@@ -24,6 +24,7 @@ UIImageEditorForm::UIImageEditorForm()
 
 UIImageEditorForm::~UIImageEditorForm()
 {
+	UI->DestroyImGuiTexture(m_EditorTexture);
 	m_Texture.destroy();;
 
 	xr_delete(m_ItemList);
@@ -119,7 +120,10 @@ void UIImageEditorForm::Draw()
 					baseTexture->Release();
 				}
 			}
-			ImGui::Image(m_Texture->get_SRView()->GetRawSRV(), ImVec2(128, 128));
+			const ImTextureID Preview = m_EditorTexture.IsValid()
+				? UI->GetImGuiTexture(m_EditorTexture)
+				: UI->LoadTexture("ed\\ed_nodata");
+			ImGui::Image(Preview, ImVec2(128, 128));
 			m_ItemProps->Draw();
 
 			if (!IsDocked)
@@ -404,6 +408,7 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 	m_THM_Current.clear();
 	m_TextureRemove = m_Texture;
 	m_Texture = nullptr;
+	UI->DestroyImGuiTexture(m_EditorTexture);
 
 	m_ItemProps->ClearProperties();
 	for (ListItem* prop : item)
@@ -426,6 +431,13 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 		m_Texture = new CTexture;
 		m_Texture->surface_set(Surf);
 		Surf->Release();
+		if (thm->Valid())
+		{
+			(void)UI->UpdateImGuiTexture(m_EditorTexture, thm->Pixels(),
+				THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4,
+				++m_EditorTextureRevision, "image-editor-thumbnail",
+				EEditorTextureFormat::Bgra8Unorm, true);
+		}
 	}
 
 	m_ItemProps->AssignItems(props);

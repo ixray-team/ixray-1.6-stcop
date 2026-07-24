@@ -1,5 +1,16 @@
 #include "stdafx.h"
 #include "../Terrain/ESceneTerrainTools.h"
+#include "../../../Renderer/Tiramisu/TiramisuEditorNativeScene.h"
+#include "../../../../xrECore/Editor/EditorRenderBackend.h"
+
+namespace
+{
+bool UsesNativeSceneObjectControl()
+{
+	return GetEditorNativeSceneDocument().IsOpen() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT;
+}
+} // namespace
 
 TUI_CustomControl::TUI_CustomControl(int st, int act, ESceneToolBase* parent)
 {
@@ -90,6 +101,33 @@ void DragDrop(const xr_string& Path, int Type)
 	Fvector p, n;
 	if (LUI->PickGround(p, UI->m_ContextRStart, UI->m_ContextRDir, 1, &n))
 	{
+		if (Path.ends_with(".static-mesh.json"))
+		{
+			TiramisuEditorNativeSceneDocument& Document =
+				GetEditorNativeSceneDocument();
+			if (!Document.IsEditableRenderScene())
+			{
+				Msg("! Open a native RenderScene before adding a native "
+					"StaticMesh.");
+				return;
+			}
+			xr_array<float, 16> Transform = {
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				p.x, p.y, p.z, 1.0f};
+			xr_string Diagnostic;
+			if (!Document.AddStaticMeshComponent(
+					std::filesystem::path(Path.c_str()),
+					Transform, Diagnostic))
+			{
+				Msg("! Cannot add native StaticMesh component: %s",
+					Diagnostic.c_str());
+				return;
+			}
+			UI->RedrawScene();
+			return;
+		}
 		// before callback
 		SBeforeAppendCallbackParams P;
 
@@ -276,6 +314,52 @@ bool TUI_CustomControl::SelectStart(TShiftState Shift)
 		return false;
 	}
 
+	if (UsesNativeSceneObjectControl())
+	{
+		if (Shift == ssRBOnly)
+		{
+			ExecCommand(COMMAND_SHOWCONTEXTMENU, parent_tool->FClassID);
+			return false;
+		}
+		FEditorViewportPickRequest Request;
+		Request.RayOrigin = {UI->m_CurrentRStart.x,
+			UI->m_CurrentRStart.y, UI->m_CurrentRStart.z};
+		Request.RayDirection = {UI->m_CurrentRDir.x,
+			UI->m_CurrentRDir.y, UI->m_CurrentRDir.z};
+		Request.MaxDistance = UI->ZFar();
+		Request.CullBackFaces = false;
+		const FEditorViewportPickResult Pick =
+			GetEditorRenderBackend().PickViewport(
+				static_cast<u32>(UI->ViewID), Request);
+		TiramisuEditorNativeSceneDocument& Document =
+			GetEditorNativeSceneDocument();
+		if (Pick.Hit)
+		{
+			const EEditorNativeSceneSelectionMode Mode =
+				(Shift & ssAlt)
+					? EEditorNativeSceneSelectionMode::Remove
+					: (Shift & ssCtrl)
+						? EEditorNativeSceneSelectionMode::Toggle
+						: EEditorNativeSceneSelectionMode::Replace;
+			(void)Document.SelectObject(Pick.ObjectId.Value, Mode);
+		}
+		else if (!((Shift & ssCtrl) || (Shift & ssAlt)))
+		{
+			Document.ClearSelection();
+		}
+		bBoxSelection = !Pick.Hit ||
+			((Shift & ssCtrl) || (Shift & ssAlt));
+		if (bBoxSelection)
+		{
+			UI->EnableSelectionRect(true);
+			UI->UpdateSelectionRect(UI->m_StartCp, UI->m_CurrentCp);
+		}
+		UI->RedrawScene();
+		// A point miss starts native rectangle selection and must not fall
+		// through to the empty transition EScene.
+		return bBoxSelection;
+	}
+
 	if (CheckSnapList(Shift)) return false;
 	if (Shift==ssRBOnly){ ExecCommand(COMMAND_SHOWCONTEXTMENU,parent_tool->FClassID); return false;}
 	if (!((Shift&ssCtrl)||(Shift&ssAlt))) Scene->SelectObjects( false, cls);
@@ -303,6 +387,30 @@ bool  TUI_CustomControl::SelectEnd(TShiftState _Shift)
 	{
 		UI->EnableSelectionRect( false );
 		bBoxSelection = false;
+		if (UsesNativeSceneObjectControl())
+		{
+			CFrustum LegacyFrustum;
+			if (LUI->SelectionFrustum(LegacyFrustum))
+			{
+				FEditorNativeSceneSelectionFrustum NativeFrustum;
+				NativeFrustum.Planes.reserve(LegacyFrustum.p_count);
+				for (int Index = 0; Index < LegacyFrustum.p_count; ++Index)
+				{
+					const CFrustum::fplane& Plane =
+						LegacyFrustum.planes[Index];
+					NativeFrustum.Planes.push_back({
+						{Plane.n.x, Plane.n.y, Plane.n.z}, Plane.d});
+				}
+				const EEditorNativeSceneSelectionMode Mode =
+					(_Shift & ssAlt)
+						? EEditorNativeSceneSelectionMode::Remove
+						: EEditorNativeSceneSelectionMode::Add;
+				(void)GetEditorNativeSceneDocument().SelectFrustum(
+					NativeFrustum, Mode);
+			}
+			UI->RedrawScene();
+			return true;
+		}
 		Scene->FrustumSelect(_Shift&ssAlt?0:1,LTools->CurrentClassID());
 	}
 	return true;
@@ -317,6 +425,33 @@ bool TUI_CustomControl::MovingStart(TShiftState Shift)
 	{
 		ExecCommand(COMMAND_SHOWCONTEXTMENU, parent_tool->FClassID);
 		return false;
+	}
+	if (UsesNativeSceneObjectControl())
+	{
+		TiramisuEditorNativeSceneDocument& Document =
+			GetEditorNativeSceneDocument();
+		if (!Document.IsEditableRenderScene() ||
+			Document.GetSelectionCount() == 0 || (Shift & ssCtrl))
+		{
+			return false;
+		}
+		if (etAxisY == Tools->GetAxis())
+		{
+			m_MovingXVector.set(0, 0, 0);
+			m_MovingYVector.set(0, 1, 0);
+		}
+		else
+		{
+			m_MovingXVector.set(UI->CurrentView().m_Camera.GetRight());
+			m_MovingXVector.y = 0;
+			m_MovingYVector.set(
+				UI->CurrentView().m_Camera.GetDirection());
+			m_MovingYVector.y = 0;
+			m_MovingXVector.normalize_safe();
+			m_MovingYVector.normalize_safe();
+		}
+		m_MovingReminder.set(0, 0, 0);
+		return Document.BeginEditTransaction();
 	}
 	if (Scene->SelectionCount(true, cls) == 0)
 		return false;
@@ -406,6 +541,13 @@ void TUI_CustomControl::MovingProcess(TShiftState _Shift)
 	Fvector amount;
 	if (DefaultMovingProcess(_Shift, amount))
 	{
+		if (UsesNativeSceneObjectControl())
+		{
+			(void)GetEditorNativeSceneDocument().TranslateSelected(
+				{amount.x, amount.y, amount.z});
+			UI->RedrawScene();
+			return;
+		}
 		ObjectList lst;
 		if (Scene->GetQueryObjects(lst, LTools->CurrentClassID(), 1, 1, 0))
 			for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
@@ -415,6 +557,13 @@ void TUI_CustomControl::MovingProcess(TShiftState _Shift)
 
 bool TUI_CustomControl::MovingEnd(TShiftState _Shift)
 {
+	if (UsesNativeSceneObjectControl())
+	{
+		const bool Ended =
+			GetEditorNativeSceneDocument().EndEditTransaction();
+		UI->RedrawScene();
+		return Ended;
+	}
 	Scene->UndoSave();
 	return true;
 }
@@ -429,7 +578,15 @@ bool TUI_CustomControl::RotateStart(TShiftState Shift)
 		ExecCommand(COMMAND_SHOWCONTEXTMENU, parent_tool->FClassID);
 		return false;
 	}
-	if (Scene->SelectionCount(true, cls) == 0)
+	if (UsesNativeSceneObjectControl())
+	{
+		if (!GetEditorNativeSceneDocument().IsEditableRenderScene() ||
+			GetEditorNativeSceneDocument().GetSelectionCount() == 0)
+		{
+			return false;
+		}
+	}
+	else if (Scene->SelectionCount(true, cls) == 0)
 		return false;
 
 	m_RotateVector.set(0, 0, 0);
@@ -440,6 +597,8 @@ bool TUI_CustomControl::RotateStart(TShiftState Shift)
 	else if (etAxisZ == Tools->GetAxis())
 		m_RotateVector.set(0, 0, 1);
 	m_fRotateSnapAngle = 0;
+	if (UsesNativeSceneObjectControl())
+		return GetEditorNativeSceneDocument().BeginEditTransaction();
 	return true;
 }
 
@@ -452,6 +611,30 @@ void TUI_CustomControl::RotateProcess(TShiftState _Shift)
 		if (Tools->GetSettings(etfASnap))
 			CHECK_SNAP(m_fRotateSnapAngle, amount, Tools->m_RotateSnapAngle);
 
+		if (UsesNativeSceneObjectControl())
+		{
+			const bool ParentSpace = Tools->GetSettings(etfCSParent);
+			(void)GetEditorNativeSceneDocument().TransformSelected(
+				[&](xr_array<float, 16>& Transform)
+				{
+					Fmatrix Matrix;
+					std::copy_n(Transform.data(), Transform.size(),
+						Matrix.mm);
+					const Fvector Position = Matrix.c;
+					Matrix.c.set(0.0f, 0.0f, 0.0f);
+					Fmatrix Delta;
+					Delta.rotation(m_RotateVector, amount);
+					if (ParentSpace)
+						Matrix.mulA_43(Delta);
+					else
+						Matrix.mulB_43(Delta);
+					Matrix.c = Position;
+					std::copy_n(Matrix.mm, Transform.size(),
+						Transform.data());
+				});
+			UI->RedrawScene();
+			return;
+		}
 		ObjectList lst;
 		if (Scene->GetQueryObjects(lst, LTools->CurrentClassID(), 1, 1, 0))
 			for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
@@ -468,6 +651,13 @@ void TUI_CustomControl::RotateProcess(TShiftState _Shift)
 
 bool TUI_CustomControl::RotateEnd(TShiftState _Shift)
 {
+	if (UsesNativeSceneObjectControl())
+	{
+		const bool Ended =
+			GetEditorNativeSceneDocument().EndEditTransaction();
+		UI->RedrawScene();
+		return Ended;
+	}
 	Scene->UndoSave();
 	return true;
 }
@@ -480,6 +670,15 @@ bool TUI_CustomControl::ScaleStart(TShiftState Shift)
 	{
 		ExecCommand(COMMAND_SHOWCONTEXTMENU, parent_tool->FClassID);
 		return false;
+	}
+	if (UsesNativeSceneObjectControl())
+	{
+		if (!GetEditorNativeSceneDocument().IsEditableRenderScene() ||
+			GetEditorNativeSceneDocument().GetSelectionCount() == 0)
+		{
+			return false;
+		}
+		return GetEditorNativeSceneDocument().BeginEditTransaction();
 	}
 	if (Scene->SelectionCount(true, cls) == 0)
 		return false;
@@ -514,6 +713,30 @@ void TUI_CustomControl::ScaleProcess(TShiftState _Shift)
 			amount.y = 0.f;
 	}
 
+	if (UsesNativeSceneObjectControl())
+	{
+		(void)GetEditorNativeSceneDocument().TransformSelected(
+			[&](xr_array<float, 16>& Transform)
+			{
+				Fmatrix Matrix;
+				std::copy_n(Transform.data(), Transform.size(), Matrix.mm);
+				const float CurrentX = Matrix.i.magnitude();
+				const float CurrentY = Matrix.j.magnitude();
+				const float CurrentZ = Matrix.k.magnitude();
+				if (CurrentX > EPS)
+					Matrix.i.mul(std::max(EPS, CurrentX + amount.x) /
+						CurrentX);
+				if (CurrentY > EPS)
+					Matrix.j.mul(std::max(EPS, CurrentY + amount.y) /
+						CurrentY);
+				if (CurrentZ > EPS)
+					Matrix.k.mul(std::max(EPS, CurrentZ + amount.z) /
+						CurrentZ);
+				std::copy_n(Matrix.mm, Transform.size(), Transform.data());
+			});
+		UI->RedrawScene();
+		return;
+	}
 	ObjectList lst;
 	if (Scene->GetQueryObjects(lst, LTools->CurrentClassID(), 1, 1, 0))
 		for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
@@ -522,6 +745,13 @@ void TUI_CustomControl::ScaleProcess(TShiftState _Shift)
 
 bool TUI_CustomControl::ScaleEnd(TShiftState _Shift)
 {
+	if (UsesNativeSceneObjectControl())
+	{
+		const bool Ended =
+			GetEditorNativeSceneDocument().EndEditTransaction();
+		UI->RedrawScene();
+		return Ended;
+	}
 	Scene->UndoSave();
 	return true;
 }

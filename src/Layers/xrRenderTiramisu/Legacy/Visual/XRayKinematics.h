@@ -1,4 +1,6 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 #include "XRayFHierrarhyVisual.h"
 
 class CDS0_SkeletonX;

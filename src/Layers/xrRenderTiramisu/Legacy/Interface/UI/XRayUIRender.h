@@ -1,8 +1,10 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 #include "Resources/RenderVertexTypes.h"
 
-class TRenderTextureResourceProxy;
-class TRenderTexture;
+class TiramisuRenderTextureResourceProxy;
+class TiramisuRenderTexture;
 
 class CDS0_UIShader :
 	public IUIShader
@@ -15,18 +17,19 @@ public:
 	virtual bool inited();
 	virtual void destroy();
 	
-	TRenderTexture* Texture = nullptr;
+	TiramisuRenderTexture* Texture = nullptr;
 };
 
+// Legacy UI primitive, временно переводимый в UI pass Tiramisu.
 struct FXRayUIPrimitive
 {
-	uint32_t						VertexOffset = 0;
-	uint32_t						VertexCount = 0;
+	u32						VertexOffset = 0;
+	u32						VertexCount = 0;
 	IUIRender::ePrimitiveType		PrimitiveType;
 	IUIRender::ePointType			PointType;
 	xr_vector<FUIVertex>			VertexesCache;
-	TRenderTexture*					Texture			= nullptr;
-	TRenderTextureResourceProxy*	TextureResourceProxy = nullptr;
+	TiramisuRenderTexture*					Texture			= nullptr;
+	TiramisuRenderTextureResourceProxy*	TextureResourceProxy = nullptr;
 	Irect							ScissorRect;
 };
 

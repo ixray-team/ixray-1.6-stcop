@@ -41,6 +41,7 @@ UIEditLibrary::UIEditLibrary()
 void UIEditLibrary::OnItemFocused(ListItem* item)
 {
 	m_RealTexture = nullptr;
+	UI->DestroyImGuiTexture(m_RealTextureEditor);
 	PreviewProps->ClearProperties();
 	m_Current = nullptr;
 
@@ -59,6 +60,14 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 			m_RealTexture = new CTexture();
 			m_RealTexture->surface_set(Surface);
 			Surface->Release();
+			if (m_Thm->Valid())
+			{
+				(void)UI->UpdateImGuiTexture(m_RealTextureEditor,
+					m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT,
+					THUMB_WIDTH * 4, ++m_RealTextureRevision,
+					"editor-library-object-thumbnail",
+					EEditorTextureFormat::Bgra8Unorm, true);
+			}
 
 			m_Thm->FillInfo(Info);
 			PreviewProps->AssignItems(Info);
@@ -106,6 +115,7 @@ void UIEditLibrary::OnItemUnfocused(ListItem* item)
 
 UIEditLibrary::~UIEditLibrary() 
 {
+	UI->DestroyImGuiTexture(m_RealTextureEditor);
 	xr_delete(PreviewProps);
 	xr_delete(InternalProps);
 }
@@ -359,7 +369,10 @@ void UIEditLibrary::DrawRightBar()
 {
 	if (ImGui::BeginChild("Right", ImVec2(0, 0)))
 	{
-		ImGui::Image(m_RealTexture ? m_RealTexture->get_SRView()->GetRawSRV() : EDevice->texture_null->get_SRView()->GetRawSRV(), ImVec2(200, 200));
+		const ImTextureID PreviewTexture = m_RealTextureEditor.IsValid()
+			? UI->GetImGuiTexture(m_RealTextureEditor)
+			: UI->GetImGuiTexture(EDevice->texture_null);
+		ImGui::Image(PreviewTexture, ImVec2(200, 200));
 
 		PreviewProps->Draw();
 

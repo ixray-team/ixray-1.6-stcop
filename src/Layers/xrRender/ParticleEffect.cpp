@@ -2,11 +2,147 @@
 #include "ParticleEffect.h"
 #include "CHudInitializer.h"
 
+#ifdef _EDITOR
+#include "../../Editors/xrECore/Editor/EditorRenderBackend.h"
+
+#include <cctype>
+#endif
+
 using namespace PAPI;
 using namespace PS;
 
 const u32	PS::uDT_STEP 	= 33;
 const float	PS::fDT_STEP 	= float(uDT_STEP)/1000.f;
+
+#ifdef _EDITOR
+namespace
+{
+constexpr std::uint64_t EditorParticleFnvOffset = 14695981039346656037ull;
+constexpr std::uint64_t EditorParticleFnvPrime = 1099511628211ull;
+
+void HashEditorParticleBytes(std::uint64_t& Hash, const void* Data,
+	const std::size_t Size)
+{
+	const auto* Bytes = static_cast<const std::uint8_t*>(Data);
+	for (std::size_t Index = 0; Index < Size; ++Index)
+	{
+		Hash ^= Bytes[Index];
+		Hash *= EditorParticleFnvPrime;
+	}
+}
+
+void HashEditorParticleString(std::uint64_t& Hash,
+	const std::string_view Text)
+{
+	HashEditorParticleBytes(Hash, Text.data(), Text.size());
+	const std::uint8_t Separator = 0;
+	HashEditorParticleBytes(Hash, &Separator, sizeof(Separator));
+}
+
+[[nodiscard]] std::uint32_t PackEditorParticleColor(const u32 Argb)
+{
+	return ((Argb >> 16u) & 0xffu) |
+		(((Argb >> 8u) & 0xffu) << 8u) |
+		((Argb & 0xffu) << 16u) |
+		(((Argb >> 24u) & 0xffu) << 24u);
+}
+
+[[nodiscard]] bool IsAdditiveParticleShader(std::string ShaderName)
+{
+	std::ranges::transform(ShaderName, ShaderName.begin(),
+		[](const unsigned char Character)
+		{
+			return static_cast<char>(std::tolower(Character));
+		});
+	return ShaderName.find("add") != std::string::npos;
+}
+
+void CaptureEditorParticleSprites(const CParticleEffect& Effect,
+	const PAPI::Particle::LITBUFF* Sprites, const std::uint32_t SpriteCount)
+{
+	if (!IsEditorDebugDrawCaptureActive() || !Effect.m_Def || !Sprites ||
+		SpriteCount == 0)
+	{
+		return;
+	}
+
+	const std::string LegacyShader = Effect.m_Def->m_ShaderName.size()
+		? *Effect.m_Def->m_ShaderName : std::string{};
+	std::string TextureName = Effect.m_Def->m_TextureName.size()
+		? *Effect.m_Def->m_TextureName : std::string{};
+	if (TextureName.empty())
+		TextureName = "textures/default/default_white";
+	const std::string ShaderName = IsAdditiveParticleShader(LegacyShader)
+		? "editor\\particle_additive" : "editor\\particle_translucent";
+
+	std::uint64_t MaterialHash = EditorParticleFnvOffset;
+	HashEditorParticleString(MaterialHash, ShaderName);
+	HashEditorParticleString(MaterialHash, TextureName);
+	if (MaterialHash == 0)
+		MaterialHash = 1;
+
+	std::uint64_t MeshHash = EditorParticleFnvOffset;
+	HashEditorParticleString(MeshHash, "legacy-editor-particle-batch-v1");
+	const auto EffectIdentity = reinterpret_cast<std::uintptr_t>(&Effect);
+	HashEditorParticleBytes(MeshHash, &EffectIdentity,
+		sizeof(EffectIdentity));
+	if (MeshHash == 0)
+		MeshHash = 1;
+
+	std::uint64_t Revision = EditorParticleFnvOffset;
+	HashEditorParticleString(Revision, TextureName);
+	HashEditorParticleBytes(Revision, &SpriteCount, sizeof(SpriteCount));
+	HashEditorParticleBytes(Revision, Sprites,
+		static_cast<std::size_t>(SpriteCount) * sizeof(*Sprites));
+	if (Revision == 0)
+		Revision = 1;
+
+	std::uint64_t ObjectId = reinterpret_cast<std::uintptr_t>(
+		GetEditorTransientObjectIdentity());
+	if (ObjectId == 0)
+		ObjectId = EffectIdentity;
+	if (ObjectId == 0)
+		ObjectId = 1;
+
+	FEditorTransientMeshCapture Capture;
+	Capture.MeshId = {MeshHash};
+	Capture.ObjectId = {ObjectId};
+	Capture.MaterialSlot = {MaterialHash};
+	Capture.Revision = Revision;
+	Capture.ShaderName = ShaderName;
+	Capture.TextureName = std::move(TextureName);
+	Capture.SurfaceName = LegacyShader.empty()
+		? "Legacy particle" : "Legacy particle: " + LegacyShader;
+	Capture.MaterialFlags = EEditorMaterialSlotFlags::TwoSided;
+	Capture.InstanceFlags = EEditorSceneInstanceFlags::TwoSided;
+	Capture.Vertices.reserve(static_cast<std::size_t>(SpriteCount) * 4);
+	Capture.Indices.reserve(static_cast<std::size_t>(SpriteCount) * 6);
+
+	for (std::uint32_t SpriteIndex = 0; SpriteIndex < SpriteCount;
+		++SpriteIndex)
+	{
+		const std::uint32_t VertexBase = static_cast<std::uint32_t>(
+			Capture.Vertices.size());
+		for (const FVF::LIT& Source : Sprites[SpriteIndex].buff)
+		{
+			FEditorStaticMeshVertex& Vertex = Capture.Vertices.emplace_back();
+			Vertex.Position = {Source.p.x, Source.p.y, Source.p.z};
+			Vertex.Normal = {-RDEVICE.vCameraDirection.x,
+				-RDEVICE.vCameraDirection.y, -RDEVICE.vCameraDirection.z};
+			Vertex.Tangent = {RDEVICE.vCameraRight.x,
+				RDEVICE.vCameraRight.y, RDEVICE.vCameraRight.z, 1.0f};
+			Vertex.TexCoord = {Source.t.x, Source.t.y};
+			Vertex.Color = PackEditorParticleColor(Source.color);
+		}
+		Capture.Indices.insert(Capture.Indices.end(),
+			{VertexBase, VertexBase + 1, VertexBase + 2,
+				VertexBase + 3, VertexBase + 2, VertexBase + 1});
+	}
+
+	CaptureEditorTransientMesh(std::move(Capture));
+}
+} // namespace
+#endif
 
 static void ApplyTexgen(const Fmatrix& mVP)
 {
@@ -720,6 +856,8 @@ void CParticleEffect::Render(float)
 				}
 			}
 			dwCount = u32(pv - pv_start) * 4;
+			CaptureEditorParticleSprites(*this, pv_start,
+				static_cast<std::uint32_t>(pv - pv_start));
 			RCache.Vertex.Unlock(dwCount, geom->vb_stride);
 
 			CHudInitializer initalizer(false);

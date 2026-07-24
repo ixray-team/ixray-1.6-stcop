@@ -3,6 +3,9 @@
 #include "UI/UIEditLibrary.h"
 #include "Scene/LEPhysics.h"
 #include "../Viewports/ViewportMesh.h"
+#include "../Renderer/Tiramisu/TiramisuEditorLegacySceneBridge.h"
+#include "../Renderer/Tiramisu/TiramisuEditorNativeScene.h"
+#include "../../xrECore/Editor/EditorRenderBackend.h"
 
 CLevelTool*	LTools=(CLevelTool*)Tools;
 
@@ -359,6 +362,15 @@ void CLevelTool::UpdateProperties()
 		MainForm->GetPropertiesForm()->PropUpdateIsCompleted = false;
 	}
 
+	if (GetEditorNativeSceneDocument().IsOpen())
+	{
+		if (MainForm != nullptr && MainForm->GetPropertiesForm())
+			MainForm->GetPropertiesForm()->PropUpdateIsCompleted = true;
+		m_Flags.set(flUpdateProperties, false);
+		m_Props->setModified(false);
+		return;
+	}
+
 	SetEvent(mtPropObj);
 	m_Flags.set(flUpdateProperties, false);
 	m_Props->setModified(false);
@@ -372,11 +384,35 @@ void  CLevelTool::OnPropsModified()
 
 bool CLevelTool::IfModified()
 {
-	return false;
+	return GetEditorNativeSceneDocument().IsDirty();
 }
 
 void CLevelTool::ZoomObject(bool bSelectedOnly)
 {
+	TiramisuEditorNativeSceneDocument& NativeDocument =
+		GetEditorNativeSceneDocument();
+	if (NativeDocument.IsOpen() &&
+		CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		const xr_optional<FEditorNativeSceneBounds> Bounds =
+			NativeDocument.GetWorldBounds(bSelectedOnly);
+		if (!Bounds)
+		{
+			ELog.Msg(mtError, "Can't calculate native scene bounding box. "
+				"Nothing visible is selected or the mesh is unresolved.");
+			return;
+		}
+		Fvector Minimum;
+		Minimum.set(Bounds->Minimum[0], Bounds->Minimum[1],
+			Bounds->Minimum[2]);
+		Fvector Maximum;
+		Maximum.set(Bounds->Maximum[0], Bounds->Maximum[1],
+			Bounds->Maximum[2]);
+		Fbox Box;
+		Box.set(Minimum, Maximum);
+		UI->CurrentView().m_Camera.ZoomExtents(Box);
+		return;
+	}
 	if (!Scene->locked())
 	{
 		Scene->ZoomExtents(CurrentClassID(), bSelectedOnly);
@@ -501,7 +537,8 @@ void CLevelTool::Render()
 
 		case esEditLightAnim:
 		case esEditScene:
-			Scene->Render(UI->CurrentView().m_Camera.GetTransform());
+			if (!GetEditorNativeSceneDocument().IsOpen())
+				Scene->Render(UI->CurrentView().m_Camera.GetTransform());
 		    if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
 		    {
 		        g_pGamePersistent->Environment().RenderFlares();
@@ -521,6 +558,11 @@ void CLevelTool::Render()
 	// draw cursor
 	LUI->m_Cursor->Render();
     inherited::Render();
+	if (est == esEditLightAnim || est == esEditScene)
+	{
+		(void)SubmitEditorSceneToEditorRenderer(
+			static_cast<u32>(UI->ViewID));
+	}
 }
 
 void CLevelTool::UpdateObjectList()
@@ -530,12 +572,37 @@ void CLevelTool::UpdateObjectList()
 
 bool CLevelTool::IsModified()
 {
+	if (GetEditorNativeSceneDocument().IsDirty())
+		return true;
 	return Scene->IsUnsaved();
 }
 
 #include "../XrECore/Editor/EditMesh.h"
 bool CLevelTool::RayPick(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n)
 {
+	if (GetEditorNativeSceneDocument().IsOpen() &&
+		GetEditorRenderBackend().GetKind() ==
+			EEditorRenderBackendKind::Tiramisu)
+	{
+		FEditorViewportPickRequest Request;
+		Request.RayOrigin = {start.x, start.y, start.z};
+		Request.RayDirection = {dir.x, dir.y, dir.z};
+		Request.MaxDistance = dist;
+		const FEditorViewportPickResult Pick =
+			GetEditorRenderBackend().PickViewport(
+				static_cast<u32>(UI->ViewID), Request);
+		if (Pick.Hit)
+		{
+			dist = Pick.Distance;
+			if (pt)
+				pt->set(Pick.WorldPosition[0], Pick.WorldPosition[1],
+					Pick.WorldPosition[2]);
+			if (n)
+				n->set(Pick.WorldNormal[0], Pick.WorldNormal[1],
+					Pick.WorldNormal[2]);
+			return true;
+		}
+	}
 	if (Scene->ObjCount()&&(UI->GetEState()==esEditScene)){
 		SRayPickInfo pinf;
 		pinf.inf.range	= dist;

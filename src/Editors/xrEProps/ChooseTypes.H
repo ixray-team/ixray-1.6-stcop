@@ -14,6 +14,13 @@ struct SChooseItem
 
 class IRHISurface;
 
+struct SChooseTexture
+{
+    IRHISurface* Legacy = nullptr;
+    FEditorTextureHandle Editor;
+    u64 Revision = 0;
+};
+
 using ChooseItemVec = xr_vector<SChooseItem>;
 using ChooseItemVecIt = ChooseItemVec::iterator;
 
@@ -23,7 +30,7 @@ typedef xr_delegate<void(SChooseItem*, PropItemVec&)>	TOnChooseSelectItem;
 typedef xr_delegate<void(const char*, HDC, const Irect&)> 	TOnDrawThumbnail;
 typedef xr_delegate<void()>						   	TOnChooseClose;
 
-using TGetTexture = xr_delegate<void(const char*, IRHISurface*&)>;
+using TGetTexture = xr_delegate<void(const char*, SChooseTexture&)>;
 
 typedef void (*TOnChooseFillEvents)();
 

@@ -15,6 +15,47 @@ ref_sound* choose_snd;
 
 namespace ChoseEvents
 {
+    void ReleaseChooseTexture(SChooseTexture& Texture)
+    {
+        if (Texture.Legacy)
+            Texture.Legacy->Release();
+        Texture.Legacy = nullptr;
+        GUIManager->DestroyEditorTexture(Texture.Editor);
+        Texture.Revision = 0;
+    }
+
+    void UpdateImageThumbnail(EImageThumbnail& Thumbnail,
+        SChooseTexture& Texture, const char* DebugName)
+    {
+        if (!Thumbnail.Valid())
+        {
+            ReleaseChooseTexture(Texture);
+            return;
+        }
+
+        Thumbnail.Update(Texture.Legacy);
+        xr_vector<std::byte> Flipped(
+            static_cast<std::size_t>(THUMB_WIDTH) * THUMB_HEIGHT * 4);
+        const auto* Source = reinterpret_cast<const std::byte*>(Thumbnail.Pixels());
+        constexpr std::size_t RowPitch = THUMB_WIDTH * 4;
+        for (u32 Y = 0; Y < THUMB_HEIGHT; ++Y)
+        {
+            memcpy(Flipped.data() + static_cast<std::size_t>(Y) * RowPitch,
+                Source + static_cast<std::size_t>(THUMB_HEIGHT - Y - 1) * RowPitch,
+                RowPitch);
+        }
+
+        FEditorTextureUpload Upload;
+        Upload.Width = THUMB_WIDTH;
+        Upload.Height = THUMB_HEIGHT;
+        Upload.RowPitch = static_cast<std::uint32_t>(RowPitch);
+        Upload.Format = EEditorTextureFormat::Bgra8Unorm;
+        Upload.Pixels = Flipped;
+        Upload.Revision = ++Texture.Revision;
+        Upload.DebugName = DebugName;
+        (void)GUIManager->UpdateEditorTexture(Texture.Editor, Upload);
+    }
+
     void   FillEntity(ChooseItemVec& items, void* param)
     {
         //.    AppendItem	   					(RPOINT_CHOOSE_NAME);
@@ -79,18 +120,10 @@ namespace ChoseEvents
         if (thm->Valid()) thm->FillInfo(info_items);
         xr_delete(thm);
     }
-    void   UpdateObjectTHM(const char* name, IRHISurface*&ID)
+    void   UpdateObjectTHM(const char* name, SChooseTexture& Texture)
     {
         EObjectThumbnail* thm = new EObjectThumbnail(name);
-        if (thm->Valid())
-        {
-            thm->Update(ID);
-        }
-        else if (ID)
-        {
-            IM_TEXTURE_RELEASE(ID);
-            ID = nullptr;
-        }
+        UpdateImageThumbnail(*thm, Texture, "choose-object-thumbnail");
         xr_delete(thm);
     }
     //---------------------------------------------------------------------------
@@ -109,18 +142,10 @@ namespace ChoseEvents
         if (thm->Valid()) thm->FillInfo(info_items);
         xr_delete(thm);
     }
-    void   UpdateGroupTHM(const char* name, IRHISurface*& ID)
+    void   UpdateGroupTHM(const char* name, SChooseTexture& Texture)
     {
         EGroupThumbnail* thm = new EGroupThumbnail(name);
-        if (thm->Valid())
-        {
-            thm->Update(ID);
-        }
-        else if(ID)
-        {
-            IM_TEXTURE_RELEASE(ID);
-            ID = nullptr;
-        }
+        UpdateImageThumbnail(*thm, Texture, "choose-group-thumbnail");
         xr_delete(thm);
     }
     //---------------------------------------------------------------------------
@@ -184,7 +209,7 @@ namespace ChoseEvents
         for (; it != _E; it++)			items.push_back(SChooseItem(*(*it)->cName, ""));
     }
 
-    void UpdateLAnim(const char* Name, IRHISurface*& Texture)
+    void UpdateLAnim(const char* Name, SChooseTexture& Texture)
     {
         CLAItem* Item = LALib.FindItem(Name);
         if (!Item)
@@ -199,14 +224,14 @@ namespace ChoseEvents
         Desc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
         Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 
-        if (Texture)
+        if (Texture.Legacy)
         {
-            if (Texture->GetWidth() != Desc.Width ||
-                Texture->GetHeight() != Desc.Height ||
-                Texture->GetFormat() != Desc.Format)
+            if (Texture.Legacy->GetWidth() != Desc.Width ||
+                Texture.Legacy->GetHeight() != Desc.Height ||
+                Texture.Legacy->GetFormat() != Desc.Format)
             {
-                Texture->Release();
-                Texture = nullptr;
+                Texture.Legacy->Release();
+                Texture.Legacy = nullptr;
             }
         }
 
@@ -231,9 +256,9 @@ namespace ChoseEvents
         SubResource.RowPitch = THUMB_WIDTH * 4;
         SubResource.Data = Pixels.data();
 
-        if (!Texture)
+        if (!Texture.Legacy)
         {
-            Texture = GRHI->CreateTexture2D(Desc, SubResource);
+            Texture.Legacy = GRHI->CreateTexture2D(Desc, SubResource);
         }
         else
         {
@@ -245,8 +270,18 @@ namespace ChoseEvents
             box.bottom = THUMB_HEIGHT;
             box.back = 1;
 
-            Texture->UpdateData(0, 0, &SubResource, box);
+            Texture.Legacy->UpdateData(0, 0, &SubResource, box);
         }
+
+        FEditorTextureUpload Upload;
+        Upload.Width = THUMB_WIDTH;
+        Upload.Height = THUMB_HEIGHT;
+        Upload.RowPitch = THUMB_WIDTH * 4;
+        Upload.Format = EEditorTextureFormat::Bgra8Unorm;
+        Upload.Pixels = std::as_bytes(std::span(Pixels));
+        Upload.Revision = ++Texture.Revision;
+        Upload.DebugName = "choose-light-animation";
+        (void)GUIManager->UpdateEditorTexture(Texture.Editor, Upload);
     }
 
     //---------------------------------------------------------------------------
@@ -348,11 +383,11 @@ namespace ChoseEvents
         }
     }
 
-    void   UpdateTextureTHM(const char* name, IRHISurface*&Texture)
+    void   UpdateTextureTHM(const char* name, SChooseTexture& Texture)
     {
         if (name && name[0]) {
             ETextureThumbnail* thm = new ETextureThumbnail(name);
-            if (thm->Valid()) thm->Update(Texture);
+            UpdateImageThumbnail(*thm, Texture, "choose-texture-thumbnail");
             xr_delete(thm);
         }
     }
@@ -368,11 +403,11 @@ namespace ChoseEvents
         }
     }
 
-    void   UpdateTextureTHMRaw(const char* name, IRHISurface*& ID)
+    void   UpdateTextureTHMRaw(const char* name, SChooseTexture& Texture)
     {
         if (name && name[0]) {
             ETextureThumbnail* thm = new ETextureThumbnail(name);
-            if (thm->Valid()) thm->Update(ID);
+            UpdateImageThumbnail(*thm, Texture, "choose-raw-texture-thumbnail");
             xr_delete(thm);
         }
     }

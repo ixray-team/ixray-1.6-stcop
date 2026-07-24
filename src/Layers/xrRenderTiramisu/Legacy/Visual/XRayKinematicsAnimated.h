@@ -1,4 +1,6 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 #include "Animation.h"
 #include "XRayKinematics.h"
 
@@ -100,7 +102,7 @@ private:
 	//.	bool						LoadMotions				(LPCSTR N, IReader *data);
 public:
 #if (defined DEBUG || defined _EDITOR)
-	std::pair<LPCSTR, LPCSTR>	LL_MotionDefName_dbg(MotionID	ID);
+	xr_pair<LPCSTR, LPCSTR>	LL_MotionDefName_dbg(MotionID	ID);
 	void						LL_DumpBlends_dbg();
 #endif
 	u32							LL_PartBlendsCount(u32 bone_part_id);

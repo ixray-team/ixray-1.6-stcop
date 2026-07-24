@@ -1,0 +1,174 @@
+{
+  "asset_version": 1,
+  "suite_id": "tiramisu-r4-parity",
+  "deterministic_policy": {
+    "command_line_flag": "-render-deterministic",
+    "required_debug_flag": "-rdbg",
+    "random_seed": 324478056,
+    "fixed_delta_seconds": 0.016666667,
+    "fixed_shader_time_seconds": 123.0,
+    "fixed_weather_time_seconds": 43200.0,
+    "fixed_exposure": 1.0
+  },
+  "scenes": [
+    {
+      "id": "editor-material-lighting-smoke",
+      "status": "ready",
+      "kind": "synthetic_gpu",
+      "source": "LevelEditor built-in viewport/material smoke",
+      "backend": ["vulkan", "d3d12"],
+      "runner": {
+        "executable": "LevelEditor.exe",
+        "arguments": [
+          "-tiramisu-editor",
+          "-rdbg",
+          "-render-deterministic",
+          "-material-preview-smoke",
+          "-viewport-material-reload-smoke"
+        ],
+        "viewport_width": 512,
+        "viewport_height": 512
+      },
+      "coverage": [
+        "opaque",
+        "translucent",
+        "additive",
+        "two_sided",
+        "texture2d",
+        "texture_cube",
+        "directional_light",
+        "point_light",
+        "selection",
+        "debug_draw",
+        "ui_overlay",
+        "hot_reload_last_good"
+      ]
+    },
+    {
+      "id": "legacy-zaton-import",
+      "status": "ready",
+      "kind": "legacy_editor_conversion",
+      "source": "rawdata/levels/!FinalSP/zaton.level",
+      "backend": ["vulkan", "d3d12"],
+      "runner": {
+        "executable": "LevelEditor.exe",
+        "arguments": [
+          "-tiramisu-editor",
+          "-rdbg",
+          "-render-deterministic",
+          "-legacy-zaton-conversion-smoke"
+        ]
+      },
+      "coverage": [
+        "legacy_level_and_sibling_parts",
+        "static_mesh_conversion",
+        "material_instance_migration",
+        "conversion_dump",
+        "large_scene"
+      ]
+    },
+    {
+      "id": "materials-reference",
+      "status": "runner_pending",
+      "kind": "game_level",
+      "source": "gamedata/levels/test_materials",
+      "backend": ["vulkan", "d3d12"],
+      "camera_profile": "materials-grid-v1",
+      "coverage": [
+        "opaque",
+        "masked",
+        "translucent",
+        "additive",
+        "emissive",
+        "normal_roughness_metallic_ao",
+        "material_permutations"
+      ]
+    },
+    {
+      "id": "lighting-reference",
+      "status": "runner_pending",
+      "kind": "game_level",
+      "source": "gamedata/levels/test_light",
+      "backend": ["vulkan", "d3d12"],
+      "camera_profile": "lighting-rig-v1",
+      "coverage": [
+        "directional_light",
+        "point_light",
+        "spot_light",
+        "sun_shadows",
+        "local_shadows",
+        "ibl",
+        "hdr_exposure"
+      ]
+    },
+    {
+      "id": "foliage-reference",
+      "status": "runner_pending",
+      "kind": "game_level",
+      "source": "gamedata/levels/test_tree",
+      "backend": ["vulkan", "d3d12"],
+      "camera_profile": "foliage-wind-v1",
+      "coverage": [
+        "tree_vertex_factory",
+        "details_grass",
+        "masked_material",
+        "wind",
+        "foliage_lighting",
+        "foliage_shadows"
+      ]
+    },
+    {
+      "id": "zaton-outdoor-flythrough",
+      "status": "runner_pending",
+      "kind": "legacy_game_level",
+      "source": "gamedata/levels/zaton",
+      "backend": ["vulkan", "d3d12"],
+      "camera_profile": "zaton-outdoor-v1",
+      "coverage": [
+        "large_outdoor_visibility",
+        "lod",
+        "details",
+        "water",
+        "weather",
+        "rain",
+        "sky",
+        "particles",
+        "performance"
+      ]
+    },
+    {
+      "id": "jupiter-underground-flythrough",
+      "status": "runner_pending",
+      "kind": "legacy_game_level",
+      "source": "gamedata/levels/jupiter_underground",
+      "backend": ["vulkan", "d3d12"],
+      "camera_profile": "jupiter-underground-v1",
+      "coverage": [
+        "indoor_visibility",
+        "sectors_portals",
+        "occlusion",
+        "dynamic_lights",
+        "decals",
+        "particles",
+        "transparency"
+      ]
+    },
+    {
+      "id": "zaton-weather-sequence",
+      "status": "runner_pending",
+      "kind": "weather_sequence",
+      "source": "gamedata/levels/zaton",
+      "backend": ["vulkan", "d3d12"],
+      "camera_profile": "zaton-weather-v1",
+      "coverage": [
+        "weather_transition",
+        "exposure_adaptation",
+        "rain",
+        "wet_surfaces",
+        "puddles",
+        "lens_flares",
+        "thunderbolt"
+      ]
+    }
+  ]
+}

@@ -154,7 +154,7 @@ void EditorLuaCodespace()
 	{
 		if (ImGui::Button(jsonArray[i]["name"].get<std::string>().c_str(), ImVec2(-1, 0)))
 		{
-			CodeText = jsonArray[i]["code"];
+			CodeText = jsonArray[i]["code"].get<std::string>();
 			LuaEditor.SetText(CodeText.c_str());
 		}
 	}

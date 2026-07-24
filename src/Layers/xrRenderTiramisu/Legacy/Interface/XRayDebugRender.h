@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TiramisuRenderTypes.h"
+
 #ifdef DEBUG_DRAW
 class CDS0_DebugRender :
 	public IDebugRender

@@ -3,10 +3,10 @@
 #include "XRaySkeletonX.h"
 #include "XRayModelPool.h"
 
-bool	pred_sort_N(const std::pair<shared_str, u32>& A, const std::pair<shared_str, u32>& B) {
+bool	pred_sort_N(const xr_pair<shared_str, u32>& A, const xr_pair<shared_str, u32>& B) {
 	return xr_strcmp(A.first, B.first) < 0;
 }
-bool	pred_sort_P(const std::pair<shared_str, u32>& A, const std::pair<shared_str, u32>& B) {
+bool	pred_sort_P(const xr_pair<shared_str, u32>& A, const xr_pair<shared_str, u32>& B) {
 	return A.first._get() < B.first._get();
 }
 int	psSkeletonUpdate;
@@ -493,7 +493,7 @@ LPCSTR CDS0_Kinematics::LL_BoneName_dbg(u16 ID)
 	return 0;
 }
 
-inline bool	pred_N(const std::pair<shared_str, u32>& N, LPCSTR B)
+inline bool	pred_N(const xr_pair<shared_str, u32>& N, LPCSTR B)
 {
 	return xr_strcmp(*N.first, B) < 0;
 }
@@ -504,7 +504,7 @@ u16		CDS0_Kinematics::LL_BoneID(LPCSTR B)
 	if (0 != xr_strcmp(*(I->first), B))	return BI_NONE;
 	return				u16(I->second);
 }
-inline bool	pred_P(const std::pair<shared_str, u32>& N, const shared_str& B) 
+inline bool	pred_P(const xr_pair<shared_str, u32>& N, const shared_str& B) 
 {
 	return N.first._get() < B._get();
 }

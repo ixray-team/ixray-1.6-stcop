@@ -1,5 +1,5 @@
 #include <RedImage/RedImage.hpp>
-#include "Resources/Textures/TRenderTexture2D.h"
+#include "Resources/Textures/TiramisuRenderTexture2D.h"
 
 ENGINE_API extern  Fvector2 g_current_font_scale;
 
@@ -164,6 +164,6 @@ void CDS0_FontRender::CreateFontAtlas(u32 Width, u32 Height, const char* Name, v
 	memcpy(*Image, Bitmap, Image.GetSizeInMemory());
 	
 	xr_delete(Atlas);
-	Atlas = new TRenderTexture2D(Name);
+	Atlas = new TiramisuRenderTexture2D(Name);
 	Atlas->LoadFromImage(Image);
 }

@@ -16,11 +16,7 @@ void UIChooseForm::UpdateSelected(UIChooseFormItem*NewSelected)
 			m_Props->AssignItems(Vec);
 		}
 		if (E.flags.test(SChooseEvents::flClearTexture))
-		{
-			if (m_Texture)
-				m_Texture->Release();
-			m_Texture = 0;
-		}
+			ReleaseTexture();
 		if (!E.on_get_texture.empty())
 			E.on_get_texture(m_SelectedItem->Object->name.c_str(), m_Texture);
 	}
@@ -74,15 +70,14 @@ void UIChooseForm::CheckFavorite()
 	m_RootItem.FillFavorited(m_SelectedItems);
 }
 
-UIChooseForm::UIChooseForm():m_Texture(nullptr),m_SelectedItem(nullptr), m_RootItem(""), m_SelectedList(-1)
+UIChooseForm::UIChooseForm():m_SelectedItem(nullptr), m_RootItem(""), m_SelectedList(-1)
 {
 	m_Props = new UIPropertiesForm();
    // m_Props->AsGroup();
 }
 UIChooseForm::~UIChooseForm()
 {
-	if (m_Texture)
-		m_Texture->Release();
+	ReleaseTexture();
 
 	if (!E.on_close.empty())
 	{
@@ -124,11 +119,17 @@ void UIChooseForm::Draw()
 		{
 			ImGui::BeginChild("Right", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), false);
 			{
-				if (NullTexture || m_Texture)
+				const FEditorViewportSurface EditorSurface =
+					GUIManager->GetEditorTextureSurface(m_Texture.Editor);
+				if (NullTexture || m_Texture.Legacy || EditorSurface.IsValid())
 				{
-					if (m_Texture)
+					if (EditorSurface.IsValid())
 					{
-						IRHIShaderResourceView* SRV = GRHI->CreateShaderResourceView(m_Texture, nullptr);
+						ImGui::Image(EditorSurface.ImGuiTextureId, ImVec2(192, 192));
+					}
+					else if (m_Texture.Legacy)
+					{
+						IRHIShaderResourceView* SRV = GRHI->CreateShaderResourceView(m_Texture.Legacy, nullptr);
 						ImGui::Image(SRV->GetRawSRV(), ImVec2(192, 192));
 					}
 					else
@@ -216,6 +217,15 @@ void UIChooseForm::Draw()
 			}
 		}
 	}
+}
+
+void UIChooseForm::ReleaseTexture()
+{
+	if (m_Texture.Legacy)
+		m_Texture.Legacy->Release();
+	m_Texture.Legacy = nullptr;
+	GUIManager->DestroyEditorTexture(m_Texture.Editor);
+	m_Texture.Revision = 0;
 }
 
 void UIChooseForm::SetNullTexture(ImTextureID Texture)

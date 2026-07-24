@@ -5,13 +5,22 @@ class CSceneObject :
 {
 	friend class UIReferenceReplacer;
 
+	struct FRenderMaterialBinding
+	{
+		shared_str SurfaceName;
+		shared_str MaterialAsset;
+	};
+
 	shared_str		m_ReferenceName;
 	CEditableObject*m_pReference;
+	xr_vector<FRenderMaterialBinding> m_RenderMaterials;
+	bool			m_RenderMaterialsResolved;
 	void 			ReferenceChange			(PropValue* sender);
 	void			OnChangeShader(PropValue* sender);
 	void			OnChangeSurface(PropValue* sender);
 	bool			AfterEditGameMtl(PropValue* sender, shared_str& str);
 	void			OnClickClearSurface(ButtonValue*, bool&, bool&);
+	void			OnOpenRenderMaterial(ButtonValue*, bool&, bool&);
 public:
 
 	SurfaceVec m_Surfaces;
@@ -110,7 +119,14 @@ public:
 
     void			Blink					(CSurface* surf=0);
 
-    virtual bool	Validate				(bool bMsg);
+	virtual bool	Validate				(bool bMsg);
+
+	// Converts legacy CSurface state to stable generated MaterialInstances.
+	// A level bridge passes DeferDatabaseSave=true for a single atomic publish
+	// after the complete visible object batch.
+	bool			ResolveRenderMaterials	(bool DeferDatabaseSave = false);
+	const char*		GetRenderMaterialAsset	(const char* SurfaceName) const;
+	static bool		FlushRenderMaterialMigration();
 
 	void ClearSurface();
 };

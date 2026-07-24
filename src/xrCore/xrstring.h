@@ -55,9 +55,13 @@ public:
 
 	xr_string(const char* Str);
 	xr_string(const char* Str, u32 Size);
+	xr_string(const std::string& Other);
+	xr_string(std::string_view Other);
 	xr_string(Super&& other);
 
 	xr_string& operator=(const char* Str);
+	xr_string& operator=(const std::string& Other);
+	xr_string& operator=(std::string_view Other);
 	xr_string& operator=(const Super& other);
 
 	xr_string& operator=(const xr_string& other) = default;

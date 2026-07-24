@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TiramisuRenderTypes.h"
+
 class CDS0_RenderGlow :
     public IRender_Glow
 {

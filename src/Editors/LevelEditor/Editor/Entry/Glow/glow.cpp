@@ -1,5 +1,120 @@
 #include "stdafx.h"
 
+#include "../../../../xrECore/Editor/EditorRenderBackend.h"
+
+namespace
+{
+constexpr std::uint64_t EditorGlowFnvOffset = 14695981039346656037ull;
+constexpr std::uint64_t EditorGlowFnvPrime = 1099511628211ull;
+
+void HashEditorGlowBytes(std::uint64_t& Hash, const void* Data,
+	const std::size_t Size)
+{
+	const auto* Bytes = static_cast<const std::uint8_t*>(Data);
+	for (std::size_t Index = 0; Index < Size; ++Index)
+	{
+		Hash ^= Bytes[Index];
+		Hash *= EditorGlowFnvPrime;
+	}
+}
+
+void HashEditorGlowString(std::uint64_t& Hash, const std::string_view Text)
+{
+	HashEditorGlowBytes(Hash, Text.data(), Text.size());
+	const std::uint8_t Separator = 0;
+	HashEditorGlowBytes(Hash, &Separator, sizeof(Separator));
+}
+
+void CaptureEditorGlowSprite(const CGlow& Glow, const Fvector& Position,
+	const bool FixedSize)
+{
+	if (!IsEditorDebugDrawCaptureActive() || !EDevice)
+		return;
+
+	FVF::TL Projected;
+	Projected.transform(Position, EDevice->mFullTransform);
+	const float ProjectionScale = std::abs(EDevice->mProject._11);
+	if (!std::isfinite(Projected.p.w) || Projected.p.w <= 0.0f ||
+		ProjectionScale <= EPS_S)
+	{
+		return;
+	}
+
+	const float HalfSize = FixedSize
+		? Glow.m_fRadius * Projected.p.w / ProjectionScale
+		: 2.0f * Glow.m_fRadius / ProjectionScale;
+	if (!std::isfinite(HalfSize) || HalfSize <= 0.0f)
+		return;
+
+	std::string TextureName = Glow.m_TexName.size()
+		? *Glow.m_TexName : std::string{};
+	if (TextureName.empty())
+		TextureName = "textures/default/default_white";
+	constexpr std::string_view ShaderName = "editor\\glow_sprite";
+
+	std::uint64_t MaterialHash = EditorGlowFnvOffset;
+	HashEditorGlowString(MaterialHash, ShaderName);
+	HashEditorGlowString(MaterialHash, TextureName);
+	if (MaterialHash == 0)
+		MaterialHash = 1;
+
+	std::uint64_t MeshHash = EditorGlowFnvOffset;
+	HashEditorGlowString(MeshHash, "legacy-editor-glow-billboard-v1");
+	const auto GlowIdentity = reinterpret_cast<std::uintptr_t>(&Glow);
+	HashEditorGlowBytes(MeshHash, &MaterialHash, sizeof(MaterialHash));
+	if (MeshHash == 0)
+		MeshHash = 1;
+
+	constexpr std::array<std::array<float, 3>, 4> Positions = {
+		std::array<float, 3>{-1.0f, -1.0f, 0.0f},
+		std::array<float, 3>{-1.0f, 1.0f, 0.0f},
+		std::array<float, 3>{1.0f, -1.0f, 0.0f},
+		std::array<float, 3>{1.0f, 1.0f, 0.0f}};
+	constexpr std::array<std::array<float, 2>, 4> TexCoords = {
+		std::array<float, 2>{0.0f, 1.0f},
+		std::array<float, 2>{0.0f, 0.0f},
+		std::array<float, 2>{1.0f, 1.0f},
+		std::array<float, 2>{1.0f, 0.0f}};
+
+	std::uint64_t ObjectId = reinterpret_cast<std::uintptr_t>(
+		GetEditorTransientObjectIdentity());
+	if (ObjectId == 0)
+		ObjectId = GlowIdentity;
+	if (ObjectId == 0)
+		ObjectId = 1;
+
+	FEditorTransientMeshCapture Capture;
+	Capture.MeshId = {MeshHash};
+	Capture.ObjectId = {ObjectId};
+	Capture.MaterialSlot = {MaterialHash};
+	Capture.Revision = MeshHash;
+	Capture.ShaderName = ShaderName;
+	Capture.TextureName = std::move(TextureName);
+	Capture.SurfaceName = Glow.m_ShaderName.size()
+		? "Legacy glow: " + std::string(*Glow.m_ShaderName)
+		: "Legacy glow";
+	Capture.MaterialFlags = EEditorMaterialSlotFlags::TwoSided;
+	Capture.InstanceFlags = EEditorSceneInstanceFlags::TwoSided;
+	Fmatrix LocalToWorld;
+	LocalToWorld.set(Fvector(EDevice->vCameraRight).mul(HalfSize),
+		Fvector(EDevice->vCameraTop).mul(HalfSize),
+		Fvector(EDevice->vCameraDirection).invert(), Position);
+	std::copy_n(LocalToWorld.mm, Capture.LocalToWorld.size(),
+		Capture.LocalToWorld.begin());
+	Capture.Vertices.reserve(Positions.size());
+	for (std::size_t Index = 0; Index < Positions.size(); ++Index)
+	{
+		FEditorStaticMeshVertex& Vertex = Capture.Vertices.emplace_back();
+		Vertex.Position = Positions[Index];
+		Vertex.Normal = {0.0f, 0.0f, 1.0f};
+		Vertex.Tangent = {1.0f, 0.0f, 0.0f, 1.0f};
+		Vertex.TexCoord = TexCoords[Index];
+	}
+	Capture.Indices = {0, 1, 2, 3, 2, 1};
+	CaptureEditorTransientMesh(std::move(Capture));
+}
+} // namespace
+
 #define GLOW_VERSION	   				0x0012
 
 #define GLOW_CHUNK_VERSION				0xC411
@@ -75,6 +190,8 @@ void CGlow::Render(int priority, bool strictB2F)
                 if (m_GShader){	EDevice->SetShader(m_GShader);
                 }else{			EDevice->SetShader(EDevice->m_WireShader);}
                 Fvector p = GetPosition();
+                CaptureEditorGlowSprite(*this, p,
+                    m_Flags.is(gfFixedSize));
                 m_RenderSprite.Render(p,m_fRadius,m_Flags.is(gfFixedSize));
                 DU_impl.DrawRomboid(p, VIS_RADIUS, 0x00FF8507);
             }else{
@@ -86,6 +203,8 @@ void CGlow::Render(int priority, bool strictB2F)
             if (m_GShader){	EDevice->SetShader(m_GShader);
             }else{			EDevice->SetShader(EDevice->m_WireShader);}
             Fvector p = GetPosition();
+            CaptureEditorGlowSprite(*this, p,
+                m_Flags.is(gfFixedSize));
             m_RenderSprite.Render(p,m_fRadius,m_Flags.is(gfFixedSize));
         }
         if( Selected() ){

@@ -1,4 +1,6 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 #include "XRayFVisual.h"
 
 class CDS0_FProgressive:

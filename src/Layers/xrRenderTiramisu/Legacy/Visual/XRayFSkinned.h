@@ -1,4 +1,6 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 #include "XRayFVisual.h"
 #include "XRaySkeletonX.h"
 #include "XRayFProgressive.h"

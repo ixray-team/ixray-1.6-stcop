@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "XRayRenderVisual.h"
-#include "Legacy/Scene/TLegacyScene.h"
+#include "Legacy/Scene/TiramisuLegacyScene.h"
 
 
 CDS0_RenderVisual::CDS0_RenderVisual()

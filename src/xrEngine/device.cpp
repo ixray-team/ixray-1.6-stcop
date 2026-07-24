@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../xrCore/Collision/Frustum.h"
+#include "../xrCore/RenderTestPolicy.h"
 
 #include "x_ray.h"
 #include "Render.h"
@@ -466,38 +467,60 @@ void CRenderDevice::FrameMove()
 {
 	PROF_EVENT("Render: Frame Move");
 	dwFrame++;
-	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
-	
-	float smoothing_alpha = .1f; 
-	float current_delta	= Timer.GetElapsed_sec(); Timer.Start();
-	float previous_delta = fTimeDelta;
 
-	// EMA smoothing
-	fTimeDelta = smoothing_alpha * current_delta + (1.f - smoothing_alpha) * previous_delta; 
-	
-	clamp(fTimeDelta, EPS_S, .1f);
-	
-	fTimeDeltaSmoothing = fTimeDelta;
-	
-	if (!Paused())
-		delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
-	
-	clamp(fTimeDeltaSmoothing, EPS_S, .1f);
-
-	if (use_smoothed_delta)
-		fTimeDelta = fTimeDeltaSmoothing;
-
-	if (Paused())
+	static const FRenderDeterministicTestPolicy DeterministicTest =
+		ResolveRenderDeterministicTestPolicy(
+			Core.Params ? Core.Params : "");
+	if (DeterministicTest.Enabled)
 	{
-		fTimeDelta = 0.0f;
-		fTimeDeltaSmoothing = 0.0f;
+		const u32 PreviousGlobal = dwTimeGlobal;
+		fTimeDelta = Paused() ? 0.0f :
+			DeterministicTest.FixedDeltaSeconds;
+		fTimeDeltaSmoothing = fTimeDelta;
+		fTimeGlobal = static_cast<float>(dwFrame - 1) *
+			DeterministicTest.FixedDeltaSeconds;
+		dwTimeGlobal = static_cast<u32>(
+			fTimeGlobal * 1000.0f + 0.5f);
+		dwTimeDelta = dwTimeGlobal - PreviousGlobal;
+		dwTimeContinual = dwTimeGlobal;
+	}
+	else
+	{
+		dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
+
+		const float smoothing_alpha = .1f;
+		const float current_delta = Timer.GetElapsed_sec();
+		Timer.Start();
+		const float previous_delta = fTimeDelta;
+
+		// EMA smoothing
+		fTimeDelta = smoothing_alpha * current_delta +
+			(1.f - smoothing_alpha) * previous_delta;
+
+		clamp(fTimeDelta, EPS_S, .1f);
+
+		fTimeDeltaSmoothing = fTimeDelta;
+
+		if (!Paused())
+			delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
+
+		clamp(fTimeDeltaSmoothing, EPS_S, .1f);
+
+		if (use_smoothed_delta)
+			fTimeDelta = fTimeDeltaSmoothing;
+
+		if (Paused())
+		{
+			fTimeDelta = 0.0f;
+			fTimeDeltaSmoothing = 0.0f;
+		}
+
+		fTimeGlobal = TimerGlobal.GetElapsed_sec();
+		const u32 OldGlobal = dwTimeGlobal;
+		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
+		dwTimeDelta = dwTimeGlobal - OldGlobal;
 	}
 
-	fTimeGlobal = TimerGlobal.GetElapsed_sec();
-	u32 _old_global = dwTimeGlobal;
-	dwTimeGlobal = TimerGlobal.GetElapsed_ms();
-	dwTimeDelta = dwTimeGlobal - _old_global;
-	
 	Statistic->EngineTOTAL.Begin();
 	Device.seqFrame.Process<&pureFrame::OnFrame>();
 	g_bLoaded = true;

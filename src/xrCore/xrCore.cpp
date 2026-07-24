@@ -10,6 +10,7 @@
 #endif
 
 #include "xrCore.h"
+#include "RenderDocIntegration.h"
 #include "discord/discord.h"
 #include "stack_string.h"
 #include "ECS/EntityManager.h"
@@ -70,6 +71,9 @@ void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb
 		Memory._initialize();
 
 		xrLogger::InitLog();
+		if (ParamsData.test(ECoreParams::renderdoc) ||
+			xrRenderDoc::IsLoaded())
+			xrRenderDoc::Initialize();
 		_initialize_cpu		();
 
 		rtc_initialize		();

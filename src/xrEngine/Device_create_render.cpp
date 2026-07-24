@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../xrCore/RenderDocIntegration.h"
 
 #include "../xrCore/_std_extensions.h"
 #include "imgui_impl_sdl3.h"
@@ -335,7 +336,7 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 
 RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
 {
-	return pRDocAPI;
+	return xrRenderDoc::GetApi();
 }
 
 void CRenderDevice::BeginRender()

@@ -7,6 +7,7 @@ using json = nlohmann::json;
 
 #include "UI_MainCommand.h"
 #include "../../xrEngine/IInputReceiver.h"
+#include "../../../Include/xrRender/EditorRenderer.h"
 
 // refs
 class CCustomObject;
@@ -223,6 +224,18 @@ public:
 	virtual const char* 	EditorName			()=0;
 	virtual const char*	EditorDesc			()=0;
 	virtual ImTextureID LoadTexture(const char*) const override;
+	bool UpdateEditorTexture(FEditorTextureHandle& Handle,
+		const FEditorTextureUpload& Upload) const override;
+	void DestroyEditorTexture(FEditorTextureHandle& Handle) const override;
+	[[nodiscard]] FEditorViewportSurface GetEditorTextureSurface(
+		FEditorTextureHandle Handle) const override;
+	[[nodiscard]] ImTextureID GetImGuiTexture(const ref_texture& Texture) const;
+	[[nodiscard]] ImTextureID GetImGuiTexture(FEditorTextureHandle Handle) const;
+	bool UpdateImGuiTexture(FEditorTextureHandle& Handle, const void* Pixels,
+		u32 Width, u32 Height, u32 RowPitch, u64 Revision,
+		const char* DebugName, EEditorTextureFormat Format =
+			EEditorTextureFormat::Rgba8Unorm, bool FlipVertical = false) const;
+	void DestroyImGuiTexture(FEditorTextureHandle& Handle) const;
 // commands   
 	virtual	void	RegisterCommands			()=0; 
 	void			ClearCommands				();
@@ -290,6 +303,11 @@ public:
 	ref_texture	m_WinRes = nullptr;
 	ref_texture	m_WinMax = nullptr;
 	ref_texture	m_WinClose = nullptr;
+	FEditorTextureHandle m_HeaderLogoEditor;
+	FEditorTextureHandle m_WinMinEditor;
+	FEditorTextureHandle m_WinResEditor;
+	FEditorTextureHandle m_WinMaxEditor;
+	FEditorTextureHandle m_WinCloseEditor;
 
 	
 	void InitWindowIcons();
@@ -299,6 +317,7 @@ protected:
 	HANDLE m_HConsole;
 
 	mutable xr_hash_map<shared_str, ref_texture> TextureStack;
+	mutable xr_hash_map<shared_str, FEditorTextureHandle> EditorTextureStack;
 
 public:
    IC  void ResetUI(bool bForced=false)  { if (!bForced)m_Flags.set(flResetUI, true); if (bForced) RealResetUI(); }

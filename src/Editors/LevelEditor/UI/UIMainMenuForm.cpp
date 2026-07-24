@@ -15,6 +15,7 @@
 
 #include "../../xrEUI/ModernUI.h"
 #include "UIWidgetsTest.h"
+#include "MaterialEditor/UIMaterialEditorForm.h"
 
 
 #include "IconsFontAwesome6.h"
@@ -113,7 +114,8 @@ void UIMainMenuForm::Draw()
 	{
 		ImVec2 cp;
 		if (ImGui::BeginMenu("File")){
-			DrawMenuItemI("Clear", ICON_FA_FILE, COMMAND_CLEAR);
+			DrawMenuItemI("New / Clear", ICON_FA_FILE,
+				COMMAND_CREATE_NATIVE_SCENE);
 			DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
 			DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, LTools->m_LastFileName);
 			DrawMenuItemI("Save As...", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, 0, 1);
@@ -556,6 +558,13 @@ void UIMainMenuForm::Draw()
 		}
 
 		if (ImGui::BeginMenu("Windows")) {
+			bool MaterialEditorVisible = !MainForm->GetMaterialEditorForm()->IsClosed();
+			if (ImGui::MenuItemI("Material Editor", ICON_FA_SQUARE_SHARE_NODES, "", &MaterialEditorVisible))
+			{
+				MainForm->GetMaterialEditorForm()->Show(MaterialEditorVisible);
+			}
+			ImGui::Separator();
+
 			DrawMenuItemI("Light Anim Editor", ICON_FA_LIGHTBULB, COMMAND_LIGHTANIM_EDITOR);
 
 			if (ImGui::MenuItemI("Macro Editor", ICON_FA_SQUARE_SHARE_NODES, ""))
@@ -662,11 +671,11 @@ void UIMainMenuForm::Draw()
 			{
 				if (Plug->Type == EPluginType::Lua)
 				{
-					ImGui::Image(PlugLua->get_SRView()->GetRawSRV(), { 15, 15 });
+					ImGui::Image(UI->GetImGuiTexture(PlugLua), { 15, 15 });
 				}
 				else
 				{
-					ImGui::Image(PlugPy->get_SRView()->GetRawSRV(), { 15, 15 });
+					ImGui::Image(UI->GetImGuiTexture(PlugPy), { 15, 15 });
 				}
 				ImGui::SameLine();
 				if (ImGui::MenuItem(Plug->Name.c_str(), ""))

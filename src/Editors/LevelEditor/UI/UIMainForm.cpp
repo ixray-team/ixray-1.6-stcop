@@ -10,6 +10,7 @@
 
 #include "IconsFontAwesome6.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
+#include "MaterialEditor/UIMaterialEditorForm.h"
 
 UIMainForm* MainForm = nullptr;
 
@@ -36,6 +37,7 @@ UIMainForm::UIMainForm()
 	m_LeftBar = new UILeftBarForm();
 	m_Properties = new UILPropertiesForm();
 	m_WorldProperties = new UIWorldPropertiesFrom();
+	m_MaterialEditor = new UIMaterialEditorForm();
 	m_Render->SetContextMenuEvent(TOnRenderContextMenu(this, &UIMainForm::DrawContextMenu));
 	m_Render->SetToolBarEvent(TOnRenderToolBar(this, &UIMainForm::DrawRenderToolBar));
 	m_Render->OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
@@ -144,6 +146,7 @@ UIMainForm::~UIMainForm()
 	LPrefs->OpenLightAnim = UIEditLightAnim::IsOpen();
 
 	ClearChooseEvents();
+	xr_delete(m_MaterialEditor);
 	xr_delete(m_WorldProperties);
 	xr_delete(m_Properties);
 	xr_delete(m_LeftBar);
@@ -266,6 +269,7 @@ void UIMainForm::Draw()
 	m_LeftBar->Draw();
 	m_Properties->Draw();
 	m_WorldProperties->Draw();
+	m_MaterialEditor->Draw();
 
 	m_Render->Draw();
 }
@@ -378,8 +382,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	auto DrawActionButton = [&](const char* id, auto& texture, ETAction action, const char* tooltip, ImDrawFlags flags)
 	{
 		bool selected = LTools->GetAction() == action;
-		texture->Load();
-		if (XRay::ImGui::ToolbarIconButton(id, texture->get_SRView()->GetRawSRV(), &selected, flags))
+		if (XRay::ImGui::ToolbarIconButton(id, UI->GetImGuiTexture(texture), &selected, flags))
 		{
 			LTools->SetAction(action);
 		}
@@ -393,8 +396,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	auto DrawSettingsButton = [&](const char* id, auto& texture, ETFlags setting, const char* tooltip, ImDrawFlags flags)
 	{
 		bool selected = Tools->GetSettings(setting);
-		texture->Load();
-		if (XRay::ImGui::ToolbarIconButton(id, texture->get_SRView()->GetRawSRV(), &selected, flags))
+		if (XRay::ImGui::ToolbarIconButton(id, UI->GetImGuiTexture(texture), &selected, flags))
 		{
 			ExecCommand(COMMAND_SET_SETTINGS, setting, !Tools->GetSettings(setting));
 		}
@@ -488,12 +490,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 
 		bool UseLocal = imManipulator.MatrixMode;
 		ref_texture& CurrentCoordsView = UseLocal ? TransformLocalOrWorld2 : TransformLocalOrWorld;
-		if (CurrentCoordsView->get_SRView() == nullptr)
-		{
-			CurrentCoordsView = EDevice->texture_null;
-		}
-
-		if (XRay::ImGui::ToolbarIconButton("##LocalOrWorldTransform", CurrentCoordsView->get_SRView()->GetRawSRV(), &UseLocal, ImDrawFlags_RoundCornersRight))
+		if (XRay::ImGui::ToolbarIconButton("##LocalOrWorldTransform", UI->GetImGuiTexture(CurrentCoordsView), &UseLocal, ImDrawFlags_RoundCornersRight))
 		{
 			imManipulator.MatrixMode = !UseLocal;
 		}
@@ -518,8 +515,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		// Группа фокусировки
 		ImGui::TableSetColumnIndex(4);
 		ImGui::BeginGroup();
-		m_tZoom->Load();
-		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar816", m_tZoom->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersLeft))
+		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar816", UI->GetImGuiTexture(m_tZoom), nullptr, ImDrawFlags_RoundCornersLeft))
 		{
 			ExecCommand(COMMAND_ZOOM_EXTENTS, false);
 		}
@@ -530,8 +526,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		}
 
 		ImGui::SameLine();
-		m_tZoomSel->Load();
-		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar830", m_tZoomSel->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight))
+		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar830", UI->GetImGuiTexture(m_tZoomSel), nullptr, ImDrawFlags_RoundCornersRight))
 		{
 			ExecCommand(COMMAND_ZOOM_EXTENTS, true);
 		}
@@ -737,7 +732,7 @@ void UIMainForm::DrawMenuSettings()
 		}
 
 		//if (ImGui::ImageButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersLeft))
+		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar548", UI->GetImGuiTexture(m_tMenu), nullptr, ImDrawFlags_RoundCornersLeft))
 		{
 			ImGui::OpenPopup("MenuScene");
 		}
@@ -763,7 +758,7 @@ void UIMainForm::DrawMenuSettings()
 void UIMainForm::RenderOldCameraButtons()
 {
 	ImGui::BeginGroup();
-	if (XRay::ImGui::ToolbarIconButton("##ViewFront", m_tVFront->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersLeft))
+	if (XRay::ImGui::ToolbarIconButton("##ViewFront", UI->GetImGuiTexture(m_tVFront), nullptr, ImDrawFlags_RoundCornersLeft))
 	{
 		UI->CurrentView().m_Camera.ViewFront();
 		UI->RedrawScene();
@@ -775,7 +770,7 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##ViewBack", m_tVBack->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##ViewBack", UI->GetImGuiTexture(m_tVBack), nullptr, ImDrawFlags_RoundCornersNone))
 	{
 		UI->CurrentView().m_Camera.ViewBack();
 		UI->RedrawScene();
@@ -787,7 +782,7 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##ViewLeft", m_tVLeft->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##ViewLeft", UI->GetImGuiTexture(m_tVLeft), nullptr, ImDrawFlags_RoundCornersNone))
 	{
 		UI->CurrentView().m_Camera.ViewLeft();
 		UI->RedrawScene();
@@ -799,7 +794,7 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##ViewRight", m_tVRight->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##ViewRight", UI->GetImGuiTexture(m_tVRight), nullptr, ImDrawFlags_RoundCornersNone))
 	{
 		UI->CurrentView().m_Camera.ViewRight();
 		UI->RedrawScene();
@@ -811,7 +806,7 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##ViewBottom", m_tVBottom->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##ViewBottom", UI->GetImGuiTexture(m_tVBottom), nullptr, ImDrawFlags_RoundCornersNone))
 	{
 		UI->CurrentView().m_Camera.ViewBottom();
 		UI->RedrawScene();
@@ -823,7 +818,7 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##ViewTop", m_tVTop->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight))
+	if (XRay::ImGui::ToolbarIconButton("##ViewTop", UI->GetImGuiTexture(m_tVTop), nullptr, ImDrawFlags_RoundCornersRight))
 	{
 		UI->CurrentView().m_Camera.ViewTop();
 		UI->RedrawScene();
@@ -862,7 +857,7 @@ void UIMainForm::RenderOldCameraButtons()
 	bool CamArcBall = Camera == cs3DArcBall;
 	bool CamFly = Camera == csFreeFly;
 
-	if (XRay::ImGui::ToolbarIconButton("##CamPlane", m_tPlaneMove->get_SRView()->GetRawSRV(), &CamPlane, ImDrawFlags_RoundCornersLeft))
+	if (XRay::ImGui::ToolbarIconButton("##CamPlane", UI->GetImGuiTexture(m_tPlaneMove), &CamPlane, ImDrawFlags_RoundCornersLeft))
 	{
 		UI->CurrentView().m_Camera.SetStyle(csPlaneMove);
 		UI->RedrawScene();
@@ -876,7 +871,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##CamArcBall", m_tArcBall->get_SRView()->GetRawSRV(), &CamArcBall, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##CamArcBall", UI->GetImGuiTexture(m_tArcBall), &CamArcBall, ImDrawFlags_RoundCornersNone))
 	{
 		UI->CurrentView().m_Camera.SetStyle(cs3DArcBall);
 		UI->RedrawScene();
@@ -890,7 +885,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##CamFreeFly", m_tFreeFly->get_SRView()->GetRawSRV(), &CamFly, ImDrawFlags_RoundCornersRight))
+	if (XRay::ImGui::ToolbarIconButton("##CamFreeFly", UI->GetImGuiTexture(m_tFreeFly), &CamFly, ImDrawFlags_RoundCornersRight))
 	{
 		UI->CurrentView().m_Camera.SetStyle(csFreeFly);
 		UI->RedrawScene();
@@ -910,35 +905,30 @@ void UIMainForm::RenderAxisButtons()
 
 	ETAxis Axis = LTools->GetAxis();
 
-	m_tX->Load();
-	m_tY->Load();
-	m_tZ->Load();
-	m_tZX->Load();
-
 	bool AxisX = Axis == etAxisX;
 	bool AxisY = Axis == etAxisY;
 	bool AxisZ = Axis == etAxisZ;
 	bool AxisZX = Axis == etAxisZX;
 
-	if (XRay::ImGui::ToolbarIconButton("##AxisX", m_tX->get_SRView()->GetRawSRV(), &AxisX, ImDrawFlags_RoundCornersLeft))
+	if (XRay::ImGui::ToolbarIconButton("##AxisX", UI->GetImGuiTexture(m_tX), &AxisX, ImDrawFlags_RoundCornersLeft))
 	{
 		ExecCommand(COMMAND_CHANGE_AXIS, etAxisX, !LTools->GetSettings(etAxisX));
 	}
 
 	ImGui::SameLine();
-	if (XRay::ImGui::ToolbarIconButton("##AxisY", m_tY->get_SRView()->GetRawSRV(), &AxisY, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##AxisY", UI->GetImGuiTexture(m_tY), &AxisY, ImDrawFlags_RoundCornersNone))
 	{
 		ExecCommand(COMMAND_CHANGE_AXIS, etAxisY, !LTools->GetSettings(etAxisY));
 	}
 
 	ImGui::SameLine();
-	if (XRay::ImGui::ToolbarIconButton("##AxisZ", m_tZ->get_SRView()->GetRawSRV(), &AxisY, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##AxisZ", UI->GetImGuiTexture(m_tZ), &AxisY, ImDrawFlags_RoundCornersNone))
 	{
 		ExecCommand(COMMAND_CHANGE_AXIS, etAxisZ, !LTools->GetSettings(etAxisZ));
 	}
 
 	ImGui::SameLine();
-	if (XRay::ImGui::ToolbarIconButton("##AxisZX", m_tZX->get_SRView()->GetRawSRV(), &AxisY, ImDrawFlags_RoundCornersRight))
+	if (XRay::ImGui::ToolbarIconButton("##AxisZX", UI->GetImGuiTexture(m_tZX), &AxisY, ImDrawFlags_RoundCornersRight))
 	{
 		ExecCommand(COMMAND_CHANGE_AXIS, etAxisZX, !LTools->GetSettings(etAxisZX));
 	}

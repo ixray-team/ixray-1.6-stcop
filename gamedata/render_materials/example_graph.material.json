@@ -1,0 +1,70 @@
+{
+  "asset_version": 1,
+  "guid": "05e99b8e-bd13-4bb5-b27b-4a4751f128f6",
+  "name": "Example Graph Surface",
+  "domain": "surface",
+  "blend_mode": "opaque",
+  "shading_model": "default_lit",
+  "two_sided": false,
+  "template": "materials/MaterialTemplate.hlsl",
+  "implementation": {
+    "type": "graph",
+    "graph": {
+      "version": 1,
+      "nodes": [
+        {
+          "guid": "ef748270-17ee-4405-ae59-829e6a15087d",
+          "type": "parameter",
+          "type_version": 1,
+          "position": [-280.0, 40.0],
+          "pins": [
+            {
+              "guid": "0e11767f-669f-47c2-be3b-c7f959a57a79",
+              "name": "BaseColor",
+              "direction": "output",
+              "type": "float3"
+            }
+          ],
+          "properties": {
+            "parameter_id": "190412be-3265-452a-94db-d4ee1a545fc8"
+          }
+        },
+        {
+          "guid": "3d584a86-b582-4b55-8609-6dff1856e5d4",
+          "type": "material_output",
+          "type_version": 1,
+          "position": [80.0, 40.0],
+          "pins": [
+            {
+              "guid": "ce17e4e8-9b26-40da-a27c-9fc442904061",
+              "name": "BaseColor",
+              "direction": "input",
+              "type": "float3"
+            }
+          ],
+          "properties": {}
+        }
+      ],
+      "links": [
+        {
+          "guid": "b5ee6d23-962b-4a4f-ac7a-9c89541a6c26",
+          "from_pin": "0e11767f-669f-47c2-be3b-c7f959a57a79",
+          "to_pin": "ce17e4e8-9b26-40da-a27c-9fc442904061"
+        }
+      ]
+    }
+  },
+  "parameters": [
+    {
+      "guid": "190412be-3265-452a-94db-d4ee1a545fc8",
+      "name": "BaseColor",
+      "type": "float3",
+      "default": [0.1, 0.35, 0.8],
+      "ui": { "display_name": "Base Color", "category": "Surface" }
+    }
+  ],
+  "static_parameters": [],
+  "dependencies": [
+    "materials/MaterialTemplate.hlsl"
+  ]
+}

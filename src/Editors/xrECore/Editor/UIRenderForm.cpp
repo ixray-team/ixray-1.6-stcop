@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UIRenderForm.h"
+#include "EditorRenderBackend.h"
 #include "ui_main.h"
 #include "../xrEUI/ImGuizmo.h"
 #include <imgui_internal.h>
@@ -156,9 +157,11 @@ void UIRenderForm::DrawVP()
 		}
 	}
 
+	IEditorRenderBackend& EditorRenderer = GetEditorRenderBackend();
+
 	if ((UI->IsPlayInEditor() && ViewportID == 0) || UI->ViewID == ViewportID)
 	{
-		GRHI->CopySurface(UI->Views[ViewportID].RTFreez->pRT, UI->RT->pRT);
+		EditorRenderer.CaptureViewport(static_cast<u32>(ViewportID));
 	}
 
 	m_render_pos.right = ImGui::GetWindowSize().x;
@@ -167,8 +170,17 @@ void UIRenderForm::DrawVP()
 	m_render_pos.bottom = ImGui::GetWindowSize().y;
 	m_render_pos.top = ImGui::GetWindowPos().y;
 
+	ImVec2 canvas_pos = ImGui::GetCursorScreenPos();
+	ImVec2 canvas_size = ImGui::GetContentRegionAvail();
+	if (canvas_size.x < 32.0f * ScreenDPI) canvas_size.x = 32.0f * ScreenDPI;
+	if (canvas_size.y < 32.0f * ScreenDPI) canvas_size.y = 32.0f * ScreenDPI;
+	EditorRenderer.ResizeViewport(static_cast<u32>(ViewportID),
+		static_cast<std::uint32_t>(canvas_size.x),
+		static_cast<std::uint32_t>(canvas_size.y));
+
 	bool cursor_in_zone = true;
-	if (UI && UI->Views[ViewportID].RTFreez->pSurface)
+	const FEditorViewportSurface ViewportSurface = EditorRenderer.GetViewportSurface(static_cast<u32>(ViewportID));
+	if (UI && ViewportSurface.IsValid())
 	{
 		int ShiftState = ssNone;
 
@@ -187,8 +199,6 @@ void UIRenderForm::DrawVP()
 
 		//VERIFY(!(ShiftState & ssLeft && ShiftState & ssRight));
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
-		ImVec2 canvas_pos = ImGui::GetCursorScreenPos();
-		ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 		ImVec2 mouse_pos = ImGui::GetIO().MousePos;
 		if (mouse_pos.x < canvas_pos.x)
 		{
@@ -215,12 +225,35 @@ void UIRenderForm::DrawVP()
 		bool curent_shiftstate_down = UI->CurrentView().m_Camera.IsMoving();
 
 
-		if (canvas_size.x < 32.0f * ScreenDPI) canvas_size.x = 32.0f * ScreenDPI;
-		if (canvas_size.y < 32.0f * ScreenDPI) canvas_size.y = 32.0f * ScreenDPI;
-		UI->Views[ViewportID].RTSize.set(canvas_size.x, canvas_size.y);
-
 		ImGui::SetCursorScreenPos(canvas_pos);
-		draw_list->AddImage(UI->Views[ViewportID].RTFreez->pSurface->GetRawTexture(), canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
+		draw_list->AddImage(ViewportSurface.ImGuiTextureId, canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
+		xr_vector<FEditorOverlayText> OverlayText;
+		EditorRenderer.CopyViewportOverlayText(
+			static_cast<u32>(ViewportID), OverlayText);
+		if (!OverlayText.empty())
+		{
+			draw_list->PushClipRect(canvas_pos,
+				ImVec2(canvas_pos.x + canvas_size.x,
+					canvas_pos.y + canvas_size.y), true);
+			for (const FEditorOverlayText& Label : OverlayText)
+			{
+				const ImVec2 Position = {
+					canvas_pos.x + (Label.Position[0] + 1.0f) *
+						0.5f * canvas_size.x,
+					canvas_pos.y + (1.0f - Label.Position[1]) *
+						0.5f * canvas_size.y};
+				const ImU32 ShadowColor = ImGui::ColorConvertFloat4ToU32(
+					ImVec4(Label.ShadowColor[0], Label.ShadowColor[1],
+						Label.ShadowColor[2], Label.ShadowColor[3]));
+				const ImU32 Color = ImGui::ColorConvertFloat4ToU32(
+					ImVec4(Label.Color[0], Label.Color[1],
+						Label.Color[2], Label.Color[3]));
+				draw_list->AddText(Position, ShadowColor, Label.Text.c_str());
+				draw_list->AddText(ImVec2(Position.x - 1.0f,
+					Position.y - 1.0f), Color, Label.Text.c_str());
+			}
+			draw_list->PopClipRect();
+		}
 
 		if (ViewportID != UI->ViewID && ImGui::IsWindowFocused())
 		{
@@ -235,7 +268,9 @@ void UIRenderForm::DrawVP()
 			//Statistic
 			DrawStatistics();
 
-			if (!psDeviceFlags.test(rsDrawAxis) && !psDeviceFlags.test(rsDisableAxisCube))
+			if ((EditorRenderer.GetKind() == EEditorRenderBackendKind::Tiramisu ||
+				!psDeviceFlags.test(rsDrawAxis)) &&
+				!psDeviceFlags.test(rsDisableAxisCube))
 			{
 				ImGuizmo::SetRect(canvas_pos.x, canvas_pos.y, canvas_size.x, canvas_size.y);
 				ImGuizmo::SetDrawlist();

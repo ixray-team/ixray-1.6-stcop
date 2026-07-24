@@ -49,6 +49,16 @@ xr_string::xr_string(const char* Str, u32 Size)
 {
 }
 
+xr_string::xr_string(const std::string& Other)
+	: Super(Other.data(), Other.size())
+{
+}
+
+xr_string::xr_string(const std::string_view Other)
+	: Super(Other.data(), Other.size())
+{
+}
+
 xr_string::xr_string(Super&& other)
 	: Super(other)
 {
@@ -62,6 +72,18 @@ xr_string::xr_string(const char* Str)
 xr_string& xr_string::operator=(const char* Str) 
 {
 	Super::operator=(Str);
+	return *this;
+}
+
+xr_string& xr_string::operator=(const std::string& Other)
+{
+	Super::assign(Other.data(), Other.size());
+	return *this;
+}
+
+xr_string& xr_string::operator=(const std::string_view Other)
+{
+	Super::assign(Other.data(), Other.size());
 	return *this;
 }
 

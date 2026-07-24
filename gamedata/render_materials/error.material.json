@@ -1,0 +1,27 @@
+{
+  "asset_version": 1,
+  "guid": "e67b251d-7905-4583-8450-0903c46ec652",
+  "name": "Diagnostic Error Material",
+  "domain": "surface",
+  "blend_mode": "opaque",
+  "shading_model": "unlit",
+  "two_sided": true,
+  "template": "materials/MaterialTemplate.hlsl",
+  "implementation": {
+    "type": "hlsl",
+    "source": "materials/ErrorMaterial.hlsl"
+  },
+  "parameters": [
+    {
+      "guid": "2136fd1d-29bd-48e9-9f4c-9ebedb470774",
+      "name": "BaseTexture",
+      "type": "texture2d",
+      "default": "textures/default/default_white"
+    }
+  ],
+  "static_parameters": [],
+  "dependencies": [
+    "materials/MaterialTemplate.hlsl",
+    "materials/ErrorMaterial.hlsl"
+  ]
+}

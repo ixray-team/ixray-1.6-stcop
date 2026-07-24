@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TiramisuRenderTypes.h"
+
 class CDS0_StatGraphRender:public IStatGraphRender
 {
 public:

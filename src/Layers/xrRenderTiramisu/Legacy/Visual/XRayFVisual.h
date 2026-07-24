@@ -1,4 +1,6 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 #define VLOAD_SWI 0x10
 #include "XRayRenderVisual.h"
 
@@ -15,10 +17,10 @@ public:
 	FLegacyVisualSceneVertexBuffer SceneVertexBuffer;
 	FLegacyVisualSceneIndexBuffer  SceneIndexBuffer;
 	
-	uint32_t CountIndex;
-	uint32_t OffsetIndex;
-	uint32_t CountVertex;
-	uint32_t OffsetVertex;
+	u32 CountIndex;
+	u32 OffsetIndex;
+	u32 CountVertex;
+	u32 OffsetVertex;
 	u32 FVF;
 
 	size_t CountMeshlet;

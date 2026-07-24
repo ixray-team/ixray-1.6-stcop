@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include "Core/Passes/UI/TRenderUIPass.h"
+#include "Core/Passes/UI/TiramisuRenderUIPass.h"
 #include "Extensions/NRIDeviceCreation.h"
-#include "Legacy/Scene/TLegacyScene.h"
+#include "Legacy/Scene/TiramisuLegacyScene.h"
 #include "Legacy/Visual/XRayModelPool.h"
 #include "Light/XRayRenderLight.h"
 #include "Light/XRayRenderGlow.h"
 #include "Light/XRayObjectSpecific.h"
-#include "Resources/TRenderResourcesManager.h"
+#include "Resources/TiramisuRenderResourcesManager.h"
 #include "src/xrCore/stream_reader.h"
 #include "src/xrEngine/IGame_Persistent.h"
 #include "src/xrEngine/xrLevel.h"
@@ -34,9 +34,9 @@ void CDS0_RenderInterface::create()
 	DevicePtr->seqFrame.Add(this);
 	GModelPool = new CDS0_ModelPool;
 	GRenderDevice.Initialize();
-	GRenderResourcesManager = new TRenderResourcesManager;
+	GRenderResourcesManager = new TiramisuRenderResourcesManager;
 	GRenderResourcesManager->Initialize();
-	GRender = new TRender;
+	GRender = new TiramisuRender;
 	GRender->Initialize();
 }
 
@@ -294,18 +294,21 @@ u32 CDS0_RenderInterface::active_phase()
 
 void CDS0_RenderInterface::Render()
 {
+	CheckIsGameThread();
 	GModelPool->Render();
 	
 	g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
 	
 	ENQUEUE_RENDER_COMMAND(CDS0_RenderInterface::Render)([Primitivs = GUIRender.Primitivs,Vertexes = std::move(GUIRender.Vertexes)]
 	{
+		CheckIsRenderThread();
 		GRender->UIPass->Primitivs = Primitivs;
 		GRender->UIPass->Vertexes = Vertexes;
 	});
 	
 	GUIRender.Flush();
-	
+
+	GRender->PrepareImguiFrame();
 	GRender->SubmitFrame();
 }
 

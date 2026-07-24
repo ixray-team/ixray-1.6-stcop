@@ -11,6 +11,8 @@ private:
 		ImVec2 RenderSize;
 		ImVec2 FileSize;
 		ImTextureID	Texture;
+		FEditorTextureHandle EditorTexture;
+		u64 TextureRevision = 0;
 		xr_string TexturePath;
 		
 		bool EdSelected = false;
@@ -54,6 +56,9 @@ private:
 	void ShowPreview();
 	void UnselectAllElements();
 	void SelectElement(Element&);
+	[[nodiscard]] ImTextureID ResolveElementTexture(const Element& Item) const;
+	[[nodiscard]] ImTextureID ResolveBackgroundTexture() const;
+	void ReleaseElementTexture(Element& Item);
 
 	void CreateElementPopup();
 
@@ -102,6 +107,8 @@ private:
 	Fvector4	m_Bound { 0,0,0,0};
 private:
 	ImTextureID					m_BackgroundTexture;
+	FEditorTextureHandle		m_BackgroundEditorTexture;
+	u64						m_BackgroundTextureRevision = 0;
 	ImTextureID					m_TextureRemove;
 	//
 	ImVec2		m_BackgroundPosition;

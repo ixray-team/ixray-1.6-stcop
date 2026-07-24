@@ -1,0 +1,30 @@
+{
+  "asset_version": 1,
+  "guid": "5f4b3a8e-85fe-42bc-9080-f71eb497f04b",
+  "name": "Legacy Masked Surface",
+  "domain": "surface",
+  "blend_mode": "masked",
+  "shading_model": "default_lit",
+  "two_sided": false,
+  "template": "materials/MaterialTemplate.hlsl",
+  "implementation": {
+    "type": "hlsl",
+    "source": "materials/LegacySurface.hlsl"
+  },
+  "parameters": [
+    { "guid": "915ce004-8c2f-47ce-87c7-b4af787b835e", "name": "BaseColor", "type": "color", "default": [1.0, 1.0, 1.0, 1.0] },
+    { "guid": "2136fd1d-29bd-48e9-9f4c-9ebedb470774", "name": "BaseTexture", "type": "texture2d", "default": "textures/default/default_white" },
+    { "guid": "7449f07b-e2f1-48cf-879d-d7e84ecb97b2", "name": "LightmapTexture", "type": "texture2d", "default": "textures/default/default_white" },
+    { "guid": "a274b611-7391-4d5f-b08d-d9ce8255fdaf", "name": "Roughness", "type": "scalar", "default": 0.8, "ui": { "min": 0.0, "max": 1.0 } },
+    { "guid": "d601334d-b60a-4632-b631-9c8bd421c71e", "name": "Metallic", "type": "scalar", "default": 0.0, "ui": { "min": 0.0, "max": 1.0 } }
+  ],
+  "static_parameters": [
+    { "guid": "0d987e11-951d-43f3-b2a8-5d47d3b10ba2", "name": "UseVertexColor", "type": "static_bool", "default": false },
+    { "guid": "e5d7660f-f7d5-4ccd-9be2-602174fa12aa", "name": "UseLightmap", "type": "static_bool", "default": false }
+  ],
+  "dependencies": [
+    "materials/MaterialTemplate.hlsl",
+    "materials/LegacySurface.hlsl",
+    "common/GBuffer.hlsl"
+  ]
+}

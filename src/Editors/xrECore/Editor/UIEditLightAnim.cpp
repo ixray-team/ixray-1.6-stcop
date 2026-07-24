@@ -36,6 +36,8 @@ UIEditLightAnim::UIEditLightAnim()
 
 UIEditLightAnim::~UIEditLightAnim()
 {
+	UI->DestroyImGuiTexture(m_ItemTextureEditor);
+	UI->DestroyImGuiTexture(m_PointerTextureEditor);
 	if (m_Modife)
 	{
 		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Save current change?") == mrYes) 
@@ -124,7 +126,10 @@ void UIEditLightAnim::Draw()
 
 				}
 				RenderPointer();
-				ImGui::Image(m_PointerTexture, ImVec2(m_PointerWeight,POINTER_HEIGHT));
+				const ImTextureID PointerPreview = m_PointerTextureEditor.IsValid()
+					? UI->GetImGuiTexture(m_PointerTextureEditor)
+					: UI->GetImGuiTexture(m_TextureNull);
+				ImGui::Image(PointerPreview, ImVec2(m_PointerWeight,POINTER_HEIGHT));
 			}
 			m_Props->Draw();
 		}
@@ -250,7 +255,10 @@ void UIEditLightAnim::Draw()
 	   
 			RenderItem();
 		}
-		ImGui::Image(m_CurrentItem?m_ItemTexture:m_TextureNull->get_SRView()->GetRawSRV(), ImGui::CalcItemSize(ImVec2(-1, -1), 32, 32));
+		const ImTextureID ItemPreview = m_CurrentItem && m_ItemTextureEditor.IsValid()
+			? UI->GetImGuiTexture(m_ItemTextureEditor)
+			: UI->GetImGuiTexture(m_TextureNull);
+		ImGui::Image(ItemPreview, ImGui::CalcItemSize(ImVec2(-1, -1), 32, 32));
 		if (!IsDocked)
 			IsDocked = ImGui::IsWindowDocked();
 		if (!IsFocused)
@@ -347,6 +355,10 @@ void UIEditLightAnim::RenderItem()
 		}
 		R_CHK(m_ItemTexture->UnlockRect(0));
 	}
+	m_ItemPixels.fill(Color);
+	(void)UI->UpdateImGuiTexture(m_ItemTextureEditor, m_ItemPixels.data(),
+		32, 32, 32 * 4, ++m_ItemTextureRevision,
+		"light-animation-preview", EEditorTextureFormat::Bgra8Unorm);
 }
 
 void UIEditLightAnim::OnCreateKeyClick()
@@ -440,6 +452,7 @@ void UIEditLightAnim::RenderPointer()
 		}
 		R_CHK(REDevice->CreateTexture(m_PointerWeight, POINTER_HEIGHT, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_PointerTexture, nullptr));
 		m_PointerRawImage = xr_alloc<u32>(POINTER_HEIGHT* m_PointerWeight);
+		m_PointerResize = false;
 	}
 	for (int x = 0; x < m_PointerWeight; x++)
 	{
@@ -548,6 +561,10 @@ void UIEditLightAnim::RenderPointer()
 		}
 		R_CHK(m_PointerTexture->UnlockRect(0));
 	}
+	(void)UI->UpdateImGuiTexture(m_PointerTextureEditor, m_PointerRawImage,
+		static_cast<u32>(m_PointerWeight), POINTER_HEIGHT,
+		static_cast<u32>(m_PointerWeight) * 4, ++m_PointerTextureRevision,
+		"light-animation-timeline", EEditorTextureFormat::Bgra8Unorm);
 	
 }
 

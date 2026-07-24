@@ -9,7 +9,7 @@ class XREPROPS_API UIChooseForm :  public IEditorWnd
     Node m_GeneralNode;*/
     void UpdateSelected(UIChooseFormItem*NewSelected);
     UIChooseFormItem m_RootItem;
-    IRHISurface* m_Texture;
+    SChooseTexture m_Texture;
     ImGuiTextFilter m_Filter;
     UIPropertiesForm* m_Props;
     Flags32  m_Flags;
@@ -23,6 +23,7 @@ class XREPROPS_API UIChooseForm :  public IEditorWnd
     u32 m_ChooseID;
     void  FillItems(u32 choose_id);
     void CheckFavorite();
+    void ReleaseTexture();
 protected:
     using EventsMap = xr_map<u32, SChooseEvents>;
     using EventsMapIt = EventsMap::iterator;

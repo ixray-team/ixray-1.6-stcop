@@ -48,5 +48,7 @@ private:
 	ref_texture m_TextureNull;
 	ref_texture m_RealTexture;
 	ref_texture m_RemoveTexture;
+	FEditorTextureHandle m_RealTextureEditor;
+	u64 m_RealTextureRevision = 0;
 	UIPropertiesForm PropsRandomAppend;
 };

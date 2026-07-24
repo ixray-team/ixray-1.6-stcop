@@ -1,0 +1,22 @@
+{
+  "asset_version": 1,
+  "guid": "f8ab2e31-cc13-4c4e-9dce-e621d92353aa",
+  "name": "Legacy Emissive Surface",
+  "domain": "surface",
+  "blend_mode": "opaque",
+  "shading_model": "unlit",
+  "two_sided": false,
+  "template": "materials/MaterialTemplate.hlsl",
+  "implementation": { "type": "hlsl", "source": "materials/LegacyEmissiveSurface.hlsl" },
+  "parameters": [
+    { "guid": "915ce004-8c2f-47ce-87c7-b4af787b835e", "name": "BaseColor", "type": "color", "default": [1.0, 1.0, 1.0, 1.0] },
+    { "guid": "2136fd1d-29bd-48e9-9f4c-9ebedb470774", "name": "BaseTexture", "type": "texture2d", "default": "textures/default/default_white" },
+    { "guid": "37863262-0b9b-4bfd-a13d-1386c399e151", "name": "EmissiveIntensity", "type": "scalar", "default": 1.0, "ui": { "min": 0.0, "max": 100.0 } }
+  ],
+  "static_parameters": [],
+  "dependencies": [
+    "materials/MaterialTemplate.hlsl",
+    "materials/LegacyEmissiveSurface.hlsl",
+    "common/GBuffer.hlsl"
+  ]
+}

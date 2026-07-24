@@ -122,7 +122,7 @@ void CUIWidgetsTest::DemoWindowWidgetsButtons()
                 ImGui::SameLine(0, itemInnerSpacing.x);
                 XRay::ImGui::Button(ICON_FA_FLOPPY_DISK "##2", { buttonSize, buttonSize });
                 ImGui::SameLine(0, itemInnerSpacing.x);
-                XRay::ImGui::IconButton("##3", Icons["save_level"]->get_SRView()->GetRawSRV(), { buttonSize, buttonSize });
+                XRay::ImGui::IconButton("##3", UI->GetImGuiTexture(Icons["save_level"]), { buttonSize, buttonSize });
 
                 ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { buttonPaddingX, tableTextPaddingY });
                 ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
@@ -134,7 +134,7 @@ void CUIWidgetsTest::DemoWindowWidgetsButtons()
                 ImGui::SameLine(0, itemInnerSpacing.x);
                 XRay::ImGui::Button(ICON_FA_FLOPPY_DISK "##12", { tableRowHeight, tableRowHeight });
                 ImGui::SameLine(0, itemInnerSpacing.x);
-                XRay::ImGui::IconButton("##13", Icons["save_level"]->get_SRView()->GetRawSRV(), { tableRowHeight, tableRowHeight });
+                XRay::ImGui::IconButton("##13", UI->GetImGuiTexture(Icons["save_level"]), { tableRowHeight, tableRowHeight });
                 ImGui::PopStyleVar(2);
 
 

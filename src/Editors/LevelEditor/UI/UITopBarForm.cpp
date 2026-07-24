@@ -29,8 +29,7 @@ UITopBarForm::~UITopBarForm()
 
 
 #define IMGUI_HINT_BUTTON(Name, Ptr, Hint, dImDrawFlags, Callback) \
-			Ptr->Load(); \
-			if (XRay::ImGui::ToolbarIconButton("##" Name, Ptr->get_SRView()->GetRawSRV(), nullptr, dImDrawFlags)) \
+			if (XRay::ImGui::ToolbarIconButton("##" Name, UI->GetImGuiTexture(Ptr), nullptr, dImDrawFlags)) \
 				Callback(); \
 			if (ImGui::IsItemHovered()) \
 			{ \
@@ -121,8 +120,7 @@ void UITopBarForm::Draw()
 					IMGUI_HINT_BUTTON("StartPIE", Icons["play_in_editor"], "Start Play in Editor", ImDrawFlags_RoundCornersLeft, ClickPlayInEditor);
 				}
 
-				Icons["play_in_editor_settings"]->Load();
-				if (XRay::ImGui::ToolbarIconButton("##PlaySettings", Icons["play_in_editor_settings"]->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight, ButtonRadius, { ButtonSize * 0.5f, ButtonSize }, { IconSize * 0.4f, IconSize * 0.4f }))
+				if (XRay::ImGui::ToolbarIconButton("##PlaySettings", UI->GetImGuiTexture(Icons["play_in_editor_settings"]), nullptr, ImDrawFlags_RoundCornersRight, ButtonRadius, { ButtonSize * 0.5f, ButtonSize }, { IconSize * 0.4f, IconSize * 0.4f }))
 				{
 					ImGui::OpenPopup("test");
 				}
@@ -263,7 +261,7 @@ void UITopBarForm::ClickRedo()
 
 void UITopBarForm::ClickNew()
 {
-	ExecCommand(COMMAND_CLEAR);
+	ExecCommand(COMMAND_CREATE_NATIVE_SCENE);
 }
 void UITopBarForm::ClickOpen()
 {

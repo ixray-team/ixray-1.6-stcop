@@ -42,9 +42,8 @@ void UIWeatherPropForm::Draw()
 	// Картинка
 	{
 		ImVec2 image_pos = ImGui::GetCursorScreenPos();
-		m_weather_properties->Load();
 		ImGui::SameLine(0, 0);
-		ImGui::Image(m_weather_properties->get_SRView()->GetRawSRV(), ImVec2(sizeImage));
+		ImGui::Image(UI->GetImGuiTexture(m_weather_properties), ImVec2(sizeImage));
 
 		// Переводим секунды в часы (0-24)
 		float hours = std::fmod(time / 3600.0f, 24.0f);

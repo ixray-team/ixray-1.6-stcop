@@ -1,0 +1,14 @@
+{
+  "asset_version": 1,
+  "guid": "128e21af-5c6f-4ec4-a2e3-8b44f90cb553",
+  "name": "Example Red Surface",
+  "parent": "67e3bc21-9df5-4fc2-ab60-1ad7d02ad6e3",
+  "overrides": {
+    "915ce004-8c2f-47ce-87c7-b4af787b835e": [1.0, 0.08, 0.04, 1.0],
+    "2136fd1d-29bd-48e9-9f4c-9ebedb470774": "textures/kung",
+    "a274b611-7391-4d5f-b08d-d9ce8255fdaf": 0.35
+  },
+  "static_overrides": {
+    "39a456f7-50be-4de7-8b7c-60fcc35b8a92": false
+  }
+}

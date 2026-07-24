@@ -4,6 +4,16 @@
 #include "../../Nodes/UIDialogsView.h"
 #include "../../../../utils/xrDXT/xrDXT.h"
 #include "../../../xrECore/Editor/ParticleEffectActions.h"
+#include "../../../xrECore/Editor/EditorRenderBackend.h"
+#include "../AssetImport/TLegacyLevelImporter.h"
+#include "../AssetImport/TLegacyObjectImporter.h"
+#include "../../Renderer/Tiramisu/TiramisuEditorNativeScene.h"
+
+#include <SceneConversionDump.h>
+
+#include <cctype>
+#include <ranges>
+#include <string_view>
 
 #include "Viewports/ViewportMesh.h"
 #include "Viewports/ViewportParticle.h"
@@ -11,6 +21,212 @@
 #include "../../UI/UITextureViewer.h"
 
 CContentView* GContentView = nullptr;
+
+namespace
+{
+bool HasFileNameSuffix(const xr_path& Path, const xr_string_view Suffix)
+{
+	xr_string FileName = Path.xfilename();
+	std::ranges::transform(FileName, FileName.begin(),
+		[](const char Character)
+		{
+			return static_cast<char>(std::tolower(
+				static_cast<unsigned char>(Character)));
+		});
+	return FileName.ends_with(Suffix);
+}
+
+void LogConversionDiagnostics(const FLegacyObjectImportResult& Result)
+{
+	for (const Tiramisu::Scene::FSceneConversionDiagnostic& Diagnostic :
+		Result.Diagnostics)
+	{
+		const char* Prefix = Diagnostic.Severity == "error" ? "!" :
+			Diagnostic.Severity == "warning" ? "~" : "*";
+		Msg("%s Tiramisu migration [%s]: %s", Prefix,
+			Diagnostic.Code.c_str(), Diagnostic.Message.c_str());
+	}
+	Msg("* Tiramisu migration dump: %s",
+		Result.DumpPath.generic_string().c_str());
+}
+
+void LogConversionDiagnostics(const FLegacyLevelImportResult& Result)
+{
+	for (const Tiramisu::Scene::FSceneConversionDiagnostic& Diagnostic :
+		Result.Diagnostics)
+	{
+		const char* Prefix = Diagnostic.Severity == "error" ? "!" :
+			Diagnostic.Severity == "warning" ? "~" : "*";
+		Msg("%s Tiramisu level migration [%s]: %s", Prefix,
+			Diagnostic.Code.c_str(), Diagnostic.Message.c_str());
+	}
+	Msg("* Tiramisu level migration dump: %s",
+		Result.DumpPath.generic_string().c_str());
+}
+
+bool OpenNativeStaticMesh(const std::filesystem::path& Path)
+{
+	TiramisuEditorNativeSceneDocument Candidate;
+	xr_string Diagnostic;
+	if (!Candidate.OpenStaticMesh(Path, Diagnostic))
+	{
+		Msg("! Cannot open native static mesh '%s': %s",
+			Path.generic_string().c_str(), Diagnostic.c_str());
+		UI->SetStatus("Native static mesh open failed. See log.");
+		return false;
+	}
+	if (!ExecCommand(COMMAND_CLEAR))
+		return false;
+	GetEditorNativeSceneDocument() = std::move(Candidate);
+	UI->SetStatus("Native static mesh opened in Tiramisu.");
+	UI->RedrawScene();
+	return true;
+}
+
+bool OpenNativeRenderScene(const std::filesystem::path& Path)
+{
+	TiramisuEditorNativeSceneDocument Candidate;
+	xr_string Diagnostic;
+	if (!Candidate.OpenRenderScene(Path, Diagnostic))
+	{
+		Msg("! Cannot open native render scene '%s': %s",
+			Path.generic_string().c_str(), Diagnostic.c_str());
+		UI->SetStatus("Native render scene open failed. See log.");
+		return false;
+	}
+	if (!ExecCommand(COMMAND_CLEAR))
+		return false;
+	GetEditorNativeSceneDocument() = std::move(Candidate);
+	UI->SetStatus("Native render scene opened in Tiramisu.");
+	UI->RedrawScene();
+	return true;
+}
+
+void ImportAndOpenLegacyObject(const xr_path& Path)
+{
+	if (GetEditorRenderBackend().GetKind() !=
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		Msg("! Legacy .object auto-conversion requires the Tiramisu editor "
+			"renderer.");
+		UI->SetStatus("Switch LevelEditor to the Tiramisu renderer.");
+		return;
+	}
+
+	string_path MaterialRoot = {};
+	string_path StaticMeshRoot = {};
+	FS.update_path(MaterialRoot, "$game_render_materials$", "");
+	FS.update_path(StaticMeshRoot, "$game_static_meshes$", "");
+	UI->SetStatus("Converting legacy .object to a native static mesh...");
+	const FLegacyObjectImportResult Result = ImportLegacyObjectAsset(
+		std::filesystem::path(Path.xstring().c_str()),
+		std::filesystem::path(MaterialRoot),
+		std::filesystem::path(StaticMeshRoot));
+	LogConversionDiagnostics(Result);
+	if (!Result.Succeeded)
+	{
+		const xr_string Status =
+			"Legacy object conversion failed. Dump: " +
+			Result.DumpPath.generic_string();
+		UI->SetStatus(Status.c_str());
+		return;
+	}
+
+	if (OpenNativeStaticMesh(Result.TargetPath))
+	{
+		const xr_string Status =
+			"Converted to native static mesh. Dump: " +
+			Result.DumpPath.generic_string();
+		UI->SetStatus(Status.c_str());
+	}
+}
+
+void ImportAndOpenLegacyLevel(const xr_path& Path)
+{
+	if (GetEditorRenderBackend().GetKind() !=
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		Msg("! Legacy .level auto-conversion requires the Tiramisu editor "
+			"renderer.");
+		UI->SetStatus("Switch LevelEditor to the Tiramisu renderer.");
+		return;
+	}
+
+	UI->SetStatus("Loading legacy level for one-time conversion...");
+	if (!ExecCommand(COMMAND_CLEAR))
+		return;
+	string_path RenderSceneRoot = {};
+	FS.update_path(RenderSceneRoot, "$game_render_scenes$", "");
+	const std::filesystem::path SourcePath(Path.xstring().c_str());
+	const auto ReportLoadFailure =
+		[&](const char* Code, const char* Message)
+		{
+			const FLegacyLevelImportResult Result =
+				WriteLegacyLevelLoadFailureDump(
+					SourcePath,
+					std::filesystem::path(RenderSceneRoot),
+					Code, Message);
+			LogConversionDiagnostics(Result);
+			const xr_string Status =
+				"Legacy level source load failed. Dump: " +
+				Result.DumpPath.generic_string();
+			UI->SetStatus(Status.c_str());
+		};
+	FS.TryLoad(Path.xstring());
+	IReader* Reader = FS.r_open(Path.xstring().c_str());
+	if (!Reader)
+	{
+		Msg("! Cannot open legacy level '%s'.", Path.xstring().c_str());
+		ReportLoadFailure("level_import.source_open_failed",
+			"Legacy level source could not be opened by the editor.");
+		return;
+	}
+	char FirstCharacter = {};
+	Reader->r(&FirstCharacter, sizeof(FirstCharacter));
+	FS.r_close(Reader);
+	const bool IsLtx = FirstCharacter == '[';
+	LTools->m_LastFileName = Path.xstring();
+	const bool Loaded = IsLtx
+		? Scene->LoadLTX(Path.xstring().c_str(), false)
+		: Scene->Load(Path.xstring().c_str(), false);
+	if (!Loaded)
+	{
+		Msg("! Legacy level '%s' could not be loaded for conversion.",
+			Path.xstring().c_str());
+		ReportLoadFailure("level_import.source_load_failed",
+			"Legacy level source was opened, but EScene could not load it.");
+		return;
+	}
+
+	string_path MaterialRoot = {};
+	string_path StaticMeshRoot = {};
+	FS.update_path(MaterialRoot, "$game_render_materials$", "");
+	FS.update_path(StaticMeshRoot, "$game_static_meshes$", "");
+	UI->SetStatus("Converting legacy level to a native render scene...");
+	const FLegacyLevelImportResult Result =
+		ImportLoadedLegacyLevelAsset(
+			SourcePath, *Scene,
+			std::filesystem::path(MaterialRoot),
+			std::filesystem::path(StaticMeshRoot),
+			std::filesystem::path(RenderSceneRoot));
+	LogConversionDiagnostics(Result);
+	if (!Result.Succeeded)
+	{
+		const xr_string Status =
+			"Legacy level conversion failed. Dump: " +
+			Result.DumpPath.generic_string();
+		UI->SetStatus(Status.c_str());
+		return;
+	}
+	if (OpenNativeRenderScene(Result.TargetPath))
+	{
+		const xr_string Status =
+			"Converted to native render scene. Dump: " +
+			Result.DumpPath.generic_string();
+		UI->SetStatus(Status.c_str());
+	}
+}
+} // namespace
 
 CContentView::CContentView():
 	WatcherPtr(nullptr)
@@ -1030,6 +1246,11 @@ void CContentView::RescanDirectory()
 void CContentView::Destroy()
 {
 	MenuIcon.destroy();
+	for (auto& [Name, Icon] : Icons)
+	{
+		(void)Name;
+		DestroyIcon(Icon);
+	}
 	Icons.clear();
 
 	IsWndDestroyed = true;
@@ -1067,7 +1288,21 @@ void CContentView::LoadCustomIcons()
 void CContentView::RemoveCustomIcon(const xr_string& icon)
 {
 	if (Icons.contains(icon))
+	{
+		DestroyIcon(Icons[icon]);
 		Icons.erase(icon);
+	}
+}
+
+ImTextureID CContentView::ResolveIcon(const IconData& Icon) const
+{
+	return Icon.EditorIcon.IsValid() ? UI->GetImGuiTexture(Icon.EditorIcon)
+		: UI->GetImGuiTexture(Icon.Icon);
+}
+
+void CContentView::DestroyIcon(IconData& Icon)
+{
+	UI->DestroyImGuiTexture(Icon.EditorIcon);
 }
 
 void CContentView::Init()
@@ -1109,6 +1344,8 @@ void CContentView::LoadExtDest()
 	ExtDesc[".tga"] = "Raw Texture Asset";
 	ExtDesc[".png"] = "Image";
 	ExtDesc[".object"] = "Object Asset";
+	ExtDesc[".static-mesh.json"] = "Tiramisu Static Mesh";
+	ExtDesc[".render-scene.json"] = "Tiramisu Render Scene";
 	ExtDesc[".group"] = "Group object Asset";
 	ExtDesc[".r16"] = "HeightMap Asset";
 	ExtDesc[".ogf"] = "Object";
@@ -1187,7 +1424,10 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	if (FilePath.has_extension()) //File DnD
 	{
 		xr_string Extension = FilePath.extension().string().c_str();
-		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".r16" || Extension == ".ise" || Extension == ".dti" || Extension == ".rai";
+		WeCanDrag = Extension == ".object" || Extension == ".group" ||
+			Extension == ".r16" || Extension == ".ise" ||
+			Extension == ".dti" || Extension == ".rai" ||
+			HasFileNameSuffix(FilePath, ".static-mesh.json");
 		
 		bool IsGameLogicFile = false;
 		if (FilePath.xstring().Contains("scripts\\") && Extension == ".ltx")
@@ -1263,12 +1503,12 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
 	if (SelectedObjects.size() == 1) 
 	{
-		ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->get_SRView() ? IconPtr->Icon->get_SRView()->GetRawSRV() : nullptr, BtnSize);
+		ImGui::ImageButton(FilePath.xfilename().c_str(), ResolveIcon(*IconPtr), BtnSize);
 		ImGui::TextUnformatted(LabelText.data());
 	}
 	else 
 	{
-		ImGui::ImageButton(FilePath.xfilename().c_str(), Icons["multi"].Icon->get_SRView()->GetRawSRV(), BtnSize);
+		ImGui::ImageButton(FilePath.xfilename().c_str(), ResolveIcon(Icons["multi"]), BtnSize);
 		ImGui::Text("%d objects", SelectedObjects.size());
 	}
 	
@@ -1428,7 +1668,8 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 				IconColor.w = 0.3;
 			}
 
-			ImGui::Image(IconPtr->Icon->get_SRView() ? IconPtr->Icon->get_SRView()->GetRawSRV()  : nullptr, ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
+			ImGui::Image(ResolveIcon(*IconPtr), ImageSize, ImVec2(0, 0),
+				ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
 
 			/*
 				Два варианта
@@ -1667,14 +1908,27 @@ bool CContentView::DrawContext(const xr_path& Path)
 
 	if (Path.has_extension())
 	{
-		if (Path.extension().string() == ".object")
+		if (HasFileNameSuffix(Path, ".static-mesh.json"))
 		{
-			if (ImGui::MenuItem("Open"))
+			if (ImGui::MenuItem("Open in Tiramisu"))
 			{
-				CViewportMesh* MeshView = new CViewportMesh;
-				MeshView->OpenModel(Path);
-
-				UI->Push(MeshView);
+				OpenNativeStaticMesh(
+					std::filesystem::path(Path.xstring().c_str()));
+			}
+		}
+		else if (HasFileNameSuffix(Path, ".render-scene.json"))
+		{
+			if (ImGui::MenuItem("Open in Tiramisu"))
+			{
+				OpenNativeRenderScene(
+					std::filesystem::path(Path.xstring().c_str()));
+			}
+		}
+		else if (Path.extension().string() == ".object")
+		{
+			if (ImGui::MenuItem("Convert and open in Tiramisu"))
+			{
+				ImportAndOpenLegacyObject(Path);
 			}
 		}
 		else if (Path.extension().string() == ".ltx" || Path.extension().string() == ".script")
@@ -1720,28 +1974,9 @@ bool CContentView::DrawContext(const xr_path& Path)
 		}
 		else if (Path.extension().string() == ".level")
 		{
-			if (ImGui::MenuItem("Open"))
+			if (ImGui::MenuItem("Convert and open in Tiramisu"))
 			{
-				UI->SetStatus("Level loading...");
-				ExecCommand(COMMAND_CLEAR);
-				FS.TryLoad(Path.xstring());
-				IReader* R = FS.r_open(Path.xstring().c_str());
-				if (!R)
-				{
-					ImGui::EndPopup();
-					return false;
-				}
-				char ch;
-				R->r(&ch, sizeof(ch));
-				bool is_ltx = (ch == '[');
-				FS.r_close(R);
-				bool res;
-				LTools->m_LastFileName = Path.xstring();
-
-				if (is_ltx)
-					Scene->LoadLTX(Path.xstring().c_str(), false);
-				else
-					Scene->Load(Path.xstring().c_str(), false);
+				ImportAndOpenLegacyLevel(Path);
 			}
 			ImGui::Separator();
 		}
@@ -1980,6 +2215,10 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				if(TempTexture->pSurface != nullptr && TempTexture->get_SRView() != nullptr)
 				{
 					Icons[IconPath] = {TempTexture, false};
+					(void)UI->UpdateImGuiTexture(Icons[IconPath].EditorIcon,
+						m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT,
+						THUMB_WIDTH * 4, 1, IconPath.c_str(),
+						EEditorTextureFormat::Bgra8Unorm, true);
 					Texture->Release();
 				}
 				else 
@@ -2008,6 +2247,10 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				if (TempTexture->pSurface != nullptr && TempTexture->get_SRView()->GetRawSRV() != nullptr)
 				{
 					Icons[IconPath] = { TempTexture, false };
+					(void)UI->UpdateImGuiTexture(Icons[IconPath].EditorIcon,
+						m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT,
+						THUMB_WIDTH * 4, 1, IconPath.c_str(),
+						EEditorTextureFormat::Bgra8Unorm, true);
 					Texture->Release();
 				}
 				else
@@ -2043,6 +2286,9 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				IRHISurface* Surf = GRHI->CreateTexture2D(Desc, SubResource);
 				TempTexture->surface_set(Surf);
 				Surf->Release();
+				(void)UI->UpdateImGuiTexture(Icons[IconPath].EditorIcon,
+					Pixels.data(), Desc.Width, Desc.Height, Desc.Width * 4,
+					1, IconPath.c_str(), EEditorTextureFormat::Bgra8Unorm);
 			}
 			else if (IconPath.ends_with(".tga"))
 			{

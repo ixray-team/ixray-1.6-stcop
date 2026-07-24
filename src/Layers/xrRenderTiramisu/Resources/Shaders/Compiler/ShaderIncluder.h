@@ -1,4 +1,7 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
+// DXC include handler, разрешающий shader includes через engine filesystem.
 struct DXCInluder :public IDxcIncludeHandler
 {
 	DXCInluder(IDxcLibrary*pLibrary)

@@ -1,8 +1,8 @@
 // xrRender_R2.cpp : Defines the entry point for the DLL application.
 //
 #include "stdafx.h" 
-size_t GRenderThreadId = Platform::GetCurrentThreadId();
-size_t GGameThreadId = Platform::GetCurrentThreadId();
+const size_t GGameThreadId = Platform::GetCurrentThreadId();
+std::atomic_size_t GRenderThreadId = GGameThreadId;
 
 CDS0_RenderFactory GRenderFactory;
 CDS0_DUInterface  GDUInterface;
@@ -59,8 +59,9 @@ extern "C"
 };
 bool _declspec(dllexport) SupportsRendering()
 {
-	/*bool result = BearRenderInterface::Initialize(TEXT("bear_render_vulkan1_0"));
-	BearRenderInterface::Destroy();
-	return result;*/
-	return true;
+	const nri::GraphicsAPI GraphicsApi = strstr(Core.Params, "-dx12")
+		? nri::GraphicsAPI::D3D12
+		: nri::GraphicsAPI::VK;
+	nri::AdapterDesc AdapterDescription = {};
+	return TiramisuRenderDevice::FindBestAdapterDescription(GraphicsApi, AdapterDescription);
 }

@@ -2,10 +2,16 @@
 
 #include "NRI.hlsl"
 #include "common.hlsl"
+#include "MaterialGpuAbi.hlsl"
 
 float4 Main( in OutputLegacySceneVertex input  ) : SV_Target
 {
-    Texture2D<float4> Texture = ResourceDescriptorHeap[input.InstanceID];
-    SamplerState Sampler = SamplerDescriptorHeap[0];
+    const MaterialInstanceGpuData Instance = LoadMaterialInstanceGpuData(input.InstanceID);
+    ByteAddressBuffer MaterialData = ResourceDescriptorHeap[MaterialParameterBufferIndex];
+    const uint TextureIndex = MaterialData.Load(Instance.ParameterDataOffset);
+
+    Texture2D<float4> Texture =
+        ResourceDescriptorHeap[NonUniformResourceIndex(TextureIndex)];
+    SamplerState Sampler = SamplerDescriptorHeap[DefaultMaterialSamplerIndex];
     return Texture.Sample( Sampler, input.UV ).rgba;
 }

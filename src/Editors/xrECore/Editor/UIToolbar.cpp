@@ -55,28 +55,28 @@ void CUIToolbar::Draw()
 		constexpr ImVec2 SizeBtn = { 24, 24 };
 
 		CheckAction(etaSelect);
-		if (ImGui::ImageButton("##ibCUIToolbar001",Select->get_SRView()->GetRawSRV(), SizeImg))
+		if (ImGui::ImageButton("##ibCUIToolbar001", UI->GetImGuiTexture(Select), SizeImg))
 		{
 			Tools->SetAction(etaSelect);
 		}
 		EndCheck();
 
 		CheckAction(etaMove);
-		if (ImGui::ImageButton("##ibCUIToolbar002", Move->get_SRView()->GetRawSRV(), SizeImg))
+		if (ImGui::ImageButton("##ibCUIToolbar002", UI->GetImGuiTexture(Move), SizeImg))
 		{
 			Tools->SetAction(etaMove);
 		}
 		EndCheck();
 
 		CheckAction(etaRotate);
-		if (ImGui::ImageButton("##ibCUIToolbar003", Rotate->get_SRView()->GetRawSRV(), SizeImg))
+		if (ImGui::ImageButton("##ibCUIToolbar003", UI->GetImGuiTexture(Rotate), SizeImg))
 		{
 			Tools->SetAction(etaRotate);
 		}
 		EndCheck();
 
 		CheckAction(etaScale);
-		if (ImGui::ImageButton("##ibCUIToolbar004", Scale->get_SRView()->GetRawSRV(), SizeImg))
+		if (ImGui::ImageButton("##ibCUIToolbar004", UI->GetImGuiTexture(Scale), SizeImg))
 		{
 			Tools->SetAction(etaScale);
 		}

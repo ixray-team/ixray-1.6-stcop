@@ -1,4 +1,5 @@
 #pragma once
+#include <atomic>
 #include "../../xrEngine/stdafx.h"
 
 #include "../../xrEngine/Render.h"
@@ -59,20 +60,30 @@ inline T Align(T x, size_t alignment) {
 #define NRI_CHECK(x) R_ASSERT((x) ==  nri::Result::SUCCESS)
 
 
-extern size_t GRenderThreadId;
-extern size_t GGameThreadId;
-inline bool IsRenderThreadRunning() { return GRenderThreadId != GGameThreadId; }
-#define CheckIsGameThread() VERIFY( !IsRenderThreadRunning() || GRenderThreadId != Platform::GetCurrentThreadId())
-#define CheckIsRenderThread() VERIFY( !IsRenderThreadRunning() || GRenderThreadId == Platform::GetCurrentThreadId())
+extern std::atomic_size_t GRenderThreadId;
+extern const size_t GGameThreadId;
+#include "Core/TThreadAffinity.h"
+inline bool IsRenderThreadRunning()
+{
+    return GRenderThreadId.load(std::memory_order_acquire) != GGameThreadId;
+}
+#define CheckIsGameThread() VERIFY(Tiramisu::Threading::IsThreadRoleSatisfied( \
+    Tiramisu::Threading::EThreadRole::Game, IsRenderThreadRunning(), \
+    Platform::GetCurrentThreadId(), GGameThreadId, \
+    GRenderThreadId.load(std::memory_order_acquire)))
+#define CheckIsRenderThread() VERIFY(Tiramisu::Threading::IsThreadRoleSatisfied( \
+    Tiramisu::Threading::EThreadRole::Render, IsRenderThreadRunning(), \
+    Platform::GetCurrentThreadId(), GGameThreadId, \
+    GRenderThreadId.load(std::memory_order_acquire)))
 
 #include "RenderCommandQueue.h"
-#include "Core/TRenderDevice.h"
-#include "Resources/Textures/TRenderTexture.h"
-#include "Resources/Textures/TRenderTexture2D.h"
-#include "Resources/Textures/TRenderTexturesManager.h"
+#include "Core/TiramisuRenderDevice.h"
+#include "Resources/Textures/TiramisuRenderTexture.h"
+#include "Resources/Textures/TiramisuRenderTexture2D.h"
+#include "Resources/Textures/TiramisuRenderTexturesManager.h"
 #include "Resources/RenderVertexTypes.h"
-#include "Resources/TRenderResourcesManager.h"
-#include "Resources/TRenderDescriptorHeapAllocator.h"
+#include "Resources/TiramisuRenderResourcesManager.h"
+#include "Resources/TiramisuRenderDescriptorHeapAllocator.h"
 #include "Resources/Shaders/ShaderType.h"
-#include "Resources/Shaders/Defines/TShaderDefinesContainer.h"
-#include "Resources/Shaders/Global/TGlobalShadersManager.h"
+#include "Resources/Shaders/Defines/TiramisuShaderDefinesContainer.h"
+#include "Resources/Shaders/Global/TiramisuGlobalShadersManager.h"

@@ -849,7 +849,6 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 
 		SceneToolsMapPairIt _I 	= m_SceneTools.begin();
 		SceneToolsMapPairIt _E 	= m_SceneTools.end();
-		Scene->setSkipCantFindDialog(false);
 		for (; _I!=_E; ++_I)
 		{
 			if (_I->second)
@@ -922,9 +921,23 @@ bool EScene::Load(const char* map_name, bool bUndo)
 		T.Start();
 
 		// read main level
-		IReader* F 	= FS.r_open(full_name.c_str()); VERIFY(F);
+		IReader* F = FS.r_open(full_name.c_str());
+		if (!F)
+		{
+			ELog.Msg(mtError,
+				"EScene: file was discovered but could not be opened: '%s'",
+				full_name.c_str());
+			return false;
+		}
 		// Version
-		R_ASSERT	(F->r_chunk(CHUNK_VERSION, &version));
+		if (!F->r_chunk(CHUNK_VERSION, &version))
+		{
+			ELog.Msg(mtError,
+				"EScene: level has no valid version chunk: '%s'",
+				full_name.c_str());
+			FS.r_close(F);
+			return false;
+		}
 		if (version!=CURRENT_FILE_VERSION)
 		{
 			ELog.DlgMsg( mtError, "EScene: unsupported file version. Can't load Level.");

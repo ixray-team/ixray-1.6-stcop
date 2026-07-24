@@ -1,0 +1,10 @@
+{
+  "asset_version": 1,
+  "guid": "e29e8196-9420-4da0-a95d-6860f30405ab",
+  "name": "Example Normal Enabled Surface",
+  "parent": "67e3bc21-9df5-4fc2-ab60-1ad7d02ad6e3",
+  "overrides": {},
+  "static_overrides": {
+    "39a456f7-50be-4de7-8b7c-60fcc35b8a92": true
+  }
+}

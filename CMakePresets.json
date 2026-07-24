@@ -159,6 +159,22 @@
                 }
             }
         },
+        {
+            "name": "Editors-x64-Windows-ASan",
+            "displayName": "Editors-x64-Windows-ASan",
+            "inherits": "Editors-Base-Windows",
+            "binaryDir": "build/x64/Editors-Windows-ASan",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "x64",
+                "IXRAY_ASAN": "ON",
+                "IXRAY_BUILD_TESTS": "ON"
+            },
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x64"
+                }
+            }
+        },
 
         {
             "name": "Utilities-Base-Windows",

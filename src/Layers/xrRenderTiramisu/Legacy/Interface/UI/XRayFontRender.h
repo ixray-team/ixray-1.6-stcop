@@ -1,6 +1,8 @@
 #pragma once
 
-class TRenderTexture2D;
+#include "TiramisuRenderTypes.h"
+
+class TiramisuRenderTexture2D;
 
 class CDS0_FontRender:
 	public IFontRender
@@ -13,5 +15,5 @@ public:
 	void CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) override;
 
 private:
-	TRenderTexture2D* Atlas;
+	TiramisuRenderTexture2D* Atlas;
 };

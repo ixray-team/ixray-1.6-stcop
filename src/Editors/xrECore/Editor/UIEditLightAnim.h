@@ -24,12 +24,17 @@ private:
 	ImTextureID			m_Texture;
 
 	ID3DTexture2D* m_ItemTexture;
+	FEditorTextureHandle m_ItemTextureEditor;
+	std::array<u32, 32 * 32> m_ItemPixels = {};
+	u64 m_ItemTextureRevision = 0;
 	CLAItem* m_CurrentItem;
 	bool m_Modife;
 
 	float m_PointerWeight;
 	bool m_PointerResize;
 	ID3DTexture2D* m_PointerTexture;
+	FEditorTextureHandle m_PointerTextureEditor;
+	u64 m_PointerTextureRevision = 0;
 	u32* m_PointerRawImage;
 	int m_PointerValue;
 	bool m_RenderAlpha;

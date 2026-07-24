@@ -143,7 +143,7 @@ void CDS0_RenderDeviceRender::Reset(SDL_Window* window, u32& dwWidth, u32& dwHei
 {
 	if (!Viewport)
 	{
-		Viewport = new TRenderViewport;
+		Viewport = new TiramisuRenderViewport;
 		GRender->SetViewport(Viewport);
 	}
 	
@@ -180,7 +180,7 @@ void CDS0_RenderDeviceRender::SetCacheXformOld(Fmatrix& mView, Fmatrix& mProject
 {
 }
 
-const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGShader(const std::string_view& subpath, float width, float height, SVGTintRGBA tint)
+const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGShader(const xr_string_view& subpath, float width, float height, SVGTintRGBA tint)
 {
 	(void)subpath;
 	(void)width;
@@ -203,7 +203,7 @@ const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGDefaultShader()
 	return m_empty_default;
 }
 
-Frect CDS0_RenderDeviceRender::GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint)
+Frect CDS0_RenderDeviceRender::GetSVGUV(const xr_string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint)
 {
 	(void)subpath;
 	(void)requested_width;

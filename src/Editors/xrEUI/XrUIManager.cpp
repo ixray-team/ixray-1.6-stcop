@@ -13,6 +13,65 @@
 
 XREUI_API XrUIManager* GUIManager = nullptr;
 
+namespace
+{
+class FDx9UIRendererBackend final : public IXrUIRendererBackend
+{
+public:
+	explicit FDx9UIRendererBackend(IDirect3DDevice9* InDevice)
+		: RenderDevice(InDevice)
+	{}
+
+	[[nodiscard]] EXrUIRendererPlatform GetPlatform() const noexcept override
+	{
+		return EXrUIRendererPlatform::D3D;
+	}
+
+	[[nodiscard]] bool SupportsPlatformViewports() const noexcept override
+	{
+		return true;
+	}
+
+	[[nodiscard]] bool OwnsMainPresentation() const noexcept override
+	{
+		return false;
+	}
+
+	[[nodiscard]] bool Initialize() override
+	{
+		return RenderDevice && ImGui_ImplDX9_Init(RenderDevice);
+	}
+
+	void Shutdown() override
+	{
+		ImGui_ImplDX9_Shutdown();
+	}
+
+	void BeginFrame() override
+	{
+		ImGui_ImplDX9_NewFrame();
+	}
+
+	void RenderDrawData(ImDrawData& DrawData) override
+	{
+		ImGui_ImplDX9_RenderDrawData(&DrawData);
+	}
+
+	void InvalidateDeviceObjects() override
+	{
+		ImGui_ImplDX9_InvalidateDeviceObjects();
+	}
+
+	void CreateDeviceObjects() override
+	{
+		ImGui_ImplDX9_CreateDeviceObjects();
+	}
+
+private:
+	IDirect3DDevice9* RenderDevice = nullptr;
+};
+} // namespace
+
 XrUIManager::XrUIManager()
 {
 }
@@ -59,6 +118,10 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 
 	ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
 	ImGuiIO& io = ImGui::GetIO();
+	// Both editor renderer backends implement ImGui 1.92 texture uploads. This
+	// flag must be visible before fonts are added, otherwise the atlas keeps the
+	// legacy ownership mode and NRI receives an unresolved font texture ID.
+	io.BackendFlags |= ImGuiBackendFlags_RendererHasTextures;
 	xr_strcpy(m_name_ini, ini_path);
 	io.IniFilename = xr_strdup(Platform::ANSI_TO_UTF8(m_name_ini).c_str());
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
@@ -92,7 +155,6 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	}
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 	ImFontConfig icons_config = {};
@@ -102,16 +164,56 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 
 	//io.Fonts->Build();
 
-	//ImGui_ImplWin32_Init(hWnd);
-	ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window);
-	ImGui_ImplDX9_Init(device);
+	if (!m_RenderBackend)
+	{
+		m_RenderBackend = new FDx9UIRendererBackend(device);
+		m_OwnRenderBackend = true;
+	}
+
+	switch (m_RenderBackend->GetPlatform())
+	{
+	case EXrUIRendererPlatform::D3D:
+		R_ASSERT(ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window));
+		break;
+	case EXrUIRendererPlatform::Vulkan:
+		R_ASSERT(ImGui_ImplSDL3_InitForVulkan(g_AppInfo.Window));
+		break;
+	case EXrUIRendererPlatform::Other:
+		R_ASSERT(ImGui_ImplSDL3_InitForOther(g_AppInfo.Window));
+		break;
+	}
+
+	R_ASSERT2(m_RenderBackend->Initialize(), "Failed to initialize the editor ImGui renderer backend");
+	m_RenderBackendInitialized = true;
+	if (m_RenderBackend->SupportsPlatformViewports())
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	else
+		io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
 }
 
 void XrUIManager::Destroy()
 {
-	ImGui_ImplDX9_Shutdown();
+	m_MainPresentationPending = false;
+	if (m_RenderBackendInitialized && m_RenderBackend)
+		m_RenderBackend->Shutdown();
+	m_RenderBackendInitialized = false;
 	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
+	if (m_OwnRenderBackend)
+		xr_delete(m_RenderBackend);
+	m_RenderBackend = nullptr;
+	m_OwnRenderBackend = false;
+}
+
+bool XrUIManager::InstallRenderBackend(IXrUIRendererBackend* Backend) noexcept
+{
+	if (m_RenderBackendInitialized)
+		return false;
+	if (m_OwnRenderBackend)
+		xr_delete(m_RenderBackend);
+	m_RenderBackend = Backend;
+	m_OwnRenderBackend = false;
+	return true;
 }
 
 bool XrUIManager::ProcessEvent(void* Event)
@@ -124,6 +226,9 @@ bool XrUIManager::ProcessEvent(void* Event)
 
 void XrUIManager::BeginFrame()
 {
+	R_ASSERT2(!m_MainPresentationPending,
+		"The external editor renderer did not present the previous ImGui frame");
+
 	for (auto str : LazyFonts)
 	{
 		LoadImGuiFontBase(str.c_str(), m_ScaleDpi);
@@ -132,13 +237,20 @@ void XrUIManager::BeginFrame()
 	LazyFonts.clear();
 
 	ImGui_ImplSDL3_NewFrame();
-	ImGui_ImplDX9_NewFrame();
+	R_ASSERT(m_RenderBackendInitialized && m_RenderBackend);
+	m_RenderBackend->BeginFrame();
 }
 
 void XrUIManager::EndFrame()
 {
 	ImGui::Render();
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+	if (ImDrawData* DrawData = ImGui::GetDrawData())
+	{
+		if (m_RenderBackend->OwnsMainPresentation())
+			m_MainPresentationPending = true;
+		else
+			m_RenderBackend->RenderDrawData(*DrawData);
+	}
 
 	for (size_t i = m_UIArray.size(); i > 0; i--)
 	{
@@ -155,10 +267,24 @@ void XrUIManager::EndFrame()
 	}
 }
 
+void XrUIManager::PresentMainFrame()
+{
+	if (!m_MainPresentationPending)
+		return;
+
+	R_ASSERT(m_RenderBackendInitialized && m_RenderBackend);
+	R_ASSERT2(m_RenderBackend->OwnsMainPresentation(),
+		"Only an external editor renderer can own deferred main presentation");
+	if (ImDrawData* DrawData = ImGui::GetDrawData())
+		m_RenderBackend->RenderDrawData(*DrawData);
+	m_MainPresentationPending = false;
+}
+
 void XrUIManager::MDIUpdate()
 {
 	ImGuiIO& io = ImGui::GetIO();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	if (m_RenderBackend && m_RenderBackend->SupportsPlatformViewports() &&
+		(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable))
 	{
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
@@ -172,12 +298,14 @@ void XrUIManager::ResetBegin()
 		Ptr->ResetBegin();
 	}
 
-	ImGui_ImplDX9_InvalidateDeviceObjects();
+	if (m_RenderBackendInitialized && m_RenderBackend)
+		m_RenderBackend->InvalidateDeviceObjects();
 }
 
 void XrUIManager::ResetEnd(void* NewDevice)
 {
-	ImGui_ImplDX9_CreateDeviceObjects();
+	if (m_RenderBackendInitialized && m_RenderBackend)
+		m_RenderBackend->CreateDeviceObjects();
 
 	for (auto Ptr : m_UIArray)
 	{
