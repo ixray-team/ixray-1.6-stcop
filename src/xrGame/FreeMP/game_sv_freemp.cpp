@@ -24,14 +24,18 @@ game_sv_freemp::game_sv_freemp()
 	m_type = eGameIDFreeMP;
 
 #ifdef IXR_MP_SQL
-	GSQLConnector = new DBService;
-	GSQLConnector->Connect();
-	GSQLConnector->Test();
+	if (strstr(Core.Params, "-sql"))
+	{
+		GSQLConnector = new DBService;
+		GSQLConnector->Connect();
+		GSQLConnector->Test();
+		
+		map_items.clear();
+		map_items = GSQLConnector->LoadGame("game_items");
+		map_quest.clear();
+		map_quest = GSQLConnector->LoadGame("game_quests");
+	}
 
-	map_items.clear();
-	map_items = GSQLConnector->LoadGame("game_items");
-	map_quest.clear();
-	map_quest = GSQLConnector->LoadGame("game_quests");
 #endif
 }
 
@@ -343,7 +347,7 @@ void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 
 #ifdef IXR_MP_SQL
 
-	if (actor)
+	if (GSQLConnector && actor)
 	{
 		int cur_user_id = GSQLConnector->GetUserIdByName(actor->Name());
 		if (cur_user_id > 0)
@@ -506,6 +510,9 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 	case GAME_EVENT_MP_ACTOR_SPAWN:
 	{
 #ifdef IXR_MP_SQL
+		if (!GSQLConnector)
+			break;
+
 		game_PlayerState* ps = nullptr;
 		if (xrClientData* xrCData = (xrClientData*)m_server->ID_to_client(sender))
 		{
