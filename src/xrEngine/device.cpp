@@ -245,14 +245,11 @@ void CRenderDevice::on_idle		()
 					seqRender.Process<&pureRender::OnRender>();
 				}
 
-				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || !Statistic->errors.empty())
-				{
-					Statistic->Show();
-				}
-
-				bool show_fps_counter = IsFpsShow && g_pGameLevel && !IsMainMenuActive && !load_screen_renderer.IsActive() && !Device.Paused();
-
-				if (show_fps_counter)
+				if (IsFpsShow &&
+					g_pGameLevel &&
+					!IsMainMenuActive &&
+					!load_screen_renderer.IsActive() &&
+					!Device.Paused())
 				{
 					pFPSCounter->OnRender();
 				}
@@ -260,9 +257,6 @@ void CRenderDevice::on_idle		()
 				End();
 			}
 		}
-		Statistic->RenderTOTAL_Real.End();
-		Statistic->RenderTOTAL_Real.FrameEnd();
-		Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
 	}
 
 	PreRenderThread.Wait();
@@ -664,7 +658,7 @@ CLoadScreenRenderer::CLoadScreenRenderer()
 
 void CLoadScreenRenderer::start(bool b_user_input) 
 {
-	Device.seqRender.Add			(this, 0);
+	Device.seqRender.Add			(this, UI_LOAD_SCREEN);
 	b_registered					= true;
 	b_need_user_input				= b_user_input;
 }
