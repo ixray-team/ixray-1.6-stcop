@@ -407,10 +407,11 @@ function store_table(table, subs)
 end
 
 -------------------------------------------------------------------------------------------
-local monster_classes = {}
-local stalker_classes = {}
-local weapon_classes = {}
-local artefact_classes = {}
+monster_classes = {}
+stalker_classes = {}
+weapon_classes = {}
+artefact_classes = {}
+squad_community_by_behaviour = {}
 
 function IsMonster (object, class_id)
 		local id = class_id or get_clsid(object)
@@ -518,92 +519,83 @@ end
 function start_game_callback()
 	aa = alife()
 
-	squad_community_by_behaviour = {
-		["stalker"]							= "stalker",
-		["bandit"]							= "bandit",
-		["dolg"]							= "dolg",
-		["freedom"]							= "freedom",
-		["army"]							= "army",
-		["ecolog"]							= "ecolog",
-		["killer"]							= "killer",
-		["zombied"]							= "zombied",
-		["monolith"]						= "monolith",
-		["monster"]							= "monster",
-		["monster_predatory_day"]			= "monster",
-		["monster_predatory_night"]			= "monster",
-		["monster_vegetarian"]				= "monster",
-		["monster_zombied_day"]				= "monster",
-		["monster_zombied_night"]			= "monster",
-		["monster_special"]					= "monster"
-	}
+	squad_community_by_behaviour["stalker"] = "stalker"
+	squad_community_by_behaviour["bandit"] = "bandit"
+	squad_community_by_behaviour["dolg"] = "dolg"
+	squad_community_by_behaviour["freedom"]	= "freedom"
+	squad_community_by_behaviour["army"] = "army"
+	squad_community_by_behaviour["ecolog"] = "ecolog"
+	squad_community_by_behaviour["killer"] = "killer"
+	squad_community_by_behaviour["zombied"]	= "zombied"
+	squad_community_by_behaviour["monolith"] = "monolith"
+	squad_community_by_behaviour["monster"] = "monster"
+	squad_community_by_behaviour["monster_predatory_day"] = "monster"
+	squad_community_by_behaviour["monster_predatory_night"] = "monster"
+	squad_community_by_behaviour["monster_vegetarian"] = "monster"
+	squad_community_by_behaviour["monster_zombied_day"] = "monster"
+	squad_community_by_behaviour["monster_zombied_night"] = "monster"
+	squad_community_by_behaviour["monster_special"] = "monster"
 
+	monster_classes[clsid.bloodsucker_s] = true
+	monster_classes[clsid.boar_s] = true
+	monster_classes[clsid.dog_s] = true
+	monster_classes[clsid.flesh_s] = true
+	monster_classes[clsid.pseudodog_s] = true
+	monster_classes[clsid.burer_s] = true
+--	monster_classes[clsid.cat_s] = true
+	monster_classes[clsid.chimera_s] = true
+	monster_classes[clsid.controller_s] = true
+--	monster_classes[clsid.fracture_s] = true
+	monster_classes[clsid.poltergeist_s] = true
+	monster_classes[clsid.gigant_s] = true
+--	monster_classes[clsid.zombie_s] = true
+	monster_classes[clsid.snork_s] = true
+	monster_classes[clsid.tushkano_s] = true
+	monster_classes[clsid.psy_dog_s] = true
+	monster_classes[clsid.psy_dog_phantom_s] = true
 
+	stalker_classes[clsid.script_actor] = true
+	stalker_classes[clsid.script_stalker] = true
 
+	weapon_classes[clsid.wpn_vintorez_s] = true
+	weapon_classes[clsid.wpn_ak74_s] = true
+	weapon_classes[clsid.wpn_lr300_s] = true
+	weapon_classes[clsid.wpn_hpsa_s] = true
+	weapon_classes[clsid.wpn_pm_s] = true
+	weapon_classes[clsid.wpn_shotgun_s] = true
+	weapon_classes[clsid.wpn_auto_shotgun_s] = true
+	weapon_classes[clsid.wpn_bm16_s] = true
+	weapon_classes[clsid.wpn_svd_s] = true
+	weapon_classes[clsid.wpn_svu_s] = true
+	weapon_classes[clsid.wpn_rg6_s] = true
+	weapon_classes[clsid.wpn_rpg7_s] = true
+	weapon_classes[clsid.wpn_val_s] = true
+	weapon_classes[clsid.wpn_walther_s] = true
+	weapon_classes[clsid.wpn_usp45_s] = true
+	weapon_classes[clsid.wpn_groza_s] = true
+	weapon_classes[clsid.wpn_knife_s] = true
+	weapon_classes[clsid.wpn_grenade_f1_s] = true
+	weapon_classes[clsid.wpn_grenade_rgd5_s] = true
+	weapon_classes[clsid.wpn_grenade_launcher] = true
+	weapon_classes[clsid.wpn_grenade_fake] = true
 
-	monster_classes = {
-		[clsid.bloodsucker_s] 			= true,
-		[clsid.boar_s] 					= true,
-		[clsid.dog_s] 					= true,
-		[clsid.flesh_s] 				= true,
-		[clsid.pseudodog_s] 			= true,
-		[clsid.burer_s] 				= true,
---		[clsid.cat_s] 					= true,
-		[clsid.chimera_s] 				= true,
-		[clsid.controller_s] 			= true,
---		[clsid.fracture_s] 				= true,
-		[clsid.poltergeist_s] 			= true,
-		[clsid.gigant_s] 				= true,
---		[clsid.zombie_s] 				= true,
-		[clsid.snork_s] 				= true,
-		[clsid.tushkano_s] 				= true,
-		[clsid.psy_dog_s] 				= true,
-		[clsid.psy_dog_phantom_s] 		= true}
+	artefact_classes[clsid.art_bast_artefact] = true
+	artefact_classes[clsid.art_black_drops] = true
+	artefact_classes[clsid.art_dummy] = true
+	artefact_classes[clsid.art_electric_ball] = true
+	artefact_classes[clsid.art_faded_ball] = true
+	artefact_classes[clsid.art_galantine] = true
+	artefact_classes[clsid.art_gravi] = true
+	artefact_classes[clsid.art_gravi_black] = true
+	artefact_classes[clsid.art_mercury_ball] = true
+	artefact_classes[clsid.art_needles] = true
+	artefact_classes[clsid.art_rusty_hair] = true
+	artefact_classes[clsid.art_thorn] = true
+	artefact_classes[clsid.art_zuda] = true
+	artefact_classes[clsid.artefact] = true
+	artefact_classes[clsid.artefact_s] = true
 
-	stalker_classes = {
-		[clsid.script_actor] 			= true,
-		[clsid.script_stalker] 			= true}
-
-	weapon_classes = {
-		[clsid.wpn_vintorez_s] 			= true,
-		[clsid.wpn_ak74_s] 				= true,
-		[clsid.wpn_lr300_s] 			= true,
-		[clsid.wpn_hpsa_s] 				= true,
-		[clsid.wpn_pm_s] 				= true,
-		[clsid.wpn_shotgun_s] 			= true,
-		[clsid.wpn_auto_shotgun_s]		= true,
-		[clsid.wpn_bm16_s] 				= true,
-		[clsid.wpn_svd_s] 				= true,
-		[clsid.wpn_svu_s] 				= true,
-		[clsid.wpn_rg6_s] 				= true,
-		[clsid.wpn_rpg7_s] 				= true,
-		[clsid.wpn_val_s] 				= true,
-		[clsid.wpn_walther_s] 			= true,
-		[clsid.wpn_usp45_s] 			= true,
-		[clsid.wpn_groza_s] 			= true,
-		[clsid.wpn_knife_s] 			= true,
-		[clsid.wpn_grenade_f1_s] 		= true,
-		[clsid.wpn_grenade_rgd5_s] 		= true,
-		[clsid.wpn_grenade_launcher] 	= true,
-		[clsid.wpn_grenade_fake] 		= true}
-
-	artefact_classes = {
-		[clsid.art_bast_artefact] 		= true,
-		[clsid.art_black_drops] 		= true,
-		[clsid.art_dummy] 				= true,
-		[clsid.art_electric_ball] 		= true,
-		[clsid.art_faded_ball] 			= true,
-		[clsid.art_galantine] 			= true,
-		[clsid.art_gravi] 				= true,
-		[clsid.art_gravi_black] 		= true,
-		[clsid.art_mercury_ball] 		= true,
-		[clsid.art_needles] 			= true,
-		[clsid.art_rusty_hair] 			= true,
-		[clsid.art_thorn] 				= true,
-		[clsid.art_zuda] 				= true,
-		[clsid.artefact] 				= true,
-		[clsid.artefact_s] 				= true}
-
-	printf	("start_game_callback called")
+	printf("start_game_callback called")
 	smart_names.init_smart_names_table()
 	task_manager.clear_task_manager()
 	sound_theme.load_sound()
