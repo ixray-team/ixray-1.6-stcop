@@ -1,18 +1,13 @@
 #include "stdafx.h"
 
 #include "EmbreeRayTrace.h"
-#include "../../xrCore/Collision/xrCDB.h"
-
-#include "xrLC_GlobalData.h"
 #include "xrFace.h"
 #include "xrDeflector.h"
-#include "light_point.h"
-#include "R_light.h"
 
 #include "global_calculation_data.h"
-#include <../xrForms/CompilersUI.h>
+#include "utils/xrForms/CompilersUI.h"
 
-#include "src/utils/xrLC/Build.h"
+#include "utils/xrLC/Build.h"
 extern CompilersMode gCompilerMode;
 extern global_claculation_data gl_data;
 

@@ -91,6 +91,7 @@ set_target_properties(xrUI PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
 # Include directories
 target_include_directories(xrUI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrUI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../")
 target_include_directories(xrUI PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines

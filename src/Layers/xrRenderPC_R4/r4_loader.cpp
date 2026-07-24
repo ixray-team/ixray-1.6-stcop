@@ -1,29 +1,24 @@
 #include "stdafx.h"
 #include "r4.h"
-#include "../xrRender/ResourceManager.h"
-#include "../xrRender/FBasicVisual.h"
-#include "../../xrEngine/FmeshRender.h"
-#include "../../xrEngine/xrLevel.h"
-#include "../../xrEngine/x_ray.h"
-#include "../../xrEngine/IGame_Persistent.h"
-#include "../../xrCore/stream_reader.h"
+#include "Layers/xrRender/ResourceManager.h"
+#include "Layers/xrRender/FBasicVisual.h"
+#include "xrEngine/FmeshRender.h"
+#include "xrEngine/xrLevel.h"
+#include "xrEngine/x_ray.h"
+#include "xrEngine/IGame_Persistent.h"
+#include "xrCore/stream_reader.h"
 
-#include "../xrRender/dxRenderDeviceRender.h"
+#include "Layers/xrRender/dxRenderDeviceRender.h"
 
-#include "../xrRenderDX10/dx10BufferUtils.h"
-#include "../xrRenderDX10/3DFluid/dx103DFluidVolume.h"
+#include "Layers/xrRenderDX10/3DFluid/dx103DFluidVolume.h"
 
-#include "../xrRender/FHierrarhyVisual.h"
+#include "Layers/xrRender/FHierrarhyVisual.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
-#include <malloc.h>
 
-#include <FlexibleVertexFormat.h>
-
-#include "../../xrCore/FormatParsers/LevelGeom/GeomIO.h"
-#include "src/xrCore/SharedMaterialLibrary.h"
-#include "src/xrCore/Collision/override/Model.h"
+#include "xrCore/FormatParsers/LevelGeom/GeomIO.h"
+#include "xrCore/Collision/override/Model.h"
 using namespace FVF;
 
 #pragma warning(pop)

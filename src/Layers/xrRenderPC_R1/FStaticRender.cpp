@@ -4,23 +4,21 @@
 
 #include "stdafx.h"
 #include <d3dcompiler.h>
-#include "../xrRenderDX9/dx9ShaderUtils.h"
+#include "Layers/xrRenderDX9/dx9ShaderUtils.h"
 
-#include "../../xrEngine/IGame_Persistent.h"
-#include "../../xrEngine/Environment.h"
-#include "../xrRender/FBasicVisual.h"
-#include "../../xrEngine/CustomHUD.h"
-#include "../../xrEngine/xr_object.h"
-#include "../../xrEngine/FmeshRender.h"
-#include "../xrRender/SkeletonCustom.h"
-#include "../xrRender/LightTrack.h"
-#include "../xrRender/dxRenderDeviceRender.h"
-#include "../xrRender/dxWallMarkArray.h"
-#include "../xrRender/dxUIShader.h"
-#include "../../xrCore/git_version.h"
-#include "../../xrEngine/IGame_Actor.h"
-#include "../xrRender/RenderInterfaceShared.h"
-#include "src/Layers/xrRender/FTreeVisual_Prototype.h"
+#include "xrEngine/IGame_Persistent.h"
+#include "xrEngine/Environment.h"
+#include "Layers/xrRender/FBasicVisual.h"
+#include "xrEngine/CustomHUD.h"
+#include "xrEngine/xr_object.h"
+#include "xrEngine/FmeshRender.h"
+#include "Layers/xrRender/SkeletonCustom.h"
+#include "Layers/xrRender/LightTrack.h"
+#include "Layers/xrRender/dxRenderDeviceRender.h"
+#include "Layers/xrRender/RenderInterfaceShared.h"
+#include "xrCore/git_version.h"
+#include "xrEngine/IGame_Actor.h"
+#include "Layers/xrRender/FTreeVisual_Prototype.h"
 using namespace R_dsgraph;
 
 CRender RImplementation;

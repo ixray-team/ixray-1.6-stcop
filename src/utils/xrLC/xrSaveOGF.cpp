@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "Build.h"
 #include "OGF_Face.h"
-#include "../../xrCore/FormatParsers/LevelGeom/GeomIO.h"
-#include "../xrForms/CompilersUI.h"
-#include "src/utils/xrLC_Light/xrMU_Model.h"
+#include "xrCore/FormatParsers/LevelGeom/GeomIO.h"
+#include "utils/xrForms/CompilersUI.h"
+#include "utils/xrLC_Light/xrMU_Model.h"
 
 SWIContainer g_SWI,x_SWI;
 VBContainer g_VB,x_VB;

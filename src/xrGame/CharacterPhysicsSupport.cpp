@@ -5,15 +5,13 @@
 #include "Hit.h"
 #include "PHDestroyable.h"
 #include "PHMovementControl.h"
-#include "Creature.h"
 
-#include "../Include/xrRender/KinematicsAnimated.h"
+#include "Include/xrRender/KinematicsAnimated.h"
 
-#include "../xrPhysics/PhysicsShell.h"
-#include "../xrPhysics/IActivationShape.h"
-#include "../xrPhysics/Geometry.h"
-#include "../xrPhysics/IPHCapture.h"
-#include "../xrPhysics/IPHWorld.h"
+#include "xrPhysics/PhysicsShell.h"
+#include "xrPhysics/IActivationShape.h"
+#include "xrPhysics/Geometry.h"
+#include "xrPhysics/IPHWorld.h"
 
 #include "ik/IKLimbsController.h"
 #include "Actor.h"
@@ -21,11 +19,10 @@
 #include "imotion_position.h"
 #include "animation_movement_controller.h"
 #include "xrServer_Object_Base.h"
-#include "stalker_animation_manager.h"
 #include "InventoryOwner.h"
 #include "Inventory.h"
 #include "stalker_movement_manager_smart_cover.h"
-#include "src/xrPhysics/PHShell.h"
+#include "xrPhysics/PHShell.h"
 
 #ifdef DEBUG
 #	include "PHDebug.h"

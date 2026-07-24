@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "particle_actions_collection.h"
 #include "particle_holder.h"
-#include "src/xrGame/alife_object_registry.h"
+#include "xrGame/alife_object_registry.h"
 
 using namespace PAPI;
 static constexpr u32 Block = 64;

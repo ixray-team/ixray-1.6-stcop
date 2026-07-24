@@ -363,8 +363,8 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 	//IReader* Geom = new IReader(_data, GeomChunk->length(), 0);
 
 	hdrCFORM H;
-	Geom_ch->r(&H, sizeof(hdrCFORM));
-	Fvector* verts = (Fvector*)Geom_ch->pointer();
+	GeomChunk->r(&H, sizeof(hdrCFORM));
+	Fvector* verts = (Fvector*)GeomChunk->pointer();
 	CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
 
 	Mixer::ResetZones();
@@ -434,7 +434,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 	std::memcpy(geom_SOM->tris.data(), tris, H.facecount);
 	geom_SOM->build_simple();
 
-	geom_ch->close();
+	GeomChunk->close();
 	//geom->close();
 	//xr_free(_data);
 }	

@@ -4,7 +4,7 @@
 #include "xrDeflector.h"
 #include "xrLC_GlobalData.h"
 #include "Lightmap.h"
-#include "src/utils/xrLC/Build.h"
+#include "utils/xrLC/Build.h"
 
 volatile u32					dwInvalidFaces;//= 0;
 u32		InvalideFaces()

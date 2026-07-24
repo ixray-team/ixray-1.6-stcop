@@ -17,6 +17,7 @@ list(APPEND MPCF_SRC_FILES ${MPCF_SOURCE_ALL_FILES})
 add_executable(mp_configs_verifyer ${MPCF_SRC_FILES})
 target_include_directories(mp_configs_verifyer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(mp_configs_verifyer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
+target_include_directories(mp_configs_verifyer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 
 # Project defines
 target_compile_definitions(mp_configs_verifyer PRIVATE MPCF_EXPORTS)

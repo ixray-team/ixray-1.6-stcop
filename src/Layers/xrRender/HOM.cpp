@@ -5,10 +5,9 @@
 #include "stdafx.h"
 #include "HOM.h"
 
-#include "../../xrEngine/GameFont.h"
+#include "xrEngine/GameFont.h"
 
-#include "dxRenderDeviceRender.h"
-#include "src/xrCore/Collision/override/Model.h"
+#include "xrCore/Collision/override/Model.h"
 
 float	psOSSR		= .001f;
 
