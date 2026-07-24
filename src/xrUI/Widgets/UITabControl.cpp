@@ -133,10 +133,18 @@ void CUITabControl::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			{
 				m_sPushedId = m_TabsArr[i]->m_btn_id;
 				if (m_sPrevPushedId == m_sPushedId)
-					return;
-                
+				{
+					if (!m_bAllowReselect)
+					{
+						return;
+					}
+
+					OnTabChange(m_sPushedId, m_sPrevPushedId);
+					break;
+				}
+
 				OnTabChange(m_sPushedId, m_sPrevPushedId);
-				m_sPrevPushedId = m_sPushedId;							
+				m_sPrevPushedId = m_sPushedId;
 				break;
 			}
 		}

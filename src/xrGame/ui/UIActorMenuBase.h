@@ -197,7 +197,26 @@ protected:
 	bool						AllowItemDrops				(EDDListType from, EDDListType to);
 	void						UpdateGamepadLegend			();
 
+	enum ESortTabsLayoutSlot : u8
+	{
+		eSortTabsInventory = 0,
+		eSortTabsUpgrade,
+		eSortTabsTradeActor,
+		eSortTabsTradePartner,
+		eSortTabsDeadBody,
+		eSortTabsLayoutCount
+	};
+
 	EInventorySortCategory		GetPlayerSortCategory		() const;
+	EInventoryOrderMode			GetPlayerOrderMode			() const;
+	ESortTabsLayoutSlot			GetActiveBagListSlot		() const;
+	void						PrepareBagItemList			(TIItemContainer& items, ESortTabsLayoutSlot slot) const;
+	bool						CycleActiveOrderOption		(ESortTabsLayoutSlot slot);
+	void						UpdateOrderTabCaption		(ESortTabsLayoutSlot slot) const;
+	void						ApplySortForSlot			(ESortTabsLayoutSlot sortSlot);
+	virtual void				UpdateActorBagList			() {}
+	virtual void				UpdateTradeActorBagList		() {}
+	virtual void				UpdateTradePartnerBagList	() {}
 	virtual bool				ShouldPutArtefactsToBag		() { return false; }
 
 	void						OnPressUserKey				();
@@ -209,10 +228,20 @@ protected:
 	eUIDirection4				GetNaviDirection			(CUIWindow* pWndFrom, CUIWindow* pWndTo);
 	void						UpdateSortTabsLayout		();
 	void						ShowSortTabsForCurrentMode	();
+	void						ApplySortTabCaptions		(CUITabControl* tabControl) const;
+	void						ApplySortTabCaptions		(CUITabControl* tabControl, EInventorySortSystem system) const;
 	CUITabControl*				GetActiveSortTabControl		() const;
 	bool						ProcessSortTabKeyboardSwitch(int dik, EUIMessages keyboard_action);
 	virtual bool				AnyInfoWindowOpen			() const { return false; }
 			void				CheckSelectors				();
+
+	u8							GetActiveSortSystemIndex	() const;
+	CUITabControl*				GetSortTabControl			(ESortTabsLayoutSlot slot) const;
+	CUITabControl*				GetSortTabControl			(EInventorySortSystem system, ESortTabsLayoutSlot slot) const;
+	void						HideAllSortTabs			();
+	void						SetInventorySortSystem		(EInventorySortSystem system);
+	void						SetInventorySortSystemScript(LPCSTR system);
+	LPCSTR						GetInventorySortSystemScript() const;
 
 	EMenuMode					m_currMenuMode = mmUndefined;
 	CUIItemDropAmountWnd*		m_pItemDropAmountWnd = nullptr;
@@ -237,21 +266,16 @@ protected:
 	xr_vector<CUIStatic*>		m_belt_list_over;
 	
 	CInventorySorter*			m_pInventorySorter = nullptr;
-	enum ESortTabsLayoutSlot : u8
-	{
-		eSortTabsInventory = 0,
-		eSortTabsUpgrade,
-		eSortTabsTradeActor,
-		eSortTabsTradePartner,
-		eSortTabsDeadBody,
-		eSortTabsLayoutCount
-	};
-	CUITabControl*				m_sortTabControl[eSortTabsLayoutCount] = {};
-	Fvector2					m_sortTabsLayoutPos[eSortTabsLayoutCount];
-	Fvector2					m_sortTabsLayoutSize[eSortTabsLayoutCount];
-	bool						m_sortTabsLayoutDefined[eSortTabsLayoutCount] = {};
+	// [0] = categories, [1] = ordering
+	CUITabControl*				m_sortTabControl[2][eSortTabsLayoutCount] = {};
+	Fvector2					m_sortTabsLayoutPos[2][eSortTabsLayoutCount];
+	Fvector2					m_sortTabsLayoutSize[2][eSortTabsLayoutCount];
+	bool						m_sortTabsLayoutDefined[2][eSortTabsLayoutCount] = {};
 	shared_str					m_sortCategoryId[eSortTabsLayoutCount];
 	EInventorySortCategory		m_sortCategory[eSortTabsLayoutCount] = {};
+	shared_str					m_orderModeId[eSortTabsLayoutCount];
+	EInventoryOrderMode			m_orderMode[eSortTabsLayoutCount] = {};
+	SInventoryOrderOptions		m_orderOptions[eSortTabsLayoutCount] = {};
 
 	u32							m_trade_partner_inventory_state = 0;
 	

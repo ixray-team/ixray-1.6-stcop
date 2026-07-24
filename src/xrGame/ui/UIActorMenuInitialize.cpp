@@ -308,62 +308,132 @@ void CUIActorMenu::Construct()
 	}
 
 	m_pInventorySorter					= new CInventorySorter();
-	m_pInventorySorter->Initialize();
 
-	if (uiXml.NavigateToNode("inventory_sort_tabs", 0))
+	const struct SSortTabsLayoutNode
 	{
-		constexpr const char* kBaseSortTabsNode = "inventory_sort_tabs";
+		ESortTabsLayoutSlot slot;
+		const char* node;
+		const char* windowName;
+	};
 
-		const struct SSortTabsLayoutNode
-		{
-			ESortTabsLayoutSlot slot;
-			const char* node;
-			const char* windowName;
-		} layoutNodes[] = {
-			{ eSortTabsInventory, "inventory_sort_tabs", "inventory_sort_tabs" },
-			{ eSortTabsUpgrade, "inventory_sort_tabs_container_upgrade", "inventory_sort_tabs_container_upgrade" },
-			{ eSortTabsTradeActor, "inventory_sort_tabs_container_trade_actor_bag", "inventory_sort_tabs_container_trade_actor_bag" },
-			{ eSortTabsTradePartner, "inventory_sort_tabs_container_trade_partner_bag", "inventory_sort_tabs_container_trade_partner_bag" },
-			{ eSortTabsDeadBody, "inventory_sort_tabs_container_deadbody_bag", "inventory_sort_tabs_container_deadbody_bag" }
-		};
+	const SSortTabsLayoutNode layoutNodesCategories[] = {
+		{ eSortTabsInventory, "inventory_sort_tabs", "inventory_sort_tabs" },
+		{ eSortTabsUpgrade, "inventory_sort_tabs_container_upgrade", "inventory_sort_tabs_container_upgrade" },
+		{ eSortTabsTradeActor, "inventory_sort_tabs_container_trade_actor_bag", "inventory_sort_tabs_container_trade_actor_bag" },
+		{ eSortTabsTradePartner, "inventory_sort_tabs_container_trade_partner_bag", "inventory_sort_tabs_container_trade_partner_bag" },
+		{ eSortTabsDeadBody, "inventory_sort_tabs_container_deadbody_bag", "inventory_sort_tabs_container_deadbody_bag" }
+	};
 
-		for (const SSortTabsLayoutNode& layoutNode : layoutNodes)
+	const SSortTabsLayoutNode layoutNodesOrdering[] = {
+		{ eSortTabsInventory, "inventory_sort_order_tabs", "inventory_sort_order_tabs" },
+		{ eSortTabsUpgrade, "inventory_sort_order_tabs_container_upgrade", "inventory_sort_order_tabs_container_upgrade" },
+		{ eSortTabsTradeActor, "inventory_sort_order_tabs_container_trade_actor_bag", "inventory_sort_order_tabs_container_trade_actor_bag" },
+		{ eSortTabsTradePartner, "inventory_sort_order_tabs_container_trade_partner_bag", "inventory_sort_order_tabs_container_trade_partner_bag" },
+		{ eSortTabsDeadBody, "inventory_sort_order_tabs_container_deadbody_bag", "inventory_sort_order_tabs_container_deadbody_bag" }
+	};
+
+	const struct SSortTabsSystemInit
+	{
+		EInventorySortSystem system;
+		u8 systemIndex;
+		const char* baseSortTabsNode;
+		const SSortTabsLayoutNode* layoutNodes;
+		u32 layoutNodesCount;
+	};
+
+	const SSortTabsSystemInit systemsToInit[] = {
 		{
-			m_sortCategory[layoutNode.slot] = EInventorySortCategory::All;
-			m_sortCategoryId[layoutNode.slot] = "";
+			EInventorySortSystem::Categories,
+			0,
+			"inventory_sort_tabs",
+			layoutNodesCategories,
+			static_cast<u32>(std::size(layoutNodesCategories))
+		},
+		{
+			EInventorySortSystem::Ordering,
+			1,
+			"inventory_sort_order_tabs",
+			layoutNodesOrdering,
+			static_cast<u32>(std::size(layoutNodesOrdering))
+		}
+	};
+
+	for (const SSortTabsSystemInit& systemInit : systemsToInit)
+	{
+		if (!uiXml.NavigateToNode(systemInit.baseSortTabsNode, 0))
+		{
+			continue;
+		}
+
+		for (u32 layoutIndex = 0; layoutIndex < systemInit.layoutNodesCount; ++layoutIndex)
+		{
+			const SSortTabsLayoutNode& layoutNode = systemInit.layoutNodes[layoutIndex];
+			const u8 systemIndex = systemInit.systemIndex;
+
+			if (systemInit.system == EInventorySortSystem::Ordering)
+			{
+				m_orderMode[layoutNode.slot] = EInventoryOrderMode::General;
+				m_orderModeId[layoutNode.slot] = "";
+				m_orderOptions[layoutNode.slot] = {};
+				m_orderOptions[layoutNode.slot].weightDesc = m_pInventorySorter->IsWeightDescending();
+				m_orderOptions[layoutNode.slot].conditionDesc = m_pInventorySorter->IsConditionDescending();
+				m_orderOptions[layoutNode.slot].costDesc = m_pInventorySorter->IsCostDescending();
+				m_orderOptions[layoutNode.slot].noveltyDesc = m_pInventorySorter->IsNoveltyDescending();
+				m_orderOptions[layoutNode.slot].typeCycle = 0;
+			}
+			else
+			{
+				m_sortCategory[layoutNode.slot] = EInventorySortCategory::All;
+				m_sortCategoryId[layoutNode.slot] = "";
+			}
 
 			if (layoutNode.slot == eSortTabsInventory)
 			{
-				m_sortTabsLayoutPos[layoutNode.slot] = Fvector2().set(uiXml.ReadAttribFlt(kBaseSortTabsNode, 0, "x", 0.0f),
-					uiXml.ReadAttribFlt(kBaseSortTabsNode, 0, "y", 0.0f));
-				m_sortTabsLayoutSize[layoutNode.slot] = Fvector2().set(uiXml.ReadAttribFlt(kBaseSortTabsNode, 0, "width", 0.0f),
-					uiXml.ReadAttribFlt(kBaseSortTabsNode, 0, "height", 0.0f));
-				m_sortTabsLayoutDefined[layoutNode.slot] = true;
+				m_sortTabsLayoutPos[systemIndex][layoutNode.slot] = Fvector2().set(
+					uiXml.ReadAttribFlt(systemInit.baseSortTabsNode, 0, "x", 0.0f),
+					uiXml.ReadAttribFlt(systemInit.baseSortTabsNode, 0, "y", 0.0f));
+				m_sortTabsLayoutSize[systemIndex][layoutNode.slot] = Fvector2().set(
+					uiXml.ReadAttribFlt(systemInit.baseSortTabsNode, 0, "width", 0.0f),
+					uiXml.ReadAttribFlt(systemInit.baseSortTabsNode, 0, "height", 0.0f));
+				m_sortTabsLayoutDefined[systemIndex][layoutNode.slot] = true;
 			}
 			else if (uiXml.NavigateToNode(layoutNode.node, 0))
 			{
-				m_sortTabsLayoutPos[layoutNode.slot].x = uiXml.ReadAttribFlt(layoutNode.node, 0, "x", 0.0f);
-				m_sortTabsLayoutPos[layoutNode.slot].y = uiXml.ReadAttribFlt(layoutNode.node, 0, "y", 0.0f);
-				m_sortTabsLayoutSize[layoutNode.slot].x = uiXml.ReadAttribFlt(layoutNode.node, 0, "width", 0.0f);
-				m_sortTabsLayoutSize[layoutNode.slot].y = uiXml.ReadAttribFlt(layoutNode.node, 0, "height", 0.0f);
-				m_sortTabsLayoutDefined[layoutNode.slot] = true;
+				m_sortTabsLayoutPos[systemIndex][layoutNode.slot].x = uiXml.ReadAttribFlt(layoutNode.node, 0, "x", 0.0f);
+				m_sortTabsLayoutPos[systemIndex][layoutNode.slot].y = uiXml.ReadAttribFlt(layoutNode.node, 0, "y", 0.0f);
+				m_sortTabsLayoutSize[systemIndex][layoutNode.slot].x = uiXml.ReadAttribFlt(layoutNode.node, 0, "width", 0.0f);
+				m_sortTabsLayoutSize[systemIndex][layoutNode.slot].y = uiXml.ReadAttribFlt(layoutNode.node, 0, "height", 0.0f);
+				m_sortTabsLayoutDefined[systemIndex][layoutNode.slot] = true;
 			}
 			else
 			{
 				continue;
 			}
 
-			m_sortTabControl[layoutNode.slot] = new CUITabControl();
-			m_sortTabControl[layoutNode.slot]->SetAutoDelete(true);
-			AttachChild(m_sortTabControl[layoutNode.slot]);
-			CUIXmlInit::InitTabControl(uiXml, kBaseSortTabsNode, 0, m_sortTabControl[layoutNode.slot]);
-			m_sortTabControl[layoutNode.slot]->SetWindowName(layoutNode.windowName);
-			m_sortTabControl[layoutNode.slot]->SetWndPos(m_sortTabsLayoutPos[layoutNode.slot]);
-			m_sortTabControl[layoutNode.slot]->SetWndSize(m_sortTabsLayoutSize[layoutNode.slot]);
-			m_sortTabControl[layoutNode.slot]->Show(false);
-			m_sortTabControl[layoutNode.slot]->Enable(false);
-			Register(m_sortTabControl[layoutNode.slot]);
+			m_sortTabControl[systemIndex][layoutNode.slot] = new CUITabControl();
+			m_sortTabControl[systemIndex][layoutNode.slot]->SetAutoDelete(true);
+			AttachChild(m_sortTabControl[systemIndex][layoutNode.slot]);
+			CUIXmlInit::InitTabControl(uiXml, systemInit.baseSortTabsNode, 0, m_sortTabControl[systemIndex][layoutNode.slot]);
+			m_sortTabControl[systemIndex][layoutNode.slot]->SetWindowName(layoutNode.windowName);
+			m_sortTabControl[systemIndex][layoutNode.slot]->SetWndPos(m_sortTabsLayoutPos[systemIndex][layoutNode.slot]);
+			m_sortTabControl[systemIndex][layoutNode.slot]->SetWndSize(m_sortTabsLayoutSize[systemIndex][layoutNode.slot]);
+			m_sortTabControl[systemIndex][layoutNode.slot]->Show(false);
+			m_sortTabControl[systemIndex][layoutNode.slot]->Enable(false);
+			if (systemInit.system == EInventorySortSystem::Ordering)
+			{
+				m_sortTabControl[systemIndex][layoutNode.slot]->SetAllowReselect(true);
+			}
+			Register(m_sortTabControl[systemIndex][layoutNode.slot]);
 			AddCallbackStr(layoutNode.windowName, TAB_CHANGED, CUIWndCallback::void_function(this, &CUIActorMenu::OnSortTabChanged));
+			ApplySortTabCaptions(m_sortTabControl[systemIndex][layoutNode.slot], systemInit.system);
+		}
+	}
+
+	if (m_pInventorySorter->GetSystem() == EInventorySortSystem::Ordering)
+	{
+		for (u8 i = 0; i < eSortTabsLayoutCount; ++i)
+		{
+			UpdateOrderTabCaption(static_cast<ESortTabsLayoutSlot>(i));
 		}
 	}
 
