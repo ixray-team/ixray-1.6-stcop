@@ -96,6 +96,11 @@ void CUIRadialMenu::Init(CUIXml* pXml)
 	selected_radius_factor		= pXml->ReadAttribFlt(pPath, 0, "selected_radius_factor", 0.0f);
 	sector = (2 * M_PI) / sectors_count - gap;
 
+	textureDefault = pXml->Read("default_arc:texture", 0, nullptr);
+	textureSelected = pXml->Read("selected_arc:texture", 0, nullptr);
+	textureFocused = pXml->Read("focused_arc:texture", 0, nullptr);
+	textureFocusedSelected = pXml->Read("focused_and_selected_arc:texture", 0, nullptr);
+
 	//read slots
 	XML_NODE* node = pXml->NavigateToNode(pPath, 0);
 	pXml->SetLocalRoot(node);
@@ -104,8 +109,14 @@ void CUIRadialMenu::Init(CUIXml* pXml)
 		int slotId = pXml->ReadAttribInt("slot", i, "id", 0);
 		slotsInSectors.push_back((u32)slotId);
 
-		CUI3dStatic* st = new CUI3dStatic();
-		slotIcons.push_back(st);
+		CUIStatic* back = new CUIStatic();
+		back->InitTexture(textureDefault.c_str());
+		back->SetStretchTexture(true);
+		back->EnableHeading(true);
+		slotBackgrounds.push_back(back);
+
+		CUI3dStatic* icon = new CUI3dStatic();
+		slotIcons.push_back(icon);
 	}
 
 	sector_inner_side_color			= CUIXmlInit::GetColor(*pXml, "sector_inner_side_color", 0, 0x0);
