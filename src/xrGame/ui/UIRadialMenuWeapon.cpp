@@ -153,16 +153,45 @@ void	CUIRadialMenuWeapon::Draw()
 		const u32 clrSlotIcon = 0xAAFFFFFF;
 		const u32 clrSlotIconBlocked = 0x55FFFFFF;
 
-		for (int i = 0; i < sectors_count; ++i) 
+		for (int i = 0; i < sectors_count; ++i)
 		{
-			CInventoryItem *item = nullptr;
-			u32 slotId = this->GetSlotIdInSector(i);
+			int backIterator = sectors_count - i - 3;
+			if (backIterator < 0)
+			{
+				backIterator += sectors_count;
+			}
+			float angle_back = PI_MUL_2 * (float(backIterator) / float(sectors_count));
+
+			Fvector2 backSize{240.f, 240.f};
+			slotBackgrounds[backIterator]->SetWndSize(backSize);
+
+			Fvector2 pivot{slotBackgrounds[backIterator]->GetWidth() / 2.f, slotBackgrounds[backIterator]->GetHeight() * 1.5f};
+			Fvector2 offset{UI_BASE_WIDTH, UI_BASE_HEIGHT};
+			offset.mad(offset, pivot, -2.0f);
+			offset.div(2.0f);
+
+			slotBackgrounds[backIterator]->SetHeadingPivot(pivot, offset, false);
+			slotBackgrounds[backIterator]->SetHeading(angle_back);
+
+			CInventoryItem* item = nullptr;
+			u32 slotId = GetSlotIdInSector(i);
 			u32 color1 = sector_inner_side_color;
 
+			shared_str backTexture = textureDefault;
+			bool isSelected = selected_index == i;
 			if (slotId == NO_ACTIVE_SLOT) // Empty hands
 			{
 				if (activeSlot == NO_ACTIVE_SLOT && (!dev || !dev->IsWorking()))
-					color1 = selected_color;
+				{
+					if (isSelected)
+					{
+						backTexture = textureFocusedSelected;
+					}
+					else
+					{
+						backTexture = textureFocused;
+					}
+				}
 			}
 			else
 			{
@@ -172,15 +201,42 @@ void	CUIRadialMenuWeapon::Draw()
 					if (slotId == DEVICE_SLOT)
 					{
 						if (dev->IsWorking())
-							color1 = selected_color;
+						{
+							if (isSelected)
+							{
+								backTexture = textureFocusedSelected;
+							}
+							else
+							{
+								backTexture = textureFocused;
+							}
+						}
 					}
 					else if (slotId == activeSlot)
-						color1 = selected_color;
+					{
+						if (isSelected)
+						{
+							backTexture = textureFocusedSelected;
+						}
+						else
+						{
+							backTexture = textureFocused;
+						}
+					}
 				}
 			}
-
-			// Sector backpad
-			draw_arc(*crosshair_shader, center_x, center_y, radius, inner_radius, current_angle, current_angle + sector, color1, sector_outer_side_color);
+			bool isBlocked = false;
+			if (slotId != NO_ACTIVE_SLOT)
+			{
+				CInventoryItem* item = inventory.ItemFromSlot(slotId);
+				isBlocked = item && inventory.IsSlotBlocked(item);
+			}
+			if (backTexture == textureDefault && isSelected && !isBlocked)
+			{
+				backTexture = textureSelected;
+			}
+			slotBackgrounds[backIterator]->InitTexture(backTexture.c_str());
+			slotBackgrounds[backIterator]->Draw();
 			current_angle += sector + gap;
 			
 			if (item)
@@ -190,7 +246,7 @@ void	CUIRadialMenuWeapon::Draw()
 				{
 					// Draw item icon
 					TexturedRectDrawData trdd;
-					trdd.width = trdd.height = radius / 4;
+					trdd.width = trdd.height = radius / 3;
 					trdd.width *= UI().get_current_kx();
 
 					slotIcons[i]->SetShader(InventoryUtilities::GetEquipmentIconsShader(item->IconsTexture.c_str()));
@@ -244,7 +300,7 @@ void	CUIRadialMenuWeapon::Draw()
 			{
 				// Draw item icon
 				TexturedRectDrawData trdd;
-				trdd.width = trdd.height = radius / 4;
+				trdd.width = trdd.height = radius / 3;
 				trdd.width *= UI().get_current_kx();
 
 				slotIcons[i]->InitTexture(emptyIconName.c_str());
@@ -258,27 +314,6 @@ void	CUIRadialMenuWeapon::Draw()
 
 				DrawItem(slotIcons[i], trdd, clrSlotIcon);
 			}
-		}
-
-		// Draw current sector selector
-		if (selected_index != -1)
-		{
-			float selected_angle = starting_angle + selected_index * (2 * M_PI / sectors_count);
-			u32 slotId = this->GetSlotIdInSector(selected_index);
-
-			u32 clr = deselected_color;
-			if (slotId == NO_ACTIVE_SLOT) // Empty hands
-			{
-				clr = selected_color;
-			}
-			else
-			{
-				CInventoryItem *item = inventory.ItemFromSlot(slotId);
-				if (item && !inventory.IsSlotBlocked(item))
-					clr = selected_color;
-			}
-
-			draw_arc(*crosshair_shader, center_x, center_y, selected_radius, inner_radius, selected_angle, selected_angle + sector, clr, clr);
 		}
 	}
 }
