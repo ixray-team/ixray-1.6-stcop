@@ -16,8 +16,328 @@
 #include "Library.h"
 #include "EditObject.h"
 #include "ui_main.h"
+#include "EditorRenderBackend.h"
 
 ECORE_API CDrawUtilities DU_impl;
+
+namespace
+{
+constexpr std::uint64_t CaptureFnvOffset = 14695981039346656037ull;
+constexpr std::uint64_t CaptureFnvPrime = 1099511628211ull;
+
+void HashCapturedBytes(std::uint64_t& Hash, const void* Data,
+	const std::size_t Size)
+{
+	const auto* Bytes = static_cast<const std::uint8_t*>(Data);
+	for (std::size_t Index = 0; Index < Size; ++Index)
+	{
+		Hash ^= Bytes[Index];
+		Hash *= CaptureFnvPrime;
+	}
+}
+
+void HashCapturedString(std::uint64_t& Hash, const std::string_view Text)
+{
+	HashCapturedBytes(Hash, Text.data(), Text.size());
+	const std::uint8_t Separator = 0;
+	HashCapturedBytes(Hash, &Separator, sizeof(Separator));
+}
+
+[[nodiscard]] std::string FindCapturedShaderTexture(const ref_shader& Shader)
+{
+	if (!Shader)
+		return {};
+	for (const ref_selement& Element : Shader->E)
+	{
+		if (!Element)
+			continue;
+		for (const ref_pass& Pass : Element->passes)
+		{
+			if (!Pass || !Pass->T)
+				continue;
+			for (const auto& [Stage, Texture] : *Pass->T)
+			{
+				(void)Stage;
+				if (Texture && Texture->cName.size() != 0 &&
+					xr_strcmp(*Texture->cName, "$null") != 0)
+				{
+					return *Texture->cName;
+				}
+			}
+		}
+	}
+	return {};
+}
+
+[[nodiscard]] std::uint32_t PackCapturedVertexColor(const u32 Argb)
+{
+	// NRI consumes this field as RGBA8_UNORM; pack bytes in memory order
+	// instead of forwarding D3D's integer ARGB representation.
+	return ((Argb >> 16u) & 0xffu) |
+		(((Argb >> 8u) & 0xffu) << 8u) |
+		((Argb & 0xffu) << 16u) |
+		(((Argb >> 24u) & 0xffu) << 24u);
+}
+
+void CaptureEditorEntityMesh(const u32 Color, const ref_shader& Shader,
+	const Fmatrix& LocalToWorld)
+{
+	if (!IsEditorDebugDrawCaptureActive())
+		return;
+
+	std::string TextureName = FindCapturedShaderTexture(Shader);
+	const bool HasIconTexture = !TextureName.empty() && EDevice &&
+		Shader != EDevice->m_WireShader;
+	if (TextureName.empty())
+		TextureName = "textures/default/default_white";
+	const std::string ShaderName = HasIconTexture
+		? "editor\\spawn_icon" : "vertex";
+
+	std::uint64_t MaterialHash = CaptureFnvOffset;
+	HashCapturedString(MaterialHash, ShaderName);
+	HashCapturedString(MaterialHash, TextureName);
+	const std::uint32_t TwoSided = static_cast<std::uint32_t>(
+		EEditorMaterialSlotFlags::TwoSided);
+	HashCapturedBytes(MaterialHash, &TwoSided, sizeof(TwoSided));
+	if (MaterialHash == 0)
+		MaterialHash = 1;
+
+	std::uint64_t MeshHash = CaptureFnvOffset;
+	HashCapturedString(MeshHash, "legacy-editor-entity-quad-v1");
+	HashCapturedBytes(MeshHash, &MaterialHash, sizeof(MaterialHash));
+	HashCapturedBytes(MeshHash, &Color, sizeof(Color));
+	if (MeshHash == 0)
+		MeshHash = 1;
+
+	std::uint64_t ObjectHash = static_cast<std::uint64_t>(
+		reinterpret_cast<std::uintptr_t>(GetEditorTransientObjectIdentity()));
+	if (ObjectHash == 0)
+	{
+		ObjectHash = CaptureFnvOffset;
+		HashCapturedBytes(ObjectHash, &MeshHash, sizeof(MeshHash));
+		HashCapturedBytes(ObjectHash, LocalToWorld.mm, sizeof(LocalToWorld.mm));
+	}
+	if (ObjectHash == 0)
+		ObjectHash = 1;
+
+	FEditorTransientMeshCapture Capture;
+	Capture.MeshId = {MeshHash};
+	Capture.ObjectId = {ObjectHash};
+	Capture.MaterialSlot = {MaterialHash};
+	Capture.Revision = MeshHash;
+	Capture.ShaderName = ShaderName;
+	Capture.TextureName = std::move(TextureName);
+	Capture.SurfaceName = "Legacy editor entity";
+	Capture.MaterialFlags = EEditorMaterialSlotFlags::TwoSided;
+	Capture.InstanceFlags = EEditorSceneInstanceFlags::TwoSided;
+	std::copy_n(LocalToWorld.mm, Capture.LocalToWorld.size(),
+		Capture.LocalToWorld.begin());
+
+	const std::uint32_t PackedColor = PackCapturedVertexColor(Color);
+	auto AddVertex = [&](const std::array<float, 3>& Position,
+		const std::array<float, 2>& TexCoord)
+	{
+		FEditorStaticMeshVertex& Vertex = Capture.Vertices.emplace_back();
+		Vertex.Position = Position;
+		Vertex.Normal = {1.0f, 0.0f, 0.0f};
+		Vertex.Tangent = {0.0f, 0.0f, 1.0f, 1.0f};
+		Vertex.TexCoord = TexCoord;
+		Vertex.Color = PackedColor;
+	};
+	AddVertex({0.0f, 1.0f, 0.0f}, {0.0f, 0.0f});
+	AddVertex({0.0f, 1.0f, 0.5f}, {1.0f, 0.0f});
+	AddVertex({0.0f, 0.5f, 0.5f}, {1.0f, 1.0f});
+	AddVertex({0.0f, 0.5f, 0.0f}, {0.0f, 1.0f});
+	Capture.Indices = {0, 1, 2, 0, 2, 3};
+	CaptureEditorTransientMesh(std::move(Capture));
+}
+
+[[nodiscard]] FEditorDebugVertex MakeCapturedDebugVertex(
+	const Fvector& Position, const u32 Color, const Fmatrix* World = nullptr)
+{
+	Fvector Transformed = Position;
+	if (World)
+		World->transform_tiny(Transformed);
+	const float Scale = 1.0f / 255.0f;
+	const u32 Alpha = Color >> 24u;
+	return {{Transformed.x, Transformed.y, Transformed.z},
+		{static_cast<float>((Color >> 16u) & 0xffu) * Scale,
+			static_cast<float>((Color >> 8u) & 0xffu) * Scale,
+			static_cast<float>(Color & 0xffu) * Scale,
+			Alpha == 0 ? 1.0f : static_cast<float>(Alpha) * Scale}};
+}
+
+[[nodiscard]] FEditorOverlayVertex MakeCapturedOverlayVertex(
+	const float PixelX, const float PixelY, const u32 Color)
+{
+	const float Width = EDevice && EDevice->TargetWidth != 0
+		? static_cast<float>(EDevice->TargetWidth) : 1.0f;
+	const float Height = EDevice && EDevice->TargetHeight != 0
+		? static_cast<float>(EDevice->TargetHeight) : 1.0f;
+	const float Scale = 1.0f / 255.0f;
+	const u32 Alpha = Color >> 24u;
+	return {{PixelX * (2.0f / Width) - 1.0f,
+		1.0f - PixelY * (2.0f / Height), 0.0f},
+		{static_cast<float>((Color >> 16u) & 0xffu) * Scale,
+			static_cast<float>((Color >> 8u) & 0xffu) * Scale,
+			static_cast<float>(Color & 0xffu) * Scale,
+			Alpha == 0 ? 1.0f : static_cast<float>(Alpha) * Scale}};
+}
+
+[[nodiscard]] std::array<float, 4> MakeCapturedTextColor(const u32 Color)
+{
+	constexpr float Scale = 1.0f / 255.0f;
+	return {static_cast<float>((Color >> 16u) & 0xffu) * Scale,
+		static_cast<float>((Color >> 8u) & 0xffu) * Scale,
+		static_cast<float>(Color & 0xffu) * Scale,
+		static_cast<float>(Color >> 24u) * Scale};
+}
+
+void CaptureOverlayText(const float PixelX, const float PixelY,
+	const char* Text, const u32 Color, const u32 ShadowColor)
+{
+	if (!IsEditorDebugDrawCaptureActive() || !Text || !Text[0])
+		return;
+	const float Width = EDevice && EDevice->TargetWidth != 0
+		? static_cast<float>(EDevice->TargetWidth) : 1.0f;
+	const float Height = EDevice && EDevice->TargetHeight != 0
+		? static_cast<float>(EDevice->TargetHeight) : 1.0f;
+	FEditorOverlayText Captured;
+	Captured.Position = {PixelX * (2.0f / Width) - 1.0f,
+		1.0f - PixelY * (2.0f / Height)};
+	Captured.Color = MakeCapturedTextColor(Color);
+	Captured.ShadowColor = MakeCapturedTextColor(ShadowColor);
+	Captured.Text = Text;
+	CaptureEditorOverlayText(Captured);
+}
+
+void CaptureDebugLine(const FEditorDebugVertex& Start,
+	const FEditorDebugVertex& End)
+{
+	CaptureEditorDebugLine({{Start, End}});
+}
+
+void CaptureDebugTriangle(const FEditorDebugVertex& A,
+	const FEditorDebugVertex& B, const FEditorDebugVertex& C)
+{
+	CaptureEditorDebugTriangle({{A, B, C}});
+}
+
+void CaptureOverlayLine(const FEditorOverlayVertex& Start,
+	const FEditorOverlayVertex& End)
+{
+	CaptureEditorOverlayLine({{Start, End}});
+}
+
+template <typename TGetVertex>
+void CaptureDebugPrimitive(const ERHI_PRIMITIVE_TOPOLOGY Topology,
+	const std::size_t VertexCount, const bool Cycle, TGetVertex&& GetVertex)
+{
+	if (!IsEditorDebugDrawCaptureActive())
+		return;
+	switch (Topology)
+	{
+	case ERHI_PRIMITIVE_TOPOLOGY::POINT_LIST:
+		for (std::size_t Index = 0; Index < VertexCount; ++Index)
+		{
+			const FEditorDebugVertex Center = GetVertex(Index);
+			for (std::size_t Axis = 0; Axis < 3; ++Axis)
+			{
+				FEditorDebugVertex Start = Center;
+				FEditorDebugVertex End = Center;
+				Start.Position[Axis] -= 0.01f;
+				End.Position[Axis] += 0.01f;
+				CaptureDebugLine(Start, End);
+			}
+		}
+		break;
+	case ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST:
+		for (std::size_t Index = 0; Index + 1 < VertexCount; Index += 2)
+			CaptureDebugLine(GetVertex(Index), GetVertex(Index + 1));
+		break;
+	case ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP:
+		for (std::size_t Index = 0; Index + 1 < VertexCount; ++Index)
+			CaptureDebugLine(GetVertex(Index), GetVertex(Index + 1));
+		if (Cycle && VertexCount > 2)
+			CaptureDebugLine(GetVertex(VertexCount - 1), GetVertex(0));
+		break;
+	case ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST:
+		for (std::size_t Index = 0; Index + 2 < VertexCount; Index += 3)
+		{
+			CaptureDebugTriangle(GetVertex(Index), GetVertex(Index + 1),
+				GetVertex(Index + 2));
+		}
+		break;
+	case ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP:
+		for (std::size_t Index = 0; Index + 2 < VertexCount; ++Index)
+		{
+			if ((Index & 1u) == 0)
+				CaptureDebugTriangle(GetVertex(Index), GetVertex(Index + 1),
+					GetVertex(Index + 2));
+			else
+				CaptureDebugTriangle(GetVertex(Index + 1), GetVertex(Index),
+					GetVertex(Index + 2));
+		}
+		break;
+	case ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_FAN:
+		for (std::size_t Index = 1; Index + 1 < VertexCount; ++Index)
+		{
+			CaptureDebugTriangle(GetVertex(0), GetVertex(Index),
+				GetVertex(Index + 1));
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void CaptureUniformDebugPrimitive(const ERHI_PRIMITIVE_TOPOLOGY Topology,
+	const Fvector* Vertices, const std::size_t VertexCount, const u32 Color,
+	const bool Cycle, const Fmatrix* World = nullptr)
+{
+	if (!Vertices || VertexCount == 0)
+		return;
+	CaptureDebugPrimitive(Topology, VertexCount, Cycle,
+		[&](const std::size_t Index)
+		{
+			return MakeCapturedDebugVertex(Vertices[Index], Color, World);
+		});
+}
+
+void CaptureIndexedDebugPrimitive(const ERHI_PRIMITIVE_TOPOLOGY Topology,
+	const Fvector* Vertices, const std::size_t VertexCount,
+	const u32* Indices, const std::size_t IndexCount, const u32 Color,
+	const Fmatrix* World = nullptr)
+{
+	if (!Vertices || !Indices || VertexCount == 0 || IndexCount == 0)
+		return;
+	CaptureDebugPrimitive(Topology, IndexCount, false,
+		[&](const std::size_t Index)
+		{
+			const std::size_t VertexIndex = Indices[Index];
+			return VertexIndex < VertexCount
+				? MakeCapturedDebugVertex(Vertices[VertexIndex], Color, World)
+				: FEditorDebugVertex{};
+		});
+}
+
+void CaptureIndexedDebugPrimitive(const ERHI_PRIMITIVE_TOPOLOGY Topology,
+	const Fvector* Vertices, const std::size_t VertexCount,
+	const WORD* Indices, const std::size_t IndexCount, const u32 Color,
+	const Fmatrix* World = nullptr)
+{
+	if (!Vertices || !Indices || VertexCount == 0 || IndexCount == 0)
+		return;
+	CaptureDebugPrimitive(Topology, IndexCount, false,
+		[&](const std::size_t Index)
+		{
+			const std::size_t VertexIndex = Indices[Index];
+			return VertexIndex < VertexCount
+				? MakeCapturedDebugVertex(Vertices[VertexIndex], Color, World)
+				: FEditorDebugVertex{};
+		});
+}
+} // namespace
 
 #define LINE_DIVISION  32  // не меньше 6!!!!!
 // for drawing sphere
@@ -350,6 +670,7 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
     // render flagshtok
 
     const Fmatrix& world = RCache.get_xform_world();
+	CaptureEditorEntityMesh(clr, s, world);
 
     // seg 0
     p0.set(0.f, 0.f, 0.f); world.transform_tiny(p0);
@@ -525,6 +846,19 @@ void CDrawUtilities::DrawSound(const Fvector& p, float r, u32 c){
 //------------------------------------------------------------------------------
 void CDrawUtilities::DrawIdentCone	(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
 {
+	const Fmatrix& World = RCache.get_xform_world();
+	if (bWire)
+	{
+		CaptureIndexedDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+			du_cone_vertices, DU_CONE_NUMVERTEX, du_cone_lines,
+			DU_CONE_NUMLINES * 2, clr_w, &World);
+	}
+	if (bSolid)
+	{
+		CaptureIndexedDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+			du_cone_vertices, DU_CONE_NUMVERTEX, du_cone_faces,
+			DU_CONE_NUMFACES * 3, clr_s, &World);
+	}
     if (bWire){
         DU_DRAW_SH_C		(EDevice->m_WireShader, clr_w);
     	m_WireCone.Render	();
@@ -538,6 +872,19 @@ void CDrawUtilities::DrawIdentCone	(bool bSolid, bool bWire, u32 clr_s, u32 clr_
 
 void CDrawUtilities::DrawIdentSphere	(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
 {
+	const Fmatrix& World = RCache.get_xform_world();
+	if (bWire)
+	{
+		CaptureIndexedDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+			du_sphere_verticesl, DU_SPHERE_NUMVERTEXL, du_sphere_lines,
+			DU_SPHERE_NUMLINES * 2, clr_w, &World);
+	}
+	if (bSolid)
+	{
+		CaptureIndexedDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+			du_sphere_vertices, DU_SPHERE_NUMVERTEX, du_sphere_faces,
+			DU_SPHERE_NUMFACES * 3, clr_s, &World);
+	}
     if (bWire){
         DU_DRAW_SH_C	(EDevice->m_WireShader,clr_w);
      	m_WireSphere.Render	();
@@ -551,6 +898,19 @@ void CDrawUtilities::DrawIdentSphere	(bool bSolid, bool bWire, u32 clr_s, u32 cl
 
 void CDrawUtilities::DrawIdentSpherePart(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
 {
+	const Fmatrix& World = RCache.get_xform_world();
+	if (bWire)
+	{
+		CaptureIndexedDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+			du_sphere_part_vertices, DU_SPHERE_PART_NUMVERTEX,
+			du_sphere_part_lines, DU_SPHERE_PART_NUMLINES * 2, clr_w, &World);
+	}
+	if (bSolid)
+	{
+		CaptureIndexedDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+			du_sphere_part_vertices, DU_SPHERE_PART_NUMVERTEX,
+			du_sphere_part_faces, DU_SPHERE_PART_NUMFACES * 3, clr_s, &World);
+	}
     if (bWire){
         DU_DRAW_SH_C	(EDevice->m_WireShader,clr_w);
      	m_WireSpherePart.Render	();
@@ -564,6 +924,19 @@ void CDrawUtilities::DrawIdentSpherePart(bool bSolid, bool bWire, u32 clr_s, u32
 
 void CDrawUtilities::DrawIdentCylinder	(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
 {
+	const Fmatrix& World = RCache.get_xform_world();
+	if (bWire)
+	{
+		CaptureIndexedDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+			du_cylinder_vertices, DU_CYLINDER_NUMVERTEX, du_cylinder_lines,
+			DU_CYLINDER_NUMLINES * 2, clr_w, &World);
+	}
+	if (bSolid)
+	{
+		CaptureIndexedDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+			du_cylinder_vertices, DU_CYLINDER_NUMVERTEX, du_cylinder_faces,
+			DU_CYLINDER_NUMFACES * 3, clr_s, &World);
+	}
     if (bWire){
         DU_DRAW_SH_C	(EDevice->m_WireShader,clr_w);
     	m_WireCylinder.Render	();
@@ -577,6 +950,19 @@ void CDrawUtilities::DrawIdentCylinder	(bool bSolid, bool bWire, u32 clr_s, u32 
 
 void CDrawUtilities::DrawIdentBox(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
 {
+	const Fmatrix& World = RCache.get_xform_world();
+	if (bWire)
+	{
+		CaptureIndexedDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+			du_box_vertices, DU_BOX_NUMVERTEX, du_box_lines,
+			DU_BOX_NUMLINES * 2, clr_w, &World);
+	}
+	if (bSolid)
+	{
+		CaptureIndexedDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+			du_box_vertices, DU_BOX_NUMVERTEX, du_box_faces,
+			DU_BOX_NUMFACES * 3, clr_s, &World);
+	}
     if (bWire){
         DU_DRAW_SH_C	(EDevice->m_WireShader,clr_w);
     	m_WireBox.Render	();
@@ -639,6 +1025,7 @@ void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, const c
 	float s = (float)sz;
 	EDevice->mFullTransform.transform(c,p);
 	c.x = (float)iFloor(_x2real(c.x)); c.y = (float)iFloor(_y2real(-c.y));
+	CaptureOverlayText(c.x, c.y + s, caption, clr_font, 0xff000000u);
 
 	_VertexStream*	Stream	= &RCache.Vertex;
     u32 vBase;
@@ -707,6 +1094,15 @@ void CDrawUtilities::DrawLine(const Fvector& p0, const Fvector& p1, u32 c){
 void CDrawUtilities::DrawSelectionBox(const Fvector& C, const Fvector& S, u32* clr)
 {
     u32 cc=(clr)?*clr:boxcolor;
+	CaptureDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+		boxvertcount, false, [&](const std::size_t Index)
+		{
+			Fvector Position;
+			Position.mul(boxvert[Index], S);
+			Position.add(C);
+			return MakeCapturedDebugVertex(Position, cc,
+				&RCache.get_xform_world());
+		});
 
 	// fill VB
 	_VertexStream*	Stream	= &RCache.Vertex;
@@ -803,6 +1199,19 @@ void CDrawUtilities::DrawSphere(const Fmatrix& parent, const Fvector& center, fl
 void CDrawUtilities::DrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr_s, u32 clr_w, bool bSolid, bool bWire)
 {
 	_VertexStream*	Stream	= &RCache.Vertex;
+	const Fvector Vertices[] = {p0, p1, p2};
+	if (bSolid)
+	{
+		CaptureUniformDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+			Vertices, std::size(Vertices), clr_s, false,
+			&RCache.get_xform_world());
+	}
+	if (bWire)
+	{
+		CaptureUniformDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,
+			Vertices, std::size(Vertices), clr_w, true,
+			&RCache.get_xform_world());
+	}
 
     u32				vBase;
     if (bSolid)
@@ -848,6 +1257,10 @@ void CDrawUtilities::DD_DrawFace_flush(bool try_again)
 }
 void CDrawUtilities::DD_DrawFace_push(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr)
 {
+	const Fvector Vertices[] = {p0, p1, p2};
+	CaptureUniformDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+		Vertices, std::size(Vertices), clr, false,
+		&RCache.get_xform_world());
     m_DD_pv->set		(p0,clr); m_DD_pv++;
     m_DD_pv->set		(p1,clr); m_DD_pv++;
     m_DD_pv->set		(p2,clr); m_DD_pv++;
@@ -927,6 +1340,23 @@ void CDrawUtilities::DrawPlane	(const Fvector& p, const Fvector& n, const Fvecto
     mR.j                = L_up;                 mR._24          = 0;
     mR.k                = L_dir;                mR._34          = 0;
     mR.c                = p;			  		mR._44          = 1;
+	Fvector Captured[] = {{-scale.x, 0, -scale.y},
+		{-scale.x, 0, scale.y}, {scale.x, 0, scale.y},
+		{scale.x, 0, -scale.y}};
+	for (Fvector& Position : Captured)
+		mR.transform_tiny(Position);
+	if (bSolid)
+	{
+		CaptureUniformDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_FAN,
+			Captured, std::size(Captured), clr_s, false,
+			&RCache.get_xform_world());
+	}
+	if (bWire)
+	{
+		CaptureUniformDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,
+			Captured, std::size(Captured), clr_w, true,
+			&RCache.get_xform_world());
+	}
 	
 	// fill VB
 	_VertexStream*	Stream	= &RCache.Vertex;
@@ -965,6 +1395,23 @@ void CDrawUtilities::DrawPlane  (const Fvector& center, const Fvector2& scale, c
     Fmatrix M;
     M.setHPB		(rotate.y,rotate.x,rotate.z);
     M.translate_over(center);
+	Fvector Captured[] = {{-scale.x, 0, -scale.y},
+		{-scale.x, 0, scale.y}, {scale.x, 0, scale.y},
+		{scale.x, 0, -scale.y}};
+	for (Fvector& Position : Captured)
+		M.transform_tiny(Position);
+	if (bSolid)
+	{
+		CaptureUniformDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_FAN,
+			Captured, std::size(Captured), clr_s, false,
+			&RCache.get_xform_world());
+	}
+	if (bWire)
+	{
+		CaptureUniformDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,
+			Captured, std::size(Captured), clr_w, true,
+			&RCache.get_xform_world());
+	}
 	// fill VB
 	_VertexStream*	Stream	= &RCache.Vertex;
 	u32			vBase;
@@ -999,6 +1446,22 @@ void CDrawUtilities::DrawPlane  (const Fvector& center, const Fvector2& scale, c
 
 void CDrawUtilities::DrawRectangle(const Fvector& o, const Fvector& u, const Fvector& v, u32 clr_s, u32 clr_w, bool bSolid, bool bWire)
 {
+	const Fvector Captured[] = {o, Fvector().add(o, u),
+		Fvector().add(Fvector().add(o, u), v), Fvector().add(o, v)};
+	if (bSolid)
+	{
+		const Fvector Solid[] = {Captured[0], Captured[2], Captured[3],
+			Captured[0], Captured[1], Captured[2]};
+		CaptureUniformDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+			Solid, std::size(Solid), clr_s, false,
+			&RCache.get_xform_world());
+	}
+	if (bWire)
+	{
+		CaptureUniformDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,
+			Captured, std::size(Captured), clr_w, true,
+			&RCache.get_xform_world());
+	}
 	_VertexStream*	Stream	= &RCache.Vertex;
 
     u32				vBase;
@@ -1031,6 +1494,27 @@ void CDrawUtilities::DrawRectangle(const Fvector& o, const Fvector& u, const Fve
 //----------------------------------------------------
 void CDrawUtilities::DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, bool bRot45)
 {
+	if (IsEditorDebugDrawCaptureActive())
+	{
+		Fvector Captured[12] = {
+			{p.x + szx2, p.y, p.z}, {p.x - szx1, p.y, p.z},
+			{p.x, p.y + szy2, p.z}, {p.x, p.y - szy1, p.z},
+			{p.x, p.y, p.z + szz2}, {p.x, p.y, p.z - szz1}};
+		const std::size_t Count = bRot45 ? 12 : 6;
+		if (bRot45)
+		{
+			Fmatrix Rotation;
+			Rotation.setHPB(PI_DIV_4, PI_DIV_4, PI_DIV_4);
+			for (std::size_t Index = 0; Index < 6; ++Index)
+			{
+				Captured[6 + Index].sub(Captured[Index], p);
+				Rotation.transform_dir(Captured[6 + Index]);
+				Captured[6 + Index].add(p);
+			}
+		}
+		CaptureUniformDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+			Captured, Count, clr, false, &RCache.get_xform_world());
+	}
 	_VertexStream*	Stream	= &RCache.Vertex;
 	// actual rendering
 	u32			vBase;
@@ -1120,8 +1604,25 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
     r.y = (float)iFloor(_y2real(-r.y));
     n.x = (float)iFloor(_x2real(n.x)); 
     n.y = (float)iFloor(_y2real(-n.y));
-    d.x = (float)iFloor(_x2real(d.x)); 
-    d.y = (float)iFloor(_y2real(-d.y));
+	d.x = (float)iFloor(_x2real(d.x));
+	d.y = (float)iFloor(_y2real(-d.y));
+
+	if (IsEditorDebugDrawCaptureActive())
+	{
+		const FEditorOverlayVertex Center =
+			MakeCapturedOverlayVertex(c.x, c.y, 0xFF222222);
+		CaptureOverlayLine(Center, MakeCapturedOverlayVertex(d.x, d.y,
+			sel ? 0xFF0000FF : 0xFF000080));
+		CaptureOverlayLine(Center, MakeCapturedOverlayVertex(r.x, r.y,
+			sel ? 0xFFFF0000 : 0xFF800000));
+		CaptureOverlayLine(Center, MakeCapturedOverlayVertex(n.x, n.y,
+			sel ? 0xFF00FF00 : 0xFF008000));
+		const u32 ShadowColor = sel ? 0xFF000000 : 0xFF909090;
+		const u32 TextColor = sel ? 0xFFFFFFFF : 0xFF000000;
+		CaptureOverlayText(r.x, r.y, "x", TextColor, ShadowColor);
+		CaptureOverlayText(n.x, n.y, "y", TextColor, ShadowColor);
+		CaptureOverlayText(d.x, d.y, "z", TextColor, ShadowColor);
+	}
 
     u32 vBase;
 	FVF::TL* pv	= (FVF::TL*)Stream->Lock(6,vs_TL->vb_stride,vBase);
@@ -1158,6 +1659,12 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
 void CDrawUtilities::DrawGrid()
 {
 	VERIFY( EDevice->b_is_Ready );
+	CaptureDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+		m_GridPoints.size(), false, [&](const std::size_t Index)
+		{
+			return MakeCapturedDebugVertex(m_GridPoints[Index].p,
+				m_GridPoints[Index].color);
+		});
 	_VertexStream*	Stream	= &RCache.Vertex;
     u32 vBase;
 	// fill VB
@@ -1202,6 +1709,9 @@ void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector
 
 void CDrawUtilities::DrawPrimitiveL	(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, Fvector* vertices, int vc, u32 color, bool bCull, bool bCycle)
 {
+	CaptureUniformDebugPrimitive(pt, vertices,
+		vc > 0 ? static_cast<std::size_t>(vc) : 0, color, bCycle,
+		&RCache.get_xform_world());
 	// fill VB
 	_VertexStream*	Stream	= &RCache.Vertex;
 	u32			vBase, dwNeed=(bCycle)?vc+1:vc;
@@ -1224,8 +1734,17 @@ void CDrawUtilities::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY pt,
                                             const u32* ib, 
                                             const u32& ib_size, 
                                             const u32& clr_argb, 
-                                            float scale)
+											float scale)
 {
+	if (IsEditorDebugDrawCaptureActive())
+	{
+		xr_vector<Fvector> CaptureVertices(vb_size);
+		for (u32 Index = 0; Index < vb_size; ++Index)
+			CaptureVertices[Index].add(pos, Fvector().mul(vb[Index], scale));
+		CaptureIndexedDebugPrimitive(pt, CaptureVertices.data(),
+			CaptureVertices.size(), ib, ib_size, clr_argb,
+			&RCache.get_xform_world());
+	}
 	_VertexStream* Stream	= &RCache.Vertex;
 	_IndexStream*	StreamI	= &RCache.Index;
 
@@ -1267,6 +1786,13 @@ void CDrawUtilities::DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::TL
 
 void CDrawUtilities::DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::LIT* vertices, int vc, bool bCull, bool bCycle)
 {
+	CaptureDebugPrimitive(pt,
+		vc > 0 ? static_cast<std::size_t>(vc) : 0, bCycle,
+		[&](const std::size_t Index)
+		{
+			return MakeCapturedDebugVertex(vertices[Index].p,
+				vertices[Index].color, &RCache.get_xform_world());
+		});
 	// fill VB
 	_VertexStream*	Stream	= &RCache.Vertex;
 	u32			vBase, dwNeed=(bCycle)?vc+1:vc;
@@ -1319,10 +1845,11 @@ void CDrawUtilities::OutText(const Fvector& pos, const char* text, u32 color, u3
     if (w >= 0)
     {
         Device.mFullTransform.transform(p, pos);
-        p.x = (float)iFloor(_x2real(p.x));
-        p.y = (float)iFloor(_y2real(-p.y));
+		p.x = (float)iFloor(_x2real(p.x));
+		p.y = (float)iFloor(_y2real(-p.y));
+		CaptureOverlayText(p.x, p.y, text, color, shadow_color);
 
-        m_Font->SetColor(shadow_color);
+		m_Font->SetColor(shadow_color);
         m_Font->Out(p.x, p.y, (LPSTR)text);
         m_Font->SetColor(color);
         m_Font->Out(p.x - 1, p.y - 1, (LPSTR)text);
@@ -1360,11 +1887,20 @@ ECORE_API void AddCross(const Fvector& p, float szx1, float szy1, float szz1, fl
         }
     }
 
+	CaptureDebugPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+		static_cast<std::size_t>(count), false,
+		[&](const std::size_t Index)
+		{
+			return MakeCapturedDebugVertex(v[Index].p, v[Index].color);
+		});
+
     g_lineVerts.insert(g_lineVerts.end(), v, v + count);
 }
 
 ECORE_API void AddLine(const Fvector& p0, const Fvector& p1, u32 c)
 {
+	CaptureDebugLine(MakeCapturedDebugVertex(p0, c),
+		MakeCapturedDebugVertex(p1, c));
     FVF::L v;
     v.set(p0, c);
     g_lineVerts.push_back(v);

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "XRayFHierrarhyVisual.h"
 
-#include "Legacy/Scene/TLegacyScene.h"
+#include "Legacy/Scene/TiramisuLegacyScene.h"
 
 
 void CDS0_FHierrarhyVisual::Release()

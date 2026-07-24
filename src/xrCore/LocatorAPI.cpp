@@ -1456,7 +1456,8 @@ bool CLocatorAPI::check_for_file	(const char* path, const char* _fname, string_p
 	check_pathes();
 
 	// correct path
-	xr_strcpy(fname,_fname);
+	xr_strcpy(fname,
+		Platform::ValidPath(Platform::RestorePath(_fname)));
 	xr_strlwr(fname);
 	if (path&&path[0])
 		update_path(fname,path,fname);
@@ -1687,17 +1688,23 @@ CLocatorAPI::files_it CLocatorAPI::file_find_it(const char* InputPath)
 
 bool CLocatorAPI::TryLoad(const xr_string& File)
 {
-	bool Found = FS.exist(File.c_str());
+	const xr_string NormalizedFile = Platform::ValidPath(
+		Platform::RestorePath(File.c_str()));
+	bool Found = FS.exist(NormalizedFile.c_str());
 
 	if (!Found)
 	{
-		Found = std::filesystem::exists(File.c_str());
+		Found = std::filesystem::exists(NormalizedFile.c_str());
 
 		if (Found)
 		{
-			size_t FileSize = std::filesystem::file_size(File.c_str());
-			size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(File.c_str()));
-			FS.Register(File.c_str(), 0xffffffff, 0, 0, FileSize, FileSize, FileModif);
+			size_t FileSize = std::filesystem::file_size(
+				NormalizedFile.c_str());
+			size_t FileModif = xr_chrono_to_time_t(
+				std::filesystem::last_write_time(
+					NormalizedFile.c_str()));
+			FS.Register(NormalizedFile.c_str(), 0xffffffff, 0, 0,
+				FileSize, FileSize, FileModif);
 		}
 	}
 

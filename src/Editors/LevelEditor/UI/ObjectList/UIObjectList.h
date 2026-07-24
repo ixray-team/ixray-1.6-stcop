@@ -16,6 +16,7 @@ public:
 
 private:
 	void DrawObjects();
+	void DrawNativeObjects();
 
 private:
 	enum EMode
@@ -30,6 +31,7 @@ private:
 	string_path m_Filter;
 	UIObjectListItem m_Root;
 	UIObjectListItem* m_LastSelected;
+	xr_string m_LastNativeSelected;
 	xrCriticalSection LoaderCS;
 
 	static UIObjectList* Form;

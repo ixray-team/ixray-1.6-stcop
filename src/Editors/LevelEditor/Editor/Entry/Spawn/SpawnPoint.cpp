@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "../../../../xrECore/Editor/EditorRenderBackend.h"
 #include "../../../../../xrServerEntities/xrServer_Objects_ALife.h"
 #include "../xrServerEntities/xrServer_Objects_Abstract.h"
 #include "../xrServerEntities/xrServer_Object_Base.h"
@@ -567,6 +569,7 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 			Particles->UpdateParent(parent, v, false);
 			Particles->OnFrame(1);
 
+			TiramisuEditorTransientObjectCaptureScope CaptureScope(m_owner);
 			::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
 		}
 	}
@@ -1018,6 +1021,7 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 				// render icon
 				ESceneSpawnTool* st	= smart_cast<ESceneSpawnTool*>(FParentTools); VERIFY(st);
 				ref_shader s 	   	= st->GetIcon(m_SpawnData.m_Data->name());
+				TiramisuEditorTransientObjectCaptureScope CaptureIdentity(this);
 				DU_impl.DrawEntity		(0xffffffff,s);
 			}else{
 				switch (m_Type)
@@ -1032,6 +1036,7 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 							Fcolor c;
 							c.set(RP_COLORS[r]);
 							c.mul_rgb(k*0.9f+0.1f);
+							TiramisuEditorTransientObjectCaptureScope CaptureIdentity(this);
 							DU_impl.DrawEntity(c.get(),EDevice->m_WireShader);
 						}
 					}break;

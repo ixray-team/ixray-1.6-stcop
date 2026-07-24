@@ -7,6 +7,7 @@
 //-----------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "../xrCore/RenderTestPolicy.h"
 #include "../xrNetServer/NET_AuthCheck.h"
 
 #include "xr_input.h"
@@ -405,6 +406,22 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	compute_build_id			();
 	CFilewatcher::instance().SetFilewatcherActive(true);
 	Core._initialize			("IXRay",nullptr, true, fsgame[0] ? fsgame : nullptr);
+	const FRenderDeterministicTestPolicy DeterministicTest =
+		ResolveRenderDeterministicTestPolicy(
+			Core.Params ? Core.Params : "");
+	if (DeterministicTest.Enabled)
+	{
+		if (!DeterministicTest.IsValid())
+		{
+			FATAL("-render-deterministic requires the exact -rdbg flag");
+		}
+		Random.seed(static_cast<s32>(DeterministicTest.RandomSeed));
+		Msg("* Engine: deterministic GPU test mode enabled "
+			"(seed=%u, delta=%.6f, shader-time=%.3f)",
+			DeterministicTest.RandomSeed,
+			DeterministicTest.FixedDeltaSeconds,
+			DeterministicTest.FixedShaderTimeSeconds);
+	}
 
 	InitSettings				();
 

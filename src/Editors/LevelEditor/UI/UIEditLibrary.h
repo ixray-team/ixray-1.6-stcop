@@ -13,6 +13,8 @@ public:
 	static void OnRender();
 
 	ref_texture m_RealTexture;
+	FEditorTextureHandle m_RealTextureEditor;
+	u64 m_RealTextureRevision = 0;
 
 	void OnItemFocused(ListItem* item);
 	void OnItemUnfocused(ListItem* item);

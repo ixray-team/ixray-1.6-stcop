@@ -50,6 +50,7 @@ void st_LevelOptions::SetHighQuality()
 EScene::EScene()
 {
 	m_Valid = false;
+	m_SkipCantFindDialog = false;
 	m_Locked = 0;
 
 	for (int i=0; i<OBJCLASS_COUNT; i++)

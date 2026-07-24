@@ -5,6 +5,24 @@
     {{"TEXCOORD", 0}, {2},offsetof(FUIVertex, uv),nri::Format::RG32_SFLOAT,0, }
 };
 
+nri::VertexAttributeDesc FStaticMeshVertex::VertexAttributeDescription[6] =
+{
+    {{"POSITION", 0}, {0}, offsetof(FStaticMeshVertex, position), nri::Format::RGB32_SFLOAT, 0},
+    {{"NORMAL", 0}, {1}, offsetof(FStaticMeshVertex, normal), nri::Format::RGB32_SFLOAT, 0},
+    {{"TANGENT", 0}, {2}, offsetof(FStaticMeshVertex, tangent), nri::Format::RGBA32_SFLOAT, 0},
+    {{"TEXCOORD", 0}, {3}, offsetof(FStaticMeshVertex, uv0), nri::Format::RG32_SFLOAT, 0},
+    {{"TEXCOORD", 1}, {4}, offsetof(FStaticMeshVertex, uv1), nri::Format::RG32_SFLOAT, 0},
+    {{"COLOR", 0}, {5}, offsetof(FStaticMeshVertex, color), nri::Format::RGBA8_UNORM, 0},
+};
+
+static_assert(sizeof(FStaticMeshVertex) == 60);
+static_assert(offsetof(FStaticMeshVertex, position) == 0);
+static_assert(offsetof(FStaticMeshVertex, normal) == 12);
+static_assert(offsetof(FStaticMeshVertex, tangent) == 24);
+static_assert(offsetof(FStaticMeshVertex, uv0) == 40);
+static_assert(offsetof(FStaticMeshVertex, uv1) == 48);
+static_assert(offsetof(FStaticMeshVertex, color) == 56);
+
 nri::VertexAttributeDesc FLegacyLevelVertex_BaseWithLightMap::VertexAttributeDescription[6] = 
 {
     {{"POSITION", 0}, {0},offsetof(FLegacyLevelVertex_BaseWithLightMap, position),nri::Format::RGB32_SFLOAT,0, },

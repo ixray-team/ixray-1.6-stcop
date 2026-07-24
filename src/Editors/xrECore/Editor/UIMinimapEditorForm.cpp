@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UIMinimapEditorForm.h"
+#include "EditorRenderBackend.h"
 #include "../../../xrCore/os_clipboard.h"
 #include "imgui.h"
 
@@ -23,15 +24,11 @@ UIMinimapEditorForm::UIMinimapEditorForm()
 UIMinimapEditorForm::~UIMinimapEditorForm()
 {
 	for (auto& element : elements)
-	{
-		if (element.Texture)
-		{
-			element.Texture = nullptr;
-		}
-	}
+		ReleaseElementTexture(element);
 
 	if (m_BackgroundTexture)
-		m_BackgroundTexture = nullptr;
+		IM_TEXTURE_RELEASE(m_BackgroundTexture);
+	UI->DestroyImGuiTexture(m_BackgroundEditorTexture);
 
 	selectedElement = nullptr;
 
@@ -69,6 +66,34 @@ void UIMinimapEditorForm::SelectElement(Element& el)
 
 	el.EdSelected = true;
 	selectedElement = &el;
+}
+
+ImTextureID UIMinimapEditorForm::ResolveElementTexture(const Element& Item) const
+{
+	if (Item.EditorTexture.IsValid())
+		return UI->GetImGuiTexture(Item.EditorTexture);
+	if (GetEditorRenderBackend().GetKind() == EEditorRenderBackendKind::Tiramisu)
+		return UI->LoadTexture(Item.TexturePath.empty()
+			? "ed\\ed_nodata" : Item.TexturePath.c_str());
+	return Item.Texture;
+}
+
+ImTextureID UIMinimapEditorForm::ResolveBackgroundTexture() const
+{
+	if (m_BackgroundEditorTexture.IsValid())
+		return UI->GetImGuiTexture(m_BackgroundEditorTexture);
+	if (GetEditorRenderBackend().GetKind() == EEditorRenderBackendKind::Tiramisu)
+		return UI->LoadTexture(m_BackgroundTexturePath.empty()
+			? "ui\\ui_nomap" : m_BackgroundTexturePath.c_str());
+	return m_BackgroundTexture;
+}
+
+void UIMinimapEditorForm::ReleaseElementTexture(Element& Item)
+{
+	UI->DestroyImGuiTexture(Item.EditorTexture);
+	if (Item.Texture)
+		IM_TEXTURE_RELEASE(Item.Texture);
+	Item.Texture = nullptr;
 }
 
 void UIMinimapEditorForm::ShowElementList() {
@@ -135,7 +160,9 @@ void UIMinimapEditorForm::RenderCanvas()
 	}
 
 	ImVec2 bg_display_size(m_BackgroundRenderSize.x * m_Zoom, m_BackgroundRenderSize.y * m_Zoom);
-	ImGui::GetWindowDrawList()->AddImage(m_BackgroundTexture->get_SRView()->GetRawSRV(), canvas_p0 + m_BackgroundPosition, canvas_p0 + m_BackgroundPosition + bg_display_size);
+	ImGui::GetWindowDrawList()->AddImage(ResolveBackgroundTexture(),
+		canvas_p0 + m_BackgroundPosition,
+		canvas_p0 + m_BackgroundPosition + bg_display_size);
 
 	
 	for (int i = 0; i < elements.size(); i++) {
@@ -149,7 +176,10 @@ void UIMinimapEditorForm::RenderCanvas()
 		element_screen_size *= m_Zoom;
 		float handle_size = 5.0f * m_Zoom;
 
-		ImGui::GetWindowDrawList()->AddImage(element.Texture->get_SRView()->GetRawSRV(), element_screen_pos, element_screen_pos + element_screen_size, ImVec2(0,0), ImVec2(1, 1), IM_COL32(255, 255, 255, m_ItemsOpacity));
+		ImGui::GetWindowDrawList()->AddImage(ResolveElementTexture(element),
+			element_screen_pos, element_screen_pos + element_screen_size,
+			ImVec2(0,0), ImVec2(1, 1),
+			IM_COL32(255, 255, 255, m_ItemsOpacity));
 
 		if (element.EdSelected || m_AlwaysDrawBorder)
 		{
@@ -436,7 +466,9 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 	}
 
 	ImVec2 bg_display_size(selectedElement->FileSize.x * m_BZoom, selectedElement->FileSize.y * m_BZoom);
-	ImGui::GetWindowDrawList()->AddImage(selectedElement->Texture->get_SRView()->GetRawSRV(), canvas_p0 + m_BoundBackgroundPosition, canvas_p0 + m_BoundBackgroundPosition + bg_display_size);
+	ImGui::GetWindowDrawList()->AddImage(ResolveElementTexture(*selectedElement),
+		canvas_p0 + m_BoundBackgroundPosition,
+		canvas_p0 + m_BoundBackgroundPosition + bg_display_size);
 
 
 	ImVec2 element_screen_pos = canvas_p0 + m_BoundBackgroundPosition;
@@ -723,10 +755,7 @@ void UIMinimapEditorForm::CreateElementPopup()
 			if (LoadTexture(el_new, p) != 0)
 			{
 				u32 mem = 0;
-				IRHISurface* Surf = RImplementation.texture_load("ed\\ed_nodata", mem);
-				el_new.Texture->surface_set(Surf);
-				Surf->Release();
-
+				el_new.Texture = RImplementation.texture_load("ed\\ed_nodata", mem);
 				el_new.FileSize = ImVec2(512,512);
 			}
 			el_new.RenderSize = ImVec2(512, 512);
@@ -746,7 +775,7 @@ void UIMinimapEditorForm::CreateElementPopup()
 			CreatingData.TexturePath.clear();
 			CreatingData.name.clear();
 			if (CreatingData.Texture)
-				CreatingData.Texture = nullptr;
+				IM_TEXTURE_RELEASE(CreatingData.Texture);
 
 			CreatingData.Texture = nullptr;
 		}
@@ -888,10 +917,10 @@ void UIMinimapEditorForm::ShowMenu()
 		ImGui::BeginDisabled(selectedElement->EdLocked);
 		if (ImGui::Button("Change"))
 		{
-			Element copy = (*selectedElement);
+			const ImVec2 PreviousRenderSize = selectedElement->RenderSize;
 			if (LoadTexture(*selectedElement) == 0)
 			{
-				selectedElement->RenderSize = copy.RenderSize;
+				selectedElement->RenderSize = PreviousRenderSize;
 				//selectedElement->name = copy.name;
 				isEdited = true;
 			}
@@ -916,10 +945,7 @@ void UIMinimapEditorForm::ShowMenu()
 			{
 				if (&(*it) == selectedElement)
 				{
-					if (it->Texture)
-						it->Texture = nullptr;
-
-					it->Texture = nullptr;
+					ReleaseElementTexture(*it);
 
 					elements.erase(it);
 					selectedElement = nullptr;
@@ -991,6 +1017,8 @@ bool UIMinimapEditorForm::GetTextureFromLevelLtx(const xr_string level_name, xr_
 }
 void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 {
+	for (Element& Item : elements)
+		ReleaseElementTexture(Item);
 	elements.clear();
 
 	FS.TryLoad(fn.c_str());
@@ -1170,16 +1198,13 @@ void UIMinimapEditorForm::Draw()
 {
 	if (m_TextureRemove)
 	{
+		IM_TEXTURE_RELEASE(m_TextureRemove);
 		m_TextureRemove = nullptr;
 	}
 	if (m_BackgroundTexture == nullptr)
 	{
 		u32 mem = 0;
-		IRHISurface* Surf = RImplementation.texture_load("ui\\ui_nomap", mem);
-		m_BackgroundTexture = new CTexture;
-		m_BackgroundTexture->surface_set(Surf);
-		Surf->Release();
-
+		m_BackgroundTexture = RImplementation.texture_load("ui\\ui_nomap", mem);
 		m_BackgroundTexturePath = "ui\\ui_nomap";
 		m_BackgroundSize.x = 512;
 		m_BackgroundSize.y = 512;
@@ -1258,7 +1283,7 @@ void UIMinimapEditorForm::Show()
 	Form->bOpen = true;
 }
 
-extern bool LoadRawImage(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a);
+extern bool Stbi_Load(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a);
 
 int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 {
@@ -1273,19 +1298,16 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 	{
 		return 1;
 	}
-
+	
 	u32 W, H, A;
 	const xr_string prefix = "map_";
 
-	if (!LoadRawImage(fn.c_str(), m_ImageData, W, H, A))
+	if (!Stbi_Load(fn.c_str(), m_ImageData, W, H, A))
 	{
 		return 2;
 	}
 
-	if (el.Texture)
-	{
-		el.Texture = nullptr;
-	}
+	ReleaseElementTexture(el);
 
 	if (texture == "")
 	{
@@ -1295,33 +1317,26 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 	//el.path = fn;
 	el.FileSize.x = W;
 	el.FileSize.y = H;
+	(void)UI->UpdateImGuiTexture(el.EditorTexture, m_ImageData.data(),
+		W, H, W * 4, ++el.TextureRevision, el.TexturePath.c_str(),
+		EEditorTextureFormat::Bgra8Unorm);
 
-	RHITextureDesc textureDesc = {};
-	textureDesc.Width = W;
-	textureDesc.Height = H;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-	textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-	textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
-
-	RHISubResource subResource = {};
-
-	IRHISurface* surf = GRHI->CreateTexture2D(textureDesc, subResource);
-	el.Texture = new CTexture();
-	el.Texture->surface_set(surf);
-
-	u32 Pitch = 0;
-	void* pBits = surf->Lock(0, &Pitch);
-
-	for (int i = 0; i < H; i++)
+	ID3DTexture2D* pTexture = nullptr;
 	{
-		unsigned char* dest = static_cast<unsigned char*>(pBits) + (Pitch * i);
-		memcpy(dest, m_ImageData.data() + (W * i), sizeof(unsigned char) * W * 4);
+		R_CHK(REDevice->CreateTexture(W, H, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr));
+		el.Texture = pTexture;
+		{
+			D3DLOCKED_RECT rect;
+			R_CHK(pTexture->LockRect(0, &rect, nullptr, D3DLOCK_DISCARD));
+			for (int i = 0; i < H; i++)
+			{
+
+				unsigned char* dest = static_cast<unsigned char*>(rect.pBits) + (rect.Pitch * i);
+				memcpy(dest, m_ImageData.data() + (W * i), sizeof(unsigned char) * W * 4);
+			}
+			R_CHK(pTexture->UnlockRect(0));
+		}
 	}
-	surf->Unlock();
-	surf->Release();
 
 	return 0;
 }
@@ -1345,7 +1360,7 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 
 	u32 m_ImageW, m_ImageH, m_ImageA;
 
-	if (LoadRawImage(fn.c_str(), m_ImageData, m_ImageW, m_ImageH, m_ImageA))
+	if (Stbi_Load(fn.c_str(), m_ImageData, m_ImageW, m_ImageH, m_ImageA))
 	{
 		isEdited = true;
 
@@ -1356,7 +1371,7 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 		m_BackgroundRenderSize = m_BackgroundSize;
 
 		m_BackgroundTexturePath = (fn.find(game_texture_dir) == 0) ? fn.substr(game_texture_dir.size()) : fn;
-
+		
 		if (auto p = xr_path(m_BackgroundTexturePath); p.has_extension())
 		{
 			p.replace_extension("");
@@ -1364,31 +1379,28 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 		}
 
 		m_TextureRemove = m_BackgroundTexture;
-
-		RHITextureDesc textureDesc = {};
-		textureDesc.Width = m_ImageW;
-		textureDesc.Height = m_ImageH;
-		textureDesc.MipLevels = 1;
-		textureDesc.ArraySize = 1;
-		textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-		textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-		textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-		textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
-
-		RHISubResource subResource = {};
-
-		IRHISurface* Surf = GRHI->CreateTexture2D(textureDesc, subResource);
-		m_BackgroundTexture = new CTexture;
-		m_BackgroundTexture->surface_set(Surf);
-		Surf->Release();
-
-		u32 Pitch = 0;
-		void* pBits = Surf->Lock(0, &Pitch);
-		for (int i = 0; i < m_ImageH; i++)
+		UI->DestroyImGuiTexture(m_BackgroundEditorTexture);
+		(void)UI->UpdateImGuiTexture(m_BackgroundEditorTexture,
+			m_ImageData.data(), m_ImageW, m_ImageH, m_ImageW * 4,
+			++m_BackgroundTextureRevision, m_BackgroundTexturePath.c_str(),
+			EEditorTextureFormat::Bgra8Unorm);
+		ID3DTexture2D* pTexture = nullptr;
 		{
-			unsigned char* dest = static_cast<unsigned char*>(pBits) + (Pitch * i);
-			memcpy(dest, m_ImageData.data() + (m_ImageW * i), sizeof(unsigned char) * m_ImageW * 4);
+			R_CHK(REDevice->CreateTexture(m_ImageW, m_ImageH, 1, 0, D3DFMT_X8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr));
+			m_BackgroundTexture = pTexture;
+
+			{
+				D3DLOCKED_RECT rect;
+				R_CHK(pTexture->LockRect(0, &rect, nullptr, D3DLOCK_DISCARD));
+				for (int i = 0; i < m_ImageH; i++)
+				{
+
+					unsigned char* dest = static_cast<unsigned char*>(rect.pBits) + (rect.Pitch * i);
+					memcpy(dest, m_ImageData.data() + (m_ImageW * i), sizeof(unsigned char) * m_ImageW * 4);
+				}
+				R_CHK(pTexture->UnlockRect(0));
+			}
 		}
-		Surf->Unlock();
 	}
+	
 }

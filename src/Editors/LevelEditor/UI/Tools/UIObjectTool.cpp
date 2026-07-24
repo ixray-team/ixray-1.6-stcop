@@ -36,6 +36,7 @@ UIObjectTool::~UIObjectTool()
 
 	m_RemoveTexture.destroy();
 	m_RealTexture.destroy();
+	UI->DestroyImGuiTexture(m_RealTextureEditor);
 
 	xr_delete(m_Props);
 	m_TextureNull.destroy();
@@ -402,7 +403,10 @@ void UIObjectTool::DrawObjectsList()
 		{
 			//if (ImGui::BeginChild("Props"))
 			{
-				ImGui::Image(m_RealTexture ? m_RealTexture->get_SRView()->GetRawSRV() : (m_TextureNull->get_SRView()->GetRawSRV()), ImVec2(128, 128));
+				const ImTextureID PreviewTexture = m_RealTextureEditor.IsValid()
+					? UI->GetImGuiTexture(m_RealTextureEditor)
+					: UI->GetImGuiTexture(m_TextureNull);
+				ImGui::Image(PreviewTexture, ImVec2(128, 128));
 				ImGui::SameLine();
 				ImGui::BeginChild("##EGIProps", { 0, 128 });
 				m_Props->Draw();
@@ -527,6 +531,7 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 {
 	if (m_RealTexture)m_RemoveTexture = m_RealTexture;
 	m_RealTexture = nullptr;
+	UI->DestroyImGuiTexture(m_RealTextureEditor);
 
 	m_Props->ClearProperties();
 	m_Current = nullptr;
@@ -536,6 +541,14 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 		auto * m_Thm = ImageLib.CreateThumbnail(m_Current, EImageThumbnail::ETObject);
 		if (m_Thm)
 		{
+			if (m_Thm->Valid())
+			{
+				(void)UI->UpdateImGuiTexture(m_RealTextureEditor,
+					m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT,
+					THUMB_WIDTH * 4, ++m_RealTextureRevision,
+					"editor-object-tool-thumbnail",
+					EEditorTextureFormat::Bgra8Unorm, true);
+			}
 			IRHISurface* Surface = nullptr;
 			m_Thm->Update(Surface);
 

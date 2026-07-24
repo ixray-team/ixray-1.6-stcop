@@ -1,11 +1,13 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 #undef Device
 #include "NRI.h"
-#include "Core/TRender.h"
-#include "Core/TRenderViewport.h"
+#include "Core/TiramisuRender.h"
+#include "Core/TiramisuRenderViewport.h"
 #include "Extensions/NRIHelper.h"
 #include "Extensions/NRISwapChain.h"
-#include "Legacy/Scene/TLegacyScene.h"
+#include "Legacy/Scene/TiramisuLegacyScene.h"
 
 
 class CDS0_RenderInterface :
@@ -107,7 +109,7 @@ public:
 	virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 
 private:
-	TLegacyScene LegacyScene;
+	TiramisuLegacyScene LegacyScene;
 	
 };
  extern CDS0_RenderInterface GRenderInterface;

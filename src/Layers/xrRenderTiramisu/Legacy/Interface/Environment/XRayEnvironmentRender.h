@@ -1,4 +1,6 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 class CDS0_EnvDescriptorMixerRender :
 	public IEnvDescriptorMixerRender
 {

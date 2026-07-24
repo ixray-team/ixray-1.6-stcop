@@ -30,6 +30,8 @@ private:
 	static UIImageEditorForm* Form;
 	ref_texture m_Texture;
 	ref_texture m_TextureRemove;
+	FEditorTextureHandle m_EditorTexture;
+	u64 m_EditorTextureRevision = 0;
 private:
 	ETextureThumbnail* FindUsedTHM(const shared_str& name);
 	void RegisterModifiedTHM();

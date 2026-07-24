@@ -1,0 +1,11 @@
+{
+  "asset_version": 1,
+  "guid": "ee5ffbc0-bd24-4aa8-9e16-50651ca1c269",
+  "name": "Legacy Default",
+  "parent": "a0f4d9f3-749c-4bc5-bf64-733927e19b20",
+  "overrides": {},
+  "static_overrides": {
+    "0d987e11-951d-43f3-b2a8-5d47d3b10ba2": false,
+    "e5d7660f-f7d5-4ccd-9be2-602174fa12aa": false
+  }
+}

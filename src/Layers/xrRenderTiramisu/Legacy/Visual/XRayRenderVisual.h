@@ -1,44 +1,50 @@
 #pragma once
-#include "Legacy/Scene/TLegacyScene.h"
-class TRenderMaterialInterface;
-class TLegacyScene;
-struct FLegacySceneShader;
-class TRenderTexture;
 
+#include "TiramisuRenderTypes.h"
+#include "Legacy/Scene/TiramisuLegacyScene.h"
+class TiramisuRenderMaterialInterface;
+class TiramisuLegacyScene;
+struct FLegacySceneShader;
+class TiramisuRenderTexture;
+
+// Описание legacy vertex buffer визуала, зарегистрированного в новой сцене.
 struct FLegacyVisualSceneVertexBuffer
 {
 	EVertexType		VertexType = EVertexType::BaseWithLightColor;
-	uint32_t                    Offset = 0;
-	uint32_t                    Size = 0;
-	uint32_t                    Stride = 0;
-	uint32_t                    Count = 0;
+	u32                    Offset = 0;
+	u32                    Size = 0;
+	u32                    Stride = 0;
+	u32                    Count = 0;
 };
 
+// Описание legacy index buffer визуала, зарегистрированного в новой сцене.
 struct FLegacyVisualSceneIndexBuffer
 {
-	uint32_t                    Offset = 0;
-	uint32_t                    Size = 0;
-	uint32_t                    Count = 0;
+	u32                    Offset = 0;
+	u32                    Size = 0;
+	u32                    Count = 0;
 };
 
+// Разрешённая legacy shader/texture пара и соответствующий новый material.
 struct FLegacySceneShader
 {
 	shared_str                  LegacyShaderName;
-	xr_vector<TRenderTexture*>		Textures;
+	xr_vector<TiramisuRenderTexture*>		Textures;
 };
 
+// Один готовый legacy draw item для передачи в scene proxy.
 struct FLegacyVisualRenderItem
 {
 	FLegacyVisualSceneVertexBuffer SceneVertexBuffer;
 	FLegacyVisualSceneIndexBuffer  SceneIndexBuffer;
 	
-	uint32_t 		CountVertex = 0;
-	uint32_t 		OffsetVertex = 0;
+	u32 		CountVertex = 0;
+	u32 		OffsetVertex = 0;
 	
-	uint32_t		CountIndex = 0;
-	uint32_t		OffsetIndex = 0;
+	u32		CountIndex = 0;
+	u32		OffsetIndex = 0;
 	
-	TRenderMaterialInterface*	Material = nullptr;
+	TiramisuRenderMaterialInterface*	Material = nullptr;
 	
 	nri::Buffer*	VertexBuffer = nullptr;
 	nri::Buffer*	IndexBuffer = nullptr;
@@ -66,7 +72,7 @@ public:
 	vis_data Vis;
 	u32 Type;
 	shared_str DebugName;
-	TLegacyScene* LegacyOwner = nullptr;
-	TRenderMaterialInterface* Material = nullptr;
+	TiramisuLegacyScene* LegacyOwner = nullptr;
+	TiramisuRenderMaterialInterface* Material = nullptr;
 	
 };

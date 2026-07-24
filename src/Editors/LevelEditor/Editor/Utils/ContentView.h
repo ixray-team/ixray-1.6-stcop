@@ -19,6 +19,7 @@ private:
 	{
 		ref_texture Icon;
 		bool UseButtonColor = false;
+		FEditorTextureHandle EditorIcon;
 	};
 
 	struct HintItem
@@ -93,6 +94,8 @@ private:
 	bool DrawContext(const xr_path& Path);
 	bool Contains(const ImVec2&);
 	IconData& GetTexture(const xr_string& IconPath);
+	[[nodiscard]] ImTextureID ResolveIcon(const IconData& Icon) const;
+	void DestroyIcon(IconData& Icon);
 
 	xr_map<xr_string, FileOptData> ScanConfigs(const xr_string& StartPath);
 	void ScanConfigsRecursive(xr_map<xr_string, CContentView::FileOptData>& TempPath, const xr_string& ParseStr);

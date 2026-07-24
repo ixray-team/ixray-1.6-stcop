@@ -1,6 +1,65 @@
 #include "stdafx.h"
 
+#include "../../../../TiramisuMaterialEditor/LegacyObjectMaterialMigration.h"
+#include "../../../../xrECore/Editor/EditorRenderBackend.h"
+#include "../../../UI/MaterialEditor/UIMaterialEditorForm.h"
+
 #define BLINK_TIME 300.f
+
+namespace
+{
+struct FLegacySceneMaterialMigrationState
+{
+	Tiramisu::Editor::TiramisuLegacyObjectMaterialMigrationService Service;
+	bool InitializationAttempted = false;
+};
+
+FLegacySceneMaterialMigrationState& GetLegacySceneMaterialMigrationState()
+{
+	static FLegacySceneMaterialMigrationState State;
+	return State;
+}
+
+void LogMaterialDiagnostics(
+	const xr_vector<FMaterialDiagnostic>& Diagnostics)
+{
+	for (const FMaterialDiagnostic& Diagnostic :
+		Diagnostics)
+	{
+		if (Diagnostic.Severity ==
+			EMaterialDiagnosticSeverity::Info)
+		{
+			continue;
+		}
+		Msg("%c [Tiramisu material migration:%s] %s",
+			Diagnostic.Severity ==
+					EMaterialDiagnosticSeverity::Error
+				? '!' : '~',
+			Diagnostic.Code.c_str(), Diagnostic.Message.c_str());
+	}
+}
+
+bool EnsureLegacySceneMaterialMigrationInitialized()
+{
+	FLegacySceneMaterialMigrationState& State =
+		GetLegacySceneMaterialMigrationState();
+	if (State.Service.IsInitialized())
+		return true;
+	if (State.InitializationAttempted)
+		return false;
+	State.InitializationAttempted = true;
+
+	string_path MaterialRoot = {};
+	FS.update_path(MaterialRoot, "$game_render_materials$", "");
+	xr_vector<FMaterialDiagnostic> Diagnostics;
+	const bool Initialized = State.Service.Initialize(
+		std::filesystem::path(MaterialRoot), &Diagnostics);
+	LogMaterialDiagnostics(Diagnostics);
+	if (!Initialized)
+		Msg("! Tiramisu could not initialize legacy scene material migration.");
+	return Initialized;
+}
+} // namespace
 
 
 CSceneObject::CSceneObject(LPVOID data, const char* name):CCustomObject(data,name)
@@ -18,6 +77,7 @@ void CSceneObject::Construct(LPVOID data)
 	m_TBBox.invalidate();
 	m_iBlinkTime	= 0;
 	m_BlinkSurf		= 0;
+	m_RenderMaterialsResolved = false;
 
 	m_Flags.zero	();
 }
@@ -331,6 +391,8 @@ void CSceneObject::OnChangeShader(PropValue* sender)
 void CSceneObject::OnChangeSurface(PropValue* sender)
 {
 	m_Flags.set(flUseSurface, 1);
+	m_RenderMaterials.clear();
+	m_RenderMaterialsResolved = false;
 }
 
 bool CSceneObject::AfterEditGameMtl(PropValue* sender,shared_str&str)
@@ -344,9 +406,32 @@ void CSceneObject::OnClickClearSurface(ButtonValue*, bool&, bool&)
 	ClearSurface();
 }
 
+void CSceneObject::OnOpenRenderMaterial(
+	ButtonValue* Sender, bool&, bool&)
+{
+	if (!Sender || Sender->tag >= m_RenderMaterials.size() || !MainForm)
+		return;
+	const char* MaterialAsset =
+		m_RenderMaterials[Sender->tag].MaterialAsset.c_str();
+	if (!MaterialAsset || !MaterialAsset[0])
+		return;
+
+	string_path MaterialRoot = {};
+	FS.update_path(MaterialRoot, "$game_render_materials$", "");
+	const std::filesystem::path MaterialPath =
+		std::filesystem::path(MaterialRoot) / MaterialAsset;
+	UIMaterialEditorForm* MaterialEditor =
+		MainForm->GetMaterialEditorForm();
+	if (!MaterialEditor ||
+		!MaterialEditor->OpenInstanceFile(MaterialPath))
+	{
+		Msg("! Cannot open generated MaterialInstance '%s'.",
+			MaterialPath.string().c_str());
+	}
+}
+
 void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 {
-	static shared_str occ_name = "materials\\occ";
 	inherited::FillProp(pref, items);
 	PropValue* V = PHelper().CreateChoose(items, PrepareKey(pref, "Reference"), &m_ReferenceName, smObject);
 	V->OnChangeEvent.bind(this, &CSceneObject::ReferenceChange);
@@ -355,10 +440,9 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 	{
 		inherited::AnimationFillProp(pref, items);
 	}
-	
+
 	SurfaceVec& s_lst = m_Surfaces;
 
-	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
 	xr_vector<CSurface*> SortedSurfaces(s_lst.begin(), s_lst.end());
 
 	std::sort
@@ -370,6 +454,48 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 		}
 	);
 
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		ResolveRenderMaterials();
+		const shared_str MaterialsPrefix =
+			PrepareKey(pref, "Materials").c_str();
+		for (CSurface* Surface : SortedSurfaces)
+		{
+			const shared_str SurfacePrefix =
+				PrepareKey(MaterialsPrefix.c_str(), Surface->_Name()).c_str();
+			const char* MaterialAsset =
+				GetRenderMaterialAsset(Surface->_Name());
+			PHelper().CreateCaption(items,
+				PrepareKey(SurfacePrefix.c_str(), "Material Instance"),
+				MaterialAsset && MaterialAsset[0]
+					? MaterialAsset : "<error material>");
+			PHelper().CreateCaption(items,
+				PrepareKey(SurfacePrefix.c_str(), "Two Sided"),
+				Surface->m_Flags.is(CSurface::sf2Sided) ? "Yes" : "No");
+			for (size_t BindingIndex = 0;
+				BindingIndex < m_RenderMaterials.size(); ++BindingIndex)
+			{
+				if (xr_strcmp(
+						m_RenderMaterials[BindingIndex].SurfaceName.c_str(),
+						Surface->_Name()) != 0)
+				{
+					continue;
+				}
+				ButtonValue* OpenButton = PHelper().CreateButton(items,
+					PrepareKey(SurfacePrefix.c_str(), "Action"), "Open",
+					ButtonValue::flFirstOnly);
+				OpenButton->tag = BindingIndex;
+				OpenButton->OnBtnClickEvent.bind(
+					this, &CSceneObject::OnOpenRenderMaterial);
+				break;
+			}
+		}
+		return;
+	}
+
+	static shared_str occ_name = "materials\\occ";
+	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
 	for (CSurface* s : SortedSurfaces)
 	{
 		shared_str Pref2 = PrepareKey(Pref1.c_str(), s->_Name()).c_str();
@@ -498,6 +624,8 @@ void CSceneObject::ClearSurface()
 	}
 
 	m_Surfaces.clear();
+	m_RenderMaterials.clear();
+	m_RenderMaterialsResolved = false;
 
 	if (m_pReference)
 	{
@@ -520,4 +648,89 @@ void CSceneObject::ClearSurface()
 	}
 	m_Flags.set(flUseSurface, 0);
 	Tools->UpdateProperties();
+}
+
+bool CSceneObject::ResolveRenderMaterials(const bool DeferDatabaseSave)
+{
+	if (m_RenderMaterialsResolved)
+		return m_RenderMaterials.size() == m_Surfaces.size();
+	m_RenderMaterialsResolved = true;
+	m_RenderMaterials.clear();
+	if (m_Surfaces.empty())
+		return true;
+	if (!EnsureLegacySceneMaterialMigrationInitialized())
+		return false;
+
+	xr_vector<Tiramisu::Editor::FLegacyObjectSurfaceDescriptor> Surfaces;
+	Surfaces.reserve(m_Surfaces.size());
+	for (const CSurface* Surface : m_Surfaces)
+	{
+		Tiramisu::Editor::FLegacyObjectSurfaceDescriptor Descriptor;
+		if (Surface)
+		{
+			Descriptor.SurfaceName = Surface->_Name();
+			Descriptor.ShaderName = Surface->_ShaderName();
+			Descriptor.CompilerShaderName = Surface->_ShaderXRLCName();
+			Descriptor.GameMaterialName = Surface->_GameMtlName();
+			Descriptor.TextureName = Surface->_Texture();
+			Descriptor.VertexMapName = Surface->_VMap();
+			Descriptor.Flags = Surface->m_Flags.get();
+			Descriptor.VertexFormat = Surface->_FVF();
+			Descriptor.TwoSided =
+				Surface->m_Flags.is(CSurface::sf2Sided);
+		}
+		Surfaces.push_back(std::move(Descriptor));
+	}
+
+	Tiramisu::Editor::FLegacyObjectMaterialMigrationResult Result =
+		GetLegacySceneMaterialMigrationState().Service.Migrate(
+			// A live level may contain thousands of components that reference
+			// the same library object. The conversion dump owns component-level
+			// provenance; the viewport migration must not duplicate it in the
+			// shared database or turn first-frame lookup into quadratic work.
+			DeferDatabaseSave ? xr_string_view{} :
+				xr_string_view{m_ReferenceName.c_str()},
+			Surfaces, DeferDatabaseSave);
+	LogMaterialDiagnostics(Result.Diagnostics);
+	if (!Result.Succeeded() ||
+		Result.Bindings.size() != m_Surfaces.size())
+	{
+		Msg("! Tiramisu could not resolve render materials for legacy object '%s'.",
+			m_ReferenceName.c_str());
+		return false;
+	}
+
+	m_RenderMaterials.reserve(Result.Bindings.size());
+	for (const Tiramisu::Editor::FLegacyObjectMaterialBinding& Binding :
+		Result.Bindings)
+	{
+		m_RenderMaterials.push_back(
+			{Binding.SurfaceName.c_str(), Binding.MaterialAsset.c_str()});
+	}
+	return true;
+}
+
+const char* CSceneObject::GetRenderMaterialAsset(
+	const char* SurfaceName) const
+{
+	if (!SurfaceName)
+		return nullptr;
+	for (const FRenderMaterialBinding& Binding : m_RenderMaterials)
+	{
+		if (xr_strcmp(Binding.SurfaceName.c_str(), SurfaceName) == 0)
+			return Binding.MaterialAsset.c_str();
+	}
+	return nullptr;
+}
+
+bool CSceneObject::FlushRenderMaterialMigration()
+{
+	FLegacySceneMaterialMigrationState& State =
+		GetLegacySceneMaterialMigrationState();
+	if (!State.Service.IsInitialized())
+		return true;
+	xr_vector<FMaterialDiagnostic> Diagnostics;
+	const bool Flushed = State.Service.FlushDatabase(Diagnostics);
+	LogMaterialDiagnostics(Diagnostics);
+	return Flushed;
 }

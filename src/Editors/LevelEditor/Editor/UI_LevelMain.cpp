@@ -4,9 +4,31 @@
 #include "UI\UIEditLibrary.h"
 #include "Editor/Utils/ContentView.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
+#include "../Renderer/Tiramisu/TiramisuEditorNativeScene.h"
+#include "../../xrECore/Editor/EditorRenderBackend.h"
 
 ECORE_API extern bool bIsLevelEditor;
 CLevelMain* LUI = (CLevelMain*)UI;
+
+namespace
+{
+bool ConfirmNativeSceneClose()
+{
+	TiramisuEditorNativeSceneDocument& Document =
+		GetEditorNativeSceneDocument();
+	if (!Document.IsEditableRenderScene() || !Document.IsDirty())
+		return true;
+	const int Answer = ELog.DlgMsg(mtInformation,
+		mbYes | mbNo | mbCancel,
+		"The native render scene has been modified. Do you want to save "
+		"your changes?");
+	if (Answer == mrCancel)
+		return false;
+	if (Answer == mrNo)
+		return true;
+	return ExecCommand(COMMAND_SAVE);
+}
+} // namespace
 
 CLevelMain::CLevelMain()
 {
@@ -250,6 +272,42 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 {
 	LUI->LoaderEvent.wait();
 
+	TiramisuEditorNativeSceneDocument& NativeDocument =
+		GetEditorNativeSceneDocument();
+	if (NativeDocument.IsEditableRenderScene())
+	{
+		std::filesystem::path Target = NativeDocument.GetSourcePath();
+		const bool SaveAs = p2 == 1 || Target.empty();
+		if (SaveAs)
+		{
+			string_path RenderSceneRoot = {};
+			FS.update_path(RenderSceneRoot, "$game_render_scenes$", "");
+			xr_string TargetText = Target.string().c_str();
+			if (!EFS.GetSaveName("$game_data$", TargetText,
+					RenderSceneRoot, -1, "*.render-scene.json"))
+			{
+				return false;
+			}
+			if (!TargetText.ends_with(".render-scene.json"))
+				TargetText += ".render-scene.json";
+			Target = TargetText.c_str();
+		}
+		UI->SetStatus("Native render scene saving...");
+		xr_string Diagnostic;
+		const bool Saved = SaveAs
+			? NativeDocument.SaveAs(Target, Diagnostic)
+			: NativeDocument.Save(Diagnostic);
+		UI->ResetStatus();
+		if (!Saved)
+		{
+			ELog.DlgMsg(mtError, "Cannot save native render scene:\n%s",
+				Diagnostic.c_str());
+			return false;
+		}
+		UI->SetStatus("Native render scene saved.");
+		return true;
+	}
+
 	if (!Scene->locked())
 	{
 		if (p2 == 1)
@@ -299,16 +357,38 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 	}
 }
 
+CCommandVar CommandCreateNativeScene(CCommandVar p1, CCommandVar p2)
+{
+	if (GetEditorRenderBackend().GetKind() !=
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		return ExecCommand(COMMAND_CLEAR);
+	}
+	if (!ExecCommand(COMMAND_CLEAR))
+		return false;
+
+	GetEditorNativeSceneDocument().NewRenderScene();
+	UI->SetStatus("New native RenderScene created.");
+	ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_SCENEOBJECT);
+	ExecCommand(COMMAND_CHANGE_ACTION, etaSelect, estDefault);
+	ExecCommand(COMMAND_UPDATE_PROPERTIES, 1);
+	UI->RedrawScene();
+	return true;
+}
+
 CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 {
 	LUI->LoaderEvent.wait();
 
 	if( !Scene->locked() )
 	{
+		if (!ConfirmNativeSceneClose())
+			return false;
 		Scene->Stop();
 		
 		if (!Scene->IfModified()) 
-			return true;
+			return false;
+		GetEditorNativeSceneDocument().Close();
 		UI->CurrentView().m_Camera.Reset	();
 		Scene->Reset			();
 		Scene->m_LevelOp.Reset	();
@@ -451,6 +531,22 @@ CCommandVar CommandReloadObjects(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandCut(CCommandVar p1, CCommandVar p2)
 {
+	TiramisuEditorNativeSceneDocument& NativeDocument =
+		GetEditorNativeSceneDocument();
+	if (NativeDocument.IsOpen() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		xr_string Diagnostic;
+		if (NativeDocument.CutSelectedToClipboard(Diagnostic) == 0)
+		{
+			if (!Diagnostic.empty())
+				Msg("! Native scene cut: %s", Diagnostic.c_str());
+			return false;
+		}
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		UI->RedrawScene();
+		return true;
+	}
 	if( !Scene->locked() ){
 		Scene->CutSelection(LTools->CurrentClassID());
 	   /* fraLeftBar->miPaste->Enabled = true;
@@ -465,6 +561,20 @@ CCommandVar CommandCut(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar CommandCopy(CCommandVar p1, CCommandVar p2)
 {
+	TiramisuEditorNativeSceneDocument& NativeDocument =
+		GetEditorNativeSceneDocument();
+	if (NativeDocument.IsOpen() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		xr_string Diagnostic;
+		if (NativeDocument.CopySelectedToClipboard(Diagnostic) == 0)
+		{
+			if (!Diagnostic.empty())
+				Msg("! Native scene copy: %s", Diagnostic.c_str());
+			return false;
+		}
+		return true;
+	}
 	  if( !Scene->locked() ){
 		Scene->CopySelection(LTools->CurrentClassID());
 		return 			true;
@@ -477,6 +587,22 @@ CCommandVar CommandCopy(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandPaste(CCommandVar p1, CCommandVar p2)
 {
+	TiramisuEditorNativeSceneDocument& NativeDocument =
+		GetEditorNativeSceneDocument();
+	if (NativeDocument.IsOpen() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		xr_string Diagnostic;
+		if (NativeDocument.PasteClipboard(Diagnostic) == 0)
+		{
+			if (!Diagnostic.empty())
+				Msg("! Native scene paste: %s", Diagnostic.c_str());
+			return false;
+		}
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		UI->RedrawScene();
+		return true;
+	}
 	if( !Scene->locked() ){
 		Scene->PasteSelection();
 		Scene->UndoSave	();
@@ -490,6 +616,22 @@ CCommandVar CommandPaste(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandDuplicate(CCommandVar p1, CCommandVar p2)
 {
+	TiramisuEditorNativeSceneDocument& NativeDocument =
+		GetEditorNativeSceneDocument();
+	if (NativeDocument.IsEditableRenderScene() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		xr_string Diagnostic;
+		if (NativeDocument.DuplicateSelected(Diagnostic) == 0)
+		{
+			if (!Diagnostic.empty())
+				Msg("! Native scene duplicate: %s", Diagnostic.c_str());
+			return false;
+		}
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		UI->RedrawScene();
+		return true;
+	}
     if (!Scene->locked()) {
 		Scene->DuplicateSelection(LTools->CurrentClassID());
         Scene->UndoSave();
@@ -551,6 +693,21 @@ CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 {
 	LTools->GetProperties()->ClearProperties();
 
+	TiramisuEditorNativeSceneDocument& NativeDocument =
+		GetEditorNativeSceneDocument();
+	if (NativeDocument.IsEditableRenderScene())
+	{
+		if (!NativeDocument.Undo())
+			ELog.DlgMsg(mtInformation, "Native scene undo buffer empty");
+		else
+		{
+			ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
+			UI->RedrawScene();
+			return true;
+		}
+		return false;
+	}
+
 	if (!Scene->locked())
 	{
 		if (!Scene->Undo())
@@ -572,6 +729,21 @@ CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandRedo(CCommandVar p1, CCommandVar p2)
 {
 	LTools->GetProperties()->ClearProperties();
+
+	TiramisuEditorNativeSceneDocument& NativeDocument =
+		GetEditorNativeSceneDocument();
+	if (NativeDocument.IsEditableRenderScene())
+	{
+		if (!NativeDocument.Redo())
+			ELog.DlgMsg(mtInformation, "Native scene redo buffer empty");
+		else
+		{
+			ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
+			UI->RedrawScene();
+			return true;
+		}
+		return false;
+	}
 
 	if (!Scene->locked()) 
 	{
@@ -834,6 +1006,13 @@ CCommandVar CommandMakeSOM(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandInvertSelectionAll(CCommandVar p1, CCommandVar p2)
 {
+	if (GetEditorNativeSceneDocument().IsOpen() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		GetEditorNativeSceneDocument().InvertSelection();
+		UI->RedrawScene();
+		return true;
+	}
 	if( !Scene->locked() ){
 		Scene->InvertSelection	(LTools->CurrentClassID());
 		return 					true;
@@ -845,6 +1024,13 @@ CCommandVar CommandInvertSelectionAll(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandSelectAll(CCommandVar p1, CCommandVar p2)
 {
+	if (GetEditorNativeSceneDocument().IsOpen() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		GetEditorNativeSceneDocument().SelectAll();
+		UI->RedrawScene();
+		return true;
+	}
 	if( !Scene->locked() ){
 		Scene->SelectObjects	(true,LTools->CurrentClassID());
 		return 					true;
@@ -856,6 +1042,13 @@ CCommandVar CommandSelectAll(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandDeselectAll(CCommandVar p1, CCommandVar p2)
 {
+	if (GetEditorNativeSceneDocument().IsOpen() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		GetEditorNativeSceneDocument().ClearSelection();
+		UI->RedrawScene();
+		return true;
+	}
 	if( !Scene->locked() ){
 		Scene->SelectObjects	(false,LTools->CurrentClassID());
 		return 					true;
@@ -867,6 +1060,14 @@ CCommandVar CommandDeselectAll(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandDeleteSelection(CCommandVar p1, CCommandVar p2)
 {
+	if (GetEditorNativeSceneDocument().IsEditableRenderScene() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		if (GetEditorNativeSceneDocument().RemoveSelected() == 0)
+			return false;
+		UI->RedrawScene();
+		return true;
+	}
 	if( !Scene->locked() ){
 		Scene->RemoveSelection	( LTools->CurrentClassID() );
 		Scene->UndoSave			();
@@ -879,6 +1080,15 @@ CCommandVar CommandDeleteSelection(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandHideUnsel(CCommandVar p1, CCommandVar p2)
 {
+	if (GetEditorNativeSceneDocument().IsEditableRenderScene() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		(void)GetEditorNativeSceneDocument()
+			.SetUnselectedComponentsVisibility(false);
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		UI->RedrawScene();
+		return true;
+	}
 	if( !Scene->locked() ){
 		Scene->ShowObjects		( false, LTools->CurrentClassID(), true, false );
 		Scene->UndoSave			();
@@ -891,6 +1101,15 @@ CCommandVar CommandHideUnsel(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar CommandHideSel(CCommandVar p1, CCommandVar p2)
 {
+	if (GetEditorNativeSceneDocument().IsEditableRenderScene() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		(void)GetEditorNativeSceneDocument()
+			.SetSelectedComponentsVisibility(bool(p1));
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		UI->RedrawScene();
+		return true;
+	}
 	if( !Scene->locked() ){
 		Scene->ShowObjects		( bool(p1), LTools->CurrentClassID(), true, true );
 		Scene->UndoSave			();
@@ -959,6 +1178,15 @@ CCommandVar CommandCreateShapeBox(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandHideAll(CCommandVar p1, CCommandVar p2)
 {
+	if (GetEditorNativeSceneDocument().IsEditableRenderScene() &&
+		LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+	{
+		(void)GetEditorNativeSceneDocument()
+			.SetAllComponentsVisibility(bool(p1));
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		UI->RedrawScene();
+		return true;
+	}
 	if( !Scene->locked() ){
 		Scene->ShowObjects		( bool(p1), LTools->CurrentClassID(), false );
 		Scene->UndoSave			();
@@ -1119,6 +1347,7 @@ void CLevelMain::RegisterCommands()
 	REGISTER_SUB_CMD_END;
 	REGISTER_CMD_S	    (COMMAND_SAVE_BACKUP,              	CommandSaveBackup);
 	REGISTER_CMD_SE	    (COMMAND_CLEAR,              		"File\\Clear Scene", 			CommandClear,			true);
+	REGISTER_CMD_SE	    (COMMAND_CREATE_NATIVE_SCENE,		"File\\New Native RenderScene",	CommandCreateNativeScene,	true);
 	REGISTER_CMD_SE	    (COMMAND_LOAD_FIRSTRECENT,          "File\\Load First Recent",		CommandLoadFirstRecent, true);
 	REGISTER_CMD_S	    (COMMAND_CLEAR_DEBUG_DRAW, 		    CommandClearDebugDraw);
 	REGISTER_CMD_S	    (COMMAND_IMPORT_COMPILER_ERROR,     CommandImportCompilerError);
@@ -1250,7 +1479,7 @@ bool EditLibPickObjectGeometry(  Fvector& hitpoint,  const Fvector& start, const
 
 bool ScenePickObjectGeometry(Fvector& hitpoint, const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal)
 {
-	constexpr std::array ObjClasses = 
+	constexpr xr_array ObjClasses = 
 	{
 	   OBJCLASS_SPAWNPOINT,
 	   OBJCLASS_SCENEOBJECT,

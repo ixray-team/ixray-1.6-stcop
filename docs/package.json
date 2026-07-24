@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@vueuse/core": "^14.3.0",
     "vitepress": "^2.0.0-alpha.17",
     "vitepress-plugin-lightbox": "^1.0.3"
   },

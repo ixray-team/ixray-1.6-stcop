@@ -9,6 +9,7 @@
 #include "../Engine/XrGameMaterialLibraryEditors.h"
 #include "../Layers/xrRender/ResourceManager.h"
 #include "../Layers/xrRender/dxRenderDeviceRender.h"
+#include "../../../xrCore/RenderTestPolicy.h"
 #include "UI_ToolsCustom.h"
 #include "SoundProcessor.h"
 #include "device_win_custom.h"
@@ -469,7 +470,18 @@ void CEditorRenderDevice::End()
 	g_bRendering = 	false;
 	// end scene
 	RCache.OnFrameEnd();
-	GRHI->Present();
+	if (UI && UI->UsesExternalMainPresentation())
+	{
+		// The transitional editor still opens a legacy D3D9 scene for its
+		// viewport. End it without presenting: the installed Tiramisu backend
+		// owns the window swapchain and performs the only Present for this frame.
+		CHK_DX(REDevice->EndScene());
+		UI->PresentMainFrame();
+	}
+	else
+	{
+		GRHI->Present();
+	}
 }
 
 void CEditorRenderDevice::UpdateView()
@@ -490,15 +502,33 @@ void CEditorRenderDevice::FrameMove()
 {
 	dwFrame++;
 
-	// Timer
-    float fPreviousFrameTime = Timer.GetElapsed_sec(); Timer.Start();	// previous frame
-    fTimeDelta = 0.1f * fTimeDelta + 0.9f*fPreviousFrameTime;			// smooth random system activity - worst case ~7% error
-    if (fTimeDelta>.1f) fTimeDelta=.1f;									// limit to 15fps minimum
+	static const FRenderDeterministicTestPolicy DeterministicTest =
+		ResolveRenderDeterministicTestPolicy(
+			Core.Params ? Core.Params : "");
+	if (DeterministicTest.Enabled)
+	{
+		const u32 PreviousGlobal = dwTimeGlobal;
+		fTimeDelta = DeterministicTest.FixedDeltaSeconds;
+		fTimeGlobal = static_cast<float>(dwFrame - 1) * fTimeDelta;
+		dwTimeGlobal = static_cast<u32>(
+			fTimeGlobal * 1000.0f + 0.5f);
+		dwTimeDelta = dwTimeGlobal - PreviousGlobal;
+		dwTimeContinual = dwTimeGlobal;
+	}
+	else
+	{
+		// Timer
+		const float fPreviousFrameTime = Timer.GetElapsed_sec();
+		Timer.Start();
+		fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime;
+		if (fTimeDelta > .1f)
+			fTimeDelta = .1f;
 
-    fTimeGlobal		= TimerGlobal.GetElapsed_sec(); //float(qTime)*CPU::cycles2seconds;
-    dwTimeGlobal	= TimerGlobal.GetElapsed_ms	();	//u32((qTime*u64(1000))/CPU::cycles_per_second);
-    dwTimeDelta		= iFloor(fTimeDelta*1000.f+0.5f);
-    dwTimeContinual	= dwTimeGlobal;
+		fTimeGlobal = TimerGlobal.GetElapsed_sec();
+		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
+		dwTimeDelta = iFloor(fTimeDelta * 1000.f + 0.5f);
+		dwTimeContinual = dwTimeGlobal;
+	}
 
 	if (!Tools->UpdateCamera())
 	{

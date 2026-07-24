@@ -1,5 +1,9 @@
 #pragma once
 
+#include <cstdint>
+#include "../../Include/xrRender/EditorRenderer.h"
+#include "../../Include/xrRender/EditorUIRenderer.h"
+
 enum TShiftState_
 {
 	ssNone = 0,
@@ -25,11 +29,26 @@ public:
 
 	void Initialize(HWND hWnd, const char*ini_path);
 	void Destroy();
+	// Must be called before Initialize. Passing nullptr selects the built-in
+	// DX9 backend. Returns false after renderer initialization has started.
+	[[nodiscard]] bool InstallRenderBackend(IXrUIRendererBackend* Backend) noexcept;
+	[[nodiscard]] IXrUIRendererBackend* GetRenderBackend() const noexcept
+	{
+		return m_RenderBackend;
+	}
 
 	bool ProcessEvent(void* Event);
 
 	void BeginFrame();
 	void EndFrame();
+	// Backends which own the main editor swapchain render after the legacy
+	// scene has ended. For the built-in DX9 backend EndFrame renders
+	// immediately and this function is a no-op.
+	void PresentMainFrame();
+	[[nodiscard]] bool UsesExternalMainPresentation() const noexcept
+	{
+		return m_RenderBackend && m_RenderBackend->OwnsMainPresentation();
+	}
 	void MDIUpdate();
 
 	void ResetBegin();
@@ -58,6 +77,10 @@ private:
 	xr_vector<IEditorWnd*> m_UIArray;
 	string_path m_name_ini;
 	float m_ScaleDpi;
+	IXrUIRendererBackend* m_RenderBackend = nullptr;
+	bool m_OwnRenderBackend = false;
+	bool m_RenderBackendInitialized = false;
+	bool m_MainPresentationPending = false;
 
 public: 
 	template<typename T> 
@@ -76,6 +99,11 @@ public:
 	bool IsEnableInput = true;
 	EDragDropType DnDType = EDragDropType::None;
 	virtual void* LoadTexture(const char*) const { return nullptr; };
+	virtual bool UpdateEditorTexture(FEditorTextureHandle&,
+		const FEditorTextureUpload&) const { return false; }
+	virtual void DestroyEditorTexture(FEditorTextureHandle&) const {}
+	[[nodiscard]] virtual FEditorViewportSurface GetEditorTextureSurface(
+		FEditorTextureHandle) const { return {}; }
 	void* SearchIcon = nullptr;
 };
 

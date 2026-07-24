@@ -1,0 +1,39 @@
+{
+  "asset_version": 1,
+  "guid": "ada19ea7-b527-46c0-a006-2e39f5170b45",
+  "name": "Legacy Editor Particle Translucent",
+  "domain": "surface",
+  "blend_mode": "translucent",
+  "shading_model": "unlit",
+  "two_sided": true,
+  "template": "materials/MaterialTemplate.hlsl",
+  "implementation": {
+    "type": "hlsl",
+    "source": "materials/LegacyEditorParticleSprite.hlsl"
+  },
+  "parameters": [
+    {
+      "guid": "915ce004-8c2f-47ce-87c7-b4af787b835e",
+      "name": "BaseColor",
+      "type": "color",
+      "default": [1.0, 1.0, 1.0, 1.0]
+    },
+    {
+      "guid": "2136fd1d-29bd-48e9-9f4c-9ebedb470774",
+      "name": "BaseTexture",
+      "type": "texture2d",
+      "default": "textures/default/default_white"
+    },
+    {
+      "guid": "ca6260a0-1047-4fd1-b251-7a40bf55d318",
+      "name": "SurfaceSampler",
+      "type": "sampler_preset",
+      "default": "linear_wrap"
+    }
+  ],
+  "static_parameters": [],
+  "dependencies": [
+    "materials/MaterialTemplate.hlsl",
+    "materials/LegacyEditorParticleSprite.hlsl"
+  ]
+}

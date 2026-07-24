@@ -1,4 +1,6 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 #ifdef RENDER_FACTORY_INTERFACE
 #undef RENDER_FACTORY_INTERFACE
 #endif

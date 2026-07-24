@@ -3,7 +3,7 @@
 #define VLOAD_NOVERTICES 1<<0
 #include "XRayFVisual.h"
 
-#include "Legacy/Scene/TLegacyScene.h"
+#include "Legacy/Scene/TiramisuLegacyScene.h"
 
 CDS0_FVisual::CDS0_FVisual()
 {

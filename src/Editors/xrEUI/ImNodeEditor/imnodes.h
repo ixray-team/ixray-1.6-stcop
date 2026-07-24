@@ -241,19 +241,19 @@ namespace IMNODES_NAMESPACE
 {
     // Call this function if you are compiling imnodes in to a dll, separate from ImGui. Calling this
     // function sets the GImGui global variable, which is not shared across dll boundaries.
-    void SetImGuiContext(ImGuiContext* ctx);
+    XREUI_API void SetImGuiContext(ImGuiContext* ctx);
 
     XREUI_API ImNodesContext* CreateContext();
     XREUI_API  void            DestroyContext(ImNodesContext* ctx = NULL); // NULL = destroy current context
-    ImNodesContext* GetCurrentContext();
-    void            SetCurrentContext(ImNodesContext* ctx);
+    XREUI_API ImNodesContext* GetCurrentContext();
+    XREUI_API void            SetCurrentContext(ImNodesContext* ctx);
 
     ImNodesEditorContext* EditorContextCreate();
     void                  EditorContextFree(ImNodesEditorContext*);
     void                  EditorContextSet(ImNodesEditorContext*);
     ImVec2                EditorContextGetPanning();
     void                  EditorContextResetPanning(const ImVec2& pos);
-    void                  EditorContextMoveToNode(const int node_id);
+    XREUI_API void        EditorContextMoveToNode(const int node_id);
 
     ImNodesIO& GetIO();
 
@@ -341,11 +341,11 @@ namespace IMNODES_NAMESPACE
 
     XREUI_API void SetNodeScreenSpacePos(int node_id, const ImVec2& screen_space_pos);
     void SetNodeEditorSpacePos(int node_id, const ImVec2& editor_space_pos);
-    void SetNodeGridSpacePos(int node_id, const ImVec2& grid_pos);
+    XREUI_API void SetNodeGridSpacePos(int node_id, const ImVec2& grid_pos);
 
     ImVec2 GetNodeScreenSpacePos(const int node_id);
     ImVec2 GetNodeEditorSpacePos(const int node_id);
-    ImVec2 GetNodeGridSpacePos(const int node_id);
+    XREUI_API ImVec2 GetNodeGridSpacePos(const int node_id);
 
     // If ImNodesStyleFlags_GridSnapping is enabled, snap the specified node's origin to the grid.
     void SnapNodeToGrid(int node_id);
@@ -362,15 +362,15 @@ namespace IMNODES_NAMESPACE
 
     // Use The following two functions to query the number of selected nodes or links in the current
     // editor. Use after calling EndNodeEditor().
-    int NumSelectedNodes();
-    int NumSelectedLinks();
+    XREUI_API int NumSelectedNodes();
+    XREUI_API int NumSelectedLinks();
     // Get the selected node/link ids. The pointer argument should point to an integer array with at
     // least as many elements as the respective NumSelectedNodes/NumSelectedLinks function call
     // returned.
-    void GetSelectedNodes(int* node_ids);
-    void GetSelectedLinks(int* link_ids);
+    XREUI_API void GetSelectedNodes(int* node_ids);
+    XREUI_API void GetSelectedLinks(int* link_ids);
     // Clears the list of selected nodes/links. Useful if you want to delete a selected node or link.
-    void ClearNodeSelection();
+    XREUI_API void ClearNodeSelection();
     void ClearLinkSelection();
     // Use the following functions to add or remove individual nodes or links from the current editors
     // selection. Note that all functions require the id to be an existing valid id for this editor.
@@ -378,7 +378,7 @@ namespace IMNODES_NAMESPACE
     // Clear-functions has the precondition that the object is currently considered selected.
     // Preconditions listed above can be checked via IsNodeSelected/IsLinkSelected if not already
     // known.
-    void SelectNode(int node_id);
+    XREUI_API void SelectNode(int node_id);
     void ClearNodeSelection(int node_id);
     XREUI_API bool IsNodeSelected(int node_id);
     void SelectLink(int link_id);
@@ -417,7 +417,7 @@ namespace IMNODES_NAMESPACE
 
     // Was an existing link detached from a pin by the user? The detached link's id is assigned to the
     // output argument link_id.
-    bool IsLinkDestroyed(int* link_id);
+    XREUI_API bool IsLinkDestroyed(int* link_id);
 
     // Use the following functions to write the editor context's state to a string, or directly to a
     // file. The editor context is serialized in the INI file format.

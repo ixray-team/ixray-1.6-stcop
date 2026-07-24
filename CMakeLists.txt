@@ -20,6 +20,7 @@ option(IXRAY_PROFILER_TRACY "Enable Tracy for perf debug" OFF)
 option(IXRAY_ENABLE_RESONANCEAUDIO "Enable Reverb from ResonanceAudio library" ON)
 option(IXRAY_CROSS_COMPILATION "Enable cross-compilation" OFF)
 
+option(IXRAY_BUILD_TESTS "Build IX-Ray automated tests" OFF)
 set(IXRAY_BUILD_BATCH_SIZE "32" CACHE STRING "UNITY_BUILD_BATCH_SIZE")
 
 # CI trash
@@ -35,6 +36,10 @@ option(DEVIXRAY_ENABLE_STEAMAUDIO "Enable HRTF and Reverb from SteamAudio librar
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if(IXRAY_BUILD_TESTS)
+    enable_testing()
+endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR APPLE)
 	include("cmake/clang.cmake")
@@ -90,6 +95,36 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 else()
 	set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
+endif()
+
+# MSVC links ASan executables against its dynamic runtime, but does not copy
+# that runtime next to the produced binaries. Without it, CTest can appear to
+# hang behind the Windows missing-DLL dialog. Keep ASan builds self-contained
+# and make the copy part of the existing runtime dependency target.
+if(MSVC AND IXRAY_ASAN)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(IXRAY_ASAN_RUNTIME_NAME clang_rt.asan_dynamic-x86_64.dll)
+    else()
+        set(IXRAY_ASAN_RUNTIME_NAME clang_rt.asan_dynamic-i386.dll)
+    endif()
+
+    get_filename_component(IXRAY_MSVC_COMPILER_DIRECTORY "${CMAKE_CXX_COMPILER}" DIRECTORY)
+    find_file(IXRAY_ASAN_RUNTIME
+        NAMES ${IXRAY_ASAN_RUNTIME_NAME}
+        HINTS "${IXRAY_MSVC_COMPILER_DIRECTORY}"
+        NO_DEFAULT_PATH
+    )
+    if(NOT IXRAY_ASAN_RUNTIME)
+        message(FATAL_ERROR
+            "IXRAY_ASAN is enabled, but ${IXRAY_ASAN_RUNTIME_NAME} was not found next to ${CMAKE_CXX_COMPILER}")
+    endif()
+
+    add_custom_command(TARGET copy_all_dlls PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${IXRAY_OUTPUT}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IXRAY_ASAN_RUNTIME}" "${IXRAY_OUTPUT}"
+        COMMENT "Copying the MSVC AddressSanitizer runtime"
+        VERBATIM
+    )
 endif()
 
 # Modules (Nuget or Src)

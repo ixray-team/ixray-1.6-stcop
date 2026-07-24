@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "../../../../xrECore/Editor/EditorRenderBackend.h"
+
 #define CPSOBJECT_VERSION  				0x0013
 
 #define CPSOBJECT_CHUNK_VERSION			0x0001
@@ -98,7 +100,10 @@ void EParticlesObject::Render(int priority, bool strictB2F)
         }
 
         if (m_Particles)
+        {
+            TiramisuEditorTransientObjectCaptureScope CaptureScope(this);
             ::RImplementation.model_Render(smart_cast<IRenderVisual*>(m_Particles), _Transform(), priority, strictB2F, 1.f);
+        }
     }
 }
 

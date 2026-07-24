@@ -1,10 +1,12 @@
 #pragma once
 
-class TRenderViewport;
+#include "TiramisuRenderTypes.h"
+
+class TiramisuRenderViewport;
 
 namespace nri
 {
-	enum class Format : uint8_t;
+	enum class Format : u8;
 	struct Descriptor;
 	struct Texture;
 	struct Fence;
@@ -66,15 +68,15 @@ public:
 	void SetupDefaultTarget() override;
 	void SetCacheXformOld(Fmatrix& mView, Fmatrix& mProject) override;
 
-	const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath, float width, float height, SVGTintRGBA tint) override;
+	const FactoryPtr<IUIShader>& GetSVGShader(const xr_string_view& subpath, float width, float height, SVGTintRGBA tint) override;
 	const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath, float width, float height, SVGTintRGBA tint) override;
 	const FactoryPtr<IUIShader>& GetSVGDefaultShader() override;
 
-	Frect GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint) override;
+	Frect GetSVGUV(const xr_string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint) override;
 	void	PostCreate() override;
 	
 
 private:
-	TRenderViewport* Viewport = nullptr;
+	TiramisuRenderViewport* Viewport = nullptr;
 	FactoryPtr<IUIShader> m_empty_default;
 };

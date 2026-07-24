@@ -1,4 +1,6 @@
 #pragma once
+class UIMaterialEditorForm;
+
 class UIMainForm final:
     public IEditorWnd
 {
@@ -16,6 +18,7 @@ public:
     IC UIRenderForm* GetRenderForm() { return m_Render; }
     IC UILPropertiesForm* GetPropertiesForm() { return m_Properties; }
     IC class UIWorldPropertiesFrom* GetWorldPropertiesFrom() { return m_WorldProperties; }
+    IC UIMaterialEditorForm* GetMaterialEditorForm() { return m_MaterialEditor; }
 
 private:
     void DrawContextMenu();
@@ -35,6 +38,7 @@ private:
     UILeftBarForm* m_LeftBar;
     UILPropertiesForm* m_Properties;
     class UIWorldPropertiesFrom* m_WorldProperties;
+    UIMaterialEditorForm* m_MaterialEditor;
 
     ref_texture m_tMenu;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TiramisuRenderTypes.h"
+
 //#include	"KinematicAnimatedDefs.h"
 
 namespace	animation

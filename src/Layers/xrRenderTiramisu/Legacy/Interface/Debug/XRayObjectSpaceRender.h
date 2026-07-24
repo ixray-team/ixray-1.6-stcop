@@ -1,4 +1,6 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 #ifdef DEBUG
 class CDS0_ObjectSpaceRender:public IObjectSpaceRender
 {

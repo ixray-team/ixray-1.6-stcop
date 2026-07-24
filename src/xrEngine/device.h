@@ -178,8 +178,6 @@ class ENGINE_API CRenderDevice:
 {
 	friend class CPHWorld;
 
-	RENDERDOC_API_1_6_0* pRDocAPI = nullptr;
-
 public:
 	int Width = 0, Height = 0, PosX = 0, PosY = 0;
 

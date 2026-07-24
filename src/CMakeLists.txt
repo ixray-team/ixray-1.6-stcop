@@ -6,6 +6,8 @@ set(IXRAY_FOLDER_GAME FOLDER "Engine/Game")
 
 # Engine libraries
 add_subdirectory("xrCore")
+add_subdirectory("xrTiramisuMaterialCore")
+add_subdirectory("xrTiramisuSceneCore")
 
 if(NOT IXRAY_COMPRESSOR_ONLY)
     add_subdirectory("xrSound")
@@ -48,6 +50,8 @@ endif()
 
 # Move libraries
 set_target_properties(xrCore PROPERTIES ${IXRAY_FOLDER_ENGINE})
+set_target_properties(xrTiramisuMaterialCore PROPERTIES ${IXRAY_FOLDER_ENGINE})
+set_target_properties(xrTiramisuSceneCore PROPERTIES ${IXRAY_FOLDER_ENGINE})
 
 if(NOT IXRAY_COMPRESSOR_ONLY)
     set_target_properties(xrSound PROPERTIES ${IXRAY_FOLDER_ENGINE})

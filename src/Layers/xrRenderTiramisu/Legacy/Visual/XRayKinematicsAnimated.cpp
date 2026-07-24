@@ -55,7 +55,7 @@ void	CDS0_KinematicsAnimated::Bone_Motion_Stop_IM(CBoneData* bd, CBlend* handle)
 
 #if (defined DEBUG || defined _EDITOR)
 
-std::pair<LPCSTR, LPCSTR> CDS0_KinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
+xr_pair<LPCSTR, LPCSTR> CDS0_KinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
 {
 	shared_motions& s_mots = m_Motions[ID.slot].motions;
 	accel_map::iterator _I, _E = s_mots.motion_map()->end();

@@ -1,0 +1,17 @@
+{
+  "asset_version": 999,
+  "guid": "invalid-master",
+  "name": "Intentionally Invalid",
+  "domain": "not-a-domain",
+  "blend_mode": "opaque",
+  "shading_model": "default_lit",
+  "two_sided": false,
+  "template": "",
+  "implementation": {
+    "type": "hlsl",
+    "source": ""
+  },
+  "parameters": [],
+  "static_parameters": [],
+  "dependencies": []
+}

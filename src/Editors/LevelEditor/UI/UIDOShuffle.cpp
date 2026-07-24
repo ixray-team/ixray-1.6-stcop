@@ -14,6 +14,8 @@ UIDOShuffle::UIDOShuffle()
 
 UIDOShuffle::~UIDOShuffle()
 {
+	UI->DestroyImGuiTexture(m_MaskTextureEditor);
+	UI->DestroyImGuiTexture(m_ObjectTextureEditor);
 	m_TextureNull.destroy();
 	m_MaskTexture.destroy();
 
@@ -33,7 +35,9 @@ void UIDOShuffle::Draw()
 	{
 		ImVec2 StartPos = ImGui::GetCursorPos();
 
-		ImGui::Image(m_MaskTexture._get() ? m_MaskTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImVec2(256, 256));
+		ImGui::Image(m_MaskTextureEditor.IsValid()
+			? UI->GetImGuiTexture(m_MaskTextureEditor)
+			: UI->GetImGuiTexture(m_TextureNull), ImVec2(256, 256));
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
 			ImVec2 ClickPos = ImGui::GetMousePos();
@@ -74,8 +78,9 @@ void UIDOShuffle::Draw()
 			m_RealTexture.destroy();
 			m_RealTexture = m_Texture;
 		}
-		bool HaveTexture = m_RealTexture != nullptr && m_RealTexture->get_SRView() != nullptr;
-		ImGui::Image(HaveTexture ? m_RealTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImVec2(256, 256));
+		ImGui::Image(m_ObjectTextureEditor.IsValid()
+			? UI->GetImGuiTexture(m_ObjectTextureEditor)
+			: UI->GetImGuiTexture(m_TextureNull), ImVec2(256, 256));
 
 		{
 			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight()))) { UIChooseForm::SelectItem(smObject, 8); m_ChooseObject = true; }; ImGui::SameLine();
@@ -252,6 +257,7 @@ void UIDOShuffle::FillData(bool ReloadTex)
 	if (ReloadTex)
 	{
 		m_MaskTexture.destroy();
+		UI->DestroyImGuiTexture(m_MaskTextureEditor);
 		if (!TextureMaskPath.empty())
 		{
 			TextureMaskPath += ".dds";
@@ -269,6 +275,10 @@ void UIDOShuffle::FillData(bool ReloadTex)
 
 			if (!Pixels.empty())
 			{
+				(void)UI->UpdateImGuiTexture(m_MaskTextureEditor,
+					Pixels.data(), 256, 256, 256 * 4,
+					++m_MaskTextureRevision, "detail-object-mask",
+					EEditorTextureFormat::Bgra8Unorm);
 				m_MaskTexture = new CTexture();
 
 				RHITextureDesc textureDesc = {};
@@ -340,9 +350,17 @@ void UIDOShuffle::OnItemFocused(const char* name)
 
 	m_Thm = ImageLib.CreateThumbnail(name, EImageThumbnail::ETObject);
 	m_Texture.destroy();
+	UI->DestroyImGuiTexture(m_ObjectTextureEditor);
 	
 	if (m_Thm)
 	{
+		if (m_Thm->Valid())
+		{
+			(void)UI->UpdateImGuiTexture(m_ObjectTextureEditor,
+				m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT,
+				THUMB_WIDTH * 4, ++m_ObjectTextureRevision,
+				"detail-object-thumbnail", EEditorTextureFormat::Bgra8Unorm, true);
+		}
 		IRHISurface* Surface = nullptr;
 		m_Thm->Update(Surface);
 

@@ -1,0 +1,64 @@
+{
+  "asset_version": 1,
+  "guid": "67e3bc21-9df5-4fc2-ab60-1ad7d02ad6e3",
+  "name": "Standard Surface",
+  "domain": "surface",
+  "blend_mode": "opaque",
+  "shading_model": "default_lit",
+  "two_sided": false,
+  "template": "materials/MaterialTemplate.hlsl",
+  "implementation": {
+    "type": "hlsl",
+    "source": "materials/StandardSurface.hlsl"
+  },
+  "parameters": [
+    {
+      "guid": "915ce004-8c2f-47ce-87c7-b4af787b835e",
+      "name": "BaseColor",
+      "type": "color",
+      "default": [1.0, 1.0, 1.0, 1.0],
+      "ui": { "display_name": "Base Color", "category": "Surface" }
+    },
+    {
+      "guid": "2136fd1d-29bd-48e9-9f4c-9ebedb470774",
+      "name": "BaseTexture",
+      "type": "texture2d",
+      "default": "textures/default/default_white",
+      "ui": { "display_name": "Base Texture", "category": "Surface" }
+    },
+    {
+      "guid": "a274b611-7391-4d5f-b08d-d9ce8255fdaf",
+      "name": "Roughness",
+      "type": "scalar",
+      "default": 0.5,
+      "ui": { "display_name": "Roughness", "category": "Surface", "min": 0.0, "max": 1.0 }
+    },
+    {
+      "guid": "d601334d-b60a-4632-b631-9c8bd421c71e",
+      "name": "Metallic",
+      "type": "scalar",
+      "default": 0.0,
+      "ui": { "display_name": "Metallic", "category": "Surface", "min": 0.0, "max": 1.0 }
+    },
+    {
+      "guid": "ca6260a0-1047-4fd1-b251-7a40bf55d318",
+      "name": "SurfaceSampler",
+      "type": "sampler_preset",
+      "default": "linear_wrap",
+      "ui": { "display_name": "Sampler", "category": "Sampling" }
+    }
+  ],
+  "static_parameters": [
+    {
+      "guid": "39a456f7-50be-4de7-8b7c-60fcc35b8a92",
+      "name": "UseNormalMap",
+      "type": "static_bool",
+      "default": false,
+      "ui": { "display_name": "Use Normal Map", "category": "Features" }
+    }
+  ],
+  "dependencies": [
+    "materials/MaterialTemplate.hlsl",
+    "materials/StandardSurface.hlsl"
+  ]
+}

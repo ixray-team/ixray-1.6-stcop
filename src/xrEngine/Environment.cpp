@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-
+#include "../xrCore/RenderTestPolicy.h"
 #include "Render.h"
 
 #include "Environment.h"
@@ -474,7 +474,16 @@ void CEnvironment::lerp		(float& current_weight)
 void CEnvironment::OnFrame()
 {
 	PROF_EVENT("CEnvironment::OnFrame");
-	if (g_pGameLevel == nullptr && Device.IsEditorMode())
+	static const FRenderDeterministicTestPolicy DeterministicTest =
+		ResolveRenderDeterministicTestPolicy(
+			Core.Params ? Core.Params : "");
+	if (DeterministicTest.Enabled)
+	{
+		// The weather preset remains content-controlled, but every reference
+		// capture evaluates it at the same noon blend.
+		SetGameTime(DeterministicTest.FixedWeatherTimeSeconds, 0.0f);
+	}
+	else if (g_pGameLevel == nullptr && Device.IsEditorMode())
 	{
 		SetGameTime(fGameTime + Device.fTimeDelta * fTimeFactor, fTimeFactor);
 		if (fsimilar(ed_to_time, DAY_LENGTH) && fsimilar(ed_from_time, 0.f)) 

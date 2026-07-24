@@ -1,0 +1,11 @@
+{
+  "asset_version": 1,
+  "guid": "68ae697d-7049-46ab-af7d-a1c4ddf2b32d",
+  "name": "Legacy Default AREF",
+  "parent": "5f4b3a8e-85fe-42bc-9080-f71eb497f04b",
+  "overrides": {},
+  "static_overrides": {
+    "0d987e11-951d-43f3-b2a8-5d47d3b10ba2": false,
+    "e5d7660f-f7d5-4ccd-9be2-602174fa12aa": false
+  }
+}

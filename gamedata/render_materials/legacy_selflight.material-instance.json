@@ -1,0 +1,10 @@
+{
+  "asset_version": 1,
+  "guid": "1b5644fb-ed55-443f-af03-eaee4b7f56cb",
+  "name": "Legacy Selflight",
+  "parent": "f8ab2e31-cc13-4c4e-9dce-e621d92353aa",
+  "overrides": {
+    "37863262-0b9b-4bfd-a13d-1386c399e151": 1.0
+  },
+  "static_overrides": {}
+}

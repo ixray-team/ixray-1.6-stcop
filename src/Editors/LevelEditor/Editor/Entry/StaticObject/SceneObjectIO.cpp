@@ -27,7 +27,7 @@ bool CSceneObject::LoadLTX(CInifile& ini, const char* sect_name)
 
             xr_string       _new_name;
             bool b_found    = Scene->GetSubstObjectName(ref_name.c_str(), _new_name);
-            if(b_found)
+            if(b_found && !Scene->isSkipCantFindDialog())
             {
                 xr_string _message;
                 _message = "Object ["+ref_name+"] not found. Relace it with ["+_new_name+"] or select other from library?";

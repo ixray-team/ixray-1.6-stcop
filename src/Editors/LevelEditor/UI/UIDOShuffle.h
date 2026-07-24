@@ -31,6 +31,10 @@ private:
 	ref_texture m_Texture;
 	ref_texture m_RealTexture;
 	ref_texture m_MaskTexture;
+	FEditorTextureHandle m_MaskTextureEditor;
+	FEditorTextureHandle m_ObjectTextureEditor;
+	u64 m_MaskTextureRevision = 0;
+	u64 m_ObjectTextureRevision = 0;
 
 	U8Vec Pixels;
 	xr_vector<xr_string> m_list;

@@ -1,4 +1,6 @@
 #pragma once
+
+#include "TiramisuRenderTypes.h"
 #include "XRayRenderVisual.h"
 
 class	CDS0_TreeVisual : public CDS0_RenderVisual
