@@ -19,9 +19,14 @@ void draw_arc(ui_shader& shader, float x, float y, float radius, float radius_in
 	float xc = cos(angle1);
 	float yc = sin(angle1);
 
-	for (unsigned iAng = 0; iAng <= quality; ++iAng) {
-		UIRender->PushPoint(x + xc * radius_inside, y + yc * radius_inside, 0, color1, 0, 0);
-		UIRender->PushPoint(x + xc * radius, y + yc * radius, 0, color2, 0, 0);
+	for (unsigned iAng = 0; iAng <= quality; ++iAng) 
+	{
+		Fvector2 pos;
+		UI().ClientToScreenScaled(pos, x + (xc * radius_inside * UI().get_current_kx()), y + yc * radius_inside);
+		UIRender->PushPoint(pos.x, pos.y, 0, color1, 0, 0);
+
+		UI().ClientToScreenScaled(pos, x + (xc * radius * UI().get_current_kx()), y + yc * radius);
+		UIRender->PushPoint(pos.x, pos.y, 0, color2, 0, 0);
 
 		float xcNew = cosInc * xc - sinInc * yc;
 		yc = sinInc * xc + cosInc * yc;
@@ -40,7 +45,7 @@ void CUIRadialMenu::DrawItem(CUIStatic* st, TexturedRectDrawData& trdd, u32 colo
 
 	float scale = float(st->GetTextureRect().height()) / st->GetTextureRect().width();
 
-	float width = trdd.width/UI().get_current_kx();
+	float width = trdd.width;
 	float height = trdd.height * scale;
 
 	float x1 = trdd.x - width/2;
@@ -58,13 +63,10 @@ void CUIRadialMenu::DrawItem(CUIStatic* st, TexturedRectDrawData& trdd, u32 colo
 CUIRadialMenu::CUIRadialMenu()
 	:m_pGamepadLegend(nullptr)
 {
-	Device.seqResolutionChanged.Add(this, REG_PRIORITY_HIGH);
 	Init();
 }
 CUIRadialMenu::~CUIRadialMenu()
 {
-	Device.seqResolutionChanged.Remove(this);
-
 	xr_delete(crosshair_shader);
 	crosshair_shader = nullptr;
 }
@@ -112,7 +114,11 @@ void CUIRadialMenu::Init(CUIXml* pXml)
 	deselected_color				= CUIXmlInit::GetColor(*pXml, "color_deselected", 0, 0x0);//0xFFFF9944
 	pXml->SetLocalRoot(stored_root);
 
-	RecheckSizes();
+	center_x = UI_BASE_WIDTH / 2.0f;
+	center_y = UI_BASE_HEIGHT / 2.0f;
+	radius = center_y - UI_BASE_HEIGHT * safezone_height_factor;
+	inner_radius = radius * inner_radius_ratio;
+	selected_radius = inner_radius * selected_radius_factor;
 
 	// Create shaders
 	crosshair_shader = new ui_shader();
@@ -155,23 +161,6 @@ void CUIRadialMenu::OnActivateSectorClicked()
 	TryActivateSelectedSector();
 	selected_index = -1;
 	bWaitForZeroRStick = true;
-}
-
-void CUIRadialMenu::OnScreenResolutionChanged()
-{
-	RecheckSizes();
-}
-
-void CUIRadialMenu::RecheckSizes()
-{
-	screen_width = ::Render->getTarget()->get_width();
-	screen_height = ::Render->getTarget()->get_height();
-	
-	center_x = screen_width / 2.0f;
-	center_y = screen_height / 2.0f;
-	radius = center_y - screen_height * safezone_height_factor;
-	inner_radius = radius * inner_radius_ratio;
-	selected_radius = inner_radius * selected_radius_factor;
 }
 
 bool CUIRadialMenu::OnMouseAction(float x, float y, EUIMessages mouse_action)
