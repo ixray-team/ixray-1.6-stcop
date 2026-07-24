@@ -33,6 +33,7 @@ public:
     virtual void	IR_GamepadKeyPress              (int id) {};
     virtual void	IR_GamepadKeyRelease            (int id) {};
 	virtual void	IR_GamepadKeyHold				(int id) {};
+	virtual void	IR_OnGyroscopeMove				(Fvector3 value)	{};
 };
 
 ENGINE_API extern float			psMouseSens;
@@ -42,3 +43,8 @@ ENGINE_API extern bool			psMouseInvert;
 
 ENGINE_API extern float			psGamepadSens;
 ENGINE_API extern bool			psGamepadInvert;
+
+ENGINE_API extern float			psGyroscopeSens;
+ENGINE_API extern bool			psGyroscopeInvertX;
+ENGINE_API extern bool			psGyroscopeInvertY;
+ENGINE_API extern bool			psGyroscopeEnabled;
