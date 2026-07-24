@@ -25,6 +25,7 @@ list(FILTER EPE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 add_executable(ParticlesEditor WIN32 ${EPE_SRC_FILES})
 target_include_directories(ParticlesEditor PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(ParticlesEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
+target_include_directories(ParticlesEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 target_precompile_headers(ParticlesEditor PRIVATE "stdafx.h")
 
 # Project defines

@@ -48,6 +48,7 @@ add_library(xrPhysics SHARED ${XPH_SRC_FILES})
 # Include directories
 target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
+target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../")
 target_include_directories(xrPhysics PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines

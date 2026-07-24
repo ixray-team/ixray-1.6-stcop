@@ -2,9 +2,9 @@
 #include "Build.h"
 #include "OGF_Face.h"
 //#include "std_classes.h"
-#include "../../xrCore/FS.h"
-#include "../../xrEngine/Fmesh.h"
-#include "src/utils/xrForms/CompilersUI.h"
+#include "xrCore/FS.h"
+#include "xrEngine/Fmesh.h"
+#include "utils/xrForms/CompilersUI.h"
 
 using namespace std;
 

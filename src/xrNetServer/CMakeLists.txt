@@ -28,6 +28,7 @@ endif()
 add_library(xrNetServer SHARED ${NETSERV_SRC_FILES})
 target_include_directories(xrNetServer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrNetServer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
+target_include_directories(xrNetServer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../")
 
 # Project defines
 target_compile_definitions(xrNetServer PRIVATE XR_NETSERVER_EXPORTS)

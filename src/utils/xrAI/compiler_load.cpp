@@ -1,10 +1,7 @@
 #include "StdAfx.h"
 #include "compiler.h"
-#include "../../xrCore/FormatParsers/LevelCForm/CFormIO.h"
-#include "levelgamedef.h"
-#include "level_graph.h"
+#include "xrCore/FormatParsers/LevelCForm/CFormIO.h"
 #include "AIMapExport.h"
-#include "src/xrCore/SharedMaterialLibrary.h"
 
 size_t BuildAIMapVersion = 0;
 IC	const Fvector vertex_position(const NodePosition& Psrc, const Fbox& bb, const SAIParams& params)

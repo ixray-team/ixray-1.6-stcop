@@ -24,6 +24,7 @@ list(FILTER EUI_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 add_library(xrEUI SHARED ${EUI_SRC_FILES})
 target_include_directories(xrEUI PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrEUI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
+target_include_directories(xrEUI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 target_precompile_headers(xrEUI PRIVATE "stdafx.h")
 
 # Project defines

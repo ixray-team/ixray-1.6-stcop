@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "compiler.h"
 
-#include "src/xrCore/SharedMaterialLibrary.h"
+#include "xrCore/SharedMaterialLibrary.h"
 
 IComputeData comp_data;
 Nodes g_nodes;

@@ -17,6 +17,7 @@ list(APPEND TC_SRC_FILES ${TC_SOURCE_ALL_FILES})
 add_executable(TextureCloner ${TC_SRC_FILES})
 target_include_directories(TextureCloner PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(TextureCloner PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
+target_include_directories(TextureCloner PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 
 # Project defines
 target_compile_definitions(TextureCloner PRIVATE TC_EXPORTS)

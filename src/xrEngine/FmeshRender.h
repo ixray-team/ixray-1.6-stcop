@@ -2,7 +2,7 @@
 
 #include "Fmesh.h"
 
-using VertexDeclarator = svector<RHIInputElementDesc,65>;
+using VertexDeclarator = FixedVector<RHIInputElementDesc,65>;
 struct ENGINE_API GeomData{
 	xr_vector<VertexDeclarator> DCL;
 	xr_vector<IRHIBuffer*> VB;

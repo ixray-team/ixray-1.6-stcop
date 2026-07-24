@@ -1,4 +1,6 @@
 #pragma once
+#include "dxUIShader.h"
+#include "dxWallMarkArray.h"
 #include "LegacyVertexElement.h"
 
 IRenderVisual* CRender::getVisual(int id)

@@ -7,11 +7,10 @@
 
 #include "ExportSkeleton.h"
 
-#include <NVMeshMender.h>
-#include <mender_input_output.h>
-#include <remove_isolated_verts.h>
+#include "NVMeshMender.h"
+#include "mender_input_output.h"
 
-#include "src/xrCore/SharedMaterialLibrary.h"
+#include "xrCore/SharedMaterialLibrary.h"
 
 void 	CExportSkeleton::SSplit::OptimizeTextureCoordinates()
 {

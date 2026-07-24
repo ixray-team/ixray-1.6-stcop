@@ -1,11 +1,10 @@
 #include "stdafx.h"
 
-#include "src/xrSound/ai_sounds.h"
+#include "xrSound/ai_sounds.h"
 #include "ParticlesObject.h"
 #include "PolterAbility.h"
 #include "PolterInterface.h"
-#include "Level.h"
-#include "src/xrGame/ai/monsters/basemonster/base_monster.h"
+#include "xrGame/ai/monsters/basemonster/base_monster.h"
 
 #include "alife_space.h"
 

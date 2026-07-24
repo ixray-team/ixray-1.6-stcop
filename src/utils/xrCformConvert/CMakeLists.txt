@@ -40,6 +40,7 @@ target_link_directories(xrLevelFilesConverter PUBLIC "${IXRAY_SDK_LIB}/")
 set_target_properties(xrLevelFilesConverter PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 target_include_directories(xrLevelFilesConverter PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrEngine/")
 target_include_directories(xrLevelFilesConverter PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
+target_include_directories(xrLevelFilesConverter PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 
 # Project defines
 target_compile_definitions(xrLevelFilesConverter PRIVATE UTILS_FORMS_EXPORTS)

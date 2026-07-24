@@ -1,12 +1,12 @@
 #include "StdAfx.h"
 
 
-#include "../xrLC_Light/xrMU_Model.h"
-#include "../xrLC_Light/xrMU_Model_Reference.h"
+#include "utils/xrLC_Light/xrMU_Model.h"
+#include "utils/xrLC_Light/xrMU_Model_Reference.h"
 
 #include "Build.h"
 #include "OGF_Face.h"
-#include "src/utils/xrForms/CompilersUI.h"
+#include "utils/xrForms/CompilersUI.h"
 
 #define	TRY(a) try { a; } catch (...) { clMsg("* E: %s", #a); }
 xrCriticalSection csThreadLock;

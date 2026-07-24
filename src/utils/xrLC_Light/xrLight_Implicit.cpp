@@ -6,9 +6,8 @@
 #include "xrLC_GlobalData.h"
 #include "xrFace.h"
 
-#include "../../xrCore/Collision/xrCDB.h"
-#include "../xrForms/CompilersUI.h"
-#include "src/utils/xrLC/Build.h"
+#include "utils/xrForms/CompilersUI.h"
+#include "utils/xrLC/Build.h"
 
 // 2 : Mainthread + UI thread
 xr_atomic_u32 ThreadTaskID_Implication = 0;
@@ -32,7 +31,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 	// Start threads
 	ThreadTaskID_Implication = 0;
 
-	ImplicitCalcGlobs* cl_globs_cpu = new ImplicitCalcGlobs(); // 4096 превышает !
+	ImplicitCalcGlobs* cl_globs_cpu = new ImplicitCalcGlobs(); // 4096 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
 	cl_globs_cpu->Initialize(defl);
  
 	xr_std_parallel_for([&cl_globs_cpu, &defl]()

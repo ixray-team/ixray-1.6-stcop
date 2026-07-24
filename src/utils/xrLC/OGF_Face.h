@@ -3,10 +3,10 @@
 
 #include "vbm.h"
 
-#include "../xrLC_Light/xrUVpoint.h"
-#include "../xrLC_Light/base_basis.h"
-#include "../xrLC_Light/base_color.h"
-#include "src/utils/xrForms/CompilersUI.h"
+#include "utils/xrLC_Light/xrUVpoint.h"
+#include "utils/xrLC_Light/base_basis.h"
+#include "utils/xrLC_Light/base_color.h"
+#include "utils/xrForms/CompilersUI.h"
 
 struct OGF_Texture
 {

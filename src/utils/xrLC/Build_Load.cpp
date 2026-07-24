@@ -2,13 +2,12 @@
 #include "ELight_def.h"
 
 #include "Build.h"
-#include "src/utils/Shader_xrLC_Compilers.h"
+#include "utils/Shader_xrLC_Compilers.h"
 
-#include "../xrLC_Light/xrLC_GlobalData.h"
-#include "../xrLC_Light/xrFace.h"
-#include "../xrLC_Light/xrMU_Model.h"
-#include "../xrLC_Light/xrMU_Model_Reference.h"
-#include "Collision/override/Model.h"
+#include "utils/xrLC_Light/xrLC_GlobalData.h"
+#include "utils/xrLC_Light/xrFace.h"
+#include "utils/xrLC_Light/xrMU_Model.h"
+#include "utils/xrLC_Light/xrMU_Model_Reference.h"
 
 extern u32	version;
 template <class T>

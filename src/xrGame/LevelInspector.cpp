@@ -3,10 +3,9 @@
 #include "GamePersistent.h"
 #include "Level.h"
 #include "Actor.h"
-#include "../xrEngine/xr_collide_form.h"
+#include "xrEngine/xr_collide_form.h"
 #include "space_restrictor.h"
-#include "../xrEngine/xr_ioc_cmd.h"
-#include "../xrEngine/xr_input.h"
+#include "xrEngine/xr_input.h"
 #include "ClimableObject.h"
 #include "Inventory.h"
 #include "InventoryWeaponSlotLayout.h"
@@ -37,7 +36,7 @@
 #include "player_hud.h"
 #include "ImUtils/ImUtils.h"
 #include "script_game_object.h"
-#include "src/xrCore/Collision/override/Model.h"
+#include "xrCore/Collision/override/Model.h"
 
 Fvector aabb_selection_vertices[32]
 {

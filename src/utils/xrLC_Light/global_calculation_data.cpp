@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "global_calculation_data.h"
 
-#include "../Shader_xrLC_Compilers.h"
+#include "utils/Shader_xrLC_Compilers.h"
 #include "embree_raytracing/EmbreeRayTrace.h"
-#include "../xrForms/CompilersUI.h"
-#include "Collision/override/Model.h"
-#include "src/utils/xrLC/Build.h"
+#include "utils/xrForms/CompilersUI.h"
+#include "utils/xrLC/Build.h"
 
 global_claculation_data	gl_data;
 

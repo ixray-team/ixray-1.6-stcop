@@ -1,9 +1,8 @@
 #include "StdAfx.h"
 #include "compiler.h"
-#include "../xrForms/CompilersUI.h"
+#include "utils/xrForms/CompilersUI.h"
 #include "compiler_embree.h"
-#include "src/xrCore/SharedMaterialLibrary.h"
-#include "src/xrCore/Collision/override/Model.h"
+#include "xrCore/SharedMaterialLibrary.h"
 
 template <class T>
 void transfer(const char* name, xr_vector<T>& dest, IReader& F, u32 chunk)
@@ -374,13 +373,13 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 				const Shader_xrLC& SH = GetShaderXRLC(F.dwMaterial, F.bSharedMaterial);
 				if (!SH.flags.bLIGHT_CastShadow) continue;
  
-				//   MU-Models !
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ MU-Models !
 				Fvector P[3];
 				xform.transform_tiny(P[0], F.v1);
 				xform.transform_tiny(P[1], F.v2);
 				xform.transform_tiny(P[2], F.v3);
 
-				//  !
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ !
 				auto& Fnew = build_faces.emplace_back();
 				Fnew.SetFace(P[0], P[1], P[2], nullptr);
 				Fnew.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0(), F.bSharedMaterial);

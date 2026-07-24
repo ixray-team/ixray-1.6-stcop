@@ -30,6 +30,7 @@ list(APPEND XPLAY_SRC_FILES ${XPLAY_SOURCE_ALL_FILES})
 # xrEngine project
 add_executable(xrEngine WIN32 ${XPLAY_SOURCE_ALL_FILES})
 target_include_directories(xrEngine PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrEngine PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories(xrEngine PRIVATE "${IXRAY_SDK_INC}")
 set_target_properties(xrEngine PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 

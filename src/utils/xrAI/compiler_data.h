@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../xrLC_Light/embree_raytracing/EmbreeGeometryBuilder.h"
-#include "src/xrEngine/Shader_xrLC.h"
+#include "utils/xrLC_Light/embree_raytracing/EmbreeGeometryBuilder.h"
+#include "xrEngine/Shader_xrLC.h"
 
 class IComputeData
 {
