@@ -171,6 +171,9 @@ public:
 	virtual	u32 Cost() const { return m_cost; }
 	void setCost(u32 nValue);
 
+	ALife::_TIME_ID m_dwTakenTime = 0;
+	IC ALife::_TIME_ID GetTakenTime() const { return m_dwTakenTime; }
+
 	virtual float Weight() const { return m_weight; }
 	void setWeight(float value);
 

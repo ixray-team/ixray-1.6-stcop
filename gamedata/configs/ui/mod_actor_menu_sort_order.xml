@@ -1,0 +1,79 @@
+<w>
+    <inventory_sort_order_tabs x="702" y="95" width="306" height="22" override="add">
+        <button x="0" y="0" width="43" height="22" id="general" frame_mode="0">
+            <text align="c" vert_align="c" font="letterica14">st_inv_sort_order_general</text>
+            <texture>ui_inGame2_pda_button</texture>
+            <text_color>
+                <t r="255" g="255" b="255"/>
+                <d r="255" g="255" b="255"/>
+                <e r="200" g="200" b="200"/>
+                <h r="170" g="170" b="170"/>
+            </text_color>
+        </button>
+        <button x="44" y="0" width="43" height="22" id="by_type" frame_mode="0">
+            <text align="c" vert_align="c" font="letterica14">st_inv_sort_order_by_type</text>
+            <texture>ui_inGame2_pda_button</texture>
+            <text_color>
+                <t r="255" g="255" b="255"/>
+                <d r="255" g="255" b="255"/>
+                <e r="200" g="200" b="200"/>
+                <h r="170" g="170" b="170"/>
+            </text_color>
+        </button>
+        <button x="88" y="0" width="43" height="22" id="by_weight" frame_mode="0">
+            <text align="c" vert_align="c" font="letterica14">st_inv_sort_order_by_weight</text>
+            <texture>ui_inGame2_pda_button</texture>
+            <text_color>
+                <t r="255" g="255" b="255"/>
+                <d r="255" g="255" b="255"/>
+                <e r="200" g="200" b="200"/>
+                <h r="170" g="170" b="170"/>
+            </text_color>
+        </button>
+        <button x="132" y="0" width="43" height="22" id="by_condition" frame_mode="0">
+            <text align="c" vert_align="c" font="letterica14">st_inv_sort_order_by_condition</text>
+            <texture>ui_inGame2_pda_button</texture>
+            <text_color>
+                <t r="255" g="255" b="255"/>
+                <d r="255" g="255" b="255"/>
+                <e r="200" g="200" b="200"/>
+                <h r="170" g="170" b="170"/>
+            </text_color>
+        </button>
+        <button x="176" y="0" width="43" height="22" id="by_cost" frame_mode="0">
+            <text align="c" vert_align="c" font="letterica14">st_inv_sort_order_by_cost</text>
+            <texture>ui_inGame2_pda_button</texture>
+            <text_color>
+                <t r="255" g="255" b="255"/>
+                <d r="255" g="255" b="255"/>
+                <e r="200" g="200" b="200"/>
+                <h r="170" g="170" b="170"/>
+            </text_color>
+        </button>
+        <button x="220" y="0" width="43" height="22" id="by_importance" frame_mode="0">
+            <text align="c" vert_align="c" font="letterica14">st_inv_sort_order_by_importance</text>
+            <texture>ui_inGame2_pda_button</texture>
+            <text_color>
+                <t r="255" g="255" b="255"/>
+                <d r="255" g="255" b="255"/>
+                <e r="200" g="200" b="200"/>
+                <h r="170" g="170" b="170"/>
+            </text_color>
+        </button>
+        <button x="264" y="0" width="42" height="22" id="by_novelty" frame_mode="0">
+            <text align="c" vert_align="c" font="letterica14">st_inv_sort_order_by_novelty</text>
+            <texture>ui_inGame2_pda_button</texture>
+            <text_color>
+                <t r="255" g="255" b="255"/>
+                <d r="255" g="255" b="255"/>
+                <e r="200" g="200" b="200"/>
+                <h r="170" g="170" b="170"/>
+            </text_color>
+        </button>
+    </inventory_sort_order_tabs>
+
+    <inventory_sort_order_tabs_container_upgrade x="702" y="95" width="306" height="22" override="add"/>
+    <inventory_sort_order_tabs_container_trade_actor_bag x="703" y="316" width="306" height="22" override="add"/>
+    <inventory_sort_order_tabs_container_trade_partner_bag x="21" y="316" width="306" height="22" override="add"/>
+    <inventory_sort_order_tabs_container_deadbody_bag x="20" y="95" width="306" height="22" override="add"/>
+</w>
