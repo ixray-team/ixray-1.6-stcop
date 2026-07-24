@@ -4,7 +4,7 @@
 #include "TiramisuMaterialRenderProxy.h"
 
 // Render-thread proxy динамического material instance.
-class TiramisuMaterialInstanceDynamicRenderProxy:public TiramisuMaterialRenderProxy
+class TiramisuMaterialInstanceDynamicRenderProxy : public TiramisuMaterialRenderProxy
 {
 public:
     [[nodiscard]] xr_optional<FMaterialPassProxy>

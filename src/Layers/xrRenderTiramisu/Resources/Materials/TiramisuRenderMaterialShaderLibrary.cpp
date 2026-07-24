@@ -21,9 +21,7 @@ TiramisuRenderMaterialShaderLibrary::TiramisuRenderMaterialShaderLibrary()
     FS.r_close(Reader);
 
     FMaterialShaderLibraryBuildOptions Options;
-    Options.Format = GRenderDevice.GraphicsApi == nri::GraphicsAPI::D3D12 ?
-        EMaterialShaderBlobFormat::Dxil :
-        EMaterialShaderBlobFormat::SpirV;
+    Options.Format = GRenderDevice.GraphicsApi == nri::GraphicsAPI::D3D12 ? EMaterialShaderBlobFormat::Dxil : EMaterialShaderBlobFormat::SpirV;
     // Bundle v2 still contains development JSON records. Cooked mode will switch
     // this to true when binary flattened material records land in bundle v3.
     Options.RequireCompleteShaderSet = false;

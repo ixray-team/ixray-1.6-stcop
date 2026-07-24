@@ -15,8 +15,7 @@ bool HasErrors(const xr_vector<FMaterialDiagnostic>& Diagnostics)
     });
 }
 
-void AddDiagnostic(xr_vector<FMaterialDiagnostic>& Diagnostics, const EMaterialDiagnosticSeverity Severity,
-    const xr_string_view Code, xr_string Message)
+void AddDiagnostic(xr_vector<FMaterialDiagnostic>& Diagnostics, const EMaterialDiagnosticSeverity Severity, const xr_string_view Code, xr_string Message)
 {
     Diagnostics.push_back({Severity, xr_string(Code), std::move(Message), {}, {}});
 }
@@ -26,8 +25,7 @@ const char* StageName(const EMaterialShaderStage Stage)
     return Stage == EMaterialShaderStage::Vertex ? "vertex" : "pixel";
 }
 
-void AppendDiagnostics(xr_vector<FMaterialDiagnostic>& Destination,
-    xr_vector<FMaterialDiagnostic> Source)
+void AppendDiagnostics(xr_vector<FMaterialDiagnostic>& Destination, xr_vector<FMaterialDiagnostic> Source)
 {
     Destination.insert(Destination.end(),
         std::make_move_iterator(Source.begin()), std::make_move_iterator(Source.end()));
@@ -39,8 +37,7 @@ bool FMaterialShaderLibraryBuildResult::Succeeded() const noexcept
     return Value.has_value() && !HasErrors(Diagnostics);
 }
 
-FMaterialShaderLibraryBuildResult TiramisuMaterialShaderLibrary::Build(
-    FMaterialBundle InBundle, const FMaterialShaderLibraryBuildOptions& Options)
+FMaterialShaderLibraryBuildResult TiramisuMaterialShaderLibrary::Build(FMaterialBundle InBundle, const FMaterialShaderLibraryBuildOptions& Options)
 {
     FMaterialShaderLibraryBuildResult Result;
     TiramisuMaterialShaderLibrary Library;
@@ -244,8 +241,7 @@ FMaterialShaderLibraryBuildResult TiramisuMaterialShaderLibrary::Build(
     return Result;
 }
 
-FMaterialShaderLibraryBuildResult TiramisuMaterialShaderLibrary::Deserialize(
-    const xr_span<const u8> Data, const FMaterialShaderLibraryBuildOptions& Options)
+FMaterialShaderLibraryBuildResult TiramisuMaterialShaderLibrary::Deserialize(const xr_span<const u8> Data, const FMaterialShaderLibraryBuildOptions& Options)
 {
     FMaterialShaderLibraryBuildResult Result;
     FMaterialBundleReadResult Read = DeserializeMaterialBundle(Data);
@@ -283,9 +279,7 @@ const FResolvedMaterialInstance* TiramisuMaterialShaderLibrary::ResolveMaterial(
     return Material != ResolvedMaterials.end() ? &Material->second : nullptr;
 }
 
-xr_optional<FMaterialShaderProgramView> TiramisuMaterialShaderLibrary::Find(
-    const FMaterialAssetId& MaterialId, const EMaterialPass Pass,
-    const xr_string_view VertexFactory, const xr_string_view RenderPassSignature) const
+xr_optional<FMaterialShaderProgramView> TiramisuMaterialShaderLibrary::Find(const FMaterialAssetId& MaterialId, const EMaterialPass Pass, const xr_string_view VertexFactory, const xr_string_view RenderPassSignature) const
 {
     const FResolvedMaterialInstance* Material = ResolveMaterial(MaterialId);
     const FMaterialPassDefinition* Definition = FindMaterialPassDefinition(Pass);
@@ -303,9 +297,7 @@ xr_optional<FMaterialShaderProgramView> TiramisuMaterialShaderLibrary::Find(
         RenderPassSignature);
 }
 
-xr_optional<FMaterialShaderProgramView> TiramisuMaterialShaderLibrary::Find(
-    const FMaterialAssetId& MaterialId, const u64 PipelineKey, const EMaterialPass Pass,
-    const xr_string_view VertexFactory, const xr_string_view RenderPassSignature) const
+xr_optional<FMaterialShaderProgramView> TiramisuMaterialShaderLibrary::Find(const FMaterialAssetId& MaterialId, const u64 PipelineKey, const EMaterialPass Pass, const xr_string_view VertexFactory, const xr_string_view RenderPassSignature) const
 {
     FMaterialShaderProgramKey Key;
     Key.MaterialId = ResolveMasterMaterialId(MaterialId);

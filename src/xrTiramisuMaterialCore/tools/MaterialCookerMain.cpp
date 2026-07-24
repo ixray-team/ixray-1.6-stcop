@@ -72,8 +72,7 @@ void PrintDiagnostics(const xr_vector<FMaterialDiagnostic>& Diagnostics, const x
 {
     for (const FMaterialDiagnostic& Diagnostic : Diagnostics)
     {
-        const char* Severity = Diagnostic.Severity == EMaterialDiagnosticSeverity::Error ? "error" :
-            Diagnostic.Severity == EMaterialDiagnosticSeverity::Warning ? "warning" : "info";
+        const char* Severity = Diagnostic.Severity == EMaterialDiagnosticSeverity::Error ? "error" : Diagnostic.Severity == EMaterialDiagnosticSeverity::Warning ? "warning" : "info";
         std::cerr << Severity << " [" << Diagnostic.Code << "] " << Asset << ": " << Diagnostic.Message << '\n';
     }
 }

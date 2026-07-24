@@ -30,8 +30,7 @@ TiramisuRenderTextureResourceProxy* TiramisuMaterialInstanceDynamicRenderProxy::
     return ParentMaterialRenderProxy->GetTexture();
 }
 
-const FMaterialAssetId&
-TiramisuMaterialInstanceDynamicRenderProxy::GetAssetReference() const
+const FMaterialAssetId& TiramisuMaterialInstanceDynamicRenderProxy::GetAssetReference() const
 {
     CheckIsRenderThread();
     VERIFY(ParentMaterialRenderProxy);

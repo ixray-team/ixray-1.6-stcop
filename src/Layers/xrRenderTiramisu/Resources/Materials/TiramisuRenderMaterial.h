@@ -6,7 +6,7 @@
 class TiramisuDefaultMaterialRenderProxy;
 
 // Runtime master material, создающий proxy для выбранной permutation.
-class TiramisuRenderMaterial: public TiramisuRenderMaterialInterface
+class TiramisuRenderMaterial : public TiramisuRenderMaterialInterface
 {
 public:
                                         TiramisuRenderMaterial     (const shared_str& InAssetReference);

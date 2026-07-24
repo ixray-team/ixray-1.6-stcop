@@ -6,7 +6,7 @@
 class TiramisuMaterialInstanceDynamicRenderProxy;
 
 // Изменяемый material instance; static parameters после создания запрещены.
-class TiramisuRenderMaterialInstanceDynamic:public TiramisuRenderMaterialInterface
+class TiramisuRenderMaterialInstanceDynamic : public TiramisuRenderMaterialInterface
 {
 public:
                                         TiramisuRenderMaterialInstanceDynamic  (TiramisuRenderMaterialInterface* InParent);

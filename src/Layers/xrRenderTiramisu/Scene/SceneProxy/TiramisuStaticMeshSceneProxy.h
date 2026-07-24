@@ -25,7 +25,7 @@ public:
 };
 
 // Scene proxy static mesh, создающий draw batches по material slots.
-class TiramisuStaticMeshSceneProxy:public TiramisuPrimitiveSceneProxy
+class TiramisuStaticMeshSceneProxy : public TiramisuPrimitiveSceneProxy
 {
 public:
                                 TiramisuStaticMeshSceneProxy   ();

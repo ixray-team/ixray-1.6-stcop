@@ -119,8 +119,7 @@ int main(const int ArgumentCount, char** ArgumentValues)
         MATERIAL_CHECK(Runner, ExpectedMaterial != ExpectedPassesByMaterial.end());
         if (ExpectedMaterial != ExpectedPassesByMaterial.end())
         {
-            MATERIAL_CHECK(Runner,
-                std::ranges::find(ExpectedMaterial->second, Blob.Pass) != ExpectedMaterial->second.end());
+            MATERIAL_CHECK(Runner, std::ranges::find(ExpectedMaterial->second, Blob.Pass) != ExpectedMaterial->second.end());
         }
         ++StageCounts[Blob.Stage];
         if (Blob.Format == EMaterialShaderBlobFormat::Dxil) ++DxilCount;
@@ -142,8 +141,7 @@ int main(const int ArgumentCount, char** ArgumentValues)
             continue;
 
         MATERIAL_CHECK(Runner, MaterialCounts->second.size() == ExpectedPasses.size());
-        const size_t ExpectedPerPass = MaterialCounts->second.contains(EMaterialPass::Validation) ?
-            MaterialCounts->second.at(EMaterialPass::Validation) : 0;
+        const size_t ExpectedPerPass = MaterialCounts->second.contains(EMaterialPass::Validation) ? MaterialCounts->second.at(EMaterialPass::Validation) : 0;
         MATERIAL_CHECK(Runner, ExpectedPerPass > 0);
         MATERIAL_CHECK(Runner, ExpectedPerPass % 4 == 0);
         for (const EMaterialPass Pass : ExpectedPasses)

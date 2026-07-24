@@ -239,10 +239,11 @@ void	CDS0_KinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)
 		for (u32 i = 0; i < P.bones.size(); i++)
 			Bone_Motion_Stop_IM((*bones)[P.bones[i]], *I);
 
-		blend_cycles[part].erase(I);// ?
-		E = blend_cycles[part].end(); I--;
+		blend_cycles[part].erase(I); // ?
+		E = blend_cycles[part].end();
+		I--;
 	}
-	//blend_cycles[part].clear	(); // ?
+	// blend_cycles[part].clear(); // ?
 }
 
 float CDS0_KinematicsAnimated::get_animation_length(MotionID motion_ID)

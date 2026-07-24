@@ -616,8 +616,7 @@ void TiramisuRender::EnableRenderThread()
     bRenderThreadEnable.store(true, std::memory_order_release);
 }
 
-void TiramisuRender::DeferDelete_RenderThread(
-    Tiramisu::TiramisuDeferredDeletionQueue::FDeleteFunction Function)
+void TiramisuRender::DeferDelete_RenderThread(Tiramisu::TiramisuDeferredDeletionQueue::FDeleteFunction Function)
 {
     CheckIsRenderThread();
     // FrameIndex is the value of the last submitted main frame. A resource
@@ -628,8 +627,7 @@ void TiramisuRender::DeferDelete_RenderThread(
     VERIFY(DeferredDeletionQueue.Enqueue(RetireFence, std::move(Function)));
 }
 
-void TiramisuRender::RecordDrawStatistics_RenderThread(
-    const u64 TriangleCount, const u64 LineCount)
+void TiramisuRender::RecordDrawStatistics_RenderThread(const u64 TriangleCount, const u64 LineCount)
 {
     CheckIsRenderThread();
     StatisticsTracker.RecordDraw(TriangleCount, LineCount);
@@ -652,16 +650,14 @@ TiramisuRender::CollectResourceStatistics_RenderThread() const
 {
     CheckIsRenderThread();
     FRenderResourceStatistics Result;
-    const auto AddBuffer = [&](const nri::Buffer* Buffer,
-        const u64 Bytes = 0)
+    const auto AddBuffer = [&](const nri::Buffer* Buffer, const u64 Bytes = 0)
     {
         if (!Buffer)
             return;
         ++Result.TrackedBufferCount;
         Result.TrackedBufferBytes += Bytes;
     };
-    const auto AddTexture = [&](const nri::Texture* Texture,
-        const u64 Bytes = 0)
+    const auto AddTexture = [&](const nri::Texture* Texture, const u64 Bytes = 0)
     {
         if (!Texture)
             return;

@@ -3,7 +3,7 @@
 #include "TiramisuRenderTypes.h"
 
 // Render-thread proxy render target с attachment descriptors.
-class TiramisuRenderTargetResourceProxy:public TiramisuRenderTextureResourceProxy
+class TiramisuRenderTargetResourceProxy : public TiramisuRenderTextureResourceProxy
 {
 public:
     virtual                         ~TiramisuRenderTargetResourceProxy     () override;

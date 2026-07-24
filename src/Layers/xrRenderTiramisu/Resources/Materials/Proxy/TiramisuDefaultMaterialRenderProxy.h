@@ -5,18 +5,15 @@
 #include <utility>
 
 // Render proxy стандартного или диагностического master material.
-class TiramisuDefaultMaterialRenderProxy:public TiramisuMaterialRenderProxy
+class TiramisuDefaultMaterialRenderProxy : public TiramisuMaterialRenderProxy
 {
 public:
     explicit TiramisuDefaultMaterialRenderProxy(FMaterialAssetId InAssetReference);
-    virtual                                             ~TiramisuDefaultMaterialRenderProxy    ();
-    [[nodiscard]] xr_optional<FMaterialPassProxy>
-                                                        ResolvePass                     (EMaterialPass Pass, EVertexType VertexType) const override;
-    [[nodiscard]] const FMaterialAssetId&
-                                                        GetAssetReference               () const override;
-    [[nodiscard]] xr_span<const FMaterialTextureParameterBinding>
-                                                        GetTextureParameters            () const override;
-    virtual TiramisuRenderTextureResourceProxy*                GetTexture                      () const override;
+    virtual ~TiramisuDefaultMaterialRenderProxy();
+    [[nodiscard]] xr_optional<FMaterialPassProxy> ResolvePass(EMaterialPass Pass, EVertexType VertexType) const override;
+    [[nodiscard]] const FMaterialAssetId& GetAssetReference() const override;
+    [[nodiscard]] xr_span<const FMaterialTextureParameterBinding> GetTextureParameters() const override;
+    virtual TiramisuRenderTextureResourceProxy* GetTexture() const override;
 
     // Одна material permutation и созданный для неё NRI pipeline.
     struct FPipelineEntry
@@ -32,6 +29,5 @@ public:
     FMaterialAssetId                AssetReference;
 
 private:
-    void                                                Initialize_RenderThread(
-                                                            const FMaterialAssetId& AssetReference);
+    void Initialize_RenderThread(const FMaterialAssetId& AssetReference);
 };

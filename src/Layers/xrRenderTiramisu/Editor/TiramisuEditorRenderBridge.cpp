@@ -2082,9 +2082,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		FEditorOwnedStaticMeshUpload Mesh;
 		Mesh.MeshId = Preview.MeshId;
 		Mesh.Revision = static_cast<u64>(Preview.Primitive) + 1;
-		auto AddVertex = [&](const xr_array<float, 3>& Position,
-			const xr_array<float, 3>& Normal,
-			const xr_array<float, 2>& TexCoord)
+		auto AddVertex = [&](const xr_array<float, 3>& Position, const xr_array<float, 3>& Normal, const xr_array<float, 2>& TexCoord)
 		{
 			FEditorStaticMeshVertex Vertex;
 			Vertex.Position = Position;
