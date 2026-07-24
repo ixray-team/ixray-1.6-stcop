@@ -107,7 +107,14 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			{
 				float gyroscopeVal[3];
 				SDL_GetGamepadSensorData(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO, gyroscopeVal, 3);
-				pInput->GamepadGyroscopeUpdate({gyroscopeVal[0], gyroscopeVal[1], gyroscopeVal[2]});
+				
+				Fvector3 gyroscope{gyroscopeVal[0], gyroscopeVal[1], gyroscopeVal[2]};
+				if (gyroscope.magnitude() < 0.05f)
+				{
+					break;
+				}
+
+				pInput->GamepadGyroscopeUpdate(gyroscope);
 			}
 			break;
 		}
