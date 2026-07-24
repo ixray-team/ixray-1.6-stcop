@@ -120,6 +120,7 @@ void DBService::DeleteInventory(int user_id)
 		}
 	};
 
+	xrCriticalSectionGuard guard(DelayCS);
 	TasksDelay.push_back(DeleteInvLambda);
 }
 
@@ -357,8 +358,11 @@ xr_hash_map<xr_string, int> DBService::LoadGame(shared_str need_field)
 
 void DBService::PushTask(const std::function<void()>& Functor)
 {
-	xrCriticalSectionGuard guard(DelayCS);
-	TasksDelay.push_back(Functor);
+	if (strstr(Core.Params, "-sql"))
+	{
+		xrCriticalSectionGuard guard(DelayCS);
+		TasksDelay.push_back(Functor);
+	}
 }
 
 DBService::UserDBProperty DBService::SelectProperty(int id)
