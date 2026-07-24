@@ -5,7 +5,7 @@
 
 CBillboard::CBillboard(const char* xml_node)
 {
-	// TODO Emmis: это не должно быть тут, ну да один хрен временный класс
+	// TODO Emmis: пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	CUIXml uiXml;
 	uiXml.Load(CONFIG_PATH, UI_PATH, "billboards.xml");
 	CUIXmlInit::InitStatic(uiXml, xml_node, 0, this);
@@ -86,7 +86,7 @@ void CBillboard::DrawTexture()
 	UIRender->FlushPrimitive();
 }
 
-void CBillboard::DrawText()
+void CBillboard::DrawWidgetText()
 {
 	if (!m_bTextEnable)
 	{
@@ -121,11 +121,11 @@ void CBillboard::DrawText()
 
 		if (IsHighlightText() && xr_strlen(TextItemControl()->GetText()) > 0 && m_bEnableTextHighlighting)
 		{
-			DrawHighlightedText(); // TODO Emmis: не реализовано
+			DrawHighlightedText(); // TODO Emmis: пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		}
 		else
 		{
-			TextItemControl()->DrawWS(x, y); // TODO Emmis: DrawWS(x, y) временное решение для рендера текста в 3д(ну типа), до создания нормального билборда
+			TextItemControl()->DrawWS(x, y); // TODO Emmis: DrawWS(x, y) пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ 3пїЅ(пїЅпїЅ пїЅпїЅпїЅпїЅ), пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		}
 	}
 }
