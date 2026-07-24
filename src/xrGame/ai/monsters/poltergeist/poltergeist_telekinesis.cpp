@@ -1,155 +1,10 @@
-<<<<<<< HEAD
 #include "stdafx.h"
-<<<<<<< HEAD
-#include "HUDManager.h"
-<<<<<<< HEAD:src/xrGame/ai/monsters/abilities/poltergeist/poltergeist_telekinesis.cpp
-=======
-#include "stdafx.h"
->>>>>>> 3421f29470 (Fix -> "Clean-ups"):src/xrGame/ai/monsters/poltergeist/poltergeist_telekinesis.cpp
-=======
-#include "HUDManager.h"
-#include "StdAfx.h"
->>>>>>> 87502bd42b (Add Instanced collision and replace OPCODE with EMBREE)
 #include "poltergeist.h"
 #include "WeaponMagazined.h"
 #include "../../../PhysicsShellHolder.h"
 #include "../../../Level.h"
 #include "../../../Actor.h"
-#include "../../../../xrPhysics/IColisiondamageInfo.h"
-#include "../../../ActorCondition.h"
-#include "../../../Inventory.h"
 #include "../../../Weapon.h"
-<<<<<<< HEAD
-=======
-
-#include "../xrSound/ai_sounds.h"
-#include "PolterInterface.h"
-#include "PolterTele.h"
-#include "PhysicsShellHolder.h"
-#include "Level.h"
-#include "Actor.h"
-#include "ActorCondition.h"
-#include "Inventory.h"
-#include "../xrPhysics/IColisiondamageInfo.h"
-#include "ai/monsters/telekinesis.h"
-#include "ai/monsters/basemonster/base_monster.h"
-
-CPolterTele::CPolterTele(IPolterInterface* polter) : inherited (polter),m_pmt_object_collision_damage(0.5f)
-{
-}
-
-CPolterTele::~CPolterTele()
-{
-}
-
-void CPolterTele::load(const char* section)
-{
-	inherited::load(section);
-
-	m_pmt_radius						= pSettings->read_if_exists<float>(section,	"Tele_Find_Radius",					10.f);
-	m_pmt_object_min_mass				= pSettings->read_if_exists<float>(section,	"Tele_Object_Min_Mass",				40.f);
-	m_pmt_object_max_mass				= pSettings->read_if_exists<float>(section,	"Tele_Object_Max_Mass",				500.f);
-	m_pmt_object_count					= pSettings->read_if_exists<u32>(section,	"Tele_Object_Count",				10);
-	m_pmt_time_to_hold					= pSettings->read_if_exists<u32>(section,	"Tele_Hold_Time",					3000);
-	m_pmt_time_to_wait					= pSettings->read_if_exists<u32>(section,	"Tele_Wait_Time",					3000);
-	m_pmt_time_to_wait_in_objects		= pSettings->read_if_exists<u32>(section,	"Tele_Delay_Between_Objects_Time",	500);
-	m_pmt_distance						= pSettings->read_if_exists<float>(section,	"Tele_Distance",					50.f);
-	m_pmt_object_height					= pSettings->read_if_exists<float>(section,	"Tele_Object_Height",				10.f);
-	m_pmt_time_object_keep				= pSettings->read_if_exists<u32>(section,	"Tele_Time_Object_Keep",			10000);
-	m_pmt_raise_speed					= pSettings->read_if_exists<float>(section,	"Tele_Raise_Speed",					3.f);
-	m_pmt_raise_time_to_wait_in_objects	= pSettings->read_if_exists<u32>(section,	"Tele_Delay_Between_Objects_Raise_Time", 500);
-	m_pmt_fly_velocity					= pSettings->read_if_exists<float>(section, "Tele_Fly_Velocity",				30.f);
-	m_pmt_object_collision_damage		= pSettings->read_if_exists<float>(section, "Tele_Collision_Damage",			0.5f);
-	::Sound->create						(m_sound_tele_hold, pSettings->r_string(section,"sound_tele_hold"),	st_Effect,SOUND_TYPE_WORLD);
-	::Sound->create						(m_sound_tele_throw, pSettings->r_string(section,"sound_tele_throw"),st_Effect,SOUND_TYPE_WORLD);
-
-	m_state								= 	eWait;
-	m_time								= 	0;
-	m_time_next							= 	0;
-}
-
-void CPolterTele::update_frame()
-{
-	inherited::update_frame();
-}
-
-void CPolterTele::update_schedule()
-{
-	inherited::update_schedule();
-	
-	CMonsterEnemyManager& enemy = m_object->GetMonster()->EnemyMan;
-	
-	const Fvector enemy_pos = enemy.get_enemy_position();
-	const float distance_to_enemy = enemy_pos.distance_to(m_object->GetCurrentPosition());
-
-	// TODO: Where was a detection level! "if ( m_object->GetCurrentDetectionLevel() < m_object->GetDetectionSuccessLevel() ) return"
-	if (distance_to_enemy > m_pmt_distance || m_object->GetActorIgnore())
-	{
-		return;
-	}
-
-	switch (m_state)
-	{
-	case eStartRaiseObjects:
-		{
-			if (m_time + m_time_next < time()) {
-				if (!tele_raise_objects())
-				{
-					m_state	= eRaisingObjects;
-				}
-				
-				m_time = time();
-				m_time_next = m_pmt_raise_time_to_wait_in_objects / 2 + Random.randI(m_pmt_raise_time_to_wait_in_objects / 2);
-			}
-	
-			if (m_state == eStartRaiseObjects) {
-				if (m_object->GetTelekinesis()->get_objects_count() >= m_pmt_object_count) {
-					m_state		= eRaisingObjects;
-					m_time		= time();
-				}
-			}
-	
-			break;
-		}
-	case eRaisingObjects:
-		{
-			if (m_time + m_pmt_time_to_hold > time())
-			{
-				break;
-			}
-		
-			m_time = time();
-			m_time_next = 0;
-			m_state = eFireObjects;
-		}
-	case eFireObjects:
-		{
-			if (m_time + m_time_next < time()) {
-				tele_fire_objects();
-			
-				m_time = time();
-				m_time_next	= m_pmt_time_to_wait_in_objects / 2 + Random.randI(m_pmt_time_to_wait_in_objects / 2);
-			}
-		
-			if (m_object->GetTelekinesis()->get_objects_count() == 0) {
-				m_state = eWait;
-				m_time = time();
-			}
-			break;
-		}
-	case eWait:
-		{
-			if (m_time + m_pmt_time_to_wait < time()) {
-				m_time_next = 0;
-				m_state = eStartRaiseObjects;
-			}
-			break;
-		}
-	}
-}
->>>>>>> 05290cbd48 (Replace READ_IF_EXISTS with optimized read)
-=======
->>>>>>> 87502bd42b (Add Instanced collision and replace OPCODE with EMBREE)
 
 //////////////////////////////////////////////////////////////////////////
 // Выбор подходящих объектов для телекинеза
@@ -209,50 +64,50 @@ void CTelekineticPoltergeist::load(LPCSTR section)
 {
 	inherited::load(section);
 
-	radius = READ_IF_EXISTS(pSettings, r_float, section, "Tele_Find_Radius", 10.f);
-	object_min_mass = READ_IF_EXISTS(pSettings, r_float, section, "Tele_Object_Min_Mass", 40.f);
-	object_max_mass = READ_IF_EXISTS(pSettings, r_float, section, "Tele_Object_Max_Mass", 500.f);
-	object_count = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Object_Count", 10);
-	time_to_hold = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Hold_Time", 3000);
-	time_to_wait = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Wait_Time", 3000);
-	time_to_wait_in_objects = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Delay_Between_Objects_Time", 500);
-	distance = READ_IF_EXISTS(pSettings, r_float, section, "Tele_Distance", 50.f);
-	object_height = READ_IF_EXISTS(pSettings, r_float, section, "Tele_Object_Height", 10.f);
-	time_object_keep = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Time_Object_Keep", 10000);
-	raise_speed = READ_IF_EXISTS(pSettings, r_float, section, "Tele_Raise_Speed", 3.f);
-	raise_time_to_wait_in_objects = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Delay_Between_Objects_Raise_Time", 500);
-	fly_velocity = READ_IF_EXISTS(pSettings, r_float, section, "Tele_Fly_Velocity", 30.f);
+	radius = pSettings->read_if_exists<float>(section, "Tele_Find_Radius", 10.f);
+	object_min_mass = pSettings->read_if_exists<float>(section, "Tele_Object_Min_Mass", 40.f);
+	object_max_mass = pSettings->read_if_exists<float>(section, "Tele_Object_Max_Mass", 500.f);
+	object_count = pSettings->read_if_exists<u32>(section, "Tele_Object_Count", 10);
+	time_to_hold = pSettings->read_if_exists<u32>(section, "Tele_Hold_Time", 3000);
+	time_to_wait = pSettings->read_if_exists<u32>(section, "Tele_Wait_Time", 3000);
+	time_to_wait_in_objects = pSettings->read_if_exists<u32>(section, "Tele_Delay_Between_Objects_Time", 500);
+	distance = pSettings->read_if_exists<float>(section, "Tele_Distance", 50.f);
+	object_height = pSettings->read_if_exists<float>(section, "Tele_Object_Height", 10.f);
+	time_object_keep = pSettings->read_if_exists<u32>(section, "Tele_Time_Object_Keep", 10000);
+	raise_speed = pSettings->read_if_exists<float>(section, "Tele_Raise_Speed", 3.f);
+	raise_time_to_wait_in_objects = pSettings->read_if_exists<u32>(section, "Tele_Delay_Between_Objects_Raise_Time", 500);
+	fly_velocity = pSettings->read_if_exists<float>(section, "Tele_Fly_Velocity", 30.f);
 
-	shooting_from_weapon_enable = READ_IF_EXISTS(pSettings, r_bool, section, "Tele_Shooting_From_Weapon_Enable", true);
-	activate_n_throw_grenade = READ_IF_EXISTS(pSettings, r_bool, section, "Tele_Activate_N_Throw_Grenade", true);
-	max_pickuped_weapons = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Max_Pickuped_Weapons", 2);
-	delay_before_first_shot = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Delay_Before_First_Shoot", 0);
-	particle_tele_object = READ_IF_EXISTS(pSettings, r_string, section, "Particle_Tele_Object", "static\\fire_distort");
+	shooting_from_weapon_enable = pSettings->read_if_exists<bool>(section, "Tele_Shooting_From_Weapon_Enable", true);
+	activate_n_throw_grenade = pSettings->read_if_exists<bool>(section, "Tele_Activate_N_Throw_Grenade", true);
+	max_pickuped_weapons = pSettings->read_if_exists<u32>(section, "Tele_Max_Pickuped_Weapons", 2);
+	delay_before_first_shot = pSettings->read_if_exists<u32>(section, "Tele_Delay_Before_First_Shoot", 0);
+	particle_tele_object = pSettings->read_if_exists<str_c>(section, "Particle_Tele_Object", "static\\fire_distort");
 
-	novice_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 180.f);
-	stalker_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 200.f);
-	veteran_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 240.f);
-	master_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 280.f);
+	novice_difficulty_angular_speed = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Angular_Speed", 180.f);
+	stalker_difficulty_angular_speed = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Angular_Speed", 200.f);
+	veteran_difficulty_angular_speed = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Angular_Speed", 240.f);
+	master_difficulty_angular_speed = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Angular_Speed", 280.f);
 
 	clamp(novice_difficulty_angular_speed, EPS_S, 360.f);
 	clamp(stalker_difficulty_angular_speed, EPS_L, 360.f);
 	clamp(veteran_difficulty_angular_speed, EPS_L, 360.f);
 	clamp(master_difficulty_angular_speed, EPS_L, 360.f);
 
-	novice_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Error_Angle", 30.f);
-	stalker_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Stalker_Difficulty_Error_Angle", 20.f);
-	veteran_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Veteran_Difficulty_Error_Angle", 15.f);
-	master_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Master_Difficulty_Error_Angle", 8.f);
+	novice_difficulty_error_angle = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Error_Angle", 30.f);
+	stalker_difficulty_error_angle = pSettings->read_if_exists<float>(section, "Stalker_Difficulty_Error_Angle", 20.f);
+	veteran_difficulty_error_angle = pSettings->read_if_exists<float>(section, "Veteran_Difficulty_Error_Angle", 15.f);
+	master_difficulty_error_angle = pSettings->read_if_exists<float>(section, "Master_Difficulty_Error_Angle", 8.f);
 
 	clamp(novice_difficulty_error_angle, EPS_L, 180.f);
 	clamp(stalker_difficulty_error_angle, EPS_L, 180.f);
 	clamp(veteran_difficulty_error_angle, EPS_L, 180.f);
 	clamp(master_difficulty_error_angle, EPS_L, 180.f);
 
-	novice_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Throwed_Object_Hit_Factor", 0.1f);
-	stalker_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Stalker_Difficulty_Throwed_Object_Hit_Factor", 0.2f);
-	veteran_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Veteran_Difficulty_Throwed_Object_Hit_Factor", 0.3f);
-	master_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Master_Difficulty_Throwed_Object_Hit_Factor", 0.4f);
+	novice_difficulty_object_hit_factor = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Throwed_Object_Hit_Factor", 0.1f);
+	stalker_difficulty_object_hit_factor = pSettings->read_if_exists<float>(section, "Stalker_Difficulty_Throwed_Object_Hit_Factor", 0.2f);
+	veteran_difficulty_object_hit_factor = pSettings->read_if_exists<float>(section, "Veteran_Difficulty_Throwed_Object_Hit_Factor", 0.3f);
+	master_difficulty_object_hit_factor = pSettings->read_if_exists<float>(section, "Master_Difficulty_Throwed_Object_Hit_Factor", 0.4f);
 
 	clamp(novice_difficulty_object_hit_factor, 0.f, 1.f);
 	clamp(stalker_difficulty_object_hit_factor, 0.f, 1.f);
@@ -532,9 +387,10 @@ bool CTelekineticPoltergeist::trace_object(CObject* obj, const Fvector& target)
 
 	collide::rq_result rq_result;
 
-	if (Level().ObjectSpace.RayPick(trace_from, dir, range, collide::rqtBoth, rq_result, obj))
+	if (Level().ObjectSpace.RayPick(trace_from, dir, range, collide::rqtBoth, rq_result, obj)
+		&& !rq_result.IsStatic())
 	{
-		CObject* raypicked_object = rq_result.O;
+		const CObject* raypicked_object = rq_result.GetDynamic();
 		const CEntityAlive* our_enemy = this->poltergeist->EnemyMan.get_enemy();
 
 		if (raypicked_object == our_enemy)

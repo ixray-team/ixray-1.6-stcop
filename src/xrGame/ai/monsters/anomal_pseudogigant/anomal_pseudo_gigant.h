@@ -1,19 +1,20 @@
 #pragma once
-#include "../abilities/poltergeist/PolterInterface.h"
+// TODO: After merging with develop need fix!
+//#include "../abilities/poltergeist/PolterInterface.h"
 #include "../basemonster/base_monster.h"
-#include "../xrGame/ai/monsters/pseudogigant/pseudo_gigant.h"
+#include "xrGame/ai/monsters/pseudogigant/pseudo_gigant.h"
 #include "../telekinesis.h"
 #include "../../../../xrGame/Hit.h"
-#include "../xrScripts/script_export_space.h"
+#include "xrScripts/script_export_space.h"
 
 //#define SCRIPT_REGISTRATOR
 
 class CPolterSpecialAbility;
 
 class CAnomalPseudoGigant final : public CPseudoGigant,
-							public CTelekinesis,
-							public IPolterInterface {
-							//	{
+							public CTelekinesis
+							//,public IPolterInterface 
+{
 
 	typedef		CPseudoGigant						inherited;
 
@@ -60,21 +61,21 @@ class CAnomalPseudoGigant final : public CPseudoGigant,
 
 
 	// begin IPolterInterface
-	virtual CBaseMonster* GetMonster() override { return this; }
-	virtual CTelekinesis* GetTelekinesis() override { return this; }
-	virtual const Fvector& GetCurrentPosition() override { return Position(); }
-	virtual float GetTargetHeight() override { return 0.0f; }
-	virtual float GetCurrentDetectionLevel() override { return get_current_detection_level(); }
-	virtual float GetDetectionSuccessLevel() override { return get_detection_success_level(); }
-	virtual bool GetActorIgnore() override { return get_actor_ignore(); }
-	virtual xr_vector<CObject*>& GetTeleObjects() override { return tele_objects; }
+	//virtual CBaseMonster* GetMonster() override { return this; }
+	//virtual CTelekinesis* GetTelekinesis() override { return this; }
+	//virtual const Fvector& GetCurrentPosition() override { return Position(); }
+	//virtual float GetTargetHeight() override { return 0.0f; }
+	//virtual float GetCurrentDetectionLevel() override { return get_current_detection_level(); }
+	//virtual float GetDetectionSuccessLevel() override { return get_detection_success_level(); }
+	//virtual bool GetActorIgnore() override { return get_actor_ignore(); }
+	//virtual xr_vector<CObject*>& GetTeleObjects() override { return tele_objects; }
 	// end IPolterInterface
 
 private:
 
-	CPolterSpecialAbility* m_flame = nullptr;
-	CPolterSpecialAbility* m_tele = nullptr;
-	CPolterSpecialAbility* m_chem = nullptr;
+	//CPolterSpecialAbility* m_flame = nullptr;
+	//CPolterSpecialAbility* m_tele = nullptr;
+	//CPolterSpecialAbility* m_chem = nullptr;
 	xr_vector<CObject*> tele_objects = {};
 
 public:

@@ -889,63 +889,64 @@ bool CBulletManager::firetrace_callback(const collide::rq_result& result, LPVOID
 	if (!result.IsStatic() && (result.GetDynamic()->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 	{
 		auto Obj = const_cast<CObject*>(result.GetDynamic());
-		if ((Obj->SpatialComponent->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
+		if ((Obj->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{
 			CGameObject* go = Obj->cast_game_object();
 
-				if (go != nullptr)
+			if (go != nullptr)
+			{
+				if (CAnomalyZone* CZ = go->cast_anomaly_zone())
 				{
-					if (CAnomalyZone* CZ = go->cast_anomaly_zone())
+					u8 flag = CZ->PlayEntranceSmallParticles(collide_position, bullet.dir, bullet.start_velocity, true);
+					if (flag == u8(1))
 					{
-						u8 flag = CZ->PlayEntranceSmallParticles(collide_position, bullet.dir, bullet.start_velocity, true);
-						if (flag == u8(1))
-						{
-							data.collide_time = 1.f;
-							bullet.speed = 0.f;
+						data.collide_time = 1.f;
+						bullet.speed = 0.f;
+						
+						return true;
+					}
 
-							return true;
-						}
+					if (flag == u8(2))
+					{
+						bullet.start_position = collide_position;
+						bullet.bullet_pos = collide_position;
+						bullet.tracer_pos[bp_update_idx] = collide_position;
 
-						if (flag == u8(2))
-						{
-							bullet.start_position = collide_position;
-							bullet.bullet_pos = collide_position;
-							bullet.tracer_pos[bp_update_idx] = collide_position;
+						Fvector C;
+						CZ->Center(C);
+						float radius = CZ->Radius();
 
-							Fvector C;
-							CZ->Center(C);
-							float radius = CZ->Radius();
+						Fvector normal;
+						normal.sub(collide_position, C);
+						normal.normalize();
 
-							Fvector normal;
-							normal.sub(collide_position, C);
-							normal.normalize();
+						Fvector incoming_dir = bullet.dir;
+						incoming_dir.normalize();
 
-							Fvector incoming_dir = bullet.dir;
-							incoming_dir.normalize();
+						float dot = incoming_dir.dotproduct(normal);
+						Fvector reflected_dir;
+						reflected_dir.mad(incoming_dir, normal, -2.0f * dot);
+						reflected_dir.normalize();
+						
+						reflected_dir.random_dir(reflected_dir, deg2rad(5.0f));
+						
+						bullet.dir = reflected_dir;
 
-							float dot = incoming_dir.dotproduct(normal);
-							Fvector reflected_dir;
-							reflected_dir.mad(incoming_dir, normal, -2.0f * dot);
-							reflected_dir.normalize();
+				
+						float energy_loss = 0.8f; //-80%
+						bullet.speed *= 1.0f - energy_loss;
 
-							reflected_dir.random_dir(reflected_dir, deg2rad(5.0f));
+						bullet.start_velocity.set(bullet.dir);
+						bullet.start_velocity.mul(bullet.speed);
+					}
 
-							bullet.dir = reflected_dir;
-
-							float energy_loss = 0.8f; //-80%
-							bullet.speed *= 1.0f - energy_loss;
-
-							bullet.start_velocity.set(bullet.dir);
-							bullet.start_velocity.mul(bullet.speed);
-						}
-
-						if (flag == u8(3))
-						{
-							bullet.start_position = collide_position;
-							bullet.bullet_pos = collide_position;
-							bullet.tracer_pos[bp_update_idx] = collide_position;
-							bullet.dir.random_dir();
-							bullet.start_velocity = Fvector(bullet.dir).mul(bullet.speed * 0.2f);
+					if (flag == u8(3))
+					{
+						bullet.start_position = collide_position;
+						bullet.bullet_pos = collide_position;
+						bullet.tracer_pos[bp_update_idx] = collide_position;
+						bullet.dir.random_dir();
+						bullet.start_velocity = Fvector(bullet.dir).mul(bullet.speed * 0.2f);
 					}
 				}
 			}

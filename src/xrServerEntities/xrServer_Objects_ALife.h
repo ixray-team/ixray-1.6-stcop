@@ -574,7 +574,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeCar,CSE_ALifeDynamicObjectVisual,CSE_PHSke
 
 	u8 Engine;
 	u8 Light;
-	u16 Owner;
+	ALife::_OBJECT_ID Owner;
 	u32 Transmission;
 	xr_vector<SPHNetState> StateVec;
 

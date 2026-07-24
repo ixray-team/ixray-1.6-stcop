@@ -851,7 +851,7 @@ bool STelekineticWeaponObject::is_enemy_tracing(float threshold)
 	);
 
 	float dot = weapon->get_LastFD().dotproduct(dir_to_enemy);
-	return rq_result.O == enemy && dot >= cosf(deg2rad(threshold));
+	return !rq_result.IsStatic() && rq_result.GetDynamic() == enemy && dot >= cosf(deg2rad(threshold));
 }
 
 void STelekineticWeaponObject::perform_keep_object()

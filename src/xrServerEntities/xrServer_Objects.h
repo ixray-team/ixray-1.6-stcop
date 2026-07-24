@@ -169,7 +169,7 @@
 //		 Add m_script_story_ID in CSE_ALifeObject
 //		 
 //------------------------------------------------------------------------------
-#define SPAWN_VERSION	u16(130)
+#define SPAWN_VERSION	u16(131)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_Shape,ISE_Shape,CShapeData)
 public:
