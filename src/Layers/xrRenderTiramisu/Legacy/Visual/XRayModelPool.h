@@ -32,6 +32,7 @@ private:
 	POOL						Pool;				// Unused / Inactive
 	bool						bForceDiscard;
 	bool						bAllowChildrenDuplicate;
+	bool						OwnsMotionsContainer = false;
 
 	void						Destroy();
 

@@ -171,20 +171,30 @@ void CDS0_ModelPool::Destroy()
 	Models.clear();
 
 	// cleanup motions container
-	g_pMotionsContainer->clean(false);
+	if (g_pMotionsContainer)
+	{
+		g_pMotionsContainer->clean(false);
+	}
 }
 
 CDS0_ModelPool::CDS0_ModelPool()
 {
 	bForceDiscard = false;
 	bAllowChildrenDuplicate = true;
-	g_pMotionsContainer = new motions_container;
+	if (!g_pMotionsContainer)
+	{
+		g_pMotionsContainer = new motions_container;
+		OwnsMotionsContainer = true;
+	}
 }
 
 CDS0_ModelPool::~CDS0_ModelPool()
 {
 	Destroy();
-	xr_delete(g_pMotionsContainer);
+	if (OwnsMotionsContainer)
+	{
+		xr_delete(g_pMotionsContainer);
+	}
 }
 
 CDS0_RenderVisual* CDS0_ModelPool::Instance_Find(LPCSTR N)

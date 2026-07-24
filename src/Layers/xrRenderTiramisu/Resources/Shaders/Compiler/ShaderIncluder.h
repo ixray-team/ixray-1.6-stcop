@@ -75,23 +75,51 @@ struct DXCInluder :public IDxcIncludeHandler
 		}
 		xr_strlwr(Name);
 		string_path FileName;
-		if (strstr(Name, "\\common.h.hlsl")&&strcmp(strstr(Name,"\\common.h.hlsl"), "\\common.h.hlsl")==0)
+		xr_strcpy(FileName, Name);
+		bool IsResolved = FS.exist(FileName) != nullptr;
+
+		auto TryGameShader = [&FileName](const char* RelativeName)
 		{
-			xr_strconcat(FileName, "r5\\common\\common.h.hlsl");
-		}
-		else
+			return FS.exist(FileName, "$game_shaders$", RelativeName) !=
+				nullptr;
+		};
+
+		// DXC может передать include как исходное имя либо как путь,
+		// уже объединённый с каталогом source-файла. Проверяем обе формы.
+		const char* R5Path = strstr(Name, "r5\\");
+		if (!IsResolved && R5Path)
 		{
-			xr_strconcat(FileName, "r5\\common\\", Name);
+			IsResolved = TryGameShader(R5Path);
 		}
 
-
-		if (!FS.exist(FileName,"$game_shaders$", FileName))
+		const char* RequestedName = Name;
+		const char* GlobalPath = strstr(Name, "\\global\\");
+		if (GlobalPath)
 		{
-			xr_strcpy(FileName, Name);
-			if (!FS.exist(FileName))
-			{
-				return E_FAIL;
-			}
+			RequestedName = GlobalPath + xr_strlen("\\global\\");
+		}
+
+		string_path RelativeName;
+		if (!IsResolved)
+		{
+			xr_strconcat(RelativeName, "r5\\", RequestedName);
+			IsResolved = TryGameShader(RelativeName);
+		}
+		if (!IsResolved)
+		{
+			xr_strconcat(RelativeName, "r5\\common\\", RequestedName);
+			IsResolved = TryGameShader(RelativeName);
+		}
+		if (!IsResolved)
+		{
+			const char* BaseName = strrchr(Name, '\\');
+			BaseName = BaseName ? BaseName + 1 : Name;
+			xr_strconcat(RelativeName, "r5\\common\\", BaseName);
+			IsResolved = TryGameShader(RelativeName);
+		}
+		if (!IsResolved)
+		{
+			return E_FAIL;
 		}
 		xr_vector<char> Data;
 		if (!ReadFile(FileName, Data))
