@@ -274,6 +274,10 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 	pIItem->m_pInventory = this;
 	pIItem->SetDropManual(false);
 	pIItem->AllowTrade();
+	if (pIItem->m_dwTakenTime == 0)
+	{
+		pIItem->m_dwTakenTime = Level().GetGameTime();
+	}
 
 	//if net_Import for pObj arrived then the pObj will pushed to CrPr list (correction prediction)
 	//usually net_Import arrived for objects that not has a parent object..

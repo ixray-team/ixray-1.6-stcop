@@ -129,11 +129,13 @@ void CUIActorMenu::UpdateActorBagList()
 	m_pInventoryBagList->ClearAll(true);
 
 	TIItemContainer ruck_list = m_pActorInvOwner->inventory().m_ruck;
-	std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
-
 	if (m_pInventorySorter)
 	{
-		m_pInventorySorter->SortItems(ruck_list, GetPlayerSortCategory());
+		PrepareBagItemList(ruck_list, GetActiveBagListSlot());
+	}
+	else
+	{
+		std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
 	}
 
 	for (PIItem item : ruck_list)

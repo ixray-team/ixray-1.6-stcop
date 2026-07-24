@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_inv_sort_order_general">
+		<text>Общ</text>
+	</string>
+	<string id="st_inv_sort_order_general_hint">
+		<text>Сортировка по размеру в сетке инвентаря</text>
+	</string>
+	<string id="st_inv_sort_order_by_type">
+		<text>Тип</text>
+	</string>
+	<string id="st_inv_sort_order_by_type_hint">
+		<text>Сортировка по типу. Повторный клик или Alt (kINV_SORT_CYCLE) переключает фокус типа</text>
+	</string>
+	<string id="st_inv_sort_order_by_weight">
+		<text>Вес</text>
+	</string>
+	<string id="st_inv_sort_order_by_weight_hint">
+		<text>Сортировка по весу. Повторный клик или Alt (kINV_SORT_CYCLE) меняет направление</text>
+	</string>
+	<string id="st_inv_sort_order_by_condition">
+		<text>Сост</text>
+	</string>
+	<string id="st_inv_sort_order_by_condition_hint">
+		<text>Сортировка по состоянию. Повторный клик или Alt (kINV_SORT_CYCLE) меняет направление</text>
+	</string>
+	<string id="st_inv_sort_order_by_cost">
+		<text>Цена</text>
+	</string>
+	<string id="st_inv_sort_order_by_cost_hint">
+		<text>Сортировка по цене. Повторный клик или Alt (kINV_SORT_CYCLE) меняет направление (дорогой / дешевый)</text>
+	</string>
+	<string id="st_inv_sort_order_by_importance">
+		<text>Важн</text>
+	</string>
+	<string id="st_inv_sort_order_by_importance_hint">
+		<text>Квестовые предметы сверху, остальные по размеру в сетке</text>
+	</string>
+	<string id="st_inv_sort_order_by_novelty">
+		<text>Нов</text>
+	</string>
+	<string id="st_inv_sort_order_by_novelty_hint">
+		<text>Сортировка по времени взятия в инвентарь. Повторный клик или Alt (kINV_SORT_CYCLE) меняет направление (новый / старый)</text>
+	</string>
+</string_table>

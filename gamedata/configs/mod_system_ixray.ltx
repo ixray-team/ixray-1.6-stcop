@@ -569,6 +569,60 @@ name = st_inv_sort_attachments
 hint = st_inv_sort_attachments_hint
 show_text = true
 
+
+[inventory_sort]
+system = categories
+
+[inventory_sort:ordering]
+weight_desc = true
+condition_desc = true
+cost_desc = true
+novelty_desc = true
+
+[inventory_sort_order]
+general = 1
+by_type = 1
+by_weight = 1
+by_condition = 1
+by_cost = 1
+by_importance = 1
+by_novelty = 1
+
+[inventory_sort_order:general]
+name = st_inv_sort_order_general
+hint = st_inv_sort_order_general_hint
+show_text = true
+
+[inventory_sort_order:by_type]
+name = st_inv_sort_order_by_type
+hint = st_inv_sort_order_by_type_hint
+show_text = true
+
+[inventory_sort_order:by_weight]
+name = st_inv_sort_order_by_weight
+hint = st_inv_sort_order_by_weight_hint
+show_text = true
+
+[inventory_sort_order:by_condition]
+name = st_inv_sort_order_by_condition
+hint = st_inv_sort_order_by_condition_hint
+show_text = true
+
+[inventory_sort_order:by_cost]
+name = st_inv_sort_order_by_cost
+hint = st_inv_sort_order_by_cost_hint
+show_text = true
+
+[inventory_sort_order:by_importance]
+name = st_inv_sort_order_by_importance
+hint = st_inv_sort_order_by_importance_hint
+show_text = true
+
+[inventory_sort_order:by_novelty]
+name = st_inv_sort_order_by_novelty
+hint = st_inv_sort_order_by_novelty_hint
+show_text = true
+
 ;quest_items.ltx
 ![jup_b206_plant]
 3d_static_rotate = 88,-23,4
