@@ -38,7 +38,7 @@ bool CUIListWnd::_initListScrollBar(Fvector2 size)
     const char* profile = m_scrollbar_profile.size() ? *m_scrollbar_profile : nullptr;
     const char* profileName = (profile && profile[0]) ? profile : "default";
 
-    if (!m_ScrollBar->InitScrollBar(scrollPos, size.y, false, profileName))
+    if (!CUIScrollBar::InitForProfile(*m_ScrollBar, scrollPos, size.y, false, profileName))
     {
         return false;
     }
