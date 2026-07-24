@@ -41,7 +41,7 @@
 	</focused_and_selected_arc>
 	
 	<texture_empty_hands>ui_rm_icon_empty</texture_empty_hands>
-	<wheel_menu_params sector_count="8" starting_angle="0.425" sector_gap_angle="0.035" safezone_height_factor="0.09" inner_radius_ratio="0.57" selected_radius_factor="1.078">
+	<wheel_menu_params sector_count="7" starting_angle="0.425" sector_gap_angle="0.035" safezone_height_factor="0.09" inner_radius_ratio="0.5" selected_radius_factor="1.078">
 		<color_selected r="255" g="153" b="68" a="255"/>
 		<color_deselected r="255" g="255" b="255" a="204"/>
 		<sector_outer_side_color r="51" g="51" b="51" a="50"/>
@@ -49,7 +49,6 @@
 		
 		<!-- first slot is at 0 degrees = EAST -->
 		<slot id="5"/>
-		<slot id="9"/>
 		<slot id="6"/>
 		<slot id="0"/>
 		<slot id="2"/>
