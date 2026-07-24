@@ -22,6 +22,7 @@ public:
 	void UpdateLEDByHP(float Health);
 	void SetTriggerResistance(bool RightTrigger, u8 StartPosition, u8 Force);
 	void ClearTriggerEffect(bool RightTrigger);
+	void SetLED(u8 Red, u8 Green, u8 Blue);
 
 	bool Rumble(u16 LFRumble, u16 HFRumble, u16 DurationMS);
 
@@ -36,7 +37,6 @@ private:
 	void InitHID();
 	void DestoryHID();
 
-	void SetLED(u8 Red, u8 Green, u8 Blue);
 };
 
 extern ENGINE_API CGamepadService* GGamepadService;
