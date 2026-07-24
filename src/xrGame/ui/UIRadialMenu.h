@@ -68,12 +68,18 @@ protected:
 
 	ui_shader* crosshair_shader;
 
+	shared_str textureDefault;
+	shared_str textureSelected;
+	shared_str textureFocused;
+	shared_str textureFocusedSelected;
+
 	int selected_index = -1;
 	bool bWaitForZeroRStick = false;
 
 	//read from xml
 	xr_vector<u32> slotsInSectors;
 	xr_vector<CUI3dStatic*> slotIcons;
+	xr_vector<CUIStatic*> slotBackgrounds;
 	int sectors_count;
 	float starting_angle;
 	float inner_radius_ratio;//radius / inner radius
