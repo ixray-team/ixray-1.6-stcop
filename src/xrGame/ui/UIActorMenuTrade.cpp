@@ -96,10 +96,13 @@ void CUIActorMenu::UpdateTradeActorBagList()
 	m_pTradeActorBagList->ClearAll(true);
 
 	TIItemContainer items_list = m_pActorInvOwner->inventory().m_ruck;
-	std::sort(items_list.begin(), items_list.end(), InventoryUtilities::GreaterRoomInRuck);
 	if (m_pInventorySorter)
 	{
-		m_pInventorySorter->SortItems(items_list, GetPlayerSortCategory());
+		PrepareBagItemList(items_list, eSortTabsTradeActor);
+	}
+	else
+	{
+		std::sort(items_list.begin(), items_list.end(), InventoryUtilities::GreaterRoomInRuck);
 	}
 
 	for (PIItem item : items_list)

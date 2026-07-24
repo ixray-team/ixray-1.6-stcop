@@ -65,6 +65,9 @@ public:
 
 	void		ResetTab					();
 
+	IC bool		GetAllowReselect			() const { return m_bAllowReselect; }
+	void		SetAllowReselect			(bool allow) { m_bAllowReselect = allow; }
+
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
@@ -83,6 +86,7 @@ protected:
 	u32					m_cActiveButtonColor;
 
 	bool				m_bAcceleratorsEnable;
+	bool				m_bAllowReselect = false;
 	shared_str			m_opt_backup_value;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
