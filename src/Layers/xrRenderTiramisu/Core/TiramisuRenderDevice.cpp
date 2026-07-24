@@ -84,14 +84,26 @@ void TiramisuRenderDevice::Initialize(
 	if (CurrentAdapterDescription.queueNum[static_cast<u32>(
 	        nri::QueueType::COMPUTE)] != 0)
 	{
-		NRI_CHECK(CoreInterface.GetQueue(*Device, nri::QueueType::COMPUTE, 0,
-			ComputeQueue));
+		const nri::Result Result = CoreInterface.GetQueue(
+			*Device, nri::QueueType::COMPUTE, 0, ComputeQueue);
+		if (Result != nri::Result::SUCCESS)
+		{
+			ComputeQueue = nullptr;
+			Msg("! Tiramisu: a dedicated compute queue is unavailable; "
+				"graphics queue fallback is enabled");
+		}
 	}
 	if (CurrentAdapterDescription.queueNum[static_cast<u32>(
 	        nri::QueueType::COPY)] != 0)
 	{
-		NRI_CHECK(CoreInterface.GetQueue(*Device, nri::QueueType::COPY, 0,
-			CopyQueue));
+		const nri::Result Result = CoreInterface.GetQueue(
+			*Device, nri::QueueType::COPY, 0, CopyQueue);
+		if (Result != nri::Result::SUCCESS)
+		{
+			CopyQueue = nullptr;
+			Msg("! Tiramisu: a dedicated copy queue is unavailable; "
+				"graphics queue fallback is enabled");
+		}
 	}
 	Msg("* Tiramisu queues: graphics=yes, async-compute=%s, copy=%s",
 		ComputeQueue ? "yes" : "fallback-to-graphics",

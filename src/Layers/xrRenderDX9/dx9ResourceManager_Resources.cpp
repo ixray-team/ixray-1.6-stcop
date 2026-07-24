@@ -170,7 +170,7 @@ SVS* CResourceManager::_CreateVS(const char* _name)
 		}
 
 		string_path					cname;
-		xr_strconcat(cname,::Render->getShaderPath(),_name,".vs.hlsl");
+		xr_strconcat(cname,RImplementation.getShaderPath(),_name,".vs.hlsl");
 		FS.update_path				(cname,	_game_shaders_, cname);
 //		const char*						target		= nullptr;
 
@@ -190,7 +190,7 @@ SVS* CResourceManager::_CreateVS(const char* _name)
 		const char* c_target = "vs_3_0";
 		const char* c_entry = "main";
 
-		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
+		HRESULT const _hr = static_cast<IRender_interface&>(RImplementation).shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
 
 		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", name);
 
@@ -235,7 +235,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 
 		// Open file
 		string_path					cname;
-        const char*						shader_path = ::Render->getShaderPath();
+        const char*						shader_path = RImplementation.getShaderPath();
 		xr_strconcat(cname,shader_path, _name,".ps.hlsl");
 		FS.update_path				(cname,	_game_shaders_, cname);
 
@@ -252,7 +252,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 		const char* c_target = "ps_3_0";
 		const char* c_entry = "main";
 
-		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_ps);
+		HRESULT const _hr = static_cast<IRender_interface&>(RImplementation).shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_ps);
 
 		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", name);
 

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Core/TiramisuRenderDevice.h"
 #include "Core/Passes/UI/TiramisuRenderUIPass.h"
 #include "Extensions/NRIDeviceCreation.h"
 #include "Legacy/Scene/TiramisuLegacyScene.h"
@@ -33,7 +34,15 @@ void CDS0_RenderInterface::create()
 {
 	DevicePtr->seqFrame.Add(this);
 	GModelPool = new CDS0_ModelPool;
-	GRenderDevice.Initialize();
+	if (GRenderDevice.IsInitialized())
+	{
+		Msg("* Tiramisu: reusing the NRI device created by the editor "
+			"presenter");
+	}
+	else
+	{
+		GRenderDevice.Initialize();
+	}
 	GRenderResourcesManager = new TiramisuRenderResourcesManager;
 	GRenderResourcesManager->Initialize();
 	GRender = new TiramisuRender;
@@ -77,7 +86,9 @@ HRESULT CDS0_RenderInterface::shader_compile(LPCSTR name, DWORD const* pSrcData,
 
 LPCSTR CDS0_RenderInterface::getShaderPath()
 {
-	return LPCSTR();
+	// Legacy API Tiramisu видит только каталог r5. Editor shaders обслуживает
+	// собственный CResourceManager редактора через RImplementation.
+	return "r5\\";
 }
 
 IRender_Sector* CDS0_RenderInterface::getSector(int id)
@@ -308,7 +319,12 @@ void CDS0_RenderInterface::Render()
 	
 	GUIRender.Flush();
 
-	GRender->PrepareImguiFrame();
+	// LevelEditor уже начал ImGui frame через xrEUI. Повторный NewFrame
+	// внутри игрового ImGui manager нарушает контракт ImGui и приводит к abort.
+	if (!DevicePtr->IsEditorMode())
+	{
+		GRender->PrepareImguiFrame();
+	}
 	GRender->SubmitFrame();
 }
 

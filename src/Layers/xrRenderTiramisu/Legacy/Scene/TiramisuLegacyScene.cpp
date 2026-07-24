@@ -257,6 +257,13 @@ void TiramisuLegacyScene::Calculate()
 {
 	CheckIsGameThread();
 	RenderGraph.Clear();
+	if (Sectors.empty() || !g_pGameLevel)
+	{
+		// В editor viewport новая сцена может существовать без загруженного
+		// legacy level. В этом состоянии portal/collision traversal не нужен.
+		LastSector = nullptr;
+		return;
+	}
 
 	// SSA (Screen-Space Area) показывает, какую площадь объект занимает на экране:
 	// чем объект больше и ближе к камере, тем выше SSA. Пороги ниже используются
