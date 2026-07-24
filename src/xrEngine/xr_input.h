@@ -96,12 +96,16 @@ private:
 
 	Fvector2 AdaptiveTrigger = { 0, 0 };
 
+	bool gyroscopeMoved = false;
+	Fvector3 Gyroscope = {0, 0, 0};
+
 	xr_vector<IInputReceiver*>	cbStack;
 
 	void						NoInputUpdate				();
 	void						MouseUpdate					();
 	void						KeyboardUpdate				();
 	void						GamepadUpdate				();
+	void						GyroscopeUpdate				();
 
 public:
 	u32							dwCurTime;
@@ -117,6 +121,8 @@ public:
 	void						LeftAxisUpdate				(bool IsX, float value);
 	void						RightAxisUpdate				(bool IsX, float value);
 	void						AdaptiveTriggerUpdate		(bool IsX, float value);
+	void						GamepadGyroscopeUpdate		(Fvector3 value);
+
 
 	void						iCapture					( IInputReceiver *pc );
 	void						iRelease					( IInputReceiver *pc );

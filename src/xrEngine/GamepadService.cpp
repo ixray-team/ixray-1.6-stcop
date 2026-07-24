@@ -19,6 +19,7 @@ CGamepadService::~CGamepadService()
 {
 	ClearTriggerEffect(true);
 	ClearTriggerEffect(false);
+	SetLED(0, 0, 255);
 
 	DestoryHID();
 
@@ -154,6 +155,7 @@ void CGamepadService::SetLED(u8 Red, u8 Green, u8 Blue)
 	}
 	else
 #endif
+	if (GamePadDevice)
 	{
 		SDL_SetGamepadLED(GamePadDevice, Red, Green, Blue);
 	}
