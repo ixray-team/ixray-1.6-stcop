@@ -601,6 +601,9 @@ bool CUIScrollBar::InitStretchLayout(CUIXml& xmlDoc, const char* profile, Fvecto
 
 	_profileConfig.layoutMode = ScrollLayoutMode::Stretch;
 
+	const char* thumbStr = xmlDoc.ReadAttrib(profile, 0, "thumb", "auto");
+	ThumbFromAttrib(thumbStr, false, _profileConfig.thumbAsButton);
+
 	_holdDelay = _profileConfig.holdDelay;
 	_scrollBoxOffset = _profileConfig.scrollBoxOffset;
 	_isHorizontal = isHorizontal;

@@ -75,7 +75,7 @@ bool CUIScrollView::_createOrInitScrollBar()
 	}
 
 	const char* profileName = (profile && profile[0]) ? profile : "default";
-	if (!m_VScrollBar->InitScrollBar(scrollPos, GetWndSize().y, false, profileName))
+	if (!CUIScrollBar::InitForProfile(*m_VScrollBar, scrollPos, GetWndSize().y, false, profileName))
 	{
 		DetachChild(m_VScrollBar);
 		m_VScrollBar = nullptr;
