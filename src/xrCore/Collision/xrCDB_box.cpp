@@ -55,10 +55,12 @@ struct cform_box_collider final
 void COLLIDER::box_query(const MODEL *m_def, const Fbox& _box)
 {
 	PROF_EVENT("COLLIDER::box_query");
-	if (!m_def || m_def->tree == nullptr)
+	if (!m_def)
 		return;
 
 	m_def->wait_loading();
+	if (m_def->tree == nullptr)
+		return;
 
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
@@ -127,10 +129,12 @@ struct cform_obb_collider final
 void COLLIDER::obb_query(const MODEL* m_def, const Fobb& obb)
 {
 	PROF_EVENT("COLLIDER::obb_query");
-	if (!m_def || m_def->tree == nullptr)
+	if (!m_def)
 		return;
 
 	m_def->wait_loading();
+	if (m_def->tree == nullptr)
+		return;
 
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
@@ -199,10 +203,12 @@ struct cform_sphere_collider final
 void COLLIDER::sphere_query(const MODEL* m_def, const Fsphere& sphere)
 {
 	PROF_EVENT("COLLIDER::sphere_query");
-	if (!m_def || m_def->tree == nullptr)
+	if (!m_def)
 		return;
 
 	m_def->wait_loading();
+	if (m_def->tree == nullptr)
+		return;
 
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
