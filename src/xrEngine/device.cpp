@@ -249,9 +249,11 @@ void CRenderDevice::on_idle		()
 					seqRender.Process<&pureRender::OnRender>();
 				}
 
-				bool show_fps_counter = IsFpsShow && g_pGameLevel && !IsMainMenuActive && !load_screen_renderer.IsActive() && !Device.Paused();
-
-				if (show_fps_counter)
+				if (IsFpsShow &&
+					g_pGameLevel &&
+					!IsMainMenuActive &&
+					!load_screen_renderer.IsActive() &&
+					!Device.Paused())
 				{
 					pFPSCounter->OnRender();
 				}
