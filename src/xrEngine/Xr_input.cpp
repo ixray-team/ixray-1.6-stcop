@@ -16,6 +16,11 @@ ENGINE_API bool		psMouseInvert		= false;
 ENGINE_API float	psGamepadSens		= 0.3f;
 ENGINE_API bool		psGamepadInvert		= false;
 
+ENGINE_API float	psGyroscopeSens		= 0.3f;
+ENGINE_API bool		psGyroscopeInvertX	= false;
+ENGINE_API bool		psGyroscopeInvertY	= false;
+ENGINE_API bool		psGyroscopeEnabled	= true;
+
 static bool g_exclusive	= true;
 static void on_error_dialog			(bool before)
 {
@@ -192,6 +197,12 @@ void CInput::AdaptiveTriggerUpdate(bool IsX, float value)
 	{
 		AdaptiveTrigger.y = value;
 	}
+}
+
+void CInput::GamepadGyroscopeUpdate(Fvector3 value)
+{
+	Gyroscope += value;
+	gyroscopeMoved = true;
 }
 
 void CInput::KeyboardUpdate()
@@ -428,6 +439,22 @@ void CInput::MouseUpdate( )
 	offs[0] = offs[1] = offs[2] = 0;
 }
 
+void CInput::GyroscopeUpdate()
+{
+	if (Device.dwPrecacheFrame)
+	{
+		return;
+	}
+
+	if (gyroscopeMoved) 
+	{
+		cbStack.back()->IR_OnGyroscopeMove(Gyroscope);
+		gyroscopeMoved = false;
+	}
+
+	Gyroscope.set(0.0f, 0.0f, 0.0f);
+}
+
 #pragma warning(pop)
 
 //-------------------------------------------------------
@@ -443,6 +470,7 @@ void CInput::iCapture(IInputReceiver *p)
 	{
 		MouseUpdate();
 		GamepadUpdate();
+		GyroscopeUpdate();
 		KeyboardUpdate();
 	}
 
@@ -517,6 +545,7 @@ void CInput::OnFrame()
 	{
 		MouseUpdate();
 		GamepadUpdate();
+		GyroscopeUpdate();
 		KeyboardUpdate();
 	}
 }

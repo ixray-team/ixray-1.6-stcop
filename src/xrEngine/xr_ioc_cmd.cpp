@@ -895,6 +895,11 @@ void CCC_Register()
 	CMD1(CCC_GamepadPrefixOverride, "gamepad_prefix_override");
 	CMD2(CCC_Boolean, "gamepad_vibration", &CGamepadService::GamepadFeedbackMode);
 
+	CMD4(CCC_Float,		"gyroscope_sens",			&psGyroscopeSens,		0.1f, 2.0f);
+	CMD2(CCC_Boolean,	"gyroscope_invert_x",		&psGyroscopeInvertX);
+	CMD2(CCC_Boolean,	"gyroscope_invert_y",		&psGyroscopeInvertY);
+	CMD2(CCC_Boolean,	"gyroscope_enabled",		&psGyroscopeEnabled);
+
 #ifndef MASTER_GOLD
 	// Other
 	CMD4(CCC_Float,		"developer_float_1",	&devfloat1, -100000.0f, 100000.0f);
