@@ -1,5 +1,4 @@
 #pragma once
-#include "src/xrCore/Save/SaveObject.h"
 
 class CArtefact;
 

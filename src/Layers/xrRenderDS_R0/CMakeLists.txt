@@ -19,6 +19,7 @@ target_precompile_headers(xrRender_DS0 PRIVATE "stdafx.h")
 
 # Include directories
 target_include_directories(xrRender_DS0 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrRender_DS0 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 
 # Project defines
 target_compile_definitions(xrRender_DS0 PRIVATE xrRender_DS0_EXPORTS)

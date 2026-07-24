@@ -25,6 +25,7 @@ list(FILTER DXT_SRC_FILES EXCLUDE REGEX "nvdxt.cpp$")
 # xrDXT project
 add_library(xrDXT SHARED ${DXT_SRC_FILES})
 target_include_directories(xrDXT PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrDXT PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 target_link_directories(xrDXT PUBLIC "${IXRAY_SDK_LIB}/")
 target_precompile_headers(xrDXT PRIVATE "StdAfx.h")
 

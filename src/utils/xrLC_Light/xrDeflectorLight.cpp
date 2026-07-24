@@ -1,13 +1,9 @@
 ﻿#include "stdafx.h"
-#include "../../xrCore/Collision/cl_intersect.h"
 
 #include "xrDeflector.h"
 #include "xrLC_GlobalData.h"
 #include "light_point.h"
 #include "xrFace.h"
-
-#include "../xrForms/CompilersUI.h"
-#include "src/utils/xrLC/Build.h"
 
 void Jitter_Select(Fvector2* &Jitter, u32& Jcount)
 {

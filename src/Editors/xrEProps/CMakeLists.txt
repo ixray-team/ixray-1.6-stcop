@@ -30,6 +30,7 @@ list(APPEND EPROPS_SRC_FILES ${EPROPS_SOURCE_PUBLIC_FILES})
 # xrEProps project
 add_library(xrEProps SHARED ${EPROPS_SRC_FILES})
 target_include_directories(xrEProps PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrEProps PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 target_precompile_headers(xrEProps PRIVATE "stdafx.h")
 
 # Project defines

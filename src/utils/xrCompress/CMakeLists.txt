@@ -22,6 +22,7 @@ list(APPEND COMPR_SRC_FILES ${COMPR_SOURCE_ALL_FILES})
 add_executable(xrCompress ${COMPR_SRC_FILES})
 target_include_directories(xrCompress PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrCompress PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
+target_include_directories(xrCompress PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
 # Move precompiled header
 target_validate_pch(xrCompress ${CMAKE_CURRENT_SOURCE_DIR})

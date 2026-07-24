@@ -19,7 +19,8 @@ list(FILTER ESHE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 # ShaderEditor project
 add_executable(ShaderEditor WIN32 ${ESHE_SRC_FILES})
 target_include_directories(ShaderEditor PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(ShaderEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+target_include_directories(ShaderEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
+target_include_directories(ShaderEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 target_precompile_headers(ShaderEditor PRIVATE "stdafx.h")
 
 # Project defines

@@ -1,7 +1,7 @@
 #pragma once
 #include <RedImage/RedImage.hpp>
-#include "../../xrEngine/xrLevel.h"
-#include "src/xrCore/Collision/xrCDB.h"
+#include "xrEngine/xrLevel.h"
+#include "xrCore/Collision/xrCDB.h"
 #pragma pack(push,4)
 
 const u32 XR_MAX_PORTAL_VERTS	= 6;

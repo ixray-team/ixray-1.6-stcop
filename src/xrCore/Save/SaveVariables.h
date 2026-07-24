@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/xrCore/_types.h"
+#include "xrCore/_types.h"
 
 struct SSaveTask;
 class CMemoryBuffer;

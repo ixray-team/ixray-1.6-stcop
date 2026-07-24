@@ -1,7 +1,7 @@
 #include "StdAfx.h"
-#include "../xrLC_Light/xrMU_Model.h"
+#include "utils/xrLC_Light/xrMU_Model.h"
 #include "OGF_Face.h"
-#include "src/utils/xrForms/CompilersUI.h"
+#include "utils/xrForms/CompilersUI.h"
 
 const u32	max_tile	= 16;
 const s32	quant		= 32768/max_tile;

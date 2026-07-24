@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "PolterChem.h"
-#include "src/xrGame/Actor.h"
 
 CPolterChem::CPolterChem(IPolterInterface* polter) : inherited(polter) {
 
