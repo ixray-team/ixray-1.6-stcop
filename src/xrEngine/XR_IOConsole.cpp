@@ -717,7 +717,7 @@ void CConsole::Show()
 	update_tips();
 	m_editor->IR_Capture();
 
-	Device.seqRender.Add(this, 1);
+	Device.seqRender.Add(this, UI_CONSOLE);
 	Device.seqFrame.Add(this);
 }
 

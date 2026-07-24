@@ -21,7 +21,7 @@ CUICursor::CUICursor()
 	vPrevPos.set			(0.0f, 0.0f);
 	vPos.set				(0.f,0.f);
 	InitInternal			();
-	Device.seqRender.Add	(this,-1023/*2*/);
+	Device.seqRender.Add	(this, UI_CURSOR);
 	Device.seqResolutionChanged.Add(this);
 }
 //--------------------------------------------------------------------

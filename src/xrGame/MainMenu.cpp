@@ -216,9 +216,9 @@ void CMainMenu::Activate	(bool bActivate)
 			}
 			Device.seqRender.Remove			(g_pGameLevel);
 			CCameraManager::ResetPP			();
-		};
-		Device.seqRender.Add				(this, 4); // 1-console 2-cursor 3-tutorial
-
+		}
+		
+		Device.seqRender.Add				(this, UI_MAIN_MENU); // 1-console 2-cursor 3-tutorial
 		//Console->Execute					("stat_memory");
 
 		g_Discord.SetPhase(StrMainMenu);
