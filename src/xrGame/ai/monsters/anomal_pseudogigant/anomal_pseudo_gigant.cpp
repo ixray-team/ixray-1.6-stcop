@@ -11,9 +11,9 @@
 #include "../control_movement_base.h"
 #include "anomal_pseudo_gigant_state_manager.h"
 #include "ParticlesObject.h"
-#include "../abilities/poltergeist/PolterChem.h"
-#include "../abilities/poltergeist/PolterFlame.h"
-#include "../abilities/poltergeist/PolterTele.h"
+//#include "../abilities/poltergeist/PolterChem.h"
+//#include "../abilities/poltergeist/PolterFlame.h"
+//#include "../abilities/poltergeist/PolterTele.h"
 
 CAnomalPseudoGigant::CAnomalPseudoGigant()
 {
@@ -25,25 +25,25 @@ CAnomalPseudoGigant::CAnomalPseudoGigant()
 
 CAnomalPseudoGigant::~CAnomalPseudoGigant()
 {
-	xr_delete(m_flame);
-	xr_delete(m_tele);
-	xr_delete(m_chem);
+	//xr_delete(m_flame);
+	//xr_delete(m_tele);
+	//xr_delete(m_chem);
 }
 
 void CAnomalPseudoGigant::Load(str_c section)
 {
 	inherited::Load(section);
 	if (pSettings->read_if_exists<bool>(section,"use_flame",false)) {
-		m_flame = new CPolterFlame(this);
-		m_flame->load(section);
+		//m_flame = new CPolterFlame(this);
+		//m_flame->load(section);
 	}
 	if (pSettings->read_if_exists<bool>(section,"use_tele",false)) {
-		m_tele = new CPolterTele(this);
-		m_tele->load(section);
+		//m_tele = new CPolterTele(this);
+		//m_tele->load(section);
 	}
 	if (pSettings->read_if_exists<bool>(section,"use_chem",false)) {
-		m_chem = new CPolterChem(this);
-		m_chem->load(section);
+		//m_chem = new CPolterChem(this);
+		//m_chem->load(section);
 	}
 
 	m_flame_max_hp_to_activate = pSettings->read_if_exists<float>(section,"flame_max_hp_to_activate",0.0f);
@@ -78,16 +78,16 @@ void CAnomalPseudoGigant::reinit()
 void CAnomalPseudoGigant::UpdateCL()
 {
 	inherited::UpdateCL();
-	if (use_fire_ability()) m_flame->update_frame();
-	if (use_tele_ability()) m_tele->update_frame();
+	//if (use_fire_ability()) m_flame->update_frame();
+	//if (use_tele_ability()) m_tele->update_frame();
 }
 
 void CAnomalPseudoGigant::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 	CTelekinesis::schedule_update();
-	if (use_fire_ability()) m_flame->update_schedule();
-	if (use_tele_ability()) m_tele->update_schedule();
+	//if (use_fire_ability()) m_flame->update_schedule();
+	//if (use_tele_ability()) m_tele->update_schedule();
 }
 
 void CAnomalPseudoGigant::HitEntityInJump(const CEntity* pEntity)
@@ -211,15 +211,15 @@ float	CAnomalPseudoGigant::get_detection_success_level()
 //IC		CAnomalGigPolterSpecialAbility* ability() { return (m_flame ? m_flame : m_tele); } // remake: tele on 66% hp, flame +tele on 33% hp
 
 bool CAnomalPseudoGigant::use_tele_ability() { 
-	return m_tele && GetfHealth() <= m_tele_max_hp_to_activate; 
+	return false; //m_tele && GetfHealth() <= m_tele_max_hp_to_activate; 
 }
 
 bool CAnomalPseudoGigant::use_fire_ability() { 
-	return m_flame && GetfHealth() <= m_flame_max_hp_to_activate;
+	return false; //m_flame && GetfHealth() <= m_flame_max_hp_to_activate;
 }
 
 bool CAnomalPseudoGigant::use_chem_ability() {
-	return m_chem && GetfHealth() <= m_chem_max_hp_to_activate;
+	return false; //m_chem && GetfHealth() <= m_chem_max_hp_to_activate;
 }
 
 void CAnomalPseudoGigant::ActivateShield()

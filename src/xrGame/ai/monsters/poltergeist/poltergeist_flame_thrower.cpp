@@ -1,22 +1,18 @@
 #include "stdafx.h"
 
-#include "../xrSound/ai_sounds.h"
-#include "PolterFlame.h"
-#include "PolterInterface.h"
-#include "../xrServerEntities/xrMessages.h"
-#include "ai_object_location.h"
-#include "level_graph.h"
-#include "Level.h"
-#include "ai_space.h"
-#include "Actor.h"
-#include "ActorEffector.h"
-#include "ai/monsters/ai_monster_utils.h"
-#include "ai/monsters/basemonster/base_monster.h"
-
-#include "alife_space.h"
 #include "ParticlesObject.h"
+#include "poltergeist.h"
+#include "../../../../xrServerEntities/xrMessages.h"
+#include "../../../ai_object_location.h"
+#include "../../../level_graph.h"
+#include "../../../Level.h"
+#include "../../../ai_space.h"
+#include "../../../restricted_object.h"
+#include "../../../Actor.h"
+#include "../../../ActorEffector.h"
+#include "../ai_monster_effector.h"
 
-CPolterFlame::CPolterFlame(CPoltergeist *polter) : inherited (polter)
+CFlamePoltergeist::CFlamePoltergeist(CPoltergeist *polter) : inherited (polter)
 {
 }
 
@@ -97,7 +93,7 @@ void CFlamePoltergeist::create_flame(const CObject *target_object)
 	element->target_object			= target_object;
 	element->time_started			= time();
 	element->sound.clone			(m_sound, st_Effect,SOUND_TYPE_WORLD);
-	element->sound.play_at_pos		(m_object,element->position);
+	element->sound.play_at_pos		(poltergeist,element->position);
 	element->particles_object		= 0;
 	element->time_last_hit			= 0;
 
@@ -119,21 +115,18 @@ void CFlamePoltergeist::select_state(SFlameElement *elem, EFlameState state)
 	switch(elem->state) {
 	case ePrepare:	
 		// start prepare particles
-		m_object->PlayParticles(m_particles_prepare,elem->position,elem->target_dir,true);
+		poltergeist->PlayParticles(m_particles_prepare,elem->position,elem->target_dir,true);
 		break;
 	case eFire:		
 		// start fire particles
-		elem->particles_object = m_object->PlayParticles(m_particles_fire,elem->position,elem->target_dir,false);
+		elem->particles_object = poltergeist->PlayParticles(m_particles_fire,elem->position,elem->target_dir,false);
 		break;
 	case eStop:		
 		// stop fire particles
-		if (elem->particles_object)
-		{
-			Particles::Details::Destroy(elem->particles_object);
-		}
+		if (elem->particles_object) Particles::Details::Destroy(elem->particles_object);
 		
 		// start finish particles
-		m_object->PlayParticles(m_particles_stop,elem->position,elem->target_dir,true);
+		poltergeist->PlayParticles(m_particles_stop,elem->position,elem->target_dir,true);
 
 		break;
 	}
@@ -151,7 +144,7 @@ void CFlamePoltergeist::update_schedule()
 	inherited::update_schedule();
 
 	// check all flames
-	for (auto it = m_flames.begin();it != m_flames.end();it++) {
+	for (FLAME_ELEMS_IT it = m_flames.begin();it != m_flames.end();it++) {
 		SFlameElement *elem = *it;
 	
 		// test switches to states
@@ -169,15 +162,15 @@ void CFlamePoltergeist::update_schedule()
 					// test hit
 					collide::rq_result rq;
 					if (Level().ObjectSpace.RayPick(elem->position, elem->target_dir, m_length, collide::rqtBoth, rq, nullptr)) {
-						if (rq.IsStatic() && (rq.GetDynamic() == elem->target_object) && (rq.range < m_length)) {
+						if (!rq.IsStatic() && (rq.GetDynamic() == elem->target_object) && (rq.range < m_length)) {
 							float		hit_value;
 							hit_value	= m_hit_value - m_hit_value * rq.range / m_length;
 
 							NET_Packet			P;
 							SHit				HS;
 							HS.GenHeader		(GE_HIT, elem->target_object->ID());	//					u_EventGen		(P,GE_HIT, element->target_object->ID());
-							HS.whoID			= (m_object->ID());						//					P.w_u16			(ID());
-							HS.weaponID			= (m_object->ID());						//					P.w_u16			(ID());
+							HS.whoID			= (poltergeist->ID());						//					P.w_u16			(ID());
+							HS.weaponID			= (poltergeist->ID());						//					P.w_u16			(ID());
 							HS.dir				= (elem->target_dir);					//					P.w_dir			(element->target_dir);
 							HS.power			= (hit_value);							//					P.w_float		(m_flame_hit_value);
 							HS.boneID			= (BI_NONE);							//					P.w_s16			(BI_NONE);
@@ -186,7 +179,7 @@ void CFlamePoltergeist::update_schedule()
 							HS.hit_type			= (ALife::eHitTypeBurn);				//					P.w_u16			(u16(ALife::eHitTypeBurn));
 
 							HS.Write_Packet			(P);
-							m_object->u_EventSend	(P);
+							poltergeist->u_EventSend	(P);
 
 							elem->time_last_hit	= time();
 						}
@@ -212,18 +205,18 @@ void CFlamePoltergeist::update_schedule()
 		m_flames.end()
 	);
 	
-	bool const detected	=	m_object->get_current_detection_level() >= m_object->get_detection_success_level();
+	bool const detected	=	poltergeist->get_current_detection_level() >= poltergeist->get_detection_success_level();
 
 	CEntityAlive const* enemy	=	Actor();
 	// check if we can create another flame
-	if ( m_object->g_Alive() && 
+	if ( poltergeist->g_Alive() && 
 		 enemy && 
 		 m_flames.size() < m_count &&
-		 !m_object->get_actor_ignore() && 
+		 !poltergeist->get_actor_ignore() && 
 		 detected ) {
 		// check aura radius and accessibility
-		float dist = enemy->Position().distance_to(m_object->Position());
-		if ((dist < m_pmt_aura_radius) && m_object->control().path_builder().accessible(enemy->Position())) {
+		float dist = enemy->Position().distance_to(poltergeist->Position());
+		if ((dist < m_pmt_aura_radius) && poltergeist->control().path_builder().accessible(enemy->Position())) {
 			// check timing
 			if (m_time_flame_started + m_delay < time()) {
 				create_flame(enemy);
@@ -236,35 +229,26 @@ void CFlamePoltergeist::on_destroy()
 {
 	inherited::on_destroy();
 
-	for (auto elem : m_flames)
-	{
-		if (elem->sound.is_playing())
-		{
-			elem->sound.stop();
-		}
-		if (elem->particles_object)
-		{
-			Particles::Details::Destroy(elem->particles_object);
-		}
-		
-		xr_delete(elem);
+	FLAME_ELEMS_IT I = m_flames.begin();
+	FLAME_ELEMS_IT E = m_flames.end();
+
+	// Пройти по всем объектам и проверить на хит врага
+	for ( ;I != E; ++I) {
+		if ((*I)->sound.is_playing()) (*I)->sound.stop();
+		if ((*I)->particles_object) Particles::Details::Destroy((*I)->particles_object);
+
+		xr_delete((*I));
 	}
 	
 	m_flames.clear();
 
-	if (m_scan_sound.is_playing())
-	{
-		m_scan_sound.stop();
-	}
+	if (m_scan_sound.is_playing()) m_scan_sound.stop();
 }
 
 void CFlamePoltergeist::on_die()
 {
 	inherited::on_die();
-	if (m_scan_sound.is_playing())
-	{
-		m_scan_sound.stop();
-	}
+	if (m_scan_sound.is_playing()) m_scan_sound.stop();
 }
 
 void CFlamePoltergeist::UpdateCL()
@@ -275,7 +259,8 @@ void CFlamePoltergeist::UpdateCL()
 
 bool CFlamePoltergeist::get_valid_flame_position(const CObject *target_object, Fvector &res_pos)
 {
-	const CGameObject *Obj = smart_cast<const CGameObject *>(target_object);
+	CObject* cast_target = const_cast<CObject*>(target_object);
+	const CGameObject *Obj = cast_target != nullptr ? cast_target->cast_game_object() : nullptr;
 	if (!Obj) return (false);
 
 	Fvector dir;
@@ -295,7 +280,7 @@ bool CFlamePoltergeist::get_valid_flame_position(const CObject *target_object, F
 		new_pos.mad(vertex_position, dir, Random.randF(m_min_flame_dist, m_max_flame_dist));
 
 		u32 node = ai().level_graph().check_position_in_direction(Obj->ai_location().level_vertex_id(), vertex_position, new_pos);
-		if (node != static_cast<u32>(-1)) {
+		if (node != u32(-1)) {
 			res_pos = ai().level_graph().vertex_position(node);
 			res_pos.y += Random.randF(m_min_flame_height, m_max_flame_height);
 			return (true);
@@ -313,7 +298,7 @@ bool CFlamePoltergeist::get_valid_flame_position(const CObject *target_object, F
 	new_pos.mad(vertex_position, dir, Random.randF(m_min_flame_dist, m_max_flame_dist));
 
 	u32 node = ai().level_graph().check_position_in_direction(Obj->ai_location().level_vertex_id(), vertex_position, new_pos);
-	if (node != static_cast<u32>(-1)) {
+	if (node != u32(-1)) {
 		res_pos = ai().level_graph().vertex_position(node);
 		res_pos.y += Random.randF(m_min_flame_height, m_max_flame_height);
 		return (true);

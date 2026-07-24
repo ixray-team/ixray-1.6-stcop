@@ -22,9 +22,6 @@
 #include "ActorEffector.h"
 #include "Weapon.h"
 #include "../../../ActorCondition.h"
-#include "../abilities/poltergeist/PolterTele.h"
-#include "../abilities/poltergeist/PolterFlame.h"
-#include "../abilities/poltergeist/PolterChem.h"
 
 void SetActorVisibility(ALife::_OBJECT_ID who, float value);
 
@@ -112,7 +109,7 @@ void CPoltergeist::Load(const char* section)
 	m_fly_around_level = pSettings->read_if_exists<float>(section, "detection_fly_around_level", 5.f);
 	m_fly_around_distance = pSettings->read_if_exists<float>(section, "detection_fly_around_distance", 15.f);
 
-	m_fly_around_change_direction_time = pSettings->read_if_exists<u32>(section, "detection_fly_around_change_direction_time", 7);
+	m_fly_around_change_direction_time = pSettings->read_if_exists<float>(section, "detection_fly_around_change_direction_time", 7);
 
 	const char* polter_type = pSettings->r_string(section, "type");
 

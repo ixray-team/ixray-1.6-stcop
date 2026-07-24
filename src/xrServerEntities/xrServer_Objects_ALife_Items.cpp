@@ -1598,7 +1598,7 @@ void CSE_ALifeItemPDA::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	inherited::STATE_Read		(tNetPacket,size);
 	if (m_wVersion > 58)
 	{
-		if (m_wVersion < 130)
+		if (m_wVersion < 131)
 		{
 			u16 ID;
 			tNetPacket.r_u16(ID);

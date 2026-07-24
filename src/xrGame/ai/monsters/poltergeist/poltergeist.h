@@ -1,5 +1,4 @@
 #pragma once
-#include "../abilities/poltergeist/PolterInterface.h"
 #include "../basemonster/base_monster.h"
 #include "../telekinesis.h"
 #include "../energy_holder.h"
