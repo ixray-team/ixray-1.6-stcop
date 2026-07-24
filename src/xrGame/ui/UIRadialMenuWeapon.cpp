@@ -191,10 +191,7 @@ void	CUIRadialMenuWeapon::Draw()
 					// Draw item icon
 					TexturedRectDrawData trdd;
 					trdd.width = trdd.height = radius / 4;
-					UI().ClientToScreenScaledWidth(trdd.width);
 					trdd.width *= UI().get_current_kx();
-
-					UI().ClientToScreenScaledHeight(trdd.height);
 
 					slotIcons[i]->SetShader(InventoryUtilities::GetEquipmentIconsShader(item->IconsTexture.c_str()));
 
@@ -213,13 +210,10 @@ void	CUIRadialMenuWeapon::Draw()
 					}
 					const float angle = starting_angle + sector / 2 + 2 * M_PI * i / float(sectors_count);
 
-					const float r = inner_radius + screen_height / 12.f;
+					const float r = inner_radius + UI_BASE_HEIGHT / 12.f;
 
-					trdd.x = center_x + cos(angle) * r;
+					trdd.x = center_x + (cos(angle) * r * UI().get_current_kx());
 					trdd.y = center_y + sin(angle) * r;
-
-					UI().ClientToScreenScaledWidth(trdd.x);
-					UI().ClientToScreenScaledHeight(trdd.y);
 
 					shared_str sect_name = item->object().cNameSect();
 					InventoryUtilities::InventoryIconParams icons_struct = InventoryUtilities::GetInventoryIconParams(sect_name.c_str());
@@ -251,22 +245,16 @@ void	CUIRadialMenuWeapon::Draw()
 				// Draw item icon
 				TexturedRectDrawData trdd;
 				trdd.width = trdd.height = radius / 4;
-				UI().ClientToScreenScaledWidth(trdd.width);
 				trdd.width *= UI().get_current_kx();
-
-				UI().ClientToScreenScaledHeight(trdd.height);
 
 				slotIcons[i]->InitTexture(emptyIconName.c_str());
 
 				const float angle = starting_angle + sector / 2 + 2 * M_PI * i / float(sectors_count);
 
-				const float r = inner_radius + screen_height / 12.f;
+				const float r = inner_radius + UI_BASE_HEIGHT / 12.f;
 
-				trdd.x = center_x + cos(angle) * r;
+				trdd.x = center_x + (cos(angle) * r * UI().get_current_kx());
 				trdd.y = center_y + sin(angle) * r;
-
-				UI().ClientToScreenScaledWidth(trdd.x);
-				UI().ClientToScreenScaledHeight(trdd.y);
 
 				DrawItem(slotIcons[i], trdd, clrSlotIcon);
 			}
