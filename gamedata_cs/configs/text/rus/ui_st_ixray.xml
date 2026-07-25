@@ -885,4 +885,16 @@
 	<string id="ui_mm_gamepad_vibration">
 		<text>Вибрация</text>
 	</string>
+	<string id="st_put_in_quick_slot_1">
+		<text>положить в слот 1</text>
+	</string>
+	<string id="st_put_in_quick_slot_2">
+		<text>положить в слот 2</text>
+	</string>
+	<string id="st_put_in_quick_slot_3">
+		<text>положить в слот 3</text>
+	</string>
+	<string id="st_put_in_quick_slot_4">
+		<text>положить в слот 4</text>
+	</string>
 </string_table>
