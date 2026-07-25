@@ -371,6 +371,14 @@ void CUISequencer::IR_OnMouseHold		(int btn)
 		m_pStoredInputReceiver->IR_OnMouseHold(btn);
 }
 
+void CUISequencer::IR_OnGyroscopeMove		(Fvector3 value)
+{
+	if (!GrabInput() && m_pStoredInputReceiver)
+	{
+		m_pStoredInputReceiver->IR_OnGyroscopeMove(value);
+	}
+}
+
 void CUISequencer::IR_OnMouseMove		(int x, int y)
 {
 	if(!GrabInput()&&m_pStoredInputReceiver)

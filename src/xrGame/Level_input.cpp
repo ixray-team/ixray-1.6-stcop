@@ -116,8 +116,10 @@ void CLevel::IR_OnGyroscopeMove( Fvector3 value )
 	}
 	/* avo: end */
 
-// implement later plz
-//	if (CurrentGameUI()->IR_UIOnMouseMove(dx,dy))		return;
+	if (CurrentGameUI()->IR_UIOnGyroscopeMove(value))
+	{
+		return;
+	}
 	if (Device.Paused() && !IsDemoPlay() 
 #ifdef DEBUG
 		&& !psActorFlags.test(AF_NO_CLIP) 

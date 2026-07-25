@@ -459,3 +459,36 @@ bool CDialogHolder::IR_UIOnMouseMove(int dx, int dy)
 	};
 	return true;
 }
+
+bool CDialogHolder::IR_UIOnGyroscopeMove(Fvector3 value)
+{
+	CUIDialogWnd* TIR = TopInputReceiver();
+	if (!TIR)
+	{
+		return false;
+	}
+	if (!TIR->IR_process())
+	{
+		return false;
+	}
+	/* if (GetUICursor().IsVisible() || TIR->ForceCursorInput())
+	{
+		GetUICursor().UpdateCursorPosition(-value.x, -value.y);
+		Fvector2 cPos = GetUICursor().GetCursorPosition();
+		TIR->OnMouseAction(cPos.x, cPos.y, WINDOW_MOUSE_MOVE);
+	}
+	else*/ if (!TIR->StopAnyMove() && g_pGameLevel)
+	{
+		CObject* O = g_pGameLevel->CurrentEntity();
+		if (O)
+		{
+			IInputReceiver* IR = O->GetIIR();
+			if (IR)
+			{
+				IR->IR_OnGyroscopeMove(value);
+			}
+			return false;
+		}
+	};
+	return true;
+}

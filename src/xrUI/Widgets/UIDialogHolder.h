@@ -63,4 +63,5 @@ public:
 	virtual bool 			IR_UIOnGamepadKeyPress			(int id);
 	virtual bool 			IR_UIOnGamepadUpdateStick		(int id, Fvector2 value);
 	virtual bool 			IR_UIOnGamepadKeyHold			(int id);
+	virtual bool 			IR_UIOnGyroscopeMove			(Fvector3 value);
 };
