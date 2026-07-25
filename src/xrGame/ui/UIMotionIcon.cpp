@@ -94,6 +94,90 @@ void CUIMotionIcon::InitMinimapLuminosityOverlay(CUIXml& uiXml)
 	LoadContextualFadeSettings(uiXml, "minimap_layout", _minimapContextualFade);
 }
 
+void CUIMotionIcon::EnsureCompassLayout(CUIXml& uiXml)
+{
+	if (_compassLayoutFrame || !uiXml.NavigateToNode("compass_layout", 0))
+	{
+		return;
+	}
+
+	CUIXmlInit xml_init;
+	const char* layoutPath = "compass_layout";
+
+	_compassLayoutFrame = new CUIWindow();
+	_compassLayoutFrame->SetAutoDelete(true);
+	xml_init.InitWindow(uiXml, layoutPath, 0, _compassLayoutFrame);
+
+	_compassLayoutPos.x = uiXml.ReadAttribFlt(layoutPath, 0, "x", 0.0f);
+	_compassLayoutPos.y = uiXml.ReadAttribFlt(layoutPath, 0, "y", 1.0f);
+	_compassLayoutSize.x = uiXml.ReadAttribFlt(layoutPath, 0, "width", 1.0f);
+	_compassLayoutSize.y = uiXml.ReadAttribFlt(layoutPath, 0, "height", 0.893f);
+	_compassLayoutRelative = _compassLayoutSize.x <= 1.0f && _compassLayoutSize.y <= 1.0f &&
+		_compassLayoutPos.x <= 1.0f;
+
+	const shared_str layoutAlign = uiXml.ReadAttrib(layoutPath, 0, "align", "");
+	_compassLayoutAlignCenter = (_compassLayoutFrame->GetAlignment() == waCenter) ||
+		(layoutAlign.size() > 0 && strchr(layoutAlign.c_str(), 'c'));
+
+	LoadContextualFadeSettings(uiXml, "compass_layout", _compassContextualFade);
+
+	if (!_compassBackground && uiXml.NavigateToNode("background", 0))
+	{
+		_compassBackground = UIHelper::CreateStatic(uiXml, "background", this);
+		if (_compassBackground)
+		{
+			_compassBackground->SetWndPos(Fvector2().set(0.0f, 0.0f));
+			_compassBackground->SetWndSize(GetWndSize());
+			_compassBackgroundBaseColor = _compassBackground->GetTextureColor();
+		}
+	}
+}
+
+void CUIMotionIcon::ApplyNavigationPresentation(bool useCompassBar, CUIXml* uiXml, Fvector2 const* overlaySize, Fvector2 const* overlayPos)
+{
+	CUIXml localXml;
+	CUIXml* xml = uiXml;
+	if (!xml)
+	{
+		localXml.Load(CONFIG_PATH, UI_PATH, MOTION_ICON_XML);
+		xml = &localXml;
+	}
+
+	_contextualAlpha = 0.f;
+
+	if (useCompassBar)
+	{
+		EnsureCompassLayout(*xml);
+		_compassModeActive = (_compassLayoutFrame != nullptr || _compassBackground != nullptr);
+		_noiseNormalized = 0.f;
+		_noiseOverlayCur = 0.f;
+		SetMinimapOverlayVisibility(false);
+		SetCompassOverlayVisibility(true);
+		if (_compassContextualFade)
+		{
+			ApplyCompassContextualAlpha(0.f);
+		}
+		return;
+	}
+
+	_compassModeActive = false;
+	SetCompassOverlayVisibility(false);
+
+	Fvector2 sz = overlaySize ? *overlaySize : GetWndSize();
+	Fvector2 pos = overlayPos ? *overlayPos : Fvector2().set(sz.x / 2.0f, sz.y / 2.0f);
+	EnsureMinimapOverlays(*xml, sz, pos);
+	SetMinimapOverlayVisibility(true);
+	if (_minimapContextualFade && _luminosityOverlay)
+	{
+		ApplyMinimapLuminosityOverlayAlpha(0.f);
+	}
+}
+
+void CUIMotionIcon::SetNavigationPresentation(bool useCompassBar)
+{
+	ApplyNavigationPresentation(useCompassBar);
+}
+
 float CUIMotionIcon::UpdateContextualFadeAlpha(float alpha, bool isVisible) const
 {
 	const float speed = std::max(isVisible ? _fadeInSpeed : _fadeOutSpeed, 1.0f);
@@ -176,13 +260,14 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar, bool use
 
 	CUIXmlInit					xml_init;
 
-	const bool hasCompassLayout = useCompassBar && useCompassLayout && uiXml.NavigateToNode("compass_layout", 0);
+	const bool hasCompassLayoutNode = useCompassLayout && uiXml.NavigateToNode("compass_layout", 0);
+	const bool bootCompassLayout = useCompassBar && hasCompassLayoutNode;
 
-	if (uiXml.NavigateToNode("window", 0) && !hasCompassLayout)
+	if (uiXml.NavigateToNode("window", 0) && !bootCompassLayout)
 	{
 		xml_init.InitWindow(uiXml, "window", 0, this);
 	}
-	else if (!hasCompassLayout)
+	else if (!bootCompassLayout)
 	{
 		m_independent = xml_init.InitStatic(uiXml, "background", 0, this);
 	}
@@ -190,26 +275,9 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar, bool use
 	Fvector2					sz;
 	Fvector2					pos;
 
-    if (hasCompassLayout)
+    if (bootCompassLayout)
     {
-        const char* layoutPath = "compass_layout";
-
-        _compassLayoutFrame = new CUIWindow();
-        _compassLayoutFrame->SetAutoDelete(true);
-        xml_init.InitWindow(uiXml, layoutPath, 0, _compassLayoutFrame);
-
-        _compassLayoutPos.x = uiXml.ReadAttribFlt(layoutPath, 0, "x", 0.0f);
-        _compassLayoutPos.y = uiXml.ReadAttribFlt(layoutPath, 0, "y", 1.0f);
-        _compassLayoutSize.x = uiXml.ReadAttribFlt(layoutPath, 0, "width", 1.0f);
-        _compassLayoutSize.y = uiXml.ReadAttribFlt(layoutPath, 0, "height", 0.893f);
-        _compassLayoutRelative = _compassLayoutPos.x <= 1.0f && _compassLayoutPos.y <= 1.0f &&
-            _compassLayoutSize.x <= 1.0f && _compassLayoutSize.y <= 1.0f;
-
-        const shared_str layoutAlign = uiXml.ReadAttrib(layoutPath, 0, "align", "");
-        _compassLayoutAlignCenter = (_compassLayoutFrame->GetAlignment() == waCenter) ||
-            (layoutAlign.size() > 0 && strchr(layoutAlign.c_str(), 'c'));
-
-        LoadContextualFadeSettings(uiXml, "compass_layout", _compassContextualFade);
+        EnsureCompassLayout(uiXml);
         _contextualAlpha = 0.f;
         _compassModeActive = true;
     }
@@ -217,7 +285,7 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar, bool use
     {
         LoadContextualFadeSettings(uiXml, "minimap_layout", _minimapContextualFade);
     }
-    else if (useCompassBar && useCompassLayout && !hasCompassLayout)
+    else if (useCompassBar && useCompassLayout && !hasCompassLayoutNode)
     {
         zonemap_rect.getsize(sz);
         SetWndSize(sz);
@@ -251,19 +319,8 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar, bool use
         if (!useNoiseOverlay && uiXml.NavigateToNode("noise_progress", 0))
             m_noise_progress_bar = UIHelper::CreateProgressBar(uiXml, "noise_progress", this);
     }
-    else if (hasCompassLayout)
+    else if (bootCompassLayout)
     {
-        if (uiXml.NavigateToNode("background", 0))
-        {
-            _compassBackground = UIHelper::CreateStatic(uiXml, "background", this);
-            if (_compassBackground)
-            {
-                _compassBackground->SetWndPos(Fvector2().set(0.0f, 0.0f));
-                _compassBackground->SetWndSize(GetWndSize());
-                _compassBackgroundBaseColor = _compassBackground->GetTextureColor();
-            }
-        }
-
         SetMinimapOverlayVisibility(false);
     }
     else if (!useCompassBar)
@@ -449,15 +506,14 @@ void CUIMotionIcon::ApplyNavigationHost(CUIWindow* attachParent, Frect const& ho
     if (CUIWindow* parent = GetParent())
         parent->DetachChild(this);
 
-    Fvector2 sz;
-    Fvector2 pos;
-
     if (!m_independent)
     {
         CUIXml uiXml;
         uiXml.Load(CONFIG_PATH, UI_PATH, MOTION_ICON_XML);
         const float rel_sz = uiXml.ReadAttribFlt("window", 0, "rel_size", 1.0f);
 
+        Fvector2 sz;
+        Fvector2 pos;
         hostRect.getsize(sz);
         pos.set(sz.x / 2.0f, sz.y / 2.0f);
         SetWndSize(sz);
@@ -466,34 +522,12 @@ void CUIMotionIcon::ApplyNavigationHost(CUIWindow* attachParent, Frect const& ho
         const float k = UI().get_current_kx();
         sz.mul(rel_sz * k);
 
-        _compassModeActive = useCompassBar && (_compassLayoutFrame != nullptr || _compassBackground != nullptr);
-        _contextualAlpha = 0.f;
-
-        if (_compassModeActive)
-        {
-            _noiseNormalized = 0.f;
-            _noiseOverlayCur = 0.f;
-            SetMinimapOverlayVisibility(false);
-            SetCompassOverlayVisibility(true);
-            if (_compassContextualFade)
-            {
-                ApplyCompassContextualAlpha(0.f);
-            }
-        }
-        else
-        {
-            SetCompassOverlayVisibility(false);
-            EnsureMinimapOverlays(uiXml, sz, pos);
-            SetMinimapOverlayVisibility(true);
-            if (_minimapContextualFade && _luminosityOverlay)
-            {
-                ApplyMinimapLuminosityOverlayAlpha(0.f);
-            }
-        }
+        ApplyNavigationPresentation(useCompassBar, &uiXml, &sz, &pos);
     }
 
     attachParent->AttachChild(this);
 }
+
 CUIWindow* CUIMotionIcon::CompassLayoutFrame()
 {
     return _compassLayoutFrame;
@@ -501,7 +535,19 @@ CUIWindow* CUIMotionIcon::CompassLayoutFrame()
 
 void CUIMotionIcon::ApplyCompassLayout(CUIWindow* compassBar)
 {
-    if (!_compassLayoutFrame || !compassBar)
+    if (!compassBar)
+    {
+        return;
+    }
+
+    if (!_compassLayoutFrame)
+    {
+        CUIXml uiXml;
+        uiXml.Load(CONFIG_PATH, UI_PATH, MOTION_ICON_XML);
+        EnsureCompassLayout(uiXml);
+    }
+
+    if (!_compassLayoutFrame)
     {
         return;
     }
@@ -546,6 +592,8 @@ void CUIMotionIcon::ApplyCompassLayout(CUIWindow* compassBar)
         _compassBackground->SetWndPos(Fvector2().set(0.0f, 0.0f));
         _compassBackground->SetWndSize(size);
     }
+
+    ApplyNavigationPresentation(true);
 }
 
 void CUIMotionIcon::ShowState(EState state)
