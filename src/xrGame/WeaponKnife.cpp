@@ -15,6 +15,7 @@
 #include "player_hud.h"
 #include "ActorEffector.h"
 #include <tuple>
+#include "../xrEngine/xr_input.h"
 
 #define KNIFE_MATERIAL_NAME "objects\\knife"
 
@@ -309,6 +310,11 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	while(m_magazine.size() < 2)	m_magazine.push_back(cartridge);
 	iAmmoElapsed					= (u32)m_magazine.size();
 	bool SendHit					= SendHitAllowed(H_Parent());
+
+	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
+	{
+		pInput->feedback(65535, 65535, 0.1f);
+	}
 
 	if (!m_eSoundsFlags.test(ESoundsFlags::sf_kick))
 	{
