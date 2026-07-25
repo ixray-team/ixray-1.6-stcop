@@ -21,6 +21,8 @@ ENGINE_API bool		psGyroscopeInvertX	= false;
 ENGINE_API bool		psGyroscopeInvertY	= false;
 ENGINE_API bool		psGyroscopeEnabled	= true;
 
+ENGINE_API float	psTouchpadSens		= 20.0f;
+
 static bool g_exclusive	= true;
 static void on_error_dialog			(bool before)
 {
