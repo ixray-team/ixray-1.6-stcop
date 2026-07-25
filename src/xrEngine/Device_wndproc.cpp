@@ -5,6 +5,7 @@
 #include "XR_IOConsole.h"
 #include "IInputReceiver.h"
 #include "string_table.h"
+#include "IGame_Persistent.h"
 
 Fvector2 fingerInitialPos;
 #define DEADZONE_SIZE 0.2f
@@ -54,7 +55,10 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 		{
 			pInput->GamepadButtonUpdate(Event.gbutton.button, true);
-			pInput->SetControllerMode(true);
+			if (Event.gbutton.button != SDL_GAMEPAD_BUTTON_TOUCHPAD)
+			{
+				pInput->SetControllerMode(true);
+			}
 			break;
 		}
 		case SDL_EVENT_GAMEPAD_BUTTON_UP:
@@ -131,7 +135,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			{
 				fingerInitialPos.set(Event.gtouchpad.x, Event.gtouchpad.y);
 			}
-			pInput->SetControllerMode(false);
+			GGamepadService->touchpadFingersCount++;
 			break;
 		}
 		case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
@@ -141,14 +145,27 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 				Fvector2 pos;
 				pos.set(Event.gtouchpad.x, Event.gtouchpad.y);
 				pos.sub(fingerInitialPos);
+				if (pos.magnitude() > 0.1f)
+				{
+					pInput->SetControllerMode(false);
+				}
+				else
+				{
+					break;
+				}
 				pos.mul(psTouchpadSens);
 				pInput->MouseMotion(pos.x, pos.y);
+				if (g_pGamePersistent)
+				{
+					g_pGamePersistent->ChangeCursorPosition(pos);
+				}
 			}
 			break;
 		}
 		case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
 		{
 			pInput->SetControllerMode(true);
+			GGamepadService->touchpadFingersCount--;
 			break;
 		}
 		case SDL_EVENT_KEYBOARD_ADDED:
