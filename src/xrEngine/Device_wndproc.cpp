@@ -4,6 +4,7 @@
 #include "imgui_impl_sdl3.h"
 #include "XR_IOConsole.h"
 #include "IInputReceiver.h"
+#include "string_table.h"
 
 #define DEADZONE_SIZE 0.2f
 bool CRenderDevice::on_event	(SDL_Event& Event)
@@ -19,6 +20,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 	{
 		case SDL_EVENT_GAMEPAD_REMOVED:
 		{
+			GGamepadService->ResetHID();
 			SDL_CloseGamepad(GGamepadService->GamePadDevice);
 			GGamepadService->GamePadDevice = nullptr;
 			
@@ -29,12 +31,17 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			if (SDL_IsGamepad(Event.jdevice.which))
 			{
 				GGamepadService->GamePadDevice = SDL_OpenGamepad(Event.jdevice.which);
+				GGamepadService->FindHIDDevice();
 				if (SDL_GamepadHasSensor(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO))
 				{
 					SDL_SetGamepadSensorEnabled(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO, true);
 				}
 
 				pInput->SelectGamepadPrefix();
+				if (g_pStringTable)
+				{
+					g_pStringTable->ReparseKeyBindings();
+				}
 
 				if (pInput->receive_gamepad_addedorremoved)
 				{
