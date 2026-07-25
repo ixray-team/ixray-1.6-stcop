@@ -2553,7 +2553,7 @@ void CActor::shedule_Update	(u32 DT)
 	{
 		UpdatePlayerView();
 	}
-	else
+	else if (!load_screen_renderer.IsActive())
 	{
 		GGamepadService->UpdateLEDByHP(GetfHealth());
 	}
