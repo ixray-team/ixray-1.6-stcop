@@ -867,6 +867,7 @@ void CActor::IR_GamepadKeyPress(int id)
 		case kUSE:
 		{
 			ActorUse();
+			UpdatePickupMode();
 			break;
 		}
 		case kCROUCH:
@@ -1066,6 +1067,12 @@ void CActor::IR_GamepadKeyHold(int id)
 			{
 				mstate_wishful |= mcAccel;
 			}
+			break;
+		}
+	
+		case kUSE:
+		{
+			UpdatePickupMode();
 			break;
 		}
 	}
