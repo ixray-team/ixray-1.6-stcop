@@ -74,6 +74,10 @@ function getNextControllIndex()
 	return ixr_options._counter
 end
 
+function on_apply_new_metadata_value(script, var_name, value, _self)
+	--SemiLog(string.format("script:%s var_name:%s value:%s", tostring(script), tostring(var_name), tostring(value)) .. " == " .. tostring(_self.value))
+end
+
 -- #######################################
 -- #	 	 	CALLBACKS				 #
 -- #######################################
@@ -171,6 +175,23 @@ function get_variable_value(var_name, default_value)
 	local script_name = ffx_callable_utils.find_caller_source(3)
 
 	return ixr_options.get_variable_value(script_name, var_name, default_value)
+end
+
+--local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+
+--[[
+Description: Set option value by name is exists
+Return: (nil|bool|int|float|string|table|function)
+]]
+function set_variable_value(var_name, var_value)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	
+	local metadata = ixr_options.get_metadata(script_name, var_name)
+	
+	metadata.update_visual_value = var_value
+	ixr_options.set_metadata(script_name, var_name, metadata)
+	
+	return ixr_options.set_variable_value(script_name, var_name, var_value)
 end
 
 -- #######################################
@@ -510,6 +531,17 @@ function ixr_options.track_bar(default_value, min_value, max_value, value_offset
 	}
 end
 
+function ixr_options.ceil_track_bar(default_value, min_value, max_value, value_offset)	
+	return {
+		["controll"] = "track_bar",
+		["default_value"] = default_value,
+		["min_value"] = min_value,
+		["max_value"] = max_value,
+		["value_offset"] = value_offset,
+		["use_ceil"] = true,
+	}
+end
+
 -- #######################################
 -- #	 	 UI TOOLS METHODS 	 	 	 #
 -- #######################################
@@ -611,26 +643,26 @@ function register_image(name_controll, img_path, x, y, width, height, alpha)
 	register_controll(name_controll)
 end
 
-function register_checkbox(name_controll, x, y, alpha, def_value, _ref, _callback)
+function register_checkbox(name_controll, x, y, alpha, def_value, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
 		_ref = get_menu_ref()
 	end
 	
 	name_controll = name_controll .. "_checkbox_"
 	
-	set_controll(name_controll, IXRCheckBox(name_controll, x, y, alpha, def_value, _callback, _ref))
+	set_controll(name_controll, IXRCheckBox(name_controll, x, y, alpha, def_value, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
 end
 
-function register_textbox(name_controll, x, y, alpha, def_value, _ref, _callback)
+function register_textbox(name_controll, x, y, alpha, def_value, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
 		_ref = get_menu_ref()
 	end
 	
 	name_controll = name_controll .. "_textbox_"
 	
-	set_controll(name_controll, IXRTextBox(name_controll, x, y, alpha, def_value, _callback, _ref))
+	set_controll(name_controll, IXRTextBox(name_controll, x, y, alpha, def_value, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
 end
@@ -647,24 +679,24 @@ function register_combobox(name_controll, x, y, alpha, def_value, list_values, _
 	register_controll(name_controll)
 end
 
-function register_numeric_up_down(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _ref, _callback)
+function register_numeric_up_down(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
 		_ref = get_menu_ref()
 	end
 	
 	name_controll = name_controll .. "_numeric_up_down_"
-	set_controll(name_controll, IXRNumericUpDown(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref))
+	set_controll(name_controll, IXRNumericUpDown(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
 end
 
-function register_track_bar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _ref, _callback)
+function register_track_bar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
 		_ref = get_menu_ref()
 	end
 	
 	name_controll = name_controll .. "_track_bar_"
-	set_controll(name_controll, IXRTrackBar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _callback, _ref))
+	set_controll(name_controll, IXRTrackBar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
 end
@@ -861,7 +893,11 @@ function pick_controll(option_data, option_bg, option_key_name)
 	local script_name = option_data["script_name"]
 	local parent_element_width = option_bg:GetWidth()
 	
-	local __callback_handler = function (value, ctrl)
+	local __callback_handler = function (value, ctrl, is_value_from_code)
+		if is_user_input == nil then
+			is_user_input = true
+		end
+		
 		if ixr_options.dynamic_vars.is_callbacks_skip then
 			return
 		end
@@ -882,9 +918,9 @@ function pick_controll(option_data, option_bg, option_key_name)
 		
 		if option_data["_callback"] ~= nil then
 			if controll_type == "combo_box" then
-				option_data["_callback"](group_name, variable_name, option_data["controll_data"]["list_values"][value]["option_return_value"])
+				option_data["_callback"](group_name, variable_name, option_data["controll_data"]["list_values"][value]["option_return_value"], is_value_from_code)
 			else
-				option_data["_callback"](group_name, variable_name, value)
+				option_data["_callback"](group_name, variable_name, value, is_value_from_code)
 			end
 		end
 	end
@@ -897,7 +933,9 @@ function pick_controll(option_data, option_bg, option_key_name)
 			ixr_options.controlls_defines.check_box_alpha,
 			option_data["controll_data"]["default_value"],
 			option_bg,
-			__callback_handler
+			__callback_handler,
+			script_name, 
+			variable_name
 		)
 	end
 		
@@ -909,7 +947,9 @@ function pick_controll(option_data, option_bg, option_key_name)
 			ixr_options.controlls_defines.text_box_alpha,
 			option_data["controll_data"]["default_value"],
 			option_bg,
-			__callback_handler
+			__callback_handler,
+			script_name, 
+			variable_name
 		)
 	end
 	
@@ -939,7 +979,9 @@ function pick_controll(option_data, option_bg, option_key_name)
 			option_data["controll_data"]["max_value"],
 			option_data["controll_data"]["value_offset"],
 			option_bg,
-			__callback_handler
+			__callback_handler,
+			script_name, 
+			variable_name
 		)
 	end
 	
@@ -955,7 +997,9 @@ function pick_controll(option_data, option_bg, option_key_name)
 			option_data["controll_data"]["value_offset"],
 			option_data["controll_data"]["use_ceil"],
 			option_bg,
-			__callback_handler
+			__callback_handler,
+			script_name, 
+			variable_name
 		)
 	end
 end
@@ -1088,8 +1132,12 @@ end
 -- 												TRACK BAR
 -- #########################################################################################################
 class "IXRTrackBar" (CUIStatic)
-function IXRTrackBar:__init(controll_name, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _callback, _ref)
+function IXRTrackBar:__init(controll_name, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _callback, _ref, script_name, variable_name)
 	super()
+	
+	self.is_pushed_from_code = false
+	self.script_name = script_name
+	self.variable_name = variable_name
 	
 	self.use_ceil = use_ceil
 	self.visible = false
@@ -1135,13 +1183,6 @@ function IXRTrackBar:__init(controll_name, x, y, alpha, default_value, min_value
 	self:SetValue(default_value)
 end
 
-function IXRTrackBar:Update()
-	if self.controll_track_bar:GetFValue() ~= self.value then
-		self.value = self.controll_track_bar:GetFValue()
-		self:OnChangeState()
-	end
-end
-
 function IXRTrackBar:Show(flag)
 	self.visible = flag
 	self.controll_background:Show(flag)
@@ -1156,6 +1197,36 @@ function IXRTrackBar:Show(flag)
 	end
 end
 
+function IXRTrackBar:Update()
+	if self.controll_track_bar:GetFValue() ~= self.value then
+		self.value = self.controll_track_bar:GetFValue()
+		self:OnChangeState()
+	end
+	
+	self:UpdateVisualValue()
+end
+
+-- update_visual_value
+function IXRTrackBar:UpdateVisualValue()
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	if metadata ~= nil and metadata.update_visual_value ~= nil then
+		local new_value = metadata.update_visual_value
+		metadata.update_visual_value = nil
+		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
+		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		self:OnIncomingUpdateVisualValue(new_value)
+
+	end
+end
+
+function IXRTrackBar:OnIncomingUpdateVisualValue(new_value_index)
+	if self.value == new_value_index then
+		return
+	end
+	self.is_pushed_from_code = true
+	self:SetValue(new_value_index)
+end
+
 function IXRTrackBar:OnChangeState()
 	if self.use_ceil then
 		self.controll_text:TextControl():SetText(tostring(math.ceil(self.value)))
@@ -1165,11 +1236,12 @@ function IXRTrackBar:OnChangeState()
 	
 	if self.visible and self.on_change_callback then
 		if self.use_ceil then
-			self.on_change_callback(math.ceil(self:GetValue()), self.controll_name)
+			self.on_change_callback(math.ceil(self:GetValue()), self.controll_name, self.is_pushed_from_code)
 		else
-			self.on_change_callback(self:GetValue(), self.controll_name)
+			self.on_change_callback(self:GetValue(), self.controll_name, self.is_pushed_from_code)
 		end
 	end
+	self.is_pushed_from_code = false
 end
 
 function IXRTrackBar:SetValue(value)
@@ -1186,8 +1258,12 @@ end
 -- 											NUMERIC UP DOWN
 -- #########################################################################################################
 class "IXRNumericUpDown" (CUIStatic)
-function IXRNumericUpDown:__init(controll_name, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref)
+function IXRNumericUpDown:__init(controll_name, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref, script_name, variable_name)
 	super()
+	
+	self.is_pushed_from_code = false
+	self.script_name = script_name
+	self.variable_name = variable_name
 	
 	self.visible = false
 	self.value = 0.0
@@ -1250,9 +1326,36 @@ function IXRNumericUpDown:Show(flag)
 	
 	if flag then
 		self:OnChangeState()
+		set_main_menu_update(self.controll_name.."numeric_up_down", function () self:Update() end)
+	else
+		set_main_menu_update(self.controll_name.."numeric_up_down", nil)
 	end
 	
 	self:UpdateArrowsVisibility()
+end
+
+function IXRNumericUpDown:Update()
+	self:UpdateVisualValue()
+end
+
+-- update_visual_value
+function IXRNumericUpDown:UpdateVisualValue()
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	if metadata ~= nil and metadata.update_visual_value ~= nil then
+		local new_value = metadata.update_visual_value
+		metadata.update_visual_value = nil
+		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
+		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		self:OnIncomingUpdateVisualValue(new_value)
+	end
+end
+
+function IXRNumericUpDown:OnIncomingUpdateVisualValue(new_value)
+	if self.value == new_value then
+		return
+	end
+	self.is_pushed_from_code = true
+	self:SetValue(new_value)
 end
 
 function IXRNumericUpDown:UpdateArrowsVisibility()
@@ -1307,8 +1410,9 @@ end
 
 function IXRNumericUpDown:OnChangeState()
 	if self.on_change_callback then
-		self.on_change_callback(self:GetValue(), self.controll_name)
+		self.on_change_callback(self:GetValue(), self.controll_name, self.is_pushed_from_code)
 	end
+	self.is_pushed_from_code = false
 end
 
 -- #########################################################################################################
@@ -1322,6 +1426,7 @@ function IXRComboBox:__init(controll_name, x, y, alpha, default_value_index, lis
 	self.value_index = nil
 	self.list_values = list_values
 	
+	self.is_pushed_from_code = false
 	self.script_name = script_name
 	self.variable_name = variable_name
 	self.disabled_ids = {}
@@ -1374,7 +1479,13 @@ function IXRComboBox:__init(controll_name, x, y, alpha, default_value_index, lis
 	self:SetValueIndex(default_value_index)
 end
 
-
+function IXRComboBox:UpdateTextColor()
+	if self:IsIndexDisabled(self.value_index) then
+		self.controll_text:TextControl():SetTextColor(GetARGB(200, 150, 100, 100))
+	else
+		self.controll_text:TextControl():SetTextColor(GetARGB(200, 255, 255, 255))
+	end
+end
 
 function IXRComboBox:RefreshDisabledIds()
 	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
@@ -1384,17 +1495,31 @@ function IXRComboBox:RefreshDisabledIds()
 	end
 end
 
-function IXRComboBox:Update()
-	self:RefreshDisabledIds()
-	self:UpdateTextColor()
+-- update_visual_value
+function IXRComboBox:UpdateVisualValue()
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	if metadata ~= nil and metadata.update_visual_value ~= nil then
+		local new_value = metadata.update_visual_value
+		metadata.update_visual_value = nil
+		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
+		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		self:OnIncomingUpdateVisualValue(new_value)
+	end
 end
 
-function IXRComboBox:UpdateTextColor()
-	if self:IsIndexDisabled(self.value_index) then
-		self.controll_text:TextControl():SetTextColor(GetARGB(200, 150, 100, 100))
-	else
-		self.controll_text:TextControl():SetTextColor(GetARGB(200, 255, 255, 255))
+function IXRComboBox:OnIncomingUpdateVisualValue(new_value_index)
+	if self.value_index == new_value_index then
+		return
 	end
+	
+	self.is_pushed_from_code = true
+	self:SetValueIndex(new_value_index)
+end
+
+function IXRComboBox:Update()
+	self:RefreshDisabledIds()
+	self:UpdateVisualValue()
+	self:UpdateTextColor()
 end
 
 function IXRComboBox:Show(flag)
@@ -1540,16 +1665,21 @@ end
 
 function IXRComboBox:OnChangeState()
 	if self.on_change_callback and not self:IsIndexDisabled(self.value_index) then
-		self.on_change_callback(self:GetValue(), self.controll_name)
+		self.on_change_callback(self:GetValue(), self.controll_name, self.is_pushed_from_code)
 	end
+	self.is_pushed_from_code = false
 end
 
 -- #########################################################################################################
 -- 												TEXT BOX
 -- #########################################################################################################
 class "IXRTextBox" (CUIStatic)
-function IXRTextBox:__init(controll_name, x, y, alpha, default_value, _callback, _ref)
+function IXRTextBox:__init(controll_name, x, y, alpha, default_value, _callback, _ref, script_name, variable_name)
 	super()
+	
+	self.is_pushed_from_code = false
+	self.script_name = script_name
+	self.variable_name = variable_name
 	
 	self.value = nil
 	self.on_change_callback = _callback
@@ -1576,10 +1706,33 @@ function IXRTextBox:__init(controll_name, x, y, alpha, default_value, _callback,
 	self:SetValue(default_value)
 end
 
+-- update_visual_value
+function IXRTextBox:UpdateVisualValue()
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	if metadata ~= nil and metadata.update_visual_value ~= nil then
+		local new_value = metadata.update_visual_value
+		metadata.update_visual_value = nil
+		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
+		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		self:OnIncomingUpdateVisualValue(new_value)
+	end
+end
+
+function IXRTextBox:OnIncomingUpdateVisualValue(new_value)
+	if self:GetValue() == new_value then
+		return
+	end
+	
+	self.is_pushed_from_code = true
+	self:SetValue(new_value)
+end
+
 function IXRTextBox:Update()
 	if self.edit_box:GetText() ~= self.value then
 		self:OnChangeState()
 	end
+	
+	self:UpdateVisualValue()
 end
 
 function IXRTextBox:Show(flag)
@@ -1599,8 +1752,9 @@ end
 
 function IXRTextBox:OnChangeState()
 	if self.on_change_callback then
-		self.on_change_callback(self:GetValue(), self.controll_name)
+		self.on_change_callback(self:GetValue(), self.controll_name, self.is_pushed_from_code)
 	end
+	self.is_pushed_from_code = false
 end
 
 function IXRTextBox:SetValue(value)
@@ -1619,8 +1773,12 @@ end
 -- 												CHECK BOX
 -- #########################################################################################################
 class "IXRCheckBox" (CUIStatic)
-function IXRCheckBox:__init(check_box_ctrl_name, x, y, alpha, state, _callback, _ref)
+function IXRCheckBox:__init(check_box_ctrl_name, x, y, alpha, state, _callback, _ref, script_name, variable_name)
 	super()
+	
+	self.is_pushed_from_code = false
+	self.script_name = script_name
+	self.variable_name = variable_name
 	
 	self.is_checked = state
 	self.on_change_callback = _callback
@@ -1668,6 +1826,36 @@ function IXRCheckBox:Show(flag)
 	if flag then
 		self:OnChangeState()
 	end
+	
+	if flag then
+		set_main_menu_update(self.check_box_ctrl_name.."check_box", function () self:Update() end)
+	else
+		set_main_menu_update(self.check_box_ctrl_name.."check_box", nil)
+	end
+end
+
+function IXRCheckBox:Update()
+	self:UpdateVisualValue()
+end
+
+-- update_visual_value
+function IXRCheckBox:UpdateVisualValue()
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	if metadata ~= nil and metadata.update_visual_value ~= nil then
+		local new_value = metadata.update_visual_value
+		metadata.update_visual_value = nil
+		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
+		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		self:OnIncomingUpdateVisualValue(new_value)
+	end
+end
+
+function IXRCheckBox:OnIncomingUpdateVisualValue(new_state)
+	if self:IsChecked() == new_state then
+		return
+	end
+	self.is_pushed_from_code = true
+	self:SetState(new_state)
 end
 
 function IXRCheckBox:SwitchState()
@@ -1685,8 +1873,9 @@ function IXRCheckBox:OnChangeState()
 	end
 	
 	if self.on_change_callback then
-		self.on_change_callback(self:IsChecked(), self.check_box_ctrl_name)
+		self.on_change_callback(self:IsChecked(), self.check_box_ctrl_name, self.is_pushed_from_code)
 	end
+	self.is_pushed_from_code = false
 end
 
 function IXRCheckBox:SetState(state)
