@@ -406,13 +406,7 @@ bool CUIScrollView::NeedShowScrollBar()
 		return false;
 	}
 
-	if (m_flags.test(eFixedScrollBar))
-	{
-		return true;
-	}
-
-	const float visibleHeight = GetHeight() - GetVertIndent();
-	return m_pad->GetHeight() > visibleHeight + 1.0f;
+	return m_flags.test(eFixedScrollBar) || GetHeight() < m_pad->GetHeight();
 }
 
 void CUIScrollView::OnScrollV(CUIWindow*, void*)
