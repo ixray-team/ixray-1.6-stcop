@@ -49,6 +49,7 @@
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UIPdaWnd.h"
 #include "HUDManager.h"
+#include "../xrUI/UICursor.h"
 
 extern int g_keypress_on_start;
 
@@ -1120,4 +1121,16 @@ void CGamePersistent::GetTextureParams(shared_str tex, Frect& out_rect, shared_s
 	ui_shader sh;
 	CUITextureMaster::InitTexture(tex, "hud\\default", sh, out_rect);
 	file_name = CUITextureMaster::GetTextureFileName(tex.c_str());
+}
+
+void CGamePersistent::ChangeCursorPosition(Fvector2 value) 
+{
+	if (!psDeviceFlags.test(rsFullscreen))
+	{
+		Fvector2 posCurrent;
+		SDL_GetMouseState(&posCurrent.x, &posCurrent.y);
+		posCurrent.add(value);
+		SDL_WarpMouseGlobal(posCurrent.x, posCurrent.y);
+	}
+	UI().GetUICursor().UpdateCursorPosition(value.x, value.y);
 }
