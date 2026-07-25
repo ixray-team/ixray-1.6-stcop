@@ -264,20 +264,21 @@ void CUIActorMenu::UpdateActor()
 	m_ActorWeightMax->AdjustWidthToText();
 	m_ActorBottomInfo->AdjustWidthToText();
 
-	if (useVolumeLayout)
+	const bool allowAutoPack = (m_ActorWeightRow == nullptr) || m_ActorWeightRowAutoPack;
+	if (allowAutoPack && !useVolumeLayout)
 	{
-		return;
+		CUIWindow* centerWeight = m_ActorWeightBar != nullptr ? static_cast<CUIWindow*>(m_ActorWeightBar)
+															  : static_cast<CUIWindow*>(m_ActorWeight);
+		R_ASSERT(centerWeight != nullptr);
+
+		Fvector2 pos = centerWeight->GetWndPos();
+		pos.x = m_ActorWeightMax->GetWndPos().x - centerWeight->GetWndSize().x - 5.0f;
+		centerWeight->SetWndPos(pos);
+		pos.x = pos.x - m_ActorBottomInfo->GetWndSize().x - 5.0f;
+		m_ActorBottomInfo->SetWndPos(pos);
 	}
 
-	CUIWindow* centerWeight = m_ActorWeightBar != nullptr ? static_cast<CUIWindow*>(m_ActorWeightBar)
-														  : static_cast<CUIWindow*>(m_ActorWeight);
-	R_ASSERT(centerWeight != nullptr);
-
-	Fvector2 pos = centerWeight->GetWndPos();
-	pos.x = m_ActorWeightMax->GetWndPos().x - centerWeight->GetWndSize().x - 5.0f;
-	centerWeight->SetWndPos(pos);
-	pos.x = pos.x - m_ActorBottomInfo->GetWndSize().x - 5.0f;
-	m_ActorBottomInfo->SetWndPos(pos);
+	AlignActorWeightRowVertically();
 }
 
 void CUIActorMenu::UpdatePartnerBag()
