@@ -32,7 +32,6 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 				if (SDL_GamepadHasSensor(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO))
 				{
 					SDL_SetGamepadSensorEnabled(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO, true);
-					Msg(make_string<const char*>("! Detected gyroscope for controller %s", SDL_GetGamepadName(GGamepadService->GamePadDevice)));
 				}
 
 				pInput->SelectGamepadPrefix();
@@ -109,7 +108,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 				SDL_GetGamepadSensorData(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO, gyroscopeVal, 3);
 				
 				Fvector3 gyroscope{gyroscopeVal[0], gyroscopeVal[1], gyroscopeVal[2]};
-				if (gyroscope.magnitude() < 0.05f)
+				if (gyroscope.magnitude() < 0.15f)
 				{
 					break;
 				}
