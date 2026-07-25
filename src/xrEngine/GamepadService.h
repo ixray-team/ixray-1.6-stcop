@@ -35,6 +35,7 @@ public:
 public:
 	EGamepadType Type = EGamepadType::Unknown;
 	SDL_Gamepad* GamePadDevice = nullptr;
+	u8 touchpadFingersCount = 0;
 
 private:
 	void* HidDevice = nullptr;
