@@ -3,6 +3,7 @@
 
 class CUIStatic;
 class CUIFrameLineWnd;
+class CGameFont;
 
 class UI_API CUIButtonHint :
 	public CUIFrameWindow
@@ -21,6 +22,7 @@ public:
 	void			OnRender		();
 	void			Draw_			()	{m_enabledOnFrame = true;};
 	void			SetHintText		(CUIWindow* w, const char* text);
+	void			SetTextStyle	(CGameFont* font, u32 color);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
