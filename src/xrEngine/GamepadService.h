@@ -29,12 +29,20 @@ public:
 	void ResetHID();
 	void FindHIDDevice();
 
+	void Update();
+	void SetTriggerResistance(bool RightTrigger, u8 StartPosition, u8 Force, float Time);
+
 public:
 	EGamepadType Type = EGamepadType::Unknown;
 	SDL_Gamepad* GamePadDevice = nullptr;
 
 private:
 	void* HidDevice = nullptr;
+
+	u32 resistanceTimeStampL = 0;
+	u32 triggerResistanceTimeL = 0;
+	u32 resistanceTimeStampR = 0;
+	u32 triggerResistanceTimeR = 0;
 
 private:
 	void InitHID();

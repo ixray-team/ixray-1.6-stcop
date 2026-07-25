@@ -242,6 +242,7 @@ void CInput::GamepadUpdate()
 		return;
 	}
 
+	GGamepadService->Update();
 	if (cbStack.empty())
 	{
 		return;
