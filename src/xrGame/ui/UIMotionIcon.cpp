@@ -112,8 +112,8 @@ void CUIMotionIcon::EnsureCompassLayout(CUIXml& uiXml)
 	_compassLayoutPos.y = uiXml.ReadAttribFlt(layoutPath, 0, "y", 1.0f);
 	_compassLayoutSize.x = uiXml.ReadAttribFlt(layoutPath, 0, "width", 1.0f);
 	_compassLayoutSize.y = uiXml.ReadAttribFlt(layoutPath, 0, "height", 0.893f);
-	_compassLayoutRelative = _compassLayoutPos.x <= 1.0f && _compassLayoutPos.y <= 1.0f &&
-		_compassLayoutSize.x <= 1.0f && _compassLayoutSize.y <= 1.0f;
+	_compassLayoutRelative = _compassLayoutSize.x <= 1.0f && _compassLayoutSize.y <= 1.0f &&
+		_compassLayoutPos.x <= 1.0f;
 
 	const shared_str layoutAlign = uiXml.ReadAttrib(layoutPath, 0, "align", "");
 	_compassLayoutAlignCenter = (_compassLayoutFrame->GetAlignment() == waCenter) ||
