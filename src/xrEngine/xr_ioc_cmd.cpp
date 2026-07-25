@@ -900,6 +900,8 @@ void CCC_Register()
 	CMD2(CCC_Boolean,	"gyroscope_invert_y",		&psGyroscopeInvertY);
 	CMD2(CCC_Boolean,	"gyroscope_enabled",		&psGyroscopeEnabled);
 
+	CMD4(CCC_Float,		"touchpad_sens",			&psTouchpadSens,		1.0f, 50.0f);
+
 #ifndef MASTER_GOLD
 	// Other
 	CMD4(CCC_Float,		"developer_float_1",	&devfloat1, -100000.0f, 100000.0f);
