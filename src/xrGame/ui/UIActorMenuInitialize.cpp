@@ -308,7 +308,6 @@ void CUIActorMenu::Construct()
 	}
 
 	m_pInventorySorter					= new CInventorySorter();
-	m_pInventorySorter->Initialize();
 
 	const struct SSortTabsLayoutNode
 	{

@@ -485,7 +485,6 @@ void CInventoryItem::save(NET_Packet& packet)
 
 	packet.w_stringZ(m_AdditionalDescription);
 	packet.w_u8(m_IsUsedAdditionalDescription ? 1 : 0);
-	packet.w_u64(m_dwTakenTime);
 
 	if (object().H_Parent())
 	{
@@ -698,7 +697,6 @@ void CInventoryItem::load(IReader& packet)
 	m_fCondition = packet.r_float();
 	packet.r_stringZ(m_AdditionalDescription);
 	m_IsUsedAdditionalDescription = packet.r_u8() == 1 ? true : false;
-	m_dwTakenTime = packet.r_u64();
 
 	if (m_IsUsedAdditionalDescription)
 	{
