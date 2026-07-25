@@ -8,6 +8,7 @@
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/CustomHUD.h"
 #include "../xrEngine/xr_object.h"
+#include "../../xrEngine/GamepadService.h"
 
 dlgItem::dlgItem(CUIWindow* pWnd)
 {
@@ -316,10 +317,18 @@ bool CDialogHolder::IR_UIOnGamepadKeyPress(int id)
 	if(!TIR->IR_process())	
 		return false;
 
-	if (TIR->OnGamepadKeyAction(id,	WINDOW_KEY_PRESSED))
+	if (id == SDL_GAMEPAD_BUTTON_TOUCHPAD)
+	{
+		Fvector2 cp = GetUICursor().GetCursorPosition();
+		if (TIR->OnMouseAction(cp.x, cp.y, GGamepadService->touchpadFingersCount == 2 ? WINDOW_RBUTTON_DOWN : WINDOW_LBUTTON_DOWN))
+		{
+			return true;
+		}
+	}
+	if (TIR->OnGamepadKeyAction(id, WINDOW_KEY_PRESSED))
+	{
 		return true;
-
-	// TODO: add customizable bindings for gamepad
+	}
 	return true;
 };
 
@@ -334,7 +343,6 @@ bool CDialogHolder::IR_UIOnGamepadUpdateStick(int id, Fvector2 value)
 
 	if (TIR->OnGamepadStickAction(id, value, WINDOW_KEY_PRESSED))
 		return true;
-
 
 	if (!TIR->StopAnyMove() && g_pGameLevel)
 	{
