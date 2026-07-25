@@ -169,6 +169,10 @@ protected:
 	float m_vibration_factor_left = 1.0f;
 	float m_vibration_factor_right = 1.0f;
 
+	float m_trigger_resist_time = 1.0f;
+	float m_trigger_resist_start = 0.0f;
+	float m_trigger_resist_force = 1.0f;
+
 public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
