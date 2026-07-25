@@ -30,6 +30,7 @@ class CUIItemDropAmountWnd;
 class CUIGamepadLegend;
 class CUIXml;
 class CUIXmlInit;
+class CGameFont;
 
 namespace inventory { namespace upgrade {
 	class Upgrade;
@@ -90,6 +91,13 @@ protected:
 	CUIStatic*					m_ActorVolumeCaption = nullptr;
 	CUIStatic*					m_ActorVolume = nullptr;
 	CUIStatic*					m_ActorVolumeMax = nullptr;
+	bool						m_ActorWeightRowAutoPack = false;
+	bool						m_ActorWeightRowVCenter = false;
+	shared_str					m_ActorWeightHintFormat;
+	shared_str					m_ActorWeightHintFormatVolume;
+	CGameFont*					m_ActorWeightHintFont = nullptr;
+	u32							m_ActorWeightHintColor = 0xffffffff;
+	bool						m_ActorWeightHintHasStyle = false;
 	
 	CUIStatic*					m_PartnerBottomInfo = nullptr;
 	CUIStatic*					m_PartnerWeight = nullptr;
@@ -155,6 +163,7 @@ protected:
 	void						Construct							();
 	void						InitActorWeightSection				(CUIXml& uiXml, CUIXmlInit& xmlInit);
 	void						InitActorVolumeSection				(CUIXml& uiXml, CUIXmlInit& xmlInit);
+	void						AlignActorWeightRowVertically		();
 	void						UpdateActorWeightBarTooltip			();
 	void						InitCallbacks						();
 
