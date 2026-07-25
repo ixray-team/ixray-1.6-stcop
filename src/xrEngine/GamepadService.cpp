@@ -21,7 +21,7 @@ CGamepadService::~CGamepadService()
 	ClearTriggerEffect(false);
 	SetLED(0, 0, 255);
 
-	DestoryHID();
+	DestroyHID();
 
 	if (GamePadDevice != nullptr)
 	{
@@ -33,7 +33,12 @@ void CGamepadService::InitHID()
 {
 #ifdef IXR_WINDOWS
 	hid_init();
+#endif
+}
 
+void CGamepadService::FindHIDDevice()
+{
+#ifdef IXR_WINDOWS
 	hid_device_info* Devices = hid_enumerate(0, 0);
 
 	for (hid_device_info* CurrentDevice = Devices; CurrentDevice; CurrentDevice = CurrentDevice->next)
@@ -80,7 +85,7 @@ void CGamepadService::InitHID()
 #endif
 }
 
-void CGamepadService::DestoryHID()
+void CGamepadService::ResetHID()
 {
 #ifdef IXR_WINDOWS
 	if (HidDevice != nullptr)
@@ -88,7 +93,14 @@ void CGamepadService::DestoryHID()
 		hid_close((hid_device*)HidDevice);
 		HidDevice = nullptr;
 	}
+	Type = EGamepadType::Unknown;
+#endif
+}
 
+void CGamepadService::DestroyHID()
+{
+#ifdef IXR_WINDOWS
+	ResetHID();
 	hid_exit();
 #endif
 }
