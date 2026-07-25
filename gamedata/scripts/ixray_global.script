@@ -20,6 +20,10 @@ _G.log = function (str)
     end
 end
 
+_G.abort = function(str, ...)
+    SemiLog(string.format(str, ...));
+end
+
 function register(object_factory)
 	class_registrator.cs_register(object_factory, "CCar", "se_car.se_car", "SCRPTCAR", "car_s")
 end
