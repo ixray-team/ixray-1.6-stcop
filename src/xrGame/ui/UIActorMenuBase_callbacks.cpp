@@ -7,7 +7,9 @@
 #include "../antigas_filter.h"
 #include "../antigas.h"
 #include "UIItemInfo.h"
+#include "UIDragDropReferenceList.h"
 #include "../../xrEngine/xr_input.h"
+#include "../../xrUI/UICursor.h"
 #include "../script_game_object.h"
 
 bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
@@ -121,7 +123,17 @@ bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 		{
 			u16 slot_to_place;
 			if( CanSetItemToList(CurrentIItem(), new_owner, slot_to_place) )
+			{
 				ToSlot	(itm, true, slot_to_place);
+			}
+			else if (m_pQuickSlot)
+			{
+				Frect quickRect;
+				m_pQuickSlot->GetAbsoluteRect(quickRect);
+				Fvector2 cursorPos = GetUICursor().GetCursorPosition();
+				if (quickRect.in(cursorPos))
+					ToQuickSlot(itm);
+			}
 		}break;
 	case iActorBag:
 		{
