@@ -26,6 +26,9 @@ public:
 
 	bool Rumble(u16 LFRumble, u16 HFRumble, u16 DurationMS);
 
+	void ResetHID();
+	void FindHIDDevice();
+
 public:
 	EGamepadType Type = EGamepadType::Unknown;
 	SDL_Gamepad* GamePadDevice = nullptr;
@@ -35,7 +38,7 @@ private:
 
 private:
 	void InitHID();
-	void DestoryHID();
+	void DestroyHID();
 
 };
 
