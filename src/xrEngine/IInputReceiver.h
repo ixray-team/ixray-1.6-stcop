@@ -48,3 +48,5 @@ ENGINE_API extern float			psGyroscopeSens;
 ENGINE_API extern bool			psGyroscopeInvertX;
 ENGINE_API extern bool			psGyroscopeInvertY;
 ENGINE_API extern bool			psGyroscopeEnabled;
+
+ENGINE_API extern float			psTouchpadSens;

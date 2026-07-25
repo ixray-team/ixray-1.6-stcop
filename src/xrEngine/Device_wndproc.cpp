@@ -6,6 +6,7 @@
 #include "IInputReceiver.h"
 #include "string_table.h"
 
+Fvector2 fingerInitialPos;
 #define DEADZONE_SIZE 0.2f
 bool CRenderDevice::on_event	(SDL_Event& Event)
 {
@@ -124,8 +125,30 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			}
 			break;
 		}
-		case SDL_GAMEPAD_AXIS_LEFTY:
+		case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN:
 		{
+			if (Event.gtouchpad.finger == 0)
+			{
+				fingerInitialPos.set(Event.gtouchpad.x, Event.gtouchpad.y);
+			}
+			pInput->SetControllerMode(false);
+			break;
+		}
+		case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
+		{
+			if (Event.gtouchpad.finger == 0)
+			{
+				Fvector2 pos;
+				pos.set(Event.gtouchpad.x, Event.gtouchpad.y);
+				pos.sub(fingerInitialPos);
+				pos.mul(psTouchpadSens);
+				pInput->MouseMotion(pos.x, pos.y);
+			}
+			break;
+		}
+		case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
+		{
+			pInput->SetControllerMode(true);
 			break;
 		}
 		case SDL_EVENT_KEYBOARD_ADDED:
