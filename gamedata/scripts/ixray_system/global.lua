@@ -46,7 +46,7 @@ function UpdateTracyState()
 end
 
 function PROF_EVENT_BEGIN(name)
-	if true then
+	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
 		local data = ffx_callable_utils.find_caller_source_tracy(3, true)
         tracy.ZoneBeginN(string.format("[%s (%d,%d)] %s", tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
 	end
