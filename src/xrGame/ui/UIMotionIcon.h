@@ -53,6 +53,8 @@ private:
 		float						m_cur_pos;
 
 		void			EnsureMinimapOverlays(CUIXml& uiXml, Fvector2 const& sz, Fvector2 const& pos);
+		void			EnsureCompassLayout(CUIXml& uiXml);
+		void			ApplyNavigationPresentation(bool useCompassBar, CUIXml* uiXml = nullptr, Fvector2 const* overlaySize = nullptr, Fvector2 const* overlayPos = nullptr);
 		void			SetMinimapOverlayVisibility(bool visible);
 		void			SetCompassOverlayVisibility(bool visible);
 		void			LoadContextualFadeSettings(CUIXml& uiXml, const char* path, bool& contextualFadeOut);
@@ -89,6 +91,7 @@ public:
 			bool			IsIndependent		() const { return m_independent; }
 			CUIWindow*		CompassLayoutFrame	();
 			void			ApplyCompassLayout	(CUIWindow* compassBar);
+			void			SetNavigationPresentation(bool useCompassBar);
 			void			ShowState			(EState state);
 			void			SetPower			(float Pos);
 			void			SetNoise			(float Pos);
