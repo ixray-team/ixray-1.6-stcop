@@ -748,6 +748,28 @@ namespace
 		}
 		return {};
 	}
+
+	shared_str UnescapeHintFormat(const char* format)
+	{
+		if (format == nullptr || format[0] == '\0')
+		{
+			return shared_str();
+		}
+
+		xr_string result;
+		result.reserve(xr_strlen(format));
+		for (const char* cursor = format; *cursor != '\0'; ++cursor)
+		{
+			if (cursor[0] == '\\' && cursor[1] == 'n')
+			{
+				result.push_back('\n');
+				++cursor;
+				continue;
+			}
+			result.push_back(*cursor);
+		}
+		return shared_str(result.c_str());
+	}
 } // namespace
 
 void CUIActorMenu::InitActorWeightSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
@@ -758,17 +780,28 @@ void CUIActorMenu::InitActorWeightSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
 	constexpr const char* kRowWeightStatic     = "actor_weight_row:actor_weight";
 	constexpr const char* kRowWeightBar        = "actor_weight_row:weight_status_bar";
 	constexpr const char* kRowWeightMax        = "actor_weight_row:actor_weight_max";
+	constexpr const char* kRowHintText         = "actor_weight_row:weight_status_bar:hint:text";
+	constexpr const char* kRowHintVolumeText   = "actor_weight_row:weight_status_bar:hint:volume_text";
 
 	constexpr const char* kFlatCaption         = "actor_weight_caption";
 	constexpr const char* kFlatWeightStatic    = "actor_weight";
 	constexpr const char* kFlatWeightBar       = "weight_status_bar";
 	constexpr const char* kFlatWeightMax       = "actor_weight_max";
+	constexpr const char* kFlatHintText        = "weight_status_bar:hint:text";
+	constexpr const char* kFlatHintVolumeText  = "weight_status_bar:hint:volume_text";
 
 	m_ActorWeightRow = nullptr;
 	m_ActorWeightBar = nullptr;
 	m_ActorWeight = nullptr;
 	m_ActorBottomInfo = nullptr;
 	m_ActorWeightMax = nullptr;
+	m_ActorWeightRowAutoPack = false;
+	m_ActorWeightRowVCenter = false;
+	m_ActorWeightHintFormat = "%.1f %s / %.1f %s";
+	m_ActorWeightHintFormatVolume = "%.1f %s / %.1f %s\n%.1f / %.1f (x%.2f)";
+	m_ActorWeightHintFont = nullptr;
+	m_ActorWeightHintColor = 0xffffffff;
+	m_ActorWeightHintHasStyle = false;
 
 	if (uiXml.NavigateToNode(kActorWeightRow, 0))
 	{
@@ -776,6 +809,8 @@ void CUIActorMenu::InitActorWeightSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
 		m_ActorWeightRow->SetAutoDelete(true);
 		AttachChild(m_ActorWeightRow);
 		R_ASSERT2(xmlInit.InitWindow(uiXml, kActorWeightRow, 0, m_ActorWeightRow), kActorWeightRow);
+		m_ActorWeightRowAutoPack = uiXml.ReadAttribBool(kActorWeightRow, 0, "auto_pack", false);
+		m_ActorWeightRowVCenter = uiXml.ReadAttribBool(kActorWeightRow, 0, "v_center", false);
 	}
 
 	if (const ResolvedNode caption = ResolveNodePath(uiXml, m_ActorWeightRow, this, kRowCaption, kFlatCaption); caption.path != nullptr)
@@ -803,6 +838,83 @@ void CUIActorMenu::InitActorWeightSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
 		m_ActorWeightMax = UIHelper::CreateStatic(uiXml, max.path, max.parent);
 	}
 	R_ASSERT(m_ActorWeightMax != nullptr);
+
+	const char* hintTextPath = nullptr;
+	if (uiXml.NavigateToNode(kRowHintText, 0))
+	{
+		hintTextPath = kRowHintText;
+	}
+	else if (uiXml.NavigateToNode(kFlatHintText, 0))
+	{
+		hintTextPath = kFlatHintText;
+	}
+
+	if (hintTextPath != nullptr)
+	{
+		const char* formatId = uiXml.Read(hintTextPath, 0, "");
+		if (formatId != nullptr && formatId[0] != '\0')
+		{
+			m_ActorWeightHintFormat = UnescapeHintFormat(g_pStringTable->translate(formatId).c_str());
+		}
+
+		CGameFont* hintFont = nullptr;
+		u32 hintColor = 0xffffffff;
+		if (CUIXmlInit::InitFont(uiXml, hintTextPath, 0, hintColor, hintFont))
+		{
+			m_ActorWeightHintFont = hintFont;
+			m_ActorWeightHintColor = hintColor;
+			m_ActorWeightHintHasStyle = true;
+		}
+	}
+
+	const char* hintVolumePath = nullptr;
+	if (uiXml.NavigateToNode(kRowHintVolumeText, 0))
+	{
+		hintVolumePath = kRowHintVolumeText;
+	}
+	else if (uiXml.NavigateToNode(kFlatHintVolumeText, 0))
+	{
+		hintVolumePath = kFlatHintVolumeText;
+	}
+
+	if (hintVolumePath != nullptr)
+	{
+		const char* formatId = uiXml.Read(hintVolumePath, 0, "");
+		if (formatId != nullptr && formatId[0] != '\0')
+		{
+			m_ActorWeightHintFormatVolume = UnescapeHintFormat(g_pStringTable->translate(formatId).c_str());
+		}
+	}
+}
+
+void CUIActorMenu::AlignActorWeightRowVertically()
+{
+	if (m_ActorWeightRow == nullptr || !m_ActorWeightRowVCenter)
+	{
+		return;
+	}
+
+	const float rowHeight = m_ActorWeightRow->GetHeight();
+	auto centerChildY = [rowHeight](CUIWindow* child)
+	{
+		if (child == nullptr)
+		{
+			return;
+		}
+
+		Fvector2 pos = child->GetWndPos();
+		pos.y = (rowHeight - child->GetHeight()) * 0.5f;
+		child->SetWndPos(pos);
+	};
+
+	centerChildY(m_ActorBottomInfo);
+	centerChildY(m_ActorWeightBar);
+	centerChildY(m_ActorWeight);
+	centerChildY(m_ActorWeightMax);
+	centerChildY(m_ActorVolumeCaption);
+	centerChildY(m_ActorVolumeBar);
+	centerChildY(m_ActorVolume);
+	centerChildY(m_ActorVolumeMax);
 }
 
 void CUIActorMenu::InitActorVolumeSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
@@ -850,7 +962,7 @@ void CUIActorMenu::InitActorVolumeSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
 
 void CUIActorMenu::UpdateActorWeightBarTooltip()
 {
-	if (m_pActorInvOwner == nullptr)
+	if (m_pActorInvOwner == nullptr || g_statHint == nullptr)
 	{
 		return;
 	}
@@ -874,36 +986,41 @@ void CUIActorMenu::UpdateActorWeightBarTooltip()
 		return;
 	}
 
-	if (g_statHint->Owner() != nullptr)
-	{
-		return;
-	}
-
 	if (Device.dwTimeContinual < hoveredBar->FocusReceiveTime() + 700)
 	{
 		return;
 	}
 
-	const float totalWeight = m_pActorInvOwner->inventory().CalcTotalWeight();
-	const float maxCarry = m_pActorInvOwner->MaxCarryWeight();
-	const char* kgStr = g_pStringTable->translate("st_kg").c_str();
-	const char* maxCaption = g_pStringTable->translate("ui_inv_max_weight").c_str();
+	// SetHintText resets light_anim; call it only when owner changes,
+	// otherwise ui_btn_hint alpha stays at fade-in start and hint stays invisible.
+	if (g_statHint->Owner() != hoveredBar)
+	{
+		const float totalWeight = m_pActorInvOwner->inventory().CalcTotalWeight();
+		const float maxCarry = m_pActorInvOwner->MaxCarryWeight();
+		const shared_str kgStr = g_pStringTable->translate("st_kg");
 
-	string256 hintBuf;
-	const CInventoryVolumeSystem& volumeSystem = CInventoryVolumeSystem::Get();
-	if (volumeSystem.IsEnabled())
-	{
-		const float volume = volumeSystem.CalcRuckVolume(*m_pActorInvOwner);
-		const float capacity = volumeSystem.GetCapacity(*m_pActorInvOwner);
-		const float overload = volumeSystem.GetOverloadFactor(*m_pActorInvOwner);
-		xr_sprintf(hintBuf, "%.3f %s\n%s %.3f %s\nV %.3f / %.3f\nOverload %.2f",
-			totalWeight, kgStr, maxCaption, maxCarry, kgStr, volume, capacity, overload);
+		string256 hintBuf;
+		const CInventoryVolumeSystem& volumeSystem = CInventoryVolumeSystem::Get();
+		if (volumeSystem.IsEnabled())
+		{
+			const float volume = volumeSystem.CalcRuckVolume(*m_pActorInvOwner);
+			const float capacity = volumeSystem.GetCapacity(*m_pActorInvOwner);
+			const float overload = volumeSystem.GetOverloadFactor(*m_pActorInvOwner);
+			xr_sprintf(hintBuf, m_ActorWeightHintFormatVolume.c_str(),
+				totalWeight, kgStr.c_str(), maxCarry, kgStr.c_str(), volume, capacity, overload);
+		}
+		else
+		{
+			xr_sprintf(hintBuf, m_ActorWeightHintFormat.c_str(),
+				totalWeight, kgStr.c_str(), maxCarry, kgStr.c_str());
+		}
+
+		g_statHint->SetHintText(hoveredBar, hintBuf);
+		if (m_ActorWeightHintHasStyle)
+		{
+			g_statHint->SetTextStyle(m_ActorWeightHintFont, m_ActorWeightHintColor);
+		}
 	}
-	else
-	{
-		xr_sprintf(hintBuf, "%.3f %s\n%s %.3f %s", totalWeight, kgStr, maxCaption, maxCarry, kgStr);
-	}
-	g_statHint->SetHintText(hoveredBar, hintBuf);
 
 	Fvector2 cursorPos = GetUICursor().GetCursorPosition();
 	Frect visRect;
@@ -928,4 +1045,6 @@ void CUIActorMenu::UpdateActorWeightBarTooltip()
 	}
 
 	g_statHint->SetWndPos(hintRect.lt);
+	// ProgressBar is not CUIStatic: must arm g_statHint draw flag each frame (see CUIStatic::Draw).
+	g_statHint->Draw_();
 }

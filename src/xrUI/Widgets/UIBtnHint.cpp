@@ -82,3 +82,35 @@ void CUIButtonHint::SetHintText	(CUIWindow* w, const char* text)
     }
 	m_text->ResetColorAnimation	();
 }
+
+void CUIButtonHint::SetTextStyle(CGameFont* font, u32 color)
+{
+	if (m_text == nullptr)
+	{
+		return;
+	}
+
+	if (font != nullptr)
+	{
+		m_text->SetFont(font);
+	}
+	m_text->SetTextColor(color);
+
+	if (m_border != nullptr)
+	{
+		m_text->AdjustWidthToText();
+		const float hh = std::max(m_text->GetWidth() + 30.0f, 80.0f);
+		SetWidth(hh);
+		m_border->SetWidth(hh);
+	}
+	else
+	{
+		m_text->AdjustHeightToText();
+		const Fvector2 newSize
+		{
+			GetWndSize().x,
+			m_text->GetWndSize().y + 20.0f
+		};
+		SetWndSize(newSize);
+	}
+}
