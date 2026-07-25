@@ -477,6 +477,7 @@ _keyboard gamepads[] =
 	{ "cDPAD_DOWN",             SDL_GAMEPAD_BUTTON_DPAD_DOWN,     "D-Pad Down" },
 	{ "cDPAD_LEFT",             SDL_GAMEPAD_BUTTON_DPAD_LEFT,     "D-Pad Left" },
 	{ "cDPAD_RIGHT",            SDL_GAMEPAD_BUTTON_DPAD_RIGHT,    "D-Pad Right" },
+	{ "cTOUCHPAD",				SDL_GAMEPAD_BUTTON_TOUCHPAD,	  "Touchpad" },
 
 	{ "cLTRIGGER",				DIK_LTRIGGER,					  "LT" },
 	{ "cRTRIGGER",				DIK_RTRIGGER,					  "RT" },
@@ -782,7 +783,7 @@ const char* GetGamepadSymbol(int dik)
 			case SDL_GAMEPAD_BUTTON_NORTH:
 				return PS4_TRIANGLE;
 			case SDL_GAMEPAD_BUTTON_BACK:
-				return PS4_TOUCHPAD;
+				return PS4_SHARE;
 			case SDL_GAMEPAD_BUTTON_GUIDE:
 				return PS4_HOME;
 			case SDL_GAMEPAD_BUTTON_START:
@@ -838,7 +839,7 @@ const char* GetGamepadSymbol(int dik)
 			case SDL_GAMEPAD_BUTTON_NORTH:
 				return PS5_TRIANGLE;
 			case SDL_GAMEPAD_BUTTON_BACK:
-				return PS5_TOUCHPAD;
+				return PS5_SHARE;
 			case SDL_GAMEPAD_BUTTON_GUIDE:
 				return PS5_HOME;
 			case SDL_GAMEPAD_BUTTON_START:
@@ -914,6 +915,8 @@ const char* GetGamepadSymbol(int dik)
 		case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
 			return SWITCH_DPAD_LEFT;
 		case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+			return SWITCH_DPAD_RIGHT;
+		case SDL_GAMEPAD_BUTTON_TOUCHPAD:
 			return SWITCH_DPAD_RIGHT;
 		case DIK_LTRIGGER:
 			return SWITCH_LTRIGGER;
@@ -994,7 +997,7 @@ const char* GetGamepadSymbol(int dik)
 		}
 	}
 	
-	return "NONE";
+	return dik_to_keyname(dik);
 }
 
 ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst_buff_sz)
