@@ -570,6 +570,11 @@ void CGamePersistent::destroy_particles(bool all_particles)
 
 void CGamePersistent::start_logo_intro()
 {
+#ifndef MASTER_GOLD
+	m_intro_event.clear();
+	Console->Execute("main_menu on");
+	return;
+#else
 	if (!g_keypress_on_start)
 	{
 		m_intro_event.clear();
@@ -590,6 +595,7 @@ void CGamePersistent::start_logo_intro()
 			Console->Hide		();
 		}
 	}
+#endif
 }
 
 void CGamePersistent::update_logo_intro()
@@ -685,9 +691,9 @@ extern CUISequencer * g_tutorial2;
 void CGamePersistent::OnFrame()
 {
 	PROF_EVENT("CGamePersistent OnFrame");
-	if(Device.dwPrecacheFrame==5 && m_intro_event.empty())
+	if (Device.dwPrecacheFrame == 5 && m_intro_event.empty())
 	{
-		m_intro_event.bind			(this,&CGamePersistent::game_loaded);
+		m_intro_event.bind(this, &CGamePersistent::game_loaded);
 	}
 
 	if(g_tutorial2)
@@ -706,7 +712,10 @@ void CGamePersistent::OnFrame()
 #ifdef DEBUG
 	++m_frame_counter;
 #endif
-	if (!g_dedicated_server && !m_intro_event.empty())	m_intro_event();
+	if (!g_dedicated_server && !m_intro_event.empty())
+	{
+		m_intro_event();
+	}
 	
 	if(!g_dedicated_server && Device.dwPrecacheFrame==0 && !m_intro && m_intro_event.empty())
 		load_screen_renderer.stop();
@@ -715,11 +724,11 @@ void CGamePersistent::OnFrame()
 		m_pMainMenu->DestroyInternal(false);
 	}
 
-if (!g_pGameLevel)
+	if (!g_pGameLevel)
 	{
 		if (Device.IsEditorMode())
 		{
-			__super::OnFrame();
+			inherited::OnFrame();
 		}
 		return;
 	}
