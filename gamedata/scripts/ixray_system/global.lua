@@ -46,7 +46,7 @@ function UpdateTracyState()
 end
 
 function PROF_EVENT_BEGIN(name)
-	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
+	if true then
 		local data = ffx_callable_utils.find_caller_source_tracy(3, true)
         tracy.ZoneBeginN(string.format("[%s (%d,%d)] %s", tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
 	end
@@ -630,7 +630,7 @@ function HasOptionsVar(var_name)
 end
 
 --[[
-Description: Check is value exists in options by script namespace
+Description: Get option value by name in script namespace
 Parameters:
   var_name (string)(required) - key name for index value in options (uique name for caller script namespace) not conflicts between other scripts,
   default_value (mixed)(required) - default value is not exists by key name
@@ -639,6 +639,21 @@ Returns: (nil|bool|int|float|string|table|function) or false is not exists
 function GetOptionsVar(var_name, default_value)
 	if IsModuleLoaded("ixr_options") then
 		return GetModule("ixr_options").get_variable_value(var_name, default_value)
+	end
+	
+	return false
+end
+
+--[[
+Description: Set option value by name in script namespace
+Parameters:
+  var_name (string)(required) - key name for index value in options (uique name for caller script namespace) not conflicts between other scripts,
+  var_value (mixed)(required) - updated value
+Returns: (nil|bool|int|float|string|table|function) or false is not exists
+]]
+function SetOptionsVar(var_name, var_value)
+	if IsModuleLoaded("ixr_options") then
+		return GetModule("ixr_options").set_variable_value(var_name, var_value)
 	end
 	
 	return false
