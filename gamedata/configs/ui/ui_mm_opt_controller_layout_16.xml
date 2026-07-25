@@ -177,7 +177,7 @@
 			<cap_touch_pad y="66" width="102" height="43" complex_mode="1">
 				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_PDA</text>
 				<auto_static x="107" y="9" width="19" height="25" stretch="1">
-					<texture>ps4_controller_tpad</texture>
+					<texture>ps4_controller_lmenu</texture>
 				</auto_static>
 			</cap_touch_pad>
 			<cap_L1 y="112" width="102" height="43" complex_mode="1">
@@ -315,7 +315,7 @@
 			<cap_touch_pad y="66" width="102" height="43" complex_mode="1">
 				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_PDA</text>
 				<auto_static x="107" y="9" width="19" height="25" stretch="1">
-					<texture>ps5_controller_tpad</texture>
+					<texture>ps5_controller_lmenu</texture>
 				</auto_static>
 			</cap_touch_pad>
 			<cap_L1 y="112" width="102" height="43" complex_mode="1">
@@ -465,7 +465,7 @@
 			<cap_touch_pad y="135" width="102" height="43" complex_mode="1">
 				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_PDA</text>
 				<auto_static x="107" y="9" width="19" height="25" stretch="1">
-					<texture>switch_controller_tpad</texture>
+					<texture>switch_controller_lmenu</texture>
 				</auto_static>
 			</cap_touch_pad>
 

@@ -23,7 +23,7 @@
 		<mapping ascii="57364" texture_id="xbox1_controller_rsv"/>
 		<mapping ascii="57365" texture_id="xbox1_controller_ls"/>
 		<mapping ascii="57366" texture_id="xbox1_controller_rs"/>
-		<!-- 57367-57369 are reserved... use them later? -->
+		<!-- 57368-57369 are reserved... use them later? -->
 		<mapping ascii="57370" texture_id="xbox1_controller_lt"/>
 		<mapping ascii="57371" texture_id="xbox1_controller_rt"/>
 		<mapping ascii="57372" texture_id="xbox1_controller_lsu"/>
@@ -59,7 +59,8 @@
 		<mapping ascii="57400" texture_id="ps4_controller_rsv"/>
 		<mapping ascii="57401" texture_id="ps4_controller_ls"/>
 		<mapping ascii="57402" texture_id="ps4_controller_rs"/>
-		<!-- 57403-57405 are reserved... use them later? -->
+		<mapping ascii="57403" texture_id="ps4_controller_tpad"/>
+		<!-- 57404-57405 are reserved... use them later? -->
 		<mapping ascii="57406" texture_id="ps4_controller_lt"/>
 		<mapping ascii="57407" texture_id="ps4_controller_rt"/>
 		<mapping ascii="57408" texture_id="ps4_controller_lsu"/>
@@ -95,7 +96,8 @@
 		<mapping ascii="57436" texture_id="ps5_controller_rsv"/>
 		<mapping ascii="57437" texture_id="ps5_controller_ls"/>
 		<mapping ascii="57438" texture_id="ps5_controller_rs"/>
-		<!-- 57439-57441 are reserved... use them later? -->
+		<mapping ascii="57439" texture_id="ps5_controller_tpad"/>
+		<!-- 57440-57441 are reserved... use them later? -->
 		<mapping ascii="57442" texture_id="ps5_controller_lt"/>
 		<mapping ascii="57443" texture_id="ps5_controller_rt"/>
 		<mapping ascii="57444" texture_id="ps5_controller_lsu"/>
@@ -131,7 +133,8 @@
 		<mapping ascii="57472" texture_id="switch_controller_rsv"/>
 		<mapping ascii="57473" texture_id="switch_controller_ls"/>
 		<mapping ascii="57474" texture_id="switch_controller_rs"/>
-		<!-- 57475-57477 are reserved... use them later? -->
+		<mapping ascii="57475" texture_id="switch_controller_tpad"/>
+		<!-- 57476-57477 are reserved... use them later? -->
 		<mapping ascii="57478" texture_id="switch_controller_lt"/>
 		<mapping ascii="57479" texture_id="switch_controller_rt"/>
 		<mapping ascii="57480" texture_id="switch_controller_lsu"/>
