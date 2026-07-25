@@ -29,6 +29,14 @@ CInventorySorter::CInventorySorter()
 
 void CInventorySorter::Initialize()
 {
+    _categories.clear();
+    _idToCategory.clear();
+    _customCategoryMap.clear();
+    _customCategoryCounter = 0;
+    _orderModes.clear();
+    _idToOrderMode.clear();
+    _typeCycleCategories.clear();
+
     LoadSystemSettings();
     InitializeDefaultCategories();
     LoadCustomCategories();
@@ -608,6 +616,19 @@ const SInventorySortCategoryInfo* CInventorySorter::GetCategoryInfoById(const sh
 
 void CInventorySorter::AddCustomCategory(const shared_str& id, const shared_str& name, const shared_str& hint)
 {
+    if (_customCategoryMap.find(id) != _customCategoryMap.end())
+    {
+        return;
+    }
+
+    // EInventorySortCategory is u8; keep custom ids inside the remaining range.
+    constexpr u8 maxCustomCategories = static_cast<u8>(255 - static_cast<u8>(EInventorySortCategory::CustomStart));
+    if (_customCategoryCounter >= maxCustomCategories)
+    {
+        Msg("! CInventorySorter: custom category limit reached, skip [%s]", id.c_str());
+        return;
+    }
+
     EInventorySortCategory newCategory = (EInventorySortCategory)((u8)EInventorySortCategory::CustomStart + _customCategoryCounter);
     ++_customCategoryCounter;
 
@@ -920,38 +941,21 @@ bool CInventorySorter::CompareByImportance(PIItem item1, PIItem item2) const
 
 bool CInventorySorter::CompareByNovelty(PIItem item1, PIItem item2, bool noveltyDesc) const
 {
-    if (!item1 || !item2)
-    {
-        return item1 != nullptr;
-    }
+	// Novelty no longer stores take-time on the item (that broke client_data layout).
+	// Keep the mode as a stable ID/section order so the tab still does something useful.
+	if (!item1 || !item2)
+	{
+		return item1 != nullptr;
+	}
 
-    const ALife::_TIME_ID takenTime1 = item1->GetTakenTime();
-    const ALife::_TIME_ID takenTime2 = item2->GetTakenTime();
+	if (item1->object().cNameSect() == item2->object().cNameSect())
+	{
+		const bool byId = item1->object().ID() > item2->object().ID();
+		return noveltyDesc ? byId : !byId;
+	}
 
-    if (noveltyDesc)
-    {
-        if (takenTime1 == 0 && takenTime2 == 0)
-        {
-            return InventoryUtilities::GreaterRoomInRuck(item1, item2);
-        }
-
-        if (takenTime1 == 0)
-        {
-            return false;
-        }
-
-        if (takenTime2 == 0)
-        {
-            return true;
-        }
-    }
-
-    if (takenTime1 != takenTime2)
-    {
-        return noveltyDesc ? takenTime1 > takenTime2 : takenTime1 < takenTime2;
-    }
-
-    return InventoryUtilities::GreaterRoomInRuck(item1, item2);
+	const bool bySect = item1->object().cNameSect() > item2->object().cNameSect();
+	return noveltyDesc ? bySect : !bySect;
 }
 
 void CInventorySorter::ApplyBagListOrder(TIItemContainer& items, EInventoryOrderMode mode) const
@@ -971,13 +975,13 @@ void CInventorySorter::ApplyBagListOrder(TIItemContainer& items, EInventoryOrder
     {
     case EInventoryOrderMode::General:
     {
-        std::sort(items.begin(), items.end(), InventoryUtilities::GreaterRoomInRuck);
+        std::stable_sort(items.begin(), items.end(), InventoryUtilities::GreaterRoomInRuck);
         break;
     }
     case EInventoryOrderMode::ByType:
     {
         const EInventorySortCategory pivot = GetTypeCycleCategory(options.typeCycle);
-        std::sort(items.begin(), items.end(), [this, pivot](PIItem item1, PIItem item2)
+        std::stable_sort(items.begin(), items.end(), [this, pivot](PIItem item1, PIItem item2)
         {
             return CompareByType(item1, item2, pivot);
         });
@@ -986,7 +990,7 @@ void CInventorySorter::ApplyBagListOrder(TIItemContainer& items, EInventoryOrder
     case EInventoryOrderMode::ByWeight:
     {
         const bool weightDesc = options.weightDesc;
-        std::sort(items.begin(), items.end(), [this, weightDesc](PIItem item1, PIItem item2)
+        std::stable_sort(items.begin(), items.end(), [this, weightDesc](PIItem item1, PIItem item2)
         {
             return CompareByWeight(item1, item2, weightDesc);
         });
@@ -995,7 +999,7 @@ void CInventorySorter::ApplyBagListOrder(TIItemContainer& items, EInventoryOrder
     case EInventoryOrderMode::ByCondition:
     {
         const bool conditionDesc = options.conditionDesc;
-        std::sort(items.begin(), items.end(), [this, conditionDesc](PIItem item1, PIItem item2)
+        std::stable_sort(items.begin(), items.end(), [this, conditionDesc](PIItem item1, PIItem item2)
         {
             return CompareByCondition(item1, item2, conditionDesc);
         });
@@ -1004,7 +1008,7 @@ void CInventorySorter::ApplyBagListOrder(TIItemContainer& items, EInventoryOrder
     case EInventoryOrderMode::ByCost:
     {
         const bool costDesc = options.costDesc;
-        std::sort(items.begin(), items.end(), [this, costDesc](PIItem item1, PIItem item2)
+        std::stable_sort(items.begin(), items.end(), [this, costDesc](PIItem item1, PIItem item2)
         {
             return CompareByCost(item1, item2, costDesc);
         });
@@ -1012,7 +1016,7 @@ void CInventorySorter::ApplyBagListOrder(TIItemContainer& items, EInventoryOrder
     }
     case EInventoryOrderMode::ByImportance:
     {
-        std::sort(items.begin(), items.end(), [this](PIItem item1, PIItem item2)
+        std::stable_sort(items.begin(), items.end(), [this](PIItem item1, PIItem item2)
         {
             return CompareByImportance(item1, item2);
         });
@@ -1021,7 +1025,7 @@ void CInventorySorter::ApplyBagListOrder(TIItemContainer& items, EInventoryOrder
     case EInventoryOrderMode::ByNovelty:
     {
         const bool noveltyDesc = options.noveltyDesc;
-        std::sort(items.begin(), items.end(), [this, noveltyDesc](PIItem item1, PIItem item2)
+        std::stable_sort(items.begin(), items.end(), [this, noveltyDesc](PIItem item1, PIItem item2)
         {
             return CompareByNovelty(item1, item2, noveltyDesc);
         });
@@ -1029,7 +1033,7 @@ void CInventorySorter::ApplyBagListOrder(TIItemContainer& items, EInventoryOrder
     }
     default:
     {
-        std::sort(items.begin(), items.end(), InventoryUtilities::GreaterRoomInRuck);
+        std::stable_sort(items.begin(), items.end(), InventoryUtilities::GreaterRoomInRuck);
         break;
     }
     }
