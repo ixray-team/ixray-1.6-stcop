@@ -49,6 +49,11 @@ namespace Platform
         return getpid();
     }
 
+    inline size_t GetCurrentThreadId()
+    {
+        return GetThreadId(GetCurrentThread());
+    }
+
     inline void WaitForSingleObject(ThreadID ID)
     {
         pthread_join(ID, nullptr);

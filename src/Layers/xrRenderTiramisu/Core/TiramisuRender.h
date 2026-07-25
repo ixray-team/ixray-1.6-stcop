@@ -116,6 +116,6 @@ private:
     std::binary_semaphore       ImguiFrameConsumed{0};
     const ImDrawData*           PendingImguiDrawData = nullptr;
     bool                        bImguiFramePrepared = false;
-    ThreadID                    RenderThread = nullptr;
+    ThreadID                    RenderThread = NULL;
 };
 extern TiramisuRender* GRender;

@@ -16,4 +16,9 @@ namespace Platform
 	ThreadID GetCurrentThread();
     size_t GetThreadId(ThreadID ID);
     void SetThreadName(const char* name);
+
+    inline size_t GetCurrentThreadId()
+    {
+        return GetThreadId(GetCurrentThread());
+    }
 }
