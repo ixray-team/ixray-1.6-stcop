@@ -25,26 +25,6 @@ void CWeaponSVD::OnAnimationEnd(u8 state)
 	inherited::OnAnimationEnd(state);
 }
 
-void CWeaponSVD::OnActiveItem()
-{
-	inherited::OnActiveItem();
-
-	if (H_Parent() == Actor())
-	{
-		GGamepadService->SetTriggerResistance(true, 1, 8);
-	}
-}
-
-void CWeaponSVD::OnHiddenItem()
-{
-	inherited::OnHiddenItem();
-
-	if (H_Parent() == Actor())
-	{
-		GGamepadService->ClearTriggerEffect(true);
-	}
-}
-
 using namespace luabind;
 
 #pragma optimize("s",on)
