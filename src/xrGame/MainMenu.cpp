@@ -345,6 +345,15 @@ void	CMainMenu::IR_OnMouseStop(int x, int y)
 {
 };
 
+void	CMainMenu::IR_OnGyroscopeMove(Fvector3 value)
+{
+	if (!IsActive())
+	{
+		return;
+	}
+	CDialogHolder::IR_UIOnGyroscopeMove(value);
+};
+
 void CMainMenu::IR_OnKeyboardPress(int dik)
 {
 	if (!IsActive()) 
