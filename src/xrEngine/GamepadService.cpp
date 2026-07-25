@@ -282,3 +282,39 @@ shared_str CGamepadService::GetGamepadPrefix() const
 
 	return Prefix;
 }
+
+void CGamepadService::SetTriggerResistance(bool RightTrigger, u8 StartPosition, u8 Force, float Time)
+{
+	SetTriggerResistance(RightTrigger, StartPosition, Force);
+	if (RightTrigger)
+	{
+		triggerResistanceTimeR = Time * 1000;
+		resistanceTimeStampR = Device.dwTimeContinual;
+	}
+	else
+	{
+		triggerResistanceTimeL = Time * 1000;
+		resistanceTimeStampL = Device.dwTimeContinual;
+	}
+}
+
+void CGamepadService::Update() 
+{
+	if (resistanceTimeStampL != 0 && triggerResistanceTimeL != 0)
+	{
+		if (Device.dwTimeContinual > (resistanceTimeStampL + triggerResistanceTimeL))
+		{
+			ClearTriggerEffect(false);
+			triggerResistanceTimeL = 0;
+		}
+	}
+
+	if (resistanceTimeStampR != 0 && triggerResistanceTimeR != 0)
+	{
+		if (Device.dwTimeContinual > (resistanceTimeStampR + triggerResistanceTimeR))
+		{
+			ClearTriggerEffect(true);
+			triggerResistanceTimeR = 0;
+		}
+	}
+}
