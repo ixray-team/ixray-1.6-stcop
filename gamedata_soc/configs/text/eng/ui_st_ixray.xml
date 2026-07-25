@@ -885,4 +885,16 @@
 	<string id="ui_mm_gamepad_vibration">
 		<text>Vibration</text>
 	</string>
+	<string id="st_put_in_quick_slot_1">
+		<text>assign to quick slot 1</text>
+	</string>
+	<string id="st_put_in_quick_slot_2">
+		<text>assign to quick slot 2</text>
+	</string>
+	<string id="st_put_in_quick_slot_3">
+		<text>assign to quick slot 3</text>
+	</string>
+	<string id="st_put_in_quick_slot_4">
+		<text>assign to quick slot 4</text>
+	</string>
 </string_table>
