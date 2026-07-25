@@ -675,6 +675,11 @@ void CUIMainIngameWnd::RebindNavigationChildren()
 
 	if (compass && IsCompassBarInitialized())
 	{
+		if (!UIMotionIcon->CompassLayoutFrame())
+		{
+			UIMotionIcon->SetNavigationPresentation(true);
+		}
+
 		CUIWindow* layoutFrame = UIMotionIcon->CompassLayoutFrame();
 		if (layoutFrame)
 		{
