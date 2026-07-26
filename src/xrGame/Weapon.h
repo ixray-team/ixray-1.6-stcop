@@ -139,6 +139,7 @@ protected:
 	float m_fHudFovGLZoomFactor;
 	float m_HudFovZoom;
 	virtual bool			IsHudModeNow		();
+	bool m_Allow3DScope = false;
 public:
 	void					signal_HideComplete	();
 	virtual bool			Action(u16 cmd, u32 flags);
