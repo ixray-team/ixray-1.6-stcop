@@ -1214,8 +1214,9 @@ function IXRTrackBar:UpdateVisualValue()
 		metadata.update_visual_value = nil
 		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
 		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		
 		self:OnIncomingUpdateVisualValue(new_value)
-
+		self.value = self.controll_track_bar:GetFValue()
 	end
 end
 
@@ -1223,6 +1224,7 @@ function IXRTrackBar:OnIncomingUpdateVisualValue(new_value_index)
 	if self.value == new_value_index then
 		return
 	end
+	
 	self.is_pushed_from_code = true
 	self:SetValue(new_value_index)
 end
