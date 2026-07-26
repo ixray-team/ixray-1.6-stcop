@@ -6,6 +6,7 @@
 #include "../ActorCondition.h"
 #include "../Level.h"
 #include "../player_hud.h"
+#include "../ui/UIMotionIcon.h"
 
 #include "../../xrCore/API/xrAPI.h"
 #include "../../xrEngine/device.h"
@@ -202,6 +203,10 @@ void CWristwatchController::Update(CActor& actor)
 	const float radiation = actor.conditions().GetRadiation();
 	hudData.radiationGlow = _settings.radiationGlowMaxMsv > 0.0f
 		? clampr(radiation / _settings.radiationGlowMaxMsv, 0.0f, 1.0f)
+		: 0.0f;
+
+	hudData.motionIconLuminosity = (g_pMotionIcon != nullptr)
+		? g_pMotionIcon->GetLuminosityNormalized()
 		: 0.0f;
 
 	ApplyBoneVisibility();

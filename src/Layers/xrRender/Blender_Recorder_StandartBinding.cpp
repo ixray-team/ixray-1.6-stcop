@@ -751,7 +751,7 @@ static class cl_m_wristwatch_fx : public RHIShaderConstant::Setup
 			C,
 			static_cast<float>(wristwatch.displayType),
 			static_cast<float>(wristwatch.surgeMode),
-			wristwatch.radiationGlow,
+			wristwatch.motionIconLuminosity,
 			wristwatch.glitchStrength);
 	}
 } binder_m_wristwatch_fx;
