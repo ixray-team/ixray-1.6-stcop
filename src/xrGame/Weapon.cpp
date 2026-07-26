@@ -708,6 +708,7 @@ void CWeapon::Load		(const char* section)
 	m_bJamNotShot = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "no_jam_fire", !isImproveMis);
 
 	NeedMisfireAmmo = READ_IF_EXISTS(pSettings, r_bool, section, "change_misfire_mag", false);
+	m_Allow3DScope = READ_IF_EXISTS(pSettings, r_bool, section, "allow_3d_scope", false);
 
 	light_misfire.startcond = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_start_condition", 1.0f);
 	light_misfire.endcond = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_end_condition", 0.0f);
@@ -2772,12 +2773,14 @@ void CWeapon::InitAddons()
 			m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_zoom_factor", m_fHudFovZoomFactor);
 			m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_gl_zoom_factor", m_fHudFovGLZoomFactor);
 			m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "alter_zoom_allowed", m_AlterZoomAllowed);
+			m_Allow3DScope = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "allow_3d_scope", m_Allow3DScope);
 		}
 		else
 		{
 			m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, ReachInAllSections("hud_fov_zoom_factor"), "hud_fov_zoom_factor", 1.0f);
 			m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, ReachInAllSections("hud_fov_gl_zoom_factor"), "hud_fov_gl_zoom_factor", 1.0f);
 			m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("alter_zoom_allowed"), "alter_zoom_allowed", false);
+			m_Allow3DScope = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("allow_3d_scope"), "allow_3d_scope", false);
 		}
 	}
 }
@@ -3173,7 +3176,7 @@ CUIStatic* CWeapon::ZoomTexture()
 
 bool CWeapon::UseScopeTexture()
 {
-	return !g_3d_scopes && !IsAltZoomed();
+	return !(g_3d_scopes && m_Allow3DScope) && !IsAltZoomed();
 }
 
 void CWeapon::SwitchState(u8 S)
