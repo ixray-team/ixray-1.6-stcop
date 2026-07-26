@@ -43,6 +43,7 @@ public:
 	virtual bool OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action);
 	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action);
 	virtual bool OnGyroscopeAction(Fvector3 value) { return true; } // do not use gyroscope for radial menu
+	virtual bool OnTouchpadAction(Fvector2 value);
 
 	bool isInitialized = false;
 	CUIGamepadLegend* m_pGamepadLegend;
