@@ -663,6 +663,46 @@ bool CUIWindow::OnGamepadKeyHold(int dik)
 	return false;
 }
 
+bool CUIWindow::OnGyroscopeAction(Fvector3 value)
+{
+	bool result;
+
+	// если есть дочернее окно,захватившее клавиатуру, то
+	// сообщение направляем ему сразу
+	if (nullptr != m_pKeyboardCapturer)
+	{
+		result = m_pKeyboardCapturer->OnGyroscopeAction(value);
+
+		if (result)
+		{
+			return true;
+		}
+	}
+	if (!csUi.TryEnter())
+	{
+		return false;
+	}
+
+	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
+
+	for (; it != m_ChildWndList.rend(); ++it)
+	{
+		if ((*it)->IsEnabled())
+		{
+			result = (*it)->OnGyroscopeAction(value);
+
+			if (result)
+			{
+				csUi.Leave();
+				return true;
+			}
+		}
+	}
+
+	csUi.Leave();
+	return false;
+}
+
 bool CUIWindow::OnKeyboardHold(int dik)
 {
 	bool result;
