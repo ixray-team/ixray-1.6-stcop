@@ -94,7 +94,8 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 				{
 					dik = DIK_LTRIGGER;
 				}
-				pInput->GamepadButtonUpdate(dik, !zeroVal);
+				bool triggerPressed = Value >= 0.75f;
+				pInput->GamepadButtonUpdate(dik, triggerPressed);
 				// L2 & R2 Triggers
 				pInput->AdaptiveTriggerUpdate(isX, ValueReal);
 			}
