@@ -51,13 +51,12 @@ private:
 	u32 TriggerEffectTimeStampR = 0;
 	u32 TriggerEffectTimeR = 0;
 
-	u8 CurrentLEDRed = 0;
-	u8 CurrentLEDGreen = 0;
-	u8 CurrentLEDBlue = 255;
-	bool RumbleActive = false;
+	xr_atomic_u8 CurrentLEDRed = 0;
+	xr_atomic_u8 CurrentLEDGreen = 0;
+	xr_atomic_u8 CurrentLEDBlue = 255;
 
-	u16 CurrentLFRumble = 0;
-	u16 CurrentHFRumble = 0;
+	std::atomic<u16> CurrentLFRumble = 0;
+	std::atomic<u16> CurrentHFRumble = 0;
 
 	SDL_TimerID RumbleTimerID = 0;
 
