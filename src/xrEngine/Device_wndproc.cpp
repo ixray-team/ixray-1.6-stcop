@@ -133,7 +133,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			{
 				fingerInitialPos.set(Event.gtouchpad.x, Event.gtouchpad.y);
 			}
-			GGamepadService->touchpadFingersCount++;
+			GGamepadService->TouchpadFingersCount++;
 			break;
 		}
 		case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
@@ -159,7 +159,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		{
 			pInput->SetControllerMode(true);
 			pInput->SetTouchpadMode(false);
-			GGamepadService->touchpadFingersCount--;
+			GGamepadService->TouchpadFingersCount--;
 			break;
 		}
 		case SDL_EVENT_KEYBOARD_ADDED:
