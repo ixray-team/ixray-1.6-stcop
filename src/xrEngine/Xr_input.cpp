@@ -824,3 +824,8 @@ void CInput::SelectGamepadPrefix()
 	
 	GamepadTypeName = GGamepadService->GetGamepadPrefix();
 }
+
+bool CInput::LeftMouseButtonPressed()
+{
+	return iGetAsyncKeyState(MOUSE_1);
+}

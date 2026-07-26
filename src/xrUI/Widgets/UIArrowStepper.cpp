@@ -181,8 +181,10 @@ void CUIArrowStepper::Update()
 
 	if (m_b_mouse_capturer)
 	{
-		if (!pInput->iGetAsyncBtnState(0))
+		if (!pInput->LeftMouseButtonPressed())
+		{
 			m_b_mouse_capturer = false;
+		}
 	}
 }
 

@@ -167,6 +167,8 @@ public:
 	void SelectGamepadPrefix();
 	const char* GamepadPrefix() const { return GamepadTypeName.c_str(); }
 
+	bool LeftMouseButtonPressed();
+
 private:
 	bool FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& info) noexcept;
 	bool GetConnectedInputKeyboards(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_keyboards = DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT) noexcept;

@@ -78,8 +78,10 @@ void CUICheckButton::InitTexture2(const char* texture_name)
 
 void CUICheckButton::OnFocusLost()
 {
-	if(m_eButtonState==BUTTON_PUSHED && pInput->iGetAsyncBtnState(0))
+	if (m_eButtonState == BUTTON_PUSHED && pInput->LeftMouseButtonPressed())
+	{
 		return;
+	}
 
 	inherited::OnFocusLost();
 }
