@@ -345,14 +345,15 @@ void	CMainMenu::IR_OnMouseStop(int x, int y)
 {
 };
 
-void	CMainMenu::IR_OnGyroscopeMove(Fvector3 value)
+void CMainMenu::IR_OnMouseWheel(int direction)
 {
 	if (!IsActive())
 	{
 		return;
 	}
-	CDialogHolder::IR_UIOnGyroscopeMove(value);
-};
+
+	CDialogHolder::IR_UIOnMouseWheel(direction);
+}
 
 void CMainMenu::IR_OnKeyboardPress(int dik)
 {
@@ -412,14 +413,23 @@ void CMainMenu::IR_GamepadUpdateStick(int id, Fvector2 value)
 	CDialogHolder::IR_UIOnGamepadUpdateStick(id, value);
 }
 
-void CMainMenu::IR_OnMouseWheel(int direction)
+void	CMainMenu::IR_OnGyroscopeMove(Fvector3 value)
 {
-	if(!IsActive()) 
+	if (!IsActive())
+	{
 		return;
-	
-	CDialogHolder::IR_UIOnMouseWheel(direction);
-}
+	}
+	CDialogHolder::IR_UIOnGyroscopeMove(value);
+};
 
+void	CMainMenu::IR_OnTouchpadMove(Fvector2 value)
+{
+	if (!IsActive())
+	{
+		return;
+	}
+	CDialogHolder::IR_UIOnTouchpadMove(value);
+};
 
 bool CMainMenu::OnRenderPPUI_query()
 {

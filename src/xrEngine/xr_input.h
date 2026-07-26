@@ -89,6 +89,7 @@ private:
 	char						old_KBState[COUNT_KB_BUTTONS] = {};
 	char						old_GPState[COUNT_GP_BUTTONS] = {};
 	bool						controllerMode = false;
+	bool						touchpadMode = false;
 	shared_str GamepadTypeName = "xbox1";
 
 	Fvector2 LeftAxis = { 0, 0 };
@@ -99,6 +100,9 @@ private:
 	bool gyroscopeMoved = false;
 	Fvector3 Gyroscope = {0, 0, 0};
 
+	bool touchpadMoved = false;
+	Fvector2 Touchpad = {0, 0};
+
 	xr_vector<IInputReceiver*>	cbStack;
 
 	void						NoInputUpdate				();
@@ -106,6 +110,7 @@ private:
 	void						KeyboardUpdate				();
 	void						GamepadUpdate				();
 	void						GyroscopeUpdate				();
+	void						TouchpadUpdate				();
 
 public:
 	u32							dwCurTime;
@@ -122,6 +127,7 @@ public:
 	void						RightAxisUpdate				(bool IsX, float value);
 	void						AdaptiveTriggerUpdate		(bool IsX, float value);
 	void						GamepadGyroscopeUpdate		(Fvector3 value);
+	void						TouchpadUpdate				(Fvector2 value);
 
 
 	void						iCapture					( IInputReceiver *pc );
@@ -166,6 +172,9 @@ public:
 	bool						GetControllerMode() { return controllerMode; }
 	void SelectGamepadPrefix();
 	const char* GamepadPrefix() const { return GamepadTypeName.c_str(); }
+
+	IC void						SetTouchpadMode(bool val) { touchpadMode = val; }
+	bool						GetTouchpadMode() { return touchpadMode; }
 
 	bool LeftMouseButtonPressed();
 

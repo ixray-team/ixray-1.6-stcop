@@ -132,6 +132,36 @@ void CLevel::IR_OnGyroscopeMove( Fvector3 value )
 	}
 }
 
+void CLevel::IR_OnTouchpadMove( Fvector2 value )
+{
+	if (g_bDisableAllInput && g_bDisableMouseMove)
+	{
+		return;
+	}
+
+	/* avo: script callback */
+	if (g_actor)
+	{
+		g_actor->callback(GameObject::eMouseMove)(value.x, value.y);
+	}
+	/* avo: end */
+
+	if (CurrentGameUI()->IR_UIOnTouchpadMove(value))
+	{
+		return;
+	}
+	if (Device.Paused() && !IsDemoPlay() 
+#ifdef DEBUG
+		&& !psActorFlags.test(AF_NO_CLIP) 
+#endif //DEBUG
+		)	return;
+	if (CURRENT_ENTITY())		
+	{
+		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
+		if (IR)				IR->IR_OnTouchpadMove					(value);
+	}
+}
+
 // Обработка нажатия клавиш
 extern bool g_block_pause;
 
