@@ -58,6 +58,15 @@ struct CWrapperBase : public T, public luabind::wrap_base {
 		return ptr->self_type::inherited::OnGamepadStickAction(key, value, gamepad_action);
 	}
 
+	virtual bool OnGyroscopeAction(Fvector3 value)
+	{
+		return call_member<bool>(this, "OnGyroscope", value);
+	}
+	static bool OnGyroscope_static(inherited* ptr, Fvector3 value)
+	{
+		return ptr->self_type::inherited::OnGyroscopeAction(value);
+	}
+
 	virtual void Update()
 	{ call_member<void>(this,"Update");}
 	static void Update_static(inherited* ptr)
