@@ -22,6 +22,7 @@ public:
 	virtual bool OnGamepadKeyAction				(int key, EUIMessages gamepad_action);
 	virtual bool OnGamepadStickAction			(int key, Fvector2 value, EUIMessages gamepad_action);
 	virtual bool OnGyroscopeAction				(Fvector3 value);
+	virtual bool OnTouchpadAction				(Fvector2 value);
 
 	CDialogHolder* GetHolder					()								{return m_pParentHolder;};
 			void SetHolder						(CDialogHolder* h)				{m_pParentHolder = h;};
