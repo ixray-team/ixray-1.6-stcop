@@ -67,6 +67,7 @@ function on_game_start()
         end),
         _ref.combo_box_item("1 Пресет", false, function () 
 			  SetOptionsVar("var_test_int_track_bar", 5)
+			  SetOptionsVar("var_test_float_track_bar_b", 5.75)
 			  SetOptionsVar("var_test_01", true)
 			  SetOptionsVar("var_test_02", false)
 			  SetOptionsVar("var_test_03", false)
@@ -76,6 +77,7 @@ function on_game_start()
         end),
         _ref.combo_box_item("2 Пресет", true, function () 
 			  SetOptionsVar("var_test_int_track_bar", 15)
+			  SetOptionsVar("var_test_float_track_bar_b", 2.15)
 			  SetOptionsVar("var_test_01", false)
 			  SetOptionsVar("var_test_02", true)
 			  SetOptionsVar("var_test_03", false)
@@ -85,6 +87,7 @@ function on_game_start()
         end),
         _ref.combo_box_item("3 Пресет", true, function () 
 			  SetOptionsVar("var_test_int_track_bar", 25)
+			  SetOptionsVar("var_test_float_track_bar_b", 1.33)
 			  SetOptionsVar("var_test_01", false)
 			  SetOptionsVar("var_test_02", false)
 			  SetOptionsVar("var_test_03", true)
@@ -92,7 +95,7 @@ function on_game_start()
 			  SetOptionsVar("var_test_float_picker", 0.3)
 			  SetOptionsVar("var_test_color_picker", 3)
         end),
-      }), function (group, name, value_fn) value_fn() end) 
+      }), function (group, name, value_fn) value_fn() end)
       
 	  --// в последнем аргументе метода комбо бокса указываем что в качестве функции обрабатывающей событие мы будем задавать
       --// анонимную функцию которая сразу же при смене опции в комбо боксе выполнить привязанный к опции анонимный метод 
@@ -100,6 +103,7 @@ function on_game_start()
       
 		--// здесь разместим тестовые контроллы которыми будем управлять при переключении пресетов
 		_ref.register_option("Пример пресета опций", "var_test_int_track_bar", "Пример трек бара целочисленный", _ref.track_bar(1.0, 0.0, 100.0, 1.0, true), this.on_change_value_preset)
+		_ref.register_option("Пример пресета опций", "var_test_float_track_bar_b", "Пример трек бара дробный", _ref.track_bar(1.0, 0.0, 100.0, 0.25, false), this.on_change_value_preset)
 		_ref.register_option("Пример пресета опций", "var_test_01", "Чекбокс 1", _ref.check_box(true), this.on_change_value_preset)
 		_ref.register_option("Пример пресета опций", "var_test_02", "Чекбокс 2", _ref.check_box(true), this.on_change_value_preset)
 		_ref.register_option("Пример пресета опций", "var_test_03", "Чекбокс 3", _ref.check_box(true), this.on_change_value_preset)
