@@ -288,33 +288,68 @@ void CGamepadService::SetTriggerResistance(bool RightTrigger, u8 StartPosition, 
 	SetTriggerResistance(RightTrigger, StartPosition, Force);
 	if (RightTrigger)
 	{
-		triggerResistanceTimeR = Time * 1000;
-		resistanceTimeStampR = Device.dwTimeContinual;
+		triggerEffectTimeR = Time * 1000;
+		triggerEffectTimeStampR = Device.dwTimeContinual;
 	}
 	else
 	{
-		triggerResistanceTimeL = Time * 1000;
-		resistanceTimeStampL = Device.dwTimeContinual;
+		triggerEffectTimeL = Time * 1000;
+		triggerEffectTimeStampL = Device.dwTimeContinual;
+	}
+}
+
+void CGamepadService::ShotTriggerEffect(bool RightTrigger, float Time)
+{
+	if (Type != EGamepadType::DualSense || HidDevice == nullptr)
+	{
+		return;
+	}
+
+	u8 Report[48] = {};
+
+	Report[0] = 0x02;
+
+	// Enable trigger effect
+	Report[1] = 0x04;
+
+	u8* Trigger = RightTrigger ? &Report[11] : &Report[22];
+
+	Trigger[0] = 0x25; // Shot mode
+	Trigger[1] = 0x20;
+	Trigger[2] = 0x1;
+	Trigger[3] = 0x7;
+
+	hid_write((hid_device*)HidDevice, Report, sizeof(Report));
+
+	if (RightTrigger)
+	{
+		triggerEffectTimeR = Time * 1000;
+		triggerEffectTimeStampR = Device.dwTimeContinual;
+	}
+	else
+	{
+		triggerEffectTimeL = Time * 1000;
+		triggerEffectTimeStampL = Device.dwTimeContinual;
 	}
 }
 
 void CGamepadService::Update() 
 {
-	if (resistanceTimeStampL != 0 && triggerResistanceTimeL != 0)
+	if (triggerEffectTimeStampL != 0 && triggerEffectTimeL != 0)
 	{
-		if (Device.dwTimeContinual > (resistanceTimeStampL + triggerResistanceTimeL))
+		if (Device.dwTimeContinual > (triggerEffectTimeStampL + triggerEffectTimeL))
 		{
 			ClearTriggerEffect(false);
-			triggerResistanceTimeL = 0;
+			triggerEffectTimeL = 0;
 		}
 	}
 
-	if (resistanceTimeStampR != 0 && triggerResistanceTimeR != 0)
+	if (triggerEffectTimeStampR != 0 && triggerEffectTimeR != 0)
 	{
-		if (Device.dwTimeContinual > (resistanceTimeStampR + triggerResistanceTimeR))
+		if (Device.dwTimeContinual > (triggerEffectTimeStampR + triggerEffectTimeR))
 		{
 			ClearTriggerEffect(true);
-			triggerResistanceTimeR = 0;
+			triggerEffectTimeR = 0;
 		}
 	}
 }
