@@ -108,7 +108,7 @@ void CUIEncyclopediaArticleWnd::SetArticle(const char* article)
 extern ENGINE_API float devfloat1;
 bool CUIEncyclopediaArticleWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
-	if (m_UIModel && m_UIModel->CursorOverWindow() && pInput->iGetAsyncBtnState(0))
+	if (m_UIModel && m_UIModel->CursorOverWindow() && pInput->LeftMouseButtonPressed())
 	{
 		// need to fix input invertion on 180 degs rotate
 		Fvector xyz = m_UIModel->GetXYZ();
