@@ -130,6 +130,7 @@ public:
 			void			CreateDragItem		(CUICellItem* itm);
 
 			void			DestroyDragItem		();
+			static void		FlushPendingDragItemDestroy();
 			void			ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds = {}); // FFx0001
 			void			Compact				();
 			bool			IsOwner				(CUICellItem* itm);
