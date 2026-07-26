@@ -72,6 +72,21 @@ bool CUIDialogWnd::OnGyroscopeAction(Fvector3 value)
 	return false;
 }
 
+bool CUIDialogWnd::OnTouchpadAction(Fvector2 value)
+{
+	if (!IR_process())
+	{
+		return false;
+	}
+
+	if (inherited::OnTouchpadAction(value))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 bool CUIDialogWnd::IR_process()
 {
 	if (!IsEnabled() || GetHolder() == nullptr)
