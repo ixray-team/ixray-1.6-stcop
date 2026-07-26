@@ -647,7 +647,7 @@ void CActor::IR_OnGyroscopeMove(Fvector3 value)
 	float LookFactor = GetLookFactor();
 
 	CCameraBase* C = cameras[cam_active];
-	float scale = (C->f_fov / g_fov) * psGyroscopeSens / 50.0f / LookFactor;
+	float scale = (C->f_fov / g_fov) / LookFactor * 0.01f;
 
 	if (CWeapon* wpn = iitem != nullptr ? iitem->cast_weapon() : nullptr)
 	{

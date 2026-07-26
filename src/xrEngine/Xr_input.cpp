@@ -16,10 +16,8 @@ ENGINE_API bool		psMouseInvert		= false;
 ENGINE_API float	psGamepadSens		= 0.3f;
 ENGINE_API bool		psGamepadInvert		= false;
 
-ENGINE_API float	psGyroscopeSens		= 0.3f;
 ENGINE_API bool		psGyroscopeInvertX	= false;
 ENGINE_API bool		psGyroscopeInvertY	= false;
-ENGINE_API bool		psGyroscopeEnabled	= true;
 
 ENGINE_API float	psTouchpadSens		= 20.0f;
 
