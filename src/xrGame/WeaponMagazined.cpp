@@ -567,7 +567,7 @@ void CWeaponMagazined::FireStart()
 				SwitchState(eFire);
 			}
 		}
-		else if (!IsPending() || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
+		else if (!IsPending() && GetState() != eFire || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
 		{
 			if (IsActor && m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
 			{
@@ -579,7 +579,7 @@ void CWeaponMagazined::FireStart()
 			}
 		}
 	}
-	else if (!IsPending() || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
+	else if (!IsPending() && GetState() != eFire || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
 	{
 		if (parent != nullptr)
 		{
