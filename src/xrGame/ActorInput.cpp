@@ -559,7 +559,6 @@ void CActor::IR_OnKeyboardHold(int dik)
 
 void CActor::IR_OnMouseMove(int dx, int dy)
 {
-
 	if (hud_adj_mode)
 	{
 		float LookFactor = GetLookFactor();
@@ -579,6 +578,11 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 	}
 
 	if (Remote())
+	{
+		return;
+	}
+
+	if (load_screen_renderer.IsActive())
 	{
 		return;
 	}
@@ -626,6 +630,11 @@ void CActor::IR_OnGyroscopeMove(Fvector3 value)
 	}
 
 	if (Remote())
+	{
+		return;
+	}
+
+	if (load_screen_renderer.IsActive())
 	{
 		return;
 	}
@@ -755,10 +764,25 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	// Right stick
 	case 1:
 	{
+		PIItem iitem = inventory().ActiveItem();
+		if (iitem != nullptr && iitem->cast_hud_item())
+		{
+			iitem->cast_hud_item()->ResetSubStateTime();
+		}
+
 		float LookFactor = GetLookFactor();
 
 		CCameraBase* C = cameras[cam_active];
 		float scale = (C->f_fov / g_fov) * psGamepadSens * Device.fTimeDelta * psMouseSensScale / LookFactor;
+
+		if (CWeapon* wpn = iitem != nullptr ? iitem->cast_weapon() : nullptr)
+		{
+			if (!wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled() && !wpn->IsAltZoomed())
+			{
+				float zoom_scale = scale * (wpn->GetLensFOV() * 0.02f);
+				scale = _lerp(scale, zoom_scale, wpn->GetAimFactor());
+			}
+		}
 
 		if (!fis_zero(value.x))
 		{
@@ -1039,6 +1063,11 @@ void CActor::IR_GamepadKeyHold(int id)
 	}
 
 	if (!g_Alive())
+	{
+		return;
+	}
+
+	if (load_screen_renderer.IsActive())
 	{
 		return;
 	}
