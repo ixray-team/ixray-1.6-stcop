@@ -57,6 +57,21 @@ bool CUIDialogWnd::OnGamepadStickAction(int key, Fvector2 value, EUIMessages gam
 	return false;
 }
 
+bool CUIDialogWnd::OnGyroscopeAction(Fvector3 value)
+{
+	if (!IR_process())
+	{
+		return false;
+	}
+
+	if (inherited::OnGyroscopeAction(value))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 bool CUIDialogWnd::IR_process()
 {
 	if (!IsEnabled() || GetHolder() == nullptr)
