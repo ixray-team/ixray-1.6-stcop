@@ -14,6 +14,24 @@ namespace
 {
 // Horizontal UV span for one cell when inventory grid is disabled (must match GetTexUVLT sliding room).
 constexpr float kInventoryCellUSpanGridDisabled = 0.23f;
+
+xr_vector<CUIDragItem*> s_pendingDragItemDestroy;
+}
+
+void CUIDragDropListEx::FlushPendingDragItemDestroy()
+{
+	if (s_pendingDragItemDestroy.empty())
+	{
+		return;
+	}
+
+	xr_vector<CUIDragItem*> pending;
+	pending.swap(s_pendingDragItemDestroy);
+
+	for (CUIDragItem* item : pending)
+	{
+		xr_delete(item);
+	}
 }
 
 void CUICell::Clear()
@@ -60,7 +78,8 @@ CUIDragDropListEx::CUIDragDropListEx()
 
 CUIDragDropListEx::~CUIDragDropListEx()
 {
-	DestroyDragItem		();
+	DestroyDragItem();
+	FlushPendingDragItemDestroy();
 
 	delete_data					(m_container);
 
@@ -190,6 +209,7 @@ void CUIDragDropListEx::OnScrollV(CUIWindow* w, void* pData)
 
 void CUIDragDropListEx::CreateDragItem(CUICellItem* itm)
 {
+	FlushPendingDragItemDestroy();
 	R_ASSERT							(!m_drag_item);
 	m_drag_item							= itm->CreateDragItem();
 
@@ -201,13 +221,24 @@ void CUIDragDropListEx::CreateDragItem(CUICellItem* itm)
 
 void CUIDragDropListEx::DestroyDragItem()
 {
-	if(m_selected_item && m_drag_item && m_drag_item->ParentItem()==m_selected_item)
+	CUIDragItem* dragItem = m_drag_item;
+	if (dragItem == nullptr)
 	{
-		VERIFY(GetParent()->GetMouseCapturer()==m_drag_item);
-		GetParent()->SetCapture				(nullptr, false);
-
-		delete_data							(m_drag_item);
+		return;
 	}
+
+	m_drag_item = nullptr;
+
+	if (CUIWindow* parent = GetParent())
+	{
+		if (parent->GetMouseCapturer() == dragItem)
+		{
+			parent->SetCapture(nullptr, false);
+		}
+	}
+
+	dragItem->UnregisterDeviceSequences();
+	s_pendingDragItemDestroy.push_back(dragItem);
 }
 
 Fvector2 CUIDragDropListEx::GetDragItemPosition()
@@ -364,6 +395,7 @@ void CUIDragDropListEx::GetClientArea(Frect& r)
 void CUIDragDropListEx::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 {
 	DestroyDragItem			();
+	FlushPendingDragItemDestroy();
 	m_container->ClearAll	(bDestroy, IgnoredItemsIds); // FFx0001
 	m_selected_item			= nullptr;
 	m_container->SetWndPos	(Fvector2().set(0,0));
@@ -385,6 +417,7 @@ void CUIDragDropListEx::Compact()
 
 void CUIDragDropListEx::Draw()
 {
+	FlushPendingDragItemDestroy();
 	inherited::Draw				();
 
 	if(0 && bDebug){
@@ -401,6 +434,7 @@ void CUIDragDropListEx::Draw()
 
 void CUIDragDropListEx::Update()
 {
+	FlushPendingDragItemDestroy();
 	inherited::Update			();
 
 	if( m_drag_item ){
