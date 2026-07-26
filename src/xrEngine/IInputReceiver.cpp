@@ -24,15 +24,27 @@ void	IInputReceiver::IR_GetLastMouseDelta			(Ivector2& p)
 
 void IInputReceiver::IR_OnDeactivate					(void)
 {
-	int i;
-	for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++ )
-		if (IR_GetKeyState(i)) {	
+	for (size_t i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
+	{
+		if (IR_GetKeyState(i))
+		{
 			IR_OnKeyboardRelease(i);
 		}
-	for (i = 0; i < CInput::COUNT_MOUSE_BUTTONS; i++ )
-		if (IR_GetBtnState(i)) {
+	}
+	for (size_t i = 0; i < CInput::COUNT_MOUSE_BUTTONS; i++)
+	{
+		if (IR_GetBtnState(i))
+		{
 			IR_OnMouseRelease(i);
 		}
+	}
+	for (size_t i = 0; i < GAMEPAD_BUTTON_COUNT_REAL; i++)
+	{
+		if (IR_GetGamepadKeyState(i))
+		{
+			IR_GamepadKeyRelease(i);
+		}
+	}
 }
 
 void IInputReceiver::IR_OnActivate(void)
