@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tracy Profiler Markers Manager v2.1
+Tracy Profiler Markers Manager v2.2 (исправленная версия)
 """
 
 import re, sys, shutil, os, time, json, threading, queue
@@ -221,12 +221,13 @@ def find_function_end(lines, start_idx, header_match):
                     if prev_keyword not in {'for', 'while', 'if', 'elseif', 'else', 'repeat'}:
                         balance += 1
                     prev_keyword = word
-                else:
-                    prev_keyword = None
+                elif word == 'elseif':
+                    prev_keyword = word
+                elif word == 'else':
+                    prev_keyword = word
                 t = j
                 continue
             t += 1
-            prev_keyword = None
         i += 1
         pos = 0
     return (len(lines) - 1, len(lines[-1]) if lines else 0)
@@ -301,14 +302,27 @@ def find_functions(lines, skip_wrapped=True):
         if not stripped:
             i += 1
             continue
-        m = re.match(r'^(local\s+)?function\s+([\w:.]+)\s*\(([^)]*)\)', stripped)
+        m = re.match(r'^(local\s+)?function\s+([\w:.]+)\s*\(', stripped)
         if m:
-            header_match = re.match(r'^(\s*)(local\s+)?function\s+([\w:.]+)\s*\(([^)]*)\)', lines[i])
+            header_lines = [lines[i]]
+            j = i
+            while ')' not in header_lines[-1] and j + 1 < len(lines):
+                j += 1
+                header_lines.append(lines[j])
+
+            full_header = ''.join(header_lines)
+            header_match = re.match(r'^(\s*)(local\s+)?function\s+([\w:.]+)\s*\(([^)]*)\)', full_header)
             if not header_match:
                 i += 1
                 continue
-            end_line_idx, end_pos = find_function_end(lines, i, header_match)
-            if not is_body_empty(lines, i, end_line_idx, end_pos, header_match):
+
+            first_line_match = re.match(r'^(\s*)(local\s+)?function\s+([\w:.]+)\s*\(([^)]*)\)', lines[i])
+            if not first_line_match:
+                i += 1
+                continue
+
+            end_line_idx, end_pos = find_function_end(lines, i, first_line_match)
+            if not is_body_empty(lines, i, end_line_idx, end_pos, first_line_match):
                 if not skip_wrapped or not is_already_wrapped(lines, i, end_line_idx):
                     full_name = header_match.group(3)
                     func_name = re.split(r'[.:]', full_name)[-1]
@@ -316,7 +330,7 @@ def find_functions(lines, skip_wrapped=True):
                         start_line=i,
                         end_line=end_line_idx,
                         end_pos=end_pos,
-                        header_match=header_match,
+                        header_match=first_line_match,
                         name=func_name,
                         args=header_match.group(4),
                         indent=header_match.group(1) or ''
@@ -397,6 +411,7 @@ def wrap_function_lines(lines, func, indent_unit):
         new_header += ' ' + super_str
 
     body_parts = []
+
     if start == end:
         tail = header_line[func.header_match.end():func.end_pos]
         m = re.search(r'\bend\b', tail)
@@ -405,7 +420,7 @@ def wrap_function_lines(lines, func, indent_unit):
         if super_str and super_str in tail:
             tail = tail.replace(super_str, '', 1)
         if tail.strip():
-            body_parts.append(tail.strip())
+            body_parts.append(('inline', tail.strip()))
     else:
         tail_first = header_line[func.header_match.end():]
         if super_str and super_str in tail_first:
@@ -414,10 +429,10 @@ def wrap_function_lines(lines, func, indent_unit):
         if m:
             tail_first = tail_first[:m.start()]
         if tail_first.strip():
-            body_parts.append(tail_first.strip())
+            body_parts.append(('inline', tail_first.strip()))
 
         for idx in range(start + 1, end):
-            body_parts.append(lines[idx].rstrip('\n'))
+            body_parts.append(('mid', lines[idx].rstrip('\n')))
 
         last_line = lines[end]
         tail_last = last_line[:func.end_pos]
@@ -425,11 +440,11 @@ def wrap_function_lines(lines, func, indent_unit):
         if m:
             tail_last = tail_last[:m.start()]
         if tail_last.strip():
-            body_parts.append(tail_last.strip())
+            body_parts.append(('inline', tail_last.strip()))
 
     super_line = None
-    if body_parts:
-        first = body_parts[0].lstrip()
+    if body_parts and body_parts[0][0] == 'inline':
+        first = body_parts[0][1].lstrip()
         if first.startswith('super('):
             super_line = base_body_indent + first + '\n'
             body_parts = body_parts[1:]
@@ -441,21 +456,25 @@ def wrap_function_lines(lines, func, indent_unit):
         capture_re = re.compile(r'^\s*local\s+(\w+)\s*=\s*\{\s*\.\.\.\s*\}')
         new_body = []
         found = False
-        for part in body_parts:
-            if not found:
+        for source, part in body_parts:
+            if not found and source == 'inline':
                 m = capture_re.match(part)
                 if m:
                     capture_line = base_body_indent + part + '\n'
                     capture_var = m.group(1)
                     found = True
                     continue
-            new_body.append(part)
+            new_body.append((source, part))
         body_parts = new_body
         if not capture_line:
-            capture_line = base_body_indent + "local arg = {...}\n"
+            capture_var = "__tracy_arg"
+            capture_line = base_body_indent + f"local {capture_var} = {{...}}\n"
 
     if vararg:
-        body_parts = [replace_vararg_in_line(part, capture_var) for part in body_parts]
+        new_body = []
+        for source, part in body_parts:
+            new_body.append((source, replace_vararg_in_line(part, capture_var)))
+        body_parts = new_body
 
     result = []
     result.append(new_header + '\n')
@@ -464,14 +483,21 @@ def wrap_function_lines(lines, func, indent_unit):
     if capture_line:
         result.append(capture_line)
     result.append(f'{base_body_indent}return {PROF_MARKER}("{func_name}", function()\n')
-    for part in body_parts:
-        result.append(f'{base_body_indent}{indent_unit}{part}\n')
+
+    for source, part in body_parts:
+        if source == 'mid':
+            if part.strip():
+                result.append(indent_unit + part + '\n')
+            else:
+                result.append('\n')
+        else:
+            result.append(f'{base_body_indent}{indent_unit}{part}\n')
+
     result.append(f'{base_body_indent}end)\n')
     result.append(f'{func_indent}end\n')
     return result
 
 def smart_unwrap_function(lines, func, indent_unit):
-    """Разворачивает обёрнутую функцию, возвращает изменённый список строк файла."""
     start = func.start_line
     end = func.end_line
     func_indent = func.indent
@@ -572,7 +598,10 @@ def transform_file(input_path, output_path=None, overwrite_backup=False):
             if g.start_line > func.end_line:
                 g.start_line += delta
                 g.end_line += delta
-            elif g.end_line >= func.end_line and g.start_line <= func.start_line:
+            elif g.start_line > func.start_line and g.end_line <= func.end_line + old_len - 1:
+                g.start_line += delta
+                g.end_line += delta
+            elif g.start_line <= func.start_line and g.end_line >= func.end_line:
                 g.end_line += delta
     if output_path is None:
         backup = input_path + '.bak'
@@ -657,7 +686,6 @@ class BlacklistManager:
             self.files.remove(path)
         self.save()
 
-
 class FunctionEditorDialog(tk.Toplevel):
     def __init__(self, parent, filepath):
         super().__init__(parent)
@@ -671,17 +699,23 @@ class FunctionEditorDialog(tk.Toplevel):
         self.indent_unit = detect_indent_unit(self.lines)
         self.funcs = []
         self.current_func = None
+        self._backup_created = False
 
         self._build_ui()
         self._refresh_list()
         self.protocol("WM_DELETE_WINDOW", self._on_close)
 
+    def _ensure_backup(self):
+        if not self._backup_created:
+            backup = self.filepath + '.bak'
+            if not os.path.exists(backup):
+                shutil.copy2(self.filepath, backup)
+            self._backup_created = True
+
     def _build_ui(self):
-        # Главный горизонтальный paned: слева список, справа превью
         main_paned = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
         main_paned.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        # Левая панель — список функций
         left_frame = ttk.Frame(main_paned)
         main_paned.add(left_frame, weight=1)
 
@@ -701,41 +735,37 @@ class FunctionEditorDialog(tk.Toplevel):
         vsb.pack(side=tk.RIGHT, fill=tk.Y)
         self.list.bind('<<TreeviewSelect>>', self._on_select)
 
-        # Правая панель — вертикальный paned: текущий сверху, будет снизу
         right_frame = ttk.Frame(main_paned)
         main_paned.add(right_frame, weight=3)
 
-        # Вертикальный paned для текущего/будущего кода
         diff_paned = ttk.PanedWindow(right_frame, orient=tk.VERTICAL)
         diff_paned.pack(fill=tk.BOTH, expand=True)
 
-        # Текущий код (сверху)
         top_frame = ttk.LabelFrame(diff_paned, text=" Текущий код ")
         diff_paned.add(top_frame, weight=1)
 
-        self.text_before = tk.Text(top_frame, wrap=tk.NONE, font=('Consolas', 10), state=tk.DISABLED)
+        self.text_before = tk.Text(top_frame, wrap=tk.NONE, font=('Consolas', 10))
         sb1 = ttk.Scrollbar(top_frame, orient=tk.VERTICAL, command=self.text_before.yview)
         self.text_before.configure(yscrollcommand=sb1.set)
+        self._make_text_readonly(self.text_before)
         self.text_before.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         sb1.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Будет (снизу)
         bottom_frame = ttk.LabelFrame(diff_paned, text=" Будет после применения ")
         diff_paned.add(bottom_frame, weight=1)
 
-        self.text_after = tk.Text(bottom_frame, wrap=tk.NONE, font=('Consolas', 10), state=tk.DISABLED)
+        self.text_after = tk.Text(bottom_frame, wrap=tk.NONE, font=('Consolas', 10))
         sb2 = ttk.Scrollbar(bottom_frame, orient=tk.VERTICAL, command=self.text_after.yview)
         self.text_after.configure(yscrollcommand=sb2.set)
+        self._make_text_readonly(self.text_after)
         self.text_after.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         sb2.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Теги подсветки
         self.text_after.tag_config('added', background='#c8e6c9', foreground='#1b5e20')
         self.text_before.tag_config('wrapped', background='#fff9c4', foreground='#f57f17')
         self.text_after.tag_config('preview_add', background='#e8f5e9')
         self.text_after.tag_config('preview_del', background='#ffebee')
 
-        # Кнопки
         btn_frame = ttk.Frame(right_frame)
         btn_frame.pack(fill=tk.X, pady=8)
         self.wrap_btn = ttk.Button(btn_frame, text="📌 Обернуть выбранную", command=self._wrap_current)
@@ -745,9 +775,25 @@ class FunctionEditorDialog(tk.Toplevel):
         ttk.Button(btn_frame, text="🔄 Перечитать файл", command=self._refresh_file).pack(side=tk.LEFT, padx=2)
         ttk.Button(btn_frame, text="Закрыть", command=self.destroy).pack(side=tk.RIGHT, padx=2)
 
-        # Статус
         self.status = ttk.Label(right_frame, text="Выберите функцию", foreground='gray')
         self.status.pack(anchor=tk.W, pady=(4, 0))
+
+    def _select_func_by_name(self, name):
+        for idx, child in enumerate(self.list.get_children("")):
+            if self.funcs[idx].name == name:
+                self.list.selection_set(child)
+                self.list.see(child)
+                self._on_select()
+                return True
+        return False
+
+    def _make_text_readonly(self, text_widget):
+        def on_key(event):
+            if event.state & 0x4 and event.keysym.lower() in ('c', 'a', 'insert'):
+                return None
+            return 'break'
+        text_widget.bind('<Key>', on_key)
+        text_widget.bind('<Button-3>', lambda e: 'break')
 
     def _refresh_file(self):
         self.lines, self.encoding = read_file_with_encoding(self.filepath)
@@ -772,7 +818,6 @@ class FunctionEditorDialog(tk.Toplevel):
         for txt in (self.text_before, self.text_after):
             txt.config(state=tk.NORMAL)
             txt.delete('1.0', tk.END)
-            txt.config(state=tk.DISABLED)
         self.wrap_btn.config(state=tk.DISABLED)
         self.unwrap_btn.config(state=tk.DISABLED)
         self.current_func = None
@@ -788,7 +833,6 @@ class FunctionEditorDialog(tk.Toplevel):
         for txt in (self.text_before, self.text_after):
             txt.config(state=tk.NORMAL)
             txt.delete('1.0', tk.END)
-            # сброс тегов
             for tag in txt.tag_names():
                 txt.tag_remove(tag, '1.0', tk.END)
 
@@ -823,18 +867,19 @@ class FunctionEditorDialog(tk.Toplevel):
             self.unwrap_btn.config(state=tk.DISABLED)
             self.status.config(text=f"{func.name} — не обёрнута. Можно обернуть.", foreground='#c62828')
 
-        for txt in (self.text_before, self.text_after):
-            txt.config(state=tk.DISABLED)
-
     def _wrap_current(self):
         if not self.current_func:
             return
+        func_name = self.current_func.name
         try:
+            self._ensure_backup()
             new_lines = wrap_function_lines(self.lines, self.current_func, self.indent_unit)
             self.lines[self.current_func.start_line : self.current_func.end_line + 1] = new_lines
             atomic_write(self.filepath, self.lines, self.encoding)
-            self._refresh_file()
-            self.status.config(text=f"{self.current_func.name} обёрнута успешно.", foreground='green')
+            self._refresh_list()
+            if not self._select_func_by_name(func_name):
+                self._clear_preview()
+            self.status.config(text=f"{func_name} обёрнута успешно.", foreground='green')
         except Exception as e:
             messagebox.showerror("Ошибка", str(e), parent=self)
             self.status.config(text=f"Ошибка: {e}", foreground='red')
@@ -842,11 +887,15 @@ class FunctionEditorDialog(tk.Toplevel):
     def _unwrap_current(self):
         if not self.current_func:
             return
+        func_name = self.current_func.name
         try:
+            self._ensure_backup()
             self.lines = smart_unwrap_function(self.lines, self.current_func, self.indent_unit)
             atomic_write(self.filepath, self.lines, self.encoding)
-            self._refresh_file()
-            self.status.config(text=f"{self.current_func.name} развёрнута успешно.", foreground='green')
+            self._refresh_list()
+            if not self._select_func_by_name(func_name):
+                self._clear_preview()
+            self.status.config(text=f"{func_name} развёрнута успешно.", foreground='green')
         except Exception as e:
             messagebox.showerror("Ошибка", str(e), parent=self)
             self.status.config(text=f"Ошибка: {e}", foreground='red')
@@ -858,7 +907,7 @@ class FunctionEditorDialog(tk.Toplevel):
 class TracyManagerApp:
     def __init__(self, root):
         self.root = root
-        root.title("Tracy Profiler Markers Manager v2.1")
+        root.title("Tracy Profiler Markers Manager v2.2")
         root.geometry("1200x800")
         root.minsize(900, 600)
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1531,11 +1580,16 @@ class TracyManagerApp:
                     wrapped_funcs = [f for f in funcs if is_already_wrapped(lines, f.start_line, f.end_line)]
                     if not wrapped_funcs:
                         continue
-                    for func in wrapped_funcs:
+                    while True:
+                        funcs = find_functions(lines, skip_wrapped=False)
+                        wrapped_funcs = [f for f in funcs if is_already_wrapped(lines, f.start_line, f.end_line)]
+                        if not wrapped_funcs:
+                            break
+                        func = max(wrapped_funcs, key=lambda f: f.start_line)
                         lines = smart_unwrap_function(lines, func, indent)
+                        stats['smart'] += 1
                     atomic_write(path, lines, enc)
                     stats['processed'] += 1
-                    stats['smart'] += 1
             except Exception as e:
                 stats['errors'].append((os.path.basename(path), str(e)))
             if idx % 5 == 0:
