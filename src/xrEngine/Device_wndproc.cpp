@@ -107,23 +107,9 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		}
 		case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
 		{
-			if (!GGamepadService || !GGamepadService->GamePadDevice || !pInput->GetControllerMode())
+			if (GGamepadService != nullptr)
 			{
-				break;
-			}
-
-			if (psGyroscopeEnabled && SDL_GamepadHasSensor(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO))
-			{
-				float gyroscopeVal[3];
-				SDL_GetGamepadSensorData(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO, gyroscopeVal, 3);
-				
-				Fvector3 gyroscope{gyroscopeVal[0], gyroscopeVal[1], gyroscopeVal[2]};
-				if (gyroscope.magnitude() < 0.15f)
-				{
-					break;
-				}
-
-				pInput->GamepadGyroscopeUpdate(gyroscope);
+				GGamepadService->GyroscopeUpdate();
 			}
 			break;
 		}
