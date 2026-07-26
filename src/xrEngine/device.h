@@ -54,6 +54,7 @@ struct SWristwatchHudData
 	u8 displayType = 2;
 	u8 surgeMode = 0;
 	float radiationGlow = 0.0f;
+	float motionIconLuminosity = 0.0f;
 	float glitchStrength = 0.0f;
 	bool isActive = false;
 	bool showAnalogHands = true;
