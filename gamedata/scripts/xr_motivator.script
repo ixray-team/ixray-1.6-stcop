@@ -40,6 +40,18 @@ function manage_callbacks(_ref_binder, is_set)
 	)
 end
 
+function reinit_callback(_ref_binder, callback_name)
+	local _script_name = script_name()
+	ixr_callback_binder.manage_callbacks(_script_name, {[callback_name] = all_callbacks[callback_name]}, _ref_binder, false, use_callback_logs,
+		function (obj_id) end,
+		function (obj_id) end
+	)
+	ixr_callback_binder.manage_callbacks(_script_name, {[callback_name] = all_callbacks[callback_name]}, _ref_binder, true, use_callback_logs,
+		function (obj_id) end,
+		function (obj_id) end
+	)
+end
+
 ----------------------------------------------------------------------------------------------------------------------
 class "motivator_binder" (object_binder)
 
@@ -398,6 +410,7 @@ function motivator_binder:death_callback(victim, who)
         db.delete_enemy( self.e_index )
     
         manage_callbacks(self, false) -- IX-Ray UNSET CALLBACKS
+		reinit_callback(self, "use_object") -- IX-Ray ADD USE callback allow after death
         --' Наносим небольшой импульс вперед.
         if(actor_stats.remove_from_ranking~=nil)then
             local community = character_community(self.object)
