@@ -125,6 +125,7 @@ public:
 	virtual void	IR_OnMouseHold					(int btn);
 	virtual void	IR_OnMouseMove					(int x, int y);
 	virtual void	IR_OnMouseStop					(int x, int y);
+	virtual void	IR_OnMouseWheel					(int direction)	;
 
 	virtual void	IR_OnKeyboardPress				(int dik);
 	virtual void	IR_OnKeyboardRelease			(int dik);
@@ -134,7 +135,7 @@ public:
 	virtual void	IR_GamepadKeyHold				(int id);
 	virtual void	IR_GamepadUpdateStick			(int id, Fvector2 value);
 	virtual void	IR_OnGyroscopeMove				(Fvector3 value);
-	virtual void	IR_OnMouseWheel					(int direction)	;
+	virtual void	IR_OnTouchpadMove				(Fvector2 value);
 
 	bool			OnRenderPPUI_query				();
 	void			OnRenderPPUI_main				();
