@@ -224,3 +224,25 @@ bool CUIRadialMenu::OnGamepadStickAction(int key, Fvector2 value, EUIMessages ga
 	}
 	return inherited::OnGamepadStickAction(key, value, gamepad_action);
 }
+
+bool CUIRadialMenu::OnTouchpadAction(Fvector2 value)
+{
+	if (!fis_zero(value.x) || !fis_zero(value.y))
+	{
+		if (!bWaitForZeroRStick && std::abs(value.magnitude()) > 0.5f)
+		{
+			float angle = atan2(value.y, value.x) + 2 * M_PI;
+			int focus_index = iFloor(((angle - starting_angle) * sectors_count) / (2 * M_PI)) % sectors_count;
+			if (focus_index != selected_index)
+			{
+				PlaySnd(eSndSwitch);
+			}
+			selected_index = focus_index;
+		}
+	}
+	else 
+	{
+		bWaitForZeroRStick = false;
+	}
+	return inherited::OnTouchpadAction(value);
+}
