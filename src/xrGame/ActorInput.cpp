@@ -934,6 +934,16 @@ void CActor::IR_GamepadKeyPress(int id)
 			}
 			break;
 		}
+		case kCAM_2:
+			if (active_cam() != eacLookAt)
+			{
+				cam_Set(eacLookAt);
+			}
+			else
+			{
+				cam_Set(eacFirstEye);
+			}
+			break;
 	}
 
 	EGameActions bindAim = get_binded_action(id, agAiming);
