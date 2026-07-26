@@ -106,7 +106,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		}
 		case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
 		{
-			if (!GGamepadService || !GGamepadService->GamePadDevice)
+			if (!GGamepadService || !GGamepadService->GamePadDevice || !pInput->GetControllerMode())
 			{
 				break;
 			}
@@ -144,19 +144,13 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 				pos.sub(fingerInitialPos);
 				if (pos.magnitude() > 0.1f)
 				{
-					pInput->SetControllerMode(false);
 					pInput->SetTouchpadMode(true);
 				}
 				else
 				{
 					break;
 				}
-				pos.mul(psTouchpadSens);
-				pInput->MouseMotion(pos.x, pos.y);
-				if (g_pGamePersistent)
-				{
-					g_pGamePersistent->ChangeCursorPosition(pos);
-				}
+				pInput->TouchpadUpdate(pos);
 			}
 			break;
 		}
