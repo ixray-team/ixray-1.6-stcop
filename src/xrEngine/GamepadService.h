@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL3/SDL_hidapi.h>
 
 enum class EGamepadType
 {
@@ -36,15 +37,15 @@ public:
 public:
 	EGamepadType Type = EGamepadType::Unknown;
 	SDL_Gamepad* GamePadDevice = nullptr;
-	u8 touchpadFingersCount = 0;
+	u8 TouchpadFingersCount = 0;
 
 private:
-	void* HidDevice = nullptr;
+	SDL_hid_device* HidDevice = nullptr;
 
-	u32 triggerEffectTimeStampL = 0;
-	u32 triggerEffectTimeL = 0;
-	u32 triggerEffectTimeStampR = 0;
-	u32 triggerEffectTimeR = 0;
+	u32 TriggerEffectTimeStampL = 0;
+	u32 TriggerEffectTimeL = 0;
+	u32 TriggerEffectTimeStampR = 0;
+	u32 TriggerEffectTimeR = 0;
 
 private:
 	void InitHID();
