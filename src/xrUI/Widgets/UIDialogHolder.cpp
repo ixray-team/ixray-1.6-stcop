@@ -504,13 +504,13 @@ bool CDialogHolder::IR_UIOnTouchpadMove(Fvector2 value)
 	{
 		return false;
 	}
-	/* if (GetUICursor().IsVisible() || TIR->ForceCursorInput())
+
+	if (TIR->OnTouchpadAction(value))
 	{
-		GetUICursor().UpdateCursorPosition(-value.x, -value.y);
-		Fvector2 cPos = GetUICursor().GetCursorPosition();
-		TIR->OnMouseAction(cPos.x, cPos.y, WINDOW_MOUSE_MOVE);
+		return true;
 	}
-	else*/ if (!TIR->StopAnyMove() && g_pGameLevel)
+
+	if (!TIR->StopAnyMove() && g_pGameLevel)
 	{
 		CObject* O = g_pGameLevel->CurrentEntity();
 		if (O)
