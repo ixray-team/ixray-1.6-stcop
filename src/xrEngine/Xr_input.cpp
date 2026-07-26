@@ -851,5 +851,5 @@ void CInput::SelectGamepadPrefix()
 
 bool CInput::LeftMouseButtonPressed()
 {
-	return iGetAsyncBtnState(MOUSE_1);
+	return iGetAsyncKeyState(MOUSE_1);
 }
