@@ -63,26 +63,49 @@ public:
 	template<typename U> requires std::derived_from<U, T>
 	void Add(U* pure_object, int priority = REG_PRIORITY_NORMAL)
 	{
-		PureReg<T> reg_entry { pure_object, priority };
+		if (pure_object == nullptr)
+		{
+			return;
+		}
+
+		PureReg<T> reg_entry { static_cast<T*>(pure_object), priority };
 		pure_objects.push_back(reg_entry);
 
 		if (in_process)
+		{
 			changed = true;
+		}
 		else
+		{
 			Resort();
+		}
 	}
 
 	template<typename U> requires std::derived_from<U, T>
 	void Remove(U* to_remove)
 	{
+		if (to_remove == nullptr)
+		{
+			return;
+		}
+
+		T* const target = static_cast<T*>(to_remove);
 		for (PureReg<T>& reg_entry : pure_objects)
-			if (reg_entry.object == to_remove)
+		{
+			if (reg_entry.object == target)
+			{
 				reg_entry.priority = REG_PRIORITY_INVALID;
-		
+			}
+		}
+
 		if (in_process)
+		{
 			changed = true;
+		}
 		else
+		{
 			Resort();
+		}
 	}
 	
 	template<void (T::*pureMethod)()>
