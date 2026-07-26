@@ -804,6 +804,8 @@ const char* GetGamepadSymbol(int dik)
 				return PS4_DPAD_LEFT;
 			case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
 				return PS4_DPAD_RIGHT;
+			case SDL_GAMEPAD_BUTTON_TOUCHPAD:
+				return PS4_TOUCHPAD;
 			case DIK_LTRIGGER:
 				return PS4_L2;
 			case DIK_RTRIGGER:
@@ -860,6 +862,8 @@ const char* GetGamepadSymbol(int dik)
 				return PS5_DPAD_LEFT;
 			case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
 				return PS5_DPAD_RIGHT;
+			case SDL_GAMEPAD_BUTTON_TOUCHPAD:
+				return PS5_TOUCHPAD;
 			case DIK_LTRIGGER:
 				return PS5_L2;
 			case DIK_RTRIGGER:
@@ -917,7 +921,7 @@ const char* GetGamepadSymbol(int dik)
 		case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
 			return SWITCH_DPAD_RIGHT;
 		case SDL_GAMEPAD_BUTTON_TOUCHPAD:
-			return SWITCH_DPAD_RIGHT;
+			return SWITCH_TOUCHPAD;
 		case DIK_LTRIGGER:
 			return SWITCH_LTRIGGER;
 		case DIK_RTRIGGER:
