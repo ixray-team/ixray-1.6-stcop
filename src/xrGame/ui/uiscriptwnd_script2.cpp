@@ -29,6 +29,7 @@ export_class script_register_ui_window2(export_class &&instance)
 		.def("OnGamepadKey",	&BaseType::OnGamepadKeyAction, &WrapType::OnGamepadKey_static)
 		.def("OnGamepadKeyHold",	&BaseType::OnGamepadKeyHold, &WrapType::OnGamepadKeyHold_static)
 		.def("OnGamepadStick",	&BaseType::OnGamepadStickAction, &WrapType::OnGamepadStick_static)
+		.def("OnGyroscope",		&BaseType::OnGyroscopeAction, &WrapType::OnGyroscope_static)
 		.def("Update",			&BaseType::Update, &WrapType::Update_static)
 		.def("Dispatch",		&BaseType::Dispatch, &WrapType::Dispatch_static)
 

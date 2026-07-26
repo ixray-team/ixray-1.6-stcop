@@ -317,14 +317,6 @@ bool CDialogHolder::IR_UIOnGamepadKeyPress(int id)
 	if(!TIR->IR_process())	
 		return false;
 
-	if (id == SDL_GAMEPAD_BUTTON_TOUCHPAD)
-	{
-		Fvector2 cp = GetUICursor().GetCursorPosition();
-		if (TIR->OnMouseAction(cp.x, cp.y, GGamepadService->touchpadFingersCount == 2 ? WINDOW_RBUTTON_DOWN : WINDOW_LBUTTON_DOWN))
-		{
-			return true;
-		}
-	}
 	if (TIR->OnGamepadKeyAction(id, WINDOW_KEY_PRESSED))
 	{
 		return true;
@@ -479,6 +471,39 @@ bool CDialogHolder::IR_UIOnGyroscopeMove(Fvector3 value)
 	{
 		return false;
 	}
+
+	if (TIR->OnGyroscopeAction(value))
+	{
+		return true;
+	}
+
+	if (!TIR->StopAnyMove() && g_pGameLevel)
+	{
+		CObject* O = g_pGameLevel->CurrentEntity();
+		if (O)
+		{
+			IInputReceiver* IR = O->GetIIR();
+			if (IR)
+			{
+				IR->IR_OnGyroscopeMove(value);
+			}
+			return false;
+		}
+	};
+	return true;
+}
+
+bool CDialogHolder::IR_UIOnTouchpadMove(Fvector2 value)
+{
+	CUIDialogWnd* TIR = TopInputReceiver();
+	if (!TIR)
+	{
+		return false;
+	}
+	if (!TIR->IR_process())
+	{
+		return false;
+	}
 	/* if (GetUICursor().IsVisible() || TIR->ForceCursorInput())
 	{
 		GetUICursor().UpdateCursorPosition(-value.x, -value.y);
@@ -493,7 +518,7 @@ bool CDialogHolder::IR_UIOnGyroscopeMove(Fvector3 value)
 			IInputReceiver* IR = O->GetIIR();
 			if (IR)
 			{
-				IR->IR_OnGyroscopeMove(value);
+				IR->IR_OnTouchpadMove(value);
 			}
 			return false;
 		}
