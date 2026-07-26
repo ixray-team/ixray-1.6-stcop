@@ -31,6 +31,7 @@ public:
 
 	void Update();
 	void SetTriggerResistance(bool RightTrigger, u8 StartPosition, u8 Force, float Time);
+	void ShotTriggerEffect(bool RightTrigger, float Time);
 
 public:
 	EGamepadType Type = EGamepadType::Unknown;
@@ -40,10 +41,10 @@ public:
 private:
 	void* HidDevice = nullptr;
 
-	u32 resistanceTimeStampL = 0;
-	u32 triggerResistanceTimeL = 0;
-	u32 resistanceTimeStampR = 0;
-	u32 triggerResistanceTimeR = 0;
+	u32 triggerEffectTimeStampL = 0;
+	u32 triggerEffectTimeL = 0;
+	u32 triggerEffectTimeStampR = 0;
+	u32 triggerEffectTimeR = 0;
 
 private:
 	void InitHID();
