@@ -45,9 +45,7 @@ ENGINE_API extern bool			psMouseInvert;
 ENGINE_API extern float			psGamepadSens;
 ENGINE_API extern bool			psGamepadInvert;
 
-ENGINE_API extern float			psGyroscopeSens;
 ENGINE_API extern bool			psGyroscopeInvertX;
 ENGINE_API extern bool			psGyroscopeInvertY;
-ENGINE_API extern bool			psGyroscopeEnabled;
 
 ENGINE_API extern float			psTouchpadSens;
