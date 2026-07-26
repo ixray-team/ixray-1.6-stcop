@@ -680,7 +680,7 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 			ActivatePropertiesBox(GetCurrentMouseHandler());
 			break;
 		case WINDOW_MOUSE_MOVE:
-			if( pInput->iGetAsyncBtnState(0) )
+			if( pInput->LeftMouseButtonPressed() )
 			{
 				MoveMap(GetUICursor().GetCursorPositionDelta());
 				return true;
