@@ -34,6 +34,7 @@ public:
     virtual void	IR_GamepadKeyRelease            (int id) {};
 	virtual void	IR_GamepadKeyHold				(int id) {};
 	virtual void	IR_OnGyroscopeMove				(Fvector3 value)	{};
+	virtual void	IR_OnTouchpadMove				(Fvector2 value)	{};
 };
 
 ENGINE_API extern float			psMouseSens;

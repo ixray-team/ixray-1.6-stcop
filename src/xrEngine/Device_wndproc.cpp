@@ -55,10 +55,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 		{
 			pInput->GamepadButtonUpdate(Event.gbutton.button, true);
-			if (Event.gbutton.button != SDL_GAMEPAD_BUTTON_TOUCHPAD)
-			{
-				pInput->SetControllerMode(true);
-			}
+			pInput->SetControllerMode(true);
 			break;
 		}
 		case SDL_EVENT_GAMEPAD_BUTTON_UP:
@@ -148,6 +145,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 				if (pos.magnitude() > 0.1f)
 				{
 					pInput->SetControllerMode(false);
+					pInput->SetTouchpadMode(true);
 				}
 				else
 				{
@@ -165,6 +163,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
 		{
 			pInput->SetControllerMode(true);
+			pInput->SetTouchpadMode(false);
 			GGamepadService->touchpadFingersCount--;
 			break;
 		}

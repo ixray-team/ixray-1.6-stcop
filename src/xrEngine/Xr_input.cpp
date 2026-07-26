@@ -207,6 +207,12 @@ void CInput::GamepadGyroscopeUpdate(Fvector3 value)
 	gyroscopeMoved = true;
 }
 
+void CInput::TouchpadUpdate(Fvector2 value)
+{
+	Touchpad.add(value);
+	touchpadMoved = true;
+}
+
 void CInput::KeyboardUpdate()
 {
 	for (size_t i = 0; i < COUNT_KB_BUTTONS; i++)
@@ -458,6 +464,22 @@ void CInput::GyroscopeUpdate()
 	Gyroscope.set(0.0f, 0.0f, 0.0f);
 }
 
+void CInput::TouchpadUpdate()
+{
+	if (Device.dwPrecacheFrame)
+	{
+		return;
+	}
+
+	if (touchpadMoved) 
+	{
+		cbStack.back()->IR_OnTouchpadMove(Touchpad);
+		touchpadMoved = false;
+	}
+
+	Touchpad.set(0.0f, 0.0f);
+}
+
 #pragma warning(pop)
 
 //-------------------------------------------------------
@@ -474,6 +496,7 @@ void CInput::iCapture(IInputReceiver *p)
 		MouseUpdate();
 		GamepadUpdate();
 		GyroscopeUpdate();
+		TouchpadUpdate();
 		KeyboardUpdate();
 	}
 
@@ -549,6 +572,7 @@ void CInput::OnFrame()
 		MouseUpdate();
 		GamepadUpdate();
 		GyroscopeUpdate();
+		TouchpadUpdate();
 		KeyboardUpdate();
 	}
 }
