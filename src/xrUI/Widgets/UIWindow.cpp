@@ -382,11 +382,12 @@ bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 	//если есть дочернее окно,захватившее мышь, то
 	//сообщение направляем ему сразу
-	if(m_pMouseCapturer)
+	if (CUIWindow* mouseCapturer = m_pMouseCapturer)
 	{
-		m_pMouseCapturer->OnMouseAction(cursor_pos.x - m_pMouseCapturer->GetWndRect().left, 
-								  cursor_pos.y - m_pMouseCapturer->GetWndRect().top, 
-								  mouse_action);
+		mouseCapturer->OnMouseAction(
+			cursor_pos.x - mouseCapturer->GetWndRect().left,
+			cursor_pos.y - mouseCapturer->GetWndRect().top,
+			mouse_action);
 		return true;
 	}
 
