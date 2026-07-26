@@ -150,9 +150,9 @@ void CGamepadService::UpdateLEDByHP(float Health)
 void CGamepadService::SetLED(u8 Red, u8 Green, u8 Blue)
 {
     // Сохраняем текущие значения
-    CurrentLEDRed = Red;
-    CurrentLEDGreen = Green;
-    CurrentLEDBlue = Blue;
+	CurrentLEDRed.store(Red);
+	CurrentLEDGreen.store(Green);
+	CurrentLEDBlue.store(Blue);
 
     if (Type == EGamepadType::DualShock4)
     {
@@ -166,8 +166,8 @@ void CGamepadService::SetLED(u8 Red, u8 Green, u8 Blue)
         Report[0] = 0x05; // Output Report ID
         Report[1] = 0xFF; // Enable rumble + lightbar
 
-        Report[4] = (u8)(CurrentLFRumble / 257);
-        Report[5] = (u8)(CurrentHFRumble / 257);
+        Report[4] = (u8)(CurrentLFRumble.load() / 257);
+        Report[5] = (u8)(CurrentHFRumble.load() / 257);
 
         Report[6] = Red;
         Report[7] = Green;
@@ -190,17 +190,17 @@ void CGamepadService::StopRumble()
 {
     if (Type == EGamepadType::DualShock4 && HidDevice != nullptr)
     {
-        CurrentLFRumble = 0;
-        CurrentHFRumble = 0;
+        CurrentLFRumble.store(0);
+        CurrentHFRumble.store(0);
         
         u8 Report[32] = {};
         Report[0] = 0x05;
         Report[1] = 0xFF;
         Report[4] = 0;
         Report[5] = 0;
-        Report[6] = CurrentLEDRed;
-        Report[7] = CurrentLEDGreen;
-        Report[8] = CurrentLEDBlue;
+		Report[6] = CurrentLEDRed.load();
+		Report[7] = CurrentLEDGreen.load();
+		Report[8] = CurrentLEDBlue.load();
 
         SDL_hid_write(HidDevice, Report, sizeof(Report));
     }
@@ -209,7 +209,6 @@ void CGamepadService::StopRumble()
         SDL_RumbleGamepad(GamePadDevice, 0, 0, 0);
     }
     
-    RumbleActive = false;
     RumbleTimerID = 0;
 }
 
@@ -274,8 +273,8 @@ bool CGamepadService::Rumble(u16 LFRumble, u16 HFRumble, u16 DurationMS)
 
     if (Type == EGamepadType::DualShock4 && HidDevice != nullptr)
     {
-        CurrentLFRumble = LFRumble;
-        CurrentHFRumble = HFRumble;
+        CurrentLFRumble.store(LFRumble);
+        CurrentHFRumble.store(HFRumble);
 
         u8 Report[32] = {};
 
@@ -285,9 +284,9 @@ bool CGamepadService::Rumble(u16 LFRumble, u16 HFRumble, u16 DurationMS)
         Report[4] = (u8)(LFRumble / 257);
         Report[5] = (u8)(HFRumble / 257);
 
-        Report[6] = CurrentLEDRed;
-        Report[7] = CurrentLEDGreen;
-        Report[8] = CurrentLEDBlue;
+        Report[6] = CurrentLEDRed.load();
+		Report[7] = CurrentLEDGreen.load();
+		Report[8] = CurrentLEDBlue.load();
 
         int Result = SDL_hid_write(HidDevice, Report, sizeof(Report));
 
@@ -300,7 +299,6 @@ bool CGamepadService::Rumble(u16 LFRumble, u16 HFRumble, u16 DurationMS)
         // Запускаем таймер на отключение вибрации
         if (DurationMS > 0)
         {
-            RumbleActive = true;
             RumbleTimerID = SDL_AddTimer(DurationMS, RumbleTimerCallback, this);
             if (RumbleTimerID == 0)
             {
