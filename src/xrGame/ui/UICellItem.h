@@ -110,11 +110,13 @@ class CUIDragItem final: public CUIWindow, public pureRender, public pureFrame
 	Fvector2				m_pos_offset;
 	CUIDragDropListEx*		m_back_list;
 	ICustomDrawDragItem*	m_custom_draw;
+	bool					_deviceSequencesRegistered = false;
 public:
 							CUIDragItem(CUICellItem* parent);
 	virtual		void		Init(const ui_shader& sh, const Frect& rect, const Frect& text_rect);
 	virtual					~CUIDragItem();
 				void		SetCustomDraw			(ICustomDrawDragItem* c);
+				void		UnregisterDeviceSequences();
 
 			CUI3dStatic*	wnd						() {return &m_static;}
 	virtual		bool		OnMouseAction					(float x, float y, EUIMessages mouse_action);

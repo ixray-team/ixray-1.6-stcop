@@ -1644,6 +1644,7 @@ void CUIActorMenuBase::UpdateGamepadLegend()
 bool CUIActorMenuBase::OnMouseAction( float x, float y, EUIMessages mouse_action )
 {
 	inherited::OnMouseAction( x, y, mouse_action );
+	CUIDragDropListEx::FlushPendingDragItemDestroy();
 	return true; // no click`s
 }
 
