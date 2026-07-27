@@ -52,6 +52,7 @@ protected:
 
 	CUIStatic* m_ind_sleepiness = nullptr;
 	CUIStatic* m_ind_thirst = nullptr;
+	CUIStatic* m_ind_intoxication = nullptr;
 
 	CUIStatic* m_icon_microphone = nullptr;
 	CUIStatic*			m_voice_distance = nullptr;

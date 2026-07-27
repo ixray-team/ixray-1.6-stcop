@@ -82,6 +82,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.property("bleeding",				&CScriptGameObject::GetBleeding,		&CScriptGameObject::SetBleeding)
 		.property("thirst",					&CScriptGameObject::GetThirst,			&CScriptGameObject::SetThirst)
 		.property("sleepiness",				&CScriptGameObject::GetSleepiness,		&CScriptGameObject::SetSleepiness)
+		.property("intoxication",			&CScriptGameObject::GetIntoxication,	&CScriptGameObject::SetIntoxication)
 
 //		.def("get_bleeding",				&CScriptGameObject::GetBleeding)
 		.def("center",						&CScriptGameObject::Center)
