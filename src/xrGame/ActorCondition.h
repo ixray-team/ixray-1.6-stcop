@@ -33,7 +33,9 @@ private:
 			void 		UpdateSatiety				();
 			void 		UpdateThirst				();
 			void 		UpdateSleepiness			();
+			void 		UpdateIntoxication			();
 	virtual void		UpdateRadiation				();
+			float		GetMedicineEfficiencyFactor	(const shared_str& sect) const;
 public:
 						CActorCondition				(CActor *object);
 	virtual				~CActorCondition			();
@@ -115,6 +117,9 @@ public:
 	PlayerAddiction Sleepiness;
 	PLAYER_ADDICTION_IMPL(Sleepiness);
 
+	PlayerAddiction Intoxication;
+	PLAYER_ADDICTION_IMPL(Intoxication);
+
 public:
 	SMedicineInfluenceValues m_curr_medicine_influence;
 
@@ -155,6 +160,7 @@ public:
 	float m_fLimpingHealthEnd;
 
 	float m_fRadiationZonePower;
+	float m_fIntoxicationThirstK;
 
 	//typedef xr_vector<SMedicineInfluenceValues> BOOSTS_VECTOR;
 	//typedef xr_vector<SMedicineInfluenceValues>::iterator BOOSTS_VECTOR_ITER;

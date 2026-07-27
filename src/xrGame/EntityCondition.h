@@ -72,6 +72,7 @@ struct SMedicineInfluenceValues{
 	float fWoundsHeal;
 	float fMaxPowerUp;
 	float fAlcohol;
+	float fIntoxication;
 	float fTimeTotal;
 	float fTimeCurrent;
 
@@ -182,6 +183,7 @@ public:
 	PLAYER_ADDICTION_BASE(Alcohol);
 	PLAYER_ADDICTION_BASE(Thirst);
 	PLAYER_ADDICTION_BASE(Sleepiness);
+	PLAYER_ADDICTION_BASE(Intoxication);
 	using WOUND_VECTOR = xr_vector<CWound*>;
 	using WOUND_VECTOR_IT = WOUND_VECTOR::iterator;
 

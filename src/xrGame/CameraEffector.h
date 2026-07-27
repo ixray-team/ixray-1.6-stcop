@@ -17,6 +17,8 @@
 #define effBigMonsterHit		(eStartEffectorID+9)
 #define effActorDeath			(eStartEffectorID+10)
 #define effWeaponNightVision	(eStartEffectorID+11)
+#define effIntoxication			(eStartEffectorID+12)
+#define effIntoxicationPP		(eStartEffectorID+13)
 
 #define effPoltergeistTeleDetectStartEffect 2048
 // warning: ~50 constants after effPoltergeistTeleDetectStartEffect are reserved for poltergeists
