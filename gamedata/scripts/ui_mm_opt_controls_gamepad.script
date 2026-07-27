@@ -25,4 +25,11 @@ function opt_controls_gamepad:InitControls(x, y, xml, handler)
 	handler:addCheck(self, true, "st_gamepad_invert", "gamepad_invert", system_depends.sdNothing)
 	handler:addCheck(self, true, "ui_mm_gamepad_vibration", "gamepad_vibration", system_depends.sdNothing)
 
+	handler:lineFrame(self, true, "ui_mm_gyroscope")
+	handler:addCheck(self, true, "ui_mm_gyroscope_enabled", "gyroscope_enabled", system_depends.sdNothing, "gyroscopeEnabled")
+	handler:addCheck(self, true, "ui_mm_gyroscope_invert_x", "gyroscope_invert_x", system_depends.sdNothing, "gyroscopeInvertX")
+	handler:addCheck(self, true, "ui_mm_gyroscope_invert_y", "gyroscope_invert_y", system_depends.sdNothing, "gyroscopeInvertY")
+	handler:addTrack(self, true, "ui_mm_gyroscope_sens", "gyroscope_sensitivity", 0.1, false, "float", true, system_depends.sdNothing, "gyroscopeSens", 40)
+	handler:addTrack(self, true, "ui_mm_gyroscope_deadzone", "gyroscope_deadzone", 0.05, false, "float", true, system_depends.sdNothing, "gyroscopeDeadzone", 100)
+
 end
