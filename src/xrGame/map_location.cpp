@@ -584,24 +584,29 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 			}
 		}
 
-		CGameTask* ml_task = Level().GameTaskManager()->HasGameTask( this, true );
-		if (ml_task)
+		bool border_show = false;
+		if (CGameTask* ml_task = Level().GameTaskManager()->HasGameTask(this, true))
 		{
 			CGameTask* storyTask = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
 			CGameTask* additionalTask = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
-			const bool border_show = ml_task == storyTask || ml_task == additionalTask;
-			if (m_minimap_spot)
-			{
-				m_minimap_spot->show_static_border(border_show);
-			}
-			if (m_level_spot)
-			{
-				m_level_spot->show_static_border(border_show);
-			}
-			if (m_complex_spot)
-			{
-				m_complex_spot->show_static_border(border_show);
-			}
+			border_show = ml_task == storyTask || ml_task == additionalTask;
+		}
+		else if (IsUserDefined())
+		{
+			border_show = Level().MapManager().IsUserNavigationLocation(this);
+		}
+
+		if (m_minimap_spot)
+		{
+			m_minimap_spot->show_static_border(border_show);
+		}
+		if (m_level_spot)
+		{
+			m_level_spot->show_static_border(border_show);
+		}
+		if (m_complex_spot)
+		{
+			m_complex_spot->show_static_border(border_show);
 		}
 
 		//update spot position
