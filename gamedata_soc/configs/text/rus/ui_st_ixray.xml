@@ -897,4 +897,22 @@
 	<string id="st_put_in_quick_slot_4">
 		<text>положить в слот 4</text>
 	</string>
+	<string id="ui_mm_gyroscope">
+		<text>Гироскоп</text>
+	</string>
+	<string id="ui_mm_gyroscope_enabled">
+		<text>Включить гироскоп</text>
+	</string>
+	<string id="ui_mm_gyroscope_invert_x">
+		<text>Инвертировать ось X</text>
+	</string>
+	<string id="ui_mm_gyroscope_invert_y">
+		<text>Инвертировать ось Y</text>
+	</string>
+	<string id="ui_mm_gyroscope_sens">
+		<text>Чувствительность гироскопа</text>
+	</string>
+	<string id="ui_mm_gyroscope_deadzone">
+		<text>Мёртвая зона гироскопа</text>
+	</string>
 </string_table>

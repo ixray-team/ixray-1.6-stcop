@@ -715,7 +715,7 @@
 		<text>$$ACTION_UI_ACTION_2$$ Gamepad layout</text>
 	</string>
 	<string id="st_gamepad_sensibility">
-		<text>Gamepad sensibility</text>
+		<text>Gamepad sensitivity</text>
 	</string>
 	<string id="st_gamepad_invert">
 		<text>Invert gamepad</text>
@@ -896,5 +896,23 @@
 	</string>
 	<string id="st_put_in_quick_slot_4">
 		<text>assign to quick slot 4</text>
+	</string>
+	<string id="ui_mm_gyroscope">
+		<text>Gyroscope</text>
+	</string>
+	<string id="ui_mm_gyroscope_enabled">
+		<text>Enable gyroscope</text>
+	</string>
+	<string id="ui_mm_gyroscope_invert_x">
+		<text>Invert X axis</text>
+	</string>
+	<string id="ui_mm_gyroscope_invert_y">
+		<text>Invert Y axis</text>
+	</string>
+	<string id="ui_mm_gyroscope_sens">
+		<text>Gyroscope sensitivity</text>
+	</string>
+	<string id="ui_mm_gyroscope_deadzone">
+		<text>Gyroscope deadzone</text>
 	</string>
 </string_table>
