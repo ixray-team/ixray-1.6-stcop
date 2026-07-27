@@ -51,6 +51,50 @@ const char* GetTitleStringIdForMode(CUIItemDropAmountWnd::EDropMode mode)
     }
 }
 
+int GetMaxSelectable(int maxAmount)
+{
+    return maxAmount + 1;
+}
+
+void ConfigureAmountTrackBar(CUITrackBar* trackBar, int maxSelectable, int amount)
+{
+    if (trackBar == nullptr)
+    {
+        return;
+    }
+
+    trackBar->SetTrackBarMode(eTrackBarModeFloat);
+    trackBar->SetNumOfSigns(0);
+    trackBar->SetStep(1.0f);
+    trackBar->SetOptFBounds(0.0f, static_cast<float>(maxSelectable));
+    clamp(amount, 1, maxSelectable);
+    trackBar->SetFValue(static_cast<float>(amount));
+    trackBar->SaveBackUpOptValue();
+}
+
+int ReadAmountFromTrackBar(CUITrackBar* trackBar, int maxSelectable)
+{
+    if (trackBar == nullptr)
+    {
+        return 1;
+    }
+
+    int amount = iFloor(trackBar->GetFValue() + 0.5f);
+    clamp(amount, 1, maxSelectable);
+    return amount;
+}
+
+void WriteAmountToTrackBar(CUITrackBar* trackBar, int amount, int maxSelectable)
+{
+    if (trackBar == nullptr)
+    {
+        return;
+    }
+
+    clamp(amount, 1, maxSelectable);
+    trackBar->SetFValue(static_cast<float>(amount));
+}
+
 void UpdateItemNameText(CUIStatic* itemNameText, CUICellItem* cellItem, CInventoryItem* item, int amount)
 {
 	if (itemNameText == nullptr || cellItem == nullptr || item == nullptr)
@@ -129,8 +173,9 @@ void CUIItemDropAmountWnd::InitDropAmount(CUIXml& uiXml)
     AddCallback(_btnInc, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnIncClicked));
 
     _trackBar = UIHelper::CreateTrackBar(uiXml, "trackbar", _background);
-    _trackBar->SetCurrentID(0);
-    _trackBar->SaveBackUpOptValue();
+    _trackBar->SetTrackBarMode(eTrackBarModeFloat);
+    _trackBar->SetNumOfSigns(0);
+    _trackBar->SetStep(1.0f);
     Register(_trackBar);
     AddCallback(_trackBar, TRACK_VALUE_CHANGED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnTrackChanged));
     AddCallback(_trackBar, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnTrackChanged));
@@ -177,15 +222,19 @@ void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryIte
     _maxAmount = (int)max;
     _pItem = pItem;
 	_pCellItem = pCellItem;
-	_currentAmount = (_maxAmount + 2) / 2;
+
+    const int maxSelectable = GetMaxSelectable(_maxAmount);
+    _currentAmount = maxSelectable / 2;
+    if (_currentAmount < 1)
+    {
+        _currentAmount = 1;
+    }
 
     Enable(true);
     ShowDialog(false);
 
-    _trackBar->SetOptIBounds(1, max + 1);
-    _trackBar->SetIValue(_currentAmount);
-    _trackBar->SaveBackUpOptValue();
-    _currentAmount = _trackBar->GetIValue();
+    ConfigureAmountTrackBar(_trackBar, maxSelectable, _currentAmount);
+    _currentAmount = ReadAmountFromTrackBar(_trackBar, maxSelectable);
 
     _dropMode = mode;
 
@@ -208,7 +257,7 @@ void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryIte
     SyncValueToEdit();
 
     string32 cnt;
-    xr_sprintf(cnt, "%d", max + 1);
+    xr_sprintf(cnt, "%d", maxSelectable);
     _staticValueMax->SetText(cnt);
     UpdateWeightText();
 }
@@ -230,14 +279,19 @@ void CUIItemDropAmountWnd::Show(CInventoryItem* pItem, CUICellItem* pCellItem, i
 	_pCellItem = pCellItem;
 	_maxAmount = maxAmount;
     _callback = std::move(callback);
-    _currentAmount = (_maxAmount + 2) / 2;
+
+    const int maxSelectable = GetMaxSelectable(_maxAmount);
+    _currentAmount = maxSelectable / 2;
+    if (_currentAmount < 1)
+    {
+        _currentAmount = 1;
+    }
 
     Enable(true);
     ShowDialog(false);
 
-    _trackBar->SetOptIBounds(1, maxAmount + 1);
-    _trackBar->SetIValue(_currentAmount);
-    _trackBar->SaveBackUpOptValue();
+    ConfigureAmountTrackBar(_trackBar, maxSelectable, _currentAmount);
+    _currentAmount = ReadAmountFromTrackBar(_trackBar, maxSelectable);
 
     if (pItem)
     {
@@ -256,7 +310,7 @@ void CUIItemDropAmountWnd::Show(CInventoryItem* pItem, CUICellItem* pCellItem, i
     if (_staticValueMax)
     {
         string32 cnt;
-        xr_sprintf(cnt, "%d", maxAmount + 1);
+        xr_sprintf(cnt, "%d", maxSelectable);
         _staticValueMax->SetText(cnt);
     }
 
@@ -284,13 +338,14 @@ void CUIItemDropAmountWnd::SyncEditToValue()
         return;
     }
 
+    const int maxSelectable = GetMaxSelectable(_maxAmount);
     const char* text = _editAmount->GetText();
     int val = 1;
     if (text && xr_strlen(text) > 0)
         val = atoi(text);
-    clamp(val, 1, _maxAmount + 1);
+    clamp(val, 1, maxSelectable);
     _currentAmount = val;
-    _trackBar->SetIValue(val);
+    WriteAmountToTrackBar(_trackBar, _currentAmount, maxSelectable);
     UpdateWeightText();
 }
 
@@ -433,9 +488,10 @@ void CUIItemDropAmountWnd::OnBtnDecClicked(CUIWindow* w, void* d)
         return;
     }
 
+    const int maxSelectable = GetMaxSelectable(_maxAmount);
     _currentAmount--;
-    clamp(_currentAmount, 1, _maxAmount + 1);
-    _trackBar->SetIValue(_currentAmount);
+    clamp(_currentAmount, 1, maxSelectable);
+    WriteAmountToTrackBar(_trackBar, _currentAmount, maxSelectable);
     SyncValueToEdit();
 }
 
@@ -446,9 +502,10 @@ void CUIItemDropAmountWnd::OnBtnIncClicked(CUIWindow* w, void* d)
         return;
     }
 
+    const int maxSelectable = GetMaxSelectable(_maxAmount);
     _currentAmount++;
-    clamp(_currentAmount, 1, _maxAmount + 1);
-    _trackBar->SetIValue(_currentAmount);
+    clamp(_currentAmount, 1, maxSelectable);
+    WriteAmountToTrackBar(_trackBar, _currentAmount, maxSelectable);
     SyncValueToEdit();
 }
 
@@ -459,9 +516,10 @@ void CUIItemDropAmountWnd::OnBtnHalfClicked(CUIWindow* w, void* d)
         return;
     }
 
-    _currentAmount = (_maxAmount + 2) / 2;
-    clamp(_currentAmount, 1, _maxAmount + 1);
-    _trackBar->SetIValue(_currentAmount);
+    const int maxSelectable = GetMaxSelectable(_maxAmount);
+    _currentAmount = maxSelectable / 2;
+    clamp(_currentAmount, 1, maxSelectable);
+    WriteAmountToTrackBar(_trackBar, _currentAmount, maxSelectable);
     SyncValueToEdit();
 }
 
@@ -472,8 +530,9 @@ void CUIItemDropAmountWnd::OnBtnAllClicked(CUIWindow* w, void* d)
         return;
     }
 
-    _currentAmount = _maxAmount + 1;
-    _trackBar->SetIValue(_currentAmount);
+    const int maxSelectable = GetMaxSelectable(_maxAmount);
+    _currentAmount = maxSelectable;
+    WriteAmountToTrackBar(_trackBar, _currentAmount, maxSelectable);
     SyncValueToEdit();
 }
 
@@ -489,7 +548,13 @@ void CUIItemDropAmountWnd::OnTrackChanged(CUIWindow* w, void* d)
         return;
     }
 
-    _currentAmount = _trackBar->GetIValue();
+    const int maxSelectable = GetMaxSelectable(_maxAmount);
+    _currentAmount = ReadAmountFromTrackBar(_trackBar, maxSelectable);
+    // Keep thumb inside selectable range (float track allows 0..max for linear mapping).
+    if (iFloor(_trackBar->GetFValue() + 0.5f) != _currentAmount)
+    {
+        WriteAmountToTrackBar(_trackBar, _currentAmount, maxSelectable);
+    }
     SyncValueToEdit();
 }
 
