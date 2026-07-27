@@ -46,6 +46,7 @@ private:
 		stt_satiety,
 		stt_thirst,
 		stt_sleep,
+		stt_intoxication,
 		stt_count
 	};
 	ui_actor_state_item*	m_state[stt_count];

@@ -815,6 +815,7 @@ bool CEntityCondition::ApplyInfluence(const SMedicineInfluenceValues& V, const s
 	ChangeBleeding	(V.fWoundsHeal);
 	SetMaxPower		(GetMaxPower()+V.fMaxPowerUp);
 	ChangeAlcohol	(V.fAlcohol);
+	ChangeIntoxication(V.fIntoxication);
 	return true;
 }
 
@@ -835,6 +836,7 @@ void SMedicineInfluenceValues::Load(const shared_str& sect)
 	clamp			(fWoundsHeal, 0.f, 1.f);
 	fMaxPowerUp		= READ_IF_EXISTS	(pSettings,r_float,sect.c_str(),	"eat_max_power",0.0f);
 	fAlcohol		= READ_IF_EXISTS	(pSettings, r_float, sect.c_str(),	"eat_alcohol", 0.0f);
+	fIntoxication	= READ_IF_EXISTS	(pSettings, r_float, sect.c_str(),	"eat_intoxication", 0.0f);
 	fTimeTotal		= READ_IF_EXISTS	(pSettings, r_float, sect.c_str(),	"apply_time_sec", -1.0f);
 }
 
