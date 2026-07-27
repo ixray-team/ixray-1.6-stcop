@@ -481,6 +481,12 @@ void CUIMainIngameWnd::Init()
 		m_ind_sleepiness = UIHelper::CreateStatic(uiXml, "indicator_sleepiness", indicatorParent);
 	}
 
+	const static bool enableMedIntoxication = EngineExternal()[EEngineExternalGame::EnableMedIntoxication];
+	if (enableMedIntoxication && uiXml.NavigateToNode("indicator_intoxication", 0))
+	{
+		m_ind_intoxication = UIHelper::CreateStatic(uiXml, "indicator_intoxication", indicatorParent);
+	}
+
 	if (uiXml.NavigateToNode("indicator_weapon_broken", 0))
 	{
 		m_ind_weapon_broken = UIHelper::CreateStatic(uiXml, "indicator_weapon_broken", indicatorParent);
@@ -1881,6 +1887,37 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 			pActor->conditions().SleepinessCritical(),
 			{ "ui_inGame2_circle_sleepiness_green", "ui_inGame2_circle_sleepiness_yellow", "ui_inGame2_circle_sleepiness_red" }
 		);
+	}
+
+	// Intoxication icon (meter grows up, same visibility pattern as radiation)
+	const static bool EnableMedIntoxication = EngineExternal()[EEngineExternalGame::EnableMedIntoxication];
+	if (EnableMedIntoxication && m_ind_intoxication)
+	{
+		float intoxication = pActor->conditions().GetIntoxication();
+		if (intoxication <= 0.05f)
+		{
+			m_ind_intoxication->Show(false);
+			m_ind_intoxication->ResetColorAnimation();
+		}
+		else
+		{
+			m_ind_intoxication->Show(true);
+			if (intoxication < 0.35f)
+			{
+				m_ind_intoxication->InitTexture("ui_inGame2_circle_toxic_green");
+				m_ind_intoxication->SetColorAnimation("ui_slow_blinking_alpha", flags);
+			}
+			else if (intoxication < 0.7f)
+			{
+				m_ind_intoxication->InitTexture("ui_inGame2_circle_toxic_yellow");
+				m_ind_intoxication->SetColorAnimation("ui_medium_blinking_alpha", flags);
+			}
+			else
+			{
+				m_ind_intoxication->InitTexture("ui_inGame2_circle_toxic_red");
+				m_ind_intoxication->SetColorAnimation("ui_fast_blinking_alpha", flags);
+			}
+		}
 	}
 
 // Armor broken icon

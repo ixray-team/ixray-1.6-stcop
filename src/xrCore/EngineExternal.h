@@ -34,6 +34,7 @@ enum class EEngineExternalGame
 {
 	EnableThirst,
 	EnableSleepiness,
+	EnableMedIntoxication,
 	EnableAiDieInAnomaly,
 	EnableNPCLookAtActor,
 	EnableBlockSprintInReload,

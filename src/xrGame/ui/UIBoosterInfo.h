@@ -21,6 +21,7 @@ protected:
 	UIBoosterInfoItem*	m_booster_satiety;
 	UIBoosterInfoItem*	m_booster_thirst;
 	UIBoosterInfoItem*	m_booster_sleepiness;
+	UIBoosterInfoItem*	m_booster_intoxication;
 	UIBoosterInfoItem*	m_booster_anabiotic;
 	UIBoosterInfoItem*	m_booster_time;
 
@@ -39,6 +40,8 @@ public:
 		void	Init				( CUIXml& xml, const char* section );
 		void	SetCaption			( const char* name );
 		void	SetValue			( float value );
+		void	SetValueText		( const char* text );
+		void	ShowValue			( bool show );
 	
 	virtual CUIWindow* ui_cast_window() { return this; }
 

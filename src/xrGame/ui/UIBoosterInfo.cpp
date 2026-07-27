@@ -8,6 +8,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrEngine/string_table.h"
+#include "../../xrCore/EngineExternal.h"
 
 CUIBoosterInfo::CUIBoosterInfo()
 {
@@ -18,6 +19,7 @@ CUIBoosterInfo::CUIBoosterInfo()
 	m_booster_satiety = nullptr;
 	m_booster_thirst = nullptr;
 	m_booster_sleepiness = nullptr;
+	m_booster_intoxication = nullptr;
 	m_booster_anabiotic = nullptr;
 	m_booster_time = nullptr;
 }
@@ -28,6 +30,7 @@ CUIBoosterInfo::~CUIBoosterInfo()
 	xr_delete(m_booster_satiety);
 	xr_delete(m_booster_thirst);
 	xr_delete(m_booster_sleepiness);
+	xr_delete(m_booster_intoxication);
 	xr_delete(m_booster_anabiotic);
 	xr_delete(m_booster_time);
 	if (m_Prop_line)
@@ -105,6 +108,17 @@ void CUIBoosterInfo::InitFromXml(CUIXml& xml)
 		m_booster_sleepiness->Init(xml, "boost_sleepiness");
 		m_booster_sleepiness->SetAutoDelete(false);
 		m_booster_sleepiness->SetCaption(g_pStringTable->translate("ui_inv_sleepiness").c_str());
+		xml.SetLocalRoot(base_node);
+	}
+
+	const static bool enableMedIntoxication = EngineExternal()[EEngineExternalGame::EnableMedIntoxication];
+	if (enableMedIntoxication && xml.NavigateToNode("boost_intoxication"))
+	{
+		m_booster_intoxication = new UIBoosterInfoItem();
+		m_booster_intoxication->Init(xml, "boost_intoxication");
+		m_booster_intoxication->SetAutoDelete(false);
+		m_booster_intoxication->SetCaption("");
+		m_booster_intoxication->ShowValue(false);
 		xml.SetLocalRoot(base_node);
 	}
 
@@ -245,6 +259,44 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 		}
 	}
 
+	if (pSettings->line_exist(section.c_str(), "eat_intoxication") && m_booster_intoxication)
+	{
+		val = pSettings->r_float(section, "eat_intoxication");
+		if (!fis_zero(val))
+		{
+			const char* descId = "ui_inv_intoxication_raise";
+			if (val <= -0.9f)
+			{
+				descId = "ui_inv_intoxication_clear";
+			}
+			else if (val < 0.0f)
+			{
+				descId = "ui_inv_intoxication_reduce";
+			}
+			else if (val <= 0.12f)
+			{
+				descId = "ui_inv_intoxication_raise_light";
+			}
+			else if (val <= 0.20f)
+			{
+				descId = "ui_inv_intoxication_raise";
+			}
+			else
+			{
+				descId = "ui_inv_intoxication_raise_heavy";
+			}
+
+			m_booster_intoxication->SetCaption(g_pStringTable->translate(descId).c_str());
+			m_booster_intoxication->ShowValue(false);
+			pos.set(m_booster_intoxication->GetWndPos());
+			pos.y = h;
+			m_booster_intoxication->SetWndPos(pos);
+
+			h += m_booster_intoxication->GetWndSize().y;
+			AttachChild(m_booster_intoxication);
+		}
+	}
+
 	if(!xr_strcmp(section.c_str(), "drug_anabiotic") && m_booster_anabiotic)
 	{
 		pos.set(m_booster_anabiotic->GetWndPos());
@@ -347,5 +399,23 @@ void UIBoosterInfoItem::SetValue(float value)
 			m_caption->InitTexture(m_texture_plus.c_str());
 		else
 			m_caption->InitTexture(m_texture_minus.c_str());
+	}
+}
+
+void UIBoosterInfoItem::SetValueText(const char* text)
+{
+	m_value->SetText(text ? text : "");
+	m_value->SetTextColor(color_rgba(170, 170, 170, 255));
+}
+
+void UIBoosterInfoItem::ShowValue(bool show)
+{
+	if (m_value)
+	{
+		m_value->Show(show);
+		if (!show)
+		{
+			m_value->SetText("");
+		}
 	}
 }
