@@ -26,6 +26,19 @@ void gamepad_led(u8 r, u8 g, u8 b)
 	GGamepadService->SetLED(r, g, b);
 }
 
+bool gyroscope_supported()
+{
+    if (!GGamepadService)
+    {
+		return false;
+    }
+    if (GGamepadService->GamePadDevice == nullptr)
+    {
+		return false;
+    }
+	return SDL_GamepadHasSensor(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO);
+}
+
 #pragma optimize("s",on)
 void key_binding_registrator::script_register(lua_State *L)
 {
@@ -39,6 +52,7 @@ void key_binding_registrator::script_register(lua_State *L)
         def("any_binded_key_for_action_pressed_c", &any_binded_key_for_action_pressed_c),
         def("gamepad_feedback", &gamepad_feedback),
         def("gamepad_led", &gamepad_led),
+        def("gyroscope_supported", &gyroscope_supported),
 
 		class_<enum_exporter<EGameActions> >("key_bindings")
 			.enum_("commands")
