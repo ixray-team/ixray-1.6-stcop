@@ -89,7 +89,7 @@ public:
 			bool			Init				(Frect const& rect, bool useCompassBar, bool useCompassLayout = false);
 			void			ApplyNavigationHost(CUIWindow* attachParent, Frect const& hostRect, bool useCompassBar);
 			bool			IsIndependent		() const { return m_independent; }
-			CUIWindow*		CompassLayoutFrame	();
+			CUIWindow*		CompassLayoutFrame	() const;
 			void			ApplyCompassLayout	(CUIWindow* compassBar);
 			void			SetNavigationPresentation(bool useCompassBar);
 			void			ShowState			(EState state);

@@ -27,6 +27,14 @@ enum class ENavigationHudMode : u8
 	CompassBar,
 };
 
+enum class ENavigationHudState : u8
+{
+	Minimap,
+	Compass,
+	Transitioning,
+	FailedInit,
+};
+
 class CUIMainIngameWnd final :
 	public CUIWindow
 {
@@ -90,6 +98,10 @@ public:
 	void			SetNavigationMode(ENavigationHudMode mode);
 	void			SetNavigationModeBool(bool compassBar);
 	bool			IsCompassBarMode() const;
+	ENavigationHudState NavigationState() const { return m_navigationState; }
+
+	bool			ValidateNavigationOwnership(shared_str& outError) const;
+	bool			RunNavigationOwnershipSmoke(u32 toggleCount = 20);
 
 	void			DrawMainIndicatorsForInventory();
 
@@ -144,7 +156,8 @@ protected:
 	CUIWindow* m_pMPChatWnd;
 	CUIWindow* m_pMPLogWnd;
 	bool				useLegacyIndicators;
-	ENavigationHudMode	m_navigationMode = ENavigationHudMode::Minimap;
+	ENavigationHudState	m_navigationState = ENavigationHudState::Minimap;
+	ENavigationHudMode	m_navigationTarget = ENavigationHudMode::Minimap;
 
 	static bool					s_hasPersistedNavigationMode;
 	static ENavigationHudMode	s_persistedNavigationMode;
@@ -153,6 +166,8 @@ protected:
 	Frect				GetNavigationHostRect() const;
 	void				RebindNavigationChildren();
 	void				PersistNavigationMode(ENavigationHudMode mode);
+	void				SettleNavigationState(ENavigationHudState state, ENavigationHudMode mode);
+	ENavigationHudMode	NavigationModeFromState() const;
 
 	bool				EnsureCompassBar();
 	bool				IsCompassBarInitialized() const;
