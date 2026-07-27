@@ -75,6 +75,7 @@ use_text = st_drink
 
 ![energy_drink]
 3d_static_rotate = -10,-10,40
+eat_thirst = 0.35
 
 ![bandage]
 3d_static_rotate = 40,70,130
@@ -82,41 +83,67 @@ use_text = st_drink
 ![antirad]
 3d_static_rotate = 54,-12,3
 3d_static_scale = 0.9
+eat_intoxication = 0.07
 
 ![medkit]
 3d_static_rotate = 58,-19,0
 3d_static_scale = 0.9
+eat_intoxication = 0.08
 
 ![medkit_army]
 3d_static_rotate = 58,-19,0
 3d_static_scale = 0.9
+eat_intoxication = 0.10
 
 ![medkit_scientic]
 3d_static_rotate = 58,-19,0
 3d_static_scale = 0.9
+eat_intoxication = 0.12
 
 ![drug_booster]
 3d_static_rotate = -10,-10,40
+eat_intoxication = 0.14
 
 ![drug_coagulant]
 3d_static_rotate = 23,80,-60
 3d_static_scale = 1.1
+eat_intoxication = 0.15
 
 ![drug_psy_blockade]
 3d_static_rotate = 23,80,-60
 3d_static_scale = 1.1
+eat_intoxication = 0.16
 
 ![drug_antidot]
 3d_static_rotate = 23,80,-60
 3d_static_scale = 1.1
+eat_intoxication = -0.25
 
 ![drug_radioprotector]
 3d_static_rotate = 23,80,-60
 3d_static_scale = 1.1
+eat_intoxication = 0.15
 
 ![drug_anabiotic]
 3d_static_rotate = 23,80,-60
 3d_static_scale = 1.1
+eat_intoxication = 0.30
+
+![actor_condition]
+intoxication_v = -0.00025
+intoxication_critical = 0.35
+intoxication_health_v = -0.0015
+intoxication_power_v = -0.005
+intoxication_thirst_k = 0.3
+
+[effector_intoxication]
+cam_eff_name = camera_effects\drunk.anm
+cam_eff_cyclic = 1
+
+[effector_intoxication_pp]
+pp_eff_name = alcohol.ppe
+pp_eff_cyclic = 1
+pp_eff_overlap = true
 
 ![device_pda]
 3d_static_rotate = 61,-23,4

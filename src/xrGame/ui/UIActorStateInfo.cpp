@@ -32,6 +32,7 @@
 #include "../ActorHelmet.h"
 #include "../Inventory.h"
 #include "../Artefact.h"
+#include "../../xrCore/EngineExternal.h"
 
 ui_actor_state_wnd::~ui_actor_state_wnd()
 {
@@ -87,6 +88,9 @@ void ui_actor_state_wnd::init_from_xml( CUIXml& xml, const char* path )
 	if (xml.NavigateToNode("sleeping_state"))
 		m_state[stt_sleep]->init_from_xml(xml, "sleeping_state");
 
+	if (xml.NavigateToNode("intoxication_state"))
+		m_state[stt_intoxication]->init_from_xml(xml, "intoxication_state");
+
 	xml.SetLocalRoot( stored_root );
 }
 
@@ -116,7 +120,10 @@ void ui_actor_state_wnd::UpdateActorInfo(CInventoryOwner* owner)
 	
 	if (m_state[stt_satiety]->m_progress != nullptr && !m_state[stt_satiety]->m_progress->IsExpressionSystem)
 	{
-		value = actor->conditions().GetSatiety();
+		const static bool enableMedIntoxication = EngineExternal()[EEngineExternalGame::EnableMedIntoxication];
+		value = enableMedIntoxication
+			? actor->conditions().GetIntoxication()
+			: actor->conditions().GetSatiety();
 		m_state[stt_satiety]->set_progress(value);
 	}
 	
@@ -160,6 +167,30 @@ void ui_actor_state_wnd::UpdateActorInfo(CInventoryOwner* owner)
 			m_state[stt_radiation]->show_static(true, 3);
 	}
 	m_state[stt_main]->set_progress_shape(value);
+
+	const static bool enableMedIntoxication = EngineExternal()[EEngineExternalGame::EnableMedIntoxication];
+	if (enableMedIntoxication)
+	{
+		if (m_state[stt_intoxication]->m_progress != nullptr && !m_state[stt_intoxication]->m_progress->IsExpressionSystem)
+		{
+			value = actor->conditions().GetIntoxication();
+			m_state[stt_intoxication]->set_progress(value);
+		}
+
+		value = actor->conditions().GetIntoxication();
+		m_state[stt_intoxication]->show_static(false, 1);
+		m_state[stt_intoxication]->show_static(false, 2);
+		m_state[stt_intoxication]->show_static(false, 3);
+		if (!fis_zero(value, EPS))
+		{
+			if (value < 0.35f)
+				m_state[stt_intoxication]->show_static(true, 1);
+			else if (value < 0.7f)
+				m_state[stt_intoxication]->show_static(true, 2);
+			else
+				m_state[stt_intoxication]->show_static(true, 3);
+		}
+	}
 
 	CCustomOutfit* outfit = actor->GetOutfit();
 	CHelmet* helmet = actor->GetHelmet();
@@ -377,7 +408,9 @@ void ui_actor_state_item::init_from_xml( CUIXml& xml, const char* path )
 	if ( xml.NavigateToNode( "state_progress", 0 ) )	
 	{
 		m_progress = UIHelper::CreateProgressBar( xml, "state_progress", this );
-		m_progress->IsExpressionSystem = xml.ReadAttrib(path, 0, "expression", nullptr) != nullptr;
+		m_progress->IsExpressionSystem =
+			xml.ReadAttrib(path, 0, "expression", nullptr) != nullptr
+			|| xml.ReadAttrib("state_progress", 0, "expression", nullptr) != nullptr;
 	}
 	if ( xml.NavigateToNode( "progress_shape", 0 ) )	
 	{

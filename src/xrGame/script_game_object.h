@@ -181,6 +181,7 @@ public:
 	_DECLARE_FUNCTION10	(GetSatiety			,			float);
 	_DECLARE_FUNCTION10	(GetSleepiness		,			float);
 	_DECLARE_FUNCTION10	(GetThirst			,			float);
+	_DECLARE_FUNCTION10	(GetIntoxication	,			float);
 	_DECLARE_FUNCTION10	(GetBleeding		,			float);
 	_DECLARE_FUNCTION10	(GetMorale			,			float);
 
@@ -192,6 +193,7 @@ public:
 	_DECLARE_FUNCTION11	(SetBleeding,		void, float);
 	_DECLARE_FUNCTION11	(SetSleepiness,		void, float);
 	_DECLARE_FUNCTION11	(SetThirst,			void, float);
+	_DECLARE_FUNCTION11	(SetIntoxication,	void, float);
 	_DECLARE_FUNCTION11	(SetCircumspection,	void, float);
 	_DECLARE_FUNCTION11	(SetMorale,			void, float);
 

@@ -915,4 +915,10 @@
 	<string id="ui_mm_gyroscope_deadzone">
 		<text>Gyroscope deadzone</text>
 	</string>
+	<string id="ui_inv_intoxication">
+		<text>Intoxication</text>
+	</string>
+	<string id="st_ui_intoxication_sensor">
+		<text>Medication intoxication</text>
+	</string>
 </string_table>
