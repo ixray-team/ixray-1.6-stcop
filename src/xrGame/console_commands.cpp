@@ -745,6 +745,47 @@ public:
 	}
 };
 
+#ifndef MASTER_GOLD
+class CCC_HudNavOwnershipSmoke : public IConsole_Command
+{
+public:
+	CCC_HudNavOwnershipSmoke(const char* N) : IConsole_Command(N)
+	{
+		bEmptyArgsHandled = true;
+	}
+
+	virtual void Execute(const char* args)
+	{
+		CUIGameCustom* ui = CurrentGameUI();
+		if (!ui || !ui->UIMainIngameWnd)
+		{
+			Msg("! hud_nav_ownership_smoke: no main ingame wnd");
+			return;
+		}
+
+		u32 toggles = 20;
+		if (args && args[0])
+		{
+			sscanf(args, "%u", &toggles);
+		}
+
+		if (ui->UIMainIngameWnd->RunNavigationOwnershipSmoke(toggles))
+		{
+			Msg("* hud_nav_ownership_smoke: passed (%u toggles)", toggles);
+		}
+		else
+		{
+			Msg("! hud_nav_ownership_smoke: failed");
+		}
+	}
+
+	virtual void Info(TInfo& I)
+	{
+		xr_strcpy(I, "smoke navigation/motion icon ownership (optional toggle count)");
+	}
+};
+#endif
+
 class CCC_FloatBlock : public CCC_Float {
 public:
 	CCC_FloatBlock(const char* N, float* V, float _min = 0, float _max = 1) :
@@ -2893,6 +2934,8 @@ void CCC_RegisterCommands()
 
 	extern bool g_bullets_stop;
 	CMD2(CCC_Boolean, "g_bullets_stop", &g_bullets_stop);
+
+	CMD1(CCC_HudNavOwnershipSmoke, "hud_nav_ownership_smoke");
 #endif
 
 
