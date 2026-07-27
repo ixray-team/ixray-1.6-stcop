@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "UIMainIngameWnd.h"
 #include "UIMotionIcon.h"
+#include "UINavigationOwnership.h"
 #include "../../xrCore/_color.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
@@ -501,11 +502,6 @@ void CUIMotionIcon::ApplyNavigationHost(CUIWindow* attachParent, Frect const& ho
     if (!attachParent)
         return;
 
-    SetAutoDelete(false);
-
-    if (CUIWindow* parent = GetParent())
-        parent->DetachChild(this);
-
     if (!m_independent)
     {
         CUIXml uiXml;
@@ -525,10 +521,10 @@ void CUIMotionIcon::ApplyNavigationHost(CUIWindow* attachParent, Frect const& ho
         ApplyNavigationPresentation(useCompassBar, &uiXml, &sz, &pos);
     }
 
-    attachParent->AttachChild(this);
+    UINavigationOwnership::ReparentOwned(attachParent, this);
 }
 
-CUIWindow* CUIMotionIcon::CompassLayoutFrame()
+CUIWindow* CUIMotionIcon::CompassLayoutFrame() const
 {
     return _compassLayoutFrame;
 }
