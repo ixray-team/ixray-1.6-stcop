@@ -236,7 +236,6 @@ function ini_parse_separated(_ini, section, parameter, def_value)
 		return def_value
 	end
 		
-		
 	local parts = ffx_string_utils.explode(string_with_separators, ",")
 	local result = {}
 	for i, string_part in ipairs(parts) do
@@ -248,6 +247,6 @@ function ini_parse_separated(_ini, section, parameter, def_value)
 	if #result == 0 then
 		return def_value
 	end
-	
+
 	return result
 end
