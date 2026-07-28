@@ -90,6 +90,7 @@ void RegisterImGuiInGame()
 		InitImGuiSearchInGame();
 		InitImGuiHudAdjustInGame();
 		InitSections();
+		CollectCars();
 		InitImGuiInGameInputReceiver();
 	}
 }
