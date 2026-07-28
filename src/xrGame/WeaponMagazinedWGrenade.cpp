@@ -507,7 +507,7 @@ void CWeaponMagazinedWGrenade::FireStart()
 	{
 		if (!infinite_fire())
 		{
-			if (!IsPending() || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
+			if (!IsPending() && GetState() != eFire)
 			{
 				if (m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
 				{
