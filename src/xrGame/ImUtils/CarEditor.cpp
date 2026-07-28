@@ -5,7 +5,7 @@ static xr_vector<shared_str> s_AvailableCars;
 static int s_SelectedCar = 0;
 
 // Collect sections
-static void CollectCars()
+void CollectCars()
 {
 	s_AvailableCars.clear();
 	CInifile::Root& sections = pSettings->sections();
@@ -84,11 +84,13 @@ void RenderCarConfigEditor()
 	if (!ImGui::Begin("Cars Editor", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_CarEditor)]))
 	{
 		ImGui::End();
+		return;
 	}
 
 	if (s_AvailableCars.empty())
 	{
-		CollectCars();
+		ImGui::End();
+		return;
 	}
 
 	ImGui::Text("Car Config Editor");
