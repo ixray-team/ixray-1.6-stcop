@@ -1088,11 +1088,13 @@ void RenderWeaponManagerWindow()
 
 			xr_string slot2_tab_name{ "Slot 2 (INV_SLOT_2) - " };
 			xr_string slot3_tab_name{ "Slot 3 (INV_SLOT_3) - " };
+			xr_string slot4_tab_name{ "Pistol (PISTOL_SLOT_NEW) - " };
 
 			if (pActor)
 			{
 				CInventoryItem* pItemInSlot2 = pActor->inventory().ItemFromSlot(INV_SLOT_2);
 				CInventoryItem* pItemInSlot3 = pActor->inventory().ItemFromSlot(INV_SLOT_3);
+				CInventoryItem* pItemInSlot4 = pActor->inventory().ItemFromSlot(PISTOL_SLOT_NEW);
 
 				if (pItemInSlot2)
 				{
@@ -1105,6 +1107,12 @@ void RenderWeaponManagerWindow()
 					slot3_tab_name += pItemInSlot3->m_section_id.c_str();
 				}
 				slot3_tab_name += "##TB_InGameWeaponManager";
+
+				if (pItemInSlot4)
+				{
+					slot4_tab_name += pItemInSlot4->m_section_id.c_str();
+				}
+				slot4_tab_name += "##TB_InGameWeaponManager";
 			}
 
 			if (ImGui::BeginTabItem(slot2_tab_name.c_str()))
@@ -1122,6 +1130,15 @@ void RenderWeaponManagerWindow()
 
 				CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_3);
 				draw_item(pItem, INV_SLOT_3);
+
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem(slot4_tab_name.c_str()))
+			{
+				CInventoryItem* pItem = pActor->inventory().ItemFromSlot(PISTOL_SLOT_NEW);
+				draw_item(pItem, PISTOL_SLOT_NEW);
 
 
 				ImGui::EndTabItem();
