@@ -155,7 +155,6 @@ function to_game_object(obj, def_value)
 			level_vertex_id = function () return obj:level_vertex_id() end,
 			game_vertex_id = function () return obj:game_vertex_id() end,
 			position = function () return obj:position() end,
-			health = function () return tonumber(obj.health) end,
 			is_valid = function () return true end,
 			is_client_object = function () return true end,
 			is_server_object = function () return false end,
@@ -176,7 +175,6 @@ function to_game_object(obj, def_value)
 			level_vertex_id = function () return obj.m_level_vertex_id end,
 			game_vertex_id = function () return obj.m_game_vertex_id end,
 			position = function () return obj.position end,
-			health = function () return tonumber(obj.health) end,
 			is_valid = function () return true end,
 			is_client_object = function () return false end,
 			is_server_object = function () return true end,
@@ -214,8 +212,6 @@ function test_to_game_object(_gobj)
 		SemiLog("game_vertex_id_b:" .. tostring(gobj_b:game_vertex_id()))
 		SemiLog("position_a:" .. " x:" ..tostring(gobj_a:position().x) .. " y:" .. tostring(gobj_a:position().y).. " z:" .. tostring(gobj_a:position().z))
 		SemiLog("position_b:" .. " x:" ..tostring(gobj_b:position().x) .. " y:" .. tostring(gobj_b:position().y).. " z:" .. tostring(gobj_b:position().z))
-		SemiLog("health_a:" .. tostring(gobj_a:health()))
-		SemiLog("health_b:" .. tostring(gobj_b:health()))
 		SemiLog("is_valid_a:" .. tostring(gobj_a:is_valid()))
 		SemiLog("is_valid_b:" .. tostring(gobj_b:is_valid()))
 		SemiLog("is_client_object_a:" .. tostring(gobj_a:is_client_object()))
