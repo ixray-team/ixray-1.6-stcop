@@ -146,6 +146,11 @@ CInifile::~CInifile()
 			Msg("!Can't save inifile: %s", m_file_name);
 	}
 
+	if (cached_ini_map == nullptr)
+	{
+		return;
+	}
+
 	auto iter = std::find_if(cached_ini_map->begin(), cached_ini_map->end(),
 		[this](const std::pair<xr_string, CInifile*>& left) {
 			return left.second == this;
