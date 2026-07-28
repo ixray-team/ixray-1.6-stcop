@@ -3554,7 +3554,7 @@ void RenderToolsOMFEditorWindow()
 
 	if (g_pOMFEditor)
 	{
-		if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui", nullptr, ImGuiWindowFlags_MenuBar))
+		if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)], ImGuiWindowFlags_MenuBar))
 		{
 			if (ImGui::BeginTabBar("##OMFToolsIII"))
 			{

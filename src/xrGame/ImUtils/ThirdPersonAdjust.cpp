@@ -122,6 +122,7 @@ void Render3rdAdjust()
 
 	if (!ImGui::Begin("3rd Adjust", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_3rdAdjust)]))
 	{
+		ImGui::End();
 		ImGui::PopStyleColor(1);
 		return;
 	}
