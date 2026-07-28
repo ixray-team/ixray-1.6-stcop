@@ -243,6 +243,25 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		}
 
 		C.r_TessPass(vs, hs, ds, "null", ps, FALSE);
+
+		u32 stage = C.r_dx10Sampler("smp_bump_ds");
+
+		if (stage != u32(-1))
+		{
+			C.i_Address(stage, D3DTADDRESS_WRAP);
+			C.i_FilterAnizo(stage, true);
+		}
+
+		if (bump)
+		{
+			C.r_dx10Texture("s_tbump", fnameA);
+			C.r_dx10Texture("s_tbumpX", fnameB);
+		}
+
+		if (bHasDetailBump)
+		{
+			C.r_dx10Texture("s_tdetailBumpX", texDetailBumpX);
+		}
 	}
 	else if (!DO_NOT_START)
 	{
