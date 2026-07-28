@@ -7,6 +7,7 @@
 #include "../antigas_filter.h"
 #include "../antigas.h"
 #include "UIItemInfo.h"
+#include "UIDragDropReferenceList.h"
 #include "../../xrEngine/xr_input.h"
 #include "../../xrUI/UICursor.h"
 #include "../script_game_object.h"
