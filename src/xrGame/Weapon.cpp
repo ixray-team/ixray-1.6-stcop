@@ -1873,8 +1873,9 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 			if (!IsPending() && GetState() == eIdle && !IsZoomed())
 			{
 				SwitchState(eKick);
-				return true;
 			}
+
+			return true;
 		}break;
 		case kWPN_ZOOM:
 		{
@@ -3618,17 +3619,17 @@ void CWeapon::SetSilencerY(int value)
 
 bool CWeapon::NeedBlockSprint() const
 {
-	u32 state = GetState();
-	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
+	const u8 State = GetState();
+	const static bool IsDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
-	if (isDelayedWeaponActions)
+	if (IsDelayedWeaponActions)
 	{
-		return state != eIdle && state != eSprintStart || m_bIsAimAnimationPlaying;
+		return State != eIdle && State != eSprintStart && State != eSprintEnd || m_bIsAimAnimationPlaying;
 	}
 
-	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
+	const static bool IsBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 
-	return state == eFire || state == eFire2 || state == eSprintEnd || isBlockSprintInReload && state == eReload || m_bIsAimAnimationPlaying;
+	return State == eFire || State == eFire2 || State == eKick || IsBlockSprintInReload && State == eReload || m_bIsAimAnimationPlaying;
 }
 
 void CWeapon::render_hud_mode()
