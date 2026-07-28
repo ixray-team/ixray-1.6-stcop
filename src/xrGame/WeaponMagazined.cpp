@@ -574,7 +574,7 @@ void CWeaponMagazined::FireStart()
 				SwitchState(eFire);
 			}
 		}
-		else if (!IsPending() && GetState() != eFire || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
+		else if (!IsPending() && GetState() != eFire)
 		{
 			if (IsActor && m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
 			{
@@ -586,7 +586,7 @@ void CWeaponMagazined::FireStart()
 			}
 		}
 	}
-	else if (!IsPending() && GetState() != eFire || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
+	else if (!IsPending() && GetState() != eFire)
 	{
 		if (parent != nullptr)
 		{
@@ -1748,12 +1748,6 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 		case eIdle:
 			switch2_Idle();
 		break;
-		case eEmptyClick:
-		{
-			m_bBlockEmptyClick = false;
-			SwitchState(eIdle);
-			break;
-		}
 		case eFire:
 		{
 			if (ParentIsActor())
@@ -1803,6 +1797,7 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 		case eMagCheck:
 		case eFiremodeCheck:
 		case eSafemodeSwitch:
+		case eEmptyClick:
 		{
 			if (state == eSwitchMode)
 			{
@@ -1864,7 +1859,6 @@ void CWeaponMagazined::switch2_Empty()
 	auto play_motion_if_exists = [&](const shared_str& motion_name)
 	{
 		SetPending(true);
-		m_bBlockEmptyClick = true;
 		PlayHUDMotion(SetCurrentStateAnimation(motion_name), EHudMixType::eMixAll, eEmptyClick);
 		if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 		{
