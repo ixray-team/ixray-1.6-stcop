@@ -714,6 +714,9 @@ void CConsole::Show()
 	bVisible = true;
 	scroll_delta = 0;
 
+	ec().clear_states();
+	reset_cmd_history_idx();
+	reset_selected_tip();
 	update_tips();
 	m_editor->IR_Capture();
 
