@@ -2,6 +2,7 @@
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/UIShader.h"
+#include <charconv>
 
 class ENGINE_API CGameFont;
 class ENGINE_API IConsole_Command;
