@@ -642,6 +642,7 @@ inline void ImGuiEditorUI_HelpSection(const char* name, const char* description)
 
 /* INIT */
 void InitSections();
+void CollectCars();
 void InitImGuiCLSIDInGame();
 void InitImGuiSearchInGame();
 void InitImGuiHudAdjustInGame();
