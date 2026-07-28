@@ -531,7 +531,7 @@ void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB,
 
 void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 {
-	if (ImGui::Begin("Render Debug - SVG Storage"))
+	if (ImGui::Begin("Render Debug - SVG Storage"), &Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_RenderDebug_SVGStorageViewer)])
 	{
 		if (DEV)
 		{

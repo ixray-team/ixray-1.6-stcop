@@ -229,7 +229,6 @@ void RenderHUDAdjustManager()
 								if (ImGui::BeginTable("Data##FPP", 1))
 								{
 									ImGui::TableNextRow();
-
 									ImGui::TableNextColumn();
 
 									ImGui::DragFloat("X##FPP", &position.x, _delta_pos, -1.0f, 1.0f, "%.6f");
@@ -684,10 +683,8 @@ void RenderHUDAdjustManager()
 				}
 			}
 		}
-
-		ImGui::End();
 	}
-
+	ImGui::End();
 	ImGui::EndDisabled();
 	ImGui::PopStyleColor(1);
 }

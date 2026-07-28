@@ -178,7 +178,7 @@ void RenderQuestEditor()
 		constexpr unsigned char _kQuestEditor_TableHeadingsCount = static_cast<unsigned char>(sizeof(_kQuestEditor_TableHeadings)) / static_cast<unsigned char>(sizeof(_kQuestEditor_TableHeadings[0]));
 
 
-		if (ImGui::Begin("Quest Editor"))
+		if (ImGui::Begin("Quest Editor", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_QuestEditor)]))
 		{
 			if (ImGui::BeginTable("##QE_Table", _kQuestEditor_TableHeadingsCount))
 			{

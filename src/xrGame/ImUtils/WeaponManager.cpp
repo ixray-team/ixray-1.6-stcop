@@ -181,7 +181,9 @@ imgui_weapon_manager;
 void RenderWeaponManagerWindow()
 {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_WeaponManager)])
+	{
 		return;
+	}
 
 	if (!g_pGameLevel)
 		return;
@@ -1127,9 +1129,8 @@ void RenderWeaponManagerWindow()
 
 			ImGui::EndTabBar();
 		}
-
-
-		ImGui::End();
 	}
+
+	ImGui::End();
 	ImGui::PopStyleColor(1);
 }

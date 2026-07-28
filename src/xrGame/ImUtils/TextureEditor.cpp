@@ -908,7 +908,7 @@ void RenderTextureEditor()
 
 	bool checkbox_about_treat_settings_was_updated = false;
 
-	if (ImGui::Begin("Texture Editor", 0, ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::Begin("Texture Editor", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)], ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		PrintHelp();
 

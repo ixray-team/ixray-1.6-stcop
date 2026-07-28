@@ -2479,7 +2479,7 @@ void RenderPPEEditor()
 
 	if (g_pPPEEditor)
 	{
-		if (ImGui::Begin("Editor - [PPE]##ToolsInGameImGui", nullptr, ImGuiWindowFlags_MenuBar))
+		if (ImGui::Begin("Editor - [PPE]##ToolsInGameImGui", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_PostProcessEffectorEditor)], ImGuiWindowFlags_MenuBar))
 		{
 			if (ImGui::BeginTabBar("##PPEToolsIII"))
 			{
