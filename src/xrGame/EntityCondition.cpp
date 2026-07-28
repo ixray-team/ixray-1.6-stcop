@@ -534,9 +534,9 @@ float CEntityCondition::BleedingSpeed()
 
 void CEntityCondition::UpdateHealth()
 {
-	float bleeding_speed = BleedingSpeed() * m_fDeltaTime * (m_change_v.m_fV_Bleeding + m_fBoostBleedingRestore);
-	m_bIsBleeding				= fis_zero(bleeding_speed)?false:true;
-	m_fDeltaHealth				-= CanBeHarmed() ? bleeding_speed : 0;
+	float bleeding_speed = BleedingSpeed() * m_fDeltaTime * m_change_v.m_fV_Bleeding;
+	m_bIsBleeding = fis_zero(bleeding_speed) ? false : true;
+	m_fDeltaHealth -= CanBeHarmed() ? bleeding_speed : 0;
 	m_fDeltaHealth += m_fDeltaTime * (m_change_v.m_fV_HealthRestore + m_fBoostHpRestore);
 	
 	VERIFY						(_valid(m_fDeltaHealth));
