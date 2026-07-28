@@ -82,7 +82,7 @@ void CGamepadService::FindHIDDevice()
                 CurrentDevice->vendor_id,
                 CurrentDevice->product_id
             );
-
+			isWireless = CurrentDevice->interface_number == -1;
             SDL_hid_free_enumeration(Devices);
             return;
         }
@@ -222,9 +222,9 @@ void CGamepadService::SetTriggerResistance(bool RightTrigger, u8 StartPosition, 
     StartPosition = std::min(StartPosition, (u8)9);
     Force = std::min(Force, (u8)8);
 
-    u8 Report[48] = {};
-
-    Report[0] = 0x02;
+    xr_vector<u8> array = {};
+	array.resize(GetPacketSize());
+	u8* Report = BeginOutputPacket(array);
 
     // Enable trigger effect
     Report[1] = 0x04;
@@ -235,7 +235,7 @@ void CGamepadService::SetTriggerResistance(bool RightTrigger, u8 StartPosition, 
     Trigger[1] = StartPosition;
     Trigger[2] = Force;
 
-    SDL_hid_write((SDL_hid_device*)HidDevice, Report, sizeof(Report));
+    EndOutputPacket(array);
 }
 
 void CGamepadService::ClearTriggerEffect(bool RightTrigger)
@@ -245,16 +245,17 @@ void CGamepadService::ClearTriggerEffect(bool RightTrigger)
         return;
     }
 
-    u8 Report[48] = {};
+    xr_vector<u8> array = {};
+	array.resize(GetPacketSize());
+	u8* Report = BeginOutputPacket(array);
 
-    Report[0] = 0x02;
     Report[1] = 0x04;
 
     u8* Trigger = RightTrigger ? &Report[11] : &Report[22];
 
     Trigger[0] = 0x00;
 
-    SDL_hid_write((SDL_hid_device*)HidDevice, Report, sizeof(Report));
+    EndOutputPacket(array);
 }
 
 bool CGamepadService::Rumble(u16 LFRumble, u16 HFRumble, u16 DurationMS)
@@ -386,9 +387,9 @@ void CGamepadService::ShotTriggerEffect(bool RightTrigger, float Time)
         return;
     }
 
-    u8 Report[48] = {};
-
-    Report[0] = 0x02;
+    xr_vector<u8> array;
+	array.resize(GetPacketSize());
+	u8* Report = BeginOutputPacket(array);
 
     // Enable trigger effect
     Report[1] = 0x04;
@@ -400,7 +401,7 @@ void CGamepadService::ShotTriggerEffect(bool RightTrigger, float Time)
     Trigger[2] = 0x1;
     Trigger[3] = 0x7;
 
-    SDL_hid_write((SDL_hid_device*)HidDevice, Report, sizeof(Report));
+    EndOutputPacket(array);
 
     if (RightTrigger)
     {
@@ -463,4 +464,52 @@ Uint32 CGamepadService::RumbleTimerCallback(void*, SDL_TimerID, Uint32)
 		GGamepadService->StopRumble();
 	}
 	return 0;
+}
+
+u8 CGamepadService::GetPacketSize()
+{
+	u8 size = 32;
+
+	if (Type == EGamepadType::DualSense)
+	{
+		size = IsGamepadWireless() ? 78 : 48;
+	}
+	return size;
+}
+
+bool CGamepadService::IsGamepadWireless()
+{
+	return isWireless;
+}
+
+u8* CGamepadService::BeginOutputPacket(xr_vector<u8>& array)
+{
+	if (IsGamepadWireless())
+    {
+		array[0] = 0x31;
+		array[1] = 0x02;
+		return &array[1];
+    }
+    else
+    {
+		array[0] = 0x02;
+		return &array[0];
+    }
+}
+
+void CGamepadService::EndOutputPacket(xr_vector<u8>& array)
+{
+#pragma todo("St4lker0k765 to ForserX: CRC calculation doesn't work for some reason")
+    if (isWireless)
+    {
+		u32 crcChecksum = crc32(array.data(), 74);
+		array[74] = crcChecksum & 0x000000FF;
+		array[75] = (crcChecksum & 0x0000FF00) >> 8;
+		array[76] = (crcChecksum & 0x00FF0000) >> 16;
+		array[77] = (crcChecksum & 0xFF000000) >> 24;
+    }
+    if (SDL_hid_write(HidDevice, array.data(), GetPacketSize()) == -1)
+    {
+		Msg(make_string<const char*>("! SDL Error while writing HID packet: %s", SDL_GetError()));
+    }
 }
