@@ -1341,7 +1341,6 @@ void CWeapon::OnHiddenItem ()
 	inherited::OnHiddenItem		();
 
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
-	m_bBlockEmptyClick = false;
 	bWorking = false;
 	bDisablePrepareAnimation = false;
 }
@@ -1375,7 +1374,6 @@ void CWeapon::OnH_B_Chield		()
 
 	OnZoomOut					();
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
-	m_bBlockEmptyClick = false;
 	bWorking = false;
 	SetState(eHidden);
 }
@@ -4589,11 +4587,6 @@ u32 CWeapon::FakeReload()
 void CWeapon::OnMotionMark(u8 state, const motion_marks& mark)
 {
 	inherited::OnMotionMark(state, mark);
-
-	if (state == eEmptyClick && mark.name == "Left")
-	{
-		m_bBlockEmptyClick = false;
-	}
 
 	bool for_grenade = IsGrenadeMode();
 
