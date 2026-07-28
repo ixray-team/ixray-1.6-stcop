@@ -59,11 +59,17 @@ private:
 	std::atomic<u16> CurrentHFRumble = 0;
 
 	SDL_TimerID RumbleTimerID = 0;
+	bool isWireless = false;
 
 private:
 	void InitHID();
 	void DestroyHID();
 	void StopRumble();
+
+	u8* BeginOutputPacket(xr_vector<u8>& array);
+	void EndOutputPacket(xr_vector<u8>& array);
+	u8 GetPacketSize();
+	bool IsGamepadWireless();
 
 	static Uint32 RumbleTimerCallback(void*, SDL_TimerID, Uint32);
 };
