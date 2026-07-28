@@ -13,7 +13,7 @@ void ECSViewDraw()
 			if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::ECSViewer)])
 				return;
 
-			ImGui::Begin("ECS Debugger");
+			ImGui::Begin("ECS Debugger", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::ECSViewer)]);
 
 			for (auto& [TypeID, StorageBase] : GECSManager->ComponentStorages)
 			{
