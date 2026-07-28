@@ -28,8 +28,9 @@ float main(PSInputFullscreen I) : SV_Target
 
     for (int i = 0; i < 16; i++)
     {
-        res += s_image.Sample(smp_rtlinear, center + offsets2[i] * adapt_params.zw).r;
+        res += s_image.SampleLevel(smp_rtlinear, center + offsets2[i] * adapt_params.zw, 0).r;
     }
+	
     res *= 0.0625;
 
     return res;
