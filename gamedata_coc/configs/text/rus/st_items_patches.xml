@@ -12,14 +12,14 @@
 		<text>Нашивка «Свободы»</text>
 	</string>
 	<string id="freedom_patch_description">
-		<text>Нашивка, содранная с костюма свободовца.</text>
+		<text>Нашивка, содранная с костюма «свободовца».</text>
 	</string>
 
 	<string id="stalker_patch">
-		<text>Нашивка одиночки</text>
+		<text>Нашивка вольного сталкера</text>
 	</string>
 	<string id="stalker_patch_description">
-		<text>Нашивка, содранная с костюма одиночки.</text>
+		<text>Нашивка, содранная с костюма вольного сталкера.</text>
 	</string>
 
 	<string id="ecolog_patch">
@@ -40,14 +40,14 @@
 		<text>Нашивка «Долга»</text>
 	</string>
 	<string id="duty_patch_description">
-		<text>Нашивка, содранная с костюма долговца.</text>
+		<text>Нашивка, содранная с костюма «долговца».</text>
 	</string>
 
 	<string id="monolith_patch">
 		<text>Нашивка «Монолита»</text>
 	</string>
 	<string id="monolith_patch_description">
-		<text>Нашивка, содранная с костюма монолитовца.</text>
+		<text>Нашивка, содранная с костюма «монолитовца».</text>
 	</string>
 
 	<string id="army_patch">

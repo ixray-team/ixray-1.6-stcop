@@ -216,7 +216,7 @@
 		<text>Чувак, иди вон лучше с главным пообщайся!</text>
 	</string>
 	<string id="cc_generic-freedom-meet_use_no_talk_leader_2">
-		<text>Я тебе врядли что интересное расскажу. Иди-ка ты лучше с главным беседуй.</text>
+		<text>Я тебе вряд ли что интересное расскажу. Иди-ка ты лучше с главным беседуй.</text>
 	</string>
 	<string id="cc_generic-freedom-meet_use_no_talk_leader_3">
 		<text>Слушай, не грузи, а? Вон главный стоит, его и спрашивай.</text>
@@ -290,7 +290,7 @@
 		<text>С вопросами - к командиру.</text>
 	</string>
 	<string id="cc_generic-military-meet_use_no_talk_leader_3">
-		<text>Моё дело стрелять. А насчёт поговорить, это к командиру.</text>
+		<text>Моё дело стрелять. А насчёт поговорить - это к командиру.</text>
 	</string>
 	
 	<string id="cc_generic-military-meet_use_no_weapon_1">
@@ -328,7 +328,7 @@
 		<text>Оружие спрячь!</text>
 	</string>
 	<string id="cc_generic-stalker-meet_hide_weapon_6">
-		<text>Ты, пукалкой-то не размахивай!</text>
+		<text>Ты пукалкой-то не размахивай!</text>
 	</string>
 	<string id="cc_generic-stalker-meet_hide_weapon_8">
 		<text>Нафиг ствол!</text>
@@ -397,7 +397,7 @@
 		<text>С пушкой - какой разговор? Спрячь от греха!</text>
 	</string>
 	<string id="cc_generic-stalker-meet_weapon_wait_4">
-		<text>Ты, пукалкой-то не размахивай!</text>
+		<text>Ты пукалкой-то не размахивай!</text>
 	</string>
 	<string id="cc_generic-stalker-meet_weapon_wait_5">
 		<text>Оружие спрячь!</text>

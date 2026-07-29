@@ -267,4 +267,10 @@
 	<string id="kb_custom9">
 		<text>Статистика</text>
 	</string>
+	<string id="kb_custom10">
+		<text>Сообщения</text>
+	</string>
+	<string id="kb_custom11">
+		<text>Сменить HUD</text>
+	</string>
 </string_table>

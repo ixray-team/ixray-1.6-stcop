@@ -26,13 +26,13 @@
     <text>Тёмная Долина</text>
   </string>
   <string id="l09_deadcity">
-    <text>Мёртвый город</text>
+    <text>Мёртвый Город</text>
   </string>
   <string id="l11_hospital">
-    <text>Заброшенный госпиталь</text>
+    <text>Заброшенный Госпиталь</text>
   </string>
    <string id="fake_start">
-    <text>Фальшстарт</text>
+    <text>Фальстарт</text>
 	</string>
   <string id="l02_garbage">
     <text>Свалка</text>
@@ -47,7 +47,7 @@
     <text>Окрестности «Юпитера»</text>
   </string>
     <string id="jupiter_underground">
-    <text>Путепровод</text>
+    <text>Путепровод «Припять-1»</text>
   </string>
   <string id="l08u_brainlab">
     <text>Лаборатория Х-16</text>
@@ -56,7 +56,7 @@
     <text>Лаборатория Х-18</text>
   </string>
   <string id="l10u_bunker">
-    <text>Лаборатория Х-19</text>
+    <text>Лаборатория Х-19 «Х-10»</text>
 	</string>
   <string id="labx8">
     <text>Лаборатория Х-8</text>
@@ -68,7 +68,7 @@
     <text>Центр управления Монолитом</text>
   </string>
    <string id="l13u_warlab">
-    <text>Варлаб</text>
+    <text>Военная лаборатория</text>
   </string>
   <string id="pripyat">
     <text>Окраины Припяти</text>
@@ -80,7 +80,7 @@
     <text>Радар</text>
   </string>
   <string id="l10_red_forest">
-    <text>Рыжий лес</text>
+    <text>Рыжий Лес</text>
   </string>
  <string id="l05_bar">
     <text>Бар</text>
@@ -89,7 +89,7 @@
     <text>Саркофаг</text>
   </string>
    <string id="k02_trucks_cemetery">
-    <text>Кладбище техники</text>
+    <text>Кладбище Техники</text>
   </string>
   <string id="l06_rostok">
     <text>Дикая Территория</text>
@@ -142,7 +142,7 @@
 		<text>В окрестности Юпитера</text>
   </string>
   <string id="space_restrictor_to_jupiter_ug_desc">
-		<text>В Путепровод</text>
+		<text>В Путепровод «Припять-1»</text>
   </string>
   <string id="space_restrictor_to_labx16_desc">
     <text>В лабораторию Х-16</text>
@@ -151,10 +151,10 @@
     <text>В лабораторию Х-18</text>
   </string>
   <string id="space_restrictor_to_labx10_desc">
-    <text>В лабораторию Х-19</text>
+    <text>В лабораторию Х-19 «Х-10»</text>
   </string>
   <string id="space_restrictor_to_labx8_desc">
-    <text>В лабораторию Х8</text>
+    <text>В лабораторию Х-8</text>
   </string>
   <string id="space_restrictor_to_limansk_desc">
     <text>В Лиманск</text>
@@ -163,7 +163,7 @@
     <text>В центр управления Монолитом</text>
   </string>
   <string id="space_restrictor_to_warlab_desc">
-    <text>В варлаб</text>
+    <text>В Военную лабораторию</text>
   </string>
   <string id="space_restrictor_to_cop_pripyat_desc">
 		<text>На Окраины Припяти</text>
@@ -178,7 +178,7 @@
     <text>В Рыжий Лес</text>
   </string>
   <string id="space_restrictor_to_bar_desc">
-    <text>В Бар</text>
+    <text>На Росток</text>
   </string>
   <string id="space_restrictor_to_sarcophagus_desc">
     <text>В Саркофаг</text>
