@@ -1,13 +1,15 @@
 #include "common.hlsli"
-uniform float4 screen_res;
 
-float4 main(p_shadow I) : SV_Target
+float4 main(PSInputFullscreen I) : SV_Target
 {
-    float3 col;
-    float factor = saturate(distance(I.tc0, float2(0.5, 0.5)));
-    col.r = s_image.Sample(smp_rtlinear, float2(I.tc0 + float2(screen_res.z * factor, 0))).r;
-    col.g = s_image.Sample(smp_rtlinear, float2(I.tc0 + float2(-0.866, -0.5) * screen_res.zw * factor)).g;
-    col.b = s_image.Sample(smp_rtlinear, float2(I.tc0 + float2(0.866, -0.5) * screen_res.zw * factor)).b;
+    float2 from_center = I.texcoord - 0.5;
+    float4 rg_shift = from_center.xyxy * float2(0.99065, 0.99373).xxyy + 0.5; //LVutner: Precalculated for 0.55 intensity, see AMD code.
 
-    return float4(col, 1);
+    float3 col;
+	col.x = s_image.SampleLevel(smp_rtlinear, rg_shift.xy, 0.0).x;
+	col.y = s_image.SampleLevel(smp_rtlinear, rg_shift.zw, 0.0).y;
+	col.z = s_image.SampleLevel(smp_rtlinear, I.texcoord, 0.0).z;
+    return float4(col, 1.0);
 }
+
+

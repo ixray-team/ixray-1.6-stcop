@@ -3,19 +3,12 @@
 uniform float4 color_params;
 uniform float4 color_grading;
 
-struct PSInput
+float3 main(PSInputFullscreen I) : SV_Target
 {
-    float4 hpos : SV_POSITION;
-    float2 texcoord : TEXCOORD0;
-};
-
-float4 main(in PSInput I) : SV_Target
-{
-	float3 color = s_image.Sample(smp_nofilter, I.texcoord.xy).xyz;
+	float3 color = s_image[I.hpos.xy].xyz;
 	
-	color = color_params.x * pow(color, color_params.y) + color_params.z;
+	color = color_params.x * pow(abs(color), color_params.y) + color_params.z;
 	color = saturate(color.xyz * color_grading.xyz);
 	
-    color = deband_color(color, I.texcoord.xy);
-	return float4(color, 1.0f);
+	return deband_color(color, I.hpos.xy);
 }

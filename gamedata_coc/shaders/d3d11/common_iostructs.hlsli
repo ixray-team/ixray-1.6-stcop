@@ -61,7 +61,7 @@ struct p_TL
 {
     float2 Tex0 : TEXCOORD0;
     float4 Color : COLOR;
-    //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
+    float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 
 ////////////////////////////////////////////////////////////////
@@ -292,20 +292,6 @@ struct v_static_color
 #endif
 };
 
-struct f_deffer
-{
-    float4 Ne : SV_Target0;
-    float4 C : SV_Target1;
-    float2 V : SV_Target2;
-};
-
-struct f_forward
-{
-    float4 Color : SV_Target0;
-    float Reactive : SV_Target1;
-    float2 Velocity : SV_Target2;
-};
-
 struct gbuffer_data
 {
     float3 P;
@@ -334,16 +320,16 @@ struct p_bumped_new
     float3 M1 : TEXCOORD2; // nmap 2 eye - 1
     float3 M2 : TEXCOORD3; // nmap 2 eye - 2
     float3 M3 : TEXCOORD4; // nmap 2 eye - 3
-
-    float4 hpos_curr : TEXCOORD5;
-    float4 hpos_old : TEXCOORD6;
-
-	float snow_mask : TEXCOORD7;
 	
-#ifndef USE_LM_HEMI
 #ifdef USE_LENGTH_BUFFER
-	float3 lmap : TEXCOORD8;
-#endif
+	#ifndef USE_LM_HEMI
+		float3 lmap : TEXCOORD5;
+	#endif
+#else
+	#ifndef DISABLE_MOTION_VECTORS
+		float4 hpos_curr : TEXCOORD5;
+		float4 hpos_old : TEXCOORD6;
+	#endif
 #endif
 };
 
@@ -356,91 +342,10 @@ struct p_bilbord
     float2 tc0 : TEXCOORD1;
     float2 tc1 : TEXCOORD2;
 
+#ifndef DISABLE_MOTION_VECTORS
     float4 hpos_curr : TEXCOORD3;
     float4 hpos_old : TEXCOORD4;
-};
-
-struct v2p_bumped
-{
-#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
-    float4 tcdh : TEXCOORD0; // Texture coordinates,         w=sun_occlusion
-#else
-    float2 tcdh : TEXCOORD0; // Texture coordinates
 #endif
-    float4 position : TEXCOORD1; // position + hemi
-    float3 M1 : TEXCOORD2; // nmap 2 eye - 1
-    float3 M2 : TEXCOORD3; // nmap 2 eye - 2
-    float3 M3 : TEXCOORD4; // nmap 2 eye - 3
-#ifdef USE_TDETAIL
-    float2 tcdbump : TEXCOORD5; // d-bump
-#endif
-#ifdef USE_LM_HEMI
-    float2 lmh : TEXCOORD6; // lm-hemi
-#endif
-    float4 hpos_curr : POSITION0;
-    float4 hpos_old : POSITION1;
-    float4 hpos : SV_POSITION;
-};
-
-struct p_bumped
-{
-#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
-    float4 tcdh : TEXCOORD0; // Texture coordinates,         w=sun_occlusion
-#else
-    float2 tcdh : TEXCOORD0; // Texture coordinates
-#endif
-    float4 position : TEXCOORD1; // position + hemi
-    float3 M1 : TEXCOORD2; // nmap 2 eye - 1
-    float3 M2 : TEXCOORD3; // nmap 2 eye - 2
-    float3 M3 : TEXCOORD4; // nmap 2 eye - 3
-#ifdef USE_TDETAIL
-    float2 tcdbump : TEXCOORD5; // d-bump
-#endif
-#ifdef USE_LM_HEMI
-    float2 lmh : TEXCOORD6; // lm-hemi
-#endif
-    float4 hpos_curr : POSITION0;
-    float4 hpos_old : POSITION1;
-};
-
-//	Defer flat
-struct v2p_flat
-{
-#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
-    float4 tcdh : TEXCOORD0; // Texture coordinates,         w=sun_occlusion
-#else
-    float2 tcdh : TEXCOORD0; // Texture coordinates
-#endif
-    float4 position : TEXCOORD1; // position + hemi
-    float3 N : TEXCOORD2; // Eye-space normal        (for lighting)
-#ifdef USE_TDETAIL
-    float2 tcdbump : TEXCOORD3; // d-bump
-#endif
-#ifdef USE_LM_HEMI
-    float2 lmh : TEXCOORD4; // lm-hemi
-#endif
-    float4 hpos_curr : POSITION0;
-    float4 hpos_old : POSITION1;
-    float4 hpos : SV_POSITION;
-};
-
-struct p_flat
-{
-#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
-    float4 tcdh : TEXCOORD0; // Texture coordinates,         w=sun_occlusion
-#else
-    float2 tcdh : TEXCOORD0; // Texture coordinates
-#endif
-    float4 position : TEXCOORD1; // position + hemi
-    float3 N : TEXCOORD2; // Eye-space normal        (for lighting)
-#ifdef USE_TDETAIL
-    float2 tcdbump : TEXCOORD3; // d-bump
-#endif
-#ifdef USE_LM_HEMI
-    float2 lmh : TEXCOORD4; // lm-hemi
-#endif
-    float4 hpos_curr : POSITION0;
-    float4 hpos_old : POSITION1;
 };
 
 //	Shadow
@@ -491,7 +396,10 @@ struct v_model
     float3 T : TANGENT; // (nx,ny,nz)
     float3 B : BINORMAL; // (nx,ny,nz)
     float2 tc : TEXCOORD0; // (u,v)
+	
+#ifndef DISABLE_MOTION_VECTORS
     float4 P_old : TEXCOORD1; // (float,float,float,1)
+#endif
 };
 
 //	Tree
@@ -509,6 +417,26 @@ struct v_detail
 {
     float4 pos : POSITION; // position, frac
     float2 tc : TEXCOORD0; // texcoord
+    float4 N : NORMAL; // (nx,ny,nz)
+};
+
+//	Fullscreen triangle
+struct PSInputFullscreen
+{
+	float4 hpos : SV_POSITION;
+	float2 texcoord : TEXCOORD0;
+};
+
+struct VSInputFullscreen
+{
+    float2 texcoord : TEXCOORD0;
+    float4 hpos : POSITIONT;
+};
+
+struct VSOutputFullscreen
+{
+    float4 hpos : SV_POSITION;
+    float2 texcoord : TEXCOORD0;
 };
 
 #endif //	common_iostructs_h_included

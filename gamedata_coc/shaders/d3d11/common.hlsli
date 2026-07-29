@@ -2,6 +2,13 @@
 #define COMMON_H
 
 #pragma warning(disable : 4000)
+#define NULL (0)
+
+#define EPS_S 0.0000001f
+#define EPS   0.0000100f
+#define EPS_L 0.0010000f
+
+#define PI 3.141592653589793f
 
 #include "shared\common.hlsli"
 

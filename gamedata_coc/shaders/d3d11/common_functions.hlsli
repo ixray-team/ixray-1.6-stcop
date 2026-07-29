@@ -13,15 +13,15 @@ float Contrast(float Input, float ContrastPower)
 }
 
 #ifndef SRGB_GAMMA
-#define SRGB_GAMMA 2.2
+	#define SRGB_GAMMA 2.2
 #endif
 
 #ifndef USE_LEGACY_LIGHT
-	#define PushGamma(x) pow(abs(x), SRGB_GAMMA)
-	#define PopGamma(x) pow(abs(x), rcp(SRGB_GAMMA))
+	#define GammaToLinear(x) pow(abs(x), SRGB_GAMMA)
+	#define LinearToGamma(x) pow(abs(x), rcp(SRGB_GAMMA))
 #else
-	#define PushGamma(x) abs(x)
-	#define PopGamma(x) abs(x)
+	#define GammaToLinear(x) abs(x)
+	#define LinearToGamma(x) abs(x)
 #endif
 
 #ifndef USE_CGIM_WHITE_TWEAK
@@ -39,12 +39,12 @@ float3 tonemap(float3 rgb, float scale)
 	rgb = rgb * scale;
 	rgb = rgb * (1.0f + rgb * RCP_WHITE_SQR) * rcp(rgb + 1.0f);
 	
-	return PopGamma(rgb);
+	return LinearToGamma(rgb);
 }
 
 float3 detonemap(float3 rgb)
 {
-	rgb = PushGamma(rgb);
+	rgb = GammaToLinear(rgb);
 	
 	float3 scale = rgb * rgb - INV_TONEMAP_COEF_ONE * rgb + 1.0f;
 	rgb = rgb + sqrt(scale) - 1.0f;
@@ -59,6 +59,96 @@ void RemapVector(inout float3 View)
 
     View *= rcp(ViewPosMax);
     View.y = View.y * 2.0 - 1.0;
+}
+
+float3 CommerceToneMapping(float3 color, float startCompression, float desaturation)
+{
+    // Lisence Creative Commons Attribution 4.0 International CC BY 4.0
+    // taken from https://modelviewer.dev/examples/tone-mapping
+    // article and original code by Emmett Lalish https://github.com/elalish 
+    
+    //float startCompression = 0.8 - 0.04; //0.8-0.04;
+    //float desaturation = 0.15f; // 0.15
+
+    float x = min(color.r, min(color.g, color.b));
+    float offset = (x < 0.08f) ? (x - 6.25f * x * x) : 0.04f;
+    color -= offset;
+
+    float peak = max(color.r, max(color.g, color.b));
+    if (peak < startCompression)
+        return color;
+
+    float d = 1.f - startCompression;
+    float newPeak = 1.f - d * d / (peak + d - startCompression);
+    color *= newPeak / peak;
+
+    float g = 1.f - 1.f / (desaturation * (peak - newPeak) + 1.f);
+    return lerp(color, newPeak.xxx, g);
+}
+
+float Curve(float A, float B, float C, float D, float E, float F, float x)
+{
+    return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+}
+
+float3 Curve(float A, float B, float C, float D, float E, float F, float3 x)
+{
+    return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+}
+
+float3 Uncharted2Tonemap(float3 Color, float A, float B, float C, float D, float E, float F, float WhitePoint)
+{
+    float P = Curve(A, B, C, D, E, F, WhitePoint);
+    float3 U = Curve(A, B, C, D, E, F, Color);
+    return U / P;
+}
+
+float3 Uncharted2Tonemap(float3 Color)
+{
+    float A = 0.15f;
+    float B = 0.5f;
+    float C = 0.1f;
+    float D = 0.4f;
+    float E = 0.02f;
+    float F = 0.3f;
+    float WhitePoint = 1.7f;
+
+    return Uncharted2Tonemap(Color, A, B, C, D, E, F, WhitePoint);
+}
+
+float3 Crossfeed(float3 rgb, float factor)
+{
+    float a = 1.f - factor;
+    float b = factor * 0.5f;
+    return float3(
+        rgb.r * a + (rgb.g + rgb.b) * b,
+        rgb.g * a + (rgb.b + rgb.r) * b,
+        rgb.b * a + (rgb.r + rgb.g) * b);
+}
+
+float3 Vibrance(float3 rgb, float vibrance)
+{
+    float lum = dot(rgb, LUMINANCE_VECTOR);
+    float3 mask = (rgb - lum.xxx);
+    mask = saturate(mask);
+    float lumMask = dot(LUMINANCE_VECTOR, mask);
+    lumMask = 1.0 - lumMask;
+    return lerp(lum.xxx, rgb, 1.0 + vibrance * lumMask);
+}
+
+float3 b_remap(float3 color, float2 threshold)
+{
+    float thres1 = min(threshold.x, threshold.y);
+    float thres2 = max(threshold.x, threshold.y);
+    float brightness = (color.r + color.g + color.b) / 3.0;
+    float factor = smoothstep(thres1, thres2, brightness);
+    return color * factor;
+}
+
+//[numthreads(64,1,1)]
+uint2 thread_remap_8x8(uint thread)
+{
+    return uint2((thread >> 1u) & 7u, (thread & 1u) | ((thread >> 3u) & 6u));
 }
 
 // Функции генерации случайных чисел [0, 1]
@@ -81,32 +171,40 @@ float Hash(float3 n)
 
 float2 Hash22(float2 value)
 {
-    return float2(
+    return float2
+	(
         Hash(dot(value, float2(12.989, 78.233))),
-        Hash(dot(value, float2(39.346, 11.135))));
+        Hash(dot(value, float2(39.346, 11.135)))
+	);
 }
 
 float3 Hash23(float2 value)
 {
-    return float3(
+    return float3
+	(
         Hash(dot(value, float2(12.989, 78.233))),
         Hash(dot(value, float2(39.346, 11.135))),
-        Hash(dot(value, float2(73.156, 52.235))));
+        Hash(dot(value, float2(73.156, 52.235)))
+	);
 }
 
 float2 Hash32(float3 value)
 {
-    return float2(
+    return float2
+	(
         Hash(dot(value, float3(12.989, 78.233, 123.134f))),
-        Hash(dot(value, float3(39.346, 11.135, 543.142f))));
+        Hash(dot(value, float3(39.346, 11.135, 543.142f)))
+	);
 }
 
 float3 Hash33(float3 value)
 {
-    return float3(
+    return float3
+	(
         Hash(dot(value, float3(12.989, 78.233, 123.134f))),
         Hash(dot(value, float3(39.346, 11.135, 543.142f))),
-        Hash(dot(value, float3(73.156, 52.235, 143.425f))));
+        Hash(dot(value, float3(73.156, 52.235, 143.425f)))
+	);
 }
 
 // END
@@ -176,23 +274,22 @@ float hashed_alpha_test(float3 position)
     return clamp(thresh, 0.063f, 1.0f);
 }
 
-#define IMAGE_BITRATE float3(255.f, 255.f, 255.f)
+// https://media.steampowered.com/apps/valve/2015/Alex_Vlachos_Advanced_VR_Rendering_GDC2015.pdf
+// page 49
 
-// Deband color function (by Hozar 2002) - may be huita
-float3 deband_color(float3 image, float2 uv)
+#ifndef IMAGE_BITRATE
+	#define IMAGE_BITRATE 255
+#endif
+
+float3 deband_color(float3 image, uint2 hpos, float bitrate = IMAGE_BITRATE)
 {
-    float3 dither = Hash23(cos(uv.xy * timers.x) * 1245.0f);
+    // float3 dither = dot(float2(171.0, 231.0), hpos.xy + m_taa_jitter.w).xxx;
+    // dither = 2.0f * frac(dither / float3(103.0, 71.0, 97.0)) - 1.0f;
+	
+	float3 dither = s_blue_noise[uint3(hpos % 128, uint(m_taa_jitter.w) % 32)].xzy - 0.5;
 
-    float3 color = saturate(image) * IMAGE_BITRATE;
-    float3 pq = frac(color);
-
-    color -= pq;
-    pq = step(dither, pq);
-
-    color += pq;
-    color *= rcp(IMAGE_BITRATE);
-
-    return color;
+    return image + dither * rcp(bitrate);
+    // return frac(image * bitrate + dither);
 }
 
 //Builds a cotangent frame. Source: http://www.thetenthplanet.de/archives/1180
@@ -216,9 +313,23 @@ float4 combine_bloom(float3 low, float4 high)
     return float4(low.xyz + high.xyz * high.w, 1.f);
 }
 
+//#define NEW_FOGGIN
+#ifdef NEW_FOGGIN
+    #define F_base 1.f
+    #define F_dens 0.002f
+#endif
+
 float calc_fogging(float3 pos)
 {
-    return saturate(length(pos - eye_position) * fog_params.w + fog_params.x);
+    #ifndef NEW_FOGGIN
+        return saturate(length(pos - eye_position) * fog_params.w + fog_params.x);
+    #else // NEW_FOGGIN
+        //float a = 1.0f;
+        //float b = 0.002f;
+        float denom = F_base - exp(-F_dens * (fog_params.z - fog_params.y));
+        float dist = length(pos - eye_position);
+        return saturate((F_base - exp(-F_dens * (dist - fog_params.y))) / denom);
+    #endif
 }
 
 float2 unpack_tc_base(float2 tc, float du, float dv)
@@ -228,7 +339,7 @@ float2 unpack_tc_base(float2 tc, float du, float dv)
 
 float3 unpack_normal(float3 v)
 {
-    return 2 * v - 1;
+    return 2 * v.zyx - 1;
 }
 
 float3 unpack_bx2(float3 v)
@@ -239,17 +350,12 @@ float3 unpack_bx2(float3 v)
 float3 unpack_bx4(float3 v)
 {
     return 4 * v - 2;
-} //! reduce the amount of stretching from 4*v-2 and increase precision
+}
 
 float2 unpack_tc_lmap(float2 tc)
 {
     return tc * (1.f / 32768.f);
 } // [-1  .. +1 ]
-
-float4 unpack_color(float4 c)
-{
-    return c.bgra;
-}
 
 float4 unpack_D3DCOLOR(float4 c)
 {
@@ -261,20 +367,22 @@ float3 unpack_D3DCOLOR(float3 c)
     return c.bgr;
 }
 
-float3 p_hemi(float2 tc)
-{
-    float4 t_lmh = s_hemi.Sample(smp_rtlinear, tc);
-    return t_lmh.w;
-}
-
 float get_hemi(float4 lmh)
 {
-    return lmh.w;
+#ifdef USE_SOC_LIGHTING
+	return lmh.y;
+#else
+	return lmh.w;
+#endif
 }
 
 float get_sun(float4 lmh)
 {
-    return lmh.y;
+#ifdef USE_SOC_LIGHTING
+	return lmh.w;
+#else
+	return lmh.y;
+#endif
 }
 
 float3 v_sun(float3 N)
@@ -282,9 +390,5 @@ float3 v_sun(float3 N)
     return L_sun_color.xyz * dot(N, -L_sun_dir_w.xyz);
 }
 
-float3 calc_reflection(float3 pos_w, float3 norm_w)
-{
-    return reflect(normalize(pos_w - eye_position), norm_w);
-}
-
 #endif //	common_functions_h_included
+
