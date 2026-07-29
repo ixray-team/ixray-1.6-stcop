@@ -262,87 +262,6 @@ function WeatherManager:forced_weather_change()
 	self.forced_weather_change_on_time_change = true
 end
 
-function WeatherManager:apply_dof()
-	--[[
-	local console=get_console()
-	if string.sub(self.levelWeather,1,9)=="atmosfear" then
-		local last_hour_str=self:get_hour_as_string(self.last_hour)
-		local next_hour_str=self:get_hour_as_string(self.next_hour)
-		local last_dist=self.far_distances[self.curr_weather][last_hour_str]
-		local next_dist=self.far_distances[self.next_weather][next_hour_str]
-		local last_dof_kernel=self.dof_kernels[self.curr_weather]
-		local next_dof_kernel=self.dof_kernels[self.next_weather]
-		local m=level.get_time_minutes()
-		local current_dof_far=math.ceil(((next_dist - last_dist) * m / 60 + last_dist)*self.dof_factor)
-		local current_dof_kernel=self:round((next_dof_kernel - last_dof_kernel) * m / 60 + last_dof_kernel,2)
-		local startTransition=0
-		local percentOfTransition=0
-		if not (self.weather_fx) then
-			if self.fx_ended==nil and self.fx_started~=nil then
-				self.fx_ended=diff_sec;
-				--self.fx_started=nil
-			end
-			if self.fx_started~=nil and self.fx_ended~=nil then
-				startTransition=diff_sec-self.fx_ended
-				percentOfTransition=startTransition/5
-				if percentOfTransition>1 then
-					percentOfTransition=1
-					self.fx_started=nil;
-					self.fx_ended=nil
-				end
-				local fx_dof_far=math.ceil(current_dof_far-((current_dof_far-200)*(1-percentOfTransition)))
-				local fx_dof_kernel=self:round(current_dof_kernel-((current_dof_kernel-4)*(1-percentOfTransition)))
-				console:execute("r2_dof_far "..tostring(fx_dof_far))
-				console:execute("r2_dof_kernel "..tostring(fx_dof_kernel))
-				--atmosfear.debugMessages[13]:SetText("fx dof fade out")
-				--atmosfear.debugMessages[14]:SetText("fx_dof_far: "..tostring(fx_dof_far))
-				--atmosfear.debugMessages[15]:SetText("fx_dof_ker: "..tostring(fx_dof_kernel))
-			else
-				console:execute("r2_dof_far "..tostring(current_dof_far))
-				console:execute("r2_dof_kernel "..tostring(current_dof_kernel))
-				--atmosfear.debugMessages[13]:SetText("normal dof")
-				--atmosfear.debugMessages[14]:SetText("dof_far: "..tostring(current_dof_far))
-				--atmosfear.debugMessages[15]:SetText("dof_ker: "..tostring(current_dof_kernel))
-			end
-		else
-			if self.fx_started==nil then
-				self.fx_started=diff_sec;
-				self.fx_ended=nil
-			end
-			if self.fx_started~=nil and self.fx_ended==nil then
-			 	startTransition=diff_sec-self.fx_started
-				percentOfTransition=startTransition/(6*60/level.get_time_factor())
-				if percentOfTransition>1 then
-					percentOfTransition=1
-				end
-				local fx_dof_far=math.ceil(current_dof_far-((current_dof_far-200)*percentOfTransition))
-				local fx_dof_kernel=self:round(current_dof_kernel-((current_dof_kernel-4)*percentOfTransition))
-				console:execute("r2_dof_far "..tostring(fx_dof_far))
-				console:execute("r2_dof_kernel "..tostring(fx_dof_kernel))
-				--atmosfear.debugMessages[13]:SetText("fx dof fade in")
-				--atmosfear.debugMessages[14]:SetText("fx_dof_far: "..tostring(fx_dof_far))
-				--atmosfear.debugMessages[15]:SetText("fx_dof_ker: "..tostring(fx_dof_kernel))
-			end
-
-
-		end
-	else
-		console:execute("r2_dof_far 800")
-		console:execute("r2_dof_kernel 2")
-		--self.debugMessages[8]:SetText("fx_dof_far: no DOF")
-		--self.debugMessages[9]:SetText("fx_dof_ker: no DOF")
-	end
-	--self.debugMessages[2]:SetText("current weather: default_"..self.curr_weather)
-	--self.debugMessages[3]:SetText("next weather: default_"..self.next_weather)
-	--self.debugMessages[4]:SetText("last_hour: "..self:get_hour_as_string(self.last_hour))
-	--self.debugMessages[5]:SetText("next_hour: "..self:get_hour_as_string(self.next_hour))
-	--self.debugMessages[6]:SetText("last_hour_distance: "..last_dist)
-	--self.debugMessages[7]:SetText("next_hour_distance: "..next_dist)
-	--self.debugMessages[10]:SetText("self.weather_fx="..tostring(self.weather_fx))
-	--self.debugMessages[11]:SetText("weather: "..tostring(self.levelWeather))
-	--]]
-end
-
 function WeatherManager:get_hour_as_string(h)
 	local hour_str=""
 	if h>23 then
@@ -378,10 +297,6 @@ function WeatherManager:update()
 		end
 		self:change_period()
 		self:select_weather(false)
-	end
-
-	if not (axr_main.weapon_is_zoomed) then
-		self:apply_dof()
 	end
 	
 	diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())

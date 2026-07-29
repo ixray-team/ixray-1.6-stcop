@@ -1,0 +1,293 @@
+--[[
+Description:
+  Checks if a global script with the given name exists.
+Parameters:
+  script_name (string) - the name of the script.
+Returns: boolean - true if present, false otherwise.
+]]
+function is_script_present_in_g_file(script_name)
+	if ffx_compare_utils.is_empty_string(script_name) then
+		return false
+	end
+	
+	return rawget(_G, script_name) ~= nil
+end
+
+--[[
+Description:
+  Checks if function by name exists in script file by name.
+Parameters:
+  script_name (string) - the name of the script.
+  function_name (string) - the name of the function.
+Returns: boolean
+]]
+function has_script_function_exists(script_name, function_name)
+	if ffx_compare_utils.is_empty_string(script_name) then
+		return false
+	end
+	
+	if ffx_compare_utils.is_empty_string(function_name) then
+		return false
+	end
+	
+	if not getmetatable(script_name) then
+		return false
+	end
+	
+	return getmetatable(script_name)[function_name] ~= nil
+end
+
+--[[
+Description:
+  Checks if a global script by name is callable (exists and is a table).
+Parameters:
+  script_name (string) - the name of the script.
+Returns: boolean - true if callable, false otherwise.
+]]
+function is_script_callable_by_name(script_name)
+	if ffx_compare_utils.is_empty_string(script_name) then
+		return false
+	end
+
+	local _script = _G[script_name]
+	
+	if not _script or _script == nil then
+        return false
+    end
+	
+	return ffx_compare_utils.is_table(_script)
+end
+
+--[[
+Description:
+  Checks if a function by name exists and is callable within a named script.
+Parameters:
+  script_name (string) - the name of the script.
+  function_name (string) - the function name to check.
+Returns: boolean - true if function is callable, false otherwise.
+]]
+function is_function_callable_by_name(script_name, function_name)
+	if ffx_compare_utils.is_empty_string(function_name) then
+		return false
+	end
+
+	if not is_script_callable_by_name(script_name) then
+        return false
+    end
+	
+	local _script = _G[script_name]
+	
+	if not ffx_compare_utils.is_table(_script) then
+        return false
+    end
+	
+	return ffx_compare_utils.is_function(_script[function_name])
+end
+
+--[[
+Description:
+  Checks if a function reference has exactly the specified number of arguments.
+Parameters:
+  _func (function) - the function reference.
+  count_args (number) - the expected number of arguments.
+Returns: boolean - true if argument count matches, false otherwise.
+]]
+function is_function_args_count_equal_by_ref(_func, count_args)
+	if not ffx_compare_utils.is_function(_func) then
+		return false
+	end
+	
+	local dbg_info = debug.getinfo(_func, "u")
+	if dbg_info then
+		return (dbg_info.nparams == count_args)
+	end
+
+	return false
+end
+
+--[[
+Description:
+  Checks if a named function within a named script has the specified argument count.
+Parameters:
+  script_name (string) - the name of the script.
+  function_name (string) - the function name.
+  count_args (number) - expected argument count.
+Returns: boolean - true if argument count matches, false otherwise.
+]]
+function is_function_args_count_equal_by_name(script_name, function_name, count_args)
+	if not is_function_callable_by_name(script_name, function_name) then
+		return false
+	end
+	
+	return is_function_args_count_equal_by_ref(_G[script_name][function_name], count_args)
+end
+
+--[[
+Description:
+  Finds the source (namespace, file, or function) of the caller at a given stack level.
+Parameters:
+  level (number) - the stack level to inspect.
+Returns: string - source identifier or "unknown" if not found.
+]]
+function find_caller_source(level)
+    local _level = level
+	
+    while true do
+        local info = debug.getinfo(_level, "S")
+		
+        if not info then
+			break 
+		end
+
+        local source = info.source
+        if source and source ~= "" and source ~= "=[C]" then
+            if source:sub(1,1) == "@" then
+                source = source:sub(2)
+            end
+
+            source = source:gsub("%.lua$", "")
+            source = source:gsub("%.script$", "")
+			
+            return source
+        end
+		
+        _level = _level + 1
+    end
+	
+    return "unknown"
+end
+
+--[[
+Description:
+  Finds the source (namespace, file, or function) of the caller at a given stack level.
+Parameters:
+  level (number) - the stack level to inspect.
+Returns: string - source identifier or "unknown" if not found.
+]]
+function find_caller_source_tracy(level, use_line)
+    local _level = level
+    
+    if use_line == nil then
+        use_line = false
+    end
+    
+	local data = {line_begin = -1, line_end = -1, file_name = "<script called by engine>"}
+	
+    while true do
+        local info = debug.getinfo(_level, "Sn")
+        
+        if not info then
+            break 
+        end
+
+        local source = info.source
+        
+        local line = ""
+        if use_line and info.linedefined and info.lastlinedefined then
+			data.line_begin = info.linedefined
+			data.line_end = info.lastlinedefined
+        end
+		
+        if source and source ~= "" and source ~= "=[C]" then
+            if source:sub(1,1) == "@" then
+                source = source:sub(2)
+            end
+
+            source = source:gsub("%.lua$", "")
+            source = source:gsub("%.script$", "")
+            data.file_name = source .. ".script"
+            
+            return data
+        end
+        
+        _level = _level + 1
+    end
+    
+    return data
+end
+
+--[[
+Description:
+  Trace stack calls to string
+Returns: string - separated by -> calls (script_name.function_name(...) -> script_name.function_name(...),...)
+]]
+function get_call_stack_trace()
+    local stack_trace = {}
+    local level = 2
+    
+    while true do
+        local info = debug.getinfo(level, "Sn")
+        
+        if not info then
+            break
+        end
+
+        if info.source and info.source ~= "=[C]" and info.what ~= "C" then
+            local source_name = info.source
+            if source_name:sub(1, 1) == "@" then
+                source_name = source_name:sub(2)
+            end
+            
+            source_name = source_name:gsub("%.lua$", "")
+            source_name = source_name:gsub("%.script$", "")
+            
+            local function_name = info.name or "[anonymous]"
+            local entry = ""
+            
+            if function_name == "[anonymous]" then
+                entry = source_name .. ".<anonymous>(...)"
+            else
+                entry = source_name .. "." .. function_name .. "(...)"
+            end
+            
+            table.insert(stack_trace, 1, entry)
+        end
+        
+        level = level + 1
+    end
+    
+    if #stack_trace > 0 then
+        return table.concat(stack_trace, " -> ")
+    else
+        return "unknown -> get_call_stack_trace(...)"
+    end
+end
+
+
+------------------------------------------------------------------------------
+--							 Sandbox 
+------------------------------------------------------------------------------
+function sandbox(file_name, function_name, ...)
+	local status, result = pcall(sandbox_exec, file_name, function_name, ...)
+	if status == false then
+		printf("(%s:sandbox) call failed, result = [%s]", self_name, result)
+		return
+	else
+		return result
+	end
+end
+
+function sandbox_exec(file_name, function_name, ...)
+	if not (file_name) then 
+		return
+	end 
+	
+	if not _G[file_name] then 
+		SemiLog(string.format("script %s is not found", file_name))
+		return
+	end 
+	
+	local result = assert(loadfile(getFS():update_path('$game_scripts$', '')..file_name..'.script'))
+	if type(result) == "function" then
+		if function_name then
+			result()
+			local f = loadstring("return "..function_name)
+			f(...)
+		else
+			result()
+		end
+	else
+		SemiLog(string.format("(%s:sandbox) exec failed. function is not available: result = [%s]", self_name, type(result)))
+		return
+	end
+end

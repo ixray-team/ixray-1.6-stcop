@@ -1,0 +1,142 @@
+
+function on_game_start()
+	RegisterScriptCallback("on_init_ixr_options", function (_ref)
+		-- ###################################
+		-- 		ПРИМЕР ОПЦИЙ БЕЗ ГРУППИРОВКИ 
+		-- ###################################
+		
+		-- Пример трек бара дробный
+		_ref.register_option(nil, "float_track_bar", "Пример трек бара дробный", _ref.track_bar(1.0, 0.0, 100.0, 0.1), this.on_change_value)
+		
+		-- Пример трек бара целочисленный
+		_ref.register_option(nil, "int_track_bar", "Пример трек бара целочисленный", _ref.ceil_track_bar(1.0, 0.0, 100.0, 1.0), this.on_change_value)
+		
+		-- Пример числового пикера
+		_ref.register_option(nil, "float_picker", "Пример числового пикера", _ref.numeric_up_down(0.0, -1.0, 1.0, 0.25), this.on_change_option_value)
+		
+		-- Пример текстового поля ввода
+		_ref.register_option(nil, "gg_name", "Пример текстового поля ввода", _ref.text_box("Меченый"), this.on_change_option_value)
+		
+		-- Пример чекбокса
+		_ref.register_option(nil, "var_2", "Чекбокс 2", _ref.check_box(false), this.on_change_option_value)
+		
+		-- Пример реализации комбобокса для выбора цвета (комбобокс можно заполнять чем угодно это просто пример сценария)
+		_ref.register_option(nil, "color_picker", "Пример комбо бокса", _ref.combo_box(1, {
+			_ref.combo_box_item("%c[255, 255, 255, 255]Не задан (белый)", true, {255, 255, 255}), 			--// в возвращаемое значение можно положить любой lua тип даже функцию
+			_ref.combo_box_item("%c[255, 255, 0, 0]Красный", false, {255, 0, 0}),							--// в возвращаемое значение можно положить любой lua тип даже функцию
+			_ref.combo_box_item("%c[255, 0, 255, 0, 255]Зеленый", true, {0, 255, 0}),						--// в возвращаемое значение можно положить любой lua тип даже функцию
+			_ref.combo_box_item("%c[255, 0, 0, 255]Синий", true, {0, 0, 255}),								--// в возвращаемое значение можно положить любой lua тип даже функцию
+			_ref.combo_box_item("тестовый пункт (не обязательно иметь цвет)", true, {k="test", v=1}),  		--// в возвращаемое значение можно положить любой lua тип даже функцию
+		}), this.on_change_value)
+		
+		-- пример блокировки индексов комбо бокса по переключению чекбокс опции
+		_ref.register_option(nil, "var_3", "Скрыть красный цвет в комбо боксе выбора цветов", _ref.check_box(false), function (group, name, value)
+			if value then
+				GetModule("ixr_options").disable_ComboBox_index("color_picker", 2) -- блокируем элемент комбо бокса по индексу
+			else
+				GetModule("ixr_options").enable_ComboBox_index("color_picker", 2) -- разблокируем элемент комбо бокса по индексу
+			end
+		end)
+		
+		-- #############################################
+		-- 		ПРИМЕР ГРУППИРОВКИ ОПЦИЙ
+		-- #############################################
+		_ref.register_option("Группа 1", "var_4", "Чекбокс 4", _ref.check_box(false), this.on_change_option_value)
+		_ref.register_option("Группа 1", "var_5", "Чекбокс 5", _ref.check_box(false), this.on_change_option_value)
+		_ref.register_option("Группа 1", "var_6", "Чекбокс 6", _ref.check_box(true), this.on_change_option_value)
+		_ref.register_option("Группа 1", "var_7", "Чекбокс 7", _ref.check_box(true), this.on_change_option_value)
+		_ref.register_option("Группа 1", "var_8", "Чекбокс 8", _ref.check_box(false), this.on_change_option_value)
+		
+		_ref.register_option("Группа 2", "var_9", "Чекбокс 9", _ref.check_box(true), this.on_change_option_value)
+		_ref.register_option("Группа 2", "var_10", "Чекбокс 10", _ref.check_box(true), this.on_change_option_value)
+		_ref.register_option("Группа 3", "var_11", "Чекбокс 11", _ref.check_box(false), this.on_change_option_value)
+		
+		_ref.register_option("Группа 3", "var_12", "Чекбокс 12", _ref.check_box(true), this.on_change_option_value)
+		_ref.register_option("Группа 3", "var_13", "Чекбокс 13", _ref.check_box(true), this.on_change_option_value)
+		
+		-- #############################################
+		-- 		ПРИМЕР ВКЛ ВЫКЛ ПОКАЗА ЗАВИСИМЫХ ОПЦИЙ
+		-- #############################################
+		_ref.register_option("Группа c зависимым параметром", "var_2_a", "Включить отображение опции находящейся ниже", _ref.check_box(false), function (group, name, value, is_value_from_code)
+			SetOptionVisible("int_track_bar_test_switch", value)
+		end)
+		
+		_ref.register_option("Группа c зависимым параметром", "int_track_bar_test_switch", "Пример трек бара целочисленный который вкл выкл чекбоксом выше", _ref.ceil_track_bar(1.0, 0.0, 100.0, 1.0), this.on_change_value)
+		
+		-- #############################################
+		-- 		ПРИМЕР РЕАЛИЗАЦИИ ПРЕСЕТА ОПЦИЙ
+		-- #############################################
+		
+		--// Будем использовать как основу для пресетов контролл комбо бокс (особенность его работы в том что мы можем в качестве значения на каждый элемент списка опций 
+		--// указывать лямбду скриптового замыкания на метод как хранимое значение) таким образом можно более наглядно связывать конкрутный пункт опции пресета 
+		--// с действиями которые нужно выполнить при переключении на пункт пресета
+	  _ref.register_option("Пример пресета опций", "preset_picker", "Пример комбо бокса с пресетами настроек", _ref.combo_box(1, {
+        _ref.combo_box_item("Пользовательский пресет", true, function () 
+          -- оставляем здесь пустой метод чтобы не зациклилось когда пееходим на первый пресет при изменении любого элемента в ручную
+        end),
+        _ref.combo_box_item("1 Пресет", false, function () 
+			  SetOptionsVar("var_test_int_track_bar", 5)
+			  SetOptionsVar("var_test_float_track_bar_b", 5.75)
+			  SetOptionsVar("var_test_01", true)
+			  SetOptionsVar("var_test_02", false)
+			  SetOptionsVar("var_test_03", false)
+			  SetOptionsVar("var_test_text", "preset first")
+			  SetOptionsVar("var_test_float_picker", 0.12)
+			  SetOptionsVar("var_test_color_picker", 1)
+        end),
+        _ref.combo_box_item("2 Пресет", true, function () 
+			  SetOptionsVar("var_test_int_track_bar", 15)
+			  SetOptionsVar("var_test_float_track_bar_b", 2.15)
+			  SetOptionsVar("var_test_01", false)
+			  SetOptionsVar("var_test_02", true)
+			  SetOptionsVar("var_test_03", false)
+			  SetOptionsVar("var_test_text", "preset two")
+			  SetOptionsVar("var_test_float_picker", 0.26)
+			  SetOptionsVar("var_test_color_picker", 2)
+        end),
+        _ref.combo_box_item("3 Пресет", true, function () 
+			  SetOptionsVar("var_test_int_track_bar", 25)
+			  SetOptionsVar("var_test_float_track_bar_b", 1.33)
+			  SetOptionsVar("var_test_01", false)
+			  SetOptionsVar("var_test_02", false)
+			  SetOptionsVar("var_test_03", true)
+			  SetOptionsVar("var_test_text", "preset three")
+			  SetOptionsVar("var_test_float_picker", 0.3)
+			  SetOptionsVar("var_test_color_picker", 3)
+        end),
+      }), function (group, name, value_fn) value_fn() end)
+      
+	  --// в последнем аргументе метода комбо бокса указываем что в качестве функции обрабатывающей событие мы будем задавать
+      --// анонимную функцию которая сразу же при смене опции в комбо боксе выполнить привязанный к опции анонимный метод 
+      --// для смены данных в подчинённых контроллах
+      
+		--// здесь разместим тестовые контроллы которыми будем управлять при переключении пресетов
+		_ref.register_option("Пример пресета опций", "var_test_int_track_bar", "Пример трек бара целочисленный", _ref.track_bar(1.0, 0.0, 100.0, 1.0, true), this.on_change_value_preset)
+		_ref.register_option("Пример пресета опций", "var_test_float_track_bar_b", "Пример трек бара дробный", _ref.track_bar(1.0, 0.0, 100.0, 0.25, false), this.on_change_value_preset)
+		_ref.register_option("Пример пресета опций", "var_test_01", "Чекбокс 1", _ref.check_box(true), this.on_change_value_preset)
+		_ref.register_option("Пример пресета опций", "var_test_02", "Чекбокс 2", _ref.check_box(true), this.on_change_value_preset)
+		_ref.register_option("Пример пресета опций", "var_test_03", "Чекбокс 3", _ref.check_box(true), this.on_change_value_preset)
+		_ref.register_option("Пример пресета опций", "var_test_text", "Пример текстового поля ввода", _ref.text_box("1234567890"), this.on_change_value_preset)
+		_ref.register_option("Пример пресета опций", "var_test_float_picker", "Пример числового пикера", _ref.numeric_up_down(0.0, -1.0, 1.0, 0.25), this.on_change_value_preset)
+		_ref.register_option("Пример пресета опций", "var_test_color_picker", "Пример комбо бокса", _ref.combo_box(1, {
+			_ref.combo_box_item("%c[255, 255, 255, 255]Не задан (белый)", true, {255, 255, 255}), 
+			_ref.combo_box_item("%c[255, 255, 0, 0]Красный", false, {255, 0, 0}),
+			_ref.combo_box_item("%c[255, 0, 255, 0, 255]Зеленый", true, {0, 255, 0}),
+			_ref.combo_box_item("%c[255, 0, 0, 255]Синий", true, {0, 0, 255}),
+		}), this.on_change_value_preset)
+		
+	end)
+end
+
+-- Функция обработчик настроенная для базовых настроек как пример можно раскоментировать вывод в лог чтобы посомтреть как значение приходит в скрипт
+function on_change_option_value(group, name, value, is_value_from_code)
+	--SemiLog(tostring(script_name()) .. ".script [option change]: group:" .. tostring(group) .." name:".. tostring(name) .. " value:" .. tostring(ffx_json_lib.json_encode(value)))
+end
+
+-- Функция обработчик для пресетов настроенная для демонстрации простейшей реализации переключения пресета на пользовательский при ручной попытке сменить настройку
+-- здесь мы развестим функцию для контретного пресета рекомендую делать по уникальному методу в настройказ для упрощения взаимодействий если пресетов на странице настроек несколько одновременно
+function on_change_value_preset(group, name, value, is_value_from_code)
+	if not is_value_from_code then --// если опция была изменена не через смену ппресета настроек кодом то переключаем пресет на пользовательский 
+		SetOptionsVar("preset_picker", 1) -- сбрасываем пресет на пользовательский (это нужно для того чтобы была возможность выбирать настройки не только через пресет а и в ручную докликивать нужные значения просто меняя пресет на пользовательский)
+	end
+end

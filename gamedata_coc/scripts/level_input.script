@@ -1,4 +1,4 @@
--- called from engine!
+--[[
 function on_key_press(dik,bind)
 
 	if (level.present() and db.actor) then
@@ -77,3 +77,4 @@ function action_quick_load()
 	
 	return true
 end
+]]

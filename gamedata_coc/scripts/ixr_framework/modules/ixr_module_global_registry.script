@@ -1,0 +1,251 @@
+
+--[[
+	IX-Ray Module Global Registry
+	Version: 1.0
+	Author: FFx0001
+	Script: ixr_module_global_registry.script
+	Description: 
+		Lightweight global ledger module for inter-script communication, providing a centralized system for storing key-value pairs with additional support for nested subkeys.
+		Store and retrieve data from any script without the need for direct links between them.
+		Supports storage of all types of Lua data.
+	
+	Public exports:
+		get_module_info()
+		init()
+		is_initialized()
+		get_value(key, subkey)
+		set_value(key, subkey, value)
+		has_value(key, subkey)
+		remove_value(key, subkey)
+		
+		-- two next methods for: save, reset, load or dumps
+		get_registry_table() 
+		override_registry_table(new_table)
+]]
+
+local ixr_registry = {
+	use_file_log = true,
+	use_console_log = true,
+	dynamic_vars = {
+		registry = {},
+		initialized = false,
+		first_log_record = true,
+	}
+}
+
+-- ################################
+-- #		   PUBLIC METHODS	  #
+-- ################################
+
+--[[
+Description: Module management. Returns metadata about the module.
+Return: (table) - A table containing module information such as alias name, category, version, authors, and description.
+]]
+function get_module_info()
+	return {
+		-- (string) constant module name independent of the script name, which will be centralized via ixr_framework.get_module("alias_name") to maintain module versioning without the need to access the script name during integration.
+		alias_name = "ixr_registry",
+		
+		-- (string) use once value at range or custom latin snake case name default categories: ["ixr_system", "sub_system", "sub_gameplay", "sub_utils"] or custom
+		category = "ixr_system",
+		
+		-- (float) value for controll versions
+		version = 1.1,
+		
+		-- (string) public exposed function name, allowed in this script for auto init module
+		init_function_name = "init",
+		
+		-- (string|string[]) code author(s) nick name(s)
+		authors = "FFx0001",
+		
+		-- (string) short description about module
+		description = "A lightweight global ledger module for inter-script communication, providing a centralized system for storing key-value pairs with additional support for nested subkeys. Store and retrieve data from any script without the need for direct links between them. Supports storage of all types of Lua data.",
+	}
+end
+
+--[[
+Description: Initializes the module and sets up necessary configurations.
+Return: (bool) - Returns true if the module was successfully initialized.
+]]
+function init()
+	return ixr_registry.init()
+end
+
+--[[
+Description: Checks whether the module has been initialized.
+Return: (bool) - Returns true if the module is initialized, otherwise false.
+]]
+function is_initialized()
+	return ixr_registry.is_initialized()
+end
+
+--[[
+Description: Retrieves a value from the registry using a specified key and optional subkey.
+Parameters:
+  key (string)(required) - The primary key used to access the value.
+  subkey (string)(optional) - An optional subkey for accessing nested values.
+Return: (any) - Returns the value associated with the key and subkey, or nil if not found.
+]]
+function get_value(key, subkey)
+	return ixr_registry.get_value(key, subkey)
+end
+
+--[[
+Description: Sets a value in the registry using a specified key and optional subkey.
+Parameters:
+  key (string)(required) - The primary key under which the value will be stored.
+  subkey (string)(optional) - An optional subkey for storing nested values.
+  value (any)(required) - The value to be stored in the registry.
+Return: (bool) - Returns true if the value was successfully set, otherwise false.
+]]
+function set_value(key, subkey, value)
+	return ixr_registry.set_value(key, subkey, value)
+end
+
+--[[
+Description: Checks if a value exists in the registry for a specified key and optional subkey.
+Parameters:
+  key (string)(required) - The primary key to check for the existence of a value.
+  subkey (string)(optional) - An optional subkey to check for the existence of a nested value.
+Return: (bool) - Returns true if the value exists, otherwise false.
+]]
+function has_value(key, subkey)
+	return ixr_registry.has_value(key, subkey)
+end
+
+--[[
+Description: Removes a value from the registry using a specified key and optional subkey.
+Parameters:
+  key (string)(required) - The primary key for the value to remove.
+  subkey (string)(optional) - An optional subkey for removing a nested value.
+Return: (bool) - Returns true if the value was successfully removed, otherwise false.
+]]
+function remove_value(key, subkey)
+	return ixr_registry.remove_value(key, subkey)
+end
+
+--[[
+Description: Get full registry table.
+Return: (table)
+]]
+function get_registry_table()
+	return ixr_registry.dynamic_vars.registry or {}
+end
+
+--[[
+Description: Override full registry table.
+Parameters:
+	new_table (table) - New data table for registry.
+Return: (table)
+]]
+function override_registry_table(new_table)
+	ixr_registry.dynamic_vars.registry = new_table
+end
+
+-- ################################
+-- #	 	 SYSTEM METHODS	  	  #
+-- ################################
+function ixr_registry.init()
+	if not ixr_registry.is_initialized() then
+		ixr_registry.dynamic_vars.initialized = true
+		ixr_registry.dynamic_vars.registry = {}
+		ixr_registry.save_log("::INIT::")
+	else
+		ixr_registry.save_log("::SKIP RE INIT::")
+	end
+end
+
+function ixr_registry.is_initialized()
+	return ixr_registry.dynamic_vars.initialized
+end
+
+function ixr_registry.get_value(key, subkey)
+    if subkey then
+        return ixr_registry.dynamic_vars.registry[key] and ixr_registry.dynamic_vars.registry[key][subkey] or nil
+    end
+	
+    return ixr_registry.dynamic_vars.registry[key]
+end
+
+function ixr_registry.set_value(key, subkey, value)
+    if not key then
+        ixr_registry.save_log("::ERROR:: set_value(...) no key is passed")
+		
+        return false
+    end
+
+    if value ~= nil then
+        if type(ixr_registry.dynamic_vars.registry[key]) ~= "table" then
+            if ixr_registry.dynamic_vars.registry[key] then
+                ixr_registry.save_log("::WARNING:: set_value(...) key: %s has value (%s) that got overwritten with a new table", key, ixr_registry.dynamic_vars.registry[key])
+            end
+            ixr_registry.dynamic_vars.registry[key] = {}
+        end
+
+        if type(subkey) ~= "string" then
+            ixr_registry.save_log("::ERROR:: set_value(...) invalid arguments key: %s - subkey: %s", key, subkey)
+			
+            return false
+        end
+
+        ixr_registry.dynamic_vars.registry[key][subkey] = value
+    else
+        ixr_registry.dynamic_vars.registry[key] = subkey
+    end
+	
+	return true
+end
+
+function ixr_registry.has_value(key, subkey)
+    if not key then
+        ixr_registry.save_log("::ERROR:: has_value(...) no key is passed")
+        return false
+    end
+
+    if subkey then
+        return ixr_registry.dynamic_vars.registry[key] and ixr_registry.dynamic_vars.registry[key][subkey] ~= nil
+    end
+	
+    return ixr_registry.dynamic_vars.registry[key] ~= nil
+end
+
+function ixr_registry.remove_value(key, subkey)
+    if not key then
+        ixr_registry.save_log("::ERROR:: remove_value(...) no key is passed")
+        return false
+    end
+
+    if subkey then
+        if ixr_registry.dynamic_vars.registry[key] then
+            ixr_registry.dynamic_vars.registry[key][subkey] = nil
+            return true
+        end
+    else
+        ixr_registry.dynamic_vars.registry[key] = nil
+        return true
+    end
+	
+    return false
+end
+
+function ixr_registry.save_log(text, ...)
+	ixr_registry.save_file_log(text, ...)
+	ixr_registry.save_console_log(text, ...)
+end
+
+function ixr_registry.save_file_log(text, ...)
+	if not ixr_registry.use_file_log then
+		return
+	end
+
+	ffx_dump_utils.write_to_file_log(tostring(string.format(text, ...)), ixr_registry.dynamic_vars.first_log_record)
+	ixr_registry.dynamic_vars.first_log_record = false
+end
+
+function ixr_registry.save_console_log(text, ...)
+	if not ixr_registry.use_console_log then
+		return
+	end
+	
+	ffx_dump_utils.write_to_console_log(tostring(string.format(text, ...)))
+end

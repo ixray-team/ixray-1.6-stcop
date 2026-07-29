@@ -1,0 +1,422 @@
+
+--[[
+	IX-Ray Module Timers
+	Version: 1.0
+	Author: FFx0001
+	Script: ixr_module_timers.script
+	Description: Module for centralized call functions by timers intervals with save timeline and closure
+	
+	Public exports:
+		get_module_info()
+		init()
+		is_initialized()
+		
+		timer_create(name, loop, auto_paly, left_milliseconds, callable_fn, ...)
+		timer_exists(name)
+		timer_play(name)
+		timer_stop(name)
+		timer_delete(name)
+]]
+
+local SCRIPT_ENABLED = true
+local MIN_TIMERS_DELAY = 50
+local CONST_TRACE_LEVEL = 3
+
+local ixr_timers = {
+	use_file_log = true,
+	use_console_log = false,
+	dynamic_vars = {
+		upd_last_time = 0,
+		initialized = false,
+		is_actor_presented = false,
+		is_actor_input_recieved = false,
+		first_log_record = true,
+		is_loaded = false,
+		timer = 0,
+		timer_increment = MIN_TIMERS_DELAY,
+		storage = {},
+	}
+}
+
+-- ################################
+-- #		   PUBLIC METHODS	  #
+-- ################################
+
+--[[
+Description: Module management. Returns metadata about the module.
+Return: (table) - A table containing module information such as alias name, category, version, authors, and description.
+]]
+function get_module_info()
+	return {
+		-- (string) constant module name independent of the script name, which will be centralized via ixr_framework.get_module("alias_name") to maintain module versioning without the need to access the script name during integration.
+		alias_name = "ixr_timers",
+		
+		-- (string) use once value at range or custom latin snake case name default categories: ["ixr_system", "sub_system", "sub_gameplay", "sub_utils"] use for ordering init calls at 1 to last ASC
+		category = "ixr_system",
+		
+		-- (float) value for controll versions
+		version = 1.0,
+		
+		-- (string) public exposed function name, allowed in this script for auto init module
+		init_function_name = "init",
+		
+		-- (string|string[]) code author(s) nick name(s)
+		authors = "FFx0001",
+		
+		-- (string) short description about module
+		description = "Module for centralized call functions by timers intervals with save timeline and closure",
+	}
+end
+
+--[[
+Description: Initializes the module and sets up necessary configurations.
+Return: (bool) - Returns true if the module was successfully initialized.
+]]
+function init()
+	return ixr_timers.init()
+end
+
+--[[
+Description: Checks whether the module has been initialized.
+Return: (bool) - Returns true if the module is initialized, otherwise false.
+]]
+function is_initialized()
+	return ixr_timers.dynamic_vars.initialized
+end
+
+--[[
+Description: Create timer is not exists.
+Return: (bool) - Returns true if the module is success, otherwise false.
+]]
+function timer_create(name, loop, auto_paly, left_milliseconds, callable_fn, ...)
+	return ixr_timers.create_timer(name, loop, auto_paly, left_milliseconds, callable_fn, ...)
+end
+
+--[[
+Description: Check timer is exists.
+Return: (bool) - Returns true if the module is success, otherwise false.
+]]
+function timer_exists(name)
+	return ixr_timers.timer_exists(name)
+end
+
+--[[
+Description: Play timer is exists and not played.
+Return: (bool) - Returns true if the module is success, otherwise false.
+]]
+function timer_play(name)
+	return ixr_timers.timer_play(name)
+end
+
+--[[
+Description: Stop timer is exists and not paused.
+Return: (bool) - Returns true if the module is success, otherwise false.
+]]
+function timer_stop(name)
+	return ixr_timers.timer_stop(name)
+end
+
+--[[
+Description: Delete timer is exists.
+Return: (bool) - Returns true if the module is success, otherwise false.
+]]
+function timer_delete(name)
+	return ixr_timers.timer_delete(name)
+end
+
+--#####################################################
+--#				SYSTEM LOGIC						  #
+--#####################################################
+
+function ixr_timers.init()
+	ixr_timers.toLog("INIT :: [BEGIN]")
+	ixr_timers.register_callbacks()
+	ixr_timers.toLog("INIT :: [COMPLETED]")
+	ixr_timers.dynamic_vars.initialized = true
+	
+	return ixr_timers.dynamic_vars.initialized
+end
+
+function ixr_timers.register_callbacks()
+	ixr_timers.toLog("REGISTER CALLBACKS :: [BEGIN]")
+	
+	RegisterScriptCallback("actor_on_spawn", function () ixr_timers.dynamic_vars.is_actor_presented = true end)
+	RegisterScriptCallback("on_load_screen_await_any_key_pressed", function () ixr_timers.dynamic_vars.is_actor_input_recieved = true end)
+	RegisterScriptCallback("actor_on_update", ixr_timers.actor_on_update)
+	RegisterScriptCallback("actor_on_save", ixr_timers.actor_on_save)
+	
+	ixr_timers.toLog("REGISTER CALLBACKS :: [COMPLETED]")
+end
+
+function ixr_timers.actor_on_save()
+	ixr_timers.toLog("TIMER STORAGE :: [BEGIN SAVE]")
+	SetStorageVar("stored_timers", ixr_timers.dynamic_vars.storage)
+	ixr_timers.toLog("TIMER STORAGE :: SAVED TIMERS TO STORAGE: [".. tostring(ffx_table_utils.get_size(ixr_timers.dynamic_vars.storage)) .."]")
+	ixr_timers.toLog("TIMER STORAGE :: [END SAVE]")
+end
+
+function ixr_timers.actor_on_load()
+	ixr_timers.toLog("TIMER STORAGE :: [BEGIN LOAD]")
+	ixr_timers.dynamic_vars.storage = ixr_timers.merge_timers(GetStorageVar("stored_timers", {}), ixr_timers.dynamic_vars.storage)
+	ixr_timers.dynamic_vars.upd_last_time = time_global()
+	ixr_timers.toLog("TIMER STORAGE :: [END LOAD]")
+end
+
+function ixr_timers.merge_timers(first_t, second_t)
+	if first_t == nil then first_t = {} end
+	if second_t == nil then second_t = {} end
+	
+	ixr_timers.toLog("TIMER STORAGE :: LOCAL TIMERS BEFORE MERGE: [".. tostring(ffx_table_utils.get_size(second_t)) .."]")
+	ixr_timers.toLog("TIMER STORAGE :: LOADED TIMERS FROM STORAGE: [".. tostring(ffx_table_utils.get_size(first_t)) .."]")
+	
+	local merged_table = ffx_table_utils.clone(first_t)
+	
+	for i, v in ipairs(second_t or {}) do
+		if not ffx_table_utils.is_value_exists_by_key(merged_table, "name", v.name) then
+			table.insert(merged_table, v)
+		end
+	end
+	
+	ixr_timers.toLog("TIMER STORAGE :: MERGED LOCAL TIMERS WITH LOADED: [".. tostring(ffx_table_utils.get_size(merged_table)) .."]")
+	
+	return merged_table
+end
+
+function ixr_timers.actor_on_update()
+	if not SCRIPT_ENABLED then return end
+	if not is_initialized() then return end
+	if not ixr_timers.dynamic_vars.is_actor_presented or not ixr_timers.dynamic_vars.is_actor_input_recieved then return end
+	
+	if not ixr_timers.dynamic_vars.is_loaded then
+		ixr_timers.dynamic_vars.is_loaded = true
+		ixr_timers.actor_on_load()
+	end
+	
+	if ixr_timers.dynamic_vars.timer < time_global() then
+		ixr_timers.dynamic_vars.timer = time_global() + ixr_timers.dynamic_vars.timer_increment
+		ixr_timers.on_tick(time_global() - ixr_timers.dynamic_vars.upd_last_time)
+		ixr_timers.dynamic_vars.upd_last_time = time_global()
+	end
+end
+
+function get_free_timer_name(name)
+	return tostring(name) .. "_" .. (ixr_timers.get_count_timers() + 1)
+end
+
+function get_count_timers()
+	return ixr_timers.get_count_timers()
+end
+
+function ixr_timers.get_count_timers()
+	return ffx_table_utils.get_size(ixr_timers.dynamic_vars.storage)
+end
+
+function ixr_timers.on_tick(delta)
+	local to_remove = {}
+	
+	for index, tmr in ipairs(ixr_timers.dynamic_vars.storage) do
+		if ixr_timers.dynamic_vars.storage[index] ~= nil then
+			if not ixr_timers.dynamic_vars.storage[index].is_paused then
+				ixr_timers.dynamic_vars.storage[index].left_milliseconds = ixr_timers.dynamic_vars.storage[index].left_milliseconds - delta
+			end
+			
+			if ixr_timers.dynamic_vars.storage[index].left_milliseconds <= 0 then
+				ixr_timers.on_timer_left(index, ixr_timers.dynamic_vars.storage[index])
+				
+				if ixr_timers.dynamic_vars.storage[index].looped then
+					ixr_timers.dynamic_vars.storage[index].left_milliseconds = ixr_timers.dynamic_vars.storage[index].timer_milliseconds
+				else
+					table.insert(to_remove, index)
+				end
+			end
+		end
+	end
+	
+	for i, index in ipairs(to_remove) do
+		ixr_timers.on_before_timer_remove(index, ixr_timers.dynamic_vars.storage[index])
+		table.remove(ixr_timers.dynamic_vars.storage, index)
+	end
+end
+
+
+function ixr_timers.on_timer_create(i, timer_options)
+	ixr_timers.toLog("Timer create:" .. timer_options.name)
+end
+
+function ixr_timers.on_timer_stop(i, timer_options)
+	ixr_timers.toLog("Timer stop:" .. timer_options.name)
+end
+
+function ixr_timers.on_timer_left(i, timer_options)
+	ixr_timers.toLog("Timer left:" .. timer_options.name)
+	ixr_timers.run_serialized_callable(timer_options.serialized_callable)
+end
+
+function ixr_timers.on_timer_play(i, timer_options)
+	ixr_timers.toLog("Timer play:" .. timer_options.name)
+end
+
+function ixr_timers.on_before_timer_remove(i, timer_options)
+	ixr_timers.toLog("Timer remove:" .. timer_options.name)
+end
+
+function ixr_timers.run_serialized_callable(serialized_callable)
+	if not serialized_callable then
+		return
+	end
+	
+	local callable = ixr_timers.deserialize_callable(serialized_callable)
+	if not callable or not callable.fn then
+		return
+	end
+	
+	if callable.args then
+		callable.fn(unpack(callable.args))
+	else
+		callable.fn()
+	end
+end
+
+function ixr_timers.serialize_callable(raw_callable, args)
+	if not raw_callable then
+		return false
+	end
+	
+	return {
+		fn = raw_callable,
+		args = args
+	}
+end
+
+function ixr_timers.deserialize_callable(packed_callable)
+	if not packed_callable then
+		return false
+	end
+	
+	return {
+		fn = packed_callable.fn,
+		args = packed_callable.args
+	}
+end
+
+function ixr_timers.build_timer_struct(timer_name, timer_milliseconds, looped, is_paused, callable_fn, ...)
+	return {
+		caller_script_name = tostring(ffx_callable_utils.find_caller_source(CONST_TRACE_LEVEL)),
+		name = timer_name,
+		left_milliseconds = timer_milliseconds,
+		timer_milliseconds = timer_milliseconds,
+		looped = looped,
+		is_paused = is_paused,
+		serialized_callable = ixr_timers.serialize_callable(callable_fn, {...}),
+	}
+end
+
+function ixr_timers.create_timer(name, loop, auto_paly, left_milliseconds, callable_fn, ...)
+	if not ixr_timers.timer_exists(name) then
+		table.insert(
+			ixr_timers.dynamic_vars.storage,
+			ixr_timers.build_timer_struct(
+				name,
+				left_milliseconds,
+				loop, 
+				(not auto_paly), 
+				callable_fn, 
+				...
+			)
+		)
+		
+		ixr_timers.on_timer_create(#ixr_timers.dynamic_vars.storage, ixr_timers.dynamic_vars.storage[#ixr_timers.dynamic_vars.storage])
+		
+		if not auto_paly then
+			ixr_timers.on_timer_stop(#ixr_timers.dynamic_vars.storage, ixr_timers.dynamic_vars.storage[#ixr_timers.dynamic_vars.storage])
+		else
+			ixr_timers.on_timer_play(#ixr_timers.dynamic_vars.storage, ixr_timers.dynamic_vars.storage[#ixr_timers.dynamic_vars.storage])
+		end
+	end
+	
+	return {
+		name = function () return name end,
+		exists = function () return ixr_timers.timer_exists(name) end,
+		play = function () return ixr_timers.timer_play(name) end,
+		stop = function () return ixr_timers.timer_stop(name) end,
+		delete = function () return ixr_timers.timer_delete(name) end,
+	}
+end
+
+function ixr_timers.timer_exists(name)
+	for i, v in ipairs(ixr_timers.dynamic_vars.storage) do
+		if v and v.name == name then
+			return true
+		end
+	end
+	
+	return false
+end
+
+function ixr_timers.timer_find_index(name)
+	for i, v in ipairs(ixr_timers.dynamic_vars.storage) do
+		if v and v.name == name then
+			return i
+		end
+	end
+	
+	return false
+end
+
+function ixr_timers.timer_play(name)
+	local completed = false
+	for timer_index, v in ipairs(ixr_timers.dynamic_vars.storage) do
+		if v and v.name == name and ixr_timers.dynamic_vars.storage[timer_index].is_paused then
+			ixr_timers.on_timer_play(timer_index, ixr_timers.dynamic_vars.storage[timer_index])
+			ixr_timers.dynamic_vars.storage[timer_index].is_paused = false
+			completed = true
+		end
+	end
+	
+	return completed
+end
+
+function ixr_timers.timer_stop(name)
+	local completed = false
+	for timer_index, v in ipairs(ixr_timers.dynamic_vars.storage) do
+		if v and v.name == name and not ixr_timers.dynamic_vars.storage[timer_index].is_paused then
+			ixr_timers.on_timer_stop(timer_index, ixr_timers.dynamic_vars.storage[timer_index])
+			ixr_timers.dynamic_vars.storage[timer_index].is_paused = true
+			completed = true
+		end
+	end
+	
+	return completed
+end
+
+function ixr_timers.timer_delete(name)	
+	local completed = false
+	for timer_index, v in ipairs(ixr_timers.dynamic_vars.storage) do
+		if v and v.name == name then
+			ixr_timers.on_before_timer_remove(timer_index, ixr_timers.dynamic_vars.storage[timer_index])
+			table.insert(to_remove, timer_index)
+		end
+	end
+	
+	for i, index in ipairs(to_remove) do
+		table.remove(ixr_timers.dynamic_vars.storage, index)
+		completed = true
+	end
+	
+	return completed
+end
+
+--#####################################################
+--#						UTILS						  #
+--#####################################################
+
+function ixr_timers.toLog(text)
+	if ixr_timers.use_file_log then
+		ffx_dump_utils.write_to_file_log(text, ixr_timers.dynamic_vars.first_log_record)
+		ixr_timers.dynamic_vars.first_log_record = false
+	end
+	
+	if ixr_timers.use_console_log then
+		ffx_dump_utils.write_to_console_log(text)
+	end
+end
