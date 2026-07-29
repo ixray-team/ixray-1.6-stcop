@@ -1538,7 +1538,7 @@ function actor_on_save(binder,packet)
 		return 
 	end 
 	-- initialize to set default values if not loaded
-	local mgr = SurgeManager
+	local mgr = get_surge_manager()
 	if not (mgr._state_loaded) then 
 		mgr:initialize()
 		mgr._state_loaded = true

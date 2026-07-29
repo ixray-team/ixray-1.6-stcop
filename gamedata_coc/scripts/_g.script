@@ -1687,6 +1687,8 @@ function ini_file_ex:get_sections(keytable)
 		else
 			table.insert(t,section)
 		end
+
+        return false
 	end
 	self.ini:section_for_each(itr)
 	return t

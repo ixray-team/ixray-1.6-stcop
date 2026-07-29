@@ -774,6 +774,8 @@ function actor_feel_touch_hud_show(hud)
 			if (o) then
 				hud:add_msg("-",strformat("ID=%s Name=%s",id,o:name()))
 			end
+
+            return false
 		end
 		db.actor:iterate_feel_touch(itr)
 	end
@@ -792,6 +794,8 @@ function feel_touch_hud_show(hud)
 			if (o) then
 				hud:add_msg("",strformat("ID=%s Name=%s",id,o:name()))
 			end
+
+            return false
 		end
 		obj:iterate_feel_touch(itr)
 	end

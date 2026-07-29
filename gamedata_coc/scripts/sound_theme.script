@@ -207,7 +207,7 @@ function npc_sound:play(npc_id, faction, point, sound)
 	local snd = self.sound_path[npc_id][table_id]
 	if not (snd) then 
 		printf("sound_theme.npc_sound:play() snd is nil! %s",sound)
-		return
+		return false
 	end
 
 	if snd and npc:position():distance_to_sqr(db.actor:position()) >= 100 and getFS():exist("$game_sounds$", snd.."_pda.ogg") ~= nil then
@@ -287,6 +287,8 @@ function npc_sound:select_next_sound(npc_id)
 		end
 		return 0
 	end
+
+    return 0
 end
 function npc_sound:stop(obj_id)
 	local npc = db.storage[obj_id] and db.storage[obj_id].object
