@@ -1,0 +1,10 @@
+
+local sounds = {}
+
+function play_sound_async(path, vol)
+	if path then
+		table.insert(sounds, sound_object(path))
+		sounds[#sounds]:play(db.actor, 0, sound_object.s2d)
+		sounds[#sounds].volume = vol
+	end
+end

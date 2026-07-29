@@ -3,7 +3,8 @@ local wide = false
 class "sleep_dialog" (CUIScriptWnd)
 function sleep_dialog:__init() super()
 	self:SetWndRect(Frect():set(0,0,1024,768))
-	if(device().width/device().height>(1024/768+0.01)) then
+
+	if (ui.is_widescreen()) then
 		wide = true
 	end
 	
@@ -41,6 +42,9 @@ function sleep_dialog:__init() super()
 	self:AddCallback("btn_sleep", ui_events.BUTTON_CLICKED, self.OnButtonSleep, self)
 	self:AddCallback("btn_cancel", ui_events.BUTTON_CLICKED, self.OnButtonCancel, self)
 	self:AddCallback("sleep_mb", ui_events.MESSAGE_BOX_OK_CLICKED, self.OnMessageBoxOk, self)
+
+	action_repeaters():Register(self, key_bindings.kUI_LEFT, 0,0)
+	action_repeaters():Register(self, key_bindings.kUI_RIGHT, 0,0)
 end
 
 function sleep_dialog:Initialize()
@@ -77,6 +81,7 @@ end
 
 function sleep_dialog:__finalize()
 	sleep_control = nil
+	action_repeaters():UnregisterOwner(self)
 end
 
 function sleep_dialog:TestAndShow()
@@ -187,6 +192,60 @@ function sleep_dialog:OnMessageBoxOk()
 	disable_info("sleep_active")
 end
 
+function sleep_dialog:OnGamepadKey(id, gamepad_action)
+	local res = CUIScriptWnd.OnGamepadKey(self,id,gamepad_action)
+
+	if res==false then
+
+		if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
+			local bindUI = dik_to_bind(id, action_groups.agUIGeneral)	
+			if bindUI == key_bindings.kUI_BACK then
+				self:OnButtonCancel()
+				res = true
+				
+			elseif bindUI == key_bindings.kUI_LEFT then
+				if not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+					self.time_track:StepLeft()
+				end
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_LEFT)
+				res = true
+				
+			elseif bindUI == key_bindings.kUI_RIGHT then
+				if not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+					self.time_track:StepRight()
+				end
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_RIGHT)
+				res = true
+			
+			elseif bindUI == key_bindings.kUI_ACCEPT then
+				self:OnButtonSleep()
+				res = true
+				
+			end
+		end
+	end
+
+	return res
+end
+
+function sleep_dialog:OnGamepadKeyHold(id)
+	local bindUI = dik_to_bind(id, action_groups.agUIGeneral)	
+	if bindUI == key_bindings.kUI_LEFT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_LEFT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			self.time_track:StepLeft()
+		end
+		return true		
+	elseif bindUI == key_bindings.kUI_RIGHT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_RIGHT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			self.time_track:StepRight()
+		end
+		return true
+	end
+	
+	return false
+end
 --------------------------------------------------------------------------------
 function dream_callback()
 	if sleep_control.forced then
@@ -207,6 +266,8 @@ function dream_callback()
 	end
 	level_weathers.get_weather_manager():forced_weather_change()
 	db.actor.power = 1
+	
+	SendScriptCallback("actor_on_sleep", hours)
 end
 
 function dream_callback2()
@@ -227,6 +288,7 @@ function sleep()
 	sleep_control.forced = nil
 	sleep_control.time_track:SetCurrentValue()
 	sleep_control:TestAndShow()
+	action_repeaters():ResetAll(sleep_control)
 end
 
 function sleep_forced(hours)
@@ -235,6 +297,7 @@ function sleep_forced(hours)
 	end
 	sleep_control.forced = hours or math.random(3,9)
 	sleep_control:OnButtonSleep()
+	action_repeaters():ResetAll(sleep_control)
 end
 
 function main()
@@ -250,5 +313,6 @@ function sleep_bag(ph_sleepbag_id,sec)
 	sleep_control.ph_sleepbag_id = ph_sleepbag_id
 	sleep_control.time_track:SetCurrentValue()
 	sleep_control:TestAndShow()
+	action_repeaters():ResetAll(sleep_control)
 	return sleep_control
 end

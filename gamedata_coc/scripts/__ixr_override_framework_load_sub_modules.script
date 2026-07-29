@@ -1,0 +1,31 @@
+--[[
+	IX-Ray override script
+	version: 1.0
+	author: FFx0001
+	script: __ixr_override_framework_load_sub_modules.script
+	description: Override configure IXR Framework load sub modules
+]]
+
+
+function configure(_ref_ixr_framework)
+	-- use concrete script names for include to framework, after module allow by alias name included in module info in module code or script name is included
+	--------------------------------------------
+	-- REGISTER MODULES CALLED AS FIRSTLY HERE ->
+	--------------------------------------------
+	_ref_ixr_framework.load_module_by_script_name("ixr_module_signals") -- alias:[ixr_signals]
+	_ref_ixr_framework.load_module_by_script_name("ixr_module_global_registry") -- alias:[ixr_registry]
+	_ref_ixr_framework.load_module_by_script_name("ixr_module_options") -- alias:[ixr_options]
+	_ref_ixr_framework.load_module_by_script_name("ixr_module_storage") -- alias:[ixr_storage]
+	
+	--------------------------------------------
+	-- REGISTER MODULES CALLED AS MIDDLE HERE ->
+	--------------------------------------------
+	_ref_ixr_framework.load_module_by_script_name("ixr_module_timers") -- alias:[ixr_timers]
+	_ref_ixr_framework.load_module_by_script_name("ixr_module_triggers") -- alias:[ixr_triggers]
+	_ref_ixr_framework.load_module_by_script_name("ixr_module_throttlers") -- alias:[ixr_throttlers]
+	
+	--------------------------------------------
+	-- REGISTER MODULES CALLED AS LATEST HERE ->
+	--------------------------------------------
+	_ref_ixr_framework.load_module_by_script_name("ixr_module_autoloader") -- alias:[ixr_autoloader] !!! required register this module latest (autoload scripts entry points after register other modules)
+end
