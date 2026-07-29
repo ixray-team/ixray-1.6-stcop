@@ -503,9 +503,34 @@ void CUIActorMenu::SetCurrentItem(CUICellItem* itm)
 	}
 }
 
+void CUIActorMenu::InvalidateDerivedCellRefsForList(CUIDragDropListEx* list)
+{
+	if (m_upgrade_selected == nullptr)
+	{
+		return;
+	}
+
+	if (list == nullptr || m_upgrade_selected->OwnerList() == list)
+	{
+		m_upgrade_selected->Mark(false);
+		m_upgrade_selected = nullptr;
+	}
+}
+
+void CUIActorMenu::InvalidateDerivedCellRefsForCell(CUICellItem* cell)
+{
+	if (m_upgrade_selected == nullptr || m_upgrade_selected != cell)
+	{
+		return;
+	}
+
+	m_upgrade_selected->Mark(false);
+	m_upgrade_selected = nullptr;
+}
+
 void CUIActorMenu::InfoCurItem( CUICellItem* cell_item )
 {
-	if ( !cell_item )
+	if ( !cell_item || !cell_item->HasValidInventoryBinding() )
 	{
 		m_ItemInfo->InitItem( nullptr );
 		return;
@@ -805,6 +830,7 @@ void CUIActorMenu::InitActorWeightSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
 
 	if (uiXml.NavigateToNode(kActorWeightRow, 0))
 	{
+		// Row container owns weight/volume children when XML uses actor_weight_row:* paths.
 		m_ActorWeightRow = new CUIWindow();
 		m_ActorWeightRow->SetAutoDelete(true);
 		AttachChild(m_ActorWeightRow);

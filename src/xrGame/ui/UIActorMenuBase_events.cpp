@@ -5,6 +5,7 @@
 #include "UIDragDropReferenceList.h"
 #include "UICellCustomItems.h"
 #include "UICellItemFactory.h"
+#include "UIInventoryInvalidation.h"
 #include "../WeaponMagazined.h"
 #include "../trade.h"
 #include "../Inventory.h"
@@ -62,15 +63,16 @@ bool FindItemInList(CUIDragDropListEx* lst, PIItem pItem, CUICellItem*& ci_res)
 	return false;
 }
 
-bool RemoveItemFromList(CUIDragDropListEx* lst, PIItem pItem)
-{// fixme
+bool CUIActorMenuBase::RemoveItemFromList(CUIDragDropListEx* lst, PIItem pItem)
+{
 	CUICellItem*	ci	= nullptr;
 	if(FindItemInList(lst, pItem, ci))
 	{
 		R_ASSERT		(ci);
 
 		CUICellItem* dying_cell = lst->RemoveItem	(ci, false);
-		xr_delete(dying_cell);
+		InvalidateTransientCellRefsForCell(dying_cell);
+		UIInventoryInvalidation::DestroyCell(dying_cell);
 
 		return			true;
 	}else

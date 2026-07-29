@@ -15,7 +15,6 @@
 #include "../game_sv_single.h"
 #include "../InventoryWeaponSlotLayout.h"
 
-bool RemoveItemFromList(CUIDragDropListEx* lst, PIItem pItem);
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
 void CUIActorMenuBase::TryHidePropertiesBox()

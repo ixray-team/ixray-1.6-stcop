@@ -3,6 +3,7 @@
 #include "../../xrUI/Widgets/UIScrollBar.h"
 #include "object_broker.h"
 #include "UICellItem.h"
+#include "UIInventoryInvalidation.h"
 #include "../../xrUI/UICursor.h"
 #include "../Inventory.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
@@ -16,6 +17,17 @@ namespace
 constexpr float kInventoryCellUSpanGridDisabled = 0.23f;
 
 xr_vector<CUIDragItem*> s_pendingDragItemDestroy;
+
+void QueuePendingDragItemDestroy(CUIDragItem* dragItem)
+{
+	if (dragItem == nullptr)
+	{
+		return;
+	}
+
+	dragItem->UnregisterDeviceSequences();
+	s_pendingDragItemDestroy.push_back(dragItem);
+}
 }
 
 void CUIDragDropListEx::FlushPendingDragItemDestroy()
@@ -32,6 +44,44 @@ void CUIDragDropListEx::FlushPendingDragItemDestroy()
 	{
 		xr_delete(item);
 	}
+}
+
+void CUIDragDropListEx::BumpContentGeneration()
+{
+	++m_contentGeneration;
+	if (m_contentGeneration == 0)
+	{
+		m_contentGeneration = 1;
+	}
+}
+
+void CUIDragDropListEx::EndDragSession()
+{
+	if (m_drag_item == nullptr)
+	{
+		FlushPendingDragItemDestroy();
+		return;
+	}
+
+	CUICellItem* parentItem = m_drag_item->ParentItem();
+	CUIDragDropListEx* owner = parentItem != nullptr ? parentItem->OwnerList() : nullptr;
+	if (owner == nullptr)
+	{
+		owner = m_drag_item->BackList();
+	}
+
+	if (owner != nullptr)
+	{
+		owner->DestroyDragItem();
+	}
+	else
+	{
+		CUIDragItem* dragItem = m_drag_item;
+		m_drag_item = nullptr;
+		QueuePendingDragItemDestroy(dragItem);
+	}
+
+	FlushPendingDragItemDestroy();
 }
 
 void CUICell::Clear()
@@ -237,8 +287,7 @@ void CUIDragDropListEx::DestroyDragItem()
 		}
 	}
 
-	dragItem->UnregisterDeviceSequences();
-	s_pendingDragItemDestroy.push_back(dragItem);
+	QueuePendingDragItemDestroy(dragItem);
 }
 
 Fvector2 CUIDragDropListEx::GetDragItemPosition()
@@ -394,12 +443,39 @@ void CUIDragDropListEx::GetClientArea(Frect& r)
 // FFx0001
 void CUIDragDropListEx::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 {
-	DestroyDragItem			();
+	if (bDestroy)
+	{
+		UIInventoryInvalidation::BeginListContentReset(*this);
+	}
+	else
+	{
+		// Compact / soft clear: keep cell widgets and menu selection unless drag is active
+		DestroyDragItem();
+		ClearSelectedItem();
+	}
+
 	FlushPendingDragItemDestroy();
 	m_container->ClearAll	(bDestroy, IgnoredItemsIds); // FFx0001
 	m_selected_item			= nullptr;
+
+	// IgnoredItemsIds survivors keep widgets; restamp owner token after generation bump
+	const u32 count = ItemsCount();
+	for (u32 i = 0; i < count; ++i)
+	{
+		CUICellItem* itm = GetItemIdx(i);
+		itm->SetOwnerList(this);
+		const u32 childCount = itm->ChildsCount();
+		for (u32 j = 0; j < childCount; ++j)
+		{
+			itm->Child(j)->SetOwnerList(this);
+		}
+	}
+
 	m_container->SetWndPos	(Fvector2().set(0,0));
-	ResetCellsCapacity		();
+	if (count == 0)
+	{
+		ResetCellsCapacity();
+	}
 }
 
 void CUIDragDropListEx::Compact()
@@ -1160,19 +1236,14 @@ void CUICellContainer::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 
 				if (bDestroy)
 				{
-					// During bulk UI list cleanup item game objects may already be invalid.
-					// Prevent CUICellItem destructor from dereferencing m_pData callbacks.
-					ci->m_b_destroy_childs = false;
-					ci->m_pData = nullptr;
+					UIInventoryInvalidation::PrepareCellForDestroy(ci);
 					delete_data(ci);
 				}
 			}
 
 			if (bDestroy)
 			{
-				// Same safety as for child cells: do not touch stale inventory object.
-				wc->m_b_destroy_childs = false;
-				wc->m_pData = nullptr;
+				UIInventoryInvalidation::PrepareCellForDestroy(wc);
 				delete_data(wc);
 			}
 		}
