@@ -42,7 +42,6 @@ constexpr u32 rankingStatActorHelpWoundedIndex = 9;
 constexpr u32 rankingStatActorHeadshotsIndex = 10;
 constexpr u32 rankingStatActorDeathsIndex = 11;
 constexpr u32 rankingStatActorDistanceIndex = 12;
-constexpr u32 rankingStatLegacyScriptMaxIndex = 6;
 
 bool RankingStatIdMatches(const shared_str& statId, const char* canonicalId)
 {
@@ -1068,13 +1067,10 @@ const char* CUIRankingWnd::GetStatValue(const StatItem& item, const u32 index) c
 		return actorStatBuffer;
 	}
 
-	if (index <= rankingStatLegacyScriptMaxIndex)
+	const char* indexValue = nullptr;
+	if (PdaScriptBridge::TryCall(PdaScript::GetStat, index, indexValue) && indexValue && indexValue[0])
 	{
-		const char* indexValue = nullptr;
-		if (PdaScriptBridge::TryCall(PdaScript::GetStat, index, indexValue) && indexValue && indexValue[0])
-		{
-			return indexValue;
-		}
+		return indexValue;
 	}
 
 	return "";
