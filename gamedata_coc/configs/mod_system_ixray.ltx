@@ -47,22 +47,13 @@ use_text = st_drink
 sound_activate          = device\torch_click
 sound_deactivate        = device\torch_click_off
 
-;device.ltx
-;![detector_simple_hud]
-;anm_bore = dev_detector_1_idle_bore
-;anm_bore_16x9 = dev_detector_1_idle_bore_ws, dev_detector_1_idle_bore
-;
-;![detector_advanced_hud]
-;anm_bore = dev_detector_2_idle_bore
-;anm_bore_16x9 = dev_detector_2_idle_bore_ws, dev_detector_1_idle_bore
-;
-;![detector_elite_hud]
-;anm_bore = dev_detector_3_idle_bore
-;anm_bore_16x9 = dev_detector_3_idle_bore_ws, dev_detector_1_idle_bore
-;
-;![detector_scientific_hud]
-;anm_bore = dev_detector_3_idle_bore
-;anm_bore_16x9 = dev_detector_3_idle_bore_ws, dev_detector_1_idle_bore
+;devices.ltx
+![detector_base_hud]
+disable_bore							 = true
+
+;zone_mine_thermal.ltx
+![zone_mine_thermal]
+hit_type			= light_burn
 
 ;w_f1.ltx
 ![grenade_f1]
@@ -351,3 +342,10 @@ zoom_limp_speed			=	6.0
 
 ;Скорость изменения амплитуды раскачки при смене режима перемещения
 amplitude_delta			= 	0.01 
+
+;w_spas12.ltx
+![wpn_spas12_hud]
+aim_hud_offset_pos                       = -0.097600, 0.090200, 0.050000
+aim_hud_offset_pos_16x9                  = -0.106600, 0.158000, 0.050000
+aim_hud_offset_rot                       = 0.051000, 0.025000,-0.022500
+aim_hud_offset_rot_16x9                  = 0.087000, 0.046500,-0.045000
