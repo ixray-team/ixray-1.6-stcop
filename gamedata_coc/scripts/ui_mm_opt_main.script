@@ -3,7 +3,8 @@ class "options_dialog" (CUIScriptWnd)
 function options_dialog:__init() super()
 	self.m_preconditions = {}
 	self.gameplay_options = {}
-	
+	self.m_deffer_ex	= {}
+
     self:InitControls()
     self:InitCallBacks()
 	self.tab:SetActiveTab("video")
@@ -183,20 +184,20 @@ end
 
 function options_dialog:UpdateDependControls()
 	self.scroll_v:Clear()
-	local _current_id = self.combo_renderer:CurrentID()
+	
+	local current_id = self.combo_renderer:CurrentID()
+	local value = self.combo_renderer:GetValueOf(current_id)
 
-	for i,j in pairs(self.m_preconditions) do
-		if(j.func(_current_id)) then
+	for _, j in pairs(self.m_preconditions) do
+		if j.func(value) then
 			self.scroll_v:AddWindow(j.control, true)
 			j.control:SetAutoDelete(false)
 		end
 	end
 
-	local max_texture_lod = 4
-	local min_texture_lod = 0
-
-	self.texture_lod_track:SetOptIBounds(min_texture_lod, max_texture_lod)
-	self:OnAOOptionChange()
+    for _, t in pairs(self.m_deffer_ex) do
+        t.func(t.arg)
+    end
 end
 
 function options_dialog:InitCallBacks()
@@ -211,7 +212,6 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnKeybDefault,		self)
 	--self:AddCallback("btn_check_updates",	ui_events.BUTTON_CLICKED,	self.OnBtnCheckUpdates,		self)
 	self:AddCallback("combo_renderer",		ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
-	self:AddCallback("tab_ao_opt",			ui_events.TAB_CHANGED,		self.OnAOOptionChange,		self)
 
 	self:AddCallback("mb",					ui_events.MESSAGE_BOX_YES_CLICKED, self.OnApplyChanges, self)
 	self:AddCallback("mb",					ui_events.MESSAGE_BOX_NO_CLICKED, self.OnDiscardChanges,self)
@@ -311,17 +311,6 @@ function options_dialog:OnTabChange()
 		self.dlg_controls:Show(true)
 	end
 
-end
-
-function options_dialog:OnAOOptionChange()
-	local ao_opt_id = self.tab_ao_opt:GetActiveId()
-	local render_id = self.combo_renderer:CurrentID()
-	if(render_id>=4) and (ao_opt_id=="hdao") then
-		self.combo_ssao:enable_id(4)
-	else
-		self.combo_ssao:disable_id(4)
-	end
-	self.combo_ssao:SetCurrentOptValue()
 end
 
 function options_dialog:OnBtnAdvGraphic()
