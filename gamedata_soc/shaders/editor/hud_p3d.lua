@@ -3,5 +3,5 @@ function normal(shader, t_base, t_second, t_detail)
         :fog(false)
         :zb(true, true)
         :blend(true, blend.srcalpha, blend.invsrcalpha)
-    shader:dx10sampler("s_base",t_base)
+    shader:sampler("s_base"):texture(t_base)
 end
