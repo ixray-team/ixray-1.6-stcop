@@ -1,30 +1,79 @@
 <w>
 
-  <custom_drop x="173" y="256" width="677" height="255" stretch="1">
-	<texture>ui_inGame2_message_box</texture>
+  <split_item x="177" y="200" width="677" height="260" stretch="1">
+    <texture>ui_inGame2_message_box</texture>
+	
+	<gamepad_legend x="0" y="730" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">st_options_save</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">st_split_item_half_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">st_split_item_all_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
+    <item_title x="0" y="30" width="677" height="24" complex_mode="1">
+      <text font="graffiti19" align="c">st_drop_amount_title</text>
+    </item_title>
 
-    <text_hint x="62" y="78" width="577" height="150" complex_mode="1">
-      <text font="letterica18" align="c">st_custom_drop_hint</text>
-    </text_hint>
+    <item_name x="0" y="60" width="677" height="24" complex_mode="1">
+      <text font="graffiti19" align="c"></text>
+    </item_name>
 
-    <trackbar x="67" y="98" width="567" height="20" mode="integer" step="1" show_value="1"/>
+    <weight_text x="0" y="85" width="677" height="20" complex_mode="1">
+      <text font="letterica18" align="c"></text>
+    </weight_text>
 
-    <value_min x="62" y="118" width="577" height="20" complex_mode="1">
-      <text font="letterica18" align="l">1</text>
+    <edit_amount x="60" y="115" width="560" height="28" max_symb_count="8" num_only="1" placeholder_text="st_drop_amount_placeholder" placeholder_blink="1">
+      <text font="letterica16" r="255" g="255" b="255" a="255" align="c"></text>
+      <texture>ui_inGame2_edit_box_2</texture>
+    </edit_amount>
+
+    <button_decrement x="32" y="115" width="28" height="28" check_mode="0">
+      <text font="letterica16">-</text>
+      <texture>ui_inGame2_button</texture>
+    </button_decrement>
+
+    <button_increment x="620" y="115" width="28" height="28" check_mode="0">
+      <text font="letterica16">+</text>
+      <texture>ui_inGame2_button</texture>
+    </button_increment>
+
+    <trackbar x="32" y="155" width="615" height="20" mode="integer" step="1" show_value="1"/>
+
+    <value_min x="36" y="177" width="50" height="20" complex_mode="1">
+      <text font="letterica16" align="l">1</text>
     </value_min>
 
-    <value_max x="62" y="118" width="577" height="20" complex_mode="1">
-      <text font="letterica18" align="r">999</text>
+    <value_max x="590" y="177" width="50" height="20" complex_mode="1">
+      <text font="letterica16" align="r">999</text>
     </value_max>
 
-	<button_yes x="209" y="212" width="127" height="28" check_mode="0">
-        <text font="letterica18">Btn_Yes</text>
-        <texture>ui_inGame2_Mp_bigbuttone</texture>
-    </button_yes>
-    <button_no x="341" y="212" width="127" height="28" check_mode="0">
-        <text font="letterica18">Btn_No</text>
-        <texture>ui_inGame2_Mp_bigbuttone</texture>
-    </button_no>
-  </custom_drop>
+    <button_half x="200" y="235" width="120" height="20" check_mode="0">
+      <text font="graffiti19">st_split_item_half</text>
+      <texture>ui_inGame2_inventory_button</texture>
+    </button_half>
+    
+    <button_all x="350" y="235" width="120" height="20" check_mode="0">
+      <text font="graffiti19">st_split_item_all</text>
+      <texture>ui_inGame2_inventory_button</texture>
+    </button_all>
+
+    <button_cancel x="350" y="210" width="120" height="20" check_mode="0">
+      <text font="graffiti19">st_split_item_cancel</text>
+      <texture>ui_inGame2_inventory_button</texture>
+    </button_cancel>
+
+    <button_accept x="200" y="210" width="120" height="20" check_mode="0">
+      <text font="graffiti19">st_split_item_accept</text>
+      <texture>ui_inGame2_inventory_button</texture>
+    </button_accept>
+  </split_item>
   
 </w>
