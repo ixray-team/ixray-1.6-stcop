@@ -7,7 +7,7 @@ struct vv
     float4 P : POSITION;
     float2 tc : TEXCOORD0;
     float3 N : NORMAL;
-   // float4 C : COLOR0;
+    float4 C : COLOR0;
 };
 
 struct vf
@@ -22,7 +22,7 @@ struct vf
     float4 tctexgen : TEXCOORD7;
     float3 pos : TEXCOORD8;
     float4 c0 : COLOR0;
-    float4 hpos : SV_POSITION;
+    float4 hpos : POSITION;
 };
 
 uniform float4x4 m_texgen;
@@ -74,8 +74,7 @@ void main(in vv v, out vf o)
     // xform, input in world coords
     o.hpos = mul(m_VP, P);
 
-    // #TODO: govno
-    o.c0 = float4(1.f, 1.f, 1.f, 1.f);// v.C;
+    o.c0 = v.C;
 
     //	Igor: for additional depth dest
     o.tctexgen = mul(m_texgen, P);
