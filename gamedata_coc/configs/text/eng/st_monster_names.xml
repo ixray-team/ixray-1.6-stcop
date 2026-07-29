@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+<!-- by sinaps -->
+	<string id="yan_tonnel_snork_1">
+		<text>Еxperimental №1</text>
+	</string>
+	<string id="yan_tonnel_snork_2">
+		<text>Еxperimental №2</text>
+	</string>
+	<string id="yan_tonnel_snork_3">
+		<text>Еxperimental №3</text>
+	</string>
+	<string id="yan_tonnel_snork_4">
+		<text>Еxperimental №4</text>
+	</string>
+	<string id="yan_tonnel_snork_5">
+		<text>Еxperimental №5</text>
+	</string>
+	<string id="yan_tonnel_snork_6">
+		<text>Еxperimental №6</text>
+	</string>
+	<string id="yan_tonnel_gigant">
+		<text>Sample №8с</text>
+	</string>
+
+	<string id="bar_arena_savage">
+		<text>Zombified</text>
+	</string>
+	<string id="bar_arena_bloodsucker">
+		<text>Bloodsucker</text>
+	</string>
+	<string id="bar_arena_burer">
+		<text>Burer</text>
+	</string>
+	<string id="bar_arena_pseudodog">
+		<text>Pseudodog</text>
+	</string>
+	<string id="bar_arena_snork">
+		<text>Snork</text>
+	</string>
+
+</string_table>

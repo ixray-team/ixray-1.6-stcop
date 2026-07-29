@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>	
+	<string id="st_pda_top20">
+		<text>Top 100 stalkers</text>
+	</string>
+	<string id="pda_btn_ranking_global">
+		<text>Ranking</text>
+	</string>
+	<string id="pda_btn_ranking_global_hint">
+		<text>Show top stalker rankings</text>
+	</string>
+	<string id="Name">
+		<text>Name</text>
+	</string>
+</string_table>
