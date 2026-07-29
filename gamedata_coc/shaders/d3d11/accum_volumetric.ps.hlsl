@@ -24,7 +24,7 @@ float4 main(v2p I) : SV_Target
     float s = 1.0f;
 	
 #ifdef USE_SHADOW
-    s = shadow(PS);
+    s = shadow_local(PS.xyz / PS.w);
 #endif
 
     // ----- lightmap
@@ -63,6 +63,6 @@ float4 main(v2p I) : SV_Target
     result *= lightmap.xyz;
     result *= Ldynamic_color.xyz * t_noise.xyz;
 
-    return float4(PushGamma(result), 0);
+    return float4(GammaToLinear(result), 0);
 }
 
