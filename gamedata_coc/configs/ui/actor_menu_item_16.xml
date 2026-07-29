@@ -1,6 +1,6 @@
 <w>
-	<main_frame x="10" y="300" width="320" height="170" delay="810"/>
-	<background_frame x="0" y="0" width="320" height="170">
+	<main_frame x="10" y="300" width="330" height="170" delay="810"/>
+	<background_frame x="0" y="0" width="330" height="170">
 		<texture>ui_inGame2_hint_wnd_main_window</texture>
 	</background_frame>
 
@@ -43,7 +43,6 @@
 		</static_handling>
 		<static_damage x="0" y="46" width="14" height="18" stretch="1">
 			<texture>ui_wp_prop_damage</texture>
-            <svg color="clr_wpn_param">ui_inv_wpn_property_damage.svg</svg>
 		</static_damage>
 		<static_rpm x="0" y="64" width="14" height="18" stretch="1">
 			<texture>ui_wp_prop_skorostrelnost</texture>
@@ -236,9 +235,9 @@
 #include "ui\booster_params_16.xml"
 
 	<upgrade_info>
-		<main_frame x="0" y="0" width="290" height="100"/>
+		<main_frame x="0" y="0" width="300" height="100"/>
 
-		<background_frame x="0" y="0" width="290" height="100">
+		<background_frame x="0" y="0" width="300" height="100">
 			<texture>ui_inGame2_hint_wnd_main_window</texture>
 		</background_frame>
 

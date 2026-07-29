@@ -26,6 +26,9 @@ back_kick_animator = boar_back_kick_animator_hud
 [backpack]
 backpack_animator = backpack_animator_hud
 
+[burn]
+burn_animator  = burn_animator_hud
+
 [pda]
 pda_animator = pda_show_animator_hud
 
@@ -55,11 +58,11 @@ OnItemFocusReceive = actor_menu_inventory.CUIActorMenu_OnItemFocusReceive
 OnItemFocusLost = actor_menu_inventory.CUIActorMenu_OnItemFocusLost
 OnCanMoveToPartner = actor_menu_inventory.CUIActorMenu_CanMoveToPartner
 OnItemAvailableToTrade = actor_menu_inventory.CInventory_ItemAvailableToTrade
+OnKeyPress = level_input.on_key_press
 OnPropertyBoxClicked = pda.property_box_clicked
 OnPropertyBoxAddProperties = pda.property_box_add_properties
 OnSetActiveSubdialog = pda.set_active_subdialog
 OnGetRankingsArraySize = pda.get_rankings_array_size
-OnKeyPress = level_input.on_key_press
 OnGetVisibleValue = visual_memory_manager.get_visible_value
 OnUpdateBestWeapon = ai_stalker.update_best_weapon
 OnDonateCurrentItem = actor_menu_inventory.CUIActorMenu_DonateCurrentItem
@@ -71,3 +74,6 @@ OnDonateCurrentItem = actor_menu_inventory.CUIActorMenu_DonateCurrentItem
 ;OnCanDisassembleItem = inventory_upgrades.gunsl_can_disassemble_item
 ;OnQuestionDisassembleItem = inventory_upgrades.gunsl_question_disassemble_item
 ;OnEffectDisassemble = inventory_upgrades.gunsl_effect_disassemble
+
+; 2055
+; OnSaveStatus = mod_saves.GetStatus

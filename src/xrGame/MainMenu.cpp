@@ -150,12 +150,14 @@ void CMainMenu::ReadTextureInfo()
 	}
 	if (pSettings->section_exist("texture_desc"))
 	{
-		xr_string itemsList;
-		string256 single_item;
-
-		itemsList = pSettings->r_string("texture_desc", "files");
+		shared_str itemsList = pSettings->r_string("texture_desc", "files");
+		if (itemsList.size() == 0)
+		{
+			return;
+		}
 		int itemsCount = _GetItemCount(itemsList.c_str());
 
+		string256 single_item;
 		for (int i = 0; i < itemsCount; i++)
 		{
 			_GetItem(itemsList.c_str(), i, single_item);
