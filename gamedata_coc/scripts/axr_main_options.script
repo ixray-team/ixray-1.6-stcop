@@ -17,17 +17,13 @@ function opt_menu_on_init(menu)
 	end}
 	
 	-- slot Hud
-	if (slot_hud) then
-		menu.gameplay_options["slot_hud"]		= {default=false, 	debug_only=false, 	typ="check", on_accept=function(handler,optMgr,ctrl)
-			if (level.present() and slot_hud) then
-				if (ctrl:GetCheck()) then
-					slot_hud.activate_hud()
-				else
-					slot_hud.deactivate_hud()
-				end
-			end
-		end}
-	end
+	menu.gameplay_options["slot_hud"]		= {default=false, 	debug_only=false, 	typ="check", on_accept=function(handler,optMgr,ctrl)
+		if (ctrl:GetCheck()) then
+			get_console():execute("g_artefacts_on_hud 1")
+		else
+			get_console():execute("g_artefacts_on_hud 0")
+		end
+	end}
 	-- Hardcore AI Aim
 	menu.gameplay_options["hardcore_ai_aim"]		= {default=false, 	debug_only=false, 	typ="check", on_accept=function(handler,optMgr,ctrl)
 		local con = get_console()
