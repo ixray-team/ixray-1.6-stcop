@@ -128,6 +128,7 @@ public:
 					bool	CanSetItem			(CUICellItem* itm);
 			
 			u32				ItemsCount			();
+			CUICellItem*	GetItemAtPos		(Fvector2 abs_pos);
 			CUICellItem*	GetItemIdx			(u32 idx);
 	virtual CUICellItem*	RemoveItem			(CUICellItem* itm, bool force_root);
 			void			CreateDragItem		(CUICellItem* itm);
