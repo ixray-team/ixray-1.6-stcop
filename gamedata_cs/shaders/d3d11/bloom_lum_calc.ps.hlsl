@@ -49,7 +49,7 @@ float4 main(PSInputFullscreen I) : SV_Target
         {
             // sample location of 16x16 tex
             uv = (float2(x,y) + 0.5) / 16.f;
-            tempCurr = s_image.Sample(smp_rtlinear, uv).r;
+            tempCurr = s_image.SampleLevel(smp_rtlinear, uv, 0).r;
             #ifndef USE_CENTER_WEIGHTED_LUMA
                 LumaCurr += tempCurr; 
             #else   // USE_CENTER_WEIGHTED_LUMA
@@ -84,7 +84,6 @@ float4 main(PSInputFullscreen I) : SV_Target
 #ifndef USE_CLASSIQUE_TONEMAP
 	return float2(LumaCurr, adapt_params.z).xxxy;
 #else
-	LumaCurr = LinearToGamma(LumaCurr);
     LumaCurr = MiddleGray.x * rcp(LumaCurr * MiddleGray.y + MiddleGray.z);
     LumaCurr = clamp(LumaCurr, 1.f / 128.f, 20.0f);
 	LumaCurr = GammaToLinear(LumaCurr);

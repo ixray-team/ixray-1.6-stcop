@@ -3,7 +3,7 @@
 #include "lmodel.hlsli"
 #include "hmodel.hlsli"
 
-void main(p_bumped_new I, out float4 Color : SV_Target0)
+void main(p_bumped_new I, out float4 Color : COLOR0)
 {
     XrayMaterial M;
 
@@ -21,7 +21,7 @@ void main(p_bumped_new I, out float4 Color : SV_Target0)
     M.Normal = normalize(M.Normal);
 
 #ifdef USE_LM_HEMI
-    float4 lm = s_hemi.Sample(smp_rtlinear, I.tcdh.zw);
+    float4 lm = tex2D(s_hemi, I.tcdh.zw);
 
     M.Sun = get_sun(lm);
     M.Hemi = get_hemi(lm);

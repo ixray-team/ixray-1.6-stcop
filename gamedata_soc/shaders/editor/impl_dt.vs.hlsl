@@ -2,7 +2,7 @@
 
 struct vf
 {
-    float4 hpos : SV_POSITION;
+    float4 hpos : POSITION;
     float2 tc0 : TEXCOORD0;
     float2 tc1 : TEXCOORD1;
     float2 tc2 : TEXCOORD2;

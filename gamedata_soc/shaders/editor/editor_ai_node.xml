@@ -1,8 +1,0 @@
-<w>
-    <element_0 ps="stub_default" vs="stub_default" fog="0" zread="1" zwrite="1">
-		<texture name="s_base" rt="t_base" />
-
-        <sampler name="smp_rtlinear" />
-        <sampler name="smp_base" />
-	</element_0>
-</w>
