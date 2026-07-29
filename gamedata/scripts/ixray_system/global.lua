@@ -659,6 +659,21 @@ function SetOptionsVar(var_name, var_value)
 	return false
 end
 
+--[[
+Description: Set option visible by name in script namespace
+Parameters:
+  var_name (string)(required) - key name for index value in options (uique name for caller script namespace) not conflicts between other scripts,
+  flag (bool)(required) - switch state show hide on next tick
+Returns: (bool)
+]]
+function SetOptionVisible(var_name, flag)
+	if IsModuleLoaded("ixr_options") then
+		return GetModule("ixr_options").set_visible_option(var_name, flag)
+	end
+	
+	return false
+end
+
 --  ####################################################################################################################
 -- 													IXR THROTTLERS 
 --  ####################################################################################################################

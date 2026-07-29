@@ -55,6 +55,15 @@ function on_game_start()
 		_ref.register_option("Группа 3", "var_13", "Чекбокс 13", _ref.check_box(true), this.on_change_option_value)
 		
 		-- #############################################
+		-- 		ПРИМЕР ВКЛ ВЫКЛ ПОКАЗА ЗАВИСИМЫХ ОПЦИЙ
+		-- #############################################
+		_ref.register_option("Группа c зависимым параметром", "var_2_a", "Включить отображение опции находящейся ниже", _ref.check_box(false), function (group, name, value, is_value_from_code)
+			SetOptionVisible("int_track_bar_test_switch", value)
+		end)
+		
+		_ref.register_option("Группа c зависимым параметром", "int_track_bar_test_switch", "Пример трек бара целочисленный который вкл выкл чекбоксом выше", _ref.ceil_track_bar(1.0, 0.0, 100.0, 1.0), this.on_change_value)
+		
+		-- #############################################
 		-- 		ПРИМЕР РЕАЛИЗАЦИИ ПРЕСЕТА ОПЦИЙ
 		-- #############################################
 		
@@ -120,7 +129,7 @@ function on_game_start()
 end
 
 -- Функция обработчик настроенная для базовых настроек как пример можно раскоментировать вывод в лог чтобы посомтреть как значение приходит в скрипт
-function on_change_option_value(group, name, value)
+function on_change_option_value(group, name, value, is_value_from_code)
 	--SemiLog(tostring(script_name()) .. ".script [option change]: group:" .. tostring(group) .." name:".. tostring(name) .. " value:" .. tostring(ffx_json_lib.json_encode(value)))
 end
 
