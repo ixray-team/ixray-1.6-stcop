@@ -45,7 +45,6 @@
 #include "nvg.h"
 
 using namespace luabind; //Alundaio
-bool RemoveItemFromList(CUIDragDropListEx* lst, PIItem pItem);
 
 void CUIActorMenu::InitInventoryMode()
 {

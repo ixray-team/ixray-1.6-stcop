@@ -44,6 +44,7 @@ private:
 	Ivector2				m_orig_cell_capacity;
 	Ivector2				m_virtual_cells_alignment;
 	bool					m_bConditionProgBarVisible;
+	u32						m_contentGeneration = 1;
 protected:
 	CUICellItem*			m_selected_item;
 	CUICellContainer*		m_container;
@@ -70,6 +71,7 @@ public:
 
 	typedef					xr_delegate<bool(CUICellItem*)>			DRAG_CELL_EVENT;
 	typedef					xr_delegate<void(CUIDragItem*, bool)>	DRAG_ITEM_EVENT;
+	typedef					xr_delegate<void(CUIDragDropListEx*)>	CONTENT_RESET_EVENT;
 
 	DRAG_CELL_EVENT			m_f_item_drop;
 	DRAG_CELL_EVENT			m_f_item_start_drag;
@@ -81,6 +83,7 @@ public:
 	DRAG_CELL_EVENT			m_f_item_focus_lost;
 	DRAG_CELL_EVENT			m_f_item_focused_update;
 	DRAG_ITEM_EVENT			m_f_drag_event;
+	CONTENT_RESET_EVENT		m_f_content_reset;
 
 	u32						back_color;
 
@@ -130,6 +133,7 @@ public:
 			void			CreateDragItem		(CUICellItem* itm);
 
 			void			DestroyDragItem		();
+			static void		EndDragSession		();
 			static void		FlushPendingDragItemDestroy();
 			void			ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds = {}); // FFx0001
 			void			Compact				();
@@ -139,7 +143,11 @@ public:
 			CUICell&		GetCellAt			(const Ivector2& pos);
 			CUICellContainer* GetContainer		() { return m_container; }; //Alundaio
 			CUICellItem*	GetSelectedItem		(){ return m_selected_item; }
+			void			ClearSelectedItem	() { m_selected_item = nullptr; }
 			void			DeselectSelected	();
+
+			u32				ContentGeneration	() const { return m_contentGeneration; }
+			void			BumpContentGeneration();
 
 public:
 	//UIWindow overriding
@@ -180,6 +188,8 @@ protected:
 	Ivector2					m_cellSize;					//pixels	(width, height)
 	Ivector2					m_cellSpacing;				//pixels	(width, height)
 
+	// Owns CUICellItem widgets placed via PlaceItemAtPos. Cells are never AutoDelete:
+	// lifetime ends only through ClearAll / RemoveItem + UIInventoryInvalidation::DestroyCell
 	UI_CELLS_VEC				m_cells;
 
 	void						GetTexUVLT			(Fvector2& uv, u32 col, u32 row, u8 select_mode);
