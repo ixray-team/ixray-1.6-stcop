@@ -116,6 +116,8 @@
 	</flashing_icons>
 
 	<pick_up_item x="452" y="400" width="120" height="100"/>
+	
+	<artefact_panel x="10" y="660" width="730" height="50" cell_width="38" cell_height="50" scale="0.75"/>
 
 	<new_contact_snd>detectors\contact_1</new_contact_snd>
 
@@ -213,14 +215,16 @@
 			<texture>ui_inGame2_Patroni_HUD_main_window</texture>
 		</back>
 		
-		<progress_bar_health x="913" y="660" width="94" height="16" horz="1" min="0" max="100" pos="0">
+		<progress_bar_health x="913" y="660" width="94" height="16" horz="1" min="0" max="100" pos="0"
+		expression="floor(fltPlayerHealth * 100.0)">
 		<progress>
 		<!-- light_anim="ui_blinking_1" la_cyclic="0" la_texture="1" la_text="0" la_alpha="1" stretch="1"-->
 				<texture>ui_inGame2_Patroni_HUD_red_bar</texture>
 			</progress>
 		</progress_bar_health>
 
-	    	<progress_bar_stamina x="913" y="680" width="94" height="6" horz="1" min="0" max="100" pos="0">
+	    	<progress_bar_stamina x="913" y="680" width="94" height="6" horz="1" min="0" max="100" pos="0"
+			expression="floor(fltPlayerPower * 100.0)">
 	        <progress>
 		<!-- light_anim="ui_blinking_1" la_cyclic="0" la_texture="1" la_text="0" la_alpha="1" stretch="0"-->
 		        <texture>ui_inGame2_Patroni_HUD_blue_bar</texture>

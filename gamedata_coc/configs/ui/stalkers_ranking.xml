@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+
+	<main_wnd x="0" y="0" width="1024" height="768"/>
+
+	<background x="35" y="41" width="955" height="678">
+		<auto_framewindow x="0" y="0" width="955" height="90" stretch="1">
+			<texture>ui_inGame2_pda_buttons_background</texture>
+		</auto_framewindow>
+	</background>
+
+	<character_info x="20" y="58" width="270" height="450"/>
+
+	<list x="20" y="45" width="622" height="513" top_indent="0" always_show_scroll="1" can_select="1" item_count="100"/>
+
+	<chicon_frame_window x="657" y="98" width="298" height="569" a="80">
+		<texture>ui_inGame2_pda_buttons_background</texture>		
+	</chicon_frame_window>
+
+	<chicon_frame_line x="8" y="17" width="284" height="21">
+        <texture>ui_inGame2_pda_ranking_center_caption</texture>		
+	</chicon_frame_line>
+
+	<info_frame_window x="0" y="98" width="648" height="569" a="80">
+		<texture>ui_inGame2_pda_buttons_background</texture>		
+	</info_frame_window>
+	<info_frame_line x="8" y="17" width="634" height="27">
+		<texture>ui_inGame2_pda_ranking_center_caption</texture>		
+	</info_frame_line>
+    <left_auto>
+		<auto_static align="r" x="14" y="20" width="30" height="20" >
+			<text font="letterica18" r="180" g="180" b="180">##</text>
+		</auto_static>
+		<auto_static align="r" x="100" y="20" width="100" height="20" >
+			<text font="letterica18" r="180" g="180" b="180">Name</text>
+		</auto_static>
+		<auto_static x="520" y="20" width="100" height="20" >
+			<text align="r" font="letterica18" r="180" g="180" b="180">ui_st_rank</text>
+		</auto_static>
+    </left_auto>
+
+
+
+	<a_static x="400" y="-3" width="32" height="32" frames="16" duration="1000" columns="8" frame_width="32" frame_height="32" cyclic="1" autoplay="1">
+		<texture></texture>
+	</a_static>
+
+	<stalkers_list>
+		<item_human width="400" height="19">
+			<text_1 x="0" y="0" width="30" height="19">
+				<text align="l" font="letterica18" r="180" g="180" b="180" a="160"/>
+			</text_1>
+			
+			<text_2 x="50" y="0" width="280" height="19" highlight_text="1" hA="255" hR="255" hB="255" hG="255">
+				<text align="l" font="letterica18" r="180" g="180" b="180" a="160"/>
+			</text_2>
+			
+			<text_3 x="450" y="0" width="150" height="19">
+				<text align="r" font="letterica18" r="180" g="180" b="180" a="160"/>
+			</text_3>
+		</item_human>
+
+		<item_actor width="400" height="19">
+			<text_1 x="0" y="0" width="30" height="19">
+				<text align="l" font="letterica18" r="255" g="0" b="0"/>
+			</text_1>
+			
+			<text_2 x="50" y="0" width="280" height="19" highlight_text="1" hA="255" hR="255" hB="255" hG="255">
+				<text align="l" font="letterica18" r="200" g="180" b="180" a="160"/>
+			</text_2>
+			
+			<text_3 x="450" y="0" width="150" height="19">
+				<text align="r" font="letterica18" r="255" g="180" b="180" a="160"/>
+			</text_3>
+			<auto>
+				<auto_frameline x="0" y="0" width="600" height="2" stretch="1">
+					<texture>ui_inGame2_pda_line_horizontal</texture>
+				</auto_frameline>
+				<auto_frameline x="0" y="19" width="600" height="2" stretch="1">
+					<texture>ui_inGame2_pda_line_horizontal</texture>
+				</auto_frameline>
+			</auto>
+		</item_actor>
+		
+		<item_ellipsis width="400" height="10">
+			<text_1 x="0" y="-15" width="30" height="10">
+				<text align="l" x="0" y="0" font="letterica25" r="180" g="180" b="180" a="160">...</text>
+			</text_1>
+			
+			<text_2/>
+			<text_3/>
+		</item_ellipsis>
+		<no_items width="400" height="40">
+			<text_1 x="30" y="0" width="300" height="40">
+				<text align="l" x="0" y="0" font="letterica18" r="180" g="180" b="180" a="160">...empty...</text>
+			</text_1>
+			
+			<text_2/>
+			<text_3/>
+		</no_items>
+	</stalkers_list>
+</window>

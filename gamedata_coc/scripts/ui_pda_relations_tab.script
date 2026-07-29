@@ -719,7 +719,7 @@ end
 --
 ---------------------------------------------------------------------------------------------------
 class "ui_companion_row" (CUIListBoxItem)
-function ui_companion_row:__init(owner,row,xml) super(owner,row,xml)
+function ui_companion_row:__init(owner,row,xml) super(22)
 	self:GetTextItem():SetText("")
 
 	local is_widescreen = utils.is_widescreen()

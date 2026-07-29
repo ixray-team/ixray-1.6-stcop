@@ -1,5 +1,5 @@
 --//  Shows belted artifacts on primary hud
-
+--[[
 local HUD,belted_arts
 
 function activate_hud()
@@ -115,3 +115,4 @@ function slot_hud:update_hud(item)
 	end
 	self.static_back:Show(table.size(belted_arts) > 0)
 end
+]]

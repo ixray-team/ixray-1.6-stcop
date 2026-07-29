@@ -22,20 +22,10 @@
             <texture>ui_inGame2_pda_line_vertical</texture>
         </auto_frameline>
 		<!-- Separates actor in leaderboard -->
-        <auto_frameline x="537" y="576" width="399" height="1" vertical="0">
+        <!--auto_frameline x="537" y="576" width="399" height="1" vertical="0">
             <texture>ui_inGame2_pda_line_horizontal</texture>
-        </auto_frameline>
+        </auto_frameline-->
     </background>
-
-	<actor_ch_info x="70" y="92" width="169" height="138">
-		<name_static x="2" y="112" width="165" height="26">
-			<text align="c" vert_align="c" font="graffiti19" color="ui_2"/>
-		</name_static>
-		<icon x="2" y="2" width="165" height="108" stretch="1"/>
-	</actor_ch_info>
-	<actor_icon_over x="70" y="92" width="169" height="138">
-		<texture>ui_inGame2_pda_ranking_icon_over</texture>
-	</actor_icon_over>
 
 	<stat_info>
 		<value color="ui_1"/>
@@ -106,9 +96,6 @@
 		</auto_frameline>
 	</down_background>
 
-    <achievements_background x="52" y="294" width="504" height="401">
-        <texture>ui_inGame2_pda_ranking_icon_over</texture>
-    </achievements_background>
 	<achievements_wnd x="73" y="304" width="468" height="381" always_show_scroll="0" stretch="1"/>
     <achievements_itm x="0" y="0" width="468" height="127" inverse_dir="1">
         <name x="133" y="3" width="320" height="20">
@@ -129,7 +116,7 @@
     </achievements_itm>
 	
 	<!-- CoC Rankings -->
-    <coc_ranking_background x="572" y="294" width="399" height="401">
+    <!--coc_ranking_background x="572" y="294" width="399" height="401">
         <texture>ui_inGame2_pda_ranking_icon_over</texture>
     </coc_ranking_background>
 	<coc_ranking_wnd x="574" y="299" width="395" height="311" always_show_scroll="0" stretch="1"/>
@@ -173,5 +160,5 @@
 		<border x="0" y="0" width="300" height="80" stretch="1">
 			<texture>ui_inGame2_servers_list_frame</texture>
 		</border>
-    </coc_ranking_itm_actor>
+    </coc_ranking_itm_actor-->
 </w>
