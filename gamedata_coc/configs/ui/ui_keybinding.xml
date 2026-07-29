@@ -24,7 +24,6 @@
 		<command id="kb_weapon4"						exe="wpn_4"/>
 		<command id="kb_weapon5"						exe="wpn_5"/>
 		<command id="kb_weapon6"						exe="wpn_6"/>
-		<!--<command id="kb_artefact"					exe="artefact"/> --> <!-- WORKS JUST NOT USED -->
 		<command id="kb_wpn_next"						exe="wpn_next"/>
 		<command id="kb_next_slot"						exe="next_slot"/>
 		<command id="kb_prev_slot"						exe="prev_slot"/>
@@ -34,12 +33,15 @@
 		<command id="kb_func"						  	exe="wpn_func"/>
 		<command id="kb_firemode_next"					exe="wpn_firemode_next"/>
 		<command id="kb_firemode_prev"					exe="wpn_firemode_prev"/>		
+		<command id="kb_safemode"		exe="safemode"/>		
 	</group>
 	<group name="kb_grp_inventory">
 		<command id="kb_inventory"						exe="inventory"/>
 		<command id="kb_active_jobs"					exe="active_jobs"/>
 		<command id="kb_torch"							exe="torch"/>
+		<command id="kb_clear_gasmask"			exe="clear_gasmask"/>
 		<command id="kb_detector"						exe="show_detector"/>
+		<command id="kb_show_quick_slots"		exe="show_quick_slots"/>
 		<command id="kb_night_vision"					exe="night_vision"/>
 		<command id="kb_quick_use_1"					exe="quick_use_1"/>
 		<command id="kb_quick_use_2"					exe="quick_use_2"/>

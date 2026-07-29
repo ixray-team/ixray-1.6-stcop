@@ -1,0 +1,181 @@
+
+function spawn_on_ground_by_actor_pos(section, count)
+	if section == nil then
+		SemiLog(script_name() .. "::spawn_on_ground_by_actor_pos(...) missing section variable")
+		return false
+	end
+	
+	if not ffx_object_utils.has_actor() then
+		SemiLog(script_name() .. "::spawn_on_ground_by_actor_pos(...) section: [" .. tostring(section).."] missing actor object")
+		
+		return false
+	end
+	
+	if count==nil then 
+		count = 1 
+	end
+	
+	local s_objects = {}
+	
+    for i=1, count do
+		local sobj = spawn_on_ground_for_current_level(section, db.actor:position())
+        if sobj then
+			table.insert(s_objects, sobj)
+		end
+    end
+	
+	if #s_objects > 0 then
+		return s_objects
+	end
+	
+	return false
+end
+
+function actor_multiple_spawn_to_backpack(section, count)
+    if not ffx_ltx_utils.has_section(section) then
+		SemiLog(script_name() .. "::actor_multiple_spawn_to_backpack(...) missing section: [" .. tostring(section).."]")
+		
+		return false
+	end
+	
+	if not ffx_object_utils.has_actor() then
+		SemiLog(script_name() .. "::actor_multiple_spawn_to_backpack(...) section: [" .. tostring(section).."] missing actor object")
+		
+		return false
+	end
+	
+	if count==nil then 
+		count = 1 
+	end
+	
+	local s_objects = {}
+	
+    for i=1, count do
+		local sobj = actor_spawn_to_backpack(section)
+        if sobj then
+			table.insert(s_objects, sobj)
+		end
+    end
+	
+	if #s_objects > 0 then
+		return s_objects
+	end
+	
+	return false
+end
+
+function create_item_on_story_object(section, story_id, count, spawn_into)
+	if section == nil then
+		SemiLog(script_name() .. "::create_item_on_story_object(...) missing section variable")
+		return false
+	end
+
+    if count==nil then count=1 end
+	if spawn_into == nil then spawn_into = false end
+	
+	if not ffx_ltx_utils.has_section(section) then
+		SemiLog(script_name() .. "::create_item_on_story_object(...) missing section: [" .. tostring(section).."]")
+		
+		return false
+	end
+	
+	local obj = false
+	if story_id then
+		obj = get_story_object(story_id)
+	end
+	
+	local s_objects = {}
+	
+	if obj then
+		for i=1, count do
+			if spawn_into then
+				local sobj = alife():create(section, obj:position(), obj:level_vertex_id(), obj:game_vertex_id(), obj:id())
+			else
+				local sobj = alife():create(section, obj:position(), obj:level_vertex_id(), obj:game_vertex_id())
+			end
+			
+			if sobj then
+				table.insert(s_objects, sobj)
+			end
+		end
+	end
+	
+	if #s_objects > 0 then
+		return s_objects
+	end
+	
+	return false
+end
+
+function actor_spawn_random_section_to_backpack(items_sections)
+	if type(items_sections) ~= "table" or #items_sections == 0 then
+		SemiLog(script_name() .. "::actor_spawn_random_section_to_backpack(...) missing items_sections variable")
+		return false
+	end
+	
+	return actor_spawn_to_backpack(items_sections[math.random(#items_sections)])
+end
+
+function spawn_by_section(section, position, lv_id, gv_id, id)
+	if not ffx_object_utils.has_actor() then
+		SemiLog(script_name() .. "::spawn_by_section(...) section: [" .. tostring(section).."] missing actor object")
+		
+		return false
+	end
+	
+	if not ffx_ltx_utils.has_section(section) then
+		SemiLog(script_name() .. "::spawn_by_section(...) missing section: [" .. tostring(section).."]")
+		
+		return false
+	end
+	
+	return ffx_object_utils.se_object_or_false(alife():create(section, ffx_vector_utils.clone(position),  lv_id, gv_id, id))
+end
+
+function spawn_on_ground_for_current_level(section, position)
+	if not ffx_object_utils.has_actor() then
+		SemiLog(script_name() .. "::spawn_on_ground_for_current_level(...) section: [" .. tostring(section).."] missing actor object")
+		
+		return false
+	end
+	
+	if not ffx_ltx_utils.has_section(section) then
+		SemiLog(script_name() .. "::spawn_on_ground_for_current_level(...) missing section: [" .. tostring(section).."]")
+		
+		return false
+	end
+
+	return ffx_object_utils.se_object_or_false(spawn_by_section(section, ffx_vector_utils.clone(position),  db.actor:level_vertex_id(), db.actor:game_vertex_id(), nil))
+end
+
+function actor_spawn_to_backpack(section)
+	if not ffx_object_utils.has_actor() then
+		SemiLog(script_name() .. "::actor_spawn_to_backpack(...) section: [" .. tostring(section).."] missing actor object")
+		
+		return false
+	end
+	
+	return npc_spawn_to_backpack(section, db.actor:id())
+end
+
+function npc_spawn_to_backpack(section, npc_id)
+	if npc_id == nil then
+		SemiLog(script_name() .. "::npc_spawn_to_backpack(...) section: [" .. tostring(section).."] missing npc id")
+		
+		return false
+	end
+
+	if not ffx_object_utils.has_actor() then
+		SemiLog(script_name() .. "::npc_spawn_to_backpack(...) section: [" .. tostring(section).."] missing actor object")
+		
+		return false
+	end
+	
+	if not ffx_ltx_utils.has_section(section) then
+		SemiLog(script_name() .. "::npc_spawn_to_backpack(...) missing section: [" .. tostring(section).."]")
+		
+		return false
+	end
+	
+	return ffx_object_utils.se_object_or_false(spawn_by_section(section, vector():set(0,0,0),  db.actor:level_vertex_id(), db.actor:game_vertex_id(), npc_id))
+end

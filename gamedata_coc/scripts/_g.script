@@ -59,10 +59,6 @@ function start_game_callback()
 	
 	sound_theme.load_sound()
 		
-	-- Alundaio
-	if (axr_main) then axr_main.on_game_start() end
-	-- End Alundaio
-
 	SIMBOARD = nil
 	sim_board.get_sim_board()
 
@@ -83,30 +79,6 @@ function alife_object(id)
 		return
 	end
 	return alife():object(id)
-end
--------------------------------------------------------------------------------------------------------
--- 											SCRIPTED CALLBACKS
--------------------------------------------------------------------------------------------------------
-function RegisterScriptCallback(name,func_or_userdata)
-	axr_main.callback_set(name,func_or_userdata)
-end
-
-function UnregisterScriptCallback(name,func_or_userdata)
-	axr_main.callback_unset(name,func_or_userdata)
-end
-
--- Call this from a script to create a new callback to functions that register for it with RegisterScriptCallback
--- Every time this function is executed it will callback to all registered members
--- If axr_main.script has a function by this name, it will automatically trigger it!
-function SendScriptCallback(name,...)
-	--alun_utils.debug_write(strformat("BEFORE SendScriptCallback %s",name))
-	-- callback to all registered functions
-	axr_main.make_callback(name,...)
-		--alun_utils.debug_write(strformat("AFTER SendScriptCallback %s",name))
-		-- check if axr_main has it's own function to execute
-	if (axr_main[name]) then
-		axr_main[name](...)
-	end
 end
 --------------------------------------------
 -- Displays message on middle-top of screen for n amount of milliseconds
@@ -241,6 +213,10 @@ end
 -- For some reason in 1.6 engine level.remove_call does not work! If you know why, please contact me @alundaio
 local level_add_call_unique = {}
 function AddUniqueCall(functor_a)
+	-- to prevent crashes on startup
+	if not level.present() then
+		return
+	end
 
 	if (level_add_call_unique[functor_a]) then 
 		return 
@@ -1366,32 +1342,14 @@ end
 ------------------------------------------------------------------------------------------------------
 -- ENGINE EXPORTS!!!
 ------------------------------------------------------------------------------------------------------
--- called when an inventory item is eaten/used
--- returning false will prevent the item from being used
-function CInventory__eat(npc,item)
-	local return_flag = true
-	SendScriptCallback("on_before_item_use",npc,item,return_flag)
-	return return_flag
+function on_game_start()
+	RegisterScriptCallback("actor_on_before_hit", _G_actor_on_before_hit)
+	RegisterScriptCallback("on_before_level_changing", _G_on_before_level_changing)
 end
 
 -- Called before actor hit callback
 -- returning false will ignore the hit completely
-function CActor__BeforeHitCallback(actor,shit,bone_id)
-	--[[
-	local hit_to_section = {
-		[hit.light_burn] = "light_burn",
-		[hit.burn] = "burn",
-		[hit.strike] = "strike",
-		[hit.shock] = "shock",
-		[hit.wound] = "wound",
-		[hit.radiation] = "radiation",
-		[hit.telepatic] = "telepatic",
-		[hit.chemical_burn] = "chemical_burn",
-		[hit.explosion] = "explosion",
-		[hit.fire_wound] = "fire_wound",
-	}
-	printf("power=%s impuse=%s type=%s dir=%s who=%s",shit.power,shit.impulse,hit_to_section[shit.type],shit.direction and vec_to_str(shit.direction),shit.draftsman and shit.draftsman:name())
-	--]]
+function _G_actor_on_before_hit(shit, bone_id, flags)
 	if (shit.type ~= hit.strike) then
 		if (bind_stalker_ext.invulnerable_time and time_global() < bind_stalker_ext.invulnerable_time) then 
 			if (db.actor) then
@@ -1403,19 +1361,17 @@ function CActor__BeforeHitCallback(actor,shit,bone_id)
 				end
 			end
 			bind_stalker_ext.invulnerable_time = bind_stalker_ext.invulnerable_time - 500
-			return false
+			flags.ret_value = false
+			return
 		end
 	end
 	
 	if (shit.power > 0) then 
 		if (shit.draftsman and shit.draftsman:id() ~= 0 and IsStalker(shit.draftsman) and shit.draftsman:relation(db.actor) == game_object.friend) then 
-			return false 
+			flags.ret_value = false
+			return 
 		end
 	end
-	
-	local flags = { ret_value = true }
-	SendScriptCallback("actor_on_before_hit",shit,bone_id,flags)
-	return flags.ret_value
 end
 
 -- called in CSE_ALifeDynamicObject::on_unregister()
@@ -1429,8 +1385,7 @@ function CSE_ALifeDynamicObject_on_unregister(id)
 	end
 end
 
-get_console():execute("r__clear_models_on_unload 0")
-function CALifeUpdateManager__on_before_change_level(packet)
+function _G_on_before_level_changing(packet)
 --[[
 	C++:
 	net_packet.r					(&graph().actor()->m_tGraphID,sizeof(graph().actor()->m_tGraphID));

@@ -1,0 +1,480 @@
+
+--[[
+	IX-Ray Module Autoloader
+	Version: 1.0
+	Author: FFx0001
+	Script: ixr_module_autoloader.script
+	Description: Module for search scripts with implement function on_game_start() and call it on load game level automatically
+	
+	Override options:
+		script: __override_ixr_autoloader_ignore_options.script
+		auto callable function: configure(_ref_ixr_autoloader) then _ref_ixr_autoloader.ignore_script("script name without extension")  end
+	
+	Public exports:
+		get_module_info()
+		init()
+		is_initialized()
+		ignore_script(script_name)
+		is_script_ignored(script_name)
+		is_script_registered(script_name)
+]]
+
+local ixr_autoloader = {
+	use_logger = true,
+	use_file_log = true,
+	use_console_log = false,
+	show_all_detected_script_names_is_logging_enabled = true,
+	entry_point_function_name = "on_game_start",
+	entry_point_signature_count_args = 1,
+	fs_scripts_path = "$game_scripts$",
+	fs_scripts_extension = ".script",
+	dynamic_vars = {
+		first_log_record = true,
+		ignored_patterns_info = {},
+		ignored_scripts = {},
+		all_registered_scripts = {},
+		is_initialized = false,
+		scripts_groups = {
+			ignored = {},
+			not_autoload = {},
+			autoload = {},
+			all = {},
+		},
+	},
+}
+
+-- #######################################
+-- #		DEFAULT IGNORED SCRIPTS	 	 #
+-- #######################################
+function ixr_autoloader.default_autoload_options()
+	ignore_script(script_name())
+	ignore_script("_g")
+	ignore_script("_e")
+	ignore_script("_f")
+	ignore_script("lua_help")
+	ignore_script("lua_help*")
+	ignore_script("*_help")
+	ignore_script("*_lib")
+	ignore_script("*_utils")
+	ignore_script("ce_*")
+	ignore_script("se_*")
+	ignore_script("ph_*")
+	ignore_script("class_registrator")
+	ignore_script("game_registrator")
+	ignore_script("alife_storage_manager")
+	ignore_script("__ixr_override_*")
+end
+
+
+-- ################################
+-- #		   PUBLIC METHODS	  #
+-- ################################
+
+--[[
+Description: Module management. Returns metadata about the module.
+Return: (table) - A table containing module information such as alias name, category, version, authors, and description.
+]]
+function get_module_info()
+	return {
+		-- (string) constant module name independent of the script name, which will be centralized via ixr_framework.get_module("alias_name") to maintain module versioning without the need to access the script name during integration.
+		alias_name = "ixr_autoloader",
+		
+		-- (string) use once value at range or custom latin snake case name default categories: ["ixr_system", "sub_system", "sub_gameplay", "sub_utils"] use for ordering init calls at 1 to last ASC
+		category = "ixr_system",
+		
+		-- (float) value for controll versions
+		version = 1.0,
+		
+		-- (string) public exposed function name, allowed in this script for auto init module
+		init_function_name = "init",
+		
+		-- (string|string[]) code author(s) nick name(s)
+		authors = "FFx0001",
+		
+		-- (string) short description about module
+		description = "Module for search scripts with implement function on_game_start(...) and call it on load game level automatically",
+	}
+end
+
+--[[
+Description: Initializes the module and sets up necessary configurations.
+Return: (bool) - Returns true if the module was successfully initialized.
+]]
+function init()
+	if editor() then
+		return false
+	end
+	
+	return ixr_autoloader.init()
+end
+
+--[[
+Description: Checks whether the module has been initialized.
+Return: (bool) - Returns true if the module is initialized, otherwise false.
+]]
+function is_initialized()
+	return ixr_autoloader.is_initialized()
+end
+
+--[[
+Description: Ignores a specified script by its name, preventing it from being loaded or executed.
+Parameters:
+  script_name (string)(required) - The name of the script to ignore.
+Return: (bool) - Returns true if the script was successfully ignored.
+]]
+function ignore_script(script_name)
+	return ixr_autoloader.ignore_script(script_name)
+end
+
+--[[
+Description: Checks if a specified script is ignored.
+Parameters:
+  script_name (string)(required) - The name of the script to check.
+Return: (bool) - Returns true if the script is ignored, otherwise false.
+]]
+function is_script_ignored(script_name)
+	return ixr_autoloader.is_script_ignored(script_name)
+end
+
+--[[
+Description: Checks if a specified script is registered in the autoloader.
+Parameters:
+  script_name (string)(required) - The name of the script to check.
+Return: (bool) - Returns true if the script is registered, otherwise false.
+]]
+function is_script_registered(script_name)
+	return ixr_autoloader.is_script_registered(script_name)
+end
+
+
+-- ################################
+-- #		  SYSTEM METHODS	  #
+-- ################################
+function ixr_autoloader.init()
+	if ixr_autoloader.is_initialized() then
+		ixr_autoloader.on_skip_reinit()
+		
+		return false;
+	end
+	
+	ixr_autoloader.dynamic_vars.is_initialized = false
+	ixr_autoloader.on_init_begin()
+	
+	-- external configure wia addon system
+	if __ixr_override_autoload_system then 
+		ixr_autoloader.on_init_default_ignore_options()
+		ixr_autoloader.default_autoload_options()
+		ixr_autoloader.on_init_custom_ignore_options()
+		__ixr_override_autoload_system.configure(this)
+	else
+		ixr_autoloader.on_init_default_ignore_options()
+		ixr_autoloader.default_autoload_options()
+	end
+	
+	ixr_autoloader.register_script_files()
+	ixr_autoloader.print_script_files()
+	ixr_autoloader.call_scripts_autoloads()
+	
+	ixr_autoloader.on_init_end()
+	ixr_autoloader.dynamic_vars.is_initialized = true
+	
+	SendScriptCallback("on_ixr_autoloader_initialized", ixr_autoloader)
+	
+	return true
+end
+
+function ixr_autoloader.is_initialized()
+	return ixr_autoloader.dynamic_vars.is_initialized
+end
+
+function ixr_autoloader.register_script_files()
+	if not level.is_exists_named_stash_string_vector("ixr_framework_scripts") then
+		ixr_autoloader.on_register_script_files()
+		
+		local fs = getFS()
+		local fs_flags = FS.FS_ListFiles
+		local fs_filter = "*" .. ixr_autoloader.fs_scripts_extension
+		local scripts = fs:file_list_open_ex(ixr_autoloader.fs_scripts_path, FS.FS_ListFiles, fs_filter)
+		local scripts_count = scripts:Size()
+		
+		for	scripts_index = 0, scripts_count - 1 do
+			local script_file = scripts:GetAt(scripts_index)
+			ixr_autoloader.register_script(ixr_autoloader.parse_script_name(script_file:NameFull()), tostring(script_file:NameFull()), script_file:Size())
+		end
+	
+		ixr_autoloader.sort_script_files()
+		
+		level.set_named_stash_string_vector("ixr_framework_scripts", {"parsed"})
+		level.set_named_stash_string_vector("ixr_framework_ignored_scripts", ixr_autoloader.dynamic_vars.scripts_groups.ignored)
+		level.set_named_stash_string_vector("ixr_framework_not_autoload_scripts", ixr_autoloader.dynamic_vars.scripts_groups.not_autoload)
+		level.set_named_stash_string_vector("ixr_framework_autoload_scripts", ixr_autoloader.dynamic_vars.scripts_groups.autoload)
+		level.set_named_stash_string_vector("ixr_framework_all_scripts", ixr_autoloader.dynamic_vars.scripts_groups.all)
+	else
+		ixr_autoloader.on_register_old_script_files()
+		ixr_autoloader.dynamic_vars.scripts_groups.ignored = level.get_named_stash_string_vector("ixr_framework_ignored_scripts")
+		ixr_autoloader.dynamic_vars.scripts_groups.not_autoload = level.get_named_stash_string_vector("ixr_framework_not_autoload_scripts")
+		ixr_autoloader.dynamic_vars.scripts_groups.autoload = level.get_named_stash_string_vector("ixr_framework_autoload_scripts")
+		ixr_autoloader.dynamic_vars.scripts_groups.all = level.get_named_stash_string_vector("ixr_framework_all_scripts")
+	end
+	
+	local tmp_scripts = {}
+	for k, v in pairs(ixr_autoloader.dynamic_vars.scripts_groups.all) do
+		tmp_scripts[v] = v
+	end
+	ixr_autoloader.dynamic_vars.scripts_groups.all = {}
+	ixr_autoloader.dynamic_vars.scripts_groups.all = tmp_scripts
+end
+
+function ixr_autoloader.is_script_ignored(script_name)
+	if ffx_compare_utils.is_empty_string(script_name) or ffx_table_utils.is_contains(ixr_autoloader.dynamic_vars.ignored_scripts, script_name) then
+		if ixr_autoloader.dynamic_vars.ignored_patterns_info[script_name] == nil then
+			ixr_autoloader.dynamic_vars.ignored_patterns_info[script_name] = {}
+		end
+		
+		table.insert(ixr_autoloader.dynamic_vars.ignored_patterns_info[script_name], script_name)
+		
+		return true
+	end
+	
+	for k, v in pairs(ixr_autoloader.dynamic_vars.ignored_scripts) do
+		if ffx_compare_utils.has_pattern(script_name, v) then
+			if ixr_autoloader.dynamic_vars.ignored_patterns_info[script_name] == nil then
+				ixr_autoloader.dynamic_vars.ignored_patterns_info[script_name] = {}
+			end
+			
+			table.insert(ixr_autoloader.dynamic_vars.ignored_patterns_info[script_name], v)
+			
+			return true
+		end
+	end
+	
+	return false
+end
+
+function ixr_autoloader.register_script(script_name, full_name, file_size)
+	if ffx_compare_utils.is_empty_string(script_name) then
+		return false
+	end
+	
+	local is_file_ignored = ixr_autoloader.is_script_ignored(script_name)
+	local is_autoload_implemented = false
+	local is_file_skip = true
+	
+	if is_autoload_implemented then
+		is_file_ignored = false
+		is_file_skip = false
+	end
+	
+	if is_file_ignored then
+		is_file_skip = false
+	end
+	
+	if is_file_ignored == false then
+		is_autoload_implemented = ffx_callable_utils.is_function_callable_by_name(script_name, ixr_autoloader.entry_point_function_name)
+	end
+	
+	ixr_autoloader.on_register_script(is_file_ignored, is_autoload_implemented, is_file_skip, script_name, full_name)
+	
+	ixr_autoloader.dynamic_vars.all_registered_scripts[script_name] = {
+		["script_name"] = script_name,
+		["file_size"] = file_size,
+		["is_file_ignored"] = is_file_ignored,
+		["is_autoload_implemented"] = is_autoload_implemented
+	}
+	
+	return true
+end
+
+function ixr_autoloader.call_scripts_autoloads()
+	ixr_autoloader.on_call_scripts_autoloads()
+
+	if #ixr_autoloader.dynamic_vars.scripts_groups.autoload > 0 then
+		for i=1, #ixr_autoloader.dynamic_vars.scripts_groups.autoload do
+			ixr_autoloader.call_entry_point(ixr_autoloader.dynamic_vars.scripts_groups.autoload[i])
+		end
+	end
+end
+
+function ixr_autoloader.sort_script_files()
+	for k, v in pairs(ixr_autoloader.dynamic_vars.all_registered_scripts) do
+		if v.is_file_ignored == true then
+			table.insert(ixr_autoloader.dynamic_vars.scripts_groups.ignored, v.script_name)
+		elseif v.is_autoload_implemented == false then
+			table.insert(ixr_autoloader.dynamic_vars.scripts_groups.not_autoload, v.script_name)
+		else
+			table.insert(ixr_autoloader.dynamic_vars.scripts_groups.autoload, v.script_name)
+		end
+		
+		table.insert(ixr_autoloader.dynamic_vars.scripts_groups.all, v.script_name)
+	end
+end
+
+function ixr_autoloader.is_script_registered(script_name)
+	return ixr_autoloader.dynamic_vars.scripts_groups.all[script_name] ~= nil
+end
+
+function ixr_autoloader.call_entry_point(script_name)
+	if ffx_compare_utils.is_not_empty_string(script_name) then
+		local fn_arg = "data"
+		if _G[script_name] then
+			if _G[script_name][ixr_autoloader.entry_point_function_name] then
+				local result = _G[script_name][ixr_autoloader.entry_point_function_name](fn_arg)
+				ixr_autoloader.on_call_entry_point(script_name, fn_arg, result)
+			else
+				ixr_autoloader.toLog("missing: _G[" .. tostring(script_name) .. "][" .. tostring(ixr_autoloader.entry_point_function_name) .. "]")
+			end
+		else
+			ixr_autoloader.toLog("missing: _G[" .. tostring(script_name) .. "]")
+		end
+	end
+end
+
+function ixr_autoloader.ignore_script(script_name)
+	if ffx_compare_utils.is_empty_string(script_name) then
+		return
+	end
+	
+	table.insert(ixr_autoloader.dynamic_vars.ignored_scripts, script_name)
+	ixr_autoloader.on_ignore_set(script_name)
+end
+
+function ixr_autoloader.parse_script_name(script_name)
+	local _script_name = script_name
+	
+	if ffx_compare_utils.is_empty_string(_script_name) then
+		return nil
+	end
+	
+	return ffx_table_utils.get_last_value(ffx_string_utils.explode(_script_name:sub(0, ffx_string_utils.get_length(_script_name) - ffx_string_utils.get_length(ixr_autoloader.fs_scripts_extension)), "\\"), nil)
+end
+
+
+-- ################################
+-- #		   LOG METHODS		  #
+-- ################################
+function ixr_autoloader.toLog(text)
+	if not ixr_autoloader.use_logger then
+		return
+	end
+	
+	if ixr_autoloader.use_file_log then
+		ffx_dump_utils.write_to_file_log(text, ixr_autoloader.dynamic_vars.first_log_record)
+		ixr_autoloader.dynamic_vars.first_log_record = false
+	end
+	
+	if ixr_autoloader.use_console_log then
+		ffx_dump_utils.write_to_console_log(text)
+	end
+end
+
+
+function ixr_autoloader.on_callback_system_disabled()
+	ixr_autoloader.toLog("[CALLBACK SYSTEM DISABLED]")
+end
+
+function ixr_autoloader.on_init_begin()
+	ixr_autoloader.toLog("\n--- init begin ---\n")
+end
+
+function ixr_autoloader.on_skip_reinit()
+	ixr_autoloader.toLog("\n--- [SKIP REINIT] ---\n")
+end
+
+function ixr_autoloader.on_init_end()
+	ixr_autoloader.toLog("\n--- init end ---\n")
+end
+
+function ixr_autoloader.on_init_default_ignore_options()
+	ixr_autoloader.toLog("\n ::: load default ignores :::\n")
+end
+
+function ixr_autoloader.on_init_custom_ignore_options()
+	ixr_autoloader.toLog("\n ::: load custom ignores :::\n")
+end
+
+function ixr_autoloader.on_ignore_set(script_name)
+	ixr_autoloader.toLog(" [add ignore option]: (" .. script_name .. ")")
+end
+
+function ixr_autoloader.on_register_script_files()
+	ixr_autoloader.toLog("\n ::: load fs scripts :::\n")
+end
+
+function ixr_autoloader.on_register_old_script_files()
+	ixr_autoloader.toLog("\n ::: load cashed scripts :::\n")
+end
+
+function ixr_autoloader.on_register_script(is_file_ignored, is_file_autoloaded, is_file_skip, script_name, full_name)
+	if ixr_autoloader.show_all_detected_script_names_is_logging_enabled then
+		local tail = ""
+		
+		if is_file_ignored and ixr_autoloader.dynamic_vars.ignored_patterns_info[script_name] ~= nil then
+			local patterns = ixr_autoloader.dynamic_vars.ignored_patterns_info[script_name] or {}
+			local quoted_patterns = {}
+			for i, pattern in ipairs(patterns) do
+				quoted_patterns[i] = "\"" .. pattern .. "\""
+			end
+			
+			tail = "  ignore_by_patterns:[" .. table.concat(quoted_patterns, ", ") .. "]"
+		end
+		
+		local to_log_info = "[READ]: " .. tostring(full_name)
+		 
+		if is_file_skip and not is_file_ignored and not is_file_autoloaded then
+			to_log_info = "☐ " .. to_log_info
+		end
+
+		if is_file_ignored then
+			to_log_info = "☒ " .. to_log_info
+		end
+
+		if is_file_autoloaded then
+			to_log_info = "▣ " .. to_log_info
+		end
+		 
+		 ixr_autoloader.toLog(to_log_info .. tostring(tail))
+	end
+end
+
+function ixr_autoloader.on_print_script_files()
+	ixr_autoloader.toLog("\n ::: dump scripts :::\n")
+end
+
+function ixr_autoloader.on_call_scripts_autoloads()
+	ixr_autoloader.toLog("\n ::: call autoloads :::\n")
+	ixr_autoloader.toLog("\n[CALL AUTO LOADERS]:")
+end
+
+function ixr_autoloader.on_call_entry_point(script_name, fn_arg, result)
+	ixr_autoloader.toLog("  [EXECUTING] " .. tostring(script_name) .. "->" .. tostring(ixr_autoloader.entry_point_function_name) .. "(...)\n")
+	ixr_autoloader.toLog("[IXR AUTOLOADER] :: CALL ENTRY POINT: " .. tostring(script_name) .. "->" .. tostring(ixr_autoloader.entry_point_function_name) .. "(...)")
+end
+
+function ixr_autoloader.print_script_files()
+	ixr_autoloader.on_print_script_files()
+	
+	if not ixr_autoloader.use_logger then
+		return
+	end
+
+	ixr_autoloader.toLog("\n[IGNORED]:")
+	if #ixr_autoloader.dynamic_vars.scripts_groups.ignored > 0 then
+		for i=1, #ixr_autoloader.dynamic_vars.scripts_groups.ignored do
+			ixr_autoloader.toLog("  " .. tostring(ixr_autoloader.dynamic_vars.scripts_groups.ignored[i]) .. ixr_autoloader.fs_scripts_extension)
+		end
+	end
+
+	ixr_autoloader.toLog("\n[WITHOUT AUTO LOADERS]:")
+	if #ixr_autoloader.dynamic_vars.scripts_groups.not_autoload > 0 then
+		for i=1, #ixr_autoloader.dynamic_vars.scripts_groups.not_autoload do
+			ixr_autoloader.toLog("  " .. tostring(ixr_autoloader.dynamic_vars.scripts_groups.not_autoload[i]) .. ixr_autoloader.fs_scripts_extension)
+		end
+	end
+	
+	ixr_autoloader.toLog("\n[WITH AUTO LOADERS]:")
+	if #ixr_autoloader.dynamic_vars.scripts_groups.autoload > 0 then
+		for i=1, #ixr_autoloader.dynamic_vars.scripts_groups.autoload do
+			ixr_autoloader.toLog("  " .. tostring(ixr_autoloader.dynamic_vars.scripts_groups.autoload[i]) .. ixr_autoloader.fs_scripts_extension)
+		end
+	end
+end

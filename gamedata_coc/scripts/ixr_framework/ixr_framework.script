@@ -1,0 +1,381 @@
+--[[
+	IX-Ray Framework
+	Version: 1.0
+	Author: FFx0001
+	Script: ixr_framework.script
+	Description: Modular framework system, load modules and retrive it by alias names without conflicts by scripts, easy use for addon system.
+	
+	Override options:
+		script: __ixr_override_framework_load_sub_modules.script
+		auto callable function: configure(_ref_ixr_framework) then _ref_ixr_framework.load_module_by_script_name("script name without extension")  end
+	
+	Public exports:
+		init()
+		is_initialized()
+		load_module_by_script_name(script_name, options)
+		get_module(script_or_alias_name)
+		is_module_loaded(script_or_alias_name)
+		call_module_is_exists(script_or_alias_name, callback_fn, def_value)
+--]]
+
+
+local SCRIPT_ENABLED = true
+local DEBUG_FILE_LOGS = true
+local DEBUG_CONSOLE_LOGS = false
+
+local ixr_framework = {
+	use_file_log = DEBUG_FILE_LOGS,
+	use_console_log = DEBUG_CONSOLE_LOGS,
+	dump_g_exports_on_load_level = true,
+	modules_entry_point_name = "init",
+	modules_collect_info_function_name = "get_module_info",
+	dynamic_vars = {
+		is_initialized = false,
+		is_init_processing = false,
+		registered_modules = {},
+		loaded_modules = {},
+	},
+}
+
+--#####################################################
+--#				DEFAULT SUB MODULES					  #
+--#####################################################
+-- Default list ixr modules
+function ixr_framework.init_default_sub_modules()
+	load_module("ixr_module_registry")
+	load_module("ixr_module_signals")
+	load_module("ixr_module_storage")
+	load_module("ixr_module_autoloader")
+end
+
+
+--#####################################################
+--#				PUBLIC EXPORTS						  #
+--#####################################################
+
+--[[
+Description: Initializes the module and sets up necessary configurations.
+Return: (bool) - Returns true if the module was successfully initialized.
+]]
+function init()
+	if editor() then
+		return false
+	end
+	
+	return ixr_framework.init()
+end
+
+--[[
+Description: Checks whether the framework has been initialized.
+Return: (bool) - Returns true if the module is initialized, otherwise false.
+]]
+function is_initialized()
+	return ixr_framework.is_initialized()
+end
+
+--[[
+Description: Load framework module by script name for automaticaly init, all sub modules allowed by alias names
+Parameters:
+  script_name (string)(required) - Unique script name without extension
+  options (string)(optional) - Custom options, now not implemented!
+Return: (bool) - Returns true if success loaded.
+]]
+function load_module_by_script_name(script_name, options)
+	return ixr_framework.load_module_by_script_name(script_name, options)
+end
+
+--[[
+Description: Retrive reference to module by alias name
+Parameters:
+  script_or_alias_name (string)(required) - Identifier script name or module alias name
+Return: (reference|exception) - Return reference to callable module or exception is module by alias or script name not exists (use check method before use it function is need skip errors).
+]]
+function get_module(script_or_alias_name)
+	ixr_framework.init(false)
+	
+	return ixr_framework.get_module(script_or_alias_name)
+end
+
+--[[
+Description: Check is module loaded by script name or alias name
+Parameters:
+  script_or_alias_name (string)(required) 	- Identifier script name or module alias name
+Return: (bool) - Return true is module by alias or script name exists.
+]]
+function is_module_loaded(script_or_alias_name)
+	ixr_framework.init(false)
+	
+	return ixr_framework.is_module_loaded(script_or_alias_name)
+end
+
+--[[
+Description: Closure call is module exists and return response or default value is module not exists
+Parameters:
+  script_or_alias_name (string)(required) 	- Identifier script name or module alias name
+Return: (mixed|false) - Return true is module by alias or script name exists.
+]]
+function call_module_is_exists(script_or_alias_name, callback_fn, def_value)
+	if def_value == nil then
+		def_value = false
+	end
+	
+	if is_module_loaded(script_or_alias_name) then
+		return callback_fn(get_module(script_or_alias_name))
+	end
+	
+	return def_value
+end
+
+local counter = 0
+
+--#####################################################
+--#					SYSTEM	LOGIC					  #
+--#####################################################
+function ixr_framework.init(log_reinit)
+	counter = counter + 1
+	if log_reinit == nil then
+		log_reinit = true
+	end
+	
+	if editor() then
+		ixr_framework.toLog("USED EDITOR MODE SKIP INIT", true)
+		return
+	end
+	
+	if ixr_framework.dynamic_vars.is_init_processing then
+		return
+	end
+
+	if ixr_framework.is_initialized() then
+		if log_reinit then
+			ixr_framework.on_skip_reinit()
+		end
+		
+		return;
+	end
+	
+	if not SCRIPT_ENABLED then
+		return;
+	end
+	
+	ixr_framework.dynamic_vars.is_init_processing = true
+	ixr_framework.dynamic_vars.is_initialized = false
+	ixr_framework.on_init_begin()
+	
+	UpdateTracyState()
+
+	-- external configure wia addon system
+	if __ixr_override_framework_load_sub_modules then
+		ixr_framework.on_init_overrided_modules()
+		__ixr_override_framework_load_sub_modules.configure(this)
+	else
+		ixr_framework.on_init_default_sub_modules()
+		ixr_framework.init_default_sub_modules()
+	end
+	
+	ixr_framework.dynamic_vars.is_initialized = true
+	ixr_framework.dynamic_vars.is_init_processing = false
+	--ixr_framework.dump_g_exports()
+	ixr_framework.on_init_end()
+end
+
+function ixr_framework.is_module_registered_by_alias_name(alias_name)
+	return ixr_framework.dynamic_vars.registered_modules[alias_name] ~= nil
+end
+
+function ixr_framework.is_module_registered_by_script_name(script_name)
+	for k, v in pairs(ixr_framework.dynamic_vars.registered_modules) do
+		if v.script_name == script_name then
+			return true
+		end
+	end
+	
+	return false
+end
+
+function ixr_framework.get_module(script_or_alias_name)
+	local module_info = false
+	
+	if ixr_framework.is_module_registered_by_alias_name(script_or_alias_name) then
+		module_info = ixr_framework.dynamic_vars.registered_modules[script_or_alias_name]
+	else
+		for k, v in pairs(ixr_framework.dynamic_vars.registered_modules) do
+			if v.script_name == script_or_alias_name then
+				module_info = ixr_framework.dynamic_vars.registered_modules[k]
+				break;
+			end
+		end
+	end
+
+	if not module_info then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] MODULE BY ALIAS OR SCRIPT NAME:[" .. script_or_alias_name .. "] NOT REGISTERED :::", false)
+		return false
+	end
+	
+	if not module_info.initialized then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP RETURN MODULE BY ALIAS OR SCRIPT NAME BEFORE INITIALIZATION] MODULE BY ALIAS OR SCRIPT NAME:[" .. script_or_alias_name .. "] LOADED AND NOT INITIALIZED :::", false)
+		return false
+	end
+	
+	return _G[module_info.script_name]
+end
+
+function ixr_framework.is_module_loaded(script_or_alias_name)
+	return ixr_framework.is_module_registered_by_alias_name(script_or_alias_name) or  ixr_framework.is_module_registered_by_script_name(script_or_alias_name)
+end
+
+function ixr_framework.dump_g_exports()
+	if ixr_framework.dump_g_exports_on_load_level then
+		ffx_dump_utils.var_dump_to_file_log(_G, true, "g_exports")
+	end
+end
+
+function ixr_framework.is_initialized()
+	return ixr_framework.dynamic_vars.is_initialized
+end
+
+function ixr_framework.init_module_by_alias(alias_name)
+	if not ixr_framework.is_module_registered_by_alias_name(alias_name) then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [FAILED TO CALL ENTRY POINT MODULE] [ERROR]: MODULE BY ALIAS NAME:[" .. alias_name .. "] NOT REGISTERED :::", false)
+		
+		return false
+	end
+	
+	local module_info = ixr_framework.dynamic_vars.registered_modules[alias_name]
+	
+	if module_info.initialized then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP CALL ENTRY POINT MODULE] [ERROR]: MODULE BY ALIAS NAME:[" .. module_info.alias_name .. "] ALREADY INITIALIZED :::", false)
+		
+		return false
+	end
+	
+	ixr_framework.toLog("::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:" .. tostring(module_info.script_name) .. " :::", false)
+	
+	local init_result = _G[module_info.script_name][module_info.init_function_name]()
+	
+	ixr_framework.dynamic_vars.registered_modules[module_info.alias_name].initialized = true
+	ixr_framework.toLog("::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:" .. tostring(module_info.script_name) .. " CALL RESPONSE:["..tostring(init_result).."] :::", false)
+	
+	return true
+end
+
+function ixr_framework.load_module_by_script_name(script_name, options)
+	if options == nil then
+		options = {}
+	end
+	
+	-- todo options  depends and sort
+	
+	if ixr_framework.is_module_registered_by_script_name(script_name) then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP DUPLICATE REGISTER MODULE]: [ERROR]: SCRIPT BY NAME:[" .. tostring(script_name) .. "] ALREADY REGISTERED :::", false)
+		return false
+	end
+	
+	if not ffx_callable_utils.is_script_callable_by_name(script_name) then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP REGISTER MODULE] [ERROR]: SCRIPT:[" .. script_name .. "] NOT FOUND OR NOT CONTAINS TABLE TYPE BY type(_G[" .. tostring(script_name) .. "]) == table :::", false)
+		return false
+	end
+	
+	if not ffx_callable_utils.is_function_callable_by_name(script_name, ixr_framework.modules_collect_info_function_name) then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP REGISTER MODULE] [ERROR]: SCRIPT:[" .. script_name .. "] NOT HAVE IMPLEMENTED INFO FUNCTION " .. tostring(ixr_framework.modules_collect_info_function_name) .. " :::", false)
+		return false
+	end
+
+	local module_info = _G[script_name][ixr_framework.modules_collect_info_function_name]()
+	
+	if not ffx_compare_utils.is_table(module_info) then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP REGISTER MODULE] [ERROR]: SCRIPT:[" .. script_name .. "] INVALID TYPE IN RETURN FUNCTION:[" .. tostring(ixr_framework.modules_collect_info_function_name) .. "] ONLY TABLE TYPE ALLOWED :::", false)
+		return false
+	end
+	
+	if not module_info.alias_name then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP REGISTER MODULE] [ERROR]: SCRIPT:[" .. script_name .. "] NOT HAVE KEY [alias_name] IN RETURN FUNCTION:[" .. tostring(ixr_framework.modules_collect_info_function_name) .. "] :::", false)
+		return false
+	end
+	
+	if ixr_framework.is_module_registered_by_alias_name(module_info.alias_name) then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP DUPLICATE REGISTER MODULE]: [ERROR]: SCRIPT:[" .. tostring(script_name) .. "] BY ALIAS NAME:[" .. tostring(module_info.alias_name) .. "] ALREADY REGISTERED :::", false)
+		return false
+	end
+	
+	if not module_info.category then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP REGISTER MODULE] [ERROR]: SCRIPT:[" .. script_name .. "] NOT HAVE KEY [category] IN RETURN FUNCTION:[" .. tostring(ixr_framework.modules_collect_info_function_name) .. "] :::", false)
+		return false
+	end
+	
+	if not module_info.version then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP REGISTER MODULE] [ERROR]: SCRIPT:[" .. script_name .. "] NOT HAVE KEY [version] IN RETURN FUNCTION:[" .. tostring(ixr_framework.modules_collect_info_function_name) .. "] :::", false)
+		return false
+	end
+	
+	if not module_info.init_function_name then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP REGISTER MODULE] [ERROR]: SCRIPT:[" .. script_name .. "] NOT HAVE KEY [init_function_name]  IN RETURN FUNCTION:[" .. tostring(ixr_framework.modules_collect_info_function_name) .. "] :::", false)
+		return false
+	end
+	
+	if not module_info.authors then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP REGISTER MODULE] [ERROR]: SCRIPT:[" .. script_name .. "] NOT HAVE KEY [authors] IN RETURN FUNCTION:[" .. tostring(ixr_framework.modules_collect_info_function_name) .. "] :::", false)
+		return false
+	end
+	
+	if not module_info.description then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP REGISTER MODULE] [ERROR]: SCRIPT:[" .. script_name .. "] NOT HAVE KEY [description] IN RETURN FUNCTION:[" .. tostring(ixr_framework.modules_collect_info_function_name) .. "] :::", false)
+		return false
+	end
+	
+	if not ffx_callable_utils.is_function_callable_by_name(script_name, module_info.init_function_name) then
+		ixr_framework.AssertWithLog("::: [IX-Ray Framework] [SKIP REGISTER MODULE] [ERROR]: SCRIPT:[" .. script_name .. "] NOT HAVE IMPLEMENTED INIT FUNCTION DECLARED IN RETURN INFO FUNCTION " .. tostring(ixr_framework.modules_collect_info_function_name) .. " BY KEY [init_function_name] :::", false)
+		return false
+	end
+	
+	module_info.script_name = script_name
+	module_info.initialized = false
+	
+	ixr_framework.dynamic_vars.registered_modules[module_info.alias_name] = module_info
+	ixr_framework.toLog("\n\n::: [IX-Ray Framework] [REGISTER MODULE]:\n" .. string.format(" --------------------- script_name: %s \n --------------------- alias_name: %s \n --------------------- category: %s \n --------------------- version: %s \n --------------------- init_function_name: %s \n --------------------- authors: %s \n --------------------- description: %s", module_info.script_name, module_info.alias_name, module_info.category, module_info.version, module_info.init_function_name, module_info.authors, module_info.description), false)
+	
+	return ixr_framework.init_module_by_alias(module_info.alias_name)
+end
+
+
+--#####################################################
+--#					SYSTEM	TOOLS					  #
+--#####################################################
+function ixr_framework.AssertWithLog(text, overwrite)
+	ixr_framework.toLog(text, false, overwrite)
+	ffx_dump_utils.AssertWithCaller(5, "IXR Framework", text)
+end
+
+function ixr_framework.toLog(text, overwrite, log_name__auto)
+	if ixr_framework.use_file_log then
+		ffx_dump_utils.write_to_file_log(text, overwrite, log_name__auto)
+	end
+	
+	if ixr_framework.use_console_log then
+		ffx_dump_utils.write_to_console_log(text)
+	end
+end
+
+
+--#####################################################
+--#					PRINT LOGS						  #
+--#####################################################
+function ixr_framework.on_skip_reinit()
+	ixr_framework.toLog("\n\n::: [IX-Ray Framework] [SKIP RE INIT] :::", true)
+end
+
+function ixr_framework.on_init_begin()
+	ixr_framework.toLog("::: [IX-Ray Framework] [INIT PREPARE] :::", true)
+end
+
+function ixr_framework.on_init_end()
+	ixr_framework.toLog("\n\n::: [IX-Ray Framework] [INIT COMPLETED] :::", false)
+end
+
+function ixr_framework.on_init_default_sub_modules()
+	ixr_framework.toLog("::: [IX-Ray Framework] [INIT DEFAULT SUB MODULES] :::", false)
+end
+
+function ixr_framework.on_init_overrided_modules()
+	ixr_framework.toLog("::: [IX-Ray Framework] [INIT CUSTOM OVERRIDED SUB MODULES] :::", false)
+end
