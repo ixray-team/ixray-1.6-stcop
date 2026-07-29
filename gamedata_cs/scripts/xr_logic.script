@@ -725,7 +725,7 @@ function pick_section_from_condlist(actor, npc, condlist)
 					else
 						if has_alife_info(infop.name) then
 							--printf("*INFO [disabled]*: npc='%s' id='%s'", actor:name(),infop.name)
-							disable_info(infop.name)
+							db.actor:disable_info_portion(infop.name)
 						end
 					end
 				end
