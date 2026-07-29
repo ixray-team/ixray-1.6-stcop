@@ -1,0 +1,8 @@
+<w>
+   <file name="ui\ui_weapon_wheel">
+		<texture id="ui_weapon_wheel_d" x="0" y="0" width="1024" height="1024" />
+		<texture id="ui_weapon_wheel_s" x="1024" y="0" width="1024" height="1024" />
+		<texture id="ui_weapon_wheel_f" x="0" y="1024" width="1024" height="1024" />
+		<texture id="ui_weapon_wheel_fs" x="1024" y="1024" width="1024" height="1024" />
+   </file>
+</w>
