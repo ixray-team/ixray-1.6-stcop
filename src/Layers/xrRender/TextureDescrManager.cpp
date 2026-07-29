@@ -133,16 +133,17 @@ void CTextureDescrMngr::LoadTHM(const char* initial)
 #endif // #ifdef DEBUG
 	FS_FileSetIt It			= flist.begin();
 	FS_FileSetIt It_e		= flist.end();
-	STextureParams			tp;
-	string_path				fn;
-	for(;It!=It_e;++It)
+	xr_parallel_foreach(It, It_e, [&](const FS_File& elem)
 	{
-		FS.update_path(fn, initial, (*It).name.c_str());
+		STextureParams			tp;
+		string_path				fn;
+		
+		FS.update_path(fn, initial, elem.name.c_str());
 		IReader* F = FS.r_open(fn);
 
 		shared_str InitialPath = fn;
 
-		xr_strcpy(fn, (*It).name.c_str());
+		xr_strcpy(fn, elem.name.c_str());
 		fix_texture_thm_name(fn);
 
 		bool FoundedChunk = !!F->find_chunk(THM_CHUNK_TYPE);
@@ -182,8 +183,10 @@ void CTextureDescrMngr::LoadTHM(const char* initial)
 			STextureParams::ttTerrain	== tp.type ||
 			STextureParams::ttNormalMap	== tp.type	)
 		{
+			MapAccessCS.Enter();
 			texture_desc& desc = m_texture_details[fn];
 			cl_dt_scaler*& dts = m_detail_scalers[fn];
+			MapAccessCS.Leave();
 
 			if (tp.detail_name.size() &&
 				tp.flags.is_any(STextureParams::flDiffuseDetail | STextureParams::flBumpDetail))
@@ -292,7 +295,7 @@ void CTextureDescrMngr::LoadTHM(const char* initial)
 				desc.m_spec->m_bump_name = tp.bump_name;
 			}
 		}
-	}
+	});
 }
 
 void CTextureDescrMngr::Load()
