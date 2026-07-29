@@ -41,9 +41,8 @@ DisableMotionIcon = false               ; Disable motion icon
 PdaRearrangeTabButtons = false          ; for CS style buttons, where their size depends on text
 UseSavedGameStatic = true               ; Use custom static for save games
 DisableHudRenderingOnMaster = false     ; Disable HUD on Master difficulty. Gunslinger Mod style
-ShowQuickSlotByDefault = true           ; Visible quick slots by default
-InventoryItemCountPrefix = "x"          ; Prefix shown in item counter, quick slots for example
-RenderingType = default                 ; raster or default = means you need to specify icons by your own (fallback); vector = new way for rendering using svg images;
+UseCompassBar = false                   ; true = compass bar (minimap disabled), false = legacy minimap
+InventoryItemCountPrefix = "x"          ; Prefix shown in item counter
 
 [physics]
 DeadBodyRagdoll = false                 ; Enable ragdoll body
@@ -52,6 +51,7 @@ DisableCameraMagicField = true          ; Disable camera magic field
 [gameplay]
 EnableThirst = false                    ; Thirst
 EnableSleepiness = false                ; Sleepiness
+EnableMedIntoxication = false           ; Medical intoxication / overdose
 EnableAiDieInAnomaly = false            ; Ai Die In Anomaly
 EnableNPCLookAtActor = true             ; NPC Look at actor
 EnableAutoreload = false                ; Enable automatic weapon reloading
@@ -59,13 +59,33 @@ EnableMonstersInventory = false         ; Enable monsters inventory
 EnableWeaponInertion = true             ; Gunslinger Mod Style
 EnableWeaponCollision = false           ; Shoker Mod Style
 EnableActorStepWallmarks = false        ; Actor step wallmarks AIW Style
-EnableAlternateZoomFovCalc = false		; Don't turn it on unnecessarily! Breaks the original weapon system.
-EnableInventoryPistolSlot = false 		; 2nd slot for pistols only (like in CS/SoC)
+EnableAlternateZoomFovCalc = false		; Don't turn it on unnecessarily! Breaks the original weapon system.EnableInventoryPistolSlot = false 		; 2nd slot for pistols only (like in CS/SoC)
 EnableImproveWeaponMisfire = false		; Gunslinger Mod Style
 EnableDelayedWeaponActions = false		; Gunslinger Mod Style
 EnableLegacyUpgradeSystem = false		; Use upgrade system from Clear Sky
 EnableEngineArtefactSpawn = false		; Read parameters for artefacts spawn directly from anomaly's configs (only for SoC)
 Enable3DPDA = false						; 3D PDA
+EnableTorchOnlyInOutfit = false			; Gunslinger Mod Style
+EnableBurerShieldPenetrationWithGauss = false ; Option to make damage to burer even when he is under shield if using Gauss
+EnableWeaponAlternateRPMSystem = false ; Call of Chernobyl like RPM
+EnableInventoryVolume = false			; Inventory volume system
+EnableRealBulletPos	= false				; Use real bullet pos for first person mode instead of camera center
+EnableWeaponAffectsOnMouseSensitivity = true; Changing sensitivity depending on the selected weapon. Configured via the `control_inertion_factor` parameter.
+
+; Dialogs
+DialogFovScale = 0.75 ; Increasing fov during dialogue
+TalkDof = 0.0, 0.5, 5.0, 0.0 ; Degree of background blurring in dialogue
+
+[pda_talk]
+enabled = false
+ignore_switch_distance = true
+; Optional comma-separated policy tables (configs/*.ltx), merged after [pda_talk_dialog]/[pda_talk_phrase].
+; policy_files = pda_talk_policies
+
+; Sprint
+EnableBlockSprintInReload = true        ; Enable block sprint in reload
+DisableSprintWhileOverweight = false    ; Disable Sprint while overweight
+SprintFovFactor = 3.0                   ; FOV magnification power while running
 
 [spawn_supplies]
 EnableLoadoutsSupplies 						= true; Use loadouts for npc profiles
@@ -73,14 +93,6 @@ EnableLoadoutsSupplies 						= true; Use loadouts for npc profiles
 EnableSpawnFullRandomLoadout				= false; Spawn all sections by once random loadout included for npc 
 EnableSpawnOnceRandomItemPerEachLoadouts	= true; Spawn by one item each loadouts included for npc (CoC Style)
 EnableSpawnOnceRandomitemByRandomLoadout	= false; Spawn once random item by all included loadouts for npc
-
-; Dialogs
-DialogFovScale = 0.75 ; Increasing fov during dialogue
-TalkDof = 0.0, 0.5, 5.0, 0.0 ; Degree of background blurring in dialogue
-; Sprint
-EnableBlockSprintInReload = true        ; Enable block sprint in reload
-DisableSprintWhileOverweight = false    ; Disable Sprint while overweight
-SprintFovFactor = 3.0                   ; FOV magnification power while running
 
 [render]
 DisableLoadScreenTips = false           ; Disable load screen tips
@@ -93,9 +105,6 @@ ReadSunConfig = true                  	; Enable sun movement in configurations
 
 [localization]
 PreferedFallbackLanguage = eng
-
-[sound]
-MaterialOCC = false                     ; Use materail occ info
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Extended sections

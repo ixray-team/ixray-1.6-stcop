@@ -1,0 +1,148 @@
+<w>
+		<!-- Xbox mapping -->
+		<mapping ascii="57344" texture_id="xbox1_controller_a"/>
+		<mapping ascii="57345" texture_id="xbox1_controller_b"/>
+		<mapping ascii="57346" texture_id="xbox1_controller_x"/>
+		<mapping ascii="57347" texture_id="xbox1_controller_y"/>
+		<mapping ascii="57348" texture_id="xbox1_controller_lmenu"/>
+		<!-- 57349 is ignored since it's used for guide button -->
+		<mapping ascii="57350" texture_id="xbox1_controller_rmenu"/>
+		<mapping ascii="57351" texture_id="xbox1_controller_lsclick"/>
+		<mapping ascii="57352" texture_id="xbox1_controller_rsclick"/>
+		<mapping ascii="57353" texture_id="xbox1_controller_lb"/>
+		<mapping ascii="57354" texture_id="xbox1_controller_rb"/>
+		<mapping ascii="57355" texture_id="xbox1_controller_dpadu"/>
+		<mapping ascii="57356" texture_id="xbox1_controller_dpadd"/>
+		<mapping ascii="57357" texture_id="xbox1_controller_dpadl"/>
+		<mapping ascii="57358" texture_id="xbox1_controller_dpadr"/>
+		<mapping ascii="57359" texture_id="xbox1_controller_dpadh"/>
+		<mapping ascii="57360" texture_id="xbox1_controller_dpadv"/>
+		<mapping ascii="57361" texture_id="xbox1_controller_lsh"/>
+		<mapping ascii="57362" texture_id="xbox1_controller_lsv"/>
+		<mapping ascii="57363" texture_id="xbox1_controller_rsh"/>
+		<mapping ascii="57364" texture_id="xbox1_controller_rsv"/>
+		<mapping ascii="57365" texture_id="xbox1_controller_ls"/>
+		<mapping ascii="57366" texture_id="xbox1_controller_rs"/>
+		<!-- 57368-57369 are reserved... use them later? -->
+		<mapping ascii="57370" texture_id="xbox1_controller_lt"/>
+		<mapping ascii="57371" texture_id="xbox1_controller_rt"/>
+		<mapping ascii="57372" texture_id="xbox1_controller_lsu"/>
+		<mapping ascii="57373" texture_id="xbox1_controller_lsd"/>
+		<mapping ascii="57374" texture_id="xbox1_controller_lsl"/>
+		<mapping ascii="57375" texture_id="xbox1_controller_lsr"/>
+		<mapping ascii="57376" texture_id="xbox1_controller_rsu"/>
+		<mapping ascii="57377" texture_id="xbox1_controller_rsd"/>
+		<mapping ascii="57378" texture_id="xbox1_controller_rsl"/>
+		<mapping ascii="57379" texture_id="xbox1_controller_rsr"/>
+		
+		<!-- PS4 mapping -->
+		<mapping ascii="57380" texture_id="ps4_controller_a"/>
+		<mapping ascii="57381" texture_id="ps4_controller_b"/>
+		<mapping ascii="57382" texture_id="ps4_controller_x"/>
+		<mapping ascii="57383" texture_id="ps4_controller_y"/>
+		<mapping ascii="57384" texture_id="ps4_controller_lmenu"/>
+		<!-- 57385 is ignored since it's used for PS button -->
+		<mapping ascii="57386" texture_id="ps4_controller_rmenu"/>
+		<mapping ascii="57387" texture_id="ps4_controller_lsclick"/>
+		<mapping ascii="57388" texture_id="ps4_controller_rsclick"/>
+		<mapping ascii="57389" texture_id="ps4_controller_lb"/>
+		<mapping ascii="57390" texture_id="ps4_controller_rb"/>
+		<mapping ascii="57391" texture_id="ps4_controller_dpadu"/>
+		<mapping ascii="57392" texture_id="ps4_controller_dpadd"/>
+		<mapping ascii="57393" texture_id="ps4_controller_dpadl"/>
+		<mapping ascii="57394" texture_id="ps4_controller_dpadr"/>
+		<mapping ascii="57395" texture_id="ps4_controller_dpadh"/>
+		<mapping ascii="57396" texture_id="ps4_controller_dpadv"/>
+		<mapping ascii="57397" texture_id="ps4_controller_lsh"/>
+		<mapping ascii="57398" texture_id="ps4_controller_lsv"/>
+		<mapping ascii="57399" texture_id="ps4_controller_rsh"/>
+		<mapping ascii="57400" texture_id="ps4_controller_rsv"/>
+		<mapping ascii="57401" texture_id="ps4_controller_ls"/>
+		<mapping ascii="57402" texture_id="ps4_controller_rs"/>
+		<mapping ascii="57403" texture_id="ps4_controller_tpad"/>
+		<!-- 57404-57405 are reserved... use them later? -->
+		<mapping ascii="57406" texture_id="ps4_controller_lt"/>
+		<mapping ascii="57407" texture_id="ps4_controller_rt"/>
+		<mapping ascii="57408" texture_id="ps4_controller_lsu"/>
+		<mapping ascii="57409" texture_id="ps4_controller_lsd"/>
+		<mapping ascii="57410" texture_id="ps4_controller_lsl"/>
+		<mapping ascii="57411" texture_id="ps4_controller_lsr"/>
+		<mapping ascii="57412" texture_id="ps4_controller_rsu"/>
+		<mapping ascii="57413" texture_id="ps4_controller_rsd"/>
+		<mapping ascii="57414" texture_id="ps4_controller_rsl"/>
+		<mapping ascii="57415" texture_id="ps4_controller_rsr"/>
+	
+		<!-- PS5 mapping -->
+		<mapping ascii="57416" texture_id="ps5_controller_a"/>
+		<mapping ascii="57417" texture_id="ps5_controller_b"/>
+		<mapping ascii="57418" texture_id="ps5_controller_x"/>
+		<mapping ascii="57419" texture_id="ps5_controller_y"/>
+		<mapping ascii="57420" texture_id="ps5_controller_lmenu"/>
+		<!-- 57421 is ignored since it's used for PS button -->
+		<mapping ascii="57422" texture_id="ps5_controller_rmenu"/>
+		<mapping ascii="57423" texture_id="ps5_controller_lsclick"/>
+		<mapping ascii="57424" texture_id="ps5_controller_rsclick"/>
+		<mapping ascii="57425" texture_id="ps5_controller_lb"/>
+		<mapping ascii="57426" texture_id="ps5_controller_rb"/>
+		<mapping ascii="57427" texture_id="ps5_controller_dpadu"/>
+		<mapping ascii="57428" texture_id="ps5_controller_dpadd"/>
+		<mapping ascii="57429" texture_id="ps5_controller_dpadl"/>
+		<mapping ascii="57430" texture_id="ps5_controller_dpadr"/>
+		<mapping ascii="57431" texture_id="ps5_controller_dpadh"/>
+		<mapping ascii="57432" texture_id="ps5_controller_dpadv"/>
+		<mapping ascii="57433" texture_id="ps5_controller_lsh"/>
+		<mapping ascii="57434" texture_id="ps5_controller_lsv"/>
+		<mapping ascii="57435" texture_id="ps5_controller_rsh"/>
+		<mapping ascii="57436" texture_id="ps5_controller_rsv"/>
+		<mapping ascii="57437" texture_id="ps5_controller_ls"/>
+		<mapping ascii="57438" texture_id="ps5_controller_rs"/>
+		<mapping ascii="57439" texture_id="ps5_controller_tpad"/>
+		<!-- 57440-57441 are reserved... use them later? -->
+		<mapping ascii="57442" texture_id="ps5_controller_lt"/>
+		<mapping ascii="57443" texture_id="ps5_controller_rt"/>
+		<mapping ascii="57444" texture_id="ps5_controller_lsu"/>
+		<mapping ascii="57445" texture_id="ps5_controller_lsd"/>
+		<mapping ascii="57446" texture_id="ps5_controller_lsl"/>
+		<mapping ascii="57447" texture_id="ps5_controller_lsr"/>
+		<mapping ascii="57448" texture_id="ps5_controller_rsu"/>
+		<mapping ascii="57449" texture_id="ps5_controller_rsd"/>
+		<mapping ascii="57450" texture_id="ps5_controller_rsl"/>
+		<mapping ascii="57451" texture_id="ps5_controller_rsr"/>
+		
+		<!-- Switch mapping -->
+		<mapping ascii="57452" texture_id="switch_controller_a"/>
+		<mapping ascii="57453" texture_id="switch_controller_b"/>
+		<mapping ascii="57454" texture_id="switch_controller_x"/>
+		<mapping ascii="57455" texture_id="switch_controller_y"/>
+		<mapping ascii="57456" texture_id="switch_controller_lmenu"/>
+		<!-- 57457 is ignored since it's used for guide button -->
+		<mapping ascii="57458" texture_id="switch_controller_rmenu"/>
+		<mapping ascii="57459" texture_id="switch_controller_lsclick"/>
+		<mapping ascii="57460" texture_id="switch_controller_rsclick"/>
+		<mapping ascii="57461" texture_id="switch_controller_lb"/>
+		<mapping ascii="57462" texture_id="switch_controller_rb"/>
+		<mapping ascii="57463" texture_id="switch_controller_dpadu"/>
+		<mapping ascii="57464" texture_id="switch_controller_dpadd"/>
+		<mapping ascii="57465" texture_id="switch_controller_dpadl"/>
+		<mapping ascii="57466" texture_id="switch_controller_dpadr"/>
+		<mapping ascii="57467" texture_id="switch_controller_dpadh"/>
+		<mapping ascii="57468" texture_id="switch_controller_dpadv"/>
+		<mapping ascii="57469" texture_id="switch_controller_lsh"/>
+		<mapping ascii="57470" texture_id="switch_controller_lsv"/>
+		<mapping ascii="57471" texture_id="switch_controller_rsh"/>
+		<mapping ascii="57472" texture_id="switch_controller_rsv"/>
+		<mapping ascii="57473" texture_id="switch_controller_ls"/>
+		<mapping ascii="57474" texture_id="switch_controller_rs"/>
+		<mapping ascii="57475" texture_id="switch_controller_tpad"/>
+		<!-- 57476-57477 are reserved... use them later? -->
+		<mapping ascii="57478" texture_id="switch_controller_lt"/>
+		<mapping ascii="57479" texture_id="switch_controller_rt"/>
+		<mapping ascii="57480" texture_id="switch_controller_lsu"/>
+		<mapping ascii="57481" texture_id="switch_controller_lsd"/>
+		<mapping ascii="57482" texture_id="switch_controller_lsl"/>
+		<mapping ascii="57483" texture_id="switch_controller_lsr"/>
+		<mapping ascii="57484" texture_id="switch_controller_rsu"/>
+		<mapping ascii="57485" texture_id="switch_controller_rsd"/>
+		<mapping ascii="57486" texture_id="switch_controller_rsl"/>
+		<mapping ascii="57487" texture_id="switch_controller_rsr"/>
+</w>

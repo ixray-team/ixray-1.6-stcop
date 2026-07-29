@@ -6,11 +6,7 @@
 -- Author:      Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
 -- Version:     0.9
 
-
-
 local SKIP_FACTION_SELECTION = false -- TRUE to disable faction selection menu and start normally
-
-
 
 class "main_menu" (CUIScriptWnd)
 function main_menu:__init() super()
@@ -156,17 +152,7 @@ end
 
 function main_menu:OnButton_last_save()
     if ( alife() == nil) then
-        local flist = getFS():file_list_open_ex("$game_saves$",bit.bor(FS.FS_ListFiles,FS.FS_RootOnly),"*"..".scop")
-        flist:Sort(FS.FS_sort_by_modif_down)
-        local file = flist:GetAt(0)
-		if not (file) then 
-			return
-		end
-        local file_name = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - string.len(".scop")))
-       
-        local console = get_console()
-        console:execute("main_menu off")
-        console:execute("start server("..file_name.."/single/alife/load) client(localhost)")
+		self:LoadLastSave	()
         return
     end
  
