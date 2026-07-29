@@ -13,8 +13,8 @@ struct v2p_L
 float4 main(v2p_L I) : SV_TARGET
 {
 	float depth = s_position.SampleLevel(smp_nofilter, I.pos.xy * screen_res.zw, 0).x;
-	depth = depth_unpack.x / (depth - depth_unpack.y);
-	clip(depth - I.viewpos.z);
+	clip(depth - I.viewpos.z / I.viewpos.w);
 	
 	return I.color;
 }
+

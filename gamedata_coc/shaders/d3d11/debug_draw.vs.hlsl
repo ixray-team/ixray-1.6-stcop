@@ -19,8 +19,11 @@ struct v2p_L
 v2p_L main(v_vert I)
 {
     v2p_L O;
+	
     O.pos = mul(m_WVP, I.pos);
-    O.viewpos = float4(mul(m_WV, I.pos), 1.0f);
-    O.color = I.color.bgra; //	swizzle vertex colour
+    O.viewpos = O.pos;
+	
+    O.color = I.color.bgra;
     return O;
 }
+

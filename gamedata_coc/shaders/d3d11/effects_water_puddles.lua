@@ -18,7 +18,8 @@ function normal(shader, t_base, t_second, t_detail)
     shader:dx10texture("s_env0", tex_env0)
     shader:dx10texture("s_env1", tex_env1)
 	
-    shader:dx10texture("s_env", "$user$sky")
+    shader:dx10texture("s_env", "$user$env")
+    shader:dx10texture("s_env_dist", "$user$env_temp")
 
     shader:dx10texture("env_s0", "$user$env_s0")
     shader:dx10texture("env_s1", "$user$env_s1")
@@ -29,7 +30,10 @@ function normal(shader, t_base, t_second, t_detail)
     shader:dx10texture("s_image", "$user$generic")
 
     shader:dx10texture("s_material", "$user$material")
+	
+    shader:dx10texture("s_smap_sun", "$user$smap_depth_sun")
 
+    shader:dx10sampler("smp_smap")
     shader:dx10sampler("smp_base")
     shader:dx10sampler("smp_nofilter")
     shader:dx10sampler("smp_rtlinear")

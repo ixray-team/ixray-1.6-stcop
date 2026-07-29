@@ -8,9 +8,15 @@ void skinned_main(in v_model I, out p_bumped_new O)
     float3 hc_neg = (float3)hemi_cube_neg_faces;
     float3 hc_mixed = (Nw < 0.0f) ? -hc_neg : hc_pos;
     float hemi_val = saturate(dot(hc_mixed, Nw));
-    float3 Pe = mul(m_WV, I.P);
 
     O.tcdh = float4(I.tc.xy, hemi_val, L_material.y);
+
+#if defined(USE_HAIRMASK)
+    hair_wave_anim(I.tc.xy, saturate(hemi_val * 4.0f - 1.0f), I.P.xyz, I.P_old.xyz, I.N);
+#endif
+
+    float3 Pe = mul(m_WV, I.P);
+
     O.position = float4(Pe, 1.0f);
 
     float3 N = I.N * 2.0f;
@@ -37,14 +43,12 @@ void skinned_main(in v_model I, out p_bumped_new O)
 
     O.hpos = mul(m_WVP, I.P);
 
+#ifndef DISABLE_MOTION_VECTORS
     O.hpos_curr = O.hpos;
     O.hpos_old = mul(m_WVP_old, I.P_old);
+#endif
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
-	
-    // Для НПС раскомментировать (не рекомендую)
-    // O.snow_mask = normalize(mul((float3x3)m_W, N)).y;
-    O.snow_mask = 0.0f;
 }
 
 #if defined(SKIN_0)
