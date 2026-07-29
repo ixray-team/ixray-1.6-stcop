@@ -222,6 +222,8 @@ public:
 	virtual CInventoryOwner*	GetPartner							() { return m_pPartnerInvOwner; }
 	virtual bool				ShouldPutArtefactsToBag				() { return true; }
 	virtual void				SetCurrentItem						(CUICellItem* itm);
+	virtual void				InvalidateDerivedCellRefsForList	(CUIDragDropListEx* list) override;
+	virtual void				InvalidateDerivedCellRefsForCell	(CUICellItem* cell) override;
 	virtual void				SendMessage							(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 	virtual void				Draw								();
 	virtual void				Update								();

@@ -33,6 +33,7 @@ protected:
 	xr_vector<CUICellItem*> m_childs;
 
 	CUIDragDropListEx*		m_pParentList;
+	u32						m_ownerContentGeneration;
 	CUIItemStateDisplay*	m_pConditionState;
 	CUIProgressBar*			m_pConditionState_filter;
 	Ivector2				m_grid_size;
@@ -75,6 +76,9 @@ public:
 
 	CUIDragDropListEx*		OwnerList				()						{return m_pParentList;}
 				void		SetOwnerList			(CUIDragDropListEx* p);
+				bool		HasValidInventoryBinding() const;
+				bool		IsOwnerListValid		() const;
+				u32			OwnerContentGeneration	() const { return m_ownerContentGeneration; }
 				void		UpdateConditionProgressBar();
 				void		SetCustomDraw			(ICustomDrawCellItem* c);
 				void		Mark					(bool status);

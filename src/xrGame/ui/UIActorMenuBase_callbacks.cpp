@@ -305,7 +305,7 @@ bool CUIActorMenuBase::OnItemFocusLost(CUICellItem* itm)
 
 	if ( itm )
 	{
-		if (itm->m_pData)
+		if (itm->HasValidInventoryBinding())
 		{
 			if (PIItem iItm = (PIItem)itm->m_pData)
 			{
@@ -327,7 +327,9 @@ bool CUIActorMenuBase::OnItemFocusLost(CUICellItem* itm)
 		luabind::functor<bool> funct1;
 		if (ai().script_engine().functor(m_onItemFocusLost, funct1))
 		{
-			PIItem _iitem = (PIItem)itm->m_pData;
+			PIItem _iitem = (itm != nullptr && itm->HasValidInventoryBinding())
+				? (PIItem)itm->m_pData
+				: nullptr;
 
 			if (CGameObject* GO = _iitem ? _iitem->cast_game_object() : nullptr)
 			{
@@ -568,4 +570,5 @@ void CUIActorMenuBase::BindDragDropListEvents(CUIDragDropListEx* lst)
 	lst->m_f_item_focus_received	= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemFocusReceive);
 	lst->m_f_item_focus_lost		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemFocusLost);
 	lst->m_f_item_focused_update	= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemFocusedUpdate);
+	lst->m_f_content_reset			= CUIDragDropListEx::CONTENT_RESET_EVENT(this, &CUIActorMenuBase::OnDragDropListContentReset);
 }

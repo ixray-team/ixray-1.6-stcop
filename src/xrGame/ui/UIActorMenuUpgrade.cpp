@@ -122,13 +122,18 @@ bool CUIActorMenu::SetInfoCurUpgrade( Upgrade_type* upgrade_type, CInventoryItem
 
 PIItem CUIActorMenu::get_upgrade_item()
 {
-	return	(m_upgrade_selected)? (PIItem)m_upgrade_selected->m_pData : nullptr;
+	if (m_upgrade_selected == nullptr || !m_upgrade_selected->HasValidInventoryBinding())
+	{
+		return nullptr;
+	}
+
+	return (PIItem)m_upgrade_selected->m_pData;
 }
 
 void CUIActorMenu::SeparateUpgradeItem()
 {
 	VERIFY( m_upgrade_selected );
-	if ( !m_upgrade_selected || !m_upgrade_selected->m_pData )
+	if ( !m_upgrade_selected || !m_upgrade_selected->HasValidInventoryBinding() )
 	{
 		return;
 	}

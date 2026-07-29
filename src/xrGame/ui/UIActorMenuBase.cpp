@@ -30,6 +30,7 @@
 #include "UITalkDialogWnd.h"
 #include "../../xrUI/Widgets/UIBtnHint.h"
 #include "UIInventoryUpgradeWnd.h"
+#include "UIInventoryInvalidation.h"
 
 void move_item_from_to (u16 from_id, u16 to_id, u16 what_id)
 {
@@ -269,7 +270,12 @@ CUICellItem* CUIActorMenuBase::CurrentItem()
 
 PIItem CUIActorMenuBase::CurrentIItem()
 {
-	return m_pCurrentCellItem ? (PIItem)m_pCurrentCellItem->m_pData : nullptr;
+	if (m_pCurrentCellItem == nullptr || !m_pCurrentCellItem->HasValidInventoryBinding())
+	{
+		return nullptr;
+	}
+
+	return (PIItem)m_pCurrentCellItem->m_pData;
 }
 
 float CUIActorMenuBase::CalcItemsWeight(CUIDragDropListEx* pList)
@@ -706,6 +712,8 @@ CUIDragDropListEx* CUIActorMenuBase::GetPrimaryDragDropList() const
 #define CLEAR_LIST(list) if (list) list->ClearAll(true);
 void CUIActorMenuBase::ClearAllLists()
 {
+	InvalidateAllTransientCellRefs();
+
 	CLEAR_LIST(GetActorList())
 	CLEAR_LIST(GetBeltList())
 
@@ -721,6 +729,81 @@ void CUIActorMenuBase::ClearAllLists()
 	CLEAR_LIST(GetTradePartnerBagList())
 	CLEAR_LIST(GetTradePartnerList())
 	CLEAR_LIST(GetPartnerList())
+}
+
+void CUIActorMenuBase::InvalidateAllTransientCellRefs()
+{
+	m_pCurrentCellItem = nullptr;
+	m_cell_lastFocusRecivedItem = nullptr;
+	m_lastFocusRecivedItem = nullptr;
+	m_lastFocusLostItem_id = u16(-1);
+	CUICellItem::m_mouse_selected_item = nullptr;
+	InvalidateDerivedCellRefsForList(nullptr);
+	InfoCurItem(nullptr);
+	UIInventoryInvalidation::EndDragSession();
+}
+
+void CUIActorMenuBase::InvalidateTransientCellRefsForList(CUIDragDropListEx* list)
+{
+	if (list == nullptr)
+	{
+		InvalidateAllTransientCellRefs();
+		return;
+	}
+
+	auto belongsToList = [list](CUICellItem* cell) -> bool
+	{
+		return cell != nullptr && cell->OwnerList() == list;
+	};
+
+	if (belongsToList(m_pCurrentCellItem))
+	{
+		m_pCurrentCellItem = nullptr;
+		InfoCurItem(nullptr);
+	}
+
+	if (belongsToList(m_cell_lastFocusRecivedItem))
+	{
+		m_cell_lastFocusRecivedItem = nullptr;
+	}
+
+	if (belongsToList(CUICellItem::m_mouse_selected_item))
+	{
+		CUICellItem::m_mouse_selected_item = nullptr;
+	}
+
+	InvalidateDerivedCellRefsForList(list);
+}
+
+void CUIActorMenuBase::InvalidateTransientCellRefsForCell(CUICellItem* cell)
+{
+	if (cell == nullptr)
+	{
+		return;
+	}
+
+	if (m_pCurrentCellItem == cell)
+	{
+		m_pCurrentCellItem = nullptr;
+		InfoCurItem(nullptr);
+	}
+
+	if (m_cell_lastFocusRecivedItem == cell)
+	{
+		m_cell_lastFocusRecivedItem = nullptr;
+	}
+
+	if (CUICellItem::m_mouse_selected_item == cell)
+	{
+		CUICellItem::m_mouse_selected_item = nullptr;
+	}
+
+	InvalidateDerivedCellRefsForCell(cell);
+}
+
+void CUIActorMenuBase::OnDragDropListContentReset(CUIDragDropListEx* list)
+{
+	InvalidateTransientCellRefsForList(list);
 }
 
 void CUIActorMenuBase::InitInventoryContents(CUIDragDropListEx* pBagList)
