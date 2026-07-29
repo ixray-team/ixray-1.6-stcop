@@ -49,7 +49,6 @@ private:
 
 	float				m_radia_self;
 //	float				m_actor_radia_factor;
-	float				m_radia_hit;
 	shared_str			m_lanim_name;
 
 	float				m_zone_cur_power[ALife::infl_max_count];
@@ -87,6 +86,7 @@ private:
 
 	CUIStackPanel*		UIStackPanelDangers;
 public:
+	float				m_radia_hit;
 
 	CUIStatic*			m_ui_weapon_cur_ammo = nullptr;
 	CUIStatic*			m_ui_weapon_fmj_ammo = nullptr;
