@@ -806,6 +806,16 @@ void CUIDragDropListEx::DeselectSelected()
 	}
 }
 
+CUICellItem* CUIDragDropListEx::GetItemAtPos(Fvector2 abs_pos)
+{
+	Ivector2 cell = PickCell(abs_pos);
+	if (m_container->ValidCell(cell))
+	{
+		return m_container->GetCellAt(cell).m_item;
+	}
+	return nullptr;
+}
+
 // =================================================================================================
 
 CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
