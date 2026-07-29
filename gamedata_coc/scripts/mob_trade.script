@@ -6,8 +6,8 @@
 --'Идея команды SP
 
 function on_game_start()
-	RegisterScriptCallback("TrdWndOpened",OnTrdWndOpened)
-	RegisterScriptCallback("TrdWndClosed",OnTrdWndClosed)
+	RegisterScriptCallback("on_actor_trade_wnd_opened",OnTrdWndOpened)
+	RegisterScriptCallback("on_actor_trade_wnd_closed",OnTrdWndClosed)
 end
 
 --]] ------------------------------------------------------------------------------------------------

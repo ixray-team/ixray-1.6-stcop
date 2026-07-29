@@ -1,0 +1,39 @@
+local cached = {}
+local default_time_invalidate = 60 * 1000
+
+
+function get_cached(key_name, fn_closure, time_invalidate, default_value, skip_errors)
+	if skip_errors == nil then
+		skip_errors = false
+	end
+	
+	if key_name == nil or key_name == "" then
+		if not skip_errors then ffx_dump_utils.AssertWithCaller(3, "IXR_CACHE", "missing key name on call " .. script_name() .. "->get_cached(...)") end
+		return default_value
+	end
+	
+	if type(fn_closure) ~= "function"  then
+		if not skip_errors then ffx_dump_utils.AssertWithCaller(3, "IXR_CACHE", "missing fn_closure on call " .. script_name() .. "->get_cached(...)") end
+		return default_value
+	end
+
+	local invalidation_time = time_invalidate or default_time_invalidate
+	if type(invalidation_time) ~= "number" then
+		return default_value
+	end
+	
+	local tmg = time_global()
+	local key = tostring(key_name)
+	if cached[key] == nil or cached[key].tmr < tmg then
+		cached[key] = {
+			tmr = tmg + invalidation_time,
+			result = fn_closure()
+		}
+	end
+	
+	return cached[key].result
+end
+
+function invalidate_cache(key_name)
+	cached[tostring(key_name)] = nil
+end

@@ -10,7 +10,16 @@
 			<texture>ui\teamEPIC_logo</texture>
 		</auto_static>
     </background>
-
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>gp_select</window_name>
+			<text font="graffiti19" vert_align="c">ui_mm_select</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+			<window_name>gp_back</window_name>
+		</auto_static>
+	</gamepad_legend>
 	<shniaga_wnd x="590" y="419" width="392" height="280">
 		<buttons_region	x="110" y="0" width="164" height="280" always_show_scroll="true"/>
 		

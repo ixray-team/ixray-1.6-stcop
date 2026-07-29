@@ -1,0 +1,14 @@
+
+local actor_loaded = false
+local actor_controll_recieved = false
+
+function on_game_start()
+	RegisterScriptCallback("on_load_screen_await_any_key_pressed", function () actor_loaded = true check() end)
+	RegisterScriptCallback("actor_on_spawn", function () actor_controll_recieved = true check() end)
+end
+
+function check()
+	if db.actor and db.actor:alive() and actor_loaded and actor_controll_recieved then
+		SendScriptCallback("on_game_present")
+	end
+end

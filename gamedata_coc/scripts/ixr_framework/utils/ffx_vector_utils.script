@@ -1,0 +1,69 @@
+
+
+function mul_in_direction(position, direction, length)
+	return clone(position):add(clone(direction):mul(length))
+end
+
+function clone(vec)
+	return vector():set(vec.x, vec.y, vec.z)
+end
+
+function get_device_position()
+	return clone(device().cam_pos)
+end
+
+function get_device_direction()
+	return clone(device().cam_dir)
+end
+
+function normalize(v)
+    local length = math.sqrt(v.x^2 + v.y^2 + v.z^2)
+    if length > 0 then
+        return { x = v.x / length, y = v.y / length, z = v.z / length }
+    else
+        return { x = 0, y = 0, z = 0 }
+    end
+end
+
+function rotate_quaternion(vector_a, base_vector, angle)
+    local a = normalize(vector_a)
+    local b = normalize(base_vector)
+    local half_angle = angle / 2
+    local sin_half_angle = math.sin(half_angle)
+	
+    local q_w = math.cos(half_angle)
+    local q_x = b.x * sin_half_angle
+    local q_y = b.y * sin_half_angle
+    local q_z = b.z * sin_half_angle
+	
+    local q_vector = {
+		x = a.x,
+		y = a.y,
+		z = a.z 
+	}
+	
+    local q_conjugate = {
+		w = q_w, 
+		x = -q_x,
+		y = -q_y, 
+		z = -q_z 
+	}
+	
+    local quaternion_multiply = function (q1, q2)
+        return {
+            w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z,
+            x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
+            y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x,
+            z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w
+        }
+    end
+
+    local v_quaternion = { w = 0, x = q_vector.x, y = q_vector.y, z = q_vector.z }
+    local q_result = quaternion_multiply(quaternion_multiply({ w = q_w, x = q_x, y = q_y, z = q_z }, v_quaternion), q_conjugate)
+   
+   return {
+	   x = q_result.x,
+	   y = q_result.y,
+	   z = q_result.z 
+   }
+end

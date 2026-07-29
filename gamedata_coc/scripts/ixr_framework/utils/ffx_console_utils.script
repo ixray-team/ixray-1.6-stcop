@@ -1,0 +1,48 @@
+--[[
+Description:
+  Register command in console
+Parameters:
+  name (string)(required) - the string command name.
+  _callable (function)(required) - the callable function is command called in console with args.
+  tips_table (table)(optional) - tips in console line by line 
+Returns: bool
+]]
+function register_command(name, _callable, tips_table)
+	if not tips_table then
+		tips_table = {}
+	end
+
+	if not name or not _callable then
+		return false
+	end
+	
+	get_console():register_lua_command(
+		name,
+		function (args)
+			_callable(unpack(args)) 
+		end,
+		table.concat(
+			tips_table, 
+			", "
+		)
+	)
+	
+	return true
+end
+
+
+local con = nil
+function execute_command(command, arg)
+	if not con then con = get_console() end
+	
+	if tostring(arg) == "true" then
+		arg = 1
+	end
+	
+	if tostring(arg) == "false" then
+		arg = 0
+	end
+	
+	--SemiLog(tostring(command) .. " " .. tostring(arg))
+	con:execute(tostring(command) .. " " .. tostring(arg))
+end
