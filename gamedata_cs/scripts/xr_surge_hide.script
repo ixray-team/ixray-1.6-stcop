@@ -213,7 +213,7 @@ function get_dest_vertex(npc, pp, pos_tbl, npc_pos)
 	 	if(dest_vertex==4294967295) or (dest_vertex==4294967296) then
 	 		if radius >= 1 then
 	 			radius = radius - 0.5
-			else
+			elseif self.path_walk then
 				abort("Invalid AI map at kamp[surge_hide] point [%s]", self.path_walk)
 	 		end
 	 	end
