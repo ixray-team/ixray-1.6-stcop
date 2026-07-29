@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>	
+	<string id="st_pda_top20">
+		<text>Лучшие 100 сталкеров</text>
+	</string>
+	<string id="pda_btn_ranking_global">
+		<text>Ранги</text>
+	</string>
+	<string id="pda_btn_ranking_global_hint">
+		<text>Показать рейтинг лучших сталкеров</text>
+	</string>
+	<string id="Name">
+		<text>Имя</text>
+	</string>
+</string_table>
