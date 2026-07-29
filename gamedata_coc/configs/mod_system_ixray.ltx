@@ -1,0 +1,351 @@
+; This is due to the fact that GSC has prescribed the sound of a gun being pulled out
+; w_knife.ltx
+![wpn_knife]
+snd_draw = weapons\draw_silent
+
+; w_binoc.ltx
+![wpn_binoc]
+use_condition = false
+
+![inventory]
+slot_persistent_4 = false ;grenades
+
+slot_persistent_13  = false ;backpack
+slot_active_13      = false
+
+![actor_look_cam_psp]
+!offset
+!autoaim_speed_y
+!autoaim_speed_x
+
+offset_right = -0.4,0.2,0.0
+offset_left = 0.314,0.2,0.0
+use_inertion = true
+
+;actor.ltx
+![actor]
+player_hud_default = actor_hud_05
+
+;m_burer.ltx
+![m_burer_e]
+icon = ui_npc_monster_burer
+
+;items.ltx
+![bread]
+use_text = st_eat
+
+![kolbasa]
+use_text = st_eat
+
+![conserva]
+use_text = st_eat
+
+![vodka]
+use_text = st_drink
+
+![device_torch]
+sound_activate          = device\torch_click
+sound_deactivate        = device\torch_click_off
+
+;devices.ltx
+![detector_base_hud]
+disable_bore							 = true
+
+;zone_mine_thermal.ltx
+![zone_mine_thermal]
+hit_type			= light_burn
+
+;w_f1.ltx
+![grenade_f1]
+detonation_threshold_hit= 0.3
+explosion_on_hit = true
+explosion_hit_types = 6, 8 
+explosive_while_not_activated = true
+
+;w_rgd5.ltx
+![grenade_rgd5]
+detonation_threshold_hit = 0.3
+explosion_on_hit = true
+explosion_hit_types = 6, 8 
+explosive_while_not_activated = true
+
+;helicopter.ltx
+![helicopter]
+ssa_dyn_factor = 0.001
+ssa_d_cam = 300.0
+
+;prefetch_mp.ltx
+; FreeMP mode
+[prefetch_objects_fmp]:prefetch_objects_mp
+[prefetch_visuals_fmp]:prefetch_visuals_mp
+
+[prefetch_objects_freemp]:prefetch_objects_mp
+[prefetch_visuals_freemp]:prefetch_visuals_mp
+
+[night_vision_base]
+snd_night_vision_on			= weapons\nv_start
+snd_night_vision_off		= weapons\nv_off
+snd_night_vision_idle		= weapons\nv_loop
+snd_night_vision_broken		= weapons\nv_off
+
+night_vision_disabled_maps						= ai_test,ai_test2, andy_test_
+
+;creatures/monsters.ltx
+![monsters_common]
+corpse_remove_game_time_interval = 24 ; in hours
+stay_after_death_time_interval = 36 ; in hours
+
+;defines.ltx
+![hud_base] ; Gunslinger Style
+;наклоны оружия при ходьбе
+hud_move_speed_rot = 3			;скорость доворота до заданного угла			
+hud_move_speed_pos = 2		        ;скорость перемещения до заданной позиции
+hud_move_stabilize_factor = 3.5		;во сколько раз быстрее возвращаемся в нейтральное положение при идле
+hud_move_weaponhide_factor = 3.5	;во сколько раз быстрее возвращаемся в нейтральное положение при убирании оружия
+hud_move_unzoom_factor = 2.0
+hud_move_slow_factor = 0.5		;во сколько раз менять амплитуду при шаге
+hud_move_crouch_factor = 0.5		;во сколько раз менять амплитуду при присяде
+hud_move_slow_crouch_factor = 0.3	;во сколько раз менять амплитуду при полном присяде
+
+;задаются максимальные отклонения от центрального в разных режимах ходьбы
+;Аддитивно!
+
+;стрейф влево
+hud_move_left_offset_pos = -0.03,-0.018,0
+hud_move_left_offset_rot = 0,0,-3.5
+
+hud_move_left_offset_pos_16x9 = -0.03,-0.018,0
+hud_move_left_offset_rot_16x9 = 0,0,-3.5
+
+;стрейф вправо
+hud_move_right_offset_pos = 0.03,-0.005,0
+hud_move_right_offset_rot = 0,0,5
+
+hud_move_right_offset_pos_16x9 = 0.03,-0.005,0
+hud_move_right_offset_rot_16x9 = 0,0,5
+
+;движение вперед
+hud_move_forward_offset_pos = 0,-0.005,-0.035
+hud_move_forward_offset_rot = 0,0,0
+
+hud_move_forward_offset_pos_16x9 = 0,-0.005,-0.035
+hud_move_forward_offset_rot_16x9 = 0,0,0
+
+;движение назад
+hud_move_back_offset_pos = 0,-0.005,0.045
+hud_move_back_offset_rot = 0,0,0
+
+hud_move_back_offset_pos_16x9 = 0,-0.005,0.045
+hud_move_back_offset_rot_16x9 = 0,0,0
+
+;прыжок
+hud_move_jump_offset_pos = 0,0.05,0.03
+hud_move_jump_offset_rot = 0,-10,-10
+
+hud_move_jump_offset_pos_16x9 = 0,0.05,0.03
+hud_move_jump_offset_rot_16x9 = 0,-10,-10
+
+;падение
+hud_move_fall_offset_pos = 0,-0.05,0.06
+hud_move_fall_offset_rot = 0,5,0
+
+hud_move_fall_offset_pos_16x9 = 0,-0.05,0.06
+hud_move_fall_offset_rot_16x9 = 0,5,0
+
+;приземление - первая фаза
+hud_move_landing_offset_pos = 0,-0.2,0.03
+hud_move_landing_offset_rot = 0,-5,10
+
+hud_move_landing_offset_pos_16x9 = 0,-0.2,0.03
+hud_move_landing_offset_rot_16x9 = 0,-5,10
+
+;приземление - вторая фаза
+hud_move_landing2_offset_pos = 0,-0.3,0.03
+hud_move_landing2_offset_rot = 0,-13,20
+
+hud_move_landing2_offset_pos_16x9 = 0,-0.3,0.03
+hud_move_landing2_offset_rot_16x9 = 0,-13,20
+
+;переход из стойки в присяд
+to_crouch_time = 0.15
+hud_move_to_crouch_offset_pos = 0,-0.02, 0
+hud_move_to_crouch_offset_rot = 0,1.5,-4
+
+hud_move_to_crouch_offset_pos_16x9 = 0,-0.02, 0
+hud_move_to_crouch_offset_rot_16x9 = 0,1.5,-4
+
+;переход из присяда в стойку
+from_crouch_time = 0.15
+hud_move_from_crouch_offset_pos = 0,-0.008,0
+hud_move_from_crouch_offset_rot = 0,-0.8,3
+
+hud_move_from_crouch_offset_pos_16x9 = 0,-0.008,0
+hud_move_from_crouch_offset_rot_16x9 = 0,-0.8,3
+
+;переход из присяда в низкий присяд
+to_slow_crouch_time = 0.15
+hud_move_to_slow_crouch_offset_pos = 0,-0.05, 0
+hud_move_to_slow_crouch_offset_rot = 0,1,-2
+
+hud_move_to_slow_crouch_offset_pos_16x9 = 0,-0.05, 0
+hud_move_to_slow_crouch_offset_rot_16x9 = 0,1,-2
+
+;переход из низкого присяда в присяд
+from_slow_crouch_time = 0.15
+hud_move_from_slow_crouch_offset_pos = 0,0.02,0
+hud_move_from_slow_crouch_offset_rot = 0,-1,2
+
+hud_move_from_slow_crouch_offset_pos_16x9 = 0,0.02,0
+hud_move_from_slow_crouch_offset_rot_16x9 = 0,-1,2
+
+;переход из обычного в наклон влево
+to_llookout_time = 0.15
+hud_move_to_llookout_offset_pos 	= -0.01, 0, 0
+hud_move_to_llookout_offset_rot		= 0,0,0
+hud_move_to_llookout_offset_pos_16x9 	= -0.01, 0, 0
+hud_move_to_llookout_offset_rot_16x9	= 0,0,0
+
+;переход из наклона влево в обычный
+from_llookout_time = 0.15
+hud_move_from_llookout_offset_pos 	= -0.01, 0, 0
+hud_move_from_llookout_offset_rot	= 0,0,0
+hud_move_from_llookout_offset_pos_16x9 	= -0.01, 0, 0
+hud_move_from_llookout_offset_rot_16x9	= 0,0,0
+
+
+;переход из обычного в наклон вправо
+to_rlookout_time = 0.15
+hud_move_to_rlookout_offset_pos 	= 0.01, 0, 0
+hud_move_to_rlookout_offset_rot		= 0,0,0
+hud_move_to_rlookout_offset_pos_16x9 	= 0.01, 0, 0
+hud_move_to_rlookout_offset_rot_16x9	= 0,0,0
+
+;переход из наклона вправо в обычный
+from_rlookout_time = 0.15
+hud_move_from_rlookout_offset_pos 	= 0.01, 0, 0
+hud_move_from_rlookout_offset_rot	= 0,0,0
+hud_move_from_rlookout_offset_pos_16x9 	= 0.01, 0, 0
+hud_move_from_rlookout_offset_rot_16x9	= 0,0,0
+
+;наклон влево (постоянная компонента)
+hud_move_llookout_offset_speed_factor = 2.8
+hud_move_llookout_offset_pos 		= -0.045, -0.03, 0
+hud_move_llookout_offset_pos_16x9 	= -0.045, -0.03, 0
+hud_move_llookout_offset_rot 		= 0, 0, -9
+hud_move_llookout_offset_rot_16x9 	= 0, 0, -9
+
+;наклон вправо (постоянная компонента)
+hud_move_rlookout_offset_speed_factor = 2.8
+hud_move_rlookout_offset_pos 		= 0.04, -0.01, 0
+hud_move_rlookout_offset_pos_16x9 	= 0.04, -0.01, 0
+hud_move_rlookout_offset_rot 		= 0, 0, 10
+hud_move_rlookout_offset_rot_16x9 	= 0, 0, 10
+
+
+;аналогично для прицеливания
+;переход из стойки в присяд
+hud_aim_move_to_crouch_offset_pos = 0,0.003, 0
+hud_aim_move_to_crouch_offset_rot = 0,0.3,-0.5
+
+hud_aim_move_to_crouch_offset_pos_16x9 = 0,0.003, 0
+hud_aim_move_to_crouch_offset_rot_16x9 = 0,0.3,-0.5
+
+;переход из присяда в стойку
+hud_aim_move_from_crouch_offset_pos = 0,-0.003,0
+hud_aim_move_from_crouch_offset_rot = 0,-0.3,0.5
+
+hud_aim_move_from_crouch_offset_pos_16x9 = 0,-0.003,0
+hud_aim_move_from_crouch_offset_rot_16x9 = 0,-0.3,0.5
+
+;переход из присяда в низкий присяд
+hud_aim_move_to_slow_crouch_offset_pos = 0,0.001, 0
+hud_aim_move_to_slow_crouch_offset_rot = 0,0.3,-0.5
+
+hud_aim_move_to_slow_crouch_offset_pos_16x9 = 0,0.002, 0
+hud_aim_move_to_slow_crouch_offset_rot_16x9 = 0,0.3,-0.5
+
+;переход из низкого присяда в присяд
+hud_aim_move_from_slow_crouch_offset_pos = 0,-0.001,0
+hud_aim_move_from_slow_crouch_offset_rot = 0,-0.3,0.5
+
+hud_aim_move_from_slow_crouch_offset_pos_16x9 = 0,-0.001,0
+hud_aim_move_from_slow_crouch_offset_rot_16x9 = 0,-0.3,0.5
+
+;переход из обычного в наклон влево
+hud_aim_move_to_llookout_offset_pos 	        = -0.003, 0, 0
+hud_aim_move_to_llookout_offset_rot		= 0,0,-0.6
+hud_aim_move_to_llookout_offset_pos_16x9 	= -0.003, 0, 0
+hud_aim_move_to_llookout_offset_rot_16x9	= 0,0,-0.6
+
+;переход из наклона влево в обычный
+hud_aim_move_from_llookout_offset_pos 	        = 0, 0, 0
+hud_aim_move_from_llookout_offset_rot	        = 0,0,-1
+hud_aim_move_from_llookout_offset_pos_16x9 	= 0, 0, 0
+hud_aim_move_from_llookout_offset_rot_16x9	= 0,0,-1
+
+
+;переход из обычного в наклон вправо
+hud_aim_move_to_rlookout_offset_pos 	        = 0.003, 0, 0
+hud_aim_move_to_rlookout_offset_rot		= 0,0,0.6
+hud_aim_move_to_rlookout_offset_pos_16x9 	= 0.003, 0, 0
+hud_aim_move_to_rlookout_offset_rot_16x9	= 0,0,0.6
+
+;переход из наклона вправо в обычный
+hud_aim_move_from_rlookout_offset_pos 	        = 0, 0, 0
+hud_aim_move_from_rlookout_offset_rot	        = 0,0,1
+hud_aim_move_from_rlookout_offset_pos_16x9 	= 0, 0, 0
+hud_aim_move_from_rlookout_offset_rot_16x9	= 0,0,1
+
+hud_collision_enabled							= true
+hud_collision_offset_pos						= 0,-0.5,0
+hud_collision_offset_pos_16x9					= 0,-0.5,0
+hud_collision_offset_rot						= -0.8,0,0
+hud_collision_offset_rot_16x9					= -0.8,0,0
+
+;effectors.ltx
+![bobbing_effector] ; Gunslinger Style
+
+;спринт
+sprint_amplitude		= 	0.014
+sprint_speed			= 	10.0
+
+;бег
+run_amplitude			=	0.0075
+run_speed			=	10.0
+zoom_run_amplitude		=	0.005
+zoom_run_speed			=	7.0
+
+;замедление/прицеливание
+walk_amplitude			=	0.005
+walk_speed				=   7.0
+zoom_walk_amplitude		=	0.005
+zoom_walk_speed			=   7.0
+
+;присяд
+crouch_amplitude		=   0.0056
+crouch_speed			=   7.5
+zoom_crouch_amplitude	=   0.0056
+zoom_crouch_speed		=   7.5
+
+;присяд+замедление
+slow_crouch_amplitude   =   0.0042
+slow_crouch_speed       =   5.625
+zoom_slow_crouch_amplitude   =   0.0042
+zoom_slow_crouch_speed       =   5.625
+
+;тяжелое дыхание
+limp_amplitude			=	0.011
+limp_speed				=	6.0
+zoom_limp_amplitude		=	0.007
+zoom_limp_speed			=	6.0
+
+
+;Скорость изменения амплитуды раскачки при смене режима перемещения
+amplitude_delta			= 	0.01 
+
+;w_spas12.ltx
+![wpn_spas12_hud]
+aim_hud_offset_pos                       = -0.097600, 0.090200, 0.050000
+aim_hud_offset_pos_16x9                  = -0.106600, 0.158000, 0.050000
+aim_hud_offset_rot                       = 0.051000, 0.025000,-0.022500
+aim_hud_offset_rot_16x9                  = 0.087000, 0.046500,-0.045000
