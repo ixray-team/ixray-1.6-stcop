@@ -23,6 +23,7 @@ CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
 CUICellItem::CUICellItem()
 {
 	m_pParentList		= nullptr;
+	m_ownerContentGeneration = 0;
 	m_pData				= nullptr;
 	m_custom_draw		= nullptr;
 	m_text				= nullptr;
@@ -542,6 +543,19 @@ CUIDragItem* CUICellItem::CreateDragItem()
 void CUICellItem::SetOwnerList(CUIDragDropListEx* p)	
 {
 	m_pParentList = p;
+	m_ownerContentGeneration = (p != nullptr) ? p->ContentGeneration() : 0;
+}
+
+bool CUICellItem::HasValidInventoryBinding() const
+{
+	return m_pData != nullptr;
+}
+
+bool CUICellItem::IsOwnerListValid() const
+{
+	return m_pParentList != nullptr
+		&& m_ownerContentGeneration != 0
+		&& m_ownerContentGeneration == m_pParentList->ContentGeneration();
 }
 
 void CUICellItem::UpdateConditionProgressBar()
