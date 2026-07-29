@@ -190,6 +190,8 @@ function on_game_start()
 	RegisterScriptCallback("actor_on_update",actor_on_update)
 	RegisterScriptCallback("monster_on_update",monster_on_update)
 	RegisterScriptCallback("actor_on_item_use",actor_on_item_use)
-	RegisterScriptCallback("save_state",save_state)
-	RegisterScriptCallback("load_state",load_state)
+    if (USE_MARSHAL) then
+	    RegisterScriptCallback("save_state",save_state)
+	    RegisterScriptCallback("load_state",load_state)
+    end
 end

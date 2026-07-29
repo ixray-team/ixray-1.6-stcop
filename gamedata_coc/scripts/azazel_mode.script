@@ -150,7 +150,7 @@ function actor_on_before_death(whoID,flags)
 	
 	local faction = se_obj:community()
 	se_actor:set_rank(se_obj:rank())
-	db.actor:set_character_community("actor_"..faction)
+	db.actor:set_character_community("actor_"..faction, 0, 0)
 	db.actor:set_character_reputation(se_obj:reputation())
 	db.actor:give_money(10*math.random(1,250)+500)
 	

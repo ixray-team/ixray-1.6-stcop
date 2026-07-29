@@ -88,8 +88,10 @@ function on_game_start()
 	RegisterScriptCallback("npc_on_hit_callback",npc_on_hit_callback)
 	RegisterScriptCallback("monster_on_hit_callback",npc_on_hit_callback)
 	RegisterScriptCallback("squad_on_npc_death",squad_on_npc_death)
-	RegisterScriptCallback("save_state",save_state)
-	RegisterScriptCallback("load_state",load_state)
+    if (USE_MARSHAL) then
+	    RegisterScriptCallback("save_state",save_state)
+	    RegisterScriptCallback("load_state",load_state)
+    end
 end
 
 ------------------------------------------------------------------------------

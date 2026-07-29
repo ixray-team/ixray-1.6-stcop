@@ -47,6 +47,8 @@ function evaluator_npc_vs_box:evaluate()
 				ret = true
 			end
 		end
+
+        return false
 	end
 	npc:iterate_feel_touch(itr)
 
@@ -81,6 +83,8 @@ function action_npc_vs_box:execute()
 				obj = o
 			end
 		end
+
+        return false
 	end
 	self.object:iterate_feel_touch(itr)
 	

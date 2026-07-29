@@ -210,7 +210,7 @@ function opt_menu_on_set_values(menu,optMgr)
 				if (type(v.default) == "boolean") then
 					v.ctrl:SetText(axr_main.config:r_value("mm_options",name,1,v.default))
 				elseif (type(v.default) == "number") then 
-					v.ctrl:SetText(axr_main.config:r_value("mm_options",name,2,v.default))
+					v.ctrl:SetText(tostring(axr_main.config:r_value("mm_options",name,2,v.default)))
 				else 
 					v.ctrl:SetText(axr_main.config:r_value("mm_options",name,0,v.default))
 				end

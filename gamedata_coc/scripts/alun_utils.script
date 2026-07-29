@@ -353,11 +353,11 @@ end
 function collect_sections(ini,sections)
 	local r,p = {},{}
 	for k,v in ipairs(sections) do
-		if ini:section_exist(v) then
-			local n = ini:line_count(v)
+		if ini:section_exist(tostring(v)) then
+			local n = ini:line_count(tostring(v))
 			if n > 0 then
 				for i = 0,n-1 do
-					local res,id,val = ini:r_line(v,i,"","")
+					local res,id,val = ini:r_line(tostring(v),i,"","")
 					if r[id] == nil then
 						r[id] = val
 					end

@@ -164,9 +164,12 @@ function on_game_start()
 	RegisterScriptCallback("squad_on_unregister",squad_on_unregister)
 	RegisterScriptCallback("on_level_changing",on_level_changing)
 	RegisterScriptCallback("actor_on_item_drop",actor_on_item_drop)
-	RegisterScriptCallback("save_state",save_state)
-	RegisterScriptCallback("load_state",load_state)
-	RegisterScriptCallback("on_game_load",on_game_load)
+    if (USE_MARSHAL) then
+	    RegisterScriptCallback("save_state",save_state)
+	    RegisterScriptCallback("load_state",load_state)
+    end
+   
+   	RegisterScriptCallback("on_game_load",on_game_load)
 
 	allow_only_friends_as_companions = ini:r_bool_ex("main","allow_only_friends_as_companions",false)
 	allow_simulation_squads_as_companions = ini:r_bool_ex("main","allow_simulation_squads_as_companions",false)

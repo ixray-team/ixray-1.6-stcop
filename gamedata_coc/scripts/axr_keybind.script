@@ -18,10 +18,10 @@ keybinds = {
 					["pda_stats"]					= "kCUSTOM9",
 					["pda_logs"]					= "kCUSTOM10",
 					
-					["debug_demo_record"]			= "DIK_NUMPAD0",
+					--["debug_demo_record"]			= "DIK_NUMPAD0",
 					--["debug_select_object"] 		= "DIK_NUMPAD9",
 					--["debug_attachment_ui"] 		= "DIK_INSERT",
-					["debug_test"] 					= "DIK_NUMPADENTER",
+					--["debug_test"] 					= "DIK_NUMPADENTER",
 					--["debug_reload_game"]			= "DIK_END",
 					--["debug_hold_action"]			= "DIK_NUMPAD8"
 }

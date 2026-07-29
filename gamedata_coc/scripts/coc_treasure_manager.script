@@ -114,8 +114,10 @@ end
 function on_game_start()
 	RegisterScriptCallback("on_game_load",on_game_load)
 	RegisterScriptCallback("actor_on_item_take_from_box",actor_on_item_take_from_box)
-	RegisterScriptCallback("save_state",save_state)
-	RegisterScriptCallback("load_state",load_state)
+    if (USE_MARSHAL) then
+	    RegisterScriptCallback("save_state",save_state)
+	    RegisterScriptCallback("load_state",load_state)
+    end
 	RegisterScriptCallback("physic_object_on_use_callback",physic_object_on_use_callback)
 end
 
@@ -358,7 +360,10 @@ function save(pk)
 	pk:w_u16(caches_count)
 	for id,v in pairs(caches) do
 		pk:w_u16(id)
-		pk:w_bool(v)
+        if not (type(caches[id]) == "string") then 
+            pk:w_bool(v)
+        end
+        
 	end
 end
 
@@ -393,7 +398,8 @@ function get_valid_item_sections()
 				end
 			end
 		end
-	end
+        return false
+    end
 	)
 	
 	-- List of all items in game that are not quest items
