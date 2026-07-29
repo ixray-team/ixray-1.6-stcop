@@ -281,12 +281,15 @@ float hashed_alpha_test(float3 position)
 	#define IMAGE_BITRATE 255
 #endif
 
-float3 deband_color(float3 image, float2 uv, float bitrate = IMAGE_BITRATE)
+float3 deband_color(float3 image, uint2 hpos, float bitrate = IMAGE_BITRATE)
 {
-    float3 dither = dot(float2(171.0, 231.0), uv.xy + m_taa_jitter.w).xxx;
-    dither = 2.0f * frac(dither / float3(103.0, 71.0, 97.0)) - 1.0f;
+    // float3 dither = dot(float2(171.0, 231.0), hpos.xy + m_taa_jitter.w).xxx;
+    // dither = 2.0f * frac(dither / float3(103.0, 71.0, 97.0)) - 1.0f;
+	
+	float3 dither = s_blue_noise[uint3(hpos % 128, uint(m_taa_jitter.w) % 32)].xzy - 0.5;
 
     return image + dither * rcp(bitrate);
+    // return frac(image * bitrate + dither);
 }
 
 //Builds a cotangent frame. Source: http://www.thetenthplanet.de/archives/1180

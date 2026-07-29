@@ -27,6 +27,10 @@ void main(v2p I, out IXRayForward O)
     O.Color.xyz = GammaToLinear(result.xyz);
 	O.Color.w = result.w;
 	
+#ifndef USE_LEGACY_LIGHT
+	O.Color.xyz *= 0.8f;
+#endif
+	
 	clip(O.Color.w  - EPS);
 	
 	O.Velocity = 0.0f;

@@ -57,7 +57,19 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 
 #ifdef USE_SSLR_ON_WATER
 	float3 Reflect = mul((float3x3)m_V, vreflect);
-	float3 ReflectPoint = I.tctexgen.xyz * 0.99f + Reflect * 0.025f;
+	
+	float3 ReflectPoint = I.tctexgen.xyz;
+	
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	float ReflectDist = s_env_dist.SampleLevel(smp_linear, ReflectPoint.xyz, 0.0f).x;
+	ReflectDist = min(ReflectDist, s_env_dist.SampleLevel(smp_nofilter, ReflectPoint.xyz, 0.0f).x);
+	
+	ReflectDist /= max(EPS, length(ReflectPoint));
+	
+	ReflectPoint *= min(1.0f, ReflectDist);
+#endif
+
+	ReflectPoint = ReflectPoint * 0.99f + Nw * 0.07f;
 	
     float4 sslr = ScreenSpaceLocalReflections(ReflectPoint, Reflect);
 	
@@ -67,7 +79,7 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
 		vslr.w *= 1.f - Fog * Fog;
 		
-		vslr.xyz = s_env.SampleLevel(smp_rtlinear, vslr.xyz, 0.0f);
+		vslr.xyz = s_env.SampleLevel(smp_linear, vslr.xyz, 0.0f);
 	#endif
 #endif
 

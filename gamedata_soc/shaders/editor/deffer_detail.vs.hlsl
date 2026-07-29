@@ -1,26 +1,11 @@
 #include "common.hlsli"
 
-cbuffer DetailConstants
-{
-    float4 consts;
+uniform float4 consts;
 
-    float4 wave;
-    float4 wave_old;
+uniform float4 wave;
+uniform float4 dir2D;
 
-    float4 dir2D;
-    float4 dir2D_old;
-};
-
-struct InstanceData
-{
-    float3 quat;
-    float  scale;
-    float3 pos;
-    float  hemi;
-};
-
-//LVutner: Always bound to slot0 (see CPP code)
-StructuredBuffer<InstanceData> detail_buffer : register(t0);
+uniform float2x4 array[50];
 
 float3x3 QuaternionToMatrix(float4 q)
 {
@@ -41,32 +26,43 @@ float3x3 QuaternionToMatrix(float4 q)
     return m;
 }
 
-void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
+void main(in v_detail I, out p_bumped_new O)
 {
-    InstanceData det = detail_buffer[instance_id];
+    int i = I.misc.w;
+	float2x4 mm = array[i];
+	
+    float3 qv = mm[0].xyz;
+    float w = sqrt(max(0.0, 1.0 - dot(qv, qv)));
+    float3x3 m_rotate = QuaternionToMatrix(float4(qv, w));
+	float3 posi = float3(mm[1].xyz);
+	
+	float scale = mm[0].w;
+    float4 m0 = float4(m_rotate[0]*scale, posi.x);
+    float4 m1 = float4(m_rotate[1]*scale, posi.y);
+    float4 m2 = float4(m_rotate[2]*scale, posi.z);
 
-    float w = sqrt(max(0.0, 1.0 - dot(det.quat, det.quat)));
-    float3x3 m_rotate = QuaternionToMatrix(float4(det.quat, w));
-
-    float3 pos_world = mul(m_rotate, I.pos.xyz * det.scale) + det.pos;
-    float3 N = mul(m_rotate, unpack_normal(I.N.xyz));
-    
-    float hemi = abs(det.hemi);
-    float sun = sign(det.hemi) * 0.25f + 0.25f;
-    
-    float4 pos = float4(pos_world, 1.0f);
+    float4 pos;
+    pos.x = dot(m0, I.pos);
+    pos.y = dot(m1, I.pos);
+    pos.z = dot(m2, I.pos);
+    pos.w = 1.0f;
 
     float3 Pe = mul(m_WV, pos);
-    float2 tc = I.tc.xy;
+    float2 tc = I.misc.xy * consts.xy;
 
-    O.tcdh = float4(tc.xy, hemi, sun);
+    float3 N;
+    N.x = pos.x - m0.w;
+    N.y = pos.y - m1.w + 0.75f;
+    N.z = pos.z - m2.w;
+
+    O.tcdh = float4(tc.xy, 0.7, 0.5);
     O.position = float4(Pe, 1.0f);
 
-    N.xyz = mul((float3x3)m_WV, N.xyz);
+    N = normalize(mul(m_WV, N));
 
-    O.M1 = N.xyz;
-    O.M2 = N.xyz;
-    O.M3 = N.xyz;
+    O.M1 = N;
+    O.M2 = N;
+    O.M3 = N;
 
     O.hpos = mul(m_WVP, pos);
-};
+}
