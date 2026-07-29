@@ -3,8 +3,10 @@
 
 #include "common.hlsli"
 
-TextureCube env_s0;
-TextureCube env_s1;
+uniform samplerCUBE env_s0;
+uniform samplerCUBE env_s1;
+uniform samplerCUBE sky_s0;
+uniform samplerCUBE sky_s1;
 
 void hmodel(out float3 hdiffuse, out float3 hspecular,
     float m, float h, float s, float3 Pnt, float3 normal)
@@ -24,21 +26,27 @@ void hmodel(out float3 hdiffuse, out float3 hspecular,
     float hspec = .5h + .5h * dot(vreflect, v2Pnt);
 
     // material
-    float4 light = s_material.SampleLevel(smp_material, float3(hscale, hspec, m), 0);
+    float4 light = tex3D(s_material, float3(hscale, hspec, m));
+
+#ifdef USE_DIFFUSE_SKY_COLOR
+	float4 weather_color = L_sky_color;
+#else
+	float4 weather_color = L_hemi_color;
+#endif
 
     // diffuse color
-    float3 e0d = env_s0.SampleLevel(smp_rtlinear, nw, 0.0f);
-    float3 e1d = env_s1.SampleLevel(smp_rtlinear, nw, 0.0f);
-    float3 env_d = L_hemi_color.xyz * lerp(e0d, e1d, L_hemi_color.w);
+    float3 e0d = texCUBElod(env_s0, float4(nw, 0.0f));
+    float3 e1d = texCUBElod(env_s1, float4(nw, 0.0f));
+    float3 env_d = weather_color.xyz * lerp(e0d, e1d, weather_color.w);
     env_d *= env_d; // contrast
     hdiffuse = env_d * light.xyz + L_ambient.rgb;
 
     // specular color
     vreflect.y = vreflect.y * 2 - 1;
 
-    float3 e0s = env_s0.SampleLevel(smp_rtlinear, vreflect, 0);
-    float3 e1s = env_s1.SampleLevel(smp_rtlinear, vreflect, 0);
-    float3 env_s = L_hemi_color.xyz * lerp(e0s, e1s, L_hemi_color.w);
+    float3 e0s = texCUBElod(env_s0, float4(vreflect, 0.0f));
+    float3 e1s = texCUBElod(env_s1, float4(vreflect, 0.0f));
+    float3 env_s = weather_color.xyz * lerp(e0s, e1s, weather_color.w);
     env_s *= env_s;
     hspecular = env_s * light.w * s;
 }

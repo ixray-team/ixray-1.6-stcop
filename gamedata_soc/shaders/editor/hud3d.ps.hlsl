@@ -3,11 +3,11 @@
 struct ui_vert_out
 {
     float2 tc0 : TEXCOORD0;
-    float4 P : SV_Position;
+    float4 P : POSITION;
 };
 
-float4 main(ui_vert_out I) : SV_Target
+float4 main(ui_vert_out I) : COLOR
 {
-    float4 r = s_base.Sample(smp_base, I.tc0);
+    float4 r = tex2D(s_base, I.tc0);
     return r;
 }
