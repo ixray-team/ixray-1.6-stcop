@@ -351,16 +351,10 @@ void ui_actor_state_wnd::UpdateHitZone()
 
 	if (m_state[stt_main])
 	{
-		CActor* actor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : NULL;
-		m_state[stt_main]->set_arrow(actor->conditions().m_fRadiationZonePower);
+		CActor* actor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
+		float detectRadZonePower = std::max(actor->conditions().m_fRadiationZonePower, wnd->m_radia_hit * 10);
+		m_state[stt_main]->set_arrow(detectRadZonePower);
 	}
-
-	/*
-	m_state[stt_fire]->set_arrow(wnd->get_zone_cur_power(ALife::eHitTypeBurn));
-	m_state[stt_radia]->set_arrow(nd->get_zone_cur_power(ALife::eHitTypeRadiation));
-	m_state[stt_acid]->set_arrow(wnd->get_zone_cur_power(ALife::eHitTypeChemicalBurn));
-	m_state[stt_psi]->set_arrow(wnd->get_zone_cur_power(ALife::eHitTypeTelepatic));
-	*/
 }
 
 void ui_actor_state_wnd::Draw()
