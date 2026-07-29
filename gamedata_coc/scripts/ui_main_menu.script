@@ -12,19 +12,45 @@ class "main_menu" (CUIScriptWnd)
 function main_menu:__init() super()
 	math.randomseed(os.time())
 	self.mbox_mode = 0
+	self.main_xml = CScriptXmlInit()
+	self.main_xml:ParseFile("ui_mm_main.xml")
+
+	SendScriptCallback("main_menu_on_init", self)
+
     self:InitControls()
+
     self:InitCallBacks()
-	SendScriptCallback("main_menu_on_init",self)
+
+	RegisterScriptCallback("on_localization_change", self)
+	
 	if not (level.present()) then
 		xrs_debug_tools.on_game_start()
 	end
 end
 
-function main_menu:__finalize()
-end
-
 function main_menu:Update()
 	CUIScriptWnd.Update(self)
+	
+	if self.gamepad_legend then
+		local text_back		= self:GetStatic("gp_back")	
+		if text_back then
+			text_back:Show((level.present()	and ((db.actor ~= nil)and(db.actor:alive())
+			or not IsGameTypeSingle())) or 
+			self.shniaga:GetPage() == CUIMMShniaga.epi_new_game
+			)
+		end
+
+		local text_select		= self:GetStatic("gp_select")	
+		if text_select then
+			if self.shniaga:GetPage() ~= CUIMMShniaga.epi_new_game then
+				text_select:SetTextST("ui_mm_select")
+			else
+				text_select:SetTextST("ui_mm_select_difficulty")
+			end
+		end
+	end
+	
+	SendScriptCallback("main_menu_update", self)
 	-- Warning messages timer 
 	if (self.msg_wnd_timer) then 
 		self.msg_wnd_timer = self.msg_wnd_timer - 1
@@ -35,43 +61,57 @@ function main_menu:Update()
 	end
 end 
 
+function main_menu:__finalize()
+end
+
 function main_menu:InitControls()
 	self:SetWndRect					(Frect():set(0,0,1024,768))
 
-    local xml						= CScriptXmlInit()
-    xml:ParseFile					("ui_mm_main.xml")
-
-    xml:InitStatic					("background", self)
-    self.shniaga					= xml:InitMMShniaga("shniaga_wnd",self);
+    self.main_xml:InitStatic("background", self)
+    self.shniaga = self.main_xml:InitMMShniaga("shniaga_wnd", self)
 
 	self.message_box				= CUIMessageBoxEx()
-	self:Register					(self.message_box, "msg_box")
+	self:Register(self.message_box, "msg_box")
 
-	local _ver = xml:InitStatic		("static_version",self)
+	local _ver = self.main_xml:InitStatic("static_version",self)
 	local mm						= _G.main_menu.get_main_menu()
-	_ver:TextControl():SetText		("Call of Chernobyl ver. " .. (_G.GAME_VERSION))
+	_ver:TextControl():SetText("Call of Chernobyl ver. " .. (_G.GAME_VERSION))
 	
 	-- IX-Ray start
-	local btn
-	if xml:NodeExist("english_lang", 0) then
-		btn = xml:Init3tButton("english_lang", self)
-		self:Register(btn, "english_lang")
+	if self.main_xml:NodeExist("english_lang", 0) then
+		self.eng_lang_btn = self.main_xml:Init3tButton("english_lang", self)
+		self:Register(self.eng_lang_btn, "english_lang")
 	end
 	
-	if xml:NodeExist("russian_lang", 0) then
-		btn = xml:Init3tButton("russian_lang", self)
-		self:Register(btn, "russian_lang")
+	if self.main_xml:NodeExist("russian_lang", 0) then
+		self.ru_lang_btn = self.main_xml:Init3tButton("russian_lang", self)
+		self:Register(self.ru_lang_btn, "russian_lang")
 	end
+	
+	if self.main_xml:NodeExist("gamepad_legend", 0) then
+		self.gamepad_legend = self.main_xml:InitGamepadLegend("gamepad_legend", self)
+		self:Register(self.gamepad_legend, "gamepad_legend")
+	end
+	
+	if is_cop() then
+		gamepad_led(255, 63, 0)
+	elseif is_cs() then
+		gamepad_led(191, 255, 255)
+	else
+		gamepad_led(255, 255, 0)
+	end
+	SendScriptCallback("main_menu_on_init_controlls", self)
 	-- IX-Ray end
-	
+
 	-- Message Window 
-	self.msg_wnd = xml:InitFrame("msg_wnd:background",self)
+	self.msg_wnd = self.main_xml:InitFrame("msg_wnd:background",self)
 	self.msg_wnd:SetAutoDelete(false)
-	self.msg_wnd_text = xml:InitTextWnd("msg_wnd:text",self.msg_wnd)
+	self.msg_wnd_text = self.main_xml:InitTextWnd("msg_wnd:text",self.msg_wnd)
 	self.msg_wnd_text:SetTextAlignment(2)
 	
 	self.msg_wnd:Show(false)
 	self.msg_wnd:SetColor(GetARGB(255,0,0,0))
+	
 end
 
 function main_menu:Show(f)
@@ -95,7 +135,10 @@ function main_menu:InitCallBacks()
 	self:AddCallback("btn_load",        ui_events.BUTTON_CLICKED,				self.OnButton_load_clicked,			self)
 	-- save
 	self:AddCallback("btn_save",		ui_events.BUTTON_CLICKED,				self.OnButton_save_clicked,			self)
-
+	-- multiplayer
+	if (IsSupportMP()) then -- IX-Ray: Optional multiplayer check
+		self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,				self.OnButton_multiplayer_clicked,	self)
+	end
 	-- quit
 	self:AddCallback("btn_quit",		ui_events.BUTTON_CLICKED,				self.OnButton_quit_clicked,			self)
 	self:AddCallback("btn_quit_to_mm",	ui_events.BUTTON_CLICKED,				self.OnButton_disconnect_clicked,	self)
@@ -118,6 +161,8 @@ function main_menu:InitCallBacks()
 
 	self:Register(self, "self")
 	self:AddCallback("self",	ui_events.MAIN_MENU_RELOADED, self.OnMenuReloaded, self)
+
+	SendScriptCallback("main_menu_on_init_callbacks", self)
 end
 function main_menu:OnMsgOk()
 	if (self.mbox_mode == 2) then
@@ -199,7 +244,7 @@ end
 function main_menu:OnButton_return_game()
 	local console = get_console()
 	console:execute("main_menu off")
-	SendScriptCallback("main_menu_on_quit",self)
+	SendScriptCallback("main_menu_on_quit", self)
 end
 
 function main_menu:OnButton_new_novice_game()
@@ -314,6 +359,7 @@ function main_menu:OnBtnRussian()
 	console:execute("language rus")
 end
 -- IX-Ray end
+
 function main_menu:OnButton_load_clicked()
 	if self.load_dlg ==nil then
 		self.load_dlg = ui_load_dialog.load_dialog()
@@ -326,8 +372,23 @@ function main_menu:OnButton_load_clicked()
 	self:Show(false)
 end
 
+function main_menu:OnButton_multiplayer_clicked()
+	if not(self.mp_dlg) then
+        self.mp_dlg = ui_mp_main.mp_main()
+        self.mp_dlg.owner = self
+		self.mp_dlg:OnRadio_NetChanged()
+    end
+    self.mp_dlg:UpdateControls()
+    self.mp_dlg:ShowDialog(true)
+
+    self:HideDialog()
+	self:Show(false)
+end
+
 function main_menu:Dispatch(cmd, param)  --virtual function
-	if cmd == 2 then
+	if cmd == 1 then -- new
+		self:ReloadGamepadLegend()
+	elseif cmd == 2 then
 		self:OnButton_multiplayer_clicked()
 	end
 	return true
@@ -337,34 +398,49 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	local bind = dik_to_bind(dik)
 	local console = get_console()
-
-	SendScriptCallback("main_menu_on_keyboard",dik,keyboard_action,self,level.present())
+	
+	SendScriptCallback("main_menu_on_keyboard", dik, keyboard_action, self, level.present())
 
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-		if (level.present()) then 
-			if (dik == DIK_keys.DIK_ESCAPE) then
-				if (db.actor and db.actor:alive()) or (IsGameTypeSingle() ~= true) then
-					self.OnButton_return_game()
-				end
-				return true
-			elseif (bind == key_bindings.kQUICK_SAVE) then
-				level_input.action_quick_save()
-				return true
-			elseif (bind == key_bindings.kQUICK_LOAD) then 
-				level_input.action_quick_load()
-				return true
+		if dik == DIK_keys.DIK_ESCAPE then
+			if level.present() and
+				(	((db.actor ~= nil)and(db.actor:alive())) or
+					(false==IsGameTypeSingle())
+				) then
+				self.OnButton_return_game()                      --' xStream 02.2008
+				-- console:execute("main_menu off")							   --' xStream 02.2008
 			end
 		end
 
-		if (dik == DIK_keys.DIK_Q) then
+--		if dik == DIK_keys.DIK_S then
+--			self:OnButton_load_spawn()
+
+--		else
+		if dik == DIK_keys.DIK_Q then
 			self:OnMessageQuitWin()
-		elseif (dik == DIK_keys.DIK_NUMPAD0) then
-			if (reload_system_ini) then
-				reload_system_ini()
-				clear_ini_cache(system_ini())
-				printf("system_ini_reload = success!")
+		end
+
+	end
+
+	return true
+end
+
+function main_menu:OnGamepadKey(dik, gamepad_action)  --virtual function
+	CUIScriptWnd.OnGamepadKey(self,dik,gamepad_action)
+	local bind = dik_to_bind(dik)
+	local bindUI = dik_to_bind(dik, action_groups.agUIGeneral)
+	local console = get_console()
+	
+	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
+		if bind == key_bindings.kQUIT or bindUI == key_bindings.kUI_BACK then
+			if level.present() and
+				(	((db.actor ~= nil)and(db.actor:alive())) or
+					(false==IsGameTypeSingle())
+				) then
+				self.OnButton_return_game()                      --' xStream 02.2008
 			end
 		end
+
 	end
 
 	return true
@@ -373,6 +449,24 @@ end
 function main_menu:OnMenuReloaded()
 	self:OnButton_options_clicked()
 	self.opt_dlg:OnMenuReloaded()
+end
+
+function main_menu:ReloadGamepadLegend()
+	if self.gamepad_legend then
+		self.gamepad_legend:ReloadLegend()
+	end
+	if self.save_dlg then
+		self.save_dlg.gamepad_legend:ReloadLegend()
+	end
+	if self.load_dlg then
+		self.load_dlg.gamepad_legend:ReloadLegend()
+	end
+	if self.opt_dlg then
+		self.opt_dlg.gamepad_legend:ReloadLegend()
+		if self.opt_dlg.dlg_controller_layout then
+			self.opt_dlg.dlg_controller_layout:ReloadGamepadTextures()
+		end
+	end
 end
 
 function main_menu:SetMsg(text,tmr)

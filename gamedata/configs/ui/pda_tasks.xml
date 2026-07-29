@@ -33,10 +33,6 @@
 		</auto_static>
 	</gamepad_legend>
 	
-	<background x="28" y="41" width="764" height="90" stretch="1">
-        <texture>ui_inGame2_pda_buttons_background</texture>
-	</background>
-
 	<background x="35" y="41" width="955" height="90">
         <texture>ui_inGame2_pda_buttons_background</texture>
 	</background>

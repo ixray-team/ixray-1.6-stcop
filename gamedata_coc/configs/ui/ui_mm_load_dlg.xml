@@ -5,10 +5,23 @@
 		</auto_static>
 	</background>
 	<file_item>
+		<itm_color r="170" g="170" b="170"/>
 	    <main width="392" height="18"/>
 	    <fn width="286" height="18"/>
 	    <fd width="88" height="18"/>
 	</file_item>
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_load_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>gp_delete_text</window_name>
+			<text font="graffiti19" vert_align="c">ui_mm_delete_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
     <form x="282" y="200" width="460" height="411" stretch="1">
         <texture>ui_inGame2_screen_4</texture>
 	    <caption x="10" y="6" width="86" height="24" stretch="1">

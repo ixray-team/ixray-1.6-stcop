@@ -1,0 +1,74 @@
+
+
+function classic_round(value)
+	if value % 1 >= 0.5 then
+		return math.ceil(value)
+	else
+		return math.floor(value)
+	end
+end
+
+function clamp_in_range(min_value, current_value, max_value)
+	if current_value > max_value then
+		current_value = max_value
+	end
+	
+	if current_value < min_value then
+		current_value = min_value
+	end
+	
+	return current_value
+end
+
+-- safe
+function scaled_random(min_value, max_value, multiplier_coeff)
+    if not min_value or not max_value or not multiplier_coeff then
+        return 0 
+    end
+    
+    if multiplier_coeff == 0 then
+        return 0
+    end
+    
+    if multiplier_coeff > 1 then
+        multiplier_coeff = 1.0
+    end
+    
+    if min_value > max_value then
+        min_value = max_value
+    end
+    
+    if max_value < min_value then
+        max_value = min_value
+    end
+    
+    local scaled_max = max_value * multiplier_coeff
+    
+    if scaled_max < min_value then
+        scaled_max = min_value
+    end
+    
+    if min_value == scaled_max then
+        return min_value
+    end
+    
+    local random_value = min_value + math.random() * (scaled_max - min_value)
+    
+    if math.floor(min_value) == min_value and math.floor(max_value) == max_value then
+        return math.floor(random_value + 0.5)
+    end
+    
+    return random_value
+end
+
+function safe_divide(first_vale, second_value)
+	if not first_vale or first_vale == 0 then
+		return 0
+	end
+	
+	if not second_value or second_value == 0 then
+		return 0
+	end
+	
+	return first_vale / second_value
+end

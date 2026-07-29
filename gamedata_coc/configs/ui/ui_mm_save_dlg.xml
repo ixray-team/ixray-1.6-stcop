@@ -4,7 +4,20 @@
 			<texture x="0" y="0" width="1920" height="1080">ui\ui_background_new</texture>
 		</auto_static>
 	</background>
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_save_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>gp_delete_text</window_name>
+			<text font="graffiti19" vert_align="c">ui_mm_delete_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
 	<file_item>
+		<itm_color r="170" g="170" b="170"/>
 	    <main width="392" height="18"/>
 	    <fn width="286" height="18"/>
 	    <fd width="88" height="18"/>
