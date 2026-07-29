@@ -239,7 +239,7 @@ bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 
 bool CUIActorMenuBase::OnItemDropped(PIItem itm, CUIDragDropListEx* new_owner, CUIDragDropListEx* old_owner)
 {
-	CUICellItem*	_citem	= (new_owner->ItemsCount()==1) ? new_owner->GetItemIdx(0) : nullptr;
+	CUICellItem*	_citem	= new_owner->GetItemAtPos(UI().GetUICursor().GetCursorPosition());
 	PIItem _iitem	= _citem ? (PIItem)_citem->m_pData : nullptr;
 
 	if (!_iitem)
