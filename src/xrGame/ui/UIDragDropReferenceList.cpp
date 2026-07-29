@@ -10,6 +10,7 @@
 #include "UIInventoryUtilities.h"
 #include "../../xrEngine/xr_input.h"
 #include "../../xrUI/UICursor.h"
+#include "UICellItemFactory.h"
 
 using namespace InventoryUtilities;
 
@@ -187,11 +188,8 @@ void CUIDragDropReferenceList::ReloadReferences(CInventoryOwner* pActor)
 	if (!pActor)
 		return;
 
-	if(m_drag_item)
-		DestroyDragItem();
-
-	m_container->ClearAll(true);
-	m_selected_item	= nullptr;
+	// Full list ClearAll: drag end + generation bump + observer invalidation + owned cell destroy
+	ClearAll(true);
 
 	for(u8 i=0; i<m_container->CellsCapacity().x; i++)
 	{

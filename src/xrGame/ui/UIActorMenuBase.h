@@ -126,6 +126,12 @@ protected:
 	CUIDragDropListEx*			GetPrimaryDragDropList		() const;
 	virtual	void				InfoCurItem					(CUICellItem* cell_item) {}
 	void						ClearAllLists				();
+	void						InvalidateTransientCellRefsForList(CUIDragDropListEx* list);
+	void						InvalidateTransientCellRefsForCell(CUICellItem* cell);
+	void						InvalidateAllTransientCellRefs();
+	virtual void				InvalidateDerivedCellRefsForList(CUIDragDropListEx* list) {}
+	virtual void				InvalidateDerivedCellRefsForCell(CUICellItem* cell) {}
+	void						OnDragDropListContentReset	(CUIDragDropListEx* list);
 	virtual	void				SetupUpgradeItem			() {}
 	virtual void				TrySetCurUpgrade			() {}
 	virtual void				UpdateOutfit				() {}
@@ -149,6 +155,7 @@ protected:
 	void						InitInventoryContents		(CUIDragDropListEx* pBagList);
 	void						InitCellForSlot				(u16 slot_idx);
 	void						UpdateDeadBodyBagList		();
+	bool						RemoveItemFromList			(CUIDragDropListEx* lst, PIItem pItem);
 
 	EDDListType					GetListType					(CUIDragDropListEx* l);
 	virtual void				SetCurrentItem				(CUICellItem* itm) = 0;
