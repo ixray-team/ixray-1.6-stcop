@@ -388,6 +388,14 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 		m_spot_border_names[3] = g_uiSpotXml->ReadAttrib(path, 0, "spot_na", "");
 
 		str = g_uiSpotXml->ReadAttrib(path, 0, "pointer", "");
+		if (!xr_strlen(str) && IsUserDefined())
+		{
+			string512 levelMapPath;
+			xr_strconcat(levelMapPath, path_base, ":level_map");
+			str = g_uiSpotXml->ReadAttrib(levelMapPath, 0, "pointer", "");
+			if (!xr_strlen(str))
+				str = "quest_pointer";
+		}
 		if( xr_strlen(str) )
 		{
 			if ( !bReload )
