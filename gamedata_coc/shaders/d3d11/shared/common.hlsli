@@ -22,6 +22,8 @@ cbuffer dynamic_transforms
     uniform float4 hemi_cube_pos_faces;
     uniform float4 hemi_cube_neg_faces;
     uniform float4 dt_params;
+
+    uniform float4 m_taa_jitter;
 }
 
 cbuffer shader_params
@@ -32,6 +34,9 @@ cbuffer shader_params
 cbuffer static_globals
 {
     uniform float3x4 m_invV;
+	
+    uniform float4x4 m_invP;
+    uniform float4x4 m_invP_hud;
 
     uniform float3x4 m_V;
     uniform float4x4 m_P;
@@ -41,10 +46,10 @@ cbuffer static_globals
     uniform float4x4 m_P_old;
     uniform float4x4 m_VP_old;
 
-    uniform float4 timers;
+    uniform float4 timers; // x - curr time, y - time - deltaframe, t / 10, sin(t)
 
     uniform float4 fog_plane;
-    uniform float4 fog_params;
+    uniform float4 fog_params; // (-n/(r-n), n, f, 1/(r-n) // near = (1.0f - fog_density) * 0.85 * fog_distance // fog_distance = fog_far
     uniform float4 fog_color;
 
     uniform float4 L_ambient;
@@ -55,14 +60,9 @@ cbuffer static_globals
 
     uniform float3 eye_position;
 
-    uniform float4 pos_decompression_params;
     uniform float4 pos_decompression_params2;
-    uniform float4 pos_decompression_params_hud;
-    uniform float4 depth_unpack;
-    uniform float def_aref;
     uniform float4 parallax;
-
-    uniform float4 m_taa_jitter;
+    uniform float def_aref;
 }
 
 float calc_cyclic(float x)
