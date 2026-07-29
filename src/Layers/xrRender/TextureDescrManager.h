@@ -40,6 +40,7 @@ class CTextureDescrMngr
 	using map_CS = xr_map<shared_str, cl_dt_scaler*>;
 	using map_CSIt = map_CS::iterator;
 
+	xrCriticalSection MapAccessCS;
 	map_TD									m_texture_details;
 	map_CS									m_detail_scalers;
 
