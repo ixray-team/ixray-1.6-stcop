@@ -66,23 +66,7 @@ local function on_game_load(binder)
 	if (faction and faction ~= "") then
 		config:w_value("character_creation","new_game_faction")
 		need_save = true
-		
-		-- Faction Spawn Position
-		local start_location = config:r_value("character_creation","new_game_faction_position")
-		config:w_value("character_creation","new_game_faction_position")
-		
-		if start_location and start_location ~= "" then
-			local loc_ini = ini_file("plugins\\faction_start_locations.ltx")
 
-			start_pos = {}
-			table.insert(start_pos,loc_ini:r_float_ex(start_location, "lvid"))
-			table.insert(start_pos,loc_ini:r_float_ex(start_location, "gvid"))
-			table.insert(start_pos,vector():set(loc_ini:r_float_ex(start_location,"x"),loc_ini:r_float_ex(start_location,"y"),loc_ini:r_float_ex(start_location,"z")))
-		else
-			spawn_path = patrol("spawn_player_"..faction)
-		end
-		
-		
 		-- Only give the story quests to factions in this table.
 		local story_factions = {
 			["csky"] = true,
@@ -219,7 +203,7 @@ local function actor_on_before_death()
 	end
 		
 	local fs = getFS()
-	local flist = fs:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly),"*.scoc")
+	local flist = fs:file_list_open_ex("$game_saves$",bit.bor(FS.FS_ListFiles,FS.FS_RootOnly),"*.scoc")
 	local f_cnt = flist:Size()
 
 	for	it=0, f_cnt-1 	do
@@ -745,7 +729,9 @@ function faction_ui:OnStartGame()
 	-- Store info in temp config so it can be read on next game load
 	axr_main.config:w_value("character_creation","new_game_character_name", character_name:gsub(" ","_") )
 	axr_main.config:save()
-	
+
+    -- Faction Spawn Position
+    set_start_position_from_smart(self.start_location)
 	-- Start the game
 	self.owner:StartGame()
 end

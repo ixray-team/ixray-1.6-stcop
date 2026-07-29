@@ -1,0 +1,30 @@
+<w>
+
+  <custom_drop x="240" y="256" width="541" height="255" stretch="1">
+    <texture>ui_inGame2_message_box</texture>
+
+    <text_hint x="49" y="78" width="461" height="150" complex_mode="1">
+      <text font="letterica18" align="c">st_custom_drop_hint</text>
+    </text_hint>
+
+    <trackbar x="54" y="98" width="451" height="20" mode="integer" step="1" show_value="1"/>
+
+    <value_min x="49" y="118" width="461" height="20" complex_mode="1">
+      <text font="letterica18" align="l">1</text>
+    </value_min>
+
+    <value_max x="49" y="118" width="461" height="20" complex_mode="1">
+      <text font="letterica18" align="r">999</text>
+    </value_max>
+
+	<button_yes x="167" y="212" width="101" height="28" check_mode="0">
+	    <text font="letterica18">Btn_Yes</text>
+	    <texture>ui_inGame2_Mp_bigbuttone</texture>
+	</button_yes>
+	<button_no x="272" y="212" width="101" height="28" check_mode="0">
+	    <text font="letterica18">Btn_No</text>
+	    <texture>ui_inGame2_Mp_bigbuttone</texture>
+	</button_no>
+  </custom_drop>
+  
+</w>
