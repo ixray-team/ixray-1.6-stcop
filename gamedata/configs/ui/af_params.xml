@@ -173,6 +173,46 @@
 		</value>
 	</af_slots>
 
+	<wound_immunity x="0" y="0" width="257" height="20" >
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_am_prop_wound</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="100">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</wound_immunity>
+	
+	<fire_wound_immunity x="0" y="0" width="257" height="20" >
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_am_propery_01</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="100">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</fire_wound_immunity>
+	
+	<explosion_immunity x="0" y="0" width="257" height="20" >
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_am_prop_explo</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="100">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</explosion_immunity>
+	
+	<strike_immunity x="0" y="0" width="257" height="20" >
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_am_prop_strike</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="100">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</strike_immunity>
+	
 	<additional_weight x="0" y="0" width="257" height="20" >
 		<caption x="0" y="2" width="257" height="20" complex_mode="0">
 			<texture>ui_am_propery_08</texture>
