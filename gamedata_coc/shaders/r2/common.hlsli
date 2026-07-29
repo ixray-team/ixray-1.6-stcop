@@ -264,7 +264,6 @@ uniform sampler2D s_tonemap; // actually MidleGray / exp(Lw + eps)
 float3 tonemap(float3 rgb, float scale)
 {
     rgb = rgb * scale;
-
     const float fWhiteIntensity = 1.7f;
     const float fWhiteIntensitySQR = fWhiteIntensity * fWhiteIntensity;
 
@@ -294,20 +293,31 @@ float3 v_sun_wrap(float3 n, float w)
 }
 float3 p_hemi(float2 tc)
 {
-    //        float3        	t_lmh         = tex2D             	(s_hemi, tc);
-    //        return  dot     (t_lmh,1.h/4.h);
     float4 t_lmh = tex2D(s_hemi, tc);
+#ifdef USE_SOC_LIGHTING
+	float r_lmh = (1.0/3.0);
+	return dot(t_lmh.xyz, float3(r_lmh, r_lmh, r_lmh));
+#else
     return t_lmh.a;
+#endif
 }
 
 float get_hemi(float4 lmh)
 {
+#ifdef USE_SOC_LIGHTING
+    return  dot(lmh.rgb, 1.h/3.h);
+#else
     return lmh.a;
+#endif
 }
 
 float get_sun(float4 lmh)
 {
+#ifdef USE_SOC_LIGHTING
+    return lmh.a;
+#else
     return lmh.g;
+#endif
 }
 
 //	contrast function
