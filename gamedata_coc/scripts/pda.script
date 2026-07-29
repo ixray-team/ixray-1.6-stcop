@@ -14,18 +14,20 @@ dialog_closed = false
 function set_active_subdialog(section)
 	--printf("section=%s",section)
 	if (section == "eptTasks") then 
-	
+        return nil
 	elseif (section == "eptRanking") then 
-	
+        return nil
 	elseif (section == "eptLogs") then 
-	
+        return nil
 	elseif (section == "eptRelations") then 
 		return ui_pda_relations_tab.get_ui()
-	elseif (section == "eptContacts") then
-		return ui_pda_contacts_tab.get_ui()
-	elseif (section == "eptEncyclopedia") then
-		return ui_pda_encyclopedia_tab.get_ui()
+--	elseif (section == "eptContactsCoC") then
+--		return ui_pda_contacts_tab.get_ui()
+--	elseif (section == "eptEncyclopedia") then
+--		return ui_pda_encyclopedia_tab.get_ui()
 	end
+
+    return nil
 end 
 
 local map_spot_property = {}
@@ -74,8 +76,10 @@ function actor_menu_mode(mode)
 		--printf("---:>Talk Dialog show")
 	elseif(mode==11) then
 		--printf("---:>Talk Dialog hide")
-		SendScriptCallback("actor_on_leave_dialog",inventory_upgrades.victim_id)
-		inventory_upgrades.victim_id = nil
+		if (ActorMenu.get_actor_menu():IsShown()) then
+			SendScriptCallback("actor_on_leave_dialog",inventory_upgrades.victim_id)
+			inventory_upgrades.victim_id = nil
+		end
 		dialog_closed = true
 	end
 end
@@ -421,7 +425,7 @@ end
 
 -- called from engine! must return string!
 function coc_rankings_set_hint(index)
-	local se_obj = coc_ranking_list[index] ~= nil and alife_object(coc_ranking_list[index])
+	local se_obj = alife():object(index)
 	if (se_obj) then
 		if (se_obj.id == 0) then
 			--TODO: Maybe some stats for player, like rank points per minute; if such a thing is possible.
@@ -498,15 +502,6 @@ function coc_rankings_set_icon(index)
 	if (se_obj) then
 		local icon_name
 		if (se_obj.id == 0) then 
-			if (axr_main.config:r_value("mm_options","enable_outfit_portrait",1,false) == true) then
-				local outfit = db.actor:item_in_slot(7)
-				if (outfit) then 
-					local icon = system_ini():r_string_ex(outfit:section(),"character_portrait")
-					if (icon and icon ~= "") then
-						return icon
-					end
-				end 
-			end
 			icon_name = db.actor:character_icon()
 		else
 			local npc = db.storage[se_obj.id] and db.storage[se_obj.id].object
@@ -524,4 +519,54 @@ end
 function coc_rankings_show_border(index)
 	local se_obj = coc_ranking_list[index] ~= nil and alife_object(coc_ranking_list[index])
 	return se_obj and se_obj.id == 0 or false
+end
+
+-- called from engine! must return string!
+function coc_contacts_get_stalkers_killed(index)
+	local se_obj = alife():object(index)
+	local m_data = alife_storage_manager.get_se_obj_state(se_obj)
+	if (m_data.stalkers_killed) then
+		return strformat("%s", m_data.stalkers_killed)
+	end
+	return "0"
+end
+
+-- called from engine! must return string!
+function coc_contacts_get_mutants_killed(index)
+	local se_obj = alife():object(index)
+	local m_data = alife_storage_manager.get_se_obj_state(se_obj)
+	if (m_data.mutants_killed) then
+		return strformat("%s", m_data.mutants_killed)
+	end
+	return "0"
+end
+
+-- called from engine! must return string!
+function coc_contacts_get_arts_found(index)
+	local se_obj = alife():object(index)
+	local m_data = alife_storage_manager.get_se_obj_state(se_obj)
+	if (m_data.artefacts_found) then
+		return strformat("%s", m_data.artefacts_found)
+	end
+	return "0"
+end
+
+-- called from engine! must return string!
+function coc_contacts_get_items_sold(index)
+	local se_obj = alife():object(index)
+	local m_data = alife_storage_manager.get_se_obj_state(se_obj)
+	if (m_data.items_sold) then
+		return strformat("%s", m_data.items_sold)
+	end
+	return "0"
+end
+
+-- called from engine! must return string!
+function coc_contacts_can_add_contact(owner)
+	local se_obj = alife():object(index)
+	local m_data = alife_storage_manager.get_se_obj_state(se_obj)
+	if (m_data.items_sold) then
+		return strformat("%s", m_data.items_sold)
+	end
+	return true
 end

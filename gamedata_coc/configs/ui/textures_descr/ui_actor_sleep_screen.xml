@@ -49,7 +49,7 @@
 	<texture id="ui_am_prop_time_period" x="825" y="433" width="19" height="19" />
 	<texture id="ui_am_prop_Vibros" x="806" y="547" width="19" height="19" />
 
-	<texture id="ui_am_condition" x="806" y="452" width="19" height="19" />
+	<!--texture id="ui_am_condition" x="806" y="452" width="19" height="19" /-->
 
     <texture id="ui_save_load_back" x="692" y="0" width="288" height="428" />
    </file>

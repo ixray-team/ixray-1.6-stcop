@@ -352,27 +352,10 @@ function actor_item_to_belt(binder,obj)
 end 
 
 function actor_item_to_slot(binder,obj)
-	if (axr_main.config:r_value("mm_options","enable_outfit_portrait",1,false) == true) then
-		local outfit = db.actor:item_in_slot(7)
-		if (outfit and outfit:id() == obj:id()) then 
-			local icon = system_ini():r_string_ex(outfit:section(),"character_portrait")
-			if (icon) then
-				db.actor:set_character_icon(icon)
-			elseif (db.actor_binder.character_icon) then -- use default portrait if no outfit portrait exists
-				db.actor:set_character_icon(db.actor_binder.character_icon)
-			end
-		end
-	end
 	SendScriptCallback("actor_item_to_slot",obj)
 end 
 
 function actor_item_to_ruck(binder,obj)
-    if (axr_main.config:r_value("mm_options","enable_outfit_portrait",1,false) == true) and IsOutfit(obj) then
-        local outfit = db.actor:item_in_slot(7)
-        if (outfit == nil and db.actor_binder.character_icon) then
-            db.actor:set_character_icon(db.actor_binder.character_icon)
-        end
-    end
 	SendScriptCallback("actor_item_to_ruck",obj)
 end
 
