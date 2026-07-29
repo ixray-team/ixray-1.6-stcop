@@ -25,7 +25,9 @@ m_data.se_object = {}
 m_data.game_object = {}
 
 -- PDA known contacts
-m_data.actor_contacts = {}
+-- m_data.actor_contacts = {}
+
+saved_game_extension_ex	= save_extension() .. "_data"
 
 local function on_pstor_load_all(obj,packet)
 	local id = obj:id()
@@ -44,15 +46,15 @@ local function on_pstor_load_all(obj,packet)
 end
 
 function on_game_start()
-	if not (USE_MARSHAL) then 
+	if not isMarshal then 
 		return 
 	end
-	RegisterScriptCallback("on_pstor_load_all",on_pstor_load_all)
+	--RegisterScriptCallback("on_pstor_load_all",on_pstor_load_all)
 end
 
 -- called from engine!
 function CALifeStorageManager_before_save(fname)
-	if not (USE_MARSHAL) then 
+	if not isMarshal then 
 		return 
 	end
 
@@ -60,7 +62,7 @@ function CALifeStorageManager_before_save(fname)
 	
 	m_data.GAME_VERSION = GAME_VERSION
 	
-	SendScriptCallback("save_state",m_data)
+	SendScriptCallback("save_state", m_data)
 	
 	--printf("CALifeStorageManager_before_save AFTER callback")
 	
@@ -95,11 +97,10 @@ function CALifeStorageManager_before_save(fname)
 	end
 		
 	local path = getFS():update_path('$game_saves$', '')
-	
+
 	lfs.mkdir(path) -- incase savegame folder doesn't exist yet
-	
-	path = path .. fname:sub(0,-6):lower() .. ".scoc"
-	
+	path = path .. fname:sub(0,-6):lower() .. saved_game_extension_ex
+
 	local savegame = io.open(path,"wb")
 	if not (io.type(savegame) == "file") then
 		printf("Error: Unable to write to %s",path)
@@ -114,18 +115,40 @@ function CALifeStorageManager_before_save(fname)
 end 
 
 -- called from engine!
+function CALifeStorageManager_after_save(fname)
+	if ffx_path_utils then
+		fname = ffx_path_utils.get_file_name(fname, false)
+	end
+	
+	local _path = getFS():update_path('$game_saves$', '')
+	
+	SendScriptCallback("save_file_created", _path, fname)
+end
+
+-- called from engine!
+function CALifeStorageManager_new_game(fname)
+	if ffx_path_utils then
+		fname = ffx_path_utils.get_file_name(fname, false)
+	end
+	
+	local _path = getFS():update_path('$game_saves$', '')
+	
+	SendScriptCallback("new_game_created", _path, fname)
+end
+
+-- called from engine!
 function CALifeStorageManager_save(fname)
 	--printf("CALifeStorageManager_save START FINISHED")
 end 
 
 -- called from engine
 function CALifeStorageManager_load(fname)
-	if not (USE_MARSHAL) then 
+	if not isMarshal then 
 		return 
 	end 
 
-	local path = fname:sub(0,-6) .. ".scoc"
-	
+	local path = fname:sub(0,-6) .. saved_game_extension_ex
+
 	--alun_utils.debug_write(strformat("CALifeStorageManager_load %s",path))
 	
 	local savegame = io.open(path,"rb")
@@ -148,7 +171,13 @@ function CALifeStorageManager_load(fname)
 	-- For debugging save state
 	--alun_utils.print_table(m_data,"m_data_on_load ("..path..")")
 
-	SendScriptCallback("load_state",m_data)
+	SendScriptCallback("load_state", m_data)
+	
+	if ffx_path_utils then
+		fname = ffx_path_utils.get_file_name(fname, false)
+	end
+	local _path = getFS():update_path('$game_saves$', '')
+	SendScriptCallback("save_file_loaded", _path, fname)
 	
 	--alun_utils.debug_write(strformat("CALifeStorageManager_load END"))
 end
