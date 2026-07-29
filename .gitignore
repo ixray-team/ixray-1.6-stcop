@@ -63,6 +63,7 @@ patch*/
 imgui.ini
 git_version.h
 changelog.txt
+axr_options.ltx
 
 # CLion cache
 cmake-build*/
