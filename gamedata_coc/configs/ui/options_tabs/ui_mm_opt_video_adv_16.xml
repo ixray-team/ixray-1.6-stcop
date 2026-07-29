@@ -1,0 +1,44 @@
+    <video_adv>
+        <scroll_v x="-4" y="-2" width="426" height="291"
+        right_ident="0" left_ident="0" top_indent="0" bottom_indent="0"
+        vert_interval="0" always_show_scroll="0"/>
+
+        <templ_item width="460" height="30"/>
+
+        <cap_template x="15" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c"/>
+        </cap_template>
+        <track_template_float x="147" y="6" width="188" height="16" show_value="1">
+            <options_item entry="console_command_undefined_please_check_your_options_script" group="mm_opt_video_adv"/>
+        </track_template_float>
+        <track_template_int x="147" y="6" width="188" height="16" is_integer="1" show_value="1">
+            <options_item entry="console_command_undefined_please_check_your_options_script" group="mm_opt_video_adv"/>
+        </track_template_int>
+        <check_template x="136" y="0" width="35" stretch="1" height="29">
+	        <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="console_command_undefined_please_check_your_options_script" group="mm_opt_video_adv"/>
+        </check_template>
+        <list_template x="147" y="5" width="188" height="20">
+            <options_item entry="console_command_undefined_please_check_your_options_script" group="mm_opt_video_adv"/>
+            <list_font r="170" g="170" b="170" font="letterica16"/>
+		    <text_color>
+	            <e r="170" g="170" b="170"/>
+	            <d r="70" g="70" b="70"/>
+		    </text_color>
+        </list_template>
+
+        <cap_header_setup x="8" y="0" width="108" height="15">
+            <text r="170" g="170" b="170" font="letterica16" vert_align="c"/>
+        </cap_header_setup>
+        <header_setup x="3" y="7" width="450" height="15">
+            <texture a="150">ui_inGame2_servers_list_button</texture>
+        </header_setup>
+
+        <btn_to_simply x="338" y="299" width="86" height="24" stretch="1">
+            <text align="c" font="letterica16">ui_mm_simply</text>
+            <texture>ui_inGame2_button</texture>
+			<text_color>
+				<e r="210" g="210" b="210"/>
+			</text_color>
+        </btn_to_simply>
+    </video_adv>

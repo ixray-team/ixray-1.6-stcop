@@ -2,7 +2,7 @@
 	<main x="0" y="0" width="1024" height="768"/>
 	<background_static x="0" y="0" width="1024" height="768">
 		<texture>ui_inGame2_pda_texture</texture>
-        <auto_frameline x="42" y="57" width="366" height="27">
+        <auto_frameline x="42" y="57" width="268" height="27">
             <texture>ui_inGame2_pda_buttons_leftside</texture>
         </auto_frameline>
 	    <auto_frameline x="887" y="57" width="96" height="27">
@@ -37,7 +37,7 @@
 		</text>
 	</hint_wnd>
 
-	<tab x="395" y="57" width="468" height="27">
+	<tab x="298" y="57" width="566" height="27">
 	<button x="0" y="0" width="112" height="27" id="eptTasks" hint="pda_btn_quests_hint" frame_mode="0">
 		<text align="c" vert_align="c" x="0" y="0" width="157" height="27" font="letterica16">pda_btn_quests</text>
 		<texture>ui_inGame2_pda_button</texture>
@@ -59,8 +59,19 @@
 			<h r="170" g="170" b="170"/>
 		</text_color>
 	</button>
+
+	<button x="196" y="0" width="112" height="27" id="eptRankingGlobal" hint="pda_btn_ranking_global_hint" frame_mode="0">
+		<text align="c" vert_align="c" x="0" y="0" font="letterica16">pda_btn_ranking_global</text>
+		<texture>ui_inGame2_pda_button</texture>
+		<text_color>
+			<t r="255" g="255" b="255"/>
+			<d r="255" g="255" b="255"/>
+			<e r="200" g="200" b="200"/>
+			<h r="170" g="170" b="170"/>
+		</text_color>
+	</button>
 	
-	<button x="196" y="0" width="112" height="27" id="eptRelations" hint="pda_btn_relations_hint" frame_mode="0">
+	<button x="294" y="0" width="112" height="27" id="eptRelations" hint="pda_btn_relations_hint" frame_mode="0">
 		<text align="c" vert_align="c" x="0" y="0" font="letterica16">pda_btn_relations</text>
 		<texture>ui_inGame2_pda_button</texture>
 		<text_color>
@@ -71,7 +82,7 @@
 		</text_color>
 	</button>
 	
-	<button x="294" y="0" width="112" height="27" id="eptContacts" hint="pda_btn_contacts_hint" frame_mode="0">
+	<button x="392" y="0" width="112" height="27" id="eptContacts" hint="pda_btn_contacts_hint" frame_mode="0">
 		<text align="c" vert_align="c" x="0" y="0" font="letterica16">pda_btn_contacts</text>
 		<texture>ui_inGame2_pda_button</texture>
 		<text_color>
@@ -82,7 +93,7 @@
 		</text_color>
 	</button>
 
-	<button x="392" y="0" width="112" height="27" id="eptLogs" hint="pda_btn_logs_hint" frame_mode="0">
+	<button x="490" y="0" width="112" height="27" id="eptLogs" hint="pda_btn_logs_hint" frame_mode="0">
 		<text align="c" vert_align="c" x="0" y="0" font="letterica16">pda_btn_logs</text>
 		<texture>ui_inGame2_pda_button</texture>
 		<text_color>
