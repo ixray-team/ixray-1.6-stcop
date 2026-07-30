@@ -921,4 +921,7 @@
 	<string id="st_ui_intoxication_sensor">
 		<text>Медикаментозная интоксикация</text>
 	</string>
+	<string id="st_quicksaves_count">
+		<text>Кол-во быстрых сохранений</text>
+	</string>
 </string_table>
