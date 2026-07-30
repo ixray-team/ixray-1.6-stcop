@@ -30,7 +30,7 @@ end
 function heli_move:reset_scheme( loading )
 	--printf("heli_move: START reset_scheme: loading[%s] %s",loading,self.object:name())
     self.a.signals = {}
-    self.heliObject:TurnEngineSound(self.a.engine_sound and axr_main.config:r_value("mm_options","enable_heli_engine_sound",1,false))
+    self.heliObject:TurnEngineSound(self.a.engine_sound and GetRegistryValue("coc_core", "coc_heli_engine_sound", true))
 ----------------------------------Вейпоинты - Начало------------------------------------------------
 
 	if (self.a.path_move) then 

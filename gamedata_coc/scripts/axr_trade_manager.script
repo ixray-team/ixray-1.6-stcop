@@ -243,7 +243,7 @@ function npc_trade_buy_sell(npc)
 	end
 	
 	if (#buy_sell_items > 0) then 
-		if (dynamic_news_manager and axr_main.config:r_value("mm_options","enable_dynamic_news",1)) then 
+		if dynamic_news_manager and GetRegistryValue("coc_core", "coc_dynamic_news", true) then 
 			dynamic_news_manager.get_dynamic_news():BoughtItems(npc,seller,buy_sell_items)
 		end
 	end

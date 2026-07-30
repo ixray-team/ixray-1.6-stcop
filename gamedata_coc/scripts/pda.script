@@ -433,11 +433,6 @@ function coc_rankings_set_hint(index)
 		else
 			local return_str = ""
 			
-			-- DEBUG REMOVE ME LATER
-			if(DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
-				return_str = se_obj:profile_name() .. [[ \n]] .. se_obj:character_icon() .. [[ \n]]
-			end 
-			
 			-- stalker stats
 			local m_data = alife_storage_manager.get_se_obj_state(se_obj)
 			if (m_data) then
