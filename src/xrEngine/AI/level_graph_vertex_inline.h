@@ -142,6 +142,139 @@ IC ILevelGraph::ELineIntersections  ILevelGraph::intersect(
 	return (LevelGraph::eLineIntersectionIntersect);
 } /* lines_intersect */
 
+IC ILevelGraph::ELineIntersections ILevelGraph::intersect3D(
+    float x1, float y1, float z1,  // Первая точка
+    float x2, float y2, float z2,  // Вторая точка
+    float x3, float y3, float z3,  // Третья точка
+    float x4, float y4, float z4,  // Четвертая точка
+    float* x, float* y, float* z   // Точка пересечения
+) const {
+    const float EPS = 1e-6f;
+    
+    // --- Проверка пересечения в XY плоскости (как в исходной функции) ---
+    float a1 = y2 - y1;
+    float b1 = x1 - x2;
+    float c1 = x2 * y1 - x1 * y2;
+    
+    float r3 = a1 * x3 + b1 * y3 + c1;
+    float r4 = a1 * x4 + b1 * y4 + c1;
+    
+    if ((r3 * r4 > EPS) && !fis_zero(r3, EPS) && !fis_zero(r4, EPS)) {
+        return LevelGraph::eLineIntersectionNone;
+    }
+    
+    float a2 = y4 - y3;
+    float b2 = x3 - x4;
+    float c2 = x4 * y3 - x3 * y4;
+    
+    float r1 = a2 * x1 + b2 * y1 + c2;
+    float r2 = a2 * x2 + b2 * y2 + c2;
+    
+    if ((r1 * r2 > EPS) && !fis_zero(r1, EPS) && !fis_zero(r2, EPS)) {
+        return LevelGraph::eLineIntersectionNone;
+    }
+    
+    // Проверка на совпадение (равенство) в XY
+    if (fis_zero(r1 * r2, EPS) && fis_zero(r3 * r4, EPS)) {
+        // Проверяем, совпадают ли отрезки и по Z
+        float dz1 = z2 - z1;
+        float dz2 = z4 - z3;
+        float dz3 = z3 - z1;
+        
+        // Если оба отрезка имеют нулевую длину по Z и начинаются в одной точке
+        if (fis_zero(dz1, EPS) && fis_zero(dz2, EPS) && fis_zero(dz3, EPS)) {
+            return LevelGraph::eLineIntersectionEqual;
+        }
+        
+        // Проверяем коллинеарность в 3D
+        // Векторы направлений
+        float dx1 = x2 - x1, dy1 = y2 - y1;
+        float dx2 = x4 - x3, dy2 = y4 - y3;
+        
+        // Проверка коллинеарности (векторное произведение = 0)
+        float cross_x = dy1 * dz2 - dz1 * dy2;
+        float cross_y = dz1 * dx2 - dx1 * dz2;
+        float cross_z = dx1 * dy2 - dy1 * dx2;
+        
+        if (fis_zero(cross_x, EPS) && fis_zero(cross_y, EPS) && fis_zero(cross_z, EPS)) {
+            return LevelGraph::eLineIntersectionCollinear;
+        }
+        
+        // Если не коллинеарны, но в XY пересекаются в одной точке - 
+        // значит пересекаются в 3D
+        // Вычисляем точку пересечения
+        float denom = a1 * b2 - a2 * b1;
+        if (fis_zero(denom, EPS)) return LevelGraph::eLineIntersectionCollinear;
+        
+        float num = b1 * c2 - b2 * c1;
+        *x = num / denom;
+        num = a2 * c1 - a1 * c2;
+        *y = num / denom;
+        
+        // Вычисляем Z через параметрическое уравнение первого отрезка
+        float t;
+        if (!fis_zero(x2 - x1, EPS)) {
+            t = (*x - x1) / (x2 - x1);
+        } else if (!fis_zero(y2 - y1, EPS)) {
+            t = (*y - y1) / (y2 - y1);
+        } else {
+            // Отрезок вырожденный
+            *z = z1;
+            return LevelGraph::eLineIntersectionIntersect;
+        }
+        *z = z1 + t * (z2 - z1);
+        
+        return LevelGraph::eLineIntersectionIntersect;
+    }
+    
+    // --- Вычисляем точку пересечения в XY ---
+    float denom = a1 * b2 - a2 * b1;
+    if (fis_zero(denom, EPS)) {
+        return LevelGraph::eLineIntersectionCollinear;
+    }
+    
+    float num = b1 * c2 - b2 * c1;
+    *x = num / denom;
+    num = a2 * c1 - a1 * c2;
+    *y = num / denom;
+    
+    // --- Проверяем, что точка пересечения находится на отрезках по Z ---
+    // Вычисляем параметр t для первого отрезка по XY
+    float t1;
+    if (!fis_zero(x2 - x1, EPS)) {
+        t1 = (*x - x1) / (x2 - x1);
+    } else if (!fis_zero(y2 - y1, EPS)) {
+        t1 = (*y - y1) / (y2 - y1);
+    } else {
+        // Первый отрезок - точка
+        t1 = 0;
+    }
+    
+    // Вычисляем параметр t для второго отрезка по XY
+    float t2;
+    if (!fis_zero(x4 - x3, EPS)) {
+        t2 = (*x - x3) / (x4 - x3);
+    } else if (!fis_zero(y4 - y3, EPS)) {
+        t2 = (*y - y3) / (y4 - y3);
+    } else {
+        // Второй отрезок - точка
+        t2 = 0;
+    }
+    
+    // Вычисляем Z для обоих отрезков в точке пересечения XY
+    float z_on_first = z1 + t1 * (z2 - z1);
+    float z_on_second = z3 + t2 * (z4 - z3);
+    
+    // Если Z совпадают - отрезки пересекаются в 3D
+    if (fis_zero(z_on_first - z_on_second, EPS)) {
+        *z = (z_on_first + z_on_second) / 2.0f;
+        return LevelGraph::eLineIntersectionIntersect;
+    }
+    
+    // Иначе пересечения в 3D нет
+    return LevelGraph::eLineIntersectionNone;
+}
+
 IC ILevelGraph::ELineIntersections  ILevelGraph::intersect_no_check( 
 					   float x1, float y1,		/* First line segment */
 					   float x2, float y2,

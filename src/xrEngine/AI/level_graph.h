@@ -162,6 +162,13 @@ public:
 	IC		float	distance					(const CPosition &position, const u32 vertex_id) const;
 	IC		ELineIntersections	intersect		(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float *x, float *y) const;
 	IC		ELineIntersections	intersect_no_check(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float *x, float *y) const;
+	IC		ELineIntersections  intersect3D(
+				float x1, float y1, float z1,  // Первая точка
+				float x2, float y2, float z2,  // Вторая точка
+				float x3, float y3, float z3,  // Третья точка
+				float x4, float y4, float z4,  // Четвертая точка
+				float* x, float* y, float* z   // Точка пересечения
+			) const;
 	IC		bool	similar						(const Fvector &point0, const Fvector &point1) const;
 	IC		bool	inside						(const Fvector &point, const SContour &contour) const;
 	IC		void	intersect					(SSegment &segment, const SContour &contour0, const SContour &contour1) const;
