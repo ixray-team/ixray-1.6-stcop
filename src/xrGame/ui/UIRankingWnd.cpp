@@ -1062,15 +1062,15 @@ const char* CUIRankingWnd::GetStatValue(const StatItem& item, const u32 index) c
 		}
 	}
 
-	if (TryFormatActorStatByIndex(actor, index, actorStatBuffer))
-	{
-		return actorStatBuffer;
-	}
-
 	const char* indexValue = nullptr;
 	if (PdaScriptBridge::TryCall(PdaScript::GetStat, index, indexValue) && indexValue && indexValue[0])
 	{
 		return indexValue;
+	}
+
+	if (TryFormatActorStatByIndex(actor, index, actorStatBuffer))
+	{
+		return actorStatBuffer;
 	}
 
 	return "";
