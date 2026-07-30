@@ -101,6 +101,8 @@ void UIImageEditorForm::Draw()
 				UpdateSelected();
 				HideLib();
 			}
+			ImGui::SameLine();
+			ImGui::Checkbox("Delete Sources", &m_bDeleteSourceTextures);
 		}
 		ImGui::EndGroup();
 	}
@@ -385,7 +387,7 @@ void UIImageEditorForm::UpdateLib()
 	if (bImportMode && !texture_map.empty())
 	{
 		AStringVec modif;
-		ImageLib.SafeCopyLocalToServer(texture_map);
+		ImageLib.SafeCopyLocalToServer(texture_map, m_bDeleteSourceTextures);
 		// rename with folder
 		FS_FileSet files = texture_map;
 		texture_map.clear();
