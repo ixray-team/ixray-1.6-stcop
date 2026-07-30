@@ -1,4 +1,5 @@
 local actor_exists = false
+local ini = system_ini()
 
 function has_actor()
 	if actor_exists then
@@ -73,8 +74,6 @@ function create(tbl)
 end
 
 function get_inv_name(section)
-	local ini = system_ini()
-
 	return game.translate_string(ini:section_exist(section) and ini:line_exist(section, "inv_name") and ini:r_string(section, "inv_name") or section) or section
 end 
 
@@ -128,4 +127,103 @@ function set_condition(gobj_client, float_condition)
 		
 		gobj_client:set_condition(float_condition)
 	end
+end
+
+function to_game_object(obj, def_value)
+	if not obj or (type(obj) ~= "userdata" and type(obj) ~= "table") then
+		return {
+			id = function () return def_value end,
+			section = function () return def_value end,
+			name = function () return def_value end,
+			alive = function () return def_value end,
+			level_vertex_id = function () return def_value end,
+			game_vertex_id = function () return def_value end,
+			position = function () return vector():set(0,0,0) end,
+			is_valid = function () return false end,
+			is_client_object = function () return false end,
+			is_server_object = function () return false end,
+			await_online = function (callable_fn) end,
+		}
+	end
+	
+	if type(obj.id) == "function" then
+		return {
+			id = function () return obj:id() end,
+			section = function () return obj:section() end,
+			name = function () return obj:section().."_"..obj:id() end,
+			alive = function () return obj:alive() end,
+			level_vertex_id = function () return obj:level_vertex_id() end,
+			game_vertex_id = function () return obj:game_vertex_id() end,
+			position = function () return obj:position() end,
+			is_valid = function () return true end,
+			is_client_object = function () return true end,
+			is_server_object = function () return false end,
+			await_online = function (self, callable_fn)
+				if callable_fn and type(callable_fn) == "function" then
+					callable_fn(obj)
+				else
+					SemiLog("! error:"..script_name() .. " to_game_object::await_online callable function type is " .. tostring(type(callable_fn)))
+				end
+			end,
+		}
+	else
+		return {
+			id = function () return obj.id end,
+			section = function () return obj:section_name() end,
+			name = function () return obj:section_name().."_".. tostring(obj.id) end,
+			alive = function () return obj:alive() end,
+			level_vertex_id = function () return obj.m_level_vertex_id end,
+			game_vertex_id = function () return obj.m_game_vertex_id end,
+			position = function () return obj.position end,
+			is_valid = function () return true end,
+			is_client_object = function () return false end,
+			is_server_object = function () return true end,
+			await_online = function (self, callable_fn)
+				if callable_fn and type(callable_fn) == "function" then
+					level.client_spawn_manager():add(obj.id, -1, function (id_gobj, gobj_client)
+						callable_fn(gobj_client)
+					end)
+				else
+					SemiLog("! error:"..script_name() .. " to_game_object::await_online callable function type is " .. tostring(type(callable_fn)))
+				end
+			end,
+		}
+	end
+end
+
+function test_to_game_object(_gobj)
+	if _gobj == nil then 
+		_gobj = db.actor
+	end
+	
+	local gobj_a =ffx_object_utils.to_game_object(alife():object(_gobj:id()))
+		local gobj_b =ffx_object_utils.to_game_object(_gobj)
+		SemiLog("id_a:" .. tostring(gobj_a:id()))
+		SemiLog("id_b:" .. tostring(gobj_b:id()))
+		SemiLog("section_a:" .. tostring(gobj_a:section()))
+		SemiLog("section_b:" .. tostring(gobj_b:section()))
+		SemiLog("name_a:" .. tostring(gobj_a:name()))
+		SemiLog("name_b:" .. tostring(gobj_b:name()))
+		SemiLog("alive_a:" .. tostring(gobj_a:alive()))
+		SemiLog("alive_b:" .. tostring(gobj_b:alive()))
+		SemiLog("level_vertex_id_a:" .. tostring(gobj_a:level_vertex_id()))
+		SemiLog("level_vertex_id_b:" .. tostring(gobj_b:level_vertex_id()))
+		SemiLog("game_vertex_id_a:" .. tostring(gobj_a:game_vertex_id()))
+		SemiLog("game_vertex_id_b:" .. tostring(gobj_b:game_vertex_id()))
+		SemiLog("position_a:" .. " x:" ..tostring(gobj_a:position().x) .. " y:" .. tostring(gobj_a:position().y).. " z:" .. tostring(gobj_a:position().z))
+		SemiLog("position_b:" .. " x:" ..tostring(gobj_b:position().x) .. " y:" .. tostring(gobj_b:position().y).. " z:" .. tostring(gobj_b:position().z))
+		SemiLog("is_valid_a:" .. tostring(gobj_a:is_valid()))
+		SemiLog("is_valid_b:" .. tostring(gobj_b:is_valid()))
+		SemiLog("is_client_object_a:" .. tostring(gobj_a:is_client_object()))
+		SemiLog("is_client_object_b:" .. tostring(gobj_b:is_client_object()))
+		SemiLog("is_server_object_a:" .. tostring(gobj_a:is_server_object()))
+		SemiLog("is_server_object_b:" .. tostring(gobj_b:is_server_object()))
+		
+		gobj_a:await_online(function (gobj) 
+			SemiLog("await_online_a:" .. tostring(gobj:section()))
+		end)
+		
+		gobj_b:await_online(function (gobj) 
+			SemiLog("await_online_b:" .. tostring(gobj:section()))
+		end)
 end
