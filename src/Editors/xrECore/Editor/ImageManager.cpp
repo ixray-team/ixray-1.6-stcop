@@ -322,33 +322,6 @@ void CImageManager::SafeCopyLocalToServer(FS_FileSet& files)
 
 		Msg("File %s copied to rawdata", files_vec[i]->name.c_str());
 	});
-
-	/*FS_FileSetIt it	= files.begin();
-	FS_FileSetIt _E = files.end();
-
-	for (; it != _E; it++)
-	{
-		xr_string fn;
-
-		// copy sources
-		fn = it->name;
-		xr_strconcat(src_name, p_import, fn.c_str());
-		UpdateFileName(fn);
-
-		xr_strconcat(dest_name, p_textures, EFS.ChangeFileExt(fn, ".tga").c_str());
-
-		if (0 == strcmp(strext(src_name), ".tga"))
-		{
-			FS.file_copy(src_name, dest_name);
-		}
-		else
-		{
-			// convert to TGA
-			DXTUtils::Converter::MakeTGA(src_name, dest_name);
-		}
-		FS.set_file_age(dest_name, xr_chrono_to_time_t(std::chrono::system_clock::now()));
-		EFS.MarkFile(src_name, true);
-	}*/
 }    
 //------------------------------------------------------------------------------
 // возвращает список не синхронизированных (модифицированных) текстур
@@ -471,7 +444,25 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 		if (bProgress)
 		{
 			xrCriticalSectionGuard g(ProgressCS);
-			pb->Inc(bUpdated ? xr_string(base_name+(bFailed?" - FAILED":" - UPDATED.")).c_str() : base_name.c_str(), bFailed);
+			if (bUpdated)
+			{
+				xr_stack_string256 Message = base_name.c_str();
+				if (bFailed)
+				{
+					Message += " - FAILED (";
+				} else
+				{
+					Message += " - UPDATED (";
+				}
+				Message += std::to_string(int(pb->progress)+1).c_str();
+				Message += "/";
+				Message += std::to_string(int(pb->max)).c_str();
+				Message += ")";
+				pb->Inc(Message.c_str(), bFailed);
+			} else
+			{
+				pb->Inc(base_name.c_str(), bFailed);
+			}
 		}
 			
 		if (bUpdated){
