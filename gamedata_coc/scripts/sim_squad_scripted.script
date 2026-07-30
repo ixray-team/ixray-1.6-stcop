@@ -1023,7 +1023,7 @@ function sim_squad_scripted:can_switch_online()
 		end
 		
 		if (db.actor and db.spawned_vertex_by_id[self:commander_id()] == nil) then
-			local dist = axr_main.config:r_value("mm_options","excl_dist",2) or 0
+			local dist = GetRegistryValue("coc_core", "coc_excl_dist", 25)
 			if (dist > 0 and not db.actor:has_info("actor_is_sleeping")) then 
 				local actor = alife():actor()
 				if (self.position:distance_to(actor.position) <= dist) then
@@ -1088,15 +1088,7 @@ function sim_squad_scripted:show()
 	end
 	local spot = ""
 
-	if (DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
-		if (DEV_DEBUG_HOLD_ACTION_1) then 
-			if (self.assigned_target_id ~= nil and smart_terrain.nearest_to_actor_smart.id == self.assigned_target_id) then 
-				spot = "storyline_task_location"
-			end
-		else
-			spot = "storyline_task_location"
-		end
-	elseif not(is_squad_monster[self.player_id]) then
+	if not(is_squad_monster[self.player_id]) then
 		local relation = game_relations.get_squad_relation_to_actor_by_id(self.id)
 		if(relation=="friends") then
 			spot = "alife_presentation_squad_friend"
@@ -1124,29 +1116,7 @@ function sim_squad_scripted:show()
 end
 
 function sim_squad_scripted:get_squad_props()
-	if (DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
-		local assigned_target = self.assigned_target_id and alife_object(self.assigned_target_id)
-		local current_target = self.current_target_id and alife_object(self.current_target_id)
-
-		local t = "%s\\n\\n%s\\n\\nnpcs=%s\\n\\ncurrent_target=%s\\nassigned_target=%s\\n\\n"
-		t = strformat(t,self.disabled and "[disabled]" or "",self:name(),self:npc_count(),self.current_target_id == 0 and "actor" or current_target and current_target:name(),self.assigned_target_id == 0 and "actor" or assigned_target and assigned_target:name())
-
-		if (self.current_action) then
-			if (self.current_action == 0) then 
-				t = t .. "Trying to Reach Target"
-			elseif (self.current_action == 1) then 
-				t = t .. "Stay On Target"
-			end
-			
-			if (self.current_action == 1 and self.stay_time) then
-				t = strformat("%s = %s (%s)",t,tostring(self.idle_time - game.get_game_time():diffSec(self.stay_time)),self.idle_time)
-			end
-		end
-
-		return t
-	else
-		return game.translate_string(self.player_id)
-	end
+	return game.translate_string(self.player_id)
 end
 
 --***********************************************************************************************

@@ -364,10 +364,6 @@ function on_game_start()
 						["toggle_right_hud"] = ini:r_string_ex(sect,"keybind_toggle_right_hud","F3")
 					}
 	end
-	
-	if (axr_main.config:r_value("mm_options","enable_debug_hud",1,false) and level.present()) then
-		activate_feature()
-	end
 end 
 
 -- NPC target for hud display ( nil = off )

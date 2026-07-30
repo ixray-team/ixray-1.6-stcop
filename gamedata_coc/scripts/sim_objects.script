@@ -73,11 +73,6 @@ function show_object_spot(obj)
 	end
 
 	objects[obj.id].flags.marked = true
-
-	local community = getObjComunity(obj)
-	if(DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
-		level.map_add_object_spot(obj.id, "alife_presentation_"..community, obj:name())
-	end
 end
 
 --' Убрать объект с карты
@@ -87,11 +82,6 @@ function hide_object_spot(obj)
 	end
 
 	objects[obj.id].flags.marked = false
-
-	local community = getObjComunity(obj)
-	if(DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
-		level.map_remove_object_spot(obj.id, "alife_presentation_"..community)
-	end 
 end
 
 --' Получить группировку объекта

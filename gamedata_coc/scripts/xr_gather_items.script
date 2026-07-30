@@ -171,7 +171,7 @@ function gather_item(npc)
 		local artefact = itm:get_artefact()
 		artefact:FollowByPath("NULL",0,vector():set(500,500,500))
 		
-		if (dynamic_news_manager and axr_main.config:r_value("mm_options","enable_dynamic_news",1)) then 
+		if (dynamic_news_manager and GetRegistryValue("coc_core", "coc_dynamic_news", true)) then 
 			dynamic_news_manager.get_dynamic_news():FoundArtefact(npc,itm)
 		end
 		

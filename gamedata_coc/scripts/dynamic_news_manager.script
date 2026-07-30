@@ -27,7 +27,7 @@ function on_game_start()
 	
 	destroy_dynamic_news()
 	
-	if (axr_main.config:r_value("mm_options","enable_dynamic_news",1,true) == false) then
+	if not GetRegistryValue("coc_core", "coc_dynamic_news", true) then
 		return 
 	end
 		
@@ -40,7 +40,9 @@ end
 ----------------------------------------------------------------------------------------------------
 class "DynamicNewsManager"
 function DynamicNewsManager:__init()
-
+	if not db.actor then
+		return
+	end
 	local comm = db.actor:character_community()
 	if (comm ~= "actor") then 
 		comm = comm:sub(7) -- remove 'actor_' prefix
@@ -96,7 +98,7 @@ function DynamicNewsManager:destroy()
 end
 
 function DynamicNewsManager:NewsTick()
-	if (axr_main.config:r_value("mm_options","enable_dynamic_news",1,true) == false) then
+	if not GetRegistryValue("coc_core", "coc_dynamic_news", true) then
 		return true
 	end
 	
@@ -125,7 +127,7 @@ function DynamicNewsManager:NewsTick()
 end
 
 function DynamicNewsManager:TickSpecialEvent()
-	if (axr_main.config:r_value("mm_options","enable_dynamic_news",1,true) == false) then
+	if not GetRegistryValue("coc_core", "coc_dynamic_news", true) then
 		return true
 	end
 

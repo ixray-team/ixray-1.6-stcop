@@ -270,8 +270,8 @@ function simulation_board:fill_start_position()
 		setting_ini = ini_file("misc\\simulation.ltx")
 	end 
 	
-	local stalker_pop_factor = (axr_main.config:r_value("mm_options","alife_stalker_pop",2) or 1)
-	local monster_pop_factor = (axr_main.config:r_value("mm_options","alife_mutant_pop",2) or 1)
+	local stalker_pop_factor = GetRegistryValue("coc_core", "coc_alife_stalker_pop", 0.5)
+	local monster_pop_factor = GetRegistryValue("coc_core", "coc_alife_mutant_pop", 0.5)
 		
 	local result, squad_section, count, li, lc
 	setting_ini:section_for_each(function(section)

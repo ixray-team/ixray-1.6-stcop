@@ -97,7 +97,7 @@ function sleep_dialog:TestAndShow()
 
 	-- Prevent sleep if not tired, but only if sleep deprivation is enabled.
 	-- If the player has drunk too many energy drinks they will be too wired to sleep.
-	if (axr_main.config:r_value("mm_options","enable_sleep_deprived",1,false) == true) then
+	if GetRegistryValue("coc_core", "coc_sleep_deprived", false) then
 		if (sleep_dep) then
 			if (sleep_dep.caff_chk and sleep_dep.caff_chk > 0) then
 				SetHudMsg(game.translate_string("st_sleep_awake_wired"),4)
