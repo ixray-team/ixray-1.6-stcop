@@ -1,0 +1,358 @@
+class "opt_controller_layout" (CUIScriptWnd)
+
+function opt_controller_layout:__init() super()
+	self.focusIndex = 1
+	
+	action_repeaters():Register(self, key_bindings.kUI_UP, 0, 0)
+	action_repeaters():Register(self, key_bindings.kUI_DOWN, 0, 0)
+end
+
+function opt_controller_layout:__finalize()
+	action_repeaters():UnregisterOwner(self)
+end
+
+function opt_controller_layout:UpdateStrings()
+	local typeIdx = self.focusList[1][2]:GetCurrentIdx() + 1
+
+	for k,v in pairs(ui_mm_opt_controller_layout_captions.captions[1][typeIdx][1]) do
+		self.capElements[k]:TextControl():SetText(game.translate_string(v))
+	end
+	
+	for k,v in pairs(ui_mm_opt_controller_layout_captions.captions[1][typeIdx][2]) do
+		self.capElements[k]:TextControl():SetText(game.translate_string(v))
+	end
+end 
+
+function opt_controller_layout:InitCallbacks()
+	self:AddCallback("btn_accept",			ui_events.BUTTON_CLICKED,	self.OnAccept,			self)
+	self:AddCallback("controls_type",		ui_events.LIST_ITEM_SELECT,	self.UpdateStrings,		self)
+end
+
+function opt_controller_layout:InitControls() 
+	
+	self.focusList = {}
+	self.capElements = {}
+	local caption, element
+	
+	self:SetWndRect				(Frect():set(0,0,1024,768))
+	self:Enable					(true)
+	self:SetAutoDelete(true)
+	local xml					= CScriptXmlInit()
+	xml:ParseFile				("ui_mm_opt_controller_layout.xml")
+
+	self.dialog	= xml:InitStatic("main_dialog:dialog", self)
+	self.bk = xml:InitFrame("main_dialog:frame", self.dialog)
+	self.gamepad_legend = xml:InitGamepadLegend("gamepad_legend", self)
+	
+	self.sndSwitch	= sound_object("interface\\console\\menu_switch")
+	self.sndAccept	= sound_object("interface\\console\\menu_accept")
+	self.sndDecline	= sound_object("interface\\console\\menu_decline")
+	
+	caption = xml:InitStatic("main_dialog:cap_controlls_type",self.bk)
+	element = xml:InitComboBox("main_dialog:list_controlls_type",self.bk)
+	element:AddItem("c_type_general", 	1)
+	element:AddItem("c_type_zomming", 	2)
+	element:AddItem("c_type_wheel", 	3)
+	element:AddItem("c_type_talk", 		4)
+	element:AddItem("c_type_trade", 	5)
+	element:AddItem("c_type_inventory", 6)
+	self:Register(element, "controls_type")
+	table.insert(self.focusList, {caption, element} )
+	
+	local prefix = ui.gamepad_prefix()
+
+	platform = "xbox_layout"
+	if prefix == "ps4" then
+        platform = "ps_layout"
+	elseif prefix == "ps5" then
+        platform = "ps5_layout"
+	elseif prefix == "switch" then
+        platform = "nx64_layout"
+	end
+	
+	local controls	= xml:InitStatic(platform, self)
+	self.bg		= xml:InitStatic(platform..":background_controller", controls)
+	
+	local leftcap = xml:InitStatic(platform..":left_cap", controls)
+	local right_cap = xml:InitStatic(platform..":right_cap", controls)
+
+	local cap 
+	for k,v in pairs(ui_mm_opt_controller_layout_captions.captions[1][1][1]) do
+		cap = xml:InitStatic(platform..":left_cap:"..k, leftcap)
+		cap:TextControl():SetText(game.translate_string(v))
+		self.capElements[k] = cap 
+	end
+	
+	for k,v in pairs(ui_mm_opt_controller_layout_captions.captions[1][1][2]) do
+		cap = xml:InitStatic(platform..":right_cap:"..k, right_cap)
+		cap:TextControl():SetText(game.translate_string(v))
+		self.capElements[k] = cap 
+	end
+	
+	self.btnAccept = xml:Init3tButton("main_dialog:btn_accept", controls)
+	self:Register(self.btnAccept, "btn_accept")
+
+	self:OnElementSetSelected(self.focusIndex, true)
+	self:Reset()
+	self.xml = xml
+end
+
+function opt_controller_layout:ReloadGamepadTextures()
+	self.gamepad_legend:ReloadLegend()
+	
+	local prefix = ui.gamepad_prefix()
+
+	platform = "xbox_layout"
+	if prefix == "ps4" then
+        platform = "ps_layout"
+	elseif prefix == "ps5" then
+        platform = "ps5_layout"
+	elseif prefix == "switch" then
+        platform = "nx64_layout"
+	end
+	
+	local texName = self.xml:ReadValue(platform..":background_controller:texture", 0)
+	self.bg:InitTexture(texName)
+	
+	for k,v in pairs(ui_mm_opt_controller_layout_captions.captions[1][1][1]) do
+		texName = self.xml:ReadValue(platform..":left_cap:"..k..":auto_static:texture", 0)
+		local static = self.capElements[k]:FindStatic("auto_static_0")
+		if static then
+			static:InitTexture(texName)
+		end
+	end
+	
+	for k,v in pairs(ui_mm_opt_controller_layout_captions.captions[1][1][2]) do
+		texName = self.xml:ReadValue(platform..":right_cap:"..k..":auto_static:texture", 0)
+		local static = self.capElements[k]:FindStatic("auto_static_0")
+		if static then
+			static:InitTexture(texName)
+		end
+	end
+	
+end
+
+function opt_controller_layout:Reset()
+	local element = self.focusList[1][2]
+	if element ~= nil then
+		if element:GetSize() == 0 then return end
+		self.focusList[1][2]:SetItemIDX(0)
+		self:UpdateStrings()
+	end
+end
+
+function opt_controller_layout:OnGamepadKey(id, gamepad_action)
+	local bindUI = dik_to_bind(id, action_groups.agUIGeneral)
+	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
+		
+		if bindUI == key_bindings.kUI_DOWN then
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+				local element = self.focusList[self.focusIndex][2]
+				local elementInfo = class_info(element)
+				local elementClass = elementInfo.name
+				if elementClass == 'CUIComboBox' and element:IsListShown() then
+					element:GetListBox():NextItem(true)
+				else
+					self:OnElementChangeSelection(1, true)
+				end
+			end
+			action_repeaters():SetActionStarted(self, key_bindings.kUI_DOWN)
+			return true
+		
+		elseif bindUI == key_bindings.kUI_UP then
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+				local element = self.focusList[self.focusIndex][2]
+				local elementInfo = class_info(element)
+				local elementClass = elementInfo.name
+				if elementClass == 'CUIComboBox' and element:IsListShown() then
+					element:GetListBox():PrevItem(true)
+				else
+					self:OnElementChangeSelection(-1, true)
+				end
+			end
+			action_repeaters():SetActionStarted(self, key_bindings.kUI_UP)
+			return true
+		elseif bindUI == key_bindings.kUI_BACK then
+			local element = self.focusList[self.focusIndex][2]
+			local elementInfo = class_info(element)
+			local elementClass = elementInfo.name
+	
+			if elementClass == 'CUIComboBox' and element:IsListShown() then
+				element:ShowList(false)
+			else
+				self:OnAccept()
+			end
+			return true
+		elseif bindUI == key_bindings.kUI_ACCEPT then
+			local element = self.focusList[self.focusIndex][2]
+			self:OnElementAbuttonPress(element)
+			return true
+		elseif bindUI == key_bindings.kUI_LEFT then
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+				local element = self.focusList[self.focusIndex][2]
+				self:OnElementGpadPress(element, false)
+			end
+			return true					
+		elseif bindUI == key_bindings.kUI_RIGHT then	
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+				local element = self.focusList[self.focusIndex][2]
+				self:OnElementGpadPress(element, true)
+			end
+			return true
+		end
+	end
+
+	return CUIScriptWnd.OnGamepadKey(self,id,gamepad_action)
+end
+
+function opt_controller_layout:OnGamepadKeyHold(id)
+	local bindUI = dik_to_bind(id, action_groups.agUIGeneral)
+	if self.mm_is_controller then 	
+		if bindUI == key_bindings.kUI_DOWN then
+			if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_DOWN) 
+			and not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+				local element = self.focusList[self.focusIndex][2]
+				local elementInfo = class_info(element)
+				local elementClass = elementInfo.name
+				if elementClass == 'CUIComboBox' and element:IsListShown() then
+					element:GetListBox():NextItem(true)
+				else
+					self:OnElementChangeSelection(1, false)
+				end
+			end
+			return true
+			
+		elseif bindUI == key_bindings.kUI_UP then
+			if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_UP) 
+			and not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+				local element = self.focusList[self.focusIndex][2]
+				local elementInfo = class_info(element)
+				local elementClass = elementInfo.name
+				if elementClass == 'CUIComboBox' and element:IsListShown() then
+					element:GetListBox():PrevItem(true)
+				else
+					self:OnElementChangeSelection(-1, false) 
+				end
+			end
+			return true
+		end
+	end
+
+	return CUIScriptWnd.OnGamepadKeyHold(self,id)
+end
+
+function opt_controller_layout:OnElementChangeSelection(offset, loop)
+
+	local eltCount = #self.focusList
+	local newFocusIndex = self.focusIndex + offset
+
+	if newFocusIndex > eltCount then
+		if loop then
+			newFocusIndex = 1
+		else
+			return false
+		end
+	elseif newFocusIndex < 1 then
+		if loop then
+			newFocusIndex = eltCount
+		else
+			return false
+		end
+	end
+	
+--	self.sndSwitch:play(nil, 0.0, sound_object.s2d)
+	
+	self:OnElementSetSelected(self.focusIndex, false)
+	self.focusIndex = newFocusIndex	
+	self:OnElementSetSelected(self.focusIndex, true)
+	return true
+end
+
+function opt_controller_layout:OnElementSetSelected(eltIndex, on)
+
+	local eltCount = #self.focusList
+	if eltIndex < 1 or eltIndex > eltCount then
+		return
+	end
+
+	local focusRecord = self.focusList[eltIndex]
+	local caption = focusRecord[1]
+	local element = focusRecord[2]
+	
+	element:SetHighlighted(on)
+
+	if on then
+		caption:SetTextColor(255, 255, 255, 255)
+	else
+		caption:SetTextColor(255, 240, 217, 182)
+	end
+end
+
+
+function opt_controller_layout:OnElementGpadPress(element, right)
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+	
+	if elementClass == 'CUIComboBox' then
+
+		local comboCnt = element:GetSize()
+		if comboCnt == 0 then return end
+		
+		local idx = element:GetCurrentIdx()
+		if idx == index_for_not_found then idx = 0
+		elseif right then
+			idx = idx + 1
+			if idx >= comboCnt then
+				idx = 0
+			end
+--			self.sndDecline:play(nil, 0.0, sound_object.s2d)
+		else
+			idx = idx - 1
+			if idx < 0 then
+				idx = comboCnt-1
+			end
+--			self.sndDecline:play(nil, 0.0, sound_object.s2d)
+		end
+		
+		element:SetItemIDX(idx)
+		
+		self:UpdateStrings()
+		
+	end
+end
+
+function opt_controller_layout:OnAccept()
+--	self.sndAccept:play(nil, 0.0, sound_object.s2d)
+	self.owner:OnBtnExitGamepadLayout()
+end
+
+function opt_controller_layout:OnElementAbuttonPress(element)
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+	
+	if elementClass == 'CUIComboBox' then
+		if element:IsListShown() then
+			element:OnListItemSelect()
+			self:UpdateStrings()
+		else
+			element:ShowList(true)
+		end
+	end
+end
+
+
+function opt_controller_layout:Update()
+	CUIScriptWnd.Update(self)
+	self.btnAccept:Show(not main_menu.in_controller_mode())
+end
+
+function opt_controller_layout:OnKeyboard(dik, keyboard_action)  --virtual function
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	local bind = dik_to_bind(dik)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if bind == key_bindings.kQUIT then
+			self:OnAccept()
+		end
+	end
+	return true
+end

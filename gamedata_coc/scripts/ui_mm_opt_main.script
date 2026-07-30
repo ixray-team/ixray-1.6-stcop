@@ -1,163 +1,128 @@
 class "options_dialog" (CUIScriptWnd)
 
 function options_dialog:__init() super()
-	self.m_preconditions = {}
-	self.gameplay_options = {}
+
+	self.m_preconditions	= {}
+	self.focusIndex = 1 --MTB_Jakub_Jurek [JP-165] reset index value
 	self.m_deffer_ex	= {}
-
     self:InitControls()
+	self.default_text_color = self.xml:GetColor("main_dialog:cap_template:text", 0)
+	self.selection_text_color = self.xml:GetColor("main_dialog:selection_color", 0)
+	self.tab_input:SetActiveTab		("keyboard_mouse")
     self:InitCallBacks()
-	self.tab:SetActiveTab("video")
-	SendScriptCallback("opt_menu_on_init",self)
-	
-	-- auto-generate UI elements for Gameplay Tab
-	local checks, lists, elements = {}, {}, {}
-	local _st 
-	self.scroll_v:Clear()
-	
-	-- add UI elements to scroll view in specific order
-	for cap,t in pairs(self.gameplay_options) do
-		if not (t.disabled) then
-			_st = self.xml:InitStatic("tab_gameplay:templ_item", nil)
-			
-			-- caption
-			local ctrl = self.xml:InitStatic("tab_gameplay:cap_check_axr",_st) -- ctrl needs scoped here because we pass it to wrapper or else ref will get replaced
-			
-			-- set caption text
-			ctrl:TextControl():SetText(game.translate_string("ui_mm_"..cap))
-			
-			-- control
-			if (t.typ == "check") then
-				-- sort by name and type
-				table.insert(checks,ctrl:TextControl():GetText())
-				elements[ctrl:TextControl():GetText()] = _st
-			
-				-- create control
-				ctrl = self.xml:InitCheck(t.tag or "tab_gameplay:check_axr",_st)
-				
-				-- register for callbacks
-				if (t.default ~= nil) then -- obviously dynamic axr option
-					self:Register(ctrl,"ck_"..cap)
-				end
-			elseif(t.typ == "list") then 
-				-- sort by name and type
-				table.insert(lists,ctrl:TextControl():GetText())
-				elements[ctrl:TextControl():GetText()] = _st
-				
-				-- create control
-				ctrl = self.xml:InitComboBox(t.tag or "tab_gameplay:list_axr",_st)
-				
-				-- setup the list
-				if (t.list) then
-					for i,v in ipairs(t.list) do 
-						ctrl:AddItem(tostring(v),i-1)
-					end
-				end
+	self.tab:SetActiveTab			("video")
 		
-				-- register for callbacks
-				if (t.default ~= nil) then -- obviously dynamic axr option
-					self:Register(ctrl,"lst_"..cap)
-					if (t.on_list_item_select) then
-						local _wrapper = function(handler) -- we need wrapper in order to pass ctrl to method
-							t.on_list_item_select(handler,ctrl)
-						end
-						self:AddCallback("lst_"..cap,ui_events.LIST_ITEM_SELECT,_wrapper,self)
-					end
-				end
-			end
-			
-			self.gameplay_options[cap].ctrl = ctrl
-		end
-	end 
+	self:OnElementSetSelected(self:GetCurTabWnd(), self.focusIndex, true)
+	action_repeaters():Register(self, key_bindings.kUI_TAB_LEFT, 250, 250)
+	action_repeaters():Register(self, key_bindings.kUI_TAB_RIGHT, 250, 250)
+	action_repeaters():Register(self, key_bindings.kUI_UP, 0, 0)
+	action_repeaters():Register(self, key_bindings.kUI_DOWN, 0, 0)
+	action_repeaters():Register(self, key_bindings.kUI_LEFT, 0, 0)
+	action_repeaters():Register(self, key_bindings.kUI_RIGHT, 0, 0)
 	
-	-- sort ui elements to display in alphabetical order
-	table.sort(lists)
-	table.sort(checks)
-	
-	for i=1,#lists do 
-		-- add to UIScrollView
-		self.gameplay_scroll_v:AddWindow(elements[lists[i]],true) 
-		elements[lists[i]]:SetAutoDelete(false)
-	end
-
-	for i=1,#checks do 
-		-- add to UIScrollView
-		self.gameplay_scroll_v:AddWindow(elements[checks[i]],true) 
-		elements[checks[i]]:SetAutoDelete(false)
-	end
-
-	self.message_box = CUIMessageBoxEx()
+	SendScriptCallback("opt_menu_on_init", self)
 end
 
 function options_dialog:__finalize()
-
+	action_repeaters():UnregisterOwner(self)
 end
+
 
 function options_dialog:InitControls()
 	self:SetWndRect				(Frect():set(0,0,1024,768))
 	self:Enable					(true)
 
-	self.xml = CScriptXmlInit()
-	local xml = self.xml
-	xml:ParseFile				("ui_mm_opt.xml")
+	self.xml					= CScriptXmlInit()
+	self.xml:ParseFile			("ui_mm_opt.xml")
 
-	xml:InitStatic				("background", self)
-	self.dialog					= xml:InitStatic("main_dialog:dialog", self)
+	self.xml:InitStatic			("background", self)
+	self.dialog					= self.xml:InitStatic("main_dialog:dialog", self)
 
---	xml:InitStatic				("main_dialog:cap_options", self.dialog)
+	if self.xml:NodeExist("main_dialog:cap_options", 0) then
+		self.xml:InitStatic			("main_dialog:cap_options", self.dialog)
+	end
 
 	self.dlg_video				= ui_mm_opt_video.opt_video()
-	self.dlg_video:InitControls	(0,0, xml, self)
+	self.dlg_video:SetWindowName("dlg_video")
+	self.dlg_video:InitControls	(0,0, self.xml, self)
 	self.dlg_video:Show			(false)
 	self.dialog:AttachChild		(self.dlg_video)
-	xml:InitWindow				("tab_size", 0, self.dlg_video)
+	self.xml:InitWindow			("tab_size", 0, self.dlg_video)
 
 	self.dlg_sound				= ui_mm_opt_sound.opt_sound()
-	self.dlg_sound:InitControls	(0,0, xml, self)
+	self.dlg_sound:SetWindowName("dlg_sound")
+	self.dlg_sound:InitControls	(0,0, self.xml, self)
 	self.dlg_sound:Show			(false)
 	self.dialog:AttachChild		(self.dlg_sound)
-	xml:InitWindow				("tab_size", 0, self.dlg_sound)
+	self.xml:InitWindow			("tab_size", 0, self.dlg_sound)
 
 	self.dlg_gameplay			= ui_mm_opt_gameplay.opt_gameplay()
-	self.dlg_gameplay:InitControls(0,0, xml, self)
+	self.dlg_gameplay:SetWindowName("dlg_gameplay")
+	self.dlg_gameplay:InitControls(0,0, self.xml, self)
 	self.dlg_gameplay:Show		(false)
 	self.dialog:AttachChild		(self.dlg_gameplay)
-	xml:InitWindow				("tab_size", 0, self.dlg_gameplay)
+	self.xml:InitWindow			("tab_size", 0, self.dlg_gameplay)
 
 	self.dlg_controls			= ui_mm_opt_controls.opt_controls()
-	self.dlg_controls:InitControls(0,0, xml, self)
+	self.dlg_controls:SetWindowName("dlg_controls")
+	self.dlg_controls:InitControls(0,0, self.xml, self)
 	self.dlg_controls:Show		(false)
 	self.dialog:AttachChild		(self.dlg_controls)
-	xml:InitWindow				("tab_size", 0, self.dlg_controls)
+	self.xml:InitWindow			("tab_size", 0, self.dlg_controls)
 
 	self.dlg_video_adv			= ui_mm_opt_video_adv.opt_video_adv()
-	self.dlg_video_adv:InitControls(0,0, xml, self)
+	self.dlg_video_adv:SetWindowName("dlg_video_adv")
+	self.dlg_video_adv:InitControls(0,0, self.xml, self)
 	self.dlg_video_adv:Show		(false)
 	self.dialog:AttachChild		(self.dlg_video_adv)
-	xml:InitWindow				("tab_size", 0, self.dlg_video_adv)
+	self.xml:InitWindow			("tab_size", 0, self.dlg_video_adv)
 
-	local btn
-	btn = xml:Init3tButton		("main_dialog:btn_accept", self.dialog)
-	self:Register				(btn, "btn_accept")
-	btn = xml:Init3tButton		("main_dialog:btn_cancel", self.dialog)
-	self:Register				(btn, "btn_cancel")
+	self.dlg_controls_gamepad	= ui_mm_opt_controls_gamepad.opt_controls_gamepad()
+	self.dlg_controls_gamepad:SetWindowName("dlg_controls_gamepad")
+	self.dlg_controls_gamepad:InitControls(0,0, self.xml, self)
+	self.dlg_controls_gamepad:Show		(false)
+	self.dialog:AttachChild		(self.dlg_controls_gamepad)
+	self.xml:InitWindow			("tab_size", 0, self.dlg_controls_gamepad)
 
-	self.tab					= xml:InitTab("main_dialog:tab", self.dialog)
+	self.btn_accept = self.xml:Init3tButton		("main_dialog:btn_accept", self.dialog)
+	self:Register				(self.btn_accept, "btn_accept")
+	self.btn_cancel = self.xml:Init3tButton		("main_dialog:btn_cancel", self.dialog)
+	self:Register				(self.btn_cancel, "btn_cancel")
+
+	self.tab					= self.xml:InitTab("main_dialog:tab", self.dialog)
 	self:Register				(self.tab, "tab")
 
+	self.tab_input				= self.xml:InitTab("main_dialog:tab_input_type", self.dialog)
+	self:Register				(self.tab_input, "tab_input")
 
 	self.message_box			= CUIMessageBoxEx()
 	self:Register				(self.message_box, "mb")
 
 	self.b_restart_system_shown	= false
 	self.timer					= nil
+
+	self.cap_download			= self.xml:InitStatic		("download_static",self)
+	self.text_download			= self.xml:InitStatic		("download_text",self)
+	self.download_progress		= self.xml:InitProgressBar	("progress_download", self)
+	self.btn_cancel_download	= self.xml:Init3tButton		("btn_cancel_download", self)
+	self:Register				(self.btn_cancel_download, "btn_cancel_download")
+	
+	self.dlg_controller_layout = ui_mm_opt_controller_layout.opt_controller_layout()
+	self.dlg_controller_layout:InitControls	()
+	self.dlg_controller_layout:InitCallbacks()
+	self.dlg_controller_layout.owner = self --mtb_Jakub_Jurek
+	self.dlg_controller_layout:Show			(false)
+	self:AttachChild	(self.dlg_controller_layout)
+	self.dlg_controller_layout:SetWindowName("dlg_controller_layout")
+		
+	if self.xml:NodeExist("gamepad_legend", 0) then
+		self.gamepad_legend = self.xml:InitGamepadLegend("gamepad_legend", self)
+		self:Register(self.gamepad_legend, "gamepad_legend")
+	end
 end
 
 function options_dialog:SetCurrentValues()
 	local opt = COptionsManager()
-
-	opt:SetCurrentValues("mm_opt_video_preset")
-	opt:SaveBackupValues("mm_opt_video_preset")
 
 	opt:SetCurrentValues("mm_opt_video")
 	opt:SaveBackupValues("mm_opt_video")
@@ -174,10 +139,13 @@ function options_dialog:SetCurrentValues()
 	opt:SetCurrentValues("mm_opt_controls")
 	opt:SaveBackupValues("mm_opt_controls")
 
+	opt:SetCurrentValues("mm_opt_controls_gamepad")
+	opt:SaveBackupValues("mm_opt_controls_gamepad")
+
 	opt:SetCurrentValues("key_binding")
 	opt:SaveBackupValues("key_binding")
-
-	SendScriptCallback("opt_menu_on_set_values",self,opt)
+	
+	SendScriptCallback("opt_menu_on_set_values", self, opt)
 
 	self:UpdateDependControls()
 end
@@ -202,21 +170,18 @@ end
 
 function options_dialog:InitCallBacks()
 	self:AddCallback("tab",					ui_events.TAB_CHANGED,		self.OnTabChange,			self)
+	self:AddCallback("tab_input",			ui_events.TAB_CHANGED,		self.OnTabInputChange,			self)
 	self:AddCallback("btn_advanced_graphic",ui_events.BUTTON_CLICKED,	self.OnBtnAdvGraphic,		self)
 	self:AddCallback("btn_accept",			ui_events.BUTTON_CLICKED,	self.OnBtnAccept,			self)
 	self:AddCallback("btn_cancel",			ui_events.BUTTON_CLICKED,	self.OnBtnCancel,			self)
-	self:AddCallback("btn_default_graphic",	ui_events.BUTTON_CLICKED,	self.OnBtnDefGraph,			self)
-	self:AddCallback("btn_default_sound",	ui_events.BUTTON_CLICKED,	self.OnBtnDefSound,			self)
-	self:AddCallback("combo_preset",		ui_events.LIST_ITEM_SELECT,	self.OnPresetChanged,		self)
+	self:AddCallback("combo_preset",		ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,		self)
 	self:AddCallback("btn_simply_graphic",	ui_events.BUTTON_CLICKED,	self.OnSimplyGraphic,		self)
 	self:AddCallback("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnKeybDefault,		self)
-	--self:AddCallback("btn_check_updates",	ui_events.BUTTON_CLICKED,	self.OnBtnCheckUpdates,		self)
 	self:AddCallback("combo_renderer",		ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
+	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
 
-	self:AddCallback("mb",					ui_events.MESSAGE_BOX_YES_CLICKED, self.OnApplyChanges, self)
-	self:AddCallback("mb",					ui_events.MESSAGE_BOX_NO_CLICKED, self.OnDiscardChanges,self)
---	self:AddCallback("trb_ssample",			ui_events.BUTTON_CLICKED,	self.UpdateDependControls,	self)
---	self:AddCallback("cb_ssample",			ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
+	self:AddCallback("mb", ui_events.MESSAGE_BOX_YES_CLICKED, self.OnApplyChanges, self)
+	self:AddCallback("mb", ui_events.MESSAGE_BOX_NO_CLICKED, self.OnDiscardChanges,self)
 end
 
 function options_dialog:OnBtnCheckUpdates()
@@ -238,17 +203,6 @@ function options_dialog:OnPresetChanged()
 	opt:SetCurrentValues		("mm_opt_video_adv")
 end
 
-
-function options_dialog:OnBtnDefGraph()
-	local opt = COptionsManager()
-	opt:SendMessage2Group("mm_opt_video","set_default_value")
-end
-
-function options_dialog:OnBtnDefSound()
-	local opt = COptionsManager()
-	opt:SendMessage2Group("mm_opt_sound","set_default_value")
-end
-
 function options_dialog:OnBtnAccept()
 
 	local opt		= COptionsManager()
@@ -256,18 +210,18 @@ function options_dialog:OnBtnAccept()
 
    	console:execute("cfg_save tmp")
 
-	opt:SaveValues("mm_opt_video_preset")
 	opt:SaveValues("key_binding")
 	opt:SaveValues("mm_opt_video")
 	opt:SaveValues("mm_opt_video_adv")
 	opt:SaveValues("mm_opt_gameplay")
 	opt:SaveValues("mm_opt_sound")
 	opt:SaveValues("mm_opt_controls")
-
-	SendScriptCallback("opt_menu_on_accept",self,opt,console)
+	opt:SaveValues("mm_opt_controls_gamepad")
+	
+	SendScriptCallback("opt_menu_on_accept", self, opt, console)
 
 	if opt:NeedVidRestart() then
-		_G.b_discard_settings_shown = true
+		SetRegistryValue("main_menu", "b_discard_settings_shown", true)
 		self.message_box:InitMessageBox("message_box_yes_no")
 		self.message_box:SetText(string.format("%s %d% s", game.translate_string("ui_mm_confirm_changes"), 15, game.translate_string("mp_si_sec")))
 		self.message_box:ShowDialog(true)
@@ -276,13 +230,12 @@ function options_dialog:OnBtnAccept()
 	end
 
 	opt:OptionsPostAccept()
-	
+
 	console:execute("cfg_save")
 end
 
 function options_dialog:OnBtnCancel()
 	local opt				= COptionsManager()
-	opt:UndoGroup			("mm_opt_video_preset")
 	opt:UndoGroup			("mm_opt_video")
 	opt:UndoGroup			("mm_opt_video_adv")
 	opt:UndoGroup			("mm_opt_sound")
@@ -299,6 +252,11 @@ function options_dialog:OnTabChange()
 	self.dlg_gameplay:Show	(false)
 	self.dlg_controls:Show	(false)
 	self.dlg_video_adv:Show	(false)
+	self.dlg_controls_gamepad:Show	(false)
+	
+	self.focusIndex = 1
+	self:DeselectAllTabElements(self:GetCurTabWnd())
+	self:OnElementSetSelected(self:GetCurTabWnd(), self.focusIndex, true)
 
 	local ids = self.tab:GetActiveId()
 	if ids == "video" then
@@ -308,19 +266,46 @@ function options_dialog:OnTabChange()
 	elseif ids == "gameplay" then
 		self.dlg_gameplay:Show(true)
 	elseif ids == "controls" then
-		self.dlg_controls:Show(true)
+		if self.tab_input:GetActiveId() == "keyboard_mouse" then
+			self.dlg_controls:Show(true)
+		else
+			self.dlg_controls_gamepad:Show(true)
+		end
 	end
+end
 
+function options_dialog:OnTabInputChange()
+	self.dlg_controls:Show	(false)
+	self.dlg_controls_gamepad:Show	(false)
+	
+	self.focusIndex = 1
+	self:DeselectAllTabElements(self:GetCurTabInputWnd())
+	self:OnElementSetSelected(self:GetCurTabInputWnd(), self.focusIndex, true)
+
+	local ids = self.tab_input:GetActiveId()
+	if ids == "keyboard_mouse" then
+		self.dlg_controls:Show(true)
+	elseif ids == "gamepad" then
+		self.dlg_controls_gamepad:Show(true)
+	end
 end
 
 function options_dialog:OnBtnAdvGraphic()
 	self.dlg_video:Show		(false)
 	self.dlg_video_adv:Show	(true)
+		
+	self.focusIndex = 1
+	self:DeselectAllTabElements(self.dlg_video_adv)
+	self:OnElementSetSelected(self.dlg_video_adv, self.focusIndex, true)
 end
 
 function options_dialog:OnSimplyGraphic()
 	self.dlg_video:Show		(true)
 	self.dlg_video_adv:Show	(false)
+	
+	self.focusIndex = 1
+	self:DeselectAllTabElements(self.dlg_video)
+	self:OnElementSetSelected(self.dlg_video, self.focusIndex, true)
 end
 
 function options_dialog:OnKeyboard(dik, keyboard_action)
@@ -348,54 +333,207 @@ function options_dialog:OnKeyboard(dik, keyboard_action)
 	return res
 end
 
+function options_dialog:OnGamepadKey(dik, gamepad_action)
+	local res = CUIScriptWnd.OnGamepadKey(self,dik,gamepad_action)
+
+	if res==false and not self.dlg_controller_layout:IsShown() then
+
+		local bind = dik_to_bind(dik)
+		local bindUI = dik_to_bind(dik, action_groups.agUIGeneral)
+
+		if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
+			if bindUI == key_bindings.kUI_BACK or bind == key_bindings.kQUIT then
+				local curTab = self:GetCurTabWnd()
+				local element = curTab.focusList[self.focusIndex][2]
+				local elementInfo = class_info(element)
+				local elementClass = elementInfo.name
+	
+				if elementClass == 'CUIComboBox' and element:IsListShown() then
+					element:ShowList(false)
+				elseif self.dlg_video_adv:IsShown() then
+					self:OnTabChange()
+				else
+					self:OnBtnAccept()
+				end
+				return true
+			elseif bindUI == key_bindings.kUI_ACCEPT then
+				local curTab = self:GetCurTabWnd()
+				local element = curTab.focusList[self.focusIndex][2]
+				self:OnElementAbuttonPress(element)
+				return true
+			elseif bindUI == key_bindings.kUI_ACTION_2 then
+				local tabId = self.tab:GetActiveId()
+				if tabId == "video" then
+					if not self.dlg_video_adv:IsShown() then
+						self:OnBtnAdvGraphic()
+					else
+						self:OnSimplyGraphic()
+					end
+				elseif self.dlg_controls_gamepad:IsShown() then
+					self:OnBtnShowGamepadLayout()
+				end
+				return true
+			elseif bindUI == key_bindings.kUI_UP then
+				local curTab = self:GetCurTabWnd()
+				local element = curTab.focusList[self.focusIndex][2]
+				local elementInfo = class_info(element)
+				local elementClass = elementInfo.name
+				if elementClass == 'CUIComboBox' and element:IsListShown() then
+					element:GetListBox():PrevItem(true)
+				else
+					self:OnElementChangeSelection(curTab, -1, true)
+				end
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_UP)
+				return true
+			elseif bindUI == key_bindings.kUI_DOWN then
+				local curTab = self:GetCurTabWnd()
+				local element = curTab.focusList[self.focusIndex][2]
+				local elementInfo = class_info(element)
+				local elementClass = elementInfo.name
+				if elementClass == 'CUIComboBox' and element:IsListShown() then
+					element:GetListBox():NextItem(true)
+				else
+					self:OnElementChangeSelection(curTab, 1, true)
+				end
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_DOWN)
+				return true
+			elseif bindUI == key_bindings.kUI_LEFT then
+				local curTab = self:GetCurTabWnd()
+				local element = curTab.focusList[self.focusIndex][2]
+				self:OnElementGpadPress(element, false)
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_LEFT)
+				return true
+			elseif bindUI == key_bindings.kUI_RIGHT then
+				local curTab = self:GetCurTabWnd()
+				local element = curTab.focusList[self.focusIndex][2]
+				self:OnElementGpadPress(element, true)
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_RIGHT)
+				return true
+			elseif bindUI == key_bindings.kUI_TAB_LEFT then
+				self.tab:PrevTab()
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_TAB_LEFT)
+				return true
+			elseif bindUI == key_bindings.kUI_TAB_RIGHT then
+				self.tab:NextTab()			
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_TAB_RIGHT)
+				return true
+			end
+			if self.tab:GetActiveId() == "controls" then
+				if bindUI == key_bindings.kUI_TAB_SECONDARY_LEFT then
+					self.tab_input:PrevTab()
+					return true
+				elseif bindUI == key_bindings.kUI_TAB_SECONDARY_RIGHT then
+					self.tab_input:NextTab()			
+					return true
+				end
+			end
+		end
+	end
+
+	return res
+end
+
 function options_dialog:Update()
 	CUIScriptWnd.Update(self)
-
+	
+	self.tab_input:Show(self.tab:GetActiveId() == "controls")
+	
+	self.btn_accept:Show(not main_menu.in_controller_mode())
+	self.btn_cancel:Show(not main_menu.in_controller_mode())
+	
+	self.dlg_video.btn_advanced:Show(not main_menu.in_controller_mode())
+	self.dlg_video_adv.btn_simply:Show(not main_menu.in_controller_mode())
+		
+	local curTab = self:GetCurTabWnd()
+	local elementCap = curTab.focusList[self.focusIndex][1]
+	if main_menu.in_controller_mode() then 
+		elementCap:SetTextColor(self.selection_text_color)
+	else
+		elementCap:SetTextColor(self.default_text_color)
+	end
+		
+	local element = curTab.focusList[self.focusIndex][2]
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+	
+	if elementClass == "CUI3tButton" 
+	or elementClass == "CUIComboBox" 
+	or elementClass == "CUICheckButton" 
+	or elementClass == "CUITrackBar" 
+	then
+		element:SetHighlighted(main_menu.in_controller_mode())
+	end
+	
+	
+	if self.gamepad_legend then
+		local text_back		= self:GetStatic("gp_additional_text")	
+		if text_back then
+			if self.dlg_video_adv:IsShown() then
+				text_back:SetTextST("st_options_basic")
+			elseif self.dlg_video:IsShown() then
+				text_back:SetTextST("st_options_advanced")
+			else
+				text_back:SetTextST("ui_opt_gamepad_layout")
+			end
+			text_back:Show(self.tab:GetActiveId() == "video" 
+			or (self.tab:GetActiveId() == "controls" and self.tab_input:GetActiveId() == "gamepad"))
+		end
+		
+		local ct_back		= self:GetStatic("gp_controls_type")	
+		if ct_back then
+			ct_back:Show(self.tab:GetActiveId() == "controls")
+		end
+	end
+	
+	
 	local mm = main_menu.get_main_menu()
+	local sss = mm:GetPatchProgress()
 
-	if(_G.b_discard_settings_shown) then
+	if sss:GetInProgress() then
+		self.text_download:Show					(true)
+		self.cap_download:Show					(true)
+		self.download_progress:Show				(true)
+		local _progr							= sss:GetProgress()
+		self.download_progress:SetProgressPos	(_progr)
+		local str								= string.format("%.0f%%(%s)",_progr,sss:GetFlieName())
+		self.text_download:TextControl():SetText				(str)
+		self.btn_cancel_download:Show			(true)
+	else
+		self.text_download:Show					(false)
+		self.cap_download:Show					(false)
+		self.download_progress:Show				(false)
+		self.btn_cancel_download:Show			(false)
+	end
+	if(GetRegistryValue("main_menu", "b_discard_settings_shown", false)) then
 		local tg = math.floor(time_global_async()/1000)
 		if(self.timer==nil) then
 			self.timer = tg
 		end
 		self.message_box:SetText(string.format("%s %d %s", game.translate_string("ui_mm_confirm_changes"), 15-(tg-self.timer), game.translate_string("mp_si_sec")))
 		if(tg-self.timer>=15) then
-			if (self.message_box:IsShown()) then
-				self.message_box:HideDialog()
-			end
+			self.message_box:HideDialog()
 			self:OnDiscardChanges()
-		end
-	end
-	
-	if (self.dlg_video) then
-		if (self.dlg_video.fov_track) then 
-			self.dlg_video.fov_value:TextControl():SetText(tostring(self.dlg_video.fov_track:GetFValue()))
-		end
-		if (self.dlg_video.hud_fov_track) then 
-			self.dlg_video.hud_fov_value:TextControl():SetText( string.format("%.2f",self.dlg_video.hud_fov_track:GetFValue()) )
 		end
 	end
 end
 
+function options_dialog:OnBtn_CancelDownload()
+	local mm = main_menu.get_main_menu()
+	mm:CancelDownload()
+end
+
 function options_dialog:OnApplyChanges()
     self.timer = nil
-    _G.b_discard_settings_shown = false
+	SetRegistryValue("main_menu", "b_discard_settings_shown", false)
 
 	self.owner:ShowDialog(true)
-	if (self:IsShown()) then
-		self:HideDialog()
-	end
+	self:HideDialog()
 	self.owner:Show(true)
-	get_console():execute("vid_restart")
 
-	if not (self.b_restart_system_shown and self.message_box:IsShown()) then
+	if false==self.b_restart_system_shown then
 		local opt = COptionsManager()
 		if opt:NeedSystemRestart() then
 			self.b_restart_system_shown = true
-			self.message_box:InitMessageBox("message_box_restart_game")
-			self.message_box:ShowDialog(true)
-		elseif (self.b__require_restart == true) then 
-			self.b__require_restart = false
 			self.message_box:InitMessageBox("message_box_restart_game")
 			self.message_box:ShowDialog(true)
 		end
@@ -404,7 +542,7 @@ end
 
 function options_dialog:OnDiscardChanges()
     self.timer = nil
-    _G.b_discard_settings_shown = false
+   SetRegistryValue("main_menu", "b_discard_settings_shown", false)
 
 	local c = get_console()
    	c:execute("cfg_load tmp")
@@ -416,9 +554,439 @@ function options_dialog:OnDiscardChanges()
 end
 
 function options_dialog:OnMenuReloaded()
-	if(_G.b_discard_settings_shown) then
+	if(GetRegistryValue("main_menu", "b_discard_settings_shown", false)) then
 	    self.message_box:InitMessageBox("message_box_yes_no")
 	    self.message_box:SetText(string.format("%s %d% s", game.translate_string("ui_mm_confirm_changes"), 15, game.translate_string("mp_si_sec")))
 	    self.message_box:ShowDialog(true)
 	end
+end
+
+--MTB_Jakub_Jurek [JP-62] change opt menu controls
+function options_dialog:OnElementAbuttonPress(element)
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+	
+	if elementClass == 'CUICheckButton' then
+		element:Toggle()
+	elseif elementClass == 'CUIComboBox' then
+		if element:IsListShown() then
+			element:OnListItemSelect()
+		else
+			element:ShowList(true)
+		end
+	elseif elementClass == 'CUI3tButton' then -- MTB_Jakub_Jurek [JUD-283]
+		element:OnClick()
+	end
+end
+--end MTB_Jakub_Jurek
+
+function options_dialog:GetTabFromId(tabId)
+	if tabId == "video" then
+		return self.dlg_video
+	elseif tabId == "sound" then
+		return self.dlg_sound
+	elseif tabId == "gameplay" then
+		return self.dlg_gameplay
+	elseif tabId == "controls" then
+		return self.dlg_controls
+	end
+	
+	return nil
+end
+
+--tab pages can contain subpages
+function options_dialog:GetCurTabWnd()
+	local curTabId = self.tab:GetActiveId()
+	if curTabId == "video" and self.dlg_video_adv:IsShown() then
+		return self.dlg_video_adv
+	elseif curTabId == "controls" and self.dlg_controls_gamepad:IsShown() then
+		return self.dlg_controls_gamepad
+	end
+	
+	return self:GetTabFromId( curTabId )
+end
+
+--tab pages can contain subpages
+function options_dialog:GetCurTabInputWnd()
+	local curTabId = self.tab_input:GetActiveId()
+	if curTabId == "keyboard_mouse" then
+		return self.dlg_controls
+	elseif curTabId == "gamepad" then
+		return self.dlg_controls_gamepad
+	end
+	
+	return nil
+end
+
+function options_dialog:OnElementGpadPress(element, right)
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+
+	-- MTB-Damian.Romanik [JP2-1565] Start
+	if not element:IsEnabled() then
+		return
+	end
+	-- MTB-Damian.Romanik [JP2-1565] End
+
+	if elementClass == 'CUITrackBar' then
+		if right then
+			element:StepRight()
+		else
+			element:StepLeft()
+		end
+	end
+end
+
+-- MTB-Damian.Romanik [JUD-317] Start: Function for making sure that index didn't exit the range
+function options_dialog:check_range(newFocusIndex, curTab, offset, loop)
+	local eltCount = #curTab.focusList
+
+	if newFocusIndex > eltCount then
+		if loop then
+			return 1
+		else
+			return -1
+		end
+	elseif newFocusIndex < 1 then
+		if loop then
+			return eltCount
+		else
+			return -1
+		end
+	end
+
+	return newFocusIndex
+end
+-- MTB-Damian.Romanik [JUD-317] End: Function for making sure that index didn't exit the range
+
+function options_dialog:get_isHidden(curTab, newFocusIndex)
+	local Element = curTab.focusList[newFocusIndex][3]
+	local isHidden = false
+	if Element ~= nil then
+		isHidden = Element.hidden
+	end
+	
+	if isHidden == nil then
+		isHidden = false
+	end
+
+	return isHidden
+end
+
+function options_dialog:OnElementChangeSelection(curTab, offset, loop)
+
+	local eltCount = #curTab.focusList
+	local newFocusIndex = self.focusIndex + offset
+
+	-- MTB-Damian.Romanik [JUD-317] Start: Improvements of the selecting focusIndex logic
+	newFocusIndex = self:check_range(newFocusIndex, curTab, offset, loop)
+	if newFocusIndex == -1 then
+		return false
+	end
+
+	local isHidden = self:get_isHidden(curTab, newFocusIndex)
+	
+	--MTB_Jakub_Jurek
+	while (newFocusIndex > 0 and newFocusIndex <= eltCount) and (not curTab.focusList[newFocusIndex][1]:GetParent():IsEnabled() or isHidden) do
+		newFocusIndex = newFocusIndex + offset
+
+		newFocusIndex = self:check_range(newFocusIndex, curTab, offset, loop)
+		if newFocusIndex == -1 then
+			return false
+		end
+
+		isHidden = self:get_isHidden(curTab, newFocusIndex)
+	end
+	--end MTB_Jakub_Jurek
+	-- MTB-Damian.Romanik [JUD-317] Start: Improvements of the selecting focusIndex logic
+
+	self:OnElementSetSelected(curTab, self.focusIndex, false)
+	
+	self.focusIndex = newFocusIndex
+
+	--for advanced video settings, some options could be disabled for this type of renderer
+	--so try next element
+	if self.dlg_video_adv:IsShown() then
+		local focusRecord = curTab.focusList[self.focusIndex]
+		
+		if not curTab.scroll_v:HasWindow(focusRecord[3]) then
+			--skip this item
+			return self:OnElementChangeSelection(curTab, offset, loop)
+		end
+	end
+
+	self:OnElementSetSelected(curTab, self.focusIndex, true)
+	return true
+end
+
+function options_dialog:OnElementSetSelected(curTab, eltIndex, on)
+
+	if curTab["focusList"] == nil then
+		return 
+	end
+
+	local eltCount = #curTab.focusList
+	
+	if eltIndex < 1 or eltIndex > eltCount then
+		return
+	end
+	
+	local focusRecord = curTab.focusList[eltIndex]
+	local element = focusRecord[2]
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+	
+	if elementClass == "CUI3tButton" 
+	or elementClass == "CUIComboBox" 
+	or elementClass == "CUICheckButton" 
+	or elementClass == "CUITrackBar" 
+	then
+		element:SetHighlighted(on)
+	end
+	
+	local caption = focusRecord[1]:TextControl()
+	
+	if on then
+		caption:SetTextColor(self.selection_text_color)
+		
+		--for advanced video settings, make autoscroll		
+		local elementParent = focusRecord[1]:GetParent()
+		
+		local scroll = curTab.scroll_v
+		local lpos = scroll:GetMinScrollPos()
+		local rpos = scroll:GetMaxScrollPos()
+		local lrdif = (rpos - lpos)
+			
+		local ratio = elementParent:GetWndPos().y / curTab.scroll_v:GetPadSize().y
+			
+		local spos = lpos + lrdif * ratio - lrdif * (3 / eltCount)
+			
+		curTab.scroll_v:SetScrollPos(spos)
+	else
+		caption:SetTextColor(self.default_text_color)
+	end
+end
+
+function options_dialog:DeselectAllTabElements(tabObject)
+	if tabObject["focusList"] == nil then
+		return 
+	end
+
+	local eltCount = #tabObject.focusList
+	for i=1,eltCount,1 do
+		local focusRecord = tabObject.focusList[i]
+		local caption = focusRecord[1]:TextControl()
+		caption:SetTextColor(self.default_text_color)
+		
+		local element = focusRecord[2]
+		local elementInfo = class_info(element)
+		local elementClass = elementInfo.name
+	
+		if elementClass == "CUI3tButton" 
+		or elementClass == "CUIComboBox" 
+		or elementClass == "CUICheckButton" 
+		or elementClass == "CUITrackBar" 
+		then
+			element:SetHighlighted(false)
+		end
+	end
+end
+
+function options_dialog:OnGamepadKeyHold(dik)
+	local bindUI = dik_to_bind(dik, action_groups.agUIGeneral)
+	if bindUI == key_bindings.kUI_TAB_LEFT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_TAB_LEFT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_TAB_RIGHT) then
+			self.tab:PrevTab()
+		end
+		return true
+		
+	elseif bindUI == key_bindings.kUI_TAB_RIGHT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_TAB_RIGHT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_TAB_LEFT) then
+			self.tab:NextTab()
+		end
+		return true
+			
+	elseif bindUI == key_bindings.kUI_DOWN then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_DOWN) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			local curTab = self:GetCurTabWnd()
+			local element = curTab.focusList[self.focusIndex][2]
+			local elementInfo = class_info(element)
+			local elementClass = elementInfo.name
+			if elementClass == 'CUIComboBox' and element:IsListShown() then
+				element:GetListBox():NextItem(true)
+			else
+				self:OnElementChangeSelection(curTab, 1, false)
+			end
+		end
+		return true
+			
+	elseif bindUI == key_bindings.kUI_UP then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_UP) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			local curTab = self:GetCurTabWnd()
+			local element = curTab.focusList[self.focusIndex][2]
+			local elementInfo = class_info(element)
+			local elementClass = elementInfo.name
+			if elementClass == 'CUIComboBox' and element:IsListShown() then
+				element:GetListBox():PrevItem(true)
+			else
+				self:OnElementChangeSelection(curTab, -1, false)
+			end
+		end
+		return true
+			
+	elseif bindUI == key_bindings.kUI_LEFT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_LEFT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			local curTab = self:GetCurTabWnd()
+			local element = curTab.focusList[self.focusIndex][2]
+			self:OnElementGpadHold(element, false)
+		end
+		return true
+			
+	elseif bindUI == key_bindings.kUI_RIGHT then	
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_RIGHT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			local curTab = self:GetCurTabWnd()
+			local element = curTab.focusList[self.focusIndex][2]
+			self:OnElementGpadHold(element, true)
+		end
+		return true
+	end
+
+	return CUIScriptWnd.OnGamepadKeyHold(self,dik)
+end
+
+function options_dialog:OnElementGpadHold(element, right)
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+		
+	if elementClass == 'CUITrackBar' then
+		if right then
+			element:StepRight()
+		else
+			element:StepLeft()
+		end
+	end
+end
+
+function options_dialog:addControl(wnd, cap, elem, crl)
+	if wnd:WindowName() ~= "dlg_video_adv" then
+		wnd.scroll_v:AddWindow(crl, true)
+		crl:SetAutoDelete(false)
+	end
+	if cap ~= nil and elem ~= nil then
+		table.insert(wnd.focusList, {cap, elem, crl} )
+	end
+end
+	
+function options_dialog:lineFrame(wnd, prec, text)
+	local static = self.xml:InitStatic("main_dialog:templ_item", nil)
+	local temp = self.xml:InitFrameLine("main_dialog:header_setup", static)
+	local tempText = self.xml:InitTextWnd("main_dialog:cap_header_setup", temp)
+	if wnd:WindowName() == "dlg_video_adv" then
+		table.insert(self.m_preconditions, {func=prec, control=static})
+	end
+	tempText:SetTextST(text)
+	self:addControl(wnd, nil, nil, static)
+	return temp
+end
+
+function options_dialog:GetPropsName(wnd)
+	if wnd:WindowName() == "dlg_video" then
+		return "mm_opt_video"
+	elseif wnd:WindowName() == "dlg_video_adv" then
+		return "mm_opt_video_adv"
+	elseif wnd:WindowName() == "dlg_sound" then
+		return "mm_opt_sound"
+	elseif wnd:WindowName() == "dlg_gameplay" then
+		return "mm_opt_gameplay"
+	elseif wnd:WindowName() == "dlg_controls" then
+		return "mm_opt_controls"
+	elseif wnd:WindowName() == "dlg_controls_gamepad" then
+		return "mm_opt_controls_gamepad"
+	end
+	return ""
+end
+
+function options_dialog:addTrack(wnd, prec, text, command, step, invert, mode, show_value, depend, reg_name, magnitude)
+	local _st = self.xml:InitStatic("main_dialog:templ_item", nil)
+	local temp = self.xml:InitTrackBar("main_dialog:track_template_" .. mode, _st)
+	local tempText = self.xml:InitTextWnd("main_dialog:cap_template", _st)
+	if wnd:WindowName() == "dlg_video_adv" then
+		table.insert(self.m_preconditions, {func=prec, control=_st})
+	end
+	temp:SetSystemDepends(depend)
+	temp:AssignProps(command, self:GetPropsName(wnd))
+	temp:SetInvert(invert)
+	temp:SetDrawingValue(show_value)
+	if reg_name then
+		self:Register(temp, reg_name)
+	end
+	if magnitude then
+		temp:SetMagnitude(magnitude)
+	end
+	temp:SetStep(step)
+	tempText:SetTextST(text)
+	self:addControl(wnd, tempText, temp, _st)
+	return temp
+end
+
+function options_dialog:addCheck(wnd, prec, text, command, depend, reg_name)
+	local _st = self.xml:InitStatic("main_dialog:templ_item", nil)
+	local temp = self.xml:InitCheck("main_dialog:check_template", _st)
+	local tempText = self.xml:InitTextWnd("main_dialog:cap_template", _st)
+	if prec and wnd:WindowName() == "dlg_video_adv" then
+		table.insert(self.m_preconditions, {func=prec, control=_st})
+	end
+	temp:AssignProps(command, self:GetPropsName(wnd))
+	temp:SetSystemDepends(depend)
+	if reg_name then
+		self:Register(temp, reg_name)
+	end
+	tempText:SetTextST(text)
+	self:addControl(wnd, tempText, temp, _st)
+	return temp
+end
+
+function options_dialog:addComboBox(wnd, prec, text, command, list_length, show_scroll, depend, reg_name)
+	local _st = self.xml:InitStatic("main_dialog:templ_item", nil)
+	local temp = self.xml:InitComboBox("main_dialog:list_template", _st)
+	local tempText = self.xml:InitTextWnd("main_dialog:cap_template", _st)
+	if wnd:WindowName() == "dlg_video_adv" then
+		table.insert(self.m_preconditions, {func=prec, control=_st})
+	end
+	temp:SetListLength(list_length)
+	temp:SetVertScroll(show_scroll)
+	temp:AssignProps(command, self:GetPropsName(wnd))
+	temp:SetSystemDepends(depend)
+	if reg_name then
+		self:Register(temp, reg_name)
+	end
+	tempText:SetTextST(text)
+	self:addControl(wnd, tempText, temp, _st)
+	return temp
+end
+
+function options_dialog:OnBtnShowGamepadLayout()
+	self.dlg_controller_layout:Show(true)
+	self.dlg_controller_layout:Reset()
+	self.gamepad_legend:Show(false)
+	self.btn_accept:Enable(false)
+	self.btn_cancel:Enable(false)	
+	self.dlg_controller_layout:Enable(true)
+	self.dialog:Enable(false)
+	self.tab:Enable(false)
+end
+
+function options_dialog:OnBtnExitGamepadLayout()
+	self.dlg_controller_layout:Show(false)
+	self.dialog:Enable(true)
+	self.tab:Enable(true)
+	self.btn_accept:Enable(true)
+	self.btn_cancel:Enable(true)
+	self.gamepad_legend:Show(true)
 end

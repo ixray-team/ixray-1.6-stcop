@@ -1,0 +1,589 @@
+<w>
+	<main_dialog>
+		<dialog x="120" y="29" width="785" height="712" stretch="1">
+			<texture>ui_inGame2_main_window</texture>
+		</dialog>
+		<frame x="80" y="63" width="665" height="602">
+			<texture>ui_inGame2_servers_list_frame</texture>		
+		</frame>
+
+		<btn_accept x="462" y="666" width="108" height="26" stretch="1">
+			<text font="letterica18" align="c">ui_mm_back</text>
+            <texture>ui_inGame2_Mp_bigbuttone</texture>
+            <text_color>
+                <e r="170" g="170" b="170"/>
+            </text_color>
+		</btn_accept>
+
+		<cap_controlls_type x="104" y="40" width="143" height="24" complex_mode="1">
+			<text r="240" g="240" b="240" font="letterica16" align="r" vert_align="c">ui_mm_controlls_type</text>
+		</cap_controlls_type>
+		<list_controlls_type x="278" y="40" width="241" height="24">
+            <list_font r="170" g="170" b="170" font="letterica16"/>
+		    <text_color>
+	            <e r="170" g="170" b="170"/>
+	            <d r="70" g="70" b="70"/>
+		    </text_color>
+		</list_controlls_type>
+		
+	</main_dialog>
+	
+	<xbox_layout x="0" y="29" width="1000" height="1000">
+		<background_controller x="341" y="138" width="383" height="502" stretch="1">
+			<texture>ui\ui_xbox_controller_button_layout</texture>
+		</background_controller>
+		<background_controller_xsx x="341" y="138" width="383" height="502" stretch="1">
+			<texture>ui\ui_xbox_controller_button_layout_xsx</texture>
+		</background_controller_xsx>
+		
+		<left_cap x="201" y="65">
+			<cap_touch_pad y="66" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_PDA</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_lmenu</texture>
+				</auto_static>
+			</cap_touch_pad>
+			<cap_L1 y="112" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_wheel</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_lb</texture>
+				</auto_static>
+			</cap_L1>
+			<cap_L2 y="158" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_aim</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_lt</texture>
+				</auto_static>
+			</cap_L2>
+			
+			<cap_lsh y="231" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_strafe</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_lsh</texture>
+				</auto_static>
+			</cap_lsh>
+			<cap_lsv y="277" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_move</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_lsv</texture>
+				</auto_static>
+			</cap_lsv>
+			<cap_lsclick y="323" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_sprint</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_lsclick</texture>
+				</auto_static>
+			</cap_lsclick>
+			
+			<cap_dpadu y="396" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_weapon_zoom_in</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_dpadu</texture>
+				</auto_static>
+			</cap_dpadu>
+			<cap_dpadl y="442" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_bandage</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_dpadl</texture>
+				</auto_static>
+			</cap_dpadl>
+			<cap_dpadr y="488" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_medkit</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_dpadr</texture>
+				</auto_static>
+			</cap_dpadr>
+			<cap_dpadd y="534" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_weapon_zoom_out</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_dpadd</texture>
+				</auto_static>
+			</cap_dpadd>	
+		</left_cap>
+		
+		<right_cap x="753" y="65">
+			<cap_rmenu y="66" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_menu</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_rmenu</texture>
+				</auto_static>
+			</cap_rmenu>
+			<cap_R1 y="112" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_jump</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_rb</texture>
+				</auto_static>
+			</cap_R1>
+			<cap_R2 y="158" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_shoot</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_rt</texture>
+				</auto_static>
+			</cap_R2>
+			
+			
+			<cap_y y="231" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_inventory</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_y</texture>
+				</auto_static>
+			</cap_y>
+			<cap_b y="277" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_crouch</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_b</texture>
+				</auto_static>
+			</cap_b>
+			<cap_x y="323" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_reload</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_x</texture>
+				</auto_static>
+			</cap_x>
+			<cap_a y="369" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_action</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_a</texture>
+				</auto_static>
+			</cap_a>
+			
+			<cap_rsh y="437" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_lookx</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_rsh</texture>
+				</auto_static>
+			</cap_rsh>
+			<cap_rsv y="483" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_Looky</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_rsv</texture>
+				</auto_static>
+			</cap_rsv>
+			<cap_rsclick y="529" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_torch</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>xbox1_controller_rsclick</texture>
+				</auto_static>
+			</cap_rsclick>
+		</right_cap>
+	</xbox_layout>
+	
+	<ps_layout x="0" y="29" width="1000" height="1000">
+		<background_controller x="341" y="138" width="383" height="502" stretch="1">
+			<texture>ui\ui_ps4_controller_button_layout</texture>
+		</background_controller>
+		
+		<left_cap x="201" y="65">
+			<cap_touch_pad y="66" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_PDA</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_lmenu</texture>
+				</auto_static>
+			</cap_touch_pad>
+			<cap_L1 y="112" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_wheel</text>
+				<auto_static x="107" y="9" width="17" height="17" stretch="1">
+					<texture>ps4_controller_lb</texture>
+				</auto_static>
+			</cap_L1>
+			<cap_L2 y="158" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_aim</text>
+				<auto_static x="107" y="9" width="15" height="22" stretch="1">
+					<texture>ps4_controller_lt</texture>
+				</auto_static>
+			</cap_L2>
+			
+			
+			<cap_dpadu y="231" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_weapon_zoom_in</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_dpadu</texture>
+				</auto_static>
+			</cap_dpadu>
+			<cap_dpadl y="277" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_bandage</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_dpadl</texture>
+				</auto_static>
+			</cap_dpadl>
+			<cap_dpadr y="323" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_medkit</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_dpadr</texture>
+				</auto_static>
+			</cap_dpadr>
+			<cap_dpadd y="369" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_weapon_zoom_out</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_dpadd</texture>
+				</auto_static>
+			</cap_dpadd>
+			
+			<cap_lsh y="437" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_strafe</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_lsh</texture>
+				</auto_static>
+			</cap_lsh>
+			<cap_lsv y="483" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_move</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_lsv</texture>
+				</auto_static>
+			</cap_lsv>
+			<cap_lsclick y="529" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_sprint</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_lsclick</texture>
+				</auto_static>
+			</cap_lsclick>
+		</left_cap>
+		
+		<right_cap x="753" y="65">
+			<cap_rmenu y="66" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_menu</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_rmenu</texture>
+				</auto_static>
+			</cap_rmenu>
+			<cap_R1 y="112" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_jump</text>
+				<auto_static x="-24" y="9" width="17" height="17" stretch="1">
+					<texture>ps4_controller_rb</texture>
+				</auto_static>
+			</cap_R1>
+			<cap_R2 y="158" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_shoot</text>
+				<auto_static x="-24" y="9" width="15" height="22" stretch="1">
+					<texture>ps4_controller_rt</texture>
+				</auto_static>
+			</cap_R2>
+			
+			
+			<cap_y y="231" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_inventory</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_y</texture>
+				</auto_static>
+			</cap_y>
+			<cap_b y="277" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_crouch</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_b</texture>
+				</auto_static>
+			</cap_b>
+			<cap_x y="323" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_reload</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_x</texture>
+				</auto_static>
+			</cap_x>
+			<cap_a y="369" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_action</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_a</texture>
+				</auto_static>
+			</cap_a>
+			
+			<cap_rsh y="437" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_lookx</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_rsh</texture>
+				</auto_static>
+			</cap_rsh>
+			<cap_rsv y="483" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_Looky</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_rsv</texture>
+				</auto_static>
+			</cap_rsv>
+			<cap_rsclick y="529" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_torch</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps4_controller_rsclick</texture>
+				</auto_static>
+			</cap_rsclick>
+		</right_cap>
+	</ps_layout>
+
+	<ps5_layout x="0" y="29" width="1000" height="1000">
+		<background_controller x="341" y="138" width="383" height="502" stretch="1">
+			<texture>ui\ui_ps5_controller_button_layout</texture>
+		</background_controller>
+		
+		<left_cap x="201" y="65">
+			<cap_touch_pad y="66" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_PDA</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_lmenu</texture>
+				</auto_static>
+			</cap_touch_pad>
+			<cap_L1 y="112" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_wheel</text>
+				<auto_static x="107" y="9" width="17" height="17" stretch="1">
+					<texture>ps5_controller_lb</texture>
+				</auto_static>
+			</cap_L1>
+			<cap_L2 y="158" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_aim</text>
+				<auto_static x="107" y="9" width="15" height="22" stretch="1">
+					<texture>ps5_controller_lt</texture>
+				</auto_static>
+			</cap_L2>
+			
+			
+			<cap_dpadu y="231" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_weapon_zoom_in</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_dpadu</texture>
+				</auto_static>
+			</cap_dpadu>
+			<cap_dpadl y="277" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_bandage</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_dpadl</texture>
+				</auto_static>
+			</cap_dpadl>
+			<cap_dpadr y="323" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_medkit</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_dpadr</texture>
+				</auto_static>
+			</cap_dpadr>
+			<cap_dpadd y="369" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_weapon_zoom_out</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_dpadd</texture>
+				</auto_static>
+			</cap_dpadd>
+			
+			<cap_lsh y="437" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_strafe</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_lsh</texture>
+				</auto_static>
+			</cap_lsh>
+			<cap_lsv y="483" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_move</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_lsv</texture>
+				</auto_static>
+			</cap_lsv>
+			<cap_lsclick y="529" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_sprint</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_lsclick</texture>
+				</auto_static>
+			</cap_lsclick>
+		</left_cap>
+		
+		<right_cap x="753" y="65">
+			<cap_rmenu y="66" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_menu</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_rmenu</texture>
+				</auto_static>
+			</cap_rmenu>
+			<cap_R1 y="112" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_jump</text>
+				<auto_static x="-24" y="9" width="17" height="17" stretch="1">
+					<texture>ps5_controller_rb</texture>
+				</auto_static>
+			</cap_R1>
+			<cap_R2 y="158" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_shoot</text>
+				<auto_static x="-24" y="9" width="15" height="22" stretch="1">
+					<texture>ps5_controller_rt</texture>
+				</auto_static>
+			</cap_R2>
+			
+			
+			<cap_y y="231" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_inventory</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_y</texture>
+				</auto_static>
+			</cap_y>
+			<cap_b y="277" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_crouch</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_b</texture>
+				</auto_static>
+			</cap_b>
+			<cap_x y="323" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_reload</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_x</texture>
+				</auto_static>
+			</cap_x>
+			<cap_a y="369" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_action</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_a</texture>
+				</auto_static>
+			</cap_a>
+			
+			<cap_rsh y="437" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_lookx</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_rsh</texture>
+				</auto_static>
+			</cap_rsh>
+			<cap_rsv y="483" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_Looky</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_rsv</texture>
+				</auto_static>
+			</cap_rsv>
+			<cap_rsclick y="529" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_torch</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>ps5_controller_rsclick</texture>
+				</auto_static>
+			</cap_rsclick>
+		</right_cap>
+	</ps5_layout>
+
+	<nx64_layout x="0" y="29" width="1000" height="1000">
+		<background_controller x="341" y="138" width="383" height="502" stretch="1">
+			<texture>ui\ui_switch_controller_button_layout</texture>
+		</background_controller>
+
+		<left_cap x="201" y="65">
+			<cap_L1 y="55" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_wheel</text>
+				<auto_static x="107" y="9" width="17" height="17" stretch="1">
+					<texture>switch_controller_lb</texture>
+				</auto_static>
+			</cap_L1>
+			<cap_L2 y="95" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_aim</text>
+				<auto_static x="107" y="9" width="15" height="22" stretch="1">
+					<texture>switch_controller_lt</texture>
+				</auto_static>
+			</cap_L2>
+			<cap_touch_pad y="135" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_PDA</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_lmenu</texture>
+				</auto_static>
+			</cap_touch_pad>
+
+			<cap_lsh y="190" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_strafe</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_lsh</texture>
+				</auto_static>
+			</cap_lsh>
+			<cap_lsv y="240" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_move</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_lsv</texture>
+				</auto_static>
+			</cap_lsv>
+			<cap_lsclick y="290" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_sprint</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_lsclick</texture>
+				</auto_static>
+			</cap_lsclick>
+
+			<cap_dpadu y="350" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_quckslot0</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_dpadu</texture>
+				</auto_static>
+			</cap_dpadu>
+			<cap_dpadl y="400" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_quckslot1</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_dpadl</texture>
+				</auto_static>
+			</cap_dpadl>
+			<cap_dpadr y="450" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_quckslot2</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_dpadr</texture>
+				</auto_static>
+			</cap_dpadr>
+			<cap_dpadd y="500" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="r" vert_align="c">ui_pad_layout_quckslot3</text>
+				<auto_static x="107" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_dpadd</texture>
+				</auto_static>
+			</cap_dpadd>
+		</left_cap>
+
+		<right_cap x="753" y="65">
+			<cap_R1 y="55" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_jump</text>
+				<auto_static x="-24" y="9" width="17" height="17" stretch="1">
+					<texture>switch_controller_rb</texture>
+				</auto_static>
+			</cap_R1>
+			<cap_R2 y="95" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_shoot</text>
+				<auto_static x="-24" y="9" width="15" height="22" stretch="1">
+					<texture>switch_controller_rt</texture>
+				</auto_static>
+			</cap_R2>
+			<cap_rmenu y="135" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_menu</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_rmenu</texture>
+				</auto_static>
+			</cap_rmenu>
+
+			<cap_y y="195" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_inventory</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_y</texture>
+				</auto_static>
+			</cap_y>
+			<cap_b y="245" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_crouch</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_b</texture>
+				</auto_static>
+			</cap_b>
+			<cap_x y="295" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_reload</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_x</texture>
+				</auto_static>
+			</cap_x>
+			<cap_a y="345" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_action</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_a</texture>
+				</auto_static>
+			</cap_a>
+
+			<cap_rsh y="410" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_lookx</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_rsh</texture>
+				</auto_static>
+			</cap_rsh>
+			<cap_rsv y="460" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_Looky</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_rsv</texture>
+				</auto_static>
+			</cap_rsv>
+			<cap_rsclick y="510" width="102" height="43" complex_mode="1">
+				<text r="240" g="240" b="240" font="letterica18" align="l" vert_align="c">ui_pad_layout_torch</text>
+				<auto_static x="-24" y="9" width="19" height="25" stretch="1">
+					<texture>switch_controller_rsclick</texture>
+				</auto_static>
+			</cap_rsclick>
+		</right_cap>
+	</nx64_layout>
+	
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
+</w>
