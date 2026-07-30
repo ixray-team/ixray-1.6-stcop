@@ -284,7 +284,7 @@ bool CImageManager::LoadTextureData(const char* src_name, U32Vec& data, u32& w, 
 // копирует обновленные текстуры с Import'a в Textures
 // files - список файлов для копирование
 //------------------------------------------------------------------------------
-void CImageManager::SafeCopyLocalToServer(FS_FileSet& files)
+void CImageManager::SafeCopyLocalToServer(FS_FileSet& files, bool DeleteSource)
 {
 	string_path p_import, p_textures;
 	FS.update_path(p_import,_import_,"");
@@ -318,8 +318,15 @@ void CImageManager::SafeCopyLocalToServer(FS_FileSet& files)
 			DXTUtils::Converter::MakeTGA(src_name, dest_name);
 		}
 		FS.set_file_age(dest_name, xr_chrono_to_time_t(std::chrono::system_clock::now()));
-		EFS.MarkFile(src_name, true);
-
+		if (DeleteSource)
+		{
+			FS.file_delete(src_name);
+		}
+		else
+		{
+			EFS.MarkFile(src_name, true);
+		}
+			
 		Msg("File %s copied to rawdata", files_vec[i]->name.c_str());
 	});
 }    
@@ -956,12 +963,12 @@ bool CImageManager::CreateSmallerCubeMap(const char* src_name, const char* dst_n
 	return false;
 }
 
-void CImageManager::CommitTextureLib(bool import_mode, FS_FileSet& texture_map, FS_FileSet& modif_map)
+void CImageManager::CommitTextureLib(bool import_mode, FS_FileSet& texture_map, FS_FileSet& modif_map, bool bDeleteSourceTextures)
 {
 	if (import_mode && !texture_map.empty())
 	{
 		AStringVec modif;
-		SafeCopyLocalToServer(texture_map);
+		SafeCopyLocalToServer(texture_map, bDeleteSourceTextures);
 		FS_FileSet files = texture_map;
 		texture_map.clear();
 		for (const FS_File& it : files)

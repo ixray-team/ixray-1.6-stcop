@@ -102,6 +102,8 @@ void UIImageEditorForm::Draw()
 				UpdateSelected();
 				HideLib();
 			}
+			ImGui::SameLine();
+			ImGui::Checkbox("Delete Sources", &m_bDeleteSourceTextures);
 		}
 		ImGui::EndGroup();
 	}
@@ -383,7 +385,7 @@ void UIImageEditorForm::UpdateLib()
 	VERIFY(!bReadonlyMode);
 	RegisterModifiedTHM();
 	SaveUsedTHM();
-	ImageLib.CommitTextureLib(bImportMode, texture_map, modif_map);
+	ImageLib.CommitTextureLib(bImportMode, texture_map, modif_map, m_bDeleteSourceTextures);
 }
 
 void UIImageEditorForm::UpdateSelected() 
