@@ -243,7 +243,17 @@ static float get_distance											(
 		}
 
 		case LevelGraph::eLineIntersectionIntersect :
+		{
+			float a = (intersection.x - a_first.x)/(a_second.x - a_first.x);
+			float y1 = b_first.y + (b_second.y - b_first.y)*a;
+			float y2 = a_first.y + (a_second.y - a_first.y)*a;
+			float y = std::abs(y1 - y2);
+			if (y > 1.0f)
+			{
+				return -1.f;
+			}
 			return						intersection.distance_to( Fvector2().set(a_first.x, a_first.z) );
+		}
 
 		default :						NODEFAULT;
 	}
