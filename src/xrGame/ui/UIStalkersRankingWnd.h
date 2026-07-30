@@ -1,5 +1,6 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIHint.h"
 
 class CUIFrameWindow;
 class CUIFrameLineWnd;
@@ -51,9 +52,10 @@ public:
 	CUIGamepadLegend*		m_gamepad_legend = nullptr;
 };
 
-class CUIStalkerRankingInfoItem :public CUIWindow, public CUISelectable
+class CUIStalkerRankingInfoItem :public UIHintWindow, public CUISelectable
 {
-	CUIStalkersRankingWnd*	m_StalkersRankingWnd;
+	typedef UIHintWindow inherited;
+	CUIStalkersRankingWnd* m_StalkersRankingWnd;
 	u32						m_stored_alpha;
 public:
 	u16						m_humanID;
@@ -69,7 +71,6 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUISelectable* ui_cast_selectable() { return this; }
 	virtual void				OnFocusReceive			();
-	virtual void				OnFocusLost				();
 			void				SetHintText				();
 };
 
