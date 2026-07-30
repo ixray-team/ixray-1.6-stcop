@@ -214,38 +214,51 @@ static float get_distance											(
 		float const safe_distance
 	)
 {
-	Fvector2					intersection;
+	Fvector					intersection;
 	switch (
 			ai().level_graph().intersect(
 					a_first.x,  a_first.z,
 					a_second.x, a_second.z,
 					b_first.x,  b_first.z,
 					b_second.x, b_second.z,
-					&intersection.x, &intersection.y
+					&intersection.x, &intersection.z
 			)
 		)
 	{
 		case LevelGraph::eLineIntersectionEqual :
-			return						0.f;
+		{
+			return 0.f;
+		}
 
 		case LevelGraph::eLineIntersectionCollinear : {
-			Fvector2 const as_af		= Fvector2().sub( Fvector2().set(a_second.x, a_second.z), Fvector2().set(a_first.x, a_first.z) );
-			Fvector2 const bf_af		= Fvector2().sub( Fvector2().set(b_first.x, b_first.z), Fvector2().set(a_first.x, a_first.z) );
+			Fvector const as_af		= Fvector().sub( a_second, a_first );
+			Fvector const bf_af		= Fvector().sub( b_first, a_first );
 			float const as_af_magnitude	= as_af.magnitude();
 			float const bf_af_magnitude	= bf_af.magnitude();
-			Fvector2 const as_af_dir	= Fvector2( as_af ).div( as_af_magnitude );
+			Fvector const as_af_dir	= Fvector( as_af ).div( as_af_magnitude );
 			float const signed_distance	= as_af_dir.dotproduct(bf_af);
 			float const distance		= _sqrt( _sqr(bf_af_magnitude) + _sqr(signed_distance) );
-			if ( distance >= safe_distance )
-				return					-1.f;
-
-			return						0.f;
+			if ( distance >= safe_distance)
+			{
+				return -1.f;
+			}
+			return 0.f;
 		}
 
 		case LevelGraph::eLineIntersectionIntersect :
-			return						intersection.distance_to( Fvector2().set(a_first.x, a_first.z) );
+		{
+			float a = (intersection.x - a_first.x)/(a_second.x - a_first.x);
+			float y1 = b_first.y + (b_second.y - b_first.y)*a;
+			float y2 = a_first.y + (a_second.y - a_first.y)*a;
+			float y = std::abs(y1 - y2);
+			if (y > 1.0f)
+			{
+				return -1.f;
+			}
+			return intersection.distance_to(a_first);
+		}
 
-		default :						NODEFAULT;
+		default : NODEFAULT;
 	}
 
 #ifdef DEBUG
@@ -274,7 +287,7 @@ float stalker_movement_manager_obstacles::is_going_through			( Fmatrix const& ma
 	detail_path_type::const_iterator	i = detail().path().begin() + detail().curr_travel_point_index() + 1;
 	detail_path_type::const_iterator	e = detail().path().end();
 	for ( ; i != e; ++i) {
-		float const distance			= get_distance((*(i - 1)).position,(*i).position,start_position,stop_position, .35f);
+		float const distance			= get_distance((*(i - 1)).position,(*i).position,start_position,stop_position, 1.0f);
 		min_distance					= distance > -1.f ? std::min( min_distance, distance ) : min_distance;
 
 		current_distance				+= (*(i - 1)).position.distance_to((*i).position);
