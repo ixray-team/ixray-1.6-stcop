@@ -1,0 +1,93 @@
+
+function on_game_start()
+	RegisterScriptCallback("on_init_ixr_options", function (_ref)
+	_ref.register_option(nil, "coc_slot_hud", "ui_mm_slot_hud", _ref.check_box(false), this.on_change_slot_hud)
+	
+	_ref.register_option(nil, "coc_release_dropped_items", "ui_mm_release_dropped_items", _ref.check_box(true), this.on_change_option_value)
+	
+	_ref.register_option(nil, "coc_radio_mod", "ui_mm_radio_mod", _ref.check_box(true), this.on_change_option_value)
+	
+	_ref.register_option(nil, "coc_mechanic_feature", "ui_mm_mechanic_feature", _ref.check_box(false), this.on_change_option_value)
+	
+	_ref.register_option(nil, "coc_heli_engine_sound", "ui_mm_heli_engine_sound", _ref.check_box(true), this.on_change_option_value)
+
+	_ref.register_option(nil, "coc_heli_spawn", "ui_mm_heli_spawn", _ref.check_box(true), this.on_change_option_value)
+
+	_ref.register_option(nil, "coc_dynamic_news", "ui_mm_dynamic_news", _ref.check_box(true), this.on_change_dynamic_news)
+
+	_ref.register_option(nil, "coc_sleep_deprived", "ui_mm_sleep_deprived", _ref.check_box(false), this.on_change_sleep_deprived)
+
+	_ref.register_option(nil, "coc_art_degrade", "ui_mm_art_degrade", _ref.check_box(false), this.on_change_art_degrade)
+
+	_ref.register_option(nil, "coc_alife_mutant_pop", "ui_mm_alife_mutant_pop", _ref.combo_box(2, {
+		_ref.combo_box_item("0.25", true, 0.25),
+		_ref.combo_box_item("0.5", true, 0.5),
+		_ref.combo_box_item("1.0", true, 1.0),
+		_ref.combo_box_item("1.5", true, 1.5),
+	}), this.on_change_value)
+
+	_ref.register_option(nil, "coc_alife_stalker_pop", "ui_mm_alife_stalker_pop", _ref.combo_box(2, {
+		_ref.combo_box_item("0.25", true, 0.25),
+		_ref.combo_box_item("0.5", true, 0.5),
+		_ref.combo_box_item("1.0", true, 1.0),
+		_ref.combo_box_item("1.5", true, 1.5),
+	}), this.on_change_value)
+		
+	_ref.register_option(nil, "coc_excl_dist", "ui_mm_excl_dist", _ref.combo_box(2, {
+		_ref.combo_box_item("0", true, 0),
+		_ref.combo_box_item("25", true, 25),
+		_ref.combo_box_item("50", true, 50),
+		_ref.combo_box_item("100", true, 100),
+	}), this.on_change_value)
+	end)
+end
+
+function on_change_debug_hud(group, name, value, is_value_from_code)
+	if level.present() and xrs_debug_tools then
+		if value then
+			xrs_debug_tools.activate_feature()
+		else 
+			xrs_debug_tools.deactivate_feature()
+		end
+	end
+end
+
+function on_change_slot_hud(group, name, value, is_value_from_code)
+	get_console():execute("g_artefacts_on_hud "..tostring(value))
+end
+
+function on_change_dynamic_news(group, name, value, is_value_from_code)
+	if level.present() and dynamic_news_manager then 
+		if value then 
+			dynamic_news_manager.get_dynamic_news()
+		else
+			dynamic_news_manager.destroy_dynamic_news()
+		end
+	end
+end
+
+function on_change_sleep_deprived(group, name, value, is_value_from_code)
+	if level.present() and sleep_dep then
+		if value then
+			sleep_dep.activate_feature()
+		else 
+			sleep_dep.deactivate_feature()
+		end
+	end
+end
+
+function on_change_art_degrade(group, name, value, is_value_from_code)
+	if level.present() and artefact_degradation then
+		if value then
+			artefact_degradation.activate_feature()
+		else
+			artefact_degradation.deactivate_feature()
+		end
+	end
+end
+
+-- Функция обработчик настроенная для базовых настроек как пример можно раскоментировать вывод в лог чтобы посомтреть как значение приходит в скрипт
+function on_change_option_value(group, name, value, is_value_from_code)
+	--SemiLog(tostring(script_name()) .. ".script [option change]: group:" .. tostring(group) .." name:".. tostring(name) .. " value:" .. tostring(ffx_json_lib.json_encode(value)))
+	SetRegistryValue("coc_core", tostring(name), value)
+end

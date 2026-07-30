@@ -1109,7 +1109,7 @@ function se_smart_terrain:get_smart_props()
 	end
 
 	local props = (not self.disabled) and smart_names.get_smart_terrain_name(self)
-	if(props==nil) or (DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
+	if props==nil then
 		if (self.disabled) then
 			return "deactivated\\n\\n"..self:name().."  ["..self.id.."]\\n".."squad_id = "..tostring(self.id)
 		end
@@ -1161,16 +1161,8 @@ function se_smart_terrain:get_smart_props()
 end
 
 function se_smart_terrain:show()
-	if (axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
-		if (level.map_has_object_spot(self.id,"alife_presentation_smart_default_neutral") == 0) then
-			level.map_add_object_spot(self.id, "alife_presentation_smart_default_neutral", self:get_smart_props())
-		else
-			level.map_change_spot_hint(self.id, "alife_presentation_smart_default_neutral", self:get_smart_props())
-		end
-	else
-		if (level.map_has_object_spot(self.id,"alife_presentation_smart_default_neutral") ~= 0) then 
-			level.map_remove_object_spot(self.id, "alife_presentation_smart_default_neutral")
-		end
+	if (level.map_has_object_spot(self.id,"alife_presentation_smart_default_neutral") ~= 0) then 
+		level.map_remove_object_spot(self.id, "alife_presentation_smart_default_neutral")
 	end
 end
 
@@ -1606,8 +1598,8 @@ function se_smart_terrain:try_respawn()
 		end
 				
 		local max_respawn_count
-		local stalker_pop_factor = (axr_main.config:r_value("mm_options","alife_stalker_pop",2) or 1)
-		local monster_pop_factor = (axr_main.config:r_value("mm_options","alife_mutant_pop",2) or 1)
+		local stalker_pop_factor = GetRegistryValue("coc_core", "coc_alife_stalker_pop", 0.5)
+		local monster_pop_factor = GetRegistryValue("coc_core", "coc_alife_mutant_pop", 0.5)
 		for k,v in pairs(self.respawn_params) do
 			if (v.num and self.already_spawned[k] and self.already_spawned[k].num) then
 				if (self.faction_controlled == nil) or (self.faction ~= nil and v.faction == self.faction) then
@@ -1652,7 +1644,7 @@ function se_smart_terrain:try_respawn()
 					printf("ERROR: call respawn failed for %s, check squad descriptions",sect_to_spawn)
 					return
 				end
-			elseif (sect_to_spawn_params.helicopter and axr_main.config:r_value("mm_options","enable_heli_spawn",1,true)) then
+			elseif (sect_to_spawn_params.helicopter and GetRegistryValue("coc_core", "coc_heli_spawn", true)) then
 				local heli = sect_to_spawn_params.helicopter[math.random(1,#sect_to_spawn_params.helicopter)]
 				if (heli) then --if (heli and self.online) then
 					local pos = vector():set(level.get_bounding_volume().max.x,level.get_bounding_volume().min.y-50,level.get_bounding_volume().max.z)
