@@ -103,7 +103,16 @@ extern float g_bobbing_factor;
 extern ENGINE_API int m_look_cam_fp_zoom;
 
 int m_iQuickSave = 0;
-int m_iQuickSavesCount = 5;
+u32 m_iQuickSavesCount = 5;
+
+xr_token quicksave_count_token[] =
+{
+	{ "1",	1 },
+	{ "5",	5 },
+	{ "10",	10 },
+	{ "20",	20 },
+	{ nullptr,	 0 }
+};
 
 extern float	_delta_pos;
 extern float	_delta_rot;
@@ -2936,6 +2945,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_HudNavOwnershipSmoke, "hud_nav_ownership_smoke");
 #endif
 
+	CMD3(CCC_Token, "g_quicksaves_count", &m_iQuickSavesCount, quicksave_count_token);
 
 #ifdef DEBUG
 	extern bool g_ai_dbg_sight;
