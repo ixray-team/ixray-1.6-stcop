@@ -921,4 +921,7 @@
 	<string id="st_ui_intoxication_sensor">
 		<text>Medication intoxication</text>
 	</string>
+	<string id="st_quicksaves_count">
+		<text>Quicksaves count</text>
+	</string>
 </string_table>
