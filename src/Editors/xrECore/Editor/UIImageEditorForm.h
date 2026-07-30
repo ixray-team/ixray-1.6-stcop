@@ -50,5 +50,6 @@ private:
 	bool m_bFilterBump;
 	bool m_bFilterNormal;
 	bool m_bFilterCube;
+	bool m_bDeleteSourceTextures = false;
 	void FilterUpdate();
 };

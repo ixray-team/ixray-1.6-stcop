@@ -39,7 +39,7 @@ public:
     int			GetTexturesRaw		(FS_FileSet& files, bool bFolder=false);
 //	int			GetServerModifiedTextures(CLocatorAPI::files_query& files);
 	int 		GetLocalNewTextures	(FS_FileSet& files);
-	void		SafeCopyLocalToServer(FS_FileSet& files);
+	void		SafeCopyLocalToServer(FS_FileSet& files, bool DeleteSource);
 
 	void		SynchronizeTextures	(bool sync_thm, bool sync_game, bool bForceGame, FS_FileSet* source_map, AStringVec* sync_list_without_extention, FS_FileSet* modif_map=nullptr, bool bForceBaseAge=false);
     void 		SynchronizeTexture	(const char* tex_name, time_t age);
@@ -75,7 +75,7 @@ public:
 
     bool		CreateSmallerCubeMap(const char* src_name, const char* dst_name);
 
-    void		CommitTextureLib(bool import_mode, FS_FileSet& texture_map, FS_FileSet& modif_map);
+    void		CommitTextureLib(bool import_mode, FS_FileSet& texture_map, FS_FileSet& modif_map, bool bDeleteSourceTextures);
 };
 
 extern ECORE_API CImageManager ImageLib;
