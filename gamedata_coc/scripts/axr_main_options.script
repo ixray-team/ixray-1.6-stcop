@@ -4,6 +4,7 @@
 --- IMPORTANT! SEE opt_menu_on_init to add a new game options (new as of 5/28/2016)
 
 function opt_menu_on_init(menu)
+	menu.gameplay_options = {}
 	-- simply add new line and a ui_mm_<name> in ui_st_mm.xml to create a new option. Script automatically does the rest for you
 	-- debug_hud
 	menu.gameplay_options["debug_hud"]			= {default=false, 	debug_only=true, 	typ="check", on_accept=function(handler,optMgr,ctrl)
@@ -136,6 +137,79 @@ function opt_menu_on_init(menu)
     if (need_save) then
         axr_main.config:save()
     end
+
+	-- auto-generate UI elements for Gameplay Tab
+	local checks, lists, elements = {}, {}, {}
+	local _st 
+	menu.scroll_v:Clear()
+	
+	-- add UI elements to scroll view in specific order
+	for cap,t in pairs(menu.gameplay_options) do
+		if not (t.disabled) then
+			_st = menu.xml:InitStatic("main_dialog:templ_item", nil)
+			
+			-- caption
+			local ctrl = menu.xml:InitStatic("main_dialog:cap_template",_st) -- ctrl needs scoped here because we pass it to wrapper or else ref will get replaced
+			
+			-- set caption text
+			ctrl:TextControl():SetText(game.translate_string("ui_mm_"..cap))
+			
+			-- control
+			if (t.typ == "check") then
+				-- sort by name and type
+				table.insert(checks,ctrl:TextControl():GetText())
+				elements[ctrl:TextControl():GetText()] = _st
+			
+				-- create control
+				ctrl = menu.xml:InitCheck(t.tag or "main_dialog:check_template",_st)
+				
+				-- register for callbacks
+				if (t.default ~= nil) then -- obviously dynamic axr option
+					menu:Register(ctrl,"ck_"..cap)
+				end
+			elseif(t.typ == "list") then 
+				-- sort by name and type
+				table.insert(lists,ctrl:TextControl():GetText())
+				elements[ctrl:TextControl():GetText()] = _st
+				
+				-- create control
+				ctrl = menu.xml:InitComboBox(t.tag or "main_dialog:list_template",_st)
+				
+				-- setup the list
+				if (t.list) then
+					for i,v in ipairs(t.list) do 
+						ctrl:AddItem(tostring(v),i-1)
+					end
+				end
+		
+				-- register for callbacks
+				if (t.default ~= nil) then -- obviously dynamic axr option
+					menu:Register(ctrl,"lst_"..cap)
+					if (t.on_list_item_select) then
+						local _wrapper = function(handler) -- we need wrapper in order to pass ctrl to method
+							t.on_list_item_select(handler,ctrl)
+						end
+						menu:AddCallback("lst_"..cap,ui_events.LIST_ITEM_SELECT,_wrapper,self)
+					end
+				end
+			end
+			
+			menu.gameplay_options[cap].ctrl = ctrl
+		end
+	end 
+	
+	-- sort ui elements to display in alphabetical order
+	table.sort(lists)
+	table.sort(checks)
+	
+	-- bring gamepad support later
+	for i=1,#lists do 
+		menu:addControl(menu.dlg_gameplay, nil, nil, elements[lists[i]])
+	end
+
+	for i=1,#checks do 
+		menu:addControl(menu.dlg_gameplay, nil, nil, elements[checks[i]])
+	end
 end
 
 function opt_menu_on_accept(menu,optMgr,console)

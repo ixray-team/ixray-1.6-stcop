@@ -6,7 +6,7 @@
 -- The Sweet Little 16-bit (tsl16b@freemail.hu)
 -- edited: Alundaio 11/23/2013
 ----------------------------------------------------------------------------------------------------
-
+--[[
 -- caption type override table
 -- snd_id	= {cc_type, showtime, sendericon, faction, name, distance_limit}
 -- cc_type	= -1: incoming message, -2: memo, -3: sending message, -4: (none)
@@ -451,11 +451,7 @@ function cc_display_radio(sender, sender_faction, sender_id, showtime, cc_text, 
 		faction = game.translate_string(sender_faction)
 	end
 	if sender_id then
-		if sender_id == "!" then
-			name = sender_unidentified()
-		else
-			name = game.translate_string(sender_id)
-		end
+		name = game.translate_string(sender_id)
 	end
 
 	local news_caption = ""
@@ -564,35 +560,6 @@ function get_game_version()	-- detect real game version
 	return ver
 end
 
-function sender_unidentified()
-	local senders = {
-		"",			-- a couple of random chars from charset below
-		"st_msgfrom_err1",	-- "[sender unknown]"
-		"st_msgfrom_err2",	-- "<!DATA_ERROR!>"
-		"st_msgfrom_err3",	-- "=?Network failure"
-		"st_msgfrom_err1",	-- "[sender unknown]"
-		"",			-- a couple of random chars from charset below
-	}
-	msg = senders[math.random(1, #senders)]
-	if msg ~= "" then
-		return game.translate_string(msg)
-	else
-		local length = 7 + math.random(1, 7)
-		local charset = "@AÁBCDEÉFGHIÍJKLMNOÓÖÕPQRSTUÚÜÛVWXYZ" ..
-				"`aábcdeéfghiíjklmnoóöõpqrstuúüûvwxyz" ..
-				[[!"#&'()*+,-./0123456789:;<=>?^_{|}]] ..
-				"~€‚„…‰Œ‘’“”•–—™Ÿ¡¢£¥§¨©ª«­®¯°±²³´µ" ..
-				"¶·¸¹º»¼½¾¿ÀÂÃÄÅÆÇÈÊËÌÎÏĞÑÒÔ×ØÙİŞßàâã" ..
-				"äåæçèêëìîïğñòô÷øùışÿ"
-		local result = {}
-		for i = 1, length do
-			local r = math.random(1, charset:len())
-			result[i] = string.sub(charset, r, r)
-		end
-		return table.concat(result)
-	end
-end
-
 -- Code portions from the excellent AMK mod --
 function save_variable(variable_name, value)
   utils.save_var(db.actor, variable_name, value)
@@ -609,3 +576,4 @@ function del_variable(variable_name)
 end
 ----------------------------------------------
 
+]]
