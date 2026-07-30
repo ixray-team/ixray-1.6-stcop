@@ -271,13 +271,18 @@ void CUIActorMenuBase::PropertiesBoxForSlots(CUICellItem* cell_item, PIItem item
 	{
 		if (item && item->cast_weapon() && !InventorySecondarySlotPairingStrict() && (item->BaseSlot() == INV_SLOT_2 || item->BaseSlot() == INV_SLOT_3))
 		{
-			shared_str str = g_pStringTable->translate("st_move_to_slot");
-			str.printf("%s 1", str.c_str());
-			m_UIPropertiesBox->AddItem(str.c_str(), (void*)INV_SLOT_2, INVENTORY_TO_SLOT_ACTION);
-
-			str = g_pStringTable->translate("st_move_to_slot");
-			str.printf("%s 2", str.c_str());
-			m_UIPropertiesBox->AddItem(str.c_str(), (void*)INV_SLOT_3, INVENTORY_TO_SLOT_ACTION);
+			if (cell_item->OwnerList() != m_pInvList[INV_SLOT_2])
+			{
+				shared_str str = g_pStringTable->translate("st_move_to_slot");
+				str.printf("%s 1", str.c_str());
+				m_UIPropertiesBox->AddItem(str.c_str(), (void*)INV_SLOT_2, INVENTORY_TO_SLOT_ACTION);
+			}
+			if (cell_item->OwnerList() != m_pInvList[INV_SLOT_3])
+			{
+				shared_str str = g_pStringTable->translate("st_move_to_slot");
+				str.printf("%s 2", str.c_str());
+				m_UIPropertiesBox->AddItem(str.c_str(), (void*)INV_SLOT_3, INVENTORY_TO_SLOT_ACTION);
+			}
 		}
 		else
 		{
