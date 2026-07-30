@@ -7,11 +7,6 @@ end
 function se_zone_anom:on_register()
 	cse_anomalous_zone.on_register(self)
 	story_objects.check_spawn_ini_for_story_id(self)
-	--[[
-	if(DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
-		level.map_add_object_spot_ser(self.id,"treasure",self:section_name())
-	end
-	--]]
 end
 function se_zone_anom:update()
 	cse_anomalous_zone.update(self)
@@ -33,11 +28,6 @@ end
 function se_zone_torrid:on_register()
 	cse_torrid_zone.on_register(self)
 	story_objects.check_spawn_ini_for_story_id(self)
-	--[[
-	if(DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
-		level.map_add_object_spot_ser(self.id,"treasure",self:section_name())
-	end
-	--]]
 end
 function se_zone_torrid:update()
 	cse_torrid_zone.update(self)
@@ -60,11 +50,6 @@ end
 function se_zone_visual:on_register()
 	cse_zone_visual.on_register(self)
 	story_objects.check_spawn_ini_for_story_id(self)
-	--[[
-	if(DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
-		level.map_add_object_spot_ser(self.id,"treasure",self:section_name())
-	end
-	--]]
 end
 function se_zone_visual:update()
 	cse_zone_visual.update(self)

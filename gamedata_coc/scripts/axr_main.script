@@ -20,16 +20,12 @@ end
 function on_game_start()
 	RegisterScriptCallback("main_menu_on_init", this.main_menu_on_init)
 	RegisterScriptCallback("main_menu_on_quit", this.main_menu_on_quit)
-	RegisterScriptCallback("opt_menu_on_init", this.opt_menu_on_init)
-	RegisterScriptCallback("opt_menu_on_accept", this.opt_menu_on_accept)
-	RegisterScriptCallback("opt_menu_on_set_values", this.opt_menu_on_set_values)
 end
 ------------------
 -- main_menu_on_init()
 ------------------
 function main_menu_on_init(menu)
 	xrs_dyn_music.main_menu_on(menu)
-	--axr_main_options.main_menu_on_init(menu)
 end
 
 ------------------
@@ -37,25 +33,4 @@ end
 ------------------
 function main_menu_on_quit(menu)
 	xrs_dyn_music.main_menu_off(menu)
-end
-
-------------------
--- opt_menu_on_init()
-------------------
-function opt_menu_on_init(menu)
-	axr_main_options.opt_menu_on_init(menu)
-end
-
-------------------
--- opt_menu_on_accept()
-------------------
-function opt_menu_on_accept(menu,optMgr,console)
-	axr_main_options.opt_menu_on_accept(menu,optMgr,console)
-end
-
-------------------
--- opt_menu_on_set_values()
-------------------
-function opt_menu_on_set_values(menu,optMgr)
-	axr_main_options.opt_menu_on_set_values(menu,optMgr)
 end

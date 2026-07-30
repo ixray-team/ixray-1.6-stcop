@@ -209,7 +209,7 @@ function action_radio_in_heli:execute()
 			end
 			
 			if not (self.st.dont_spam) then
-				if (dynamic_news_manager and axr_main.config:r_value("mm_options","enable_dynamic_news",1) and (math.random(1,100)/100) < 0.5) then 
+				if (dynamic_news_manager and GetRegistryValue("coc_core", "coc_dynamic_news", true) and (math.random(1,100)/100) < 0.5) then 
 					dynamic_news_manager.get_dynamic_news():RadioInHeli(npc,be)
 				end
 			

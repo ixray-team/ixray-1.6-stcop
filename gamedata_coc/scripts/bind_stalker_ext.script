@@ -38,18 +38,6 @@ end
 -------------------
 function actor_on_net_spawn()
 	local con = get_console()
-	if (axr_main.config:r_value("mm_options","hardcore_ai_aim",1,false)) then
-		con:execute("ai_aim_max_angle 20.0")
-		con:execute("ai_aim_min_angle 17.0")
-		con:execute("ai_aim_min_speed 2.00")
-		con:execute("ai_aim_predict_time 0.28")
-	else
-		con:execute("ai_aim_max_angle 0.7854")
-		con:execute("ai_aim_min_angle 0.19635")
-		con:execute("ai_aim_min_speed 0.24")
-		con:execute("ai_aim_predict_time 0.40")
-	end
-	
 	local sim = alife()
 	for i=1,65534 do
 		local se_obj = sim:object(i)
@@ -59,7 +47,7 @@ function actor_on_net_spawn()
 		end
 	end
 	
-	if (axr_main.config:r_value("mm_options","enable_heli_spawn",1,true) == false) then 
+	if GetRegistryValue("coc_core", "coc_heli_spawn", true) == false then 
 		for k,v in pairs(se_heli.se_helicopters) do 
 			alife():release(v,true)
 		end
