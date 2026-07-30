@@ -228,7 +228,7 @@ function npc_sound:play(npc_id, faction, point, sound)
 		self.can_play_sound[npc_id] = false
 	end
 
-	if not closecaption.sound(snd, sound_object(snd):length(), npc, faction, point, self.delay_sound) then
+--	if not closecaption.sound(snd, sound_object(snd):length(), npc, faction, point, self.delay_sound) then
 		if game.translate_string(snd_st) ~= snd_st then
 			faction = faction or character_community(npc)
 			if not point then
@@ -241,7 +241,7 @@ function npc_sound:play(npc_id, faction, point, sound)
 		else
 			news_manager.send_sound(npc, faction, point, snd, nil , self.delay_sound)
 		end
-	end
+--	end
 	return true
 end
 function npc_sound:select_next_sound(npc_id)
@@ -498,9 +498,9 @@ function actor_sound:play(npc, faction, point, sound)
 		sname = point
 	end
 	
-	if not closecaption.sound(snd, self.snd_obj:length(), sender, faction, sname, 0) then
+--	if not closecaption.sound(snd, self.snd_obj:length(), sender, faction, sname, 0) then
 		news_manager.send_sound(nil, faction, point, snd)
-	end
+--	end
 	return true
 end
 function actor_sound:reset(npc_id)
@@ -704,9 +704,9 @@ function object_sound:play(obj_id, faction, point,sound)
 
 	self.can_play_sound[obj_id] = false
 
-	if not closecaption.sound(snd, self.snd_obj:length(), obj, faction, point, 0) then
+--	if not closecaption.sound(snd, self.snd_obj:length(), obj, faction, point, 0) then
 		news_manager.send_sound(nil, faction, point, snd)
-	end
+--	end
 	
 	--printf("END object_sound:play() sound=%s %s[%s]",sound,obj:name(),obj_id)
 	return true
