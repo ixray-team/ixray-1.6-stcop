@@ -179,6 +179,8 @@ void CUIStalkersRankingWnd::AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTrader
 	string64								buff;
 	CUIStalkerRankingInfoItem* itm		= new CUIStalkerRankingInfoItem(this);
 	itm->Init							(xml, "item_human", 0);
+	itm->set_hint_wnd					(m_hint_wnd);
+	itm->set_hint_delay					(0);
 
 	xr_sprintf								(buff,"%d.",num);
 	itm->m_text1->SetText				(buff);		
@@ -206,6 +208,8 @@ void CUIStalkersRankingWnd::AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAb
 
 	itm									= new CUIStalkerRankingInfoItem(this);
 	itm->Init							(xml, "item_actor", 0);
+	itm->set_hint_wnd					(m_hint_wnd);
+	itm->set_hint_delay					(0);
 
 	xr_sprintf								(buff,"%d.",num);
 	itm->m_text1->SetText				(buff);		
@@ -371,17 +375,11 @@ bool CUIStalkerRankingInfoItem::OnMouseDown		(int mouse_btn)
 
 void CUIStalkerRankingInfoItem::OnFocusReceive()
 {
-	CUIWindow::OnFocusReceive();
-
-	if (!m_StalkersRankingWnd->m_hint_wnd)
-		return;
-
-	if (!m_bCursorOverWindow)
+	inherited::OnFocusReceive();
+	if (get_hint_wnd())
 	{
-		m_StalkersRankingWnd->m_hint_wnd->set_text("");
-		return;
+		SetHintText();
 	}
-	SetHintText();
 }
 
 void CUIStalkerRankingInfoItem::SetHintText()
@@ -392,14 +390,7 @@ void CUIStalkerRankingInfoItem::SetHintText()
 	if (ai().script_engine().functor("pda.coc_rankings_set_hint", functorSetHint))
 		hint = functorSetHint(m_humanID);
 
-	m_StalkersRankingWnd->m_hint_wnd->set_text(hint);
-}
-
-void CUIStalkerRankingInfoItem::OnFocusLost()
-{
-	CUIWindow::OnFocusLost();
-	if (m_StalkersRankingWnd->m_hint_wnd)
-		m_StalkersRankingWnd->m_hint_wnd->set_text("");
+	set_hint_text(hint);
 }
 
 CUIStalkerRankingElipsisItem::CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd* w)
