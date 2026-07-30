@@ -490,13 +490,69 @@ void CUIPdaContactItem::SetHintText()
 		status = EPdaCommunicationStatus::NpcOffline;
 	}
 
-	xr_string str;
-	str = "%c[255, 255, 160, 255] %c[default]";
+	const char* stalkersKilled = "0";
+	const char* mutantsKilled = "0";
+	const char* artsFound = "0";
+	const char* itemsSold = "0";
+
+	bool cocFunctorsExist = false;
+	luabind::functor<const char*> functorGetStalkersKilled;
+	if (ai().script_engine().functor("pda.coc_contacts_get_stalkers_killed", functorGetStalkersKilled))
+	{
+		stalkersKilled = functorGetStalkersKilled(UIInfo->OwnerID());
+		cocFunctorsExist = true;
+	}
+
+	luabind::functor<const char*> functorGetMutantsKilled;
+	if (ai().script_engine().functor("pda.coc_contacts_get_mutants_killed", functorGetMutantsKilled))
+	{
+		mutantsKilled = functorGetMutantsKilled(UIInfo->OwnerID());
+		cocFunctorsExist = true;
+	}
+
+	luabind::functor<const char*> functorGetArtsFound;
+	if (ai().script_engine().functor("pda.coc_contacts_get_arts_found", functorGetArtsFound))
+	{
+		artsFound = functorGetArtsFound(UIInfo->OwnerID());
+		cocFunctorsExist = true;
+	}
+
+	luabind::functor<const char*> functorGetItemsSold;
+	if (ai().script_engine().functor("pda.coc_contacts_get_items_sold", functorGetItemsSold))
+	{
+		itemsSold = functorGetItemsSold(UIInfo->OwnerID());
+		cocFunctorsExist = true;
+	}
+
+	xr_string str = "%c[255, 255, 160, 255] %c[default]";
 	str += T->m_character_name.c_str();
 	str += "\\n \\n %c[255, 215, 215, 215]";
-	str += g_pStringTable->translate("st_pda_talk_status_label").c_str();
-	str += ": %c[default] ";
-	str += g_pStringTable->translate(CPdaCommunication::StatusStringId(status)).c_str();
+	if (!cocFunctorsExist)
+	{
+		str += g_pStringTable->translate("st_pda_talk_status_label").c_str();
+		str += ": %c[default] ";
+		str += g_pStringTable->translate(CPdaCommunication::StatusStringId(status)).c_str();
+	}
+	else
+	{
+		str += g_pStringTable->translate("st_mm_pda_statistics").c_str();
+		str += ": %c[default] \\n%c[255, 160, 160, 160]";
+		str += g_pStringTable->translate("st_mm_pda_stalkers_killed").c_str();
+		str += ": %c[default] ";
+		str += stalkersKilled;
+		str += "\\n%c[255, 160, 160, 160]";
+		str += g_pStringTable->translate("st_mm_pda_mutants_killed").c_str();
+		str += ": %c[default] ";
+		str += mutantsKilled;
+		str += "\\n%c[255, 160, 160, 160]";
+		str += g_pStringTable->translate("st_mm_pda_artes_found").c_str();
+		str += ": %c[default] ";
+		str += artsFound;
+		str += "\\n%c[255, 160, 160, 160]";
+		str += g_pStringTable->translate("st_mm_pda_items_sold").c_str();
+		str += ": %c[default] ";
+		str += itemsSold;
+	}
 
 	m_cw->m_hint_wnd->set_text(str.c_str());
 }
