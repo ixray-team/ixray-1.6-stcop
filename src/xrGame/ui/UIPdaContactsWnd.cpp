@@ -269,6 +269,8 @@ void CUIPdaContactsWnd::AddContact(CInventoryOwner* owner)
 	pItem->Init						(0,0,UIListWnd->GetWidth(),85);
 	pItem->InitCharacter			(owner);
 	pItem->m_data					= (void*)owner;
+	pItem->set_hint_wnd				(m_hint_wnd);
+	pItem->set_hint_delay			(0);
 }
 
 //удалить все контакты из списка
@@ -451,21 +453,12 @@ bool CUIPdaContactItem::OnMouseDown(int mouse_btn)
 
 void CUIPdaContactItem::OnFocusReceive()
 {
-	CUIWindow::OnFocusReceive();
+	inherited::OnFocusReceive();
 
-	if (!m_cw->m_hint_wnd)
-		return;
-
-	Frect rect;
-	m_cw->UIListWnd->GetAbsoluteRect(rect);
-	Fvector2 pos = UI().GetUICursor().GetCursorPosition();
-
-	if (!m_bCursorOverWindow || !rect.in(pos))
+	if (get_hint_wnd())
 	{
-		m_cw->m_hint_wnd->set_text("");
-		return;
+		SetHintText();
 	}
-	SetHintText();
 }
 
 void CUIPdaContactItem::SetHintText()
@@ -473,7 +466,7 @@ void CUIPdaContactItem::SetHintText()
 	CSE_ALifeTraderAbstract* T = ch_info_get_from_id(UIInfo->OwnerID());
 	if (!T)
 	{
-		m_cw->m_hint_wnd->set_text("");
+		set_hint_text("");
 		return;
 	}
 
@@ -554,12 +547,5 @@ void CUIPdaContactItem::SetHintText()
 		str += itemsSold;
 	}
 
-	m_cw->m_hint_wnd->set_text(str.c_str());
-}
-
-void CUIPdaContactItem::OnFocusLost()
-{
-	CUIWindow::OnFocusLost();
-	if (m_cw->m_hint_wnd)
-		m_cw->m_hint_wnd->set_text("");
+	set_hint_text(str.c_str());
 }
