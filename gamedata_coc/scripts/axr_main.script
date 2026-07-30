@@ -29,7 +29,6 @@ end
 ------------------
 function main_menu_on_init(menu)
 	xrs_dyn_music.main_menu_on(menu)
-	closecaption.main_menu_on_init(menu)
 	--axr_main_options.main_menu_on_init(menu)
 end
 
@@ -37,7 +36,6 @@ end
 -- main_menu_on_quit()
 ------------------
 function main_menu_on_quit(menu)
-	closecaption.main_menu_on_quit(menu)
 	xrs_dyn_music.main_menu_off(menu)
 end
 
