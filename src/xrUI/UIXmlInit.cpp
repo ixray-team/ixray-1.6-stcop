@@ -12,7 +12,6 @@
 #include "Widgets/UIProgressShape.h"
 #include "Widgets/UITabControl.h"
 #include "Widgets/UIAnimatedStatic.h"
-#include "UIXmlInit.h"
 #include "Widgets/UIListBox.h"
 #include "Widgets/UIComboBox.h"
 #include "Widgets/UITrackBar.h"
