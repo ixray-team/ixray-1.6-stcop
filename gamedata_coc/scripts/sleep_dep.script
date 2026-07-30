@@ -170,7 +170,7 @@ function deactivate_feature()
 end 
 
 function on_game_start()
-	if (axr_main.config:r_value("mm_options","enable_sleep_deprived",1,false) == false) then
+	if not GetRegistryValue("coc_core", "coc_sleep_deprived", false) then
 		return 
 	end
 	local function actor_on_first_update()

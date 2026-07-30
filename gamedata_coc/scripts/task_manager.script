@@ -104,7 +104,7 @@ function CRandomTask:update()
 		local tsk = self.task_info[k]
 		tsk:check_task()
 		if (tsk.timeout and game.get_game_time():diffSec(tsk.timeout) > tsk.repeat_timeout) then
-			if (axr_main.config:r_value("mm_options","enable_dynamic_news",1)) then
+			if GetRegistryValue("coc_core", "coc_dynamic_news", true) then
 				dynamic_news_manager.get_dynamic_news():GossipTaskRepeatTimeout(k)
 			end
 			if not (db.actor:get_task(k,true)) then -- don't remove if engine task object still exist
