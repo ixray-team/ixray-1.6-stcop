@@ -322,33 +322,6 @@ void CImageManager::SafeCopyLocalToServer(FS_FileSet& files)
 
 		Msg("File %s copied to rawdata", files_vec[i]->name.c_str());
 	});
-
-	/*FS_FileSetIt it	= files.begin();
-	FS_FileSetIt _E = files.end();
-
-	for (; it != _E; it++)
-	{
-		xr_string fn;
-
-		// copy sources
-		fn = it->name;
-		xr_strconcat(src_name, p_import, fn.c_str());
-		UpdateFileName(fn);
-
-		xr_strconcat(dest_name, p_textures, EFS.ChangeFileExt(fn, ".tga").c_str());
-
-		if (0 == strcmp(strext(src_name), ".tga"))
-		{
-			FS.file_copy(src_name, dest_name);
-		}
-		else
-		{
-			// convert to TGA
-			DXTUtils::Converter::MakeTGA(src_name, dest_name);
-		}
-		FS.set_file_age(dest_name, xr_chrono_to_time_t(std::chrono::system_clock::now()));
-		EFS.MarkFile(src_name, true);
-	}*/
 }    
 //------------------------------------------------------------------------------
 // возвращает список не синхронизированных (модифицированных) текстур
@@ -471,7 +444,25 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 		if (bProgress)
 		{
 			xrCriticalSectionGuard g(ProgressCS);
-			pb->Inc(bUpdated ? xr_string(base_name+(bFailed?" - FAILED":" - UPDATED.")).c_str() : base_name.c_str(), bFailed);
+			if (bUpdated)
+			{
+				xr_stack_string256 Message = base_name.c_str();
+				if (bFailed)
+				{
+					Message += " - FAILED (";
+				} else
+				{
+					Message += " - UPDATED (";
+				}
+				Message += std::to_string(int(pb->progress)+1).c_str();
+				Message += "/";
+				Message += std::to_string(int(pb->max)).c_str();
+				Message += ")";
+				pb->Inc(Message.c_str(), bFailed);
+			} else
+			{
+				pb->Inc(base_name.c_str(), bFailed);
+			}
 		}
 			
 		if (bUpdated){
@@ -491,80 +482,6 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 			}
 		}
 	});
-	/*FS_FileSetIt it=M_BASE.begin();
-	FS_FileSetIt _E = M_BASE.end();
-	for (; it!=_E; it++){
-		U32Vec data;
-		u32 w, h, a;
-
-		xr_string base_name	= EFS.ChangeFileExt(it->name,""); xr_strlwr(base_name);
-		string_path				fn;
-		FS.update_path			(fn,_textures_,EFS.ChangeFileExt(base_name,".tga").c_str());
-		if (!FS.TryLoad(fn)) continue;
-
-		FS_FileSetIt th 	= M_THUM.find(base_name);
-		bool bThm = ((th==M_THUM.end()) || ((th!=M_THUM.end())&&(th->time_write!=it->time_write)));
-		FS_FileSetIt gm = M_GAME.find(base_name);
-		bool bGame= bThm || ((gm==M_GAME.end()) || ((gm!=M_GAME.end())&&(gm->time_write!=it->time_write)));
-
-		ETextureThumbnail* THM=nullptr;
-
-		bool bUpdated 	= false;
-		bool bFailed 	= false;
-		// check thumbnail
-		if (sync_thm&&bThm){
-			THM = new ETextureThumbnail(it->name.c_str());
-		bool bRes = LoadRawImage(fn,data,w,h,a); R_ASSERT(bRes);
-//.             MakeThumbnailImage(THM,data.begin(),w,h,a);
-			THM->Save	(it->time_write);
-			bUpdated = true;
-		}
-		// check game textures
-		if (bForceGame||(sync_game&&bGame)){
-			if (!THM) THM = new ETextureThumbnail(it->name.c_str());
-			R_ASSERT(THM);
-			if (data.empty()){ bool bRes = LoadRawImage(fn,data,w,h,a); R_ASSERT(bRes);}
-			if (true)
-			{
-				string_path 			game_name;
-				xr_strconcat(game_name, base_name.c_str(), ".dds");
-
-				FS.update_path			(game_name,_game_textures_,game_name);
-				if (MakeGameTexture(THM,game_name,data.data()))
-				{
-					if (sync_list) 		sync_list->push_back(base_name.c_str());
-					if (modif_map) 		modif_map->insert(*it);
-				}else{
-					bFailed				= true;
-				}
-				bUpdated 				= true;
-			}else{
-				ELog.DlgMsg(mtError,"Can't make game texture '%s'.\nInvalid size (%dx%d).",base_name.c_str(),w,h);
-			}
-		}
-		if (THM) xr_delete(THM);
-		if (UI->NeedAbort()) break;
-		
-		if (bProgress) 
-			pb->Inc(bUpdated ? xr_string(base_name+(bFailed?" - FAILED":" - UPDATED.")).c_str() : base_name.c_str(), bFailed);
-			
-		if (bUpdated){
-			string_path             tga_fn,thm_fn,dds_fn;
-			FS.update_path			(tga_fn,_textures_,		 EFS.ChangeFileExt(base_name,".tga").c_str());
-			FS.update_path			(thm_fn,_game_textures_, EFS.ChangeFileExt(base_name,".thm").c_str());
-			FS.update_path			(dds_fn,_game_textures_, EFS.ChangeFileExt(base_name,".dds").c_str());
-			if (bForceBaseAge){
-				int age 			= it->time_write;
-				FS.set_file_age			(tga_fn,age);
-				FS.set_file_age			(thm_fn,age);
-				FS.set_file_age			(dds_fn,age);
-			}else{
-				FS.set_file_age			(tga_fn,m_age);
-				FS.set_file_age			(thm_fn,m_age);
-				FS.set_file_age			(dds_fn,m_age);
-			}
-		}
-	}*/
 	if (bProgress)
 	{
 		UI->ProgressEnd(pb);
