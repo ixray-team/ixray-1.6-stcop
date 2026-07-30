@@ -70,6 +70,8 @@ protected:
 class CUIPdaContactItem :public CUIPdaListItem, public CUISelectable
 {
 	CUIPdaContactsWnd*			m_cw;
+private:
+	typedef CUIPdaListItem inherited;
 public:
 								CUIPdaContactItem		(CUIPdaContactsWnd* cw)		{m_cw = cw;}
 	virtual						~CUIPdaContactItem		() = default;
@@ -80,6 +82,5 @@ public:
 	virtual CUISelectable* ui_cast_selectable() { return this; }
 
 	virtual void				OnFocusReceive			();
-	virtual void				OnFocusLost				();
 			void				SetHintText				();
 };
