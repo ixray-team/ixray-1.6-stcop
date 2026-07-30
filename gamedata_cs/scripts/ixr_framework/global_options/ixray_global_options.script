@@ -1,0 +1,7 @@
+function on_game_start()
+	RegisterScriptCallback("on_init_ixr_options", function (_ref)
+		_ref.register_option("ОПЦИИ", "switch_draw_vars", "Отображать имена переменных в заголовке опций", _ref.check_box(false), function (group, name, value) 
+			_ref.set_draw_variable_names_state(value)
+		end)
+	end)
+end

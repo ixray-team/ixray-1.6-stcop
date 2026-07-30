@@ -158,3 +158,95 @@ function get_translated_section_name(real_sect)
 		return real_sect
 	end
 end
+
+function parse_section_to_array(ini, section)
+	local tmp=nil
+	if ini and ini:section_exist(section) then
+		tmp={}
+		local result, id, value = nil, nil, nil
+		
+		for a=0,ini:line_count(section)-1 do
+			result, id, value = ini:r_line(section, a, "", "")
+			
+			if id~=nil then
+				id = ffx_string_utils.trim(id)
+				if id ~= "" and id ~= nil then
+					tmp[trim(id)] = ffx_string_utils.trim(value)
+				end
+			end
+		end
+	end
+	
+	return tmp
+end
+
+
+
+-- ##########################################################
+--		optional ini methods
+-- ##########################################################
+
+function ini_section_exists(_ini, section)
+	if not _ini or not section then
+		return false
+	end
+	
+	return _ini:section_exist(section)
+end
+
+function ini_line_exists(_ini, section, parameter)
+	if not _ini or not section or not parameter then
+		return false
+	end
+	
+	return _ini:line_exist(section, parameter)
+end
+
+function ini_has_line_in_section(_ini, section, parameter)
+	if not ini_section_exists(_ini, section) then
+		return false
+	end
+	
+	if not ini_line_exists(_ini, section, parameter) then
+		return false
+	end
+	
+	return true
+end
+
+function ini_get_string(_ini, section, parameter, def_value)
+	if ini_section_exists(_ini, section) and ini_line_exists(_ini, section, parameter) then
+		local line_value = _ini:r_string(section, parameter) or nil
+		
+		if line_value ~= nil then
+			return line_value
+		end
+	end
+	
+	return def_value
+end
+
+function ini_parse_separated(_ini, section, parameter, def_value)
+	if not ini_has_line_in_section(_ini, section, parameter) then
+		return def_value
+	end
+	
+	local string_with_separators = ini_get_string(_ini, section, parameter, false)
+	if not string_with_separators then
+		return def_value
+	end
+		
+	local parts = ffx_string_utils.explode(string_with_separators, ",")
+	local result = {}
+	for i, string_part in ipairs(parts) do
+		if string_part then
+			table.insert(result, ffx_string_utils.trim(string_part))
+		end
+	end
+	
+	if #result == 0 then
+		return def_value
+	end
+
+	return result
+end
