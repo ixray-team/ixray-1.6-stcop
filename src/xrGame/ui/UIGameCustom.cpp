@@ -312,6 +312,12 @@ void CUIGameCustom::HideActorMenu()
 	{
 		m_TradeMenu->HideDialog();
 	}
+
+	CInventoryOwner* pIOActor = Level().CurrentViewEntity() != nullptr ? Level().CurrentViewEntity()->cast_inventory_owner() : nullptr;
+	if (pIOActor->IsTalking())
+	{
+		TalkMenu->UITalkDialogWnd->Show();
+	}
 }
 
 //Alundaio:
