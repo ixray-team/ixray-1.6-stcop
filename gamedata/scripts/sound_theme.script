@@ -203,6 +203,7 @@ function npc_sound:play(npc_id, faction, point, msg)
 		--' Пропускаем.
 		return false
 	end
+	
 	--printf("playing sound "..self.played_id)
 	if npc ~= nil then
 		-- play_sound (u32 internal_type, u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
@@ -210,43 +211,49 @@ function npc_sound:play(npc_id, faction, point, msg)
 
 		SendScriptCallback("on_npc_sound_play", self, npc_id, faction, point, msg)
 	end
+	
 	local table_id = self.played_id + 1
 	local snd = self.sound_path[npc_id][table_id]
-	-- проверка на существование звука дублирующего основной по ПДА. Если он есть то играть его.
 	local f = getFS()
+	
+	-- проверка на существование звука дублирующего основной по ПДА. Если он есть то играть его.
 	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and npc:position():distance_to_sqr(db.actor:position()) >= 100 then
 		if self.pda_snd_obj ~= nil and self.pda_snd_obj:playing() then
 			self.pda_snd_obj:stop()
 		end
+		
 		self.pda_snd_obj = sound_object(snd.."_pda")
-		--play_at_pos(CScriptGameObject *object, const Fvector &position, float delay, int flags)
 		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), self.delay_sound, sound_object.s2d)
 		self.pda_snd_obj.volume = 0.8
 	end
-	--printf("snd_path is "..tostring(self.sound_path[npc_id][table_id]))
-	local snd_st, num_copy = string.gsub(snd, "\\", "_")
 
 	if self.group_snd then
 		self.can_play_group_sound = false
 	else
 		self.can_play_sound[npc_id] = false
 	end
-	if game.translate_string(snd_st) ~= snd_st then
-		if not faction then
-			faction = character_community(npc)
-		end
-		if not point then
-						point = npc:profile_name().."_name"
-			if game.translate_string(point) == point then
-							point = nil
+	
+	if snd then
+		--printf("snd_path is "..tostring(self.sound_path[npc_id][table_id]))
+		local snd_st, num_copy = string.gsub(snd, "\\", "_")
+		if game.translate_string(snd_st) ~= snd_st then
+			if not faction then
+				faction = character_community(npc)
 			end
+			if not point then
+							point = npc:profile_name().."_name"
+				if game.translate_string(point) == point then
+								point = nil
+				end
+			end
+			news_manager.send_sound(npc, faction, point, snd, snd_st, self.delay_sound)
+		else
+			news_manager.send_sound(npc, faction, point, snd, nil , self.delay_sound)
 		end
-		news_manager.send_sound(npc, faction, point, snd, snd_st, self.delay_sound)
-	else
-		news_manager.send_sound(npc, faction, point, snd, nil , self.delay_sound)
 	end
 	return true
 end
+
 function npc_sound:select_next_sound(npc_id)
 	local npc_data = self.npc[npc_id]
 	if self.shuffle == "rnd" then
