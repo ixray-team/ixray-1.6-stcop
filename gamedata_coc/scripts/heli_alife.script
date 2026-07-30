@@ -106,9 +106,7 @@ local function try_to_reach_target(heli,se_obj,heliObject,se_target)
 		abort("heli_alife.try_to_reach_target: heliObject is nil! IMPOSSIBLE!")
 		return 
 	end
-	
-	--heliObject:TurnEngineSound(axr_main.config:r_value("mm_options","enable_heli_engine_sound",1,false))
-	
+		
 	local vel = db.storage[se_obj.id].combat.max_velocity or 30
 	heliObject:SetMaxVelocity(vel)
 	
@@ -276,7 +274,7 @@ function update(heli,se_obj,heliObject)
 		smart:unregister_npc(se_obj)
 	end
 	
-	heliObject:TurnEngineSound(axr_main.config:r_value("mm_options","enable_heli_engine_sound",1,false))
+	heliObject:TurnEngineSound(GetRegistryValue("coc_core", "coc_heli_engine_sound", true))
 	
 	se_obj.help_id = nil
 	

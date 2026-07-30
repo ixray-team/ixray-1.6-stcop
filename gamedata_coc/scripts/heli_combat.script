@@ -326,7 +326,7 @@ function heli_combat:initialize()
 
 	self.object:set_fastcall( self.fastcall, self )
 	
-	self.heliObject:TurnEngineSound(axr_main.config:r_value("mm_options","enable_heli_engine_sound",1,false))
+	self.heliObject:TurnEngineSound(GetRegistryValue("coc_core", "coc_heli_engine_sound", true))
 	
 	self.initialized = true
 	self.flyby_initialized  = false

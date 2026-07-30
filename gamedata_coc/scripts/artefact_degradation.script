@@ -132,7 +132,7 @@ function deactivate_feature()
 end
 
 function on_game_start()
-	if (axr_main.config:r_value("mm_options","enable_art_degrade",1,false)) then
+	if GetRegistryValue("coc_core", "coc_art_degrade", false) then
 		activate_feature()
 	end
 end

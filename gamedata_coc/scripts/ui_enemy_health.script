@@ -20,10 +20,7 @@ function on_hit(obj,power,dir,who,bi)
 	end 
 	
 	if not (st.show_health) then
-		-- show health progress for all objects hit by actor if option is enabled
-		if (axr_main.config:r_value("mm_options","enable_show_enemy_health",1,false) == false) then
-			return 
-		end
+		return 
 	end
 	
 	-- in case object dies by something other than actor

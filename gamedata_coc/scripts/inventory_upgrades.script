@@ -301,6 +301,14 @@ function prereq_functor_a( param3, section )
 	return str
 end
 
+local function normalize(val, min, max)
+	local d = 100*(val-min)/(max-min)
+	if d < 0 then
+		return 0
+	end
+	return d
+end
+
 function property_functor_a(param1, name)
 	local section_table = utils.parse_names(param1)
 	if (#section_table == 0) then 
@@ -398,7 +406,7 @@ function property_functor_a(param1, name)
 		elseif (name == "prop_dispersion") then
 			val = char_ini:r_float_ex(section_table[i],"fire_dispersion_base") or 0
 			if (val ~= 0) then
-				sum = sum + (ui_wpn_params.normalize(val,1.0,0)-100)
+				sum = sum + normalize(val,1.0,0)-100
 			end
 		elseif (name == "prop_bullet_speed") then
 			val = char_ini:r_float_ex(section_table[i],"bullet_speed") or 0
@@ -409,34 +417,34 @@ function property_functor_a(param1, name)
 		elseif (name == "prop_inertion") then 
 			val = char_ini:r_float_ex(section_table[i],"control_inertion_factor") or 0
 			if (val ~= 0) then
-				sum = sum + (ui_wpn_params.normalize(val,3,0)-100)/2
+				sum = sum + normalize(val,3,0)-100/2
 			end
 			val = char_ini:r_float_ex(section_table[i],"PDM_disp_base") or 0
 			if (val ~= 0) then
-				sum = sum + (ui_wpn_params.normalize(val,2.1,0)-100)/2
+				sum = sum + normalize(val,2.1,0)-100/2
 			end
 		elseif (name == "prop_recoil") then
 			local actual_section = "wpn_" .. section_table[i]:gsub("(.*)_","")
 			val = char_ini:r_float_ex(section_table[i],"zoom_cam_dispersion") or 0
 			if (val ~= 0) then
-				sum = sum + (100-ui_wpn_params.normalize(val,sysini:r_float_ex(actual_section,"zoom_cam_dispersion",3),0))/2
+				sum = sum + (100-normalize(val,sysini:r_float_ex(actual_section,"zoom_cam_dispersion",3),0))/2
 			end
 			val = char_ini:r_float_ex(section_table[i],"cam_dispersion") or 0
 			if (val ~= 0) then				
-				sum = sum + (100-ui_wpn_params.normalize(val,sysini:r_float_ex(actual_section,"cam_dispersion",3),0))/2
+				sum = sum + (100-normalize(val,sysini:r_float_ex(actual_section,"cam_dispersion",3),0))/2
 			end
 		elseif (name == "prop_reliability") then 
 			val = char_ini:r_float_ex(section_table[i],"misfire_start_prob") or 0
 			if (val ~= 0) then
-				sum = sum + (ui_wpn_params.normalize(val,0.01,0)-100)/3
+				sum = sum + (normalize(val,0.01,0)-100)/3
 			end
 			val = char_ini:r_float_ex(section_table[i],"misfire_end_prob") or 0
 			if (val ~= 0) then
-				sum = sum + (ui_wpn_params.normalize(val,0.1,0)-100)/3
+				sum = sum + (normalize(val,0.1,0)-100)/3
 			end
 			val = char_ini:r_float_ex(section_table[i],"condition_shot_dec") or 0
 			if (val ~= 0) then
-				sum = sum + (ui_wpn_params.normalize(val,0.005,0)-100)/3
+				sum = sum + (normalize(val,0.005,0)-100)/3
 			end
 		else
 			sum = sum + (char_ini:r_float_ex(section_table[i], "value") or 0)
@@ -541,7 +549,7 @@ function question_repair_item( item_name, item_condition, can, mechanic ) --( st
 end
 
 function effect_upgrade_item(item,upgrade_section) -- Alundaio: called from engine (UIInventoryUpgradeWnd.cpp)
-	if (axr_main.config:r_value("mm_options","enable_mechanic_feature",1,false) ~= true) then 
+	if GetRegistryValue("coc_core", "coc_mechanic_feature", false) ~= true then 
 		return
 	end
 	
@@ -555,7 +563,7 @@ function effect_repair_item( item_name, item_condition)
 	local price = how_much_repair( item_name, item_condition )
 	db.actor:give_money(-price)
 
-	if (axr_main.config:r_value("mm_options","enable_mechanic_feature",1,false) ~= true) then 
+	if GetRegistryValue("coc_core", "coc_mechanic_feature", false) ~= true then 
 		return
 	end
 
