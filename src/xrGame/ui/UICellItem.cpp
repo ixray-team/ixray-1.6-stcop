@@ -9,6 +9,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIItemStateDisplay.h"
+#include "../../xrUI/UIVectorBinding.h"
 #include "../eatable_item.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/RenderVisual.h"
@@ -17,6 +18,50 @@
 #include "CustomOutfit.h"
 #include "PowerBank.h"
 #include "IPowerManager.h"
+
+namespace
+{
+bool IsSvgTexturePath(const shared_str& path)
+{
+	if (!path.size())
+	{
+		return false;
+	}
+
+	const char* ext = strext(path.c_str());
+	return ext && !_stricmp(ext, ".svg");
+}
+
+Fvector2 CalcInvCellAnchorPos(
+	const Fvector2& cellSize,
+	const Fvector2& childSize,
+	CInventoryItem::EInvCellAnchor anchor,
+	const Fvector2& inset)
+{
+	// XML x/y (stored as inset) are the only padding from the corner.
+	const float padX = inset.x;
+	const float padY = inset.y;
+
+	Fvector2 pos;
+	switch (anchor)
+	{
+	case CInventoryItem::EInvCellAnchor::TopLeft:
+		pos.set(padX, padY);
+		break;
+	case CInventoryItem::EInvCellAnchor::TopRight:
+		pos.set(cellSize.x - childSize.x - padX, padY);
+		break;
+	case CInventoryItem::EInvCellAnchor::BottomLeft:
+		pos.set(padX, cellSize.y - childSize.y - padY);
+		break;
+	case CInventoryItem::EInvCellAnchor::BottomRight:
+	default:
+		pos.set(cellSize.x - childSize.x - padX, cellSize.y - childSize.y - padY);
+		break;
+	}
+	return pos;
+}
+} // namespace
 
 CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
 
@@ -44,6 +89,12 @@ CUICellItem::CUICellItem()
 	m_has_upgrade		= false;
 	m_with_custom_text	= false;
 	m_with_custom_mark	= false;
+	m_text_use_anchor	= false;
+	m_text_anchor		= 0;
+	m_text_anchor_inset.set(0.f, 0.f);
+	m_condition_use_anchor = false;
+	m_condition_anchor = 0;
+	m_condition_anchor_inset.set(0.f, 0.f);
 
 	init();
 }
@@ -80,6 +131,21 @@ void CUICellItem::init()
 	CUIXmlInit::InitStatic	( uiXml, "cell_item_text", 0, m_text );
 	m_text->Show			( false );
 
+	m_text_use_anchor = false;
+	m_text_anchor = static_cast<u8>(CInventoryItem::EInvCellAnchor::BottomRight);
+	m_text_anchor_inset.set(0.f, 0.f);
+	if (uiXml.NavigateToNode("cell_item_text", 0))
+	{
+		const char* anchorStr = uiXml.ReadAttrib("cell_item_text", 0, "anchor", nullptr);
+		if (anchorStr && anchorStr[0])
+		{
+			m_text_use_anchor = true;
+			m_text_anchor = static_cast<u8>(CInventoryItem::ParseInvCellAnchor(anchorStr));
+			// With anchor enabled, XML x/y are treated as inset from the corner.
+			m_text_anchor_inset = m_text->GetWndPos();
+		}
+	}
+
 /*	m_mark					= new CUIStatic();
 	m_mark->SetAutoDelete	( true );
 	AttachChild				( m_mark );
@@ -114,6 +180,21 @@ void CUICellItem::init()
 	AttachChild(m_pConditionState);
 	CUIXmlInit::InitItemStateDisplay(uiXml, "condition_progess_bar", 0, m_pConditionState);
 	m_pConditionState->Show(true);
+
+	m_condition_use_anchor = false;
+	m_condition_anchor = static_cast<u8>(CInventoryItem::EInvCellAnchor::BottomRight);
+	m_condition_anchor_inset.set(0.f, 0.f);
+	if (uiXml.NavigateToNode("condition_progess_bar", 0))
+	{
+		const char* anchorStr = uiXml.ReadAttrib("condition_progess_bar", 0, "anchor", nullptr);
+		if (anchorStr && anchorStr[0])
+		{
+			m_condition_use_anchor = true;
+			m_condition_anchor = static_cast<u8>(CInventoryItem::ParseInvCellAnchor(anchorStr));
+			// With anchor enabled, XML x/y are treated as inset from the corner.
+			m_condition_anchor_inset = m_pConditionState->GetWndPos();
+		}
+	}
 
 	if (uiXml.NavigateToNode("cell_item_custom_text", 0))
 	{
@@ -346,79 +427,135 @@ void CUICellItem::Update()
         }
         m_upgrade->Show(m_has_upgrade);
     }
+	UpdateItemTextAnchor();
 	UpdateCustomMarksAndText();
 }
 
-void CUICellItem::UpdateCustomMarksAndText() {
-	if (m_custom_text == nullptr)
+void CUICellItem::UpdateCustomMarksAndText()
+{
+	PIItem item = static_cast<PIItem>(m_pData);
+	m_with_custom_text = false;
+	m_with_custom_mark = false;
+
+	if (!item)
 	{
+		if (m_custom_text)
+		{
+			m_custom_text->Show(false);
+		}
+		if (m_custom_mark)
+		{
+			m_custom_mark->Show(false);
+		}
 		return;
 	}
 
-	if (m_custom_mark == nullptr)
+	const Fvector2 cellSize = GetWndSize();
+
+	if (m_custom_text)
 	{
-		return;
-	}
+		string32 usesBuf = {};
+		const char* textToShow = nullptr;
+		bool useStringTable = false;
 
-	PIItem item = (PIItem)m_pData;
-	if (item) {
-		m_with_custom_text = item->m_custom_text != nullptr;
-		m_with_custom_mark = item->m_custom_mark;
-		if (m_with_custom_text) {
-			Fvector2 pos;
-			pos.set(m_custom_text_pos);
-			Fvector2 size = GetWndSize();
-			Fvector2 up_size = m_custom_text->GetWndSize();
-			pos.x = size.x - up_size.x - 4.0f;// making pos at right-end of cell
-			pos.y = size.y - up_size.y - 4.0f;// making pos at bottom-end of cell
-			m_custom_text->SetWndPos(pos);
-			m_custom_text->TextItemControl()->SetTextST(*item->m_custom_text);
+		if (item->m_custom_text.size())
+		{
+			textToShow = item->m_custom_text.c_str();
+			useStringTable = true;
+		}
+		else if (item->m_custom_text_auto_uses)
+		{
+			if (CEatableItem* eatable = item->cast_eatable_item())
+			{
+				if (eatable->GetMaxUses() > 1)
+				{
+					xr_sprintf(usesBuf, "%u/%u",
+						static_cast<u32>(eatable->GetRemainingUses()),
+						static_cast<u32>(eatable->GetMaxUses()));
+					textToShow = usesBuf;
+				}
+			}
+		}
 
-			if (item->m_custom_text_clr_inv != 0) 
+		m_with_custom_text = textToShow != nullptr;
+		if (m_with_custom_text)
+		{
+			const Fvector2 textSize = m_custom_text->GetWndSize();
+			m_custom_text->SetWndPos(CalcInvCellAnchorPos(
+				cellSize, textSize, item->m_custom_text_anchor, item->m_custom_text_offset));
+
+			if (useStringTable)
+			{
+				m_custom_text->TextItemControl()->SetTextST(textToShow);
+			}
+			else
+			{
+				m_custom_text->TextItemControl()->SetText(textToShow);
+			}
+
+			if (item->m_custom_text_clr_inv != 0)
 			{
 				m_custom_text->TextItemControl()->SetTextColor(item->m_custom_text_clr_inv);
 			}
-			if (item->m_custom_text_font != nullptr) {
+			if (item->m_custom_text_font != nullptr)
+			{
 				m_custom_text->TextItemControl()->SetFont(item->m_custom_text_font);
 			}
-
-			m_custom_text->SetTextOffset(item->m_custom_text_offset.x, item->m_custom_text_offset.y);
 		}
+		m_custom_text->Show(m_with_custom_text);
+	}
+
+	if (m_custom_mark)
+	{
+		m_with_custom_mark = item->m_custom_mark;
 		if (m_with_custom_mark)
 		{
-			Fvector2 pos;
-			pos.set(m_custom_mark_pos);
-			Fvector2 size = GetWndSize();
-			Fvector2 up_size = m_custom_mark->GetWndSize();
-			pos.x = size.x - up_size.x - 4.0f;// making pos at right-end of cell
-			pos.y = size.y - up_size.y - 4.0f;// making pos at bottom-end of cell
-			m_custom_mark->SetWndPos(pos);
-
 			if (item->m_custom_mark_size.x > 0.f && item->m_custom_mark_size.y > 0.f)
 			{
 				m_custom_mark->SetWndSize(item->m_custom_mark_size);
 			}
 			else if (item->m_custom_mark_size.x < 0.f || item->m_custom_mark_size.y < 0.f)
 			{
-				R_ASSERT("item_custom_mark_size < 0.f || item_custom_mark_size < 0.f");
+				R_ASSERT(!"item_custom_mark_size < 0.f");
 			}
 
-			if (item->m_custom_mark_texture != nullptr)
+			const Fvector2 markSize = m_custom_mark->GetWndSize();
+			m_custom_mark->SetWndPos(CalcInvCellAnchorPos(
+				cellSize, markSize, item->m_custom_mark_anchor, item->m_custom_mark_offset));
+
+			if (item->m_custom_mark_texture.size())
 			{
-				m_custom_mark->InitTextureEx(item->m_custom_mark_texture.c_str());
+				if (IsSvgTexturePath(item->m_custom_mark_texture))
+				{
+					SVGTintRGBA tint{};
+					if (item->m_custom_mark_clr != 0)
+					{
+						tint.SetFromColourDword(item->m_custom_mark_clr);
+					}
+					CUIVectorBinding::ApplyVectorPathToStatic(
+						*m_custom_mark,
+						item->m_custom_mark_texture.c_str(),
+						markSize.x,
+						markSize.y,
+						tint);
+					m_custom_mark->SetStretchTexture(true);
+				}
+				else
+				{
+					m_custom_mark->InitTextureEx(item->m_custom_mark_texture.c_str());
+					if (item->m_custom_mark_clr != 0)
+					{
+						m_custom_mark->SetTextureColor(item->m_custom_mark_clr);
+					}
+				}
 			}
-
-			if (item->m_custom_mark_clr != 0)
+			else if (item->m_custom_mark_clr != 0)
 			{
 				m_custom_mark->SetTextureColor(item->m_custom_mark_clr);
 			}
-
-			m_custom_mark->SetTextureOffset(item->m_custom_mark_offset.x, item->m_custom_mark_offset.y);
 		}
+		m_custom_mark->Show(m_with_custom_mark);
 	}
-
-	m_custom_text->Show(m_with_custom_text);
-	m_custom_mark->Show(m_with_custom_mark);
 }
 
 bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
@@ -587,8 +724,6 @@ void CUICellItem::UpdateConditionProgressBar()
 
 	Ivector2 cell_size = m_pParentList->CellSize();
 	Ivector2 cell_space = m_pParentList->CellsSpacing();
-	float x = 1.0f;
-	float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 2.0f;
 
 	const InventoryUtilities::ConditionDisplayParams display =
 		InventoryUtilities::GetConditionDisplayParams(itm);
@@ -599,7 +734,22 @@ void CUICellItem::UpdateConditionProgressBar()
 		return;
 	}
 
-	m_pConditionState->SetWndPos(Fvector2().set(x, y));
+	if (m_condition_use_anchor)
+	{
+		m_pConditionState->SetWndPos(CalcInvCellAnchorPos(
+			GetWndSize(),
+			m_pConditionState->GetWndSize(),
+			static_cast<CInventoryItem::EInvCellAnchor>(m_condition_anchor),
+			m_condition_anchor_inset));
+	}
+	else
+	{
+		// Legacy layout: bottom strip with fixed left inset.
+		const float x = 1.0f;
+		const float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 2.0f;
+		m_pConditionState->SetWndPos(Fvector2().set(x, y));
+	}
+
 	m_pConditionState->m_bUseGradient = !display.disableGradient;
 
 	if (display.hideBackground)
@@ -679,11 +829,26 @@ void CUICellItem::UpdateItemText()
     {
         m_text->Show(nullptr != finalText);
         m_text->SetText(finalText);
+		UpdateItemTextAnchor();
     }
     else
     {
         this->SetText(finalText);
     }
+}
+
+void CUICellItem::UpdateItemTextAnchor()
+{
+	if (!m_text || !m_text_use_anchor)
+	{
+		return;
+	}
+
+	m_text->SetWndPos(CalcInvCellAnchorPos(
+		GetWndSize(),
+		m_text->GetWndSize(),
+		static_cast<CInventoryItem::EInvCellAnchor>(m_text_anchor),
+		m_text_anchor_inset));
 }
 
 void CUICellItem::Mark( bool status )
