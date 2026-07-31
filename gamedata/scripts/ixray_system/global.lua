@@ -674,6 +674,34 @@ function SetOptionVisible(var_name, flag)
 	return false
 end
 
+--[[
+Description: Set option title
+Parameters:
+  title_text (string)(required) - renderable text option title
+Returns: (bool)
+]]
+function SetOptionTitle(title_text)
+	if IsModuleLoaded("ixr_options") then
+		return GetModule("ixr_options").set_options_title(title_text)
+	end
+	
+	return false
+end
+
+--[[
+Description: Set option icon
+Parameters:
+  title_text (string)(required) - renderable icon option
+Returns: (bool)
+]]
+function SetOptionIcon(title_text)
+	if IsModuleLoaded("ixr_options") then
+		return GetModule("ixr_options").set_options_icon(title_text)
+	end
+	
+	return false
+end
+
 --  ####################################################################################################################
 -- 													IXR THROTTLERS 
 --  ####################################################################################################################
@@ -800,4 +828,9 @@ function add_art(zone_name, art_section)
 		end
 		binder:spawn_artefact_randomly()
 	end
+end
+
+function fix_controll_size(controll)
+	controll:SetWndPos(vector2():set(controll:GetWndPos().x * ui.get_current_kx(), controll:GetWndPos().y))
+    controll:SetWidth(controll:GetWidth()*ui.get_current_kx())
 end
