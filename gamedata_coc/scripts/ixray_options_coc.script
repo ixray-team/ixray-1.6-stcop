@@ -1,5 +1,11 @@
 
 function on_game_start()
+	SetOptionTitle("st_ixray_title_coc") -- Задаём заголовок для вкладки опций
+	SetOptionAddonName("st_ixray_title_coc") -- Задаём название аддона для вкладки опций
+	SetOptionScriptVersion("1.4.22") -- Задаём версию скрипта для вкладки опций
+	SetOptionAuthors("TeamEPIC, St4lker0k765") -- Задаём авторов аддона для вкладки опций
+	SetOptionIcon("ui\\ixr_options\\icons\\ixr_global_icon") -- Задаём путь до иконки вкладки опций
+	
 	RegisterScriptCallback("on_init_ixr_options", function (_ref)
 	_ref.register_option(nil, "coc_slot_hud", "ui_mm_slot_hud", _ref.check_box(false), this.on_change_slot_hud)
 	
