@@ -188,14 +188,16 @@ function keep_item(npc, item)
 		return 
 	end
 	
-	local m = item:get_max_uses()
-	if (m > 0) then 
-		local r = math.random(0,m)
-		item:set_remaining_uses(r)
-		if (r == 0) then 
-			alife():release(se_item, true)
+	if item:cast_EatableItem() then
+		local m = item:get_max_uses()
+		if (m > 0) then 
+			local r = math.random(0,m)
+			item:set_remaining_uses(r)
+			if (r == 0) then 
+				alife():release(se_item, true)
+			end
+			return
 		end
-		return
 	end
 	
 	if IsArtefact(item) then
