@@ -234,6 +234,33 @@ function set_options_title(title_text)
 	ixr_options.options_addon_info[script_name]["options_title"] = title_text
 end
 
+function set_options_addon_name(addon_name)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	if ixr_options.options_addon_info[script_name] == nil then
+		ixr_options.options_addon_info[script_name] = {}
+	end
+	
+	ixr_options.options_addon_info[script_name]["options_addon_name"] = addon_name
+end
+
+function set_options_script_version(script_version)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	if ixr_options.options_addon_info[script_name] == nil then
+		ixr_options.options_addon_info[script_name] = {}
+	end
+	
+	ixr_options.options_addon_info[script_name]["options_script_version"] = script_version
+end
+
+function set_options_authors_text(authors_text)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	if ixr_options.options_addon_info[script_name] == nil then
+		ixr_options.options_addon_info[script_name] = {}
+	end
+	
+	ixr_options.options_addon_info[script_name]["options_authors_text"] = authors_text
+end
+
 function set_options_icon(icon_path)
 	local script_name = ffx_callable_utils.find_caller_source(3)
 	if ixr_options.options_addon_info[script_name] == nil then
@@ -841,40 +868,68 @@ function _on_main_menu_init_controlls(_ref)
 	
 	get_controll("addons_list_box"):RemoveAll()
 	
+	-- наши аддоны всегда с верху
 	for options_script_name, options_variables in pairs(getOptions()) do
 		if ffx_string_utils.start_with(options_script_name, "ixray_") or ffx_string_utils.start_with(options_script_name, "ixr_") then
-			get_controll("addons_list_box"):AddExistingItem(
-				AddonItem(
-					vector2():set(250, 65), 
-					"ui\\ixr_options\\icons\\ixr_addon_icon",
-					tostring(options_script_name).. ".script", GetARGB(255, 255, 255, 255),
-					"Call Of Pripat 1.6.02", GetARGB(255, 200, 200, 200),
-					"1.0.0", GetARGB(255, 200, 200, 200),
-					"active", GetARGB(255, 200, 200, 200),
-					options_variables,
-					ixr_options.options_addon_info[options_script_name] or {}
-				)
-			)
+			get_controll("addons_list_box"):AddExistingItem(AddonItem(
+				vector2():set(250, 65), 
+				"ui\\ixr_options\\icons\\ixr_addon_icon",
+				tostring(options_script_name).. ".script", GetARGB(255, 122, 255, 122),
+				"IXRay Team", GetARGB(255, 150, 150, 150),
+				"1.0.0", GetARGB(255, 150, 150, 150),
+				"IXRay Addon", GetARGB(255, 150, 150, 150),
+				options_variables,
+				ixr_options.options_addon_info[options_script_name] or {}
+			))
 		end
 	end
 	
+	local sorted_addons_names = {}
+	-- сборка листа сортировки для именованных аддонов
 	for options_script_name, options_variables in pairs(getOptions()) do
 		if not (ffx_string_utils.start_with(options_script_name, "ixray_") or ffx_string_utils.start_with(options_script_name, "ixr_")) then
-			get_controll("addons_list_box"):AddExistingItem(
-				AddonItem(
+			if ixr_options.options_addon_info[options_script_name] and ixr_options.options_addon_info[options_script_name].options_addon_name ~= nil then
+				if not ffx_table_utils.is_contains(sorted_addons_names, ixr_options.options_addon_info[options_script_name].options_addon_name) then
+					table.insert(sorted_addons_names, ixr_options.options_addon_info[options_script_name].options_addon_name)
+				end
+			end
+		end
+	end
+	
+	-- сортировка по именованным аддонам
+	for i, addon_name in ipairs(sorted_addons_names) do
+		for options_script_name, options_variables in pairs(getOptions()) do
+			if not (ffx_string_utils.start_with(options_script_name, "ixray_") or ffx_string_utils.start_with(options_script_name, "ixr_")) and ixr_options.options_addon_info[options_script_name] and addon_name == ixr_options.options_addon_info[options_script_name].options_addon_name then
+				get_controll("addons_list_box"):AddExistingItem(AddonItem(
 					vector2():set(250, 65), 
 					"ui\\ixr_options\\icons\\addon_icon",
 					tostring(options_script_name).. ".script", GetARGB(255, 255, 255, 255),
-					"Call Of Pripat 1.6.02", GetARGB(255, 200, 200, 200),
-					"1.0.0", GetARGB(255, 200, 200, 200),
-					"active", GetARGB(255, 200, 200, 200),
+					"[Unknown]", GetARGB(255, 150, 150, 150),
+					"[Unknown]", GetARGB(255, 150, 150, 150),
+					"[Unknown]", GetARGB(255, 150, 150, 150),
 					options_variables,
 					ixr_options.options_addon_info[options_script_name] or {}
-				)
-			)
+				))
+			end
 		end
 	end
-
+	
+	-- сортировка в конец безымянных аддонов
+	for options_script_name, options_variables in pairs(getOptions()) do
+		if not (ffx_string_utils.start_with(options_script_name, "ixray_") or ffx_string_utils.start_with(options_script_name, "ixr_")) and ((not ixr_options.options_addon_info[options_script_name]) or  ixr_options.options_addon_info[options_script_name].options_addon_name == nil) then
+			get_controll("addons_list_box"):AddExistingItem(AddonItem(
+				vector2():set(250, 65), 
+				"ui\\ixr_options\\icons\\addon_icon",
+				tostring(options_script_name).. ".script", GetARGB(255, 255, 255, 255),
+				"[Unknown]", GetARGB(255, 150, 150, 150),
+				"[Unknown]", GetARGB(255, 150, 150, 150),
+				"[Unknown]", GetARGB(255, 150, 150, 150),
+				options_variables,
+				ixr_options.options_addon_info[options_script_name] or {}
+			))
+		end
+	end
+		
 	--register_scroll_view("options_scroll", "scroll_v", 320, 270, 670, 400)
 	register_scroll_view("options_scroll", "scroll_v", 320, 125, 670, 550) -- (name_controll, scroll_section, x, y, width, height)
 	get_controll("options_scroll"):Show(false)
@@ -2045,14 +2100,30 @@ end
 -- #########################################################################################################
 class "AddonItem" (CUIListBoxItem)
 
-function AddonItem:__init(wnd_size, icon_path, script_name, color_addon_name, addon_platform, color_platform, addon_version, color_version, addon_status, color_status, options_variables, addon_info) super()
+function AddonItem:__init(wnd_size, icon_path, script_name, color_option_title, addon_authors, color_platform, addon_version, color_version, addon_name, color_status, options_variables, addon_info) super()
 	self.addon_info = addon_info
 	
-	self.addon_name = game.translate_string(self.addon_info.options_title) or self.addon_info.options_title
+	self.option_title = game.translate_string(self.addon_info.options_title) or self.addon_info.options_title
 	self.icon_path = icon_path
 	
 	if self.addon_info.icon_path ~= nil then
 		self.icon_path = self.addon_info.icon_path
+	end
+	
+	self.options_addon_name = addon_name
+	if self.addon_info.options_addon_name ~= nil then
+		self.options_addon_name =  game.translate_string(tostring(self.addon_info.options_addon_name)) or tostring(self.addon_info.options_addon_name)
+	end
+	
+	self.options_script_version = addon_version
+	if self.addon_info.options_script_version ~= nil then
+		self.options_script_version = tostring(self.addon_info.options_script_version)
+	end
+	
+	
+	self.options_authors_text = addon_authors
+	if self.addon_info.options_authors_text ~= nil then
+		self.options_authors_text = tostring(self.addon_info.options_authors_text)
 	end
 	
 	self.counter = 0
@@ -2081,8 +2152,8 @@ function AddonItem:__init(wnd_size, icon_path, script_name, color_addon_name, ad
 		self.addon_title = get_options_xml():InitStatic("ixr_product_sans_16_l", self)
 		self.addon_title:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
 		self.addon_title:SetWndSize(vector2():set(250, 15))
-		self.addon_title:TextControl():SetText(self.addon_name)
-		self.addon_title:TextControl():SetTextColor(color_addon_name)
+		self.addon_title:TextControl():SetText(self.option_title)
+		self.addon_title:TextControl():SetTextColor(color_option_title)
 		self:add_counter()
 	end
 	
@@ -2093,33 +2164,34 @@ function AddonItem:__init(wnd_size, icon_path, script_name, color_addon_name, ad
 	end
 	self.script_name:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
 	self.script_name:SetWndSize(vector2():set(250, 15))
-	if self.addon_name ~= nil then
-		self.script_name:TextControl():SetText("script: " .. self.addon_script_name)
+	self.script_name:TextControl():SetText("script: " .. self.addon_script_name)
+	if self.addon_info.options_title ~= nil then
+		self.script_name:TextControl():SetTextColor(color_platform)
 	else
-		self.script_name:TextControl():SetText("script: " .. self.addon_script_name)
+		self.script_name:TextControl():SetTextColor(color_option_title)
 	end
-	self.script_name:TextControl():SetTextColor(color_platform)
-	self:add_counter()
-	
-	self.addon_platform = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
-	self.addon_platform:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
-	self.addon_platform:SetWndSize(vector2():set(250, 15))
-	self.addon_platform:TextControl():SetText("platform: " .. addon_platform)
-	self.addon_platform:TextControl():SetTextColor(color_platform)
-	self:add_counter()
-	
-	self.addon_version = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
-	self.addon_version:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
-	self.addon_version:SetWndSize(vector2():set(250, 15))
-	self.addon_version:TextControl():SetText("addon version: " .. addon_version)
-	self.addon_version:TextControl():SetTextColor(color_version)
 	self:add_counter()
 	
 	self.addon_status = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
 	self.addon_status:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
 	self.addon_status:SetWndSize(vector2():set(250, 15))
-	self.addon_status:TextControl():SetText("addon status: " .. addon_status)
+	self.addon_status:TextControl():SetText("Addon: " .. self.options_addon_name)
 	self.addon_status:TextControl():SetTextColor(color_status)
+	self:add_counter()
+	
+	self.addon_version = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
+	self.addon_version:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
+	self.addon_version:SetWndSize(vector2():set(250, 15))
+	self.addon_version:TextControl():SetText("Version: " .. self.options_script_version)
+	self.addon_version:TextControl():SetTextColor(color_version)
+	self:add_counter()
+	
+	self.addon_authors = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
+	self.addon_authors:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
+	self.addon_authors:SetWndSize(vector2():set(250, 15))
+	self.addon_authors:TextControl():SetText("Authors: " .. tostring(self.options_authors_text))
+	self.addon_authors:TextControl():SetTextColor(color_platform)
+	self:add_counter()
 	
 	self:SetWndSize(vector2():set(100, wnd_size.y))
 	self.addon_background:SetWndSize(vector2():set(222, 90))

@@ -689,6 +689,48 @@ function SetOptionTitle(title_text)
 end
 
 --[[
+Description: Set option addon name
+Parameters:
+  addon_name_text (string)(required) - renderable text option title
+Returns: (bool)
+]]
+function SetOptionAddonName(addon_name_text)
+	if IsModuleLoaded("ixr_options") then
+		return GetModule("ixr_options").set_options_addon_name(addon_name_text)
+	end
+	
+	return false
+end
+
+--[[
+Description: Set option script version
+Parameters:
+  script_version_text (string)(required) - renderable text option title
+Returns: (bool)
+]]
+function SetOptionScriptVersion(script_version_text)
+	if IsModuleLoaded("ixr_options") then
+		return GetModule("ixr_options").set_options_script_version(script_version_text)
+	end
+	
+	return false
+end
+
+--[[
+Description: Set option authors
+Parameters:
+  script_version_text (string)(required) - renderable text option title
+Returns: (bool)
+]]
+function SetOptionAuthors(authors_text)
+	if IsModuleLoaded("ixr_options") then
+		return GetModule("ixr_options").set_options_authors_text(authors_text)
+	end
+	
+	return false
+end
+
+--[[
 Description: Set option icon
 Parameters:
   title_text (string)(required) - renderable icon option
