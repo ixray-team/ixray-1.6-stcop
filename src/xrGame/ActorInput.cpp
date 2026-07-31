@@ -2036,7 +2036,7 @@ void CActor::MakeKick()
 
 void CActor::UpdatePickupMode()
 {
-	if (g_Alive() && !CurrentGameUI()->ActorMenu()->IsShown())
+	if (g_Alive() && !CurrentGameUI()->TopInputReceiver())
 	{
 		pPickup->SetPickupMode(true);
 	}
