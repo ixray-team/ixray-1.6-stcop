@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_ixray_global_options_addon"> 
+		<text>IXRay Аддон глобальных настроек</text>
+	</string>
+
+	<string id="st_ixray_global_options"> 
+		<text>IXRay Глобальные настройки</text>
+	</string>
+	
+	<string id="st_ixray_global_options_params"> 
+		<text>Настройки отображения опций</text>
+	</string>
+	
+	<string id="st_ixray_global_options_draw_var_names"> 
+		<text>Отображать имена переменных в заголовке опций</text>
+	</string>
+</string_table>
