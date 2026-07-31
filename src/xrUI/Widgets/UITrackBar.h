@@ -69,7 +69,8 @@ ETrackBarMode		GetTrackBarMode			() const { return m_mode; }
 	virtual void 	OnFocusLost				();
 			void	SetHighlighted			(bool value);
 public:
-		IC	void	SetDrawingValue			(bool value) { m_b_draw_value = value; }
+		IC				void	SetDrawingValue			(bool value) { m_b_draw_value = value; }
+			bool	IsMouseCapturing		() const { return m_b_mouse_capturer; }
 
 		virtual CUIWindow* ui_cast_window() { return this; }
 
