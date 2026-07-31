@@ -779,6 +779,8 @@ bool CUIXmlInit::InitItemStateDisplay(CUIXml& xml_doc, const char* path, int ind
 					pLines->SetVTextAlignment(valBotton);
 				else if (0 == xr_strcmp(al, "t"))
 					pLines->SetVTextAlignment(valTop);
+
+				ApplyShadowsToLines(xml_doc, subPath, index, pLines);
 			}
 		}
 

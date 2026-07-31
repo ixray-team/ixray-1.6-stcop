@@ -190,17 +190,30 @@ public:
 	shared_str m_custom_text;
 	Fvector2 m_custom_text_offset;
 	CGameFont* m_custom_text_font = nullptr;
-	u32	m_custom_text_clr_inv = 0;
+	u32 m_custom_text_clr_inv = 0;
 	u32	m_last_dropped_owner_id = 65535;
 	// Used on next Take() to restore sidearm to holster after kG drop (see CInventory::Take / DropItem).
 	u16 m_preferredSlotAfterPickup = 0xffff;
+
+	enum class EInvCellAnchor : u8
+	{
+		BottomRight = 0,
+		BottomLeft,
+		TopRight,
+		TopLeft,
+	};
+
+	static EInvCellAnchor ParseInvCellAnchor(const char* value);
 
 	bool m_custom_mark = false;
 	shared_str m_custom_mark_texture;
 	Fvector2 m_custom_mark_offset;
 	Fvector2 m_custom_mark_size;
 	u32 m_custom_mark_clr = 0;
+	EInvCellAnchor m_custom_mark_anchor = EInvCellAnchor::BottomRight;
 	const char* m_custom_mark_lanim = {};
+	EInvCellAnchor m_custom_text_anchor = EInvCellAnchor::BottomRight;
+	bool m_custom_text_auto_uses = false;
 	float ScaleIcon = 1.0f;
 	shared_str IconsTexture;
 
