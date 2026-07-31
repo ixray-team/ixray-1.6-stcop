@@ -25,6 +25,7 @@
 #include "../xrEngine/x_ray.h"
 #include "ui/UICellItem.h"
 #include "ui/UITalkDialogWnd.h"
+#include "ui/UISleepWnd.h"
 
 EGameIDs ParseStringToGameType(const char* str);
 
@@ -448,6 +449,8 @@ void CUIGameCustom::HideShownDialogs()
 {
 	HideActorMenu();
 	HidePdaMenu();
+	if (SleepWnd && SleepWnd->IsShown())
+		SleepWnd->HideDialog();
 	if (TalkMenu && TalkMenu->IsEmbeddedInPda())
 	{
 		TalkMenu->StopPdaDialog();
@@ -539,6 +542,7 @@ void CUIGameCustom::UnLoad()
 	xr_delete					(UIMainIngameWnd);
 	xr_delete					(m_pMessagesWnd);
 	xr_delete					(m_RadialMenuWeapon);
+	xr_delete					(SleepWnd);
 }
 
 void CUIGameCustom::Load()
@@ -582,6 +586,9 @@ void CUIGameCustom::Load()
 
 		R_ASSERT				(nullptr==m_RadialMenuWeapon);
 		m_RadialMenuWeapon		= new CUIRadialMenuWeapon();
+
+		R_ASSERT				(nullptr==SleepWnd);
+		SleepWnd				= new CUISleepWnd();
 		
 		Init					(0);
 		Init					(1);
@@ -906,6 +913,158 @@ void CUIGameCustom::ChangeLevel(GameGraph::_GRAPH_ID game_vert_id,
 
 		UIChangeLevelWnd->ShowDialog(true);
 	}
+}
+
+void CUIGameCustom::ShowSleepDialog()
+{
+	if (SleepWnd == nullptr)
+	{
+		Msg("! [sleep] SleepWnd is null");
+		return;
+	}
+	if (!SleepWnd->HasInitializedLayout())
+	{
+		Msg("! [sleep] SleepWnd layout not initialized (ui_sleep_dialog.xml?)");
+		return;
+	}
+	SleepWnd->ShowSleepDialog();
+}
+
+void CUIGameCustom::ShowSleepDialogAtHour(int hours)
+{
+	if (SleepWnd != nullptr && SleepWnd->HasInitializedLayout())
+		SleepWnd->ShowSleepDialog(hours);
+}
+
+void CUIGameCustom::SetSleepHourPresets(xr_vector<int> hours)
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->SetHourPresets(std::move(hours));
+}
+
+void CUIGameCustom::ClearSleepHourPresets()
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->ClearHourPresets();
+}
+
+bool CUIGameCustom::IsSleepDialogReady() const
+{
+	return SleepWnd != nullptr && SleepWnd->IsSleepDialogReady();
+}
+
+bool CUIGameCustom::IsSleepDialogShown() const
+{
+	return SleepWnd != nullptr && SleepWnd->IsSleepDialogShown();
+}
+
+void CUIGameCustom::HideSleepDialog()
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->HideSleepDialog();
+}
+
+void CUIGameCustom::CancelSleepDialog()
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->CancelSleepDialog();
+}
+
+bool CUIGameCustom::ConfirmSleep()
+{
+	return SleepWnd != nullptr && SleepWnd->ConfirmSleep();
+}
+
+void CUIGameCustom::ForceSleep(int hours)
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->ForceSleep(hours);
+}
+
+bool CUIGameCustom::AbortSleep()
+{
+	return SleepWnd != nullptr && SleepWnd->AbortSleep();
+}
+
+int CUIGameCustom::GetSleepSelectedHours() const
+{
+	return SleepWnd != nullptr ? SleepWnd->GetSleepSelectedHours() : 1;
+}
+
+void CUIGameCustom::SetSleepSelectedHours(int hours)
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->SetSleepSelectedHours(hours);
+}
+
+bool CUIGameCustom::IsActorSleeping() const
+{
+	return SleepWnd != nullptr && SleepWnd->IsActorSleeping();
+}
+
+u8 CUIGameCustom::GetSleepPhase() const
+{
+	return SleepWnd != nullptr ? SleepWnd->GetSleepPhase() : 0;
+}
+
+void CUIGameCustom::SetSleepHoursRange(int minHours, int maxHours)
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->SetSleepHoursRange(minHours, maxHours);
+}
+
+void CUIGameCustom::ClearSleepHoursRange()
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->ClearSleepHoursRange();
+}
+
+void CUIGameCustom::SetSleepAllowBleeding(bool allow)
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->SetSleepAllowBleeding(allow);
+}
+
+void CUIGameCustom::ClearSleepAllowBleeding()
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->ClearSleepAllowBleeding();
+}
+
+void CUIGameCustom::SetSleepRestorePower(float power)
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->SetSleepRestorePower(power);
+}
+
+void CUIGameCustom::ClearSleepRestorePower()
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->ClearSleepRestorePower();
+}
+
+void CUIGameCustom::SetSleepMute(bool muteMusic, bool muteEffects)
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->SetSleepMute(muteMusic, muteEffects);
+}
+
+void CUIGameCustom::ClearSleepMute()
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->ClearSleepMute();
+}
+
+void CUIGameCustom::ClearSleepSessionOverrides()
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->ClearSleepSessionOverrides();
+}
+
+void CUIGameCustom::SetSleepBlocked(bool blocked, LPCSTR warningText)
+{
+	if (SleepWnd != nullptr)
+		SleepWnd->SetSleepBlocked(blocked, warningText);
 }
 
 #include "ui/UIMessageBox.h"
