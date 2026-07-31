@@ -49,7 +49,16 @@ protected:
 	Fvector2				m_custom_mark_pos;
 	xr_vector<CUIProgressBar*> m_pCellsConditions;
 
+	bool					m_text_use_anchor;
+	u8						m_text_anchor;
+	Fvector2				m_text_anchor_inset;
+
+	bool					m_condition_use_anchor;
+	u8						m_condition_anchor;
+	Fvector2				m_condition_anchor_inset;
+
 	virtual void			UpdateItemText			();
+			void			UpdateItemTextAnchor	();
 			void			init					();
 public:
 							CUICellItem				();
