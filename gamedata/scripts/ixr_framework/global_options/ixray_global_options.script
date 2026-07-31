@@ -1,6 +1,9 @@
 function on_game_start()
-	GetModule("ixr_options").set_options_title("st_ixray_global_options")
-	GetModule("ixr_options").set_options_icon("ui\\ixr_options\\icons\\ixr_global_icon")
+	SetOptionTitle("st_ixray_global_options") -- Задаём заголовок для вкладки опций
+	SetOptionAddonName("st_ixray_global_options_addon") -- Задаём название аддона для вкладки опций
+	SetOptionScriptVersion("1.0.0") -- Задаём версию скрипта для вкладки опций
+	SetOptionAuthors("IXRay Team | FFx0001") -- Задаём авторов аддона для вкладки опций
+	SetOptionIcon("ui\\ixr_options\\icons\\ixr_global_icon") -- Задаём путь до иконки вкладки опций
 	
 	RegisterScriptCallback("on_init_ixr_options", function (_ref)
 		_ref.register_option("st_ixray_global_options_params", "switch_draw_vars", "st_ixray_global_options_draw_var_names", _ref.check_box(false), function (group, name, value) 
