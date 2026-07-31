@@ -190,6 +190,15 @@ retval: (table) - данные контрола для  _ref.register_option.
 
 --// автоматически вызываемый метод системой ixr autoloader
 function on_game_start()
+
+  -- Регистрируем данные своего аддона перед инициализацией настроек
+	SetOptionTitle("st_my_addon_title") -- Задаём заголовок для вкладки опций (создаем в xml строку перевода и указываем её id)
+	SetOptionAddonName("st_my_addon") -- Задаём название аддона для вкладки опций (создаем в xml строку перевода и указываем её id)
+	SetOptionScriptVersion("1.0.2") -- Задаём версию скрипта для вкладки опций
+	SetOptionAuthors("User8912") -- Задаём авторов аддона для вкладки опций
+	SetOptionIcon("addons_icons\\my_addon_icon") -- Задаём путь до иконки вкладки опций (dds файл указывается без расширения полный путь с двойными слешами относительно папки текстур)
+	
+
   --// Подписываемся на событие регистрации опций
 	RegisterScriptCallback("on_init_ixr_options", function (_ref)
     --// создаем TextBox (текстовое поле)
