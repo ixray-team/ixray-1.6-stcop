@@ -81,11 +81,11 @@ public:
 
 extern CMapListHelper	gMapListHelper;
 
-
 class CUITalkWnd;
 class CInventoryOwner;
 class CInventoryBox;
 class CUIMessageBox;
+class CUISleepWnd;
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CChangeLevelWnd :	public CUIDialogWnd
@@ -221,7 +221,35 @@ public:
 	// Change Level
 public:
 	CChangeLevelWnd* UIChangeLevelWnd;
+	CUISleepWnd* SleepWnd = nullptr;
 	void				ChangeLevel	(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, Fvector pos, Fvector ang, Fvector pos2, Fvector ang2, bool b, const shared_str& message, bool b_allow_change_level);
+	void				ShowSleepDialog();
+	void				ShowSleepDialogAtHour(int hours);
+	void				SetSleepHourPresets(xr_vector<int> hours);
+	void				ClearSleepHourPresets();
+
+	bool				IsSleepDialogReady() const;
+	bool				IsSleepDialogShown() const;
+	void				HideSleepDialog();
+	void				CancelSleepDialog();
+	bool				ConfirmSleep();
+	void				ForceSleep(int hours);
+	bool				AbortSleep();
+	int					GetSleepSelectedHours() const;
+	void				SetSleepSelectedHours(int hours);
+	bool				IsActorSleeping() const;
+	u8					GetSleepPhase() const;
+
+	void				SetSleepHoursRange(int minHours, int maxHours);
+	void				ClearSleepHoursRange();
+	void				SetSleepAllowBleeding(bool allow);
+	void				ClearSleepAllowBleeding();
+	void				SetSleepRestorePower(float power);
+	void				ClearSleepRestorePower();
+	void				SetSleepMute(bool muteMusic, bool muteEffects);
+	void				ClearSleepMute();
+	void				ClearSleepSessionOverrides();
+	void				SetSleepBlocked(bool blocked, LPCSTR warningText = nullptr);
 
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
