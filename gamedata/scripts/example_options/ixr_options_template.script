@@ -1,5 +1,8 @@
 
 function on_game_start()
+	SetOptionTitle("st_options_template") -- Задаём заголовок для вкладки опций
+	SetOptionIcon("addons_icons\\ixr_addon_template_icon") -- Задаём путь до иконки вкладки опций
+	
 	RegisterScriptCallback("on_init_ixr_options", function (_ref)
 		-- ###################################
 		-- 		ПРИМЕР ОПЦИЙ БЕЗ ГРУППИРОВКИ 
