@@ -1,6 +1,9 @@
 function on_game_start()
+	GetModule("ixr_options").set_options_title("st_ixray_global_options")
+	GetModule("ixr_options").set_options_icon("ui\\ixr_options\\icons\\ixr_global_icon")
+	
 	RegisterScriptCallback("on_init_ixr_options", function (_ref)
-		_ref.register_option("ОПЦИИ", "switch_draw_vars", "Отображать имена переменных в заголовке опций", _ref.check_box(false), function (group, name, value) 
+		_ref.register_option("st_ixray_global_options_params", "switch_draw_vars", "st_ixray_global_options_draw_var_names", _ref.check_box(false), function (group, name, value) 
 			_ref.set_draw_variable_names_state(value)
 		end)
 	end)
