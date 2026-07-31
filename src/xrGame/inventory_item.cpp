@@ -193,10 +193,36 @@ void CInventoryItem::SetAdditionalDescription(const char* additionalDescription)
 	}
 }
 
+CInventoryItem::EInvCellAnchor CInventoryItem::ParseInvCellAnchor(const char* value)
+{
+	if (!value || !value[0])
+	{
+		return EInvCellAnchor::BottomRight;
+	}
+
+	if (!_stricmp(value, "top_left") || !_stricmp(value, "tl"))
+	{
+		return EInvCellAnchor::TopLeft;
+	}
+	if (!_stricmp(value, "top_right") || !_stricmp(value, "tr"))
+	{
+		return EInvCellAnchor::TopRight;
+	}
+	if (!_stricmp(value, "bottom_left") || !_stricmp(value, "bl"))
+	{
+		return EInvCellAnchor::BottomLeft;
+	}
+
+	return EInvCellAnchor::BottomRight;
+}
+
 void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 {
 	m_custom_text = READ_IF_EXISTS(pSettings, r_string, section, "item_custom_text", nullptr);
 	m_custom_text_offset = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_text_offset", Fvector2().set(0.f, 0.f));
+	m_custom_text_auto_uses = READ_IF_EXISTS(pSettings, r_bool, section, "item_custom_text_auto_uses", false);
+	m_custom_text_anchor = ParseInvCellAnchor(
+		READ_IF_EXISTS(pSettings, r_string, section, "item_custom_text_anchor", "bottom_right"));
 
 	if (pSettings->line_exist(section, "item_custom_text_font"))
 	{
@@ -218,6 +244,8 @@ void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 	m_custom_mark_offset = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_mark_offset", Fvector2().set(0.f, 0.f));
 	m_custom_mark_size = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_mark_size", Fvector2().set(0.f, 0.f));
 	m_custom_mark_clr = READ_IF_EXISTS(pSettings, r_color, section, "item_custom_mark_clr", 0);
+	m_custom_mark_anchor = ParseInvCellAnchor(
+		READ_IF_EXISTS(pSettings, r_string, section, "item_custom_mark_anchor", "bottom_right"));
 }
 
 void CInventoryItem::Read3dStaticsData(const char* section)
