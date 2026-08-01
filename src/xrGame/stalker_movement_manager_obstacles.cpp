@@ -214,48 +214,42 @@ static float get_distance											(
 		float const safe_distance
 	)
 {
-	Fvector intersection;
+	Fvector2					intersection;
 	switch (
-			ai().level_graph().intersect3D(
-					a_first.x, a_first.z, a_first.y,
-					a_second.x, a_second.z, a_second.y,
-					b_first.x, b_first.z, b_first.y,
-					b_second.x, b_second.z, b_second.y,
-					&intersection.x, &intersection.y, &intersection.z
+			ai().level_graph().intersect(
+					a_first.x,  a_first.z,
+					a_second.x, a_second.z,
+					b_first.x,  b_first.z,
+					b_second.x, b_second.z,
+					&intersection.x, &intersection.y
 			)
 		)
 	{
 		case LevelGraph::eLineIntersectionEqual :
-		{
-			return 0.f;
-		}
+			return						0.f;
 
 		case LevelGraph::eLineIntersectionCollinear : {
-			Fvector2 const as_af = Fvector2().sub( Fvector2().set(a_second.x, a_second.z), Fvector2().set(a_first.x, a_first.z) );
-			Fvector2 const bf_af = Fvector2().sub( Fvector2().set(b_first.x, b_first.z), Fvector2().set(a_first.x, a_first.z) );
+			Fvector2 const as_af		= Fvector2().sub( Fvector2().set(a_second.x, a_second.z), Fvector2().set(a_first.x, a_first.z) );
+			Fvector2 const bf_af		= Fvector2().sub( Fvector2().set(b_first.x, b_first.z), Fvector2().set(a_first.x, a_first.z) );
 			float const as_af_magnitude	= as_af.magnitude();
 			float const bf_af_magnitude	= bf_af.magnitude();
-			Fvector2 const as_af_dir = Fvector2( as_af ).div( as_af_magnitude );
+			Fvector2 const as_af_dir	= Fvector2( as_af ).div( as_af_magnitude );
 			float const signed_distance	= as_af_dir.dotproduct(bf_af);
-			float const distance = _sqrt( _sqr(bf_af_magnitude) + _sqr(signed_distance) );
+			float const distance		= _sqrt( _sqr(bf_af_magnitude) + _sqr(signed_distance) );
 			if ( distance >= safe_distance )
-			{
-				return -1.f;
-			}
+				return					-1.f;
 
-			return 0.f;
+			return						0.f;
 		}
 
 		case LevelGraph::eLineIntersectionIntersect :
-		{
-			return intersection.distance_to( a_first );
-		}
+			return						intersection.distance_to( Fvector2().set(a_first.x, a_first.z) );
 
-		default : NODEFAULT;
+		default :						NODEFAULT;
 	}
 
 #ifdef DEBUG
-	return -1.f;
+	return								-1.f;
 #endif // #ifdef DEBUG
 }
 
