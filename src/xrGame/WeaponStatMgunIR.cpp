@@ -98,3 +98,27 @@ void CWeaponStatMgun::OnGamepadAxisMove(int id, Fvector2 value)
 		}
 	}
 }
+
+void CWeaponStatMgun::OnGyroscopeMove(Fvector3 value)
+{
+	if (Remote())
+		return;
+
+	float scale = Device.fTimeDelta * psMouseSensScale;
+	float h, p;
+	m_destEnemyDir.getHP(h, p);
+
+	if (value.y)
+	{
+		float d = (psGyroscopeInvertX ? -1 : 1) * -value.y * scale;
+		h -= d;
+		SetDesiredDir(h, p);
+	}
+
+	if (value.x)
+	{
+		float d = (psGyroscopeInvertY ? -1 : 1) * -value.x * scale;
+		p -= d;
+		SetDesiredDir(h, p);
+	}
+}

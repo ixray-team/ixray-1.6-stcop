@@ -227,6 +227,29 @@ void CHolderEntityObject::OnGamepadAxisMove(int id, Fvector2 value)
 	}
 }
 
+void CHolderEntityObject::OnGyroscopeMove(Fvector3 value)
+{
+	if (Remote())
+	{
+		return;
+	}
+
+	CCameraBase* C = camera;
+	float scale = (C->f_fov / g_fov) * Device.fTimeDelta * psMouseSensScale;
+	if (value.x)
+	{
+		float d = (psGyroscopeInvertY ? -1 : 1) * value.x * scale;
+		d *= 8;
+		C->Move((d < 0) ? kUP : kDOWN, std::abs(d));
+	}
+
+	if (value.y)
+	{
+		float d = (psGyroscopeInvertY ? -1 : 1) * value.y * scale * 8;
+		C->Move((d > 0) ? kLEFT : kRIGHT, std::abs(d));
+	}
+}
+
 void CHolderEntityObject::OnKeyboardPress(int dik)
 {
 	if (Remote())							return;

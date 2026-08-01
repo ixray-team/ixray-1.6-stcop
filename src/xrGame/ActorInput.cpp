@@ -641,7 +641,7 @@ void CActor::IR_OnGyroscopeMove(Fvector3 value)
 
 	if (m_holder)
 	{
-	//	m_holder->OnMouseMove(dx, dy);
+		m_holder->OnGyroscopeMove(value);
 		return;
 	}
 
@@ -661,7 +661,7 @@ void CActor::IR_OnGyroscopeMove(Fvector3 value)
 
 	if (value.x)
 	{
-		float d = (psGyroscopeInvertY ? -1 : 1) * value.x * scale * 3.0f / 4.0f;
+		float d = (psGyroscopeInvertY ? -1 : 1) * value.x * scale;
 		cam_Active()->Move((d < 0) ? kUP : kDOWN, std::abs(d));
 	}
 
