@@ -181,7 +181,7 @@ void CUIActorMenu::UpdateActor()
 	if ( IsGameTypeSingle() )
 	{
 		string64 buf;
-		xr_sprintf( buf, "%d RU", m_pActorInvOwner->get_money() );
+		xr_sprintf( buf, "%u RU", m_pActorInvOwner->get_money() );
 		m_ActorMoney->SetText( buf );
 	}
 	else
@@ -298,7 +298,7 @@ void CUIActorMenu::UpdatePartnerBag()
 	}
 	else
 	{
-		xr_sprintf( buf, "%d RU", m_pPartnerInvOwner->get_money() );
+		xr_sprintf( buf, "%u RU", m_pPartnerInvOwner->get_money() );
 		m_PartnerMoney->SetText( buf );
 	}	
 
@@ -325,8 +325,8 @@ void CUIActorMenu::UpdatePrices()
 	u32 partner_price = CalcItemsPrice( m_pTradePartnerList, m_partner_trade, false );
 
 	string64 buf;
-	xr_sprintf( buf, "%d RU", actor_price );		m_ActorTradePrice->SetText( buf );	m_ActorTradePrice->AdjustWidthToText();
-	xr_sprintf( buf, "%d RU", partner_price );	m_PartnerTradePrice->SetText( buf );	m_PartnerTradePrice->AdjustWidthToText();
+	xr_sprintf( buf, "%u RU", actor_price );		m_ActorTradePrice->SetText( buf );	m_ActorTradePrice->AdjustWidthToText();
+	xr_sprintf( buf, "%u RU", partner_price );	m_PartnerTradePrice->SetText( buf );	m_PartnerTradePrice->AdjustWidthToText();
 
 	float actor_weight   = CalcItemsWeight( m_pTradeActorList );
 	float partner_weight = CalcItemsWeight( m_pTradePartnerList );
@@ -367,20 +367,17 @@ void CUIActorMenu::OnBtnPerformTradeBuy(CUIWindow* w, void* d)
 		return;
 	}
 
-	int actor_money    = (int)m_pActorInvOwner->get_money();
-	int partner_money  = (int)m_pPartnerInvOwner->get_money();
-	int actor_price    = 0;//(int)CalcItemsPrice( m_pTradeActorList,   m_partner_trade, true  );
-	int partner_price  = (int)CalcItemsPrice( m_pTradePartnerList, m_partner_trade, false );
+	s64 actor_money    = (s64)m_pActorInvOwner->get_money();
+	s64 partner_money  = (s64)m_pPartnerInvOwner->get_money();
+	u32 partner_price  = CalcItemsPrice( m_pTradePartnerList, m_partner_trade, false );
 
-	int delta_price    = actor_price - partner_price;
-	actor_money        += delta_price;
-	partner_money      -= delta_price;
+	actor_money        -= partner_price;
+	partner_money      += partner_price;
 
-	if ( ( actor_money >= 0 ) /*&& ( partner_money >= 0 )*/ && ( actor_price >= 0 || partner_price > 0 ) )
+	if ( actor_money >= 0 && partner_price > 0 )
 	{
-		m_partner_trade->OnPerformTrade( partner_price, actor_price );
+		m_partner_trade->OnPerformTrade( partner_price, 0 );
 
-//		TransferItems( m_pTradeActorList,   m_pTradePartnerBagList, m_partner_trade, true );
 		TransferItems( m_pTradePartnerList,	m_pTradeActorBagList,	m_partner_trade, false );
 
 		// we clear current selection here since the item is transferred.
@@ -395,10 +392,6 @@ void CUIActorMenu::OnBtnPerformTradeBuy(CUIWindow* w, void* d)
 		{
 			CallMessageBoxOK( "not_enough_money_actor" );
 		}
-		//else if ( partner_money < 0 )
-		//{
-		//	CallMessageBoxOK( "not_enough_money_partner" );
-		//}
 		else
 		{
 			CallMessageBoxOK( "trade_dont_make" );
@@ -417,19 +410,17 @@ void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 		return;
 	}
 
-	int actor_money = (int)m_pActorInvOwner->get_money();
-	int partner_money = (int)m_pPartnerInvOwner->get_money();
-	int actor_price = (int)CalcItemsPrice(m_pTradeActorList, m_partner_trade, true);
-	int partner_price = 0;
+	s64 actor_money = (s64)m_pActorInvOwner->get_money();
+	s64 partner_money = (s64)m_pPartnerInvOwner->get_money();
+	u64 actor_price = CalcItemsPrice(m_pTradeActorList, m_partner_trade, true);
 	bool partner_infinivite_money = m_pPartnerInvOwner->InfinitiveMoney();
 
-	int delta_price = actor_price - partner_price;
-	actor_money += delta_price;
-	partner_money -= delta_price;
+	actor_money += actor_price;
+	partner_money -= actor_price;
 
-	if (actor_money >= 0 && (partner_infinivite_money || partner_money >= 0) && (actor_price >= 0 || partner_price > 0))
+	if (actor_money >= 0 && (partner_infinivite_money || partner_money >= 0) && actor_price >= 0)
 	{
-		m_partner_trade->OnPerformTrade(partner_price, actor_price);
+		m_partner_trade->OnPerformTrade(0, actor_price);
 
 		TransferItems(m_pTradeActorList, m_pTradePartnerBagList, m_partner_trade, true);
 
@@ -453,7 +444,7 @@ void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 	UpdateItemsPlace();
 }
 
-void CUIActorMenu::TradeShowMessage(int money_actor, int money_patner) 
+void CUIActorMenu::TradeShowMessage(s64 money_actor, s64 money_patner) 
 {
 	if (money_actor < 0)
 	{
