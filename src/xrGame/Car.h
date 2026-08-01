@@ -496,6 +496,7 @@ public:
 	virtual	void			net_Relcase					(CObject* O );
 	// Input
 	virtual void			OnGamepadAxisMove			(int id, Fvector2 value);
+	virtual void			OnGyroscopeMove				(Fvector3 value);
 	virtual void			OnGamepadKeyPress			(int id);
 	virtual void			OnGamepadKeyRelease			(int id);
 	virtual void			OnMouseMove					(int x, int y);

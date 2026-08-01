@@ -103,6 +103,26 @@ void CCar::OnGamepadAxisMove(int id, Fvector2 value)
 	}
 }
 
+void CCar::OnGyroscopeMove(Fvector3 value)
+{
+	if (!IsMyCar())
+		return;
+
+	CCameraBase* C = active_camera;
+	float scale = (C->f_fov / g_fov) * Device.fTimeDelta * psMouseSensScale;
+	if (value.x)
+	{
+		float d = (psGyroscopeInvertX ? -1 : 1) * value.x * scale;
+		C->Move((d < 0) ? kUP : kDOWN, std::abs(d));
+	}
+
+	if (value.y)
+	{
+		float d = (psGyroscopeInvertY ? -1 : 1) * value.y * scale;
+		C->Move((d > 0) ? kLEFT : kRIGHT, std::abs(d));
+	}
+}
+
 bool CCar::bfAssignMovement(CScriptEntityAction *tpEntityAction)
 {
 	if (tpEntityAction->m_tMovementAction.m_bCompleted)
