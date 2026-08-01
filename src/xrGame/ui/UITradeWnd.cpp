@@ -302,7 +302,7 @@ void CUITradeWnd::StopTrade()
 	bStarted						= false;
 }
 
-void CUITradeWnd::TradeShowMessage(int money_actor, int money_patner) 
+void CUITradeWnd::TradeShowMessage(s64 money_actor, s64 money_patner) 
 {
 	if (money_patner < 0)
 		UIDealMsg = CurrentGameUI()->AddCustomStatic("not_enough_money_other", true);
@@ -336,17 +336,17 @@ void CUITradeWnd::UpdatePrices()
 
 
 	string256				buf;
-	xr_sprintf				(buf, "%d RU", m_iOurTradePrice);
+	xr_sprintf				(buf, "%u RU", m_iOurTradePrice);
 	UIOurPriceCaption.GetPhraseByIndex(2)->str = buf;
-	xr_sprintf				(buf, "%d RU", m_iOthersTradePrice);
+	xr_sprintf				(buf, "%u RU", m_iOthersTradePrice);
 	UIOthersPriceCaption.GetPhraseByIndex(2)->str = buf;
 
-	xr_sprintf				(buf, "%d RU", m_pInvOwner->get_money());
+	xr_sprintf				(buf, "%u RU", m_pInvOwner->get_money());
 	UIOurMoneyStatic.SetText(buf);
 
 	if(!m_pOthersInvOwner->InfinitiveMoney())
 	{
-		xr_sprintf			(buf, "%d RU", m_pOthersInvOwner->get_money());
+		xr_sprintf			(buf, "%u RU", m_pOthersInvOwner->get_money());
 		UIOtherMoneyStatic.SetText(buf);
 	}
 	else
