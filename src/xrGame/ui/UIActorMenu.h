@@ -211,7 +211,7 @@ protected:
 	// Controller UI
 	virtual void				SetAuxMode							(eActorMenuControllerAuxMode mode);
 
-	virtual void				TradeShowMessage					(int money_actor, int money_patner);
+	virtual void				TradeShowMessage					(u32 money_actor, u32 money_patner);
 
 public:
 								CUIActorMenu						();

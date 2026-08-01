@@ -225,7 +225,7 @@ void CUIInventoryWnd::Update()
 		}
 		// update money
 		string64						sMoney;
-		xr_sprintf						(sMoney,"%d RU", _money);
+		xr_sprintf						(sMoney,"%u RU", _money);
 		UIMoneyWnd.SetText				(sMoney);
 
 		// update outfit parameters

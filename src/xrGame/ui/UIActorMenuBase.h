@@ -136,7 +136,7 @@ protected:
 	virtual void				TrySetCurUpgrade			() {}
 	virtual void				UpdateOutfit				() {}
 	virtual void				UpdateActor					() {}
-	virtual void				TradeShowMessage			(int money_actor, int money_patner) {}
+	virtual void				TradeShowMessage			(u32 money_actor, u32 money_patner) {}
 	void						InitPartnerInventoryContents();
 
 	void						clear_highlight_lists		();
