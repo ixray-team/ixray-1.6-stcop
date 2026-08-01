@@ -3,7 +3,7 @@
 		<window_name>pda_tasks</window_name>
 	</main_wnd>
 
-	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+	<gamepad_legend x="0" y="724" width="819" height="30" spacing="5">
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_pda_tabs</text>
 		</auto_static>
