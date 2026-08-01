@@ -43,6 +43,7 @@ _appdata_ixray_/
 ixr_addons/
 fs_*.ltx
 fsgame_*.ltx
+!fsgame_coc.ltx
 fsfactory_*.ltx
 
 # masOS cache
