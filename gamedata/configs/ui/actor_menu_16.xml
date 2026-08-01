@@ -198,7 +198,7 @@
 			<slot_highlight x="472" y="17" width="76" height="98" stretch="1">
 				<texture>ui_inGame2_helmet_highlighter</texture>
 			</slot_highlight>
-    		<slot_progress x="488" y="118" width="47" height="5" horz="1" min="0" max="1" pos="0">
+    		<slot_progress x="488" y="119" width="47" height="5" horz="1" min="0" max="1" pos="0">
     		    <progress stretch="1">
     		        <texture r="142" g="149" b="149">ui_inGame2_inventory_status_bar</texture>
     		    </progress>
@@ -221,16 +221,16 @@
 		<texture>ui_inGame2_artefakt_highlighter</texture>
 	</artefact_slot_highlight>
 
-	<quick_slot1_text x="386" y="446" width="14" height="13">
+	<quick_slot1_text x="387" y="446" width="14" height="13">
 		<text align="c" font="letterica16">quick_use_str_1</text>
 	</quick_slot1_text>
-	<quick_slot2_text x="451" y="446" width="14" height="13">
+	<quick_slot2_text x="452" y="446" width="14" height="13">
 		<text align="c" font="letterica16">quick_use_str_2</text>
 	</quick_slot2_text>
-	<quick_slot3_text x="516" y="446" width="14" height="13">
+	<quick_slot3_text x="517" y="446" width="14" height="13">
 		<text align="c" font="letterica16">quick_use_str_3</text>
 	</quick_slot3_text>
-	<quick_slot4_text x="580" y="446" width="14" height="13">
+	<quick_slot4_text x="581.5" y="446" width="14" height="13">
 		<text align="c" font="letterica16">quick_use_str_4</text>
 	</quick_slot4_text>
 
