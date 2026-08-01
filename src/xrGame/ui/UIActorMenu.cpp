@@ -662,7 +662,7 @@ void CUIActorMenu::UpdateActorMoneyMP()
 	s32 money = Game().local_player->money_for_round;
 
 	string64 buf;
-	xr_sprintf( buf, "%d RU", money );
+	xr_sprintf( buf, "%u RU", money );
 	m_ActorMoney->SetText( buf );
 }
 
