@@ -100,12 +100,12 @@ void UIPropertiesItem::RemoveMixed()
 	break;
 	case PROP_BOOLEAN:
 	{
-		BOOLValue* V = dynamic_cast<BOOLValue*>(PItem->GetFrontValue()); VERIFY(V);
-		int val = V->GetValue();
-		PItem->BeforeEdit<BOOLValue, int>(val);
+		BoolValue* V = dynamic_cast<BoolValue*>(PItem->GetFrontValue()); VERIFY(V);
+		auto val = V->GetValue();
+		PItem->BeforeEdit<BoolValue, bool>(val);
 
-		if (PItem->AfterEdit<BOOLValue, int>(val))
-			if (PItem->ApplyValue<BOOLValue, int>(val))
+		if (PItem->AfterEdit<BoolValue, bool>(val))
+			if (PItem->ApplyValue<BoolValue, bool>(val))
 			{
 				change = true;
 			}
