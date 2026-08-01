@@ -36,6 +36,7 @@ public:
 	virtual void			OnKeyboardPress		(int dik)		= 0;
 	virtual void			OnKeyboardRelease	(int dik)		= 0;
 	virtual void			OnKeyboardHold		(int dik)		= 0;
+	virtual void			OnGyroscopeMove		(Fvector3 value) = 0;
 	// Inventory for the car
 	virtual CInventory*		GetInventory		()				= 0;
 
