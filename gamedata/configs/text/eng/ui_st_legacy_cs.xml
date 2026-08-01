@@ -12,4 +12,10 @@
 	<string id="st_creating_new_game">
 		<text>Creating new game</text>
 	</string>
+	<string id="ui_inv_outfit_explosion_protection">
+		<text>Explosion</text>
+	</string>
+	<string id="ui_inv_outfit_strike_protection">
+		<text>Impact</text>
+	</string>
 </string_table>
