@@ -70,4 +70,9 @@ void XRay::Engine::GameThread()
 	}
 	PROF_STOP_THREAD();
 	Platform::SetThreadName("X-Ray Empty Task");
+
+	if (g_pGamePersistent != nullptr)
+	{
+		g_pGamePersistent->OnFrameMT();
+	}
 }

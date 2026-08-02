@@ -4,6 +4,7 @@
 #include "Environment.h"
 #include "IGame_ObjectPool.h"
 #include "Render.h"
+#include <luabind/class_info.hpp>
 
 class IRenderVisual;
 class IMainMenu;
@@ -59,6 +60,7 @@ public:
 
 	params m_game_params;
 	ShaderParamsData ShaderParams;
+	luabind::functor<void> ixr_framework_onframe;
 public:
 	virtual void					PreStart			(const char* op);
 	virtual void					Start				(const char* op);
@@ -82,6 +84,7 @@ public:
 	virtual	void					OnAppActivate		();
 	virtual void					OnAppDeactivate		();
 	virtual void		_BCL		OnFrame				();
+	virtual void					OnFrameMT			();
 
 	// вызывается только когда изменяется тип игры
 	virtual	void					OnGameStart			(); 
