@@ -168,6 +168,7 @@ void CGamePersistent::OnAppStart()
 	inherited::OnAppStart			();
 	m_pUI_core					= new ui_core();
 	m_pMainMenu					= new CMainMenu();
+	ai().script_engine().functor("___ixr_engine_callbacks.on_frame", ixr_framework_onframe);
 }
 
 

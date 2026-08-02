@@ -10,7 +10,7 @@
 #include "Render.h"
 #include "CustomHUD.h"
 
-ENGINE_API	IGame_Persistent* g_pGamePersistent = nullptr;
+ENGINE_API IGame_Persistent* g_pGamePersistent = nullptr;
 
 bool IsMainMenuActive() { return  g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
 
@@ -145,6 +145,14 @@ void IGame_Persistent::OnFrame()
 {
 	if (!Device.Paused() || Device.dwPrecacheFrame)
 		Environment().OnFrame();
+}
+
+void IGame_Persistent::OnFrameMT()
+{
+	if (ixr_framework_onframe.is_valid())
+	{
+		ixr_framework_onframe();
+	}
 }
 
 void IGame_Persistent::OnAssetsChanged()
