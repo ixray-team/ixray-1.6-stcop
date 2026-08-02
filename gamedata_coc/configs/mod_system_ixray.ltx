@@ -10,15 +10,18 @@ files =
 ![wpn_knife]
 snd_draw = weapons\draw_silent
 
-; w_binoc.ltx
-![wpn_binoc]
-use_condition = false
+![bolt]
+icons_texture = ui\ui_icon_bolt
+inv_scale = 2.0
 
 ![inventory]
 slot_persistent_4 = false ;grenades
 
 slot_persistent_13  = false ;backpack
 slot_active_13      = false
+
+; Legacy CoP: flexible second/third weapon columns in the inventory UI (replaces engine_external EnableInventoryPistolSlot).
+inventory_secondary_slot_pairing_strict = false
 
 ![actor_look_cam_psp]
 !offset
@@ -37,26 +40,175 @@ player_hud_default = actor_hud_05
 ![m_burer_e]
 icon = ui_npc_monster_burer
 
+;artefacts.ltx
+![af_glass]
+3d_static_scale			= 0.3
+
+![af_medusa]
+3d_static_scale			= 0.9
+
+![af_electra_flash]
+3d_static_scale			= 0.3
+
+![af_electra_sparkler]
+3d_static_scale			= 0.7
+
+![af_dummy_glassbeads]
+3d_static_rotate			= 0,0,-45
+
 ;items.ltx
 ![bread]
 use_text = st_eat
+3d_static_rotate = -12,-140,30
+3d_static_scale = 1.17
 
 ![kolbasa]
 use_text = st_eat
+3d_static_rotate = -16.5,-140,-30
+3d_static_scale = 1.3
 
 ![conserva]
 use_text = st_eat
+3d_static_rotate = 19,0,0
 
 ![vodka]
 use_text = st_drink
+3d_static_rotate = -10,-10,45
+
+![guitar_a]
+3d_static_rotate = 0,-100,100
+
+![energy_drink]
+3d_static_rotate = -10,-10,40
+eat_thirst = 0.35
+
+![bandage]
+3d_static_rotate = 40,70,130
+
+![antirad]
+3d_static_rotate = 54,-12,3
+3d_static_scale = 0.9
+eat_intoxication = 0.07
+
+![medkit]
+3d_static_rotate = 58,-19,0
+3d_static_scale = 0.9
+eat_intoxication = 0.08
+
+![medkit_army]
+3d_static_rotate = 58,-19,0
+3d_static_scale = 0.9
+eat_intoxication = 0.10
+
+![medkit_scientic]
+3d_static_rotate = 58,-19,0
+3d_static_scale = 0.9
+eat_intoxication = 0.12
+
+![drug_booster]
+3d_static_rotate = -10,-10,40
+eat_intoxication = 0.14
+
+![drug_coagulant]
+3d_static_rotate = 23,80,-60
+3d_static_scale = 1.1
+eat_intoxication = 0.15
+
+![drug_psy_blockade]
+3d_static_rotate = 23,80,-60
+3d_static_scale = 1.1
+eat_intoxication = 0.16
+
+![drug_antidot]
+3d_static_rotate = 23,80,-60
+3d_static_scale = 1.1
+eat_intoxication = -0.25
+
+![drug_radioprotector]
+3d_static_rotate = 23,80,-60
+3d_static_scale = 1.1
+eat_intoxication = 0.15
+
+![drug_anabiotic]
+3d_static_rotate = 23,80,-60
+3d_static_scale = 1.1
+eat_intoxication = 0.30
+
+![csky_patch]
+3d_static_rotate = 90,0,0
+
+![mutant_part_general_meat]
+3d_static_rotate = 90,0,0
+
+![actor_condition]
+intoxication_v = -0.00025
+intoxication_critical = 0.35
+intoxication_health_v = -0.0015
+intoxication_power_v = -0.005
+intoxication_thirst_k = 0.3
+
+[effector_intoxication]
+cam_eff_name = camera_effects\drunk.anm
+cam_eff_cyclic = 1
+
+[effector_intoxication_pp]
+pp_eff_name = alcohol.ppe
+pp_eff_cyclic = 1
+pp_eff_overlap = true
+
+![device_pda]
+3d_static_rotate = 61,-23,4
+
+![dev_flash_1]
+3d_static_rotate = -40,110,100
+
+![dev_flash_2]
+3d_static_rotate = -40,110,100
 
 ![device_torch]
 sound_activate          = device\torch_click
 sound_deactivate        = device\torch_click_off
 
+;outfit.ltx
+![outfit_base]
+3d_static_rotate			= -90,-180,0
+3d_static_scale				= 0.8
+
+![stalker_outfit]
+3d_static_rotate = -84,170,-10
+3d_static_scale = 1
+
+![svoboda_light_outfit]
+3d_static_rotate = -90,-180,0
+
+![scientific_outfit]
+3d_static_rotate			= -90,180,0
+
+![helm_respirator]
+3d_static_rotate = -90,0,-180
+3d_static_scale = 0.9
+
+![helm_hardhat]
+3d_static_rotate			= -20,180,0
+
+![helm_protective]
+3d_static_rotate = -90,180,0
+3d_static_scale = 0.900000
+
+![helm_tactic]
+3d_static_rotate = -20,180,0
+3d_static_scale = 1.1
+
+![helm_battle]
+3d_static_rotate = -30,180,0
+
 ;devices.ltx
 ![detector_base_hud]
 disable_bore							 = true
+
+![detector_simple]
+3d_static_rotate = 60,-20,-0
+3d_static_scale = 0.92
 
 ;zone_mine_thermal.ltx
 ![zone_mine_thermal]
@@ -68,6 +220,8 @@ detonation_threshold_hit= 0.3
 explosion_on_hit = true
 explosion_hit_types = 6, 8 
 explosive_while_not_activated = true
+3d_static_rotate			= -45,-90,0
+3d_static_scale			= 0.7
 
 ;w_rgd5.ltx
 ![grenade_rgd5]
@@ -75,6 +229,12 @@ detonation_threshold_hit = 0.3
 explosion_on_hit = true
 explosion_hit_types = 6, 8 
 explosive_while_not_activated = true
+3d_static_rotate			= -45,-90,0
+3d_static_scale			= 0.7
+
+![grenade_gd-05]
+3d_static_rotate			= -45,-90,0
+3d_static_scale			= 0.7
 
 ;helicopter.ltx
 ![helicopter]
@@ -103,6 +263,10 @@ corpse_remove_game_time_interval = 24 ; in hours
 stay_after_death_time_interval = 36 ; in hours
 
 ;defines.ltx
+![default_weapon_params]
+3d_static_rotate			= 0.000000,-90,0.000000
+3d_static_scale			= 0.900000
+
 ![hud_base] ; Gunslinger Style
 ;наклоны оружия при ходьбе
 hud_move_speed_rot = 3			;скорость доворота до заданного угла			
@@ -303,6 +467,33 @@ hud_aim_move_from_rlookout_offset_rot	        = 0,0,1
 hud_aim_move_from_rlookout_offset_pos_16x9 	= 0, 0, 0
 hud_aim_move_from_rlookout_offset_rot_16x9	= 0,0,1
 
+;прыжок
+hud_aim_move_jump_offset_pos = 0,0.015,0.009
+hud_aim_move_jump_offset_rot = 0,-3,-3
+
+hud_aim_move_jump_offset_pos_16x9 = 0,0.015,0.009
+hud_aim_move_jump_offset_rot_16x9 = 0,-3,-3
+
+;падение
+hud_aim_move_fall_offset_pos = 0,-0.015,0.018
+hud_aim_move_fall_offset_rot = 0,1.5,0
+
+hud_aim_move_fall_offset_pos_16x9 = 0,-0.015,0.018
+hud_aim_move_fall_offset_rot_16x9 = 0,1.5,0
+
+;приземление - первая фаза
+hud_aim_move_landing_offset_pos = 0,-0.06,0.009
+hud_aim_move_landing_offset_rot = 0,-1.5,3
+
+hud_aim_move_landing_offset_pos_16x9 = 0,-0.06,0.009
+hud_aim_move_landing_offset_rot_16x9 = 0,-1.5,3
+
+;приземление - вторая фаза
+hud_aim_move_landing2_offset_pos = 0,-0.09,0.009
+hud_aim_move_landing2_offset_rot = 0,-3.9,6
+
+hud_aim_move_landing2_offset_pos_16x9 = 0,-0.09,0.009
+hud_aim_move_landing2_offset_rot_16x9 = 0,-3.9,6
 hud_collision_enabled							= true
 hud_collision_offset_pos						= 0,-0.5,0
 hud_collision_offset_pos_16x9					= 0,-0.5,0
@@ -350,9 +541,409 @@ zoom_limp_speed			=	6.0
 ;Скорость изменения амплитуды раскачки при смене режима перемещения
 amplitude_delta			= 	0.01 
 
+;quest_items.ltx
+![jup_b206_plant]
+3d_static_rotate = 88,-23,4
+3d_static_scale = 1.2
+
+![main_story_3_lab_x16_documents]
+3d_static_rotate			= 20,-120,170
+
+![jup_b209_monster_scanner]
+3d_static_rotate = 11,-23,4
+3d_static_scale = 1.05
+
+![jup_b200_tech_materials_wire]
+3d_static_rotate = 31,37,174
+
+![jup_b9_blackbox]
+3d_static_rotate = 21,-23,4
+3d_static_scale = 1.1
+
+![toolkit_1]
+3d_static_rotate = 88,9,0
+3d_static_scale = 0.9
+
+![toolkit_2]
+3d_static_rotate = 88,9,0
+3d_static_scale = 0.9
+
+![toolkit_3]
+3d_static_rotate = 88,9,0
+3d_static_scale = 0.9
+
+![zat_b33_safe_container]
+3d_static_rotate = 21,-23,4
+3d_static_scale = 1.1
+
+![zat_b57_gas]
+3d_static_rotate = 1,7,4
+
+![zat_b12_key_1]
+3d_static_rotate = -40,-100,-120
+
+![zat_b12_key_2]
+3d_static_rotate = -40,-100,-120
+
+![zat_b40_notebook]
+3d_static_rotate = 11,-23, 0
+
+![zat_a23_access_card]
+3d_static_rotate = 40,130,60
+
+![pri_a15_documents]
+3d_static_rotate = 40,130,60
+
+![pri_b35_lab_x8_key]
+3d_static_rotate = 40,130,60
+
+![pri_a25_explosive_charge_item]
+3d_static_rotate = 0,170,0
+
+![pri_a19_american_experiment_info]
+3d_static_rotate = 16,-23,4
+
+![pri_a19_lab_x16_info]
+3d_static_rotate = 16,-23,4
+
+![pri_a19_lab_x10_info]
+3d_static_rotate = 16,-23,4
+
+![pri_a19_lab_x7_info]
+3d_static_rotate = 16,-23,4
+
+![pri_a19_lab_x18_info]
+3d_static_rotate = 16,-23,4
+
+![zat_a23_labx8_key]
+3d_static_rotate	= 40,130,60
+
+![lx8_service_instruction]
+3d_static_rotate = 16,-23,4
+
+![zat_b12_documents_2]
+3d_static_rotate = 40,130,60
+
+![af_quest_b14_twisted]
+3d_static_rotate			= -45,0,0
+
+;weapons.ltx
+![ammo_base]
+3d_static_rotate = 11,-12,1
+3d_static_scale = 0.75
+
+![ammo_9x18_fmj]
+3d_static_scale	= 0.85
+
+![ammo_9x18_pmm]
+3d_static_scale = 0.85
+
+![ammo_9x19_fmj]
+3d_static_scale = 0.85
+
+![ammo_9x19_pbp]
+3d_static_scale = 0.85
+
+![ammo_gauss]
+3d_static_rotate = 0,90,0
+
+![ammo_og-7b]
+3d_static_scale = 1
+
+![ammo_vog-25]
+3d_static_rotate = -149,32,1
+
+![ammo_m209]
+3d_static_rotate = -149,32,1
+
+![wpn_addon_scope]
+3d_static_rotate = 0,-90,-90
+
+![wpn_addon_scope_x2.7]
+3d_static_rotate = 0,-90,-90
+
+![wpn_addon_scope_detector]
+3d_static_rotate = 0,-90,-90
+
+![wpn_addon_scope_night]
+3d_static_rotate = 0,-90,-90
+
+![wpn_addon_scope_susat]
+3d_static_rotate = 0,-90,0
+
+![wpn_addon_scope_susat_x1.6]
+3d_static_rotate = 0,-90,0
+
+![wpn_addon_scope_susat_custom]
+3d_static_rotate = 0,-90,0
+
+![wpn_addon_scope_susat_dusk]
+3d_static_rotate = 0,-90,0
+
+![wpn_addon_scope_susat_night]
+3d_static_rotate = 0,-90,0
+
+![wpn_addon_silencer]
+3d_static_rotate = 0,-90,0
+
+![wpn_addon_grenade_launcher]
+3d_static_rotate = 0,-90,0
+
+![wpn_addon_grenade_launcher_m203]
+3d_static_rotate = 0,-90,0
+
+;w_binoc.ltx
+![wpn_binoc]
+3d_static_rotate = 22.5, 22.5, -11.25
+
+;w_gauss.ltx
+![wpn_gauss]
+vibration_time = 2.0
+
+;w_mp5.ltx
+![wpn_mp5]
+3d_static_scale = 0.8
+
+;w_pm.ltx
+![wpn_pm]
+3d_static_scale = 0.9
+
 ;w_spas12.ltx
 ![wpn_spas12_hud]
 aim_hud_offset_pos                       = -0.097600, 0.090200, 0.050000
 aim_hud_offset_pos_16x9                  = -0.106600, 0.158000, 0.050000
 aim_hud_offset_rot                       = 0.051000, 0.025000,-0.022500
 aim_hud_offset_rot_16x9                  = 0.087000, 0.046500,-0.045000
+
+;w_svd.ltx
+![wpn_svd]
+3d_static_scale			= 0.6
+
+;w_svu.ltx
+![wpn_svu]
+3d_static_scale			= 0.7
+
+![wpn_mine]
+3d_static_rotate			= 30,0,0
+
+[hud_movement_layers]
+movement_layer_0             = blend\walk.anm, 1, 1.5        	 ; Walk
+movement_layer_1             = blend\walk.anm, 0.7, 1.5        ; Walk slow
+movement_layer_2             = blend\walk.anm, 0.5, 1.5        ; Crouch
+movement_layer_3             = blend\walk.anm, 0.3, 1.5        ; Crouch slow
+movement_layer_4             = blend\sprint.anm, 1.55, 2      ; Sprint
+
+
+[inventory_sort]
+system = categories
+
+[inventory_sort:ordering]
+weight_desc = true
+condition_desc = true
+cost_desc = true
+novelty_desc = true
+
+[inventory_sort_order]
+general = 1
+by_type = 1
+by_weight = 1
+by_condition = 1
+by_cost = 1
+by_importance = 1
+by_novelty = 1
+
+[inventory_sort_order:general]
+name = st_inv_sort_order_general
+hint = st_inv_sort_order_general_hint
+show_text = true
+
+[inventory_sort_order:by_type]
+name = st_inv_sort_order_by_type
+hint = st_inv_sort_order_by_type_hint
+show_text = true
+
+[inventory_sort_order:by_weight]
+name = st_inv_sort_order_by_weight
+hint = st_inv_sort_order_by_weight_hint
+show_text = true
+
+[inventory_sort_order:by_condition]
+name = st_inv_sort_order_by_condition
+hint = st_inv_sort_order_by_condition_hint
+show_text = true
+
+[inventory_sort_order:by_cost]
+name = st_inv_sort_order_by_cost
+hint = st_inv_sort_order_by_cost_hint
+show_text = true
+
+[inventory_sort_order:by_importance]
+name = st_inv_sort_order_by_importance
+hint = st_inv_sort_order_by_importance_hint
+show_text = true
+
+[inventory_sort_order:by_novelty]
+name = st_inv_sort_order_by_novelty
+hint = st_inv_sort_order_by_novelty_hint
+show_text = true
+
+[inventory_sort_categories]
+all = 1
+weapons = 1
+ammo = 1
+armor = 1
+devices = 1
+consumables = 1
+artefacts = 1
+attachments = 1
+
+[inventory_sort_categories:all]
+name = st_inv_sort_all
+hint = st_inv_sort_all_hint
+show_text = true
+
+[inventory_sort_categories:weapons]
+name = st_inv_sort_weapons
+hint = st_inv_sort_weapons_hint
+icon = ui_icon_weapons
+show_text = true
+
+[inventory_sort_categories:ammo]
+name = st_inv_sort_ammo
+hint = st_inv_sort_ammo_hint
+show_text = true
+
+[inventory_sort_categories:armor]
+name = st_inv_sort_armor
+hint = st_inv_sort_armor_hint
+show_text = true
+
+[inventory_sort_categories:devices]
+name = st_inv_sort_devices
+hint = st_inv_sort_devices_hint
+show_text = true
+
+[inventory_sort_categories:consumables]
+name = st_inv_sort_consumables
+hint = st_inv_sort_consumables_hint
+show_text = true
+
+[inventory_sort_categories:artefacts]
+name = st_inv_sort_artefacts
+hint = st_inv_sort_artefacts_hint
+show_text = true
+
+[inventory_sort_categories:attachments]
+name = st_inv_sort_attachments
+hint = st_inv_sort_attachments_hint
+show_text = true
+
+[dynamic_wallmark]:space_restrictor
+GroupControlSection =
+$spawn      = "ai\dynamic_wallmark"
+$def_sphere = 1
+class = DYNA_WM
+
+shape_transp_color    = 135, 245, 66, 24
+
+[auto_aiming]
+
+; fraction of the full height of the target. 0.0 aim at legs, 1.0f aim at head
+height_fraction = 0.72
+
+; how easy it is to autoaim, 0-1, lerps between easy and norm
+easiness = 0.0
+
+; near, midnear, far distances a-b-c
+distance_a = 1.0
+distance_b = 4.0
+distance_c = 80.0
+
+; threshold angle differences for targets near and far
+dotp_a_norm = 0.7
+dotp_b_norm = 0.99
+dotp_c_norm = 0.999999
+
+dotp_a_easy = 0.7
+dotp_b_easy = 0.8
+dotp_c_easy = 0.9
+
+; no weapon, aiming at chars to talk to them
+; a-b works as easy
+; b-c targets are ignored
+
+![m_poltergeist_normal_tele];m_poltergeist.ltx
+Tele_Time_Object_Keep					= 10000
+Tele_Object_Min_Mass					= 0
+Tele_Object_Max_Mass					= 10000
+
+Tele_Shooting_From_Weapon_Enable        = on;                   Разрешает возможность стрелять с оружия по врагу.
+Tele_Activate_N_Throw_Grenade           = on;                   Разрешает выдрать чеку и кинуть гранату во врага.
+Tele_Max_Pickuped_Weapons				= 3; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
+Tele_Delay_Before_First_Shoot			= 0; 				    Задержка перед первым выстрелом. (in ms)
+Particle_Tele_Object					= static\fire_distort;	Проигрываемый партикл под предметом, чисто для красоты.
+
+; Зачем нужены множители ниже?
+; Без масштабирования реальная физическая энергия в рамках геймплея оказывается избыточной.
+; Множитель позволяет искусственно снизить (поделить в N раз) или повысить урон для игрового баланса.
+; Указывается в пределах: 0..1
+; 1 = 100% урон, 0 - урон от попаданий предметами отключается, 0.5 - 50% урона.
+Novice_Difficulty_Throwed_Object_Hit_Factor = 0.1
+Stalker_Difficulty_Throwed_Object_Hit_Factor = 0.2
+Veteran_Difficulty_Throwed_Object_Hit_Factor = 0.3
+Master_Difficulty_Throwed_Object_Hit_Factor = 0.4
+
+; Угловая скорость наведения оружия на врага.
+; Указывается в градусах/с. 
+; Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив везде 360.
+Novice_Difficulty_Angular_Speed			= 180.0
+Stalker_Difficulty_Angular_Speed		= 200.0
+Veteran_Difficulty_Angular_Speed		= 240.0
+Master_Difficulty_Angular_Speed			= 280.0
+
+; Погрешность наведения на врага, после которой можно стрелять. Указывается в градусах/с (1..180)
+; Чем ниже сложность - тем больше погрешность для начала стрельбы - тем больше будет потрачено патрон.
+; Настраивается вместе с параметрами %difficulty%_Angular_Speed, чтобы при низких уровнях сложности - оружие в случае идеального наведения на модель врага.
+; 1deg отклонения автоаима - оружие начнёт стрелять только в случае идеального наведения в центр модели врага.
+; 180deg отклонения - оружие начинает стрелять, даже когда смотрит в противоположну сторону, относительно врага.
+Novice_Difficulty_Error_Angle			= 30.0
+Stalker_Difficulty_Error_Angle			= 20.0
+Veteran_Difficulty_Error_Angle			= 15.0
+Master_Difficulty_Error_Angle			= 8
+
+![m_burer_e];m_burer.ltx
+Tele_Time_To_Hold		 				= 10000
+Tele_Object_Min_Mass					= 1
+Tele_Object_Max_Mass					= 10000
+Tele_Shooting_From_Weapon_Enable        = on;                   Разрешает возможность стрелять с оружия по врагу.
+Tele_Activate_N_Throw_Grenade           = on;                   Разрешает выдрать чеку и кинуть гранату во врага.
+Tele_Max_Pickuped_Weapons				= 1; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
+Tele_Delay_Before_First_Shoot			= 0; 				    Задержка перед первым выстрелом. (in ms)
+Particle_Tele_Object					= static\fire_distort;	Проигрываемый партикл под предметом, чисто для красоты.
+
+; Зачем нужены множители ниже?
+; Без масштабирования реальная физическая энергия в рамках геймплея оказывается избыточной.
+; Множитель позволяет искусственно снизить (поделить в N раз) или повысить урон для игрового баланса.
+; Указывается в пределах: 0..1
+; 1 = 100% урон, 0 - урон от попаданий предметами отключается, 0.5 - 50% урона.
+Novice_Difficulty_Throwed_Object_Hit_Factor = 0.1
+Stalker_Difficulty_Throwed_Object_Hit_Factor = 0.2
+Veteran_Difficulty_Throwed_Object_Hit_Factor = 0.3
+Master_Difficulty_Throwed_Object_Hit_Factor = 0.4
+
+; Угловая скорость наведения оружия на врага. Указывается в градусах/с. 
+; Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив везде 360.
+Novice_Difficulty_Angular_Speed			= 180.0
+Stalker_Difficulty_Angular_Speed		= 200.0
+Veteran_Difficulty_Angular_Speed		= 240.0
+Master_Difficulty_Angular_Speed			= 280.0
+
+; Погрешность наведения на врага, после которой можно стрелять. Указывается в градусах/с (1..180)
+; Чем ниже сложность - тем больше погрешность для начала стрельбы - тем больше будет потрачено патрон.
+; Настраивается вместе с параметрами %difficulty%_Angular_Speed, чтобы при низких уровнях сложности - оружие в случае идеального наведения на модель врага.
+; 1deg отклонения автоаима - оружие начнёт стрелять только в случае идеального наведения в центр модели врага.
+; 180deg отклонения - оружие начинает стрелять, даже когда смотрит в противоположну сторону, относительно врага.
+Novice_Difficulty_Error_Angle			= 30.0
+Stalker_Difficulty_Error_Angle			= 20.0
+Veteran_Difficulty_Error_Angle			= 15.0
+Master_Difficulty_Error_Angle			= 8
