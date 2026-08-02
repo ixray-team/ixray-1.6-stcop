@@ -52,13 +52,19 @@ void CScriptBinderObjectWrapper::FinishInitialization()
 	}
 	ReflectionData = ObjectsReflectionData[ClassName];
 	
+	bool HasLuaFunctions = false;
 	for (int i = (int)ScriptBinderMethods::reinit; i <= (int)ScriptBinderMethods::net_Relcase; ++i)
 	{
 		lua_getfield(L, -1, magic_enum::enum_name<ScriptBinderMethods>((ScriptBinderMethods)i).data());
 		ReflectionData[i] = lua_isfunction(L, -1);
 		lua_pop(L, 1);
+		HasLuaFunctions = HasLuaFunctions || ReflectionData[i];
 		//auto elem = self[magic_enum::enum_name<ScriptBinderMethods>((ScriptBinderMethods)i).data()];
 		//ReflectionData[i] = elem && elem.type() == LUA_TFUNCTION;
+	}
+	if (HasLuaFunctions)
+	{
+		m_object->object().SetPureCPPObject(false);
 	}
 }
 
