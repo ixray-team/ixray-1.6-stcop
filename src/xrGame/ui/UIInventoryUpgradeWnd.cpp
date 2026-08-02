@@ -174,8 +174,12 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 		InventoryIconParams icons_struct = GetInventoryIconParams(m_inv_item->m_section_id.c_str());
         if (psActorFlags.test(AF_3D_ICONS_INV))
         {
+			IRenderVisual* prevVisual = m_item->GetVisual();
             m_item->SetVisual(icons_struct._3d_static_visual);
-            m_item->SetXYZ(icons_struct._3d_static_rotate);
+			if (m_item->GetVisual() != prevVisual)
+			{
+				m_item->SetXYZ(icons_struct._3d_static_rotate);
+			}
             m_item->SetScaleFactor(icons_struct._3d_static_scale);
             m_item->SetBonesVisible(m_inv_item->object().Visual()->dcast_PKinematics());
         }
