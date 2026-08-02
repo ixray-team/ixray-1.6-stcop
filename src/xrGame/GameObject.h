@@ -120,9 +120,13 @@ protected:
 	Flags32					m_server_flags;
 	int						m_script_clsid;
 	u32						m_spawn_time;
+	bool PureCPPObject = true;
 public:
 	CGameObject();
 	virtual ~CGameObject();
+	
+	ICF void SetPureCPPObject(bool value) {PureCPPObject = value;}
+	ICF bool GetPureCPPObject() {return PureCPPObject;}
 public:
 	//functions used for avoiding most of the smart_cast
 	virtual CGameObject*				cast_game_object			() override {return this;}
