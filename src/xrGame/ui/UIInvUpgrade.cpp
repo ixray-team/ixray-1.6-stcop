@@ -229,7 +229,7 @@ void UIUpgrade::Update()
 
 	if (m_point != nullptr)
 	{
-		m_point->Show(get_upgrade()->get_highlight());
+		m_point->Show(get_upgrade()->get_highlight() && !psActorFlags.test(AF_3D_ICONS_INV));
 	}
 }
 
