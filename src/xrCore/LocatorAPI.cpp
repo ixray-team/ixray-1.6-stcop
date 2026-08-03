@@ -687,10 +687,8 @@ IReader *CLocatorAPI::setup_fs_ltx	(const char* fs_name)
 	void			*buffer = FileDownload(fs_file_name, file_handle, file_size);
 	result			= new CTempReader(buffer,file_size,0);
 
-#ifdef DEBUG
 	if (result && m_Flags.is(flBuildCopy|flReady))
 		copy_file_to_build	(result, fs_file_name);
-#endif // DEBUG
 
 	return			(result);
 }
@@ -1432,10 +1430,8 @@ T *CLocatorAPI::r_open_impl	(const char* path, const char* _fname)
 	else
 		file_from_archive	(R,fname,*desc);
 
-#ifdef DEBUG
 	if (R && m_Flags.is(flBuildCopy|flReady))
 		copy_file_to_build	(R,source_name);
-#endif // DEBUG
 
 	return (R);
 }
