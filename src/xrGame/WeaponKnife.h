@@ -71,13 +71,52 @@ public:
 	virtual bool		Action							(u16 cmd, u32 flags);
 
 	virtual bool		GetBriefInfo					(II_BriefInfo& info);
+	IC		Fvector3	GetHit1SplashDir				()	const	{ return m_Hit1SplashDir; }
+	IC		Fvector3	GetHit2SplashDir				()	const	{ return m_Hit2SplashDir; }
+	IC		void		SetHit1SplashDir				(Fvector3 value)	{ m_Hit1SplashDir = value; }
+	IC		void		SetHit2SplashDir				(Fvector3 value)	{ m_Hit2SplashDir = value; }
+
 	IC		float		GetHit1Dist						()	const	{ return m_Hit1Distance; }
 	IC		float		GetHit2Dist						()	const	{ return m_Hit2Distance; }
+	IC		void		SetHit1Dist						(float value)		{ m_Hit1Distance = value; }
+	IC		void		SetHit2Dist						(float value)		{ m_Hit2Distance = value; }
+
+	IC		float		GetHit1SplashRadius				()	const	{ return m_Hit1SplashRadius; }
+	IC		float		GetHit2SplashRadius				()	const	{ return m_Hit2SplashRadius; }
+	IC		void		SetHit1SplashRadius				(float value)		{ m_Hit1SplashRadius = value; }
+	IC		void		SetHit2SplashRadius				(float value)		{ m_Hit2SplashRadius = value; }
+
+	IC		u32			GetSplash1HitsCount			()	const	{ return m_Splash1HitsCount; }
+	IC		u32			GetSplash2HitsCount			()	const	{ return m_Splash2HitsCount; }
+	IC		void		SetSplash1HitsCount			(u32 value)			{ m_Splash1HitsCount = value; }
+	IC		void		SetSplash2HitsCount			(u32 value)			{ m_Splash2HitsCount = value; }
+
+	IC		u32			GetSplash1PerVictimsHCount	()	const	{ return m_Splash1PerVictimsHCount; }
+	IC		void		SetSplash1PerVictimsHCount	(u32 value)			{ m_Splash1PerVictimsHCount = value; }
+
+	IC		float		GetNextHitDivideFactor			()	const	{ return m_NextHitDivideFactor; }
+	IC		void		SetNextHitDivideFactor			(float value)		{ m_NextHitDivideFactor = value; }
+
 	bool				m_bShowKnifeStats;
 
 	void				FastKick();
 
 	virtual CWeaponKnife* cast_weapon_knife() { return this; }
+
+	virtual float getHitImpulse() const { return fHitImpulse_1; }
+	virtual void setHitImpulse(float value);
+	virtual const Fvector4& getHitPower() const { return fvHitPower_1; }
+	virtual void setHitPower(const Fvector4& vec);
+	virtual const Fvector4& getHitPowerCritical() const { return fvHitPowerCritical_1; }
+	virtual void setHitPowerCritical(const Fvector4& vec);
+
+	float getHitImpulse_2() const { return fHitImpulse_2; }
+	void setHitImpulse_2(float value);
+	const Fvector4& getHitPower_2() const { return fvHitPower_2; }
+	void setHitPower_2(const Fvector4& vec);
+	const Fvector4& getHitPowerCritical_2() const { return fvHitPowerCritical_2; }
+	void setHitPowerCritical_2(const Fvector4& vec);
+
 
 #ifdef DEBUG
 	virtual void		OnRender						();
@@ -103,8 +142,8 @@ private:
 	float			m_Hit1Distance;
 	float			m_Hit2Distance;
 
-	Fvector3		m_Hit1SpashDir;
-	Fvector3		m_Hit2SpashDir;
+	Fvector3		m_Hit1SplashDir;
+	Fvector3		m_Hit2SplashDir;
 	
 	float			m_Hit1SplashRadius;
 	float			m_Hit2SplashRadius;

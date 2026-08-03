@@ -37,8 +37,8 @@ CWeaponKnife::CWeaponKnife()
 	m_Hit1SplashRadius		= 1.0f;
 	m_Hit2SplashRadius		= 1.0f;
 
-    m_Hit1SpashDir.set		(0.f, -0.3, 1.f);
-    m_Hit2SpashDir.set		(0.f, 0.f, 1.f);
+    m_Hit1SplashDir.set		(0.f, -0.3, 1.f);
+    m_Hit2SplashDir.set		(0.f, 0.f, 1.f);
 
     m_Splash1HitsCount		= 3;
     m_Splash1PerVictimsHCount = 1;
@@ -69,8 +69,8 @@ void CWeaponKnife::Load(const char* section)
     constexpr u32 elementsCount = 10;
     const xr_array<std::tuple<const char*, const char*, FieldTypes, void*>, elementsCount> fields =
     {{
-        { "splash1_direction", nullptr, FieldTypes::t_fvector3, &m_Hit1SpashDir },
-        { "splash2_direction", nullptr, FieldTypes::t_fvector3, &m_Hit2SpashDir },
+        { "splash1_direction", nullptr, FieldTypes::t_fvector3, &m_Hit1SplashDir },
+        { "splash2_direction", nullptr, FieldTypes::t_fvector3, &m_Hit2SplashDir },
 
         { "splash1_dist", "spash1_dist", FieldTypes::t_float, &m_Hit1Distance }, // We need those fallback names just because
         { "splash2_dist", "spash2_dist", FieldTypes::t_float, &m_Hit2Distance }, // GSC was too lazy to fix the typos!!!
@@ -340,7 +340,7 @@ void CWeaponKnife::OnMotionMark(u8 state, const motion_marks& M)
 	if (state == eFire)
 	{
 		m_hit_dist		=	m_Hit1Distance;
-		m_splash_dir	=	m_Hit1SpashDir;
+		m_splash_dir	=	m_Hit1SplashDir;
 		m_splash_radius	=	m_Hit1SplashRadius;
 		m_hits_count	=	m_Splash1HitsCount;
 		m_perv_hits_count = m_Splash1PerVictimsHCount;
@@ -349,7 +349,7 @@ void CWeaponKnife::OnMotionMark(u8 state, const motion_marks& M)
 	else if (state == eFire2)
 	{
 		m_hit_dist		=	m_Hit2Distance;
-		m_splash_dir	=	m_Hit2SpashDir;
+		m_splash_dir	=	m_Hit2SplashDir;
 		m_splash_radius	=	m_Hit2SplashRadius;
 		m_hits_count	=	m_Splash2HitsCount;
 		fireDistance = m_hit_dist + m_splash_radius;
@@ -1194,4 +1194,34 @@ void CWeaponKnife::FastKick()
 	motion_marks mark;
 	mark.name = "Left";
 	OnMotionMark(eFire, mark);
+}
+
+void CWeaponKnife::setHitImpulse(float value)
+{
+	fHitImpulse_1 = value;
+}
+
+void CWeaponKnife::setHitPower(const Fvector4& vec)
+{
+	fvHitPower_1 = vec;
+}
+
+void CWeaponKnife::setHitPowerCritical(const Fvector4& vec)
+{
+	fvHitPowerCritical_1 = vec;
+}
+
+void CWeaponKnife::setHitImpulse_2(float value)
+{
+	fHitImpulse_2 = value;
+}
+
+void CWeaponKnife::setHitPower_2(const Fvector4& vec)
+{
+	fvHitPower_2 = vec;
+}
+
+void CWeaponKnife::setHitPowerCritical_2(const Fvector4& vec)
+{
+	fvHitPowerCritical_2 = vec;
 }
