@@ -15,9 +15,6 @@
 #include "lua_ext.h"
 
 #include "script_callback_ex.h"
-#ifdef XRSCRIPTS_EXPORTS
-#include "../xrEngine/IGame_Persistent.h"
-#endif
 #include <luabind/class_info.hpp>
 
 #ifdef IXRAY_PROFILER_TRACY
@@ -40,10 +37,6 @@ CScriptEngine::CScriptEngine			()
 
 CScriptEngine::~CScriptEngine			()
 {
-#ifdef XRSCRIPTS_EXPORTS
-	g_pGamePersistent->ixr_framework_onframe.reset();
-#endif
-
 	while (!m_script_processes.empty())
 		remove_script_process(m_script_processes.begin()->first);
 
@@ -248,12 +241,6 @@ void CScriptEngine::init()
 #endif
 
 	add_script_process(ScriptEngine::eScriptProcessorHelper, new CScriptProcess("ImHelper", ""));
-#ifdef XRSCRIPTS_EXPORTS
-	if (g_pGamePersistent)
-	{
-		functor("___ixr_engine_callbacks.on_frame", g_pGamePersistent->ixr_framework_onframe);
-	}
-#endif
 }
 
 void CScriptEngine::remove_script_process	(const EScriptProcessors &process_id)

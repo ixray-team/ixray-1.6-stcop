@@ -40,7 +40,9 @@ void restart_all				()
 	xr_delete(g_object_factory);
 	object_factory();
 
+	g_pGamePersistent->ixr_framework_onframe.reset();
 	ai().script_engine().init	();
+	ai().script_engine().functor("___ixr_engine_callbacks.on_frame", g_pGamePersistent->ixr_framework_onframe);
 
 #ifdef DEBUG
 	ai().moving_objects().clear	();
