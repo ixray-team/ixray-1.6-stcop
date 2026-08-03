@@ -36,7 +36,6 @@ enum
 	cam_step_angle_horz,
 	hit_power,
 	hit_power_critical,
-	inv_scale,
 	inv_grid_x,
 	inv_grid_y,
 	inv_grid_width,
@@ -59,6 +58,18 @@ enum
 	splash_hit_divide_factor,
 
 	max_count
+};
+
+struct WeaponIcon
+{
+	float inv_scale{};
+	u32 inv_grid_x{};
+	u32 inv_grid_y{};
+	u32 inv_grid_width{};
+	u32 inv_grid_height{};
+	const char* p_section_name{};
+	shared_str ui_icon_name{};
+	IRender_interface::SurfaceParams ui_icons;
 };
 
 struct
@@ -169,8 +180,6 @@ struct
 	int silencer_y{};
 	int cfg_silencer_y{};
 
-	size_t icons_count{};
-
 	Fvector4 hit_power;
 	Fvector4 cfg_hit_power;
 
@@ -217,24 +226,14 @@ struct
 	float cfg_splash_hit_divide_factor{};
 
 	IRender_interface::SurfaceParams ui_icons;
-
-	struct WeaponIcon
-	{
-		float inv_scale{};
-		u32 inv_grid_x{};
-		u32 inv_grid_y{};
-		u32 inv_grid_width{};
-		u32 inv_grid_height{};
-		const char* p_section_name{};
-	};
+	shared_str ui_icon_name{};
 
 	// id for string table
 	string128 inv_name{};
 	// id for string table
 	string128 inv_short_name{};
 
-
-	WeaponIcon icons[1024]{};
+	xr_vector<WeaponIcon> icons{};
 	void Reset()
 	{
 		for (int i = 0; i < max_count; i++)
@@ -272,16 +271,16 @@ void RenderWeaponManagerWindow()
 			if (imgui_weapon_manager.weapon_id != pItem->object_id())
 				imgui_weapon_manager.init = false;
 
-			if (Render)
-			{
-				const auto surface = READ_IF_EXISTS(pSettings, r_string, pItem->m_section_id, "icons_texture", "ui\\ui_icon_equipment");
-				imgui_weapon_manager.ui_icons = Render->getSurface(surface);
-			}
-
 			if (!imgui_weapon_manager.init)
 			{
 				// clear bool flags that line_exist checking for correct init/uninit cycle
 				imgui_weapon_manager.Reset();
+				if (Render)
+				{
+					const auto surface = READ_IF_EXISTS(pSettings, r_string, pItem->m_section_id, "icons_texture", "ui\\ui_icon_equipment");
+					imgui_weapon_manager.ui_icons = Render->getSurface(surface);
+					imgui_weapon_manager.ui_icon_name = surface;
+				}
 
 				imgui_weapon_manager.current_slot = slot_type;
 				imgui_weapon_manager.weapon_id = pItem->object_id();
@@ -337,8 +336,7 @@ void RenderWeaponManagerWindow()
 				}
 
 				// icons
-				imgui_weapon_manager.icons_count = 0;
-				ZeroMemory(imgui_weapon_manager.icons, sizeof(imgui_weapon_manager.icons));
+				imgui_weapon_manager.icons.clear();
 				CInifile::Root& sections = pSettings->sections();
 				for (CInifile::Sect& pSection : sections)
 				{
@@ -351,14 +349,16 @@ void RenderWeaponManagerWindow()
 						{
 							if (pSection.line_exist("inv_grid_x") && pSection.line_exist("inv_grid_y") && pSection.line_exist("inv_grid_width") && pSection.line_exist("inv_grid_height"))
 							{
-								auto& icon = imgui_weapon_manager.icons[imgui_weapon_manager.icons_count];
+								WeaponIcon icon;
 								icon.inv_scale = READ_IF_EXISTS(pSettings, r_float, name.data(), "inv_scale", 1.0f);
 								icon.inv_grid_x = pSettings->r_u32(name.data(), "inv_grid_x");
 								icon.inv_grid_y = pSettings->r_u32(name.data(), "inv_grid_y");
 								icon.inv_grid_width = pSettings->r_u32(name.data(), "inv_grid_width");
 								icon.inv_grid_height = pSettings->r_u32(name.data(), "inv_grid_height");
 								icon.p_section_name = name.data();
-								++imgui_weapon_manager.icons_count;
+								icon.ui_icon_name = READ_IF_EXISTS(pSettings, r_string, name.data(), "icons_texture", "ui\\ui_icon_equipment");
+								icon.ui_icons = Render->getSurface(icon.ui_icon_name.c_str());
+								imgui_weapon_manager.icons.push_back(icon);
 							}
 						}
 					}
@@ -613,15 +613,7 @@ void RenderWeaponManagerWindow()
 							imgui_weapon_manager.cfg_fire_dispersion_condition_factor = pSettings->r_float(pSectionName, "fire_dispersion_condition_factor");
 						}
 
-						if (pSettings->line_exist(pSectionName, "inv_scale"))
-						{
-							imgui_weapon_manager.can_show[inv_scale] = true;
-							imgui_weapon_manager.cfg_inv_scale = pSettings->r_u32(pSectionName, "inv_scale");
-						}
-						else
-						{
-							imgui_weapon_manager.cfg_inv_scale = 1.0f;
-						}
+						imgui_weapon_manager.cfg_inv_scale = READ_IF_EXISTS(pSettings, r_float, pSectionName, "inv_scale", 1.0f);
 
 						if (pSettings->line_exist(pSectionName, "inv_grid_x"))
 						{
@@ -688,9 +680,11 @@ void RenderWeaponManagerWindow()
 						ImGui::Text("Grid Y: %d", pItem->GetInvGridRect().y1);
 						ImGui::Text("Grid Width: %d", pItem->GetInvGridRect().x2);
 						ImGui::Text("Grid Height: %d", pItem->GetInvGridRect().y2);
+						ImGui::Text("Grid Scale: %.1f", pItem->ScaleIcon);
 
 						if (imgui_weapon_manager.ui_icons.Surface != nullptr)
 						{
+							ImGui::Text("Grid Texture: %s", pItem->IconsTexture.c_str());
 							float scaleIcon = imgui_weapon_manager.inv_scale;
 							float x = imgui_weapon_manager.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
 							float y = imgui_weapon_manager.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
@@ -855,8 +849,8 @@ void RenderWeaponManagerWindow()
 
 					if (ImGui::BeginTable("icons##Editing_WeaponManager", kWeaponManagerTableColumnSize, ImGuiTableFlags_Borders))
 					{
-						int row_max = std::ceil(imgui_weapon_manager.icons_count / kWeaponManagerTableColumnSize);
-						R_ASSERT(row_max > 0 && "something is wrong");
+						int row_max = std::ceil(imgui_weapon_manager.icons.size() / kWeaponManagerTableColumnSize);
+						R_ASSERT2(row_max > 0, "something is wrong");
 
 						for (int row = 0; row < row_max; ++row)
 						{
@@ -866,7 +860,7 @@ void RenderWeaponManagerWindow()
 								int current_icon_index = row * kWeaponManagerTableColumnSize + column;
 
 								// overflow, but we need to round up for iterating through all items, imagine size of 213 elements and our column is equal to 5 so rows are 213/5=42.6 => roundup() = 43 but 43 * 5 = 215 and then it is 213 leading to overflow... This is okay :))
-								if (current_icon_index < imgui_weapon_manager.icons_count)
+								if (current_icon_index < imgui_weapon_manager.icons.size())
 								{
 									ImGui::TableSetColumnIndex(column);
 									const auto& icon = imgui_weapon_manager.icons[current_icon_index];
@@ -879,7 +873,7 @@ void RenderWeaponManagerWindow()
 									string64 button_name{};
 									xr_sprintf(button_name, sizeof(button_name), "%s%d", "WeaponIconButton_", current_icon_index);
 
-									bool is_pressed_icon = ImGui::ImageButton(button_name, imgui_weapon_manager.ui_icons.Surface, { w,h }, { x / imgui_weapon_manager.ui_icons.w, y / imgui_weapon_manager.ui_icons.h }, { (x + w) / imgui_weapon_manager.ui_icons.w, (y + h) / imgui_weapon_manager.ui_icons.h });
+									bool is_pressed_icon = ImGui::ImageButton(button_name, icon.ui_icons.Surface, { w,h }, { x / icon.ui_icons.w, y / icon.ui_icons.h }, { (x + w) / icon.ui_icons.w, (y + h) / icon.ui_icons.h });
 
 									if (ImGui::BeginItemTooltip())
 									{
@@ -891,6 +885,8 @@ void RenderWeaponManagerWindow()
 										ImGui::Text("Grid Y: %d", icon.inv_grid_y);
 										ImGui::Text("Grid Width: %d", icon.inv_grid_width);
 										ImGui::Text("Grid Height: %d", icon.inv_grid_height);
+										ImGui::Text("Grid Scale: %.1f", icon.inv_scale);
+										ImGui::Text("Grid Texture: %s", icon.ui_icon_name.c_str());
 
 										ImGui::EndTooltip();
 									}
@@ -901,10 +897,15 @@ void RenderWeaponManagerWindow()
 										imgui_weapon_manager.inv_grid_y = icon.inv_grid_y;
 										imgui_weapon_manager.inv_grid_width = icon.inv_grid_width;
 										imgui_weapon_manager.inv_grid_height = icon.inv_grid_height;
+										imgui_weapon_manager.inv_scale = icon.inv_scale;
+										imgui_weapon_manager.ui_icon_name = icon.ui_icon_name;
+										imgui_weapon_manager.ui_icons = Render->getSurface(icon.ui_icon_name.c_str());
 
 										if (pItem)
 										{
 											pItem->SetInvGridRect(icon.inv_grid_x, icon.inv_grid_y, icon.inv_grid_width, icon.inv_grid_height);
+											pItem->ScaleIcon = icon.inv_scale;
+											pItem->IconsTexture = icon.ui_icon_name;
 										}
 
 										imgui_weapon_manager.modal_icon_selection_window = false;
@@ -1055,6 +1056,11 @@ void RenderWeaponManagerWindow()
 								{
 									const Irect& rect = pItem->GetInvGridRect();
 									pItem->SetInvGridRect(rect.x1, rect.y1, rect.x2, imgui_weapon_manager.inv_grid_height);
+								}
+
+								if (ImGui::SliderFloat("Grid Scale##Editing", &imgui_weapon_manager.inv_scale, 0.1f, 4.f, "%.1f", flags))
+								{
+									pItem->ScaleIcon = imgui_weapon_manager.inv_scale;
 								}
 
 								if (imgui_weapon_manager.ui_icons.Surface)
