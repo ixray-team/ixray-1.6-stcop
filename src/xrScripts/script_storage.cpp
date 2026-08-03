@@ -15,9 +15,6 @@
 #include <sstream>
 #include "lua_ext.h"
 #include "script_process.h"
-#ifdef XRSCRIPTS_EXPORTS
-#include "../xrEngine/IGame_Persistent.h"
-#endif
 
 const char*	file_header = "\
 local function script_name() \
@@ -50,13 +47,6 @@ CScriptStorage::~CScriptStorage()
 
 void CScriptStorage::reinit	()
 {
-#ifdef XRSCIPTS_EXPORTS
-	if (g_pGamePersistent && g_pGamePersistent->ixr_framework_onframe)
-	{
-		g_pGamePersistent->ixr_framework_onframe.reset();
-	}
-#endif
-
 	if (m_virtual_machine)
 	{
 		lua_close(m_virtual_machine);

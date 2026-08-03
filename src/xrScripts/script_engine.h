@@ -12,7 +12,6 @@
 #include "script_export_space.h"
 #include "script_space_forward.h"
 #include "../xrCore/Containers/associative_vector.h"
-
 #include "script_engine_space.h"
 
 class CScriptProcess;
