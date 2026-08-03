@@ -719,6 +719,8 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	if (hasUpdateSection)
 	{
 		PdaState::Clear(updateSection);
+		if (g_pda_info_state == 0)
+			CurrentGameUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, false);
 	}
 
 	if (m_isSetActiveSubdialog)
@@ -949,7 +951,8 @@ void CUIPdaWnd::UpdateRankingWnd()
 
 void CUIPdaWnd::PdaContentsChanged	(pda_section::part type)
 {
-	bool b = true;
+	bool changed = true;
+	bool flashHud = true;
 
 	if (type == pda_section::encyclopedia && pUIEncyclopediaWnd)
 	{
@@ -966,28 +969,35 @@ void CUIPdaWnd::PdaContentsChanged	(pda_section::part type)
 			pUIDiaryWnd->AddNews();
 			pUIDiaryWnd->MarkNewsAsRead(pUIDiaryWnd->IsShown());
 		}
+		if (!pUILogsWnd && !pUIDiaryWnd)
+			changed = false;
+		flashHud = (pUIDiaryWnd != nullptr);
 	}
-	else if (type == pda_section::quests && pUIEventsWnd)
+	else if (type == pda_section::quests)
 	{
-		pUIEventsWnd->Reload				();
+		if (pUIEventsWnd)
+			pUIEventsWnd->Reload();
+		if (!pUIEventsWnd && !pUITaskWnd)
+			changed = false;
+		flashHud = (pUIEventsWnd != nullptr);
 	}
 	else if (type == pda_section::contacts)
 	{
 		if (UIPdaContactsWnd)
 			UIPdaContactsWnd->Reload			();
-		b = false;
+		changed = false;
 	}
 	else
 	{
-		b = false;
+		changed = false;
 	}
 
-	if(b)
-	{
-		PdaState::MarkUpdated(type);
+	if (!changed)
+		return;
+
+	PdaState::MarkUpdated(type);
+	if (flashHud)
 		CurrentGameUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, true);
-	}
-
 }
 void draw_sign		(CUIStatic* s, Fvector2& pos)
 {
