@@ -37,54 +37,46 @@ end
 --                                         TRACY LOGIC
 --  ####################################################################################################################
 
-function UpdateTracyState()
-    if (not IsTracyConnected) then
-        return
-    end
-    
-    _G.IS_TRACY_PROFILER_CONNECTED = IsTracyConnected()
-end
-
+--[[
+Description: Begin a profiling event with the given name. The event will be visible in Tracy profiler if connected.
+Parameters:
+  name (string)(required) - Name of the profiling event.
+Return: (none)
+]]
 function PROF_EVENT_BEGIN(name)
-	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
-		local data = ffx_callable_utils.find_caller_source_tracy(3, true)
-        tracy.ZoneBeginN(string.format("[%s (%d,%d)] %s", tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
-	end
-end
-
-function PROF_EVENT_END()
-	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
-        tracy.ZoneEnd()
-	end
-end
-
-function PROF_EVENT_CLOSURE(name, callable)
-	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
-		local podrobnaya_infa = true
-	
-		if podrobnaya_infa then
-			local data = ffx_callable_utils.find_caller_source_tracy(3, true)
-			tracy.ZoneBeginN(string.format("[%s (%d,%d)] %s", tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
-		else
-			tracy.ZoneBeginN(string.format("[LUA] %s", tostring(name)))
-		end
-		
-		local result
-		
-		if callable then
-			result = callable()
-		end
-		
-		tracy.ZoneEnd()
-		
-		return result
-    else
-        if callable then
-			return callable()
-		end
+	if ixr_tracy_profiler then 
+		return ixr_tracy_profiler.prof_event_begin(name)
 	end
 	
 	return nil
+end
+
+--[[
+Description: End the current profiling event. Must be called after a corresponding PROF_EVENT_BEGIN.
+Parameters: (none)
+Return: (none)
+]]
+function PROF_EVENT_END()
+	if ixr_tracy_profiler then
+		return ixr_tracy_profiler.prof_event_end()
+	end
+	
+	return nil
+end
+
+--[[
+Description: Executes a callable function wrapped in a profiling event. If profiler is not connected, the function is called directly. Returns the result(s) of the callable.
+Parameters:
+  name (string)(required) - Name of the profiling event.
+  callable (function)(required) - The function to be executed and profiled.
+Return: (*) - The return value(s) of the callable function, or nil if callable is not provided.
+]]
+function PROF_EVENT_CLOSURE(name, callable)
+	if ixr_tracy_profiler then 
+		return ixr_tracy_profiler.prof_event_closure(name, callable)
+	end
+	
+	return callable()
 end
 
 --  ####################################################################################################################
@@ -761,6 +753,34 @@ function IsActionThrottled(name, interval_ms)
 	end
 	
 	return true
+end
+
+--  ####################################################################################################################
+--                                         IXR LOGS
+--  ####################################################################################################################
+
+function IXRLogUseFileLog(flag, custom_script)
+	return ixr_logs.set_use_file_log(flag, custom_script)
+end
+
+function IXRLogUseConsoleLog(flag, custom_script)
+	return ixr_logs.set_use_console_log(flag, custom_script)
+end
+
+function IXRLogUseTimeInLog(flag, custom_script)
+	return ixr_logs.set_use_time(flag, custom_script)
+end
+
+function IXRLog(text, clear_log, custom_script)
+	return ixr_logs.log(text, clear_log, custom_script)
+end
+
+function IXRLogEmptyLine(pereat_cnt, custom_script)
+	return ixr_logs.empty_line(pereat_cnt, custom_script)
+end
+
+function IXRLogClear(custom_script)
+	return ixr_logs.clear_log(custom_script)
 end
 
 -- ##############################################################

@@ -16,12 +16,14 @@
 ]]
 
 local SCRIPT_ENABLED = true
-local USE_CONSOLE_LOGS = false
-local USE_FILE_LOGS = true
+local USE_FILE_LOG = true
+local USE_CONSOLE_LOG = false
+local USE_TIME_IN_LOGS = true
 
 local ixr_throttlers = {
-	use_file_log = USE_FILE_LOGS,
-	use_console_log = USE_CONSOLE_LOGS,
+	use_file_log = USE_FILE_LOG,
+	use_time_log = USE_TIME_IN_LOGS,
+	use_console_log = USE_CONSOLE_LOG,
 	dynamic_vars = {
 		initialized = false,
 		first_log_record = true,
@@ -85,20 +87,24 @@ end
 --#####################################################
 
 function ixr_throttlers.init()
-	ixr_throttlers.toLog("INIT :: [BEGIN]")
+	IXRLogUseFileLog(ixr_throttlers.use_file_log)
+	IXRLogUseConsoleLog(ixr_throttlers.use_console_log)
+	IXRLogUseTimeInLog(ixr_throttlers.use_time_log)
+	
+	IXRLog("INIT :: [BEGIN]")
 	ixr_throttlers.register_callbacks()
-	ixr_throttlers.toLog("INIT :: [COMPLETED]")
+	IXRLog("INIT :: [COMPLETED]")
 	ixr_throttlers.dynamic_vars.initialized = true
 	
 	return ixr_throttlers.dynamic_vars.initialized
 end
 
 function ixr_throttlers.register_callbacks()
-	ixr_throttlers.toLog("REGISTER CALLBACKS :: [BEGIN]")
+	IXRLog("REGISTER CALLBACKS :: [BEGIN]")
 
 	RegisterScriptCallback("actor_on_update", ixr_throttlers.actor_on_update)
 	
-	ixr_throttlers.toLog("REGISTER CALLBACKS :: [COMPLETED]")
+	IXRLog("REGISTER CALLBACKS :: [COMPLETED]")
 end
 
 function ixr_throttlers.actor_on_update()
@@ -107,7 +113,7 @@ end
 
 function ixr_throttlers.is_action_throttled(name, interval_ms)
 	if not ixr_throttlers.dynamic_vars.storage[name] then
-		ixr_throttlers.toLog("REGISTER_THROTTLER: " .. tostring(name) .. " delay:" .. tostring(interval_ms))
+		IXRLog("REGISTER_THROTTLER: " .. tostring(name) .. " delay:" .. tostring(interval_ms))
 		ixr_throttlers.dynamic_vars.storage[name] = { delay = interval_ms, next_update = 0, counter = 0}
 	end
 	
@@ -119,19 +125,4 @@ function ixr_throttlers.is_action_throttled(name, interval_ms)
 	end
 	
 	return true
-end
-
---#####################################################
---#						UTILS						  #
---#####################################################
-
-function ixr_throttlers.toLog(text)
-	if ixr_throttlers.use_file_log then
-		ffx_dump_utils.write_to_file_log(text, ixr_throttlers.dynamic_vars.first_log_record)
-		ixr_throttlers.dynamic_vars.first_log_record = false
-	end
-	
-	if ixr_throttlers.use_console_log then
-		ffx_dump_utils.write_to_console_log(text)
-	end
 end
