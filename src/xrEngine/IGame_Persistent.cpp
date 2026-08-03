@@ -53,6 +53,7 @@ void IGame_Persistent::OnAppStart()
 
 void IGame_Persistent::OnAppEnd()
 {
+	g_pGamePersistent->ixr_framework_onframe.reset();
 	Environment().unload();
 	OnGameEnd();
 
