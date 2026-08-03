@@ -12,8 +12,11 @@
 		is_initialized()
 ]]
 
+
 local USE_FILE_LOG = true
 local USE_CONSOLE_LOG = false
+local USE_TIME_IN_LOGS = true
+
 local APPDATA_ALIAS = '$app_data_root$'
 local OPTIONS_FILE_NAME = "ixr_options.ixr"
 local DRAW_VAR_NAME = false
@@ -29,12 +32,12 @@ local ixr_options = {
 	update_bus = {},
 	initialized = false,
 	use_file_log = USE_FILE_LOG,
+	use_time_log = USE_TIME_IN_LOGS,
 	use_console_log = USE_CONSOLE_LOG,
 	main_menu_ref = nil,
 	_counter = 0,
 	__timer = 0,
 	dynamic_vars = {
-		first_log_record = true,
 		menu_opened = false,
 		is_callbacks_skip = false,
 		need_redraw = false,
@@ -282,27 +285,31 @@ function ixr_options.is_initialized()
 end
 
 function ixr_options.init()
+	IXRLogUseFileLog(ixr_options.use_file_log)
+	IXRLogUseConsoleLog(ixr_options.use_console_log)
+	IXRLogUseTimeInLog(ixr_options.use_time_log)
+	
 	if ixr_options.is_initialized() then
 		return true
 	end
 
 	ixr_options.initialized = false
 
-	ixr_options.toLog("[IXR OPTIONS] PREPARE INIT")
+	IXRLog("[IXR OPTIONS] PREPARE INIT")
 	
 	RegisterScriptCallback("on_ixr_autoloader_initialized", ixr_options.on_all_scripts_loaded)
 
 	ixr_options.initialized = true
 
-	ixr_options.toLog("[IXR OPTIONS] INITIALIZED")
+	IXRLog("[IXR OPTIONS] INITIALIZED")
 	
 	--[[
 	local addons_data = get_addons_list()
 
 	for i, addon_data in ipairs(addons_data) do
-		ixr_options.toLog("РђРґРґРѕРЅ " .. i .. ": " .. addon_data.addon_folder)
+		IXRLog("ADDON: " .. i .. ": " .. addon_data.addon_folder)
 		for j, script_name in ipairs(addon_data.script_files_names) do
-			ixr_options.toLog("  РЎРєСЂРёРїС‚ " .. j .. ": " .. script_name)
+			IXRLog("  ADDON‚ " .. j .. ": " .. script_name)
 		end
 	end
 	--]]
@@ -330,7 +337,7 @@ function _load_options()
 	end
 	
 	ixr_options.options_storage_loaded = true
-	ixr_options.toLog("[IXR OPTIONS] BEGIN LOAD OPTIONS BY FILE")
+	IXRLog("[IXR OPTIONS] BEGIN LOAD OPTIONS BY FILE")
 	local stored_options_string = ffx_io_utils.read_string_file_(_get_option_storage_path(), false)
 	if stored_options_string then
 		local tmp_opt_storage = ffx_json_lib.json_decode(stored_options_string) or {}
@@ -346,26 +353,29 @@ function _load_options()
 	
 		if need_resave then
 			ffx_io_utils.write_string_file(ffx_json_lib.json_encode(ixr_options.options_storage), _get_option_storage_path(), "w+")
-			ixr_options.toLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE [ACTUALIZE VERSION]")
+			IXRLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE [ACTUALIZE VERSION]")
 		else
 			ixr_options.options_storage = tmp_opt_storage
 		end
 		
-		ixr_options.toLog("[IXR OPTIONS] LOAD OLD OPTIONS FILE")
-		ixr_options.toLog("[IXR OPTIONS] LOADED [" .. tostring(ffx_table_utils.get_size(ixr_options.options_storage)) .. "] OPTIONS")
+		IXRLog("[IXR OPTIONS] LOAD OLD OPTIONS FILE")
+		IXRLog("[IXR OPTIONS] LOADED [" .. tostring(ffx_table_utils.get_size(ixr_options.options_storage)) .. "] OPTIONS")
 	else
 		ffx_io_utils.write_string_file(ffx_json_lib.json_encode(ixr_options.options_storage), _get_option_storage_path(), "w+")
-		ixr_options.toLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE")
+		IXRLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE")
 	end
-	ixr_options.toLog("[IXR OPTIONS] END LOAD OPTIONS BY FILE")
+	IXRLog("[IXR OPTIONS] END LOAD OPTIONS BY FILE")
 	
-	ixr_options.toLog("[IXR OPTIONS] DUMP:[ixr_options.options_storage]:\n\n" .. ffx_dump_utils.var_export(ixr_options.options_storage))
+	IXRLog("[IXR OPTIONS] DUMP:[ixr_options.options_storage]:")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
+	IXRLog(ffx_dump_utils.var_export(ixr_options.options_storage))
 end
 
 function _save_options()
 	_on_main_menu_update(get_menu_ref())
 	ffx_io_utils.write_string_file(ffx_json_lib.json_encode(ixr_options.options_storage), _get_option_storage_path(), "w+")
-	ixr_options.toLog("IXR Options saved ...")
+	IXRLog("IXR Options saved ...")
 end
 
 
@@ -374,15 +384,21 @@ end
 -- #######################################
 
 function ixr_options.on_all_scripts_loaded(_ref)
-	ixr_options.toLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS BEGIN\n\n")
+	IXRLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS BEGIN")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
 	
 	SendScriptCallback("on_init_ixr_options", ixr_options)
 	
-	ixr_options.toLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS END\n\n")
+	IXRLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS END")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
 	
 	if ixr_options.options_storage_loaded then
-		ixr_options.toLog("[IXR OPTIONS] BEGIN SEND EVENTS TO SCRIPTS BY LOADED VALUES\n\n")
-		--ixr_options.toLog("[IXR OPTIONS] DUMP:[ixr_options.options]:\n\n" .. ffx_dump_utils.var_export(ixr_options.options))
+		IXRLog("[IXR OPTIONS] BEGIN SEND EVENTS TO SCRIPTS BY LOADED VALUES")
+		IXRLogEmptyLine()
+		IXRLogEmptyLine()
+		--IXRLog("[IXR OPTIONS] DUMP:[ixr_options.options]:\n\n" .. ffx_dump_utils.var_export(ixr_options.options))
 		
 		for file_name, file_options in pairs(ixr_options.options) do
 			for index, option_data in pairs(file_options) do
@@ -400,13 +416,15 @@ function ixr_options.on_all_scripts_loaded(_ref)
 							option_data._callback(group_name, variable_name, actual_value, is_value_from_code)
 						end
 						
-						ixr_options.toLog( "[IXR OPTIONS] RUN CALLBACK::[" .. tostring(option_data.script_name) .. ".script] -> { group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .. "] actual_value:[" .. tostring(ffx_json_lib.json_encode(actual_value)) .. "]" )
+						IXRLog( "[IXR OPTIONS] RUN CALLBACK::[" .. tostring(option_data.script_name) .. ".script] -> { group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .. "] actual_value:[" .. tostring(ffx_json_lib.json_encode(actual_value)) .. "]" )
 					end
 				end
 			end
 		end
 
-		ixr_options.toLog("[IXR OPTIONS] END SEND EVENTS TO SCRIPTS BY LOADED VALUES\n\n")
+		IXRLog("[IXR OPTIONS] END SEND EVENTS TO SCRIPTS BY LOADED VALUES")
+		IXRLogEmptyLine()
+		IXRLogEmptyLine()
 	end
 end
 
@@ -470,7 +488,7 @@ end
 
 function ixr_options.register_option(group_name, variable_name, display_text, controll_data, _callback)
 	local script_name = ffx_callable_utils.find_caller_source(3)
-	ixr_options.toLog("[IXR OPTIONS]::[REGISTER]:: script_name:[" .. tostring(script_name) .. "] group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .."] controll_data:[" .. tostring(ffx_json_lib.json_encode(controll_data)) .."]")
+	IXRLog("[IXR OPTIONS]::[REGISTER]:: script_name:[" .. tostring(script_name) .. "] group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .."] controll_data:[" .. tostring(ffx_json_lib.json_encode(controll_data)) .."]")
 	
 	if ixr_options.options[script_name] == nil then
 		ixr_options.options[script_name] = {}
@@ -478,7 +496,7 @@ function ixr_options.register_option(group_name, variable_name, display_text, co
 
 	for k, v in pairs(ixr_options.options[script_name]) do
 		if v["variable_name"] == variable_name then
-			ixr_options.toLog("[IXR OPTIONS] SKIP DUPLICATE KEY: " .. tostring(script_name) .. "[" .. tostring(variable_name).. "]")
+			IXRLog("[IXR OPTIONS] SKIP DUPLICATE KEY: " .. tostring(script_name) .. "[" .. tostring(variable_name).. "]")
 			return
 		end
 	end
@@ -2216,17 +2234,6 @@ end
 function _find_appdata_folder()
 	if CONST_APPDATA_FOLDER == nil then
 		CONST_APPDATA_FOLDER = getFS():update_path(APPDATA_ALIAS, '')
-	end
-end
-
-function ixr_options.toLog(text)
-	if ixr_options.use_file_log then
-		ffx_dump_utils.write_to_file_log(text, ixr_options.dynamic_vars.first_log_record)
-		ixr_options.dynamic_vars.first_log_record = false
-	end
-	
-	if ixr_options.use_console_log then
-		ffx_dump_utils.write_to_console_log(text)
 	end
 end
 

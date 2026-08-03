@@ -23,9 +23,14 @@
 		override_registry_table(new_table)
 ]]
 
+local USE_FILE_LOG = true
+local USE_CONSOLE_LOG = false
+local USE_TIME_IN_LOGS = true
+
 local ixr_registry = {
-	use_file_log = true,
-	use_console_log = true,
+	use_file_log = USE_FILE_LOG,
+	use_time_log = USE_TIME_IN_LOGS,
+	use_console_log = USE_CONSOLE_LOG,
 	dynamic_vars = {
 		registry = {},
 		initialized = false,
@@ -146,12 +151,16 @@ end
 -- #	 	 SYSTEM METHODS	  	  #
 -- ################################
 function ixr_registry.init()
+	IXRLogUseFileLog(ixr_registry.use_file_log)
+	IXRLogUseConsoleLog(ixr_registry.use_console_log)
+	IXRLogUseTimeInLog(ixr_registry.use_time_log)
+
 	if not ixr_registry.is_initialized() then
 		ixr_registry.dynamic_vars.initialized = true
 		ixr_registry.dynamic_vars.registry = {}
-		ixr_registry.save_log("::INIT::")
+		IXRLog("::INIT::")
 	else
-		ixr_registry.save_log("::SKIP RE INIT::")
+		IXRLog("::SKIP RE INIT::")
 	end
 end
 
@@ -169,7 +178,7 @@ end
 
 function ixr_registry.set_value(key, subkey, value)
     if not key then
-        ixr_registry.save_log("::ERROR:: set_value(...) no key is passed")
+        IXRLog("::ERROR:: set_value(...) no key is passed")
 		
         return false
     end
@@ -177,13 +186,13 @@ function ixr_registry.set_value(key, subkey, value)
     if value ~= nil then
         if type(ixr_registry.dynamic_vars.registry[key]) ~= "table" then
             if ixr_registry.dynamic_vars.registry[key] then
-                ixr_registry.save_log("::WARNING:: set_value(...) key: %s has value (%s) that got overwritten with a new table", key, ixr_registry.dynamic_vars.registry[key])
+                IXRLog(string.format("::WARNING:: set_value(...) key: %s has value (%s) that got overwritten with a new table", tostring(key), tostring(ixr_registry.dynamic_vars.registry[key])))
             end
             ixr_registry.dynamic_vars.registry[key] = {}
         end
 
         if type(subkey) ~= "string" then
-            ixr_registry.save_log("::ERROR:: set_value(...) invalid arguments key: %s - subkey: %s", key, subkey)
+            IXRLog(string.format("::ERROR:: set_value(...) invalid arguments key: %s - subkey: %s", tostring(key), tostring(subkey)))
 			
             return false
         end
@@ -198,7 +207,7 @@ end
 
 function ixr_registry.has_value(key, subkey)
     if not key then
-        ixr_registry.save_log("::ERROR:: has_value(...) no key is passed")
+        IXRLog("::ERROR:: has_value(...) no key is passed")
         return false
     end
 
@@ -211,7 +220,7 @@ end
 
 function ixr_registry.remove_value(key, subkey)
     if not key then
-        ixr_registry.save_log("::ERROR:: remove_value(...) no key is passed")
+        IXRLog("::ERROR:: remove_value(...) no key is passed")
         return false
     end
 
@@ -226,26 +235,4 @@ function ixr_registry.remove_value(key, subkey)
     end
 	
     return false
-end
-
-function ixr_registry.save_log(text, ...)
-	ixr_registry.save_file_log(text, ...)
-	ixr_registry.save_console_log(text, ...)
-end
-
-function ixr_registry.save_file_log(text, ...)
-	if not ixr_registry.use_file_log then
-		return
-	end
-
-	ffx_dump_utils.write_to_file_log(tostring(string.format(text, ...)), ixr_registry.dynamic_vars.first_log_record)
-	ixr_registry.dynamic_vars.first_log_record = false
-end
-
-function ixr_registry.save_console_log(text, ...)
-	if not ixr_registry.use_console_log then
-		return
-	end
-	
-	ffx_dump_utils.write_to_console_log(tostring(string.format(text, ...)))
 end
