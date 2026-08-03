@@ -759,28 +759,70 @@ end
 --                                         IXR LOGS
 --  ####################################################################################################################
 
+--[[
+Description: Enable or disable file logging for the calling script only (not globally).
+Parameters:
+  flag (boolean)(required)          - True to enable, false to disable.
+  custom_script (string)(optional)  - Target script identifier (file name). If omitted, the calling script is used automatically.
+Return: (any) - Result from ixr_logs.set_use_file_log.
+]]
 function IXRLogUseFileLog(flag, custom_script)
-	return ixr_logs.set_use_file_log(flag, custom_script)
+    return ixr_logs.set_use_file_log(flag, custom_script)
 end
 
+--[[
+Description: Enable or disable console logging for the calling script only (not globally).
+Parameters:
+  flag (boolean)(required)          - True to enable, false to disable.
+  custom_script (string)(optional)  - Target script identifier (file name). If omitted, the calling script is used automatically.
+Return: (any) - Result from ixr_logs.set_use_console_log.
+]]
 function IXRLogUseConsoleLog(flag, custom_script)
-	return ixr_logs.set_use_console_log(flag, custom_script)
+    return ixr_logs.set_use_console_log(flag, custom_script)
 end
 
+--[[
+Description: Enable or disable timestamp inclusion in log entries for the calling script only (not globally).
+Parameters:
+  flag (boolean)(required)          - True to include timestamps, false to omit them.
+  custom_script (string)(optional)  - Target script identifier (file name). If omitted, the calling script is used automatically.
+Return: (any) - Result from ixr_logs.set_use_time.
+]]
 function IXRLogUseTimeInLog(flag, custom_script)
-	return ixr_logs.set_use_time(flag, custom_script)
+    return ixr_logs.set_use_time(flag, custom_script)
 end
 
+--[[
+Description: Write a text message to the log of the calling script. This method respects the current logging settings for that script (file, console, timestamp) which are enabled by default. If you previously disabled any of these via the corresponding IXRLogUse... functions, those settings will affect this output.
+Parameters:
+  text (string)(required)           - The message to log.
+  clear_log (boolean)(optional)     - If true, clears the log before writing the message (default: false).
+  custom_script (string)(optional)  - Target script identifier (file name). If omitted, the calling script is used automatically.
+Return: (any) - Result from ixr_logs.log.
+]]
 function IXRLog(text, clear_log, custom_script)
-	return ixr_logs.log(text, clear_log, custom_script)
+    return ixr_logs.log(text, clear_log, custom_script)
 end
 
+--[[
+Description: Insert empty lines into the log of the calling script only (isolated per script).
+Parameters:
+  pereat_cnt (number)(required)     - Number of empty lines to insert.
+  custom_script (string)(optional)  - Target script identifier (file name). If omitted, the calling script is used automatically.
+Return: (any) - Result from ixr_logs.empty_line.
+]]
 function IXRLogEmptyLine(pereat_cnt, custom_script)
-	return ixr_logs.empty_line(pereat_cnt, custom_script)
+    return ixr_logs.empty_line(pereat_cnt, custom_script)
 end
 
+--[[
+Description: Clear the log of the calling script only (isolated per script).
+Parameters:
+  custom_script (string)(optional)  - Target script identifier (file name). If omitted, the calling script is used automatically.
+Return: (any) - Result from ixr_logs.clear_log.
+]]
 function IXRLogClear(custom_script)
-	return ixr_logs.clear_log(custom_script)
+    return ixr_logs.clear_log(custom_script)
 end
 
 -- ##############################################################
