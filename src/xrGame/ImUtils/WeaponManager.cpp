@@ -5,47 +5,69 @@
 #include "../Weapon.h"
 #include "../ui/UIInventoryUtilities.h"
 #include "ImUtils.h"
+#include "../WeaponKnife.h"
+
+enum
+{
+	inv_cost = 0,
+	ammo_mag_size,
+	inv_weight,
+	fire_distance,
+	bullet_speed,
+	rpm,
+	hit_impulse,
+	upgrade_disp_base,
+	upgrade_disp_vel_factor,
+	upgrade_disp_accel_factor,
+	upgrade_disp_crouch,
+	upgrade_disp_crouch_no_acc,
+	fire_dispersion_condition_factor,
+	fire_dispersion_base,
+	control_inertion_factor,
+	crosshair_inertion,
+	cam_return,
+	cam_relax_speed,
+	cam_relax_speed_ai,
+	cam_dispersion,
+	cam_dispersion_inc,
+	cam_dispersion_frac,
+	cam_max_angle,
+	cam_max_angle_horz,
+	cam_step_angle_horz,
+	hit_power,
+	hit_power_critical,
+	inv_scale,
+	inv_grid_x,
+	inv_grid_y,
+	inv_grid_width,
+	inv_grid_height,
+	silencer_x,
+	silencer_y,
+	
+	hit_impulse_2,
+	hit_power_2,
+	hit_power_critical_2,
+	splash1_direction,
+	splash2_direction,
+	splash1_dist,
+	splash2_dist,
+	splash1_radius,
+	splash2_radius,
+	splash1_hits_count,
+	splash1_pervictim_hcount,
+	splash2_hits_count,
+	splash_hit_divide_factor,
+
+	max_count
+};
 
 struct
 {
 	bool init{};
 
-	bool can_show_inv_cost{};
-	bool can_show_ammo_mag_size{};
-	bool can_show_inv_weight{};
-	bool can_show_fire_distance{};
-	bool can_show_bullet_speed{};
-	bool can_show_rpm{};
-	bool can_show_hit_impulse{};
-	bool can_show_upgrade_disp_base{};
-	bool can_show_upgrade_disp_vel_factor{};
-	bool can_show_upgrade_disp_accel_factor{};
-	bool can_show_upgrade_disp_crouch{};
-	bool can_show_upgrade_disp_crouch_no_acc{};
-	bool can_show_fire_dispersion_condition_factor{};
-	bool can_show_fire_dispersion_base{};
-	bool can_show_control_inertion_factor{};
-	bool can_show_crosshair_inertion{};
-	bool can_show_cam_return{};
-	bool can_show_cam_relax_speed{};
-	bool can_show_cam_relax_speed_ai{};
-	bool can_show_cam_dispersion{};
-	bool can_show_cam_dispersion_inc{};
-	bool can_show_cam_dispersion_frac{};
-	bool can_show_cam_max_angle{};
-	bool can_show_cam_max_angle_horz{};
-	bool can_show_cam_step_angle_horz{};
-	bool can_show_hit_power{};
-	bool can_show_hit_power_critical{};
-	bool can_show_inv_scale{};
-	bool can_show_inv_grid_x{};
-	bool can_show_inv_grid_y{};
-	bool can_show_inv_grid_width{};
-	bool can_show_inv_grid_height{};
-	bool can_show_silencer_x{};
-	bool can_show_silencer_y{};
+	bool can_show[max_count]{};
 
-	bool can_show_modal_icon_selection_window{};
+	bool modal_icon_selection_window{};
 
 	u16 weapon_id{ u16(-1) };
 
@@ -155,6 +177,45 @@ struct
 	Fvector4 hit_power_critical;
 	Fvector4 cfg_hit_power_critical;
 
+	float hit_impulse_2{};
+	float cfg_hit_impulse_2{};
+
+	Fvector4 hit_power_2;
+	Fvector4 cfg_hit_power_2;
+
+	Fvector4 hit_power_critical_2;
+	Fvector4 cfg_hit_power_critical_2;
+
+	Fvector3 splash1_direction;
+	Fvector3 cfg_splash1_direction;
+
+	Fvector3 splash2_direction;
+	Fvector3 cfg_splash2_direction;
+
+	float splash1_dist{};
+	float cfg_splash1_dist{};
+
+	float splash2_dist{};
+	float cfg_splash2_dist{};
+
+	float splash1_radius{};
+	float cfg_splash1_radius{};
+
+	float splash2_radius{};
+	float cfg_splash2_radius{};
+
+	int splash1_hits_count{};
+	u32 cfg_splash1_hits_count{};
+
+	int splash1_pervictim_hcount{};
+	u32 cfg_splash1_pervictim_hcount{};
+
+	int splash2_hits_count{};
+	u32 cfg_splash2_hits_count{};
+
+	float splash_hit_divide_factor{};
+	float cfg_splash_hit_divide_factor{};
+
 	IRender_interface::SurfaceParams ui_icons;
 
 	struct WeaponIcon
@@ -174,6 +235,13 @@ struct
 
 
 	WeaponIcon icons[1024]{};
+	void Reset()
+	{
+		for (int i = 0; i < max_count; i++)
+		{
+			can_show[i] = false;
+		}
+	}
 }
 imgui_weapon_manager;
 
@@ -195,7 +263,8 @@ void RenderWeaponManagerWindow()
 		if (pItem)
 		{
 			CShootingObject* pSO = dynamic_cast<CShootingObject*>(pItem);
-			CWeapon* pWeapon = dynamic_cast<CWeapon*>(pItem);
+			CWeapon* pWeapon = pItem->cast_weapon();
+			CWeaponKnife* pKnife = pItem->cast_weapon_knife();
 
 			if (imgui_weapon_manager.current_slot != slot_type)
 				imgui_weapon_manager.init = false;
@@ -212,7 +281,7 @@ void RenderWeaponManagerWindow()
 			if (!imgui_weapon_manager.init)
 			{
 				// clear bool flags that line_exist checking for correct init/uninit cycle
-				ZeroMemory((&imgui_weapon_manager.init + sizeof(imgui_weapon_manager.init)), 33);
+				imgui_weapon_manager.Reset();
 
 				imgui_weapon_manager.current_slot = slot_type;
 				imgui_weapon_manager.weapon_id = pItem->object_id();
@@ -228,16 +297,32 @@ void RenderWeaponManagerWindow()
 
 				if (pSO)
 				{
-					imgui_weapon_manager.fire_distance = pSO->getFireDistance();
-					imgui_weapon_manager.bullet_speed = pSO->getStartBulletSpeed();
-					imgui_weapon_manager.rpm = pSO->getRPM();
 					imgui_weapon_manager.hit_impulse = pSO->getHitImpulse();
 					imgui_weapon_manager.hit_power = pSO->getHitPower();
 					imgui_weapon_manager.hit_power_critical = pSO->getHitPowerCritical();
+				}
+				if (pKnife)
+				{
+					imgui_weapon_manager.splash1_direction = pKnife->GetHit1SplashDir();
+					imgui_weapon_manager.splash2_direction = pKnife->GetHit2SplashDir();
+					imgui_weapon_manager.splash1_dist = pKnife->GetHit1Dist();
+					imgui_weapon_manager.splash2_dist = pKnife->GetHit2Dist();
+					imgui_weapon_manager.splash1_radius = pKnife->GetHit1SplashRadius();
+					imgui_weapon_manager.splash2_radius = pKnife->GetHit2SplashRadius();
+					imgui_weapon_manager.splash1_hits_count = pKnife->GetSplash1HitsCount();
+					imgui_weapon_manager.splash1_pervictim_hcount = pKnife->GetSplash1PerVictimsHCount();
+					imgui_weapon_manager.splash2_hits_count = pKnife->GetSplash2HitsCount();
+					imgui_weapon_manager.splash_hit_divide_factor = pKnife->GetNextHitDivideFactor();
+				}
+				if (pSO && !pKnife)
+				{
+					imgui_weapon_manager.fire_distance = pSO->getFireDistance();
+					imgui_weapon_manager.bullet_speed = pSO->getStartBulletSpeed();
+					imgui_weapon_manager.rpm = pSO->getRPM();
 					imgui_weapon_manager.fire_dispersion_base = pSO->getFireDispersionBase();
 				}
 
-				if (pWeapon)
+				if (pWeapon && !pKnife)
 				{
 					imgui_weapon_manager.ammo_mag_size = pWeapon->GetAmmoMagSize();
 					imgui_weapon_manager.crosshair_inertion = pWeapon->GetCrosshairInertion();
@@ -258,9 +343,7 @@ void RenderWeaponManagerWindow()
 				for (CInifile::Sect& pSection : sections)
 				{
 					// todo: temp because of korzyna need to replace to g_pClsidManager
-
 					xr_string_view name = pSection.Name.c_str();
-
 					if (!name.empty())
 					{
 						size_t index = name.find("wpn_");
@@ -281,9 +364,7 @@ void RenderWeaponManagerWindow()
 					}
 				}
 
-
 				// defaults
-
 				if (pSettings)
 				{
 					if (pSettings->section_exist(pItem->m_section_id.c_str()))
@@ -292,180 +373,249 @@ void RenderWeaponManagerWindow()
 
 						if (pSettings->line_exist(pSectionName, "cost"))
 						{
-							imgui_weapon_manager.can_show_inv_cost = true;
+							imgui_weapon_manager.can_show[inv_cost] = true;
 							imgui_weapon_manager.cfg_inv_cost = pSettings->r_u32(pSectionName, "cost");
 						}
 
 						if (pSettings->line_exist(pSectionName, "inv_weight"))
 						{
-							imgui_weapon_manager.can_show_inv_weight = true;
+							imgui_weapon_manager.can_show[inv_weight] = true;
 							imgui_weapon_manager.cfg_inv_weight = pSettings->r_float(pSectionName, "inv_weight");
 						}
 
 						if (pSettings->line_exist(pSectionName, "fire_distance"))
 						{
-							imgui_weapon_manager.can_show_fire_distance = true;
+							imgui_weapon_manager.can_show[fire_distance] = true;
 							imgui_weapon_manager.cfg_fire_distance = pSettings->r_float(pSectionName, "fire_distance");
 						}
 
 						if (pSettings->line_exist(pSectionName, "bullet_speed"))
 						{
-							imgui_weapon_manager.can_show_bullet_speed = true;
+							imgui_weapon_manager.can_show[bullet_speed] = true;
 							imgui_weapon_manager.cfg_bullet_speed = pSettings->r_float(pSectionName, "bullet_speed");
 						}
 
 						if (pSettings->line_exist(pSectionName, "rpm"))
 						{
-							imgui_weapon_manager.can_show_rpm = true;
+							imgui_weapon_manager.can_show[rpm] = true;
 							imgui_weapon_manager.cfg_rpm = pSettings->r_float(pSectionName, "rpm");
 							imgui_weapon_manager.cfg_rpm = 60.0f / imgui_weapon_manager.cfg_rpm;
 						}
 
 						if (pSettings->line_exist(pSectionName, "hit_impulse"))
 						{
-							imgui_weapon_manager.can_show_hit_impulse = true;
+							imgui_weapon_manager.can_show[hit_impulse] = true;
 							imgui_weapon_manager.cfg_hit_impulse = pSettings->r_float(pSectionName, "hit_impulse");
 						}
 
 						if (pSettings->line_exist(pSectionName, "hit_power"))
 						{
-							imgui_weapon_manager.can_show_hit_power = true;
+							imgui_weapon_manager.can_show[hit_power] = true;
 							imgui_weapon_manager.cfg_hit_power = pSettings->r_fvector4(pSectionName, "hit_power");
 						}
 
 						if (pSettings->line_exist(pSectionName, "hit_power_critical"))
 						{
-							imgui_weapon_manager.can_show_hit_power_critical = true;
+							imgui_weapon_manager.can_show[hit_power_critical] = true;
 							imgui_weapon_manager.cfg_hit_power_critical = pSettings->r_fvector4(pSectionName, "hit_power_critical");
+						}
+						
+						if (pSettings->line_exist(pSectionName, "hit_impulse_2"))
+						{
+							imgui_weapon_manager.can_show[hit_impulse_2] = true;
+							imgui_weapon_manager.cfg_hit_impulse_2 = pSettings->r_float(pSectionName, "hit_impulse_2");
+						}
+
+						if (pSettings->line_exist(pSectionName, "hit_power_2"))
+						{
+							imgui_weapon_manager.can_show[hit_power_2] = true;
+							imgui_weapon_manager.cfg_hit_power_2 = pSettings->r_fvector4(pSectionName, "hit_power_2");
+						}
+
+						if (pSettings->line_exist(pSectionName, "hit_power_critical_2"))
+						{
+							imgui_weapon_manager.can_show[hit_power_critical_2] = true;
+							imgui_weapon_manager.cfg_hit_power_critical_2 = pSettings->r_fvector4(pSectionName, "hit_power_critical_2");
+						}
+
+						if (pSettings->line_exist(pSectionName, "splash1_direction"))
+						{
+							imgui_weapon_manager.can_show[splash1_direction] = true;
+							imgui_weapon_manager.cfg_splash1_direction = pSettings->r_fvector3(pSectionName, "splash1_direction");
+						}
+
+						if (pSettings->line_exist(pSectionName, "splash2_direction"))
+						{
+							imgui_weapon_manager.can_show[splash2_direction] = true;
+							imgui_weapon_manager.cfg_splash2_direction = pSettings->r_fvector3(pSectionName, "splash2_direction");
+						}
+
+						// DO NOT FIX TYPOS!!!!!! THOSE ARE INTENTIONAL
+						if (pSettings->line_exist(pSectionName, "spash1_dist"))
+						{
+							imgui_weapon_manager.can_show[splash1_dist] = true;
+							imgui_weapon_manager.cfg_splash1_dist = pSettings->r_float(pSectionName, "spash1_dist");
+						}
+
+						if (pSettings->line_exist(pSectionName, "spash2_dist"))
+						{
+							imgui_weapon_manager.can_show[splash2_dist] = true;
+							imgui_weapon_manager.cfg_splash2_dist = pSettings->r_float(pSectionName, "spash2_dist");
+						}
+
+						if (pSettings->line_exist(pSectionName, "spash1_radius"))
+						{
+							imgui_weapon_manager.can_show[splash1_radius] = true;
+							imgui_weapon_manager.cfg_splash1_radius = pSettings->r_float(pSectionName, "spash1_radius");
+						}
+
+						if (pSettings->line_exist(pSectionName, "spash2_radius"))
+						{
+							imgui_weapon_manager.can_show[splash2_radius] = true;
+							imgui_weapon_manager.cfg_splash2_radius = pSettings->r_float(pSectionName, "spash2_radius");
+						}
+
+						if (pSettings->line_exist(pSectionName, "splash1_hits_count"))
+						{
+							imgui_weapon_manager.can_show[splash1_hits_count] = true;
+							imgui_weapon_manager.cfg_splash1_hits_count = pSettings->r_u32(pSectionName, "splash1_hits_count");
+						}
+
+						if (pSettings->line_exist(pSectionName, "splash1_pervictim_hcount"))
+						{
+							imgui_weapon_manager.can_show[splash1_pervictim_hcount] = true;
+							imgui_weapon_manager.cfg_splash1_pervictim_hcount = pSettings->r_u32(pSectionName, "splash1_pervictim_hcount");
+						}
+
+						if (pSettings->line_exist(pSectionName, "splash2_hits_count"))
+						{
+							imgui_weapon_manager.can_show[splash2_hits_count] = true;
+							imgui_weapon_manager.cfg_splash2_hits_count = pSettings->r_u32(pSectionName, "splash2_hits_count");
+						}
+
+						if (pSettings->line_exist(pSectionName, "splash_hit_divide_factor"))
+						{
+							imgui_weapon_manager.can_show[splash_hit_divide_factor] = true;
+							imgui_weapon_manager.cfg_splash_hit_divide_factor = pSettings->r_float(pSectionName, "splash_hit_divide_factor");
 						}
 
 						if (pSettings->line_exist(pSectionName, "ammo_mag_size"))
 						{
-							imgui_weapon_manager.can_show_ammo_mag_size = true;
+							imgui_weapon_manager.can_show[ammo_mag_size] = true;
 							imgui_weapon_manager.cfg_ammo_mag_size = pSettings->r_u32(pSectionName, "ammo_mag_size");
 						}
 
 						if (pSettings->line_exist(pSectionName, "PDM_disp_accel_factor"))
 						{
-							imgui_weapon_manager.can_show_upgrade_disp_accel_factor = true;
+							imgui_weapon_manager.can_show[upgrade_disp_accel_factor] = true;
 							imgui_weapon_manager.cfg_upgrade_disp_accel_factor = pSettings->r_float(pSectionName, "PDM_disp_accel_factor");
 						}
 
 						if (pSettings->line_exist(pSectionName, "PDM_disp_base"))
 						{
-							imgui_weapon_manager.can_show_upgrade_disp_base = true;
+							imgui_weapon_manager.can_show[upgrade_disp_base] = true;
 							imgui_weapon_manager.cfg_upgrade_disp_base = pSettings->r_float(pSectionName, "PDM_disp_base");
 						}
 
 						if (pSettings->line_exist(pSectionName, "PDM_disp_crouch"))
 						{
-							imgui_weapon_manager.can_show_upgrade_disp_crouch = true;
+							imgui_weapon_manager.can_show[upgrade_disp_crouch] = true;
 							imgui_weapon_manager.cfg_upgrade_disp_crouch = pSettings->r_float(pSectionName, "PDM_disp_crouch");
 						}
 
 						if (pSettings->line_exist(pSectionName, "PDM_disp_crouch_no_acc"))
 						{
-							imgui_weapon_manager.can_show_upgrade_disp_crouch_no_acc = true;
+							imgui_weapon_manager.can_show[upgrade_disp_crouch_no_acc] = true;
 							imgui_weapon_manager.cfg_upgrade_disp_crouch_no_acc = pSettings->r_float(pSectionName, "PDM_disp_crouch_no_acc");
 						}
 
 						if (pSettings->line_exist(pSectionName, "PDM_disp_vel_factor"))
 						{
-							imgui_weapon_manager.can_show_upgrade_disp_vel_factor = true;
-							imgui_weapon_manager.cfg_upgrade_disp_vel_factor
-								= pSettings->r_float(pSectionName, "PDM_disp_vel_factor");
+							imgui_weapon_manager.can_show[upgrade_disp_vel_factor] = true;
+							imgui_weapon_manager.cfg_upgrade_disp_vel_factor = pSettings->r_float(pSectionName, "PDM_disp_vel_factor");
 						}
 
 						if (pSettings->line_exist(pSectionName, "cam_return"))
 						{
-							imgui_weapon_manager.can_show_cam_return = true;
+							imgui_weapon_manager.can_show[cam_return] = true;
 							imgui_weapon_manager.cfg_cam_return = pSettings->r_float(pSectionName, "cam_return");
 						}
 
 						if (pSettings->line_exist(pSectionName, "cam_relax_speed"))
 						{
-							imgui_weapon_manager.can_show_cam_relax_speed = true;
+							imgui_weapon_manager.can_show[cam_relax_speed] = true;
 							imgui_weapon_manager.cfg_cam_relax_speed = pSettings->r_float(pSectionName, "cam_relax_speed");
 						}
 
 						if (pSettings->line_exist(pSectionName, "cam_relax_speed_ai"))
 						{
-							imgui_weapon_manager.can_show_cam_relax_speed_ai = true;
+							imgui_weapon_manager.can_show[cam_relax_speed_ai] = true;
 							imgui_weapon_manager.cfg_cam_relax_speed_ai = pSettings->r_float(pSectionName, "cam_relax_speed_ai");
 						}
 
 						if (pSettings->line_exist(pSectionName, "cam_dispersion"))
 						{
-							imgui_weapon_manager.can_show_cam_dispersion = true;
+							imgui_weapon_manager.can_show[cam_dispersion] = true;
 							imgui_weapon_manager.cfg_cam_dispersion = pSettings->r_float(pSectionName, "cam_dispersion");
 						}
 
 						if (pSettings->line_exist(pSectionName, "cam_dispersion_inc"))
 						{
-							imgui_weapon_manager.can_show_cam_dispersion_inc = true;
+							imgui_weapon_manager.can_show[cam_dispersion_inc] = true;
 							imgui_weapon_manager.cfg_cam_dispersion_inc = pSettings->r_float(pSectionName, "cam_dispersion_inc");
 						}
 
-
 						if (pSettings->line_exist(pSectionName, "cam_dispersion_frac"))
 						{
-							imgui_weapon_manager.can_show_cam_dispersion_frac = true;
+							imgui_weapon_manager.can_show[cam_dispersion_frac] = true;
 							imgui_weapon_manager.cfg_cam_dispersion_frac = pSettings->r_float(pSectionName, "cam_dispersion_frac");
 						}
 
-
 						if (pSettings->line_exist(pSectionName, "cam_max_angle"))
 						{
-							imgui_weapon_manager.can_show_cam_max_angle = true;
+							imgui_weapon_manager.can_show[cam_max_angle] = true;
 							imgui_weapon_manager.cfg_cam_max_angle = pSettings->r_float(pSectionName, "cam_max_angle");
 						}
 
-
 						if (pSettings->line_exist(pSectionName, "cam_max_angle_horz"))
 						{
-							imgui_weapon_manager.can_show_cam_max_angle_horz = true;
+							imgui_weapon_manager.can_show[cam_max_angle_horz] = true;
 							imgui_weapon_manager.cfg_cam_max_angle_horz = pSettings->r_float(pSectionName, "cam_max_angle_horz");
 						}
 
-
 						if (pSettings->line_exist(pSectionName, "cam_step_angle_horz"))
 						{
-							imgui_weapon_manager.can_show_cam_step_angle_horz = true;
+							imgui_weapon_manager.can_show[cam_step_angle_horz] = true;
 							imgui_weapon_manager.cfg_cam_step_angle_horz = pSettings->r_float(pSectionName, "cam_step_angle_horz");
 						}
 
-
-
 						if (pSettings->line_exist(pSectionName, "fire_dispersion_base"))
 						{
-							imgui_weapon_manager.can_show_fire_dispersion_base = true;
+							imgui_weapon_manager.can_show[fire_dispersion_base] = true;
 							imgui_weapon_manager.cfg_fire_dispersion_base = pSettings->r_float(pSectionName, "fire_dispersion_base");
 						}
 
-
 						if (pSettings->line_exist(pSectionName, "control_inertion_factor"))
 						{
-							imgui_weapon_manager.can_show_control_inertion_factor = true;
+							imgui_weapon_manager.can_show[control_inertion_factor] = true;
 							imgui_weapon_manager.cfg_control_inertion_factor = pSettings->r_float(pSectionName, "control_inertion_factor");
 						}
 
-
 						if (pSettings->line_exist(pSectionName, "crosshair_inertion"))
 						{
-							imgui_weapon_manager.can_show_crosshair_inertion = true;
+							imgui_weapon_manager.can_show[crosshair_inertion] = true;
 							imgui_weapon_manager.cfg_crosshair_inertion = pSettings->r_float(pSectionName, "crosshair_inertion");
 						}
 
-
 						if (pSettings->line_exist(pSectionName, "fire_dispersion_condition_factor"))
 						{
-							imgui_weapon_manager.can_show_fire_dispersion_condition_factor = true;
+							imgui_weapon_manager.can_show[fire_dispersion_condition_factor] = true;
 							imgui_weapon_manager.cfg_fire_dispersion_condition_factor = pSettings->r_float(pSectionName, "fire_dispersion_condition_factor");
 						}
 
 						if (pSettings->line_exist(pSectionName, "inv_scale"))
 						{
-							imgui_weapon_manager.can_show_inv_scale = true;
+							imgui_weapon_manager.can_show[inv_scale] = true;
 							imgui_weapon_manager.cfg_inv_scale = pSettings->r_u32(pSectionName, "inv_scale");
 						}
 						else
@@ -475,25 +625,25 @@ void RenderWeaponManagerWindow()
 
 						if (pSettings->line_exist(pSectionName, "inv_grid_x"))
 						{
-							imgui_weapon_manager.can_show_inv_grid_x = true;
+							imgui_weapon_manager.can_show[inv_grid_x] = true;
 							imgui_weapon_manager.cfg_inv_grid_x = pSettings->r_u32(pSectionName, "inv_grid_x");
 						}
 
 						if (pSettings->line_exist(pSectionName, "inv_grid_y"))
 						{
-							imgui_weapon_manager.can_show_inv_grid_y = true;
+							imgui_weapon_manager.can_show[inv_grid_y] = true;
 							imgui_weapon_manager.cfg_inv_grid_y = pSettings->r_u32(pSectionName, "inv_grid_y");
 						}
 
 						if (pSettings->line_exist(pSectionName, "inv_grid_width"))
 						{
-							imgui_weapon_manager.can_show_inv_grid_width = true;
+							imgui_weapon_manager.can_show[inv_grid_width] = true;
 							imgui_weapon_manager.cfg_inv_grid_width = pSettings->r_u32(pSectionName, "inv_grid_width");
 						}
 
 						if (pSettings->line_exist(pSectionName, "inv_grid_height"))
 						{
-							imgui_weapon_manager.can_show_inv_grid_height = true;
+							imgui_weapon_manager.can_show[inv_grid_height] = true;
 							imgui_weapon_manager.cfg_inv_grid_height = pSettings->r_u32(pSectionName, "inv_grid_height");
 						}
 
@@ -501,7 +651,7 @@ void RenderWeaponManagerWindow()
 						{
 							if (pWeapon)
 							{
-								imgui_weapon_manager.can_show_silencer_x = true;
+								imgui_weapon_manager.can_show[silencer_x] = true;
 								imgui_weapon_manager.cfg_silencer_x = pSettings->r_s32(pSectionName, "silencer_x");
 							}
 						}
@@ -510,7 +660,7 @@ void RenderWeaponManagerWindow()
 						{
 							if (pWeapon)
 							{
-								imgui_weapon_manager.can_show_silencer_y = true;
+								imgui_weapon_manager.can_show[silencer_y] = true;
 								imgui_weapon_manager.cfg_silencer_y = pSettings->r_s32(pSectionName, "silencer_y");
 							}
 						}
@@ -534,7 +684,6 @@ void RenderWeaponManagerWindow()
 
 					if (ImGui::TreeNode("Icon"))
 					{
-
 						ImGui::Text("Grid X: %d", pItem->GetInvGridRect().x1);
 						ImGui::Text("Grid Y: %d", pItem->GetInvGridRect().y1);
 						ImGui::Text("Grid Width: %d", pItem->GetInvGridRect().x2);
@@ -564,20 +713,14 @@ void RenderWeaponManagerWindow()
 								ImGui::Text("Silencer X: %d", pWeapon->GetSilencerX());
 								ImGui::Text("Silencer Y: %d", pWeapon->GetSilencerY());
 							}
-
 							ImGui::TreePop();
 						}
-
-
 						ImGui::TreePop();
 					}
-
 					ImGui::TreePop();
 				}
 
-
-
-				if (pSO)
+				if (pSO && !pKnife)
 				{
 					if (ImGui::TreeNode("Ballistic"))
 					{
@@ -586,20 +729,29 @@ void RenderWeaponManagerWindow()
 						ImGui::Text("RPM: %.4f", pSO->getRPM());
 						ImGui::TreePop();
 					}
-
-
+				}
+				if (pSO)
+				{
 					if (ImGui::TreeNode("Hit"))
 					{
 						ImGui::Text("Hit impulse: %.4f", pSO->getHitImpulse());
 						const auto& hit_power = pSO->getHitPower();
-						ImGui::Text("Hit power: %.4f %.4f %.4f %.4f", hit_power.x, hit_power.y, hit_power.z, hit_power.z, hit_power.w);
+						ImGui::Text("Hit power: %.4f %.4f %.4f %.4f", hit_power.x, hit_power.y, hit_power.z, hit_power.w);
 						const auto& hit_power_critical = pSO->getHitPowerCritical();
 						ImGui::Text("Hit power critical: %.4f %.4f %.4f %.4f", hit_power_critical.x, hit_power_critical.y, hit_power_critical.z, hit_power_critical.w);
+						if (pKnife)
+						{
+							ImGui::Text("Hit impulse 2: %.4f", pKnife->getHitImpulse_2());
+							const auto& hit_power_2 = pKnife->getHitPower_2();
+							ImGui::Text("Hit power 2: %.4f %.4f %.4f %.4f", hit_power_2.x, hit_power_2.y, hit_power_2.z, hit_power_2.w);
+							const auto& hit_power_critical_2 = pKnife->getHitPowerCritical_2();
+							ImGui::Text("Hit power critical 2: %.4f %.4f %.4f %.4f", hit_power_critical_2.x, hit_power_critical_2.y, hit_power_critical_2.z, hit_power_critical_2.w);
+						}
 						ImGui::TreePop();
 					}
 				}
 
-				if (pWeapon && pSO)
+				if (pWeapon && pSO && !pKnife)
 				{
 					if (ImGui::TreeNode("Ammunition"))
 					{
@@ -668,7 +820,23 @@ void RenderWeaponManagerWindow()
 						ImGui::Text("Zoom step angle horizontal: %.4f", zoom_cam_recoil.StepAngleHorz);
 						ImGui::TreePop();
 					}
-
+				}
+				if (pKnife)
+				{
+					if (ImGui::TreeNode("Knife params"))
+					{
+						ImGui::Text("Splash direction 1: %.4f %.4f %4.f", pKnife->GetHit1SplashDir().x, pKnife->GetHit1SplashDir().y, pKnife->GetHit1SplashDir().z);
+						ImGui::Text("Splash distance 1: %.4f", pKnife->GetHit1Dist());
+						ImGui::Text("Splash radius 1: %.4f", pKnife->GetHit1SplashRadius());
+						ImGui::Text("Splash hits count 1: %u", pKnife->GetSplash1HitsCount());
+						ImGui::Text("Splash hits per victim: %u", pKnife->GetSplash1PerVictimsHCount());
+						ImGui::Text("Splash direction 2: %.4f %.4f %4.f", pKnife->GetHit2SplashDir().x, pKnife->GetHit2SplashDir().y, pKnife->GetHit2SplashDir().z);
+						ImGui::Text("Splash distance 2: %.4f", pKnife->GetHit2Dist());
+						ImGui::Text("Splash radius 2: %.4f", pKnife->GetHit2SplashRadius());
+						ImGui::Text("Splash hits count 2: %u", pKnife->GetSplash2HitsCount());
+						ImGui::Text("Splash next hit divide factor: %.4f", pKnife->GetNextHitDivideFactor());
+						ImGui::TreePop();
+					}
 				}
 			}
 
@@ -676,10 +844,10 @@ void RenderWeaponManagerWindow()
 			{
 				constexpr const char* pModalIconSelectionName = "Select Icon...##Editing";
 
-				if (imgui_weapon_manager.can_show_modal_icon_selection_window && !ImGui::IsPopupOpen(pModalIconSelectionName))
+				if (imgui_weapon_manager.modal_icon_selection_window && !ImGui::IsPopupOpen(pModalIconSelectionName))
 					ImGui::OpenPopup(pModalIconSelectionName);
 
-				if (ImGui::BeginPopupModal(pModalIconSelectionName, &imgui_weapon_manager.can_show_modal_icon_selection_window, ImGuiWindowFlags_AlwaysAutoResize))
+				if (ImGui::BeginPopupModal(pModalIconSelectionName, &imgui_weapon_manager.modal_icon_selection_window, ImGuiWindowFlags_AlwaysAutoResize))
 				{
 					constexpr int kWeaponManagerTableColumnSize = 5;
 
@@ -739,7 +907,7 @@ void RenderWeaponManagerWindow()
 											pItem->SetInvGridRect(icon.inv_grid_x, icon.inv_grid_y, icon.inv_grid_width, icon.inv_grid_height);
 										}
 
-										imgui_weapon_manager.can_show_modal_icon_selection_window = false;
+										imgui_weapon_manager.modal_icon_selection_window = false;
 										ImGui::CloseCurrentPopup();
 									}
 								}
@@ -752,11 +920,9 @@ void RenderWeaponManagerWindow()
 					ImGui::EndPopup();
 				}
 
-
 				if (ImGui::CollapsingHeader("Editing"))
 				{
 					ImGui::Text("section name: [%s]", pItem->m_section_id.c_str());
-
 					if (ImGui::Button("Reset to defaults"))
 					{
 						imgui_weapon_manager.inv_cost = imgui_weapon_manager.cfg_inv_cost;
@@ -770,8 +936,7 @@ void RenderWeaponManagerWindow()
 						imgui_weapon_manager.hit_power_critical = imgui_weapon_manager.hit_power_critical;
 						imgui_weapon_manager.upgrade_disp_accel_factor = imgui_weapon_manager.cfg_upgrade_disp_accel_factor;
 						imgui_weapon_manager.upgrade_disp_base = imgui_weapon_manager.cfg_upgrade_disp_base;
-						imgui_weapon_manager.upgrade_disp_crouch
-							= imgui_weapon_manager.cfg_upgrade_disp_crouch;
+						imgui_weapon_manager.upgrade_disp_crouch = imgui_weapon_manager.cfg_upgrade_disp_crouch;
 						imgui_weapon_manager.upgrade_disp_crouch_no_acc = imgui_weapon_manager.cfg_upgrade_disp_crouch_no_acc;
 						imgui_weapon_manager.upgrade_disp_vel_factor = imgui_weapon_manager.cfg_upgrade_disp_vel_factor;
 						imgui_weapon_manager.fire_dispersion_condition_factor = imgui_weapon_manager.cfg_fire_dispersion_condition_factor;
@@ -782,6 +947,16 @@ void RenderWeaponManagerWindow()
 						imgui_weapon_manager.inv_grid_y = imgui_weapon_manager.cfg_inv_grid_y;
 						imgui_weapon_manager.silencer_x = imgui_weapon_manager.cfg_silencer_x;
 						imgui_weapon_manager.silencer_y = imgui_weapon_manager.cfg_silencer_y;
+						imgui_weapon_manager.splash1_direction = imgui_weapon_manager.cfg_splash1_direction;
+						imgui_weapon_manager.splash2_direction = imgui_weapon_manager.cfg_splash2_direction;
+						imgui_weapon_manager.splash1_dist = imgui_weapon_manager.cfg_splash1_dist;
+						imgui_weapon_manager.splash2_dist = imgui_weapon_manager.cfg_splash2_dist;
+						imgui_weapon_manager.splash1_radius = imgui_weapon_manager.cfg_splash1_radius;
+						imgui_weapon_manager.splash2_radius = imgui_weapon_manager.cfg_splash2_radius;
+						imgui_weapon_manager.splash1_hits_count = imgui_weapon_manager.cfg_splash1_hits_count;
+						imgui_weapon_manager.splash1_pervictim_hcount = imgui_weapon_manager.cfg_splash1_pervictim_hcount;
+						imgui_weapon_manager.splash2_hits_count = imgui_weapon_manager.cfg_splash1_hits_count;
+						imgui_weapon_manager.splash_hit_divide_factor = imgui_weapon_manager.cfg_splash_hit_divide_factor;
 
 						if (pItem)
 						{
@@ -790,7 +965,7 @@ void RenderWeaponManagerWindow()
 							pItem->SetInvGridRect(imgui_weapon_manager.inv_grid_x, imgui_weapon_manager.inv_grid_y, imgui_weapon_manager.inv_grid_width, imgui_weapon_manager.inv_grid_height);
 						}
 
-						if (pSO)
+						if (pSO && !pKnife)
 						{
 							pSO->setFireDistance(imgui_weapon_manager.fire_distance);
 							pSO->setStartBulletSpeed(imgui_weapon_manager.bullet_speed);
@@ -799,8 +974,20 @@ void RenderWeaponManagerWindow()
 							pSO->setHitPower(imgui_weapon_manager.hit_power);
 							pSO->setHitPowerCritical(imgui_weapon_manager.hit_power_critical);
 						}
-
-						if (pWeapon)
+						if (pKnife)
+						{
+							pKnife->SetHit1SplashDir(imgui_weapon_manager.splash1_direction);
+							pKnife->SetHit1Dist(imgui_weapon_manager.splash1_dist);
+							pKnife->SetHit1SplashRadius(imgui_weapon_manager.splash1_radius);
+							pKnife->SetSplash1HitsCount(imgui_weapon_manager.splash1_hits_count);
+							pKnife->SetSplash1PerVictimsHCount(imgui_weapon_manager.splash1_pervictim_hcount);
+							pKnife->SetHit2SplashDir(imgui_weapon_manager.splash2_direction);
+							pKnife->SetHit2Dist(imgui_weapon_manager.splash2_dist);
+							pKnife->SetHit2SplashRadius(imgui_weapon_manager.splash2_radius);
+							pKnife->SetSplash2HitsCount(imgui_weapon_manager.splash2_hits_count);
+							pKnife->SetNextHitDivideFactor(imgui_weapon_manager.splash_hit_divide_factor);
+						}
+						if (pWeapon && !pKnife)
 						{
 							pWeapon->SetAmmoMagSize(imgui_weapon_manager.ammo_mag_size);
 
@@ -814,17 +1001,19 @@ void RenderWeaponManagerWindow()
 						}
 					}
 
+					// remove this button for now
+					/*
 					ImGui::SameLine();
 
 					if (ImGui::Button("Save"))
 					{
 
-					}
+					}*/
 					ImGuiSliderFlags flags = ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_Logarithmic;
 
 					if (ImGui::TreeNode("Inventory##Editing"))
 					{
-						if (imgui_weapon_manager.can_show_inv_cost)
+						if (imgui_weapon_manager.can_show[inv_cost])
 						{
 							if (ImGui::SliderInt("Cost##Editing", &imgui_weapon_manager.inv_cost, 0, 100000, "%d", flags))
 							{
@@ -832,7 +1021,7 @@ void RenderWeaponManagerWindow()
 							}
 						}
 
-						if (imgui_weapon_manager.can_show_inv_weight)
+						if (imgui_weapon_manager.can_show[inv_weight])
 						{
 							if (ImGui::SliderFloat("Weight##Editing", &imgui_weapon_manager.inv_weight, 0.0f, 100000.0f, "%.3f", flags))
 							{
@@ -842,7 +1031,7 @@ void RenderWeaponManagerWindow()
 
 						if (ImGui::TreeNode("Icon##Editing"))
 						{
-							if (imgui_weapon_manager.can_show_inv_grid_height && imgui_weapon_manager.can_show_inv_grid_width && imgui_weapon_manager.can_show_inv_grid_x && imgui_weapon_manager.can_show_inv_grid_y)
+							if (imgui_weapon_manager.can_show[inv_grid_height] && imgui_weapon_manager.can_show[inv_grid_width] && imgui_weapon_manager.can_show[inv_grid_x] && imgui_weapon_manager.can_show[inv_grid_y])
 							{
 								if (ImGui::SliderInt("Grid X##Editing", &imgui_weapon_manager.inv_grid_x, 0, 16000, "%d", flags))
 								{
@@ -880,28 +1069,28 @@ void RenderWeaponManagerWindow()
 
 									if (is_pressed)
 									{
-										imgui_weapon_manager.can_show_modal_icon_selection_window = true;
+										imgui_weapon_manager.modal_icon_selection_window = true;
 									}
 								}
 							}
 
 							if (ImGui::TreeNode("Addons"))
 							{
-								if (imgui_weapon_manager.can_show_silencer_x)
+								if (imgui_weapon_manager.can_show[silencer_x])
 								{
 									if (ImGui::SliderInt("Silencer X##Editing", &imgui_weapon_manager.silencer_x, -4096, 4096, "%d", flags))
 									{
-										if (pWeapon)
+										if (pWeapon && !pKnife)
 										{
 											pWeapon->SetSilencerX(imgui_weapon_manager.silencer_x);
 										}
 									}
 								}
-								if (imgui_weapon_manager.can_show_silencer_y)
+								if (imgui_weapon_manager.can_show[silencer_y])
 								{
 									if (ImGui::SliderInt("Silencer Y##Editing", &imgui_weapon_manager.silencer_y, -4096, 4096, "%d", flags))
 									{
-										if (pWeapon)
+										if (pWeapon && !pKnife)
 										{
 											pWeapon->SetSilencerY(imgui_weapon_manager.silencer_y);
 										}
@@ -918,11 +1107,11 @@ void RenderWeaponManagerWindow()
 						ImGui::TreePop();
 					}
 
-					if (pSO)
+					if (pSO && !pKnife)
 					{
 						if (ImGui::TreeNode("Ballistic##Editing"))
 						{
-							if (imgui_weapon_manager.can_show_fire_distance)
+							if (imgui_weapon_manager.can_show[fire_distance])
 							{
 								if (ImGui::SliderFloat("Fire distance##Editing", &imgui_weapon_manager.fire_distance, 0.0f, 10000.0f, "%.3f", flags))
 								{
@@ -930,7 +1119,7 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
-							if (imgui_weapon_manager.can_show_bullet_speed)
+							if (imgui_weapon_manager.can_show[bullet_speed])
 							{
 								if (ImGui::SliderFloat("Bullet speed##Editing", &imgui_weapon_manager.bullet_speed, 0.0f, 10000.0f, "%.3f", flags))
 								{
@@ -938,7 +1127,7 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
-							if (imgui_weapon_manager.can_show_rpm)
+							if (imgui_weapon_manager.can_show[rpm])
 							{
 								if (ImGui::SliderFloat("RPM##Editing", &imgui_weapon_manager.rpm, 0.001f, 100.0f, "%.3f", flags))
 								{
@@ -948,10 +1137,12 @@ void RenderWeaponManagerWindow()
 
 							ImGui::TreePop();
 						}
-
+					}
+					if (pSO)
+					{
 						if (ImGui::TreeNode("Hit##Editing"))
 						{
-							if (imgui_weapon_manager.can_show_hit_impulse)
+							if (imgui_weapon_manager.can_show[hit_impulse])
 							{
 								if (ImGui::SliderFloat("Hit impulse##Editing", &imgui_weapon_manager.hit_impulse, 0.0f, 10000.0f, "%.3f", flags))
 								{
@@ -959,7 +1150,7 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
-							if (imgui_weapon_manager.can_show_hit_power)
+							if (imgui_weapon_manager.can_show[hit_power])
 							{
 								if (ImGui::SliderFloat4("Hit power##Editing", &imgui_weapon_manager.hit_power.x, 0.0f, 10000.0f, "%.3f", flags))
 								{
@@ -967,7 +1158,7 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
-							if (imgui_weapon_manager.can_show_hit_power_critical)
+							if (imgui_weapon_manager.can_show[hit_power_critical])
 							{
 								if (ImGui::SliderFloat4("Hit power critical##Editing", &imgui_weapon_manager.hit_power_critical.x, 0.0f, 10000.0f, "%.3f", flags))
 								{
@@ -975,15 +1166,41 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
+							if (pKnife)
+							{
+								if (imgui_weapon_manager.can_show[hit_impulse_2])
+								{
+									if (ImGui::SliderFloat("Hit impulse 2##Editing", &imgui_weapon_manager.hit_impulse_2, 0.0f, 10000.0f, "%.3f", flags))
+									{
+										pKnife->setHitImpulse_2(imgui_weapon_manager.hit_impulse_2);
+									}
+								}
+
+								if (imgui_weapon_manager.can_show[hit_power_2])
+								{
+									if (ImGui::SliderFloat4("Hit power 2##Editing", &imgui_weapon_manager.hit_power_2.x, 0.0f, 10000.0f, "%.3f", flags))
+									{
+										pKnife->setHitPower_2(imgui_weapon_manager.hit_power_2);
+									}
+								}
+
+								if (imgui_weapon_manager.can_show[hit_power_critical_2])
+								{
+									if (ImGui::SliderFloat4("Hit power critical 2##Editing", &imgui_weapon_manager.hit_power_critical_2.x, 0.0f, 10000.0f, "%.3f", flags))
+									{
+										pKnife->setHitPowerCritical_2(imgui_weapon_manager.hit_power_critical_2);
+									}
+								}
+							}
 							ImGui::TreePop();
 						}
 					}
 
-					if (pWeapon)
+					if (pWeapon && !pKnife)
 					{
 						if (ImGui::TreeNode("Ammunition##Editing"))
 						{
-							if (imgui_weapon_manager.can_show_ammo_mag_size)
+							if (imgui_weapon_manager.can_show[ammo_mag_size])
 							{
 								if (ImGui::SliderInt("Magazine size##Editing", &imgui_weapon_manager.ammo_mag_size, 0, 10000, "%d", flags))
 								{
@@ -999,7 +1216,7 @@ void RenderWeaponManagerWindow()
 
 						if (ImGui::TreeNode("Dispersion##Editing"))
 						{
-							if (imgui_weapon_manager.can_show_fire_dispersion_base)
+							if (imgui_weapon_manager.can_show[fire_dispersion_base])
 							{
 								if (ImGui::SliderFloat("Fire dispersion base", &imgui_weapon_manager.fire_dispersion_base, 0.0f, 100.0f, "%.3f", flags))
 								{
@@ -1007,7 +1224,7 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
-							if (imgui_weapon_manager.can_show_control_inertion_factor)
+							if (imgui_weapon_manager.can_show[control_inertion_factor])
 							{
 								if (ImGui::SliderFloat("Control inertion factor", &imgui_weapon_manager.control_inertion_factor, 0.0f, 100.0f, "%.3f", flags))
 								{
@@ -1015,7 +1232,7 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
-							if (imgui_weapon_manager.can_show_crosshair_inertion)
+							if (imgui_weapon_manager.can_show[crosshair_inertion])
 							{
 								if (ImGui::SliderFloat("Crosshair inertion", &imgui_weapon_manager.crosshair_inertion, 0.0f, 100.0f, "%.3f", flags))
 								{
@@ -1031,7 +1248,7 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
-							if (imgui_weapon_manager.can_show_upgrade_disp_vel_factor)
+							if (imgui_weapon_manager.can_show[upgrade_disp_vel_factor])
 							{
 								if (ImGui::SliderFloat("Upgrade dispersion velocity factor", &imgui_weapon_manager.upgrade_disp_vel_factor, 0.0f, 100.0f, "%.3f", flags))
 								{
@@ -1039,7 +1256,7 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
-							if (imgui_weapon_manager.can_show_upgrade_disp_accel_factor)
+							if (imgui_weapon_manager.can_show[upgrade_disp_accel_factor])
 							{
 								if (ImGui::SliderFloat("Upgrade dispersion acceleration factor", &imgui_weapon_manager.upgrade_disp_accel_factor, 0.0f, 100.0f, "%.3f", flags))
 								{
@@ -1047,7 +1264,7 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
-							if (imgui_weapon_manager.can_show_upgrade_disp_crouch)
+							if (imgui_weapon_manager.can_show[upgrade_disp_crouch])
 							{
 								if (ImGui::SliderFloat("Upgrade dispersion crouch", &imgui_weapon_manager.upgrade_disp_crouch, 0.0f, 100.0f, "%.3f", flags))
 								{
@@ -1063,7 +1280,7 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
-							if (imgui_weapon_manager.can_show_fire_dispersion_condition_factor)
+							if (imgui_weapon_manager.can_show[fire_dispersion_condition_factor])
 							{
 								if (ImGui::SliderFloat("Dispersion factor when weapon is damaged/broken", &imgui_weapon_manager.fire_dispersion_condition_factor, 0.0f, 100.0f, "%.3f", flags))
 								{
@@ -1071,6 +1288,83 @@ void RenderWeaponManagerWindow()
 								}
 							}
 
+							ImGui::TreePop();
+						}
+					}
+					if (pKnife)
+					{
+						if (ImGui::TreeNode("Knife params##Editing"))
+						{
+							if (imgui_weapon_manager.can_show[splash1_direction])
+							{
+								if (ImGui::SliderFloat3("Splash direction 1##Editing", &imgui_weapon_manager.splash1_direction.x, 0.0f, 100.0f, "%.3f", flags))
+								{
+									pKnife->SetHit1SplashDir(imgui_weapon_manager.splash1_direction);
+								}
+							}
+							if (imgui_weapon_manager.can_show[splash1_dist])
+							{
+								if (ImGui::SliderFloat("Splash distance 1##Editing", &imgui_weapon_manager.splash1_dist, 0.0f, 1000.0f, "%.3f", flags))
+								{
+									pKnife->SetHit1Dist(imgui_weapon_manager.splash1_dist);
+								}
+							}
+							if (imgui_weapon_manager.can_show[splash1_radius])
+							{
+								if (ImGui::SliderFloat("Splash radius 1##Editing", &imgui_weapon_manager.splash1_radius, 0.0f, 1000.0f, "%.3f", flags))
+								{
+									pKnife->SetHit1SplashRadius(imgui_weapon_manager.splash1_radius);
+								}
+							}
+							if (imgui_weapon_manager.can_show[splash1_hits_count])
+							{
+								if (ImGui::SliderInt("Splash hits count 1##Editing", &imgui_weapon_manager.splash1_hits_count, 0, 1000, "%d", flags))
+								{
+									pKnife->SetSplash1HitsCount(imgui_weapon_manager.splash1_hits_count);
+								}
+							}
+							if (imgui_weapon_manager.can_show[splash1_pervictim_hcount])
+							{
+								if (ImGui::SliderInt("Splash hits per victim##Editing", &imgui_weapon_manager.splash1_pervictim_hcount, 0, 1000, "%d", flags))
+								{
+									pKnife->SetSplash1PerVictimsHCount(imgui_weapon_manager.splash1_pervictim_hcount);
+								}
+							}
+							if (imgui_weapon_manager.can_show[splash2_direction])
+							{
+								if (ImGui::SliderFloat3("Splash direction 2##Editing", &imgui_weapon_manager.splash2_direction.x, 0.0f, 100.0f, "%.3f", flags))
+								{
+									pKnife->SetHit2SplashDir(imgui_weapon_manager.splash2_direction);
+								}
+							}
+							if (imgui_weapon_manager.can_show[splash2_dist])
+							{
+								if (ImGui::SliderFloat("Splash distance 2##Editing", &imgui_weapon_manager.splash2_dist, 0.0f, 1000.0f, "%.3f", flags))
+								{
+									pKnife->SetHit2Dist(imgui_weapon_manager.splash2_dist);
+								}
+							}
+							if (imgui_weapon_manager.can_show[splash2_radius])
+							{
+								if (ImGui::SliderFloat("Splash radius 2##Editing", &imgui_weapon_manager.splash2_radius, 0.0f, 1000.0f, "%.3f", flags))
+								{
+									pKnife->SetHit2SplashRadius(imgui_weapon_manager.splash2_radius);
+								}
+							}
+							if (imgui_weapon_manager.can_show[splash2_hits_count])
+							{
+								if (ImGui::SliderInt("Splash hits count 2##Editing", &imgui_weapon_manager.splash2_hits_count, 0, 1000, "%d", flags))
+								{
+									pKnife->SetSplash2HitsCount(imgui_weapon_manager.splash2_hits_count);
+								}
+							}
+							if (imgui_weapon_manager.can_show[splash_hit_divide_factor])
+							{
+								if (ImGui::SliderFloat("Splash hit divide factor##Editing", &imgui_weapon_manager.splash_hit_divide_factor, 0.0f, 1000.0f, "%.3f", flags))
+								{
+									pKnife->SetNextHitDivideFactor(imgui_weapon_manager.splash_hit_divide_factor);
+								}
+							}
 							ImGui::TreePop();
 						}
 					}
@@ -1086,15 +1380,23 @@ void RenderWeaponManagerWindow()
 		{
 			CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 
+			xr_string slot1_tab_name{ "Knife (KNIFE_SLOT) - " };
 			xr_string slot2_tab_name{ "Slot 2 (INV_SLOT_2) - " };
 			xr_string slot3_tab_name{ "Slot 3 (INV_SLOT_3) - " };
 			xr_string slot4_tab_name{ "Pistol (PISTOL_SLOT_NEW) - " };
 
 			if (pActor)
 			{
+				CInventoryItem* pItemInSlot1 = pActor->inventory().ItemFromSlot(KNIFE_SLOT);
 				CInventoryItem* pItemInSlot2 = pActor->inventory().ItemFromSlot(INV_SLOT_2);
 				CInventoryItem* pItemInSlot3 = pActor->inventory().ItemFromSlot(INV_SLOT_3);
 				CInventoryItem* pItemInSlot4 = pActor->inventory().ItemFromSlot(PISTOL_SLOT_NEW);
+
+				if (pItemInSlot1)
+				{
+					slot1_tab_name += pItemInSlot1->m_section_id.c_str();
+				}
+				slot1_tab_name += "##TB_InGameWeaponManager";
 
 				if (pItemInSlot2)
 				{
@@ -1115,22 +1417,26 @@ void RenderWeaponManagerWindow()
 				slot4_tab_name += "##TB_InGameWeaponManager";
 			}
 
+			if (ImGui::BeginTabItem(slot1_tab_name.c_str()))
+			{
+				CInventoryItem* pItem = pActor->inventory().ItemFromSlot(KNIFE_SLOT);
+				draw_item(pItem, KNIFE_SLOT);
+
+				ImGui::EndTabItem();
+			}
+
 			if (ImGui::BeginTabItem(slot2_tab_name.c_str()))
 			{
 				CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_2);
 				draw_item(pItem, INV_SLOT_2);
 
-
 				ImGui::EndTabItem();
 			}
 
-
 			if (ImGui::BeginTabItem(slot3_tab_name.c_str()))
 			{
-
 				CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_3);
 				draw_item(pItem, INV_SLOT_3);
-
 
 				ImGui::EndTabItem();
 			}
@@ -1139,7 +1445,6 @@ void RenderWeaponManagerWindow()
 			{
 				CInventoryItem* pItem = pActor->inventory().ItemFromSlot(PISTOL_SLOT_NEW);
 				draw_item(pItem, PISTOL_SLOT_NEW);
-
 
 				ImGui::EndTabItem();
 			}

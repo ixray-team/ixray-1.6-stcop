@@ -65,14 +65,15 @@ public:
 	void setFireDispersionBase(float value);
 	float getStartBulletSpeed(void) const { return m_fStartBulletSpeed; }
 	void setStartBulletSpeed(float value);
-	float getHitImpulse(void) const { return fHitImpulse; }
-	void setHitImpulse(float value);
 	float getRPM(void) const { return fOneShotTime; }
 	void setRPM(float value);
-	const Fvector4& getHitPower(void) const { return fvHitPower; }
-	void setHitPower(const Fvector4& vec);
-	const Fvector4& getHitPowerCritical(void) const { return fvHitPowerCritical; }
-	void setHitPowerCritical(const Fvector4& vec);
+
+	virtual float getHitImpulse() const { return fHitImpulse; }
+	virtual void setHitImpulse(float value);
+	virtual const Fvector4& getHitPower() const { return fvHitPower; }
+	virtual void setHitPower(const Fvector4& vec);
+	virtual const Fvector4& getHitPowerCritical() const { return fvHitPowerCritical; }
+	virtual void setHitPowerCritical(const Fvector4& vec);
 
 protected:
 	// Weapon fires now
