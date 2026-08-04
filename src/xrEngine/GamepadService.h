@@ -36,6 +36,7 @@ public:
 	void Update();
 	void SetTriggerResistance(bool RightTrigger, u8 StartPosition, u8 Force, float Time);
 	void ShotTriggerEffect(bool RightTrigger, float Time);
+	void MachineTriggerEffect(bool RightTrigger, u8 StartZone, bool Behavior, u8 Force, u8 Amplitude, u8 Period, u8 Frequency, float Time);
 	void GyroscopeUpdate();
 
 public:
