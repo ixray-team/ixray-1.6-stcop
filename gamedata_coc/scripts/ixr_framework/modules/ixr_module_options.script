@@ -325,7 +325,9 @@ function _on_main_menu_update(_ref)
 			if type(v) == "function" then v() end
 		end
 	end
-	get_controll("framewindow_gamepad"):Show(main_menu.in_controller_mode() and ixr_options.is_options_opened())
+	if _ref.main_xml ~= nil then
+		get_controll("framewindow_gamepad"):Show(main_menu.in_controller_mode() and ixr_options.is_options_opened())
+	end
 end
 
 function set_main_menu_update(name, _callable)
