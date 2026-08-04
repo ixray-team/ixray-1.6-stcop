@@ -415,6 +415,43 @@ void CGamepadService::ShotTriggerEffect(bool RightTrigger, float Time)
     }
 }
 
+void CGamepadService::MachineTriggerEffect(bool RightTrigger, u8 StartZone, bool Behavior, u8 Force, u8 Amplitude, u8 Period, u8 Frequency, float Time)
+{
+    if (Type != EGamepadType::DualSense || HidDevice == nullptr)
+    {
+        return;
+    }
+
+    xr_vector<u8> array;
+	array.resize(GetPacketSize());
+	u8* Report = BeginOutputPacket(array);
+
+    // Enable trigger effect
+    Report[1] = 0x04;
+
+    u8* Trigger = RightTrigger ? &Report[11] : &Report[22];
+
+    Trigger[0] = 0x27; // Machine
+	Trigger[1] = StartZone;
+	Trigger[2] = Behavior ? 0x02 : !RightTrigger;
+	Trigger[3] = Force << 4 | (Amplitude & 0x0F);
+	Trigger[4] = Period;
+	Trigger[5] = Frequency;
+
+    EndOutputPacket(array);
+
+    if (RightTrigger)
+    {
+        TriggerEffectTimeR = Time * 1000;
+        TriggerEffectTimeStampR = Device.dwTimeContinual;
+    }
+    else
+    {
+        TriggerEffectTimeL = Time * 1000;
+        TriggerEffectTimeStampL = Device.dwTimeContinual;
+    }
+}
+
 void CGamepadService::GyroscopeUpdate()
 {
     if (!GyroscopeEnabled || GGamepadService->GamePadDevice == nullptr || !SDL_GamepadHasSensor(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO) || !pInput->GetControllerMode())
