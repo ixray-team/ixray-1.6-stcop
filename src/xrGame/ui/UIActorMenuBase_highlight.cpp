@@ -77,7 +77,7 @@ void CUIActorMenuBase::set_highlight_item(CUICellItem* cell_item)
 	case mmDeadBodySearch:
 		{
 			highlight_armament( item, GetActorList() );
-			highlight_armament( item, GetActorList() );
+			highlight_armament( item, GetPartnerList() );
 			break;
 		}
 	}
