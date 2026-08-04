@@ -1619,7 +1619,15 @@ void CWeaponMagazined::OnShot()
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
 		pInput->feedback(65535 * m_vibration_factor_left, 65535 * m_vibration_factor_right, m_vibration_time);
-		GGamepadService->ShotTriggerEffect(true, m_trigger_effect_time);
+		if (GetCurrentFireMode() != 1)
+		{
+			u8 gamepadRpm = fOneShotTimeSaved / 60;
+			GGamepadService->MachineTriggerEffect(true, 127, true, 255, 255, gamepadRpm, 255, (float)gamepadRpm/100);
+		}
+		else
+		{
+			GGamepadService->ShotTriggerEffect(true, m_trigger_effect_time);
+		}
 	}
 
 	// Animation
