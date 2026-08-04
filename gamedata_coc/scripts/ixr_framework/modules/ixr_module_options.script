@@ -31,7 +31,10 @@ local ixr_options = {
 	use_file_log = USE_FILE_LOG,
 	use_console_log = USE_CONSOLE_LOG,
 	main_menu_ref = nil,
+	gamepad_right_focus = false,
 	_counter = 0,
+	focusIndex = 1,
+	focusList = {},
 	__timer = 0,
 	dynamic_vars = {
 		first_log_record = true,
@@ -270,6 +273,10 @@ function set_options_icon(icon_path)
 	ixr_options.options_addon_info[script_name]["icon_path"] = icon_path
 end
 
+function is_options_opened()
+    return ixr_options.is_options_opened()
+end
+
 -- #######################################
 -- #	 	 SYSTEM METHODS 	  	 	 #
 -- #######################################
@@ -318,6 +325,7 @@ function _on_main_menu_update(_ref)
 			if type(v) == "function" then v() end
 		end
 	end
+	get_controll("framewindow_gamepad"):Show(main_menu.in_controller_mode() and ixr_options.is_options_opened())
 end
 
 function set_main_menu_update(name, _callable)
@@ -669,6 +677,14 @@ function register_static(name_controll, static, x, y, width, height, color)
 	register_controll(name_controll)
 end
 
+function register_framewindow(name_controll, static, x, y, width, height)
+	set_controll(name_controll, get_options_xml():InitFrame(static, get_menu_ref()))
+	get_controll(name_controll):SetWndPos(vector2():set(x, y))
+	get_controll(name_controll):SetWndSize(vector2():set(width, height))
+	get_controll(name_controll):Show(false)
+	register_controll(name_controll)
+end
+
 function register_button(name_controll, static, x, y, width, height, _callback)
 	set_controll(name_controll, get_options_xml():Init3tButton(static, get_menu_ref()))
 	get_controll(name_controll):SetStretchTexture(true)
@@ -730,6 +746,7 @@ function register_checkbox(name_controll, x, y, alpha, def_value, _ref, _callbac
 	set_controll(name_controll, IXRCheckBox(name_controll, x, y, alpha, def_value, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	return get_controll(name_controll)
 end
 
 function register_textbox(name_controll, x, y, alpha, def_value, _ref, _callback, script_name, variable_name)
@@ -742,6 +759,7 @@ function register_textbox(name_controll, x, y, alpha, def_value, _ref, _callback
 	set_controll(name_controll, IXRTextBox(name_controll, x, y, alpha, def_value, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	return get_controll(name_controll)
 end
 
 function register_combobox(name_controll, x, y, alpha, def_value, list_values, _ref, _callback, script_name, variable_name)
@@ -754,6 +772,7 @@ function register_combobox(name_controll, x, y, alpha, def_value, list_values, _
 	set_controll(name_controll, IXRComboBox(name_controll, x, y, alpha, def_value, list_values, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	return get_controll(name_controll)
 end
 
 function register_numeric_up_down(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _ref, _callback, script_name, variable_name)
@@ -765,6 +784,7 @@ function register_numeric_up_down(name_controll, x, y, alpha, default_value, min
 	set_controll(name_controll, IXRNumericUpDown(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	return get_controll(name_controll)
 end
 
 function register_track_bar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _ref, _callback, script_name, variable_name)
@@ -776,6 +796,7 @@ function register_track_bar(name_controll, x, y, alpha, default_value, min_value
 	set_controll(name_controll, IXRTrackBar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	return get_controll(name_controll)
 end
 
 -- #######################################
@@ -801,6 +822,7 @@ end
 
 function on_ixr_options_exit_btn_clicked()
 	ixr_options.dynamic_vars.menu_opened = false
+	set_addon_focus(false)
 	hide_options()
 	get_menu_ref().ixr_options_btn:Show(true)
 	if get_menu_ref().shniaga then
@@ -809,6 +831,7 @@ function on_ixr_options_exit_btn_clicked()
 	end
 	if get_menu_ref().eng_lang_btn then get_menu_ref().eng_lang_btn:Show(true) end
 	if get_menu_ref().ru_lang_btn then get_menu_ref().ru_lang_btn:Show(true) end
+	if get_menu_ref().gamepad_legend then get_menu_ref().gamepad_legend:Show(true) end
 end
 
 function on_btn_options_ixr_clicked()
@@ -820,6 +843,7 @@ function on_btn_options_ixr_clicked()
 		get_menu_ref().shniaga:SetVisibleMagnifier(false)
 		get_menu_ref().shniaga:Show(false)
 	end
+	if get_menu_ref().gamepad_legend then get_menu_ref().gamepad_legend:Show(false) end
 	draw_options()
 end
 
@@ -932,6 +956,7 @@ function _on_main_menu_init_controlls(_ref)
 		
 	--register_scroll_view("options_scroll", "scroll_v", 320, 270, 670, 400)
 	register_scroll_view("options_scroll", "scroll_v", 320, 125, 670, 550) -- (name_controll, scroll_section, x, y, width, height)
+	register_framewindow("framewindow_gamepad", "frame_window", 33, 108, 250, 575)
 	get_controll("options_scroll"):Show(false)
 end
 
@@ -1005,6 +1030,9 @@ function OnAddonItemClicked()
 	
 	--SemiLog("selected:" .. tostring(index) .. " name:" .. tostring(item.addon_display_name))
 	
+	for key in pairs(ixr_options.focusList) do
+		ixr_options.focusList[key] = nil
+	end
 	get_controll("options_scroll"):Clear()
 	get_controll("options_scroll"):Show(false)
 	if on_draw_options(index, item) then
@@ -1052,7 +1080,7 @@ function pick_controll(option_data, option_bg, option_key_name)
 	end
 	
 	if controll_type == "check_box" then
-		register_checkbox(
+		return register_checkbox(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.check_box_width - 3.5,
 			4,
@@ -1066,7 +1094,7 @@ function pick_controll(option_data, option_bg, option_key_name)
 	end
 		
 	if controll_type == "text_box" then
-		register_textbox(
+		return register_textbox(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.text_box_width - 3.5,
 			4,
@@ -1080,7 +1108,7 @@ function pick_controll(option_data, option_bg, option_key_name)
 	end
 	
 	if controll_type == "combo_box" then
-		register_combobox(
+		return register_combobox(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.combo_box_width - 3.5,
 			4,
@@ -1095,7 +1123,7 @@ function pick_controll(option_data, option_bg, option_key_name)
 	end
 	
 	if controll_type == "numeric_up_down" then
-		register_numeric_up_down(
+		return register_numeric_up_down(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.numeric_up_down_width - 3.5,
 			4,
@@ -1112,7 +1140,7 @@ function pick_controll(option_data, option_bg, option_key_name)
 	end
 	
 	if controll_type == "track_bar" then
-		register_track_bar(
+		return register_track_bar(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.track_bar_width - 3.5,
 			4,
@@ -1128,6 +1156,7 @@ function pick_controll(option_data, option_bg, option_key_name)
 			variable_name
 		)
 	end
+	return nil
 end
 
 function add_single_ungroupped_option(option_index, padding, alpha, option_data)
@@ -1167,7 +1196,7 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		CTRLText:Show(true)
 		get_menu_ref():Register(CTRLText, "ixr_controll_label_"  .. tostring(option_index))
 		
-		pick_controll(option_data, option_bg, tostring(option_index))
+		local elem = pick_controll(option_data, option_bg, tostring(option_index))
 		
 		local _metadata = ixr_options.get_metadata(option_data["script_name"], option_data["variable_name"])
 		_metadata.background_controll_ref = option_bg
@@ -1175,6 +1204,7 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		_metadata.label_controll_ref = CTRLText
 		_metadata.label_controll_color = GetARGB(255, 200, 200, 200)
 		ixr_options.set_metadata(option_data["script_name"], option_data["variable_name"], _metadata)
+		table.insert(ixr_options.focusList, {CTRLText, elem, option_bg} )
 	end)
 
 end
@@ -1229,7 +1259,7 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_name_controll:Show(true)
 		get_menu_ref():Register(option_name_controll, "ixr_option_name_label_"  .. tostring(option_index) .. "_" .. tostring(i))
 		
-		pick_controll(option_data, option_bg, tostring(option_index) .. "_" .. tostring(i))
+		local elem = pick_controll(option_data, option_bg, tostring(option_index) .. "_" .. tostring(i))
 		local _metadata = ixr_options.get_metadata(option_data["script_name"], option_data["variable_name"])
 		_metadata.background_controll_ref = option_bg
 		_metadata.background_controll_color = GetARGB(alpha, 225, 225, 225)
@@ -1239,6 +1269,7 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		
 		y_offset = y_offset + option_bg:GetHeight() + padding
 		sum_height = sum_height + option_bg:GetHeight() + padding
+		table.insert(ixr_options.focusList, {option_name_controll, elem, option_bg} )
 	end
 	
 	local last_height = shell:GetHeight()
@@ -1355,6 +1386,14 @@ function IXRTrackBar:Update()
 	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
 	self:UpdateVisualValue(metadata)
 	self:UpdateControllVisibility(metadata)
+end
+
+function IXRTrackBar:StepLeft()
+	self.controll_track_bar:StepLeft()
+end
+
+function IXRTrackBar:StepRight()
+	self.controll_track_bar:StepRight()
 end
 
 --[[
@@ -2310,4 +2349,235 @@ function get_scripts_for_addon(addon_path)
 	end
 	
 	return script_files
+end
+
+function OnKeyboard(dik, keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_ESCAPE then
+			on_ixr_options_exit_btn_clicked()
+		end
+	end
+end
+
+function OnGamepadKey(key, gamepad_action)
+	local bind = dik_to_bind(key)
+	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
+	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
+		if bind == key_bindings.kQUIT then
+			on_ixr_options_exit_btn_clicked()
+		elseif bindUI == key_bindings.kUI_BACK then
+			if get_addon_focus() then
+				set_addon_focus(false)
+			else
+				on_ixr_options_exit_btn_clicked()
+			end
+		elseif bindUI == key_bindings.kUI_ACCEPT then
+			if not get_addon_focus() and get_controll("addons_list_box"):GetSelectedItem() ~= nil then
+				set_addon_focus(true)
+			elseif get_addon_focus() then
+				local element = ixr_options.focusList[ixr_options.focusIndex][2]
+				OnGamepadAccept(element)
+			end
+		elseif bindUI == key_bindings.kUI_UP then
+			action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_UP)
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+				if get_addon_focus() then
+					OnElementChangeSelection(-1, true)
+				else
+					get_controll("addons_list_box"):PrevItem()
+				end
+			end
+		elseif bindUI == key_bindings.kUI_DOWN then
+			action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_DOWN)
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+				if get_addon_focus() then
+					OnElementChangeSelection(1, true)
+				else
+					get_controll("addons_list_box"):NextItem()
+				end
+			end
+		elseif bindUI == key_bindings.kUI_LEFT then
+			if get_addon_focus() then
+				local element = ixr_options.focusList[ixr_options.focusIndex][2]
+				OnElementGpadPress(element, false)
+				action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_LEFT)
+			end
+		elseif bindUI == key_bindings.kUI_RIGHT then
+			if get_addon_focus() then
+				local element = ixr_options.focusList[ixr_options.focusIndex][2]
+				OnElementGpadPress(element, true)
+				action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_RIGHT)
+			end
+		end
+	end
+end
+
+function OnGamepadKeyHold(key)
+	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
+
+	if bindUI == key_bindings.kUI_DOWN then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_DOWN)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			if get_addon_focus() then
+				OnElementChangeSelection(1, false)
+			else
+				get_controll("addons_list_box"):NextItem()
+			end
+		end
+	elseif bindUI == key_bindings.kUI_UP then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_UP)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			if get_addon_focus() then
+				OnElementChangeSelection(-1, false)
+			else
+				get_controll("addons_list_box"):PrevItem()
+			end
+		end
+	elseif bindUI == key_bindings.kUI_LEFT then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_LEFT)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			local element = ixr_options.focusList[ixr_options.focusIndex][2]
+			OnElementGpadPress(element, false)
+		end
+	elseif bindUI == key_bindings.kUI_RIGHT then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_RIGHT)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			local element = ixr_options.focusList[ixr_options.focusIndex][2]
+			OnElementGpadPress(element, true)
+		end
+	end
+end
+
+function set_addon_focus(isRight)
+	ixr_options.gamepad_right_focus = isRight
+	if isRight then
+		get_controll("framewindow_gamepad"):SetWndPos(vector2():set(320, 125))
+		get_controll("framewindow_gamepad"):SetWndSize(vector2():set(670, 550))
+	else
+		get_controll("framewindow_gamepad"):SetWndPos(vector2():set(33, 108))
+		get_controll("framewindow_gamepad"):SetWndSize(vector2():set(250, 575))
+		
+	end
+end
+
+function get_addon_focus()
+	return ixr_options.gamepad_right_focus
+end
+
+function OnGamepadAccept(element)
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+	
+	if elementClass == 'IXRCheckBox' then
+		element:SwitchState()
+	end
+end
+
+function OnElementGpadPress(element, right)
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+
+	if elementClass == 'IXRTrackBar' then
+		if right then
+			element:StepRight()
+		else
+			element:StepLeft()
+		end
+	elseif elementClass == 'IXRNumericUpDown' then
+		if right then 
+			element:RightArrowClick()
+		else
+			element:LeftArrowClick()
+		end
+	elseif elementClass == 'IXRComboBox' then
+		if right then
+			element:RightArrowClick()
+		else
+			element:LeftArrowClick()
+		end
+	end
+end
+
+function get_isHidden(newFocusIndex)
+	local Element = ixr_options.focusList[newFocusIndex][3]
+	local isHidden = false
+	if Element ~= nil then
+		isHidden = Element.hidden
+	end
+	
+	if isHidden == nil then
+		isHidden = false
+	end
+
+	return isHidden
+end
+
+function OnElementChangeSelection(offset, loop)
+
+	local eltCount = #ixr_options.focusList
+	local newFocusIndex = ixr_options.focusIndex + offset
+	
+	if newFocusIndex > eltCount then
+		if loop then
+			newFocusIndex = 1
+		else
+			return false
+		end
+	elseif newFocusIndex < 1 then
+		if loop then
+			newFocusIndex = eltCount
+		else
+			return false
+		end
+	end
+	
+	OnElementSetSelected(ixr_options.focusIndex, false)
+	focusIndex = newFocusIndex
+	SemiLog(tostring(focusIndex))
+	OnElementSetSelected(ixr_options.focusIndex, true)
+	return true
+end
+
+function OnElementSetSelected(eltIndex, on)
+	local eltCount = #ixr_options.focusList
+	
+	if eltIndex < 1 or eltIndex > eltCount then
+		SemiLog("fuck you, index "..eltIndex.." count "..eltCount)
+		return
+	end
+	
+	local focusRecord = ixr_options.focusList[eltIndex]
+	local element = focusRecord[2]
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+	
+	if elementClass == "CUI3tButton" 
+	or elementClass == "CUIComboBox" 
+	or elementClass == "CUICheckButton" 
+	or elementClass == "CUITrackBar" 
+	then
+		element:SetHighlighted(on)
+	end
+	
+	local caption = focusRecord[3]
+	
+	if on then
+		caption:SetTextureColor(GetARGB(255, 225, 225, 225))
+		
+		--for advanced video settings, make autoscroll		
+		local elementParent = focusRecord[1]:GetParent()
+		
+		local scroll = get_controll("options_scroll")
+		local lpos = scroll:GetMinScrollPos()
+		local rpos = scroll:GetMaxScrollPos()
+		local lrdif = (rpos - lpos)
+			
+		local ratio = elementParent:GetWndPos().y / get_controll("options_scroll"):GetPadSize().y
+			
+		local spos = lpos + lrdif * ratio - lrdif * (3 / eltCount)
+			
+		get_controll("options_scroll"):SetScrollPos(spos)
+	else
+		caption:SetTextureColor(GetARGB(112, 225, 225, 225))
+	end
 end

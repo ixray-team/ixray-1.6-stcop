@@ -924,4 +924,7 @@
 	<string id="st_quicksaves_count">
 		<text>Кол-во быстрых сохранений</text>
 	</string>
+	<string id="st_ixray_framework_options">
+		<text>$$ACTION_UI_ACTION_2$$ IX-Ray Framework</text>
+	</string>
 </string_table>

@@ -112,6 +112,10 @@ function main_menu:InitControls()
 	self.msg_wnd:Show(false)
 	self.msg_wnd:SetColor(GetARGB(255,0,0,0))
 	
+	action_repeaters():Register(self, key_bindings.kUI_DOWN,0,0)
+	action_repeaters():Register(self, key_bindings.kUI_UP,0,0)
+	action_repeaters():Register(self, key_bindings.kUI_LEFT,0,0)
+	action_repeaters():Register(self, key_bindings.kUI_RIGHT,0,0)
 end
 
 function main_menu:Show(f)
@@ -399,6 +403,11 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	local bind = dik_to_bind(dik)
 	local console = get_console()
 	
+	if GetModule("ixr_options") and GetModule("ixr_options").is_options_opened() then
+		GetModule("ixr_options").OnKeyboard(dik, keyboard_action)
+		return true
+	end
+	
 	SendScriptCallback("main_menu_on_keyboard", dik, keyboard_action, self, level.present())
 
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
@@ -431,6 +440,11 @@ function main_menu:OnGamepadKey(dik, gamepad_action)  --virtual function
 	local bindUI = dik_to_bind(dik, action_groups.agUIGeneral)
 	local console = get_console()
 	
+	if GetModule("ixr_options") and GetModule("ixr_options").is_options_opened() then
+		GetModule("ixr_options").OnGamepadKey(dik, gamepad_action)
+		return true
+	end
+	
 	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
 		if bind == key_bindings.kQUIT or bindUI == key_bindings.kUI_BACK then
 			if level.present() and
@@ -439,10 +453,24 @@ function main_menu:OnGamepadKey(dik, gamepad_action)  --virtual function
 				) then
 				self.OnButton_return_game()                      --' xStream 02.2008
 			end
+		elseif bindUI == key_bindings.kUI_ACTION_2 then
+			if GetModule("ixr_options") then
+				GetModule("ixr_options").on_btn_options_ixr_clicked()
+			end
 		end
 
 	end
 
+	return true
+end
+
+function main_menu:OnGamepadKeyHold(dik)  --virtual function
+	CUIScriptWnd.OnGamepadKeyHold(self,dik)
+	
+	if GetModule("ixr_options") and GetModule("ixr_options").is_options_opened() then
+		GetModule("ixr_options").OnGamepadKeyHold(dik)
+		return true
+	end
 	return true
 end
 
