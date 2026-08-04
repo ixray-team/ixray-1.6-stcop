@@ -39,6 +39,33 @@ bool gyroscope_supported()
 	return SDL_GamepadHasSensor(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO);
 }
 
+void trigger_machine(bool RightTrigger, u8 StartZone, bool Behavior, u8 Force, u8 Amplitude, u8 Period, u8 Frequency, float Time)
+{
+    if (!GGamepadService)
+    {
+		return;
+    }
+	GGamepadService->MachineTriggerEffect(RightTrigger, StartZone, Behavior, Force, Amplitude, Period, Frequency, Time);
+}
+
+void trigger_shot(bool RightTrigger, float Time)
+{
+	if (!GGamepadService)
+	{
+		return;
+	}
+	GGamepadService->ShotTriggerEffect(RightTrigger, Time);
+}
+
+void trigger_resistance(bool RightTrigger, u8 StartPosition, u8 Force, float Time)
+{
+	if (!GGamepadService)
+	{
+		return;
+	}
+	GGamepadService->SetTriggerResistance(RightTrigger, StartPosition, Force, Time);
+}
+
 #pragma optimize("s",on)
 void key_binding_registrator::script_register(lua_State *L)
 {
@@ -53,6 +80,9 @@ void key_binding_registrator::script_register(lua_State *L)
         def("gamepad_feedback", &gamepad_feedback),
         def("gamepad_led", &gamepad_led),
         def("gyroscope_supported", &gyroscope_supported),
+		def("gamepad_trigger_machine", &trigger_machine),
+    	def("gamepad_trigger_shot", &trigger_shot),
+		def("gamepad_trigger_resistance", &trigger_resistance),
 
 		class_<enum_exporter<EGameActions> >("key_bindings")
 			.enum_("commands")
