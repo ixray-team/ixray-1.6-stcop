@@ -87,7 +87,11 @@ function hit_callback(obj, who, amount )
 		return
 	end
 		
-	if who:id() == db.actor:id() and db.actor:active_item():section() == "wpn_gauss_aes" and (strelok_last_hit_time == nil or (strelok_last_hit_time <= time_global() - 5000))  then
+	if who and 
+		who:id() == db.actor:id() 
+		and db.actor:active_item():section() == "wpn_gauss_aes" 
+		and (strelok_last_hit_time == nil 
+		or (strelok_last_hit_time <= time_global() - 5000))  then
 		
 		local multiplier = game_difficulty_multiplier[tostring(level.get_game_difficulty())]
 		
