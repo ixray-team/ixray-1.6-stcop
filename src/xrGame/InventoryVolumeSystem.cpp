@@ -71,8 +71,29 @@ CInventoryVolumeSystem& CInventoryVolumeSystem::Get()
 
 bool CInventoryVolumeSystem::IsEnabled() const
 {
-    const static bool isEnabled = EngineExternal()[EEngineExternalGame::EnableInventoryVolume];
-    return isEnabled;
+    if (_scriptOverride >= 0)
+    {
+        return _scriptOverride != 0;
+    }
+
+    return EngineExternal()[EEngineExternalGame::EnableInventoryVolume];
+}
+
+void CInventoryVolumeSystem::SetScriptEnabled(bool enabled)
+{
+    const s8 newOverride = enabled ? s8(1) : s8(0);
+    if (_scriptOverride == newOverride)
+    {
+        return;
+    }
+
+    _scriptOverride = newOverride;
+    _loaded = false;
+
+    if (enabled)
+    {
+        Load();
+    }
 }
 
 void CInventoryVolumeSystem::Load()
