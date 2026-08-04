@@ -591,6 +591,7 @@ void CUIActorMenuBase::TakeAllFromPartner(CUIWindow* w, void* d)
 	}
 
 	GetPartnerList()->ClearAll(true); // false
+	UpdateDeadBodyBag();
 }
 
 void CUIActorMenuBase::TakeAllFromInventoryBox()
@@ -639,6 +640,7 @@ void CUIActorMenuBase::TakeAllFromInventoryBox()
 
 	GetPartnerList()->ClearAll(true, IgnoredItemsIds); // FFx0001
 	IgnoredItemsIds.clear();
+	UpdateDeadBodyBag();
 }
 
 bool CUIActorMenuBase::TryUseItem( CUICellItem* cell_itm )
