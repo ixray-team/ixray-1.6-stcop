@@ -10,9 +10,6 @@ struct v2p
     float fog : FOG;
 };
 
-//	Must be less than view near
-#define DEPTH_EPSILON 0.1h
-
 void main(v2p I, out IXRayForward O)
 {
     float4 result = I.c * s_base.Sample(smp_base, I.tc);
@@ -23,10 +20,14 @@ void main(v2p I, out IXRayForward O)
     result *= Contrast(saturate(spaceDepth * 1.3f), 2.0f);
 #endif
 
-    clip(result.a - (0.01f / 255.0f));
+    clip(result.w - EPS);
 
     O.Color.xyz = GammaToLinear(result.xyz * I.fog);
     O.Color.w = result.w * I.fog;
+
+#ifndef USE_PBR
+	O.Color.w = GammaToLinear(O.Color.w);
+#endif
 	
 	O.Velocity = 0.0f;
 }
