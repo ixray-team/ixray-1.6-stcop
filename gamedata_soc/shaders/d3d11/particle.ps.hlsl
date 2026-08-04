@@ -23,15 +23,15 @@ void main(v2p I, out IXRayForward O)
 
    // clip(result.a - (0.01f / 255.0f));
 	result = lerp(fog_color, result, I.fog);
-	
     O.Color.xyz = GammaToLinear(result.xyz);
-	O.Color.w = result.w;
 	
-#ifndef USE_LEGACY_LIGHT
-	O.Color.xyz *= 0.8f;
+#ifdef USE_PBR
+	O.Color.w = result.w;
+#else
+	O.Color.w = GammaToLinear(result.w);
 #endif
 	
-	clip(O.Color.w  - EPS);
+	clip(O.Color.w - EPS);
 	
 	O.Velocity = 0.0f;
 }
