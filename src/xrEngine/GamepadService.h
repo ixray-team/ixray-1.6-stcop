@@ -38,6 +38,9 @@ public:
 	void ShotTriggerEffect(bool RightTrigger, float Time);
 	void MachineTriggerEffect(bool RightTrigger, u8 StartZone, bool Behavior, u8 Force, u8 Amplitude, u8 Period, u8 Frequency, float Time);
 	void GyroscopeUpdate();
+	void SetMicrophoneLED(bool Value);
+
+	IC bool GetMicrophoneLED() { return MicrophoneLEDEnabled; }
 
 public:
 	EGamepadType Type = EGamepadType::Unknown;
@@ -61,6 +64,7 @@ private:
 
 	SDL_TimerID RumbleTimerID = 0;
 	bool isWireless = false;
+	bool MicrophoneLEDEnabled = true;
 
 private:
 	void InitHID();

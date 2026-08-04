@@ -55,6 +55,12 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 		{
 			pInput->GamepadButtonUpdate(Event.gbutton.button, true);
+			// DualSense microphone LED toggle
+			if (GGamepadService->Type == EGamepadType::DualSense && 
+				Event.gbutton.button == SDL_GAMEPAD_BUTTON_MISC1)
+			{
+				GGamepadService->SetMicrophoneLED(!GGamepadService->GetMicrophoneLED());
+			}
 			pInput->SetControllerMode(true);
 			break;
 		}
