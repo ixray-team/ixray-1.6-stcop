@@ -76,6 +76,10 @@
 		<font font="letterica16"/>
 	</addons_list>
 	
+	<frame_window x="0" y="0" width="64" height="64">
+		<texture>ui_inv_item_selector_tri</texture>
+	</frame_window>
+	
 	<addon_icon x="0" y="0" width="64" height="64" stretch="1">
 		<texture width="128" height="128">ui\ui_noise</texture>
 	</addon_icon>
