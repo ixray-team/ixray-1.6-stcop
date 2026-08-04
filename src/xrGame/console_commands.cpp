@@ -2601,6 +2601,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "hud_draw", &psHUD_Flags, HUD_DRAW);
 	CMD3(CCC_Mask32, "hud_minimap", &psHUD_Flags, HUD_MINIMAP);
 	CMD3(CCC_Mask32, "hud_hide_quick_slots", &psHUD_Flags, HUD_HIDE_QUICK_SLOTS);
+	CMD3(CCC_Mask32, "hud_contextual_status", &psHUD_Flags, HUD_CONTEXTUAL_STATUS);
 
     // Cursor
     CMD2(CCC_Boolean, "ui_3d_cursor", &ui_3d_cursor);

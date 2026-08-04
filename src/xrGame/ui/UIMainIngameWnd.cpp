@@ -562,7 +562,7 @@ void CUIMainIngameWnd::Init()
 
 	HUD_SOUND_ITEM::LoadSound("maingame_ui", "snd_new_contact", m_contactSnd, SOUND_TYPE_IDLE);
 
-	const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+	const bool isHideQuickSlotsEnabled = HUD_IsQuickSlotsAutoHide();
 	if (isHideQuickSlotsEnabled)
 	{
 		if (uiXml.NavigateToNode("quick_slots_panel", 0))
@@ -586,6 +586,7 @@ void CUIMainIngameWnd::Init()
 	m_quick_slots_force_visible_by_key = false;                        // Track if force visibility was set by key press
 	m_quick_slots_alpha = isHideQuickSlotsEnabled ? 0.0f : 1.0f;       // Start visible if hide option is disabled
 	m_quick_slots_last_interaction_time = 0.0f;                        // Initialize to 0 instead of negative value
+	m_quick_slots_auto_hide_active = isHideQuickSlotsEnabled;
 
 	if (isHideQuickSlotsEnabled && !m_quick_slots_visible)
 	{
@@ -1349,14 +1350,21 @@ void CUIMainIngameWnd::TickQuickSlotsPanelFade()
 		return; // Protection against invalid delta time
 	}
 
-	// If hide quick slots option is disabled, panel is always visible
-	const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+	// If auto-hide is disabled, panel is always visible
+	const bool isHideQuickSlotsEnabled = HUD_IsQuickSlotsAutoHide();
 	if (!isHideQuickSlotsEnabled)
 	{
 		m_quick_slots_alpha = 1.0f;
 		m_quick_slots_visible = true;
+		m_quick_slots_auto_hide_active = false;
 		return;
 	}
+
+	if (!m_quick_slots_auto_hide_active && !m_quick_slots_force_visible)
+	{
+		m_quick_slots_visible = false;
+	}
+	m_quick_slots_auto_hide_active = true;
 
 	bool should_be_visible = m_quick_slots_force_visible || m_quick_slots_visible;
 
@@ -2064,7 +2072,7 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 	}
 
 	// If hide quick slots option is disabled, panel is always visible
-	const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+	const bool isHideQuickSlotsEnabled = HUD_IsQuickSlotsAutoHide();
 	bool should_show_panel = (!isHideQuickSlotsEnabled) || m_quick_slots_force_visible || m_quick_slots_visible;
 
 	int i = -1;
@@ -2190,7 +2198,7 @@ void CUIMainIngameWnd::DrawMainIndicatorsForInventory()
 
 	// Проверяем, должна ли панель быть видимой
 	// If hide quick slots option is disabled, panel is always visible
-	const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+	const bool isHideQuickSlotsEnabled = HUD_IsQuickSlotsAutoHide();
 	bool should_show_panel = (!isHideQuickSlotsEnabled) || m_quick_slots_force_visible || m_quick_slots_visible;
 
 	// Отрисовываем быстрые слоты только если панель должна быть видимой

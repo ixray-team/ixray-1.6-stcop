@@ -29,6 +29,7 @@
 #include "../WeaponBinoculars.h"
 #include "../Bolt.h"
 #include "../../xrEngine/string_table.h"
+#include "../../xrEngine/CustomHUD.h"
 
 namespace
 {
@@ -633,12 +634,27 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
         m_cur_state_LA[i] = true;
         SwitchLA(false, static_cast<ALife::EInfluenceType>(i));
     }
+
+    LoadContextualDisplaySettings(xml, path);
+
+    if (m_back)
+    {
+        m_back_base_color = m_back->GetTextureColor();
+    }
+    if (m_bleeding)
+    {
+        m_bleeding_base_color = m_bleeding->GetTextureColor();
+    }
+
+    CaptureContextualBaseColors();
+
     xml.SetLocalRoot( stored_root );
 }
 
 void CUIHudStatesWnd::on_connected()
 {
     Load_section();
+    CaptureContextualBaseColors();
 }
 
 void CUIHudStatesWnd::Load_section()
@@ -692,13 +708,19 @@ void CUIHudStatesWnd::Update()
         return;
     }
 
+    UpdateContextualTriggers(actor);
+
     UpdateHealth( actor );
     UpdateActiveItemInfo( actor );
     UpdateIndicators( actor );
 
     UpdateZones();
 
+    TickContextualDisplay();
+
     inherited::Update();
+
+    ApplyContextualAlpha();
 }
 
 void CUIHudStatesWnd::UpdateHealth( CActor* actor )
@@ -2099,4 +2121,489 @@ void CUIHudStatesWnd::FakeUpdateIndicatorType(u8 t, float power)
 void CUIHudStatesWnd::EnableFakeIndicators(bool enable)
 {
     m_fake_indicators_update = enable;
+}
+
+bool CUIHudStatesWnd::IsContextualDisplayEnabled() const
+{
+    return psHUD_Flags.test(HUD_CONTEXTUAL_STATUS);
+}
+
+void CUIHudStatesWnd::LoadContextualDisplaySettings(CUIXml& xml, const char* path)
+{
+    string256 contextualPath;
+    xr_sprintf(contextualPath, "%s:contextual_display", path);
+    if (!xml.NavigateToNode(contextualPath, 0))
+    {
+        return;
+    }
+
+    m_context_show_speed = std::max(xml.ReadAttribFlt(contextualPath, 0, "show_speed", m_context_show_speed), 0.1f);
+    m_context_hide_speed = std::max(xml.ReadAttribFlt(contextualPath, 0, "hide_speed", m_context_hide_speed), 0.1f);
+    m_context_hide_delay = std::max(xml.ReadAttribFlt(contextualPath, 0, "hide_delay", m_context_hide_delay), 0.1f);
+    m_context_health_threshold = std::max(xml.ReadAttribFlt(contextualPath, 0, "health_threshold", m_context_health_threshold), EPS);
+}
+
+void CUIHudStatesWnd::TriggerHealthContext()
+{
+    if (!IsContextualDisplayEnabled())
+    {
+        return;
+    }
+
+    m_health_context_active = true;
+    m_health_context_last_time = Device.fTimeGlobal;
+}
+
+void CUIHudStatesWnd::TriggerWeaponContext()
+{
+    if (!IsContextualDisplayEnabled())
+    {
+        return;
+    }
+
+    m_weapon_context_active = true;
+    m_weapon_context_last_time = Device.fTimeGlobal;
+}
+
+void CUIHudStatesWnd::UpdateContextualTriggers(CActor* actor)
+{
+    if (!IsContextualDisplayEnabled())
+    {
+        return;
+    }
+
+    const float curHealth = actor->GetfHealth();
+    const float curStamina = actor->conditions().GetPower();
+
+    if (m_context_stamina_for_track < 0.f)
+    {
+        m_last_health = curHealth;
+        m_context_stamina_for_track = curStamina;
+    }
+    else
+    {
+        if (std::abs(curHealth - m_last_health) > m_context_health_threshold)
+        {
+            TriggerHealthContext();
+            m_last_health = curHealth;
+        }
+
+        if (std::abs(curStamina - m_context_stamina_for_track) > m_context_health_threshold)
+        {
+            TriggerHealthContext();
+            m_context_stamina_for_track = curStamina;
+        }
+    }
+
+    PIItem activeItem = actor->inventory().ActiveItem();
+    const shared_str activeSect = activeItem ? activeItem->m_section_id : shared_str();
+
+    if (activeSect != m_context_active_item_sect)
+    {
+        m_context_active_item_sect = activeSect;
+        if (activeItem && activeItem->cast_weapon())
+        {
+            TriggerWeaponContext();
+        }
+    }
+
+    CWeapon* weapon = activeItem ? activeItem->cast_weapon() : nullptr;
+    if (weapon)
+    {
+        const u8 weaponState = weapon->GetState();
+        if (weaponState != m_context_weapon_state)
+        {
+            switch (weaponState)
+            {
+            case CWeapon::eFire:
+            case CWeapon::eFire2:
+            case CWeapon::eReload:
+            case CWeapon::eSwitch:
+            case CWeapon::eSwitchMode:
+            case CWeapon::eFiremodeCheck:
+                TriggerWeaponContext();
+                break;
+            default:
+                break;
+            }
+            m_context_weapon_state = weaponState;
+        }
+
+        II_BriefInfo briefInfo;
+        weapon->GetBriefInfo(briefInfo);
+
+        string64 ammoSignature = {};
+        xr_sprintf(ammoSignature, sizeof(ammoSignature), "%s|%s|%s|%s|%s",
+            briefInfo.cur_ammo.c_str(),
+            briefInfo.fmj_ammo.c_str(),
+            briefInfo.ap_ammo.c_str(),
+            briefInfo.total_ammo.c_str(),
+            briefInfo.fire_mode.c_str());
+
+        if (xr_strcmp(ammoSignature, m_context_ammo_signature) != 0)
+        {
+            if (m_context_ammo_signature[0] != 0)
+            {
+                TriggerWeaponContext();
+            }
+            xr_strcpy(m_context_ammo_signature, ammoSignature);
+        }
+
+        if (briefInfo.fire_mode != m_context_fire_mode)
+        {
+            if (m_context_fire_mode.size())
+            {
+                TriggerWeaponContext();
+            }
+            m_context_fire_mode = briefInfo.fire_mode;
+        }
+    }
+    else
+    {
+        m_context_weapon_state = 0xff;
+        m_context_ammo_signature[0] = 0;
+        m_context_fire_mode = shared_str();
+    }
+
+    if (actor->IsActionKeyPressedInGame(kWPN_RELOAD))
+    {
+        PIItem peekItem = actor->inventory().ActiveItem();
+        if (peekItem && peekItem->cast_weapon())
+        {
+            TriggerWeaponContext();
+        }
+    }
+}
+
+void CUIHudStatesWnd::TickContextualDisplay()
+{
+    const bool isContextual = IsContextualDisplayEnabled();
+    if (isContextual != m_contextual_was_enabled)
+    {
+        if (isContextual)
+        {
+            m_health_block_alpha = 0.f;
+            m_weapon_block_alpha = 0.f;
+            m_health_context_active = false;
+            m_weapon_context_active = false;
+        }
+        else
+        {
+            m_health_block_alpha = 1.f;
+            m_weapon_block_alpha = 1.f;
+            m_health_context_active = false;
+            m_weapon_context_active = false;
+            RestoreContextualColorsFromCache();
+        }
+        m_contextual_was_enabled = isContextual;
+    }
+
+    if (!isContextual)
+    {
+        m_health_block_alpha = 1.f;
+        m_weapon_block_alpha = 1.f;
+        return;
+    }
+
+    const float dt = Device.fTimeDelta;
+    if (dt <= 0.f)
+    {
+        return;
+    }
+
+    if (m_health_context_active &&
+        (Device.fTimeGlobal - m_health_context_last_time) >= m_context_hide_delay)
+    {
+        m_health_context_active = false;
+    }
+
+    if (m_weapon_context_active &&
+        (Device.fTimeGlobal - m_weapon_context_last_time) >= m_context_hide_delay)
+    {
+        m_weapon_context_active = false;
+    }
+
+    const float healthTarget = m_health_context_active ? 1.f : 0.f;
+    const float weaponTarget = m_weapon_context_active ? 1.f : 0.f;
+    const float healthSpeed = m_health_context_active ? m_context_show_speed : m_context_hide_speed;
+    const float weaponSpeed = m_weapon_context_active ? m_context_show_speed : m_context_hide_speed;
+
+    if (m_health_block_alpha < healthTarget)
+    {
+        m_health_block_alpha += healthSpeed * dt;
+        if (m_health_block_alpha > healthTarget)
+        {
+            m_health_block_alpha = healthTarget;
+        }
+    }
+    else if (m_health_block_alpha > healthTarget)
+    {
+        m_health_block_alpha -= healthSpeed * dt;
+        if (m_health_block_alpha < healthTarget)
+        {
+            m_health_block_alpha = healthTarget;
+        }
+    }
+
+    if (m_weapon_block_alpha < weaponTarget)
+    {
+        m_weapon_block_alpha += weaponSpeed * dt;
+        if (m_weapon_block_alpha > weaponTarget)
+        {
+            m_weapon_block_alpha = weaponTarget;
+        }
+    }
+    else if (m_weapon_block_alpha > weaponTarget)
+    {
+        m_weapon_block_alpha -= weaponSpeed * dt;
+        if (m_weapon_block_alpha < weaponTarget)
+        {
+            m_weapon_block_alpha = weaponTarget;
+        }
+    }
+}
+
+void CUIHudStatesWnd::CaptureStaticColorCache(CUIStatic* wnd, SContextualColorCache& cache) const
+{
+    if (!wnd)
+    {
+        return;
+    }
+
+    cache.texture = wnd->GetTextureColor();
+    cache.text = wnd->GetTextColor();
+}
+
+void CUIHudStatesWnd::CaptureProgressColorCache(CUIProgressBar* bar, SContextualColorCache& progress, SContextualColorCache& background) const
+{
+    if (!bar)
+    {
+        return;
+    }
+
+    progress.texture = bar->m_UIProgressItem.GetTextureColor();
+    background.texture = bar->m_UIBackgroundItem.GetTextureColor();
+}
+
+void CUIHudStatesWnd::CaptureContextualBaseColors()
+{
+    CaptureProgressColorCache(m_ui_health_bar, m_cache_health_progress, m_cache_health_background);
+    CaptureProgressColorCache(m_ui_stamina_bar, m_cache_stamina_progress, m_cache_stamina_background);
+    CaptureProgressColorCache(m_ui_armor_bar, m_cache_armor_progress, m_cache_armor_background);
+    CaptureStaticColorCache(m_static_health, m_cache_static_health);
+    CaptureStaticColorCache(m_static_armor, m_cache_static_armor);
+    CaptureStaticColorCache(m_static_weapon, m_cache_static_weapon);
+    CaptureStaticColorCache(m_ui_weapon_cur_ammo, m_cache_cur_ammo);
+    CaptureStaticColorCache(m_ui_weapon_fmj_ammo, m_cache_fmj_ammo);
+    CaptureStaticColorCache(m_ui_weapon_ap_ammo, m_cache_ap_ammo);
+    CaptureStaticColorCache(m_ui_weapon_third_ammo, m_cache_third_ammo);
+    CaptureStaticColorCache(m_ui_weapon_sign_ammo, m_cache_sign_ammo);
+    CaptureStaticColorCache(m_ui_adaptive_clip, m_cache_adaptive_clip);
+    CaptureStaticColorCache(m_ui_adaptive_total, m_cache_adaptive_total);
+    CaptureStaticColorCache(m_fire_mode, m_cache_fire_mode);
+    CaptureStaticColorCache(m_ui_fire_mode_icon, m_cache_fire_mode_icon);
+    CaptureStaticColorCache(m_ui_caliber_text, m_cache_caliber_text);
+    CaptureStaticColorCache(m_ui_caliber_icon, m_cache_caliber_icon);
+    CaptureStaticColorCache(m_ui_weapon_icon, m_cache_weapon_icon);
+    CaptureStaticColorCache(m_ui_grenade, m_cache_grenade);
+}
+
+void CUIHudStatesWnd::SyncDynamicWeaponColorCaches()
+{
+    if (!IsContextualDisplayEnabled() || m_use_adaptive_ammo_widget)
+    {
+        return;
+    }
+
+    CaptureStaticColorCache(m_ui_weapon_cur_ammo, m_cache_cur_ammo);
+    CaptureStaticColorCache(m_ui_weapon_fmj_ammo, m_cache_fmj_ammo);
+    CaptureStaticColorCache(m_ui_weapon_ap_ammo, m_cache_ap_ammo);
+    CaptureStaticColorCache(m_ui_weapon_third_ammo, m_cache_third_ammo);
+    CaptureStaticColorCache(m_ui_weapon_sign_ammo, m_cache_sign_ammo);
+    CaptureStaticColorCache(m_ui_grenade, m_cache_grenade);
+}
+
+void CUIHudStatesWnd::ApplyStaticFromColorCache(CUIStatic* wnd, const SContextualColorCache& cache, float blockAlpha) const
+{
+    if (!wnd)
+    {
+        return;
+    }
+
+    if (blockAlpha <= 0.001f)
+    {
+        wnd->Show(false);
+        return;
+    }
+
+    if (!wnd->IsShown())
+    {
+        return;
+    }
+
+    const u32 textureAlpha = (u32)clampr(iFloor(color_get_A(cache.texture) * blockAlpha), 0, 255);
+    wnd->SetTextureColor(subst_alpha(cache.texture, textureAlpha));
+
+    const u32 textAlpha = (u32)clampr(iFloor(color_get_A(cache.text) * blockAlpha), 0, 255);
+    wnd->SetTextColor(subst_alpha(cache.text, textAlpha));
+}
+
+void CUIHudStatesWnd::ApplyProgressFromColorCache(
+    CUIProgressBar* bar,
+    const SContextualColorCache& progress,
+    const SContextualColorCache& background,
+    float blockAlpha) const
+{
+    if (!bar)
+    {
+        return;
+    }
+
+    if (blockAlpha <= 0.001f)
+    {
+        bar->Show(false);
+        return;
+    }
+
+    bar->Show(true);
+
+    const u32 progressAlpha = (u32)clampr(iFloor(color_get_A(progress.texture) * blockAlpha), 0, 255);
+    bar->m_UIProgressItem.SetTextureColor(subst_alpha(progress.texture, progressAlpha));
+
+    if (bar->IsShownBackground())
+    {
+        const u32 backgroundAlpha = (u32)clampr(iFloor(color_get_A(background.texture) * blockAlpha), 0, 255);
+        bar->m_UIBackgroundItem.SetTextureColor(subst_alpha(background.texture, backgroundAlpha));
+    }
+}
+
+void CUIHudStatesWnd::RestoreContextualColorsFromCache()
+{
+    if (m_back)
+    {
+        m_back->SetTextureColor(m_back_base_color);
+        m_back->Show(true);
+    }
+
+    if (m_ui_health_bar)
+    {
+        m_ui_health_bar->Show(true);
+        m_ui_health_bar->m_UIProgressItem.SetTextureColor(m_cache_health_progress.texture);
+        if (m_ui_health_bar->IsShownBackground())
+        {
+            m_ui_health_bar->m_UIBackgroundItem.SetTextureColor(m_cache_health_background.texture);
+        }
+    }
+
+    if (m_ui_stamina_bar)
+    {
+        m_ui_stamina_bar->Show(true);
+        m_ui_stamina_bar->m_UIProgressItem.SetTextureColor(m_cache_stamina_progress.texture);
+        if (m_ui_stamina_bar->IsShownBackground())
+        {
+            m_ui_stamina_bar->m_UIBackgroundItem.SetTextureColor(m_cache_stamina_background.texture);
+        }
+    }
+
+    auto restoreStatic = [](CUIStatic* wnd, const SContextualColorCache& cache)
+    {
+        if (!wnd)
+        {
+            return;
+        }
+
+        wnd->SetTextureColor(cache.texture);
+        wnd->SetTextColor(cache.text);
+    };
+
+    restoreStatic(m_static_health, m_cache_static_health);
+    restoreStatic(m_static_armor, m_cache_static_armor);
+
+    if (m_ui_armor_bar)
+    {
+        m_ui_armor_bar->m_UIProgressItem.SetTextureColor(m_cache_armor_progress.texture);
+        if (m_ui_armor_bar->IsShownBackground())
+        {
+            m_ui_armor_bar->m_UIBackgroundItem.SetTextureColor(m_cache_armor_background.texture);
+        }
+    }
+
+    if (m_bleeding)
+    {
+        m_bleeding->SetTextureColor(m_bleeding_base_color);
+    }
+
+    restoreStatic(m_static_weapon, m_cache_static_weapon);
+    restoreStatic(m_ui_weapon_cur_ammo, m_cache_cur_ammo);
+    restoreStatic(m_ui_weapon_fmj_ammo, m_cache_fmj_ammo);
+    restoreStatic(m_ui_weapon_ap_ammo, m_cache_ap_ammo);
+    restoreStatic(m_ui_weapon_third_ammo, m_cache_third_ammo);
+    restoreStatic(m_ui_weapon_sign_ammo, m_cache_sign_ammo);
+    restoreStatic(m_ui_adaptive_clip, m_cache_adaptive_clip);
+    restoreStatic(m_ui_adaptive_total, m_cache_adaptive_total);
+    restoreStatic(m_ui_grenade, m_cache_grenade);
+    restoreStatic(m_fire_mode, m_cache_fire_mode);
+    restoreStatic(m_ui_fire_mode_icon, m_cache_fire_mode_icon);
+    restoreStatic(m_ui_caliber_text, m_cache_caliber_text);
+    restoreStatic(m_ui_caliber_icon, m_cache_caliber_icon);
+    restoreStatic(m_ui_weapon_icon, m_cache_weapon_icon);
+}
+
+void CUIHudStatesWnd::ApplyContextualAlpha()
+{
+    if (!IsContextualDisplayEnabled())
+    {
+        return;
+    }
+
+    SyncDynamicWeaponColorCaches();
+
+    const float backAlpha = m_health_block_alpha;
+    if (m_back)
+    {
+        if (backAlpha <= 0.001f)
+        {
+            m_back->Show(false);
+        }
+        else
+        {
+            m_back->Show(true);
+            const u32 channelAlpha = (u32)clampr(iFloor(backAlpha * color_get_A(m_back_base_color)), 0, 255);
+            m_back->SetTextureColor(subst_alpha(m_back_base_color, channelAlpha));
+        }
+    }
+
+    ApplyProgressFromColorCache(m_ui_health_bar, m_cache_health_progress, m_cache_health_background, m_health_block_alpha);
+    ApplyProgressFromColorCache(m_ui_stamina_bar, m_cache_stamina_progress, m_cache_stamina_background, m_health_block_alpha);
+    ApplyStaticFromColorCache(m_static_health, m_cache_static_health, m_health_block_alpha);
+    ApplyStaticFromColorCache(m_static_armor, m_cache_static_armor, m_health_block_alpha);
+    ApplyProgressFromColorCache(m_ui_armor_bar, m_cache_armor_progress, m_cache_armor_background, m_health_block_alpha);
+
+    if (m_bleeding)
+    {
+        if (m_health_block_alpha <= 0.001f)
+        {
+            m_bleeding->Show(false);
+        }
+        else if (m_bleeding->IsShown())
+        {
+            const u32 channelAlpha = (u32)clampr(iFloor(m_health_block_alpha * color_get_A(m_bleeding_base_color)), 0, 255);
+            m_bleeding->SetTextureColor(subst_alpha(m_bleeding_base_color, channelAlpha));
+        }
+    }
+
+    ApplyStaticFromColorCache(m_static_weapon, m_cache_static_weapon, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_weapon_cur_ammo, m_cache_cur_ammo, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_weapon_fmj_ammo, m_cache_fmj_ammo, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_weapon_ap_ammo, m_cache_ap_ammo, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_weapon_third_ammo, m_cache_third_ammo, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_weapon_sign_ammo, m_cache_sign_ammo, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_adaptive_clip, m_cache_adaptive_clip, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_adaptive_total, m_cache_adaptive_total, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_grenade, m_cache_grenade, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_fire_mode, m_cache_fire_mode, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_fire_mode_icon, m_cache_fire_mode_icon, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_caliber_text, m_cache_caliber_text, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_caliber_icon, m_cache_caliber_icon, m_weapon_block_alpha);
+    ApplyStaticFromColorCache(m_ui_weapon_icon, m_cache_weapon_icon, m_weapon_block_alpha);
 }
