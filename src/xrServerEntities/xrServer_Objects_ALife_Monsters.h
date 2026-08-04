@@ -77,8 +77,8 @@ public:
 									CSE_ALifeTraderAbstract		(const char* caSection);
 	virtual							~CSE_ALifeTraderAbstract	();
 	// we need this to prevent virtual inheritance :-(
-	virtual CSE_Abstract			*base						() = 0;
-	virtual const CSE_Abstract		*base						() const = 0;
+	virtual CSE_Abstract			*base						() { return nullptr; }
+	virtual const CSE_Abstract		*base						() const { return nullptr; }
 	virtual CSE_Abstract			*init						();
 	virtual CSE_Abstract			*cast_abstract				() {return 0;};
 	virtual CSE_ALifeTraderAbstract	*cast_trader_abstract		() {return this;};
