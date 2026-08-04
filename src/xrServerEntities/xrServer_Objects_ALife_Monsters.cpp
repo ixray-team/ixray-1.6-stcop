@@ -523,8 +523,13 @@ shared_str CSE_ALifeTraderAbstract::character_profile()
 #ifdef XRGAME_EXPORTS
 
 //для работы с relation system
-u16								CSE_ALifeTraderAbstract::object_id		() const
+u16 CSE_ALifeTraderAbstract::object_id		() const
 {
+	// in case base gets destroyed but trader isn't
+	if (!base())
+	{
+		return ALife::_OBJECT_ID(-1);
+	}
 	return base()->ID;
 }
 
