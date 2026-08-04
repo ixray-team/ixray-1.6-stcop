@@ -266,7 +266,7 @@ void CActor::IR_OnKeyboardPress(int dik)
 	case kSHOW_QUICK_SLOTS:
 	{
 		// Only process if hide quick slots option is enabled
-		if (psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS))
+		if (HUD_IsQuickSlotsAutoHide())
 		{
 			if (CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd)
 			{
@@ -376,7 +376,7 @@ void CActor::IR_OnKeyboardRelease(int dik)
 		case kSHOW_QUICK_SLOTS:
 		{
 			// Only process if hide quick slots option is enabled
-			if (psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS))
+			if (HUD_IsQuickSlotsAutoHide())
 			{
 				// Only hide panel if it was shown by key press (not by item use)
 				// This prevents hiding when key binding is changed and old key is released

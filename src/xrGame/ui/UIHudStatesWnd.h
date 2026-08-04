@@ -85,6 +85,55 @@ private:
 	xr_map<shared_str, shared_str>	m_fire_mode_label_map;
 
 	CUIStackPanel*		UIStackPanelDangers;
+
+	struct SContextualColorCache
+	{
+		u32 texture = color_rgba(255, 255, 255, 255);
+		u32 text = color_rgba(255, 255, 255, 255);
+	};
+
+	// Contextual display (health/stamina + weapon blocks)
+	bool				m_health_context_active = false;
+	bool				m_weapon_context_active = false;
+	float				m_health_context_last_time = 0.f;
+	float				m_weapon_context_last_time = 0.f;
+	float				m_health_block_alpha = 0.f;
+	float				m_weapon_block_alpha = 0.f;
+	float				m_context_show_speed = 4.f;
+	float				m_context_hide_speed = 3.f;
+	float				m_context_hide_delay = 2.5f;
+	float				m_context_health_threshold = 0.002f;
+	float				m_context_stamina_for_track = -1.f;
+	shared_str			m_context_active_item_sect;
+	shared_str			m_context_fire_mode;
+	string64			m_context_ammo_signature = {};
+	u8					m_context_weapon_state = 0xff;
+	bool				m_contextual_was_enabled = false;
+	u32					m_back_base_color = color_rgba(255, 255, 255, 255);
+	u32					m_bleeding_base_color = color_rgba(255, 255, 255, 255);
+	SContextualColorCache m_cache_health_progress;
+	SContextualColorCache m_cache_health_background;
+	SContextualColorCache m_cache_stamina_progress;
+	SContextualColorCache m_cache_stamina_background;
+	SContextualColorCache m_cache_armor_progress;
+	SContextualColorCache m_cache_armor_background;
+	SContextualColorCache m_cache_static_health;
+	SContextualColorCache m_cache_static_armor;
+	SContextualColorCache m_cache_static_weapon;
+	SContextualColorCache m_cache_cur_ammo;
+	SContextualColorCache m_cache_fmj_ammo;
+	SContextualColorCache m_cache_ap_ammo;
+	SContextualColorCache m_cache_third_ammo;
+	SContextualColorCache m_cache_sign_ammo;
+	SContextualColorCache m_cache_adaptive_clip;
+	SContextualColorCache m_cache_adaptive_total;
+	SContextualColorCache m_cache_fire_mode;
+	SContextualColorCache m_cache_fire_mode_icon;
+	SContextualColorCache m_cache_caliber_text;
+	SContextualColorCache m_cache_caliber_icon;
+	SContextualColorCache m_cache_weapon_icon;
+	SContextualColorCache m_cache_grenade;
+
 public:
 	float				m_radia_hit;
 
@@ -148,5 +197,20 @@ protected:
 			void	HideCaliberHudWidgets	();
 			void	UpdateCaliberHudForItem	( CInventoryItem* item );
 			shared_str ResolveFireModeDisplayText(const shared_str& fireModeCode) const;
+
+			bool	IsContextualDisplayEnabled	() const;
+			void	LoadContextualDisplaySettings(CUIXml& xml, const char* path);
+			void	TriggerHealthContext		();
+			void	TriggerWeaponContext		();
+			void	UpdateContextualTriggers	(CActor* actor);
+			void	TickContextualDisplay		();
+			void	SyncDynamicWeaponColorCaches();
+			void	CaptureStaticColorCache		(CUIStatic* wnd, SContextualColorCache& cache) const;
+			void	CaptureProgressColorCache	(CUIProgressBar* bar, SContextualColorCache& progress, SContextualColorCache& background) const;
+			void	CaptureContextualBaseColors	();
+			void	ApplyStaticFromColorCache	(CUIStatic* wnd, const SContextualColorCache& cache, float alpha) const;
+			void	ApplyProgressFromColorCache	(CUIProgressBar* bar, const SContextualColorCache& progress, const SContextualColorCache& background, float alpha) const;
+			void	RestoreContextualColorsFromCache();
+			void	ApplyContextualAlpha		();
 
 }; // class CUIHudStatesWnd
