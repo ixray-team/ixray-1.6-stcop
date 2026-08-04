@@ -101,7 +101,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, const char* path_ui)
 				m_quickSlotsKey1 = pEditKB1;
 				m_quickSlotsKey2 = pEditKB2;
 
-				const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+				const bool isHideQuickSlotsEnabled = HUD_IsQuickSlotsAutoHide();
 				// Element is always visible
 				pItem->Show(true);
 				pEditKB1->Show(true);
@@ -206,7 +206,7 @@ void CUIKeyBinding::UpdateQuickSlotsBindingState()
 	if (m_quickSlotsItem && m_quickSlotsKey1 && m_quickSlotsKey2)
 	{
 		// Safely access psHUD_Flags
-		const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+		const bool isHideQuickSlotsEnabled = HUD_IsQuickSlotsAutoHide();
 		// Element is always visible
 		m_quickSlotsItem->Show(true);
 		m_quickSlotsKey1->Show(true);

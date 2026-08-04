@@ -132,6 +132,7 @@ protected:
 	float				m_quick_slots_show_speed = 3.0f;               // Speed of panel appearance
 	float				m_quick_slots_hide_speed = 4.0f;               // Speed of panel disappearance
 	float				m_quick_slots_hide_delay = 2.0f;               // Delay before auto-hide in seconds
+	bool				m_quick_slots_auto_hide_active = false;        // Tracks auto-hide mode for runtime toggles
 	bool				m_quick_slots_empty_red_glow_counter = true;   // Enable red glow for empty slot counter
 	bool				m_quick_slots_empty_red_glow_icon = true;      // Enable red glow for empty slot icon
 	float				m_quick_slots_empty_red_intensity = 1.0f;      // Red color intensity for empty slots (0.0 - 1.0)
