@@ -176,7 +176,7 @@ void CUIStalkersRankingWnd::ShowHumanInfo(u16 id)
 
 void CUIStalkersRankingWnd::AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t)
 {
-	string64								buff;
+	string256							buff;
 	CUIStalkerRankingInfoItem* itm		= new CUIStalkerRankingInfoItem(this);
 	itm->Init							(xml, "item_human", 0);
 	itm->set_hint_wnd					(m_hint_wnd);
