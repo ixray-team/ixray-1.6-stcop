@@ -24,6 +24,7 @@ export const supportStatusMap: Record<string, SupportMeta> = {
   '/scripting/luamarshal': { label: 'Unsupported', state: 'unsupported' },
   '/editors/particles': { label: '1.4', state: 'supported' },
   '/weapon-system/shot-pattern-system': { label: '1.4', state: 'supported' },
+  '/interface/sleep-dialog': { label: 'rolling', state: 'supported' },
 }
 
 const normalizeLink = (link: string) => link.replace(/^\/(en|ru)(?=\/)/, '')

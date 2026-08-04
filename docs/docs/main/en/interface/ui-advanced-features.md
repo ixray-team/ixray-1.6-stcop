@@ -19,6 +19,7 @@ This page serves as an overview of new UI features. Each page below is provided 
 7. [Radial progress shapes](radial-progress-shape.md)
 8. [SVG on HUD](svg-icons.md)
 9. [Weight progress bar](weight-progress-bar.md)
+10. [Sleep dialog](sleep-dialog.md)
 
 ## Quick toggles
 

@@ -19,6 +19,7 @@
 7. [Радиальные индикаторы](radial-progress-shape.md)
 8. [SVG на HUD](hud-svg-vector-icons.md)
 9. [Прогресс бар веса](weight-progress-bar.md)
+10. [Окно сна](sleep-dialog.md)
 
 ## Быстрые переключатели
 

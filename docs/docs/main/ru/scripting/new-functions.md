@@ -1239,3 +1239,18 @@ args:
     direction (vector), -- направление партикла
     velocity (vector), -- скорость совмещения позиции партикла
 ```
+
+## CEntityAlive
+```lua
+local game_object = db.actor -- актор или любой нпц
+
+--// Проверка состояния игнорирования монстрами живого обьекта
+game_object:get_entity_ignored_by_monsters_state()
+retval: bool возвращает текущее состояние установленного флага или false если обьект не подходит критериям
+    
+--// Установка состояния игнорирования монстрами живого обьекта
+game_object:set_entity_ignored_by_monsters_state(flag)
+retval: bool true если успешно установлено false если обьект не подходит критериям
+args: 
+    flag (bool), -- true если требуется чтобы монстры не агрились на живой обьект false обычное поведение
+```

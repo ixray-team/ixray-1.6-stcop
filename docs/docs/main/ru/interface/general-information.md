@@ -77,6 +77,68 @@ local IsRight = sp:IsAlignRight() --// получить выравнивание
 * Добавлена возможность настройки UI элемента. Подробности смотреть в ```custom_spin.xml```
 * Добавлена поддержка горизонтальных ползунков при указании атрибута `horz="1"`. Горизонтальные ползунки настраиваются в файле ```custom_spin_horz.xml```
 
+### CUIScrollBar | scroll_profile
+> [!IMPORTANT]  
+> **Статус**: Поддерживается <br>
+> **Минимальная версия**: 1.x
+* Профили скролл-баров задаются в ```gamedata/configs/ui/scroll_bar.xml```. Каждый узел (например, `default`, `pda`, `pda_logs`) описывает стрелки, трек, ползунок и параметры layout.
+* Атрибут `scroll_profile` в XML подключает профиль к `scroll_view` и `list`:
+
+```xml
+<logs_list x="45" y="176" width="936" height="523" item_height="35" scroll_profile="pda_logs" always_show_scroll="1">
+```
+
+Параметры профиля в `scroll_bar.xml`:
+
+| Атрибут | Назначение |
+|---------|------------|
+| `layout` | `stretch`, `fixed` или `auto` (по умолчанию `auto`) |
+| `width`, `height` | Размер fixed-бара для горизонтальной оси |
+| `width_v`, `height_v` | Размер fixed-бара для вертикальной оси |
+| `hold_delay` | Задержка автопрокрутки при удержании кнопки (мс) |
+| `scroll_box_offset_x`, `scroll_box_offset_y` | Отступ рабочей области ползунка |
+| `thumb` | `auto`, `button` или `box` (тип ползунка в fixed-режиме) |
+
+Дочерние узлы профиля: `up_arrow` / `down_arrow` / `left_arrow` / `right_arrow`, `back` / `back_v`, `box` / `box_v` (также поддерживаются алиасы `dec`, `inc`, `track`, `thumb`).
+
+> [!WARNING]
+> `SetFixedScrollBar(bool)` у `CUIScrollView` / `CUIListBox` управляет флагом `always_show_scroll` (всегда показывать полосу), а **не** fixed-layout профиля из `scroll_bar.xml`.
+
+Пример Lua (XML-путь без изменений):
+
+```lua
+local view = xml:InitScrollView("my_scroll", self)
+```
+
+Смена профиля в runtime:
+
+```lua
+view:SetScrollBarProfile("pda")
+view:ReinitScrollBar()
+
+local bar = view:ScrollBar()
+bar:SetScrollPos(10)
+```
+
+Standalone скролл-бар (кастомные диалоги, карта PDA):
+
+```lua
+local bar = CUIScrollBar()
+parent:AttachChild(bar)
+bar:InitScrollBarFixed(x, y, false, "pda")
+```
+
+Проверка layout до инициализации:
+
+```lua
+local layout = ui.QueryScrollBarProfileLayout("pda_logs", false)
+-- -1: профиль не найден
+-- 0: stretch (CUIScrollBar.layout_mode.stretch)
+-- 1: fixed (CUIScrollBar.layout_mode.fixed)
+```
+
+Те же методы `SetScrollBarProfile`, `ScrollBar`, `ReinitScrollBar` доступны у `CUIListWnd`.
+
 ## Прочее
 
 ### CUIStatic | CUITextWnd
@@ -186,6 +248,7 @@ local IsRight = sp:IsAlignRight() --// получить выравнивание
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.3
 * Добавлена поддержка квадратной миникарты, как в ЧН/ТЧ.
+* Прозрачность текстуры карты уровня настраивается атрибутами `a`, `r`, `g`, `b` или `color` на узле `level_frame` в `zone_map.xml`. Если атрибуты не заданы, используется значение по умолчанию `a=127` (как в оригинале).
 
 ![image](https://github.com/user-attachments/assets/9473739e-71c0-4d11-8dd9-6a1322901095)
 
@@ -193,7 +256,7 @@ local IsRight = sp:IsAlignRight() --// получить выравнивание
 ```xml
 <window>
 	<minimap>
-		<level_frame x="17" y="14" width="137" height="166"/>
+		<level_frame x="17" y="14" width="137" height="166" a="127"/>
 		
 		<background x="3" y="3" width="164" height="191" stretch="1"> 
 			<texture>ui_hud_map</texture>

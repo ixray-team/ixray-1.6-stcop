@@ -188,6 +188,7 @@ Example:
 > **Status**: Supported  
 > **Minimum Version**: 1.3
 * Added support for a square minimap, as in Clear Sky / Shadow of Chernobyl.
+* Level map texture transparency is configured via `a`, `r`, `g`, `b`, or `color` attributes on the `level_frame` node in `zone_map.xml`. If omitted, the default is `a=127` (vanilla behavior).
 
 ![image](https://github.com/user-attachments/assets/9473739e-71c0-4d11-8dd9-6a1322901095)
 
@@ -195,7 +196,7 @@ Example:
 ```xml
 <window>
     <minimap>
-        <level_frame x="17" y="14" width="137" height="166"/>
+        <level_frame x="17" y="14" width="137" height="166" a="127"/>
         
         <background x="3" y="3" width="164" height="191" stretch="1"> 
             <texture>ui_hud_map</texture>

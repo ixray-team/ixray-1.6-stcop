@@ -103,6 +103,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
           { text: 'Item condition and percentages', link: '/en/interface/item-condition-percent-display' },
           { text: 'Radial indicators', link: '/en/interface/radial-progress-shape' },
           { text: 'Weight progress bar', link: '/en/interface/weight-progress-bar' },
+          { text: 'Sleep dialog', link: '/en/interface/sleep-dialog' },
         ],
       },
     ]

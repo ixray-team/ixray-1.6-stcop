@@ -4,7 +4,7 @@
 > **Минимальная версия**: 1.4.0
 
 
-### Основная утилиты:
+### Основные утилиты:
 ```ini
 ffx_callable_utils.script
 ffx_compare_utils.script

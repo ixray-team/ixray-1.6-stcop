@@ -1,7 +1,7 @@
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.4 <br>
-> **Последнее обновление**: 2026-06-06
+> **Последнее обновление**: 2026-07-22
 
 # Горизонтальный компас, миникарта и новые возможности motion icon для мини-карты
 
@@ -34,6 +34,25 @@ end
 
 Доступны readonly-поля `UIZoneMap` и `UICompassBar` на `CUIMainIngameWnd`. `UICompassBar` может быть `nil`, пока compass bar не активирован.
 
+Поле `UICompassBar.visible` синхронизировано с `Show()`: скрытый компас не участвует в child-walk `Update`.
+
+## Контракт единиц compass_bar.xml
+
+| Узел | Атрибуты | Единицы | Примечание |
+|------|----------|---------|------------|
+| `compass_bar` | `x` `y` `width` `height` | доли родителя (UI base) | всегда relative, без эвристики `<= 1` |
+| `strip` / `cardinal_points` | `x` `y` `width` `height` | доли родителя | strip хранит `_stripRel*`, cardinals - доли clip-окна |
+| `strip:texture` | `draw_scale_x/y` или `draw_scale`; legacy `width`/`height` | scale относительно clip / native | не atlas crop |
+| `strip:texture` | `draw_offset_x/y`; legacy `x`/`y` | px offset отрисовки | |
+| `strip` | `tex_width` | px логической окружности | при сильном расхождении с atlas width - warning в лог |
+| `marker` кардинала | `width`/`height` | `<= 1` relative к host, иначе px; `offset_y` px | |
+| `active_target` | window `width`/`height`/`x` | px | |
+| `active_target` | `active_offset_y` / `offset_y` / legacy `y` | px вертикальный offset контейнера | приоритет: `active_offset_y` > `offset_y` > `y` |
+| `altitude_arrow` | `altitude_deadzone` | метры | override значения контейнера `active_target` |
+| `distance_text` / arrows / marker | `x` `y` `width` `height` | px | |
+
+Пример HD HUD (без правок XML): `strip` `width="0.88"`, texture `width="0.9" height="0.22" y="9"`, `tex_width="1024"`, cardinal tick `width="4"`, `active_target y="0"` как offset.
+
 ## Атлас и компоненты compass_bar.xml
 
 ### Корневой узел compass_bar
@@ -60,12 +79,17 @@ end
 
 ### strip:texture
 
-Цель: прямоугольник выборки из атласа.  
-Параметры: `x`, `y`, `width`, `height`.
+Цель: scale и offset отрисовки dial (не crop атласа).
+
+| Атрибут | Назначение | Default |
+|---------|------------|---------|
+| `draw_scale` / `draw_scale_x` / `draw_scale_y` | явный scale | legacy `width`/`height` |
+| `draw_offset_x` / `draw_offset_y` | явный offset px | legacy `x`/`y` |
+| `width` / `height` / `x` / `y` | legacy aliases | `1` / `1` / `0` / `0` |
 
 ### tex_width
 
-Цель: реальная ширина шкалы в пикселях.  
+Цель: логическая ширина шкалы в пикселях.  
 Если задано неверно, скорость движения меток не совпадает с углом обзора.
 
 ### tex_loop
@@ -91,6 +115,12 @@ end
 ### active_target
 
 Цель: маркер выбранной цели, дистанция, вертикальное отклонение.
+
+| Атрибут | Назначение | Default |
+|---------|------------|---------|
+| `active_offset_y` / `offset_y` / `y` | вертикальный offset контейнера, px | `0` |
+| `altitude_deadzone` | порог высоты для стрелки | `1.8` |
+| `padding` | отступ от краев strip | `8` |
 
 #### distance_text
 

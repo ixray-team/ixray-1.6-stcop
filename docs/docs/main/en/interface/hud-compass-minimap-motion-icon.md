@@ -1,7 +1,7 @@
 > [!IMPORTANT]
 > **Status**: Supported <br>
 > **Minimum version**: 1.4 <br>
-> **Last updated**: 2026-06-06
+> **Last updated**: 2026-07-22
 
 # Horizontal compass, minimap and motion icon features for the minimap
 
@@ -34,6 +34,25 @@ end
 
 Readonly fields `UIZoneMap` and `UICompassBar` are available on `CUIMainIngameWnd`. `UICompassBar` may be `nil` until the compass bar is activated.
 
+`UICompassBar.visible` is synced with `Show()` so a hidden compass is skipped by the child-walk `Update`.
+
+## compass_bar.xml unit contract
+
+| Node | Attributes | Units | Notes |
+|------|------------|-------|-------|
+| `compass_bar` | `x` `y` `width` `height` | parent-relative fractions (UI base) | always relative, no `<= 1` heuristic |
+| `strip` / `cardinal_points` | `x` `y` `width` `height` | parent-relative fractions | strip uses `_stripRel*`, cardinals are clip-relative |
+| `strip:texture` | `draw_scale_x/y` or `draw_scale`; legacy `width`/`height` | draw scale vs clip / native | not atlas crop |
+| `strip:texture` | `draw_offset_x/y`; legacy `x`/`y` | draw offset px | |
+| `strip` | `tex_width` | logical circumference px | strong mismatch vs atlas width logs a warning |
+| cardinal `marker` | `width`/`height` | `<= 1` relative to host, else px; `offset_y` px | |
+| `active_target` | window `width`/`height`/`x` | px | |
+| `active_target` | `active_offset_y` / `offset_y` / legacy `y` | vertical container offset px | priority: `active_offset_y` > `offset_y` > `y` |
+| `altitude_arrow` | `altitude_deadzone` | meters | overrides container `active_target` value |
+| `distance_text` / arrows / marker | `x` `y` `width` `height` | px | |
+
+HD HUD example (no XML changes required): `strip` `width="0.88"`, texture `width="0.9" height="0.22" y="9"`, `tex_width="1024"`, cardinal tick `width="4"`, `active_target y="0"` as offset.
+
 ## Atlas and compass_bar.xml components
 
 ### compass_bar root
@@ -60,12 +79,17 @@ Logic: the engine shifts UV coordinates depending on camera rotation.
 
 ### strip:texture
 
-Purpose: atlas sample rectangle.
-Parameters: `x`, `y`, `width`, `height`.
+Purpose: dial draw scale and offset (not atlas crop).
+
+| Attribute | Purpose | Default |
+|-----------|---------|---------|
+| `draw_scale` / `draw_scale_x` / `draw_scale_y` | explicit scale | legacy `width`/`height` |
+| `draw_offset_x` / `draw_offset_y` | explicit offset px | legacy `x`/`y` |
+| `width` / `height` / `x` / `y` | legacy aliases | `1` / `1` / `0` / `0` |
 
 ### tex_width
 
-Purpose: actual scale width in pixels.
+Purpose: logical scale width in pixels.
 If set incorrectly, the marker movement speed will not match the viewing angle.
 
 ### tex_loop
@@ -91,6 +115,12 @@ Purpose: text direction labels.
 ### active_target
 
 Purpose: selected target marker, distance, and vertical offset.
+
+| Attribute | Purpose | Default |
+|-----------|---------|---------|
+| `active_offset_y` / `offset_y` / `y` | container vertical offset, px | `0` |
+| `altitude_deadzone` | altitude arrow threshold | `1.8` |
+| `padding` | strip edge padding | `8` |
 
 #### distance_text
 

@@ -104,6 +104,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
           { text: 'Состояние предмета и проценты', link: '/interface/item-condition-percent-display' },
           { text: 'Радиальные индикаторы', link: '/interface/radial-progress-shape' },
           { text: 'Прогресс бар веса', link: '/interface/weight-progress-bar' },
+          { text: 'Окно сна', link: '/interface/sleep-dialog' },
         ],
       },
     ],

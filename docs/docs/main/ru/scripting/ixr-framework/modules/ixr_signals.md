@@ -174,8 +174,10 @@ end
 ("actor_on_detach_vehicle",        		{"vechicle_game_object"}) 
 ("actor_on_use_vehicle",           		{"vechicle_game_object"}) 
 ("actor_on_hud_animation_end",     		{"item_game_object", "hud_section_string", "m_current_motion_string", "state_number", "animation_slot_number"}) -- не полностью соответствует варианту из anomaly-coc ("game_object", "string", "bool", "bool", "number")
+("actor_on_can_sleep",                  {"hours_number", "flags_table"}) -- { allow = true, warning_text = "" }; вызывается из CUISleepWnd::TestAndShow после bleed/rad
 ("actor_on_before_sleep",               {"hours_number"}) 
 ("actor_on_sleep",                  	{"hours_number"}) 
+("actor_on_sleep_aborted",              {"phase_number"}) -- 0 dialog, 1 fade-in, 2 fade-out; после AbortSleep
 ("actor_on_interaction",            	{"string", "game_object", "string"}) 
 ("actor_on_leave_dialog",           	{"npc_id_number"}) 
 ("actor_on_foot_step",              	{"alife_game_object", "power_number", "play_bool", "on_ground_bool", "hud_view_bool"}) 
