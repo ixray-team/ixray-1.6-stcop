@@ -27,11 +27,13 @@ void CUIActorMenu::InitDeadBodySearchMode()
 	m_LeftBackground->Show			(true);
 	m_PartnerBottomInfo->Show		(true);
 	m_PartnerWeight->Show			(true);
-	m_takeall_button->Show			(true);
+	m_takeall_button->SetVisible	(true);
+	m_takeall_button->Enable		(false);
 
 	if (m_putall_button != nullptr)
 	{
-		m_putall_button->Show(true);
+		m_putall_button->SetVisible(true);
+		m_putall_button->Enable(false);
 	}
 
 	if ( m_pPartnerInvOwner )
@@ -107,4 +109,15 @@ void CUIActorMenu::UpdateDeadBodyBag()
 	m_PartnerWeight->SetWndPos( pos );
 	pos.x = pos.x - m_PartnerBottomInfo->GetWndSize().x - 5.0f;
 	m_PartnerBottomInfo->SetWndPos( pos );
+
+	if (m_takeall_button)
+	{
+		const bool has_partner_items = m_pDeadBodyBagList && m_pDeadBodyBagList->ItemsCount() > 0;
+		m_takeall_button->Enable(has_partner_items);
+	}
+	if (m_putall_button)
+	{
+		const bool has_actor_items = m_pInventoryBagList && m_pInventoryBagList->ItemsCount() > 0;
+		m_putall_button->Enable(has_actor_items);
+	}
 }

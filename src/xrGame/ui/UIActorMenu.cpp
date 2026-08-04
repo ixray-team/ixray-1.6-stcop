@@ -419,25 +419,25 @@ void CUIActorMenu::Update()
 	m_exit_button->Show(!pInput->GetControllerMode());
 
 	bool showForDeadbody = m_currMenuMode == mmDeadBodySearch && !pInput->GetControllerMode();
-	m_takeall_button->Show(showForDeadbody);
+	m_takeall_button->SetVisible(showForDeadbody);
 	if (m_putall_button)
 	{
-		m_putall_button->Show(showForDeadbody);
+		m_putall_button->SetVisible(showForDeadbody);
 	}
 
 	bool showForTrade = m_currMenuMode == mmTrade && !pInput->GetControllerMode();
 
 	if (m_trade_button)
 	{
-		m_trade_button->Show(showForTrade);
+		m_trade_button->SetVisible(showForTrade);
 	}
 	if (m_trade_buy_button)
 	{
-		m_trade_buy_button->Show(showForTrade);
+		m_trade_buy_button->SetVisible(showForTrade);
 	}
 	if (m_trade_sell_button)
 	{
-		m_trade_sell_button->Show(showForTrade);
+		m_trade_sell_button->SetVisible(showForTrade);
 	}
 }
 
