@@ -152,11 +152,20 @@ void CUIStalkersRankingWnd::FillList()
 		int actor_place							= get_actor_ranking();
 
 		int sz = std::min(g_all_statistic_humans.size(),(size_t)m_items_count);
-		for(int i=0; i<sz; ++i){
+		for (int i = 0; i < sz; ++i)
+		{
 			CSE_ALifeTraderAbstract* pT			= (g_all_statistic_humans[i]).trader;
-			if(pT==pActorAbstract || (i== m_items_count-1&&actor_place>m_items_count-1)  ){
+			if (!pT || pT->object_id() == ALife::_OBJECT_ID(-1))
+			{
+				continue;
+			}
+
+			if(pT==pActorAbstract || (i== m_items_count-1&&actor_place>m_items_count-1)  )
+			{
 				AddActorItem					(&uiXml, actor_place+1, pActorAbstract);
-			}else{
+			}
+			else
+			{
 				AddStalkerItem					(&uiXml, i+1, pT);
 			}
 		}
