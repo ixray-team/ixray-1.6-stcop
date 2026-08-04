@@ -32,6 +32,7 @@ public:
 
     void Load();
     bool IsEnabled() const;
+    void SetScriptEnabled(bool enabled);
 
     float CalcRuckVolume(const CInventoryOwner& owner) const;
     float GetCapacity(const CInventoryOwner& owner) const;
@@ -58,6 +59,8 @@ private:
 
 private:
     bool _loaded = false;
+    // -1: inherit EnableInventoryVolume from engine_external; 0/1: Lua/IXR Options override
+    s8 _scriptOverride = -1;
     bool _blockPickupAtHardLimit = true;
     bool _recursiveContainerVolume = false;
 

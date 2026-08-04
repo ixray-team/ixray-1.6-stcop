@@ -48,6 +48,7 @@
 #include "inventory_upgrade_manager.h"
 #include "ActorHelmet.h"
 #include "DynamicWallmarkZone.h"
+#include "InventoryVolumeSystem.h"
 #include "../xrEngine/WristwatchSettings.h"
 #include "PickupManager.h"
 #include "UIActorMenu.h"
@@ -751,6 +752,16 @@ void set_snd_volume(float v)
 {
 	psSoundVFactor = v;
 	clamp(psSoundVFactor,0.0f,1.0f);
+}
+
+bool is_inventory_volume_enabled()
+{
+	return CInventoryVolumeSystem::Get().IsEnabled();
+}
+
+void set_inventory_volume_enabled(bool enabled)
+{
+	CInventoryVolumeSystem::Get().SetScriptEnabled(enabled);
 }
 #include "actor_statistic_mgr.h"
 void add_actor_points(const char* sect, const char* detail_key, int cnt, int pts)
@@ -1975,6 +1986,8 @@ void CLevel::script_register(lua_State *L)
 		def("physics_world",					&physics_world_scripted),
 		def("get_snd_volume",					&get_snd_volume),
 		def("set_snd_volume",					&set_snd_volume),
+		def("is_inventory_volume_enabled",		&is_inventory_volume_enabled),
+		def("set_inventory_volume_enabled",		&set_inventory_volume_enabled),
 		def("add_cam_effector",					&add_cam_effector),
 		def("add_cam_effector2",				&add_cam_effector2),
 		def("add_cam_effector2",				&add_cam_effector_without_fov),
