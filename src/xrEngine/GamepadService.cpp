@@ -27,6 +27,7 @@ CGamepadService::~CGamepadService()
     ClearTriggerEffect(true);
     ClearTriggerEffect(false);
     SetLED(0, 0, 255);
+	SetMicrophoneLED(false);
 
     DestroyHID();
 
@@ -83,6 +84,10 @@ void CGamepadService::FindHIDDevice()
                 CurrentDevice->product_id
             );
 			isWireless = CurrentDevice->interface_number == -1;
+            if (Type == EGamepadType::DualSense)
+            {
+				SetMicrophoneLED(true); // inside CGamepadService it is enabled, but we need to send packet
+            }
             SDL_hid_free_enumeration(Devices);
             return;
         }
@@ -549,4 +554,25 @@ void CGamepadService::EndOutputPacket(xr_vector<u8>& array)
     {
 		Msg(make_string<const char*>("! SDL Error while writing HID packet: %s", SDL_GetError()));
     }
+}
+
+void CGamepadService::SetMicrophoneLED(bool Value)
+{
+    MicrophoneLEDEnabled = Value;
+	if (Type != EGamepadType::DualSense || HidDevice == nullptr)
+	{
+		return;
+	}
+
+	xr_vector<u8> array;
+	array.resize(GetPacketSize());
+	u8* Report = BeginOutputPacket(array);
+
+	Report[1] = 0xFF;
+	Report[2] = 0x01; // Change LED
+	Report[9] = Value;
+    // Toggle microphone itself?
+    //Report[10] = Value ? 0x10 : 0x00;
+
+	EndOutputPacket(array);
 }
