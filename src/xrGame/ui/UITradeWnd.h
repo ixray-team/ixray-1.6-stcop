@@ -96,7 +96,7 @@ protected:
 	TIItemContainer		ruck_list;
 
 	virtual void		SetCurrentItem				(CUICellItem* itm);
-	virtual void		TradeShowMessage			(u32 money_actor, u32 money_patner);
+	virtual void		TradeShowMessage			(s64 money_actor, s64 money_patner);
 
 public:
 	virtual CInventory*			GetInventory				() { return m_pInv; }

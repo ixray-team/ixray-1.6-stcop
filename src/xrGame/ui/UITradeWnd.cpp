@@ -302,7 +302,7 @@ void CUITradeWnd::StopTrade()
 	bStarted						= false;
 }
 
-void CUITradeWnd::TradeShowMessage(u32 money_actor, u32 money_patner) 
+void CUITradeWnd::TradeShowMessage(s64 money_actor, s64 money_patner) 
 {
 	if (money_patner < 0)
 		UIDealMsg = CurrentGameUI()->AddCustomStatic("not_enough_money_other", true);

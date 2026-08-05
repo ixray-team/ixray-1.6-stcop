@@ -367,8 +367,8 @@ void CUIActorMenu::OnBtnPerformTradeBuy(CUIWindow* w, void* d)
 		return;
 	}
 
-	u32 actor_money    = m_pActorInvOwner->get_money();
-	u32 partner_money  = m_pPartnerInvOwner->get_money();
+	s64 actor_money    = (s64)m_pActorInvOwner->get_money();
+	s64 partner_money  = (s64)m_pPartnerInvOwner->get_money();
 	u32 partner_price  = CalcItemsPrice( m_pTradePartnerList, m_partner_trade, false );
 
 	actor_money        -= partner_price;
@@ -410,9 +410,9 @@ void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 		return;
 	}
 
-	u32 actor_money = m_pActorInvOwner->get_money();
-	u32 partner_money = m_pPartnerInvOwner->get_money();
-	u32 actor_price = CalcItemsPrice(m_pTradeActorList, m_partner_trade, true);
+	s64 actor_money = (s64)m_pActorInvOwner->get_money();
+	s64 partner_money = (s64)m_pPartnerInvOwner->get_money();
+	u64 actor_price = CalcItemsPrice(m_pTradeActorList, m_partner_trade, true);
 	bool partner_infinivite_money = m_pPartnerInvOwner->InfinitiveMoney();
 
 	actor_money += actor_price;
@@ -444,7 +444,7 @@ void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 	UpdateItemsPlace();
 }
 
-void CUIActorMenu::TradeShowMessage(u32 money_actor, u32 money_patner) 
+void CUIActorMenu::TradeShowMessage(s64 money_actor, s64 money_patner) 
 {
 	if (money_actor < 0)
 	{
