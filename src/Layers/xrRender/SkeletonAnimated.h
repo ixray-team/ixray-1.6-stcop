@@ -68,7 +68,7 @@ public:
 
 	virtual void				OnCalculateBones		();
 public:
-	u32											Update_LastTime;
+	float										Update_LastTime;
 
 	CBlendInstance*								blend_instances;
 
