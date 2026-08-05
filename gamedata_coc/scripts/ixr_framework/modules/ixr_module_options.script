@@ -17,6 +17,7 @@ local USE_CONSOLE_LOG = false
 local APPDATA_ALIAS = '$app_data_root$'
 local OPTIONS_FILE_NAME = "ixr_options.ixr"
 local DRAW_VAR_NAME = false
+local emulateGamepad = false
 
 local CONST_APPDATA_FOLDER = nil -- auto
 local options_scroll_wnd = nil
@@ -326,7 +327,11 @@ function _on_main_menu_update(_ref)
 		end
 	end
 	if _ref.main_xml ~= nil then
-		get_controll("framewindow_gamepad"):Show(main_menu.in_controller_mode() and ixr_options.is_options_opened())
+		if emulateGamepad then
+			get_controll("framewindow_gamepad"):Show(ixr_options.is_options_opened())
+		else
+			get_controll("framewindow_gamepad"):Show(main_menu.in_controller_mode() and ixr_options.is_options_opened())
+		end
 	end
 end
 
@@ -2356,7 +2361,54 @@ end
 function OnKeyboard(dik, keyboard_action)
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE then
-			on_ixr_options_exit_btn_clicked()
+			if get_addon_focus() then
+				set_addon_focus(false)
+			else
+				on_ixr_options_exit_btn_clicked()
+			end
+		elseif dik == DIK_keys.DIK_NUMPAD0 then
+			if emulateGamepad then
+				emulateGamepad = false
+			else
+				emulateGamepad = true
+			end
+		elseif dik == DIK_keys.DIK_NUMPAD5 then
+			if not get_addon_focus() and get_controll("addons_list_box"):GetSelectedItem() ~= nil then
+				set_addon_focus(true)
+			elseif get_addon_focus() then
+				local element = ixr_options.focusList[ixr_options.focusIndex][2]
+				OnGamepadAccept(element)
+			end
+		elseif dik == DIK_keys.DIK_NUMPAD8 then
+			action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_UP)
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+				if get_addon_focus() then
+					OnElementChangeSelection(-1, true)
+				else
+					get_controll("addons_list_box"):PrevItem()
+				end
+			end
+		elseif dik == DIK_keys.DIK_NUMPAD2 then
+			action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_DOWN)
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+				if get_addon_focus() then
+					OnElementChangeSelection(1, true)
+				else
+					get_controll("addons_list_box"):NextItem()
+				end
+			end
+		elseif dik == DIK_keys.DIK_NUMPAD4 then
+			if get_addon_focus() then
+				local element = ixr_options.focusList[ixr_options.focusIndex][2]
+				OnElementGpadPress(element, false)
+				action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_LEFT)
+			end
+		elseif dik == DIK_keys.DIK_NUMPAD6 then
+			if get_addon_focus() then
+				local element = ixr_options.focusList[ixr_options.focusIndex][2]
+				OnElementGpadPress(element, true)
+				action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_RIGHT)
+			end
 		end
 	end
 end
