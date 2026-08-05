@@ -450,3 +450,7 @@ end
 
 function WeatherManager:reset()	
 end
+
+function WeatherManager:get_weather_fx()
+	return self.weather_fx
+end
