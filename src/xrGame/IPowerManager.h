@@ -8,8 +8,6 @@
 #include "UICellItem.h"
 #include "PowerBank.h"
 
-class CUIProgressBar;
-
 class IPowerManager: 
 	public pureFrame
 {
@@ -17,17 +15,16 @@ private:
 	bool use_power_cells = false;
 	bool use_power_bank = false;
 	float power_drain_value = 0.f;
-	PowerCellData m_power_cell;
 	bool is_power_cell_installed = false;
 	CInventoryItem* selfObject = nullptr;
 	CObject* m_parent = nullptr;
 	u32 await_object_id = -1;
 	xr_vector<xr_string> m_allowed_power_cells_sections;
-	bool initialized = false;
 	bool is_enabled = false;
-	CUIProgressBar* m_progress_bar;
 
 public:
+	bool initialized = false;
+	PowerCellData m_power_cell;
 	IPowerManager();
 	~IPowerManager();
 
@@ -65,6 +62,4 @@ public:
 	bool UnistallPowerCell();
 	bool OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox);
 	bool OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox);
-	void CellUpdate(CUICellItem* oCUICellItem, Ivector2 cell_size, Ivector2 cell_space, Ivector2 itm_grid_size);
-	void OnCellsDestroy(CUICellItem* oCUICellItem);
 };

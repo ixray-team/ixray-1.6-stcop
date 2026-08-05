@@ -101,16 +101,8 @@ CUICellItem::CUICellItem()
 
 CUICellItem::~CUICellItem()
 {
-	if (m_b_destroy_childs) {
-		PIItem item = (PIItem)m_pData;
-		if (item) 
-		{
-			if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item->cast_inventory_item()))
-			{
-				oPowerManager->OnCellsDestroy(this);
-			}
-		}
-
+	if (m_b_destroy_childs) 
+	{
 		delete_data(m_childs);
 	}
 
@@ -298,10 +290,42 @@ void CUICellItem::Update()
 	{
 		if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item))
 		{
-			oPowerManager->CellUpdate(this, cell_size, cell_space, itm_grid_size);
+			if (!oPowerManager->initialized || !(oPowerManager->GetUsePowerCell() && oPowerManager->IsPowerCellInstalled()))
+			{
+				if (m_pCellsConditions.size())
+				{
+					m_pCellsConditions[0]->SetProgressPos(0);
+				}
+			}
+			else
+			{
+				if (m_pCellsConditions.size() && IsChild(m_pCellsConditions[0]))
+				{
+					const Fvector2 pos{
+						1.f,
+						itm_grid_size.y * (cell_size.y + cell_space.y) - (m_pCellsConditions[0]->GetHeight() + 16.f)
+					};
+
+					m_pCellsConditions[0]->SetWndPos(pos);
+					m_pCellsConditions[0]->SetProgressPos(0);
+					m_pCellsConditions[0]->Show(true);
+					if (oPowerManager->m_power_cell.current_power > 0 && oPowerManager->m_power_cell.max_power > 0)
+					{
+						m_pCellsConditions[0]->SetProgressPos(((oPowerManager->m_power_cell.current_power * 100) / oPowerManager->m_power_cell.max_power) / 100);
+					}
+				}
+				else
+				{
+					CUIProgressBar* bar = new CUIProgressBar();
+					bar->SetProgressPos(0.f);
+					bar->Show(false);
+					AttachChild(bar);
+					CUIXmlInit::InitProgressBar(GetXml(), "condition_progess_bar", 0, bar);
+					m_pCellsConditions.push_back(bar);
+				}
+			}
 		}
 
-		
 		if (PowerBank* pb = smart_cast<PowerBank*>(item))
 		{
 			if (m_pCellsConditions.empty())
