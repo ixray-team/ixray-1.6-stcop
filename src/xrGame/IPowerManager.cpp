@@ -6,22 +6,16 @@
 #include "ai_object_location.h"
 #include "alife_simulator_base.h"
 #include "alife_simulator.h"
-#include "../xrUI/Widgets/UIProgressBar.h"
 #include "UICellItem.h"
 #include "../xrUI/UIXmlInit.h"
 
 IPowerManager::IPowerManager()
 {
-	m_progress_bar = new CUIProgressBar();
-	m_progress_bar->SetAutoDelete(false);
-	m_progress_bar->SetProgressPos(0.f);
-	m_progress_bar->Show(false);
 	Device.seqFrame.Add(this, REG_PRIORITY_LOW - 5000);
 }
 
 IPowerManager::~IPowerManager()
 {
-	//xr_delete(m_progress_bar);
 	Device.seqFrame.Remove(this);
 }
 
@@ -273,55 +267,6 @@ bool IPowerManager::OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIProperti
 	}
 
 	return false;
-}
-
-
-void IPowerManager::CellUpdate(CUICellItem* oCUICellItem, Ivector2 cell_size, Ivector2 cell_space, Ivector2 itm_grid_size)
-{
-	if (!initialized || !(GetUsePowerCell() && IsPowerCellInstalled()))
-	{
-		if (m_progress_bar != nullptr)
-		{
-			m_progress_bar->SetProgressPos(0);
-		}
-
-		return;
-	}
-
-	if (oCUICellItem->IsChild(m_progress_bar))
-	{
-		const Fvector2 pos
-		{
-			1.f,
-			itm_grid_size.y * (cell_size.y + cell_space.y) - (m_progress_bar->GetHeight() + 16.f)
-		};
-
-		m_progress_bar->SetWndPos(pos);
-;		m_progress_bar->SetProgressPos(0);
-		m_progress_bar->Show(true);
-		if (m_power_cell.current_power > 0 && m_power_cell.max_power > 0)
-		{
-			m_progress_bar->SetProgressPos(((m_power_cell.current_power * 100) / m_power_cell.max_power) / 100);
-		}
-	}
-	else
-	{
-		oCUICellItem->AttachChild(m_progress_bar);
-		CUIXmlInit::InitProgressBar(oCUICellItem->GetXml(), "condition_progess_bar", 0, m_progress_bar);
-	}
-}
-
-void IPowerManager::OnCellsDestroy(CUICellItem* oCUICellItem)
-{
-	if (!(GetUsePowerCell() && IsPowerCellInstalled()))
-	{
-		return;
-	}
-
-	if (oCUICellItem->IsChild(m_progress_bar))
-	{
-		oCUICellItem->DetachChild(m_progress_bar);
-	}
 }
 
 void IPowerManager::net_save(NET_Packet& output_packet)
