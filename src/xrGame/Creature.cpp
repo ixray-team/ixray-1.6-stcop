@@ -325,7 +325,7 @@ void CCreature::shedule_Update	( u32 DT )
 	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL))
 		NET.pop_front();
 
-	float dt			= float(DT)/1000.f;
+	float dt			= Device.fTimeDelta;
 	
 	// *** general stuff
 	CScriptEntity::process_sound_callbacks();

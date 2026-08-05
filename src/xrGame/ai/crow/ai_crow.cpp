@@ -339,7 +339,7 @@ void CAI_Crow::renderable_Render	()
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
 void CAI_Crow::shedule_Update		(u32 DT)
 {
-	float fDT = float(DT)/1000.F;
+	float fDT = Device.fTimeDelta;
 	SpatialComponent->type &=~ESPATIAL_TYPE::VISIBLEFORAI;
 
 	inherited::shedule_Update(DT);
