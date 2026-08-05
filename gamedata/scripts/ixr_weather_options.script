@@ -1,0 +1,83 @@
+
+local delayed_actions = {}
+local game_loaded = false
+
+function on_game_start()
+	RegisterScriptCallback("on_key_press", function (key) 
+		if (key == DIK_keys.DIK_B) then
+			SemiLog(ffx_dump_utils.var_export(level_weathers.get_weather_manager().weather_graph))
+		end
+	end)
+
+	RegisterScriptCallback("on_game_present", function () 
+		game_loaded = true
+		for _, v in ipairs(delayed_actions) do
+			if v[1] ~= nil then
+				v[1]()
+			end
+		end
+		delayed_actions = {}
+	end)
+
+	local weather_graph = level_weathers.parse_weathers_graph()
+	
+	if level_weathers.is_sgim_enabled and level_weathers.is_sgim_enabled() then
+		SetOptionTitle("сgim2_opt_name__title") 					 -- Задаём заголовок для вкладки опций
+		SetOptionAddonName("сgim2_opt_name__addon") 				 -- Задаём название аддона для вкладки опций
+		SetOptionScriptVersion("2.0") 								 -- Задаём версию скрипта для вкладки опций
+		SetOptionAuthors("ZhoraCementov | IXRay Team") 				 -- Задаём авторов аддона для вкладки опций
+		SetOptionIcon("addons_icons\\ixray_cgim_addon_icon") 		 -- Задаём путь до иконки вкладки опций
+	else
+		SetOptionTitle("st_cop_deafult_weather_opt_name__title") 	 -- Задаём заголовок для вкладки опций
+		SetOptionAddonName("st_cop_deafult_weather_opt_name__addon") -- Задаём название аддона для вкладки опций
+		SetOptionScriptVersion("1.0") 								 -- Задаём версию скрипта для вкладки опций
+		SetOptionAuthors("IXRay Team") 								 -- Задаём авторов аддона для вкладки опций
+		SetOptionIcon("addons_icons\\ixray_cop_weather_addon_icon")  -- Задаём путь до иконки вкладки опций
+	end
+
+	RegisterScriptCallback("on_init_ixr_options", function (_ref)
+		for _, weather_group in ipairs(weather_graph["weather_groups"]) do
+			local data = weather_graph["weather_graph"][weather_group]
+				
+			_ref.register_option("st_weather_group_"..tostring(weather_group), tostring(weather_group).."_length_min", "st_weather_length_min", _ref.track_bar(data.weather_length_hours_min, 1.0, 24.0, 1.0, true), function (group, name, value) 
+				delayed_action(function () 
+					if level_weathers.get_weather_manager() then
+						level_weathers.get_weather_manager().weather_graph[weather_group].weather_length_hours_min = value
+					end
+				end, name, value)
+			end)
+			
+			_ref.register_option("st_weather_group_"..tostring(weather_group), tostring(weather_group).."_length_max", "st_weather_length_max", _ref.track_bar(data.weather_length_hours_max, 1.0, 24.0, 1.0, true), function (group, name, value) 
+				delayed_action(function () 
+					if level_weathers.get_weather_manager() then
+						level_weathers.get_weather_manager().weather_graph[weather_group].weather_length_hours_max = value
+					end
+				end, name, value)
+			end)
+			
+			for i, data in ipairs(data.weather_sections) do
+				_ref.register_option("st_weather_group_"..tostring(weather_group), tostring(weather_group).."_group_"..tostring(data.section).."_prob", "st_weather_group_preset_"..tostring(data.section), _ref.track_bar(math.ceil(data.chance * 100), 1, 100, 1, true), function (group, name, value) 
+					delayed_action(function () 
+						if level_weathers.get_weather_manager() then
+							for w_i, w_v in ipairs(level_weathers.get_weather_manager().weather_graph[weather_group].weather_sections) do
+								if level_weathers.get_weather_manager().weather_graph[weather_group].weather_sections[w_i].section == data.section then
+									level_weathers.get_weather_manager().weather_graph[weather_group].weather_sections[w_i].chance = tonumber(value) / 100
+								end
+							end
+						end
+					end, name, value)
+				end)
+			end
+			
+		end
+	end)
+end
+
+-- отложенные действия опций чтобы дождаться симуляции уровня
+function delayed_action(callable, option_name, option_value)
+	if game_loaded then
+		callable()
+	else
+		table.insert(delayed_actions, {callable, option_name, option_value})
+	end
+end

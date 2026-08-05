@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_cop_deafult_weather_opt_name__title"><text>Настройки оригинальной погоды</text></string>
+	<string id="st_cop_deafult_weather_opt_name__addon"><text>Динамическая погода (Зов Припяти)</text></string>
+
+	<string id="st_weather_group_dynamic_default"><text>Настройки динамической погоды для (Зов Припяти)</text></string>
+	
+	<string id="st_weather_length_min"><text>Минимальное время работы погодного цикла</text></string>
+	<string id="st_weather_length_max"><text>Максимальное время работы погодного цикла</text></string>
+	
+	<string id="st_weather_group_preset_clear"><text>Шанс перехода к ясной погоде</text></string>
+	<string id="st_weather_group_preset_cloudy"><text>Шанс перехода к облачной погоде</text></string>
+	<string id="st_weather_group_preset_rain"><text>Шанс перехода к дождливой погоде</text></string>
+	<string id="st_weather_group_preset_thunder"><text>Шанс перехода к штормовой погоде</text></string>
+
+</string_table>
