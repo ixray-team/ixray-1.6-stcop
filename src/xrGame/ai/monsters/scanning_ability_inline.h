@@ -127,7 +127,7 @@ void CScanningAbilityAbstract::frame_update(u32 dt)
 
 	if (scan_value < 0) scan_value = 0.f;
 	else if (scan_value > 0) {
-		scan_value -= decrease_value * float(dt) / 1000;
+		scan_value -= decrease_value * Device.fTimeDelta;
 	}
 }
 
