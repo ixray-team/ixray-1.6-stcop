@@ -938,3 +938,32 @@ function fix_controll_size(controll)
 	controll:SetWndPos(vector2():set(controll:GetWndPos().x * ui.get_current_kx(), controll:GetWndPos().y))
     controll:SetWidth(controll:GetWidth()*ui.get_current_kx())
 end
+
+
+local dbg_spots = {}
+local dbg_spots_filled = false
+
+function dbg_register_spot(id, hint)
+	if dev_debug and id and hint then 
+		if dbg_spots[id] == nil then
+			dbg_spots[id] = {}
+		end
+		
+		table.insert(dbg_spots[id], hint)
+		
+		dbg_spots_filled = true
+	end
+end
+		
+function dbg_remove_spots()
+	if not dev_debug and dbg_spots_filled then
+		for k, v in pairs(dbg_spots) do
+			for __, vv in pairs(v) do
+				level.map_remove_object_spot(k, vv)
+			end
+		end
+
+		dbg_spots_filled = false
+		dbg_spots = {}
+	end
+end
