@@ -1,240 +1,452 @@
+
+local USE_FILE_LOG = false
+local USE_CONSOLE_LOG = false
+local STORAGE_KEY = "ixr_level_weathers"
+
+local ini = system_ini()
+local game_levels_ini = get_cached_ini("game_levels.ltx")
+local graphs_ini = get_cached_ini("environment\\dynamic_weather_graphs.ltx")
+local game_ini = get_cached_ini("game_maps_single.ltx")
 local weather_manager = nil
---18.02.2008 - added dynamic weather
 
-class "WeatherManager"
-function WeatherManager:__init()
-	self.wfx_time = 0
-	self.weather_fx = nil
-	self.update_time = 0
-	self.update_level = ""
-	self.forced_weather_change_on_time_change = false
-	self.last_hour = 0
-		self.state={}
-	self.graphs={}
-	self.graphs_ini = ini_file("environment\\dynamic_weather_graphs.ltx")
-	if not self.graphs_ini then
-		abort("error when open weather_dynamic_graphs.ltx")
-	end
-end
 
--- Вызывается после load(). Состояние погоды уже загружено.
-function WeatherManager:reset()
-	printf("WeatherManager:WeatherManager():Reset()")
-	-- Загрузить кондлист с погодой.
-	local ini = ini_file("game.ltx")
-	local weather = utils.cfg_get_string(ini, level.name(), "weathers", db.actor, false, "", "[default]")
-	local postprocess = utils.cfg_get_string(ini, level.name(), "postprocess", db.actor, false, "")
-	if postprocess ~= nil then
-		printf("LEVEL POSTPROCESS: level: [%s], postprocess: [%s]", level.name(), postprocess)
-		level.add_pp_effector(postprocess, 999, true)
-	else
-		printf("LEVEL POSTPROCESS: level: [%s], postprocess: [none]", level.name())
-		level.remove_pp_effector(999)
-	end
-	if weather == "[default]" then
-		-- сетим дефолтовую погоду
-		self.weather_list = xr_logic.parse_condlist(db.actor, level.name(), "weather", "[default]")
-	else
-		self.weather_list = xr_logic.parse_condlist(db.actor, level.name(), "weather", weather)
-	end
-    self:select_weather(true)
-	self.last_hour=level.get_time_hours()
-end
-function WeatherManager:forced_weather_change()
-	self.forced_weather_change_on_time_change = true
-end
--- Обновляем погоду раз в час.
-function WeatherManager:update()
-	if(level.is_wfx_playing()) then
-		self.weather_fx = level.get_weather()
-	else
-		self.weather_fx = nil
-	end
-	if not benchmark.weather then
-		if self.last_hour~=level.get_time_hours() then
-				self.last_hour=level.get_time_hours()
-				for lvl,st in pairs(self.state) do
-				st.current_state=st.next_state
-				st.next_state=get_next_state(st.graph,st.current_state)
-				end
-				-- Устанавливаем погоду на текущем уровне
-				self:select_weather(false)
-		end
-	end
-end
-
-function WeatherManager:select_weather(now)
-	local weather = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.weather_list)
-	local graph=self:get_graph_by_name(weather)
-	local weather_section_name=""
-	-- Проверим, совпадает ли текущий граф уровня с полученным по кондлисту...
-	if graph==nil then
-		-- Переходим на статику
-		self.state[weather]=nil
-			weather_section_name=weather
-	else
-		-- Новая погода - динамическая. Проверим, нужно ли менять/устанавливать граф
-			if self.state[weather]==nil or self.state[weather].graph_name~=weather then
-			-- Граф изменился. Переходим на него.
-			self.state[weather]=self:init_by_graph(graph,weather)
-		-- else
-			-- now = false
-			end
-			-- Получаем название секции по текущему состоянию.
-			local st=self.state[weather]
-			--weather_section_name="dw_"..st.current_state.."_"..st.next_state.."_"..level.get_time_hours()
-			weather_section_name="default_"..st.current_state
-	end
-	if now then
-		self.last_hour=level.get_time_hours()
-	end
-	if self.forced_weather_change_on_time_change then
-		now = true
-		self.forced_weather_change_on_time_change = false
-	end
-	if not(self.weather_fx) then
-		level.set_weather(weather_section_name,now)
-	else
-		level.start_weather_fx_from_time(self.weather_fx, self.wfx_time)
-	end
-	printf("WEATHER: '%s' now '%s'", weather_section_name, tostring(now))
-	-- if xrs_news then
-		-- xrs_news.news_call(1,1,nil,nil,weather_section_name,nil)
-	-- end
-end
-
--- Возвращает начальное состояние погоды.
-function WeatherManager:init_by_graph(graph,graph_name)
-	local cur_state=get_next_state(graph,"")
-	local next_state=get_next_state(graph,cur_state)
-	return {current_state=cur_state,next_state=next_state,graph_name=graph_name,graph=graph}
-end
-
--- Возвращает одно из следующих состояний графа, согласно прописанным вероятностям.
-function get_next_state(graph,state)
-	local sum=0
-	for st,prob in pairs(graph) do
-		--if state==st then prob=prob*2 end
-		sum=sum+prob
-	end
-	local rnd=math.random()*sum
-	local next_state
-	for st,prob in pairs(graph) do
-		--if state==st then prob=prob*2 end
-		next_state=st
-		rnd=rnd-prob
-		if (rnd<=0) then
-			break
-		end
-	end
-	return next_state
-end
-
--- Устанавливаем состояние менеджера, распарсивая строку состояния
-function WeatherManager:set_state_as_string(ss)
-	self.state={}
-		for lvlstring in string.gmatch(ss,"[^;]+") do
-		local i,j,grname,curs,nexs=string.find(lvlstring,"([^=]+)=([^,]+),([^,]+)")
-		if not grname then
-			abort("WeatherManager:set_state_as_string: malformed state string. "..ss)
-		end
-		--local lvl_name=self:unpack_level(lvl)
-		local current_state=self:unpack_state(curs)
-		local next_state=self:unpack_state(nexs)
-		local graph_name=self:unpack_graph_name(grname)
-		local graph=self:get_graph_by_name(graph_name)
-		if graph==nil then
-		-- Старая сохранёнка? Будем считать что на этом уровне - статическая погода
-		else
-			self.state[graph_name]={current_state=current_state,next_state=next_state,graph_name=graph_name,graph=graph}
-		end
-	end
-end
-
--- Преобразуем текущее состояние менеджера в строку
-function WeatherManager:get_state_as_string()
-	local lvlstrings={}
-	for lvl_name,st in pairs(self.state) do
-		--local lvl=self:pack_level(lvl_name)
-		local curs=self:pack_state(st.current_state)
-		local nexs=self:pack_state(st.next_state)
-		local grn=self:pack_graph_name(st.graph_name)
-		table.insert(lvlstrings,grn.."="..curs..","..nexs)
-	end
-	return table.concat(lvlstrings,";")
-end
-
--- Получить граф (таблицу переходов состояний погоды) по его названию и названию игрового уровня
-function WeatherManager:get_graph_by_name(name)
-	if not self.graphs[name] then
-		self.graphs[name] = xr_s.parse_ini_section_to_array(self.graphs_ini,name)
-	end
-	return self.graphs[name]
-end
-
--- Запаковать название вершины графа
-function WeatherManager:pack_state(state)
-	-- Пока паковать не будем.
-	return state
-end
-
--- Распаковать название вершины графа
-function WeatherManager:unpack_state(st)
-	-- Пока паковать не будем
-	return st
-end
-
--- Запаковать название графа переходов погоды
-function WeatherManager:pack_graph_name(graph_name)
-	-- Пока паковать не будем.
-	return graph_name
-end
-
--- Распаковать название графа переходов погоды
-function WeatherManager:unpack_graph_name(grn)
-	-- Пока паковать не будем
-	return grn
-end
-
-function WeatherManager:load(F)
-	set_save_marker(F, "load", false, "WeatherManager")
-	printf("WEATHER LOAD")
-	--self.update_level  = F:r_stringZ();
-	local state_string = F:r_stringZ();
-	printf("str = "..state_string)
-	if state_string == "" then
-		printf("str = empty string")
-	end
-	self:set_state_as_string(state_string)
-	self.update_time = F:r_u32();
-	local str = F:r_stringZ()
-	if(str~="nil") then
-		self.weather_fx = str
-		self.wfx_time = F:r_float()
-	end
-	set_save_marker(F, "load", true, "WeatherManager")
-end
-
-function WeatherManager:save(F)
-	set_save_marker(F, "save", false, "WeatherManager")
-	printf("WEATHER SAVE")
-	--F:w_stringZ(self.update_level);
-	printf("str = "..tostring(self:get_state_as_string()))
-	if self:get_state_as_string() == "" then
-		printf("str = empty string")
-	end
-	F:w_stringZ(self:get_state_as_string())
-	F:w_u32(self.update_time)
-	F:w_stringZ(tostring(self.weather_fx))
-	if(self.weather_fx) then
-		F:w_float(level.get_wfx_time())
-	end
-	set_save_marker(F, "save", true, "WeatherManager")
-end
-
-function get_weather_manager ()
+-- ###############################################################################
+function get_weather_manager()
 	if weather_manager == nil then
 		weather_manager = WeatherManager()
 	end
 	return weather_manager
+end
+
+-- ###############################################################################
+
+local is_sgim = false
+function is_sgim_enabled()
+	return is_sgim
+end
+
+function parse_weathers_graph()
+	local weather_graph = {}
+	local weather_groups = {}
+	
+	if not ffx_ltx_utils.ini_section_exists(graphs_ini, "weather_periods") then
+		IXRLog( "WEATHER:: missing weather_periods")
+		if ffx_ltx_utils.ini_section_exists(graphs_ini, "dynamic_default") then
+			IXRLog( "WEATHER:: exists dynamic_default")
+			
+			local dynamic_default_weather_sections = {}
+			for k, v in pairs(ffx_ltx_utils.parse_section_to_array(graphs_ini, "dynamic_default")) do
+				table.insert(dynamic_default_weather_sections, {
+					section = k, 
+					chance = tonumber(v)
+				})
+			end
+			
+			weather_graph["dynamic_default"] = {
+				weather_group = weather_group,
+				weather_length_hours_min = 3,
+				weather_length_hours_max = 6,
+				weather_sections = dynamic_default_weather_sections
+			}
+			
+			is_sgim = false
+			
+			return {
+				["weather_graph"] = weather_graph,
+				["weather_groups"] = {"dynamic_default"}
+			}
+		else
+			IXRLog( "WEATHER:: sections (weather_periods or dynamic_default) not found")
+			return 
+		end
+	end
+	
+	
+	local graph_sections = ffx_ltx_utils.parse_section_to_array(graphs_ini, "weather_periods")
+
+	for weather_group, hours_string in pairs(graph_sections) do
+		local hours = ffx_string_utils.parse_separated_numbers(hours_string, {})
+		local weather_sections = {}
+		
+		for k, v in pairs(ffx_ltx_utils.parse_section_to_array(graphs_ini, weather_group)) do
+			table.insert(weather_sections, {
+				section = k, 
+				chance = tonumber(v)
+			})
+		end
+		
+		table.insert(weather_groups, weather_group)
+		weather_graph[weather_group] = {
+			weather_group = weather_group,
+			weather_length_hours_min = hours[1],
+			weather_length_hours_max = hours[2],
+			weather_sections = weather_sections
+		}
+	end
+	
+	IXRLog( "WEATHER_GRAPH::" .. tostring(ffx_json_lib.json_encode(weather_graph)))
+	
+	is_sgim = true
+	
+	return {
+		["weather_graph"] = weather_graph,
+		["weather_groups"] = weather_groups
+	}
+end
+
+function get_weather_for_level()
+	if game_ini and game_ini:section_exist(level.name()) then
+		local section_lines = ffx_ltx_utils.parse_section_to_array(game_ini, level.name())
+		if type(section_lines) == "table" and section_lines["weathers"] ~= nil then
+			return section_lines["weathers"]
+		end
+	end
+	
+	return nil
+end
+
+class "WeatherManager"
+function WeatherManager:__init()
+	
+	IXRLogUseFileLog(USE_FILE_LOG)
+	IXRLogUseConsoleLog(USE_CONSOLE_LOG)
+	
+	self.last_period_change_hour = level.get_time_hours()
+	self.weather_fx = nil
+	self.loaded = false
+	self.processing_allowed = true
+	self.force_switch_weather_once = false
+	
+	self:CheckAndSwitchToIndoor()
+	
+	local data = parse_weathers_graph()
+	self.weather_graph = data["weather_graph"]
+	self.weather_groups = data["weather_groups"]
+	self.norepeat_cycles_size = 4
+	
+	self.count_weather_groups = ffx_table_utils.get_size(self.weather_groups)
+	
+	if self.count_weather_groups <= self.norepeat_cycles_size then
+		self.norepeat_cycles_size = self.count_weather_groups - 1
+	end
+	
+	if self.norepeat_cycles_size <= 0 then
+		self.norepeat_cycles_size = 1
+	end
+
+	self.ffx_rand = FFxRandom(time_global(), 0)
+	
+	self.storage = {
+		w_section = nil,
+		cycle_group_length = 0,
+		section_length = 0,
+		current_group = nil,
+		next_section_timer = 0,
+		next_cycle_timer = 0,
+		time_minutes = 0,
+		last_time = 0,
+		last_used_cycles = {},
+		is_wfx_palying = false,
+		is_wfx_initialized = false,
+		wfx_section = nil,
+		wfx_left_time = 0,
+		rand_counter = self.ffx_rand:get_counter(),
+		rand_seed = self.ffx_rand:get_seed(),
+	}
+end
+
+function WeatherManager:CheckAndSwitchToIndoor()
+	local default_weather_for_current_level = get_weather_for_level()
+	if default_weather_for_current_level and string.find(default_weather_for_current_level, "indoor") then
+		self.processing_allowed = false
+		level.set_weather(default_weather_for_current_level, true)
+		IXRLog("INDOOR Found in default weather for current level")
+	end
+end
+
+function WeatherManager:IsDuplicateCycle(r_cycle)
+	for k, v in pairs(self.storage.last_used_cycles) do
+		if v == r_cycle then
+			return true
+		end
+	end
+	
+	return false
+end
+
+-- Возвращает список групп, которых нет в истории последних использованных
+-- (скользящее окно размером self.norepeat_cycles_size).
+function WeatherManager:GetGroupsNotInRecentHistory()
+    local available = {}
+    for _, group_name in ipairs(self.weather_groups) do
+        local is_in_history = false
+        for _, used_group in ipairs(self.storage.last_used_cycles) do
+            if group_name == used_group then
+                is_in_history = true
+                break
+            end
+        end
+        if not is_in_history then
+            table.insert(available, group_name)
+        end
+    end
+    return available
+end
+
+-- Добавляет группу в историю, сохраняя размер скользящего окна
+-- (удаляет самую старую запись, если превышен лимит).
+function WeatherManager:PushToHistory(group_name)
+    table.insert(self.storage.last_used_cycles, group_name)
+    if #self.storage.last_used_cycles > self.norepeat_cycles_size then
+        table.remove(self.storage.last_used_cycles, 1)
+    end
+end
+
+-- Выбирает случайную группу погоды, избегая повторения недавних.
+function WeatherManager:GetNextRandomWeatherGroup()
+    -- Если всего одна группа, или её размер равен размеру окна – возвращаем её же
+    if self.count_weather_groups == 1 and self.count_weather_groups == self.norepeat_cycles_size then
+        return self.weather_groups[1]
+    end
+
+    local available = self:GetGroupsNotInRecentHistory()
+    local chosen_group = available[self.ffx_rand:next_int_range(1, #available)]
+
+    self:PushToHistory(chosen_group)
+
+    return chosen_group
+end
+
+-- Выбирает случайную секцию погоды из указанной группы используя шансы на выпадение пока не будет выбрана одна из секций
+function WeatherManager:GetRandomWeatherSectionWithProbability(group)
+	if #self.weather_graph[group].weather_sections == 1 then
+		return self.weather_graph[group].weather_sections[1].section
+	end
+	
+	local r_section = nil
+	local err_cnt = 0
+	while (r_section == nil or r_section == self.storage.w_section) do
+		for k, v in pairs(self.weather_graph[group].weather_sections) do
+			if self.ffx_rand:next_float() < v.chance then
+				r_section = v.section
+			end
+		end
+		err_cnt = err_cnt + 1
+		if err_cnt > 200 then
+			r_section = self.weather_graph[group].weather_sections[self.ffx_rand:next_int_range(1, #self.weather_graph[group].weather_sections)].section
+			IXRLog("Weather group ["..group.."] limit probes reached selected random section: "..r_section)
+			return r_section
+		end
+	end
+	
+	return r_section
+end
+
+-- Устанавливает следующую случайную секцию погоды среди выбранной группы погоды
+function WeatherManager:InstallNextRandWeatherSection()
+	if self.weather_graph[self.storage.current_group] == nil then
+		return
+	end
+	
+	self.storage.section_length = self.storage.cycle_group_length / (#self.weather_graph[self.storage.current_group].weather_sections)
+	self.storage.next_section_timer = self.storage.time_minutes + (60 * self.storage.section_length)
+	self.storage.w_section = self:GetRandomWeatherSectionWithProbability(self.storage.current_group)
+end
+
+-- обновление погоды
+function WeatherManager:update()
+	if not db.actor then
+		return
+	end
+
+	-- первая инициализация 
+	if not self.loaded then
+		IXRLog("ON LOAD FIRST UPDATE")
+		self.storage = GetStorageVar(STORAGE_KEY, self.storage)
+		
+		if not self.storage.rand_seed then
+			self.storage.rand_counter = self.ffx_rand:get_counter()
+			self.storage.rand_seed = self.ffx_rand:get_seed()
+			IXRLog("ON NEW GAME RESEED FFxRANDOM")
+		end
+		
+		-- устанавливаем состояние рандомизатора (позволяет не хранить в сохранениях циклы погоды на будущее)
+		self.ffx_rand:set_state(
+			self.storage.rand_seed,
+			self.storage.rand_counter
+		)
+
+		-- в загруженных данных нет секции погоды пробуем сделать тик обдейта тобы сгенерировать случайную на следующем кадре
+		if not self.storage.w_section then
+			self:tick()
+			IXRLog("ON NEW GAME RESEED WEATHER SECTION")
+		end
+
+		-- применяем секцию погоды с последнего сохранения если есть
+		if tostring(self.storage.w_section) ~= "nil" then
+			IXRLog("Use saved weather section: "..self.storage.w_section)
+			self:play_weather(self.storage.w_section, true)
+		else
+			IXRLog("Saved weather section not exists")
+		end
+		
+		-- фактически проверка на наличие требования indoor погоды из конфига просто прерываем обновления устанавив погоду
+		if not self.processing_allowed then
+			IXRLog("INDOOR State")
+			level.set_weather("indoor", true)
+		end
+		
+		self.storage.is_wfx_initialized = false
+		self.loaded = true
+	end
+
+	-- данные загружены и обработка тиков разрешена т.е не indoor
+	if self.loaded and self.processing_allowed then
+		-- проверяем надобность воспроизводить эффекты выброса
+		if not self.storage.is_wfx_initialized then
+			self.storage.is_wfx_initialized = true
+			self:play_vfx(self.storage.wfx_section)
+			IXRLog("ON INIT LAST VFX")
+		end
+		
+		if self.storage.last_time ~= level.get_time_minutes() then
+			self.storage.last_time = level.get_time_minutes()
+			self.storage.time_minutes = self.storage.time_minutes + 1
+			self:tick()
+		end
+	end
+end
+
+
+function WeatherManager:on_wfx_start()
+	self.storage.is_wfx_palying = true
+	self.storage.is_wfx_initialized = true
+	self.storage.wfx_section = level.get_weather()
+	self.storage.wfx_left_time = level.get_wfx_time()
+	IXRLog("on_wfx_start")
+end
+
+function WeatherManager:on_wfx_update()
+	self.storage.wfx_section = level.get_weather()
+	self.storage.wfx_left_time = level.get_wfx_time()
+		
+	IXRLog("WFX PROCESSING:" ..tostring(level.get_wfx_time()) .. " -> " .. tostring(level.get_weather()))
+end
+
+function WeatherManager:on_wfx_end()
+	self.storage.is_wfx_palying = false
+	self.storage.is_wfx_initialized = false
+	self.storage.wfx_section = nil
+	self.storage.wfx_left_time = 0
+	IXRLog("on_wfx_end")
+end
+
+function WeatherManager:tick()
+	-- для indoor
+	if not self.processing_allowed then
+		return
+	end
+
+	if (level.is_wfx_playing()) then
+		if not self.storage.is_wfx_palying then
+			self:on_wfx_start()
+		end
+	else
+		if self.storage.is_wfx_palying then
+			self:on_wfx_end()
+		end
+	end
+
+	if self.storage.is_wfx_palying then
+		self:on_wfx_update()
+		return
+	end
+	
+	local has_changed = false
+	if self.storage.time_minutes >= self.storage.next_cycle_timer then
+		self.storage.current_group = self:GetNextRandomWeatherGroup()
+		if self.storage.current_group == nil then
+			self.storage.current_group = self:GetNextRandomWeatherGroup()
+		end
+		
+		if self.storage.current_group ~= nil then
+			self.storage.cycle_group_length = self.ffx_rand:next_float_range(
+				self.weather_graph[self.storage.current_group].weather_length_hours_min,
+				self.weather_graph[self.storage.current_group].weather_length_hours_max
+			)
+		else
+			IXRLog("EMPTY RANDOM WEATHER GROUP")
+		end
+		
+		self.storage.next_cycle_timer = self.storage.time_minutes + (60 * self.storage.cycle_group_length)
+		
+		self:InstallNextRandWeatherSection()
+		has_changed = true
+	end
+
+	if self.storage.next_section_timer < self.storage.time_minutes then
+		self:InstallNextRandWeatherSection()
+		has_changed = true
+	end
+
+	if has_changed then
+		self:play_weather(self.storage.w_section)
+	end
+
+	IXRLog("group_length:" .. tostring(math.ceil(self.storage.cycle_group_length)) .. " | " .. " preset_length:" .. tostring(math.ceil(self.storage.section_length)) .. " cur_group: " .. tostring(self.storage.current_group) .. " cur_preset: " .. tostring(self.storage.w_section) .." curr_minutes: ".. tostring(self.storage.time_minutes).." next_group_timer: ".. tostring(math.ceil(self.storage.next_cycle_timer)) .." next_preset_timer: ".. tostring(math.ceil(self.storage.next_section_timer)))
+end
+
+function WeatherManager:play_weather(section, is_force)	
+	if is_force == nil then
+		is_force = false
+	end
+	
+	if section ~= nil then
+		IXRLog("RUN WEATHER: default_" .. tostring(section))
+		if self.force_switch_weather_once then	
+			level.set_weather("default_" .. section, true)
+			self.force_switch_weather_once = false
+		else
+			level.set_weather("default_" .. section, is_force)
+		end
+	else
+		IXRLog("NULL WEATHER SECTION SKIP")
+	end
+end
+
+function WeatherManager:play_vfx(section)	
+	if section ~= nil then
+		IXRLog("RUN VFX: " .. tostring(section))
+		level.set_weather_fx(section)
+	else
+		IXRLog("NULL VFX SECTION SKIP")
+	end
+end
+
+function WeatherManager:forced_weather_change() -- выброс стоп
+	self.force_switch_weather_once = true
+	self.storage.next_cycle_timer = self.storage.time_minutes
+end
+
+function WeatherManager:load(F)
+end
+
+function WeatherManager:load_state(m_data)
+end
+
+function WeatherManager:save(F)
+	SetStorageVar(STORAGE_KEY, self.storage)
+end
+
+function WeatherManager:save_state(m_data)
+	SetStorageVar(STORAGE_KEY, self.storage)
+end
+
+function WeatherManager:select_weather(now)
+end
+
+function WeatherManager:finalize()
+end
+
+function WeatherManager:reset()	
 end
