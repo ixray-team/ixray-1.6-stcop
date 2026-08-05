@@ -991,6 +991,13 @@ function sim_squad_scripted:target_precondition(squad)
 		return false
 	end
 
+	local smart = alife():object(self.smart_id)
+	if smart then
+		if tonumber(smart.props["base"]) > 0 then
+			return false
+		end
+	end
+
 	local self_params = squad_params.squad[self.player_id]
 	if self_params == nil or self_params.prec(squad, self) == false then
 		return false
