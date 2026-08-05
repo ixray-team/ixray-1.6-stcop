@@ -15,4 +15,8 @@
 	<string id="st_ixray_global_options_draw_var_names"> 
 		<text>Отображать имена переменных в заголовке опций</text>
 	</string>
+	
+	<string id="st_ixray_global_options__draw_debug"> 
+		<text>Отображение симуляции жизни</text>
+	</string>
 </string_table>

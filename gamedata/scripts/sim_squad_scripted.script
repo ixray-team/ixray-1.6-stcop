@@ -1028,10 +1028,12 @@ function sim_squad_scripted:show()
                 spot = spots[squad_relation_to_actor] or ""
             end
         end
-        
-        if(spot ~= "") then
+		
+		
+		if(spot ~= "") then
             if spot == self.spot_section then
                 level.map_change_spot_hint(self.current_spot_id, self.spot_section, self:get_squad_props())
+				dbg_register_spot(self.current_spot_id, self.spot_section)
                 return
             end
             if self.spot_section == nil then
@@ -1041,11 +1043,17 @@ function sim_squad_scripted:show()
                 level.map_add_object_spot(self.current_spot_id, spot, self:get_squad_props())
             end
             self.spot_section = spot
+			
         elseif(self.spot_section~=nil) then
             level.map_remove_object_spot(self.current_spot_id, self.spot_section)
             self.spot_section = nil
         end
-    end)
+		
+		dbg_register_spot(self.current_spot_id, self.spot_section)
+		dbg_register_spot(self.current_spot_id, spot)
+		dbg_remove_spots()
+
+	end)
 end
 
 function sim_squad_scripted:get_squad_props()

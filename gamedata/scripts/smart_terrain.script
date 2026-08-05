@@ -1026,6 +1026,8 @@ function se_smart_terrain:show()
             end
             level.map_add_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..spot, self:get_smart_props())
             self.smrt_showed_spot = spot
+			dbg_register_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..spot)
+			dbg_remove_spots()
         else
     
         if(self.smrt_showed_spot~=nil) and
