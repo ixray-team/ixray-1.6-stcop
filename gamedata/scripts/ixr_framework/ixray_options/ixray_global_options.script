@@ -9,5 +9,9 @@ function on_game_start()
 		_ref.register_option("st_ixray_global_options_params", "switch_draw_vars", "st_ixray_global_options_draw_var_names", _ref.check_box(false), function (group, name, value) 
 			_ref.set_draw_variable_names_state(value)
 		end)
+		
+		_ref.register_option("st_ixray_global_options_params", "_g_draw_debug", "st_ixray_global_options__draw_debug", _ref.check_box(false), function (group, name, value) 
+			_G.dev_debug = value
+		end)
 	end)
 end
