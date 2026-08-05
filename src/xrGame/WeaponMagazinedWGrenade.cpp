@@ -763,11 +763,11 @@ void CWeaponMagazinedWGrenade::switch2_SwitchMode()
 
 	if (m_bGrenadeMode && m_eSoundsFlags.test(ESoundsFlags::sf_switch_g))
 	{
-		PlaySound("sndSwitchG", get_LastFP());
+		PlaySound("sndSwitchG", get_LastFP(), true);
 	}
 	else
 	{
-		PlaySound("sndSwitch", get_LastFP());
+		PlaySound("sndSwitch", get_LastFP(), true);
 	}
 
 	PlayAnimModeSwitch();
