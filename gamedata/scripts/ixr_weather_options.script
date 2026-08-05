@@ -3,12 +3,10 @@ local delayed_actions = {}
 local game_loaded = false
 
 function on_game_start()
-	RegisterScriptCallback("on_key_press", function (key) 
-		if (key == DIK_keys.DIK_B) then
-			SemiLog(ffx_dump_utils.var_export(level_weathers.get_weather_manager().weather_graph))
-		end
-	end)
-
+	if not level_weathers or not level_weathers.parse_weathers_graph then
+		return
+	end
+	
 	RegisterScriptCallback("on_game_present", function () 
 		game_loaded = true
 		for _, v in ipairs(delayed_actions) do
