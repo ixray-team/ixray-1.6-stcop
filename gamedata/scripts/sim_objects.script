@@ -69,6 +69,7 @@ end
 
 --' Показать объект на карте
 function show_object_spot(obj)
+	dbg_remove_spots()
 	if objects[obj.id].flags.marked then
 		return
 	end
@@ -80,12 +81,14 @@ function show_object_spot(obj)
 
 	local community = getObjComunity(obj)
 	if(_G.dev_debug) then
-		level.map_add_object_spot(obj.id, "alife_presentation_"..community, obj:name())
+		level.map_add_object_spot(obj.id, "alife_presentation_"..community, obj:name())	
+		dbg_register_spot(obj.id, "alife_presentation_"..community)
 	end
 end
 
 --' Убрать объект с карты
 function hide_object_spot(obj)
+	dbg_remove_spots()
 	if not objects[obj.id].flags.marked then
 		return
 	end
