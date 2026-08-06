@@ -7,13 +7,13 @@
 	Description: Script for collect exterbal engine calls
 ]]
 
-function on_frame()
-	SemiLog("[LUA] OnFrame tick.")
-end
-
 ------------------------------------------------------------------------------------------------------
 -- ENGINE EXPORTS!!!
 ------------------------------------------------------------------------------------------------------
+function on_frame()
+	if ixr_framework then ixr_framework.get_framework().on_frame() end
+end
+
 -- called when an inventory item is eaten/used
 -- returning false will prevent the item from being used
 function CInventory__eat(npc_gobj, item_gobj)
