@@ -71,18 +71,7 @@ function cfg_parse_separated_strings(section, parameter, def_value)
 		return def_value
 	end
 		
-	local strings_list = {}
-	for string_part in string.gfind(string_with_separators, "([%w_%-.\\]+)%p*") do
-		if string_part then
-			table.insert(strings_list, string_part)
-		end
-	end
-	
-	if #strings_list == 0 then
-		return def_value
-	end
-	
-	return strings_list
+	return ffx_string_utils.parse_separated_strings(string_with_separators, def_value)
 end
 
 function cfg_parse_separated_numbers(section, parameter, def_value)
@@ -95,23 +84,7 @@ function cfg_parse_separated_numbers(section, parameter, def_value)
 		return def_value
 	end
 		
-    local cleaned = string.gsub(string_with_separators, "[^%d%,%.]", "")
-    
-    local numbers_list = {}
-    for num in string.gmatch(cleaned, "([^,]+)") do
-        if num and num ~= "" then
-            local number = tonumber(num)
-            if number then
-                table.insert(numbers_list, number)
-            end
-        end
-    end
-    
-    if #numbers_list == 0 then
-        return def_value
-    end
-    
-    return numbers_list
+    return ffx_string_utils.parse_separated_numbers(string_with_separators, def_value)
 end
 
 function cfg_parse_separated_bools(section, parameter, def_value)
@@ -123,26 +96,8 @@ function cfg_parse_separated_bools(section, parameter, def_value)
 	if not string_with_values then
 		return def_value
 	end
-		
-     local cleaned = string.lower(string_with_values)
-    cleaned = string.gsub(cleaned, "[^%w%,]", "")
     
-    local boolean_list = {}
-    for val in string.gmatch(cleaned, "([^,]+)") do
-        if val and val ~= "" then
-            if val == "true" or val == "1" or val == "yes" or val == "on" then
-                table.insert(boolean_list, true)
-            elseif val == "false" or val == "0" or val == "no" or val == "off" then
-                table.insert(boolean_list, false)
-            end
-        end
-    end
-    
-    if #boolean_list == 0 then
-        return def_value
-    end
-    
-    return boolean_list
+    return ffx_string_utils.parse_separated_bools(string_with_values, def_value)
 end
 
 -- safe
@@ -159,20 +114,23 @@ function get_translated_section_name(real_sect)
 	end
 end
 
+
 function parse_section_to_array(ini, section)
-	local tmp=nil
-	if ini and ini:section_exist(section) then
-		tmp={}
-		local result, id, value = nil, nil, nil
-		
-		for a=0,ini:line_count(section)-1 do
-			result, id, value = ini:r_line(section, a, "", "")
-			
-			if id~=nil then
-				id = ffx_string_utils.trim(id)
-				if id ~= "" and id ~= nil then
-					tmp[trim(id)] = ffx_string_utils.trim(value)
-				end
+	local tmp = {}
+	local result = nil
+	local id = nil
+	local value = nil
+	
+	if not ini or not ini:section_exist(section) then
+		return tmp
+	end
+
+	for i=0, ini:line_count(section)-1 do
+		result, id, value = ini:r_line(section, i, "", "")
+		if id ~= "" and id ~= nil then
+			id = ffx_string_utils.trim(id)
+			if id ~= "" and id ~= nil then
+				tmp[id] = ffx_string_utils.trim(value)
 			end
 		end
 	end
