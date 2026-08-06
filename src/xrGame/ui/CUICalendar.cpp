@@ -438,7 +438,7 @@ void CUICalendar::Refresh()
     const u32 offset = MondayIndex(_viewYear, _viewMonth, 1);
 
     xr_vector<u8> marks(len + 1, 0);
-    if (CActor* actor = Actor())
+    if (CActor* actor = g_actor)
     {
         for (GAME_NEWS_DATA& item : actor->game_news_registry->registry().objects())
         {
