@@ -22,10 +22,12 @@
 local SCRIPT_ENABLED = true
 local DEBUG_FILE_LOGS = true
 local DEBUG_CONSOLE_LOGS = false
+local USE_LOGS_TIME = true
 
 local ixr_framework = {
 	use_file_log = DEBUG_FILE_LOGS,
 	use_console_log = DEBUG_CONSOLE_LOGS,
+	use_time_log = USE_LOGS_TIME,
 	dump_g_exports_on_load_level = true,
 	modules_entry_point_name = "init",
 	modules_collect_info_function_name = "get_module_info",
@@ -52,6 +54,14 @@ end
 --#####################################################
 --#				PUBLIC EXPORTS						  #
 --#####################################################
+
+--[[
+Description: get reference to internal private methods
+Return: (table) - ixr_framework ref
+]]
+function get_framework()
+	return ixr_framework
+end
 
 --[[
 Description: Initializes the module and sets up necessary configurations.
@@ -131,14 +141,28 @@ local counter = 0
 --#####################################################
 --#					SYSTEM	LOGIC					  #
 --#####################################################
+
+--[[
+Description: on frame ticks handler
+Return: (void)
+--]]
+function ixr_framework.on_frame()
+	if ixr_logs then ixr_logs.update() end
+	if ixr_tracy_profiler then ixr_tracy_profiler.on_framework_frame_update() end
+end
+
 function ixr_framework.init(log_reinit)
 	counter = counter + 1
 	if log_reinit == nil then
 		log_reinit = true
 	end
 	
+	ixr_logs.set_use_file_log(ixr_framework.use_file_log)
+	ixr_logs.set_use_console_log(ixr_framework.use_console_log)
+	ixr_logs.set_use_time(ixr_framework.use_time_log)
+
 	if editor() then
-		ixr_framework.toLog("USED EDITOR MODE SKIP INIT", true)
+		ixr_logs.log("USED EDITOR MODE SKIP INIT")
 		return
 	end
 	
@@ -158,12 +182,12 @@ function ixr_framework.init(log_reinit)
 		return;
 	end
 	
+	if ixr_tracy_profiler then ixr_tracy_profiler.on_framework_init_begin() end
+	
 	ixr_framework.dynamic_vars.is_init_processing = true
 	ixr_framework.dynamic_vars.is_initialized = false
 	ixr_framework.on_init_begin()
 	
-	UpdateTracyState()
-
 	-- external configure wia addon system
 	if __ixr_override_framework_load_sub_modules then
 		ixr_framework.on_init_overrided_modules()
@@ -177,6 +201,7 @@ function ixr_framework.init(log_reinit)
 	ixr_framework.dynamic_vars.is_init_processing = false
 	--ixr_framework.dump_g_exports()
 	ixr_framework.on_init_end()
+	if ixr_tracy_profiler then ixr_tracy_profiler.on_framework_init_end() end
 end
 
 function ixr_framework.is_module_registered_by_alias_name(alias_name)
@@ -249,12 +274,12 @@ function ixr_framework.init_module_by_alias(alias_name)
 		return false
 	end
 	
-	ixr_framework.toLog("::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:" .. tostring(module_info.script_name) .. " :::", false)
+	ixr_logs.log("::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:" .. tostring(module_info.script_name) .. " :::")
 	
 	local init_result = _G[module_info.script_name][module_info.init_function_name]()
 	
 	ixr_framework.dynamic_vars.registered_modules[module_info.alias_name].initialized = true
-	ixr_framework.toLog("::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:" .. tostring(module_info.script_name) .. " CALL RESPONSE:["..tostring(init_result).."] :::", false)
+	ixr_logs.log("::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:" .. tostring(module_info.script_name) .. " CALL RESPONSE:["..tostring(init_result).."] :::")
 	
 	return true
 end
@@ -332,7 +357,17 @@ function ixr_framework.load_module_by_script_name(script_name, options)
 	module_info.initialized = false
 	
 	ixr_framework.dynamic_vars.registered_modules[module_info.alias_name] = module_info
-	ixr_framework.toLog("\n\n::: [IX-Ray Framework] [REGISTER MODULE]:\n" .. string.format(" --------------------- script_name: %s \n --------------------- alias_name: %s \n --------------------- category: %s \n --------------------- version: %s \n --------------------- init_function_name: %s \n --------------------- authors: %s \n --------------------- description: %s", module_info.script_name, module_info.alias_name, module_info.category, module_info.version, module_info.init_function_name, module_info.authors, module_info.description), false)
+	
+	ixr_logs.empty_line(2)
+	ixr_logs.log("::: [IX-Ray Framework] [REGISTER MODULE]:")
+	local pref = "---------------------"
+	ixr_logs.log(pref.." script:"..module_info.script_name)
+	ixr_logs.log(pref.." alias:"..module_info.alias_name)
+	ixr_logs.log(pref.." category:"..module_info.category)
+	ixr_logs.log(pref.." version:"..module_info.version)
+	ixr_logs.log(pref.." init function_name:"..module_info.init_function_name)
+	ixr_logs.log(pref.." authors:"..module_info.authors)
+	ixr_logs.log(pref.." description:"..module_info.description)
 	
 	return ixr_framework.init_module_by_alias(module_info.alias_name)
 end
@@ -341,19 +376,9 @@ end
 --#####################################################
 --#					SYSTEM	TOOLS					  #
 --#####################################################
-function ixr_framework.AssertWithLog(text, overwrite)
-	ixr_framework.toLog(text, false, overwrite)
+function ixr_framework.AssertWithLog(text, clear_log)
+	ixr_logs.log(text, clear_log)
 	ffx_dump_utils.AssertWithCaller(5, "IXR Framework", text)
-end
-
-function ixr_framework.toLog(text, overwrite, log_name__auto)
-	if ixr_framework.use_file_log then
-		ffx_dump_utils.write_to_file_log(text, overwrite, log_name__auto)
-	end
-	
-	if ixr_framework.use_console_log then
-		ffx_dump_utils.write_to_console_log(text)
-	end
 end
 
 
@@ -361,21 +386,23 @@ end
 --#					PRINT LOGS						  #
 --#####################################################
 function ixr_framework.on_skip_reinit()
-	ixr_framework.toLog("\n\n::: [IX-Ray Framework] [SKIP RE INIT] :::", true)
+	ixr_logs.empty_line(2)
+	ixr_logs.log("::: [IX-Ray Framework] [SKIP RE INIT] :::")
 end
 
 function ixr_framework.on_init_begin()
-	ixr_framework.toLog("::: [IX-Ray Framework] [INIT PREPARE] :::", true)
+	ixr_logs.log("::: [IX-Ray Framework] [INIT PREPARE] :::")
 end
 
 function ixr_framework.on_init_end()
-	ixr_framework.toLog("\n\n::: [IX-Ray Framework] [INIT COMPLETED] :::", false)
+	ixr_logs.empty_line(2)
+	ixr_logs.log("::: [IX-Ray Framework] [INIT COMPLETED] :::")
 end
 
 function ixr_framework.on_init_default_sub_modules()
-	ixr_framework.toLog("::: [IX-Ray Framework] [INIT DEFAULT SUB MODULES] :::", false)
+	ixr_logs.log("::: [IX-Ray Framework] [INIT DEFAULT SUB MODULES] :::")
 end
 
 function ixr_framework.on_init_overrided_modules()
-	ixr_framework.toLog("::: [IX-Ray Framework] [INIT CUSTOM OVERRIDED SUB MODULES] :::", false)
+	ixr_logs.log("::: [IX-Ray Framework] [INIT CUSTOM OVERRIDED SUB MODULES] :::")
 end

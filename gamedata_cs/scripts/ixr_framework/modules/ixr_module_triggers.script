@@ -18,10 +18,14 @@
 
 local SCRIPT_ENABLED = true
 local SCAN_DELAY = 100
+local USE_FILE_LOG = true
+local USE_CONSOLE_LOG = false
+local USE_TIME_IN_LOGS = true
 
 local ixr_triggers = {
-	use_file_log = true,
-	use_console_log = false,
+	use_file_log = USE_FILE_LOG,
+	use_time_log = USE_TIME_IN_LOGS,
+	use_console_log = USE_CONSOLE_LOG,
 	delay = SCAN_DELAY,
 	dynamic_vars = {
 		initialized = false,
@@ -152,16 +156,20 @@ end
 -- #############################################
 
 function ixr_triggers.init()
-	ixr_triggers.toLog("INIT :: [BEGIN]")
+	IXRLogUseFileLog(ixr_triggers.use_file_log)
+	IXRLogUseConsoleLog(ixr_triggers.use_console_log)
+	IXRLogUseTimeInLog(ixr_triggers.use_time_log)
+	
+	IXRLog("INIT :: [BEGIN]")
 	ixr_triggers.register_callbacks()
-	ixr_triggers.toLog("INIT :: [COMPLETED]")
+	IXRLog("INIT :: [COMPLETED]")
 	ixr_triggers.dynamic_vars.initialized = true
 	
 	return ixr_triggers.dynamic_vars.initialized
 end
 
 function ixr_triggers.register_callbacks()
-	ixr_triggers.toLog("REGISTER CALLBACKS :: [BEGIN]")
+	IXRLog("REGISTER CALLBACKS :: [BEGIN]")
 	
 	RegisterScriptCallback("actor_on_spawn", function () 
 		ixr_triggers.dynamic_vars.is_actor_present = true
@@ -172,18 +180,7 @@ function ixr_triggers.register_callbacks()
 	RegisterScriptCallback("npc_on_update", this.npc_on_update)
 	RegisterScriptCallback("monster_on_update", this.monster_on_update)
 	
-	ixr_triggers.toLog("REGISTER CALLBACKS :: [COMPLETED]")
-end
-
-function ixr_triggers.toLog(text)
-	if ixr_triggers.use_file_log then
-		ffx_dump_utils.write_to_file_log(text, ixr_triggers.dynamic_vars.first_log_record)
-		ixr_triggers.dynamic_vars.first_log_record = false
-	end
-	
-	if ixr_triggers.use_console_log then
-		ffx_dump_utils.write_to_console_log(text)
-	end
+	IXRLog("REGISTER CALLBACKS :: [COMPLETED]")
 end
 
 function ixr_triggers.check_position(gobj, source)
@@ -237,7 +234,7 @@ function ixr_triggers.remove_trigger(trigger_name)
 	for lvl, list in pairs(ixr_triggers.dynamic_vars.triggers) do
 		if list[trigger_name] ~= nil then
 			ixr_triggers.dynamic_vars.triggers[lvl][trigger_name] = nil
-			ixr_triggers.toLog("Remove trigger :: [" .. tostring(trigger_name) .. "]")
+			IXRLog("Remove trigger :: [" .. tostring(trigger_name) .. "]")
 			return true
 		end
 	end
@@ -251,7 +248,7 @@ function ixr_triggers.set_trigger(trigger_name, level_name, position, radius, ca
 		return false
 	end
 	
-	ixr_triggers.toLog("Create trigger :: level_name:[" .. tostring(level_name) .. "] trigger_name:[" .. tostring(trigger_name) .. "] radius:[" ..tostring(radius) .. "]")
+	IXRLog("Create trigger :: level_name:[" .. tostring(level_name) .. "] trigger_name:[" .. tostring(trigger_name) .. "] radius:[" ..tostring(radius) .. "]")
 	
 	local pos = ffx_vector_utils.clone(position)
 	

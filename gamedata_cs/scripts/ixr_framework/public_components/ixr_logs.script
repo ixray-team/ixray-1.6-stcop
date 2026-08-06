@@ -1,0 +1,229 @@
+local SCRIPT_ENABLED = true
+local GLOBAL_USE_FILE_LOG = true
+local GLOBAL_USE_CONSOLE_LOG = true
+local GLOBAL_USE_TIME = true
+local CONST_LOG_FILE_PREFIX = "__log__"
+local TIME_PREFIX_FORMAT = "[%Y-%m-%d %H:%M:%S]  "
+local CONST_TRACE_LEVEL = 4
+
+local log_system = {
+	use_time = GLOBAL_USE_TIME,
+	use_file_log = GLOBAL_USE_FILE_LOG,
+	use_console_log = GLOBAL_USE_CONSOLE_LOG,
+	logs_history = {},
+	logs_options = {},
+	is_need_flush = false,
+}
+
+-- ########################################
+-- 				PUBLIC
+-- ########################################
+function update()
+	log_system.update()
+end
+
+function script_enabled()
+	return log_system.script_enabled()
+end
+
+function set_script_enabled(is_enabled)
+	log_system.set_script_enabled(is_enabled)
+end
+
+function set_use_file_log(flag, custom_script)
+	local caller_script_name = custom_script
+	if caller_script_name == nil then
+		caller_script_name = log_system.get_caller()
+	end
+	
+	log_system.set_use_file_log(caller_script_name, flag)
+end
+
+function set_use_console_log(flag, custom_script)
+	local caller_script_name = custom_script
+	if caller_script_name == nil then
+		caller_script_name = log_system.get_caller()
+	end
+	
+	log_system.set_use_console_log(caller_script_name, flag)
+end
+
+function set_use_time(flag, custom_script)
+	local caller_script_name = custom_script
+	if caller_script_name == nil then
+		caller_script_name = log_system.get_caller()
+	end
+	
+	log_system.set_use_time(caller_script_name, flag)
+end
+
+function log(text, clear_log, custom_script)
+	local caller_script_name = custom_script
+	if caller_script_name == nil then
+		caller_script_name = log_system.get_caller()
+	end
+	
+	return log_system.to_log(caller_script_name, text, clear_log)
+end
+
+function empty_line(pereat_cnt, custom_script)
+	if pereat_cnt == nil then
+		pereat_cnt = 1
+	end
+	
+	local caller_script_name = custom_script
+	if caller_script_name == nil then
+		caller_script_name = log_system.get_caller()
+	end
+	
+	log_system.to_log(caller_script_name, " ", false, true, pereat_cnt)
+end
+
+function clear_log(custom_script)
+	local caller_script_name = custom_script
+	if caller_script_name == nil then
+		caller_script_name = log_system.get_caller()
+	end
+	
+	return log_system.clear_log()
+end
+
+-- ########################################
+-- 				SYSTEM LOGIC
+-- ########################################
+function log_system.make_log_options(caller_script_name)
+	if log_system.logs_options[caller_script_name] == nil then
+		log_system.logs_options[caller_script_name] = {}
+	end
+end
+
+function log_system.set_use_file_log(caller_script_name, flag)
+	log_system.make_log_options(caller_script_name)
+	log_system.logs_options[caller_script_name].use_file_log = flag
+end
+
+function log_system.set_use_console_log(caller_script_name, flag)
+	log_system.make_log_options(caller_script_name)
+	log_system.logs_options[caller_script_name].use_console_log = flag
+end
+
+function log_system.set_use_time(caller_script_name, flag)
+	log_system.make_log_options(caller_script_name)
+	log_system.logs_options[caller_script_name].use_time = flag
+end
+
+function log_system.get_log_options(caller_script_name)
+	if log_system.logs_options[caller_script_name] == nil then
+		log_system.make_log_options(caller_script_name)
+		log_system.logs_options[caller_script_name].use_file_log = log_system.use_file_log
+		log_system.logs_options[caller_script_name].use_console_log = log_system.use_console_log
+		log_system.logs_options[caller_script_name].use_time = log_system.use_time
+	end
+	
+	return log_system.logs_options[caller_script_name]
+end
+
+function log_system.get_caller()
+	return tostring(ffx_callable_utils.find_caller_source(CONST_TRACE_LEVEL))
+end
+
+function log_system.script_enabled()
+	return SCRIPT_ENABLED
+end
+
+function log_system.set_script_enabled(is_enabled)
+	SCRIPT_ENABLED = is_enabled
+end
+
+function log_system.get_time_format()
+	return os.date(TIME_PREFIX_FORMAT)
+end
+
+function log_system.make_messages(caller_script_name)
+	if log_system.logs_history[caller_script_name] == nil then
+		log_system.logs_history[caller_script_name] = {
+			is_updated = true,
+			messages = {},
+			overwrite = true,
+		}
+	end
+end
+
+function log_system.add_message(caller_script_name, text)
+	log_system.make_messages(caller_script_name)
+	table.insert(
+		log_system.logs_history[caller_script_name].messages,
+		text
+	)
+	
+	log_system.logs_history[caller_script_name].is_updated = true
+	log_system.is_need_flush = true
+	
+	-- SemiLog("add:"..caller_script_name.." :: "..tostring(text))
+end
+
+function log_system.clear_log(caller_script_name)
+	local local_script_options = log_system.get_log_options(caller_script_name)
+	
+	if log_system.use_file_log and local_script_options.use_file_log then
+		log_system.make_messages(caller_script_name)
+		log_system.logs_history[caller_script_name].overwrite = true
+		log_system.logs_history[caller_script_name].messages = {}
+		log_system.logs_history[caller_script_name].is_updated = true
+		log_system.is_need_flush = true
+	end
+end
+
+function log_system.to_log(caller_script_name, text, clear_log, is_skip_time, pereat_cnt)
+	if not log_system.script_enabled() then
+		return
+	end
+	
+	if pereat_cnt == nil then
+		pereat_cnt = 1
+	end
+	
+	local local_script_options = log_system.get_log_options(caller_script_name)
+	if clear_log then
+		log_system.clear_log(caller_script_name)
+	end
+	
+	if log_system.use_time and local_script_options.use_time and not is_skip_time then
+		text = log_system.get_time_format() .. tostring(text)
+	else
+		text = tostring(text)
+	end
+	
+	for i=1, pereat_cnt do
+		if log_system.use_file_log and local_script_options.use_file_log then
+			log_system.add_message(caller_script_name, text)
+		end
+		
+		if log_system.use_console_log and local_script_options.use_console_log then
+			ffx_dump_utils.write_to_console_log(text, caller_script_name)
+		end
+	end
+end
+
+function log_system.update()
+	if not log_system.script_enabled() or not log_system.is_need_flush then
+		return
+	end
+	
+	for file_name, data in pairs(log_system.logs_history) do
+		if data.is_updated then
+			ffx_dump_utils.write_to_file_log(
+				table.concat(data.messages, "\n"),
+				data.overwrite,
+				CONST_LOG_FILE_PREFIX .. file_name
+			)
+			-- SemiLog("update:"..file_name.." :: "..tostring(ffx_dump_utils.var_export(data.messages)))
+			log_system.logs_history[file_name].is_updated = false
+			log_system.logs_history[file_name].overwrite = false
+			log_system.logs_history[file_name].messages = {}
+			
+		end
+	end
+	
+	log_system.is_need_flush = false
+end
