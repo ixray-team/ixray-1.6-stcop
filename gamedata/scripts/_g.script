@@ -482,7 +482,7 @@ end
 -- Крешнуть игру (после вывода сообщения об ошибке в лог)
 function abort(fmt, ...)
 	local reason = string.format(fmt, ...)
-	--error_log(reason)
+	error_log(reason)
 end
 
 function set_inactivate_input_time(delta)
