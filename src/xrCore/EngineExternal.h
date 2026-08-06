@@ -56,6 +56,7 @@ enum class EEngineExternalGame
 	EnableInventoryVolume,
 	EnableRealBulletPos,
 	EnableWeaponAffectsOnMouseSensitivity,
+	EnableMainMenuForDisabledControls,
 	None
 };
 
