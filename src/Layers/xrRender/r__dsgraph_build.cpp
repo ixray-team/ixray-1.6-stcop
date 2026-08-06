@@ -790,8 +790,9 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 	int SelectedLOD = 0;
 	bool has_lod1 = false;
 
-	if (pVisual->Type == MT_LOD || (pVisual->Type >= MT_LOD1 && pVisual->Type <= MT_LOD4))
+	if (pVisual->Type >= MT_LOD1 && pVisual->Type <= MT_LOD4)
 	{
+		PROF_EVENT("add_static LODs")
 		has_lod1 = HasNextLOD(pVisual, MT_LOD1);
 		bool has_lod2 = HasNextLOD(pVisual, MT_LOD2);
 		bool has_lod3 = HasNextLOD(pVisual, MT_LOD3);
@@ -800,6 +801,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		SelectedLOD = SelectLOD(D, has_lod1, has_lod2, has_lod3, has_lod4);
 	}
 
+	PROF_EVENT("add_Static switch")
 	// If we get here visual is visible or partially visible
 	switch (pVisual->Type)
 	{
@@ -825,18 +827,22 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 #else
 		case MT_LOD:
 		{
+			PROF_EVENT("add_Static MT_LOD")
 			FLOD		* pV	=		(FLOD*) pVisual;
 			if ((SelectedLOD == 0) && has_lod1)
 			{
+				PROF_EVENT("add_Static MT_LOD add_leafs_Static")
 				add_leafs_Static(pV->children);
 			}
 			else if ((SelectedLOD == 0) && !has_lod1)
 			{
+				PROF_EVENT("add_Static MT_LOD r_dsgraph_insert_static_lod")
 				r_dsgraph_insert_static_lod(pVisual);
 			}
 		}return;
 		case MT_LOD1:
 		{
+			PROF_EVENT("add_Static MT_LOD1")
 			FLOD		* pV	=		(FLOD*) pVisual;
 			if (SelectedLOD == 1)
 			{
@@ -845,6 +851,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		}return;
 		case MT_LOD2:
 		{
+			PROF_EVENT("add_Static MT_LOD2")
 			FLOD		* pV	=		(FLOD*) pVisual;
 			if (SelectedLOD == 2)
 			{
@@ -853,6 +860,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		}return;
 		case MT_LOD3:
 		{
+			PROF_EVENT("add_Static MT_LOD3")
 			FLOD		* pV	=		(FLOD*) pVisual;
 			if (SelectedLOD == 3)
 			{
@@ -861,6 +869,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		}return;
 	case MT_LOD4:
 		{
+			PROF_EVENT("add_Static MT_LOD4")
 			FLOD		* pV	=		(FLOD*) pVisual;
 			if (SelectedLOD == 4)
 			{
