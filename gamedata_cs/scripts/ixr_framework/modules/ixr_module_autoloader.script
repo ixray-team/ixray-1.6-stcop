@@ -19,17 +19,21 @@
 		is_script_registered(script_name)
 ]]
 
+local USE_FILE_LOG = true
+local USE_CONSOLE_LOG = false
+local USE_TIME_IN_LOGS = true
+
 local ixr_autoloader = {
-	use_logger = true,
-	use_file_log = true,
-	use_console_log = false,
+	use_logger = USE_FILE_LOG or USE_CONSOLE_LOG,
+	use_file_log = USE_FILE_LOG,
+	use_time_log = USE_TIME_IN_LOGS,
+	use_console_log = USE_CONSOLE_LOG,
 	show_all_detected_script_names_is_logging_enabled = true,
 	entry_point_function_name = "on_game_start",
 	entry_point_signature_count_args = 1,
 	fs_scripts_path = "$game_scripts$",
 	fs_scripts_extension = ".script",
 	dynamic_vars = {
-		first_log_record = true,
 		ignored_patterns_info = {},
 		ignored_scripts = {},
 		all_registered_scripts = {},
@@ -151,6 +155,10 @@ end
 -- #		  SYSTEM METHODS	  #
 -- ################################
 function ixr_autoloader.init()
+	IXRLogUseFileLog(ixr_autoloader.use_file_log)
+	IXRLogUseConsoleLog(ixr_autoloader.use_console_log)
+	IXRLogUseTimeInLog(ixr_autoloader.use_time_log)
+	
 	if ixr_autoloader.is_initialized() then
 		ixr_autoloader.on_skip_reinit()
 		
@@ -321,10 +329,10 @@ function ixr_autoloader.call_entry_point(script_name)
 				local result = _G[script_name][ixr_autoloader.entry_point_function_name](fn_arg)
 				ixr_autoloader.on_call_entry_point(script_name, fn_arg, result)
 			else
-				ixr_autoloader.toLog("missing: _G[" .. tostring(script_name) .. "][" .. tostring(ixr_autoloader.entry_point_function_name) .. "]")
+				IXRLog("missing: _G[" .. tostring(script_name) .. "][" .. tostring(ixr_autoloader.entry_point_function_name) .. "]")
 			end
 		else
-			ixr_autoloader.toLog("missing: _G[" .. tostring(script_name) .. "]")
+			IXRLog("missing: _G[" .. tostring(script_name) .. "]")
 		end
 	end
 end
@@ -352,56 +360,55 @@ end
 -- ################################
 -- #		   LOG METHODS		  #
 -- ################################
-function ixr_autoloader.toLog(text)
-	if not ixr_autoloader.use_logger then
-		return
-	end
-	
-	if ixr_autoloader.use_file_log then
-		ffx_dump_utils.write_to_file_log(text, ixr_autoloader.dynamic_vars.first_log_record)
-		ixr_autoloader.dynamic_vars.first_log_record = false
-	end
-	
-	if ixr_autoloader.use_console_log then
-		ffx_dump_utils.write_to_console_log(text)
-	end
-end
-
 
 function ixr_autoloader.on_callback_system_disabled()
-	ixr_autoloader.toLog("[CALLBACK SYSTEM DISABLED]")
+	IXRLog("[CALLBACK SYSTEM DISABLED]")
 end
 
 function ixr_autoloader.on_init_begin()
-	ixr_autoloader.toLog("\n--- init begin ---\n")
+	IXRLogEmptyLine()
+	IXRLog("--- [INIT] ---")
+	IXRLogEmptyLine()
 end
 
 function ixr_autoloader.on_skip_reinit()
-	ixr_autoloader.toLog("\n--- [SKIP REINIT] ---\n")
+	IXRLogEmptyLine()
+	IXRLog("--- [SKIP REINIT] ---")
+	IXRLogEmptyLine()
 end
 
 function ixr_autoloader.on_init_end()
-	ixr_autoloader.toLog("\n--- init end ---\n")
+	IXRLogEmptyLine()
+	IXRLog("--- [INITIALIZED] ---")
+	IXRLogEmptyLine()
 end
 
 function ixr_autoloader.on_init_default_ignore_options()
-	ixr_autoloader.toLog("\n ::: load default ignores :::\n")
+	IXRLogEmptyLine()
+	IXRLog("[LOAD DEFAULT IGNORES]:")
+	IXRLogEmptyLine()
 end
 
 function ixr_autoloader.on_init_custom_ignore_options()
-	ixr_autoloader.toLog("\n ::: load custom ignores :::\n")
+	IXRLogEmptyLine()
+	IXRLog("[LOAD CUSTOM IGNORES]:")
+	IXRLogEmptyLine()
 end
 
 function ixr_autoloader.on_ignore_set(script_name)
-	ixr_autoloader.toLog(" [add ignore option]: (" .. script_name .. ")")
+	IXRLog("[ADD IGNORE FILE]: (" .. script_name .. ")")
 end
 
 function ixr_autoloader.on_register_script_files()
-	ixr_autoloader.toLog("\n ::: load fs scripts :::\n")
+	IXRLogEmptyLine()
+	IXRLog("[LOAD FS SCRIPTS]:")
+	IXRLogEmptyLine()
 end
 
 function ixr_autoloader.on_register_old_script_files()
-	ixr_autoloader.toLog("\n ::: load cashed scripts :::\n")
+	IXRLogEmptyLine()
+	IXRLog("::: load cashed scripts :::")
+	IXRLogEmptyLine()
 end
 
 function ixr_autoloader.on_register_script(is_file_ignored, is_file_autoloaded, is_file_skip, script_name, full_name)
@@ -432,22 +439,23 @@ function ixr_autoloader.on_register_script(is_file_ignored, is_file_autoloaded, 
 			to_log_info = "▣ " .. to_log_info
 		end
 		 
-		 ixr_autoloader.toLog(to_log_info .. tostring(tail))
+		 IXRLog(to_log_info .. tostring(tail))
 	end
 end
 
 function ixr_autoloader.on_print_script_files()
-	ixr_autoloader.toLog("\n ::: dump scripts :::\n")
+	IXRLogEmptyLine()
+	IXRLog("[DUMP SCRIPTS]:")
 end
 
 function ixr_autoloader.on_call_scripts_autoloads()
-	ixr_autoloader.toLog("\n ::: call autoloads :::\n")
-	ixr_autoloader.toLog("\n[CALL AUTO LOADERS]:")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
+	IXRLog("[CALL AUTO LOADERS]:")
 end
 
 function ixr_autoloader.on_call_entry_point(script_name, fn_arg, result)
-	ixr_autoloader.toLog("  [EXECUTING] " .. tostring(script_name) .. "->" .. tostring(ixr_autoloader.entry_point_function_name) .. "(...)\n")
-	ixr_autoloader.toLog("[IXR AUTOLOADER] :: CALL ENTRY POINT: " .. tostring(script_name) .. "->" .. tostring(ixr_autoloader.entry_point_function_name) .. "(...)")
+	IXRLog("  [CALL ENTRY POINT] :: " .. tostring(script_name) .. "->" .. tostring(ixr_autoloader.entry_point_function_name) .. "(...)")
 end
 
 function ixr_autoloader.print_script_files()
@@ -457,24 +465,30 @@ function ixr_autoloader.print_script_files()
 		return
 	end
 
-	ixr_autoloader.toLog("\n[IGNORED]:")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
+	IXRLog("[IGNORED]:")
 	if #ixr_autoloader.dynamic_vars.scripts_groups.ignored > 0 then
 		for i=1, #ixr_autoloader.dynamic_vars.scripts_groups.ignored do
-			ixr_autoloader.toLog("  " .. tostring(ixr_autoloader.dynamic_vars.scripts_groups.ignored[i]) .. ixr_autoloader.fs_scripts_extension)
-		end
-	end
-
-	ixr_autoloader.toLog("\n[WITHOUT AUTO LOADERS]:")
-	if #ixr_autoloader.dynamic_vars.scripts_groups.not_autoload > 0 then
-		for i=1, #ixr_autoloader.dynamic_vars.scripts_groups.not_autoload do
-			ixr_autoloader.toLog("  " .. tostring(ixr_autoloader.dynamic_vars.scripts_groups.not_autoload[i]) .. ixr_autoloader.fs_scripts_extension)
+			IXRLog("  " .. tostring(ixr_autoloader.dynamic_vars.scripts_groups.ignored[i]) .. ixr_autoloader.fs_scripts_extension)
 		end
 	end
 	
-	ixr_autoloader.toLog("\n[WITH AUTO LOADERS]:")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
+	IXRLog("[WITHOUT AUTO LOADERS]:")
+	if #ixr_autoloader.dynamic_vars.scripts_groups.not_autoload > 0 then
+		for i=1, #ixr_autoloader.dynamic_vars.scripts_groups.not_autoload do
+			IXRLog("  " .. tostring(ixr_autoloader.dynamic_vars.scripts_groups.not_autoload[i]) .. ixr_autoloader.fs_scripts_extension)
+		end
+	end
+	
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
+	IXRLog("[WITH AUTO LOADERS]:")
 	if #ixr_autoloader.dynamic_vars.scripts_groups.autoload > 0 then
 		for i=1, #ixr_autoloader.dynamic_vars.scripts_groups.autoload do
-			ixr_autoloader.toLog("  " .. tostring(ixr_autoloader.dynamic_vars.scripts_groups.autoload[i]) .. ixr_autoloader.fs_scripts_extension)
+			IXRLog("  " .. tostring(ixr_autoloader.dynamic_vars.scripts_groups.autoload[i]) .. ixr_autoloader.fs_scripts_extension)
 		end
 	end
 end

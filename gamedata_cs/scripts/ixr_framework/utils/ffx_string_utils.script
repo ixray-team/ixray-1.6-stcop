@@ -284,3 +284,67 @@ Returns: string - with replaced
 function remove_substring(text, substring)
     return text:gsub(substring, "")
 end
+
+function parse_separated_numbers(str)
+    if not str or str == "" then
+        return {}
+    end
+
+    local numbers = {}
+    for token in string.gmatch(str, "[-+]?%d+%.?%d*[eE]?[-+]?%d*") do
+        local num = tonumber(token)
+        if num then
+            table.insert(numbers, num)
+        end
+    end
+
+    if #numbers == 0 then
+        return {}
+    end
+    return numbers
+end
+
+function parse_separated_strings(string_with_separators, def_value)
+	if not string_with_separators then
+		return def_value
+	end
+		
+	local strings_list = {}
+	for string_part in string.gfind(string_with_separators, "([%w_%-.\\]+)%p*") do
+		if string_part then
+			table.insert(strings_list, string_part)
+		end
+	end
+	
+	if #strings_list == 0 then
+		return def_value
+	end
+	
+	return strings_list
+end
+
+function parse_separated_bools(string_with_values, def_value)
+	if not string_with_values then
+		return def_value
+	end
+	
+    local cleaned = string.lower(string_with_values)
+    cleaned = string.gsub(cleaned, "[^%w%,]", "")
+    
+    local boolean_list = {}
+    for val in string.gmatch(cleaned, "([^,]+)") do
+        if val and val ~= "" then
+            if val == "true" or val == "1" or val == "yes" or val == "on" then
+                table.insert(boolean_list, true)
+            elseif val == "false" or val == "0" or val == "no" or val == "off" then
+                table.insert(boolean_list, false)
+            end
+        end
+    end
+    
+    if #boolean_list == 0 then
+        return def_value
+    end
+    
+    return boolean_list
+end

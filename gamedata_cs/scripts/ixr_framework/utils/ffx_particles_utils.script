@@ -1,4 +1,28 @@
 
+local particles_array = {}
+
+function play_async(id, pg_path, pos)
+	local id = #particles_array + 1
+	if particles_array[id] == nil then
+		particles_array[id] = particles_object(pg_path)
+	end
+	
+	if particles_array[id]:playing() == false then
+		particles_array[id]:play_at_pos(pos)
+	else
+		particles_array[id]:move_to(pos, pos)
+	end
+end
+
+
+
+function destroy(id)
+	if particles_array[id] ~= nil then
+		particles_array[id]:stop()
+		particles_array[id] = nil
+	end
+end
+
 function set_pos_and_dir_x_bazis(pg_object, position, direction)
 	local vel = vector():set(0,0,0)
 	pg_object:set_xform_dir_x(position, direction, vel)
