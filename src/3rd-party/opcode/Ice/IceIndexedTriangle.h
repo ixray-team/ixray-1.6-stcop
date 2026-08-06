@@ -36,6 +36,7 @@
 									mVRef[0] = triangle.mVRef[0];
 									mVRef[1] = triangle.mVRef[1];
 									mVRef[2] = triangle.mVRef[2];
+									mVRef[3] = triangle.mVRef[3];
 								}
 		//! Destructor
 		inline_					~IndexedTriangle()									{}

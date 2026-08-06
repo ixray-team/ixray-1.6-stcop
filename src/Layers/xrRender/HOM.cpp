@@ -138,6 +138,7 @@ void CHOM::Load()
 	else
 	{
 		IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
+		pWriterCache->w_u32(CDB::CDB_MODEL_CACHE_VERSION);
 		pWriterCache->w_u32(crc);
 		m_pModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pWriterCache, false);
 	}
