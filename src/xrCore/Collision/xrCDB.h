@@ -46,6 +46,9 @@ namespace CDB
 	// Build callback
 	using build_callback = void(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, void* params);
 
+	// Model cache header: [version u32][crc u32][tree...]
+	constexpr u32 CDB_MODEL_CACHE_VERSION = 1;
+
 	// Model definition
 	XRCORE_API IReader* GetModelCache(string_path Name, u32 crc);
 	XRCORE_API IReader* GetModelCache(const xr_stack_string_path& Name, u32 crc);
