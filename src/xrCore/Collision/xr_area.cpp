@@ -70,6 +70,7 @@ void CObjectSpace::Load(const char* initial, const char* fname, CDB::build_callb
 	else
 	{
 		IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName.c_str());
+		pWriterCache->w_u32(CDB::CDB_MODEL_CACHE_VERSION);
 		pWriterCache->w_u32(CFormData->GetFileHash());
 		Create(*CFormData, build_callback, pWriterCache, false);
 	}
