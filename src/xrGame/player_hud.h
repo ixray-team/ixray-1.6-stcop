@@ -256,8 +256,6 @@ struct attachable_hud_item final
 	Fmatrix							m_item_transform;
 
 	player_hud_motion_container		m_hand_motions;
-			
-	u32 time_accumulator = 0;
 
 	u32 tocrouch_time_remains = 0;
 	u32 fromcrouch_time_remains = 0;
