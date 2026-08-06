@@ -11,6 +11,8 @@ namespace Opcode
 using namespace CDB;
 using namespace Opcode;
 
+static_assert(sizeof(IceMaths::IndexedTriangle) == sizeof(CDB::TRI));
+
 XRCORE_API IReader* CDB::GetModelCache(string_path LevelName, u32 crc)
 {
 	IReader* pReaderCache = nullptr;
@@ -19,7 +21,7 @@ XRCORE_API IReader* CDB::GetModelCache(string_path LevelName, u32 crc)
 	{
 		pReaderCache = FS.r_open("$app_data_root$", LevelName);
 
-		if (pReaderCache->length() <= 4 || pReaderCache->r_u32() != crc)
+		if (pReaderCache->length() <= 8 || pReaderCache->r_u32() != CDB_MODEL_CACHE_VERSION || pReaderCache->r_u32() != crc)
 		{
 			FS.r_close(pReaderCache);
 		}
@@ -36,7 +38,7 @@ IReader* CDB::GetModelCache(const xr_stack_string_path& LevelName, u32 crc)
 	{
 		pReaderCache = FS.r_open("$app_data_root$", LevelName.c_str());
 
-		if (pReaderCache->length() <= 4 || pReaderCache->r_u32() != crc)
+		if (pReaderCache->length() <= 8 || pReaderCache->r_u32() != CDB_MODEL_CACHE_VERSION || pReaderCache->r_u32() != crc)
 		{
 			FS.r_close(pReaderCache);
 		}
@@ -106,6 +108,7 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 		OPCC.mIMesh->SetNbTriangles(tris.size());
 		OPCC.mIMesh->SetNbVertices(verts.size());
 		OPCC.mIMesh->SetPointers((IceMaths::IndexedTriangle*)tris.data(), (IceMaths::Point*)verts.data());
+		OPCC.mIMesh->SetStrides(sizeof(CDB::TRI), sizeof(Fvector));
 		OPCC.mSettings.mRules = SplittingRules::SPLIT_SPLATTER_POINTS | SplittingRules::SPLIT_GEOM_CENTER;
 		OPCC.mNoLeaf = true;
 		OPCC.mQuantized = false;
