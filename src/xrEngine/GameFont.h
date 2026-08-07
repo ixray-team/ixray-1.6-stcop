@@ -17,29 +17,6 @@ struct ABC
 
 extern ENGINE_API Fvector2 g_current_font_scale;
 
-class ENGINE_API CFontScaleScope final
-{
-public:
-	explicit CFontScaleScope(float xScale, float yScale = 1.f)
-		: m_prev(g_current_font_scale)
-	{
-		const float x = (xScale > 1e-6f) ? xScale : 1.f;
-		const float y = (yScale > 1e-6f) ? yScale : 1.f;
-		g_current_font_scale.set(x, y);
-	}
-
-	~CFontScaleScope()
-	{
-		g_current_font_scale = m_prev;
-	}
-
-	CFontScaleScope(const CFontScaleScope&) = delete;
-	CFontScaleScope& operator=(const CFontScaleScope&) = delete;
-
-private:
-	Fvector2 m_prev;
-};
-
 class ENGINE_API CGameFont final
 {
 	friend class dxFontRender;
@@ -131,7 +108,6 @@ public:
 
 	void SetWidthCoef(float S) { fCurrentWidthCoef = (S > 1e-6f) ? S : 1.f; }
 	float GetWidthCoef() const { return fCurrentWidthCoef; }
-	float GetEffectiveWidthScale() const { return GetWidthCoef() * g_current_font_scale.x; }
 
 	/**
 	 * Извлекает ширину строки.
@@ -298,10 +274,7 @@ public:
 	inline Fvector2 sizeOfImage(Frect rect)
 	{
 		float sc = fCurrentHeight / rect.height();
-		return {
-			rect.width() * sc * g_current_font_scale.x,
-			rect.height() * sc * g_current_font_scale.y
-		};
+		return {rect.width() * sc, rect.height() * sc};
 	}
 
 private:
