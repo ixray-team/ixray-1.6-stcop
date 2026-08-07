@@ -363,8 +363,10 @@ void CRender::reset_begin() {
 	xr_delete(Target);
 	HWOCC.occq_destroy();
 
-	if(!EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT"))) {
+	if(!EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT"))) 
+	{
 		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+		o.offscreen_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_OFFSCREEN_REFLECTIONS);
 	}
 }
 
