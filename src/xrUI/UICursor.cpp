@@ -66,7 +66,8 @@ void CUICursor::InitInternal()
 		m_static->SetWidth(m_static->GetWidth() * UI().get_current_kx());
 		m_static->SetHeight(m_static->GetHeight() * UI().get_current_kx());
 	}
-	m_static->SetWidth(m_static->GetWidth() * UI().get_current_kx());
+	m_width_initial = m_static->GetWidth(); 
+	m_static->SetWidth(m_width_initial * UI().get_current_kx());
 
 	m_static_text = new CUIStatic();
 	m_static_text->SetWndSize(Fvector2().set(80.f, 10.f));
