@@ -26,9 +26,9 @@ enum MT {
 	MT_LOD3					=16,
 	MT_LOD4					=17,
 	MT_LOD0					=19,
-	MT_MESH_LODS			=20
+	MT_MESH_LODS			=20,
 	
-	MT_TREE_PROTOTYPE		=18,
+	MT_TREE_PROTOTYPE		=21,
 };
 
 enum OGF_Chuncks {
