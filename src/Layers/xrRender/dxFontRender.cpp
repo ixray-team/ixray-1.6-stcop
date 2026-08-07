@@ -224,7 +224,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 				float GlyphY = Y + glyphInfo->yOffset;
 				float GlyphY2 = Y2 + glyphInfo->yOffset;
 
-				float X2 = X + glyphInfo->Abc.abcB;
+				float X2 = X + (glyphInfo->Abc.abcB * owner.GetWidthCoef());
 
 				float u1 = float(glyphInfo->TextureCoord.left) / fWidth;
 				float u2 = float(glyphInfo->TextureCoord.right) / fWidth;

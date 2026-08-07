@@ -579,7 +579,9 @@ float CGameFont::WidthOf(int ch)
 		return 0.f;
 
 	if (const Glyph* glyphInfo = GetGlyphInfo(ch))
-		return float(glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC);
+	{
+		return float(glyphInfo->Abc.abcA + (glyphInfo->Abc.abcB * GetWidthCoef()) + glyphInfo->Abc.abcC);
+	}
 
 	return float(OurFont->glyph->metrics.width) / 64.f;
 }
