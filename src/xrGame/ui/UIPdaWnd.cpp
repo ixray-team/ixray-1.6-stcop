@@ -1119,11 +1119,12 @@ void RearrangeTabButtons(CUITabControl* pTab)
 	pos.set						((*it)->GetWndPos());
 	float						size_x;
 
+	float kx = UI().get_current_kx() / CHudPdaAnimator::GetPDAScreen_kx();
 	for ( ; it != it_e; ++it )
 	{
 		(*it)->SetWndPos		(pos);
 		(*it)->AdjustWidthToText();
-		size_x					= (*it)->GetWndSize().x + 30.0f;
+		size_x					= ((*it)->GetWndSize().x / kx) + 30.0f;
 		(*it)->SetWidth			(size_x);
 		pos.x					+= size_x - 6.0f;
 	}
