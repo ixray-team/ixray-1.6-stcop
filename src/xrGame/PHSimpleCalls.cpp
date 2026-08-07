@@ -71,6 +71,11 @@ CPHConstForceAction::CPHConstForceAction(CPhysicsShell	*shell, const Fvector &fo
 
 void CPHConstForceAction::run()
 {
+	if (!m_shell || !m_shell->isActive())
+	{
+		return;
+	}
+
 	m_shell->applyForce(m_force.x,m_force.y,m_force.z);
 }
 
