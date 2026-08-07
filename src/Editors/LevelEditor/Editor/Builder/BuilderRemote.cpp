@@ -852,7 +852,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 
 	UI->SetStatus(temp.c_str());
 
-	BuildMUObjectModel(obj);
+	if (!BuildMUObjectModel(obj)) return false;
 
 #ifdef MU_LODS_TRUE
 	//Seakad: Parser lod0 - lod4 (export lod1-lod4)

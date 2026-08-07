@@ -60,10 +60,8 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
         mtl_idx = l_materials.size() - 1;
     }
 
-#endif
-    l_lods.push_back(e_b_lod());
-    e_b_lod& b = l_lods.back();
-#ifndef MU_LODS_OFF_BILLBOARD
+    e_b_lod new_lod;
+
     Fvector p[4];
     Fvector2 t[4];
 
@@ -71,43 +69,44 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
     {
         E->GetLODFrame(frame, p, t, &parent);
         for (int k = 0; k < 4; k++) {
-            b.lod.faces[frame].v[k].set(p[k]);
-            b.lod.faces[frame].t[k].set(t[k]);
+            new_lod.lod.faces[frame].v[k].set(p[k]);
+            new_lod.lod.faces[frame].t[k].set(t[k]);
         }
     }
 
-    b.lod.dwMaterial = mtl_idx;
-    b.lod_name = lod_name.c_str();
+    new_lod.lod.dwMaterial = mtl_idx;
+    new_lod.lod_name = lod_name.c_str();
 
     xr_string l_name = lod_name.c_str();
     u32 w, h;
     time_t age;
 #ifndef MU_LODS_TRUE
-    if (!ImageLib.LoadTextureData(l_name.c_str(), b.data, w, h, &age))
+    if (!ImageLib.LoadTextureData(l_name.c_str(), new_lod.data, w, h, &age))
     {
         Msg("!Can't find LOD texture: '%s'", l_name.c_str());
         return -2;
     }
 
     l_name += "_nm";
-    if (!ImageLib.LoadTextureData(l_name.c_str(), b.ndata, w, h, &age))
+    if (!ImageLib.LoadTextureData(l_name.c_str(), new_lod.ndata, w, h, &age))
     {
         Msg("!Can't find LOD texture: '%s'", l_name.c_str());
         return -2;
     }
 #else
-    if (!ImageLib.LoadTextureData("lod_stub", b.data, w, h, &age))
+    if (!ImageLib.LoadTextureData("lod_stub", new_lod.data, w, h, &age))
     {
         Msg("!Can't load LOD texture: 'lod_stub'");
         return -2;
     }
 
-    if (!ImageLib.LoadTextureData("lod_stub", b.ndata, w, h, &age))
+    if (!ImageLib.LoadTextureData("lod_stub", new_lod.ndata, w, h, &age))
     {
         Msg("!Can't load LOD normal texture: 'lod_stub'");
         return -2;
     }
 #endif
+    l_lods.push_back(std::move(new_lod));
 #endif
     return l_lods.size() - 1;
 }
