@@ -117,7 +117,7 @@ void UIImageEditorForm::Draw()
 				if (baseTexture)
 				{
 					m_Texture = new CTexture;
-					m_Texture->surface_set(GRHI->CreateTextureFromMemory(baseTexture, 0, {}));
+					m_Texture->surface_set(baseTexture);
 					baseTexture->Release();
 				}
 			}
