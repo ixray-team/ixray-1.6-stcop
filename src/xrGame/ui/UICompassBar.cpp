@@ -464,6 +464,7 @@ float CUICompassBar::GetCardinalTextCenterX(const SCompassCardinalEntry& entry) 
     switch (lines->GetTextAlignment())
     {
     case CGameFont::alLeft:
+    case CGameFont::alJustify:
         return offsetX + textW * 0.5f;
     case CGameFont::alRight:
         return offsetX + hostW - textW * 0.5f;
@@ -580,6 +581,10 @@ bool CUICompassBar::InitCardinalEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR
             else if (alignStr[0] == 'r' || alignStr[0] == 'R')
             {
                 text->TextItemControl()->SetTextAlignment(CGameFont::alRight);
+            }
+            else if (alignStr[0] == 'j' || alignStr[0] == 'J')
+            {
+                text->TextItemControl()->SetTextAlignment(CGameFont::alJustify);
             }
             else
             {

@@ -89,7 +89,8 @@ void UIRegistrator::script_register(lua_State *L)
 			[
 				value("alLeft",						int(CGameFont::alLeft)),
 				value("alRight",					int(CGameFont::alRight)),
-				value("alCenter",					int(CGameFont::alCenter))
+				value("alCenter",					int(CGameFont::alCenter)),
+				value("alJustify",					int(CGameFont::alJustify))
 			],
 
 		class_<CUICaption>("CUICaption")
