@@ -797,17 +797,17 @@ void CActorCondition::BoostParameters(const SBooster& B)
 	}
 	case eBoostRadiationProtection:
 	{
-		m_fBoostRadiationImmunity = B.fBoostValue;
+		m_fBoostRadiationProtection = B.fBoostValue;
 		break;
 	}
 	case eBoostTelepaticProtection:
 	{
-		m_fBoostTelepaticImmunity = B.fBoostValue;
+		m_fBoostTelepaticProtection = B.fBoostValue;
 		break;
 	}
 	case eBoostChemicalBurnProtection:
 	{
-		m_fBoostChemicalBurnImmunity = B.fBoostValue;
+		m_fBoostChemicalBurnProtection = B.fBoostValue;
 		break;
 	}
 	default: NODEFAULT;
@@ -892,17 +892,17 @@ void CActorCondition::DisableBoostParameters(const SBooster& B)
 	}
 	case eBoostRadiationProtection:
 	{
-		m_fBoostRadiationImmunity = 0.0f;
+		m_fBoostRadiationProtection = 0.0f;
 		break;
 	}
 	case eBoostTelepaticProtection:
 	{
-		m_fBoostTelepaticImmunity = 0.0f;
+		m_fBoostTelepaticProtection = 0.0f;
 		break;
 	}
 	case eBoostChemicalBurnProtection:
 	{
-		m_fBoostChemicalBurnImmunity = 0.0f;
+		m_fBoostChemicalBurnProtection = 0.0f;
 		break;
 	}
 		default: NODEFAULT;	
