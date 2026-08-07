@@ -35,11 +35,11 @@ void CPHCall::check()
 
 bool CPHCall::equal(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
 {
-	return m_action->compare(cmp_action)&&m_condition->compare(cmp_condition);
+	return m_action && m_condition && m_action->compare(cmp_action)&&m_condition->compare(cmp_condition);
 }
 bool CPHCall::is_any(CPHReqComparerV* v)
 {
-	return m_action->compare(v)||m_condition->compare(v);
+	return (m_action && m_action->compare(v)) || (m_condition && m_condition->compare(v));
 }
 
 void delete_call(CPHCall* &call)
@@ -57,38 +57,80 @@ CPHCommander::~CPHCommander()
 {
 	clear();
 }
+
+void CPHCommander::scheduleDelete(CPHCall* call)
+{
+	if (!call)
+	{
+		return;
+	}
+
+	if (m_isUpdating)
+	{
+		m_callsDeferredDelete.push_back(call);
+		return;
+	}
+
+	delete_call(call);
+}
+
+void CPHCommander::flushDeferredDeletes()
+{
+	while (!m_callsDeferredDelete.empty())
+	{
+		CPHCall* call = m_callsDeferredDelete.back();
+		m_callsDeferredDelete.pop_back();
+		delete_call(call);
+	}
+}
+
 void CPHCommander::clear	()
 {
 	xrCriticalSectionGuard guard(&lock);
 	while (m_calls.size())	{
 		remove_call(m_calls.end()-1);
 	}
+	flushDeferredDeletes();
 }
 
 void CPHCommander::update	()
 {
 	xrCriticalSectionGuard guard(&lock);
 	PROF_EVENT("CPHCommander::update");
-	for(u32 i=0; i<m_calls.size(); i++)
+
+	m_isUpdating = true;
+
+	for(u32 i=0; i<m_calls.size();)
 	{
+		CPHCall* call = m_calls[i];
+		bool hasException = false;
+
 		try
 		{
-			m_calls[i]->check();
+			call->check();
 		} 
 		catch(...)
 		{
-			remove_call(m_calls.begin()+i);
-			i--;
+			hasException = true;
+		}
+
+		PHCALL_I it = std::find(m_calls.begin(), m_calls.end(), call);
+		if (it == m_calls.end())
+		{
 			continue;
 		}
 
-		if(m_calls[i]->obsolete())
+		if (hasException || (*it)->obsolete())
 		{
-			remove_call(m_calls.begin()+i);
-			i--;
+			remove_call(it);
 			continue;
 		}
+
+		++i;
 	}
+
+	m_isUpdating = false;
+	flushDeferredDeletes();
 }
 
 void CPHCommander::add_call(CPHCondition* condition,CPHAction* action)
@@ -112,11 +154,10 @@ void CPHCommander::remove_call(PHCALL_I i)
 		//Msg(" const force removed: force: %f,  remove step: %d  world step: %d ,dir(%f,%f,%f) ", m, esc->step(), (u32)physics_world()->StepsNum(), f.x, f.y , f.z ); 
 	}
 #endif
-	delete_call(*i);
+	CPHCall* call = *i;
 	m_calls.erase(i);
+	scheduleDelete(call);
 }
-
-
 
 struct SFEqualPred
 {
@@ -130,25 +171,6 @@ struct SFEqualPred
 		return	call->equal(cmp_condition,cmp_action);
 	}
 };
-struct SFRemovePred2
-{
-	CPHReqComparerV* cmp_condition,*cmp_action;
-	SFRemovePred2(CPHReqComparerV* cmp_c,CPHReqComparerV* cmp_a)
-	{
-		cmp_condition=cmp_c;cmp_action=cmp_a;
-	}
-	bool operator()(CPHCall* call)
-	{
-		if(call->equal(cmp_condition,cmp_action))
-		{
-			delete_call(call);
-			return true;
-		}
-		return false;
-		
-	}
-};
-
 
 PHCALL_I CPHCommander::find_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
 {
@@ -164,7 +186,19 @@ bool CPHCommander::has_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_
 void CPHCommander::remove_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
 {
 	xrCriticalSectionGuard guard(&lock);
-	m_calls.erase(std::remove_if(m_calls.begin(), m_calls.end(), SFRemovePred2(cmp_condition, cmp_action)), m_calls.end());
+	for (PHCALL_I it = m_calls.begin(); it != m_calls.end();)
+	{
+		if ((*it)->equal(cmp_condition, cmp_action))
+		{
+			CPHCall* call = *it;
+			it = m_calls.erase(it);
+			scheduleDelete(call);
+		}
+		else
+		{
+			++it;
+		}
+	}
 }
 
 bool CPHCommander::add_call_unique(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action)
@@ -176,29 +210,23 @@ bool CPHCommander::add_call_unique(CPHCondition* condition,CPHReqComparerV* cmp_
 	}
 	return false;
 }
-struct SRemoveRped
-{
-	CPHReqComparerV*	cmp_object;
-	SRemoveRped(CPHReqComparerV* cmp_o)
-	{
-		cmp_object=cmp_o;
-	}
-	bool operator() (CPHCall* call)
-	{
-		if(call->is_any(cmp_object))
-		{
-			delete_call(call);
-			return true;
-		}
-		else
-			return false;
-	}
-};
 
 void CPHCommander::remove_calls(CPHReqComparerV* cmp_object)
 {
 	xrCriticalSectionGuard guard(&lock);
-	m_calls.erase(std::remove_if(m_calls.begin(), m_calls.end(), SRemoveRped(cmp_object)), m_calls.end());
+	for (PHCALL_I it = m_calls.begin(); it != m_calls.end();)
+	{
+		if ((*it)->is_any(cmp_object))
+		{
+			CPHCall* call = *it;
+			it = m_calls.erase(it);
+			scheduleDelete(call);
+		}
+		else
+		{
+			++it;
+		}
+	}
 }
 
 void CPHCommander::phys_shell_relcase(CPhysicsShell* sh)
