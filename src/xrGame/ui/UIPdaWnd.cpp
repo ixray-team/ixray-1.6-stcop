@@ -484,6 +484,7 @@ void CUIPdaWnd::Show(bool status)
 	inherited::Show						(status);
 	if(status)
 	{
+		UI().GetUICursor().m_static->SetWidth(UI().GetUICursor().m_width_initial * CHudPdaAnimator::GetPDAScreen_kx());
 		InventoryUtilities::SendInfoToActor	(PdaActorInfo::Show);
 		UpdateLocationName();
 		UpdateDateTime(true);
@@ -509,9 +510,11 @@ void CUIPdaWnd::Show(bool status)
 			SetActiveSubdialog(m_sActiveSection);
 		}
 		m_uiSounds.SetSuppressTabSound(false);
-	}else
+	}
+	else
 	{
-		InventoryUtilities::SendInfoToActor	(PdaActorInfo::Hide);
+		UI().GetUICursor().m_static->SetWidth(UI().GetUICursor().m_width_initial * UI().get_current_kx());
+		InventoryUtilities::SendInfoToActor(PdaActorInfo::Hide);
 		CurrentGameUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, false);
 		if (m_pActiveDialog)
 		{
