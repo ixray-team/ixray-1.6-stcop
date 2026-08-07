@@ -253,9 +253,6 @@ void CSoundMemoryManager::add(const CObject* O, int sound_type, const Fvector& p
 	if (who_entity_alive && me_entity_alive && (me_entity_alive->tfGetRelationType(who_entity_alive) == ALife::eRelationTypeFriend || me_entity_alive->tfGetRelationType(who_entity_alive) == ALife::eRelationTypeNeutral))
 		return;
 
-	if (who_entity_alive && !m_object->memory().enemy().is_useful(who_entity_alive))
-		return;
-
 	const CGameObject* game_object = object ? object->cast_game_object() : NULL;
 	if (!game_object && object)
 		return;
