@@ -4,12 +4,16 @@
 
 #include "GameFont.h"
 #include "FDemoRecord.h"
+
+#include "CameraBase.h"
 #include "XR_IOConsole.h"
 #include "xr_input.h"
 #include "xr_object.h"
 #include "Render.h"
 #include "CustomHUD.h"
 #include "CameraManager.h"
+#include "IGame_Actor.h"
+#include "xr_level_controller.h"
 
 extern bool g_bDisableRedText;
 static Flags32	s_hud_flag	= {0};
@@ -53,6 +57,12 @@ void setup_lm_screenshot_matrices()
 	Device.mView_old = Device.mView;
 }
 
+static void update_whith_timescale(Fvector& v, const Fvector& v_delta)
+{
+	float scale = 1.f / Device.time_factor();
+	v.mad(v, v_delta, scale);
+}
+
 Fbox get_level_screenshot_bound()
 {
 	Fbox res = g_pGameLevel->ObjectSpace.GetBoundingVolume();
@@ -70,91 +80,6 @@ Fbox get_level_screenshot_bound()
 
 	return res;
 }
-
-CDemoRecord::CDemoRecord(const char *name,float life_time) : CEffectorCam(cefDemo,life_time/*,false*/)
-{
-	stored_red_text = g_bDisableRedText;
-	g_bDisableRedText = true;
-	m_iLMScreenshotFragment = -1;
-	
-	m_b_redirect_input_to_level = false;
-	Platform::Unlink(name);
-	file	= FS.w_open	(name);
-	if (file) 
-	{
-		g_position.set_position  = false;
-		IR_Capture		();	// capture input
-		m_Camera.invert	(Device.mView);
-
-		// parse yaw
-		Fvector& dir	= m_Camera.k;
-		Fvector DYaw;	DYaw.set(dir.x,0.f,dir.z); DYaw.normalize_safe();
-		if (DYaw.x<0)	m_HPB.x = acosf(DYaw.z);
-		else			m_HPB.x = 2*PI-acosf(DYaw.z);
-
-		// parse pitch
-		dir.normalize_safe	();
-		m_HPB.y			= asinf(dir.y);
-		m_HPB.z			= 0;
-
-		m_Position.set	(m_Camera.c);
-
-		m_vVelocity.set	(0,0,0);
-		m_vAngularVelocity.set(0,0,0);
-		iCount			= 0;
-		
-		m_vT.set(0,0,0);
-		m_vR.set(0,0,0);
-		m_bMakeCubeMap		= false;
-		m_bMakeScreenshot	= false;
-		m_bMakeLevelMap		= false;
-
-		m_fSpeed0		= pSettings->r_float("demo_record","speed0");
-		m_fSpeed1		= pSettings->r_float("demo_record","speed1");
-		m_fSpeed2		= pSettings->r_float("demo_record","speed2");
-		m_fSpeed3		= pSettings->r_float("demo_record","speed3");
-		m_fAngSpeed0	= pSettings->r_float("demo_record","ang_speed0");
-		m_fAngSpeed1	= pSettings->r_float("demo_record","ang_speed1");
-		m_fAngSpeed2	= pSettings->r_float("demo_record","ang_speed2");
-		m_fAngSpeed3	= pSettings->r_float("demo_record","ang_speed3");
-	} else {
-		fLifeTime = -1;
-	}
-}
-
-CDemoRecord::~CDemoRecord()
-{
-	if (file) 
-	{
-		IR_Release	();	// release input
-		FS.w_close	(file);
-	}
-	g_bDisableRedText	= stored_red_text;
-
-	Device.seqRender.Remove		( this		);
-}
-
-//								+X,				-X,				+Y,				-Y,			+Z,				-Z
-static Fvector cmNorm[6]	= {{0.f,1.f,0.f}, {0.f,1.f,0.f}, {0.f,0.f,-1.f},{0.f,0.f,1.f}, {0.f,1.f,0.f}, {0.f,1.f,0.f}};
-static Fvector cmDir[6]		= {{1.f,0.f,0.f}, {-1.f,0.f,0.f},{0.f,1.f,0.f}, {0.f,-1.f,0.f},{0.f,0.f,1.f}, {0.f,0.f,-1.f}};
-
-
-void CDemoRecord::MakeScreenshotFace()
-{
-	switch (m_Stage){
-	case 0:
-		s_hud_flag.assign	(psHUD_Flags);
-		psHUD_Flags.assign	(0);
-	break;
-	case 1:
-		Render->Screenshot	();
-		psHUD_Flags.assign	(s_hud_flag);
-		m_bMakeScreenshot= false;
-	break;
-	}
-	m_Stage++;
-}
-
 
 void GetLM_BBox(Fbox &bb, int Step)
 {
@@ -186,11 +111,96 @@ void GetLM_BBox(Fbox &bb, int Step)
 	}
 };
 
+
+//								+X,				-X,				+Y,				-Y,			+Z,				-Z
+static Fvector cmNorm[6]	= {{0.f,1.f,0.f}, {0.f,1.f,0.f}, {0.f,0.f,-1.f},{0.f,0.f,1.f}, {0.f,1.f,0.f}, {0.f,1.f,0.f}};
+static Fvector cmDir[6]		= {{1.f,0.f,0.f}, {-1.f,0.f,0.f},{0.f,1.f,0.f}, {0.f,-1.f,0.f},{0.f,0.f,1.f}, {0.f,0.f,-1.f}};
+
+CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDemo, life_time /*,false*/)
+{
+	stored_red_text = g_bDisableRedText;
+	g_bDisableRedText = true;
+	m_iLMScreenshotFragment = -1;
+
+	m_b_redirect_input_to_level = false;
+	Platform::Unlink(name);
+	file = FS.w_open(name);
+	if (file)
+	{
+		g_position.set_position = false;
+		IR_Capture(); // capture input
+		Camera.invert(Device.mView);
+
+		// parse yaw
+		Fvector& dir = Camera.k;
+		Fvector DYaw;
+		DYaw.set(dir.x, 0.f, dir.z);
+		DYaw.normalize_safe();
+		if (DYaw.x < 0)
+		{
+			HPB.x = acosf(DYaw.z);
+		}
+		else
+		{
+			HPB.x = 2 * PI - acosf(DYaw.z);
+		}
+
+		// parse pitch
+		dir.normalize_safe();
+		HPB.y = asinf(dir.y);
+		HPB.z = 0;
+
+		Position.set(Camera.c);
+
+		Velocity.set(0, 0, 0);
+		AngularVelocity.set(0, 0, 0);
+
+		FrameTopDelta.set(0, 0, 0);
+		FrameRightDelta.set(0, 0, 0);
+		m_bMakeCubeMap = false;
+		m_bMakeScreenshot = false;
+		m_bMakeLevelMap = false;
+		CameraTransformFactor = 5.f;
+	}
+	else
+	{
+		fLifeTime = -1;
+	}
+}
+
+CDemoRecord::~CDemoRecord()
+{
+	if (file) 
+	{
+		IR_Release	();	// release input
+		FS.w_close	(file);
+	}
+	g_bDisableRedText	= stored_red_text;
+
+	Device.seqRender.Remove		( this		);
+}
+
+void CDemoRecord::MakeScreenshotFace()
+{
+	switch (Stage){
+	case 0:
+		s_hud_flag.assign	(psHUD_Flags);
+		psHUD_Flags.assign	(0);
+	break;
+	case 1:
+		Render->Screenshot	();
+		psHUD_Flags.assign	(s_hud_flag);
+		m_bMakeScreenshot= false;
+	break;
+	}
+	Stage++;
+}
+
 void CDemoRecord::MakeLevelMapProcess()
 {
 	static float psOldVidMode[2];
 
-	switch (m_Stage)
+	switch (Stage)
 	{
 	case 0:
 		{
@@ -228,7 +238,7 @@ void CDemoRecord::MakeLevelMapProcess()
 				{
 					curr_lm_fbox		= get_level_screenshot_bound();
 					GetLM_BBox			(curr_lm_fbox, m_iLMScreenshotFragment);
-					m_Stage				-= 20;
+					Stage				-= 20;
 				}
 			}
 
@@ -253,16 +263,16 @@ void CDemoRecord::MakeLevelMapProcess()
 			setup_lm_screenshot_matrices		();
 		}break;
 	}
-	m_Stage++;
+	Stage++;
 }
 
 void CDemoRecord::MakeCubeMapFace(Fvector &D, Fvector &N)
 {
 	string32 buf;
-	switch (m_Stage){
+	switch (Stage){
 	case 0:
-		N.set		(cmNorm[m_Stage]);
-		D.set		(cmDir[m_Stage]);
+		N.set		(cmNorm[Stage]);
+		D.set		(cmDir[Stage]);
 		s_hud_flag.assign(psHUD_Flags);
 		psHUD_Flags.assign	(0);
 	break;
@@ -271,55 +281,65 @@ void CDemoRecord::MakeCubeMapFace(Fvector &D, Fvector &N)
 	case 3:
 	case 4:
 	case 5:
-		N.set		(cmNorm[m_Stage]);
-		D.set		(cmDir[m_Stage]);
-		Render->Screenshot	(IRender_interface::SM_FOR_CUBEMAP,_itoa(m_Stage,buf,10));
+		N.set		(cmNorm[Stage]);
+		D.set		(cmDir[Stage]);
+		Render->Screenshot	(IRender_interface::SM_FOR_CUBEMAP,_itoa(Stage,buf,10));
 	break;
 	case 6:
-		Render->Screenshot	(IRender_interface::SM_FOR_CUBEMAP,_itoa(m_Stage,buf,10));
-		N.set		(m_Camera.j);
-		D.set		(m_Camera.k);
+		Render->Screenshot	(IRender_interface::SM_FOR_CUBEMAP,_itoa(Stage,buf,10));
+		N.set		(Camera.j);
+		D.set		(Camera.k);
 		psHUD_Flags.assign(s_hud_flag);
 		m_bMakeCubeMap = false;
 	break;
 	}
-	m_Stage++;
+	Stage++;
 }
 
 bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
-	info.dont_apply					= false;
-	if (0==file)					return true;
+	info.dont_apply = false;
+	
+	if (nullptr == file)
+	{
+		return true;
+	}
 
 	if (m_bMakeScreenshot)
 	{
 		MakeScreenshotFace();
 		// update camera
-		info.n.set(m_Camera.j);
-		info.d.set(m_Camera.k);
-		info.p.set(m_Camera.c);
-	}else if (m_bMakeLevelMap)
+		info.n.set(Camera.j);
+		info.d.set(Camera.k);
+		info.p.set(Camera.c);
+	}
+	else if (m_bMakeLevelMap)
 	{
 		MakeLevelMapProcess();
 		info.dont_apply = true;
-	}else if (m_bMakeCubeMap)
+	}
+	else if (m_bMakeCubeMap)
 	{
-		MakeCubeMapFace	(info.d, info.n);
-		info.p.set		(m_Camera.c);
-		info.fAspect	= 1.f;
-	}else
+		MakeCubeMapFace(info.d, info.n);
+		info.p.set(Camera.c);
+		info.fAspect = 1.f;
+	}
+	else
 	{
-		if(IR_GetKeyState(SDL_SCANCODE_F1))
+		if (IR_GetKeyState(SDL_SCANCODE_F1))
 		{
 			CGameFont* SystemFont = g_FontManager->pFontSystem;
+			
 			SystemFont->SetColor(color_rgba(255, 0, 0, 255));
 			SystemFont->SetAligment(CGameFont::alCenter);
 			SystemFont->OutSetI(0, -.05f);
-			SystemFont->OutNext("%s", "RECORDING");
-			SystemFont->OutNext("Key frames count: %d", iCount);
+			
+			SystemFont->OutNext("RECORDING");
+			SystemFont->OutNext("Key frames count: %d", KeyframesPositions.size());
+			
 			SystemFont->SetAligment(CGameFont::alLeft);
 			SystemFont->OutSetI(-0.2f, +.05f);
-			SystemFont->OutNext("SPACE");
+			SystemFont->OutNext("F");
 			SystemFont->OutNext("BACK");
 			SystemFont->OutNext("ESC");
 			SystemFont->OutNext("F11");
@@ -327,212 +347,258 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			SystemFont->OutNext("F12");
 			SystemFont->SetAligment(CGameFont::alLeft);
 			SystemFont->OutSetI(0, +.05f);
-			SystemFont->OutNext("= Append Key");
+			SystemFont->OutNext("= Append keyframe");
 			SystemFont->OutNext("= Cube Map");
 			SystemFont->OutNext("= Quit");
 			SystemFont->OutNext("= Level Map ScreenShot");
 			SystemFont->OutNext("= Level Map ScreenShot(High Quality)");
 			SystemFont->OutNext("= ScreenShot");
-
 		}
+		
+		FrameTopDelta.mul(CameraTransformFactor);
+		FrameTopDelta.mul(Device.fTimeDelta);
+		FrameRightDelta.mul(1.f);
 
-		m_vVelocity.lerp		(m_vVelocity,m_vT,0.3f);
-		m_vAngularVelocity.lerp	(m_vAngularVelocity,m_vR,0.3f);
+		HPB.x -= FrameRightDelta.y;
+		HPB.y -= FrameRightDelta.x;
+		HPB.z += FrameRightDelta.z;
 
-		float speed = m_fSpeed1, ang_speed = m_fAngSpeed1;
-
-		if (IR_GetKeyState(SDL_SCANCODE_LSHIFT))
-		{ 
-			speed=m_fSpeed0; 
-			ang_speed=m_fAngSpeed0;
-		}else 
-		if (IR_GetKeyState(SDL_SCANCODE_LALT))
-		{ 
-			speed=m_fSpeed2; 
-			ang_speed=m_fAngSpeed2;
-		}else 
-		if (m_bEnableAcceleration)
-		{ 
-			speed=m_fSpeed3; 
-			ang_speed=m_fAngSpeed3;
-		}
-
-		m_vT.mul				(m_vVelocity, Device.fTimeDelta * speed);
-		m_vR.mul				(m_vAngularVelocity, Device.fTimeDelta * ang_speed);
-
-		m_HPB.x -= m_vR.y;
-		m_HPB.y -= m_vR.x;
-		m_HPB.z += m_vR.z;
-		if(g_position.set_position)
+		if (g_position.set_position)
 		{
-			m_Position.set(g_position.p);
+			Position.set(g_position.p);
 			g_position.set_position = false;
-		} else
-			g_position.p.set( m_Position );
-		// move
-		Fvector vmove;
+		}
+		else
+		{
+			g_position.p.set(Position);
+		}
 
-		vmove.set				(m_Camera.k);
-		vmove.normalize_safe	();
-		vmove.mul				(m_vT.z);
-		m_Position.add			(vmove);
+		Fvector CamMove;
 
-		vmove.set				(m_Camera.i);
-		vmove.normalize_safe	();
-		vmove.mul				(m_vT.x);
-		m_Position.add			(vmove);
+		CamMove.set				(Camera.k);
+		CamMove.normalize_safe	();
+		CamMove.mul				(FrameTopDelta.z);
+		Position.add			(CamMove);
 
-		vmove.set				(m_Camera.j);
-		vmove.normalize_safe	();
-		vmove.mul				(m_vT.y);
-		m_Position.add			(vmove);
+		CamMove.set				(Camera.i);
+		CamMove.normalize_safe	();
+		CamMove.mul				(FrameTopDelta.x);
+		Position.add			(CamMove);
 
-		m_Camera.setHPB			(m_HPB.x,m_HPB.y,m_HPB.z);
-		m_Camera.translate_over	(m_Position);
+		CamMove.set				(Camera.j);
+		CamMove.normalize_safe	();
+		CamMove.mul				(FrameTopDelta.y);
+		Position.add			(CamMove);
+
+		Camera.setHPB			(HPB.x,HPB.y,HPB.z);
+		Camera.translate_over	(Position);
 
 		// update camera
-		info.n.set(m_Camera.j);
-		info.d.set(m_Camera.k);
-		info.p.set(m_Camera.c);
+		info.n.set(Camera.j);
+		info.d.set(Camera.k);
+		info.p.set(Camera.c);
 
-		fLifeTime-=Device.fTimeDelta;
+		fLifeTime -= Device.fTimeDelta;
 
-		m_vT.set(0,0,0);
-		m_vR.set(0,0,0);
+		FrameTopDelta.set(0, 0, 0);
+		FrameRightDelta.set(0, 0, 0);
 	}
 	return true;
 }
 
-void CDemoRecord::IR_OnKeyboardPress	(int dik)
+void CDemoRecord::IR_OnKeyboardPress(int dik)
 {
-	if (dik == SDL_SCANCODE_KP_MULTIPLY)	m_b_redirect_input_to_level	= !m_b_redirect_input_to_level;
+	if (dik == SDL_SCANCODE_0)
+	{
+		m_b_redirect_input_to_level = !m_b_redirect_input_to_level;
+	}
+	
 	if (dik == SDL_SCANCODE_LCTRL)
 	{
 		m_bEnableAcceleration = true;
 	}
 
-	if(m_b_redirect_input_to_level)
+	if (m_b_redirect_input_to_level)
 	{
-		g_pGameLevel->IR_OnKeyboardPress(dik);
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_OnKeyboardPress(dik);
+		}
 		return;
 	}
+	
 	if (dik == SDL_SCANCODE_GRAVE)
-							Console->Show			();
-	if (dik == SDL_SCANCODE_SPACE)	RecordKey				();
-	if (dik == SDL_SCANCODE_BACKSPACE)	MakeCubemap				();
-	if (dik == SDL_SCANCODE_F11)		MakeLevelMapScreenshot	(IR_GetKeyState(SDL_SCANCODE_LCTRL));
-	if (dik == SDL_SCANCODE_F12)		MakeScreenshot			();
-	if (dik == SDL_SCANCODE_ESCAPE)	fLifeTime				= -1;
+	{
+		Console->Show();
+	}
+	
+	if (dik == SDL_SCANCODE_F)
+	{
+		RecordKey();
+	}
+	
+	if (dik == SDL_SCANCODE_BACKSPACE)
+	{
+		MakeCubemap();
+	}
+	
+	if (dik == SDL_SCANCODE_F11)
+	{
+		MakeLevelMapScreenshot(IR_GetKeyState(SDL_SCANCODE_LCTRL));
+	}
+	
+	if (dik == SDL_SCANCODE_F12)
+	{
+		MakeScreenshot();
+	}
+	
+	if (dik == SDL_SCANCODE_ESCAPE)
+	{
+		fLifeTime = -1;
+	}
 
 #ifndef MASTER_GOLD
-	if (dik == SDL_SCANCODE_RETURN) {
-		if (g_pGameLevel->CurrentEntity()) {
-			g_pGameLevel->CurrentEntity()->ForceTransform(m_Camera);
-			fLifeTime		= -1; 
+	if (dik == SDL_SCANCODE_RETURN)
+	{
+		if (g_pGameLevel->CurrentEntity())
+		{
+			g_pGameLevel->CurrentEntity()->ForceTransform(Camera);
+			fLifeTime = -1;
 		}
 	}
 #endif
 
-	if	(dik == SDL_SCANCODE_PAUSE)
+	if (dik == SDL_SCANCODE_PAUSE)
+	{
 		Device.Pause(!Device.Paused(), true, true, "demo_record");
+	}
 }
 
-static void update_whith_timescale( Fvector &v, const Fvector &v_delta )
+void CDemoRecord::IR_OnKeyboardHold(int dik)
 {
-	VERIFY(!fis_zero(Device.time_factor()));
-	float scale = 1.f/Device.time_factor();
-	v.mad( v, v_delta, scale );
-}
-
-
-
-void CDemoRecord::IR_OnKeyboardHold	(int dik)
-{
-	if(m_b_redirect_input_to_level)
+	if (m_b_redirect_input_to_level)
 	{
-		g_pGameLevel->IR_OnKeyboardHold(dik);
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_OnKeyboardHold(dik);
+		}
 		return;
 	}
-	Fvector		vT_delta = Fvector().set(0,0,0);
-	Fvector		vR_delta = Fvector().set(0,0,0);
+	
+	EGameActions action = get_binded_action(dik);
+	Fvector TopDelta = Fvector();
 
-	switch(dik){
-	case SDL_SCANCODE_A:
-	case SDL_SCANCODE_KP_1:
-	case SDL_SCANCODE_LEFT:		vT_delta.x -= 1.0f; break; // Slide Left
-	case SDL_SCANCODE_D:
-	case SDL_SCANCODE_KP_3:
-	case SDL_SCANCODE_RIGHT:		vT_delta.x += 1.0f; break; // Slide Right
-	case SDL_SCANCODE_S:			vT_delta.y -= 1.0f; break; // Slide Down
-	case SDL_SCANCODE_W:			vT_delta.y += 1.0f; break; // Slide Up
-	// rotate	
-	case SDL_SCANCODE_KP_2:	vR_delta.x -= 1.0f; break; // Pitch Down
-	case SDL_SCANCODE_KP_8:	vR_delta.x += 1.0f; break; // Pitch Up
-	case SDL_SCANCODE_KP_E:
-	case SDL_SCANCODE_KP_6:	vR_delta.y += 1.0f; break; // Turn Left
-	case SDL_SCANCODE_Q:
-	case SDL_SCANCODE_KP_4:	vR_delta.y -= 1.0f; break; // Turn Right
-	case SDL_SCANCODE_KP_9:	vR_delta.z -= 2.0f; break; // Turn Right
-	case SDL_SCANCODE_KP_7:	vR_delta.z += 2.0f; break; // Turn Right
+	switch (action)
+	{
+		case kFWD:
+			TopDelta.z += 1.0f;
+			break;
+
+		case kBACK:
+			TopDelta.z -= 1.0f;
+			break;
+
+		case kL_STRAFE:
+			TopDelta.x -= 1.0f;
+			break;
+
+		case kR_STRAFE:
+			TopDelta.x += 1.0f;
+			break;
+
+		case kCROUCH:
+			TopDelta.y -= 1.0f;
+			break;
+
+		case kJUMP:
+			TopDelta.y += 1.0f;
+			break;
 	}
 
-	update_whith_timescale( m_vT, vT_delta );
-	update_whith_timescale( m_vR, vR_delta );
-
+	FrameTopDelta.add(TopDelta);
 }
 
-void CDemoRecord::IR_OnMouseMove		(int dx, int dy)
+void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 {
-	if(m_b_redirect_input_to_level)
+	if (m_b_redirect_input_to_level)
 	{
-		g_pGameLevel->IR_OnMouseMove(dx, dy);
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_OnMouseMove(dx, dy);
+		}
 		return;
 	}
 
-	Fvector		vR_delta = Fvector().set(0,0,0);
-
-	float scale			= .5f;//psMouseSens;
-	if (dx||dy){
-		vR_delta.y			+= float(dx)*scale; // heading
-		vR_delta.x			+= (psMouseInvert?-1:1)*float(dy)*scale*(3.f/4.f); // pitch
-	}
-	update_whith_timescale( m_vR, vR_delta );
-}
-
-void CDemoRecord::IR_OnMouseHold		(int btn)
-{
-	if(m_b_redirect_input_to_level)
+	Fvector RightDelta = Fvector();
+	float Sensitivity = .5f;
+	
+	if (IGame_Actor* IGameActor = smart_cast<IGame_Actor*>(g_pGameLevel->CurrentControlEntity()))
 	{
-		g_pGameLevel->IR_OnMouseHold(btn);
-		return;
+		float fov = IGameActor->cam_Active()->f_fov;
+		Sensitivity = fov / 67.5f * psMouseSens * psMouseSensScale / 50.0f;
 	}
-	Fvector		vT_delta = Fvector().set(0,0,0);
-	switch (btn){
-	case 0:			vT_delta.z += 1.0f; break; // Move Backward
-	case 1:			vT_delta.z -= 1.0f; break; // Move Forward
+
+	if (dx)
+	{
+		RightDelta.y += static_cast<float>(dx) * Sensitivity;
 	}
-	update_whith_timescale( m_vT, vT_delta );
+
+	if (dy)
+	{
+		RightDelta.x += (psMouseInvert ? -1 : 1) * static_cast<float>(dy) * Sensitivity * 3.0f / 4.0f;
+	}
+	
+	FrameRightDelta.add(RightDelta);
 }
 
-void CDemoRecord::RecordKey			()
+void CDemoRecord::IR_OnMouseWheel(int direction)
 {
-	Fmatrix			g_matView;
- 
-	g_matView.invert(m_Camera);
-	file->w			(&g_matView,sizeof(Fmatrix));
-	iCount++;
+	bool ModifierIncluded = pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT) || pInput->iGetAsyncKeyState(SDL_SCANCODE_RSHIFT);
+	
+	switch (direction)
+	{
+		case -1:
+			CameraTransformFactor -= ModifierIncluded ? 15.f : 5.f;
+			break;
+			
+		case 1:
+			CameraTransformFactor += ModifierIncluded ? 15.f : 5.f;
+			break;
+	}
+	clamp(CameraTransformFactor, 1.f, FLT_MAX);
 }
 
-void CDemoRecord::MakeCubemap		()
+void CDemoRecord::IR_OnMouseHold(int btn)
+{
+	if (m_b_redirect_input_to_level)
+	{
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_OnMouseHold(btn);
+		}
+	}
+}
+
+void CDemoRecord::RecordKey()
+{
+	Fmatrix ViewMatrix;
+
+	ViewMatrix.invert(Camera);
+	file->w(&ViewMatrix, sizeof(Fmatrix));
+	
+	KeyframesPositions.emplace_back(ViewMatrix.c);
+}
+
+void CDemoRecord::MakeCubemap()
 {
 	m_bMakeCubeMap	= true;
-	m_Stage			= 0;
+	Stage			= 0;
 }
 
-void CDemoRecord::MakeScreenshot	()
+void CDemoRecord::MakeScreenshot()
 {
 	m_bMakeScreenshot = true;
-	m_Stage = 0;
+	Stage = 0;
 }
 
 void CDemoRecord::MakeLevelMapScreenshot(bool bHQ)
@@ -548,7 +614,7 @@ void CDemoRecord::MakeLevelMapScreenshot(bool bHQ)
 	GetLM_BBox			(curr_lm_fbox, m_iLMScreenshotFragment);
 
 	m_bMakeLevelMap		= true;
-	m_Stage				= 0;
+	Stage				= 0;
 }
 
 void CDemoRecord::OnRender()
@@ -612,8 +678,8 @@ void CDemoRecord::IR_GamepadUpdateStick(int id, Fvector2 value)
 		}
 		break;
 	}
-	update_whith_timescale(m_vR, vR_delta);
-	update_whith_timescale(m_vT, vT_delta);
+	update_whith_timescale(FrameRightDelta, vR_delta);
+	update_whith_timescale(FrameTopDelta, vT_delta);
 }
 
 void CDemoRecord::IR_GamepadKeyPress(int id) 
