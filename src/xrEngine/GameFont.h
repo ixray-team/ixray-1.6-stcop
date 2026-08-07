@@ -32,7 +32,8 @@ public:
 	{
 		alLeft = 0,
 		alRight,
-		alCenter
+		alCenter,
+		alJustify
 	};
 	enum EGradientMode
 	{

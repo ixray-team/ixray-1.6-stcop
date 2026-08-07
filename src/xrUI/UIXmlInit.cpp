@@ -373,6 +373,8 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, const char* path, int index, CUILines
 		pLines->SetTextAlignment(CGameFont::alCenter);
 	else if (0 == xr_strcmp(al, "r"))
 		pLines->SetTextAlignment(CGameFont::alRight);
+	else if (0 == xr_strcmp(al, "j"))
+		pLines->SetTextAlignment(CGameFont::alJustify);
 	else if (0 == xr_strcmp(al, "l"))
 		pLines->SetTextAlignment(CGameFont::alLeft);
 
@@ -769,6 +771,8 @@ bool CUIXmlInit::InitItemStateDisplay(CUIXml& xml_doc, const char* path, int ind
 					pLines->SetTextAlignment(CGameFont::alCenter);
 				else if (0 == xr_strcmp(al, "r"))
 					pLines->SetTextAlignment(CGameFont::alRight);
+				else if (0 == xr_strcmp(al, "j"))
+					pLines->SetTextAlignment(CGameFont::alJustify);
 				else if (0 == xr_strcmp(al, "l"))
 					pLines->SetTextAlignment(CGameFont::alLeft);
 

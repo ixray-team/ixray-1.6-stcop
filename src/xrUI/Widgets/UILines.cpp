@@ -497,7 +497,9 @@ void CUILines::DrawInternal(float x, float y, bool worldSpace)
 	auto emitSimple = [&](float ox, float oy, u32 color)
 	{
 		m_pFont->SetColor(color);
-		m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
+		const CGameFont::EAligment drawAlign =
+			(m_eTextAlign == CGameFont::alJustify) ? CGameFont::alLeft : (CGameFont::EAligment)m_eTextAlign;
+		m_pFont->SetAligment(drawAlign);
 		m_pFont->SetGradientMode(m_eTextGradientMode);
 
 		if (!worldSpace)
@@ -569,18 +571,34 @@ void CUILines::DrawInternal(float x, float y, bool worldSpace)
 		}
 
 		const u32 size = (u32)m_lines.size();
-		m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
+		const bool useJustify = (m_eTextAlign == CGameFont::alJustify) && (size > 1);
+		m_pFont->SetAligment(useJustify ? CGameFont::alLeft : (CGameFont::EAligment)m_eTextAlign);
 		m_pFont->SetGradientMode(m_eTextGradientMode);
 		for (u32 i = 0; i < size; ++i)
 		{
 			const float posX = x + ox + (worldSpace ? 0.0f : GetIndentByAlign());
+			const bool justifyLine = useJustify && (i + 1 < size);
 			if (worldSpace)
 			{
-				m_lines[i].DrawWS(m_pFont, posX, posY, colorOverride);
+				if (justifyLine)
+				{
+					m_lines[i].DrawJustifiedWS(m_pFont, posX, posY, m_wndSize.x, colorOverride);
+				}
+				else
+				{
+					m_lines[i].DrawWS(m_pFont, posX, posY, colorOverride);
+				}
 			}
 			else
 			{
-				m_lines[i].Draw(m_pFont, posX, posY, colorOverride);
+				if (justifyLine)
+				{
+					m_lines[i].DrawJustified(m_pFont, posX, posY, m_wndSize.x, colorOverride);
+				}
+				else
+				{
+					m_lines[i].Draw(m_pFont, posX, posY, colorOverride);
+				}
 			}
 			posY += height;
 		}
@@ -626,6 +644,7 @@ float CUILines::GetIndentByAlign()const
 			return (m_wndSize.x)/2;
 		}break;
 	case CGameFont::alLeft:
+	case CGameFont::alJustify:
 		{
 			return 0;
 		}break;
