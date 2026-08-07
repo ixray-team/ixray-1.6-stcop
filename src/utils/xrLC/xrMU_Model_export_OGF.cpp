@@ -108,13 +108,13 @@ void export_ogf( xrMU_Reference& mu_reference )
 			//R_ASSERT		(M);
 
 			// Common data
-			pOGF->Sector = mu_reference.sector;
+			pOGF->Sector = Ref.sector;
 			pOGF->material = it->material;
 			pOGF->bSharedMaterial = it->bSharedMaterial;
 
-			pOGF->debug_name = mu_reference.debug_name;
+			pOGF->debug_name = Ref.debug_name;
 			pOGF->debug_name += ":subdiv ";
-			pOGF->debug_name += std::to_string(it-model->m_subdivs.begin()).c_str();
+			pOGF->debug_name += std::to_string(it-Model.m_subdivs.begin()).c_str();
 
 			// Collect textures
 			auto& Tex = pBuild->GetTexture(it->material, it->bSharedMaterial);
@@ -133,18 +133,17 @@ void export_ogf( xrMU_Reference& mu_reference )
 			if (gCompilerMode.LC_UseExternalRefs)
 			{
 				pOGF->external_path = it->external_path;
-				pOGF->SplitID = it-model->m_subdivs.begin();
+				pOGF->SplitID = it-Model.m_subdivs.begin();
 			}
-			pOGF->xform.set(mu_reference.xform);
-			pOGF->c_scale = mu_reference.c_scale;
-			pOGF->c_bias = mu_reference.c_bias;
+			pOGF->xform.set(Ref.xform);
+			pOGF->c_scale = Ref.c_scale;
+			pOGF->c_bias = Ref.c_bias;
 
 			pOGF->CalcBounds();
-			generated_ids.push_back((u32)g_tree.size());
-
+			
 			csThreadLock.Enter();
 			GeneratedIds.push_back((u32)g_tree.size());
- 			g_tree.push_back(pOGF);
+			g_tree.push_back(pOGF);
 			csThreadLock.Leave();
 		}
 	};
@@ -172,7 +171,7 @@ void export_ogf( xrMU_Reference& mu_reference )
 	
 	// New way
 	auto LODNode = new OGF_MESH_LODS(1, mu_reference.sector);
-	auto AttackLOD = [&](OGF_Node* LOD)
+	auto AttachLOD = [&](OGF_Node* LOD)
 	{
 		for (auto Ref : generated_ids)
 		{
@@ -187,30 +186,30 @@ void export_ogf( xrMU_Reference& mu_reference )
 		csThreadLock.Leave();
 		LODNode->AddChield(ID);
 	};
-	AttackLOD(new OGF_LOD_MU0(1, mu_reference.sector));
+	AttachLOD(new OGF_LOD_MU0(1, mu_reference.sector));
 	{
 		generated_ids.clear();
-		auto& LOD1Model = *pBuild->mu_models()[mu_reference.model->LODsID[0]];
+		auto& LOD1Model = *CBuild::mu_models()[mu_reference.model->LODsID[0]];
 		MakeRef(LOD1Model, generated_ids, mu_reference);
-		AttackLOD(new OGF_LOD_MU1(1, mu_reference.sector));
+		AttachLOD(new OGF_LOD_MU1(1, mu_reference.sector));
 	}
 	{
 		generated_ids.clear();
-		auto& LOD2Model = *pBuild->mu_models()[mu_reference.model->LODsID[1]];
+		auto& LOD2Model = *CBuild::mu_models()[mu_reference.model->LODsID[1]];
 		MakeRef(LOD2Model, generated_ids, mu_reference);
-		AttackLOD(new OGF_LOD_MU2(1, mu_reference.sector));
+		AttachLOD(new OGF_LOD_MU2(1, mu_reference.sector));
 	}
 	{
 		generated_ids.clear();
-		auto& LOD3Model = *pBuild->mu_models()[mu_reference.model->LODsID[2]];
+		auto& LOD3Model = *CBuild::mu_models()[mu_reference.model->LODsID[2]];
 		MakeRef(LOD3Model, generated_ids, mu_reference);
-		AttackLOD(new OGF_LOD_MU3(1, mu_reference.sector));
+		AttachLOD(new OGF_LOD_MU3(1, mu_reference.sector));
 	}
 	{
 		generated_ids.clear();
-		auto& LOD4Model = *pBuild->mu_models()[mu_reference.model->LODsID[3]];
+		auto& LOD4Model = *CBuild::mu_models()[mu_reference.model->LODsID[3]];
 		MakeRef(LOD4Model, generated_ids, mu_reference);
-		AttackLOD(new OGF_LOD_MU4(1, mu_reference.sector));
+		AttachLOD(new OGF_LOD_MU4(1, mu_reference.sector));
 	} 
 	Fvector E;
 	LODNode->bbox.get_CD(LODNode->C, E);

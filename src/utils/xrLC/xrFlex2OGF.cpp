@@ -106,18 +106,19 @@ void CBuild::Flex2OGF()
  			OGF*		pOGF	= new OGF ();
 			Face*		F		= (* faces->begin() );	// first face	
 			R_ASSERT	(F);
-			b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material
-			auto Sector = M->sector;
-			
+			auto Sector = GetMaterialSector(*F);	
+			//b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material
+ 
 			try 
 			{
 				// Common data
+				pOGF->Sector		= Sector;
 				pOGF->Sector		= Sector;
 				pOGF->material		= F->dwMaterial;
 			
 				// Collect textures
 				OGF_Texture			T;
-				T.pBuildSurface = &textures()[M->surfidx];
+				T.pBuildSurface = &GetTexture(*F);
 				T.name = T.pBuildSurface->name;
 				pOGF->textures.push_back(T);
 			
