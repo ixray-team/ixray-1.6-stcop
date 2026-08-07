@@ -298,6 +298,22 @@ struct	OGF_LOD		: public OGF_Node
 	virtual void		Save		(IWriter &fs);
 };
 
+//MeshLods
+struct OGF_MESH_LODS : public OGF_Node
+{
+	OGF_MESH_LODS(int _L, u16 _Sector) : OGF_Node(_L, _Sector) {};
+	
+	virtual void Save(IWriter &fs) override;
+};
+
+//LOD0
+struct OGF_LOD_MU0 : public OGF_Node
+{
+	OGF_LOD_MU0(int _L, u16 _Sector) : OGF_Node(_L,_Sector) {};
+	
+	virtual void Save(IWriter &fs);
+};
+
 //LOD1
 struct	OGF_LOD_MU1		: public OGF_Node
 {

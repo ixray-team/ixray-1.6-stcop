@@ -167,35 +167,6 @@ ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 	return	R / distSQ;
 }
 
-//Seakad: вылетает исключение тут, на чуть более старой версии не было. Forser глянь пж потом, что тут. 
-IC bool HasNextLOD(dxRender_Visual *pVisual, u32 next_type)
-{
-	FLOD* pV = (FLOD*)pVisual;
-
-    if (pV->next_lod_checked)
-        return pV->has_next_lod;
-
-    pV->next_lod_checked = true;
-    float R = std::max(pV->vis.sphere.R,0.5f);
-    for (auto* visual : RImplementation.Visuals)
-    {
-        if (!visual)
-            continue;
-
-        if (visual->Type != next_type)
-            continue;
-
-        float D = visual->vis.sphere.P.distance_to(pV->vis.sphere.P);
-        if (D < R)
-        {
-            pV->has_next_lod = true;
-            return true;
-        }
-    }
-    pV->has_next_lod = false;
-    return false;
-}
-
 void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center)
 {
 	CRender& RI = RImplementation;
@@ -636,36 +607,48 @@ IC float distance_to_aabb(const Fvector& point,const Fbox& box)
     return _sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-IC int SelectLOD(float D,bool has_lod1,bool has_lod2,bool has_lod3,bool has_lod4)
+IC FMUMeshLOD* SelectLOD(float D, const xr_vector<dxRender_Visual*>& V)
 {
-	if (!has_lod1)
-        return 0;
-
-	if (!has_lod2)
-        return 1;
-
-	if (!has_lod3)
-        return 2;
-
-	if (!has_lod4)
-        return 3;
-
-	if (D < r_ssaLOD_MU0)
-        return 0;
-
-    if (D >= r_ssaLOD_MU0 && D <  r_ssaLOD_MU1)
-        return 1;
-
-    if (D >= r_ssaLOD_MU1 && D <  r_ssaLOD_MU2)
-        return 2;
-
-    if (D >= r_ssaLOD_MU2 && D <  r_ssaLOD_MU3)
-        return 3;
-
-    if (D >= r_ssaLOD_MU3 && D <  (r_ssaLOD_MU4/(ps_r__LOD_MU4_discard * 0.001f)))
-        return 4;
-
-    return -1;
+	VERIFY(!V.empty());
+	switch (V.size())
+	{
+		case 5:
+		{
+			if (D >= r_ssaLOD_MU3 && D < (r_ssaLOD_MU4/(ps_r__LOD_MU4_discard * 0.001f)))
+			{
+				return (FMUMeshLOD*)V[4];
+			}
+		}
+		case 4:
+		{
+			if (D >= r_ssaLOD_MU2 && D < r_ssaLOD_MU3)
+			{
+				return (FMUMeshLOD*)V[3];
+			}
+		}
+		case 3:
+		{
+			if (D >= r_ssaLOD_MU1 && D < r_ssaLOD_MU2)
+			{
+				return (FMUMeshLOD*)V[2];
+			}
+		}
+		case 2:
+		{
+			if (D >= r_ssaLOD_MU0 && D < r_ssaLOD_MU1)
+			{
+				return (FMUMeshLOD*)V[1];
+			}
+		}
+		case 1:
+		{
+			if (D < r_ssaLOD_MU0)
+			{
+				return (FMUMeshLOD*)V.at(0);
+			}
+		}
+	}
+	return nullptr;
 }
 
 void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
@@ -691,90 +674,40 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 
 		float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
 
-
-		int SelectedLOD = 0;
-		bool has_lod1 = false;
-
-		if (pVisual->Type == MT_LOD || (pVisual->Type >= MT_LOD1 && pVisual->Type <= MT_LOD4))
-		{
-			has_lod1 = HasNextLOD(pVisual, MT_LOD1);
-			bool has_lod2 = HasNextLOD(pVisual, MT_LOD2);
-			bool has_lod3 = HasNextLOD(pVisual, MT_LOD3);
-			bool has_lod4 = HasNextLOD(pVisual, MT_LOD4);
-
-			SelectedLOD = SelectLOD(D, has_lod1, has_lod2, has_lod3, has_lod4);
-		}
-
 		// Visual is 100% visible - simply add it
 		switch (pVisual->Type)
 		{
-		case MT_HIERRARHY:
-		{
-			// Add all children, doesn't perform any tests
-			add_leafs_Static(static_cast<FHierrarhyVisual*>(pVisual)->children);
-		}continue;
-#ifndef MU_LODS_TRUE
-		case MT_LOD:
-		{
-			r_dsgraph_insert_static_lod(pVisual);
-		}continue;
-#else
-		case MT_LOD:
-		{
-			FLOD		* pV	=		(FLOD*) pVisual;
-			if ((SelectedLOD == 0) && has_lod1)
+			case MT_HIERRARHY:
 			{
-				add_leafs_Static(pV->children);
-			}
-			else if ((SelectedLOD == 0) && !has_lod1)
+				// Add all children, doesn't perform any tests
+				add_leafs_Static(static_cast<FHierrarhyVisual*>(pVisual)->children);
+			}continue;
+			case MT_LOD:
 			{
 				r_dsgraph_insert_static_lod(pVisual);
-			}
-		}continue;
-		case MT_LOD1:
-		{
-			FLOD		* pV	=		(FLOD*) pVisual;
-			if (SelectedLOD == 1)
+			}continue;
+			case MT_MESH_LODS:
 			{
-				add_leafs_Static(pV->children);
+				FMUMeshLOD* SelectedLOD = SelectLOD(D, static_cast<FMUMeshLODs*>(pVisual)->children);
+				if(SelectedLOD)
+				{
+					add_leafs_Static(SelectedLOD->children);
+				}
+				continue;
 			}
-		}continue;
-		case MT_LOD2:
-		{
-			FLOD		* pV	=		(FLOD*) pVisual;
-			if (SelectedLOD == 2)
+			case MT_TREE_PM:
+			case MT_TREE_ST:
 			{
-				add_leafs_Static(pV->children);
-			}
-		}continue;
-		case MT_LOD3:
-		{
-			FLOD		* pV	=		(FLOD*) pVisual;
-			if (SelectedLOD == 3)
+				//PROF_EVENT("CRender::add_leafs_Static: MT_TREE")
+				// General type of visual
+				RI.r_dsgraph_insert_static(pVisual);
+			}continue;
+			default:
 			{
-				add_leafs_Static(pV->children);
-			}
-		}continue;
-	case MT_LOD4:
-		{
-			FLOD		* pV	=		(FLOD*) pVisual;
-			if (SelectedLOD == 4)
-			{
-				add_leafs_Static(pV->children);
-			}
-		}continue;
-#endif
-		case MT_TREE_PM:
-		case MT_TREE_ST:
-		{
-			// General type of visual
-			RI.r_dsgraph_insert_static(pVisual);
-		}continue;
-		default:
-		{
-			// General type of visual
-			RI.r_dsgraph_insert_static(pVisual);
-		}continue;
+				//PROF_EVENT("CRender::add_leafs_Static: Default")
+				// General type of visual
+				RI.r_dsgraph_insert_static(pVisual);
+			}continue;
 		}
 	}
 }
@@ -812,20 +745,6 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 
 	float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
 
-	int SelectedLOD = 0;
-	bool has_lod1 = false;
-
-	if (pVisual->Type >= MT_LOD1 && pVisual->Type <= MT_LOD4)
-	{
-		PROF_EVENT("add_static LODs")
-		has_lod1 = HasNextLOD(pVisual, MT_LOD1);
-		bool has_lod2 = HasNextLOD(pVisual, MT_LOD2);
-		bool has_lod3 = HasNextLOD(pVisual, MT_LOD3);
-		bool has_lod4 = HasNextLOD(pVisual, MT_LOD4);
-
-		SelectedLOD = SelectLOD(D, has_lod1, has_lod2, has_lod3, has_lod4);
-	}
-
 	PROF_EVENT("add_Static switch")
 	// If we get here visual is visible or partially visible
 	switch (pVisual->Type)
@@ -843,65 +762,19 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		{
 			add_leafs_Static(pV->children);
 		}
-	}return;
-#ifndef MU_LODS_TRUE
+		}return;
 		case MT_LOD:
 		{
 			r_dsgraph_insert_static_lod(pVisual);
 		}return;
-#else
-		case MT_LOD:
+		case MT_MESH_LODS:
 		{
-			PROF_EVENT("add_Static MT_LOD")
-			FLOD		* pV	=		(FLOD*) pVisual;
-			if ((SelectedLOD == 0) && has_lod1)
+			auto Casted = SelectLOD(D, static_cast<FMUMeshLODs*>(pVisual)->children);
+			if (Casted)
 			{
-				PROF_EVENT("add_Static MT_LOD add_leafs_Static")
-				add_leafs_Static(pV->children);
+				add_leafs_Static(Casted->children);
 			}
-			else if ((SelectedLOD == 0) && !has_lod1)
-			{
-				PROF_EVENT("add_Static MT_LOD r_dsgraph_insert_static_lod")
-				r_dsgraph_insert_static_lod(pVisual);
-			}
-		}return;
-		case MT_LOD1:
-		{
-			PROF_EVENT("add_Static MT_LOD1")
-			FLOD		* pV	=		(FLOD*) pVisual;
-			if (SelectedLOD == 1)
-			{
-				add_leafs_Static(pV->children);
-			}
-		}return;
-		case MT_LOD2:
-		{
-			PROF_EVENT("add_Static MT_LOD2")
-			FLOD		* pV	=		(FLOD*) pVisual;
-			if (SelectedLOD == 2)
-			{
-				add_leafs_Static(pV->children);
-			}
-		}return;
-		case MT_LOD3:
-		{
-			PROF_EVENT("add_Static MT_LOD3")
-			FLOD		* pV	=		(FLOD*) pVisual;
-			if (SelectedLOD == 3)
-			{
-				add_leafs_Static(pV->children);
-			}
-		}return;
-	case MT_LOD4:
-		{
-			PROF_EVENT("add_Static MT_LOD4")
-			FLOD		* pV	=		(FLOD*) pVisual;
-			if (SelectedLOD == 4)
-			{
-				add_leafs_Static(pV->children);
-			}
-		}return;
-#endif
+		}
 	case MT_TREE_ST:
 	case MT_TREE_PM:
 	{
