@@ -17,6 +17,7 @@ if not exist publish mkdir publish
 call :PackDeveloper cop patch
 call :PackDeveloper cs patch_cs
 call :PackDeveloper soc patch_soc
+call :PackDeveloper coc patch_coc
 
 :: ============================================
 :: Pack game build (CoP, CS, SoC)
@@ -24,6 +25,7 @@ call :PackDeveloper soc patch_soc
 call :PackGame cop patch
 call :PackGame cs patch_cs
 call :PackGame soc patch_soc
+call :PackGame coc patch_coc
 
 :: ============================================
 :: Pack editors build (CoP, CS, SoC)
@@ -31,6 +33,7 @@ call :PackGame soc patch_soc
 call :PackEditors cop patch
 call :PackEditors cs patch_cs
 call :PackEditors soc patch_soc
+call :PackEditors coc patch_coc
 
 :: ============================================
 :: Cleanup temp directories
@@ -61,7 +64,18 @@ set "temp_dir=build\x64\Server-Windows\temp-developer"
 if exist "%temp_dir%" rd /s /q "%temp_dir%"
 mkdir "%temp_dir%"
 
-copy fsgame.ltx "%temp_dir%" >nul
+:: Check if variant is coc and use appropriate fsgame.ltx
+if "%variant%"=="coc" (
+    if exist fsgame_coc.ltx (
+        copy fsgame_coc.ltx "%temp_dir%\fsgame.ltx" >nul
+    ) else (
+        echo Warning: fsgame_coc.ltx not found, using default fsgame.ltx
+        copy fsgame.ltx "%temp_dir%" >nul
+    )
+) else (
+    copy fsgame.ltx "%temp_dir%" >nul
+)
+
 copy .xrignore "%temp_dir%" >nul
 xcopy "%patch_dir%" "%temp_dir%\gamedata" /e /i /q >nul
 xcopy "build\x64\Server-Windows\bin\RelWithDebInfo" "%temp_dir%\bin" /e /i /q >nul
@@ -100,7 +114,18 @@ set "temp_dir=build\x64\Server-Windows\temp-game"
 if exist "%temp_dir%" rd /s /q "%temp_dir%"
 mkdir "%temp_dir%"
 
-copy fsgame.ltx "%temp_dir%" >nul
+:: Check if variant is coc and use appropriate fsgame.ltx
+if "%variant%"=="coc" (
+    if exist fsgame_coc.ltx (
+        copy fsgame_coc.ltx "%temp_dir%\fsgame.ltx" >nul
+    ) else (
+        echo Warning: fsgame_coc.ltx not found, using default fsgame.ltx
+        copy fsgame.ltx "%temp_dir%" >nul
+    )
+) else (
+    copy fsgame.ltx "%temp_dir%" >nul
+)
+
 copy .xrignore "%temp_dir%" >nul
 xcopy "%patch_dir%" "%temp_dir%\gamedata" /e /i /q >nul
 xcopy "build\x64\Server-Windows\bin\Release" "%temp_dir%\bin" /e /i /q >nul
@@ -139,7 +164,18 @@ set "temp_dir=build\x64\Editors-Windows\temp-editor"
 if exist "%temp_dir%" rd /s /q "%temp_dir%"
 mkdir "%temp_dir%"
 
-copy fs*.ltx "%temp_dir%" >nul
+:: Check if variant is coc and use appropriate fsgame.ltx for editor
+if "%variant%"=="coc" (
+    if exist fsgame_coc.ltx (
+        copy fsgame_coc.ltx "%temp_dir%\fsgame.ltx" >nul
+    ) else (
+        echo Warning: fsgame_coc.ltx not found, using default fsgame.ltx
+        copy fsgame.ltx "%temp_dir%" >nul
+    )
+) else (
+    copy fsgame.ltx "%temp_dir%" >nul
+)
+
 copy .xrignore "%temp_dir%" >nul
 copy ActorEditorLevel.cform "%temp_dir%" >nul
 xcopy "%patch_dir%" "%temp_dir%\gamedata" /e /i /q >nul
@@ -151,7 +187,7 @@ pushd "%temp_dir%"
     "bin" ^
     -ir!"gamedata" ^
     -ir!"rawdata" ^
-    -ir!"fs*.ltx" ^
+    -ir!"fsgame.ltx" ^
     -ir!".xrignore" ^
     -ir!"ActorEditorLevel.cform" ^
     -xr!"*.pdb"

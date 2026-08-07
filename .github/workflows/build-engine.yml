@@ -158,7 +158,23 @@ jobs:
             .xrignore
             fsgame.ltx
           include-hidden-files: true
-  
+
+      - name: Upload assets (CoC)
+        shell: cmd
+        run: |
+          if exist gamedata rd /s /q gamedata
+          xcopy /e /i patch_coc gamedata
+          if exist fsgame.ltx del fsgame.ltx
+          copy fsgame_coc.ltx fsgame.ltx
+      - uses: actions/upload-artifact@v7
+        with:
+          name: engine-assets-coc-${{ github.sha }}
+          path: |
+            gamedata/
+            .xrignore
+            fsgame.ltx
+          include-hidden-files: true
+
       - name: Upload assets (SoC)
         shell: cmd
         run: |
@@ -181,7 +197,7 @@ jobs:
         platform: [x64]
         preset: [Engine]
         config: [RelWithDebInfo]
-        variant: [cop, cs, soc]
+        variant: [cop, cs, soc, coc]
     runs-on: ${{ matrix.system }}
   
     steps:
