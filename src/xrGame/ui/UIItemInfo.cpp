@@ -392,6 +392,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
             UIItemImage->SetVisual(pInvItem->m_3d_static_visual_name);
             UIItemImage->SetScaleFactor(pInvItem->m_3d_static_scale);
             UIItemImage->SetXYZ(pInvItem->m_3d_static_rotate);
+			UIItemImage->SetBonesVisible(pInvItem->object().Visual()->dcast_PKinematics());
         }
         else
             UIItemImage->SetVisual(nullptr);
