@@ -449,27 +449,17 @@ void SceneBuilder::SaveBuild()
 		}
 		F->close_chunk	();
 		
-		F->open_chunk(EB_MU_Mesh_LODs);
-		for (auto& elem : l_mu_mesh_lods)
+		F->make_chunk(EB_MU_Mesh_LODs, [this](IWriter& F)
 		{
-			F->w_u8(elem.UseMeshLods);
-			F->w_u32(elem.model_index[0]);
-			F->w_u32(elem.model_index[1]);
-			F->w_u32(elem.model_index[2]);
-			F->w_u32(elem.model_index[3]);
-		}
-		F->close_chunk	();
-		
-		F->open_chunk(EB_MU_Mesh_LODs);
-		for (auto& elem : l_mu_mesh_lods)
-		{
-			F->w_u8(elem.UseMeshLods);
-			F->w_u32(elem.model_index[0]);
-			F->w_u32(elem.model_index[1]);
-			F->w_u32(elem.model_index[2]);
-			F->w_u32(elem.model_index[3]);
-		}
-		F->close_chunk	();
+			for (auto& elem : l_mu_mesh_lods)
+			{
+				F.w_u8(elem.UseMeshLods);
+				F.w_u32(elem.model_index[0]);
+				F.w_u32(elem.model_index[1]);
+				F.w_u32(elem.model_index[2]);
+				F.w_u32(elem.model_index[3]);
+			}
+		});
 
 		F->open_chunk	(EB_MU_refs);
 		F->w			(l_mu_refs.data(),sizeof(b_mu_reference)*l_mu_refs.size());
@@ -936,11 +926,6 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	xr_string temp = "Building object: ";
 	temp += obj->GetName();
 
-	if (temp.size() > 9 && temp[temp.size()-8] == 'p')
-	{
-		__nop();
-	}
-
 	UI->SetStatus(temp.c_str());
 	
 	CEditableObject* O = obj->GetReference();
@@ -1077,110 +1062,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 		debug_name += ":";
 	}
 	debug_name += obj->GetName();
-
-	// detect sector
-	CSector* S 			= PortalUtils.FindSector(obj,*O->FirstMesh());
-	int sect_num 		= S?S->m_sector_num:m_iDefaultSectorNum;
-
-	// build model
-	if (-1==model_idx || m_save_as_object)
-	{
-		// build LOD
-		int	lod_id = BuildObjectLOD(Fidentity,O,sect_num);
-		if (lod_id==-2)
-		{
-			return false;
-		}
-		// build model
-		model_idx = l_mu_models.size();
-		l_mu_models.push_back(b_mu_model());
-		b_mu_model&	M = l_mu_models.back();
-		M.lod_id = (u16)lod_id;
-		int vert_it=0, face_it=0;
-
-		auto FaceCount = obj->GetFaceCount();
-		auto VertexCount = obj->GetVertexCount();
-		strcpy(M.name,O->GetName());
-
-		M.faces.resize(FaceCount);
-		M.vertices.resize(VertexCount);
-		M.smgroups.resize(FaceCount);
-		// parse mesh data
-		Fmatrix T;
-		T.identity();
-
-		if(m_save_as_object)
-		{
-			T = obj->_Transform();
-			
-			Fmatrix cv = Fidentity;
-
-			cv.k.z 				= -1.f;
-
-			Fmatrix 			TM;
-
-			TM.mul				( Fmatrix().mul(cv,T), cv );
-			TM.mulB_44			( cv );
-			T 					= TM;
-		}
-
-		for(EditMeshIt MESH=O->FirstMesh();MESH!=O->LastMesh();++MESH)
-		{
-			if (M.vertices.empty() || M.faces.empty())
-			{
-				continue;
-			}
-			if (!BuildMesh(T, O, *MESH, sect_num, M.vertices, vert_it, M.faces, face_it, M.smgroups, obj->_Transform(), obj))
-			{
-				return false;
-			}
-		}
-
-		CDB::MODEL Collision;
-		b_mu_collision& Slot = l_mu_collsions.emplace_back();
-		auto& CollisionVerts = Slot.verts;
-		auto& CollisionTris = Slot.faces;
-		{
-			CDB::CollectorPacked CL(O->GetBox(), M.vertices.size(), M.faces.size());
-			for (auto& face : M.faces)
-			{
-				str_c cshader_name = nullptr;
-				bool IsShared = (bool)(face.flags&b_face_flags::UseSharedMaterial);
-				if (IsShared)
-				{
-					auto MatName = l_materials_shared[face.dwMaterial].Name;
-					cshader_name = CSharedMaterialLibrary::Instance().GetData(MatName)->m_ShaderXRLCName.c_str();
-				} else
-				{
-					cshader_name = l_shaders_xrlc[l_materials[face.dwMaterial].shader_xrlc].name;
-				}
-				Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(cshader_name);
-				if (!c_sh->flags.bCollision)
-				{
-					continue;
-				}
-				CL.add_face(M.vertices[face.v[0]], M.vertices[face.v[1]], M.vertices[face.v[2]], face.dwMaterial, -1, IsShared, 0);
-			}
-			CollisionVerts = CL.getV_Vec();
-			CollisionTris = CL.getT_Vec();
-		}
-	}
-
-	l_mu_refs.push_back	(b_mu_reference());
-	b_mu_reference&	R = l_mu_refs.back();
-	R.model_index = model_idx;
-	R.transform = obj->_Transform();
-	R.flags.zero();
-	R.sector = (u16)sect_num;
-
-	xr_stack_string256 debug_name;
-	if (obj->m_pOwnerObject)
-	{
-		debug_name = obj->m_pOwnerObject->GetName();
-		debug_name += ":";
-	}
-	debug_name += obj->GetName();
-	l_mu_refs_debug.push_back(debug_name.c_str());
+	l_mu_refs_debug.emplace_back(debug_name.c_str());
 
 	// scene statssm
 	b_mu_model& MStat = l_mu_models[model_idx];
@@ -1189,6 +1071,113 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 		l_scene_stat->add_muvert(obj->_Transform(),MStat.vertices[mu_vi]);
 	}
 	
+	return true;
+}
+
+u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, int sect_num)
+{
+	CEditableObject* O = obj->GetReference();
+	// build LOD
+	u16	lod_id = u16(-1);
+	if (BuildBillboard)
+	{
+		lod_id = u16(BuildObjectLOD(Fidentity,O,sect_num));
+		if (lod_id==u16(-2))
+		{
+			return u32(-1);
+		}
+	}
+	// build model
+	u32 model_idx = l_mu_models.size();
+	b_mu_model&	M = l_mu_models.emplace_back();
+	M.lod_id = lod_id;
+	int vert_it=0, face_it=0;
+
+	auto FaceCount = obj->GetFaceCount();
+	auto VertexCount = obj->GetVertexCount();
+	strcpy(M.name,O->GetName());
+
+	M.faces.resize(FaceCount);
+	M.vertices.resize(VertexCount);
+	M.smgroups.resize(FaceCount);
+	// parse mesh data
+	Fmatrix T;
+	T.identity();
+
+	if(m_save_as_object)
+	{
+		T = obj->_Transform();
+		
+		Fmatrix cv = Fidentity;
+
+		cv.k.z = -1.f;
+
+		Fmatrix TM;
+
+		TM.mul( Fmatrix().mul(cv,T), cv );
+		TM.mulB_44( cv );
+		T = TM;
+	}
+
+	for(EditMeshIt MESH=O->FirstMesh();MESH!=O->LastMesh();++MESH)
+	{
+		if (M.vertices.empty() || M.faces.empty())
+		{
+			continue;
+		}
+		if (!BuildMesh(T, O, *MESH, sect_num, M.vertices, vert_it, M.faces, face_it, M.smgroups, obj->_Transform(), obj))
+		{
+			return u32(-1);
+		}
+	}
+
+	CDB::MODEL Collision;
+	b_mu_collision& Slot = l_mu_collsions.emplace_back();
+	auto& CollisionVerts = Slot.verts;
+	auto& CollisionTris = Slot.faces;
+	{
+		CDB::CollectorPacked CL(O->GetBox(), M.vertices.size(), M.faces.size());
+		for (auto& face : M.faces)
+		{
+			str_c cshader_name = nullptr;
+			bool IsShared = (bool)(face.flags&b_face_flags::UseSharedMaterial);
+			if (IsShared)
+			{
+				auto MatName = l_materials_shared[face.dwMaterial].Name;
+				cshader_name = CSharedMaterialLibrary::Instance().GetData(MatName)->m_ShaderXRLCName.c_str();
+			} else
+			{
+				cshader_name = l_shaders_xrlc[l_materials[face.dwMaterial].shader_xrlc].name;
+			}
+			Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(cshader_name);
+			if (!c_sh->flags.bCollision)
+			{
+				continue;
+			}
+			CL.add_face(M.vertices[face.v[0]], M.vertices[face.v[1]], M.vertices[face.v[2]], face.dwMaterial, -1, IsShared, 0);
+		}
+		CollisionVerts = CL.getV_Vec();
+		CollisionTris = CL.getT_Vec();
+	}
+	return model_idx;
+}
+
+bool SceneBuilder::BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 LODID, int sect_num)
+{
+	CEditableObject *O = obj->GetReference();
+	int model_idx = GetModelIdx( O->GetName() ) ;
+
+	// build model
+	if (-1==model_idx || m_save_as_object)
+	{
+		model_idx = BuildMUObjectTemplate(obj, false, sect_num);
+		if (model_idx == -1)
+		{
+			return false;
+		}
+	}
+	
+	Slot.model_index[LODID-1] = model_idx;
 	return true;
 }
 
@@ -1201,7 +1190,7 @@ int	SceneBuilder::BuildLightControl(const char* name)
 		sb_light_control& b = l_light_control[k];
 		if (0==strcmp(b.name,name)) return k;
 	}
-	l_light_control.push_back(sb_light_control());
+	l_light_control.emplace_back();
 	sb_light_control& b = l_light_control.back();
 	strcpy(b.name,name);
 	return l_light_control.size()-1;
@@ -1233,7 +1222,7 @@ void SceneBuilder::BuildHemiLights(u8 quality, const char* lcontrol)
 		xrHemisphereBuild(quality,2.f,hemi_callback,&h_data);   //. hack
 		int control_ID	= BuildLightControl(lcontrol);
 		for (BLIt it=dest.begin(); it!=dest.end(); it++){
-			l_light_static.push_back(b_light_static());
+			l_light_static.emplace_back();
 			b_light_static& sl	= l_light_static.back();
 			sl.controller_ID 	= control_ID;
 			sl.data			    = it->light;
@@ -1241,7 +1230,7 @@ void SceneBuilder::BuildHemiLights(u8 quality, const char* lcontrol)
 		}
 	}else{
 		int control_ID		= BuildLightControl(lcontrol);
-		l_light_static.push_back(b_light_static());
+		l_light_static.emplace_back();
 		b_light_static& sl	= l_light_static.back();
 		sl.controller_ID 	= control_ID;
 		sl.data.type			= D3DLIGHT_DIRECTIONAL;
@@ -1276,7 +1265,7 @@ bool SceneBuilder::BuildSun(u8 quality, Fvector2 dir)
 		float fx = mn_x+x*da;
 		for (int y=0; y<samples; y++){
 			float fy = mn_y+y*da;
-			l_light_static.push_back(b_light_static());
+			l_light_static.emplace_back();
 			b_light_static& sl	= l_light_static.back();
 			sl.controller_ID 	= controller_ID;
 			sl.data.type		= D3DLIGHT_DIRECTIONAL;
@@ -1287,7 +1276,7 @@ bool SceneBuilder::BuildSun(u8 quality, Fvector2 dir)
 	}
 	// dynamic
 	{
-		l_light_dynamic.push_back(b_light_dynamic());
+		l_light_dynamic.emplace_back();
 		b_light_dynamic& dl	= l_light_dynamic.back();
 		dl.controller_ID 	= controller_ID;
 		dl.data.type		= D3DLIGHT_DIRECTIONAL;
@@ -1311,7 +1300,7 @@ bool SceneBuilder::BuildPointLight(b_light* b, const Flags32& usage, FixedVector
 			color.mul_rgb		(sample_energy);
 
 			for (u32 k=0; k<soft_points->size(); k++){
-				l_light_static.push_back(b_light_static());
+				l_light_static.emplace_back();
 				b_light_static& sl	= l_light_static.back();
 				sl.controller_ID 	= b->controller_ID;
 				sl.data				= b->data;
@@ -1320,7 +1309,7 @@ bool SceneBuilder::BuildPointLight(b_light* b, const Flags32& usage, FixedVector
 			}
 		}else{
 			// make single light
-			l_light_static.push_back(b_light_static());
+			l_light_static.emplace_back();
 			b_light_static& sl	= l_light_static.back();
 			sl.controller_ID 	= b->controller_ID;
 			sl.data			    = b->data;
@@ -1328,7 +1317,7 @@ bool SceneBuilder::BuildPointLight(b_light* b, const Flags32& usage, FixedVector
 	}
 	if (usage.is(ELight::flAffectDynamic)){
 		R_ASSERT			(sectors);
-		l_light_dynamic.push_back(b_light_dynamic());
+		l_light_dynamic.emplace_back();
 		b_light_dynamic& dl	= l_light_dynamic.back();
 		dl.controller_ID 	= b->controller_ID;
 		dl.data			    = b->data;

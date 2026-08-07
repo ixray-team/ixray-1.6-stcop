@@ -55,6 +55,8 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 #ifndef _EDITOR
 	case MT_LOD:
 	{
+		V = new FLOD();
+		break;
 	}
 	case MT_MESH_LODS:
 	{
