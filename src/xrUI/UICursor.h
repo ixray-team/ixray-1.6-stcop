@@ -11,7 +11,6 @@ class UI_API CUICursor :
 	bool			bVisible;
 	Fvector2		vPos;
 	Fvector2		vPrevPos;
-	CUIStatic*		m_static;
     CUI3dStatic*    m_3dstatic;
 	void			InitInternal				();
 public:
@@ -30,4 +29,6 @@ public:
 	void			Show();
 	void			Hide						() {bVisible = false;}
 	CUIStatic*		m_static_text;
+	CUIStatic*		m_static;
+	float			m_width_initial = 0.0f;
 };
