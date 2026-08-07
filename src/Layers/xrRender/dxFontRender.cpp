@@ -4,6 +4,8 @@
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/GameFont.h"
 
+extern ENGINE_API Fvector2 g_current_font_scale;
+
 extern ENGINE_API xr_atomic_bool g_bRendering;
 
 dxFontRender::dxFontRender() {}
@@ -108,7 +110,10 @@ void dxFontRender::RenderBase(CGameFont& owner)
 
 			float X = float(iFloor(str.x));
 			float Y = float(iFloor(str.y));
-			float Y2 = Y + str.height;
+			const float xs = g_current_font_scale.x;
+			const float ys = g_current_font_scale.y;
+			const float widthCoef = owner.GetWidthCoef();
+			float Y2 = Y + str.height * ys;
 
 			if(str.align)
 			{
@@ -177,7 +182,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 
 							IconsToRender.push_back(icon);
 
-							X += icon.sz.x + owner.GetLetterSpacing();
+							X += icon.sz.x + owner.GetLetterSpacing() * xs;
 							continue;
 						}
 					}
@@ -207,7 +212,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 
 							IconsToRender.push_back(icon);
 
-							X += icon.sz.x + owner.GetLetterSpacing();
+							X += icon.sz.x + owner.GetLetterSpacing() * xs;
 							continue;
 						}
 					}
@@ -218,13 +223,13 @@ void dxFontRender::RenderBase(CGameFont& owner)
 				}
 
 				if(i != 0) {
-					X += glyphInfo->Abc.abcA;
+					X += glyphInfo->Abc.abcA * xs;
 				}
 
-				float GlyphY = Y + glyphInfo->yOffset;
-				float GlyphY2 = Y2 + glyphInfo->yOffset;
+				float GlyphY = Y + glyphInfo->yOffset * ys;
+				float GlyphY2 = Y2 + glyphInfo->yOffset * ys;
 
-				float X2 = X + (glyphInfo->Abc.abcB * owner.GetWidthCoef());
+				float X2 = X + glyphInfo->Abc.abcB * widthCoef * xs;
 
 				float u1 = float(glyphInfo->TextureCoord.left) / fWidth;
 				float u2 = float(glyphInfo->TextureCoord.right) / fWidth;
@@ -273,7 +278,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 					};
 				}
 				++vertexes;
-				X = X2 + glyphInfo->Abc.abcC + owner.GetLetterSpacing();
+				X = X2 + glyphInfo->Abc.abcC * xs + owner.GetLetterSpacing() * xs;
 			}
 
 			// Unlock and draw
