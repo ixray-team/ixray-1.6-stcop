@@ -44,8 +44,6 @@
 #include "UIActorMenu.h"
 #include "UIPdaWnd.h"
 #include "../xrUI/UICursor.h"
-#include "../xrEngine/GameFont.h"
-#include "HudPdaAnimator.h"
 #include "Wound.h"
 #include "inventory_space.h"
 #include "nvg.h"
@@ -2710,38 +2708,11 @@ void CActor::renderable_Render()
 	VERIFY(_valid(XFORM()));
 }
 
-namespace
-{
-float PdaFontXScale()
-{
-	const float uiKx = UI().get_current_kx();
-	if (uiKx <= EPS_S)
-	{
-		return 1.f;
-	}
-
-	const float pdaKx = CHudPdaAnimator::GetPDAScreen_kx();
-	float xScale = pdaKx / uiKx;
-
-	if (xScale < 0.5f)
-	{
-		xScale = 0.5f;
-	}
-	else if (xScale > 2.0f)
-	{
-		xScale = 2.0f;
-	}
-	return xScale;
-}
-} // namespace
-
 void CActor::RenderItemUI()
 {
 	CHudPdaAnimator* pdaAnimator = HudAnimator()->PdaAnimator();
 	if (pdaAnimator != nullptr && pdaAnimator->IsActive())
 	{
-		CFontScaleScope fontScale(PdaFontXScale());
-
 		CUIPdaWnd* PdaMenu = CurrentGameUI()->PdaMenu();
 		CUIDialogWnd* TopInputReceiver = CurrentGameUI()->TopInputReceiver();
 		CUIPdaSpot* PdaSpot = PdaMenu->GetActiveUserSpotWnd();
