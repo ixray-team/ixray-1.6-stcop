@@ -578,15 +578,13 @@ float CGameFont::WidthOf(int ch)
 	if (ch == '\t' || ch == '\n')
 		return 0.f;
 
-	const float xs = GetEffectiveWidthScale();
 	if (const Glyph* glyphInfo = GetGlyphInfo(ch))
 	{
-		const float body = float(glyphInfo->Abc.abcB) * GetWidthCoef();
-		return (float(glyphInfo->Abc.abcA) + body + float(glyphInfo->Abc.abcC)) * g_current_font_scale.x;
+		return float(glyphInfo->Abc.abcA + (glyphInfo->Abc.abcB * GetWidthCoef()) + glyphInfo->Abc.abcC);
 	}
 
 	if (OurFont && OurFont->glyph)
-		return float(OurFont->glyph->metrics.width) / 64.f * xs;
+		return float(OurFont->glyph->metrics.width) / 64.f;
 
 	return 0.f;
 }
@@ -610,7 +608,7 @@ float CGameFont::WidthOf(const char* str)
 
 	float size = 0;
 	int length = 0;
-	const float spacing = GetLetterSpacing() * g_current_font_scale.x;
+	const float spacing = GetLetterSpacing();
 
 	if (IsUTF8(str)) 
 	{
