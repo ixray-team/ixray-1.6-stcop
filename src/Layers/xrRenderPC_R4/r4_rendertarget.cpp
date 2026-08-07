@@ -646,6 +646,21 @@ CRenderTarget::CRenderTarget()
 			rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, ERHI_FORMAT::D16_UNORM);
 			rt_Reflection_forward.create(r2_RT_env_fwd, RefSize * 2u, RefSize * 2u, ERHI_FORMAT::R8G8B8A8_UNORM_SRGB, 1, CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS);
 		}
+		else
+		{
+			rt_Reflection.create(r2_RT_env, 4u, ERHI_FORMAT::R11G11B10_FLOAT); // Color
+			rt_Reflection_temp.create(r2_RT_env_temp, 4u, ERHI_FORMAT::R16_FLOAT); // Distance2Point
+			rt_Reflection_forward.create(r2_RT_env_fwd, 4u, 4u, ERHI_FORMAT::R8G8B8A8_UNORM_SRGB);
+
+			for(auto& pRT : rt_Reflection_temp->pRT)
+			{
+				Fvector4 FogPlane = { 2000, 0, 0, 0 };
+				GRHI->ClearTarget(pRT, &FogPlane.x);
+			}
+
+			Fvector4 Reflections = { 0, 0, 0, 0.75f }; // Hack
+			GRHI->ClearTarget(rt_Reflection_forward->pRT, &Reflections.x);
+		}
 
 		b_sslr = new CBlender_sslr();
 		s_sslr.create(b_sslr);
