@@ -70,6 +70,12 @@ class CPHCommander:
 {
 	xrCriticalSection	lock;
 	PHCALL_STORAGE	m_calls;
+	PHCALL_STORAGE	m_callsDeferredDelete;
+	bool			m_isUpdating = false;
+
+	void				scheduleDelete				(CPHCall* call);
+	void				flushDeferredDeletes		();
+
 public:
 						~CPHCommander				()																;
 
