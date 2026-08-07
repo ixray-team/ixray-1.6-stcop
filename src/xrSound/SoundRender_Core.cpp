@@ -208,8 +208,8 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 		u32			b2sided;
 		float		occ;
 	};
-	// Create AABB-tree
-	static CDB::Collector CL; CL.clear();
+	// Create AABB-tree (sync build, same as geom_ENV)
+	CDB::Collector CL;
 	while (!geom->eof()){
 		SOM_poly				P;
 		geom->r					(&P,sizeof(P));
@@ -220,6 +220,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 
 	geom_SOM = new CDB::MODEL();
 	geom_SOM->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
+	geom_SOM->wait_loading();
 
 	geom->close();
 }
@@ -339,7 +340,7 @@ void	CSoundRender_Core::play					( ref_sound& S, CObject* O, u32 flags, float de
 	}
 }
 
-void	CSoundRender_Core::play_no_feedback		( ref_sound& S, CObject* O, u32 flags, float delay, Fvector* pos, float* vol, float* freq, Fvector2* range)
+void	CSoundRender_Core::play_no_feedback		( ref_sound& S, CObject* O, u32 flags, float delay, Fvector* pos, float* vol, float* freq, Fvector2* range, float* base_vol_scale)
 {
 	if (!bPresent || (0 == S._handle())) return;
 	ref_sound_data_ptr	orig = S._p;
@@ -367,6 +368,11 @@ void	CSoundRender_Core::play_no_feedback		( ref_sound& S, CObject* O, u32 flags,
 	if (freq)			S._feedback()->set_frequency(*freq);
 	if (range)			S._feedback()->set_range   	((*range)[0],(*range)[1]);
 	if (vol)			S._feedback()->set_volume   (*vol);
+	if (base_vol_scale)
+	{
+		CSound_params params = S._feedback()->get_params();
+		S._feedback()->set_base_volume(params.base_volume * (*base_vol_scale));
+	}
 	S._p				= orig;
 }
 
