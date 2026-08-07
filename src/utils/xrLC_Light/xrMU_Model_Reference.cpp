@@ -14,6 +14,7 @@ void xrMU_Reference::Load( IReader& F, xr_vector<xrMU_Model*>& mu_models )
 	b_mu_reference		R;
 	F.r					(&R,sizeof(R));
 	model				= mu_models[R.model_index];
+	ModelID = R.model_index;
 	xform				= R.transform;
 	flags				= R.flags;
 	sector				= R.sector;

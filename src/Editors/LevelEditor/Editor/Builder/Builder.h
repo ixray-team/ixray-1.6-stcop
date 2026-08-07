@@ -50,6 +50,7 @@ public:
 
     xr_vector<b_mu_model>		l_mu_models;
     xr_vector<b_mu_reference>	l_mu_refs;
+	xr_vector<b_mu_mesh_lods>	l_mu_mesh_lods;
 	xr_vector<b_mu_collision>	l_mu_collsions;
     xr_vector<shared_str>	l_mu_refs_debug;
     xr_vector<e_b_lod>			l_lods;
@@ -79,7 +80,8 @@ public:
     bool    BuildObject     (CSceneObject* obj);
     bool    BuildEditableObject(CEditableObject* obj, Fmatrix T, CSceneObject* Owner);
     bool    BuildMUObject   (CSceneObject* obj);
-    bool    BuildMUObjectModel   (CSceneObject* obj);
+	bool BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 LODID, int sect_num);
+	u32 BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, int sect_num);
 
     void    Clear 			();
 

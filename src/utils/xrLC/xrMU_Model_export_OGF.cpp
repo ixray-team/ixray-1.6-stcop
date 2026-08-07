@@ -100,21 +100,21 @@ void export_ogf( xrMU_Reference& mu_reference )
 	xr_vector<u32>		generated_ids;
 	xrMU_Model *model = mu_reference.model;
 	// Export nodes
-	{
-		for (xrMU_Model::v_subdivs_it it=model->m_subdivs.begin(); it!=model->m_subdivs.end(); it++)
+	auto MakeRef = [](xrMU_Model& Model, xr_vector<u32>& GeneratedIds, const xrMU_Reference& Ref) -> void{
+		for (xrMU_Model::v_subdivs_it it=Model.m_subdivs.begin(); it!=Model.m_subdivs.end(); it++)
 		{
 			OGF_Reference* pOGF = new OGF_Reference ();
 			//b_material*		M		= &(pBuild->materials()[it->material]);	// and it's material
 			//R_ASSERT		(M);
 
 			// Common data
-			pOGF->Sector = mu_reference.sector;
+			pOGF->Sector = Ref.sector;
 			pOGF->material = it->material;
 			pOGF->bSharedMaterial = it->bSharedMaterial;
 
-			pOGF->debug_name = mu_reference.debug_name;
+			pOGF->debug_name = Ref.debug_name;
 			pOGF->debug_name += ":subdiv ";
-			pOGF->debug_name += std::to_string(it-model->m_subdivs.begin()).c_str();
+			pOGF->debug_name += std::to_string(it-Model.m_subdivs.begin()).c_str();
 
 			// Collect textures
 			auto& Tex = pBuild->GetTexture(it->material, it->bSharedMaterial);
@@ -133,55 +133,88 @@ void export_ogf( xrMU_Reference& mu_reference )
 			if (gCompilerMode.LC_UseExternalRefs)
 			{
 				pOGF->external_path = it->external_path;
-				pOGF->SplitID = it-model->m_subdivs.begin();
+				pOGF->SplitID = it-Model.m_subdivs.begin();
 			}
-			pOGF->xform.set(mu_reference.xform);
-			pOGF->c_scale = mu_reference.c_scale;
-			pOGF->c_bias = mu_reference.c_bias;
+			pOGF->xform.set(Ref.xform);
+			pOGF->c_scale = Ref.c_scale;
+			pOGF->c_bias = Ref.c_bias;
 
 			pOGF->CalcBounds();
-			generated_ids.push_back((u32)g_tree.size());
-
+			
 			csThreadLock.Enter();
- 			g_tree.push_back		(pOGF);
+			GeneratedIds.push_back((u32)g_tree.size());
+ 			g_tree.push_back(pOGF);
 			csThreadLock.Leave();
 		}
-	}
+	};
+	MakeRef(*mu_reference.model, generated_ids, mu_reference);
 
-	if (model->color.size() == 0)
+	if (model->color.empty())
+	{
 		return;
+	}
 	 
 	// Now, let's fuck with LODs
-	if (u16(-1) == model->m_lod_ID)
-		return;
-	 
-	xr_string ref_name_muX = model->m_name.c_str();
-
-	b_lod& LOD = pBuild->lods[model->m_lod_ID];
-	if (ref_name_muX.find("lod1") != xr_string::npos)
+	if (u16(-1) != model->m_lod_ID)
 	{
-		OGF_LOD_MU1* pNode = new OGF_LOD_MU1(1, mu_reference.sector);
-		BuildLODNode(pNode, LOD, generated_ids, model, mu_reference);
-	}
-	else if (ref_name_muX.find("lod2") != xr_string::npos)
-	{
-		OGF_LOD_MU2* pNode = new OGF_LOD_MU2(1, mu_reference.sector);
-		BuildLODNode(pNode, LOD, generated_ids, model, mu_reference);
-	}
-	else if (ref_name_muX.find("lod3") != xr_string::npos)
-	{
-		OGF_LOD_MU3* pNode = new OGF_LOD_MU3(1, mu_reference.sector);
-		BuildLODNode(pNode, LOD, generated_ids, model, mu_reference);
-	}
-	else if (ref_name_muX.find("lod4") != xr_string::npos)
-	{
-		OGF_LOD_MU4* pNode = new OGF_LOD_MU4(1, mu_reference.sector);
-		BuildLODNode(pNode, LOD, generated_ids, model, mu_reference);
-	}
-	else
-	{
+		// Vanilla way
+		b_lod& LOD = pBuild->lods[model->m_lod_ID];
 		OGF_LOD* pNode = new OGF_LOD(1, mu_reference.sector);
 		BuildLODNode(pNode, LOD, generated_ids, model, mu_reference);
+		return;
 	}
- 
+	
+	if (model->UseBillboard)
+	{
+		return;
+	}
+	
+	// New way
+	auto LODNode = new OGF_MESH_LODS(1, mu_reference.sector);
+	auto AttackLOD = [&](OGF_Node* LOD)
+	{
+		for (auto Ref : generated_ids)
+		{
+			LOD->AddChield(Ref);
+		}
+		Fvector E;
+		LOD->bbox.get_CD(LOD->C, E);
+		LOD->R = E.magnitude();
+		csThreadLock.Enter();
+		auto ID = g_tree.size();
+		g_tree.push_back(LOD);
+		csThreadLock.Leave();
+		LODNode->AddChield(ID);
+	};
+	AttackLOD(new OGF_LOD_MU0(1, mu_reference.sector));
+	{
+		generated_ids.clear();
+		auto& LOD1Model = *CBuild::mu_models()[mu_reference.model->LODsID[0]];
+		MakeRef(LOD1Model, generated_ids, mu_reference);
+		AttackLOD(new OGF_LOD_MU1(1, mu_reference.sector));
+	}
+	{
+		generated_ids.clear();
+		auto& LOD2Model = *CBuild::mu_models()[mu_reference.model->LODsID[1]];
+		MakeRef(LOD2Model, generated_ids, mu_reference);
+		AttackLOD(new OGF_LOD_MU2(1, mu_reference.sector));
+	}
+	{
+		generated_ids.clear();
+		auto& LOD3Model = *CBuild::mu_models()[mu_reference.model->LODsID[2]];
+		MakeRef(LOD3Model, generated_ids, mu_reference);
+		AttackLOD(new OGF_LOD_MU3(1, mu_reference.sector));
+	}
+	{
+		generated_ids.clear();
+		auto& LOD4Model = *CBuild::mu_models()[mu_reference.model->LODsID[3]];
+		MakeRef(LOD4Model, generated_ids, mu_reference);
+		AttackLOD(new OGF_LOD_MU4(1, mu_reference.sector));
+	} 
+	Fvector E;
+	LODNode->bbox.get_CD(LODNode->C, E);
+	LODNode->R = E.magnitude();
+	csThreadLock.Enter();
+	g_tree.push_back(LODNode);
+	csThreadLock.Leave();
 }

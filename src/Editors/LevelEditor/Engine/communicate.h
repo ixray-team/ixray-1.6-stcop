@@ -158,6 +158,12 @@ struct b_mu_reference
     u32					reserved	[8];
 };
 
+struct b_mu_mesh_lods
+{
+	u32 model_index[4] = {u32(-1), u32(-1), u32(-1), u32(-1)};
+	bool UseMeshLods = false;
+};
+
 struct b_mu_collision
 {
 	xr_vector<Fvector> verts;
@@ -269,6 +275,7 @@ enum EBUILD_CHUNKS
 	EB_MaterialsShared,
 	EB_MU_refs_debug,
     EB_MU_collisions,
+    EB_MU_Mesh_LODs,
 
 	EB_FORCE_DWORD = u32(-1)
 };

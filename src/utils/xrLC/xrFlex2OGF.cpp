@@ -104,21 +104,22 @@ void CBuild::Flex2OGF()
  
 			auto& faces = g_XSplit[sID];
  			OGF*		pOGF	= new OGF ();
-			Face*		F		= (* faces->begin() );			// first face
-			b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material
-			R_ASSERT	(F && M);
+			Face*		F		= (* faces->begin() );	// first face	
+			R_ASSERT	(F);
+			auto Sector = GetMaterialSector(*F);	
+			//b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material
  
 			try 
 			{
 				// Common data
-				pOGF->Sector		= M->sector;
+				pOGF->Sector		= Sector;
 				pOGF->material		= F->dwMaterial;
 			
 				// Collect textures
 				OGF_Texture			T;
-				TRY(T.name			= textures()[M->surfidx].name);
-				TRY(T.pBuildSurface	= &(textures()[M->surfidx]));
-				TRY(pOGF->textures.push_back(T));
+				T.pBuildSurface = &GetTexture(*F);
+				T.name = T.pBuildSurface->name;
+				pOGF->textures.push_back(T);
 			
 				try {
 					if (F->hasImplicitLighting())

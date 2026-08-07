@@ -448,6 +448,18 @@ void SceneBuilder::SaveBuild()
 			F->w		(m.smgroups.data(),sizeof(u32)*m.smgroups.size());
 		}
 		F->close_chunk	();
+		
+		F->make_chunk(EB_MU_Mesh_LODs, [this](IWriter& F)
+		{
+			for (auto& elem : l_mu_mesh_lods)
+			{
+				F.w_u8(elem.UseMeshLods);
+				F.w_u32(elem.model_index[0]);
+				F.w_u32(elem.model_index[1]);
+				F.w_u32(elem.model_index[2]);
+				F.w_u32(elem.model_index[3]);
+			}
+		});
 
 		F->open_chunk	(EB_MU_refs);
 		F->w			(l_mu_refs.data(),sizeof(b_mu_reference)*l_mu_refs.size());
@@ -911,206 +923,133 @@ int	GetModelIdx( const char* model_name )
 
 bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 {
-	CEditableObject *O = obj->GetReference();
 	xr_string temp = "Building object: ";
 	temp += obj->GetName();
 
-	if (temp.size() > 9 && temp[temp.size()-8] == 'p')
-	{
-		__nop();
-	}
-
 	UI->SetStatus(temp.c_str());
-
-	if (!BuildMUObjectModel(obj)) return false;
-
-	if (EPrefs->UseMULODs)
-	{
-	//Seakad: Parser lod0 - lod4 (export lod1-lod4)
-    xr_string ref_name1 = obj->m_ReferenceName.c_str();
-	bool LOD0HasSuffix = ref_name1.find("lod0") != xr_string::npos;
-    if (EPrefs->LODsForAllMU || LOD0HasSuffix)
-    {
-	    size_t f1 = ref_name1.find_last_of('\\');
-    	int RF_MU1_FS_I = static_cast<int>(f1);
-
-    	xr_string RF_MUX_add = ref_name1;
-    	xr_string RF_MUX_added = "\\lod";
-    	RF_MUX_add.insert(RF_MU1_FS_I, RF_MUX_added);
-
-    	xr_string ref_new_MU1 = RF_MUX_add;
-    	if (LOD0HasSuffix){
-    		ref_new_MU1.erase(ref_new_MU1.length() - 5);
-		}
-
-    	ref_new_MU1 += "_lod1";
-
-		xr_string ref_new_MU2 = RF_MUX_add;
-    	if (LOD0HasSuffix){
-			ref_new_MU2.erase(ref_new_MU2.length() - 5);
-		}
-		ref_new_MU2 += "_lod2";
-
-		xr_string ref_new_MU3 = RF_MUX_add;
-    	if (LOD0HasSuffix){
-			ref_new_MU3.erase(ref_new_MU3.length() - 5);
-		}
-		ref_new_MU3 += "_lod3";
-
-		xr_string ref_new_MU4 = RF_MUX_add;
-    	if (LOD0HasSuffix){
-			ref_new_MU4.erase(ref_new_MU4.length() - 5);
-		}
-		ref_new_MU4 += "_lod4";
-
-		xr_string ref_new_MU1_check = ref_new_MU1;
-		xr_string ref_new_MU2_check = ref_new_MU2;
-		xr_string ref_new_MU3_check = ref_new_MU3;
-		xr_string ref_new_MU4_check = ref_new_MU4;
-
-		{
-			xr_stack_string_path stack_path;
-			ref_new_MU1_check = FS.update_path(stack_path, _objects_, ref_new_MU1_check.c_str());
-			ref_new_MU1_check += ".object";
-			ref_new_MU2_check = FS.update_path(stack_path, _objects_, ref_new_MU2_check.c_str());
-			ref_new_MU2_check += ".object";
-			ref_new_MU3_check = FS.update_path(stack_path, _objects_, ref_new_MU3_check.c_str());
-			ref_new_MU3_check += ".object";
-			ref_new_MU4_check = FS.update_path(stack_path, _objects_, ref_new_MU4_check.c_str());
-			ref_new_MU4_check += ".object";
-		}
-
-		if (FS.TryLoad(ref_new_MU1_check))
-		{
-			LPCSTR ref_new_MU1_1 = ref_new_MU1.c_str();
-			O = obj->SetReference(ref_new_MU1_1);
-			UI->SetStatus(ref_new_MU1_check.c_str());
-			BuildMUObjectModel(obj);
-		}
-		if (FS.TryLoad(ref_new_MU2_check))
-		{
-			LPCSTR ref_new_MU2_2 = ref_new_MU2.c_str();
-			O = obj->SetReference(ref_new_MU2_2);
-			UI->SetStatus(ref_new_MU2_check.c_str());
-			BuildMUObjectModel(obj);
-		}
-		if (FS.TryLoad(ref_new_MU3_check))
-		{
-			LPCSTR ref_new_MU3_3 = ref_new_MU3.c_str();
-			O = obj->SetReference(ref_new_MU3_3);
-			UI->SetStatus(ref_new_MU3_check.c_str());
-			BuildMUObjectModel(obj);
-		}
-		if (FS.TryLoad(ref_new_MU4_check))
-		{
-			LPCSTR ref_new_MU4_4 = ref_new_MU4.c_str();
-			O = obj->SetReference(ref_new_MU4_4);
-			UI->SetStatus(ref_new_MU4_check.c_str());
-			BuildMUObjectModel(obj);
-		}
-
-		O = obj->SetReference(ref_name1.c_str());
-		R_ASSERT(O);
-	}
-	}
-	return true;
-}
-
-bool SceneBuilder::BuildMUObjectModel(CSceneObject* obj)
-{
-	CEditableObject *O = obj->GetReference();
+	
+	CEditableObject* O = obj->GetReference();
 	int model_idx = GetModelIdx( O->GetName() ) ;
 
 	// detect sector
 	CSector* S 			= PortalUtils.FindSector(obj,*O->FirstMesh());
 	int sect_num 		= S?S->m_sector_num:m_iDefaultSectorNum;
+	
+	xr_string ref_name1 = obj->m_ReferenceName.c_str();
+	bool LOD0HasSuffix = ref_name1.find("lod0") != xr_string::npos;
+	bool UseMeshLODs = EPrefs->UseMULODs && EPrefs->LODsForAllMU || LOD0HasSuffix;
 
 	// build model
 	if (-1==model_idx || m_save_as_object)
 	{
-		// build LOD
-		int	lod_id = BuildObjectLOD(Fidentity,O,sect_num);
-		if (lod_id==-2)
+		model_idx = BuildMUObjectTemplate(obj, !UseMeshLODs, sect_num);
+		if (model_idx == -1)
 		{
 			return false;
 		}
-		// build model
-		model_idx = l_mu_models.size();
-		l_mu_models.push_back(b_mu_model());
-		b_mu_model&	M = l_mu_models.back();
-		M.lod_id = (u16)lod_id;
-		int vert_it=0, face_it=0;
-
-		auto FaceCount = obj->GetFaceCount();
-		auto VertexCount = obj->GetVertexCount();
-		strcpy(M.name,O->GetName());
-
-		M.faces.resize(FaceCount);
-		M.vertices.resize(VertexCount);
-		M.smgroups.resize(FaceCount);
-		// parse mesh data
-		Fmatrix T;
-		T.identity();
-
-		if(m_save_as_object)
-		{
-			T = obj->_Transform();
-			
-			Fmatrix cv = Fidentity;
-
-			cv.k.z = -1.f;
-
-			Fmatrix TM;
-
-			TM.mul( Fmatrix().mul(cv,T), cv );
-			TM.mulB_44( cv );
-			T = TM;
-		}
-
-		for(EditMeshIt MESH=O->FirstMesh();MESH!=O->LastMesh();++MESH)
-		{
-			if (M.vertices.empty() || M.faces.empty())
-			{
-				continue;
+		auto& slot = l_mu_mesh_lods.emplace_back();
+		slot.UseMeshLods = UseMeshLODs;
+		
+		//Seakad: Parser lod0 - lod4 (export lod1-lod4)
+    	if (UseMeshLODs)
+    	{
+		    size_t f1 = ref_name1.find_last_of('\\');
+    		int RF_MU1_FS_I = static_cast<int>(f1);
+	
+    		xr_string RF_MUX_add = ref_name1;
+    		xr_string RF_MUX_added = "\\lod";
+    		RF_MUX_add.insert(RF_MU1_FS_I, RF_MUX_added);
+	
+    		xr_string ref_new_MU1 = RF_MUX_add;
+    		if (LOD0HasSuffix){
+    			ref_new_MU1.erase(ref_new_MU1.length() - 5);
 			}
-			if (!BuildMesh(T, O, *MESH, sect_num, M.vertices, vert_it, M.faces, face_it, M.smgroups, obj->_Transform(), obj))
-			{
-				return false;
+	
+    		ref_new_MU1 += "_lod1";
+	
+			xr_string ref_new_MU2 = RF_MUX_add;
+    		if (LOD0HasSuffix){
+				ref_new_MU2.erase(ref_new_MU2.length() - 5);
 			}
-		}
-
-		CDB::MODEL Collision;
-		b_mu_collision& Slot = l_mu_collsions.emplace_back();
-		auto& CollisionVerts = Slot.verts;
-		auto& CollisionTris = Slot.faces;
-		{
-			CDB::CollectorPacked CL(O->GetBox(), M.vertices.size(), M.faces.size());
-			for (auto& face : M.faces)
+			ref_new_MU2 += "_lod2";
+	
+			xr_string ref_new_MU3 = RF_MUX_add;
+    		if (LOD0HasSuffix){
+				ref_new_MU3.erase(ref_new_MU3.length() - 5);
+			}
+			ref_new_MU3 += "_lod3";
+	
+			xr_string ref_new_MU4 = RF_MUX_add;
+    		if (LOD0HasSuffix){
+				ref_new_MU4.erase(ref_new_MU4.length() - 5);
+			}
+			ref_new_MU4 += "_lod4";
+	
+			xr_string ref_new_MU1_check = ref_new_MU1;
+			xr_string ref_new_MU2_check = ref_new_MU2;
+			xr_string ref_new_MU3_check = ref_new_MU3;
+			xr_string ref_new_MU4_check = ref_new_MU4;
+	
 			{
-				str_c cshader_name = nullptr;
-				bool IsShared = (bool)(face.flags&b_face_flags::UseSharedMaterial);
-				if (IsShared)
+				xr_stack_string_path stack_path;
+				ref_new_MU1_check = FS.update_path(stack_path, _objects_, ref_new_MU1_check.c_str());
+				ref_new_MU1_check += ".object";
+				ref_new_MU2_check = FS.update_path(stack_path, _objects_, ref_new_MU2_check.c_str());
+				ref_new_MU2_check += ".object";
+				ref_new_MU3_check = FS.update_path(stack_path, _objects_, ref_new_MU3_check.c_str());
+				ref_new_MU3_check += ".object";
+				ref_new_MU4_check = FS.update_path(stack_path, _objects_, ref_new_MU4_check.c_str());
+				ref_new_MU4_check += ".object";
+			}
+	
+			if (FS.TryLoad(ref_new_MU1_check))
+			{
+				LPCSTR ref_new_MU1_1 = ref_new_MU1.c_str();
+				O = obj->SetReference(ref_new_MU1_1);
+				UI->SetStatus(ref_new_MU1_check.c_str());
+				
+				if (!BuildMUObjectLOD(obj, slot, 1, sect_num))
 				{
-					auto MatName = l_materials_shared[face.dwMaterial].Name;
-					cshader_name = CSharedMaterialLibrary::Instance().GetData(MatName)->m_ShaderXRLCName.c_str();
-				} else
-				{
-					cshader_name = l_shaders_xrlc[l_materials[face.dwMaterial].shader_xrlc].name;
+					return false;
 				}
-				Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(cshader_name);
-				if (!c_sh->flags.bCollision)
-				{
-					continue;
-				}
-				CL.add_face(M.vertices[face.v[0]], M.vertices[face.v[1]], M.vertices[face.v[2]], face.dwMaterial, -1, IsShared, 0);
 			}
-			CollisionVerts = CL.getV_Vec();
-			CollisionTris = CL.getT_Vec();
+			if (FS.TryLoad(ref_new_MU2_check))
+			{
+				LPCSTR ref_new_MU2_2 = ref_new_MU2.c_str();
+				O = obj->SetReference(ref_new_MU2_2);
+				UI->SetStatus(ref_new_MU2_check.c_str());
+				if (!BuildMUObjectLOD(obj, slot, 2, sect_num))
+				{
+					return false;
+				}
+			}
+			if (FS.TryLoad(ref_new_MU3_check))
+			{
+				LPCSTR ref_new_MU3_3 = ref_new_MU3.c_str();
+				O = obj->SetReference(ref_new_MU3_3);
+				UI->SetStatus(ref_new_MU3_check.c_str());
+				if (!BuildMUObjectLOD(obj, slot, 3, sect_num))
+				{
+					return false;
+				}
+			}
+			if (FS.TryLoad(ref_new_MU4_check))
+			{
+				LPCSTR ref_new_MU4_4 = ref_new_MU4.c_str();
+				O = obj->SetReference(ref_new_MU4_4);
+				UI->SetStatus(ref_new_MU4_check.c_str());
+				if (!BuildMUObjectLOD(obj, slot, 4, sect_num))
+				{
+					return false;
+				}
+			}
+	
+			O = obj->SetReference(ref_name1.c_str());
+			R_ASSERT(O);
 		}
 	}
-
-	l_mu_refs.push_back	(b_mu_reference());
-	b_mu_reference&	R = l_mu_refs.back();
+	
+	b_mu_reference&	R = l_mu_refs.emplace_back();
 	R.model_index = model_idx;
 	R.transform = obj->_Transform();
 	R.flags.zero();
@@ -1132,6 +1071,113 @@ bool SceneBuilder::BuildMUObjectModel(CSceneObject* obj)
 		l_scene_stat->add_muvert(obj->_Transform(),MStat.vertices[mu_vi]);
 	}
 	
+	return true;
+}
+
+u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, int sect_num)
+{
+	CEditableObject* O = obj->GetReference();
+	// build LOD
+	u16	lod_id = u16(-1);
+	if (BuildBillboard)
+	{
+		lod_id = u16(BuildObjectLOD(Fidentity,O,sect_num));
+		if (lod_id==u16(-2))
+		{
+			return u32(-1);
+		}
+	}
+	// build model
+	u32 model_idx = l_mu_models.size();
+	b_mu_model&	M = l_mu_models.emplace_back();
+	M.lod_id = lod_id;
+	int vert_it=0, face_it=0;
+
+	auto FaceCount = obj->GetFaceCount();
+	auto VertexCount = obj->GetVertexCount();
+	strcpy(M.name,O->GetName());
+
+	M.faces.resize(FaceCount);
+	M.vertices.resize(VertexCount);
+	M.smgroups.resize(FaceCount);
+	// parse mesh data
+	Fmatrix T;
+	T.identity();
+
+	if(m_save_as_object)
+	{
+		T = obj->_Transform();
+		
+		Fmatrix cv = Fidentity;
+
+		cv.k.z = -1.f;
+
+		Fmatrix TM;
+
+		TM.mul( Fmatrix().mul(cv,T), cv );
+		TM.mulB_44( cv );
+		T = TM;
+	}
+
+	for(EditMeshIt MESH=O->FirstMesh();MESH!=O->LastMesh();++MESH)
+	{
+		if (M.vertices.empty() || M.faces.empty())
+		{
+			continue;
+		}
+		if (!BuildMesh(T, O, *MESH, sect_num, M.vertices, vert_it, M.faces, face_it, M.smgroups, obj->_Transform(), obj))
+		{
+			return u32(-1);
+		}
+	}
+
+	CDB::MODEL Collision;
+	b_mu_collision& Slot = l_mu_collsions.emplace_back();
+	auto& CollisionVerts = Slot.verts;
+	auto& CollisionTris = Slot.faces;
+	{
+		CDB::CollectorPacked CL(O->GetBox(), M.vertices.size(), M.faces.size());
+		for (auto& face : M.faces)
+		{
+			str_c cshader_name = nullptr;
+			bool IsShared = (bool)(face.flags&b_face_flags::UseSharedMaterial);
+			if (IsShared)
+			{
+				auto MatName = l_materials_shared[face.dwMaterial].Name;
+				cshader_name = CSharedMaterialLibrary::Instance().GetData(MatName)->m_ShaderXRLCName.c_str();
+			} else
+			{
+				cshader_name = l_shaders_xrlc[l_materials[face.dwMaterial].shader_xrlc].name;
+			}
+			Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(cshader_name);
+			if (!c_sh->flags.bCollision)
+			{
+				continue;
+			}
+			CL.add_face(M.vertices[face.v[0]], M.vertices[face.v[1]], M.vertices[face.v[2]], face.dwMaterial, -1, IsShared, 0);
+		}
+		CollisionVerts = CL.getV_Vec();
+		CollisionTris = CL.getT_Vec();
+	}
+	return model_idx;
+}
+
+bool SceneBuilder::BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 LODID, int sect_num)
+{
+	CEditableObject *O = obj->GetReference();
+	int model_idx = GetModelIdx( O->GetName() ) ;
+
+	// build model
+	if (-1==model_idx || m_save_as_object)
+	{
+		model_idx = BuildMUObjectTemplate(obj, false, sect_num);
+		if (model_idx == -1)
+		{
+			return false;
+		}
+	}
+	
+	Slot.model_index[LODID-1] = model_idx;
 	return true;
 }
 
