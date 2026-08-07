@@ -17,17 +17,19 @@ private:
 			bool	set_position;
 			Fvector p;
 	} g_position;
-	int			iCount;
-	IWriter*	file;
-	Fvector		m_HPB;
-	Fvector		m_Position;
-	Fmatrix		m_Camera;
-	u32			m_Stage;
 
-	Fvector		m_vT;
-    Fvector		m_vR;
-	Fvector		m_vVelocity;
-	Fvector		m_vAngularVelocity;
+	IWriter*	file;
+	Fvector		HPB;
+	Fvector		Position;
+	Fmatrix		Camera;
+	u32			Stage;
+
+	Fvector		FrameTopDelta;
+    Fvector		FrameRightDelta;
+	Fvector		Velocity;
+	Fvector		AngularVelocity;
+	
+	xr_vector<Fvector> KeyframesPositions; 
 
 	bool		m_bMakeCubeMap;
 	bool		m_bMakeScreenshot;
@@ -35,14 +37,7 @@ private:
 	bool		m_bMakeLevelMap;
 	bool		m_bEnableAcceleration = false;
 
-	float		m_fSpeed0;
-	float		m_fSpeed1;
-	float		m_fSpeed2;
-	float		m_fSpeed3;
-	float		m_fAngSpeed0;
-	float		m_fAngSpeed1;
-	float		m_fAngSpeed2;
-	float		m_fAngSpeed3;
+	float		CameraTransformFactor = 1.f;
 
 	void		MakeCubeMapFace			(Fvector &D, Fvector &N);
 	void		MakeLevelMapProcess		();
@@ -59,6 +54,7 @@ public:
 	virtual void IR_OnKeyboardRelease	(int dik);
 	virtual void IR_OnKeyboardHold		(int dik);
 	virtual void IR_OnMouseMove			(int dx, int dy);
+	virtual void IR_OnMouseWheel		(int direction);
 	virtual void IR_OnMouseHold			(int btn);
 	virtual void IR_GamepadUpdateStick	(int id, Fvector2 value);
 	virtual void IR_GamepadKeyPress		(int id);
