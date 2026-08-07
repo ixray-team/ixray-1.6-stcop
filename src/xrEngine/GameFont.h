@@ -72,6 +72,7 @@ protected:
 	float fCurrentX = 0.0f;
 	float fCurrentY = 0.0f;
 	bool fGradientEnabled = false;
+	float fCurrentWidthCoef = 1.0f;
 	EGradientMode fGradientMode = gm_vert;
 
 	u32 uFlags;
@@ -101,7 +102,10 @@ public:
 	void  SetHeight(float S);
 	float GetHeight() { return fCurrentHeight; }
 	void  SetAligment(EAligment aligment) { eCurrentAlignment = aligment; }
-	
+
+	void SetWidthCoef(float S) { fCurrentWidthCoef = S; }
+	float GetWidthCoef() { return fCurrentWidthCoef; }
+
 	/**
 	 * Извлекает ширину строки.
 	 * @param s строка с текстом.
