@@ -86,10 +86,15 @@ void CMMSound::music_Play()
 		m_music_l.create(_path_l, st_Music, sg_SourceType);
 		m_music_r.create(_path_r, st_Music, sg_SourceType);
 
+#ifdef IXR_HYPESOUND
 		m_music_l.play(nullptr, sm_Intro | sm_Looped);
-		//m_music_l.set_panning(1.0f, 0.f);
+		m_music_l.set_panning(1.0f, 0.f);
 		m_music_r.play(nullptr, sm_Intro | sm_Looped);
-		//m_music_r.set_panning(0.f, 1.0f);
+		m_music_r.set_panning(0.f, 1.0f);
+#else
+		m_music_l.play_at_pos(nullptr, Fvector().set(-0.5f, 0.f, 0.3f), sm_Intro | sm_Looped);
+		m_music_r.play_at_pos(nullptr, Fvector().set(+0.5f, 0.f, 0.3f), sm_Intro | sm_Looped);
+#endif
 	}
 }
 
