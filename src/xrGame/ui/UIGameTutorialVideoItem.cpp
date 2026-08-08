@@ -159,10 +159,15 @@ void CUISequenceVideoItem::Update()
 					m_sound.play		(nullptr, sm_Intro);
 				else
 				{
+#ifdef IXR_HYPESOUND
 					m_sound_mono[0].play(nullptr, sm_Intro);
-					//m_sound_mono[0].set_panning(1.0f, 0.f);
+					m_sound_mono[0].set_panning(1.0f, 0.f);
 					m_sound_mono[1].play(nullptr, sm_Intro);
-					//m_sound_mono[1].set_panning(0.f, 1.0f);
+					m_sound_mono[1].set_panning(0.f, 1.0f);
+#else
+					m_sound_mono[0].play_at_pos(nullptr, Fvector().set(-0.5f, 0.f, 0.3f), sm_Intro);
+					m_sound_mono[1].play_at_pos(nullptr, Fvector().set(+0.5f, 0.f, 0.3f), sm_Intro);
+#endif
 				}
 				m_texture->video_Play	(false, m_sync_time);
 				m_flags.set				(etiNeedStart,false);
