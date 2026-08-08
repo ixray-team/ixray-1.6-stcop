@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
 	<string id="st_ixray_global_options_addon"> 
-		<text>IXRay РђРґРґРѕРЅ РіР»РѕР±Р°Р»СЊРЅС‹С… РЅР°СЃС‚СЂРѕРµРє</text>
+		<text>IX-Ray Аддон глобальных настроек</text>
 	</string>
 
 	<string id="st_ixray_global_options"> 
-		<text>IXRay Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё</text>
+		<text>IX-Ray Глобальные настройки</text>
 	</string>
 	
 	<string id="st_ixray_global_options_params"> 
-		<text>РќР°СЃС‚СЂРѕР№РєРё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РѕРїС†РёР№</text>
+		<text>Настройки отображения опций</text>
 	</string>
 	
 	<string id="st_ixray_global_options_draw_var_names"> 
-		<text>РћС‚РѕР±СЂР°Р¶Р°С‚СЊ РёРјРµРЅР° РїРµСЂРµРјРµРЅРЅС‹С… РІ Р·Р°РіРѕР»РѕРІРєРµ РѕРїС†РёР№</text>
+		<text>Отображать имена переменных в заголовке опций</text>
+	</string>
+	
+	<string id="st_ixray_global_options__draw_debug"> 
+		<text>Отображение симуляции жизни</text>
 	</string>
 </string_table>

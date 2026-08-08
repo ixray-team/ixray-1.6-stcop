@@ -19,12 +19,17 @@
 ]]
 
 local SCRIPT_ENABLED = true
+local USE_FILE_LOG = true
+local USE_CONSOLE_LOG = false
+local USE_TIME_IN_LOGS = true
+
 local MIN_TIMERS_DELAY = 50
 local CONST_TRACE_LEVEL = 3
 
 local ixr_timers = {
-	use_file_log = true,
-	use_console_log = false,
+	use_file_log = USE_FILE_LOG,
+	use_time_log = USE_TIME_IN_LOGS,
+	use_console_log = USE_CONSOLE_LOG,
 	dynamic_vars = {
 		upd_last_time = 0,
 		initialized = false,
@@ -129,45 +134,49 @@ end
 --#####################################################
 
 function ixr_timers.init()
-	ixr_timers.toLog("INIT :: [BEGIN]")
+	IXRLogUseFileLog(ixr_timers.use_file_log)
+	IXRLogUseConsoleLog(ixr_timers.use_console_log)
+	IXRLogUseTimeInLog(ixr_timers.use_time_log)
+
+	IXRLog("INIT :: [BEGIN]")
 	ixr_timers.register_callbacks()
-	ixr_timers.toLog("INIT :: [COMPLETED]")
+	IXRLog("INIT :: [COMPLETED]")
 	ixr_timers.dynamic_vars.initialized = true
 	
 	return ixr_timers.dynamic_vars.initialized
 end
 
 function ixr_timers.register_callbacks()
-	ixr_timers.toLog("REGISTER CALLBACKS :: [BEGIN]")
+	IXRLog("REGISTER CALLBACKS :: [BEGIN]")
 	
 	RegisterScriptCallback("actor_on_spawn", function () ixr_timers.dynamic_vars.is_actor_presented = true end)
 	RegisterScriptCallback("on_load_screen_await_any_key_pressed", function () ixr_timers.dynamic_vars.is_actor_input_recieved = true end)
 	RegisterScriptCallback("actor_on_update", ixr_timers.actor_on_update)
 	RegisterScriptCallback("actor_on_save", ixr_timers.actor_on_save)
 	
-	ixr_timers.toLog("REGISTER CALLBACKS :: [COMPLETED]")
+	IXRLog("REGISTER CALLBACKS :: [COMPLETED]")
 end
 
 function ixr_timers.actor_on_save()
-	ixr_timers.toLog("TIMER STORAGE :: [BEGIN SAVE]")
+	IXRLog("TIMER STORAGE :: [BEGIN SAVE]")
 	SetStorageVar("stored_timers", ixr_timers.dynamic_vars.storage)
-	ixr_timers.toLog("TIMER STORAGE :: SAVED TIMERS TO STORAGE: [".. tostring(ffx_table_utils.get_size(ixr_timers.dynamic_vars.storage)) .."]")
-	ixr_timers.toLog("TIMER STORAGE :: [END SAVE]")
+	IXRLog("TIMER STORAGE :: SAVED TIMERS TO STORAGE: [".. tostring(ffx_table_utils.get_size(ixr_timers.dynamic_vars.storage)) .."]")
+	IXRLog("TIMER STORAGE :: [END SAVE]")
 end
 
 function ixr_timers.actor_on_load()
-	ixr_timers.toLog("TIMER STORAGE :: [BEGIN LOAD]")
+	IXRLog("TIMER STORAGE :: [BEGIN LOAD]")
 	ixr_timers.dynamic_vars.storage = ixr_timers.merge_timers(GetStorageVar("stored_timers", {}), ixr_timers.dynamic_vars.storage)
 	ixr_timers.dynamic_vars.upd_last_time = time_global()
-	ixr_timers.toLog("TIMER STORAGE :: [END LOAD]")
+	IXRLog("TIMER STORAGE :: [END LOAD]")
 end
 
 function ixr_timers.merge_timers(first_t, second_t)
 	if first_t == nil then first_t = {} end
 	if second_t == nil then second_t = {} end
 	
-	ixr_timers.toLog("TIMER STORAGE :: LOCAL TIMERS BEFORE MERGE: [".. tostring(ffx_table_utils.get_size(second_t)) .."]")
-	ixr_timers.toLog("TIMER STORAGE :: LOADED TIMERS FROM STORAGE: [".. tostring(ffx_table_utils.get_size(first_t)) .."]")
+	IXRLog("TIMER STORAGE :: LOCAL TIMERS BEFORE MERGE: [".. tostring(ffx_table_utils.get_size(second_t)) .."]")
+	IXRLog("TIMER STORAGE :: LOADED TIMERS FROM STORAGE: [".. tostring(ffx_table_utils.get_size(first_t)) .."]")
 	
 	local merged_table = ffx_table_utils.clone(first_t)
 	
@@ -177,7 +186,7 @@ function ixr_timers.merge_timers(first_t, second_t)
 		end
 	end
 	
-	ixr_timers.toLog("TIMER STORAGE :: MERGED LOCAL TIMERS WITH LOADED: [".. tostring(ffx_table_utils.get_size(merged_table)) .."]")
+	IXRLog("TIMER STORAGE :: MERGED LOCAL TIMERS WITH LOADED: [".. tostring(ffx_table_utils.get_size(merged_table)) .."]")
 	
 	return merged_table
 end
@@ -240,24 +249,24 @@ end
 
 
 function ixr_timers.on_timer_create(i, timer_options)
-	ixr_timers.toLog("Timer create:" .. timer_options.name)
+	IXRLog("Timer create:" .. timer_options.name)
 end
 
 function ixr_timers.on_timer_stop(i, timer_options)
-	ixr_timers.toLog("Timer stop:" .. timer_options.name)
+	IXRLog("Timer stop:" .. timer_options.name)
 end
 
 function ixr_timers.on_timer_left(i, timer_options)
-	ixr_timers.toLog("Timer left:" .. timer_options.name)
+	IXRLog("Timer left:" .. timer_options.name)
 	ixr_timers.run_serialized_callable(timer_options.serialized_callable)
 end
 
 function ixr_timers.on_timer_play(i, timer_options)
-	ixr_timers.toLog("Timer play:" .. timer_options.name)
+	IXRLog("Timer play:" .. timer_options.name)
 end
 
 function ixr_timers.on_before_timer_remove(i, timer_options)
-	ixr_timers.toLog("Timer remove:" .. timer_options.name)
+	IXRLog("Timer remove:" .. timer_options.name)
 end
 
 function ixr_timers.run_serialized_callable(serialized_callable)
@@ -404,19 +413,4 @@ function ixr_timers.timer_delete(name)
 	end
 	
 	return completed
-end
-
---#####################################################
---#						UTILS						  #
---#####################################################
-
-function ixr_timers.toLog(text)
-	if ixr_timers.use_file_log then
-		ffx_dump_utils.write_to_file_log(text, ixr_timers.dynamic_vars.first_log_record)
-		ixr_timers.dynamic_vars.first_log_record = false
-	end
-	
-	if ixr_timers.use_console_log then
-		ffx_dump_utils.write_to_console_log(text)
-	end
 end

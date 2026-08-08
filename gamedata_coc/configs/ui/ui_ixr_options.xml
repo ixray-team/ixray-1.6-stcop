@@ -1,5 +1,25 @@
 <w>
-
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">st_ixray_framework_options_lr</text>
+			<window_name>framework_gp_lr</window_name>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">st_ixray_framework_addons_ud</text>
+			<window_name>framework_gp_ud</window_name>
+		</auto_static>	
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>framework_gp_accept</window_name>
+			<text font="graffiti19" vert_align="c">st_ixray_framework_options_accept</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">st_ixray_framework_options_save</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
 	<ixr_options_btn x="25" y="650" width="40" height="40" stretch="1">
 		<texture>ui\ixr_options\options</texture>
 	</ixr_options_btn>
@@ -37,8 +57,16 @@
 	</black_round_r_d>
 	
 	<black_option_rounded_rect x="0" y="0" width="640" height="40" stretch="1">
-		<texture  x="0" y="0" width="640" height="40">ui\ixr_options\option_rounded_rect</texture>
+		<texture  x="0" y="0" width="820" height="40">ui\ixr_options\option_rounded_rect</texture>
 	</black_option_rounded_rect>
+	
+	<black_option_rounded_rect_selected x="0" y="0" width="640" height="40" stretch="1">
+		<texture  x="0" y="0" width="820" height="40">ui\ixr_options\option_rounded_rect_selected</texture>
+	</black_option_rounded_rect_selected>
+	
+	<black_option_rounded_rect_focused x="0" y="0" width="640" height="40" stretch="1">
+		<texture  x="0" y="0" width="820" height="40">ui\ixr_options\option_rounded_rect_focused</texture>
+	</black_option_rounded_rect_focused>
 	
 	<ixr_options_boycott_32_l x="0" y="0" width="1" height="1" stretch="1">
 		<text align="l"  complex_mode="1" font="font_boycott_32"> </text>
@@ -76,10 +104,6 @@
 		<font font="letterica16"/>
 	</addons_list>
 	
-	<frame_window x="0" y="0" width="64" height="64">
-		<texture>ui_inv_item_selector_tri</texture>
-	</frame_window>
-	
 	<addon_icon x="0" y="0" width="64" height="64" stretch="1">
 		<texture width="128" height="128">ui\ui_noise</texture>
 	</addon_icon>
@@ -87,7 +111,15 @@
 	<addon_background x="0" y="0" width="64" height="64" stretch="1">
 		<texture x="0" y="0" width="222" height="68">ui\ixr_options\addon_background</texture>
 	</addon_background>
+	
+	<addon_background_selected x="0" y="0" width="64" height="64" stretch="1">
+		<texture x="0" y="0" width="222" height="68">ui\ixr_options\addon_background_selected</texture>
+	</addon_background_selected>
 
+	<frame_window x="0" y="0" width="64" height="64">
+		<texture>ui_inv_item_selector_tri</texture>
+	</frame_window>
+	
 	<scroll_v x="0" y="0" width="670" height="320" right_ident="0" left_ident="0" top_indent="0" bottom_indent="0" vert_interval="0" always_show_scroll="0" />
 	
 	<check_box_background x="0" y="0" width="256" height="64" stretch="1">

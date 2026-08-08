@@ -134,6 +134,7 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("actor_on_leave_dialog",           		{"npc_id_number"}) 
 	_ref_ixr_signals.add_intercept("actor_on_foot_step",              		{"alife_game_object", "power_number", "play_bool", "on_ground_bool", "hud_view_bool"}) 
 	_ref_ixr_signals.add_intercept("actor_on_footstep",                		{"alife_game_object", "power_number", "play_bool", "on_ground_bool", "hud_view_bool"}) -- replicated actor_on_foot_step
+	_ref_ixr_signals.add_intercept("actor_on_article",             			{"npc_game_object", "article_group", "article_name"}) 
 
 	_ref_ixr_signals.add_intercept("npc_on_use",                       		{"target_game_object", "initiator_game_object"}) 
 	_ref_ixr_signals.add_intercept("npc_on_item_take",                 		{"npc_game_object", "item_game_object"}) 
@@ -160,6 +161,11 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("monster_on_death",         				{"monster_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("monster_on_actor_use_callback",     	{"monster_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("monster_on_use",     					{"monster_game_object", "who_game_object", "is_alive_bool"}) 
+
+	_ref_ixr_signals.add_intercept("crow_on_net_spawn",             		{"crow_game_object", "monster_server_object"}) 
+	_ref_ixr_signals.add_intercept("crow_on_net_destroy",            		{"crow_game_object"}) 
+	_ref_ixr_signals.add_intercept("crow_on_update",                 		{"crow_game_object", "self_st_table"}) 
+	_ref_ixr_signals.add_intercept("crow_on_death",         				{"crow_game_object", "who_game_object"}) 
 
 	_ref_ixr_signals.add_intercept("anomaly_field_on_update",     			{"binder_class", "anomaly_zone_game_object"}) 
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_options_template">
+		<text>Example of addon option</text>
+	</string>
+	<string id="st_options_template_addon">
+		<text>IXRay Options addon template</text>
+	</string>
+</string_table>

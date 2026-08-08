@@ -645,6 +645,9 @@
 	<string id="kb_safemode">
 		<text>Safemode</text>
 	</string>
+	<string id="kb_inv_unload_ruck">
+		<text>Unload all weapons in backpack</text>
+	</string>
 	<string id="ui_tasks_show_on_map">
 		<text>$$ACTION_pda_tasks_filter_toggle$$ Show on map</text>
 	</string>
@@ -923,5 +926,26 @@
 	</string>
 	<string id="st_quicksaves_count">
 		<text>Quicksaves count</text>
+	</string>
+	<string id="st_ixray_framework_options">
+		<text>$$ACTION_UI_ACTION_2$$ IX-Ray Framework</text>
+	</string>
+	<string id="st_ixray_framework_options_accept">
+		<text>$$ACTION_UI_ACCEPT$$ Pick option</text>
+	</string>
+	<string id="st_ixray_framework_options_lr">
+		<text>$$ACTION_UI_LEFT$$/$$ACTION_UI_RIGHT$$ Change tab</text>
+	</string>
+	<string id="st_ixray_framework_options_lr_focused">
+		<text>$$ACTION_UI_LEFT$$/$$ACTION_UI_RIGHT$$ Change value</text>
+	</string>
+	<string id="st_ixray_framework_addons_ud">
+		<text>$$ACTION_UI_UP$$/$$ACTION_UI_DOWN$$ Change addon</text>
+	</string>
+	<string id="st_ixray_framework_options_ud">
+		<text>$$ACTION_UI_UP$$/$$ACTION_UI_DOWN$$ Change selection</text>
+	</string>
+	<string id="st_ixray_framework_options_save">
+		<text>$$ACTION_UI_ACTION_2$$ Save options</text>
 	</string>
 </string_table>
