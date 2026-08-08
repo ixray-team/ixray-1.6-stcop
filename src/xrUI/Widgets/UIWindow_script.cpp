@@ -256,7 +256,8 @@ void CUIWindow::script_register(lua_State *L)
 		.def("ReinitScrollBar",			&CUIScrollView::ReinitScrollBar)
 		.def("SetScrollPos",			&CUIScrollView::SetScrollPos)
 		.def("GetPadSize",				&CUIScrollView::GetPadSize)
-		.def("HasWindow",				&CUIScrollView::HasWindow),
+		.def("HasWindow",				&CUIScrollView::HasWindow)
+		.def("ScrollToItem",			&CUIScrollView::ScrollToItem),
 
 		class_<enum_exporter<EUIMessages> >("ui_events")
 			.enum_("events")
