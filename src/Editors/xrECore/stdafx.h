@@ -33,7 +33,7 @@
 #include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #define smart_cast fast_dynamic_cast
 
-#define MU_LODS_TRUE
+//#define MU_LODS_TRUE
 #define R_R1    1
 #define R_R2    2
 #define R_R4    4

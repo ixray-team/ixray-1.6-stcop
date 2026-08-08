@@ -854,7 +854,8 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 
 	if (!BuildMUObjectModel(obj)) return false;
 
-#ifdef MU_LODS_TRUE
+	if (EPrefs->UseMULODs)
+	{
 	//Seakad: Parser lod0 - lod4 (export lod1-lod4)
     xr_string ref_name1 = obj->m_ReferenceName.c_str();
 	bool LOD0HasSuffix = ref_name1.find("lod0") != xr_string::npos;
@@ -941,7 +942,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 		O = obj->SetReference(ref_name1.c_str());
 		R_ASSERT(O);
 	}
-#endif
+	}
 	return true;
 }
 
@@ -1537,8 +1538,7 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 	}
 	UI->ProgressEnd(pb);
 // process lods
-#ifndef MU_LODS_TRUE_1 //Seakad: я пока не решил, вырезать полностью билборды, или оставить с пустышкой-текстурой, и с уменьшенным разрешением
-	if (bResult&&!l_lods.empty())
+	if (bResult&&!l_lods.empty() && !EPrefs->DisableBillboardLOD)
 	{
 		SPBItem* pb = UI->ProgressStart(l_lods.size()*2,"Merge LOD textures...");
 		Fvector2Vec			offsets;
@@ -1553,13 +1553,16 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 			I.name			= l_lods[k].lod_name;
 			I.layers.push_back(l_lods[k].data);
 			I.layers.push_back(l_lods[k].ndata);
-#ifndef MU_LODS_TRUE
-			I.w				= LOD_IMAGE_SIZE*LOD_SAMPLE_COUNT;
-			I.h				= LOD_IMAGE_SIZE;
-#else
-			I.w				= 8*LOD_SAMPLE_COUNT;
-			I.h				= 8;
-#endif
+			if (!EPrefs->UseMULODs)
+			{
+				I.w				= LOD_IMAGE_SIZE*LOD_SAMPLE_COUNT;
+				I.h				= LOD_IMAGE_SIZE;
+			}
+			else
+			{
+				I.w				= 8*LOD_SAMPLE_COUNT;
+				I.h				= 8;
+			}
 			pb->Inc();
 		}
 
@@ -1594,7 +1597,6 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 		UI->ProgressEnd(pb);
 	}
 
-#endif
 // save build    
 	if (bResult && !UI->NeedAbort())
 	{

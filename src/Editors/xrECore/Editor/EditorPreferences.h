@@ -94,6 +94,10 @@ public:
 	xr_string		Compiler_xrDO;
 	bool LODsForAllMU = false;
 
+	// Experimental -> LOD
+	bool UseMULODs = false;
+	bool DisableBillboardLOD = false;
+
 	std::map<std::string, std::string> custom_icons;
 protected:
 	void 			OnKeyboardCommonFileClick	(ButtonValue* value, bool& bModif, bool& bSafe);
