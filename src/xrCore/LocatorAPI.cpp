@@ -1850,19 +1850,23 @@ int	CLocatorAPI::file_length(const char* src)
 
 void CLocatorAPI::file_update(const char* file_name)
 {
-	xrSRWLockGuard g(m_files_lock);
-	auto I = file_find_it(file_name);
-	if(I == m_files.end())
 	{
-		TryLoad(file_name);
-		return;
+		xrSRWLockGuard g(m_files_lock);
+		auto I = file_find_it(file_name);
+		if(I != m_files.end())
+		{
+			auto& Data = const_cast<file&>(*I); // safe, because changed fields are not affected on order
+			size_t FileSize = std::filesystem::file_size(file_name);
+			size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(file_name));
+			Data.size_real = FileSize;
+			Data.size_compressed = FileSize;
+			Data.modif = FileModif;
+			return;
+		}
 	}
-	auto& Data = const_cast<file&>(*I); // safe, because changed fields are not affected on order
-	size_t FileSize = std::filesystem::file_size(file_name);
-	size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(file_name));
-	Data.size_real = FileSize;
-	Data.size_compressed = FileSize;
-	Data.modif = FileModif;
+	// File not in VFS yet - register it outside the lock to avoid deadlock
+	// (Register also acquires m_files_lock)
+	TryLoad(file_name);
 }
 
 bool CLocatorAPI::path_exist(const char* path)
