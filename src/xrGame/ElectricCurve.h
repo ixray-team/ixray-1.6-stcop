@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "ParticlesObject.h"
 
@@ -6,9 +6,14 @@ struct SElectricCurve
 {
 	shared_str particleName = "ffx0001\\test\\t_01";
 	xr_vector<xr_shared_ptr<CParticlesObject>> particlesElectric;
+
 	xr_vector<Fvector> segmentStarts;
 	Fvector initialPos;
 	Fvector destinationPos;
+
+	xr_shared_ptr<CParticlesObject> contactParticleGround;
+	shared_str particleContactGroundName;
+
 	float m_upd_timer = 0.f;
 	float m_max_upd_timer = 0.f;
 
@@ -16,35 +21,23 @@ struct SElectricCurve
 	float max_anim_time = Random.randF(20.0f, 80.0f);
 
 	float STEP = 0.05f;
-	float SEGMENT_LENGTH = 0.5f;           // Длина одного сегмента (метров)
-	float ANIMATION_SPEED = Random.randF(0.001f, 0.0015f);        // Скорость анимации (множитель dwTimeDelta)
+	float SEGMENT_LENGTH = 0.45f;
+	float ANIMATION_SPEED = Random.randF(0.001f, 0.0015f);
 
-	float MAX_CURVE_DISTANCE = 5.0f;						// Максимальная длинна дуги
-	float PARABOLA_HEIGHT_MULT = Random.randF(0.3f, 0.8f);  // Высота параболы множитель от расстояния
-	float MIN_HEIGHT = 0.5f;								// Минимальная высота дуги
-	float MAX_HEIGHT = Random.randF(2.0f, 5.0f);            // Максимальная высота дуги
+	float MAX_CURVE_DISTANCE = 5.0f;
+	float PARABOLA_HEIGHT_MULT = Random.randF(0.3f, 0.8f);
+	float MIN_HEIGHT = 0.5f;
+	float MAX_HEIGHT = Random.randF(2.0f, 5.0f);
 
 	bool isEnabled = true;
 	bool isStopped = true;
 
-	bool IsEnable()
-	{
-		return isEnabled;
-	}
-
-	void Enable()
-	{
-		isEnabled = true;
-	}
-
-	void Disable()
-	{
-		isEnabled = false;
-	}
+	bool IsEnable() { return isEnabled; }
+	void Enable() { isEnabled = true; }
+	void Disable() { isEnabled = false; }
 
 	ICF Fvector GetArcPoint(float t, const Fvector& initialPos, const Fvector& destinationPos, float dist, float animTime)
 	{
-		// Параметры гармоник Y (вертикальные колебания)
 		float Y_NOISE_AMP1 = 0.75f;
 		float Y_NOISE_AMP2 = 0.35f;
 		float Y_NOISE_AMP3 = 0.1f;
@@ -53,7 +46,6 @@ struct SElectricCurve
 		float Y_NOISE_FREQ3 = 45.0f;
 		float Y_NOISE_INFLUENCE = 0.6f;
 
-		// Параметры хаотичности XZ (боковые отклонения)
 		float CHAOS_MULT = 0.5f;
 		float CHAOS_AMP1 = 0.5f;
 		float CHAOS_AMP2 = 0.25f;
@@ -66,8 +58,14 @@ struct SElectricCurve
 
 		float parabola = sin(t * 3.14159f);
 		float maxHeight = dist * PARABOLA_HEIGHT_MULT;
-		if (maxHeight < MIN_HEIGHT) maxHeight = MIN_HEIGHT;
-		if (maxHeight > MAX_HEIGHT) maxHeight = MAX_HEIGHT;
+		if (maxHeight < MIN_HEIGHT)
+		{
+			maxHeight = MIN_HEIGHT;
+		}
+		if (maxHeight > MAX_HEIGHT)
+		{
+			maxHeight = MAX_HEIGHT;
+		}
 
 		float timeFactor = animTime * 10.0f;
 		float yNoise = sin(t * Y_NOISE_FREQ1 + timeFactor) * Y_NOISE_AMP1;
@@ -101,10 +99,6 @@ struct SElectricCurve
 	{
 		VERIFY(points.size() == S + 1);
 
-		float max_len = L * float(S);
-
-		float distAB = A.distance_to(B);
-
 		for (int iter = 0; iter < iterations; ++iter)
 		{
 			points[S].set(B);
@@ -113,12 +107,14 @@ struct SElectricCurve
 			{
 				Fvector dir;
 				dir.sub(points[i], points[i + 1]);
-
 				if (dir.square_magnitude() > EPS_S)
+				{
 					dir.normalize();
+				}
 				else
+				{
 					dir.set(0.f, 1.f, 0.f);
-
+				}
 				points[i].mad(points[i + 1], dir, L);
 			}
 
@@ -128,22 +124,45 @@ struct SElectricCurve
 			{
 				Fvector dir;
 				dir.sub(points[i], points[i - 1]);
-
 				if (dir.square_magnitude() > EPS_S)
+				{
 					dir.normalize();
+				}
 				else
+				{
 					dir.set(0.f, 1.f, 0.f);
-
+				}
 				points[i].mad(points[i - 1], dir, L);
 			}
 
 			if (points[S].distance_to(B) <= epsilon)
+			{
 				break;
+			}
 		}
 	}
 
-	void UpdateMovement() 
+	float EstimateArcLength(float dist, int numSteps = 50)
 	{
+		float len = 0.0f;
+		Fvector prev = GetArcPoint(0.0f, initialPos, destinationPos, dist, animTime);
+		for (int i = 1; i <= numSteps; ++i)
+		{
+			float t = (float)i / numSteps;
+			Fvector cur = GetArcPoint(t, initialPos, destinationPos, dist, animTime);
+			len += prev.distance_to(cur);
+			prev = cur;
+		}
+		return len;
+	}
+
+	void UpdateMovement()
+	{
+		if (contactParticleGround == nullptr && particleContactGroundName.size() > 0)
+		{
+			contactParticleGround = Particles::Details::Create(particleContactGroundName.c_str(), false);
+		}
+
 		if (!IsEnable())
 		{
 			if (!isStopped && !particlesElectric.empty())
@@ -155,35 +174,36 @@ struct SElectricCurve
 						particlesElectric[i]->Stop(false);
 					}
 				}
-
 				isStopped = true;
 			}
-
 			return;
 		}
 
 		isStopped = false;
-
 		animTime += Device.dwTimeDelta * ANIMATION_SPEED;
+
 		if (animTime > max_anim_time)
 		{
 			animTime = 0.0f;
 		}
 
 		float dist = initialPos.distance_to(destinationPos);
+
 		if (dist > MAX_CURVE_DISTANCE)
 		{
 			dist = MAX_CURVE_DISTANCE;
 		}
-		float coeff = 1.6;
 
-		float chain = (dist * coeff) / SEGMENT_LENGTH;
-		chain = std::floor(chain + 1);
-		STEP = 1 / chain;
+		float arcLen = EstimateArcLength(dist, 50);
+		int chain = (int)std::ceil(arcLen / SEGMENT_LENGTH) + 1;
+		if (chain < 2)
+		{
+			chain = 2;
+		}
 
+		STEP = 1.0f / chain;
 		segmentStarts.clear();
-
-		Fvector currentSpawnPoint = segmentStarts.emplace_back(GetArcPoint(0.0f, initialPos, destinationPos, dist, animTime));
+		segmentStarts.emplace_back(GetArcPoint(0.0f, initialPos, destinationPos, dist, animTime));
 		float currentT = 0.0f;
 
 		while (currentT < 1.0f)
@@ -193,26 +213,13 @@ struct SElectricCurve
 			{
 				currentT = 1.0f;
 			}
-
-			Fvector currentPoint = GetArcPoint(currentT, initialPos, destinationPos, dist, animTime);
-			segmentStarts.push_back(currentPoint);
-		}
-
-		for (size_t i = 0; i < segmentStarts.size() - 1; i++)
-		{
-			Fvector startB;
-			startB.set(segmentStarts[i]);
-
-			Fvector endB;
-			endB.set(segmentStarts[i + 1]);
-
-			Fvector dirB;
-			dirB.sub(endB, startB);
-			dirB.normalize();
+			segmentStarts.push_back(GetArcPoint(currentT, initialPos, destinationPos, dist, animTime));
 		}
 
 		size_t neededParticles = segmentStarts.size() - 1;
 		SolveChainFABRIK(segmentStarts, initialPos, destinationPos, SEGMENT_LENGTH, neededParticles);
+		segmentStarts[neededParticles] = destinationPos;
+		const float OVERLAP = 0.05f;
 
 		while (particlesElectric.size() < neededParticles)
 		{
@@ -223,16 +230,24 @@ struct SElectricCurve
 		{
 			if (particlesElectric[i] != nullptr)
 			{
-				Fvector start;
-				start.set(segmentStarts[i]);
-
-				Fvector end;
-				end.set(segmentStarts[i + 1]);
-
+				Fvector start = segmentStarts[i];
+				Fvector end = segmentStarts[i + 1];
 				Fvector dir;
 				dir.sub(end, start);
-				float length = dir.magnitude();
-				dir.normalize();
+				float len = dir.magnitude();
+				if (len > EPS_L)
+				{
+					dir /= len;
+				}
+				else
+				{
+					dir.set(0.f, 1.f, 0.f);
+				}
+
+				if (i > 0)
+				{
+					start -= dir * OVERLAP;
+				}
 
 				Fmatrix XF;
 				XF.j.set(dir);
@@ -247,6 +262,24 @@ struct SElectricCurve
 			}
 		}
 
+		if (contactParticleGround)
+		{
+			Fvector dir;
+			dir.sub(destinationPos, initialPos);
+			dir.normalize();
+
+			Fmatrix XF;
+			XF.j.set(dir);
+			Fvector::generate_orthonormal_basis(XF.j, XF.k, XF.i);
+			XF.c.set(destinationPos);
+			contactParticleGround->SetXFORM(XF);
+
+			if (!contactParticleGround->IsPlaying())
+			{
+				contactParticleGround->Play(false);
+			}
+		}
+
 		for (size_t i = segmentStarts.size() > 0 ? segmentStarts.size() - 1 : 0; i < particlesElectric.size(); i++)
 		{
 			if (particlesElectric[i])
@@ -256,4 +289,3 @@ struct SElectricCurve
 		}
 	}
 };
-
