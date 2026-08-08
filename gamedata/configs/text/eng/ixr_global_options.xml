@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_ixray_global_options_addon"> 
+		<text>IX-Ray Global options addon</text>
+	</string>
+
+	<string id="st_ixray_global_options"> 
+		<text>IX-Ray Global options</text>
+	</string>
+	
+	<string id="st_ixray_global_options_params"> 
+		<text>Global options parameters</text>
+	</string>
+	
+	<string id="st_ixray_global_options_draw_var_names"> 
+		<text>Show variable names for options</text>
+	</string>
+	
+	<string id="st_ixray_global_options__draw_debug"> 
+		<text>Draw A-Life debug</text>
+	</string>
+</string_table>

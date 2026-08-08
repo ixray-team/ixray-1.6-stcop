@@ -12,12 +12,20 @@
 		is_initialized()
 ]]
 
+
+-- black_option_rounded_rect_selected
+
+-- addon_background_selected
+--AddonItem:SetSelectedState(is_selected)
+
 local USE_FILE_LOG = true
 local USE_CONSOLE_LOG = false
+local USE_TIME_IN_LOGS = true
+local DEBUG_GAMEPAD_KEYBOARD_EMULATE = false
+
 local APPDATA_ALIAS = '$app_data_root$'
 local OPTIONS_FILE_NAME = "ixr_options.ixr"
 local DRAW_VAR_NAME = false
-local emulateGamepad = false
 
 local CONST_APPDATA_FOLDER = nil -- auto
 local options_scroll_wnd = nil
@@ -26,19 +34,21 @@ local ixr_options = {
 	options = {},
 	options_addon_info = {},
 	options_storage = {},
+	gamepad_supported_controlls = {
+		is_controlls_rendering_completed = false,
+		options_controlls = {},
+		addons = {},
+	},
 	options_storage_loaded = false,
 	update_bus = {},
 	initialized = false,
 	use_file_log = USE_FILE_LOG,
+	use_time_log = USE_TIME_IN_LOGS,
 	use_console_log = USE_CONSOLE_LOG,
 	main_menu_ref = nil,
-	gamepad_right_focus = false,
 	_counter = 0,
-	focusIndex = 1,
-	focusList = {},
 	__timer = 0,
 	dynamic_vars = {
-		first_log_record = true,
 		menu_opened = false,
 		is_callbacks_skip = false,
 		need_redraw = false,
@@ -64,7 +74,7 @@ local ixr_options = {
 		track_bar_height = 18,
 		track_bar_alpha = 128,
 		
-		option_plane_width = 620,
+		option_plane_width = 820,
 		option_plane_height = 40,
 	}
 }
@@ -275,11 +285,420 @@ function set_options_icon(icon_path)
 end
 
 function is_options_opened()
-    return ixr_options.is_options_opened()
+	return ixr_options.is_options_opened()
+end
+
+-- #############################################
+-- #			GAME PAD HOOKS 				   #
+-- #############################################
+
+-- обрабатываем нажатия
+function on_gamepad_key(key, action)
+	if not is_options_opened() then
+		return false
+	end
+	
+	local bind = dik_to_bind(key)
+	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
+	
+	if action and action ~= ui_events.WINDOW_KEY_PRESSED then
+		return false
+	end
+	
+	if bindUI == key_bindings.kUI_BACK then
+		return ixr_options.emulate_back()
+	elseif bindUI == key_bindings.kUI_ACCEPT then
+		return ixr_options.emulate_accept()
+	elseif bindUI == key_bindings.kUI_ACTION_2 then
+		return _save_options()
+	elseif bindUI == key_bindings.kUI_UP then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_UP)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			return ixr_options.emulate_up(false)
+		end
+	elseif bindUI == key_bindings.kUI_DOWN then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_DOWN)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			return ixr_options.emulate_down(false)
+		end
+	elseif bindUI == key_bindings.kUI_LEFT then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_LEFT)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			return ixr_options.emulate_left(false)
+		end
+	elseif bindUI == key_bindings.kUI_RIGHT then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_RIGHT)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			return ixr_options.emulate_right(false)
+		end
+	end
+	
+	return false
+end
+
+-- обрабатываем удержания
+function on_gamepad_key_hold(key, action)
+	if not is_options_opened() then
+		return false
+	end
+	
+	local bind = dik_to_bind(key)
+	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
+	
+	if action and action ~= ui_events.WINDOW_KEY_PRESSED then
+		return false
+	end
+	
+	if bindUI == key_bindings.kUI_UP then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_UP)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			return ixr_options.emulate_up(true)
+		end
+	elseif bindUI == key_bindings.kUI_DOWN then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_DOWN)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			return ixr_options.emulate_down(true)
+		end
+	elseif bindUI == key_bindings.kUI_LEFT then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_LEFT)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			return ixr_options.emulate_left(true)
+		end
+	elseif bindUI == key_bindings.kUI_RIGHT then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_RIGHT)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			return ixr_options.emulate_right(true)
+		end
+	end
+	
+	return false
+end
+
+function on_press_key(dik, action, is_hold)
+	if not DEBUG_GAMEPAD_KEYBOARD_EMULATE or not is_options_opened() then
+		return false
+	end
+	
+	if action and action ~= ui_events.WINDOW_KEY_PRESSED then
+		return false
+	end
+	
+	if dik == DIK_keys.DIK_ESCAPE then
+		on_ixr_options_exit_btn_clicked()
+		return true
+	else
+		if dik == DIK_keys.DIK_NUMPAD0 then
+			return ixr_options.emulate_back()
+		elseif dik == DIK_keys.DIK_NUMPAD5 then
+			return ixr_options.emulate_accept()
+		elseif dik == DIK_keys.DIK_NUMPAD8 then
+			return ixr_options.emulate_up(is_hold)
+		elseif dik == DIK_keys.DIK_NUMPAD2 then
+			return ixr_options.emulate_down(is_hold)
+		elseif dik == DIK_keys.DIK_NUMPAD4 then
+			return ixr_options.emulate_left(is_hold)
+		elseif dik == DIK_keys.DIK_NUMPAD6 then
+			return ixr_options.emulate_right(is_hold)
+		end
+	end
+	
+	return false
 end
 
 -- #######################################
--- #	 	 SYSTEM METHODS 	  	 	 #
+-- #	  UI GAMEPAD CONTROLL 	 	 	 #
+-- #######################################
+local selection_addon_index = 0
+local selected_option_index = 0
+local selection_row = 1
+local option_focused = false
+
+function ixr_options.emulate_back()
+	if option_focused then
+		ixr_options.reset_focused_options()
+	else
+		on_ixr_options_exit_btn_clicked()
+	end
+end
+
+function ixr_options.emulate_accept()
+	if not option_focused and selection_row > 1 then
+		if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
+			ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:Show(true)
+			option_focused = true
+		end
+	else
+		ixr_options.reset_focused_options()
+	end
+end
+
+function ixr_options.emulate_up(is_hold)
+	if option_focused then
+		return true
+	end
+	
+	if ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed then
+
+	end
+	
+	-- листаем аддоны
+	if selection_row == 1 then
+		if selection_addon_index > 0 and ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
+			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(false)
+		end
+		
+		selection_addon_index = selection_addon_index - 1
+		selected_option_index = 0
+		
+		if selection_addon_index < 1 then
+			selection_addon_index = 1
+		end
+		
+		if ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
+			get_controll("addons_list_box"):SetSelectedIndex(selection_addon_index - 1)
+			OnAddonItemClicked()
+			
+			local pos = get_controll("addons_list_box"):GetSelectedIndex() * get_controll("addons_list_box"):GetItemHeight();
+			pos = pos - get_controll("addons_list_box"):GetHeight()/2;
+			if pos < 0 then
+				pos = 0
+			end
+
+			get_controll("addons_list_box"):SetScrollPos(pos);
+	
+			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(true)
+		end
+	end
+	
+	-- листаем опции
+	if selection_row > 1 then
+		if ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed then			
+			if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(false)
+			end
+			
+			selected_option_index = selected_option_index - 1
+		
+			if selected_option_index < 1 then
+				selected_option_index = 1
+			end
+
+			local bar = get_controll("options_scroll"):ScrollBar()
+			local barHeight = bar:GetHeight()
+			local scroll = get_controll("options_scroll")
+			scroll:ScrollToItem(ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent(), 
+														math.floor(-barHeight / 2 + ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent():GetHeight() / 2))
+		
+			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(true)
+			end
+		end
+	end
+	
+	ixr_options.reset_focused_options()
+end
+
+function ixr_options.emulate_down(is_hold)
+	if option_focused then
+		return true
+	end
+	
+	-- листаем аддоны
+	if selection_row == 1 then
+		if selection_addon_index > 0 and ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
+			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(false)
+		end
+		
+		selection_addon_index = selection_addon_index + 1
+		selected_option_index = 0
+		
+		if selection_addon_index > #ixr_options.gamepad_supported_controlls.addons then
+			selection_addon_index = #ixr_options.gamepad_supported_controlls.addons
+		end
+		
+		if ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
+			get_controll("addons_list_box"):SetSelectedIndex(selection_addon_index - 1)
+			OnAddonItemClicked()
+			
+			local pos = get_controll("addons_list_box"):GetSelectedIndex() * get_controll("addons_list_box"):GetItemHeight();
+			pos = pos - get_controll("addons_list_box"):GetHeight() / 2;
+			if pos < 0 then
+				pos = 0
+			end
+
+			get_controll("addons_list_box"):SetScrollPos(pos);
+	
+			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(true)
+		end
+	end
+	
+	-- листаем опции
+	if selection_row > 1 then
+		if ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed then
+			if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(false)
+			end
+			
+			selected_option_index = selected_option_index + 1
+			
+			if selected_option_index > #ixr_options.gamepad_supported_controlls.options_controlls then
+				selected_option_index = #ixr_options.gamepad_supported_controlls.options_controlls
+			end
+
+			local bar = get_controll("options_scroll"):ScrollBar()
+			local barHeight = bar:GetHeight()
+			local scroll = get_controll("options_scroll")
+			scroll:ScrollToItem(ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent(), 
+														math.floor(-barHeight / 2 + ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent():GetHeight() / 2))
+					
+			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(true)
+			end
+		end
+	end
+	
+	ixr_options.reset_focused_options()
+end
+
+function ixr_options.emulate_left(is_hold)
+	--  выбираем аддоны либо контролы
+	if not option_focused then
+		selection_row = selection_row - 1
+		if selection_row < 1 then
+			selection_row = 1
+		end
+		
+		if selection_row == 1 then
+			get_controll("framewindow_gamepad"):SetWndPos(vector2():set(33, 108))
+			get_controll("framewindow_gamepad"):SetWndSize(vector2():set(250, 575))
+			ixr_options.reset_selection_options()
+			ixr_options.reset_focused_options()
+		end
+	end
+	
+	-- контрол выбран крутим в лево в право его значения
+	if option_focused then
+		if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref then
+			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref.on_gamepad_left then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref:on_gamepad_left(is_hold)
+			end
+		end
+	end
+end
+
+function ixr_options.emulate_right(is_hold)
+	--  выбираем аддоны либо контролы
+	if not option_focused then
+		if selection_addon_index == 0 then
+			return
+		end
+		
+		selection_row = selection_row + 1
+		if selection_row > 2 then
+			selection_row = 2
+		end
+		
+		if selected_option_index == 0 then
+			get_controll("framewindow_gamepad"):SetWndPos(vector2():set(320, 125))
+			get_controll("framewindow_gamepad"):SetWndSize(vector2():set(670, 550))
+			ixr_options.select_first_option()
+			ixr_options.reset_focused_options()
+		end
+	end
+	
+	-- контрол выбран крутим в лево в право его значения
+	if option_focused then
+		if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref then
+			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref.on_gamepad_right then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref:on_gamepad_right(is_hold)
+			end
+		end
+	end
+end
+
+function ixr_options.reset_focused_options()
+	option_focused = false
+	for i,v in ipairs(ixr_options.gamepad_supported_controlls.options_controlls) do
+		v.background_focused_controll_ref:Show(false)
+	end
+end
+
+function ixr_options.select_first_option()
+	ixr_options.gamepad_supported_controlls.options_controlls[1].background_selected_controll_ref:Show(true)
+	selected_option_index = 1
+end
+
+function ixr_options.reset_selection_options()
+	selected_option_index = 0
+	for i,v in ipairs(ixr_options.gamepad_supported_controlls.options_controlls) do
+		v.background_selected_controll_ref:Show(false)
+	end
+end
+
+-- #######################################
+-- #	   GAMEPAD COLLECT INFO 		 #
+-- #######################################
+-- событие перед выходом из опций чистит данные о контроллах (перед скрытием опций)
+function on_before_clear_controlls_and_addons_info_gamepads()
+	ixr_options.gamepad_supported_controlls = {
+		is_controlls_rendering_completed = false,
+		options_controlls = {},
+		addons = {},
+	}
+end
+
+-- контроллы отрендерены можно использовать метаданные (вызывается после отрисовки правой части опций)
+function on_controlls_rendering_completed()
+	ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed = true
+	
+	local addons = ixr_options.gamepad_supported_controlls.options_controlls
+	local controlls = ixr_options.gamepad_supported_controlls.addons
+end
+
+-- событие о чистке данных контролов для геймпада (вызывается перед отрисовкой правой части опций)
+function on_before_clear_controlls_info_gamepads()
+	ixr_options.gamepad_supported_controlls.options_controlls = {}
+	ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed = false
+end
+
+-- регистрирует информацию о контролле
+function register_controll_metadata_for_gamepad(script_file_name, variable_name, _metadata)
+	if ixr_options.gamepad_supported_controlls.options_controlls == nil then
+		ixr_options.gamepad_supported_controlls.options_controlls = {}
+	end
+
+	local idx = #ixr_options.gamepad_supported_controlls.options_controlls
+	table.insert(ixr_options.gamepad_supported_controlls.options_controlls, {
+		controll_type = _metadata.controll_type,
+		controll_ref = _metadata.controll_ref,
+		script_name = _metadata.script_name,
+		variable_name = _metadata.variable_name,
+		background_focused_controll_ref = _metadata.background_focused_controll_ref,
+		background_selected_controll_ref = _metadata.background_selected_controll_ref,
+		background_controll_ref = _metadata.background_controll_ref,
+		background_controll_color = _metadata.background_controll_color,
+		label_controll_ref = _metadata.label_controll_ref,
+		label_controll_color = _metadata.label_controll_color,
+		idx = idx + 1
+	})
+end
+
+-- регистрирует информацию об аддоне
+function register_addon_for_gamepad(script_file_name, ref)
+	if ixr_options.gamepad_supported_controlls.addons == nil then
+		ixr_options.gamepad_supported_controlls.addons = {}
+	end
+	
+	local idx = #ixr_options.gamepad_supported_controlls.addons
+	table.insert(ixr_options.gamepad_supported_controlls.addons, {
+		addon_controll_ref = ref,
+		script_file_name = script_file_name,
+		idx = idx + 1
+	})
+end
+
+-- #######################################
+-- #	 	 	SYSTEM METHODS 	  	 	 #
 -- #######################################
 function ixr_options.is_options_opened()
 	return ixr_options.dynamic_vars.menu_opened
@@ -290,27 +709,31 @@ function ixr_options.is_initialized()
 end
 
 function ixr_options.init()
+	IXRLogUseFileLog(ixr_options.use_file_log)
+	IXRLogUseConsoleLog(ixr_options.use_console_log)
+	IXRLogUseTimeInLog(ixr_options.use_time_log)
+	
 	if ixr_options.is_initialized() then
 		return true
 	end
 
 	ixr_options.initialized = false
 
-	ixr_options.toLog("[IXR OPTIONS] PREPARE INIT")
+	IXRLog("[IXR OPTIONS] PREPARE INIT")
 	
 	RegisterScriptCallback("on_ixr_autoloader_initialized", ixr_options.on_all_scripts_loaded)
 
 	ixr_options.initialized = true
 
-	ixr_options.toLog("[IXR OPTIONS] INITIALIZED")
+	IXRLog("[IXR OPTIONS] INITIALIZED")
 	
 	--[[
 	local addons_data = get_addons_list()
 
 	for i, addon_data in ipairs(addons_data) do
-		ixr_options.toLog("РђРґРґРѕРЅ " .. i .. ": " .. addon_data.addon_folder)
+		IXRLog("ADDON: " .. i .. ": " .. addon_data.addon_folder)
 		for j, script_name in ipairs(addon_data.script_files_names) do
-			ixr_options.toLog("  РЎРєСЂРёРїС‚ " .. j .. ": " .. script_name)
+			IXRLog("  ADDON‚ " .. j .. ": " .. script_name)
 		end
 	end
 	--]]
@@ -327,10 +750,31 @@ function _on_main_menu_update(_ref)
 		end
 	end
 	if _ref.main_xml ~= nil then
-		if emulateGamepad then
-			get_controll("framewindow_gamepad"):Show(ixr_options.is_options_opened())
-		else
-			get_controll("framewindow_gamepad"):Show(main_menu.in_controller_mode() and ixr_options.is_options_opened())
+		get_controll("framewindow_gamepad"):Show(main_menu.in_controller_mode() and ixr_options.is_options_opened())
+		
+		-- for gamepad legend
+		local text_accept		= get_menu_ref():GetStatic("framework_gp_accept")	
+		if text_accept then
+			text_accept:Show(selection_row > 1)
+		end
+
+		local text_lr		= get_menu_ref():GetStatic("framework_gp_lr")	
+		if text_lr then
+			if option_focused then
+				text_lr:SetTextST("st_ixray_framework_options_lr_focused")
+			else
+				text_lr:SetTextST("st_ixray_framework_options_lr")
+			end
+		end
+
+		local text_ud		= get_menu_ref():GetStatic("framework_gp_ud")	
+		if text_ud then
+			if selection_row == 1 then
+				text_ud:SetTextST("st_ixray_framework_addons_ud")
+			else
+				text_ud:SetTextST("st_ixray_framework_options_ud")
+			end
+			text_ud:Show(not option_focused)
 		end
 	end
 end
@@ -345,7 +789,7 @@ function _load_options()
 	end
 	
 	ixr_options.options_storage_loaded = true
-	ixr_options.toLog("[IXR OPTIONS] BEGIN LOAD OPTIONS BY FILE")
+	IXRLog("[IXR OPTIONS] BEGIN LOAD OPTIONS BY FILE")
 	local stored_options_string = ffx_io_utils.read_string_file_(_get_option_storage_path(), false)
 	if stored_options_string then
 		local tmp_opt_storage = ffx_json_lib.json_decode(stored_options_string) or {}
@@ -361,26 +805,29 @@ function _load_options()
 	
 		if need_resave then
 			ffx_io_utils.write_string_file(ffx_json_lib.json_encode(ixr_options.options_storage), _get_option_storage_path(), "w+")
-			ixr_options.toLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE [ACTUALIZE VERSION]")
+			IXRLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE [ACTUALIZE VERSION]")
 		else
 			ixr_options.options_storage = tmp_opt_storage
 		end
 		
-		ixr_options.toLog("[IXR OPTIONS] LOAD OLD OPTIONS FILE")
-		ixr_options.toLog("[IXR OPTIONS] LOADED [" .. tostring(ffx_table_utils.get_size(ixr_options.options_storage)) .. "] OPTIONS")
+		IXRLog("[IXR OPTIONS] LOAD OLD OPTIONS FILE")
+		IXRLog("[IXR OPTIONS] LOADED [" .. tostring(ffx_table_utils.get_size(ixr_options.options_storage)) .. "] OPTIONS")
 	else
 		ffx_io_utils.write_string_file(ffx_json_lib.json_encode(ixr_options.options_storage), _get_option_storage_path(), "w+")
-		ixr_options.toLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE")
+		IXRLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE")
 	end
-	ixr_options.toLog("[IXR OPTIONS] END LOAD OPTIONS BY FILE")
+	IXRLog("[IXR OPTIONS] END LOAD OPTIONS BY FILE")
 	
-	ixr_options.toLog("[IXR OPTIONS] DUMP:[ixr_options.options_storage]:\n\n" .. ffx_dump_utils.var_export(ixr_options.options_storage))
+	IXRLog("[IXR OPTIONS] DUMP:[ixr_options.options_storage]:")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
+	IXRLog(ffx_dump_utils.var_export(ixr_options.options_storage))
 end
 
 function _save_options()
 	_on_main_menu_update(get_menu_ref())
 	ffx_io_utils.write_string_file(ffx_json_lib.json_encode(ixr_options.options_storage), _get_option_storage_path(), "w+")
-	ixr_options.toLog("IXR Options saved ...")
+	IXRLog("IXR Options saved ...")
 end
 
 
@@ -389,15 +836,21 @@ end
 -- #######################################
 
 function ixr_options.on_all_scripts_loaded(_ref)
-	ixr_options.toLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS BEGIN\n\n")
+	IXRLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS BEGIN")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
 	
 	SendScriptCallback("on_init_ixr_options", ixr_options)
 	
-	ixr_options.toLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS END\n\n")
+	IXRLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS END")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
 	
 	if ixr_options.options_storage_loaded then
-		ixr_options.toLog("[IXR OPTIONS] BEGIN SEND EVENTS TO SCRIPTS BY LOADED VALUES\n\n")
-		--ixr_options.toLog("[IXR OPTIONS] DUMP:[ixr_options.options]:\n\n" .. ffx_dump_utils.var_export(ixr_options.options))
+		IXRLog("[IXR OPTIONS] BEGIN SEND EVENTS TO SCRIPTS BY LOADED VALUES")
+		IXRLogEmptyLine()
+		IXRLogEmptyLine()
+		--IXRLog("[IXR OPTIONS] DUMP:[ixr_options.options]:\n\n" .. ffx_dump_utils.var_export(ixr_options.options))
 		
 		for file_name, file_options in pairs(ixr_options.options) do
 			for index, option_data in pairs(file_options) do
@@ -415,13 +868,15 @@ function ixr_options.on_all_scripts_loaded(_ref)
 							option_data._callback(group_name, variable_name, actual_value, is_value_from_code)
 						end
 						
-						ixr_options.toLog( "[IXR OPTIONS] RUN CALLBACK::[" .. tostring(option_data.script_name) .. ".script] -> { group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .. "] actual_value:[" .. tostring(ffx_json_lib.json_encode(actual_value)) .. "]" )
+						IXRLog( "[IXR OPTIONS] RUN CALLBACK::[" .. tostring(option_data.script_name) .. ".script] -> { group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .. "] actual_value:[" .. tostring(ffx_json_lib.json_encode(actual_value)) .. "]" )
 					end
 				end
 			end
 		end
 
-		ixr_options.toLog("[IXR OPTIONS] END SEND EVENTS TO SCRIPTS BY LOADED VALUES\n\n")
+		IXRLog("[IXR OPTIONS] END SEND EVENTS TO SCRIPTS BY LOADED VALUES")
+		IXRLogEmptyLine()
+		IXRLogEmptyLine()
 	end
 end
 
@@ -485,7 +940,7 @@ end
 
 function ixr_options.register_option(group_name, variable_name, display_text, controll_data, _callback)
 	local script_name = ffx_callable_utils.find_caller_source(3)
-	ixr_options.toLog("[IXR OPTIONS]::[REGISTER]:: script_name:[" .. tostring(script_name) .. "] group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .."] controll_data:[" .. tostring(ffx_json_lib.json_encode(controll_data)) .."]")
+	IXRLog("[IXR OPTIONS]::[REGISTER]:: script_name:[" .. tostring(script_name) .. "] group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .."] controll_data:[" .. tostring(ffx_json_lib.json_encode(controll_data)) .."]")
 	
 	if ixr_options.options[script_name] == nil then
 		ixr_options.options[script_name] = {}
@@ -493,7 +948,7 @@ function ixr_options.register_option(group_name, variable_name, display_text, co
 
 	for k, v in pairs(ixr_options.options[script_name]) do
 		if v["variable_name"] == variable_name then
-			ixr_options.toLog("[IXR OPTIONS] SKIP DUPLICATE KEY: " .. tostring(script_name) .. "[" .. tostring(variable_name).. "]")
+			IXRLog("[IXR OPTIONS] SKIP DUPLICATE KEY: " .. tostring(script_name) .. "[" .. tostring(variable_name).. "]")
 			return
 		end
 	end
@@ -634,6 +1089,7 @@ function ixr_options.ceil_track_bar(default_value, min_value, max_value, value_o
 	}
 end
 
+
 -- #######################################
 -- #	 	 UI TOOLS METHODS 	 	 	 #
 -- #######################################
@@ -669,6 +1125,9 @@ function draw_options()
 end
 
 function hide_options()
+	-- очищаем данные о контроллах и аддонах для геймпада перед выходом
+	--on_before_clear_controlls_and_addons_info_gamepads()
+	
 	for k, v in pairs(get_menu_ref().ixr_controlls) do
 		v:Show(false)
 	end
@@ -682,12 +1141,20 @@ function register_static(name_controll, static, x, y, width, height, color)
 	get_controll(name_controll):SetTextureColor(color)
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
 function register_framewindow(name_controll, static, x, y, width, height)
 	set_controll(name_controll, get_options_xml():InitFrame(static, get_menu_ref()))
 	get_controll(name_controll):SetWndPos(vector2():set(x, y))
 	get_controll(name_controll):SetWndSize(vector2():set(width, height))
+	get_controll(name_controll):Show(false)
+	register_controll(name_controll)
+end
+
+function register_gamepad_legend(name_controll, static)
+	set_controll(name_controll, get_options_xml():InitGamepadLegend(static, get_menu_ref()))
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
 end
@@ -700,6 +1167,8 @@ function register_button(name_controll, static, x, y, width, height, _callback)
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
 	get_menu_ref():AddCallback(name_controll, ui_events.BUTTON_CLICKED, _callback, get_menu_ref())
+	
+	return get_controll(name_controll)
 end
 
 function register_text(name_controll, text_section, displayText, x, y, width, height, color)
@@ -710,6 +1179,8 @@ function register_text(name_controll, text_section, displayText, x, y, width, he
 	get_controll(name_controll):TextControl():SetTextColor(color)
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
 function register_list_box(name_controll, list_box, x, y, width, height, item_height)
@@ -722,6 +1193,8 @@ function register_list_box(name_controll, list_box, x, y, width, height, item_he
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
 	get_menu_ref():AddCallback(name_controll, ui_events.LIST_ITEM_CLICKED, this.OnAddonItemClicked,	get_menu_ref())
+	
+	return get_controll(name_controll)
 end
 
 function register_scroll_view(name_controll, scroll_section, x, y, width, height)
@@ -730,6 +1203,8 @@ function register_scroll_view(name_controll, scroll_section, x, y, width, height
 	get_controll(name_controll):SetWndSize(vector2():set(width, height))
     get_controll(name_controll):Show(false)
     register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
 function register_image(name_controll, img_path, x, y, width, height, alpha)
@@ -741,6 +1216,8 @@ function register_image(name_controll, img_path, x, y, width, height, alpha)
 	get_controll(name_controll):SetTextureColor(GetARGB(alpha, 255, 255, 255))
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
 function register_checkbox(name_controll, x, y, alpha, def_value, _ref, _callback, script_name, variable_name)
@@ -753,6 +1230,7 @@ function register_checkbox(name_controll, x, y, alpha, def_value, _ref, _callbac
 	set_controll(name_controll, IXRCheckBox(name_controll, x, y, alpha, def_value, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	
 	return get_controll(name_controll)
 end
 
@@ -766,6 +1244,7 @@ function register_textbox(name_controll, x, y, alpha, def_value, _ref, _callback
 	set_controll(name_controll, IXRTextBox(name_controll, x, y, alpha, def_value, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	
 	return get_controll(name_controll)
 end
 
@@ -779,6 +1258,7 @@ function register_combobox(name_controll, x, y, alpha, def_value, list_values, _
 	set_controll(name_controll, IXRComboBox(name_controll, x, y, alpha, def_value, list_values, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	
 	return get_controll(name_controll)
 end
 
@@ -791,6 +1271,7 @@ function register_numeric_up_down(name_controll, x, y, alpha, default_value, min
 	set_controll(name_controll, IXRNumericUpDown(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	
 	return get_controll(name_controll)
 end
 
@@ -803,6 +1284,7 @@ function register_track_bar(name_controll, x, y, alpha, default_value, min_value
 	set_controll(name_controll, IXRTrackBar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	
 	return get_controll(name_controll)
 end
 
@@ -829,7 +1311,6 @@ end
 
 function on_ixr_options_exit_btn_clicked()
 	ixr_options.dynamic_vars.menu_opened = false
-	set_addon_focus(false)
 	hide_options()
 	get_menu_ref().ixr_options_btn:Show(true)
 	if get_menu_ref().shniaga then
@@ -964,6 +1445,7 @@ function _on_main_menu_init_controlls(_ref)
 	--register_scroll_view("options_scroll", "scroll_v", 320, 270, 670, 400)
 	register_scroll_view("options_scroll", "scroll_v", 320, 125, 670, 550) -- (name_controll, scroll_section, x, y, width, height)
 	register_framewindow("framewindow_gamepad", "frame_window", 33, 108, 250, 575)
+	register_gamepad_legend("gamepad_legend", "gamepad_legend")
 	get_controll("options_scroll"):Show(false)
 end
 
@@ -988,6 +1470,9 @@ function on_draw_options(index, item)
 	local padding = 7
 	local alpha = 75
 	
+	-- Чистим данные контролов для геймпада
+	on_before_clear_controlls_info_gamepads()
+	
 	local cnt_ungroupped_controlls = #ungroupped_controlls
 	if cnt_ungroupped_controlls > 0 then
 		for i=1, cnt_ungroupped_controlls do
@@ -1005,6 +1490,9 @@ function on_draw_options(index, item)
 			end
 		end
 	end
+	
+	-- Ставим метку о том что генерация контролов завершена теперь доступна их метадата
+	on_controlls_rendering_completed()
 	
 	return true
 end
@@ -1037,9 +1525,6 @@ function OnAddonItemClicked()
 	
 	--SemiLog("selected:" .. tostring(index) .. " name:" .. tostring(item.addon_display_name))
 	
-	for key in pairs(ixr_options.focusList) do
-		ixr_options.focusList[key] = nil
-	end
 	get_controll("options_scroll"):Clear()
 	get_controll("options_scroll"):Show(false)
 	if on_draw_options(index, item) then
@@ -1147,7 +1632,7 @@ function pick_controll(option_data, option_bg, option_key_name)
 	end
 	
 	if controll_type == "track_bar" then
-		return register_track_bar(
+		return  register_track_bar(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.track_bar_width - 3.5,
 			4,
@@ -1163,7 +1648,6 @@ function pick_controll(option_data, option_bg, option_key_name)
 			variable_name
 		)
 	end
-	return nil
 end
 
 function add_single_ungroupped_option(option_index, padding, alpha, option_data)
@@ -1184,6 +1668,23 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		option_bg:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
 		option_bg:SetTextureColor(GetARGB(alpha, 225, 225, 225))
 		get_menu_ref():Register(option_bg, controll_option_bg_name)
+		fix_controll_size(option_bg)
+		
+		local option_bg_selected = get_options_xml():InitStatic("black_option_rounded_rect_selected", _shell)
+		option_bg_selected:SetWndPos(vector2():set(padding, padding))
+		option_bg_selected:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
+		option_bg_selected:SetTextureColor(GetARGB(alpha, 225, 225, 225))
+		option_bg_selected:Show(false)
+		get_menu_ref():Register(option_bg_selected, controll_option_bg_name.."_selected")
+		fix_controll_size(option_bg_selected)
+		
+		local option_bg_focused = get_options_xml():InitStatic("black_option_rounded_rect_focused", _shell)
+		option_bg_focused:SetWndPos(vector2():set(padding, padding))
+		option_bg_focused:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
+		option_bg_focused:SetTextureColor(GetARGB(alpha, 225, 225, 225))
+		option_bg_focused:Show(false)
+		get_menu_ref():Register(option_bg_focused, controll_option_bg_name.."_focused")
+		fix_controll_size(option_bg_focused)
 		
 		local displayText = "text_" .. tostring(option_index)
 		local ctrl_name = "txt_"  .. tostring(option_index)
@@ -1203,15 +1704,22 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		CTRLText:Show(true)
 		get_menu_ref():Register(CTRLText, "ixr_controll_label_"  .. tostring(option_index))
 		
-		local elem = pick_controll(option_data, option_bg, tostring(option_index))
-		
+		local controll_ref = pick_controll(option_data, option_bg, tostring(option_index))
+
 		local _metadata = ixr_options.get_metadata(option_data["script_name"], option_data["variable_name"])
+		_metadata.controll_type = option_data["controll_data"]["controll"]
+		_metadata.controll_ref = controll_ref
+		_metadata.script_name = option_data["script_name"]
+		_metadata.variable_name = option_data["variable_name"]
+		_metadata.background_focused_controll_ref = option_bg_focused
+		_metadata.background_selected_controll_ref = option_bg_selected
 		_metadata.background_controll_ref = option_bg
 		_metadata.background_controll_color = GetARGB(alpha, 225, 225, 225)
 		_metadata.label_controll_ref = CTRLText
 		_metadata.label_controll_color = GetARGB(255, 200, 200, 200)
 		ixr_options.set_metadata(option_data["script_name"], option_data["variable_name"], _metadata)
-		table.insert(ixr_options.focusList, {CTRLText, elem, option_bg} )
+		
+		register_controll_metadata_for_gamepad(option_data["script_name"], option_data["variable_name"], _metadata)
 	end)
 
 end
@@ -1251,6 +1759,23 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_bg:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
 		option_bg:SetTextureColor(GetARGB(alpha, 225, 225, 225))
 		get_menu_ref():Register(option_bg, controll_option_bg_name .. "_" .. tostring(i))
+		fix_controll_size(option_bg)
+		
+		local option_bg_selected = get_options_xml():InitStatic("black_option_rounded_rect_selected", group_bg)
+		option_bg_selected:SetWndPos(vector2():set(padding, padding + y_offset))
+		option_bg_selected:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
+		option_bg_selected:SetTextureColor(GetARGB(alpha, 225, 225, 225))
+		option_bg_selected:Show(false)
+		get_menu_ref():Register(option_bg_selected, controll_option_bg_name .. "_selected_" .. tostring(i))
+		fix_controll_size(option_bg_selected)
+		
+		local option_bg_focused = get_options_xml():InitStatic("black_option_rounded_rect_focused", group_bg)
+		option_bg_focused:SetWndPos(vector2():set(padding, padding + y_offset))
+		option_bg_focused:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
+		option_bg_focused:SetTextureColor(GetARGB(alpha, 225, 225, 225))
+		option_bg_focused:Show(false)
+		get_menu_ref():Register(option_bg_focused, controll_option_bg_name .. "_focused_" .. tostring(i))
+		fix_controll_size(option_bg_focused)
 		
 		local option_name_controll = get_options_xml():InitStatic("ixr_product_sans_12_l", option_bg)
 		option_name_controll:SetWndPos(vector2():set(padding, padding))
@@ -1266,17 +1791,24 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_name_controll:Show(true)
 		get_menu_ref():Register(option_name_controll, "ixr_option_name_label_"  .. tostring(option_index) .. "_" .. tostring(i))
 		
-		local elem = pick_controll(option_data, option_bg, tostring(option_index) .. "_" .. tostring(i))
+		local controll_ref = pick_controll(option_data, option_bg, tostring(option_index) .. "_" .. tostring(i))
 		local _metadata = ixr_options.get_metadata(option_data["script_name"], option_data["variable_name"])
+		_metadata.controll_type = option_data["controll_data"]["controll"]
+		_metadata.controll_ref = controll_ref
+		_metadata.script_name = option_data["script_name"]
+		_metadata.variable_name = option_data["variable_name"]
+		_metadata.background_focused_controll_ref = option_bg_focused
+		_metadata.background_selected_controll_ref = option_bg_selected
 		_metadata.background_controll_ref = option_bg
 		_metadata.background_controll_color = GetARGB(alpha, 225, 225, 225)
 		_metadata.label_controll_ref = option_name_controll
 		_metadata.label_controll_color = GetARGB(255, 200, 200, 200)
 		ixr_options.set_metadata(option_data["script_name"], option_data["variable_name"], _metadata)
+
+		register_controll_metadata_for_gamepad(option_data["script_name"], option_data["variable_name"], _metadata)
 		
 		y_offset = y_offset + option_bg:GetHeight() + padding
 		sum_height = sum_height + option_bg:GetHeight() + padding
-		table.insert(ixr_options.focusList, {option_name_controll, elem, option_bg} )
 	end
 	
 	local last_height = shell:GetHeight()
@@ -1395,14 +1927,6 @@ function IXRTrackBar:Update()
 	self:UpdateControllVisibility(metadata)
 end
 
-function IXRTrackBar:StepLeft()
-	self.controll_track_bar:StepLeft()
-end
-
-function IXRTrackBar:StepRight()
-	self.controll_track_bar:StepRight()
-end
-
 --[[
 metadata.background_controll_ref = option_bg
 metadata.background_controll_color =  GetARGB(alpha, 225, 225, 225)
@@ -1499,13 +2023,33 @@ function IXRTrackBar:OnChangeState()
 end
 
 function IXRTrackBar:SetValue(value)
-	self.value = value
-	self.controll_track_bar:SetFValue(self.value)
-	self:OnChangeState()
+	if value < self.min_value then
+		value = self.min_value
+	end
+	
+	if value > self.max_value then
+		value = self.max_value
+	end
+
+	if self.value ~= value then
+		self.value = value
+		self.controll_track_bar:SetFValue(self.value)
+		self:OnChangeState()
+	end
 end
 
 function IXRTrackBar:GetValue()
 	return self.value or 0
+end
+
+-- for game pad events
+function IXRTrackBar:on_gamepad_left(is_hold)
+	self:SetValue(self:GetValue() - self.value_offset)
+end
+
+-- for game pad events
+function IXRTrackBar:on_gamepad_right(is_hold)
+	self:SetValue(self:GetValue() + self.value_offset)
 end
 
 -- #########################################################################################################
@@ -1667,6 +2211,16 @@ function IXRNumericUpDown:OnChangeState()
 		self.on_change_callback(self:GetValue(), self.controll_name, self.is_pushed_from_code)
 	end
 	self.is_pushed_from_code = false
+end
+
+-- for game pad events
+function IXRNumericUpDown:on_gamepad_left(is_hold)
+	self:LeftArrowClick()
+end
+
+-- for game pad events
+function IXRNumericUpDown:on_gamepad_right(is_hold)
+	self:RightArrowClick()
 end
 
 -- #########################################################################################################
@@ -1924,6 +2478,16 @@ function IXRComboBox:OnChangeState()
 	self.is_pushed_from_code = false
 end
 
+-- for game pad events
+function IXRComboBox:on_gamepad_left(is_hold)
+	self:LeftArrowClick()
+end
+
+-- for game pad events
+function IXRComboBox:on_gamepad_right(is_hold)
+	self:RightArrowClick()
+end
+
 -- #########################################################################################################
 -- 												TEXT BOX
 -- #########################################################################################################
@@ -2021,6 +2585,14 @@ function IXRTextBox:GetValue()
 	self.value = self.edit_box:GetText()
 
 	return self.value
+end
+
+-- for game pad events
+function IXRTextBox:on_gamepad_left(is_hold)
+end
+
+-- for game pad events
+function IXRTextBox:on_gamepad_right(is_hold)
 end
 
 -- #########################################################################################################
@@ -2141,6 +2713,16 @@ function IXRCheckBox:IsChecked()
 	return self.is_checked
 end
 
+-- for game pad events
+function IXRCheckBox:on_gamepad_left(is_hold)
+	self:SetState(false)
+end
+
+-- for game pad events
+function IXRCheckBox:on_gamepad_right(is_hold)
+	self:SetState(true)
+end
+
 -- #########################################################################################################
 -- 												ADDON ITEM
 -- #########################################################################################################
@@ -2184,6 +2766,12 @@ function AddonItem:__init(wnd_size, icon_path, script_name, color_option_title, 
 	self.addon_background:SetWndPos(vector2():set(5, 5))
 	self.addon_background:SetWndSize(vector2():set(222, 70))
 	self.addon_background:SetTextureColor(GetARGB(75, 255, 255, 255))
+	
+	self.addon_background_selected = get_options_xml():InitStatic("addon_background_selected", self)
+	self.addon_background_selected:SetStretchTexture(true)
+	self.addon_background_selected:SetWndPos(vector2():set(5, 5))
+	self.addon_background_selected:SetWndSize(vector2():set(222, 70))
+	self.addon_background_selected:SetTextureColor(GetARGB(75, 255, 255, 255))
 	
 	self.addon_icon = get_options_xml():InitStatic("addon_icon", self)
 	self.addon_icon:InitTexture(self.icon_path)
@@ -2240,7 +2828,24 @@ function AddonItem:__init(wnd_size, icon_path, script_name, color_option_title, 
 	self:add_counter()
 	
 	self:SetWndSize(vector2():set(100, wnd_size.y))
+	
 	self.addon_background:SetWndSize(vector2():set(222, 90))
+	self.addon_background_selected:SetWndSize(vector2():set(222, 90))
+
+	self:SetSelectedState(false)
+	
+	-- for gamepads
+	register_addon_for_gamepad(script_name, self)
+end
+
+function AddonItem:SetSelectedState(is_selected)
+	if is_selected then
+		self.addon_background:Show(false)
+		self.addon_background_selected:Show(true)
+	else
+		self.addon_background:Show(true)
+		self.addon_background_selected:Show(false)
+	end
 end
 
 function AddonItem:add_counter()
@@ -2262,17 +2867,6 @@ end
 function _find_appdata_folder()
 	if CONST_APPDATA_FOLDER == nil then
 		CONST_APPDATA_FOLDER = getFS():update_path(APPDATA_ALIAS, '')
-	end
-end
-
-function ixr_options.toLog(text)
-	if ixr_options.use_file_log then
-		ffx_dump_utils.write_to_file_log(text, ixr_options.dynamic_vars.first_log_record)
-		ixr_options.dynamic_vars.first_log_record = false
-	end
-	
-	if ixr_options.use_console_log then
-		ffx_dump_utils.write_to_console_log(text)
 	end
 end
 
@@ -2356,282 +2950,4 @@ function get_scripts_for_addon(addon_path)
 	end
 	
 	return script_files
-end
-
-function OnKeyboard(dik, keyboard_action)
-	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-		if dik == DIK_keys.DIK_ESCAPE then
-			if get_addon_focus() then
-				set_addon_focus(false)
-			else
-				on_ixr_options_exit_btn_clicked()
-			end
-		elseif dik == DIK_keys.DIK_NUMPAD0 then
-			if emulateGamepad then
-				emulateGamepad = false
-			else
-				emulateGamepad = true
-			end
-		elseif dik == DIK_keys.DIK_NUMPAD5 then
-			if not get_addon_focus() and get_controll("addons_list_box"):GetSelectedItem() ~= nil then
-				set_addon_focus(true)
-			elseif get_addon_focus() then
-				local element = ixr_options.focusList[ixr_options.focusIndex][2]
-				OnGamepadAccept(element)
-			end
-		elseif dik == DIK_keys.DIK_NUMPAD8 then
-			action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_UP)
-			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
-				if get_addon_focus() then
-					OnElementChangeSelection(-1, true)
-				else
-					get_controll("addons_list_box"):PrevItem()
-				end
-			end
-		elseif dik == DIK_keys.DIK_NUMPAD2 then
-			action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_DOWN)
-			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
-				if get_addon_focus() then
-					OnElementChangeSelection(1, true)
-				else
-					get_controll("addons_list_box"):NextItem()
-				end
-			end
-		elseif dik == DIK_keys.DIK_NUMPAD4 then
-			if get_addon_focus() then
-				local element = ixr_options.focusList[ixr_options.focusIndex][2]
-				OnElementGpadPress(element, false)
-				action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_LEFT)
-			end
-		elseif dik == DIK_keys.DIK_NUMPAD6 then
-			if get_addon_focus() then
-				local element = ixr_options.focusList[ixr_options.focusIndex][2]
-				OnElementGpadPress(element, true)
-				action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_RIGHT)
-			end
-		end
-	end
-end
-
-function OnGamepadKey(key, gamepad_action)
-	local bind = dik_to_bind(key)
-	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
-	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
-		if bind == key_bindings.kQUIT then
-			on_ixr_options_exit_btn_clicked()
-		elseif bindUI == key_bindings.kUI_BACK then
-			if get_addon_focus() then
-				set_addon_focus(false)
-			else
-				on_ixr_options_exit_btn_clicked()
-			end
-		elseif bindUI == key_bindings.kUI_ACCEPT then
-			if not get_addon_focus() and get_controll("addons_list_box"):GetSelectedItem() ~= nil then
-				set_addon_focus(true)
-			elseif get_addon_focus() then
-				local element = ixr_options.focusList[ixr_options.focusIndex][2]
-				OnGamepadAccept(element)
-			end
-		elseif bindUI == key_bindings.kUI_UP then
-			action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_UP)
-			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
-				if get_addon_focus() then
-					OnElementChangeSelection(-1, true)
-				else
-					get_controll("addons_list_box"):PrevItem()
-				end
-			end
-		elseif bindUI == key_bindings.kUI_DOWN then
-			action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_DOWN)
-			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
-				if get_addon_focus() then
-					OnElementChangeSelection(1, true)
-				else
-					get_controll("addons_list_box"):NextItem()
-				end
-			end
-		elseif bindUI == key_bindings.kUI_LEFT then
-			if get_addon_focus() then
-				local element = ixr_options.focusList[ixr_options.focusIndex][2]
-				OnElementGpadPress(element, false)
-				action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_LEFT)
-			end
-		elseif bindUI == key_bindings.kUI_RIGHT then
-			if get_addon_focus() then
-				local element = ixr_options.focusList[ixr_options.focusIndex][2]
-				OnElementGpadPress(element, true)
-				action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_RIGHT)
-			end
-		end
-	end
-end
-
-function OnGamepadKeyHold(key)
-	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
-
-	if bindUI == key_bindings.kUI_DOWN then
-		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_DOWN)
-		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
-			if get_addon_focus() then
-				OnElementChangeSelection(1, false)
-			else
-				get_controll("addons_list_box"):NextItem()
-			end
-		end
-	elseif bindUI == key_bindings.kUI_UP then
-		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_UP)
-		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
-			if get_addon_focus() then
-				OnElementChangeSelection(-1, false)
-			else
-				get_controll("addons_list_box"):PrevItem()
-			end
-		end
-	elseif bindUI == key_bindings.kUI_LEFT then
-		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_LEFT)
-		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
-			local element = ixr_options.focusList[ixr_options.focusIndex][2]
-			OnElementGpadPress(element, false)
-		end
-	elseif bindUI == key_bindings.kUI_RIGHT then
-		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_RIGHT)
-		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
-			local element = ixr_options.focusList[ixr_options.focusIndex][2]
-			OnElementGpadPress(element, true)
-		end
-	end
-end
-
-function set_addon_focus(isRight)
-	ixr_options.gamepad_right_focus = isRight
-	if isRight then
-		get_controll("framewindow_gamepad"):SetWndPos(vector2():set(320, 125))
-		get_controll("framewindow_gamepad"):SetWndSize(vector2():set(670, 550))
-	else
-		get_controll("framewindow_gamepad"):SetWndPos(vector2():set(33, 108))
-		get_controll("framewindow_gamepad"):SetWndSize(vector2():set(250, 575))
-		
-	end
-end
-
-function get_addon_focus()
-	return ixr_options.gamepad_right_focus
-end
-
-function OnGamepadAccept(element)
-	local elementInfo = class_info(element)
-	local elementClass = elementInfo.name
-	
-	if elementClass == 'IXRCheckBox' then
-		element:SwitchState()
-	end
-end
-
-function OnElementGpadPress(element, right)
-	local elementInfo = class_info(element)
-	local elementClass = elementInfo.name
-
-	if elementClass == 'IXRTrackBar' then
-		if right then
-			element:StepRight()
-		else
-			element:StepLeft()
-		end
-	elseif elementClass == 'IXRNumericUpDown' then
-		if right then 
-			element:RightArrowClick()
-		else
-			element:LeftArrowClick()
-		end
-	elseif elementClass == 'IXRComboBox' then
-		if right then
-			element:RightArrowClick()
-		else
-			element:LeftArrowClick()
-		end
-	end
-end
-
-function get_isHidden(newFocusIndex)
-	local Element = ixr_options.focusList[newFocusIndex][3]
-	local isHidden = false
-	if Element ~= nil then
-		isHidden = Element.hidden
-	end
-	
-	if isHidden == nil then
-		isHidden = false
-	end
-
-	return isHidden
-end
-
-function OnElementChangeSelection(offset, loop)
-
-	local eltCount = #ixr_options.focusList
-	local newFocusIndex = ixr_options.focusIndex + offset
-	
-	if newFocusIndex > eltCount then
-		if loop then
-			newFocusIndex = 1
-		else
-			return false
-		end
-	elseif newFocusIndex < 1 then
-		if loop then
-			newFocusIndex = eltCount
-		else
-			return false
-		end
-	end
-	
-	OnElementSetSelected(ixr_options.focusIndex, false)
-	focusIndex = newFocusIndex
-	SemiLog(tostring(focusIndex))
-	OnElementSetSelected(ixr_options.focusIndex, true)
-	return true
-end
-
-function OnElementSetSelected(eltIndex, on)
-	local eltCount = #ixr_options.focusList
-	
-	if eltIndex < 1 or eltIndex > eltCount then
-		SemiLog("fuck you, index "..eltIndex.." count "..eltCount)
-		return
-	end
-	
-	local focusRecord = ixr_options.focusList[eltIndex]
-	local element = focusRecord[2]
-	local elementInfo = class_info(element)
-	local elementClass = elementInfo.name
-	
-	if elementClass == "CUI3tButton" 
-	or elementClass == "CUIComboBox" 
-	or elementClass == "CUICheckButton" 
-	or elementClass == "CUITrackBar" 
-	then
-		element:SetHighlighted(on)
-	end
-	
-	local caption = focusRecord[3]
-	
-	if on then
-		caption:SetTextureColor(GetARGB(255, 225, 225, 225))
-		
-		--for advanced video settings, make autoscroll		
-		local elementParent = focusRecord[1]:GetParent()
-		
-		local scroll = get_controll("options_scroll")
-		local lpos = scroll:GetMinScrollPos()
-		local rpos = scroll:GetMaxScrollPos()
-		local lrdif = (rpos - lpos)
-			
-		local ratio = elementParent:GetWndPos().y / get_controll("options_scroll"):GetPadSize().y
-			
-		local spos = lpos + lrdif * ratio - lrdif * (3 / eltCount)
-			
-		get_controll("options_scroll"):SetScrollPos(spos)
-	else
-		caption:SetTextureColor(GetARGB(112, 225, 225, 225))
-	end
 end
