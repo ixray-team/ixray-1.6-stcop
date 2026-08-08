@@ -16,10 +16,15 @@ CPPEffectorControllerAura::CPPEffectorControllerAura(const SPPInfo &ppi, u32 tim
 	m_snd_left.clone		(snd_left,st_Effect,sg_SourceType);	
 	m_snd_right.clone		(snd_right,st_Effect,sg_SourceType);	
 
+#ifdef IXR_HYPESOUND
 	m_snd_left.play	(Actor(), sm_2D);
-	//m_snd_left.set_panning(1.0, 0.0);
+	m_snd_left.set_panning(1.0, 0.0);
 	m_snd_right.play	(Actor(), sm_2D);
-	//m_snd_right.set_panning(0.0, 1.0);
+	m_snd_right.set_panning(0.0, 1.0);
+#else
+	m_snd_left.play_at_pos	(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
+	m_snd_right.play_at_pos	(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
+#endif
 }
 
 void CPPEffectorControllerAura::switch_off()
@@ -52,10 +57,15 @@ bool CPPEffectorControllerAura::update()
 	// start new or play again?
 	if (!m_snd_left.is_playing() && !m_snd_right.is_playing() && !g_pGamePersistent->m_pMainMenu->IsActive()) 
 	{
+#ifdef IXR_HYPESOUND
 		m_snd_left.play(Actor(), sm_2D);
-		//m_snd_left.set_panning(1.0, 0.0);
+		m_snd_left.set_panning(1.0, 0.0);
 		m_snd_right.play(Actor(), sm_2D);
-		//m_snd_right.set_panning(0.0, 1.0);
+		m_snd_right.set_panning(0.0, 1.0);
+#else
+		m_snd_left.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
+		m_snd_right.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
+#endif
 	} 
 
 	if (m_snd_left.is_playing())	m_snd_left.set_volume	(m_factor);
