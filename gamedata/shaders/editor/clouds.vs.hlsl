@@ -29,7 +29,7 @@ vf main(vi v)
     o.tc0 = _0;
     o.tc1 = _1;
 
-    o.color = v.color;
+    o.color = unpack_D3DCOLOR(v.color);
     o.color.w *= pow(v.p.y, 25.0f);
 
     return o;
