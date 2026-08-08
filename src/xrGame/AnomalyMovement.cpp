@@ -122,9 +122,9 @@ void TAnomalyMovement::Update(CGameObject* m_best_magnetic_target, bool isUpdate
 	}
 	else if (m_use_movement_always_mode)
 	{
-		float dist_to_target = XFORM().c.distance_to_xz_sqr(m_target_position);
+		float dist_to_target = XFORM().c.distance_to_xz(m_target_position);
 
-		if (m_best_magnetic_target == nullptr && ((m_target_position.x == 0.f && m_target_position.y == 0.f && m_target_position.z == 0.f) || (dist_to_target <= m_currentAnomalyObject->Radius() * 0.5)))
+		if (m_best_magnetic_target == nullptr && ((m_target_position.x == 0.f && m_target_position.y == 0.f && m_target_position.z == 0.f) || (dist_to_target <= (m_currentAnomalyObject->Radius() * 0.5) )))
 		{
 			m_target_position.x = Random.randF(min.x, max.x);
 			m_target_position.z = Random.randF(min.z, max.z);
@@ -148,23 +148,33 @@ void TAnomalyMovement::Update(CGameObject* m_best_magnetic_target, bool isUpdate
 				float rq_range = R.range;
 				if (rq_range > m_currentAnomalyObject->Radius())
 				{
-					rq_range -= m_currentAnomalyObject->Radius();
+				//	rq_range -= m_currentAnomalyObject->Radius();
 				}
 
-				if (rq_range > 0.5) {
-					m_target_position.mad(XFORM().c, dir, rq_range);
+				if (rq_range > m_currentAnomalyObject->Radius() * 0.5)
+				{
+					m_target_position.mad(pos, dir, rq_range);
 				}
 			}
 
-			m_target_position.y = GetLVPos(m_target_position).y + 0.25;
+			m_target_position.y = GetLVPos(m_target_position).y + 0.5;
 		}
 
 		MoveToFromDelta(m_target_position, m_movement_speed);
 	}
 
-	if (!m_use_movement_always_mode && m_best_magnetic_target == nullptr && m_timer_magnetic_on_take_artefacts <= 0.f && XFORM().c.distance_to_xz_sqr(m_initial_spawn_position) > 0.5)
+	if (!m_use_movement_always_mode && m_best_magnetic_target == nullptr && m_timer_magnetic_on_take_artefacts <= 0.f && XFORM().c.distance_to_xz(m_initial_spawn_position) > m_currentAnomalyObject->Radius() * 0.5)
 	{
 		MoveToFromDelta(m_initial_spawn_position, m_movement_speed);
+	}
+
+	if (m_use_movement_always_mode)
+	{	
+		if (lastPosition.distance_to(XFORM().c) <= EPS_L)
+		{
+			m_target_position.set(0, 0, 0);
+		}
+		lastPosition.set(XFORM().c);
 	}
 }
 
