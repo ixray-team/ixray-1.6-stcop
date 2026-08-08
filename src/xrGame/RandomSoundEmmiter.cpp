@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "RandomSoundEmmiter.h"
 
+#pragma optimize("", off)
+
 CRandomSoundEmmiter::CRandomSoundEmmiter(const char* section, const char* soundParameter, esound_type _sound_type, int _game_type)
 {
 	sound_type = _sound_type;
@@ -10,8 +12,6 @@ CRandomSoundEmmiter::CRandomSoundEmmiter(const char* section, const char* soundP
 
 void CRandomSoundEmmiter::Load(const char* section, const char* soundParameter)
 {
-	soundsArray.clear();
-
 	if (pSettings->line_exist(section, soundParameter))
 	{
 		xr_string unsplittedPaths = pSettings->r_string(section, soundParameter);
@@ -30,18 +30,19 @@ void CRandomSoundEmmiter::Stop()
 {
 	for (ref_sound& sound : soundsArray)
 	{
-		if (sound.is_playing()) {
+		if (sound.handle() && sound.is_playing())
+		{
 			sound.stop();
 		}
 	}
 }
 
-
 bool CRandomSoundEmmiter::IsPlaying()
 {
 	for (ref_sound& sound : soundsArray)
 	{
-		if (sound.is_playing()) {
+		if (sound.handle() && sound.is_playing())
+		{
 			return true;
 		}
 	}
@@ -53,7 +54,8 @@ void CRandomSoundEmmiter::UpdatePosition(const Fvector& pos)
 {
 	for (ref_sound& sound : soundsArray)
 	{
-		if (sound.is_playing() && sound._feedback()) {
+		if (sound.handle() && sound.is_playing() && sound._feedback())
+		{
 			sound.set_position(pos);
 		}
 	}
@@ -63,7 +65,10 @@ void CRandomSoundEmmiter::UpdateVolume(float volume)
 {
 	for (ref_sound& sound : soundsArray)
 	{
-		sound.set_volume(volume);
+		if (sound.handle())
+		{
+			sound.set_volume(volume);
+		}
 	}
 }
 
@@ -71,8 +76,11 @@ void CRandomSoundEmmiter::PlayRandomSound(CObject* O, const Fvector& pos, u32 fl
 {
 	if (!soundsArray.empty())
 	{
-		ref_sound snd = soundsArray[::Random.randI(soundsArray.size())];
-		snd.play_at_pos(O, pos, flags, delay);
-		snd.set_volume(volume);
+		ref_sound snd = soundsArray[::Random.randI(soundsArray.size() -1)];
+		if (snd.handle())
+		{
+			snd.play_at_pos(O, pos, flags, delay);
+			snd.set_volume(volume);
+		}
 	}
 }
