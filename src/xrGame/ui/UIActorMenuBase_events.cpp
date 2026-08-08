@@ -90,8 +90,14 @@ void CUIActorMenuBase::SendEvent_ActivateSlot(u16 slot, u16 recipient)
 
 void CUIActorMenuBase::SendEvent_Item2Slot(PIItem pItem, u16 recipient, u16 slot_id)
 {
-	if(pItem->parent_id()!=recipient)
-		move_item_from_to			(pItem->parent_id(), recipient, pItem->object_id());
+	if (pItem->parent_id() != recipient)
+	{
+		if (!GetInventoryOwner()->inventory().CanTakeItem(pItem))
+		{
+			return;
+		}
+		move_item_from_to(pItem->parent_id(), recipient, pItem->object_id());
+	}
 
 	NET_Packet						P;
 	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM2SLOT, pItem->object().H_Parent()->ID());
@@ -105,8 +111,14 @@ void CUIActorMenuBase::SendEvent_Item2Slot(PIItem pItem, u16 recipient, u16 slot
 
 void CUIActorMenuBase::SendEvent_Item2Belt(PIItem pItem, u16 recipient)
 {
-	if(pItem->parent_id()!=recipient)
-		move_item_from_to			(pItem->parent_id(), recipient, pItem->object_id());
+	if (pItem->parent_id() != recipient)
+	{
+		if (!GetInventoryOwner()->inventory().CanTakeItem(pItem))
+		{
+			return;
+		}
+		move_item_from_to(pItem->parent_id(), recipient, pItem->object_id());
+	}
 
 	NET_Packet						P;
 	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM2BELT, pItem->object().H_Parent()->ID());
@@ -119,8 +131,14 @@ void CUIActorMenuBase::SendEvent_Item2Belt(PIItem pItem, u16 recipient)
 
 void CUIActorMenuBase::SendEvent_Item2Ruck(PIItem pItem, u16 recipient)
 {
-	if(pItem->parent_id()!=recipient)
-		move_item_from_to			(pItem->parent_id(), recipient, pItem->object_id());
+	if (pItem->parent_id() != recipient)
+	{
+		if (!GetInventoryOwner()->inventory().CanTakeItem(pItem))
+		{
+			return;
+		}
+		move_item_from_to(pItem->parent_id(), recipient, pItem->object_id());
+	}
 
 	NET_Packet						P;
 	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM2RUCK, pItem->object().H_Parent()->ID());
@@ -133,8 +151,14 @@ void CUIActorMenuBase::SendEvent_Item2Ruck(PIItem pItem, u16 recipient)
 
 void CUIActorMenuBase::SendEvent_Item_Eat(PIItem pItem, u16 recipient)
 {
-	if(pItem->parent_id()!=recipient)
-		move_item_from_to			(pItem->parent_id(), recipient, pItem->object_id());
+	if (pItem->parent_id() != recipient)
+	{
+		if (!GetInventoryOwner()->inventory().CanTakeItem(pItem))
+		{
+			return;
+		}
+		move_item_from_to(pItem->parent_id(), recipient, pItem->object_id());
+	}
 
 	NET_Packet						P;
 	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM_EAT, recipient);
@@ -303,6 +327,59 @@ void CUIActorMenuBase::UnloadWeapon(CWeaponMagazined* pWpn)
 		P.w_u8(0);
 		CGameObject::u_EventSend(P);
 	}
+}
+
+void CUIActorMenuBase::UnloadWeaponItem(CWeaponMagazined* pWpn)
+{
+	if (!pWpn)
+		return;
+
+	UnloadWeapon(pWpn);
+	if (!pWpn->IsGrenadeMode())
+	{
+		pWpn->UnloadChamber();
+	}
+
+	pWpn->m_bHaveShell = false;
+	pWpn->m_bNeedPumpState = false;
+}
+
+void CUIActorMenuBase::UnloadAllWeaponsFromRuck()
+{
+	if (!GetInventoryOwner())
+		return;
+
+	if (m_currMenuMode != mmInventory)
+		return;
+
+	if (!IsGameTypeSingleCompatible())
+		return;
+
+	bool unloaded_any = false;
+	TIItemContainer ruck_list = GetInventoryOwner()->inventory().m_ruck;
+	for (PIItem item : ruck_list)
+	{
+		CWeaponMagazined* weap_mag = item ? item->cast_weapon_magazined() : nullptr;
+		if (!weap_mag)
+			continue;
+
+		const bool can_unload =
+			weap_mag->GetAmmoElapsed() ||
+			(weap_mag->IsChamber() && weap_mag->GetAmmoChamberElapsed());
+		if (!can_unload)
+			continue;
+
+		UnloadWeaponItem(weap_mag);
+		unloaded_any = true;
+	}
+
+	if (unloaded_any)
+	{
+		PlaySnd(eUnloadMagazine);
+	}
+
+	UpdateActorBagList();
+	UpdateConditionProgressBars();
 }
 
 void CUIActorMenuBase::TransferItemsMp(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying)
@@ -668,6 +745,10 @@ bool CUIActorMenuBase::TryUseItem( CUICellItem* cell_itm )
 	u16 recipient = GetInventoryOwner()->object_id();
 	if ( item->parent_id() != recipient )
 	{
+		if (!GetInventoryOwner()->inventory().CanTakeItem(item))
+		{
+			return false;
+		}
 		cell_itm->OwnerList()->RemoveItem( cell_itm, false );
 	}
 
@@ -718,6 +799,10 @@ bool CUIActorMenuBase::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 	PIItem	iitem							= (PIItem)itm->m_pData;
 
 	bool b_own_item							= (iitem->parent_id()==GetInventoryOwner()->object_id());
+	if (!b_own_item && !GetInventoryOwner()->inventory().CanTakeItem(iitem))
+	{
+		return false;
+	}
 	if (slot_id==HELMET_SLOT)
 	{
 		CCustomOutfit* pOutfit = GetInventoryOwner()->GetOutfit();
@@ -934,6 +1019,10 @@ bool CUIActorMenuBase::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 {
 	PIItem	iitem						= (PIItem)itm->m_pData;
 	bool b_own_item						= (iitem->parent_id()==GetInventoryOwner()->object_id());
+	if (!b_own_item && !GetInventoryOwner()->inventory().CanTakeItem(iitem))
+	{
+		return false;
+	}
 
 	if(GetInventoryOwner()->inventory().CanPutInBelt(iitem))
 	{
@@ -1046,29 +1135,38 @@ void CUIActorMenuBase::TakeAllCurrentItem(u32 item_amount)
 
 	for (u32 i = 0; i < childrenToTake; ++i)
 	{
-		CUICellItem* child_itm = CurrentItem()->PopChild(nullptr);
+		CUICellItem* child_itm = CurrentItem()->Child(0);
 		PIItem child_iitm = (PIItem)child_itm->m_pData;
+		if (!GetInventoryOwner()->inventory().CanTakeItem(child_iitm))
+		{
+			break;
+		}
+
+		child_itm = CurrentItem()->PopChild(nullptr);
+		child_iitm = (PIItem)child_itm->m_pData;
 		move_item_from_to(child_iitm->parent_id(), GetInventoryOwner()->object_id(), child_iitm->object_id());
 		GetActorList()->SetItem(child_itm);
 		if (GetPartner() || GetInvBox())
 		{
 			ColorizeItem(child_itm, m_currMenuMode == mmTrade ? !CanMoveToPartner(child_iitm) : false);
 		}
-
 	}
 
 	if (toTake > childCount)
 	{
 		CUICellItem* parent_itm = CurrentItem();
 		PIItem parent_iitm = CurrentIItem();
-		move_item_from_to(parent_iitm->parent_id(), GetInventoryOwner()->object_id(), parent_iitm->object_id());
-		parent_itm = deadBodyList->RemoveItem(parent_itm, true);
-		if (parent_itm)
+		if (GetInventoryOwner()->inventory().CanTakeItem(parent_iitm))
 		{
-			GetActorList()->SetItem(parent_itm);
-			if (GetPartner() || GetInvBox())
+			move_item_from_to(parent_iitm->parent_id(), GetInventoryOwner()->object_id(), parent_iitm->object_id());
+			parent_itm = deadBodyList->RemoveItem(parent_itm, true);
+			if (parent_itm)
 			{
-				ColorizeItem(parent_itm, m_currMenuMode == mmTrade ? !CanMoveToPartner(parent_iitm) : false);
+				GetActorList()->SetItem(parent_itm);
+				if (GetPartner() || GetInvBox())
+				{
+					ColorizeItem(parent_itm, m_currMenuMode == mmTrade ? !CanMoveToPartner(parent_iitm) : false);
+				}
 			}
 		}
 	}

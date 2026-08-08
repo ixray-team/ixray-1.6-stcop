@@ -33,6 +33,7 @@
 #include "ai/crow/ai_crow.h"
 #include "ai/monsters/bloodsucker/bloodsucker.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
+#include "WeaponAmmo.h"
 
 #include <algorithm>
 
@@ -2148,6 +2149,17 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, u32 ParentID)
 	++l_type; 
 	l_type							%= m_ammoTypes.size();
 
+	CObject* parentObj = nullptr;
+	if (ParentID != 0xffffffff)
+	{
+		parentObj = Level().Objects.net_Find((u16)ParentID);
+	}
+	if (!parentObj)
+	{
+		parentObj = H_Parent();
+	}
+	CGameObject* parentGO = parentObj ? parentObj->cast_game_object() : nullptr;
+
 	CSE_Abstract *D					= F_entity_Create(ammoSect);
 
 	{	
@@ -2156,18 +2168,26 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, u32 ParentID)
 		l_pA->m_boxSize				= (u16)pSettings->r_s32(ammoSect, "box_size");
 		D->s_name					= ammoSect;
 		D->set_name_replace			("");
-//.		D->s_gameid					= u8(GameID());
 		D->s_RP						= 0xff;
 		D->ID						= 0xffff;
-		if (ParentID == 0xffffffff)	
-			D->ID_Parent			= (u16)H_Parent()->ID();
-		else
-			D->ID_Parent			= (u16)ParentID;
+		R_ASSERT					(parentObj);
+		D->ID_Parent				= (u16)parentObj->ID();
 
 		D->ID_Phantom				= 0xffff;
 		D->s_flags.assign			(M_SPAWN_OBJECT_LOCAL);
 		D->RespawnTime				= 0;
-		l_pA->m_tNodeID				= g_dedicated_server ? u32(-1) : ai_location().level_vertex_id();
+
+		if (parentGO)
+		{
+			D->o_Position			= parentGO->Position();
+			l_pA->m_tNodeID			= parentGO->ai_location().level_vertex_id();
+			l_pA->m_tGraphID			= parentGO->ai_location().game_vertex_id();
+		}
+		else
+		{
+			D->o_Position			= Position();
+			l_pA->m_tNodeID			= g_dedicated_server ? u32(-1) : ai_location().level_vertex_id();
+		}
 
 		if(boxCurr == 0xffffffff) 	
 			boxCurr					= l_pA->m_boxSize;
@@ -2186,6 +2206,84 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, u32 ParentID)
 		}
 	}
 	F_entity_Destroy				(D);
+}
+
+void CWeapon::ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo, xr_map<u16, u16>* ammos_to_sync)
+{
+	bool ammoChanged = false;
+
+	for (auto& entry : ammo)
+	{
+		if (m_pInventory)
+		{
+			const auto tryFillBox = [&](PIItem item)
+			{
+				if (!entry.second || !item)
+				{
+					return;
+				}
+
+				if (xr_strcmp(item->object().cNameSect(), *entry.first))
+				{
+					return;
+				}
+
+				CWeaponAmmo* weaponAmmo = item->cast_weapon_ammo();
+				if (!weaponAmmo || weaponAmmo->m_boxCurr >= weaponAmmo->m_boxSize)
+				{
+					return;
+				}
+
+				const u16 freeSlots = weaponAmmo->m_boxSize - weaponAmmo->m_boxCurr;
+				const u16 addCount = (freeSlots < entry.second) ? freeSlots : entry.second;
+				weaponAmmo->m_boxCurr = weaponAmmo->m_boxCurr + addCount;
+				weaponAmmo->SetDropManual(false);
+				entry.second = entry.second - addCount;
+				ammoChanged = true;
+
+				if (Level().Server)
+				{
+					if (CSE_Abstract* seObject = Level().Server->ID_to_entity(weaponAmmo->ID()))
+					{
+						if (CSE_ALifeItemAmmo* seAmmo = seObject->cast_item_ammo())
+						{
+							seAmmo->a_elapsed = weaponAmmo->m_boxCurr;
+						}
+					}
+				}
+
+				if (ammos_to_sync && !IsGameTypeSingle())
+				{
+					(*ammos_to_sync)[weaponAmmo->ID()] = weaponAmmo->m_boxCurr;
+				}
+			};
+
+			for (PIItem item : m_pInventory->m_belt)
+			{
+				tryFillBox(item);
+			}
+			for (PIItem item : m_pInventory->m_ruck)
+			{
+				tryFillBox(item);
+			}
+		}
+
+		if (entry.second)
+		{
+			u32 parentId = 0xffffffff;
+			if (CObject* parent = H_Parent())
+			{
+				parentId = parent->ID();
+			}
+			SpawnAmmo(entry.second, *entry.first, parentId);
+		}
+	}
+
+	if (ammoChanged && m_pInventory)
+	{
+		m_pInventory->InvalidateState();
+		m_pInventory->CalcTotalWeight();
+	}
 }
 
 void CWeapon::SetAmmoMagSize(int size)
@@ -4343,27 +4441,32 @@ void CWeapon::DeleteAmmoInChamber()
 
 void CWeapon::UnloadChamber(bool spawn_ammo)
 {
-	xr_map<const char*, u16> l_ammo;
+	xr_map<shared_str, u16> l_ammo;
 
 	while (!m_chamber.empty())
 	{
 		CCartridge& l_cartridge = m_chamber.back();
-		xr_map<const char*, u16>::iterator l_it;
+		xr_map<shared_str, u16>::iterator l_it;
 		for (l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it)
 		{
-			if (!xr_strcmp(*l_cartridge.m_ammoSect, l_it->first))
+			if (l_cartridge.m_ammoSect == l_it->first)
 			{
 				++(l_it->second);
 				break;
 			}
 		}
 
-		if (l_it == l_ammo.end()) l_ammo[*l_cartridge.m_ammoSect] = 1;
+		if (l_it == l_ammo.end()) l_ammo[l_cartridge.m_ammoSect] = 1;
 		m_chamber.pop_back();
 		--iAmmoChamberElapsed;
 	}
 
 	//VERIFY((u32)iAmmoInChamberElapsed == m_chamber.size());
+
+	if (spawn_ammo)
+	{
+		ReturnAmmoToInventory(l_ammo);
+	}
 
 	if (ParentIsActor())
 	{
@@ -4373,23 +4476,6 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 
 	if (!spawn_ammo)
 		return;
-
-	xr_map<const char*, u16>::iterator l_it;
-	for (l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it)
-	{
-		if (m_pInventory)
-		{
-			PIItem get_any = m_pInventory->GetAny(l_it->first);
-			CWeaponAmmo* l_pA = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
-			if (l_pA)
-			{
-				u16 l_free = l_pA->m_boxSize - l_pA->m_boxCurr;
-				l_pA->m_boxCurr = l_pA->m_boxCurr + (l_free < l_it->second ? l_free : l_it->second);
-				l_it->second = l_it->second - (l_free < l_it->second ? l_free : l_it->second);
-			}
-		}
-		if (l_it->second && !unlimited_ammo()) SpawnAmmo(l_it->second, l_it->first);
-	}
 
 	if (GetState() == eIdle)
 	{

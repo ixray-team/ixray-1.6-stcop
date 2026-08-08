@@ -645,6 +645,9 @@
 	<string id="kb_safemode">
 		<text>Опустить оружие</text>
 	</string>
+	<string id="kb_inv_unload_ruck">
+		<text>Разрядить все оружие в рюкзаке</text>
+	</string>
 	<string id="ui_tasks_show_on_map">
 		<text>$$ACTION_pda_tasks_filter_toggle$$ Показать на карте</text>
 	</string>
