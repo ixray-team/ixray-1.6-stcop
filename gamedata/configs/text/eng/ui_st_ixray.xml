@@ -645,6 +645,9 @@
 	<string id="kb_safemode">
 		<text>Safemode</text>
 	</string>
+	<string id="kb_inv_unload_ruck">
+		<text>Unload all weapons in backpack</text>
+	</string>
 	<string id="ui_tasks_show_on_map">
 		<text>$$ACTION_pda_tasks_filter_toggle$$ Show on map</text>
 	</string>
