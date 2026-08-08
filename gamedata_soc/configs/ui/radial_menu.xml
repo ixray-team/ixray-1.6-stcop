@@ -1,6 +1,7 @@
 <w>
-	<main x="0" y="0" width="1024" height="768"/>	
-	<gamepad_legend x="0" y="720" width="1024" height="50" spacing="3">
+	<main x="0" y="0" width="1024" height="768"/>
+	
+	<gamepad_legend x="0" y="734" width="1024" height="50" spacing="3">
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_rmw_drop_weapon</text>
 		</auto_static>
@@ -18,42 +19,38 @@
 		</auto_static>
 	</gamepad_legend>
 	
-	<action_sounds>
-		<snd_open>interface\console\whl_open</snd_open>
-		<snd_close>interface\console\whl_close</snd_close>
-		<snd_switch_slot>interface\console\whl_hover</snd_switch_slot>
-		<snd_select_slot>interface\console\whl_select</snd_select_slot>
-		<snd_fire_mode>interface\console\whl_fire_mode</snd_fire_mode>
-		<snd_grenade_mode>interface\console\whl_grenade_mode</snd_grenade_mode>
-	</action_sounds>
-	
-	<default_arc x="512" y="384" width="200" height="200" stretch="1">
-		<texture>ui_weapon_wheel_d</texture>
-	</default_arc>
-	<selected_arc  x="512" y="384" width="53" height="64" stretch="1">
-		<texture>ui_weapon_wheel_s</texture>
-	</selected_arc>
-	<focused_arc  x="512" y="384" width="53" height="64" stretch="1">
-		<texture>ui_weapon_wheel_f</texture>
-	</focused_arc>	
-	<focused_and_selected_arc  x="512" y="384" width="53" height="64" stretch="1">
-		<texture>ui_weapon_wheel_fs</texture>
-	</focused_and_selected_arc>
-	
-	<texture_empty_hands>ui_rm_icon_empty</texture_empty_hands>
-	<wheel_menu_params sector_count="7" starting_angle="0.425" sector_gap_angle="0.035" safezone_height_factor="0.09" inner_radius_ratio="0.5" selected_radius_factor="1.078">
-		<color_selected r="255" g="153" b="68" a="255"/>
-		<color_deselected r="255" g="255" b="255" a="204"/>
-		<sector_outer_side_color r="51" g="51" b="51" a="50"/>
-		<sector_inner_side_color r="255" g="255" b="255" a="200"/>
+	<radial_menu>
+		<action_sounds>
+			<snd_open>interface\console\whl_open</snd_open>
+			<snd_close>interface\console\whl_close</snd_close>
+			<snd_switch_slot>interface\console\whl_hover</snd_switch_slot>
+			<snd_select_slot>interface\console\whl_select</snd_select_slot>
+			<snd_fire_mode>interface\console\whl_fire_mode</snd_fire_mode>
+			<snd_grenade_mode>interface\console\whl_grenade_mode</snd_grenade_mode>
+		</action_sounds>
 		
-		<!-- first slot is at 0 degrees = EAST -->
-		<slot id="5"/>
-		<slot id="6"/>
-		<slot id="0"/>
-		<slot id="2"/>
-		<slot id="3"/>
-		<slot id="1"/>
-		<slot id="4"/>
-	</wheel_menu_params>
+		<general>
+			<!-- specify size without widescreen in mind, engine will do the thing -->
+			<size_back width="280" height="280"/>
+			<!-- means size per cell -->
+			<size_icon width="25" height="25"/>
+			<pivot x="140" y="390"/>
+			<!-- recomended to maintain same texture size -->
+			<texture_default>ui_weapon_wheel_d</texture_default>		
+			<texture_selected>ui_weapon_wheel_s</texture_selected>		
+			<texture_focused>ui_weapon_wheel_f</texture_focused>		
+			<texture_focused_and_selected>ui_weapon_wheel_fs</texture_focused_and_selected>		
+		</general>
+		
+		<!-- start from north -->
+		<element angle="0" slot="3"/> <!-- automatic -->
+		<element angle="51,4" slot="2"/> <!-- pistol -->
+		<element angle="102,8" slot="0" width="120" height="120"> <!-- empty -->
+			<icon>ui_rm_icon_empty</icon>
+		</element>	
+		<element angle="154,2" slot="6" width="40" height="40"/> <!-- bolt -->
+		<element angle="205,6" slot="5" width="30" height="30"/> <!-- binoculars -->
+		<element angle="257"   slot="4" width="40" height="40"/> <!-- grenade -->
+		<element angle="308,4" slot="1" width="30" height="30"/> <!-- knife -->
+	</radial_menu>
 </w>
