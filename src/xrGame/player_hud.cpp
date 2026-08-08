@@ -449,11 +449,7 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 
 	if(m_measures.m_prop_flags.test(hud_item_measures::e_shell_point))
 	{
-		if (m_measures.m_shell_bone == BI_NONE)
-		{
-			return;
-		}
-		Fmatrix& fire_mat			= m_model->LL_GetTransform(m_measures.m_shell_bone);
+		Fmatrix& fire_mat = m_measures.m_shell_bone != u16(-1) ? m_model->LL_GetTransform(m_measures.m_shell_bone) : m_model->LL_GetTransform(m_measures.m_fire_bone);
 		fire_mat.transform_tiny		(fd.vLastSP,m_measures.m_shell_point_offset);
 		m_item_transform.transform_tiny	(fd.vLastSP);
 		VERIFY(_valid(fd.vLastSP));
@@ -613,11 +609,11 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K, bool c
 	// St4lker0k765: got to move this param from fire_bone2 because SoC don't have it in configs
 	m_fire_point2_offset = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "fire_point2", zero_vel);
 
-	m_prop_flags.set(e_shell_point, pSettings->line_exist(sect_name, "shell_bone"));
+	m_prop_flags.set(e_shell_point, pSettings->line_exist(sect_name, "shell_point"));
 	if (m_prop_flags.test(e_shell_point))
 	{
-		bone_name = pSettings->r_string(sect_name, "shell_bone");
-		m_shell_bone = K->LL_BoneID(bone_name);
+		bone_name = READ_IF_EXISTS(pSettings, r_string, sect_name, "shell_bone", "");
+		m_shell_bone = bone_name.size() ? K->LL_BoneID(bone_name) : u16(-1);
 		m_shell_point_offset = pSettings->r_fvector3(sect_name, "shell_point");
 	}
 	else
