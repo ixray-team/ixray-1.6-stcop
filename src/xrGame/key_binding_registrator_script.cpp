@@ -211,6 +211,7 @@ void key_binding_registrator::script_register(lua_State *L)
 				value("kINV_SORT_PREV",	            int(kINV_SORT_PREV)),
 				value("kINV_SORT_NEXT",	            int(kINV_SORT_NEXT)),
 				value("kINV_SORT_CYCLE",	        int(kINV_SORT_CYCLE)),
+				value("kINV_UNLOAD_RUCK",	        int(kINV_UNLOAD_RUCK)),
 
 				value("kDETECTOR",				    int(kDETECTOR))
 			],

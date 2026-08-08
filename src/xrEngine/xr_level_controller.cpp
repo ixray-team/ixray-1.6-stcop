@@ -177,6 +177,7 @@ ENGINE_API _action  actions[]		= {
 	{ "wpn_radial_menu",	kWPN_RADIAL_MENU		,_both,			agDefault},
 	{ "actormenu_action",	kACTORMENU_ACTION		,_both,			agUIGeneral},
 	{ "safemode",			kSAFEMODE				,_both,			agDefault },
+	{ "inv_unload_ruck",	kINV_UNLOAD_RUCK		,_both,			agUIGeneral},
 
 	{ nullptr, 				kLASTACTION				,_both,			agDefault}
 };															

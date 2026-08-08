@@ -957,14 +957,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 				break;
 			}
 
-			UnloadWeapon(weap_mag);
-			if (!weap_mag->IsGrenadeMode())
-			{
-				weap_mag->UnloadChamber();
-			}
-
-			weap_mag->m_bHaveShell = false;
-			weap_mag->m_bNeedPumpState = false;
+			UnloadWeaponItem(weap_mag);
 
 			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
@@ -973,15 +966,15 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 				CWeaponMagazined* child_weap_mag = weapon ? weapon->cast_weapon_magazined() : nullptr;
 				if (child_weap_mag != nullptr)
 				{
-					UnloadWeapon(child_weap_mag);
-					if (!child_weap_mag->IsGrenadeMode())
-					{
-						child_weap_mag->UnloadChamber();
-					}
-
-					child_weap_mag->m_bHaveShell = false;
-					child_weap_mag->m_bNeedPumpState = false;
+					UnloadWeaponItem(child_weap_mag);
 				}
+			}
+
+			PlaySnd(eUnloadMagazine);
+
+			if (m_currMenuMode == mmInventory)
+			{
+				UpdateActorBagList();
 			}
 			break;
 		}

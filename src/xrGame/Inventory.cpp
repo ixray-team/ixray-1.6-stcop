@@ -264,12 +264,12 @@ void CInventory::RepairItemPlacements()
 	InvalidateState();
 }
 
-void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placement)
+void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placement, bool bForce)
 {
 	CInventoryItem* pIItem = pObj->cast_inventory_item();
 	VERIFY(pIItem);
 	VERIFY(pIItem->m_pInventory == nullptr);
-	VERIFY(CanTakeItem(pIItem));
+	VERIFY(bForce || CanTakeItem(pIItem));
 
 	pIItem->m_pInventory = this;
 	pIItem->SetDropManual(false);

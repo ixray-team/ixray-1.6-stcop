@@ -260,6 +260,14 @@ void CUIActorMenuBase::InitBase(CUIXml& uiXml)
 	::Sound->create						(sounds[eAttachAddon],	uiXml.Read("snd_attach_addon",	0,	"interface\\inv_attach_addon"), st_Effect, sg_SourceType);
 	::Sound->create						(sounds[eDetachAddon],	uiXml.Read("snd_detach_addon",	0,	"interface\\inv_detach_addon"), st_Effect, sg_SourceType);
 	::Sound->create						(sounds[eItemUse],		uiXml.Read("snd_item_use",		0,	"interface\\inv_slot"), st_Effect, sg_SourceType);
+	if (uiXml.NavigateToNode("snd_unload_magazine", 0))
+	{
+		LPCSTR snd_unload = uiXml.Read("snd_unload_magazine", 0, "");
+		if (snd_unload && snd_unload[0])
+		{
+			::Sound->create(sounds[eUnloadMagazine], snd_unload, st_Effect, sg_SourceType);
+		}
+	}
 	uiXml.SetLocalRoot					(stored_root);
 }
 
@@ -1745,6 +1753,20 @@ bool CUIActorMenuBase::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 			SendEvent_Item_Drop		(CurrentIItem(), GetInventoryOwner()->object_id());
 			SetCurrentItem			(nullptr);
 		}
+		return true;
+	}
+
+	if ( is_binded(kINV_UNLOAD_RUCK, dik) )
+	{
+		if ( WINDOW_KEY_PRESSED == keyboard_action )
+		{
+			UnloadAllWeaponsFromRuck();
+		}
+		return true;
+	}
+
+	if ( m_currMenuMode == mmInventory && is_binded(kWPN_RELOAD, dik) )
+	{
 		return true;
 	}
 
