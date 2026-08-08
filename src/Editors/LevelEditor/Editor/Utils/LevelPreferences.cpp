@@ -94,6 +94,12 @@ void CLevelPreferences::Load()
 		GetSafe(*comp, "LODsForAllMU", LODsForAllMU);
 	}
 
+	if (const auto* lod = GetObjectSafe(JSONData, "ExperimentalLOD"))
+	{
+		GetSafe(*lod, "UseMULODs", UseMULODs);
+		GetSafe(*lod, "DisableBillboardLOD", DisableBillboardLOD);
+	}
+
 	if (const auto* cb = GetObjectSafe(JSONData, "ContentBrowser"))
 	{
 		GetSafe(*cb, "CurPath", GContentView->CurrentDir);
@@ -169,6 +175,9 @@ void CLevelPreferences::Save()
 	JSONData["Compilers Path"]["xrDO"] = Compiler_xrDO.c_str();
 	JSONData["Compilers"]["LODsForAllMU"] = LODsForAllMU;
 
+	JSONData["ExperimentalLOD"]["UseMULODs"] = UseMULODs;
+	JSONData["ExperimentalLOD"]["DisableBillboardLOD"] = DisableBillboardLOD;
+
 	JSONData["ContentBrowser"]["CurPath"] = GContentView->CurrentDir;
 	JSONData["ContentBrowser"]["ISEPath"] = GContentView->VirtualPath;
 	JSONData["ContentBrowser"]["IsSpawnElement"] = GContentView->IsSpawnElement;
@@ -200,6 +209,10 @@ void CLevelPreferences::OnReadonlyChange(PropValue* prop)
 void CLevelPreferences::FillProp(PropItemVec& items)
 {
 	inherited::FillProp	(items);
+
+	PHelper().CreateBool(items, "Experimental\\LOD\\Use MU LODs (4-level)", &UseMULODs);
+	PHelper().CreateBool(items, "Experimental\\LOD\\Disable Billboard LOD", &DisableBillboardLOD);
+
 	SceneToolsMapPairIt _I 	= Scene->FirstTool();
 	SceneToolsMapPairIt _E 	= Scene->LastTool();
 	for (; _I!=_E; _I++)
