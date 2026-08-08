@@ -34,6 +34,9 @@
 			<text font="graffiti19" vert_align="c">ui_mm_select</text>
 		</auto_static>
 		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">st_ixray_framework_options</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
 			<window_name>gp_back</window_name>
 		</auto_static>

@@ -16,10 +16,15 @@
 		remove_var(cell_name, var_name)
 ]]
 
+local USE_FILE_LOG = true
+local USE_CONSOLE_LOG = false
+local USE_TIME_IN_LOGS = true
+
 local ixr_store = {
 	log_name = "IXR_STORAGE",
-	use_log = true,
-	first_log_record = true,
+	use_file_log = USE_FILE_LOG,
+	use_time_log = USE_TIME_IN_LOGS,
+	use_console_log = USE_CONSOLE_LOG,
 	save_ext = ".ixr",
 	dynamic_vars = {
 		storage_loaded = false,
@@ -140,25 +145,29 @@ end
 -- #	 	 SYSTEM METHODS	  	  #
 -- ################################
 function on_save_file_loaded(save_directory_path, save_file_name)
-	ixr_store.save_log("[on_save_file_loaded]")
+	IXRLog("[on_save_file_loaded]")
 	ixr_store.load_storage(save_directory_path, save_file_name)
 end
 
 function on_save_file_created(save_directory_path, save_file_name)
 	ixr_store.first_log_record = true
-	ixr_store.save_log("[mod_version]:"..tostring(ixr_store.dynamic_vars.mod_version)) 
-	ixr_store.save_log("[on_save_file_created]")
+	IXRLog("[mod_version]:"..tostring(ixr_store.dynamic_vars.mod_version)) 
+	IXRLog("[on_save_file_created]")
 	ixr_store.save_storage(save_directory_path, save_file_name, false)
 end
 
 function on_new_game(save_directory_path, save_file_name)
 	ixr_store.first_log_record = true
-	ixr_store.save_log("[mod_version]:"..tostring(ixr_store.dynamic_vars.mod_version)) 
-	ixr_store.save_log("[on_new_game]")
+	IXRLog("[mod_version]:"..tostring(ixr_store.dynamic_vars.mod_version)) 
+	IXRLog("[on_new_game]")
 	ixr_store.save_storage(save_directory_path, save_file_name, true)
 end
 
 function ixr_store.init()
+	IXRLogUseFileLog(ixr_store.use_file_log)
+	IXRLogUseConsoleLog(ixr_store.use_console_log)
+	IXRLogUseTimeInLog(ixr_store.use_time_log)
+	
 	if ixr_store.dynamic_vars.initialized then
 		return true
 	end
@@ -190,13 +199,13 @@ function ixr_store.save_storage(save_directory_path, save_file_name, is_new_game
 		postfix = "[NEW GAME] "
 	end
 	
-	ixr_store.save_log(postfix .. "[WRITE] FILE:" .. tostring(ixr_store.build_path(save_directory_path, save_file_name)))
+	IXRLog(postfix .. "[WRITE] FILE:" .. tostring(ixr_store.build_path(save_directory_path, save_file_name)))
 	
 	if is_new_game then
 		ixr_store.load_storage(save_directory_path, save_file_name)
 	else
-		ixr_store.save_log("[DUMP STORED DATA][SAVED]:" .. ffx_dump_utils.var_export(ixr_store.dynamic_vars.m_storage))
-		ixr_store.save_log("[STORAGE SAVED]")
+		IXRLog("[DUMP STORED DATA][SAVED]:" .. ffx_dump_utils.var_export(ixr_store.dynamic_vars.m_storage))
+		IXRLog("[STORAGE SAVED]")
 	end
 end
 
@@ -205,20 +214,20 @@ function ixr_store.get_mod_version()
 end
 
 function ixr_store.load_storage(save_directory_path, save_file_name)
-	ixr_store.save_log("[mod_version]:"..tostring(ixr_store.dynamic_vars.mod_version)) 
+	IXRLog("[mod_version]:"..tostring(ixr_store.dynamic_vars.mod_version)) 
 	local stored = ffx_io_utils.read_binary_file(ixr_store.build_path(save_directory_path, save_file_name), false)
 	if stored then
 		ixr_store.dynamic_vars.m_storage = marshal.decode(stored)
-		ixr_store.save_log("[READ] FILE: " ..tostring(ixr_store.build_path(save_directory_path, save_file_name)))
+		IXRLog("[READ] FILE: " ..tostring(ixr_store.build_path(save_directory_path, save_file_name)))
 	else
 		ixr_store.dynamic_vars.m_storage = ixr_store.default_storage()
-		ixr_store.save_log("[NOT FOUND] FILE: " ..tostring(ixr_store.build_path(save_directory_path, save_file_name)))
+		IXRLog("[NOT FOUND] FILE: " ..tostring(ixr_store.build_path(save_directory_path, save_file_name)))
 	end
 	
-	ixr_store.save_log("[DUMP STORED DATA][LOADED]:" .. ffx_dump_utils.var_export(ixr_store.dynamic_vars.m_storage))
+	IXRLog("[DUMP STORED DATA][LOADED]:" .. ffx_dump_utils.var_export(ixr_store.dynamic_vars.m_storage))
 	
 	ixr_store.dynamic_vars.storage_loaded = true
-	ixr_store.save_log("[STORAGE LOADED]")
+	IXRLog("[STORAGE LOADED]")
 end
 
 function ixr_store.default_storage()
@@ -229,8 +238,8 @@ function ixr_store.default_storage()
 end
 
 function ixr_store.get_var(cell_name, var_name, def_value)
-	if editor() then
-		ixr_store.save_log("GET VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+	if IsEditor() or editor() then
+		IXRLog("GET VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
 		return def_value
 	end
 	if not ixr_store.is_storage_loaded() then
@@ -261,7 +270,7 @@ end
 
 function ixr_store.set_var(cell_name, var_name, var_value, var_type)
 	if editor() then
-		ixr_store.save_log("SET VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		IXRLog("SET VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
 		return false
 	end
 
@@ -310,7 +319,7 @@ end
 
 function ixr_store.remove_var(cell_name, var_name)
 	if editor() then
-		ixr_store.save_log("RM VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		IXRLog("RM VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
 		return
 	end
 	
@@ -329,7 +338,7 @@ end
 
 function ixr_store.has_var(cell_name, var_name)
 	if editor() then
-		ixr_store.save_log("HAS VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		IXRLog("HAS VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
 		return false
 	end
 	
@@ -342,13 +351,4 @@ function ixr_store.has_var(cell_name, var_name)
 	end
 	
 	return ixr_store.dynamic_vars.m_storage.chunks[cell_name][var_name] ~= nil
-end
-
-function ixr_store.save_log(text)
-	if not ixr_store.use_log then
-		return
-	end
-	
-	ffx_dump_utils.write_to_file_log(tostring(text), ixr_store.first_log_record)
-	ixr_store.first_log_record = false
 end
