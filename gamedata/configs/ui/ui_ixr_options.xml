@@ -96,6 +96,10 @@
 		<texture x="0" y="0" width="222" height="68">ui\ixr_options\addon_background_selected</texture>
 	</addon_background_selected>
 
+	<frame_window x="0" y="0" width="64" height="64">
+		<texture>ui_inv_item_selector_tri</texture>
+	</frame_window>
+	
 	<scroll_v x="0" y="0" width="670" height="320" right_ident="0" left_ident="0" top_indent="0" bottom_indent="0" vert_interval="0" always_show_scroll="0" />
 	
 	<check_box_background x="0" y="0" width="256" height="64" stretch="1">
