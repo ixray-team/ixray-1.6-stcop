@@ -329,29 +329,47 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		if (IR_GetKeyState(SDL_SCANCODE_F1))
 		{
 			CGameFont* SystemFont = g_FontManager->pFontSystem;
-			
+
 			SystemFont->SetColor(color_rgba(255, 0, 0, 255));
 			SystemFont->SetAligment(CGameFont::alCenter);
 			SystemFont->OutSetI(0, -.05f);
-			
+
 			SystemFont->OutNext("RECORDING");
 			SystemFont->OutNext("Key frames count: %d", KeyframesPositions.size());
-			
+
 			SystemFont->SetAligment(CGameFont::alLeft);
 			SystemFont->OutSetI(-0.2f, +.05f);
+			
+			SystemFont->OutNext("%s%s%s%s",
+				dik_to_keyname(get_action_dik(kFWD)),
+				dik_to_keyname(get_action_dik(kBACK)), 
+				dik_to_keyname(get_action_dik(kL_STRAFE)), 
+				dik_to_keyname(get_action_dik(kR_STRAFE))
+			);
+			SystemFont->OutNext("%s", dik_to_keyname(get_action_dik(kCROUCH)));
+			SystemFont->OutNext("%s", dik_to_keyname(get_action_dik(kJUMP)));
+			SystemFont->OutNext("MWUP");
+			SystemFont->OutNext("MWDOWN");
+			SystemFont->OutNext("SHIFT + MW");
 			SystemFont->OutNext("F");
-			SystemFont->OutNext("BACK");
 			SystemFont->OutNext("ESC");
 			SystemFont->OutNext("F11");
-			SystemFont->OutNext("LCONTROL+F11");
+			SystemFont->OutNext("Left Ctrl + F11");
 			SystemFont->OutNext("F12");
+			SystemFont->OutNext("Left Ctrl + F12");
 			SystemFont->SetAligment(CGameFont::alLeft);
 			SystemFont->OutSetI(0, +.05f);
+			SystemFont->OutNext("= Forward, Backward, Left, Right");
+			SystemFont->OutNext("= Move down");
+			SystemFont->OutNext("= Move up");
+			SystemFont->OutNext("= Increase camera speed");
+			SystemFont->OutNext("= Decrease camera speed");
+			SystemFont->OutNext("= Decrease camera speed by 3 times");
 			SystemFont->OutNext("= Append keyframe");
-			SystemFont->OutNext("= Cube Map");
 			SystemFont->OutNext("= Quit");
-			SystemFont->OutNext("= Level Map ScreenShot");
-			SystemFont->OutNext("= Level Map ScreenShot(High Quality)");
+			SystemFont->OutNext("= Cube Map");
+			SystemFont->OutNext("= Level Map Screenshot");
+			SystemFont->OutNext("= Level Map Screenshot (High Quality)");
 			SystemFont->OutNext("= ScreenShot");
 		}
 		
