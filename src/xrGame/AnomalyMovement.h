@@ -26,7 +26,7 @@ private:
 	float m_movement_speed = 0.f;
 	float m_movement_radius = 0.f;
 	Fvector m_target_position;
-
+	Fvector lastPosition;
 	Fmatrix& XFORM() { return m_currentAnomalyObject->XFORM(); }
 	void MoveToFromDelta(Fvector newPos, float speed);
 	Fvector GetLVPos(Fvector newPos);
