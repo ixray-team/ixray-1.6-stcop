@@ -19,6 +19,7 @@ private:
 
 	CAnomalyZone* m_currentAnomalyObject = nullptr;
 	shared_str m_electric_curve_particle_path;
+	shared_str m_electric_curve_ground_contact_particle_path;
 	Fvector m_initial_spawn_position;
 	xr_vector<SElectricCurve> m_electric_curves;
 	CGameObject* lastDamagedObject = nullptr;
@@ -37,10 +38,16 @@ private:
 	float blastTimeProcessing = 0.0f;
 	float max_blastTimeProcessing = 5000.0f;
 	float m_max_curve_radius = 5.0f;
+	float m_curve_start_y_offset = 0.f;
+
+	float m_change_target_timeout_ms_min = 500.0f;
+	float m_change_target_timeout_ms_max = 5000.0f;
+	
 
 	Fmatrix& XFORM() { return m_currentAnomalyObject->XFORM(); }
 	void AffectCurveDamade(CGameObject* obj);
 	void OnBlastElectricCurvesUpdate(CGameObject* obj);
+	Fvector RecalculateStartPosition(Fvector& anomalyCenter);
 
 public:
 	void BeginComponent(IECSOwner* O);
