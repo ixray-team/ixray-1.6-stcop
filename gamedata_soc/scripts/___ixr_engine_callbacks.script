@@ -10,6 +10,10 @@
 ------------------------------------------------------------------------------------------------------
 -- ENGINE EXPORTS!!!
 ------------------------------------------------------------------------------------------------------
+function on_frame()
+	if ixr_framework then ixr_framework.get_framework().on_frame() end
+end
+
 -- called when an inventory item is eaten/used
 -- returning false will prevent the item from being used
 function CInventory__eat(npc_gobj, item_gobj)
@@ -192,4 +196,14 @@ function level_on_key_press(dik,bind)
 	end
 	
 	return false
+end
+
+-- called from engine!
+-- for debug visible entity
+function get_near_object_info(npc_object)
+	return ixr_npc_info.collect_object_info(npc_object)
+end
+
+function load_screen_press_any_key()
+	SendScriptCallback("on_load_screen_await_any_key_pressed")
 end

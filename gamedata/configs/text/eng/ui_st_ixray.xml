@@ -945,4 +945,7 @@
 	<string id="st_ixray_framework_options_ud">
 		<text>$$ACTION_UI_UP$$/$$ACTION_UI_DOWN$$ Change selection</text>
 	</string>
+	<string id="st_ixray_framework_options_save">
+		<text>$$ACTION_UI_ACTION_2$$ Save options</text>
+	</string>
 </string_table>

@@ -1,0 +1,100 @@
+
+local USE_FILE_LOG = false
+local USE_CONSOLE_LOG = true
+local USE_TIME_IN_LOGS = true
+
+local STACK_TRACE_LEVEL = 3
+local USE_DRAW_DETALIZED_INFO_IN_PROFILER = true
+local PROF_EVENT_DETALIZED_INFO_FORMAT = "[%s (%d,%d)] %s"
+local PROF_EVENT_MINIMAL_INFO_FORMAT = "[LUA] %s"
+
+local is_tracy_connected = IsTracyConnected()
+local last_state = nil
+
+function on_game_start()
+	refresh_state_tracy_connection()
+	
+	ixr_logs.set_use_file_log(USE_FILE_LOG)
+	ixr_logs.set_use_console_log(USE_CONSOLE_LOG)
+	ixr_logs.set_use_time(USE_TIME_IN_LOGS)
+end
+
+function refresh_state_tracy_connection()
+	if not IsTracyConnected then
+		return
+	end
+    
+    is_tracy_connected = IsTracyConnected()
+	notify_connection_profiler_switch()
+end
+
+function on_framework_init_begin()
+	refresh_state_tracy_connection()
+end
+
+function on_framework_init_end()
+	refresh_state_tracy_connection()
+end
+
+function on_framework_frame_update()
+	refresh_state_tracy_connection()
+end
+
+function is_profiler_connected()
+	return is_tracy_connected
+end
+
+function notify_connection_profiler_switch()
+	if is_tracy_connected ~= last_state and tracy then
+		last_state = is_tracy_connected
+		if is_tracy_connected then
+			ixr_logs.log("~ TRACY PROFILER:: [CONNECTED]")
+		else
+			ixr_logs.log("~ TRACY PROFILER:: [DISCONNECTED]")
+		end
+	end
+end
+
+function prof_event_begin(name)
+	if name and is_profiler_connected() and tracy then
+		if USE_DRAW_DETALIZED_INFO_IN_PROFILER then
+			local data = ffx_callable_utils.find_caller_source_tracy(STACK_TRACE_LEVEL, true)
+			tracy.ZoneBeginN(string.format(PROF_EVENT_DETALIZED_INFO_FORMAT, tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
+		else
+			tracy.ZoneBeginN(string.format(PROF_EVENT_MINIMAL_INFO_FORMAT, tostring(name)))
+		end
+	end
+end
+
+function prof_event_end()
+	if is_profiler_connected() and tracy then
+        tracy.ZoneEnd()
+	end
+end
+
+function prof_event_closure(name, callable)
+	if name and is_profiler_connected() and tracy then
+		if USE_DRAW_DETALIZED_INFO_IN_PROFILER then
+			local data = ffx_callable_utils.find_caller_source_tracy(STACK_TRACE_LEVEL, true)
+			tracy.ZoneBeginN(string.format(PROF_EVENT_DETALIZED_INFO_FORMAT, tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
+		else
+			tracy.ZoneBeginN(string.format(PROF_EVENT_MINIMAL_INFO_FORMAT, tostring(name)))
+		end
+		
+		local result
+		
+		if callable then
+			result = callable()
+		end
+		
+		tracy.ZoneEnd()
+		
+		return result
+    else
+        if callable then
+			return callable()
+		end
+	end
+	
+	return nil
+end

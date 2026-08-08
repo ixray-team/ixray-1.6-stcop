@@ -166,6 +166,24 @@ end
 
 --[[
 Description:
+  Get table element index by contains value or false.
+Parameters:
+  t (table) - the flat table to check.
+  item (any) - the value to find.
+Returns: key otherwise false.
+]]
+function get_contains_element_number(t, value)
+	for i, v in ipairs(t) do
+		if v == value then
+			return i
+		end
+	end
+	
+	return false
+end
+
+--[[
+Description:
   Retrieves the last value at the root level of a table (flat or associative).
 Parameters:
   input_table (table) - the table to inspect.
@@ -281,4 +299,13 @@ function get_min_key_index(input_table, default_value, depth)
     end
 
     return min_index or default_value
+end
+
+function get_array_keys(tbl)
+	local keys = {}
+	for k, v in pairs(tbl) do
+		table.insert(keys, k)
+	end
+	
+	return keys
 end

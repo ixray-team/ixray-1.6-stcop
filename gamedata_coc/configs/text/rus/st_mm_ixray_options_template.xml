@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
 	<string id="st_options_template">
-		<text>РЁР°Р±Р»РѕРЅ РїСЂРёРјРµСЂР° РѕРїС†РёР№ РґР»СЏ Р°РґРґРѕРЅР°</text>
+		<text>Шаблон примера опций для аддона</text>
 	</string>
 	<string id="st_options_template_addon">
-		<text>IXRay РђРґРґРѕРЅ С€Р°Р±Р»РѕРЅР° РЅР°СЃС‚СЂРѕРµРє</text>
+		<text>IXRay Аддон шаблона настроек</text>
 	</string>
 </string_table>
