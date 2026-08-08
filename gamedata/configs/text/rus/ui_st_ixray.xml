@@ -930,4 +930,19 @@
 	<string id="st_ixray_framework_options">
 		<text>$$ACTION_UI_ACTION_2$$ IX-Ray Framework</text>
 	</string>
+	<string id="st_ixray_framework_options_accept">
+		<text>$$ACTION_UI_ACCEPT$$ Выбор</text>
+	</string>
+	<string id="st_ixray_framework_options_lr">
+		<text>$$ACTION_UI_LEFT$$/$$ACTION_UI_RIGHT$$ Сменить раздел</text>
+	</string>
+	<string id="st_ixray_framework_options_lr_focused">
+		<text>$$ACTION_UI_LEFT$$/$$ACTION_UI_RIGHT$$ Сменить значение</text>
+	</string>
+	<string id="st_ixray_framework_addons_ud">
+		<text>$$ACTION_UI_UP$$/$$ACTION_UI_DOWN$$ Сменить аддон</text>
+	</string>
+	<string id="st_ixray_framework_options_ud">
+		<text>$$ACTION_UI_UP$$/$$ACTION_UI_DOWN$$ Сменить выбор</text>
+	</string>
 </string_table>
