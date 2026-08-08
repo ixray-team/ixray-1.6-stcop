@@ -55,9 +55,8 @@ bool ESceneObjectTool::Validate(bool full_test)
                 }
             }
 
-#ifndef MU_LODS_TRUE
             // validate lods
-            if (Scene->IsValidateLODs && full_test && A->IsMUStatic())
+            if (!EPrefs->UseMULODs && Scene->IsValidateLODs && full_test && A->IsMUStatic())
             {
                 CEditableObject* E = A->GetReference(); VERIFY(E);
                 xr_string lod_name = E->GetLODTextureName();
@@ -82,7 +81,6 @@ bool ESceneObjectTool::Validate(bool full_test)
                 if (age_nm == -1 || age == -1)
                     bRes = false;
             }
-#endif
         }
     );
 

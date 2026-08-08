@@ -38,7 +38,9 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha)
 
 int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int sector_num)
 {
-#ifndef MU_LODS_OFF_BILLBOARD //Seakad: я пока не решил, вырезать полностью билборды, или оставить с пустышкой-текстурой, и с уменьшенным разрешением (именно это тут и происходит)
+    if (EPrefs->DisableBillboardLOD)
+        return -1;
+
     if (!E->m_objectFlags.is(CEditableObject::eoUsingLOD)) 
         return -1;
 
@@ -80,33 +82,35 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
     xr_string l_name = lod_name.c_str();
     u32 w, h;
     time_t age;
-#ifndef MU_LODS_TRUE
-    if (!ImageLib.LoadTextureData(l_name.c_str(), new_lod.data, w, h, &age))
+    if (!EPrefs->UseMULODs)
     {
-        Msg("!Can't find LOD texture: '%s'", l_name.c_str());
-        return -2;
-    }
+        if (!ImageLib.LoadTextureData(l_name.c_str(), new_lod.data, w, h, &age))
+        {
+            Msg("!Can't find LOD texture: '%s'", l_name.c_str());
+            return -2;
+        }
 
-    l_name += "_nm";
-    if (!ImageLib.LoadTextureData(l_name.c_str(), new_lod.ndata, w, h, &age))
-    {
-        Msg("!Can't find LOD texture: '%s'", l_name.c_str());
-        return -2;
+        l_name += "_nm";
+        if (!ImageLib.LoadTextureData(l_name.c_str(), new_lod.ndata, w, h, &age))
+        {
+            Msg("!Can't find LOD normal texture: '%s'", l_name.c_str());
+            return -2;
+        }
     }
-#else
-    if (!ImageLib.LoadTextureData("lod_stub", new_lod.data, w, h, &age))
+    else
     {
-        Msg("!Can't load LOD texture: 'lod_stub'");
-        return -2;
-    }
+        if (!ImageLib.LoadTextureData("lod_stub", new_lod.data, w, h, &age))
+        {
+            Msg("!Can't load LOD texture: 'lod_stub'");
+            return -2;
+        }
 
-    if (!ImageLib.LoadTextureData("lod_stub", new_lod.ndata, w, h, &age))
-    {
-        Msg("!Can't load LOD normal texture: 'lod_stub'");
-        return -2;
+        if (!ImageLib.LoadTextureData("lod_stub", new_lod.ndata, w, h, &age))
+        {
+            Msg("!Can't load LOD normal texture: 'lod_stub'");
+            return -2;
+        }
     }
-#endif
     l_lods.push_back(std::move(new_lod));
-#endif
     return l_lods.size() - 1;
 }
