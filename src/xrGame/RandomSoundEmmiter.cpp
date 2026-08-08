@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "RandomSoundEmmiter.h"
 
-#pragma optimize("", off)
 
 CRandomSoundEmmiter::CRandomSoundEmmiter(const char* section, const char* soundParameter, esound_type _sound_type, int _game_type)
 {
