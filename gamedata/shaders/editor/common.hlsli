@@ -3,6 +3,11 @@
 
 #include "shared\common.hlsli"
 
+float4 unpack_D3DCOLOR(float4 c)
+{
+    return c.bgra;
+}
+
 uniform float4 L_material; // per object, xyz=sun,w=hemi
 uniform float4 L_dynamic_props; // per object, xyz=sun,w=hemi
 uniform float4 L_dynamic_color; // dynamic light color (rgb1)	- spot/point
