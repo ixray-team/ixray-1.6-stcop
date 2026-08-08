@@ -750,6 +750,8 @@ public:
 			void			SpawnAmmo			(u32 boxCurr = 0xffffffff, 
 													const char* ammoSect = NULL, 
 													u32 ParentID = 0xffffffff);
+			void			ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo,
+													xr_map<u16, u16>* ammos_to_sync = nullptr);
 	bool					SwitchAmmoType		(u32 flags);
 
 	virtual	float			Get_PDM_Base		()	const	{ return m_pdm.m_fPDM_disp_base			; };

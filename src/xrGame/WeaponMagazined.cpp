@@ -762,27 +762,32 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 		SetMisfireStatus(false);
 	}
 
-	xr_map<const char*, u16> l_ammo;
+	xr_map<shared_str, u16> l_ammo;
 	xr_map< u16, u16> ammos_to_sync;
 	while(!m_magazine.empty()) 
 	{
 		CCartridge &l_cartridge = m_magazine.back();
-		xr_map<const char*, u16>::iterator l_it;
+		xr_map<shared_str, u16>::iterator l_it;
 		for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
 		{
-            if(!xr_strcmp(*l_cartridge.m_ammoSect, l_it->first)) 
+            if(l_cartridge.m_ammoSect == l_it->first) 
             { 
 				 ++(l_it->second); 
 				 break; 
 			}
 		}
 
-		if(l_it == l_ammo.end()) l_ammo[*l_cartridge.m_ammoSect] = 1;
+		if(l_it == l_ammo.end()) l_ammo[l_cartridge.m_ammoSect] = 1;
 		m_magazine.pop_back(); 
 		--iAmmoElapsed;
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+
+	if (spawn_ammo)
+	{
+		ReturnAmmoToInventory(l_ammo, &ammos_to_sync);
+	}
 
 	if (ParentIsActor())
 	{
@@ -792,24 +797,6 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 
 	if (!spawn_ammo)
 		return;
-
-	xr_map<const char*, u16>::iterator l_it;
-	for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
-	{
-		if(m_pInventory)
-		{
-			PIItem get_any = m_pInventory->GetAny(l_it->first);
-			CWeaponAmmo *l_pA = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
-			if(l_pA) 
-			{
-				u16 l_free = l_pA->m_boxSize - l_pA->m_boxCurr;
-				l_pA->m_boxCurr = l_pA->m_boxCurr + (l_free < l_it->second ? l_free : l_it->second);
-				l_it->second = l_it->second - (l_free < l_it->second ? l_free : l_it->second);
-				if (!IsGameTypeSingle()) ammos_to_sync[l_pA->ID()] = l_pA->m_boxCurr;
-			}
-		}
-		if(l_it->second && !unlimited_ammo()) SpawnAmmo(l_it->second, l_it->first);
-	}
 
 	if (!IsGrenadeMode())
 	{

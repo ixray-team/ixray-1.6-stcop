@@ -157,6 +157,11 @@ bool CInventoryVolumeSystem::CanAddToRuck(const CInventoryOwner& owner, const CI
         return true;
     }
 
+    if (const_cast<CInventoryItem&>(item).cast_weapon_ammo() != nullptr)
+    {
+        return true;
+    }
+
     if (!IsActor(owner))
     {
         return true;
