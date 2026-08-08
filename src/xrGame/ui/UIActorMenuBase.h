@@ -72,6 +72,7 @@ protected:
 								eAttachAddon,
 								eDetachAddon,
 								eItemUse,
+								eUnloadMagazine,
 								eSndMax};
 
 	ref_sound					sounds						[eSndMax];
@@ -112,6 +113,8 @@ protected:
 	void						DetachAddon					(const char* addon_name, PIItem itm = nullptr);
 
 	void						UnloadWeapon				(CWeaponMagazined* pWnp);
+	void						UnloadWeaponItem			(CWeaponMagazined* pWpn);
+	void						UnloadAllWeaponsFromRuck	();
 
 	void						UpdateItemsPlace			();
 	void						UpdateConditionProgressBars	();
