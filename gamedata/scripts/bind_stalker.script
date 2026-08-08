@@ -217,6 +217,11 @@ function actor_binder:on_trade(item, sell_bye, money)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:article_callback(npc, group, name)
+	--printf("article_callback [%s][%s]", group, name)
+	if device().precache_frame >1 then 
+		return 
+	end
+	SendScriptCallback("actor_on_article", npc, group, name) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_take(obj, m_last_dropped_owner_id)

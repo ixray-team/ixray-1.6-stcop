@@ -12,27 +12,43 @@
 		is_initialized()
 ]]
 
+
+-- black_option_rounded_rect_selected
+
+-- addon_background_selected
+--AddonItem:SetSelectedState(is_selected)
+
 local USE_FILE_LOG = true
 local USE_CONSOLE_LOG = false
+local USE_TIME_IN_LOGS = true
+local DEBUG_GAMEPAD_KEYBOARD_EMULATE = false
+
 local APPDATA_ALIAS = '$app_data_root$'
 local OPTIONS_FILE_NAME = "ixr_options.ixr"
+local DRAW_VAR_NAME = false
 
 local CONST_APPDATA_FOLDER = nil -- auto
 local options_scroll_wnd = nil
 
 local ixr_options = {
 	options = {},
+	options_addon_info = {},
 	options_storage = {},
+	gamepad_supported_controlls = {
+		is_controlls_rendering_completed = false,
+		options_controlls = {},
+		addons = {},
+	},
 	options_storage_loaded = false,
 	update_bus = {},
 	initialized = false,
 	use_file_log = USE_FILE_LOG,
+	use_time_log = USE_TIME_IN_LOGS,
 	use_console_log = USE_CONSOLE_LOG,
 	main_menu_ref = nil,
 	_counter = 0,
 	__timer = 0,
 	dynamic_vars = {
-		first_log_record = true,
 		menu_opened = false,
 		is_callbacks_skip = false,
 		need_redraw = false,
@@ -58,7 +74,7 @@ local ixr_options = {
 		track_bar_height = 18,
 		track_bar_alpha = 128,
 		
-		option_plane_width = 620,
+		option_plane_width = 820,
 		option_plane_height = 40,
 	}
 }
@@ -71,6 +87,10 @@ function getNextControllIndex()
 	ixr_options._counter = ixr_options._counter + 1
 	
 	return ixr_options._counter
+end
+
+function on_apply_new_metadata_value(script, var_name, value, _self)
+	--SemiLog(string.format("script:%s var_name:%s value:%s", tostring(script), tostring(var_name), tostring(value)) .. " == " .. tostring(_self.value))
 end
 
 -- #######################################
@@ -172,8 +192,513 @@ function get_variable_value(var_name, default_value)
 	return ixr_options.get_variable_value(script_name, var_name, default_value)
 end
 
+--local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+
+--[[
+Description: Set option value by name is exists
+Return: (nil|bool|int|float|string|table|function)
+]]
+function set_variable_value(var_name, var_value)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	
+	local metadata = ixr_options.get_metadata(script_name, var_name)
+	
+	metadata.update_visual_value = var_value
+	ixr_options.set_metadata(script_name, var_name, metadata)
+	
+	return ixr_options.set_variable_value(script_name, var_name, var_value)
+end
+
+--[[
+Description: Set option visible state by name is exists
+Return: (nil|bool|int|float|string|table|function)
+]]
+function set_visible_option(var_name, visible)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	
+	--[[
+		metadata.background_controll_ref = option_bg
+		metadata.background_controll_color =  GetARGB(alpha, 225, 225, 225)
+		metadata.label_controll_ref = CTRLText
+		metadata.label_controll_color = GetARGB(255, 200, 200, 200)
+
+		metadata.visible_controlls
+		metadata.visible_background
+		metadata.gray_background
+		metadata.gray_label
+	--]]
+	
+	local metadata = ixr_options.get_metadata(script_name, var_name)
+	
+	metadata.visible_controlls = visible
+	metadata.gray_label = (not visible)
+	metadata.gray_background = (not visible)
+	
+	ixr_options.set_metadata(script_name, var_name, metadata)
+	
+	return ixr_options.set_variable_value(script_name, var_name, var_value)
+end
+
+function set_options_title(title_text)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	if ixr_options.options_addon_info[script_name] == nil then
+		ixr_options.options_addon_info[script_name] = {}
+	end
+	
+	ixr_options.options_addon_info[script_name]["options_title"] = title_text
+end
+
+function set_options_addon_name(addon_name)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	if ixr_options.options_addon_info[script_name] == nil then
+		ixr_options.options_addon_info[script_name] = {}
+	end
+	
+	ixr_options.options_addon_info[script_name]["options_addon_name"] = addon_name
+end
+
+function set_options_script_version(script_version)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	if ixr_options.options_addon_info[script_name] == nil then
+		ixr_options.options_addon_info[script_name] = {}
+	end
+	
+	ixr_options.options_addon_info[script_name]["options_script_version"] = script_version
+end
+
+function set_options_authors_text(authors_text)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	if ixr_options.options_addon_info[script_name] == nil then
+		ixr_options.options_addon_info[script_name] = {}
+	end
+	
+	ixr_options.options_addon_info[script_name]["options_authors_text"] = authors_text
+end
+
+function set_options_icon(icon_path)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	if ixr_options.options_addon_info[script_name] == nil then
+		ixr_options.options_addon_info[script_name] = {}
+	end
+	
+	ixr_options.options_addon_info[script_name]["icon_path"] = icon_path
+end
+
+function is_options_opened()
+	return ixr_options.is_options_opened()
+end
+
+-- #############################################
+-- #			GAME PAD HOOKS 				   #
+-- #############################################
+
+-- обрабатываем нажатия
+function on_gamepad_key(key, action)
+	if not is_options_opened() then
+		return false
+	end
+	
+	local bind = dik_to_bind(key)
+	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
+	
+	if action and action ~= ui_events.WINDOW_KEY_PRESSED then
+		return false
+	end
+	
+	if bindUI == key_bindings.kUI_BACK then
+		return ixr_options.emulate_back()
+	elseif bindUI == key_bindings.kUI_ACCEPT then
+		return ixr_options.emulate_accept()
+	elseif bindUI == key_bindings.kUI_ACTION_2 then
+		return _save_options()
+	elseif bindUI == key_bindings.kUI_UP then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_UP)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			return ixr_options.emulate_up(false)
+		end
+	elseif bindUI == key_bindings.kUI_DOWN then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_DOWN)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			return ixr_options.emulate_down(false)
+		end
+	elseif bindUI == key_bindings.kUI_LEFT then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_LEFT)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			return ixr_options.emulate_left(false)
+		end
+	elseif bindUI == key_bindings.kUI_RIGHT then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_RIGHT)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			return ixr_options.emulate_right(false)
+		end
+	end
+	
+	return false
+end
+
+-- обрабатываем удержания
+function on_gamepad_key_hold(key, action)
+	if not is_options_opened() then
+		return false
+	end
+	
+	local bind = dik_to_bind(key)
+	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
+	
+	if action and action ~= ui_events.WINDOW_KEY_PRESSED then
+		return false
+	end
+	
+	if bindUI == key_bindings.kUI_UP then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_UP)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			return ixr_options.emulate_up(true)
+		end
+	elseif bindUI == key_bindings.kUI_DOWN then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_DOWN)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			return ixr_options.emulate_down(true)
+		end
+	elseif bindUI == key_bindings.kUI_LEFT then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_LEFT)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			return ixr_options.emulate_left(true)
+		end
+	elseif bindUI == key_bindings.kUI_RIGHT then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_RIGHT)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			return ixr_options.emulate_right(true)
+		end
+	end
+	
+	return false
+end
+
+function on_press_key(dik, action, is_hold)
+	if not DEBUG_GAMEPAD_KEYBOARD_EMULATE or not is_options_opened() then
+		return false
+	end
+	
+	if action and action ~= ui_events.WINDOW_KEY_PRESSED then
+		return false
+	end
+	
+	if dik == DIK_keys.DIK_ESCAPE then
+		on_ixr_options_exit_btn_clicked()
+		return true
+	else
+		if dik == DIK_keys.DIK_NUMPAD0 then
+			return ixr_options.emulate_back()
+		elseif dik == DIK_keys.DIK_NUMPAD5 then
+			return ixr_options.emulate_accept()
+		elseif dik == DIK_keys.DIK_NUMPAD8 then
+			return ixr_options.emulate_up(is_hold)
+		elseif dik == DIK_keys.DIK_NUMPAD2 then
+			return ixr_options.emulate_down(is_hold)
+		elseif dik == DIK_keys.DIK_NUMPAD4 then
+			return ixr_options.emulate_left(is_hold)
+		elseif dik == DIK_keys.DIK_NUMPAD6 then
+			return ixr_options.emulate_right(is_hold)
+		end
+	end
+	
+	return false
+end
+
 -- #######################################
--- #	 	 SYSTEM METHODS 	  	 	 #
+-- #	  UI GAMEPAD CONTROLL 	 	 	 #
+-- #######################################
+local selection_addon_index = 0
+local selected_option_index = 0
+local selection_row = 1
+local option_focused = false
+
+function ixr_options.emulate_back()
+	if option_focused then
+		ixr_options.reset_focused_options()
+	else
+		on_ixr_options_exit_btn_clicked()
+	end
+end
+
+function ixr_options.emulate_accept()
+	if not option_focused and selection_row > 1 then
+		if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
+			ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:Show(true)
+			option_focused = true
+		end
+	else
+		ixr_options.reset_focused_options()
+	end
+end
+
+function ixr_options.emulate_up(is_hold)
+	if option_focused then
+		return true
+	end
+	
+	if ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed then
+
+	end
+	
+	-- листаем аддоны
+	if selection_row == 1 then
+		if selection_addon_index > 0 and ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
+			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(false)
+		end
+		
+		selection_addon_index = selection_addon_index - 1
+		selected_option_index = 0
+		
+		if selection_addon_index < 1 then
+			selection_addon_index = 1
+		end
+		
+		if ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
+			get_controll("addons_list_box"):SetSelectedIndex(selection_addon_index - 1)
+			OnAddonItemClicked()
+			
+			local pos = get_controll("addons_list_box"):GetSelectedIndex() * get_controll("addons_list_box"):GetItemHeight();
+			pos = pos - get_controll("addons_list_box"):GetHeight()/2;
+			if pos < 0 then
+				pos = 0
+			end
+
+			get_controll("addons_list_box"):SetScrollPos(pos);
+	
+			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(true)
+		end
+	end
+	
+	-- листаем опции
+	if selection_row > 1 then
+		if ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed then			
+			if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(false)
+			end
+			
+			selected_option_index = selected_option_index - 1
+		
+			if selected_option_index < 1 then
+				selected_option_index = 1
+			end
+
+			local bar = get_controll("options_scroll"):ScrollBar()
+			local barHeight = bar:GetHeight()
+			local scroll = get_controll("options_scroll")
+			scroll:ScrollToItem(ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent(), 
+														math.floor(-barHeight / 2 + ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent():GetHeight() / 2))
+		
+			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(true)
+			end
+		end
+	end
+	
+	ixr_options.reset_focused_options()
+end
+
+function ixr_options.emulate_down(is_hold)
+	if option_focused then
+		return true
+	end
+	
+	-- листаем аддоны
+	if selection_row == 1 then
+		if selection_addon_index > 0 and ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
+			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(false)
+		end
+		
+		selection_addon_index = selection_addon_index + 1
+		selected_option_index = 0
+		
+		if selection_addon_index > #ixr_options.gamepad_supported_controlls.addons then
+			selection_addon_index = #ixr_options.gamepad_supported_controlls.addons
+		end
+		
+		if ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
+			get_controll("addons_list_box"):SetSelectedIndex(selection_addon_index - 1)
+			OnAddonItemClicked()
+			
+			local pos = get_controll("addons_list_box"):GetSelectedIndex() * get_controll("addons_list_box"):GetItemHeight();
+			pos = pos - get_controll("addons_list_box"):GetHeight() / 2;
+			if pos < 0 then
+				pos = 0
+			end
+
+			get_controll("addons_list_box"):SetScrollPos(pos);
+	
+			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(true)
+		end
+	end
+	
+	-- листаем опции
+	if selection_row > 1 then
+		if ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed then
+			if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(false)
+			end
+			
+			selected_option_index = selected_option_index + 1
+			
+			if selected_option_index > #ixr_options.gamepad_supported_controlls.options_controlls then
+				selected_option_index = #ixr_options.gamepad_supported_controlls.options_controlls
+			end
+
+			local bar = get_controll("options_scroll"):ScrollBar()
+			local barHeight = bar:GetHeight()
+			local scroll = get_controll("options_scroll")
+			scroll:ScrollToItem(ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent(), 
+														math.floor(-barHeight / 2 + ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent():GetHeight() / 2))
+					
+			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(true)
+			end
+		end
+	end
+	
+	ixr_options.reset_focused_options()
+end
+
+function ixr_options.emulate_left(is_hold)
+	--  выбираем аддоны либо контролы
+	if not option_focused then
+		selection_row = selection_row - 1
+		if selection_row < 1 then
+			selection_row = 1
+		end
+		
+		if selection_row == 1 then
+			get_controll("framewindow_gamepad"):SetWndPos(vector2():set(33, 108))
+			get_controll("framewindow_gamepad"):SetWndSize(vector2():set(250, 575))
+			ixr_options.reset_selection_options()
+			ixr_options.reset_focused_options()
+		end
+	end
+	
+	-- контрол выбран крутим в лево в право его значения
+	if option_focused then
+		if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref then
+			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref.on_gamepad_left then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref:on_gamepad_left(is_hold)
+			end
+		end
+	end
+end
+
+function ixr_options.emulate_right(is_hold)
+	--  выбираем аддоны либо контролы
+	if not option_focused then
+		if selection_addon_index == 0 then
+			return
+		end
+		
+		selection_row = selection_row + 1
+		if selection_row > 2 then
+			selection_row = 2
+		end
+		
+		if selected_option_index == 0 then
+			get_controll("framewindow_gamepad"):SetWndPos(vector2():set(320, 125))
+			get_controll("framewindow_gamepad"):SetWndSize(vector2():set(670, 550))
+			ixr_options.select_first_option()
+			ixr_options.reset_focused_options()
+		end
+	end
+	
+	-- контрол выбран крутим в лево в право его значения
+	if option_focused then
+		if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref then
+			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref.on_gamepad_right then
+				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].controll_ref:on_gamepad_right(is_hold)
+			end
+		end
+	end
+end
+
+function ixr_options.reset_focused_options()
+	option_focused = false
+	for i,v in ipairs(ixr_options.gamepad_supported_controlls.options_controlls) do
+		v.background_focused_controll_ref:Show(false)
+	end
+end
+
+function ixr_options.select_first_option()
+	ixr_options.gamepad_supported_controlls.options_controlls[1].background_selected_controll_ref:Show(true)
+	selected_option_index = 1
+end
+
+function ixr_options.reset_selection_options()
+	selected_option_index = 0
+	for i,v in ipairs(ixr_options.gamepad_supported_controlls.options_controlls) do
+		v.background_selected_controll_ref:Show(false)
+	end
+end
+
+-- #######################################
+-- #	   GAMEPAD COLLECT INFO 		 #
+-- #######################################
+-- событие перед выходом из опций чистит данные о контроллах (перед скрытием опций)
+function on_before_clear_controlls_and_addons_info_gamepads()
+	ixr_options.gamepad_supported_controlls = {
+		is_controlls_rendering_completed = false,
+		options_controlls = {},
+		addons = {},
+	}
+end
+
+-- контроллы отрендерены можно использовать метаданные (вызывается после отрисовки правой части опций)
+function on_controlls_rendering_completed()
+	ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed = true
+	
+	local addons = ixr_options.gamepad_supported_controlls.options_controlls
+	local controlls = ixr_options.gamepad_supported_controlls.addons
+end
+
+-- событие о чистке данных контролов для геймпада (вызывается перед отрисовкой правой части опций)
+function on_before_clear_controlls_info_gamepads()
+	ixr_options.gamepad_supported_controlls.options_controlls = {}
+	ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed = false
+end
+
+-- регистрирует информацию о контролле
+function register_controll_metadata_for_gamepad(script_file_name, variable_name, _metadata)
+	if ixr_options.gamepad_supported_controlls.options_controlls == nil then
+		ixr_options.gamepad_supported_controlls.options_controlls = {}
+	end
+
+	local idx = #ixr_options.gamepad_supported_controlls.options_controlls
+	table.insert(ixr_options.gamepad_supported_controlls.options_controlls, {
+		controll_type = _metadata.controll_type,
+		controll_ref = _metadata.controll_ref,
+		script_name = _metadata.script_name,
+		variable_name = _metadata.variable_name,
+		background_focused_controll_ref = _metadata.background_focused_controll_ref,
+		background_selected_controll_ref = _metadata.background_selected_controll_ref,
+		background_controll_ref = _metadata.background_controll_ref,
+		background_controll_color = _metadata.background_controll_color,
+		label_controll_ref = _metadata.label_controll_ref,
+		label_controll_color = _metadata.label_controll_color,
+		idx = idx + 1
+	})
+end
+
+-- регистрирует информацию об аддоне
+function register_addon_for_gamepad(script_file_name, ref)
+	if ixr_options.gamepad_supported_controlls.addons == nil then
+		ixr_options.gamepad_supported_controlls.addons = {}
+	end
+	
+	local idx = #ixr_options.gamepad_supported_controlls.addons
+	table.insert(ixr_options.gamepad_supported_controlls.addons, {
+		addon_controll_ref = ref,
+		script_file_name = script_file_name,
+		idx = idx + 1
+	})
+end
+
+-- #######################################
+-- #	 	 	SYSTEM METHODS 	  	 	 #
 -- #######################################
 function ixr_options.is_options_opened()
 	return ixr_options.dynamic_vars.menu_opened
@@ -184,27 +709,31 @@ function ixr_options.is_initialized()
 end
 
 function ixr_options.init()
+	IXRLogUseFileLog(ixr_options.use_file_log)
+	IXRLogUseConsoleLog(ixr_options.use_console_log)
+	IXRLogUseTimeInLog(ixr_options.use_time_log)
+	
 	if ixr_options.is_initialized() then
 		return true
 	end
 
 	ixr_options.initialized = false
 
-	ixr_options.toLog("[IXR OPTIONS] PREPARE INIT")
+	IXRLog("[IXR OPTIONS] PREPARE INIT")
 	
 	RegisterScriptCallback("on_ixr_autoloader_initialized", ixr_options.on_all_scripts_loaded)
 
 	ixr_options.initialized = true
 
-	ixr_options.toLog("[IXR OPTIONS] INITIALIZED")
+	IXRLog("[IXR OPTIONS] INITIALIZED")
 	
 	--[[
 	local addons_data = get_addons_list()
 
 	for i, addon_data in ipairs(addons_data) do
-		ixr_options.toLog("Аддон " .. i .. ": " .. addon_data.addon_folder)
+		IXRLog("ADDON: " .. i .. ": " .. addon_data.addon_folder)
 		for j, script_name in ipairs(addon_data.script_files_names) do
-			ixr_options.toLog("  Скрипт " .. j .. ": " .. script_name)
+			IXRLog("  ADDON‚ " .. j .. ": " .. script_name)
 		end
 	end
 	--]]
@@ -220,6 +749,34 @@ function _on_main_menu_update(_ref)
 			if type(v) == "function" then v() end
 		end
 	end
+	if _ref.main_xml ~= nil then
+		get_controll("framewindow_gamepad"):Show(main_menu.in_controller_mode() and ixr_options.is_options_opened())
+		
+		-- for gamepad legend
+		local text_accept		= get_menu_ref():GetStatic("framework_gp_accept")	
+		if text_accept then
+			text_accept:Show(selection_row > 1)
+		end
+
+		local text_lr		= get_menu_ref():GetStatic("framework_gp_lr")	
+		if text_lr then
+			if option_focused then
+				text_lr:SetTextST("st_ixray_framework_options_lr_focused")
+			else
+				text_lr:SetTextST("st_ixray_framework_options_lr")
+			end
+		end
+
+		local text_ud		= get_menu_ref():GetStatic("framework_gp_ud")	
+		if text_ud then
+			if selection_row == 1 then
+				text_ud:SetTextST("st_ixray_framework_addons_ud")
+			else
+				text_ud:SetTextST("st_ixray_framework_options_ud")
+			end
+			text_ud:Show(not option_focused)
+		end
+	end
 end
 
 function set_main_menu_update(name, _callable)
@@ -232,7 +789,7 @@ function _load_options()
 	end
 	
 	ixr_options.options_storage_loaded = true
-	ixr_options.toLog("[IXR OPTIONS] BEGIN LOAD OPTIONS BY FILE")
+	IXRLog("[IXR OPTIONS] BEGIN LOAD OPTIONS BY FILE")
 	local stored_options_string = ffx_io_utils.read_string_file_(_get_option_storage_path(), false)
 	if stored_options_string then
 		local tmp_opt_storage = ffx_json_lib.json_decode(stored_options_string) or {}
@@ -248,26 +805,29 @@ function _load_options()
 	
 		if need_resave then
 			ffx_io_utils.write_string_file(ffx_json_lib.json_encode(ixr_options.options_storage), _get_option_storage_path(), "w+")
-			ixr_options.toLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE [ACTUALIZE VERSION]")
+			IXRLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE [ACTUALIZE VERSION]")
 		else
 			ixr_options.options_storage = tmp_opt_storage
 		end
 		
-		ixr_options.toLog("[IXR OPTIONS] LOAD OLD OPTIONS FILE")
-		ixr_options.toLog("[IXR OPTIONS] LOADED [" .. tostring(ffx_table_utils.get_size(ixr_options.options_storage)) .. "] OPTIONS")
+		IXRLog("[IXR OPTIONS] LOAD OLD OPTIONS FILE")
+		IXRLog("[IXR OPTIONS] LOADED [" .. tostring(ffx_table_utils.get_size(ixr_options.options_storage)) .. "] OPTIONS")
 	else
 		ffx_io_utils.write_string_file(ffx_json_lib.json_encode(ixr_options.options_storage), _get_option_storage_path(), "w+")
-		ixr_options.toLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE")
+		IXRLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE")
 	end
-	ixr_options.toLog("[IXR OPTIONS] END LOAD OPTIONS BY FILE")
+	IXRLog("[IXR OPTIONS] END LOAD OPTIONS BY FILE")
 	
-	ixr_options.toLog("[IXR OPTIONS] DUMP:[ixr_options.options_storage]:\n\n" .. ffx_dump_utils.var_export(ixr_options.options_storage))
+	IXRLog("[IXR OPTIONS] DUMP:[ixr_options.options_storage]:")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
+	IXRLog(ffx_dump_utils.var_export(ixr_options.options_storage))
 end
 
 function _save_options()
 	_on_main_menu_update(get_menu_ref())
 	ffx_io_utils.write_string_file(ffx_json_lib.json_encode(ixr_options.options_storage), _get_option_storage_path(), "w+")
-	ixr_options.toLog("IXR Options saved ...")
+	IXRLog("IXR Options saved ...")
 end
 
 
@@ -276,15 +836,21 @@ end
 -- #######################################
 
 function ixr_options.on_all_scripts_loaded(_ref)
-	ixr_options.toLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS BEGIN\n\n")
+	IXRLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS BEGIN")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
 	
 	SendScriptCallback("on_init_ixr_options", ixr_options)
 	
-	ixr_options.toLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS END\n\n")
+	IXRLog("[IXR OPTIONS] INIT SCRIPTS OPTIONS END")
+	IXRLogEmptyLine()
+	IXRLogEmptyLine()
 	
 	if ixr_options.options_storage_loaded then
-		ixr_options.toLog("[IXR OPTIONS] BEGIN SEND EVENTS TO SCRIPTS BY LOADED VALUES\n\n")
-		--ixr_options.toLog("[IXR OPTIONS] DUMP:[ixr_options.options]:\n\n" .. ffx_dump_utils.var_export(ixr_options.options))
+		IXRLog("[IXR OPTIONS] BEGIN SEND EVENTS TO SCRIPTS BY LOADED VALUES")
+		IXRLogEmptyLine()
+		IXRLogEmptyLine()
+		--IXRLog("[IXR OPTIONS] DUMP:[ixr_options.options]:\n\n" .. ffx_dump_utils.var_export(ixr_options.options))
 		
 		for file_name, file_options in pairs(ixr_options.options) do
 			for index, option_data in pairs(file_options) do
@@ -294,20 +860,23 @@ function ixr_options.on_all_scripts_loaded(_ref)
 					local variable_name = option_data.variable_name or nil
 					
 					if option_data._callback ~= nil then
+						local is_value_from_code = true
 						if option_data.controll_data.controll == "combo_box" then
 							actual_value = option_data.controll_data.list_values[actual_value].option_return_value
-							option_data._callback(group_name, variable_name, actual_value)
+							option_data._callback(group_name, variable_name, actual_value, is_value_from_code)
 						else
-							option_data._callback(group_name, variable_name, actual_value)
+							option_data._callback(group_name, variable_name, actual_value, is_value_from_code)
 						end
 						
-						ixr_options.toLog( "[IXR OPTIONS] RUN CALLBACK::[" .. tostring(option_data.script_name) .. ".script] -> { group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .. "] actual_value:[" .. tostring(ffx_json_lib.json_encode(actual_value)) .. "]" )
+						IXRLog( "[IXR OPTIONS] RUN CALLBACK::[" .. tostring(option_data.script_name) .. ".script] -> { group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .. "] actual_value:[" .. tostring(ffx_json_lib.json_encode(actual_value)) .. "]" )
 					end
 				end
 			end
 		end
 
-		ixr_options.toLog("[IXR OPTIONS] END SEND EVENTS TO SCRIPTS BY LOADED VALUES\n\n")
+		IXRLog("[IXR OPTIONS] END SEND EVENTS TO SCRIPTS BY LOADED VALUES")
+		IXRLogEmptyLine()
+		IXRLogEmptyLine()
 	end
 end
 
@@ -371,7 +940,7 @@ end
 
 function ixr_options.register_option(group_name, variable_name, display_text, controll_data, _callback)
 	local script_name = ffx_callable_utils.find_caller_source(3)
-	ixr_options.toLog("[IXR OPTIONS]::[REGISTER]:: script_name:[" .. tostring(script_name) .. "] group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .."] controll_data:[" .. tostring(ffx_json_lib.json_encode(controll_data)) .."]")
+	IXRLog("[IXR OPTIONS]::[REGISTER]:: script_name:[" .. tostring(script_name) .. "] group_name:[" .. tostring(group_name) .. "] variable_name:[" .. tostring(variable_name) .."] controll_data:[" .. tostring(ffx_json_lib.json_encode(controll_data)) .."]")
 	
 	if ixr_options.options[script_name] == nil then
 		ixr_options.options[script_name] = {}
@@ -379,7 +948,7 @@ function ixr_options.register_option(group_name, variable_name, display_text, co
 
 	for k, v in pairs(ixr_options.options[script_name]) do
 		if v["variable_name"] == variable_name then
-			ixr_options.toLog("[IXR OPTIONS] SKIP DUPLICATE KEY: " .. tostring(script_name) .. "[" .. tostring(variable_name).. "]")
+			IXRLog("[IXR OPTIONS] SKIP DUPLICATE KEY: " .. tostring(script_name) .. "[" .. tostring(variable_name).. "]")
 			return
 		end
 	end
@@ -403,6 +972,17 @@ end
 -- #######################################
 -- #	 	 SCRIPT UI TOOLS 	 	 	 #
 -- #######################################
+
+
+function ixr_options.set_draw_variable_names_state(flag)
+	DRAW_VAR_NAME = flag
+	ReDraw()
+end
+
+function ixr_options.get_draw_variable_names_state()
+	return DRAW_VAR_NAME
+end
+
 
 function ixr_options.check_box(def_value)
 	return {
@@ -483,15 +1063,32 @@ function ixr_options.numeric_up_down(default_value, min_value, max_value, value_
 	}
 end
 
-function ixr_options.track_bar(default_value, min_value, max_value, value_offset)
+function ixr_options.track_bar(default_value, min_value, max_value, value_offset, use_ceil)
+	if use_ceil == nil then
+		use_ceil = false 
+	end
+	
 	return {
 		["controll"] = "track_bar",
 		["default_value"] = default_value,
 		["min_value"] = min_value,
 		["max_value"] = max_value,
 		["value_offset"] = value_offset,
+		["use_ceil"] = use_ceil,
 	}
 end
+
+function ixr_options.ceil_track_bar(default_value, min_value, max_value, value_offset)	
+	return {
+		["controll"] = "track_bar",
+		["default_value"] = default_value,
+		["min_value"] = min_value,
+		["max_value"] = max_value,
+		["value_offset"] = value_offset,
+		["use_ceil"] = true,
+	}
+end
+
 
 -- #######################################
 -- #	 	 UI TOOLS METHODS 	 	 	 #
@@ -528,6 +1125,9 @@ function draw_options()
 end
 
 function hide_options()
+	-- очищаем данные о контроллах и аддонах для геймпада перед выходом
+	--on_before_clear_controlls_and_addons_info_gamepads()
+	
 	for k, v in pairs(get_menu_ref().ixr_controlls) do
 		v:Show(false)
 	end
@@ -541,6 +1141,22 @@ function register_static(name_controll, static, x, y, width, height, color)
 	get_controll(name_controll):SetTextureColor(color)
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
+end
+
+function register_framewindow(name_controll, static, x, y, width, height)
+	set_controll(name_controll, get_options_xml():InitFrame(static, get_menu_ref()))
+	get_controll(name_controll):SetWndPos(vector2():set(x, y))
+	get_controll(name_controll):SetWndSize(vector2():set(width, height))
+	get_controll(name_controll):Show(false)
+	register_controll(name_controll)
+end
+
+function register_gamepad_legend(name_controll, static)
+	set_controll(name_controll, get_options_xml():InitGamepadLegend(static, get_menu_ref()))
+	get_controll(name_controll):Show(false)
+	register_controll(name_controll)
 end
 
 function register_button(name_controll, static, x, y, width, height, _callback)
@@ -551,6 +1167,8 @@ function register_button(name_controll, static, x, y, width, height, _callback)
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
 	get_menu_ref():AddCallback(name_controll, ui_events.BUTTON_CLICKED, _callback, get_menu_ref())
+	
+	return get_controll(name_controll)
 end
 
 function register_text(name_controll, text_section, displayText, x, y, width, height, color)
@@ -561,6 +1179,8 @@ function register_text(name_controll, text_section, displayText, x, y, width, he
 	get_controll(name_controll):TextControl():SetTextColor(color)
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
 function register_list_box(name_controll, list_box, x, y, width, height, item_height)
@@ -573,6 +1193,8 @@ function register_list_box(name_controll, list_box, x, y, width, height, item_he
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
 	get_menu_ref():AddCallback(name_controll, ui_events.LIST_ITEM_CLICKED, this.OnAddonItemClicked,	get_menu_ref())
+	
+	return get_controll(name_controll)
 end
 
 function register_scroll_view(name_controll, scroll_section, x, y, width, height)
@@ -581,6 +1203,8 @@ function register_scroll_view(name_controll, scroll_section, x, y, width, height
 	get_controll(name_controll):SetWndSize(vector2():set(width, height))
     get_controll(name_controll):Show(false)
     register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
 function register_image(name_controll, img_path, x, y, width, height, alpha)
@@ -592,30 +1216,36 @@ function register_image(name_controll, img_path, x, y, width, height, alpha)
 	get_controll(name_controll):SetTextureColor(GetARGB(alpha, 255, 255, 255))
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
-function register_checkbox(name_controll, x, y, alpha, def_value, _ref, _callback)
+function register_checkbox(name_controll, x, y, alpha, def_value, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
 		_ref = get_menu_ref()
 	end
 	
 	name_controll = name_controll .. "_checkbox_"
 	
-	set_controll(name_controll, IXRCheckBox(name_controll, x, y, alpha, def_value, _callback, _ref))
+	set_controll(name_controll, IXRCheckBox(name_controll, x, y, alpha, def_value, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
-function register_textbox(name_controll, x, y, alpha, def_value, _ref, _callback)
+function register_textbox(name_controll, x, y, alpha, def_value, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
 		_ref = get_menu_ref()
 	end
 	
 	name_controll = name_controll .. "_textbox_"
 	
-	set_controll(name_controll, IXRTextBox(name_controll, x, y, alpha, def_value, _callback, _ref))
+	set_controll(name_controll, IXRTextBox(name_controll, x, y, alpha, def_value, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
 function register_combobox(name_controll, x, y, alpha, def_value, list_values, _ref, _callback, script_name, variable_name)
@@ -628,28 +1258,34 @@ function register_combobox(name_controll, x, y, alpha, def_value, list_values, _
 	set_controll(name_controll, IXRComboBox(name_controll, x, y, alpha, def_value, list_values, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
-function register_numeric_up_down(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _ref, _callback)
+function register_numeric_up_down(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
 		_ref = get_menu_ref()
 	end
 	
 	name_controll = name_controll .. "_numeric_up_down_"
-	set_controll(name_controll, IXRNumericUpDown(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref))
+	set_controll(name_controll, IXRNumericUpDown(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
-function register_track_bar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _ref, _callback)
+function register_track_bar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
 		_ref = get_menu_ref()
 	end
 	
 	name_controll = name_controll .. "_track_bar_"
-	set_controll(name_controll, IXRTrackBar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref))
+	set_controll(name_controll, IXRTrackBar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
+	
+	return get_controll(name_controll)
 end
 
 -- #######################################
@@ -683,6 +1319,7 @@ function on_ixr_options_exit_btn_clicked()
 	end
 	if get_menu_ref().eng_lang_btn then get_menu_ref().eng_lang_btn:Show(true) end
 	if get_menu_ref().ru_lang_btn then get_menu_ref().ru_lang_btn:Show(true) end
+	if get_menu_ref().gamepad_legend then get_menu_ref().gamepad_legend:Show(true) end
 end
 
 function on_btn_options_ixr_clicked()
@@ -694,6 +1331,7 @@ function on_btn_options_ixr_clicked()
 		get_menu_ref().shniaga:SetVisibleMagnifier(false)
 		get_menu_ref().shniaga:Show(false)
 	end
+	if get_menu_ref().gamepad_legend then get_menu_ref().gamepad_legend:Show(false) end
 	draw_options()
 end
 
@@ -733,7 +1371,7 @@ function _on_main_menu_init_controlls(_ref)
 	
 	]]
 	
-	register_list_box("addons_list_box", "addons_list", 33, 108, 250, 575, 80)
+	register_list_box("addons_list_box", "addons_list", 33, 108, 250, 575, 100)
 	
 	register_button("ixr_save_options", "ixr_product_sans_16_l", 976, 710 + 14, 100, 18, function () _save_options() end)
 	get_controll("ixr_save_options"):TextControl():SetText("SAVE")
@@ -741,22 +1379,73 @@ function _on_main_menu_init_controlls(_ref)
 	
 	
 	get_controll("addons_list_box"):RemoveAll()
+	
+	-- наши аддоны всегда с верху
 	for options_script_name, options_variables in pairs(getOptions()) do
-		get_controll("addons_list_box"):AddExistingItem(
-			AddonItem(
+		if ffx_string_utils.start_with(options_script_name, "ixray_") or ffx_string_utils.start_with(options_script_name, "ixr_") then
+			get_controll("addons_list_box"):AddExistingItem(AddonItem(
+				vector2():set(250, 65), 
+				"ui\\ixr_options\\icons\\ixr_addon_icon",
+				tostring(options_script_name).. ".script", GetARGB(255, 122, 255, 122),
+				"IXRay Team", GetARGB(255, 150, 150, 150),
+				"1.0.0", GetARGB(255, 150, 150, 150),
+				"IXRay Addon", GetARGB(255, 150, 150, 150),
+				options_variables,
+				ixr_options.options_addon_info[options_script_name] or {}
+			))
+		end
+	end
+	
+	local sorted_addons_names = {}
+	-- сборка листа сортировки для именованных аддонов
+	for options_script_name, options_variables in pairs(getOptions()) do
+		if not (ffx_string_utils.start_with(options_script_name, "ixray_") or ffx_string_utils.start_with(options_script_name, "ixr_")) then
+			if ixr_options.options_addon_info[options_script_name] and ixr_options.options_addon_info[options_script_name].options_addon_name ~= nil then
+				if not ffx_table_utils.is_contains(sorted_addons_names, ixr_options.options_addon_info[options_script_name].options_addon_name) then
+					table.insert(sorted_addons_names, ixr_options.options_addon_info[options_script_name].options_addon_name)
+				end
+			end
+		end
+	end
+	
+	-- сортировка по именованным аддонам
+	for i, addon_name in ipairs(sorted_addons_names) do
+		for options_script_name, options_variables in pairs(getOptions()) do
+			if not (ffx_string_utils.start_with(options_script_name, "ixray_") or ffx_string_utils.start_with(options_script_name, "ixr_")) and ixr_options.options_addon_info[options_script_name] and addon_name == ixr_options.options_addon_info[options_script_name].options_addon_name then
+				get_controll("addons_list_box"):AddExistingItem(AddonItem(
+					vector2():set(250, 65), 
+					"ui\\ixr_options\\icons\\addon_icon",
+					tostring(options_script_name).. ".script", GetARGB(255, 255, 255, 255),
+					"[Unknown]", GetARGB(255, 150, 150, 150),
+					"[Unknown]", GetARGB(255, 150, 150, 150),
+					"[Unknown]", GetARGB(255, 150, 150, 150),
+					options_variables,
+					ixr_options.options_addon_info[options_script_name] or {}
+				))
+			end
+		end
+	end
+	
+	-- сортировка в конец безымянных аддонов
+	for options_script_name, options_variables in pairs(getOptions()) do
+		if not (ffx_string_utils.start_with(options_script_name, "ixray_") or ffx_string_utils.start_with(options_script_name, "ixr_")) and ((not ixr_options.options_addon_info[options_script_name]) or  ixr_options.options_addon_info[options_script_name].options_addon_name == nil) then
+			get_controll("addons_list_box"):AddExistingItem(AddonItem(
 				vector2():set(250, 65), 
 				"ui\\ixr_options\\icons\\addon_icon",
 				tostring(options_script_name).. ".script", GetARGB(255, 255, 255, 255),
-				"Call Of Pripat 1.6.02", GetARGB(255, 200, 200, 200),
-				"1.0.0", GetARGB(255, 200, 200, 200),
-				"active", GetARGB(255, 200, 200, 200),
-				options_variables
-			)
-		)
+				"[Unknown]", GetARGB(255, 150, 150, 150),
+				"[Unknown]", GetARGB(255, 150, 150, 150),
+				"[Unknown]", GetARGB(255, 150, 150, 150),
+				options_variables,
+				ixr_options.options_addon_info[options_script_name] or {}
+			))
+		end
 	end
-
+		
 	--register_scroll_view("options_scroll", "scroll_v", 320, 270, 670, 400)
 	register_scroll_view("options_scroll", "scroll_v", 320, 125, 670, 550) -- (name_controll, scroll_section, x, y, width, height)
+	register_framewindow("framewindow_gamepad", "frame_window", 33, 108, 250, 575)
+	register_gamepad_legend("gamepad_legend", "gamepad_legend")
 	get_controll("options_scroll"):Show(false)
 end
 
@@ -781,6 +1470,9 @@ function on_draw_options(index, item)
 	local padding = 7
 	local alpha = 75
 	
+	-- Чистим данные контролов для геймпада
+	on_before_clear_controlls_info_gamepads()
+	
 	local cnt_ungroupped_controlls = #ungroupped_controlls
 	if cnt_ungroupped_controlls > 0 then
 		for i=1, cnt_ungroupped_controlls do
@@ -798,6 +1490,9 @@ function on_draw_options(index, item)
 			end
 		end
 	end
+	
+	-- Ставим метку о том что генерация контролов завершена теперь доступна их метадата
+	on_controlls_rendering_completed()
 	
 	return true
 end
@@ -844,7 +1539,11 @@ function pick_controll(option_data, option_bg, option_key_name)
 	local script_name = option_data["script_name"]
 	local parent_element_width = option_bg:GetWidth()
 	
-	local __callback_handler = function (value, ctrl)
+	local __callback_handler = function (value, ctrl, is_value_from_code)
+		if is_user_input == nil then
+			is_user_input = true
+		end
+		
 		if ixr_options.dynamic_vars.is_callbacks_skip then
 			return
 		end
@@ -865,39 +1564,43 @@ function pick_controll(option_data, option_bg, option_key_name)
 		
 		if option_data["_callback"] ~= nil then
 			if controll_type == "combo_box" then
-				option_data["_callback"](group_name, variable_name, option_data["controll_data"]["list_values"][value]["option_return_value"])
+				option_data["_callback"](group_name, variable_name, option_data["controll_data"]["list_values"][value]["option_return_value"], is_value_from_code)
 			else
-				option_data["_callback"](group_name, variable_name, value)
+				option_data["_callback"](group_name, variable_name, value, is_value_from_code)
 			end
 		end
 	end
 	
 	if controll_type == "check_box" then
-		register_checkbox(
+		return register_checkbox(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.check_box_width - 3.5,
 			4,
 			ixr_options.controlls_defines.check_box_alpha,
 			option_data["controll_data"]["default_value"],
 			option_bg,
-			__callback_handler
+			__callback_handler,
+			script_name, 
+			variable_name
 		)
 	end
 		
 	if controll_type == "text_box" then
-		register_textbox(
+		return register_textbox(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.text_box_width - 3.5,
 			4,
 			ixr_options.controlls_defines.text_box_alpha,
 			option_data["controll_data"]["default_value"],
 			option_bg,
-			__callback_handler
+			__callback_handler,
+			script_name, 
+			variable_name
 		)
 	end
 	
 	if controll_type == "combo_box" then
-		register_combobox(
+		return register_combobox(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.combo_box_width - 3.5,
 			4,
@@ -912,7 +1615,7 @@ function pick_controll(option_data, option_bg, option_key_name)
 	end
 	
 	if controll_type == "numeric_up_down" then
-		register_numeric_up_down(
+		return register_numeric_up_down(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.numeric_up_down_width - 3.5,
 			4,
@@ -922,12 +1625,14 @@ function pick_controll(option_data, option_bg, option_key_name)
 			option_data["controll_data"]["max_value"],
 			option_data["controll_data"]["value_offset"],
 			option_bg,
-			__callback_handler
+			__callback_handler,
+			script_name, 
+			variable_name
 		)
 	end
 	
 	if controll_type == "track_bar" then
-		register_track_bar(
+		return  register_track_bar(
 			tostring(controll_type) .. tostring(option_key_name),
 			parent_element_width - ixr_options.controlls_defines.track_bar_width - 3.5,
 			4,
@@ -936,8 +1641,11 @@ function pick_controll(option_data, option_bg, option_key_name)
 			option_data["controll_data"]["min_value"],
 			option_data["controll_data"]["max_value"],
 			option_data["controll_data"]["value_offset"],
+			option_data["controll_data"]["use_ceil"],
 			option_bg,
-			__callback_handler
+			__callback_handler,
+			script_name, 
+			variable_name
 		)
 	end
 end
@@ -960,6 +1668,23 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		option_bg:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
 		option_bg:SetTextureColor(GetARGB(alpha, 225, 225, 225))
 		get_menu_ref():Register(option_bg, controll_option_bg_name)
+		fix_controll_size(option_bg)
+		
+		local option_bg_selected = get_options_xml():InitStatic("black_option_rounded_rect_selected", _shell)
+		option_bg_selected:SetWndPos(vector2():set(padding, padding))
+		option_bg_selected:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
+		option_bg_selected:SetTextureColor(GetARGB(alpha, 225, 225, 225))
+		option_bg_selected:Show(false)
+		get_menu_ref():Register(option_bg_selected, controll_option_bg_name.."_selected")
+		fix_controll_size(option_bg_selected)
+		
+		local option_bg_focused = get_options_xml():InitStatic("black_option_rounded_rect_focused", _shell)
+		option_bg_focused:SetWndPos(vector2():set(padding, padding))
+		option_bg_focused:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
+		option_bg_focused:SetTextureColor(GetARGB(alpha, 225, 225, 225))
+		option_bg_focused:Show(false)
+		get_menu_ref():Register(option_bg_focused, controll_option_bg_name.."_focused")
+		fix_controll_size(option_bg_focused)
 		
 		local displayText = "text_" .. tostring(option_index)
 		local ctrl_name = "txt_"  .. tostring(option_index)
@@ -967,13 +1692,34 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		local CTRLText = get_options_xml():InitStatic("ixr_product_sans_12_l", option_bg)
 		CTRLText:SetWndPos(vector2():set(5, 8))
 		CTRLText:SetWndSize(vector2():set(250, 25))
-		CTRLText:TextControl():SetText(tostring(variable_name) .. " (" .. tostring( game.translate_string(tostring(display_text) or display_text) ) .. ")")
+		
+		if DRAW_VAR_NAME then
+			CTRLText:TextControl():SetText( tostring(variable_name) .. " (" .. tostring(game.translate_string(tostring(display_text)) or display_text) .. ")" )
+		else
+			CTRLText:TextControl():SetText( tostring(game.translate_string(tostring(display_text)) or display_text) )
+		end
+		
+		
 		CTRLText:TextControl():SetTextColor(GetARGB(255, 200, 200, 200))
 		CTRLText:Show(true)
 		get_menu_ref():Register(CTRLText, "ixr_controll_label_"  .. tostring(option_index))
 		
-		pick_controll(option_data, option_bg, tostring(option_index))
+		local controll_ref = pick_controll(option_data, option_bg, tostring(option_index))
 
+		local _metadata = ixr_options.get_metadata(option_data["script_name"], option_data["variable_name"])
+		_metadata.controll_type = option_data["controll_data"]["controll"]
+		_metadata.controll_ref = controll_ref
+		_metadata.script_name = option_data["script_name"]
+		_metadata.variable_name = option_data["variable_name"]
+		_metadata.background_focused_controll_ref = option_bg_focused
+		_metadata.background_selected_controll_ref = option_bg_selected
+		_metadata.background_controll_ref = option_bg
+		_metadata.background_controll_color = GetARGB(alpha, 225, 225, 225)
+		_metadata.label_controll_ref = CTRLText
+		_metadata.label_controll_color = GetARGB(255, 200, 200, 200)
+		ixr_options.set_metadata(option_data["script_name"], option_data["variable_name"], _metadata)
+		
+		register_controll_metadata_for_gamepad(option_data["script_name"], option_data["variable_name"], _metadata)
 	end)
 
 end
@@ -1013,18 +1759,53 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_bg:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
 		option_bg:SetTextureColor(GetARGB(alpha, 225, 225, 225))
 		get_menu_ref():Register(option_bg, controll_option_bg_name .. "_" .. tostring(i))
+		fix_controll_size(option_bg)
 		
-		local option_name_controll = get_options_xml():InitStatic("ixr_product_sans_12_l", group_bg)
-		option_name_controll:SetWndPos(vector2():set(padding + padding, 5 + padding + y_offset))
+		local option_bg_selected = get_options_xml():InitStatic("black_option_rounded_rect_selected", group_bg)
+		option_bg_selected:SetWndPos(vector2():set(padding, padding + y_offset))
+		option_bg_selected:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
+		option_bg_selected:SetTextureColor(GetARGB(alpha, 225, 225, 225))
+		option_bg_selected:Show(false)
+		get_menu_ref():Register(option_bg_selected, controll_option_bg_name .. "_selected_" .. tostring(i))
+		fix_controll_size(option_bg_selected)
+		
+		local option_bg_focused = get_options_xml():InitStatic("black_option_rounded_rect_focused", group_bg)
+		option_bg_focused:SetWndPos(vector2():set(padding, padding + y_offset))
+		option_bg_focused:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
+		option_bg_focused:SetTextureColor(GetARGB(alpha, 225, 225, 225))
+		option_bg_focused:Show(false)
+		get_menu_ref():Register(option_bg_focused, controll_option_bg_name .. "_focused_" .. tostring(i))
+		fix_controll_size(option_bg_focused)
+		
+		local option_name_controll = get_options_xml():InitStatic("ixr_product_sans_12_l", option_bg)
+		option_name_controll:SetWndPos(vector2():set(padding, padding))
 		option_name_controll:SetWndSize(vector2():set(texture_width - padding, group_name_text_height))
 		
-		option_name_controll:TextControl():SetText(tostring(variable_name) .. " (" .. tostring(game.translate_string(tostring(display_text)) or display_text) .. ")")
+		if DRAW_VAR_NAME then
+			option_name_controll:TextControl():SetText( tostring(variable_name) .. " (" .. tostring(game.translate_string(tostring(display_text)) or display_text) .. ")" )
+		else
+			option_name_controll:TextControl():SetText( tostring(game.translate_string(tostring(display_text)) or display_text) )
+		end
 		
 		option_name_controll:TextControl():SetTextColor(GetARGB(255, 200, 200, 200))
 		option_name_controll:Show(true)
 		get_menu_ref():Register(option_name_controll, "ixr_option_name_label_"  .. tostring(option_index) .. "_" .. tostring(i))
 		
-		pick_controll(option_data, option_bg, tostring(option_index) .. "_" .. tostring(i))
+		local controll_ref = pick_controll(option_data, option_bg, tostring(option_index) .. "_" .. tostring(i))
+		local _metadata = ixr_options.get_metadata(option_data["script_name"], option_data["variable_name"])
+		_metadata.controll_type = option_data["controll_data"]["controll"]
+		_metadata.controll_ref = controll_ref
+		_metadata.script_name = option_data["script_name"]
+		_metadata.variable_name = option_data["variable_name"]
+		_metadata.background_focused_controll_ref = option_bg_focused
+		_metadata.background_selected_controll_ref = option_bg_selected
+		_metadata.background_controll_ref = option_bg
+		_metadata.background_controll_color = GetARGB(alpha, 225, 225, 225)
+		_metadata.label_controll_ref = option_name_controll
+		_metadata.label_controll_color = GetARGB(255, 200, 200, 200)
+		ixr_options.set_metadata(option_data["script_name"], option_data["variable_name"], _metadata)
+
+		register_controll_metadata_for_gamepad(option_data["script_name"], option_data["variable_name"], _metadata)
 		
 		y_offset = y_offset + option_bg:GetHeight() + padding
 		sum_height = sum_height + option_bg:GetHeight() + padding
@@ -1059,9 +1840,19 @@ end
 -- 												TRACK BAR
 -- #########################################################################################################
 class "IXRTrackBar" (CUIStatic)
-function IXRTrackBar:__init(controll_name, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref)
+function IXRTrackBar:__init(controll_name, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _callback, _ref, script_name, variable_name)
 	super()
 	
+	self.script_visible_controlls = nil
+	self.script_visible_background = nil
+	self.script_gray_label = nil
+	self.script_gray_background = nil
+	
+	self.is_pushed_from_code = false
+	self.script_name = script_name
+	self.variable_name = variable_name
+	
+	self.use_ceil = use_ceil
 	self.visible = false
 	self.value = 0.0
 	self.value_offset = value_offset
@@ -1088,7 +1879,11 @@ function IXRTrackBar:__init(controll_name, x, y, alpha, default_value, min_value
 	self.controll_text:SetWndPos(vector2():set(3, 2))
 	self.controll_text:SetWndSize(vector2():set(50, 16))
 	self.controll_text:Show(false)
-	self.controll_text:TextControl():SetText("0.0")
+	if self.use_ceil then
+		self.controll_text:TextControl():SetText("0")
+	else
+		self.controll_text:TextControl():SetText("0.0")
+	end
 	self.controll_text:TextControl():SetTextColor(GetARGB(200, 255, 255, 255))
 	
 	self.controll_track_bar = get_options_xml():InitTrackBar("track_bar", self.controll_background)
@@ -1101,50 +1896,172 @@ function IXRTrackBar:__init(controll_name, x, y, alpha, default_value, min_value
 	self:SetValue(default_value)
 end
 
-function IXRTrackBar:Update()
-	if self.controll_track_bar:GetFValue() ~= self.value then
-		self.value = self.controll_track_bar:GetFValue()
-		self:OnChangeState()
+function IXRTrackBar:Show(flag, skip_callbacks)
+	if skip_callbacks == nil then 
+		skip_callbacks = false
 	end
-end
-
-function IXRTrackBar:Show(flag)
+	
 	self.visible = flag
 	self.controll_background:Show(flag)
 	self.controll_track_bar:Show(flag)
 	self.controll_text:Show(flag)
 	
-	if flag then
-		self:OnChangeState()
-		set_main_menu_update(self.controll_name.."track_bar", function () self:Update() end)
-	else
-		set_main_menu_update(self.controll_name.."track_bar", nil)
+	if not skip_callbacks then
+		if flag then
+			self:OnChangeState()
+			set_main_menu_update(self.controll_name.."track_bar", function () self:Update() end)
+		else
+			set_main_menu_update(self.controll_name.."track_bar", nil)
+		end
 	end
+end
+
+function IXRTrackBar:Update()
+	if self.controll_track_bar:GetFValue() ~= self.value then
+		self.value = self.controll_track_bar:GetFValue()
+		self:OnChangeState()
+	end
+	
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	self:UpdateVisualValue(metadata)
+	self:UpdateControllVisibility(metadata)
+end
+
+--[[
+metadata.background_controll_ref = option_bg
+metadata.background_controll_color =  GetARGB(alpha, 225, 225, 225)
+metadata.label_controll_ref = CTRLText
+metadata.label_controll_color = GetARGB(255, 200, 200, 200)
+
+metadata.visible_controlls
+metadata.visible_background
+metadata.gray_label
+metadata.gray_background
+--]]
+
+function IXRTrackBar:UpdateControllVisibility(metadata)
+	if metadata ~= nil and self.script_visible_controlls ~= metadata.visible_controlls then
+		self.script_visible_controlls = metadata.visible_controlls
+		self:Show(metadata.visible_controlls, true)
+	end
+	
+	if metadata ~= nil and self.script_visible_background ~= metadata.visible_background then
+		self.script_visible_background = metadata.visible_background
+		if metadata.script_visible_background ~= nil then
+			metadata.background_controll_ref:Show(metadata.visible_background)
+		end
+	end
+	
+	if metadata ~= nil and self.script_visible_background ~= metadata.gray_label then
+		self.script_gray_label = metadata.gray_label
+		if metadata.label_controll_ref ~= nil then
+			if metadata.gray_label then
+				metadata.label_controll_ref:TextControl():SetTextColor(GetARGB(255, 100, 100, 100))
+			else
+				metadata.label_controll_ref:TextControl():SetTextColor(metadata.label_controll_color)
+			end
+		end
+	end
+	
+	if metadata ~= nil and self.script_visible_background ~= metadata.gray_background then
+		self.script_gray_background = metadata.gray_background
+		if metadata.background_controll_ref ~= nil then
+			if metadata.gray_background then
+				metadata.background_controll_ref:SetTextureColor(GetARGB(50, 225, 225, 225))
+			else
+				metadata.background_controll_ref:SetTextureColor(metadata.background_controll_color)
+			end
+		end
+	end
+end
+
+
+function IXRTrackBar:UpdateVisualValue(metadata)
+	if metadata ~= nil and metadata.update_visual_value ~= nil then
+		local new_value = metadata.update_visual_value
+		metadata.update_visual_value = nil
+		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
+		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		
+		self:OnIncomingUpdateVisualValue(new_value)
+		self.value = self.controll_track_bar:GetFValue()
+	end
+end
+
+function IXRTrackBar:OnIncomingUpdateVisualValue(new_value_index)
+	if self.value == new_value_index then
+		return
+	end
+	
+	self.is_pushed_from_code = true
+	self:SetValue(new_value_index)
 end
 
 function IXRTrackBar:OnChangeState()
-	self.controll_text:TextControl():SetText(tostring(string.format("%.3f", self.value)))
-	if self.visible and self.on_change_callback then
-		self.on_change_callback(self:GetValue(), self.controll_name)
+	if self.value ~= nil then
+		if self.use_ceil then
+			self.controll_text:TextControl():SetText(tostring(math.ceil(self.value)))
+		else
+			self.controll_text:TextControl():SetText(tostring(string.format("%.3f", self.value)))
+		end
+	else
+		if self.use_ceil then
+			self.controll_text:TextControl():SetText("0")
+		else
+			self.controll_text:TextControl():SetText("0.0")
+		end
 	end
+	
+	if self.visible and self.on_change_callback then
+		if self.use_ceil then
+			self.on_change_callback(math.ceil(self:GetValue()), self.controll_name, self.is_pushed_from_code)
+		else
+			self.on_change_callback(self:GetValue(), self.controll_name, self.is_pushed_from_code)
+		end
+	end
+	self.is_pushed_from_code = false
 end
 
 function IXRTrackBar:SetValue(value)
-	self.value = value
-	self.controll_track_bar:SetFValue(self.value)
-	self:OnChangeState()
+	if value < self.min_value then
+		value = self.min_value
+	end
+	
+	if value > self.max_value then
+		value = self.max_value
+	end
+
+	if self.value ~= value then
+		self.value = value
+		self.controll_track_bar:SetFValue(self.value)
+		self:OnChangeState()
+	end
 end
 
 function IXRTrackBar:GetValue()
-	return self.value
+	return self.value or 0
+end
+
+-- for game pad events
+function IXRTrackBar:on_gamepad_left(is_hold)
+	self:SetValue(self:GetValue() - self.value_offset)
+end
+
+-- for game pad events
+function IXRTrackBar:on_gamepad_right(is_hold)
+	self:SetValue(self:GetValue() + self.value_offset)
 end
 
 -- #########################################################################################################
 -- 											NUMERIC UP DOWN
 -- #########################################################################################################
 class "IXRNumericUpDown" (CUIStatic)
-function IXRNumericUpDown:__init(controll_name, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref)
+function IXRNumericUpDown:__init(controll_name, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref, script_name, variable_name)
 	super()
+	
+	self.is_pushed_from_code = false
+	self.script_name = script_name
+	self.variable_name = variable_name
 	
 	self.visible = false
 	self.value = 0.0
@@ -1207,9 +2124,36 @@ function IXRNumericUpDown:Show(flag)
 	
 	if flag then
 		self:OnChangeState()
+		set_main_menu_update(self.controll_name.."numeric_up_down", function () self:Update() end)
+	else
+		set_main_menu_update(self.controll_name.."numeric_up_down", nil)
 	end
 	
 	self:UpdateArrowsVisibility()
+end
+
+function IXRNumericUpDown:Update()
+	self:UpdateVisualValue()
+end
+
+-- update_visual_value
+function IXRNumericUpDown:UpdateVisualValue()
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	if metadata ~= nil and metadata.update_visual_value ~= nil then
+		local new_value = metadata.update_visual_value
+		metadata.update_visual_value = nil
+		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
+		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		self:OnIncomingUpdateVisualValue(new_value)
+	end
+end
+
+function IXRNumericUpDown:OnIncomingUpdateVisualValue(new_value)
+	if self.value == new_value then
+		return
+	end
+	self.is_pushed_from_code = true
+	self:SetValue(new_value)
 end
 
 function IXRNumericUpDown:UpdateArrowsVisibility()
@@ -1264,8 +2208,19 @@ end
 
 function IXRNumericUpDown:OnChangeState()
 	if self.on_change_callback then
-		self.on_change_callback(self:GetValue(), self.controll_name)
+		self.on_change_callback(self:GetValue(), self.controll_name, self.is_pushed_from_code)
 	end
+	self.is_pushed_from_code = false
+end
+
+-- for game pad events
+function IXRNumericUpDown:on_gamepad_left(is_hold)
+	self:LeftArrowClick()
+end
+
+-- for game pad events
+function IXRNumericUpDown:on_gamepad_right(is_hold)
+	self:RightArrowClick()
 end
 
 -- #########################################################################################################
@@ -1279,6 +2234,7 @@ function IXRComboBox:__init(controll_name, x, y, alpha, default_value_index, lis
 	self.value_index = nil
 	self.list_values = list_values
 	
+	self.is_pushed_from_code = false
 	self.script_name = script_name
 	self.variable_name = variable_name
 	self.disabled_ids = {}
@@ -1331,7 +2287,13 @@ function IXRComboBox:__init(controll_name, x, y, alpha, default_value_index, lis
 	self:SetValueIndex(default_value_index)
 end
 
-
+function IXRComboBox:UpdateTextColor()
+	if self:IsIndexDisabled(self.value_index) then
+		self.controll_text:TextControl():SetTextColor(GetARGB(200, 150, 100, 100))
+	else
+		self.controll_text:TextControl():SetTextColor(GetARGB(200, 255, 255, 255))
+	end
+end
 
 function IXRComboBox:RefreshDisabledIds()
 	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
@@ -1341,17 +2303,31 @@ function IXRComboBox:RefreshDisabledIds()
 	end
 end
 
-function IXRComboBox:Update()
-	self:RefreshDisabledIds()
-	self:UpdateTextColor()
+-- update_visual_value
+function IXRComboBox:UpdateVisualValue()
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	if metadata ~= nil and metadata.update_visual_value ~= nil then
+		local new_value = metadata.update_visual_value
+		metadata.update_visual_value = nil
+		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
+		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		self:OnIncomingUpdateVisualValue(new_value)
+	end
 end
 
-function IXRComboBox:UpdateTextColor()
-	if self:IsIndexDisabled(self.value_index) then
-		self.controll_text:TextControl():SetTextColor(GetARGB(200, 150, 100, 100))
-	else
-		self.controll_text:TextControl():SetTextColor(GetARGB(200, 255, 255, 255))
+function IXRComboBox:OnIncomingUpdateVisualValue(new_value_index)
+	if self.value_index == new_value_index then
+		return
 	end
+	
+	self.is_pushed_from_code = true
+	self:SetValueIndex(new_value_index)
+end
+
+function IXRComboBox:Update()
+	self:RefreshDisabledIds()
+	self:UpdateVisualValue()
+	self:UpdateTextColor()
 end
 
 function IXRComboBox:Show(flag)
@@ -1458,7 +2434,8 @@ function IXRComboBox:SetValueIndex(index)
 	
 	if #self.list_values > 0 and self.list_values[index] then
 		self:UpdateTextColor()
-		self.controll_text:TextControl():SetText(tostring(self.list_values[index]["option_display_name"] or nil))
+		local display_text = tostring(self.list_values[index]["option_display_name"] or "nil")
+		self.controll_text:TextControl():SetText(game.translate_string(display_text) or display_text)
 	end
 
 	self:UpdateArrowsVisibility()
@@ -1496,16 +2473,31 @@ end
 
 function IXRComboBox:OnChangeState()
 	if self.on_change_callback and not self:IsIndexDisabled(self.value_index) then
-		self.on_change_callback(self:GetValue(), self.controll_name)
+		self.on_change_callback(self:GetValue(), self.controll_name, self.is_pushed_from_code)
 	end
+	self.is_pushed_from_code = false
+end
+
+-- for game pad events
+function IXRComboBox:on_gamepad_left(is_hold)
+	self:LeftArrowClick()
+end
+
+-- for game pad events
+function IXRComboBox:on_gamepad_right(is_hold)
+	self:RightArrowClick()
 end
 
 -- #########################################################################################################
 -- 												TEXT BOX
 -- #########################################################################################################
 class "IXRTextBox" (CUIStatic)
-function IXRTextBox:__init(controll_name, x, y, alpha, default_value, _callback, _ref)
+function IXRTextBox:__init(controll_name, x, y, alpha, default_value, _callback, _ref, script_name, variable_name)
 	super()
+	
+	self.is_pushed_from_code = false
+	self.script_name = script_name
+	self.variable_name = variable_name
 	
 	self.value = nil
 	self.on_change_callback = _callback
@@ -1532,10 +2524,33 @@ function IXRTextBox:__init(controll_name, x, y, alpha, default_value, _callback,
 	self:SetValue(default_value)
 end
 
+-- update_visual_value
+function IXRTextBox:UpdateVisualValue()
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	if metadata ~= nil and metadata.update_visual_value ~= nil then
+		local new_value = metadata.update_visual_value
+		metadata.update_visual_value = nil
+		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
+		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		self:OnIncomingUpdateVisualValue(new_value)
+	end
+end
+
+function IXRTextBox:OnIncomingUpdateVisualValue(new_value)
+	if self:GetValue() == new_value then
+		return
+	end
+	
+	self.is_pushed_from_code = true
+	self:SetValue(new_value)
+end
+
 function IXRTextBox:Update()
 	if self.edit_box:GetText() ~= self.value then
 		self:OnChangeState()
 	end
+	
+	self:UpdateVisualValue()
 end
 
 function IXRTextBox:Show(flag)
@@ -1555,8 +2570,9 @@ end
 
 function IXRTextBox:OnChangeState()
 	if self.on_change_callback then
-		self.on_change_callback(self:GetValue(), self.controll_name)
+		self.on_change_callback(self:GetValue(), self.controll_name, self.is_pushed_from_code)
 	end
+	self.is_pushed_from_code = false
 end
 
 function IXRTextBox:SetValue(value)
@@ -1571,12 +2587,24 @@ function IXRTextBox:GetValue()
 	return self.value
 end
 
+-- for game pad events
+function IXRTextBox:on_gamepad_left(is_hold)
+end
+
+-- for game pad events
+function IXRTextBox:on_gamepad_right(is_hold)
+end
+
 -- #########################################################################################################
 -- 												CHECK BOX
 -- #########################################################################################################
 class "IXRCheckBox" (CUIStatic)
-function IXRCheckBox:__init(check_box_ctrl_name, x, y, alpha, state, _callback, _ref)
+function IXRCheckBox:__init(check_box_ctrl_name, x, y, alpha, state, _callback, _ref, script_name, variable_name)
 	super()
+	
+	self.is_pushed_from_code = false
+	self.script_name = script_name
+	self.variable_name = variable_name
 	
 	self.is_checked = state
 	self.on_change_callback = _callback
@@ -1624,6 +2652,36 @@ function IXRCheckBox:Show(flag)
 	if flag then
 		self:OnChangeState()
 	end
+	
+	if flag then
+		set_main_menu_update(self.check_box_ctrl_name.."check_box", function () self:Update() end)
+	else
+		set_main_menu_update(self.check_box_ctrl_name.."check_box", nil)
+	end
+end
+
+function IXRCheckBox:Update()
+	self:UpdateVisualValue()
+end
+
+-- update_visual_value
+function IXRCheckBox:UpdateVisualValue()
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	if metadata ~= nil and metadata.update_visual_value ~= nil then
+		local new_value = metadata.update_visual_value
+		metadata.update_visual_value = nil
+		ixr_options.set_metadata(self.script_name, self.variable_name, metadata)
+		on_apply_new_metadata_value(self.script_name, self.variable_name, new_value, self)
+		self:OnIncomingUpdateVisualValue(new_value)
+	end
+end
+
+function IXRCheckBox:OnIncomingUpdateVisualValue(new_state)
+	if self:IsChecked() == new_state then
+		return
+	end
+	self.is_pushed_from_code = true
+	self:SetState(new_state)
 end
 
 function IXRCheckBox:SwitchState()
@@ -1641,8 +2699,9 @@ function IXRCheckBox:OnChangeState()
 	end
 	
 	if self.on_change_callback then
-		self.on_change_callback(self:IsChecked(), self.check_box_ctrl_name)
+		self.on_change_callback(self:IsChecked(), self.check_box_ctrl_name, self.is_pushed_from_code)
 	end
+	self.is_pushed_from_code = false
 end
 
 function IXRCheckBox:SetState(state)
@@ -1654,16 +2713,52 @@ function IXRCheckBox:IsChecked()
 	return self.is_checked
 end
 
+-- for game pad events
+function IXRCheckBox:on_gamepad_left(is_hold)
+	self:SetState(false)
+end
+
+-- for game pad events
+function IXRCheckBox:on_gamepad_right(is_hold)
+	self:SetState(true)
+end
+
 -- #########################################################################################################
 -- 												ADDON ITEM
 -- #########################################################################################################
 class "AddonItem" (CUIListBoxItem)
 
-function AddonItem:__init(wnd_size, icon_path, addon_name, color_addon_name, addon_platform, color_platform, addon_version, color_version, addon_status, color_status, options_variables) super()
-	self:SetWndSize(wnd_size)
+function AddonItem:__init(wnd_size, icon_path, script_name, color_option_title, addon_authors, color_platform, addon_version, color_version, addon_name, color_status, options_variables, addon_info) super()
+	self.addon_info = addon_info
+	
+	self.option_title = game.translate_string(self.addon_info.options_title) or self.addon_info.options_title
+	self.icon_path = icon_path
+	
+	if self.addon_info.icon_path ~= nil then
+		self.icon_path = self.addon_info.icon_path
+	end
+	
+	self.options_addon_name = addon_name
+	if self.addon_info.options_addon_name ~= nil then
+		self.options_addon_name =  game.translate_string(tostring(self.addon_info.options_addon_name)) or tostring(self.addon_info.options_addon_name)
+	end
+	
+	self.options_script_version = addon_version
+	if self.addon_info.options_script_version ~= nil then
+		self.options_script_version = tostring(self.addon_info.options_script_version)
+	end
+	
+	
+	self.options_authors_text = addon_authors
+	if self.addon_info.options_authors_text ~= nil then
+		self.options_authors_text = tostring(self.addon_info.options_authors_text)
+	end
+	
+	self.counter = 0
+	self:SetWndSize(vector2():set(wnd_size.x, wnd_size.y))
 	
 	self.y_offset = 10
-	self.addon_display_name = addon_name
+	self.addon_script_name = script_name
 	self.options_variables = options_variables
 	
 	self.addon_background = get_options_xml():InitStatic("addon_background", self)
@@ -1672,36 +2767,93 @@ function AddonItem:__init(wnd_size, icon_path, addon_name, color_addon_name, add
 	self.addon_background:SetWndSize(vector2():set(222, 70))
 	self.addon_background:SetTextureColor(GetARGB(75, 255, 255, 255))
 	
+	self.addon_background_selected = get_options_xml():InitStatic("addon_background_selected", self)
+	self.addon_background_selected:SetStretchTexture(true)
+	self.addon_background_selected:SetWndPos(vector2():set(5, 5))
+	self.addon_background_selected:SetWndSize(vector2():set(222, 70))
+	self.addon_background_selected:SetTextureColor(GetARGB(75, 255, 255, 255))
+	
 	self.addon_icon = get_options_xml():InitStatic("addon_icon", self)
-	self.addon_icon:InitTexture(icon_path)
+	self.addon_icon:InitTexture(self.icon_path)
 	self.addon_icon:SetStretchTexture(true)
 	self.addon_icon:SetWndPos(vector2():set(14, self.y_offset + 10))
-	self.addon_icon:SetWndSize(vector2():set(40, 40))
+	self.addon_icon:SetWndSize(vector2():set(64, 64))
 	self.addon_icon:SetTextureColor(GetARGB(200, 255, 255, 255))
 	
-	self.addon_name = get_options_xml():InitStatic("ixr_product_sans_16_l", self)
-	self.addon_name:SetWndPos(vector2():set(64, self.y_offset))
-	self.addon_name:SetWndSize(vector2():set(250, 15))
-	self.addon_name:TextControl():SetText(addon_name)
-	self.addon_name:TextControl():SetTextColor(color_addon_name)
+	fix_controll_size(self.addon_icon)
 	
-	self.addon_platform = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
-	self.addon_platform:SetWndPos(vector2():set(64, self.y_offset + 15 + 2))
-	self.addon_platform:SetWndSize(vector2():set(250, 15))
-	self.addon_platform:TextControl():SetText("platform: " .. addon_platform)
-	self.addon_platform:TextControl():SetTextColor(color_platform)
+	if self.addon_info.options_title ~= nil then
+		self.addon_title = get_options_xml():InitStatic("ixr_product_sans_16_l", self)
+		self.addon_title:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
+		self.addon_title:SetWndSize(vector2():set(250, 15))
+		self.addon_title:TextControl():SetText(self.option_title)
+		self.addon_title:TextControl():SetTextColor(color_option_title)
+		self:add_counter()
+	end
 	
-	self.addon_version = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
-	self.addon_version:SetWndPos(vector2():set(64, self.y_offset + 15 + 15 + 2 + 2))
-	self.addon_version:SetWndSize(vector2():set(250, 15))
-	self.addon_version:TextControl():SetText("script version: " .. addon_version)
-	self.addon_version:TextControl():SetTextColor(color_version)
+	if self.addon_info.options_title ~= nil then
+		self.script_name = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
+	else
+		self.script_name = get_options_xml():InitStatic("ixr_product_sans_16_l", self)
+	end
+	self.script_name:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
+	self.script_name:SetWndSize(vector2():set(250, 15))
+	self.script_name:TextControl():SetText("script: " .. self.addon_script_name)
+	if self.addon_info.options_title ~= nil then
+		self.script_name:TextControl():SetTextColor(color_platform)
+	else
+		self.script_name:TextControl():SetTextColor(color_option_title)
+	end
+	self:add_counter()
 	
 	self.addon_status = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
-	self.addon_status:SetWndPos(vector2():set(64, self.y_offset + 15 + 15 + 15 + 2 + 2 + 2))
+	self.addon_status:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
 	self.addon_status:SetWndSize(vector2():set(250, 15))
-	self.addon_status:TextControl():SetText("script status: " .. addon_status)
+	self.addon_status:TextControl():SetText("Addon: " .. self.options_addon_name)
 	self.addon_status:TextControl():SetTextColor(color_status)
+	self:add_counter()
+	
+	self.addon_version = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
+	self.addon_version:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
+	self.addon_version:SetWndSize(vector2():set(250, 15))
+	self.addon_version:TextControl():SetText("Version: " .. self.options_script_version)
+	self.addon_version:TextControl():SetTextColor(color_version)
+	self:add_counter()
+	
+	self.addon_authors = get_options_xml():InitStatic("ixr_product_sans_12_l", self)
+	self.addon_authors:SetWndPos(vector2():set(64, self.y_offset + ((15 + 2) * self:get_counter())))
+	self.addon_authors:SetWndSize(vector2():set(250, 15))
+	self.addon_authors:TextControl():SetText("Authors: " .. tostring(self.options_authors_text))
+	self.addon_authors:TextControl():SetTextColor(color_platform)
+	self:add_counter()
+	
+	self:SetWndSize(vector2():set(100, wnd_size.y))
+	
+	self.addon_background:SetWndSize(vector2():set(222, 90))
+	self.addon_background_selected:SetWndSize(vector2():set(222, 90))
+
+	self:SetSelectedState(false)
+	
+	-- for gamepads
+	register_addon_for_gamepad(script_name, self)
+end
+
+function AddonItem:SetSelectedState(is_selected)
+	if is_selected then
+		self.addon_background:Show(false)
+		self.addon_background_selected:Show(true)
+	else
+		self.addon_background:Show(true)
+		self.addon_background_selected:Show(false)
+	end
+end
+
+function AddonItem:add_counter()
+	self.counter = self.counter + 1
+end
+
+function AddonItem:get_counter()
+	return self.counter
 end
 
 -- #######################################
@@ -1715,17 +2867,6 @@ end
 function _find_appdata_folder()
 	if CONST_APPDATA_FOLDER == nil then
 		CONST_APPDATA_FOLDER = getFS():update_path(APPDATA_ALIAS, '')
-	end
-end
-
-function ixr_options.toLog(text)
-	if ixr_options.use_file_log then
-		ffx_dump_utils.write_to_file_log(text, ixr_options.dynamic_vars.first_log_record)
-		ixr_options.dynamic_vars.first_log_record = false
-	end
-	
-	if ixr_options.use_console_log then
-		ffx_dump_utils.write_to_console_log(text)
 	end
 end
 

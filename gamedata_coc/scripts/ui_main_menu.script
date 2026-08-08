@@ -20,7 +20,7 @@ function main_menu:__init() super()
     self:InitControls()
 
     self:InitCallBacks()
-
+	
 	RegisterScriptCallback("on_localization_change", self)
 	
 	if not (level.present()) then
@@ -59,18 +59,18 @@ function main_menu:Update()
 			self.msg_wnd:Show(false)
 		end
 	end
-end 
+end
 
 function main_menu:__finalize()
 end
 
 function main_menu:InitControls()
-	self:SetWndRect					(Frect():set(0,0,1024,768))
+	self:SetWndRect	(Frect():set(0,0,1024,768))
 
     self.main_xml:InitStatic("background", self)
     self.shniaga = self.main_xml:InitMMShniaga("shniaga_wnd", self)
 
-	self.message_box				= CUIMessageBoxEx()
+	self.message_box = CUIMessageBoxEx()
 	self:Register(self.message_box, "msg_box")
 
 	local _ver = self.main_xml:InitStatic("static_version",self)
@@ -165,7 +165,7 @@ function main_menu:InitCallBacks()
 
 	self:Register(self, "self")
 	self:AddCallback("self",	ui_events.MAIN_MENU_RELOADED, self.OnMenuReloaded, self)
-
+	
 	SendScriptCallback("main_menu_on_init_callbacks", self)
 end
 function main_menu:OnMsgOk()
@@ -200,22 +200,24 @@ function main_menu:LoadLastSave()
 end
 
 function main_menu:OnButton_last_save()
-    if ( alife() == nil) then
+	if ( alife() == nil) then
 		self:LoadLastSave	()
-        return
-    end
- 
-    if ( (db.actor ~= nil) and (db.actor:alive() == false) ) then
-        self:LoadLastSave   ()
-        return
-    end
- 
-    self.mbox_mode          = 1
-    self.message_box:InitMessageBox ("message_box_confirm_load_save")
-    self.message_box:ShowDialog(true)
+		return
+	end
+
+	if ( (db.actor ~= nil) and (db.actor:alive() == false) ) then
+		self:LoadLastSave	()
+		return
+	end
+
+	self.mbox_mode			= 1
+	self.message_box:InitMessageBox	("message_box_confirm_load_save")
+	self.message_box:ShowDialog(true)
 end
 
 function main_menu:OnButton_credits_clicked()
+--	local console = get_console()
+--	console:execute("main_menu off")
 	game.start_tutorial("credits_seq")
 end
 
@@ -223,6 +225,7 @@ function main_menu:OnButton_quit_clicked()
 	self.message_box:InitMessageBox("message_box_quit_windows")
 	self.message_box:ShowDialog(true)
 end
+
 
 function main_menu:OnButton_disconnect_clicked()
 	self.message_box:InitMessageBox("message_box_quit_game")
@@ -400,13 +403,14 @@ end
 
 function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
-	local bind = dik_to_bind(dik)
-	local console = get_console()
 	
-	if GetModule("ixr_options") and GetModule("ixr_options").is_options_opened() then
-		GetModule("ixr_options").OnKeyboard(dik, keyboard_action)
+	local hold = false
+	if GetModule("ixr_options") and GetModule("ixr_options").on_press_key(dik, keyboard_action, hold) then -- вернёт true если было совпадение по кнопке с опциями
 		return true
 	end
+	
+	local bind = dik_to_bind(dik)
+	local console = get_console()
 	
 	SendScriptCallback("main_menu_on_keyboard", dik, keyboard_action, self, level.present())
 
@@ -434,16 +438,24 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	return true
 end
 
+function main_menu:OnKeyboardHold(dik)  --virtual function
+	if GetModule("ixr_options") and GetModule("ixr_options").on_press_key(dik, nil, true) then -- вернёт true если было совпадение по кнопке с опциями
+		return true
+	end
+
+	return true
+end
+
 function main_menu:OnGamepadKey(dik, gamepad_action)  --virtual function
 	CUIScriptWnd.OnGamepadKey(self,dik,gamepad_action)
+
+	if GetModule("ixr_options") and GetModule("ixr_options").on_gamepad_key(dik, gamepad_action) then -- вернёт true если было совпадение по кнопке с опциями
+		return true
+	end
+	
 	local bind = dik_to_bind(dik)
 	local bindUI = dik_to_bind(dik, action_groups.agUIGeneral)
 	local console = get_console()
-	
-	if GetModule("ixr_options") and GetModule("ixr_options").is_options_opened() then
-		GetModule("ixr_options").OnGamepadKey(dik, gamepad_action)
-		return true
-	end
 	
 	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
 		if bind == key_bindings.kQUIT or bindUI == key_bindings.kUI_BACK then
@@ -467,11 +479,11 @@ end
 function main_menu:OnGamepadKeyHold(dik)  --virtual function
 	CUIScriptWnd.OnGamepadKeyHold(self,dik)
 	
-	if GetModule("ixr_options") and GetModule("ixr_options").is_options_opened() then
-		GetModule("ixr_options").OnGamepadKeyHold(dik)
+	if GetModule("ixr_options") and GetModule("ixr_options").on_gamepad_key_hold(dik, nil) then -- вернёт true если было совпадение по кнопке с опциями
 		return true
 	end
-	return true
+	
+	return false
 end
 
 function main_menu:OnMenuReloaded()

@@ -309,6 +309,8 @@ function on_gamepad_key(key, action)
 		return ixr_options.emulate_back()
 	elseif bindUI == key_bindings.kUI_ACCEPT then
 		return ixr_options.emulate_accept()
+	elseif bindUI == key_bindings.kUI_ACTION_2 then
+		return _save_options()
 	elseif bindUI == key_bindings.kUI_UP then
 		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_UP)
 		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
