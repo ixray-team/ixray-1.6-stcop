@@ -529,9 +529,10 @@ u8* CGamepadService::BeginOutputPacket(xr_vector<u8>& array)
 	if (IsGamepadWireless())
     {
 		array[0] = 0x31;
-		array[1] = 0x02;
-		return &array[1];
-    }
+		array[1] = 0x00; // Tag and sequence
+		array[2] = 0x10; // Magic value
+		return &array[2];
+	}
     else
     {
 		array[0] = 0x02;
@@ -541,15 +542,14 @@ u8* CGamepadService::BeginOutputPacket(xr_vector<u8>& array)
 
 void CGamepadService::EndOutputPacket(xr_vector<u8>& array)
 {
-#pragma todo("St4lker0k765 to ForserX: CRC calculation doesn't work for some reason")
     if (isWireless)
     {
-		u32 crcChecksum = crc32(array.data(), 74);
-		array[74] = crcChecksum & 0x000000FF;
-		array[75] = (crcChecksum & 0x0000FF00) >> 8;
-		array[76] = (crcChecksum & 0x00FF0000) >> 16;
-		array[77] = (crcChecksum & 0xFF000000) >> 24;
-    }
+		Uint8 ubHdr = 0xA2; // hidp header is part of the CRC calculation
+		Uint32 unCRC;
+		unCRC = SDL_crc32(0, &ubHdr, 1);
+		unCRC = SDL_crc32(unCRC, array.data(), (size_t)(GetPacketSize() - sizeof(unCRC)));
+		memcpy(&array[GetPacketSize() - sizeof(unCRC)], &unCRC, sizeof(unCRC));
+	}
     if (SDL_hid_write(HidDevice, array.data(), GetPacketSize()) == -1)
     {
 		Msg(make_string<const char*>("! SDL Error while writing HID packet: %s", SDL_GetError()));
