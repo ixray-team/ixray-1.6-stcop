@@ -17,11 +17,11 @@ void TAnomalyElectricCurve::BeginComponent(IECSOwner* O)
 
 void TAnomalyElectricCurve::EndComponent()
 {
-	delete_data(m_snd_emmiter_electric_curve_start);
-	delete_data(m_snd_emmiter_electric_curve_loop);
-	delete_data(m_snd_emmiter_electric_curve_end);
-	delete_data(m_snd_emmiter_electric_core_loop);
-	delete_data(m_snd_emmiter_electric_core_target_damage);
+	//delete_data(m_snd_emmiter_electric_curve_start);
+	//delete_data(m_snd_emmiter_electric_curve_loop);
+	//delete_data(m_snd_emmiter_electric_curve_end);
+	//delete_data(m_snd_emmiter_electric_core_loop);
+	//delete_data(m_snd_emmiter_electric_core_target_damage);
 }
 
 void TAnomalyElectricCurve::InitElectricCurves()
@@ -35,8 +35,9 @@ void TAnomalyElectricCurve::InitElectricCurves()
 	{
 		SElectricCurve& curva = m_electric_curves.emplace_back();
 		curva.particleName = m_electric_curve_particle_path;
-		curva.initialPos = XFORM().c;
-		curva.destinationPos = XFORM().c;
+		curva.particleContactGroundName = m_electric_curve_ground_contact_particle_path;
+		curva.initialPos.set(RecalculateStartPosition(XFORM().c));
+		curva.destinationPos.set(XFORM().c);
 		curva.MAX_CURVE_DISTANCE = m_max_curve_radius;
 		curva.Disable();
 	}
@@ -89,6 +90,7 @@ void TAnomalyElectricCurve::Load(const char* section)
 			max_processing_distance = READ_IF_EXISTS(pSettings, r_float, sect, "max_processing_distance", max_processing_distance); // дистанция обновления
 
 			m_electric_curve_particle_path = READ_IF_EXISTS(pSettings, r_string, sect, "electric_curve_particle_path", "");
+			m_electric_curve_ground_contact_particle_path = READ_IF_EXISTS(pSettings, r_string, sect, "electric_curve_ground_contact_particle_path", "");
 			m_max_count_electric_curves = READ_IF_EXISTS(pSettings, r_u8, sect, "max_count_electric_curves", m_max_count_electric_curves);
 			max_trace_curve_distance = READ_IF_EXISTS(pSettings, r_float, sect, "max_trace_curve_distance", max_trace_curve_distance);
 
@@ -96,6 +98,10 @@ void TAnomalyElectricCurve::Load(const char* section)
 			m_max_curve_radius = READ_IF_EXISTS(pSettings, r_float, sect, "max_curve_atack_radius", m_max_curve_radius);// для атак
 			m_max_curve_damage = READ_IF_EXISTS(pSettings, r_float, sect, "max_curve_atack_damage", m_max_curve_damage);
 			m_max_curve_impulse = READ_IF_EXISTS(pSettings, r_float, sect, "max_curve_atack_impulse", m_max_curve_impulse);
+
+			m_change_target_timeout_ms_min = READ_IF_EXISTS(pSettings, r_float, sect, "change_target_timeout_ms_min", m_change_target_timeout_ms_min);
+			m_change_target_timeout_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "change_target_timeout_ms_max", m_change_target_timeout_ms_max);
+			m_curve_start_y_offset = READ_IF_EXISTS(pSettings, r_float, sect, "curve_start_y_offset", m_curve_start_y_offset);
 
 			m_cascade_curves = READ_IF_EXISTS(pSettings, r_bool, sect, "use_cascade_electric_curves", m_cascade_curves); // цепные молнии
 			if (m_cascade_curves)
@@ -139,7 +145,7 @@ void  TAnomalyElectricCurve::AffectCurveDamade(CGameObject* obj)
 	hit_dir.normalize();
 	hit_dir.y = hit_dir.y + 0.4f;
 
-	float effective = (100 - (obj->Position().distance_to(XFORM().c) * 100) / max_trace_curve_distance) / 100;
+	float effective = (100 - (obj->Position().distance_to(XFORM().c) * 100) / m_max_curve_radius) / 100;
 	float power = effective * m_max_curve_damage;
 	float impulse = mass * (m_max_curve_impulse * effective);
 
@@ -209,7 +215,7 @@ void TAnomalyElectricCurve::Update(bool isUpdateCL)
 		SElectricCurve& spline = m_electric_curves[i];
 		if (blastTimeProcessing <= 0)
 		{
-			spline.initialPos = XFORM().c;
+			spline.initialPos = RecalculateStartPosition(XFORM().c);
 		}
 		spline.UpdateMovement();
 		spline.Enable();
@@ -227,7 +233,7 @@ void TAnomalyElectricCurve::Update(bool isUpdateCL)
 
 			if (spline.m_upd_timer > spline.m_max_upd_timer)
 			{
-				spline.m_max_upd_timer = Random.randF(2000.0f, 5000.0f);
+				spline.m_max_upd_timer = Random.randF(m_change_target_timeout_ms_min, m_change_target_timeout_ms_max);
 				spline.m_upd_timer = 0.f;
 
 				bool needTrace = true;
@@ -253,6 +259,9 @@ void TAnomalyElectricCurve::Update(bool isUpdateCL)
 
 				if (needTrace)
 				{
+					bool is_found_point = false;
+					Fvector beforeTracePos;
+
 					for (u8 i = 0; i < 5; i++)
 					{
 						dir.set(0, 0, 0);
@@ -262,30 +271,59 @@ void TAnomalyElectricCurve::Update(bool isUpdateCL)
 
 						if (g_pGameLevel->ObjectSpace.RayPick(startTracePos, dir, max_trace_curve_distance, collide::rqtStatic, R, m_currentAnomalyObject))
 						{
+							beforeTracePos.set(spline.destinationPos);
 							rq_range = R.range;
-
-							if (!m_snd_emmiter_electric_curve_end[i]->IsPlaying())
-							{
-								m_snd_emmiter_electric_curve_end[i]->PlayRandomSound(nullptr, spline.destinationPos, 0U, 0.f, 1.5f);
-							}
-
 							if (blastTimeProcessing <= 0)
 							{
-								spline.destinationPos = destPosition.mad(XFORM().c, dir, rq_range);
+								spline.destinationPos = destPosition.mad(startTracePos, dir, rq_range);
 							}
 
-							if (!m_snd_emmiter_electric_curve_start[i]->IsPlaying())
-							{
-								m_snd_emmiter_electric_curve_start[i]->PlayRandomSound(nullptr, spline.destinationPos, 0U, 0.f, 1.5f);
-							}
+							is_found_point = true;
 							break;
+						}
+					}
+
+					if (is_found_point)
+					{
+						for (CRandomSoundEmmiter* snd :m_snd_emmiter_electric_curve_end)
+						{
+							if (!snd->IsPlaying())
+							{
+								snd->PlayRandomSound(nullptr, beforeTracePos, 0U, 0.f, 1.5f);
+								break;
+							}
+						}
+
+						for (CRandomSoundEmmiter* snd : m_snd_emmiter_electric_curve_start)
+						{
+							if (!snd->IsPlaying())
+							{
+								snd->PlayRandomSound(nullptr, spline.destinationPos, 0U, 0.f, 1.5f);
+								break;
+							}
 						}
 					}
 				}
 			}
+			/*
+			if (spline.destinationPos.distance_to(XFORM().c) > m_max_curve_radius)
+			{
+				spline.m_upd_timer = spline.m_max_upd_timer;
+			}
+			*/
 		}
 	}
 }
+
+Fvector TAnomalyElectricCurve::RecalculateStartPosition(Fvector& anomalyCenter)
+{
+	Fvector res;
+	res.set(anomalyCenter);
+	res.y = res.y + m_curve_start_y_offset;
+
+	return res;
+}
+
 
 void TAnomalyElectricCurve::OnBlastElectricCurvesUpdate(CGameObject* obj)
 {
@@ -311,7 +349,7 @@ void TAnomalyElectricCurve::OnBlastElectricCurvesUpdate(CGameObject* obj)
 
 				if (m_currentAnomalyObject->lastScannedObjects[0] != nullptr && !m_currentAnomalyObject->lastScannedObjects[0]->getDestroy())
 				{
-					spline.initialPos.set(XFORM().c);
+					spline.initialPos.set(RecalculateStartPosition(XFORM().c));
 					spline.destinationPos.set(m_currentAnomalyObject->lastScannedObjects[0]->Position());
 					AffectCurveDamade(m_currentAnomalyObject->lastScannedObjects[0]);
 				}
@@ -338,13 +376,13 @@ void TAnomalyElectricCurve::OnBlastElectricCurvesUpdate(CGameObject* obj)
 
 			if (targetObj != nullptr)
 			{
-				spline.initialPos.set(XFORM().c);
+				spline.initialPos.set(RecalculateStartPosition(XFORM().c));
 				spline.destinationPos.set(targetObj->Position());
 			}
 
 			if (i > 0 && i < cnt && m_currentAnomalyObject->lastScannedObjects[i - 1] != nullptr && m_currentAnomalyObject->lastScannedObjects[i] != nullptr && !m_currentAnomalyObject->lastScannedObjects[i - 1]->getDestroy() && !m_currentAnomalyObject->lastScannedObjects[i]->getDestroy())
 			{
-				spline.initialPos.set(m_currentAnomalyObject->lastScannedObjects[i]->Position());
+				spline.initialPos.set(RecalculateStartPosition(m_currentAnomalyObject->lastScannedObjects[i]->Position()));
 				spline.destinationPos.set(m_currentAnomalyObject->lastScannedObjects[i - 1]->Position());
 				AffectCurveDamade(m_currentAnomalyObject->lastScannedObjects[i]);
 			}
