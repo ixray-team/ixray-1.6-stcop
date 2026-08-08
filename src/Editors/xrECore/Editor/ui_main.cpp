@@ -496,6 +496,8 @@ void TUI::Redraw()
 
 			Tools->Render();
 
+			GRHI->CopySurface(RTCopy->pRT, RT->pRT);
+
 			// draw selection rect
 			if (m_SelectionRect)
 			{
