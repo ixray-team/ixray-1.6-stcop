@@ -21,7 +21,7 @@
 local USE_FILE_LOG = true
 local USE_CONSOLE_LOG = false
 local USE_TIME_IN_LOGS = true
-local DEBUG_GAMEPAD_KEYBOARD_EMULATE = true
+local DEBUG_GAMEPAD_KEYBOARD_EMULATE = false
 
 local APPDATA_ALIAS = '$app_data_root$'
 local OPTIONS_FILE_NAME = "ixr_options.ixr"
@@ -292,9 +292,9 @@ end
 -- #			GAME PAD HOOKS 				   #
 -- #############################################
 
--- обрабатываем и нажатия и удержания одновременно
-function on_gamepad_key(dik, action, hold)
-	if DEBUG_GAMEPAD_KEYBOARD_EMULATE or not is_options_opened() then
+-- обрабатываем нажатия
+function on_gamepad_key(key, action)
+	if not is_options_opened() then
 		return false
 	end
 	
@@ -305,22 +305,67 @@ function on_gamepad_key(dik, action, hold)
 		return false
 	end
 	
-	if dik == DIK_keys.DIK_ESCAPE then
-		on_ixr_options_exit_btn_clicked()
-		return true
-	else
-		if bindUI == key_bindings.kUI_BACK then
-			return ixr_options.emulate_back()
-		elseif bindUI == key_bindings.kUI_ACCEPT then
-			return ixr_options.emulate_accept()
-		elseif bindUI == key_bindings.kUI_UP then
-			return ixr_options.emulate_up(is_hold)
-		elseif bindUI == key_bindings.kUI_DOWN then
-			return ixr_options.emulate_down(is_hold)
-		elseif bindUI == key_bindings.kUI_LEFT then
-			return ixr_options.emulate_left(is_hold)
-		elseif bindUI == key_bindings.kUI_RIGHT then
-			return ixr_options.emulate_right(is_hold)
+	if bindUI == key_bindings.kUI_BACK then
+		return ixr_options.emulate_back()
+	elseif bindUI == key_bindings.kUI_ACCEPT then
+		return ixr_options.emulate_accept()
+	elseif bindUI == key_bindings.kUI_UP then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_UP)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			return ixr_options.emulate_up(false)
+		end
+	elseif bindUI == key_bindings.kUI_DOWN then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_DOWN)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			return ixr_options.emulate_down(false)
+		end
+	elseif bindUI == key_bindings.kUI_LEFT then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_LEFT)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			return ixr_options.emulate_left(false)
+		end
+	elseif bindUI == key_bindings.kUI_RIGHT then
+		action_repeaters():SetActionStarted(get_menu_ref(), key_bindings.kUI_RIGHT)
+		if not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			return ixr_options.emulate_right(false)
+		end
+	end
+	
+	return false
+end
+
+-- обрабатываем удержания
+function on_gamepad_key_hold(key, action)
+	if not is_options_opened() then
+		return false
+	end
+	
+	local bind = dik_to_bind(key)
+	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
+	
+	if action and action ~= ui_events.WINDOW_KEY_PRESSED then
+		return false
+	end
+	
+	if bindUI == key_bindings.kUI_UP then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_UP)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			return ixr_options.emulate_up(true)
+		end
+	elseif bindUI == key_bindings.kUI_DOWN then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_DOWN)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			return ixr_options.emulate_down(true)
+		end
+	elseif bindUI == key_bindings.kUI_LEFT then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_LEFT)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			return ixr_options.emulate_left(true)
+		end
+	elseif bindUI == key_bindings.kUI_RIGHT then
+		if action_repeaters():CanRepeatActionNow(get_menu_ref(), key_bindings.kUI_RIGHT)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			return ixr_options.emulate_right(true)
 		end
 	end
 	
@@ -341,9 +386,9 @@ function on_press_key(dik, action, is_hold)
 		return true
 	else
 		if dik == DIK_keys.DIK_NUMPAD0 then
-			return ixr_options.emulate_back(is_hold)
+			return ixr_options.emulate_back()
 		elseif dik == DIK_keys.DIK_NUMPAD5 then
-			return ixr_options.emulate_accept(is_hold)
+			return ixr_options.emulate_accept()
 		elseif dik == DIK_keys.DIK_NUMPAD8 then
 			return ixr_options.emulate_up(is_hold)
 		elseif dik == DIK_keys.DIK_NUMPAD2 then
@@ -366,19 +411,15 @@ local selected_option_index = 0
 local selection_row = 1
 local option_focused = false
 
-function ixr_options.emulate_back(is_hold)
-	if is_hold then
-		return true
+function ixr_options.emulate_back()
+	if option_focused then
+		ixr_options.reset_focused_options()
+	else
+		on_ixr_options_exit_btn_clicked()
 	end
-	SemiLog("send: .emulate_back()")
 end
 
-function ixr_options.emulate_accept(is_hold)
-	if is_hold then
-		return true
-	end
-	SemiLog("send: .emulate_accept()")
-	
+function ixr_options.emulate_accept()
 	if not option_focused and selection_row > 1 then
 		if selected_option_index > 0 and ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
 			ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:Show(true)
@@ -390,11 +431,9 @@ function ixr_options.emulate_accept(is_hold)
 end
 
 function ixr_options.emulate_up(is_hold)
-	if is_hold or option_focused then
+	if option_focused then
 		return true
 	end
-	
-	SemiLog("send: .emulate_up() is_hold:" .. tostring(is_hold))
 	
 	if ixr_options.gamepad_supported_controlls.is_controlls_rendering_completed then
 
@@ -418,8 +457,6 @@ function ixr_options.emulate_up(is_hold)
 			OnAddonItemClicked()
 			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(true)
 		end
-		
-		SemiLog("selection_addon_index:"..tostring(selection_addon_index) .. " #:"..tostring(#ixr_options.gamepad_supported_controlls.addons))
 	end
 	
 	-- листаем опции
@@ -445,11 +482,10 @@ function ixr_options.emulate_up(is_hold)
 end
 
 function ixr_options.emulate_down(is_hold)
-	if is_hold or option_focused then
+	if option_focused then
 		return true
 	end
 	
-	SemiLog("send: .emulate_down() is_hold:" .. tostring(is_hold))
 	-- листаем аддоны
 	if selection_row == 1 then
 		if selection_addon_index > 0 and ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
@@ -468,8 +504,6 @@ function ixr_options.emulate_down(is_hold)
 			OnAddonItemClicked()
 			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(true)
 		end
-		
-		SemiLog("selection_addon_index:"..tostring(selection_addon_index) .. " #:"..tostring(#ixr_options.gamepad_supported_controlls.addons))
 	end
 	
 	-- листаем опции
@@ -480,11 +514,17 @@ function ixr_options.emulate_down(is_hold)
 			end
 			
 			selected_option_index = selected_option_index + 1
-		
+			
 			if selected_option_index > #ixr_options.gamepad_supported_controlls.options_controlls then
 				selected_option_index = #ixr_options.gamepad_supported_controlls.options_controlls
 			end
-			
+
+			local bar = get_controll("options_scroll"):ScrollBar()
+			local barHeight = bar:GetHeight()
+			local scroll = get_controll("options_scroll")
+			scroll:ScrollToItem(ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref, 
+														math.floor(-barHeight / 2 + ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetHeight() / 2))
+					
 			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
 				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(true)
 			end
@@ -495,12 +535,6 @@ function ixr_options.emulate_down(is_hold)
 end
 
 function ixr_options.emulate_left(is_hold)
-	if is_hold then
-		return true
-	end
-	
-	SemiLog("send: .emulate_left() is_hold:" .. tostring(is_hold))
-	
 	--  выбираем аддоны либо контролы
 	if not option_focused then
 		selection_row = selection_row - 1
@@ -509,6 +543,8 @@ function ixr_options.emulate_left(is_hold)
 		end
 		
 		if selection_row == 1 then
+			get_controll("framewindow_gamepad"):SetWndPos(vector2():set(33, 108))
+			get_controll("framewindow_gamepad"):SetWndSize(vector2():set(250, 575))
 			ixr_options.reset_selection_options()
 			ixr_options.reset_focused_options()
 		end
@@ -525,20 +561,20 @@ function ixr_options.emulate_left(is_hold)
 end
 
 function ixr_options.emulate_right(is_hold)
-	if is_hold then
-		return true
-	end
-	
-	SemiLog("send: .emulate_right() is_hold:" .. tostring(is_hold))
-	
 	--  выбираем аддоны либо контролы
 	if not option_focused then
+		if selection_addon_index == 0 then
+			return
+		end
+		
 		selection_row = selection_row + 1
 		if selection_row > 2 then
 			selection_row = 2
 		end
 		
 		if selected_option_index == 0 then
+			get_controll("framewindow_gamepad"):SetWndPos(vector2():set(320, 125))
+			get_controll("framewindow_gamepad"):SetWndSize(vector2():set(670, 550))
 			ixr_options.select_first_option()
 			ixr_options.reset_focused_options()
 		end
@@ -686,6 +722,9 @@ function _on_main_menu_update(_ref)
 		for k, v in pairs(ixr_options.update_bus) do
 			if type(v) == "function" then v() end
 		end
+	end
+	if _ref.main_xml ~= nil then
+		get_controll("framewindow_gamepad"):Show(main_menu.in_controller_mode() and ixr_options.is_options_opened())
 	end
 end
 
@@ -1036,7 +1075,7 @@ end
 
 function hide_options()
 	-- очищаем данные о контроллах и аддонах для геймпада перед выходом
-	on_before_clear_controlls_and_addons_info_gamepads()
+	--on_before_clear_controlls_and_addons_info_gamepads()
 	
 	for k, v in pairs(get_menu_ref().ixr_controlls) do
 		v:Show(false)
@@ -1053,6 +1092,14 @@ function register_static(name_controll, static, x, y, width, height, color)
 	register_controll(name_controll)
 	
 	return get_controll(name_controll)
+end
+
+function register_framewindow(name_controll, static, x, y, width, height)
+	set_controll(name_controll, get_options_xml():InitFrame(static, get_menu_ref()))
+	get_controll(name_controll):SetWndPos(vector2():set(x, y))
+	get_controll(name_controll):SetWndSize(vector2():set(width, height))
+	get_controll(name_controll):Show(false)
+	register_controll(name_controll)
 end
 
 function register_button(name_controll, static, x, y, width, height, _callback)
@@ -1338,6 +1385,7 @@ function _on_main_menu_init_controlls(_ref)
 		
 	--register_scroll_view("options_scroll", "scroll_v", 320, 270, 670, 400)
 	register_scroll_view("options_scroll", "scroll_v", 320, 125, 670, 550) -- (name_controll, scroll_section, x, y, width, height)
+	register_framewindow("framewindow_gamepad", "frame_window", 33, 108, 250, 575)
 	get_controll("options_scroll"):Show(false)
 end
 
@@ -1936,19 +1984,11 @@ end
 
 -- for game pad events
 function IXRTrackBar:on_gamepad_left(is_hold)
-	if is_hold  then
-		return
-	end
-	
 	self:SetValue(self:GetValue() - self.value_offset)
 end
 
 -- for game pad events
 function IXRTrackBar:on_gamepad_right(is_hold)
-	if is_hold then
-		return
-	end
-	
 	self:SetValue(self:GetValue() + self.value_offset)
 end
 
@@ -2115,19 +2155,11 @@ end
 
 -- for game pad events
 function IXRNumericUpDown:on_gamepad_left(is_hold)
-	if is_hold  then
-		return
-	end
-	
 	self:LeftArrowClick()
 end
 
 -- for game pad events
 function IXRNumericUpDown:on_gamepad_right(is_hold)
-	if is_hold then
-		return
-	end
-	
 	self:RightArrowClick()
 end
 
@@ -2388,19 +2420,11 @@ end
 
 -- for game pad events
 function IXRComboBox:on_gamepad_left(is_hold)
-	if is_hold  then
-		return
-	end
-	
 	self:LeftArrowClick()
 end
 
 -- for game pad events
 function IXRComboBox:on_gamepad_right(is_hold)
-	if is_hold then
-		return
-	end
-	
 	self:RightArrowClick()
 end
 
@@ -2505,16 +2529,10 @@ end
 
 -- for game pad events
 function IXRTextBox:on_gamepad_left(is_hold)
-	if is_hold  then
-		return
-	end
 end
 
 -- for game pad events
 function IXRTextBox:on_gamepad_right(is_hold)
-	if is_hold then
-		return
-	end
 end
 
 -- #########################################################################################################
@@ -2637,19 +2655,11 @@ end
 
 -- for game pad events
 function IXRCheckBox:on_gamepad_left(is_hold)
-	if is_hold or self:IsChecked() == false then
-		return
-	end
-
 	self:SetState(false)
 end
 
 -- for game pad events
 function IXRCheckBox:on_gamepad_right(is_hold)
-	if is_hold or self:IsChecked() == true then
-		return
-	end
-
 	self:SetState(true)
 end
 
