@@ -24,11 +24,17 @@
 		make_callback(name, ...)
 ]]
 
+
+local USE_FILE_LOG = true
+local USE_CONSOLE_LOG = false
+local USE_TIME_IN_LOGS = true
+
 local ixr_signals = {
 	intercepts = {},
 	initialized = false,
-	use_file_log = true,
-	use_console_log = false,
+	use_file_log = USE_FILE_LOG,
+	use_time_log = USE_TIME_IN_LOGS,
+	use_console_log = USE_CONSOLE_LOG,
 }
 
 
@@ -169,7 +175,9 @@ end
 -- #	 	 IX-Ray INTERCEPTS 	  	 	 #
 -- #######################################
 function ixr_signals.load_addons_intercepts()
-	ixr_signals.toLog("\n[IXR SIGNALS] LOAD IXR ADDONS INTERCEPT SETTINGS\n", false)
+	IXRLogEmptyLine()
+	IXRLog("[IXR SIGNALS] LOAD IXR ADDONS INTERCEPT SETTINGS")
+	IXRLogEmptyLine()
 	
 	--// IXR addons
 	ixr_signals.add_intercept("update",                          		{"delta_number"}) -- actor
@@ -188,7 +196,10 @@ end
 -- #######################################
 function ixr_signals.load_default_intercepts()
 	ixr_signals.load_addons_intercepts()
-	ixr_signals.toLog("\n[IXR SIGNALS] LOAD DEFAULT SETTINGS\n", false)
+	
+	IXRLogEmptyLine()
+	IXRLog("[IXR SIGNALS] LOAD DEFAULT SETTINGS")
+	IXRLogEmptyLine()
 	
 	ixr_signals.add_intercept("level_input_on_key_press",				{})	
 	ixr_signals.add_intercept("on_key_press",                         	{"dik_key_number"})	
@@ -386,15 +397,21 @@ end
 -- #	 	 SYSTEM METHODS 	  	 	 #
 -- #######################################
 function ixr_signals.init()
+	IXRLogUseFileLog(ixr_signals.use_file_log)
+	IXRLogUseConsoleLog(ixr_signals.use_console_log)
+	IXRLogUseTimeInLog(ixr_signals.use_time_log)
+	
 	if ixr_signals.is_initialized() then
 		return true
 	end
 	
-	ixr_signals.toLog("[IXR SIGNALS] PREPARE INIT", true)
+	IXRLog("[IXR SIGNALS] PREPARE INIT", true)
 	
 	if __ixr_override_signals_intercepts then 
 		ixr_signals.load_addons_intercepts()
-		ixr_signals.toLog("\n[IXR SIGNALS] LOAD OVERRIDED SETTINGS\n", false)
+		IXRLogEmptyLine()
+		IXRLog("[IXR SIGNALS] LOAD OVERRIDED SETTINGS")
+		IXRLogEmptyLine()
 		__ixr_override_signals_intercepts.configure(this)
 	else
 		ixr_signals.load_default_intercepts()
@@ -405,11 +422,15 @@ function ixr_signals.init()
 		return false
 	end
 	
-	ixr_signals.toLog("\n[IXR SIGNALS] SETTINGS LOADED\n", false)
+	IXRLogEmptyLine()
+	IXRLog("[IXR SIGNALS] SETTINGS LOADED")
+	IXRLogEmptyLine()
 	
 	ixr_signals.initialized = true
 	
-	ixr_signals.toLog("\n[IXR SIGNALS] INITIALIZED\n", false)
+	IXRLogEmptyLine()
+	IXRLog("[IXR SIGNALS] INITIALIZED")
+	IXRLogEmptyLine()
 	
 	return true
 end
@@ -438,7 +459,7 @@ function ixr_signals.subscribe_to_event(name, func_or_userdata)
 
 	if (ixr_signals.intercepts[name]) then
 		local caller = tostring(ffx_callable_utils.find_caller_source(4))
-		ixr_signals.toLog(ixr_signals.format_subscribe_log("ADD", name, caller), false)
+		IXRLog(ixr_signals.format_subscribe_log("ADD", name, caller))
 		ixr_signals.intercepts[name][func_or_userdata] = true
 	end
 end
@@ -455,7 +476,7 @@ function ixr_signals.un_subscribe_from_event(name, func_or_userdata)
 	
 	if (ixr_signals.intercepts[name]) then
 		local caller = tostring(ffx_callable_utils.find_caller_source(4))
-		ixr_signals.toLog(ixr_signals.format_subscribe_log("REMOVE", name, caller), false)
+		IXRLog(ixr_signals.format_subscribe_log("REMOVE", name, caller))
 		ixr_signals.intercepts[name][func_or_userdata] = nil
 	end
 end
@@ -483,9 +504,9 @@ function ixr_signals.add_intercept(name, args_map)
 	end
 	
 	if args_map and not ffx_compare_utils.is_empty_flat_or_assoc_table(args_map) then
-		ixr_signals.toLog("[IXR SIGNALS] ADD INTERCEPT: ".. tostring(name) .."(".. ffx_json_lib.json_encode(args_map) ..")", false)
+		IXRLog("[IXR SIGNALS] ADD INTERCEPT: ".. tostring(name) .."(".. ffx_json_lib.json_encode(args_map) ..")")
 	else
-		ixr_signals.toLog("[IXR SIGNALS] ADD INTERCEPT: ".. tostring(name) .."()", false)
+		IXRLog("[IXR SIGNALS] ADD INTERCEPT: ".. tostring(name) .."()")
 	end
 	
 	ixr_signals.intercepts[name] = {}
@@ -499,17 +520,7 @@ function ixr_signals.remove_intercept(name)
 	end
 	
 	ixr_signals.intercepts[name] = nil
-	ixr_signals.toLog("[IXR SIGNALS] REMOVE INTERCEPT: ".. tostring(name), false)
+	IXRLog("[IXR SIGNALS] REMOVE INTERCEPT: ".. tostring(name))
 	
 	return true
-end
-
-function ixr_signals.toLog(text, overwrite, log_name__auto)
-	if ixr_signals.use_file_log then
-		ffx_dump_utils.write_to_file_log(text, overwrite, log_name__auto)
-	end
-	
-	if ixr_signals.use_console_log then
-		ffx_dump_utils.write_to_console_log(text)
-	end
 end

@@ -22,6 +22,8 @@ end
 function crow_binder:update(delta)
 -- standart update
     object_binder.update(self, delta)
+ 	SendScriptCallback("crow_on_update", self.object, self.st)
+
     if not(self.object:alive()) and (self.body_timer<=time_global()-120000) and (self.body_timer~=0) then
 -- if crow is killed and body lays down for two minutes - release it
         printf("releasing object ["..self.object:name().."]")
@@ -44,6 +46,14 @@ function crow_binder:net_spawn(sobject)
     if not(object_binder.net_spawn(self, sobject)) then
         return false
     end
+
+	local se_obj = alife():object(self.object:id())
+	if not (se_obj) then 
+		return false 
+	end
+
+	SendScriptCallback("crow_on_net_spawn", self.object, se_obj)
+
     db.add_obj(self.object)
     bind_crow.crow_storage[self.object:id()] = self.object:id()
 	bind_crow.crow_counter = bind_crow.crow_counter + 1
@@ -53,6 +63,8 @@ end
 -- Net destroy
 function crow_binder:net_destroy()
     self.object:set_callback(callback.death, nil)
+   	SendScriptCallback("crow_on_net_destroy", self.object)
+
     if (bind_crow.crow_storage[self.object:id()] ~= nil) then --*Crow FIX*
         bind_crow.crow_storage[self.object:id()] = nil
         bind_crow.crow_counter = bind_crow.crow_counter - 1
@@ -73,6 +85,8 @@ function crow_binder:death_callback(victim, who)
             bind_crow.crow_counter = 0 --*Crow FIX*
         end --*Crow FIX*
     end --*Crow FIX*
+
+    SendScriptCallback("crow_on_death", victim, who)
 end
 -- Standart function for save
 function crow_binder:net_save_relevant()
