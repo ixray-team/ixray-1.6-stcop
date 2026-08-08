@@ -455,6 +455,15 @@ function ixr_options.emulate_up(is_hold)
 		if ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
 			get_controll("addons_list_box"):SetSelectedIndex(selection_addon_index - 1)
 			OnAddonItemClicked()
+			
+			local pos = get_controll("addons_list_box"):GetSelectedIndex() * get_controll("addons_list_box"):GetItemHeight();
+			pos = pos - get_controll("addons_list_box"):GetHeight()/2;
+			if pos < 0 then
+				pos = 0
+			end
+
+			get_controll("addons_list_box"):SetScrollPos(pos);
+	
 			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(true)
 		end
 	end
@@ -471,7 +480,13 @@ function ixr_options.emulate_up(is_hold)
 			if selected_option_index < 1 then
 				selected_option_index = 1
 			end
-			
+
+			local bar = get_controll("options_scroll"):ScrollBar()
+			local barHeight = bar:GetHeight()
+			local scroll = get_controll("options_scroll")
+			scroll:ScrollToItem(ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent(), 
+														math.floor(-barHeight / 2 + ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent():GetHeight() / 2))
+		
 			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
 				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(true)
 			end
@@ -502,6 +517,15 @@ function ixr_options.emulate_down(is_hold)
 		if ixr_options.gamepad_supported_controlls.addons[selection_addon_index] then
 			get_controll("addons_list_box"):SetSelectedIndex(selection_addon_index - 1)
 			OnAddonItemClicked()
+			
+			local pos = get_controll("addons_list_box"):GetSelectedIndex() * get_controll("addons_list_box"):GetItemHeight();
+			pos = pos - get_controll("addons_list_box"):GetHeight() / 2;
+			if pos < 0 then
+				pos = 0
+			end
+
+			get_controll("addons_list_box"):SetScrollPos(pos);
+	
 			ixr_options.gamepad_supported_controlls.addons[selection_addon_index].addon_controll_ref:SetSelectedState(true)
 		end
 	end
@@ -522,8 +546,8 @@ function ixr_options.emulate_down(is_hold)
 			local bar = get_controll("options_scroll"):ScrollBar()
 			local barHeight = bar:GetHeight()
 			local scroll = get_controll("options_scroll")
-			scroll:ScrollToItem(ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref, 
-														math.floor(-barHeight / 2 + ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetHeight() / 2))
+			scroll:ScrollToItem(ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent(), 
+														math.floor(-barHeight / 2 + ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_focused_controll_ref:GetParent():GetParent():GetHeight() / 2))
 					
 			if ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index] then
 				ixr_options.gamepad_supported_controlls.options_controlls[selected_option_index].background_selected_controll_ref:Show(true)
@@ -725,6 +749,31 @@ function _on_main_menu_update(_ref)
 	end
 	if _ref.main_xml ~= nil then
 		get_controll("framewindow_gamepad"):Show(main_menu.in_controller_mode() and ixr_options.is_options_opened())
+		
+		-- for gamepad legend
+		local text_accept		= get_menu_ref():GetStatic("framework_gp_accept")	
+		if text_accept then
+			text_accept:Show(selection_row > 1)
+		end
+
+		local text_lr		= get_menu_ref():GetStatic("framework_gp_lr")	
+		if text_lr then
+			if option_focused then
+				text_lr:SetTextST("st_ixray_framework_options_lr_focused")
+			else
+				text_lr:SetTextST("st_ixray_framework_options_lr")
+			end
+		end
+
+		local text_ud		= get_menu_ref():GetStatic("framework_gp_ud")	
+		if text_ud then
+			if selection_row == 1 then
+				text_ud:SetTextST("st_ixray_framework_addons_ud")
+			else
+				text_ud:SetTextST("st_ixray_framework_options_ud")
+			end
+			text_ud:Show(not option_focused)
+		end
 	end
 end
 
@@ -1102,6 +1151,12 @@ function register_framewindow(name_controll, static, x, y, width, height)
 	register_controll(name_controll)
 end
 
+function register_gamepad_legend(name_controll, static)
+	set_controll(name_controll, get_options_xml():InitGamepadLegend(static, get_menu_ref()))
+	get_controll(name_controll):Show(false)
+	register_controll(name_controll)
+end
+
 function register_button(name_controll, static, x, y, width, height, _callback)
 	set_controll(name_controll, get_options_xml():Init3tButton(static, get_menu_ref()))
 	get_controll(name_controll):SetStretchTexture(true)
@@ -1262,6 +1317,7 @@ function on_ixr_options_exit_btn_clicked()
 	end
 	if get_menu_ref().eng_lang_btn then get_menu_ref().eng_lang_btn:Show(true) end
 	if get_menu_ref().ru_lang_btn then get_menu_ref().ru_lang_btn:Show(true) end
+	if get_menu_ref().gamepad_legend then get_menu_ref().gamepad_legend:Show(true) end
 end
 
 function on_btn_options_ixr_clicked()
@@ -1273,6 +1329,7 @@ function on_btn_options_ixr_clicked()
 		get_menu_ref().shniaga:SetVisibleMagnifier(false)
 		get_menu_ref().shniaga:Show(false)
 	end
+	if get_menu_ref().gamepad_legend then get_menu_ref().gamepad_legend:Show(false) end
 	draw_options()
 end
 
@@ -1386,6 +1443,7 @@ function _on_main_menu_init_controlls(_ref)
 	--register_scroll_view("options_scroll", "scroll_v", 320, 270, 670, 400)
 	register_scroll_view("options_scroll", "scroll_v", 320, 125, 670, 550) -- (name_controll, scroll_section, x, y, width, height)
 	register_framewindow("framewindow_gamepad", "frame_window", 33, 108, 250, 575)
+	register_gamepad_legend("gamepad_legend", "gamepad_legend")
 	get_controll("options_scroll"):Show(false)
 end
 
