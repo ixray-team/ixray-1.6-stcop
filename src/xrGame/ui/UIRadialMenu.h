@@ -4,8 +4,6 @@
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "inventory_space.h"
 
-void draw_arc(ui_shader& shader, float x, float y, float radius, float radius_inside, float angle1, float angle2, u32 color1, u32 color2, u32 quality = 42);
-
 class CInventoryItem;
 class CInventory;
 class CUIXml;
@@ -18,7 +16,8 @@ class CUIRadialMenu : public CUIDialogWnd
 	typedef CUIDialogWnd		inherited;
 
 public:
-	struct TexturedRectDrawData {
+	struct TexturedRectDrawData 
+	{
 		float x = 0.f;
 		float y = 0.f;
 		float width = 0.f;
@@ -27,7 +26,7 @@ public:
 
 public:
 	CUIRadialMenu();
-	virtual ~CUIRadialMenu();
+	virtual ~CUIRadialMenu() = default;
 
 	virtual void Init() {};
 	virtual void Init(CUIXml* pXml);
@@ -46,13 +45,11 @@ public:
 	virtual bool OnTouchpadAction(Fvector2 value);
 
 	bool isInitialized = false;
-	CUIGamepadLegend* m_pGamepadLegend;
+	CUIGamepadLegend* m_pGamepadLegend = nullptr;
 
 protected:
 	virtual void OnActivateSectorClicked();
 	
-	void DrawItem(CUIStatic* st, TexturedRectDrawData& trdd, u32 color_mask);
-
 protected:
 	enum eRadialMenuSndAction 
 	{
@@ -64,11 +61,11 @@ protected:
 		eSndGrenadeMode,
 		eSndMax
 	};
+	const u32 clrSlotIcon = 0xAAFFFFFF;
+	const u32 clrSlotIconBlocked = 0x55FFFFFF;
 
 	ref_sound	sounds[eSndMax];
 	void		PlaySnd(eRadialMenuSndAction a);
-
-	ui_shader* crosshair_shader;
 
 	shared_str textureDefault;
 	shared_str textureSelected;
@@ -81,25 +78,16 @@ protected:
 	//read from xml
 	xr_vector<u32> slotsInSectors;
 	xr_vector<CUI3dStatic*> slotIcons;
+
+	// size used for inventory cells
+	xr_vector<Fvector2> slotIconDefaultSizes;
+
 	xr_vector<CUIStatic*> slotBackgrounds;
-	int sectors_count;
-	float starting_angle;
-	float inner_radius_ratio;//radius / inner radius
-	float selected_radius_factor;
-	float safezone_height_factor;
+	u32 sectors_count;
 
-	float center_x;
-	float center_y;
-	float radius;
-	float inner_radius;
-	float selected_radius;
-
-	float gap;
 	float sector;
 
-	u32 deselected_color;
-	u32 selected_color;
-	u32 sector_inner_side_color;
-	u32 sector_outer_side_color;
-	shared_str emptyIconName = "";
+	Fvector2 backgroundSize;
+	Fvector2 iconSize;
+	Fvector2 backgroundPivot;
 };
