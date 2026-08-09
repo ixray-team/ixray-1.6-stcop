@@ -175,7 +175,7 @@ void	CUIRadialMenuWeapon::Draw()
 					Fvector2 v_r = {grect.x2 * slotIconDefaultSizes[i].x, grect.y2 * slotIconDefaultSizes[i].y};
 					v_r.x *= UI().get_current_kx();
 
-					if (grect.y2 == 1)
+					if (grect.x2 < 5 && grect.y2 == 1)
 					{
 						v_r.mul(2.f);
 					}

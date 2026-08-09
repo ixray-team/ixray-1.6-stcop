@@ -8,12 +8,12 @@
 #include "Level.h"
 #include "game_cl_base.h"
 #include "../xrEngine/IGame_Persistent.h"
-
+#include "ui/UIGameCustom.h"
 #include "../../xrUI/ui_base.h"
 #include "InventoryOwner.h"
 #include "relation_registry.h"
 #include "character_info.h"
-
+#include "ui/UIRadialMenuWeapon.h"
 #include "../xrEngine/string_table.h"
 #include "entity_alive.h"
 
@@ -162,10 +162,19 @@ void CHUDTarget::Render()
 	bool  b_do_rendering = ( psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) && renderHUDTarget );
 	
 	if(!b_do_rendering)
+	{
 		return;
-
+	}
+	
 	if (load_screen_renderer.IsActive())
+	{
 		return;
+	}
+
+	if (CurrentGameUI() && CurrentGameUI()->RadialMenuWeapon() && CurrentGameUI()->RadialMenuWeapon()->IsShown())
+	{
+		return;
+	}
 
 	VERIFY				(g_bRendering);
 
