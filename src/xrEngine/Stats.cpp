@@ -243,7 +243,6 @@ void CStats::Show()
 
 		//////////////////////////////////////////////////////////////////////////
 		// process PURE STATS
-		seqStats.Process<&pureStats::OnStats>();
 		pFont->OnRender					();
 	};
 
