@@ -25,8 +25,8 @@ public:
     virtual const char*	EditorName				(){return "shader";}
     virtual const char*	EditorDesc				(){return "Shader Editor";}
 
-    virtual bool 	ApplyShortCut			(DWORD Key, TShiftState Shift);
-    virtual bool 	ApplyGlobalShortCut		(DWORD Key, TShiftState Shift);
+    virtual bool ApplyShortCut(u32 Key, TShiftState Shift) override;
+	virtual bool ApplyGlobalShortCut(u32 Key, TShiftState Shift) override;
 
     // commands
 	virtual	void		RegisterCommands	(); 
