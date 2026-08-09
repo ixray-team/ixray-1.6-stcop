@@ -111,7 +111,6 @@ public:
 	void			OnDeviceDestroy	(void);
 public:
 	xr_vector		<shared_str>	errors;
-	CRegistrator	<pureStats>		seqStats;
 public:
 			CStats();
 	virtual ~CStats();

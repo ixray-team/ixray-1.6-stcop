@@ -125,10 +125,6 @@ void CEStats::Show()
         F.SetColor(0xFFC8DCAF);
         F.OutNext("GAME TIME:    %02d :%02d :%02d", hours, minutes, seconds);
         F.OutSkip(1.5f);
-        // F.OutNext("Level summary:");
-        // F.OutNext(" Sel Faces: %d", dwLevelSelFaceCount);
-        // F.OutNext(" Sel Verts: %d", dwLevelSelVertexCount);
-        //UI->OnStats(EDevice->pSystemFont);
 #endif
     }
 
