@@ -51,8 +51,8 @@ void UILeftBarForm::Draw()
 {
     ImVec2	ItemSpacing = ImGui::GetStyle().ItemSpacing;
     ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 300, 100 });
-    ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ItemSpacing.y, ItemSpacing.y));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ItemSpacing.y, ItemSpacing.y));
+	ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
     if (ImGui::Begin("Object Tool", 0))
     {
         if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
@@ -204,6 +204,7 @@ void UILeftBarForm::Draw()
     }
 
     ImGui::End();
+	ImGui::PopStyleVar();
 
     // OBJECT ITEMS
     if (ImGui::Begin("Object Properties"))
@@ -238,6 +239,7 @@ void UILeftBarForm::Draw()
     }
     ImGui::End();
 
+	ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
     if (ImGui::Begin("Item Properties", 0))
     {
         ImGui::BeginGroup();

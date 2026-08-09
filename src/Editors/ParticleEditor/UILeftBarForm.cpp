@@ -1,7 +1,9 @@
 #include "stdafx.h"
+#include "IconsFontAwesome6.h"
 
 UILeftBarForm::UILeftBarForm()
 {
+	m_SearchFilter[0] = '\0';
 }
 
 UILeftBarForm::~UILeftBarForm()
@@ -79,14 +81,26 @@ void UILeftBarForm::Draw()
 		
 		ImGui::Separator();
 
+		ImGui::PushItemWidth(-1);
+		ImGui::InputTextWithHint("##SearchFilter", ICON_FA_MAGNIFYING_GLASS " Search...", m_SearchFilter, sizeof(m_SearchFilter));
+		ImGui::PopItemWidth();
+
+		auto CurrentList = PTools->GetCurrentList();
+		if (CurrentList)
+		{
+			CurrentList->SetFilter(m_SearchFilter);
+		}
+
+		ImGui::Separator();
+
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
 		if (ImGui::TreeNode("Items"))
 		{
 			ImGui::BeginGroup();
-			auto CurrentList = PTools->GetCurrentList();
-			R_ASSERT(CurrentList);
-			CurrentList->Draw();
+			auto CurrentListForDraw = PTools->GetCurrentList();
+			R_ASSERT(CurrentListForDraw);
+			CurrentListForDraw->Draw();
 			ImGui::EndGroup();
 			ImGui::TreePop();
 		}
