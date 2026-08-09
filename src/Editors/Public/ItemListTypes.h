@@ -9,6 +9,7 @@ class ListItem
     friend class		UIItemListForm;
     shared_str		  	key;
 	shared_str		  	prefix = "";
+	shared_str		  	icon = "";
     int					type;
 	void*				item;
 public:                        
@@ -39,6 +40,7 @@ public:
 	virtual 			~ListItem		(){};
     void				SetName			(const char* _key){key=_key;}
 	void				SetPrefix		(const char* _prefix){prefix = _prefix;}
+	void				SetIconStr		(const char* _icon){icon = _icon;}
 
     IC void				Visible			(bool val){m_Flags.set(flHidden, !val);}
     IC bool				Visible			() const{ return !m_Flags.test(flHidden);}
@@ -46,6 +48,7 @@ public:
 	IC void*			Item			(){return item;}
 	IC const char*			Key				(){return *key;}
 	IC const char*			Prefix			(){return *prefix;}
+	IC const char*			Icon			(){return *icon;}
     IC void				SetIcon			(int index){icon_index=index;}
 };
 
