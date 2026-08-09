@@ -23,35 +23,31 @@ enum
 };
 //------------------------------------------------------------------------------
 
-class CActorMain: 
-    public TUI
+class CActorMain :
+	public TUI
 {
-	typedef TUI inherited;
-    virtual void 	RealUpdateScene			();
+	using inherited = TUI ;
 
 public:
-    				CActorMain 				();
-    virtual 		~CActorMain				();
+	CActorMain();
+	virtual ~CActorMain();
 
-    virtual LPSTR	GetCaption				();
+	virtual char* GetCaption();
 
-    virtual void 	ResetStatus				();
-    virtual void 	SetStatus				(const char* s, bool bOutLog);
-    virtual void	ProgressDraw			();
+	virtual void ResetStatus();
+	virtual void SetStatus(const char* s, bool bOutLog);
 
-    virtual const char*	EditorName				(){return "actor";}
-    virtual const char*	EditorDesc				(){return "Actor Editor";}
+	virtual const char* EditorName() { return "actor"; }
+	virtual const char* EditorDesc() { return "Actor Editor"; }
 
-    virtual bool 	ApplyShortCut			(DWORD Key, TShiftState Shift);
-    virtual bool 	ApplyGlobalShortCut		(DWORD Key, TShiftState Shift);
+	// commands
+	virtual void RegisterCommands();
 
-    // commands
-	virtual	void	RegisterCommands		(); 
 protected:
-    virtual void    OnDrawUI();
+	virtual void OnDrawUI();
 
-    virtual Ivector2 GetRenderMousePosition()const;
-};    
+	virtual Ivector2 GetRenderMousePosition() const;
+};
 
 extern CActorMain*	AUI;
 

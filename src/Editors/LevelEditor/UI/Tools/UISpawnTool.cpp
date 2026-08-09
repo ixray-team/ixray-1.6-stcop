@@ -182,5 +182,4 @@ void UISpawnTool::OnItemFocused(ListItem* item)
 		else
 			m_Current = (const char*)item->m_Object;
 	}
-	ExecCommand(COMMAND_RENDER_FOCUS);
 }
