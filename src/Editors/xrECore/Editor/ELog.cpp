@@ -129,33 +129,33 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 	return (TMsgDlgButtons)buttonid;
 }
 
-int CLog::DlgMsg (TMsgDlgType mt, int btn, const char* _Format, ...)
+int CLog::DlgMsg(TMsgDlgType mt, int btn, const char* _Format, ...)
 {
-    in_use = true;
+	in_use = true;
 	char buf[4096];
 	va_list l;
-	va_start( l, _Format );
-	vsprintf( buf, _Format, l );
+	va_start(l, _Format);
+	vsprintf(buf, _Format, l);
 
-	int res=0;
+	int res = 0;
 
-    ExecCommand(COMMAND_RENDER_FOCUS);
+	res = MessageDlg(buf, mt, btn);
+	if (mtConfirmation == mt)
+	{
+		switch (res)
+		{
+			case mrYes: strcat(buf, " - Yes."); break;
+			case mrNo: strcat(buf, " - No."); break;
+			case mrCancel: strcat(buf, " - Cancel."); break;
+			default: strcat(buf, " - Something.");
+		}
+	}
 
-    res=MessageDlg(buf, mt, btn);
-    if (mtConfirmation==mt){
-        switch (res){
-        case mrYes: 	strcat(buf," - Yes."); 	break;
-        case mrNo: 		strcat(buf," - No."); 	break;
-        case mrCancel:  strcat(buf," - Cancel.");	break;
-        default: strcat(buf," - Something.");
-        }
-    }
+	Msg(mt, buf);
 
-    Msg(mt, buf);
+	in_use = false;
 
-    in_use = false;
-
-    return res;
+	return res;
 }
 
 void CLog::Close()
@@ -173,7 +173,6 @@ int CLog::DlgMsg (TMsgDlgType mt, const char* _Format, ...)
 	vsprintf( buf, _Format, l );
 
     int res=0;
-    ExecCommand(COMMAND_RENDER_FOCUS);
 
     if (mtConfirmation==mt)	res = MessageDlg(buf, mt,  mbYes | mbNo | mbCancel);
 	else if (mtSkip == mt)	res = MessageDlg(buf, mtConfirmation, mbOK | mbSkip);

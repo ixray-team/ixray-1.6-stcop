@@ -199,47 +199,14 @@ char* CActorMain::GetCaption()
 	return (char*)(ATools->GetEditFileName().empty() ? "noname" : ATools->GetEditFileName().c_str());
 }
 
-bool  CActorMain::ApplyShortCut(DWORD Key, TShiftState Shift)
-{
-	return inherited::ApplyShortCut(Key,Shift);
-}
-//---------------------------------------------------------------------------
-
-bool  CActorMain::ApplyGlobalShortCut(DWORD Key, TShiftState Shift)
-{
-	return inherited::ApplyGlobalShortCut(Key,Shift);
-}
-//---------------------------------------------------------------------------
-
-void CActorMain::RealUpdateScene()
-{
-	inherited::RealUpdateScene	();
-}
-//---------------------------------------------------------------------------
-
 void CActorMain::ResetStatus()
 {
 	VERIFY(m_bReady);
-	
-   /* if (fraBottomBar->paStatus->Caption!=""){
-		fraBottomBar->paStatus->Caption=""; fraBottomBar->paStatus->Repaint();
-	}*/
 }
+
 void CActorMain::SetStatus(const char* s, bool bOutLog)
 {
 	VERIFY(m_bReady);
-	
-	/*if (fraBottomBar->paStatus->Caption!=s)
-	{
-		fraBottomBar->paStatus->Caption=s; fraBottomBar->paStatus->Repaint();
-		if (bOutLog&&s&&s[0]) ELog.Msg(mtInformation,s);
-	}*/
-}
-
-void CActorMain::ProgressDraw()
-{
-	inherited::ProgressDraw();
-	/*fraBottomBar->RedrawBar();*/
 }
 
 //---------------------------------------------------------------------------
