@@ -226,7 +226,7 @@ public:
 		RHIShaderConstant* C = &*RCache.get_c("s_base"); // get sampler
 		if(nullptr == C)			return;
 		VERIFY(RC_dest_sampler == C->destination);
-		VERIFY(RC_sampler == C->type);
+		VERIFY(RC_dx10texture == C->type);
 		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
 		VERIFY(T);
 		float	mtl = T->m_material;
