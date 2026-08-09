@@ -13,7 +13,6 @@ UIMainForm::UIMainForm()
         exit(-1);
     }
     ExecCommand(COMMAND_UPDATE_GRID);
-    ExecCommand(COMMAND_RENDER_FOCUS);
 
     FillChooseEvents();
 
