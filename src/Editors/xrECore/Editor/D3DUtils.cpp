@@ -86,7 +86,13 @@ static const WORD identboxindiceswire[identboxindexwirecount] = {
 using FLvertexVec = xr_vector<FVF::L>;
 using FLvertexIt = FLvertexVec::iterator;
 
-static FLvertexVec 	m_GridPoints;
+// New grid system parameters
+static inline float GridCellSize = 1.0f;
+static inline float GridSize = 100.0f;
+static inline int GridSubdiv = 10;
+static inline int GridThickInterval = 10;
+static inline float GridFadeStart = 50.0f;
+static inline float GridFarPlane = 500.0f;
 
 u32 m_ColorAxis	= 0xff000000;
 u32 m_ColorGrid	= 0xff909090;
@@ -151,48 +157,14 @@ void SPrimitiveBuffer::Destroy()
 	}
 }
 
-void CDrawUtilities::UpdateGrid(int number_of_cell, float square_size, int subdiv){
-	m_GridPoints.clear();
-// grid
-	int m_GridSubDiv[2];
-	int m_GridCounts[2];
-    Fvector2 m_GridStep;
-
-    m_GridStep.set(square_size,square_size);
-	m_GridSubDiv[0] = subdiv;
-	m_GridSubDiv[1] = subdiv;
-	m_GridCounts[0] = number_of_cell;//iFloor(size/step)*subdiv;
-	m_GridCounts[1] = number_of_cell;//iFloor(size/step)*subdiv;
-
-	FVF::L left,right;
-	left.p.y = right.p.y = 0;
-
-	for(int thin=0; thin<2; thin++){
-		for(int i=-m_GridCounts[0]; i<=m_GridCounts[0]; i++){
-			if( (!!thin) != !!(i%m_GridSubDiv[0]) ){
-				left.p.z = -m_GridCounts[1]*m_GridStep.y;
-				right.p.z = m_GridCounts[1]*m_GridStep.y;
-				left.p.x = i*m_GridStep.x;
-				right.p.x = left.p.x;
-				left.color = (i%m_GridSubDiv[0]) ? m_ColorGrid : m_ColorGridTh;
-				right.color = left.color;
-				m_GridPoints.push_back( left );
-				m_GridPoints.push_back( right );
-			}
-		}
-		for(int i=-m_GridCounts[1]; i<=m_GridCounts[1]; i++){
-			if( (!!thin) != !!(i%m_GridSubDiv[1]) ){
-				left.p.x = -m_GridCounts[0]*m_GridStep.x;
-				right.p.x = m_GridCounts[0]*m_GridStep.x;
-				left.p.z = i*m_GridStep.y;
-				right.p.z = left.p.z;
-				left.color = (i%m_GridSubDiv[1]) ? m_ColorGrid : m_ColorGridTh;
-				right.color = left.color;
-				m_GridPoints.push_back( left );
-				m_GridPoints.push_back( right );
-			}
-		}
-	}
+void CDrawUtilities::UpdateGrid(int number_of_cell, float square_size, int subdiv)
+{
+    GridCellSize = square_size;
+    GridSize = number_of_cell * square_size * 2.0f;
+    GridSubdiv = subdiv;
+    GridThickInterval = subdiv;
+    GridFadeStart = GridSize * 0.5f;
+    GridFarPlane = GridSize * 2.0f;
 }
 
 void CDrawUtilities::OnDeviceCreate()
@@ -238,8 +210,8 @@ void CDrawUtilities::OnDeviceCreate()
     	boxvert[i*6+4].set(p);
     	boxvert[i*6+5].set(p.x,p.y,p.z-S.z*0.25f);
     }
-    // create render stream
-	vs_L.create		(FVF::F_L,RCache.Vertex.Buffer(),RCache.Index.Buffer());
+// create render stream
+ 	vs_L.create		(FVF::F_L,RCache.Vertex.Buffer(),RCache.Index.Buffer());
     vs_TL.create	(FVF::F_TL,RCache.Vertex.Buffer(),RCache.Index.Buffer());
     vs_LIT.create	(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.Index.Buffer());
 
@@ -255,22 +227,22 @@ void CDrawUtilities::DestroyObjects()
 
 void CDrawUtilities::OnDeviceDestroy()
 {
-	EDevice->seqRender.Remove		(this);
+ 	EDevice->seqRender.Remove		(this);
 
     m_SolidBox.Destroy			();
-	m_SolidCone.Destroy			();
-	m_SolidSphere.Destroy		();
-	m_SolidSpherePart.Destroy	();
+ 	m_SolidCone.Destroy			();
+ 	m_SolidSphere.Destroy		();
+ 	m_SolidSpherePart.Destroy	();
     m_SolidCylinder.Destroy		();
     m_WireBox.Destroy			();
-	m_WireCone.Destroy			();
-	m_WireSphere.Destroy		();
-	m_WireSpherePart.Destroy	();
+ 	m_WireCone.Destroy			();
+ 	m_WireSphere.Destroy		();
+ 	m_WireSpherePart.Destroy	();
     m_WireCylinder.Destroy		();
 
-	vs_L.destroy		();
-	vs_TL.destroy		();
-	vs_LIT.destroy		();
+ 	vs_L.destroy		();
+ 	vs_TL.destroy		();
+ 	vs_LIT.destroy		();
 }
 //----------------
 
@@ -1157,23 +1129,101 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
 
 void CDrawUtilities::DrawGrid()
 {
-	VERIFY( EDevice->b_is_Ready );
-	_VertexStream*	Stream	= &RCache.Vertex;
-    u32 vBase;
-	// fill VB
-	FVF::L*	pv	= (FVF::L*)Stream->Lock(m_GridPoints.size(),vs_L->vb_stride,vBase);
-    for (FLvertexIt v_it=m_GridPoints.begin(); v_it!=m_GridPoints.end(); v_it++,pv++) pv->set(*v_it);
-	Stream->Unlock(m_GridPoints.size(),vs_L->vb_stride);
-	// Render it as triangle list
-    Fmatrix ddd;
-    ddd.identity();
-    RCache.set_xform_world(ddd);
-	DU_DRAW_SH(EDevice->m_WireShader);
-    DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,m_GridPoints.size()/2);
+	VERIFY(EDevice->b_is_Ready);
 
-    RCache.stat.calls--;
-    RCache.stat.verts -= (m_GridPoints.size() / 2) * 3;
-    RCache.stat.polys -= (m_GridPoints.size() / 2);
+	Fvector CamPos = EDevice->vCameraPosition;
+
+	const float CamGridX = floorf(CamPos.x / GridCellSize) * GridCellSize;
+	const float CamGridZ = floorf(CamPos.z / GridCellSize) * GridCellSize;
+	const float HalfGrid = GridSize * 0.5f;
+
+	const int LinesPerAxis = int(GridSize / GridCellSize) + 1;
+	const int TotalLines = LinesPerAxis * 2;
+
+	DU_DRAW_SH(EDevice->m_WireShader);
+
+	Fmatrix World;
+	World.identity();
+	RCache.set_xform_world(World);
+
+	_VertexStream* Stream = &RCache.Vertex;
+	u32 VBase;
+
+	const u32 VertexCount = TotalLines * 2;
+	FVF::L* Pv = (FVF::L*)Stream->Lock(VertexCount, vs_L->vb_stride, VBase);
+
+	FVF::L Vertex;
+	Vertex.p.y = 0.0f;
+
+	for (int I = -LinesPerAxis / 2; I <= LinesPerAxis / 2; I++)
+	{
+		float Z = CamGridZ + I * GridCellSize;
+
+		const bool IsAxis = (I == 0);
+		const bool IsThick = (I % GridThickInterval == 0);
+
+		u32 Color;
+		if (IsAxis)
+		{
+			Color = 0xFF0000FF;
+		}
+		else if (IsThick)
+		{
+			Color = m_ColorGridTh;
+		}
+		else
+		{
+			Color = m_ColorGrid;
+		}
+
+		// Start point
+		Vertex.p.x = CamGridX - HalfGrid;
+		Vertex.p.z = Z;
+		Vertex.color = Color;
+		Pv->set(Vertex);
+		Pv++;
+
+		// End point
+		Vertex.p.x = CamGridX + HalfGrid;
+		Pv->set(Vertex);
+		Pv++;
+	}
+
+	for (int I = -LinesPerAxis / 2; I <= LinesPerAxis / 2; I++)
+	{
+		float X = CamGridX + I * GridCellSize;
+
+		bool IsAxis = (I == 0);
+		bool IsThick = (I % GridThickInterval == 0);
+
+		u32 Color = m_ColorGrid;
+
+		if (IsAxis)
+		{
+			Color = 0xFFFF0000;
+		}
+		else if (IsThick)
+		{
+			Color = m_ColorGridTh;
+		}
+
+		// Start point
+		Vertex.p.x = X;
+		Vertex.p.z = CamGridZ - HalfGrid;
+		Vertex.color = Color;
+		Pv->set(Vertex);
+		Pv++;
+
+		// End point
+		Vertex.p.z = CamGridZ + HalfGrid;
+		Pv->set(Vertex);
+		Pv++;
+	}
+
+	Stream->Unlock(VertexCount, vs_L->vb_stride);
+
+	// Render as line list
+	DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, vs_L, VBase, TotalLines);
 }
 
 void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd)
