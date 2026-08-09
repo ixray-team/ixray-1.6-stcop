@@ -143,10 +143,15 @@ public:
 		R_ASSERT(ItemMoveActionSlots.find(Slot) == ItemMoveActionSlots.end());
 		ItemMoveActionSlots[Slot] = e;
 	}
+	IC void SetFilter(const char* filter)
+	{
+		m_Filter = filter ? filter : "";
+	}
 
 private:
 	virtual void DrawAfterFolderNode(bool is_open, Node* Node = 0);
 	virtual void DrawItem(Node* Node);
+	virtual void DrawNode(Node* N) override;
 	virtual bool IsDrawFolder(Node* Node);
 	virtual void IsItemClicked(Node* Node);
 	virtual bool IsFolderBullet(Node* Node);
@@ -161,6 +166,9 @@ private:
 	virtual void EventRemoveNode(Node* Node, const char* path) override;
 	virtual bool EventPreRemoveNode(Node* Node) override;
 
+	void ResetAutoExpand(Node* N);
+	bool SetAutoExpandForFilter(Node* N);
+
 public:
 	Node         m_GeneralNode;
 	ListItemsVec m_Items;
@@ -168,4 +176,5 @@ public:
 	void         ClearSelectedItems();
 	bool         m_UseMenuEdit;
 	void         ClearObject(Node* Node);
+	xr_string    m_Filter;
 };
