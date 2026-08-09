@@ -4,6 +4,7 @@
 
 
 #include "UI_ParticleTools.h"
+#include "IconsFontAwesome6.h"
 
 #include "../../Layers/xrRender/ParticleAnimCurve.h"
 #include "../../xrEngine/ObjectAnimator.h"
@@ -1701,13 +1702,13 @@ void CParticleTool::RealUpdateProperties()
                 0,
                 *Pe);
             I->SetIcon(1);
-            I->SetPrefix("[PE] ");
+            I->SetIconStr(ICON_FA_FIRE);
             //xr_string ModifiedPath = buffer;
             for (auto Action : (*Pe)->m_EActionList)
             {
                 xr_sprintf(buffer, "%s\\%s", *(*Pe)->m_Name, Action->actionName.c_str());
                 I = LHelper().CreateItem(items, buffer, emAction, 0, Action );
-                I->SetPrefix("[ACTION] ");
+                I->SetIconStr(ICON_FA_BOLT);
             }
         }
         return items;
@@ -1724,7 +1725,7 @@ void CParticleTool::RealUpdateProperties()
                 0,
                 *Pg);
             I->SetIcon(2);
-            I->SetPrefix("[PG] ");
+			I->SetIconStr(ICON_FA_LAYER_GROUP);
             for (auto Effect : (*Pg)->m_Effects)
             {
                 const char* EffectName = nullptr;
@@ -1745,7 +1746,7 @@ void CParticleTool::RealUpdateProperties()
                 EffectNameBuilder.append("\\");
                 EffectNameBuilder.append(EffectName);
                 I = LHelper().CreateItem(items, EffectNameBuilder.c_str(), emEffectSlot, 0, Effect );
-                I->SetPrefix("[EFFECT] ");
+                I->SetIconStr(ICON_FA_FLASK);
             }
         }
         return items;
@@ -1761,7 +1762,7 @@ void CParticleTool::RealUpdateProperties()
                 0,
                 elem);
             I->SetIcon(3);
-            I->SetPrefix("[PAC] ");
+            I->SetIconStr(ICON_FA_BEZIER_CURVE);
         }
         return items;
     };
