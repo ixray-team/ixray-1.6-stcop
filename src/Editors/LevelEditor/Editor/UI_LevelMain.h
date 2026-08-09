@@ -78,50 +78,47 @@ enum ELECommand
     COMMAND_LE_END
 };
 
-class CLevelMain: 
-    public TUI
+class CLevelMain :
+	public TUI
 {
 	typedef TUI inherited;
-    
-    virtual void 	RealUpdateScene			();
-    virtual void 	RealQuit				();
+
+	virtual void RealUpdateScene();
+	virtual void RealQuit();
 
 public:
-    C3DCursor*   	m_Cursor;
-    xr_task_group LoaderEvent;
+	C3DCursor* m_Cursor;
+	xr_task_group LoaderEvent;
 
 public:
-    				CLevelMain 				();
-    virtual 		~CLevelMain				();
+	CLevelMain();
+	virtual ~CLevelMain();
 
+	virtual char* GetCaption() override;
+	virtual void ResetStatus() override;
+	virtual void SetStatus(const char* s, bool bOutLog = true) override;
+	virtual void ProgressDraw() override;
 
-    virtual LPSTR	GetCaption				();
+	virtual const char* EditorName() override { return "level"; }
+	virtual const char* EditorDesc() override { return "Level Editor"; }
 
-    virtual void 	ResetStatus				();
-    virtual void 	SetStatus				(const char* s, bool bOutLog=true);
-    virtual void	ProgressDraw			();
+	void ShowContextMenu(int cls);
+	bool PickGround(Fvector& hitpoint, const Fvector& start, const Fvector& direction, int bSnap = 1, Fvector* hitnormal = 0);
+	bool SelectionFrustum(CFrustum& frustum);
 
-    virtual const char*	EditorName				(){return "level";}
-    virtual const char*	EditorDesc				(){return "Level Editor";}
+	virtual bool ApplyShortCut(u32 Key, TShiftState Shift) override;
 
-    void 			ShowContextMenu			(int cls);
-	bool 			PickGround				(Fvector& hitpoint, const Fvector& start, const Fvector& direction, int bSnap=1, Fvector* hitnormal=0);
-	bool 			SelectionFrustum		(CFrustum& frustum);
+	// commands
+	virtual void RegisterCommands() override;
 
-    virtual bool 	ApplyShortCut			(DWORD Key, TShiftState Shift);
-    virtual bool 	ApplyGlobalShortCut		(DWORD Key, TShiftState Shift);
+	virtual void SaveSettings(nlohmann::json&) override;
+	virtual void LoadSettings(nlohmann::json&) override;
+	virtual Ivector2 GetRenderMousePosition() const override;
+	virtual void OnDrawUI() override;
 
-    // commands
-	virtual	void	RegisterCommands		(); 
+	virtual bool IsPlayInEditor();
 
-    virtual void	SaveSettings			(nlohmann::json&);
-    virtual void	LoadSettings			(nlohmann::json&);
-    virtual Ivector2 GetRenderMousePosition()const;
-    virtual void OnDrawUI();
-    virtual bool  KeyDown(WORD Key, TShiftState Shift) override;
-    virtual void	OnStats(CGameFont* font);
-
-    virtual bool IsPlayInEditor();
 private:
-};    
+};
+
 extern CLevelMain*	LUI;
