@@ -1,79 +1,75 @@
-#ifndef UI_MainCommandH
-#define UI_MainCommandH
+#pragma once
 
 enum ECoreCommands
 {
-	COMMAND_INITIALIZE=0,		// p1 - D3DWindow, p2 - TPanel
+	COMMAND_INITIALIZE = 0, // p1 - D3DWindow, p2 - TPanel
 	COMMAND_DESTROY,
 	COMMAND_QUIT,
 	COMMAND_EDITOR_PREF,
 	COMMAND_CHANGE_ACTION,
-    COMMAND_IMAGE_EDITOR,
-    COMMAND_LIGHTANIM_EDITOR,
-    COMMAND_MINIMAP_EDITOR,
-    COMMAND_WEATHER_PROPERTIES,
+	COMMAND_IMAGE_EDITOR,
+	COMMAND_LIGHTANIM_EDITOR,
+	COMMAND_MINIMAP_EDITOR,
+	COMMAND_WEATHER_PROPERTIES,
 	COMMAND_CHECK_TEXTURES,
 	COMMAND_REFRESH_TEXTURES,
 	COMMAND_RELOAD_TEXTURES,
 	COMMAND_CHANGE_AXIS,
-    COMMAND_SET_SETTINGS = 14,
-    COMMAND_UNLOAD_TEXTURES,
-    COMMAND_EVICT_OBJECTS,
-    COMMAND_EVICT_TEXTURES,
-    COMMAND_CHECK_MODIFIED,
+	COMMAND_SET_SETTINGS = 14,
+	COMMAND_UNLOAD_TEXTURES,
+	COMMAND_EVICT_OBJECTS,
+	COMMAND_EVICT_TEXTURES,
+	COMMAND_CHECK_MODIFIED,
 	COMMAND_EXIT,
 	COMMAND_SHOW_PROPERTIES,
-	COMMAND_UPDATE_PROPERTIES,	// p1 - forced update if needed
-    COMMAND_MOVE_CAMERA_TO = 23,
+	COMMAND_UPDATE_PROPERTIES, // p1 - forced update if needed
+	COMMAND_MOVE_CAMERA_TO = 23,
 	COMMAND_ZOOM_EXTENTS,
-    COMMAND_RENDER_FOCUS,
-    COMMAND_RENDER_RESIZE,		
-    COMMAND_TOGGLE_RENDER_WIRE,
+	COMMAND_TOGGLE_RENDER_WIRE = 27,
 	COMMAND_BREAK_LAST_OPERATION = 29,
-    COMMAND_TOGGLE_SAFE_RECT = 31,
-    COMMAND_TOGGLE_GRID,
+	COMMAND_TOGGLE_SAFE_RECT = 31,
+	COMMAND_TOGGLE_GRID,
 	COMMAND_UPDATE_GRID,
-    COMMAND_GRID_NUMBER_OF_SLOTS,
-    COMMAND_GRID_SLOT_SIZE,
-    
-    COMMAND_ICON_PICKER,
-    COMMAND_ICON_LOAD,
-    COMMAND_ICON_REMOVE,
+	COMMAND_GRID_NUMBER_OF_SLOTS,
+	COMMAND_GRID_SLOT_SIZE,
 
-    COMMAND_MUTE_SOUND,
+	COMMAND_ICON_PICKER,
+	COMMAND_ICON_LOAD,
+	COMMAND_ICON_REMOVE,
 
-    // ����� ������ ����������
-    COMMAND_CLEAR,
-    COMMAND_LOAD,
-    COMMAND_SAVE,
-    COMMAND_SAVE_BACKUP,
+	COMMAND_MUTE_SOUND,
 
-    COMMAND_CREATE_SOUND_LIB,
+	// ����� ������ ����������
+	COMMAND_CLEAR,
+	COMMAND_LOAD,
+	COMMAND_SAVE,
+	COMMAND_SAVE_BACKUP,
+
+	COMMAND_CREATE_SOUND_LIB,
 	COMMAND_TOGGLE_AIMAP_VISIBILITY,
-    
-    // sound
+
+	// sound
 	COMMAND_SOUND_EDITOR,
 	COMMAND_SYNC_SOUNDS,
-    COMMAND_SYNC_SOUNDS_HARD,
-    
+	COMMAND_SYNC_SOUNDS_HARD,
+
 	COMMAND_UNDO,
 	COMMAND_REDO,
-                                                                
-    COMMAND_EDIT_COMMAND_LIST,
-    COMMAND_EXECUTE_COMMAND_LIST,
-    COMMAND_LOG_COMMANDS,
-    COMMAND_RUN_MACRO,				// p1 - file name
-    COMMAND_ASSIGN_MACRO,			// p1 - slot, p2 - file_name
 
-    COMMAND_SIMULATE,
-    COMMAND_USE_SIMULATE_POSITIONS,
-    COMMAND_IMAGE_EDITOR_SELECT,
+	COMMAND_EXECUTE_COMMAND_LIST = 52,
+	COMMAND_LOG_COMMANDS,
+	COMMAND_RUN_MACRO,	  // p1 - file name
+	COMMAND_ASSIGN_MACRO, // p1 - slot, p2 - file_name
 
-    COMMAND_MAIN_LAST
+	COMMAND_SIMULATE,
+	COMMAND_USE_SIMULATE_POSITIONS,
+	COMMAND_IMAGE_EDITOR_SELECT,
+
+	COMMAND_MAIN_LAST
 };
-//------------------------------------------------------------------------------
 
-class CCommandVar{
+class CCommandVar
+{
     enum EType{
         tpStr,
         tpInt
@@ -96,14 +92,22 @@ using TECommandEvent = xr_delegate< CCommandVar(CCommandVar,CCommandVar)>;
 
 class SECommand;
 
-struct ECORE_API SESubCommand{
-    SECommand* 		parent;
-    xr_string		desc;
-    CCommandVar 	p0;
-    CCommandVar 	p1;
-    xr_shortcut		shortcut;
+struct ECORE_API SESubCommand
+{
+	SECommand* parent;
+	xr_string desc;
+	CCommandVar p0;
+	CCommandVar p1;
+	xr_shortcut shortcut;
+
 public:
-                	SESubCommand	(const char* d, SECommand* p, CCommandVar _p0, CCommandVar _p1){desc=d;parent=p;p0=_p0;p1=_p1;}
+	SESubCommand(const char* d, SECommand* p, CCommandVar _p0, CCommandVar _p1)
+	{
+		desc = d;
+		parent = p;
+		p0 = _p0;
+		p1 = _p1;
+	}
 };
 
 using ESubCommandVec = xr_vector<SESubCommand*>;
@@ -155,8 +159,3 @@ ECORE_API bool				AllowLogCommands		();
 #define REGISTER_SUB_CMD_CE(id,desc,owner,cmd,gs){ 	SECommand* SUB_CMD_HOLDER; RegisterCommand(id, SUB_CMD_HOLDER=new SECommand(#id,desc,true,true,BIND_CMD_EVENT_C(owner,cmd),id,gs));
 #define APPEND_SUB_CMD(desc,p0,p1)					RegisterSubCommand(SUB_CMD_HOLDER,desc,p0,p1);
 #define REGISTER_SUB_CMD_END }
-
-#endif //UI_MainCommandH
-
-
-
