@@ -160,12 +160,20 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 		m_bMakeCubeMap = false;
 		m_bMakeScreenshot = false;
 		m_bMakeLevelMap = false;
-		CameraTransformFactor = 5.f;
+		CameraTransformFactor = 3.f;
+
+		m_fSpeed0 = pSettings->r_float("demo_record", "speed0");
+		m_fSpeed1 = pSettings->r_float("demo_record", "speed1");
+		m_fSpeed2 = pSettings->r_float("demo_record", "speed2");
+		m_fSpeed3 = pSettings->r_float("demo_record", "speed3");
+		
+		NewInputSchema = EngineExternal()[EEngineExternalGame::NewDemoRecordInputSchema];
 	}
 	else
 	{
 		fLifeTime = -1;
 	}
+
 }
 
 CDemoRecord::~CDemoRecord()
@@ -326,54 +334,112 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 	}
 	else
 	{
-		if (IR_GetKeyState(SDL_SCANCODE_F1))
+		if (NewInputSchema)
 		{
-			CGameFont* SystemFont = g_FontManager->pFontSystem;
-
-			SystemFont->SetColor(color_rgba(255, 0, 0, 255));
-			SystemFont->SetAligment(CGameFont::alCenter);
-			SystemFont->OutSetI(0, -.05f);
-
-			SystemFont->OutNext("RECORDING");
-			SystemFont->OutNext("Key frames count: %d", KeyframesPositions.size());
-
-			SystemFont->SetAligment(CGameFont::alLeft);
-			SystemFont->OutSetI(-0.2f, +.05f);
 			
-			SystemFont->OutNext("%s%s%s%s",
-				dik_to_keyname(get_action_dik(kFWD)),
-				dik_to_keyname(get_action_dik(kBACK)), 
-				dik_to_keyname(get_action_dik(kL_STRAFE)), 
-				dik_to_keyname(get_action_dik(kR_STRAFE))
-			);
-			SystemFont->OutNext("%s", dik_to_keyname(get_action_dik(kCROUCH)));
-			SystemFont->OutNext("%s", dik_to_keyname(get_action_dik(kJUMP)));
-			SystemFont->OutNext("MWUP");
-			SystemFont->OutNext("MWDOWN");
-			SystemFont->OutNext("SHIFT + MW");
-			SystemFont->OutNext("F");
-			SystemFont->OutNext("ESC");
-			SystemFont->OutNext("F11");
-			SystemFont->OutNext("Left Ctrl + F11");
-			SystemFont->OutNext("F12");
-			SystemFont->OutNext("Left Ctrl + F12");
-			SystemFont->SetAligment(CGameFont::alLeft);
-			SystemFont->OutSetI(0, +.05f);
-			SystemFont->OutNext("= Forward, Backward, Left, Right");
-			SystemFont->OutNext("= Move down");
-			SystemFont->OutNext("= Move up");
-			SystemFont->OutNext("= Increase camera speed");
-			SystemFont->OutNext("= Decrease camera speed");
-			SystemFont->OutNext("= Decrease camera speed by 3 times");
-			SystemFont->OutNext("= Append keyframe");
-			SystemFont->OutNext("= Quit");
-			SystemFont->OutNext("= Cube Map");
-			SystemFont->OutNext("= Level Map Screenshot");
-			SystemFont->OutNext("= Level Map Screenshot (High Quality)");
-			SystemFont->OutNext("= ScreenShot");
+			if (IR_GetKeyState(SDL_SCANCODE_F1))
+			{
+				CGameFont* SystemFont = g_FontManager->pFontSystem;
+
+				SystemFont->SetColor(color_rgba(255, 0, 0, 255));
+				SystemFont->SetAligment(CGameFont::alCenter);
+				SystemFont->OutSetI(0, -.05f);
+
+				SystemFont->OutNext("RECORDING");
+				SystemFont->OutNext("Key frames count: %d", KeyframesPositions.size());
+
+				SystemFont->SetAligment(CGameFont::alLeft);
+				SystemFont->OutSetI(-0.2f, +.05f);
+				
+				SystemFont->OutNext("%s%s%s%s",
+					dik_to_keyname(get_action_dik(kFWD)),
+					dik_to_keyname(get_action_dik(kBACK)), 
+					dik_to_keyname(get_action_dik(kL_STRAFE)), 
+					dik_to_keyname(get_action_dik(kR_STRAFE))
+				);
+				SystemFont->OutNext("%s", dik_to_keyname(get_action_dik(kCROUCH)));
+				SystemFont->OutNext("%s", dik_to_keyname(get_action_dik(kJUMP)));
+				SystemFont->OutNext("MWUP");
+				SystemFont->OutNext("MWDOWN");
+				SystemFont->OutNext("SHIFT + MW");
+				SystemFont->OutNext("F");
+				SystemFont->OutNext("ESC");
+				SystemFont->OutNext("F11");
+				SystemFont->OutNext("Left Ctrl + F11");
+				SystemFont->OutNext("F12");
+				SystemFont->OutNext("Left Ctrl + F12");
+				SystemFont->SetAligment(CGameFont::alLeft);
+				SystemFont->OutSetI(0, +.05f);
+				SystemFont->OutNext("= Forward, Backward, Left, Right");
+				SystemFont->OutNext("= Move down");
+				SystemFont->OutNext("= Move up");
+				SystemFont->OutNext("= Increase camera speed");
+				SystemFont->OutNext("= Decrease camera speed");
+				SystemFont->OutNext("= Decrease camera speed by 3 times");
+				SystemFont->OutNext("= Append keyframe");
+				SystemFont->OutNext("= Quit");
+				SystemFont->OutNext("= Cube Map");
+				SystemFont->OutNext("= Level Map Screenshot");
+				SystemFont->OutNext("= Level Map Screenshot (High Quality)");
+				SystemFont->OutNext("= ScreenShot");
+			}
+		}
+		else
+		{
+			if (IR_GetKeyState(SDL_SCANCODE_F1))
+			{
+				CGameFont* SystemFont = g_FontManager->pFontSystem;
+			
+				SystemFont->SetColor(color_rgba(255, 0, 0, 255));
+				SystemFont->SetAligment(CGameFont::alCenter);
+				SystemFont->OutSetI(0, -.05f);
+			
+				SystemFont->OutNext("RECORDING");
+				SystemFont->OutNext("Key frames count: %d", KeyframesPositions.size());
+			
+				SystemFont->SetAligment(CGameFont::alLeft);
+				SystemFont->OutSetI(-0.2f, +.05f);
+				SystemFont->OutNext("F");
+				SystemFont->OutNext("BACK");
+				SystemFont->OutNext("ESC");
+				SystemFont->OutNext("F11");
+				SystemFont->OutNext("Left Ctrl + F11");
+				SystemFont->OutNext("F12");
+				SystemFont->SetAligment(CGameFont::alLeft);
+				SystemFont->OutSetI(0, +.05f);
+				SystemFont->OutNext("= Append keyframe");
+				SystemFont->OutNext("= Cube Map");
+				SystemFont->OutNext("= Quit");
+				SystemFont->OutNext("= Level Map ScreenShot");
+				SystemFont->OutNext("= Level Map ScreenShot(High Quality)");
+				SystemFont->OutNext("= ScreenShot");
+			}
 		}
 		
-		FrameTopDelta.mul(CameraTransformFactor);
+		if (!NewInputSchema)
+		{
+			if (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT))
+			{
+				FrameTopDelta.mul(m_fSpeed0);
+			}
+			else if (IR_GetKeyState(SDL_SCANCODE_LALT) || IR_GetKeyState(SDL_SCANCODE_RALT))
+			{
+				FrameTopDelta.mul(m_fSpeed2);
+			}
+			else if (IR_GetKeyState(SDL_SCANCODE_LCTRL) || IR_GetKeyState(SDL_SCANCODE_RCTRL))
+			{
+				FrameTopDelta.mul(m_fSpeed3);
+			}
+			else
+			{
+				FrameTopDelta.mul(10.f);
+			}
+		}
+		else
+		{
+			FrameTopDelta.mul(CameraTransformFactor);
+		}
+
 		FrameTopDelta.mul(Device.fTimeDelta);
 		FrameRightDelta.mul(1.f);
 
@@ -502,38 +568,63 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 		}
 		return;
 	}
-	
-	EGameActions action = get_binded_action(dik);
-	Fvector TopDelta = Fvector();
 
-	switch (action)
+	Fvector Delta = Fvector();
+
+	if (!NewInputSchema)
 	{
-		case kFWD:
-			TopDelta.z += 1.0f;
-			break;
+		switch (dik)
+		{
+			case SDL_SCANCODE_W:
+				Delta.y += 1.0f;
+				break;
+				
+			case SDL_SCANCODE_A:
+				Delta.x -= 1.0f;
+				break;
 
-		case kBACK:
-			TopDelta.z -= 1.0f;
-			break;
+			case SDL_SCANCODE_S:
+				Delta.y -= 1.0f;
+				break;
+				
+			case SDL_SCANCODE_D:
+				Delta.x += 1.0f;
+				break;
+		}
+	}
+	else
+	{
+		EGameActions action = get_binded_action(dik);
 
-		case kL_STRAFE:
-			TopDelta.x -= 1.0f;
-			break;
+		switch (action)
+		{
+			case kFWD:
+				Delta.z += 1.0f;
+				break;
 
-		case kR_STRAFE:
-			TopDelta.x += 1.0f;
-			break;
+			case kBACK:
+				Delta.z -= 1.0f;
+				break;
 
-		case kCROUCH:
-			TopDelta.y -= 1.0f;
-			break;
+			case kL_STRAFE:
+				Delta.x -= 1.0f;
+				break;
 
-		case kJUMP:
-			TopDelta.y += 1.0f;
-			break;
+			case kR_STRAFE:
+				Delta.x += 1.0f;
+				break;
+
+			case kCROUCH:
+				Delta.y -= 1.0f;
+				break;
+
+			case kJUMP:
+				Delta.y += 1.0f;
+				break;
+		}
 	}
 
-	FrameTopDelta.add(TopDelta);
+	FrameTopDelta.add(Delta);
 }
 
 void CDemoRecord::IR_OnMouseMove(int dx, int dy)
@@ -595,6 +686,24 @@ void CDemoRecord::IR_OnMouseHold(int btn)
 			ControlEntityIR->IR_OnMouseHold(btn);
 		}
 	}
+
+	Fvector Delta = Fvector();
+	
+	if (!NewInputSchema)
+	{
+		switch (btn)
+		{
+			case 0:
+				Delta.z += 1.f;
+				break;
+				
+			case 1:
+				Delta.z -= 1.f;
+				break;
+		}
+	}
+	
+	FrameTopDelta.add(Delta);
 }
 
 void CDemoRecord::RecordKey()
