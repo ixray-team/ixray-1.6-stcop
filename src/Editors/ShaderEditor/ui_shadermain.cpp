@@ -71,13 +71,13 @@ char* CShaderMain::GetCaption()
 	return (LPSTR)STools->CurrentToolsName();// "shaders&materials";
 }           
 
-bool  CShaderMain::ApplyShortCut(DWORD Key, TShiftState Shift)
+bool CShaderMain::ApplyShortCut(u32 Key, TShiftState Shift)
 {
     return inherited::ApplyShortCut(Key,Shift);
 }
 //---------------------------------------------------------------------------
 
-bool  CShaderMain::ApplyGlobalShortCut(DWORD Key, TShiftState Shift)
+bool CShaderMain::ApplyGlobalShortCut(u32 Key, TShiftState Shift)
 {
     return inherited::ApplyGlobalShortCut(Key,Shift);
 }

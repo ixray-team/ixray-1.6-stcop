@@ -34,7 +34,7 @@ public:
 
 	void ResetBegin();
 	void ResetEnd(void* NewDevice);
-	virtual bool 	ApplyShortCut(DWORD Key, TShiftState Shift)=0;
+	virtual bool ApplyShortCut(u32 Key, TShiftState Shift) = 0;
 
 	inline float GetMenuBarHeight()const { return m_MenuBarHeight; }
 
