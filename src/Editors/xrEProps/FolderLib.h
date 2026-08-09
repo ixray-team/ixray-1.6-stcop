@@ -21,13 +21,15 @@ public:
 	};
 	struct Node
 	{
-		Node() :Object(nullptr), Type(FNT_Root), Selected(false) {}
+		Node() :Object(nullptr), Type(FNT_Root), Selected(false), AutoExpand(false) {}
 		~Node() {  }
 		bool Selected;
+		bool AutoExpand;
 		EFolderNodeType Type;
 		shared_str Name;
 		shared_str Path;
 		shared_str Prefix = "";
+		shared_str Icon = "";
 		xr_vector<Node> Nodes;
 		mutable C* Object;
 		IC bool IsObject() { return Type == FNT_Object; }
@@ -346,11 +348,16 @@ public:
 		}
 		else if (N->IsFolder())
 		{
-			if (N->Selected)ImGui::SetNextItemOpen(true);
+			if (N->Selected || N->AutoExpand)ImGui::SetNextItemOpen(true);
 			ImGui::AlignTextToFramePadding();
 			ImGuiTreeNodeFlags FolderFlags = ImGuiTreeNodeFlags_OpenOnArrow;
 			if (IsFolderBullet(N))FolderFlags |= ImGuiTreeNodeFlags_Bullet;
 			if (IsFolderSelected(N))FolderFlags |= ImGuiTreeNodeFlags_Selected;
+			if (N->Icon.size() > 0)
+			{
+				ImGui::Text(N->Icon.c_str());
+				ImGui::SameLine();
+			}
 			xr_string builder = N->Prefix.c_str();
 			builder.append(N->Name.c_str());
 			if (ImGui::TreeNodeEx(builder.c_str(), FolderFlags))
@@ -421,6 +428,8 @@ private:
 		std::swap(Dst->Type, Src->Type);
 		std::swap(Dst->Object, Src->Object);
 		std::swap(Dst->Prefix, Src->Prefix);
+		std::swap(Dst->Icon, Src->Icon);
+		std::swap(Dst->AutoExpand, Src->AutoExpand);
 		Dst->Nodes.swap(Src->Nodes);
 	}
 	inline void RebuildPath(Node* N)

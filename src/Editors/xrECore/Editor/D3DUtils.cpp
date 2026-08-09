@@ -1140,10 +1140,10 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
 	Stream->Unlock(6,vs_TL->vb_stride);
 
 	// Render it as line list
-	DU_DRAW_RS	(D3DRS_SHADEMODE,D3DSHADE_GOURAUD);
+	//DU_DRAW_RS	(D3DRS_SHADEMODE,D3DSHADE_GOURAUD);
 	DU_DRAW_SH	(EDevice->ShaderTL);
     DU_DRAW_DP	(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_TL,vBase,3);
-	DU_DRAW_RS	(D3DRS_SHADEMODE,SHADE_MODE);
+	//DU_DRAW_RS	(D3DRS_SHADEMODE,SHADE_MODE);
 
     m_Font->SetColor(sel ? 0xFF000000 : 0xFF909090);
     m_Font->Out(r.x, r.y, "x");
