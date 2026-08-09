@@ -104,13 +104,8 @@ void CUIRadialMenu::Init(CUIXml* pXml)
 		Fvector2 posIcon{UI_BASE_WIDTH/2,UI_BASE_HEIGHT/2};
 		posIcon.x -= sin(heading) * ((backgroundPivot.y - (backgroundSize.x) / 2) * UI().get_current_kx());
 		posIcon.y -= cos(heading) * (backgroundPivot.y - (backgroundSize.y / 2));
-		/* if (slotId == NO_ACTIVE_SLOT)
-		{
-			posIcon.x -= (icon->GetWidth() / 2);
-			posIcon.y -= (icon->GetHeight() / 2);
-		}*/
-
 		icon->SetWndPos(posIcon);
+
 		Fvector2 cellSize{iconSize};
 		float width = pXml->ReadAttribFlt("element", i, "width");
 		float height = pXml->ReadAttribFlt("element", i, "height");
@@ -175,7 +170,7 @@ bool CUIRadialMenu::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	{
 		if (!fis_zero(pos.x) || !fis_zero(pos.y))
 		{
-			if (!bWaitForZeroRStick && std::abs(pos.magnitude()) > 30.f)
+			if (!bWaitForZeroRStick && std::abs(pos.magnitude()) > 40.f)
 			{
 				Fvector2 vec{pos.x, -pos.y};
 				float angle = vec.getH() + PI_MUL_2;
