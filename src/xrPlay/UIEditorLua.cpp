@@ -76,14 +76,31 @@ void EditorLuaCodespace()
 
 	if (ImGui::Button("Save", ImVec2(70.f, 25.f)) && !isDisabledSave)
 	{
-		jsonArray.push_back
-		(
+		bool scriptExists = false;
+		int i = 0;
+		for (; i < jsonArray.size(); i++)
+		{
+			if (!xr_strcmp(jsonArray[i]["name"].get<std::string>().c_str(), name))
 			{
-				{ "name", name },
-				{ "code", CodeText.data() }
+				scriptExists = true;
+				break;
 			}
-		);
-
+		}
+		if (scriptExists)
+		{
+			jsonArray[i]["name"] = name;
+			jsonArray[i]["code"] = CodeText.data();
+		}
+		else
+		{
+			jsonArray.push_back
+			(
+				{
+					{"name", name},
+					{"code", CodeText.data()}
+				}
+			);
+		}
 		name[0] = 0;
 		auto file = FS.w_open(jsonSnippetsPath);
 		file->w_string(jsonArray.dump().c_str());
