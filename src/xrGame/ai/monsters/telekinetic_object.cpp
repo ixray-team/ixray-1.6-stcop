@@ -124,7 +124,7 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 	CActor* actor = ph_damage_receiver->cast_actor();
 	CAI_Stalker* ai_stalker = ph_damage_receiver->cast_stalker();
 
-	if (do_colide && (actor && !GodMode() || ai_stalker) && entity_alive->g_Alive())
+	if (do_colide && (actor && !GodMode() || ai_stalker) && (entity_alive->g_Alive() && (!entity_alive->cast_creature() || !entity_alive->cast_creature()->invulnerable())))
 	{
 		Fvector linear_vel;
 		ph_self_object->PHGetLinearVell(linear_vel);
