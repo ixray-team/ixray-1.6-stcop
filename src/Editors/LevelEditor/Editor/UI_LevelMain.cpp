@@ -1181,27 +1181,29 @@ char* CLevelMain::GetCaption()
 	return (char*)(Tools->m_LastFileName.empty()?"noname":Tools->m_LastFileName.c_str());
 }
 
-bool  CLevelMain::ApplyShortCut(DWORD Key, TShiftState Shift)
+bool CLevelMain::ApplyShortCut(u32 Key, TShiftState Shift)
 {
-	if (Scene->IsPlayInEditor())return true;
-	return inherited::ApplyShortCut(Key,Shift);
-}
-
-
-bool  CLevelMain::ApplyGlobalShortCut(DWORD Key, TShiftState Shift)
-{
-	return inherited::ApplyGlobalShortCut(Key,Shift);
-}
-
-void RetrieveSceneObjPointAndNormal( Fvector& hitpoint, Fvector* hitnormal, const SRayPickInfo &pinf, int bSnap )
-{
-	if(pinf.e_mesh == 0)
+	if (Scene->IsPlayInEditor())
 	{
-	  hitpoint = pinf.pt;
-	   if (hitnormal && pinf.visual_inf.K )
-			*hitnormal = pinf.visual_inf.normal;
-	   return;
+		return true;
 	}
+
+	return inherited::ApplyShortCut(Key, Shift);
+}
+
+void RetrieveSceneObjPointAndNormal(Fvector& hitpoint, Fvector* hitnormal, const SRayPickInfo& pinf, int bSnap)
+{
+	if (pinf.e_mesh == 0)
+	{
+		hitpoint = pinf.pt;
+		if (hitnormal && pinf.visual_inf.K)
+		{
+			*hitnormal = pinf.visual_inf.normal;
+		}
+
+		return;
+	}
+
 	if (Tools->GetSettings(etfVSnap) && bSnap)
 	{
 		Fvector pn;
@@ -1212,16 +1214,26 @@ void RetrieveSceneObjPointAndNormal( Fvector& hitpoint, Fvector* hitnormal, cons
 		pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(), pinf.e_mesh, pinf.inf.id, verts);
 
 		if ((w > u) && (w > v))
+		{
 			pn.set(verts[0]);
+		}
 		else if ((u > w) && (u > v))
+		{
 			pn.set(verts[1]);
+		}
 		else
+		{
 			pn.set(verts[2]);
+		}
 
 		if (pn.distance_to(pinf.pt) < LTools->m_MoveSnap)
+		{
 			hitpoint.set(pn);
+		}
 		else
+		{
 			hitpoint.set(pinf.pt);
+		}
 	}
 	else
 	{
@@ -1231,11 +1243,10 @@ void RetrieveSceneObjPointAndNormal( Fvector& hitpoint, Fvector* hitnormal, cons
 	if (hitnormal)
 	{
 		Fvector verts[3];
-		pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(),pinf.e_mesh,pinf.inf.id,verts);
-		hitnormal->mknormal(verts[0],verts[1],verts[2]);
+		pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(), pinf.e_mesh, pinf.inf.id, verts);
+		hitnormal->mknormal(verts[0], verts[1], verts[2]);
 	}
 }
-
 
 bool EditLibPickObjectGeometry(  Fvector& hitpoint,  const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal )
 {
@@ -1280,36 +1291,36 @@ bool ScenePickObjectGeometry(Fvector& hitpoint, const Fvector& start, const Fvec
 	return false;
 }
 
-bool PickObjectGeometry( EEditorState est, Fvector& hitpoint,  const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal )
+bool PickObjectGeometry(EEditorState est, Fvector& hitpoint, const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal)
 {
-
-	switch(est)
+	switch (est)
 	{
-	   case esEditLibrary:
-			return EditLibPickObjectGeometry( hitpoint, start, direction, bSnap, hitnormal );
-	   case esEditScene:
-			return ScenePickObjectGeometry( hitpoint, start, direction, bSnap, hitnormal );
-		default:
-			NODEFAULT;
+		case esEditLibrary: return EditLibPickObjectGeometry(hitpoint, start, direction, bSnap, hitnormal);
+		case esEditScene:   return ScenePickObjectGeometry(hitpoint, start, direction, bSnap, hitnormal);
+		default:            NODEFAULT;
 	}
+
 	return false;
 }
 
-bool PickGrid(  Fvector& hitpoint,  const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal )
+bool PickGrid(Fvector& hitpoint, const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal)
 {
-	 
 	// pick grid
 	Fvector normal;
-	normal.set( 0, 1, 0 );
-	float clcheck = direction.dotproduct( normal );
+	normal.set(0, 1, 0);
+	float clcheck = direction.dotproduct(normal);
 
-	if( fis_zero( clcheck ) )
-		 return false;
-
-	float alpha = - start.dotproduct(normal) / clcheck;
-	
-	if( alpha <= 0 )
+	if (fis_zero(clcheck))
+	{
 		return false;
+	}
+
+	float alpha = -start.dotproduct(normal) / clcheck;
+
+	if (alpha <= 0)
+	{
+		return false;
+	}
 
 	hitpoint.x = start.x + direction.x * alpha;
 	hitpoint.y = start.y + direction.y * alpha;
@@ -1321,29 +1332,35 @@ bool PickGrid(  Fvector& hitpoint,  const Fvector& start, const Fvector& directi
 		hitpoint.z = snapto(hitpoint.z, LTools->m_MoveSnap);
 		hitpoint.y = 0.f;
 	}
-	
+
 	if (hitnormal)
-		hitnormal->set(0,1,0);
+	{
+		hitnormal->set(0, 1, 0);
+	}
 	return true;
 }
 
-bool CLevelMain::PickGround(Fvector& hitpoint, const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal){
+bool CLevelMain::PickGround(Fvector& hitpoint, const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal)
+{
 	VERIFY(m_bReady);
-	
+
 	EEditorState est = GetEState();
-	if( est!= esEditLibrary && est != esEditScene )
-		return false;
-   
-	// pick object geometry
-	if( (bSnap==-1) || ( Tools->GetSettings(etfOSnap) && (bSnap==1) ) )
+	if (est != esEditLibrary && est != esEditScene)
 	{
-	  bool b =  PickObjectGeometry( est, hitpoint, start, direction, bSnap,  hitnormal );
-	  if(b)
-	  return true;
+		return false;
 	}
 
-	return   PickGrid( hitpoint, start, direction, bSnap,  hitnormal );
+	// pick object geometry
+	if ((bSnap == -1) || (Tools->GetSettings(etfOSnap) && (bSnap == 1)))
+	{
+		bool b = PickObjectGeometry(est, hitpoint, start, direction, bSnap, hitnormal);
+		if (b)
+		{
+			return true;
+		}
+	}
 
+	return PickGrid(hitpoint, start, direction, bSnap, hitnormal);
 }
 
 bool CLevelMain::SelectionFrustum(CFrustum& frustum)
@@ -1417,7 +1434,9 @@ void CLevelMain::SetStatus(const char* s, bool bOutLog)
 	VERIFY(m_bReady);
 
 	if (bOutLog && s && s[0])
+	{
 		ELog.Msg(mtInformation, s);
+	}
 
 	UI->ProgressStatusName = s;
 }
@@ -1437,6 +1456,7 @@ void CLevelMain::SaveSettings(nlohmann::json& js)
 	inherited::SaveSettings(js);
 	SSceneSummary::Save();
 }
+
 void CLevelMain::LoadSettings(nlohmann::json& js)
 {
 	inherited::LoadSettings(js);
@@ -1458,39 +1478,6 @@ void CLevelMain::OnDrawUI()
 		LTools->GetToolForm()->OnDrawUI();
 	}
 }
-
-bool CLevelMain::KeyDown(WORD Key, TShiftState Shift)
-{
-	if (TUI::KeyDown(Key, Shift))
-		return true;
-
-	return false;
-}
-
-void CLevelMain::OnStats(CGameFont* font)
-{
-	float Height = font->GetHeight();
-	font->SetColor(color_rgba(255, 0, 0, 255));
-	font->SetHeight(14);
-	if (!Scene->m_RTFlags.is(EScene::flIsBuildedCForm))
-	{
-		font->OutNext("NEED REBUILD CFORM");
-	}
-	if (!Scene->m_RTFlags.is(EScene::flIsBuildedAIMap))
-	{
-		font->OutNext("NEED REBUILD AIMAP");
-	}
-	if (!Scene->m_RTFlags.is(EScene::flIsBuildedGameGraph))
-	{
-		font->OutNext("NEED REBUILD GAME GRAPH");
-	}
-
-
-	font->SetHeight(Height);
-}
-
-
-
 
 bool CLevelMain::IsPlayInEditor()
 {

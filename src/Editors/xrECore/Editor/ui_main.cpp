@@ -557,29 +557,34 @@ void TUI::RealResize()
 	EDevice->Resize(m_Size.x, m_Size.y,m_Size_Maximize);
 	ExecCommand			(COMMAND_UPDATE_PROPERTIES);
 }
+
 void TUI::RealUpdateScene()
 {
-	Tools->UpdateProperties	(false);
-	m_Flags.set			(flUpdateScene,false);
+	Tools->UpdateProperties(false);
+	m_Flags.set(flUpdateScene, false);
 }
+
 void TUI::RealRedrawScene()
 {
-
-	Redraw				();         
+	Redraw();
 }
+
 void TUI::OnFrame()
 {
-	EDevice->FrameMove	();
-	SndLib->OnFrame		();
+	EDevice->FrameMove();
+	SndLib->OnFrame();
 	// tools on frame
-	if (m_Flags.is(flUpdateScene)) RealUpdateScene();
-	Tools->OnFrame		();
+	if (m_Flags.is(flUpdateScene))
+	{
+		RealUpdateScene();
+	}
+	Tools->OnFrame();
 
 	// show hint
-	ResetBreak			();
+	ResetBreak();
 
 	// Progress
-	ProgressDraw		();
+	ProgressDraw();
 }
 
 bool TUI::Idle()
@@ -604,7 +609,9 @@ bool TUI::Idle()
 	} while (msg.message);
 
 	if (m_Flags.is(flResetUI))
+	{
 		RealResetUI();
+	}
 
 	Sleep(1);
 
