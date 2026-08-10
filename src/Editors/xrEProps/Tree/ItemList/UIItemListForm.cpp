@@ -38,34 +38,36 @@ void UIItemListForm::DrawNode(Node* N)
 {
 	if (N->Type == FNT_Root)
 	{
-		for (Node& node : N->Nodes)
+		for (Node& Node : N->Nodes)
 		{
-			if (IsNodeTrueFolder(node) && IsDrawFolder(&node))
+			if (IsNodeTrueFolder(Node) && IsDrawFolder(&Node))
 			{
-				DrawNode(&node);
+				DrawNode(&Node);
 				ImGui::Separator();
 			}
 		}
-		for (Node& node : N->Nodes)
+
+		for (Node& Node : N->Nodes)
 		{
-			if (!IsNodeTrueFolder(node))
+			if (!IsNodeTrueFolder(Node))
 			{
-				if (node.Object && node.Object->Visible())
+				if (Node.Object && Node.Object->Visible())
 				{
 					if (m_Filter.empty())
 					{
-						DrawNode(&node);
+						DrawNode(&Node);
 						ImGui::Separator();
 					}
 					else
 					{
-						xr_string nodeNameLower = node.Name.c_str();
-						xr_string filterLower = m_Filter.c_str();
-						xr_strlwr(nodeNameLower);
-						xr_strlwr(filterLower);
-						if (nodeNameLower.Contains(filterLower))
+						xr_string NodeNameLower = Node.Name.c_str();
+						xr_string FilterLower = m_Filter.c_str();
+						xr_strlwr(NodeNameLower);
+						xr_strlwr(FilterLower);
+
+						if (NodeNameLower.Contains(FilterLower))
 						{
-							DrawNode(&node);
+							DrawNode(&Node);
 							ImGui::Separator();
 						}
 					}
@@ -75,52 +77,71 @@ void UIItemListForm::DrawNode(Node* N)
 	}
 	else if (N->IsFolder())
 	{
-		if (N->Selected || N->AutoExpand)ImGui::SetNextItemOpen(true);
+		if (N->Selected || N->AutoExpand)
+		{
+			ImGui::SetNextItemOpen(true);
+		}
+
 		ImGui::AlignTextToFramePadding();
 		ImGuiTreeNodeFlags FolderFlags = ImGuiTreeNodeFlags_OpenOnArrow;
-		if (IsFolderBullet(N))FolderFlags |= ImGuiTreeNodeFlags_Bullet;
-		if (IsFolderSelected(N))FolderFlags |= ImGuiTreeNodeFlags_Selected;
+
+		if (IsFolderBullet(N))
+		{
+			FolderFlags |= ImGuiTreeNodeFlags_Bullet;
+		}
+
+		if (IsFolderSelected(N))
+		{
+			FolderFlags |= ImGuiTreeNodeFlags_Selected;
+		}
+
 		if (N->Icon.size() > 0)
 		{
 			ImGui::Text(N->Icon.c_str());
 			ImGui::SameLine();
 		}
+
 		xr_string builder = N->Prefix.c_str();
 		builder.append(N->Name.c_str());
+
 		if (ImGui::TreeNodeEx(builder.c_str(), FolderFlags))
 		{
 			DrawAfterFolderNode(true, N);
 			if (ImGui::IsItemClicked() && N->Object)
-				IsItemClicked(N);
-			for (Node& node : N->Nodes)
 			{
-				if (IsNodeTrueFolder(node) && IsDrawFolder(&node))
+				IsItemClicked(N);
+			}
+
+			for (Node& Node : N->Nodes)
+			{
+				if (IsNodeTrueFolder(Node) && IsDrawFolder(&Node))
 				{
 					ImGui::Separator();
-					DrawNode(&node);
+					DrawNode(&Node);
 				}
 			}
-			for (Node& node : N->Nodes)
+
+			for (Node& Node : N->Nodes)
 			{
-				if (!IsNodeTrueFolder(node))
+				if (!IsNodeTrueFolder(Node))
 				{
-					if (node.Object && node.Object->Visible())
+					if (Node.Object && Node.Object->Visible())
 					{
 						if (m_Filter.empty())
 						{
 							ImGui::Separator();
-							DrawNode(&node);
+							DrawNode(&Node);
 						}
 						else
 						{
-							xr_string nodeNameLower = node.Name.c_str();
-							xr_string filterLower = m_Filter.c_str();
-							xr_strlwr(nodeNameLower);
-							xr_strlwr(filterLower);
-							if (nodeNameLower.Contains(filterLower))
+							xr_string NodeNameLower = Node.Name.c_str();
+							xr_string FilterLower = m_Filter.c_str();
+							xr_strlwr(NodeNameLower);
+							xr_strlwr(FilterLower);
+							if (NodeNameLower.Contains(FilterLower))
 							{
 								ImGui::Separator();
-								DrawNode(&node);
+								DrawNode(&Node);
 							}
 						}
 					}
@@ -132,14 +153,17 @@ void UIItemListForm::DrawNode(Node* N)
 		{
 			DrawAfterFolderNode(false, N);
 			if (ImGui::IsItemClicked() && N->Object)
+			{
 				IsItemClicked(N);
+			}
 		}
-		if (N->Selected)N->Selected = false;
+
+		N->Selected = false;
 	}
 	else if (N->IsObject())
 	{
 		DrawItem(N);
-		if (N->Selected)N->Selected = false;
+		N->Selected = false;
 	}
 }
 
@@ -576,11 +600,11 @@ void UIItemListForm::DrawItem(Node* Node)
 
 	if (!m_Filter.empty())
 	{
-		xr_string nodeNameLower = Node->Name.c_str();
-		xr_string filterLower = m_Filter.c_str();
-		xr_strlwr(nodeNameLower);
-		xr_strlwr(filterLower);
-		if (!nodeNameLower.Contains(filterLower))
+		xr_string NodeNameLower = Node->Name.c_str();
+		xr_string FilterLower = m_Filter.c_str();
+		xr_strlwr(NodeNameLower);
+		xr_strlwr(FilterLower);
+		if (!NodeNameLower.Contains(FilterLower))
 			return;
 	}
 
@@ -647,21 +671,30 @@ void UIItemListForm::DrawItem(Node* Node)
 					auto Begin = std::find(m_Items.begin(), m_Items.end(), LastItem);
 					auto End = std::find(m_Items.begin(), m_Items.end(), Node->Object);
 
-					ptrdiff_t Dis = std::distance(Begin, End);
-					if (Dis < 0)
+					if (Begin > End)
 					{
 						std::swap(Begin, End);
 					}
 
-					for (auto Iter = Begin; Iter < End; Iter++)
+					for (auto Iter = Begin; Iter <= End; ++Iter)
 					{
 						ListItem* NodeObj = *Iter;
-						NodeObj->selected = true;
-						m_SelectedItems.push_back(NodeObj);
+
+						if (!NodeObj->selected)
+						{
+							NodeObj->selected = true;
+							m_SelectedItems.push_back(NodeObj);
+						}
+
 						if (!OnItemFocusedEvent.empty())
+						{
 							OnItemFocusedEvent(NodeObj);
-						if (!OnItemsFocusedEvent.empty())
-							OnItemsFocusedEvent(m_SelectedItems);
+						}
+					}
+
+					if (!OnItemsFocusedEvent.empty())
+					{
+						OnItemsFocusedEvent(m_SelectedItems);
 					}
 				}
 				else
@@ -685,24 +718,24 @@ void UIItemListForm::DrawItem(Node* Node)
 	}
 }
 
-bool UIItemListForm::IsDrawFolder(Node* node)
+bool UIItemListForm::IsDrawFolder(Node* InputNode)
 {
 	if (m_Flags.test(fMenuEdit) && !m_Filter.empty())
 	{
-		bool result = false;
-		for (Node& N : node->Nodes)
+		bool Result = false;
+		for (Node& N : InputNode->Nodes)
 		{
 			if (N.IsObject())
 			{
 				if (N.Object && N.Object->Visible())
 				{
-					xr_string nodeNameLower = N.Name.c_str();
-					xr_string filterLower = m_Filter.c_str();
-					xr_strlwr(nodeNameLower);
-					xr_strlwr(filterLower);
-					if (nodeNameLower.Contains(filterLower))
+					xr_string NodeNameLower = N.Name.c_str();
+					xr_string FilterLower = m_Filter.c_str();
+					xr_strlwr(NodeNameLower);
+					xr_strlwr(FilterLower);
+					if (NodeNameLower.Contains(FilterLower))
 					{
-						result = true;
+						Result = true;
 						break;
 					}
 				}
@@ -711,23 +744,26 @@ bool UIItemListForm::IsDrawFolder(Node* node)
 			{
 				if (IsDrawFolder(&N))
 				{
-					result = true;
+					Result = true;
 					break;
 				}
 			}
 		}
-		return result;
+		return Result;
 	}
 
-	if (node->Object)
-		return node->Object->Visible();
-	bool result = m_Flags.test(fMenuEdit);
-	;
-	for (Node& N : node->Nodes)
+	if (InputNode->Object)
 	{
-		result = result | IsDrawFolder(&N);
+		return InputNode->Object->Visible();
 	}
-	return result;
+
+	bool Result = m_Flags.test(fMenuEdit);
+
+	for (Node& N : InputNode->Nodes)
+	{
+		Result = Result || IsDrawFolder(&N);
+	}
+	return Result;
 }
 
 void UIItemListForm::IsItemClicked(Node* Node)
@@ -871,11 +907,11 @@ bool UIItemListForm::SetAutoExpandForFilter(Node* N)
 		{
 			if (child.Object && child.Object->Visible())
 			{
-				xr_string nodeNameLower = child.Name.c_str();
-				xr_string filterLower = m_Filter.c_str();
-				xr_strlwr(nodeNameLower);
-				xr_strlwr(filterLower);
-				if (nodeNameLower.Contains(filterLower))
+				xr_string NodeNameLower = child.Name.c_str();
+				xr_string FilterLower = m_Filter.c_str();
+				xr_strlwr(NodeNameLower);
+				xr_strlwr(FilterLower);
+				if (NodeNameLower.Contains(FilterLower))
 				{
 					hasMatch = true;
 				}
