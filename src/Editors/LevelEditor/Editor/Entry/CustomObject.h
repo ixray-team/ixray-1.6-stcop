@@ -3,10 +3,7 @@
 #define CHUNK_OBJECT_BODY   0x7777
 
 struct SRayPickInfo;
-struct FSChunkDef;
 class CFrustum;
-class IReader;
-class IWriter;
 class COMotion;
 class CCustomMotion;
 class SAnimParams;
