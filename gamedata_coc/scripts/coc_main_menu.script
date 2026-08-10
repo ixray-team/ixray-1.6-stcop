@@ -1,0 +1,44 @@
+
+function on_game_start()
+	RegisterScriptCallback("main_menu_update", this.on_main_menu_update)
+	RegisterScriptCallback("main_menu_on_init_controlls", this.on_main_menu_init_controlls)
+
+    ui_main_menu.main_menu.SetMsg = function(mm_ref,text,tmr)
+		if (text == "") then 
+			return 
+		end
+		mm_ref.msg_wnd:Show(true)
+		mm_ref.msg_wnd_text:SetText(text)
+		mm_ref.msg_wnd_text:AdjustHeightToText()
+		mm_ref.msg_wnd_text:SetWndSize(vector2():set(1024,mm_ref.msg_wnd_text:GetHeight()+10))
+		mm_ref.msg_wnd_text:SetWndPos(vector2():set(0,20))
+		
+		mm_ref.msg_wnd:SetWndSize(vector2():set(1024,mm_ref.msg_wnd_text:GetHeight()+44))
+		mm_ref.msg_wnd:SetWndPos(vector2():set(0,80))
+
+		mm_ref.msg_wnd_timer = 100*tmr
+    end
+    
+end
+
+function on_main_menu_init_controlls(ref)
+	-- Message Window 
+	ref.msg_wnd = ref.main_xml:InitFrame("msg_wnd:background",ref)
+	ref.msg_wnd:SetAutoDelete(false)
+	ref.msg_wnd_text = ref.main_xml:InitTextWnd("msg_wnd:text",ref.msg_wnd)
+	ref.msg_wnd_text:SetTextAlignment(2)
+	
+	ref.msg_wnd:Show(false)
+	ref.msg_wnd:SetColor(GetARGB(255,0,0,0))
+end
+
+function on_main_menu_update(ref)
+	-- Warning messages timer 
+	if (ref.msg_wnd_timer) then 
+		ref.msg_wnd_timer = ref.msg_wnd_timer - 1
+		if (ref.msg_wnd_timer <= 0) then
+			ref.msg_wnd_timer = nil
+			ref.msg_wnd:Show(false)
+		end
+	end
+end

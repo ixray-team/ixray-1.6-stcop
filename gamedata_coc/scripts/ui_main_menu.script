@@ -9,8 +9,8 @@
 local SKIP_FACTION_SELECTION = false -- TRUE to disable faction selection menu and start normally
 
 class "main_menu" (CUIScriptWnd)
+
 function main_menu:__init() super()
-	math.randomseed(os.time())
 	self.mbox_mode = 0
 	self.main_xml = CScriptXmlInit()
 	self.main_xml:ParseFile("ui_mm_main.xml")
@@ -22,10 +22,6 @@ function main_menu:__init() super()
     self:InitCallBacks()
 	
 	RegisterScriptCallback("on_localization_change", self)
-	
-	if not (level.present()) then
-		xrs_debug_tools.on_game_start()
-	end
 end
 
 function main_menu:Update()
@@ -51,14 +47,6 @@ function main_menu:Update()
 	end
 	
 	SendScriptCallback("main_menu_update", self)
-	-- Warning messages timer 
-	if (self.msg_wnd_timer) then 
-		self.msg_wnd_timer = self.msg_wnd_timer - 1
-		if (self.msg_wnd_timer <= 0) then
-			self.msg_wnd_timer = nil
-			self.msg_wnd:Show(false)
-		end
-	end
 end
 
 function main_menu:__finalize()
@@ -101,21 +89,12 @@ function main_menu:InitControls()
 		gamepad_led(255, 255, 0)
 	end
 	SendScriptCallback("main_menu_on_init_controlls", self)
-	-- IX-Ray end
 
-	-- Message Window 
-	self.msg_wnd = self.main_xml:InitFrame("msg_wnd:background",self)
-	self.msg_wnd:SetAutoDelete(false)
-	self.msg_wnd_text = self.main_xml:InitTextWnd("msg_wnd:text",self.msg_wnd)
-	self.msg_wnd_text:SetTextAlignment(2)
-	
-	self.msg_wnd:Show(false)
-	self.msg_wnd:SetColor(GetARGB(255,0,0,0))
-	
 	action_repeaters():Register(self, key_bindings.kUI_DOWN,0,0)
 	action_repeaters():Register(self, key_bindings.kUI_UP,0,0)
 	action_repeaters():Register(self, key_bindings.kUI_LEFT,0,0)
 	action_repeaters():Register(self, key_bindings.kUI_RIGHT,0,0)
+	-- IX-Ray end
 end
 
 function main_menu:Show(f)
@@ -507,20 +486,4 @@ function main_menu:ReloadGamepadLegend()
 			self.opt_dlg.dlg_controller_layout:ReloadGamepadTextures()
 		end
 	end
-end
-
-function main_menu:SetMsg(text,tmr)
-	if (text == "") then 
-		return 
-	end
-	self.msg_wnd:Show(true)
-	self.msg_wnd_text:SetText(text)
-	self.msg_wnd_text:AdjustHeightToText()
-	self.msg_wnd_text:SetWndSize(vector2():set(1024,self.msg_wnd_text:GetHeight()+10))
-	self.msg_wnd_text:SetWndPos(vector2():set(0,20))
-	
-	self.msg_wnd:SetWndSize(vector2():set(1024,self.msg_wnd_text:GetHeight()+44))
-	self.msg_wnd:SetWndPos(vector2():set(0,80))
-
-	self.msg_wnd_timer = 100*tmr
 end
