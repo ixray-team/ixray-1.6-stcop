@@ -61,6 +61,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("enable_memory_object",		&CScriptGameObject::enable_memory_object)
 		.def("active_sound_count",			(int (CScriptGameObject::*)())(&CScriptGameObject::active_sound_count))
 		.def("active_sound_count",			(int (CScriptGameObject::*)(bool))(&CScriptGameObject::active_sound_count))
+		.def("active_sound_count_script",	(int (CScriptGameObject::*)())(&CScriptGameObject::active_sound_count_script))
+		.def("active_sound_count_script",	(int (CScriptGameObject::*)(bool))(&CScriptGameObject::active_sound_count_script))
 		.def("best_cover",					&CScriptGameObject::best_cover)
 		.def("safe_cover",					&CScriptGameObject::safe_cover)
 		.def("spawn_ini",					&CScriptGameObject::spawn_ini)

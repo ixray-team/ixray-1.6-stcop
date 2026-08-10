@@ -44,6 +44,34 @@ IC	u32	CSoundPlayer::active_sound_count(bool only_playing) const
 	return								(count);
 }
 
+IC	u32	CSoundPlayer::active_sound_count_script(bool only_playing) const
+{
+	u32									count = 0;
+	xr_vector<CSoundSingle>::const_iterator	I = m_playing_sounds.begin();
+	xr_vector<CSoundSingle>::const_iterator	E = m_playing_sounds.end();
+	if (!only_playing) 
+	{
+		for (; I != E; ++I)
+		{
+			if ((*I).m_script_sound && ((*I).m_sound->is_playing() || ((*I).m_start_time <= Device.dwTimeGlobal)))
+			{
+				++count;
+			}
+		}
+	}
+	else 
+	{
+		for (; I != E; ++I)
+		{
+			if ((*I).m_script_sound && (*I).m_sound->is_playing())
+			{
+				++count;
+			}
+		}
+	}
+	return								(count);
+}
+
 IC	ref_sound *CSoundPlayer::CSoundCollection::add	(ESoundTypes type, const char* name) const
 {
 	ref_sound				*temp = new ref_sound();
