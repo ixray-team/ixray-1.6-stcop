@@ -383,6 +383,7 @@ public:
 	bool 			Save					(const char* fname);
 	bool 			Load					(IReader&);
 	void 			Save					(IWriter&);
+	IC void			SetLoadInfo				(const char* fname, time_t version) { m_LoadName = fname; m_ObjectVersion = version; }
 #if 1
 	void 			FillMotionList			(const char* pref, ListItemsVec& items, int modeID);
 	void 			FillBoneList			(const char* pref, ListItemsVec& items, int modeID);
