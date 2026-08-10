@@ -61,7 +61,7 @@ void CSoundPlayer::unload			()
 	VERIFY							(m_playing_sounds.empty());
 }
 
-u32 CSoundPlayer::add				(const char* prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, const char* bone_name, CSound_UserDataPtr data)
+u32 CSoundPlayer::add				(const char* prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, const char* bone_name, CSound_UserDataPtr data, bool isScripted)
 {
 	SOUND_COLLECTIONS::iterator		I = m_sounds.find(internal_type);
 	if (m_sounds.end() != I)
@@ -76,6 +76,7 @@ u32 CSoundPlayer::add				(const char* prefix, u32 max_count, ESoundTypes type, u
 	sound_params.m_max_count			= max_count;
 	sound_params.m_type					= type;
 	sound_params.m_data					= data;
+	sound_params.m_script_sound			= isScripted;
 
 	typedef CSoundCollectionStorage::SOUND_COLLECTION_PAIR	SOUND_COLLECTION_PAIR;
 	const SOUND_COLLECTION_PAIR			&pair = sound_collection_storage().object(sound_params);
