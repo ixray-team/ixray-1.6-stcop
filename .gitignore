@@ -35,7 +35,7 @@ build*/
 # X-Ray user files
 _appdata_/
 _appdata_ixray_/
-ixr_addons/
+ixr_addons*/
 fs_*.ltx
 fsgame_*.ltx
 !fsgame_coc.ltx
