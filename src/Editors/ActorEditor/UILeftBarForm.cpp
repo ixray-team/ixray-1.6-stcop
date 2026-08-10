@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "../xrECore/Editor/EditMesh.h"
+#include "IconsFontAwesome6.h"
 
 extern ECORE_API bool g_force16BitTransformQuant;
 extern ECORE_API bool g_force32BitTransformQuant;
@@ -211,7 +212,30 @@ void UILeftBarForm::Draw()
     if (ImGui::Begin("Object Properties"))
     {
         ImGui::BeginGroup();
+
+        ATools->m_ObjectItems->SetOnDrawItemExtraEvent(+[](UIItemListForm::Node& node)
+        {
+            if (node.Object && node.Object->Type() == emSurface && node.Object->m_Object)
+            {
+                CSurface* surf = (CSurface*)node.Object->m_Object;
+                const float ButtonWidth = ImGui::GetFrameHeight();
+                const float AvailWidth = ImGui::GetContentRegionAvail().x;
+                ImGui::SameLine();
+
+                ImGui::SetCursorPosX(AvailWidth - ButtonWidth);
+                ImGui::PushID(surf);
+                const char* icon = surf->m_bEditorVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
+                if (ImGui::SmallButton(icon))
+                {
+                    surf->m_bEditorVisible = !surf->m_bEditorVisible;
+                    UI->RedrawScene();
+                }
+                ImGui::PopID();
+            }
+        });
         ATools->m_ObjectItems->Draw();
+        ATools->m_ObjectItems->SetOnDrawItemExtraEvent(nullptr);
+
         ImGui::EndGroup();
 
 

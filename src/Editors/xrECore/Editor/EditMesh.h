@@ -8,15 +8,9 @@
 // refs
 class 	CSurface;
 struct 	SRayPickInfo;
-//struct CFrustum;
-struct 	FSChunkDef;
-class 	CExporter;
 class	CCustomObject;
 
-#if 1
-#	include "pick_defs.h"
-#endif
-
+#include "pick_defs.h"
 #include "../xrEngine/bone.h"
 
 #pragma pack( push,1 )
