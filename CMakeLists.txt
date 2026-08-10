@@ -106,10 +106,8 @@ add_subdirectory("src/3rd-party")
 # Engine libraries
 add_subdirectory("src")
 
-# Plugins 
-if (IXRAY_PLUGINS)
-    add_subdirectory("src/plugins")
-endif()
+# Plugins
+add_subdirectory("src/plugins")
 
 # Test 
 if (IXRAY_TESTS)
