@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "CustomTools/UIBatchTools.h"
 #include "CustomTools/UIPostProcess.h"
 #include "../xrEUI/xrUITheme.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
@@ -136,6 +137,14 @@ void UIMainMenuForm::Draw()
 			DrawMenuItem("Preferences", COMMAND_PREVIEW_OBJ_PREF);
 			ImGui::EndMenu();
 		};
+
+		if (ImGui::BeginMenu("Tools"))
+		{
+			if (ImGui::MenuItem("Batch Tools"))
+				CUIBatchTools::Instance().Open();
+
+			ImGui::EndMenu();
+		}
 
 		if (ImGui::BeginMenu("Editors")) {
 			if (ImGui::BeginMenu("Images"))
