@@ -3,10 +3,11 @@ class UIChooseFormItem :public UITreeItem
 {
 public:
 	UIChooseFormItem(shared_str Name);
-	virtual ~UIChooseFormItem();
+	virtual ~UIChooseFormItem() = default;
 
 	bool bIsFavorite;
 	bool m_bOpenByDefault;
+	bool NeedScrollToSelected = false;
 
 	class UIChooseForm* Form;
 	int Index;
