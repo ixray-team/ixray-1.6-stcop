@@ -1,7 +1,7 @@
 project(ActorEditor)
 
 # Files import
-file(GLOB EAE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
+file(GLOB_RECURSE EAE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
     "*.ico"
@@ -43,10 +43,10 @@ target_compile_options(ActorEditor PRIVATE /W0)
 target_compile_definitions(ActorEditor PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(ActorEditor PUBLIC xrCore)
 target_link_libraries(ActorEditor PUBLIC xrEUI)
 target_link_libraries(ActorEditor PUBLIC xrEProps)
 target_link_libraries(ActorEditor PUBLIC xrECore)
+target_link_libraries(ActorEditor PUBLIC PCore)
 
 # Move precompiled header
 set_target_properties(ActorEditor PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
