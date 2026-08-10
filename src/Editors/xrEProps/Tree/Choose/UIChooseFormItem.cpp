@@ -10,17 +10,17 @@ UIChooseFormItem::UIChooseFormItem(shared_str Name):Object(nullptr),UITreeItem(N
 	m_bOpenByDefault = false;
 }
 
-UIChooseFormItem::~UIChooseFormItem()
-{
-}
-
 void UIChooseFormItem::Draw()
 {
 	if (!CheckFilter())
+	{
 		return;
+	}
+
 	ImGui::PushID(this);
 	ImGui::TableNextRow();
 	ImGui::TableNextColumn();
+
 	if (Object)
 	{
 		ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
@@ -28,10 +28,18 @@ void UIChooseFormItem::Draw()
 		{
 			Flags |= ImGuiTreeNodeFlags_Bullet;
 		}
-		if (Form->m_SelectedItem==this)
+
+		if (Form->m_SelectedItem == this)
 		{
 			Flags |= ImGuiTreeNodeFlags_Selected;
+
+			if (NeedScrollToSelected)
+			{
+				ImGui::SetScrollHereY(0.5f);
+				NeedScrollToSelected = false;
+			}
 		}
+
 		if (Form->m_Flags.test(cfMultiSelect))
 		{
 			if (ImGui::Checkbox("##checkbox", &bIsFavorite))
@@ -50,6 +58,7 @@ void UIChooseFormItem::Draw()
 			}
 			ImGui::SameLine(0, 0);
 		}
+
 		ImGui::TreeNodeEx(Text.c_str(), Flags);
 		if (ImGui::IsItemClicked())
 		{
@@ -90,7 +99,9 @@ void UIChooseFormItem::Draw()
 		ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow;
 
 		if (m_bOpenByDefault)
+		{
 			Flags |= ImGuiTreeNodeFlags_DefaultOpen;
+		}
 
 		if (Form->m_Flags.test(cfMultiSelect))
 		{
@@ -111,22 +122,23 @@ void UIChooseFormItem::Draw()
 		{
 			for (UITreeItem* Item : Items)
 			{
-				((UIChooseFormItem*)Item)->Draw();
+				UIChooseFormItem* ChooseItem = ((UIChooseFormItem*)Item);
+				ChooseItem->NeedScrollToSelected = NeedScrollToSelected;
+				ChooseItem->Draw();
 			}
 			ImGui::TreePop();
 		}
 	}
 
 	ImGui::PopID();
-
-
-	
 }
 
 void UIChooseFormItem::OpenParentItems(const char* path, char delimiter)
 {
 	if (!delimiter || !strchr(path, delimiter)) // not a folder
+	{
 		return;
+	}
 
 	string_path itemName;
 	xr_strcpy(itemName, path);
@@ -143,8 +155,13 @@ void UIChooseFormItem::DrawRoot()
 {
 	for (UITreeItem* Item : Items)
 	{
-		((UIChooseFormItem*)Item)->Draw();
+		UIChooseFormItem* ChooseItem = ((UIChooseFormItem*)Item);
+		ChooseItem->NeedScrollToSelected = NeedScrollToSelected;
+
+		ChooseItem->Draw();
 	}
+
+	NeedScrollToSelected = false;
 }
 
 void UIChooseFormItem::Sort()
