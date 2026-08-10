@@ -117,11 +117,6 @@ public:
 	const Fvector4& getHitPowerCritical_2() const { return fvHitPowerCritical_2; }
 	void setHitPowerCritical_2(const Fvector4& vec);
 
-
-#ifdef DEBUG
-	virtual void		OnRender						();
-#endif
-
 private:
 	typedef buffer_vector<Fvector>						shot_targets_t;
 #ifdef DEBUG
