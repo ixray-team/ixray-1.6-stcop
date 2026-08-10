@@ -19,11 +19,6 @@
 
 #define KNIFE_MATERIAL_NAME "objects\\knife"
 
-#ifdef DEBUG
-#	include "debug_renderer.h"
-	extern int g_bDrawBulletHit;
-#endif //#ifdef DEBUG
-
 CWeaponKnife::CWeaponKnife()
 {
 	SetState				( eHidden );
@@ -628,53 +623,6 @@ bool CWeaponKnife::GetBriefInfo( II_BriefInfo& info )
 	info.icon._set( cNameSect() );
 	return true;
 }
-
-#ifdef DEBUG
-void CWeaponKnife::OnRender()
-{
-	CDebugRenderer& renderer	= Level().debug_renderer();
-	if (g_bDrawBulletHit)
-	{
-		for (dbg_draw_data::spheres_t::const_iterator i = m_dbg_data.m_spheres.begin(),
-			ie = m_dbg_data.m_spheres.end(); i != ie; ++i)
-		{
-			float	sc_r				= i->second;
-			Fmatrix	sphere				= Fmatrix().scale(sc_r, sc_r, sc_r);
-			sphere.c					= i->first;
-			renderer.draw_ellipse		(sphere, color_xrgb(100, 255, 0));
-		}
-		/*
-		Fmatrix	sphere				= Fmatrix().scale(.05f, .05f, .05f);
-		sphere.c					= m_dbg_data.m_pos;
-		renderer.draw_ellipse		(sphere, color_xrgb(255, 0, 0));
-		renderer.draw_line			(Fidentity, m_dbg_data.m_pos, m_dbg_data.m_endpos, color_xrgb(255, 255, 0));
-		
-		sphere.c					= m_dbg_data.m_endpos;
-		renderer.draw_ellipse		(sphere, color_xrgb(100, 255, 0));*/
-		//Fvector victim_end			(m_dbg_data.m_pos);
-		//victim_end.add				(m_dbg_data.m_pick_vector);
-		//renderer.draw_line			(Fidentity, m_dbg_data.m_pos, victim_end, color_xrgb(0, 255, 255));
-	}
-	float hit_power = 1.f;
-	for (dbg_draw_data::targets_t::const_iterator i = m_dbg_data.m_targets_vectors.begin(),
-		ie = m_dbg_data.m_targets_vectors.end(); i != ie; ++i)
-	{
-		Fmatrix	sphere	= Fmatrix().scale(0.05f, 0.05f, 0.05f);
-		sphere.c		= *i;
-		u8				hit_color = u8(255 * hit_power);
-		hit_power		*= m_NextHitDivideFactor;
-		renderer.draw_ellipse(sphere, color_xrgb(hit_color, 50, 0));
-	}
-	
-	for (dbg_draw_data::obbes_t::const_iterator i = m_dbg_data.m_target_boxes.begin(),
-		ie = m_dbg_data.m_target_boxes.end(); i != ie; ++i)
-	{
-		Fmatrix	tmp_matrix;
-		tmp_matrix.set(i->m_rotate.i, i->m_rotate.j, i->m_rotate.k, i->m_translate);
-		renderer.draw_obb(tmp_matrix, i->m_halfsize, color_xrgb(0, 255, 0));
-	}
-}
-#endif
 
 static bool intersect	( Fsphere const& bone, Fsphere const& query )
 {
