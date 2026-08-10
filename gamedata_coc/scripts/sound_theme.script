@@ -46,6 +46,8 @@ function npc_sound:__init(snd_ini, section)
 	self.point = snd_ini:r_string_ex(section,"point") or ""
 	self.msg = snd_ini:r_string_ex(section,"message") or ""
 	self.avail_communities = snd_ini:line_exist(section,"avail_communities") and alun_utils.parse_list(snd_ini,section,"avail_communities",true) or nil
+
+	SendScriptCallback("on_npc_sound_init", self, snd_ini, section)
 end
 
 function npc_sound:reset(npc_id)
@@ -200,9 +202,12 @@ function npc_sound:play(npc_id, faction, point, sound)
 	if self.played_id == -1 then
 		return false
 	end
+	if npc ~= nil then
+		-- play_sound (u32 internal_type, u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
+		npc:play_sound(npc_data.id, self.delay_sound+0.06, self.delay_sound+0.05, 1, 0, self.played_id)
 
-	npc:play_sound(npc_data.id, self.delay_sound+0.06, self.delay_sound+0.05, 1, 0, self.played_id)
-
+		SendScriptCallback("on_npc_sound_play", self, npc_id, faction, point, msg)
+	end
 	local table_id = self.played_id + 1
 	local snd = self.sound_path[npc_id][table_id]
 	if not (snd) then 
@@ -428,6 +433,8 @@ function actor_sound:__init(snd_ini, section)
 	if #self.sound == 0 then
 		abort("There are no sound collection with path: %s", self.path)
 	end
+
+	SendScriptCallback("on_actor_sound_init", self, snd_ini, section)
 end
 function actor_sound:callback(npc_id)
 	self.played_time = time_global()
@@ -489,6 +496,8 @@ function actor_sound:play(npc, faction, point, sound)
 	self.snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
 	self.snd_obj.volume = 0.8
 	self.can_play_sound = false
+
+	SendScriptCallback("on_actor_sound_play", self, npc, faction, point, msg)
 
 	local sender, sname
 	if type(npc) ~= "userdata" then
@@ -621,6 +630,8 @@ function object_sound:__init(snd_ini, section)
 	if #self.sound == 0 then
 		abort("There are no sound collection with path: %s", self.path)
 	end
+
+	SendScriptCallback("on_object_sound_init", self, snd_ini, section)
 end
 function object_sound:callback(npc_id)
 	if not (self.cooldown) then 
@@ -701,6 +712,8 @@ function object_sound:play(obj_id, faction, point,sound)
 	end
 	self.snd_obj = sound_object(snd)
 	self.snd_obj:play_at_pos(obj, obj:position(), 0, sound_object.s3d)
+
+	SendScriptCallback("on_object_sound_play", self, obj_id, faction, point, msg)
 
 	self.can_play_sound[obj_id] = false
 
