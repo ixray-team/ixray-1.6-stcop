@@ -74,10 +74,21 @@ EnableInventoryVolume = false			; Inventory volume system
 EnableRealBulletPos	= false				; Use real bullet pos for first person mode instead of camera center
 EnableWeaponAffectsOnMouseSensitivity = true; Changing sensitivity depending on the selected weapon. Configured via the `control_inertion_factor` parameter.
 EnableMainMenuForDisabledControls = false; Enable switch to main menu if game controls are disabled (in cutscene for example)
+NewDemoRecordInputSchema = false; Enable demorecord movement like g_no_clip.
+EnablePolterStaminaLooseOnHit = true
+EnablePolterDrop = true ; Drop of weapon or detector in case of low HP or stamina
+
 
 ; Dialogs
 DialogFovScale = 0.75 ; Increasing fov during dialogue
 TalkDof = 0.0, 0.5, 5.0, 0.0 ; Degree of background blurring in dialogue
+
+[pda_talk]
+enabled = false
+ignore_switch_distance = true
+; Optional comma-separated policy tables (configs/*.ltx), merged after [pda_talk_dialog]/[pda_talk_phrase].
+; policy_files = pda_talk_policies
+
 ; Sprint
 EnableBlockSprintInReload = true        ; Enable block sprint in reload
 DisableSprintWhileOverweight = false    ; Disable Sprint while overweight
@@ -101,9 +112,6 @@ ReadSunConfig = false                   ; Enable sun movement in configurations
 
 [localization]
 PreferedFallbackLanguage = eng
-
-[sound]
-MaterialOCC = false                     ; Use materail occ info
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Extended sections

@@ -5,6 +5,8 @@ SaveImageSize = 128, 128               	; Size of saved thumbnail image
 
 [shaders_options]
 USE_LEGACY_LIGHT = 1                   	; 1 - legacy pipeline, 0 - PBR pipeline
+; USE_SOC_LIGHTING = 1				   	; For levels with SoC lightmap format
+; USE_DIFFUSE_SKY_COLOR = 1			   	; For SoC weather
 
 ; Hozar: Use brga skycolor format
 ; USE_BGRA_SKYCOLOR = 1;
@@ -59,7 +61,7 @@ EnableMonstersInventory = false         ; Enable monsters inventory
 EnableWeaponInertion = true             ; Gunslinger Mod Style
 EnableWeaponCollision = false           ; Shoker Mod Style
 EnableActorStepWallmarks = false        ; Actor step wallmarks AIW Style
-EnableAlternateZoomFovCalc = false		; Don't turn it on unnecessarily! Breaks the original weapon system.EnableInventoryPistolSlot = false 		; 2nd slot for pistols only (like in CS/SoC)
+EnableAlternateZoomFovCalc = false		; Don't turn it on unnecessarily! Breaks the original weapon system.
 EnableImproveWeaponMisfire = false		; Gunslinger Mod Style
 EnableDelayedWeaponActions = false		; Gunslinger Mod Style
 EnableLegacyUpgradeSystem = false		; Use upgrade system from Clear Sky
@@ -72,6 +74,10 @@ EnableInventoryVolume = false			; Inventory volume system
 EnableRealBulletPos	= false				; Use real bullet pos for first person mode instead of camera center
 EnableWeaponAffectsOnMouseSensitivity = true; Changing sensitivity depending on the selected weapon. Configured via the `control_inertion_factor` parameter.
 EnableMainMenuForDisabledControls = false; Enable switch to main menu if game controls are disabled (in cutscene for example)
+NewDemoRecordInputSchema = false; Enable demorecord movement like g_no_clip.
+EnablePolterStaminaLooseOnHit = true
+EnablePolterDrop = true ; Drop of weapon or detector in case of low HP or stamina
+
 
 ; Dialogs
 DialogFovScale = 0.75 ; Increasing fov during dialogue
