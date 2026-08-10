@@ -33,7 +33,7 @@ void CTLSprite::Render(Fvector &pos, float radius, bool bFixedSize, u32 clr)
     mesh.m[1].p.x = cx-sz;	mesh.m[1].p.y = cy-sz;
     mesh.m[3].p.x = cx+sz;	mesh.m[3].p.y = cy-sz;
     mesh.m[2].p.x = cx+sz;	mesh.m[2].p.y = cy+sz;
-    mesh.setdepth	( P.p.z, P.p.w );
+    mesh.setdepth	( P.p.z );
     mesh.setcolor	( clr );
 
     DU_impl.DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP,2,(FVF::TL*)&mesh,4,false,false);
@@ -61,7 +61,7 @@ void CTLSprite::Render(Fvector &pos, u32 color, float radius, float angle)
 	mesh.m[2].p.x = cx+sz*_sin2;	mesh.m[2].p.y = cy+sz*_cos2;
 	mesh.m[3].p.x = cx-sz*_sin1;	mesh.m[3].p.y = cy-sz*_cos1;
 
-	mesh.setdepth	(P.p.z, P.p.w);
+	mesh.setdepth	(P.p.z);
 	mesh.setcolor	(color);
 
     DU_impl.DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP,2,(FVF::TL*)&mesh,4,false,false);
@@ -86,10 +86,10 @@ void CTLSprite::Render( Fvector &pos, u32 color, float radius, const Fvector& D 
 	dir.norm		();
 	R.cross			(dir);
 
-	mesh.m[0].p.x 	= EDevice->_x2real(s1.p.x+l1*R.x);	mesh.m[0].p.y = EDevice->_y2real(s1.p.y+l1*R.y); mesh.m[0].p.z = s2.p.z; mesh.m[0].p.w = s2.p.w;
-	mesh.m[1].p.x 	= EDevice->_x2real(s2.p.x+l2*R.x);	mesh.m[1].p.y = EDevice->_y2real(s2.p.y+l2*R.y); mesh.m[1].p.z = s2.p.z; mesh.m[1].p.w = s2.p.w;
-	mesh.m[2].p.x 	= EDevice->_x2real(s1.p.x-l1*R.x);	mesh.m[2].p.y = EDevice->_y2real(s1.p.y-l1*R.y); mesh.m[2].p.z = s2.p.z; mesh.m[2].p.w = s2.p.w;
-	mesh.m[3].p.x 	= EDevice->_x2real(s2.p.x-l2*R.x);	mesh.m[3].p.y = EDevice->_y2real(s2.p.y-l2*R.y); mesh.m[3].p.z = s2.p.z; mesh.m[3].p.w = s2.p.w;
+	mesh.m[0].p.x 	= EDevice->_x2real(s1.p.x+l1*R.x);	mesh.m[0].p.y = EDevice->_y2real(s1.p.y+l1*R.y); mesh.m[0].p.z = s2.p.z; mesh.m[0].p.w = 1.0f;
+	mesh.m[1].p.x 	= EDevice->_x2real(s2.p.x+l2*R.x);	mesh.m[1].p.y = EDevice->_y2real(s2.p.y+l2*R.y); mesh.m[1].p.z = s2.p.z; mesh.m[1].p.w = 1.0f;
+	mesh.m[2].p.x 	= EDevice->_x2real(s1.p.x-l1*R.x);	mesh.m[2].p.y = EDevice->_y2real(s1.p.y-l1*R.y); mesh.m[2].p.z = s2.p.z; mesh.m[2].p.w = 1.0f;
+	mesh.m[3].p.x 	= EDevice->_x2real(s2.p.x-l2*R.x);	mesh.m[3].p.y = EDevice->_y2real(s2.p.y-l2*R.y); mesh.m[3].p.z = s2.p.z; mesh.m[3].p.w = 1.0f;
 
 	mesh.setcolor	(color);
 
