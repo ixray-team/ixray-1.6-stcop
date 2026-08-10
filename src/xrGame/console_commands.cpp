@@ -139,7 +139,6 @@ Flags32	dbg_net_Draw_Flags = {};
 bool	g_bDebugNode = false;
 u32		g_dwDebugNodeSource = 0;
 u32		g_dwDebugNodeDest = 0;
-extern	int	g_bDrawBulletHit;
 extern	bool	g_bDrawFirstBulletCrosshair;
 
 float	debug_on_frame_gather_stats_frequency = 0.f;
@@ -1466,19 +1465,6 @@ static CCC_RadioMask x##CCC_RadioMask2(p4,p5,p6);		Console->AddCommand(&x##CCC_R
 static CCC_RadioGroupMask2 x##CCC_RadioGroupMask2(&x##CCC_RadioMask1,&x##CCC_RadioMask2);\
 }
 
-struct CCC_DbgBullets : public CCC_Integer {
-	CCC_DbgBullets(const char* N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max) {};
-
-	virtual void	Execute(const char* args)
-	{
-		extern FvectorVec g_hit[];
-		g_hit[0].clear();
-		g_hit[1].clear();
-		g_hit[2].clear();
-		CCC_Integer::Execute(args);
-	}
-};
-
 class CCC_Crash : public IConsole_Command {
 public:
 	CCC_Crash(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
@@ -2794,7 +2780,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "dbg_ph_character_control", &ph_dbg_draw_mask, phDbgCharacterControl);
 	CMD3(CCC_Mask32, "dbg_draw_ph_ray_motions", &ph_dbg_draw_mask, phDbgDrawRayMotions);
 	CMD4(CCC_Float, "dbg_ph_vel_collid_damage_to_display", &dbg_vel_collid_damage_to_display, 0.f, 1000.f);
-	CMD4(CCC_DbgBullets, "dbg_draw_bullet_hit", &g_bDrawBulletHit, 0, 1);
 	CMD2(CCC_Boolean, "dbg_draw_fb_crosshair", &g_bDrawFirstBulletCrosshair);
 	CMD1(CCC_DbgPhTrackObj, "dbg_track_obj");
 	CMD3(CCC_Mask32, "dbg_ph_actor_restriction", &ph_dbg_draw_mask1, ph_m1_DbgActorRestriction);
