@@ -21,6 +21,8 @@
 #define HIT_POWER_EPSILON 0.05f
 #define WALLMARK_SIZE 0.04f
 
+constexpr float MIN_RAYPICK_ERROR_DISTANCE = .01f;
+
 float CBulletManager::m_fMinBulletSpeed = 2.f;
 float const CBulletManager::parent_ignore_distance = 3.f;
 
@@ -583,13 +585,12 @@ ICF float trajectory_select_pick_time(
 
 	float low = start_low;
 	float check_time = high;
-	float const epsilon = .1f;
 
 	while (!fsimilar(low, high))
 	{
 		float distance = trajectory_pick_error(start_low, check_time, bullet.start_position, bullet.start_velocity, gravity, air_resistance);
 
-		if (distance < epsilon)
+		if (distance < MIN_RAYPICK_ERROR_DISTANCE)
 		{
 			low = check_time;
 		}
