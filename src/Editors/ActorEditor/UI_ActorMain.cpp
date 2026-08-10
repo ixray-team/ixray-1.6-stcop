@@ -218,15 +218,21 @@ constexpr size_t ConfigVer = 2;
 
 void CAEPreferences::Load()
 {
-	PrefConfigVer = JSONData["ae_prefs"]["version"];
-
 	inherited::Load();
 
-	bAlwaysShowKeyBar12 = JSONData["ae_prefs"]["always_show_keybar12"];
-	bAlwaysShowKeyBar34 = JSONData["ae_prefs"]["always_show_keybar34"];
+	const auto& AePrefs = JSONData["ae_prefs"];
+	PrefConfigVer = AePrefs["version"];
 
-	g_force16BitTransformQuant = JSONData["ae_prefs"]["anims_bit"]["16"];
-	g_force32BitTransformQuant = JSONData["ae_prefs"]["anims_bit"]["32"];
+	bAlwaysShowKeyBar12 = AePrefs["always_show_keybar12"];
+	bAlwaysShowKeyBar34 = AePrefs["always_show_keybar34"];
+
+	g_force16BitTransformQuant = AePrefs["anims_bit"]["16"];
+	g_force32BitTransformQuant = AePrefs["anims_bit"]["32"];
+
+	if (AePrefs.contains("SmoothGroup"))
+	{
+		SmoothGroup = (ESmoothGroup)AePrefs["SmoothGroup"].get<int>();
+	}
 }
 
 void CAEPreferences::Save()
@@ -238,6 +244,7 @@ void CAEPreferences::Save()
 
 	JSONData["ae_prefs"]["anims_bit"]["16"] = g_force16BitTransformQuant;
 	JSONData["ae_prefs"]["anims_bit"]["32"] = g_force32BitTransformQuant;
+	JSONData["ae_prefs"]["SmoothGroup"] = (int)SmoothGroup;
 
 	JSONData["ae_prefs"]["version"] = ConfigVer;
 }

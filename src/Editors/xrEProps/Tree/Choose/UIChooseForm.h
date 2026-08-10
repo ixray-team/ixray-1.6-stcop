@@ -1,12 +1,9 @@
 #pragma once
-class XREPROPS_API UIChooseForm :  public IEditorWnd
+
+class XREPROPS_API UIChooseForm :
+    public IEditorWnd
 {
     friend class UIChooseFormItem;
- /*   virtual void DrawItem(Node* Node);
-    virtual bool IsDrawFolder(Node* Node);
-    void AppendItem(SChooseItem& item);
- 
-    Node m_GeneralNode;*/
     void UpdateSelected(UIChooseFormItem*NewSelected);
     UIChooseFormItem m_RootItem;
     IRHISurface* m_Texture;
@@ -23,15 +20,12 @@ class XREPROPS_API UIChooseForm :  public IEditorWnd
     u32 m_ChooseID;
     void  FillItems(u32 choose_id);
     void CheckFavorite();
+
 protected:
     using EventsMap = xr_map<u32, SChooseEvents>;
     using EventsMapIt = EventsMap::iterator;
 
     static EventsMap			m_Events;
-private:
-    SChooseEvents 	E;
-    static UIChooseForm* Form;
-    static ImTextureID NullTexture;
 
 public:
     enum Result
@@ -39,8 +33,13 @@ public:
         R_Ok,
         R_Cancel
     };
+
 private:
-        Result m_Result;
+	Result m_Result;
+	SChooseEvents E;
+	static UIChooseForm* Form;
+	static ImTextureID NullTexture;
+
 public:
     UIChooseForm();
     virtual ~UIChooseForm();
