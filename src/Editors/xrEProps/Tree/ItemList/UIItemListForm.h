@@ -17,6 +17,7 @@ public:
 	DECLARE_XR_DELEGATE(VerifyItem, bool, Node*);
 	DECLARE_XR_DELEGATE(GetItemMoveActionSlot, ENodeMoveActionSlot, Node*);
 	DECLARE_XR_DELEGATE(OnMoveItem, bool, Node*);
+	DECLARE_XR_DELEGATE(OnDrawItemExtra, void, Node&);
 
 private:
 	TOnILItemsFocused OnItemsFocusedEvent;
@@ -36,6 +37,7 @@ private:
 	xr_map<ENodeMoveActionSlot, TOnMoveItem> ItemMoveActionSlots = {
 		{ENodeMoveActionSlot::Default, {this, &UIItemListForm::ItemMoveActionDefault}}
 	};
+	TOnDrawItemExtra OnDrawItemExtraEvent;
 
 public:
 	UIItemListForm();
@@ -142,6 +144,10 @@ public:
 	{
 		R_ASSERT(ItemMoveActionSlots.find(Slot) == ItemMoveActionSlots.end());
 		ItemMoveActionSlots[Slot] = e;
+	}
+	IC void SetOnDrawItemExtraEvent(TOnDrawItemExtra e)
+	{
+		OnDrawItemExtraEvent = e;
 	}
 	IC void SetFilter(const char* filter)
 	{
