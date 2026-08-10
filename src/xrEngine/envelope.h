@@ -107,9 +107,8 @@ using KeyVec = xr_vector<st_Key*>;
 using KeyIt = KeyVec::iterator;
 
 // refs
-class CExporter;
-
-class ENGINE_API CEnvelope {
+class ENGINE_API CEnvelope
+{
 public:
 	KeyVec		keys;
 	int			behavior[2];
