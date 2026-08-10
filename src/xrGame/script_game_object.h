@@ -595,6 +595,8 @@ public:
 			void				enable_memory_object	(CScriptGameObject *object, bool enable);
 			int					active_sound_count		();
 			int					active_sound_count		(bool only_playing);
+			int					active_sound_count_script();
+			int					active_sound_count_script(bool only_playing);
 			bool				RayPick					(const Fvector3& Pos, const Fvector3& Dir, float Range);
 			const CCoverPoint	*best_cover				(const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance);
 			const CCoverPoint	*safe_cover				(const Fvector &position, float radius, float min_distance);
