@@ -101,28 +101,29 @@ void UILeftBarForm::Draw()
                     ImGui::PopStyleVar();
 
                     XRay::ImGui::TableNextRow();
-                    XRay::ImGui::TableNextColumn();     XRay::ImGui::TextFramed("Smooth:");
+                    XRay::ImGui::TableNextColumn();
+                    XRay::ImGui::TextFramed("Smooth:");
                     XRay::ImGui::TableNextColumn();
 
-                    bool edge = EPrefs->SmoothGroup == ESmoothGroup::Edges;
-                    bool normal = EPrefs->SmoothGroup == ESmoothGroup::Normals;
-                    bool other = EPrefs->SmoothGroup == ESmoothGroup::Other;
+                    bool Edge = EPrefs->SmoothGroup == ESmoothGroup::Edges;
+                    bool Normals = EPrefs->SmoothGroup == ESmoothGroup::Normals;
+                    bool Legacy = EPrefs->SmoothGroup == ESmoothGroup::Other;
 
-                    if (XRay::ImGui::ToolbarButton("edge", "Edges", &edge, { 0, 0 }, ImDrawFlags_RoundCornersLeft))
+                    if (XRay::ImGui::ToolbarButton("edge", "Edges", &Edge, { 0, 0 }, ImDrawFlags_RoundCornersLeft))
                     {
                         SetSmooth(ESmoothGroup::Edges);
                     }
 
                     ImGui::SameLine(0, 0);
 
-                    if (XRay::ImGui::ToolbarButton("normal", "Normals", &normal, { 0, 0 }, ImDrawFlags_RoundCornersNone))
+                    if (XRay::ImGui::ToolbarButton("normal", "Normals", &Normals, { 0, 0 }, ImDrawFlags_RoundCornersNone))
                     {
                         SetSmooth(ESmoothGroup::Normals);
                     }
 
                     ImGui::SameLine(0, 0);
 
-                    if (XRay::ImGui::ToolbarButton("other", "Legacy", &other, { 0, 0 }, ImDrawFlags_RoundCornersRight))
+                    if (XRay::ImGui::ToolbarButton("other", "Legacy", &Legacy, { 0, 0 }, ImDrawFlags_RoundCornersRight))
                     {
                         SetSmooth(ESmoothGroup::Other);
                     }
@@ -224,9 +225,7 @@ void UILeftBarForm::Draw()
                 {
                     ATools->CurrentObject()->CreateBone("idle");
 
-                    for (EditMeshIt mesh_it = ATools->CurrentObject()->FirstMesh();
-                        mesh_it != ATools->CurrentObject()->LastMesh();
-                        mesh_it++)
+                    for (EditMeshIt mesh_it = ATools->CurrentObject()->FirstMesh(); mesh_it != ATools->CurrentObject()->LastMesh(); mesh_it++)
                     {
                         CEditableMesh* pMesh = *mesh_it;
                         pMesh->AssignMesh("idle");
