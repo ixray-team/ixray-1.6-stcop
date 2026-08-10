@@ -142,16 +142,16 @@ void XrUIManager::EndFrame()
 	ImGui::Render();
 	RHIUtils::ImGui::DrawData();
 
-	for (size_t i = m_UIArray.size(); i > 0; i--)
+	for (size_t i = ActualWindows.size(); i > 0; i--)
 	{
-		if (m_UIArray[i - 1]->IsClosed())
+		if (ActualWindows[i - 1]->IsClosed())
 		{
-			if (!m_UIArray[i - 1]->Flags.test(IEditorWnd::F_NoDelete))
+			if (!ActualWindows[i - 1]->Flags.test(IEditorWnd::F_NoDelete))
 			{
-				xr_delete(m_UIArray[i - 1]);
+				xr_delete(ActualWindows[i - 1]);
 			}
-			m_UIArray.erase(m_UIArray.begin() + (i - 1));
-			i = m_UIArray.size();
+			ActualWindows.erase(ActualWindows.begin() + (i - 1));
+			i = ActualWindows.size();
 			if (i == 0)return;
 		}
 	}
@@ -169,7 +169,7 @@ void XrUIManager::MDIUpdate()
 
 void XrUIManager::ResetBegin()
 {
-	for (auto Ptr : m_UIArray)
+	for (auto Ptr : ActualWindows)
 	{
 		Ptr->ResetBegin();
 	}
@@ -179,7 +179,7 @@ void XrUIManager::ResetBegin()
 
 void XrUIManager::ResetEnd(void* NewDevice)
 {
-	for (auto Ptr : m_UIArray)
+	for (auto Ptr : ActualWindows)
 	{
 		Ptr->ResetEnd();
 	}
@@ -277,23 +277,33 @@ void XrUIManager::ApplyShortCutInput(DWORD Key)
 
 void XrUIManager::Push(IEditorWnd* ui, bool need_deleted)
 {
-	m_UIArray.push_back(ui);
-	ui->Flags.set(!need_deleted, IEditorWnd::F_NoDelete);
+	if (std::ranges::find(ActualWindows, ui) == ActualWindows.end())
+	{
+		ui->Flags.set(!need_deleted, IEditorWnd::F_NoDelete);
+
+		if (Rendering)
+		{
+			NextWindows.push_back(ui);
+			return;
+		}
+
+		ActualWindows.push_back(ui);
+	}
 }
 
 void XrUIManager::Remove(IEditorWnd* ui)
 {
-	auto Iter = std::find(m_UIArray.begin(), m_UIArray.end(), ui);
+	auto Iter = std::find(ActualWindows.begin(), ActualWindows.end(), ui);
 	
-	if (Iter != m_UIArray.end())
+	if (Iter != ActualWindows.end())
 	{
-		m_UIArray.erase(Iter);
+		ActualWindows.erase(Iter);
 	}
 }
 
 void XrUIManager::PushBegin(IEditorWnd* ui, bool need_deleted)
 {
-	m_UIArray.insert(m_UIArray.begin(), ui);
+	ActualWindows.insert(ActualWindows.begin(), ui);
 	ui->Flags.set(!need_deleted, IEditorWnd::F_NoDelete);
 }
 
@@ -352,12 +362,20 @@ void XrUIManager::Draw()
 	
 	OnDrawUI();
 	
-	for (IEditorWnd* ui : m_UIArray)
+	if (!NextWindows.empty())
+	{
+		ActualWindows.insert(ActualWindows.end(), NextWindows.begin(), NextWindows.end());
+		NextWindows.clear();
+	}
+
+	Rendering = true;
+	for (IEditorWnd* ui : ActualWindows)
 	{
 		ui->BeginDraw();
 		ui->Draw();
 		ui->EndDraw();
 	}
+	Rendering = false;
 
 	if (!CopyBool)
 	{
