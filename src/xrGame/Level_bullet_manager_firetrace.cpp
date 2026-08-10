@@ -374,10 +374,6 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 	}
 }
 
-#ifdef DEBUG
-FvectorVec g_hit[3];
-#endif
-
 extern void random_dir	(Fvector& tgt_dir, const Fvector& src_dir, float dispersion);
 
 bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fvector& end_point, 
@@ -453,28 +449,17 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 		//пуля пробила материал
 		shoot_factor = (( ap - mtl_ap ) / ap);
 	}
+	
 	hit_res->impulse = 0.0f;
 	float speed_scale = 0.0f;
-
-#ifdef DEBUG
-	//Fvector dbg_bullet_pos;
-	//dbg_bullet_pos.mad(bullet->bullet_pos,bullet->dir,R.range);
-	int bullet_state = 0;
-#endif
-
+	
 	if ( fsimilar( mtl_ap, 0.0f ) )//Если материал полностью простреливаемый (кусты)
 	{
-#ifdef DEBUG
-		bullet_state = 2;
-#endif	
 		return true;
 	}
 
 	if (bullet->flags.magnetic_beam && (shoot_factor > EPS))
 	{
-#ifdef DEBUG
-		bullet_state = 2;
-#endif
 		//air resistance of magnetic_beam bullet is armor resistance too
 		bullet->armor_piercing	-= mtl_ap * bullet->air_resistance;
 		return true;
@@ -502,17 +487,11 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 		bullet->bullet_pos			= end_point;
 		bullet->flags.ricochet_was	= 1;
 
-#ifdef DEBUG
-		bullet_state = 0;
-#endif		
 	}
 	else if ( shoot_factor < EPS )
 	{
 		//застрявание пули в материале
 		speed_scale = 0.0f;
-#ifdef DEBUG
-		bullet_state = 1;
-#endif		
 	}
 	else
 	{
@@ -535,9 +514,6 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 			rand_normal.random_dir(bullet->dir, deg2rad(angle), Random);
 		}
 		bullet->dir.set(rand_normal);
-#ifdef DEBUG
-		bullet_state = 2;
-#endif
 	}
 
 	//уменьшить скорость в зависимости от простреливаемости
@@ -546,16 +522,6 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 	float energy_lost = 1.0f - bullet->speed / old_speed;
 	//импульс переданный объекту равен прямопропорционален потерянной энергии
 	hit_res->impulse = bullet->hit_param.impulse * speed_factor * energy_lost;
-
-
-#ifdef DEBUG
-	extern int g_bDrawBulletHit;
-	if(g_bDrawBulletHit)
-	{
-//		g_hit[bullet_state].push_back(dbg_bullet_pos);
-		g_hit[bullet_state].push_back(end_point);
-	}
-#endif 
 
 	return true;
 }
