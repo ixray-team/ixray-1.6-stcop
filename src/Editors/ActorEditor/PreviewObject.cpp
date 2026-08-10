@@ -30,10 +30,10 @@ void PreviewModel::Draw()
 	{
 		if (result.size() > 0)
 		{
-			Lib.RemoveEditObject(m_pObject);
-			m_pObject = Lib.CreateEditObject(result.c_str());
+			Lib.RemoveEditObject(SelectedObject);
+			SelectedObject = Lib.CreateEditObject(result.c_str());
 
-			if (!m_pObject)
+			if (!SelectedObject)
 				ELog.DlgMsg(mtError, "Object '%s' can't find in object library.", result.c_str());
 			else
 				m_LastObjectName = result.c_str();
@@ -46,7 +46,7 @@ void PreviewModel::Draw()
 
 void PreviewModel::Clear()
 {
-	Lib.RemoveEditObject(m_pObject);
+	Lib.RemoveEditObject(SelectedObject);
 	UI->RedrawScene();
 }
 
@@ -69,7 +69,7 @@ void PreviewModel::SetPreferences()
 
 void PreviewModel::Render()
 {
-	if (m_pObject)
+	if (SelectedObject)
 	{
 		float angle = 0.f;
 		switch (m_ScrollAxis)
@@ -85,7 +85,7 @@ void PreviewModel::Render()
 		R.rotateY(angle);
 		T.translate(m_vPosition);
 		T.mulA_43(R);
-		m_pObject->RenderSkeletonSingle(NULL, T);
+		SelectedObject->RenderSkeletonSingle(NULL, T);
 	}
 }
 
