@@ -20,6 +20,7 @@ void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
 		m_CurrentMotion = "";
 		m_CurrentSlot = -1;
 	}
+	UVView->SetSurface(nullptr, nullptr);
 	for (ListItem* prop : items)
 	{
 
@@ -46,9 +47,10 @@ void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
 				if (BONE) 			BONE->Select(true);
 			}
 			break;
-			case emSurface:
-				FillSurfaceProperties(props, SURFACES_PREFIX, prop);
-				break;
+		case emSurface:
+			FillSurfaceProperties(props, SURFACES_PREFIX, prop);
+			UVView->SetSurface((CSurface*)prop->m_Object, m_pEditObject);
+			break;
 			case emMesh:
 				break;
 			}

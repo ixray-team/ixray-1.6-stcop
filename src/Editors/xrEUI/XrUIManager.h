@@ -54,10 +54,15 @@ protected:
 private:
 	float m_MenuBarHeight;
 	float m_MenuBarButtonHeight;
-	TShiftState m_ShiftState;
-	xr_vector<IEditorWnd*> m_UIArray;
-	string_path m_name_ini;
 	float m_ScaleDpi;
+	
+	TShiftState m_ShiftState;
+	xr_atomic_bool Rendering = false;
+
+	xr_vector<IEditorWnd*> ActualWindows;
+	xr_vector<IEditorWnd*> NextWindows;
+
+	string_path m_name_ini;
 
 public: 
 	template<typename T> 
@@ -65,7 +70,7 @@ public:
 	{
 		return std::any_of
 		(
-			m_UIArray.begin(), m_UIArray.end(),
+			ActualWindows.begin(), ActualWindows.end(),
 			[](IEditorWnd* Form)
 			{
 				return smart_cast<T*>(Form);
