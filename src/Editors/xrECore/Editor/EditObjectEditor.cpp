@@ -50,8 +50,22 @@ bool CEditableObject::RayPick(float& dist, const Fvector& S, const Fvector& D, c
 {
 	bool picked = false;
 	for(EditMeshIt m = m_Meshes.begin();m!=m_Meshes.end();m++)
+	{
+		float prev_dist = dist;
 		if( (*m)->RayPick( dist, S, D, inv_parent, pinf ) )
+		{
+			if (pinf && pinf->e_mesh)
+			{
+				CSurface* surf = pinf->e_mesh->GetSurfaceByFaceID(pinf->inf.id);
+				if (surf && !surf->m_bEditorVisible)
+				{
+					dist = prev_dist;
+					continue;
+				}
+			}
 			picked = true;
+		}
+	}
 	return picked;
 }
 
@@ -156,6 +170,12 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 			size_t s_id = 0;
 			for (auto s_it : m_Surfaces)
 			{
+				if (!s_it->m_bEditorVisible)
+				{
+					s_id++;
+					continue;
+				}
+
 				int pr = s_it->_Priority();
 				bool strict = s_it->_StrictB2F();
 
