@@ -1326,6 +1326,21 @@ bool PickGrid(Fvector& hitpoint, const Fvector& start, const Fvector& direction,
 	hitpoint.y = start.y + direction.y * alpha;
 	hitpoint.z = start.z + direction.z * alpha;
 
+	if (std::abs(hitpoint.x) < EPS_L)
+	{
+		hitpoint.x = 0.0f;
+	}
+
+	if (std::abs(hitpoint.y) < EPS_L)
+	{
+		hitpoint.y = 0.0f;
+	}
+
+	if (std::abs(hitpoint.z) < EPS_L)
+	{
+		hitpoint.z = 0.0f;
+	}
+
 	if (Tools->GetSettings(etfGSnap) && bSnap)
 	{
 		hitpoint.x = snapto(hitpoint.x, LTools->m_MoveSnap);
