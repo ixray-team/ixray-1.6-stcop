@@ -18,6 +18,7 @@ public:
 		u32										m_priority;
 		u32										m_synchro_mask;
 		shared_str								m_bone_name;
+		bool									m_script_sound = false;
 	};
 
 	struct CSoundCollectionParams {
@@ -138,7 +139,7 @@ public:
 	virtual	void		reinit						();
 	virtual	void		reload						(const char* section);
 			void		unload						();
-			u32			add							(const char* prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, const char* bone_name, CSound_UserDataPtr data = 0);
+			u32			add							(const char* prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, const char* bone_name, CSound_UserDataPtr data = 0, bool isScripted = false);
 			void		remove						(u32 internal_type);
 			void		clear						();
 			void		play						(u32 internal_type, u32 max_start_time = 0, u32 min_start_time = 0, u32 max_stop_time = 0, u32 min_stop_time = 0, u32 id = u32(-1));
@@ -147,6 +148,7 @@ public:
 	IC		void		remove_active_sounds		(u32 sound_mask);
 	IC	const xr_vector<CSoundSingle>&playing_sounds() const;
 	IC		u32			active_sound_count			(bool only_playing = false) const;
+	IC		u32			active_sound_count_script	(bool only_playing = false) const;
 			bool		need_bone_data				() const;
 	IC	const SOUND_COLLECTIONS &objects			() const;
 	IC		bool		active_sound_type			(u32 synchro_mask) const;

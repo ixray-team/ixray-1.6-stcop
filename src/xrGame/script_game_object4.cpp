@@ -60,7 +60,7 @@ u32	CScriptGameObject::add_sound(const char* prefix, u32 max_count, ESoundTypes 
 {
 	if (CCreature* monster = object().cast_creature())
 	{
-		return monster->sound().add(prefix, max_count, type, priority, mask, internal_type, bone_name);
+		return monster->sound().add(prefix, max_count, type, priority, mask, internal_type, bone_name, 0, true);
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CSoundPlayer : cannot access class member add!");
@@ -71,7 +71,7 @@ u32	CScriptGameObject::add_combat_sound(const char* prefix, u32 max_count, ESoun
 {
 	if (CAI_Stalker* const stalker = object().cast_stalker())
 	{
-		return stalker->sound().add(prefix, max_count, type, priority, mask, internal_type, bone_name, new CStalkerSoundData(stalker));
+		return stalker->sound().add(prefix, max_count, type, priority, mask, internal_type, bone_name, new CStalkerSoundData(stalker), true);
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CSoundPlayer : cannot access class member add!");
@@ -198,6 +198,22 @@ int CScriptGameObject::active_sound_count(bool only_playing)
 int CScriptGameObject::active_sound_count()
 {
 	return active_sound_count(false);
+}
+
+int CScriptGameObject::active_sound_count_script(bool only_playing)
+{
+	if (CCreature* monster = object().cast_creature())
+	{
+		return monster->sound().active_sound_count_script(only_playing);
+	}
+
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot access class member active_sound_count_script!");
+	return -1;
+}
+
+int CScriptGameObject::active_sound_count_script()
+{
+	return active_sound_count_script(false);
 }
 
 bool CScriptGameObject::wounded() const
