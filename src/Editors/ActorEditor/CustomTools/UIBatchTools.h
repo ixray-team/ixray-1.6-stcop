@@ -1,6 +1,7 @@
 #pragma once
 
-class CUIBatchTools final : public IEditorWnd
+class CUIBatchTools final : 
+	public IEditorWnd
 {
 public:
 	CUIBatchTools();
