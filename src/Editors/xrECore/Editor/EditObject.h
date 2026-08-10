@@ -2,12 +2,9 @@
 
 #include "../../xrEngine/Bone.h"
 #include "../../xrEngine/Motion.h"
-#if 1
 #	include "../../../Editors/Public/PropertiesListTypes.h"
-//	#include "PropertiesListHelper.h"
 #	include "..\Engine\XrGameMaterialLibraryEditors.h"
 #	include "pick_defs.h"
-#endif
 #	include "..\..\..\Include\xrRender\Kinematics.h"
 
 #include "PhysicsShellHolderEditorBase.h"
@@ -20,18 +17,9 @@ class 	CFrustum;
 class 	CCustomMotion;
 class	CBone;
 class	Shader;
-class	Mtl;
-class	CExporter;
-class	CMayaTranslator;
 struct	st_ObjectDB;
-struct	SXRShaderData;
 struct  ogf_desc;
 class	CCustomObject;
-
-#if 0
-	class PropValue;
-	#define ref_shader LPVOID
-#endif
 
 #define LOD_SHADER_NAME 		"details\\lod"
 #define LOD_SAMPLE_COUNT 		8
@@ -39,7 +27,6 @@ class	CCustomObject;
 #define RENDER_SKELETON_LINKS	4
 
 // refs
-class XRayMtl;
 class SSimpleImage;
 
 class ECORE_API CSurface
@@ -66,6 +53,7 @@ public:
 	u32				tag;
 	SSimpleImage*	m_ImageData;
 	u16				m_id = 0;
+	bool m_bEditorVisible = true;
 
 public:
 	CSurface		()
@@ -154,9 +142,9 @@ struct ECORE_API SBonePart{
 using BPVec = xr_vector<SBonePart>;
 using BPIt = BPVec::iterator;
 
-class ECORE_API CEditableObject:
-public IKinematics,
-public CPhysicsShellHolderEditorBase
+class ECORE_API CEditableObject :
+	public IKinematics,
+	public CPhysicsShellHolderEditorBase
 {
 	friend class CSceneObject;
 	friend class CEditableMesh;
@@ -442,11 +430,6 @@ public:
 	bool			ExportOBJ				(const char* name);
 
 	const char*			GenerateSurfaceName		(const char* base_name);
-#ifdef _MAYA_EXPORT
-	bool			ParseMAMaterial			(CSurface* dest, SXRShaderData& d);
-	CSurface*		CreateSurface			(const char* m_name, SXRShaderData& d);
-	CSurface*		CreateSurface			(MObject shader);
-#endif
 	bool			ExportLWO				(const char* fname);
 	bool			Validate				();
 private:
