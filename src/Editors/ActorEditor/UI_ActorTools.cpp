@@ -48,11 +48,13 @@ CActorTools::CActorTools()
 	dwFogColor = 0xffffffff;
 
 	BoneView = new CUIBoneView;
+	UVView = new CUIUVView;
 }
 
 CActorTools::~CActorTools()
 {
 	xr_delete(BoneView);
+	xr_delete(UVView);
 }
 
 #include "../../xrEngine/IGame_Persistent.h"
@@ -139,9 +141,9 @@ void CActorTools::OnFrame()
 		{
 			m_pEditObject->OnFrame();
 
-			if (m_PreviewObject.m_pObject != nullptr)
+			if (m_PreviewObject.SelectedObject != nullptr)
 			{
-				m_PreviewObject.m_pObject->OnFrame();
+				m_PreviewObject.SelectedObject->OnFrame();
 			}
 		}
 
@@ -226,7 +228,8 @@ bool CActorTools::OnCreate()
 	// key bar
 	OnDeviceCreate();
 
-	UI->Push(BoneView);
+	UI->Push(BoneView, false);
+	UI->Push(UVView, false);
 
 	return true;
 }
@@ -336,6 +339,8 @@ bool CActorTools::Load(const char* obj_name)
 	xr_string Str = obj_name;
 	xr_strlwr(Str);
 
+	UVView->SetSurface(nullptr, nullptr);
+	
 	bool loaded = false;
 	if (FS.TryLoad(Str))
 	{
@@ -363,10 +368,10 @@ bool CActorTools::Load(const char* obj_name)
 	{
 		xr_delete(m_pEditObject);
 		m_pEditObject = O;
-		  m_pEditObject->Optimize ();
-		  // delete visual
+		m_pEditObject->Optimize();
+		// delete visual
 		m_RenderObject.Clear();
-		
+
 		MainForm->GetLeftBarForm()->SetRenderMode(false);
 
 		UpdateProperties();
@@ -379,7 +384,7 @@ bool CActorTools::Load(const char* obj_name)
 
 		return true;
 	}
-	else 
+	else
 	{
 		ELog.DlgMsg(mtError, "Can't load object file '%s'.", obj_name);
 	}
@@ -678,10 +683,10 @@ bool CActorTools::Pick(TShiftState Shift)
 
 bool CActorTools::RayPick(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n)
 {
-	if (m_PreviewObject.m_pObject)
+	if (m_PreviewObject.SelectedObject)
 	{
 		SRayPickInfo pinf;
-		if (m_PreviewObject.m_pObject->RayPick(dist, start, dir, Fidentity, &pinf))
+		if (m_PreviewObject.SelectedObject->RayPick(dist, start, dir, Fidentity, &pinf))
 		{
 			if (pt) pt->set(pinf.pt);
 			if (n)
@@ -937,11 +942,11 @@ void CActorTools::SetCurrentMotion(const char* name, u16 slot)
 				m_pEditObject->SetActiveSMotion(M);
 			}
 
-			if (m_PreviewObject.m_pObject != nullptr)
+			if (m_PreviewObject.SelectedObject != nullptr)
 			{
-				if (CSMotion* PM = m_PreviewObject.m_pObject->FindSMotionByName(name))
+				if (CSMotion* PM = m_PreviewObject.SelectedObject->FindSMotionByName(name))
 				{
-					m_PreviewObject.m_pObject->SetActiveSMotion(PM);
+					m_PreviewObject.SelectedObject->SetActiveSMotion(PM);
 				}
 			}
 
