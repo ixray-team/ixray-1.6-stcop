@@ -631,6 +631,11 @@ void UIItemListForm::DrawItem(Node* Node)
 	}
 	ImGui::TreeNodeEx(Node->Name.c_str(), Flags);
 
+	if (!OnDrawItemExtraEvent.empty())
+	{
+		OnDrawItemExtraEvent(*Node);
+	}
+
 	if (m_Flags.is(fMenuEdit))
 	{
 		if (ImGui::OpenPopupOnItemClick2("MenuEdit", 1))
