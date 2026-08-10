@@ -172,13 +172,13 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 		
 		float health_loss = kinetic_energy * difficulty_modifier;
 
-		if (actor)
+		if (actor && EngineExternal()[EEngineExternalGame::EnablePolterStaminaLooseOnHit])
 		{
 			entity_alive->conditions().SetPower(entity_alive->conditions().GetPower() - health_loss);
 		}
 		entity_alive->conditions().SetHealth(entity_alive->conditions().GetHealth() - health_loss);
 
-		if (actor)
+		if (actor && EngineExternal()[EEngineExternalGame::EnablePolterDrop])
 		{
 			PIItem item = actor->inventory().ActiveItem();
 			CCustomDevice* device = actor->GetDevice();
