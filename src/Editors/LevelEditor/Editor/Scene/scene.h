@@ -51,13 +51,12 @@ struct doug_lea_allocator_wrapper {
 #	define render_alloc				doug_lea_alloc
 typedef doug_lea_allocator_wrapper	render_allocator;
 
-struct FSChunkDef;
 class PropValue;
 struct SPBItem;
 
-
 #pragma pack( push,1 )
-struct UndoItem {
+struct UndoItem 
+{
 	char m_FileName[MAX_PATH];
 };
 #pragma pack( pop )
