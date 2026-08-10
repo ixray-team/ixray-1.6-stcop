@@ -56,33 +56,32 @@ struct SBullet
 
 	// коэфициенты и параметры патрона
 	SBullet_Hit hit_param;
-	//-------------------------------------------------------------------
+
 	float air_resistance;
-	//-------------------------------------------------------------------
+
 	float max_speed; // maxspeed*cartridge
 	float max_dist;	 // maxdist*cartridge
 	float armor_piercing;
 	float wallmark_size;
-	//-------------------------------------------------------------------
+
 	u8 m_u8ColorID;
 
 	// тип наносимого хита
 	ALife::EHitType hit_type;
-	//---------------------------------
+
 	u32 m_dwID;
 	ref_sound m_whine_snd;
 	ref_sound m_mtl_snd;
-	//---------------------------------
+
 	u16 targetID;
-	//---------------------------------
+
 	bool density_mode;
 	float density;
 	Fvector begin_density;
 	bool operator==(u32 ID) { return ID == m_dwID; }
 
-public:
-	SBullet();
-	~SBullet();
+	SBullet() = default;
+	~SBullet() = default;
 
 	void Init(const Fvector& position, const Fvector& direction, float start_speed, float power,
 			  //.										float	power_critical,
@@ -100,14 +99,11 @@ class CLevel;
 
 class CBulletManager
 {
-private:
 	static float const parent_ignore_distance;
 
-private:
 	collide::rq_results rq_storage;
 	collide::rq_results m_rq_results;
 
-private:
 	using SoundVec = xr_vector<ref_sound>;
 	using SoundVecIt = SoundVec::iterator;
 
@@ -180,7 +176,6 @@ protected:
 
 	ui_shader m_trj_shader;
 
-protected:
 	void PlayWhineSound(SBullet* bullet, CObject* object, const Fvector& pos);
 	void PlayExplodePS(const Fmatrix& xf);
 	// функция обработки хитов объектов
@@ -249,7 +244,5 @@ struct bullet_test_callback_data
 	Fvector collide_position;
 	SBullet* pBullet;
 	float collide_time;
-#if 1 // def DEBUG
 	float high_time;
-#endif // #ifdef DEBUG
 };
