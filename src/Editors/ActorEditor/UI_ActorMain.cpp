@@ -15,8 +15,9 @@ CCommandVar CActorTools::CommandSave(CCommandVar p1, CCommandVar p2)
 {
 	if (p2==1){
 		xr_string temp_fn	= ATools->m_LastFileName.c_str();
-		if (EFS.GetSaveName	( _objects_, temp_fn )){
-			temp_fn			= EFS.ChangeFileExt(temp_fn,".object");
+		if (EFS.GetSaveName(_objects_, temp_fn, nullptr, -1, "*.object;*.ogf")){
+			if (!strext(temp_fn.c_str()))
+				temp_fn += ".object";
 			return 			ExecCommand(COMMAND_SAVE,temp_fn,0);
 		}
 	}else{
@@ -344,7 +345,7 @@ CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
 	if (!p1.IsString()) 
 	{
 		temp_fn = ChangeFileExt(m_LastFileName, "").c_str();
-		if (!EFS.GetOpenName(_objects_, temp_fn))
+		if (!EFS.GetOpenName(_objects_, temp_fn, false, nullptr, -1, "*.object;*.ogf"))
 			return false;
 	}
 

@@ -8,6 +8,8 @@
 #include "../xrECore/Editor/EditMesh.h"
 #include "../../Layers/xrRender/KinematicAnimatedDefs.h"
 #include "../../Layers/xrRender/SkeletonAnimated.h"
+#include "../../plugins/PCore/xr_ogf.h"
+#include "../../plugins/PCore/xr_writer.h"
 
 CActorTools*	ATools=(CActorTools*)Tools;
 //------------------------------------------------------------------------------
@@ -334,7 +336,30 @@ bool CActorTools::Load(const char* obj_name)
 	xr_string Str = obj_name;
 	xr_strlwr(Str);
 
-	if (FS.TryLoad(Str) && O->Load(Str.c_str()))
+	bool loaded = false;
+	if (FS.TryLoad(Str))
+	{
+		if (0 == xr_stricmp(EFS.ExtractFileExt(Str.c_str()).c_str(), ".ogf"))
+		{
+			std::unique_ptr<xray_re::xr_ogf> ogf(xray_re::xr_ogf::load_ogf(Str.c_str()));
+			if (ogf)
+			{
+				ogf->to_object();
+				xray_re::xr_memory_writer writer;
+				ogf->save_object(writer);
+				IReader reader(const_cast<u8*>(writer.data()), writer.tell());
+				loaded = O->Load(reader);
+				if (loaded)
+					O->SetLoadInfo(Str.c_str(), FS.get_file_age(Str.c_str()));
+			}
+		}
+		else
+		{
+			loaded = O->Load(Str.c_str());
+		}
+	}
+
+	if (loaded)
 	{
 		xr_delete(m_pEditObject);
 		m_pEditObject = O;
@@ -369,7 +394,8 @@ bool CActorTools::Save(const char* obj_name, bool bInternal)
 	VERIFY(m_bReady);
 	if (m_pEditObject) {
 		EFS.MarkFile(full_name.c_str(), true);
-		if (m_pEditObject->Save(full_name.c_str()))
+		const bool ogf = 0 == xr_stricmp(EFS.ExtractFileExt(full_name.c_str()).c_str(), ".ogf");
+		if (ogf ? ExportOGF(full_name.c_str()) : m_pEditObject->Save(full_name.c_str()))
 		{
 			if (!bInternal)
 				m_bObjectModified = false;
