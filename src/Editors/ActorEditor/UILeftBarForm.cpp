@@ -185,6 +185,12 @@ void UILeftBarForm::Draw()
                 UIBoneForm::Show();
             }
 
+            if (XRay::ImGui::Button("UV View", { -0.01, 0 }))
+            {
+				ATools->UVView->Show(true);
+				GUIManager->Push(ATools->UVView, false);
+            }
+
             XRay::ImGui::EndExpand();
         }
 
