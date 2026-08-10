@@ -58,6 +58,8 @@ enum class EEngineExternalGame
 	EnableWeaponAffectsOnMouseSensitivity,
 	EnableMainMenuForDisabledControls,
 	NewDemoRecordInputSchema,
+	EnablePolterStaminaLooseOnHit,
+	EnablePolterDrop,
 	None
 };
 
