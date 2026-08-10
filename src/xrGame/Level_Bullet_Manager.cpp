@@ -143,12 +143,28 @@ void CBulletManager::UpdateWorkload()
 	BulletVec::reverse_iterator begin = m_Bullets.rbegin();
 	BulletVec::reverse_iterator end = m_Bullets.rend();
 
+	float dt =	Device.fTimeDelta;
+
 	for (auto& it = begin; it < end; ++it)
 	{
-		if (process_bullet(rq_storage, *it, Device.fTimeDelta * g_bullet_time_factor))
+#if 0
+		constexpr u32 SubstepsCount = 10;
+		u32 SubSteps = it->speed * dt * SubstepsCount;
+		float SubDt = dt / SubSteps;
+
+		for (u32 i = 0u; i < SubSteps; ++i)
+		{
+			if (!process_bullet(rq_storage, *it, SubDt * g_bullet_time_factor))
+			{
+				break;
+			}
+		}
+#else
+		if (process_bullet(rq_storage, *it, dt * g_bullet_time_factor))
 		{
 			continue;
 		}
+#endif
 
 		if (g_bullet_debug_trj && Device.dwTimeGlobal < (*it).born_time + 10000)
 		{
