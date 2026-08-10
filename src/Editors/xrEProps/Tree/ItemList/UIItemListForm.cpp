@@ -631,6 +631,8 @@ void UIItemListForm::DrawItem(Node* Node)
 	}
 	ImGui::TreeNodeEx(Node->Name.c_str(), Flags);
 
+	const volatile bool IsItemClicked = ImGui::IsItemClicked();
+
 	if (!OnDrawItemExtraEvent.empty())
 	{
 		OnDrawItemExtraEvent(*Node);
@@ -647,7 +649,7 @@ void UIItemListForm::DrawItem(Node* Node)
 		}
 	}
 
-	if (ImGui::IsItemClicked())
+	if (IsItemClicked)
 	{
 		if (m_Flags.test(fMultiSelect))
 		{
