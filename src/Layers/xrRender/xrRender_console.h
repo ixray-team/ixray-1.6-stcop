@@ -224,6 +224,7 @@ enum
 	R4FLAG_OFFSCREEN_REFLECTIONS	= (1<<17),
 	R4FLAG_SSLR_ON_WORLD = (1<<18),
 	RFLAG_DD_TEX_LOAD = (1<<19),
+	R4FLAG_TSHDOWS = (1<<20),
 };
 
 extern void						xrRender_initconsole	();

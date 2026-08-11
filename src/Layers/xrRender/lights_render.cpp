@@ -108,7 +108,7 @@ void	CRender::render_lights	(light_Package& LP)
 
 				// render
 				phase = PHASE_SMAP;
-				r_pmask(true, !!RImplementation.o.Tshadows);
+				r_pmask(true, /*!!RImplementation.o.Tshadows*/ps_r2_ls_flags_ext.test(R4FLAG_TSHDOWS));
 
 				PROF_EVENT("SHADOWED_LIGHTS_RENDER_SUBSPACE");
 				bool decorative_light = false;

@@ -341,7 +341,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 			bool bSpecialFull = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
 			VERIFY(!bSpecialFull);
 			phase = PHASE_SMAP;
-			r_pmask(true, !!RImplementation.o.Tshadows && false);
+			r_pmask(true, /*!!RImplementation.o.Tshadows &&*/ false);
 		}
 
 		// Fill the database
