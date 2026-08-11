@@ -1063,8 +1063,7 @@ ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buff
 
 	// Deferred stopping
 	bool IsMusic = (Slot.flags & (u16)Mixer::Flags::Intro);
-
-	if (Slot.flags & (u16)Mixer::Flags::NoOCC && OCCResult != ESlotOcclusionResult::SOM)
+	if ((Slot.flags & (u16)Mixer::Flags::NoOCC) == 0 || OCCResult != ESlotOcclusionResult::SOM)
 	{
 		occ_volume = 1.f;
 	}
@@ -1650,7 +1649,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 		} break;
 		case sound_cmd_id::pause_all: {
 			for (size_t i = 0; i < mixer.slots.size(); i++) {
-				if (mixer.slots[i].sound_name.size() && mixer.slots[i].state != State::Stopped) {
+				if (mixer.slots[i].sound_name.size() && mixer.slots[i].state != State::Stopped && mixer.slots[i].state != State::Paused) {
 					mixer.slots[i].prev_state = mixer.slots[i].state;
 					mixer.slots[i].state = State::Paused;
 					mixer.slots[i].fake_state = State::Paused;
@@ -1659,10 +1658,10 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 		} break;
 		case sound_cmd_id::resume_all: {
 			for (size_t i = 0; i < mixer.slots.size(); i++) {
-				if (mixer.slots[i].state == State::Paused) {
+				if (mixer.slots[i].state == State::Paused && mixer.slots[i].prev_state != State::Paused) {
 					mixer.slots[i].state = mixer.slots[i].prev_state;
 					mixer.slots[i].prev_state = State::Paused;
-					mixer.slots[i].fake_state = State::Playing;
+					mixer.slots[i].fake_state = mixer.slots[i].state;
 				}
 			}
 		} break;
