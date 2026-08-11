@@ -49,15 +49,15 @@ DSP_CalculateRelativePosition(const dsp_stuff& stuff, Fvector& out_pos, float& o
     out_pos.normalize_safe();
 }
 
-void 
+static constexpr float SND_BACK_ATTENUATION = 0.3f;
+
+void
 DSP_SpatialProcess(float** buffer, const Fvector& distances, const dsp_stuff& stuff, bool disable_attenuation)
-{   
+{
     // LH coordinates
     Fvector pos;
     float distance;
-    Fvector speaker_l = Fvector(-1, 0, 0.5);
-    Fvector speaker_r = Fvector(1, 0, 0.5);
-    
+
     DSP_CalculateRelativePosition(stuff, pos, distance);
 
     // Broken ogg-comments give us zero/inverted ranges
@@ -78,9 +78,14 @@ DSP_SpatialProcess(float** buffer, const Fvector& distances, const dsp_stuff& st
         att = std::clamp(att, 0.f, 1.f);
     }
 
-    // Panning
-    float lc = ((speaker_l.dotproduct(pos) + 1.0f) * 0.5f);
-    float rc = ((speaker_r.dotproduct(pos) + 1.0f) * 0.5f);
+    float pan_angle = (std::clamp(pos.x, -1.0f, 1.0f) + 1.0f) * PI_DIV_4;
+    float lc = cosf(pan_angle);
+    float rc = sinf(pan_angle);
+
+    float back_gain = 1.0f - SND_BACK_ATTENUATION * std::clamp(-pos.z, 0.0f, 1.0f);
+    lc *= back_gain;
+    rc *= back_gain;
+
     lc = lerp(1.0f, lc, std::min(distance, 1.0f) / 1.0f);
     rc = lerp(1.0f, rc, std::min(distance, 1.0f) / 1.0f);
     //volume_lerp(stuff.panning[0], lc, 10.0f, stuff.dt);
