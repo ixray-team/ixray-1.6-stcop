@@ -1,26 +1,4 @@
---news = {}
---[[
-tips_icons = {
-	default  = { 0, 658},      -- ui_iconsTotal_grouping
-	trader	 = { 332, 893},    -- ui_iconsNpc_trader
-	dolg     = { 0, 658},
-	freedom  = { 0, 658},
-	ecolog   = { 498, 0},      -- ui_iconsNpc_ecolog
-	army     = { 332, 141},    -- ui_iconsNpc_stalker_neytral_balon_6
-	stalker  = { 0, 658},
-	csky  	 = { 0, 658},
-	krot     = { 332, 47},     -- ui_iconsNpc_stalker_neytral_rukzak_4
-	barman   = { 332, 235},    -- ui_iconsNpc_barman
-	wolf	 = { 332, 940},    -- ui_iconsNpc_stalker_neytral_balon_1
-	o_soznanie = { 498, 893},
-	monolith = { 0, 658},
-	saharov  = { 332, 470},    -- ui_iconsNpc_ucheniy_2
-	prizrak  = { 0, 658},
-	killer   = { 0, 658},
-	bandit   = { 0, 658},
-	renegade = { 0, 658}
-}
-]]
+subtitles_enabled = true
 
 -- ToDo - Need Pioneer icon here!
 tips_icons = {
@@ -111,7 +89,12 @@ end
 
 
 function send_sound(npc, faction, point, str, str2, delay_sound)
-	--callstack()
+	if not subtitles_enabled then
+		return
+	end
+	if delay_sound == nil then
+		delay_sound = 0
+	end
 	if faction ~= nil then
 		--printf("---------------------")
 		--printf(tostring(faction))
@@ -121,7 +104,17 @@ function send_sound(npc, faction, point, str, str2, delay_sound)
 			if smart then
 				point_name = smart_names.get_smart_terrain_name(smart.smrt)
 			else
-				point_name = game.translate_string(point)
+				--MTB_Jakub_Jurek JUD-894
+				-- try finding terain name by id, if filed returns id back
+				local name = smart_names.get_smart_terrain_name_by_id(point)
+				if (name ~= point) then
+					point_name = name
+			     else
+					if game.translate_string(point) ~= point then
+						point_name = point
+					end
+				end
+				--MTB_Jakub_Jurek JUD-894 end
 			end
 		end
 		--printf(point_name)
@@ -134,10 +127,12 @@ function send_sound(npc, faction, point, str, str2, delay_sound)
 		end
 		--printf("--->"..tostring(txt))
 
-		local news_text = game.translate_string(txt)
-		if news_text == txt then
+		-- MTB_Jakub_Jurek [JUD-139]
+		local news_text = txt
+		if game.translate_string(txt) == txt then
 			return
 		end
+		-- MTB_Jakub_Jurek [JUD-139]
 
 
 --		callstack()
@@ -156,16 +151,15 @@ function send_sound(npc, faction, point, str, str2, delay_sound)
 			end
 		end
 --		printf("--->texture="..tostring(texture))
-		local news_caption = game.translate_string("st_tip").." "..game.translate_string(faction)
+		local news_caption = "#st_tip#".." #"..faction.."#" -- MTB_Jakub_Jurek [JUD-139]
 		if point_name ~= "" then
-			news_caption = news_caption..". "..point_name..":"
+			news_caption = news_caption..". #"..point_name.."#:"
 		else
 			news_caption = news_caption..":"
 		end
 
 
 --		db.actor:give_game_news(news_caption, news_text, texture, 1000, 5000)
---		give_game_news(LPCSTR caption, LPCSTR news, LPCSTR texture_name, int delay, int show_time)
 		db.actor:give_game_news(news_caption, news_text, texture, delay_sound+1000, 5000, 1)
 
 		return true
