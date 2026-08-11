@@ -1,26 +1,5 @@
---news = {}
---[[
-tips_icons = {
-	default  = { 0, 658},      -- ui_iconsTotal_grouping
-	trader	 = { 332, 893},    -- ui_iconsNpc_trader
-	dolg     = { 0, 658},
-	freedom  = { 0, 658},
-	ecolog   = { 498, 0},      -- ui_iconsNpc_ecolog
-	army     = { 332, 141},    -- ui_iconsNpc_stalker_neytral_balon_6
-	stalker  = { 0, 658},
-	csky  	 = { 0, 658},
-	krot     = { 332, 47},     -- ui_iconsNpc_stalker_neytral_rukzak_4
-	barman   = { 332, 235},    -- ui_iconsNpc_barman
-	wolf	 = { 332, 940},    -- ui_iconsNpc_stalker_neytral_balon_1
-	o_soznanie = { 498, 893},
-	monolith = { 0, 658},
-    saharov  = { 332, 470},    -- ui_iconsNpc_ucheniy_2
-    prizrak  = { 0, 658},
-    killer   = { 0, 658},
-    bandit   = { 0, 658},
-    renegade = { 0, 658}
-}
-]]
+subtitles_enabled = true
+
 tips_icons = {
 	bandit 		= "ui_npc_small_bandit_1",
 	csky     	= "ui_npc_small_nebo_1",
@@ -117,7 +96,9 @@ end
 
 
 function send_sound(npc, faction, point, str, str2, delay_sound)
-	--callstack()
+	if not subtitles_enabled then
+		return
+	end
 	if delay_sound == nil then
 		delay_sound = 0
 	end
