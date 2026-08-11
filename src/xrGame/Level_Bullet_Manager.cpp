@@ -21,7 +21,7 @@
 #define HIT_POWER_EPSILON 0.05f
 #define WALLMARK_SIZE 0.04f
 
-constexpr float MIN_RAYPICK_ERROR_DISTANCE = .01f;
+constexpr float MIN_RAYPICK_ERROR_DISTANCE = .1f;
 
 float CBulletManager::m_fMinBulletSpeed = 2.f;
 float const CBulletManager::parent_ignore_distance = 3.f;
