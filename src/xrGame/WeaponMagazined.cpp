@@ -2429,7 +2429,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	}break;
 	case kTACTICALTORCH:
 	{
-		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfTACTICALTORCH) && GetComponent<THudLightTorch>() != nullptr && !IsZoomed() && GetState() == eIdle)
+		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfTACTICALTORCH) && GetComponent<THudLightTorch>() != nullptr && !IsZoomed() && !IsPending() && GetState() != eFire)
 		{
 			m_eDevicesFlags.set(EDevicesFlags::df_tacticaltorch, true);
 			SwitchState(eDevice);
@@ -2439,7 +2439,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	}
 	case kLASER:
 	{
-		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfLASER) && GetComponent<THudLightLaser>() != nullptr && !IsZoomed() && GetState() == eIdle)
+		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfLASER) && GetComponent<THudLightLaser>() != nullptr && !IsZoomed() && !IsPending() && GetState() != eFire)
 		{
 			m_eDevicesFlags.set(EDevicesFlags::df_laser, true);
 			SwitchState(eDevice);
@@ -2449,7 +2449,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	}
 	case kMAG_CHECK:
 	{
-		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_mag_check) && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfMAGCHECK) && !IsZoomed() && GetState() == eIdle)
+		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_mag_check) && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfMAGCHECK) && !IsZoomed() && !IsPending() && GetState() != eFire)
 		{
 			SwitchState(eMagCheck);
 			return true;
@@ -2458,7 +2458,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	}
 	case kFIREMODE_CHECK:
 	{
-		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_firemode_check) && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfFIREMODECHECK) && !IsGrenadeMode() && !IsZoomed() && GetState() == eIdle)
+		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_firemode_check) && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfFIREMODECHECK) && !IsGrenadeMode() && !IsZoomed() && !IsPending() && GetState() != eFire)
 		{
 			SwitchState(eFiremodeCheck);
 			return true;
@@ -2469,7 +2469,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	{
 		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_chamber_load) &&
 			SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCHAMBERLOAD) && !IsGrenadeMode() &&
-			!IsZoomed() && GetState() == eIdle && !IsMisfire() && m_bAmmoInChamber && iAmmoChamberElapsed == 0 && !m_bHaveShell)
+			!IsZoomed() && !IsPending() && GetState() != eFire && !IsMisfire() && m_bAmmoInChamber && iAmmoChamberElapsed == 0 && !m_bHaveShell)
 		{
 			return TryReloadChamber();
 		}
@@ -2479,7 +2479,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	{
 		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_chamber_unload) &&
 			SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCHAMBERUNLOAD) && !IsGrenadeMode() &&
-			!IsZoomed() && GetState() == eIdle && !IsMisfire() && m_bAmmoInChamber && iAmmoChamberElapsed != 0 && !m_bHaveShell)
+			!IsZoomed() && !IsPending() && GetState() != eFire && !IsMisfire() && m_bAmmoInChamber && iAmmoChamberElapsed != 0 && !m_bHaveShell)
 		{
 			SwitchState(eUnloadChamber);
 			return true;
@@ -2490,7 +2490,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	{
 		if (flags & CMD_START && m_bAmmoInChamber && m_eAnimationsFlags.test(EAnimationsFlags::af_chamber_check) &&
 			SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCHAMBERCHECK) && !IsGrenadeMode() &&
-			!IsZoomed() && GetState() == eIdle && !IsMisfire())
+			!IsZoomed() && !IsPending() && GetState() != eFire && !IsMisfire())
 		{
 			SwitchState(eChamberCheck);
 			return true;
