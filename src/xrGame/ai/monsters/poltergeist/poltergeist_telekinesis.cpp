@@ -1,5 +1,5 @@
-#include "HUDManager.h"
 #include "StdAfx.h"
+#include "HUDManager.h"
 #include "poltergeist.h"
 #include "WeaponMagazined.h"
 #include "../../../PhysicsShellHolder.h"
