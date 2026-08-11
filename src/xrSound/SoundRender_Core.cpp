@@ -224,14 +224,10 @@ int CSoundRender_Core::pause_emitters(bool val)
 {
 	m_iPauseCounter += val ? +1 : -1;
 	VERIFY(m_iPauseCounter >= 0);
-	m_iPauseCounter = std::max(m_iPauseCounter, 0);
 
-	// Pauses nest (alt-tab, dialogs, menus): only the outermost one touches the mixer
 	if (val) {
-		if (m_iPauseCounter == 1) {
-			Mixer::PauseAll();
-		}
-	} else if (m_iPauseCounter == 0) {
+		Mixer::PauseAll();
+	} else {
 		Mixer::ResumeAll();
 	}
 

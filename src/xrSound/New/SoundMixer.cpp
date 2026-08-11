@@ -1652,7 +1652,6 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 				if (mixer.slots[i].sound_name.size() && mixer.slots[i].state != State::Stopped && mixer.slots[i].state != State::Paused) {
 					mixer.slots[i].prev_state = mixer.slots[i].state;
 					mixer.slots[i].state = State::Paused;
-					mixer.slots[i].fake_state = State::Paused;
 				}
 			}
 		} break;
@@ -1661,7 +1660,6 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 				if (mixer.slots[i].state == State::Paused && mixer.slots[i].prev_state != State::Paused) {
 					mixer.slots[i].state = mixer.slots[i].prev_state;
 					mixer.slots[i].prev_state = State::Paused;
-					mixer.slots[i].fake_state = mixer.slots[i].state;
 				}
 			}
 		} break;
