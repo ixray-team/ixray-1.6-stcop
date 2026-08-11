@@ -441,7 +441,7 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 		return false;
 	}
 
-	bool bUsefulStateToSwitch = !IsPending() && !IsZoomed();
+	bool bUsefulStateToSwitch = !IsPending() && GetState() != eFire && !IsZoomed();
 
 	if (!bUsefulStateToSwitch)
 	{
