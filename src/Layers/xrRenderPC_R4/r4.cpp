@@ -249,7 +249,6 @@ void CRender::create()
 	o.sunstatic = !ps_r2_ls_flags.test(R2FLAG_SUN) ? true : false;
 	o.volumetricfog = ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
 	o.noshadows = Core.ParamsData.test(ECoreParams::noshadows);
-	o.Tshadows = Core.ParamsData.test(ECoreParams::tsh);
 	o.distortion_enabled = !Core.ParamsData.test(ECoreParams::nodistort);
 	o.distortion = o.distortion_enabled;
 	o.disasm = Core.ParamsData.test(ECoreParams::disasm);
