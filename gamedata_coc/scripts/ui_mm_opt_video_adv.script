@@ -236,4 +236,6 @@ function opt_video_adv:InitControls(x, y, xml, handler)
     end
 	
     table.insert(handler.m_preconditions, {func=enableTalkDofFunc, control=handler.talkDof:GetParent()})
+	handler:addTrack(self, mode_4, "st_motion_blur_power", "r4_mblur_power", 0.1, false, "float", false, system_depends.sdNothing)
+  	handler:addComboBox(self, mode_4, "st_motion_blur_quality", "r4_mblur_quality", 6, false, system_depends.sdSystemRestart)
 end

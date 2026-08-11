@@ -948,4 +948,13 @@
 	<string id="st_ixray_framework_options_save">
 		<text>$$ACTION_UI_ACTION_2$$ Сохранить настройки</text>
 	</string>
+	<string id="st_3d_scopes">
+		<text>3D прицелы</text>
+	</string>
+	<string id="st_motion_blur_power">
+		<text>Сила размытия в движении</text>
+	</string>
+	<string id="st_motion_blur_quality">
+		<text>Качество размытия в движении</text>
+	</string>
 </string_table>
