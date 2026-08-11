@@ -60,17 +60,21 @@ DSP_SpatialProcess(float** buffer, const Fvector& distances, const dsp_stuff& st
     
     DSP_CalculateRelativePosition(stuff, pos, distance);
 
+    // Broken ogg-comments give us zero/inverted ranges
+    float min_distance = std::max(distances.x, EPS_S);
+    float max_distance = std::max(distances.y, min_distance + EPS_S);
+
     // Panning level
-    float pl = std::min(distance / distances.x, 1.0f);
+    float pl = std::min(distance / min_distance, 1.0f);
 
     // Attenuation
-    distance = std::clamp(distance, distances.x, distances.y);
+    distance = std::clamp(distance, min_distance, max_distance);
     float att = 1.0f;
 
     if (!disable_attenuation) {
-        att = distances.x / (psSoundRolloff * distance);
+        att = min_distance / (psSoundRolloff * distance);
         att = powf(att, 1.3f);
-        att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / (distances.y - distances.x), 0.0f, 1.0f);
+        att *= 1.0f - std::clamp(std::max(distance - min_distance, 0.0f) / (max_distance - min_distance), 0.0f, 1.0f);
         att = std::clamp(att, 0.f, 1.f);
     }
 
@@ -108,9 +112,9 @@ DSP_ResampleBuffer(float** input, float** output, float history[SND_CHANNEL_COUN
         for (u32 i = 0; i < output_frames; ++i) {
             float& phase = history[k][0];
 
-            u32 idx0 = (u32)phase;
-            u32 idx1 = idx0 + 1;
-            //R_ASSERT(idx1 < input_frames);
+            // input_frames is the last valid index: the caller decodes input_frames+1 frames
+            u32 idx0 = std::min((u32)phase, input_frames);
+            u32 idx1 = std::min(idx0 + 1, input_frames);
 
             float delta = phase - (float)idx0;
             float sample0 = input[k][idx0];

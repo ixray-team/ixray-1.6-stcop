@@ -67,7 +67,8 @@ Snd_Initialize()
     backend.buffer_frame_count = std::max((u32)SND_BLOCKSIZE, (u32)MEM_ALIGN(backend.device_frame_count, SND_BLOCKSIZE));
     backend.buffer = xr_alloc<float>(backend.buffer_frame_count * SND_CHANNEL_COUNT);
     backend.output_buffer = xr_alloc<float>(backend.buffer_frame_count * SND_CHANNEL_COUNT);
-    memset(backend.buffer, 0, backend.buffer_frame_count * SND_CHANNEL_COUNT);
+    memset(backend.buffer, 0, backend.buffer_frame_count * SND_CHANNEL_COUNT * sizeof(float));
+    memset(backend.output_buffer, 0, backend.buffer_frame_count * SND_CHANNEL_COUNT * sizeof(float));
     R_ASSERT2(SDL_ResumeAudioDevice(backend.device),
         make_string<const char*>("Couldn't resume audio stream: %s", SDL_GetError()));
 }
@@ -76,6 +77,7 @@ static void
 Snd_Shutdown()
 {
     xr_free(backend.buffer);
+    xr_free(backend.output_buffer);
     SDL_DestroyAudioStream(backend.stream);
     SDL_CloseAudioDevice(backend.device);
 }
