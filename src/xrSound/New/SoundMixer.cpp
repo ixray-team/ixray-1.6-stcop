@@ -49,6 +49,7 @@
 
 #define SND_HRTF_SLOT_COUNT (512)
 #define DEFAULT_SLOT_COUNT (512)
+#define SND_MAX_PITCH (4)
 #define CACHE_LINES_COUNT (1024)
 #define CACHE_LINE_WIDTH (12)
 #define CACHE_LINE_ENTRY_COUNT (32)
@@ -372,19 +373,21 @@ ICF void Snd_PurgeCacheLine(u32 cache_idx, bool purge_from_entry)
 {
 	auto& line = mixer.cache_lines[cache_idx - 1];
 
-	if (purge_from_entry) {
-		auto& source = mixer.snd_sources[line.name.c_str()];
-		for (u32& entry_cache_idx : source.cache_lines) {
-			if (entry_cache_idx == cache_idx) {
-				entry_cache_idx = 0;
-				break;
+	if (purge_from_entry && line.name.size()) {
+		auto found_source = mixer.snd_sources.find(line.name.c_str());
+		if (found_source != mixer.snd_sources.end()) {
+			for (u32& entry_cache_idx : found_source->second.cache_lines) {
+				if (entry_cache_idx == cache_idx) {
+					entry_cache_idx = 0;
+					break;
+				}
 			}
 		}
 	}
 
-	memset(&mixer.cache_lines[cache_idx - 1], 0, sizeof(mixer.cache_lines[cache_idx - 1]));
+	line.name = nullptr;
+	memset(&line, 0, sizeof(line));
 	mixer.free_cachelines.push_back(cache_idx);
-	cache_idx = 0;
 }
 
 ICF void Snd_DestroySourceCache(sound_source& source)
@@ -427,9 +430,10 @@ ICF u32 Snd_NewCacheLine()
 		{
 			Snd_GrowCacheLines(false);
 		}
-
-		R_ASSERT(cache_idx);
-		Snd_PurgeCacheLine(cache_idx, true);
+		else
+		{
+			Snd_PurgeCacheLine(cache_idx, true);
+		}
 	}
 
 	{
@@ -487,6 +491,7 @@ ICF void Snd_LoadSource(sound_source& source, const char* name)
 	source.data = xr_alloc<u8>(source.pub.data_size);
 	m_wavefile->r(source.data, m_wavefile->length());
 	m_wavefile->close();
+	xr_delete(source.reader);
 	source.reader = new IReader(source.data, source.pub.data_size);
 
 	ov_callbacks ovc;
@@ -538,49 +543,74 @@ ICF void Snd_LoadSource(sound_source& source, const char* name)
 	source.pub.volume = std::min(source.pub.volume, 1.0f);
 }
 
-ICF void Snd_AcquireSound(const xr_string& name, bool fail_if_not_found)
+ICF sound_source* Snd_FindSound(const xr_string& name)
 {
-	if (name.empty())
-		return;
-
-	mixer.source_lock.AcquireShared();
-	bool contains = mixer.snd_sources.contains(name);
-	mixer.source_lock.ReleaseShared();
-	if (!contains) {
-		R_ASSERT(!fail_if_not_found);
-		// TODO: async file load?
-		mixer.source_lock.AcquireExclusive();
-		Snd_LoadSource(mixer.snd_sources[name], name.c_str());
-		mixer.source_lock.ReleaseExclusive();
+	if (name.empty()) {
+		return nullptr;
 	}
 
-	auto& source = mixer.snd_sources[name];
-	source.pub.ref_count++;
+	xrSRWLockGuard guard(mixer.source_lock, true);
+	auto found_source = mixer.snd_sources.find(name);
+	if (found_source == mixer.snd_sources.end()) {
+		return nullptr;
+	}
+
+	found_source->second.pub.ref_count++;
+	return &found_source->second;
 }
 
-ICF void Snd_ReleaseSound(xr_string& name)
+ICF sound_source* Snd_AcquireSound(const xr_string& name, bool fail_if_not_found)
+{
+	sound_source* source = Snd_FindSound(name);
+	if (source != nullptr || name.empty()) {
+		return source;
+	}
+
+	R_ASSERT(!fail_if_not_found);
+
+	// TODO: async file load?
+	xrSRWLockGuard guard(mixer.source_lock);
+	source = &mixer.snd_sources[name];
+	if (source->reader == nullptr) {
+		Snd_LoadSource(*source, name.c_str());
+	}
+
+	source->pub.ref_count++;
+	return source;
+}
+
+ICF void Snd_ReleaseSound(const xr_string& name)
 {
 	if (name.empty()) {
 		return;
 	}
 
-	mixer.source_lock.AcquireShared();
-	auto* source = &mixer.snd_sources.at(name);
-	R_ASSERT(source->pub.ref_count);
-	source->pub.ref_count--;
-	mixer.source_lock.ReleaseShared();
-
-	if (source->pub.ref_count == 0) {
-		mixer.source_lock.AcquireExclusive();
-		ov_clear(&source->file);
-		if (source->data != nullptr) {
-			xr_free(source->data);
+	{
+		xrSRWLockGuard guard(mixer.source_lock, true);
+		auto found_source = mixer.snd_sources.find(name);
+		if (found_source == mixer.snd_sources.end()) {
+			return;
 		}
 
-		Snd_DestroySourceCache(*source);
-		mixer.snd_sources.erase(name);
-		mixer.source_lock.ReleaseExclusive();
+		R_ASSERT(found_source->second.pub.ref_count);
+		if (--found_source->second.pub.ref_count != 0) {
+			return;
+		}
 	}
+
+	xrSRWLockGuard guard(mixer.source_lock);
+	auto found_source = mixer.snd_sources.find(name);
+	if (found_source == mixer.snd_sources.end() || found_source->second.pub.ref_count != 0) {
+		return;
+	}
+
+	auto& source = found_source->second;
+	ov_clear(&source.file);
+	xr_delete(source.reader);
+	xr_free(source.data);
+
+	Snd_DestroySourceCache(source);
+	mixer.snd_sources.erase(found_source);
 }
 
 ICF u32 Snd_ReadFromSource(sound_source& source, float** buffer, u32 frames)
@@ -626,7 +656,7 @@ enum class ESlotOcclusionResult
 	SOM
 };
 
-ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, float dt, float* occ_volume)
+ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, const sound_source& source, float dt, float* occ_volume)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
 	if (slot.state != Mixer::State::Playing)
@@ -636,8 +666,6 @@ ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, float dt, float* occ_vo
 
 	ESlotOcclusionResult Result = ESlotOcclusionResult::True;
 
-	xrSRWLockGuard guard2(mixer.source_lock, true);
-	auto& source = mixer.snd_sources.at(slot.sound_name.c_str());
 	if (source.pub.channels_count == 1 && slot.flags & (u32)Mixer::Flags::Spatial)
 	{
 		// Check range
@@ -687,21 +715,14 @@ ICF u32 Snd_FindAvailableCacheLine(sound_source& source, u32 position)
 	return found_cache_idx;
 }
 
-ICF void Snd_UpdateCache(u32 slot_idx)
+// 'position' is a source frame index, not necessarily slot.position
+ICF void Snd_UpdateCache(sound_source& source, u32 position)
 {
 	PROF_EVENT("Sound: Update Slot Cache");
 
-	auto& slot = mixer.slots[slot_idx - 1];
-	if (slot.sound_name.empty() || !mixer.snd_sources.contains(slot.sound_name.c_str())) {
-		return;
-	}
-
-	Snd_AcquireSound(slot.sound_name, true);
-	auto& source = mixer.snd_sources[slot.sound_name];
-
 	{
 		xrSRWLockGuard guard2(mixer.source_lock, true);
-		u32 found_cache_idx = Snd_FindAvailableCacheLine(source, slot.position);
+		u32 found_cache_idx = Snd_FindAvailableCacheLine(source, position);
 		if (found_cache_idx == 0 && source.file.datasource != nullptr) {
 			mixer.stats.cache_miss_count++;
 			found_cache_idx = Snd_NewCacheLine();
@@ -711,13 +732,13 @@ ICF void Snd_UpdateCache(u32 slot_idx)
 
 			{
 				// TODO: parallel decoding for each slot
-				u32 begin_pos = Snd_SeekSource(source, slot.position, false);
+				u32 begin_pos = Snd_SeekSource(source, position, false);
 				u32 end_pos = begin_pos + cache_size;
-				if (end_pos < (slot.position + SND_BLOCKSIZE)) {
-					begin_pos = Snd_SeekSource(source, slot.position, true);
+				if (end_pos < (position + SND_BLOCKSIZE)) {
+					begin_pos = Snd_SeekSource(source, position, true);
 				}
 
-				memset(line.data, 0, cache_size * sizeof(float));
+				memset(line.data, 0, sizeof(line.data));
 
 				float* ch_data[SND_CHANNEL_COUNT];
 				for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
@@ -769,63 +790,53 @@ ICF void Snd_UpdateCache(u32 slot_idx)
 			}
 		}
 	}
-
-	Snd_ReleaseSound(slot.sound_name);
 }
 
-ICF u32 Snd_ReadSlotData(u32 slot_idx, float** data, u32 frames_count)
+ICF u32 Snd_ReadSlotData(u32 slot_idx, sound_source& source, float** data, u32 frames_count)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
-	if (slot.sound_name.c_str() == nullptr || !mixer.snd_sources.contains(slot.sound_name.c_str())) {
-		return frames_count;
-	}
 
-	Snd_AcquireSound(slot.sound_name, true);
+	u32 read_position = slot.position;
 	u32 frames_to_read = frames_count;
 
-	{
-		do {
-			auto& source = mixer.snd_sources[slot.sound_name.c_str()];
-			u32 found_cache_idx = Snd_FindAvailableCacheLine(source, slot.position);
+	while (frames_to_read && read_position < source.pub.frames_total) {
+		u32 found_cache_idx = Snd_FindAvailableCacheLine(source, read_position);
 
-			if (found_cache_idx == 0) {
-				Snd_UpdateCache(slot_idx);
-				found_cache_idx = Snd_FindAvailableCacheLine(source, slot.position);
-				VERIFY(found_cache_idx != 0);
-			}
+		if (found_cache_idx == 0) {
+			Snd_UpdateCache(source, read_position);
+			found_cache_idx = Snd_FindAvailableCacheLine(source, read_position);
+			VERIFY(found_cache_idx != 0);
+		}
 
-			if (found_cache_idx == 0) {
-				break;
-			}
+		if (found_cache_idx == 0) {
+			break;
+		}
 
+		auto& cache_line = mixer.cache_lines[found_cache_idx - 1];
+		u32 begin_offset = read_position - cache_line.start;
+		u32 cache_frames = std::min(frames_to_read, cache_line.end - read_position);
+		if (cache_frames == 0) {
+			break;
+		}
 
-			auto& cache_line = mixer.cache_lines[found_cache_idx - 1];
-			if (cache_line.start > slot.position) {
-				slot.position = cache_line.start; // HACK(vertver): мне похуй
-			}
+		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+			memcpy(&data[ch][frames_count - frames_to_read], &cache_line.data[ch][begin_offset], cache_frames * sizeof(float));
+		}
 
-			u32 begin_offset = slot.position - cache_line.start;
-			u32 cache_frames = std::min(std::min(frames_to_read, cache_line.end - slot.position), (u32)SND_BLOCKSIZE);
-			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-				memcpy(&data[ch][frames_count - frames_to_read], &cache_line.data[ch][begin_offset], cache_frames * sizeof(float));
-			}
-
-			frames_to_read -= cache_frames;
-			if (slot.position + cache_frames >= source.pub.frames_total) {
-				break;
-			}
-		} while (frames_to_read);
+		frames_to_read -= cache_frames;
+		read_position += cache_frames;
 	}
 
-	Snd_ReleaseSound(slot.sound_name);
-
-	return (u32)std::min(std::max((s64)frames_count- (s64)frames_to_read, (s64)0), (s64)frames_count);
+	return frames_count - frames_to_read;
 }
 
-ICF void Snd_ReadSlot(u32 slot_idx, float** data, u32 frames_count)
+ICF void Snd_ReadSlot(u32 slot_idx, sound_source& source, float** data, u32 frames_count)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
-	auto& source = mixer.snd_sources.at(slot.sound_name.c_str());
+	if (source.pub.frames_total == 0) {
+		MixerNewState(slot_idx, Mixer::State::Stopped);
+		return;
+	}
 
 	u32 last_frames = frames_count;
 	while (last_frames) {
@@ -835,31 +846,36 @@ ICF void Snd_ReadSlot(u32 slot_idx, float** data, u32 frames_count)
 			offfseted_data[i] = &data[i][buf_offset];
 		}
 
-		u32 read_frames = Snd_ReadSlotData(slot_idx, offfseted_data, last_frames);
-		if (slot.position + read_frames >= source.pub.frames_total) {
-			slot.position = 0;
-			if (slot.flags & (u32)Mixer::Flags::Looped) {
-				continue;
-			} else {
+		u32 read_frames = Snd_ReadSlotData(slot_idx, source, offfseted_data, last_frames);
+
+		last_frames -= read_frames;
+		slot.position = std::min(slot.position + read_frames, source.pub.frames_total);
+
+		if (slot.position < source.pub.frames_total) {
+			if (read_frames == 0) {
 				MixerNewState(slot_idx, Mixer::State::Stopped);
 				break;
 			}
+
+			continue;
 		}
 
-		u32 total_frames = source.pub.frames_total;
-		slot.position = std::min(slot.position + read_frames, total_frames);
-		last_frames -= read_frames;
+		slot.position = 0;
+		if ((slot.flags & (u32)Mixer::Flags::Looped) == 0) {
+			MixerNewState(slot_idx, Mixer::State::Stopped);
+			break;
+		}
 	}
 }
 
-ICF void Snd_ProcessSlot(u32 slot_idx, float** data)
+ICF void Snd_ProcessSlot(u32 slot_idx, sound_source& source, float** data)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
 	float pitch = slot.parameters[(u32)Mixer::ParameterId::Pitch].x;
 
 	u32 output_frames = SND_BLOCKSIZE;
-	float scaled_frames = (float)output_frames * pitch * mixer.time_factor;
-	u32 input_frames = std::min((u32)scaled_frames, (u32)SND_BLOCKSIZE);
+	float ratio = std::clamp(pitch * mixer.time_factor, 0.0f, (float)SND_MAX_PITCH);
+	u32 input_frames = std::max((u32)((float)output_frames * ratio), 1u);
 
 	bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
 
@@ -868,15 +884,18 @@ ICF void Snd_ProcessSlot(u32 slot_idx, float** data)
 	}
 
 	if (is_music || fis_zero(1.0 - mixer.time_factor)) {
-		Snd_ReadSlot(slot_idx, data, SND_BLOCKSIZE);
+		Snd_ReadSlot(slot_idx, source, data, SND_BLOCKSIZE);
 	} else {
 		float* offfseted_data[SND_CHANNEL_COUNT];
 		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
 			offfseted_data[ch] = mixer.read_buffer[ch];
 		}
 
-		Snd_ReadSlot(slot_idx, offfseted_data, input_frames+1);
-		slot.position -= 1; // account 1 sample of tail for interpolation
+		Snd_ReadSlot(slot_idx, source, offfseted_data, input_frames+1);
+		if (slot.position > 0) {
+			slot.position -= 1; // account 1 sample of tail for interpolation
+		}
+
 		DSP_ResampleBuffer(offfseted_data, data, slot.history, input_frames, output_frames);
 	}
 }
@@ -899,22 +918,28 @@ ICF void Snd_PrecacheRenderCallback()
 		mixer.stats.cache_miss_count = 0;
 	}
 
-	for (size_t i = 0; i < mixer.slots.size() - 1; i++) {
-		if (Snd_SlotOcclusion(i + 1, dt, nullptr) != ESlotOcclusionResult::False)
+	for (size_t i = 0; i < mixer.slots.size(); i++) {
+		auto& slot = mixer.slots[i];
+
+		sound_source* source = Snd_FindSound(slot.sound_name);
+		if (source != nullptr && Snd_SlotOcclusion(i + 1, *source, dt, nullptr) != ESlotOcclusionResult::False)
 		{
 			Snd_AcquireHRTFSlot(i + 1);
-			Snd_UpdateCache(i + 1);
+			Snd_UpdateCache(*source, slot.position);
 		} else {
 			Snd_ReleaseHRTFSlot(i + 1);
 		}
 
-		auto& slot = mixer.slots[i + 1];
+		if (source != nullptr) {
+			Snd_ReleaseSound(slot.sound_name);
+		}
+
 		if (slot.state == Mixer::State::Delay)
 		{
 			slot.delay -= dt;
 			if (slot.delay <= 0.f)
 			{
-				MixerNewState(i + 2, Mixer::State::Playing);
+				MixerNewState(i + 1, Mixer::State::Playing);
 			}
 		}
 	}
@@ -993,16 +1018,152 @@ ICF void Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 #endif
 
 	// Attenuation
-	distance = std::clamp(distance, distances.x, distances.y);
-	float att = distances.x / (psSoundRolloff * distance);
+	float min_distance = std::max(distances.x, EPS_S);
+	float max_distance = std::max(distances.y, min_distance + EPS_S);
+
+	distance = std::clamp(distance, min_distance, max_distance);
+	float att = min_distance / (psSoundRolloff * distance);
 	att *= att;
-	att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / ((distances.y - distances.x)), 0.0f, 1.0f);
+	att *= 1.0f - std::clamp(std::max(distance - min_distance, 0.0f) / (max_distance - min_distance), 0.0f, 1.0f);
 	att = std::clamp(att, 0.f, 1.f);
 	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
 		for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
 			data[ch][i] *= att;
 		}
 	}
+}
+
+ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buffer, float dt)
+{
+	auto& Slot = mixer.slots[slot_idx - 1];
+
+	float occ_volume = 1.0f;
+	ESlotOcclusionResult OCCResult = Snd_SlotOcclusion(slot_idx, Source, dt, &occ_volume);
+	if (OCCResult == ESlotOcclusionResult::False)
+	{
+		// TODO: hack for simulated sounds
+		Slot.position = std::min(Slot.position + SND_BLOCKSIZE, Source.pub.frames_total);
+		if (Slot.position == Source.pub.frames_total && (Slot.flags & (u16)Mixer::Flags::Looped) == 0) {
+			MixerNewState(slot_idx, Mixer::State::Stopped);
+		}
+
+		return;
+	}
+
+	// Clear process buffer and read data from source
+	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+		memset(process_buffer[ch], 0, SND_BLOCKSIZE * sizeof(float));
+	}
+
+	Snd_ProcessSlot(slot_idx, Source, process_buffer);
+
+	Fvector& pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
+	Fvector& volumes = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
+	float begin_factor = 1.0f, end_factor = 1.0f;
+
+	// Deferred stopping
+	bool IsMusic = (Slot.flags & (u16)Mixer::Flags::Intro);
+
+	if (Slot.flags & (u16)Mixer::Flags::NoOCC && OCCResult != ESlotOcclusionResult::SOM)
+	{
+		occ_volume = 1.f;
+	}
+
+	// Update fade volume for non-intro sounds (fade in on startup)
+	//if (!is_music) {
+	//	slot.fade_volume += dt * 10.0f;
+	//	clamp(slot.fade_volume, 0.0f, 1.0f);
+	//}
+	//else
+	{
+		Slot.fade_volume = 1.f;
+	}
+
+	if (Slot.stopping_position != (u32)-1) {
+		u32 stopping_total = Source.pub.frames_total - Slot.stopping_position;
+		if (stopping_total > 1 && Slot.position >= Slot.stopping_position) {
+			u32 begin_offset = Slot.position - Slot.stopping_position;
+			u32 write_count = IsMusic ? SND_BLOCKSIZE : (u32)((float)SND_BLOCKSIZE * mixer.time_factor);
+			u32 end_offset = std::min(begin_offset + write_count, Source.pub.frames_total - 1);
+			begin_factor = 1.0f - ((float)begin_offset / (float)(stopping_total - 1));
+			end_factor = 1.0f - ((float)end_offset / (float)(stopping_total - 1));
+			begin_factor = std::clamp(begin_factor, 0.0f, 1.0f);
+			end_factor = std::clamp(end_factor, 0.0f, 1.0f);
+		}
+	}
+
+	// Apply final volumes
+	float slot_volume = volumes.x * volumes.y * volumes.z;
+
+	float vol_mixer = mixer.effect_volume;
+	if (Slot.flags & (u16)Mixer::Flags::Music) {
+		vol_mixer = mixer.music_volume;
+	} else if (Slot.flags & (u16)Mixer::Flags::Shooting) {
+		vol_mixer = mixer.shooting_volume;
+	}
+
+	float volume_final = occ_volume * slot_volume * vol_mixer * Slot.fade_volume;
+	begin_factor *= volume_final;
+	end_factor *= volume_final;
+
+	float left_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].x;
+	float right_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].y;
+
+	// Spatial processing
+	if (!(Slot.flags & (u32)Mixer::Flags::Intro) && Source.pub.channels_count == 1) {
+		PROF_EVENT("Slot Spatial");
+
+		if (Slot.flags & (u32)Mixer::Flags::Spatial) {
+#if !defined(DISABLE_STEAM_AUDIO) || 0//!defined(DISABLE_RESONANCE_AUDIO)
+			if (psSoundFlags.is(ss_HRTF) && mixer.hrtf_enabled)
+			{
+				Snd_PhononSpatialProcess(process_buffer, slot_idx);
+			}
+			else
+#endif
+			{
+				dsp_stuff stuff = {
+					.dt = mixer.dt,
+					.panning = Slot.panning,
+					.camera_position = &mixer.P,
+					.camera_direction = &mixer.D,
+					.camera_normal = &mixer.N,
+					.obj_position = &pos
+				};
+
+				DSP_SpatialProcess(process_buffer, Slot.parameters[(u32)Mixer::ParameterId::DistanceRange], stuff, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
+			}
+		}
+
+		if (mixer.editor_zone) {
+			Slot.zone_idx = 1;
+		}
+
+		u32 zone_idx = Slot.zone_idx;
+		if (zone_idx && zone_idx <= mixer.zones.size()) {
+			sound_zone_params& zone = mixer.zones[zone_idx - 1];
+			zone.use_count++;
+			zone.last_use_ms = Snd_Milliseconds();
+
+			float* reverb_buffer[SND_CHANNEL_COUNT] = {};
+			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+				reverb_buffer[ch] = zone.data[ch];
+			}
+
+			// TODO(vertver): better volume attenutation for reverb stuff
+			DSP_MixBufferPanning(reverb_buffer, process_buffer, begin_factor, end_factor, left_panning, right_panning, SND_BLOCKSIZE);
+		}
+	}
+
+	// TODO(vertver): push data to buses instead of main
+	int bus_idx = IsMusic ? SND_BUS_MUSIC : SND_BUS_EFFECTS;
+	float* bus_buffer[SND_CHANNEL_COUNT] = {};
+	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+		bus_buffer[ch] = mixer.buses[bus_idx].data[ch];
+	}
+
+	// Bus mixing
+	DSP_MixBufferPanning(bus_buffer, process_buffer, begin_factor, end_factor, left_panning, right_panning, SND_BLOCKSIZE);
 }
 
 ICF void Snd_MixerRenderCallback(float* buffer)
@@ -1039,153 +1200,15 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 		if (mixer.slots[i].state != Mixer::State::Playing) {
 			continue;
 		}
-		
-		mixer.source_lock.AcquireShared();
-		bool contains = mixer.snd_sources.contains(mixer.slots[i].sound_name);
-		mixer.source_lock.ReleaseShared();
 
-		if (!contains) {
+		sound_source* source = Snd_FindSound(mixer.slots[i].sound_name);
+		if (source == nullptr) {
 			MixerNewState(i + 1, Mixer::State::Stopped);
 			continue;
 		}
 
-		auto& Slot = mixer.slots[i];
-		auto& Source = mixer.snd_sources.at(mixer.slots[i].sound_name);
-
-		float occ_volume = 1.0f;
-		ESlotOcclusionResult OCCResult = Snd_SlotOcclusion(i + 1, dt, &occ_volume); 
-		if (OCCResult == ESlotOcclusionResult::False)
-		{
-			// TODO: hack for simulated sounds
-			Slot.position = std::min(Slot.position + SND_BLOCKSIZE, Source.pub.frames_total);
-			if (Slot.position == Source.pub.frames_total && (Slot.flags & (u16)Mixer::Flags::Looped) == 0) {
-				MixerNewState(i + 1, Mixer::State::Stopped);
-				continue;
-			}
-
-			continue;
-		}
-
-		// Clear process buffer and read data from source
-		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-			memset(process_buffer[ch], 0, SND_BLOCKSIZE * sizeof(float));
-		}
-
-		Snd_ProcessSlot(i + 1, process_buffer);
-
-		mixer.source_lock.AcquireShared();
-		contains = mixer.snd_sources.contains(mixer.slots[i].sound_name);
-		mixer.source_lock.ReleaseShared();
-		if (!contains) {
-			MixerNewState(i + 1, Mixer::State::Stopped);
-			continue;
-		}
-
-		Fvector& pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
-		Fvector& volumes = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
-		float begin_factor = 1.0f, end_factor = 1.0f;
-
-		// Deferred stopping
-		bool IsMusic = (Slot.flags & (u16)Mixer::Flags::Intro);
-
-		if (Slot.flags & (u16)Mixer::Flags::NoOCC && OCCResult != ESlotOcclusionResult::SOM)
-		{
-			occ_volume = 1.f;
-		}
-
-		// Update fade volume for non-intro sounds (fade in on startup)
-		//if (!is_music) {
-		//	slot.fade_volume += dt * 10.0f;
-		//	clamp(slot.fade_volume, 0.0f, 1.0f);
-		//}
-		//else
-		{
-			Slot.fade_volume = 1.f;
-		}
-		
-		if (Slot.stopping_position != (u32)-1) {
-			u32 stopping_total = Source.pub.frames_total - Slot.stopping_position;
-			if (stopping_total != 0) {
-				u32 begin_offset = Slot.position - Slot.stopping_position;
-				u32 write_count = IsMusic ? SND_BLOCKSIZE : (u32)((float)SND_BLOCKSIZE * mixer.time_factor);
-				u32 end_offset = std::min(begin_offset + write_count, Source.pub.frames_total - 1);
-				begin_factor = 1.0f - ((float)begin_offset / (float)(stopping_total - 1));
-				end_factor = 1.0f - ((float)end_offset / (float)(stopping_total - 1));
-			}
-		}
-
-		// Apply final volumes
-		float slot_volume = volumes.x * volumes.y * volumes.z;
-
-		float vol_mixer = mixer.effect_volume;
-		if (Slot.flags & (u16)Mixer::Flags::Music) {
-			vol_mixer = mixer.music_volume;
-		} else if (Slot.flags & (u16)Mixer::Flags::Shooting) {
-			vol_mixer = mixer.shooting_volume;
-		}
-
-		float volume_final = occ_volume * slot_volume * vol_mixer * Slot.fade_volume;
-		begin_factor *= volume_final;
-		end_factor *= volume_final;
-
-		float left_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].x;
-		float right_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].y;
-
-		// Spatial processing
-		if (!(Slot.flags & (u32)Mixer::Flags::Intro) && Source.pub.channels_count == 1) {
-			PROF_EVENT("Slot Spatial");
-
-			if (Slot.flags & (u32)Mixer::Flags::Spatial) {
-#if !defined(DISABLE_STEAM_AUDIO) || 0//!defined(DISABLE_RESONANCE_AUDIO)
-				if (psSoundFlags.is(ss_HRTF) && mixer.hrtf_enabled)
-				{
-					Snd_PhononSpatialProcess(process_buffer, i + 1);
-				}
-				else
-#endif
-				{
-					dsp_stuff stuff = {
-						.dt = mixer.dt,
-						.panning = Slot.panning,
-						.camera_position = &mixer.P,
-						.camera_direction = &mixer.D,
-						.camera_normal = &mixer.N,
-						.obj_position = &pos
-					};
-
-					DSP_SpatialProcess(process_buffer, Slot.parameters[(u32)Mixer::ParameterId::DistanceRange], stuff, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
-				}
-			}
-
-			if (mixer.editor_zone) {
-				Slot.zone_idx = 1;
-			}
-
-			u32 slot_idx = Slot.zone_idx;
-			if (slot_idx && !mixer.zones.empty()) {
-				sound_zone_params& zone = mixer.zones.at(slot_idx - 1);
-				zone.use_count++;
-				zone.last_use_ms = Snd_Milliseconds();
-
-				float* reverb_buffer[SND_CHANNEL_COUNT] = {};
-				for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-					reverb_buffer[ch] = zone.data[ch];
-				}
-
-				// TODO(vertver): better volume attenutation for reverb stuff
-				DSP_MixBufferPanning(reverb_buffer, process_buffer, begin_factor, end_factor, left_panning, right_panning, SND_BLOCKSIZE);
-			}
-		}
-
-		// TODO(vertver): push data to buses instead of main
-		int bus_idx = IsMusic ? SND_BUS_MUSIC : SND_BUS_EFFECTS;
-		float* bus_buffer[SND_CHANNEL_COUNT] = {};
-		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-			bus_buffer[ch] = mixer.buses[bus_idx].data[ch];
-		}
-
-		// Bus mixing
-		DSP_MixBufferPanning(bus_buffer, process_buffer, begin_factor, end_factor, left_panning, right_panning, SND_BLOCKSIZE);
+		Snd_RenderSlot(i + 1, *source, process_buffer, dt);
+		Snd_ReleaseSound(mixer.slots[i].sound_name);
 	}
 
 	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
@@ -1461,6 +1484,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 	mixer.D = D;
 	mixer.N = N;
 
+	mixer.render_lock.AcquireExclusive();
 	mixer.manage_lock.AcquireExclusive();
 	mixer.update_lock.AcquireExclusive();
 
@@ -1538,11 +1562,20 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 				actial_slot.sound_name.clear();
 			}
 
-			if (!is_same_file) {
-				Snd_AcquireSound(cmd.string_storage.c_str(), false);
+			sound_source* source_ptr = is_same_file ?
+				Snd_FindSound(actial_slot.sound_name) : Snd_AcquireSound(cmd.string_storage.c_str(), false);
+
+			if (source_ptr == nullptr) {
+				MixerNewState(cmd.slot, State::Stopped);
+				break;
 			}
 
-			auto& source = mixer.snd_sources.at(cmd.string_storage.c_str());
+			if (is_same_file) {
+				// The slot already holds a reference on it
+				Snd_ReleaseSound(actial_slot.sound_name);
+			}
+
+			auto& source = *source_ptr;
 			memset(actial_slot.parameters, 0, sizeof(actial_slot.parameters));
 			memset(actial_slot.history, 0, sizeof(actial_slot.history));
 			actial_slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel] = Fvector(source.pub.volume, 1.0f, 1.0f);
@@ -1659,6 +1692,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 
 	mixer.update_lock.ReleaseExclusive();
 	mixer.manage_lock.ReleaseExclusive();
+	mixer.render_lock.ReleaseExclusive();
 }
 
 void 
@@ -1701,16 +1735,14 @@ Mixer::DereferenceObjects(CObject** object, int count)
 	}
 }
 
-u32 
+u32
 Mixer::Create()
 {
-	xrSRWLockGuard g0(mixer.update_lock);
-
-	// TODO: fix memory leak (probably xrGame-related issue)
-	//Msg("Free Sounds: %d", mixer.free_slots.size());
 	if (mixer.free_slots.empty()) {
-		Snd_GrowSlots(false);
+		Snd_GrowSlots(true);
 	}
+
+	xrSRWLockGuard g0(mixer.update_lock);
 
 	u32 slot_idx = mixer.free_slots[mixer.free_slots.size() - 1];
 	mixer.free_slots.pop_back();
@@ -1898,7 +1930,19 @@ float Mixer::GetDuration(u32 slot)
 
 bool Mixer::SlotIsRelated(u32 slot)
 {
-	return Snd_SlotOcclusion(slot, 0.0f, nullptr) != ESlotOcclusionResult::False;
+	if (slot == 0) {
+		return false;
+	}
+
+	const xr_string& name = mixer.slots[slot - 1].sound_name;
+	sound_source* source = Snd_FindSound(name);
+	if (source == nullptr) {
+		return false;
+	}
+
+	bool result = Snd_SlotOcclusion(slot, *source, 0.0f, nullptr) != ESlotOcclusionResult::False;
+	Snd_ReleaseSound(name);
+	return result;
 }
 
 u32 Mixer::GetGameType(u32 slot)
@@ -1940,6 +1984,8 @@ Mixer::GetState(u32 slot)
 u32
 Mixer::GetSourceCount()
 {
+	xrSRWLockGuard guard(mixer.source_lock, true);
+
 	return mixer.snd_sources.size();
 }
 
