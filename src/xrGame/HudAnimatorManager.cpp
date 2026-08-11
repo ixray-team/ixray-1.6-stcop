@@ -11,7 +11,7 @@
 #include "../../xrScripts/script_engine.h"
 
 bool m_AnimatorForceHideItems = false;
-
+float AnimatorHideSpeedFactor = 1.0f;
 
 CHudAnimatorBase::~CHudAnimatorBase()
 {
@@ -35,6 +35,8 @@ void CHudAnimatorBase::Load()
 	m_sLuaRight2Callback = READ_IF_EXISTS(pSettings, r_string, m_section, "right2_lua_callback", "null");
 	m_sLuaStartCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "start_lua_callback", "null");
 	m_sLuaEndCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "end_lua_callback", "null");
+
+	AnimatorHideSpeedFactor = READ_IF_EXISTS(pSettings, r_float, m_section, "hide_speed_factor", 1.0f);
 
 	pSettings->read_if_exists<bool>(m_bBlendMovement, m_section, "use_blending_movement");
 }
