@@ -29,10 +29,8 @@ void CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
 
 void CRenderTarget::phase_smap_direct_tsh(light* L, u32 sub_phase)
 {
-	VERIFY(RImplementation.o.Tshadows);
 	RCache.set_ColorWriteEnable();
-
-	//	Prepare viewport for shadow map rendering
 	RImplementation.rmNormal();
+
 	GRHI->ClearTarget(RCache.get_RT(), ERTColor::Black);
 }

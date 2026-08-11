@@ -52,7 +52,6 @@ public:
 		    
 		u32 sunstatic			: 1;
 		u32 noshadows			: 1;
-		u32 Tshadows			: 1;						// transluent shadows
 		u32 disasm				: 1;
 		u32 volumetricfog		: 1;
 		u32 offscreen_reflecitons	: 1;
