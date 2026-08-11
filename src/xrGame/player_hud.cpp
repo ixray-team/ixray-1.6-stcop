@@ -1214,6 +1214,8 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		return;
 	}
 
+	time_accumulator += delta;
+
 	shared_str section = itm->HudSection();
 	auto& current_params = m_measures.m_weapon_inertion;
 
@@ -1300,14 +1302,11 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 
 	float speed_pos = 0.0f;
 	float speed_rot = 0.0f;
-	
-	float TimeFactor = Device.time_factor();
-	clamp<float>(TimeFactor, EPS, 1.0f);
-	
+
 	//if (!actor->IsActorSuicideNow() && !itm->IsSuicideAnimPlaying())
 	{
-		speed_rot = current_params.move_speed_rot * factor / 100.0f * TimeFactor;
-		speed_pos = current_params.move_speed_pos * factor / 100.0f * TimeFactor;
+		speed_rot = current_params.move_speed_rot * factor / 100.0f;
+		speed_pos = current_params.move_speed_pos * factor / 100.0f;
 	}
 	//else
 	//{
@@ -1317,63 +1316,67 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 
 	CHudItem::jitter_params& jitter = itm->GetCurJitterParams();
 
-
-	pos = targetpos;
-	rot = targetrot;
-
-	Fvector cur_pos = hands_attach_pos();
-	Fvector cur_rot = hands_attach_rot();
-
-	pos.sub(cur_pos);
-	rot.sub(cur_rot);
-
-	//if (actor->IsActorSuicideNow())
-	//{
-	//	if (pos.magnitude() > speed_pos)
-	//	{
-	//		pos.set_length(speed_pos);
-	//	}
-	//
-	//	if (rot.magnitude() > speed_rot)
-	//	{
-	//		rot.set_length(speed_rot);
-	//	}
-	//}
-	//else
+	while (time_accumulator > 8)
 	{
-		if (pos.magnitude() > EPS)
+		pos = targetpos;
+		rot = targetrot;
+
+		Fvector cur_pos = hands_attach_pos();
+		Fvector cur_rot = hands_attach_rot();
+
+		pos.sub(cur_pos);
+		rot.sub(cur_rot);
+
+		//if (actor->IsActorSuicideNow())
+		//{
+		//	if (pos.magnitude() > speed_pos)
+		//	{
+		//		pos.set_length(speed_pos);
+		//	}
+		//
+		//	if (rot.magnitude() > speed_rot)
+		//	{
+		//		rot.set_length(speed_rot);
+		//	}
+		//}
+		//else
 		{
-			pos.mul(speed_pos);
+			if (pos.magnitude() > 0.0001f)
+			{
+				pos.mul(speed_pos);
+			}
+
+			if (rot.magnitude() > 0.0001f)
+			{
+				rot.mul(speed_rot);
+			}
 		}
 
-		if (rot.magnitude() > EPS)
-		{
-			rot.mul(speed_rot);
-		}
-	}
-
-	cur_pos.add(pos);
-	cur_rot.add(rot);
-
-	if (actor->IsHandJitter())
-	{
-		pos.x = ::Random.randF(0.0f, 1000.0f) - 500.0f;
-		pos.y = ::Random.randF(0.0f, 500.0f) - 250.0f;
-		pos.z = ::Random.randF(0.0f, 1000.0f) - 500.0f;
-		pos.set_length(jitter.pos_amplitude * actor->GetHandJitterScale(itm));
 		cur_pos.add(pos);
-
-		rot.x = ::Random.randF(0.0f, 1000.f) - 500.0f;
-		rot.y = ::Random.randF(0.0f, 1000.f) - 500.0f;
-		rot.z = ::Random.randF(0.0f, 1000.f) - 500.0f;
-		rot.set_length(jitter.rot_amplitude * actor->GetHandJitterScale(itm));
 		cur_rot.add(rot);
-	}
 
-	cur_pos.sub(m_measures.m_hands_attach_real[0]);
-	m_measures.m_hands_attach_real[0].add(cur_pos);
-	cur_rot.sub(m_measures.m_hands_attach_real[1]);
-	m_measures.m_hands_attach_real[1].add(cur_rot);
+		if (actor->IsHandJitter())
+		{
+			pos.x = ::Random.randF(0.0f, 1000.0f) - 500.0f;
+			pos.y = ::Random.randF(0.0f, 500.0f) - 250.0f;
+			pos.z = ::Random.randF(0.0f, 1000.0f) - 500.0f;
+			pos.set_length(jitter.pos_amplitude * actor->GetHandJitterScale(itm));
+			cur_pos.add(pos);
+
+			rot.x = ::Random.randF(0.0f, 1000.f) - 500.0f;
+			rot.y = ::Random.randF(0.0f, 1000.f) - 500.0f;
+			rot.z = ::Random.randF(0.0f, 1000.f) - 500.0f;
+			rot.set_length(jitter.rot_amplitude * actor->GetHandJitterScale(itm));
+			cur_rot.add(rot);
+		}
+
+		cur_pos.sub(m_measures.m_hands_attach_real[0]);
+		m_measures.m_hands_attach_real[0].add(cur_pos);
+		cur_rot.sub(m_measures.m_hands_attach_real[1]);
+		m_measures.m_hands_attach_real[1].add(cur_rot);
+
+		time_accumulator -= 8;
+	}
 
 	//if (actor->IsActorSuicideNow() && actor->CheckActorVisibilityForController() && !(READ_IF_EXISTS(pSettings, r_bool, section, "prohibit_suicide", false) || READ_IF_EXISTS(pSettings, r_bool, section, "suicide_by_animation", false)))
 	//{
