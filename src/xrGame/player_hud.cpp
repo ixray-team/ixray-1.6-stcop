@@ -15,13 +15,22 @@ player_hud* g_player_hud = nullptr;
 player_hud* g_player_hud2 = nullptr;
 Fvector _ancor_pos;
 Fvector _wpn_root_pos;
+extern float AnimatorHideSpeedFactor;
 
 float CalcMotionSpeed(const shared_str& anim_name)
 {
-	if(!IsGameTypeSingle() && (anim_name=="anm_show" || anim_name=="anm_hide") )
+	if (!IsGameTypeSingle() && (anim_name == "anm_show" || anim_name == "anm_hide"))
+	{
 		return 2.0f;
+	}
+	else if (CActor* Actor = (Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr); Actor && Actor->HudAnimator()->TargetAnimator())
+	{
+		return AnimatorHideSpeedFactor;
+	}
 	else
+	{
 		return 1.0f;
+	}
 }
 
 player_hud_motion* player_hud_motion_container::find_motion(const shared_str& name)
@@ -879,7 +888,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 		rnd_idx = u8(-1);
 	}
 
-	float speed = anm->m_anim_speed;
+	float speed = CalcMotionSpeed(anm_name_b) * anm->m_anim_speed;
 
 	bool need_mix_hands = bMixIn >= EHudMixType::eMixHands;
 
