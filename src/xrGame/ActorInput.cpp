@@ -1715,7 +1715,7 @@ void CActor::SwitchNightVision()
 
 	if (itm != nullptr && dev != nullptr)
 	{
-		if (wpn != nullptr && wpn->IsZoomed())
+		if (wpn != nullptr && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eFire))
 		{
 			return;
 		}
@@ -1727,7 +1727,7 @@ void CActor::SwitchNightVision()
 				return;
 			}
 
-			if (itm->GetState() != CHUDState::eIdle || dev->GetState() != CCustomDevice::eIdle)
+			if (itm->IsPending() || dev->IsPending())
 			{
 				return;
 			}
@@ -1742,7 +1742,7 @@ void CActor::SwitchNightVision()
 
 	if (itm != nullptr)
 	{
-		if (wpn != nullptr && wpn->IsZoomed())
+		if (wpn != nullptr && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eFire))
 		{
 			return;
 		}
@@ -1754,7 +1754,7 @@ void CActor::SwitchNightVision()
 				return;
 			}
 
-			if (itm->GetState() != CHUDState::eIdle)
+			if (itm->IsPending())
 			{
 				return;
 			}
@@ -1769,7 +1769,7 @@ void CActor::SwitchNightVision()
 	{
 		if (dev->m_eAnimationsFlags.test(CCustomDevice::EAnimationsFlags::af_nvg))
 		{
-			if (dev->GetState() != CCustomDevice::eIdle)
+			if (dev->IsPending())
 			{
 				return;
 			}
@@ -1834,7 +1834,7 @@ void CActor::SwitchTorch()
 
 		if (itm != nullptr && dev != nullptr)
 		{
-			if (wpn && wpn->IsZoomed())
+			if (wpn != nullptr && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eFire))
 			{
 				return;
 			}
@@ -1846,7 +1846,7 @@ void CActor::SwitchTorch()
 					return;
 				}
 
-				if (itm->GetState() != CHUDState::eIdle || dev->GetState() != CCustomDevice::eIdle)
+				if (itm->IsPending() || dev->IsPending())
 				{
 					return;
 				}
@@ -1861,7 +1861,7 @@ void CActor::SwitchTorch()
 
 		if (itm != nullptr)
 		{
-			if (wpn && wpn->IsZoomed())
+			if (wpn != nullptr && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eFire))
 			{
 				return;
 			}
@@ -1873,7 +1873,7 @@ void CActor::SwitchTorch()
 					return;
 				}
 
-				if (itm->GetState() != CHUDState::eIdle)
+				if (itm->IsPending())
 				{
 					return;
 				}
@@ -1888,7 +1888,7 @@ void CActor::SwitchTorch()
 		{
 			if (dev->m_eAnimationsFlags.test(CCustomDevice::EAnimationsFlags::af_torch))
 			{
-				if (dev->GetState() != CCustomDevice::eIdle)
+				if (dev->IsPending())
 				{
 					return;
 				}
@@ -1945,7 +1945,7 @@ void CActor::ClearMask()
 
 	if (itm != nullptr && dev != nullptr)
 	{
-		if (wpn != nullptr && wpn->IsZoomed())
+		if (wpn != nullptr && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eFire))
 		{
 			return;
 		}
@@ -1972,7 +1972,7 @@ void CActor::ClearMask()
 
 	if (itm != nullptr)
 	{
-		if (wpn != nullptr && wpn->IsZoomed())
+		if (wpn != nullptr && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eFire))
 		{
 			return;
 		}
@@ -1984,7 +1984,7 @@ void CActor::ClearMask()
 				return;
 			}
 
-			if (itm->GetState() != CHUDState::eIdle)
+			if (itm->IsPending())
 			{
 				return;
 			}
@@ -1999,7 +1999,7 @@ void CActor::ClearMask()
 	{
 		if (dev->m_eAnimationsFlags.test(CCustomDevice::EAnimationsFlags::af_clear_mask))
 		{
-			if (dev->GetState() != CCustomDevice::eIdle)
+			if (dev->IsPending())
 			{
 				return;
 			}
