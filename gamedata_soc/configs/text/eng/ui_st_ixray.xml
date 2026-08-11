@@ -948,4 +948,13 @@
 	<string id="st_ixray_framework_options_save">
 		<text>$$ACTION_UI_ACTION_2$$ Save options</text>
 	</string>
+	<string id="st_3d_scopes">
+		<text>3D scopes</text>
+	</string>
+	<string id="st_motion_blur_power">
+		<text>Motion blur power</text>
+	</string>
+	<string id="st_motion_blur_quality">
+		<text>Motion blur quality</text>
+	</string>
 </string_table>
