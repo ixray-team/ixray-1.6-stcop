@@ -6,6 +6,7 @@
 
 #include "utils/xrLC_Light/xrLC_GlobalData.h"
 #include "utils/xrLC_Light/xrFace.h"
+#include "utils/xrLC_Light/xrMU_InstancedGroup.h"
 #include "utils/xrLC_Light/xrMU_Model.h"
 #include "utils/xrLC_Light/xrMU_Model_Reference.h"
 
@@ -247,6 +248,25 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				F->r(TrisArr.data(), Size*sizeof(CDB::TRI));
 			}
 			Model.build_simple();
+		}
+	}
+	
+	F = fs.open_chunk(EB_InstancedGroup);
+	if (F)
+	{
+		auto& vec = instanced_groups();
+		vec.resize(F->r_u32());
+		for (auto& Group : vec)
+		{
+			Group = new xrMU_InstancedGroup();
+			Group->Slots.resize(F->r_u32());
+			for (auto& Elem : Group->Slots)
+			{
+				Elem.ModelID = F->r_u32();
+				Elem.Model = mu_models()[Elem.ModelID];
+				Elem.Instances.resize(F->r_u32());
+				F->r(Elem.Instances.data(), Elem.Instances.size()*sizeof(Fmatrix));
+			}
 		}
 	}
 

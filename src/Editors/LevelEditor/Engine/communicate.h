@@ -146,6 +146,17 @@ struct b_mu_model
 	u16					lod_id;				// u16(-1) = no lod, just static geometry
 };
 
+struct b_instanced_group_elem
+{
+	xr_vector<Fmatrix> Transforms = {};
+	u32 MUID = u32(-1);
+};
+
+struct b_instanced_group
+{
+	xr_vector<b_instanced_group_elem> elems;
+};
+
 /*
 	self-describing
 */
@@ -276,6 +287,7 @@ enum EBUILD_CHUNKS
 	EB_MU_refs_debug,
     EB_MU_collisions,
     EB_MU_Mesh_LODs,
+	EB_InstancedGroup,
 
 	EB_FORCE_DWORD = u32(-1)
 };

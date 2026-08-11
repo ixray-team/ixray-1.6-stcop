@@ -82,13 +82,17 @@ RTCBVH CDB::BuildModel(const BuilderConfig& config)
 	{
 		TotalPrimitives += config.Instances->size();
 	}
+	if (config.GroupInstances)
+	{
+		TotalPrimitives += config.GroupInstances->size();
+	}
 	if (!TotalPrimitives)
 	{
 		return model;
 	}
 	xr_vector<RTCBuildPrimitive> Primitives;
 	
-	size_t i = 0;
+	size_t PrimID = 0;
 	if (config.Faces)
 	{
 		for (auto& Face : *config.Faces)
@@ -102,20 +106,34 @@ RTCBVH CDB::BuildModel(const BuilderConfig& config)
 				AABB.min.x, AABB.min.y, AABB.min.z,
 				u32(-1),
 				AABB.max.x, AABB.max.y, AABB.max.z,
-				i++
+				PrimID++
 			);
 		}
 	}
+	size_t GeomID = 0;
 	if (config.Instances)
 	{
-		for (int j = 0; j < config.Instances->size(); j++)
+		for (; GeomID < config.Instances->size(); GeomID++)
 		{
-			auto& Inst = config.Instances->at(j);
+			auto& Inst = config.Instances->at(GeomID);
 			Primitives.emplace_back(
 				Inst.GlobalAABB.min.x, Inst.GlobalAABB.min.y, Inst.GlobalAABB.min.z,
-				j,
+				GeomID,
 				Inst.GlobalAABB.max.x, Inst.GlobalAABB.max.y, Inst.GlobalAABB.max.z,
-				i++
+				PrimID++
+			);
+		}
+	}
+	if (config.GroupInstances)
+	{
+		for (int j = 0; j < config.GroupInstances->size(); j++)
+		{
+			auto& Inst = config.GroupInstances->at(j);
+			Primitives.emplace_back(
+				Inst.GlobalAABB.min.x, Inst.GlobalAABB.min.y, Inst.GlobalAABB.min.z,
+				GeomID++,
+				Inst.GlobalAABB.max.x, Inst.GlobalAABB.max.y, Inst.GlobalAABB.max.z,
+				PrimID++
 			);
 		}
 	}

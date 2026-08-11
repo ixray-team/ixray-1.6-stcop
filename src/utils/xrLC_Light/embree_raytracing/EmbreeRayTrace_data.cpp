@@ -12,6 +12,7 @@
 
 #include <base_face.h>
 #include "global_calculation_data.h"
+#include "xrMU_InstancedGroup.h"
 #include "../xrLC/Build.h"
 extern CBuild* pBuild;
 
@@ -162,6 +163,24 @@ void EmbreeRayTraceModel::BuildRayTraceModel()
 				buf.AddFaceRaw((Face*)F.ptr, F.v1, F.v2, F.v3);
 			}
 		}
+		for (auto& Group : lc_global_data()->instanced_groups())
+		{
+			for (auto& Slot : Group->Slots)
+			{
+				auto MU = lc_global_data()->mu_models()[Slot.ModelID];
+				for (auto& Transform : Slot.Instances)
+				{
+					faces.clear();
+					MU->export_cform_rcast_new(faces, Transform);
+					for (auto& F : faces)
+					{
+						bool isOpacue = ((Face*)F.ptr)->flags.bOpaque;
+						auto& buf = isOpacue || !use_transp ? opacue_geom : transp_geom;
+						buf.AddFaceRaw((Face*)F.ptr, F.v1, F.v2, F.v3);
+					}
+				}
+			}
+		}
 	}
 
 	// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании) 
@@ -188,6 +207,18 @@ void EmbreeRayTraceModel::BuildRayTraceModel_Instaced()
 	for (auto& MU_REF : lc_global_data()->mu_refs())
 	{
 		instances[MU_REF->ModelID]->SetInstance(IntelScene, MU_REF->xform, LastGeomID);
+	}
+	
+	for (auto& Group : lc_global_data()->instanced_groups())
+	{
+		for (auto& Slot : Group->Slots)
+		{
+			auto Template = instances[Slot.ModelID];
+			for (auto& Transform : Slot.Instances)
+			{
+				Template->SetInstance(IntelScene, Transform, LastGeomID);
+			}
+		}
 	}
 }
 

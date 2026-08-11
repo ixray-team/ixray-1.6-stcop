@@ -476,6 +476,21 @@ void SceneBuilder::SaveBuild()
 				F.w(data.faces.data(),sizeof(CDB::TRI)*data.faces.size());
 			}
 		});
+		
+		F->make_chunk(EB_InstancedGroup, [this](IWriter& F)
+		{
+			F.w_u32(l_instanced_groups.size());
+			for (auto& data : l_instanced_groups)
+			{
+				F.w_u32(data.elems.size());
+				for (auto& elem : data.elems)
+				{
+					F.w_u32(elem.MUID);
+					F.w_u32(elem.Transforms.size());
+					F.w(elem.Transforms.data(),sizeof(Fmatrix)*elem.Transforms.size());
+				}
+			}
+		});
 
 		F->make_chunk(EB_MU_refs_debug, [this](IWriter& F)
 		{
@@ -921,7 +936,7 @@ int	GetModelIdx( const char* model_name )
 //    int sect_num 		= S?S->m_sector_num:Builder.m_iDefaultSectorNum;
 //}
 
-bool SceneBuilder::BuildMUObject(CSceneObject* obj)
+bool SceneBuilder::BuildMUObject(CSceneObject* obj, u32& MUID)
 {
 	xr_string temp = "Building object: ";
 	temp += obj->GetName();
@@ -1048,6 +1063,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 			R_ASSERT(O);
 		}
 	}
+	MUID = model_idx;
 	
 	b_mu_reference&	R = l_mu_refs.emplace_back();
 	R.model_index = model_idx;
@@ -1638,6 +1654,53 @@ int SceneBuilder::BuildMaterial(const char* esh_name, const char* csh_name, cons
 	return mtl_idx;
 }
 
+bool SceneBuilder::ParseInstancedGroupObjects(ObjectList& lst, const char* prefix, bool b_selected_only)
+{
+	bool bResult = true;
+	auto& Slot = l_instanced_groups.emplace_back();
+	xr_hash_map<u32, xr_vector<CCustomObject*>> Grouping;
+	for (auto elem : lst)
+	{
+		u32 ID = -1;
+		switch (elem->FClassID)
+		{
+			case OBJCLASS_SCENEOBJECT:
+			{
+				auto obj = (CSceneObject*)elem;
+				if (obj->IsMUStatic())
+				{
+					bResult = bResult && BuildMUObject(obj, ID);
+				} else
+				{
+					ELog.DlgMsg(mtError,"Failed to build object '%s': %s is not MU",prefix, obj->GetName());
+					bResult = false;
+				}
+				break;
+			}
+			default:
+			{
+			}
+		}
+		if (ID != -1)
+		{
+			Grouping[ID].push_back(elem);
+		}
+	}
+	if (!bResult)
+	{
+		return bResult;
+	}
+	for (auto& [k,v] : Grouping)
+	{
+		auto& ElemSlot = Slot.elems.emplace_back();
+		ElemSlot.MUID = k;
+		for (auto& elem : v)
+		{
+			ElemSlot.Transforms.emplace_back(elem->FTransform);
+		}
+	}
+	return bResult;
+}
 
 bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool b_selected_only)
 {
@@ -1671,21 +1734,37 @@ bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool 
 		case OBJCLASS_SCENEOBJECT:
 		{
 			CSceneObject *obj = (CSceneObject*)(*_F);
-			if (obj->IsStatic()) 		
-				bResult = BuildObject(obj);
-			else if (obj->IsMUStatic())
-				bResult = BuildMUObject(obj);
+			if (!obj->GetOwner())
+			{
+				if (obj->IsStatic())
+				{
+					bResult = BuildObject(obj);
+				}
+				else if (obj->IsMUStatic())
+				{
+					u32 ID;
+					bResult = BuildMUObject(obj, ID);
+				}
+			}
 
 			break;
 		}
-/*        case OBJCLASS_GROUP:{
+        case OBJCLASS_GROUP:
+		{
 			CGroupObject* group = (CGroupObject*)(*_F);
 
 			ObjectList 			grp_lst;
 			group->GetObjects	(grp_lst);
 			
-			bResult = ParseStaticObjects(grp_lst, group->Name, b_selected_only);
-		}break;   */
+			if (group->IsInstanceGroup())
+			{
+				bResult = ParseInstancedGroupObjects(grp_lst, group->GetName(), b_selected_only);
+			} else
+			{
+				bResult = ParseStaticObjects(grp_lst, group->GetName(), b_selected_only);
+			}
+			break;
+		}   
 		}// end switch
 
 		if (!bResult)

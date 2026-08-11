@@ -70,6 +70,17 @@ namespace CDB
 		size_t ModelIndex;
 		u16 Sector;
 	};
+
+	class MODEL;
+
+	struct GroupData
+	{
+		Fmatrix Transform;
+		Fmatrix InvTransform;
+		Fbox GlobalAABB;
+		MODEL* Model;
+		u16 Sector;
+	};
 	
 	class XRCORE_API MODEL final
 	{
@@ -79,6 +90,8 @@ namespace CDB
 		xr_vector<Fvector> verts;
 		xr_vector<MODEL*> models;
 		xr_vector<InstanceData> instances;
+		xr_vector<MODEL*> GroupModels;
+		xr_vector<InstanceData> GroupInstances;
 		RTCBVH tree = nullptr;
 		BVHNode* root = nullptr;
 		u16 Sector = u16(-1);

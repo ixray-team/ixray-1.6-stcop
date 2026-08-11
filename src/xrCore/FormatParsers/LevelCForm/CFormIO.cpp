@@ -283,8 +283,8 @@ bool CForm::CFormatInstanced::Write(xr_string_view FileName)
 	}
 
 	Writer->w(&Header, sizeof(Header));
-	Writer->w(VertsPtr, Header.vertcount*sizeof(Fvector));
-	Writer->w(TrisPtr, Header.facecount*sizeof(CDB::TRI));
+	Writer->w(Global.VertsPtr, Header.vertcount*sizeof(Fvector));
+	Writer->w(Global.TrisPtr, Header.facecount*sizeof(CDB::TRI));
 	
 	Writer->w_u64(instances.size());
 	for (auto& elem : instances)
@@ -294,11 +294,22 @@ bool CForm::CFormatInstanced::Write(xr_string_view FileName)
 		Writer->w(elem.second.data(), elem.second.size()*sizeof(decltype(elem.second)::value_type));
 	}
 	
-	CDB::MODEL PreBuild;
+	Writer->w_u64(Groups.size());
+	for (auto& elem : Groups)
+	{
+		Writer->w_u64(elem.VertsSize);
+		Writer->w(elem.VertsPtr, elem.VertsSize*sizeof(Fvector));
+		Writer->w_u64(elem.TrisSize);
+		Writer->w(elem.TrisPtr, elem.TrisSize*sizeof(CDB::TRI));
+		Writer->w_u64(elem.TransformsSize);
+		Writer->w(elem.TransformsPtr, elem.TransformsSize*sizeof(InstanceDataPacked));
+	}
+	
+	/*CDB::MODEL PreBuild;
 	PreBuild.verts.resize(Header.vertcount);
-	std::memcpy(PreBuild.verts.data(), VertsPtr, Header.vertcount*sizeof(Fvector));
+	std::memcpy(PreBuild.verts.data(), Global.VertsPtr, Header.vertcount*sizeof(Fvector));
 	PreBuild.tris.resize(Header.facecount);
-	std::memcpy(PreBuild.tris.data(), TrisPtr, Header.facecount*sizeof(CDB::TRI));
+	std::memcpy(PreBuild.tris.data(), Global.TrisPtr, Header.facecount*sizeof(CDB::TRI));
 	
 	for (auto& [Name, Vec] : instances)
 	{
@@ -311,7 +322,7 @@ bool CForm::CFormatInstanced::Write(xr_string_view FileName)
 			Inv.invert();
 			PreBuild.instances.emplace_back(Inst.xform, Inv, Inst.AABB, Index, Inst.Sector);
 		}
-	}
+	}*/
     
 	return true;
 }
@@ -334,9 +345,9 @@ bool CForm::CFormatInstanced::Read(xr_string_view FileName)
 	{
 		return false;
 	}
-	VertsPtr = (Fvector*)FileReader->pointer();
+	Global.VertsPtr = (Fvector*)FileReader->pointer();
 	FileReader->advance(Header.vertcount*sizeof(Fvector));
-	TrisPtr = (CDB::TRI*)FileReader->pointer();
+	Global.TrisPtr = (CDB::TRI*)FileReader->pointer();
 	FileReader->advance(Header.facecount*sizeof(CDB::TRI));
 	
 	size_t InstancesCount = FileReader->r_u64();
@@ -351,6 +362,22 @@ bool CForm::CFormatInstanced::Read(xr_string_view FileName)
 		std::memcpy(Slot.data(), FileReader->pointer(), xformCount * sizeof(decltype(instances)::mapped_type::value_type));
 		FileReader->advance(xformCount * sizeof(decltype(instances)::mapped_type::value_type));
 	}
+	
+	InstancesCount = FileReader->r_u64();
+	Groups.reserve(InstancesCount);
+	for (size_t i = 0; i < InstancesCount; ++i)
+	{
+		auto& Slot = Groups.emplace_back();
+		Slot.VertsSize = FileReader->r_u64();
+		Slot.VertsPtr = (Fvector*)FileReader->pointer();
+		FileReader->advance(Slot.VertsSize*sizeof(Fvector));
+		Slot.TrisSize = FileReader->r_u64();
+		Slot.TrisPtr = (CDB::TRI*)FileReader->pointer();
+		FileReader->advance(Slot.TrisSize*sizeof(CDB::TRI));
+		Slot.TransformsSize = FileReader->r_u64();
+		Slot.TransformsPtr = (InstanceDataPacked*)FileReader->pointer();
+		FileReader->advance(Slot.TransformsSize*sizeof(InstanceDataPacked));
+	}
 
 	return true;
 }
@@ -364,14 +391,25 @@ void CForm::CFormatInstanced::AddStaticGeom(xr_span<Fvector> Verts, xr_span<CDB:
 	{
 		Header.aabb.modify(elem);
 	}
-	VertsPtr = Verts.data();
-	TrisPtr = Tris.data();
+	Global.VertsPtr = Verts.data();
+	Global.TrisPtr = Tris.data();
 }
 
 void CForm::CFormatInstanced::AddInstanceRef(shared_str Path, const Fmatrix& xform, const Fbox& AABB, CDB::MODEL& Collsion, u16 Sector)
 {
 	instances.try_emplace(Path).first->second.emplace_back(xform, AABB, Sector);
 	Models.try_emplace(Path).first->second = &Collsion;
+}
+
+void CForm::CFormatInstanced::AddInstance(xr_span<Fvector> Vertices, xr_span<CDB::TRI> Tris, xr_span<InstanceDataPacked> Transforms)
+{
+	auto& Slot = Groups.emplace_back();
+	Slot.TransformsPtr = Transforms.data();
+	Slot.TransformsSize = Transforms.size();
+	Slot.VertsPtr = Vertices.data();
+	Slot.TrisPtr = Tris.data();
+	Slot.VertsSize = Vertices.size();
+	Slot.TrisSize = Tris.size();
 }
 
 void CForm::CFormatInstanced::GetStaticGeom(xr_vector<Fvector>& OutVertices, xr_vector<CDB::TRI>& OutTris) const
@@ -393,10 +431,26 @@ void CForm::CFormatInstanced::ReadData(CDB::MODEL& Model, CDB::build_callback* b
 		}
 	}
 	
+	for (auto& elem : Groups)
+	{
+		auto ModelSlot = Model.GroupModels.emplace_back(new CDB::MODEL());
+		ModelSlot->verts.resize(elem.VertsSize);
+		std::memcpy(ModelSlot->verts.data(), elem.VertsPtr, elem.VertsSize*sizeof(Fvector));
+		ModelSlot->tris.resize(elem.TrisSize);
+		std::memcpy(ModelSlot->tris.data(), elem.TrisPtr, elem.TrisSize*sizeof(CDB::TRI));
+		for (auto& trans : xr_span<InstanceDataPacked>(elem.TransformsPtr, elem.TransformsSize))
+		{
+			Fmatrix Inv = trans.xform;
+			Inv.invert();
+			Model.GroupInstances.emplace_back(trans.xform, Inv, trans.AABB, ModelSlot->GroupModels.size()-1, trans.Sector);
+		}
+		ModelSlot->build_simple();
+	}
+	
 	Model.verts.resize(Header.vertcount);
-	std::memcpy(Model.verts.data(), VertsPtr, sizeof(Fvector) * Header.vertcount);
+	std::memcpy(Model.verts.data(), Global.VertsPtr, sizeof(Fvector) * Header.vertcount);
 	Model.tris.resize(Header.facecount);
-	std::memcpy(Model.tris.data(), TrisPtr, sizeof(CDB::TRI) * Header.facecount);
+	std::memcpy(Model.tris.data(), Global.TrisPtr, sizeof(CDB::TRI) * Header.facecount);
 	
 	if (bc)
 	{

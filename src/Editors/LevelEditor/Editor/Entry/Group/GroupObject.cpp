@@ -421,6 +421,8 @@ void CGroupObject::FillProp(const char* pref, PropItemVec& items)
 	ButtonValue* B;
 	B=PHelper().CreateButton	(items,PrepareKey(pref,"FreezeObjects"), 	"Unique,Reference",0);
 	B->OnBtnClickEvent.bind		(this,&CGroupObject::OnFreezeAllClick);
+	
+	PHelper().CreateBool(items,PrepareKey(pref,"IsInstanceGroup"),&bIsInstanceGroup);
 
 	for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)
 	{

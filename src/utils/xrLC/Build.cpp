@@ -498,6 +498,12 @@ xr_vector<xrMU_Reference*>&CBuild::mu_refs()
 	return lc_global_data()->mu_refs(); 
 }
 
+xr_vector<xrMU_InstancedGroup*>& CBuild::instanced_groups()
+{
+	VERIFY(lc_global_data()); 
+	return lc_global_data()->instanced_groups(); 
+}
+
 void CBuild::ImplicitLighting()
 {
 	if (g_params().m_quality == ebqDraft)

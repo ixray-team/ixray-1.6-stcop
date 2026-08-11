@@ -10,6 +10,7 @@
 #include "../xrLC_Light/b_build_texture.h"
 #include "../xrLC_Light/xrFace.h"
 
+class xrMU_InstancedGroup;
 class xrLC_GlobalData;
 class xrMU_Model;
 class xrMU_Reference;
@@ -74,6 +75,7 @@ public:
 	static base_lighting& L_static();
 	static xr_vector<xrMU_Model*>& mu_models();
 	static xr_vector<xrMU_Reference*>& mu_refs();
+	static xr_vector<xrMU_InstancedGroup*>& instanced_groups();
 
 	static Shader_xrLC_LIB& shaders();
 

@@ -112,6 +112,45 @@ void MODEL::build_simple()
 		rtcReleaseGeometry(InstanceOnLevel);
 	}
 	
+	for (auto elem : GroupInstances)
+	{
+		auto InstModel = GroupModels[elem.ModelIndex];
+		VERIFY(InstModel->IsBuilt);
+		VERIFY(InstModel->GroupModels.empty());
+		auto InstanceOnLevel = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_INSTANCE);
+		rtcSetGeometryInstancedScene(InstanceOnLevel, InstModel->InstaceScene);
+
+		float matrix[16];
+		
+		matrix[0] = elem.Transform._11;
+		matrix[1] = elem.Transform._12;
+		matrix[2] = elem.Transform._13;
+		matrix[3] = elem.Transform._14;
+
+		matrix[4] = elem.Transform._21;
+		matrix[5] = elem.Transform._22;
+		matrix[6] = elem.Transform._23;
+		matrix[7] = elem.Transform._24;
+
+		matrix[8] = elem.Transform._31;
+		matrix[9] = elem.Transform._32;
+		matrix[10] = elem.Transform._33;
+		matrix[11] = elem.Transform._34;
+
+		matrix[12] = elem.Transform._41;
+		matrix[13] = elem.Transform._42;
+		matrix[14] = elem.Transform._43;
+		matrix[15] = elem.Transform._44;
+		
+		rtcSetGeometryTransform(InstanceOnLevel, 0, RTC_FORMAT_FLOAT4X4_COLUMN_MAJOR, &matrix);
+		rtcSetGeometryUserData(InstanceOnLevel, &elem);
+			
+		rtcCommitGeometry(InstanceOnLevel);
+		
+		rtcAttachGeometry(InstaceScene, InstanceOnLevel);
+		rtcReleaseGeometry(InstanceOnLevel);
+	}
+	
 	auto BatchedGeometry = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_TRIANGLE);
 	
 	rtcSetSharedGeometryBuffer(BatchedGeometry, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, verts.data(), 0, sizeof(Fvector), verts.size());
@@ -131,6 +170,7 @@ void MODEL::build_simple()
 	Config.Vertices = &verts;
 	Config.Faces = &tris;
 	Config.Instances = &instances;
+	Config.GroupInstances = &GroupInstances;
 	Config.UserData = &UserData;
 	tree = CDB::BuildModel(Config);
 	

@@ -113,6 +113,11 @@ void export_ogf( xrMU_Reference& mu_reference )
 			pOGF->bSharedMaterial = it->bSharedMaterial;
 
 			pOGF->debug_name = Ref.debug_name;
+			if (pOGF->debug_name.size() > 240)
+			{
+				auto Res = pOGF->debug_name.substr(0, 240);
+				pOGF->debug_name = Res;
+			}
 			pOGF->debug_name += ":subdiv ";
 			pOGF->debug_name += std::to_string(it-Model.m_subdivs.begin()).c_str();
 
@@ -187,25 +192,29 @@ void export_ogf( xrMU_Reference& mu_reference )
 		LODNode->AddChield(ID);
 	};
 	AttackLOD(new OGF_LOD_MU0(1, mu_reference.sector));
-	{
+	bool MakeLOD1 = mu_reference.model->LODsID[0] != u32(-1);
+	bool MakeLOD2 = MakeLOD1 && mu_reference.model->LODsID[1] != u32(-1);
+	bool MakeLOD3 = MakeLOD2 && mu_reference.model->LODsID[2] != u32(-1);
+	bool MakeLOD4 = MakeLOD3 && mu_reference.model->LODsID[3] != u32(-1);
+	if (MakeLOD1){
 		generated_ids.clear();
 		auto& LOD1Model = *CBuild::mu_models()[mu_reference.model->LODsID[0]];
 		MakeRef(LOD1Model, generated_ids, mu_reference);
 		AttackLOD(new OGF_LOD_MU1(1, mu_reference.sector));
 	}
-	{
+	if (MakeLOD2){
 		generated_ids.clear();
 		auto& LOD2Model = *CBuild::mu_models()[mu_reference.model->LODsID[1]];
 		MakeRef(LOD2Model, generated_ids, mu_reference);
 		AttackLOD(new OGF_LOD_MU2(1, mu_reference.sector));
 	}
-	{
+	if (MakeLOD3){
 		generated_ids.clear();
 		auto& LOD3Model = *CBuild::mu_models()[mu_reference.model->LODsID[2]];
 		MakeRef(LOD3Model, generated_ids, mu_reference);
 		AttackLOD(new OGF_LOD_MU3(1, mu_reference.sector));
 	}
-	{
+	if (MakeLOD4){
 		generated_ids.clear();
 		auto& LOD4Model = *CBuild::mu_models()[mu_reference.model->LODsID[3]];
 		MakeRef(LOD4Model, generated_ids, mu_reference);

@@ -8,6 +8,8 @@
 #include "base_lighting.h"
 #include "../xrForms/CompilersUI.h"
 
+class xrMU_InstancedGroup;
+
 namespace CDB{
 class MODEL;
 class CollectorPacked;
@@ -42,6 +44,7 @@ class XRLC_LIGHT_API xrLC_GlobalData
 	vecFace							_g_faces;
 	xr_vector<xrMU_Model*>			_mu_models;
 	xr_vector<xrMU_Reference*>		_mu_refs;
+	xr_vector<xrMU_InstancedGroup*>	_g_instanced_groups;
 
 public:
 	xr_vector<base_Face*>			FacesStorage;
@@ -78,6 +81,7 @@ public:
 		base_lighting&				L_static()		{ return _L_static; }
  		xr_vector<xrMU_Model*>&		mu_models()		{ return _mu_models; }
 		xr_vector<xrMU_Reference*>& mu_refs()		{ return _mu_refs; }
+		xr_vector<xrMU_InstancedGroup*>& instanced_groups()		{ return _g_instanced_groups; }
 
  
  		void						initialize		()		;

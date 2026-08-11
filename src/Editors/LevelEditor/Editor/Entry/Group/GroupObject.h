@@ -14,6 +14,7 @@ class CGroupObject: public CCustomObject
     };
     typedef xr_list<SGroupObjectItem> ObjectsInGroup;
     ObjectsInGroup		m_ObjectsInGroup;
+	bool bIsInstanceGroup = false;
 
 
     bool			LL_AppendObject		(CCustomObject* object);
@@ -23,6 +24,7 @@ class CGroupObject: public CCustomObject
 	void   OnFreezeAllClick	(ButtonValue* sender, bool& bModif, bool& bSafe);
     void			ClearInternal			(ObjectsInGroup& v);
 public:
+	bool IsInstanceGroup(){return bIsInstanceGroup;}
     void			Clear1				(){ClearInternal(m_ObjectsInGroup);};
 	bool 			UpdateReference		(bool bForceReload);
 public:

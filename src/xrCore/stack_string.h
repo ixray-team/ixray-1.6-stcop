@@ -231,20 +231,26 @@ public:
 		const number_type current_length = this->size();
 		const number_type available_length = _kStringLength - current_length;
 
-		if (!IVERIFY(available_length > 0) || !IVERIFY(current_length < available_length))
+		if (!IVERIFY(available_length > 0))
 		{
 			return *this;
 		}
 
 		if constexpr (std::is_same_v<char_t, char>)
 		{
-			std::strncat(this->m_buffer, p_str, available_length);
+			if (IVERIFY(std::strlen(p_str) < available_length))
+			{
+				std::strncat(this->m_buffer, p_str, available_length);
+			}
 		}
 
 #ifdef IXR_WINDOWS
 		if constexpr (std::is_same_v<char_t, wchar_t>)
 		{
-			std::wcsncat(this->m_buffer, p_str, available_length);
+			if (IVERIFY(std::wcslen(p_str) < available_length))
+			{
+				std::wcsncat(this->m_buffer, p_str, available_length);
+			}
 		}
 #endif
 

@@ -64,6 +64,7 @@ namespace CDB
 		xr_vector<Fvector>* Vertices = nullptr;
 		xr_vector<TRI>* Faces = nullptr;
 		xr_vector<InstanceData>* Instances = nullptr;
+		xr_vector<InstanceData>* GroupInstances = nullptr;
 		Data* UserData = nullptr;
 	};
 

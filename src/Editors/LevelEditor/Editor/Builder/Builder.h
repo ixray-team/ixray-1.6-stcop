@@ -53,6 +53,7 @@ public:
 	xr_vector<b_mu_mesh_lods>	l_mu_mesh_lods;
 	xr_vector<b_mu_collision>	l_mu_collsions;
     xr_vector<shared_str>	l_mu_refs_debug;
+	xr_vector<b_instanced_group>	l_instanced_groups;
     xr_vector<e_b_lod>			l_lods;
     xr_vector<sb_light_control>	l_light_control;
     xr_vector<b_light_static>	l_light_static;
@@ -79,7 +80,7 @@ public:
                             xr_vector<u32>& smooth_groups, const Fmatrix& real_transform, CSceneObject* obj);
     bool    BuildObject     (CSceneObject* obj);
     bool    BuildEditableObject(CEditableObject* obj, Fmatrix T, CSceneObject* Owner);
-    bool    BuildMUObject   (CSceneObject* obj);
+    bool    BuildMUObject   (CSceneObject* obj, u32& MUID);
 	bool BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 LODID, int sect_num);
 	u32 BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, int sect_num);
 
@@ -109,6 +110,7 @@ public:
 	int 	BuildMaterial	(CSurface* surf, int sector_num, bool allow_draft);
 	int 	BuildMaterial	(const char* esh_name, const char* csh_name, const char* tx_name, u32 tx_cnt, int sector_num, bool allow_draft);
 
+	bool ParseInstancedGroupObjects(ObjectList& lst, const char* prefix, bool b_selected_only);
     bool	ParseStaticObjects	(ObjectList& lst, const char* prefix, bool b_selected_only);
 
 	int 	CalculateSector		(const Fvector& P, float R);

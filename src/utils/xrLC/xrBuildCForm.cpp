@@ -10,6 +10,7 @@
 #include "../../xrCore/FormatParsers/LevelCForm/CFormIO.h"
 #include "../xrLC_Light/embree_raytracing/EmbreeGeometryBuilder.h"
 #include "Collision/override/Model.h"
+#include "utils/xrLC_Light/xrMU_InstancedGroup.h"
 
 int GetVertexIndex(Vertex* Vert)
 {
@@ -140,10 +141,20 @@ void CBuild::BuildCForm	()
 		Progress(float(ref) / float(mu_refs_arr.size()));
 		mu_refs_arr[ref]->export_cform_game(CL);
 	}
+	
+	// Instanced Groups
+	auto& MUInstancedGroups = instanced_groups();
+	for (size_t i = 0; i < MUInstancedGroups.size(); i++)
+	{
+		Progress(float(i) / float(MUInstancedGroups.size()));
+		MUInstancedGroups[i]->export_cform_game(CL);
+	}
 
 	// Simplification
 	if (g_params().m_quality != ebqDraft)
+	{
 		SimplifyCFORM(CL);
+	}
 
 	// bb?
 	BB.invalidate();
@@ -197,7 +208,7 @@ void CBuild::BuildCForm	()
 
 void CBuild::BuildCTree()
 {
-	Status("CTree: creating...");
+	Status("CForm: creating...");
 	
 	vecFace cfFaces;
 	vecVertex cfVertices;
@@ -297,6 +308,26 @@ void CBuild::BuildCTree()
 			BB.modify(TransformedVert);
 		}
 	}
+	Status("InstancedGroups...");
+	auto& mu_instanced_groups = instanced_groups();
+	for (u32 ref = 0; ref < mu_instanced_groups.size(); ref++)
+	{
+		Progress(float(ref) / float(mu_instanced_groups.size()));
+		auto Group = mu_instanced_groups[ref];
+		for (auto& slot : Group->Slots)
+		{
+			auto MUModel = slot.Model;
+			for (auto& trans : slot.Instances)
+			{
+				for (auto& elem : MUModel->CollisionModel.verts)
+				{
+					Fvector TransformedVert;
+					trans.transform_tiny(TransformedVert,elem);
+					BB.modify(TransformedVert);
+				}
+			}
+		}
+	}
 
 	// Saving
 	Status("Saving...");
@@ -345,6 +376,24 @@ void CBuild::BuildCTree()
 				GlobalAABB.modify(gv);
 			}
 			FormatPtr->AddInstanceRef(elem->model->m_name, elem->xform, GlobalAABB, elem->model->CollisionModel, elem->sector);
+		}
+	}
+	for (u32 ref = 0; ref < mu_instanced_groups.size(); ref++)
+	{
+		Progress(float(ref) / float(mu_instanced_groups.size()));
+		auto Group = mu_instanced_groups[ref];
+		for (auto& slot : Group->Slots)
+		{
+			auto MUModel = slot.Model;
+			for (auto& trans : slot.Instances)
+			{
+				for (auto& elem : MUModel->CollisionModel.verts)
+				{
+					Fvector TransformedVert;
+					trans.transform_tiny(TransformedVert,elem);
+					BB.modify(TransformedVert);
+				}
+			}
 		}
 	}
 	xr_stack_string_path level_path = pBuild->path;
