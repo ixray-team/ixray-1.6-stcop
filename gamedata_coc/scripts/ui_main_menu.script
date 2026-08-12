@@ -486,4 +486,7 @@ function main_menu:ReloadGamepadLegend()
 			self.opt_dlg.dlg_controller_layout:ReloadGamepadTextures()
 		end
 	end
+	if GetModule("ixr_options") then
+		GetModule("ixr_options").get_controll("gamepad_legend"):ReloadLegend()
+	end
 end
