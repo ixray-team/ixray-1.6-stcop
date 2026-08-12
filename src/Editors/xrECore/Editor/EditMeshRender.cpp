@@ -28,10 +28,10 @@
 
 struct svertRender
 {
-	Fvector3 P{}; float pad0 = 1.0f;
-	Fvector3 N{}; float weight0 = 0.0f;
-	Fvector3 T{}; float weight1 = 0.0f;
-	Fvector3 B{}; float weight2 = 0.0f;
+	Fvector3 P{}; float weight0 = 1.0f;
+	Fvector3 N{}; float weight1 = 0.0f;
+	Fvector3 T{}; float weight2 = 0.0f;
+	Fvector3 B{}; float weight3 = 0.0f;
 	Fvector2 uv { };
 	uint32_t ind = 0;
 };
@@ -347,15 +347,16 @@ void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurf
 			pv->uv = SV.uv;
 			pv->P = SV.offs;
 			pv->N = SV.norm;
-			pv->pad0 = 1;
 
 			u8 bone_count = (u8)SV.bones.size();
 			float total = SV.bones[0].w;
 			float max_weight = SV.bones[0].w + SV.bones[1 % bone_count].w + SV.bones[2 % bone_count].w;
-		
-			pv->weight0 = SV.bones[0].w / max_weight;
-			pv->weight1 = SV.bones[1 % bone_count].w / max_weight;
-			pv->weight2 = SV.bones[2 % bone_count].w / max_weight;
+			
+			pv->weight3 = SV.bones[0].w / max_weight;
+			pv->weight2 = SV.bones[1 % bone_count].w / max_weight;
+			pv->weight1 = SV.bones[2 % bone_count].w / max_weight;
+			pv->weight0 = SV.bones[3 % bone_count].w / max_weight;
+
 			pv->ind = color_rgba(
 				SV.bones[0].id, 
 				SV.bones[1 % bone_count].id,
