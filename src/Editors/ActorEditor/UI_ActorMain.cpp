@@ -88,6 +88,29 @@ CCommandVar CActorTools::CommandImport(CCommandVar p1, CCommandVar p2)
 	return false;
 }
 
+CCommandVar CActorTools::CommandImportOMF(CCommandVar p1, CCommandVar p2)
+{
+	xr_string temp_fn = p1.IsString() ? xr_string(p1) : xr_string("");
+	if (p1.IsString() || EFS.GetOpenName(_import_, temp_fn, false, nullptr, -1, "*.omf"))
+	{
+		if (!FS.TryLoad(temp_fn))
+		{
+			return false;
+		}
+
+		CTimer T;
+		T.Start();
+		if (!ATools->ImportOMF(temp_fn.c_str()))
+		{
+			return false;
+		}
+
+		ELog.Msg(mtInformation, "Motions from '%s' successfully imported. Loading time - %3.2f(s).", temp_fn.c_str(), T.GetElapsed_sec());
+		return true;
+	}
+	return false;
+}
+
 CCommandVar CActorTools::CommandExportDM(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= false;
@@ -399,6 +422,7 @@ void CActorMain::RegisterCommands()
 	APPEND_SUB_CMD("Save As", 0, 1);
 	REGISTER_SUB_CMD_END;
 	REGISTER_CMD_CE(COMMAND_IMPORT, "File\\Import", ATools, CActorTools::CommandImport, true);
+	REGISTER_CMD_CE(COMMAND_IMPORT_OMF, "File\\Import OMF", ATools, CActorTools::CommandImportOMF, true);
 	REGISTER_CMD_CE(COMMAND_EXPORT_DM, "File\\Export DM", ATools, CActorTools::CommandExportDM, true);
 	REGISTER_CMD_CE(COMMAND_EXPORT_OBJ, "File\\Export OBJ", ATools, CActorTools::CommandExportOBJ, true);
 	REGISTER_CMD_CE(COMMAND_EXPORT_OGF, "File\\Export OGF", ATools, CActorTools::CommandExportOGF, true);
