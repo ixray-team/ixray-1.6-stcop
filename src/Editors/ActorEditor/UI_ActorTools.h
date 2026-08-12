@@ -272,6 +272,7 @@ public:
 
 	void 				ShowClipMaker		();
 	bool				Import				(const char* path, const char* name);
+	bool				ImportOMF			(const char* name);
 	bool				ExportOBJ			(const char* name);
 	bool				ExportOGF			(const char* name);
 	bool				ExportOMF			(const char* name);
@@ -334,6 +335,7 @@ public:
 	CCommandVar         CommandSaveBackup	(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandSave			(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandImport		(CCommandVar p1, CCommandVar p2);
+	CCommandVar         CommandImportOMF	(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandExportDM		(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandExportOBJ	(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandExportOGF	(CCommandVar p1, CCommandVar p2);
