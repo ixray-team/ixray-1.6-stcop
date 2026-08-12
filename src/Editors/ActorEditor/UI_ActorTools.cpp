@@ -9,6 +9,7 @@
 #include "../../Layers/xrRender/KinematicAnimatedDefs.h"
 #include "../../Layers/xrRender/SkeletonAnimated.h"
 #include "../../plugins/PCore/xr_ogf.h"
+#include "../../plugins/PCore/xr_ogf_v4.h"
 #include "../../plugins/PCore/xr_writer.h"
 
 CActorTools*	ATools=(CActorTools*)Tools;
@@ -120,6 +121,11 @@ void CActorTools::Render()
 
 void CActorTools::RenderEnvironment()
 {
+	if (psDeviceFlags.is(rsEnvironment))
+	{
+		g_pGamePersistent->Environment().RenderSky();
+		g_pGamePersistent->Environment().RenderClouds();
+	}
 }
 
 void CActorTools::OnFrame()
@@ -809,6 +815,66 @@ bool CActorTools::Import(const char* initial, const char* obj_name)
 	}
 	xr_delete(O);
 
+	return false;
+}
+
+bool CActorTools::ImportOMF(const char* obj_name)
+{
+	VERIFY(m_bReady);
+
+	xr_string Str = obj_name;
+	xr_strlwr(Str);
+
+	if (0 != xr_stricmp(EFS.ExtractFileExt(Str.c_str()).c_str(), ".omf"))
+	{
+		ELog.DlgMsg(mtError, "Can't load OMF file '%s'.", obj_name);
+		return false;
+	}
+
+	std::unique_ptr<xray_re::xr_ogf_v4> omf(new xray_re::xr_ogf_v4());
+	if (!omf->load_omf(Str.c_str()))
+	{
+		ELog.DlgMsg(mtError, "Can't load OMF file '%s'.", obj_name);
+		return false;
+	}
+
+	xray_re::xr_memory_writer writer;
+	omf->save_skls(writer);
+
+	string_path temp_fn;
+	FS.update_path(temp_fn, "$temp$", "temp_import.skls");
+	IWriter* temp_w = FS.w_open(temp_fn);
+	if (!temp_w)
+	{
+		ELog.DlgMsg(mtError, "Can't create temporary file.");
+		return false;
+	}
+	temp_w->w(writer.data(), writer.tell());
+	FS.w_close(temp_w);
+
+	SMotionVec appended_motions;
+	if (m_pEditObject)
+	{
+		m_pEditObject->AppendSMotion(temp_fn, &appended_motions);
+		if (!appended_motions.empty())
+		{
+			OnMotionDefsModified();
+			UpdateProperties();
+			Msg("Imported %d motion(s) from '%s'.", appended_motions.size(), obj_name);
+			EFS.MarkFile(temp_fn, true);
+			return true;
+		}
+		else
+		{
+			ELog.DlgMsg(mtError, "Failed to import motions from '%s'.", obj_name);
+		}
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "No object loaded. Load a skeleton first, then import OMF.");
+	}
+
+	EFS.MarkFile(temp_fn, true);
 	return false;
 }
 
