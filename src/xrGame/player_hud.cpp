@@ -1061,7 +1061,7 @@ void attachable_hud_item::GetCurrentTargetOffset_aim(weapon_inertion& inertion_p
 	}
 }
 
-void attachable_hud_item::GetCurrentTargetOffset(weapon_inertion& inertion_params, Fvector& pos, Fvector& rot, float& factor, u32& real)
+void attachable_hud_item::GetCurrentTargetOffset(weapon_inertion& inertion_params, Fvector& pos, Fvector& rot, float& factor, u32& real, Fvector2 movement_factor)
 {
 	factor = inertion_params.move_stabilize_factor;
 
@@ -1082,6 +1082,9 @@ void attachable_hud_item::GetCurrentTargetOffset(weapon_inertion& inertion_param
 	{
 		koef = inertion_params.move_slow_factor;
 	}
+
+	float koef_x = koef * movement_factor.x;
+	float koef_y = koef * movement_factor.y;
 
 	if (tocrouch_time_remains > 0)
 	{
@@ -1145,25 +1148,25 @@ void attachable_hud_item::GetCurrentTargetOffset(weapon_inertion& inertion_param
 
 	if ((real & mcLStrafe) && !(real & mcRStrafe))
 	{
-		AddOffsets(inertion_params.move_left_offset, pos, rot, koef);
+		AddOffsets(inertion_params.move_left_offset, pos, rot, koef_x);
 		factor = 1.0f;
 	}
 
 	if ((real & mcRStrafe) && !(real & mcLStrafe))
 	{
-		AddOffsets(inertion_params.move_right_offset, pos, rot, koef);
+		AddOffsets(inertion_params.move_right_offset, pos, rot, koef_x);
 		factor = 1.0f;
 	}
 
 	if ((real & mcFwd) && !(real & mcBack))
 	{
-		AddOffsets(inertion_params.move_forward_offset, pos, rot, koef);
+		AddOffsets(inertion_params.move_forward_offset, pos, rot, koef_y);
 		factor = 1.0f;
 	}
 
 	if ((real & mcBack) && !(real & mcFwd))
 	{
-		AddOffsets(inertion_params.move_back_offset, pos, rot, koef);
+		AddOffsets(inertion_params.move_back_offset, pos, rot, koef_y);
 		factor = 1.0f;
 	}
 
@@ -1288,7 +1291,7 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 	}
 	else
 	{
-		GetCurrentTargetOffset(current_params, targetpos, targetrot, factor, real);
+		GetCurrentTargetOffset(current_params, targetpos, targetrot, factor, real, actor->MovementFactor());
 		/*if (actor->IsActorSuicideNow() && actor->CheckActorVisibilityForController())
 			AddSuicideOffset(current_params, section, targetpos, targetrot);
 		else if (HID != nullptr)
