@@ -60,6 +60,7 @@ namespace CDB
 		{
 			BVHNode** Ptr;
 			size_t FacesCount;
+			size_t InstancesCount;
 		};
 		xr_vector<Fvector>* Vertices = nullptr;
 		xr_vector<TRI>* Faces = nullptr;

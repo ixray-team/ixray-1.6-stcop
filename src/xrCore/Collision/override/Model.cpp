@@ -53,15 +53,12 @@ namespace CDB::Internal
 	void* EmbreeCreateLeafFunction(RTCThreadLocalAllocator allocator, const struct RTCBuildPrimitive* primitives, size_t primitiveCount, void* userPtr)
 	{
 		auto Node = (BVHNode*)EmbreeCreateNodeFunction(allocator, primitiveCount, userPtr);
+		auto Data = (BuilderConfig::Data*)userPtr;
 		for (size_t i = 0; i < primitiveCount; i++)
 		{
 			Node->GetElement(i).IsNotPointer = true;
-			Node->GetElement(i).IsInstance = primitives[i].geomID != u32(-1);
+			Node->GetElement(i).Type = primitives[i].geomID;
 			Node->GetElement(i).Index = primitives[i].primID;
-			if (Node->GetElement(i).IsInstance)
-			{
-				Node->GetElement(i).Index -= ((BuilderConfig::Data*)userPtr)->FacesCount;
-			}
 		}
 		return Node;
 	}
@@ -104,34 +101,33 @@ RTCBVH CDB::BuildModel(const BuilderConfig& config)
 			AABB.modify(config.Vertices->at(Face.verts[2]));
 			Primitives.emplace_back(
 				AABB.min.x, AABB.min.y, AABB.min.z,
-				u32(-1),
+				(size_t)Type::Tris,
 				AABB.max.x, AABB.max.y, AABB.max.z,
 				PrimID++
 			);
 		}
 	}
-	size_t GeomID = 0;
+	PrimID = 0;
 	if (config.Instances)
 	{
-		for (; GeomID < config.Instances->size(); GeomID++)
+		for (auto& Inst : *config.Instances)
 		{
-			auto& Inst = config.Instances->at(GeomID);
 			Primitives.emplace_back(
 				Inst.GlobalAABB.min.x, Inst.GlobalAABB.min.y, Inst.GlobalAABB.min.z,
-				GeomID,
+				(size_t)Type::Instance,
 				Inst.GlobalAABB.max.x, Inst.GlobalAABB.max.y, Inst.GlobalAABB.max.z,
 				PrimID++
 			);
 		}
 	}
+	PrimID = 0;
 	if (config.GroupInstances)
 	{
-		for (int j = 0; j < config.GroupInstances->size(); j++)
+		for (auto& Inst : *config.GroupInstances)
 		{
-			auto& Inst = config.GroupInstances->at(j);
 			Primitives.emplace_back(
 				Inst.GlobalAABB.min.x, Inst.GlobalAABB.min.y, Inst.GlobalAABB.min.z,
-				GeomID++,
+				(size_t)Type::Group,
 				Inst.GlobalAABB.max.x, Inst.GlobalAABB.max.y, Inst.GlobalAABB.max.z,
 				PrimID++
 			);

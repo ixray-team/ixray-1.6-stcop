@@ -385,6 +385,25 @@ void CBuild::BuildCTree()
 		for (auto& slot : Group->Slots)
 		{
 			auto MUModel = slot.Model;
+			
+			auto& GroupSlot = FormatPtr->AddGroup();
+			auto& MapSlot = GroupSlot.instances[MUModel->m_name];
+			for (auto& trans : slot.Instances)
+			{
+				auto Inv = Group->Transform;
+				Inv.invert();
+				auto& Data = MapSlot.emplace_back();
+				Data.xform.mul(Inv,trans);
+				Data.Sector = Group->Sector;
+				Data.AABB.invalidate();
+				for (auto& v : MUModel->CollisionModel.verts)
+				{
+					Fvector gv;
+					Data.xform.transform_tiny(gv, v);
+					Data.AABB.modify(gv);
+				}
+			}
+			
 			for (auto& trans : slot.Instances)
 			{
 				for (auto& elem : MUModel->CollisionModel.verts)

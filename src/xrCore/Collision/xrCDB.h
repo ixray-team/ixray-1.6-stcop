@@ -130,13 +130,20 @@ namespace CDB
 		OPT_FULL_TEST   = (1<<3)		// for box & frustum queries - enable class III test(s)
 	};
 
+	enum class Type : u8
+	{
+		Tris = 0,
+		Instance,
+		Group,
+	};
+
 	union ElementID
 	{
 		BVHNode* p;
 		struct
 		{
-			size_t Index:62;
-			size_t IsInstance:1;
+			size_t Index:61;
+			size_t Type:2;
 			size_t IsNotPointer:1;
 		};
 	};

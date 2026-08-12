@@ -154,6 +154,7 @@ struct b_instanced_group_elem
 
 struct b_instanced_group
 {
+	Fmatrix GroupTransform;
 	xr_vector<b_instanced_group_elem> elems;
 };
 

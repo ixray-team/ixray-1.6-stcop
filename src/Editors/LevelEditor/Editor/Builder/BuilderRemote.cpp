@@ -482,6 +482,7 @@ void SceneBuilder::SaveBuild()
 			F.w_u32(l_instanced_groups.size());
 			for (auto& data : l_instanced_groups)
 			{
+				F.w(&data.GroupTransform, sizeof(Fmatrix));
 				F.w_u32(data.elems.size());
 				for (auto& elem : data.elems)
 				{
@@ -1654,7 +1655,7 @@ int SceneBuilder::BuildMaterial(const char* esh_name, const char* csh_name, cons
 	return mtl_idx;
 }
 
-bool SceneBuilder::ParseInstancedGroupObjects(ObjectList& lst, const char* prefix, bool b_selected_only)
+bool SceneBuilder::ParseInstancedGroupObjects(const Fmatrix& GroupTransform,ObjectList& lst, const char* prefix, bool b_selected_only)
 {
 	bool bResult = true;
 	auto& Slot = l_instanced_groups.emplace_back();
@@ -1690,6 +1691,7 @@ bool SceneBuilder::ParseInstancedGroupObjects(ObjectList& lst, const char* prefi
 	{
 		return bResult;
 	}
+	Slot.GroupTransform = GroupTransform;
 	for (auto& [k,v] : Grouping)
 	{
 		auto& ElemSlot = Slot.elems.emplace_back();

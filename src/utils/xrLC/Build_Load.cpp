@@ -259,6 +259,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		for (auto& Group : vec)
 		{
 			Group = new xrMU_InstancedGroup();
+			F->r(&Group->Transform, sizeof(Fmatrix));
 			Group->Slots.resize(F->r_u32());
 			for (auto& Elem : Group->Slots)
 			{

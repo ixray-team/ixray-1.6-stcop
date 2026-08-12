@@ -110,7 +110,7 @@ public:
 	int 	BuildMaterial	(CSurface* surf, int sector_num, bool allow_draft);
 	int 	BuildMaterial	(const char* esh_name, const char* csh_name, const char* tx_name, u32 tx_cnt, int sector_num, bool allow_draft);
 
-	bool ParseInstancedGroupObjects(ObjectList& lst, const char* prefix, bool b_selected_only);
+	bool ParseInstancedGroupObjects(const Fmatrix& GroupTransform, ObjectList& lst, const char* prefix, bool b_selected_only);
     bool	ParseStaticObjects	(ObjectList& lst, const char* prefix, bool b_selected_only);
 
 	int 	CalculateSector		(const Fvector& P, float R);

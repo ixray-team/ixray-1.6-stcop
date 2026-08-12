@@ -116,7 +116,6 @@ void MODEL::build_simple()
 	{
 		auto InstModel = GroupModels[elem.ModelIndex];
 		VERIFY(InstModel->IsBuilt);
-		VERIFY(InstModel->GroupModels.empty());
 		auto InstanceOnLevel = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_INSTANCE);
 		rtcSetGeometryInstancedScene(InstanceOnLevel, InstModel->InstaceScene);
 
@@ -396,7 +395,7 @@ struct cform_frustum_collider final
 	ICF void Prim(ElementID InPrim, const Fmatrix& ToWorldTransform)
 	{
 		VERIFY(InPrim.IsNotPointer);
-		if (InPrim.IsInstance)
+		if (InPrim.Type > (size_t)CDB::Type::Tris)
 		{
 			auto& CurModel = stack->GetCurrentTree();
 			auto& Instances = CurModel.get_instances();
@@ -538,7 +537,7 @@ struct cform_box_collider final
 	ICF void Prim(ElementID InPrim, const Fmatrix& ToWorldTransform)
 	{
 		VERIFY(InPrim.IsNotPointer);
-		if (InPrim.IsInstance)
+		if (InPrim.Type > (size_t)CDB::Type::Tris)
 		{
 			auto& CurModel = stack->GetCurrentTree();
 			auto& Instances = CurModel.get_instances();
@@ -680,7 +679,7 @@ struct cform_obb_collider final
 	ICF void Prim(ElementID prim, const Fmatrix& ToWorldTransform)
 	{
 		VERIFY(prim.IsNotPointer);
-		if (prim.IsInstance)
+		if (prim.Type > (size_t)CDB::Type::Tris)
 		{
 			auto& CurModel = stack->GetCurrentTree();
 			auto& Instances = CurModel.get_instances();
@@ -821,7 +820,7 @@ struct cform_sphere_collider final
 	ICF void Prim(ElementID prim, const Fmatrix& ToWorldTransform)
 	{
 		VERIFY(prim.IsNotPointer);
-		if (prim.IsInstance)
+		if (prim.Type > (size_t)CDB::Type::Tris)
 		{
 			auto& CurModel = stack->GetCurrentTree();
 			auto& Instances = CurModel.get_instances();
@@ -967,7 +966,7 @@ struct cform_custom_collider final
 	void Prim(ElementID prim, const Fmatrix& ToWorldTransform)
 	{
 		VERIFY(prim.IsNotPointer);
-		if(prim.IsInstance)
+		if(prim.Type > (size_t)CDB::Type::Tris)
 		{
 			auto& CurModel = stack->GetCurrentTree();
 			auto& Instances = CurModel.get_instances();
