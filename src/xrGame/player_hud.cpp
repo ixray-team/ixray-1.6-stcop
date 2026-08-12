@@ -701,9 +701,9 @@ void weapon_inertion::Load(const shared_str& section, bool is_16x9)
 	aim_move_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_aim_move_crouch_factor", 1.0f);
 	aim_move_slow_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_aim_move_slow_factor", 1.0f);
 
-	aim_move_slow_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_slow_crouch_factor", 1.0f);
-	aim_move_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_crouch_factor", 1.0f);
-	aim_move_slow_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_slow_factor", 1.0f);
+	move_slow_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_slow_crouch_factor", 1.0f);
+	move_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_crouch_factor", 1.0f);
+	move_slow_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_slow_factor", 1.0f);
 
 	no_other_hud_moving_while_suicide = READ_IF_EXISTS(pSettings, r_bool, section, "no_other_hud_moving_while_suicide", false);
 
