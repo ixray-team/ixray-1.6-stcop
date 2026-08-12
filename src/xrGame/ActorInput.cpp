@@ -372,7 +372,17 @@ void CActor::IR_OnKeyboardRelease(int dik)
 
 		switch (bind)
 		{
-		case kJUMP:		mstate_wishful &= ~mcJump;		break;
+			case kL_STRAFE:
+			case kR_STRAFE:
+				leftStickThreshold.x = 0.0f;
+				break;
+			case kFWD:
+			case kBACK:
+				leftStickThreshold.y = 0.0f;
+				break;
+			case kJUMP:
+				mstate_wishful &= ~mcJump;
+				break;
 		case kSHOW_QUICK_SLOTS:
 		{
 			// Only process if hide quick slots option is enabled
