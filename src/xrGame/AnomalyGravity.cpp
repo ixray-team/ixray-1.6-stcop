@@ -159,41 +159,36 @@ void TAnomalyGravity::SetForce(CGameObject* obj, Fvector dir, float value, float
 	{
 		if (CPhysicsShell* shell = shellHolder->PPhysicsShell())
 		{
-			float dt = Device.fTimeDelta;
-
-			if (XFORM().c.distance_to_sqr(obj->Position()) <= m_gravity_radius * m_gravity_radius)
+			if (!shell->isActive())
 			{
-				shell->Deactivate();
-				shell->set_ApplyByGravity(false);
-
-				dir.normalize_safe();
-				obj->Position().mad(dir, value * dt);
-
-				Fvector cur_dir;
-				cur_dir.set(obj->XFORM().k).normalize_safe();
-
-				float step = 1.f - expf(-rotationSpeed * dt);
-				clamp(step, 0.f, 1.f);
-
-				Fvector interpolated;
-				interpolated.lerp(cur_dir, dir, step);
-				interpolated.normalize_safe();
-
-				obj->XFORM().SetDirection(interpolated);
-
-				float rot = obj->XFORM().GetRotation();
-				rot += rollSpeed * dt;
-				obj->XFORM().SetRotation(rollSpeed * dt);
+				return;
 			}
-			else
+
+			// за пределами радиуса вихря — не управляем объектом, физика сама всё решит
+			if (XFORM().c.distance_to_sqr(obj->Position()) > m_gravity_radius * m_gravity_radius)
 			{
-				shell->Activate();
-				shell->set_ApplyByGravity(true);
+				return;
 			}
+
+			dir.normalize_safe();
+
+			// линейная скорость к орбитальной точке (цель сама движется => объект закручивается)
+			Fvector vel = dir;
+			vel.mul(value);
+			shell->set_LinearVel(vel);
+
+			// угловая скорость: разворачиваем "вперёд" объекта по направлению движения + крен
+			Fvector cur_dir;
+			cur_dir.set(obj->XFORM().k).normalize_safe();
+
+			Fvector ang_vel;
+			ang_vel.crossproduct(cur_dir, dir);
+			ang_vel.mul(rotationSpeed);
+			ang_vel.add(dir * rollSpeed);
+			shell->set_AngularVel(ang_vel);
 		}
 	}
 }
-
 
 void TAnomalyGravity::save(NET_Packet& output_packet)
 {
