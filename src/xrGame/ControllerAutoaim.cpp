@@ -70,8 +70,10 @@ bool CAutoAim::auto_aim_pick_target(CActor* pActor, CActorMemory* pMem, CEntityA
 
 		// Check distance
 		float distance = pAlive->Position().distance_to(pActor->Position());
-		clamp(distance, distA, distC);
-
+		if (distance >= distC)
+		{
+			continue;
+		}
 		// Check angle (camera direction, and direction from camera pos to the target's head)
 		CCameraBase* pCam = pActor->cam_Active();
 		Fvector camDirF = pCam->Direction();
