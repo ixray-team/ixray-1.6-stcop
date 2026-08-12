@@ -3,6 +3,7 @@
 #include "CustomTools/UIPostProcess.h"
 #include "../xrEUI/xrUITheme.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
+#include "../../xrEngine/IGame_Persistent.h"
 
 #include "IconsFontAwesome6.h"
 
@@ -106,6 +107,7 @@ void UIMainMenuForm::Draw()
 			ImGui::Separator();
 
 			DrawMenuItemI("Import...", ICON_FA_FILE_IMPORT, COMMAND_IMPORT);
+			DrawMenuItemI("Import OMF...", ICON_FA_FILE_IMPORT, COMMAND_IMPORT_OMF);
 			ImGui::Separator();
 
 			DrawMenuItem("Optimize Motions", COMMAND_OPTIMIZE_MOTIONS);
@@ -182,30 +184,61 @@ void UIMainMenuForm::Draw()
 		if (ImGui::BeginMenu("Options")) {
 			if (ImGui::BeginMenu("Render"))
 			{
+				if (ImGui::BeginMenuI("Environment", ICON_FA_CLOUD_SUN))
+				{
+					DrawMenuItem("Properties", COMMAND_WEATHER_PROPERTIES);
+
+					bool selected = !psDeviceFlags.test(rsEnvironment);
+					if (ImGui::MenuItem("None", "", &selected))
+					{
+						psDeviceFlags.set(rsEnvironment, false);
+						UI->RedrawScene();
+					}
+
+					ImGui::Separator();
+					auto& WeatherCycles = g_pGamePersistent->Environment().WeatherCycles;
+					for (auto& Cycle : WeatherCycles)
+					{
+						selected = psDeviceFlags.test(rsEnvironment) && Cycle.first == g_pGamePersistent->Environment().CurrentCycleName;
+
+						if (ImGui::MenuItem(Cycle.first.c_str(), "", &selected))
+						{
+							psDeviceFlags.set(rsEnvironment, true);
+							g_pGamePersistent->Environment().SetWeather(Cycle.first.c_str(), true);
+							UI->RedrawScene();
+						}
+
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						}
+					}
+					ImGui::EndMenu();
+				}
 				if (ImGui::BeginMenu("Quality"))
 				{
-					static bool selected[4] = { false,false,true,false };
-					if (ImGui::MenuItem("25%", "", &selected[0]))
+					static bool Selected[4] = { false,false,true,false };
+					if (ImGui::MenuItem("25%", "", &Selected[0]))
 					{
-						selected[1] = selected[2] = selected[3] = false;
+						Selected[1] = Selected[2] = Selected[3] = false;
 						UI->SetRenderQuality(1 / 4.f);
 						UI->RedrawScene();
 					}
-					if (ImGui::MenuItem("50%", "", &selected[1]))
+					if (ImGui::MenuItem("50%", "", &Selected[1]))
 					{
-						selected[0] = selected[2] = selected[3] = false;
+						Selected[0] = Selected[2] = Selected[3] = false;
 						UI->SetRenderQuality(1 / 2.f);
 						UI->RedrawScene();
 					}
-					if (ImGui::MenuItem("100%", "", &selected[2]))
+					if (ImGui::MenuItem("100%", "", &Selected[2]))
 					{
-						selected[1] = selected[0] = selected[3] = false;
+						Selected[1] = Selected[0] = Selected[3] = false;
 						UI->SetRenderQuality(1.f);
 						UI->RedrawScene();
 					}
-					if (ImGui::MenuItem("200%", "", &selected[3]))
+					if (ImGui::MenuItem("200%", "", &Selected[3]))
 					{
-						selected[1] = selected[2] = selected[0] = false;
+						Selected[1] = Selected[2] = Selected[0] = false;
 						UI->SetRenderQuality(2.f);
 						UI->RedrawScene();
 					}
@@ -213,13 +246,13 @@ void UIMainMenuForm::Draw()
 				}
 				if (ImGui::BeginMenu("Fill Mode"))
 				{
-					bool selected[3] = { false ,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
-					if (ImGui::MenuItem("Wireframe", "", &selected[1]))
+					bool Selected[3] = { false ,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
+					if (ImGui::MenuItem("Wireframe", "", &Selected[1]))
 					{
 						EDevice->dwFillMode = D3DFILL_WIREFRAME;
 						UI->RedrawScene();
 					}
-					if (ImGui::MenuItem("Solid", "", &selected[2]))
+					if (ImGui::MenuItem("Solid", "", &Selected[2]))
 					{
 						EDevice->dwFillMode = D3DFILL_SOLID;
 						UI->RedrawScene();
@@ -227,10 +260,10 @@ void UIMainMenuForm::Draw()
 					ImGui::EndMenu();
 				}
 				{
-					bool selected = psDeviceFlags.test(rsEdgedFaces);
-					if (ImGui::MenuItem("Edged Faces", "", &selected))
+					bool Selected = psDeviceFlags.test(rsEdgedFaces);
+					if (ImGui::MenuItem("Edged Faces", "", &Selected))
 					{
-						psDeviceFlags.set(rsEdgedFaces, selected);
+						psDeviceFlags.set(rsEdgedFaces, Selected);
 						UI->RedrawScene();
 					}
 				}
