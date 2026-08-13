@@ -162,50 +162,35 @@ void UIObjectListItem::DrawRoot()
 	float ScrollPos = -1;
 	size_t SelectedObjectsCounter = 0;
 
-	//if (strlen(UIObjectList::Form->m_Filter) != 0)
+	// Cheap pre-scan (no ImGui calls): count selected objects and remember the
+	// first selected index so we can keep it visible through the clipper.
+	int FocusIndex = -1;
+	for (size_t i = 0; i < Items.size(); i++)
 	{
-		for (UITreeItem* Item : Items)
+		UIObjectListItem* RItem = (UIObjectListItem*)Items[i];
+		if (RItem->Object && RItem->Object->Selected())
 		{
-			UIObjectListItem* CastedItem = ((UIObjectListItem*)Item);
-
-			float NewScrollPos = CastedItem->Draw();
-
-			if (NewScrollPos != -1)
-			{
-				ScrollPos = NewScrollPos;
-			}
-
-			if (CastedItem->Object->Selected())
-			{
-				SelectedObjectsCounter++;
-			}
+			SelectedObjectsCounter++;
+			if (FocusIndex < 0)
+				FocusIndex = (int)i;
 		}
 	}
-	//else
-	//{
-	//	ImGuiListClipper clipper;
-	//	clipper.Begin((int)Items.size());
-	//
-	//	while (clipper.Step())
-	//	{
-	//		for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
-	//		{
-	//			UIObjectListItem* CastedItem = (UIObjectListItem*)Items[i];
-	//
-	//			float NewScrollPos = CastedItem->Draw();
-	//
-	//			if (NewScrollPos != -1)
-	//			{
-	//				ScrollPos = NewScrollPos;
-	//			}
-	//
-	//			if (CastedItem->Object->Selected())
-	//			{
-	//				SelectedObjectsCounter++;
-	//			}
-	//		}
-	//	}
-	//}
+
+	ImGuiListClipper clipper;
+	clipper.Begin((int)Items.size());
+	if (FocusIndex >= 0 && SelectedObjectsCounter < 2)
+		clipper.IncludeItemByIndex(FocusIndex);
+
+	while (clipper.Step())
+	{
+		for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
+		{
+			UIObjectListItem* CastedItem = (UIObjectListItem*)Items[i];
+			float NewScrollPos = CastedItem->Draw();
+			if (NewScrollPos != -1)
+				ScrollPos = NewScrollPos;
+		}
+	}
 
 	if (ScrollPos > 0 && SelectedObjectsCounter < 2)
 	{

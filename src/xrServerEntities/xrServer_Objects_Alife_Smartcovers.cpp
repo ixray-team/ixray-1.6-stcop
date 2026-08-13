@@ -597,10 +597,6 @@ void CSE_SmartCover::on_render	(CDUInterface* du, ISE_AbstractLEOwner* owner_, b
 
 		du->OutText(pos, H.string_identifier.c_str(), color_rgba(255,255,255,255));
 
-		//du->DrawBox(H.point_position,Fvector().set(0.2f,0.2f,0.2f),true,true,color_rgba(255,0,0,80),color_rgba(0,255,0,255));
-		//du->DrawFlag(H.point_position, 0, 1.0f, 1, 1, color_rgba(0,255,0,255), false);
-		//du->DrawCylinder(Fidentity, pos, Fvector().set(0.f, 1.f, 0.f), 1.f, .05f, color_rgba(0,255,0,255), color_rgba(0,255,0,255), true, false);
-
 		Fvector dir = H.fov_direction;
 		parent.transform_dir(dir);
 		Fvector up = parent.j;
