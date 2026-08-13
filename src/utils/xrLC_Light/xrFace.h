@@ -11,8 +11,7 @@
 struct DataFace;
 class  CLightmap;
 
-struct  DataVertex;
-typedef	Tvertex< DataVertex> Vertex;
+typedef	Tvertex< base_Vertex> Vertex;
 
 typedef std::pair<Vertex*, Vertex *>	PAIR_VV;
 typedef xr_map<Vertex*,Vertex*>			map_v2v;	// vertex to vertex translation
@@ -20,11 +19,11 @@ typedef map_v2v::iterator				map_v2v_it;
 
 template <typename DataVertexType>
 struct Tface;
-typedef	Tface<DataVertex> Face;
+typedef	Tface<base_Vertex> Face;
 
 template <typename DataVertexType>
 struct Tvertex;
-typedef	Tvertex<DataVertex>	Vertex;
+typedef	Tvertex<base_Vertex>	Vertex;
 
 typedef xr_vector<Vertex*>			vecVertex;
 typedef vecVertex::iterator			vecVertexIt;
@@ -40,7 +39,7 @@ typedef vec2Face::iterator			splitIt;
 typedef vecFace						vecAdj;
 typedef vecAdj::iterator			vecAdjIt;
 
-struct XRLC_LIGHT_API DataVertex :	public base_Vertex
+/*struct XRLC_LIGHT_API DataVertex :	public base_Vertex
 {
 public:
 	typedef DataFace DataFaceType;
@@ -49,9 +48,9 @@ public:
 
 	DataVertex() {};
 	virtual ~DataVertex() {};
-};
+};*/
 
-struct XRLC_LIGHT_API DataFace	: public base_Face
+/*struct XRLC_LIGHT_API DataFace	: public base_Face
 {
 public:
 
@@ -71,7 +70,7 @@ public:
 
 	DataFace(){};
 	virtual ~DataFace(){};
-};
+};*/
 
 class Material;
 class Edge;
@@ -87,10 +86,10 @@ extern "C" XRLC_LIGHT_API void destroy_vertex(Vertex* &v, bool unregister);
 
 void destroy_face(Face*& v, bool unregister);
 							
-IC bool DataVertex::similar(Vertex& V, float eps)
+/*IC bool Vertex::similar(Vertex& V, float eps)
 {
 	return P.similar(V.P, eps);
-}
+}*/
 
 
 void GetBarycentric(Face* F, Fvector& wP, Fvector& wN, Fvector& B);

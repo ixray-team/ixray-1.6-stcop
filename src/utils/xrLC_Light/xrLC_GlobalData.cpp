@@ -105,22 +105,66 @@ void mu_mesh_clear();
 // create - destroy 
 Face* xrLC_GlobalData::create_face()
 {
-	return new Face();
+	auto NewFace = new Face();
+	NewFace->pDeflector = nullptr;
+	NewFace->flags.bSplitted = false;
+	inlc_global_data()->g_faces().push_back(NewFace);
+	NewFace->sm_group = u32(-1);
+	NewFace->lmap_layer = nullptr;
+	return NewFace;
 }
 
 void xrLC_GlobalData::destroy_face(Face*& f)
 {
+	if (g_bUnregister) 
+	{
+		vecFaceIt F = std::ranges::find(inlc_global_data()->g_faces(), f);
+		if (F!=inlc_global_data()->g_faces().end())
+		{
+			vecFace& faces = inlc_global_data()->g_faces();
+			std::swap( *F, *( faces.end()-1 ) );
+			faces.pop_back();
+		}
+		else clMsg("* ERROR: Unregistered FACE destroyed");
+	}
+
+	// Remove 'this' from adjacency info in vertices
+	for (int i=0; i<3; ++i)
+	{
+		f->v[i]->prep_remove(f);
+	}
+	f->lmap_layer = nullptr;
 	xr_delete(f);
 }
 
 Vertex* xrLC_GlobalData::create_vertex()
 {
-	return new Vertex();
+	auto NewVertex = new Vertex();
+	R_ASSERT(inlc_global_data());
+	if(inlc_global_data()->vert_construct_register())
+	{
+		inlc_global_data()->g_vertices().push_back(NewVertex);
+	}
+	return NewVertex;
 }
 
 void xrLC_GlobalData::destroy_vertex(Vertex*& v)
 {
-	return xr_delete(v);
+	if (g_bUnregister) 
+	{
+		auto F = std::find(inlc_global_data()->g_vertices().begin(), inlc_global_data()->g_vertices().end(), v);
+		if (F!=inlc_global_data()->g_vertices().end())
+		{
+			auto& verts = inlc_global_data()->g_vertices();
+			std::swap( *F, *( verts.end()-1 ) );
+			verts.pop_back();
+		}
+		else clMsg("* ERROR: Unregistered VERTEX destroyed");
+	}
+
+	v->m_adjacents.clear();
+	v->m_adjacents.shrink_to_fit();
+	xr_delete(v);
 }
 
 void xrLC_GlobalData::clear() 

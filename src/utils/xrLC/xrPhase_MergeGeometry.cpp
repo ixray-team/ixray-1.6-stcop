@@ -372,7 +372,7 @@ void CBuild::xrPhase_MergeGeometry()
 	}
 
 	// Проверяем на INFINITY
-	validate_splits();
+	validate_splits(g_XSplit);
 
 	AditionalData("Splits Merged [%u]", g_XSplit.size());
 }

@@ -38,7 +38,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 	DB.ray_options				(0);
 
 	// MT-Safe 
-	xr_vector<_vertex> SafeVertices(m_vertices.size());
+	xr_vector<Vertex> SafeVertices(m_vertices.size());
  	for (size_t Iter = 0; Iter < m_vertices.size(); Iter++)
  		SafeVertices[Iter] = *m_vertices[Iter];
 	
@@ -48,7 +48,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 	// Perform lighting
 	for (u32 I = 0; I < SafeVertices.size(); I++)
 	{
-		_vertex&	V			= SafeVertices[I];
+		auto&	V			= SafeVertices[I];
 		base_color_c			vC;
 
 		Fvector					vP, vN;
@@ -72,7 +72,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		float		v_trans = 0.f;
 		for (u32 f = 0; f < V.m_adjacents.size(); f++)
 		{
-			_face* F = V.m_adjacents[f];
+			auto F = V.m_adjacents[f];
 			v_amb += F->Shader().vert_ambient;
 			v_trans += F->Shader().vert_translucency;
 		}
@@ -108,7 +108,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		for (; it!=it2; it++)
 		{
 			v_vertices&	VL		= it->second;
-			_vertex* Front		= VL.front();
+			auto Front		= VL.front();
 			R_ASSERT			(Front);
 			if (Front->P.similar(V.P,eps))
 			{

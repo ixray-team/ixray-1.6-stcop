@@ -75,7 +75,7 @@ void xrMU_Reference::export_cform_game(CDB::CollectorPacked& CL)
 	u32	Offset			= (u32)CL.getTS();
 	for (xrMU_Model::v_faces_it F = cfFaces->begin(); F!=cfFaces->end(); F++)
 	{
-		_face*	T = *F;
+		auto	T = *F;
 		
 		// xform
 		Fvector					P[3];

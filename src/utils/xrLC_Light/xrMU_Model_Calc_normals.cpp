@@ -6,9 +6,9 @@
 
 #include "../../xrCore/xrPool.h"
 
-poolSS<_vertex,8*1024>	&mu_vertices_pool();
+poolSS<Vertex,8*1024>	&mu_vertices_pool();
 
-void destroy_vertex( _vertex* &v, bool unregister )
+void destroy_vertex_mu( Vertex* &v, bool unregister )
 {
 	mu_vertices_pool().destroy(v);
 	v = nullptr;
@@ -16,5 +16,5 @@ void destroy_vertex( _vertex* &v, bool unregister )
 
 void calc_normals( xrMU_Model &model )
 {
-	calculate_normals<_vertex>::calc_normals( model.m_vertices, model.m_faces );
+	calculate_normals<Vertex, true>::calc_normals( model.m_vertices, model.m_faces );
 }

@@ -33,13 +33,13 @@ struct _counter
 };
 
 
-void	CBuild::xrPhase_ResolveMaterials()
+void	CBuild::xrPhase_ResolveMaterials(const vecFace& faces, vec2Face& Split)
 {
 	CTimer  tProcecss; tProcecss.Start();
 	
  	// Count number of materials
  	// Calculating materials
-	auto& faces = lc_global_data()->g_faces();
+	//auto& faces = lc_global_data()->g_faces();
 	std::unordered_map<_mat_key, size_t> matToIndex;
  
 	// Локальные хранилища для потоков -> потом сведём в общий map
@@ -94,27 +94,31 @@ void	CBuild::xrPhase_ResolveMaterials()
 		});
  
 	// Переносим в итоговый g_XSplit
-	g_XSplit.reserve(count.size());
-	g_XSplit.resize(count.size());
+	Split.reserve(count.size());
+	Split.resize(count.size());
 
-	for (size_t i = 0; i < g_XSplit.size(); ++i)
+	for (size_t i = 0; i < Split.size(); ++i)
 	{
 		// vecFace имеет конструктор от итераторов
-		g_XSplit[i] = new vecFace(bins[i].begin(), bins[i].end());
+		Split[i] = new vecFace(bins[i].begin(), bins[i].end());
 	}
  
 	// Старый код
  	{
-		for (int SP = 0; SP<int(g_XSplit.size()); SP++)
+		for (int SP = 0; SP<int(Split.size()); SP++)
 		{
-			if (g_XSplit[SP]->empty())
-				xr_delete(g_XSplit[SP]);
+			if (Split[SP]->empty())
+			{
+				xr_delete(Split[SP]);
+			}
 		}
-		g_XSplit.erase(std::remove(g_XSplit.begin(),g_XSplit.end(),nullptr),g_XSplit.end());
+		std::erase(Split,nullptr);
 	}
    
  	for (auto F : g_XSplit)
+ 	{
  		Detach(F);
+ 	}
  
 	//clMsg				("Material %u subdivisions. %u ms", g_XSplit.size(), tProcecss.GetElapsed_ms());
 

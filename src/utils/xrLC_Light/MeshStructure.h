@@ -12,10 +12,6 @@ struct MESHSTRUCTURE_API Tface: public DataVertexType::DataFaceType
 	typedef	Tvertex<DataVertexType>	type_vertex;
 	typedef	Tface<DataVertexType>	type_face;
 	type_vertex* v[3] = {};
-
-public:
-				Tface	();
-	virtual		~Tface	();
  
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	void	Verify		();
@@ -136,7 +132,7 @@ public:
 		double mag		= dN.magnitude	();
 		if (mag<dbl_zero)
 		{
-			Failure		();
+			Failure();
 			Dvector Nabs;
 			Nabs.abs	(dN);
 
@@ -186,10 +182,6 @@ struct MESHSTRUCTURE_API Tvertex: public DataVertexType
  	typedef xr_vector<type_vertex*>			 v_vertices;
 	typedef typename v_vertices::iterator	v_vertices_it;
 
-/* Constructor */
-	Tvertex();
- 	~Tvertex();
-
 /*	FUNCTIONS MAIN */
 	Tvertex* CreateCopy_NOADJ(v_vertices& vertises_storage) const;
 
@@ -228,13 +220,20 @@ struct MESHSTRUCTURE_API Tvertex: public DataVertexType
 
 };
  
-template<typename typeVertex>
+// TODO: Почистить эту гомосятину
+template<typename typeVertex, bool ForMU>
 IC  void   _destroy_vertex( typeVertex* &v, bool unregister )
 {
-	destroy_vertex( v, unregister );
+	if constexpr (ForMU)
+	{
+		destroy_vertex_mu( v, unregister );
+	} else
+	{
+		destroy_vertex( v, unregister );
+	}
 }
   
-template<typename typeVertex>
+template<typename typeVertex, bool ForMU>
 IC void isolate_vertices(bool bProgress, xr_vector<typeVertex*> &vertices )
 {
    	const u32 verts_old		= (u32)vertices.size();
@@ -244,7 +243,7 @@ IC void isolate_vertices(bool bProgress, xr_vector<typeVertex*> &vertices )
 	{
  		if (vertices[it] && vertices[it]->m_adjacents.empty())
 		{
-			_destroy_vertex(vertices[it], false);
+			_destroy_vertex<typeVertex, ForMU>(vertices[it], false);
 			vRemoveReal++;
 		}
 	}

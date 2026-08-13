@@ -8,13 +8,13 @@
 
 #define	TRY(a) try { a; } catch (...) { clMsg("* E: %s", #a); }
 
-void CBuild::validate_splits			()
+void CBuild::validate_splits(const vec2Face& Split)
 {
 	u32 Errors = 0;
 
-	for (splitIt it=g_XSplit.begin(); it!=g_XSplit.end(); it++)
+	for (auto it=Split.begin(); it!=Split.end(); it++)
 	{
-		u32 MODEL_ID		= u32(it-g_XSplit.begin())	;
+		u32 MODEL_ID		= u32(it-Split.begin())	;
 		if ((*it)->size() > c_SS_HighVertLimit*2)		{
 			clMsg	("! ERROR: subdiv #%d has more than %d faces (%d)",MODEL_ID,2*c_SS_HighVertLimit,(*it)->size());
 			Errors++;
@@ -84,7 +84,7 @@ void CBuild::Flex2OGF()
 	float p_total	= 0;
 	float p_cost	= 1/float(g_XSplit.size());
 
-	validate_splits	();
+	validate_splits(g_XSplit);
 
 	g_tree.clear	();
 	g_tree.reserve	(4096);

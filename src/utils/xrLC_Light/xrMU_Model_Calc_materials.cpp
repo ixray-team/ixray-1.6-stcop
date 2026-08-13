@@ -3,7 +3,7 @@
 #include "../Shader_xrLC.h"
 #include "utils/xrLC/Build.h"
 
-bool	cmp_face_material		(_face* f1, _face* f2)
+bool	cmp_face_material		(Face* f1, Face* f2)
 {
 	if (f1->dwMaterial != f2->dwMaterial)
 	    return f1->dwMaterial < f2->dwMaterial;
@@ -43,9 +43,9 @@ void xrMU_Model::calc_materials	()
 	current.start		= 0;
 	current.count		= 1;
 
-	xr_set<_vertex*> unique_verts;
+	xr_set<Vertex*> unique_verts;
 
-    auto face_new_vert_count = [&](const _face* F) -> u32
+    auto face_new_vert_count = [&](const Face* F) -> u32
     {
         u32 count = (u32)unique_verts.size();
         if (unique_verts.find(F->v[0]) == unique_verts.end())
@@ -60,7 +60,7 @@ void xrMU_Model::calc_materials	()
         return count;
     };
 
-    auto add_face_verts = [&](const _face* F)
+    auto add_face_verts = [&](const Face* F)
     {
         unique_verts.insert(F->v[0]);
         unique_verts.insert(F->v[1]);
@@ -72,7 +72,7 @@ void xrMU_Model::calc_materials	()
 
 	for (u32 it=1; it<temp_vector.size(); it++)
 	{
-		_face* F = temp_vector[it];
+		auto F = temp_vector[it];
 		if ((current.material != F->dwMaterial) || (face_new_vert_count(F) > MAX_SUBDIV_VERTS))
 		{
 			// end of strip 
@@ -92,7 +92,7 @@ void xrMU_Model::calc_materials	()
 	// remove non-visible materials
 	for (s32 it=0; it<s32(m_subdivs.size()); it++)
 	{
-		_face*		first	= temp_vector[m_subdivs[it].start];
+		auto first = temp_vector[m_subdivs[it].start];
 		if (first->Shader().flags.bRendering)	continue;
 
 		m_subdivs.erase	(m_subdivs.begin()+it);

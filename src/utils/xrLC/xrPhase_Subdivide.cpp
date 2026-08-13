@@ -182,5 +182,5 @@ void CBuild::xrPhase_Subdivide()
 		s2.clear();
 	}
 	clMsg("%d subdivisions.", g_XSplit.size());
-	validate_splits();
+	validate_splits(g_XSplit);
 }

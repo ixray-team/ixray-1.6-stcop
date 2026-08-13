@@ -3,7 +3,7 @@
 #include "itterate_adjacents_static.h"
 #include "../../Editors/Public/itterate_adjacents.h"
 
-template <typename typeVertex>
+template <typename typeVertex, bool ForMU>
 class calculate_normals
 {
 
@@ -81,7 +81,7 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 	Progress		( 1.f );
 
 	// Destroy unused vertices
- 	isolate_vertices<type_vertex>( false, vertices);
+ 	isolate_vertices<type_vertex, ForMU>( false, vertices);
 	  
 	// Recalculate normals
 	for ( vecVertexIt it=vertices.begin(); it!=vertices.end(); it++ )

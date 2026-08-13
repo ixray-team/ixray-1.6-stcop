@@ -96,7 +96,7 @@ public:
 
 	void	CalcNormals				();
 	void	MU_ModelsCalculateNormals();
-	void	xrPhase_TangentBasis	();
+	void	xrPhase_TangentBasis	(vecVertex& Verts, vecFace& Faces);
 
 	void	BuildCForm				();
 	void BuildCTree();
@@ -104,7 +104,7 @@ public:
 	 
 		
 	void	IsolateVertices			(bool bProgress);
-	void	xrPhase_ResolveMaterials();
+	void	xrPhase_ResolveMaterials(const vecFace& faces, vec2Face& Split);
 	void	xrPhase_UVmap			();
 	void	xrPhase_Subdivide		();
 	void	ImplicitLighting		();
@@ -130,7 +130,7 @@ public:
 	void	SaveTREE				(IWriter &fs);
 	void	SaveSectors				(IWriter &fs);
 
-	void	validate_splits			();
+	void	validate_splits			(const vec2Face& Split);
 	bool	IsOGFContainersEmpty	();
 	void	CheckBeforeSave			( u32 stage );
 	void	TempSave				( u32 stage );
@@ -145,3 +145,4 @@ public:
 
 extern CBuild*		pBuild;			;
 extern vec2Face		g_XSplit		;
+extern xr_hash_map<xrMU_Model*, vec2Face> g_XSplitPerMU;

@@ -2,8 +2,8 @@
 #include "xrMU_Model.h"
 //#include "build.h"
 #include "../../xrCore/xrPool.h"
-poolSS<_face,8*1024>	&mu_faces_pool();
-poolSS<_vertex,8*1024>	&mu_vertices_pool();
+poolSS<Face,8*1024>	&mu_faces_pool();
+poolSS<Vertex,8*1024>	&mu_vertices_pool();
  
 void xrMU_Model::Load	( IReader& F, u32 version )
 {
@@ -47,8 +47,8 @@ void xrMU_Model::Load	( IReader& F, u32 version )
 	}
 	for (u32 f_it=0; f_it<b_faces.size(); f_it++)
 	{
-		b_face&	r_face		= b_faces[f_it];
-		_face *face = create_face		(m_vertices[r_face.v[0]],m_vertices[r_face.v[1]],m_vertices[r_face.v[2]],r_face);
+		b_face&	r_face = b_faces[f_it];
+		auto face = create_face(m_vertices[r_face.v[0]],m_vertices[r_face.v[1]],m_vertices[r_face.v[2]],r_face);
 		face->sm_group = sm_groups[f_it];
 	}
 
@@ -115,9 +115,9 @@ void xrMU_Model::Load_Embree(IReader& F, xr_vector<FaceDataEmbree>& faces)
 	clMsg("* Loading model: '%s' - v(%d), f(%d)", *m_name, b_vertices.size(), b_faces.size());
 }
 
-_face* xrMU_Model::create_face(_vertex* v0, _vertex* v1, _vertex* v2, b_face& B)
+Face* xrMU_Model::create_face(Vertex* v0, Vertex* v1, Vertex* v2, b_face& B)
 {
-	_face*	_F			= mu_faces_pool().create();
+	auto _F = mu_faces_pool().create();
 	_F->dwMaterial		= u16(B.dwMaterial);
 	_F->dwMaterialGame	= B.dwMaterialGame;
 	R_ASSERT			(B.dwMaterialGame<65536);
@@ -129,9 +129,9 @@ _face* xrMU_Model::create_face(_vertex* v0, _vertex* v1, _vertex* v2, b_face& B)
 	_F->SetVertex		(2,v2);
 
 	// tc
-	_F->tc[0]			= B.t[0];
-	_F->tc[1]			= B.t[1];
-	_F->tc[2]			= B.t[2];
+	_F->tc[0].uv[0]			= B.t[0];
+	_F->tc[0].uv[1]			= B.t[1];
+	_F->tc[0].uv[2]			= B.t[2];
 	_F->CalcNormal		();
 
 	// register
@@ -139,21 +139,21 @@ _face* xrMU_Model::create_face(_vertex* v0, _vertex* v1, _vertex* v2, b_face& B)
 	return _F;
 }
 
-_face* xrMU_Model::load_create_face(Fvector& P1, Fvector& P2, Fvector& P3, b_face& B)
+Face* xrMU_Model::load_create_face(Fvector& P1, Fvector& P2, Fvector& P3, b_face& B)
 {
 	return create_face(load_create_vertex(P1),load_create_vertex(P2),load_create_vertex(P3),B);
 }
 
-_vertex* xrMU_Model::create_vertex(Fvector& P)
+Vertex* xrMU_Model::create_vertex(Fvector& P)
 {
-	_vertex*	_V		= mu_vertices_pool().create();
-	_V->P				= P;
-	_V->N.set			(0,0,0);
+	auto _V = mu_vertices_pool().create();
+	_V->P = P;
+	_V->N.set(0,0,0);
 	m_vertices.push_back(_V);
-	return				_V;
+	return _V;
 }
 
-_vertex* xrMU_Model::load_create_vertex(Fvector& P)
+Vertex* xrMU_Model::load_create_vertex(Fvector& P)
 {
 	// find similar
 	for (u32 it=0; it<m_vertices.size(); it++)

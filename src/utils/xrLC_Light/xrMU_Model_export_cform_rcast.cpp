@@ -30,7 +30,7 @@ void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataEmbree>& faces, Fmatri
 {
 	for (v_faces_it it = m_faces.begin(); it != m_faces.end(); it++)
 	{
-		_face* F = (*it);
+		auto F = (*it);
 		const Shader_xrLC& SH = F->Shader();
 		if (!SH.flags.bLIGHT_CastShadow) continue;
 

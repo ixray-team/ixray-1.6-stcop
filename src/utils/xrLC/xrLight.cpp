@@ -10,6 +10,7 @@
 #include "../../xrCore/xrSyncronize.h"
 #include "../xrLC_Light/mu_model_light.h"
 #include "../xrLC_Light/light_point.h"
+#include "utils/xrLC_Light/xrMU_Model.h"
 
 #ifdef LCCUDA_BUILD
 #include "../xrLC_Light/CUDA/CUDARayCast.h"
@@ -49,7 +50,7 @@ void	CBuild::LMaps					()
 					D->LightGPU();
 					AditionalData("*** [LMAPS] ID [%u/%u]", Index, deflectors.size());
 				}
-				GPUTaskinSystem.LightPointPacked_run_tasks(); // Завершаем задачи !
+				GPUTaskinSystem.LightPointPacked_run_tasks(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ !
 			},
 			gCompilerMode.ThreadsPerWork );
 		GPUTaskinSystem.RestartALL();
@@ -122,11 +123,25 @@ void CBuild::Light()
 	{
 		CalcNormals();
  
-  		xrPhase_TangentBasis();
+  		xrPhase_TangentBasis(lc_global_data()->g_vertices(), lc_global_data()->g_faces());
+		if (gCompilerMode.LC_MULightmaps)
+		{
+			for (auto& elem : mu_models())
+			{
+  				xrPhase_TangentBasis(elem->m_vertices, elem->m_faces);
+			}
+		}
 
 		Phase("Building UV...");
 		//****************************************** Resolve materials
-		xrPhase_ResolveMaterials();
+		xrPhase_ResolveMaterials(lc_global_data()->g_faces(), g_XSplit);
+		if (gCompilerMode.LC_MULightmaps)
+		{
+			for (auto elem : mu_models())
+			{
+				xrPhase_ResolveMaterials(elem->m_faces, g_XSplitPerMU[elem]);
+			}
+		}
 		IsolateVertices(true);
 
 		//****************************************** UV mapping
@@ -145,7 +160,7 @@ void CBuild::Light()
 	BuildingUV();
 	InitModel();
   
-	//****************************************** AdaptiveHT расщет
+	//****************************************** AdaptiveHT пїЅпїЅпїЅпїЅпїЅпїЅ
 	xrPhase_AdaptiveHT_calculate();		
 	
 	//****************************************** Implicit

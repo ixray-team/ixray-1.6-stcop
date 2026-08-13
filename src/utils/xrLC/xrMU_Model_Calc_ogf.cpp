@@ -6,22 +6,22 @@
 
 #define	TRY(a) try { a; } catch (...) { clMsg("* E: %s", #a); }
 
-void MModel_face2OGF_Vertices( const _face &FF, OGF_Vertex	V[3], const xrMU_Model &model )
+void MModel_face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3], const xrMU_Model &model )
 {
 	for (u32 k=0; k<3; k++)
 	{
-		_vertex*	_V		= FF.v[k];	
-		u32 id			= (u32)(std::find(model.m_vertices.begin(),model.m_vertices.end(),_V)-model.m_vertices.begin());
-		V[k].P			= _V->P;
-		V[k].N			= _V->N; 
-		V[k].Color		= model.color[id];
-		V[k].T.set		(0,0,0);	//.
-		V[k].B.set		(0,0,0);	//.
-		V[k].UV.push_back(FF.tc[k]);
+		auto _V = FF.v[k];	
+		u32 id = (u32)(std::find(model.m_vertices.begin(),model.m_vertices.end(),_V)-model.m_vertices.begin());
+		V[k].P = _V->P;
+		V[k].N = _V->N; 
+		V[k].Color = model.color[id];
+		V[k].T.set(0,0,0);	//.
+		V[k].B.set(0,0,0);	//.
+		V[k].UV.push_back(FF.tc[0].uv[k]);
 	}
 }
 
-void OGF_AddFace( OGF &ogf, const _face &FF, const xrMU_Model& model )
+void OGF_AddFace( OGF &ogf, const Face &FF, const xrMU_Model& model )
 {
 	OGF_Vertex		V[3];
 
@@ -61,7 +61,7 @@ void calc_ogf( xrMU_Model &	mu_model )
 				xrMU_Model::v_faces_it	_end	= _beg + it->count;
 				for (xrMU_Model::v_faces_it Fit =_beg; Fit!=_end; Fit++)
 				{
-					_face* FF = *Fit;
+					auto FF = *Fit;
 					R_ASSERT(FF);
 					OGF_AddFace( *pOGF, *FF, mu_model ); 
 				}

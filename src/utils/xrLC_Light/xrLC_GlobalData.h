@@ -68,11 +68,11 @@ public:
 		vecFace&						g_faces()		{ return	_g_faces; }
 		vecDefl& g_deflectors() { return	_g_deflectors; }
 
-		Face*						create_face();
-		void						destroy_face(Face*& f);
+    static Face* create_face();
+    static void destroy_face(Face*& f);
 
-		Vertex*						create_vertex();
-		void						destroy_vertex(Vertex*& f);
+    static Vertex* create_vertex();
+    static void destroy_vertex(Vertex*& f);
 
 		bool										b_r_vertices();
 		bool										vert_construct_register() { return !b_r_vertices(); }

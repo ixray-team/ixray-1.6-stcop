@@ -1,51 +1,17 @@
 #include "stdafx.h"
 #include "mu_model_face.h"
-#include "../../xrCore/xrPool.h"
+#include "xrCore/xrPool.h"
 
 // POOLS  Для чего ?  
 
-static poolSS<_vertex, 8 * 1024> mu_vertices;
-static poolSS<_face,   8 * 1024> mu_faces;
+static poolSS<Vertex, 8 * 1024> mu_vertices;
+static poolSS<Face,   8 * 1024> mu_faces;
 
-poolSS<_vertex,8*1024>	&mu_vertices_pool();
-poolSS<_face,8*1024>	&mu_faces_pool();
-
-template<>
-Tface<data_vertex>::Tface()
-{}
-
-template<>
-Tvertex<data_vertex>::Tvertex()
-{}
-
-template<>
-_vertex* _vertex::CreateCopy_NOADJ(v_vertices& vertises_storage) const
-{
-	_vertex* V = mu_vertices_pool().create();
-	vertises_storage.push_back(V);
-	V->P.set(P);
-	V->N.set(N);
-	V->C = C;
-	return V;
-}
-
-template<>
-Tface<data_vertex>::~Tface()
-{}
-template<>
-Tvertex<data_vertex>::~Tvertex()
-{}
-
-template<>
-void _face::Failure()
-{
-}
-
-poolSS<_vertex,8*1024> &mu_vertices_pool()
+poolSS<Vertex,8*1024> &mu_vertices_pool()
 {
 	return mu_vertices;
 }
-poolSS<_face,8*1024> &mu_faces_pool()
+poolSS<Face,8*1024> &mu_faces_pool()
 {
 	return mu_faces;
 }

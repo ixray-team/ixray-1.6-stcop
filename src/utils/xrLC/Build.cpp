@@ -29,7 +29,8 @@ extern u16 RegisterShader(const char* T);
 // Буферы геометрии
 struct OGF_Base;
 xr_vector<OGF_Base*> g_tree;
-vec2Face			 g_XSplit;
+vec2Face g_XSplit;
+xr_hash_map<xrMU_Model*, vec2Face> g_XSplitPerMU;
 
 void CBuild::CheckBeforeSave(u32 stage)
 {
@@ -37,6 +38,11 @@ void CBuild::CheckBeforeSave(u32 stage)
 	R_ASSERT(b_g_tree_empty);
 	bool b_g_XSplit_empty = g_XSplit.empty();
 	R_ASSERT(b_g_XSplit_empty);
+	if (gCompilerMode.LC_MULightmaps)
+	{
+		bool b_g_XSplitPerMU_empty = g_XSplitPerMU.empty();
+		R_ASSERT(b_g_XSplitPerMU_empty);
+	}
 	bool b_IsOGFContainersEmpty = IsOGFContainersEmpty();
 	R_ASSERT(b_IsOGFContainersEmpty);
 }
@@ -73,9 +79,19 @@ CBuild::~CBuild()
 
 	clMsg("[xrLC_Remove] Removing g_XSplits !");
 	for (auto faces : g_XSplit)
+	{
 		xr_delete(faces);
+	}
 	g_XSplit.clear();
 	g_XSplit.shrink_to_fit();
+	for (auto& [Ptr, Value] : g_XSplitPerMU)
+	{
+		for (auto faces : Value)
+		{
+			xr_delete(faces);
+		}
+	}
+	g_XSplitPerMU.clear();
 
 	Memory.mem_compact();
 	clMsg("[xrLC_Remove] mem usage after: %u  mb", GetHeapMemory() / 1024 / 1024);

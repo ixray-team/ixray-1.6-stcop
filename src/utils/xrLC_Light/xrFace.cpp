@@ -61,7 +61,7 @@ void destroy_face( Face* &v, bool unregister )
 	g_bUnregister = tmp_unregister;
 }
 
-template<>
+/*template<>
 Tvertex<DataVertex>::Tvertex()
 {
  	R_ASSERT( inlc_global_data() );
@@ -86,7 +86,7 @@ Tvertex<DataVertex>::~Tvertex()
 
 	m_adjacents.clear();
 	m_adjacents.shrink_to_fit();
-}
+}*/
 
 template<>
 Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
@@ -101,7 +101,7 @@ Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
 }
  
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<>
+/*template<>
 Tface<DataVertex>::Tface()
 {
  	pDeflector				= nullptr;
@@ -131,7 +131,7 @@ Tface<DataVertex>::~Tface()
 	for (int i=0; i<3; ++i)
 		v[i]->prep_remove(this);
  	lmap_layer				= nullptr;
-}
+}*/
  
 template<>
 void Face::	Failure		()
@@ -202,7 +202,7 @@ void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces)
 	}
 }
 
-bool DataFace::RenderEqualTo(Face *F)
+/*bool DataFace::RenderEqualTo(Face *F)
 {
 	if (F->dwMaterial	!= dwMaterial		)	
 		return false;
@@ -225,7 +225,7 @@ bool DataFace::hasImplicitLighting()
 	VERIFY( inlc_global_data() );
 	auto& T = pBuild->GetTexture(dwMaterial, flags.bSharedMaterial);
 	return (T.THM.flags.test(STextureParams::flImplicitLighted));
-}
+}*/
 
 void GetBarycentric(Face* F, Fvector& wP, Fvector& wN, Fvector& B)
 {

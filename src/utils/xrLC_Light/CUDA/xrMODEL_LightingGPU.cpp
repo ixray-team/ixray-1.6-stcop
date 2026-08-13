@@ -36,7 +36,7 @@ void RunMURefsGPU()
 				MRef->calc_lighting_cuda_1();
 			};
 
-			// Завершаем накопленые данные
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			GPUTaskinSystem.LightPointPacked_run_tasks();
 	}, gCompilerMode.ThreadsPerWork);
 	Msg("[MURefs] Elapsed For Compute: %u ms", tStats.GetElapsed_ms());
@@ -61,7 +61,7 @@ void RunMURefsGPU()
 
 	Msg("[MURefs] Elapsed For Apply Colors: %u ms", tStats.GetElapsed_ms());
 
-	GPUTaskinSystem.RestartALL(); // Выгружаем все Это последнее освещение 
+	GPUTaskinSystem.RestartALL(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 }
 
 // Capture RAYS
@@ -80,7 +80,7 @@ void xrMU_Reference::calc_lighting_cuda_1()
 	// Perform lighting
 	for (u32 I = 0; I < model->m_vertices.size(); I++)
 	{
-		_vertex& V = *model->m_vertices[I];
+		auto& V = *model->m_vertices[I];
 
 		Fvector					vP, vN;
 		xform.transform_tiny(vP, V.P);
@@ -122,7 +122,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 	u32 SampleMAX = gCompilerMode.IsOverloadedSettings ? gCompilerMode.LC_JSampleMU : 6;
 	const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : SampleMAX;
 
-	xr_vector<_vertex>								  SafeVertices;
+	xr_vector<Vertex>								  SafeVertices;
 	SafeVertices.resize(model->m_vertices.size());
 	for (size_t Iter = 0; Iter < model->m_vertices.size(); Iter++)
 		SafeVertices[Iter] = *model->m_vertices[Iter];
@@ -130,7 +130,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 	// Perform lighting
 	for (u32 I = 0; I < SafeVertices.size(); I++)
 	{
-		_vertex& V = SafeVertices[I];
+		auto& V = SafeVertices[I];
 		base_color_c			vC = colors_cuda[I];
 
 		// Get ambient factor
@@ -138,7 +138,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 		float		v_trans = 0.f;
 		for (u32 f = 0; f < V.m_adjacents.size(); f++)
 		{
-			_face* F = V.m_adjacents[f];
+			auto F = V.m_adjacents[f];
 			v_amb += F->Shader().vert_ambient;
 			v_trans += F->Shader().vert_translucency;
 		}
@@ -168,7 +168,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 		for (; it != it2; it++)
 		{
 			xrMU_Model::v_vertices& VL = it->second;
-			_vertex* Front = VL.front();
+			auto Front = VL.front();
 			R_ASSERT(Front);
 			if (Front->P.similar(V.P, eps))
 			{
@@ -231,7 +231,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 
 	colors_cuda.clear();
 
-	// se7kills: ’от€бы пам€ть убрать из юза
+	// se7kills: пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
 	SafeVertices.clear();
 	SafeVertices.shrink_to_fit();
 }

@@ -54,7 +54,7 @@ void xrMU_InstancedGroup::export_cform_game(CDB::CollectorPacked& CL)
 		{
 			for (xrMU_Model::v_faces_it F = cfFaces->begin(); F!=cfFaces->end(); F++)
 			{
-				_face*	T = *F;
+				auto T = *F;
 		
 				// xform
 				Fvector P[3];

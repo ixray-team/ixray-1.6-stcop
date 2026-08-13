@@ -83,11 +83,11 @@ public:
 	};
 
 	//** 
-	typedef	xr_vector<_vertex*>			v_vertices;
+	typedef	xr_vector<Vertex*>			v_vertices;
 	typedef	v_vertices::iterator		v_vertices_it;
 	typedef	v_vertices::const_iterator	v_vertices_cit;
 
-	typedef xr_vector<_face*>		v_faces;
+	typedef xr_vector<Face*>		v_faces;
 	typedef v_faces::iterator		v_faces_it;
 	typedef v_faces::const_iterator	v_faces_cit;
 
@@ -109,10 +109,10 @@ public:
 	xr_vector<base_color>	color;
 	Fvector CollisionBias;
 private:
-	_face*					create_face			( _vertex* v0, _vertex* v1, _vertex* v2, b_face& F );
-	_vertex*				create_vertex		( Fvector& P );
-	_face*					load_create_face	( Fvector& P1, Fvector& P2, Fvector& P3, b_face& F );
-	_vertex*				load_create_vertex	( Fvector& P );
+	Face*					create_face			( Vertex* v0, Vertex* v1, Vertex* v2, b_face& F );
+	Vertex*				create_vertex		( Fvector& P );
+	Face*					load_create_face	( Fvector& P1, Fvector& P2, Fvector& P3, b_face& F );
+	Vertex*				load_create_vertex	( Fvector& P );
 public:
 							xrMU_Model			();
 							~xrMU_Model			();
@@ -132,8 +132,8 @@ public:
 
 	xr_vector<FaceDataEmbree>& EmbreeInstanceCopy	();
 
-	u32						find				( const _vertex *v )	const;
-	u32						find				( const _face *v )		const;
+	u32						find				( const Vertex *v )	const;
+	u32						find				( const Face *v )		const;
 };
 
 void XRLC_LIGHT_API	calc_normals	( xrMU_Model &model );
