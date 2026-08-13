@@ -369,7 +369,7 @@ void CUIActorMenu::OnBtnPerformTradeBuy(CUIWindow* w, void* d)
 
 	s64 actor_money    = (s64)m_pActorInvOwner->get_money();
 	s64 partner_money  = (s64)m_pPartnerInvOwner->get_money();
-	u32 partner_price  = CalcItemsPrice( m_pTradePartnerList, m_partner_trade, false );
+	s64 partner_price  = (s64)CalcItemsPrice( m_pTradePartnerList, m_partner_trade, false );
 
 	actor_money        -= partner_price;
 	partner_money      += partner_price;
@@ -412,7 +412,7 @@ void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 
 	s64 actor_money = (s64)m_pActorInvOwner->get_money();
 	s64 partner_money = (s64)m_pPartnerInvOwner->get_money();
-	u64 actor_price = CalcItemsPrice(m_pTradeActorList, m_partner_trade, true);
+	s64 actor_price = (s64)CalcItemsPrice(m_pTradeActorList, m_partner_trade, true);
 	bool partner_infinivite_money = m_pPartnerInvOwner->InfinitiveMoney();
 
 	actor_money += actor_price;
