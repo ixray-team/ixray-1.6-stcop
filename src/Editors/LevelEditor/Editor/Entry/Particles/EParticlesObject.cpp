@@ -102,6 +102,13 @@ void EParticlesObject::Render(int priority, bool strictB2F)
     }
 }
 
+u32 EParticlesObject::RenderPriorityMask() const
+{
+    // model_Render passes 'priority' through to the particle visual, which only draws
+    // when it matches the visual's surface priority. Cover all priorities to keep it visible.
+    return (1u << 1) | (1u << 2) | (1u << 3);
+}
+
 void EParticlesObject::RenderSingle()
 {
 	Render(1,false);
