@@ -22,6 +22,7 @@ public:
 
     void				RenderSingle		();
 	virtual void    	Render      		(int priority, bool strictB2F);
+	virtual u32			RenderPriorityMask() const;
 	virtual bool    	RayPick     		(float& distance,	const Fvector& start,	const Fvector& direction,
 		                          			SRayPickInfo* pinf = NULL );
     virtual bool 		FrustumPick			(const CFrustum& frustum);

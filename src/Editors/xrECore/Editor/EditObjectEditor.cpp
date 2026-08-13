@@ -215,6 +215,19 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 	}
 }
 
+u32 CEditableObject::RenderPriorityMask() const
+{
+    u32 m = (1u << 1); // base priority (edge / LOD / most surfaces)
+    if (m_objectFlags.is(eoHOM) || m_objectFlags.is(eoSoundOccluder))
+        m |= (1u << 2);
+    for (CSurface* s : m_Surfaces)
+    {
+        int p = s->_Priority();
+        if (p >= 1 && p <= 3) m |= (1u << p);
+    }
+    return m;
+}
+
 void CEditableObject::RenderSingle(CCustomObject* pParent, const Fmatrix& parent)
 {
 	for (int i=0; i<4; i++)
