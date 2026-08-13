@@ -26,5 +26,5 @@ public:
 protected:
 	virtual CInventoryItem* GetInventorySlotFromSector(CInventory& inventory, u32 sector_index);
 	virtual u16 GetSlotIdInSector(u16 sector_index);
-	CInventoryItem* GetSelectedItem(u32 it);
+	CInventoryItem* GetSelectedItem(RadialMenuItem itm);
 };
