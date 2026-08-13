@@ -329,6 +329,7 @@ public:
 
 	// render methods
 	void 			Render					(CCustomObject*, const Fmatrix& parent, int priority, bool strictB2F,SurfaceVec * surfaces=nullptr);
+	u32				RenderPriorityMask() const;
 	
 	void 			RenderSelection			(CCustomObject*, CEditableMesh* m=0, u32 c=0x40E64646);
 	void 			RenderEdge				(CCustomObject*, CEditableMesh* m=0, u32 c=0xFFC0C0C0);
