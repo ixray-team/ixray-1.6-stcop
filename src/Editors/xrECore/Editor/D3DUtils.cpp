@@ -378,54 +378,6 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
     }
 }
 
-void CDrawUtilities::DrawFlag(const Fvector& p, float heading, float height, float sz, float sz_fl, u32 clr, bool bDrawEntity){
-    Fvector p0;
-    Fvector p1;
-    p1.set(p.x, p.y + height, p.z);
-    DrawLine(p, p1, clr);
-    
-	_VertexStream*	Stream	= &RCache.Vertex;
-	u32			    vBase;
-
-    if (bDrawEntity){
-        float rx = std::sin(heading);
-        float rz = std::cos(heading);
-
-        sz *= 0.8f;
-        
-        // seg 0
-        p0.set(p.x, p.y + height, p.z);
-        p1.set(p.x + rx * sz, p.y + height, p.z + rz * sz);
-        DrawLine(p0, p1, clr);
-
-        sz *= 0.5f;
-
-        // seg 1
-        p0.set(p.x, p.y + height * (1.f - sz_fl * .5f), p.z);
-        p1.set(p.x + rx * sz * 0.6f, p.y + height * (1.f - sz_fl * .5f), p.z + rz * sz * 0.75f);
-        DrawLine(p0, p1, clr);
-
-        // seg 2
-        p0.set(p.x, p.y + height * (1.f - sz_fl), p.z);
-        p1.set(p.x + rx * sz, p.y + height * (1.f - sz_fl), p.z + rz * sz);
-        DrawLine(p0, p1, clr);
-    }else{
-		// fill VB
-		FVF::L*	pv	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
-	    pv->set			(p.x,p.y+height*(1.f-sz_fl),p.z,clr); 								pv++;
-    	pv->set			(p.x,p.y+height,p.z,clr); 											pv++;
-	    pv->set			(p.x+ std::sin(heading)*sz,((pv-2)->p.y+(pv-1)->p.y)/2,p.z+ std::cos(heading)*sz,clr); pv++;
-    	pv->set			(*(pv-3)); 															pv++;
-	    pv->set			(*(pv-2)); 															pv++;
-    	pv->set			(*(pv-4)); 															pv++;
-		Stream->Unlock	(6,vs_L->vb_stride);
-		// and Render it as triangle list
-    	DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vs_L,vBase,2);
-    }
-}
-
-//------------------------------------------------------------------------------
-
 void CDrawUtilities::DrawRomboid(const Fvector& p, float r, u32 c)
 {
 static const u32 IL[24]={0,2, 2,5, 0,5, 3,5, 3,0, 4,3, 4,0, 4,2, 1,2, 1,5, 1,3, 1,4};
@@ -1266,6 +1218,12 @@ void CDrawUtilities::DrawPrimitiveL	(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, Fvector
     if (!bCull) DU_DRAW_RS(D3DRS_CULLMODE,D3DCULL_CCW);
 }
 
+xr_vector<FVF::L> g_idxVerts[2]; // 0 = LINE_LIST, 1 = TRIANGLE_LIST
+xr_vector<u16>    g_idxIdx[2];
+u32               g_idxPrims[2] = {0, 0};
+
+static void FlushIndexBatch(int slot);
+
 void CDrawUtilities::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY pt,
 											u32 pc, 
                                             const Fvector& pos, 
@@ -1276,27 +1234,56 @@ void CDrawUtilities::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY pt,
                                             const u32& clr_argb, 
                                             float scale)
 {
-	_VertexStream* Stream	= &RCache.Vertex;
-	_IndexStream*	StreamI	= &RCache.Index;
+	int slot = (pt == ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST) ? 0 : 1;
 
-	u32 vBase, iBase;
-    WORD* i;
+	// Batch all indexed primitives and emit them as a single draw call per
+	// topology at FlushDU(). This avoids one draw call per CSE_ALifeGraphPoint
+	// (on_render issues 2 calls each), which previously cost dozens of FPS.
+	if (g_idxVerts[slot].size() + vb_size > 65000)
+		FlushIndexBatch(slot);
 
-	FVF::L* pv				= (FVF::L*)Stream->Lock(vb_size, vs_L->vb_stride, vBase);
-    for(int k=0; k<vb_size; ++k,++pv)
-    	pv->set		(Fvector().add(pos, Fvector().mul(vb[k],scale)), clr_argb);
-        
-	Stream->Unlock(vb_size, vs_L->vb_stride);
+	u32 base = (u32)g_idxVerts[slot].size();
+	for (int k = 0; k < vb_size; ++k)
+	{
+		FVF::L v;
+		v.set(Fvector().add(pos, Fvector().mul(vb[k], scale)), clr_argb);
+		g_idxVerts[slot].push_back(v);
+	}
+	for (int k = 0; k < ib_size; ++k)
+		g_idxIdx[slot].push_back((u16)(base + ib[k]));
+	g_idxPrims[slot] += pc;
+}
 
-    i 				= StreamI->Lock(ib_size,iBase);
-    for (int k=0; k<ib_size; ++k,++i) 
-    	*i= ib[k];
-        
-    StreamI->Unlock(ib_size);
+static void FlushIndexBatch(int slot)
+{
+	if (g_idxVerts[slot].empty())
+		return;
 
-    EDevice->SetShader	(EDevice->m_SelectionShader);
-	// and Render it as triangle list
-	DU_DRAW_DIP	((ERHI_PRIMITIVE_TOPOLOGY)pt, vs_L, vBase, 0, vb_size, iBase, pc);
+	_VertexStream* Stream = &RCache.Vertex;
+	u32 vBase;
+	FVF::L* pv = (FVF::L*)Stream->Lock(g_idxVerts[slot].size(), DU_impl.vs_L->vb_stride, vBase);
+	memcpy(pv, g_idxVerts[slot].data(), g_idxVerts[slot].size() * sizeof(FVF::L));
+	Stream->Unlock(g_idxVerts[slot].size(), DU_impl.vs_L->vb_stride);
+
+	_IndexStream* StreamI = &RCache.Index;
+	u32 iBase;
+	u16* i = StreamI->Lock(g_idxIdx[slot].size(), iBase);
+	memcpy(i, g_idxIdx[slot].data(), g_idxIdx[slot].size() * sizeof(u16));
+	StreamI->Unlock(g_idxIdx[slot].size());
+
+	EDevice->SetShader(EDevice->m_SelectionShader);
+	DU_DRAW_DIP(
+		(slot == 0) ? ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST : ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+		DU_impl.vs_L,
+		vBase, 0,
+		(u32)g_idxVerts[slot].size(),
+		iBase,
+		g_idxPrims[slot]
+	);
+
+	g_idxVerts[slot].clear();
+	g_idxIdx[slot].clear();
+	g_idxPrims[slot] = 0;
 }
 
 void CDrawUtilities::DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::TL* vertices, int vc, bool bCull, bool bCycle)
@@ -1424,28 +1411,31 @@ ECORE_API void AddLine(const Fvector& p0, const Fvector& p1, u32 c)
 
 ECORE_API void FlushDU()
 {
-    if (g_lineVerts.empty())
-        return;
+    if (!g_lineVerts.empty())
+    {
+        _VertexStream* Stream = &RCache.Vertex;
 
-    _VertexStream* Stream = &RCache.Vertex;
+        u32 vBase;
+        FVF::L* pv = (FVF::L*)Stream->Lock(
+            g_lineVerts.size(),
+            DU_impl.vs_L->vb_stride,
+            vBase
+        );
 
-    u32 vBase;
-    FVF::L* pv = (FVF::L*)Stream->Lock(
-        g_lineVerts.size(),
-        DU_impl.vs_L->vb_stride,
-        vBase
-    );
+        memcpy(pv, g_lineVerts.data(), g_lineVerts.size() * sizeof(FVF::L));
 
-    memcpy(pv, g_lineVerts.data(), g_lineVerts.size() * sizeof(FVF::L));
+        Stream->Unlock(g_lineVerts.size(), DU_impl.vs_L->vb_stride);
 
-    Stream->Unlock(g_lineVerts.size(), DU_impl.vs_L->vb_stride);
+        DU_DRAW_DP(
+            ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+            DU_impl.vs_L,
+            vBase,
+            g_lineVerts.size() / 2
+        );
 
-    DU_DRAW_DP(
-        ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
-        DU_impl.vs_L,
-        vBase,
-        g_lineVerts.size() / 2
-    );
+        g_lineVerts.clear();
+    }
 
-    g_lineVerts.clear();
+    FlushIndexBatch(0);
+    FlushIndexBatch(1);
 }
