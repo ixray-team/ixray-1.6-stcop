@@ -56,38 +56,37 @@ void CUIRadialMenu::Init(CUIXml* pXml)
 	//read slots
 	for (u32 i = 0; i < sectors_count; ++i)
 	{
-		u32 slotId = pXml->ReadAttribInt("element", i, "slot", 0);
-		slotsInSectors.push_back(slotId);
+		RadialMenuItem itm;
+		itm.slot = pXml->ReadAttribInt("element", i, "slot", 0);
 
-		CUIStatic* back = new CUIStatic();
-		back->InitTexture(textureDefault.c_str());
-		back->SetStretchTexture(true);
+		itm.background = new CUIStatic();
+		itm.background->InitTexture(textureDefault.c_str());
+		itm.background->SetStretchTexture(true);
 
-		back->EnableHeading(true);
+		itm.background->EnableHeading(true);
 		float heading = deg2rad(pXml->ReadAttribFlt("element", i, "angle", 0.f));
-		back->SetHeading(heading);
-		back->SetWndSize(backgroundSize);
+		itm.background->SetHeading(heading);
+		itm.background->SetWndSize(backgroundSize);
 
 		Fvector2 offset{UI_BASE_WIDTH, UI_BASE_HEIGHT};
 		offset.mad(offset, backgroundPivot, -2.0f);
 		offset.div(2.0f);
 
-		back->SetHeadingPivot(backgroundPivot, offset, false);
+		itm.background->SetHeadingPivot(backgroundPivot, offset, false);
 
-		slotBackgrounds.push_back(back);
+		itm.icon = new CUI3dStatic();
 
-		CUI3dStatic* icon = new CUI3dStatic();
-
-		icon->SetWndSize(backgroundSize);
-		icon->SetAlignment(EWindowAlignment::waCenter);
-		icon->SetStretchTexture(true);
+		itm.icon->SetWndSize(backgroundSize);
+		itm.icon->SetAlignment(EWindowAlignment::waCenter);
+		itm.icon->SetStretchTexture(true);
 
 		const char* iconTag = "element:icon";
 		shared_str iconTexture = pXml->Read(iconTag, i, "");
 		if (iconTexture.size())
 		{
-			icon->InitTexture(iconTexture.c_str());
-			icon->SetWidth(icon->GetWidth() * UI().get_current_kx());
+			itm.alwaysShowIcon = true;
+			itm.icon->InitTexture(iconTexture.c_str());
+			itm.icon->SetWidth(itm.icon->GetWidth() * UI().get_current_kx());
 
 			Frect rect;
 			rect.x1 = pXml->ReadAttribFlt(iconTag, i, "x", 0);
@@ -97,14 +96,14 @@ void CUIRadialMenu::Init(CUIXml* pXml)
 
 			if (rect.width() != 0 && rect.height() != 0)
 			{
-				icon->SetTextureRect(rect);
+				itm.icon->SetTextureRect(rect);
 			}
 		}
 
 		Fvector2 posIcon{UI_BASE_WIDTH/2,UI_BASE_HEIGHT/2};
 		posIcon.x -= sin(heading) * ((backgroundPivot.y - (backgroundSize.x) / 2) * UI().get_current_kx());
 		posIcon.y -= cos(heading) * (backgroundPivot.y - (backgroundSize.y / 2));
-		icon->SetWndPos(posIcon);
+		itm.icon->SetWndPos(posIcon);
 
 		Fvector2 cellSize{iconSize};
 		float width = pXml->ReadAttribFlt("element", i, "width");
@@ -117,9 +116,8 @@ void CUIRadialMenu::Init(CUIXml* pXml)
 		{
 			cellSize.y = height;
 		}
-		slotIconDefaultSizes.push_back(cellSize);
-
-		slotIcons.push_back(icon);
+		itm.defaultSize = cellSize;
+		slotList.push_back(itm);
 	}
 
 	sector = PI_MUL_2 / sectors_count;

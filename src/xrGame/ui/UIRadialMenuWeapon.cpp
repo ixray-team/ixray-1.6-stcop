@@ -122,7 +122,7 @@ void CUIRadialMenuWeapon::TryActivateSelectedSector()
 u16 CUIRadialMenuWeapon::GetSlotIdInSector(u16 sector_index)
 {
 	if (sector_index >= 0 && sector_index < sectors_count)
-		return slotsInSectors[sector_index];
+		return slotList[sector_index].slot;
 
 	return NO_ACTIVE_SLOT;
 }
@@ -140,39 +140,40 @@ void	CUIRadialMenuWeapon::Draw()
 	if (owner)
 	{
 		inherited::Draw();
-		for (u32 i = 0; i < sectors_count; ++i)
+		for (RadialMenuItem itm : slotList)
 		{
-			CInventoryItem* item = GetSelectedItem(i);
-			slotBackgrounds[i]->Draw();
+			CInventoryItem* item = GetSelectedItem(itm);
+			itm.background->Draw();
 			if (item)
 			{
 				Irect grect = item->GetInvGridRect();
 				if (grect.y2 > 0 && grect.x2 > 0)
 				{
-					slotIcons[i]->SetShader(InventoryUtilities::GetEquipmentIconsShader(item->IconsTexture.c_str()));
+					itm.icon->TextureOn();
+					itm.icon->SetShader(InventoryUtilities::GetEquipmentIconsShader(item->IconsTexture.c_str()));
 
 					float scaleIcon = item->ScaleIcon;
 					Frect texture_rect = {};
 					texture_rect.lt.set(grect.x1 * INV_GRID_WIDTH(scaleIcon), grect.y1 * INV_GRID_HEIGHT(scaleIcon));
 					texture_rect.rb.set(grect.x2 * INV_GRID_WIDTH(scaleIcon), grect.y2 * INV_GRID_HEIGHT(scaleIcon));
 					texture_rect.rb.add(texture_rect.lt);
-					slotIcons[i]->SetTextureRect(texture_rect);
+					itm.icon->SetTextureRect(texture_rect);
 
 					shared_str sect_name = item->object().cNameSect();
 					InventoryUtilities::InventoryIconParams icons_struct = InventoryUtilities::GetInventoryIconParams(sect_name.c_str());
 					if (psActorFlags.test(AF_3D_ICONS_INV))
 					{
-						slotIcons[i]->SetVisual(icons_struct._3d_static_visual);
-						slotIcons[i]->SetXYZ(icons_struct._3d_static_rotate);
-						slotIcons[i]->SetScaleFactor(icons_struct._3d_static_scale);
-						slotIcons[i]->SetBonesVisible(item->object().Visual()->dcast_PKinematics());
+						itm.icon->SetVisual(icons_struct._3d_static_visual);
+						itm.icon->SetXYZ(icons_struct._3d_static_rotate);
+						itm.icon->SetScaleFactor(icons_struct._3d_static_scale);
+						itm.icon->SetBonesVisible(item->object().Visual()->dcast_PKinematics());
 					}
 					else
 					{
-						slotIcons[i]->SetVisual(nullptr);
+						itm.icon->SetVisual(nullptr);
 					}
 
-					Fvector2 v_r = {grect.x2 * slotIconDefaultSizes[i].x, grect.y2 * slotIconDefaultSizes[i].y};
+					Fvector2 v_r = {grect.x2 * itm.defaultSize.x, grect.y2 * itm.defaultSize.y};
 					v_r.x *= UI().get_current_kx();
 
 					if (grect.x2 < 5 && grect.y2 == 1)
@@ -180,33 +181,38 @@ void	CUIRadialMenuWeapon::Draw()
 						v_r.mul(2.f);
 					}
 
-					slotIcons[i]->GetUIStaticItem().SetSize(v_r);
-					slotIcons[i]->SetWidth(v_r.x);
-					slotIcons[i]->SetHeight(v_r.y);
+					itm.icon->GetUIStaticItem().SetSize(v_r);
+					itm.icon->SetWidth(v_r.x);
+					itm.icon->SetHeight(v_r.y);
 
 					CInventory& inventory = owner->inventory();
-					if (!inventory.IsSlotBlocked(item) || GetSlotIdInSector(i) == DEVICE_SLOT)
+					if (!inventory.IsSlotBlocked(item) || itm.slot == DEVICE_SLOT)
 					{
-						slotIcons[i]->SetTextureColor(clrSlotIcon);
+						itm.icon->SetTextureColor(clrSlotIcon);
 					}
 					else
 					{
-						slotIcons[i]->SetTextureColor(clrSlotIconBlocked);
+						itm.icon->SetTextureColor(clrSlotIconBlocked);
 					}
 
 				}
 			}
 			else
 			{
-				slotIcons[i]->SetWidth(slotIconDefaultSizes[i].x * UI().get_current_kx());
-				slotIcons[i]->SetHeight(slotIconDefaultSizes[i].y);
+				if (!itm.alwaysShowIcon)
+				{
+					itm.icon->TextureOff();
+				}
+				itm.icon->SetVisual(nullptr);
+				itm.icon->SetWidth(itm.defaultSize.x * UI().get_current_kx());
+				itm.icon->SetHeight(itm.defaultSize.y);
 			}
-			slotIcons[i]->Draw();
+			itm.icon->Draw();
 		}
 	}
 }
 
-CInventoryItem* CUIRadialMenuWeapon::GetSelectedItem(u32 it)
+CInventoryItem* CUIRadialMenuWeapon::GetSelectedItem(RadialMenuItem itm)
 {
 	CActor* owner = g_pGameLevel->CurrentViewEntity()->cast_actor();
 	CInventory& inventory = owner->inventory();
@@ -218,9 +224,9 @@ CInventoryItem* CUIRadialMenuWeapon::GetSelectedItem(u32 it)
 		dev = inventory.ItemFromSlot(DEVICE_SLOT)->cast_custom_device();
 	}
 
-	u32 slotId = GetSlotIdInSector(it);
+	u32 slotId = itm.slot;
 	shared_str backTexture = textureDefault;
-	bool isSelected = selected_index == it;
+	bool isSelected = slotList[selected_index].slot == itm.slot;
 	const auto chooseBackground = [&]()
 	{
 		if (isSelected)
@@ -268,6 +274,6 @@ CInventoryItem* CUIRadialMenuWeapon::GetSelectedItem(u32 it)
 	{
 		backTexture = textureSelected;
 	}
-	slotBackgrounds[it]->InitTexture(backTexture.c_str());
+	itm.background->InitTexture(backTexture.c_str());
 	return item;
 }

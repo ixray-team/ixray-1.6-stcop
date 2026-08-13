@@ -75,14 +75,16 @@ protected:
 	int selected_index = -1;
 	bool bWaitForZeroRStick = false;
 
-	//read from xml
-	xr_vector<u32> slotsInSectors;
-	xr_vector<CUI3dStatic*> slotIcons;
+	struct RadialMenuItem
+	{
+		u32 slot = u32(-1);
+		bool alwaysShowIcon = false;
+		CUI3dStatic* icon = nullptr;
+		CUIStatic* background = nullptr;
+		Fvector2 defaultSize;
+	};
+	xr_vector<RadialMenuItem> slotList;
 
-	// size used for inventory cells
-	xr_vector<Fvector2> slotIconDefaultSizes;
-
-	xr_vector<CUIStatic*> slotBackgrounds;
 	u32 sectors_count;
 
 	float sector;
