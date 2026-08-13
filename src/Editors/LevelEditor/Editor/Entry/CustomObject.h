@@ -155,6 +155,7 @@ public:
 
 	virtual bool 	IsRender		();
 	virtual void 	Render			(int priority, bool strictB2F);
+	virtual u32		RenderPriorityMask() const { return 1u<<1; } // default: priority 1
 	virtual void 	OnFrame			();
 	virtual void 	OnUpdateTransform();
 
