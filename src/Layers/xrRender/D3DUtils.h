@@ -89,7 +89,6 @@ public:
     virtual void  DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, bool bRot45=false);
     virtual void  DrawCross(const Fvector& p, float sz, u32 clr, bool bRot45=false){ DrawCross(p, sz,sz,sz, sz,sz,sz, clr, bRot45); }
     virtual void  DrawEntity(u32 clr, ref_shader s);
-    virtual void  DrawFlag(const Fvector& p, float heading, float height, float sz, float sz_fl, u32 clr, bool bDrawEntity);
     virtual void  DrawRomboid(const Fvector& p, float radius, u32 clr);
 	virtual void  DrawJoint(const Fvector& p, float radius, u32 clr);
 
