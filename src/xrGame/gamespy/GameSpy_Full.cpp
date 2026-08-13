@@ -25,6 +25,7 @@ CGameSpy_Full::CGameSpy_Full()
 	if (Engine.External.hGameSpy == 0)
 		return;
 
+#ifdef XR_MP_BUILD
 	LoadGameSpy();
 	//---------------------------------------
 	m_pGSA = new CGameSpy_Available();
@@ -41,6 +42,7 @@ CGameSpy_Full::CGameSpy_Full()
 		m_pGS_SAKE = new CGameSpy_SAKE();
 		m_pGS_ATLAS = new CGameSpy_ATLAS();
 	}
+#endif
 }
 
 CGameSpy_Full::~CGameSpy_Full()
