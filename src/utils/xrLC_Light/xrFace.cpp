@@ -32,7 +32,7 @@ void base_Face::CacheOpacity()
 	flags.bOpaque = true;
 	VERIFY(inlc_global_data());
 
-	b_BuildTexture& T = pBuild->GetTexture(dwMaterial, flags.bSharedMaterial);
+	b_BuildTexture& T = CBuild::GetTexture(dwMaterial, flags.bSharedMaterial);
 	flags.bOpaque = !T.bHasAlpha;
 
 	// pSurface was possible deleted
@@ -136,7 +136,7 @@ Tface<DataVertex>::~Tface()
 template<>
 void Face::	Failure		()
 {
-	dwInvalidFaces			++;
+	dwInvalidFaces++;
 
 	inlc_global_data()->err_invalid().w_fvector3	(v[0]->P);
 	inlc_global_data()->err_invalid().w_fvector3	(v[1]->P);

@@ -329,6 +329,15 @@ struct OGF_MESH_LODS : public OGF_Node
 	virtual void Save(IWriter &fs) override;
 };
 
+struct OGF_INSTANCED_GROUP : public OGF_Base
+{
+	xr_hash_map<u32, xr_vector<Fmatrix>> children;
+	
+	OGF_INSTANCED_GROUP(int _L, u16 _Sector) : OGF_Base(_L) { Sector=_Sector; }
+	
+	virtual void Save(IWriter &fs) override;
+};
+
 //LOD0
 struct OGF_LOD_MU0 : public OGF_Node
 {

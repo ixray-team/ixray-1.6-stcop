@@ -94,22 +94,22 @@ void CBuild::xrPhase_TangentBasis()
 	Phase("Building tangent-basis ...");
 
  	xr_vector< MeshMender::Vertex > mender_in_out_verts;
-	xr_vector< unsigned int >		mender_in_out_indices;
-	xr_vector< unsigned int >		mender_mapping_out_to_in_vert;
+	xr_vector< unsigned int > mender_in_out_indices;
+	xr_vector< unsigned int > mender_mapping_out_to_in_vert;
 
 	// ************************************* Declare inputs
-	Status						("Declarator...");
-	u32 v_count_reserve			= iFloor(float(lc_global_data()->g_vertices().size())*1.33f);
-	u32 i_count_reserve			= 3*lc_global_data()->g_faces().size();
+	Status("Declarator...");
+	u32 v_count_reserve = iFloor(float(lc_global_data()->g_vertices().size())*1.33f);
+	u32 i_count_reserve = 3*lc_global_data()->g_faces().size();
 	
-	mender_in_out_verts				.clear( );
-	mender_in_out_indices			.clear( );
-	mender_mapping_out_to_in_vert	.clear( );
+	mender_in_out_verts.clear( );
+	mender_in_out_indices.clear( );
+	mender_mapping_out_to_in_vert.clear( );
 
 
-	mender_in_out_verts				.reserve( v_count_reserve );
-	mender_in_out_indices			.reserve( i_count_reserve );
-	mender_mapping_out_to_in_vert	.reserve( v_count_reserve );
+	mender_in_out_verts.reserve( v_count_reserve );
+	mender_in_out_indices.reserve( i_count_reserve );
+	mender_mapping_out_to_in_vert.reserve( v_count_reserve );
 
 
 	// ************************************* Build vectors + expand TC if nessesary

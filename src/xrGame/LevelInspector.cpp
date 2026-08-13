@@ -3947,7 +3947,7 @@ void LevelInspector::DrawCFORM()
 							Fvector vertices[8];
 							if (IsLeaf)
 							{
-								if (Node.GetElement(i).IsInstance)
+								if (Node.GetElement(i).Type > (size_t)CDB::Type::Tris)
 								{
 									auto& Inst = Model.get_instances()[Node.GetElement(i).Index];
 									for (int j = 0; j < 8; ++j)
@@ -4008,7 +4008,7 @@ void LevelInspector::DrawCFORM()
 				[](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, CDB::ElementID InPrim, void* ptr)
 				{
 					VERIFY(InPrim.IsNotPointer);
-					if ((selected_prim.model == &Model && selected_prim.tris_id == InPrim.Index) || InPrim.IsInstance)
+					if ((selected_prim.model == &Model && selected_prim.tris_id == InPrim.Index) || InPrim.Type > (size_t)CDB::Type::Tris)
 					{
 						return;
 					}

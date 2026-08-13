@@ -482,6 +482,36 @@ void OGF_MESH_LODS::Save(IWriter& fs)
 	});
 }
 
+void OGF_INSTANCED_GROUP::Save(IWriter& fs)
+{
+	OGF_Base::Save(fs);
+
+	// Header
+	fs.make_chunk(OGF_HEADER, [this](IWriter& F)
+	{
+		ogf_header H;
+		H.format_version	= xrOGF_FormatVersion;
+		H.type				= MT_INSTANCED_GROUP;
+		H.shader_id			= 0;
+		H.bb.min			= bbox.min;
+		H.bb.max			= bbox.max;
+		H.bs.c				= C;
+		H.bs.r				= R;
+		F.w				(&H,sizeof(H));
+	});
+	
+	fs.make_chunk(OGF_CHILDREN_L, [this](IWriter& F)
+	{
+		F.w_u32(children.size());
+		for (auto& [ID, Transforms] : children)
+		{
+			F.w_u32(ID);
+			F.w_u32(Transforms.size());
+			F.w(Transforms.data(),Transforms.size()*sizeof(Fmatrix));
+		}
+	});
+}
+
 void OGF_LOD_MU0::Save(IWriter& fs)
 {
 	OGF_Base::Save		(fs);

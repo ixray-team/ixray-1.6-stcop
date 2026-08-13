@@ -1736,7 +1736,8 @@ bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool 
 		case OBJCLASS_SCENEOBJECT:
 		{
 			CSceneObject *obj = (CSceneObject*)(*_F);
-			if (!obj->GetOwner())
+			if (!obj->GetOwner() 
+				|| (obj->GetOwner()->FClassID == OBJCLASS_GROUP && !((CGroupObject*)obj->GetOwner())->IsInstanceGroup()))
 			{
 				if (obj->IsStatic())
 				{
@@ -1760,7 +1761,7 @@ bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool 
 			
 			if (group->IsInstanceGroup())
 			{
-				bResult = ParseInstancedGroupObjects(grp_lst, group->GetName(), b_selected_only);
+				bResult = ParseInstancedGroupObjects(group->FTransform, grp_lst, group->GetName(), b_selected_only);
 			} else
 			{
 				bResult = ParseStaticObjects(grp_lst, group->GetName(), b_selected_only);
