@@ -2190,8 +2190,8 @@ void CUIActorMenuBase::OnBtnPerformTrade(CUIWindow* w, void* d)
 
 	s64 actor_money = (s64)GetInventoryOwner()->get_money();
 	s64 partner_money = (s64)GetPartner()->get_money();
-	u32 actor_price = CalcItemsPrice(GetTradeActorList(), GetPartnerTrade(), true);
-	u32 partner_price = CalcItemsPrice(GetTradePartnerList(), GetPartnerTrade(), false);
+	s64 actor_price = (s64)CalcItemsPrice(GetTradeActorList(), GetPartnerTrade(), true);
+	s64 partner_price = (s64)CalcItemsPrice(GetTradePartnerList(), GetPartnerTrade(), false);
 
 	s64 delta_price = actor_price - partner_price;
 	actor_money += delta_price;
