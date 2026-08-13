@@ -70,6 +70,7 @@ public:
     // render methods
 	virtual bool 	IsRender				();
 	virtual void 	Render					(int priority, bool strictB2F);
+	virtual u32		RenderPriorityMask() const;
 	void 			RenderSelection			(u32 color=0x80E64646);
 	void 			RenderEdge				(CEditableMesh* m=0, u32 color=0xFFC0C0C0);
 	void 			RenderBones				();

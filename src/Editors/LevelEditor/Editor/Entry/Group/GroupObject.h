@@ -53,6 +53,7 @@ public:
 	virtual void 	Scale			(Fvector& amount );
 
 	virtual void 	Render			(int priority, bool strictB2F);
+	virtual u32		RenderPriorityMask() const;
 
 	virtual bool 	RayPick			(float& dist, const Fvector& start,const Fvector& dir, SRayPickInfo* pinf=NULL);
     virtual bool 	FrustumPick		(const CFrustum& frustum);

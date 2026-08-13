@@ -266,6 +266,14 @@ void CGroupObject::Render(int priority, bool strictB2F)
     }
 }
 
+u32 CGroupObject::RenderPriorityMask() const
+{
+    u32 m = CCustomObject::RenderPriorityMask();
+    for (auto& it : m_ObjectsInGroup)
+        if (it.pObject) m |= it.pObject->RenderPriorityMask();
+    return m;
+}
+
 bool CGroupObject::FrustumPick(const CFrustum& frustum)
 {
     if (m_ObjectsInGroup.empty())

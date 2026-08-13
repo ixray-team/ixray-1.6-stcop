@@ -164,6 +164,8 @@ void CSector::Render(int priority, bool strictB2F)
 	}
 }
 
+u32 CSector::RenderPriorityMask() const { return 1u << 2; }
+
 void CSector::Move(Fvector& amount)
 {
 	m_SectorCenter.add(amount);
