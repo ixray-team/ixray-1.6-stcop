@@ -153,6 +153,11 @@ void CSceneObject::Render(int priority, bool strictB2F)
 	m_pReference->Render(this, _Transform(), priority, strictB2F, &m_Surfaces);
 }
 
+u32 CSceneObject::RenderPriorityMask() const
+{
+    return m_pReference ? m_pReference->RenderPriorityMask() : (1u << 1);
+}
+
 void CSceneObject::RenderBlink()
 {
 	if (m_iBlinkTime > 0)
