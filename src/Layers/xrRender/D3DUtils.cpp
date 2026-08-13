@@ -371,50 +371,6 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
     }
 }
 
-void CDrawUtilities::DrawFlag(const Fvector& p, float heading, float height, float sz, float sz_fl, u32 clr, bool bDrawEntity){
-	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
-	u32			vBase;
-	FVF::L*	pv	 	= (FVF::L*)Stream->Lock(2,vs_L->vb_stride,vBase);
-    pv->set			(p,clr); pv++;
-    pv->set			(p.x,p.y+height,p.z,clr); pv++;
-	Stream->Unlock	(2,vs_L->vb_stride);
-	// and Render it as triangle list
-    DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,1);
-
-    if (bDrawEntity){
-		// fill VB
-        float rx		= std::sin(heading);
-        float rz		= std::cos(heading);
-		FVF::L*	pv_	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
-        sz				*= 0.8f;
-        pv_->set			(p.x,p.y+height,p.z,clr);											pv_++;
-        pv_->set			(p.x+rx*sz,p.y+height,p.z+rz*sz,clr);                               pv_++;
-        sz				*= 0.5f;
-        pv_->set			(p.x,p.y+height*(1.f-sz_fl*.5f),p.z,clr);                           pv_++;
-        pv_->set			(p.x+rx*sz*0.6f,p.y+height*(1.f-sz_fl*.5f),p.z+rz*sz*0.75f,clr);   	pv_++;
-        pv_->set			(p.x,p.y+height*(1.f-sz_fl),p.z,clr);                               pv_++;
-        pv_->set			(p.x+rx*sz,p.y+height*(1.f-sz_fl),p.z+rz*sz,clr);                   pv_++;
-		Stream->Unlock	(6,vs_L->vb_stride);
-		// and Render it as line list
-    	DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,3);
-    }else{
-		// fill VB
-		FVF::L*	pv_	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
-	    pv_->set			(p.x,p.y+height*(1.f-sz_fl),p.z,clr); 								pv_++;
-    	pv_->set			(p.x,p.y+height,p.z,clr); 											pv_++;
-	    pv_->set			(p.x+ std::sin(heading)*sz,((pv_-2)->p.y+(pv_-1)->p.y)/2,p.z+ std::cos(heading)*sz,clr); pv_++;
-    	pv_->set			(*(pv_-3)); 															pv_++;
-	    pv_->set			(*(pv_-2)); 															pv_++;
-    	pv_->set			(*(pv_-4)); 															pv_++;
-		Stream->Unlock	(6,vs_L->vb_stride);
-		// and Render it as triangle list
-    	DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vs_L,vBase,2);
-    }
-}
-
-//------------------------------------------------------------------------------
-
 void CDrawUtilities::DrawRomboid(const Fvector& p, float r, u32 c)
 {
 static const WORD IL[24]={0,2, 2,5, 0,5, 3,5, 3,0, 4,3, 4,0, 4,2, 1,2, 1,5, 1,3, 1,4};
@@ -565,18 +521,14 @@ void CDrawUtilities::DrawLineSphere(const Fvector& p, float radius, u32 c, bool 
     if (bCross) DrawCross(p, radius,radius,radius, radius,radius,radius, c);
 }
 
-//----------------------------------------------------
-#ifdef _EDITOR
-IC float 				_x2real			(float x)
-{ return (x+1)*Device.m_RenderWidth_2;	}
-IC float 				_y2real			(float y)
-{ return (y+1)*Device.m_RenderHeight_2;}
-#else
-IC float 				_x2real			(float x)
-{ return (x+1)*RCache.get_width()*0.5f;	}
-IC float 				_y2real			(float y)
-{ return (y+1)*RCache.get_height()*0.5f;}
-#endif
+IC float _x2real(float x)
+{
+	return (x + 1) * RCache.get_width() * 0.5f;
+}
+IC float _y2real(float y)
+{
+	return (y + 1) * RCache.get_height() * 0.5f;
+}
 
 void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, const char* caption, u32 clr_font)
 {
