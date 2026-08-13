@@ -1112,6 +1112,14 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 	FTransformRP = SaveTransform;
 }
 
+u32 CSpawnPoint::RenderPriorityMask() const
+{
+    // Spawn visual & idle particle are drawn via model_Render(...,priority,...), which only
+    // renders when the passed priority matches the visual's surface priority. Cover all
+    // priorities so they always render (this matches the pre-Tier-B behaviour).
+    return (1u << 1) | (1u << 2) | (1u << 3);
+}
+
 bool CSpawnPoint::FrustumPick(const CFrustum& frustum)
 {
 	if (m_AttachedObject&&m_AttachedObject->FrustumPick(frustum)) return true;
