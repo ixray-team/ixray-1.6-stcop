@@ -6,7 +6,7 @@
 
 #define	TRY(a) try { a; } catch (...) { clMsg("* E: %s", #a); }
 
-void MModel_face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3], const xrMU_Model &model )
+void MModel_face2OGF_Vertices( const TFace &FF, OGF_Vertex	V[3], const xrMU_Model &model )
 {
 	for (u32 k=0; k<3; k++)
 	{
@@ -21,7 +21,7 @@ void MModel_face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3], const xrMU_Model
 	}
 }
 
-void OGF_AddFace( OGF &ogf, const Face &FF, const xrMU_Model& model )
+void OGF_AddFace( OGF &ogf, const TFace &FF, const xrMU_Model& model )
 {
 	OGF_Vertex		V[3];
 

@@ -28,7 +28,7 @@ public:
 	
 	/* Специальные релизация под разные типы освещения */
 	ColorsReturnType ColorsMapType = eCommon;
-	void LightPointPacked_add_task(size_t IndexTask, void* Refference, Fvector& P, Fvector& N, Face* skip);
+	void LightPointPacked_add_task(size_t IndexTask, void* Refference, Fvector& P, Fvector& N, TFace* skip);
  	void LightPointPacked_run_tasks(bool unload=true);
   	
 	// Lightpoint Base

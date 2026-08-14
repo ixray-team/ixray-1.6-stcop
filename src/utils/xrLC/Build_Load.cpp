@@ -82,7 +82,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		size_t LastStatCalls = 0;
 		for (i = 0; i < v_count; i++)
 		{
-			Vertex* pV = lc_global_data()->create_vertex();
+			TVertex* pV = lc_global_data()->create_vertex();
 			F->r_fvector3(pV->P);
 			pV->N.set(0, 0, 0);
 			scene_bb.modify(pV->P);
@@ -103,7 +103,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 		for (i=0; i<f_count; i++)
 		{
-			Face*	_F			= lc_global_data()->create_face();
+			TFace*	_F			= lc_global_data()->create_face();
 			
 			b_face	B;
 			B.v[0] = F->r_u32();
@@ -545,7 +545,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	CopyMemory(&g_params(),&Params,sizeof(b_params));
 
 	// 
-	clMsg	("* sizes: V(%d),F(%d)",sizeof(Vertex),sizeof(Face));
+	clMsg	("* sizes: V(%d),F(%d)",sizeof(TVertex),sizeof(TFace));
 }
 
 

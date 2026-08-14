@@ -129,7 +129,7 @@ void ImplicitLightingExec()
 	xr_map<b_BuildTexture*, ImplicitDeflector>	calculator;
 	for (vecFaceIt I = inlc_global_data()->g_faces().begin(); I != inlc_global_data()->g_faces().end(); I++)
 	{
-		Face* F = *I;
+		TFace* F = *I;
 		if (F->pDeflector)				continue;
 		if (!F->hasImplicitLighting())	continue;
 

@@ -213,7 +213,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 
 
         // 1. Обрабатываем статическую геометрию
-        for (Face* F : globalData->g_faces())
+        for (TFace* F : globalData->g_faces())
         {
             const Shader_xrLC& SH = F->Shader();
             if (!SH.flags.bLIGHT_CastShadow) { continue; }
@@ -234,7 +234,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 
             for (auto& pF : tempBuffer)
             {
-                Face* F = (Face*)pF.ptr;
+                TFace* F = (TFace*)pF.ptr;
                 b_texture& T = CBuild::GetTexture(*F);
 
                 bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);

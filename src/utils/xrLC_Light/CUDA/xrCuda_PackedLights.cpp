@@ -45,7 +45,7 @@ void CUDA_PackedLighting::RestartALL()
 }
 
 // Deflectors
-void CUDA_PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owner, Fvector& P, Fvector& N, Face* skip)
+void CUDA_PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owner, Fvector& P, Fvector& N, TFace* skip)
 {
 	// MT SAFE
 	if (recvest_array.size() >= MAX_RAYS_PER_TASK - 16)

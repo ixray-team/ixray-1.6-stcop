@@ -17,8 +17,6 @@ class CollectorPacked;
 class CLightmap;
 class xrMU_Model;
 class xrMU_Reference;
-class base_Vertex;
-class base_Face;
 
 class XRLC_LIGHT_API xrLC_GlobalData
 {
@@ -47,7 +45,7 @@ class XRLC_LIGHT_API xrLC_GlobalData
 	xr_vector<xrMU_InstancedGroup*>	_g_instanced_groups;
 
 public:
-	xr_vector<base_Face*>			FacesStorage;
+	xr_vector<TFace*>			FacesStorage;
 
 	xrLC_GlobalData();
 	~xrLC_GlobalData();
@@ -68,11 +66,11 @@ public:
 		vecFace&						g_faces()		{ return	_g_faces; }
 		vecDefl& g_deflectors() { return	_g_deflectors; }
 
-    static Face* create_face();
-    static void destroy_face(Face*& f);
+    static TFace* create_face();
+    static void destroy_face(TFace*& f);
 
-    static Vertex* create_vertex();
-    static void destroy_vertex(Vertex*& f);
+    static TVertex* create_vertex();
+    static void destroy_vertex(TVertex*& f);
 
 		bool										b_r_vertices();
 		bool										vert_construct_register() { return !b_r_vertices(); }
@@ -101,5 +99,5 @@ extern xrLC_GlobalData* data;
 IC xrLC_GlobalData* inlc_global_data() { return data; }
 static const char* gl_data_net_file_name = "tmp_global_data";
 
-XRLC_LIGHT_API base_Face* convert_nax(u32 dummy);
-XRLC_LIGHT_API u32 convert_nax(base_Face* F);
+XRLC_LIGHT_API TFace* convert_nax(u32 dummy);
+XRLC_LIGHT_API u32 convert_nax(TFace* F);

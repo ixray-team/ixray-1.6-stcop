@@ -39,7 +39,7 @@ void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, boo
 	for (UVIt T=tris.begin(); T!=tris.end(); T++)
 	{
 		UVtri&	P			= *T;
-		Face	*F			= P.owner;
+		TFace	*F			= P.owner;
 		F->lmap_layer		= this;
 		F->AddChannel		(P.uv[0], P.uv[1], P.uv[2]);
 	}

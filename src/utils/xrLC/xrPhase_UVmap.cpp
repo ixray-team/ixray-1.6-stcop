@@ -16,8 +16,8 @@ void Detach(vecFace* S)
 	{
 		for (int i = 0; i < 3; ++i)
 		{
-			Vertex* V = (*F)->v[i];
-			Vertex* VNewCreate;
+			TVertex* V = (*F)->v[i];
+			TVertex* VNewCreate;
 			map_v2v_it W = verts.find(V); // iterator
 
 			if (W == verts.end())
@@ -42,7 +42,7 @@ void Detach(vecFace* S)
 	verts.clear();
 }
 
-bool sort_faces(Face* face, Face* face2)
+bool sort_faces(TFace* face, TFace* face2)
 {
 	if (face->CalcArea() > face2->CalcArea())
 	{
@@ -75,7 +75,7 @@ void CBuild::xrPhase_UVmap()
 			continue;
 		}
 
-		Face* Fvl = g_XSplit[SP]->front();
+		TFace* Fvl = g_XSplit[SP]->front();
 		if (Fvl->Shader().flags.bLIGHT_Vertex)
 		{
 			continue; // do-not touch (skip)
@@ -98,7 +98,7 @@ void CBuild::xrPhase_UVmap()
 				break;
 			}
 			// Select maximal sized poly
-			Face* msF = nullptr;
+			TFace* msF = nullptr;
 
 			for (auto FACE : *g_XSplit[SP])
 			{
@@ -129,7 +129,7 @@ void CBuild::xrPhase_UVmap()
 				auto rIT = std::remove_if(
 					g_XSplit[SP]->begin(),
 					g_XSplit[SP]->end(),
-					[&](Face* F)
+					[&](TFace* F)
 					{
 						if (F->pDeflector != nullptr)
 						{

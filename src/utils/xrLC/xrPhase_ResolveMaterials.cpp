@@ -45,7 +45,7 @@ void	CBuild::xrPhase_ResolveMaterials(const vecFace& faces, vec2Face& Split)
 	// Локальные хранилища для потоков -> потом сведём в общий map
 	concurrency::combinable<std::unordered_map<_mat_key, u32>> localCounts;
 
- 	xr_parallel_foreach(faces.begin(), faces.end(), [&](Face* F)
+ 	xr_parallel_foreach(faces.begin(), faces.end(), [&](TFace* F)
 		{
 			localCounts.local()[{F->dwMaterial, (bool)F->flags.bSharedMaterial}] += 1;
 		});
@@ -76,10 +76,10 @@ void	CBuild::xrPhase_ResolveMaterials(const vecFace& faces, vec2Face& Split)
 	}
 
 	// Performing Subdivs
-	concurrency::concurrent_vector<concurrency::concurrent_vector<Face*>> bins;
+	concurrency::concurrent_vector<concurrency::concurrent_vector<TFace*>> bins;
 	bins.reserve(count.size());
 	bins.resize(count.size());
- 	xr_parallel_foreach(faces.begin(), faces.end(), [&](Face* F)
+ 	xr_parallel_foreach(faces.begin(), faces.end(), [&](TFace* F)
 		{
 			if (!F->Shader().flags.bRendering)
 			{

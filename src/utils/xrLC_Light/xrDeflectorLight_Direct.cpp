@@ -14,9 +14,11 @@ void CDeflector::Light(base_lighting* LightsSelected)
 	bb.invalidate();
  	for (u32 fid = 0; fid < UVpolys.size(); fid++)
 	{
-		Face* F = UVpolys[fid].owner;
+		auto F = UVpolys[fid].owner;
 		for (int i = 0; i < 3; i++)
+		{
 			bb.modify(F->v[i]->P);
+		}
 	}
 	bb.getsphere(Sphere.P, Sphere.R);
 	 
@@ -112,7 +114,7 @@ void CDeflector::L_Direct	( base_lighting* LightsSelected)
 {
 	u32 flags = LGetCurrentFlags();
  
- 	auto EdgeProcessing = [&](  base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+ 	auto EdgeProcessing = [&](  base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, TFace* skip)
 		{
 			Fvector		vdir;
 			vdir.sub(v2, v1);
@@ -246,7 +248,7 @@ void CDeflector::L_Direct	( base_lighting* LightsSelected)
 	for (u32 t=0; t<UVpolys.size(); t++)
 	{
 		UVtri&		T	= UVpolys[t];
-		Face*		F	= T.owner;
+		TFace*		F	= T.owner;
 		R_ASSERT	(F);
 		EdgeProcessing( LightsSelected, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size,F);
 		EdgeProcessing( LightsSelected, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size,F);

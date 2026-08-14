@@ -5,7 +5,7 @@
 #include "../../xrCore/Collision/xrCDB.h"
 #include "../Shader_xrLC.h"
 
-u32 convert_nax(base_Face* F);
+u32 convert_nax(TFace* F);
 
 void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 {

@@ -37,7 +37,7 @@ void CBuild::validate_splits(const vec2Face& Split)
 	}
 }
 
-void Face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3] ) 
+void Face2OGF_Vertices( const TFace &FF, OGF_Vertex	V[3] ) 
 {
 	for (u32 fv=0; fv<3; fv++)
 	{
@@ -58,7 +58,7 @@ void Face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3] )
 	}
 }
 
-void OGF_AddFace( OGF &ogf, const Face& FF, bool _tc_ )
+void OGF_AddFace( OGF &ogf, const TFace& FF, bool _tc_ )
 {
 	OGF_Vertex	V[3];
 	// Geometry
@@ -72,7 +72,7 @@ void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
 {
 	for (vecFaceCit Fit=faces.begin(); Fit!=faces.end(); Fit++)
 	{
-		Face*	FF = *Fit;
+		TFace*	FF = *Fit;
 		R_ASSERT(FF);
 		OGF_AddFace( ogf, *FF, _tc_ );
 	}
@@ -104,7 +104,7 @@ void CBuild::Flex2OGF()
  
 			auto& faces = g_XSplit[sID];
  			OGF*		pOGF	= new OGF ();
-			Face*		F		= (* faces->begin() );	// first face	
+			TFace*		F		= (* faces->begin() );	// first face	
 			R_ASSERT	(F);
 			auto Sector = GetMaterialSector(*F);	
 			//b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material

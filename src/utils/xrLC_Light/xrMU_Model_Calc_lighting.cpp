@@ -4,15 +4,13 @@
 #include "light_point.h"
  
 #include "../../xrCore/Collision/xrCDB.h"
-#include "../Shader_xrLC.h"
-#include "mu_model_face.h"
 #include "xrFace.h"
 #include "xrLC_GlobalData.h"
 
 #include "../xrForms/CompilersUI.h"
 
 extern CompilersMode gCompilerMode;
-extern void		LightPoint(EmbreeRayTraceModel& MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
+extern void		LightPoint(EmbreeRayTraceModel& MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, TFace* skip);
 
 //-----------------------------------------------------------------------
 void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, EmbreeRayTraceModel& MDL, base_lighting& lights, u32 flags)
@@ -38,7 +36,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 	DB.ray_options				(0);
 
 	// MT-Safe 
-	xr_vector<Vertex> SafeVertices(m_vertices.size());
+	xr_vector<TVertex> SafeVertices(m_vertices.size());
  	for (size_t Iter = 0; Iter < m_vertices.size(); Iter++)
  		SafeVertices[Iter] = *m_vertices[Iter];
 	
@@ -185,7 +183,7 @@ void xrMU_Model::calc_lighting	()
 
 		for (auto& F : faces)
 		{
-			auto _F = (Face*)F.ptr;
+			auto _F = (TFace*)F.ptr;
 			_F->CacheOpacity();
 		}
 

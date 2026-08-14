@@ -13,7 +13,7 @@ const int    FLOOR_VALUE = 1;
 
 //extern volatile u32	dwInvalidFaces;
 
-IC bool				FaceEqual(Face& F1, Face& F2)
+IC bool				FaceEqual(TFace& F1, TFace& F2)
 {
 	// Test for 6 variations
 	if ((F1.v[0]==F2.v[0]) && (F1.v[1]==F2.v[1]) && (F1.v[2]==F2.v[2])) return true;
@@ -50,7 +50,7 @@ void CBuild::PreOptimize()
            Progress(float ( it ) / float( lc_global_data()->g_vertices().size())  );
         }
 
-        Vertex* pTest = lc_global_data()->g_vertices()[it];
+        TVertex* pTest = lc_global_data()->g_vertices()[it];
         Fvector& V = pTest->P;
          
  
@@ -65,7 +65,7 @@ void CBuild::PreOptimize()
         auto itHash = hashTable.find(hashKey);
         if (itHash != hashTable.end())
         {
-            Vertex* parsed = nullptr;
+            TVertex* parsed = nullptr;
             for (auto& v : itHash->second)
             {
                 if (v->similar(*pTest, g_params().m_weld_distance))
@@ -96,7 +96,7 @@ void CBuild::PreOptimize()
 	for (u32 it=0; it<lc_global_data()->g_faces().size(); it++)
 	{
 		R_ASSERT		(it>=0 && it<(int)lc_global_data()->g_faces().size());
-		Face* F			= lc_global_data()->g_faces()[it];
+		TFace* F			= lc_global_data()->g_faces()[it];
 		if ( F->isDegenerated()) {
 			lc_global_data()->destroy_face	(lc_global_data()->g_faces()[it]);
 			Fremoved			++;
@@ -141,5 +141,5 @@ void CBuild::PreOptimize()
 #include "../xrLC_Light/xrMU_Model_Reference.h"
 void CBuild::IsolateVertices	(bool bProgress)
 {
-	isolate_vertices<Vertex, false>( bProgress, lc_global_data()->g_vertices() );
+	isolate_vertices( bProgress, lc_global_data()->g_vertices(), false );
 }

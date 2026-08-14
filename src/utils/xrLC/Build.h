@@ -22,9 +22,9 @@ extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
 
 
 
-typedef	int		tesscb_estimator	( const Face* F );	// -1 = none, 0,1,2 = edge-number
-typedef void	tesscb_face			(Face*		F);	// new face
-typedef void	tesscb_vertex		(Vertex*	V);	// new vertex
+using tesscb_estimator = int( const TFace* F );	// -1 = none, 0,1,2 = edge-number
+using tesscb_face = void(TFace*		F);	// new face
+using tesscb_vertex = void(TVertex*	V);	// new vertex
 
 class  base_lighting;
 extern size_t GetHeapMemory();
@@ -50,22 +50,22 @@ public:
 	xr_vector<const char*>				g_Shaders;
 	CDB::CollectorPacked			CL;
 
-	static u16 GetMaterialSector(const Face& F);
-	static u16 GetMaterialReserved(const Face& F);
-	static u32 GetMaterialInternalMaxArea(const Face& F);
-	static u32& GetMutableMaterialInternalMaxArea(const Face& F);
-	static b_BuildTexture& GetTexture(const Face& F);
+	static u16 GetMaterialSector(const TFace& F);
+	static u16 GetMaterialReserved(const TFace& F);
+	static u32 GetMaterialInternalMaxArea(const TFace& F);
+	static u32& GetMutableMaterialInternalMaxArea(const TFace& F);
+	static b_BuildTexture& GetTexture(const TFace& F);
 	static u16 GetMaterialSector(u16 index, bool shared);
 	static u16 GetMaterialReserved(u16 index, bool shared);
 	static u32 GetMaterialInternalMaxArea(u16 index, bool shared);
 	static b_BuildTexture& GetTexture(u16 index, bool shared);
 	
-	static Shader_xrLC& GetShaderXRLC(const Face& F);
+	static Shader_xrLC& GetShaderXRLC(const TFace& F);
 	static Shader_xrLC& GetShaderXRLC(u32 ID, bool Shared);
 
-	str_c GetMaterialShaderName(const Face& F) const;
+	str_c GetMaterialShaderName(const TFace& F) const;
 	str_c GetMaterialShaderName(u16 index, bool shared) const;
-	str_c GetMaterialShaderXRLCName(const Face& F) const;
+	str_c GetMaterialShaderXRLCName(const TFace& F) const;
 	str_c GetMaterialShaderXRLCName(u16 index, bool shared) const;
 
 	static xr_vector<b_material>& materials();
@@ -95,7 +95,7 @@ public:
 	void	u_SmoothVertColors		(int count);
 
 	void	CalcNormals				();
-	void	MU_ModelsCalculateNormals();
+	static void	MU_ModelsCalculateNormals();
 	void	xrPhase_TangentBasis	(vecVertex& Verts, vecFace& Faces);
 
 	void	BuildCForm				();

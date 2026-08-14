@@ -10,7 +10,7 @@ class ImplicitDeflector
 public:
 	b_BuildTexture*			texture;
 	lm_layer				lmap;
-	xr_vector<Face*>		faces;
+	xr_vector<TFace*>		faces;
 	
 	ImplicitDeflector() : texture(0)
 	{
@@ -50,7 +50,7 @@ public:
 #include "hash2D.h"
 class ImplicitCalcGlobs
 {
-	hash2D<Face*, 256, 256> hash2dImpl;
+	hash2D<TFace*, 256, 256> hash2dImpl;
 
 	ImplicitDeflector* defl;
 

@@ -10,7 +10,6 @@
 #include "xrMU_Model.h"
 #include "../../xrLC/Build.h"
 
-#include <base_face.h>
 #include "global_calculation_data.h"
 #include "xrMU_InstancedGroup.h"
 #include "../xrLC/Build.h"
@@ -82,7 +81,7 @@ void EmbreeInstancedModel::InitializeModel(xr_vector<FaceDataEmbree>& faces)
 	TriangleContainer geom_builder_transp;
 	for (auto& F : faces)
 	{
-		Face* Fc = (Face*)F.ptr;
+		TFace* Fc = (TFace*)F.ptr;
 		auto& geom = Fc->flags.bOpaque ? geom_builder_opacue : geom_builder_transp;
 		geom.AddFaceRaw(F.ptr, F.v1, F.v2, F.v3);
 	}
@@ -158,9 +157,9 @@ void EmbreeRayTraceModel::BuildRayTraceModel()
 			REF->export_cform_rcast_new(faces);
 			for (auto& F : faces)
 			{
-				bool isOpacue = ((Face*)F.ptr)->flags.bOpaque;
+				bool isOpacue = ((TFace*)F.ptr)->flags.bOpaque;
 				auto& buf = isOpacue || !use_transp ? opacue_geom : transp_geom;
-				buf.AddFaceRaw((Face*)F.ptr, F.v1, F.v2, F.v3);
+				buf.AddFaceRaw((TFace*)F.ptr, F.v1, F.v2, F.v3);
 			}
 		}
 		for (auto& Group : lc_global_data()->instanced_groups())
@@ -174,9 +173,9 @@ void EmbreeRayTraceModel::BuildRayTraceModel()
 					MU->export_cform_rcast_new(faces, Transform);
 					for (auto& F : faces)
 					{
-						bool isOpacue = ((Face*)F.ptr)->flags.bOpaque;
+						bool isOpacue = ((TFace*)F.ptr)->flags.bOpaque;
 						auto& buf = isOpacue || !use_transp ? opacue_geom : transp_geom;
-						buf.AddFaceRaw((Face*)F.ptr, F.v1, F.v2, F.v3);
+						buf.AddFaceRaw((TFace*)F.ptr, F.v1, F.v2, F.v3);
 					}
 				}
 			}

@@ -26,13 +26,13 @@ constexpr bool is_CCW(int _1, int _2)
 }
 
 // Iterate on edges - select longest
-int		callback_edge_longest	( const Face* F)
+int		callback_edge_longest	( const TFace* F)
 {
 	float	max_err				= -1;
 	int		max_id				= -1;
 	for (u32 e=0; e<3; e++)
 	{
-		Vertex					*V1,*V2;
+		TVertex					*V1,*V2;
 		F->EdgeVerts			(e,&V1,&V2);
 		float len				= V1->P.distance_to	(V2->P);	// len
 		if (len<aht_max_edge)	continue;
@@ -57,7 +57,7 @@ void CBuild::xrPhase_AdaptiveHT_tessalte()
 			lc_global_data()->g_faces()[fit]->flags.bLocked = true;
 			lc_global_data()->g_faces()[fit]->CalcNormal();
 		}
-		u_Tesselate(callback_edge_longest, 0, 0);		// tesselate
+		u_Tesselate(callback_edge_longest, nullptr, nullptr);		// tesselate
 	}
 }
 
@@ -83,10 +83,10 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
  
 				base_color_c		vC;
 				vecVertex& verts = lc_global_data()->g_vertices();
-				Vertex* V = verts[taskID];
+				TVertex* V = verts[taskID];
 
 				V->normalFromAdj();
-				LightPoint(EmbreeMain, vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0);
+				LightPoint(EmbreeMain, vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, nullptr);
 				vC.mul(0.5f);
 				V->C._set(vC);
 			}
@@ -111,7 +111,7 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 			// 1: VertexID, 2: SampleID
 			auto& V = lc_global_data()->g_vertices()[VertexID];
 			V->normalFromAdj();
-			GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(VertexID, 0), nullptr, V->P, V->N, 0);
+			GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(VertexID, 0), nullptr, V->P, V->N, nullptr);
 		
 			AditionalData("Vertex : %u / %u", VertexID, lc_global_data()->g_vertices().size());
 		}
@@ -131,9 +131,9 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 #endif
 }
 
-void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )
+void CollectProblematicFaces(const TFace &F, int max_id, xr_vector<TFace*> & reult, TVertex** V1, TVertex** V2 )
 {
-	xr_vector<Face*>			&adjacent_vec = reult;
+	xr_vector<TFace*>			&adjacent_vec = reult;
 	adjacent_vec.reserve		(6*2*3);
 	// now, we need to tesselate all faces which shares this 'problematic' edge
 	// collect all this faces
@@ -142,7 +142,7 @@ void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult
 	adjacent_vec.clear	();
 	for ( u32 adj=0; adj<(*V1)->m_adjacents.size(); ++adj )
 	{
-		Face* A					= (*V1)->m_adjacents[adj];
+		TFace* A					= (*V1)->m_adjacents[adj];
 		if ( A->flags.bSplitted )	
 			continue;
 
@@ -150,13 +150,13 @@ void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult
 			adjacent_vec.push_back	( A );
 	}
 
-	std::sort			(adjacent_vec.begin(), adjacent_vec.end());
-	adjacent_vec.erase	(std::unique(adjacent_vec.begin(),adjacent_vec.end()),adjacent_vec.end());
+	std::ranges::sort			(adjacent_vec);
+	adjacent_vec.erase	(std::ranges::unique(adjacent_vec).begin(),adjacent_vec.end());
 }
 
 bool check_and_destroy_splited( u32 face_it )
 {
-	Face* F	= lc_global_data()->g_faces()[face_it];
+	TFace* F	= lc_global_data()->g_faces()[face_it];
 	VERIFY( F );
 	if (F->flags.bSplitted)	
 	{
@@ -166,7 +166,7 @@ bool check_and_destroy_splited( u32 face_it )
 	}
 	return true;
 }
-bool do_tesselate_face( const Face &F, tesscb_estimator* cb_E, int &max_id )
+bool do_tesselate_face( const TFace &F, tesscb_estimator* cb_E, int &max_id )
 {
 	if (F.CalcArea()<EPS_L)	
 		return false;//continue;
@@ -176,17 +176,17 @@ bool do_tesselate_face( const Face &F, tesscb_estimator* cb_E, int &max_id )
 	return true;
 }
 
-void	tessalate_faces( xr_vector<Face*> & faces, Vertex* V1, Vertex* V2,  tesscb_face* cb_F, tesscb_vertex* cb_V  )
+void	tessalate_faces( xr_vector<TFace*> & faces, TVertex* V1, TVertex* V2,  tesscb_face* cb_F, tesscb_vertex* cb_V  )
 {
-		xr_vector<Face*> & adjacent_vec = faces;
+		xr_vector<TFace*> & adjacent_vec = faces;
 		// create new vertex (lerp)
-		Vertex*		V		= lc_global_data()->create_vertex();
+		TVertex*		V		= lc_global_data()->create_vertex();
 		V->P.lerp			(V1->P, V2->P, .5f);
 
 		// iterate on faces which share this 'problematic' edge
 		for (u32 af_it=0; af_it<adjacent_vec.size(); ++af_it)
 		{
-			Face*	AF			= adjacent_vec[af_it];
+			TFace*	AF			= adjacent_vec[af_it];
 			VERIFY				(false==AF->flags.bSplitted);
 			AF->flags.bSplitted	= true;
 			_TCF&	atc			= AF->tc.front();
@@ -203,13 +203,13 @@ void	tessalate_faces( xr_vector<Face*> & faces, Vertex* V1, Vertex* V2,  tesscb_
 			UV.averageA			(atc.uv[id1],atc.uv[id2]);
 
 			// Create F1 & F2
-			Face* F1			= lc_global_data()->create_face();
+			TFace* F1			= lc_global_data()->create_face();
 			F1->flags.bSplitted	= false;
 			F1->flags.bLocked	= false;
 			F1->dwMaterial		= AF->dwMaterial;
 			F1->dwMaterialGame	= AF->dwMaterialGame;
 			F1->flags.bSharedMaterial = AF->flags.bSharedMaterial;
-			Face* F2			= lc_global_data()->create_face();
+			TFace* F2			= lc_global_data()->create_face();
 			F2->flags.bSplitted	= false;
 			F2->flags.bLocked	= false;
 			F2->dwMaterial		= AF->dwMaterial;
@@ -293,8 +293,8 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 	
 	for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)
 	{
-		Face* F					= lc_global_data()->g_faces()[I];
-		if (0==F)				
+		TFace* F					= lc_global_data()->g_faces()[I];
+		if (nullptr==F)				
 			continue;
 		if( !check_and_destroy_splited( I ) )
 			continue;
@@ -304,8 +304,8 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 		if( !do_tesselate_face( *F, cb_E, max_id ) )
 			continue;
 
-		xr_vector<Face*>		adjacent_vec;
-		Vertex					*V1,*V2;
+		xr_vector<TFace*>		adjacent_vec;
+		TVertex					*V1,*V2;
 		CollectProblematicFaces( *F, max_id, adjacent_vec, &V1, &V2 );
 		++counter_create;
 		if (0==(counter_create%100000))	
@@ -318,22 +318,28 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 
 	for (u32 I = 0; I < lc_global_data()->g_vertices().size(); ++I)
 	if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())
+	{
 		lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[I]);
+	}
 	Status("Working: %d verts created, %d(now) / %d(was) ...", counter_create, lc_global_data()->g_vertices().size(), cnt_verts);
 
 
 
 	// Cleanup
 	for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)	
-	if (0!=lc_global_data()->g_faces()[I] && lc_global_data()->g_faces()[I]->flags.bSplitted)	
+	if (nullptr!=lc_global_data()->g_faces()[I] && lc_global_data()->g_faces()[I]->flags.bSplitted)
+	{
 		lc_global_data()->destroy_face	(lc_global_data()->g_faces()[I]);
+	}
 
 	for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
 	if (lc_global_data()->g_vertices()[I] && lc_global_data()->g_vertices()[I]->m_adjacents.empty())
+	{
 		lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
+	}
 
-	lc_global_data()->g_faces().erase		(std::remove(lc_global_data()->g_faces().begin(),lc_global_data()->g_faces().end(),(Face*)0),lc_global_data()->g_faces().end());
-	lc_global_data()->g_vertices().erase	(std::remove(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),(Vertex*)0),lc_global_data()->g_vertices().end());
+	std::erase(lc_global_data()->g_faces(),nullptr);
+	std::erase(lc_global_data()->g_vertices(),nullptr);
 	g_bUnregister		= true;
 }
 
@@ -357,14 +363,14 @@ void CBuild::u_SmoothVertColors(int count)
 			while (true)
 			{
 				// Circle
-				xr_vector<Vertex*> circle_vec;
+				xr_vector<TVertex*> circle_vec;
 				u32 IDX = ThreadTaskID.fetch_add(1);
 				if (IDX >= lc_global_data()->g_vertices().size()) break;
  
-				Vertex* V = lc_global_data()->g_vertices()[IDX];
+				TVertex* V = lc_global_data()->g_vertices()[IDX];
  				for (u32 fit = 0; fit < V->m_adjacents.size(); ++fit)
 				{
-					Face* F = V->m_adjacents[fit];
+					TFace* F = V->m_adjacents[fit];
 					circle_vec.push_back(F->v[0]);
 					circle_vec.push_back(F->v[1]);
 					circle_vec.push_back(F->v[2]);

@@ -43,7 +43,7 @@ ICF void CreateBox(vecFace& subdiv, Fbox& bb_base)
 {
 	for (u32 it = 0; it < subdiv.size(); it++)
 	{
-		Face* F = subdiv[it];
+		TFace* F = subdiv[it];
 		bb_base.modify(F->v[0]->P);
 		bb_base.modify(F->v[1]->P);
 		bb_base.modify(F->v[2]->P);

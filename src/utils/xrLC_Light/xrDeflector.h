@@ -39,7 +39,7 @@ public:
 	};
 
 	void	OA_SetNormal		(Fvector &_N )	{ normal.set(_N); normal.normalize(); VERIFY(_valid(normal)); }
-	bool	OA_Place			(Face *owner);
+	bool	OA_Place			(TFace *owner);
 	void	OA_Place			(vecFace& lst);
 	void	OA_Export			();
 		
@@ -50,7 +50,7 @@ public:
 	void	L_Direct			(  base_lighting* LightsSelected);
  
 	u32 weight() { return layer.Area(); }	
-	Face& GetBaseMaterial();
+	TFace& GetBaseMaterial();
 
 	void	Bounds				(u32 ID, Fbox2& dest)
 	{
@@ -128,6 +128,6 @@ extern void		lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF);
 
 extern void UpdateCurrentPhase(str_c text);
 
-extern XRLC_LIGHT_API void		LightPoint	(EmbreeRayTraceModel& MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
+extern XRLC_LIGHT_API void		LightPoint	(EmbreeRayTraceModel& MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, TFace* skip);
 void LightPoint_Jitters(xr_vector<JiterPixel>& world_pos, base_lighting& lights, u32 flags);
 void LightPoint_Details(xr_vector<DetailsTask>& world_pos, base_lighting& lights, u32 flags);

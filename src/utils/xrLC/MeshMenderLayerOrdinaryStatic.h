@@ -5,7 +5,7 @@
 
 #include "../xrLC_Light/xrFace.h"
 
-IC void	set_vertex( MeshMender::Vertex &out_vertex, const Vertex& in_veretex, const Fvector2 Ftc )
+IC void	set_vertex( MeshMender::Vertex &out_vertex, const TVertex& in_veretex, const Fvector2 Ftc )
 {
 			cv_vector( out_vertex.pos, in_veretex.P );
 			cv_vector( out_vertex.normal, in_veretex.N );
@@ -16,7 +16,7 @@ IC void	set_vertex( MeshMender::Vertex &out_vertex, const Vertex& in_veretex, co
 }
 
 
-IC void	set_face( Face &out_face, const MeshMender::Vertex in_vertices[3] )
+IC void	set_face( TFace &out_face, const MeshMender::Vertex in_vertices[3] )
 {
 	for( u16 v = 0; v< 3; ++v )
 	{

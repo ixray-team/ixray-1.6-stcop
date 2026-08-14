@@ -37,7 +37,7 @@ void Jitter_Select(Fvector2* &Jitter, u32& Jcount)
 	}
 }
 
-void LightPoint(EmbreeRayTraceModel& MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip)
+void LightPoint(EmbreeRayTraceModel& MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, TFace* skip)
 {
 	auto processLight = [&]<typename T>(R_Light & L, T & accumulator, bool isSunOrHemi)
 	{   

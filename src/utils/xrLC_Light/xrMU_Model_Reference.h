@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base_color.h"
-#include "mu_model_face.h"
 
 class xrMU_Model;
 struct FaceDataEmbree;

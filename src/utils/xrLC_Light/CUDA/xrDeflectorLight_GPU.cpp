@@ -16,7 +16,7 @@ void CDeflector::LightGPU()
 	Fbox bb;		bb.invalidate();
 	for (u32 fid = 0; fid < UVpolys.size(); fid++)
 	{
-		Face* F = UVpolys[fid].owner;
+		TFace* F = UVpolys[fid].owner;
 		for (int i = 0; i < 3; i++)	bb.modify(F->v[i]->P);
 	}
 	bb.getsphere(Sphere.P, Sphere.R);
@@ -33,7 +33,7 @@ void CDeflector::LightGPU()
  
 void CDeflector::L_DirectGPU()
 {
- 	auto EdgeProcessing = [](CDeflector* Deflector, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+ 	auto EdgeProcessing = [](CDeflector* Deflector, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, TFace* skip)
 		{
 			Fvector vdir;
 			vdir.sub(v2, v1);
@@ -112,7 +112,7 @@ void CDeflector::L_DirectGPU()
  				{
 					if (T->isInside(P, B))
 					{
-						Face* F = T->owner;
+						TFace* F = T->owner;
 						GetBarycentricNormalized(F, wP, wN, B);
 						GPUTaskinSystem.LightPointPacked_add_task(TaskID, this, wP, wN, F);
 						Fcount += 1;
@@ -133,7 +133,7 @@ void CDeflector::L_DirectGPU()
 	for (u32 t = 0; t < UVpolys.size(); t++)
 	{
 		UVtri& T = UVpolys[t];
-		Face* F = T.owner;
+		TFace* F = T.owner;
 		EdgeProcessing(this, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size, F);
 		EdgeProcessing(this, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F);
 		EdgeProcessing(this, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F);

@@ -27,14 +27,14 @@ IC float	SqrDistance2Segment(const Fvector& P, const Fvector& A, const Fvector& 
 
 struct record
 {
-	Vertex	*E1,*E2;
-	Vertex	*T;
+	TVertex	*E1,*E2;
+	TVertex	*T;
 };
 
 static xr_vector<record>*	vecJunctions;
 static xr_vector<record>*	vecEdges;
 
-static void check(Vertex* vE1, Vertex* vE2, Vertex* vTEST)
+static void check(TVertex* vE1, TVertex* vE2, TVertex* vTEST)
 {
 	if (_sqrt(SqrDistance2Segment(vTEST->P,vE1->P,vE2->P))<0.002f)	
 	{
@@ -63,7 +63,7 @@ static void check(Vertex* vE1, Vertex* vE2, Vertex* vTEST)
 	}
 }
 
-static void edge(Vertex* vE1, Vertex* vE2)
+static void edge(TVertex* vE1, TVertex* vE2)
 {
 	float		len	= vE1->P.distance_to(vE2->P);
 	if (len<32.f)	return;

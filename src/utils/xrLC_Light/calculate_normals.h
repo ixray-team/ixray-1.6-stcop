@@ -1,31 +1,27 @@
 #pragma once
 
 #include "itterate_adjacents_static.h"
+#include "xrFace.h"
 #include "../../Editors/Public/itterate_adjacents.h"
 
-template <typename typeVertex, bool ForMU>
 class calculate_normals
-{
-
-	typedef	typeVertex											type_vertex;
- 	typedef	typename typeVertex::type_face						type_face;
-	
+{	
 	
 	//these typedefs to hide global typedefs!!!
-	typedef xr_vector<type_vertex*>								vecVertex;
+	typedef xr_vector<TVertex*>								vecVertex;
 	typedef typename vecVertex::iterator						vecVertexIt;
-	typedef xr_vector<type_face*>								vecFace;
+	typedef xr_vector<TFace*>								vecFace;
 	typedef typename vecFace::iterator							vecFaceIt;
 
 	typedef vecFace												vecAdj;
 	typedef typename vecAdj::iterator							vecAdjIt;
 private:	
 
-typedef  itterate_adjacents< itterate_adjacents_params_static<type_vertex> > itterate_adjacents_type;
+typedef  itterate_adjacents< itterate_adjacents_params_static> itterate_adjacents_type;
 
 public:
 	
-static void	calc_normals( vecVertex &vertices, vecFace &faces )
+static void	calc_normals( vecVertex &vertices, vecFace &faces, bool IsMU )
 {
  	u32		Vcount	= (u32)vertices.size();
 	float	p_total = 0;
@@ -35,10 +31,10 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 	// Status			("Processing...");
 	float sm_cos	= std::cos(deg2rad(g_params().m_sm_angle));
 
-	for (vecFaceIt it = faces.begin(); it!=faces.end(); it++)
+	for (auto face : faces)
 	{
-		(*it)->flags.bSplitted	= true;
-		(*it)->CalcNormal		();
+		face->flags.bSplitted	= true;
+		face->CalcNormal		();
 	}
 	 
 	// remark:
@@ -48,29 +44,29 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 
  	for (u32 I=0; I<Vcount; I++)
 	{
-		type_vertex* pTestVertex = vertices[I];
+		TVertex* pTestVertex = vertices[I];
  
 		for (vecAdjIt AFit = pTestVertex->m_adjacents.begin(); AFit!=pTestVertex->m_adjacents.end(); ++AFit)
 		{
-			type_face*	F					= *AFit;
+			TFace*	F					= *AFit;
 			F->flags.bSplitted			= false;
 		}
 
-		std::sort( pTestVertex->m_adjacents.begin(), pTestVertex->m_adjacents.end() );
+		std::ranges::sort(pTestVertex->m_adjacents);
 
 		while ( pTestVertex->m_adjacents.size() )	
 		{
  			vecFace new_adj;
-			typename itterate_adjacents_type::recurse_tri_params p( pTestVertex, new_adj, sm_cos );
+			itterate_adjacents_type::recurse_tri_params p( pTestVertex, new_adj, sm_cos );
 			itterate_adjacents_type::RecurseTri( 0, p );
  
-			type_vertex*	pNewVertex			= pTestVertex->CreateCopy_NOADJ( vertices );
+			TVertex*	pNewVertex			= pTestVertex->CreateCopy_NOADJ( vertices );
 			VCountAllocated++;
 
 
  			for (u32 a=0; a<new_adj.size(); ++a)
 			{
-				type_face* test		= new_adj[a];
+				TFace* test		= new_adj[a];
 				test->VReplace	( pTestVertex, pNewVertex );
 			}
 			new_adj.clear();
@@ -81,16 +77,20 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 	Progress		( 1.f );
 
 	// Destroy unused vertices
- 	isolate_vertices<type_vertex, ForMU>( false, vertices);
+ 	isolate_vertices( false, vertices, IsMU);
 	  
 	// Recalculate normals
-	for ( vecVertexIt it=vertices.begin(); it!=vertices.end(); it++ )
-		(*it)->normalFromAdj	();
+	for (auto Vertex : vertices)
+	{
+		Vertex->normalFromAdj();
+	}
 
 	// clMsg	("%d vertices was duplicated 'cause of SM groups",vertices.size()-Vcount);
 
 	// Clear temporary flag
-	for ( vecFaceIt it = faces.begin(); it!=faces.end(); it++ )
-		(*it)->flags.bSplitted = false;
+	for (auto face : faces)
+	{
+		face->flags.bSplitted = false;
+	}
 }
 };

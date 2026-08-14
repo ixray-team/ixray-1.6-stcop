@@ -4,10 +4,8 @@
 #include "xrFace.h"
 #include "xrDeflector.h"
 #include "Lightmap.h"
-#include "mu_model_face.h"
 #include "xrMU_Model.h"
 #include "xrMU_Model_Reference.h"
-#include "../../xrCore/Collision/xrCDB.h"
 
 bool g_using_smooth_groups = true;
 bool g_smooth_groups_by_faces = false;
@@ -47,13 +45,13 @@ void xrLC_GlobalData::initialize()
 
 xrSRWLock NaxGuard;
 
-XRLC_LIGHT_API base_Face* convert_nax(u32 dummy)
+XRLC_LIGHT_API TFace* convert_nax(u32 dummy)
 {
 	xrSRWLockGuard guard(NaxGuard, true);
  	return lc_global_data()->FacesStorage[dummy];
 }
 
-XRLC_LIGHT_API u32 convert_nax(base_Face* F)
+XRLC_LIGHT_API u32 convert_nax(TFace* F)
 {
 	xrSRWLockGuard guard(NaxGuard);
  	lc_global_data()->FacesStorage.push_back(F);
@@ -103,9 +101,9 @@ void vec_free(xr_vector<T*>& v)
 void mu_mesh_clear();
 
 // create - destroy 
-Face* xrLC_GlobalData::create_face()
+TFace* xrLC_GlobalData::create_face()
 {
-	auto NewFace = new Face();
+	auto NewFace = new TFace();
 	NewFace->pDeflector = nullptr;
 	NewFace->flags.bSplitted = false;
 	inlc_global_data()->g_faces().push_back(NewFace);
@@ -114,7 +112,7 @@ Face* xrLC_GlobalData::create_face()
 	return NewFace;
 }
 
-void xrLC_GlobalData::destroy_face(Face*& f)
+void xrLC_GlobalData::destroy_face(TFace*& f)
 {
 	if (g_bUnregister) 
 	{
@@ -137,9 +135,9 @@ void xrLC_GlobalData::destroy_face(Face*& f)
 	xr_delete(f);
 }
 
-Vertex* xrLC_GlobalData::create_vertex()
+TVertex* xrLC_GlobalData::create_vertex()
 {
-	auto NewVertex = new Vertex();
+	auto NewVertex = new TVertex();
 	R_ASSERT(inlc_global_data());
 	if(inlc_global_data()->vert_construct_register())
 	{
@@ -148,11 +146,11 @@ Vertex* xrLC_GlobalData::create_vertex()
 	return NewVertex;
 }
 
-void xrLC_GlobalData::destroy_vertex(Vertex*& v)
+void xrLC_GlobalData::destroy_vertex(TVertex*& v)
 {
 	if (g_bUnregister) 
 	{
-		auto F = std::find(inlc_global_data()->g_vertices().begin(), inlc_global_data()->g_vertices().end(), v);
+		auto F = std::ranges::find(inlc_global_data()->g_vertices(), v);
 		if (F!=inlc_global_data()->g_vertices().end())
 		{
 			auto& verts = inlc_global_data()->g_vertices();
@@ -200,7 +198,7 @@ void xrLC_GlobalData::clear()
  	
 	for (auto F : _g_faces)
 	{
-		F->~Tface();
+		F->~TFace();
 		xr_free(F);
 	}
 	_g_faces.clear();
@@ -208,7 +206,7 @@ void xrLC_GlobalData::clear()
  
 	for (auto V : _g_vertices)
 	{
-		V->~Tvertex();
+		V->~TVertex();
 		xr_free(V);
 	}
  	_g_vertices.clear();

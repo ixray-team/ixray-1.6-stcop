@@ -3,7 +3,7 @@
 #include "../Shader_xrLC.h"
 #include "utils/xrLC/Build.h"
 
-bool	cmp_face_material		(Face* f1, Face* f2)
+bool	cmp_face_material		(TFace* f1, TFace* f2)
 {
 	if (f1->dwMaterial != f2->dwMaterial)
 	    return f1->dwMaterial < f2->dwMaterial;
@@ -43,9 +43,9 @@ void xrMU_Model::calc_materials	()
 	current.start		= 0;
 	current.count		= 1;
 
-	xr_set<Vertex*> unique_verts;
+	xr_set<TVertex*> unique_verts;
 
-    auto face_new_vert_count = [&](const Face* F) -> u32
+    auto face_new_vert_count = [&](const TFace* F) -> u32
     {
         u32 count = (u32)unique_verts.size();
         if (unique_verts.find(F->v[0]) == unique_verts.end())
@@ -60,7 +60,7 @@ void xrMU_Model::calc_materials	()
         return count;
     };
 
-    auto add_face_verts = [&](const Face* F)
+    auto add_face_verts = [&](const TFace* F)
     {
         unique_verts.insert(F->v[0]);
         unique_verts.insert(F->v[1]);

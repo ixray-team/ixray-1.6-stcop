@@ -113,7 +113,7 @@ CMemoryWriter& CBuild::err_tjunction()
 	return lc_global_data()->err_tjunction(); 
 }
 
-u16 CBuild::GetMaterialSector(const Face& F)
+u16 CBuild::GetMaterialSector(const TFace& F)
 {
 	if (F.flags.bSharedMaterial)
 	{
@@ -126,7 +126,7 @@ u16 CBuild::GetMaterialSector(const Face& F)
 	return Arr[F.dwMaterial].sector;
 }
 
-u16 CBuild::GetMaterialReserved(const Face& F)
+u16 CBuild::GetMaterialReserved(const TFace& F)
 {
 	if (F.flags.bSharedMaterial)
 	{
@@ -139,7 +139,7 @@ u16 CBuild::GetMaterialReserved(const Face& F)
 	return Arr[F.dwMaterial].reserved;
 }
 
-u32 CBuild::GetMaterialInternalMaxArea(const Face& F)
+u32 CBuild::GetMaterialInternalMaxArea(const TFace& F)
 {
 	if (F.flags.bSharedMaterial)
 	{
@@ -152,7 +152,7 @@ u32 CBuild::GetMaterialInternalMaxArea(const Face& F)
 	return Arr[F.dwMaterial].internal_max_area;
 }
 
-u32& CBuild::GetMutableMaterialInternalMaxArea(const Face& F)
+u32& CBuild::GetMutableMaterialInternalMaxArea(const TFace& F)
 {
 	if (F.flags.bSharedMaterial)
 	{
@@ -165,7 +165,7 @@ u32& CBuild::GetMutableMaterialInternalMaxArea(const Face& F)
 	return Arr[F.dwMaterial].internal_max_area;
 }
 
-b_BuildTexture& CBuild::GetTexture(const Face& F)
+b_BuildTexture& CBuild::GetTexture(const TFace& F)
 {
 	if (!F.flags.bSharedMaterial)
 	{
@@ -222,7 +222,7 @@ b_BuildTexture& CBuild::GetTexture(u16 index, bool shared)
 	return textures_shared()[&materials_shared()[index]];
 }
 
-Shader_xrLC& CBuild::GetShaderXRLC(const Face& F)
+Shader_xrLC& CBuild::GetShaderXRLC(const TFace& F)
 {
 	return GetShaderXRLC(F.dwMaterial, F.flags.bSharedMaterial);
 }
@@ -242,7 +242,7 @@ Shader_xrLC& CBuild::GetShaderXRLC(u32 ID, bool Shared)
 	return *Shader;
 }
 
-str_c CBuild::GetMaterialShaderName(const Face& F) const
+str_c CBuild::GetMaterialShaderName(const TFace& F) const
 {
 	if (F.flags.bSharedMaterial)
 	{
@@ -260,7 +260,7 @@ str_c CBuild::GetMaterialShaderName(u16 index, bool shared) const
 	return shader_render[materials()[index].shader].name;
 }
 
-str_c CBuild::GetMaterialShaderXRLCName(const Face& F) const
+str_c CBuild::GetMaterialShaderXRLCName(const TFace& F) const
 {
 	if (F.flags.bSharedMaterial)
 	{

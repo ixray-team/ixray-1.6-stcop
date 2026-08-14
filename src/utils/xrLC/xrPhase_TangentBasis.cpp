@@ -24,7 +24,7 @@ static u32 find_same_vertex( const xr_vector<u32> &m, const Fvector2& Ftc, const
 	return u32(-1);
 }
 
-static u32 add_vertex(const	Vertex& V,
+static u32 add_vertex(const	TVertex& V,
 				 const Fvector2& Ftc,
 				 xr_vector<MeshMender::Vertex>& theVerts)
 {
@@ -34,14 +34,14 @@ static u32 add_vertex(const	Vertex& V,
 	return theVerts.size() - 1;
 }
 
-static void	add_face(const vecVertex& Verts, const Face& F, 
+static void	add_face(const vecVertex& Verts, const TFace& F, 
 					xr_vector< MeshMender::Vertex >& theVerts,
 					xr_vector< unsigned int >& theIndices,
 					xr_vector<xr_vector<u32> >	&remap )
 {
 	for (u32 v=0; v<3; v++)
 	{
-		const Vertex* V = F.v[v];	
+		const TVertex* V = F.v[v];	
 		u32 ID	= u32(std::ranges::lower_bound(Verts,V)-Verts.begin());
 		xr_vector<u32>& m	= remap[ID];
 		Fvector2 Ftc = F.tc.front().uv[v];
@@ -91,7 +91,7 @@ void CBuild::xrPhase_TangentBasis(vecVertex& Verts, vecFace& Faces)
 	for (u32 f = 0; f < Faces.size(); f++)
 	{
 		Progress(float(f) / float(Faces.size()));
-		Face* F = Faces[f];
+		TFace* F = Faces[f];
 		add_face(Verts, *F, mender_in_out_verts, mender_in_out_indices, remap);
 	}
 	remap.clear();
@@ -129,7 +129,7 @@ void CBuild::xrPhase_TangentBasis(vecVertex& Verts, vecFace& Faces)
 	Status("Retreiving basis...");
 	for (u32 f = 0; f < Faces.size(); f++)
 	{
-		Face* F = Faces[f];
+		TFace* F = Faces[f];
 		u32	id0 = mender_in_out_indices[f * 3 + 0];	// vertex index
 		u32	id1 = mender_in_out_indices[f * 3 + 1];	// vertex index
 		u32	id2 = mender_in_out_indices[f * 3 + 2];	// vertex index

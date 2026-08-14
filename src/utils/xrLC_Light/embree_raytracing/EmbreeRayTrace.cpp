@@ -102,7 +102,7 @@ void FilterRayTraceTransp(const struct RTCFilterFunctionNArguments* args)
 		}
 		else if (UD->DummyType == 0)
 		{
-			auto _F = (Face*) F;
+			auto _F = (TFace*) F;
 			const b_texture& T = CBuild::GetTexture(*_F);
 			// fetch pixel
 			if (T.pSurface.Empty())
@@ -274,9 +274,9 @@ void EmbreeRayTraceModel::InitializeGeometry_Model(xr_vector<FaceDataEmbree>& fa
 	transp_geom.ClearAll();
 	for (auto& F : faces)
 	{
-		bool isOpacue = ((Face*)F.ptr)->flags.bOpaque;
+		bool isOpacue = ((TFace*)F.ptr)->flags.bOpaque;
 		auto& buf = isOpacue ? opacue_geom : transp_geom;
-		buf.AddFaceRaw((Face*)F.ptr, F.v1, F.v2, F.v3);
+		buf.AddFaceRaw((TFace*)F.ptr, F.v1, F.v2, F.v3);
 	}
 	opacue_geom.useMsg = false;
 	transp_geom.useMsg = false;

@@ -12,28 +12,28 @@
 #include "Collision/override/Model.h"
 #include "utils/xrLC_Light/xrMU_InstancedGroup.h"
 
-int GetVertexIndex(Vertex* Vert)
+int GetVertexIndex(TVertex* Vert)
 {
 	vecVertexIt it = std::lower_bound(lc_global_data()->g_vertices().begin(), lc_global_data()->g_vertices().end(), Vert);
 	R_ASSERT(it != lc_global_data()->g_vertices().end());
 	return int(it - lc_global_data()->g_vertices().begin());
 }
 
-int getCFormVID(vecVertex& V, Vertex* Vertx)
+int getCFormVID(vecVertex& V, TVertex* Vertx)
 {
 	vecVertexIt it = std::lower_bound(V.begin(), V.end(), Vertx);
 	return int(it - V.begin());
 }
 int bCriticalErrCnt = 0;
 
-void TestEdge(Vertex* V1, Vertex* V2, Face* parent)
+void TestEdge(TVertex* V1, TVertex* V2, TFace* parent)
 {
-	Face* found = 0;
+	TFace* found = 0;
 	int		f_count = 0;
 
 	for (vecFaceIt I = V1->m_adjacents.begin(); I != V1->m_adjacents.end(); ++I)
 	{
-		Face* test = *I;
+		TFace* test = *I;
 		if (test == parent) continue;
 		if (test->VContains(V2))
 		{
@@ -67,7 +67,7 @@ void CBuild::BuildCForm	()
 		cfFaces->reserve(lc_global_data()->g_faces().size());
 		for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); ++I)
 		{
-			Face* F = *I;
+			TFace* F = *I;
 			if (F->Shader().flags.bCollision)
 			{
 				cfFaces->push_back(F);
@@ -110,7 +110,7 @@ void CBuild::BuildCForm	()
 	CDB::CollectorPacked CL(BB, (int)cfVertices->size(), (int)cfFaces->size());
 	for (vecFaceIt F = cfFaces->begin(); F != cfFaces->end(); F++)
 	{
-		Face* T = *F;
+		TFace* T = *F;
 
 		TestEdge(T->v[0], T->v[1], T);
 		TestEdge(T->v[1], T->v[2], T);
@@ -201,7 +201,7 @@ void CBuild::BuildCForm	()
 	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
 	for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
 	{
-		Face* F = *I;
+		TFace* F = *I;
 		F->pDeflector = nullptr;
 	}
 }
@@ -223,7 +223,7 @@ void CBuild::BuildCTree()
 		cfFaces.reserve(lc_global_data()->g_faces().size());
 		for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); ++I)
 		{
-			Face* F = *I;
+			TFace* F = *I;
 			if (F->Shader().flags.bCollision)
 			{
 				cfFaces.push_back(F);
@@ -270,7 +270,7 @@ void CBuild::BuildCTree()
 	CDB::CollectorPacked CL(BB, (int)cfVertices.size(), (int)cfFaces.size());
 	for (vecFaceIt F = cfFaces.begin(); F != cfFaces.end(); F++)
 	{
-		Face* T = *F;
+		TFace* T = *F;
 
 		TestEdge(T->v[0], T->v[1], T);
 		TestEdge(T->v[1], T->v[2], T);
@@ -422,7 +422,7 @@ void CBuild::BuildCTree()
 	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
 	for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
 	{
-		Face* F = *I;
+		TFace* F = *I;
 		F->pDeflector = nullptr;
 	}
 }

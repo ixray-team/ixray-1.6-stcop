@@ -2,8 +2,9 @@
 #include "xrMU_Model.h"
 //#include "build.h"
 #include "../../xrCore/xrPool.h"
-poolSS<Face,8*1024>	&mu_faces_pool();
-poolSS<Vertex,8*1024>	&mu_vertices_pool();
+
+poolSS<TFace,8*1024>	&mu_faces_pool();
+poolSS<TVertex,8*1024>	&mu_vertices_pool();
  
 void xrMU_Model::Load	( IReader& F, u32 version )
 {
@@ -115,7 +116,7 @@ void xrMU_Model::Load_Embree(IReader& F, xr_vector<FaceDataEmbree>& faces)
 	clMsg("* Loading model: '%s' - v(%d), f(%d)", *m_name, b_vertices.size(), b_faces.size());
 }
 
-Face* xrMU_Model::create_face(Vertex* v0, Vertex* v1, Vertex* v2, b_face& B)
+TFace* xrMU_Model::create_face(TVertex* v0, TVertex* v1, TVertex* v2, b_face& B)
 {
 	auto _F = mu_faces_pool().create();
 	_F->dwMaterial		= u16(B.dwMaterial);
@@ -139,12 +140,12 @@ Face* xrMU_Model::create_face(Vertex* v0, Vertex* v1, Vertex* v2, b_face& B)
 	return _F;
 }
 
-Face* xrMU_Model::load_create_face(Fvector& P1, Fvector& P2, Fvector& P3, b_face& B)
+TFace* xrMU_Model::load_create_face(Fvector& P1, Fvector& P2, Fvector& P3, b_face& B)
 {
 	return create_face(load_create_vertex(P1),load_create_vertex(P2),load_create_vertex(P3),B);
 }
 
-Vertex* xrMU_Model::create_vertex(Fvector& P)
+TVertex* xrMU_Model::create_vertex(Fvector& P)
 {
 	auto _V = mu_vertices_pool().create();
 	_V->P = P;
@@ -153,7 +154,7 @@ Vertex* xrMU_Model::create_vertex(Fvector& P)
 	return _V;
 }
 
-Vertex* xrMU_Model::load_create_vertex(Fvector& P)
+TVertex* xrMU_Model::load_create_vertex(Fvector& P)
 {
 	// find similar
 	for (u32 it=0; it<m_vertices.size(); it++)

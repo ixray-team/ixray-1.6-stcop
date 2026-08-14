@@ -140,9 +140,9 @@ void CDeflector::OA_Export()
 	tN.set			(0,0,0);
 	float density	= 0;
 	float fcount	= 0;
-	for (UVIt it = UVpolys.begin(); it!=UVpolys.end(); it++)
+	for (auto& UVpoly : UVpolys)
 	{
-		Face	*F = it->owner;
+		auto F = UVpoly.owner;
 		Fvector	SN;
 		SN.set	(F->N);
 		SN.mul	(1+EPS*F->CalcArea());
@@ -151,14 +151,16 @@ void CDeflector::OA_Export()
 		density	+= F->Shader().lm_density;
 		fcount	+= 1.f;
 	}
-	if (tN.magnitude()>EPS_S && _valid(tN))	
+	if (tN.magnitude()>EPS_S && _valid(tN))
+	{
 		normal.set(tN).normalize();
+	}
 	else
 	{
 		clMsg("* ERROR: Internal precision error in CDeflector::OA_Export");
-		for (UVIt it = UVpolys.begin(); it!=UVpolys.end(); it++)
+		for (auto& UVpoly : UVpolys)
 		{
-			Face &fc = *((*it).owner);
+			auto& fc = *(UVpoly.owner);
 			inlc_global_data()->err_tjunction().w_fvector3(fc.v[0]->P);
 			inlc_global_data()->err_tjunction().w_fvector3(fc.v[1]->P);
 
@@ -185,8 +187,8 @@ void CDeflector::OA_Export()
 	Fbox bb; bb.invalidate();
 	for (UVIt it = UVpolys.begin(); it!=UVpolys.end(); it++)
 	{
-		UVtri	*T = &*it;
-		Face	*F = T->owner;
+		auto T = &*it;
+		auto F = T->owner;
 		Fvector	P;	// projected
 
 		for (int i=0; i<3; i++) {
@@ -214,7 +216,7 @@ void CDeflector::OA_Export()
 	// Не алоцируем
 }
 
-bool CDeflector::OA_Place	(Face *owner)
+bool CDeflector::OA_Place(TFace *owner)
 {
 	// It is not correct to rely solely on normal-split-angle for lmaps - imagine smooth sphere
 	float cosa = normal.dotproduct(owner->N);
@@ -229,29 +231,30 @@ bool CDeflector::OA_Place	(Face *owner)
 	return true;
 }
 
-void CDeflector::OA_Place	(vecFace& lst)
+void CDeflector::OA_Place(vecFace& lst)
 {
 	UVpolys.clear	();
  	for (u32 I=0; I<lst.size(); I++)
 	{
 		UVtri T;
-		Face* F			= lst[I];
-		T.owner			= F;
-		F->pDeflector	= this;
+		auto F = lst[I];
+		T.owner = F;
+		F->pDeflector = this;
 		UVpolys.push_back(T);
 	}
 }
 
-void CDeflector::GetRect	(Fvector2 &min, Fvector2 &max)
+void CDeflector::GetRect(Fvector2 &min, Fvector2 &max)
 {
 	// Calculate bounds
 	xr_vector<UVtri>::iterator it=UVpolys.begin();
 	min = max = it->uv[0];
 	for (;it != UVpolys.end(); it++)
 	{
-		for (int i=0; i<3; i++) {
-			min.min(it->uv[i]);
-			max.max(it->uv[i]);
+		for (auto& i : it->uv)
+		{
+			min.min(i);
+			max.max(i);
 		}
 	}
 }
@@ -259,7 +262,7 @@ void CDeflector::GetRect	(Fvector2 &min, Fvector2 &max)
 
 // Пред расчет при запекании освещения
 
-void CDeflector::RemapUV	(xr_vector<UVtri>& dest, u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_u, u32 lm_v, bool bRotate)
+void CDeflector::RemapUV(xr_vector<UVtri>& dest, u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_u, u32 lm_v, bool bRotate)
 {
 	dest.clear	();
  	
@@ -319,7 +322,7 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 
 
 // Дампинг и сравнение
-Face& CDeflector::GetBaseMaterial() 
+TFace& CDeflector::GetBaseMaterial() 
 {
 	return *UVpolys.front().owner;	
 }

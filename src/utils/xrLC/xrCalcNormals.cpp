@@ -13,7 +13,7 @@ void CBuild::CalcNormals()
 {
 	Phase("Building Normals...");
 
-	calculate_normals<Vertex, false>::calc_normals( lc_global_data()->g_vertices(), lc_global_data()->g_faces() );
+	calculate_normals::calc_normals( lc_global_data()->g_vertices(), lc_global_data()->g_faces(), false);
  
 	// Models
 	Status	("Calculate Normals for  mu-Models...");

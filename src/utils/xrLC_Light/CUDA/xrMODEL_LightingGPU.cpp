@@ -122,7 +122,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 	u32 SampleMAX = gCompilerMode.IsOverloadedSettings ? gCompilerMode.LC_JSampleMU : 6;
 	const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : SampleMAX;
 
-	xr_vector<Vertex>								  SafeVertices;
+	xr_vector<TVertex>								  SafeVertices;
 	SafeVertices.resize(model->m_vertices.size());
 	for (size_t Iter = 0; Iter < model->m_vertices.size(); Iter++)
 		SafeVertices[Iter] = *model->m_vertices[Iter];

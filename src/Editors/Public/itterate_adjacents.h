@@ -3,9 +3,6 @@
 template <typename P>
 concept IterateAdjacentsParams = requires(P p)
 {
-	typename P::type_vertex;
-	typename P::type_face;
-
 	{ p.current_adjacents_size() } -> std::convertible_to<std::size_t>;
 	{ p.add_adjacents(std::declval<u32>(), std::declval<u32>()) } -> std::same_as<bool>;
 };

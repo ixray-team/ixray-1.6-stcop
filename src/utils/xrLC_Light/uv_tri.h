@@ -4,7 +4,7 @@
 
 struct XRLC_LIGHT_API UVtri : public _TCF
 {
-	Face* owner;
+	TFace* owner;
 
 	bool similar(const UVtri& uv, float eps = EPS) const;
 

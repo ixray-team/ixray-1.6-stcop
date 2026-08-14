@@ -14,9 +14,9 @@ typedef	mapVert::iterator				mapVertIt;
 mapVert* g_trans;
 xrCriticalSection g_trans_CS;
 
-extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
+extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, TFace* skip);
  
-void	g_trans_register_internal		(Vertex* V)
+void	g_trans_register_internal		(TVertex* V)
 {
 	R_ASSERT	(V);
 
@@ -37,7 +37,7 @@ void	g_trans_register_internal		(Vertex* V)
 	for (; it!=it2; it++)
 	{
 		vecVertex&	VL		= it->second;
-		Vertex* Front		= VL.front();
+		TVertex* Front		= VL.front();
 		R_ASSERT			(Front);
 		if (Front->P.similar(V->P,eps))
 		{
@@ -52,7 +52,7 @@ void	g_trans_register_internal		(Vertex* V)
 	ins->second.push_back	(V);
 }
 
-void	g_trans_register	(Vertex* V)
+void	g_trans_register	(TVertex* V)
 {
 	g_trans_CS.Enter			();
 	g_trans_register_internal	(V);
@@ -60,7 +60,7 @@ void	g_trans_register	(Vertex* V)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool GetTranslucency(const Vertex* V,float &v_trans )
+bool GetTranslucency(const TVertex* V,float &v_trans )
 {
 	// Get transluency factor
 			
@@ -68,7 +68,7 @@ bool GetTranslucency(const Vertex* V,float &v_trans )
 	u32 		L_flags		= 0;
 	for (u32 f=0; f<V->m_adjacents.size(); ++f)
 	{
-		Face*	F								=	V->m_adjacents[f];
+		TFace*	F								=	V->m_adjacents[f];
 		v_trans									+=	F->Shader().vert_translucency;
 		if	(F->Shader().flags.bLIGHT_Vertex)	
 			bVertexLight		= true;
@@ -98,7 +98,7 @@ void LightVertex()
 				u32 tID = TasksIds.fetch_add(1);
 				if (tID >= lc_global_data()->g_vertices().size()) break;
 
-				Vertex* V = lc_global_data()->g_vertices()[tID];
+				TVertex* V = lc_global_data()->g_vertices()[tID];
 				float		v_trans = 0.f;
 				if (GetTranslucency(V, v_trans))
 				{

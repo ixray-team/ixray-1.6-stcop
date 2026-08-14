@@ -127,7 +127,7 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<void*>& Faces)
 
 		if (isLC)
 		{
-			Face* F		= (Face*)Fv;
+			TFace* F		= (TFace*)Fv;
 			TC			= F->getTC0();
 			bOpacue		= F->flags.bOpaque;
 			bShared = F->flags.bSharedMaterial;
@@ -149,7 +149,7 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<void*>& Faces)
 			b_material_shared* ID = nullptr;
 			if (isLC)
 			{
-				Face* F = (Face*)Fv;
+				TFace* F = (TFace*)Fv;
 				ID = &lc_global_data()->materials_shared()[F->dwMaterial];
 			} else
 			{
@@ -170,7 +170,7 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<void*>& Faces)
 			u16 surfidx = u16(-1);
 			if (isLC)
 			{
-				Face* F = (Face*)Fv;
+				TFace* F = (TFace*)Fv;
 				surfidx = lc_global_data()->materials()[F->dwMaterial].surfidx;
 			} else
 			{
