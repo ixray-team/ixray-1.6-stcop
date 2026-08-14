@@ -17,10 +17,6 @@ void CUIGamepadLegend::Draw()
 		{
 			continue;
 		}
-		if (W->ui_cast_static())
-		{
-			W->ui_cast_static()->AdjustWidthToText();
-		}
 		totalWidth += W->GetWndSize().x;
 		totalWidth += Spacing;
 	}
@@ -32,13 +28,15 @@ void CUIGamepadLegend::Draw()
 		{
 			continue;
 		}
-		if (W->ui_cast_static())
-		{
-			W->ui_cast_static()->SetTextShadow(true, 0.5f, color_argb(255, 0, 0, 0));
-		}
+
 		W->SetWndPos(Fvector2().set(x, 0.f));
 		x += W->GetWndSize().x;
 		x += Spacing;
+
+		if (W->ui_cast_static())
+		{
+			W->ui_cast_static()->AdjustWidthToText();
+		}
 		W->Draw();
 	}
 }
