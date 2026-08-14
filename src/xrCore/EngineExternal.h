@@ -60,6 +60,7 @@ enum class EEngineExternalGame
 	NewDemoRecordInputSchema,
 	EnablePolterStaminaLooseOnHit,
 	EnablePolterDrop,
+	EnableWindEffectOnABullet,
 	None
 };
 

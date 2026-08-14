@@ -97,7 +97,7 @@ struct SBullet
 
 class CLevel;
 
-class CBulletManager
+class CBulletManager : public pureFrame
 {
 	static float const parent_ignore_distance;
 
@@ -207,7 +207,8 @@ protected:
 		float& low,
 		float& high,
 		Fvector const& gravity,
-		float const air_resistance
+		Fvector wind_factor,
+		float air_resistance
 	);
 
 	void add_bullet_point(
@@ -215,6 +216,7 @@ protected:
 		Fvector& previous_position,
 		Fvector const& start_velocity,
 		Fvector const& gravity,
+		Fvector wind_factor,
 		float air_resistance,
 		float current_time,
 		SBullet& bullet
@@ -228,6 +230,8 @@ protected:
 	void UpdateWorkload();
 
 public:
+	static Fvector wind;
+
 	CBulletManager();
 	virtual ~CBulletManager();
 
@@ -237,6 +241,8 @@ public:
 
 	void CommitEvents(); // @ the start of frame
 	void Render();
+	
+	void OnFrame() override;
 };
 
 struct bullet_test_callback_data
