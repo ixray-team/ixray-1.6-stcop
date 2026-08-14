@@ -1427,7 +1427,7 @@ void CBulletManager::Render()
 void CBulletManager::OnFrame()
 {
 	static bool EnableWindEffectOnABullet = EngineExternal()[EEngineExternalGame::EnableWindEffectOnABullet];
-	
+
 	if (EnableWindEffectOnABullet)
 	{
 		static CGameFont* F = g_FontManager->CloneFont("stat_font");
@@ -1438,101 +1438,90 @@ void CBulletManager::OnFrame()
 		static float target_velocity = 0.f;
 		static float target_dir = 0.f;
 
-		constexpr float cmp_threshold = .33f;
-		constexpr bool enable_dbg = true;
+		constexpr float cmp_threshold = 0.1f;
+		constexpr bool debug_draw = true;
+		
+		float max_wind_rnd_velocity = CCC_Float::FastCommand("bullet_manager_max_wind_rnd_velocity", 2.5f, EPS_S, FLT_MAX);
+		float max_wind_rnd_direction = CCC_Float::FastCommand("bullet_manager_max_wind_rnd_direction", 360.f, EPS_S, FLT_MAX);
+
+		bool w_horizontal = CCC_Boolean::FastCommand("bullet_manager_wind_horizontal", true);
 
 		if (fsimilar(velocity, target_velocity, cmp_threshold) && fsimilar(direction, target_dir, cmp_threshold))
 		{
-			target_velocity = Random.randF(1.f, 10.f);
-			target_dir = deg2rad(Random.randF(0.f, 360.f));
+			target_velocity = Random.randF(0.f, max_wind_rnd_velocity);
+			target_dir = deg2rad(Random.randF(0.f, max_wind_rnd_direction));
 		}
 
-		float lerp_factor = CCC_Float::FastCommand("wind_lerp_factor", 0.1f, EPS_S, 0.99f);
+		float lerp_factor = CCC_Float::FastCommand("bullet_manager_wind_lerp_factor", .1f, EPS_S, .99f);
 		float lerp_scale = lerp_factor * Device.fTimeDelta;
 
 		velocity += (target_velocity - velocity) * lerp_scale;
-		float angle_diff = target_dir - direction;
-
-		while (angle_diff > M_PI)
+		direction = angle_inertion(direction, target_dir, .1f, M_PI, Device.fTimeDelta);
+		direction = angle_normalize(direction);
+		
+		if (w_horizontal)
 		{
-			angle_diff -= PI_MUL_2;
-		}
-
-		while (angle_diff < -M_PI)
-		{
-			angle_diff += PI_MUL_2;
-		}
-
-		direction += angle_diff * lerp_scale;
-
-		while (direction >= M_PI)
-		{
-			direction -= PI_MUL_2;
-		}
-
-		while (direction < 0.f)
-		{
-			direction += PI_MUL_2;
-		}
-
-		// xz clockwise rotation x = sin (cos default) && z = cos (sin default)
-		wind.set(sinf(direction), 0.f, cosf(direction)).mul(velocity);
-
-		F->SetColor(color_rgba(255, 255, 255, 255));
-		F->OutSet(400, 300);
-
-		shared_str wind_dir = "???";
-		float wd_angle = rad2deg(direction);
-
-		if (wd_angle >= 337.5f || wd_angle < 22.5f)
-		{
-			wind_dir = "North";
-		}
-		else if (wd_angle < 67.5f)
-		{
-			wind_dir = "North-East";
-		}
-		else if (wd_angle < 112.5f)
-		{
-			wind_dir = "East";
-		}
-		else if (wd_angle < 157.5f)
-		{
-			wind_dir = "South-East";
-		}
-		else if (wd_angle < 202.5f)
-		{
-			wind_dir = "South";
-		}
-		else if (wd_angle < 247.5f)
-		{
-			wind_dir = "South-West";
-		}
-		else if (wd_angle < 292.5f)
-		{
-			wind_dir = "West";
+			// xz clockwise rotation x = sin (cos default) && z = cos (sin default)
+			wind.set(sinf(direction), 0.f, cos(direction)).mul(velocity);
 		}
 		else
 		{
-			wind_dir = "North-West";
+			// xy counter clock-wise rotation x = cos (cos default) && y = sin (sin default)
+			wind.set(cosf(direction), sinf(direction), 0.f).mul(velocity);
 		}
 
-		if (enable_dbg)
+		if (debug_draw)
 		{
+			F->SetColor(color_rgba(255, 255, 255, 255));
+			F->OutSet(400, 300);
+
+			shared_str wind_dir = "???";
+			float wd_angle = rad2deg(direction);
+
+			if (wd_angle >= 337.5f || wd_angle < 22.5f)
+			{
+				wind_dir = "North";
+			}
+			else if (wd_angle < 67.5f)
+			{
+				wind_dir = "North-East";
+			}
+			else if (wd_angle < 112.5f)
+			{
+				wind_dir = "East";
+			}
+			else if (wd_angle < 157.5f)
+			{
+				wind_dir = "South-East";
+			}
+			else if (wd_angle < 202.5f)
+			{
+				wind_dir = "South";
+			}
+			else if (wd_angle < 247.5f)
+			{
+				wind_dir = "South-West";
+			}
+			else if (wd_angle < 292.5f)
+			{
+				wind_dir = "West";
+			}
+			else
+			{
+				wind_dir = "North-West";
+			}
+
 			F->OutNext("Wind accel: [%.3f, %.3f, %.3f]", VPUSH(wind));
-			F->OutNext("Velocity: %.3fdeg (lerp to %.3fdeg)", rad2deg(velocity), rad2deg(target_velocity));
+			F->OutNext("Velocity: %.3f (lerp to %.3f)", velocity, target_velocity);
 			F->OutNext("Direction: %.3fdeg (lerp to %.3fdeg)", rad2deg(direction), rad2deg(target_dir));
-			F->OutNext("Angle diff: %.3f (%s)", rad2deg(angle_diff), angle_diff < 0.f ? "counter clock-wise" : "clock-wise");
 			F->OutNext("%s (%.1f deg)", *wind_dir, wd_angle);
 
 			// kuda duet
-			HUD().world_prims.append_lines_arrow(Fvector().set(0.f, 100.f, 0.f), wind, 10.f, color_rgba(0, 255, 0, 255));
-
-			const Fbox& world_bv = Level().ObjectSpace.GetBoundingVolume();
+			HUD().world_prims.append_lines_arrow(Fvector().set(0.f, 50.f, 0.f), wind, 10.f, color_rgba(255, 165, 0, 255));
 
 			Fmatrix world_basis;
 			world_basis.identity();
-			world_bv.getcenter(world_basis.c);
+			Level().ObjectSpace.GetBoundingVolume().getcenter(world_basis.c);
 			world_basis.setXYZ(0.f, 0.f, 0.f);
 
 			// World basis (dlya orientacii kuda duet)
