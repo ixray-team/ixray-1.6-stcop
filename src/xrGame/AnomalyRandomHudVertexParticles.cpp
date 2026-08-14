@@ -43,26 +43,30 @@ void TAnomalyRandomHudVertexParticles::Load(const char* section)
 		{
 			max_processing_distance = READ_IF_EXISTS(pSettings, r_float, sect, "max_processing_distance", max_processing_distance);
 			m_max_procedural_vertex_hud_particles_field_distance = READ_IF_EXISTS(pSettings, r_float, sect, "max_procedural_vertex_hud_particles_field_distance", m_max_procedural_vertex_hud_particles_field_distance);
-			m_r0_max_count_procedural_vertex_hud_particles = READ_IF_EXISTS(pSettings, r_u32, sect, "r0_max_count_particles", m_r0_max_count_procedural_vertex_hud_particles);
-			m_r1_max_count_procedural_vertex_hud_particles = READ_IF_EXISTS(pSettings, r_u32, sect, "r1_max_count_particles", m_r1_max_count_procedural_vertex_hud_particles);
 			m_update_particles_interval_milliseconds = READ_IF_EXISTS(pSettings, r_float, sect, "update_particles_interval_milliseconds", m_update_particles_interval_milliseconds);
 
 			m_identity_group_name = READ_IF_EXISTS(pSettings, r_string, sect, "identity_group_name", m_identity_group_name);
-			m_use_r0 = READ_IF_EXISTS(pSettings, r_bool, sect, "use_r0", m_use_r0);
-			m_use_r1 = READ_IF_EXISTS(pSettings, r_bool, sect, "use_r1", m_use_r1);
 			m_before_play_delay_ms_min = READ_IF_EXISTS(pSettings, r_float, sect, "before_play_delay_ms_min", m_before_play_delay_ms_min);
 			m_before_play_delay_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "before_play_delay_ms_max", m_before_play_delay_ms_max);
-			m_r0_playing_time_ms_min = READ_IF_EXISTS(pSettings, r_float, sect, "r0_particle_playing_time_ms_min", m_r0_playing_time_ms_min);
-			m_r0_playing_time_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "r0_particle_playing_time_ms_max", m_r0_playing_time_ms_max);
-			m_r1_playing_time_ms_min = READ_IF_EXISTS(pSettings, r_float, sect, "r1_particle_playing_time_ms_min", m_r1_playing_time_ms_min);
-			m_r1_playing_time_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "r1_particle_playing_time_ms_max", m_r1_playing_time_ms_max);
-			m_r0_after_play_delay_time_ms_min = READ_IF_EXISTS(pSettings, r_float, sect, "r0_after_play_delay_time_ms_min", m_r0_after_play_delay_time_ms_min);
-			m_r0_after_play_delay_time_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "r0_after_play_delay_time_ms_max", m_r0_after_play_delay_time_ms_max);
-			m_r1_after_play_delay_time_ms_min = READ_IF_EXISTS(pSettings, r_float, sect, "r1_after_play_delay_time_ms_min", m_r1_after_play_delay_time_ms_min);
-			m_r1_after_play_delay_time_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "r1_after_play_delay_time_ms_max", m_r1_after_play_delay_time_ms_max);
 
-			ParseRandomParticlesPaths(sect, "r0_particles_paths", r0_particles_paths);
-			ParseRandomParticlesPaths(sect, "r1_particles_paths", r1_particles_paths);
+			m_use_r0 = READ_IF_EXISTS(pSettings, r_bool, sect, "is_allow_particles_for_right_hand", m_use_r0);
+			m_use_r1 = READ_IF_EXISTS(pSettings, r_bool, sect, "is_allow_particles_for_left_hand", m_use_r1);
+
+			m_r0_max_count_procedural_vertex_hud_particles = READ_IF_EXISTS(pSettings, r_u32, sect, "right_hand_max_count_particles", m_r0_max_count_procedural_vertex_hud_particles);
+			m_r1_max_count_procedural_vertex_hud_particles = READ_IF_EXISTS(pSettings, r_u32, sect, "left_hand_max_count_particles", m_r1_max_count_procedural_vertex_hud_particles);
+
+			m_r0_playing_time_ms_min = READ_IF_EXISTS(pSettings, r_float, sect, "right_hand_particle_playing_time_ms_min", m_r0_playing_time_ms_min);
+			m_r0_playing_time_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "right_hand_particle_playing_time_ms_max", m_r0_playing_time_ms_max);
+			m_r1_playing_time_ms_min = READ_IF_EXISTS(pSettings, r_float, sect, "left_hand_particle_playing_time_ms_min", m_r1_playing_time_ms_min);
+			m_r1_playing_time_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "left_hand_particle_playing_time_ms_max", m_r1_playing_time_ms_max);
+
+			m_r0_after_play_delay_time_ms_min = READ_IF_EXISTS(pSettings, r_float, sect, "right_hand_after_play_delay_time_ms_min", m_r0_after_play_delay_time_ms_min);
+			m_r0_after_play_delay_time_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "right_hand_after_play_delay_time_ms_max", m_r0_after_play_delay_time_ms_max);
+			m_r1_after_play_delay_time_ms_min = READ_IF_EXISTS(pSettings, r_float, sect, "left_hand_after_play_delay_time_ms_min", m_r1_after_play_delay_time_ms_min);
+			m_r1_after_play_delay_time_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "left_hand_after_play_delay_time_ms_max", m_r1_after_play_delay_time_ms_max);
+
+			ParseRandomParticlesPaths(sect, "right_hand_particles_paths", r0_particles_paths);
+			ParseRandomParticlesPaths(sect, "left_hand_particles_paths", r1_particles_paths);
 		}
 	}
 }
