@@ -50,6 +50,7 @@
 #include "ui/UIPdaSpot.h"
 #include "../xrEngine/GamepadService.h"
 #include "ai/stalker/ai_stalker.h"
+#include "HudVertexAssignedPatricles.h"
 
 namespace
 {
@@ -104,9 +105,18 @@ Flags32			psActorFlags={AF_DISABLE_CONDITION_TEST|AF_AUTO_PICKUP|AF_RUN_BACKWARD
 ENGINE_API extern float		psHUD_FOV;
 ENGINE_API extern bool g_3d_scopes;
 
+void CActor::OnFrame()
+{
+	if (THudVertexAssignedPatricles* HudVertexAssignedPatricles = GetComponent<THudVertexAssignedPatricles>())
+	{
+		HudVertexAssignedPatricles->OnFrame();
+	}
+}
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
+	Device.seqFrame.Add(this, REG_PRIORITY_LOW - 5000);
+
 	LoadCallbackGlobals(m_isBeforeHitCallback, m_onBeforeHitCallback, "OnBeforeHit");
 	encyclopedia_registry	= new CEncyclopediaRegistryWrapper();
 	game_news_registry		= new CGameNewsRegistryWrapper();
@@ -234,10 +244,14 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 		m_pCameraIdle = new CAnimatorCamLerpEffectorConst();
 		m_pCameraIdle->SetCyclic(false);
 	}
+
+	CreateComponent<THudVertexAssignedPatricles>();
 }
 
 CActor::~CActor()
 {
+	Device.seqFrame.Remove(this);
+
 	xr_delete				(m_location_manager);
 	xr_delete				(m_memory);
 	xr_delete				(encyclopedia_registry);
@@ -265,6 +279,11 @@ CActor::~CActor()
 
 	old_slot = NO_ACTIVE_SLOT;
 	need_restore_detector = false;
+}
+
+THudVertexAssignedPatricles* CActor::GetHudVertexAssignedPatriclesComponent()
+{
+	return GetComponent<THudVertexAssignedPatricles>();
 }
 
 void CActor::reinit	()

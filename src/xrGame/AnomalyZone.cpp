@@ -23,6 +23,7 @@
 #include "AnomalyMovement.h"
 #include "AnomalyRainCollide.h"
 #include "AnomalyGravity.h"
+#include "AnomalyRandomHudVertexParticles.h"
 
 #define WIND_RADIUS (4*Radius())	//расстояние до актера, когда появляется ветер 
 #define FASTMODE_DISTANCE (50.f)	//distance to camera from sphere, when zone switches to fast update sequence
@@ -71,6 +72,7 @@ CAnomalyZone::CAnomalyZone(void)
 	CreateComponent<TAnomalyMovement>();
 	CreateComponent<TAnomalyRainCollide>();
 	CreateComponent<TAnomalyGravity>();
+	CreateComponent<TAnomalyRandomHudVertexParticles>();
 }
 
 CAnomalyZone::~CAnomalyZone(void) 
@@ -370,6 +372,11 @@ void CAnomalyZone::Load(const char* section)
 	{
 		AnomalyGravity->Load(section);
 	}
+
+	if (TAnomalyRandomHudVertexParticles* AnomalyRandomHudVertexParticles = GetComponent<TAnomalyRandomHudVertexParticles>())
+	{
+		AnomalyRandomHudVertexParticles->Load(section);
+	}
 }
 
 bool CAnomalyZone::net_Spawn(CSE_Abstract* DC) 
@@ -469,6 +476,12 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 	if (TAnomalyGravity* AnomalyGravity = GetComponent<TAnomalyGravity>())
 	{
 		AnomalyGravity->net_Spawn(DC);
+	}
+
+	if (TAnomalyRandomHudVertexParticles* AnomalyRandomHudVertexParticles = GetComponent<TAnomalyRandomHudVertexParticles>())
+	{
+		AnomalyRandomHudVertexParticles->SetInitialSpawnPosition(Z->o_Position);
+		AnomalyRandomHudVertexParticles->net_Spawn(DC);
 	}
 
 	return true;
@@ -630,6 +643,8 @@ void CAnomalyZone::UpdateComponents(bool isUpdateCL)
 	TAnomalyMovement* AnomalyMovement = GetComponent<TAnomalyMovement>();
 	TAnomalyRainCollide* AnomalyRainCollide = GetComponent<TAnomalyRainCollide>();
 	TAnomalyGravity* AnomalyGravity = GetComponent<TAnomalyGravity>();
+	TAnomalyRandomHudVertexParticles* AnomalyRandomHudVertexParticles = GetComponent<TAnomalyRandomHudVertexParticles>();
+	
 
 	if (AnomalyRainCollide != nullptr && isUpdateCL)
 	{
@@ -682,6 +697,11 @@ void CAnomalyZone::UpdateComponents(bool isUpdateCL)
 		}
 	}
 
+	if (AnomalyRandomHudVertexParticles != nullptr)
+	{
+		IsNeedUpdate = true;
+	}
+
 	if (AnomalyGravity != nullptr)
 	{
 		if (AnomalyGravity->IsEnabled())
@@ -730,8 +750,12 @@ void CAnomalyZone::UpdateComponents(bool isUpdateCL)
 	{
 		AnomalyGravity->Update();
 	}
-	
 
+	if (AnomalyRandomHudVertexParticles != nullptr && isUpdateCL)
+	{
+		AnomalyRandomHudVertexParticles->Update(isUpdateCL);
+	}
+	
 	bool IsNeedActivate = false;
 	if (AnomalyMovement != nullptr && AnomalyMovement->AlwaysTheCrow())
 	{

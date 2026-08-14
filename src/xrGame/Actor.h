@@ -71,6 +71,7 @@ class CNightVisionEffector;
 class CHudAnimatorManager;
 
 class CAnimatorCamLerpEffectorConst;
+class THudVertexAssignedPatricles;
 
 class CActor: 
 	public IGame_Actor, 
@@ -79,7 +80,8 @@ class CActor:
 	public CInventoryOwner,
 	public CPhraseDialogManager,
 	public CStepManager,
-	public Feel::Sound
+	public Feel::Sound,
+	public pureFrame
 #ifdef DEBUG_DRAW
 	,public pureRender
 #endif
@@ -95,8 +97,10 @@ private:
 public:
 										CActor				();
 	virtual								~CActor				();
+	void OnFrame();
+	THudVertexAssignedPatricles* GetHudVertexAssignedPatriclesComponent();
 
-public:
+									public:
 	virtual bool						AlwaysTheCrow				()						{ return TRUE; }
 
 	virtual CAttachmentOwner*			cast_attachment_owner		() override						{return this;}
@@ -111,7 +115,7 @@ public:
 	virtual	CCharacterPhysicsSupport*	character_physics_support	() const				{return m_pPhysics_support;}
 	virtual CPHDestroyable*				ph_destroyable				()						;
 			CHolderCustom*				Holder						()						{return m_holder;}
-public:
+
 	virtual xr_vector<xr_string>		GetKnownPortions() const ;
 	virtual xr_vector<xr_string>		GetKnownPortionDialogs(shared_str id) const ;
 	virtual xr_vector<xr_string>		GetKnownPortionDisable(shared_str id) const;
@@ -123,6 +127,7 @@ public:
 	virtual void						shedule_Update		( u32 T );
 	void PlayRainOnHelmetSound();
 	virtual void						UpdateCL			( );
+	void draw_electrical_fur();
 			void						UpdateLensFOV		(CWeapon* wpn, float value);
 	void CheckFlyhack();
 			void						UpdatePlayerView	( );
@@ -355,7 +360,7 @@ private:
 
 	void UpdateCameraIdleAnimation();
 
-public:
+ public:
 	bool					m_bAllowDeathRemove;
 	float					m_fLegs_shift;
 
