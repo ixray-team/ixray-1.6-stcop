@@ -23,8 +23,9 @@
 
 constexpr float MIN_RAYPICK_ERROR_DISTANCE = .1f;
 
-float CBulletManager::m_fMinBulletSpeed = 2.f;
 float const CBulletManager::parent_ignore_distance = 3.f;
+float CBulletManager::m_fMinBulletSpeed = 2.f;
+Fvector CBulletManager::wind;
 
 float air_resistance_epsilon = .1f;
 
@@ -186,6 +187,7 @@ CBulletManager::CBulletManager()
 {
 	m_Bullets.clear();
 	m_Bullets.reserve(100);
+	Device.seqFrame.Add(this, REG_PRIORITY_LOW);
 }
 
 CBulletManager::~CBulletManager()
@@ -316,16 +318,32 @@ namespace
 ICF Fvector parabolic_velocity(
 	Fvector const& start_velocity,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance,
 	float const time
 )
 {
-	return Fvector(start_velocity).mul(std::max(0.f, 1.f - air_resistance * time)).mad(gravity, time);
+	return Fvector(start_velocity)
+		.mul(
+			std::max(
+				0.f,
+				1.f - air_resistance * time
+			)
+		)
+		.mad(
+			gravity,
+			time
+		)
+		.mad(
+			wind_factor,
+			time
+		);
 }
 
 ICF Fvector trajectory_velocity(
 	Fvector const& start_velocity,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance,
 	float const time
 )
@@ -343,6 +361,7 @@ ICF Fvector trajectory_velocity(
 			return parabolic_velocity(
 				start_velocity,
 				gravity,
+				wind_factor,
 				air_resistance,
 				time
 			);
@@ -357,37 +376,51 @@ ICF Fvector trajectory_velocity(
 		::parabolic_velocity(
 			start_velocity,
 			gravity,
+			wind_factor,
 			air_resistance,
 			parabolic_time
 		);
 
 	VERIFY(!fis_zero(air_resistance_epsilon) || fis_zero(_sqr(parabolic_velocity.x) + _sqr(parabolic_velocity.z), EPS_L));
-	return parabolic_velocity.mad(
-		gravity,
-		fall_down_time
-	);
+	
+	return parabolic_velocity
+		.mad(
+			gravity,
+			fall_down_time
+		)
+		.mad(
+			wind_factor,
+			fall_down_time
+		);
 }
 
 ICF Fvector parabolic_position(
 	Fvector const& start_position,
 	Fvector const& start_velocity,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance,
 	float const time
 )
 {
 	float const sqr_t_div_2 = _sqr(time) * .5f;
-	return Fvector().mad(
-						start_position,
-						start_velocity,
-						time
-	)
+
+	return Fvector()
+		.mad(
+			start_position,
+			start_velocity,
+			time
+		)
 		.mad(
 			Fvector(start_velocity).mul(-air_resistance),
 			sqr_t_div_2
 		)
 		.mad(
 			gravity,
+			sqr_t_div_2
+		)
+		.mad(
+			wind_factor,
 			sqr_t_div_2
 		);
 }
@@ -396,6 +429,7 @@ ICF Fvector trajectory_position(
 	Fvector const& start_position,
 	Fvector const& base_start_velocity,
 	Fvector const& base_gravity,
+	Fvector wind_factor,
 	float base_air_resistance,
 	float const base_time
 )
@@ -417,12 +451,22 @@ ICF Fvector trajectory_position(
 				start_position,
 				start_velocity,
 				gravity,
+				wind_factor,
 				air_resistance,
 				time
 			);
 		}
 
-		return Fvector(start_position).mad(start_velocity, time).mad(gravity, _sqr(time) * .5f);
+		return Fvector(start_position)
+			.mad(
+				start_velocity, time
+			)
+			.mad(
+				gravity, _sqr(time) * .5f
+			)
+			.mad(
+				wind_factor, _sqr(time) * .5f
+			);
 	}
 
 	Fvector const parabolic_position =
@@ -430,6 +474,7 @@ ICF Fvector trajectory_position(
 			start_position,
 			start_velocity,
 			gravity,
+			wind_factor,
 			air_resistance,
 			parabolic_time
 		);
@@ -438,11 +483,21 @@ ICF Fvector trajectory_position(
 		::parabolic_velocity(
 			start_velocity,
 			gravity,
+			wind_factor,
 			air_resistance,
 			parabolic_time
 		);
 
-	return Fvector(parabolic_position).mad(parabolic_velocity, fall_down_time).mad(gravity, _sqr(fall_down_time) * .5f);
+	return Fvector(parabolic_position)
+		.mad(
+			parabolic_velocity, fall_down_time
+		)
+		.mad(
+			gravity, _sqr(fall_down_time) * .5f
+		)
+		.mad(
+			wind_factor, _sqr(fall_down_time) * .5f
+		);
 }
 
 ICF  float trajectory_max_error_time(
@@ -462,14 +517,15 @@ ICF float trajectory_pick_error(
 	Fvector const& position,
 	Fvector const& velocity,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance
 )
 {
 	float max_error_time = trajectory_max_error_time(low, high);
 
-	Fvector const start = trajectory_position(position, velocity, gravity, air_resistance, low);
-	Fvector const target = trajectory_position(position, velocity, gravity, air_resistance, high);
-	Fvector const max_error = trajectory_position(position, velocity, gravity, air_resistance, max_error_time);
+	Fvector const start = trajectory_position(position, velocity, gravity, wind_factor, air_resistance, low);
+	Fvector const target = trajectory_position(position, velocity, gravity, wind_factor, air_resistance, high);
+	Fvector const max_error = trajectory_position(position, velocity, gravity, wind_factor, air_resistance, max_error_time);
 
 	Fvector start_to_max_error = Fvector().sub(max_error, start);
 	float magnitude = start_to_max_error.magnitude();
@@ -515,18 +571,19 @@ ICF float trajectory_select_pick_parabolic(
 	float const start_low,
 	float high,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance
 )
 {
 	float const max_test_distance = bullet.max_dist - bullet.fly_dist;
-	Fvector const start = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, air_resistance, start_low);
+	Fvector const start = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, wind_factor, air_resistance, start_low);
 	float const start_high = high;
 	float low = start_low;
 	float check_time = high;
 	while (!fsimilar(low, high))
 	{
-		Fvector const intermediate = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, air_resistance, start_low + (check_time - start_low) * .5f);
-		Fvector const target = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, air_resistance, check_time);
+		Fvector const intermediate = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, wind_factor, air_resistance, start_low + (check_time - start_low) * .5f);
+		Fvector const target = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, wind_factor, air_resistance, check_time);
 		float const distance = start.distance_to(intermediate) + intermediate.distance_to(target);
 		if (distance < max_test_distance)
 		{
@@ -550,6 +607,7 @@ ICF bool trajectory_select_pick_ranges(
 	float const low,
 	float const high,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance
 )
 {
@@ -564,14 +622,14 @@ ICF bool trajectory_select_pick_ranges(
 
 	if (air_resistance * (high + air_resistance_epsilon) < 1.f)
 	{
-		result = trajectory_select_pick_parabolic(bullet, low, high, gravity, air_resistance);
+		result = trajectory_select_pick_parabolic(bullet, low, high, gravity, wind_factor, air_resistance);
 		return false;
 	}
 
 	float const fall_down_time = std::max(0.f, 1.f / air_resistance - air_resistance_epsilon);
 	if (!fsimilar(fall_down_time, low))
 	{
-		result = trajectory_select_pick_parabolic(bullet, low, fall_down_time, gravity, air_resistance);
+		result = trajectory_select_pick_parabolic(bullet, low, fall_down_time, gravity, wind_factor, air_resistance);
 		return false;
 	}
 
@@ -584,12 +642,13 @@ ICF float trajectory_select_pick_time(
 	float const start_low,
 	float high,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance
 )
 {
 	VERIFY2(start_low < high, make_string<const char*>("start_low[%f] high[%f]", start_low, high));
 	float const start_high = high;
-	if (trajectory_select_pick_ranges(high, bullet, start_low, high, gravity, air_resistance))
+	if (trajectory_select_pick_ranges(high, bullet, start_low, high, gravity, wind_factor, air_resistance))
 	{
 		if (high <= start_high)
 		{
@@ -604,7 +663,7 @@ ICF float trajectory_select_pick_time(
 
 	while (!fsimilar(low, high))
 	{
-		float distance = trajectory_pick_error(start_low, check_time, bullet.start_position, bullet.start_velocity, gravity, air_resistance);
+		float distance = trajectory_pick_error(start_low, check_time, bullet.start_position, bullet.start_velocity, gravity, wind_factor, air_resistance);
 
 		if (distance < MIN_RAYPICK_ERROR_DISTANCE)
 		{
@@ -626,6 +685,7 @@ ICF void update_bullet_parabolic(
 	SBullet& bullet,
 	bullet_test_callback_data& data,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance
 )
 {
@@ -652,8 +712,8 @@ ICF void update_bullet_parabolic(
 
 	clamp(data.collide_time, bullet.life_time, data.high_time);
 
-	data.collide_position = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, air_resistance, data.collide_time);
-	Fvector const new_velocity = trajectory_velocity(bullet.start_velocity, gravity, air_resistance, data.collide_time);
+	data.collide_position = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, wind_factor, air_resistance, data.collide_time);
+	Fvector const new_velocity = trajectory_velocity(bullet.start_velocity, gravity, wind_factor, air_resistance, data.collide_time);
 	bullet.speed = new_velocity.magnitude();
 	bullet.dir = Fvector(new_velocity).normalize_safe();
 }
@@ -662,12 +722,13 @@ ICF void update_bullet_gravitation(
 	SBullet& bullet,
 	bullet_test_callback_data& data,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance,
 	float const fall_down_time
 )
 {
-	Fvector const fall_down_position = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, air_resistance, fall_down_time);
-	Fvector const fall_down_velocity = trajectory_velocity(bullet.start_velocity, gravity, air_resistance, fall_down_time);
+	Fvector const fall_down_position = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, wind_factor, air_resistance, fall_down_time);
+	Fvector const fall_down_velocity = trajectory_velocity(bullet.start_velocity, gravity, wind_factor, air_resistance, fall_down_time);
 	VERIFY(!fis_zero(air_resistance_epsilon) || fis_zero(_sqr(fall_down_velocity.x) + _sqr(fall_down_velocity.z), EPS_L));
 	float const fall_down_velocity_magnitude = fall_down_velocity.magnitude();
 
@@ -694,7 +755,7 @@ ICF void update_bullet_gravitation(
 		clamp(data.collide_time, bullet.life_time, data.high_time);
 	}
 
-	Fvector const new_velocity = trajectory_velocity(bullet.start_velocity, gravity, air_resistance, data.collide_time);
+	Fvector const new_velocity = trajectory_velocity(bullet.start_velocity, gravity, wind_factor,  air_resistance, data.collide_time);
 	bullet.speed = new_velocity.magnitude();
 	bullet.dir = Fvector(new_velocity).normalize_safe();
 }
@@ -703,28 +764,29 @@ ICF void update_bullet(
 	SBullet& bullet,
 	bullet_test_callback_data& data,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance
 )
 {
 	if (air_resistance * (bullet.life_time + air_resistance_epsilon) >= 1.f)
 	{
-		update_bullet_gravitation(bullet, data, gravity, air_resistance, std::max(0.f, 1.f / air_resistance - air_resistance_epsilon));
+		update_bullet_gravitation(bullet, data, gravity,wind_factor, air_resistance, std::max(0.f, 1.f / air_resistance - air_resistance_epsilon));
 		return;
 	}
 
 	Fvector const xz_velocity = Fvector().set(bullet.start_velocity.x, 0.f, bullet.start_velocity.z);
 	if (fis_zero(xz_velocity.square_magnitude()))
 	{
-		update_bullet_gravitation(bullet, data, gravity, air_resistance, 0.f);
+		update_bullet_gravitation(bullet, data, gravity, wind_factor, air_resistance, 0.f);
 		return;
 	}
 
-	update_bullet_parabolic(bullet, data, gravity, air_resistance);
+	update_bullet_parabolic(bullet, data, gravity, wind_factor,air_resistance);
 }
 
-ICF bool try_update_bullet(SBullet& bullet, Fvector const& gravity, float const air_resistance, float const time)
+ICF bool try_update_bullet(SBullet& bullet, Fvector const& gravity, Fvector wind_factor,float const air_resistance, float const time)
 {
-	Fvector const new_position = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, air_resistance, time);
+	Fvector const new_position = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, wind_factor, air_resistance, time);
 	bullet.fly_dist += bullet.bullet_pos.distance_to(new_position);
 
 	if (bullet.fly_dist >= bullet.max_dist)
@@ -745,7 +807,7 @@ ICF bool try_update_bullet(SBullet& bullet, Fvector const& gravity, float const 
 		return false;
 	}
 
-	Fvector const new_velocity = trajectory_velocity(bullet.start_velocity, gravity, air_resistance, bullet.life_time);
+	Fvector const new_velocity = trajectory_velocity(bullet.start_velocity, gravity, wind_factor, air_resistance, bullet.life_time);
 	bullet.speed = new_velocity.magnitude();
 
 	if (fis_zero(bullet.speed))
@@ -865,7 +927,7 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 
 	CBulletManager& bullet_manager = Level().BulletManager();
 	Fvector const gravity = {0.f, -bullet_manager.m_fGravityConst, 0.f};
-	update_bullet(bullet, data, gravity, air_resistance);
+	update_bullet(bullet, data, gravity, wind, air_resistance);
 	if (fis_zero(bullet.speed))
 	{
 		return false;
@@ -902,12 +964,13 @@ void CBulletManager::add_bullet_point(
 	Fvector& previous_position,
 	Fvector const& start_velocity,
 	Fvector const& gravity,
+	Fvector wind_factor,
 	float const air_resistance,
 	float const current_time,
 	SBullet& bullet
 )
 {
-	Fvector const temp = trajectory_position(start_position, start_velocity, gravity, air_resistance, current_time);
+	Fvector const temp = trajectory_position(start_position, start_velocity, gravity, wind_factor, air_resistance, current_time);
 
 	if (!g_bullet_debug_trj)
 	{
@@ -925,13 +988,14 @@ bool CBulletManager::trajectory_check_error(
 	float& low,
 	float& high,
 	Fvector const& gravity,
-	float const air_resistance
+	Fvector wind_factor,
+	float air_resistance
 )
 {
 	Fvector const& position = bullet.start_position;
 	Fvector const& velocity = bullet.start_velocity;
-	Fvector const start = trajectory_position(position, velocity, gravity, air_resistance, low);
-	Fvector const target = trajectory_position(position, velocity, gravity, air_resistance, high);
+	Fvector const start = trajectory_position(position, velocity, gravity, wind_factor, air_resistance, low);
+	Fvector const target = trajectory_position(position, velocity, gravity, wind_factor, air_resistance, high);
 	Fvector start_to_target = Fvector().sub(target, start);
 	float const distance = start_to_target.magnitude();
 	if (fis_zero(distance))
@@ -957,6 +1021,7 @@ bool CBulletManager::trajectory_check_error(
 			previous_position,
 			bullet.start_velocity,
 			gravity,
+			wind_factor,
 			air_resistance,
 			high,
 			bullet
@@ -970,6 +1035,7 @@ bool CBulletManager::trajectory_check_error(
 		previous_position,
 		bullet.start_velocity,
 		gravity,
+		wind_factor,
 		air_resistance,
 		data.collide_time,
 		bullet
@@ -1017,8 +1083,8 @@ bool CBulletManager::process_bullet(collide::rq_results& storage, SBullet& bulle
 				return false;
 			}
 
-			float time = trajectory_select_pick_time(bullet, low, high, gravity, air_resistance);
-			// if (time == low)
+			float time = trajectory_select_pick_time(bullet, low, high, gravity, wind, air_resistance);
+
 			if (fsimilar(time, low))
 			{
 				return false;
@@ -1026,7 +1092,7 @@ bool CBulletManager::process_bullet(collide::rq_results& storage, SBullet& bulle
 
 			float safe_time = time;
 			VERIFY2(safe_time <= high, make_string<const char*>("safe_time[%f], high[%f]", safe_time, high));
-			if (!trajectory_check_error(previous_position, storage, bullet, low, time, gravity, air_resistance))
+			if (!trajectory_check_error(previous_position, storage, bullet, low, time, gravity, wind, air_resistance))
 			{
 				VERIFY2(safe_time >= time, make_string<const char*>("safe_time[%f], time[%f]", safe_time, time));
 				VERIFY2(safe_time <= high, make_string<const char*>("safe_time[%f], high[%f]", safe_time, high));
@@ -1041,7 +1107,7 @@ bool CBulletManager::process_bullet(collide::rq_results& storage, SBullet& bulle
 				break;
 			}
 
-			if (!try_update_bullet(bullet, gravity, air_resistance, time))
+			if (!try_update_bullet(bullet, gravity, wind, air_resistance, time))
 			{
 				return false;
 			}
@@ -1354,6 +1420,125 @@ void CBulletManager::Render()
 			*buffer += batch_size;
 
 			UIRender->FlushPrimitive();
+		}
+	}
+}
+
+void CBulletManager::OnFrame()
+{
+	static bool EnableWindEffectOnABullet = EngineExternal()[EEngineExternalGame::EnableWindEffectOnABullet];
+	
+	if (EnableWindEffectOnABullet)
+	{
+		static CGameFont* F = g_FontManager->CloneFont("stat_font");
+
+		static float velocity = 0.f;
+		static float direction = 0.f;
+
+		static float target_velocity = 0.f;
+		static float target_dir = 0.f;
+
+		constexpr float cmp_threshold = .33f;
+		constexpr bool enable_dbg = true;
+
+		if (fsimilar(velocity, target_velocity, cmp_threshold) && fsimilar(direction, target_dir, cmp_threshold))
+		{
+			target_velocity = Random.randF(1.f, 10.f);
+			target_dir = deg2rad(Random.randF(0.f, 360.f));
+		}
+
+		float lerp_factor = CCC_Float::FastCommand("wind_lerp_factor", 0.1f, EPS_S, 0.99f);
+		float lerp_scale = lerp_factor * Device.fTimeDelta;
+
+		velocity += (target_velocity - velocity) * lerp_scale;
+		float angle_diff = target_dir - direction;
+
+		while (angle_diff > M_PI)
+		{
+			angle_diff -= PI_MUL_2;
+		}
+
+		while (angle_diff < -M_PI)
+		{
+			angle_diff += PI_MUL_2;
+		}
+
+		direction += angle_diff * lerp_scale;
+
+		while (direction >= M_PI)
+		{
+			direction -= PI_MUL_2;
+		}
+
+		while (direction < 0.f)
+		{
+			direction += PI_MUL_2;
+		}
+
+		// xz clockwise rotation x = sin (cos default) && z = cos (sin default)
+		wind.set(sinf(direction), 0.f, cosf(direction)).mul(velocity);
+
+		F->SetColor(color_rgba(255, 255, 255, 255));
+		F->OutSet(400, 300);
+
+		shared_str wind_dir = "???";
+		float wd_angle = rad2deg(direction);
+
+		if (wd_angle >= 337.5f || wd_angle < 22.5f)
+		{
+			wind_dir = "North";
+		}
+		else if (wd_angle < 67.5f)
+		{
+			wind_dir = "North-East";
+		}
+		else if (wd_angle < 112.5f)
+		{
+			wind_dir = "East";
+		}
+		else if (wd_angle < 157.5f)
+		{
+			wind_dir = "South-East";
+		}
+		else if (wd_angle < 202.5f)
+		{
+			wind_dir = "South";
+		}
+		else if (wd_angle < 247.5f)
+		{
+			wind_dir = "South-West";
+		}
+		else if (wd_angle < 292.5f)
+		{
+			wind_dir = "West";
+		}
+		else
+		{
+			wind_dir = "North-West";
+		}
+
+		if (enable_dbg)
+		{
+			F->OutNext("Wind accel: [%.3f, %.3f, %.3f]", VPUSH(wind));
+			F->OutNext("Velocity: %.3fdeg (lerp to %.3fdeg)", rad2deg(velocity), rad2deg(target_velocity));
+			F->OutNext("Direction: %.3fdeg (lerp to %.3fdeg)", rad2deg(direction), rad2deg(target_dir));
+			F->OutNext("Angle diff: %.3f (%s)", rad2deg(angle_diff), angle_diff < 0.f ? "counter clock-wise" : "clock-wise");
+			F->OutNext("%s (%.1f deg)", *wind_dir, wd_angle);
+
+			// kuda duet
+			HUD().world_prims.append_lines_arrow(Fvector().set(0.f, 100.f, 0.f), wind, 10.f, color_rgba(0, 255, 0, 255));
+
+			const Fbox& world_bv = Level().ObjectSpace.GetBoundingVolume();
+
+			Fmatrix world_basis;
+			world_basis.identity();
+			world_bv.getcenter(world_basis.c);
+			world_basis.setXYZ(0.f, 0.f, 0.f);
+
+			// World basis (dlya orientacii kuda duet)
+			HUD().world_prims.append_lines_arrow(Fvector().set(0.f, 50.f, 0.f), world_basis.i, 10.f, color_rgba(255, 0, 0, 255));
+			HUD().world_prims.append_lines_arrow(Fvector().set(0.f, 50.f, 0.f), world_basis.j, 10.f, color_rgba(0, 255, 0, 255));
+			HUD().world_prims.append_lines_arrow(Fvector().set(0.f, 50.f, 0.f), world_basis.k, 10.f, color_rgba(0, 0, 255, 255));
 		}
 	}
 }
