@@ -163,7 +163,7 @@ bool TAnomalyElectricCurve::IsEnabled()
 
 bool TAnomalyElectricCurve::AlwaysTheCrow()
 {
-	return IsEnabled() && Actor()->Position().distance_to_xz(m_initial_spawn_position) <= max_processing_distance;
+	return IsEnabled() && Actor()->Position().distance_to_xz(XFORM().c) <= max_processing_distance;
 }
 
 void TAnomalyElectricCurve::Update(bool isUpdateCL)
