@@ -3,7 +3,7 @@
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrFace.h"
 
-extern void		Detach		(vecFace* S);
+extern void		Detach		(vecFace* S, vecVertex& vertices_storage, bool IsMU);
 
 struct _mat_key
 {
@@ -33,7 +33,7 @@ struct _counter
 };
 
 
-void	CBuild::xrPhase_ResolveMaterials(const vecFace& faces, vec2Face& Split)
+void	CBuild::xrPhase_ResolveMaterials(const vecFace& faces, vec2Face& Split, vecVertex& vertices_storage, bool IsMU)
 {
 	CTimer  tProcecss; tProcecss.Start();
 	
@@ -117,7 +117,7 @@ void	CBuild::xrPhase_ResolveMaterials(const vecFace& faces, vec2Face& Split)
    
  	for (auto F : g_XSplit)
  	{
- 		Detach(F);
+ 		Detach(F, vertices_storage, IsMU);
  	}
  
 	//clMsg				("Material %u subdivisions. %u ms", g_XSplit.size(), tProcecss.GetElapsed_ms());

@@ -104,9 +104,9 @@ public:
 	 
 		
 	void	IsolateVertices			(bool bProgress);
-	void	xrPhase_ResolveMaterials(const vecFace& faces, vec2Face& Split);
-	void	xrPhase_UVmap			();
-	void	xrPhase_Subdivide		();
+	void	xrPhase_ResolveMaterials(const vecFace& faces, vec2Face& Split, vecVertex& vertices_storage, bool IsMU);
+	void	xrPhase_UVmap			(vec2Face& Split, vecVertex& vertices_storage, bool IsMU);
+	void	xrPhase_Subdivide		(vec2Face& Split, vecVertex& vertices_storage, bool IsMU);
 	void	ImplicitLighting		();
 
 	// Lighting Functions

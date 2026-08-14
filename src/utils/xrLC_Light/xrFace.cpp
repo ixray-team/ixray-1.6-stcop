@@ -85,11 +85,17 @@ static void destroy_vertex_mu( TVertex* &v, bool unregister )
 	v = nullptr;
 }
 
-TVertex*	TVertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
+TVertex*	TVertex::CreateCopy_NOADJ( vecVertex& vertises_storage, bool IsMU ) const
 {
-	R_ASSERT( &vertises_storage == &inlc_global_data()->g_vertices() );
-
-	TVertex* V	= inlc_global_data()->create_vertex();
+	TVertex* V = nullptr;
+	if (IsMU)
+	{
+		V = mu_vertices_pool().create();
+	} else
+	{
+		R_ASSERT( &vertises_storage == &inlc_global_data()->g_vertices() );
+		V	= inlc_global_data()->create_vertex();
+	}
 	V->P.set	(P);
 	V->N.set	(N);
 	V->C		= C;

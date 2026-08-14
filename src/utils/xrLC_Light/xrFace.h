@@ -122,12 +122,12 @@ struct XRLC_LIGHT_API TVertex
 	}
 
 	/*	FUNCTIONS MAIN */
-	TVertex* CreateCopy_NOADJ(v_vertices& vertises_storage) const;
+	TVertex* CreateCopy_NOADJ(v_vertices& vertises_storage, bool IsMU) const;
 
 	v_faces m_adjacents;
-	IC	TVertex* CreateCopy(v_vertices& vertises_storage) const
+	IC	TVertex* CreateCopy(v_vertices& vertises_storage, bool IsMU) const
 	{
-		TVertex* V = CreateCopy_NOADJ(vertises_storage);
+		TVertex* V = CreateCopy_NOADJ(vertises_storage, IsMU);
 		V->m_adjacents = m_adjacents;
 		return V;
 	}

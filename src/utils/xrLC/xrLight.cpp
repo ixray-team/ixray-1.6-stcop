@@ -126,7 +126,7 @@ void CBuild::Light()
   		xrPhase_TangentBasis(lc_global_data()->g_vertices(), lc_global_data()->g_faces());
 		if (gCompilerMode.LC_MULightmaps)
 		{
-			for (auto& elem : mu_models())
+			for (auto elem : mu_models())
 			{
   				xrPhase_TangentBasis(elem->m_vertices, elem->m_faces);
 			}
@@ -134,23 +134,40 @@ void CBuild::Light()
 
 		Phase("Building UV...");
 		//****************************************** Resolve materials
-		xrPhase_ResolveMaterials(lc_global_data()->g_faces(), g_XSplit);
+		xrPhase_ResolveMaterials(lc_global_data()->g_faces(), g_XSplit, lc_global_data()->g_vertices(), false);
+		IsolateVertices(true);
 		if (gCompilerMode.LC_MULightmaps)
 		{
 			for (auto elem : mu_models())
 			{
-				xrPhase_ResolveMaterials(elem->m_faces, g_XSplitPerMU[elem]);
+				xrPhase_ResolveMaterials(elem->m_faces, g_XSplitPerMU[elem], elem->m_vertices, true);
+				isolate_vertices( true, elem->m_vertices, true);
 			}
 		}
-		IsolateVertices(true);
 
 		//****************************************** UV mapping
-		xrPhase_UVmap();
+		xrPhase_UVmap(g_XSplit, lc_global_data()->g_vertices(), false);
 		IsolateVertices(true);
+		if (gCompilerMode.LC_MULightmaps)
+		{
+			for (auto elem : mu_models())
+			{
+				xrPhase_UVmap(g_XSplitPerMU[elem], elem->m_vertices, true);
+				isolate_vertices( true, elem->m_vertices, true);
+			}
+		}
 
 		//****************************************** Subdivide geometry
-		xrPhase_Subdivide();
+		xrPhase_Subdivide(g_XSplit, lc_global_data()->g_vertices(), false);
 		IsolateVertices(true);
+		if (gCompilerMode.LC_MULightmaps)
+		{
+			for (auto elem : mu_models())
+			{
+				xrPhase_Subdivide(g_XSplitPerMU[elem], elem->m_vertices, true);
+				isolate_vertices( true, elem->m_vertices, true);
+			}
+		}
 	};
 
 	// Hemi MT - Calculate

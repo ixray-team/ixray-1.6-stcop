@@ -39,7 +39,7 @@ void xrMU_Model::Load	( IReader& F, u32 version )
 	xr_vector<u32>			sm_groups;
 	sm_groups.resize		(b_faces.size());
 	R_ASSERT				( version > 17 );
-	F.r	(&*sm_groups.begin(),(u32)sm_groups.size()*sizeof(u32));
+	F.r	(sm_groups.data(),(u32)sm_groups.size()*sizeof(u32));
 
 	// CONVERT and OPTIMIZE
 	for (u32 v_it=0; v_it<b_vertices.size(); v_it++)
@@ -130,9 +130,7 @@ TFace* xrMU_Model::create_face(TVertex* v0, TVertex* v1, TVertex* v2, b_face& B)
 	_F->SetVertex		(2,v2);
 
 	// tc
-	_F->tc[0].uv[0]			= B.t[0];
-	_F->tc[0].uv[1]			= B.t[1];
-	_F->tc[0].uv[2]			= B.t[2];
+	_F->tc.push_back({B.t[0], B.t[1], B.t[2]});
 	_F->CalcNormal		();
 
 	// register

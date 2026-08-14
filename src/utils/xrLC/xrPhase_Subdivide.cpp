@@ -4,7 +4,7 @@
 #include "../xrLC_Light/xrFace.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 
-extern void		Detach(vecFace* S);
+extern void		Detach(vecFace* S, vecVertex& vertices_storage, bool IsMU);
 
 void	setup_bbs(Fbox& b1, Fbox& b2, Fbox& bb, int edge) {
 	Fvector	size;
@@ -26,31 +26,31 @@ void	setup_bbs(Fbox& b1, Fbox& b2, Fbox& bb, int edge) {
 	}
 };
 
-void CBuild::xrPhase_Subdivide()
+void CBuild::xrPhase_Subdivide(vec2Face& Split, vecVertex& vertices_storage, bool IsMU)
 {
 	Status("Subdividing in space...");
 	vecFace s1, s2;
 	Fbox	b1, b2;
-	for (int X = 0; X<int(g_XSplit.size()); X++)
+	for (int X = 0; X<int(Split.size()); X++)
 	{
-		if (g_XSplit[X]->empty())
+		if (Split[X]->empty())
 		{
-			xr_delete(g_XSplit[X]);
-			g_XSplit.erase(g_XSplit.begin() + X);
+			xr_delete(Split[X]);
+			Split.erase(Split.begin() + X);
 			X--;
 			continue;
 		}
-		Progress(float(X) / float(g_XSplit.size()));
+		Progress(float(X) / float(Split.size()));
 
 		// skip if subdivision is too small already
-		if (int(g_XSplit[X]->size()) < (c_SS_LowVertLimit * 2))	continue;
+		if (int(Split[X]->size()) < (c_SS_LowVertLimit * 2))	continue;
 
 		// calc bounding box
 		Fbox	bb;
 		Fvector size;
 
 		bb.invalidate();
-		for (vecFaceIt F = g_XSplit[X]->begin(); F != g_XSplit[X]->end(); F++)
+		for (vecFaceIt F = Split[X]->begin(); F != Split[X]->end(); F++)
 		{
 			TFace* XF = *F;
 			bb.modify(XF->v[0]->P);
@@ -61,11 +61,11 @@ void CBuild::xrPhase_Subdivide()
 		// analyze if we need to split
 		size.sub(bb.max, bb.min);
 		bool bSplit = false;
-		if (size.x > c_SS_maxsize || size.y > c_SS_maxsize || size.z > c_SS_maxsize || int(g_XSplit[X]->size()) > c_SS_HighVertLimit)
+		if (size.x > c_SS_maxsize || size.y > c_SS_maxsize || size.z > c_SS_maxsize || int(Split[X]->size()) > c_SS_HighVertLimit)
 		{
 			bSplit = true;
 		}
-		CDeflector* defl_base = g_XSplit[X]->front()->pDeflector;
+		CDeflector* defl_base = Split[X]->front()->pDeflector;
 		if (!bSplit && defl_base) {
 			if (defl_base->layer.width >= (gCompilerMode.LC_sizeLmaps - 2 * gCompilerMode.LC_BORDER) 
 				|| defl_base->layer.height >= (gCompilerMode.LC_sizeLmaps - 2 * gCompilerMode.LC_BORDER))
@@ -101,7 +101,7 @@ void CBuild::xrPhase_Subdivide()
 		s2.clear();
 		s1.clear();
 		iteration_per_edge++;
-		for (vecFaceIt F = g_XSplit[X]->begin(); F != g_XSplit[X]->end(); F++)
+		for (vecFaceIt F = Split[X]->begin(); F != Split[X]->end(); F++)
 		{
 			TFace* XF = *F;
 			Fvector C;
@@ -115,7 +115,7 @@ void CBuild::xrPhase_Subdivide()
 			// splitting failed
 			// clMsg("! ERROR: model #%d - split fail, faces: %d, s1/s2:%d/%d", X, g_XSplit[X]->size(), s1.size(), s2.size());
 			if (iteration_per_edge < 10) {
-				if (g_XSplit[X]->size() > c_SS_LowVertLimit * 4)
+				if (Split[X]->size() > c_SS_LowVertLimit * 4)
 				{
 					if (s2.size() > s1.size())
 					{	//b2 -less, b1-grow
@@ -173,14 +173,14 @@ void CBuild::xrPhase_Subdivide()
 			}
 
 			// Delete old SPLIT and push two new
-			xr_delete(g_XSplit[X]);
-			g_XSplit.erase(g_XSplit.begin() + X); X--;
-			g_XSplit.push_back(new vecFace(s1));	Detach(&s1);
-			g_XSplit.push_back(new vecFace(s2));	Detach(&s2);
+			xr_delete(Split[X]);
+			Split.erase(Split.begin() + X); X--;
+			Split.push_back(new vecFace(s1));	Detach(&s1, vertices_storage, IsMU);
+			Split.push_back(new vecFace(s2));	Detach(&s2, vertices_storage, IsMU);
 		}
 		s1.clear();
 		s2.clear();
 	}
-	clMsg("%d subdivisions.", g_XSplit.size());
-	validate_splits(g_XSplit);
+	clMsg("%d subdivisions.", Split.size());
+	validate_splits(Split);
 }

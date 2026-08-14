@@ -6,7 +6,7 @@
 #include "../xrLC_Light/xrFace.h"
 
 
-void Detach(vecFace* S)
+void Detach(vecFace* S, vecVertex& vertices_storage, bool IsMU)
 {
 	map_v2v verts;
 	verts.clear();
@@ -22,7 +22,7 @@ void Detach(vecFace* S)
 
 			if (W == verts.end())
 			{																	  // where is no such-vertex
-				VNewCreate = V->CreateCopy_NOADJ(lc_global_data()->g_vertices()); // make copy
+				VNewCreate = V->CreateCopy_NOADJ(vertices_storage, IsMU); // make copy
 				verts.insert(std::make_pair(V, VNewCreate));
 			}
 			else
@@ -51,7 +51,7 @@ bool sort_faces(TFace* face, TFace* face2)
 	return false;
 }
 
-void CBuild::xrPhase_UVmap()
+void CBuild::xrPhase_UVmap(vec2Face& Split, vecVertex& vertices_storage, bool IsMU)
 {
 	CTimer tState;
 	tState.Start();
@@ -59,23 +59,24 @@ void CBuild::xrPhase_UVmap()
 	// Main loop
 	Status("Processing...");
 	lc_global_data()->g_deflectors().reserve(64 * 1024);
-	float p_cost = 1.f / float(g_XSplit.size());
+	float p_cost = 1.f / float(Split.size());
 	float p_total = 0.f;
 	vecFace faces_affected;
 
 	//se7kills : НЕ ТРОГАТЬ !!! (Ломает сектора !)
-	int StartPoint = g_XSplit.size();
+	//mnelenpridumivat : Понял, потрогаю, но аккуратно
+	int StartPoint = Split.size();
  	for (int SP = 0; SP < int(StartPoint); SP++)
 	{
 		Progress(p_total += p_cost);
 
 		// Detect vertex-lighting and avoid this subdivision
-		if (g_XSplit[SP]->empty())
+		if (Split[SP]->empty())
 		{
 			continue;
 		}
 
-		TFace* Fvl = g_XSplit[SP]->front();
+		TFace* Fvl = Split[SP]->front();
 		if (Fvl->Shader().flags.bLIGHT_Vertex)
 		{
 			continue; // do-not touch (skip)
@@ -92,15 +93,15 @@ void CBuild::xrPhase_UVmap()
 		while (true)
 		{
 			// Сортировка списка в перед с больщими зонами.
-			std::sort(g_XSplit[SP]->begin(), g_XSplit[SP]->end(), sort_faces);
-			if (g_XSplit[SP] == nullptr)
+			std::ranges::sort(*Split[SP], sort_faces);
+			if (Split[SP] == nullptr)
 			{
 				break;
 			}
 			// Select maximal sized poly
 			TFace* msF = nullptr;
 
-			for (auto FACE : *g_XSplit[SP])
+			for (auto FACE : *Split[SP])
 			{
 				if (FACE && FACE->pDeflector == nullptr)
 				{
@@ -118,32 +119,30 @@ void CBuild::xrPhase_UVmap()
 					D->OA_Export();
 
 					// detaching itself
-					Detach(&faces_affected);
-					g_XSplit.push_back(new vecFace(faces_affected));
+					Detach(&faces_affected, vertices_storage, IsMU);
+					Split.push_back(new vecFace(faces_affected));
  				}
 			}
 
-			if (!g_XSplit[SP]->empty())
+			if (!Split[SP]->empty())
 			{
 				// u32 CapacityOrig = g_XSplit[SP]->capacity();
-				auto rIT = std::remove_if(
-					g_XSplit[SP]->begin(),
-					g_XSplit[SP]->end(),
-					[&](TFace* F)
-					{
-						if (F->pDeflector != nullptr)
-						{
-							// xr_delete(F);   // Освобождаем память
-							return true; // Убираем из контейнера
-						}
-						return false;
-					}
-				);
+				auto rIT = std::ranges::remove_if(*Split[SP],
+				                                  [&](TFace* F)
+				                                  {
+					                                  if (F->pDeflector != nullptr)
+					                                  {
+						                                  // xr_delete(F);   // Освобождаем память
+						                                  return true; // Убираем из контейнера
+					                                  }
+					                                  return false;
+				                                  }
+				).begin();
 
-				if (rIT != g_XSplit[SP]->end())
+				if (rIT != Split[SP]->end())
 				{
-					g_XSplit[SP]->erase(rIT, g_XSplit[SP]->end());
-					g_XSplit[SP]->shrink_to_fit();
+					Split[SP]->erase(rIT, Split[SP]->end());
+					Split[SP]->shrink_to_fit();
 				}
 			}
 
@@ -154,18 +153,18 @@ void CBuild::xrPhase_UVmap()
 			}
 		}
 
-		AditionalData("SP[%u], xsp: %u", SP, g_XSplit.size());
+		AditionalData("SP[%u], xsp: %u", SP, Split.size());
 	}
 
-	clMsg("%d subdivisions...", g_XSplit.size());
+	clMsg("%d subdivisions...", Split.size());
 
 	// VALIDATION
-	for (auto SP = 0; SP < g_XSplit.size(); SP++)
+	for (auto SP = 0; SP < Split.size(); SP++)
 	{
-		if (g_XSplit[SP]->empty())
+		if (Split[SP]->empty())
 		{
-			xr_delete(g_XSplit[SP]);
-			g_XSplit.erase(g_XSplit.begin() + SP);
+			xr_delete(Split[SP]);
+			Split.erase(Split.begin() + SP);
 			SP--;
 		}
 	}

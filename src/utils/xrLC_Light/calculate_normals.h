@@ -60,9 +60,13 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces, bool IsMU )
 			itterate_adjacents_type::recurse_tri_params p( pTestVertex, new_adj, sm_cos );
 			itterate_adjacents_type::RecurseTri( 0, p );
  
-			TVertex*	pNewVertex			= pTestVertex->CreateCopy_NOADJ( vertices );
+			TVertex*	pNewVertex			= pTestVertex->CreateCopy_NOADJ( vertices, IsMU );
 			VCountAllocated++;
 
+			if (IsMU)
+			{
+				vertices.push_back( pNewVertex);
+			}
 
  			for (u32 a=0; a<new_adj.size(); ++a)
 			{
