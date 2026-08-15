@@ -659,8 +659,10 @@ game_sv_GameState::~game_sv_GameState()
 {
 	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
 	xr_delete(m_event_queue);
-	delete_data(m_alife_simulator);
-
+	if (m_alife_simulator)
+	{
+		delete_data(m_alife_simulator);
+	}
 	SaveMapList();
 
 	m_pMapRotation_List.clear();
