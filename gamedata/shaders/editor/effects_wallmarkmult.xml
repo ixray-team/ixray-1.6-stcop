@@ -1,5 +1,5 @@
 <w>
-    <element_0 vs="stub_default" ps="stub_default_ma" fog="0" zread="1" zwrite="0">
+    <element_0 vs="stub_default" ps="stub_default" fog="0" zread="1" zwrite="0">
         <sort status="0" count="1" />
         <blend status="1" src="destcolor" dest="srccolor"/>
         <aref status="1" count="0"/>
