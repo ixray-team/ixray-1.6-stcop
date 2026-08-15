@@ -293,6 +293,9 @@ function configure(_ref_ixr_signals)
 
 	_ref_ixr_signals.add_intercept("on_object_sound_init",  				{"ref_binder", "snd_ini", "section"})
 	_ref_ixr_signals.add_intercept("on_object_sound_play",  				{"ref_binder", "obj_id", "faction", "point", "msg"})
+	
+	_ref_ixr_signals.add_intercept("on_trader_sound_play",  				{"ref_binder", "snd"})
+	_ref_ixr_signals.add_intercept("on_trader_sound_end",  					{"ref_binder"})
 
 	_ref_ixr_signals.add_intercept("anabiotic_callback_before_change_weather",	{})
 
