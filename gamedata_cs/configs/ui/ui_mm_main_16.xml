@@ -72,7 +72,7 @@
 
   <button h="25"/>
 
-  <menu_main btn_height="34" font="graffiti22" color="ui_mm_font">
+  <menu_main btn_height="36" font="graffiti22" color="ui_mm_font">
     <btn name="btn_new_game"	caption="ui_mm_newgame" />
     <btn name="btn_load"		caption="ui_mm_load_game" />
     <btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" />
@@ -81,7 +81,7 @@
     <btn name="btn_quit"		caption="ui_mm_quit2windows" />
   </menu_main>
 
-  <menu_main_last_save btn_height="34" font="graffiti22" color="ui_mm_font">
+  <menu_main_last_save btn_height="36" font="graffiti22" color="ui_mm_font">
     <btn name="btn_lastsave"	caption="ui_mm_last_save" />
     <btn name="btn_new_game"	caption="ui_mm_newgame" />
     <btn name="btn_load"		  caption="ui_mm_load_game" />
@@ -91,7 +91,7 @@
     <btn name="btn_quit"		  caption="ui_mm_quit2windows" />
   </menu_main_last_save>
 
-  <menu_new_game btn_height="34" font="graffiti22" color="ui_mm_font">
+  <menu_new_game btn_height="36" font="graffiti22" color="ui_mm_font">
     <btn name="btn_novice"		caption="ui_mm_novice" />
     <btn name="btn_stalker"		caption="ui_mm_stalker" />
     <btn name="btn_veteran"		caption="ui_mm_veteran" />
@@ -99,7 +99,7 @@
     <btn name="btn_new_back"	caption="ui_mm_back" />
   </menu_new_game>
 
-  <menu_main_single btn_height="34" font="graffiti22" color="ui_mm_font">
+  <menu_main_single btn_height="36" font="graffiti22" color="ui_mm_font">
     <btn name="btn_ret"			  caption="ui_mm_return_game" />
     <btn name="btn_lastsave"	caption="ui_mm_last_save" />
     <btn name="btn_load"		  caption="ui_mm_load_game" />
@@ -110,7 +110,7 @@
     <btn name="btn_quit"		  caption="ui_mm_quit2windows" />
   </menu_main_single>
 
-  <menu_main_single_dead btn_height="34" font="graffiti22" color="ui_mm_font">
+  <menu_main_single_dead btn_height="36" font="graffiti22" color="ui_mm_font">
     <btn name="btn_lastsave"	caption="ui_mm_last_save" />
     <btn name="btn_load"		  caption="ui_mm_load_game" />
     <btn name="btn_options"		caption="ui_mm_options_n" />
@@ -119,7 +119,7 @@
     <btn name="btn_quit"		  caption="ui_mm_quit2windows" />
   </menu_main_single_dead>
 
-  <menu_main_mm btn_height="35" font="graffiti22" a="255" r="0" g="0" b="0">
+  <menu_main_mm btn_height="36" font="graffiti22" color="ui_mm_font">
     <btn name="btn_ret"			caption="ui_mm_return_game" />
     <btn name="btn_options"		caption="ui_mm_options_n" />
     <btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" />
