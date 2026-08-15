@@ -1,10 +1,5 @@
 #include "stdafx.h"
 
-static constexpr size_t	s_arena_size = 8 * 1024 * 1024;
-static char s_fake_array[s_arena_size];
-
-doug_lea_area_allocator	g_render_lua_allocator_area(s_fake_array,"render:sdk", s_arena_size);
-
 struct RenderBuckets
 {
     xr_vector<CCustomObject*> Normal[4];
@@ -13,27 +8,15 @@ struct RenderBuckets
 
 static RenderBuckets* RenderBucketsData = nullptr;
 
-static void collect_object(EScene::mapObject_Node* N)
-{
-    CCustomObject* o = N->val;
-    u32 m = o->RenderPriorityMask();
-    for (u32 P = 1; P <= 3; ++P)
-    {
-        if (m & (1u << P))
-        {
-            RenderBucketsData->Normal[P].push_back(o);
-            RenderBucketsData->Alpha[P].push_back(o);
-        }
-    }
-}
-
 struct tools_rp_pred
 {
     IC bool operator()(ESceneToolBase* x, ESceneToolBase* y) const
     {	return x->RenderPriority()<y->RenderPriority();	}
 };
 
-#define DEFINE_MSET_PRED(T,N,I,P)	typedef xr_multiset< T, P > N;		typedef N::iterator I;
+#define DEFINE_MSET_PRED(T, N, I, Priority) \
+	typedef xr_multiset<T, Priority> N;     \
+	typedef N::iterator I;
 
 DEFINE_MSET_PRED(ESceneToolBase*,SceneMToolsSet,SceneMToolsIt,tools_rp_pred);
 DEFINE_MSET_PRED(ESceneCustomOTool*,SceneOToolsSet,SceneOToolsIt,tools_rp_pred);
@@ -46,8 +29,8 @@ void EScene::Render(const Fmatrix& camera)
 	}
 
 	// extract and sort object tools
-	SceneOToolsSet object_tools;
-	SceneMToolsSet scene_tools;
+	SceneOToolsSet ObjTools;
+	SceneMToolsSet SceneTools;
 	{
 		SceneToolsMapPairIt t_it = m_SceneTools.begin();
 		SceneToolsMapPairIt t_end = m_SceneTools.end();
@@ -58,18 +41,22 @@ void EScene::Render(const Fmatrix& camera)
 				// before render
 				t_it->second->BeforeRender();
 				// sort tools
-				ESceneCustomOTool* mt = smart_cast<ESceneCustomOTool*>(t_it->second);
-				if (mt)
+				ESceneCustomOTool* CustomTool = smart_cast<ESceneCustomOTool*>(t_it->second);
+				if (CustomTool)
 				{
-					object_tools.insert(mt);
+					ObjTools.insert(CustomTool);
 				}
-				scene_tools.insert(t_it->second);
+				SceneTools.insert(t_it->second);
 			}
 		}
 	}
 
-	// insert objects
-	for (auto SceneTool : object_tools)
+	// collect visible objects into a reusable vector (no per-frame sort)
+	static xr_vector<CCustomObject*> RenderList;
+	RenderList.reserve(8192);
+	RenderList.clear();
+
+	for (auto SceneTool : ObjTools)
 	{
 		if (!SceneTool->IsLoaded || !SceneTool->IsVisible())
 		{
@@ -82,16 +69,15 @@ void EScene::Render(const Fmatrix& camera)
 		{
 			if (Obj->Visible() && Obj->IsRender())
 			{
-				float distSQ = EDevice->vCameraPosition.distance_to_sqr(Obj->FPosition);
-				mapRenderObjects.insertInAnyWay(distSQ, Obj);
+				RenderList.push_back(Obj);
 			}
 		}
 	}
 
-	auto RENDER_SCENE_TOOLS = [scene_tools](int P, bool B)
+	auto RENDER_SCENE_TOOLS = [&SceneTools](int P, bool B)
 	{
-		SceneMToolsIt s_it = scene_tools.begin();
-		SceneMToolsIt s_end = scene_tools.end();
+		SceneMToolsIt s_it = SceneTools.begin();
+		SceneMToolsIt s_end = SceneTools.end();
 		for (; s_it != s_end; s_it++)
 		{
 			EDevice->SetShader(B ? EDevice->m_SelectionShader : EDevice->m_WireShader);
@@ -100,41 +86,52 @@ void EScene::Render(const Fmatrix& camera)
 		}
 	};
 
-	RenderBuckets rb;
-	RenderBucketsData = &rb;
-	mapRenderObjects.traverseLR(collect_object);
+	RenderBuckets RBucket;
+	RenderBucketsData = &RBucket;
+	for (CCustomObject* Object : RenderList)
+	{
+		u32 RenderPriorityMask = Object->RenderPriorityMask();
+		for (u32 P = 1; P <= 3; ++P)
+		{
+			if (RenderPriorityMask & (1u << P))
+			{
+				RenderBucketsData->Normal[P].push_back(Object);
+				RenderBucketsData->Alpha[P].push_back(Object);
+			}
+		}
+	}
+
 	RenderBucketsData = nullptr;
 
-	for (u32 P = 1; P <= 3; ++P)
+	for (u32 Priority = 1; Priority <= 3; ++Priority)
 	{
 		// normal pass: near-to-far
-		for (CCustomObject* o : rb.Normal[P])
+		for (CCustomObject* Object : RBucket.Normal[Priority])
 		{
-			o->Render((int)P, false);
+			Object->Render((int)Priority, false);
 		}
-
-		RENDER_SCENE_TOOLS((int)P, false);
-		FlushDU();
 
 		// alpha (strict B2F) pass: far-to-near -> reverse the near-to-far bucket
-		for (int i = (int)rb.Alpha[P].size() - 1; i >= 0; --i)
+		for (int Iter = (int)RBucket.Alpha[Priority].size() - 1; Iter >= 0; --Iter)
 		{
-			rb.Alpha[P][i]->Render((int)P, true);
+			RBucket.Alpha[Priority][Iter]->Render((int)Priority, true);
 		}
 
-		RENDER_SCENE_TOOLS((int)P, true);
-		FlushDU();
+		RENDER_SCENE_TOOLS((int)Priority, false);
+		RENDER_SCENE_TOOLS((int)Priority, true);
 	}
+
+	FlushDU();
 
 	// render snap
 	RenderSnapList();
 
 	// clear
-	mapRenderObjects.clear();
+	RenderList.clear();
 
 
-	SceneMToolsIt s_it = scene_tools.begin();
-	SceneMToolsIt s_end = scene_tools.end();
+	SceneMToolsIt s_it = SceneTools.begin();
+	SceneMToolsIt s_end = SceneTools.end();
 	for (; s_it != s_end; s_it++)
 	{
 		(*s_it)->AfterRender();
