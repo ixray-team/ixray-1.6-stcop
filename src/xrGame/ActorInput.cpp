@@ -682,6 +682,57 @@ void CActor::IR_OnGyroscopeMove(Fvector3 value)
 	}
 }
 
+void CActor::IR_OnTouchpadMove(Fvector2 value)
+{
+	PIItem iitem = inventory().ActiveItem();
+	if (iitem != nullptr && iitem->cast_hud_item())
+	{
+		iitem->cast_hud_item()->ResetSubStateTime();
+	}
+
+	if (Remote())
+	{
+		return;
+	}
+
+	if (load_screen_renderer.IsActive())
+	{
+		return;
+	}
+
+	if (m_holder)
+	{
+//		m_holder->OnGyroscopeMove(value);
+		return;
+	}
+
+	float LookFactor = GetLookFactor();
+
+	CCameraBase* C = cameras[cam_active];
+	float scale = (C->f_fov / g_fov) / LookFactor * 0.01f;
+
+	if (CWeapon* wpn = iitem != nullptr ? iitem->cast_weapon() : nullptr)
+	{
+		if (!wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled() && !wpn->IsAltZoomed())
+		{
+			float zoom_scale = scale * (wpn->GetLensFOV() * 0.02f);
+			scale = _lerp(scale, zoom_scale, wpn->GetAimFactor());
+		}
+	}
+
+	if (value.x)
+	{
+		float d = (psGyroscopeInvertY ? -1 : 1) * value.x * scale;
+		cam_Active()->Move((d < 0) ? kLEFT : kRIGHT, std::abs(d));
+	}
+
+	if (value.y)
+	{
+		float d = (psGyroscopeInvertX ? -1 : 1) * value.y * scale;
+		cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));
+	}
+}
+
 void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 {
 	if (Remote())
