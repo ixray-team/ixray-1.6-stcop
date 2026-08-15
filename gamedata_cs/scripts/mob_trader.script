@@ -89,6 +89,7 @@ function mob_trader:reset_scheme()
         if (self.st.sound_phrase) then
                 local snd = mob_sound.pick_sound_from_set(self.object, self.st.sound_phrase, {})
                 self.object:set_trader_sound(snd, self:select_head_animation());
+				SendScriptCallback("on_trader_sound_play", self, snd)
         end
 
         if self.st.anim_head == nil then
@@ -140,6 +141,7 @@ end
 
 function mob_trader:on_sound_end()
         self.st.signals["sound_phrase_end"] = true
+		SendScriptCallback("on_trader_sound_end")
 end
 ---------------------------------------------------------------------------------------------------------------------
 function mob_trader:deactivate()
