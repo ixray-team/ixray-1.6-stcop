@@ -619,13 +619,13 @@ xr_string EScene::LevelPath()
 
 void EScene::SelectLightsForObject(CCustomObject* obj)
 {
-	ESceneCustomOTool* t 			= Scene->GetOTool(OBJCLASS_LIGHT);
-	if(!t)
-		return;
-
-	ESceneLightTool* lt 		= smart_cast<ESceneLightTool*>(t);
-	VERIFY						(lt);
-	lt->SelectLightsForObject	(obj);
+	//ESceneCustomOTool* t 			= Scene->GetOTool(OBJCLASS_LIGHT);
+	//if(!t)
+	//	return;
+	//
+	//ESceneLightTool* lt 		= smart_cast<ESceneLightTool*>(t);
+	//VERIFY						(lt);
+	//lt->SelectLightsForObject	(obj);
 }
 
 void EScene::HighlightTexture(const char* t_name, bool allow_ratio, u32 t_width, u32 t_height, bool leave_previous)
