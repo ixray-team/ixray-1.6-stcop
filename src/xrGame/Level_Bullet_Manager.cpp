@@ -315,6 +315,24 @@ void CBulletManager::AddBullet(
 
 namespace
 {
+ICF float effective_air_resistance(
+	const SBullet& bullet,
+	Fvector wind_factor,
+	float const air_resistance
+)
+{
+	Fvector b_vel;
+	b_vel.mul(bullet.dir, bullet.speed);
+
+	Fvector rel_vel;
+	rel_vel.sub(b_vel, wind_factor);
+	
+	float rel_v_mag = rel_vel.magnitude();
+	float rel_v_factor = rel_v_mag / bullet.speed;
+	
+	return air_resistance * rel_v_factor;
+}
+
 ICF Fvector parabolic_velocity(
 	Fvector const& start_velocity,
 	Fvector const& gravity,
