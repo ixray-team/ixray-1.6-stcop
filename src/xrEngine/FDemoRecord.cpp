@@ -426,7 +426,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			{
 				FrameTopDelta.mul(m_fSpeed2);
 			}
-			else if (IR_GetKeyState(SDL_SCANCODE_LCTRL) || IR_GetKeyState(SDL_SCANCODE_RCTRL))
+			else if (m_bEnableAcceleration)
 			{
 				FrameTopDelta.mul(m_fSpeed3);
 			}
@@ -497,7 +497,7 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 		m_b_redirect_input_to_level = !m_b_redirect_input_to_level;
 	}
 	
-	if (dik == SDL_SCANCODE_LCTRL)
+	if (dik == SDL_SCANCODE_LCTRL || dik == SDL_SCANCODE_RCTRL)
 	{
 		m_bEnableAcceleration = true;
 	}
@@ -765,25 +765,25 @@ void CDemoRecord::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 			if (!fis_zero(value.y))
 			{
-				vT_delta.y += value.y;
+				vT_delta.z += value.y;
 			}
 		}
 		break;
 		// Right stick
 		case 1:
 		{
-			float scale = Device.fTimeDelta * psMouseSensScale;
+			float scale = Device.fTimeDelta * psGamepadSens * psMouseSensScale;
 
 			if (!fis_zero(value.x))
 			{
-				float d = value.x * scale * 160;
+				float d = value.x * scale * 8;
 				vR_delta.y += d;
 			}
 
 			if (!fis_zero(value.y))
 			{
 				float d = (psGamepadInvert ? -1 : 1) * value.y * scale * 3.f / 4.f;
-				d *= 160;
+				d *= 8;
 
 				vR_delta.x += d;
 			}
@@ -795,12 +795,12 @@ void CDemoRecord::IR_GamepadUpdateStick(int id, Fvector2 value)
 			// Left
 			if (!fis_zero(value.x))
 			{
-				vT_delta.z -= value.x;
+				vT_delta.y -= value.x;
 			}
 			// Right
 			if (!fis_zero(value.y))
 			{
-				vT_delta.z += value.y;
+				vT_delta.y += value.y;
 			}
 		}
 		break;
@@ -831,6 +831,7 @@ void CDemoRecord::IR_OnKeyboardRelease(int dik)
 	switch (dik)
 	{
 		case SDL_SCANCODE_LCTRL:
+		case SDL_SCANCODE_RCTRL:
 		{
 			m_bEnableAcceleration = false;
 			break;
