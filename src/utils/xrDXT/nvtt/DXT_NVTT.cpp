@@ -22,6 +22,7 @@ void GenerateAdvancedFilterMipMaps(u32& w, u32& h, nvtt::InputOptions& inOpt, u3
 
 	u8* pImagePixels = 0;
 	int numMipmaps = GetPowerOf2Plus1Lambda(std::min(w, h));
+	Msg("*     [AdvMip] w=%d h=%d numMipmaps=%d fade_amount=%d fade_delay=%d", w, h, numMipmaps, fmt->fade_amount, fmt->fade_delay);
 	inOpt.setMipmapGeneration(true, numMipmaps);
 	u32 dwW = w;
 	u32 dwH = h;
@@ -35,7 +36,9 @@ void GenerateAdvancedFilterMipMaps(u32& w, u32& h, nvtt::InputOptions& inOpt, u3
 
 	for (int i = 1; i < numMipmaps; i++)
 	{
+		Msg("*     [AdvMip] mip %d/%d: %dx%d ->", i, numMipmaps, dwW, dwH);
 		u32* pNewMip = Build32MipLevel(dwW, dwH, dwP, pLastMip, fmt, i < fmt->fade_delay ? 0.f : 1.f - blend);
+		Msg("*     [AdvMip] mip %d/%d: -> %dx%d", i, numMipmaps, dwW, dwH);
 		xr_free(pLastMip);
 		pLastMip = pNewMip;
 		pNewMip = 0;
@@ -44,7 +47,9 @@ void GenerateAdvancedFilterMipMaps(u32& w, u32& h, nvtt::InputOptions& inOpt, u3
 
 	xr_free(pLastMip);
 
+	Msg("*     [AdvMip] All mipmaps generated, calling nvtt::Compressor().process()...");
 	result = nvtt::Compressor().process(inOpt, compOpt, outOpt);
+	Msg("*     [AdvMip] Compressor done, result=%d", result);
 	xr_free(pImagePixels);
 }
 
@@ -126,9 +131,12 @@ int DXTCompressImageNVTT(const char* out_name, u8* raw_data, u32 w, u32 h, u32 p
 	outOpt.setOutputHandler(&writer);
 	outOpt.setErrorHandler(&handler);
 
+	Msg("*   [NVTT] w=%d h=%d pitch=%d fmt=%d mip_filter=%d flags=0x%x", w, h, pitch, fmt->fmt, fmt->mip_filter, fmt->flags.get());
 	if ((fmt->flags.is(STextureParams::flGenerateMipMaps)) && (STextureParams::kMIPFilterAdvanced == fmt->mip_filter))
 	{
+		Msg("*   [NVTT] Advanced mip filter path, calling GenerateAdvancedFilterMipMaps...");
  		GenerateAdvancedFilterMipMaps(w, h, inOpt, pitch, raw_data, fmt, result, compOpt, outOpt);
+		Msg("*   [NVTT] GenerateAdvancedFilterMipMaps done, result=%d", result);
 	}
 	else
 	{
@@ -155,9 +163,9 @@ int DXTCompressImageNVTT(const char* out_name, u8* raw_data, u32 w, u32 h, u32 p
 			inOpt.setMipmapData(raw_data, w, h);
 		}
 
-
-
+		Msg("*   [NVTT] Standard path, calling nvtt::Compressor().process()...");
 		result = nvtt::Compressor().process(inOpt, compOpt, outOpt);
+		Msg("*   [NVTT] nvtt::Compressor().process() done, result=%d", result);
 	}
 
 	_close(gFileOut);
