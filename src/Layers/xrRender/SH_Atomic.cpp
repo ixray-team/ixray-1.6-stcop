@@ -6,11 +6,17 @@
 ///////////////////////////////////////////////////////////////////////
 //	SVS
 SVS::SVS() : vs(nullptr)
+#ifdef USE_DX11
+	, vs_code(nullptr)
+#endif //USE_DX11
 {
 }
 
 SVS::~SVS()
 {
+#ifdef USE_DX11
+	_RELEASE(vs_code);
+#endif //USE_DX11
 	DEV->_DeleteVS(this);
 	_RELEASE(vs);
 }
