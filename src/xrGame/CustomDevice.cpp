@@ -82,7 +82,7 @@ bool CCustomDevice::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate)
 	{
 		if (CWeapon* W = itm->cast_weapon())
 		{
-			bres = bres && (W->GetState() != CHUDState::eBore) && (W->GetState() != CWeapon::eReload) && (W->GetState() != CWeapon::eSwitch) && !W->IsZoomed();
+			bres = bres && (W->GetState() != CHUDState::eBore) && (W->GetState() != CWeapon::eReload) && (W->GetState() != CWeapon::eSwitch) && (W->GetState() != CWeapon::eSwitchMode) && !W->IsZoomed();
 		}
 
 		if (CMissile* M = itm->cast_missile())
@@ -666,7 +666,7 @@ void CCustomDevice::UpdateVisibility()
 		else
 		{
 			CWeapon* wpn = parent_hud_item != nullptr ? parent_hud_item->cast_weapon() : nullptr;
-			if (wpn != nullptr && (wpn->IsZoomed() && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch))
+			if (wpn != nullptr && (wpn->IsZoomed() && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch || wpn->GetState() == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() + wpn->GetAmmoChamberElapsed() == 0))
 			{
 				HideDetector(true);
 				m_bNeedActivation = true;
