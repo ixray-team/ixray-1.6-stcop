@@ -1890,7 +1890,7 @@ void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse, bool NeedMou
 	}
 }
 
-void  CLocatorAPI::rescan_pathes()
+void  CLocatorAPI::rescan_pathes(bool NeedMountAddons)
 {
 	m_Flags.set(flNeedRescan,false);
 	for (PathPairIt p_it=pathes.begin(); p_it!=pathes.end(); p_it++)
@@ -1903,7 +1903,7 @@ void  CLocatorAPI::rescan_pathes()
 		}
 	}
 
-	if (GAddonsManager != nullptr)
+	if (GAddonsManager != nullptr && NeedMountAddons)
 	{
 		GAddonsManager->MountAddons();
 	}
