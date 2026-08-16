@@ -18,7 +18,7 @@ list(FILTER ESHE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 # ShaderEditor project
 add_executable(ShaderEditor WIN32 ${ESHE_SRC_FILES})
 target_include_directories(ShaderEditor PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(ShaderEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
+target_include_directories(ShaderEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 target_precompile_headers(ShaderEditor PRIVATE "stdafx.h")
 
 # Project defines
@@ -33,6 +33,10 @@ target_link_libraries(ShaderEditor PUBLIC xrEUI)
 target_link_libraries(ShaderEditor PUBLIC xrEProps)
 target_link_libraries(ShaderEditor PUBLIC xrECore)
 target_link_libraries(ShaderEditor PUBLIC xrSound)
+target_link_libraries(ShaderEditor PUBLIC imgui_node_editor)
+
+# VS input-signature reflection (CPreviewObject) needs the D3D11 reflection API.
+target_link_libraries(ShaderEditor PUBLIC d3d11.lib d3dcompiler.lib dxguid.lib)
 
 # Move precompiled header
 set_target_properties(ShaderEditor PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
