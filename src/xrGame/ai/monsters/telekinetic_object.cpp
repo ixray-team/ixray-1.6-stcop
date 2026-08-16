@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "../../PhysicsShellHolder.h"
 #include "telekinetic_object.h"
+
+#include "CharacterPhysicsSupport.h"
 #include "../../../xrPhysics/PhysicsShell.h"
 #include "../../../xrPhysics/MathUtils.h"
 #include "WeaponMagazined.h"
@@ -176,7 +178,26 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 		{
 			entity_alive->conditions().SetPower(entity_alive->conditions().GetPower() - health_loss);
 		}
-		entity_alive->conditions().SetHealth(entity_alive->conditions().GetHealth() - health_loss);
+		
+		SHit HDS
+		{
+			health_loss,
+			linear_vel.GetNormalizedCopy(),
+			ph_self_object,
+			entity_alive->character_physics_support()->movement()->ContactBone(),
+			ph_self_object->Position(),
+			0.f,
+			ALife::EHitType::eHitTypeStrike,
+			0.0f,
+			false
+		};
+		NET_Packet	l_P;
+		HDS.GenHeader(GE_HIT, entity_alive->ID());
+		HDS.whoID = ph_self_object->ID();
+		HDS.weaponID = ph_self_object->ID();
+		HDS.Write_Packet(l_P);
+		entity_alive->u_EventSend(l_P);
+		//entity_alive->conditions().SetHealth(entity_alive->conditions().GetHealth() - health_loss);
 
 		if (actor && EngineExternal()[EEngineExternalGame::EnablePolterDrop])
 		{
