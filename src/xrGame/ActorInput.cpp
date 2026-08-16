@@ -2018,7 +2018,7 @@ void CActor::ClearMask()
 				return;
 			}
 
-			if (itm->GetState() != CHUDState::eIdle || dev->GetState() != CCustomDevice::eIdle)
+			if (itm->IsPending() || dev->IsPending())
 			{
 				return;
 			}

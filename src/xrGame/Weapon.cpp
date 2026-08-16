@@ -1862,12 +1862,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				return false;
 			}
 
-			if (GetState() == eKick)
-			{
-				return true;
-			}
-
-			if ((!IsPending() || GetState() == eIdle) && !IsZoomed())
+			if (!IsPending() && GetState() != eFire && !IsZoomed())
 			{
 				SwitchState(eKick);
 			}
