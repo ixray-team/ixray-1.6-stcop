@@ -58,8 +58,8 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeSchedulable,IPureSchedulableObject)
 									CSE_ALifeSchedulable	(const char* caSection);
 	virtual							~CSE_ALifeSchedulable	();
 	// we need this to prevent virtual inheritance :-(
-	virtual CSE_Abstract			*base					() = 0;
-	virtual const CSE_Abstract		*base					() const = 0;
+	virtual CSE_Abstract			*base					() { return nullptr; }
+	virtual const CSE_Abstract		*base					() const { return nullptr; }
 	virtual CSE_Abstract			*init					();
 	virtual CSE_ALifeSchedulable	*cast_schedulable		() {return this;};
 	virtual CSE_Abstract			*cast_abstract			() {return 0;};
@@ -190,8 +190,8 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeGroupAbstract)
 									CSE_ALifeGroupAbstract	(const char* caSection);
 	virtual							~CSE_ALifeGroupAbstract	();
 	virtual	CSE_Abstract			*init					();
-	virtual CSE_Abstract			*base					() = 0;
-	virtual const CSE_Abstract		*base					() const = 0;
+	virtual CSE_Abstract			*base					() { return nullptr; }
+	virtual const CSE_Abstract		*base					() const { return nullptr; }
 	virtual CSE_ALifeGroupAbstract	*cast_group_abstract	() {return this;};
 	virtual CSE_Abstract			*cast_abstract			() {return 0;};
 #ifdef XRGAME_EXPORTS
