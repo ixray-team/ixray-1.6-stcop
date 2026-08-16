@@ -360,8 +360,8 @@ bool CActorTools::Load(const char* obj_name)
 				ogf->save_object(writer);
 				IReader reader(const_cast<u8*>(writer.data()), writer.tell());
 				loaded = O->Load(reader);
-				//if (loaded)
-				//	O->SetLoadInfo(Str.c_str(), FS.get_file_age(Str.c_str()));
+				if (loaded)
+					O->SetLoadInfo(Str.c_str(), FS.get_file_age(Str.c_str()));
 			}
 		}
 		else
