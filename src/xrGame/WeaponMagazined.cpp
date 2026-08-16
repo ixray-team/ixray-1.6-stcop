@@ -2149,10 +2149,15 @@ void CWeaponMagazined::switch2_FireMode()
 	{
 		if (CCustomDevice* dev = pActor->GetDevice())
 		{
+			bDisablePrepareAnimation = iAmmoElapsed + iAmmoChamberElapsed == 0;
 			if (dev->CanFiremode())
 			{
 				dev->SwitchState(CCustomDevice::EDeviceStates::eHandFiremode);
 			}
+		}
+		else
+		{
+			bDisablePrepareAnimation = false;
 		}
 	}
 }
@@ -3044,6 +3049,15 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 		if (ScopeAttachable() && !IsScopeAttached())
 		{
 			AddSuffixName(anim, "_noscope");
+		}
+
+		if (CActor* pActor = Level().CurrentControlEntity()->cast_actor())
+		{
+			if (pActor->GetDevice())
+			{
+				AddSuffixName(anim, "_detector");
+				AddSuffixName(anim, "_det");
+			}
 		}
 	}
 
