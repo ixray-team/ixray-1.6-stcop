@@ -76,6 +76,8 @@ bool CSHEngineTools::OnCreate()
 {
 	IBlender::CreatePalette(m_TemplatePalette);
 	Load();
+	m_PreviewObjectType = pvoBox;
+	OnPreviewObjectRefChange("editor\\ShaderTest_Box");
 	return true;
 }
 
@@ -132,7 +134,9 @@ void CSHEngineTools::OnPreviewObjectRefChange(const char* fn)
 		Lib.RemoveEditObject(m_PreviewObject);
 		m_PreviewObject = (fn && fn[0]) ? Lib.CreateEditObject(fn) : 0;
 		ZoomObject(false);
+		m_Preview.SetObject(m_PreviewObject);
 		UpdateObjectShader();
+		UpdatePreviewShader();
 		UI->RedrawScene();
 	}
 }
@@ -248,7 +252,12 @@ void CSHEngineTools::OnFrame()
 
 void CSHEngineTools::OnRender()
 {
-	if (m_PreviewObject) m_PreviewObject->RenderSingle(NULL, Fidentity);
+	if (m_PreviewObject){
+		Fmatrix WVP;
+		WVP.mul(Device.mProject, Device.mView);
+		m_Preview.UpdateClipSpace(WVP);
+		m_PreviewObject->RenderSingle(NULL, Fidentity);
+	}
 }
 
 void CSHEngineTools::ZoomObject(bool bOnlySel)
@@ -269,6 +278,7 @@ void CSHEngineTools::RealResetShaders()
 	UpdateStreamFromObject();
  
 	UpdateObjectShader	();
+	UpdatePreviewShader();
 	// save to temp file
 	PrepareRender		();
 	// reset device shaders from temp file
@@ -717,6 +727,7 @@ void CSHEngineTools::SetCurrentItem(const char* name, bool bView)
 		UpdateStreamFromObject();
 		// apply this shader to non custom object
 		UpdateObjectShader();
+		UpdatePreviewShader();
 		if (bView) ViewSetCurrentItem(name);
 	}
 }
@@ -888,6 +899,31 @@ void CSHEngineTools::UpdateObjectShader()
 		UI->RedrawScene();
 		E->OnDeviceDestroy();
 	}
+}
+
+ID3DBlob* CSHEngineTools::GetCurrentVSSignature()
+{
+	if (!m_PreviewObject) return nullptr;
+	CEditableObject* E = m_PreviewObject;
+	CSurface* surf = *E->FirstSurface(); R_ASSERT(surf);
+	ref_shader sh = surf->_Shader();
+	for (u32 e = 0; e < 6; e++)
+	{
+		for (u32 p = 0; p < sh->E[e]->passes.size(); p++)
+		{
+			auto& S = sh->E[e]->passes[p];
+			if (S->vs)
+				return (ID3DBlob*)S->vs->vs_code;
+		}
+	}
+	return nullptr;
+}
+
+void CSHEngineTools::UpdatePreviewShader()
+{
+	if (!m_PreviewObject) return;
+	m_Preview.SetVSSignature(GetCurrentVSSignature());
+	m_Preview.Apply(m_PreviewObject);
 }
 
 void CSHEngineTools::OnShowHint(AStringVec& ss)

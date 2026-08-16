@@ -32,6 +32,8 @@ struct ECORE_API SVS : public xr_resource_uniq
 	R_constant_table					constants;
 #ifdef USE_DX11
 	ref_input_sign						signature;
+	// full compiled VS bytecode (kept so editors/tools can reflect inputs)
+	ID3DBlob*							vs_code;
 #endif //USE_DX11
 	SVS				();
 	~SVS			();
@@ -99,6 +101,10 @@ struct ECORE_API SDeclaration : public xr_resource_flagged
 	//	Maps input signature to input layout
 	xr_map<ID3DBlob*, ID3DInputLayout*> vs_to_layout;
 	xr_vector<RHIInputElementDesc> dx10_dcl_code;
+	//	Pristine declaration as created (never patched by the shader preview).
+	//	Used as the source for VS-input mapping so repeated patches to
+	//	dx10_dcl_code don't degrade the channel set.
+	xr_vector<RHIInputElementDesc> dx10_dcl_code_pristine;
 #else //USE_DX11	//	Don't need it: use ID3DInputLayout instead
 					//	which is per ( declaration, VS input layout) pair
 	IDirect3DVertexDeclaration9*		dcl;

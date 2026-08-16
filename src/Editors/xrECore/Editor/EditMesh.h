@@ -186,6 +186,7 @@ using SurfFacesPairIt = SurfFaces::iterator;
 struct st_RenderBuffer;
 class CSurface;
 class CSector;
+struct SDeclaration;
 
 #if 1
 	struct ECORE_API st_RenderBuffer{
@@ -228,7 +229,6 @@ public:
 
 	void 			GenerateRenderBuffers();
 	void 			UnloadRenderBuffers();
-
 	void 			GenerateFNormals	();
 	void 			GenerateVNormals	(const Fmatrix* parent_xform, bool force = false);
 	void			AssignMesh			(shared_str to_bone);
@@ -284,8 +284,9 @@ protected:
 
 #if 1
 	CDB::MODEL*		m_CFModel;
-	RBMap*			m_RenderBuffers;
 #endif
+public:
+	RBMap*			m_RenderBuffers;
 
 	EditColorMesh m_color_map;
 
