@@ -120,7 +120,7 @@ void CEditableMesh::UnloadRenderBuffers()
 		xr_delete					(m_RenderBuffers);
 	}
 }
-//----------------------------------------------------
+
 void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, u8*& src_data)
 {
 	VERIFY(surf);
@@ -136,6 +136,11 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 		vtx->P.x = m_Vertices[fv.pindex].x;
 		vtx->P.y = m_Vertices[fv.pindex].y;
 		vtx->P.z = m_Vertices[fv.pindex].z;
+
+		vtx->weight0 = 1.0f;
+		vtx->weight1 = 0.0f;
+		vtx->weight2 = 0.0f;
+		vtx->weight3 = 0.0f;
 
 		if (dwFVF & D3DFVF_NORMAL)
 		{
@@ -187,6 +192,17 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 				vtx->uv = vmap->getUV(vm_pt.index);
 			}
 		}
+
+		// Tangent/Binormal are consumed by model shaders (normal mapping) but
+		// were never written, leaving them zero. normalize(zero) -> NaN and the
+		// geometry collapses for any such shader. Build a stable orthonormal
+		// frame from the normal so they are always valid.
+		Fvector tref(0, 1, 0);
+		if (fabsf(vtx->N.y) > 0.99f) tref.set(0, 0, 1);
+		vtx->T.crossproduct(vtx->N, tref);
+		if (vtx->T.square_magnitude() < EPS_S) vtx->T.set(1, 0, 0);
+		else vtx->T.normalize_safe();
+		vtx->B.crossproduct(vtx->N, vtx->T);
 
 		++vtx;
 	};
