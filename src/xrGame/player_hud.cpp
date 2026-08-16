@@ -23,7 +23,7 @@ float CalcMotionSpeed(const shared_str& anim_name)
 	{
 		return 2.0f;
 	}
-	else if (CActor* Actor = (Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr); Actor->HudAnimator()->TargetAnimator())
+	else if (CActor* Actor = (Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr); Actor && Actor->HudAnimator()->TargetAnimator())
 	{
 		return AnimatorHideSpeedFactor;
 	}
