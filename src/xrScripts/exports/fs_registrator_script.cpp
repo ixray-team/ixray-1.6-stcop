@@ -112,7 +112,7 @@ FS_file_list_ex::FS_file_list_ex(const char* path, u32 flags, const char* mask)
 		FS_Path* P = FS.get_path(path);
 		P->m_Flags.set(FS_Path::flNeedRescan, true);
 		FS.m_Flags.set(CLocatorAPI::flNeedCheck, true);
-		FS.rescan_pathes();
+		FS.rescan_pathes(false);
 	}
 
 	FS_FileSet files;
