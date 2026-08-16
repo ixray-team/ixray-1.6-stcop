@@ -219,7 +219,7 @@ public:
 
 	void						rescan_path			(const char* full_path, bool bRecurse, bool NeedMountAddons = true);
 	// editor functions
-	void						rescan_pathes		();
+	void						rescan_pathes		(bool NeedMountAddons = true);
 	void						lock_rescan			();
 	void						unlock_rescan		();
 };
