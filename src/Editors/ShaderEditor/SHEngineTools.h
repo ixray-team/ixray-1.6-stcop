@@ -3,6 +3,7 @@
 #define SHEngineToolsH
 
 #include "SHToolsInterface.h"
+#include "SHPreviewObject.h"
 
 using TemplateVec = xr_vector<IBlender*>;
 using TemplateIt = TemplateVec::iterator;
@@ -52,6 +53,8 @@ class CSHEngineTools: public ISHTools
 
     xr_string				m_RenBlenderOldName;
     xr_string				m_RenBlenderNewName;
+
+    CPreviewObject			m_Preview;
 
 	TemplateVec				m_TemplatePalette;
 
@@ -110,7 +113,11 @@ friend class TfrmShaderProperties;
     // name                                 
 	bool   		NameOnAfterEdit		(PropValue* sender, xr_string& edit_val);
 
-    void					RealResetShaders	();
+    void 					RealResetShaders	();
+
+    ID3DBlob*				GetCurrentVSSignature();
+    void					UpdatePreviewShader	();
+
 
 	void   		FillMatrix			(PropItemVec& values, const char* pref, CMatrix* m);
 	void   		FillConst			(PropItemVec& values, const char* pref, CConstant* c);
