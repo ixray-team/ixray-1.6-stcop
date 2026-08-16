@@ -22,6 +22,10 @@ if (IXRAY_PROFILER_TRACY)
     include("${CMAKE_MODULE_PATHEX}/Tracy.cmake")
 endif()
 
+if (IXRAY_EDITORS)
+    include("${CMAKE_MODULE_PATHEX}/ImGuiNodeEditor.cmake")
+endif()
+
 # Resonance Audio 3rd
 include("${CMAKE_MODULE_PATHEX}/eigen.cmake")
 include("${CMAKE_MODULE_PATHEX}/pffft.cmake")
