@@ -796,6 +796,14 @@ static HRESULT create_shader(
 
 			_RELEASE(pSignatureBlob);
 
+			//	Keep full VS bytecode so tools can reflect input parameters
+			ID3DBlob* pCodeBlob = nullptr;
+			if (SUCCEEDED(D3DCreateBlob(buffer_size, &pCodeBlob)))
+			{
+				CopyMemory(pCodeBlob->GetBufferPointer(), buffer, buffer_size);
+				svs_result->vs_code = pCodeBlob;
+			}
+
 			//	Let constant table parse it's data
 			svs_result->constants.parse(pReflection, RC_dest_vertex);
 
