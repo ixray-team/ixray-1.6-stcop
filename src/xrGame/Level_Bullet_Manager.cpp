@@ -195,6 +195,7 @@ CBulletManager::~CBulletManager()
 	m_Bullets.clear();
 	m_WhineSounds.clear();
 	m_Events.clear();
+	Device.seqFrame.Remove(this);
 }
 
 void CBulletManager::Load()
