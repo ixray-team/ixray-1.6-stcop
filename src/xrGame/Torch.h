@@ -46,6 +46,8 @@ public:
 	virtual void OnH_A_Chield() override;
 	virtual void OnH_B_Independent(bool just_before_destroy) override;
 
+	virtual void OnMoveToSlot(const SInvItemPlace& prev);
+	virtual void OnMoveToRuck(const SInvItemPlace& prev);
 	virtual void UpdateCL() override;
 
 	void Switch();
