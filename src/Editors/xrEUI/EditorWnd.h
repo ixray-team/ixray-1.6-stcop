@@ -20,6 +20,8 @@ public:
 	virtual void Draw() = 0;
 	void EndDraw() const;
 
+	int TabIndex = 0;
+
 protected:
 	bool bOpen;
 	bool IsDocked = true;
