@@ -571,7 +571,7 @@ bool CCustomDevice::CanFiremode() const
 bool CCustomDevice::CanShooting(bool dry) const
 {
 	return (dry && m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_dry) || m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_shoot)) && GetState() != eHidden && GetState() != eHiding
-			&& GetState() != eHandAimStart && GetState() != eHandAimEnd;
+			&& GetState() != eHandAimStart && GetState() != eHandAimEnd && GetState() != eShowing;
 }
 
 bool CCustomDevice::CanJammed() const
