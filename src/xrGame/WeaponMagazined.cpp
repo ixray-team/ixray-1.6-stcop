@@ -2366,8 +2366,23 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	{
 	case kWPN_RELOAD:
 		{
-			if (flags & CMD_START && (m_bBlockReload && (!IsPending() && GetState() != eFire || GetState() == eIdle) || !m_bBlockReload))
+			if (flags & CMD_START)
 			{
+				if (!ParentIsActor() && GetNextState() != eIdle)
+				{
+					return false;
+				}
+
+				if (m_bBlockReload && GetNextState() == eFire)
+				{
+					return false;
+				}
+
+				if (IsPending())
+				{
+					return false;
+				}
+
 				if ((iAmmoElapsed < GetMagCapacity() || IsMisfire()))
 				{
 					if (!unlimited_ammo() && !IsMisfire())
@@ -2399,11 +2414,6 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 					}
 
 					if (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(m_iLastShotTime) < std::floor(m_fLastRechargeTime * 1000.0f))
-					{
-						return false;
-					}
-
-					if (IsPending())
 					{
 						return false;
 					}
