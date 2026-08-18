@@ -270,7 +270,7 @@ struct attachable_hud_item final
 	u32 fromllookout_time_remains = 0;
 
 	void GetCurrentTargetOffset_aim(weapon_inertion& inertion_params, Fvector& pos, Fvector& rot, float& factor, u32& real);
-	void GetCurrentTargetOffset(weapon_inertion& inertion_params, Fvector& pos, Fvector& rot, float& factor, u32& real, Fvector2 movement_factor);
+	void GetCurrentTargetOffset(weapon_inertion& inertion_params, Fvector& pos, Fvector& rot, float& factor, u32& real);
 	void AddOffsets(weapon_inertion::base_params& base, Fvector& pos, Fvector& rot, float koef = 1.0f);
 	void AddSuicideOffset(weapon_inertion& inertion_params, const shared_str& section, Fvector& pos, Fvector& rot);
 
