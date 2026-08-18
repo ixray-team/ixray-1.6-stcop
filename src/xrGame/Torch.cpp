@@ -58,6 +58,23 @@ CTorch::~CTorch()
 	glow_render.destroy		();
 }
 
+void CTorch::OnMoveToSlot(const SInvItemPlace& prev)
+{
+	CInventoryOwner* owner = H_Parent() ? H_Parent()->cast_inventory_owner() : nullptr;
+	if (owner && !owner->attached(this))
+	{
+		owner->attach(this->cast_inventory_item());
+	}
+}
+
+void CTorch::OnMoveToRuck(const SInvItemPlace& prev)
+{
+	if (prev.type == eItemPlaceSlot)
+	{
+		Switch(false);
+	}
+}
+
 inline bool CTorch::can_use_dynamic_lights()
 {
 	if (!H_Parent())
