@@ -983,7 +983,6 @@ public:
 	float fSprintFactor = 0;
 	float m_SprintFovFactor = 7.0f;
 	bool IsActorBurning();
-	IC Fvector2 MovementFactor() const { return leftStickThreshold; };
 };
 
 extern bool		isActorAccelerated			(u32 mstate, bool ZoomMode);
