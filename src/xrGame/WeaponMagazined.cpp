@@ -2147,12 +2147,12 @@ void CWeaponMagazined::switch2_FireMode()
 
 	if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 	{
-		if (CCustomDevice* dev = pActor->GetDevice())
+		if (CCustomDevice* Dev = pActor->GetDevice(true); Dev && (!Dev->IsHidden() || Dev->NeedActivation()))
 		{
 			bDisablePrepareAnimation = iAmmoElapsed + iAmmoChamberElapsed == 0;
-			if (dev->CanFiremode())
+			if (Dev->CanFiremode())
 			{
-				dev->SwitchState(CCustomDevice::EDeviceStates::eHandFiremode);
+				Dev->SwitchState(CCustomDevice::EDeviceStates::eHandFiremode);
 			}
 		}
 		else
@@ -2980,12 +2980,14 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 			AddSuffixName(anim, "_ammochange");
 		}
 
-		CActor* actor = Level().CurrentControlEntity()->cast_actor();
-		bool detector = actor != nullptr && actor->GetDevice() != nullptr;
-
-		if (detector)
+		if (CActor* pActor = Level().CurrentControlEntity()->cast_actor())
 		{
-			AddSuffixName(anim, "_detector");
+			CCustomDevice* Dev = pActor->GetDevice(true);
+			if (Dev && (!Dev->IsHidden() || Dev->NeedActivation()))
+			{
+				AddSuffixName(anim, "_detector");
+				AddSuffixName(anim, "_det");
+			}
 		}
 
 		if (ScopeAttachable() && !IsScopeAttached())
@@ -3053,7 +3055,8 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 
 		if (CActor* pActor = Level().CurrentControlEntity()->cast_actor())
 		{
-			if (pActor->GetDevice())
+			CCustomDevice* Dev = pActor->GetDevice(true);
+			if (Dev && (!Dev->IsHidden() || Dev->NeedActivation()))
 			{
 				AddSuffixName(anim, "_detector");
 				AddSuffixName(anim, "_det");
@@ -3087,8 +3090,8 @@ void CWeaponMagazined::PlayAnimReload()
 		}
 
 		CActor* actor = Level().CurrentControlEntity()->cast_actor();
-		bool detector = actor != nullptr && actor->GetDevice() != nullptr;
-		if (detector && HudAnimationExist("anm_reload_detector"))
+		CCustomDevice* Dev = actor ? actor->GetDevice(true) : nullptr;
+		if (Dev && (!Dev->IsHidden() || Dev->NeedActivation()) && HudAnimationExist("anm_reload_detector"))
 		{
 			bDisablePrepareAnimation = true;
 		}
