@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <fstream>
+#include "IconsFontAwesome6.h"
 
 // file: SceneChunks.h
 #define CURRENT_FILE_VERSION    	0x00000005
@@ -811,8 +811,10 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 		SDL_SetWindowTitle(g_AppInfo.Window, Name.c_str());
 	}
 
-	shared_str LevelPath = xr_path(map_name).stem().string().c_str();
-	UI->GeneralTabs[0] = { LevelPath, []()->bool {return Scene->IsUnsaved(); } };
+	xr_string LevelPath = xr_string(ICON_FA_MOUNTAIN) + " " + xr_path(map_name).stem().string().c_str();
+	UI->GeneralTabs[0] = { LevelPath.c_str(), []()->bool {return Scene->IsUnsaved(); } };
+	UI->ActiveTabIndex = 0;
+	
 	full_name = map_name;
 
 	ELog.Msg( mtInformation, "EScene: loading '%s'", map_name);
