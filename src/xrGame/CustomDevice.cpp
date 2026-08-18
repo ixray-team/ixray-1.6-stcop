@@ -5,6 +5,7 @@
 #include "Actor.h"
 #include "player_hud.h"
 #include "Weapon.h"
+#include "Missile.h"
 
 CCustomDevice::~CCustomDevice()
 {
@@ -82,6 +83,11 @@ bool CCustomDevice::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate)
 		if (CWeapon* W = itm->cast_weapon())
 		{
 			bres = bres && (W->GetState() != CHUDState::eBore) && (W->GetState() != CWeapon::eReload) && (W->GetState() != CWeapon::eSwitch) && (W->GetState() != CWeapon::eSwitchMode) && !W->IsZoomed();
+		}
+
+		if (CMissile* M = itm->cast_missile())
+		{
+			bres = bres && M->GetState() < CMissile::EMissileStates::eThrowStart;
 		}
 	}
 	return bres;
@@ -262,6 +268,11 @@ void CCustomDevice::switch_device()
 	PIItem active_item = m_pInventory->ActiveItem();
 
 	bool need_fx = active_item == nullptr || active_item->cast_hud_item() == nullptr || !active_item->cast_hud_item()->m_eAnimationsFlags.test(af_prepare_detector);
+
+	if (!CheckCompatibilityInt(active_item ? active_item->cast_hud_item() : nullptr, nullptr))
+	{
+		return;
+	}
 
 	if (GetState() == eHidden && g_player_hud->attached_item(0) && need_fx && active_item && IsSidearmPhysicalSlot(active_item->BaseSlot()))
 	{
