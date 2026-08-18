@@ -8,11 +8,14 @@ CDialogNode::CDialogNode(const xr_string Name) :
 	AddContactLink("In");
 };
 
-void CDialogNode::RenderItemString(const char* RawName, const char* Name, shared_str& Data, XML_NODE*& Node, size_t Size)
+void CDialogNode::RenderItemString(const char* RawName, const char* Name, shared_str& Data, XML_NODE*& Node, float Width)
 {
 	ImGui::Text(Name);
 	ImGui::SameLine();
-	ImGui::PushItemWidth(Size);
+	float ItemWidth = Width - ImGui::CalcTextSize(Name).x - ImGui::GetStyle().ItemSpacing.x;
+	if (ItemWidth < 1.0f)
+		ItemWidth = 60.0f;
+	ImGui::PushItemWidth(ItemWidth);
 	string256 Value1 = {};
 
 	if (Data.size() > 0)
@@ -34,11 +37,14 @@ void CDialogNode::RenderItemString(const char* RawName, const char* Name, shared
 	ImGui::PopItemWidth();
 }
 
-void CDialogNode::RenderItemString(const char* RawName, const char* Name, shared_str& Data, xr_vector<XML_NODE*>& Node, size_t Size)
+void CDialogNode::RenderItemString(const char* RawName, const char* Name, shared_str& Data, xr_vector<XML_NODE*>& Node, float Width)
 {
 	ImGui::Text(Name);
 	ImGui::SameLine();
-	ImGui::PushItemWidth(Size);
+	float ItemWidth = Width - ImGui::CalcTextSize(Name).x - ImGui::GetStyle().ItemSpacing.x;
+	if (ItemWidth < 1.0f)
+		ItemWidth = 60.0f;
+	ImGui::PushItemWidth(ItemWidth);
 	string256 Value1 = {};
 
 	if (Data.size() > 0)
@@ -154,6 +160,33 @@ void CDialogNode::Draw()
 	}
 
 	DrawEnd();
+}
+
+void CDialogNode::DrawInlineEditor(float Width)
+{
+	if (ParentNode == nullptr)
+		return;
+
+	RenderItemString("text", "Text:", Text, TextNode, Width);
+	RenderItemString("has_info", "Has Info:", HasInfo, HasInfoNode, Width);
+	RenderItemString("dont_has_info", "Don't Has Info:", DontHasInfo, DontHasInfoNode, Width);
+	RenderItemString("give_info", "Give Info(Y/N):", GiveInfo, GiveInfoNode, Width);
+	RenderItemString("action", "Action:", Action, ActionNode, Width);
+	RenderItemString("precondition", "Precondition:", Precondition, PreconditionNode, Width);
+
+	if (ImGui::Checkbox((xr_string("Is Final##") + NodeName).c_str(), &IsFinal))
+	{
+		if (IsFinal)
+		{
+			if (IsFinalNode == nullptr)
+				IsFinalNode = ParentNode->ToElement()->InsertNewChildElement("is_final");
+			IsFinalNode->ToElement()->SetText("1");
+		}
+		else
+		{
+			ParentNode->ToElement()->DeleteChild(IsFinalNode);
+		}
+	}
 }
 
 void CDialogNode::AddContactLink(const xr_string& Name, bool IsOut)

@@ -262,11 +262,14 @@ void UIMainForm::Draw()
 	bOpen = true;
 	m_MainMenu->Draw();
 	m_TopBar->Draw();
-	m_LeftBar->Draw();
-	m_Properties->Draw();
-	m_WorldProperties->Draw();
 
-	m_Render->Draw();
+	if (UI->ActiveTabIndex == 0)
+	{
+		m_LeftBar->Draw();
+		m_Properties->Draw();
+		m_WorldProperties->Draw();
+		m_Render->Draw();
+	}
 }
 
 bool UIMainForm::Frame()

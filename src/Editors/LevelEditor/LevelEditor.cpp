@@ -7,6 +7,8 @@
 
 #include "Editor/Utils/ContentView.h"
 #include "Editor/Scene/LEPhysics.h"
+#include "Nodes/UIDialogsView.h"
+#include "../xrECore/Editor/UIEditLightAnim.h"
 
 #include "../../xrPlay/Splash.h"
 
@@ -19,8 +21,12 @@
 #include "../../xrEngine/xr_input.h"
 #include "../../xrEngine/FPSCounter.h"
 
+#include "IconsFontAwesome6.h"
+
 ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
+
+static DialogEditor* g_DialogEditor = nullptr;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
@@ -62,7 +68,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	UI = new CLevelMain();
 	UI->RegisterCommands();
-	UI->GeneralTabs.push_back({ "Scene View", nullptr });
+	UI->GeneralTabs.push_back({ICON_FA_MOUNTAIN " Scene View##scene_view", []()->bool {return Scene->IsUnsaved(); }});
+	UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialog Editor", nullptr});
+	UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Anim Editor", nullptr});
 
 	LUI = static_cast<CLevelMain*>(UI);
 
@@ -112,9 +120,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	splash::SetProgressStatus(75, "Performing Final UI Setup");
 
 	::MainForm = MainForm;
+	MainForm->TabIndex = -1;
 	UI->Push(MainForm, false);
 
+	g_DialogEditor = new DialogEditor();
+	g_DialogEditor->TabIndex = 1;
+	g_DialogEditor->Show(true);
+	UI->Push(g_DialogEditor, false);
+
 	pFPSCounter = new XRay::Hardware::FPSCounter();
+	UIEditLightAnim::Show();
 
 	bool NeedExit = false;
 	splash::SetProgressStatus(85, "Performing Final Checks");
@@ -123,6 +138,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	splash::SetProgressStatus(90, "Finalizing UI Setup");
 	GContentView->Init();
 	UI->PushBegin(GContentView);
+
 	splash::SetProgressStatus(100, "Finalizing");
 	splash::Close();
 	while (!NeedExit)
