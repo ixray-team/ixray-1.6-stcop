@@ -58,7 +58,7 @@ private:
 	};
 
 public:
-	CContentView();
+	CContentView(xr_string WindowName = "Content Browser");
 	virtual void Draw() override;
 	void DrawHeader();
 	void FindFile();
@@ -137,6 +137,7 @@ private:
 	xr_string CurrentDir;
 	xr_string RootDir;
 	xr_string LogsDir;
+	xr_string WindowName;
 	ImVec2 BtnSize{};
 
 	xr_hash_map<xr_string, IconData> Icons;

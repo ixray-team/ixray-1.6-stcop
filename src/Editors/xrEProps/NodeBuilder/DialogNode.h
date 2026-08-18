@@ -15,6 +15,7 @@ public:
 			void DestroyContacts();
 
 	void ValidateNodes(shared_str& Data, const char* RawName);
+	void DrawInlineEditor(float Width);
 
 public:
 	shared_str HasInfo;
@@ -37,7 +38,10 @@ public:
 
 	XML_NODE* ParentNode = nullptr;
 
+	bool IsBranch = false;
+	xr_vector<XML_NODE*> NextNodes;
+
 private:
-	void RenderItemString(const char* RawName, const char* Name, shared_str& Data, XML_NODE*& Node, size_t Size);
-	void RenderItemString(const char* RawName, const char* Name, shared_str& Data, xr_vector<XML_NODE*>& Node, size_t Size);
+	void RenderItemString(const char* RawName, const char* Name, shared_str& Data, XML_NODE*& Node, float Width);
+	void RenderItemString(const char* RawName, const char* Name, shared_str& Data, xr_vector<XML_NODE*>& Node, float Width);
 };
