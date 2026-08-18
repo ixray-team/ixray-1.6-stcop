@@ -9,6 +9,7 @@ UIEditLightAnim* UIEditLightAnim::Form = nullptr;
 
 UIEditLightAnim::UIEditLightAnim()
 {
+	TabIndex = 2;
 	m_Modife = false;
 	m_Items = new UIItemListForm();
 	m_Items->m_Flags.set(UIItemListForm::fMenuEdit, true);
@@ -87,11 +88,22 @@ void UIEditLightAnim::Draw()
 	IsDocked = ImGui::IsWindowDocked();
 	IsFocused = ImGui::IsWindowFocused();
 
-	if(ImGui::BeginChild("Left", ImVec2(230, 0)))
+	if (ImGui::BeginChild("Left", ImVec2(250, 0)))
 	{
-		
-		if (ImGui::Button("Save", ImVec2(0, ImGui::GetFrameHeight()))) { m_Modife = false; LALib.Save(); } ImGui::SameLine();
-		if (ImGui::Button("Reload", ImVec2(0, ImGui::GetFrameHeight()))) { m_Modife = false; LALib.Reload(); OnItemFocused(nullptr); InitializeItems(); } ImGui::SameLine();
+		if (ImGui::Button("Save", ImVec2(0, ImGui::GetFrameHeight())))
+		{
+			m_Modife = false;
+			LALib.Save();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reload", ImVec2(0, ImGui::GetFrameHeight())))
+		{
+			m_Modife = false;
+			LALib.Reload();
+			OnItemFocused(nullptr);
+			InitializeItems();
+		}
+		ImGui::SameLine();
 		ImGui::Checkbox("Render Alpha", &m_RenderAlpha);
 		if (ImGui::BeginChild("Left", ImVec2(0, 0), true))
 		{
@@ -99,26 +111,33 @@ void UIEditLightAnim::Draw()
 
 			IsContextMenu = m_Items->m_UseMenuEdit;
 			if (!IsDocked)
+			{
 				IsDocked = ImGui::IsWindowDocked();
+			}
 			if (!IsFocused)
+			{
 				IsFocused = ImGui::IsWindowFocused();
+			}
 		}
 		ImGui::EndChild();
 		if (!IsDocked)
+		{
 			IsDocked = ImGui::IsWindowDocked();
+		}
 		if (!IsFocused)
+		{
 			IsFocused = ImGui::IsWindowFocused();
+		}
 	}
 	ImGui::EndChild();
 	ImGui::SameLine();
-	if (ImGui::BeginChild("Midle", ImVec2(-230, 0)))
+	if (ImGui::BeginChild("Midle", ImVec2(-330, 0)))
 	{
 		{
 			ImGui::SetNextItemWidth(-1);
 			float width = ImGui::CalcItemWidth();
-			if (width>=1)
+			if (width >= 1)
 			{
-				
 				if (m_PointerWeight != floorf(width))
 				{
 					m_PointerWeight = floorf(width);
@@ -128,13 +147,16 @@ void UIEditLightAnim::Draw()
 				{
 					ImVec2 canvas_pos = ImGui::GetCursorScreenPos();
 					ImVec2 canvas_size = ImGui::GetContentRegionAvail();
-					if (canvas_size.x > m_PointerWeight-2)
-						canvas_size.x = m_PointerWeight-2;
+					if (canvas_size.x > m_PointerWeight - 2)
+					{
+						canvas_size.x = m_PointerWeight - 2;
+					}
 					if (canvas_size.y > POINTER_HEIGHT)
+					{
 						canvas_size.y = POINTER_HEIGHT;
+					}
 					if ((ImGui::GetIO().MousePos.x >= canvas_pos.x && ImGui::GetIO().MousePos.y >= canvas_pos.y) &&
-						(ImGui::GetIO().MousePos.x <= (canvas_pos.x + canvas_size.x) && ImGui::GetIO().MousePos.y <= (canvas_pos.y + canvas_size.y)) 
-						)
+						(ImGui::GetIO().MousePos.x <= (canvas_pos.x + canvas_size.x) && ImGui::GetIO().MousePos.y <= (canvas_pos.y + canvas_size.y)))
 					{
 						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 						{
@@ -143,12 +165,12 @@ void UIEditLightAnim::Draw()
 						if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 						{
 							if (float(ImGui::GetIO().MousePos.x - canvas_pos.x) >= 1)
+							{
 								m_PointerValue = iFloor(float(m_CurrentItem->iFrameCount) * float(ImGui::GetIO().MousePos.x - canvas_pos.x) / float(m_PointerWeight - 2));
+							}
 							UpdateProperties();
 						}
-						
 					}
-
 				}
 				RenderPointer();
 				ImGui::Image(m_PointerTexture->get_SRView()->GetRawSRV(), ImVec2(m_PointerWeight, POINTER_HEIGHT));
@@ -156,12 +178,17 @@ void UIEditLightAnim::Draw()
 			m_Props->Draw();
 		}
 		if (!IsDocked)
+		{
 			IsDocked = ImGui::IsWindowDocked();
+		}
 		if (!IsFocused)
+		{
 			IsFocused = ImGui::IsWindowFocused();
+		}
 	}
-	ImGui::EndChild(); ImGui::SameLine();
-	if (ImGui::BeginChild("Right", ImVec2(230, 0)))
+	ImGui::EndChild();
+	ImGui::SameLine();
+	if (ImGui::BeginChild("Right", ImVec2(330, 0)))
 	{
 		ImGui::BeginGroup();
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
@@ -170,21 +197,26 @@ void UIEditLightAnim::Draw()
 			if (ImGui::Button("|<<", ImVec2(ImGui::GetFrameHeight() * 3, ImGui::GetFrameHeight())))
 			{
 				m_PointerValue = 0;
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			ImGui::SetNextItemWidth(-ImGui::GetFrameHeight() * 3);
 			if (ImGui::InputInt("##value", &m_PointerValue, 1, 2))
 			{
 				if (m_CurrentItem)
 				{
 					if (m_PointerValue > m_CurrentItem->iFrameCount - 1)
+					{
 						m_PointerValue = m_CurrentItem->iFrameCount - 1;
-					if (m_PointerValue < 0)m_PointerValue = 0;
+					}
+					if (m_PointerValue < 0)
+					{
+						m_PointerValue = 0;
+					}
 				}
 				else
 				{
 					m_PointerValue = 0;
 				}
-
 			}
 			ImGui::SameLine();
 			if (ImGui::Button(">>|", ImVec2(ImGui::GetFrameHeight() * 3, ImGui::GetFrameHeight())) && m_CurrentItem)
@@ -193,10 +225,12 @@ void UIEditLightAnim::Draw()
 			}
 		}
 		{
-
 			float button_w = ImGui::GetWindowWidth() - (12 * ImGui::GetFrameHeight() + 6 * 2);
 			button_w = button_w / 2;
-			if (button_w < ImGui::GetFrameHeight())button_w = ImGui::GetFrameHeight();
+			if (button_w < ImGui::GetFrameHeight())
+			{
+				button_w = ImGui::GetFrameHeight();
+			}
 			if (ImGui::Button("<-", ImVec2(ImGui::GetFrameHeight() * 2, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				if ((m_PointerValue != 0) && (m_CurrentItem->IsKey(m_PointerValue)))
@@ -215,38 +249,49 @@ void UIEditLightAnim::Draw()
 						}
 						f1--;
 					}
-
 				}
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button("|<<", ImVec2(ImGui::GetFrameHeight() * 3, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_PointerValue = m_CurrentItem->FirstKeyFrame();
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button("<", ImVec2(ImGui::GetFrameHeight() * 1, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_PointerValue = m_CurrentItem->PrevKeyFrame(m_PointerValue);
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button("+", ImVec2(button_w, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				OnCreateKeyClick();
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button("-", ImVec2(button_w, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_CurrentItem->DeleteKey(m_PointerValue);
 				if (m_PointerValue > m_CurrentItem->iFrameCount - 1)
+				{
 					m_PointerValue = m_CurrentItem->iFrameCount - 1;
-				if (m_PointerValue < 0)m_PointerValue = 0;
+				}
+				if (m_PointerValue < 0)
+				{
+					m_PointerValue = 0;
+				}
 				UpdateProperties();
 				OnModified();
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button(">", ImVec2(ImGui::GetFrameHeight() * 1, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_PointerValue = m_CurrentItem->NextKeyFrame(m_PointerValue);
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button(">>|", ImVec2(ImGui::GetFrameHeight() * 3, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_PointerValue = m_CurrentItem->LastKeyFrame();
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button("->", ImVec2(ImGui::GetFrameHeight() * 2, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				if ((m_PointerValue != m_CurrentItem->iFrameCount - 1) && (m_CurrentItem->IsKey(m_PointerValue)))
@@ -265,23 +310,24 @@ void UIEditLightAnim::Draw()
 						}
 						f1++;
 					}
-
 				}
 			}
-
 		}
 		ImGui::PopStyleVar(2);
 		ImGui::EndGroup();
 		if (m_CurrentItem)
 		{
-
 			RenderItem();
 		}
 		ImGui::Image(m_CurrentItem ? m_ItemTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImGui::CalcItemSize(ImVec2(-1, -1), 32, 32));
 		if (!IsDocked)
+		{
 			IsDocked = ImGui::IsWindowDocked();
+		}
 		if (!IsFocused)
+		{
 			IsFocused = ImGui::IsWindowFocused();
+		}
 	}
 	ImGui::EndChild();
 }
@@ -292,6 +338,9 @@ void UIEditLightAnim::Update()
     {
         if (!Form->IsClosed())
         {
+            if (UI->ActiveTabIndex != Form->TabIndex)
+                return;
+
             Form->BeginDraw();
             ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 600));
             if (ImGui::Begin("Light Animations Editor", &Form->bOpen))
@@ -409,11 +458,23 @@ void UIEditLightAnim::OnItemFocused(ListItem*item)
 
 bool UIEditLightAnim::OnFrameCountAfterEdit(PropValue* v, s32& val)
 {
-	if (val != m_CurrentItem->iFrameCount) OnModified();
+	if (val != m_CurrentItem->iFrameCount)
+	{
+		OnModified();
+	}
+
 	m_CurrentItem->Resize(val);
+
 	if (m_PointerValue > m_CurrentItem->iFrameCount - 1)
+	{
 		m_PointerValue = m_CurrentItem->iFrameCount - 1;
-	if (m_PointerValue < 0)m_PointerValue = 0;
+	}
+
+	if (m_PointerValue < 0)
+	{
+		m_PointerValue = 0;
+	}
+
 	return true;
 }
 
