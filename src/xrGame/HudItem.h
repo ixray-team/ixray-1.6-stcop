@@ -93,13 +93,8 @@ public:
 	};
 
 protected:
-	
-	Flags16					m_huditem_flags;
-	enum{
-		fl_pending			= (1<<0),
-		fl_renderhud		= (1<<1),
-	};
 
+	bool Pending = false;
 	virtual void switch2_Bore();
 
 public:
@@ -123,7 +118,7 @@ public:
 
 	bool						GetHUDmode			();
 	bool						GetHUDSoundMode		();
-	IC bool						IsPending			()		const					{ return !!m_huditem_flags.test(fl_pending);}
+	IC bool IsPending() const { return Pending; }
 
 	virtual bool				ActivateItem		();
 	virtual void				DeactivateItem		();
@@ -172,8 +167,6 @@ public:
 	virtual shared_str			SetCurrentIdleAnimation();
 	virtual shared_str			SetCurrentStateAnimation(const shared_str& first_name) { return first_name; }
 
-	IC void						RenderHud				(bool B)	{ m_huditem_flags.set(fl_renderhud, B);}
-	IC bool						RenderHud				()			{ return m_huditem_flags.test(fl_renderhud);}
 	attachable_hud_item*		HudItemData				();
 	virtual void				on_a_hud_attach			();
 	virtual bool				HudAnimationExist		(const shared_str& anim_name, bool only_for_actor = true);
@@ -356,7 +349,7 @@ public:
 	bool m_disable_random_animations = false;
 protected:
 
-	IC		void				SetPending			(bool H)			{ m_huditem_flags.set(fl_pending, H);}
+	IC void SetPending(bool H) { Pending = H; }
 	shared_str					hud_sect;
 	shared_str					hud_sect_cache;
 
