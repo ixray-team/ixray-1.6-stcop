@@ -1714,12 +1714,6 @@ void CWeapon::renderable_Render		()
 
 	RenderLight				();	
 
-	//если мы в режиме снайперки, то сам HUD рисовать не надо
-	if(IsZoomed() && !IsRotatingToZoom() && m_zoom_params.m_fZoomRotationFactor2 == 0.0f && ZoomTexture())
-		RenderHud		(false);
-	else
-		RenderHud		(true);
-
 	inherited::renderable_Render	();
 }
 
