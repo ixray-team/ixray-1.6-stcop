@@ -79,6 +79,7 @@ public:
 	}
 
 	bool IsEnableInput = true;
+	int ActiveTabIndex = 0;
 	EDragDropType DnDType = EDragDropType::None;
 	virtual void* LoadTexture(const char*) const { return nullptr; };
 	void* SearchIcon = nullptr;
