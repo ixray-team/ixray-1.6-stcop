@@ -17,7 +17,6 @@
 
 CHudItem::CHudItem()
 {
-	RenderHud(true);
 	m_eDevicesFlags.zero();
 }
 
