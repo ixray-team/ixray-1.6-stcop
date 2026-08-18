@@ -341,13 +341,11 @@ void XrUIManager::Draw()
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(separatorSize, separatorSize));
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
 		ImGui::PushStyleColor(ImGuiCol_Border, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
+
 		ImGui::Begin("MyDockspace", NULL, window_flags);
-		ImGuiID dockMain = ImGui::GetID("MyDockspace");
-
-		////// Save off menu bar height for later.
-
-		ImGui::DockSpace(dockMain);
+		ImGui::DockSpace(ImGui::GetID("MyDockspace"));
 		ImGui::End();
+
 		ImGui::PopStyleColor(2); // Border, WindowBG
 		ImGui::PopStyleVar(1); // WindowPadding
 
@@ -359,21 +357,24 @@ void XrUIManager::Draw()
 	{
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	}
-	
-	OnDrawUI();
-	
+
 	if (!NextWindows.empty())
 	{
 		ActualWindows.insert(ActualWindows.end(), NextWindows.begin(), NextWindows.end());
 		NextWindows.clear();
 	}
 
+	OnDrawUI();
+	
 	Rendering = true;
 	for (IEditorWnd* ui : ActualWindows)
 	{
-		ui->BeginDraw();
-		ui->Draw();
-		ui->EndDraw();
+		if (ui->TabIndex < 0 || ui->TabIndex == ActiveTabIndex)
+		{
+			ui->BeginDraw();
+			ui->Draw();
+			ui->EndDraw();
+		}
 	}
 	Rendering = false;
 
