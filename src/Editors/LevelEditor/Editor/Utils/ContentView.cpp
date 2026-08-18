@@ -12,8 +12,8 @@
 
 CContentView* GContentView = nullptr;
 
-CContentView::CContentView():
-	WatcherPtr(nullptr)
+CContentView::CContentView(xr_string NewWindowName)
+	: WatcherPtr(nullptr), WindowName(NewWindowName)
 {
 	string_path Dir = {};
 	FS.update_path(Dir, "$fs_root$", "");
@@ -280,7 +280,7 @@ void CContentView::Draw()
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(250, 100));
-	if (ImGui::Begin("Content Browser"))
+	if (ImGui::Begin(WindowName.c_str()))
 	{
 		if ((NeedRescan || Files.empty()) && !IsFindResult && !IsSpawnElement && !IsParticles)
 		{
@@ -947,7 +947,7 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 					auto Iter = std::find(GameDialogs.begin(), GameDialogs.end(), FileName);
 					if (Iter != GameDialogs.end())
 					{
-						CUIDialogView::OpenFile(FilePath.File.xfilename());
+						DialogEditor::OpenFile(FilePath.File.xfilename());
 					}
 				}
 				if (FilePath.File.extension() == ".thm")

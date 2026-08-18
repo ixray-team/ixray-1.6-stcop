@@ -159,6 +159,7 @@ ECORE_API bool IXBeginMainMenuBar()
 
 		if (!UI->GeneralTabs.empty() && ImGui::BeginTabBar("#TopBarView"))
 		{
+			int tabIdx = 0;
 			for (const auto& [Name, Callback] : UI->GeneralTabs)
 			{
 				bool ChangedColor = false;
@@ -168,8 +169,9 @@ ECORE_API bool IXBeginMainMenuBar()
 					ChangedColor = true;
 				}
 
-				if (ImGui::BeginTabItem(*Name, nullptr, ImGuiTabItemFlags_SetSelected))
+				if (ImGui::BeginTabItem(*Name))
 				{
+					UI->ActiveTabIndex = tabIdx;
 					ImGui::EndTabItem();
 				}
 
@@ -177,6 +179,7 @@ ECORE_API bool IXBeginMainMenuBar()
 				{
 					ImGui::PopStyleColor();
 				}
+				tabIdx++;
 			}
 
 			ImGui::EndTabBar();
