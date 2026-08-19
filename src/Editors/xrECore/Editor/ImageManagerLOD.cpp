@@ -28,29 +28,29 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
     uv.x = cuv[0]->x*B.x + cuv[1]->x*B.y + cuv[2]->x*B.z;
     uv.y = cuv[0]->y*B.x + cuv[1]->y*B.y + cuv[2]->y*B.z;
 
-    int U = iFloor(uv.x*float(surf->m_ImageData->w) + .5f);
-    int V = iFloor(uv.y*float(surf->m_ImageData->h)+ .5f);
+    int U = iFloor(uv.x*float(surf->ImageData->w) + .5f);
+    int V = iFloor(uv.y*float(surf->ImageData->h)+ .5f);
 
-    if (surf->m_ImageData->w != 0)
+    if (surf->ImageData->w != 0)
     {
-        U %= surf->m_ImageData->w;
+        U %= surf->ImageData->w;
         if (U < 0)
-            U += surf->m_ImageData->w;
+            U += surf->ImageData->w;
     }
 
-    if (surf->m_ImageData->h != 0)
+    if (surf->ImageData->h != 0)
     {
-        V %= surf->m_ImageData->h;
+        V %= surf->ImageData->h;
         if (V < 0)
-            V += surf->m_ImageData->h;
+            V += surf->ImageData->h;
     }
 
 
-    auto& Layer = surf->m_ImageData->layers;
+    auto& Layer = surf->ImageData->layers;
 
     if (!Layer.empty() && !Layer.back().empty())
     {
-        color = Layer.back()[V * surf->m_ImageData->w + U];
+        color = Layer.back()[V * surf->ImageData->w + U];
         alpha = color_get_A(color);
     }
     else
@@ -186,7 +186,7 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
         CSurface* surf = *surf_it;
         Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
         if (!c_sh->flags.bRendering) continue;
-        if (nullptr == surf->m_ImageData)surf->CreateImageData();
+        if (nullptr == surf->ImageData)surf->CreateImageData();
     }
 
     // calculate
