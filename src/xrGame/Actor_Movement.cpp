@@ -273,16 +273,16 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		mstate_real &= (~move);
 		mstate_real |= (mstate_wf & move);
 
-		if(mstate_wf&mcSprint)
-			mstate_real|=mcSprint;
+		if (mstate_wf & mcSprint && CanSprint())
+		{
+			mstate_real |= mcSprint;
+		}
 		else
-			mstate_real&=~mcSprint;
+		{
+			mstate_real &= ~mcSprint;
+		}
 
-		if (!(mstate_real & (mcFwd | mcLStrafe | mcRStrafe)) ||
-			(mstate_real & mcFwd && mstate_real & mcBack) ||
-			(mstate_real & mcLStrafe && mstate_real & mcRStrafe) ||
-			mstate_real & (mcCrouch | mcClimb) ||
-			!isActorAccelerated(mstate_wf, IsZoomAimingMode())) 
+		if (!(mstate_real & (mcFwd | mcLStrafe | mcRStrafe)) || (mstate_real & mcFwd && mstate_real & mcBack) || (mstate_real & mcLStrafe && mstate_real & mcRStrafe) || mstate_real & (mcCrouch | mcClimb) || !isActorAccelerated(mstate_wf, IsZoomAimingMode()))
 		{
 			mstate_real &= ~mcSprint;
 			mstate_wishful &= ~mcSprint;
@@ -452,6 +452,20 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 	Fmatrix				mOrient;
 	mOrient.rotateY		(-r_model_yaw);
 	mOrient.transform_dir(vControlAccel);
+
+	if (this == Level().CurrentViewEntity())
+	{
+		auto TestState = [&](u32 State)
+		{
+			return ((mstate_real & State) != (mstate_old & State));
+		};
+
+		if (TestState(mcSprint) || TestState(mcAnyMove) || TestState(mcAccel) || TestState(mcCrouch))
+		{
+			g_player_hud->OnMovementChanged(ACTOR_DEFS::EMoveCommand(mstate_real));
+			HudAnimator()->OnMovementChanged();
+		}
+	};
 }
 
 #define ACTOR_ANIM_SECT "actor_animation"
