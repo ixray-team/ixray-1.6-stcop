@@ -27,12 +27,12 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha)
     uv.x = cuv[0]->x * B.x + cuv[1]->x * B.y + cuv[2]->x * B.z;
     uv.y = cuv[0]->y * B.x + cuv[1]->y * B.y + cuv[2]->y * B.z;
 
-    int U = iFloor(uv.x * float(surf->m_ImageData->w) + .5f);
-    int V = iFloor(uv.y * float(surf->m_ImageData->h) + .5f);
-    U %= surf->m_ImageData->w;	if (U < 0) U += surf->m_ImageData->w;
-    V %= surf->m_ImageData->h;	if (V < 0) V += surf->m_ImageData->h;
+    int U = iFloor(uv.x * float(surf->ImageData->w) + .5f);
+    int V = iFloor(uv.y * float(surf->ImageData->h) + .5f);
+    U %= surf->ImageData->w;	if (U < 0) U += surf->ImageData->w;
+    V %= surf->ImageData->h;	if (V < 0) V += surf->ImageData->h;
 
-    alpha = color_get_A(surf->m_ImageData->layers.back()[V * surf->m_ImageData->w + U]);
+    alpha = color_get_A(surf->ImageData->layers.back()[V * surf->ImageData->w + U]);
     return true;
 }
 
