@@ -452,20 +452,6 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 	Fmatrix				mOrient;
 	mOrient.rotateY		(-r_model_yaw);
 	mOrient.transform_dir(vControlAccel);
-
-	if (this == Level().CurrentViewEntity())
-	{
-		auto TestState = [&](u32 State)
-		{
-			return ((mstate_real & State) != (mstate_old & State));
-		};
-
-		if (TestState(mcSprint) || TestState(mcAnyMove) || TestState(mcAccel) || TestState(mcCrouch))
-		{
-			g_player_hud->OnMovementChanged(ACTOR_DEFS::EMoveCommand(mstate_real));
-			HudAnimator()->OnMovementChanged();
-		}
-	};
 }
 
 #define ACTOR_ANIM_SECT "actor_animation"
