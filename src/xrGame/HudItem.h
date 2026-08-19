@@ -247,6 +247,7 @@ public:
 		af_safemode_in_out = (1 << 28),
 		af_sprint = (1 << 29),
 		af_moving = (1 << 30),
+		af_alt_kick = (1 << 31),
 	};
 
 	enum EBPAnimsFlags : u64

@@ -23,8 +23,6 @@ protected:
 
 	virtual void		UpdateCL					();
 
-	void				state_Attacking				(float dt);
-
 	virtual void		KnifeStrike					(const Fvector& pos, const Fvector& dir);
 
 	float				fWallmarkSize;
@@ -52,6 +50,8 @@ protected:
 	float				fHitImpulse_cur;
 
 	u32					dwUpdateSounds_Frame;
+
+	bool				UseAlt = false;
 
 protected:
 	virtual void		LoadFireParams					(const char* section);

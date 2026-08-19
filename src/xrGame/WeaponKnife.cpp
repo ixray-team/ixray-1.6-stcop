@@ -395,11 +395,10 @@ void CWeaponKnife::OnAnimationEnd(u8 state)
         }
         if (time == 0)
         {
-        	SwitchState(eIdle);		break;
+        	SwitchState(UseAlt ? eShowing : eIdle);
         }
         break;
     }
-
 	case eShowing:
 	case eIdle:		SwitchState(eIdle);		break;
 
@@ -407,10 +406,6 @@ void CWeaponKnife::OnAnimationEnd(u8 state)
 	}
 
 	bWorking = false;
-}
-
-void CWeaponKnife::state_Attacking	(float)
-{
 }
 
 void CWeaponKnife::switch2_Attacking(u8 state)
@@ -428,7 +423,7 @@ void CWeaponKnife::switch2_Attacking(u8 state)
 			}
 		}
 
-		PlayHUDMotion("anm_attack", "anm_shoot1_start", EHudMixType::eNoMix, state);
+		PlayHUDMotion(UseAlt ? "anm_attack_alt" : "anm_attack", "anm_shoot1_start", EHudMixType::eNoMix, state);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_kick))
 		{
@@ -448,7 +443,7 @@ void CWeaponKnife::switch2_Attacking(u8 state)
 			}
 		}
 
-		PlayHUDMotion("anm_attack2", "anm_shoot2_start", EHudMixType::eNoMix, state);
+		PlayHUDMotion(UseAlt ? "anm_attack2_alt" : "anm_attack2", "anm_shoot2_start", EHudMixType::eNoMix, state);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_kick))
 		{
@@ -490,7 +485,9 @@ void CWeaponKnife::switch2_Hidden()
 void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion("anm_show", "anm_draw", EHudMixType::eNoMix, GetState());
+	PlayHUDMotion("anm_show", "anm_draw", UseAlt ? EHudMixType::eMixAll : EHudMixType::eNoMix, GetState());
+
+	UseAlt = false;
 
 	if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
 	{
@@ -523,6 +520,11 @@ void CWeaponKnife::FireStart()
 		return;
 	}
 
+	if (m_eAnimationsFlags.test(EAnimationsFlags::af_alt_kick) && (GetState() == eFire || GetState() == eFire2))
+	{
+		UseAlt = true;
+	}
+
 	inherited::FireStart();
 	SwitchState(eFire);
 }
@@ -534,17 +536,17 @@ void CWeaponKnife::Fire2Start()
 		return;
 	}
 
+	if (m_eAnimationsFlags.test(EAnimationsFlags::af_alt_kick) && (GetState() == eFire || GetState() == eFire2))
+	{
+		UseAlt = true;
+	}
+
 	inherited::FireStart();
 	SwitchState(eFire2);
 }
 
 bool CWeaponKnife::Action(u16 cmd, u32 flags)
 {
-	if (inherited::Action(cmd, flags))
-	{
-		return true;
-	}
-
 	switch (cmd)
 	{
 		case kWPN_ZOOM:
@@ -556,9 +558,18 @@ bool CWeaponKnife::Action(u16 cmd, u32 flags)
 
 			return true;
 		}
+		case kWPN_FIRE:
+		{
+			if (flags & CMD_START)
+			{
+				FireStart();
+			}
+
+			return true;
+		}
 	}
 
-	return false;
+	return inherited::Action(cmd, flags);
 }
 
 void CWeaponKnife::LoadFireParams(const char* section)
