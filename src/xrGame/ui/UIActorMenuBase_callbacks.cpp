@@ -263,6 +263,10 @@ bool CUIActorMenuBase::OnItemDropped(PIItem itm, CUIDragDropListEx* new_owner, C
 
 bool CUIActorMenuBase::OnItemFocusedUpdate(CUICellItem* itm)
 {
+	if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->IsShown())
+	{
+		return true;
+	}
 	if (itm)
 	{
 		itm->m_selected = true;
@@ -374,10 +378,13 @@ bool CUIActorMenuBase::OnItemFocusReceive(CUICellItem* itm)
 	InfoCurItem( nullptr );
 	m_item_info_view = true;
 
-	itm->m_selected = true;
-	if (m_currMenuMode != mmTrade)
+	if (!m_pItemDropAmountWnd || !m_pItemDropAmountWnd->IsShown())
 	{
-		set_highlight_item( itm );
+		itm->m_selected = true;
+		if (m_currMenuMode != mmTrade)
+		{
+			set_highlight_item( itm );
+		}
 	}
 
 	m_lastFocusRecivedItem = (PIItem)itm->m_pData;
