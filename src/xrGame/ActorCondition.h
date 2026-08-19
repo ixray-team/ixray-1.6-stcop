@@ -93,6 +93,7 @@ public:
 	float	GetMaxPowerRestoreSpeed					() {return m_max_power_restore_speed;};
 	float	GetMaxWoundProtection					() {return m_max_wound_protection;};
 	float	GetMaxFireWoundProtection				() {return m_max_fire_wound_protection;};
+	float	GetHealthBoost();
 
 public:
 	PlayerAddiction Satiety;
