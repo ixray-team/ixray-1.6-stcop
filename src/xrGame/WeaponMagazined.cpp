@@ -3773,7 +3773,7 @@ void CWeaponMagazined::OnMotionMark(u8 state, const motion_marks& mark)
 {
 	inherited::OnMotionMark(state, mark);
 
-	if (ParentIsActor() && !m_bTriStateReload && state == eReload && mark.name == "Right" && !m_bIsReloaded)
+	if (ParentIsActor() && (!m_bTriStateReload || bMisfire) && state == eReload && mark.name == "Right" && !m_bIsReloaded)
 	{
 		m_bIsReloaded = true;
 		bool grenade_mode = IsGrenadeMode();
