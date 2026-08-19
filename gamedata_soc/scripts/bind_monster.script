@@ -1,3 +1,26 @@
+
+local ini = system_ini()
+
+--[[
+ IXR FFx0001 все коллбеки определять здесь (автоматическая регистрация - снатие событий)
+ Отсутствие коллбека в движке не вызывает вылет
+ Отсутсвие вызываемого метода в биндере не вызывает вылет
+--]] 
+local use_callback_logs = false -- логирование подписки и отписки для коллбеков
+local all_callbacks = {
+	["patrol_path_in_point"] 	= "waypoint_callback",
+	["hit"] 					= "hit_callback",
+	["death"] 					= "death_callback",
+	["sound"] 					= "hear_callback",
+	["use_object"]				= "use_callback",
+}
+
+
+-- IXR FFx0001 Упрощенная система подписки и отписки от коллбеков
+function manage_callbacks(_ref_binder, is_set)
+	ixr_callback_binder.manage_callbacks(script_name(), all_callbacks, _ref_binder, is_set, use_callback_logs)
+end
+
 -----------------------------------------------------------------------------------
 -- Monster binding
 -----------------------------------------------------------------------------------
@@ -25,6 +48,8 @@ end
 
 function generic_object_binder:reinit()
 	object_binder.reinit(self)
+	
+	SendScriptCallback("monster_on_update", self.object, self.st)
 
 	-- У торговца нет поддержки перемещения
 	if self.object:clsid() ~= clsid.script_trader then
@@ -35,9 +60,7 @@ function generic_object_binder:reinit()
 
 	self.st = db.storage[self.object:id()]
 
-	self.object:set_callback(callback.patrol_path_in_point, self.waypoint_callback, self)
-	self.object:set_callback(callback.hit,					self.hit_callback,		self)
-	self.object:set_callback(callback.death,				self.death_callback,	self)
+	manage_callbacks(self, true) -- IX-Ray SET CALLBACKS
 end
 
 function generic_object_binder:update(delta)
@@ -88,6 +111,13 @@ function generic_object_binder:waypoint_callback(obj, action_type, index)
 	end
 end
 
+function generic_object_binder:use_callback(obj, who)
+	SendScriptCallback("monster_on_actor_use_callback", obj, who)
+	if obj and obj:id() then
+		SendScriptCallback("monster_on_use", obj, who, obj:alive())
+	end
+end
+
 function generic_object_binder:death_callback(victim, who)
 	if who:id() == db.actor:id() then
 		xr_statistic.addKillCount(self.object)
@@ -113,6 +143,25 @@ function generic_object_binder:death_callback(victim, who)
 	h.impulse = 10
 	self.object:hit(h)
 
+	if who and (who:id() == db.actor:id()) then
+		local kind_to_section = {
+			["SM_POLTER_G"]  = "poltergeist",
+			["SM_PYRO_G"] 	 = "pyrogeist",
+			["SM_PSEUDO_G"]  = "pseudogeist"
+		}
+		local sec = victim:section()
+		local kind = ini:section_exist(sec) and ini:line_exist(sec, "kind") and ini:r_string(sec, "kind") or "unknown"
+		local name = kind_to_section[kind]
+		if name then
+			SendScriptCallback("actor_on_interaction", "mutants", nil, name)
+		end
+	end
+	
+	if (victim:clsid() ~= clsid.poltergeist_s) then
+		SendScriptCallback("monster_on_death_callback", victim, who)
+	end
+	
+	SendScriptCallback("monster_on_death", victim, who)
 end
 
 function generic_object_binder:hit_callback(obj, amount, local_direction, who, bone_index)
@@ -120,12 +169,20 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
 	if self.st.hit then
 		xr_logic.issue_event(self.object, self.st.hit, "hit_callback", obj, amount, local_direction, who, bone_index)
 	end
+	SendScriptCallback("monster_on_hit_callback", obj, amount, local_direction, who ,bone_index)
 end
 
 function generic_object_binder:net_spawn(sobject)
 	if not object_binder.net_spawn(self, sobject) then
 		return false
 	end
+
+	local se_obj = alife():object(self.object:id())
+	if not (se_obj) then 
+		return false 
+	end
+	
+	SendScriptCallback("monster_on_net_spawn", self.object, se_obj)
 
 	db.add_obj(self.object)
 
@@ -135,10 +192,10 @@ function generic_object_binder:net_spawn(sobject)
 end
 
 function generic_object_binder:net_destroy()
-	self.object:set_callback(callback.death,				nil)
-	self.object:set_callback(callback.patrol_path_in_point, nil)
-	self.object:set_callback(callback.hit,					nil)
+	manage_callbacks(self, false) -- IX-Ray UNSET CALLBACKS
 
+	SendScriptCallback("monster_on_net_destroy", self.object)
+	
 	local st = db.storage[self.object:id()]
 	if st and st.active_scheme then
 		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
