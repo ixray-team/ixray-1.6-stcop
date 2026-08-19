@@ -48,6 +48,7 @@ private:
 	CUITextWnd*	m_value;
 	float		m_magnitude;
 	bool		m_show_sign;
+	bool		m_sign_inverse = false;
 	shared_str	m_unit_str;
 	shared_str	m_texture_minus;
 	shared_str	m_texture_plus;
