@@ -1,0 +1,129 @@
+-- actor_menu_mode -----
+
+-- int mode:
+-- 0 = 	Undefined = закрыто
+-- 1 = 	Inventory
+-- 2 = 	Trade
+-- 3 = 	Upgrade
+-- 4 = 	DeadBodySearch
+-- 10 =  Talk dialog  show
+-- 11 =  Talk dialog  hide
+local last_mode = 0
+xr_meet_dialog_closed = false
+xr_meet_trade_closed = false
+xr_meet_upgrade_closed = false
+dead_body_searching = false
+
+local npc_dlg_id = nil
+function actor_menu_mode(mode)
+	if not db.actor then
+		return
+	end
+	
+	SendScriptCallback("on_actor_wnd_mode_switch", mode)
+	
+	if(mode==0) then
+		SendScriptCallback("on_actor_wnd_closed", mode)
+	else
+		SendScriptCallback("on_actor_wnd_opened", mode)
+	end
+	
+	if(mode==0) then
+		if(last_mode==1) then
+			inventory_wnd_closed()
+			SendScriptCallback("on_actor_inventory_wnd_closed", mode)
+		elseif(last_mode==2) then
+			trade_wnd_closed()
+			SendScriptCallback("on_actor_trade_wnd_closed", mode)
+		elseif(last_mode==3) then
+			upgrade_wnd_closed()
+			SendScriptCallback("on_actor_upgrade_wnd_closed", mode)
+		elseif(last_mode==4) then
+			dead_body_search_wnd_closed()
+			SendScriptCallback("on_actor_dead_body_search_wnd_closed", mode)
+		end
+		last_mode = 0
+	elseif(mode==1) then
+		last_mode = 1
+		inventory_wnd_opened()
+		SendScriptCallback("on_actor_inventory_wnd_opened", mode)
+	elseif(mode==2) then
+		last_mode = 2
+		trade_wnd_opened()
+		SendScriptCallback("on_actor_trade_wnd_opened", mode)
+	elseif(mode==3) then
+		last_mode = 3
+		upgrade_wnd_opened()
+		SendScriptCallback("on_actor_upgrade_wnd_opened", mode)
+	elseif(mode==4) then
+		last_mode = 4
+		dead_body_search_wnd_opened()
+		SendScriptCallback("on_actor_dead_body_search_wnd_opened", mode)
+	elseif(mode==10) then
+		-- coc export begin
+		for k,st in pairs(db.storage) do
+			if (st.object and st.object:is_talking() and st.object:id() ~= db.actor:id()) then
+				npc_dlg_id = st.object:id()
+				SetRegistryValue("used_npc_id", st.object:id())
+				break
+			end
+		end
+		-- coc export end
+		dialog_wnd_showed()
+		SendScriptCallback("on_actor_dialog_wnd_showed", mode, npc_dlg_id)
+	elseif(mode==11) then
+		SendScriptCallback("actor_on_leave_dialog", GetRegistryValue("used_npc_id"))
+		SetRegistryValue("used_npc_id", nil)
+		dialog_wnd_closed()
+		SendScriptCallback("on_actor_dialog_wnd_closed", mode, npc_dlg_id)
+		npc_dlg_id = nil
+	end
+end
+
+function inventory_wnd_opened()
+	printf("---:>Inventory opened")
+end
+
+function inventory_wnd_closed()
+	printf("---:>Inventory closed")
+end
+
+function trade_wnd_opened()
+	xr_meet_dialog_closed = false
+	printf("---:>Trade opened")
+end
+
+function trade_wnd_closed()
+	printf("---:>Trade closed")
+	xr_meet_trade_closed = true
+end
+
+function upgrade_wnd_opened()
+	xr_meet_dialog_closed = false
+	printf("---:>Upgrade opened")
+end
+
+function upgrade_wnd_closed()
+	printf("---:>Upgrade closed")
+	xr_meet_upgrade_closed = true
+end
+
+function dead_body_search_wnd_opened()
+	printf("---:>DeadBodySearch opened")
+	dead_body_searching = true
+end
+
+function dead_body_search_wnd_closed()
+	printf("---:>DeadBodySearch closed")
+	dead_body_searching = false
+end
+
+function dialog_wnd_showed()
+	printf("---:>Talk Dialog show")
+end
+
+function dialog_wnd_closed()
+	printf("---:>Talk Dialog hide")
+	xr_meet_dialog_closed = true
+end
+
