@@ -128,6 +128,10 @@ float GetPlayerRestoreSpeed()	            { return GetActor() == nullptr ? 0.f :
 float GetOutfiteMaxFireWoundProtection()    { return GetActor() == nullptr ? 0.f : GetActor()->conditions().GetMaxFireWoundProtection();	}
 float GetPlayerArmor()                      
 {
+    if (!GetActor())
+    {
+		return 0.f;
+    }
     // P.S. да, знаю что это лютая васня, но что поделать
     if (GetActor()->GetOutfit() != nullptr && GetActor()->GetHelmet() != nullptr)
         return (GetActor()->GetOutfit()->GetCondition() * 0.5f) + (GetActor()->GetHelmet()->GetCondition() * 0.5f);
@@ -138,6 +142,7 @@ float GetPlayerArmor()
     else
         return 0.f;
 }
+float GetHealthRegeneration()    { return GetActor() == nullptr ? 0.f : GetActor()->conditions().GetHealthBoost();	}
 
 void RegisterExpressionDelegates ()
 {
@@ -203,4 +208,5 @@ void RegisterExpressionDelegates ()
 	g_uiExpressionMgr->RegisterVariable("fltPlayerRestoreSpeed",						GetPlayerRestoreSpeed);
 	g_uiExpressionMgr->RegisterVariable("fltPlayerBleedingSpeed",		    		GetPlayerBleedingSpeed);
 	g_uiExpressionMgr->RegisterVariable("fltPlayerArmor",							GetPlayerArmor);
+	g_uiExpressionMgr->RegisterVariable("fltPlayerHealthRegeneration",				GetHealthRegeneration);
 }
