@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 #pragma once
 
-class UIMinimapEditorForm:
+class ECORE_API UIMinimapEditorForm:
 	public IEditorWnd
 {
 private:
@@ -65,7 +65,7 @@ private:
 
 	bool GetTextureFromLevelLtx(const xr_string, xr_string&);
 
-	xr_vector<Element> elements;
+	xr_vector<Element> MapElements;
 	xr_vector<xr_string> levels;
 
 	bool m_DebugView = false;
@@ -101,14 +101,14 @@ private:
 	ImVec2		m_BoundBackgroundPosition{ 0,0 };
 	Fvector4	m_Bound { 0,0,0,0};
 private:
-	ref_texture m_BackgroundTexture;
-	ref_texture m_TextureRemove;
+	ref_texture BackgroundTexture;
+	ref_texture TextureRemove;
 	//
 	ImVec2		m_BackgroundPosition;
-	ImVec2		m_BackgroundRenderSize;
-	ImVec2		m_BackgroundSize;
+	ImVec2		BackgroundRenderSize;
+	ImVec2		BackgroundSize;
 	//
-	U32Vec      m_ImageData;
-	xr_string	m_BackgroundTexturePath;
+	U32Vec      ImageData;
+	xr_string	BackgroundTexturePath;
 	bool		m_mp_mode = false;
 };
