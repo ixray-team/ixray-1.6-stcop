@@ -3381,7 +3381,12 @@ bool CWeaponMagazined::SwitchMode()
  
 void CWeaponMagazined::ChangeFireMode(u16 cmd)
 {
-	if (!HasFireModes() || IsPending() && GetNextState() != eIdle)
+	if (!HasFireModes())
+	{
+		return;
+	}
+
+	if (IsPending())
 	{
 		return;
 	}
