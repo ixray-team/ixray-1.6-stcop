@@ -149,7 +149,13 @@ function act_state_mgr_weapon_unstrapp:__init(name, st) super (nil, name)
 end
 function act_state_mgr_weapon_unstrapp:initialize()
 	action_base.initialize(self)
-	self.object:set_item(get_idle_state(self.st.target_state), get_weapon(self.object, self.st.target_state))
+	local wpn = get_weapon(self.object, self.st.target_state)
+	if not (wpn) then 
+		return 
+	end
+	
+	SendScriptCallback("npc_on_weapon_unstrapped", self.object, wpn)
+	self.object:set_item(get_idle_state(self.st.target_state), wpn)
 end
 function act_state_mgr_weapon_unstrapp:execute()
 	action_base.execute(self)
@@ -168,6 +174,7 @@ function act_state_mgr_weapon_strapp:initialize()
 	local weap = get_weapon(self.object, self.st.target_state)
 	if strappable_weapon(weap) then
 		self.object:set_item(object.strap, weap)
+		SendScriptCallback("npc_on_weapon_strapped", self.object, weap)
 	else
 		self.object:set_item(object.idle, nil)
 	end
@@ -205,6 +212,7 @@ function act_state_mgr_weapon_drop:initialize()
 	local weap = get_weapon(self.object, self.st.target_state)
 	if strappable_weapon(weap) then
 		self.object:set_item(object.drop, weap)
+		SendScriptCallback("npc_on_weapon_drop", self.object, weap)
 	else
 		self.object:set_item(object.idle, nil)
 	end
