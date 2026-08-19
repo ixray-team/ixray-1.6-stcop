@@ -36,6 +36,12 @@ function evaluator_danger:evaluate()
 		self.mgr = self.object:motivation_action_manager()
 	end
 
+	local flags_into_callbacks = {ret_value = true}
+	SendScriptCallback("npc_on_eval_danger", self.object, flags_into_callbacks)
+	if flags_into_callbacks.ret_value == false then
+		return false 
+	end
+
 	local best_danger = self.object:best_danger()
 	local best_danger_name = "ricochet"
 	local active_scheme = db.storage[self.object:id()].active_scheme	

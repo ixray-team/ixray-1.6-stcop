@@ -138,7 +138,9 @@ end
 --------------------
 function se_stalker:on_register()
 	cse_alife_human_stalker.on_register( self )
-
+	
+	SendScriptCallback("server_entity_on_register", self, "se_stalker")
+	
 	if(actor_stats.add_to_ranking~=nil)then
 		local community = self:community()
 		if not(community == "zombied" or
@@ -166,7 +168,9 @@ end
 --------------------
 function se_stalker:on_unregister()
 	cse_alife_human_stalker.on_unregister(self)
-
+	
+	SendScriptCallback("server_entity_on_unregister", self, "se_stalker")
+	
 	--' Убрать мапспот с собой
 --'	if sim_statistic.show_stalker_spot == true then
 --'		local community, rank = sim_statistic.getNpcType(self)
@@ -192,7 +196,7 @@ end
 --------------------
 function se_stalker:on_spawn()
 	cse_alife_human_stalker.on_spawn(self)
-
+	SendScriptCallback("se_stalker_on_spawn", self)
 end
 --------------------
 function se_stalker:on_death(killer)
@@ -224,6 +228,17 @@ end
 class "se_trader" (cse_alife_trader)
 function se_trader:__init (section) super (section)
 end
+
+function se_trader:on_register()
+	SendScriptCallback("server_entity_on_register", self, "se_trader")
+	cse_alife_trader.on_register(self)
+end
+
+function se_trader:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_trader")
+	cse_alife_trader.on_unregister(self)
+end
+
 function se_trader:keep_saved_data_anyway()
 	return true
 end

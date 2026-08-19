@@ -6,6 +6,9 @@
 ----------------------------------------------------------------------------------------------------
 
 function init(obj)
+	if obj and obj:id() then
+		SendScriptCallback("physic_object_on_init", obj)
+	end
 	printf("_bp: init(): name='%s'", obj:name())
 
 	----------------------------------------------------------------------------------------
@@ -64,6 +67,8 @@ end
 function generic_physics_binder:update(delta)
 	object_binder.update(self, delta)
 
+	SendScriptCallback("physic_object_on_update", self, self.object, delta)
+
 	if not self.initialized and db.actor then
 		self.initialized = true
 		xr_logic.initialize_obj(self.object, self.st, self.loaded, db.actor, modules.stype_item)        
@@ -108,6 +113,8 @@ function generic_physics_binder:net_spawn(data)
 		self.box_items = xr_box.ph_item_box(self.object)
 	end
 
+	SendScriptCallback("physic_object_on_net_spawn", self, self.object, data)
+	
 	return true
 end
 
@@ -154,6 +161,11 @@ function generic_physics_binder:use_callback(obj, who)
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "use_callback", obj, who)
 	end
+	
+	if obj and obj:id() then
+		SendScriptCallback("physic_object_on_use", obj, who)
+		SendScriptCallback("physic_object_on_use_callback", obj, who)
+	end
 end
 
 function generic_physics_binder:hit_callback(obj, amount, local_direction, who, bone_index)
@@ -163,6 +175,12 @@ function generic_physics_binder:hit_callback(obj, amount, local_direction, who, 
 	end
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+
+	SendScriptCallback("physic_object_on_hit_callback", obj, amount, local_direction, who, bone_index)
+	
+	if obj and obj:id() then
+		SendScriptCallback("physic_object_on_hit", obj, amount, local_direction, who, bone_index)
 	end
 end
 
@@ -184,5 +202,8 @@ function generic_physics_binder:death_callback(victim, who)
 	if self.object:spawn_ini() ~= nil and self.object:spawn_ini():section_exist("drop_box") == true then
 		self.box_items:spawn_items()
 	end
-    
+	
+	if victim and victim:id() then
+		SendScriptCallback("physic_object_on_death", victim, who)
+	end
 end

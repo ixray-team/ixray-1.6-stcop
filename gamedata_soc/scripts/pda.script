@@ -1,0 +1,296 @@
+
+
+-- вызывается  1 раз в 3 секунды
+function fill_faction_state(state)
+	local board = sim_board.get_sim_board()
+
+	state.member_count = 0
+	state.resource = 0
+	state.power = 0
+
+
+ 	state.actor_goodwill = 3000
+	state.name = "ui_inGame2_hint_wnd_bar"
+	state.icon = "ui_inGame2_hint_wnd_bar"
+	state.icon_big = "logos_big_empty"
+	state.target = game.translate_string("ui_st_no_faction")
+	state.target_desc = "aaa"
+	state.location = "a"
+
+	state.war_state1 = "a"
+	state.war_state_hint1 = "1"
+	state.war_state2 = "3"
+	state.war_state_hint2 = "2"
+	state.war_state3 = "33"
+	state.war_state_hint3 = ""
+	state.war_state4 = "23"
+	state.war_state_hint4 = ""
+	state.war_state5 = "5"
+	state.war_state_hint5 = "5"
+
+	state.bonus = 0
+end
+
+--int		get_max_member_count	();   ------ 1 раз в 3 секунды
+--float	get_max_resource();
+--float	get_max_power();
+
+function get_max_member_count()
+	return 10
+end
+
+function get_max_resource()
+	return 10
+end
+
+function get_max_power()
+	return 10
+end
+
+
+-- потом это нужно стереть
+
+-- int mode:
+-- 0 = 	Undefined = закрыто
+-- 1 = 	Inventory
+-- 2 = 	Trade
+-- 3 = 	Upgrade
+-- 4 = 	DeadBodySearch
+-- 10 =  Talk dialog  show
+-- 11 =  Talk dialog  hide
+local last_mode = 0
+local dialog_closed = false
+local trade_closed = false
+local upgrade_closed = false
+local npc_dlg_id = nil
+
+function actor_menu_mode(mode)
+	return PROF_EVENT_CLOSURE("actor_menu_mode", function()
+        SendScriptCallback("on_actor_wnd_mode_switch", mode)
+        
+        if(mode==0) then
+            SendScriptCallback("on_actor_wnd_closed", mode)
+        else
+            SendScriptCallback("on_actor_wnd_opened", mode)
+        end
+        
+        if(mode==0) then
+            if(last_mode==1) then
+                inventory_wnd_closed()
+                SendScriptCallback("on_actor_inventory_wnd_closed", mode)
+            elseif(last_mode==2) then
+                trade_wnd_closed()
+                SendScriptCallback("on_actor_trade_wnd_closed", mode)
+            elseif(last_mode==3) then
+                upgrade_wnd_closed()
+                SendScriptCallback("on_actor_upgrade_wnd_closed", mode)
+            elseif(last_mode==4) then
+                dead_body_search_wnd_closed()
+                SendScriptCallback("on_actor_dead_body_search_wnd_closed", mode)
+            end
+            last_mode = 0
+        elseif(mode==1) then
+            last_mode = 1
+            inventory_wnd_opened()
+            SendScriptCallback("on_actor_inventory_wnd_opened", mode)
+        elseif(mode==2) then
+            last_mode = 2
+            trade_wnd_opened()
+            SendScriptCallback("on_actor_trade_wnd_opened", mode)
+        elseif(mode==3) then
+            last_mode = 3
+            upgrade_wnd_opened()
+            SendScriptCallback("on_actor_upgrade_wnd_opened", mode)
+        elseif(mode==4) then
+            last_mode = 4
+            dead_body_search_wnd_opened()
+            SendScriptCallback("on_actor_dead_body_search_wnd_opened", mode)
+        elseif(mode==10) then
+            -- coc export begin
+            for k,st in pairs(db.storage) do
+                if (st.object and st.object:is_talking() and st.object:id() ~= AC_ID) then
+                    npc_dlg_id = st.object:id()
+                    SetRegistryValue("used_npc_id", st.object:id())
+                    break
+                end
+            end
+            -- coc export end
+            dialog_wnd_showed()
+            SendScriptCallback("on_actor_dialog_wnd_showed", mode, npc_dlg_id)
+        elseif(mode==11) then
+            SendScriptCallback("actor_on_leave_dialog", GetRegistryValue("used_npc_id"))
+            SetRegistryValue("used_npc_id", nil)
+            dialog_wnd_closed()
+            SendScriptCallback("on_actor_dialog_wnd_closed", mode, npc_dlg_id)
+            npc_dlg_id = nil
+        end
+    end)
+end
+
+function inventory_wnd_opened()
+	--printf("---:>Inventory opened")
+end
+
+function inventory_wnd_closed()
+	--printf("---:>Inventory closed")
+end
+
+function trade_wnd_opened()
+	dialog_closed = false
+	--printf("---:>Trade opened")
+end
+
+function trade_wnd_closed()
+	--printf("---:>Trade closed")
+	trade_closed = true
+end
+
+function upgrade_wnd_opened()
+	dialog_closed = false
+	--printf("---:>Upgrade opened")
+end
+
+function upgrade_wnd_closed()
+	--printf("---:>Upgrade closed")
+	upgrade_closed = true
+end
+
+function dead_body_search_wnd_opened()
+	--printf("---:>DeadBodySearch opened")
+end
+
+function dead_body_search_wnd_closed()
+	--printf("---:>DeadBodySearch closed")
+end
+
+function dialog_wnd_showed()
+	return PROF_EVENT_CLOSURE("dialog_wnd_showed", function()
+        dialog_closed = false
+        for k,v in pairs(db.storage) do
+            local npc = v.object
+            if npc ~= nil then
+                local npc_id = npc:id()
+                if npc:is_talking() and npc_id ~= db.actor:id() then
+                    local sound_theme = xr_sound.sound_table[npc_id]
+                    if sound_theme and sound_theme.reset then
+                        sound_theme:reset(npc_id)
+                    end
+                    break
+                end
+            end
+        end
+        --printf("---:>Talk Dialog show")
+    end)
+end
+
+function dialog_wnd_closed()
+	--printf("---:>Talk Dialog hide")
+	dialog_closed = true
+end
+
+-- CoCray
+function get_time_elapsed()
+	return PROF_EVENT_CLOSURE("get_time_elapsed", function()
+        local s_time = level.get_start_time()
+        local seconds = tonumber(game.get_game_time():diffSec(s_time))
+        
+        if (seconds < 60) then 
+            return string.format("%d %s",seconds,game.translate_string("ui_st_secs"))
+        elseif (seconds < 3600) then 
+            return string.format("%d %s",seconds/60,game.translate_string("ui_st_mins"))
+        elseif (seconds < 86400) then 
+            return string.format("%d %s",seconds/60/60,game.translate_string("ui_st_hours"))
+        end
+        
+        return string.format("%d %s",seconds/60/60/24,game.translate_string("ui_st_days"))
+    end)
+end 
+--//
+
+function get_stat(index) -- index= int        return string
+	return PROF_EVENT_CLOSURE("get_stat", function()
+        return "Unknown"
+    end)
+end
+
+-- CoCray
+----------------------------------------------------------------------------
+-- Engine->lua function calls 
+----------------------------------------------------------------------------
+
+-- PDA Tabs 
+-- It's now possible to add new button tabs to pda*.xml.
+-- You can use ActorMenu.get_pda_menu():GetActiveSection() to find out active pda tab
+-- UI returned must be CUIScriptWnd
+function set_active_subdialog(section)
+	--printf("section=%s",section)
+	local tbl_dialog = {ui_wnd = nil}
+	SendScriptCallback("on_pda_set_active_subdialog", this, section, tbl_dialog)
+	
+	if tbl_dialog["ui_wnd"] ~= nil then
+		return tbl_dialog["ui_wnd"]
+	end
+	
+	if (section == "eptTasks") then 
+	
+	elseif (section == "eptRanking") then 
+	
+	elseif (section == "eptLogs") then
+	    return nil
+	
+	elseif (section == "eptRelations") then 
+		--return ui_pda_relations_tab.get_ui()
+	elseif (section == "eptContacts") then
+		--return ui_pda_contacts_tab.get_ui()
+	elseif (section == "eptEncyclopedia") then
+		--return ui_pda_encyclopedia_tab.get_ui()
+	end
+end 
+
+function property_box_clicked(property_ui)
+	-- See CoC for implmentation
+	local list_item = property_ui:GetSelectedItem()
+	if not (list_item) then 
+		return 
+	end
+	local textControl = list_item:GetTextItem()
+	local prop = textControl:GetText()
+	
+	SendScriptCallback("map_spot_menu_property_clicked", property_ui ,map_spot_property.id, map_spot_property.level_name, prop)
+end 
+
+function property_box_add_properties(property_ui, id, level_name, hint)
+	-- See CoC for implmentation
+	SendScriptCallback("map_spot_menu_add_property", property_ui, id, level_name, hint)
+end
+
+-- called from engine! It's how many character rankings to display! u8 (max 255)
+function get_rankings_array_size()
+	return 1
+end	
+
+-- called from engine! must return bool!
+function coc_rankings_can_show(index)
+	return false
+end
+
+-- called from engine! must return string!
+function coc_rankings_set_name(index)
+	return ""
+end
+
+-- called from engine! must return string!
+function coc_rankings_set_hint(index)
+	return ""
+end
+
+-- called from engine! must return string!
+function coc_rankings_set_description(index)
+	return ""
+end
+
+-- called from engine! must return string!
+function coc_rankings_set_icon(index)
+	return ""
+end
+-- //
