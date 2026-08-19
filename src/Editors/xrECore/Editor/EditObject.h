@@ -51,7 +51,7 @@ public:
 
 	Flags32			m_RTFlags;
 	u32				tag;
-	SSimpleImage*	m_ImageData;
+	SSimpleImage*	ImageData;
 	u16				m_id = 0;
 	bool m_bEditorVisible = true;
 
@@ -59,7 +59,7 @@ public:
 	CSurface		()
 	{
 		m_GameMtlName="default";
-		m_ImageData	= nullptr;
+		ImageData	= nullptr;
 		m_Shader	= nullptr;
 		m_RTFlags.zero	();
 		m_Flags.zero	();
@@ -71,7 +71,7 @@ public:
 		return (0!=xr_strlen(m_Texture))&&(0!=xr_strlen(m_ShaderName));
 	}
 #if 1
-					~CSurface		(){R_ASSERT(!m_Shader);xr_delete(m_ImageData);}
+					~CSurface		(){R_ASSERT(!m_Shader);xr_delete(ImageData);}
 	IC void			CopyFrom		(CSurface* surf){*this = *surf; m_Shader=nullptr; m_RTFlags.set(rtValidShader, false);}
 	IC int			_Priority		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.iPriority:1;}
 	IC bool			_StrictB2F		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.bStrictB2F:false;}
