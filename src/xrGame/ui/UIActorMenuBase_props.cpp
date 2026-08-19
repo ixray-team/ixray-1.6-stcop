@@ -971,11 +971,6 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			}
 
 			PlaySnd(eUnloadMagazine);
-
-			if (m_currMenuMode == mmInventory)
-			{
-				UpdateActorBagList();
-			}
 			break;
 		}
 	case INVENTORY_REPAIR:
