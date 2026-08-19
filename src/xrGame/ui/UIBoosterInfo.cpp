@@ -350,6 +350,7 @@ void UIBoosterInfoItem::Init(CUIXml& xml, const char* section)
 	m_caption   = UIHelper::CreateStatic(xml, "caption", this);
 	m_value     = UIHelper::CreateStatic(xml, "value",   this);
 	m_magnitude = xml.ReadAttribFlt("value", 0, "magnitude", 1.0f);
+	m_sign_inverse = (xml.ReadAttribInt( "value", 0, "sign_inverse", 0 ) == 1);
 	m_show_sign = (xml.ReadAttribInt("value", 0, "show_sign", 1) == 1);
 	
 	const char* unit_str = xml.ReadAttrib("value", 0, "unit_str", "");
@@ -389,7 +390,8 @@ void UIBoosterInfoItem::SetValue(float value)
 	m_value->SetText(str);
 
 	bool positive = (value >= 0.0f);
-	m_value->SetTextColor(color_rgba(170,170,170,255));
+	positive = (m_sign_inverse) ? !positive : positive;
+	m_value->SetTextColor(color_rgba(170, 170, 170, 255));
 
 	if(m_texture_minus.size())
 	{
