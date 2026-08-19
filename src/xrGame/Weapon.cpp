@@ -1406,16 +1406,6 @@ void CWeapon::OnHiddenItem ()
 
 bool CWeapon::SendDeactivateItem(bool Force)
 {
-	if (GetState() == eFire)
-	{
-		if (!Force)
-		{
-			return false;
-		}
-
-		FireEnd();
-	}
-
 	return inherited::SendDeactivateItem(Force);
 }
 
