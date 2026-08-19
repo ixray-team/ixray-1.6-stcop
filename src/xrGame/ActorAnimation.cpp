@@ -468,20 +468,6 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 		moving_idx						= STorsoWpn::eSprint;
 	}
 
-	if (this == Level().CurrentViewEntity())
-	{
-		auto TestState = [&](u32 State)
-		{
-			return ((mstate_rl & State) != (mstate_old & State));
-		};
-
-		if (TestState(mcSprint) || TestState(mcAnyMove) || TestState(mcAccel) || TestState(mcCrouch))
-		{
-			g_player_hud->OnMovementChanged(ACTOR_DEFS::EMoveCommand(mstate_rl));
-			HudAnimator()->OnMovementChanged();
-		}
-	};
-
 	//-----------------------------------------------------------------------
 	// Torso
 	if (mstate_rl & mcClimb)
