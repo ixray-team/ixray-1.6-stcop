@@ -178,7 +178,7 @@ void CWeapon::UpdateFireDependencies_internal()
 
 	UpdateXForm			();
 
-	if (GetHUDmode() && HudItemData() != nullptr)
+	if ((GetHUDmode() || render_item_ui_query()) && HudItemData() != nullptr)
 	{
 		HudItemData()->setup_firedeps(m_current_firedeps);
 		VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
