@@ -17,16 +17,16 @@ float g_MinBoxSize = 0.05f;
 
 void CSurface::CreateImageData()
 {
-	VERIFY(0 == m_ImageData);
-	m_ImageData = new SSimpleImage();
-	m_ImageData->name = m_Texture;
-	m_ImageData->layers.push_back(U32Vec());
-	ImageLib.LoadTextureData(*m_ImageData->name, m_ImageData->layers.back(), m_ImageData->w, m_ImageData->h);
+	VERIFY(0 == ImageData);
+	ImageData = new SSimpleImage();
+	ImageData->name = m_Texture;
+	ImageData->layers.push_back(U32Vec());
+	ImageLib.LoadTextureData(*ImageData->name, ImageData->layers.back(), ImageData->w, ImageData->h);
 }
 
 void CSurface::RemoveImageData()
 {
-	xr_delete(m_ImageData);
+	xr_delete(ImageData);
 }
 
 CEditableObject::CEditableObject(const char* name) :
