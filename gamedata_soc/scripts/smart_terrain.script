@@ -943,6 +943,8 @@ end
 -- вызывается симулятором.
 function se_smart_terrain:on_register()
 	cse_alife_smart_zone.on_register( self )
+	
+	SendScriptCallback("server_entity_on_register", self, "se_smart_terrain")
 
 	self:register_if_needed()
 	self:initialize_if_needed()
@@ -997,6 +999,7 @@ end
 -- дерегистрация объекта в симуляторе.
 -- вызывается симулятором.
 function se_smart_terrain:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_smart_terrain")
 	cse_alife_smart_zone.on_unregister( self )
 
 --	printf( "[smart_terrain %s] on_unregister called", self:name() )
@@ -1124,6 +1127,7 @@ function se_smart_terrain:update()
 	else
 		self:remove_gulag()
 	end
+    SendScriptCallback("smart_terrain_on_update", self)
 end
 
 --------------------

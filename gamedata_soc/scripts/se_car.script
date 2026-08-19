@@ -6,6 +6,16 @@ function se_car:__init (section) super (section)
 	self.ini = nil
 	self.spawner_present = false
 end
+
+function se_car:on_register()
+	cse_alife_car.on_register(self)
+
+	SendScriptCallback("server_entity_on_register", self, "se_car")
+end
+function se_car:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_car")
+	cse_alife_car.on_unregister(self)
+end
 --------------------
 function se_car:can_switch_offline ()
 	return cse_alife_car.can_switch_offline(self)
@@ -31,6 +41,18 @@ class "se_heli" (cse_alife_helicopter)
 --------------------
 function se_heli:__init (section) super (section)
 end
+
+function se_heli:on_register()
+	cse_alife_helicopter.on_register(self)
+	
+	SendScriptCallback("server_entity_on_register", self, "se_heli")
+end
+
+function se_heli:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_heli")
+	cse_alife_helicopter.on_unregister(self)
+end
+
 function se_heli:keep_saved_data_anyway()
 	return true
 end
