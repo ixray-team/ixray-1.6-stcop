@@ -265,6 +265,12 @@ void CCustomDevice::switch_device()
 		return;
 	}
 
+	// SoC case
+	if (!hud_sect.size())
+	{
+		return;
+	}
+
 	PIItem active_item = m_pInventory->ActiveItem();
 
 	bool need_fx = active_item == nullptr || active_item->cast_hud_item() == nullptr || !active_item->cast_hud_item()->m_eAnimationsFlags.test(af_prepare_detector);
