@@ -262,7 +262,6 @@ void CHudItem::OnStateSwitch(u8 S)
 	}
 	case eSprintStart:
 	{
-		m_bSwitchSprint = true;
 		SetPending(true);
 		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_start"), EHudMixType::eMixAll, eSprintStart);
 		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_sprint_start))
@@ -273,7 +272,6 @@ void CHudItem::OnStateSwitch(u8 S)
 	}
 	case eSprintEnd:
 	{
-		m_bSwitchSprint = false;
 		SetPending(true);
 		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_end"), EHudMixType::eMixAll, eSprintEnd);
 		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_sprint_end))
@@ -440,7 +438,6 @@ void CHudItem::UpdateCL()
 						OnMotionMark(m_startedMotionState, M);
 					}
 				}
-
 			}
 
 			m_dwMotionCurrTm = Device.dwTimeGlobal;
@@ -732,6 +729,8 @@ bool CHudItem::TryPlayAnimIdle()
 
 				if (!m_bSwitchSprint && m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out))
 				{
+					m_bSwitchSprint = true;
+					SetPending(true);
 					SwitchState(eSprintStart);
 					return true;
 				}
@@ -745,6 +744,8 @@ bool CHudItem::TryPlayAnimIdle()
 			}
 			else if (m_bSwitchSprint && m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out))
 			{
+				m_bSwitchSprint = false;
+				SetPending(true);
 				SwitchState(eSprintEnd);
 				return true;
 			}
@@ -871,7 +872,7 @@ void CHudItem::PlayAnimDeviceSwitch()
 
 void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 {
-	if (GetState() == eIdle)
+	if (GetNextState() == eIdle)
 	{
 		if (!m_bStopAtEndAnimIsRunning)
 		{
@@ -881,12 +882,16 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 	}
 	else
 	{
-		if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && GetState() != eSprintStart && GetState() == eSprintEnd)
+		if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && GetNextState() != eSprintStart && GetNextState() == eSprintEnd)
 		{
+			m_bSwitchSprint = true;
+			SetPending(true);
 			SwitchState(eSprintStart);
 		}
-		else if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) == 0 && GetState() != eSprintEnd && GetState() == eSprintStart)
+		else if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) == 0 && GetNextState() != eSprintEnd && GetNextState() == eSprintStart)
 		{
+			m_bSwitchSprint = false;
+			SetPending(true);
 			SwitchState(eSprintEnd);
 		}
 	}
