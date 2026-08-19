@@ -139,6 +139,7 @@ void TestLegacyViewportResolution(TiramisuMaterialTestRunner& Runner)
 	FEditorViewportLegacyMaterialSource Native;
 	Native.MaterialSlot = 0x6789;
 	Native.MaterialAsset = "128e21af-5c6f-4ec4-a2e3-8b44f90cb553";
+	Native.Textures = {"textures/default/default_error"};
 	Native.SurfaceName = "native instance slot";
 	const FEditorViewportMaterialResolution Explicit =
 		Resolver.Resolve(Native);
@@ -148,6 +149,43 @@ void TestLegacyViewportResolution(TiramisuMaterialTestRunner& Runner)
 	MATERIAL_CHECK(Runner, HasDependency(Explicit, "example_red.material-instance.json"));
 	MATERIAL_CHECK(Runner, !HasDependency(Explicit, "legacy-map.json"));
 	MATERIAL_CHECK(Runner, std::get<FFloat4>(Explicit.Resolved.Parameters.at(FMaterialParameterId{"915ce004-8c2f-47ce-87c7-b4af787b835e"}))[0] == 1.0f);
+	MATERIAL_CHECK(
+		Runner,
+		std::get<xr_string>(Explicit.Resolved.Parameters.at(
+			FMaterialParameterId{xr_string(LegacyBaseTextureParameterId)}
+		)) == "textures/kung"
+	);
+
+	FEditorViewportLegacyMaterialSource NativeMaster = Native;
+	NativeMaster.MaterialSlot = 0x6790;
+	NativeMaster.MaterialAsset = "standard_surface.material.json";
+	NativeMaster.SurfaceName = "native master slot";
+	const FEditorViewportMaterialResolution ExplicitMaster =
+		Resolver.Resolve(NativeMaster);
+	MATERIAL_CHECK(Runner, ExplicitMaster.Succeeded());
+	MATERIAL_CHECK(
+		Runner,
+		ExplicitMaster.Legacy.Resolution ==
+			ELegacyMaterialResolution::ExplicitMaterial
+	);
+	MATERIAL_CHECK(
+		Runner,
+		ExplicitMaster.Master.Id.Value ==
+			"67e3bc21-9df5-4fc2-ab60-1ad7d02ad6e3"
+	);
+	MATERIAL_CHECK(
+		Runner,
+		HasDependency(
+			ExplicitMaster,
+			"standard_surface.material.json"
+		)
+	);
+	MATERIAL_CHECK(
+		Runner,
+		std::get<xr_string>(ExplicitMaster.Resolved.Parameters.at(
+			FMaterialParameterId{xr_string(LegacyBaseTextureParameterId)}
+		)) == "textures/default/default_white"
+	);
 
 	TiramisuEditorViewportMaterialResolver MissingResolver;
 	MATERIAL_CHECK(Runner, !MissingResolver.Load(Root / "missing", &LoadDiagnostics));

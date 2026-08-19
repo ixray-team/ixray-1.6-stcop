@@ -2,7 +2,6 @@
 #include "UIMaterialEditorForm.h"
 
 #include "../../../xrEUI/ImNodeEditor/imnodes.h"
-#include <MaterialInstanceParentResolver.h>
 
 #include <algorithm>
 #include <cctype>
@@ -179,6 +178,40 @@ ImU32 PinColor(const EMaterialValueType Type)
 	}
 }
 
+bool DrawMaterialFloatTypeCombo(
+	const char* Label,
+	EMaterialValueType& Type
+)
+{
+	bool Changed = false;
+	const xr_string_view Preview = ToString(Type);
+	if (ImGui::BeginCombo(Label, Preview.data()))
+	{
+		constexpr xr_array Types = {
+			EMaterialValueType::Float1,
+			EMaterialValueType::Float2,
+			EMaterialValueType::Float3,
+			EMaterialValueType::Float4,
+		};
+		for (const EMaterialValueType Candidate : Types)
+		{
+			const bool Selected = Type == Candidate;
+			const xr_string_view Name = ToString(Candidate);
+			if (ImGui::Selectable(Name.data(), Selected))
+			{
+				Type = Candidate;
+				Changed = true;
+			}
+			if (Selected)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+	return Changed;
+}
+
 ImNodesPinShape PinShape(const EMaterialValueType Type)
 {
 	if (Type == EMaterialValueType::Texture2D || Type == EMaterialValueType::TextureCube)
@@ -211,7 +244,6 @@ UIMaterialEditorForm::UIMaterialEditorForm()
 	ImNodes::SetImGuiContext(ImGui::GetCurrentContext());
 	NodesContext = ImNodes::CreateContext();
 	SyncMaterialDrafts();
-	SyncInstanceDrafts();
 	Compile();
 	NextAutosaveTime = ImGui::GetTime() + 30.0;
 	NextDependencyPollTime = ImGui::GetTime() + 0.5;
@@ -272,7 +304,7 @@ void UIMaterialEditorForm::DrawToolbar()
 {
 	if (ImGui::BeginMenuBar())
 	{
-		ImGui::BeginDisabled(Document.IsDirty() || InstanceDocument.IsDirty());
+		ImGui::BeginDisabled(Document.IsDirty());
 		if (ImGui::MenuItem("New"))
 		{
 			Document.NewMaterial();
@@ -442,36 +474,6 @@ void UIMaterialEditorForm::TickAutosave()
 		}
 	}
 
-	if (InstanceDocument.IsDirty())
-	{
-		const std::filesystem::path RecoveryPath = InstanceRecoveryPath();
-		std::error_code Error;
-		if (!RecoveryPath.parent_path().empty())
-		{
-			std::filesystem::create_directories(RecoveryPath.parent_path(), Error);
-		}
-		if (Error)
-		{
-			AutosaveStatus = "Instance autosave directory failed";
-			Failed = true;
-		}
-		else
-		{
-			FMaterialEditorOperationResult Result =
-				InstanceDocument.SaveRecoveryFile(RecoveryPath);
-			if (!Result.Succeeded())
-			{
-				AutosaveStatus = "Instance autosave failed";
-				Failed = true;
-				SetDiagnostics(std::move(Result.Diagnostics));
-			}
-			else
-			{
-				SavedAny = true;
-			}
-		}
-	}
-
 	if (SavedAny && !Failed)
 	{
 		AutosaveStatus = "Autosaved recovery";
@@ -490,16 +492,7 @@ void UIMaterialEditorForm::RefreshDependencyWatch()
 	};
 
 	Add(std::filesystem::path(Document.GetMaterial().SourcePath.c_str()));
-	Add(std::filesystem::path(InstanceDocument.GetInstance().SourcePath.c_str()));
-	for (const std::filesystem::path& Path : ParentAssetDependencies)
-	{
-		Add(Path);
-	}
-
-	const FMaterialAsset& ActiveMaterial =
-		InstanceDocument.GetParentMaterial()
-			? *InstanceDocument.GetParentMaterial()
-			: Document.GetMaterial();
+	const FMaterialAsset& ActiveMaterial = Document.GetMaterial();
 	string_path ShaderRoot{};
 	FS.update_path(ShaderRoot, "$game_shaders$", "r5\\");
 	const auto AddShaderDependency = [&Add, &ShaderRoot](xr_string Reference)
@@ -563,17 +556,15 @@ void UIMaterialEditorForm::ApplyDependencyChanges(
 	const std::filesystem::path MaterialPath(
 		Document.GetMaterial().SourcePath.c_str()
 	);
-	const std::filesystem::path InstancePath(
-		InstanceDocument.GetInstance().SourcePath.c_str()
+	const bool MaterialChanged = std::ranges::any_of(
+		Changes,
+		[&MaterialPath](const FMaterialDependencyChange& Change)
+		{
+			return SameEditorPath(Change.Path, MaterialPath);
+		}
 	);
-	const bool MaterialChanged = std::ranges::any_of(Changes, [&MaterialPath](const FMaterialDependencyChange& Change)
-													 { return SameEditorPath(Change.Path, MaterialPath); });
-	const bool InstanceChanged = std::ranges::any_of(Changes, [&InstancePath](const FMaterialDependencyChange& Change)
-													 { return SameEditorPath(Change.Path, InstancePath); });
 
-	if (!AllowDirtyReload &&
-		((MaterialChanged && Document.IsDirty()) ||
-		 (InstanceChanged && InstanceDocument.IsDirty())))
+	if (!AllowDirtyReload && MaterialChanged && Document.IsDirty())
 	{
 		PendingDependencyChanges = std::move(Changes);
 		DependencyStatus = "External changes pending (local edits are protected)";
@@ -586,13 +577,9 @@ void UIMaterialEditorForm::ApplyDependencyChanges(
 
 	DependencyStatus.clear();
 	bool ReloadedMaterial = false;
-	bool ReloadedInstance = false;
-	bool ReloadedParentChain = false;
-	bool AssetDependencyChanged = false;
 	bool ShaderDependencyChanged = false;
 	for (const FMaterialDependencyChange& Change : Changes)
 	{
-		AssetDependencyChanged |= IsMaterialAssetPath(Change.Path);
 		ShaderDependencyChanged |= !IsMaterialAssetPath(Change.Path);
 	}
 
@@ -611,38 +598,9 @@ void UIMaterialEditorForm::ApplyDependencyChanges(
 			ReloadedMaterial = true;
 		}
 	}
-	if (InstanceChanged && !InstancePath.empty())
-	{
-		FMaterialEditorOperationResult Result =
-			InstanceDocument.OpenInstanceFile(InstancePath);
-		if (!Result.Succeeded())
-		{
-			SetDiagnostics(std::move(Result.Diagnostics));
-			DependencyStatus = "External instance reload failed; last good document kept";
-		}
-		else
-		{
-			SyncInstanceDrafts();
-			ReloadedInstance = true;
-		}
-	}
-
-	if (AssetDependencyChanged &&
-		!InstanceDocument.GetInstance().Parent.empty())
-	{
-		ReloadedParentChain = ResolveInstanceParent();
-		if (!ReloadedParentChain)
-		{
-			DependencyStatus = "Parent-chain reload failed; last good instance kept";
-		}
-	}
-	if (ReloadedMaterial || ReloadedInstance || ShaderDependencyChanged)
+	if (ReloadedMaterial || ShaderDependencyChanged)
 	{
 		Compile();
-	}
-	else if (ReloadedParentChain)
-	{
-		PreviewSourceDirty = true;
 	}
 
 	PendingDependencyChanges.clear();
@@ -678,7 +636,164 @@ void UIMaterialEditorForm::DrawPalette()
 		{
 			continue;
 		}
-		const xr_string SearchText = Lower(xr_string(Definition.DisplayName) + " " + xr_string(Definition.Type) + " " + xr_string(Definition.Category));
+		if (Definition.Type == "constant")
+		{
+			struct FConstantPaletteEntry
+			{
+				xr_string_view Label;
+				xr_string_view SearchAliases;
+				EMaterialValueType ValueType;
+			};
+
+			constexpr xr_array ConstantEntries = {
+				FConstantPaletteEntry{
+					"Constant (float)",
+					"constant scalar float constant1",
+					EMaterialValueType::Float1
+				},
+				FConstantPaletteEntry{
+					"Constant2 (float2)",
+					"constant2 vector2 float2",
+					EMaterialValueType::Float2
+				},
+				FConstantPaletteEntry{
+					"Constant3 (float3)",
+					"constant3 vector3 float3 color rgb",
+					EMaterialValueType::Float3
+				},
+				FConstantPaletteEntry{
+					"Constant4 (float4)",
+					"constant4 vector4 float4 color rgba",
+					EMaterialValueType::Float4
+				},
+			};
+
+			bool HasVisibleEntry = false;
+			for (const FConstantPaletteEntry& Entry : ConstantEntries)
+			{
+				if (Filter.empty() || Lower(Entry.SearchAliases).find(Filter) != xr_string::npos)
+				{
+					HasVisibleEntry = true;
+					break;
+				}
+			}
+			if (!HasVisibleEntry)
+			{
+				continue;
+			}
+
+			if (LastCategory != Definition.Category)
+			{
+				if (!LastCategory.empty())
+				{
+					ImGui::Spacing();
+				}
+				ImGui::TextDisabled(
+					"%.*s",
+					static_cast<int>(Definition.Category.size()),
+					Definition.Category.data()
+				);
+				LastCategory = Definition.Category;
+			}
+
+			for (const FConstantPaletteEntry& Entry : ConstantEntries)
+			{
+				if (!Filter.empty() &&
+					Lower(Entry.SearchAliases).find(Filter) == xr_string::npos)
+				{
+					continue;
+				}
+				const xr_string Label = xr_string(Entry.Label) + "##constant_" +
+					xr_string(ToString(Entry.ValueType));
+				if (ImGui::Button(Label.c_str(), ImVec2(-1.0f, 0.0f)))
+				{
+					AddNode(Definition.Type, Entry.ValueType);
+				}
+			}
+			continue;
+		}
+		if (Definition.Type == "make_vector" ||
+			Definition.Type == "break_vector" ||
+			Definition.Type == "swizzle")
+		{
+			struct FVectorPaletteEntry
+			{
+				xr_string Label;
+				xr_string SearchAliases;
+				EMaterialValueType ValueType;
+			};
+
+			const xr_string OperationName = Definition.Type == "make_vector"
+				? "Make"
+				: Definition.Type == "break_vector" ? "Break" : "Swizzle";
+			const xr_array VectorEntries = {
+				FVectorPaletteEntry{
+					OperationName + " Float2",
+					Lower(OperationName + " vector2 float2"),
+					EMaterialValueType::Float2
+				},
+				FVectorPaletteEntry{
+					OperationName + " Float3",
+					Lower(OperationName + " vector3 float3 rgb"),
+					EMaterialValueType::Float3
+				},
+				FVectorPaletteEntry{
+					OperationName + " Float4",
+					Lower(OperationName + " vector4 float4 rgba"),
+					EMaterialValueType::Float4
+				},
+			};
+
+			const bool HasVisibleEntry = std::ranges::any_of(
+				VectorEntries,
+				[&Filter](const FVectorPaletteEntry& Entry)
+				{
+					return Filter.empty() ||
+						Entry.SearchAliases.find(Filter) != xr_string::npos;
+				}
+			);
+			if (!HasVisibleEntry)
+			{
+				continue;
+			}
+
+			if (LastCategory != Definition.Category)
+			{
+				if (!LastCategory.empty())
+				{
+					ImGui::Spacing();
+				}
+				ImGui::TextDisabled(
+					"%.*s",
+					static_cast<int>(Definition.Category.size()),
+					Definition.Category.data()
+				);
+				LastCategory = Definition.Category;
+			}
+
+			for (const FVectorPaletteEntry& Entry : VectorEntries)
+			{
+				if (!Filter.empty() &&
+					Entry.SearchAliases.find(Filter) == xr_string::npos)
+				{
+					continue;
+				}
+				const xr_string Label = Entry.Label + "##" +
+					xr_string(Definition.Type) + "_" +
+					xr_string(ToString(Entry.ValueType));
+				if (ImGui::Button(Label.c_str(), ImVec2(-1.0f, 0.0f)))
+				{
+					AddNode(Definition.Type, Entry.ValueType);
+				}
+			}
+			continue;
+		}
+
+		const xr_string SearchText = Lower(
+			xr_string(Definition.DisplayName) + " " +
+			xr_string(Definition.Type) + " " +
+			xr_string(Definition.Category)
+		);
 		if (!Filter.empty() && SearchText.find(Filter) == xr_string::npos)
 		{
 			continue;
@@ -718,7 +833,51 @@ void UIMaterialEditorForm::DrawGraph()
 		ImNodes::BeginNode(NodeUiId);
 		ImNodes::BeginNodeTitleBar();
 		const FMaterialNodeDefinition* Definition = FindMaterialNodeDefinition(Node.Type);
-		ImGui::TextUnformatted(Definition ? Definition->DisplayName.data() : Node.Type.c_str());
+		if (Node.Type == "constant" && !Node.Pins.empty())
+		{
+			switch (Node.Pins.front().Type)
+			{
+				case EMaterialValueType::Float2:
+					ImGui::TextUnformatted("Constant2");
+					break;
+				case EMaterialValueType::Float3:
+					ImGui::TextUnformatted("Constant3");
+					break;
+				case EMaterialValueType::Float4:
+					ImGui::TextUnformatted("Constant4");
+					break;
+				default:
+					ImGui::TextUnformatted("Constant");
+					break;
+			}
+		}
+		else
+		{
+			xr_string Title = Definition
+				? xr_string(Definition->DisplayName)
+				: Node.Type;
+			if (Node.Type == "make_vector" ||
+				Node.Type == "break_vector" ||
+				Node.Type == "swizzle")
+			{
+				const auto VectorPin = std::ranges::find_if(
+					Node.Pins,
+					[](const FMaterialGraphPin& Pin)
+					{
+						return Pin.Type >= EMaterialValueType::Float2 &&
+							Pin.Type <= EMaterialValueType::Float4;
+					}
+				);
+				if (VectorPin != Node.Pins.end())
+				{
+					const xr_string OperationName = Node.Type == "make_vector"
+						? "Make "
+						: Node.Type == "break_vector" ? "Break " : "Swizzle ";
+					Title = OperationName + xr_string(ToString(VectorPin->Type));
+				}
+			}
+			ImGui::TextUnformatted(Title.c_str());
+		}
 		ImNodes::EndNodeTitleBar();
 
 		DrawNodeProperties(Node);
@@ -836,12 +995,6 @@ void UIMaterialEditorForm::DrawOutputPanel()
 		ImGui::EndTabItem();
 	}
 
-	if (ImGui::BeginTabItem("Instance"))
-	{
-		DrawInstancePanel();
-		ImGui::EndTabItem();
-	}
-
 	if (ImGui::BeginTabItem("Diagnostics"))
 	{
 		if (Diagnostics.empty())
@@ -938,15 +1091,9 @@ void UIMaterialEditorForm::DrawPreviewPanel()
 		return;
 	}
 
-	const xr_optional<FMaterialAsset>& ParentMaterial =
-		InstanceDocument.GetParentMaterial();
-	const FMaterialAsset& PreviewMaterial = ParentMaterial
-												? *ParentMaterial
-												: Document.GetMaterial();
+	const FMaterialAsset& PreviewMaterial = Document.GetMaterial();
 	const xr_string MaterialJson = SerializeMaterialAssetJson(PreviewMaterial);
-	const xr_string InstanceJson = ParentMaterial
-									   ? InstanceDocument.SerializeFlattenedInstance()
-									   : xr_string{};
+	const xr_string InstanceJson;
 	if (MaterialJson != SubmittedMaterialJson ||
 		InstanceJson != SubmittedInstanceJson)
 	{
@@ -956,7 +1103,7 @@ void UIMaterialEditorForm::DrawPreviewPanel()
 	if (PreviewSourceDirty)
 	{
 		FMaterialGraphCompileResult PreviewImplementation =
-			BuildMaterialImplementation(PreviewMaterial, ParentMaterial ? InstanceDocument.GetEffectiveStaticParameters() : FMaterialStaticParameterSet{});
+			BuildMaterialImplementation(PreviewMaterial);
 		if (!PreviewImplementation.Diagnostics.empty())
 		{
 			Diagnostics = PreviewImplementation.Diagnostics;
@@ -967,9 +1114,7 @@ void UIMaterialEditorForm::DrawPreviewPanel()
 		SubmittedHlsl = std::move(PreviewImplementation.GeneratedHlsl);
 
 		FMaterialPreviewSource Source;
-		Source.MaterialAssetId = ParentMaterial
-									 ? InstanceDocument.GetInstance().Id.Value
-									 : PreviewMaterial.Id.Value;
+		Source.MaterialAssetId = PreviewMaterial.Id.Value;
 		Source.MaterialJson = SubmittedMaterialJson;
 		Source.MaterialInstanceJson = SubmittedInstanceJson;
 		Source.GeneratedHlsl = SubmittedHlsl;
@@ -1033,6 +1178,10 @@ void UIMaterialEditorForm::DrawPreviewPanel()
 
 void UIMaterialEditorForm::DrawNodeProperties(const FMaterialGraphNode& Node)
 {
+	if (Node.Type == "custom_hlsl")
+	{
+		DrawCustomHlslSignature(Node);
+	}
 	for (const FMaterialNodePropertyDefinition& Definition :
 		 GetMaterialNodePropertyDefinitions(Node.Type))
 	{
@@ -1130,7 +1279,8 @@ void UIMaterialEditorForm::DrawNodeProperties(const FMaterialGraphNode& Node)
 				ImGui::TextDisabled("Texture link overrides this parameter");
 			}
 		}
-		else if (Definition.Kind == EMaterialNodePropertyKind::HlslExpression)
+		else if (Definition.Kind == EMaterialNodePropertyKind::HlslExpression ||
+			Definition.Kind == EMaterialNodePropertyKind::String)
 		{
 			const xr_string* Code = std::get_if<xr_string>(&Current->second);
 			auto [Draft, Inserted] = NodeStringDrafts.try_emplace(DraftKey);
@@ -1139,7 +1289,23 @@ void UIMaterialEditorForm::DrawNodeProperties(const FMaterialGraphNode& Node)
 				SetTextBuffer(Draft->second, Code ? xr_string_view{*Code} : xr_string_view{});
 			}
 			ImGui::SetNextItemWidth(240.0f);
-			ImGui::InputTextMultiline("##Code", Draft->second.data(), Draft->second.size(), ImVec2(240.0f, 72.0f));
+			if (Definition.Kind == EMaterialNodePropertyKind::HlslExpression)
+			{
+				ImGui::InputTextMultiline(
+					"##Code",
+					Draft->second.data(),
+					Draft->second.size(),
+					ImVec2(240.0f, 72.0f)
+				);
+			}
+			else
+			{
+				ImGui::InputText(
+					"##Text",
+					Draft->second.data(),
+					Draft->second.size()
+				);
+			}
 			if (ImGui::IsItemDeactivatedAfterEdit())
 			{
 				FMaterialEditorOperationResult Result = Document.SetNodeProperty(
@@ -1152,6 +1318,10 @@ void UIMaterialEditorForm::DrawNodeProperties(const FMaterialGraphNode& Node)
 				else
 				{
 					SetDiagnostics(std::move(Result.Diagnostics));
+					SetTextBuffer(
+						Draft->second,
+						std::get<xr_string>(Current->second)
+					);
 				}
 			}
 		}
@@ -1224,6 +1394,112 @@ void UIMaterialEditorForm::DrawNodeProperties(const FMaterialGraphNode& Node)
 		}
 		ImGui::PopID();
 	}
+}
+
+void UIMaterialEditorForm::DrawCustomHlslSignature(
+	const FMaterialGraphNode& Node
+)
+{
+	auto [DraftIterator, Inserted] =
+		CustomHlslSignatureDrafts.try_emplace(Node.Id.Value);
+	FCustomHlslSignatureDraft& Draft = DraftIterator->second;
+	if (Inserted)
+	{
+		for (const FMaterialGraphPin& Pin : Node.Pins)
+		{
+			if (Pin.Direction == EMaterialPinDirection::Input)
+			{
+				FCustomHlslInputDraft Input;
+				SetTextBuffer(Input.Name, Pin.Name);
+				Input.Type = Pin.Type;
+				Draft.Inputs.push_back(std::move(Input));
+			}
+			else if (Pin.Name == "Result")
+			{
+				Draft.OutputType = Pin.Type;
+			}
+		}
+	}
+
+	ImGui::TextDisabled("Signature");
+	ImGui::SetNextItemWidth(150.0f);
+	(void)DrawMaterialFloatTypeCombo(
+		"Result Type##CustomHlsl",
+		Draft.OutputType
+	);
+	ImGui::TextDisabled("Inputs");
+	xr_optional<size_t> RemoveIndex;
+	for (size_t Index = 0; Index < Draft.Inputs.size(); ++Index)
+	{
+		FCustomHlslInputDraft& Input = Draft.Inputs[Index];
+		ImGui::PushID(static_cast<int>(Index));
+		ImGui::SetNextItemWidth(105.0f);
+		ImGui::InputText("##InputName", Input.Name.data(), Input.Name.size());
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(85.0f);
+		(void)DrawMaterialFloatTypeCombo("##InputType", Input.Type);
+		ImGui::SameLine();
+		if (ImGui::SmallButton("-"))
+		{
+			RemoveIndex = Index;
+		}
+		ImGui::PopID();
+	}
+	if (RemoveIndex)
+	{
+		Draft.Inputs.erase(Draft.Inputs.begin() + *RemoveIndex);
+	}
+
+	if (Draft.Inputs.size() < 16 && ImGui::SmallButton("+ Input"))
+	{
+		xr_set<xr_string> ExistingNames;
+		for (const FCustomHlslInputDraft& Input : Draft.Inputs)
+		{
+			ExistingNames.emplace(Input.Name.data());
+		}
+		u32 Suffix = static_cast<u32>(Draft.Inputs.size());
+		xr_string Name;
+		do
+		{
+			Name = "Input" + std::to_string(Suffix++);
+		}
+		while (ExistingNames.contains(Name));
+
+		FCustomHlslInputDraft Input;
+		SetTextBuffer(Input.Name, Name);
+		Draft.Inputs.push_back(std::move(Input));
+	}
+	ImGui::SameLine();
+	if (ImGui::SmallButton("Apply Signature"))
+	{
+		xr_vector<FMaterialCustomHlslInputDefinition> Inputs;
+		Inputs.reserve(Draft.Inputs.size());
+		for (const FCustomHlslInputDraft& Input : Draft.Inputs)
+		{
+			Inputs.push_back({Input.Name.data(), Input.Type});
+		}
+		FMaterialEditorOperationResult Result =
+			Document.SetCustomHlslSignature(
+				Node.Id,
+				Inputs,
+				Draft.OutputType
+			);
+		if (Result.Succeeded())
+		{
+			Compile();
+		}
+		else
+		{
+			SetDiagnostics(std::move(Result.Diagnostics));
+		}
+	}
+	ImGui::TextDisabled(
+		"Use {InputName} in the expression; Parameter nodes connect to these pins."
+	);
+	ImGui::TextDisabled(
+		"Renaming or changing a pin type removes incompatible links."
+	);
+	ImGui::Separator();
 }
 
 void UIMaterialEditorForm::DrawDetailsPanel()
@@ -1681,199 +1957,6 @@ bool UIMaterialEditorForm::CommitParameterDraft(
 	return true;
 }
 
-void UIMaterialEditorForm::DrawInstancePanel()
-{
-	const FMaterialInstanceAsset& Instance = InstanceDocument.GetInstance();
-	ImGui::Text("Status: %s", InstanceDocument.IsDirty() ? "Modified" : "Saved");
-	ImGui::TextDisabled("GUID");
-	ImGui::TextWrapped("%s", Instance.Id.Value.c_str());
-	ImGui::TextDisabled("Source");
-	ImGui::TextWrapped("%s", Instance.SourcePath.empty() ? "Unsaved" : Instance.SourcePath.c_str());
-
-	ImGui::BeginDisabled(InstanceDocument.IsDirty());
-	if (ImGui::Button("New from Master"))
-	{
-		InstanceDocument.NewInstance(Document.GetMaterial().Id.Value);
-		InstanceDocument.SetParentMaterial(Document.GetMaterial());
-		SyncInstanceDrafts();
-		RefreshDependencyWatch();
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Open..."))
-	{
-		OpenInstance();
-	}
-	ImGui::EndDisabled();
-	if (ImGui::Button("Save"))
-	{
-		SaveInstance(false);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Save As..."))
-	{
-		SaveInstance(true);
-	}
-
-	ImGui::Separator();
-	ImGui::SetNextItemWidth(-1.0f);
-	ImGui::InputText("Name##Instance", InstanceNameDraft.data(), InstanceNameDraft.size());
-	if (ImGui::IsItemDeactivatedAfterEdit())
-	{
-		InstanceDocument.SetName(InstanceNameDraft.data());
-	}
-
-	ImGui::SetNextItemWidth(-1.0f);
-	ImGui::InputText("Parent", InstanceParentDraft.data(), InstanceParentDraft.size());
-	if (ImGui::IsItemDeactivatedAfterEdit())
-	{
-		FMaterialEditorOperationResult Result =
-			InstanceDocument.SetParent(InstanceParentDraft.data());
-		if (!Result.Succeeded())
-		{
-			SetDiagnostics(std::move(Result.Diagnostics));
-			SyncInstanceDrafts();
-		}
-		else
-		{
-			(void)ResolveInstanceParent();
-		}
-	}
-	if (ImGui::Button("Choose Parent Asset..."))
-	{
-		LoadInstanceParent();
-	}
-
-	const xr_optional<FMaterialAsset>& Parent =
-		InstanceDocument.GetParentMaterial();
-	if (!Parent)
-	{
-		ImGui::TextWrapped("Load the parent master schema to inspect and edit typed overrides.");
-		return;
-	}
-
-	ImGui::Text("Parent: %s", Parent->Name.c_str());
-	ImGui::TextDisabled("Domain=%.*s, Blend=%.*s, Shading=%.*s", static_cast<int>(ToString(Parent->Domain).size()), ToString(Parent->Domain).data(), static_cast<int>(ToString(Parent->BlendMode).size()), ToString(Parent->BlendMode).data(), static_cast<int>(ToString(Parent->ShadingModel).size()), ToString(Parent->ShadingModel).data());
-	ImGui::Separator();
-
-	for (const FMaterialParameterDefinition& Parameter : Parent->Parameters)
-	{
-		ImGui::PushID(Parameter.Id.Value.c_str());
-		const FMaterialParameterMap& Overrides = Parameter.IsStatic()
-													 ? Instance.StaticOverrides
-													 : Instance.Overrides;
-		const auto Override = Overrides.find(Parameter.Id);
-		bool Enabled = Override != Overrides.end();
-		if (ImGui::Checkbox("##Override", &Enabled))
-		{
-			const FMaterialValue* Inherited =
-				InstanceDocument.GetInheritedValue(
-					Parameter.Id, Parameter.IsStatic()
-				);
-			FMaterialEditorOperationResult Result = Enabled
-														? InstanceDocument.SetOverride(Parameter.Id, Inherited ? *Inherited : Parameter.DefaultValue, Parameter.IsStatic())
-														: InstanceDocument.RemoveOverride(Parameter.Id);
-			if (!Result.Succeeded())
-			{
-				SetDiagnostics(std::move(Result.Diagnostics));
-			}
-			InstanceOverrideDrafts.erase(Parameter.Id.Value);
-			InstanceStringDrafts.erase(Parameter.Id.Value);
-		}
-		ImGui::SameLine();
-		ImGui::Text("%s [%.*s]%s", Parameter.DisplayName.empty() ? Parameter.Name.c_str() : Parameter.DisplayName.c_str(), static_cast<int>(ToString(Parameter.Type).size()), ToString(Parameter.Type).data(), Parameter.IsStatic() ? " (permutation)" : "");
-
-		const FMaterialParameterMap& CurrentOverrides = Parameter.IsStatic()
-															? Instance.StaticOverrides
-															: Instance.Overrides;
-		const auto Current = CurrentOverrides.find(Parameter.Id);
-		if (Current != CurrentOverrides.end())
-		{
-			FMaterialValue& Draft = InstanceOverrideDrafts.try_emplace(
-															  Parameter.Id.Value, Current->second
-			)
-										.first->second;
-			bool Commit = false;
-			if (float* Value = std::get_if<float>(&Draft))
-			{
-				const float Minimum = Parameter.Minimum.value_or(0.0f);
-				const float Maximum = Parameter.Maximum.value_or(0.0f);
-				ImGui::SetNextItemWidth(-1.0f);
-				ImGui::DragFloat("##Value", Value, 0.01f, Minimum, Maximum);
-				Commit = ImGui::IsItemDeactivatedAfterEdit();
-			}
-			else if (FFloat2* Value = std::get_if<FFloat2>(&Draft))
-			{
-				ImGui::SetNextItemWidth(-1.0f);
-				ImGui::DragFloat2("##Value", Value->data(), 0.01f);
-				Commit = ImGui::IsItemDeactivatedAfterEdit();
-			}
-			else if (FFloat3* Value = std::get_if<FFloat3>(&Draft))
-			{
-				ImGui::SetNextItemWidth(-1.0f);
-				ImGui::DragFloat3("##Value", Value->data(), 0.01f);
-				Commit = ImGui::IsItemDeactivatedAfterEdit();
-			}
-			else if (FFloat4* Value = std::get_if<FFloat4>(&Draft))
-			{
-				ImGui::SetNextItemWidth(-1.0f);
-				if (Parameter.Type == EMaterialParameterType::Color)
-				{
-					ImGui::ColorEdit4("##Value", Value->data());
-				}
-				else
-				{
-					ImGui::DragFloat4("##Value", Value->data(), 0.01f);
-				}
-				Commit = ImGui::IsItemDeactivatedAfterEdit();
-			}
-			else if (bool* Value = std::get_if<bool>(&Draft))
-			{
-				Commit = ImGui::Checkbox("Value", Value);
-			}
-			else if (s32* Value = std::get_if<s32>(&Draft))
-			{
-				int EditorValue = *Value;
-				ImGui::SetNextItemWidth(-1.0f);
-				if (ImGui::DragInt("##Value", &EditorValue, 1.0f))
-				{
-					*Value = EditorValue;
-				}
-				Commit = ImGui::IsItemDeactivatedAfterEdit();
-			}
-			else if (const xr_string* Value = std::get_if<xr_string>(&Draft))
-			{
-				auto [Text, Inserted] = InstanceStringDrafts.try_emplace(
-					Parameter.Id.Value
-				);
-				if (Inserted)
-				{
-					SetTextBuffer(Text->second, *Value);
-				}
-				ImGui::SetNextItemWidth(-1.0f);
-				ImGui::InputText("##Value", Text->second.data(), Text->second.size());
-				if (ImGui::IsItemDeactivatedAfterEdit())
-				{
-					Draft = xr_string{Text->second.data()};
-					Commit = true;
-				}
-			}
-
-			if (Commit)
-			{
-				FMaterialEditorOperationResult Result = InstanceDocument.SetOverride(
-					Parameter.Id, Draft, Parameter.IsStatic()
-				);
-				if (!Result.Succeeded())
-				{
-					SetDiagnostics(std::move(Result.Diagnostics));
-				}
-			}
-		}
-		ImGui::Separator();
-		ImGui::PopID();
-	}
-}
-
 void UIMaterialEditorForm::Compile()
 {
 	CompileResult = BuildMaterialImplementation(Document.GetMaterial());
@@ -1898,11 +1981,17 @@ void UIMaterialEditorForm::ReleasePreview()
 	SubmittedHlsl.clear();
 }
 
-void UIMaterialEditorForm::AddNode(const xr_string_view Type)
+void UIMaterialEditorForm::AddNode(
+	const xr_string_view Type,
+	const EMaterialValueType ValueType
+)
 {
 	const float Offset = static_cast<float>((Document.GetGraph().Nodes.size() % 7) * 28);
 	FMaterialEditorOperationResult Result = Document.AddNode(
-		Type, {MakeStableId()}, {80.0f + Offset, 80.0f + Offset}
+		Type,
+		{MakeStableId()},
+		{80.0f + Offset, 80.0f + Offset},
+		ValueType
 	);
 	if (Result.Succeeded())
 	{
@@ -1950,6 +2039,7 @@ void UIMaterialEditorForm::DeleteSelection()
 	}
 	NodePropertyDrafts.clear();
 	NodeStringDrafts.clear();
+	CustomHlslSignatureDrafts.clear();
 	Compile();
 }
 
@@ -2048,6 +2138,89 @@ void UIMaterialEditorForm::OpenMaterial()
 	NextAutosaveTime = ImGui::GetTime() + 30.0;
 }
 
+bool UIMaterialEditorForm::OpenMaterialFile(
+	const std::filesystem::path& MaterialPath
+)
+{
+	const std::filesystem::path CurrentPath(
+		Document.GetMaterial().SourcePath.c_str()
+	);
+	if (Document.IsDirty() && !SameEditorPath(CurrentPath, MaterialPath))
+	{
+		Show();
+		AutosaveStatus =
+			"Save or discard the active material before opening another one";
+		return false;
+	}
+
+	std::filesystem::path RecoveryPath = MaterialPath;
+	RecoveryPath += ".autosave";
+	const bool RestoreRecovery = IsRecoveryNewer(
+		RecoveryPath,
+		MaterialPath
+	) && ELog.DlgMsg(
+		mtConfirmation,
+		mbYes | mbNo,
+		"A newer Material Editor autosave exists. Restore it?"
+	) == mrYes;
+	FMaterialEditorOperationResult Result = RestoreRecovery
+		? Document.OpenRecoveryFile(RecoveryPath, MaterialPath)
+		: Document.OpenMaterialFile(MaterialPath);
+	if (!Result.Succeeded())
+	{
+		SetDiagnostics(std::move(Result.Diagnostics));
+		Show();
+		return false;
+	}
+
+	xr_vector<FMaterialDiagnostic> LoadDiagnostics =
+		std::move(Result.Diagnostics);
+	ResetPresentationState();
+	Compile();
+	Diagnostics.insert(
+		Diagnostics.begin(),
+		LoadDiagnostics.begin(),
+		LoadDiagnostics.end()
+	);
+	AutosaveStatus = RestoreRecovery
+		? "Recovered autosave (unsaved)"
+		: xr_string{};
+	NextAutosaveTime = ImGui::GetTime() + 30.0;
+	Show();
+	return true;
+}
+
+bool UIMaterialEditorForm::CreateMaterialFile(
+	const std::filesystem::path& MaterialPath
+)
+{
+	if (Document.IsDirty())
+	{
+		Show();
+		AutosaveStatus =
+			"Save or discard the active material before creating another one";
+		return false;
+	}
+	Document.NewMaterial();
+	FMaterialEditorOperationResult Result =
+		Document.SaveMaterialFile(MaterialPath);
+	if (!Result.Succeeded())
+	{
+		SetDiagnostics(std::move(Result.Diagnostics));
+		Show();
+		return false;
+	}
+	ResetPresentationState();
+	Compile();
+	Diagnostics.insert(
+		Diagnostics.begin(),
+		Result.Diagnostics.begin(),
+		Result.Diagnostics.end()
+	);
+	Show();
+	return true;
+}
+
 void UIMaterialEditorForm::OpenAutosave()
 {
 	string_path MaterialRoot{};
@@ -2072,10 +2245,8 @@ void UIMaterialEditorForm::OpenAutosave()
 		}
 	}
 
-	const bool Instance = Lower(RecoveryPath.filename().string()).ends_with(".material-instance.json.autosave");
-	FMaterialEditorOperationResult Result = Instance
-												? InstanceDocument.OpenRecoveryFile(RecoveryPath, OriginalPath)
-												: Document.OpenRecoveryFile(RecoveryPath, OriginalPath);
+	FMaterialEditorOperationResult Result =
+		Document.OpenRecoveryFile(RecoveryPath, OriginalPath);
 	if (!Result.Succeeded())
 	{
 		SetDiagnostics(std::move(Result.Diagnostics));
@@ -2084,16 +2255,8 @@ void UIMaterialEditorForm::OpenAutosave()
 
 	xr_vector<FMaterialDiagnostic> LoadDiagnostics =
 		std::move(Result.Diagnostics);
-	if (Instance)
-	{
-		SyncInstanceDrafts();
-		(void)ResolveInstanceParent();
-	}
-	else
-	{
-		ResetPresentationState();
-		Compile();
-	}
+	ResetPresentationState();
+	Compile();
 	Diagnostics.insert(Diagnostics.begin(), LoadDiagnostics.begin(), LoadDiagnostics.end());
 	AutosaveStatus = "Recovered autosave (unsaved)";
 	NextAutosaveTime = ImGui::GetTime() + 30.0;
@@ -2133,192 +2296,6 @@ void UIMaterialEditorForm::SaveMaterial(const bool SaveAs)
 	Diagnostics.insert(Diagnostics.begin(), SaveDiagnostics.begin(), SaveDiagnostics.end());
 }
 
-void UIMaterialEditorForm::OpenInstance()
-{
-	string_path MaterialRoot{};
-	FS.update_path(MaterialRoot, "$game_data$", "render_materials");
-	xr_string Path;
-	if (!EFS.GetOpenName("$game_data$", Path, false, MaterialRoot, -1, "*.material-instance.json"))
-	{
-		return;
-	}
-
-	(void)OpenInstanceFile(std::filesystem::path{Path.c_str()});
-}
-
-bool UIMaterialEditorForm::OpenInstanceFile(
-	const std::filesystem::path& InstancePath
-)
-{
-	const std::filesystem::path CurrentPath{
-		InstanceDocument.GetInstance().SourcePath.c_str()
-	};
-	if (InstanceDocument.IsDirty())
-	{
-		Show();
-		if (SameEditorPath(CurrentPath, InstancePath))
-		{
-			return true;
-		}
-		AutosaveStatus =
-			"Save or discard the active instance before opening another one";
-		return false;
-	}
-
-	std::filesystem::path RecoveryPath = InstancePath;
-	RecoveryPath += ".autosave";
-	bool RestoreRecovery = false;
-	if (IsRecoveryNewer(RecoveryPath, InstancePath))
-	{
-		RestoreRecovery = ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "A newer Material Instance autosave exists. Restore it?") == mrYes;
-	}
-	FMaterialEditorOperationResult Result = RestoreRecovery
-												? InstanceDocument.OpenRecoveryFile(RecoveryPath, InstancePath)
-												: InstanceDocument.OpenInstanceFile(InstancePath);
-	if (!Result.Succeeded())
-	{
-		SetDiagnostics(std::move(Result.Diagnostics));
-		Show();
-		return false;
-	}
-	xr_vector<FMaterialDiagnostic> LoadDiagnostics =
-		std::move(Result.Diagnostics);
-	SyncInstanceDrafts();
-	(void)ResolveInstanceParent();
-	Diagnostics.insert(Diagnostics.begin(), LoadDiagnostics.begin(), LoadDiagnostics.end());
-	AutosaveStatus = RestoreRecovery ? "Recovered instance autosave (unsaved)" : xr_string{};
-	NextAutosaveTime = ImGui::GetTime() + 30.0;
-	RefreshDependencyWatch();
-	PreviewSourceDirty = true;
-	Show();
-	return true;
-}
-
-void UIMaterialEditorForm::SaveInstance(const bool SaveAs)
-{
-	string_path MaterialRoot{};
-	FS.update_path(MaterialRoot, "$game_data$", "render_materials");
-	xr_string Path = InstanceDocument.GetInstance().SourcePath.c_str();
-	if (SaveAs || Path.empty())
-	{
-		if (!EFS.GetSaveName("$game_data$", Path, MaterialRoot, -1, "*.material-instance.json"))
-		{
-			return;
-		}
-		if (!Lower(Path.c_str()).ends_with(".material-instance.json"))
-		{
-			Path += ".material-instance.json";
-		}
-	}
-
-	const std::filesystem::path PreviousRecovery = InstanceRecoveryPath();
-	FMaterialEditorOperationResult Result =
-		InstanceDocument.SaveInstanceFile(Path.c_str());
-	if (Result.Succeeded())
-	{
-		RemoveRecoveryFile(PreviousRecovery);
-		RemoveRecoveryFile(InstanceRecoveryPath());
-		AutosaveStatus = "Instance saved; recovery cleared";
-		NextAutosaveTime = ImGui::GetTime() + 30.0;
-		RefreshDependencyWatch();
-	}
-	SetDiagnostics(std::move(Result.Diagnostics));
-}
-
-void UIMaterialEditorForm::LoadInstanceParent()
-{
-	string_path MaterialRoot{};
-	FS.update_path(MaterialRoot, "$game_data$", "render_materials");
-	xr_string Path;
-	if (!EFS.GetOpenName("$game_data$", Path, false, MaterialRoot, -1, "*.material.json;*.material-instance.json"))
-	{
-		return;
-	}
-
-	const bool InstanceParent = Lower(Path.c_str()).ends_with(".material-instance.json");
-	FMaterialEditorOperationResult Result;
-	xr_string ParentReference;
-	xr_optional<FMaterialAsset> DirectMaster;
-	if (InstanceParent)
-	{
-		Tiramisu::Editor::TiramisuMaterialInstanceEditorDocument ParentDocument;
-		Result = ParentDocument.OpenInstanceFile(Path.c_str());
-		if (Result.Succeeded())
-		{
-			ParentReference = ParentDocument.GetInstance().Id.Value;
-		}
-	}
-	else
-	{
-		Tiramisu::Editor::TiramisuMaterialEditorDocument ParentDocument;
-		Result = ParentDocument.OpenMaterialFile(Path.c_str());
-		if (Result.Succeeded())
-		{
-			ParentReference = ParentDocument.GetMaterial().Id.Value;
-			DirectMaster = ParentDocument.GetMaterial();
-		}
-	}
-	if (!Result.Succeeded())
-	{
-		SetDiagnostics(std::move(Result.Diagnostics));
-		return;
-	}
-
-	Result = InstanceDocument.SetParent(std::move(ParentReference));
-	if (!Result.Succeeded())
-	{
-		SetDiagnostics(std::move(Result.Diagnostics));
-		SyncInstanceDrafts();
-		return;
-	}
-
-	if (DirectMaster)
-	{
-		InstanceDocument.SetParentMaterial(std::move(*DirectMaster));
-		ParentAssetDependencies = {std::filesystem::path{Path.c_str()}};
-		SetDiagnostics(std::move(Result.Diagnostics));
-	}
-	else
-	{
-		(void)ResolveInstanceParent();
-	}
-	InstanceOverrideDrafts.clear();
-	InstanceStringDrafts.clear();
-	PreviewSourceDirty = true;
-	SyncInstanceDrafts();
-	RefreshDependencyWatch();
-}
-
-bool UIMaterialEditorForm::ResolveInstanceParent()
-{
-	string_path MaterialRoot{};
-	FS.update_path(MaterialRoot, "$game_data$", "render_materials");
-	Tiramisu::Editor::FMaterialInstanceParentResolution Resolution =
-		Tiramisu::Editor::ResolveMaterialInstanceParent(MaterialRoot, InstanceDocument.GetInstance());
-	bool Succeeded = Resolution.Succeeded();
-	xr_vector<FMaterialDiagnostic> ResolutionDiagnostics =
-		std::move(Resolution.Diagnostics);
-	if (Succeeded)
-	{
-		ParentAssetDependencies = std::move(Resolution.AssetDependencies);
-		FMaterialEditorOperationResult Applied =
-			InstanceDocument.SetParentResolution(
-				std::move(Resolution.Master), std::move(Resolution.Parent)
-			);
-		Succeeded = Applied.Succeeded();
-		ResolutionDiagnostics.insert(ResolutionDiagnostics.end(), Applied.Diagnostics.begin(), Applied.Diagnostics.end());
-	}
-	if (Succeeded)
-	{
-		InstanceOverrideDrafts.clear();
-		InstanceStringDrafts.clear();
-		PreviewSourceDirty = true;
-		RefreshDependencyWatch();
-	}
-	SetDiagnostics(std::move(ResolutionDiagnostics));
-	return Succeeded;
-}
-
 std::filesystem::path UIMaterialEditorForm::MaterialRecoveryPath() const
 {
 	if (!Document.GetMaterial().SourcePath.empty())
@@ -2332,22 +2309,6 @@ std::filesystem::path UIMaterialEditorForm::MaterialRecoveryPath() const
 	FS.update_path(MaterialRoot, "$game_data$", "render_materials");
 	return std::filesystem::path{MaterialRoot} / ".autosave" /
 		   (Document.GetMaterial().Id.Value + ".material.json.autosave").c_str();
-}
-
-std::filesystem::path UIMaterialEditorForm::InstanceRecoveryPath() const
-{
-	if (!InstanceDocument.GetInstance().SourcePath.empty())
-	{
-		std::filesystem::path Result{InstanceDocument.GetInstance().SourcePath.c_str()};
-		Result += ".autosave";
-		return Result;
-	}
-
-	string_path MaterialRoot{};
-	FS.update_path(MaterialRoot, "$game_data$", "render_materials");
-	return std::filesystem::path{MaterialRoot} / ".autosave" /
-		   (InstanceDocument.GetInstance().Id.Value +
-			".material-instance.json.autosave");
 }
 
 void UIMaterialEditorForm::RemoveRecoveryFile(
@@ -2369,6 +2330,7 @@ void UIMaterialEditorForm::ResetPresentationState()
 	PositionedNodes.clear();
 	NodePropertyDrafts.clear();
 	NodeStringDrafts.clear();
+	CustomHlslSignatureDrafts.clear();
 	ParameterDrafts.clear();
 	SyncMaterialDrafts();
 }
@@ -2377,14 +2339,6 @@ void UIMaterialEditorForm::SyncMaterialDrafts()
 {
 	SetTextBuffer(MaterialNameDraft, Document.GetMaterial().Name);
 	SetTextBuffer(MaterialTemplateDraft, Document.GetMaterial().HlslTemplate);
-}
-
-void UIMaterialEditorForm::SyncInstanceDrafts()
-{
-	SetTextBuffer(InstanceNameDraft, InstanceDocument.GetInstance().Name);
-	SetTextBuffer(InstanceParentDraft, InstanceDocument.GetInstance().Parent);
-	InstanceOverrideDrafts.clear();
-	InstanceStringDrafts.clear();
 }
 
 int UIMaterialEditorForm::UiId(const xr_string_view StableId)

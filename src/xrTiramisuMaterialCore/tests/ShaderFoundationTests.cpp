@@ -84,7 +84,7 @@ int main()
 	MATERIAL_CHECK(Runner, LightingSource.find("TiramisuFresnelSchlick") != xr_string::npos);
 	MATERIAL_CHECK(Runner, DeferredSource.find("ResourceDescriptorHeap") != xr_string::npos);
 	MATERIAL_CHECK(Runner, MaterialGpuAbiSource.find(
-		"TIRAMISU_MATERIAL_GPU_ABI_VERSION 4u"
+		"TIRAMISU_MATERIAL_GPU_ABI_VERSION 5u"
 	) != xr_string::npos);
 	MATERIAL_CHECK(Runner, MaterialGpuAbiSource.find("TIRAMISU_MATERIAL_LIGHT_GPU_DATA_SIZE 64u") != xr_string::npos);
 	MATERIAL_CHECK(Runner, MaterialGpuAbiSource.find(
@@ -101,6 +101,9 @@ int main()
 	MATERIAL_CHECK(Runner, MaterialLightingSource.find("min(LightCount, 64u)") != xr_string::npos);
 	MATERIAL_CHECK(Runner, MaterialLightingSource.find("LoadMaterialLightGpuData(Index)") != xr_string::npos);
 	MATERIAL_CHECK(Runner, MaterialForwardSource.find("EvaluateMaterialSceneDirectLighting") != xr_string::npos);
+	MATERIAL_CHECK(Runner, MaterialForwardSource.find(
+		"ResourceDescriptorHeap[EnvironmentTextureIndex]"
+	) != xr_string::npos);
 
 	TiramisuMaterialLibrary Library;
 	for (const char* Path : {

@@ -254,8 +254,13 @@ FEditorViewportMaterialResolution TiramisuEditorViewportMaterialResolver::Resolv
 	Result.Master = *Master;
 	Result.TwoSided |= Result.Master.TwoSided;
 
+	// Явный asset уже содержит авторитетные flattened overrides. Legacy texture
+	// metadata применяется только к compatibility fallback, иначе выбранный в
+	// редакторе instance незаметно заменялся старым CSurface.
 	const FMaterialParameterMap RuntimeOverrides =
-		MakeLegacyMaterialRuntimeOverrides(Result.Legacy);
+		Result.Legacy.Resolution == ELegacyMaterialResolution::ExplicitMaterial
+		? FMaterialParameterMap{}
+		: MakeLegacyMaterialRuntimeOverrides(Result.Legacy);
 	for (const auto& [ParameterId, Value] : RuntimeOverrides)
 	{
 		const FMaterialParameterDefinition* Definition =

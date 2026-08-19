@@ -1703,6 +1703,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			Core.Params ? Core.Params : "", "-renderdoc-capture"
 		) &&
 		(MaterialPreviewSmokeRequested || ViewportMaterialSmokeRequested);
+	bool RenderDocSmokeCaptureArmed = false;
 	if (RenderDocSmokeRequested && !NeedExit)
 	{
 		if (!xrRenderDoc::IsAvailable())
@@ -1714,7 +1715,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 		else
 		{
-			Msg("* RenderDoc smoke: explicit frame capture requested");
+			LUI->SetRenderDocCaptureGateOpen(false);
+			Msg(
+				"* RenderDoc smoke: capture waits for ready material pipelines"
+			);
 		}
 	}
 
@@ -1855,7 +1859,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			}
 		}
 
-		if (SmokePreviewHandle.IsValid())
+		if (SmokePreviewHandle.IsValid() && !MaterialPreviewSmokeComplete)
 		{
 			SmokePreviewRenderer->RenderPreview(SmokePreviewHandle, 1.0f / 60.0f);
 		}
@@ -1967,10 +1971,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				Msg("* Material preview smoke: success (%ux%u)",
 					Frame.Surface.Width,
 					Frame.Surface.Height);
-				SmokePreviewRenderer->DestroyPreview(SmokePreviewHandle);
-				SmokePreviewHandle = {};
+				if (!RenderDocSmokeRequested)
+				{
+					SmokePreviewRenderer->DestroyPreview(SmokePreviewHandle);
+					SmokePreviewHandle = {};
+				}
 				MaterialPreviewSmokeComplete = true;
-				if (ViewportMaterialSmokeComplete)
+				if (ViewportMaterialSmokeComplete && !RenderDocSmokeRequested)
 				{
 					GContentView->Destroy();
 					NeedExit = true;
@@ -2392,11 +2399,34 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 					),
 					RendererStatistics.Frame.GpuTimingValid ? "valid" : "not-collected");
 				ViewportMaterialSmokeComplete = true;
-				if (MaterialPreviewSmokeComplete)
+				if (MaterialPreviewSmokeComplete && !RenderDocSmokeRequested)
 				{
 					GContentView->Destroy();
 					NeedExit = true;
 				}
+			}
+		}
+
+		if (RenderDocSmokeRequested && MaterialPreviewSmokeComplete &&
+			ViewportMaterialSmokeComplete)
+		{
+			if (!RenderDocSmokeCaptureArmed)
+			{
+				RenderDocSmokeCaptureArmed = true;
+				LUI->SetRenderDocCaptureGateOpen(true);
+				Msg(
+					"* RenderDoc smoke: ready material frame capture armed"
+				);
+			}
+			else if (LUI->IsRenderDocCaptureFinished())
+			{
+				if (!LUI->WasRenderDocCaptureSuccessful())
+				{
+					Msg("! RenderDoc smoke: ready frame capture failed");
+					ProcessExitCode = 12;
+				}
+				GContentView->Destroy();
+				NeedExit = true;
 			}
 		}
 

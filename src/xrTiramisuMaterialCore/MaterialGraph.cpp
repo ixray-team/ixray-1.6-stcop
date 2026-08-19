@@ -171,6 +171,35 @@ u32 ComponentCount(const EMaterialValueType Type)
 	return static_cast<u32>(Type) - static_cast<u32>(EMaterialValueType::Float1) + 1;
 }
 
+bool IsValidSwizzlePattern(
+	const xr_string_view Pattern,
+	const EMaterialValueType Type
+)
+{
+	const u32 Count = ComponentCount(Type);
+	if (Count < 2 || Pattern.size() != Count)
+	{
+		return false;
+	}
+
+	constexpr xr_string_view PositionComponents = "xyzw";
+	constexpr xr_string_view ColorComponents = "rgba";
+	const bool UsesPositionSet =
+		PositionComponents.find(Pattern.front()) != xr_string_view::npos;
+	const xr_string_view Components = UsesPositionSet
+		? PositionComponents
+		: ColorComponents;
+	for (const char Component : Pattern)
+	{
+		const size_t Index = Components.find(Component);
+		if (Index == xr_string_view::npos || Index >= Count)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 bool TypesCompatible(const EMaterialValueType Source, const EMaterialValueType Destination)
 {
 	if (Source == Destination)
@@ -593,6 +622,132 @@ private:
 			}
 			return FExpression{Output.Type, "dot(" + A->Code + ", " + B->Code + ")", std::nullopt};
 		}
+		if (Node.Type == "make_vector")
+		{
+			constexpr xr_array ComponentNames = {"X", "Y", "Z", "W"};
+			xr_vector<FExpression> Components;
+			Components.reserve(ComponentCount(Output.Type));
+			for (u32 Index = 0; Index < ComponentCount(Output.Type); ++Index)
+			{
+				const xr_optional<FExpression> Component =
+					CompileInput(Node, ComponentNames[Index]);
+				if (!Component)
+				{
+					return std::nullopt;
+				}
+				Components.push_back(*Component);
+			}
+
+			xr_string Code = xr_string(ToString(Output.Type)) + "(";
+			for (size_t Index = 0; Index < Components.size(); ++Index)
+			{
+				if (Index != 0)
+				{
+					Code += ", ";
+				}
+				Code += Components[Index].Code;
+			}
+			Code += ")";
+			return FExpression{Output.Type, std::move(Code), std::nullopt};
+		}
+		if (Node.Type == "break_vector")
+		{
+			if (Output.Name.size() != 1 ||
+				xr_string_view{"XYZW"}.find(Output.Name.front()) == xr_string_view::npos)
+			{
+				AddDiagnostic(
+					Result.Diagnostics,
+					"graph.invalid_break_vector_output",
+					"Break Float output must be X, Y, Z or W.",
+					Node.Id,
+					Output.Id
+				);
+				return std::nullopt;
+			}
+			const xr_optional<FExpression> Value = CompileInput(Node, "Value");
+			if (!Value)
+			{
+				return std::nullopt;
+			}
+			const FMaterialGraphPin* ValuePin = FindPin(
+				Node,
+				"Value",
+				EMaterialPinDirection::Input
+			);
+			if (!ValuePin)
+			{
+				AddDiagnostic(
+					Result.Diagnostics,
+					"graph.missing_pin",
+					"Break Float node is missing input pin 'Value'.",
+					Node.Id,
+					Output.Id
+				);
+				return std::nullopt;
+			}
+			const char Component = static_cast<char>(
+				std::tolower(static_cast<unsigned char>(Output.Name.front()))
+			);
+			xr_string Code = "(" + Convert(
+				Value->Code,
+				Value->Type,
+				ValuePin->Type
+			) + ").";
+			Code += Component;
+			return FExpression{
+				Output.Type,
+				std::move(Code),
+				std::nullopt
+			};
+		}
+		if (Node.Type == "swizzle")
+		{
+			const auto PatternProperty = Node.Properties.find("pattern");
+			const xr_string* Pattern = PatternProperty == Node.Properties.end()
+				? nullptr
+				: std::get_if<xr_string>(&PatternProperty->second);
+			if (!Pattern || !IsValidSwizzlePattern(*Pattern, Output.Type))
+			{
+				AddDiagnostic(
+					Result.Diagnostics,
+					"graph.invalid_swizzle_pattern",
+					"Swizzle pattern must use valid xyzw or rgba components and preserve vector width.",
+					Node.Id,
+					Output.Id
+				);
+				return std::nullopt;
+			}
+			const xr_optional<FExpression> Value = CompileInput(Node, "Value");
+			if (!Value)
+			{
+				return std::nullopt;
+			}
+			const FMaterialGraphPin* ValuePin = FindPin(
+				Node,
+				"Value",
+				EMaterialPinDirection::Input
+			);
+			if (!ValuePin)
+			{
+				AddDiagnostic(
+					Result.Diagnostics,
+					"graph.missing_pin",
+					"Swizzle node is missing input pin 'Value'.",
+					Node.Id,
+					Output.Id
+				);
+				return std::nullopt;
+			}
+			return FExpression{
+				Output.Type,
+				"(" + Convert(
+					Value->Code,
+					Value->Type,
+					ValuePin->Type
+				) + ")." + *Pattern,
+				std::nullopt
+			};
+		}
 		if (Node.Type == "fresnel")
 		{
 			const auto Normal = CompileInput(Node, "Normal");
@@ -722,12 +877,28 @@ private:
 					return std::nullopt;
 				}
 				const xr_string Marker = "{" + Pin.Name + "}";
+				const xr_string InputCode = Convert(
+					Input->Code,
+					Input->Type,
+					Pin.Type
+				);
 				size_t Position = 0;
 				while ((Position = Code.find(Marker, Position)) != xr_string::npos)
 				{
-					Code.replace(Position, Marker.size(), "(" + Input->Code + ")");
-					Position += Input->Code.size() + 2;
+					Code.replace(Position, Marker.size(), "(" + InputCode + ")");
+					Position += InputCode.size() + 2;
 				}
+			}
+			if (Code.find_first_of("{}") != xr_string::npos)
+			{
+				AddDiagnostic(
+					Result.Diagnostics,
+					"graph.custom_hlsl_unknown_input",
+					"Custom HLSL expression references an undeclared input marker.",
+					Node.Id,
+					Output.Id
+				);
+				return std::nullopt;
 			}
 			return FExpression{Output.Type, "(" + Code + ")", std::nullopt};
 		}

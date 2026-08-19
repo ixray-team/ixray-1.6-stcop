@@ -16,6 +16,7 @@
 #include "../../xrEUI/ModernUI.h"
 #include "UIWidgetsTest.h"
 #include "MaterialEditor/UIMaterialEditorForm.h"
+#include "MaterialEditor/UIMaterialInstanceEditorForm.h"
 
 
 #include "IconsFontAwesome6.h"
@@ -576,6 +577,19 @@ void UIMainMenuForm::Draw()
 			if (ImGui::MenuItemI("Material Editor", ICON_FA_SQUARE_SHARE_NODES, "", &MaterialEditorVisible))
 			{
 				MainForm->GetMaterialEditorForm()->Show(MaterialEditorVisible);
+			}
+			bool MaterialInstanceEditorVisible =
+				!MainForm->GetMaterialInstanceEditorForm()->IsClosed();
+			if (ImGui::MenuItemI(
+				"Material Instance Editor",
+				ICON_FA_SLIDERS,
+				"",
+				&MaterialInstanceEditorVisible
+			))
+			{
+				MainForm->GetMaterialInstanceEditorForm()->Show(
+					MaterialInstanceEditorVisible
+				);
 			}
 			ImGui::Separator();
 

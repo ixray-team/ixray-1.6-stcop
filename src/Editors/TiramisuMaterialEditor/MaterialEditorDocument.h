@@ -86,6 +86,11 @@ public:
 	[[nodiscard]] FMaterialEditorOperationResult SetNodeProperty(
 		const FMaterialNodeId& NodeId, xr_string_view PropertyName, FMaterialValue Value
 	);
+	[[nodiscard]] FMaterialEditorOperationResult SetCustomHlslSignature(
+		const FMaterialNodeId& NodeId,
+		xr_span<const FMaterialCustomHlslInputDefinition> Inputs,
+		EMaterialValueType OutputType
+	);
 	[[nodiscard]] FMaterialEditorOperationResult CopyNodes(
 		xr_span<const FMaterialNodeId> NodeIds, xr_string& ClipboardJson
 	) const;

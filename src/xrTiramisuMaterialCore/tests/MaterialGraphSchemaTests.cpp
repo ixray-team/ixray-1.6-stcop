@@ -58,6 +58,145 @@ void TestCatalogAndFactory(TiramisuMaterialTestRunner& Runner)
 
 void TestTypedCreation(TiramisuMaterialTestRunner& Runner)
 {
+	const auto Constant2 = CreateMaterialGraphNode(
+		"constant",
+		{"constant-2"},
+		{},
+		EMaterialValueType::Float2
+	);
+	MATERIAL_CHECK(Runner, Constant2.has_value());
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Constant2, "Value", EMaterialPinDirection::Output).Type ==
+			EMaterialValueType::Float2
+	);
+	MATERIAL_CHECK(
+		Runner,
+		std::holds_alternative<FFloat2>(Constant2->Properties.at("value"))
+	);
+
+	const auto Constant3 = CreateMaterialGraphNode(
+		"constant",
+		{"constant-3"},
+		{},
+		EMaterialValueType::Float3
+	);
+	MATERIAL_CHECK(Runner, Constant3.has_value());
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Constant3, "Value", EMaterialPinDirection::Output).Type ==
+			EMaterialValueType::Float3
+	);
+	MATERIAL_CHECK(
+		Runner,
+		std::holds_alternative<FFloat3>(Constant3->Properties.at("value"))
+	);
+
+	const auto Constant4 = CreateMaterialGraphNode(
+		"constant",
+		{"constant-4"},
+		{},
+		EMaterialValueType::Float4
+	);
+	MATERIAL_CHECK(Runner, Constant4.has_value());
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Constant4, "Value", EMaterialPinDirection::Output).Type ==
+			EMaterialValueType::Float4
+	);
+	MATERIAL_CHECK(
+		Runner,
+		std::holds_alternative<FFloat4>(Constant4->Properties.at("value"))
+	);
+
+	const auto Make4 = CreateMaterialGraphNode(
+		"make_vector",
+		{"make-4"},
+		{},
+		EMaterialValueType::Float4
+	);
+	MATERIAL_CHECK(Runner, Make4.has_value());
+	MATERIAL_CHECK(Runner, Make4->Pins.size() == 5);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Make4, "W", EMaterialPinDirection::Input).Type ==
+			EMaterialValueType::Float1
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Make4, "Result", EMaterialPinDirection::Output).Type ==
+			EMaterialValueType::Float4
+	);
+
+	const auto Break2 = CreateMaterialGraphNode(
+		"break_vector",
+		{"break-2"},
+		{},
+		EMaterialValueType::Float2
+	);
+	MATERIAL_CHECK(Runner, Break2.has_value());
+	MATERIAL_CHECK(Runner, Break2->Pins.size() == 3);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Break2, "Value", EMaterialPinDirection::Input).Type ==
+			EMaterialValueType::Float2
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Break2, "Y", EMaterialPinDirection::Output).Type ==
+			EMaterialValueType::Float1
+	);
+
+	const auto Swizzle3 = CreateMaterialGraphNode(
+		"swizzle",
+		{"swizzle-3"},
+		{},
+		EMaterialValueType::Float3
+	);
+	MATERIAL_CHECK(Runner, Swizzle3.has_value());
+	MATERIAL_CHECK(
+		Runner,
+		std::get<xr_string>(Swizzle3->Properties.at("pattern")) == "xyz"
+	);
+	MATERIAL_CHECK(
+		Runner,
+		ValidateMaterialGraphNodeProperty(
+			*Swizzle3,
+			"pattern",
+			xr_string{"zyx"}
+		).Succeeded()
+	);
+	MATERIAL_CHECK(
+		Runner,
+		ValidateMaterialGraphNodeProperty(
+			*Swizzle3,
+			"pattern",
+			xr_string{"bgr"}
+		).Succeeded()
+	);
+	MATERIAL_CHECK(
+		Runner,
+		HasDiagnostic(
+			ValidateMaterialGraphNodeProperty(
+				*Swizzle3,
+				"pattern",
+				xr_string{"xwz"}
+			).Diagnostics,
+			"graph.invalid_swizzle_pattern"
+		)
+	);
+	MATERIAL_CHECK(
+		Runner,
+		HasDiagnostic(
+			ValidateMaterialGraphNodeProperty(
+				*Swizzle3,
+				"pattern",
+				xr_string{"xy"}
+			).Diagnostics,
+			"graph.invalid_swizzle_pattern"
+		)
+	);
+
 	const auto Add = CreateMaterialGraphNode(
 		"add", {"vector-add"}, {10.0f, 20.0f}, EMaterialValueType::Float3
 	);
@@ -136,6 +275,97 @@ void TestPropertySchema(TiramisuMaterialTestRunner& Runner)
 	const auto Properties = GetMaterialNodePropertyDefinitions(Custom->Type);
 	MATERIAL_CHECK(Runner, Properties.size() == 1);
 	MATERIAL_CHECK(Runner, Properties.front().Multiline);
+
+	FMaterialGraphNode TypedCustom = *Custom;
+	const xr_array CustomInputs = {
+		FMaterialCustomHlslInputDefinition{
+			"BaseColor",
+			EMaterialValueType::Float3
+		},
+		FMaterialCustomHlslInputDefinition{
+			"Intensity",
+			EMaterialValueType::Float1
+		},
+	};
+	MATERIAL_CHECK(
+		Runner,
+		ConfigureMaterialCustomHlslNode(
+			TypedCustom,
+			CustomInputs,
+			EMaterialValueType::Float4
+		).Succeeded()
+	);
+	MATERIAL_CHECK(Runner, TypedCustom.Pins.size() == 3);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(
+			TypedCustom,
+			"BaseColor",
+			EMaterialPinDirection::Input
+		).Type == EMaterialValueType::Float3
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(
+			TypedCustom,
+			"Result",
+			EMaterialPinDirection::Output
+		).Type == EMaterialValueType::Float4
+	);
+	const FMaterialPinId BaseColorPin = Pin(
+		TypedCustom,
+		"BaseColor",
+		EMaterialPinDirection::Input
+	).Id;
+	MATERIAL_CHECK(
+		Runner,
+		ConfigureMaterialCustomHlslNode(
+			TypedCustom,
+			CustomInputs,
+			EMaterialValueType::Float4
+		).Succeeded()
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(
+			TypedCustom,
+			"BaseColor",
+			EMaterialPinDirection::Input
+		).Id == BaseColorPin
+	);
+
+	const xr_array DuplicateInputs = {
+		FMaterialCustomHlslInputDefinition{"Value", EMaterialValueType::Float1},
+		FMaterialCustomHlslInputDefinition{"Value", EMaterialValueType::Float3},
+	};
+	MATERIAL_CHECK(
+		Runner,
+		HasDiagnostic(
+			ConfigureMaterialCustomHlslNode(
+				TypedCustom,
+				DuplicateInputs,
+				EMaterialValueType::Float1
+			).Diagnostics,
+			"graph.custom_hlsl_duplicate_input"
+		)
+	);
+	const xr_array InvalidNameInputs = {
+		FMaterialCustomHlslInputDefinition{
+			"2Invalid",
+			EMaterialValueType::Float1
+		},
+	};
+	MATERIAL_CHECK(
+		Runner,
+		HasDiagnostic(
+			ConfigureMaterialCustomHlslNode(
+				TypedCustom,
+				InvalidNameInputs,
+				EMaterialValueType::Float1
+			).Diagnostics,
+			"graph.custom_hlsl_invalid_input_name"
+		)
+	);
 
 	const auto TextureSample = CreateMaterialGraphNode("texture_sample", {"texture-sample"});
 	MATERIAL_CHECK(Runner, TextureSample.has_value());

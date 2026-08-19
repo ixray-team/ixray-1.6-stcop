@@ -162,12 +162,15 @@ struct alignas(16) FEditorMaterialGlobalConstants
 	u32 LightDataBufferIndex = 0;
 	u32 LightDataOffset = 0;
 	u32 LightCount = 0;
-	u32 LightingFlags = 0;
+	u32 EnvironmentTextureIndex = FDescriptorHeapIndex::Invalid;
 	u32 SkinningPaletteBufferIndex = 0;
 	xr_array<u32, 3> Padding = {};
 };
 
 static_assert(sizeof(FEditorMaterialGlobalConstants) == 208);
+static_assert(
+	offsetof(FEditorMaterialGlobalConstants, EnvironmentTextureIndex) == 188
+);
 
 constexpr u32 MaxMaterialPreviews = 64;
 constexpr u32 PreviewParameterStride = 4096;
@@ -1247,7 +1250,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		Legacy.MaterialSlot = Source.MaterialSlot.Value;
 		Legacy.MaterialAsset = Source.MaterialAsset;
 		Legacy.ShaderName = Source.ShaderName;
-		if (!Source.TextureName.empty())
+		if (Source.MaterialAsset.empty() && !Source.TextureName.empty())
 		{
 			Legacy.Textures.push_back(Source.TextureName);
 		}
@@ -2649,6 +2652,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		PreviewPipelineLayout = nullptr;
 		NextMaterialPreviewTextureDescriptor =
 			PreviewFirstAssetTextureDescriptorIndex;
+		SceneEnvironmentTextureIndex = FDescriptorHeapIndex::Invalid;
 		MaterialPreviews.clear();
 		FreeMaterialPreviewSlots.clear();
 		NextSceneMaterialInstance = MaxMaterialPreviews;
@@ -5684,6 +5688,23 @@ struct TiramisuEditorRenderBridge::FImpl
 			Viewport.SceneLightBase;
 		Global.LightDataOffset = AbsoluteLightIndex;
 		Global.LightCount = LightCount;
+		if (SceneEnvironmentTextureIndex == FDescriptorHeapIndex::Invalid)
+		{
+			xr_string EnvironmentWarning;
+			SceneEnvironmentTextureIndex = ResolveMaterialPreviewTexture(
+				Tiramisu::Editor::MaterialPreviewEnvironmentAsset("Studio"),
+				true,
+				EnvironmentWarning
+			);
+			if (!EnvironmentWarning.empty())
+			{
+				Msg(
+					"! Tiramisu editor scene environment: %s",
+					EnvironmentWarning.c_str()
+				);
+			}
+		}
+		Global.EnvironmentTextureIndex = SceneEnvironmentTextureIndex;
 
 		xr_vector<FMaterialLightGpuData> GpuLights;
 		GpuLights.reserve(LightCount);
@@ -7549,6 +7570,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		MaterialPreviewTextures;
 	u32 NextMaterialPreviewTextureDescriptor =
 		PreviewFirstAssetTextureDescriptorIndex;
+	u32 SceneEnvironmentTextureIndex = FDescriptorHeapIndex::Invalid;
 	nri::PipelineLayout* ScenePipelineLayout = nullptr;
 	nri::Pipeline* ScenePipeline = nullptr;
 	nri::Pipeline* SceneSelectionPipeline = nullptr;

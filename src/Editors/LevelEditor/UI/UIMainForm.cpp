@@ -6,11 +6,14 @@
 #include "../xrEUI/ImGuizmo.h"
 
 #include "Editor/Utils/Gizmo/IM_Manipulator.h"
+#include "Editor/Entry/StaticObject/SceneObject.h"
 #include "Editor/Terrain/HeightmapUtils.h"
 
 #include "IconsFontAwesome6.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
 #include "MaterialEditor/UIMaterialEditorForm.h"
+#include "MaterialEditor/UIMaterialInstanceEditorForm.h"
+#include "../../TiramisuMaterialEditor/MaterialEditorAssetRouting.h"
 
 UIMainForm* MainForm = nullptr;
 
@@ -38,6 +41,7 @@ UIMainForm::UIMainForm()
 	m_Properties = new UILPropertiesForm();
 	m_WorldProperties = new UIWorldPropertiesFrom();
 	m_MaterialEditor = new UIMaterialEditorForm();
+	m_MaterialInstanceEditor = new UIMaterialInstanceEditorForm();
 	m_Render->SetContextMenuEvent(TOnRenderContextMenu(this, &UIMainForm::DrawContextMenu));
 	m_Render->SetToolBarEvent(TOnRenderToolBar(this, &UIMainForm::DrawRenderToolBar));
 	m_Render->OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
@@ -147,6 +151,7 @@ UIMainForm::~UIMainForm()
 
 	ClearChooseEvents();
 	xr_delete(m_MaterialEditor);
+	xr_delete(m_MaterialInstanceEditor);
 	xr_delete(m_WorldProperties);
 	xr_delete(m_Properties);
 	xr_delete(m_LeftBar);
@@ -226,8 +231,127 @@ void UIMainForm::Draw()
 	m_Properties->Draw();
 	m_WorldProperties->Draw();
 	m_MaterialEditor->Draw();
+	m_MaterialInstanceEditor->Draw();
+	UpdateMaterialPicker();
 
 	m_Render->Draw();
+}
+
+void UIMainForm::OpenMaterialPicker(
+	CSceneObject* Object,
+	const char* SurfaceName,
+	const char* CurrentMaterial
+)
+{
+	if (!Object || !SurfaceName || !SurfaceName[0] ||
+		m_MaterialPickerActive || UIChooseForm::IsActive())
+	{
+		return;
+	}
+
+	string_path MaterialRoot = {};
+	FS.update_path(MaterialRoot, "$game_render_materials$", "");
+	const xr_vector<Tiramisu::Editor::FMaterialEditorAssetEntry> Assets =
+		Tiramisu::Editor::CollectMaterialEditorAssets(
+			std::filesystem::path(MaterialRoot)
+		);
+	if (Assets.empty())
+	{
+		ELog.Msg(mtError, "No Material assets were found.");
+		return;
+	}
+
+	ChooseItemVec Items;
+	Items.reserve(Assets.size());
+	for (const Tiramisu::Editor::FMaterialEditorAssetEntry& Asset : Assets)
+	{
+		const xr_string Key =
+			Tiramisu::Editor::MakeMaterialEditorPickerKey(Asset);
+		const char* TypeName =
+			Asset.Kind ==
+				Tiramisu::Editor::EMaterialEditorAssetKind::MasterMaterial
+			? "Master Material"
+			: "Material Instance";
+		Items.emplace_back(Key.c_str(), TypeName);
+	}
+
+	xr_string InitialKey;
+	if (CurrentMaterial && CurrentMaterial[0])
+	{
+		const std::filesystem::path CurrentPath(CurrentMaterial);
+		const auto Kind =
+			Tiramisu::Editor::ClassifyMaterialEditorAsset(CurrentPath);
+		if (Kind !=
+			Tiramisu::Editor::EMaterialEditorAssetKind::Unsupported)
+		{
+			InitialKey = Tiramisu::Editor::MakeMaterialEditorPickerKey({
+				CurrentPath,
+				Kind
+			});
+		}
+	}
+
+	m_MaterialPickerObject = Object;
+	m_MaterialPickerSurface = SurfaceName;
+	m_MaterialPickerActive = true;
+	UIChooseForm::SelectItem(
+		smCustom,
+		1,
+		InitialKey.empty() ? nullptr : InitialKey.c_str(),
+		0,
+		nullptr,
+		0,
+		&Items,
+		0,
+		"Select Material"
+	);
+}
+
+void UIMainForm::UpdateMaterialPicker()
+{
+	if (!m_MaterialPickerActive)
+	{
+		return;
+	}
+
+	bool Changed = false;
+	xr_string SelectedKey;
+	if (UIChooseForm::GetResult(Changed, SelectedKey))
+	{
+		CSceneObject* Object = m_MaterialPickerObject;
+		const xr_string SurfaceName = m_MaterialPickerSurface;
+		m_MaterialPickerObject = nullptr;
+		m_MaterialPickerSurface.clear();
+		m_MaterialPickerActive = false;
+		if (!Changed || !Object || !Scene ||
+			!Scene->ContainsObject(Object, OBJCLASS_SCENEOBJECT))
+		{
+			return;
+		}
+
+		const auto Selected =
+			Tiramisu::Editor::ParseMaterialEditorPickerKey(SelectedKey);
+		if (!Selected)
+		{
+			ELog.Msg(mtError, "Selected Material asset is invalid.");
+			return;
+		}
+		Scene->UndoSave();
+		if (!Object->AssignRenderMaterial(
+				SurfaceName.c_str(),
+				Selected->RelativePath.generic_string().c_str()
+			))
+		{
+			ELog.Msg(mtError, "Cannot assign selected Material asset.");
+			return;
+		}
+		Scene->Modified();
+		Tools->UpdateProperties();
+		UI->RedrawScene();
+		return;
+	}
+
+	UIChooseForm::Update();
 }
 
 bool UIMainForm::Frame()

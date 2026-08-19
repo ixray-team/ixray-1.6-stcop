@@ -146,7 +146,7 @@ Captures сохраняются раздельно:
 - [x] OGF/OMF loader читает embedded motions, старые refs/REFS2 и внешние OMF,
   поддерживает compressed/uncompressed rotation/translation, constant tracks,
   loop и stop-at-end sampling.
-- [x] Material GPU ABI v4 хранит current/previous palette offsets, bone count,
+- [x] Material GPU ABI v5 хранит current/previous palette offsets, bone count,
   inverse view-projection и данные projective decal draw;
   отдельный bindless palette buffer заполняется только render thread.
 - [x] Общий `MaterialSkeletalVertexFactory` зарегистрирован в material manifest,
@@ -186,9 +186,9 @@ Tiramisu по-прежнему включается только через `-r5
 | --- | --- | --- |
 | Документация и baseline | ✅ Этап 1 закрыт | Обзор, архитектура, материалы, [R4 feature matrix](./r4-feature-matrix.md), [representative scenes](./representative-scenes.md), roadmap, deterministic policy, диагностика и этот checkpoint |
 | `xrTiramisuMaterialCore` | 🟡 Рабочая основа | Assets, master/instance inheritance, dynamic instances, generation-counted handles, legacy fallback, parameter layout |
-| HLSL/graph compiler | 🟡 Рабочая основа | Typed graph, diagnostics, constant folding, DCE, Static Switch, ограниченный Custom HLSL, общий каталог из 21 node type, HLSL generation |
+| HLSL/graph compiler | 🟡 Рабочая основа | Typed graph, diagnostics, constant folding, DCE, Static Switch, Custom HLSL с редактируемой typed signature, типизированные Constant/Make/Break/Swizzle для float2/3/4, общий каталог из 24 node type, HLSL generation |
 | Cooker и shader bundle | 🟡 Рабочая основа | Bundle v2, flattened instances, deterministic output, 216 DXIL/SPIR-V blobs для обоих backend/stage, runtime shader library и CPU pipeline cache |
-| GPU material ABI | 🟡 Подключён к static/skeletal editor geometry, lights и decals | ABI v4: material/draw buffers, current/previous skinning offsets, inverse view-projection, bindless descriptor indices, 64-байтные light/palette records и общий C++/HLSL contract |
+| GPU material ABI | 🟡 Подключён к static/skeletal editor geometry, lights и decals | ABI v5: material/draw buffers, current/previous skinning offsets, inverse view-projection, bindless environment/texture indices, 64-байтные light/palette records и общий C++/HLSL contract |
 | Projective decals | 🟡 Editor path готов | Отдельные `Decal` pass/domain и `decal_projector`, box-volume rasterization, conservative renderer-side frustum culling, native RenderScene v3 component, bindless depth SRV, live legacy adapter и persistent Wallmark migration с audit dump готовы; production DBuffer/G-buffer, lifetime/occlusion и игровой scene wiring ещё отсутствуют |
 | Material pass proxies | 🟡 Частично | Generation-counted NRI pipeline registry и `ResolvePass`; default material пока регистрирует старые prototype pipelines |
 | Static/skeletal geometry | 🟡 Частично | Использует `FMeshBatch`, LOD/section/material-slot model и draw-record index через `baseInstance`; renderer-owned OGF/OMF path читает static/progressive/hierarchy, external motions и рисует animated 1–4-weight geometry через GPU palette. Visibility, LOD/SWI и остальные production vertex factories ещё прототипные |
@@ -207,7 +207,7 @@ Tiramisu по-прежнему включается только через `-r5
 - Master materials и instances читаются из versioned JSON; inheritance flattening и cycle/type validation покрыты тестами.
 - Параметры scalar, vector, texture и sampler имеют deterministic layout и загружаются из `ByteAddressBuffer`.
 - Общий HLSL ABI использует `ResourceDescriptorHeap` и `SamplerDescriptorHeap` для D3D12/Vulkan.
-- Material GPU ABI v4 добавляет отдельные bindless `ByteAddressBuffer` света
+- Material GPU ABI v5 добавляет отдельные bindless `ByteAddressBuffer` света
   и skinning palettes: constants передают descriptor indices и inverse
   view-projection, draw record — current/previous palette offsets, bone count
   либо world-to-decal/depth descriptor для decal pass. Каждая light/matrix
@@ -221,8 +221,8 @@ Tiramisu по-прежнему включается только через `-r5
 - `xrECore` больше не требует прямого обращения `UIRenderForm` к legacy `GRHI` для capture/resize/surface.
 - UI-independent `TiramisuMaterialEditorDocument` владеет целым master asset: metadata, runtime/static parameters, graph, typed node properties, undo/redo, compile, open/save.
 - `TiramisuMaterialInstanceEditorDocument` редактирует parent и типизированные runtime/static overrides, запрещая менять domain/blend/shading model через instance.
-- В LevelEditor добавлено окно `Windows → Material Editor`, построенное на ImNodes из `xrEUI` и UX-схеме ShaderEditor.
-- Material Editor открывает и сохраняет настоящие `*.material.json` и `*.material-instance.json`, показывает master details и instance inspector.
+- В LevelEditor добавлены отдельные окна `Windows → Material Editor` и `Windows → Material Instance Editor`. Master-окно построено на ImNodes из `xrEUI` и UX-схеме ShaderEditor; instance-окно не содержит graph и редактирует только parent и overrides.
+- Content Browser распознаёт составные расширения: двойной клик и `Open` маршрутизируют `*.material.json` в master editor, а `*.material-instance.json` — в instance editor. Из контекстного меню master создаётся новый instance с заполненным parent GUID; пустое место каталога render materials создаёт master asset.
 - Compiler diagnostics могут выделить и центрировать конкретный ImNodes node.
 - Новые GUID assets, nodes, pins и links имеют UUID-форму; factory pins получают deterministic GUID.
 - JSON parsers переведены на non-throwing syntax parsing, чтобы invalid external JSON не завершал process при сборке nlohmann/json без exceptions.
@@ -297,7 +297,7 @@ Tiramisu по-прежнему включается только через `-r5
 2. [x] **Editor 2 — NRI ImGui presenter.** Backend, swapchain, тройной frame scheduler, двухфазный present и startup по умолчанию подключены в LevelEditor (`-dx12` выбирает D3D12; прежний `-tiramisu-editor` допустим, но больше не обязателен). Runtime GPU acceptance вынесен в Editor 6.
 3. [ ] 🟡 **Editor 3 — Tiramisu viewport и native scene workflow.** Главный viewport, renderer-owned editor textures, picking/selection/debug draw, Forward materials и native Light готовы. `xrTiramisuSceneCore`, native static-mesh/render-scene assets, Content Browser open и автоматический `.object`/`.level` importer с дампами подключены. Native lifecycle включает point/rectangle selection, Focus Selected/Zoom All, move/rotate/scale, StaticMesh drag-and-drop, создание Directional/Point/Spot Light, Cut/Copy/Paste с cross-scene GUID remap, delete/duplicate, invert selection, Hide Selected/Unselected/All, transaction undo/redo и atomic Save/Save As. Outliner объединяет StaticMesh и Light; Light Details редактирует type, transform, HDR color/intensity, range, spot cones, visibility и cast-shadows. Остались остальные editor object types/tools, а затем удаление переходной `EScene` модели. `TiramisuLegacyScene` сохраняется для старого игрового контента.
 4. [x] **Editor 4 — базовый material GPU preview.** Tiramisu реализует sphere/cube/plane, offscreen render target, environment selection, асинхронную DXC/NRI pipeline сборку и безопасную ImGui presentation. Vulkan и D3D12 smoke пройдены с `-rdbg`.
-5. [ ] 🟡 **Editor 5 — Material Editor authoring.** Node canvas, assets, parent instance chains, diagnostics, generated HLSL, фактический preview pipeline key/backend/pass/vertex-factory и GPU preview с настоящими Texture2D/TextureCube/environment lighting готовы. Остаются production IBL и статистика полного production permutation set.
+5. [ ] 🟡 **Editor 5 — Material Editor authoring.** Master Material Editor и Material Instance Editor разделены и подключены к Content Browser; node canvas, assets, parent instance chains, diagnostics, generated HLSL, фактический preview pipeline key/backend/pass/vertex-factory и GPU preview с настоящими Texture2D/TextureCube/environment lighting готовы. Остаются production IBL и статистика полного production permutation set.
 6. [ ] 🟡 **Editor 6 — live workflow и тесты.** Dependency watcher preview и основной сцены, background compile, безопасная publication/last-good pipeline, autosave/migration integration, общий render-thread submit, normal/ASan CTest, resize/recreate и совместный preview+scene reload Vulkan/D3D12 GPU smoke готовы. Остались restart/device-loss, тройные immutable UI packets и automated flythrough.
 
 NRI presenter является default для LevelEditor, но не меняет игровые renderer selection и остальные legacy editor executables. Editor images передаются через renderer-owned texture handles и mailbox; оставшиеся незарегистрированные legacy user-image команды безопасно заменяются white descriptor и не попадают в NRI как raw DX9 pointers. Submit, resize, создание и удаление editor GPU resources выполняются выделенным общим render thread `xrRenderTiramisu`; lifecycle status и resize smoke проверяют ненулевой ID этого потока. Временной остаётся синхронная передача живого `ImDrawData`, которую позже заменят тройные immutable UI packets.
@@ -396,11 +396,33 @@ ctest --test-dir intermediate/recovery-editors-asan -C Debug --output-on-failure
 
 Совместный Material Preview + editor scene reload GPU smoke пройден исключительно с `-rdbg -render-deterministic` в четырёх вариантах: normal/ASan × Vulkan/D3D12. Preview загружает `kung` как Texture2D 1024×1024 с 11 mip и `sky_10_cube#small` как TextureCube 32×32 через прямой descriptor heap; scene smoke создаёт synthetic indexed mesh с тремя material sections и non-identity translation в `LocalToWorld`, Directional и Point Light, renderer-owned effect и group instances из реального каталога, проверяет CPU pick смещённого instance (`distance=1.000`, object/material IDs), разрешает legacy `default`/`textures/kung`, `editor\spawn_icon`/default-white и particle materials, собирает отдельные opaque, translucent/unlit и additive/unlit Forward pipelines, запускает background resolver reload и ждёт `ReloadCount = 1/1/1/1`. Group для smoke выбирается только при наличии включённого child callback; acceptance ждёт не только `particle-children=1`, но и отдельный дочерний billboard draw. Дополнительный particle-only viewport проверяет тот же путь, который использует `CViewportParticle`: surface `384×384`, один effect instance, ненулевая simulation и один draw batch. Отдельный legacy bridge viewport создаёт временные selected Spot `CLight`, `CEditShape`, `ESoundSource`, `ESoundEnvironment`, `CPortal` и `CGlow`, добавляет legacy sun, синхронно копирует snapshot и проверяет `legacy-gizmos=2/229/212`, `legacy-glow=1/1`: два light records, один glow draw, один selection draw, 229 линий и 212 solid triangles. Временные объекты удаляются сразу после submit и не меняют пользовательскую сцену. Во всех четырёх вариантах нижняя точка acceptance — `draws=6`, `selection=3`, `debug-lines>=22`, `particle-instances=2`, `particle-groups=1`, `particle-children=1`, `simulated-particles>=5`, `particle-billboards>=5`, `particle-billboard-draws=3`, `particle-preview=384x384/>=2`, `legacy-gizmos=2/229/212`, `legacy-glow=1/1`, `overlay-text=1`, `lights=2`, renderer snapshot содержит `passes=5`, `gpu-draws>=186`, `triangles>=7604` и ненулевой tracked resource census; exit 0, нет `FATAL ERROR`, ASan, NRI/API validation errors. Более медленный ASan Vulkan может успеть симулировать больше частиц до опроса, но проходит те же нижние acceptance bounds. Значение `gpu-timing=not-collected` ожидаемо: timestamp queries ещё не реализованы. На D3D12 остаётся только NRI warning о неподдержанном optional `options22` (`E_INVALIDARG`), это не validation error. Скрытый Win32-запуск работает, однако это ещё не headless runner: content flythrough и image-diff capture runner остаются следующими задачами.
 
+После исправления назначения объекта explicit master material и `Material
+Instance` больше не перетираются legacy-текстурой `CSurface`; Properties
+сохраняет per-surface override через `Open/Select/Reset`. `Select` использует
+внутренний modal с единым деревом `Materials`/`Instances` и поиском, а `Open`
+маршрутизирует asset в соответствующий редактор. Forward scene pass ABI v5 получает bindless
+environment descriptor и использует то же IBL-приближение, что preview, вместо
+одного слабого constant ambient. RenderDoc smoke теперь захватывает следующий
+кадр только после material/reload acceptance. Свежие RenderDoc 1.45 captures
+Vulkan и D3D12 содержат соответственно 197 draws, 0 debug messages и реальные
+material `DrawIndexedIndirect`/`ExecuteIndirect`; native MCP replay подтвердил
+`GlobalConstants`, entry points `Main`, `ResourceDescriptorHeap` и
+`EnvironmentTextureIndex` в обоих backend.
+
+MCP readback одновременно показал, что полный deterministic image parity ещё
+не закрыт: после одинаковой semantic точки 67 177 из 262 144 пикселей synthetic
+scene отличаются, максимальная разница компонента равна 246. Более узкая
+проверка показала, что D3D12 skeletal `ExecuteIndirect` с 17 850 indices
+присутствует в capture, но не меняет render target, тогда как соответствующий
+Vulkan draw рисует модель. Status-based smoke этого не обнаруживал. Дефект
+занесён отдельной незакрытой задачей; назначение explicit static material и
+scene environment исправлены независимо от неё.
+
 Актуальный Puddle checkpoint заменяет предыдущие значения legacy viewport: normal/ASan × Vulkan/D3D12 с `-rdbg` проверяют `legacy-gizmos=2/420/408`, `legacy-glow=2/1` и `legacy-labels=4`. К общим Shape/Sound/Portal/Spawn/AI Map/WayPoint/Group пакетам добавлены 12 линий и 12 треугольников временного selected `CPuddle`; все четыре запуска завершены с exit 0 без ASan и NRI/API validation errors.
 
 Projective Decal checkpoint добавляет отдельные `EMaterialPass::Decal` и
 `decal_projector`, RenderScene v3 `decal_components`, bindless D32 depth SRV и
-ABI v4. Deterministic smoke содержит одну native decal и один настоящий legacy
+ABI v5. Deterministic smoke содержит одну native decal и один настоящий legacy
 `wm_slot`; второй преобразуется из positions/UV/width/height в projector volume,
 а старые clipped triangles при Tiramisu backend не рисуются. Normal Vulkan и
 D3D12 reload smoke прошли с точным `-rdbg`: native `instances=1/draws=1`,
@@ -504,6 +526,7 @@ Legacy conversion GPU/editor smoke также пройден исключите�
 - Scene/Material Editor core suite: 7/7 — успешно с `-rdbg`.
 - Renderer-neutral editor/Tiramisu suite: 13/13 — успешно с `-rdbg`.
 - Совокупный material/scene/Tiramisu/editor CTest block: 48/48 normal и 48/48 ASan — успешно с `-rdbg`.
+- Разделение material editors, 20 августа 2026 года: `xrMaterialEditorDocumentTests` — 171 проверка, `xrMaterialInstanceEditorDocumentTests` — 75, новый `xrMaterialEditorAssetRoutingTests` — 5; normal и ASan CTest запущены исключительно с `-rdbg`. Скрытый совместный preview/scene smoke завершился с exit `0` в матрице normal/ASan × Vulkan/D3D12, без sanitizer, fatal и NRI/API validation diagnostics.
 - Git merge не находится в незавершённом состоянии. После успешных build/test проверок владелец запросил отдельный WIP checkpoint-коммит с пометкой `needs refactor`.
 ## Исправление границы LevelEditor и renderer — 24 июля 2026
 

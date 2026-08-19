@@ -119,7 +119,7 @@ Loader также читает bone hierarchy и bind transforms, вычисля
 builder строит `current-model × inverse-bind` palette. OGF/OMF loader читает
 embedded motions и внешние motion references, поддерживает compressed и
 uncompressed tracks, loop/stop-at-end sampling и сохраняет current/previous
-pose. Material GPU ABI v4 передаёт offsets обеих палитр в draw record,
+pose. Material GPU ABI v5 передаёт offsets обеих палитр в draw record,
 inverse view-projection в scene constants и данные projective decals;
 `MaterialSkeletalVertexFactory` читает матрицы через Descriptor Heap Indexing
 и деформирует position/normal на GPU. Первый CPU I/O/parse выполняет bounded

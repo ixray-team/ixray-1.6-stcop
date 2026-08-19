@@ -8,8 +8,12 @@
 #include "../AssetImport/TLegacyLevelImporter.h"
 #include "../AssetImport/TLegacyObjectImporter.h"
 #include "../../Renderer/Tiramisu/TiramisuEditorNativeScene.h"
+#include "../../UI/UIMainForm.h"
+#include "../../UI/MaterialEditor/UIMaterialEditorForm.h"
+#include "../../UI/MaterialEditor/UIMaterialInstanceEditorForm.h"
 
 #include <SceneConversionDump.h>
+#include <MaterialEditorAssetRouting.h>
 
 #include <cctype>
 #include <ranges>
@@ -21,6 +25,8 @@
 #include "../../UI/UITextureViewer.h"
 
 CContentView* GContentView = nullptr;
+
+bool OpenMaterialEditorAsset(const std::filesystem::path& Path);
 
 namespace
 {
@@ -1174,7 +1180,18 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 		{
 			if (DrawItem(FilePath, HorBtnIter, IterCount))
 			{
-				if (FilePath.File.extension() == ".xml")
+				const auto MaterialKind =
+					Tiramisu::Editor::ClassifyMaterialEditorAsset(
+						FilePath.File.xstring().c_str()
+					);
+				if (MaterialKind !=
+					Tiramisu::Editor::EMaterialEditorAssetKind::Unsupported)
+				{
+					(void)OpenMaterialEditorAsset(
+						FilePath.File.xstring().c_str()
+					);
+				}
+				else if (FilePath.File.extension() == ".xml")
 				{
 					xr_string FileName = FilePath.File.xfilename();
 					FileName = FileName.substr(0, FileName.size() - 4);
@@ -1317,6 +1334,108 @@ ImTextureID CContentView::ResolveIcon(const IconData& Icon) const
 {
 	return Icon.EditorIcon.IsValid() ? UI->GetImGuiTexture(Icon.EditorIcon)
 									 : UI->LoadTexture(Icon.TextureName.c_str());
+}
+
+bool OpenMaterialEditorAsset(const std::filesystem::path& Path)
+{
+	if (!MainForm)
+	{
+		return false;
+	}
+	using Tiramisu::Editor::ClassifyMaterialEditorAsset;
+	using Tiramisu::Editor::EMaterialEditorAssetKind;
+	switch (ClassifyMaterialEditorAsset(Path))
+	{
+		case EMaterialEditorAssetKind::MasterMaterial:
+			return MainForm->GetMaterialEditorForm()->OpenMaterialFile(Path);
+		case EMaterialEditorAssetKind::MaterialInstance:
+			return MainForm->GetMaterialInstanceEditorForm()->OpenInstanceFile(
+				Path
+			);
+		default:
+			return false;
+	}
+}
+
+std::filesystem::path MakeUniqueAssetPath(
+	const std::filesystem::path& Directory,
+	const xr_string_view BaseName,
+	const xr_string_view Suffix
+)
+{
+	std::filesystem::path Candidate = Directory /
+		(xr_string(BaseName) + xr_string(Suffix)).c_str();
+	for (u32 Index = 1; std::filesystem::exists(Candidate); ++Index)
+	{
+		xr_string FileName(BaseName);
+		FileName += "_";
+		FileName += std::to_string(Index).c_str();
+		FileName += Suffix;
+		Candidate = Directory / FileName.c_str();
+	}
+	return Candidate;
+}
+
+bool IsMaterialAssetDirectory(const std::filesystem::path& Directory)
+{
+	string_path MaterialRoot{};
+	FS.update_path(MaterialRoot, "$game_render_materials$", "");
+	std::error_code Error;
+	const std::filesystem::path Root =
+		std::filesystem::weakly_canonical(MaterialRoot, Error);
+	if (Error)
+	{
+		return false;
+	}
+	const std::filesystem::path Candidate =
+		std::filesystem::weakly_canonical(Directory, Error);
+	if (Error)
+	{
+		return false;
+	}
+	const std::filesystem::path Relative =
+		std::filesystem::relative(Candidate, Root, Error);
+	return !Error && !Relative.empty() &&
+		*Relative.begin() != std::filesystem::path("..");
+}
+
+bool CreateMasterMaterialAsset(const std::filesystem::path& Directory)
+{
+	if (!MainForm)
+	{
+		return false;
+	}
+	const std::filesystem::path Path = MakeUniqueAssetPath(
+		Directory,
+		"NewMaterial",
+		".material.json"
+	);
+	return MainForm->GetMaterialEditorForm()->CreateMaterialFile(Path);
+}
+
+bool CreateMaterialInstanceAsset(
+	const std::filesystem::path& MasterPath
+)
+{
+	if (!MainForm)
+	{
+		return false;
+	}
+	std::filesystem::path Target =
+		Tiramisu::Editor::MakeMaterialInstancePath(MasterPath);
+	if (std::filesystem::exists(Target))
+	{
+		xr_string BaseName = MasterPath.filename().string().c_str();
+		constexpr xr_string_view MasterSuffix = ".material.json";
+		BaseName.resize(BaseName.size() - MasterSuffix.size());
+		Target = MakeUniqueAssetPath(
+			MasterPath.parent_path(),
+			BaseName,
+			".material-instance.json"
+		);
+	}
+	return MainForm->GetMaterialInstanceEditorForm()
+		->CreateInstanceFromMaster(MasterPath, Target);
 }
 
 void CContentView::DestroyIcon(IconData& Icon)
@@ -1942,6 +2061,19 @@ bool CContentView::DrawFormContext()
 	ImGui::EndDisabled();
 
 	ImGui::Separator();
+	if (IsMaterialAssetDirectory(CurrentDir.c_str()) &&
+		ImGui::BeginMenu("Create Tiramisu Asset"))
+	{
+		if (ImGui::MenuItem("Master Material"))
+		{
+			if (CreateMasterMaterialAsset(CurrentDir.c_str()))
+			{
+				RescanDirectory();
+			}
+		}
+		ImGui::EndMenu();
+		ImGui::Separator();
+	}
 
 	if (ImGui::MenuItem("Create Folder"))
 	{
@@ -1961,7 +2093,32 @@ bool CContentView::DrawContext(const xr_path& Path)
 
 	if (Path.has_extension())
 	{
-		if (HasFileNameSuffix(Path, ".static-mesh.json"))
+		using Tiramisu::Editor::ClassifyMaterialEditorAsset;
+		using Tiramisu::Editor::EMaterialEditorAssetKind;
+		const EMaterialEditorAssetKind MaterialKind =
+			ClassifyMaterialEditorAsset(Path.xstring().c_str());
+		if (MaterialKind == EMaterialEditorAssetKind::MasterMaterial)
+		{
+			if (ImGui::MenuItem("Open Material Editor"))
+			{
+				(void)OpenMaterialEditorAsset(Path.xstring().c_str());
+			}
+			if (ImGui::MenuItem("Create Material Instance"))
+			{
+				if (CreateMaterialInstanceAsset(Path.xstring().c_str()))
+				{
+					RescanDirectory();
+				}
+			}
+		}
+		else if (MaterialKind == EMaterialEditorAssetKind::MaterialInstance)
+		{
+			if (ImGui::MenuItem("Open Material Instance Editor"))
+			{
+				(void)OpenMaterialEditorAsset(Path.xstring().c_str());
+			}
+		}
+		else if (HasFileNameSuffix(Path, ".static-mesh.json"))
 		{
 			if (ImGui::MenuItem("Open in Tiramisu"))
 			{

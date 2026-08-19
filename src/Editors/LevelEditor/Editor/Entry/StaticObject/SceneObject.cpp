@@ -1,8 +1,10 @@
 #include "stdafx.h"
 
 #include "../../../../TiramisuMaterialEditor/LegacyObjectMaterialMigration.h"
+#include "../../../../TiramisuMaterialEditor/MaterialEditorAssetRouting.h"
 #include "../../../../xrECore/Editor/EditorRenderBackend.h"
 #include "../../../UI/MaterialEditor/UIMaterialEditorForm.h"
+#include "../../../UI/MaterialEditor/UIMaterialInstanceEditorForm.h"
 
 #define BLINK_TIME 300.f
 
@@ -448,6 +450,7 @@ void CSceneObject::ReferenceChange(PropValue* sender)
 	}
 
 	Scene->BeforeObjectChange(this);
+	m_RenderMaterialOverrides.clear();
 	UpdateReference();
 
 	if (OldSector)
@@ -486,33 +489,135 @@ void CSceneObject::OnClickClearSurface(ButtonValue*, bool&, bool&)
 	ClearSurface();
 }
 
-void CSceneObject::OnOpenRenderMaterial(
-	ButtonValue* Sender, bool&, bool&
+void CSceneObject::OnRenderMaterialAction(
+	ButtonValue* Sender,
+	bool& Modified,
+	bool& Safe
 )
 {
+	Modified = false;
+	Safe = true;
 	if (!Sender || Sender->tag >= m_RenderMaterials.size() || !MainForm)
 	{
 		return;
 	}
-	const char* MaterialAsset =
-		m_RenderMaterials[Sender->tag].MaterialAsset.c_str();
-	if (!MaterialAsset || !MaterialAsset[0])
+	const FRenderMaterialBinding& Binding = m_RenderMaterials[Sender->tag];
+	const char* MaterialAsset = Binding.MaterialAsset.c_str();
+	if (Sender->btn_num == 2)
 	{
+		Scene->UndoSave();
+		ResetRenderMaterialOverride(Binding.SurfaceName.c_str());
+		Scene->Modified();
+		Tools->UpdateProperties();
+		UI->RedrawScene();
 		return;
 	}
 
 	string_path MaterialRoot = {};
 	FS.update_path(MaterialRoot, "$game_render_materials$", "");
+	if (Sender->btn_num == 1)
+	{
+		MainForm->OpenMaterialPicker(
+			this,
+			Binding.SurfaceName.c_str(),
+			Binding.MaterialAsset.c_str()
+		);
+		return;
+	}
+
+	if (!MaterialAsset || !MaterialAsset[0])
+	{
+		return;
+	}
+
 	const std::filesystem::path MaterialPath =
 		std::filesystem::path(MaterialRoot) / MaterialAsset;
-	UIMaterialEditorForm* MaterialEditor =
-		MainForm->GetMaterialEditorForm();
-	if (!MaterialEditor ||
-		!MaterialEditor->OpenInstanceFile(MaterialPath))
+	const auto Kind =
+		Tiramisu::Editor::ClassifyMaterialEditorAsset(MaterialPath);
+	bool Opened = false;
+	if (Kind == Tiramisu::Editor::EMaterialEditorAssetKind::MasterMaterial)
 	{
-		Msg("! Cannot open generated MaterialInstance '%s'.",
+		UIMaterialEditorForm* MaterialEditor =
+			MainForm->GetMaterialEditorForm();
+		Opened = MaterialEditor &&
+			MaterialEditor->OpenMaterialFile(MaterialPath);
+	}
+	else if (Kind ==
+		Tiramisu::Editor::EMaterialEditorAssetKind::MaterialInstance)
+	{
+		UIMaterialInstanceEditorForm* InstanceEditor =
+			MainForm->GetMaterialInstanceEditorForm();
+		Opened = InstanceEditor &&
+			InstanceEditor->OpenInstanceFile(MaterialPath);
+	}
+	if (!Opened)
+	{
+		Msg("! Cannot open Material asset '%s'.",
 			MaterialPath.string().c_str());
 	}
+}
+
+bool CSceneObject::SetRenderMaterialOverride(
+	const char* SurfaceName,
+	const char* MaterialAsset
+)
+{
+	if (!SurfaceName || !SurfaceName[0] ||
+		!MaterialAsset || !MaterialAsset[0])
+	{
+		return false;
+	}
+	auto Override = std::ranges::find_if(
+		m_RenderMaterialOverrides,
+		[SurfaceName](const FRenderMaterialBinding& Item)
+		{
+			return xr_strcmp(Item.SurfaceName.c_str(), SurfaceName) == 0;
+		}
+	);
+	if (Override == m_RenderMaterialOverrides.end())
+	{
+		m_RenderMaterialOverrides.push_back({SurfaceName, MaterialAsset});
+	}
+	else
+	{
+		Override->MaterialAsset = MaterialAsset;
+	}
+	for (FRenderMaterialBinding& Item : m_RenderMaterials)
+	{
+		if (xr_strcmp(Item.SurfaceName.c_str(), SurfaceName) == 0)
+		{
+			Item.MaterialAsset = MaterialAsset;
+			m_RenderMaterialsResolved = true;
+			return true;
+		}
+	}
+	m_RenderMaterialsResolved = false;
+	return ResolveRenderMaterials();
+}
+
+bool CSceneObject::AssignRenderMaterial(
+	const char* SurfaceName,
+	const char* MaterialAsset
+)
+{
+	return SetRenderMaterialOverride(SurfaceName, MaterialAsset);
+}
+
+void CSceneObject::ResetRenderMaterialOverride(const char* SurfaceName)
+{
+	if (!SurfaceName)
+	{
+		return;
+	}
+	std::erase_if(
+		m_RenderMaterialOverrides,
+		[SurfaceName](const FRenderMaterialBinding& Item)
+		{
+			return xr_strcmp(Item.SurfaceName.c_str(), SurfaceName) == 0;
+		}
+	);
+	m_RenderMaterialsResolved = false;
+	(void)ResolveRenderMaterials();
 }
 
 void CSceneObject::FillProp(const char* pref, PropItemVec& items)
@@ -547,7 +652,7 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 				PrepareKey(MaterialsPrefix.c_str(), Surface->_Name()).c_str();
 			const char* MaterialAsset =
 				GetRenderMaterialAsset(Surface->_Name());
-			PHelper().CreateCaption(items, PrepareKey(SurfacePrefix.c_str(), "Material Instance"), MaterialAsset && MaterialAsset[0] ? MaterialAsset : "<error material>");
+			PHelper().CreateCaption(items, PrepareKey(SurfacePrefix.c_str(), "Material"), MaterialAsset && MaterialAsset[0] ? MaterialAsset : "<error material>");
 			PHelper().CreateCaption(items, PrepareKey(SurfacePrefix.c_str(), "Two Sided"), Surface->m_Flags.is(CSurface::sf2Sided) ? "Yes" : "No");
 			for (size_t BindingIndex = 0;
 				 BindingIndex < m_RenderMaterials.size();
@@ -560,10 +665,15 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 				{
 					continue;
 				}
-				ButtonValue* OpenButton = PHelper().CreateButton(items, PrepareKey(SurfacePrefix.c_str(), "Action"), "Open", ButtonValue::flFirstOnly);
+				ButtonValue* OpenButton = PHelper().CreateButton(
+					items,
+					PrepareKey(SurfacePrefix.c_str(), "Action"),
+					"Open,Select,Reset",
+					ButtonValue::flFirstOnly
+				);
 				OpenButton->tag = BindingIndex;
 				OpenButton->OnBtnClickEvent.bind(
-					this, &CSceneObject::OnOpenRenderMaterial
+					this, &CSceneObject::OnRenderMaterialAction
 				);
 				break;
 			}
@@ -814,6 +924,20 @@ bool CSceneObject::ResolveRenderMaterials(const bool DeferDatabaseSave)
 		m_RenderMaterials.push_back(
 			{Binding.SurfaceName.c_str(), Binding.MaterialAsset.c_str()}
 		);
+	}
+	for (const FRenderMaterialBinding& Override : m_RenderMaterialOverrides)
+	{
+		for (FRenderMaterialBinding& Binding : m_RenderMaterials)
+		{
+			if (xr_strcmp(
+					Binding.SurfaceName.c_str(),
+					Override.SurfaceName.c_str()
+				) == 0)
+			{
+				Binding.MaterialAsset = Override.MaterialAsset;
+				break;
+			}
+		}
 	}
 	return true;
 }

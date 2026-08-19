@@ -13,13 +13,19 @@ class CSceneObject :
 
 	CEditableObject* m_pReference;
 	xr_vector<FRenderMaterialBinding> m_RenderMaterials;
+	xr_vector<FRenderMaterialBinding> m_RenderMaterialOverrides;
 	bool m_RenderMaterialsResolved;
 	void ReferenceChange(PropValue* sender);
 	void OnChangeShader(PropValue* sender);
 	void OnChangeSurface(PropValue* sender);
 	bool AfterEditGameMtl(PropValue* sender, shared_str& str);
 	void OnClickClearSurface(ButtonValue*, bool&, bool&);
-	void OnOpenRenderMaterial(ButtonValue*, bool&, bool&);
+	void OnRenderMaterialAction(ButtonValue*, bool&, bool&);
+	[[nodiscard]] bool SetRenderMaterialOverride(
+		const char* SurfaceName,
+		const char* MaterialAsset
+	);
+	void ResetRenderMaterialOverride(const char* SurfaceName);
 
 public:
 	shared_str m_ReferenceName;
@@ -115,6 +121,10 @@ public:
 	// editor integration
 	virtual void FillProp(const char* pref, PropItemVec& values);
 	virtual bool GetSummaryInfo(SSceneSummary* inf);
+	[[nodiscard]] bool AssignRenderMaterial(
+		const char* SurfaceName,
+		const char* MaterialAsset
+	);
 
 	// load/save methods
 	virtual bool LoadStream(IReader&);

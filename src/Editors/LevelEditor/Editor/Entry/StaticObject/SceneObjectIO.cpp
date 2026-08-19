@@ -1,13 +1,14 @@
 #include "stdafx.h"
 
 
-#define SCENEOBJ_CURRENT_VERSION 0x0012
+#define SCENEOBJ_CURRENT_VERSION 0x0013
 
 #define SCENEOBJ_CHUNK_VERSION 0x0900
 #define SCENEOBJ_CHUNK_REFERENCE 0x0902
 #define SCENEOBJ_CHUNK_PLACEMENT 0x0904
 #define SCENEOBJ_CHUNK_FLAGS 0x0905
 #define SCENEOBJ_CHUNK_SURFACE 0x0906
+#define SCENEOBJ_CHUNK_RENDER_MATERIAL_OVERRIDES 0x0907
 bool CSceneObject::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	bool bRes = true;
@@ -56,6 +57,30 @@ bool CSceneObject::LoadLTX(CInifile& ini, const char* sect_name)
 		//            ELog.Msg( mtError, "CSceneObject: '%s' different file version!", ref_name.c_str() );
 
 		m_Flags.assign(ini.r_u32(sect_name, "flags"));
+		m_RenderMaterialOverrides.clear();
+		if (ini.line_exist(sect_name, "render_material_override_count"))
+		{
+			const u32 OverrideCount = ini.r_u32(
+				sect_name,
+				"render_material_override_count"
+			);
+			for (u32 Index = 0; Index < OverrideCount; ++Index)
+			{
+				xr_string Prefix = "render_material_override_";
+				Prefix += std::to_string(Index).c_str();
+				const xr_string SurfaceKey = Prefix + "_surface";
+				const xr_string MaterialKey = Prefix + "_asset";
+				if (!ini.line_exist(sect_name, SurfaceKey.c_str()) ||
+					!ini.line_exist(sect_name, MaterialKey.c_str()))
+				{
+					continue;
+				}
+				m_RenderMaterialOverrides.push_back({
+					ini.r_string(sect_name, SurfaceKey.c_str()),
+					ini.r_string(sect_name, MaterialKey.c_str())
+				});
+			}
+		}
 		if (m_Flags.test(flUseSurface))
 		{
 			SIniFileStream ini_stream;
@@ -147,6 +172,28 @@ void CSceneObject::SaveLTX(CInifile& ini, const char* sect_name)
 	ini.w_string(sect_name, "reference_name", m_ReferenceName.c_str());
 
 	ini.w_u32(sect_name, "flags", m_Flags.get());
+	ini.w_u32(
+		sect_name,
+		"render_material_override_count",
+		static_cast<u32>(m_RenderMaterialOverrides.size())
+	);
+	for (u32 Index = 0;
+		 Index < static_cast<u32>(m_RenderMaterialOverrides.size());
+		 ++Index)
+	{
+		xr_string Prefix = "render_material_override_";
+		Prefix += std::to_string(Index).c_str();
+		ini.w_string(
+			sect_name,
+			(Prefix + "_surface").c_str(),
+			m_RenderMaterialOverrides[Index].SurfaceName.c_str()
+		);
+		ini.w_string(
+			sect_name,
+			(Prefix + "_asset").c_str(),
+			m_RenderMaterialOverrides[Index].MaterialAsset.c_str()
+		);
+	}
 	if (m_Flags.test(flUseSurface))
 	{
 		SIniFileStream ini_stream;
@@ -239,6 +286,26 @@ bool CSceneObject::LoadStream(IReader& F)
 		{
 			m_Flags.assign(F.r_u32());
 		}
+		m_RenderMaterialOverrides.clear();
+		if (F.find_chunk(SCENEOBJ_CHUNK_RENDER_MATERIAL_OVERRIDES))
+		{
+			const u32 OverrideCount = F.r_u32();
+			m_RenderMaterialOverrides.reserve(OverrideCount);
+			for (u32 Index = 0; Index < OverrideCount; ++Index)
+			{
+				xr_string SurfaceName;
+				xr_string MaterialAsset;
+				F.r_stringZ(SurfaceName);
+				F.r_stringZ(MaterialAsset);
+				if (!SurfaceName.empty() && !MaterialAsset.empty())
+				{
+					m_RenderMaterialOverrides.push_back({
+						SurfaceName.c_str(),
+						MaterialAsset.c_str()
+					});
+				}
+			}
+		}
 		if (m_Flags.test(flUseSurface))
 		{
 			if (F.find_chunk(SCENEOBJ_CHUNK_SURFACE))
@@ -321,6 +388,19 @@ void CSceneObject::SaveStream(IWriter& F)
 	F.open_chunk(SCENEOBJ_CHUNK_FLAGS);
 	F.w_u32(m_Flags.flags);
 	F.close_chunk();
+
+	if (!m_RenderMaterialOverrides.empty())
+	{
+		F.open_chunk(SCENEOBJ_CHUNK_RENDER_MATERIAL_OVERRIDES);
+		F.w_u32(static_cast<u32>(m_RenderMaterialOverrides.size()));
+		for (const FRenderMaterialBinding& Override :
+			 m_RenderMaterialOverrides)
+		{
+			F.w_stringZ(Override.SurfaceName.c_str());
+			F.w_stringZ(Override.MaterialAsset.c_str());
+		}
+		F.close_chunk();
+	}
 
 	if (m_Flags.test(flUseSurface))
 	{

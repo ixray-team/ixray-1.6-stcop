@@ -22,7 +22,8 @@ enum class EMaterialNodePropertyKind : u8
 {
 	Value,
 	ParameterId,
-	HlslExpression
+	HlslExpression,
+	String
 };
 
 // Schema редактируемого свойства material node.
@@ -44,6 +45,21 @@ struct FMaterialGraphLinkValidationResult
 
 // Результат проверки значения node property по schema.
 struct FMaterialGraphNodePropertyValidationResult
+{
+	xr_vector<FMaterialDiagnostic> Diagnostics;
+
+	[[nodiscard]] bool Succeeded() const noexcept;
+};
+
+// Именованный вход Custom HLSL expression с явно заданным material value type.
+struct FMaterialCustomHlslInputDefinition
+{
+	xr_string Name;
+	EMaterialValueType Type = EMaterialValueType::Float1;
+};
+
+// Результат проверки и перестроения типизированной сигнатуры Custom HLSL node.
+struct FMaterialCustomHlslSignatureResult
 {
 	xr_vector<FMaterialDiagnostic> Diagnostics;
 
@@ -81,4 +97,12 @@ struct FMaterialGraphNodePropertyValidationResult
 );
 [[nodiscard]] FMaterialGraphNodePropertyValidationResult ValidateMaterialGraphNodeProperty(
 	const FMaterialGraphNode& Node, xr_string_view PropertyName, const FMaterialValue& Value
+);
+
+// Перестраивает входные pins и единственный Result pin Custom HLSL node.
+// Стабильные имена сохраняют deterministic pin GUID.
+[[nodiscard]] FMaterialCustomHlslSignatureResult ConfigureMaterialCustomHlslNode(
+	FMaterialGraphNode& Node,
+	xr_span<const FMaterialCustomHlslInputDefinition> Inputs,
+	EMaterialValueType OutputType
 );

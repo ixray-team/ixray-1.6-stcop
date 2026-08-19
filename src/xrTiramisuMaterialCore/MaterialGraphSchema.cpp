@@ -20,6 +20,9 @@ constexpr xr_array Definitions = {
 	FMaterialNodeDefinition{"clamp", "Clamp", "Math", 1, EMaterialValueType::Float1, true},
 	FMaterialNodeDefinition{"normalize", "Normalize", "Vector", 1, EMaterialValueType::Float3, true},
 	FMaterialNodeDefinition{"dot", "Dot Product", "Vector", 1, EMaterialValueType::Float3, true},
+	FMaterialNodeDefinition{"make_vector", "Make Float", "Vector", 1, EMaterialValueType::Float3, true},
+	FMaterialNodeDefinition{"break_vector", "Break Float", "Vector", 1, EMaterialValueType::Float3, true},
+	FMaterialNodeDefinition{"swizzle", "Swizzle", "Vector", 1, EMaterialValueType::Float3, true},
 	FMaterialNodeDefinition{"fresnel", "Fresnel", "Vector", 1, EMaterialValueType::Float1, false},
 	FMaterialNodeDefinition{"texture_sample", "Texture Sample", "Texture", 1, EMaterialValueType::Float4, false},
 	FMaterialNodeDefinition{"texcoord0", "Texture Coordinate 0", "Coordinates", 1, EMaterialValueType::Float2, false},
@@ -54,6 +57,12 @@ constexpr xr_array CustomHlslProperties = {
 	},
 };
 
+constexpr xr_array SwizzleProperties = {
+	FMaterialNodePropertyDefinition{
+		"pattern", "Pattern", EMaterialNodePropertyKind::String, false
+	},
+};
+
 bool IsNumeric(const EMaterialValueType Type) noexcept
 {
 	return Type >= EMaterialValueType::Float1 && Type <= EMaterialValueType::Float4;
@@ -62,6 +71,47 @@ bool IsNumeric(const EMaterialValueType Type) noexcept
 bool IsVector(const EMaterialValueType Type) noexcept
 {
 	return Type >= EMaterialValueType::Float2 && Type <= EMaterialValueType::Float4;
+}
+
+u32 ComponentCount(const EMaterialValueType Type) noexcept
+{
+	return IsNumeric(Type)
+		? static_cast<u32>(Type) - static_cast<u32>(EMaterialValueType::Float1) + 1
+		: 0;
+}
+
+xr_string DefaultSwizzlePattern(const EMaterialValueType Type)
+{
+	constexpr xr_string_view Components = "xyzw";
+	return xr_string(Components.substr(0, ComponentCount(Type)));
+}
+
+bool IsValidSwizzlePattern(
+	const xr_string_view Pattern,
+	const EMaterialValueType Type
+) noexcept
+{
+	const u32 Count = ComponentCount(Type);
+	if (Count < 2 || Pattern.size() != Count)
+	{
+		return false;
+	}
+
+	const xr_string_view PositionComponents = "xyzw";
+	const xr_string_view ColorComponents = "rgba";
+	const bool UsesPositionSet = PositionComponents.find(Pattern.front()) != xr_string_view::npos;
+	const xr_string_view Components = UsesPositionSet
+		? PositionComponents
+		: ColorComponents;
+	for (const char Component : Pattern)
+	{
+		const size_t Index = Components.find(Component);
+		if (Index == xr_string_view::npos || Index >= Count)
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 bool ValueMatchesGraphType(const FMaterialValue& Value, const EMaterialValueType Type) noexcept
@@ -141,6 +191,36 @@ void AddDiagnostic(FMaterialGraphNodePropertyValidationResult& Result, const xr_
 	);
 }
 
+void AddDiagnostic(
+	FMaterialCustomHlslSignatureResult& Result,
+	const xr_string_view Code,
+	xr_string Message,
+	const FMaterialNodeId Node = {}
+)
+{
+	Result.Diagnostics.push_back(
+		{EMaterialDiagnosticSeverity::Error, xr_string(Code), std::move(Message), Node, {}}
+	);
+}
+
+bool IsValidHlslIdentifier(const xr_string_view Name) noexcept
+{
+	if (Name.empty() ||
+		!(std::isalpha(static_cast<unsigned char>(Name.front())) ||
+			Name.front() == '_'))
+	{
+		return false;
+	}
+	return std::ranges::all_of(
+		Name.substr(1),
+		[](const char Character)
+		{
+			return std::isalnum(static_cast<unsigned char>(Character)) ||
+				Character == '_';
+		}
+	);
+}
+
 struct FPinOwner
 {
 	const FMaterialGraphNode* Node = nullptr;
@@ -171,7 +251,18 @@ bool FMaterialGraphLinkValidationResult::Succeeded() const noexcept
 bool FMaterialGraphNodePropertyValidationResult::Succeeded() const noexcept
 {
 	return std::ranges::none_of(Diagnostics, [](const FMaterialDiagnostic& Diagnostic)
-								{ return Diagnostic.Severity == EMaterialDiagnosticSeverity::Error; });
+									{ return Diagnostic.Severity == EMaterialDiagnosticSeverity::Error; });
+}
+
+bool FMaterialCustomHlslSignatureResult::Succeeded() const noexcept
+{
+	return std::ranges::none_of(
+		Diagnostics,
+		[](const FMaterialDiagnostic& Diagnostic)
+		{
+			return Diagnostic.Severity == EMaterialDiagnosticSeverity::Error;
+		}
+	);
 }
 
 xr_span<const FMaterialNodeDefinition> GetMaterialNodeDefinitions() noexcept
@@ -204,6 +295,10 @@ xr_span<const FMaterialNodePropertyDefinition> GetMaterialNodePropertyDefinition
 	if (NodeType == "custom_hlsl")
 	{
 		return CustomHlslProperties;
+	}
+	if (NodeType == "swizzle")
+	{
+		return SwizzleProperties;
 	}
 	return {};
 }
@@ -302,6 +397,52 @@ xr_optional<FMaterialGraphNode> CreateMaterialGraphNode(const xr_string_view Typ
 		AddPin(Node, "B", EMaterialPinDirection::Input, ValueType);
 		AddPin(Node, "Result", EMaterialPinDirection::Output, EMaterialValueType::Float1);
 	}
+	else if (Type == "make_vector")
+	{
+		if (!IsVector(ValueType))
+		{
+			ValueType = EMaterialValueType::Float3;
+		}
+		constexpr xr_array ComponentNames = {"X", "Y", "Z", "W"};
+		for (u32 Index = 0; Index < ComponentCount(ValueType); ++Index)
+		{
+			AddPin(
+				Node,
+				ComponentNames[Index],
+				EMaterialPinDirection::Input,
+				EMaterialValueType::Float1
+			);
+		}
+		AddPin(Node, "Result", EMaterialPinDirection::Output, ValueType);
+	}
+	else if (Type == "break_vector")
+	{
+		if (!IsVector(ValueType))
+		{
+			ValueType = EMaterialValueType::Float3;
+		}
+		AddPin(Node, "Value", EMaterialPinDirection::Input, ValueType);
+		constexpr xr_array ComponentNames = {"X", "Y", "Z", "W"};
+		for (u32 Index = 0; Index < ComponentCount(ValueType); ++Index)
+		{
+			AddPin(
+				Node,
+				ComponentNames[Index],
+				EMaterialPinDirection::Output,
+				EMaterialValueType::Float1
+			);
+		}
+	}
+	else if (Type == "swizzle")
+	{
+		if (!IsVector(ValueType))
+		{
+			ValueType = EMaterialValueType::Float3;
+		}
+		AddPin(Node, "Value", EMaterialPinDirection::Input, ValueType);
+		AddPin(Node, "Result", EMaterialPinDirection::Output, ValueType);
+		Node.Properties["pattern"] = DefaultSwizzlePattern(ValueType);
+	}
 	else if (Type == "fresnel")
 	{
 		AddPin(Node, "Normal", EMaterialPinDirection::Input, EMaterialValueType::Float3);
@@ -357,8 +498,10 @@ xr_optional<FMaterialGraphNode> CreateMaterialGraphNode(const xr_string_view Typ
 		{
 			ValueType = EMaterialValueType::Float1;
 		}
-		AddPin(Node, "In", EMaterialPinDirection::Input, ValueType);
-		AddPin(Node, "Result", EMaterialPinDirection::Output, ValueType);
+		const xr_array Inputs = {
+			FMaterialCustomHlslInputDefinition{"In", ValueType}
+		};
+		(void)ConfigureMaterialCustomHlslNode(Node, Inputs, ValueType);
 		Node.Properties["code"] = xr_string{"{In}"};
 	}
 	return Node;
@@ -456,5 +599,109 @@ FMaterialGraphNodePropertyValidationResult ValidateMaterialGraphNodeProperty(
 			AddDiagnostic(Result, "graph.invalid_parameter_id_property", "Parameter id contains characters that are not valid in a stable id.", Node.Id);
 		}
 	}
+	else if (Node.Type == "swizzle" && PropertyName == "pattern")
+	{
+		const xr_string& Pattern = std::get<xr_string>(Value);
+		const auto Input = std::ranges::find_if(
+			Node.Pins,
+			[](const FMaterialGraphPin& Pin)
+			{
+				return Pin.Direction == EMaterialPinDirection::Input;
+			}
+		);
+		if (Input == Node.Pins.end() ||
+			!IsValidSwizzlePattern(Pattern, Input->Type))
+		{
+			AddDiagnostic(
+				Result,
+				"graph.invalid_swizzle_pattern",
+				"Swizzle pattern must use valid xyzw or rgba components and preserve vector width.",
+				Node.Id
+			);
+		}
+	}
+	return Result;
+}
+
+FMaterialCustomHlslSignatureResult ConfigureMaterialCustomHlslNode(
+	FMaterialGraphNode& Node,
+	const xr_span<const FMaterialCustomHlslInputDefinition> Inputs,
+	const EMaterialValueType OutputType
+)
+{
+	FMaterialCustomHlslSignatureResult Result;
+	if (Node.Type != "custom_hlsl")
+	{
+		AddDiagnostic(
+			Result,
+			"graph.custom_hlsl_signature_wrong_node",
+			"Only a Custom HLSL node can receive a Custom HLSL signature.",
+			Node.Id
+		);
+		return Result;
+	}
+	if (!IsNumeric(OutputType))
+	{
+		AddDiagnostic(
+			Result,
+			"graph.custom_hlsl_invalid_output_type",
+			"Custom HLSL Result must be float, float2, float3 or float4.",
+			Node.Id
+		);
+	}
+	if (Inputs.size() > 16)
+	{
+		AddDiagnostic(
+			Result,
+			"graph.custom_hlsl_too_many_inputs",
+			"Custom HLSL supports at most 16 explicitly declared inputs.",
+			Node.Id
+		);
+	}
+
+	xr_set<xr_string> Names;
+	for (const FMaterialCustomHlslInputDefinition& Input : Inputs)
+	{
+		if (!IsValidHlslIdentifier(Input.Name) || Input.Name == "Result")
+		{
+			AddDiagnostic(
+				Result,
+				"graph.custom_hlsl_invalid_input_name",
+				"Custom HLSL input '" + Input.Name +
+					"' must be a valid unique HLSL identifier and cannot be Result.",
+				Node.Id
+			);
+		}
+		else if (!Names.emplace(Input.Name).second)
+		{
+			AddDiagnostic(
+				Result,
+				"graph.custom_hlsl_duplicate_input",
+				"Custom HLSL input names must be unique.",
+				Node.Id
+			);
+		}
+		if (!IsNumeric(Input.Type))
+		{
+			AddDiagnostic(
+				Result,
+				"graph.custom_hlsl_invalid_input_type",
+				"Custom HLSL inputs must be float, float2, float3 or float4.",
+				Node.Id
+			);
+		}
+	}
+	if (!Result.Succeeded())
+	{
+		return Result;
+	}
+
+	Node.Pins.clear();
+	Node.Pins.reserve(Inputs.size() + 1);
+	for (const FMaterialCustomHlslInputDefinition& Input : Inputs)
+	{
+		AddPin(Node, Input.Name, EMaterialPinDirection::Input, Input.Type);
+	}
+	AddPin(Node, "Result", EMaterialPinDirection::Output, OutputType);
 	return Result;
 }

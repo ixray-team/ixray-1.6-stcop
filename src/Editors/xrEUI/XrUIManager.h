@@ -45,6 +45,16 @@ public:
 	// scene has ended. For the built-in DX9 backend EndFrame renders
 	// immediately and this function is a no-op.
 	void PresentMainFrame();
+	// Откладывает автоматический RenderDoc capture до готовности проверяемого кадра.
+	void SetRenderDocCaptureGateOpen(bool Open) noexcept;
+	[[nodiscard]] bool IsRenderDocCaptureFinished() const noexcept
+	{
+		return m_RenderDocCaptureAttempted;
+	}
+	[[nodiscard]] bool WasRenderDocCaptureSuccessful() const noexcept
+	{
+		return m_RenderDocCaptureSucceeded;
+	}
 	[[nodiscard]] bool UsesExternalMainPresentation() const noexcept
 	{
 		return m_RenderBackend && m_RenderBackend->OwnsMainPresentation();
@@ -82,6 +92,8 @@ private:
 	bool m_RenderBackendInitialized = false;
 	bool m_MainPresentationPending = false;
 	bool m_RenderDocCaptureAttempted = false;
+	bool m_RenderDocCaptureGateOpen = true;
+	bool m_RenderDocCaptureSucceeded = false;
 
 public:
 	template <typename T>

@@ -3,7 +3,7 @@
 
 #include "NRI.hlsl"
 
-#define TIRAMISU_MATERIAL_GPU_ABI_VERSION 4u
+#define TIRAMISU_MATERIAL_GPU_ABI_VERSION 5u
 #define TIRAMISU_MATERIAL_INSTANCE_GPU_DATA_SIZE 16u
 #define TIRAMISU_MATERIAL_DRAW_GPU_DATA_SIZE 160u
 #define TIRAMISU_MATERIAL_LIGHT_GPU_DATA_SIZE 64u
@@ -24,7 +24,7 @@ NRI_RESOURCE(cbuffer, GlobalConstants, b, 0, 2)
     uint LightDataBufferIndex;
     uint LightDataOffset;
     uint LightCount;
-    uint LightingFlags;
+    uint EnvironmentTextureIndex;
     uint SkinningPaletteBufferIndex;
     uint3 MaterialGpuAbiPadding;
 };

@@ -2,7 +2,6 @@
 
 #include <MaterialDependencyWatcher.h>
 #include <MaterialEditorDocument.h>
-#include <MaterialInstanceEditorDocument.h>
 #include <Editor/MaterialPreviewRenderer.h>
 
 #include <array>
@@ -24,8 +23,11 @@ public:
 
 	void Draw() override;
 	void Show(bool Value = true) noexcept { bOpen = Value; }
-	[[nodiscard]] bool OpenInstanceFile(
-		const std::filesystem::path& InstancePath
+	[[nodiscard]] bool OpenMaterialFile(
+		const std::filesystem::path& MaterialPath
+	);
+	[[nodiscard]] bool CreateMaterialFile(
+		const std::filesystem::path& MaterialPath
 	);
 
 private:
@@ -40,31 +42,28 @@ private:
 	void DrawPalette();
 	void DrawGraph();
 	void DrawNodeProperties(const FMaterialGraphNode& Node);
+	void DrawCustomHlslSignature(const FMaterialGraphNode& Node);
 	void DrawOutputPanel();
 	void DrawPreviewPanel();
 	void DrawDetailsPanel();
 	[[nodiscard]] bool DrawParameterEditor(
 		const FMaterialParameterDefinition& Parameter
 	);
-	void DrawInstancePanel();
 	void Compile();
-	void AddNode(xr_string_view Type);
+	void AddNode(
+		xr_string_view Type,
+		EMaterialValueType ValueType = EMaterialValueType::Invalid
+	);
 	void DeleteSelection();
 	void CopySelection();
 	void PasteClipboard();
 	void OpenMaterial();
 	void OpenAutosave();
 	void SaveMaterial(bool SaveAs);
-	void OpenInstance();
-	void SaveInstance(bool SaveAs);
-	void LoadInstanceParent();
-	[[nodiscard]] bool ResolveInstanceParent();
 	void ResetPresentationState();
 	void ReleasePreview();
 	void SyncMaterialDrafts();
-	void SyncInstanceDrafts();
 	[[nodiscard]] std::filesystem::path MaterialRecoveryPath() const;
-	[[nodiscard]] std::filesystem::path InstanceRecoveryPath() const;
 	static void RemoveRecoveryFile(const std::filesystem::path& Path);
 
 	struct FParameterEditorDraft
@@ -83,6 +82,18 @@ private:
 		float Maximum = 1.0f;
 	};
 
+	struct FCustomHlslInputDraft
+	{
+		xr_array<char, 64> Name{};
+		EMaterialValueType Type = EMaterialValueType::Float1;
+	};
+
+	struct FCustomHlslSignatureDraft
+	{
+		xr_vector<FCustomHlslInputDraft> Inputs;
+		EMaterialValueType OutputType = EMaterialValueType::Float1;
+	};
+
 	FParameterEditorDraft& GetParameterDraft(
 		const FMaterialParameterDefinition& Parameter
 	);
@@ -97,7 +108,6 @@ private:
 	void SetDiagnostics(xr_vector<FMaterialDiagnostic> Diagnostics);
 
 	Tiramisu::Editor::TiramisuMaterialEditorDocument Document;
-	Tiramisu::Editor::TiramisuMaterialInstanceEditorDocument InstanceDocument;
 	FMaterialGraphCompileResult CompileResult;
 	xr_vector<FMaterialDiagnostic> Diagnostics;
 
@@ -107,18 +117,15 @@ private:
 	xr_hash_set<int> PositionedNodes;
 	xr_hash_map<xr_string, FMaterialValue> NodePropertyDrafts;
 	xr_hash_map<xr_string, xr_array<char, 2048>> NodeStringDrafts;
+	xr_hash_map<xr_string, FCustomHlslSignatureDraft>
+		CustomHlslSignatureDrafts;
 	xr_hash_map<xr_string, FParameterEditorDraft> ParameterDrafts;
 	xr_array<char, 128> Search{};
 	xr_array<char, 256> MaterialNameDraft{};
 	xr_array<char, 512> MaterialTemplateDraft{};
-	xr_array<char, 256> InstanceNameDraft{};
-	xr_array<char, 512> InstanceParentDraft{};
-	xr_hash_map<xr_string, FMaterialValue> InstanceOverrideDrafts;
-	xr_hash_map<xr_string, xr_array<char, 512>> InstanceStringDrafts;
 	double NextAutosaveTime = 0.0;
 	xr_string AutosaveStatus;
 	Tiramisu::Editor::TiramisuMaterialDependencyWatcher DependencyWatcher;
-	xr_vector<std::filesystem::path> ParentAssetDependencies;
 	xr_vector<Tiramisu::Editor::FMaterialDependencyChange>
 		PendingDependencyChanges;
 	double NextDependencyPollTime = 0.0;

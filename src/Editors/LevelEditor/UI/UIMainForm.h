@@ -1,5 +1,7 @@
 #pragma once
 class UIMaterialEditorForm;
+class UIMaterialInstanceEditorForm;
+class CSceneObject;
 
 class UIMainForm final :
 	public IEditorWnd
@@ -19,6 +21,15 @@ public:
 	IC UILPropertiesForm* GetPropertiesForm() { return m_Properties; }
 	IC class UIWorldPropertiesFrom* GetWorldPropertiesFrom() { return m_WorldProperties; }
 	IC UIMaterialEditorForm* GetMaterialEditorForm() { return m_MaterialEditor; }
+	IC UIMaterialInstanceEditorForm* GetMaterialInstanceEditorForm()
+	{
+		return m_MaterialInstanceEditor;
+	}
+	void OpenMaterialPicker(
+		CSceneObject* Object,
+		const char* SurfaceName,
+		const char* CurrentMaterial
+	);
 
 private:
 	void DrawContextMenu();
@@ -26,6 +37,7 @@ private:
 	void DrawMenuSettings();
 	void RenderOldCameraButtons();
 	void RenderAxisButtons();
+	void UpdateMaterialPicker();
 
 	shared_str GetCommandShortcat(int CommandID) const;
 	void DrawMenuItem(const char* label, int command, int param = 0, int flag = 0);
@@ -39,6 +51,10 @@ private:
 	UILPropertiesForm* m_Properties;
 	class UIWorldPropertiesFrom* m_WorldProperties;
 	UIMaterialEditorForm* m_MaterialEditor;
+	UIMaterialInstanceEditorForm* m_MaterialInstanceEditor;
+	CSceneObject* m_MaterialPickerObject = nullptr;
+	xr_string m_MaterialPickerSurface;
+	bool m_MaterialPickerActive = false;
 
 	xr_string m_tMenu;
 

@@ -54,9 +54,10 @@ Tiramisu shader ABI использует Descriptor Heap Indexing. Generated и 
 
 Матрицы требуют явного контракта на границе CPU/GPU. `Fmatrix` X-Ray хранит row-vector transform (`[position, 1] * M`), а material vertex factory вычисляет `mul(M, position)`. Матрицы draw record загружаются из `ByteAddressBuffer` явными HLSL-строками, поэтому CPU перед записью применяет `MakeMaterialDrawBufferMatrix` и транспонирует current/previous transform. Эта операция относится только к draw buffer: обычные constant/root buffers используют column-major packing DXC и дополнительного transpose не требуют.
 
-Material GPU ABI v4 также определяет независимые от NRI 64-байтные light
+Material GPU ABI v5 также определяет независимые от NRI 64-байтные light
 records и skinning matrices. Scene constants передают descriptor indices
-light/palette buffers и inverse view-projection; `FMaterialDrawGpuData` хранит
+light/palette buffers, environment `TextureCube` и inverse view-projection;
+`FMaterialDrawGpuData` хранит
 current/previous palette offsets и bone count. Для `decal_projector` поле
 previous transform содержит заранее вычисленный world-to-decal, а свободный
 skinning descriptor slot — bindless index scene depth. HLSL выбирает ресурсы
@@ -67,6 +68,21 @@ material permutation; vertex factory (`level_static`, `skeletal` либо
 обходит не более 64 Directional/Point/Spot lights; отдельный Decal pass читает
 depth и композитит color до editor overlays. Это не замена будущих clustered
 lists, shadow passes и production DBuffer/G-buffer decals.
+
+Поле `Material` поверхности объекта в LevelEditor принимает как master
+`*.material.json`, так и `*.material-instance.json`. Master используется
+напрямую со своими defaults; instance разрешается через parent chain. Оба типа
+считаются авторитетными и не заменяются texture metadata старого `CSurface`;
+legacy texture override применяется только к compatibility fallback.
+
+Действие `Select` открывает внутренний modal `Select Material`, а не системный
+файловый диалог. Picker рекурсивно индексирует `$game_render_materials$`,
+показывает общим деревом группы `Materials` и `Instances` и поддерживает поиск
+по полному относительному пути. `Open` направляет master в Material Editor, а
+instance — в Material Instance Editor; `Reset` возвращает результат legacy
+автоконвертации. Выбор хранится как относительный путь в optional chunk/LTX-
+полях объекта, поэтому старые assets остаются читаемыми, а новый override
+сохраняется вместе со сценой.
 
 Renderer уже создаёт три начальных bindless buffer: draw data, material instance table и material parameter data. Изменённые parameter ranges обновляются отдельно. Это пока baseline, а не финальный allocator: storage должен перейти на frame contexts, fenced reuse и deferred deletion.
 
@@ -93,9 +109,9 @@ void EvaluateMaterial(
 
 Graph описывает expressions, а не произвольные shader stages или render passes. Он не может назначать registers и создавать глобальные GPU resources.
 
-Начальный набор nodes включает constants/parameters, arithmetic/vector operations, texture/sample/UV, vertex color, normals, world/camera data, time, lerp, clamp, Fresnel, static switch, Custom HLSL и Material Output.
+Начальный набор nodes включает constants/parameters, arithmetic/vector operations, texture/sample/UV, vertex color, normals, world/camera data, time, lerp, clamp, Fresnel, static switch, Custom HLSL и Material Output. Палитра создаёт типизированные `Constant`, `Constant2`, `Constant3` и `Constant4`, а также `Make Float2/3/4`, `Break Float2/3/4` и `Swizzle Float2/3/4`. `Swizzle` принимает шаблоны `xyzw` либо `rgba`, разрешает перестановку и повтор компонентов, но сохраняет ширину входного вектора; изменение ширины выполняется через `Break` и `Make`.
 
-Custom HLSL node обязан явно объявлять typed inputs/outputs. Объявления глобальных resources, registers, entry points и include с произвольными bindings запрещены.
+Custom HLSL node содержит встроенный редактор сигнатуры. `Result Type` задаёт тип единственного результата `float/float2/float3/float4`; секция `Inputs` позволяет добавлять до 16 именованных входов и независимо выбирать один из этих типов для каждого. В expression вход используется как `{InputName}`, например `saturate({BaseColor} * {Intensity})`. Runtime material parameters не объявляются повторно внутри Custom HLSL: для них создаётся обычный `Parameter` node и подключается к соответствующему input pin. `Apply Signature` является одной undo-операцией; переименование или смена типа pin удаляет ставшие несовместимыми links. Необъявленные маркеры дают node-addressable diagnostic. Объявления глобальных resources, registers, entry points и include с произвольными bindings запрещены.
 
 Graph JSON содержит versioned node type, стабильные node/pin GUID, links, значения и editor positions. Compiler добавляет node GUID в diagnostics и `#line`, чтобы Level Editor мог перейти к проблемному node.
 
@@ -153,7 +169,9 @@ Hot reload подключён к Material Editor preview и Forward material pat
 
 За основу компоновки и пользовательского workflow берётся существующий `src/Editors/ShaderEditor`: отдельные panels, item browser, properties/details и preview viewport. Его legacy semantic model (`IBlender`, `CSHEngineTools`, временная сериализация shaders и прямой `EDevice->Reset`) в новую систему не переносится.
 
-Новый editor хранит единственную semantic model в `FMaterialGraph`/material assets из `xrTiramisuMaterialCore`. ImNodes отвечает только за view/controller: позиции, выбор, создание links и команды редактирования. Компиляция, type checking и diagnostics всегда идут через общий material compiler.
+Authoring разделён на два самостоятельных окна. `Material Editor` хранит master material и `FMaterialGraph`; ImNodes отвечает только за view/controller: позиции, выбор, создание links и команды редактирования. `Material Instance Editor` не содержит node graph и позволяет менять только parent chain и типизированные runtime/static overrides. Компиляция, type checking и diagnostics обоих окон всегда идут через общий material compiler.
+
+Оба окна подключены к Content Browser по типу составного расширения. Двойной клик по `*.material.json` открывает `Material Editor`, а по `*.material-instance.json` — `Material Instance Editor`. Контекстное меню master asset создаёт новый instance рядом с parent, заполняет стабильный parent GUID и сразу открывает inspector. В каталоге `$game_data$/render_materials` контекст пустого места создаёт новый master material.
 
 Для полного перехода редакторов требуется отделить `xrECore` от встроенного legacy renderer. `xrECore` всё ещё компилирует D3D9/R1/R4 renderer sources внутрь своей библиотеки, поэтому миграционная граница разделена на следующие части:
 
@@ -164,4 +182,4 @@ Hot reload подключён к Material Editor preview и Forward material pat
 
 Базовый scene/presentation-срез уже готов: `UIRenderForm` использует `IEditorRenderBackend` для capture, resize, scene snapshots, CPU picking и opaque ImGui surface, а legacy adapter временно сохраняет прежнее поведение. NRI presenter LevelEditor имеет собственный swapchain и три frame contexts; создание ресурсов, запись команд, resize, present и удаление выполняются общим render thread `xrRenderTiramisu`. Viewport рисует static/transient meshes, selection и debug/overlay primitives; legacy surfaces разрешаются через pre-authored `MaterialInstance`, parent flattening и bindless texture overrides. Общий compiler асинхронно собирает Forward pass для Vulkan/D3D12, а неуспешный rebuild сохраняет last-good pipeline. `NRI_BASE_INSTANCE` индексирует `FMaterialDrawGpuData`; draw/instance/parameter records и отдельные light records тройно буферизованы. Forward pass учитывает two-sided/blend mode и вычисляет GGX/Smith/Schlick lighting для native Directional/Point/Spot lights из Descriptor Heap Indexing buffer. Совместный normal/ASan GPU smoke на Vulkan и D3D12 проверяет два lights, три opaque/translucent/additive draws, selection, debug/overlay paths и safe reload с обязательным `-rdbg`. Material preview отдельно реализует background DXC, offscreen sphere/cube/plane, Texture2D/TextureCube cache и environment lighting. Production prefiltered IBL, clustered lights/shadows, игровой renderer-wide hot reload и полный новый scene path ещё не подключены. Standalone legacy ShaderEditor не подключается; новый Material Editor работает внутри Tiramisu-only режима LevelEditor. Игровой R4 остаётся отдельным.
 
-Текущий GUI уже включает master/instance assets и parent chains, searchable palette, typed pins, details panel, undo/redo, copy/paste, autosave/recovery, migrations, diagnostics с переходом к node, generated HLSL preview, permutation statistics, preview primitive/environment controls, instance inspector и безопасный dependency-driven live preview. До готовности остаются production IBL, renderer-wide pipeline hot reload и завершение Tiramisu scene viewport workflow.
+Текущие GUI уже включают master/instance assets и parent chains, searchable palette, typed pins, details panel, undo/redo, copy/paste, autosave/recovery, migrations, diagnostics с переходом к node, generated HLSL preview, permutation statistics, preview primitive/environment controls, отдельный instance inspector и безопасный dependency-driven live preview. До готовности остаются production IBL, renderer-wide pipeline hot reload и завершение Tiramisu scene viewport workflow.

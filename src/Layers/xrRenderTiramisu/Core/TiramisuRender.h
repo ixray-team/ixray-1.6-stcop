@@ -3,6 +3,7 @@
 #include "TiramisuRenderTypes.h"
 #include <atomic>
 #include <barrier>
+#include <cstddef>
 #include <mutex>
 #include <semaphore>
 
@@ -24,6 +25,7 @@ struct alignas(16) FXRayRenderConstantBuffer
 {
 	Fvector4 SceneView;
 	Fmatrix ViewProjection;
+	Fmatrix InverseViewProjection;
 	Fvector4 CameraPositionAndTime;
 	u32 DrawDataBufferIndex;
 	u32 MaterialInstanceBufferIndex;
@@ -32,12 +34,16 @@ struct alignas(16) FXRayRenderConstantBuffer
 	u32 LightDataBufferIndex;
 	u32 LightDataOffset;
 	u32 LightCount;
-	u32 LightingFlags;
+	u32 EnvironmentTextureIndex;
 	u32 SkinningPaletteBufferIndex;
 	u32 MaterialGpuAbiPadding[3];
 };
 
-static_assert(sizeof(FXRayRenderConstantBuffer) == 144);
+static_assert(sizeof(FXRayRenderConstantBuffer) == 208);
+static_assert(offsetof(FXRayRenderConstantBuffer, InverseViewProjection) == 80);
+static_assert(offsetof(FXRayRenderConstantBuffer, CameraPositionAndTime) == 144);
+static_assert(offsetof(FXRayRenderConstantBuffer, DrawDataBufferIndex) == 160);
+static_assert(offsetof(FXRayRenderConstantBuffer, EnvironmentTextureIndex) == 188);
 
 // Главный координатор Tiramisu: владеет render thread, кадрами, passes и глобальными GPU-ресурсами.
 class TiramisuRender

@@ -410,6 +410,218 @@ void TestGraphCopyPasteAndSingleUndo(TiramisuMaterialTestRunner& Runner)
 	MATERIAL_CHECK(Runner, HasDiagnostic(Document.PasteNodes("{ invalid json", {}, Pasted).Diagnostics, "graph.invalid_json"));
 	MATERIAL_CHECK(Runner, HasDiagnostic(Document.PasteNodes(Document.Serialize(), {}, Pasted).Diagnostics, "editor.clipboard_material_output"));
 }
+
+void TestVectorNodeCopyPastePreservesWidth(TiramisuMaterialTestRunner& Runner)
+{
+	TiramisuMaterialEditorDocument Document;
+	MATERIAL_CHECK(
+		Runner,
+		Document.AddNode(
+			"make_vector",
+			{"copy-make-float4"},
+			{},
+			EMaterialValueType::Float4
+		).Succeeded()
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Document.AddNode(
+			"break_vector",
+			{"copy-break-float2"},
+			{},
+			EMaterialValueType::Float2
+		).Succeeded()
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Document.AddNode(
+			"swizzle",
+			{"copy-swizzle-float3"},
+			{},
+			EMaterialValueType::Float3
+		).Succeeded()
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Document.SetNodeProperty(
+			{"copy-swizzle-float3"},
+			"pattern",
+			xr_string{"zyx"}
+		).Succeeded()
+	);
+
+	const xr_array Selection{
+		FMaterialNodeId{"copy-make-float4"},
+		FMaterialNodeId{"copy-break-float2"},
+		FMaterialNodeId{"copy-swizzle-float3"},
+	};
+	xr_string ClipboardJson;
+	MATERIAL_CHECK(
+		Runner,
+		Document.CopyNodes(Selection, ClipboardJson).Succeeded()
+	);
+	xr_vector<FMaterialNodeId> Pasted;
+	MATERIAL_CHECK(
+		Runner,
+		Document.PasteNodes(ClipboardJson, {}, Pasted).Succeeded()
+	);
+	MATERIAL_CHECK(Runner, Pasted.size() == 3);
+
+	const FMaterialGraphNode* Make = FindMaterialGraphNode(
+		Document.GetGraph(),
+		Pasted[0]
+	);
+	const FMaterialGraphNode* Break = FindMaterialGraphNode(
+		Document.GetGraph(),
+		Pasted[1]
+	);
+	const FMaterialGraphNode* Swizzle = FindMaterialGraphNode(
+		Document.GetGraph(),
+		Pasted[2]
+	);
+	MATERIAL_CHECK(Runner, Make != nullptr);
+	MATERIAL_CHECK(Runner, Break != nullptr);
+	MATERIAL_CHECK(Runner, Swizzle != nullptr);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Make, "Result", EMaterialPinDirection::Output).Type ==
+			EMaterialValueType::Float4
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Break, "Value", EMaterialPinDirection::Input).Type ==
+			EMaterialValueType::Float2
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Swizzle, "Result", EMaterialPinDirection::Output).Type ==
+			EMaterialValueType::Float3
+	);
+	MATERIAL_CHECK(
+		Runner,
+		std::get<xr_string>(Swizzle->Properties.at("pattern")) == "zyx"
+	);
+}
+
+void TestCustomHlslSignatureEditing(TiramisuMaterialTestRunner& Runner)
+{
+	TiramisuMaterialEditorDocument Document;
+	MATERIAL_CHECK(
+		Runner,
+		Document.AddNode(
+			"custom_hlsl",
+			{"signature-custom"}
+		).Succeeded()
+	);
+	const FMaterialGraphNode* Custom = FindMaterialGraphNode(
+		Document.GetGraph(),
+		{"signature-custom"}
+	);
+	MATERIAL_CHECK(Runner, Custom != nullptr);
+	MATERIAL_CHECK(
+		Runner,
+		Document.Connect(
+			"signature-output-link",
+			Pin(*Custom, "Result", EMaterialPinDirection::Output).Id,
+			Pin(
+				Document.GetGraph().Nodes.front(),
+				"Roughness",
+				EMaterialPinDirection::Input
+			).Id
+		).Succeeded()
+	);
+	MATERIAL_CHECK(Runner, Document.GetGraph().Links.size() == 1);
+
+	const xr_array Inputs = {
+		FMaterialCustomHlslInputDefinition{
+			"Color",
+			EMaterialValueType::Float3
+		},
+		FMaterialCustomHlslInputDefinition{
+			"Factor",
+			EMaterialValueType::Float1
+		},
+	};
+	MATERIAL_CHECK(
+		Runner,
+		Document.SetCustomHlslSignature(
+			{"signature-custom"},
+			Inputs,
+			EMaterialValueType::Float3
+		).Succeeded()
+	);
+	MATERIAL_CHECK(Runner, Document.GetGraph().Links.empty());
+	Custom = FindMaterialGraphNode(
+		Document.GetGraph(),
+		{"signature-custom"}
+	);
+	MATERIAL_CHECK(Runner, Custom != nullptr);
+	MATERIAL_CHECK(Runner, Custom->Pins.size() == 3);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Custom, "Color", EMaterialPinDirection::Input).Type ==
+			EMaterialValueType::Float3
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*Custom, "Result", EMaterialPinDirection::Output).Type ==
+			EMaterialValueType::Float3
+	);
+
+	MATERIAL_CHECK(Runner, Document.Undo());
+	MATERIAL_CHECK(Runner, Document.GetGraph().Links.size() == 1);
+	MATERIAL_CHECK(Runner, Document.Redo());
+	MATERIAL_CHECK(Runner, Document.GetGraph().Links.empty());
+
+	const xr_array Selected{FMaterialNodeId{"signature-custom"}};
+	xr_string ClipboardJson;
+	MATERIAL_CHECK(
+		Runner,
+		Document.CopyNodes(Selected, ClipboardJson).Succeeded()
+	);
+	xr_vector<FMaterialNodeId> Pasted;
+	MATERIAL_CHECK(
+		Runner,
+		Document.PasteNodes(ClipboardJson, {}, Pasted).Succeeded()
+	);
+	MATERIAL_CHECK(Runner, Pasted.size() == 1);
+	const FMaterialGraphNode* PastedCustom = FindMaterialGraphNode(
+		Document.GetGraph(),
+		Pasted.front()
+	);
+	MATERIAL_CHECK(Runner, PastedCustom != nullptr);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*PastedCustom, "Color", EMaterialPinDirection::Input).Type ==
+			EMaterialValueType::Float3
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*PastedCustom, "Factor", EMaterialPinDirection::Input).Type ==
+			EMaterialValueType::Float1
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Pin(*PastedCustom, "Result", EMaterialPinDirection::Output).Type ==
+			EMaterialValueType::Float3
+	);
+
+	const xr_array DuplicateInputs = {
+		FMaterialCustomHlslInputDefinition{"Value", EMaterialValueType::Float1},
+		FMaterialCustomHlslInputDefinition{"Value", EMaterialValueType::Float2},
+	};
+	MATERIAL_CHECK(
+		Runner,
+		HasDiagnostic(
+			Document.SetCustomHlslSignature(
+				{"signature-custom"},
+				DuplicateInputs,
+				EMaterialValueType::Float1
+			).Diagnostics,
+			"graph.custom_hlsl_duplicate_input"
+		)
+	);
+}
 } // namespace
 
 int main()
@@ -428,5 +640,7 @@ int main()
 	TestParameterEditingAndReferences(Runner);
 	TestTypedNodeParameterBindings(Runner);
 	TestGraphCopyPasteAndSingleUndo(Runner);
+	TestVectorNodeCopyPastePreservesWidth(Runner);
+	TestCustomHlslSignatureEditing(Runner);
 	return Runner.Finish();
 }

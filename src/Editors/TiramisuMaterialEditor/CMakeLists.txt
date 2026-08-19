@@ -8,6 +8,8 @@ add_library(xrTiramisuMaterialEditorCore STATIC
     MaterialDependencyWatcher.h
     MaterialEditorDocument.cpp
     MaterialEditorDocument.h
+    MaterialEditorAssetRouting.cpp
+    MaterialEditorAssetRouting.h
     MaterialEditorFileIO.cpp
     MaterialEditorFileIO.h
     MaterialInstanceEditorDocument.cpp
@@ -39,6 +41,20 @@ if(IXRAY_BUILD_TESTS)
     set_tests_properties(xrMaterialEditorDocumentTests PROPERTIES
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     set_target_properties(xrMaterialEditorDocumentTests PROPERTIES FOLDER "Tests")
+
+    add_executable(xrMaterialEditorAssetRoutingTests
+        tests/MaterialEditorAssetRoutingTests.cpp)
+    target_link_libraries(xrMaterialEditorAssetRoutingTests PRIVATE
+        xrTiramisuMaterialEditorCore)
+    target_include_directories(xrMaterialEditorAssetRoutingTests PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/xrTiramisuMaterialCore/tests)
+    target_compile_features(xrMaterialEditorAssetRoutingTests PRIVATE cxx_std_23)
+    add_test(NAME xrMaterialEditorAssetRoutingTests
+        COMMAND xrMaterialEditorAssetRoutingTests -rdbg)
+    set_tests_properties(xrMaterialEditorAssetRoutingTests PROPERTIES
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    set_target_properties(xrMaterialEditorAssetRoutingTests PROPERTIES
+        FOLDER "Tests")
 
     add_executable(xrMaterialInstanceEditorDocumentTests
         tests/MaterialInstanceEditorDocumentTests.cpp)

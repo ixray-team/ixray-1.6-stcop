@@ -273,9 +273,12 @@ void UIChooseForm::Update()
 	// ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
 	if (Form && !Form->IsClosed())
 	{
-		ImGui::OpenPopup("Choose form");
+		const char* PopupTitle = Form->m_Title.empty()
+			? "Choose form"
+			: Form->m_Title.c_str();
+		ImGui::OpenPopup(PopupTitle);
 		ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_::ImGuiCond_FirstUseEver);
-		if (ImGui::BeginPopupModal("Choose form", nullptr, 0))
+		if (ImGui::BeginPopupModal(PopupTitle, nullptr, 0))
 		{
 			Form->Draw();
 			ImGui::EndPopup();
@@ -403,7 +406,17 @@ bool UIChooseForm::GetResult(bool& change, xr_vector<xr_string>& result)
 
 	return false;
 }
-void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, const char* init_name, TOnChooseFillItems item_fill, void* fill_param, TOnChooseSelectItem item_select, ChooseItemVec* items, u32 mask)
+void UIChooseForm::SelectItem(
+	u32 choose_ID,
+	int sel_cnt,
+	const char* init_name,
+	TOnChooseFillItems item_fill,
+	void* fill_param,
+	TOnChooseSelectItem item_select,
+	ChooseItemVec* items,
+	u32 mask,
+	const char* title
+)
 {
 	VERIFY(!Form);
 
@@ -446,7 +459,9 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, const char* init_name,
 	// set & fill
 
 
-	Form->m_Title = Form->E.caption.c_str();
+	Form->m_Title = title && title[0]
+		? title
+		: Form->E.caption.c_str();
 	if (!Form->E.on_fill.empty())
 	{
 		Form->E.on_fill(Form->m_Items, fill_param);

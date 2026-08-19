@@ -254,6 +254,104 @@ void TestCustomHlslRestrictions(TiramisuMaterialTestRunner& Runner)
 	const FMaterialGraphCompileResult Invalid = CompileMaterialGraph(Graph, {});
 	MATERIAL_CHECK(Runner, !Invalid.Succeeded());
 	MATERIAL_CHECK(Runner, HasDiagnostic(Invalid.Diagnostics, "graph.custom_hlsl_forbidden_token"));
+
+	FMaterialGraph TypedGraph;
+	TypedGraph.Nodes.push_back(*CreateMaterialGraphNode(
+		"constant",
+		{"custom-color"},
+		{},
+		EMaterialValueType::Float3
+	));
+	TypedGraph.Nodes.back().Properties["value"] =
+		FFloat3{0.25f, 0.5f, 1.0f};
+	TypedGraph.Nodes.push_back(*CreateMaterialGraphNode(
+		"constant",
+		{"custom-factor"}
+	));
+	TypedGraph.Nodes.back().Properties["value"] = 2.0f;
+	TypedGraph.Nodes.push_back(*CreateMaterialGraphNode(
+		"custom_hlsl",
+		{"custom-typed"}
+	));
+	const xr_array Inputs = {
+		FMaterialCustomHlslInputDefinition{
+			"Color",
+			EMaterialValueType::Float3
+		},
+		FMaterialCustomHlslInputDefinition{
+			"Factor",
+			EMaterialValueType::Float1
+		},
+	};
+	MATERIAL_CHECK(
+		Runner,
+		ConfigureMaterialCustomHlslNode(
+			TypedGraph.Nodes.back(),
+			Inputs,
+			EMaterialValueType::Float3
+		).Succeeded()
+	);
+	TypedGraph.Nodes.back().Properties["code"] =
+		xr_string{"saturate({Color} * {Factor})"};
+	TypedGraph.Nodes.push_back(*CreateMaterialGraphNode(
+		"material_output",
+		{"custom-typed-output"}
+	));
+	TypedGraph.Links = {
+		{"custom-color-link",
+		 GraphPin(
+			 TypedGraph.Nodes[0],
+			 "Value",
+			 EMaterialPinDirection::Output
+		 ).Id,
+		 GraphPin(
+			 TypedGraph.Nodes[2],
+			 "Color",
+			 EMaterialPinDirection::Input
+		 ).Id},
+		{"custom-factor-link",
+		 GraphPin(
+			 TypedGraph.Nodes[1],
+			 "Value",
+			 EMaterialPinDirection::Output
+		 ).Id,
+		 GraphPin(
+			 TypedGraph.Nodes[2],
+			 "Factor",
+			 EMaterialPinDirection::Input
+		 ).Id},
+		{"custom-typed-output-link",
+		 GraphPin(
+			 TypedGraph.Nodes[2],
+			 "Result",
+			 EMaterialPinDirection::Output
+		 ).Id,
+		 GraphPin(
+			 TypedGraph.Nodes[3],
+			 "BaseColor",
+			 EMaterialPinDirection::Input
+		 ).Id},
+	};
+	const FMaterialGraphCompileResult TypedResult =
+		CompileMaterialGraph(TypedGraph, {});
+	MATERIAL_CHECK(Runner, TypedResult.Succeeded());
+	MATERIAL_CHECK(
+		Runner,
+		TypedResult.GeneratedHlsl.find("saturate(") != xr_string::npos
+	);
+
+	TypedGraph.Nodes[2].Properties["code"] =
+		xr_string{"{Undeclared} + {Color}"};
+	const FMaterialGraphCompileResult UnknownInput =
+		CompileMaterialGraph(TypedGraph, {});
+	MATERIAL_CHECK(Runner, !UnknownInput.Succeeded());
+	MATERIAL_CHECK(
+		Runner,
+		HasDiagnostic(
+			UnknownInput.Diagnostics,
+			"graph.custom_hlsl_unknown_input"
+		)
+	);
 }
 
 void TestParameterIdentityAndDescriptorIndexing(TiramisuMaterialTestRunner& Runner)
@@ -307,6 +405,99 @@ void TestTextureSampleParameterBinding(TiramisuMaterialTestRunner& Runner)
 	MATERIAL_CHECK(Runner, std::ranges::contains(Result.UsedParameters, FMaterialParameterId{"bound-texture-guid"}));
 }
 
+void TestMakeBreakAndSwizzle(TiramisuMaterialTestRunner& Runner)
+{
+	FMaterialGraph Graph;
+	for (const auto& [Id, Value] : xr_array{
+			std::pair{xr_string_view{"component-x"}, 0.1f},
+			std::pair{xr_string_view{"component-y"}, 0.2f},
+			std::pair{xr_string_view{"component-z"}, 0.3f},
+		})
+	{
+		Graph.Nodes.push_back(*CreateMaterialGraphNode("constant", {xr_string(Id)}));
+		Graph.Nodes.back().Properties["value"] = Value;
+	}
+	Graph.Nodes.push_back(*CreateMaterialGraphNode(
+		"make_vector",
+		{"make-float3"},
+		{},
+		EMaterialValueType::Float3
+	));
+	Graph.Nodes.push_back(*CreateMaterialGraphNode(
+		"swizzle",
+		{"swizzle-float3"},
+		{},
+		EMaterialValueType::Float3
+	));
+	Graph.Nodes.back().Properties["pattern"] = xr_string{"zyx"};
+	Graph.Nodes.push_back(*CreateMaterialGraphNode(
+		"break_vector",
+		{"break-float3"},
+		{},
+		EMaterialValueType::Float3
+	));
+	Graph.Nodes.push_back(*CreateMaterialGraphNode(
+		"material_output",
+		{"vector-output"}
+	));
+
+	const FMaterialGraphNode& X = Graph.Nodes[0];
+	const FMaterialGraphNode& Y = Graph.Nodes[1];
+	const FMaterialGraphNode& Z = Graph.Nodes[2];
+	const FMaterialGraphNode& Make = Graph.Nodes[3];
+	const FMaterialGraphNode& Swizzle = Graph.Nodes[4];
+	const FMaterialGraphNode& Break = Graph.Nodes[5];
+	const FMaterialGraphNode& Output = Graph.Nodes[6];
+	Graph.Links = {
+		{"make-x", GraphPin(X, "Value", EMaterialPinDirection::Output).Id,
+		 GraphPin(Make, "X", EMaterialPinDirection::Input).Id},
+		{"make-y", GraphPin(Y, "Value", EMaterialPinDirection::Output).Id,
+		 GraphPin(Make, "Y", EMaterialPinDirection::Input).Id},
+		{"make-z", GraphPin(Z, "Value", EMaterialPinDirection::Output).Id,
+		 GraphPin(Make, "Z", EMaterialPinDirection::Input).Id},
+		{"swizzle-value",
+		 GraphPin(Make, "Result", EMaterialPinDirection::Output).Id,
+		 GraphPin(Swizzle, "Value", EMaterialPinDirection::Input).Id},
+		{"break-value",
+		 GraphPin(Swizzle, "Result", EMaterialPinDirection::Output).Id,
+		 GraphPin(Break, "Value", EMaterialPinDirection::Input).Id},
+		{"base-color",
+		 GraphPin(Swizzle, "Result", EMaterialPinDirection::Output).Id,
+		 GraphPin(Output, "BaseColor", EMaterialPinDirection::Input).Id},
+		{"roughness",
+		 GraphPin(Break, "X", EMaterialPinDirection::Output).Id,
+		 GraphPin(Output, "Roughness", EMaterialPinDirection::Input).Id},
+	};
+
+	const FMaterialGraphCompileResult Result = CompileMaterialGraph(Graph, {});
+	MATERIAL_CHECK(Runner, Result.Succeeded());
+	MATERIAL_CHECK(
+		Runner,
+		Result.GeneratedHlsl.find("float3(") != xr_string::npos
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Result.GeneratedHlsl.find(").zyx") != xr_string::npos
+	);
+	MATERIAL_CHECK(
+		Runner,
+		Result.GeneratedHlsl.find(").x") != xr_string::npos
+	);
+
+	FMaterialGraph Invalid = Graph;
+	Invalid.Nodes[4].Properties["pattern"] = xr_string{"xwz"};
+	const FMaterialGraphCompileResult InvalidResult =
+		CompileMaterialGraph(Invalid, {});
+	MATERIAL_CHECK(Runner, !InvalidResult.Succeeded());
+	MATERIAL_CHECK(
+		Runner,
+		HasDiagnostic(
+			InvalidResult.Diagnostics,
+			"graph.invalid_swizzle_pattern"
+		)
+	);
+}
+
 void TestGraphJsonAndGoldenHlsl(TiramisuMaterialTestRunner& Runner)
 {
 	const FMaterialAssetParseResult Asset = ParseMaterialAssetJson(
@@ -338,6 +529,7 @@ int main()
 	TestCustomHlslRestrictions(Runner);
 	TestParameterIdentityAndDescriptorIndexing(Runner);
 	TestTextureSampleParameterBinding(Runner);
+	TestMakeBreakAndSwizzle(Runner);
 	TestGraphJsonAndGoldenHlsl(Runner);
 	return Runner.Finish();
 }

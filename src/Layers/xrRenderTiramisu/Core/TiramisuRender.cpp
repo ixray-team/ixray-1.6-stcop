@@ -827,6 +827,9 @@ void TiramisuRender::UpdateGlobalConstantBuffer()
 	{
 		ConstantBuffer->SceneView = {(float)OutputRenderTarget->TextureDescription.width, (float)OutputRenderTarget->TextureDescription.height, 1.f / OutputRenderTarget->TextureDescription.width, 1.f / OutputRenderTarget->TextureDescription.height};
 		ConstantBuffer->ViewProjection = DevicePtr->mFullTransform;
+		ConstantBuffer->InverseViewProjection.invert(
+			ConstantBuffer->ViewProjection
+		);
 		static const FRenderDeterministicTestPolicy DeterministicTest =
 			ResolveRenderDeterministicTestPolicy(
 				Core.Params ? Core.Params : ""
@@ -843,7 +846,7 @@ void TiramisuRender::UpdateGlobalConstantBuffer()
 		ConstantBuffer->LightDataBufferIndex = 0;
 		ConstantBuffer->LightDataOffset = 0;
 		ConstantBuffer->LightCount = 0;
-		ConstantBuffer->LightingFlags = 0;
+		ConstantBuffer->EnvironmentTextureIndex = UINT32_MAX;
 		ConstantBuffer->SkinningPaletteBufferIndex = UINT32_MAX;
 		std::fill_n(ConstantBuffer->MaterialGpuAbiPadding, 3, 0u);
 		GRenderDevice.CoreInterface.UnmapBuffer(*GlobalConstantBuffer);

@@ -177,7 +177,7 @@ void TestValidation(TiramisuMaterialTestRunner& Runner)
 
 void TestGpuAbi(TiramisuMaterialTestRunner& Runner)
 {
-	MATERIAL_CHECK(Runner, MaterialGpuAbiVersion == 4);
+	MATERIAL_CHECK(Runner, MaterialGpuAbiVersion == 5);
 	MATERIAL_CHECK(Runner, sizeof(FMaterialLightGpuData) == MaterialLightGpuDataSize);
 	MATERIAL_CHECK(Runner, sizeof(FMaterialInstanceGpuData) == MaterialInstanceGpuDataSize);
 	MATERIAL_CHECK(Runner, offsetof(FMaterialInstanceGpuData, ParameterDataOffset) == 0);

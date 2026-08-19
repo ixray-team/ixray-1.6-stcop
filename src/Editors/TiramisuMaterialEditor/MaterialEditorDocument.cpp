@@ -541,6 +541,84 @@ FMaterialEditorOperationResult TiramisuMaterialEditorDocument::SetNodeProperty(
 	return Result;
 }
 
+FMaterialEditorOperationResult TiramisuMaterialEditorDocument::SetCustomHlslSignature(
+	const FMaterialNodeId& NodeId,
+	const xr_span<const FMaterialCustomHlslInputDefinition> Inputs,
+	const EMaterialValueType OutputType
+)
+{
+	FMaterialEditorOperationResult Result;
+	if (!RequireGraph(Result))
+	{
+		return Result;
+	}
+
+	FMaterialGraph& Graph = MaterialAsset.Implementation.Graph;
+	const auto Node = std::ranges::find(Graph.Nodes, NodeId, &FMaterialGraphNode::Id);
+	if (Node == Graph.Nodes.end())
+	{
+		AddDiagnostic(
+			Result,
+			"editor.missing_node",
+			"The node no longer exists.",
+			NodeId
+		);
+		return Result;
+	}
+
+	FMaterialGraphNode Updated = *Node;
+	FMaterialCustomHlslSignatureResult SignatureResult =
+		ConfigureMaterialCustomHlslNode(Updated, Inputs, OutputType);
+	Result.Diagnostics = std::move(SignatureResult.Diagnostics);
+	if (!Result.Succeeded())
+	{
+		return Result;
+	}
+
+	const bool Unchanged = Node->Pins.size() == Updated.Pins.size() &&
+		std::ranges::equal(
+			Node->Pins,
+			Updated.Pins,
+			[](const FMaterialGraphPin& Left, const FMaterialGraphPin& Right)
+			{
+				return Left.Id == Right.Id &&
+					Left.Name == Right.Name &&
+					Left.Direction == Right.Direction &&
+					Left.Type == Right.Type;
+			}
+		);
+	if (Unchanged)
+	{
+		return Result;
+	}
+
+	xr_hash_set<xr_string> InvalidatedPins;
+	for (const FMaterialGraphPin& OldPin : Node->Pins)
+	{
+		const auto NewPin = std::ranges::find(
+			Updated.Pins,
+			OldPin.Id,
+			&FMaterialGraphPin::Id
+		);
+		if (NewPin == Updated.Pins.end() || NewPin->Type != OldPin.Type)
+		{
+			InvalidatedPins.emplace(OldPin.Id.Value);
+		}
+	}
+
+	RecordMutation();
+	*Node = std::move(Updated);
+	std::erase_if(
+		Graph.Links,
+		[&InvalidatedPins](const FMaterialGraphLink& Link)
+		{
+			return InvalidatedPins.contains(Link.FromPin.Value) ||
+				InvalidatedPins.contains(Link.ToPin.Value);
+		}
+	);
+	return Result;
+}
+
 FMaterialEditorOperationResult TiramisuMaterialEditorDocument::CopyNodes(
 	const xr_span<const FMaterialNodeId> NodeIds, xr_string& ClipboardJson
 ) const
@@ -657,9 +735,26 @@ FMaterialEditorOperationResult TiramisuMaterialEditorDocument::PasteNodes(
 		EMaterialValueType ValueType = Definition->DefaultValueType;
 		if (Definition->ValueTypeConfigurable)
 		{
-			const auto Output = std::ranges::find_if(SourceNode.Pins, [](const FMaterialGraphPin& Pin)
-													 { return Pin.Direction == EMaterialPinDirection::Output; });
-			if (Output != SourceNode.Pins.end())
+			const auto VectorPin = std::ranges::find_if(
+				SourceNode.Pins,
+				[](const FMaterialGraphPin& Pin)
+				{
+					return Pin.Type >= EMaterialValueType::Float2 &&
+						Pin.Type <= EMaterialValueType::Float4;
+				}
+			);
+			const auto Output = std::ranges::find_if(
+				SourceNode.Pins,
+				[](const FMaterialGraphPin& Pin)
+				{
+					return Pin.Direction == EMaterialPinDirection::Output;
+				}
+			);
+			if (VectorPin != SourceNode.Pins.end())
+			{
+				ValueType = VectorPin->Type;
+			}
+			else if (Output != SourceNode.Pins.end())
 			{
 				ValueType = Output->Type;
 			}
@@ -673,6 +768,37 @@ FMaterialEditorOperationResult TiramisuMaterialEditorDocument::PasteNodes(
 		{
 			AddDiagnostic(Result, "editor.clipboard_node_migration_failed", "Clipboard node could not be recreated with the current schema.", SourceNode.Id);
 			continue;
+		}
+		if (SourceNode.Type == "custom_hlsl")
+		{
+			xr_vector<FMaterialCustomHlslInputDefinition> Inputs;
+			EMaterialValueType OutputType = EMaterialValueType::Invalid;
+			for (const FMaterialGraphPin& Pin : SourceNode.Pins)
+			{
+				if (Pin.Direction == EMaterialPinDirection::Input)
+				{
+					Inputs.push_back({Pin.Name, Pin.Type});
+				}
+				else if (Pin.Name == "Result")
+				{
+					OutputType = Pin.Type;
+				}
+			}
+			FMaterialCustomHlslSignatureResult Signature =
+				ConfigureMaterialCustomHlslNode(
+					*NewNode,
+					Inputs,
+					OutputType
+				);
+			Result.Diagnostics.insert(
+				Result.Diagnostics.end(),
+				Signature.Diagnostics.begin(),
+				Signature.Diagnostics.end()
+			);
+			if (!Signature.Succeeded())
+			{
+				continue;
+			}
 		}
 
 		for (const auto& [Name, Value] : SourceNode.Properties)

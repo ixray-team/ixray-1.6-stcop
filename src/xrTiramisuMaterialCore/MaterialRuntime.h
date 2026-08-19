@@ -20,7 +20,7 @@ struct FDescriptorHeapIndex
 	auto operator<=>(const FDescriptorHeapIndex&) const = default;
 };
 
-inline constexpr u32 MaterialGpuAbiVersion = 4;
+inline constexpr u32 MaterialGpuAbiVersion = 5;
 inline constexpr u32 MaterialInstanceGpuDataSize = 16;
 inline constexpr u32 MaterialDrawGpuDataSize = 160;
 inline constexpr u32 MaterialLightGpuDataSize = 64;

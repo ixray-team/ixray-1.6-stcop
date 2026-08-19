@@ -300,7 +300,7 @@ void XrUIManager::PresentMainFrame()
 	R_ASSERT2(m_RenderBackend->OwnsMainPresentation(), "Only an external editor renderer can own deferred main presentation");
 	bool RenderDocCaptureStarted = false;
 	void* RenderDocWindowHandle = nullptr;
-	if (!m_RenderDocCaptureAttempted &&
+	if (m_RenderDocCaptureGateOpen && !m_RenderDocCaptureAttempted &&
 		HasRenderCommandLineFlag(
 			Core.Params ? Core.Params : "", "-renderdoc-capture"
 		))
@@ -323,11 +323,18 @@ void XrUIManager::PresentMainFrame()
 	}
 	if (RenderDocCaptureStarted)
 	{
-		Msg(xrRenderDoc::EndCapture(RenderDocWindowHandle)
+		m_RenderDocCaptureSucceeded =
+			xrRenderDoc::EndCapture(RenderDocWindowHandle);
+		Msg(m_RenderDocCaptureSucceeded
 				? "* RenderDoc: explicit editor frame capture completed"
 				: "! RenderDoc: explicit editor frame capture could not complete");
 	}
 	m_MainPresentationPending = false;
+}
+
+void XrUIManager::SetRenderDocCaptureGateOpen(const bool Open) noexcept
+{
+	m_RenderDocCaptureGateOpen = Open;
 }
 
 void XrUIManager::MDIUpdate()

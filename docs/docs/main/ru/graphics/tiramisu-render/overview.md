@@ -62,7 +62,7 @@ LevelEditor.exe -tiramisu-editor -rdbg -render-deterministic -editor-test-hidden
 LevelEditor.exe -tiramisu-editor -dx12 -rdbg -render-deterministic -editor-test-hidden -material-preview-smoke -viewport-material-reload-smoke -renderdoc -renderdoc-capture
 ```
 
-`-renderdoc` принимает уже инжектированный `renderdoc.dll` либо ищет его рядом с executable, по пути из переменной `RENDERDOC_DLL`, через `PATH` и в стандартном `Program Files\RenderDoc`. Версия API и полный путь DLL выводятся в лог. Интерактивный захват выполняется клавишей `F12`. Для автоматического smoke используется дополнительный `-renderdoc-capture`: он явно оборачивает один внешний present через `StartFrameCapture`/`EndFrameCapture` и передаёт HWND главного окна. Имя содержит backend и PID (`LevelEditor_vulkan_<pid>_capture.rdc` или `LevelEditor_d3d12_<pid>_capture.rdc`), поэтому параллельные normal/ASan запуски не перезаписывают друг друга. Файлы сохраняются в `logs/renderdoc/`; для текущего workspace это `G:/GameDev/Engine/XRay/ixray-1.6-stcop/logs/renderdoc/`.
+`-renderdoc` принимает уже инжектированный `renderdoc.dll` либо ищет его рядом с executable, по пути из переменной `RENDERDOC_DLL`, через `PATH` и в стандартном `Program Files\RenderDoc`. Версия API и полный путь DLL выводятся в лог. Интерактивный захват выполняется клавишей `F12`. Для автоматического smoke используется дополнительный `-renderdoc-capture`: capture gate ждёт готовности material pipelines и reload acceptance, после чего явно оборачивает следующий внешний present через `StartFrameCapture`/`EndFrameCapture` и передаёт HWND главного окна. Редактор завершается только после успешного `EndFrameCapture`; самый первый стартовый present больше не считается RenderDoc acceptance. Имя содержит backend и PID (`LevelEditor_vulkan_<pid>_capture.rdc` или `LevelEditor_d3d12_<pid>_capture.rdc`), поэтому параллельные normal/ASan запуски не перезаписывают друг друга. Файлы сохраняются в `logs/renderdoc/`; для текущего workspace это `G:/GameDev/Engine/XRay/ixray-1.6-stcop/logs/renderdoc/`.
 
 `-rdbg` остаётся обязательным и продолжает включать debug-информацию DXC. Когда RenderDoc активен, конфликтующие graphics API validation и NRI validation layers автоматически отключаются до создания device; это явно отмечается в логе. Для узкой диагностики доступен опасный override `-renderdoc-validation`, принудительно совмещающий RenderDoc с validation layers; он может быть нестабилен и не используется в штатных тестах.
 
@@ -101,7 +101,7 @@ LevelEditor.exe -tiramisu-editor -dx12 -rdbg -render-deterministic -editor-test-
 - LevelEditor NRI viewport с material slot resolution, pre-authored instances, Forward material permutations и runtime Directional/Point/Spot PBR lighting;
 - отдельный LevelEditor Tiramisu redraw, который обходит legacy `CEditorRenderDevice::Begin`/`RCache`/`Scene->Render` и передаёт scene snapshot, ImGui submit и Present в `xrRenderTiramisu`;
 - тройная буферизация editor draw/instance/parameter/light/skinning records:
-  `NRI_BASE_INSTANCE` индексирует ABI v4 `FMaterialDrawGpuData`, а scene
+  `NRI_BASE_INSTANCE` индексирует ABI v5 `FMaterialDrawGpuData`, а scene
   constants задают bindless light, palette buffers и inverse view-projection;
 - отдельный projective Decal pass LevelEditor: scene depth читается через
   `ResourceDescriptorHeap`, мировая позиция восстанавливается в pixel shader,
