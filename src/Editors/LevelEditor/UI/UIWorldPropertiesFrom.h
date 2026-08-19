@@ -10,8 +10,6 @@ public:
 	IC void Close() { bOpen = false; }
 
 private:
-    ref_texture m_dds_texture;
-
     bool m_show_r;
     bool m_show_g;
     bool m_show_b;

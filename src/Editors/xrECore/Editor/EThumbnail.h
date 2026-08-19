@@ -54,7 +54,6 @@ protected:
 public:
 					EImageThumbnail	(const char* src_name, THMType type):ECustomThumbnail(src_name, type){};
 	virtual			~EImageThumbnail();
-	virtual void 	Update			(IRHISurface*& Texture);
     u32*			Pixels			(){return &m_Pixels.front();}
     virtual	int		MemoryUsage		(){return 0;};
 
@@ -86,7 +85,6 @@ public:
         	void    SetValid        () {m_bValid = true;}
 	virtual void	FillProp		(PropItemVec& values, PropValue::TOnChange on_type_change);
 	virtual void	FillInfo		(PropItemVec& values);
-	virtual void 	Update			(IRHISurface*& Texture) override;
 //	virtual void 	Draw			(TMxPanel* panel){inherited::Draw(panel);}
 
     virtual int		MemoryUsage		();

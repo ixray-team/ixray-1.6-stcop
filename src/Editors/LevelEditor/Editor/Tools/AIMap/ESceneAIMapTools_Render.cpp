@@ -43,6 +43,64 @@ void ESceneAIMapTool::OnDeviceDestroy()
 bool ai_map_shown = true;
 
 static const u32 block_size = 0x2000;
+
+void ESceneAIMapTool::CollectVisibleNodes(
+	const Fvector& Center,
+	const float Radius,
+	const size_t MaxCount,
+	AINodeVec& OutNodes
+)
+{
+	OutNodes.clear();
+	if (MaxCount == 0 || m_Nodes.empty() ||
+		m_Flags.is(flHideNodes) || !ai_map_shown)
+	{
+		return;
+	}
+	const float SafeRadius = std::max(Radius, EPS_L);
+	const float RadiusSquared = SafeRadius * SafeRadius;
+	auto AppendNode = [&](SAINode* Node)
+	{
+		if (!Node || OutNodes.size() >= MaxCount ||
+			Center.distance_to_sqr(Node->Pos) > RadiusSquared)
+		{
+			return;
+		}
+		OutNodes.push_back(Node);
+	};
+	if (m_AIBBox.is_valid())
+	{
+		Irect Rect;
+		HashRect(Center, SafeRadius, Rect);
+		for (int X = Rect.x1;
+			 X <= Rect.x2 && OutNodes.size() < MaxCount;
+			 ++X)
+		{
+			for (int Z = Rect.y1;
+				 Z <= Rect.y2 && OutNodes.size() < MaxCount;
+				 ++Z)
+			{
+				if (AINodeVec* Bucket = HashMap(X, Z))
+				{
+					for (SAINode* Node : *Bucket)
+					{
+						AppendNode(Node);
+					}
+				}
+			}
+		}
+	}
+	// Небольшой ещё не синхронизированный набор встречается при создании
+	// новой карты и в smoke-тесте. Линейный fallback намеренно ограничен.
+	if (OutNodes.empty() && m_Nodes.size() <= MaxCount)
+	{
+		for (SAINode* Node : m_Nodes)
+		{
+			AppendNode(Node);
+		}
+	}
+}
+
 void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
 {
     if (!IsLoaded)

@@ -15,6 +15,14 @@
 #include <utility>
 #include <vector>
 
+// Renderer-owned binding skeletal vertex. Он не входит в публичный контракт
+// LevelEditor: OGF parser добавляет данные только внутри xrRenderTiramisu.
+struct FEditorOwnedSkinBinding
+{
+	xr_array<u16, 4> BoneIndices = {};
+	xr_array<float, 4> Weights = {1.0f, 0.0f, 0.0f, 0.0f};
+};
+
 // Владеющий CPU-пакет geometry static mesh для render thread.
 struct FEditorOwnedStaticMeshUpload
 {
@@ -23,6 +31,7 @@ struct FEditorOwnedStaticMeshUpload
 	xr_vector<FEditorStaticMeshVertex> Vertices;
 	xr_vector<u32> Indices;
 	xr_vector<FEditorStaticMeshSection> Sections;
+	xr_vector<FEditorOwnedSkinBinding> SkinBindings;
 };
 
 // Исходные данные material slot editor mesh до runtime-разрешения.
@@ -34,6 +43,29 @@ struct FEditorOwnedMaterialSlotSource
 	xr_string SurfaceName;
 	EEditorMaterialSlotFlags Flags = EEditorMaterialSlotFlags::None;
 	xr_string MaterialAsset;
+	// Только renderer-owned OGF path запрашивает skeletal permutation.
+	bool SupportsSkeletal = false;
+};
+
+struct FEditorOwnedParticleInstance
+{
+	FEditorSceneObjectId ObjectId;
+	xr_string AssetName;
+	EEditorParticleAssetType AssetType =
+		EEditorParticleAssetType::Effect;
+	xr_array<float, 16> LocalToWorld = {};
+	EEditorParticleInstanceFlags Flags =
+		EEditorParticleInstanceFlags::None;
+};
+
+struct FEditorOwnedModelInstance
+{
+	FEditorSceneObjectId ObjectId;
+	xr_string AssetName;
+	xr_string AnimationName;
+	xr_array<float, 16> LocalToWorld = {};
+	EEditorSceneInstanceFlags Flags =
+		EEditorSceneInstanceFlags::None;
 };
 
 // Полный неизменяемый снимок editor scene для передачи renderer.
@@ -44,7 +76,13 @@ struct FEditorOwnedViewportScenePacket
 	xr_vector<FEditorOwnedStaticMeshUpload> StaticMeshUpdates;
 	xr_vector<FEditorStaticMeshId> RemovedStaticMeshes;
 	xr_vector<FEditorStaticMeshInstance> Instances;
+	xr_vector<FEditorDecalInstance> DecalInstances;
+	xr_vector<FEditorOwnedModelInstance> ModelInstances;
+	u32 SourceInstanceCount = 0;
+	u32 PendingModelLoadCount = 0;
+	u32 ModelDrawCount = 0;
 	xr_vector<FEditorSceneLight> Lights;
+	xr_vector<FEditorOwnedParticleInstance> ParticleInstances;
 	xr_vector<FEditorDebugLine> DebugLines;
 	xr_vector<FEditorDebugTriangle> DebugTriangles;
 	xr_vector<FEditorOverlayLine> OverlayLines;
@@ -142,11 +180,62 @@ public:
 		}
 		xr_hash_set<u64> SceneObjectIds;
 		SceneObjectIds.reserve(
-			Snapshot.Instances.size() + Snapshot.Lights.size()
+			Snapshot.Instances.size() + Snapshot.ModelInstances.size() +
+			Snapshot.DecalInstances.size() + Snapshot.Lights.size() +
+			Snapshot.ParticleInstances.size()
 		);
 		for (const FEditorStaticMeshInstance& Instance : Snapshot.Instances)
 		{
 			SceneObjectIds.insert(Instance.ObjectId.Value);
+		}
+		if (Snapshot.DecalInstances.size() >
+			EditorViewportMaxDecalCount)
+		{
+			SetDiagnostic(
+				OutDiagnostic,
+				"Scene decal count exceeds the viewport limit"
+			);
+			return false;
+		}
+		for (const FEditorDecalInstance& Decal :
+			 Snapshot.DecalInstances)
+		{
+			if (!Decal.ObjectId.IsValid() ||
+				!SceneObjectIds.insert(Decal.ObjectId.Value).second ||
+				!Decal.MaterialSlot.IsValid() ||
+				!SubmittedMaterialIds.contains(Decal.MaterialSlot.Value) ||
+				!IsFinite(Decal.LocalToWorld))
+			{
+				SetDiagnostic(
+					OutDiagnostic,
+					"Scene decal has an invalid ID, material or transform"
+				);
+				return false;
+			}
+		}
+		xr_vector<FEditorOwnedModelInstance> ModelCopies;
+		ModelCopies.reserve(Snapshot.ModelInstances.size());
+		for (const FEditorModelInstance& Model : Snapshot.ModelInstances)
+		{
+			if (!Model.ObjectId.IsValid() ||
+				!SceneObjectIds.insert(Model.ObjectId.Value).second ||
+				Model.AssetName.empty() || Model.AssetName.size() > 1024 ||
+				Model.AnimationName.size() > 1024 ||
+				!IsFinite(Model.LocalToWorld))
+			{
+				SetDiagnostic(
+					OutDiagnostic,
+					"Model instance has an invalid asset, ID or transform"
+				);
+				return false;
+			}
+			ModelCopies.push_back({
+				Model.ObjectId,
+				xr_string(Model.AssetName),
+				xr_string(Model.AnimationName),
+				Model.LocalToWorld,
+				Model.Flags
+			});
 		}
 		if (Snapshot.Lights.size() > EditorViewportMaxLightCount)
 		{
@@ -179,6 +268,36 @@ public:
 				return false;
 			}
 		}
+		xr_vector<FEditorOwnedParticleInstance> ParticleCopies;
+		ParticleCopies.reserve(Snapshot.ParticleInstances.size());
+		for (const FEditorParticleInstance& Particle :
+			 Snapshot.ParticleInstances)
+		{
+			const bool ValidType =
+				Particle.AssetType == EEditorParticleAssetType::Effect ||
+				Particle.AssetType == EEditorParticleAssetType::Group;
+			if (!ValidType || !Particle.ObjectId.IsValid() ||
+				!SceneObjectIds.insert(Particle.ObjectId.Value).second ||
+				Particle.AssetName.empty() ||
+				Particle.AssetName.size() > 1024 ||
+				!IsFinite(Particle.LocalToWorld))
+			{
+				SetDiagnostic(
+					OutDiagnostic,
+					"Particle instance has an invalid asset, ID or transform"
+				);
+				return false;
+			}
+			ParticleCopies.push_back({
+				Particle.ObjectId,
+				xr_string(Particle.AssetName),
+				Particle.AssetType,
+				Particle.LocalToWorld,
+				Particle.Flags
+			});
+		}
+		const bool DebugDrawChanged =
+			Snapshot.DebugDrawRevision != AcceptedDebugDrawRevision;
 		if ((!Snapshot.DebugLines.empty() || !Snapshot.DebugTriangles.empty() ||
 			 !Snapshot.OverlayLines.empty() ||
 			 !Snapshot.OverlayTriangles.empty() ||
@@ -188,56 +307,59 @@ public:
 			SetDiagnostic(OutDiagnostic, "Non-empty editor debug draw has no revision");
 			return false;
 		}
-		for (const FEditorDebugLine& Line : Snapshot.DebugLines)
+		if (DebugDrawChanged)
 		{
-			for (const FEditorDebugVertex& Vertex : Line.Vertices)
+			for (const FEditorDebugLine& Line : Snapshot.DebugLines)
 			{
-				if (!ValidateDebugVertex(Vertex))
+				for (const FEditorDebugVertex& Vertex : Line.Vertices)
 				{
-					SetDiagnostic(OutDiagnostic, "Editor debug line contains a non-finite vertex");
-					return false;
+					if (!ValidateDebugVertex(Vertex))
+					{
+						SetDiagnostic(OutDiagnostic, "Editor debug line contains a non-finite vertex");
+						return false;
+					}
 				}
 			}
-		}
-		for (const FEditorDebugTriangle& Triangle : Snapshot.DebugTriangles)
-		{
-			for (const FEditorDebugVertex& Vertex : Triangle.Vertices)
+			for (const FEditorDebugTriangle& Triangle : Snapshot.DebugTriangles)
 			{
-				if (!ValidateDebugVertex(Vertex))
+				for (const FEditorDebugVertex& Vertex : Triangle.Vertices)
 				{
-					SetDiagnostic(OutDiagnostic, "Editor debug triangle contains a non-finite vertex");
-					return false;
+					if (!ValidateDebugVertex(Vertex))
+					{
+						SetDiagnostic(OutDiagnostic, "Editor debug triangle contains a non-finite vertex");
+						return false;
+					}
 				}
 			}
-		}
-		for (const FEditorOverlayLine& Line : Snapshot.OverlayLines)
-		{
-			for (const FEditorOverlayVertex& Vertex : Line.Vertices)
+			for (const FEditorOverlayLine& Line : Snapshot.OverlayLines)
 			{
-				if (!ValidateOverlayVertex(Vertex))
+				for (const FEditorOverlayVertex& Vertex : Line.Vertices)
 				{
-					SetDiagnostic(OutDiagnostic, "Editor overlay line contains an invalid vertex");
-					return false;
+					if (!ValidateOverlayVertex(Vertex))
+					{
+						SetDiagnostic(OutDiagnostic, "Editor overlay line contains an invalid vertex");
+						return false;
+					}
 				}
 			}
-		}
-		for (const FEditorOverlayTriangle& Triangle : Snapshot.OverlayTriangles)
-		{
-			for (const FEditorOverlayVertex& Vertex : Triangle.Vertices)
+			for (const FEditorOverlayTriangle& Triangle : Snapshot.OverlayTriangles)
 			{
-				if (!ValidateOverlayVertex(Vertex))
+				for (const FEditorOverlayVertex& Vertex : Triangle.Vertices)
 				{
-					SetDiagnostic(OutDiagnostic, "Editor overlay triangle contains an invalid vertex");
-					return false;
+					if (!ValidateOverlayVertex(Vertex))
+					{
+						SetDiagnostic(OutDiagnostic, "Editor overlay triangle contains an invalid vertex");
+						return false;
+					}
 				}
 			}
-		}
-		for (const FEditorOverlayText& Text : Snapshot.OverlayText)
-		{
-			if (!ValidateOverlayText(Text))
+			for (const FEditorOverlayText& Text : Snapshot.OverlayText)
 			{
-				SetDiagnostic(OutDiagnostic, "Editor overlay text is empty, oversized or non-finite");
-				return false;
+				if (!ValidateOverlayText(Text))
+				{
+					SetDiagnostic(OutDiagnostic, "Editor overlay text is empty, oversized or non-finite");
+					return false;
+				}
 			}
 		}
 
@@ -364,12 +486,38 @@ public:
 		PendingCamera = Snapshot.Camera;
 		PendingMaterialSlots = std::move(MaterialCopies);
 		PendingInstances.assign(Snapshot.Instances.begin(), Snapshot.Instances.end());
+		PendingDecalInstances.assign(
+			Snapshot.DecalInstances.begin(),
+			Snapshot.DecalInstances.end()
+		);
+		PendingModelInstances = std::move(ModelCopies);
 		PendingLights.assign(Snapshot.Lights.begin(), Snapshot.Lights.end());
-		PendingDebugLines.assign(Snapshot.DebugLines.begin(), Snapshot.DebugLines.end());
-		PendingDebugTriangles.assign(Snapshot.DebugTriangles.begin(), Snapshot.DebugTriangles.end());
-		PendingOverlayLines.assign(Snapshot.OverlayLines.begin(), Snapshot.OverlayLines.end());
-		PendingOverlayTriangles.assign(Snapshot.OverlayTriangles.begin(), Snapshot.OverlayTriangles.end());
-		PendingOverlayText.assign(Snapshot.OverlayText.begin(), Snapshot.OverlayText.end());
+		PendingParticleInstances = std::move(ParticleCopies);
+		if (DebugDrawChanged)
+		{
+			PendingDebugLines.assign(
+				Snapshot.DebugLines.begin(),
+				Snapshot.DebugLines.end()
+			);
+			PendingDebugTriangles.assign(
+				Snapshot.DebugTriangles.begin(),
+				Snapshot.DebugTriangles.end()
+			);
+			PendingOverlayLines.assign(
+				Snapshot.OverlayLines.begin(),
+				Snapshot.OverlayLines.end()
+			);
+			PendingOverlayTriangles.assign(
+				Snapshot.OverlayTriangles.begin(),
+				Snapshot.OverlayTriangles.end()
+			);
+			PendingOverlayText.assign(
+				Snapshot.OverlayText.begin(),
+				Snapshot.OverlayText.end()
+			);
+			PendingDebugDrawChanged = true;
+		}
+		AcceptedDebugDrawRevision = Snapshot.DebugDrawRevision;
 		PendingDebugDrawRevision = Snapshot.DebugDrawRevision;
 		PendingRevision = Snapshot.Revision;
 		HasPendingScene = true;
@@ -384,17 +532,47 @@ public:
 			return false;
 		}
 
-		OutPacket = {};
+		if (PendingDebugDrawChanged)
+		{
+			OutPacket = {};
+		}
+		else
+		{
+			auto DebugLines = std::move(OutPacket.DebugLines);
+			auto DebugTriangles = std::move(OutPacket.DebugTriangles);
+			auto OverlayLines = std::move(OutPacket.OverlayLines);
+			auto OverlayTriangles =
+				std::move(OutPacket.OverlayTriangles);
+			auto OverlayText = std::move(OutPacket.OverlayText);
+			OutPacket = {};
+			OutPacket.DebugLines = std::move(DebugLines);
+			OutPacket.DebugTriangles = std::move(DebugTriangles);
+			OutPacket.OverlayLines = std::move(OverlayLines);
+			OutPacket.OverlayTriangles = std::move(OverlayTriangles);
+			OutPacket.OverlayText = std::move(OverlayText);
+		}
 		OutPacket.Camera = PendingCamera;
 		OutPacket.MaterialSlots = std::move(PendingMaterialSlots);
 		OutPacket.Revision = PendingRevision;
 		OutPacket.Instances = std::move(PendingInstances);
+		OutPacket.DecalInstances = std::move(PendingDecalInstances);
+		OutPacket.ModelInstances = std::move(PendingModelInstances);
+		OutPacket.SourceInstanceCount = static_cast<u32>(
+			OutPacket.Instances.size()
+		);
 		OutPacket.Lights = std::move(PendingLights);
-		OutPacket.DebugLines = std::move(PendingDebugLines);
-		OutPacket.DebugTriangles = std::move(PendingDebugTriangles);
-		OutPacket.OverlayLines = std::move(PendingOverlayLines);
-		OutPacket.OverlayTriangles = std::move(PendingOverlayTriangles);
-		OutPacket.OverlayText = std::move(PendingOverlayText);
+		OutPacket.ParticleInstances =
+			std::move(PendingParticleInstances);
+		if (PendingDebugDrawChanged)
+		{
+			OutPacket.DebugLines = std::move(PendingDebugLines);
+			OutPacket.DebugTriangles =
+				std::move(PendingDebugTriangles);
+			OutPacket.OverlayLines = std::move(PendingOverlayLines);
+			OutPacket.OverlayTriangles =
+				std::move(PendingOverlayTriangles);
+			OutPacket.OverlayText = std::move(PendingOverlayText);
+		}
 		OutPacket.DebugDrawRevision = PendingDebugDrawRevision;
 		OutPacket.StaticMeshUpdates.reserve(PendingMeshUpdates.size());
 		for (auto& [MeshId, Mesh] : PendingMeshUpdates)
@@ -409,6 +587,7 @@ public:
 
 		PendingMeshUpdates.clear();
 		PendingRemovedMeshes.clear();
+		PendingDebugDrawChanged = false;
 		HasPendingScene = false;
 		return true;
 	}
@@ -531,13 +710,18 @@ private:
 	FEditorViewportCamera PendingCamera;
 	xr_vector<FEditorOwnedMaterialSlotSource> PendingMaterialSlots;
 	xr_vector<FEditorStaticMeshInstance> PendingInstances;
+	xr_vector<FEditorDecalInstance> PendingDecalInstances;
+	xr_vector<FEditorOwnedModelInstance> PendingModelInstances;
 	xr_vector<FEditorSceneLight> PendingLights;
+	xr_vector<FEditorOwnedParticleInstance> PendingParticleInstances;
 	xr_vector<FEditorDebugLine> PendingDebugLines;
 	xr_vector<FEditorDebugTriangle> PendingDebugTriangles;
 	xr_vector<FEditorOverlayLine> PendingOverlayLines;
 	xr_vector<FEditorOverlayTriangle> PendingOverlayTriangles;
 	xr_vector<FEditorOverlayText> PendingOverlayText;
 	u64 PendingDebugDrawRevision = 0;
+	u64 AcceptedDebugDrawRevision = 0;
+	bool PendingDebugDrawChanged = false;
 	u64 PendingRevision = 0;
 	bool HasPendingScene = false;
 };

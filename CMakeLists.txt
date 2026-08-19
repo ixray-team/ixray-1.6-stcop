@@ -59,6 +59,7 @@ set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 # ASan
 if (IXRAY_ASAN)
 	add_compile_options(-fsanitize=address)
+	add_compile_definitions(IXRAY_ASAN_BUILD=1)
 endif()
 
 ## Disable user-cheats for Release/Shipping build

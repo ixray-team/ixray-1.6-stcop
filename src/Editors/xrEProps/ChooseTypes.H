@@ -12,11 +12,8 @@ struct SChooseItem
     SChooseItem	(const char* nm, const char* ht):name(nm),hint(ht){}
 };
 
-class IRHISurface;
-
 struct SChooseTexture
 {
-    IRHISurface* Legacy = nullptr;
     FEditorTextureHandle Editor;
     u64 Revision = 0;
 };

@@ -5,7 +5,6 @@ UIIconPicker* UIIconPicker::Form = nullptr;
 
 UIIconPicker::UIIconPicker()
 {
-	Icons["ed_nodata"] = {EDevice->Resources->_CreateTexture("ed\\ed_nodata"), true};
 }
 
 UIIconPicker::~UIIconPicker()
@@ -31,7 +30,11 @@ bool UIIconPicker::ShowIcons()
 		}
 		xr_string id = "##ibUIIconPicker";
 		id += it->name;
-		if (ImGui::ImageButton(id.c_str(), UI->GetImGuiTexture(Icons[it->name]), ImVec2(button_size, button_size)))
+		if (ImGui::ImageButton(
+				id.c_str(),
+				UI->LoadTexture(Icons[it->name].c_str()),
+				ImVec2(button_size, button_size)
+			))
 		{
 			ImGui::Text("Button %d pressed", 0);
 			EPrefs->custom_icons[file_path.c_str()] = it->name;
@@ -146,13 +149,7 @@ void UIIconPicker::InitPreviewTexture(const xr_string& Tag, const string_path& P
 	}
 
 	xr_string NewPath = Path + Tag;
-	Icons[Tag] = EDevice->Resources->_CreateTexture(NewPath.c_str());
-	Icons[Tag]->Load();
-
-	if (!Icons[Tag]->pSurface)
-	{
-		Icons[Tag] = Icons["ed_nodata"];
-	}
+	Icons[Tag] = std::move(NewPath);
 }
 
 void UIIconPicker::HideLib()

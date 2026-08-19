@@ -1,6 +1,8 @@
 #include "stdafx.h"
+#include "../../xrCore/RenderDebugPolicy.h"
+#include "../../xrCore/RenderDocIntegration.h"
 #include "../../xrEngine/stdafx.h"
-#include "imgui_impl_dx9.h"
+#include "../../xrRHI/Layout/ImGui/RHIImGuiLayout.h"
 #include "imgui_impl_sdl3.h"
 #include "spectrum.h"
 #include <SDL3/SDL.h>
@@ -18,11 +20,6 @@ namespace
 class FDx9UIRendererBackend final : public IXrUIRendererBackend
 {
 public:
-	explicit FDx9UIRendererBackend(IDirect3DDevice9* InDevice)
-		: RenderDevice(InDevice)
-	{
-	}
-
 	[[nodiscard]] EXrUIRendererPlatform GetPlatform() const noexcept override
 	{
 		return EXrUIRendererPlatform::D3D;
@@ -40,36 +37,40 @@ public:
 
 	[[nodiscard]] bool Initialize() override
 	{
-		return RenderDevice && ImGui_ImplDX9_Init(RenderDevice);
+		if (!GRHI || !GRHI->DevicePtr ||
+			GRHI->APILevel != ERHI_API_LAYER::D3D9)
+		{
+			return false;
+		}
+		RHIUtils::ImGui::Init();
+		return true;
 	}
 
 	void Shutdown() override
 	{
-		ImGui_ImplDX9_Shutdown();
+		RHIUtils::ImGui::Destroy();
 	}
 
 	void BeginFrame() override
 	{
-		ImGui_ImplDX9_NewFrame();
+		RHIUtils::ImGui::NewFrame();
 	}
 
 	void RenderDrawData(ImDrawData& DrawData) override
 	{
-		ImGui_ImplDX9_RenderDrawData(&DrawData);
+		(void)DrawData;
+		RHIUtils::ImGui::DrawData();
 	}
 
 	void InvalidateDeviceObjects() override
 	{
-		ImGui_ImplDX9_InvalidateDeviceObjects();
+		RHIUtils::ImGui::Reset();
 	}
 
 	void CreateDeviceObjects() override
 	{
-		ImGui_ImplDX9_CreateDeviceObjects();
+		// DX9 backend пересоздаёт объекты в следующем NewFrame.
 	}
-
-private:
-	IDirect3DDevice9* RenderDevice = nullptr;
 };
 } // namespace
 
@@ -112,7 +113,7 @@ void LoadImGuiFontBase(const char* Font, float scale)
 	}
 }
 
-void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* ini_path)
+void XrUIManager::Initialize(HWND hWnd, const char* ini_path)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -167,7 +168,7 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 
 	if (!m_RenderBackend)
 	{
-		m_RenderBackend = new FDx9UIRendererBackend(device);
+		m_RenderBackend = new FDx9UIRendererBackend();
 		m_OwnRenderBackend = true;
 	}
 
@@ -297,9 +298,34 @@ void XrUIManager::PresentMainFrame()
 
 	R_ASSERT(m_RenderBackendInitialized && m_RenderBackend);
 	R_ASSERT2(m_RenderBackend->OwnsMainPresentation(), "Only an external editor renderer can own deferred main presentation");
+	bool RenderDocCaptureStarted = false;
+	void* RenderDocWindowHandle = nullptr;
+	if (!m_RenderDocCaptureAttempted &&
+		HasRenderCommandLineFlag(
+			Core.Params ? Core.Params : "", "-renderdoc-capture"
+		))
+	{
+		m_RenderDocCaptureAttempted = true;
+		RenderDocWindowHandle = SDL_GetPointerProperty(
+			SDL_GetWindowProperties(g_AppInfo.Window),
+			SDL_PROP_WINDOW_WIN32_HWND_POINTER,
+			nullptr
+		);
+		RenderDocCaptureStarted =
+			xrRenderDoc::BeginCapture(RenderDocWindowHandle);
+		Msg(RenderDocCaptureStarted
+				? "* RenderDoc: explicit editor frame capture started"
+				: "! RenderDoc: explicit editor frame capture could not start");
+	}
 	if (ImDrawData* DrawData = ImGui::GetDrawData())
 	{
 		m_RenderBackend->RenderDrawData(*DrawData);
+	}
+	if (RenderDocCaptureStarted)
+	{
+		Msg(xrRenderDoc::EndCapture(RenderDocWindowHandle)
+				? "* RenderDoc: explicit editor frame capture completed"
+				: "! RenderDoc: explicit editor frame capture could not complete");
 	}
 	m_MainPresentationPending = false;
 }

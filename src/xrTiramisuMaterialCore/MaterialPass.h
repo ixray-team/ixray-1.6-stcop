@@ -13,7 +13,7 @@ constexpr u32 MaterialPassManifestVersion = 1;
 constexpr u32 MaterialVertexFactoryManifestVersion = 1;
 inline constexpr xr_string_view MaterialCookedShaderModel = "6.6";
 inline constexpr xr_string_view MaterialCookedCompilerOptions =
-	"-O3;-Ges;descriptor_heap_indexing;pass_manifest_v1;vertex_factory_manifest_v1";
+	"-O3;-Ges;descriptor_heap_indexing;material_gpu_abi_v4;pass_manifest_v1;vertex_factory_manifest_v1";
 
 enum class EMaterialShaderStage : u8
 {

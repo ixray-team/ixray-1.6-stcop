@@ -279,6 +279,7 @@ protected:
 	
 	u32				m_VertCount;
 	u32				m_FaceCount;
+	u64 m_RenderGeometryRevision = 1;
 	
 	AdjVec*			m_Adjs;    	// + some array size!!!
 	u32*			m_SmoothGroups;		// |
@@ -332,8 +333,28 @@ public:
 	IC const VMapVec&	GetVMaps			(){ return m_VMaps;		}
 	IC const VMRefsVec&	GetVMRefs			(){ return m_VMRefs;	}
 	IC const SurfFaces&	GetSurfFaces		(){ return m_SurfFaces;	}
+	// Дешёвая версия геометрии для renderer cache. Она изменяется только при
+	// правке вершин, граней, UV или распределения граней по surfaces.
+	IC u64 GetRenderGeometryRevision() const
+	{
+		return m_RenderGeometryRevision;
+	}
+	IC void MarkRenderGeometryDirty()
+	{
+		++m_RenderGeometryRevision;
+		if (m_RenderGeometryRevision == 0)
+		{
+			++m_RenderGeometryRevision;
+		}
+	}
 	IC const Fvector*	GetFNormals			(){ VERIFY(0!=m_FaceNormals); return m_FaceNormals;	}
 	IC const Fvector*	GetVNormals			(){ VERIFY(0!=m_VertexNormals); return m_VertexNormals;	}
+	// Возвращает активный corner-normal cache независимо от выбранного в
+	// настройках редактора способа хранения сглаженных нормалей.
+	IC const Fvector* GetActiveVNormals() const
+	{
+		return m_VertexNormals ? m_VertexNormals : m_Normals;
+	}
 	IC const st_SVert*	GetSVertices		(){ VERIFY(0!=m_SVertices);return m_SVertices;	}
 	IC const Fvector*	GetNormals			(){ VERIFY(0!=m_Normals); return m_Normals; }
 	// pick routine

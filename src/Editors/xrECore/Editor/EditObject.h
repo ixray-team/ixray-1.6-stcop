@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EditorRenderBackend.h"
+
 #include "../../xrEngine/Bone.h"
 #include "../../xrEngine/Motion.h"
 #if 1
@@ -115,6 +117,14 @@ public:
 	IC void			OnDeviceCreate	()
 	{ 
 		R_ASSERT(!m_RTFlags.is(rtValidShader));
+		if (GetEditorRenderBackend().GetKind() ==
+			EEditorRenderBackendKind::Tiramisu)
+		{
+			// Surface metadata остаётся доступной importer и material bridge,
+			// а GPU shader создаёт только xrRenderTiramisu.
+			m_RTFlags.set(rtValidShader, true);
+			return;
+		}
 		if (m_ShaderName.size()&&m_Texture.size())	m_Shader.create(*m_ShaderName,*m_Texture); 
 		else                                       	m_Shader.create("editor\\wire");
 		m_RTFlags.set(rtValidShader,true);

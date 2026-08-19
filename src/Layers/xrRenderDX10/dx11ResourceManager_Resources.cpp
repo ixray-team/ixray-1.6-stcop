@@ -166,7 +166,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 		}
 
 		string_path cname;
-		xr_strconcat(cname, ::Render->getShaderPath(), _name, ".vs.hlsl");
+		xr_strconcat(cname, GetResourceShaderRenderInterface().getShaderPath(), _name, ".vs.hlsl");
 		FS.update_path(cname, _game_shaders_, cname);
 		//		const char*						target		= nullptr;
 
@@ -178,7 +178,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 			string1024 tmp;
 			xr_sprintf(tmp, "DX10: %s is missing. Replace with stub_default.vs.hlsl", cname);
 			Msg(tmp);
-			xr_strconcat(cname, ::Render->getShaderPath(), "stub_default", ".vs.hlsl");
+			xr_strconcat(cname, GetResourceShaderRenderInterface().getShaderPath(), "stub_default", ".vs.hlsl");
 			FS.update_path(cname, _game_shaders_, cname);
 			file = FS.r_open(cname);
 		}
@@ -206,7 +206,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 			flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
 		}
 
-		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);
+		HRESULT	const _hr = GetResourceShaderRenderInterface().shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);
 
 #ifdef _EDITOR
 		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
@@ -280,7 +280,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 
 		// Open file
 		string_path					cname;
-		xr_strconcat(cname,::Render->getShaderPath(),_name,".ps.hlsl");
+		xr_strconcat(cname,GetResourceShaderRenderInterface().getShaderPath(),_name,".ps.hlsl");
 		FS.update_path				(cname,	_game_shaders_, cname);
 
 		// duplicate and zero-terminate
@@ -293,7 +293,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 			//Memory.mem_compact();
 			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.ps.hlsl", cname);
 			Msg					(tmp);
-			xr_strconcat(cname,::Render->getShaderPath(),"stub_default",".ps.hlsl");
+			xr_strconcat(cname,GetResourceShaderRenderInterface().getShaderPath(),"stub_default",".ps.hlsl");
 			FS.update_path				(cname,	_game_shaders_, cname);
 			R		= FS.r_open(cname);
 		}
@@ -325,7 +325,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 			flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
 		}
 
-		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps);
+		HRESULT	const _hr = GetResourceShaderRenderInterface().shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps);
 
 #ifdef _EDITOR
 		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
@@ -389,7 +389,7 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 
 		// Open file
 		string_path					cname;
-		xr_strconcat(cname,::Render->getShaderPath(),_name,".gs.hlsl");
+		xr_strconcat(cname,GetResourceShaderRenderInterface().getShaderPath(),_name,".gs.hlsl");
 		FS.update_path				(cname,	_game_shaders_, cname);
 
 		// duplicate and zero-terminate
@@ -402,7 +402,7 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 			//Memory.mem_compact();
 			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.gs.hlsl", cname);
 			Msg					(tmp);
-			xr_strconcat(cname,::Render->getShaderPath(),"stub_default",".gs.hlsl");
+			xr_strconcat(cname,GetResourceShaderRenderInterface().getShaderPath(),"stub_default",".gs.hlsl");
 			FS.update_path				(cname,	_game_shaders_, cname);
 			R		= FS.r_open(cname);
 		}
@@ -422,7 +422,7 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 			flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
 		}
 
-		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs);
+		HRESULT	const _hr = GetResourceShaderRenderInterface().shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs);
 
 #ifdef _EDITOR
 		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);

@@ -70,6 +70,7 @@ void CEditableMesh::Clear()
 	for (VMRefsIt ref_it=m_VMRefs.begin(); ref_it!=m_VMRefs.end(); ref_it++)
 		xr_free			(ref_it->pts);
     m_VMRefs.clear		();
+	MarkRenderGeometryDirty();
 }
 
 void CEditableMesh::UnloadCForm     ()
@@ -576,4 +577,5 @@ void CEditableMesh::Create(st_Face* faces, u32 face_count, Fvector* vertices, u3
 
 		m_SurfFaces[surf] = face_indices;
 	}
+	MarkRenderGeometryDirty();
 }

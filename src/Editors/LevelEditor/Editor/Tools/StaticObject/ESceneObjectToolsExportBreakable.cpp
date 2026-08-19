@@ -28,7 +28,7 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 		if (!M->Flags.is(game_mtl_mask)) continue;
 
 		// check engine shader compatibility
-		if (!ignore_shader){
+		if (!ignore_shader && EDevice->Resources){
 			IBlender* 		B = EDevice->Resources->_FindBlender(surf->_ShaderName()); 
 			if (!B){
 				ELog.Msg	(mtError,"Can't find engine shader '%s'. Object '%s', surface '%s'. Export interrupted.",surf->_ShaderName(),mesh->Parent()->m_LibName.c_str(),surf->_Name());

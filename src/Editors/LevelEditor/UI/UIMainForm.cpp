@@ -43,54 +43,54 @@ UIMainForm::UIMainForm()
 	m_Render->OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
 
 	// Action
-	m_tMenu = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
-	m_tSelect = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Select");
-	m_tAdd = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Add");
-	m_tMove = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Move");
-	m_tScale = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Scale");
-	m_tRotate = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Rotate");
+	m_tMenu = "ed\\bar\\menu";
+	m_tSelect = "ed\\icons\\Tool Select";
+	m_tAdd = "ed\\icons\\Tool Add";
+	m_tMove = "ed\\icons\\Tool Move";
+	m_tScale = "ed\\icons\\Tool Scale";
+	m_tRotate = "ed\\icons\\Tool Rotate";
 
 	// Snap
-	m_tGSnap = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Align to Normal");
-	m_tOSnap = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Grid");
-	m_tMoveToSnap = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Object");
-	m_tNSnap = EDevice->Resources->_CreateTexture("ed\\icons\\Snap while Moving");
-	m_tVSnap = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Vertex");
-	m_tASnap = EDevice->Resources->_CreateTexture("ed\\bar\\asnap"); //????
-	m_tMSnap = EDevice->Resources->_CreateTexture("ed\\bar\\msnap"); //????
+	m_tGSnap = "ed\\icons\\Snap Align to Normal";
+	m_tOSnap = "ed\\icons\\Snap to Grid";
+	m_tMoveToSnap = "ed\\icons\\Snap to Object";
+	m_tNSnap = "ed\\icons\\Snap while Moving";
+	m_tVSnap = "ed\\icons\\Snap to Vertex";
+	m_tASnap = "ed\\bar\\asnap";
+	m_tMSnap = "ed\\bar\\msnap";
 
-	m_tZoom = EDevice->Resources->_CreateTexture("ed\\icons\\Zoom Extent");
-	m_tZoomSel = EDevice->Resources->_CreateTexture("ed\\icons\\Zoom Extents Selected");
+	m_tZoom = "ed\\icons\\Zoom Extent";
+	m_tZoomSel = "ed\\icons\\Zoom Extents Selected";
 
 	// Axis
-	m_tX = EDevice->Resources->_CreateTexture("ed\\bar\\AxisX");
-	m_tY = EDevice->Resources->_CreateTexture("ed\\bar\\AxisY");
-	m_tZ = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZ");
-	m_tZX = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZX");
+	m_tX = "ed\\bar\\AxisX";
+	m_tY = "ed\\bar\\AxisY";
+	m_tZ = "ed\\bar\\AxisZ";
+	m_tZX = "ed\\bar\\AxisZX";
 
-	m_tGrid = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Moving");
-	m_tScaleGrid = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Scale");
-	m_tAngle = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Rotate");
+	m_tGrid = "ed\\icons\\Snap Moving";
+	m_tScaleGrid = "ed\\icons\\Snap Scale";
+	m_tAngle = "ed\\icons\\Snap Rotate";
 
-	m_tCsLocal = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Parent CS");
-	m_tNuScale = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Non-Uniform Scale");
+	m_tCsLocal = "ed\\icons\\Tool Parent CS";
+	m_tNuScale = "ed\\icons\\Tool Non-Uniform Scale";
 
 	// View
-	m_tVFront = EDevice->Resources->_CreateTexture("ed\\bar\\ViewFront");
-	m_tVBack = EDevice->Resources->_CreateTexture("ed\\bar\\ViewB");
-	m_tVLeft = EDevice->Resources->_CreateTexture("ed\\bar\\ViewLeft");
-	m_tVRight = EDevice->Resources->_CreateTexture("ed\\bar\\ViewRight");
-	m_tVTop = EDevice->Resources->_CreateTexture("ed\\bar\\ViewTop");
-	m_tVBottom = EDevice->Resources->_CreateTexture("ed\\bar\\ViewB");
-	m_tVReset = EDevice->Resources->_CreateTexture("ed\\bar\\ViewReset");
+	m_tVFront = "ed\\bar\\ViewFront";
+	m_tVBack = "ed\\bar\\ViewB";
+	m_tVLeft = "ed\\bar\\ViewLeft";
+	m_tVRight = "ed\\bar\\ViewRight";
+	m_tVTop = "ed\\bar\\ViewTop";
+	m_tVBottom = "ed\\bar\\ViewB";
+	m_tVReset = "ed\\bar\\ViewReset";
 
 	// Camera
-	m_tPlaneMove = EDevice->Resources->_CreateTexture("ed\\bar\\PlaneMove");
-	m_tArcBall = EDevice->Resources->_CreateTexture("ed\\bar\\ArcBall");
-	m_tFreeFly = EDevice->Resources->_CreateTexture("ed\\bar\\FreeFly");
+	m_tPlaneMove = "ed\\bar\\PlaneMove";
+	m_tArcBall = "ed\\bar\\ArcBall";
+	m_tFreeFly = "ed\\bar\\FreeFly";
 
-	TransformLocalOrWorld = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Local");
-	TransformLocalOrWorld2 = EDevice->Resources->_CreateTexture("ed\\icons\\Tool World");
+	TransformLocalOrWorld = "ed\\icons\\Tool Local";
+	TransformLocalOrWorld2 = "ed\\icons\\Tool World";
 
 	LoadWindowsStates();
 }
@@ -153,54 +153,6 @@ UIMainForm::~UIMainForm()
 	xr_delete(m_MainMenu);
 	xr_delete(m_Render);
 	xr_delete(m_TopBar);
-
-	// Action
-	m_tMenu.destroy();
-	m_tSelect.destroy();
-	m_tAdd.destroy();
-	m_tMove.destroy();
-	m_tScale.destroy();
-	m_tRotate.destroy();
-
-	// Snap
-	m_tGSnap.destroy();
-	m_tOSnap.destroy();
-	m_tMoveToSnap.destroy();
-	m_tNSnap.destroy();
-	m_tVSnap.destroy();
-	m_tASnap.destroy();
-	m_tMSnap.destroy();
-
-	// Axis
-	m_tX.destroy();
-	m_tY.destroy();
-	m_tZ.destroy();
-	m_tZX.destroy();
-
-	m_tZoom.destroy();
-	m_tZoomSel.destroy();
-	m_tGrid.destroy();
-	m_tScaleGrid.destroy();
-	m_tAngle.destroy();
-
-	m_tCsLocal.destroy();
-	m_tNuScale.destroy();
-
-	// View
-	m_tVFront.destroy();
-	m_tVBack.destroy();
-	m_tVLeft.destroy();
-	m_tVRight.destroy();
-	m_tVTop.destroy();
-	m_tVBottom.destroy();
-	m_tVReset.destroy();
-
-	// Camera
-	m_tPlaneMove.destroy();
-	m_tArcBall.destroy();
-	m_tFreeFly.destroy();
-	TransformLocalOrWorld.destroy();
-	TransformLocalOrWorld2.destroy();
 
 	Console->Execute("cfg_save");
 	ExecCommand(COMMAND_DESTROY, (u32)0, (u32)0);
@@ -383,10 +335,12 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 	ImGui::SameLine(0, ToolbarPadding);
 
-	auto DrawActionButton = [&](const char* id, auto& texture, ETAction action, const char* tooltip, ImDrawFlags flags)
+	auto DrawActionButton = [&](const char* id, const xr_string& texture, ETAction action, const char* tooltip, ImDrawFlags flags)
 	{
 		bool selected = LTools->GetAction() == action;
-		if (XRay::ImGui::ToolbarIconButton(id, UI->GetImGuiTexture(texture), &selected, flags))
+		if (XRay::ImGui::ToolbarIconButton(
+				id, UI->LoadTexture(texture.c_str()), &selected, flags
+			))
 		{
 			LTools->SetAction(action);
 		}
@@ -397,10 +351,12 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		}
 	};
 
-	auto DrawSettingsButton = [&](const char* id, auto& texture, ETFlags setting, const char* tooltip, ImDrawFlags flags)
+	auto DrawSettingsButton = [&](const char* id, const xr_string& texture, ETFlags setting, const char* tooltip, ImDrawFlags flags)
 	{
 		bool selected = Tools->GetSettings(setting);
-		if (XRay::ImGui::ToolbarIconButton(id, UI->GetImGuiTexture(texture), &selected, flags))
+		if (XRay::ImGui::ToolbarIconButton(
+				id, UI->LoadTexture(texture.c_str()), &selected, flags
+			))
 		{
 			ExecCommand(COMMAND_SET_SETTINGS, setting, !Tools->GetSettings(setting));
 		}
@@ -493,8 +449,14 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		ImGui::BeginDisabled(action == etaScale || action == etaSelect || action == etaAdd);
 
 		bool UseLocal = imManipulator.MatrixMode;
-		ref_texture& CurrentCoordsView = UseLocal ? TransformLocalOrWorld2 : TransformLocalOrWorld;
-		if (XRay::ImGui::ToolbarIconButton("##LocalOrWorldTransform", UI->GetImGuiTexture(CurrentCoordsView), &UseLocal, ImDrawFlags_RoundCornersRight))
+		const xr_string& CurrentCoordsView =
+			UseLocal ? TransformLocalOrWorld2 : TransformLocalOrWorld;
+		if (XRay::ImGui::ToolbarIconButton(
+				"##LocalOrWorldTransform",
+				UI->LoadTexture(CurrentCoordsView.c_str()),
+				&UseLocal,
+				ImDrawFlags_RoundCornersRight
+			))
 		{
 			imManipulator.MatrixMode = !UseLocal;
 		}
@@ -519,7 +481,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		// Группа фокусировки
 		ImGui::TableSetColumnIndex(4);
 		ImGui::BeginGroup();
-		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar816", UI->GetImGuiTexture(m_tZoom), nullptr, ImDrawFlags_RoundCornersLeft))
+		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar816", UI->LoadTexture(m_tZoom.c_str()), nullptr, ImDrawFlags_RoundCornersLeft))
 		{
 			ExecCommand(COMMAND_ZOOM_EXTENTS, false);
 		}
@@ -530,7 +492,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		}
 
 		ImGui::SameLine();
-		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar830", UI->GetImGuiTexture(m_tZoomSel), nullptr, ImDrawFlags_RoundCornersRight))
+		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar830", UI->LoadTexture(m_tZoomSel.c_str()), nullptr, ImDrawFlags_RoundCornersRight))
 		{
 			ExecCommand(COMMAND_ZOOM_EXTENTS, true);
 		}
@@ -613,8 +575,6 @@ void UIMainForm::DrawMenuSettings()
 	// Меню
 	{
 		ImGui::BeginGroup();
-		m_tMenu->Load();
-
 		if (ImGui::BeginPopupContextItem("MenuScene"))
 		{
 			DrawFlagMenuItem("Draw Safe Rect", rsDrawSafeRect);
@@ -743,8 +703,7 @@ void UIMainForm::DrawMenuSettings()
 			ImGui::EndPopup();
 		}
 
-		// if (ImGui::ImageButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar548", UI->GetImGuiTexture(m_tMenu), nullptr, ImDrawFlags_RoundCornersLeft))
+		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar548", UI->LoadTexture(m_tMenu.c_str()), nullptr, ImDrawFlags_RoundCornersLeft))
 		{
 			ImGui::OpenPopup("MenuScene");
 		}
@@ -770,7 +729,7 @@ void UIMainForm::DrawMenuSettings()
 void UIMainForm::RenderOldCameraButtons()
 {
 	ImGui::BeginGroup();
-	if (XRay::ImGui::ToolbarIconButton("##ViewFront", UI->GetImGuiTexture(m_tVFront), nullptr, ImDrawFlags_RoundCornersLeft))
+	if (XRay::ImGui::ToolbarIconButton("##ViewFront", UI->LoadTexture(m_tVFront.c_str()), nullptr, ImDrawFlags_RoundCornersLeft))
 	{
 		UI->CurrentView().m_Camera.ViewFront();
 		UI->RedrawScene();
@@ -782,7 +741,7 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##ViewBack", UI->GetImGuiTexture(m_tVBack), nullptr, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##ViewBack", UI->LoadTexture(m_tVBack.c_str()), nullptr, ImDrawFlags_RoundCornersNone))
 	{
 		UI->CurrentView().m_Camera.ViewBack();
 		UI->RedrawScene();
@@ -794,7 +753,7 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##ViewLeft", UI->GetImGuiTexture(m_tVLeft), nullptr, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##ViewLeft", UI->LoadTexture(m_tVLeft.c_str()), nullptr, ImDrawFlags_RoundCornersNone))
 	{
 		UI->CurrentView().m_Camera.ViewLeft();
 		UI->RedrawScene();
@@ -806,7 +765,7 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##ViewRight", UI->GetImGuiTexture(m_tVRight), nullptr, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##ViewRight", UI->LoadTexture(m_tVRight.c_str()), nullptr, ImDrawFlags_RoundCornersNone))
 	{
 		UI->CurrentView().m_Camera.ViewRight();
 		UI->RedrawScene();
@@ -818,7 +777,7 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##ViewBottom", UI->GetImGuiTexture(m_tVBottom), nullptr, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##ViewBottom", UI->LoadTexture(m_tVBottom.c_str()), nullptr, ImDrawFlags_RoundCornersNone))
 	{
 		UI->CurrentView().m_Camera.ViewBottom();
 		UI->RedrawScene();
@@ -830,7 +789,7 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##ViewTop", UI->GetImGuiTexture(m_tVTop), nullptr, ImDrawFlags_RoundCornersRight))
+	if (XRay::ImGui::ToolbarIconButton("##ViewTop", UI->LoadTexture(m_tVTop.c_str()), nullptr, ImDrawFlags_RoundCornersRight))
 	{
 		UI->CurrentView().m_Camera.ViewTop();
 		UI->RedrawScene();
@@ -842,22 +801,6 @@ void UIMainForm::RenderOldCameraButtons()
 	}
 	ImGui::SameLine();
 
-	// Сбросить Вид.
-	//{
-	//	m_tVReset->Load();
-	//	{
-	//		if (ImGui::ImageButton("##DrawRenderToolBar1343", m_tVReset->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-	//		{
-	//			UI->CurrentView().m_Camera.ViewReset();
-	//			UI->RedrawScene();
-	//		}
-	//	}
-	//	if (ImGui::IsItemHovered())
-	//	{
-	//		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-	//		ImGui::SetTooltip("Reset View");
-	//	}
-	//}
 	ImGui::EndGroup();
 
 	ImGui::SameLine(0, 4);
@@ -869,7 +812,7 @@ void UIMainForm::RenderOldCameraButtons()
 	bool CamArcBall = Camera == cs3DArcBall;
 	bool CamFly = Camera == csFreeFly;
 
-	if (XRay::ImGui::ToolbarIconButton("##CamPlane", UI->GetImGuiTexture(m_tPlaneMove), &CamPlane, ImDrawFlags_RoundCornersLeft))
+	if (XRay::ImGui::ToolbarIconButton("##CamPlane", UI->LoadTexture(m_tPlaneMove.c_str()), &CamPlane, ImDrawFlags_RoundCornersLeft))
 	{
 		UI->CurrentView().m_Camera.SetStyle(csPlaneMove);
 		UI->RedrawScene();
@@ -883,7 +826,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##CamArcBall", UI->GetImGuiTexture(m_tArcBall), &CamArcBall, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##CamArcBall", UI->LoadTexture(m_tArcBall.c_str()), &CamArcBall, ImDrawFlags_RoundCornersNone))
 	{
 		UI->CurrentView().m_Camera.SetStyle(cs3DArcBall);
 		UI->RedrawScene();
@@ -897,7 +840,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##CamFreeFly", UI->GetImGuiTexture(m_tFreeFly), &CamFly, ImDrawFlags_RoundCornersRight))
+	if (XRay::ImGui::ToolbarIconButton("##CamFreeFly", UI->LoadTexture(m_tFreeFly.c_str()), &CamFly, ImDrawFlags_RoundCornersRight))
 	{
 		UI->CurrentView().m_Camera.SetStyle(csFreeFly);
 		UI->RedrawScene();
@@ -922,25 +865,25 @@ void UIMainForm::RenderAxisButtons()
 	bool AxisZ = Axis == etAxisZ;
 	bool AxisZX = Axis == etAxisZX;
 
-	if (XRay::ImGui::ToolbarIconButton("##AxisX", UI->GetImGuiTexture(m_tX), &AxisX, ImDrawFlags_RoundCornersLeft))
+	if (XRay::ImGui::ToolbarIconButton("##AxisX", UI->LoadTexture(m_tX.c_str()), &AxisX, ImDrawFlags_RoundCornersLeft))
 	{
 		ExecCommand(COMMAND_CHANGE_AXIS, etAxisX, !LTools->GetSettings(etAxisX));
 	}
 
 	ImGui::SameLine();
-	if (XRay::ImGui::ToolbarIconButton("##AxisY", UI->GetImGuiTexture(m_tY), &AxisY, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##AxisY", UI->LoadTexture(m_tY.c_str()), &AxisY, ImDrawFlags_RoundCornersNone))
 	{
 		ExecCommand(COMMAND_CHANGE_AXIS, etAxisY, !LTools->GetSettings(etAxisY));
 	}
 
 	ImGui::SameLine();
-	if (XRay::ImGui::ToolbarIconButton("##AxisZ", UI->GetImGuiTexture(m_tZ), &AxisY, ImDrawFlags_RoundCornersNone))
+	if (XRay::ImGui::ToolbarIconButton("##AxisZ", UI->LoadTexture(m_tZ.c_str()), &AxisY, ImDrawFlags_RoundCornersNone))
 	{
 		ExecCommand(COMMAND_CHANGE_AXIS, etAxisZ, !LTools->GetSettings(etAxisZ));
 	}
 
 	ImGui::SameLine();
-	if (XRay::ImGui::ToolbarIconButton("##AxisZX", UI->GetImGuiTexture(m_tZX), &AxisY, ImDrawFlags_RoundCornersRight))
+	if (XRay::ImGui::ToolbarIconButton("##AxisZX", UI->LoadTexture(m_tZX.c_str()), &AxisY, ImDrawFlags_RoundCornersRight))
 	{
 		ExecCommand(COMMAND_CHANGE_AXIS, etAxisZX, !LTools->GetSettings(etAxisZX));
 	}

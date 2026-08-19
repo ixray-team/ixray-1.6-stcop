@@ -8,6 +8,7 @@
 #include <array>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <set>
 #include <sstream>
 #include <string>
@@ -43,10 +44,26 @@ bool HasBackendMagic(const FMaterialShaderCompileResult& Result, const EMaterial
 	return Result.Bytecode.size() >= Expected.size() && std::equal(Expected.begin(), Expected.end(), Result.Bytecode.begin());
 }
 
+void PrintCompileDiagnostics(
+	const xr_string_view Label,
+	const FMaterialShaderCompileResult& Result
+)
+{
+	if (Result.Succeeded())
+	{
+		return;
+	}
+	for (const FMaterialDiagnostic& Diagnostic : Result.Diagnostics)
+	{
+		std::cerr << Label << " [" << Diagnostic.Code << "] "
+			<< Diagnostic.Message << '\n';
+	}
+}
+
 void TestManifestAndRouting(TiramisuMaterialTestRunner& Runner)
 {
 	const xr_span Manifest = GetMaterialPassManifest();
-	MATERIAL_CHECK(Runner, Manifest.size() == 7);
+	MATERIAL_CHECK(Runner, Manifest.size() == 8);
 	xr_set<EMaterialPass> Unique;
 	for (const FMaterialPassDefinition& Definition : Manifest)
 	{
@@ -75,11 +92,11 @@ void TestManifestAndRouting(TiramisuMaterialTestRunner& Runner)
 	Asset.Domain = EMaterialDomain::PostProcess;
 	MATERIAL_CHECK(Runner, GetRequiredMaterialPasses(Asset) == xr_vector<EMaterialPass>({EMaterialPass::PostProcess}));
 	Asset.Domain = EMaterialDomain::Decal;
-	MATERIAL_CHECK(Runner, GetRequiredMaterialPasses(Asset) == xr_vector<EMaterialPass>({EMaterialPass::GBuffer}));
+	MATERIAL_CHECK(Runner, GetRequiredMaterialPasses(Asset) == xr_vector<EMaterialPass>({EMaterialPass::Decal}));
 	MATERIAL_CHECK(Runner, !ParseMaterialPass("not-a-pass").has_value());
 
 	const xr_span VertexFactories = GetMaterialVertexFactoryManifest();
-	MATERIAL_CHECK(Runner, VertexFactories.size() == 2);
+	MATERIAL_CHECK(Runner, VertexFactories.size() == 4);
 	xr_set<xr_string_view> UniqueVertexFactories;
 	for (const FMaterialVertexFactoryDefinition& Definition : VertexFactories)
 	{
@@ -91,6 +108,9 @@ void TestManifestAndRouting(TiramisuMaterialTestRunner& Runner)
 		MATERIAL_CHECK(Runner, FindMaterialVertexFactoryDefinition(Definition.Name) == &Definition);
 	}
 	MATERIAL_CHECK(Runner, FindMaterialVertexFactoryDefinition("missing") == nullptr);
+	MATERIAL_CHECK(Runner, FindMaterialVertexFactoryDefinition(
+		"skeletal"
+	) != nullptr);
 }
 
 void TestAllPassesCompile(TiramisuMaterialTestRunner& Runner)
@@ -104,6 +124,22 @@ void TestAllPassesCompile(TiramisuMaterialTestRunner& Runner)
 	const FMaterialStaticParameterSet StaticParameters = DefaultStaticParameters(Parsed.Value);
 	const TiramisuMaterialShaderCompiler Compiler;
 	MATERIAL_CHECK(Runner, Compiler.IsAvailable());
+	const FMaterialPassDefinition* DecalPass =
+		FindMaterialPassDefinition(EMaterialPass::Decal);
+	MATERIAL_CHECK(Runner, DecalPass != nullptr);
+	const xr_string DecalPassSource = ReadText(
+		std::filesystem::path("gamedata/shaders/r5") /
+			DecalPass->ShaderSource
+	);
+	MATERIAL_CHECK(
+		Runner,
+		DecalPassSource.find("ProjectionAngleFade") != xr_string::npos
+	);
+	MATERIAL_CHECK(
+		Runner,
+		DecalPassSource.find("Context.WorldNormal = SurfaceNormal") !=
+			xr_string::npos
+	);
 
 	for (const FMaterialPassDefinition& Pass : GetMaterialPassManifest())
 	{
@@ -124,6 +160,7 @@ void TestAllPassesCompile(TiramisuMaterialTestRunner& Runner)
 			Request.TargetProfile = xr_string(Pass.TargetProfile);
 			Request.IncludeDirectories = {"gamedata/shaders/r5", "gamedata/shaders/r5/materials", "gamedata/shaders/r5/materials/passes"};
 			const FMaterialShaderCompileResult Compiled = Compiler.Compile(Request);
+			PrintCompileDiagnostics(Pass.Name, Compiled);
 			MATERIAL_CHECK(Runner, Compiled.Succeeded());
 			MATERIAL_CHECK(Runner, HasBackendMagic(Compiled, Backend));
 		}
@@ -171,7 +208,29 @@ void TestVertexFactoriesCompile(TiramisuMaterialTestRunner& Runner)
 		);
 		MATERIAL_CHECK(Runner, Source.Succeeded());
 		MATERIAL_CHECK(Runner, Source.Source.find("NRI_INSTANCE_ID_OFFSET") != xr_string::npos);
-		MATERIAL_CHECK(Runner, Source.Source.find("EvaluateMaterial(Context, Parameters, Material)") != xr_string::npos);
+		if (VertexFactory.Name != "decal_projector")
+		{
+			MATERIAL_CHECK(
+				Runner,
+				Source.Source.find(
+					"EvaluateMaterial(Context, Parameters, Material)"
+				) != xr_string::npos
+			);
+		}
+		else
+		{
+			MATERIAL_CHECK(
+				Runner,
+				Source.Source.find("DecalProjectorIndices[36]") !=
+					xr_string::npos
+			);
+			MATERIAL_CHECK(
+				Runner,
+				Source.Source.find(
+					"mul(ViewProjectionWorldMatrix, WorldPosition)"
+				) != xr_string::npos
+			);
+		}
 
 		for (const EMaterialShaderBackend Backend : {EMaterialShaderBackend::D3D12, EMaterialShaderBackend::Vulkan})
 		{
@@ -188,6 +247,7 @@ void TestVertexFactoriesCompile(TiramisuMaterialTestRunner& Runner)
 			}
 			Request.IncludeDirectories = {"gamedata/shaders/r5", "gamedata/shaders/r5/common", "gamedata/shaders/r5/materials", "gamedata/shaders/r5/materials/passes", "gamedata/shaders/r5/materials/vertex"};
 			const FMaterialShaderCompileResult Compiled = Compiler.Compile(Request);
+			PrintCompileDiagnostics(VertexFactory.Name, Compiled);
 			MATERIAL_CHECK(Runner, Compiled.Succeeded());
 			MATERIAL_CHECK(Runner, HasBackendMagic(Compiled, Backend));
 		}

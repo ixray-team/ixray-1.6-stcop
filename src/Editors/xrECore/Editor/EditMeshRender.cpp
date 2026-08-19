@@ -8,6 +8,7 @@
 #include "EditObject.h"
 #include "ui_main.h"
 #include "D3DUtils.h"
+#include "EditorRenderBackend.h"
 #include "render.h"
 
 #include <FlexibleVertexFormat.h>
@@ -52,6 +53,12 @@ static RHIInputElementDesc dwDecl_4W[] =
 //----------------------------------------------------
 void CEditableMesh::GenerateRenderBuffers()
 {
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		// Tiramisu строит собственные NRI buffers из CPU mesh payload.
+		return;
+	}
 	if (m_RenderBuffers)
 	{
 		return;

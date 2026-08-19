@@ -25,6 +25,7 @@ struct FEditorViewportSurface
 	void* ImGuiTextureId = nullptr;
 	u32 Width = 0;
 	u32 Height = 0;
+	u64 Revision = 0;
 
 	[[nodiscard]] bool IsValid() const noexcept
 	{
@@ -152,7 +153,24 @@ enum class EEditorSceneInstanceFlags : u32
 {
 	None = 0,
 	Selected = 1u << 0,
-	TwoSided = 1u << 1
+	TwoSided = 1u << 1,
+	DepthBias = 1u << 2
+};
+
+// Renderer-neutral состояние presentation и публикации editor surfaces.
+// Счётчики позволяют smoke-тесту доказать пересоздание ресурсов без выпуска
+// NRI/D3D/Vulkan объектов за границу xrRenderTiramisu.
+struct FEditorRenderLifecycleStatus
+{
+	bool PresentationReady = false;
+	bool DedicatedRenderThreadActive = false;
+	u32 PresentationWidth = 0;
+	u32 PresentationHeight = 0;
+	u64 RenderExecutionThreadId = 0;
+	u64 SwapchainRevision = 0;
+	u64 PresentedFrameCount = 0;
+	u64 ViewportResourceRevision = 0;
+	u64 ImGuiTextureRedirectCount = 0;
 };
 
 // Per-component replacement of a static-mesh material slot. Both IDs must be
@@ -173,6 +191,51 @@ struct FEditorStaticMeshInstance
 	};
 	EEditorSceneInstanceFlags Flags = EEditorSceneInstanceFlags::None;
 	xr_vector<FEditorMaterialSlotOverride> MaterialOverrides;
+};
+
+enum class EEditorDecalInstanceFlags : u32
+{
+	None = 0,
+	Selected = 1u << 0
+};
+
+inline constexpr size_t EditorViewportMaxDecalCount = 4096;
+
+// Проекционная декаль в renderer-neutral scene packet. LocalToWorld переводит
+// канонический объём [-0.5, 0.5] в мир; материал обязан иметь domain Decal.
+// Геометрия старого Wallmark через этот контракт не передаётся.
+struct FEditorDecalInstance
+{
+	FEditorSceneObjectId ObjectId;
+	FEditorMaterialSlotId MaterialSlot;
+	xr_array<float, 16> LocalToWorld = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+	s32 SortOrder = 0;
+	EEditorDecalInstanceFlags Flags = EEditorDecalInstanceFlags::None;
+};
+
+// Renderer-neutral ссылка на standalone OGF. LevelEditor не создаёт
+// IRenderVisual и не разбирает геометрию: xrRenderTiramisu загружает ассет,
+// кэширует его draw-parts и создаёт GPU-ресурсы на render thread.
+struct FEditorModelInstance
+{
+	FEditorSceneObjectId ObjectId;
+	xr_string_view AssetName;
+	// Необязательный motion из legacy Spawn. Renderer самостоятельно
+	// разрешает его после загрузки skeleton/motions OGF.
+	xr_string_view AnimationName;
+	xr_array<float, 16> LocalToWorld = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+	EEditorSceneInstanceFlags Flags =
+		EEditorSceneInstanceFlags::None;
 };
 
 enum class EEditorSceneLightType : u8
@@ -207,6 +270,39 @@ struct FEditorSceneLight
 	float InnerConeAngleDegrees = 20.0f;
 	float OuterConeAngleDegrees = 45.0f;
 	EEditorSceneLightFlags Flags = EEditorSceneLightFlags::None;
+};
+
+enum class EEditorParticleAssetType : u8
+{
+	Effect,
+	Group,
+	AnimationCurve
+};
+
+enum class EEditorParticleInstanceFlags : u32
+{
+	None = 0,
+	Selected = 1u << 0,
+	Playing = 1u << 1
+};
+
+// Renderer-neutral instance legacy particle asset. Симуляция, текстуры и
+// GPU-ресурсы принадлежат xrRenderTiramisu; LevelEditor передаёт только
+// стабильную ссылку на каталог, transform и состояние authoring controls.
+struct FEditorParticleInstance
+{
+	FEditorSceneObjectId ObjectId;
+	xr_string_view AssetName;
+	EEditorParticleAssetType AssetType =
+		EEditorParticleAssetType::Effect;
+	xr_array<float, 16> LocalToWorld = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+	EEditorParticleInstanceFlags Flags =
+		EEditorParticleInstanceFlags::None;
 };
 
 [[nodiscard]] inline FEditorMaterialSlotId ResolveEditorMaterialSlot(
@@ -297,7 +393,10 @@ struct FEditorViewportSceneSnapshot
 	xr_span<const FEditorStaticMeshUpload> StaticMeshes;
 	xr_span<const FEditorStaticMeshId> RemovedStaticMeshes;
 	xr_span<const FEditorStaticMeshInstance> Instances;
+	xr_span<const FEditorDecalInstance> DecalInstances;
+	xr_span<const FEditorModelInstance> ModelInstances;
 	xr_span<const FEditorSceneLight> Lights;
+	xr_span<const FEditorParticleInstance> ParticleInstances;
 	xr_span<const FEditorDebugLine> DebugLines;
 	xr_span<const FEditorDebugTriangle> DebugTriangles;
 	xr_span<const FEditorOverlayLine> OverlayLines;
@@ -336,11 +435,20 @@ struct FEditorViewportMaterialStatus
 	bool SelectionOverlayReady = false;
 	bool DebugOverlayReady = false;
 	bool ScreenOverlayReady = false;
+	bool ParticleBillboardReady = false;
+	bool DecalReady = false;
+	bool ModelPickingReady = false;
+	bool ModelAnimationReady = false;
+	bool ModelSkinningReady = false;
+	bool ModelPaletteChanged = false;
 	u64 RequestedRevision = 0;
 	u64 AcceptedRevision = 0;
 	u64 PipelineKey = 0;
 	u32 SharedPipelineReferenceCount = 0;
 	u32 DrawCount = 0;
+	u32 DecalInstanceCount = 0;
+	u32 DecalDrawCount = 0;
+	u32 DecalCulledCount = 0;
 	u32 SelectionDrawCount = 0;
 	u32 DebugLineCount = 0;
 	u32 DebugTriangleCount = 0;
@@ -348,8 +456,53 @@ struct FEditorViewportMaterialStatus
 	u32 OverlayTriangleCount = 0;
 	u32 OverlayTextCount = 0;
 	u32 LightCount = 0;
+	u32 ModelInstanceCount = 0;
+	u32 ModelDrawCount = 0;
+	u32 PendingModelLoadCount = 0;
+	u32 AnimatedModelCount = 0;
+	u32 SkinnedModelCount = 0;
+	u32 GpuSkinnedModelCount = 0;
+	u32 ModelPaletteMatrixCount = 0;
+	u32 UploadedSkinningMatrixCount = 0;
+	u32 ParticleInstanceCount = 0;
+	u32 ParticleGroupInstanceCount = 0;
+	u32 ParticleChildInstanceCount = 0;
+	u32 SimulatedParticleCount = 0;
+	u32 ParticleBillboardCount = 0;
+	u32 ParticleBillboardDrawCount = 0;
 	u32 ReloadCount = 0;
 	xr_string Diagnostic;
+};
+
+// Копируемая запись renderer-owned библиотеки частиц. Имена зависимостей
+// содержат эффекты, используемые группой, либо animation curves эффекта.
+// Legacy PS-типы и shader handles через эту границу не передаются.
+struct FEditorParticleAssetInfo
+{
+	xr_string Name;
+	EEditorParticleAssetType Type = EEditorParticleAssetType::Effect;
+	xr_string ShaderName;
+	xr_string TextureName;
+	xr_vector<xr_string> Dependencies;
+	u32 MaxParticles = 0;
+	u32 GroupEntryCount = 0;
+	u32 EnabledGroupEntryCount = 0;
+	u32 GroupChildCallbackCount = 0;
+	bool HasCompiledActions = false;
+};
+
+// Цельный снимок каталога. Revision детерминированно вычисляется из данных,
+// поэтому UI может не перестраивать списки при неизменившейся библиотеке.
+struct FEditorParticleLibrarySnapshot
+{
+	xr_vector<FEditorParticleAssetInfo> Assets;
+	u64 Revision = 0;
+	xr_string Diagnostic;
+
+	[[nodiscard]] bool IsReady() const noexcept
+	{
+		return Revision != 0;
+	}
 };
 
 // Контракт передачи editor scene в выбранный renderer без NRI/D3D/Vulkan типов.
@@ -387,6 +540,23 @@ public:
 	{
 		return {};
 	}
+	[[nodiscard]] virtual FEditorRenderLifecycleStatus
+	GetRenderLifecycleStatus() const noexcept
+	{
+		return {};
+	}
+	// Вызывается после остановки общего renderer. Нужен backend, который
+	// создал shared device до появления render thread и должен удалить его
+	// только после освобождения всех renderer-owned ресурсов.
+	virtual void FinalizeRendererShutdown()
+	{
+	}
+	// После bootstrap shared device общий renderer уже может выполнять команды
+	// в выделенном потоке. Editor backend создаёт свои GPU-ресурсы здесь.
+	[[nodiscard]] virtual bool InitializeRendererResources()
+	{
+		return true;
+	}
 	[[nodiscard]] virtual bool IsAvailable() const noexcept
 	{
 		return true;
@@ -399,6 +569,19 @@ public:
 	[[nodiscard]] virtual xr_string_view GetLastDiagnostic() const noexcept
 	{
 		return {};
+	}
+
+	// Перезагрузка и хранение библиотеки выполняются renderer module. Вызов
+	// копирования не выпускает наружу ссылки на внутренние asset records.
+	[[nodiscard]] virtual bool ReloadParticleLibrary()
+	{
+		return false;
+	}
+	virtual void CopyParticleLibrary(
+		FEditorParticleLibrarySnapshot& OutSnapshot
+	) const
+	{
+		OutSnapshot = {};
 	}
 };
 

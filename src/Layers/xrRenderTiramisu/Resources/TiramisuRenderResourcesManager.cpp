@@ -145,6 +145,7 @@ TiramisuRenderResourcesManager::TiramisuRenderResourcesManager()
 	CreateQuadBuffer();
 }
 extern u32 UIShaderCounter;
+void DumpLiveTiramisuUiShaders();
 TiramisuRenderResourcesManager::~TiramisuRenderResourcesManager()
 {
 	CheckIsGameThread();
@@ -152,6 +153,10 @@ TiramisuRenderResourcesManager::~TiramisuRenderResourcesManager()
 	delete RenderScene;
 	MaterialsManager->Free(DefaultMaterial);
 	delete MaterialsManager;
+	if (UIShaderCounter != 0)
+	{
+		DumpLiveTiramisuUiShaders();
+	}
 	VERIFY(UIShaderCounter == 0);
 	delete MaterialGpuStorage;
 	MaterialGpuStorage = nullptr;

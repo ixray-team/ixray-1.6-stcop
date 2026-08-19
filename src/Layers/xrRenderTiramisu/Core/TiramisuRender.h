@@ -33,9 +33,11 @@ struct alignas(16) FXRayRenderConstantBuffer
 	u32 LightDataOffset;
 	u32 LightCount;
 	u32 LightingFlags;
+	u32 SkinningPaletteBufferIndex;
+	u32 MaterialGpuAbiPadding[3];
 };
 
-static_assert(sizeof(FXRayRenderConstantBuffer) == 128);
+static_assert(sizeof(FXRayRenderConstantBuffer) == 144);
 
 // Главный координатор Tiramisu: владеет render thread, кадрами, passes и глобальными GPU-ресурсами.
 class TiramisuRender

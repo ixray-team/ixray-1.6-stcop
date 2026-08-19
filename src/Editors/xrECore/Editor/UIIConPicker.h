@@ -13,7 +13,7 @@ public:
 private:
 	FS_FileSet	texture_map;
 
-	xr_hash_map<xr_string, ref_texture> Icons;
+	xr_hash_map<xr_string, xr_string> Icons;
 	static UIIconPicker* Form;
 	xr_string file_path;
 	

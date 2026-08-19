@@ -18,9 +18,20 @@ if (IXRAY_EDITORS)
         target_sources(xrRenderTiramisu PRIVATE
             ${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorRendererFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorRenderBridge.cpp
+            ${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorParticleLibrary.cpp
+            ${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorParticleSimulation.cpp
+			${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorOgfModelLoader.cpp
+            ${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorOgfMotionLoader.cpp
+			${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorViewportSceneCulling.cpp
+            ${CMAKE_SOURCE_DIR}/src/Layers/xrRender/particle_core/noise.cpp
+            ${CMAKE_SOURCE_DIR}/src/Layers/xrRender/particle_core/particle_core.cpp
+            ${CMAKE_SOURCE_DIR}/src/Layers/xrRender/particle_core/particle_actions_collection.cpp
+            ${CMAKE_SOURCE_DIR}/src/Layers/xrRender/particle_core/particle_actions_collection_io.cpp
             ${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorViewportScenePicker.cpp)
         target_link_libraries(xrRenderTiramisu PRIVATE
             xrTiramisuMaterialEditorCore)
+		target_compile_definitions(xrRenderTiramisu PRIVATE
+			PAPI_NO_LEGACY_VERTEX_BUFFER)
     endif()
 
     # Main Editors
@@ -37,6 +48,73 @@ if (IXRAY_EDITORS AND IXRAY_BUILD_TESTS)
     add_test(NAME xrEditorRenderBackendTests COMMAND xrEditorRenderBackendTests -rdbg)
     set_tests_properties(xrEditorRenderBackendTests PROPERTIES WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     set_target_properties(xrEditorRenderBackendTests PROPERTIES FOLDER "Tests")
+
+	set_source_files_properties(
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorParticleLibrary.cpp
+		PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+	add_executable(xrEditorParticleLibraryTests
+		tests/EditorParticleLibraryTests.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorParticleLibrary.cpp)
+	target_include_directories(xrEditorParticleLibraryTests PRIVATE
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu)
+	target_link_libraries(xrEditorParticleLibraryTests PRIVATE xrCore)
+	target_compile_features(xrEditorParticleLibraryTests PRIVATE cxx_std_23)
+	add_test(NAME xrEditorParticleLibraryTests
+		COMMAND xrEditorParticleLibraryTests -rdbg)
+	set_tests_properties(xrEditorParticleLibraryTests PROPERTIES
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+	set_target_properties(xrEditorParticleLibraryTests PROPERTIES
+		FOLDER "Tests")
+
+	add_executable(xrEditorParticleSimulationTests
+		tests/EditorParticleSimulationTests.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorParticleSimulation.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRender/particle_core/noise.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRender/particle_core/particle_core.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRender/particle_core/particle_actions_collection.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRender/particle_core/particle_actions_collection_io.cpp)
+	target_include_directories(xrEditorParticleSimulationTests PRIVATE
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu)
+	target_link_libraries(xrEditorParticleSimulationTests PRIVATE
+		xrCore xrEngineCore xrTiramisuMaterialCore NRI)
+	target_compile_features(xrEditorParticleSimulationTests PRIVATE cxx_std_23)
+	target_compile_definitions(xrEditorParticleSimulationTests PRIVATE
+		PAPI_NO_LEGACY_VERTEX_BUFFER)
+	add_test(NAME xrEditorParticleSimulationTests
+		COMMAND xrEditorParticleSimulationTests -rdbg)
+	set_tests_properties(xrEditorParticleSimulationTests PROPERTIES
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+	set_target_properties(xrEditorParticleSimulationTests PROPERTIES
+		FOLDER "Tests")
+
+	add_executable(xrEditorOgfModelLoaderTests
+		tests/EditorOgfModelLoaderTests.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorOgfModelLoader.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorOgfMotionLoader.cpp)
+	target_include_directories(xrEditorOgfModelLoaderTests PRIVATE
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu)
+	target_link_libraries(xrEditorOgfModelLoaderTests PRIVATE xrCore)
+	target_compile_features(xrEditorOgfModelLoaderTests PRIVATE cxx_std_23)
+	add_test(NAME xrEditorOgfModelLoaderTests
+		COMMAND xrEditorOgfModelLoaderTests -rdbg)
+	set_tests_properties(xrEditorOgfModelLoaderTests PROPERTIES
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+	set_target_properties(xrEditorOgfModelLoaderTests PROPERTIES
+		FOLDER "Tests")
+
+	add_executable(xrEditorOgfMotionLoaderTests
+		tests/EditorOgfMotionLoaderTests.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorOgfMotionLoader.cpp)
+	target_include_directories(xrEditorOgfMotionLoaderTests PRIVATE
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu)
+	target_link_libraries(xrEditorOgfMotionLoaderTests PRIVATE xrCore)
+	target_compile_features(xrEditorOgfMotionLoaderTests PRIVATE cxx_std_23)
+	add_test(NAME xrEditorOgfMotionLoaderTests
+		COMMAND xrEditorOgfMotionLoaderTests -rdbg)
+	set_tests_properties(xrEditorOgfMotionLoaderTests PROPERTIES
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+	set_target_properties(xrEditorOgfMotionLoaderTests PROPERTIES
+		FOLDER "Tests")
 
     add_executable(xrMaterialPreviewRendererTests tests/MaterialPreviewRendererTests.cpp)
     target_link_libraries(xrMaterialPreviewRendererTests PRIVATE xrECore)
@@ -92,9 +170,24 @@ if (IXRAY_EDITORS AND IXRAY_BUILD_TESTS)
     set_tests_properties(xrEditorViewportSceneMailboxTests PROPERTIES WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     set_target_properties(xrEditorViewportSceneMailboxTests PROPERTIES FOLDER "Tests")
 
+	add_executable(xrEditorViewportSceneCullingTests
+		tests/EditorViewportSceneCullingTests.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorViewportSceneCulling.cpp)
+	target_link_libraries(xrEditorViewportSceneCullingTests PRIVATE xrCore)
+	target_compile_features(xrEditorViewportSceneCullingTests PRIVATE cxx_std_23)
+	add_test(NAME xrEditorViewportSceneCullingTests
+		COMMAND xrEditorViewportSceneCullingTests -rdbg)
+	set_tests_properties(xrEditorViewportSceneCullingTests PROPERTIES
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+	set_target_properties(xrEditorViewportSceneCullingTests PROPERTIES
+		FOLDER "Tests")
+
     add_executable(xrEditorViewportScenePickerTests
         tests/EditorViewportScenePickerTests.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorOgfModelLoader.cpp
+		${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorOgfMotionLoader.cpp
         ${CMAKE_SOURCE_DIR}/src/Layers/xrRenderTiramisu/Editor/TiramisuEditorViewportScenePicker.cpp)
+	target_link_libraries(xrEditorViewportScenePickerTests PRIVATE xrCore)
     target_compile_features(xrEditorViewportScenePickerTests PRIVATE cxx_std_23)
     add_test(NAME xrEditorViewportScenePickerTests
         COMMAND xrEditorViewportScenePickerTests -rdbg)
@@ -138,6 +231,7 @@ if (IXRAY_EDITORS AND IXRAY_BUILD_TESTS)
         xrRenderStatisticsTests
         xrEditorNriTextureRegistryTests
         xrEditorViewportSceneMailboxTests
+		xrEditorViewportSceneCullingTests
         xrEditorViewportScenePickerTests
         xrEditorNativeSceneDocumentTests
         xrEditorTextureMailboxTests

@@ -177,61 +177,6 @@ void ETextureThumbnail::FillInfo(PropItemVec& items)
     PHelper().CreateCaption		(items, "Alpha",					_Alpha()?"on":"off");
 }
 
-void ETextureThumbnail::Update(IRHISurface*& Texture)
-{
-	VERIFY(!Texture);
-	if (0 == m_Pixels.size())
-	{
-		u32 image_w, image_h, image_a;
-		xr_string fn_img = EFS.ChangeFileExt(m_Name.c_str(), ".tga");
-		string_path fn;
-		FS.update_path(fn, _textures_, fn_img.c_str());
-
-		if (!FS.exist(fn))
-		{
-			fn_img = EFS.ChangeFileExt(m_Name.c_str(), ".dds");
-			FS.update_path(fn, _game_textures_, fn_img.c_str());
-
-			if (!FS.exist(fn))
-			{
-				ELog.Msg(mtError, "Can't make preview for texture '%s'.", m_Name.c_str());
-				return;
-			}
-		}
-
-		U32Vec data;
-		u32 w, h, a;
-		if (!LoadRawImage(fn, data, image_w, image_h, image_a))
-		{
-			fn_img = EFS.ChangeFileExt(m_Name.c_str(), ".dds");
-			u32 mem = 0;
-
-			auto* baseTexture = ::RImplementation.texture_load(fn_img.c_str(), mem);
-			if (baseTexture)
-			{
-				Texture = GRHI->CreateTextureFromMemory(baseTexture, 0, {});
-			}
-
-			if (!Texture)
-			{
-				ELog.Msg(mtError, "Can't make preview for texture '%s'.", m_Name.c_str());
-			}
-
-			return;
-		}
-
-		if (!data.empty())
-		{
-			ImageLib.MakeThumbnailImage(this, data.data(), image_w, image_h, image_a);
-		}
-	}
-
-	if (Valid() || HasPreview)
-	{
-		inherited::Update(Texture);
-	}
-}
-
 bool ETextureThumbnail::similar(ETextureThumbnail* thm1, xr_vector<xr_string>& sel_params)
 {
 	return m_TexParams.similar(thm1->m_TexParams, sel_params);

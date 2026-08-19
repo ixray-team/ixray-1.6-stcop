@@ -10,6 +10,7 @@ namespace
 		FMaterialPassDefinition{MaterialPassManifestVersion, EMaterialPass::Shadow, "shadow", "materials/passes/MaterialShadowPass.hlsl", "Main", "ps_6_6", "level_static", "shadow:d32"},
 		FMaterialPassDefinition{MaterialPassManifestVersion, EMaterialPass::GBuffer, "gbuffer", "materials/passes/MaterialGBufferPass.hlsl", "Main", "ps_6_6", "level_static", "gbuffer:rgba8+rgba16f+rgba16f+rg16f:d24s8"},
 		FMaterialPassDefinition{MaterialPassManifestVersion, EMaterialPass::Forward, "forward", "materials/passes/MaterialForwardPass.hlsl", "Main", "ps_6_6", "level_static", "forward:rgba16f:d24s8"},
+		FMaterialPassDefinition{MaterialPassManifestVersion, EMaterialPass::Decal, "decal", "materials/passes/MaterialDecalPass.hlsl", "Main", "ps_6_6", "decal_projector", "decal:rgba8:depth-srv"},
 		FMaterialPassDefinition{MaterialPassManifestVersion, EMaterialPass::UI, "ui", "materials/passes/MaterialUIPass.hlsl", "Main", "ps_6_6", "level_static", "ui:rgba8"},
 		FMaterialPassDefinition{MaterialPassManifestVersion, EMaterialPass::PostProcess, "post_process", "materials/passes/MaterialPostProcessPass.hlsl", "Main", "ps_6_6", "level_static", "post_process:rgba16f"},
 		FMaterialPassDefinition{MaterialPassManifestVersion, EMaterialPass::Validation, "validation", "materials/passes/MaterialValidationPass.hlsl", "Main", "ps_6_6", "material_validation", "validation:rgba8"},
@@ -18,6 +19,8 @@ namespace
 	constexpr xr_array VertexFactoryManifest = 
 	{
 		FMaterialVertexFactoryDefinition{MaterialVertexFactoryManifestVersion, "level_static", "materials/vertex/MaterialLevelStaticVertexFactory.hlsl"},
+		FMaterialVertexFactoryDefinition{MaterialVertexFactoryManifestVersion, "skeletal", "materials/vertex/MaterialSkeletalVertexFactory.hlsl"},
+		FMaterialVertexFactoryDefinition{MaterialVertexFactoryManifestVersion, "decal_projector", "materials/vertex/MaterialDecalProjectorVertexFactory.hlsl"},
 		FMaterialVertexFactoryDefinition{MaterialVertexFactoryManifestVersion, "material_validation", "materials/vertex/MaterialLevelStaticVertexFactory.hlsl"},
 	};
 }
@@ -67,7 +70,7 @@ xr_vector<EMaterialPass> GetRequiredMaterialPasses(const FMaterialAsset& Asset)
 			}
 			return {EMaterialPass::Forward};
 		case EMaterialDomain::Decal:
-			return {EMaterialPass::GBuffer};
+			return {EMaterialPass::Decal};
 		case EMaterialDomain::UI:
 			return {EMaterialPass::UI};
 		case EMaterialDomain::PostProcess:

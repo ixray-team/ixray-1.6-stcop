@@ -55,7 +55,9 @@ int ESceneAIMapTool::RaySelect(int flag, float& distance, const Fvector& start, 
             }
         }break;
         }
-        UpdateHLSelected	();
+		UpdateHLSelected	();
+		if (count)
+			MarkRenderDataDirty();
         UI->RedrawScene		();
     }
     return count;
@@ -80,7 +82,9 @@ int ESceneAIMapTool::FrustumSelect(int flag, const CFrustum& frustum)
         }break;
         }
     
-        UpdateHLSelected	();
+		UpdateHLSelected();
+		if (count)
+			MarkRenderDataDirty();
         UI->RedrawScene		();
  	}
     return count;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../../../xrECore/Editor/EditorRenderBackend.h"
 
 static const u32 DETMGR_VERSION = 0x0003ul;
 enum{
@@ -128,7 +129,8 @@ void EDetailManager::OnDeviceCreate()
     for (DetailIt it = objects.begin(); it != objects.end(); it++)
         ((EDetail*)(*it))->OnDeviceCreate();
 
-    if (!objects.empty())
+    if (!objects.empty() &&
+		GetEditorRenderBackend().GetKind() == EEditorRenderBackendKind::Legacy)
         hw_Load();
 }
 
@@ -256,7 +258,8 @@ bool EDetailManager::LoadColorIndices(IReader& F)
     }
     InvalidateCache();
 
-    if (!objects.empty())
+    if (!objects.empty() &&
+		GetEditorRenderBackend().GetKind() == EEditorRenderBackendKind::Legacy)
         hw_Load();
 
     return bRes;

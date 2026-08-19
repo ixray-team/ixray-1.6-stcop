@@ -96,6 +96,8 @@ protected:
 
 	void PrepareRedraw();
 	void Redraw();
+	void RedrawTiramisu();
+	void BeginTiramisuOverlayCapture();
 
 protected:
 	void D3D_CreateStateBlocks();
@@ -276,7 +278,6 @@ public:
 	[[nodiscard]] FEditorViewportSurface GetEditorTextureSurface(
 		FEditorTextureHandle Handle
 	) const override;
-	[[nodiscard]] ImTextureID GetImGuiTexture(const ref_texture& Texture) const;
 	[[nodiscard]] ImTextureID GetImGuiTexture(FEditorTextureHandle Handle) const;
 	bool UpdateImGuiTexture(FEditorTextureHandle& Handle, const void* Pixels, u32 Width, u32 Height, u32 RowPitch, u64 Revision, const char* DebugName, EEditorTextureFormat Format = EEditorTextureFormat::Rgba8Unorm, bool FlipVertical = false) const;
 	void DestroyImGuiTexture(FEditorTextureHandle& Handle) const;
@@ -342,11 +343,6 @@ public:
 	size_t ViewID = -1;
 	xr_map<int, Viewport> Views;
 
-	ref_texture m_HeaderLogo = nullptr;
-	ref_texture m_WinMin = nullptr;
-	ref_texture m_WinRes = nullptr;
-	ref_texture m_WinMax = nullptr;
-	ref_texture m_WinClose = nullptr;
 	FEditorTextureHandle m_HeaderLogoEditor;
 	FEditorTextureHandle m_WinMinEditor;
 	FEditorTextureHandle m_WinResEditor;
@@ -361,7 +357,6 @@ protected:
 	void RealResetUI();
 	HANDLE m_HConsole;
 
-	mutable xr_hash_map<shared_str, ref_texture> TextureStack;
 	mutable xr_hash_map<shared_str, FEditorTextureHandle> EditorTextureStack;
 
 public:

@@ -46,6 +46,14 @@ public:
     virtual bool	CanAttach		() {return true;}
     
     const char*			GetSourceWAV	(){return *m_WAVName;}
+	[[nodiscard]] float GetMinDistance() const noexcept
+	{
+		return m_Params.min_distance;
+	}
+	[[nodiscard]] float GetMaxDistance() const noexcept
+	{
+		return m_Params.max_distance;
+	}
     void			SetSourceWAV	(const char* fname);
     void			Play			(){m_Command=stPlay;}
     void			Stop			(){m_Command=stStop;}

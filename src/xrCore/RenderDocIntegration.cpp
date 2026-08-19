@@ -204,8 +204,15 @@ bool xrRenderDoc::Initialize()
 	std::filesystem::path CaptureDirectory =
 		WorkingDirectory / "logs" / "renderdoc";
 	std::filesystem::create_directories(CaptureDirectory, Error);
+	const char* GraphicsApi =
+		Core.Params && strstr(Core.Params, "-dx12")
+			? "d3d12"
+			: "vulkan";
+	const xr_string CaptureName =
+		xr_string(Core.ApplicationName) + "_" + GraphicsApi + "_" +
+		xr_string::ToString(static_cast<u32>(GetCurrentProcessId()));
 	const std::filesystem::path CaptureTemplate =
-		CaptureDirectory / Core.ApplicationName;
+		CaptureDirectory / CaptureName.c_str();
 	CapturePathTemplate = CaptureTemplate.generic_string().c_str();
 	RenderDocApi->SetCaptureFilePathTemplate(CapturePathTemplate.c_str());
 
@@ -277,6 +284,35 @@ bool xrRenderDoc::TriggerCapture()
 
 	RenderDocApi->TriggerCapture();
 	return true;
+#else
+	return false;
+#endif
+}
+
+bool xrRenderDoc::BeginCapture(void* WindowHandle)
+{
+#ifdef IXR_WINDOWS
+	if (!RenderDocApi || RenderDocApi->IsFrameCapturing())
+	{
+		return false;
+	}
+
+	RenderDocApi->StartFrameCapture(nullptr, WindowHandle);
+	return RenderDocApi->IsFrameCapturing() != 0;
+#else
+	return false;
+#endif
+}
+
+bool xrRenderDoc::EndCapture(void* WindowHandle)
+{
+#ifdef IXR_WINDOWS
+	if (!RenderDocApi || !RenderDocApi->IsFrameCapturing())
+	{
+		return false;
+	}
+
+	return RenderDocApi->EndFrameCapture(nullptr, WindowHandle) != 0;
 #else
 	return false;
 #endif

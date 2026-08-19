@@ -61,7 +61,7 @@ void CLE_Visual::OnDrawUI()
 		if (ok)
 		{
 			source->visual_name = name;
-			visual = ::Render->model_Create(source->visual_name.c_str());
+			OnChangeVisual();
 		}
 		EDevice->seqDrawUI.Remove(this);
 	}
@@ -71,6 +71,14 @@ void CLE_Visual::OnDrawUI()
 void CLE_Visual::OnChangeVisual()
 {
 	::Render->model_Delete(visual, true);
+	visual = nullptr;
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		// Tiramisu получает имя OGF через scene packet и сам владеет model cache.
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		return;
+	}
 	if (source->visual_name.size())
 	{
 		visual = ::Render->model_Create(source->visual_name.c_str());
@@ -292,8 +300,13 @@ void CSpawnPoint::SSpawnData::Create(const char* _entity_ref)
 
 		if (pSettings->line_exist(_entity_ref, "idle_particles"))
 		{
-			shared_str m_sIdleParticles = pSettings->r_string(_entity_ref, "idle_particles");
-			if (IdleParticle = ::Render->model_CreateParticles(*m_sIdleParticles))
+			IdleParticleName =
+				pSettings->r_string(_entity_ref, "idle_particles");
+			if (GetEditorRenderBackend().GetKind() !=
+					EEditorRenderBackendKind::Tiramisu &&
+				(IdleParticle = ::Render->model_CreateParticles(
+					IdleParticleName.c_str()
+				)))
 			{
 				IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
 				Particles->Play();
@@ -323,6 +336,7 @@ void CSpawnPoint::SSpawnData::Destroy()
 	xr_delete(m_Visual);
 	xr_delete(m_Motion);
 	xr_delete(IdleParticle);
+	IdleParticleName = nullptr;
 }
 
 void CSpawnPoint::SSpawnData::get_bone_xform(const char* name, Fmatrix& xform)
@@ -907,6 +921,35 @@ bool CSpawnPoint::RefCompare(const char* ref)
 const char* CSpawnPoint::RefName()
 {
 	return m_SpawnData.Valid() ? m_SpawnData.m_Data->name() : 0;
+}
+
+const char* CSpawnPoint::GetEditorVisualName() const noexcept
+{
+	if (!m_SpawnData.m_Visual || !m_SpawnData.m_Visual->source)
+	{
+		return nullptr;
+	}
+	const shared_str& VisualName =
+		m_SpawnData.m_Visual->source->visual_name;
+	return VisualName.size() != 0 ? VisualName.c_str() : nullptr;
+}
+
+const char* CSpawnPoint::GetEditorAnimationName() const noexcept
+{
+	if (!m_SpawnData.m_Visual || !m_SpawnData.m_Visual->source)
+	{
+		return nullptr;
+	}
+	const shared_str& AnimationName =
+		m_SpawnData.m_Visual->source->startup_animation;
+	return AnimationName.size() != 0 ? AnimationName.c_str() : nullptr;
+}
+
+const char* CSpawnPoint::GetEditorIdleParticleName() const noexcept
+{
+	return m_SpawnData.IdleParticleName.size() != 0
+		? m_SpawnData.IdleParticleName.c_str()
+		: nullptr;
 }
 
 bool CSpawnPoint::CreateSpawnData(const char* entity_ref)

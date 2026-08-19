@@ -30,8 +30,6 @@ private:
 	bool bImportMode;
 	bool bReadonlyMode;
 	static UIImageEditorForm* Form;
-	ref_texture m_Texture;
-	ref_texture m_TextureRemove;
 	FEditorTextureHandle m_EditorTexture;
 	u64 m_EditorTextureRevision = 0;
 

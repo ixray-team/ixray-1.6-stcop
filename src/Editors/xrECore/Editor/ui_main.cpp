@@ -24,10 +24,6 @@
 
 #include <RedImage/RedImage.hpp>
 
-#define TRelease(x) \
-	if (x)          \
-	x->pSurface->Release()
-
 ECORE_API extern bool bIsLevelEditor;
 namespace ImGui
 {
@@ -79,11 +75,6 @@ TUI::~TUI()
 	VERIFY(m_ProgressItems.size() == 0);
 	VERIFY(m_EditorState.size() == 0);
 
-	TRelease(m_HeaderLogo);
-	TRelease(m_WinMin);
-	TRelease(m_WinRes);
-	TRelease(m_WinMax);
-	TRelease(m_WinClose);
 }
 
 ImTextureID TUI::LoadTexture(const char* Texture) const
@@ -94,114 +85,77 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 	}
 
 	IEditorRenderBackend& EditorRenderer = GetEditorRenderBackend();
-	if (EditorRenderer.GetKind() == EEditorRenderBackendKind::Tiramisu)
+	const auto Existing = EditorTextureStack.find(Texture);
+	if (Existing != EditorTextureStack.end())
 	{
-		const auto Existing = EditorTextureStack.find(Texture);
-		if (Existing != EditorTextureStack.end())
-		{
-			return EditorRenderer.GetTextureSurface(Existing->second).ImGuiTextureId;
-		}
-
-		string_path Normalized = {};
-		xr_strcpy(Normalized, Texture);
-		if (char* Extension = strext(Normalized);
-			Extension && (_stricmp(Extension, ".tga") == 0 ||
-						  _stricmp(Extension, ".dds") == 0 ||
-						  _stricmp(Extension, ".bmp") == 0 ||
-						  _stricmp(Extension, ".ogm") == 0))
-		{
-			*Extension = 0;
-		}
-
-		string_path FileName = {};
-		bool Found = FS.exist(FileName, "$level$", Normalized, ".dds") ||
-					 FS.exist(FileName, "$game_saves$", Normalized, ".dds") ||
-					 FS.exist(FileName, _game_textures_, Normalized, ".dds");
-		if (!Found)
-		{
-			xr_string LooseName = xr_string(Normalized) + ".dds";
-			if (FS.TryLoad(LooseName))
-			{
-				xr_strcpy(FileName, LooseName.c_str());
-				Found = true;
-			}
-		}
-		if (!Found)
-		{
-			Found = FS.exist(FileName, _game_textures_, "ed\\ed_not_existing_texture", ".dds");
-		}
-		if (!Found)
-		{
-			return nullptr;
-		}
-
-		IReader* Reader = FS.r_open(FileName);
-		if (!Reader)
-		{
-			return nullptr;
-		}
-		RedImageTool::RedImage Image;
-		const bool Loaded = Image.LoadFromMemory(Reader->pointer(), Reader->length());
-		FS.r_close(Reader);
-		if (!Loaded || Image.IsCubeMap() || Image.GetDepth() != 1)
-		{
-			return nullptr;
-		}
-		Image.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
-
-		FEditorTextureUpload Upload;
-		Upload.Width = Image.GetWidth();
-		Upload.Height = Image.GetHeight();
-		Upload.RowPitch = Upload.Width * 4;
-		Upload.Format = EEditorTextureFormat::Rgba8Unorm;
-		Upload.Pixels = std::span(reinterpret_cast<const std::byte*>(*Image), static_cast<std::size_t>(Upload.RowPitch) * Upload.Height);
-		Upload.Revision = 1;
-		Upload.DebugName = Texture;
-		const FEditorTextureHandle Handle = EditorRenderer.CreateTexture(Upload);
-		if (!Handle.IsValid())
-		{
-			return nullptr;
-		}
-		EditorTextureStack.emplace(Texture, Handle);
-		return EditorRenderer.GetTextureSurface(Handle).ImGuiTextureId;
+		return EditorRenderer.GetTextureSurface(Existing->second).ImGuiTextureId;
 	}
 
-	if (EDevice == nullptr || EDevice->Resources == nullptr)
+	string_path Normalized = {};
+	xr_strcpy(Normalized, Texture);
+	if (char* Extension = strext(Normalized);
+		Extension && (_stricmp(Extension, ".tga") == 0 ||
+					  _stricmp(Extension, ".dds") == 0 ||
+					  _stricmp(Extension, ".bmp") == 0 ||
+					  _stricmp(Extension, ".ogm") == 0))
+	{
+		*Extension = 0;
+	}
+
+	string_path FileName = {};
+	bool Found = FS.exist(FileName, "$level$", Normalized, ".dds") ||
+				 FS.exist(FileName, "$game_saves$", Normalized, ".dds") ||
+				 FS.exist(FileName, _game_textures_, Normalized, ".dds");
+	if (!Found)
+	{
+		xr_string LooseName = xr_string(Normalized) + ".dds";
+		if (FS.TryLoad(LooseName))
+		{
+			xr_strcpy(FileName, LooseName.c_str());
+			Found = true;
+		}
+	}
+	if (!Found)
+	{
+		Found = FS.exist(FileName, _game_textures_, "ed\\ed_not_existing_texture", ".dds");
+	}
+	if (!Found)
 	{
 		return nullptr;
 	}
 
-	if (TextureStack.contains(Texture))
-	{
-		return TextureStack[Texture]->get_SRView()->GetRawSRV();
-	}
-
-	TextureStack[Texture] = EDevice->Resources->_CreateTexture(Texture);
-	ref_texture& Tex = TextureStack[Texture];
-
-	if (Tex->pSurface == nullptr)
-	{
-		Tex->apply_load(0);
-	}
-
-	return (void*)Tex->get_SRView()->GetRawSRV();
-}
-
-ImTextureID TUI::GetImGuiTexture(const ref_texture& Texture) const
-{
-	if (!Texture)
+	IReader* Reader = FS.r_open(FileName);
+	if (!Reader)
 	{
 		return nullptr;
 	}
-	if (GetEditorRenderBackend().GetKind() == EEditorRenderBackendKind::Tiramisu)
+	RedImageTool::RedImage Image;
+	const bool Loaded = Image.LoadFromMemory(Reader->pointer(), Reader->length());
+	FS.r_close(Reader);
+	if (!Loaded || Image.IsCubeMap() || Image.GetDepth() != 1)
 	{
-		return Texture->cName.size() ? LoadTexture(*Texture->cName) : nullptr;
+		return nullptr;
 	}
-	if (!Texture->pSurface)
+	Image.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+
+	FEditorTextureUpload Upload;
+	Upload.Width = Image.GetWidth();
+	Upload.Height = Image.GetHeight();
+	Upload.RowPitch = Upload.Width * 4;
+	Upload.Format = EEditorTextureFormat::Rgba8Unorm;
+	Upload.Pixels = std::span(
+		reinterpret_cast<const std::byte*>(*Image),
+		static_cast<std::size_t>(Upload.RowPitch) * Upload.Height
+	);
+	Upload.Revision = 1;
+	Upload.DebugName = Texture;
+	const FEditorTextureHandle Handle = EditorRenderer.CreateTexture(Upload);
+	if (!Handle.IsValid())
 	{
-		Texture->Load();
+		return nullptr;
 	}
-	return Texture->get_SRView() ? Texture->get_SRView()->GetRawSRV() : nullptr;
+	EditorTextureStack.emplace(Texture, Handle);
+	return EditorRenderer.GetTextureSurface(Handle).ImGuiTextureId;
 }
 
 ImTextureID TUI::GetImGuiTexture(const FEditorTextureHandle Handle) const
@@ -275,12 +229,22 @@ void TUI::DestroyImGuiTexture(FEditorTextureHandle& Handle) const
 
 void TUI::OnDeviceCreate()
 {
-	DU_impl.OnDeviceCreate();
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Legacy)
+	{
+		DU_impl.OnDeviceCreate();
+	}
 }
 
 void TUI::OnDeviceDestroy()
 {
-	DU_impl.OnDeviceDestroy();
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Legacy)
+	{
+		DU_impl.OnDeviceDestroy();
+	}
+	GUIManager->SearchIcon = nullptr;
+	UIChooseForm::SetNullTexture(nullptr);
 	DestroyImGuiTexture(m_HeaderLogoEditor);
 	DestroyImGuiTexture(m_WinMinEditor);
 	DestroyImGuiTexture(m_WinResEditor);
@@ -293,7 +257,6 @@ void TUI::OnDeviceDestroy()
 		EditorRenderer.DestroyTexture(Handle);
 	}
 	EditorTextureStack.clear();
-	TextureStack.clear();
 }
 
 bool TUI::IsModified()
@@ -601,6 +564,12 @@ void TUI::PrepareRedraw()
 
 void TUI::Invalidate()
 {
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		RedrawScene();
+		return;
+	}
 	UI->RT.destroy();
 	UI->RT.create("$user$rt_color", UI->GetRenderWidth(), UI->GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 }
@@ -608,9 +577,123 @@ void TUI::Invalidate()
 extern ENGINE_API xr_atomic_bool g_bRendering;
 ECORE_API xrCriticalSection temp_render_lock;
 
+void TUI::BeginTiramisuOverlayCapture()
+{
+	BeginEditorDebugDrawCapture();
+	if (!m_SelectionRect || EDevice->TargetWidth == 0 ||
+		EDevice->TargetHeight == 0)
+	{
+		return;
+	}
+
+	constexpr std::uint32_t SelectionColor = 0x407fff7fu;
+	const auto MakeVertex = [&](const float X, const float Y)
+	{
+		FEditorOverlayVertex Vertex;
+		Vertex.Position = {
+			X * EDevice->m_ScreenQuality * 2.0f /
+					static_cast<float>(EDevice->TargetWidth) -
+				1.0f,
+			1.0f - Y * EDevice->m_ScreenQuality * 2.0f /
+					   static_cast<float>(EDevice->TargetHeight),
+			0.0f
+		};
+		constexpr float Scale = 1.0f / 255.0f;
+		Vertex.Color = {
+			static_cast<float>((SelectionColor >> 16u) & 0xffu) * Scale,
+			static_cast<float>((SelectionColor >> 8u) & 0xffu) * Scale,
+			static_cast<float>(SelectionColor & 0xffu) * Scale,
+			static_cast<float>(SelectionColor >> 24u) * Scale
+		};
+		return Vertex;
+	};
+
+	const FEditorOverlayVertex TopLeft = MakeVertex(
+		static_cast<float>(m_SelStart.x),
+		static_cast<float>(m_SelStart.y)
+	);
+	const FEditorOverlayVertex BottomLeft = MakeVertex(
+		static_cast<float>(m_SelStart.x),
+		static_cast<float>(m_SelEnd.y)
+	);
+	const FEditorOverlayVertex BottomRight = MakeVertex(
+		static_cast<float>(m_SelEnd.x),
+		static_cast<float>(m_SelEnd.y)
+	);
+	const FEditorOverlayVertex TopRight = MakeVertex(
+		static_cast<float>(m_SelEnd.x),
+		static_cast<float>(m_SelStart.y)
+	);
+	CaptureEditorOverlayTriangle({{TopLeft, BottomLeft, BottomRight}});
+	CaptureEditorOverlayTriangle({{TopLeft, BottomRight, TopRight}});
+}
+
+void TUI::RedrawTiramisu()
+{
+	PROF_EVENT("LevelEditor: Redraw Tiramisu");
+	static bool FirstFrame = true;
+	if (FirstFrame)
+	{
+		Msg("* LevelEditor: legacy GPU scene draw is disabled; "
+			"viewport frames are owned by xrRenderTiramisu");
+		FirstFrame = false;
+	}
+
+	Viewport& View = CurrentView();
+	const FEditorViewportSurface Surface =
+		GetEditorRenderBackend().GetViewportSurface(
+			static_cast<u32>(View.ViewGlobalIDX)
+		);
+	const u32 Width = Surface.Width != 0
+		? Surface.Width
+		: static_cast<u32>(std::max(View.RTSize.x, 1));
+	const u32 Height = Surface.Height != 0
+		? Surface.Height
+		: static_cast<u32>(std::max(View.RTSize.y, 1));
+	View.RTSize.set(static_cast<int>(Width), static_cast<int>(Height));
+	EDevice->TargetWidth = Width;
+	EDevice->TargetHeight = Height;
+	HalfTarget.set(float(Width) * 0.5f, float(Height) * 0.5f);
+	EDevice->fASPECT = float(Height) / float(Width);
+
+	if (!IsPlayInEditor())
+	{
+		EDevice->mProject.build_projection(
+			deg2rad(EDevice->fFOV),
+			EDevice->fASPECT,
+			View.m_Camera.m_Znear,
+			View.m_Camera.m_Zfar
+		);
+	}
+	EDevice->UpdateView();
+	m_Flags.set(flRedraw, false);
+	++EDevice->dwRenderFrame;
+
+	// В Tiramisu-режиме редактор только формирует scene snapshot.
+	// GPU draw, ImGui submit и Present принадлежат xrRenderTiramisu.
+	BeginTiramisuOverlayCapture();
+	Tools->Render();
+	if (IsEditorDebugDrawCaptureActive())
+	{
+		DiscardEditorDebugDrawCapture();
+	}
+
+	BeginFrame();
+	Draw();
+	EndFrame();
+	PresentMainFrame();
+	MDIUpdate();
+}
+
 void TUI::Redraw()
 {
 	xrCriticalSectionGuard guard_lock(temp_render_lock);
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		RedrawTiramisu();
+		return;
+	}
 
 	PrepareRedraw();
 
@@ -707,62 +790,6 @@ void TUI::Redraw()
 			RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			EDevice->UpdateView();
 			EDevice->ResetMaterial();
-			if (GetEditorRenderBackend().GetKind() ==
-				EEditorRenderBackendKind::Tiramisu)
-			{
-				BeginEditorDebugDrawCapture();
-				// The scene packet is submitted from Tools->Render(), before the
-				// legacy selection rectangle draw below. Publish its screen-space
-				// geometry up front so the same redraw owns both scene and overlay.
-				if (m_SelectionRect && EDevice->TargetWidth != 0 &&
-					EDevice->TargetHeight != 0)
-				{
-					constexpr std::uint32_t SelectionColor = 0x407fff7fu;
-					auto MakeVertex = [&](const float X, const float Y)
-					{
-						FEditorOverlayVertex Vertex;
-						Vertex.Position = {
-							X * EDevice->m_ScreenQuality * 2.0f /
-									static_cast<float>(EDevice->TargetWidth) -
-								1.0f,
-							1.0f - Y * EDevice->m_ScreenQuality * 2.0f /
-									   static_cast<float>(EDevice->TargetHeight),
-							0.0f
-						};
-						constexpr float Scale = 1.0f / 255.0f;
-						Vertex.Color = {
-							static_cast<float>((SelectionColor >> 16u) & 0xffu) * Scale,
-							static_cast<float>((SelectionColor >> 8u) & 0xffu) * Scale,
-							static_cast<float>(SelectionColor & 0xffu) * Scale,
-							static_cast<float>(SelectionColor >> 24u) * Scale
-						};
-						return Vertex;
-					};
-					const FEditorOverlayVertex TopLeft = MakeVertex(
-						static_cast<float>(m_SelStart.x),
-						static_cast<float>(m_SelStart.y)
-					);
-					const FEditorOverlayVertex BottomLeft = MakeVertex(
-						static_cast<float>(m_SelStart.x),
-						static_cast<float>(m_SelEnd.y)
-					);
-					const FEditorOverlayVertex BottomRight = MakeVertex(
-						static_cast<float>(m_SelEnd.x),
-						static_cast<float>(m_SelEnd.y)
-					);
-					const FEditorOverlayVertex TopRight = MakeVertex(
-						static_cast<float>(m_SelEnd.x),
-						static_cast<float>(m_SelStart.y)
-					);
-					CaptureEditorOverlayTriangle(
-						{{TopLeft, BottomLeft, BottomRight}}
-					);
-					CaptureEditorOverlayTriangle(
-						{{TopLeft, BottomRight, TopRight}}
-					);
-				}
-			}
-
 			Tools->RenderEnvironment();
 
 			for (u32 k = 0; k < Caps.raster.dwStages; k++)
@@ -999,6 +1026,28 @@ bool TUI::OnCreate()
 
 	GetRenderWidth() = 128;
 	GetRenderHeight() = 128;
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		for (auto& [ID, View] : Views)
+		{
+			(void)ID;
+			View.RTSize = {
+				static_cast<int>(GetRenderWidth()),
+				static_cast<int>(GetRenderHeight())
+			};
+		}
+		EDevice->fASPECT = static_cast<float>(GetRenderWidth()) /
+			static_cast<float>(GetRenderHeight());
+		EDevice->mProject.build_projection(
+			deg2rad(EDevice->fFOV),
+			EDevice->fASPECT,
+			CurrentView().m_Camera.m_Znear,
+			CurrentView().m_Camera.m_Zfar
+		);
+		EDevice->m_fNearer = EDevice->mProject._43;
+		return true;
+	}
 
 	for (auto& [ID, View] : Views)
 	{
@@ -1031,20 +1080,21 @@ void TUI::OnDestroy()
 	Console->Destroy();
 	xr_delete(Console);
 
-	for (auto& [ID, View] : Views)
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Legacy)
 	{
-		View.RTFreez.destroy();
+		for (auto& [ID, View] : Views)
+		{
+			(void)ID;
+			View.RTFreez.destroy();
+		}
+		RT.destroy();
+		RTCopy.destroy();
+		ZB.destroy();
+		RTPostion.destroy();
+		RTNormal.destroy();
+		RTDiffuse.destroy();
 	}
-
-	TextureStack.clear();
-
-	RT.destroy();
-	RTCopy.destroy();
-	ZB.destroy();
-
-	RTPostion.destroy();
-	RTNormal.destroy();
-	RTDiffuse.destroy();
 
 	VERIFY(m_bReady);
 	m_bReady = false;
@@ -1118,7 +1168,16 @@ void TUI::CreateViewport(int ID, UIRenderForm* Form)
 	MainView.ViewGlobalIDX = ID;
 
 	MainView.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
-	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Legacy)
+	{
+		MainView.RTFreez.create(
+			("$user$rt_freez" + xr_string::ToString(ID)).c_str(),
+			GetRenderWidth() * EDevice->m_ScreenQuality,
+			GetRenderHeight() * EDevice->m_ScreenQuality,
+			ERHI_FORMAT::B8G8R8X8_UNORM
+		);
+	}
 }
 
 void TUI::DestroyViewport(int ID)
@@ -1137,10 +1196,6 @@ namespace
 {
 void UploadEditorSvgIcon(FEditorTextureHandle& Handle, const char* SvgText, const int Width, const int Height, const char* DebugName)
 {
-	if (GetEditorRenderBackend().GetKind() != EEditorRenderBackendKind::Tiramisu)
-	{
-		return;
-	}
 	const auto Document = lunasvg::Document::loadFromData(SvgText);
 	if (!Document)
 	{
@@ -1155,11 +1210,6 @@ void UploadEditorSvgIcon(FEditorTextureHandle& Handle, const char* SvgText, cons
 
 void TUI::InitWindowIcons()
 {
-	m_HeaderLogo = chezze_svg_temporary::RasterizeSvg(IX_RAY_LOGO, 64, 64); // EDevice->Resources->_CreateTexture("ed\\bar\\win_header_logo");
-	m_WinMin = chezze_svg_temporary::RasterizeSvg(IX_MIN_ICON, 10, 10);
-	m_WinMax = chezze_svg_temporary::RasterizeSvg(IX_MAX_ICON, 10, 10);
-	m_WinRes = chezze_svg_temporary::RasterizeSvg(IX_RESTORE_ICON, 10, 10);
-	m_WinClose = chezze_svg_temporary::RasterizeSvg(IX_CLOSE_ICON, 10, 10);
 	UploadEditorSvgIcon(m_HeaderLogoEditor, IX_RAY_LOGO, 64, 64, "editor-window-logo");
 	UploadEditorSvgIcon(m_WinMinEditor, IX_MIN_ICON, 10, 10, "editor-window-minimize");
 	UploadEditorSvgIcon(m_WinMaxEditor, IX_MAX_ICON, 10, 10, "editor-window-maximize");

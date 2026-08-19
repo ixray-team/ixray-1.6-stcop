@@ -8,13 +8,13 @@ UITopBarForm::UITopBarForm()
 {
 	m_timeUndo = 0;
 	m_timeRedo = 0;
-	m_tAIMap = EDevice->Resources->_CreateTexture("ed\\bar\\AIMap");
-	m_tPlayInEditor = EDevice->Resources->_CreateTexture("ed\\bar\\play_in_editor");
-	m_tPlayPC = EDevice->Resources->_CreateTexture("ed\\bar\\play_pc");
-	m_tPlayCleanGame = EDevice->Resources->_CreateTexture("ed\\bar\\play_clean_game");
-	m_tTerminated = EDevice->Resources->_CreateTexture("ed\\bar\\terminated");
+	m_tAIMap = "ed\\bar\\AIMap";
+	m_tPlayInEditor = "ed\\bar\\play_in_editor";
+	m_tPlayPC = "ed\\bar\\play_pc";
+	m_tPlayCleanGame = "ed\\bar\\play_clean_game";
+	m_tTerminated = "ed\\bar\\terminated";
 
-	m_tReloadConfigs = EDevice->Resources->_CreateTexture("ed\\bar\\reload_configs");
+	m_tReloadConfigs = "ed\\bar\\reload_configs";
 
 	InitIcons();
 
@@ -29,7 +29,7 @@ UITopBarForm::~UITopBarForm()
 
 
 #define IMGUI_HINT_BUTTON(Name, Ptr, Hint, dImDrawFlags, Callback)                                  \
-	if (XRay::ImGui::ToolbarIconButton("##" Name, UI->GetImGuiTexture(Ptr), nullptr, dImDrawFlags)) \
+	if (XRay::ImGui::ToolbarIconButton("##" Name, UI->LoadTexture((Ptr).c_str()), nullptr, dImDrawFlags)) \
 		Callback();                                                                                 \
 	if (ImGui::IsItemHovered())                                                                     \
 	{                                                                                               \
@@ -112,7 +112,7 @@ void UITopBarForm::Draw()
 					IMGUI_HINT_BUTTON("StartPIE", Icons["play_in_editor"], "Start Play in Editor", ImDrawFlags_RoundCornersLeft, ClickPlayInEditor);
 				}
 
-				if (XRay::ImGui::ToolbarIconButton("##PlaySettings", UI->GetImGuiTexture(Icons["play_in_editor_settings"]), nullptr, ImDrawFlags_RoundCornersRight, ButtonRadius, {ButtonSize * 0.5f, ButtonSize}, {IconSize * 0.4f, IconSize * 0.4f}))
+				if (XRay::ImGui::ToolbarIconButton("##PlaySettings", UI->LoadTexture(Icons["play_in_editor_settings"].c_str()), nullptr, ImDrawFlags_RoundCornersRight, ButtonRadius, {ButtonSize * 0.5f, ButtonSize}, {IconSize * 0.4f, IconSize * 0.4f}))
 				{
 					ImGui::OpenPopup("test");
 				}
@@ -205,23 +205,23 @@ void UITopBarForm::Draw()
 
 void UITopBarForm::InitIcons()
 {
-	Icons["undo"] = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Undo");
-	Icons["redo"] = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Redo");
-	Icons["new_scene"] = EDevice->Resources->_CreateTexture("ed\\icons\\File New");
-	Icons["open_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open");
-	Icons["save_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Save");
-	Icons["build_cform"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build CForm");
-	Icons["build_ai_map"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build AI-Map");
-	Icons["build_game_graph"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build Graph");
-	Icons["play_in_editor"] = EDevice->Resources->_CreateTexture("ed\\icons\\Run PiE");
-	Icons["play_in_editor_settings"] = EDevice->Resources->_CreateTexture("ed\\bar\\arrow");
+	Icons["undo"] = "ed\\icons\\Edit Undo";
+	Icons["redo"] = "ed\\icons\\Edit Redo";
+	Icons["new_scene"] = "ed\\icons\\File New";
+	Icons["open_level"] = "ed\\icons\\File Open";
+	Icons["save_level"] = "ed\\icons\\File Save";
+	Icons["build_cform"] = "ed\\icons\\Build CForm";
+	Icons["build_ai_map"] = "ed\\icons\\Build AI-Map";
+	Icons["build_game_graph"] = "ed\\icons\\Build Graph";
+	Icons["play_in_editor"] = "ed\\icons\\Run PiE";
+	Icons["play_in_editor_settings"] = "ed\\bar\\arrow";
 
-	Icons["reload_configs"] = EDevice->Resources->_CreateTexture("ed\\icons\\Settings Update Configs");
-	Icons["build_and_make"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build and Make");
-	Icons["play_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\Play Level");
-	Icons["play_level_in_game"] = EDevice->Resources->_CreateTexture("ed\\icons\\Play Game");
-	Icons["open_gamedata_folder"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open Game Data Folder");
-	Icons["prefs"] = EDevice->Resources->_CreateTexture("ed\\icons\\Tab Outliner");
+	Icons["reload_configs"] = "ed\\icons\\Settings Update Configs";
+	Icons["build_and_make"] = "ed\\icons\\Build and Make";
+	Icons["play_level"] = "ed\\icons\\Play Level";
+	Icons["play_level_in_game"] = "ed\\icons\\Play Game";
+	Icons["open_gamedata_folder"] = "ed\\icons\\File Open Game Data Folder";
+	Icons["prefs"] = "ed\\icons\\Tab Outliner";
 }
 
 void UITopBarForm::ClickUndo()

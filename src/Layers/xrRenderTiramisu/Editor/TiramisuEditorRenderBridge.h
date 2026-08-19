@@ -57,6 +57,10 @@ public:
 	) const override;
 	[[nodiscard]] FRenderStatisticsSnapshot GetRenderStatistics()
 		const noexcept override;
+	[[nodiscard]] FEditorRenderLifecycleStatus GetRenderLifecycleStatus()
+		const noexcept override;
+	void FinalizeRendererShutdown() override;
+	[[nodiscard]] bool InitializeRendererResources() override;
 
 	// Управляет безопасным material preview через тот же device и material ABI.
 	[[nodiscard]] bool IsAvailable() const noexcept override;
@@ -80,8 +84,16 @@ public:
 		u32 ViewportId, FEditorMaterialSlotId MaterialSlot
 	) const override;
 	[[nodiscard]] xr_string_view GetLastDiagnostic() const noexcept override;
+	[[nodiscard]] bool ReloadParticleLibrary() override;
+	void CopyParticleLibrary(
+		FEditorParticleLibrarySnapshot& OutSnapshot
+	) const override;
 
 private:
+	[[nodiscard]] bool Initialize_RenderThread();
+	void Shutdown_RenderThread();
+	void RenderDrawData_RenderThread(ImDrawData& DrawData);
+
 	struct FImpl;
 	std::unique_ptr<FImpl> Impl;
 };

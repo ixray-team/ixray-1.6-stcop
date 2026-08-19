@@ -11,17 +11,13 @@
 #include "../../Layers/xrRender/ParticleAnimCurve.h"
 #include "../../xrEngine/defines.h"
 #include "EditObject.h"
+#include "EditorRenderBackend.h"
 ref_sound* choose_snd;
 
 namespace ChoseEvents
 {
 void ReleaseChooseTexture(SChooseTexture& Texture)
 {
-	if (Texture.Legacy)
-	{
-		Texture.Legacy->Release();
-	}
-	Texture.Legacy = nullptr;
 	GUIManager->DestroyEditorTexture(Texture.Editor);
 	Texture.Revision = 0;
 }
@@ -34,7 +30,6 @@ void UpdateImageThumbnail(EImageThumbnail& Thumbnail, SChooseTexture& Texture, c
 		return;
 	}
 
-	Thumbnail.Update(Texture.Legacy);
 	xr_vector<std::byte> Flipped(
 		static_cast<std::size_t>(THUMB_WIDTH) * THUMB_HEIGHT * 4
 	);
@@ -254,26 +249,6 @@ void UpdateLAnim(const char* Name, SChooseTexture& Texture)
 		return;
 	}
 
-	RHITextureDesc Desc;
-	Desc.Width = THUMB_WIDTH;
-	Desc.Height = THUMB_HEIGHT;
-	Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-	Desc.MipLevels = 1;
-	Desc.ArraySize = 1;
-	Desc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-	Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-
-	if (Texture.Legacy)
-	{
-		if (Texture.Legacy->GetWidth() != Desc.Width ||
-			Texture.Legacy->GetHeight() != Desc.Height ||
-			Texture.Legacy->GetFormat() != Desc.Format)
-		{
-			Texture.Legacy->Release();
-			Texture.Legacy = nullptr;
-		}
-	}
-
 	xr_vector<u32> Pixels(THUMB_WIDTH * THUMB_HEIGHT);
 
 	int Frame = 0;
@@ -285,31 +260,6 @@ void UpdateLAnim(const char* Name, SChooseTexture& Texture)
 			Color = subst_alpha(Color, 0xFF); // фиксируем альфу
 			Pixels[Y * THUMB_WIDTH + X] = Color;
 		}
-	}
-
-	// Подготовка подресурса
-	RHISubResource SubResource{};
-	SubResource.Width = THUMB_WIDTH;
-	SubResource.Height = THUMB_HEIGHT;
-	SubResource.TextureFormat = Desc.Format;
-	SubResource.RowPitch = THUMB_WIDTH * 4;
-	SubResource.Data = Pixels.data();
-
-	if (!Texture.Legacy)
-	{
-		Texture.Legacy = GRHI->CreateTexture2D(Desc, SubResource);
-	}
-	else
-	{
-		RHIBox box;
-		box.left = 0;
-		box.top = 0;
-		box.front = 0;
-		box.right = THUMB_WIDTH;
-		box.bottom = THUMB_HEIGHT;
-		box.back = 1;
-
-		Texture.Legacy->UpdateData(0, 0, &SubResource, box);
 	}
 
 	FEditorTextureUpload Upload;
@@ -326,6 +276,10 @@ void UpdateLAnim(const char* Name, SChooseTexture& Texture)
 //---------------------------------------------------------------------------
 void FillEShader(ChooseItemVec& items, void* param)
 {
+	if (!EDevice->Resources)
+	{
+		return;
+	}
 	CResourceManager::map_Blender& blenders = EDevice->Resources->_GetBlenders();
 	CResourceManager::map_BlenderIt _S = blenders.begin();
 	CResourceManager::map_BlenderIt _E = blenders.end();
@@ -348,29 +302,44 @@ void FillCShader(ChooseItemVec& items, void* param)
 //---------------------------------------------------------------------------
 void FillPE(ChooseItemVec& items, void* param)
 {
-	for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++)
+	FEditorParticleLibrarySnapshot Snapshot;
+	GetEditorRenderBackend().CopyParticleLibrary(Snapshot);
+	for (const FEditorParticleAssetInfo& Asset : Snapshot.Assets)
 	{
-		items.push_back(SChooseItem(*(*E)->m_Name, "EFFECT"));
+		if (Asset.Type == EEditorParticleAssetType::Effect)
+		{
+			items.push_back(SChooseItem(Asset.Name.c_str(), "EFFECT"));
+		}
 	}
 }
 //---------------------------------------------------------------------------
 void FillPAC(ChooseItemVec& items, void* param)
 {
-	for (auto elem : RImplementation.PSLibrary.VecPACDs())
+	FEditorParticleLibrarySnapshot Snapshot;
+	GetEditorRenderBackend().CopyParticleLibrary(Snapshot);
+	for (const FEditorParticleAssetInfo& Asset : Snapshot.Assets)
 	{
-		items.push_back(SChooseItem(elem->getName(), "ANIM_CURVE"));
+		if (Asset.Type == EEditorParticleAssetType::AnimationCurve)
+		{
+			items.push_back(SChooseItem(Asset.Name.c_str(), "ANIM_CURVE"));
+		}
 	}
 }
 //---------------------------------------------------------------------------
 void FillParticles(ChooseItemVec& items, void* param)
 {
-	for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++)
+	FEditorParticleLibrarySnapshot Snapshot;
+	GetEditorRenderBackend().CopyParticleLibrary(Snapshot);
+	for (const FEditorParticleAssetInfo& Asset : Snapshot.Assets)
 	{
-		items.push_back(SChooseItem(*(*E)->m_Name, "EFFECT"));
-	}
-	for (PS::PGDIt G = ::RImplementation.PSLibrary.FirstPGD(); G != ::RImplementation.PSLibrary.LastPGD(); G++)
-	{
-		items.push_back(SChooseItem(*(*G)->m_Name, "GROUP"));
+		if (Asset.Type == EEditorParticleAssetType::Effect)
+		{
+			items.push_back(SChooseItem(Asset.Name.c_str(), "EFFECT"));
+		}
+		else if (Asset.Type == EEditorParticleAssetType::Group)
+		{
+			items.push_back(SChooseItem(Asset.Name.c_str(), "GROUP"));
+		}
 	}
 }
 
@@ -379,18 +348,19 @@ void SelectPE(SChooseItem* item, PropItemVec& info_items)
 	string64 str;
 	u32 i = 0;
 	PHelper().CreateCaption(info_items, "", "used in groups");
-	for (PS::PGDIt G = ::RImplementation.PSLibrary.FirstPGD(); G != ::RImplementation.PSLibrary.LastPGD(); ++G)
+	FEditorParticleLibrarySnapshot Snapshot;
+	GetEditorRenderBackend().CopyParticleLibrary(Snapshot);
+	for (const FEditorParticleAssetInfo& Asset : Snapshot.Assets)
 	{
-		PS::CPGDef* def = (*G);
-		PS::CPGDef::EffectIt pe_it = def->m_Effects.begin();
-		PS::CPGDef::EffectIt pe_it_e = def->m_Effects.end();
-		for (; pe_it != pe_it_e; ++pe_it)
+		if (Asset.Type != EEditorParticleAssetType::Group)
 		{
-			if ((*pe_it)->m_EffectName == item->name)
-			{
-				xr_sprintf(str, sizeof(str), "%d", ++i);
-				PHelper().CreateCaption(info_items, str, def->m_Name);
-			}
+			continue;
+		}
+		if (std::ranges::find(Asset.Dependencies, item->name.c_str()) !=
+			Asset.Dependencies.end())
+		{
+			xr_sprintf(str, sizeof(str), "%d", ++i);
+			PHelper().CreateCaption(info_items, str, Asset.Name.c_str());
 		}
 	}
 }
@@ -400,17 +370,17 @@ void SelectPG(SChooseItem* item, PropItemVec& info_items)
 	string64 str;
 	u32 i = 0;
 	PHelper().CreateCaption(info_items, "", "using effects");
-	for (PS::PGDIt G = ::RImplementation.PSLibrary.FirstPGD(); G != ::RImplementation.PSLibrary.LastPGD(); G++)
+	FEditorParticleLibrarySnapshot Snapshot;
+	GetEditorRenderBackend().CopyParticleLibrary(Snapshot);
+	for (const FEditorParticleAssetInfo& Asset : Snapshot.Assets)
 	{
-		PS::CPGDef* def = (*G);
-		if (def->m_Name == item->name)
+		if (Asset.Type == EEditorParticleAssetType::Group &&
+			Asset.Name == item->name.c_str())
 		{
-			PS::CPGDef::EffectIt pe_it = def->m_Effects.begin();
-			PS::CPGDef::EffectIt pe_it_e = def->m_Effects.end();
-			for (; pe_it != pe_it_e; ++pe_it)
+			for (const xr_string& Dependency : Asset.Dependencies)
 			{
 				xr_sprintf(str, sizeof(str), "%d", ++i);
-				PHelper().CreateCaption(info_items, str, (*pe_it)->m_EffectName);
+				PHelper().CreateCaption(info_items, str, Dependency.c_str());
 			}
 			break;
 		}

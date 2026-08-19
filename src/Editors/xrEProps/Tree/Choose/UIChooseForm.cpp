@@ -126,16 +126,11 @@ void UIChooseForm::Draw()
 			{
 				const FEditorViewportSurface EditorSurface =
 					GUIManager->GetEditorTextureSurface(m_Texture.Editor);
-				if (NullTexture || m_Texture.Legacy || EditorSurface.IsValid())
+				if (NullTexture || EditorSurface.IsValid())
 				{
 					if (EditorSurface.IsValid())
 					{
 						ImGui::Image(EditorSurface.ImGuiTextureId, ImVec2(192, 192));
-					}
-					else if (m_Texture.Legacy)
-					{
-						IRHIShaderResourceView* SRV = GRHI->CreateShaderResourceView(m_Texture.Legacy, nullptr);
-						ImGui::Image(SRV->GetRawSRV(), ImVec2(192, 192));
 					}
 					else
 					{
@@ -262,11 +257,6 @@ void UIChooseForm::Draw()
 
 void UIChooseForm::ReleaseTexture()
 {
-	if (m_Texture.Legacy)
-	{
-		m_Texture.Legacy->Release();
-	}
-	m_Texture.Legacy = nullptr;
 	GUIManager->DestroyEditorTexture(m_Texture.Editor);
 	m_Texture.Revision = 0;
 }

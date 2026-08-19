@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "HeightmapUtils.h"
+#include "../../../xrECore/Editor/EditorRenderBackend.h"
 #include <RedImage/RedImage.hpp>
 
 void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Heightmap, CEditableObject* OutMesh, int ScaleY)
@@ -160,17 +161,22 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 	Surface->SetTexture("terrain\\terrain_mp_atp");
 	Surface->SetVMap("Texture");
 	Surface->SetFVF(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1);
-	Surface->OnDeviceCreate();
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Legacy)
+	{
+		Surface->OnDeviceCreate();
+	}
 
 	IntVec FaceIndices(Faces.size());
 	for (u32 i = 0; i < Faces.size(); ++i)
 		FaceIndices[i] = i;
 
 	Mesh->Surfaces()[Surface] = FaceIndices;
+	Mesh->MarkRenderGeometryDirty();
 
-	Mesh->GenerateFNormals();
-	Mesh->GenerateVNormals(nullptr, true);
-	Mesh->GenerateAdjacency();
+	// CEditableMesh::Create уже строит normals и adjacency и удерживает по одной
+	// ссылке на derived data. Повторная генерация оставляла лишние ref-counts и
+	// вызывала assert при удалении CTerrain.
 	OutMesh->UpdateBox();
 
 	Msg("Terrain mesh created successfully: %d vertices, %d faces", Vertices.size(), Faces.size());

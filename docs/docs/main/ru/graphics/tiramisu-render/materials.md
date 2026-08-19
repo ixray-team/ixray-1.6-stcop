@@ -54,7 +54,19 @@ Tiramisu shader ABI использует Descriptor Heap Indexing. Generated и 
 
 Матрицы требуют явного контракта на границе CPU/GPU. `Fmatrix` X-Ray хранит row-vector transform (`[position, 1] * M`), а material vertex factory вычисляет `mul(M, position)`. Матрицы draw record загружаются из `ByteAddressBuffer` явными HLSL-строками, поэтому CPU перед записью применяет `MakeMaterialDrawBufferMatrix` и транспонирует current/previous transform. Эта операция относится только к draw buffer: обычные constant/root buffers используют column-major packing DXC и дополнительного transpose не требуют.
 
-Material GPU ABI v2 также определяет независимый от NRI `FMaterialLightGpuData` размером 64 байта. Scene constants передают `LightDataBufferIndex`, `LightDataOffset` и `LightCount`; HLSL выбирает `ByteAddressBuffer` через `ResourceDescriptorHeap`, а не через фиксированный register. Runtime-изменение position/range, direction/type, HDR color/intensity, spot cone и flags не создаёт новую material permutation. Editor Forward pass обходит не более 64 Directional/Point/Spot lights; это первая реализация scene lighting, но не замена будущих clustered lists и shadow passes.
+Material GPU ABI v4 также определяет независимые от NRI 64-байтные light
+records и skinning matrices. Scene constants передают descriptor indices
+light/palette buffers и inverse view-projection; `FMaterialDrawGpuData` хранит
+current/previous palette offsets и bone count. Для `decal_projector` поле
+previous transform содержит заранее вычисленный world-to-decal, а свободный
+skinning descriptor slot — bindless index scene depth. HLSL выбирает ресурсы
+через `ResourceDescriptorHeap`, а не через фиксированные registers.
+Runtime-изменение света, bone palette или projector transform не создаёт
+material permutation; vertex factory (`level_static`, `skeletal` либо
+`decal_projector`) входит в deterministic pipeline key. Editor Forward pass
+обходит не более 64 Directional/Point/Spot lights; отдельный Decal pass читает
+depth и композитит color до editor overlays. Это не замена будущих clustered
+lists, shadow passes и production DBuffer/G-buffer decals.
 
 Renderer уже создаёт три начальных bindless buffer: draw data, material instance table и material parameter data. Изменённые parameter ranges обновляются отдельно. Это пока baseline, а не финальный allocator: storage должен перейти на frame contexts, fenced reuse и deferred deletion.
 
@@ -118,7 +130,16 @@ Development cache key учитывает hashes material/template/graph, static 
 
 `xrMaterialCooker` использует тот же compiler и создаёт versioned binary bundle с flattened instances, dependency table и DXIL/SPIR-V blobs. Cooked runtime не читает JSON и не компилирует HLSL.
 
-Текущий checkpoint валидирует 9 masters и 9 instances. Для всех известных static permutations cooker создаёт 200 DXIL/SPIR-V blobs: парные canonical vertex и pixel stages для production/validation passes двух backend. Vertex factory вызывает тот же `EvaluateMaterial` для `WorldPositionOffset`, использует `SampleLevel` для vertex texture reads и получает draw record через `NRI_INSTANCE_ID_OFFSET`. Bundle v2 хранит material/pipeline key, backend format, pass, stage, entry point, vertex factory и render-pass signature. Все pixel templates компилируются для Vulkan и D3D12 с одинаковыми descriptor-heap bindings.
+Текущий checkpoint валидирует 11 masters и 9 instances. Для всех известных
+static permutations cooker создаёт 216 DXIL/SPIR-V blobs: парные canonical
+vertex и pixel stages для production/validation passes двух backend, включая
+две legacy decal masters. Vertex factory получает draw record через
+`NRI_INSTANCE_ID_OFFSET`; surface factories вызывают тот же `EvaluateMaterial`
+для `WorldPositionOffset`, а `decal_projector` создаёт fullscreen triangle и
+передаёт draw index pixel pass. Bundle v2 хранит material/pipeline key, backend
+format, pass, stage, entry point, vertex factory и render-pass signature. Все
+pixel templates компилируются для Vulkan и D3D12 с одинаковыми
+descriptor-heap bindings.
 
 Renderer умеет загрузить development bundle, выбрать нужный backend и material permutation и создать validation NRI pipeline только на render thread. Legacy G-buffer pipeline остаётся отдельным fallback до подключения настоящих MRT. Полный production pipeline set, binary flattened records без JSON и frame-safe hot reload ещё не завершены. Поэтому bundle намеренно сохраняет `CompleteShaderSet = false`, а строгий cooked runtime обязан его отклонять.
 
@@ -138,9 +159,9 @@ Hot reload подключён к Material Editor preview и Forward material pat
 
 - renderer-neutral viewport/editor render contract в `xrECore`;
 - временный legacy adapter для работы текущих редакторов во время миграции;
-- Tiramisu composition root для LevelEditor и ShaderEditor;
+- Tiramisu composition root для режима `-tiramisu-editor` в LevelEditor;
 - material preview только через `IMaterialPreviewRenderer`, без NRI типов в editor code.
 
-Базовый scene/presentation-срез уже готов: `UIRenderForm` использует `IEditorRenderBackend` для capture, resize, scene snapshots, CPU picking и opaque ImGui surface, а legacy adapter временно сохраняет прежнее поведение. NRI presenter LevelEditor имеет собственный swapchain и три frame contexts. Viewport рисует static/transient meshes, selection и debug/overlay primitives; legacy surfaces разрешаются через pre-authored `MaterialInstance`, parent flattening и bindless texture overrides. Общий compiler асинхронно собирает Forward pass для Vulkan/D3D12, а неуспешный rebuild сохраняет last-good pipeline. `NRI_BASE_INSTANCE` индексирует `FMaterialDrawGpuData`; draw/instance/parameter records и отдельные light records тройно буферизованы. Forward pass учитывает two-sided/blend mode и вычисляет GGX/Smith/Schlick lighting для native Directional/Point/Spot lights из Descriptor Heap Indexing buffer. Совместный normal/ASan GPU smoke на Vulkan и D3D12 проверяет два lights, три opaque/translucent/additive draws, selection, debug/overlay paths и safe reload с обязательным `-rdbg`. Material preview отдельно реализует background DXC, offscreen sphere/cube/plane, Texture2D/TextureCube cache и environment lighting. Production prefiltered IBL, clustered lights/shadows, игровой renderer-wide hot reload и полный новый scene path ещё не подключены. Целевые LevelEditor/ShaderEditor могут быть Tiramisu-only; игровой R4 остаётся отдельным.
+Базовый scene/presentation-срез уже готов: `UIRenderForm` использует `IEditorRenderBackend` для capture, resize, scene snapshots, CPU picking и opaque ImGui surface, а legacy adapter временно сохраняет прежнее поведение. NRI presenter LevelEditor имеет собственный swapchain и три frame contexts; создание ресурсов, запись команд, resize, present и удаление выполняются общим render thread `xrRenderTiramisu`. Viewport рисует static/transient meshes, selection и debug/overlay primitives; legacy surfaces разрешаются через pre-authored `MaterialInstance`, parent flattening и bindless texture overrides. Общий compiler асинхронно собирает Forward pass для Vulkan/D3D12, а неуспешный rebuild сохраняет last-good pipeline. `NRI_BASE_INSTANCE` индексирует `FMaterialDrawGpuData`; draw/instance/parameter records и отдельные light records тройно буферизованы. Forward pass учитывает two-sided/blend mode и вычисляет GGX/Smith/Schlick lighting для native Directional/Point/Spot lights из Descriptor Heap Indexing buffer. Совместный normal/ASan GPU smoke на Vulkan и D3D12 проверяет два lights, три opaque/translucent/additive draws, selection, debug/overlay paths и safe reload с обязательным `-rdbg`. Material preview отдельно реализует background DXC, offscreen sphere/cube/plane, Texture2D/TextureCube cache и environment lighting. Production prefiltered IBL, clustered lights/shadows, игровой renderer-wide hot reload и полный новый scene path ещё не подключены. Standalone legacy ShaderEditor не подключается; новый Material Editor работает внутри Tiramisu-only режима LevelEditor. Игровой R4 остаётся отдельным.
 
 Текущий GUI уже включает master/instance assets и parent chains, searchable palette, typed pins, details panel, undo/redo, copy/paste, autosave/recovery, migrations, diagnostics с переходом к node, generated HLSL preview, permutation statistics, preview primitive/environment controls, instance inspector и безопасный dependency-driven live preview. До готовности остаются production IBL, renderer-wide pipeline hot reload и завершение Tiramisu scene viewport workflow.

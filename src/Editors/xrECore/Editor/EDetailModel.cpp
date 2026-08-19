@@ -6,6 +6,7 @@
 #include "EditObject.h"
 #include "EditMesh.h"
 #include "ImageManager.h"
+#include "EditorRenderBackend.h"
 
 //------------------------------------------------------------------------------
 #define DETOBJ_CHUNK_VERSION		0x1000
@@ -45,6 +46,26 @@ EDetail::~EDetail()
 
 void EDetail::Unload()
 {
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		xr_free(vertices);
+		vertices = nullptr;
+		xr_free(indices);
+		indices = nullptr;
+		number_vertices = 0;
+		number_indices = 0;
+		for (auto& Variant : m_items)
+		{
+			for (auto& Wind : Variant)
+			{
+				Wind.clear();
+			}
+		}
+		Lib.RemoveEditObject(m_pRefs);
+		m_pRefs = nullptr;
+		return;
+	}
 	CDetail::Unload		();
 	Lib.RemoveEditObject(m_pRefs);
 	OnDeviceDestroy		();
@@ -185,9 +206,12 @@ bool EDetail::Update(const char* name)
 	Memory.mem_copy(indices, inds.data(), number_indices * sizeof(u16));
 
 	bv_bb.getsphere(bv_sphere.P, bv_sphere.R);
-	LoadGeom();
-
-	OnDeviceCreate();
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Legacy)
+	{
+		LoadGeom();
+		OnDeviceCreate();
+	}
 
 	return true;
 }

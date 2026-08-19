@@ -6,7 +6,8 @@ class EParticlesObject: public CCustomObject
     Fbox				m_BBox;
     shared_str			m_RefName;
 
-    IParticleCustom*	m_Particles;
+	IParticleCustom*	m_Particles;
+	bool m_IsPlaying = false;
 	GameTypeChooser		m_GameType;
 
 	void   	OnRefChange			(PropValue* V);
@@ -18,7 +19,7 @@ public:
     virtual bool		CanAttach			() {return true;}
 
     IParticleCustom*	GetParticles		(){return m_Particles;}
-	const char*				GetReferenceName	(){return m_Particles?*m_Particles->Name():0;}
+	const char*				GetReferenceName	(){return m_RefName.c_str()[0]?*m_RefName:0;}
 
     void				RenderSingle		();
 	virtual void    	Render      		(int priority, bool strictB2F);
@@ -37,6 +38,7 @@ public:
 
     void 				Play				();
     void				Stop				();
+	[[nodiscard]] bool IsPlaying() const noexcept { return m_IsPlaying; }
 
     virtual void 		OnUpdateTransform	();
 

@@ -3,16 +3,19 @@
 
 #include "NRI.hlsl"
 
-#define TIRAMISU_MATERIAL_GPU_ABI_VERSION 2u
+#define TIRAMISU_MATERIAL_GPU_ABI_VERSION 4u
 #define TIRAMISU_MATERIAL_INSTANCE_GPU_DATA_SIZE 16u
-#define TIRAMISU_MATERIAL_DRAW_GPU_DATA_SIZE 144u
+#define TIRAMISU_MATERIAL_DRAW_GPU_DATA_SIZE 160u
 #define TIRAMISU_MATERIAL_LIGHT_GPU_DATA_SIZE 64u
+#define TIRAMISU_MATERIAL_SKINNING_MATRIX_GPU_DATA_SIZE 64u
 #define TIRAMISU_INVALID_DESCRIPTOR_INDEX 0xffffffffu
+#define TIRAMISU_MATERIAL_DRAW_FLAG_EDITOR_DEPTH_BIAS 4u
 
 NRI_RESOURCE(cbuffer, GlobalConstants, b, 0, 2)
 {
     float4 SceneView;
     float4x4 ViewProjectionWorldMatrix;
+    float4x4 InverseViewProjectionWorldMatrix;
     float4 CameraPositionAndTime;
     uint DrawDataBufferIndex;
     uint MaterialInstanceBufferIndex;
@@ -22,6 +25,8 @@ NRI_RESOURCE(cbuffer, GlobalConstants, b, 0, 2)
     uint LightDataOffset;
     uint LightCount;
     uint LightingFlags;
+    uint SkinningPaletteBufferIndex;
+    uint3 MaterialGpuAbiPadding;
 };
 
 struct MaterialInstanceGpuData
@@ -53,6 +58,9 @@ struct MaterialDrawGpuData
     uint MaterialInstanceIndex;
     uint ObjectId;
     uint Flags;
+    uint SkinningPaletteOffset;
+    uint PreviousSkinningPaletteOffset;
+    uint SkinningBoneCount;
 };
 
 float4x4 LoadMaterialGpuMatrix(ByteAddressBuffer Buffer, uint Offset)
@@ -77,7 +85,20 @@ MaterialDrawGpuData LoadMaterialDrawGpuData(uint DrawIndex)
     Result.MaterialInstanceIndex = Metadata.x;
     Result.ObjectId = Metadata.y;
     Result.Flags = Metadata.z;
+    Result.SkinningPaletteOffset = Metadata.w;
+    const uint4 SkinningMetadata = DrawTable.Load4(Offset + 144u);
+    Result.PreviousSkinningPaletteOffset = SkinningMetadata.x;
+    Result.SkinningBoneCount = SkinningMetadata.y;
     return Result;
+}
+
+float4x4 LoadMaterialSkinningMatrix(uint MatrixIndex)
+{
+    ByteAddressBuffer Palette =
+        ResourceDescriptorHeap[SkinningPaletteBufferIndex];
+    return LoadMaterialGpuMatrix(
+        Palette,
+        MatrixIndex * TIRAMISU_MATERIAL_SKINNING_MATRIX_GPU_DATA_SIZE);
 }
 
 struct MaterialLightGpuData

@@ -52,9 +52,9 @@
 | Hierarchy visuals | `FHierrarhyVisual` | 🟡 Legacy import flattening/instances покрывает только текущий slice | Иерархия, visibility и instance transforms сохраняются |
 | Progressive meshes и SWI | `FProgressive`, `R_Backend_LOD` | ⬜ | Все SWI ranges, transitions и bounds |
 | FLOD/LOD visuals | `FLOD`, `r__dsgraph_render_lods.cpp` | 🟡 StaticMesh LOD data model есть, selection policy не подключена | Deterministic screen-size LOD и отсутствие popping regressions |
-| Skeletal rigid/animated | `SkeletonRigid`, `SkeletonAnimated`, `SkeletonX` | ⬜ | Actors/NPC/HUD skinned scene, previous pose и shadows |
+| Skeletal rigid/animated | `SkeletonRigid`, `SkeletonAnimated`, `SkeletonX` | 🧪 LevelEditor OGF/OMF actor path: 1–4 weights, current/previous GPU palette и `skeletal` material vertex factory | Игровые Actors/NPC/HUD skinned scenes, LOD/SWI, velocity acceptance и shadows |
 | Trees и wind deformation | `FTreeVisual`, `R_Backend_tree` | ⬜ | Tree vertex factory, wind, lighting и masked shadows |
-| Details/grass | `DetailManager*`, `DetailModel` | ⬜ | Streaming/placement, wind, fade, shadows и density settings |
+| Details/grass | `DetailManager*`, `DetailModel` | 🟡 | LevelEditor: CPU slot placement → batched neutral static mesh → `xrRenderTiramisu`; отсутствуют game streaming, wind, fade, shadows, density runtime и native GPU instancing |
 | Particles и particle groups | `ParticleEffect`, `ParticleGroup` | 🟡 Editor billboard bridge есть, игровой vertex factory отсутствует | Game particle library, sorting, soft/distort/additive variants |
 | Glows | glow renderer/shared render interface | 🟡 Editor billboard bridge есть | Game glows, occlusion/fade и blend parity |
 | HUD models и оружие | HUD render phases и model pool | ⬜ | First-person weapon/HUD depth/FOV, attachments и effects |
@@ -110,7 +110,8 @@
 | Local-light shadows | `phase_smap_spot*`, light visibility | ⬜ | Point/spot allocation, cache/lifetime и masked casters |
 | Translucent shadows | `*_tsh` shadow phases | ⬜ | Решение parity по content audit и reference |
 | Volumetric lights/sunshafts | `accum_direct_volumetric`, `phase_combine_volumetric` | ⬜ | Sun/local volumetrics и composition |
-| Decals/wallmarks | `WallmarksEngine`, `phase_wallmarks` | ⬜ | Static/dynamic decals, clipping, lifetime и material domain |
+| Decals/wallmarks | `WallmarksEngine`, `phase_wallmarks` | 🟡 Editor projective Decal pass + legacy adapter | Production DBuffer/G-buffer composition, angle fade, lifetime/culling, game dynamic decals и persistent migration dump |
+| Fog Volume authoring | `EFogVolume`, emitter/occlusion shapes | 🟡 LevelEditor renderer-neutral shape packet | Volumetric fog simulation/composition остаётся отдельным game-renderer pass |
 
 ## World и environment
 

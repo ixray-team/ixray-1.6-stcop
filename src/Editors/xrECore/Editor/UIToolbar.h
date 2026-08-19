@@ -4,10 +4,6 @@
 class ECORE_API CUIToolbar :
 	public IEditorWnd
 {
-	ref_texture Select;
-	ref_texture Move;
-	ref_texture Rotate;
-	ref_texture Scale;
 
 	bool bFocus = false;
 

@@ -64,6 +64,23 @@ public:
 		return Result;
 	}
 
+	[[nodiscard]] FEditorRenderLifecycleStatus GetRenderLifecycleStatus()
+		const noexcept override
+	{
+		return LifecycleStatus;
+	}
+
+	void FinalizeRendererShutdown() override
+	{
+		++FinalizeCount;
+	}
+
+	[[nodiscard]] bool InitializeRendererResources() override
+	{
+		++InitializeResourcesCount;
+		return InitializeResourcesResult;
+	}
+
 	void CopyViewportOverlayText(const u32 ViewportId, xr_vector<FEditorOverlayText>& OutText) const override
 	{
 		RequestedOverlayViewport = ViewportId;
@@ -129,6 +146,20 @@ public:
 	u64 SubmittedDebugDrawRevision = 0;
 	bool AcceptScene = true;
 	FEditorViewportSurface Surface;
+	FEditorRenderLifecycleStatus LifecycleStatus{
+		true,
+		true,
+		1920,
+		1080,
+		77,
+		3,
+		64,
+		6,
+		2
+	};
+	u32 FinalizeCount = 0;
+	u32 InitializeResourcesCount = 0;
+	bool InitializeResourcesResult = true;
 	mutable int TextureToken = 0;
 	FEditorTextureHandle TextureHandle{3, 7};
 	u64 TextureRevision = 0;
@@ -245,6 +276,34 @@ int main()
 	{
 		return Fail("Editor debug capture did not preserve one redraw packet");
 	}
+	BeginEditorDebugDrawCapture();
+	CaptureEditorDebugLine(CapturedLine);
+	CaptureEditorOverlayText(CapturedText);
+	DiscardEditorDebugDrawCapture();
+	if (IsEditorDebugDrawCaptureActive())
+	{
+		return Fail("Discarded editor debug capture remained active");
+	}
+	CapturedLines.clear();
+	CapturedTriangles.clear();
+	CapturedOverlayLines.clear();
+	CapturedOverlayTriangles.clear();
+	CapturedOverlayText.clear();
+	CapturedTransientMeshes.clear();
+	EndEditorDebugDrawCapture(
+		CapturedLines,
+		CapturedTriangles,
+		CapturedOverlayLines,
+		CapturedOverlayTriangles,
+		CapturedOverlayText,
+		CapturedTransientMeshes
+	);
+	if (!CapturedLines.empty() || !CapturedTriangles.empty() ||
+		!CapturedOverlayLines.empty() || !CapturedOverlayTriangles.empty() ||
+		!CapturedOverlayText.empty() || !CapturedTransientMeshes.empty())
+	{
+		return Fail("Discarded editor debug capture retained primitives");
+	}
 
 	FTestEditorRenderBackend First(EEditorRenderBackendKind::Tiramisu);
 	if (InstallEditorRenderBackend(&First) != nullptr)
@@ -287,6 +346,13 @@ int main()
 	const FEditorViewportPickResult PickResult =
 		Active.PickViewport(7, PickRequest);
 	const FEditorViewportSurface Surface = Active.GetViewportSurface(7);
+	const FEditorRenderLifecycleStatus Lifecycle =
+		Active.GetRenderLifecycleStatus();
+	if (!Active.InitializeRendererResources())
+	{
+		return Fail("Renderer resource initialization was rejected");
+	}
+	Active.FinalizeRendererShutdown();
 	xr_vector<FEditorOverlayText> CopiedOverlayText;
 	Active.CopyViewportOverlayText(7, CopiedOverlayText);
 	if (First.CaptureCount != 1 || First.CapturedViewport != 7 || First.ResizedViewport != 7 ||
@@ -313,6 +379,20 @@ int main()
 	if (!Surface.IsValid() || Surface.Width != 640 || Surface.Height != 360)
 	{
 		return Fail("The installed backend did not return its opaque viewport surface");
+	}
+	if (!Lifecycle.PresentationReady ||
+		!Lifecycle.DedicatedRenderThreadActive ||
+		Lifecycle.PresentationWidth != 1920 ||
+		Lifecycle.PresentationHeight != 1080 ||
+		Lifecycle.RenderExecutionThreadId != 77 ||
+		Lifecycle.SwapchainRevision != 3 ||
+		Lifecycle.PresentedFrameCount != 64 ||
+		Lifecycle.ViewportResourceRevision != 6 ||
+		Lifecycle.ImGuiTextureRedirectCount != 2 ||
+		First.InitializeResourcesCount != 1 ||
+		First.FinalizeCount != 1)
+	{
+		return Fail("Renderer lifecycle operations were not forwarded");
 	}
 
 	FTestEditorRenderBackend Second(EEditorRenderBackendKind::Tiramisu);

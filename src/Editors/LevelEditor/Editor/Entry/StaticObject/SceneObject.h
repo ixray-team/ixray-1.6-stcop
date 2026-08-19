@@ -11,7 +11,6 @@ class CSceneObject :
 		shared_str MaterialAsset;
 	};
 
-	shared_str m_ReferenceName;
 	CEditableObject* m_pReference;
 	xr_vector<FRenderMaterialBinding> m_RenderMaterials;
 	bool m_RenderMaterialsResolved;

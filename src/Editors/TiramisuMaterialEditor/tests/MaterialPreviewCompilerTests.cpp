@@ -251,6 +251,24 @@ int main()
 		return Fail(Forward, "D3D12 editor Forward material pass failed");
 	}
 
+	FMaterialPreviewCompileRequest SkeletalRequest = ForwardRequest;
+	SkeletalRequest.VertexFactory = "skeletal";
+	SkeletalRequest.VertexFactorySource = ReadText(
+		"gamedata/shaders/r5/materials/vertex/"
+		"MaterialSkeletalVertexFactory.hlsl"
+	);
+	const FMaterialPreviewCompileResult Skeletal =
+		CompileMaterialPreview(SkeletalRequest);
+	if (!Skeletal.Succeeded() || Skeletal.VertexFactory != "skeletal" ||
+		Skeletal.PipelineKey == Forward.PipelineKey ||
+		Skeletal.VertexBytecode == Forward.VertexBytecode)
+	{
+		return Fail(
+			Skeletal,
+			"D3D12 skeletal vertex-factory permutation failed"
+		);
+	}
+
 	FMaterialPreviewCompileRequest ForwardVulkanRequest = ForwardRequest;
 	ForwardVulkanRequest.Backend = EMaterialShaderBackend::Vulkan;
 	const FMaterialPreviewCompileResult ForwardVulkan =

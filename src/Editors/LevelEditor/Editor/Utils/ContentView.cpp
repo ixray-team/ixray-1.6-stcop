@@ -768,14 +768,11 @@ void CContentView::DrawHeader()
 
 			ImGui::EndPopup();
 		}
-		/*
-		Exception thrown: read access violation.
-	this->MenuIcon.p_ was nullptr.
-		*/
-
-		// if (MenuIcon && ImGui::ImageButton("##MenuCB", MenuIcon->get_SRView()->GetRawSRV(), { 15, 15 }))
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + TableBorder);
-		if (MenuIcon && XRay::ImGui::Button(ICON_FA_BARS "##IMenuCB", {Height - TableBorder * 2.f, Height - TableBorder * 2.f}))
+		if (XRay::ImGui::Button(
+				ICON_FA_BARS "##IMenuCB",
+				{Height - TableBorder * 2.f, Height - TableBorder * 2.f}
+			))
 		{
 			ImGui::OpenPopup("MenuCBPpp");
 		}
@@ -1066,7 +1063,7 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 
 	xr_vector<xr_string> Directories;
 
-	auto ApplyParticleLambda = [&](const char* Name, const char* ext, void* Ptr)
+	auto ApplyParticleLambda = [&](const char* Name, const char* ext, const EEditorParticleAssetType Type)
 	{
 		xr_path PEPath = Name;
 		if (PEPath.has_parent_path() && !path.empty())
@@ -1079,7 +1076,7 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 				FileInfo.File.replace_extension(ext);
 
 				Files.push_back(FileInfo);
-				ParticlesCache[xr_string(Name) + "." + ext] = Ptr;
+				ParticlesCache[xr_string(Name) + "." + ext] = Type;
 			}
 			else if (!path.empty() && ParentPath.contains(path))
 			{
@@ -1100,7 +1097,7 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 			FileOptData FileInfo;
 			FileInfo.File = Name;
 			Files.push_back(FileInfo);
-			ParticlesCache[xr_string(Name) + "." + ext] = Ptr;
+			ParticlesCache[xr_string(Name) + "." + ext] = Type;
 		}
 		else if (path.empty() && PEPath.has_parent_path())
 		{
@@ -1123,18 +1120,22 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 		}
 	};
 
-	PS::PEDIt Pe = RImplementation.PSLibrary.FirstPED();
-	PS::PEDIt Ee = RImplementation.PSLibrary.LastPED();
-	for (; Pe != Ee; Pe++)
+	FEditorParticleLibrarySnapshot Snapshot;
+	GetEditorRenderBackend().CopyParticleLibrary(Snapshot);
+	for (const FEditorParticleAssetInfo& Asset : Snapshot.Assets)
 	{
-		ApplyParticleLambda(*(*Pe)->m_Name, "pe", (*Pe));
-	}
-
-	PS::PGDIt Pg = RImplementation.PSLibrary.FirstPGD();
-	PS::PGDIt Eg = RImplementation.PSLibrary.LastPGD();
-	for (; Pg != Eg; Pg++)
-	{
-		ApplyParticleLambda(*(*Pg)->m_Name, "pg", (*Pg));
+		if (Asset.Type == EEditorParticleAssetType::Effect)
+		{
+			ApplyParticleLambda(
+				Asset.Name.c_str(), "pe", Asset.Type
+			);
+		}
+		else if (Asset.Type == EEditorParticleAssetType::Group)
+		{
+			ApplyParticleLambda(
+				Asset.Name.c_str(), "pg", Asset.Type
+			);
+		}
 	}
 
 	IsParticles = true;
@@ -1262,7 +1263,6 @@ void CContentView::RescanDirectory()
 
 void CContentView::Destroy()
 {
-	MenuIcon.destroy();
 	for (auto& [Name, Icon] : Icons)
 	{
 		(void)Name;
@@ -1299,7 +1299,7 @@ void CContentView::LoadCustomIcons()
 		{
 			string_path Path = {};
 			sprintf(Path, "%s%s", "ed\\content_browser\\", el.second.c_str());
-			Icons[el.first.c_str()] = {EDevice->Resources->_CreateTexture(Path), true};
+			Icons[el.first.c_str()] = {Path, true};
 		}
 	}
 }
@@ -1316,7 +1316,7 @@ void CContentView::RemoveCustomIcon(const xr_string& icon)
 ImTextureID CContentView::ResolveIcon(const IconData& Icon) const
 {
 	return Icon.EditorIcon.IsValid() ? UI->GetImGuiTexture(Icon.EditorIcon)
-									 : UI->GetImGuiTexture(Icon.Icon);
+									 : UI->LoadTexture(Icon.TextureName.c_str());
 }
 
 void CContentView::DestroyIcon(IconData& Icon)
@@ -1326,27 +1326,25 @@ void CContentView::DestroyIcon(IconData& Icon)
 
 void CContentView::Init()
 {
-	Icons["Folder"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\folder"), true};
-	Icons[".."] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\folder"), true};
-	Icons["thm"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\thm"), true};
-	Icons["logs"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\log"), true};
-	Icons["ogg"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\ogg"), true};
-	Icons["level"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\level"), true};
-	Icons["wav"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\wav"), true};
-	Icons["object"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\object"), true};
-	Icons["image"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\image"), true};
-	Icons["seq"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\seq"), true};
-	Icons["tga"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\tga"), true};
-	Icons["file"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\file"), true};
-	Icons["exe"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\exe"), true};
-	Icons["cmd"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\cmd"), true};
-	Icons["dll"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\dll"), true};
-	Icons["backup"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\backup"), true};
-	Icons["env_mod"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\env_mod"), true};
-	Icons["dialogs"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\dialogs"), true};
-	Icons["multi"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\multi"), true};
-
-	MenuIcon = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
+	Icons["Folder"] = {"ed\\content_browser\\folder", true};
+	Icons[".."] = {"ed\\content_browser\\folder", true};
+	Icons["thm"] = {"ed\\content_browser\\thm", true};
+	Icons["logs"] = {"ed\\content_browser\\log", true};
+	Icons["ogg"] = {"ed\\content_browser\\ogg", true};
+	Icons["level"] = {"ed\\content_browser\\level", true};
+	Icons["wav"] = {"ed\\content_browser\\wav", true};
+	Icons["object"] = {"ed\\content_browser\\object", true};
+	Icons["image"] = {"ed\\content_browser\\image", true};
+	Icons["seq"] = {"ed\\content_browser\\seq", true};
+	Icons["tga"] = {"ed\\content_browser\\tga", true};
+	Icons["file"] = {"ed\\content_browser\\file", true};
+	Icons["exe"] = {"ed\\content_browser\\exe", true};
+	Icons["cmd"] = {"ed\\content_browser\\cmd", true};
+	Icons["dll"] = {"ed\\content_browser\\dll", true};
+	Icons["backup"] = {"ed\\content_browser\\backup", true};
+	Icons["env_mod"] = {"ed\\content_browser\\env_mod", true};
+	Icons["dialogs"] = {"ed\\content_browser\\dialogs", true};
+	Icons["multi"] = {"ed\\content_browser\\multi", true};
 
 	LoadCustomIcons();
 	LoadExtDest();
@@ -1629,7 +1627,8 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 		IconPtr = &GetTexture(FilePath);
 	}
 
-	if (!IconPtr->Icon)
+	const ImTextureID IconTexture = ResolveIcon(*IconPtr);
+	if (!IconTexture)
 	{
 		return false;
 	}
@@ -1705,7 +1704,14 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 				IconColor.w = 0.3;
 			}
 
-			ImGui::Image(ResolveIcon(*IconPtr), ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0, 0, 0, 0));
+			ImGui::Image(
+				IconTexture,
+				ImageSize,
+				ImVec2(0, 0),
+				ImVec2(1, 1),
+				IconColor,
+				ImVec4(0, 0, 0, 0)
+			);
 
 			/*
 				Два варианта
@@ -2007,16 +2013,11 @@ bool CContentView::DrawContext(const xr_path& Path)
 			if (ImGui::MenuItem("Open"))
 			{
 				CViewportParticle* MeshView = new CViewportParticle;
-				void* Ptr = ParticlesCache[Path.xstring()];
-
-				if (Path.extension().string() == ".pg")
-				{
-					MeshView->OpenModel((PS::CPGDef*)Ptr);
-				}
-				else
-				{
-					MeshView->OpenModel((PS::CPEDef*)Ptr);
-				}
+				const EEditorParticleAssetType Type =
+					ParticlesCache[Path.xstring()];
+				xr_path AssetPath = Path;
+				AssetPath.replace_extension();
+				MeshView->OpenModel(AssetPath.xstring(), Type);
 
 				UI->Push(MeshView);
 			}
@@ -2264,8 +2265,12 @@ CContentView::IconData& CContentView::GetTexture(const xr_string& IconPath)
 
 			if (pSettings->line_exist(ValidPath.data(), "$ed_icon"))
 			{
-				Icons[IconPath] = {EDevice->Resources->_CreateTexture(pSettings->r_string_wb(ValidPath.data(), "$ed_icon").c_str()), false};
-				Icons[IconPath].Icon->Load();
+				Icons[IconPath] = {
+					pSettings->r_string_wb(
+						ValidPath.data(), "$ed_icon"
+					).c_str(),
+					false
+				};
 			}
 			else
 			{
@@ -2282,23 +2287,27 @@ CContentView::IconData& CContentView::GetTexture(const xr_string& IconPath)
 			{
 				xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
 
-				EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETObject);
-				CTexture* TempTexture = new CTexture();
-
-				IRHISurface* Texture = nullptr;
-				m_Thm->Update(Texture);
-				TempTexture->surface_set(Texture);
-
-				if (TempTexture->pSurface != nullptr && TempTexture->get_SRView() != nullptr)
+				auto* Thumbnail = static_cast<EObjectThumbnail*>(
+					ImageLib.CreateThumbnail(
+						NewPath.data(), EImageThumbnail::ETObject
+					)
+				);
+				if (Thumbnail && Thumbnail->Valid())
 				{
-					Icons[IconPath] = {TempTexture, false};
-					(void)UI->UpdateImGuiTexture(Icons[IconPath].EditorIcon, m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4, 1, IconPath.c_str(), EEditorTextureFormat::Bgra8Unorm, true);
-					Texture->Release();
+					Icons[IconPath] = {};
+					(void)UI->UpdateImGuiTexture(
+						Icons[IconPath].EditorIcon,
+						Thumbnail->Pixels(),
+						THUMB_WIDTH,
+						THUMB_HEIGHT,
+						THUMB_WIDTH * 4,
+						1,
+						IconPath.c_str(),
+						EEditorTextureFormat::Bgra8Unorm,
+						true
+					);
 				}
-				else
-				{
-					xr_delete(TempTexture);
-				}
+				xr_delete(Thumbnail);
 			}
 		}
 		else if (IconPath.ends_with(".group"))
@@ -2311,23 +2320,23 @@ CContentView::IconData& CContentView::GetTexture(const xr_string& IconPath)
 			{
 				xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
 
-				EGroupThumbnail* m_Thm = new EGroupThumbnail(NewPath.data());
-				CTexture* TempTexture = new CTexture();
-
-				IRHISurface* Texture = nullptr;
-				m_Thm->Update(Texture);
-				TempTexture->surface_set(Texture);
-
-				if (TempTexture->pSurface != nullptr && TempTexture->get_SRView()->GetRawSRV() != nullptr)
+				auto* Thumbnail = new EGroupThumbnail(NewPath.data());
+				if (Thumbnail->Valid())
 				{
-					Icons[IconPath] = {TempTexture, false};
-					(void)UI->UpdateImGuiTexture(Icons[IconPath].EditorIcon, m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4, 1, IconPath.c_str(), EEditorTextureFormat::Bgra8Unorm, true);
-					Texture->Release();
+					Icons[IconPath] = {};
+					(void)UI->UpdateImGuiTexture(
+						Icons[IconPath].EditorIcon,
+						Thumbnail->Pixels(),
+						THUMB_WIDTH,
+						THUMB_HEIGHT,
+						THUMB_WIDTH * 4,
+						1,
+						IconPath.c_str(),
+						EEditorTextureFormat::Bgra8Unorm,
+						true
+					);
 				}
-				else
-				{
-					xr_delete(TempTexture);
-				}
+				xr_delete(Thumbnail);
 			}
 		}
 		else if (IconPath.ends_with(".png") || IconPath.ends_with(".tga"))
@@ -2335,29 +2344,19 @@ CContentView::IconData& CContentView::GetTexture(const xr_string& IconPath)
 			U8Vec Pixels = DXTUtils::GitPixels(IconPath.c_str(), BtnSize.x, BtnSize.y);
 			if (!Pixels.empty())
 			{
-				CTexture* TempTexture = new CTexture();
-				Icons[IconPath] = {TempTexture, false};
-
-				RHITextureDesc Desc;
-				Desc.Width = BtnSize.x;
-				Desc.Height = BtnSize.x;
-				Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-				Desc.MipLevels = 1;
-				Desc.ArraySize = 1;
-				Desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
-				Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-
-				RHISubResource SubResource{};
-				SubResource.Width = BtnSize.x;
-				SubResource.Height = BtnSize.x;
-				SubResource.TextureFormat = Desc.Format;
-				SubResource.RowPitch = BtnSize.x * 4;
-				SubResource.Data = Pixels.data();
-
-				IRHISurface* Surf = GRHI->CreateTexture2D(Desc, SubResource);
-				TempTexture->surface_set(Surf);
-				Surf->Release();
-				(void)UI->UpdateImGuiTexture(Icons[IconPath].EditorIcon, Pixels.data(), Desc.Width, Desc.Height, Desc.Width * 4, 1, IconPath.c_str(), EEditorTextureFormat::Bgra8Unorm);
+				Icons[IconPath] = {};
+				const u32 Width = static_cast<u32>(BtnSize.x);
+				const u32 Height = static_cast<u32>(BtnSize.y);
+				(void)UI->UpdateImGuiTexture(
+					Icons[IconPath].EditorIcon,
+					Pixels.data(),
+					Width,
+					Height,
+					Width * 4,
+					1,
+					IconPath.c_str(),
+					EEditorTextureFormat::Bgra8Unorm
+				);
 			}
 			else if (IconPath.ends_with(".tga"))
 			{
@@ -2367,14 +2366,7 @@ CContentView::IconData& CContentView::GetTexture(const xr_string& IconPath)
 		else if (IconPath.ends_with(".dds"))
 		{
 			xr_string NewPath = IconPath.substr(0, IconPath.length() - 4);
-
-			Icons[IconPath] = {EDevice->Resources->_CreateTexture(NewPath.c_str()), false};
-			Icons[IconPath].Icon->Load();
-
-			if (!Icons[IconPath].Icon->pSurface)
-			{
-				Icons[IconPath] = Icons["image"];
-			}
+			Icons[IconPath] = {std::move(NewPath), false};
 		}
 		else
 		{

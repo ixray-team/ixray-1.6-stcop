@@ -18,7 +18,6 @@ public:
 	void UpdateTexture();
 
 private:
-	ref_texture Texture;
 	DXTUtils::ImageInfo SrcData;
 	FEditorTextureHandle EditorTexture;
 	u64 TextureRevision = 0;

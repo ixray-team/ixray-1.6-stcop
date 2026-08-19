@@ -7,10 +7,63 @@
 
 #include "ui_main.h"
 #include "UI_ToolsCustom.h"
+#include "EditorWindowPlacement.h"
 #include "../xrEngine/Environment.h"
 #include "../xrEngine/IGame_Persistent.h"
+#include "../../../xrCore/RenderTestPolicy.h"
 //---------------------------------------------------------------------------
 CCustomPreferences* EPrefs=nullptr;
+
+namespace
+{
+[[nodiscard]] bool UsesHiddenEditorTestWindow() noexcept
+{
+	return HasRenderCommandLineFlag(
+		Core.Params ? xr_string_view(Core.Params) : xr_string_view(),
+		"-editor-test-hidden"
+	);
+}
+
+[[nodiscard]] bool IsSavedEditorWindowPlacementVisible(
+	const int X,
+	const int Y,
+	const int Width,
+	const int Height
+)
+{
+	int DisplayCount = 0;
+	SDL_DisplayID* Displays = SDL_GetDisplays(&DisplayCount);
+	if (!Displays)
+	{
+		return false;
+	}
+
+	const FEditorWindowPlacementRect Window{X, Y, Width, Height};
+	bool Visible = false;
+	for (int DisplayIndex = 0; DisplayIndex < DisplayCount; ++DisplayIndex)
+	{
+		SDL_Rect Bounds = {};
+		if (!SDL_GetDisplayUsableBounds(Displays[DisplayIndex], &Bounds))
+		{
+			continue;
+		}
+
+		const FEditorWindowPlacementRect Display{
+			Bounds.x,
+			Bounds.y,
+			Bounds.w,
+			Bounds.h
+		};
+		if (IsEditorWindowTitleAreaVisible(Window, Display))
+		{
+			Visible = true;
+			break;
+		}
+	}
+	SDL_free(Displays);
+	return Visible;
+}
+} // namespace
 //---------------------------------------------------------------------------
 // extern ENGINE_API bool bIsRaindropCollision;
 // extern ENGINE_API bool bIsSndOnRoof;
@@ -422,9 +475,34 @@ void CCustomPreferences::Load()
 		GetSafe(*render, "quality", EDevice->m_ScreenQuality);
 
 		int x = 0, y = 0;
-		if (GetSafe(*render, "x", x) && GetSafe(*render, "y", y))
+		if (!UsesHiddenEditorTestWindow() &&
+			GetSafe(*render, "x", x) && GetSafe(*render, "y", y))
 		{
-			SDL_SetWindowPosition(g_AppInfo.Window, x, y);
+			if (IsSavedEditorWindowPlacementVisible(
+					x,
+					y,
+					static_cast<int>(start_w),
+					static_cast<int>(start_h)
+				))
+			{
+				SDL_SetWindowPosition(g_AppInfo.Window, x, y);
+			}
+			else
+			{
+				// Hidden smoke старых сборок мог сохранить -32000/-32000.
+				// Обычный запуск восстанавливает такое окно на основном дисплее.
+				Msg(
+					"* LevelEditor: off-screen window placement (%d, %d) "
+					"reset to the primary display",
+					x,
+					y
+				);
+				SDL_SetWindowPosition(
+					g_AppInfo.Window,
+					SDL_WINDOWPOS_CENTERED,
+					SDL_WINDOWPOS_CENTERED
+				);
+			}
 		}
 
 		GetSafe(*render, "maximized", start_maximized);
@@ -546,16 +624,38 @@ void CCustomPreferences::Save()
     JSONData["editor_prefs"]["env_speed"] = env_speed;
     JSONData["editor_prefs"]["weather"] = sWeather.c_str() ? sWeather.c_str() : "";
 
-	JSONData["render"]["maximized"] = WndFlags & SDL_WINDOW_MAXIMIZED;
+	const bool HiddenTestWindow = UsesHiddenEditorTestWindow();
+	if (!HiddenTestWindow)
+	{
+		JSONData["render"]["maximized"] =
+			WndFlags & SDL_WINDOW_MAXIMIZED;
+		JSONData["render"]["w"] = EDevice->Width;
+		JSONData["render"]["h"] = EDevice->Height;
 
-	JSONData["render"]["w"] = EDevice->Width;
-	JSONData["render"]["h"] = EDevice->Height;
+		int X = 0;
+		int Y = 0;
+		SDL_GetWindowPosition(g_AppInfo.Window, &X, &Y);
+		JSONData["render"]["x"] = X;
+		JSONData["render"]["y"] = Y;
+	}
+	else
+	{
+		// Автоматический smoke не должен менять placement интерактивного окна.
+		// Для первого запуска сохраняются только безопасные размеры.
+		if (!JSONData["render"].contains("w"))
+		{
+			JSONData["render"]["w"] = EDevice->Width;
+		}
+		if (!JSONData["render"].contains("h"))
+		{
+			JSONData["render"]["h"] = EDevice->Height;
+		}
+		if (!JSONData["render"].contains("maximized"))
+		{
+			JSONData["render"]["maximized"] = false;
+		}
+	}
 	JSONData["render"]["quality"] = EDevice->m_ScreenQuality;
-
-	int X, Y;
-	SDL_GetWindowPosition(g_AppInfo.Window, &X, &Y);
-	JSONData["render"]["x"]=X;
-	JSONData["render"]["y"]=Y;
 
 	JSONData["windows"]["log"]=bAllowLogCommands;
 	JSONData["render"]["render_radius"]=EDevice->RenderRadius;

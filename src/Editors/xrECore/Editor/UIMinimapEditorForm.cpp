@@ -1280,7 +1280,8 @@ void UIMinimapEditorForm::Draw()
 		IM_TEXTURE_RELEASE(m_TextureRemove);
 		m_TextureRemove = nullptr;
 	}
-	if (m_BackgroundTexture == nullptr)
+	if (m_BackgroundTexture == nullptr &&
+		!m_BackgroundEditorTexture.IsValid())
 	{
 		u32 mem = 0;
 		m_BackgroundTexture = RImplementation.texture_load("ui\\ui_nomap", mem);
@@ -1365,7 +1366,8 @@ void UIMinimapEditorForm::Show()
 	Form->bOpen = true;
 }
 
-extern bool Stbi_Load(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a);
+extern bool LoadRawImage(const char* full_name, U32Vec& data, u32& w,
+	u32& h, u32& a);
 
 int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 {
@@ -1384,7 +1386,7 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 	u32 W, H, A;
 	const xr_string prefix = "map_";
 
-	if (!Stbi_Load(fn.c_str(), m_ImageData, W, H, A))
+	if (!LoadRawImage(fn.c_str(), m_ImageData, W, H, A))
 	{
 		return 2;
 	}
@@ -1400,22 +1402,6 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 	el.FileSize.x = W;
 	el.FileSize.y = H;
 	(void)UI->UpdateImGuiTexture(el.EditorTexture, m_ImageData.data(), W, H, W * 4, ++el.TextureRevision, el.TexturePath.c_str(), EEditorTextureFormat::Bgra8Unorm);
-
-	ID3DTexture2D* pTexture = nullptr;
-	{
-		R_CHK(REDevice->CreateTexture(W, H, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr));
-		el.Texture = pTexture;
-		{
-			D3DLOCKED_RECT rect;
-			R_CHK(pTexture->LockRect(0, &rect, nullptr, D3DLOCK_DISCARD));
-			for (int i = 0; i < H; i++)
-			{
-				unsigned char* dest = static_cast<unsigned char*>(rect.pBits) + (rect.Pitch * i);
-				memcpy(dest, m_ImageData.data() + (W * i), sizeof(unsigned char) * W * 4);
-			}
-			R_CHK(pTexture->UnlockRect(0));
-		}
-	}
 
 	return 0;
 }
@@ -1441,7 +1427,8 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 
 	u32 m_ImageW, m_ImageH, m_ImageA;
 
-	if (Stbi_Load(fn.c_str(), m_ImageData, m_ImageW, m_ImageH, m_ImageA))
+	if (LoadRawImage(fn.c_str(), m_ImageData, m_ImageW, m_ImageH,
+		m_ImageA))
 	{
 		isEdited = true;
 
@@ -1460,23 +1447,8 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 		}
 
 		m_TextureRemove = m_BackgroundTexture;
+		m_BackgroundTexture = nullptr;
 		UI->DestroyImGuiTexture(m_BackgroundEditorTexture);
 		(void)UI->UpdateImGuiTexture(m_BackgroundEditorTexture, m_ImageData.data(), m_ImageW, m_ImageH, m_ImageW * 4, ++m_BackgroundTextureRevision, m_BackgroundTexturePath.c_str(), EEditorTextureFormat::Bgra8Unorm);
-		ID3DTexture2D* pTexture = nullptr;
-		{
-			R_CHK(REDevice->CreateTexture(m_ImageW, m_ImageH, 1, 0, D3DFMT_X8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr));
-			m_BackgroundTexture = pTexture;
-
-			{
-				D3DLOCKED_RECT rect;
-				R_CHK(pTexture->LockRect(0, &rect, nullptr, D3DLOCK_DISCARD));
-				for (int i = 0; i < m_ImageH; i++)
-				{
-					unsigned char* dest = static_cast<unsigned char*>(rect.pBits) + (rect.Pitch * i);
-					memcpy(dest, m_ImageData.data() + (m_ImageW * i), sizeof(unsigned char) * m_ImageW * 4);
-				}
-				R_CHK(pTexture->UnlockRect(0));
-			}
-		}
 	}
 }

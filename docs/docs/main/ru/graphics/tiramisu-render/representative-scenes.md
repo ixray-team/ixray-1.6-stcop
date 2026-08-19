@@ -10,7 +10,7 @@
 -rdbg -render-deterministic
 ```
 
-Для LevelEditor дополнительно требуется `-tiramisu-editor`, для D3D12 — `-dx12`. Запуск `-render-deterministic` без точного `-rdbg` считается ошибкой и не начинается. Алиас `-rdebug` это требование не удовлетворяет.
+LevelEditor использует `xrRenderTiramisu` по умолчанию; `-tiramisu-editor` в командах ниже оставлен для явности и совместимости старых launch-конфигураций. Для D3D12 требуется `-dx12`. Автоматический smoke всегда получает `-editor-test-hidden`, чтобы splash и главное окно не забирали фокус; этот флаг валиден только вместе с `-render-deterministic`. Запуск `-render-deterministic` без точного `-rdbg` считается ошибкой и не начинается. Алиас `-rdebug` это требование не удовлетворяет.
 
 Общий policy находится в `xrCore/RenderTestPolicy.h` и фиксирует:
 
@@ -46,20 +46,20 @@ Fixed exposure уже входит в versioned contract режима, но на
 Vulkan:
 
 ```text
-LevelEditor.exe -tiramisu-editor -rdbg -render-deterministic -material-preview-smoke -viewport-material-reload-smoke
-LevelEditor.exe -tiramisu-editor -rdbg -render-deterministic -legacy-zaton-conversion-smoke
+LevelEditor.exe -tiramisu-editor -rdbg -render-deterministic -editor-test-hidden -material-preview-smoke -viewport-material-reload-smoke
+LevelEditor.exe -tiramisu-editor -rdbg -render-deterministic -editor-test-hidden -legacy-zaton-conversion-smoke
 ```
 
 D3D12:
 
 ```text
-LevelEditor.exe -tiramisu-editor -dx12 -rdbg -render-deterministic -material-preview-smoke -viewport-material-reload-smoke
-LevelEditor.exe -tiramisu-editor -dx12 -rdbg -render-deterministic -legacy-zaton-conversion-smoke
+LevelEditor.exe -tiramisu-editor -dx12 -rdbg -render-deterministic -editor-test-hidden -material-preview-smoke -viewport-material-reload-smoke
+LevelEditor.exe -tiramisu-editor -dx12 -rdbg -render-deterministic -editor-test-hidden -legacy-zaton-conversion-smoke
 ```
 
 ASan использует те же аргументы. Ни normal, ни ASan запуск без `-rdbg -render-deterministic` не закрывает deterministic GPU acceptance.
 
-Последний baseline smoke пройден в четырёх комбинациях normal/ASan × Vulkan/D3D12. Во всех запусках exit code равен нулю, pipeline keys совпадают между normal и ASan внутри одного backend, NRI/API validation и AddressSanitizer ошибок нет. Statistics gate подтвердил `passes=3`, `draws=164`, `triangles=6560` и ненулевой tracked resource census; GPU timestamp пока ожидаемо отмечен как `not-collected`.
+Последний baseline smoke пройден в четырёх комбинациях normal/ASan × Vulkan/D3D12. Во всех запусках exit code равен нулю, pipeline keys совпадают между normal и ASan внутри одного backend, NRI/API validation и AddressSanitizer ошибок нет. Statistics gate подтвердил `passes=3`, `draws=177`, `triangles=6560` и ненулевой tracked resource census; GPU timestamp пока ожидаемо отмечен как `not-collected`. Full-level Zaton conversion в той же матрице создал 426 mesh assets, 5536 StaticMesh components и 753 native light components с пустым списком diagnostics.
 
 ## Критерий готовности capture
 

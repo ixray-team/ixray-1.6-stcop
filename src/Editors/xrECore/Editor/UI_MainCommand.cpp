@@ -482,7 +482,10 @@ CCommandVar 	CommandEvictObjects(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar 	CommandEvictTextures(CCommandVar p1, CCommandVar p2)
 {
-	EDevice->Resources->Evict();
+	if (EDevice->Resources)
+	{
+		EDevice->Resources->Evict();
+	}
 	return				true;
 }
 CCommandVar 	CommandCheckModified(CCommandVar p1, CCommandVar p2)

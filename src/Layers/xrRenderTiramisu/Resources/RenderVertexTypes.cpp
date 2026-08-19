@@ -41,6 +41,22 @@ static_assert(offsetof(FStaticMeshVertex, uv0) == 40);
 static_assert(offsetof(FStaticMeshVertex, uv1) == 48);
 static_assert(offsetof(FStaticMeshVertex, color) == 56);
 
+nri::VertexAttributeDesc FSkeletalMeshVertex::VertexAttributeDescription[8] =
+	{
+		{{"POSITION", 0}, {0}, offsetof(FSkeletalMeshVertex, vertex) + offsetof(FStaticMeshVertex, position), nri::Format::RGB32_SFLOAT, 0},
+		{{"NORMAL", 0}, {1}, offsetof(FSkeletalMeshVertex, vertex) + offsetof(FStaticMeshVertex, normal), nri::Format::RGB32_SFLOAT, 0},
+		{{"TANGENT", 0}, {2}, offsetof(FSkeletalMeshVertex, vertex) + offsetof(FStaticMeshVertex, tangent), nri::Format::RGBA32_SFLOAT, 0},
+		{{"TEXCOORD", 0}, {3}, offsetof(FSkeletalMeshVertex, vertex) + offsetof(FStaticMeshVertex, uv0), nri::Format::RG32_SFLOAT, 0},
+		{{"TEXCOORD", 1}, {4}, offsetof(FSkeletalMeshVertex, vertex) + offsetof(FStaticMeshVertex, uv1), nri::Format::RG32_SFLOAT, 0},
+		{{"COLOR", 0}, {5}, offsetof(FSkeletalMeshVertex, vertex) + offsetof(FStaticMeshVertex, color), nri::Format::RGBA8_UNORM, 0},
+		{{"BLENDINDICES", 0}, {6}, offsetof(FSkeletalMeshVertex, boneIndices), nri::Format::RGBA16_UINT, 0},
+		{{"BLENDWEIGHT", 0}, {7}, offsetof(FSkeletalMeshVertex, boneWeights), nri::Format::RGBA32_SFLOAT, 0},
+	};
+
+static_assert(sizeof(FSkeletalMeshVertex) == 84);
+static_assert(offsetof(FSkeletalMeshVertex, boneIndices) == 60);
+static_assert(offsetof(FSkeletalMeshVertex, boneWeights) == 68);
+
 nri::VertexAttributeDesc FLegacyLevelVertex_BaseWithLightMap::VertexAttributeDescription[6] =
 	{
 		{

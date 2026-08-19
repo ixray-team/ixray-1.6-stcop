@@ -205,6 +205,13 @@ const int	MAX_R_VERTEX	= 4096;
 
 void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
 {
+	// Tiramisu получает projective decal packets через общий scene bridge.
+	// Старые clipped triangles остаются только входом автоконвертации.
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		return;
+	}
     if (!IsLoaded)
         return;
 
@@ -631,7 +638,10 @@ ESceneWallmarkTool::wm_slot* ESceneWallmarkTool::FindSlot	(shared_str sh_name, s
 ESceneWallmarkTool::wm_slot* ESceneWallmarkTool::AppendSlot(shared_str sh_name, shared_str tx_name)
 {
 	wm_slot* slot			= new wm_slot(sh_name,tx_name);
-    if (0==slot->shader)	xr_delete(slot);
+	if (GetEditorRenderBackend().GetKind() ==
+			EEditorRenderBackendKind::Legacy &&
+		0 == slot->shader)
+		xr_delete(slot);
     else marks.push_back	(slot);
     return slot;
 }
@@ -889,6 +899,14 @@ bool ESceneWallmarkTool::Validate(bool)
 
     for (WMSVecIt slot_it=marks.begin(); slot_it!=marks.end(); slot_it++){
         wm_slot* slot= *slot_it;	
+		if (!EDevice->Resources)
+		{
+			if (!slot->sh_name.size())
+			{
+				bRes = false;
+			}
+			continue;
+		}
         if (slot->items.size()){
             IBlender* 	B 	= EDevice->Resources->_FindBlender(*slot->sh_name); 
             if (!B||B->canBeLMAPped()){

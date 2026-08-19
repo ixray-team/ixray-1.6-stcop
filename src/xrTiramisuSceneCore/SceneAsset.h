@@ -18,7 +18,8 @@ inline constexpr u32 StaticMeshBinaryVersion = 1;
 inline constexpr u32 StaticMeshBinaryVertexStride = 60;
 inline constexpr u32 StaticMeshBinaryIndexStride = 4;
 inline constexpr u32 LegacyStaticMeshOnlyRenderSceneAssetVersion = 1;
-inline constexpr u32 RenderSceneAssetVersion = 2;
+inline constexpr u32 LightRenderSceneAssetVersion = 2;
+inline constexpr u32 RenderSceneAssetVersion = 3;
 
 enum class ESceneDiagnosticSeverity : u8
 {
@@ -145,6 +146,23 @@ struct FLightComponent
 	bool CastShadows = true;
 };
 
+// Native проекционная декаль. Transform задаёт положение, ориентацию и размер
+// канонического projector volume; Material ссылается на domain Decal.
+struct FDecalComponent
+{
+	xr_string Id;
+	xr_string Name;
+	xr_string Material;
+	xr_array<float, 16> LocalToWorld = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+	s32 SortOrder = 0;
+	bool Visible = true;
+};
+
 // Текстовый native scene asset из компонентов и общих настроек.
 struct FRenderSceneAsset
 {
@@ -154,6 +172,7 @@ struct FRenderSceneAsset
 	xr_string SourcePath;
 	xr_vector<FStaticMeshComponent> StaticMeshComponents;
 	xr_vector<FLightComponent> LightComponents;
+	xr_vector<FDecalComponent> DecalComponents;
 };
 
 template <typename T>

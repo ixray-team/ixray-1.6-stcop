@@ -1886,6 +1886,26 @@ void CDrawUtilities::DrawGrid()
 	RCache.stat.polys -= (m_GridPoints.size() / 2);
 }
 
+void CaptureTiramisuEditorGrid()
+{
+	if (!IsEditorDebugDrawCaptureActive())
+	{
+		return;
+	}
+	CaptureDebugPrimitive(
+		ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+		m_GridPoints.size(),
+		false,
+		[](const std::size_t Index)
+		{
+			return MakeCapturedDebugVertex(
+				m_GridPoints[Index].p,
+				m_GridPoints[Index].color
+			);
+		}
+	);
+}
+
 void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd)
 {
 	VERIFY(EDevice->b_is_Ready);

@@ -4,6 +4,18 @@
 
 #	include "ResourceManager.h"
 
+	// Переходные ресурсы редактора компилируются локальным editor renderer.
+	// Глобальный Render при этом остаётся xrRenderTiramisu и не подменяется даже
+	// временно: его shader_compile намеренно не обслуживает legacy DX11 shaders.
+	static inline IRender_interface& GetResourceShaderRenderInterface()
+	{
+#ifdef _EDITOR
+		return RImplementation;
+#else
+		return *::Render;
+#endif
+	}
+
 	template<typename T>
 	struct ShaderTypeTraits;
 
@@ -97,7 +109,14 @@
 
 			// Open file
 			string_path					cname;
-			xr_strconcat(cname,::Render->getShaderPath(), _name, ShaderTypeTraits<T>::GetShaderExt());
+			IRender_interface& ShaderRenderer =
+				GetResourceShaderRenderInterface();
+			xr_strconcat(
+				cname,
+				ShaderRenderer.getShaderPath(),
+				_name,
+				ShaderTypeTraits<T>::GetShaderExt()
+			);
 			FS.update_path				(cname,	_game_shaders_, cname);
 
 			// duplicate and zero-terminate
@@ -109,7 +128,15 @@
 			const char*						c_entry		= "main";
 
 			// Compile
-			HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
+			HRESULT const _hr = ShaderRenderer.shader_compile(
+				name,
+				(DWORD const*)file->pointer(),
+				file->length(),
+				c_entry,
+				c_target,
+				D3DCOMPILE_PACK_MATRIX_ROW_MAJOR,
+				(void*&)sh
+			);
 
 #ifdef _EDITOR
 			R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);

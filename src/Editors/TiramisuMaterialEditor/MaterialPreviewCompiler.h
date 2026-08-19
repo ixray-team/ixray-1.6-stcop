@@ -26,6 +26,10 @@ struct FMaterialPreviewCompileRequest
 	xr_string GeneratedHlsl;
 	xr_string TemplateSource;
 	xr_string VertexFactorySource;
+	// Пустое имя использует vertex factory из manifest выбранного pass.
+	// Явное имя позволяет renderer запросить skeletal permutation того же
+	// материала, не меняя material graph или pixel pass.
+	xr_string VertexFactory;
 	// Универсальный pass source используют preview и основной viewport; старое поле
 	// PreviewPassSource сохранено только для поэтапной миграции callers.
 	EMaterialPass Pass = EMaterialPass::Validation;
@@ -49,6 +53,7 @@ struct FMaterialPreviewCompileResult
 	FMaterialPackedParameterBlock ParameterBlock;
 	xr_vector<u8> VertexBytecode;
 	xr_vector<u8> PixelBytecode;
+	xr_string VertexFactory;
 	u64 PipelineKey = 0;
 	xr_vector<FMaterialDiagnostic> Diagnostics;
 

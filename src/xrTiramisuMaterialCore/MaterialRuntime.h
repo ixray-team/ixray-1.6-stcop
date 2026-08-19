@@ -20,10 +20,11 @@ struct FDescriptorHeapIndex
 	auto operator<=>(const FDescriptorHeapIndex&) const = default;
 };
 
-inline constexpr u32 MaterialGpuAbiVersion = 2;
+inline constexpr u32 MaterialGpuAbiVersion = 4;
 inline constexpr u32 MaterialInstanceGpuDataSize = 16;
-inline constexpr u32 MaterialDrawGpuDataSize = 144;
+inline constexpr u32 MaterialDrawGpuDataSize = 160;
 inline constexpr u32 MaterialLightGpuDataSize = 64;
+inline constexpr u32 MaterialSkinningMatrixGpuDataSize = 64;
 
 using FMaterialGpuMatrix = xr_array<float, 16>;
 
@@ -68,7 +69,11 @@ struct alignas(16) FMaterialDrawGpuData
 	u32 MaterialInstanceIndex = 0;
 	u32 ObjectId = 0;
 	u32 Flags = 0;
-	u32 Padding = 0;
+	u32 SkinningPaletteOffset = FDescriptorHeapIndex::Invalid;
+	u32 PreviousSkinningPaletteOffset = FDescriptorHeapIndex::Invalid;
+	u32 SkinningBoneCount = 0;
+	u32 Padding0 = 0;
+	u32 Padding1 = 0;
 
 	auto operator<=>(const FMaterialDrawGpuData&) const = default;
 };
@@ -130,6 +135,7 @@ enum class EMaterialPass : u8
 	Shadow,
 	GBuffer,
 	Forward,
+	Decal,
 	UI,
 	PostProcess,
 	Validation

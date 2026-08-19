@@ -5,10 +5,13 @@
   "mappings": {
     "default": "ee5ffbc0-bd24-4aa8-9e16-50651ca1c269",
     "default_aref": "68ae697d-7049-46ab-af7d-a1c4ddf2b32d",
+    "details\\blend": "68ae697d-7049-46ab-af7d-a1c4ddf2b32d",
     "editor\\glow_sprite": "4ea32e17-b945-42ad-9c2d-8cb63b658b9a",
     "editor\\particle_additive": "4ea32e17-b945-42ad-9c2d-8cb63b658b9a",
     "editor\\particle_translucent": "ada19ea7-b527-46c0-a006-2e39f5170b45",
     "editor\\spawn_icon": "d52ad18c-b4ce-4d4d-a5e3-7269071f43e1",
+    "effects\\wallmarkblend": "c4c45d66-6cc9-4e62-89a8-f86eaf0b8014",
+    "effects\\wallmarkmult": "9c07a224-7b1e-43b7-bf75-191b9e90d7f2",
     "lmap": "c30e92c2-d38c-4423-9f27-e42d245caf54",
     "lmap_aref": "50400bdb-5aab-4fb9-b15f-dba129a042a4",
     "model_def_hq": "1f7e0305-f4a2-4447-a268-e67a74d0f3f6",

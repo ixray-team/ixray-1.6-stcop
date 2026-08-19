@@ -35,10 +35,6 @@ void CUIToolbar::EndCheck()
 
 void CUIToolbar::OnCreate()
 {
-	Select = EDevice->Resources->_CreateTexture("ed\\bar\\select");
-	Move = EDevice->Resources->_CreateTexture("ed\\bar\\move");
-	Rotate = EDevice->Resources->_CreateTexture("ed\\bar\\rotate");
-	Scale = EDevice->Resources->_CreateTexture("ed\\bar\\scale");
 }
 
 void CUIToolbar::Draw()
@@ -55,28 +51,44 @@ void CUIToolbar::Draw()
 		constexpr ImVec2 SizeBtn = {24, 24};
 
 		CheckAction(etaSelect);
-		if (ImGui::ImageButton("##ibCUIToolbar001", UI->GetImGuiTexture(Select), SizeImg))
+		if (ImGui::ImageButton(
+				"##ibCUIToolbar001",
+				UI->LoadTexture("ed\\bar\\select"),
+				SizeImg
+			))
 		{
 			Tools->SetAction(etaSelect);
 		}
 		EndCheck();
 
 		CheckAction(etaMove);
-		if (ImGui::ImageButton("##ibCUIToolbar002", UI->GetImGuiTexture(Move), SizeImg))
+		if (ImGui::ImageButton(
+				"##ibCUIToolbar002",
+				UI->LoadTexture("ed\\bar\\move"),
+				SizeImg
+			))
 		{
 			Tools->SetAction(etaMove);
 		}
 		EndCheck();
 
 		CheckAction(etaRotate);
-		if (ImGui::ImageButton("##ibCUIToolbar003", UI->GetImGuiTexture(Rotate), SizeImg))
+		if (ImGui::ImageButton(
+				"##ibCUIToolbar003",
+				UI->LoadTexture("ed\\bar\\rotate"),
+				SizeImg
+			))
 		{
 			Tools->SetAction(etaRotate);
 		}
 		EndCheck();
 
 		CheckAction(etaScale);
-		if (ImGui::ImageButton("##ibCUIToolbar004", UI->GetImGuiTexture(Scale), SizeImg))
+		if (ImGui::ImageButton(
+				"##ibCUIToolbar004",
+				UI->LoadTexture("ed\\bar\\scale"),
+				SizeImg
+			))
 		{
 			Tools->SetAction(etaScale);
 		}

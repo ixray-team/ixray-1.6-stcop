@@ -113,6 +113,19 @@ protected:
     virtual void 		CreateControls			();
 	virtual void 		RemoveControls			();
 public:
+	[[nodiscard]] u64 GetRenderDataRevision() const
+	{
+		return m_RenderDataRevision;
+	}
+	void MarkRenderDataDirty()
+	{
+		++m_RenderDataRevision;
+		if (m_RenderDataRevision == 0)
+		{
+			++m_RenderDataRevision;
+		}
+	}
+
 	enum EMode{
     	mdAppend,
     	mdRemove,
@@ -129,6 +142,7 @@ public:
     float 				m_VisRadius;
     float 				m_SmoothHeight;
     u32					m_BrushSize;
+	u64					m_RenderDataRevision = 1;
     xr_vector<u16>		m_ignored_materials;
 
     bool				PickObjects				(Fvector& dest, const Fvector& start, const Fvector& dir, float dist);
@@ -202,6 +216,14 @@ public:
     void				DenumerateNodes();
     IC AINodeVec&			Nodes					(){return m_Nodes;}
     IC SAIParams&          AIParams                (){ return m_Params; }
+	// Возвращает ограниченный набор узлов вокруг камеры для renderer-neutral
+	// пакета. GPU-типы и ресурсы через эту границу не передаются.
+	void CollectVisibleNodes(
+		const Fvector& Center,
+		float Radius,
+		size_t MaxCount,
+		AINodeVec& OutNodes
+	);
     void				CalculateNodesBBox      (Fbox& bb);
     
     void				MakeLinks				(u8 side_flag, EMode mode, bool bIgnoreConstraints);

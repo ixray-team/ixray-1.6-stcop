@@ -1,5 +1,6 @@
 #pragma once
 #include "IViewport.h"
+#include "../../../Include/xrRender/EditorRenderer.h"
 
 class CViewportParticle :
     public IViewport
@@ -10,12 +11,17 @@ public:
 
     virtual void Draw() override;
     virtual void Render() override;
-    void OpenModel(PS::CPGDef* Part);
-    void OpenModel(PS::CPEDef* Part);
+	void RenderTiramisu() override;
+	void OpenModel(
+		xr_string_view AssetName,
+		EEditorParticleAssetType AssetType
+	);
 
 private:
     UIRenderForm View;
 
-    PS::CParticleGroup* ParticleGroupView = nullptr;
-    PS::CParticleEffect* ParticleEffectView = nullptr;
+	xr_string ParticleAssetName;
+	EEditorParticleAssetType ParticleAssetType =
+		EEditorParticleAssetType::Effect;
+	u64 SceneRevision = 0;
 };

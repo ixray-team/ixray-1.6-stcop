@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ExportDefines.h"
+
 namespace PS
 {
     class ENGINE_API IPAC

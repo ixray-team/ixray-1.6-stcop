@@ -16,7 +16,7 @@ private:
 
 	struct IconData
 	{
-		ref_texture Icon;
+		xr_string TextureName;
 		bool UseButtonColor = false;
 		FEditorTextureHandle EditorIcon;
 	};
@@ -128,8 +128,6 @@ private:
 	xr_vector<FileOptData> Files;
 	filewatch::FileWatch<std::string>* WatcherPtr;
 
-	ref_texture MenuIcon;
-
 	xr_vector<xr_path> SelectedObjects;
 	mutable xr_vector<xr_path> CopiedObjects;
 
@@ -144,7 +142,7 @@ private:
 
 	xr_hash_map<xr_string, IconData> Icons;
 
-	xr_hash_map<xr_string, void*> ParticlesCache;
+	xr_hash_map<xr_string, EEditorParticleAssetType> ParticlesCache;
 	xr_hash_map<xr_string, xr_string> ExtDesc;
 
 	bool IsDelWatcher = false;

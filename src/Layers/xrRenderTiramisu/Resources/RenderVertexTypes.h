@@ -24,6 +24,7 @@ enum class EVertexType : uint8_t
 	VertexOnly = 2,
 	MultipleUsageModel = 3,
 	StaticMesh = 4,
+	SkeletalMesh = 5,
 };
 
 // Базовая вершина нового static mesh pipeline.
@@ -37,6 +38,17 @@ struct FStaticMeshVertex
 	float uv0[2];
 	float uv1[2];
 	u32 color;
+};
+
+// Вершина skeletal vertex factory. Базовая material-часть совпадает со
+// static mesh, а индексы и веса поддерживают до четырёх костей OGF.
+struct FSkeletalMeshVertex
+{
+	static nri::VertexAttributeDesc VertexAttributeDescription[8];
+
+	FStaticMeshVertex vertex;
+	u16 boneIndices[4];
+	float boneWeights[4];
 };
 
 // Legacy-вершина уровня с базовыми и lightmap UV.

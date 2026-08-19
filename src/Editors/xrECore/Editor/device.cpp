@@ -4,6 +4,7 @@
 #include "../xrEngine/GameFont.h"
 #include <sal.h>
 #include "ImageManager.h"
+#include "EditorRenderBackend.h"
 #include "ui_main.h"
 #include "render.h"
 #include "../Engine/XrGameMaterialLibraryEditors.h"
@@ -15,6 +16,23 @@
 #include "device_win_custom.h"
 CEditorRenderDevice* EDevice;
 bool g_bIsEditor;
+
+namespace
+{
+[[nodiscard]] bool UsesTiramisuEditorRenderer() noexcept
+{
+	return GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu;
+}
+
+[[nodiscard]] bool UsesHiddenEditorTestWindow() noexcept
+{
+	return HasRenderCommandLineFlag(
+		Core.Params ? xr_string_view(Core.Params) : xr_string_view(),
+		"-editor-test-hidden"
+	);
+}
+} // namespace
 
 void CEditorRenderDevice::AddSeqFrame(pureFrame* f, bool mt)
 {
@@ -120,12 +138,14 @@ void CEditorRenderDevice::Initialize()
 {
 	m_DefaultMat.set(1, 1, 1);
 
-	RenderFactory = &RenderFactoryImpl;
-	UIRender = &UIRenderImpl;
-
+	if (!UsesTiramisuEditorRenderer())
+	{
+		RenderFactory = &RenderFactoryImpl;
+		UIRender = &UIRenderImpl;
 #ifdef DEBUG_DRAW
-	DRender = &DebugRenderImpl;
+		DRender = &DebugRenderImpl;
 #endif
+	}
 
 	// compiler shader
 	string_path fn;
@@ -144,21 +164,50 @@ void CEditorRenderDevice::Initialize()
 	// Startup shaders
 	Create();
 
-	::RImplementation.Initialize();
-	UIRenderImpl.CreateUIGeom();
+	if (!UsesTiramisuEditorRenderer())
+	{
+		::RImplementation.Initialize();
+	}
+	if (!UsesTiramisuEditorRenderer())
+	{
+		UIRenderImpl.CreateUIGeom();
+	}
 
-	Resize(EPrefs->start_w, EPrefs->start_h, EPrefs->start_maximized);
+	if (UsesTiramisuEditorRenderer())
+	{
+		Width = EPrefs->start_w;
+		Height = EPrefs->start_h;
+		SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
+	}
+	else
+	{
+		Resize(EPrefs->start_w, EPrefs->start_h, EPrefs->start_maximized);
+	}
 
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Width, &Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &PosX, &PosY);
 
-	if (EPrefs->start_maximized)
+	if (EPrefs->start_maximized && !UsesHiddenEditorTestWindow())
 	{
 		SDL_MaximizeWindow(g_AppInfo.Window);
 	}
 
-	SDL_ShowWindow(g_AppInfo.Window);
-	SDL_RaiseWindow(g_AppInfo.Window);
+	if (UsesHiddenEditorTestWindow())
+	{
+		// DXGI при полностью hidden HWND может прекратить выдавать кадры.
+		// Test window остаётся non-focusable и уводится за рабочий стол, но
+		// считается видимым для Vulkan/D3D12 swapchain.
+		SDL_SetWindowPosition(g_AppInfo.Window, -32000, -32000);
+		SDL_ShowWindow(g_AppInfo.Window);
+#if _WINDOWS
+		ShowWindow(GetHWND(), SW_SHOWNOACTIVATE);
+#endif
+	}
+	else
+	{
+		SDL_ShowWindow(g_AppInfo.Window);
+		SDL_RaiseWindow(g_AppInfo.Window);
+	}
 
 
 	if (psDeviceFlags.test(mtSound))
@@ -173,8 +222,14 @@ void CEditorRenderDevice::Initialize()
 
 void CEditorRenderDevice::ShutDown()
 {
-	UIRenderImpl.DestroyUIGeom();
-	::RImplementation.ShutDown();
+	if (!UsesTiramisuEditorRenderer())
+	{
+		UIRenderImpl.DestroyUIGeom();
+	}
+	if (!UsesTiramisuEditorRenderer())
+	{
+		::RImplementation.ShutDown();
+	}
 
 	ShaderXRLC.Unload();
 
@@ -260,12 +315,35 @@ bool CEditorRenderDevice::Create()
 			UI->ResetUI();
 		}
 
-		InitRenderDeviceEditor();
+		if (!UsesTiramisuEditorRenderer())
+		{
+			InitRenderDeviceEditor();
+		}
 		UI->Initialize(hwnd, ini_path);
 	}
 
 	// after creation
 	dwFrame = 0;
+	if (UsesTiramisuEditorRenderer())
+	{
+		Resources = nullptr;
+		g_FontManager = new CFontManager();
+		b_is_Ready = true;
+		UI->OnDeviceCreate();
+		InitWindowStyle();
+		::Render->create();
+		R_ASSERT2(
+			GetEditorRenderBackend().InitializeRendererResources(),
+			"xrRenderTiramisu failed to initialize editor resources"
+		);
+		g_FontManager->InitializeFonts();
+		Statistic = new CEStats();
+		ELog.Msg(
+			mtInformation,
+			"Tiramisu editor device initialized without legacy D3D11/CRHI"
+		);
+		return true;
+	}
 
 	string_path sh;
 	FS.update_path(sh, _game_data_, "shaders.xr");
@@ -288,6 +366,14 @@ bool CEditorRenderDevice::Create()
 	_Create(F);
 	FS.r_close(F);
 
+	if (!UsesTiramisuEditorRenderer() && ::Render != &::RImplementation)
+	{
+		::RImplementation.create();
+	}
+	else if (UsesTiramisuEditorRenderer())
+	{
+		Msg("* LevelEditor: local legacy RImplementation runtime is disabled");
+	}
 	::Render->create();
 
 	g_FontManager->InitializeFonts();
@@ -307,9 +393,25 @@ void CEditorRenderDevice::Destroy()
 		return;
 	}
 	ELog.Msg(mtInformation, "Destroying Direct3D...");
+	if (UsesTiramisuEditorRenderer())
+	{
+		UI->OnDeviceDestroy();
+		b_is_Ready = false;
+		UI->Destroy();
+		::Render->destroy();
+		GetEditorRenderBackend().FinalizeRendererShutdown();
+		ELog.Msg(
+			mtInformation,
+			"Tiramisu editor device cleared without legacy D3D11/CRHI"
+		);
+		return;
+	}
 
-	SearchIcon.destroy();
 	::Render->destroy();
+	if (!UsesTiramisuEditorRenderer() && ::Render != &::RImplementation)
+	{
+		::RImplementation.destroy();
+	}
 	// before destroy
 	_Destroy(false);
 
@@ -362,12 +464,10 @@ void CEditorRenderDevice::_Create(IReader* F)
 	m_SelectionShader.create("editor\\selection");
 	ShaderTL.create("editor\\default");
 
-	texture_null.create("ed\\ed_nodata");
-	texture_null->Load();
-	UIChooseForm::SetNullTexture(texture_null->get_SRView()->GetRawSRV());
-
 	// signal another objects
 	UI->OnDeviceCreate();
+	UIChooseForm::SetNullTexture(UI->LoadTexture("ed\\ed_nodata"));
+	GUIManager->SearchIcon = UI->LoadTexture("ed\\content_browser_search");
 
 	EDevice->InitWindowStyle();
 }
@@ -382,8 +482,6 @@ void CEditorRenderDevice::_Destroy(bool bKeepTextures)
 	m_WireShader.destroy();
 	m_SelectionShader.destroy();
 	ShaderTL.destroy();
-	texture_null.destroy();
-
 	::RImplementation.Models->OnDeviceDestroy();
 
 	Resources->OnDeviceDestroy(bKeepTextures);
@@ -397,6 +495,12 @@ void CEditorRenderDevice::Resize(int w, int h, bool maximized)
 {
 	Width = w;
 	Height = h;
+	if (UsesTiramisuEditorRenderer())
+	{
+		SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
+		UI->RedrawScene();
+		return;
+	}
 
 	Reset(false);
 	UI->RedrawScene();
@@ -404,10 +508,18 @@ void CEditorRenderDevice::Resize(int w, int h, bool maximized)
 
 void CEditorRenderDevice::Reset(bool)
 {
+	if (UsesTiramisuEditorRenderer())
+	{
+		SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
+		UI->RedrawScene();
+		return;
+	}
 	u32 tm_start = TimerAsync();
-	SearchIcon.destroy();
-
 	Resources->reset_begin();
+	if (!UsesTiramisuEditorRenderer() && ::Render != &::RImplementation)
+	{
+		::RImplementation.reset_begin();
+	}
 	Resources->DeferredUnload();
 	UI->ResetBegin();
 
@@ -416,20 +528,17 @@ void CEditorRenderDevice::Reset(bool)
 	SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
 
 	Resources->reset_end();
+	if (!UsesTiramisuEditorRenderer() && ::Render != &::RImplementation)
+	{
+		::RImplementation.reset_end();
+	}
 	Resources->DeferredUpload();
 
 	UI->ResetEnd(RDevice);
 	_SetupStates();
 
-	R_ASSERT(texture_null->get_SRView(), "Null texture not found!");
-	UIChooseForm::SetNullTexture(texture_null->get_SRView()->GetRawSRV());
-
-	SearchIcon = EDevice->Resources->_CreateTexture("ed\\content_browser_search");
-	if (SearchIcon)
-	{
-		SearchIcon->Load();
-		GUIManager->SearchIcon = SearchIcon->get_SRView()->GetRawSRV();
-	}
+	UIChooseForm::SetNullTexture(UI->LoadTexture("ed\\ed_nodata"));
+	GUIManager->SearchIcon = UI->LoadTexture("ed\\content_browser_search");
 	u32 tm_end = TimerAsync();
 	Msg("*** RESET [%d ms]", tm_end - tm_start);
 }
@@ -499,10 +608,9 @@ void CEditorRenderDevice::End()
 	RCache.OnFrameEnd();
 	if (UI && UI->UsesExternalMainPresentation())
 	{
-		// The transitional editor still opens a legacy D3D9 scene for its
-		// viewport. End it without presenting: the installed Tiramisu backend
-		// owns the window swapchain and performs the only Present for this frame.
-		CHK_DX(REDevice->EndScene());
+		// Legacy editor renderer завершил offscreen-команды в RCache.OnFrameEnd.
+		// Window swapchain принадлежит внешнему Tiramisu backend, поэтому здесь
+		// выполняется только его единственный Present без вызовов D3D9 API.
 		UI->PresentMainFrame();
 	}
 	else
@@ -656,8 +764,11 @@ void CEditorRenderDevice::InitWindowStyle()
 	win_chezze_layer(GetHWND());
 	SDL_SetWindowHitTest(g_AppInfo.Window, HitTest, &EDevice->isZoomed);
 
-	SetFocus(EDevice->GetHWND());
-	SetForegroundWindow(EDevice->GetHWND());
+	if (!UsesHiddenEditorTestWindow())
+	{
+		SetFocus(EDevice->GetHWND());
+		SetForegroundWindow(EDevice->GetHWND());
+	}
 #else
 	SDL_SetWindowResizable(g_AppInfo.Window, SDL_TRUE);
 	SDL_SetWindowHitTest(g_AppInfo.Window, HitTestCallback, 0);
@@ -730,9 +841,22 @@ void CEditorRenderDevice::CreateWindow()
 	int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
 	int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
 
-	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Editor", DisplayX, DisplayY, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
+	SDL_WindowFlags WindowFlags = SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE;
+	if (UsesHiddenEditorTestWindow())
+	{
+		WindowFlags |= SDL_WINDOW_NOT_FOCUSABLE;
+	}
+	g_AppInfo.Window = SDL_CreateWindow(
+		"IX-Ray Editor",
+		DisplayX,
+		DisplayY,
+		WindowFlags
+	);
 #if _WINDOWS
-	SetForegroundWindow(EDevice->GetHWND());
+	if (!UsesHiddenEditorTestWindow())
+	{
+		SetForegroundWindow(EDevice->GetHWND());
+	}
 #endif
 }
 

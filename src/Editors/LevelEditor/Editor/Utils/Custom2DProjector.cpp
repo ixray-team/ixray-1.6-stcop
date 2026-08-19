@@ -1,6 +1,7 @@
 
 #include "stdafx.h"
 #include "Custom2DProjector.h"
+#include "../../../xrECore/Editor/EditorRenderBackend.h"
 
 #define MAX_BUF_SIZE 0xFFFF
 
@@ -20,7 +21,13 @@ bool CCustom2DProjector::LoadImage(const char* nm)
 
 void CCustom2DProjector::CreateRMFromObjects(const Fbox& box, ObjectList& lst)
 {
-	geom.destroy();
+	const bool UsesLegacyRenderer =
+		GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Legacy;
+	if (UsesLegacyRenderer)
+	{
+		geom.destroy();
+	}
     mesh.clear	();
 	for (ObjectIt it=lst.begin(); it!=lst.end(); it++){
     	CSceneObject*	 S = (CSceneObject*)(*it);
@@ -40,7 +47,10 @@ void CCustom2DProjector::CreateRMFromObjects(const Fbox& box, ObjectList& lst)
             }
         }
     }
-	geom.create(FVF::F_V,RCache.Vertex.Buffer(),0);
+	if (UsesLegacyRenderer)
+	{
+		geom.create(FVF::F_V, RCache.Vertex.Buffer(), 0);
+	}
 }
 
 void CCustom2DProjector::Render(bool blended)
@@ -69,6 +79,11 @@ void CCustom2DProjector::Render(bool blended)
 
 void CCustom2DProjector::CreateShader()
 {
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		return;
+	}
 	DestroyShader		();
 	if (Valid()){
 		shader_blended.create	("editor\\do_base",*name);
@@ -79,6 +94,11 @@ void CCustom2DProjector::CreateShader()
 
 void CCustom2DProjector::DestroyShader()
 {
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		return;
+	}
 	geom.destroy();
 	shader_blended.destroy();
 	shader_overlap.destroy();

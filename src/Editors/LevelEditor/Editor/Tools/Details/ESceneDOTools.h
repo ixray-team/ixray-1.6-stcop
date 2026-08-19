@@ -81,6 +81,42 @@ public:
 	U8Vec				m_Selected;
     CCustom2DProjector	m_Base;
 
+	// Tiramisu использует только CPU-базу слотов и модели деталей.
+	// GPU-ресурсы legacy DetailManager через этот путь не создаются.
+	[[nodiscard]] bool HasTiramisuRenderData() const noexcept
+	{
+		return IsLoaded.load() && dtSlots && !objects.empty() &&
+			m_Flags.is(flObjectsDraw);
+	}
+	void SetObjectsDrawEnabled(const bool Enabled) noexcept
+	{
+		m_Flags.set(flObjectsDraw, Enabled);
+	}
+	[[nodiscard]] bool ShouldDrawSlotBoxes() const noexcept
+	{
+		return m_Flags.is(flSlotBoxesDraw);
+	}
+	void SetSlotBoxesDrawEnabled(const bool Enabled) noexcept
+	{
+		m_Flags.set(flSlotBoxesDraw, Enabled);
+	}
+	[[nodiscard]] bool ShouldDrawBaseTexture() const noexcept
+	{
+		return m_Flags.is(flBaseTextureDraw);
+	}
+	[[nodiscard]] bool IsBaseTextureBlended() const noexcept
+	{
+		return m_Flags.is(flBaseTextureBlended);
+	}
+	void SetBaseTextureDrawEnabled(
+		const bool Enabled,
+		const bool Blended
+	) noexcept
+	{
+		m_Flags.set(flBaseTextureDraw, Enabled);
+		m_Flags.set(flBaseTextureBlended, Blended);
+	}
+
     void				SaveColorIndices		(IWriter&);
     bool				LoadColorIndices		(IReader&);
 public:

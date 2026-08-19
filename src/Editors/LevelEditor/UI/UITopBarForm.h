@@ -12,17 +12,17 @@ public:
 private:
 	void InitIcons();
 
-	xr_hash_map<xr_string, ref_texture> Icons;
+	xr_hash_map<xr_string, xr_string> Icons;
 
 	u32 m_timeUndo;
 	u32 m_timeRedo;
 
-	ref_texture m_tReloadConfigs;
-	ref_texture m_tAIMap;
-	ref_texture m_tPlayInEditor;
-	ref_texture m_tTerminated;
-	ref_texture m_tPlayPC;
-	ref_texture m_tPlayCleanGame;
+	xr_string m_tReloadConfigs;
+	xr_string m_tAIMap;
+	xr_string m_tPlayInEditor;
+	xr_string m_tTerminated;
+	xr_string m_tPlayPC;
+	xr_string m_tPlayCleanGame;
 
 	bool m_VerifySpaceRestrictors;
 	bool m_Simulate;

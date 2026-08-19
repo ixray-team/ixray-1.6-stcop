@@ -49,6 +49,14 @@ MaterialPassPixelInput Main(
     Output.CurrentClipPosition = mul(ViewProjectionWorldMatrix, WorldPosition);
     Output.PreviousClipPosition =
         mul(ViewProjectionWorldMatrix, PreviousWorldPosition);
+	if ((DrawData.Flags &
+		 TIRAMISU_MATERIAL_DRAW_FLAG_EDITOR_DEPTH_BIAS) != 0u)
+	{
+		const float CurrentBias = Output.CurrentClipPosition.w * 1.0e-4f;
+		const float PreviousBias = Output.PreviousClipPosition.w * 1.0e-4f;
+		Output.CurrentClipPosition.z -= CurrentBias;
+		Output.PreviousClipPosition.z -= PreviousBias;
+	}
     Output.Position = Output.CurrentClipPosition;
     Output.TexCoord0 = Input.TexCoord0;
     Output.TexCoord1 = Input.TexCoord1;
@@ -57,5 +65,6 @@ MaterialPassPixelInput Main(
     Output.WorldPosition = WorldPosition.xyz;
     Output.MaterialInstanceIndex = DrawData.MaterialInstanceIndex;
     Output.MaterialDrawFlags = DrawData.Flags;
+    Output.MaterialDrawIndex = NRI_INSTANCE_ID_OFFSET;
     return Output;
 }

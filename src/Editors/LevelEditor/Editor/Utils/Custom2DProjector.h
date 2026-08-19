@@ -27,6 +27,10 @@ public:
     void			CreateShader		();
     void			DestroyShader		();
     IC const char* 		GetName				(){ return *name; }
+	[[nodiscard]] xr_span<const FVF::V> GetRenderMesh() const noexcept
+	{
+		return mesh;
+	}
     IC bool 		GetColor			(u32& color, int U, int V){
         if (Valid()&&(U<(int)w)&&(V<(int)h)){
             color 	= data[V*w+U];

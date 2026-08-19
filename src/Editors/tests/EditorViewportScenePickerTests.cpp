@@ -1,11 +1,16 @@
 #include "../../Layers/xrRenderTiramisu/Editor/TiramisuEditorViewportScenePicker.h"
+#include "../../Layers/xrRenderTiramisu/Editor/TiramisuEditorOgfModelLoader.h"
 
 #include <array>
 #include <cmath>
+#include <fstream>
 #include <iostream>
+#include <iterator>
 
 namespace
 {
+using FVector = xr_array<float, 3>;
+
 int Fail(const char* Message)
 {
 	std::cerr << Message << '\n';
@@ -24,6 +29,106 @@ FEditorStaticMeshInstance MakeInstance(const u64 ObjectId, const float Z)
 bool Near(const float A, const float B)
 {
 	return std::abs(A - B) <= 1.0e-4f;
+}
+
+bool TestRealOgfPicking()
+{
+	std::ifstream Stream(
+		"gamedata/meshes/dynamics/scene_objects/part/part_none.ogf",
+		std::ios::binary
+	);
+	if (!Stream)
+	{
+		return false;
+	}
+	const xr_vector<char> FileBytes{
+		std::istreambuf_iterator<char>(Stream),
+		std::istreambuf_iterator<char>()
+	};
+	xr_vector<u8> Bytes(FileBytes.begin(), FileBytes.end());
+	IReader Reader(Bytes.data(), Bytes.size());
+	FTiramisuEditorOgfModelSource Model;
+	if (!LoadTiramisuEditorOgfModel(Reader, Model) ||
+		!Model.IsValid())
+	{
+		return false;
+	}
+
+	const FTiramisuEditorOgfMeshSource& Source = Model.Meshes.front();
+	FVector Centroid = {};
+	FVector Normal = {};
+	bool TriangleFound = false;
+	for (size_t Index = 0; Index + 2 < Source.Indices.size(); Index += 3)
+	{
+		const FVector& A = Source.Vertices[Source.Indices[Index]].Position;
+		const FVector& B = Source.Vertices[Source.Indices[Index + 1]].Position;
+		const FVector& C = Source.Vertices[Source.Indices[Index + 2]].Position;
+		const FVector Edge1 = {
+			B[0] - A[0], B[1] - A[1], B[2] - A[2]
+		};
+		const FVector Edge2 = {
+			C[0] - A[0], C[1] - A[1], C[2] - A[2]
+		};
+		Normal = {
+			Edge1[1] * Edge2[2] - Edge1[2] * Edge2[1],
+			Edge1[2] * Edge2[0] - Edge1[0] * Edge2[2],
+			Edge1[0] * Edge2[1] - Edge1[1] * Edge2[0]
+		};
+		const float Length = std::sqrt(
+			Normal[0] * Normal[0] + Normal[1] * Normal[1] +
+			Normal[2] * Normal[2]
+		);
+		if (Length <= 1.0e-6f)
+		{
+			continue;
+		}
+		for (float& Component : Normal)
+		{
+			Component /= Length;
+		}
+		Centroid = {
+			(A[0] + B[0] + C[0]) / 3.0f,
+			(A[1] + B[1] + C[1]) / 3.0f,
+			(A[2] + B[2] + C[2]) / 3.0f
+		};
+		TriangleFound = true;
+		break;
+	}
+	if (!TriangleFound)
+	{
+		return false;
+	}
+
+	const xr_array<FEditorStaticMeshSection, 1> Sections = {{
+		{0, static_cast<u32>(Source.Indices.size()), {71}}
+	}};
+	const xr_array<FEditorStaticMeshUpload, 1> Meshes = {{
+		{{77}, 1, Source.Vertices, Source.Indices, Sections}
+	}};
+	FEditorStaticMeshInstance Instance;
+	Instance.ObjectId = {900};
+	Instance.MeshId = {77};
+	const xr_array<FEditorStaticMeshInstance, 1> Instances = {Instance};
+	FEditorViewportSceneSnapshot Snapshot;
+	Snapshot.StaticMeshes = Meshes;
+	Snapshot.Instances = Instances;
+	Snapshot.Revision = 4;
+	TiramisuEditorViewportScenePicker Picker;
+	Picker.Submit(Snapshot);
+
+	FEditorViewportPickRequest Request;
+	Request.RayOrigin = {
+		Centroid[0] + Normal[0] * 2.0f,
+		Centroid[1] + Normal[1] * 2.0f,
+		Centroid[2] + Normal[2] * 2.0f
+	};
+	Request.RayDirection = {-Normal[0], -Normal[1], -Normal[2]};
+	Request.MaxDistance = 4.0f;
+	const FEditorViewportPickResult Result = Picker.Pick(Request);
+	return Result.Hit && Result.ObjectId.Value == 900 &&
+		Result.MeshId.Value == 77 && Result.MaterialSlot.Value == 71 &&
+		Result.Distance > 0.0f && Result.Distance <= 2.001f &&
+		Result.SceneRevision == 4;
 }
 } // namespace
 
@@ -109,6 +214,10 @@ int main()
 	if (Picker.Pick(Request).Hit)
 	{
 		return Fail("Invalid zero-length ray was accepted");
+	}
+	if (!TestRealOgfPicking())
+	{
+		return Fail("Real skeletal OGF bind pose was not pickable");
 	}
 	return 0;
 }

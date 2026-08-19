@@ -559,7 +559,9 @@ void ValidateRenderScene(FRenderSceneAssetParseResult& Result)
 {
 	FRenderSceneAsset& Asset = Result.Value;
 	const xr_string& Source = Asset.SourcePath;
-	if (Asset.Version != RenderSceneAssetVersion && Asset.Version != LegacyStaticMeshOnlyRenderSceneAssetVersion)
+	if (Asset.Version != RenderSceneAssetVersion &&
+		Asset.Version != LightRenderSceneAssetVersion &&
+		Asset.Version != LegacyStaticMeshOnlyRenderSceneAssetVersion)
 	{
 		AddError(Result.Diagnostics, "scene.unsupported_version", "Unsupported render-scene asset version " + std::to_string(Asset.Version) + ".", Source);
 	}
@@ -599,6 +601,16 @@ void ValidateRenderScene(FRenderSceneAssetParseResult& Result)
 	{
 		AddError(Result.Diagnostics, "scene.light_requires_version_2", "Light components require render-scene asset version 2.", Source);
 	}
+	if (Asset.Version < RenderSceneAssetVersion &&
+		!Asset.DecalComponents.empty())
+	{
+		AddError(
+			Result.Diagnostics,
+			"scene.decal_requires_version_3",
+			"Decal components require render-scene asset version 3.",
+			Source
+		);
+	}
 	for (const FLightComponent& Light : Asset.LightComponents)
 	{
 		if (!IsValidSceneStableId(Light.Id) || !ObjectIds.insert(Light.Id).second)
@@ -626,6 +638,37 @@ void ValidateRenderScene(FRenderSceneAssetParseResult& Result)
 		if (Light.Type == ELightType::Spot && (!std::isfinite(Light.InnerConeAngleDegrees) || !std::isfinite(Light.OuterConeAngleDegrees) || Light.InnerConeAngleDegrees < 0.0f || Light.OuterConeAngleDegrees <= 0.0f || Light.InnerConeAngleDegrees > Light.OuterConeAngleDegrees || Light.OuterConeAngleDegrees >= 90.0f))
 		{
 			AddError(Result.Diagnostics, "scene.invalid_light_cone", "Spot-light cone angles must satisfy 0 <= inner <= outer < 90 degrees.", Source);
+		}
+	}
+	for (const FDecalComponent& Decal : Asset.DecalComponents)
+	{
+		if (!IsValidSceneStableId(Decal.Id) ||
+			!ObjectIds.insert(Decal.Id).second)
+		{
+			AddError(
+				Result.Diagnostics,
+				"scene.invalid_decal_guid",
+				"Decal component GUID is invalid or duplicated by another scene object.",
+				Source
+			);
+		}
+		if (Decal.Name.empty() || Decal.Material.empty())
+		{
+			AddError(
+				Result.Diagnostics,
+				"scene.invalid_decal",
+				"Decal component must have a name and explicit material reference.",
+				Source
+			);
+		}
+		if (!IsFinite(Decal.LocalToWorld))
+		{
+			AddError(
+				Result.Diagnostics,
+				"scene.non_finite_decal_transform",
+				"Decal component contains a non-finite transform.",
+				Source
+			);
 		}
 	}
 }
@@ -1034,6 +1077,67 @@ FRenderSceneAssetParseResult ParseRenderSceneAssetJson(const xr_string_view Json
 				Result.Value.LightComponents.push_back(std::move(Light));
 			}
 		}
+		const auto Decals = Root.find("decal_components");
+		if (Decals != Root.end() && !Decals->is_array())
+		{
+			AddError(
+				Result.Diagnostics,
+				"scene.invalid_decal_array",
+				"decal_components must be an array.",
+				SourcePath
+			);
+		}
+		else if (Decals != Root.end())
+		{
+			for (const Json& Item : *Decals)
+			{
+				FDecalComponent Decal;
+				bool Valid = Item.is_object();
+				Valid = Valid && ReadString(Item, "guid", Decal.Id);
+				Valid = Valid && ReadString(Item, "name", Decal.Name);
+				Valid = Valid && ReadString(Item, "material", Decal.Material);
+				Valid = Valid && Item.contains("transform") &&
+					ReadFloatArray(Item["transform"], Decal.LocalToWorld);
+				const auto SortOrder = Item.find("sort_order");
+				if (SortOrder == Item.end() ||
+					!SortOrder->is_number_integer())
+				{
+					Valid = false;
+				}
+				else
+				{
+					const s64 Value = SortOrder->get<s64>();
+					Valid = Valid &&
+						Value >= std::numeric_limits<s32>::min() &&
+						Value <= std::numeric_limits<s32>::max();
+					if (Valid)
+					{
+						Decal.SortOrder = static_cast<s32>(Value);
+					}
+				}
+				if (!Item.contains("visible") ||
+					!Item["visible"].is_boolean())
+				{
+					Valid = false;
+				}
+				else
+				{
+					Decal.Visible = Item["visible"].get<bool>();
+				}
+				if (!Valid)
+				{
+					AddError(
+						Result.Diagnostics,
+						"scene.invalid_decal_fields",
+						"Every decal component must contain typed guid, name, material, transform, sort_order and visible fields.",
+						SourcePath
+					);
+				}
+				Result.Value.DecalComponents.push_back(
+					std::move(Decal)
+				);
+			}
+		}
 		ValidateRenderScene(Result);
 	}
 	catch (const std::exception& Error)
@@ -1114,6 +1218,18 @@ xr_string SerializeRenderSceneAssetJson(const FRenderSceneAsset& Asset)
 	for (const FLightComponent& Light : Asset.LightComponents)
 	{
 		Root["light_components"].push_back({{"guid", Light.Id}, {"name", Light.Name}, {"type", ToString(Light.Type)}, {"transform", Light.LocalToWorld}, {"color", Light.Color}, {"intensity", Light.Intensity}, {"range", Light.Range}, {"inner_cone_degrees", Light.InnerConeAngleDegrees}, {"outer_cone_degrees", Light.OuterConeAngleDegrees}, {"visible", Light.Visible}, {"cast_shadows", Light.CastShadows}});
+	}
+	Root["decal_components"] = Json::array();
+	for (const FDecalComponent& Decal : Asset.DecalComponents)
+	{
+		Root["decal_components"].push_back({
+			{"guid", Decal.Id},
+			{"name", Decal.Name},
+			{"material", Decal.Material},
+			{"transform", Decal.LocalToWorld},
+			{"sort_order", Decal.SortOrder},
+			{"visible", Decal.Visible}
+		});
 	}
 	return Root.dump(2);
 }

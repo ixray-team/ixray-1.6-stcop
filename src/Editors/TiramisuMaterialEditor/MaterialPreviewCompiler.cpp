@@ -115,7 +115,8 @@ FMaterialPreviewShaderCache& ShaderCache()
 bool FMaterialPreviewCompileResult::Succeeded() const noexcept
 {
 	return !VertexBytecode.empty() && !PixelBytecode.empty() &&
-		   PipelineKey != 0 && !HasErrors(Diagnostics);
+		   !VertexFactory.empty() && PipelineKey != 0 &&
+		   !HasErrors(Diagnostics);
 }
 
 FMaterialPreviewCompileResult CompileMaterialPreview(
@@ -223,8 +224,6 @@ FMaterialPreviewCompileResult CompileMaterialPreview(
 	}
 	Result.ParameterBlock = std::move(Packed.Value);
 
-	FMaterialSourceAssemblyResult VertexSource =
-		AssembleMaterialShaderSourceForPass(Master, Request.TemplateSource, Implementation, Result.ResolvedMaterial.StaticParameters, Request.VertexFactorySource, "materials/vertex/MaterialLevelStaticVertexFactory.hlsl");
 	const FMaterialPassDefinition* PassDefinition =
 		FindMaterialPassDefinition(Request.Pass);
 	if (!PassDefinition)
@@ -232,6 +231,30 @@ FMaterialPreviewCompileResult CompileMaterialPreview(
 		AddError(Result, "preview.pass_missing", "The requested material pass is absent from the pass manifest.");
 		return Result;
 	}
+	const xr_string_view VertexFactoryName = Request.VertexFactory.empty()
+		? PassDefinition->VertexFactory
+		: xr_string_view(Request.VertexFactory);
+	const FMaterialVertexFactoryDefinition* VertexFactoryDefinition =
+		FindMaterialVertexFactoryDefinition(VertexFactoryName);
+	if (!VertexFactoryDefinition)
+	{
+		AddError(
+			Result,
+			"preview.vertex_factory_missing",
+			"The requested material vertex factory is absent from the manifest."
+		);
+		return Result;
+	}
+	Result.VertexFactory = VertexFactoryName;
+	FMaterialSourceAssemblyResult VertexSource =
+		AssembleMaterialShaderSourceForPass(
+			Master,
+			Request.TemplateSource,
+			Implementation,
+			Result.ResolvedMaterial.StaticParameters,
+			Request.VertexFactorySource,
+			VertexFactoryDefinition->ShaderSource
+		);
 	Append(Result.Diagnostics, VertexSource.Diagnostics);
 	FMaterialSourceAssemblyResult PixelSource =
 		AssembleMaterialShaderSourceForPass(Master, Request.TemplateSource, Implementation, Result.ResolvedMaterial.StaticParameters, PassSource, PassDefinition->ShaderSource);
@@ -244,6 +267,7 @@ FMaterialPreviewCompileResult CompileMaterialPreview(
 	FMaterialPipelineKey Pipeline = MakeCookedMaterialPipelineKey(
 		Result.ResolvedMaterial, *PassDefinition, Request.Backend == EMaterialShaderBackend::D3D12 ? "d3d12" : "vulkan"
 	);
+	Pipeline.VertexFactory = Result.VertexFactory;
 	if (!Request.RenderPassSignature.empty())
 	{
 		Pipeline.RenderPassSignature = Request.RenderPassSignature;

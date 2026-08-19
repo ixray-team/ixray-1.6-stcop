@@ -2,6 +2,8 @@ project(xrTiramisuSceneCore)
 
 add_library(xrTiramisuSceneCore STATIC
     TiramisuSceneTypes.h
+    LegacyDecalProjection.cpp
+    LegacyDecalProjection.h
     SceneJsonHelpers.h
     SceneAsset.cpp
     SceneAsset.h

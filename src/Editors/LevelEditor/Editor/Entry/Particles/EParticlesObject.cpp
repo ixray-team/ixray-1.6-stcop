@@ -12,6 +12,19 @@
 
 #define PSOBJECT_SIZE 0.5f
 
+void ReportMissingParticleReference(const xr_string& ReferenceName)
+{
+	if (Scene && Scene->isSkipCantFindDialog())
+	{
+		Msg("! EParticlesObject: '%s' not found in library",
+			ReferenceName.c_str());
+		return;
+	}
+
+	ELog.DlgMsg(mtError, "EParticlesObject: '%s' not found in library",
+		ReferenceName.c_str());
+}
+
 // using namespace PS;
 
 EParticlesObject::EParticlesObject(LPVOID data, const char* name)
@@ -31,8 +44,12 @@ void EParticlesObject::Construct(LPVOID data)
 
 EParticlesObject::~EParticlesObject()
 {
-	auto model = smart_cast<IRenderVisual*>(m_Particles);
-	::Render->model_Delete(model);
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Legacy)
+	{
+		auto model = smart_cast<IRenderVisual*>(m_Particles);
+		::Render->model_Delete(model);
+	}
 	m_Particles = nullptr;
 }
 
@@ -163,6 +180,7 @@ bool EParticlesObject::RayPick(float& distance, const Fvector& start, const Fvec
 
 void EParticlesObject::Play()
 {
+	m_IsPlaying = true;
 	if (m_Particles)
 	{
 		m_Particles->Play();
@@ -172,6 +190,7 @@ void EParticlesObject::Play()
 
 void EParticlesObject::Stop()
 {
+	m_IsPlaying = false;
 	if (m_Particles)
 	{
 		m_Particles->Stop();
@@ -194,7 +213,7 @@ bool EParticlesObject::LoadLTX(CInifile& ini, const char* sect_name)
 	xr_string Copy = *m_RefName;
 	if (!Compile(*m_RefName))
 	{
-		ELog.DlgMsg(mtError, "EParticlesObject: '%s' not found in library", Copy.c_str());
+		ReportMissingParticleReference(Copy);
 		IsLoaded = true;
 		return false;
 	}
@@ -240,7 +259,7 @@ bool EParticlesObject::LoadStream(IReader& F)
 	xr_string CopyName = *m_RefName;
 	if (!Compile(*m_RefName))
 	{
-		ELog.DlgMsg(mtError, "EParticlesObject: '%s' not found in library", CopyName.c_str());
+		ReportMissingParticleReference(CopyName);
 		return false;
 	}
 
@@ -296,6 +315,33 @@ bool EParticlesObject::ExportGame(SExportStreams* F)
 
 bool EParticlesObject::Compile(const char* ref_name)
 {
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		m_Particles = nullptr;
+		if (ref_name && ref_name[0])
+		{
+			FEditorParticleLibrarySnapshot Snapshot;
+			GetEditorRenderBackend().CopyParticleLibrary(Snapshot);
+			const bool Found = std::ranges::any_of(
+				Snapshot.Assets,
+				[&](const FEditorParticleAssetInfo& Asset)
+				{
+					return Asset.Type !=
+							   EEditorParticleAssetType::AnimationCurve &&
+						   xr_strcmp(Asset.Name.c_str(), ref_name) == 0;
+				}
+			);
+			if (Found)
+			{
+				m_RefName = ref_name;
+				return true;
+			}
+		}
+		m_RefName = "";
+		return false;
+	}
+
 	auto model = smart_cast<IRenderVisual*>(m_Particles);
 	::Render->model_Delete(model);
 	m_Particles = nullptr;

@@ -1,7 +1,9 @@
 #include "../SceneAsset.h"
 #include "../SceneConversionDump.h"
+#include "../LegacyDecalProjection.h"
 
 #include <chrono>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -33,6 +35,42 @@ bool HasDiagnostic(const xr_vector<FSceneDiagnostic>& Diagnostics, const xr_stri
 
 int main()
 {
+	const xr_vector<FLegacyDecalVertex> LegacyDecalVertices = {
+		{{-1.0f, -2.0f, 0.0f}, {0.0f, 0.0f}},
+		{{1.0f, -2.0f, 0.0f}, {1.0f, 0.0f}},
+		{{-1.0f, 2.0f, 0.0f}, {0.0f, 1.0f}}
+	};
+	const FLegacyDecalProjectionResult LegacyDecalProjection =
+		BuildLegacyDecalProjection(LegacyDecalVertices, 2.0f, 4.0f);
+	if (!LegacyDecalProjection.Succeeded() ||
+		std::abs(LegacyDecalProjection.LocalToWorld[0] - 2.0f) > 1.0e-5f ||
+		std::abs(LegacyDecalProjection.LocalToWorld[5] - 4.0f) > 1.0e-5f ||
+		std::abs(LegacyDecalProjection.LocalToWorld[10] - 0.4f) > 1.0e-5f ||
+		std::abs(LegacyDecalProjection.LocalToWorld[12]) > 1.0e-5f ||
+		std::abs(LegacyDecalProjection.LocalToWorld[13]) > 1.0e-5f ||
+		std::abs(LegacyDecalProjection.LocalToWorld[14]) > 1.0e-5f)
+	{
+		return Fail("Legacy Wallmark projector conversion failed");
+	}
+	xr_vector<FLegacyDecalVertex> DegenerateDecalVertices =
+		LegacyDecalVertices;
+	for (FLegacyDecalVertex& Vertex : DegenerateDecalVertices)
+	{
+		Vertex.TexCoord = {0.0f, 0.0f};
+	}
+	const FLegacyDecalProjectionResult DegenerateProjection =
+		BuildLegacyDecalProjection(
+			DegenerateDecalVertices,
+			2.0f,
+			4.0f
+		);
+	if (DegenerateProjection.Succeeded() ||
+		DegenerateProjection.DiagnosticCode !=
+			"decal_projection.degenerate_uv")
+	{
+		return Fail("Degenerate legacy Wallmark projection was accepted");
+	}
+
 	FStaticMeshAsset Mesh;
 	Mesh.Id = "a520c30d-b7a7-4a65-9915-558343d43d9a";
 	Mesh.Name = "Triangle";
@@ -182,6 +220,14 @@ int main()
 	Light.InnerConeAngleDegrees = 15.0f;
 	Light.OuterConeAngleDegrees = 35.0f;
 	Scene.LightComponents.push_back(Light);
+	FDecalComponent Decal;
+	Decal.Id = "87be3fd5-3a31-4f8c-b242-36b893e2e812";
+	Decal.Name = "Projected grime";
+	Decal.Material = "materials/decals/grime.material-instance.json";
+	Decal.LocalToWorld[12] = 1.0f;
+	Decal.LocalToWorld[13] = 2.0f;
+	Decal.SortOrder = 12;
+	Scene.DecalComponents.push_back(Decal);
 	const FRenderSceneAssetParseResult ParsedScene =
 		ParseRenderSceneAssetJson(SerializeRenderSceneAssetJson(Scene));
 	if (!ParsedScene.Succeeded() ||
@@ -193,6 +239,9 @@ int main()
 		ParsedScene.Value.LightComponents[0].Type != ELightType::Spot ||
 		ParsedScene.Value.LightComponents[0].Color != Light.Color ||
 		ParsedScene.Value.LightComponents[0].Intensity != Light.Intensity ||
+		ParsedScene.Value.DecalComponents.size() != 1 ||
+		ParsedScene.Value.DecalComponents[0].Material != Decal.Material ||
+		ParsedScene.Value.DecalComponents[0].SortOrder != 12 ||
 		ToString(ParsedScene.Value.LightComponents[0].Type) != "spot")
 	{
 		return Fail("Valid render-scene round trip failed");
@@ -208,6 +257,7 @@ int main()
 	FRenderSceneAsset LegacyScene = Scene;
 	LegacyScene.Version = LegacyStaticMeshOnlyRenderSceneAssetVersion;
 	LegacyScene.LightComponents.clear();
+	LegacyScene.DecalComponents.clear();
 	const FRenderSceneAssetParseResult ParsedLegacyScene =
 		ParseRenderSceneAssetJson(
 			SerializeRenderSceneAssetJson(LegacyScene)
@@ -228,6 +278,32 @@ int main()
 		!HasDiagnostic(LegacySceneWithLight.Diagnostics, "scene.light_requires_version_2"))
 	{
 		return Fail("Render-scene v1 accepted a light component");
+	}
+
+	FRenderSceneAsset VersionTwoScene = Scene;
+	VersionTwoScene.Version = LightRenderSceneAssetVersion;
+	VersionTwoScene.DecalComponents.clear();
+	const FRenderSceneAssetParseResult ParsedVersionTwo =
+		ParseRenderSceneAssetJson(
+			SerializeRenderSceneAssetJson(VersionTwoScene)
+		);
+	if (!ParsedVersionTwo.Succeeded() ||
+		ParsedVersionTwo.Value.Version != LightRenderSceneAssetVersion)
+	{
+		return Fail("Render-scene v2 compatibility failed");
+	}
+	VersionTwoScene.DecalComponents.push_back(Decal);
+	const FRenderSceneAssetParseResult VersionTwoWithDecal =
+		ParseRenderSceneAssetJson(
+			SerializeRenderSceneAssetJson(VersionTwoScene)
+		);
+	if (VersionTwoWithDecal.Succeeded() ||
+		!HasDiagnostic(
+			VersionTwoWithDecal.Diagnostics,
+			"scene.decal_requires_version_3"
+		))
+	{
+		return Fail("Render-scene v2 accepted a decal component");
 	}
 
 	FRenderSceneAsset InvalidLightScene = Scene;

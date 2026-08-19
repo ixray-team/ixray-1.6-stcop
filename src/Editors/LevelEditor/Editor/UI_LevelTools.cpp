@@ -531,6 +531,31 @@ void CLevelTool::RenderEnvironment()
 
 void CLevelTool::Render()
 {
+	PROF_EVENT("LevelEditor: Render Tools");
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Tiramisu)
+	{
+		if (psDeviceFlags.is(rsDrawGrid))
+		{
+			CaptureTiramisuEditorGrid();
+		}
+		const EEditorState State = UI->GetEState();
+		if (State == esEditLightAnim || State == esEditScene)
+		{
+			(void)SubmitEditorSceneToEditorRenderer(
+				static_cast<u32>(UI->ViewID)
+			);
+		}
+		else if (State == esEditCustom)
+		{
+			for (IViewport* Viewport : Viewlist)
+			{
+				Viewport->RenderTiramisu();
+			}
+		}
+		return;
+	}
+
 	// Render update
 	if (!Scene->IsPlayInEditor())
 	{

@@ -369,6 +369,7 @@ SAINode* ESceneAIMapTool::BuildNode(Fvector& vFrom, Fvector& vAt, bool bIC, bool
 
 int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
 {
+	MarkRenderDataDirty();
 	// Align emitter
 	Fvector			Pos = pos;
 	SnapXZ			(Pos,m_Params.fPatchSize);
@@ -449,6 +450,7 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
 
 void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
 {
+	MarkRenderDataDirty();
 	// begin
 	m_Nodes.reserve	(1024*1024);
 
@@ -569,6 +571,7 @@ void ESceneAIMapTool::UpdateLinks(SAINode* N, bool bIC)
 
 bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 {
+	MarkRenderDataDirty();
 	std::sort(m_ignored_materials.begin(), m_ignored_materials.end());
 	bool bRes = false;
 	if (!GetSnapList()->empty()) {
@@ -706,6 +709,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 
 int ESceneAIMapTool::RemoveOutOfBoundsNodes()
 {
+	MarkRenderDataDirty();
 	int count = 0;
 	for (int k=0; k<(int)m_Nodes.size(); k++){
 		SAINode* N 		= m_Nodes[k];
@@ -742,6 +746,7 @@ bool ESceneAIMapTool::RealUpdateSnapList()
 
 void ESceneAIMapTool::RemoveLinks()
 {
+	MarkRenderDataDirty();
 	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
 		if ((*it)->flags.is(SAINode::flSelected)){
 			for (int k=0; k<4; k++) 
@@ -755,6 +760,7 @@ static const int opposite[4]={2,3,0,1};
 static const u8 fl[4]		={SAINode::flN1,SAINode::flN2,SAINode::flN3,SAINode::flN4};
 void ESceneAIMapTool::InvertLinks()
 {
+	MarkRenderDataDirty();
 	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
 		if ((*it)->flags.is(SAINode::flSelected))
 			for (int k=0; k<4; k++)
@@ -817,6 +823,7 @@ SAINode* ESceneAIMapTool::FindNeighbor(SAINode* N, int side, bool bIgnoreConstra
 void ESceneAIMapTool::MakeLinks(u8 side_flag, EMode mode, bool bIgnoreConstraints)
 {
 	if (!side_flag) return;
+	MarkRenderDataDirty();
 	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++){
 		SAINode* T 						= *it;
 		if ((*it)->flags.is(SAINode::flSelected)){
@@ -855,6 +862,7 @@ void ESceneAIMapTool::MakeLinks(u8 side_flag, EMode mode, bool bIgnoreConstraint
 
 void ESceneAIMapTool::ResetNodes()
 {
+	MarkRenderDataDirty();
 	SPBItem* pb = UI->ProgressStart(m_Nodes.size(), "Smoothing nodes...");
 
 	int	n_cnt	= 0;
@@ -873,6 +881,7 @@ void ESceneAIMapTool::ResetNodes()
 #define		merge(pt)	if (fsimilar(P.y,REF.y,m_SmoothHeight)) { c++; pt.add(P); }
 void ESceneAIMapTool::SmoothNodes()
 {
+	MarkRenderDataDirty();
 	SPBItem* pb = UI->ProgressStart(m_Nodes.size(), "Smoothing nodes...");
 
 	AINodeVec	smoothed;	smoothed.reserve(m_Nodes.size());

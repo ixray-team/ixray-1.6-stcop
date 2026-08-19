@@ -9,7 +9,26 @@
 #include "Editor/Scene/LEPhysics.h"
 #include "Editor/AssetImport/TLegacyLevelImporter.h"
 #include "Editor/AssetImport/TLegacyObjectImporter.h"
+#include "Editor/Entry/Glow/glow.h"
+#include "Editor/Entry/Group/GroupObject.h"
+#include "Editor/Entry/Light/ELight.h"
+#include "Editor/Entry/Portal/portal.h"
+#include "Editor/Entry/Puddles/puddle.h"
+#include "Editor/Entry/Shape/EShape.h"
+#include "Editor/Entry/Sound/ESound_Environment.h"
+#include "Editor/Entry/Sound/ESound_Source.h"
+#include "Editor/Entry/Spawn/SpawnPoint.h"
+#include "Editor/Entry/StaticObject/SceneObject.h"
+#include "Editor/Entry/Terrain/Terrain.h"
+#include "Editor/Entry/WayPoint/WayPoint.h"
+#include "Editor/Terrain/HeightmapUtils.h"
+#include "Editor/Tools/AIMap/ESceneAIMapTools.h"
+#include "Editor/Tools/Details/ESceneDOTools.h"
+#include "Editor/Tools/FogVolume/ESceneFogVolumeTools.h"
+#include "Editor/Tools/Light/ESceneLightTools.h"
+#include "Editor/Tools/Wallmark/ESceneWallmarkTools.h"
 #include "../../Include/xrRender/TiramisuEditorRendererFactory.h"
+#include "Renderer/Tiramisu/TiramisuEditorLegacySceneBridge.h"
 #include "Renderer/Tiramisu/TiramisuEditorNriStartup.h"
 #include "../xrECore/Editor/EditorRenderBackend.h"
 #include "../xrECore/Editor/MaterialPreviewRenderer.h"
@@ -24,6 +43,8 @@
 #include "../../xrEngine/x_ray.h"
 #include "../../xrEngine/xr_input.h"
 #include "../../xrEngine/FPSCounter.h"
+#include "../../xrCore/RenderDebugPolicy.h"
+#include "../../xrCore/RenderDocIntegration.h"
 
 #include <SceneAsset.h>
 #include <SceneConversionDump.h>
@@ -74,6 +95,67 @@ void LogConversionDiagnostics(
 		Msg("%s Legacy conversion smoke [%s]: %s", Prefix, Diagnostic.Code.c_str(), Diagnostic.Message.c_str());
 	}
 }
+
+[[nodiscard]] bool HasConversionDiagnostic(
+	const Tiramisu::Scene::FSceneConversionDump& Dump,
+	const xr_string_view Code
+)
+{
+	return std::ranges::any_of(
+		Dump.Diagnostics,
+		[Code](const Tiramisu::Scene::FSceneConversionDiagnostic& Diagnostic)
+		{
+			return Diagnostic.Code == Code;
+		}
+	);
+}
+
+struct FLegacyWallmarkSmokeFixture
+{
+	ESceneWallmarkTool* Tool = nullptr;
+	ESceneWallmarkTool::wm_slot* Slot = nullptr;
+	ESceneWallmarkTool::wallmark* Wallmark = nullptr;
+
+	~FLegacyWallmarkSmokeFixture()
+	{
+		if (Tool && Slot)
+		{
+			std::erase(Tool->marks, Slot);
+			Slot->items.clear();
+		}
+		xr_delete(Wallmark);
+		xr_delete(Slot);
+	}
+
+	[[nodiscard]] bool Attach(EScene& LegacyScene)
+	{
+		Tool = smart_cast<ESceneWallmarkTool*>(
+			LegacyScene.GetTool(OBJCLASS_WM)
+		);
+		if (!Tool)
+		{
+			return false;
+		}
+		Slot = new ESceneWallmarkTool::wm_slot(
+			"effects\\wallmarkblend",
+			"textures/default/default_white"
+		);
+		Wallmark = new ESceneWallmarkTool::wallmark();
+		Wallmark->parent = Slot;
+		Wallmark->w = 2.0f;
+		Wallmark->h = 2.0f;
+		Wallmark->verts.resize(3);
+		Wallmark->verts[0].p.set(-1.0f, -1.0f, 0.0f);
+		Wallmark->verts[0].t.set(0.0f, 0.0f);
+		Wallmark->verts[1].p.set(1.0f, -1.0f, 0.0f);
+		Wallmark->verts[1].t.set(1.0f, 0.0f);
+		Wallmark->verts[2].p.set(-1.0f, 1.0f, 0.0f);
+		Wallmark->verts[2].t.set(0.0f, 1.0f);
+		Slot->items.push_back(Wallmark);
+		Tool->marks.push_back(Slot);
+		return true;
+	}
+};
 
 struct FLegacyConversionSmokeOptions
 {
@@ -209,6 +291,12 @@ bool RunLegacyConversionSmoke(
 			Options.LevelSource.generic_string().c_str());
 		return false;
 	}
+	FLegacyWallmarkSmokeFixture WallmarkFixture;
+	if (!WallmarkFixture.Attach(*Scene))
+	{
+		Msg("! Legacy conversion smoke could not attach a Wallmark fixture");
+		return false;
+	}
 	const FLegacyLevelImportResult Level =
 		ImportLoadedLegacyLevelAsset(Options.LevelSource, *Scene, MaterialRoot, StaticMeshRoot, RenderSceneRoot);
 	LogConversionDiagnostics(Level.Diagnostics);
@@ -227,16 +315,57 @@ bool RunLegacyConversionSmoke(
 		LevelDump.Value.AssetMappings.empty() ||
 		LevelDump.Value.ComponentCount == 0 ||
 		!NativeScene.Succeeded() ||
-		NativeScene.Value.Scene.StaticMeshComponents.empty())
+		NativeScene.Value.Scene.StaticMeshComponents.empty() ||
+		NativeScene.Value.Scene.LightComponents.empty() ||
+		NativeScene.Value.Scene.DecalComponents.empty() ||
+		!HasConversionDiagnostic(
+			LevelDump.Value,
+			"level_import.wallmarks_migrated"
+		) ||
+		NativeScene.Value.Scene.LightComponents.front().Type !=
+			ELightType::Directional ||
+		!NativeScene.Value.Scene.LightComponents.front().CastShadows)
 	{
 		Msg("! Legacy level conversion smoke produced an invalid native scene "
-			"or audit dump");
+			"with materials, geometry, lights, or audit dump");
+		return false;
+	}
+	const FLegacyLevelImportResult SecondLevel =
+		ImportLoadedLegacyLevelAsset(
+			Options.LevelSource,
+			*Scene,
+			MaterialRoot,
+			StaticMeshRoot,
+			RenderSceneRoot
+		);
+	const FSceneConversionDumpParseResult SecondLevelDump =
+		ParseSceneConversionDumpJson(
+			ReadEditorDiskFile(SecondLevel.DumpPath)
+		);
+	const FResolvedRenderSceneResult SecondNativeScene =
+		LoadRenderSceneAsset(SecondLevel.TargetPath);
+	if (!SecondLevel.Succeeded || !SecondLevelDump.Succeeded() ||
+		!SecondNativeScene.Succeeded() ||
+		SecondLevel.TargetAssetId != Level.TargetAssetId ||
+		SecondLevelDump.Value.CreatedMaterialInstances != 0 ||
+		SecondLevelDump.Value.ReusedMaterialInstances == 0 ||
+		SecondNativeScene.Value.Scene.DecalComponents.size() !=
+			NativeScene.Value.Scene.DecalComponents.size() ||
+		SecondNativeScene.Value.Scene.DecalComponents.front().Id !=
+			NativeScene.Value.Scene.DecalComponents.front().Id ||
+		SecondNativeScene.Value.Scene.DecalComponents.front().Material !=
+			NativeScene.Value.Scene.DecalComponents.front().Material)
+	{
+		Msg("! Legacy level decal conversion is not deterministic or did not "
+			"reuse MaterialInstance assets");
 		return false;
 	}
 	Msg("* Legacy conversion smoke: success (meshes=%u, components=%u, "
-		"materials created=%u, reused=%u)",
+		"lights=%zu, decals=%zu, materials created=%u, reused=%u)",
 		LevelDump.Value.MeshCount,
 		LevelDump.Value.ComponentCount,
+		NativeScene.Value.Scene.LightComponents.size(),
+		NativeScene.Value.Scene.DecalComponents.size(),
 		LevelDump.Value.CreatedMaterialInstances,
 		LevelDump.Value.ReusedMaterialInstances);
 	if (Options.KeepOutput)
@@ -253,6 +382,10 @@ bool RunLegacyConversionSmoke(
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
 	bIsLevelEditor = true;
+	const bool HiddenTestWindow = HasEditorCommandLineFlag(
+		pCmdLine ? xr_string_view(pCmdLine) : xr_string_view(),
+		"-editor-test-hidden"
+	);
 
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS))
 	{
@@ -260,8 +393,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		return 0;
 	}
 
-	splash::SetBackground(IDB_LE);
-	std::jthread s(splash::Show);
+	std::jthread SplashThread;
+	if (!HiddenTestWindow)
+	{
+		splash::SetBackground(IDB_LE);
+		SplashThread = std::jthread(splash::Show);
+	}
 
 	splash::SetProgressStatus(5, "Initializing Debugger");
 
@@ -285,8 +422,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		ParseEditorNriStartupConfig(Core.Params ? Core.Params : "");
 	if (!EditorNriConfig.IsValid())
 	{
-		Msg("! LevelEditor: -render-deterministic requires both "
-			"-tiramisu-editor and the exact -rdbg flag");
+		Msg("! LevelEditor: -render-deterministic requires the exact "
+			"-rdbg flag and the Tiramisu renderer");
 		Core._destroy();
 		return 11;
 	}
@@ -401,26 +538,60 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	GContentView->Init();
 	UI->PushBegin(GContentView);
 	splash::SetProgressStatus(100, "Finalizing");
-	splash::Close();
+	if (!HiddenTestWindow)
+	{
+		splash::Close();
+	}
 
 	const bool MaterialPreviewSmokeRequested =
 		strstr(Core.Params, "-material-preview-smoke") != nullptr;
 	const bool ViewportMaterialReloadSmokeRequested =
 		strstr(Core.Params, "-viewport-material-reload-smoke") != nullptr;
+	const bool EditorResizeSmokeRequested =
+		strstr(Core.Params, "-editor-resize-smoke") != nullptr;
 	const bool ViewportMaterialSmokeRequested =
 		strstr(Core.Params, "-viewport-material-smoke") != nullptr ||
-		ViewportMaterialReloadSmokeRequested;
+		ViewportMaterialReloadSmokeRequested || EditorResizeSmokeRequested;
 	const bool LegacyConversionSmokeRequested =
 		strstr(Core.Params, "-legacy-conversion-smoke") != nullptr;
 	const bool ZatonConversionSmokeRequested =
 		strstr(Core.Params, "-legacy-zaton-conversion-smoke") != nullptr;
+	const bool ZatonRuntimeProfileRequested =
+		strstr(Core.Params, "-legacy-zaton-runtime-profile") != nullptr;
 	bool MaterialPreviewSmokeComplete = !MaterialPreviewSmokeRequested;
 	bool ViewportMaterialSmokeComplete = !ViewportMaterialSmokeRequested;
+	bool EditorResizeSmokeTriggered = false;
+	u64 ResizeSmokeSurfaceRevision = 0;
+	u64 ResizeSmokeSwapchainRevision = 0;
+	u64 ResizeSmokePresentedFrameCount = 0;
+	u64 ResizeSmokeViewportResourceRevision = 0;
+	u64 ResizeSmokeTextureRedirectCount = 0;
+	u64 ResizeSmokeStatisticsRevision = 0;
+	u64 ResizeSmokeMaterialRevision = 0;
+	u64 ResizeSmokePipelineKey = 0;
 	int ProcessExitCode = 0;
 	IMaterialPreviewRenderer* SmokePreviewRenderer = nullptr;
 	FMaterialPreviewHandle SmokePreviewHandle;
-	const auto SmokeDeadline = std::chrono::steady_clock::now() +
-							   std::chrono::seconds(60);
+	bool ZatonRuntimeProfileActive = false;
+	size_t ZatonRuntimeWarmupFrames = 0;
+	bool ZatonRuntimeCaptureStarted = false;
+	xr_vector<double> ZatonRuntimeFrameMilliseconds;
+	xr_string ZatonRuntimeProfilePath;
+	// RenderDoc и AddressSanitizer заметно замедляют компиляцию shader permutations,
+	// загрузку OGF и сериализацию capture. Обычный deterministic smoke сохраняет
+	// прежний строгий дедлайн.
+#if defined(IXRAY_ASAN_BUILD)
+	constexpr bool IsAddressSanitizerBuild = true;
+#else
+	constexpr bool IsAddressSanitizerBuild = false;
+#endif
+	const auto SmokeTimeout = xrRenderDoc::IsLoaded()
+		? std::chrono::seconds(240)
+		: IsAddressSanitizerBuild
+		? std::chrono::seconds(120)
+		: std::chrono::seconds(60);
+	const auto SmokeDeadline =
+		std::chrono::steady_clock::now() + SmokeTimeout;
 	if (MaterialPreviewSmokeRequested)
 	{
 		SmokePreviewRenderer = &GetMaterialPreviewRenderer();
@@ -467,6 +638,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	}
 
 	constexpr u32 SmokeSceneViewportId = 0x7ffffff0u;
+	constexpr u32 SmokeParticlePreviewViewportId = 0x7fffffefu;
+	constexpr u32 SmokeLegacyLightViewportId = 0x7fffffeeu;
+	constexpr u32 ResizeSmokeViewportWidth = 704;
+	constexpr u32 ResizeSmokeViewportHeight = 416;
 	constexpr FEditorMaterialSlotId SmokeSceneMaterialSlot = {
 		0x736d6f6b656d6174ull
 	};
@@ -475,6 +650,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	};
 	constexpr FEditorMaterialSlotId SmokeSceneParticleMaterialSlot = {
 		0x7061727469636c65ull
+	};
+	constexpr FEditorMaterialSlotId SmokeSceneDecalMaterialSlot = {
+		0x646563616c6d6174ull
 	};
 	constexpr u64 SmokeSceneCloneMaterialSlotBase =
 		0x636c6f6e65000100ull;
@@ -494,6 +672,36 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 		else
 		{
+			FEditorParticleLibrarySnapshot ParticleLibrary;
+			EditorNriBackend->CopyParticleLibrary(ParticleLibrary);
+			const auto ParticleAsset = std::ranges::find_if(
+				ParticleLibrary.Assets,
+				[](const FEditorParticleAssetInfo& Asset)
+				{
+					return Asset.Type ==
+						   EEditorParticleAssetType::Effect &&
+						   Asset.HasCompiledActions;
+				}
+			);
+			const auto ParticleGroupAsset = std::ranges::find_if(
+				ParticleLibrary.Assets,
+				[](const FEditorParticleAssetInfo& Asset)
+				{
+					return Asset.Type ==
+						   EEditorParticleAssetType::Group &&
+						   Asset.EnabledGroupEntryCount != 0 &&
+						   Asset.GroupChildCallbackCount != 0;
+				}
+			);
+			if (ParticleAsset == ParticleLibrary.Assets.end() ||
+				ParticleGroupAsset == ParticleLibrary.Assets.end())
+			{
+				Msg("! Viewport material smoke requires particle effect and group assets");
+				ProcessExitCode = 6;
+				GContentView->Destroy();
+				NeedExit = true;
+			}
+
 			xr_array<FEditorStaticMeshVertex, 9> Vertices;
 			Vertices[0].Position = {-0.8f, -0.8f, 0.0f};
 			Vertices[1].Position = {0.0f, 0.8f, 0.0f};
@@ -532,12 +740,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			// clip-space W in the vertex shader.
 			Instances[0].LocalToWorld[12] = 0.6f;
 			Instances[0].Flags = EEditorSceneInstanceFlags::Selected;
-			xr_vector<FEditorMaterialSlotSource> Materials = {
+				xr_vector<FEditorMaterialSlotSource> Materials = {
 				{SmokeSceneMaterialSlot, "default", "textures/kung", "Viewport material smoke", EEditorMaterialSlotFlags::None},
 				{SmokeSceneSpriteMaterialSlot, "editor\\spawn_icon", "textures/default/default_white", "Editor sprite smoke", EEditorMaterialSlotFlags::TwoSided},
-				{SmokeSceneParticleMaterialSlot, "editor\\particle_additive", "textures/default/default_white", "Editor particle smoke", EEditorMaterialSlotFlags::TwoSided}
+				{SmokeSceneParticleMaterialSlot, "editor\\particle_additive", "textures/default/default_white", "Editor particle smoke", EEditorMaterialSlotFlags::TwoSided},
+				{SmokeSceneDecalMaterialSlot, {}, "textures/default/default_white", "Projective decal smoke", EEditorMaterialSlotFlags::None, "c4c45d66-6cc9-4e62-89a8-f86eaf0b8014"}
 			};
-			Materials.reserve(3 + SmokeSceneCloneMaterialCount);
+			Materials.reserve(4 + SmokeSceneCloneMaterialCount);
 			for (u32 Index = 0;
 				 Index < SmokeSceneCloneMaterialCount;
 				 ++Index)
@@ -595,6 +804,49 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			Lights[1].Color = {0.2f, 0.45f, 1.0f};
 			Lights[1].Intensity = 4.0f;
 			Lights[1].Range = 4.0f;
+			xr_array<FEditorParticleInstance, 2> ParticleInstances;
+			ParticleInstances[0].ObjectId = {
+				0x736d6f6b65706172ull
+			};
+			if (ParticleAsset != ParticleLibrary.Assets.end())
+			{
+				ParticleInstances[0].AssetName = ParticleAsset->Name;
+			}
+			ParticleInstances[0].LocalToWorld[12] = -0.4f;
+			ParticleInstances[0].LocalToWorld[13] = 0.35f;
+			ParticleInstances[0].Flags =
+				EEditorParticleInstanceFlags::Playing;
+			ParticleInstances[1].ObjectId = {
+				0x736d6f6b65706772ull
+			};
+			if (ParticleGroupAsset != ParticleLibrary.Assets.end())
+			{
+				ParticleInstances[1].AssetName = ParticleGroupAsset->Name;
+				ParticleInstances[1].AssetType =
+					EEditorParticleAssetType::Group;
+			}
+			ParticleInstances[1].LocalToWorld[12] = 0.4f;
+			ParticleInstances[1].LocalToWorld[13] = 0.35f;
+			ParticleInstances[1].Flags =
+				EEditorParticleInstanceFlags::Playing;
+			xr_array<FEditorModelInstance, 1> ModelInstances;
+			ModelInstances[0].ObjectId = {
+				0x736d6f6b656f6766ull
+			};
+			ModelInstances[0].AssetName =
+				"actors\\stalker_bandit\\stalker_bandit_1";
+			ModelInstances[0].AnimationName = "norm_walk_fwd_0";
+			ModelInstances[0].LocalToWorld[12] = -0.5f;
+			xr_array<FEditorDecalInstance, 2> DecalInstances;
+			DecalInstances[0].ObjectId = {0x736d6f6b65646563ull};
+			DecalInstances[0].MaterialSlot = SmokeSceneDecalMaterialSlot;
+			DecalInstances[0].LocalToWorld[0] = 1.2f;
+			DecalInstances[0].LocalToWorld[5] = 1.2f;
+			DecalInstances[0].LocalToWorld[10] = 0.2f;
+			DecalInstances[0].LocalToWorld[12] = 0.6f;
+			DecalInstances[1] = DecalInstances[0];
+			DecalInstances[1].ObjectId = {0x736d6f6b656f6666ull};
+			DecalInstances[1].LocalToWorld[12] = 100.0f;
 			FEditorViewportSceneSnapshot Snapshot;
 			Snapshot.Camera.View = {
 				1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
@@ -607,7 +859,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			Snapshot.MaterialSlots = Materials;
 			Snapshot.StaticMeshes = Meshes;
 			Snapshot.Instances = Instances;
+			Snapshot.DecalInstances = DecalInstances;
+			Snapshot.ModelInstances = ModelInstances;
 			Snapshot.Lights = Lights;
+			Snapshot.ParticleInstances = ParticleInstances;
 			Snapshot.DebugLines = DebugLines;
 			Snapshot.DebugTriangles = DebugTriangles;
 			Snapshot.OverlayLines = OverlayLines;
@@ -622,6 +877,693 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			{
 				Msg("! Viewport material smoke setup failed: %.*s",
 					static_cast<int>(EditorNriBackend->GetLastDiagnostic().size()),
+					EditorNriBackend->GetLastDiagnostic().data());
+				ProcessExitCode = 6;
+				GContentView->Destroy();
+				NeedExit = true;
+			}
+			auto* LegacyLightTools = smart_cast<ESceneLightTool*>(
+				Scene->GetOTool(OBJCLASS_LIGHT)
+			);
+			if (!LegacyLightTools)
+			{
+				Msg("! Legacy light bridge smoke has no light tools");
+				ProcessExitCode = 6;
+				GContentView->Destroy();
+				NeedExit = true;
+			}
+			else
+			{
+				xr_vector<xr_pair<ESceneToolBase*, bool>>
+					LegacyToolVisibility;
+				auto MakeLegacyToolVisible =
+					[&LegacyToolVisibility](ESceneToolBase* Tool)
+				{
+					if (!Tool)
+					{
+						return;
+					}
+					LegacyToolVisibility.emplace_back(
+						Tool,
+						Tool->IsVisible()
+					);
+					Tool->m_EditFlags.set(
+						ESceneToolBase::flVisible,
+						true
+					);
+				};
+				MakeLegacyToolVisible(LegacyLightTools);
+				auto* LegacyLight = static_cast<CLight*>(
+					LegacyLightTools->CreateObject(
+						nullptr,
+						"tiramisu_legacy_light_smoke"
+					)
+				);
+				LegacyLight->m_Type = ELight::ltSpot;
+				LegacyLight->m_Color.set(0.25f, 0.5f, 1.0f, 1.0f);
+				LegacyLight->m_Brightness = 3.0f;
+				LegacyLight->m_Range = 8.0f;
+				LegacyLight->m_Cone = deg2rad(50.0f);
+				LegacyLight->m_Flags.set(ELight::flCastShadow, true);
+				Fvector LightPosition = {0.0f, 1.0f, -1.0f};
+				LegacyLight->SetPosition(LightPosition);
+				LegacyLight->Select(true);
+				LegacyLightTools->_AppendObject(LegacyLight);
+				ESceneCustomOTool* LegacyShapeTools =
+					Scene->GetOTool(OBJCLASS_SHAPE);
+				MakeLegacyToolVisible(LegacyShapeTools);
+				CEditShape* LegacyShape = nullptr;
+				if (LegacyShapeTools)
+				{
+					LegacyShape = static_cast<CEditShape*>(
+						LegacyShapeTools->CreateObject(
+							nullptr,
+							"tiramisu_legacy_shape_smoke"
+						)
+					);
+					Fsphere Sphere;
+					Sphere.P.set(-0.75f, 0.0f, 0.0f);
+					Sphere.R = 0.5f;
+					LegacyShape->add_sphere(Sphere);
+					Fmatrix Box = Fidentity;
+					Box.scale(1.0f, 0.5f, 0.75f);
+					const Fvector BoxPosition = {0.75f, 0.0f, 0.0f};
+					Box.translate_over(BoxPosition);
+					LegacyShape->add_box(Box);
+					LegacyShape->SetLoadedState();
+					LegacyShape->Select(true);
+					LegacyShapeTools->_AppendObject(LegacyShape);
+				}
+				ESceneCustomOTool* LegacyPuddleTools =
+					Scene->GetOTool(OBJCLASS_PUDDLES);
+				MakeLegacyToolVisible(LegacyPuddleTools);
+				CPuddle* LegacyPuddle = nullptr;
+				if (LegacyPuddleTools)
+				{
+					LegacyPuddle = static_cast<CPuddle*>(
+						LegacyPuddleTools->CreateObject(
+							nullptr,
+							"tiramisu_legacy_puddle_smoke"
+						)
+					);
+					const Fvector PuddlePosition = {0.0f, -0.25f, 0.0f};
+					LegacyPuddle->SetPosition(PuddlePosition);
+					LegacyPuddle->SetLoadedState();
+					LegacyPuddle->Select(true);
+					LegacyPuddleTools->_AppendObject(LegacyPuddle);
+				}
+				auto* LegacyWallmarkTools =
+					smart_cast<ESceneWallmarkTool*>(
+						Scene->GetTool(OBJCLASS_WM)
+					);
+				MakeLegacyToolVisible(LegacyWallmarkTools);
+				ESceneWallmarkTool::wm_slot* LegacyWallmarkSlot = nullptr;
+				ESceneWallmarkTool::wallmark* LegacyWallmark = nullptr;
+				if (LegacyWallmarkTools)
+				{
+					LegacyWallmarkSlot = new ESceneWallmarkTool::wm_slot(
+						"effects\\wallmarkblend",
+						"textures/default/default_white"
+					);
+					LegacyWallmark = new ESceneWallmarkTool::wallmark();
+					LegacyWallmark->parent = LegacyWallmarkSlot;
+					LegacyWallmark->w = 0.8f;
+					LegacyWallmark->h = 0.8f;
+					LegacyWallmark->flags.set(
+						ESceneWallmarkTool::wallmark::flSelected,
+						true
+					);
+					LegacyWallmark->verts.resize(3);
+					LegacyWallmark->verts[0].p.set(-0.4f, -0.4f, 0.0f);
+					LegacyWallmark->verts[0].t.set(0.0f, 1.0f);
+					LegacyWallmark->verts[1].p.set(-0.4f, 0.4f, 0.0f);
+					LegacyWallmark->verts[1].t.set(0.0f, 0.0f);
+					LegacyWallmark->verts[2].p.set(0.4f, 0.4f, 0.0f);
+					LegacyWallmark->verts[2].t.set(1.0f, 0.0f);
+					LegacyWallmark->bbox.invalidate();
+					for (const FVF::LIT& Vertex : LegacyWallmark->verts)
+					{
+						LegacyWallmark->bbox.modify(Vertex.p);
+					}
+					LegacyWallmark->bbox.getcenter(
+						LegacyWallmark->bounds.P
+					);
+					LegacyWallmark->bounds.R = 0.6f;
+					LegacyWallmarkSlot->items.push_back(LegacyWallmark);
+					LegacyWallmarkTools->marks.push_back(
+						LegacyWallmarkSlot
+					);
+				}
+				ESceneCustomOTool* LegacySoundTools =
+					Scene->GetOTool(OBJCLASS_SOUND_SRC);
+				MakeLegacyToolVisible(LegacySoundTools);
+				ESoundSource* LegacySound = nullptr;
+				if (LegacySoundTools)
+				{
+					LegacySound = static_cast<ESoundSource*>(
+						LegacySoundTools->CreateObject(
+							nullptr,
+							"tiramisu_legacy_sound_smoke"
+						)
+					);
+					const Fvector SoundPosition = {0.0f, 0.5f, 0.0f};
+					LegacySound->SetPosition(SoundPosition);
+					LegacySound->SetLoadedState();
+					LegacySound->Select(true);
+					LegacySoundTools->_AppendObject(LegacySound);
+				}
+				ESceneCustomOTool* LegacySoundEnvironmentTools =
+					Scene->GetOTool(OBJCLASS_SOUND_ENV);
+				MakeLegacyToolVisible(LegacySoundEnvironmentTools);
+				ESoundEnvironment* LegacySoundEnvironment = nullptr;
+				if (LegacySoundEnvironmentTools)
+				{
+					LegacySoundEnvironment =
+						static_cast<ESoundEnvironment*>(
+							LegacySoundEnvironmentTools->CreateObject(
+								nullptr,
+								"tiramisu_legacy_sound_env_smoke"
+							)
+						);
+					LegacySoundEnvironment->SetLoadedState();
+					LegacySoundEnvironment->Select(true);
+					LegacySoundEnvironmentTools->_AppendObject(
+						LegacySoundEnvironment
+					);
+				}
+				ESceneCustomOTool* LegacyPortalTools =
+					Scene->GetOTool(OBJCLASS_PORTAL);
+				MakeLegacyToolVisible(LegacyPortalTools);
+				CPortal* LegacyPortal = nullptr;
+				if (LegacyPortalTools)
+				{
+					LegacyPortal = static_cast<CPortal*>(
+						LegacyPortalTools->CreateObject(
+							nullptr,
+							"tiramisu_legacy_portal_smoke"
+						)
+					);
+					LegacyPortal->Vertices() = {
+						{-0.65f, -0.65f, 0.25f},
+						{-0.65f, 0.65f, 0.25f},
+						{0.65f, 0.65f, 0.25f},
+						{0.65f, -0.65f, 0.25f}
+					};
+					LegacyPortal->SetLoadedState();
+					LegacyPortal->Select(true);
+					LegacyPortalTools->_AppendObject(LegacyPortal);
+				}
+				ESceneCustomOTool* LegacyGlowTools =
+					Scene->GetOTool(OBJCLASS_GLOW);
+				MakeLegacyToolVisible(LegacyGlowTools);
+				CGlow* LegacyGlow = nullptr;
+				if (LegacyGlowTools)
+				{
+					LegacyGlow = static_cast<CGlow*>(
+						LegacyGlowTools->CreateObject(
+							nullptr,
+							"tiramisu_legacy_glow_smoke"
+						)
+					);
+					LegacyGlow->m_TexName =
+						"textures/default/default_white";
+					LegacyGlow->m_fRadius = 0.35f;
+					const Fvector GlowPosition = {0.0f, 0.0f, 0.5f};
+					LegacyGlow->SetPosition(GlowPosition);
+					LegacyGlow->SetLoadedState();
+					LegacyGlow->Select(true);
+					LegacyGlowTools->_AppendObject(LegacyGlow);
+				}
+				ESceneCustomOTool* LegacySpawnTools =
+					Scene->GetOTool(OBJCLASS_SPAWNPOINT);
+				MakeLegacyToolVisible(LegacySpawnTools);
+				CSpawnPoint* LegacySpawn = nullptr;
+				CSpawnPoint* LegacyIdleSpawn = nullptr;
+				if (LegacySpawnTools)
+				{
+					LegacySpawn = static_cast<CSpawnPoint*>(
+						LegacySpawnTools->CreateObject(
+							const_cast<char*>(RPOINT_CHOOSE_NAME),
+							"tiramisu_legacy_spawn_smoke"
+						)
+					);
+					const Fvector SpawnPosition = {0.0f, 0.0f, 0.75f};
+					static_cast<CCustomObject*>(LegacySpawn)->SetPosition(
+						SpawnPosition
+					);
+					LegacySpawn->SetLoadedState();
+					LegacySpawn->Select(true);
+					LegacySpawnTools->_AppendObject(LegacySpawn);
+
+					LegacyIdleSpawn = static_cast<CSpawnPoint*>(
+						LegacySpawnTools->CreateObject(
+							const_cast<char*>("campfire"),
+							"tiramisu_legacy_idle_spawn_smoke"
+						)
+					);
+					const Fvector IdleSpawnPosition = {
+						0.5f,
+						0.0f,
+						0.75f
+					};
+					static_cast<CCustomObject*>(LegacyIdleSpawn)->SetPosition(
+						IdleSpawnPosition
+					);
+					if (LegacyShapeTools)
+					{
+						auto* AttachedShape = static_cast<CEditShape*>(
+							LegacyShapeTools->CreateObject(
+								nullptr,
+								"tiramisu_spawn_attached_shape_smoke"
+							)
+						);
+						Fsphere AttachedSphere;
+						AttachedSphere.identity();
+						AttachedSphere.R = 0.4f;
+						AttachedShape->add_sphere(AttachedSphere);
+						static_cast<CCustomObject*>(AttachedShape)->SetPosition(
+							IdleSpawnPosition
+						);
+						AttachedShape->SetLoadedState();
+						LegacyShapeTools->_AppendObject(AttachedShape);
+						if (!LegacyIdleSpawn->AttachObject(AttachedShape))
+						{
+							LegacyShapeTools->_RemoveObject(AttachedShape);
+							xr_delete(AttachedShape);
+						}
+					}
+					LegacyIdleSpawn->SetLoadedState();
+					LegacySpawnTools->_AppendObject(LegacyIdleSpawn);
+				}
+				auto* LegacyAiMap = smart_cast<ESceneAIMapTool*>(
+					Scene->GetTool(OBJCLASS_AIMAP)
+				);
+				MakeLegacyToolVisible(LegacyAiMap);
+				SAINode* LegacyAiNodeA = nullptr;
+				SAINode* LegacyAiNodeB = nullptr;
+				if (LegacyAiMap)
+				{
+					LegacyAiNodeA = new SAINode();
+					LegacyAiNodeB = new SAINode();
+					LegacyAiNodeA->Pos.set(-0.25f, 0.0f, 0.0f);
+					LegacyAiNodeB->Pos.set(0.25f, 0.0f, 0.0f);
+					const Fvector AiNormal = {0.0f, 1.0f, 0.0f};
+					LegacyAiNodeA->Plane.build(
+						LegacyAiNodeA->Pos,
+						AiNormal
+					);
+					LegacyAiNodeB->Plane.build(
+						LegacyAiNodeB->Pos,
+						AiNormal
+					);
+					LegacyAiNodeA->n3 = LegacyAiNodeB;
+					LegacyAiNodeB->n1 = LegacyAiNodeA;
+					LegacyAiNodeA->flags.set(
+						SAINode::flSelected,
+						true
+					);
+					LegacyAiMap->Nodes().push_back(LegacyAiNodeA);
+					LegacyAiMap->Nodes().push_back(LegacyAiNodeB);
+				}
+				ESceneCustomOTool* LegacyWayTools =
+					Scene->GetOTool(OBJCLASS_WAY);
+				MakeLegacyToolVisible(LegacyWayTools);
+				CWayObject* LegacyWay = nullptr;
+				if (LegacyWayTools)
+				{
+					LegacyWay = static_cast<CWayObject*>(
+						LegacyWayTools->CreateObject(
+							nullptr,
+							"tiramisu_legacy_way_smoke"
+						)
+					);
+					CWayPoint* FirstWayPoint =
+						LegacyWay->WayPoints().front();
+					FirstWayPoint->MoveTo({-0.5f, 0.0f, 0.0f});
+					CWayPoint* SecondWayPoint =
+						LegacyWay->AppendWayPoint();
+					SecondWayPoint->MoveTo({0.5f, 0.0f, 0.0f});
+					FirstWayPoint->AddDoubleLink(SecondWayPoint);
+					LegacyWay->SetLoadedState();
+					LegacyWay->Select(true);
+					LegacyWayTools->_AppendObject(LegacyWay);
+				}
+				ESceneCustomOTool* LegacyGroupTools =
+					Scene->GetOTool(OBJCLASS_GROUP);
+				MakeLegacyToolVisible(LegacyGroupTools);
+				CGroupObject* LegacyGroup = nullptr;
+				if (LegacyGroupTools)
+				{
+					LegacyGroup = static_cast<CGroupObject*>(
+						LegacyGroupTools->CreateObject(
+							nullptr,
+							"tiramisu_legacy_group_smoke"
+						)
+					);
+					LegacyGroup->SetLoadedState();
+					LegacyGroup->Select(true);
+					LegacyGroupTools->_AppendObject(LegacyGroup);
+				}
+				ESceneCustomOTool* LegacyTerrainTools =
+					Scene->GetOTool(OBJCLASS_TERRAIN);
+				MakeLegacyToolVisible(LegacyTerrainTools);
+				CTerrain* LegacyTerrain = nullptr;
+				if (LegacyTerrainTools)
+				{
+					LegacyTerrain = static_cast<CTerrain*>(
+						LegacyTerrainTools->CreateObject(
+							nullptr,
+							"tiramisu_legacy_terrain_smoke"
+						)
+					);
+					XRay::Editor::HeightmapUtils::SHeightMap HeightMap;
+					HeightMap.Width = 2;
+					HeightMap.Height = 2;
+					HeightMap.Data = xr_alloc<float>(4);
+					HeightMap.Data[0] = 0.20f;
+					HeightMap.Data[1] = 0.25f;
+					HeightMap.Data[2] = 0.30f;
+					HeightMap.Data[3] = 0.35f;
+					HeightMap.MinH = 0.20f;
+					HeightMap.MaxH = 0.35f;
+					XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(
+						HeightMap,
+						LegacyTerrain->GetReference(),
+						1
+					);
+					for (CSurface* Surface :
+						 LegacyTerrain->GetReference()->m_Surfaces)
+					{
+						Surface->SetShader("default");
+						Surface->SetTexture(
+							"textures/default/default_white"
+						);
+					}
+					LegacyTerrain->SetLoadedState();
+					static_cast<CCustomObject*>(LegacyTerrain)->Select(true);
+					LegacyTerrainTools->ESceneCustomOTool::_AppendObject(
+						LegacyTerrain
+					);
+				}
+				ESceneCustomOTool* LegacyFogTools =
+					Scene->GetOTool(OBJCLASS_FOG_VOL);
+				MakeLegacyToolVisible(LegacyFogTools);
+				EFogVolume* LegacyFogEmitter = nullptr;
+				EFogVolume* LegacyFogOcclusion = nullptr;
+				if (LegacyFogTools)
+				{
+					LegacyFogEmitter = static_cast<EFogVolume*>(
+						LegacyFogTools->CreateObject(
+							nullptr,
+							"tiramisu_legacy_fog_emitter_smoke"
+						)
+					);
+					const Fvector EmitterPosition = {-1.0f, 0.0f, 0.0f};
+					LegacyFogEmitter->SetPosition(EmitterPosition);
+					LegacyFogEmitter->SetLoadedState();
+					static_cast<CCustomObject*>(LegacyFogEmitter)->Select(true);
+					LegacyFogTools->_AppendObject(LegacyFogEmitter);
+
+					LegacyFogOcclusion = static_cast<EFogVolume*>(
+						LegacyFogTools->CreateObject(
+							nullptr,
+							"tiramisu_legacy_fog_occlusion_smoke"
+						)
+					);
+					LegacyFogOcclusion->m_volumeType = fvOcclusion;
+					LegacyFogOcclusion->SetDrawColor(
+						0x2050a050u,
+						0xff202020u
+					);
+					const Fvector OcclusionPosition = {1.0f, 0.0f, 0.0f};
+					LegacyFogOcclusion->SetPosition(OcclusionPosition);
+					LegacyFogOcclusion->SetLoadedState();
+					LegacyFogTools->_AppendObject(LegacyFogOcclusion);
+				}
+				auto* LegacyDetails = static_cast<EDetailManager*>(
+					Scene->GetTool(OBJCLASS_DO)
+				);
+				MakeLegacyToolVisible(LegacyDetails);
+				bool LegacyDetailPrepared = false;
+				bool LegacyDetailBasePrepared = false;
+				CSceneObject* LegacyDetailBaseSnap = nullptr;
+				if (LegacyDetails)
+				{
+					LegacyDetails->SetObjectsDrawEnabled(true);
+					LegacyDetails->SetSlotBoxesDrawEnabled(true);
+					EDetail* Detail = LegacyDetails->AppendDO(
+						"detail\\det_hvosh"
+					);
+					if (Detail)
+					{
+						LegacyDetails->dtH.object_count = 1;
+						LegacyDetails->dtH.offs_x = 0;
+						LegacyDetails->dtH.offs_z = 0;
+						LegacyDetails->dtH.size_x = 1;
+						LegacyDetails->dtH.size_z = 1;
+						LegacyDetails->dtSlots = xr_alloc<DetailSlot>(1);
+						ZeroMemory(
+							LegacyDetails->dtSlots,
+							sizeof(DetailSlot)
+						);
+						LegacyDetails->dtSlots[0].w_y(-0.5f, 1.0f);
+						for (u32 Part = 0; Part < dm_obj_in_slot; ++Part)
+						{
+							LegacyDetails->dtSlots[0].w_id(
+								Part,
+								DetailSlot::ID_Empty
+							);
+						}
+						LegacyDetails->m_Selected.assign(1, 1);
+						const Fvector& CameraPosition =
+							UI->CurrentView().m_Camera.GetPosition();
+						LegacyDetails->cache_Update(CameraPosition);
+						if (!LegacyDetails->cache_pool.empty())
+						{
+							CDetailManager::Slot& Slot =
+								LegacyDetails->cache_pool.front();
+							Slot.empty = 0;
+							Slot.type = CDetailManager::stReady;
+							Slot.G[0].id = 0;
+							CDetail::SlotItem* Item =
+								LegacyDetails->items_pool.create();
+							Item->quat.set(0.0f, 0.0f, 0.0f);
+							Item->scale = 0.75f;
+							Item->pos.set(CameraPosition);
+							Item->pos.mad(
+								UI->CurrentView().m_Camera.GetDirection(),
+								2.0f
+							);
+							Item->c_hemi = 1.0f;
+							Slot.G[0].items[0].push_back(Item);
+							LegacyDetailPrepared = true;
+						}
+
+						LegacyDetailBaseSnap = new CSceneObject(
+							nullptr,
+							"tiramisu_detail_base_snap_smoke"
+						);
+						if (LegacyDetailBaseSnap->SetReference(
+								"detail\\det_hvosh"
+							) &&
+							LegacyDetails->m_Base.LoadImage(
+								"detail\\detail_asfalt_det1"
+							))
+						{
+							Fvector SnapPosition = CameraPosition;
+							SnapPosition.mad(
+								UI->CurrentView().m_Camera.GetDirection(),
+								2.0f
+							);
+							LegacyDetailBaseSnap->SetPosition(SnapPosition);
+							LegacyDetailBaseSnap->SetLoadedState();
+							Fbox SnapBox;
+							if (LegacyDetailBaseSnap->GetBox(SnapBox))
+							{
+								LegacyDetails->GetSnapList()->push_back(
+									LegacyDetailBaseSnap
+								);
+								LegacyDetails->m_Base.CreateRMFromObjects(
+									SnapBox,
+									*LegacyDetails->GetSnapList()
+								);
+								LegacyDetails->SetBaseTextureDrawEnabled(
+									true,
+									true
+								);
+								LegacyDetailBasePrepared =
+									!LegacyDetails->m_Base
+										.GetRenderMesh()
+										.empty();
+							}
+						}
+					}
+				}
+				if (!LegacyDetailPrepared || !LegacyDetailBasePrepared)
+				{
+					Msg(
+						"! Legacy detail bridge smoke setup failed: "
+						"instances=%u, base=%u",
+						LegacyDetailPrepared ? 1u : 0u,
+						LegacyDetailBasePrepared ? 1u : 0u
+					);
+				}
+				else
+				{
+					Msg(
+						"* Legacy detail bridge smoke prepared: "
+						"visible=%u, render-data=%u, task-finished=%u",
+						LegacyDetails->IsVisible() ? 1u : 0u,
+						LegacyDetails->HasTiramisuRenderData() ? 1u : 0u,
+						LegacyDetails->task_finished.load() ? 1u : 0u
+					);
+				}
+				EditorNriBackend->ResizeViewport(
+					SmokeLegacyLightViewportId,
+					320,
+					240
+				);
+				const bool LegacyLightSubmitted = LegacyDetailPrepared &&
+					LegacyDetailBasePrepared &&
+					SubmitEditorSceneToEditorRenderer(
+						SmokeLegacyLightViewportId
+					);
+				if (LegacyDetails)
+				{
+					LegacyDetails->Clear();
+				}
+				xr_delete(LegacyDetailBaseSnap);
+				LegacyLightTools->_RemoveObject(LegacyLight);
+				xr_delete(LegacyLight);
+				if (LegacyShape)
+				{
+					LegacyShapeTools->_RemoveObject(LegacyShape);
+					xr_delete(LegacyShape);
+				}
+				if (LegacyPuddle)
+				{
+					LegacyPuddleTools->_RemoveObject(LegacyPuddle);
+					xr_delete(LegacyPuddle);
+				}
+				if (LegacyWallmarkSlot)
+				{
+					std::erase(
+						LegacyWallmarkTools->marks,
+						LegacyWallmarkSlot
+					);
+					LegacyWallmarkSlot->items.clear();
+					xr_delete(LegacyWallmark);
+					xr_delete(LegacyWallmarkSlot);
+				}
+				if (LegacySound)
+				{
+					LegacySoundTools->_RemoveObject(LegacySound);
+					xr_delete(LegacySound);
+				}
+				if (LegacySoundEnvironment)
+				{
+					LegacySoundEnvironmentTools->_RemoveObject(
+						LegacySoundEnvironment
+					);
+					xr_delete(LegacySoundEnvironment);
+				}
+				if (LegacyPortal)
+				{
+					LegacyPortalTools->_RemoveObject(LegacyPortal);
+					xr_delete(LegacyPortal);
+				}
+				if (LegacyGlow)
+				{
+					LegacyGlowTools->_RemoveObject(LegacyGlow);
+					xr_delete(LegacyGlow);
+				}
+				if (LegacySpawn)
+				{
+					LegacySpawnTools->_RemoveObject(LegacySpawn);
+					xr_delete(LegacySpawn);
+				}
+				if (LegacyIdleSpawn)
+				{
+					LegacySpawnTools->_RemoveObject(LegacyIdleSpawn);
+					xr_delete(LegacyIdleSpawn);
+				}
+				if (LegacyAiMap && LegacyAiNodeA && LegacyAiNodeB)
+				{
+					LegacyAiMap->Nodes().pop_back();
+					LegacyAiMap->Nodes().pop_back();
+					xr_delete(LegacyAiNodeA);
+					xr_delete(LegacyAiNodeB);
+				}
+				if (LegacyWay)
+				{
+					LegacyWayTools->_RemoveObject(LegacyWay);
+					xr_delete(LegacyWay);
+				}
+				if (LegacyGroup)
+				{
+					LegacyGroupTools->_RemoveObject(LegacyGroup);
+					xr_delete(LegacyGroup);
+				}
+				if (LegacyFogEmitter)
+				{
+					LegacyFogTools->_RemoveObject(LegacyFogEmitter);
+					xr_delete(LegacyFogEmitter);
+				}
+				if (LegacyFogOcclusion)
+				{
+					LegacyFogTools->_RemoveObject(LegacyFogOcclusion);
+					xr_delete(LegacyFogOcclusion);
+				}
+				if (LegacyTerrain)
+				{
+					LegacyTerrainTools->ESceneCustomOTool::_RemoveObject(
+						LegacyTerrain
+					);
+					xr_delete(LegacyTerrain);
+				}
+				for (const auto& [Tool, WasVisible] :
+					 LegacyToolVisibility)
+				{
+					Tool->m_EditFlags.set(
+						ESceneToolBase::flVisible,
+						WasVisible
+					);
+				}
+				if (!LegacyLightSubmitted)
+				{
+					Msg("! Legacy light bridge smoke submit failed");
+					ProcessExitCode = 6;
+					GContentView->Destroy();
+					NeedExit = true;
+				}
+			}
+			FEditorParticleInstance PreviewParticle = ParticleInstances[0];
+			PreviewParticle.ObjectId = {0x7072657669657770ull};
+			PreviewParticle.LocalToWorld = {};
+			PreviewParticle.LocalToWorld[0] = 1.0f;
+			PreviewParticle.LocalToWorld[5] = 1.0f;
+			PreviewParticle.LocalToWorld[10] = 1.0f;
+			PreviewParticle.LocalToWorld[15] = 1.0f;
+			FEditorViewportSceneSnapshot PreviewSnapshot;
+			PreviewSnapshot.Camera = Snapshot.Camera;
+			PreviewSnapshot.ParticleInstances =
+				xr_span(&PreviewParticle, 1);
+			PreviewSnapshot.DebugDrawRevision = 1;
+			PreviewSnapshot.Revision = 1;
+			EditorNriBackend->ResizeViewport(
+				SmokeParticlePreviewViewportId,
+				384,
+				384
+			);
+			if (!EditorNriBackend->SubmitViewportScene(
+					SmokeParticlePreviewViewportId,
+					PreviewSnapshot
+				))
+			{
+				Msg("! Particle preview smoke setup failed: %.*s",
+					static_cast<int>(
+						EditorNriBackend->GetLastDiagnostic().size()
+					),
 					EditorNriBackend->GetLastDiagnostic().data());
 				ProcessExitCode = 6;
 				GContentView->Destroy();
@@ -690,8 +1632,95 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		NeedExit = true;
 	}
 
+	if (ZatonRuntimeProfileRequested && !NeedExit)
+	{
+		if (!HiddenTestWindow ||
+			!EditorNriConfig.DeterministicTest.Enabled || !EditorNriBackend)
+		{
+			Msg(
+				"! Zaton runtime profile requires Tiramisu, -rdbg, "
+				"-render-deterministic and -editor-test-hidden"
+			);
+			ProcessExitCode = 13;
+			GContentView->Destroy();
+			NeedExit = true;
+		}
+		else
+		{
+			const std::filesystem::path ZatonPath =
+				std::filesystem::absolute(
+					"rawdata/levels/!FinalSP/zaton.level"
+				);
+			if (!std::filesystem::exists(ZatonPath) ||
+				!ExecCommand(COMMAND_LOAD, xr_string(ZatonPath.string().c_str())))
+			{
+				Msg("! Zaton runtime profile could not start level loading");
+				ProcessExitCode = 14;
+				GContentView->Destroy();
+				NeedExit = true;
+			}
+			else
+			{
+				LUI->LoaderEvent.wait();
+				const std::filesystem::path ProfileDirectory =
+					std::filesystem::absolute(
+						"build/test-results/tiramisu/profiles"
+					);
+				std::filesystem::create_directories(ProfileDirectory);
+				const char* BackendName =
+					EditorNriConfig.Api ==
+						ETiramisuEditorGraphicsApi::D3D12
+					? "d3d12"
+					: "vulkan";
+				xr_string CaptureName =
+					"zaton-runtime-" + xr_string(BackendName);
+#if defined(IXRAY_ASAN_BUILD)
+				CaptureName += "-asan";
+#endif
+				const std::filesystem::path ProfilePath =
+					ProfileDirectory /
+					(CaptureName + ".opt");
+				ZatonRuntimeProfilePath = ProfilePath.string().c_str();
+				constexpr size_t WarmupFrameCount = 60;
+				constexpr size_t CaptureFrameCount = 60;
+				ZatonRuntimeWarmupFrames = WarmupFrameCount;
+				ZatonRuntimeFrameMilliseconds.reserve(CaptureFrameCount);
+				ZatonRuntimeProfileActive = true;
+				Msg(
+					"* Zaton runtime profile: level loaded, warming up %zu "
+					"frames before a %zu-frame capture (%s)",
+					WarmupFrameCount,
+					CaptureFrameCount,
+					BackendName
+				);
+			}
+		}
+	}
+
+	const bool RenderDocSmokeRequested =
+		Core.ParamsData.test(ECoreParams::renderdoc) &&
+		HasRenderCommandLineFlag(
+			Core.Params ? Core.Params : "", "-renderdoc-capture"
+		) &&
+		(MaterialPreviewSmokeRequested || ViewportMaterialSmokeRequested);
+	if (RenderDocSmokeRequested && !NeedExit)
+	{
+		if (!xrRenderDoc::IsAvailable())
+		{
+			Msg("! RenderDoc smoke cannot access the in-application API");
+			ProcessExitCode = 12;
+			GContentView->Destroy();
+			NeedExit = true;
+		}
+		else
+		{
+			Msg("* RenderDoc smoke: explicit frame capture requested");
+		}
+	}
+
 	while (!NeedExit)
 	{
+		PROF_FRAME("LevelEditor Zaton Runtime");
 		SDL_Event Event;
 		while (SDL_PollEvent(&Event))
 		{
@@ -833,9 +1862,81 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		if (ViewportMaterialSmokeRequested && EditorNriBackend)
 		{
 			EditorNriBackend->CaptureViewport(SmokeSceneViewportId);
+			EditorNriBackend->CaptureViewport(
+				SmokeParticlePreviewViewportId
+			);
+			EditorNriBackend->CaptureViewport(
+				SmokeLegacyLightViewportId
+			);
 		}
 
+		const auto RuntimeFrameStart = std::chrono::steady_clock::now();
 		MainForm->Frame();
+		if (ZatonRuntimeProfileActive)
+		{
+			if (ZatonRuntimeWarmupFrames != 0)
+			{
+				--ZatonRuntimeWarmupFrames;
+				if (ZatonRuntimeWarmupFrames == 0)
+				{
+					PROF_START_CAPTURE();
+					ZatonRuntimeCaptureStarted = true;
+					Msg(
+						"* Zaton runtime profile: warmup complete, "
+						"capture started"
+					);
+				}
+				continue;
+			}
+			const double FrameMilliseconds =
+				static_cast<double>(
+					std::chrono::duration_cast<std::chrono::microseconds>(
+						std::chrono::steady_clock::now() - RuntimeFrameStart
+					).count()
+				) / 1000.0;
+			ZatonRuntimeFrameMilliseconds.push_back(FrameMilliseconds);
+			const size_t FrameNumber =
+				ZatonRuntimeFrameMilliseconds.size();
+			if (FrameNumber <= 3 || FrameNumber % 5 == 0)
+			{
+				Msg(
+					"* Zaton runtime profile: frame=%zu, cpu=%.2f ms",
+					FrameNumber,
+					FrameMilliseconds
+				);
+			}
+			if (FrameNumber >= 60)
+			{
+				if (ZatonRuntimeCaptureStarted)
+				{
+					PROF_STOP_CAPTURE();
+					PROF_SAVE_CAPTURE(
+						ZatonRuntimeProfilePath.c_str()
+					);
+				}
+				xr_vector<double> Sorted = ZatonRuntimeFrameMilliseconds;
+				std::ranges::sort(Sorted);
+				const double Median = Sorted[Sorted.size() / 2];
+				const size_t P95Index = std::min(
+					Sorted.size() - 1,
+					(Sorted.size() * 95 + 99) / 100 - 1
+				);
+				Msg(
+					"* Zaton runtime profile: success "
+					"(frames=%zu, first=%.2f ms, p50=%.2f ms, "
+					"p95=%.2f ms, max=%.2f ms, capture=%s)",
+					Sorted.size(),
+					ZatonRuntimeFrameMilliseconds.front(),
+					Median,
+					Sorted[P95Index],
+					Sorted.back(),
+					ZatonRuntimeProfilePath.c_str()
+				);
+				ZatonRuntimeProfileActive = false;
+				GContentView->Destroy();
+				NeedExit = true;
+			}
+		}
 
 		if (SmokePreviewHandle.IsValid())
 		{
@@ -899,8 +2000,33 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				);
 			const FEditorViewportSurface Surface =
 				EditorNriBackend->GetViewportSurface(SmokeSceneViewportId);
+			const FEditorViewportMaterialStatus ParticlePreviewStatus =
+				EditorNriBackend->GetViewportMaterialStatus(
+					SmokeParticlePreviewViewportId,
+					SmokeSceneParticleMaterialSlot
+				);
+			const FEditorViewportMaterialStatus DecalStatus =
+				EditorNriBackend->GetViewportMaterialStatus(
+					SmokeSceneViewportId,
+					SmokeSceneDecalMaterialSlot
+				);
+			const FEditorViewportSurface ParticlePreviewSurface =
+				EditorNriBackend->GetViewportSurface(
+					SmokeParticlePreviewViewportId
+				);
+			const FEditorViewportMaterialStatus LegacyLightStatus =
+				EditorNriBackend->GetViewportMaterialStatus(
+					SmokeLegacyLightViewportId,
+					SmokeSceneMaterialSlot
+				);
+			const FEditorViewportSurface LegacyLightSurface =
+				EditorNriBackend->GetViewportSurface(
+					SmokeLegacyLightViewportId
+				);
 			const FRenderStatisticsSnapshot RendererStatistics =
 				EditorNriBackend->GetRenderStatistics();
+			const FEditorRenderLifecycleStatus LifecycleStatus =
+				EditorNriBackend->GetRenderLifecycleStatus();
 			const bool RendererStatisticsReady =
 				RendererStatistics.Revision != 0 &&
 				RendererStatistics.Frame.PassCount >= 2 &&
@@ -918,55 +2044,284 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			const bool ParticleMaterialFailed = ParticleStatus.RequestedRevision != 0 &&
 												ParticleStatus.AcceptedRevision < ParticleStatus.RequestedRevision &&
 												!ParticleStatus.Diagnostic.empty();
+			const bool DecalMaterialFailed =
+				DecalStatus.RequestedRevision != 0 &&
+				DecalStatus.AcceptedRevision <
+					DecalStatus.RequestedRevision &&
+				!DecalStatus.Diagnostic.empty();
 			const bool CloneMaterialFailed = CloneStatus.RequestedRevision != 0 &&
 											 CloneStatus.AcceptedRevision < CloneStatus.RequestedRevision &&
 											 !CloneStatus.Diagnostic.empty();
 			if (SurfaceMaterialFailed || SpriteMaterialFailed ||
-				ParticleMaterialFailed || CloneMaterialFailed || TimedOut)
+				ParticleMaterialFailed || DecalMaterialFailed ||
+				CloneMaterialFailed || TimedOut)
 			{
-				const xr_string& MaterialDiagnostic = SurfaceMaterialFailed
-														  ? Status.Diagnostic
-													  : SpriteMaterialFailed
-														  ? SpriteStatus.Diagnostic
-													  : ParticleMaterialFailed
-														  ? ParticleStatus.Diagnostic
-														  : CloneStatus.Diagnostic;
-				if (MaterialDiagnostic.empty())
+				const xr_string* MaterialDiagnostic =
+					&CloneStatus.Diagnostic;
+				if (SurfaceMaterialFailed)
 				{
-					Msg("! Viewport material smoke timed out");
+					MaterialDiagnostic = &Status.Diagnostic;
+				}
+				else if (SpriteMaterialFailed)
+				{
+					MaterialDiagnostic = &SpriteStatus.Diagnostic;
+				}
+				else if (ParticleMaterialFailed)
+				{
+					MaterialDiagnostic = &ParticleStatus.Diagnostic;
+				}
+				else if (DecalMaterialFailed)
+				{
+					MaterialDiagnostic = &DecalStatus.Diagnostic;
+				}
+				if (MaterialDiagnostic->empty())
+				{
+					Msg(
+						"! Viewport material smoke timed out: "
+						"main=%u/%u/%u, legacy=%u/%u/%u/%u, "
+						"legacy-particles=%u/%u/%u, "
+						"legacy-meta=%u/%u/%u/%u/%u, legacy-ready=%u",
+						Status.DrawCount,
+						Status.SelectionDrawCount,
+						Status.PendingModelLoadCount,
+						LegacyLightStatus.DrawCount,
+						LegacyLightStatus.DebugLineCount,
+						LegacyLightStatus.DebugTriangleCount,
+						LegacyLightStatus.OverlayTextCount,
+						LegacyLightStatus.ParticleInstanceCount,
+						LegacyLightStatus.SimulatedParticleCount,
+						LegacyLightStatus.ParticleBillboardDrawCount,
+						LegacyLightStatus.SelectionDrawCount,
+						LegacyLightStatus.LightCount,
+						LegacyLightStatus.ParticleGroupInstanceCount,
+						LegacyLightStatus.ParticleBillboardReady ? 1u : 0u,
+						LegacyLightSurface.IsValid() ? 1u : 0u,
+						LegacyLightStatus.Ready ? 1u : 0u
+					);
 				}
 				else
 				{
 					Msg("! Viewport material smoke failed: %s",
-						MaterialDiagnostic.c_str());
+						MaterialDiagnostic->c_str());
 				}
 				ProcessExitCode = 7;
 				GContentView->Destroy();
 				NeedExit = true;
 			}
-			else if (Status.Ready && SpriteStatus.Ready && ParticleStatus.Ready &&
-					 CloneStatus.Ready &&
+			else if (Status.Ready && SpriteStatus.Ready &&
+					 ParticleStatus.Ready && DecalStatus.Ready &&
+					 CloneStatus.Ready && ParticlePreviewStatus.Ready &&
 					 CloneStatus.PipelineKey == Status.PipelineKey &&
 					 Status.SharedPipelineReferenceCount >=
 						 SmokeSceneCloneMaterialCount + 1 &&
-					 Surface.IsValid() && Status.DrawCount == 3 &&
+					 Surface.IsValid() &&
+					 ParticlePreviewSurface.IsValid() &&
+					 LegacyLightSurface.IsValid() &&
+					 LegacyLightStatus.LightCount == 2 &&
+					 LegacyLightStatus.DrawCount == 6 &&
+					 LegacyLightStatus.SelectionDrawCount == 2 &&
+					 LegacyLightStatus.DebugOverlayReady &&
+					 LegacyLightStatus.DebugLineCount >= 456 &&
+					 LegacyLightStatus.DebugTriangleCount >= 432 &&
+					 LegacyLightStatus.OverlayTextCount >= 4 &&
+					 LegacyLightStatus.ParticleInstanceCount == 1 &&
+					 LegacyLightStatus.ParticleGroupInstanceCount == 1 &&
+					 LegacyLightStatus.SimulatedParticleCount != 0 &&
+					 LegacyLightStatus.ParticleBillboardReady &&
+					 LegacyLightStatus.ParticleBillboardDrawCount == 1 &&
+					 LegacyLightStatus.DecalReady &&
+					 LegacyLightStatus.DecalInstanceCount == 1 &&
+					 LegacyLightStatus.DecalDrawCount == 1 &&
+					 LegacyLightStatus.DecalCulledCount == 0 &&
+					 Status.ModelInstanceCount == 1 &&
+					 Status.ModelDrawCount != 0 &&
+					 Status.PendingModelLoadCount == 0 &&
+					 Status.ModelPickingReady &&
+					 Status.ModelAnimationReady &&
+					 Status.ModelSkinningReady &&
+					 Status.AnimatedModelCount == 1 &&
+					 Status.SkinnedModelCount == 1 &&
+					 Status.GpuSkinnedModelCount == 1 &&
+					 Status.ModelPaletteChanged &&
+					 Status.ModelPaletteMatrixCount != 0 &&
+					 Status.UploadedSkinningMatrixCount ==
+						 Status.ModelPaletteMatrixCount * 2 &&
+					 ParticlePreviewStatus.ParticleInstanceCount == 1 &&
+					 ParticlePreviewStatus.ParticleGroupInstanceCount == 0 &&
+					 ParticlePreviewStatus.SimulatedParticleCount != 0 &&
+					 ParticlePreviewStatus.ParticleBillboardReady &&
+					 ParticlePreviewStatus.ParticleBillboardDrawCount == 1 &&
+					 ParticlePreviewStatus.DrawCount == 1 &&
+					 Status.DrawCount == 3 + Status.ModelDrawCount +
+						 Status.ParticleBillboardDrawCount +
+						 Status.DecalDrawCount &&
+					 Status.DecalReady &&
+					 Status.DecalInstanceCount == 2 &&
+					 Status.DecalDrawCount == 1 &&
+					 Status.DecalCulledCount == 1 &&
 					 Status.SelectionOverlayReady &&
 					 Status.SelectionDrawCount == 3 &&
 					 Status.DebugOverlayReady &&
-					 Status.DebugLineCount == 1 &&
+					 Status.DebugLineCount ==
+						 1 + Status.ParticleInstanceCount * 3 +
+							 Status.SimulatedParticleCount * 3 &&
 					 Status.DebugTriangleCount == 1 &&
 					 Status.ScreenOverlayReady &&
 					 Status.OverlayLineCount == 1 &&
 					 Status.OverlayTriangleCount == 1 &&
 					 Status.OverlayTextCount == 1 &&
 					 Status.LightCount == 2 &&
+					 Status.ParticleInstanceCount == 2 &&
+					 Status.ParticleGroupInstanceCount == 1 &&
+					 Status.ParticleChildInstanceCount != 0 &&
+					 Status.SimulatedParticleCount != 0 &&
+					 Status.ParticleBillboardReady &&
+					 Status.ParticleBillboardCount >= 2 &&
+					 Status.ParticleBillboardDrawCount >= 3 &&
 					 RendererStatisticsReady &&
 					 (!ViewportMaterialReloadSmokeRequested ||
 					  (Status.ReloadCount >= 1 && SpriteStatus.ReloadCount >= 1 &&
 					   ParticleStatus.ReloadCount >= 1 &&
+					   DecalStatus.ReloadCount >= 1 &&
 					   CloneStatus.ReloadCount >= 1)))
 			{
-				Msg("* Viewport material smoke: success (%ux%u, draws=%u, selection=%u, debug-lines=%u, debug-triangles=%u, overlay-lines=%u, overlay-triangles=%u, overlay-text=%u, lights=%u, pipeline=%llu, shared-pipeline-refs=%u, sprite-pipeline=%llu, particle-pipeline=%llu, revision=%llu, reloads=%u/%u/%u/%u, stats-revision=%llu, passes=%u, gpu-draws=%u, triangles=%llu, buffers=%u/%llu, textures=%u/%llu, pipelines=%u, descriptors=%u, deferred=%u, cpu-ns=%llu, gpu-timing=%s)",
+				if (EditorResizeSmokeRequested)
+				{
+					if (!EditorResizeSmokeTriggered)
+					{
+						if (!LifecycleStatus.PresentationReady ||
+							!LifecycleStatus.DedicatedRenderThreadActive ||
+							LifecycleStatus.RenderExecutionThreadId == 0 ||
+							LifecycleStatus.SwapchainRevision == 0 ||
+							LifecycleStatus.PresentedFrameCount == 0 ||
+							Surface.Revision == 0)
+						{
+							continue;
+						}
+
+						ResizeSmokeSurfaceRevision = Surface.Revision;
+						ResizeSmokeSwapchainRevision =
+							LifecycleStatus.SwapchainRevision;
+						ResizeSmokePresentedFrameCount =
+							LifecycleStatus.PresentedFrameCount;
+						ResizeSmokeViewportResourceRevision =
+							LifecycleStatus.ViewportResourceRevision;
+						ResizeSmokeTextureRedirectCount =
+							LifecycleStatus.ImGuiTextureRedirectCount;
+						ResizeSmokeStatisticsRevision =
+							RendererStatistics.Revision;
+						ResizeSmokeMaterialRevision =
+							Status.AcceptedRevision;
+						ResizeSmokePipelineKey = Status.PipelineKey;
+
+						EditorNriBackend->ResizeViewport(
+							SmokeSceneViewportId,
+							ResizeSmokeViewportWidth,
+							ResizeSmokeViewportHeight
+						);
+						int WindowWidth = 0;
+						int WindowHeight = 0;
+						SDL_GetWindowSize(
+							g_AppInfo.Window,
+							&WindowWidth,
+							&WindowHeight
+						);
+						const int TargetWindowWidth =
+							WindowWidth > 800 ? WindowWidth - 160
+											  : WindowWidth + 160;
+						const int TargetWindowHeight =
+							WindowHeight > 600 ? WindowHeight - 96
+											   : WindowHeight + 96;
+						SDL_SetWindowSize(
+							g_AppInfo.Window,
+							TargetWindowWidth,
+							TargetWindowHeight
+						);
+						EditorResizeSmokeTriggered = true;
+						Msg(
+							"* Editor resize smoke: requested window=%dx%d, "
+							"viewport=%ux%u",
+							TargetWindowWidth,
+							TargetWindowHeight,
+							ResizeSmokeViewportWidth,
+							ResizeSmokeViewportHeight
+						);
+						continue;
+					}
+
+					const bool ResizeReady =
+						Surface.Width == ResizeSmokeViewportWidth &&
+						Surface.Height == ResizeSmokeViewportHeight &&
+						Surface.Revision > ResizeSmokeSurfaceRevision &&
+						LifecycleStatus.PresentationReady &&
+						LifecycleStatus.DedicatedRenderThreadActive &&
+						LifecycleStatus.RenderExecutionThreadId != 0 &&
+						LifecycleStatus.SwapchainRevision >
+							ResizeSmokeSwapchainRevision &&
+						LifecycleStatus.PresentedFrameCount >
+							ResizeSmokePresentedFrameCount &&
+						LifecycleStatus.ViewportResourceRevision >
+							ResizeSmokeViewportResourceRevision &&
+						LifecycleStatus.ImGuiTextureRedirectCount >
+							ResizeSmokeTextureRedirectCount &&
+						RendererStatistics.Revision >
+							ResizeSmokeStatisticsRevision &&
+						Status.AcceptedRevision ==
+							ResizeSmokeMaterialRevision &&
+						Status.PipelineKey == ResizeSmokePipelineKey;
+					if (!ResizeReady)
+					{
+						continue;
+					}
+					Msg(
+						"* Editor resize smoke: success "
+						"(surface=%ux%u/r%llu, swapchain-r=%llu, "
+						"presented=%llu, redirects=%llu, render-thread=%llu)",
+						Surface.Width,
+						Surface.Height,
+						static_cast<unsigned long long>(Surface.Revision),
+						static_cast<unsigned long long>(
+							LifecycleStatus.SwapchainRevision
+						),
+						static_cast<unsigned long long>(
+							LifecycleStatus.PresentedFrameCount
+						),
+						static_cast<unsigned long long>(
+							LifecycleStatus.ImGuiTextureRedirectCount
+						),
+						static_cast<unsigned long long>(
+							LifecycleStatus.RenderExecutionThreadId
+						)
+					);
+				}
+				Msg(
+					"* Legacy Detail base-texture smoke: success "
+					"(meshes=1, textured=1, depth-bias=1, GPU draws=1)"
+				);
+				Msg(
+					"* Legacy Detail slot-box smoke: success "
+					"(slots=1, selected=1, lines=12)"
+				);
+				Msg(
+					"* Legacy CTerrain bridge smoke: success "
+					"(meshes=1, selected=1, GPU draws=1)"
+				);
+				Msg(
+					"* Legacy Fog Volume bridge smoke: success "
+					"(emitter=1, occlusion=1)"
+				);
+				Msg(
+					"* Legacy detail bridge smoke: success "
+					"(models=1, instances=1, GPU draws=1)"
+				);
+				Msg(
+					"* Viewport decal smoke: success (instances=%u, draws=%u, culled=%u, pass-ready=%u)",
+					Status.DecalInstanceCount,
+					Status.DecalDrawCount,
+					Status.DecalCulledCount,
+					Status.DecalReady ? 1u : 0u
+				);
+				Msg("* Viewport material smoke: success (%ux%u, draws=%u, selection=%u, debug-lines=%u, debug-triangles=%u, overlay-lines=%u, overlay-triangles=%u, overlay-text=%u, lights=%u, models=%u/%u/%u/%u/%u/%u/%u/%u/%u, particle-instances=%u, particle-groups=%u, particle-children=%u, simulated-particles=%u, particle-billboards=%u, particle-billboard-draws=%u, particle-preview=%ux%u/%u, legacy-gizmos=%u/%u/%u, legacy-glow=%u/%u, legacy-labels=%u, legacy-idle=%u/%u/%u, pipeline=%llu, shared-pipeline-refs=%u, sprite-pipeline=%llu, particle-pipeline=%llu, revision=%llu, reloads=%u/%u/%u/%u, stats-revision=%llu, passes=%u, gpu-draws=%u, triangles=%llu, buffers=%u/%llu, textures=%u/%llu, pipelines=%u, descriptors=%u, deferred=%u, cpu-ns=%llu, gpu-timing=%s)",
 					Surface.Width,
 					Surface.Height,
 					Status.DrawCount,
@@ -977,6 +2332,33 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 					Status.OverlayTriangleCount,
 					Status.OverlayTextCount,
 					Status.LightCount,
+					Status.ModelInstanceCount,
+					Status.ModelDrawCount,
+					Status.PendingModelLoadCount,
+					Status.ModelPickingReady ? 1u : 0u,
+					Status.SkinnedModelCount,
+					Status.GpuSkinnedModelCount,
+					Status.ModelPaletteMatrixCount,
+					Status.UploadedSkinningMatrixCount,
+					Status.ModelPaletteChanged ? 1u : 0u,
+					Status.ParticleInstanceCount,
+					Status.ParticleGroupInstanceCount,
+					Status.ParticleChildInstanceCount,
+					Status.SimulatedParticleCount,
+					Status.ParticleBillboardCount,
+					Status.ParticleBillboardDrawCount,
+					ParticlePreviewSurface.Width,
+					ParticlePreviewSurface.Height,
+					ParticlePreviewStatus.ParticleBillboardCount,
+					LegacyLightStatus.LightCount,
+					LegacyLightStatus.DebugLineCount,
+					LegacyLightStatus.DebugTriangleCount,
+					LegacyLightStatus.DrawCount,
+					LegacyLightStatus.SelectionDrawCount,
+					LegacyLightStatus.OverlayTextCount,
+					LegacyLightStatus.ParticleInstanceCount,
+					LegacyLightStatus.SimulatedParticleCount,
+					LegacyLightStatus.ParticleBillboardDrawCount,
 					static_cast<unsigned long long>(Status.PipelineKey),
 					Status.SharedPipelineReferenceCount,
 					static_cast<unsigned long long>(SpriteStatus.PipelineKey),
@@ -1027,7 +2409,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	{
 		SmokePreviewRenderer->DestroyPreview(SmokePreviewHandle);
 	}
-	s.join();
+	if (SplashThread.joinable())
+	{
+		SplashThread.join();
+	}
 	xr_delete(g_FontManager);
 
 	g_scene_physics.DestroyAll();

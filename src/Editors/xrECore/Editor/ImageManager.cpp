@@ -770,14 +770,20 @@ void CImageManager::RefreshTextures(AStringVec* modif)
 
 		if (modif)
 		{
-			EDevice->Resources->ED_UpdateTextures(modif);
+			if (EDevice->Resources)
+			{
+				EDevice->Resources->ED_UpdateTextures(modif);
+			}
 		}
 		else
 		{
 			UI->SetStatus("Refresh textures...");
 			AStringVec modif_files;
 			ImageLib.SynchronizeTextures(true,true,false,nullptr,&modif_files);
-			EDevice->Resources->ED_UpdateTextures(&modif_files);
+			if (EDevice->Resources)
+			{
+				EDevice->Resources->ED_UpdateTextures(&modif_files);
+			}
 			UI->SetStatus("");
 		}
 	}else{

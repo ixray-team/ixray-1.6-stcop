@@ -13,6 +13,7 @@ struct MaterialPassPixelInput
     nointerpolation uint MaterialInstanceIndex : TEXCOORD4;
     float2 TexCoord1 : TEXCOORD5;
     nointerpolation uint MaterialDrawFlags : TEXCOORD6;
+    nointerpolation uint MaterialDrawIndex : TEXCOORD7;
 };
 
 MaterialContext BuildMaterialContext(MaterialPassPixelInput Input)

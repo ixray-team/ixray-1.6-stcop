@@ -1287,7 +1287,8 @@ int SceneBuilder::BuildShader(const char * s)
 	strcpy(sh.name,s);
 	int sh_id = FindInShaders(&sh);
 	if (sh_id<0){
-		if (!EDevice->Resources->_FindBlender(sh.name)){
+		if (EDevice->Resources &&
+			!EDevice->Resources->_FindBlender(sh.name)){
 			ELog.DlgMsg(mtError,"Can't find engine shader: %s",sh.name);
 			return -1;
 		}

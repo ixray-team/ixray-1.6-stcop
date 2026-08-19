@@ -320,9 +320,7 @@ void CalculateTriangleTangents(
 			continue;
 		}
 		Mesh->GenerateVNormals(nullptr);
-		const Fvector* Normals = Mesh->m_VertexNormals
-									 ? Mesh->m_VertexNormals
-									 : Mesh->m_Normals;
+		const Fvector* Normals = Mesh->GetActiveVNormals();
 		NormalScopes.emplace_back(Mesh, Normals);
 	}
 

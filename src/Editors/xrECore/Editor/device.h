@@ -34,7 +34,6 @@ private:
 	float m_fNearer;
 
 	ref_shader m_CurrentShader;
-	ref_texture SearchIcon;
 
 	void _SetupStates();
 	void _Create(IReader* F);
@@ -45,7 +44,6 @@ public:
 	ref_shader m_SelectionShader;
 	ref_shader ShaderTL;
 
-	ref_texture texture_null;
 	Fmaterial m_DefaultMat;
 
 	float RenderRadius;

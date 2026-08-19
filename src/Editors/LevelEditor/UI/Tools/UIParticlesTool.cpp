@@ -3,18 +3,26 @@
 
 UIParticlesTool::UIParticlesTool()
 {
-    m_Current = nullptr;
+	m_Current.clear();
     m_ParticlesList = new UIItemListForm();
     m_ParticlesList->SetOnItemFocusedEvent({this, &UIParticlesTool::OnItemFocused});
     ListItemsVec items;
-    for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++) {
-        ListItem* I = LHelper().CreateItem(items, *(*E)->m_Name, 0, 0, *E);
-        I->SetIcon(1);
-    }
-    for (PS::PGDIt G = ::RImplementation.PSLibrary.FirstPGD(); G != ::RImplementation.PSLibrary.LastPGD(); G++) {
-        ListItem* I = LHelper().CreateItem(items, *(*G)->m_Name, 0, 0, *G);
-        I->SetIcon(2);
-    }
+	FEditorParticleLibrarySnapshot Snapshot;
+	GetEditorRenderBackend().CopyParticleLibrary(Snapshot);
+	for (const FEditorParticleAssetInfo& Asset : Snapshot.Assets)
+	{
+		if (Asset.Type != EEditorParticleAssetType::Effect &&
+			Asset.Type != EEditorParticleAssetType::Group)
+		{
+			continue;
+		}
+		ListItem* I = LHelper().CreateItem(
+			items, Asset.Name.c_str(), 0, 0, nullptr
+		);
+		I->SetIcon(
+			Asset.Type == EEditorParticleAssetType::Effect ? 1 : 2
+		);
+	}
 
     m_ParticlesList->AssignItems(items);
 }
@@ -82,14 +90,14 @@ void UIParticlesTool::DrawObjectsList()
 
 void UIParticlesTool::SelByRef(bool flag)
 {
-    if (m_Current) 
+    if (!m_Current.empty())
     {
         ObjectIt _F = Scene->FirstObj(OBJCLASS_PS);
         ObjectIt _E = Scene->LastObj(OBJCLASS_PS);
         for (; _F != _E; _F++) {
             if ((*_F)->Visible()) {
                 EParticlesObject* _O = (EParticlesObject*)(*_F);
-                if (_O->RefCompare(m_Current)) _O->Select(flag);
+                if (_O->RefCompare(m_Current.c_str())) _O->Select(flag);
             }
         }
     }
@@ -97,7 +105,7 @@ void UIParticlesTool::SelByRef(bool flag)
 
 void UIParticlesTool::OnItemFocused(ListItem* item)
 {
-    m_Current = nullptr;
+	m_Current.clear();
     if (item)
     {
         m_Current = item->Key();

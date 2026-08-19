@@ -13,5 +13,4 @@ public:
 	virtual void Draw() override;
 
 private:
-	ref_texture OpenImage;
 };

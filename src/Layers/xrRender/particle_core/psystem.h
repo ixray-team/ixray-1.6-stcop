@@ -1,5 +1,7 @@
 #pragma once
+#ifndef PAPI_NO_LEGACY_VERTEX_BUFFER
 #include "../FVF.h"
+#endif
 // Actually this must be < sqrt(MAXFLOAT) since we store this value squared.
 #define P_MAXFLOAT	1.0e16f
 
@@ -30,6 +32,7 @@ namespace PAPI{
 		enum{
 			ANIMATE_CCW	= (1<<0),
 		};
+	#ifndef PAPI_NO_LEGACY_VERTEX_BUFFER
 		struct LITBUFF { FVF::LIT buff[4]; } buff =
 		{
 			Fvector{0.f,0.f,0.f},0u,Fvector2{0.f,0.f},
@@ -37,6 +40,7 @@ namespace PAPI{
 			Fvector{0.f,0.f,0.f},0u,Fvector2{0.f,0.f},
 			Fvector{0.f,0.f,0.f},0u,Fvector2{0.f,0.f}
 		};
+	#endif
 		Fvector pos;
 		Fvector posB;
 		Fvector posI;

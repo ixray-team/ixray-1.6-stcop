@@ -7,7 +7,9 @@
 #include "../../../TiramisuMaterialEditor/MaterialEditorFileIO.h"
 #include "../Entry/StaticObject/SceneObject.h"
 #include "../Scene/scene.h"
+#include "../Tools/Wallmark/ESceneWallmarkTools.h"
 
+#include <LegacyDecalProjection.h>
 #include <MaterialTypes.h>
 #include <SceneAsset.h>
 #include <SceneConversionDump.h>
@@ -26,7 +28,7 @@ namespace
 {
 using namespace Tiramisu;
 
-constexpr u32 LegacyLevelImporterVersion = 2;
+constexpr u32 LegacyLevelImporterVersion = 3;
 constexpr u64 FnvOffset = 14695981039346656037ull;
 constexpr u64 FnvPrime = 1099511628211ull;
 
@@ -211,6 +213,313 @@ struct FImportedStaticMesh
 	xr_string Reference;
 	Scene::FStaticMeshAsset Asset;
 };
+
+[[nodiscard]] Scene::ELightType ConvertLegacyLightType(
+	const ELight::EType Type
+)
+{
+	switch (Type)
+	{
+		case ELight::ltDirect:
+			return Scene::ELightType::Directional;
+		case ELight::ltSpot:
+			return Scene::ELightType::Spot;
+		case ELight::ltPoint:
+		default:
+			return Scene::ELightType::Point;
+	}
+}
+
+void SetLightDirection(
+	Scene::FLightComponent& Component,
+	const Fvector& SourceDirection
+)
+{
+	Fvector Direction = SourceDirection;
+	if (!_valid(Direction) || Direction.square_magnitude() <= EPS_S)
+	{
+		Direction.set(0.0f, -1.0f, 0.0f);
+	}
+	Direction.normalize_safe();
+
+	Fvector Up;
+	Up.set(0.0f, 1.0f, 0.0f);
+	if (std::abs(Direction.dotproduct(Up)) > 0.999f)
+	{
+		Up.set(1.0f, 0.0f, 0.0f);
+	}
+	Fvector Right;
+	Right.crossproduct(Up, Direction).normalize_safe();
+	Fvector CorrectedUp;
+	CorrectedUp.crossproduct(Direction, Right).normalize_safe();
+
+	Fmatrix Transform;
+	Transform.identity();
+	Transform.i.set(Right);
+	Transform.j.set(CorrectedUp);
+	Transform.k.set(Direction);
+	std::copy_n(
+		Transform.mm,
+		Component.LocalToWorld.size(),
+		Component.LocalToWorld.begin()
+	);
+}
+
+void AppendLegacySun(
+	Scene::FRenderSceneAsset& Asset,
+	EScene& LegacyScene,
+	const xr_string& SceneIdentity
+)
+{
+	auto* LightTool = smart_cast<ESceneLightTool*>(
+		LegacyScene.GetOTool(OBJCLASS_LIGHT)
+	);
+	if (!LightTool)
+	{
+		return;
+	}
+
+	Scene::FLightComponent Sun;
+	Sun.Id = GenerateDeterministicMaterialGuid(
+		"legacy-level-sun", SceneIdentity
+	);
+	Sun.Name = "Legacy Sun";
+	Sun.Type = Scene::ELightType::Directional;
+	Fvector Direction;
+	const Fvector2& ShadowDirection =
+		LightTool->GetSunShadowDirection();
+	Direction.setHP(ShadowDirection.y, ShadowDirection.x);
+	SetLightDirection(Sun, Direction);
+	Sun.Color = {1.0f, 1.0f, 1.0f};
+	Sun.Intensity = 1.0f;
+	Sun.CastShadows = true;
+	Asset.LightComponents.push_back(std::move(Sun));
+}
+
+void AppendLegacyLights(
+	Scene::FRenderSceneAsset& Asset,
+	EScene& LegacyScene,
+	const xr_string& SceneIdentity
+)
+{
+	const ObjectList& Lights = LegacyScene.ListObj(OBJCLASS_LIGHT);
+	u32 LightIndex = 0;
+	for (CCustomObject* CustomObject : Lights)
+	{
+		auto* LegacyLight = smart_cast<CLight*>(CustomObject);
+		if (!LegacyLight)
+		{
+			continue;
+		}
+
+		Scene::FLightComponent Component;
+		const xr_string LightIdentity = SceneIdentity + "|" +
+			xr_string(LegacyLight->GetName()) + "|" +
+			xr_string(std::to_string(LightIndex++));
+		Component.Id = GenerateDeterministicMaterialGuid(
+			"legacy-level-light", LightIdentity
+		);
+		Component.Name = LegacyLight->GetName();
+		Component.Type = ConvertLegacyLightType(
+			LegacyLight->m_Type
+		);
+		std::copy_n(
+			LegacyLight->FTransform.mm,
+			Component.LocalToWorld.size(),
+			Component.LocalToWorld.begin()
+		);
+		Component.Color = {
+			std::max(LegacyLight->m_Color.r, 0.0f),
+			std::max(LegacyLight->m_Color.g, 0.0f),
+			std::max(LegacyLight->m_Color.b, 0.0f)
+		};
+		Component.Intensity = std::max(
+			LegacyLight->m_Brightness, 0.0f
+		);
+		Component.Range = std::max(LegacyLight->m_Range, EPS_S);
+		if (Component.Type == Scene::ELightType::Spot)
+		{
+			// Legacy D3D phi хранит полный угол конуса, а native scene —
+			// половинный угол от оси прожектора.
+			Component.OuterConeAngleDegrees = std::clamp(
+				rad2deg(LegacyLight->m_Cone) * 0.5f,
+				0.1f,
+				89.0f
+			);
+			Component.InnerConeAngleDegrees =
+				Component.OuterConeAngleDegrees * 0.8f;
+		}
+		Component.Visible = LegacyLight->Visible();
+		Component.CastShadows = LegacyLight->m_Flags.is(
+			ELight::flCastShadow
+		);
+		Asset.LightComponents.push_back(std::move(Component));
+	}
+}
+
+[[nodiscard]] Scene::FLegacyDecalProjectionResult
+BuildLegacyWallmarkProjection(
+	const ESceneWallmarkTool::wallmark& Wallmark
+)
+{
+	xr_vector<Scene::FLegacyDecalVertex> Vertices;
+	Vertices.reserve(Wallmark.verts.size());
+	for (const FVF::LIT& Vertex : Wallmark.verts)
+	{
+		Vertices.push_back({
+			{Vertex.p.x, Vertex.p.y, Vertex.p.z},
+			{Vertex.t.x, Vertex.t.y}
+		});
+	}
+	return Scene::BuildLegacyDecalProjection(
+		Vertices,
+		Wallmark.w,
+		Wallmark.h
+	);
+}
+
+void AppendLegacyDecals(
+	Scene::FRenderSceneAsset& Asset,
+	EScene& LegacyScene,
+	const xr_string& SceneIdentity,
+	Editor::TiramisuLegacyObjectMaterialMigrationService& MaterialMigration,
+	Scene::FSceneConversionDump& Dump
+)
+{
+	auto* Tool = smart_cast<ESceneWallmarkTool*>(
+		LegacyScene.GetTool(OBJCLASS_WM)
+	);
+	if (!Tool)
+	{
+		return;
+	}
+
+	u32 SlotIndex = 0;
+	u32 ConvertedCount = 0;
+	u32 SkippedCount = 0;
+	for (const ESceneWallmarkTool::wm_slot* Slot : Tool->marks)
+	{
+		if (!Slot)
+		{
+			++SlotIndex;
+			continue;
+		}
+		const bool HasPersistentWallmark = std::ranges::any_of(
+			Slot->items,
+			[](const ESceneWallmarkTool::wallmark* Wallmark)
+			{
+				return Wallmark && !Wallmark->flags.test(
+					ESceneWallmarkTool::wallmark::flRemoved |
+					ESceneWallmarkTool::wallmark::flTemporary
+				);
+			}
+		);
+		if (!HasPersistentWallmark)
+		{
+			++SlotIndex;
+			continue;
+		}
+
+		Editor::FLegacyObjectSurfaceDescriptor Surface;
+		Surface.SurfaceName = "Wallmark " +
+			xr_string(std::to_string(SlotIndex));
+		Surface.ShaderName = Slot->sh_name.c_str();
+		Surface.TextureName = Slot->tx_name.c_str();
+		const xr_string SlotSource = Dump.SourcePath +
+			"#wallmark-slot-" + xr_string(std::to_string(SlotIndex));
+		const Editor::FLegacyObjectMaterialMigrationResult Migration =
+			MaterialMigration.Migrate(SlotSource, {Surface}, true);
+		AppendMaterialDiagnostics(Dump, Migration.Diagnostics);
+		Dump.CreatedMaterialInstances += Migration.CreatedInstanceCount;
+		Dump.ReusedMaterialInstances += Migration.ReusedInstanceCount;
+		if (!Migration.Succeeded() || Migration.Bindings.size() != 1)
+		{
+			AddDiagnostic(
+				Dump,
+				"error",
+				"level_import.wallmark_material_failed",
+				"Legacy Wallmark material could not be migrated for slot " +
+					xr_string(std::to_string(SlotIndex)) + "."
+			);
+			++SlotIndex;
+			continue;
+		}
+		const Editor::FLegacyObjectMaterialBinding& Binding =
+			Migration.Bindings.front();
+		Dump.MaterialMappings.push_back({
+			Surface.SurfaceName,
+			Binding.SourceKey,
+			Binding.MaterialInstance,
+			false,
+			Binding.Created
+		});
+
+		u32 WallmarkIndex = 0;
+		for (const ESceneWallmarkTool::wallmark* Wallmark : Slot->items)
+		{
+			if (!Wallmark || Wallmark->flags.test(
+					ESceneWallmarkTool::wallmark::flRemoved |
+					ESceneWallmarkTool::wallmark::flTemporary
+			))
+			{
+				++WallmarkIndex;
+				continue;
+			}
+			const Scene::FLegacyDecalProjectionResult Projection =
+				BuildLegacyWallmarkProjection(*Wallmark);
+			if (!Projection.Succeeded())
+			{
+				AddDiagnostic(
+					Dump,
+					"warning",
+					"level_import.wallmark_projection_skipped",
+					"Legacy Wallmark slot " +
+						xr_string(std::to_string(SlotIndex)) +
+						", item " +
+						xr_string(std::to_string(WallmarkIndex)) +
+						" was skipped: " + Projection.DiagnosticCode + "."
+				);
+				++SkippedCount;
+				++WallmarkIndex;
+				continue;
+			}
+
+			Scene::FDecalComponent Decal;
+			const xr_string Identity = SceneIdentity + "|" +
+				xr_string(Slot->sh_name.c_str()) + "|" +
+				xr_string(Slot->tx_name.c_str()) + "|" +
+				xr_string(std::to_string(SlotIndex)) + "|" +
+				xr_string(std::to_string(WallmarkIndex));
+			Decal.Id = GenerateDeterministicMaterialGuid(
+				"legacy-level-decal-component",
+				Identity
+			);
+			Decal.Name = "Legacy Wallmark " +
+				xr_string(std::to_string(ConvertedCount));
+			Decal.Material = Binding.MaterialInstance;
+			Decal.LocalToWorld = Projection.LocalToWorld;
+			Decal.SortOrder = static_cast<s32>(ConvertedCount);
+			Decal.Visible = Tool->IsVisible() && Tool->m_Flags.is(
+				ESceneWallmarkTool::flDrawWallmark
+			);
+			Asset.DecalComponents.push_back(std::move(Decal));
+			++ConvertedCount;
+			++WallmarkIndex;
+		}
+		++SlotIndex;
+	}
+	if (ConvertedCount != 0 || SkippedCount != 0)
+	{
+		AddDiagnostic(
+			Dump,
+			"info",
+			"level_import.wallmarks_migrated",
+			"Legacy Wallmarks converted to native projective decals: " +
+				xr_string(std::to_string(ConvertedCount)) +
+				", skipped: " + xr_string(std::to_string(SkippedCount)) + "."
+		);
+	}
+}
 } // namespace
 
 std::filesystem::path MakeImportedRenderScenePath(
@@ -440,6 +749,9 @@ FLegacyLevelImportResult ImportLoadedLegacyLevelAsset(
 	Asset.SourcePath = Result.TargetPath.generic_string();
 	Dump.TargetAssetId = Asset.Id;
 	Result.TargetAssetId = Asset.Id;
+	const xr_string SceneIdentity = NormalizeIdentity(Result.SourcePath);
+	AppendLegacySun(Asset, LegacyScene, SceneIdentity);
+	AppendLegacyLights(Asset, LegacyScene, SceneIdentity);
 
 	u32 ComponentIndex = 0;
 	for (CCustomObject* CustomObject : Objects)
@@ -520,6 +832,13 @@ FLegacyLevelImportResult ImportLoadedLegacyLevelAsset(
 		}
 		Asset.StaticMeshComponents.push_back(std::move(Component));
 	}
+	AppendLegacyDecals(
+		Asset,
+		LegacyScene,
+		SceneIdentity,
+		MaterialMigration,
+		Dump
+	);
 
 	xr_vector<FMaterialDiagnostic> FlushDiagnostics;
 	if (!MaterialMigration.FlushDatabase(FlushDiagnostics))
@@ -533,8 +852,11 @@ FLegacyLevelImportResult ImportLoadedLegacyLevelAsset(
 
 	Dump.MeshCount =
 		static_cast<u32>(ImportedMeshes.size());
-	Dump.ComponentCount =
-		static_cast<u32>(Asset.StaticMeshComponents.size());
+	Dump.ComponentCount = static_cast<u32>(
+		Asset.StaticMeshComponents.size() +
+		Asset.LightComponents.size() +
+		Asset.DecalComponents.size()
+	);
 	if (Asset.StaticMeshComponents.empty())
 	{
 		AddDiagnostic(Dump, "error", "level_import.empty_scene", "Legacy level contains no convertible static-mesh components.");

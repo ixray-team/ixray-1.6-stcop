@@ -356,6 +356,18 @@ bool IsEditorDebugDrawCaptureActive() noexcept
 	return EditorDebugDrawCaptureActive;
 }
 
+void DiscardEditorDebugDrawCapture() noexcept
+{
+	EditorDebugDrawCaptureActive = false;
+	CapturedEditorDebugLines.clear();
+	CapturedEditorDebugTriangles.clear();
+	CapturedEditorOverlayLines.clear();
+	CapturedEditorOverlayTriangles.clear();
+	CapturedEditorOverlayText.clear();
+	CapturedEditorTransientMeshes.clear();
+	EditorTransientObjectIdentity = nullptr;
+}
+
 const void* SetEditorTransientObjectIdentity(const void* Identity) noexcept
 {
 	const void* Previous = EditorTransientObjectIdentity;

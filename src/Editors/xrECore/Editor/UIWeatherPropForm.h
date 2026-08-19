@@ -24,5 +24,4 @@ public:
 
 private:
     static UIWeatherPropForm* Form;
-    ref_texture m_weather_properties;
 };

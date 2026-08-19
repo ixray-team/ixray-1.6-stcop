@@ -51,7 +51,14 @@ public:
 						ESceneLightTool 	   	();
 	virtual        	 	~ESceneLightTool		();
 
-    virtual void		Clear					(bool bSpecific=false);
+	// Возвращает сохранённое в legacy level направление солнца для
+	// конвертации в native Tiramisu scene.
+	IC const Fvector2& GetSunShadowDirection() const
+	{
+		return m_SunShadowDir;
+	}
+
+	virtual void		Clear					(bool bSpecific=false);
 
 	// definition
     IC const char*			ClassName				(){return "light";}

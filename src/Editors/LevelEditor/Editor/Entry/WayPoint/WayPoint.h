@@ -46,6 +46,12 @@ public:
     void		Convert1Link	(CWayPoint* P);
     void		Convert2Link	(CWayPoint* P);
     WPLIt		FindLink		(CWayPoint* P);
+	// Renderer-neutral bridge читает authoring-данные, не получая доступ к
+	// legacy shader или draw utilities.
+	const Fvector& Position() const { return m_vPosition; }
+	bool IsSelected() const { return m_bSelected; }
+	const WPLVec& Links() const { return m_Links; }
+	const char* Name() const { return m_Name.c_str(); }
     void		GetBox			(Fbox& bb);
 };
 
@@ -82,6 +88,7 @@ public:
     virtual Fmatrix GetTransform    () const;
 
     CWayPoint*		AppendWayPoint	();
+	const WPVec& WayPoints() const { return m_WayPoints; }
     CWayPoint*		GetFirstSelected();
     int 			GetSelectedPoints(WPVec& lst);
     void			RemoveSelectedPoints();

@@ -5,25 +5,16 @@ UIDOShuffle::UIDOShuffle()
 {
 	bModif = false;
 	m_ChooseObject = false;
-	m_Texture = nullptr;
-	m_TextureNull.create("ed\\ed_nodata");
-	m_TextureNull->Load();
 	m_Props = new UIPropertiesForm();
-	m_RealTexture = nullptr;
 }
 
 UIDOShuffle::~UIDOShuffle()
 {
 	UI->DestroyImGuiTexture(m_MaskTextureEditor);
 	UI->DestroyImGuiTexture(m_ObjectTextureEditor);
-	m_TextureNull.destroy();
-	m_MaskTexture.destroy();
 
 	ApplyChanges();
 	xr_delete(m_Props);
-
-	m_Texture.destroy();
-	m_RealTexture.destroy();
 
 	ClearIndexForms();
 }
@@ -35,7 +26,12 @@ void UIDOShuffle::Draw()
 	{
 		ImVec2 StartPos = ImGui::GetCursorPos();
 
-		ImGui::Image(m_MaskTextureEditor.IsValid() ? UI->GetImGuiTexture(m_MaskTextureEditor) : UI->GetImGuiTexture(m_TextureNull), ImVec2(256, 256));
+		ImGui::Image(
+			m_MaskTextureEditor.IsValid()
+				? UI->GetImGuiTexture(m_MaskTextureEditor)
+				: UI->LoadTexture("ed\\ed_nodata"),
+			ImVec2(256, 256)
+		);
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
 			ImVec2 ClickPos = ImGui::GetMousePos();
@@ -75,12 +71,12 @@ void UIDOShuffle::Draw()
 	ImGui::NextColumn();
 	ImGui::BeginChild("Left");
 	{
-		if (m_RealTexture != m_Texture)
-		{
-			m_RealTexture.destroy();
-			m_RealTexture = m_Texture;
-		}
-		ImGui::Image(m_ObjectTextureEditor.IsValid() ? UI->GetImGuiTexture(m_ObjectTextureEditor) : UI->GetImGuiTexture(m_TextureNull), ImVec2(256, 256));
+		ImGui::Image(
+			m_ObjectTextureEditor.IsValid()
+				? UI->GetImGuiTexture(m_ObjectTextureEditor)
+				: UI->LoadTexture("ed\\ed_nodata"),
+			ImVec2(256, 256)
+		);
 
 		{
 			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight())))
@@ -260,7 +256,6 @@ void UIDOShuffle::FillData(bool ReloadTex)
 
 	if (ReloadTex)
 	{
-		m_MaskTexture.destroy();
 		UI->DestroyImGuiTexture(m_MaskTextureEditor);
 		if (!TextureMaskPath.empty())
 		{
@@ -279,29 +274,17 @@ void UIDOShuffle::FillData(bool ReloadTex)
 
 			if (!Pixels.empty())
 			{
-				(void)UI->UpdateImGuiTexture(m_MaskTextureEditor, Pixels.data(), 256, 256, 256 * 4, ++m_MaskTextureRevision, "detail-object-mask", EEditorTextureFormat::Bgra8Unorm);
-				m_MaskTexture = new CTexture();
-
-				RHITextureDesc textureDesc = {};
-				textureDesc.Width = 256;
-				textureDesc.Height = 256;
-				textureDesc.MipLevels = 1;
-				textureDesc.ArraySize = 1;
-				textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-				textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-				textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-				textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
-
-				RHISubResource subResource = {};
-
-				IRHISurface* Surf = GRHI->CreateTexture2D(textureDesc, subResource);
-
-				u32 Pitch = 0;
-				void* pBits = Surf->Lock(0, &Pitch);
-				memcpy(pBits, Pixels.data(), Pixels.size());
-				Surf->Unlock();
-				m_MaskTexture->surface_set(Surf);
-				Surf->Release();
+				// Texture upload принадлежит выбранному editor backend.
+				(void)UI->UpdateImGuiTexture(
+					m_MaskTextureEditor,
+					Pixels.data(),
+					256,
+					256,
+					256 * 4,
+					++m_MaskTextureRevision,
+					"detail-object-mask",
+					EEditorTextureFormat::Bgra8Unorm
+				);
 			}
 		}
 	}
@@ -344,43 +327,34 @@ void UIDOShuffle::OnItemFocused(const char* name)
 {
 	if (!name)
 	{
-		m_Texture.destroy();
-
+		UI->DestroyImGuiTexture(m_ObjectTextureEditor);
 		m_Props->ClearProperties();
 		m_list_selected = -1;
 		return;
 	}
 
-	m_Thm = ImageLib.CreateThumbnail(name, EImageThumbnail::ETObject);
-	m_Texture.destroy();
 	UI->DestroyImGuiTexture(m_ObjectTextureEditor);
-
-	if (m_Thm)
+	EImageThumbnail* Thumbnail = ImageLib.CreateThumbnail(
+		name, EImageThumbnail::ETObject
+	);
+	if (Thumbnail)
 	{
-		if (m_Thm->Valid())
+		if (Thumbnail->Valid())
 		{
-			(void)UI->UpdateImGuiTexture(m_ObjectTextureEditor, m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4, ++m_ObjectTextureRevision, "detail-object-thumbnail", EEditorTextureFormat::Bgra8Unorm, true);
-		}
-		IRHISurface* Surface = nullptr;
-		m_Thm->Update(Surface);
-
-		if (m_Texture == nullptr)
-		{
-			m_Texture = new CTexture;
-		}
-
-		if (Surface == nullptr)
-		{
-			Msg("! Error creating object view: %s", name);
-		}
-		else
-		{
-			m_Texture->surface_set(Surface);
-			Surface->Release();
+			(void)UI->UpdateImGuiTexture(
+				m_ObjectTextureEditor,
+				Thumbnail->Pixels(),
+				THUMB_WIDTH,
+				THUMB_HEIGHT,
+				THUMB_WIDTH * 4,
+				++m_ObjectTextureRevision,
+				"detail-object-thumbnail",
+				EEditorTextureFormat::Bgra8Unorm,
+				true
+			);
 		}
 	}
-
-	xr_delete(m_Thm);
+	xr_delete(Thumbnail);
 
 	EDetail* dd = DM->FindDOByName(name);
 	VERIFY(dd);

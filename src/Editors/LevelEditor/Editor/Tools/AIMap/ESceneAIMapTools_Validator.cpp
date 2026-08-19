@@ -107,6 +107,7 @@ bool ESceneAIMapTool::IsNodeValidForCleanup(SAINode* Node) const
 
 int ESceneAIMapTool::CleanupInvalidNodes()
 {
+	MarkRenderDataDirty();
 	if (m_Nodes.empty())
 	{
 		return 0;

@@ -16,17 +16,6 @@ CViewportParticle::CViewportParticle()
 
 CViewportParticle::~CViewportParticle()
 {
-	if (ParticleGroupView != nullptr)
-	{
-		dxRender_Visual* Vis = ParticleGroupView;
-		((CRender*)::Render)->Models->Delete(Vis);
-	}
-
-	if (ParticleEffectView != nullptr)
-	{
-		dxRender_Visual* Vis = ParticleEffectView;
-		((CRender*)::Render)->Models->Delete(Vis);
-	}
 }
 
 void CViewportParticle::Draw()
@@ -54,41 +43,65 @@ void CViewportParticle::Render()
 		return;
 	}
 
-	if (ParticleGroupView != nullptr)
-	{
-		ParticleGroupView->OnFrame(Device.dwTimeDelta);
-		//ParticleGroupView->Render(0);
-		((CRender*)::Render)->Models->RenderSingle(ParticleGroupView, Fidentity, 1.f);
-	}
-
-	if (ParticleEffectView != nullptr)
-	{
-		ParticleEffectView->OnFrame(Device.dwTimeDelta);
-		//ParticleEffectView->Render(0);
-		((CRender*)::Render)->Models->RenderSingle(ParticleEffectView, Fidentity, 1.f);
-	}
+	// Particle simulation и draw будут выполнены renderer-owned preview pass.
+	// Здесь не создаются legacy CModelPool или dynamic vertex buffers.
 }
 
-void CViewportParticle::OpenModel(PS::CPGDef* Part)
+void CViewportParticle::RenderTiramisu()
 {
-	ParticleGroupView = (PS::CParticleGroup*)((CRender*)::Render)->Models->CreatePG(0);
-	ParticleGroupView->Compile(Part);
-	ParticleGroupView->Play();
-	ViewName = Part->m_Name;
+	if (UI->ViewID != View.ViewportID || ParticleAssetName.empty())
+	{
+		return;
+	}
 
-	dxRender_Visual* Vis = ParticleEffectView;
-	((CRender*)::Render)->Models->Delete(Vis);
-	ParticleEffectView = nullptr;
+	FEditorViewportCamera Camera;
+	std::copy_n(EDevice->mView.mm, Camera.View.size(), Camera.View.begin());
+	std::copy_n(
+		EDevice->mProject.mm,
+		Camera.Projection.size(),
+		Camera.Projection.begin()
+	);
+	std::copy_n(
+		EDevice->mFullTransform.mm,
+		Camera.ViewProjection.size(),
+		Camera.ViewProjection.begin()
+	);
+	const Fvector& Position = UI->CurrentView().m_Camera.GetPosition();
+	Camera.WorldPosition = {Position.x, Position.y, Position.z};
+	Camera.NearPlane = UI->CurrentView().m_Camera._Znear();
+	Camera.FarPlane = UI->CurrentView().m_Camera._Zfar();
+
+	FEditorParticleInstance Particle;
+	Particle.ObjectId = {
+		static_cast<u64>(reinterpret_cast<std::uintptr_t>(this))
+	};
+	if (!Particle.ObjectId.IsValid())
+	{
+		Particle.ObjectId.Value = 1;
+	}
+	Particle.AssetName = ParticleAssetName;
+	Particle.AssetType = ParticleAssetType;
+	Particle.Flags = EEditorParticleInstanceFlags::Playing;
+
+	const u64 NameHash = std::hash<xr_string_view>{}(
+		ParticleAssetName
+	);
+	FEditorViewportSceneSnapshot Snapshot;
+	Snapshot.Camera = Camera;
+	Snapshot.ParticleInstances = xr_span(&Particle, 1);
+	Snapshot.DebugDrawRevision = NameHash == 0 ? 1 : NameHash;
+	Snapshot.Revision = ++SceneRevision;
+	(void)GetEditorRenderBackend().SubmitViewportScene(
+		static_cast<u32>(View.ViewportID), Snapshot
+	);
 }
 
-void CViewportParticle::OpenModel(PS::CPEDef* Part)
+void CViewportParticle::OpenModel(
+	const xr_string_view AssetName,
+	const EEditorParticleAssetType AssetType
+)
 {
-	dxRender_Visual* Vis = ParticleGroupView;
-	((CRender*)::Render)->Models->Delete(Vis);
-	ParticleGroupView = nullptr;
-	ViewName = Part->m_Name;
-
-	ParticleEffectView = (PS::CParticleEffect*)((CRender*)::Render)->Models->CreatePE(0);
-	ParticleEffectView->Compile(Part);
-	ParticleEffectView->Play();
+	ParticleAssetName = AssetName;
+	ParticleAssetType = AssetType;
+	ViewName = ParticleAssetName.c_str();
 }

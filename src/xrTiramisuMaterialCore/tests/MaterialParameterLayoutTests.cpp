@@ -177,7 +177,7 @@ void TestValidation(TiramisuMaterialTestRunner& Runner)
 
 void TestGpuAbi(TiramisuMaterialTestRunner& Runner)
 {
-	MATERIAL_CHECK(Runner, MaterialGpuAbiVersion == 2);
+	MATERIAL_CHECK(Runner, MaterialGpuAbiVersion == 4);
 	MATERIAL_CHECK(Runner, sizeof(FMaterialLightGpuData) == MaterialLightGpuDataSize);
 	MATERIAL_CHECK(Runner, sizeof(FMaterialInstanceGpuData) == MaterialInstanceGpuDataSize);
 	MATERIAL_CHECK(Runner, offsetof(FMaterialInstanceGpuData, ParameterDataOffset) == 0);
@@ -190,6 +190,16 @@ void TestGpuAbi(TiramisuMaterialTestRunner& Runner)
 	MATERIAL_CHECK(Runner, offsetof(FMaterialDrawGpuData, MaterialInstanceIndex) == 128);
 	MATERIAL_CHECK(Runner, offsetof(FMaterialDrawGpuData, ObjectId) == 132);
 	MATERIAL_CHECK(Runner, offsetof(FMaterialDrawGpuData, Flags) == 136);
+	MATERIAL_CHECK(Runner, offsetof(
+		FMaterialDrawGpuData, SkinningPaletteOffset
+	) == 140);
+	MATERIAL_CHECK(Runner, offsetof(
+		FMaterialDrawGpuData, PreviousSkinningPaletteOffset
+	) == 144);
+	MATERIAL_CHECK(Runner, offsetof(
+		FMaterialDrawGpuData, SkinningBoneCount
+	) == 148);
+	MATERIAL_CHECK(Runner, MaterialSkinningMatrixGpuDataSize == 64);
 
 	const FMaterialGpuMatrix XRayMatrix = 
 	{

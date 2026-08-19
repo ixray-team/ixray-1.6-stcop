@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../../../xrECore/Editor/EditorRenderBackend.h"
 
 #define CHUNK_TOOLS_TAG	0x7777
 
@@ -34,12 +35,20 @@ void ESceneToolBase::Reset()
  
 void ESceneToolBase::OnCreate()
 {
-    OnDeviceCreate		();
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Legacy)
+	{
+		OnDeviceCreate();
+	}
     CreateControls		();
 }
 void ESceneToolBase::OnDestroy()
 {
-    OnDeviceDestroy		();
+	if (GetEditorRenderBackend().GetKind() ==
+		EEditorRenderBackendKind::Legacy)
+	{
+		OnDeviceDestroy();
+	}
     RemoveControls		();
 }
 

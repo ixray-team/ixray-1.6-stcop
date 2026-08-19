@@ -4,7 +4,6 @@
 
 CUITextureViewer::CUITextureViewer()
 {
-	Texture = new CTexture;
 	Zoom = 1.0f;
 }
 
@@ -83,11 +82,11 @@ void CUITextureViewer::DrawView()
 
 		float sliderHeight = 6.0f;
 
-		// ����� ���������
+		// перед слайдером
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
-		// ������ ����� ����� SetNextItemWidth � ����� ������ FrameHeight ����� Style
+		// просто задаём через SetNextItemWidth и потом меняем FrameHeight через Style
 		ImGuiStyle& style = ImGui::GetStyle();
 		float oldFrameHeight = style.FramePadding.y;
 		style.FramePadding.y = sliderHeight * 0.5f;
@@ -153,120 +152,95 @@ void CUITextureViewer::LoadFromFile(const xr_path& File)
 {
 	CurrentFileName = File.xfilename();
 	SrcData = DXTUtils::GitPixels(File.xstring().c_str());
-
-	RHITextureDesc Desc;
-	Desc.Width = SrcData.W;
-	Desc.Height = SrcData.H;
-	Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-	Desc.MipLevels = 1;
-	Desc.ArraySize = 1;
-	Desc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-	Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-
-	xr_vector<u8> Pixels(SrcData.W * SrcData.H * 4);
-	for (size_t y = 0; y < SrcData.H; ++y)
-	{
-		for (size_t x = 0; x < SrcData.W; ++x)
-		{
-			size_t idx = (y * SrcData.W + x) * 4;
-			Pixels[idx + 0] = SrcData.P[idx + 2]; // B
-			Pixels[idx + 1] = SrcData.P[idx + 1]; // G
-			Pixels[idx + 2] = SrcData.P[idx + 0]; // R
-			Pixels[idx + 3] = SrcData.P[idx + 3]; // A
-		}
-	}
-
-	RHISubResource SubResource{};
-	SubResource.Width = SrcData.W;
-	SubResource.Height = SrcData.H;
-	SubResource.TextureFormat = Desc.Format;
-	SubResource.RowPitch = SrcData.W * 4;
-	SubResource.Data = Pixels.data();
-
-	IRHISurface* Surf = GRHI->CreateTexture2D(Desc, SubResource);
-	Texture->surface_set(Surf);
-	Surf->Release();
-
 	UpdateTexture();
 }
 
 void CUITextureViewer::UpdateTexture()
 {
-	if (!Texture || !Texture->pSurface)
+	if (SrcData.P.empty() || SrcData.W == 0 || SrcData.H == 0)
 	{
 		return;
 	}
 
-	IRHISurface* Surf = Texture->pSurface;
-	u32 Width = Surf->GetWidth();
-	u32 Height = Surf->GetHeight();
-
-	u8* Data = static_cast<u8*>(Surf->Lock(0, nullptr));
-	if (!Data)
-	{
-		return;
-	}
-
-	bool FullMask = (ChannelMask == (Channel_R | Channel_G | Channel_B | Channel_A));
+	const u32 Width = SrcData.W;
+	const u32 Height = SrcData.H;
+	xr_vector<u8> Pixels(
+		static_cast<size_t>(Width) * Height * 4
+	);
+	const bool FullMask =
+		ChannelMask == (Channel_R | Channel_G | Channel_B | Channel_A);
 
 	for (size_t y = 0; y < Height; ++y)
 	{
-		u8* Row = Data + y * Width * 4;
 		for (size_t x = 0; x < Width; ++x)
 		{
-			size_t idx = (y * Width + x) * 4;
-			uint8_t r = SrcData.P[idx + 0];
-			uint8_t g = SrcData.P[idx + 1];
-			uint8_t b = SrcData.P[idx + 2];
-			uint8_t a = SrcData.P[idx + 3];
+			const size_t Index = (y * Width + x) * 4;
+			const u8 Red = SrcData.P[Index + 0];
+			const u8 Green = SrcData.P[Index + 1];
+			const u8 Blue = SrcData.P[Index + 2];
+			const u8 Alpha = SrcData.P[Index + 3];
 
-			uint8_t R, G, B, A;
+			u8 OutputRed = 0;
+			u8 OutputGreen = 0;
+			u8 OutputBlue = 0;
+			u8 OutputAlpha = 255;
 
 			if (FullMask)
 			{
-				R = b;
-				G = g;
-				B = r;
-				A = a;
+				OutputRed = Blue;
+				OutputGreen = Green;
+				OutputBlue = Red;
+				OutputAlpha = Alpha;
 			}
 			else if (GrayMode)
 			{
-				uint8_t v = 0;
+				u8 Value = 0;
 				if (ChannelMask & Channel_R)
 				{
-					v = b;
+					Value = Blue;
 				}
 				if (ChannelMask & Channel_G)
 				{
-					v = g;
+					Value = Green;
 				}
 				if (ChannelMask & Channel_B)
 				{
-					v = r;
+					Value = Red;
 				}
 				if (ChannelMask & Channel_A)
 				{
-					v = a;
+					Value = Alpha;
 				}
 
-				R = G = B = v;
-				A = 255;
+				OutputRed = Value;
+				OutputGreen = Value;
+				OutputBlue = Value;
 			}
 			else
 			{
-				R = (ChannelMask & Channel_R) ? b : 0;
-				G = (ChannelMask & Channel_G) ? g : 0;
-				B = (ChannelMask & Channel_B) ? r : 0;
-				A = (ChannelMask & Channel_A) ? a : 255;
+				OutputRed = (ChannelMask & Channel_R) ? Blue : 0;
+				OutputGreen = (ChannelMask & Channel_G) ? Green : 0;
+				OutputBlue = (ChannelMask & Channel_B) ? Red : 0;
+				OutputAlpha = (ChannelMask & Channel_A) ? Alpha : 255;
 			}
 
-			Row[x * 4 + 0] = B;
-			Row[x * 4 + 1] = G;
-			Row[x * 4 + 2] = R;
-			Row[x * 4 + 3] = A;
+			Pixels[Index + 0] = OutputBlue;
+			Pixels[Index + 1] = OutputGreen;
+			Pixels[Index + 2] = OutputRed;
+			Pixels[Index + 3] = OutputAlpha;
 		}
 	}
 
-	(void)UI->UpdateImGuiTexture(EditorTexture, Data, Width, Height, Width * 4, ++TextureRevision, CurrentFileName.c_str(), EEditorTextureFormat::Bgra8Unorm);
-	Surf->Unlock();
+	// GPU resource принадлежит выбранному editor backend. Окно просмотра
+	// больше не создаёт и не блокирует legacy D3D surface напрямую.
+	(void)UI->UpdateImGuiTexture(
+		EditorTexture,
+		Pixels.data(),
+		Width,
+		Height,
+		Width * 4,
+		++TextureRevision,
+		CurrentFileName.c_str(),
+		EEditorTextureFormat::Bgra8Unorm
+	);
 }

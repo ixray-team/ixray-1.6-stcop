@@ -14,6 +14,7 @@
 #include "src/xrEngine/ImGuiManager.h"
 
 #include <imgui.h>
+#include <algorithm>
 #include <chrono>
 
 void TiramisuRender::OnThread(void* p)
@@ -843,6 +844,8 @@ void TiramisuRender::UpdateGlobalConstantBuffer()
 		ConstantBuffer->LightDataOffset = 0;
 		ConstantBuffer->LightCount = 0;
 		ConstantBuffer->LightingFlags = 0;
+		ConstantBuffer->SkinningPaletteBufferIndex = UINT32_MAX;
+		std::fill_n(ConstantBuffer->MaterialGpuAbiPadding, 3, 0u);
 		GRenderDevice.CoreInterface.UnmapBuffer(*GlobalConstantBuffer);
 		StatisticsTracker.RecordUpload(sizeof(FXRayRenderConstantBuffer));
 	}

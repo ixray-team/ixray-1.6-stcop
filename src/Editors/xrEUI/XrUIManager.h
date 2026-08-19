@@ -81,6 +81,7 @@ private:
 	bool m_OwnRenderBackend = false;
 	bool m_RenderBackendInitialized = false;
 	bool m_MainPresentationPending = false;
+	bool m_RenderDocCaptureAttempted = false;
 
 public:
 	template <typename T>

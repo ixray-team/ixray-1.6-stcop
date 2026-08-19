@@ -73,14 +73,29 @@ int main()
 		ReadText("gamedata/shaders/r5/materials/passes/MaterialLightingCommon.hlsl");
 	const xr_string MaterialForwardSource =
 		ReadText("gamedata/shaders/r5/materials/passes/MaterialForwardPass.hlsl");
+	const xr_string LevelStaticVertexSource = ReadText(
+		"gamedata/shaders/r5/materials/vertex/"
+		"MaterialLevelStaticVertexFactory.hlsl"
+	);
 	MATERIAL_CHECK(Runner, GBufferSource.find("EncodeOctahedralNormal") != xr_string::npos);
 	MATERIAL_CHECK(Runner, GBufferSource.find("DecodeOctahedralNormal") != xr_string::npos);
 	MATERIAL_CHECK(Runner, LightingSource.find("TiramisuDistributionGGX") != xr_string::npos);
 	MATERIAL_CHECK(Runner, LightingSource.find("TiramisuGeometrySmith") != xr_string::npos);
 	MATERIAL_CHECK(Runner, LightingSource.find("TiramisuFresnelSchlick") != xr_string::npos);
 	MATERIAL_CHECK(Runner, DeferredSource.find("ResourceDescriptorHeap") != xr_string::npos);
-	MATERIAL_CHECK(Runner, MaterialGpuAbiSource.find("TIRAMISU_MATERIAL_GPU_ABI_VERSION 2u") != xr_string::npos);
+	MATERIAL_CHECK(Runner, MaterialGpuAbiSource.find(
+		"TIRAMISU_MATERIAL_GPU_ABI_VERSION 4u"
+	) != xr_string::npos);
 	MATERIAL_CHECK(Runner, MaterialGpuAbiSource.find("TIRAMISU_MATERIAL_LIGHT_GPU_DATA_SIZE 64u") != xr_string::npos);
+	MATERIAL_CHECK(Runner, MaterialGpuAbiSource.find(
+		"ResourceDescriptorHeap[SkinningPaletteBufferIndex]"
+	) != xr_string::npos);
+	MATERIAL_CHECK(Runner, MaterialGpuAbiSource.find(
+		"TIRAMISU_MATERIAL_DRAW_FLAG_EDITOR_DEPTH_BIAS 4u"
+	) != xr_string::npos);
+	MATERIAL_CHECK(Runner, LevelStaticVertexSource.find(
+		"Output.CurrentClipPosition.z -= CurrentBias"
+	) != xr_string::npos);
 	MATERIAL_CHECK(Runner, MaterialGpuAbiSource.find("ResourceDescriptorHeap[LightDataBufferIndex]") != xr_string::npos);
 	MATERIAL_CHECK(Runner, MaterialGpuAbiSource.find("LightDataOffset + LightIndex") != xr_string::npos);
 	MATERIAL_CHECK(Runner, MaterialLightingSource.find("min(LightCount, 64u)") != xr_string::npos);

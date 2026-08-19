@@ -850,9 +850,13 @@ static HRESULT create_shader(
 
 class includer : public ID3DInclude {
 public:
+	explicit includer(const char* ShaderPath) : ShaderPath(ShaderPath)
+	{
+	}
+
 	HRESULT  __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
 		string_path pname;
-		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
+		xr_strconcat(pname, ShaderPath, pFileName);
 		IReader* R = FS.r_open(_game_shaders_, pname);
 		if (0 == R) {
 			// possibly in shared directory or somewhere else - open directly
@@ -878,6 +882,9 @@ public:
 		xr_free(pData);
 		return D3D_OK;
 	}
+
+private:
+	const char* ShaderPath = nullptr;
 };
 
 HRESULT	CRender::shader_compile(
@@ -1182,7 +1189,9 @@ HRESULT	CRender::shader_compile(
 	if (FAILED(_result)) {
 		LPD3DBLOB pShaderBuf = nullptr;
 		LPD3DBLOB pErrorBuf = nullptr;
-		includer Includer;
+		// Этот compiler принадлежит editor RImplementation. Include path нельзя
+		// брать из глобального Render: при Tiramisu там находится каталог r5.
+		includer Includer(getShaderPath());
 
 		_result = D3DCompile(
 			pSrcData,

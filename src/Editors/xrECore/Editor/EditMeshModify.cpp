@@ -25,6 +25,7 @@ void CEditableMesh::Transform(const Fmatrix& parent)
     UnloadFNormals	(true);
     UnloadVNormals	(true);
     UnloadSVertices	(true);
+	MarkRenderGeometryDirty();
 }
 //----------------------------------------------------
 
@@ -152,6 +153,7 @@ void CEditableMesh::RebuildVMaps()
 	}
 	m_VMRefs.clear();
 	m_VMRefs = nVMRefs;
+	MarkRenderGeometryDirty();
 }
 
 #define MX 25
@@ -343,5 +345,6 @@ void CEditableMesh::OptimizeMesh(bool NoOpt)
             xr_free		(old_faces);
             xr_free		(old_sg);
 		}
+		MarkRenderGeometryDirty();
 	}
 }

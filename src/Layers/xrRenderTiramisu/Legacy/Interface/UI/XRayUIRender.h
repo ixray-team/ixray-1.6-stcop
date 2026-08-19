@@ -18,7 +18,11 @@ public:
 	virtual void destroy();
 
 	TiramisuRenderTexture* Texture = nullptr;
+	xr_string ShaderName;
+	xr_string TextureName;
 };
+
+void DumpLiveTiramisuUiShaders();
 
 // Legacy UI primitive, временно переводимый в UI pass Tiramisu.
 struct FXRayUIPrimitive

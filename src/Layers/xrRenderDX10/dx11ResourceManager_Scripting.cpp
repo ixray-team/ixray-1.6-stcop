@@ -239,8 +239,15 @@ void	CResourceManager::LS_Load			()
 		def("ClearAllShaderOptions", LuaClearAllShaderOptions)
 	];
 
-	// load shaders
-	xr_vector<char*>*	folder			= FS.file_list_open	(_game_shaders_,::Render->getShaderPath(),FS_ListFiles|FS_RootOnly);
+	// Lua-библиотека здесь принадлежит переходному editor resource manager.
+	// Глобальный Render уже может быть xrRenderTiramisu, поэтому его r5 path
+	// нельзя использовать для поиска editor shader scripts.
+#ifdef _EDITOR
+	const char* ShaderPath = RImplementation.getShaderPath();
+#else
+	const char* ShaderPath = ::Render->getShaderPath();
+#endif
+	xr_vector<char*>*	folder			= FS.file_list_open	(_game_shaders_,ShaderPath,FS_ListFiles|FS_RootOnly);
 	VERIFY								(folder);
 	for (u32 it=0; it<folder->size(); it++)	{
 		string_path						namesp,fn;
@@ -248,7 +255,7 @@ void	CResourceManager::LS_Load			()
 		if	(0==strext(namesp) || 0!=xr_strcmp(strext(namesp),".lua"))	continue;
 		*strext	(namesp)=0;
 		if		(0==namesp[0])			xr_strcpy	(namesp,"_G");
-		xr_strconcat(fn,::Render->getShaderPath(),(*folder)[it]);
+		xr_strconcat(fn,ShaderPath,(*folder)[it]);
 		FS.update_path					(fn,_game_shaders_,fn);
 		try {
 			Script::bfLoadFileIntoNamespace	(LSVM,fn,namesp,true);

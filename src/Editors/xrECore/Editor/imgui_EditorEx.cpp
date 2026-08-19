@@ -114,6 +114,8 @@ ECORE_API bool IXBeginMainMenuBar()
 
 	if (!ImGui::Begin("##ChezzeTopMenu", nullptr, window_flags))
 	{
+		// Даже скрытое/collapsed окно после Begin обязано получить парный End.
+		ImGui::End();
 		ImGui::PopStyleVar(3);
 		ImGui::PopStyleColor(4);
 		return false;
@@ -142,9 +144,7 @@ ECORE_API bool IXBeginMainMenuBar()
 	{
 		ImVec2 t_pose = {(LogoButtonSize.x - LogoSize) / 2, (LogoButtonSize.y - LogoSize) / 2};
 		ImGui::SetCursorPos(t_pose);
-		const ImTextureID Logo = UI->m_HeaderLogoEditor.IsValid()
-									 ? UI->GetImGuiTexture(UI->m_HeaderLogoEditor)
-									 : UI->GetImGuiTexture(UI->m_HeaderLogo);
+		const ImTextureID Logo = UI->GetImGuiTexture(UI->m_HeaderLogoEditor);
 		ImGui::Image(Logo, {LogoSize, LogoSize});
 		ImGui::SameLine();
 	}
@@ -187,6 +187,13 @@ ECORE_API bool IXBeginMainMenuBar()
 
 	if (!BeginMenuBar(offset_y + ImGui::GetTextLineHeight() + style.FramePadding.y * 2.0f))
 	{
+		// BeginMenuBar выполняется внутри MENUBAR child. Сначала закрываем
+		// текущий child и его стили, только затем родительское окно.
+		ImGui::EndChild();
+		ImGui::PopStyleVar(2);
+#if dbg_draw_tmenu
+		ImGui::PopStyleColor(1);
+#endif
 		ImGui::PopStyleVar(3);
 		ImGui::PopStyleColor(4);
 		ImGui::End();
@@ -260,20 +267,25 @@ ECORE_API void IXEndMainMenuBar()
 
 		ImGui::BeginChild("##ControlButtons", {button_w * 3, button_h});
 
-		const auto WindowIcon = [](const FEditorTextureHandle Handle,
-								   const ref_texture& Legacy)
-		{
-			return Handle.IsValid() ? UI->GetImGuiTexture(Handle)
-									: UI->GetImGuiTexture(Legacy);
-		};
-		if (ImGui::ImageButton("##IXEndMainMenuBar01", WindowIcon(UI->m_WinMinEditor, UI->m_WinMin), ImageSize))
+		if (ImGui::ImageButton(
+			"##IXEndMainMenuBar01",
+			UI->GetImGuiTexture(UI->m_WinMinEditor),
+			ImageSize
+		))
 		{
 			SendMessageW(EDevice->GetHWND(), WM_SYSCOMMAND, SC_MINIMIZE, 0);
 		}
 
 		ImGui::SameLine();
 
-		if (ImGui::ImageButton("##IXEndMainMenuBar02", EDevice->isZoomed ? WindowIcon(UI->m_WinResEditor, UI->m_WinRes) : WindowIcon(UI->m_WinMaxEditor, UI->m_WinMax), ImageSize))
+		const FEditorTextureHandle SizeIcon = EDevice->isZoomed
+			? UI->m_WinResEditor
+			: UI->m_WinMaxEditor;
+		if (ImGui::ImageButton(
+			"##IXEndMainMenuBar02",
+			UI->GetImGuiTexture(SizeIcon),
+			ImageSize
+		))
 		{
 			MaxBut = true;
 		}
@@ -283,7 +295,11 @@ ECORE_API void IXEndMainMenuBar()
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(81.f / 255.f, 36.f / 255.f, 40.f / 255, 1.f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(71.f / 255.f, 24.f / 255.f, 28.f / 255, 1.f));
 
-		if (ImGui::ImageButton("##IXEndMainMenuBar03", WindowIcon(UI->m_WinCloseEditor, UI->m_WinClose), ImageSize))
+		if (ImGui::ImageButton(
+			"##IXEndMainMenuBar03",
+			UI->GetImGuiTexture(UI->m_WinCloseEditor),
+			ImageSize
+		))
 		{
 			SendMessageW(EDevice->GetHWND(), WM_CLOSE, 0, 0);
 		}

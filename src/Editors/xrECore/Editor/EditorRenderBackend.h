@@ -46,6 +46,7 @@ struct FEditorTransientMeshCapture
 // same primitives normally.
 ECORE_API void BeginEditorDebugDrawCapture();
 [[nodiscard]] ECORE_API bool IsEditorDebugDrawCaptureActive() noexcept;
+ECORE_API void DiscardEditorDebugDrawCapture() noexcept;
 // Legacy objects publish their address only as a process-lifetime object ID;
 // the pointer is never dereferenced by the renderer or serialized.
 [[nodiscard]] ECORE_API const void* SetEditorTransientObjectIdentity(

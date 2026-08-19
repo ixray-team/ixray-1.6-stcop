@@ -40,54 +40,54 @@ private:
 	class UIWorldPropertiesFrom* m_WorldProperties;
 	UIMaterialEditorForm* m_MaterialEditor;
 
-	ref_texture m_tMenu;
+	xr_string m_tMenu;
 
 	// Action
-	ref_texture m_tSelect;
-	ref_texture m_tAdd;
-	ref_texture m_tMove;
-	ref_texture m_tRotate;
-	ref_texture m_tScale;
+	xr_string m_tSelect;
+	xr_string m_tAdd;
+	xr_string m_tMove;
+	xr_string m_tRotate;
+	xr_string m_tScale;
 
 	// Snap
-	ref_texture m_tGSnap;
-	ref_texture m_tOSnap;
-	ref_texture m_tMoveToSnap;
-	ref_texture m_tNSnap;
-	ref_texture m_tVSnap;
-	ref_texture m_tASnap;
-	ref_texture m_tMSnap;
+	xr_string m_tGSnap;
+	xr_string m_tOSnap;
+	xr_string m_tMoveToSnap;
+	xr_string m_tNSnap;
+	xr_string m_tVSnap;
+	xr_string m_tASnap;
+	xr_string m_tMSnap;
 
-	ref_texture m_tZoom;
-	ref_texture m_tZoomSel;
+	xr_string m_tZoom;
+	xr_string m_tZoomSel;
 
-	ref_texture m_tGrid;
-	ref_texture m_tScaleGrid;
-	ref_texture m_tAngle;
+	xr_string m_tGrid;
+	xr_string m_tScaleGrid;
+	xr_string m_tAngle;
 
-	ref_texture m_tCsLocal;
-	ref_texture m_tNuScale;
-	ref_texture TransformLocalOrWorld;
-	ref_texture TransformLocalOrWorld2;
+	xr_string m_tCsLocal;
+	xr_string m_tNuScale;
+	xr_string TransformLocalOrWorld;
+	xr_string TransformLocalOrWorld2;
 
 	// Axis
-	ref_texture m_tX;
-	ref_texture m_tY;
-	ref_texture m_tZ;
-	ref_texture m_tZX;
+	xr_string m_tX;
+	xr_string m_tY;
+	xr_string m_tZ;
+	xr_string m_tZX;
 
 	// View
-	ref_texture m_tVFront;
-	ref_texture m_tVBack;
-	ref_texture m_tVLeft;
-	ref_texture m_tVRight;
-	ref_texture m_tVTop;
-	ref_texture m_tVBottom;
-	ref_texture m_tVReset;
+	xr_string m_tVFront;
+	xr_string m_tVBack;
+	xr_string m_tVLeft;
+	xr_string m_tVRight;
+	xr_string m_tVTop;
+	xr_string m_tVBottom;
+	xr_string m_tVReset;
 
 	// Camera
-	ref_texture m_tPlaneMove;
-	ref_texture m_tArcBall;
-	ref_texture m_tFreeFly;
+	xr_string m_tPlaneMove;
+	xr_string m_tArcBall;
+	xr_string m_tFreeFly;
 };
 extern UIMainForm* MainForm;

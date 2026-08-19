@@ -9,14 +9,19 @@
 
 struct FEditorNriStartupConfig
 {
-	bool Enabled = false;
+	// LevelEditor использует xrRenderTiramisu по умолчанию. Поле сохранено в
+	// контракте запуска, чтобы остальные editor executables не зависели от
+	// renderer-specific типов и существующие launch-конфигурации не ломались.
+	bool Enabled = true;
+	bool HiddenTestWindow = false;
 	ETiramisuEditorGraphicsApi Api = ETiramisuEditorGraphicsApi::Vulkan;
 	FRenderDeterministicTestPolicy DeterministicTest;
 
 	[[nodiscard]] constexpr bool IsValid() const noexcept
 	{
 		return DeterministicTest.IsValid() &&
-			   (!DeterministicTest.Enabled || Enabled);
+			   (!DeterministicTest.Enabled || Enabled) &&
+			   (!HiddenTestWindow || DeterministicTest.Enabled);
 	}
 };
 
@@ -51,7 +56,10 @@ struct FEditorNriStartupConfig
 ) noexcept
 {
 	FEditorNriStartupConfig Result;
-	Result.Enabled = HasEditorCommandLineFlag(CommandLine, "-tiramisu-editor");
+	Result.HiddenTestWindow = HasEditorCommandLineFlag(
+		CommandLine,
+		"-editor-test-hidden"
+	);
 	Result.Api = HasEditorCommandLineFlag(CommandLine, "-dx12")
 					 ? ETiramisuEditorGraphicsApi::D3D12
 					 : ETiramisuEditorGraphicsApi::Vulkan;

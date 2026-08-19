@@ -25,7 +25,10 @@ FEditorViewportSceneSnapshot MakeSnapshot(
 	const xr_span<const FEditorOverlayLine> OverlayLines = {},
 	const xr_span<const FEditorOverlayTriangle> OverlayTriangles = {},
 	const xr_span<const FEditorOverlayText> OverlayText = {},
-	const xr_span<const FEditorSceneLight> Lights = {}
+	const xr_span<const FEditorSceneLight> Lights = {},
+	const xr_span<const FEditorParticleInstance> Particles = {},
+	const xr_span<const FEditorModelInstance> Models = {},
+	const xr_span<const FEditorDecalInstance> Decals = {}
 )
 {
 	FEditorViewportSceneSnapshot Snapshot;
@@ -36,7 +39,10 @@ FEditorViewportSceneSnapshot MakeSnapshot(
 	Snapshot.StaticMeshes = Meshes;
 	Snapshot.RemovedStaticMeshes = Removed;
 	Snapshot.Instances = Instances;
+	Snapshot.DecalInstances = Decals;
+	Snapshot.ModelInstances = Models;
 	Snapshot.Lights = Lights;
+	Snapshot.ParticleInstances = Particles;
 	Snapshot.DebugLines = DebugLines;
 	Snapshot.DebugTriangles = DebugTriangles;
 	Snapshot.OverlayLines = OverlayLines;
@@ -58,7 +64,11 @@ int main()
 	const xr_array<u32, 3> Indices = {0, 1, 2};
 	const xr_array Sections = {FEditorStaticMeshSection{0, 3, {9}}};
 	const FEditorStaticMeshUpload Mesh{{1}, 4, Vertices, Indices, Sections};
-	const FEditorStaticMeshInstance Instance{{7}, {1}};
+	FEditorStaticMeshInstance Instance{{7}, {1}};
+	Instance.Flags = static_cast<EEditorSceneInstanceFlags>(
+		static_cast<u32>(EEditorSceneInstanceFlags::TwoSided) |
+		static_cast<u32>(EEditorSceneInstanceFlags::DepthBias)
+	);
 	const xr_array Materials = {FEditorMaterialSlotSource{{9}, "default", "textures/test", "test surface", EEditorMaterialSlotFlags::TwoSided}};
 	xr_array<FEditorDebugLine, 1> DebugLines;
 	DebugLines[0].Vertices[0].Position = {-1.0f, 0.0f, 0.0f};
@@ -89,14 +99,37 @@ int main()
 	Lights[0].InnerConeAngleDegrees = 15.0f;
 	Lights[0].OuterConeAngleDegrees = 35.0f;
 	Lights[0].Flags = EEditorSceneLightFlags::CastShadows;
+	xr_string ParticleName = "effects\\editor_test";
+	xr_array<FEditorParticleInstance, 1> Particles;
+	Particles[0].ObjectId = {12};
+	Particles[0].AssetName = ParticleName;
+	Particles[0].LocalToWorld[12] = 4.0f;
+	Particles[0].Flags = EEditorParticleInstanceFlags::Playing;
+	xr_string ModelName = "dynamics\\scene_objects\\part\\part_none";
+	xr_string AnimationName = "idle";
+	xr_array<FEditorModelInstance, 1> Models;
+	Models[0].ObjectId = {13};
+	Models[0].AssetName = ModelName;
+	Models[0].AnimationName = AnimationName;
+	Models[0].LocalToWorld[13] = 5.0f;
+	Models[0].Flags = EEditorSceneInstanceFlags::Selected;
+	xr_array<FEditorDecalInstance, 1> Decals;
+	Decals[0].ObjectId = {15};
+	Decals[0].MaterialSlot = {9};
+	Decals[0].LocalToWorld[12] = 1.5f;
+	Decals[0].SortOrder = 7;
+	Decals[0].Flags = EEditorDecalInstanceFlags::Selected;
 
 	TiramisuEditorViewportSceneMailbox Mailbox;
 	xr_string Diagnostic;
-	if (!Mailbox.Submit(MakeSnapshot(xr_span(&Mesh, 1), xr_span(&Instance, 1), {}, Materials, DebugLines, DebugTriangles, 23, OverlayLines, OverlayTriangles, OverlayText, Lights), &Diagnostic))
+	if (!Mailbox.Submit(MakeSnapshot(xr_span(&Mesh, 1), xr_span(&Instance, 1), {}, Materials, DebugLines, DebugTriangles, 23, OverlayLines, OverlayTriangles, OverlayText, Lights, Particles, Models, Decals), &Diagnostic))
 	{
 		return Fail(Diagnostic.c_str());
 	}
 	OverlayText[0].Text = "mutated source label";
+	ParticleName = "mutated source particle";
+	ModelName = "mutated source model";
+	AnimationName = "mutated source animation";
 
 	FEditorOwnedViewportScenePacket Packet;
 	if (!Mailbox.Consume(Packet))
@@ -105,11 +138,25 @@ int main()
 	}
 	if (Packet.Revision != 17 || Packet.StaticMeshUpdates.size() != 1 ||
 		Packet.Instances.size() != 1 || Packet.MaterialSlots.size() != 1 ||
+		Packet.Instances[0].Flags != Instance.Flags ||
 		Packet.MaterialSlots[0].TextureName != "textures/test" ||
 		Packet.MaterialSlots[0].Flags != EEditorMaterialSlotFlags::TwoSided ||
 		Packet.Lights.size() != 1 ||
 		Packet.Lights[0].ObjectId.Value != 11 ||
 		Packet.Lights[0].Intensity != 8.0f ||
+		Packet.ParticleInstances.size() != 1 ||
+		Packet.ParticleInstances[0].AssetName !=
+			"effects\\editor_test" ||
+		Packet.ParticleInstances[0].LocalToWorld[12] != 4.0f ||
+		Packet.ModelInstances.size() != 1 ||
+		Packet.ModelInstances[0].AssetName !=
+			"dynamics\\scene_objects\\part\\part_none" ||
+		Packet.ModelInstances[0].AnimationName != "idle" ||
+		Packet.ModelInstances[0].LocalToWorld[13] != 5.0f ||
+		Packet.DecalInstances.size() != 1 ||
+		Packet.DecalInstances[0].MaterialSlot.Value != 9 ||
+		Packet.DecalInstances[0].LocalToWorld[12] != 1.5f ||
+		Packet.DecalInstances[0].SortOrder != 7 ||
 		Packet.StaticMeshUpdates[0].Vertices.size() != 3 ||
 		Packet.DebugLines.size() != 1 || Packet.DebugTriangles.size() != 1 ||
 		Packet.OverlayLines.size() != 1 ||
@@ -294,6 +341,91 @@ int main()
 	if (Mailbox.Submit(MakeSnapshot({}, xr_span(&Instance, 1), {}, Materials, {}, {}, 0, {}, {}, {}, InvalidLights), &Diagnostic))
 	{
 		return Fail("A light duplicated a scene instance object ID");
+	}
+
+	Particles[0].AssetName = {};
+	if (Mailbox.Submit(
+			MakeSnapshot(
+				{}, {}, {}, {}, {}, {}, 0, {}, {}, {}, {}, Particles
+			),
+			&Diagnostic
+		))
+	{
+		return Fail("A particle instance with an empty asset was accepted");
+	}
+	ParticleName = "effects\\duplicate";
+	Particles[0].AssetName = ParticleName;
+	Particles[0].ObjectId = Instance.ObjectId;
+	if (Mailbox.Submit(
+			MakeSnapshot(
+				{}, xr_span(&Instance, 1), {}, Materials,
+				{}, {}, 0, {}, {}, {}, {}, Particles
+			),
+			&Diagnostic
+		))
+	{
+		return Fail("A particle duplicated a scene instance object ID");
+	}
+
+	Models[0].AssetName = {};
+	if (Mailbox.Submit(
+			MakeSnapshot(
+				{}, {}, {}, {}, {}, {}, 0, {}, {}, {}, {}, {}, Models
+			),
+			&Diagnostic
+		))
+	{
+		return Fail("A model instance with an empty asset was accepted");
+	}
+	ModelName = "dynamics\\duplicate";
+	Models[0].AssetName = ModelName;
+	Models[0].ObjectId = Instance.ObjectId;
+	if (Mailbox.Submit(
+			MakeSnapshot(
+				{}, xr_span(&Instance, 1), {}, Materials,
+				{}, {}, 0, {}, {}, {}, {}, {}, Models
+			),
+			&Diagnostic
+		))
+	{
+		return Fail("A model duplicated a scene instance object ID");
+	}
+
+	Decals[0].MaterialSlot = {99};
+	if (Mailbox.Submit(
+			MakeSnapshot(
+				{}, {}, {}, Materials, {}, {}, 0, {}, {}, {}, {}, {}, {},
+				Decals
+			),
+			&Diagnostic
+		))
+	{
+		return Fail("A decal referencing an undeclared material was accepted");
+	}
+	Decals[0].MaterialSlot = {9};
+	Decals[0].ObjectId = Instance.ObjectId;
+	if (Mailbox.Submit(
+			MakeSnapshot(
+				{}, xr_span(&Instance, 1), {}, Materials, {}, {}, 0,
+				{}, {}, {}, {}, {}, {}, Decals
+			),
+			&Diagnostic
+		))
+	{
+		return Fail("A decal duplicated a scene instance object ID");
+	}
+	Models[0].ObjectId = {14};
+	xr_string LongAnimationName;
+	LongAnimationName.resize(1025, 'a');
+	Models[0].AnimationName = LongAnimationName;
+	if (Mailbox.Submit(
+			MakeSnapshot(
+				{}, {}, {}, {}, {}, {}, 0, {}, {}, {}, {}, {}, Models
+			),
+			&Diagnostic
+		))
+	{
+		return Fail("An oversized model animation name was accepted");
 	}
 
 	return 0;

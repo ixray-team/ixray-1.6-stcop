@@ -12,7 +12,6 @@ public:
 	static void Close();
 	static void OnRender();
 
-	ref_texture m_RealTexture;
 	FEditorTextureHandle m_RealTextureEditor;
 	u64 m_RealTextureRevision = 0;
 

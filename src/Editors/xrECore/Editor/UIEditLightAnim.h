@@ -21,17 +21,16 @@ private:
 private:
 	UIItemListForm* m_Items;
 	UIPropertiesForm* m_Props;
-	ref_texture m_TextureNull;
-	ImTextureID m_Texture;
-
-	ref_texture m_ItemTexture;
-	ref_texture m_PointerTexture;
+	FEditorTextureHandle m_ItemTexture;
+	FEditorTextureHandle m_PointerTexture;
+	u64 m_ItemTextureRevision = 0;
+	u64 m_PointerTextureRevision = 0;
 	CLAItem* m_CurrentItem;
 	bool m_Modife;
 
 	float m_PointerWeight;
 	bool m_PointerResize;
-	u32* m_PointerRawImage;
+	xr_vector<u32> m_PointerRawImage;
 	int m_PointerValue;
 	bool m_RenderAlpha;
 

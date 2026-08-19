@@ -30,8 +30,6 @@ UIEditLibrary::UIEditLibrary()
 
 	m_Preview = ((CLevelPreferences*)(EPrefs))->PreviewRenderLibrary;
 	m_SelectLods = false;
-	m_RealTexture = nullptr;
-
 	View.OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
 
 	SearchList.SetOnItemFocusedEvent({this, &UIEditLibrary::OnItemFocused});
@@ -40,7 +38,6 @@ UIEditLibrary::UIEditLibrary()
 
 void UIEditLibrary::OnItemFocused(ListItem* item)
 {
-	m_RealTexture = nullptr;
 	UI->DestroyImGuiTexture(m_RealTextureEditor);
 	PreviewProps->ClearProperties();
 	m_Current = nullptr;
@@ -50,22 +47,31 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 		PropItemVec Info;
 
 		m_Current = item->Key();
-		EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(m_Current, EImageThumbnail::ETObject);
+		auto* Thumbnail = static_cast<EObjectThumbnail*>(
+			ImageLib.CreateThumbnail(
+				m_Current, EImageThumbnail::ETObject
+			)
+		);
 
-		if (m_Thm && m_Thm->_FaceCount() != 0 && m_Thm->_VertexCount() != 0)
+		if (Thumbnail && Thumbnail->_FaceCount() != 0 &&
+			Thumbnail->_VertexCount() != 0)
 		{
-			IRHISurface* Surface = nullptr;
-			m_Thm->Update(Surface);
-
-			m_RealTexture = new CTexture();
-			m_RealTexture->surface_set(Surface);
-			Surface->Release();
-			if (m_Thm->Valid())
+			if (Thumbnail->Valid())
 			{
-				(void)UI->UpdateImGuiTexture(m_RealTextureEditor, m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4, ++m_RealTextureRevision, "editor-library-object-thumbnail", EEditorTextureFormat::Bgra8Unorm, true);
+				(void)UI->UpdateImGuiTexture(
+					m_RealTextureEditor,
+					Thumbnail->Pixels(),
+					THUMB_WIDTH,
+					THUMB_HEIGHT,
+					THUMB_WIDTH * 4,
+					++m_RealTextureRevision,
+					"editor-library-object-thumbnail",
+					EEditorTextureFormat::Bgra8Unorm,
+					true
+				);
 			}
 
-			m_Thm->FillInfo(Info);
+			Thumbnail->FillInfo(Info);
 			PreviewProps->AssignItems(Info);
 		}
 		else
@@ -74,6 +80,7 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 			PHelper().CreateCaption(Info, "Vertexes", "THM not found");
 			PreviewProps->AssignItems(Info);
 		}
+		xr_delete(Thumbnail);
 
 		if (m_Preview)
 		{
@@ -387,7 +394,7 @@ void UIEditLibrary::DrawRightBar()
 	{
 		const ImTextureID PreviewTexture = m_RealTextureEditor.IsValid()
 											   ? UI->GetImGuiTexture(m_RealTextureEditor)
-											   : UI->GetImGuiTexture(EDevice->texture_null);
+											   : UI->LoadTexture("ed\\ed_nodata");
 		ImGui::Image(PreviewTexture, ImVec2(200, 200));
 
 		PreviewProps->Draw();

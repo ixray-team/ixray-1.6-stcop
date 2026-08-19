@@ -6,37 +6,45 @@ u32 UIShaderCounter = 0;
 xr_set<CDS0_UIShader*> dbg_uishaders;
 CDS0_UIShader::CDS0_UIShader()
 {
-	UIShaderCounter++;
 	dbg_uishaders.insert(this);
 }
 
 CDS0_UIShader::~CDS0_UIShader()
 {
 	destroy();
-	UIShaderCounter--;
-
 	dbg_uishaders.erase(this);
 }
 
 void CDS0_UIShader::Copy(IUIShader& _in)
 {
 	destroy();
-	Texture = static_cast<CDS0_UIShader&>(_in).Texture;
+	const auto& Source = static_cast<CDS0_UIShader&>(_in);
+	Texture = Source.Texture;
+	ShaderName = Source.ShaderName;
+	TextureName = Source.TextureName;
 	if (Texture)
 	{
 		GRenderResourcesManager->TexturesManager->Copy(Texture);
+		++UIShaderCounter;
 	}
 }
 
 void CDS0_UIShader::create(LPCSTR sh, LPCSTR tex)
 {
 	destroy();
+	ShaderName = sh ? sh : "";
+	TextureName = tex ? tex : "";
 	if (tex == nullptr)
 	{
 		Texture = GRenderResourcesManager->WhiteTexture;
+		++UIShaderCounter;
 		return;
 	}
 	Texture = GRenderResourcesManager->TexturesManager->GetTexture(tex);
+	if (Texture)
+	{
+		++UIShaderCounter;
+	}
 }
 
 bool CDS0_UIShader::inited()
@@ -50,6 +58,26 @@ void CDS0_UIShader::destroy()
 	{
 		GRenderResourcesManager->TexturesManager->Free(Texture);
 		Texture = nullptr;
+		R_ASSERT(UIShaderCounter != 0);
+		--UIShaderCounter;
+	}
+}
+
+void DumpLiveTiramisuUiShaders()
+{
+	for (const CDS0_UIShader* Shader : dbg_uishaders)
+	{
+		if (!Shader->Texture)
+		{
+			continue;
+		}
+		Msg(
+			"! Tiramisu: live UI shader at shutdown: shader='%s', "
+			"texture='%s', address=%p",
+			Shader->ShaderName.c_str(),
+			Shader->TextureName.c_str(),
+			Shader
+		);
 	}
 }
 

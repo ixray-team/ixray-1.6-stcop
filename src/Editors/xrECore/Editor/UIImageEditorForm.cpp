@@ -27,8 +27,6 @@ UIImageEditorForm::UIImageEditorForm()
 UIImageEditorForm::~UIImageEditorForm()
 {
 	UI->DestroyImGuiTexture(m_EditorTexture);
-	m_Texture.destroy();
-	;
 
 	xr_delete(m_ItemList);
 	xr_delete(m_ItemProps);
@@ -43,12 +41,6 @@ void UIImageEditorForm::Draw()
 	{
 		UpdateProperties();
 		m_bUpdateProperties = false;
-	}
-
-	if (m_TextureRemove)
-	{
-		m_TextureRemove.destroy();
-		m_TextureRemove = nullptr;
 	}
 
 	ImGui::Columns(2);
@@ -138,18 +130,6 @@ void UIImageEditorForm::Draw()
 	{
 		ImGui::BeginChild("Right", ImVec2(0, 0));
 		{
-			if (m_Texture == nullptr)
-			{
-				u32 mem = 0;
-
-				auto* baseTexture = ::RImplementation.texture_load("ed\\ed_nodata", mem);
-				if (baseTexture)
-				{
-					m_Texture = new CTexture;
-					m_Texture->surface_set(GRHI->CreateTextureFromMemory(baseTexture, 0, {}));
-					baseTexture->Release();
-				}
-			}
 			const ImTextureID Preview = m_EditorTexture.IsValid()
 											? UI->GetImGuiTexture(m_EditorTexture)
 											: UI->LoadTexture("ed\\ed_nodata");
@@ -484,8 +464,6 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 
 	RegisterModifiedTHM();
 	m_THM_Current.clear();
-	m_TextureRemove = m_Texture;
-	m_Texture = nullptr;
 	UI->DestroyImGuiTexture(m_EditorTexture);
 
 	m_ItemProps->ClearProperties();
@@ -503,12 +481,6 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 			B->OnBtnClickEvent.bind(this, &UIImageEditorForm::OnCubeMapBtnClick);
 		}
 
-		IRHISurface* Surf = nullptr;
-		thm->Update(Surf);
-
-		m_Texture = new CTexture;
-		m_Texture->surface_set(Surf);
-		Surf->Release();
 		if (thm->Valid())
 		{
 			(void)UI->UpdateImGuiTexture(m_EditorTexture, thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4, ++m_EditorTextureRevision, "image-editor-thumbnail", EEditorTextureFormat::Bgra8Unorm, true);

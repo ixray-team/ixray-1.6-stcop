@@ -18,7 +18,6 @@ UIWeatherPropForm* UIWeatherPropForm::Form = nullptr;
 
 UIWeatherPropForm::UIWeatherPropForm()
 {
-	m_weather_properties = EDevice->Resources->_CreateTexture("ed\\bar\\WeatherProp");
 	m_speed_time = EPrefs->env_speed;
 	m_snd_on_roof = bIsSndOnRoof;
 	m_raindrop_collision = bIsRaindropCollision;
@@ -43,7 +42,9 @@ void UIWeatherPropForm::Draw()
 	{
 		ImVec2 image_pos = ImGui::GetCursorScreenPos();
 		ImGui::SameLine(0, 0);
-		ImGui::Image(UI->GetImGuiTexture(m_weather_properties), ImVec2(sizeImage));
+		ImGui::Image(
+			UI->LoadTexture("ed\\bar\\WeatherProp"), ImVec2(sizeImage)
+		);
 
 		// Переводим секунды в часы (0-24)
 		float hours = std::fmod(time / 3600.0f, 24.0f);

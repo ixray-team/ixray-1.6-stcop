@@ -1,6 +1,6 @@
 # Архитектура Tiramisu Render
 
-> Статус: описание прототипа и целевой архитектуры. Обновлено 23 июля 2026 года.
+> Статус: описание прототипа и целевой архитектуры. Обновлено 19 августа 2026 года.
 
 ## Границы подсистем
 
@@ -30,9 +30,9 @@ NRI-типы не должны попадать в публичное API `xrTir
 Миграция выполняется через renderer-neutral editor contract:
 
 ```text
-LevelEditor / ShaderEditor UI
-           |
-           v
+       LevelEditor UI
+             |
+             v
   xrECore editor render contract
        /                 \
 legacy adapter       Tiramisu adapter
@@ -47,21 +47,134 @@ EDevice/R4            renderer DLL/NRI
 
 Общие renderer-neutral интерфейсы viewport и material preview находятся в `src/Include/xrRender/EditorRenderer.h`. Поэтому renderer DLL может реализовать их без зависимости от `xrECore`, а editor не включает NRI headers.
 
-Renderer-neutral CPU picking уже переведён на contract и использует persistent CPU mesh cache из тех же scene snapshots; legacy backend сохраняет старый точный picking. Тот же contract передаёт depth-tested world-space debug lines/triangles, screen-space overlay lines/triangles в NDC и owned text labels. `xrECore` открывает capture на время editor redraw и параллельно с неизменённым legacy draw собирает common `DU_impl` primitives: lines/crosses, point/line/triangle lists, strips и fans, indexed faces, grid, selection boxes, prebuilt sphere/box/cone/cylinder gizmos, object-axis lines и подписи. `DrawEntity` дополнительно создаёт owned transient static mesh со стабильными mesh/material IDs, texture name и transform: migration bridge объединяет его с обычными static meshes, поэтому spawn icon проходит через тот же mailbox, material resolver, DescriptorHeapIndexing и Forward pipeline. Glow использует общий immutable quad и меняет camera-facing instance transform; editor particle renderer копирует уже рассчитанные CPU billboard vertices до unlock legacy dynamic VB. Оба пути публикуют стабильный object ID и bindless texture override в том же transient mesh packet. Selection rectangle добавляется до scene submission, потому что его legacy draw расположен позже `Tools->Render()`. После `Scene->Render`, cursor и сохранённого `m_DebugDraw` capture закрывается, migration bridge добавляет все списки в один owned scene snapshot; NRI backend рисует world-space primitives с depth test, overlays — после них без depth test, а UI копирует labels и композит их ImGui поверх renderer-owned image. Corner axis использует ImGuizmo и не зависит от legacy model. Далее переводятся полный lifecycle render targets и целевой новый scene path. После этого Tiramisu становится единственным composition root для LevelEditor/ShaderEditor; сохранять legacy D3D9 renderer в editor build не требуется, тогда как игровой R4 остаётся отдельным fallback. Editor-код не получает D3D9 или NRI handles; для ImGui он использует opaque viewport surface handle, создаваемый Tiramisu adapter.
+Renderer-neutral CPU picking использует persistent CPU mesh cache из тех же scene snapshots. Тот же contract передаёт depth-tested world-space debug lines/triangles, screen-space overlay triangles в NDC и owned text labels. В `-tiramisu-editor` redraw ответвляется до `CEditorRenderDevice::Begin`, `RCache`, `CRender::Render` и `EScene::Render`: LevelEditor обновляет CPU camera, добавляет grid, сохранённый `m_DebugDraw` и selection rectangle в snapshot, а NRI backend `xrRenderTiramisu` выполняет viewport draw, ImGui submit и единственный Present. Незавершённый capture явно отбрасывается при смене editor state.
 
-Material Editor использует layout и workflow существующего `src/Editors/ShaderEditor`, но не наследует `CSHEngineTools`, `IBlender` или legacy shader serialization. Его данные — `FMaterialGraph` и material assets из `xrTiramisuMaterialCore`; preview подключается через `IMaterialPreviewRenderer`.
+Startup этого режима также не вызывает `InitRenderDeviceEditor` и не создаёт legacy D3D11 `CRHI`, `CResourceManager`, render targets, vertex buffers или editor shaders. Загрузка старых `.object`/`.level` остаётся CPU-only import path: surface metadata, mesh geometry, details и wallmark slots читаются без legacy GPU allocation, после чего importer пишет native assets. Глобальные `RenderFactory`, `UIRender` и `DRender` остаются реализациями `xrRenderTiramisu`, а не перезаписываются `xrECore`.
 
-`xrEUI` теперь разделяет ImGui frontend и renderer backend через `IXrUIRendererBackend`. Встроенный DX9 backend остаётся временным fallback. Реализация LevelEditor `TiramisuEditorRenderBridge` находится в `xrRenderTiramisu`, использует единый `TiramisuRenderDevice` и общий streamer, а сам владеет только editor swapchain, ImGui instance, тремя command contexts, timeline fence и ресурсами editor surfaces. Для Vulkan и D3D12 используется тот же официальный NRI ImGui path, что и в игровом Tiramisu.
+Decal path также принадлежит `xrRenderTiramisu`, а не LevelEditor. Общий
+scene contract передаёт `FEditorDecalInstance`: stable object/material IDs,
+канонический projector transform, sort order и selection flag. Renderer
+создаёт depth SRV, резервирует отдельный bindless descriptor каждому viewport,
+публикует draw record до записи command buffer и выполняет порядок
+`geometry → depth SRV → decals → depth attachment → editor overlays`.
+Legacy `ESceneWallmarkTool` вычисляет projector basis из сохранённых позиций и
+UV только в adapter; его старые clipped triangles в Tiramisu не отрисовываются.
+Native schema хранит тот же смысл напрямую как `decal_components` RenderScene
+v3. Полная миграция Wallmarks в эти компоненты с audit dump остаётся отдельным
+шагом importer, поэтому runtime adapter пока не считается завершённой
+контентной миграцией.
 
-External presenter работает в две фазы: `EndFrame` завершает построение `ImDrawData`, legacy scene закрывается без DX9 present, затем `PresentMainFrame` записывает NRI commands и выполняет единственный present главного окна. Путь устанавливается opt-in флагом `-tiramisu-editor`; Vulkan является default API, `-dx12` выбирает D3D12. Viewport, thumbnails и icons на новом пути публикуются через renderer-owned texture handles/registry. Оставшиеся незарегистрированные legacy user-image commands безопасно заменяются white descriptor и никогда не передаются GPU как raw DX9 pointers; подмена типов через cast запрещена.
+Оставшаяся работа относится не к параллельному renderer, а к editor services. Первый particle service уже находится в `xrRenderTiramisu`: он различает original/extended `particles.xr`, читает loose `.pe/.pg/.pac`, публикует owned snapshot, принимает particle instances через scene mailbox и не создаёт `CPSLibrary` shaders. Effect definition сохраняет compiled PAPI actions и sprite metadata; group definition — расписание root effects и child references. Render thread владеет отдельным simulation state каждого object ID, выполняет ограниченный fixed-step update, запускает enabled group entries по `time0/time1`, создаёт related/free child states для `on play/birth/death`, обновляет frame animation и строит vertices с velocity/path/world/face alignment, UV и vertex color. Texture использует тот же DescriptorHeapIndexing material ABI, buffer заменяется renderer-ом и удаляется deferred. `CViewportParticle` использует отдельный viewport ID и renderer-owned surface без legacy model pool. До полного particle parity остаются collision/culling/distortion/soft-particle варианты. Остальные gizmo/object packets должны переходить через тот же контракт LevelEditor. Игровой R4 остаётся отдельным fallback.
 
-Первый scene-срез этой границы реализован для главного viewport. Тот же backend реализует `IEditorRenderBackend`, принимает resize/capture и renderer-neutral snapshot без NRI типов. Snapshot содержит camera, changed static-mesh uploads, sections/material-slot IDs, visible instances/transforms, Directional/Point/Spot lights, removed mesh IDs и revisioned debug line/triangle lists; backend обязан скопировать spans до возврата. Thread-safe mailbox проверяет finite geometry/radiometry, max 64 lights, positive local-light range, spot cone и global object/light GUID constraints, валидирует пакет транзакционно и передаёт owned data стороне записи GPU commands. Повторяющийся instance `ObjectId` допустим для нескольких editable meshes одного legacy object.
+Material Editor находится в LevelEditor и использует существующий
+`src/Editors/ShaderEditor` только как визуальный ориентир для layout и
+workflow. Сам legacy ShaderEditor не подключается к Tiramisu и не входит в
+composition root нового редактора. Material Editor не наследует
+`CSHEngineTools`, `IBlender` или legacy shader serialization: его данные —
+`FMaterialGraph` и material assets из `xrTiramisuMaterialCore`, а preview
+подключается через `IMaterialPreviewRenderer`.
 
-Legacy `EScene` остаётся загрузчиком старого editor content и через migration bridge преобразует `CSceneObject/CEditableMesh` в тот же контракт, который выдаёт новый scene/static-mesh/light component path. NRI backend лениво создаёт device-local `RGBA8` color target, `D32` depth target и views, загружает изменённые meshes, разрешает legacy shader/texture через pre-authored material instances и асинхронно создаёт настоящий Forward pipeline. Pass учитывает two-sided/blend mode и использует общий GGX/Smith/Schlick BRDF. До 64 Directional/Point/Spot lights загружаются в отдельный bindless `ByteAddressBuffer`; point использует smooth range falloff, spot — inner/outer cone. При отсутствии lights остаётся временный hardcoded sun fallback. Shadow flag переносится в GPU record, но shadow maps/passes пока отсутствуют. Debug shader остаётся fallback при первой сборке или ошибке. `editor\spawn_icon` разрешается в translucent/unlit master; `editor\particle_translucent`, `editor\particle_additive` и `editor\glow_sprite` — в translucent/additive unlit masters, а texture path передаётся как bindless `BaseTexture` override. Выбранные instances повторно рисуются отдельным wireframe pipeline с depth test без depth write. CPU picker использует persistent mesh cache, поддерживает transforms и возвращает ближайший triangle вместе с object/mesh/material IDs. Сохранённый `m_DebugDraw` и common world-space `DU_impl` primitives преобразуются в цветные line/triangle vertex lists и рисуются depth-tested NRI pipelines с alpha blending; selection rectangle и object-axis lines используют следующие screen-space pipelines без depth test. Text mailbox валидирует finite position/colors, ограничивает длину, владеет строками и отдаёт UI безопасную копию для ImGui composition. Общий GPU buffer заменяется по deterministic revision и удаляется deferred. Color переводится в `SHADER_RESOURCE` для ImGui, а заменённые mesh buffers/pipelines освобождаются после timeline fence. При resize выполняется ожидание graphics queue, unregister и пересоздание targets. Restart/device-loss acceptance ещё не завершён.
+`xrEUI` теперь разделяет ImGui frontend и renderer backend через `IXrUIRendererBackend`. Встроенный DX9 backend остаётся временным fallback. Реализация LevelEditor `TiramisuEditorRenderBridge` находится в `xrRenderTiramisu`, использует единый `TiramisuRenderDevice` и общий streamer, а сам владеет только editor swapchain, ImGui instance, тремя command contexts, timeline fence и ресурсами editor surfaces. Для Vulkan и D3D12 используется тот же официальный NRI ImGui path, что и в игровом Tiramisu. Zero-size ImGui frames при создании, минимизации или восстановлении окна отбрасываются до записи command buffer, поскольку Vulkan/NRI не допускает viewport нулевой ширины. При resize bridge ждёт graphics queue, пересоздаёт swapchain/targets и атомарно перенаправляет descriptor старого viewport surface в уже собранном `ImDrawData` на новый descriptor. Renderer-neutral lifecycle status публикует только размеры и revision/counters; NRI-объекты остаются внутри DLL. Автоматический `-editor-test-hidden` не создаёт splash и не активирует главное окно: non-focusable HWND расположен за пределами рабочего стола, но остаётся видимым для DXGI/Vulkan swapchain.
 
-Editor material GPU ABI v2 разделён на три frame regions. `NRI_BASE_INSTANCE` передаёт абсолютный индекс draw record в `FMaterialDrawGpuData`; record ссылается на `FMaterialInstanceGpuData`, тот — на упакованный parameter block с bindless indices из `ResourceDescriptorHeap` и `SamplerDescriptorHeap`. Отдельный `LightDataBufferIndex` выбирает `ByteAddressBuffer`, а `LightDataOffset`/`LightCount` адресуют диапазон текущего viewport/frame. Каждый `FMaterialLightGpuData` занимает 64 байта. Draw/instance/parameter/light данные и viewport constants обновляются только после ожидания fence переиспользуемого frame context. Preview и каждый main viewport используют непересекающиеся диапазоны. X-Ray `Fmatrix` остаётся row-vector типом на CPU; только current/previous transform, записываемый в построчно восстанавливаемый HLSL `ByteAddressBuffer`, транспонируется через общий `xrTiramisuMaterialCore` helper. Cbuffer и root constants сохраняют исходную память `Fmatrix`, поскольку их column-major packing выполняет DXC.
+Presentation работает в две фазы: `EndFrame` на game thread завершает
+построение `ImDrawData`, legacy scene закрывается без DX9 present, затем
+`PresentMainFrame` синхронно передаёт draw data общей очереди render commands.
+Выделенный render thread `xrRenderTiramisu` обрабатывает scene/mailbox,
+записывает NRI commands и выполняет единственный present главного окна. До
+введения тройного immutable UI packet game thread ждёт завершения этой команды,
+поэтому следующий ImGui frame не может перезаписать используемый `ImDrawData`.
+LevelEditor устанавливает этот путь по умолчанию; прежний флаг
+`-tiramisu-editor` сохранён как совместимый необязательный аргумент существующих
+launch-конфигураций. Vulkan является default API, `-dx12` выбирает D3D12.
+Viewport, thumbnails и icons на новом пути
+публикуются через renderer-owned texture handles/registry. Оставшиеся
+незарегистрированные legacy user-image commands безопасно заменяются white
+descriptor и никогда не передаются GPU как raw DX9 pointers; подмена типов
+через cast запрещена.
 
-Текущий editor NRI backend является scene/presentation foundation, а не завершённой render-thread моделью. Scene submission уже копируется в immutable owned packet, однако запись NRI commands пока выполняется внешним presenter path. Перед включением по умолчанию consumer packet должен быть перенесён на editor render thread; NRI create/destroy/submit будут проверяться теми же thread-affinity правилами, что игровой renderer.
+Первый scene-срез этой границы реализован для главного viewport. Тот же backend реализует `IEditorRenderBackend`, принимает resize/capture и renderer-neutral snapshot без NRI типов. Snapshot содержит camera, changed static-mesh uploads, sections/material-slot IDs, visible instances/transforms, standalone OGF model instances, Directional/Point/Spot lights, removed mesh IDs и revisioned debug line/triangle lists; backend обязан скопировать spans до возврата. Thread-safe mailbox проверяет finite geometry/radiometry, model asset name, max 64 lights, positive local-light range, spot cone и global object/light GUID constraints, валидирует пакет транзакционно и передаёт owned data стороне записи GPU commands. Повторяющийся instance `ObjectId` допустим для нескольких editable meshes одного legacy object.
+
+Standalone OGF остаётся renderer-owned asset path: LevelEditor передаёт только
+имя visual, необязательный `startup_animation`, transform, object ID и flags.
+`xrRenderTiramisu` нормализует путь, bounded worker читает и разбирает
+static/progressive/embedded hierarchy либо skeletal 1–4-weight draw-parts,
+а render thread публикует cache entry, создаёт stable mesh/material IDs и NRI
+buffers. Для skeletal vertices loader сохраняет bone indices и проверенные
+нормализованные weights, читает bone hierarchy/bind transforms и вычисляет
+inverse-bind matrices. Renderer-owned pose builder уже строит конечную
+`current-model × inverse-bind` palette из массива local transforms. Pending
+instance сохраняется в owned scene packet и автоматически разворачивается
+после готовности job. OGF/OMF parser читает embedded/external motions и
+семплирует current/previous pose. Render thread упаковывает обе палитры в
+bindless `ByteAddressBuffer`, записывает offsets/count в `FMaterialDrawGpuData`
+ABI v4 и выбирает отдельную `skeletal` material permutation. Общий
+`MaterialSkeletalVertexFactory` выполняет до четырёх bone influences и
+предыдущую деформацию для будущего velocity pass; LevelEditor не видит NRI
+buffer, descriptor index или внутренний формат skeletal vertex.
+
+Expanded OGF mesh updates/instances также атомарно передаются в существующий
+`TiramisuEditorViewportScenePicker`. Он хранит CPU mesh cache под mutex и
+возвращает тот же Spawn object ID, поэтому LevelEditor не содержит отдельной
+логики ray intersection для OGF.
+
+Остальные Spawn-представления не вводят собственных passes: attached
+`CEditShape` проходит через общий shape debug packet, а `idle_particles` — через
+`FEditorParticleInstance` и renderer-owned particle catalog/simulation. На
+Tiramisu path LevelEditor хранит только source names и не создаёт legacy
+`IRenderVisual` для OGF или idle particle. Незакрытой Spawn-частью остаются
+специализированные object/gizmo packets и полный authoring UI анимаций, а не
+базовая OGF/OMF GPU-деформация.
+
+Legacy `EScene` остаётся загрузчиком старого editor content и через migration bridge преобразует `CSceneObject/CEditableMesh` в тот же контракт, который выдаёт новый scene/static-mesh/light component path. Тот же bridge преобразует сохранённое направление legacy-солнца и видимые `CLight` с включённым `m_UseInD3D` в Directional/Point/Spot records; spot cone переводится из полного D3D-угла в half angle, selection и cast-shadow metadata сохраняются. Legacy `CEditShape`, `ESoundEnvironment` и `CPuddle` sphere/box используют общие `du_sphere/du_box` topology данные только на CPU: bridge применяет shape и object transforms, ограничивает объём пакета и передаёт wire/solid vertices в renderer-neutral debug lists. Для `ESoundSource` в тот же line packet попадают min/max distance spheres либо компактный icon sphere. `CPortal` публикует замкнутый wire contour, двухсторонний полупрозрачный triangle fan и normal marker; приватные legacy sector colors в новый render contract не протекают. NRI backend лениво создаёт device-local `RGBA8` color target, `D32` depth target и views, загружает изменённые meshes, разрешает legacy shader/texture через pre-authored material instances и асинхронно создаёт настоящий Forward pipeline. Pass учитывает two-sided/blend mode и использует общий GGX/Smith/Schlick BRDF. До 64 Directional/Point/Spot lights загружаются в отдельный bindless `ByteAddressBuffer`; point использует smooth range falloff, spot — inner/outer cone. При отсутствии lights остаётся временный hardcoded sun fallback. Shadow flag переносится в GPU record, но shadow maps/passes пока отсутствуют. Debug shader остаётся fallback при первой сборке или ошибке. `editor\spawn_icon` разрешается в translucent/unlit master; `editor\particle_translucent`, `editor\particle_additive` и `editor\glow_sprite` — в translucent/additive unlit masters, а texture path передаётся как bindless `BaseTexture` override. Выбранные instances повторно рисуются отдельным wireframe pipeline с depth test без depth write. CPU picker использует persistent mesh cache, поддерживает transforms и возвращает ближайший triangle вместе с object/mesh/material IDs. Сохранённый `m_DebugDraw` и common world-space `DU_impl` primitives преобразуются в цветные line/triangle vertex lists и рисуются depth-tested NRI pipelines с alpha blending; selection rectangle и object-axis lines используют следующие screen-space pipelines без depth test. Text mailbox валидирует finite position/colors, ограничивает длину, владеет строками и отдаёт UI безопасную копию для ImGui composition. Общий GPU buffer заменяется по deterministic revision и удаляется deferred. Color переводится в `SHADER_RESOURCE` для ImGui, а заменённые mesh buffers/pipelines освобождаются после timeline fence. Resize/recreate acceptance пройден на normal/ASan Vulkan/D3D12; restart/device-loss acceptance ещё не завершён.
+
+Editor material GPU ABI v4 разделён на три frame regions.
+`NRI_BASE_INSTANCE` передаёт абсолютный индекс draw record в
+`FMaterialDrawGpuData`; 160-байтный record ссылается на material instance,
+current/previous palette offsets и bone count, а decal record переиспользует
+неактивные skinning поля для depth descriptor и world-to-decal. Отдельные
+descriptor indices выбирают parameter, light и skinning `ByteAddressBuffer`;
+scene constants дополнительно содержат inverse view-projection. Каждая
+light/palette matrix запись занимает 64 байта. Draw/instance/parameter/light/
+palette данные и viewport constants обновляются только после ожидания fence
+переиспользуемого frame context. Preview и каждый main viewport используют
+непересекающиеся диапазоны. X-Ray `Fmatrix` остаётся row-vector типом на CPU;
+current/previous transform, world-to-decal и bone matrices транспонируются
+только при записи в построчно восстанавливаемый HLSL buffer. Cbuffer и root
+constants сохраняют исходную память `Fmatrix`, поскольку их column-major
+packing выполняет DXC.
+
+Editor NRI backend использует общий render thread `xrRenderTiramisu`. До запуска
+выделенного потока game thread временно выполняет роль render thread и создаёт
+shared NRI device вместе с базовыми ресурсами самого `Render->create()`. После
+запуска renderer вызов
+`InitializeRendererResources` ставит команду создания swapchain, frame
+contexts, ImGui backend, viewport/preview pipelines и GPU resources на render
+thread. Каждый editor frame и resize выполняются там же с
+`CheckIsRenderThread`. SDL window handle и pixel size считываются только game
+thread и передаются consumer через атомарное presentation state.
+
+Остановка выполняется в обратном порядке: editor GPU resources удаляются
+render command, затем останавливается общий renderer, и только после этого
+`FinalizeRendererShutdown` освобождает shared device. Scene submission до
+возврата копируется в immutable owned packet. Текущая синхронная передача
+`ImDrawData` уже соблюдает thread contract, но остаётся временной до введения
+трёх независимых immutable UI packets.
+
+Legacy `CGlow` не вызывает `ref_shader`, `RCache` или `CTLSprite` в Tiramisu composition root. Bridge строит общий unit quad, передаёт texture через material slot `editor\glow_sprite`, а camera-facing transform, fixed/world size, selection и object ID хранит в обычном scene instance. NRI mesh, pipeline и descriptors создаются и удаляются только renderer thread.
+
+Legacy `CSpawnPoint` публикует renderer-neutral fallback icon, overlay label,
+selection bounds и EnvMod radius. Entity visual передаётся как standalone OGF
+instance, attached shape использует общий shape packet, а idle particle —
+общий particle packet. OGF/OMF animation выполняется renderer-side; остаются
+специализированные authoring controls и остальные object packets.
+
+AI Map больше не требует `ref_geom`, `ref_shader` и dynamic legacy vertex stream в Tiramisu viewport. `ESceneAIMapTool` отдаёт ограниченный `m_VisRadius` набор из spatial hash, bridge строит plane-projected node quads и уникальные link lines, а renderer получает обычные debug triangles/lines. Линейный fallback разрешён только малому ещё не синхронизированному набору узлов.
+
+Legacy `CWayObject/CWayPoint` публикует point crosses, одно отображение reciprocal link и labels через те же renderer-neutral line/text lists. Односторонняя связь не теряется из-за pointer ordering, а приватные authoring collections открыты bridge только через read-only accessors.
+
+Grouped objects остаются в обычных `EScene` class lists, поэтому bridge не дублирует их geometry. Общая проверка видимости проходит цепочку `GetOwner()` и учитывает `ESceneToolBase::flVisible`; скрытая Group или скрытый tool исключает child packets. Выбранная `CGroupObject` отдельно публикует только renderer-neutral bounds.
+
+Выбранный legacy `CSector` также не создаёт editor-local GPU resources. Bridge читает его итоговый world-space `Fbox`, публикует 12 renderer-neutral линий и включает их в deterministic debug revision. Цвет выбранного sector box остаётся белым, locked box — красным; приватный `sector_color` через границу редактора не передаётся. Portal contour и sector bounds уже видны в Tiramisu viewport, но runtime portal traversal, indoor/outdoor visibility и OCC этим диагностическим пакетом не реализуются.
 
 ## Threads и владение ресурсами
 

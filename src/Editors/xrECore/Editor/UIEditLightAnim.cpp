@@ -16,31 +16,10 @@ UIEditLightAnim::UIEditLightAnim()
 	m_Props->SetModifiedEvent(TOnModifiedEvent(this, &UIEditLightAnim::OnModified));
 	m_CurrentItem = nullptr;
 
-	m_TextureNull.create("ed\\ed_nodata");
-	m_TextureNull->Load();
-	m_Texture = nullptr;
 	m_PointerWeight = -1;
 	m_PointerResize = true;
-	m_PointerTexture = new CTexture;
 	m_PointerValue = 0;
 	m_RenderAlpha = false;
-
-	RHITextureDesc textureDesc = {};
-	textureDesc.Width = 32;
-	textureDesc.Height = 32;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-	textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-	textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
-
-	RHISubResource subResource = {};
-
-	IRHISurface* surf = GRHI->CreateTexture2D(textureDesc, subResource);
-	m_ItemTexture = new CTexture;
-	m_ItemTexture->surface_set(surf);
-	surf->Release();
 
 	m_Items->SetOnItemCreaetEvent(xr_make_delegate(this, &UIEditLightAnim::OnCreateItem));
 	m_Items->SetOnItemRemoveEvent({this, &UIEditLightAnim::OnRemoveItem});
@@ -64,20 +43,8 @@ UIEditLightAnim::~UIEditLightAnim()
 			LALib.Reload();
 		}
 	}
-	m_ItemTexture->surface_set(nullptr);
-
-	if (m_PointerTexture)
-	{
-		m_PointerTexture->surface_set(nullptr);
-		xr_delete(m_PointerRawImage);
-	}
-
-	if (m_Texture)
-	{
-		IM_TEXTURE_RELEASE(m_Texture);
-	}
-
-	m_TextureNull.destroy();
+	UI->DestroyImGuiTexture(m_ItemTexture);
+	UI->DestroyImGuiTexture(m_PointerTexture);
 	xr_delete(m_Props);
 	xr_delete(m_Items);
 }
@@ -172,7 +139,10 @@ void UIEditLightAnim::Draw()
 					}
 				}
 				RenderPointer();
-				ImGui::Image(m_PointerTexture->get_SRView()->GetRawSRV(), ImVec2(m_PointerWeight, POINTER_HEIGHT));
+				ImGui::Image(
+					UI->GetImGuiTexture(m_PointerTexture),
+					ImVec2(m_PointerWeight, POINTER_HEIGHT)
+				);
 			}
 			m_Props->Draw();
 		}
@@ -318,7 +288,12 @@ void UIEditLightAnim::Draw()
 		{
 			RenderItem();
 		}
-		ImGui::Image(m_CurrentItem ? m_ItemTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImGui::CalcItemSize(ImVec2(-1, -1), 32, 32));
+		ImGui::Image(
+			m_CurrentItem
+				? UI->GetImGuiTexture(m_ItemTexture)
+				: UI->LoadTexture("ed\\ed_nodata"),
+			ImGui::CalcItemSize(ImVec2(-1, -1), 32, 32)
+		);
 		if (!IsDocked)
 		{
 			IsDocked = ImGui::IsWindowDocked();
@@ -411,21 +386,18 @@ void UIEditLightAnim::RenderItem()
 			Color = subst_alpha(Color, 0xFF);
 		}
 	}
-	{
-		u32 Pitch = 0;
-		void* pBits = m_ItemTexture->pSurface->Lock(0, &Pitch);
-		u32* dest = nullptr;
-
-		for (u32 y = 0; y < 32; y++)
-		{
-			dest = reinterpret_cast<u32*>(reinterpret_cast<char*>(pBits) + (Pitch * y));
-			for (u32 i = 0; i < 32; i++)
-			{
-				dest[i] = Color;
-			}
-		}
-		m_ItemTexture->pSurface->Unlock();
-	}
+	xr_array<u32, 32 * 32> Pixels;
+	Pixels.fill(Color);
+	(void)UI->UpdateImGuiTexture(
+		m_ItemTexture,
+		Pixels.data(),
+		32,
+		32,
+		32 * sizeof(u32),
+		++m_ItemTextureRevision,
+		"light-animation-color",
+		EEditorTextureFormat::Bgra8Unorm
+	);
 }
 
 void UIEditLightAnim::OnCreateKeyClick()
@@ -525,31 +497,10 @@ void UIEditLightAnim::RenderPointer()
 {
 	if (m_PointerResize)
 	{
-		if (m_PointerTexture)
-		{
-			m_PointerTexture->surface_set(nullptr);
-			xr_delete(m_PointerRawImage);
-		}
-
-
-		RHITextureDesc textureDesc = {};
-		textureDesc.Width = m_PointerWeight;
-		textureDesc.Height = POINTER_HEIGHT;
-		textureDesc.MipLevels = 1;
-		textureDesc.ArraySize = 1;
-		textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-		textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-		textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-		textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
-
-		RHISubResource subResource = {};
-
-		IRHISurface* surf = GRHI->CreateTexture2D(textureDesc, subResource);
-
-		m_PointerTexture->surface_set(surf);
-		surf->Release();
-
-		m_PointerRawImage = xr_alloc<u32>(POINTER_HEIGHT * m_PointerWeight);
+		const u32 Width = std::max(1, iFloor(m_PointerWeight));
+		m_PointerWeight = static_cast<float>(Width);
+		m_PointerRawImage.resize(POINTER_HEIGHT * Width);
+		m_PointerResize = false;
 	}
 	for (int x = 0; x < m_PointerWeight; x++)
 	{
@@ -651,21 +602,17 @@ void UIEditLightAnim::RenderPointer()
 			}
 		}
 	}
-	{
-		u32 Pitch = 0;
-		void* pBits = m_PointerTexture->pSurface->Lock(0, &Pitch);
-		u32* dest = nullptr;
-
-		for (u32 y = 0; y < POINTER_HEIGHT; y++)
-		{
-			dest = reinterpret_cast<u32*>(reinterpret_cast<char*>(pBits) + (Pitch * y));
-			for (u32 i = 0; i < m_PointerWeight; i++)
-			{
-				dest[i] = m_PointerRawImage[y * int(m_PointerWeight) + i];
-			}
-		}
-		m_PointerTexture->pSurface->Unlock();
-	}
+	const u32 Width = static_cast<u32>(m_PointerWeight);
+	(void)UI->UpdateImGuiTexture(
+		m_PointerTexture,
+		m_PointerRawImage.data(),
+		Width,
+		POINTER_HEIGHT,
+		Width * sizeof(u32),
+		++m_PointerTextureRevision,
+		"light-animation-timeline",
+		EEditorTextureFormat::Bgra8Unorm
+	);
 }
 
 void UIEditLightAnim::FillRectPointer(const ImVec4& rect, u32 color, bool plus_one)

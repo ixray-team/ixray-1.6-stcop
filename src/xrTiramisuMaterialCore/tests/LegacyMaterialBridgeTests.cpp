@@ -98,6 +98,7 @@ int main()
 		FLegacyCase{"default_aref", "5f4b3a8e-85fe-42bc-9080-f71eb497f04b", false, false},
 		FLegacyCase{"vertex_aref", "5f4b3a8e-85fe-42bc-9080-f71eb497f04b", true, false},
 		FLegacyCase{"lmap_aref", "5f4b3a8e-85fe-42bc-9080-f71eb497f04b", false, true},
+		FLegacyCase{"details\\blend", "5f4b3a8e-85fe-42bc-9080-f71eb497f04b", false, false},
 		FLegacyCase{"models/selflight", "f8ab2e31-cc13-4c4e-9dce-e621d92353aa", {}, {}},
 	};
 

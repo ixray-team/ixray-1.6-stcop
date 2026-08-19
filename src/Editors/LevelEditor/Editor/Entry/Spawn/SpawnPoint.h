@@ -54,6 +54,7 @@ public:
         CLE_Visual*		m_Visual;
         Flags8			m_flags;
         xr_vector<CLE_Visual*> m_VisualHelpers;
+        shared_str      IdleParticleName;
         IRenderVisual*  IdleParticle = nullptr;
 		xr_shared_ptr<EWallmarkWrapper> Wallmark = nullptr;
         CLE_Motion*		m_Motion;
@@ -152,6 +153,11 @@ public:
     
 	bool 			RefCompare		(const char* ref);
     virtual const char*	RefName			();
+	// Возвращает только ссылку на OGF для renderer-neutral scene packet.
+	// Время жизни строки принадлежит spawn entity.
+	[[nodiscard]] const char* GetEditorVisualName() const noexcept;
+	[[nodiscard]] const char* GetEditorAnimationName() const noexcept;
+	[[nodiscard]] const char* GetEditorIdleParticleName() const noexcept;
 
     bool			CreateSpawnData	(const char* entity_ref);
 	virtual void    Render      	( int priority, bool strictB2F );

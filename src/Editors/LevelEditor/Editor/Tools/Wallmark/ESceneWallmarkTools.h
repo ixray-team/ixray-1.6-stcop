@@ -1,5 +1,6 @@
 #pragma once
 #include "Editor/Tools/Base/ESceneCustomMTools.h"
+#include "../../../../xrECore/Editor/EditorRenderBackend.h"
 
 class ESceneWallmarkTool: public ESceneToolBase
 {
@@ -33,7 +34,17 @@ public:
 		shared_str		tx_name;
 		ref_shader		shader;
 		WMVec			items;
-						wm_slot	(shared_str sh, shared_str tx)		{sh_name=sh;tx_name=tx;shader.create(*sh_name,*tx_name);items.reserve(256);}
+		wm_slot(shared_str sh, shared_str tx)
+		{
+			sh_name = sh;
+			tx_name = tx;
+			if (GetEditorRenderBackend().GetKind() ==
+				EEditorRenderBackendKind::Legacy)
+			{
+				shader.create(*sh_name, *tx_name);
+			}
+			items.reserve(256);
+		}
 	};
 
 	using WMSVec = xr_vector<wm_slot*>;

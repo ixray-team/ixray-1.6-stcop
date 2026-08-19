@@ -1,4 +1,5 @@
 #include "../LevelEditor/Renderer/Tiramisu/TiramisuEditorNriStartup.h"
+#include "../xrECore/Editor/EditorWindowPlacement.h"
 #include "../../xrCore/RenderDebugPolicy.h"
 
 #include <cstdlib>
@@ -15,11 +16,33 @@ int Fail(const char* Message)
 
 int main()
 {
+	constexpr FEditorWindowPlacementRect PrimaryDisplay{0, 0, 1920, 1080};
+	constexpr FEditorWindowPlacementRect LeftDisplay{-1920, 0, 1920, 1080};
+	if (!IsEditorWindowTitleAreaVisible(
+			{100, 100, 1280, 720},
+			PrimaryDisplay
+		) ||
+		!IsEditorWindowTitleAreaVisible(
+			{-1800, 100, 1280, 720},
+			LeftDisplay
+		) ||
+		IsEditorWindowTitleAreaVisible(
+			{-32000, -32000, 1280, 720},
+			PrimaryDisplay
+		) ||
+		IsEditorWindowTitleAreaVisible(
+			{1900, 1060, 1280, 720},
+			PrimaryDisplay
+		))
+	{
+		return Fail("The editor window placement visibility policy is invalid");
+	}
+
 	const FEditorNriStartupConfig Default = ParseEditorNriStartupConfig("");
-	if (Default.Enabled || Default.Api != ETiramisuEditorGraphicsApi::Vulkan ||
+	if (!Default.Enabled || Default.Api != ETiramisuEditorGraphicsApi::Vulkan ||
 		Default.DeterministicTest.Enabled || !Default.IsValid())
 	{
-		return Fail("The NRI editor must remain opt-in and default to Vulkan");
+		return Fail("LevelEditor must use Tiramisu and Vulkan by default");
 	}
 
 	const FEditorNriStartupConfig Vulkan =
@@ -36,9 +59,9 @@ int main()
 		return Fail("The D3D12 NRI editor command line was parsed incorrectly");
 	}
 
-	if (ParseEditorNriStartupConfig("-tiramisu-editor-disabled").Enabled)
+	if (!ParseEditorNriStartupConfig("-tiramisu-editor-disabled").Enabled)
 	{
-		return Fail("A partial command-line token enabled the NRI editor");
+		return Fail("A partial compatibility token disabled Tiramisu");
 	}
 
 	const FEditorNriStartupConfig Deterministic =
@@ -57,6 +80,30 @@ int main()
 		return Fail("The deterministic GPU test policy was parsed incorrectly");
 	}
 
+	const FEditorNriStartupConfig HiddenDeterministic =
+		ParseEditorNriStartupConfig(
+			"-tiramisu-editor -rdbg -render-deterministic "
+			"-editor-test-hidden"
+		);
+	if (!HiddenDeterministic.IsValid() ||
+		!HiddenDeterministic.HiddenTestWindow)
+	{
+		return Fail("The hidden editor smoke mode was parsed incorrectly");
+	}
+	if (ParseEditorNriStartupConfig(
+			"-tiramisu-editor -rdbg -editor-test-hidden"
+		).IsValid())
+	{
+		return Fail("A hidden editor window must require deterministic mode");
+	}
+	if (ParseEditorNriStartupConfig(
+			"-tiramisu-editor -rdbg -render-deterministic "
+			"-editor-test-hidden-disabled"
+		).HiddenTestWindow)
+	{
+		return Fail("A partial hidden-window token enabled the test mode");
+	}
+
 	if (ParseEditorNriStartupConfig(
 			"-tiramisu-editor -render-deterministic"
 		)
@@ -73,12 +120,12 @@ int main()
 		return Fail("-rdebug must not satisfy the deterministic -rdbg contract");
 	}
 
-	if (ParseEditorNriStartupConfig(
-			"-rdbg -render-deterministic"
-		)
-			.IsValid())
+	const FEditorNriStartupConfig DefaultDeterministic =
+		ParseEditorNriStartupConfig("-rdbg -render-deterministic");
+	if (!DefaultDeterministic.Enabled || !DefaultDeterministic.IsValid() ||
+		!DefaultDeterministic.DeterministicTest.Enabled)
 	{
-		return Fail("The editor deterministic mode requires -tiramisu-editor");
+		return Fail("The default Tiramisu editor rejected deterministic mode");
 	}
 
 	if (ParseEditorNriStartupConfig(

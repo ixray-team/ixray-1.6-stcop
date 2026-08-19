@@ -2,32 +2,30 @@
 #include "IconsFontAwesome7.h"
 #include "UIWidgetsTest.h"
 
-#include "../../xrEUI/ModernUI.h" // Í‡Í ‚ UIMainMenuForm.cpp
+#include "../../xrEUI/ModernUI.h" // –∫–∞–∫ –≤ UIMainMenuForm.cpp
 
 static CUIWidgetsTest* g_UIWidgetsTest = nullptr;
 static bool show_demo_window = false; // Dear ImGui Demo Window bool
 
-// static xr_hash_map<xr_string, ref_texture>& Icons = CUIWidgetsTest::Instance().Icons;
-
 void CUIWidgetsTest::InitIcons()
 {
-	Icons["undo"] = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Undo");
-	Icons["redo"] = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Redo");
-	Icons["new_scene"] = EDevice->Resources->_CreateTexture("ed\\icons\\File New");
-	Icons["open_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open");
-	Icons["save_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Save");
-	Icons["build_cform"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build CForm");
-	Icons["build_ai_map"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build AI-Map");
-	Icons["build_game_graph"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build Graph");
-	Icons["play_in_editor"] = EDevice->Resources->_CreateTexture("ed\\icons\\Run PiE");
-	Icons["play_in_editor_settings"] = EDevice->Resources->_CreateTexture("ed\\bar\\arrow");
+	Icons["undo"] = "ed\\icons\\Edit Undo";
+	Icons["redo"] = "ed\\icons\\Edit Redo";
+	Icons["new_scene"] = "ed\\icons\\File New";
+	Icons["open_level"] = "ed\\icons\\File Open";
+	Icons["save_level"] = "ed\\icons\\File Save";
+	Icons["build_cform"] = "ed\\icons\\Build CForm";
+	Icons["build_ai_map"] = "ed\\icons\\Build AI-Map";
+	Icons["build_game_graph"] = "ed\\icons\\Build Graph";
+	Icons["play_in_editor"] = "ed\\icons\\Run PiE";
+	Icons["play_in_editor_settings"] = "ed\\bar\\arrow";
 
-	Icons["reload_configs"] = EDevice->Resources->_CreateTexture("ed\\icons\\Settings Update Configs");
-	Icons["build_and_make"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build and Make");
-	Icons["play_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\Play Level");
-	Icons["play_level_in_game"] = EDevice->Resources->_CreateTexture("ed\\icons\\Play Game");
-	Icons["open_gamedata_folder"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open Game Data Folder");
-	Icons["prefs"] = EDevice->Resources->_CreateTexture("ed\\icons\\Tab Outliner");
+	Icons["reload_configs"] = "ed\\icons\\Settings Update Configs";
+	Icons["build_and_make"] = "ed\\icons\\Build and Make";
+	Icons["play_level"] = "ed\\icons\\Play Level";
+	Icons["play_level_in_game"] = "ed\\icons\\Play Game";
+	Icons["open_gamedata_folder"] = "ed\\icons\\File Open Game Data Folder";
+	Icons["prefs"] = "ed\\icons\\Tab Outliner";
 }
 
 // Helper to wire demo markers located in code to an interactive browser
@@ -128,7 +126,11 @@ void CUIWidgetsTest::DemoWindowWidgetsButtons()
 				ImGui::SameLine(0, itemInnerSpacing.x);
 				XRay::ImGui::Button(ICON_FA_FLOPPY_DISK "##2", {buttonSize, buttonSize});
 				ImGui::SameLine(0, itemInnerSpacing.x);
-				XRay::ImGui::IconButton("##3", UI->GetImGuiTexture(Icons["save_level"]), {buttonSize, buttonSize});
+				XRay::ImGui::IconButton(
+					"##3",
+					UI->LoadTexture(Icons["save_level"].c_str()),
+					{buttonSize, buttonSize}
+				);
 
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {buttonPaddingX, tableTextPaddingY});
 				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
@@ -140,7 +142,11 @@ void CUIWidgetsTest::DemoWindowWidgetsButtons()
 				ImGui::SameLine(0, itemInnerSpacing.x);
 				XRay::ImGui::Button(ICON_FA_FLOPPY_DISK "##12", {tableRowHeight, tableRowHeight});
 				ImGui::SameLine(0, itemInnerSpacing.x);
-				XRay::ImGui::IconButton("##13", UI->GetImGuiTexture(Icons["save_level"]), {tableRowHeight, tableRowHeight});
+				XRay::ImGui::IconButton(
+					"##13",
+					UI->LoadTexture(Icons["save_level"].c_str()),
+					{tableRowHeight, tableRowHeight}
+				);
 				ImGui::PopStyleVar(2);
 
 

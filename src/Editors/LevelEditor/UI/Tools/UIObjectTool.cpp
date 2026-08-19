@@ -12,12 +12,8 @@ UIObjectTool::UIObjectTool()
 	m_Current = nullptr;
 	m_RandomAppend = false;
 	m_Selection = false;
-	m_RealTexture = nullptr;
-	m_RemoveTexture = nullptr;
 	m_ObjectList = new UIItemListForm();
 	m_ObjectList->SetOnItemFocusedEvent({this, &UIObjectTool::OnItemFocused});
-	m_TextureNull.create("ed\\ed_nodata");
-	m_TextureNull->Load();
 
 	m_Props = new UIPropertiesForm();
 	m_Props->SetFitMode(true);
@@ -34,12 +30,9 @@ UIObjectTool::~UIObjectTool()
 		std::this_thread::yield();
 	}
 
-	m_RemoveTexture.destroy();
-	m_RealTexture.destroy();
 	UI->DestroyImGuiTexture(m_RealTextureEditor);
 
 	xr_delete(m_Props);
-	m_TextureNull.destroy();
 	xr_delete(m_ObjectList);
 }
 
@@ -161,8 +154,6 @@ void UIObjectTool::Draw()
 			}
 			XRay::ImGui::Separator();
 		}
-
-		m_RemoveTexture.destroy();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
 
@@ -442,8 +433,8 @@ void UIObjectTool::DrawObjectsList()
 			// if (ImGui::BeginChild("Props"))
 			{
 				const ImTextureID PreviewTexture = m_RealTextureEditor.IsValid()
-													   ? UI->GetImGuiTexture(m_RealTextureEditor)
-													   : UI->GetImGuiTexture(m_TextureNull);
+											   ? UI->GetImGuiTexture(m_RealTextureEditor)
+											   : UI->LoadTexture("ed\\ed_nodata");
 				ImGui::Image(PreviewTexture, ImVec2(128, 128));
 				ImGui::SameLine();
 				ImGui::BeginChild("##EGIProps", {0, 128});
@@ -500,12 +491,6 @@ void UIObjectTool::RefreshListInternal()
 			ListItem* I = LHelper().CreateItem(items, it->name.c_str(), 0, ListItem::flDrawThumbnail, 0);
 		}
 	}
-	if (m_RealTexture)
-	{
-		m_RemoveTexture = m_RealTexture;
-	}
-
-	m_RealTexture = nullptr;
 	m_Props->ClearProperties();
 	m_ObjectList->AssignItems(items);
 
@@ -574,11 +559,6 @@ void UIObjectTool::OnDrawUI()
 }
 void UIObjectTool::OnItemFocused(ListItem* item)
 {
-	if (m_RealTexture)
-	{
-		m_RemoveTexture = m_RealTexture;
-	}
-	m_RealTexture = nullptr;
 	UI->DestroyImGuiTexture(m_RealTextureEditor);
 
 	m_Props->ClearProperties();
@@ -586,27 +566,30 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 	if (item)
 	{
 		m_Current = item->Key();
-		auto* m_Thm = ImageLib.CreateThumbnail(m_Current, EImageThumbnail::ETObject);
-		if (m_Thm)
+		auto* Thumbnail = ImageLib.CreateThumbnail(
+			m_Current, EImageThumbnail::ETObject
+		);
+		if (Thumbnail)
 		{
-			if (m_Thm->Valid())
+			if (Thumbnail->Valid())
 			{
-				(void)UI->UpdateImGuiTexture(m_RealTextureEditor, m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4, ++m_RealTextureRevision, "editor-object-tool-thumbnail", EEditorTextureFormat::Bgra8Unorm, true);
-			}
-			IRHISurface* Surface = nullptr;
-			m_Thm->Update(Surface);
-
-			if (Surface != nullptr)
-			{
-				m_RealTexture = new CTexture;
-				m_RealTexture->surface_set(Surface);
-
-				Surface->Release();
+				(void)UI->UpdateImGuiTexture(
+					m_RealTextureEditor,
+					Thumbnail->Pixels(),
+					THUMB_WIDTH,
+					THUMB_HEIGHT,
+					THUMB_WIDTH * 4,
+					++m_RealTextureRevision,
+					"editor-object-tool-thumbnail",
+					EEditorTextureFormat::Bgra8Unorm,
+					true
+				);
 			}
 
 			PropItemVec Info;
-			m_Thm->FillInfo(Info);
+			Thumbnail->FillInfo(Info);
 			m_Props->AssignItems(Info);
+			xr_delete(Thumbnail);
 		}
 	}
 }

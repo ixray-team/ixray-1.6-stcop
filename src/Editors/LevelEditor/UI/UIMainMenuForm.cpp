@@ -22,8 +22,6 @@
 
 UIMainMenuForm::UIMainMenuForm()
 {
-	PlugPy = EDevice->Resources->_CreateTexture("ed\\plugins\\python");
-	PlugLua = EDevice->Resources->_CreateTexture("ed\\plugins\\lua");
 }
 
 UIMainMenuForm::~UIMainMenuForm()
@@ -688,18 +686,19 @@ void UIMainMenuForm::Draw()
 				PlugMngr.Reinit();
 			}
 
-			PlugPy->Load();
-			PlugLua->Load();
-
 			for (IPluginBase* Plug : PlugMngr.Plugins)
 			{
 				if (Plug->Type == EPluginType::Lua)
 				{
-					ImGui::Image(UI->GetImGuiTexture(PlugLua), {15, 15});
+					ImGui::Image(
+						UI->LoadTexture("ed\\plugins\\lua"), {15, 15}
+					);
 				}
 				else
 				{
-					ImGui::Image(UI->GetImGuiTexture(PlugPy), {15, 15});
+					ImGui::Image(
+						UI->LoadTexture("ed\\plugins\\python"), {15, 15}
+					);
 				}
 				ImGui::SameLine();
 				if (ImGui::MenuItem(Plug->Name.c_str(), ""))

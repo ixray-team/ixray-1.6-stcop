@@ -17,4 +17,9 @@ XRCORE_API const char* GetCapturePathTemplate();
 
 // Schedules a capture of the next frame. Interactive captures use F12.
 XRCORE_API bool TriggerCapture();
+
+// Явная граница capture нужна автоматическим smoke-тестам: она исключает
+// неоднозначный выбор следующего Present при наличии нескольких API devices.
+XRCORE_API bool BeginCapture(void* WindowHandle);
+XRCORE_API bool EndCapture(void* WindowHandle);
 } // namespace xrRenderDoc

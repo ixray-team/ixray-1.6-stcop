@@ -186,6 +186,7 @@ ESceneAIMapTool::~ESceneAIMapTool()
 
 void ESceneAIMapTool::Clear(bool bOnlyNodes)
 {
+	MarkRenderDataDirty();
     inherited::Clear();
     hash_Clear();
     for (SAINode* node : m_Nodes)
@@ -225,6 +226,7 @@ void ESceneAIMapTool::OnFrame()
         return;
 
 	if (m_Flags.is(flUpdateHL)){
+		MarkRenderDataDirty();
     	m_Flags.set(flUpdateHL,false);
         for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
 			(*it)->flags.set(SAINode::flHLSelected,false);
@@ -280,6 +282,7 @@ void ESceneAIMapTool::DenumerateNodes()
 }
 bool ESceneAIMapTool::LoadLTX(CInifile& ini)
 {
+	MarkRenderDataDirty();
 	IsLoaded = false;
     inherited::LoadLTX(ini);
 
@@ -425,6 +428,7 @@ void ESceneAIMapTool::SaveLTX(CInifile& ini, int id)
 
 bool ESceneAIMapTool::LoadStream(IReader& F)
 {
+	MarkRenderDataDirty();
     IsLoaded = false;
     inherited::LoadStream(F);
 
@@ -612,6 +616,7 @@ void ESceneAIMapTool::OnObjectRemove(CCustomObject* O, bool bDeleting)
 
 int ESceneAIMapTool::AddNode(const Fvector& pos, bool bIgnoreConstraints, bool bAutoLink, int sz)
 {
+	MarkRenderDataDirty();
     Fvector Pos = pos;
     if (1 == sz)
     {
@@ -642,6 +647,7 @@ struct invalid_node_pred
 };
 void ESceneAIMapTool::SelectNodesByLink(int link)
 {
+	MarkRenderDataDirty();
     SelectObjects		(false);
     // remove link to sel nodes
     for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
@@ -655,6 +661,7 @@ void ESceneAIMapTool::SelectObjects(bool flag)
 {
     if (!IsLoaded)
         return;
+	MarkRenderDataDirty();
 
     switch (LTools->GetSubTarget()){
     case estAIMapNode:{
@@ -683,6 +690,7 @@ struct delete_sel_node_pred
 };
 void ESceneAIMapTool::RemoveSelection()
 {
+	MarkRenderDataDirty();
     switch (LTools->GetSubTarget()){
     case estAIMapNode:{
     	if (m_Nodes.size()==(u32)SelectionCount(true)){
@@ -708,6 +716,7 @@ void ESceneAIMapTool::RemoveSelection()
 
 void ESceneAIMapTool::InvertSelection()
 {
+	MarkRenderDataDirty();
     switch (LTools->GetSubTarget()){
     case estAIMapNode:{
         for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
