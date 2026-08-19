@@ -27,6 +27,7 @@ function se_zone_anom:__init (section) super (section)
 end
 function se_zone_anom:on_register()
 	cse_anomalous_zone.on_register(self)
+	SendScriptCallback("server_entity_on_register", self, "se_zone_anom")
 	
 	self.artefact_spawn_idle = 60*60*1000*utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_idle", self, false, 24)
 	self.artefact_spawn_rnd = utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_rnd", self, false, 100)	
@@ -77,12 +78,19 @@ function se_zone_anom:STATE_Read( packet, size )
 	end
 end
 
+function se_zone_anom:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_zone_anom")
+	cse_anomalous_zone.on_unregister(self)
+end
+
 
 class "se_zone_visual" (cse_zone_visual)
 function se_zone_visual:__init (section) super (section)
 end
 function se_zone_visual:on_register()
 	cse_zone_visual.on_register(self)
+	
+	SendScriptCallback("server_entity_on_register", self, "se_zone_visual")
 	
 	self.artefact_spawn_idle = 60*60*1000*utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_idle", self, false, 24)
 	self.artefact_spawn_rnd = utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_rnd", self, false, 100)	
@@ -134,12 +142,29 @@ function se_zone_visual:STATE_Read( packet, size )
 	end
 end
 
+function se_zone_visual:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_zone_visual")
+	cse_anomalous_zone.on_unregister(self)
+end
 
 
 --' Рестрикторы
 class "se_restrictor" (cse_alife_space_restrictor)
 function se_restrictor:__init (section) super (section)
 end
+
+function se_restrictor:on_register()
+	cse_alife_space_restrictor.on_register(self)
+	
+	SendScriptCallback("server_entity_on_register", self, "se_restrictor")
+
+end
+
 function se_restrictor:keep_saved_data_anyway()
 	return true
+end
+
+function se_restrictor:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_restrictor")
+	cse_alife_space_restrictor.on_unregister(self)
 end

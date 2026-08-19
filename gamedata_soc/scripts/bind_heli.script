@@ -178,6 +178,7 @@ function heli_binder:on_hit( power, impulse, hit_type, enemy_id )
 		heli_snd.play_snd( self.st, heli_snd.snd_hit, 2 )
 		self.last_hit_snd_timeout = time_global() + math.random( 4000, 8000 )
 	end
+	SendScriptCallback("heli_on_hit_callback", self.object, power, nil, enemy, nil)
 end
 
 function heli_binder:on_point( distance, position, path_idx )
