@@ -29,7 +29,7 @@ private:
 	bool bReadonlyMode;
 	static UIImageEditorForm* Form;
 	ref_texture m_Texture;
-	ref_texture m_TextureRemove;
+	ref_texture TextureRemove;
 private:
 	ETextureThumbnail* FindUsedTHM(const shared_str& name);
 	void RegisterModifiedTHM();

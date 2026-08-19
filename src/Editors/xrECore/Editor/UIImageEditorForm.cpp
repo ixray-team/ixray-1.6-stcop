@@ -43,10 +43,10 @@ void UIImageEditorForm::Draw()
 		m_bUpdateProperties = false;
 	}
 
-	if (m_TextureRemove)
+	if (TextureRemove)
 	{
-		m_TextureRemove.destroy();
-		m_TextureRemove = nullptr;
+		TextureRemove.destroy();
+		TextureRemove = nullptr;
 	}
 
 	ImGui::Columns(2);
@@ -440,7 +440,7 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 
 	RegisterModifiedTHM();
 	m_THM_Current.clear();
-	m_TextureRemove = m_Texture;
+	TextureRemove = m_Texture;
 	m_Texture = nullptr;
 
 	m_ItemProps->ClearProperties();
