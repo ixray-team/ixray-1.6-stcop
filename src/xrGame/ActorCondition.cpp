@@ -1360,3 +1360,49 @@ void CActorCondition::SetActorMorale(const float value)
 	m_fEntityMorale = value;
 	clamp(m_fEntityMorale, 0.0f, m_fEntityMoraleMax);
 }
+
+float CActorCondition::GetHealthBoost()
+{
+	float total = 0.0f;
+
+	float satiety_health_koef = (Satiety.Current - Satiety.Critical) / (Satiety.Current >= Satiety.Critical ? 1 - Satiety.Critical : Satiety.Critical);
+	total += Satiety.HealthBoost * satiety_health_koef * m_fDeltaTime;
+
+	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
+	if (enableThirst)
+	{
+		float thirst_health_koef = (Thirst.Current - Thirst.Critical) / (Thirst.Current >= Thirst.Critical ? 1 - Thirst.Critical : Thirst.Critical);
+		total += Thirst.HealthBoost * thirst_health_koef * m_fDeltaTime;
+	}
+
+	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
+	if (enableSleepiness)
+	{
+		float SleepinessHealthKoef = ((1.f - Sleepiness.Current) - Sleepiness.Critical) / (Sleepiness.Current < Sleepiness.Critical ? 1 - Sleepiness.Critical : Sleepiness.Critical);
+		total += Sleepiness.HealthBoost * SleepinessHealthKoef * m_fDeltaTime;
+	}
+
+	const static bool enableMedIntoxication = EngineExternal()[EEngineExternalGame::EnableMedIntoxication];
+	if (enableMedIntoxication)
+	{
+		const float denom = std::max(EPS, 1.0f - Intoxication.Critical);
+		const float excess = (Intoxication.Current - Intoxication.Critical) / denom;
+
+		// HP drains past critical; stronger past heavy / critical overdose tiers
+		float healthMul = 1.0f;
+		if (Intoxication.Current >= 0.7f)
+		{
+			healthMul = 1.5f;
+		}
+		if (Intoxication.Current > 0.9f)
+		{
+			healthMul = 2.5f;
+		}
+
+		total += Intoxication.HealthBoost * excess * healthMul * m_fDeltaTime;
+	}
+
+	total += m_fDeltaTime * (m_change_v.m_fV_HealthRestore + m_fBoostHpRestore);
+
+	return total;
+}

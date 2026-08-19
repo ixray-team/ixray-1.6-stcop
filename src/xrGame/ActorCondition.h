@@ -103,6 +103,8 @@ public:
 	virtual void SetActorPsyHealth(const float value);
 	virtual void SetActorMorale(const float value);
 
+	float GetHealthBoost();
+
 public:
 	PlayerAddiction Satiety;
 	PLAYER_ADDICTION_IMPL(Satiety);
