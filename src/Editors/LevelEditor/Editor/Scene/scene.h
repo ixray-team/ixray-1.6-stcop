@@ -248,7 +248,7 @@ public:
 	int 			FrustumPick(const CFrustum& frustum, ObjClassID classfilter, ObjectList& ol);
 	int 			SpherePick(const Fvector& center, float radius, ObjClassID classfilter, ObjectList& ol);
 
-	virtual void			GenObjectName(ObjClassID cls_id, char* buffer, const char* prefix = NULL);
+	virtual void			GenObjectName(ObjClassID cls_id, char* buffer, const char* prefix = nullptr, int RefCount = -1);
 	virtual CCustomObject* FindObjectByName(const char* name, ObjClassID classfilter);
 	virtual CCustomObject* FindObjectByName(const char* name, CCustomObject* pass_object);
 	bool 			FindDuplicateName();

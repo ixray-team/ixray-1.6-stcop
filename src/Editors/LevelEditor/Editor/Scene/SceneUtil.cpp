@@ -68,18 +68,52 @@ bool EScene::FindDuplicateName()
 }
 
 
-void EScene::GenObjectName(ObjClassID cls_id, char* buffer, const char* pref)
+void EScene::GenObjectName(ObjClassID cls_id, char* buffer, const char* pref, int RefCount)
 {
-	for (int i = 0; true; i++)
+	xr_stack_string4096 temp;
+	if (RefCount == -1)
+	{
+		for (int i = 0; true; i++)
+		{
+			bool result;
+			temp.clear();
+			if (pref && pref[0])
+			{
+				temp = pref;
+				if (i != 0)
+				{
+					temp += "_";
+					temp += xr_string::ToString(i - 1).c_str();
+				}
+			}
+			else
+			{
+				ESceneCustomOTool* ot = GetOTool(cls_id);
+				VERIFY(ot);
+
+				temp = ot->ClassName() + xr_string("_") + xr_string::ToString(i);
+			}
+
+			FindObjectByNameCB(temp.c_str(), result);
+			if (!result)
+			{
+				xr_strcpy(buffer, 256, temp.c_str());
+				return;
+			}
+		}
+	}
+	
+	for (int i = RefCount; i >= 0; --i)
 	{
 		bool result;
-		xr_string temp;
+		temp.clear();
 		if (pref && pref[0])
 		{
 			temp = pref;
 			if (i != 0)
 			{
-				temp += "_" + xr_string::ToString(i - 1);
+				temp += "_";
+				temp += xr_string::ToString(i - 1).c_str();
 			}
 		}
 		else
@@ -93,8 +127,9 @@ void EScene::GenObjectName(ObjClassID cls_id, char* buffer, const char* pref)
 		FindObjectByNameCB(temp.c_str(), result);
 		if (!result)
 		{
-			xr_strcpy(buffer, 256, temp.c_str());
+			xr_strcpy(buffer, 4096, temp.c_str());
 			return;
 		}
 	}
+	
 }

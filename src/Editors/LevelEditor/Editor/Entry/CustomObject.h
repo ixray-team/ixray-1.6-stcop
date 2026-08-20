@@ -108,7 +108,7 @@ public:
 	void  	OnMotionCameraViewChange(PropValue* value); 
 public:
 	const char*			GetName			() const {return *FName; }
-	void			SetName			(const char* N){string256 tmp; strcpy(tmp,N); strlwr(tmp); FName=tmp;}
+	void			SetName			(const char* N){string4096 tmp; strcpy(tmp,N); strlwr(tmp); FName=tmp;}
 
 	virtual const Fvector& GetPosition	()	const { return FPosition; 	}
 	virtual const Fvector& GetRotation	()	const { return FRotation;	}
