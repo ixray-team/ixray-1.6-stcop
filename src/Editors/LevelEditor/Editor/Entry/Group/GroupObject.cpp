@@ -104,8 +104,14 @@ bool CGroupObject::AppendObjectLoadCB(CCustomObject* object)
 	m_ObjectsInGroup.back().pObject = object;
 
 
-	string256 			buf;
-	Scene->GenObjectName(object->FClassID, buf, object->GetName());
+	string4096 buf;
+	if (auto Casted = smart_cast<CSceneObject*>(object))
+	{
+		Scene->GenObjectName(object->FClassID, buf, object->GetName(), Casted->GetReference()->m_RefCount);
+	} else
+	{
+		Scene->GenObjectName(object->FClassID, buf, object->GetName());
+	}
 	const char* N = object->GetName();
 	if (xr_strcmp(N,buf)!=0)
 	{
