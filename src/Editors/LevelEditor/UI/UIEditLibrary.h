@@ -8,6 +8,7 @@ public:
 	virtual ~UIEditLibrary();
 
 	static void Update();
+	static UIEditLibrary* Init();
 	static void Show();
 	static void Close();
 	static void OnRender();
