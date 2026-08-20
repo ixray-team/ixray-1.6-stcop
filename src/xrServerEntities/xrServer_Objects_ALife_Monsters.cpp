@@ -417,7 +417,12 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 
 	CSpecificCharacter selected_char;
 	selected_char.Load(m_SpecificCharacter);
-	if(selected_char.Visual())
+	if (
+#ifdef XRGAME_EXPORTS
+		IsGameTypeSingleCompatible() &&
+#endif
+		selected_char.Visual()
+	)
 	{
 		CSE_Visual* visual = smart_cast<CSE_Visual*>(base()); VERIFY(visual);
 		if(xr_strlen(selected_char.Visual())>0)
