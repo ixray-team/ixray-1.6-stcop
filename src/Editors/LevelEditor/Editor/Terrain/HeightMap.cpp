@@ -4,6 +4,70 @@
 using XRay::Editor::HeightmapUtils::SHeightMap;
 using XRay::Editor::HeightmapUtils::SHeightMapRenderData;
 
+namespace XRay::Editor::HeightmapUtils
+{
+	struct SGpuCache
+	{
+		ref_geom Geom;
+	};
+}
+
+void SHeightMapRenderData::InvalidateGpu()
+{
+	if (Gpu)
+	{
+		_RELEASE(Gpu->Geom->vb);
+		_RELEASE(Gpu->Geom->ib);
+		Gpu->Geom.destroy();
+		delete Gpu;
+	}
+}
+
+void SHeightMap::BuildGpu()
+{
+	RenderData.InvalidateGpu();
+
+	u32 total = 0;
+	for (const auto& c : RenderData.Chunks)
+		total += u32(c.Gpu.size());
+	if (total == 0)
+		return;
+
+	xr_vector<SHeightMapVertex> all;
+	all.reserve(total);
+
+	u32 base = 0;
+	RenderData.ChunkBase.resize(RenderData.Chunks.size());
+	RenderData.ChunkCount.resize(RenderData.Chunks.size());
+	for (size_t ci = 0; ci < RenderData.Chunks.size(); ++ci)
+	{
+		const auto& c = RenderData.Chunks[ci];
+		RenderData.ChunkBase[ci] = base;
+		RenderData.ChunkCount[ci] = u32(c.Gpu.size());
+		all.insert(all.end(), c.Gpu.begin(), c.Gpu.end());
+		base += u32(c.Gpu.size());
+	}
+
+	IRHIBuffer* pVB = nullptr;
+	if (!RHIUtils::CreateVertexBuffer(&pVB, all.data(), total * sizeof(SHeightMapVertex), false))
+		return;
+
+	RenderData.Gpu = new SGpuCache();
+	RenderData.Gpu->Geom.create(FVF::F_L, pVB, nullptr);
+}
+
+void SHeightMap::Create(u32 w, u32 h, float fill)
+{
+	if (Data) xr_free(Data);
+	Width = w;
+	Height = h;
+	Data = (float*)xr_malloc(u32(w * h) * sizeof(float));
+	for (u32 i = 0; i < w * h; ++i)
+		Data[i] = fill;
+	MinH = MaxH = fill;
+	PrecacheRenderData(50.f, 1.f, 0xffffff, true);
+}
+
 bool SHeightMap::LoadRAW(const char* filename)
 {
 	if (!FS.TryLoad(filename))
@@ -148,7 +212,9 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 			}
 		}
 
-		float CenterY = (globalMinH + globalMaxH) * 0.5f;
+		// Стабильный вертикальный центр — середина номинального диапазона высот [0,1],
+		// а не текущий min/max, иначе при подъёме горки вся карта "опускается".
+		float CenterY = 0.5f * scaleY * Size.y;
 
 		// Генерация чанков
 		for (u32 cz = 0; cz < chunkCountZ; ++cz)
@@ -201,13 +267,14 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 						Fvector v2 = { (x + 1) * cellSize - centerX, h2 - CenterY, (z + 1) * cellSize - centerZ };
 						Fvector v3 = { x * cellSize - centerX, h3 - CenterY, (z + 1) * cellSize - centerZ };
 
-						chunk.Vertices.insert(chunk.Vertices.end(), { v0, v1, v2, v0, v2, v3 });
-						chunk.BBox.modify(v0);
-						chunk.BBox.modify(v2);
+					chunk.Vertices.insert(chunk.Vertices.end(), { v0, v1, v2, v0, v2, v3 });
+					chunk.BBox.modify(v0);
+					chunk.BBox.modify(v2);
 
-						float hAvg = (h0 + h1 + h2 + h3) * 0.25f;
-						u32 col = Height2Color(hAvg, globalMinH, globalMaxH);
-						chunk.Colors.insert(chunk.Colors.end(), 6, col);
+					float hAvg = (h0 + h1 + h2 + h3) * 0.25f;
+					u32 col = Height2Color(hAvg, globalMinH, globalMaxH);
+					chunk.Colors.insert(chunk.Colors.end(), 6, col);
+					chunk.Gpu.insert(chunk.Gpu.end(), { {v0,col},{v1,col},{v2,col},{v0,col},{v2,col},{v3,col} });
 					}
 				}
 
@@ -236,28 +303,31 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 			}
 		}
 
-		float CenterY = (globalMinH + globalMaxH) * 0.5f;
+		// Стабильный вертикальный центр (середина диапазона [0,1]), без рецентровки по текущему min/max
+		float CenterY = 0.5f * scaleY * Size.y;
 
 		for (auto& chunk : RenderData.Chunks)
 		{
-			if (chunk.IsFlat)
-				continue;
-
 			chunk.BBox.invalidate();
-			for (auto& v : chunk.Vertices)
+			for (size_t i = 0; i < chunk.Vertices.size(); ++i)
 			{
+				Fvector& v = chunk.Vertices[i];
 				float ox = (v.x + centerX) / cellSize;
 				float oz = (v.z + centerZ) / cellSize;
 
 				u32 ix = u32((Width - 1 - (ox - Pos.x)) / Size.x);
 				u32 iz = u32((oz - Pos.z) / Size.z);
 
-				v.y = GetHeight(ix, iz) * scaleY * Size.y - CenterY + Pos.y;
+				float h = GetHeight(ix, iz) * scaleY * Size.y;
+				v.y = h - CenterY + Pos.y;
 				chunk.BBox.modify(v);
+				chunk.Colors[i] = Height2Color(h, globalMinH, globalMaxH);
+				chunk.Gpu[i] = { v, chunk.Colors[i] };
 			}
 		}
 	}
 
+	BuildGpu();
 	RenderData.IsDirty = false;
 }
 
@@ -265,17 +335,23 @@ void SHeightMap::Draw(float scaleY, float cellSize)
 {
 	PrecacheRenderData(scaleY, cellSize, 0xffffff, false);
 
-	if (RenderData.Chunks.empty())
+	if (RenderData.Chunks.empty() || !RenderData.Gpu || !RenderData.Gpu->Geom)
 		return;
 
-	DU_impl.DD_DrawFace_begin(false);
 	EDevice->SetShader(EDevice->m_WireShader);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
 	CFrustum& frustum = ::Render->ViewBase;
 
-	for (const auto& chunk : RenderData.Chunks)
+	// Геометрия хранится в персистентном GPU-буфере (строится в PrecacheRenderData
+	// только при IsDirty). Здесь — только отсечение по фрустуму и один DP на чанк,
+	// без пересборки/заливки вершин каждый кадр.
+	for (size_t ci = 0; ci < RenderData.Chunks.size(); ++ci)
 	{
+		const auto& chunk = RenderData.Chunks[ci];
+		if (RenderData.ChunkCount[ci] == 0)
+			continue;
+
 		float aabb[6] =
 		{
 			chunk.BBox.min.x, chunk.BBox.min.y, chunk.BBox.min.z,
@@ -286,19 +362,11 @@ void SHeightMap::Draw(float scaleY, float cellSize)
 		if (frustum.testAABB(aabb, mask) == fcvNone)
 			continue;
 
-		for (size_t i = 0; i < chunk.Vertices.size(); i += 3)
-		{
-			DU_impl.DD_DrawFace_push
-			(
-				chunk.Vertices[i],
-				chunk.Vertices[i + 1],
-				chunk.Vertices[i + 2],
-				chunk.Colors[i]
-			);
-		}
+		EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+			RenderData.Gpu->Geom,
+			RenderData.ChunkBase[ci],
+			RenderData.ChunkCount[ci] / 3);
 	}
-
-	DU_impl.DD_DrawFace_end();
 }
 
 void SHeightMap::MarkDirty()
