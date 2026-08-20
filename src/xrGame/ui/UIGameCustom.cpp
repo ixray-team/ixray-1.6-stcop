@@ -315,7 +315,7 @@ void CUIGameCustom::HideActorMenu()
 	}
 
 	CInventoryOwner* pIOActor = Level().CurrentViewEntity() != nullptr ? Level().CurrentViewEntity()->cast_inventory_owner() : nullptr;
-	if (pIOActor->IsTalking())
+	if (pIOActor && pIOActor->IsTalking())
 	{
 		TalkMenu->UITalkDialogWnd->Show();
 	}
