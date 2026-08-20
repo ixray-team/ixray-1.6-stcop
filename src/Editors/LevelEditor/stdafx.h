@@ -169,5 +169,6 @@
 #include "UI/Tools/UISectorTool.h"
 #include "UI/Tools/UIShapeTool.h"
 #include "UI/Tools/UISpawnTool.h"
+#include "UI/Tools/UITerrainTool.h"
 #include "UI/Tools/UIToolCustom.h"
 #include "UI/Tools/UIWayTool.h"
