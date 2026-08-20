@@ -15,7 +15,8 @@ TiramisuRenderTexturesManager::~TiramisuRenderTexturesManager()
 
 TiramisuRenderTexture* TiramisuRenderTexturesManager::GetTexture(const shared_str& InName, bool bSrgb)
 {
-	CheckIsGameThread();
+	CheckIsCpuResourceThread();
+	std::scoped_lock Lock(TextureMutex);
 	if (InName == "ui\\ui_actor_MP_screen")
 	{
 		__nop();
@@ -111,11 +112,12 @@ TiramisuRenderTexture* TiramisuRenderTexturesManager::GetTexture(const shared_st
 
 void TiramisuRenderTexturesManager::Free(TiramisuRenderTexture* InTexture)
 {
-	CheckIsGameThread();
+	CheckIsCpuResourceThread();
 	if (!InTexture || InTexture->Owner != this)
 	{
 		return;
 	}
+	std::scoped_lock Lock(TextureMutex);
 	if (InTexture->Name == "ui\\ui_actor_MP_screen")
 	{
 		__nop();
@@ -136,6 +138,7 @@ void TiramisuRenderTexturesManager::Free(TiramisuRenderTexture* InTexture)
 void TiramisuRenderTexturesManager::FlushNextFrame()
 {
 	CheckIsGameThread();
+	std::scoped_lock Lock(TextureMutex);
 	for (auto& [Name, Texture] : FreeTexturesNextFrame)
 	{
 		xr_delete(Texture);
@@ -150,11 +153,12 @@ void TiramisuRenderTexturesManager::FlushNextFrame()
 
 void TiramisuRenderTexturesManager::Copy(TiramisuRenderTexture* InTexture)
 {
-	CheckIsGameThread();
-	if (InTexture->Owner != this)
+	CheckIsCpuResourceThread();
+	if (!InTexture || InTexture->Owner != this)
 	{
 		return;
 	}
+	std::scoped_lock Lock(TextureMutex);
 	if (InTexture->Name == "ui\\ui_actor_MP_screen")
 	{
 		__nop();

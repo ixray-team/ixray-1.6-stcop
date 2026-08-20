@@ -46,6 +46,8 @@ public:
 	TiramisuPrimitiveSceneProxy();
 	virtual ~TiramisuPrimitiveSceneProxy();
 	virtual u32 GetNumMeshBatches() const = 0;
-	virtual bool GetMeshBatch(u32 BatchIndex, FMeshBatch& OutMeshBatch) = 0;
+	// Возвращает render-thread view без копирования Elements и их allocator.
+	// Указатель действителен как минимум до следующего вызова этого proxy.
+	virtual const FMeshBatch* GetMeshBatch(u32 BatchIndex) = 0;
 	bool bNeedRemove = false;
 };

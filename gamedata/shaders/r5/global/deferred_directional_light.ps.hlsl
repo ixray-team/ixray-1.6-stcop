@@ -2,6 +2,11 @@
 
 float4 Main(DeferredFullscreenInput Input) : SV_Target0
 {
+	if (DeferredGBufferVersion != TIRAMISU_GBUFFER_VERSION)
+	{
+		return float4(1.0f, 0.0f, 1.0f, 1.0f);
+	}
+
     const int2 PixelPosition = int2(Input.Position.xy);
     const TiramisuGBufferData GBuffer = LoadDeferredGBuffer(PixelPosition);
     const float DeviceDepth = LoadDeferredDepth(PixelPosition);

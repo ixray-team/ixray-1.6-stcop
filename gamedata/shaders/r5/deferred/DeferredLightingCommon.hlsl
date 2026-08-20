@@ -18,8 +18,8 @@ NRI_RESOURCE(cbuffer, DeferredLightingConstants, b, 0, 2)
     uint DeferredVelocityIndex;
     uint DeferredDepthIndex;
     uint DeferredSamplerIndex;
-    uint DeferredPadding0;
-    uint DeferredPadding1;
+	uint DeferredGBufferVersion;
+	uint DeferredPadding;
 };
 
 struct DeferredFullscreenInput

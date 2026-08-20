@@ -1,4 +1,5 @@
 #include "TiramisuDefaultMaterialRenderProxy.h"
+#include "Core/Passes/Deferred/TiramisuGBufferLayout.h"
 #include "Resources/Materials/TiramisuRenderMaterialPipelineRegistry.h"
 #include "Resources/Materials/TiramisuRenderMaterialShaderLibrary.h"
 
@@ -22,7 +23,7 @@ u64 MakeLegacyPipelineKey(const FMaterialAssetId& AssetReference, const EVertexT
 	FMaterialPipelineKey Key;
 	Key.MasterMaterial = AssetReference;
 	Key.VertexFactory = GetLegacyVertexFactoryName(VertexType);
-	Key.RenderPassSignature = "legacy_geometry:rgba8:d24s8";
+	Key.RenderPassSignature = TiramisuGBufferLayout::RenderPassSignature;
 	Key.Backend = GRenderDevice.GraphicsApi == nri::GraphicsAPI::D3D12 ? "d3d12" : "vulkan";
 	Key.ShaderModel = "6.6";
 	Key.CompilerOptions = "legacy_global_shader;descriptor_heap_indexing";
@@ -66,17 +67,25 @@ void TiramisuDefaultMaterialRenderProxy::Initialize_RenderThread(const FMaterial
 		RasterizationDescription.fillMode = nri::FillMode::SOLID;
 		RasterizationDescription.cullMode = nri::CullMode::BACK;
 
-		nri::ColorAttachmentDesc colorAttachmentDesc = {};
-		colorAttachmentDesc.format = nri::Format::RGBA8_UNORM;
-		colorAttachmentDesc.colorWriteMask = nri::ColorWriteBits::RGBA;
-		colorAttachmentDesc.blendEnabled = false;
-		colorAttachmentDesc.colorBlend = {nri::BlendFactor::SRC_ALPHA, nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
+		xr_array<nri::ColorAttachmentDesc,
+			TiramisuGBufferLayout::TargetCount> ColorAttachmentDescriptions = {};
+		for (u32 TargetIndex = 0;
+			 TargetIndex < TiramisuGBufferLayout::TargetCount;
+			 ++TargetIndex)
+		{
+			ColorAttachmentDescriptions[TargetIndex].format =
+				TiramisuGBufferLayout::TargetFormats[TargetIndex];
+			ColorAttachmentDescriptions[TargetIndex].colorWriteMask =
+				nri::ColorWriteBits::RGBA;
+		}
 
 		nri::OutputMergerDesc OutputMergerDescription = {};
-		OutputMergerDescription.colors = &colorAttachmentDesc;
-		OutputMergerDescription.depthStencilFormat = nri::Format::D24_UNORM_S8_UINT;
+		OutputMergerDescription.colors = ColorAttachmentDescriptions.data();
+		OutputMergerDescription.depthStencilFormat =
+			TiramisuGBufferLayout::DepthFormat;
 		OutputMergerDescription.depth = {nri::CompareOp::LESS, true, false};
-		OutputMergerDescription.colorNum = 1;
+		OutputMergerDescription.colorNum =
+			TiramisuGBufferLayout::TargetCount;
 
 		TiramisuShaderDefinesContainer ShaderDefinesContainer;
 
@@ -124,7 +133,10 @@ void TiramisuDefaultMaterialRenderProxy::Initialize_RenderThread(const FMaterial
 	RegisterPipeline(EVertexType::BaseWithLightColor, "scene_vertex", FLegacyLevelVertex_BaseWithLightColor::VertexAttributeDescription);
 	RegisterPipeline(EVertexType::BaseWithLightMap, "scene_lmap", FLegacyLevelVertex_BaseWithLightMap::VertexAttributeDescription);
 
-	const auto Program = GRenderResourcesManager->MaterialShaderLibrary->Find_RenderThread(AssetReference, EMaterialPass::Validation);
+	const auto Program =
+		GRenderResourcesManager->MaterialShaderLibrary->Find_RenderThread(
+			AssetReference, EMaterialPass::GBuffer
+		);
 	if (Program && Program->IsComplete())
 	{
 		nri::VertexStreamDesc VertexStreamDescription = {};
@@ -143,13 +155,27 @@ void TiramisuDefaultMaterialRenderProxy::Initialize_RenderThread(const FMaterial
 		RasterizationDescription.fillMode = nri::FillMode::SOLID;
 		RasterizationDescription.cullMode = nri::CullMode::BACK;
 
-		nri::ColorAttachmentDesc ColorAttachmentDescription = {};
-		ColorAttachmentDescription.format = nri::Format::RGBA8_UNORM;
-		ColorAttachmentDescription.colorWriteMask = nri::ColorWriteBits::RGBA;
+		xr_array<nri::ColorAttachmentDesc,
+			TiramisuGBufferLayout::TargetCount> ColorAttachmentDescriptions = {};
+		for (u32 TargetIndex = 0;
+			 TargetIndex < TiramisuGBufferLayout::TargetCount;
+			 ++TargetIndex)
+		{
+			ColorAttachmentDescriptions[TargetIndex].format =
+				TiramisuGBufferLayout::TargetFormats[TargetIndex];
+			ColorAttachmentDescriptions[TargetIndex].colorWriteMask =
+				nri::ColorWriteBits::RGBA;
+		}
 
 		nri::OutputMergerDesc OutputMergerDescription = {};
-		OutputMergerDescription.colors = &ColorAttachmentDescription;
-		OutputMergerDescription.colorNum = 1;
+		OutputMergerDescription.colors = ColorAttachmentDescriptions.data();
+		OutputMergerDescription.colorNum =
+			TiramisuGBufferLayout::TargetCount;
+		OutputMergerDescription.depthStencilFormat =
+			TiramisuGBufferLayout::DepthFormat;
+		OutputMergerDescription.depth = {
+			nri::CompareOp::LESS, true, false
+		};
 
 		nri::ShaderDesc ShaderDescriptions[2] = {};
 		ShaderDescriptions[0].stage = nri::StageBits::VERTEX_SHADER;
@@ -178,7 +204,10 @@ void TiramisuDefaultMaterialRenderProxy::Initialize_RenderThread(const FMaterial
 		Entry.PipelineKey = Program->Vertex->PipelineKey;
 		Entry.VertexFactory = Program->Vertex->VertexFactory;
 		VERIFY(Entry.Handle.IsValid());
-		Pipelines.emplace(FPipelineMapKey{EMaterialPass::Validation, EVertexType::StaticMesh}, std::move(Entry));
+		Pipelines.emplace(
+			FPipelineMapKey{EMaterialPass::GBuffer, EVertexType::StaticMesh},
+			std::move(Entry)
+		);
 	}
 }
 

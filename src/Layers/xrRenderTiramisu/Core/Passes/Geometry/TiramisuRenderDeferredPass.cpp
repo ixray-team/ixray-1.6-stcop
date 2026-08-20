@@ -37,10 +37,10 @@ TiramisuRenderDeferredPass::~TiramisuRenderDeferredPass()
 	CheckIsRenderThread();
 }
 
-void TiramisuRenderDeferredPass::Render(nri::CommandBuffer& CurrentCommandBuffer)
+void TiramisuRenderDeferredPass::Prepare_RenderThread()
 {
 	CheckIsRenderThread();
-	GRenderDevice.CoreInterface.CmdBeginAnnotation(CurrentCommandBuffer, "DeferredPass", nri::BGRA_UNUSED);
+	PreparedDraws.clear();
 
 	xr_vector<TiramisuPrimitiveSceneProxy*>& RenderSceneProxies =
 		GRenderResourcesManager->RenderScene->RenderSceneProxies;
@@ -49,24 +49,25 @@ void TiramisuRenderDeferredPass::Render(nri::CommandBuffer& CurrentCommandBuffer
 	{
 		for (u32 i = 0; i < SceneProxy->GetNumMeshBatches(); ++i)
 		{
-			FMeshBatch MeshBatch;
-			if (!SceneProxy->GetMeshBatch(i, MeshBatch) || !MeshBatch.Material ||
-				!MeshBatch.VertexBuffer.VertexBuffer || !MeshBatch.IndexBuffer.IndexBuffer)
+			const FMeshBatch* MeshBatch = SceneProxy->GetMeshBatch(i);
+			if (!MeshBatch || !MeshBatch->Material ||
+				!MeshBatch->VertexBuffer.VertexBuffer ||
+				!MeshBatch->IndexBuffer.IndexBuffer)
 			{
 				continue;
 			}
 
 			const u32 MaterialInstanceIndex =
 				GRenderResourcesManager->MaterialGpuStorage->GetOrCreateMaterial_RenderThread(
-					*MeshBatch.Material
+					*MeshBatch->Material
 				);
 			if (MaterialInstanceIndex == INDEX_NONE)
 			{
 				continue;
 			}
 
-			auto PassProxy = MeshBatch.Material->ResolvePass(
-				EMaterialPass::GBuffer, MeshBatch.VertexType
+			auto PassProxy = MeshBatch->Material->ResolvePass(
+				EMaterialPass::GBuffer, MeshBatch->VertexType
 			);
 			if (!PassProxy || !PassProxy->IsValid())
 			{
@@ -79,19 +80,7 @@ void TiramisuRenderDeferredPass::Render(nri::CommandBuffer& CurrentCommandBuffer
 			{
 				continue;
 			}
-			GRenderDevice.CoreInterface.CmdSetPipeline(CurrentCommandBuffer, *Pipeline);
-
-			GRenderDevice.CoreInterface.CmdSetIndexBuffer(CurrentCommandBuffer, *MeshBatch.IndexBuffer.IndexBuffer, MeshBatch.IndexBuffer.Offset, MeshBatch.IndexBuffer.IndexType);
-
-			nri::VertexBufferDesc VertexBufferDescription = {};
-			VertexBufferDescription.buffer = MeshBatch.VertexBuffer.VertexBuffer;
-			VertexBufferDescription.offset = MeshBatch.VertexBuffer.Offset;
-			VertexBufferDescription.stride = MeshBatch.VertexBuffer.Stride;
-			GRenderDevice.CoreInterface.CmdSetVertexBuffers(
-				CurrentCommandBuffer, 0, &VertexBufferDescription, 1
-			);
-
-			for (const FMeshBatchElement& Element : MeshBatch.Elements)
+			for (const FMeshBatchElement& Element : MeshBatch->Elements)
 			{
 				const auto DrawData = MakeIdentityDrawData(MaterialInstanceIndex, ObjectId++);
 				const u32 DrawIndex =
@@ -100,14 +89,69 @@ void TiramisuRenderDeferredPass::Render(nri::CommandBuffer& CurrentCommandBuffer
 				{
 					break;
 				}
-				GRenderDevice.CoreInterface.CmdDrawIndexed(CurrentCommandBuffer, {Element.CountIndex, 1, Element.OffsetIndex, Element.OffsetVertex, DrawIndex});
-				if (GRender)
-				{
-					GRender->RecordDrawStatistics_RenderThread(
-						Element.CountIndex / 3
-					);
-				}
+				FPreparedDraw& Prepared = PreparedDraws.emplace_back();
+				Prepared.Pipeline = Pipeline;
+				Prepared.IndexBuffer = MeshBatch->IndexBuffer.IndexBuffer;
+				Prepared.IndexBufferOffset = MeshBatch->IndexBuffer.Offset;
+				Prepared.IndexType = MeshBatch->IndexBuffer.IndexType;
+				Prepared.VertexBuffer = MeshBatch->VertexBuffer.VertexBuffer;
+				Prepared.VertexBufferOffset = MeshBatch->VertexBuffer.Offset;
+				Prepared.VertexStride = MeshBatch->VertexBuffer.Stride;
+				Prepared.Draw = {
+					Element.CountIndex,
+					1,
+					Element.OffsetIndex,
+					Element.OffsetVertex,
+					DrawIndex
+				};
 			}
+		}
+	}
+}
+
+void TiramisuRenderDeferredPass::Render(
+	nri::CommandBuffer& CurrentCommandBuffer
+)
+{
+	CheckIsRenderThread();
+	GRenderDevice.CoreInterface.CmdBeginAnnotation(
+		CurrentCommandBuffer,
+		"DeferredPass",
+		nri::BGRA_UNUSED
+	);
+
+	for (const FPreparedDraw& Prepared : PreparedDraws)
+	{
+		GRenderDevice.CoreInterface.CmdSetPipeline(
+			CurrentCommandBuffer,
+			*Prepared.Pipeline
+		);
+		GRenderDevice.CoreInterface.CmdSetIndexBuffer(
+			CurrentCommandBuffer,
+			*Prepared.IndexBuffer,
+			Prepared.IndexBufferOffset,
+			Prepared.IndexType
+		);
+		const nri::VertexBufferDesc VertexBufferDescription = {
+			Prepared.VertexBuffer,
+			Prepared.VertexBufferOffset,
+			Prepared.VertexStride
+		};
+		GRenderDevice.CoreInterface.CmdSetVertexBuffers(
+			CurrentCommandBuffer,
+			0,
+			&VertexBufferDescription,
+			1
+		);
+		GRenderDevice.CoreInterface.CmdDrawIndexed(
+			CurrentCommandBuffer,
+			Prepared.Draw
+		);
+		if (GRender)
+		{
+			GRender->RecordDrawStatistics_RenderThread(
+				Prepared.Draw.indexNum / 3
+			);
 		}
 	}
 	GRenderDevice.CoreInterface.CmdEndAnnotation(CurrentCommandBuffer);

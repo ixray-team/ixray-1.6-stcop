@@ -272,11 +272,16 @@ FMaterialPreviewCompileResult CompileMaterialPreview(
 	{
 		Pipeline.RenderPassSignature = Request.RenderPassSignature;
 	}
+	FMaterialPipelineKey SortPipeline = Pipeline;
+	SortPipeline.Backend = "backend-neutral";
+	SortPipeline.CompilerOptions += ';' + Request.CompilerOptions +
+		(Request.Debug ? ";debug=1" : ";debug=0");
+	Result.PipelineSortKey = SortPipeline.StableHash();
 	Pipeline.CompilerOptions += ';' + Request.CompilerOptions +
 								";source_hash=" + SourceHash(Request, Implementation, PassSource) +
 								(Request.Debug ? ";debug=1" : ";debug=0");
 	Result.PipelineKey = Pipeline.StableHash();
-	if (Result.PipelineKey == 0)
+	if (Result.PipelineKey == 0 || Result.PipelineSortKey == 0)
 	{
 		AddError(Result, "preview.invalid_pipeline_key", "The material preview pipeline key resolved to zero.");
 		return Result;

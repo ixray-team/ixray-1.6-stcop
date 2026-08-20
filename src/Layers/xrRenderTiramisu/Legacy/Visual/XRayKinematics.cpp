@@ -489,6 +489,7 @@ CDS0_Kinematics::CDS0_Kinematics()
 
 void CDS0_Kinematics::Bone_Calculate(CBoneData* bd, Fmatrix* parent)
 {
+	xrCriticalSectionGuard Guard(UCalcRecursiveMutex);
 	u16 SelfID = bd->GetSelfID();
 	CBoneInstance& BONE_INST = LL_GetBoneInstance(SelfID);
 	CLBone(bd, BONE_INST, parent, u8(-1));
@@ -699,6 +700,9 @@ void CDS0_Kinematics::CalculateBones(bool bForceExact)
 		return; // early out for "fast" update
 	}
 
+	// Animation, collision и renderer могут запросить один skeleton в одном
+	// кадре. Все изменения bone transforms выполняются как одна транзакция.
+	xrCriticalSectionGuard Guard(UCalcMutex);
 	OnCalculateBones();
 	if (!bForceExact && (DevicePtr->dwTimeGlobal < (UCalc_Time + UCalc_Interval)))
 	{

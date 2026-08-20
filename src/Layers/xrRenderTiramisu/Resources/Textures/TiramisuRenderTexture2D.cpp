@@ -47,7 +47,7 @@ nri::Format ConvertFormatToNRI(RedImageTool::RedTexturePixelFormat InFormat, boo
 
 bool TiramisuRenderTexture2D::LoadFromFile(const char* FilePath, bool bSrgb)
 {
-	CheckIsGameThread();
+	CheckIsCpuResourceThread();
 	RedImageTool::RedImage RedImage;
 
 	IReader* FileReader = FS.r_open(FilePath);
@@ -67,7 +67,7 @@ bool TiramisuRenderTexture2D::LoadFromFile(const char* FilePath, bool bSrgb)
 
 bool TiramisuRenderTexture2D::LoadFromImage(const RedImageTool::RedImage& FromImage, bool bSrgb)
 {
-	CheckIsGameThread();
+	CheckIsCpuResourceThread();
 	if (FromImage.GetFormat() == RedImageTool::RedTexturePixelFormat::R8G8B8)
 	{
 		return false;

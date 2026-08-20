@@ -9,6 +9,8 @@
 
 #include "TiramisuRenderViewport.h"
 #include "TiramisuDeferredDeletionQueue.h"
+#include "Passes/Deferred/TiramisuGBufferLayout.h"
+#include "Resources/Materials/TiramisuMaterialDrawFrameLayout.h"
 #include "src/xrCore/RenderStatistics.h"
 #include "Extensions/NRIImgui.h"
 
@@ -44,6 +46,30 @@ static_assert(offsetof(FXRayRenderConstantBuffer, InverseViewProjection) == 80);
 static_assert(offsetof(FXRayRenderConstantBuffer, CameraPositionAndTime) == 144);
 static_assert(offsetof(FXRayRenderConstantBuffer, DrawDataBufferIndex) == 160);
 static_assert(offsetof(FXRayRenderConstantBuffer, EnvironmentTextureIndex) == 188);
+
+// Константы отдельного fullscreen resolve, читающего bindless G-buffer.
+struct alignas(16) FTiramisuDeferredLightingConstants
+{
+	Fmatrix InverseViewProjection;
+	Fvector4 CameraPosition;
+	Fvector4 LightDirectionAndIntensity;
+	Fvector4 LightColorAndAmbientIntensity;
+	Fvector4 PointLightPositionAndInverseRadiusSquared;
+	u32 BaseColorAmbientOcclusionIndex;
+	u32 NormalRoughnessMetallicIndex;
+	u32 EmissiveMaterialFlagsIndex;
+	u32 VelocityIndex;
+	u32 DepthIndex;
+	u32 SamplerIndex;
+	u32 GBufferVersion;
+	u32 Padding;
+};
+
+static_assert(sizeof(FTiramisuDeferredLightingConstants) == 160);
+static_assert(offsetof(
+	FTiramisuDeferredLightingConstants,
+	BaseColorAmbientOcclusionIndex
+) == 128);
 
 // Главный координатор Tiramisu: владеет render thread, кадрами, passes и глобальными GPU-ресурсами.
 class TiramisuRender
@@ -81,12 +107,16 @@ protected:
 	// Создаёт ABI-буфер, читаемый шейдерами через bindless descriptor index.
 	void CreateGlobalConstantBuffer();
 	void UpdateGlobalConstantBuffer();
+	void CreateDeferredLightingResources();
+	void UpdateDeferredLightingConstants_RenderThread();
+	void CreateDeferredLightingPipeline_RenderThread();
 	void Submit(TiramisuRenderViewport* ToViewport);
 	FRenderResourceStatistics CollectResourceStatistics_RenderThread() const;
 
 	TiramisuRenderViewport* CurrentViewport = nullptr;
 	xr_vector<FQueuedFrame> QueuedFrames;
-	static constexpr u32 QueuedFrameCount = 3;
+	static constexpr u32 QueuedFrameCount =
+		TiramisuMaterialDrawFrameLayout::BufferedFrameCount;
 
 	nri::Fence* FrameFence = nullptr;
 	u32 FrameIndex = 0;
@@ -97,12 +127,18 @@ protected:
 	nri::Buffer* GlobalConstantBuffer = nullptr;
 	nri::Descriptor* GlobalConstantDescriptor = nullptr;
 	nri::Memory* GlobalConstantBufferMemory = nullptr;
+	nri::DescriptorSet* DeferredLightingDescriptorSet = nullptr;
+	nri::Buffer* DeferredLightingConstantBuffer = nullptr;
+	nri::Descriptor* DeferredLightingConstantDescriptor = nullptr;
+	nri::Memory* DeferredLightingConstantBufferMemory = nullptr;
 
 	nri::Pipeline* Pipeline = nullptr;
-
+	nri::Pipeline* DeferredLightingPipeline = nullptr;
 
 	TiramisuRenderTarget2D* OutputRenderTarget = nullptr;
 	TiramisuRenderTarget2D* DepthRenderTarget = nullptr;
+	xr_array<TiramisuRenderTarget2D*,
+		TiramisuGBufferLayout::TargetCount> GBufferRenderTargets = {};
 
 	TiramisuRenderTargetResourceProxy* OutputRenderTarget_RenderThread = nullptr;
 	TiramisuRenderTargetResourceProxy* DepthRenderTarget_RenderThread = nullptr;
@@ -125,6 +161,8 @@ private:
 	std::binary_semaphore ImguiFrameConsumed{0};
 	const ImDrawData* PendingImguiDrawData = nullptr;
 	bool bImguiFramePrepared = false;
+	bool bRenderDocCaptureAttempted = false;
+	bool bRenderDocCaptureActive = false;
 	ThreadID RenderThread = nullptr;
 };
 extern TiramisuRender* GRender;

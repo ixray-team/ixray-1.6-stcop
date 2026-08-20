@@ -3,6 +3,7 @@
 #include <RedImage/RedImage.hpp>
 
 #include "RenderVertexTypes.h"
+#include "TiramisuDescriptorHeapLayout.h"
 #include "Materials/TiramisuRenderMaterialGpuStorage.h"
 #include "Materials/TiramisuRenderMaterialPipelineRegistry.h"
 #include "Materials/TiramisuRenderMaterialShaderLibrary.h"
@@ -78,8 +79,10 @@ TiramisuRenderResourcesManager::TiramisuRenderResourcesManager()
 		nri::DescriptorPoolDesc DescriptorPoolDescription = {};
 		DescriptorPoolDescription.mutableMaxNum = 2048;
 		DescriptorPoolDescription.samplerMaxNum = 4;
-		DescriptorPoolDescription.descriptorSetMaxNum = 2 + 1;
-		DescriptorPoolDescription.constantBufferMaxNum = 1;
+		DescriptorPoolDescription.descriptorSetMaxNum = 2 + 2;
+		DescriptorPoolDescription.constantBufferMaxNum = 2;
+		DescriptorPoolDescription.flags =
+			TiramisuDescriptorHeapLayout::PoolFlags;
 		NRI_CHECK(GRenderDevice.CoreInterface.CreateDescriptorPool(*GRenderDevice.Device, DescriptorPoolDescription, GlobalDescriptorPool));
 	}
 
@@ -91,7 +94,7 @@ TiramisuRenderResourcesManager::TiramisuRenderResourcesManager()
 				2048,
 				nri::DescriptorType::MUTABLE,
 				nri::StageBits::VERTEX_SHADER | nri::StageBits::FRAGMENT_SHADER,
-				nri::DescriptorRangeBits::ARRAY | nri::DescriptorRangeBits::PARTIALLY_BOUND,
+				TiramisuDescriptorHeapLayout::ResourceRangeFlags,
 			},
 			{
 				// Sampler heap
@@ -107,7 +110,12 @@ TiramisuRenderResourcesManager::TiramisuRenderResourcesManager()
 		nri::DescriptorRangeDesc SetConstantBuffer = {0, 1, nri::DescriptorType::CONSTANT_BUFFER, nri::StageBits::ALL};
 
 		nri::DescriptorSetDesc GlobalDescriptorSetDescription[] = {
-			{0, DescriptorRangeDescriptions + 0, 1},
+			{
+				0,
+				DescriptorRangeDescriptions + 0,
+				1,
+				TiramisuDescriptorHeapLayout::ResourceSetFlags
+			},
 			{1, DescriptorRangeDescriptions + 1, 1},
 			{2, &SetConstantBuffer, 1}
 		};
@@ -144,8 +152,9 @@ TiramisuRenderResourcesManager::TiramisuRenderResourcesManager()
 	CreateSamplers();
 	CreateQuadBuffer();
 }
-extern u32 UIShaderCounter;
 void DumpLiveTiramisuUiShaders();
+u32 GetLiveTiramisuUiShaderTextureCount();
+void ReleaseLiveTiramisuUiShaderTextures();
 TiramisuRenderResourcesManager::~TiramisuRenderResourcesManager()
 {
 	CheckIsGameThread();
@@ -153,11 +162,16 @@ TiramisuRenderResourcesManager::~TiramisuRenderResourcesManager()
 	delete RenderScene;
 	MaterialsManager->Free(DefaultMaterial);
 	delete MaterialsManager;
-	if (UIShaderCounter != 0)
+	const u32 LiveUiShaderTextureCount =
+		GetLiveTiramisuUiShaderTextureCount();
+	if (LiveUiShaderTextureCount != 0)
 	{
 		DumpLiveTiramisuUiShaders();
+		Msg("* Tiramisu: releasing %u live UI shader texture references "
+			"before renderer shutdown", LiveUiShaderTextureCount);
+		ReleaseLiveTiramisuUiShaderTextures();
 	}
-	VERIFY(UIShaderCounter == 0);
+	VERIFY(GetLiveTiramisuUiShaderTextureCount() == 0);
 	delete MaterialGpuStorage;
 	MaterialGpuStorage = nullptr;
 	delete TexturesManager;

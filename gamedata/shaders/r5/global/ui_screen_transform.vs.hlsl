@@ -17,7 +17,7 @@ OutputUI Main
     output.Position.y = -output.Position.y;
     output.Position.zw = float2( 0.0, 1.0 );
     output.UV = input.UV;
-    output.Color = output.Color;
+    output.Color = input.Color;
 
     return output;
 }

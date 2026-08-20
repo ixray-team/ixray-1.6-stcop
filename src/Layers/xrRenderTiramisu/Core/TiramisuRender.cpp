@@ -1,5 +1,6 @@
 #include "TiramisuRender.h"
 
+#include "src/xrCore/RenderDocIntegration.h"
 #include "src/xrCore/RenderTestPolicy.h"
 #include "Passes/Geometry/TiramisuRenderDeferredPass.h"
 #include "Passes/UI/TiramisuRenderUIPass.h"
@@ -69,9 +70,31 @@ void TiramisuRender::Initialize()
 		NRI_CHECK(GRenderDevice.CoreInterface.CreateCommandBuffer(*QueuedFrame.CommandAllocator, QueuedFrame.CommandBuffer));
 	}
 	CreateGlobalConstantBuffer();
+	CreateDeferredLightingResources();
 
 	OutputRenderTarget = new TiramisuRenderTarget2D(1024, 768, nri::Format::RGBA8_UNORM, {}, "Output");
-	DepthRenderTarget = new TiramisuRenderTarget2D(1024, 768, nri::Format::D24_UNORM_S8_UINT, {}, "Depth");
+	DepthRenderTarget = new TiramisuRenderTarget2D(
+		1024, 768, TiramisuGBufferLayout::DepthFormat, {}, "GBufferDepth"
+	);
+	constexpr xr_array<const char*, TiramisuGBufferLayout::TargetCount>
+		GBufferNames = {
+			"GBufferBaseColorAO",
+			"GBufferNormalRoughnessMetallic",
+			"GBufferEmissiveMaterialFlags",
+			"GBufferVelocity"
+		};
+	for (u32 TargetIndex = 0;
+		 TargetIndex < TiramisuGBufferLayout::TargetCount;
+		 ++TargetIndex)
+	{
+		GBufferRenderTargets[TargetIndex] = new TiramisuRenderTarget2D(
+			1024,
+			768,
+			TiramisuGBufferLayout::TargetFormats[TargetIndex],
+			{},
+			GBufferNames[TargetIndex]
+		);
+	}
 
 	UIPass = new TiramisuRenderUIPass;
 	GeometryPass = new TiramisuRenderDeferredPass;
@@ -107,6 +130,30 @@ void TiramisuRender::Destroy()
 		}
 		GlobalConstantDescriptorSet = nullptr;
 	}
+	{
+		if (DeferredLightingConstantDescriptor)
+		{
+			GRenderDevice.CoreInterface.DestroyDescriptor(
+				DeferredLightingConstantDescriptor
+			);
+			DeferredLightingConstantDescriptor = nullptr;
+		}
+		if (DeferredLightingConstantBuffer)
+		{
+			GRenderDevice.CoreInterface.DestroyBuffer(
+				DeferredLightingConstantBuffer
+			);
+			DeferredLightingConstantBuffer = nullptr;
+		}
+		if (DeferredLightingConstantBufferMemory)
+		{
+			GRenderDevice.CoreInterface.FreeMemory(
+				DeferredLightingConstantBufferMemory
+			);
+			DeferredLightingConstantBufferMemory = nullptr;
+		}
+		DeferredLightingDescriptorSet = nullptr;
+	}
 
 	if (OutputRenderTarget)
 	{
@@ -118,6 +165,11 @@ void TiramisuRender::Destroy()
 	{
 		delete DepthRenderTarget;
 		DepthRenderTarget = nullptr;
+	}
+	for (TiramisuRenderTarget2D*& Target : GBufferRenderTargets)
+	{
+		delete Target;
+		Target = nullptr;
 	}
 
 	if (ImGuiInstance)
@@ -142,6 +194,13 @@ void TiramisuRender::Destroy()
 	{
 		GRenderDevice.CoreInterface.DestroyPipeline(Pipeline);
 		Pipeline = nullptr;
+	}
+	if (DeferredLightingPipeline)
+	{
+		GRenderDevice.CoreInterface.DestroyPipeline(
+			DeferredLightingPipeline
+		);
+		DeferredLightingPipeline = nullptr;
 	}
 
 	if (WaitSemaphore)
@@ -176,6 +235,8 @@ void TiramisuRender::Destroy()
 		}
 	}
 	FrameIndex = 0;
+	bRenderDocCaptureAttempted = false;
+	bRenderDocCaptureActive = false;
 	StatisticsTracker.Reset();
 	{
 		std::scoped_lock Lock(StatisticsMutex);
@@ -363,6 +424,8 @@ void TiramisuRender::Render_RenderThread()
 		GRenderDevice.CoreInterface.GetFenceValue(*FrameFence)
 	);
 	StatisticsTracker.BeginFrame(FrameIndex);
+	const u32 QueuedFrameIndex =
+		FrameIndex % static_cast<u32>(QueuedFrames.size());
 
 	{
 		if (IsRenderThreadRunning())
@@ -379,16 +442,74 @@ void TiramisuRender::Render_RenderThread()
 		}
 
 
-		GRenderResourcesManager->MaterialGpuStorage->BeginFrame_RenderThread();
+		GRenderResourcesManager->MaterialGpuStorage->BeginFrame_RenderThread(
+			QueuedFrameIndex
+		);
 		GRenderResourcesManager->RenderScene->Update();
 		UpdateGlobalConstantBuffer();
+		UpdateDeferredLightingConstants_RenderThread();
 		GRenderResourcesManager->FlushNextFrame_RenderThread();
 	}
 
 
 	PROF_EVENT("Main Render")
+	const bool RenderDocCaptureRequested =
+		xrRenderDoc::IsAvailable() &&
+		HasRenderCommandLineFlag(
+			Core.Params ? Core.Params : "", "-renderdoc-capture"
+		);
+	const bool RenderDocSceneCaptureRequested =
+		HasRenderCommandLineFlag(
+			Core.Params ? Core.Params : "", "-renderdoc-capture-scene"
+		);
+	bool RenderDocSceneReady = false;
+	if (RenderDocSceneCaptureRequested)
+	{
+		for (const TiramisuPrimitiveSceneProxy* SceneProxy :
+			 GRenderResourcesManager->RenderScene->RenderSceneProxies)
+		{
+			if (SceneProxy && SceneProxy->GetNumMeshBatches() != 0)
+			{
+				RenderDocSceneReady = true;
+				break;
+			}
+		}
+	}
+	const bool RenderDocCaptureContentReady =
+		!RenderDocSceneCaptureRequested || RenderDocSceneReady;
+	if (RenderDocCaptureRequested && !bRenderDocCaptureAttempted &&
+		RenderDocCaptureContentReady && CurrentViewport &&
+		CurrentViewport->IsValid() && CurrentViewport->HasPresentedFrame())
+	{
+		bRenderDocCaptureAttempted = true;
+		void* RenderDocDeviceHandle = nullptr;
+		if (GRenderDevice.GraphicsApi == nri::GraphicsAPI::D3D12)
+		{
+			RenderDocDeviceHandle =
+				GRenderDevice.CoreInterface.GetDeviceNativeObject(
+					GRenderDevice.Device
+				);
+		}
+		bRenderDocCaptureActive = xrRenderDoc::BeginCapture(
+			CurrentViewport->GetNativeWindowHandle(),
+			RenderDocDeviceHandle
+		);
+		if (bRenderDocCaptureActive)
+		{
+			Msg("* RenderDoc: Tiramisu game frame capture started");
+		}
+		else if (xrRenderDoc::TriggerCapture())
+		{
+			// Некоторые D3D12 drivers не принимают explicit device/window pair,
+			// но корректно захватывают следующую активную Present-пару.
+			Msg("* RenderDoc: Tiramisu game frame capture scheduled");
+		}
+		else
+		{
+			Msg("! RenderDoc: Tiramisu game frame capture could not start");
+		}
+	}
 
-	u32 QueuedFrameIndex = FrameIndex % QueuedFrames.size();
 	const FQueuedFrame& QueuedFrame = QueuedFrames[QueuedFrameIndex];
 
 	nri::CommandBuffer& CurrentCommandBuffer = *QueuedFrame.CommandBuffer;
@@ -402,21 +523,43 @@ void TiramisuRender::Render_RenderThread()
 			UIPass->Upload(CurrentCommandBuffer);
 		}
 		{
-			nri::TextureBarrierDesc TextureBarrierDescription[2] = {};
-			TextureBarrierDescription[0].texture = OutputRenderTarget->ResourceProxy->Texture;
-			TextureBarrierDescription[0].layerNum = 1;
-			TextureBarrierDescription[0].mipNum = 1;
-			OutputRenderTarget->RenderTargetResourceProxy->SetNewAccessLayoutStage(TextureBarrierDescription[0], {nri::AccessBits::COLOR_ATTACHMENT, nri::Layout::COLOR_ATTACHMENT});
+			xr_array<nri::TextureBarrierDesc,
+				TiramisuGBufferLayout::TargetCount + 1> TextureBarriers = {};
+			for (u32 TargetIndex = 0;
+				 TargetIndex < TiramisuGBufferLayout::TargetCount;
+				 ++TargetIndex)
+			{
+				TiramisuRenderTarget2D* Target =
+					GBufferRenderTargets[TargetIndex];
+				TextureBarriers[TargetIndex].texture =
+					Target->ResourceProxy->Texture;
+				TextureBarriers[TargetIndex].layerNum = 1;
+				TextureBarriers[TargetIndex].mipNum = 1;
+				Target->RenderTargetResourceProxy->SetNewAccessLayoutStage(
+					TextureBarriers[TargetIndex],
+					{
+						nri::AccessBits::COLOR_ATTACHMENT,
+						nri::Layout::COLOR_ATTACHMENT
+					}
+				);
+			}
 
-			TextureBarrierDescription[1].texture = DepthRenderTarget->ResourceProxy->Texture;
-			TextureBarrierDescription[1].layerNum = 1;
-			TextureBarrierDescription[1].mipNum = 1;
-			DepthRenderTarget->RenderTargetResourceProxy->SetNewAccessLayoutStage(TextureBarrierDescription[1], {nri::AccessBits::DEPTH_STENCIL_ATTACHMENT_WRITE, nri::Layout::DEPTH_STENCIL_ATTACHMENT});
-
+			nri::TextureBarrierDesc& DepthBarrier =
+				TextureBarriers[TiramisuGBufferLayout::TargetCount];
+			DepthBarrier.texture = DepthRenderTarget->ResourceProxy->Texture;
+			DepthBarrier.layerNum = 1;
+			DepthBarrier.mipNum = 1;
+			DepthRenderTarget->RenderTargetResourceProxy->SetNewAccessLayoutStage(
+				DepthBarrier,
+				{
+					nri::AccessBits::DEPTH_STENCIL_ATTACHMENT_WRITE,
+					nri::Layout::DEPTH_STENCIL_ATTACHMENT
+				}
+			);
 
 			nri::BarrierDesc BarrierDescription = {};
-			BarrierDescription.textureNum = 2;
-			BarrierDescription.textures = TextureBarrierDescription;
+			BarrierDescription.textureNum = TextureBarriers.size();
+			BarrierDescription.textures = TextureBarriers.data();
 			GRenderDevice.CoreInterface.CmdBarrier(CurrentCommandBuffer, BarrierDescription);
 		}
 
@@ -435,15 +578,38 @@ void TiramisuRender::Render_RenderThread()
 			GRenderDevice.ImGuiInterface.CmdCopyImguiData(CurrentCommandBuffer, *GRenderDevice.Streamer, *ImGuiInstance, CopyImguiDataDesc);
 		}
 
+		GeometryPass->Prepare_RenderThread();
+		GRenderResourcesManager->MaterialGpuStorage
+			->Upload_RenderThread(CurrentCommandBuffer);
+
 		{
-			nri::AttachmentDesc ColorAttachmentDescription = {};
-			ColorAttachmentDescription.descriptor = OutputRenderTarget->RenderTargetResourceProxy->DescriptorAttachment;
-			ColorAttachmentDescription.clearValue.color.f = {0.0f, 0.0f, 0.0f, 1.0f};
-			ColorAttachmentDescription.loadOp = nri::LoadOp::CLEAR;
+			xr_array<nri::AttachmentDesc,
+				TiramisuGBufferLayout::TargetCount> ColorAttachments = {};
+			for (u32 TargetIndex = 0;
+				 TargetIndex < TiramisuGBufferLayout::TargetCount;
+				 ++TargetIndex)
+			{
+				ColorAttachments[TargetIndex].descriptor =
+					GBufferRenderTargets[TargetIndex]
+						->RenderTargetResourceProxy->DescriptorAttachment;
+				ColorAttachments[TargetIndex].loadOp = nri::LoadOp::CLEAR;
+			}
+			ColorAttachments[TiramisuGBufferLayout::GetTargetIndex(
+				ETiramisuGBufferTarget::BaseColorAmbientOcclusion
+			)].clearValue.color.f = {0.0f, 0.0f, 0.0f, 1.0f};
+			ColorAttachments[TiramisuGBufferLayout::GetTargetIndex(
+				ETiramisuGBufferTarget::NormalRoughnessMetallic
+			)].clearValue.color.f = {0.5f, 0.5f, 1.0f, 0.0f};
+			ColorAttachments[TiramisuGBufferLayout::GetTargetIndex(
+				ETiramisuGBufferTarget::EmissiveMaterialFlags
+			)].clearValue.color.f = {0.0f, 0.0f, 0.0f, 0.0f};
+			ColorAttachments[TiramisuGBufferLayout::GetTargetIndex(
+				ETiramisuGBufferTarget::Velocity
+			)].clearValue.color.f = {0.0f, 0.0f, 0.0f, 0.0f};
 
 			nri::RenderingDesc RenderingDescription = {};
-			RenderingDescription.colorNum = 1;
-			RenderingDescription.colors = &ColorAttachmentDescription;
+			RenderingDescription.colorNum = ColorAttachments.size();
+			RenderingDescription.colors = ColorAttachments.data();
 			RenderingDescription.depth.clearValue = {1, 0x0};
 			RenderingDescription.depth.loadOp = nri::LoadOp::CLEAR;
 			RenderingDescription.depth.descriptor = DepthRenderTarget->RenderTargetResourceProxy->DescriptorAttachment;
@@ -467,49 +633,147 @@ void TiramisuRender::Render_RenderThread()
 			GRenderDevice.CoreInterface.CmdSetScissors(CurrentCommandBuffer, &ScissorRect, 1);
 		}
 
-		{
-			StatisticsTracker.RecordPass();
-			GeometryPass->Render(CurrentCommandBuffer);
-			StatisticsTracker.RecordPass();
-			UIPass->Render(CurrentCommandBuffer, viewport);
+		StatisticsTracker.RecordPass();
+		GeometryPass->Render(CurrentCommandBuffer);
+		GRenderDevice.CoreInterface.CmdEndRendering(CurrentCommandBuffer);
 
-			if (ImguiDrawData)
+		{
+			xr_array<nri::TextureBarrierDesc,
+				TiramisuGBufferLayout::TargetCount + 2> TextureBarriers = {};
+			for (u32 TargetIndex = 0;
+				 TargetIndex < TiramisuGBufferLayout::TargetCount;
+				 ++TargetIndex)
 			{
-				GRenderDevice.CoreInterface.CmdBeginAnnotation(
-					CurrentCommandBuffer, "ImGui", nri::BGRA_UNUSED
-				);
-				StatisticsTracker.RecordPass();
-				for (int ListIndex = 0;
-					 ListIndex < ImguiDrawData->CmdListsCount;
-					 ++ListIndex)
-				{
-					const ImDrawList* DrawList =
-						ImguiDrawData->CmdLists[ListIndex];
-					for (const ImDrawCmd& Command : DrawList->CmdBuffer)
+				TiramisuRenderTarget2D* Target =
+					GBufferRenderTargets[TargetIndex];
+				TextureBarriers[TargetIndex].texture =
+					Target->ResourceProxy->Texture;
+				TextureBarriers[TargetIndex].layerNum = 1;
+				TextureBarriers[TargetIndex].mipNum = 1;
+				Target->RenderTargetResourceProxy->SetNewAccessLayoutStage(
+					TextureBarriers[TargetIndex],
 					{
-						if (!Command.UserCallback && Command.ElemCount != 0)
-						{
-							StatisticsTracker.RecordDraw(Command.ElemCount / 3);
-						}
+						nri::AccessBits::SHADER_RESOURCE,
+						nri::Layout::SHADER_RESOURCE
 					}
-				}
-				nri::DrawImguiDesc DrawImguiDesc = {};
-				DrawImguiDesc.drawLists = ImguiDrawData->CmdLists.Data;
-				DrawImguiDesc.drawListNum = ImguiDrawData->CmdLists.Size;
-				DrawImguiDesc.displaySize = {
-					static_cast<nri::Dim_t>(ImguiDrawData->DisplaySize.x),
-					static_cast<nri::Dim_t>(ImguiDrawData->DisplaySize.y)
-				};
-				DrawImguiDesc.hdrScale = 1.0f;
-				DrawImguiDesc.attachmentFormat = nri::Format::RGBA8_UNORM;
-				DrawImguiDesc.linearColor = false;
-				GRenderDevice.ImGuiInterface.CmdDrawImgui(
-					CurrentCommandBuffer, *ImGuiInstance, DrawImguiDesc
-				);
-				GRenderDevice.CoreInterface.CmdEndAnnotation(
-					CurrentCommandBuffer
 				);
 			}
+
+			nri::TextureBarrierDesc& DepthBarrier =
+				TextureBarriers[TiramisuGBufferLayout::TargetCount];
+			DepthBarrier.texture = DepthRenderTarget->ResourceProxy->Texture;
+			DepthBarrier.layerNum = 1;
+			DepthBarrier.mipNum = 1;
+			DepthRenderTarget->RenderTargetResourceProxy->SetNewAccessLayoutStage(
+				DepthBarrier,
+				{
+					nri::AccessBits::SHADER_RESOURCE,
+					nri::Layout::SHADER_RESOURCE
+				}
+			);
+
+			nri::TextureBarrierDesc& OutputBarrier =
+				TextureBarriers[TiramisuGBufferLayout::TargetCount + 1];
+			OutputBarrier.texture = OutputRenderTarget->ResourceProxy->Texture;
+			OutputBarrier.layerNum = 1;
+			OutputBarrier.mipNum = 1;
+			OutputRenderTarget->RenderTargetResourceProxy
+				->SetNewAccessLayoutStage(
+					OutputBarrier,
+					{
+						nri::AccessBits::COLOR_ATTACHMENT,
+						nri::Layout::COLOR_ATTACHMENT
+					}
+				);
+
+			nri::BarrierDesc BarrierDescription = {};
+			BarrierDescription.textureNum = TextureBarriers.size();
+			BarrierDescription.textures = TextureBarriers.data();
+			GRenderDevice.CoreInterface.CmdBarrier(
+				CurrentCommandBuffer, BarrierDescription
+			);
+		}
+
+		{
+			nri::AttachmentDesc ColorAttachment = {};
+			ColorAttachment.descriptor = OutputRenderTarget
+				->RenderTargetResourceProxy->DescriptorAttachment;
+			ColorAttachment.clearValue.color.f = {
+				0.0f, 0.0f, 0.0f, 1.0f
+			};
+			ColorAttachment.loadOp = nri::LoadOp::CLEAR;
+
+			nri::RenderingDesc RenderingDescription = {};
+			RenderingDescription.colorNum = 1;
+			RenderingDescription.colors = &ColorAttachment;
+			GRenderDevice.CoreInterface.CmdBeginRendering(
+				CurrentCommandBuffer, RenderingDescription
+			);
+		}
+
+		CreateDeferredLightingPipeline_RenderThread();
+		GRenderDevice.CoreInterface.CmdBeginAnnotation(
+			CurrentCommandBuffer, "DeferredLighting", nri::BGRA_UNUSED
+		);
+		GRenderDevice.CoreInterface.CmdSetPipeline(
+			CurrentCommandBuffer, *DeferredLightingPipeline
+		);
+		GRenderDevice.CoreInterface.CmdSetDescriptorSet(
+			CurrentCommandBuffer,
+			{2, DeferredLightingDescriptorSet}
+		);
+		GRenderDevice.CoreInterface.CmdDraw(
+			CurrentCommandBuffer, {3, 1, 0, 0}
+		);
+		StatisticsTracker.RecordPass();
+		StatisticsTracker.RecordDraw(1);
+		GRenderDevice.CoreInterface.CmdEndAnnotation(CurrentCommandBuffer);
+
+		GRenderDevice.CoreInterface.CmdSetDescriptorSet(
+			CurrentCommandBuffer,
+			{2, GlobalConstantDescriptorSet}
+		);
+		StatisticsTracker.RecordPass();
+		UIPass->Render(CurrentCommandBuffer, viewport);
+
+		if (ImguiDrawData)
+		{
+			GRenderDevice.CoreInterface.CmdBeginAnnotation(
+				CurrentCommandBuffer, "ImGui", nri::BGRA_UNUSED
+			);
+			StatisticsTracker.RecordPass();
+			for (int ListIndex = 0;
+				 ListIndex < ImguiDrawData->CmdListsCount;
+				 ++ListIndex)
+			{
+				const ImDrawList* DrawList =
+					ImguiDrawData->CmdLists[ListIndex];
+				for (const ImDrawCmd& Command : DrawList->CmdBuffer)
+				{
+					if (!Command.UserCallback && Command.ElemCount != 0)
+					{
+						StatisticsTracker.RecordDraw(
+							Command.ElemCount / 3
+						);
+					}
+				}
+			}
+			nri::DrawImguiDesc DrawImguiDesc = {};
+			DrawImguiDesc.drawLists = ImguiDrawData->CmdLists.Data;
+			DrawImguiDesc.drawListNum = ImguiDrawData->CmdLists.Size;
+			DrawImguiDesc.displaySize = {
+				static_cast<nri::Dim_t>(ImguiDrawData->DisplaySize.x),
+				static_cast<nri::Dim_t>(ImguiDrawData->DisplaySize.y)
+			};
+			DrawImguiDesc.hdrScale = 1.0f;
+			DrawImguiDesc.attachmentFormat = nri::Format::RGBA8_UNORM;
+			DrawImguiDesc.linearColor = false;
+			GRenderDevice.ImGuiInterface.CmdDrawImgui(
+				CurrentCommandBuffer, *ImGuiInstance, DrawImguiDesc
+			);
+			GRenderDevice.CoreInterface.CmdEndAnnotation(
+				CurrentCommandBuffer
+			);
 		}
 
 		GRenderDevice.CoreInterface.CmdEndRendering(CurrentCommandBuffer);
@@ -559,6 +823,25 @@ void TiramisuRender::Render_RenderThread()
 	{
 		Submit(CurrentViewport);
 	}
+	if (bRenderDocCaptureActive)
+	{
+		bRenderDocCaptureActive = false;
+		void* RenderDocDeviceHandle = nullptr;
+		if (GRenderDevice.GraphicsApi == nri::GraphicsAPI::D3D12)
+		{
+			RenderDocDeviceHandle =
+				GRenderDevice.CoreInterface.GetDeviceNativeObject(
+					GRenderDevice.Device
+				);
+		}
+		const bool CaptureSucceeded = xrRenderDoc::EndCapture(
+			CurrentViewport ? CurrentViewport->GetNativeWindowHandle() : nullptr,
+			RenderDocDeviceHandle
+		);
+		Msg(CaptureSucceeded
+			? "* RenderDoc: Tiramisu game frame capture completed"
+			: "! RenderDoc: Tiramisu game frame capture could not complete");
+	}
 	StatisticsTracker.SetResources(CollectResourceStatistics_RenderThread());
 	const auto CpuFrameEnd = std::chrono::steady_clock::now();
 	StatisticsTracker.EndFrame(static_cast<u64>(
@@ -602,9 +885,38 @@ void TiramisuRender::ResizeRenderTarget(u32 InWidth, u32 InHeight)
 
 	xr_delete(OutputRenderTarget);
 	xr_delete(DepthRenderTarget);
+	for (TiramisuRenderTarget2D*& Target : GBufferRenderTargets)
+	{
+		xr_delete(Target);
+	}
 
 	OutputRenderTarget = new TiramisuRenderTarget2D(InWidth, InHeight, nri::Format::RGBA8_UNORM, {}, "Output");
-	DepthRenderTarget = new TiramisuRenderTarget2D(InWidth, InHeight, nri::Format::D24_UNORM_S8_UINT, {}, "Depth");
+	DepthRenderTarget = new TiramisuRenderTarget2D(
+		InWidth,
+		InHeight,
+		TiramisuGBufferLayout::DepthFormat,
+		{},
+		"GBufferDepth"
+	);
+	constexpr xr_array<const char*, TiramisuGBufferLayout::TargetCount>
+		GBufferNames = {
+			"GBufferBaseColorAO",
+			"GBufferNormalRoughnessMetallic",
+			"GBufferEmissiveMaterialFlags",
+			"GBufferVelocity"
+		};
+	for (u32 TargetIndex = 0;
+		 TargetIndex < TiramisuGBufferLayout::TargetCount;
+		 ++TargetIndex)
+	{
+		GBufferRenderTargets[TargetIndex] = new TiramisuRenderTarget2D(
+			InWidth,
+			InHeight,
+			TiramisuGBufferLayout::TargetFormats[TargetIndex],
+			{},
+			GBufferNames[TargetIndex]
+		);
+	}
 
 	ENQUEUE_RENDER_COMMAND(TiramisuRender::ResizeRenderTarget)([this,
 																InOutputRenderTarget = OutputRenderTarget->RenderTargetResourceProxy,
@@ -683,6 +995,15 @@ TiramisuRender::CollectResourceStatistics_RenderThread() const
 
 	AddBuffer(GlobalConstantBuffer, Align(sizeof(FXRayRenderConstantBuffer), GRenderDevice.DeviceDescription.memoryAlignment.constantBufferOffset));
 	AddDescriptor(GlobalConstantDescriptor);
+	AddBuffer(
+		DeferredLightingConstantBuffer,
+		Align(
+			sizeof(FTiramisuDeferredLightingConstants),
+			GRenderDevice.DeviceDescription.memoryAlignment
+				.constantBufferOffset
+		)
+	);
+	AddDescriptor(DeferredLightingConstantDescriptor);
 	if (UIPass)
 	{
 		constexpr u64 UiBufferBytes =
@@ -695,6 +1016,10 @@ TiramisuRender::CollectResourceStatistics_RenderThread() const
 		}
 	}
 	if (Pipeline)
+	{
+		++Result.TrackedPipelineCount;
+	}
+	if (DeferredLightingPipeline)
 	{
 		++Result.TrackedPipelineCount;
 	}
@@ -721,14 +1046,19 @@ TiramisuRender::CollectResourceStatistics_RenderThread() const
 		}
 	}
 
-	const auto AddRenderTarget = [&](const TiramisuRenderTarget2D* Target)
+	const auto AddRenderTarget = [&](const TiramisuRenderTarget2D* Target,
+		const u32 BytesPerPixel)
 	{
 		if (!Target || !Target->ResourceProxy)
 		{
 			return;
 		}
 		const nri::TextureDesc& Description = Target->TextureDescription;
-		AddTexture(Target->ResourceProxy->Texture, static_cast<u64>(Description.width) * Description.height * 4);
+		AddTexture(
+			Target->ResourceProxy->Texture,
+			static_cast<u64>(Description.width) *
+				Description.height * BytesPerPixel
+		);
 		AddDescriptor(Target->ResourceProxy->Descriptor);
 		if (Target->RenderTargetResourceProxy)
 		{
@@ -737,8 +1067,17 @@ TiramisuRender::CollectResourceStatistics_RenderThread() const
 			);
 		}
 	};
-	AddRenderTarget(OutputRenderTarget);
-	AddRenderTarget(DepthRenderTarget);
+	AddRenderTarget(OutputRenderTarget, 4);
+	AddRenderTarget(DepthRenderTarget, 4);
+	for (u32 TargetIndex = 0;
+		 TargetIndex < TiramisuGBufferLayout::TargetCount;
+		 ++TargetIndex)
+	{
+		AddRenderTarget(
+			GBufferRenderTargets[TargetIndex],
+			TiramisuGBufferLayout::TargetBytesPerPixel[TargetIndex]
+		);
+	}
 
 	if (CurrentViewport)
 	{
@@ -817,6 +1156,186 @@ void TiramisuRender::CreateGlobalConstantBuffer()
 		nri::UpdateDescriptorRangeDesc UpdateDescriptorRangeDescription = {GlobalConstantDescriptorSet, 0, 0, &GlobalConstantDescriptor, 1};
 		GRenderDevice.CoreInterface.UpdateDescriptorRanges(&UpdateDescriptorRangeDescription, 1);
 	}
+}
+
+void TiramisuRender::CreateDeferredLightingResources()
+{
+	CheckIsRenderThread();
+	const u64 ConstantBufferSize = Align(
+		sizeof(FTiramisuDeferredLightingConstants),
+		GRenderDevice.DeviceDescription.memoryAlignment.constantBufferOffset
+	);
+
+	nri::BufferDesc BufferDescription = {};
+	BufferDescription.size = ConstantBufferSize;
+	BufferDescription.usage = nri::BufferUsageBits::CONSTANT_BUFFER;
+	NRI_CHECK(GRenderDevice.CoreInterface.CreateBuffer(
+		*GRenderDevice.Device,
+		BufferDescription,
+		DeferredLightingConstantBuffer
+	));
+
+	nri::ResourceGroupDesc ResourceGroupDescription = {};
+	ResourceGroupDescription.memoryLocation = nri::MemoryLocation::HOST_UPLOAD;
+	ResourceGroupDescription.bufferNum = 1;
+	ResourceGroupDescription.buffers = &DeferredLightingConstantBuffer;
+	NRI_CHECK(GRenderDevice.HelperInterface.AllocateAndBindMemory(
+		*GRenderDevice.Device,
+		ResourceGroupDescription,
+		&DeferredLightingConstantBufferMemory
+	));
+
+	nri::BufferViewDesc BufferViewDescription = {};
+	BufferViewDescription.buffer = DeferredLightingConstantBuffer;
+	BufferViewDescription.type = nri::BufferView::CONSTANT_BUFFER;
+	BufferViewDescription.size = ConstantBufferSize;
+	NRI_CHECK(GRenderDevice.CoreInterface.CreateBufferView(
+		BufferViewDescription,
+		DeferredLightingConstantDescriptor
+	));
+
+	NRI_CHECK(GRenderDevice.CoreInterface.AllocateDescriptorSets(
+		*GRenderResourcesManager->GlobalDescriptorPool,
+		*GRenderResourcesManager->GlobalPipelineLayout,
+		2,
+		&DeferredLightingDescriptorSet,
+		1,
+		0
+	));
+	const nri::UpdateDescriptorRangeDesc UpdateDescription = {
+		DeferredLightingDescriptorSet,
+		0,
+		0,
+		&DeferredLightingConstantDescriptor,
+		1
+	};
+	GRenderDevice.CoreInterface.UpdateDescriptorRanges(
+		&UpdateDescription, 1
+	);
+}
+
+void TiramisuRender::UpdateDeferredLightingConstants_RenderThread()
+{
+	CheckIsRenderThread();
+	auto* Constants = static_cast<FTiramisuDeferredLightingConstants*>(
+		GRenderDevice.CoreInterface.MapBuffer(
+			*DeferredLightingConstantBuffer,
+			0,
+			sizeof(FTiramisuDeferredLightingConstants)
+		)
+	);
+	if (!Constants)
+	{
+		return;
+	}
+
+	Constants->InverseViewProjection.invert(DevicePtr->mFullTransform);
+	Constants->CameraPosition = {
+		DevicePtr->vCameraPosition.x,
+		DevicePtr->vCameraPosition.y,
+		DevicePtr->vCameraPosition.z,
+		1.0f
+	};
+	Constants->LightDirectionAndIntensity = {
+		0.35f, -0.9f, 0.25f, 4.0f
+	};
+	Constants->LightColorAndAmbientIntensity = {
+		1.0f, 0.95f, 0.85f, 0.03f
+	};
+	Constants->PointLightPositionAndInverseRadiusSquared = {};
+	Constants->BaseColorAmbientOcclusionIndex =
+		GBufferRenderTargets[TiramisuGBufferLayout::GetTargetIndex(
+			ETiramisuGBufferTarget::BaseColorAmbientOcclusion
+		)]->ResourceProxy->GetOrCreateHeapID();
+	Constants->NormalRoughnessMetallicIndex =
+		GBufferRenderTargets[TiramisuGBufferLayout::GetTargetIndex(
+			ETiramisuGBufferTarget::NormalRoughnessMetallic
+		)]->ResourceProxy->GetOrCreateHeapID();
+	Constants->EmissiveMaterialFlagsIndex =
+		GBufferRenderTargets[TiramisuGBufferLayout::GetTargetIndex(
+			ETiramisuGBufferTarget::EmissiveMaterialFlags
+		)]->ResourceProxy->GetOrCreateHeapID();
+	Constants->VelocityIndex =
+		GBufferRenderTargets[TiramisuGBufferLayout::GetTargetIndex(
+			ETiramisuGBufferTarget::Velocity
+		)]->ResourceProxy->GetOrCreateHeapID();
+	Constants->DepthIndex =
+		DepthRenderTarget->ResourceProxy->GetOrCreateHeapID();
+	Constants->SamplerIndex = 0;
+	Constants->GBufferVersion = TiramisuGBufferLayout::Version;
+	Constants->Padding = 0;
+
+	GRenderDevice.CoreInterface.UnmapBuffer(
+		*DeferredLightingConstantBuffer
+	);
+	StatisticsTracker.RecordUpload(
+		sizeof(FTiramisuDeferredLightingConstants)
+	);
+}
+
+void TiramisuRender::CreateDeferredLightingPipeline_RenderThread()
+{
+	CheckIsRenderThread();
+	if (DeferredLightingPipeline)
+	{
+		return;
+	}
+
+	nri::InputAssemblyDesc InputAssemblyDescription = {};
+	InputAssemblyDescription.topology = nri::Topology::TRIANGLE_LIST;
+
+	nri::RasterizationDesc RasterizationDescription = {};
+	RasterizationDescription.fillMode = nri::FillMode::SOLID;
+	RasterizationDescription.cullMode = nri::CullMode::NONE;
+
+	nri::ColorAttachmentDesc ColorAttachmentDescription = {};
+	ColorAttachmentDescription.format = nri::Format::RGBA8_UNORM;
+	ColorAttachmentDescription.colorWriteMask = nri::ColorWriteBits::RGBA;
+
+	nri::OutputMergerDesc OutputMergerDescription = {};
+	OutputMergerDescription.colors = &ColorAttachmentDescription;
+	OutputMergerDescription.colorNum = 1;
+
+	TiramisuShaderDefinesContainer ShaderDefines;
+	nri::ShaderDesc ShaderDescriptions[2] = {};
+	{
+		const xr_vector<char>& ShaderCode =
+			GRenderResourcesManager->GlobalShadersManager->GetShader(
+				"fullscreen_triangle",
+				EShaderType::Vertex,
+				ShaderDefines
+			);
+		ShaderDescriptions[0].stage = nri::StageBits::VERTEX_SHADER;
+		ShaderDescriptions[0].bytecode = ShaderCode.data();
+		ShaderDescriptions[0].size = ShaderCode.size();
+		ShaderDescriptions[0].entryPointName = "Main";
+	}
+	{
+		const xr_vector<char>& ShaderCode =
+			GRenderResourcesManager->GlobalShadersManager->GetShader(
+				"deferred_directional_light",
+				EShaderType::Pixel,
+				ShaderDefines
+			);
+		ShaderDescriptions[1].stage = nri::StageBits::FRAGMENT_SHADER;
+		ShaderDescriptions[1].bytecode = ShaderCode.data();
+		ShaderDescriptions[1].size = ShaderCode.size();
+		ShaderDescriptions[1].entryPointName = "Main";
+	}
+
+	nri::GraphicsPipelineDesc PipelineDescription = {};
+	PipelineDescription.pipelineLayout =
+		GRenderResourcesManager->GlobalPipelineLayout;
+	PipelineDescription.inputAssembly = InputAssemblyDescription;
+	PipelineDescription.rasterization = RasterizationDescription;
+	PipelineDescription.outputMerger = OutputMergerDescription;
+	PipelineDescription.shaders = ShaderDescriptions;
+	PipelineDescription.shaderNum = 2;
+	NRI_CHECK(GRenderDevice.CoreInterface.CreateGraphicsPipeline(
+		*GRenderDevice.Device,
+		PipelineDescription,
+		DeferredLightingPipeline
+	));
 }
 
 void TiramisuRender::UpdateGlobalConstantBuffer()

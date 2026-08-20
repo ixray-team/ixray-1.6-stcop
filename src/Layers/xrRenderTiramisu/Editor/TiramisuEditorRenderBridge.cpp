@@ -486,11 +486,14 @@ struct TiramisuEditorRenderBridge::FImpl
 	struct FSceneGeometryLayoutItem
 	{
 		u32 InstanceIndex = 0;
+		u64 ObjectId = 0;
 		u64 MeshId = 0;
 		u32 SectionIndex = 0;
 		FEditorMaterialSlotId MaterialSlot;
+		u64 PipelineSortKey = 0;
 		u32 LocalMaterialIndex = 0;
 		nri::Pipeline* Pipeline = nullptr;
+		bool PipelineTwoSided = false;
 		bool Skinned = false;
 		bool Skip = false;
 	};
@@ -731,8 +734,10 @@ struct TiramisuEditorRenderBridge::FImpl
 		EMaterialDomain Domain = EMaterialDomain::Surface;
 		nri::Pipeline* Pipeline = nullptr;
 		u64 PipelineKey = 0;
+		u64 PipelineSortKey = 0;
 		nri::Pipeline* SkeletalPipeline = nullptr;
 		u64 SkeletalPipelineKey = 0;
+		u64 SkeletalPipelineSortKey = 0;
 		u64 SkeletalAcceptedRevision = 0;
 		xr_string SkeletalDiagnostic;
 		bool SkeletalRequested = false;
@@ -2503,9 +2508,11 @@ struct TiramisuEditorRenderBridge::FImpl
 			(void)Slot;
 			Material.Pipeline = nullptr;
 			Material.PipelineKey = 0;
+			Material.PipelineSortKey = 0;
 			Material.PipelineTwoSided = false;
 			Material.SkeletalPipeline = nullptr;
 			Material.SkeletalPipelineKey = 0;
+			Material.SkeletalPipelineSortKey = 0;
 			Material.SkeletalPipelineTwoSided = false;
 		}
 		SceneMaterials.clear();
@@ -3374,11 +3381,15 @@ struct TiramisuEditorRenderBridge::FImpl
 		u64& PipelineKey = Skeletal
 			? Material.SkeletalPipelineKey
 			: Material.PipelineKey;
+		u64& PipelineSortKey = Skeletal
+			? Material.SkeletalPipelineSortKey
+			: Material.PipelineSortKey;
 		bool& PipelineTwoSided = Skeletal
 			? Material.SkeletalPipelineTwoSided
 			: Material.PipelineTwoSided;
 		if (!Pipeline || PipelineKey == 0)
 		{
+			PipelineSortKey = 0;
 			return;
 		}
 		const FScenePipelineCacheKey Key = {
@@ -3389,6 +3400,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			Pipeline = nullptr;
 			PipelineKey = 0;
+			PipelineSortKey = 0;
 			PipelineTwoSided = false;
 			return;
 		}
@@ -3405,6 +3417,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 		Pipeline = nullptr;
 		PipelineKey = 0;
+		PipelineSortKey = 0;
 		PipelineTwoSided = false;
 	}
 
@@ -3488,6 +3501,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		u64& ActivePipelineKey = Skeletal
 			? Material.SkeletalPipelineKey
 			: Material.PipelineKey;
+		u64& ActivePipelineSortKey = Skeletal
+			? Material.SkeletalPipelineSortKey
+			: Material.PipelineSortKey;
 		bool& ActivePipelineTwoSided = Skeletal
 			? Material.SkeletalPipelineTwoSided
 			: Material.PipelineTwoSided;
@@ -3510,6 +3526,7 @@ struct TiramisuEditorRenderBridge::FImpl
 			ActivePipelineKey = Compiled.PipelineKey;
 			ActivePipelineTwoSided = PipelineTwoSided;
 		}
+		ActivePipelineSortKey = Compiled.PipelineSortKey;
 		Material.ParameterData = std::move(Patched.Value.Data);
 		Material.ParameterLayoutHash = Patched.Value.LayoutHash;
 		if (Skeletal)
@@ -5412,9 +5429,41 @@ struct TiramisuEditorRenderBridge::FImpl
 				Viewport.ModelAnimationReady = false;
 				continue;
 			}
-			State.PreviousPalette = State.CurrentPalette;
-			State.CurrentTime += FrameDeltaSeconds;
 			xr_string MotionDiagnostic;
+			if (DeterministicTest.Enabled)
+			{
+				// Capture не должен зависеть от длительности фоновой
+				// компиляции pipeline. Current/previous pose фиксируются
+				// одной парой времён на Vulkan и D3D12.
+				State.CurrentTime =
+					DeterministicTest.FixedShaderTimeSeconds;
+				const float PreviousTime = std::max(
+					0.0f,
+					State.CurrentTime -
+						DeterministicTest.FixedDeltaSeconds
+				);
+				if (!SampleTiramisuEditorOgfModelMotion(
+						Cached->second.Source,
+						State.AnimationName,
+						PreviousTime,
+						State.PreviousPalette,
+						&MotionDiagnostic
+					))
+				{
+					Viewport.ModelAnimationReady = false;
+					if (Viewport.ModelAnimationDiagnostic.empty())
+					{
+						Viewport.ModelAnimationDiagnostic =
+							std::move(MotionDiagnostic);
+					}
+					continue;
+				}
+			}
+			else
+			{
+				State.PreviousPalette = State.CurrentPalette;
+				State.CurrentTime += FrameDeltaSeconds;
+			}
 			if (!SampleTiramisuEditorOgfModelMotion(
 					Cached->second.Source,
 					State.AnimationName,
@@ -5859,19 +5908,38 @@ struct TiramisuEditorRenderBridge::FImpl
 					: Mesh.Skinned
 						? Material->second.SkeletalPipeline
 						: Material->second.Pipeline;
+				const u64 PipelineAcceptedRevision =
+					Material == SceneMaterials.end()
+					? 0
+					: Mesh.Skinned
+						? Material->second.SkeletalAcceptedRevision
+						: Material->second.AcceptedRevision;
+				const bool PipelineReady = Pipeline != nullptr;
+				const bool PipelineTwoSided =
+					Material != SceneMaterials.end() &&
+					(Mesh.Skinned
+						? Material->second.SkeletalPipelineTwoSided
+						: Material->second.PipelineTwoSided);
+				const u64 PipelineSortKey =
+					Material == SceneMaterials.end()
+					? 0
+					: Mesh.Skinned
+						? Material->second.SkeletalPipelineSortKey
+						: Material->second.PipelineSortKey;
 				const bool Skip = Mesh.Skinned && Pipeline == nullptr;
 				LayoutCandidates.push_back({
 					InstanceIndex,
+					Instance.ObjectId.Value,
 					Instance.MeshId.Value,
 					SectionIndex,
 					MaterialSlot,
+					PipelineSortKey,
 					LocalMaterialIndex,
 					Pipeline,
+					PipelineTwoSided,
 					Mesh.Skinned,
 					Skip
 				});
-				const std::uintptr_t PipelineAddress =
-					reinterpret_cast<std::uintptr_t>(Pipeline);
 				LayoutRevision = HashEditorAssetBytes(
 					&Instance.ObjectId.Value,
 					sizeof(Instance.ObjectId.Value),
@@ -5893,8 +5961,23 @@ struct TiramisuEditorRenderBridge::FImpl
 					LayoutRevision
 				);
 				LayoutRevision = HashEditorAssetBytes(
-					&PipelineAddress,
-					sizeof(PipelineAddress),
+					&PipelineSortKey,
+					sizeof(PipelineSortKey),
+					LayoutRevision
+				);
+				LayoutRevision = HashEditorAssetBytes(
+					&PipelineTwoSided,
+					sizeof(PipelineTwoSided),
+					LayoutRevision
+				);
+				LayoutRevision = HashEditorAssetBytes(
+					&PipelineAcceptedRevision,
+					sizeof(PipelineAcceptedRevision),
+					LayoutRevision
+				);
+				LayoutRevision = HashEditorAssetBytes(
+					&PipelineReady,
+					sizeof(PipelineReady),
 					LayoutRevision
 				);
 			}
@@ -5916,17 +5999,23 @@ struct TiramisuEditorRenderBridge::FImpl
 					const FSceneGeometryLayoutItem& Right)
 				{
 					return std::tuple(
-						reinterpret_cast<std::uintptr_t>(Left.Pipeline),
+						Left.PipelineSortKey,
+						Left.PipelineTwoSided,
 						Left.Skip,
 						Left.Skinned,
+						Left.MaterialSlot.Value,
 						Left.MeshId,
-						Left.SectionIndex
+						Left.SectionIndex,
+						Left.ObjectId
 					) < std::tuple(
-						reinterpret_cast<std::uintptr_t>(Right.Pipeline),
+						Right.PipelineSortKey,
+						Right.PipelineTwoSided,
 						Right.Skip,
 						Right.Skinned,
+						Right.MaterialSlot.Value,
 						Right.MeshId,
-						Right.SectionIndex
+						Right.SectionIndex,
+						Right.ObjectId
 					);
 				}
 			);

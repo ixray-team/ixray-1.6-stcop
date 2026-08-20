@@ -36,6 +36,11 @@ TiramisuRenderTarget2D::TiramisuRenderTarget2D(u32 InWidth, u32 InHeight, nri::F
         NRI_CHECK(GRenderDevice.CoreInterface.CreatePlacedTexture(*GRenderDevice.Device, NriDeviceHeap, RenderTargetResourceProxy->TextureDescription, RenderTargetResourceProxy->Texture));
 
         nri::TextureViewDesc TextureViewDescription = {RenderTargetResourceProxy->Texture, nri::TextureView::TEXTURE, RenderTargetResourceProxy->TextureDescription.format};
+		if (!!(RenderTargetResourceProxy->TextureDescription.usage &
+			nri::TextureUsageBits::DEPTH_STENCIL_ATTACHMENT))
+		{
+			TextureViewDescription.planes = nri::PlaneBits::DEPTH;
+		}
         NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewDescription, RenderTargetResourceProxy->Descriptor));
 
 

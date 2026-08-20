@@ -7,6 +7,28 @@
 
 #include <vector>
 
+namespace
+{
+void NRI_CALL TiramisuNriMessageCallback(
+	const nri::Message MessageType,
+	const char* File,
+	const u32 Line,
+	const char* Message,
+	void*
+)
+{
+	const char* Severity = MessageType == nri::Message::ERROR
+		? "error"
+		: MessageType == nri::Message::WARNING ? "warning" : "info";
+	Msg("%s NRI[%s] %s:%u: %s",
+		MessageType == nri::Message::ERROR ? "!" : "*",
+		Severity,
+		File ? File : "<unknown>",
+		Line,
+		Message ? Message : "<no message>");
+}
+} // namespace
+
 TiramisuRenderDevice GRenderDevice;
 
 TiramisuRenderDevice::TiramisuRenderDevice()
@@ -51,7 +73,12 @@ void TiramisuRenderDevice::Initialize(
 	// Device
 	nri::DeviceCreationDesc deviceCreationDesc = {};
 	deviceCreationDesc.graphicsAPI = GraphicsApi;
-	deviceCreationDesc.callbackInterface = CallbackInterface;
+	nri::CallbackInterface ResolvedCallbacks = CallbackInterface;
+	if (!ResolvedCallbacks.MessageCallback)
+	{
+		ResolvedCallbacks.MessageCallback = TiramisuNriMessageCallback;
+	}
+	deviceCreationDesc.callbackInterface = ResolvedCallbacks;
 	const FRenderDebugPolicy DebugPolicy = ResolveRenderDebugPolicy(
 		Core.Params ? Core.Params : "", xrRenderDoc::IsLoaded()
 	);

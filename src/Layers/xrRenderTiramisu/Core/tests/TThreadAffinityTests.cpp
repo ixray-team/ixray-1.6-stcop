@@ -60,6 +60,19 @@ int main()
 		EThreadRole::Render, true, WorkerThread, GameThread, RenderThread
 	));
 
+	THREAD_CHECK(IsCpuResourceThreadSatisfied(
+		false, GameThread, GameThread
+	));
+	THREAD_CHECK(IsCpuResourceThreadSatisfied(
+		true, GameThread, RenderThread
+	));
+	THREAD_CHECK(IsCpuResourceThreadSatisfied(
+		true, WorkerThread, RenderThread
+	));
+	THREAD_CHECK(!IsCpuResourceThreadSatisfied(
+		true, RenderThread, RenderThread
+	));
+
 	if (Failures != 0)
 	{
 		return EXIT_FAILURE;

@@ -23,7 +23,7 @@ OutputLegacySceneVertex Main
     output.Binormal = mul(LocalToWorld3x3, input.Binormal.xyz);
 
 	output.UV = unpack_tc_base(input.UV, (input.Tangent.w + 1) / 2.0, (input.Binormal.w + 1) / 2.0);
-    output.Color = output.Color;
+	output.Color = input.Color;
 
     return output;
 }

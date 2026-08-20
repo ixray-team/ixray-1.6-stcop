@@ -96,6 +96,41 @@ public:
 
 	virtual Fmatrix& LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
 	virtual const Fmatrix& LL_GetTransform(u16 bone_id) const { return LL_GetBoneInstance(bone_id).mTransform; }
+
+	// Возвращает согласованный снимок transform, пока animation update может
+	// пересчитывать тот же skeleton с другого CPU-потока.
+	virtual void LL_GetBoneLocalPosition(u16 bone_id, Fvector& result) override
+	{
+		xrCriticalSectionGuard Guard(UCalcMutex);
+		result = LL_GetBoneInstance(bone_id).mTransform.c;
+	}
+
+	virtual void LL_GetBoneLocalTransform(u16 bone_id, Fmatrix& result) override
+	{
+		xrCriticalSectionGuard Guard(UCalcMutex);
+		result = LL_GetBoneInstance(bone_id).mTransform;
+	}
+
+	virtual void LL_GetBoneWorldPosition(
+		u16 bone_id,
+		const Fmatrix& xform,
+		Fvector& result
+	) override
+	{
+		LL_GetBoneLocalPosition(bone_id, result);
+		xform.transform_tiny(result);
+	}
+
+	virtual void LL_GetBoneWorldTransform(
+		u16 bone_id,
+		const Fmatrix& xform,
+		Fmatrix& result
+	) override
+	{
+		LL_GetBoneLocalTransform(bone_id, result);
+		result.mulA_43(xform);
+	}
+
 	virtual Fmatrix& LL_GetTransform_R(u16 bone_id) { return LL_GetBoneInstance(bone_id).mRenderTransform; } // rendering only
 
 	virtual Fobb& LL_GetBox(u16 bone_id)
@@ -175,6 +210,8 @@ protected:
 	bool Update_Visibility;
 	u32 UCalc_Time;
 	s32 UCalc_Visibox;
+	xrCriticalSection UCalcMutex;
+	xrCriticalSection UCalcRecursiveMutex;
 
 
 private:

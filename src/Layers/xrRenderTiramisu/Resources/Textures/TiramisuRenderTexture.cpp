@@ -3,12 +3,12 @@
 TiramisuRenderTexture::TiramisuRenderTexture(const shared_str& InName)
 	: Name(InName)
 {
-	CheckIsGameThread();
+	CheckIsCpuResourceThread();
 }
 
 TiramisuRenderTexture::~TiramisuRenderTexture()
 {
-	CheckIsGameThread();
+	CheckIsCpuResourceThread();
 	if (Owner)
 	{
 		VERIFY(Counter == 0);
@@ -24,5 +24,5 @@ TiramisuRenderTexture::~TiramisuRenderTexture()
 
 void TiramisuRenderTexture::Update()
 {
-	CheckIsGameThread();
+	CheckIsCpuResourceThread();
 }

@@ -241,6 +241,11 @@ bool TiramisuGlobalShadersManager::RegisterShader(xr_vector<shared_str> Defines,
 	FS.update_path(CommonPath, "$game_shaders$", CommonPath);
 	ApplyInclude(CommonPath);
 
+	string_path ShaderRootPath;
+	xr_strcpy(ShaderRootPath, "r5\\");
+	FS.update_path(ShaderRootPath, "$game_shaders$", ShaderRootPath);
+	IncludePaths.push_back(ShaderRootPath);
+
 	string_path InFileName;
 	xr_strconcat(InFileName, "r5\\global\\", ShaderName.c_str(), GetTypeByString(ShaderType), ".hlsl");
 	FS.update_path(InFileName, "$game_shaders$", InFileName);
@@ -325,6 +330,12 @@ bool TiramisuGlobalShadersManager::LoadFromSourceFiles()
 	bResult = bResult && RegisterShader({}, "scene_vertex", EShaderType::Pixel);
 	bResult = bResult && RegisterShader({}, "scene_lmap", EShaderType::Vertex);
 	bResult = bResult && RegisterShader({}, "scene_lmap", EShaderType::Pixel);
+	bResult = bResult && RegisterShader(
+		{}, "fullscreen_triangle", EShaderType::Vertex
+	);
+	bResult = bResult && RegisterShader(
+		{}, "deferred_directional_light", EShaderType::Pixel
+	);
 	return bResult;
 }
 #endif

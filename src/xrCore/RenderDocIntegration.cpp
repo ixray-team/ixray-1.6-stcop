@@ -10,6 +10,9 @@ HMODULE RenderDocModule = nullptr;
 RENDERDOC_API_1_6_0* RenderDocApi = nullptr;
 xr_string CapturePathTemplate;
 bool InitializationAttempted = false;
+void* ActiveCaptureDevice = nullptr;
+void* ActiveCaptureWindow = nullptr;
+bool ActiveCapturePairValid = false;
 
 xr_string WideToUtf8(const wchar_t* Value)
 {
@@ -289,7 +292,7 @@ bool xrRenderDoc::TriggerCapture()
 #endif
 }
 
-bool xrRenderDoc::BeginCapture(void* WindowHandle)
+bool xrRenderDoc::BeginCapture(void* WindowHandle, void* DeviceHandle)
 {
 #ifdef IXR_WINDOWS
 	if (!RenderDocApi || RenderDocApi->IsFrameCapturing())
@@ -297,14 +300,52 @@ bool xrRenderDoc::BeginCapture(void* WindowHandle)
 		return false;
 	}
 
-	RenderDocApi->StartFrameCapture(nullptr, WindowHandle);
-	return RenderDocApi->IsFrameCapturing() != 0;
+	ActiveCaptureDevice = nullptr;
+	ActiveCaptureWindow = nullptr;
+	ActiveCapturePairValid = false;
+	if (DeviceHandle && WindowHandle)
+	{
+		// Иначе TriggerCapture может выбрать другую API/window pair или не
+		// найти активную D3D12 swapchain при скрытом smoke-окне.
+		RenderDocApi->SetActiveWindow(DeviceHandle, WindowHandle);
+	}
+
+	const auto TryBegin = [&](void* CandidateDevice, void* CandidateWindow)
+	{
+		RenderDocApi->StartFrameCapture(CandidateDevice, CandidateWindow);
+		if (!RenderDocApi->IsFrameCapturing())
+		{
+			return false;
+		}
+
+		ActiveCaptureDevice = CandidateDevice;
+		ActiveCaptureWindow = CandidateWindow;
+		ActiveCapturePairValid = true;
+		return true;
+	};
+
+	// RenderDoc сопоставляет D3D12 device по COM identity, а отдельные drivers
+	// по-разному обрабатывают пару с HWND. Проверяем разрешённые API wildcard
+	// комбинации и сохраняем ту же пару для EndFrameCapture.
+	if (TryBegin(DeviceHandle, WindowHandle))
+	{
+		return true;
+	}
+	if (DeviceHandle && TryBegin(DeviceHandle, nullptr))
+	{
+		return true;
+	}
+	if (WindowHandle && TryBegin(nullptr, WindowHandle))
+	{
+		return true;
+	}
+	return TryBegin(nullptr, nullptr);
 #else
 	return false;
 #endif
 }
 
-bool xrRenderDoc::EndCapture(void* WindowHandle)
+bool xrRenderDoc::EndCapture(void* WindowHandle, void* DeviceHandle)
 {
 #ifdef IXR_WINDOWS
 	if (!RenderDocApi || !RenderDocApi->IsFrameCapturing())
@@ -312,7 +353,18 @@ bool xrRenderDoc::EndCapture(void* WindowHandle)
 		return false;
 	}
 
-	return RenderDocApi->EndFrameCapture(nullptr, WindowHandle) != 0;
+	void* CaptureDevice = ActiveCapturePairValid
+		? ActiveCaptureDevice
+		: DeviceHandle;
+	void* CaptureWindow = ActiveCapturePairValid
+		? ActiveCaptureWindow
+		: WindowHandle;
+	const bool Succeeded =
+		RenderDocApi->EndFrameCapture(CaptureDevice, CaptureWindow) != 0;
+	ActiveCaptureDevice = nullptr;
+	ActiveCaptureWindow = nullptr;
+	ActiveCapturePairValid = false;
+	return Succeeded;
 #else
 	return false;
 #endif

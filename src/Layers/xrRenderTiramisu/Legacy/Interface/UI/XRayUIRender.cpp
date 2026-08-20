@@ -2,7 +2,6 @@
 
 CDS0_UIRender GUIRender;
 
-u32 UIShaderCounter = 0;
 xr_set<CDS0_UIShader*> dbg_uishaders;
 CDS0_UIShader::CDS0_UIShader()
 {
@@ -25,7 +24,6 @@ void CDS0_UIShader::Copy(IUIShader& _in)
 	if (Texture)
 	{
 		GRenderResourcesManager->TexturesManager->Copy(Texture);
-		++UIShaderCounter;
 	}
 }
 
@@ -37,14 +35,9 @@ void CDS0_UIShader::create(LPCSTR sh, LPCSTR tex)
 	if (tex == nullptr)
 	{
 		Texture = GRenderResourcesManager->WhiteTexture;
-		++UIShaderCounter;
 		return;
 	}
 	Texture = GRenderResourcesManager->TexturesManager->GetTexture(tex);
-	if (Texture)
-	{
-		++UIShaderCounter;
-	}
 }
 
 bool CDS0_UIShader::inited()
@@ -58,8 +51,28 @@ void CDS0_UIShader::destroy()
 	{
 		GRenderResourcesManager->TexturesManager->Free(Texture);
 		Texture = nullptr;
-		R_ASSERT(UIShaderCounter != 0);
-		--UIShaderCounter;
+	}
+}
+
+u32 GetLiveTiramisuUiShaderTextureCount()
+{
+	u32 Result = 0;
+	for (const CDS0_UIShader* Shader : dbg_uishaders)
+	{
+		Result += Shader->Texture != nullptr ? 1u : 0u;
+	}
+	return Result;
+}
+
+void ReleaseLiveTiramisuUiShaderTextures()
+{
+	// Кадровые primitive packets держат собственные texture references.
+	// На shutdown renderer освобождается раньше части legacy UI объектов,
+	// поэтому обе группы ссылок закрываются здесь одним game-thread шагом.
+	GUIRender.Flush();
+	for (CDS0_UIShader* Shader : dbg_uishaders)
+	{
+		Shader->destroy();
 	}
 }
 

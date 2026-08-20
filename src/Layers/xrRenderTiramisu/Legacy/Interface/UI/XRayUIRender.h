@@ -23,6 +23,8 @@ public:
 };
 
 void DumpLiveTiramisuUiShaders();
+[[nodiscard]] u32 GetLiveTiramisuUiShaderTextureCount();
+void ReleaseLiveTiramisuUiShaderTextures();
 
 // Legacy UI primitive, временно переводимый в UI pass Tiramisu.
 struct FXRayUIPrimitive

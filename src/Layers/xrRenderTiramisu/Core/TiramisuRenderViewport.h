@@ -41,6 +41,8 @@ public:
 	u32 GetWidth() const { return Width; }
 	u32 GetHeight() const { return Height; }
 	nri::Format GetSwapChainFormat() const { return SwapChainFormat; }
+	void* GetNativeWindowHandle() const { return NativeWindowHandle; }
+	bool HasPresentedFrame() const { return FrameIndex != 0; }
 	u32 GetSwapChainTextureCount() const
 	{
 		return static_cast<u32>(SwapChainTextures.size());
@@ -62,6 +64,7 @@ protected:
 	bool bVSync = false;
 	u32 Width = 0;
 	u32 Height = 0;
+	void* NativeWindowHandle = nullptr;
 
 private:
 	bool bRenderer = false;

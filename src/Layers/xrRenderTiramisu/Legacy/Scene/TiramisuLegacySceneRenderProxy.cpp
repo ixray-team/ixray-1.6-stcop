@@ -10,18 +10,20 @@ TiramisuLegacySceneRenderProxy::~TiramisuLegacySceneRenderProxy()
 	CheckIsRenderThread();
 }
 
-bool TiramisuLegacySceneRenderProxy::GetMeshBatch(const u32 BatchIndex, FMeshBatch& OutMeshBatch)
+const FMeshBatch* TiramisuLegacySceneRenderProxy::GetMeshBatch(
+	const u32 BatchIndex
+)
 {
 	CheckIsRenderThread();
-	if (MeshBatches.size() <= BatchIndex)
+	if (!RenderData || MeshBatches.size() <= BatchIndex)
 	{
-		return false;
+		return nullptr;
 	}
 
-	OutMeshBatch = MeshBatches[BatchIndex];
-	OutMeshBatch.VertexBuffer.VertexBuffer = RenderData->GeometryBuffer;
-	OutMeshBatch.IndexBuffer.IndexBuffer = RenderData->GeometryBuffer;
-	return true;
+	FMeshBatch& MeshBatch = MeshBatches[BatchIndex];
+	MeshBatch.VertexBuffer.VertexBuffer = RenderData->GeometryBuffer;
+	MeshBatch.IndexBuffer.IndexBuffer = RenderData->GeometryBuffer;
+	return &MeshBatch;
 }
 
 u32 TiramisuLegacySceneRenderProxy::GetNumMeshBatches() const

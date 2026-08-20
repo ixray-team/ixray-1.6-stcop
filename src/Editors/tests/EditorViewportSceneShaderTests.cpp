@@ -3,6 +3,7 @@
 #include "../../xrTiramisuMaterialCore/TiramisuMaterialShaderCompiler.h"
 
 #include <array>
+#include <cstddef>
 #include <cstring>
 #include <iostream>
 
@@ -21,54 +22,104 @@ int Fail(const char* Message, const xr_vector<FMaterialDiagnostic>& Diagnostics 
 
 int main()
 {
-	const FEditorDrawIndexedIndirectCommand SourceCommand = {
-		123,
-		7,
-		41,
-		-9,
-		2048
+	static_assert(
+		offsetof(
+			FEditorDrawIndexedIndirectEmulatedCommand,
+			ShaderBaseVertex
+		) == 0
+	);
+	static_assert(
+		offsetof(
+			FEditorDrawIndexedIndirectEmulatedCommand,
+			ShaderBaseInstance
+		) == sizeof(s32)
+	);
+	static_assert(
+		offsetof(FEditorDrawIndexedIndirectEmulatedCommand, Draw) ==
+		2 * sizeof(u32)
+	);
+
+	const xr_array<FEditorDrawIndexedIndirectCommand, 2> SourceCommands = {{
+		{123, 7, 41, -9, 2048},
+		{93228, 1, 17907, 820, 8258}
+	}};
+	const auto CommandsEqual = [](
+		const FEditorDrawIndexedIndirectCommand& Left,
+		const FEditorDrawIndexedIndirectCommand& Right
+	)
+	{
+		return Left.IndexCount == Right.IndexCount &&
+			Left.InstanceCount == Right.InstanceCount &&
+			Left.FirstIndex == Right.FirstIndex &&
+			Left.BaseVertex == Right.BaseVertex &&
+			Left.BaseInstance == Right.BaseInstance;
 	};
+
 	xr_vector<u8> VulkanCommands;
-	AppendEditorDrawIndexedIndirectCommand(
-		VulkanCommands,
-		SourceCommand,
-		false
-	);
-	FEditorDrawIndexedIndirectCommand VulkanCommand;
-	std::memcpy(
-		&VulkanCommand,
-		VulkanCommands.data(),
-		sizeof(VulkanCommand)
-	);
-	if (VulkanCommands.size() != 20 ||
-		VulkanCommand.IndexCount != SourceCommand.IndexCount ||
-		VulkanCommand.InstanceCount != SourceCommand.InstanceCount ||
-		VulkanCommand.FirstIndex != SourceCommand.FirstIndex ||
-		VulkanCommand.BaseVertex != SourceCommand.BaseVertex ||
-		VulkanCommand.BaseInstance != SourceCommand.BaseInstance)
+	for (const auto& SourceCommand : SourceCommands)
+	{
+		AppendEditorDrawIndexedIndirectCommand(
+			VulkanCommands,
+			SourceCommand,
+			false
+		);
+	}
+	if (GetEditorDrawIndexedIndirectCommandStride(false) != 20 ||
+		VulkanCommands.size() !=
+			SourceCommands.size() *
+			GetEditorDrawIndexedIndirectCommandStride(false))
 	{
 		return Fail("Vulkan indirect command ABI is invalid");
 	}
+	for (size_t Index = 0; Index < SourceCommands.size(); ++Index)
+	{
+		FEditorDrawIndexedIndirectCommand VulkanCommand;
+		std::memcpy(
+			&VulkanCommand,
+			VulkanCommands.data() + Index * sizeof(VulkanCommand),
+			sizeof(VulkanCommand)
+		);
+		if (!CommandsEqual(VulkanCommand, SourceCommands[Index]))
+		{
+			return Fail("Vulkan indirect command sequence is invalid");
+		}
+	}
 
 	xr_vector<u8> D3D12Commands;
-	AppendEditorDrawIndexedIndirectCommand(
-		D3D12Commands,
-		SourceCommand,
-		true
-	);
-	FEditorDrawIndexedIndirectEmulatedCommand D3D12Command;
-	std::memcpy(
-		&D3D12Command,
-		D3D12Commands.data(),
-		sizeof(D3D12Command)
-	);
-	if (D3D12Commands.size() != 28 ||
-		D3D12Command.ShaderBaseVertex != SourceCommand.BaseVertex ||
-		D3D12Command.ShaderBaseInstance != SourceCommand.BaseInstance ||
-		D3D12Command.Draw.IndexCount != SourceCommand.IndexCount ||
-		D3D12Command.Draw.BaseInstance != SourceCommand.BaseInstance)
+	for (const auto& SourceCommand : SourceCommands)
+	{
+		AppendEditorDrawIndexedIndirectCommand(
+			D3D12Commands,
+			SourceCommand,
+			true
+		);
+	}
+	if (GetEditorDrawIndexedIndirectCommandStride(true) != 28 ||
+		D3D12Commands.size() !=
+			SourceCommands.size() *
+			GetEditorDrawIndexedIndirectCommandStride(true))
 	{
 		return Fail("D3D12 emulated indirect command ABI is invalid");
+	}
+	for (size_t Index = 0; Index < SourceCommands.size(); ++Index)
+	{
+		FEditorDrawIndexedIndirectEmulatedCommand D3D12Command;
+		std::memcpy(
+			&D3D12Command,
+			D3D12Commands.data() + Index * sizeof(D3D12Command),
+			sizeof(D3D12Command)
+		);
+		const auto& SourceCommand = SourceCommands[Index];
+		if (D3D12Command.ShaderBaseVertex !=
+				SourceCommand.BaseVertex ||
+			D3D12Command.ShaderBaseInstance !=
+				SourceCommand.BaseInstance ||
+			!CommandsEqual(D3D12Command.Draw, SourceCommand))
+		{
+			return Fail(
+				"D3D12 emulated indirect command sequence is invalid"
+			);
+		}
 	}
 
 	TiramisuMaterialShaderCompiler Compiler;

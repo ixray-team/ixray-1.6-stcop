@@ -77,6 +77,12 @@ inline bool IsRenderThreadRunning()
 #define CheckIsRenderThread() VERIFY(Tiramisu::Threading::IsThreadRoleSatisfied(                                                                                      \
 	Tiramisu::Threading::EThreadRole::Render, IsRenderThreadRunning(), Platform::GetCurrentThreadId(), GGameThreadId, GRenderThreadId.load(std::memory_order_acquire) \
 ))
+#define CheckIsCpuResourceThread() VERIFY( \
+	Tiramisu::Threading::IsCpuResourceThreadSatisfied( \
+		IsRenderThreadRunning(), Platform::GetCurrentThreadId(), \
+		GRenderThreadId.load(std::memory_order_acquire) \
+	) \
+)
 
 #include "RenderCommandQueue.h"
 #include "Core/TiramisuRenderDevice.h"

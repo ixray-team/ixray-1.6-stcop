@@ -53,8 +53,8 @@ public:
 	template <class TCallable>
 	void operator()(TCallable&& callable) const
 	{
-#ifdef CheckIsGameThread
-		CheckIsGameThread();
+#ifdef CheckIsCpuResourceThread
+		CheckIsCpuResourceThread();
 #endif
 		GetRenderCommandQueue().Enqueue(DebugName, CommandFunction(std::forward<TCallable>(callable)));
 	}

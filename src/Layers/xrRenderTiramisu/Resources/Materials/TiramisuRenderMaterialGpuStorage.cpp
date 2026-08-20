@@ -24,6 +24,19 @@ void LogMaterialDiagnostics(const xr_span<const FMaterialDiagnostic> Diagnostics
 		Msg("! Tiramisu material GPU %s [%s]: %s", Stage, Diagnostic.Code.c_str(), Diagnostic.Message.c_str());
 	}
 }
+
+void IncludeDirtyRange(
+	u32& DirtyBegin,
+	u32& DirtyEnd,
+	const u32 Offset,
+	const u32 Size
+)
+{
+	DirtyBegin = DirtyBegin == INDEX_NONE
+		? Offset
+		: std::min(DirtyBegin, Offset);
+	DirtyEnd = std::max(DirtyEnd, Offset + Size);
+}
 } // namespace
 
 TiramisuRenderMaterialGpuStorage::TiramisuRenderMaterialGpuStorage()
@@ -32,28 +45,72 @@ TiramisuRenderMaterialGpuStorage::TiramisuRenderMaterialGpuStorage()
 	MaterialInstances.reserve(MaxMaterialInstances);
 	MaterialParameterMirror.resize(MaterialParameterCapacity);
 
-	CreateBuffer_RenderThread(u64(MaxDrawsPerFrame) * MaterialDrawGpuDataSize, DrawDataBuffer, DrawDataDescriptor, DrawDataBufferIndex);
-	CreateBuffer_RenderThread(u64(MaxMaterialInstances) * MaterialInstanceGpuDataSize, MaterialInstanceBuffer, MaterialInstanceDescriptor, MaterialInstanceBufferIndex);
-	CreateBuffer_RenderThread(MaterialParameterCapacity, MaterialParameterBuffer, MaterialParameterDescriptor, MaterialParameterBufferIndex);
+	CreateDrawBuffers_RenderThread();
+	CreateBufferedTable_RenderThread(
+		u64(MaxMaterialInstances) * MaterialInstanceGpuDataSize,
+		MaterialInstanceBuffer,
+		MaterialInstanceUploadBuffer,
+		MaterialInstanceDescriptor,
+		MaterialInstanceBufferIndex
+	);
+	CreateBufferedTable_RenderThread(
+		MaterialParameterCapacity,
+		MaterialParameterBuffer,
+		MaterialParameterUploadBuffer,
+		MaterialParameterDescriptor,
+		MaterialParameterBufferIndex
+	);
 }
 
 TiramisuRenderMaterialGpuStorage::~TiramisuRenderMaterialGpuStorage()
 {
 	CheckIsRenderThread();
-	DestroyBuffer_RenderThread(DrawDataBuffer, DrawDataDescriptor, DrawDataBufferIndex);
-	DestroyBuffer_RenderThread(MaterialInstanceBuffer, MaterialInstanceDescriptor, MaterialInstanceBufferIndex);
-	DestroyBuffer_RenderThread(MaterialParameterBuffer, MaterialParameterDescriptor, MaterialParameterBufferIndex);
+	DestroyDrawBuffers_RenderThread();
+	DestroyBufferedTable_RenderThread(
+		MaterialInstanceBuffer,
+		MaterialInstanceUploadBuffer,
+		MaterialInstanceDescriptor,
+		MaterialInstanceBufferIndex
+	);
+	DestroyBufferedTable_RenderThread(
+		MaterialParameterBuffer,
+		MaterialParameterUploadBuffer,
+		MaterialParameterDescriptor,
+		MaterialParameterBufferIndex
+	);
 }
 
-void TiramisuRenderMaterialGpuStorage::CreateBuffer_RenderThread(const u64 Size, nri::Buffer*& Buffer, nri::Descriptor*& Descriptor, u32& DescriptorIndex)
+void TiramisuRenderMaterialGpuStorage::CreateBufferedTable_RenderThread(
+	const u64 Size,
+	nri::Buffer*& Buffer,
+	nri::Buffer*& UploadBuffer,
+	nri::Descriptor*& Descriptor,
+	u32& DescriptorIndex
+)
 {
 	CheckIsRenderThread();
 
-	nri::BufferDesc BufferDescription = {};
-	BufferDescription.size = Size;
-	BufferDescription.structureStride = sizeof(u32);
-	BufferDescription.usage = nri::BufferUsageBits::SHADER_RESOURCE;
-	NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device, nri::MemoryLocation::DEVICE_UPLOAD, 0.5f, BufferDescription, Buffer));
+	nri::BufferDesc DeviceDescription = {};
+	DeviceDescription.size = Size;
+	DeviceDescription.structureStride = sizeof(u32);
+	DeviceDescription.usage = nri::BufferUsageBits::SHADER_RESOURCE;
+	NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(
+		*GRenderDevice.Device,
+		nri::MemoryLocation::DEVICE,
+		0.5f,
+		DeviceDescription,
+		Buffer
+	));
+
+	nri::BufferDesc UploadDescription = {};
+	UploadDescription.size = Size;
+	NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(
+		*GRenderDevice.Device,
+		nri::MemoryLocation::HOST_UPLOAD,
+		0.0f,
+		UploadDescription,
+		UploadBuffer
+	));
 
 	nri::BufferViewDesc ViewDescription = {};
 	ViewDescription.buffer = Buffer;
@@ -65,7 +122,12 @@ void TiramisuRenderMaterialGpuStorage::CreateBuffer_RenderThread(const u64 Size,
 	DescriptorIndex = GRenderResourcesManager->DescriptorHeapAllocator->Alloc(Descriptor);
 }
 
-void TiramisuRenderMaterialGpuStorage::DestroyBuffer_RenderThread(nri::Buffer*& Buffer, nri::Descriptor*& Descriptor, u32& DescriptorIndex)
+void TiramisuRenderMaterialGpuStorage::DestroyBufferedTable_RenderThread(
+	nri::Buffer*& Buffer,
+	nri::Buffer*& UploadBuffer,
+	nri::Descriptor*& Descriptor,
+	u32& DescriptorIndex
+)
 {
 	CheckIsRenderThread();
 	if (DescriptorIndex != INDEX_NONE)
@@ -84,6 +146,11 @@ void TiramisuRenderMaterialGpuStorage::DestroyBuffer_RenderThread(nri::Buffer*& 
 	{
 		GRenderDevice.CoreInterface.DestroyBuffer(Buffer);
 		Buffer = nullptr;
+	}
+	if (UploadBuffer)
+	{
+		GRenderDevice.CoreInterface.DestroyBuffer(UploadBuffer);
+		UploadBuffer = nullptr;
 	}
 }
 
@@ -104,10 +171,91 @@ bool TiramisuRenderMaterialGpuStorage::WriteBuffer_RenderThread(nri::Buffer& Buf
 	return true;
 }
 
-void TiramisuRenderMaterialGpuStorage::BeginFrame_RenderThread()
+void TiramisuRenderMaterialGpuStorage::BeginFrame_RenderThread(
+	const u32 FrameSlot
+)
 {
 	CheckIsRenderThread();
+	VERIFY(FrameSlot <
+		TiramisuMaterialDrawFrameLayout::BufferedFrameCount);
+	DrawBaseIndex =
+		TiramisuMaterialDrawFrameLayout::GetAbsoluteDrawIndex(
+			FrameSlot, 0
+		);
 	DrawCount = 0;
+}
+
+void TiramisuRenderMaterialGpuStorage::CreateDrawBuffers_RenderThread()
+{
+	CheckIsRenderThread();
+
+	nri::BufferDesc DeviceDescription = {};
+	DeviceDescription.size =
+		TiramisuMaterialDrawFrameLayout::BufferSize;
+	DeviceDescription.structureStride = sizeof(u32);
+	DeviceDescription.usage = nri::BufferUsageBits::SHADER_RESOURCE;
+	NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(
+		*GRenderDevice.Device,
+		nri::MemoryLocation::DEVICE,
+		0.5f,
+		DeviceDescription,
+		DrawDataBuffer
+	));
+
+	nri::BufferDesc UploadDescription = {};
+	UploadDescription.size = DeviceDescription.size;
+	NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(
+		*GRenderDevice.Device,
+		nri::MemoryLocation::HOST_UPLOAD,
+		0.0f,
+		UploadDescription,
+		DrawDataUploadBuffer
+	));
+
+	nri::BufferViewDesc ViewDescription = {};
+	ViewDescription.buffer = DrawDataBuffer;
+	ViewDescription.type = nri::BufferView::BYTE_ADDRESS_BUFFER;
+	ViewDescription.size = DeviceDescription.size;
+	NRI_CHECK(GRenderDevice.CoreInterface.CreateBufferView(
+		ViewDescription,
+		DrawDataDescriptor
+	));
+	DrawDataBufferIndex =
+		GRenderResourcesManager->DescriptorHeapAllocator->Alloc(
+			DrawDataDescriptor
+		);
+}
+
+void TiramisuRenderMaterialGpuStorage::DestroyDrawBuffers_RenderThread()
+{
+	CheckIsRenderThread();
+	if (DrawDataBufferIndex != INDEX_NONE)
+	{
+		GRenderResourcesManager->DescriptorHeapAllocator->Free(
+			DrawDataBufferIndex
+		);
+		DrawDataBufferIndex = INDEX_NONE;
+	}
+	if (DrawDataDescriptor)
+	{
+		GRenderDevice.CoreInterface.DestroyDescriptor(
+			DrawDataDescriptor
+		);
+		DrawDataDescriptor = nullptr;
+	}
+	if (DrawDataBuffer)
+	{
+		GRenderDevice.CoreInterface.DestroyBuffer(DrawDataBuffer);
+		DrawDataBuffer = nullptr;
+	}
+	if (DrawDataUploadBuffer)
+	{
+		GRenderDevice.CoreInterface.DestroyBuffer(
+			DrawDataUploadBuffer
+		);
+		DrawDataUploadBuffer = nullptr;
+	}
+	DrawDataBufferState = {};
 }
 
 u32 TiramisuRenderMaterialGpuStorage::CreateMaterialInstance_RenderThread(const xr_span<const u8> ParameterData, const u64 LayoutHash)
@@ -128,10 +276,21 @@ u32 TiramisuRenderMaterialGpuStorage::CreateMaterialInstance_RenderThread(const 
 
 	std::memset(MaterialParameterMirror.data() + ParameterOffset, 0, AlignedParameterSize);
 	std::memcpy(MaterialParameterMirror.data() + ParameterOffset, ParameterData.data(), ParameterData.size());
-	if (!WriteBuffer_RenderThread(*MaterialParameterBuffer, ParameterOffset, MaterialParameterMirror.data() + ParameterOffset, AlignedParameterSize))
+	if (!WriteBuffer_RenderThread(
+			*MaterialParameterUploadBuffer,
+			ParameterOffset,
+			MaterialParameterMirror.data() + ParameterOffset,
+			AlignedParameterSize
+		))
 	{
 		return INDEX_NONE;
 	}
+	IncludeDirtyRange(
+		MaterialParameterDirtyBegin,
+		MaterialParameterDirtyEnd,
+		ParameterOffset,
+		AlignedParameterSize
+	);
 
 	FMaterialInstanceGpuData InstanceData;
 	InstanceData.ParameterDataOffset = ParameterOffset;
@@ -140,10 +299,23 @@ u32 TiramisuRenderMaterialGpuStorage::CreateMaterialInstance_RenderThread(const 
 	InstanceData.LayoutHashHigh = static_cast<u32>(LayoutHash >> 32u);
 
 	const u32 MaterialInstanceIndex = static_cast<u32>(MaterialInstances.size());
-	if (!WriteBuffer_RenderThread(*MaterialInstanceBuffer, u64(MaterialInstanceIndex) * sizeof(InstanceData), &InstanceData, sizeof(InstanceData)))
+	const u32 InstanceOffset =
+		MaterialInstanceIndex * sizeof(InstanceData);
+	if (!WriteBuffer_RenderThread(
+			*MaterialInstanceUploadBuffer,
+			InstanceOffset,
+			&InstanceData,
+			sizeof(InstanceData)
+		))
 	{
 		return INDEX_NONE;
 	}
+	IncludeDirtyRange(
+		MaterialInstanceDirtyBegin,
+		MaterialInstanceDirtyEnd,
+		InstanceOffset,
+		sizeof(InstanceData)
+	);
 
 	MaterialInstances.push_back(InstanceData);
 	MaterialParameterSize = ParameterOffset + AlignedParameterSize;
@@ -169,7 +341,22 @@ bool TiramisuRenderMaterialGpuStorage::UpdateMaterialInstance_RenderThread(const
 		return true;
 	}
 	std::memcpy(CurrentData, ParameterData.data(), ParameterData.size());
-	return WriteBuffer_RenderThread(*MaterialParameterBuffer, InstanceData.ParameterDataOffset, CurrentData, ParameterData.size());
+	if (!WriteBuffer_RenderThread(
+			*MaterialParameterUploadBuffer,
+			InstanceData.ParameterDataOffset,
+			CurrentData,
+			ParameterData.size()
+		))
+	{
+		return false;
+	}
+	IncludeDirtyRange(
+		MaterialParameterDirtyBegin,
+		MaterialParameterDirtyEnd,
+		InstanceData.ParameterDataOffset,
+		static_cast<u32>(ParameterData.size())
+	);
+	return true;
 }
 
 u32 TiramisuRenderMaterialGpuStorage::GetOrCreateMaterial_RenderThread(const TiramisuMaterialRenderProxy& Material)
@@ -276,11 +463,119 @@ u32 TiramisuRenderMaterialGpuStorage::AddDraw_RenderThread(const FMaterialDrawGp
 	{
 		return INDEX_NONE;
 	}
-	const u32 DrawIndex = DrawCount;
-	if (!WriteBuffer_RenderThread(*DrawDataBuffer, u64(DrawIndex) * sizeof(DrawData), &DrawData, sizeof(DrawData)))
+	const u32 DrawIndex = DrawBaseIndex + DrawCount;
+	if (!WriteBuffer_RenderThread(
+			*DrawDataUploadBuffer,
+			u64(DrawIndex) * sizeof(DrawData),
+			&DrawData,
+			sizeof(DrawData)
+		))
 	{
 		return INDEX_NONE;
 	}
 	++DrawCount;
 	return DrawIndex;
+}
+
+void TiramisuRenderMaterialGpuStorage::UploadRange_RenderThread(
+	nri::CommandBuffer& CommandBuffer,
+	nri::Buffer& Buffer,
+	nri::Buffer& UploadBuffer,
+	nri::AccessStage& State,
+	const u64 Offset,
+	const u64 Size,
+	const nri::StageBits ShaderStages
+)
+{
+	CheckIsRenderThread();
+	if (Size == 0)
+	{
+		return;
+	}
+
+	nri::BufferBarrierDesc Barrier = {};
+	Barrier.buffer = &Buffer;
+	Barrier.before = State;
+	Barrier.after = {
+		nri::AccessBits::COPY_DESTINATION,
+		nri::StageBits::COPY
+	};
+	nri::BarrierDesc BarrierDescription = {};
+	BarrierDescription.buffers = &Barrier;
+	BarrierDescription.bufferNum = 1;
+	GRenderDevice.CoreInterface.CmdBarrier(
+		CommandBuffer,
+		BarrierDescription
+	);
+
+	GRenderDevice.CoreInterface.CmdCopyBuffer(
+		CommandBuffer,
+		Buffer,
+		Offset,
+		UploadBuffer,
+		Offset,
+		Size
+	);
+
+	Barrier.before = Barrier.after;
+	Barrier.after = {
+		nri::AccessBits::SHADER_RESOURCE,
+		ShaderStages
+	};
+	GRenderDevice.CoreInterface.CmdBarrier(
+		CommandBuffer,
+		BarrierDescription
+	);
+	State = Barrier.after;
+}
+
+void TiramisuRenderMaterialGpuStorage::Upload_RenderThread(
+	nri::CommandBuffer& CommandBuffer
+)
+{
+	CheckIsRenderThread();
+	if (DrawCount != 0)
+	{
+		UploadRange_RenderThread(
+			CommandBuffer,
+			*DrawDataBuffer,
+			*DrawDataUploadBuffer,
+			DrawDataBufferState,
+			u64(DrawBaseIndex) * MaterialDrawGpuDataSize,
+			u64(DrawCount) * MaterialDrawGpuDataSize,
+			nri::StageBits::VERTEX_SHADER
+		);
+	}
+
+	const nri::StageBits MaterialShaderStages =
+		nri::StageBits::VERTEX_SHADER |
+		nri::StageBits::FRAGMENT_SHADER;
+	if (MaterialInstanceDirtyBegin != INDEX_NONE)
+	{
+		UploadRange_RenderThread(
+			CommandBuffer,
+			*MaterialInstanceBuffer,
+			*MaterialInstanceUploadBuffer,
+			MaterialInstanceBufferState,
+			MaterialInstanceDirtyBegin,
+			MaterialInstanceDirtyEnd - MaterialInstanceDirtyBegin,
+			MaterialShaderStages
+		);
+		MaterialInstanceDirtyBegin = INDEX_NONE;
+		MaterialInstanceDirtyEnd = 0;
+	}
+	if (MaterialParameterDirtyBegin != INDEX_NONE)
+	{
+		UploadRange_RenderThread(
+			CommandBuffer,
+			*MaterialParameterBuffer,
+			*MaterialParameterUploadBuffer,
+			MaterialParameterBufferState,
+			MaterialParameterDirtyBegin,
+			MaterialParameterDirtyEnd - MaterialParameterDirtyBegin,
+			MaterialShaderStages
+		);
+		MaterialParameterDirtyBegin = INDEX_NONE;
+		MaterialParameterDirtyEnd = 0;
+	}
 }

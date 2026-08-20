@@ -121,4 +121,35 @@ if (IXRAY_BUILD_TESTS)
     add_test(NAME xrTiramisuRenderGraphExecutorTests COMMAND xrTiramisuRenderGraphExecutorTests -rdbg)
     set_tests_properties(xrTiramisuRenderGraphExecutorTests PROPERTIES WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     set_target_properties(xrTiramisuRenderGraphExecutorTests PROPERTIES FOLDER "Tests")
+
+    add_executable(xrTiramisuGBufferLayoutTests
+        Core/tests/TiramisuGBufferLayoutTests.cpp
+    )
+    target_include_directories(xrTiramisuGBufferLayoutTests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    target_compile_features(xrTiramisuGBufferLayoutTests PRIVATE cxx_std_23)
+    target_link_libraries(xrTiramisuGBufferLayoutTests PRIVATE xrCore NRI)
+    add_test(NAME xrTiramisuGBufferLayoutTests COMMAND xrTiramisuGBufferLayoutTests -rdbg)
+    set_tests_properties(xrTiramisuGBufferLayoutTests PROPERTIES WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    set_target_properties(xrTiramisuGBufferLayoutTests PROPERTIES FOLDER "Tests")
+
+    add_executable(xrTiramisuDescriptorHeapLayoutTests
+        Core/tests/TiramisuDescriptorHeapLayoutTests.cpp
+    )
+    target_include_directories(xrTiramisuDescriptorHeapLayoutTests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    target_compile_features(xrTiramisuDescriptorHeapLayoutTests PRIVATE cxx_std_23)
+    target_link_libraries(xrTiramisuDescriptorHeapLayoutTests PRIVATE xrCore NRI)
+    add_test(NAME xrTiramisuDescriptorHeapLayoutTests COMMAND xrTiramisuDescriptorHeapLayoutTests -rdbg)
+    set_tests_properties(xrTiramisuDescriptorHeapLayoutTests PROPERTIES WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    set_target_properties(xrTiramisuDescriptorHeapLayoutTests PROPERTIES FOLDER "Tests")
+
+    add_executable(xrTiramisuMaterialDrawFrameLayoutTests
+        Core/tests/TiramisuMaterialDrawFrameLayoutTests.cpp
+    )
+    target_include_directories(xrTiramisuMaterialDrawFrameLayoutTests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    target_compile_features(xrTiramisuMaterialDrawFrameLayoutTests PRIVATE cxx_std_23)
+    target_link_libraries(xrTiramisuMaterialDrawFrameLayoutTests PRIVATE xrCore xrTiramisuMaterialCore NRI)
+    add_test(NAME xrTiramisuMaterialDrawFrameLayoutTests COMMAND xrTiramisuMaterialDrawFrameLayoutTests -rdbg)
+    set_tests_properties(xrTiramisuMaterialDrawFrameLayoutTests PROPERTIES WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    set_target_properties(xrTiramisuMaterialDrawFrameLayoutTests PROPERTIES FOLDER "Tests")
+
 endif()

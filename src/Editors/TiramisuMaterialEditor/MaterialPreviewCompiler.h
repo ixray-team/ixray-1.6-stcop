@@ -55,6 +55,7 @@ struct FMaterialPreviewCompileResult
 	xr_vector<u8> PixelBytecode;
 	xr_string VertexFactory;
 	u64 PipelineKey = 0;
+	u64 PipelineSortKey = 0;
 	xr_vector<FMaterialDiagnostic> Diagnostics;
 
 	[[nodiscard]] bool Succeeded() const noexcept;

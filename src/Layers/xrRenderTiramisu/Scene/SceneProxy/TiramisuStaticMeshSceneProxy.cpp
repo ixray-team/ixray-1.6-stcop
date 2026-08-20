@@ -24,41 +24,43 @@ TiramisuStaticMeshSceneProxy::~TiramisuStaticMeshSceneProxy()
 	CheckIsRenderThread();
 }
 
-bool TiramisuStaticMeshSceneProxy::GetMeshBatch(const u32 BatchIndex, FMeshBatch& OutMeshBatch)
+const FMeshBatch* TiramisuStaticMeshSceneProxy::GetMeshBatch(
+	const u32 BatchIndex
+)
 {
 	CheckIsRenderThread();
 	if (!RenderData || LODIndex >= RenderData->LODResources.size())
 	{
-		return false;
+		return nullptr;
 	}
 
 	const FStaticMeshLODResources& LOD = RenderData->LODResources[LODIndex];
 	if (BatchIndex >= LOD.Sections.size())
 	{
-		return false;
+		return nullptr;
 	}
 
 	const FStaticMeshSection& Section = LOD.Sections[BatchIndex];
 	if (Section.MaterialSlot >= Materials.size() || !Materials[Section.MaterialSlot])
 	{
-		return false;
+		return nullptr;
 	}
 
-	OutMeshBatch = {};
-	OutMeshBatch.VertexBuffer = LOD.VertexBuffer;
-	OutMeshBatch.IndexBuffer = LOD.IndexBuffer;
-	OutMeshBatch.Material = Materials[Section.MaterialSlot];
-	OutMeshBatch.VertexType = LOD.VertexType;
-	OutMeshBatch.LODIndex = LODIndex;
-	OutMeshBatch.MaterialSlot = Section.MaterialSlot;
+	ResolvedMeshBatch.Elements.clear();
+	ResolvedMeshBatch.VertexBuffer = LOD.VertexBuffer;
+	ResolvedMeshBatch.IndexBuffer = LOD.IndexBuffer;
+	ResolvedMeshBatch.Material = Materials[Section.MaterialSlot];
+	ResolvedMeshBatch.VertexType = LOD.VertexType;
+	ResolvedMeshBatch.LODIndex = LODIndex;
+	ResolvedMeshBatch.MaterialSlot = Section.MaterialSlot;
 
 	FMeshBatchElement Element;
 	if (!BuildStaticMeshBatchElement(Section, Element))
 	{
-		return false;
+		return nullptr;
 	}
-	OutMeshBatch.Elements.push_back(Element);
-	return true;
+	ResolvedMeshBatch.Elements.push_back(Element);
+	return &ResolvedMeshBatch;
 }
 
 u32 TiramisuStaticMeshSceneProxy::GetNumMeshBatches() const

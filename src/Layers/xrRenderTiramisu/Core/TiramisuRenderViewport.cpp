@@ -21,9 +21,15 @@ void TiramisuRenderViewport::CreateOrReset(SDL_Window* InWindows, u32 InWidth, u
 			bVSync = InVSync;
 			Width = InWidth;
 			Height = InHeight;
+			NativeWindowHandle = SDL_GetPointerProperty(
+				SDL_GetWindowProperties(InWindows),
+				SDL_PROP_WINDOW_WIN32_HWND_POINTER,
+				nullptr
+			);
 
 			nri::SwapChainDesc SwapChainDescription = {};
-			SwapChainDescription.window.windows.hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(InWindows), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+			SwapChainDescription.window.windows.hwnd =
+				static_cast<HWND>(NativeWindowHandle);
 			SwapChainDescription.queue = GRenderDevice.GraphicsQueue;
 			SwapChainDescription.format = nri::SwapChainFormat::BT709_G22_8BIT;
 			SwapChainDescription.flags = (bVSync ? nri::SwapChainBits::VSYNC : nri::SwapChainBits::NONE) | nri::SwapChainBits::ALLOW_TEARING;
@@ -88,6 +94,7 @@ void TiramisuRenderViewport::Destroy()
 
 	Width = 0;
 	Height = 0;
+	NativeWindowHandle = nullptr;
 	SwapChainFormat = nri::Format::UNKNOWN;
 	for (FSwapChainTexture& SwapChainTexture : SwapChainTextures)
 	{

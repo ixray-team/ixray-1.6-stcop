@@ -11,4 +11,9 @@ public:
 	virtual void Render(CEffect_Rain& owner);
 
 	virtual const Fsphere& GetDropBounds() const;
+
+private:
+	// Пока rain draw pass не реализован, simulation использует безопасные
+	// bounds исходной drop mesh вместо разыменования заглушки nullptr.
+	Fsphere DropBounds = {};
 };

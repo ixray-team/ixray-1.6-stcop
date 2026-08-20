@@ -1,6 +1,8 @@
 #pragma once
 
 #include "TiramisuRenderTypes.h"
+
+#include <mutex>
 class TiramisuRenderTextureSequence;
 
 // Загружает и кэширует runtime textures по нормализованному имени.
@@ -20,4 +22,5 @@ private:
 	xr_map<shared_str, TiramisuRenderTexture*> Textures;
 	xr_map<shared_str, TiramisuRenderTexture*> FreeTexturesNextFrame;
 	xr_set<shared_str> ErrorTextures;
+	std::mutex TextureMutex;
 };

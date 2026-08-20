@@ -38,6 +38,7 @@ FMaterialShaderCompileResult CompileFile(const TiramisuMaterialShaderCompiler& C
 	Request.SourceName = Path;
 	Request.TargetProfile = Profile;
 	Request.IncludeDirectories = {"gamedata/shaders/r5", "gamedata/shaders/r5/common", "gamedata/shaders/r5/deferred", "gamedata/shaders/r5/lighting", "gamedata/shaders/r5/postprocess", "gamedata/shaders/r5/global"};
+	Request.Defines.emplace_back("NRI_ENABLE_DRAW_PARAMETERS_EMULATION=1");
 	return Compiler.Compile(Request);
 }
 } // namespace
@@ -53,6 +54,11 @@ int main()
 		xr_pair{"gamedata/shaders/r5/global/deferred_directional_light.ps.hlsl", "ps_6_6"},
 		xr_pair{"gamedata/shaders/r5/global/deferred_point_light.ps.hlsl", "ps_6_6"},
 		xr_pair{"gamedata/shaders/r5/global/postprocess_tonemap.ps.hlsl", "ps_6_6"},
+		xr_pair{"gamedata/shaders/r5/global/scene_vertex.ps.hlsl", "ps_6_6"},
+		xr_pair{"gamedata/shaders/r5/global/scene_lmap.ps.hlsl", "ps_6_6"},
+		xr_pair{"gamedata/shaders/r5/global/ui_screen_transform.vs.hlsl", "vs_6_6"},
+		xr_pair{"gamedata/shaders/r5/global/ui_no_transform.vs.hlsl", "vs_6_6"},
+		xr_pair{"gamedata/shaders/r5/global/ui.ps.hlsl", "ps_6_6"},
 	};
 	for (const EMaterialShaderBackend Backend : {EMaterialShaderBackend::D3D12, EMaterialShaderBackend::Vulkan})
 	{
@@ -79,6 +85,12 @@ int main()
 	);
 	MATERIAL_CHECK(Runner, GBufferSource.find("EncodeOctahedralNormal") != xr_string::npos);
 	MATERIAL_CHECK(Runner, GBufferSource.find("DecodeOctahedralNormal") != xr_string::npos);
+	MATERIAL_CHECK(Runner, GBufferSource.find(
+		"TIRAMISU_GBUFFER_VERSION 1u"
+	) != xr_string::npos);
+	MATERIAL_CHECK(Runner, GBufferSource.find(
+		"NormalRoughnessMetallic"
+	) != xr_string::npos);
 	MATERIAL_CHECK(Runner, LightingSource.find("TiramisuDistributionGGX") != xr_string::npos);
 	MATERIAL_CHECK(Runner, LightingSource.find("TiramisuGeometrySmith") != xr_string::npos);
 	MATERIAL_CHECK(Runner, LightingSource.find("TiramisuFresnelSchlick") != xr_string::npos);

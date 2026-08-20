@@ -115,6 +115,7 @@ int main()
 			ConcurrentRequests[Index].get();
 		if (!Concurrent.Succeeded() ||
 			Concurrent.PipelineKey != D3D.PipelineKey ||
+			Concurrent.PipelineSortKey != D3D.PipelineSortKey ||
 			Concurrent.VertexBytecode != D3D.VertexBytecode ||
 			Concurrent.PixelBytecode != D3D.PixelBytecode)
 		{
@@ -159,6 +160,7 @@ int main()
 
 	const FMaterialPreviewCompileResult D3DAgain = CompileMaterialPreview(D3DRequest);
 	if (!D3DAgain.Succeeded() || D3DAgain.PipelineKey != D3D.PipelineKey ||
+		D3DAgain.PipelineSortKey != D3D.PipelineSortKey ||
 		D3DAgain.VertexBytecode != D3D.VertexBytecode ||
 		D3DAgain.PixelBytecode != D3D.PixelBytecode)
 	{
@@ -182,6 +184,7 @@ int main()
 		GetMaterialPreviewShaderCacheStatistics();
 	if (!RuntimeOverride.Succeeded() ||
 		RuntimeOverride.PipelineKey != D3D.PipelineKey ||
+		RuntimeOverride.PipelineSortKey != D3D.PipelineSortKey ||
 		RuntimeOverride.VertexBytecode != D3D.VertexBytecode ||
 		RuntimeOverride.PixelBytecode != D3D.PixelBytecode ||
 		std::abs(ReadFloat(RuntimeOverride.ParameterBlock, *Roughness) - 0.21f) > 0.0001f ||
@@ -199,6 +202,7 @@ int main()
 		return Fail(Vulkan, "Vulkan material preview compilation failed");
 	}
 	if (Vulkan.PipelineKey == D3D.PipelineKey ||
+		Vulkan.PipelineSortKey != D3D.PipelineSortKey ||
 		Vulkan.VertexBytecode == D3D.VertexBytecode ||
 		Vulkan.PixelBytecode == D3D.PixelBytecode)
 	{
