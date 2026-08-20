@@ -99,8 +99,13 @@ void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 void CRocketLauncher::LaunchRocket(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel)
 {
 	VERIFY2(_valid(xform), "CRocketLauncher::LaunchRocket. Invalid xform argument!");
+
 	if (CCustomRocket* Rocket = getCurrentRocket())
 	{
+		if (CInventoryItem* r = Rocket->cast_inventory_item(); r != nullptr)
+		{
+			r->SetCanTake(false);
+		}
 		Rocket->SetLaunchParams(xform, vel, angular_vel);
 		m_launched_rockets.push_back(Rocket);
 	}
