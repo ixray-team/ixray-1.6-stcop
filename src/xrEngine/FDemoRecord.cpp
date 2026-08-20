@@ -336,7 +336,6 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 	{
 		if (NewInputSchema)
 		{
-			
 			if (IR_GetKeyState(SDL_SCANCODE_F1))
 			{
 				CGameFont* SystemFont = g_FontManager->pFontSystem;
@@ -399,7 +398,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(-0.2f, +.05f);
-				SystemFont->OutNext("F");
+				SystemFont->OutNext("SPACE");
 				SystemFont->OutNext("BACK");
 				SystemFont->OutNext("ESC");
 				SystemFont->OutNext("F11");
@@ -515,8 +514,8 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 	{
 		Console->Show();
 	}
-	
-	if (dik == SDL_SCANCODE_F)
+
+	if (NewInputSchema && dik == SDL_SCANCODE_F || !NewInputSchema && dik == SDL_SCANCODE_SPACE)
 	{
 		RecordKey();
 	}
