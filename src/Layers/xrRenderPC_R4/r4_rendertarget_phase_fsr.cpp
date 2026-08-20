@@ -1,14 +1,14 @@
 #include "stdafx.h"
 
-#include "OverlayAPI/FSR2Wrapper.h"
+#include "OverlayAPI/FSR3Wrapper.h"
 
 extern Fvector3 ps_r_taa_jitter_full;
 
-void CRenderTarget::init_fsr() 
+void CRenderTarget::init_fsr()
 {
-	g_Fsr2Wrapper.Destroy();
+	g_Fsr3Wrapper.Destroy();
 
-	Fsr2Wrapper::ContextParameters initParams = {};
+	Fsr3Wrapper::ContextParameters initParams = {};
 
 	initParams.displaySize.width = (u32)RCache.get_target_width();
 	initParams.displaySize.height = (u32)RCache.get_target_height();
@@ -18,50 +18,43 @@ void CRenderTarget::init_fsr()
 
 	initParams.device = RDevice;
 
-#ifdef DEBUG_DRAW
-	initParams.fpMessage = [](FfxFsr2MsgType type, const wchar_t* message)
-	{
-		xr_string error_msg = Platform::TCHAR_TO_ANSI_U8(message);
-		Msg("[FSR]: %s", error_msg.c_str());
-	};
-#endif
-
-	g_Fsr2Wrapper.Create(initParams);
+	g_Fsr3Wrapper.Create(initParams);
 }
 
 bool CRenderTarget::phase_fsr()
 {
 	GPU_EVENT(FSR);
 
-	Fsr2Wrapper::DrawParameters fsr2Params = {};
-	fsr2Params.deviceContext = RContext;
+	Fsr3Wrapper::DrawParameters fsr3Params = {};
+	fsr3Params.deviceContext = RContext;
 
-	fsr2Params.unresolvedColorResource = (ID3D11Resource*)rt_Generic_0->pSurface->GetRawTexture();
-	fsr2Params.motionvectorResource = (ID3D11Resource*)rt_Velocity->pSurface->GetRawTexture();
-	fsr2Params.depthbufferResource = (ID3D11Resource*)rt_Position->pSurface->GetRawTexture();
+	fsr3Params.unresolvedColorResource = (ID3D11Resource*)rt_Generic_0->pSurface->GetRawTexture();
+	fsr3Params.motionvectorResource = (ID3D11Resource*)rt_Velocity->pSurface->GetRawTexture();
+	fsr3Params.depthbufferResource = (ID3D11Resource*)rt_Position->pSurface->GetRawTexture();
 
-	fsr2Params.reactiveMapResource = nullptr;
-	fsr2Params.transparencyAndCompositionResource = nullptr;
+	fsr3Params.reactiveMapResource = nullptr;
+	fsr3Params.transparencyAndCompositionResource = nullptr;
 
-	fsr2Params.resolvedColorResource = (ID3D11Resource*)rt_Generic->pSurface->GetRawTexture();
+	fsr3Params.resolvedColorResource = (ID3D11Resource*)rt_Generic->pSurface->GetRawTexture();
 
-	fsr2Params.renderWidth = (u32)RCache.get_width();
-	fsr2Params.renderHeight = (u32)RCache.get_height();
+	fsr3Params.renderWidth = (u32)RCache.get_width();
+	fsr3Params.renderHeight = (u32)RCache.get_height();
+	fsr3Params.displayWidth = (u32)RCache.get_target_width();
+	fsr3Params.displayHeight = (u32)RCache.get_target_height();
 
-	fsr2Params.cameraReset = false;
+	fsr3Params.cameraReset = false;
 
-	fsr2Params.cameraJitterX = ps_r_taa_jitter_full.x;
-	fsr2Params.cameraJitterY = ps_r_taa_jitter_full.y;
+	fsr3Params.cameraJitterX = ps_r_taa_jitter_full.x;
+	fsr3Params.cameraJitterY = ps_r_taa_jitter_full.y;
 
-	fsr2Params.enableSharpening = false;
-	fsr2Params.sharpness = 0.0f;
+	fsr3Params.enableSharpening = false;
+	fsr3Params.sharpness = 0.0f;
 
-	fsr2Params.frameTimeDelta = std::max(1.0f + EPS_L, float(Device.dwTimeDelta));
+	fsr3Params.frameTimeDelta = std::max(1.0f + EPS_L, float(Device.dwTimeDelta));
 
-	fsr2Params.farPlane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
-	fsr2Params.nearPlane = Device.fViewportNear;
-	fsr2Params.fovH = deg2rad(Device.fFOV);
+	fsr3Params.farPlane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
+	fsr3Params.nearPlane = Device.fViewportNear;
+	fsr3Params.fovH = deg2rad(Device.fFOV);
 
-	return g_Fsr2Wrapper.Draw(fsr2Params);
+	return g_Fsr3Wrapper.Draw(fsr3Params);
 }
-

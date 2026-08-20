@@ -66,7 +66,7 @@ private:
     Ivector2 DisplaySize{};
 
     bool DLSSInited = false;
-    bool m_created = false;
+    bool Created = false;
 };
 
 extern DLSSWrapper g_DLSSWrapper;
