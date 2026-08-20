@@ -85,13 +85,13 @@ void DLSSWrapper::Create()
 		return;
 	}
 
-	m_created = true;
+	Created = true;
 #endif
 }
 
 bool DLSSWrapper::GetRenderScale(float& RenderScale)
 {
-	if (!m_created || !NgxParameters)
+	if (!Created || !NgxParameters)
 	{
 		Msg("! GetRenderScale DLSSWrapper not valid. Fallback!");
 		return false;
@@ -150,7 +150,7 @@ void DLSSWrapper::Resize(const ContextParameters& Parameters)
 {
 	PROF_EVENT("DLSSWrapper::Create");
 
-	if (!m_created)
+	if (!Created)
 	{
 		return;
 	}
@@ -218,7 +218,7 @@ void DLSSWrapper::Resize(const ContextParameters& Parameters)
 	if (result != NVSDK_NGX_Result_Success)
 	{
 		Msg("! NGX_D3D11_CREATE_DLSS_EXT not valid. Need use FSR");
-		m_created = false;
+		Created = false;
 		return;
 	}
 #endif
@@ -245,13 +245,13 @@ void DLSSWrapper::Destroy()
 		DLSSInited = false;
 	}
 
-	m_created = false;	
+	Created = false;	
 #endif
 }
 
 bool DLSSWrapper::Draw(const DrawParameters& params)
 {
-	if(!m_created)
+	if(!Created)
 	{
 		Msg("! DLSSWrapper not created. Need use FSR");
 		return false;

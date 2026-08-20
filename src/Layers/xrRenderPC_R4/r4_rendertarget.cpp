@@ -29,7 +29,7 @@
 #include "BlenderGamma.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
-#include "OverlayAPI/FSR2Wrapper.h"
+#include "OverlayAPI/FSR3Wrapper.h"
 #include "OverlayAPI/DLSSWrapper.h"
 #include "OverlayAPI/XESSWrapper.h"
 
@@ -1126,7 +1126,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_new_adaptation);
 	xr_delete(b_sslr);
 
-	g_Fsr2Wrapper.Destroy();
+	g_Fsr3Wrapper.Destroy();
 #if 0
 	g_XESSWrapper.Destroy();
 #endif
