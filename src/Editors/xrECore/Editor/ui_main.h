@@ -183,6 +183,7 @@ public:
    virtual bool  KeyDown     		(WORD Key, TShiftState Shift);
 	bool  KeyUp       		(WORD Key, TShiftState Shift);
 	bool  KeyPress    		(WORD Key, TShiftState Shift);
+	virtual void IR_OnMouseWheel	(int direction);
 	void  MousePress			(TShiftState Shift, int X, int Y);
 	void  MouseRelease		(TShiftState Shift, int X, int Y);
 	void  MouseMove			(TShiftState Shift, int X, int Y);

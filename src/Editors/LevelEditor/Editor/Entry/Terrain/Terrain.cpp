@@ -22,6 +22,7 @@ CTerrain::~CTerrain()
 		{
 			_M->RemoveColor(this);
 		}
+		TerrainObject->EvictObject();
 	}
 
 	xr_delete(TerrainObject);
@@ -41,16 +42,59 @@ void CTerrain::OnUpdateTransform()
 
 bool CTerrain::LoadStream(IReader& F)
 {
+	if (F.length() == 0)
+		return false;
+
 	HMap.LoadSteam(&F);
 	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY);
 
 	return true;
 }
 
+void CTerrain::InitializeHeightmap(u32 w, u32 h, float fill)
+{
+	HMap.Create(w, h, fill);
+	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY);
+	HMap.MarkDirty();
+	OnUpdateTransform();
+}
+
+void CTerrain::RebuildMesh()
+{
+	CEditableObject* Old = TerrainObject;
+	TerrainObject = new CEditableObject(GetName());
+	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY);
+	UI->CommandList[TUI::ECommandListID::NextFrame].push_back
+	(
+		[Old]()
+		{
+			Old->EvictObject();
+			xr_delete(Old);
+		}
+	);
+	OnUpdateTransform();
+	HMap.MarkDirty();
+}
+
+void CTerrain::OnChangePreview(PropValue* sender)
+{
+	if (IsPreview)
+		RebuildMesh();
+}
+
 void CTerrain::SaveStream(IWriter& F)
 {
 	HMap.SaveSteam(&F);
 	inherited::SaveStream(F);
+}
+
+void CTerrain::OnDeviceDestroy()
+{
+	// GPU-буфер высотной карты принадлежит устройству — сбрасываем его,
+	// иначе Draw будет указывать на освобождённый ресурс после ресета.
+	HMap.RenderData.InvalidateGpu();
+	HMap.RenderData.IsDirty = true;
+	inherited::OnDeviceDestroy();
 }
 
 void CTerrain::OnFrame()
@@ -142,7 +186,8 @@ void CTerrain::FillProp(const char* pref, PropItemVec& items)
 	inherited::FillProp(pref, items);
 
 	SurfaceVec& s_lst = TerrainObject->m_Surfaces;
-	PHelper().CreateBool(items, "Height Map\\Preview", &IsPreview);
+	PropValue* PreviewVal = PHelper().CreateBool(items, "Height Map\\Preview", &IsPreview);
+	PreviewVal->OnChangeEvent.bind(this, &CTerrain::OnChangePreview);
 	
 	S32Value* ScaleEdit = PHelper().CreateS32(items, "Height Map\\Multiply Y", &ScaleY);
 	ScaleEdit->OnAfterEditEvent.bind(this, &CTerrain::OnChangeHMData);
@@ -178,23 +223,16 @@ bool CTerrain::OnChangeHMData(PropValue* sender, int& NewValue)
 	if (NewValue < 0)
 		return false;
 
+	if (NewValue == m_AppliedHMScale)
+		return true;
+
+	m_AppliedHMScale = NewValue;
+	ScaleY = NewValue;
+
 	HMap.MarkDirty();
 
-	// Очень медленная херня. Нужно просто аплаить дельту на высоту вертексов
-	// но пока впадлу, мб потом
-	CEditableObject* OldObject = TerrainObject;
-	UI->CommandList[TUI::ECommandListID::NextFrame].push_back
-	(
-		[OldObject]()
-		{
-			xr_delete(OldObject);
-		}
-	);
-
-	TerrainObject = new CEditableObject(GetName());
-	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, NewValue);
-
-	LTools->UpdateProperties(false);
+	if (IsPreview)
+		RebuildMesh();
 
 	return true;
 }

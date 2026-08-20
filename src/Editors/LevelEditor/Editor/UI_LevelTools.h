@@ -108,6 +108,7 @@ public:
 	virtual bool  	KeyDown    	(WORD Key, TShiftState Shift);
 	virtual bool  	KeyUp       (WORD Key, TShiftState Shift);
 	virtual bool  	KeyPress    (WORD Key, TShiftState Shift);
+	virtual bool  	MouseWheel  (int direction, TShiftState Shift);
 
 	virtual bool		Pick				(TShiftState Shift);
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);

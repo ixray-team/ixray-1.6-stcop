@@ -66,6 +66,7 @@ public:
     virtual bool 	KeyDown				(WORD Key, TShiftState Shift){return false;}
     virtual bool 	KeyUp  				(WORD Key, TShiftState Shift){return false;}
     virtual bool 	KeyPress			(WORD Key, TShiftState Shift){return false;}
+    virtual bool 	Wheel				(int direction, TShiftState Shift){return false;}
     virtual void 	OnEnter				(){;}
     virtual void 	OnExit				(){;}
     //virtual void    DragDrop            (const xr_string& Path);

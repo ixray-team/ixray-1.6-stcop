@@ -1431,6 +1431,7 @@ bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool 
 		case OBJCLASS_TERRAIN:
 		{
 			CTerrain* obj = (CTerrain*)(*_F);
+			obj->RebuildMesh();
 			bResult = BuildEditableObject(obj->GetReference(), obj->_Transform(), nullptr);
 			break;
 		}
