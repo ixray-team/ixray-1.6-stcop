@@ -750,8 +750,8 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 	CObject* p_obj_killer = Level().Objects.net_Find(KillerID);
 	CObject* p_obj_weapon = Level().Objects.net_Find(WeaponID);
 	
-	p_go_killer = p_obj_killer->cast_game_object();
-	p_go_weapon = p_obj_weapon->cast_game_object();
+	p_go_killer = p_obj_killer ? p_obj_killer->cast_game_object() : nullptr;
+	p_go_weapon = p_obj_weapon ? p_obj_weapon->cast_game_object() : nullptr;
 
 	game_PlayerState* pPlayer = GetPlayerByGameID(KilledID);
 	if (!pPlayer)
