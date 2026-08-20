@@ -28,12 +28,13 @@ UIEditLibrary::UIEditLibrary()
 	PreviewProps = new UIPropertiesForm();
 	PreviewProps->DisableSearch(true);
 
-	m_Preview = ((CLevelPreferences*)(EPrefs))->PreviewRenderLibrary;
+	m_Preview = true;
 	m_SelectLods = false;
 	m_RealTexture = nullptr;
 
 	View.OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
-
+	xr_strcpy(View.ViewportName, "Render##ObjectLibrary");
+	
 	SearchList.SetOnItemFocusedEvent({this, &UIEditLibrary::OnItemFocused});
 	SearchList.SetOnItemUnfocusedEvent({this, &UIEditLibrary::OnItemUnfocused});
 }
@@ -137,28 +138,26 @@ void UIEditLibrary::Update()
 		Close();
 }
 
+UIEditLibrary* UIEditLibrary::Init()
+{
+	if (!Form)
+	{
+		Form = new UIEditLibrary();
+	}
+	return Form;
+}
+
 void UIEditLibrary::Show()
 {
 	UI->BeginEState(esEditLibrary);
 
-	bool NeedToPush = false;
-
 	if (!Form)
 	{
-		Form = new UIEditLibrary();
-		NeedToPush = true;
-	}
-	else
-	{
-		NeedToPush = !Form->bOpen;
-		Form->bOpen = true;
+		Init();
 	}
 
-	if (NeedToPush)
-	{
-		UI->Push(Form, false);
-		modif_map.clear();
-	}
+	Form->bOpen = true;
+	UI->ActiveTabIndex = Form->TabIndex;
 }
 
 void UIEditLibrary::Close()
@@ -451,12 +450,6 @@ void UIEditLibrary::DrawRightBar()
 				ImGui::PopItemFlag();
 				ImGui::PopStyleVar();
 			}
-		}
-
-		if (ImGui::Checkbox("Preview", &m_Preview))
-		{
-			((CLevelPreferences*)(EPrefs))->PreviewRenderLibrary = m_Preview;
-			OnPreviewClick();
 		}
 
 		ImGui::SameLine();
