@@ -1,0 +1,27 @@
+{
+  "eyebrow": "Catalog",
+  "title": "Mods List",
+  "subtitle": "",
+  "labels": {
+    "view": "Download / Open",
+    "soon": "Coming soon"
+  },
+  "mods": [
+    {
+      "id": "chkdz_iskrinka",
+      "title": "CHKDS: Iskrinka",
+      "description": "2020. The Dark Valley is open again after another emission. The squad of official stalkers sent to study laboratory X-18 vanished without a trace. You are Frolov's assistant, a member of the 'Iskra' research group dispatched by the CHAZ Institute to find out what happened to them and survey the laboratory.",
+      "author": "Krim",
+      "link": "https://ap-pro.ru/forums/topic/15146-chkdz-iskrinka/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/99befa3b21fd5702e9fff7870712937d7ac70c03/res/Site_media/chkdz.png"
+    },
+    {
+      "id": "project2",
+      "title": "[Project №2] (Beta | Project closed)",
+      "description": "An attempt to adapt the S.T.A.L.K.E.R. Mobile storyline.",
+      "author": "Graff46",
+      "link": "https://ap-pro.ru/forums/topic/2029-proekt-%E2%84%962/?do=findComment&comment=501744",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%822.png"
+    }
+  ]
+}

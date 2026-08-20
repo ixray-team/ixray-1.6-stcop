@@ -1,0 +1,27 @@
+{
+  "eyebrow": "Каталог",
+  "title": "Список модификаций",
+  "subtitle": "",
+  "labels": {
+    "view": "Скачать / открыть",
+    "soon": "Скоро"
+  },
+  "mods": [
+    {
+      "id": "chkdz_iskrinka",
+      "title": "ЧКДЗ: Искринка",
+      "description": "2020 год. Тёмная Долина снова открыта после очередного выброса. Группа официальных сталкеров, отправленная изучать лабораторию X-18, пропала без вести. Вы — ассистентка Фролова, член научной группы «Искра», отправленной НИИ ЧАЗ выяснить судьбу пропавших и обследовать лабораторию.",
+      "author": "Крим",
+      "link": "https://ap-pro.ru/forums/topic/15146-chkdz-iskrinka/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/99befa3b21fd5702e9fff7870712937d7ac70c03/res/Site_media/chkdz.png"
+    },
+    {
+      "id": "project2",
+      "title": "[Проект №2] (Бета | Проект закрыт)",
+      "description": "Попытка перенести сюжет игры S.T.A.L.K.E.R. Mobile.",
+      "author": "Graff46",
+      "link": "https://ap-pro.ru/forums/topic/2029-proekt-%E2%84%962/?do=findComment&comment=501744",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%822.png"
+    }
+  ]
+}
