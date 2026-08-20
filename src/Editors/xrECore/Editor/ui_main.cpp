@@ -169,6 +169,15 @@ bool  TUI::KeyPress(WORD Key, TShiftState Shift)
 	return Tools->KeyPress(Key, Shift);
 }
 //----------------------------------------------------
+void TUI::IR_OnMouseWheel(int direction)
+{
+	if (!m_bReady) return;
+	if (Tools->MouseWheel(direction, m_ShiftState))
+	{
+		RedrawScene();
+	}
+}
+//----------------------------------------------------
 
 void TUI::MousePress(TShiftState Shift, int X, int Y)
 {
