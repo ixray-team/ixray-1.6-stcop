@@ -144,7 +144,7 @@ bool Fsr3Wrapper::Draw(const DrawParameters& params)
 	FsrDesc.cameraFar = params.farPlane;
 	FsrDesc.cameraFovAngleVertical = params.fovH;
 	FsrDesc.viewSpaceToMetersFactor = 1.0f;
-
+	
 	const FfxErrorCode ErrorCode = ffxFsr3UpscalerContextDispatch(&Context, &FsrDesc);
 	if (ErrorCode != FFX_OK)
 	{

@@ -7,6 +7,7 @@ export const modsSidebar: DefaultTheme.Sidebar = [
     items: [
       { text: 'Released', link: '/en/mods/released/mods' },
       { text: 'WIP', link: '/en/mods/released/mods_dev' },
+      { text: 'Unfinished', link: '/en/mods/released/mods_unfinished' },
     ]
   },
   {
