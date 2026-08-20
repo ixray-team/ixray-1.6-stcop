@@ -8,6 +8,7 @@
 #include "Editor/Utils/ContentView.h"
 #include "Editor/Scene/LEPhysics.h"
 #include "Nodes/UIDialogsView.h"
+#include "UI/UIEditLibrary.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
 
@@ -28,6 +29,7 @@ ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
 
 static DialogEditor* g_DialogEditor = nullptr;
+static UIEditLibrary* g_ObjectLibrary = nullptr;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
@@ -73,6 +75,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialog Editor", nullptr});
 	UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Anim Editor", nullptr});
 	UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap Editor", nullptr});
+	UI->GeneralTabs.push_back({ICON_FA_CUBES " Object Library", nullptr});
 
 	LUI = static_cast<CLevelMain*>(UI);
 
@@ -129,6 +132,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	g_DialogEditor->TabIndex = 1;
 	g_DialogEditor->Show(true);
 	UI->Push(g_DialogEditor, false);
+
+	g_ObjectLibrary = UIEditLibrary::Init();
+	g_ObjectLibrary->TabIndex = (int)UI->GeneralTabs.size() - 1;
+	UI->Push(g_ObjectLibrary, false);
 
 	pFPSCounter = new XRay::Hardware::FPSCounter();
 	UIEditLightAnim::Show();
