@@ -226,6 +226,7 @@ public:
     virtual bool  	KeyDown    	(WORD Key, TShiftState Shift){return false;}
     virtual bool  	KeyUp      	(WORD Key, TShiftState Shift){return false;}
     virtual bool  	KeyPress   	(WORD Key, TShiftState Shift){return false;}
+	virtual bool  	MouseWheel 	(int direction, TShiftState Shift){return false;}
 
     virtual bool		Pick				(TShiftState Shift)=0;
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt=nullptr, Fvector* n=nullptr)=0;

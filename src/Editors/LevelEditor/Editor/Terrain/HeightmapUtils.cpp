@@ -15,16 +15,17 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 
 	const u32 Width = Heightmap.Width;
 	const u32 Height = Heightmap.Height;
-	constexpr float SizeHM = 512;
+
+	const float StepX = Heightmap.Size.x > 0.f ? Heightmap.Size.x : 1.f;
+	const float StepZ = Heightmap.Size.z > 0.f ? Heightmap.Size.z : 1.f;
 
 	xr_vector<Fvector> Vertices;
 	Vertices.resize(Width * Height);
 
-	xr_atomic_float minY(FLT_MAX);
-	xr_atomic_float maxY(-FLT_MAX);
-
-	const float StepHM = SizeHM / (Width - 1);
-	constexpr float HalfHM = SizeHM / 2.0f;
+	const float SizeX = (Width - 1) * StepX;
+	const float HalfX = SizeX / 2.0f;
+	const float SizeZ = (Height - 1) * StepZ;
+	const float HalfZ = SizeZ / 2.0f;
 
 	xr_vector<bool> IsHoleVertex(Width * Height, false);
 
@@ -36,22 +37,14 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 			float h = Heightmap.GetHeight(x, z);
 
 			Fvector V;
-			V.x = -(x * StepHM - HalfHM);
-			V.z = (z * StepHM - HalfHM);
-			V.y = h * ScaleY;
+			V.x = -(x * StepX - HalfX);
+			V.z = (z * StepZ - HalfZ);
+			V.y = h * ScaleY * Heightmap.Size.y;
 			Vertices[z * Width + x] = V;
 
 			if (h <= 0.0f)
 			{
 				IsHoleVertex[z * Width + x] = true;
-			}
-			else
-			{
-				float currentMinY = minY.load();
-				while (V.y < currentMinY && !minY.compare_exchange_weak(currentMinY, V.y)) {}
-
-				float currentMaxY = maxY.load();
-				while (V.y > currentMaxY && !maxY.compare_exchange_weak(currentMaxY, V.y)) {}
 			}
 		}
 	});
@@ -61,7 +54,10 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 	const u32 QuadsZ = Height - 1;
 	Faces.resize(QuadsX * QuadsZ * 2); // Резервируем с запасом
 
-	float centerY = (minY.load() + maxY.load()) * 0.5f;
+	// Тот же вертикальный центр, что и в отрисовке высотной карты:
+	// середина номинального диапазона [0,1], а не текущий min/max,
+	// чтобы меш совпадал по высоте с HMap (иначе scene object "прыгает" по Y).
+	float centerY = 0.5f * ScaleY * Heightmap.Size.y;
 
 	// Параллельная нормализация высот
 	xr_parallel_for(size_t(0), Vertices.size(), [&](size_t i)

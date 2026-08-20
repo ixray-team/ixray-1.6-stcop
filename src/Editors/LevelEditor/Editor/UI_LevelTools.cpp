@@ -179,6 +179,16 @@ bool CLevelTool::KeyPress(WORD Key, TShiftState Shift)
 	return false;
 }
 
+bool CLevelTool::MouseWheel(int direction, TShiftState Shift)
+{
+	if (CurrentTool && CurrentTool->pCurControl)
+	{
+		return CurrentTool->pCurControl->Wheel(direction, Shift);
+	}
+
+	return false;
+}
+
 void CLevelTool::RealSetAction(ETAction act)
 {
 	inherited::SetAction(act);
