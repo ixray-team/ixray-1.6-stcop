@@ -426,7 +426,7 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 
 #ifdef XRGAME_EXPORTS
 
-	if(s32(-1) == m_community_index)
+	if (IsGameTypeSingleCompatible() && s32(-1) == m_community_index)
 	{
 		m_community_index = selected_char.Community().index();
 		CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>(base());
