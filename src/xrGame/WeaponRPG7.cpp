@@ -96,7 +96,7 @@ void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
 		d.normalize();
 		d.mul(m_fLaunchSpeed);
 
-		CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel);
+		LaunchRocket(launch_matrix, d, zero_vel);
 
 		CExplosiveRocket* pGrenade = getCurrentRocket()->cast_explosive_rocket();
 		VERIFY(pGrenade);
