@@ -7,7 +7,7 @@
 
 #include "../xrRender/QueryHelper.h"
 
-#include "OverlayAPI/FSR2Wrapper.h"
+#include "OverlayAPI/FSR3Wrapper.h"
 
 #include "../../xrEngine/GameFont.h"
 #include "../../xrEngine/x_ray.h"
@@ -445,8 +445,8 @@ void CRender::Render()
 
 	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
 	{
-		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
-		ffxFsr2GetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
+		int32_t jitterPhaseCount = ffxFsr3UpscalerGetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
+		ffxFsr3UpscalerGetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
 		ps_r_taa_jitter_full = ps_r_taa_jitter_full.mul(ps_r_taa_jitter_scale);
 

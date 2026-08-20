@@ -69,8 +69,9 @@ target_link_libraries(xrRender_R4 PUBLIC NvTriStrip)
 target_link_libraries(xrRender_R4 PUBLIC lunasvg)
 
 if (WIN32)
-	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR2)
-	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR2_DX11)
+	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR3_DX11)
+	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR3)
+
 	target_link_libraries(xrRender_R4 PUBLIC NVIDIA::DLSS)
 	target_link_libraries(xrRender_R4 PUBLIC DirectX::Tex)
 	target_link_libraries(xrRender_R4 PUBLIC DirectX::Mesh)
