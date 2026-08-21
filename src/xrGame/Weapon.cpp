@@ -2557,6 +2557,11 @@ bool CWeapon::SilencerAttachable()
 
 void CWeapon::UpdateScopePosition()
 {
+	if (bUseAltScope)
+	{
+		return;
+	}
+
 	auto HID = HudItemData();
 
 	if (HID != nullptr && ScopeAttachable())
