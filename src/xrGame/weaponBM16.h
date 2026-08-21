@@ -25,6 +25,7 @@ protected:
 	virtual shared_str SetCurrentAimAnimation();
 
 	virtual CWeaponBM16* cast_weapon_bm16() override { return this; }
+	virtual CWeaponAutomaticShotgun* cast_weapon_auto_shotgun() override { return this; }
 
 	virtual int GetMagCapacity() override { int size = m_iAmmoCountToReload; m_iAmmoCountToReload = iMagazineSize; return size; }
 
