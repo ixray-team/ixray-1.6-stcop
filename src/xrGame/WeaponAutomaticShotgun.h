@@ -33,6 +33,7 @@ public:
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };
 	virtual void	OnMotionMark(u8 state, const motion_marks&);
 
+	virtual CWeaponAutomaticShotgun* cast_weapon_auto_shotgun() override { return this; }
 
 protected:
 	virtual void	OnAnimationEnd			(u8 state);
