@@ -181,8 +181,9 @@ class	type_motion2 : public type_motion
 			return false;
 		}
 
-		CWeaponShotgun* s = O->cast_weapon_shotgun();
-		if (s == nullptr)
+		bool is_shotgun = O->cast_weapon_shotgun() || O->cast_weapon_auto_shotgun();
+
+		if (!is_shotgun)
 		{
 			return false;
 		}
