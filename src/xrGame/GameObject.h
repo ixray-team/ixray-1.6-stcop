@@ -91,6 +91,7 @@ class CClimableObject;
 class CPhysicObject;
 class CTeamBaseZone;
 class CWeaponShotgun;
+class CWeaponAutomaticShotgun;
 
 class IKinematics;
 class CAI_Trader;
@@ -185,6 +186,7 @@ public:
 	virtual CCustomRocket* cast_custom_rocket() { return nullptr; }
 	virtual CRocketLauncher* cast_rocket_launcher() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
+	virtual CWeaponAutomaticShotgun* cast_weapon_auto_shotgun() { return nullptr; }
 	virtual CVisualZone* cast_visual_zone() { return nullptr; }
 	virtual CNoGravityZone* cast_no_gravity_zone() { return nullptr; }
 	virtual CMosquitoBald* cast_mosquito_bald_zone() { return nullptr; }
