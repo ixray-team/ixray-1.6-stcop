@@ -1322,9 +1322,6 @@ void CWeaponMagazined::state_Fire(float dt)
 				}
 			}
 			
-			if (!infinite_fire() || m_bIAmWeaponRPG7)
-				++m_iShotNum;
-			
 			if (m_bUseLastAmmoType)
 			{
 				u8 type_to_update = m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
@@ -1335,12 +1332,48 @@ void CWeaponMagazined::state_Fire(float dt)
 				}
 			}
 
-			OnShot					();
+			if (cast_weapon_bm16() && iAmmoElapsed == 2 && GetQueueSize() == 2)
+			{
+				for (u8 i = 0; i < 2; i++)
+				{
+					if (i == 1)
+					{
+						OnShot();
+					}
 
-			if (m_iShotNum>m_iBaseDispersionedBulletsCount)
-				FireTrace		(p1,d);
+					if (!infinite_fire() || m_bIAmWeaponRPG7)
+					{
+						++m_iShotNum;
+					}
+
+					if (m_iShotNum > m_iBaseDispersionedBulletsCount)
+					{
+						FireTrace(p1, d);
+					}
+					else
+					{
+						FireTrace(m_vStartPos, m_vStartDir);
+					}
+				}
+			}
 			else
-				FireTrace		(m_vStartPos, m_vStartDir);
+			{
+				OnShot();
+
+				if (!infinite_fire() || m_bIAmWeaponRPG7)
+				{
+					++m_iShotNum;
+				}
+
+				if (m_iShotNum > m_iBaseDispersionedBulletsCount)
+				{
+					FireTrace(p1, d);
+				}
+				else
+				{
+					FireTrace(m_vStartPos, m_vStartDir);
+				}
+			}
 		}
 	
 		if(m_iShotNum == m_iQueueSize)
