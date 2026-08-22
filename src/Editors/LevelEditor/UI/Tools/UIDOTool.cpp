@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../Editor/Tools/Details/ESceneDOTools.h"
 
 void UIDOTool::Draw()
 {
@@ -99,6 +100,47 @@ void UIDOTool::Draw()
 				UIChooseForm::SelectItem(smTexture, 1);
 				IsChooseDraw = true;
 			}
+
+			XRay::ImGui::EndExpand();
+		}
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Paint Grass Mask"))
+		{
+			bool InPaint = (LTools && LTools->GetSubTarget() == EDetailManager::estDOPaint);
+
+			if (!InPaint)
+			{
+				if (XRay::ImGui::Button("Enter Paint Mode", { -0.01f, 0 }))
+				{
+					ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_DO, EDetailManager::estDOPaint);
+					ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
+				}
+			}
+			else
+			{
+				if (XRay::ImGui::Button("Exit Paint Mode", { -0.01f, 0 }))
+				{
+					ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_DO);
+				}
+			}
+
+			XRay::ImGui::Separator();
+
+			float Color[4] = { DM->PaintColor.r, DM->PaintColor.g, DM->PaintColor.b, DM->PaintColor.a };
+			if (ImGui::ColorEdit4("Paint Color", Color))
+				DM->PaintColor.set(Color[0], Color[1], Color[2], Color[3]);
+
+			ImGui::SetNextItemWidth(-0.01f);
+			ImGui::SliderInt("Brush Radius", &DM->BrushSize, 1, 200);
+
+			ImGui::SetNextItemWidth(-0.01f);
+			ImGui::SliderFloat("Brush Density", &DM->BrushStrength, 0.01f, 1.f, "%.2f");
+
+			ImGui::Checkbox("Erase", &DM->PaintErase);
+
+			if (XRay::ImGui::Button("Clear Mask", { -0.01f, 0 }))
+				DM->ClearMask();
 
 			XRay::ImGui::EndExpand();
 		}
