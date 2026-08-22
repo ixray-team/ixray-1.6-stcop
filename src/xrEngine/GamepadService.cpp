@@ -4,7 +4,7 @@
 
 ENGINE_API CGamepadService* GGamepadService = nullptr;
 
-bool CGamepadService::FeedbackMode = false;
+bool CGamepadService::FeedbackMode = true;
 bool CGamepadService::GyroscopeEnabled = true;
 float CGamepadService::GyroscopeDeadZone = 0.15f;
 float CGamepadService::GyroscopeSensitivity = 1.f;
