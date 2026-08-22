@@ -24,8 +24,7 @@
 #include "../../xrUI/UIFontDefines.h"
 #include "Actor.h"
 #include "game_cl_single.h"
-
-class CCustomRocket;
+#include "CustomRocket.h"
 
 u32 C_ON_ENEMY = color_rgba(0xff,0,0,0x80);
 u32 C_ON_NEUTRAL = color_rgba(0xff,0xff,0x80,0x80);
