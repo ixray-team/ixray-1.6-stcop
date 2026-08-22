@@ -24,7 +24,6 @@
 #include "../../xrUI/UIFontDefines.h"
 #include "Actor.h"
 #include "game_cl_single.h"
-#include "CustomRocket.h"
 
 u32 C_ON_ENEMY = color_rgba(0xff,0,0,0x80);
 u32 C_ON_NEUTRAL = color_rgba(0xff,0xff,0x80,0x80);
@@ -255,7 +254,7 @@ void CHUDTarget::Render()
 			}
 			else if (l_pI && our_inv_owner && PP.RQ.range < 2.0f * 2.0f)
 			{
-				if (l_pI->NameItem() && smart_cast<CCustomRocket*>(l_pI) == nullptr)
+				if (l_pI->NameItem() && l_pI->CanTake())
 				{
 					targetFont->SetColor(subst_alpha(C, static_cast<u32>(lerp(0.f, 255.f, accumulatedTime))));
 					targetFont->OutNext("%s", l_pI->NameItem());
