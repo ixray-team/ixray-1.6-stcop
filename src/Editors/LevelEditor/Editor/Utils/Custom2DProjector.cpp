@@ -1,6 +1,7 @@
-
 #include "stdafx.h"
 #include "Custom2DProjector.h"
+
+#include "Editor/Entry/Terrain/Terrain.h"
 
 #define MAX_BUF_SIZE 0xFFFF
 
@@ -21,26 +22,48 @@ bool CCustom2DProjector::LoadImage(const char* nm)
 void CCustom2DProjector::CreateRMFromObjects(const Fbox& box, ObjectList& lst)
 {
 	geom.destroy();
-    mesh.clear	();
-	for (ObjectIt it=lst.begin(); it!=lst.end(); it++){
-    	CSceneObject*	 S = (CSceneObject*)(*it);
-    	CEditableObject* O = S->GetReference(); VERIFY(O);
+	mesh.clear();
 
-        Fmatrix T; S->GetFullTransformToWorld(T);
-        mesh.reserve	(mesh.size()+S->GetFaceCount()*3);
-        for (EditMeshIt m_it=O->FirstMesh(); m_it!=O->LastMesh(); m_it++){
-	        for (u32 f_id=0; f_id!=(*m_it)->GetFCount(); f_id++){
-            	FVF::V v;
-                for (int k=0; k<3; k++){
-                	T.transform_tiny(v.p,(*m_it)->GetVertices()[(*m_it)->GetFaces()[f_id].pv[k].pindex]);
-					v.t.x = GetUFromX(v.p.x,box);
-					v.t.y = GetVFromZ(v.p.z,box);
-                    mesh.push_back(v);
-                }
-            }
-        }
-    }
-	geom.create(FVF::F_V,RCache.Vertex.Buffer(),0);
+	for (ObjectIt it = lst.begin(); it != lst.end(); it++)
+	{
+		CEditableObject* O = nullptr;
+		Fmatrix T;
+
+		if (CSceneObject* S = smart_cast<CSceneObject*>(*it))
+		{
+			S->GetFullTransformToWorld(T);
+			O = S->GetReference();
+		}
+		else if (CTerrain* S = smart_cast<CTerrain*>(*it))
+		{
+			T.set(S->_Transform());
+			O = S->TerrainObject;
+		}
+		else
+		{
+			VERIFY(O);
+			break;
+		}
+
+
+		mesh.reserve(mesh.size() + O->GetFaceCount() * 3);
+		for (EditMeshIt m_it = O->FirstMesh(); m_it != O->LastMesh(); m_it++)
+		{
+			for (u32 f_id = 0; f_id != (*m_it)->GetFCount(); f_id++)
+			{
+				FVF::V v;
+				for (int k = 0; k < 3; k++)
+				{
+					T.transform_tiny(v.p, (*m_it)->GetVertices()[(*m_it)->GetFaces()[f_id].pv[k].pindex]);
+					v.t.x = GetUFromX(v.p.x, box);
+					v.t.y = GetVFromZ(v.p.z, box);
+					mesh.push_back(v);
+				}
+			}
+		}
+	}
+
+	geom.create(FVF::F_V, RCache.Vertex.Buffer(), 0);
 }
 
 void CCustom2DProjector::Render(bool blended)
