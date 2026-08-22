@@ -9,7 +9,7 @@ UIDOShuffle::UIDOShuffle()
 	m_TextureNull.create("ed\\ed_nodata");
 	m_TextureNull->Load();
 	m_Props = new UIPropertiesForm();
-	m_RealTexture = nullptr;
+	RealTexture = nullptr;
 }
 
 UIDOShuffle::~UIDOShuffle()
@@ -21,7 +21,7 @@ UIDOShuffle::~UIDOShuffle()
 	xr_delete(m_Props);
 
 	m_Texture.destroy();
-	m_RealTexture.destroy();
+	RealTexture.destroy();
 
 	ClearIndexForms();
 }
@@ -69,13 +69,13 @@ void UIDOShuffle::Draw()
 	ImGui::NextColumn();
 	ImGui::BeginChild("Left");
 	{
-		if (m_RealTexture != m_Texture)
+		if (RealTexture != m_Texture)
 		{
-			m_RealTexture.destroy();
-			m_RealTexture = m_Texture;
+			RealTexture.destroy();
+			RealTexture = m_Texture;
 		}
-		bool HaveTexture = m_RealTexture != nullptr && m_RealTexture->get_SRView() != nullptr;
-		ImGui::Image(HaveTexture ? m_RealTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImVec2(256, 256));
+		bool HaveTexture = RealTexture != nullptr && RealTexture->get_SRView() != nullptr;
+		ImGui::Image(HaveTexture ? RealTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImVec2(256, 256));
 
 		{
 			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight()))) { UIChooseForm::SelectItem(smObject, 8); m_ChooseObject = true; }; ImGui::SameLine();
