@@ -712,7 +712,8 @@ void CMissile::OnEvent(NET_Packet& P, u16 type)
 
 			CObject* O = Level().Objects.net_Find(id); if (!O || O->getDestroy()) break;
 			CMissile* missile = O->cast_missile(); if (!missile) break;
-			missile->H_SetParent(0,!P.r_eof() && P.r_u8());
+			missile->H_SetParent(nullptr,!P.r_eof() && P.r_u8());
+			missile->SetCanTake(false);
 			if (IsFakeMissile && OnClient()) 
 				missile->set_destroy_time(m_dwDestroyTimeMax);
 			break;

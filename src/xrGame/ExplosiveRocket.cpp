@@ -61,6 +61,7 @@ void CExplosiveRocket::net_Destroy()
 void CExplosiveRocket::OnH_A_Independent()
 {
 	inherited::OnH_A_Independent();
+	SetCanTake(false);
 }
 
 void CExplosiveRocket::OnH_B_Independent(bool just_before_destroy)
