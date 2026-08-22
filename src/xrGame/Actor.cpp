@@ -2085,6 +2085,11 @@ void CActor::UpdateCL()
 	else
 		fSprintFactor -= Device.fTimeDelta / 0.1f;
 	clamp(fSprintFactor, 0.0f, 1.0f);
+
+	if (!pInput->GetControllerMode() && !(mstate_real & mcAnyMove))
+	{
+		leftStickThreshold.set(0.f, 0.f);
+	}
 }
 
 void CActor::UpdatePlayerHud()
