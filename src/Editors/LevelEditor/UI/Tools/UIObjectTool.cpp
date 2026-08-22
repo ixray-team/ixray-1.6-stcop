@@ -12,10 +12,10 @@ UIObjectTool::UIObjectTool()
 	m_Current = nullptr;
 	m_RandomAppend = false;
 	m_Selection = false;
-	m_RealTexture = nullptr;
+	RealTexture = nullptr;
 	m_RemoveTexture = nullptr;
-	m_ObjectList = new UIItemListForm();
-	m_ObjectList->SetOnItemFocusedEvent({this, &UIObjectTool::OnItemFocused});
+	ObjectList = new UIItemListForm();
+	ObjectList->SetOnItemFocusedEvent({this, &UIObjectTool::OnItemFocused});
 	m_TextureNull.create("ed\\ed_nodata");
 	m_TextureNull->Load();
 
@@ -35,11 +35,11 @@ UIObjectTool::~UIObjectTool()
 	}
 
 	m_RemoveTexture.destroy();
-	m_RealTexture.destroy();
+	RealTexture.destroy();
 
 	xr_delete(m_Props);
 	m_TextureNull.destroy();
-	xr_delete(m_ObjectList);
+	xr_delete(ObjectList);
 }
 
 
@@ -402,7 +402,7 @@ void UIObjectTool::DrawObjectsList()
 		{
 			//if (ImGui::BeginChild("Props"))
 			{
-				ImGui::Image(m_RealTexture ? m_RealTexture->get_SRView()->GetRawSRV() : (m_TextureNull->get_SRView()->GetRawSRV()), ImVec2(128, 128));
+				ImGui::Image(RealTexture ? RealTexture->get_SRView()->GetRawSRV() : (m_TextureNull->get_SRView()->GetRawSRV()), ImVec2(128, 128));
 				ImGui::SameLine();
 				ImGui::BeginChild("##EGIProps", { 0, 128 });
 				m_Props->Draw();
@@ -413,7 +413,7 @@ void UIObjectTool::DrawObjectsList()
 			//ImGui::EndChild();
 			if (ImGui::BeginChild("##objectslist"))
 			{
-				m_ObjectList->Draw();
+				ObjectList->Draw();
 			}
 			ImGui::EndChild();
 		}
@@ -453,12 +453,12 @@ void UIObjectTool::RefreshListInternal()
 			ListItem* I = LHelper().CreateItem(items, it->name.c_str(), 0, ListItem::flDrawThumbnail, 0);
 		}
 	}
-	if (m_RealTexture)
-		m_RemoveTexture = m_RealTexture;
+	if (RealTexture)
+		m_RemoveTexture = RealTexture;
 
-	m_RealTexture = nullptr;
+	RealTexture = nullptr;
 	m_Props->ClearProperties();
-	m_ObjectList->AssignItems(items);
+	ObjectList->AssignItems(items);
 
 	RefreshInProgress = false;
 }
@@ -473,7 +473,7 @@ void UIObjectTool::OnDrawUI()
 		{
 			if (change)
 			{
-				m_ObjectList->SelectItem(lst.c_str());
+				ObjectList->SelectItem(lst.c_str());
 			}
 			m_Selection = false;
 		}
@@ -525,8 +525,8 @@ void UIObjectTool::OnDrawUI()
 }
 void UIObjectTool::OnItemFocused(ListItem* item)
 {
-	if (m_RealTexture)m_RemoveTexture = m_RealTexture;
-	m_RealTexture = nullptr;
+	if (RealTexture)m_RemoveTexture = RealTexture;
+	RealTexture = nullptr;
 
 	m_Props->ClearProperties();
 	m_Current = nullptr;
@@ -541,8 +541,8 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 
 			if (Surface != nullptr)
 			{
-				m_RealTexture = new CTexture;
-				m_RealTexture->surface_set(Surface);
+				RealTexture = new CTexture;
+				RealTexture->surface_set(Surface);
 
 				Surface->Release();
 			}
@@ -571,7 +571,7 @@ void UIObjectTool::SelByRefObject(bool flag)
 
 void UIObjectTool::MultiSelByRefObject(bool clear_prev)
 {
-	ObjectList 	objlist;
+	::ObjectList 	objlist;
 	LPU32Vec 	sellist;
 	if (Scene->GetQueryObjects(objlist, OBJCLASS_SCENEOBJECT, 1, 1, -1)) {
 		for (ObjectIt it = objlist.begin(); it != objlist.end(); it++) {
