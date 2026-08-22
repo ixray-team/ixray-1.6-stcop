@@ -193,7 +193,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 	if (mstate_wf & mcRStrafe) vControlAccel.x += leftStickThreshold.x;
 	if (mstate_wf & mcLStrafe) vControlAccel.x += leftStickThreshold.x;
 
-	if (mstate_wf & mcAccel)
+	if (pInput->GetControllerMode() && mstate_wf & mcAccel)
 	{
 		vControlAccel.x *= 2.0f;
 		vControlAccel.z *= 2.0f;
@@ -706,7 +706,7 @@ bool CActor::CanRun()
 bool CActor::CanSprint()
 {
 	bool is_animator = (HudAnimator() != nullptr && (HudAnimator()->IsAnyAnimatorActive() && HudAnimator()->CanSprint() || !HudAnimator()->IsAnyAnimatorActive()) || HudAnimator() == nullptr);
-	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() && Game().PlayerCanSprint(this) && (mstate_real & mcLStrafe) == 0 && (mstate_real & mcRStrafe) == 0 && CanRun() && InventoryAllowSprint() && !bBlockSprint && is_animator;
+	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() && Game().PlayerCanSprint(this) && (abs(leftStickThreshold.x) <= 0.5f) && CanRun() && InventoryAllowSprint() && !bBlockSprint && is_animator;
 
 	return can_Sprint && (m_block_sprint_counter<=0);
 }
