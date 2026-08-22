@@ -850,7 +850,7 @@ void CCC_Register()
 	CMD4(CCC_Float,		"cam_inert", &psCamInert, 0.0f, 100.0f);
 	CMD2(CCC_Float,		"cam_slide_inert",		&psCamSlideInert);
 
-	CMD4(CCC_Float, "cam_viewport_near", &Device.fViewportNear, 0.05f, 0.1f);
+	CMD4(CCC_Float, "cam_viewport_near", &Device.fViewportNear, 0.05f, 0.2f);
 	CMD4(CCC_Float, "cam_hud_viewport_near", &Device.fHUDViewportNear, 0.001f, 0.1f);
 
 	if(!Device.IsEditorMode()) {
