@@ -789,7 +789,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 		ReturnAmmoToInventory(l_ammo, &ammos_to_sync);
 	}
 
-	if (ParentIsActor())
+	if (IsGameTypeSingleCompatible() && ParentIsActor())
 	{
 		int	AC = GetSuitableAmmoTotal();
 		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
