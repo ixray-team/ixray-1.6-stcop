@@ -77,6 +77,10 @@ void CUIZoneMap::Init()
 		m_mapTextureColor = kDefaultMinimapTextureColor;
 
 	xml_init.InitStatic				(uiXml, "minimap:center",		0, &m_center);
+	if (m_background.WndSizeIsProbablyRelative())
+	{
+		m_center.SetWidth(m_center.GetWidth() * UI().get_current_kx());
+	}
 	
 	if (uiXml.NavigateToNode("minimap:clock_wnd", 0))
 		m_clock_wnd						= UIHelper::CreateStatic(uiXml, "minimap:clock_wnd", &m_background);
