@@ -30,24 +30,34 @@ void	FillSecretKey(char* SecretKey)
 	SecretKey[6] = '\0';
 }
 
-const char* GetGameVersion	(int PlatformID)
+const char* GetGameVersion	()
 {
-	switch (PlatformID)
+	/*HKEY KeyCDKey = 0;
+	long res = RegOpenKeyEx(REGISTRY_BASE, 
+		REGISTRY_PATH, 0, KEY_READ, &KeyCDKey);
+
+//	char	KeyValue[1024] = "";
+	DWORD KeyValueSize = 128;
+	DWORD KeyValueType = REG_SZ;
+	if (res == ERROR_SUCCESS && KeyCDKey != 0)
 	{
-	case 0:	
-		return GAME_VERSION_SOC;
-	case 1:
-		return GAME_VERSION_CS;
-	case 2:
+		res = RegQueryValueEx(KeyCDKey, REGISTRY_VALUE_VERSION, NULL, &KeyValueType, (LPBYTE)KeyValue, &KeyValueSize);
+	};
+	if (KeyCDKey != 0) RegCloseKey(KeyCDKey);
+
+	if (res == ERROR_PATH_NOT_FOUND ||
+		res == ERROR_FILE_NOT_FOUND ||
+		KeyValueSize == 0)
+	{
 		return GAME_VERSION;
-	default:
-		return "Unknown";
-	}
+	};*/
+//	return KeyValue;	
+	return GAME_VERSION;
 }
 
-XRGAMESPY_API const char* xrGS_GetGameVersion	(int PlatformID)
+XRGAMESPY_API const char* xrGS_GetGameVersion	()
 {
-	return GetGameVersion(PlatformID);
+	return GetGameVersion();
 }
 
 XRGAMESPY_API void xrGS_GetGameID	(int* GameID, int verID)
