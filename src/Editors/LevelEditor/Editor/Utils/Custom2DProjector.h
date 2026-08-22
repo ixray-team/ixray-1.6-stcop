@@ -2,6 +2,7 @@
 
 class CCustom2DProjector
 {
+    friend class EDetailManager;
 protected:
     ref_shader		shader_blended;
     ref_shader		shader_overlap;
