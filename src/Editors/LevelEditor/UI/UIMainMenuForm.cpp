@@ -280,10 +280,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Objects")) {
-			DrawMenuItemI("Library Editor", ICON_FA_BOOK, COMMAND_LIBRARY_EDITOR);
-			ImGui::Separator();
-
+		if (ImGui::BeginMenu("Objects"))
+		{
 			DrawMenuItem("Clip Editor", COMMAND_SHOW_CLIP_EDITOR);
 			DrawMenuItem("Multi Rename", COMMAND_MULTI_RENAME_OBJECTS);
 
@@ -298,7 +296,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Images")) {
+		if (ImGui::BeginMenu("Images"))
+		{
 			DrawMenuItemI("Image Editor", ICON_FA_IMAGE, COMMAND_IMAGE_EDITOR);
 			ImGui::Separator();
 
@@ -328,7 +327,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Sounds")) {
+		if (ImGui::BeginMenu("Sounds"))
+		{
 			DrawMenuItemI("Sound Editor", ICON_FA_MUSIC, COMMAND_SOUND_EDITOR, "");
 			ImGui::Separator();
 
@@ -341,7 +341,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Options")) {
+		if (ImGui::BeginMenu("Options"))
+		{
 			if (ImGui::BeginMenu("Render"))
 			{
 				if (ImGui::BeginMenu("Quality"))
@@ -627,7 +628,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Help")) {
+		if (ImGui::BeginMenu("Help"))
+		{
 			if (ImGui::MenuItem("Wiki", ""))
 			{
 
@@ -642,7 +644,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Plugins", "")) {
+		if (ImGui::BeginMenu("Plugins", ""))
+		{
 			CPluginsManagers& PlugMngr = CPluginsManagers::Instance();
 
 			bool NeedReinit = false;
