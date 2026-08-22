@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<w>
+    <pause_static x="0" y="0" width="1024" height="768">
+        <text font="graffiti50" r="255" g="0" b="0" a="127" align="c" vert_align="c">st_game_paused</text>
+    </pause_static>
+</w>
