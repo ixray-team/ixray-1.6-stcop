@@ -957,4 +957,7 @@
 	<string id="st_motion_blur_quality">
 		<text>Качество размытия в движении</text>
 	</string>
+	<string id="ui_rmw_grenade_next">
+		<text>$$ACTION_WPN_NEXT$$ Сменить гранату</text>
+	</string>
 </string_table>
