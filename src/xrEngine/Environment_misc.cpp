@@ -709,8 +709,8 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 
 	rain_angle_rotation = fi * A.rain_angle_rotation + f * B.rain_angle_rotation;
 
-	bolt_period = rain_fi * A.bolt_period + rain_f * B.bolt_period;
-	bolt_duration = rain_fi * A.bolt_duration + rain_f * B.bolt_duration;
+	bolt_period = fi * A.bolt_period + f * B.bolt_period;
+	bolt_duration = fi * A.bolt_duration + f * B.bolt_duration;
 
 	// wind
 	wind_velocity			=	fi*A.wind_velocity + f*B.wind_velocity;
