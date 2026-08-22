@@ -3295,7 +3295,7 @@ void CWeapon::OnMagazineEmpty	()
 {
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-	if (ParentIsActor())
+	if (IsGameTypeSingleCompatible() && ParentIsActor())
 	{
 		int	AC = GetSuitableAmmoTotal();
 		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
@@ -4457,7 +4457,7 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 		ReturnAmmoToInventory(l_ammo);
 	}
 
-	if (ParentIsActor())
+	if (IsGameTypeSingleCompatible() && ParentIsActor())
 	{
 		int	AC = GetSuitableAmmoTotal();
 		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
