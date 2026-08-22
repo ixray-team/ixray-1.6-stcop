@@ -23,6 +23,7 @@ private:
 	void PlayMotion();
 
 	bool m_bBlend = false;
+	Fvector4 Dof = {-1.0f, -1.0f, -1.0f, -1.0f};
 };
 
 class CBackpackAnimator final : public CHudStateAnimator
