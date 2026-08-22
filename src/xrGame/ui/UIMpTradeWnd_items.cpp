@@ -899,7 +899,7 @@ void CUICellItemTradeMenuDraw::OnDraw(CUICellItem* cell)
 			acc = 1;
 		string64							buff;
 
-		xr_sprintf							(buff," %d", acc - SDL_SCANCODE_ESCAPE);
+		xr_sprintf							(buff," %d", acc - SDL_SCANCODE_Z);
 		CGameFont* pFont					= UI().Font().GetFont(LETTERICA16_FONT_NAME);
 		pFont->SetAligment					(CGameFont::alCenter);
 		pFont->SetColor						(color_rgba(135,123,116,255));
