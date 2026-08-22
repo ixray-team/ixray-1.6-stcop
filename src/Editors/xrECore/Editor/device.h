@@ -153,6 +153,9 @@ public:
 
 	bool MakeScreenshot(U32Vec& pixels, u32 width, u32 height);
 
+	bool RenderScreenshotRT(ref_rt& rtColor, ref_rt& rtDepth);
+	bool ReadbackRT(ref_rt& rt, U32Vec& pixels);
+	bool DownsampleLODAtlas(xr_vector<ref_rt>& srcRTs, ref_rt& atlasRT, u32 tgt_w, u32 tgt_h, u32 samples, u32 quality);
 
 	void InitTimer();
 
