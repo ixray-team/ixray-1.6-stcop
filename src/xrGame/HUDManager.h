@@ -4,6 +4,7 @@
 #include "HitMarker.h"
 #include "LevelInspector.h"
 
+class CUIStatic;
 class CHUDTarget;
 class CUIGameCustom;
 
@@ -16,6 +17,7 @@ private:
 	CUIGameCustom*			pUIGame;
 	CHitMarker				HitMarker;
 	CHUDTarget*				m_pHUDTarget;
+	CUIStatic*				m_pPauseStatic = nullptr;
 	bool					b_online;
 public:
 	LevelInspector			world_prims = LevelInspector(false);
@@ -42,6 +44,7 @@ public:
 				bool		AddGrenade_ForMark	( CGrenade* grn );
 				void		Update_GrenadeView	( Fvector& pos_actor );
 				void		net_Relcase			( CObject* obj );
+				void		InitializePauseStatic();
 
 	//текущий предмет на который смотрит HUD
 	collide::rq_result&		GetCurrentRayQuery	();
