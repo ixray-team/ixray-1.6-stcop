@@ -13,7 +13,7 @@ public:
 	static void Close();
 	static void OnRender();
 
-	ref_texture m_RealTexture;
+	ref_texture RealTexture;
 
 	void OnItemFocused(ListItem* item);
 	void OnItemUnfocused(ListItem* item);
@@ -44,26 +44,22 @@ private:
 	void ExportOneOBJ(CEditableObject* EO);
 	void ExportObj();
 
-	UIPropertiesForm* GetPropertyWnd();
-
 	static void OnModified();
-	UIItemListForm& ActualItemList() { if (SearchQuery.empty()) return *m_ObjectList; return SearchList; }
-	UIItemListForm* m_ObjectList;
+	UIItemListForm& ActualItemList() { if (SearchQuery.empty()) return *ObjectList; return SearchList; }
+	UIItemListForm* ObjectList;
 	UIItemListForm SearchList;
-	const char* m_Current;
-	bool m_Preview;
+	const char* CurrentKey;
+	bool IsPreview;
 	bool m_Dropper;
 
 	xr_string PrevClick;
 
 	UIRenderForm View;
 
-	bool m_SelectLods;
+	bool SelectLods;
 	bool m_HighQualityLod;
-	bool bShowProps = false;
 
 	bool IsModify = false;
-	bool UseWorldPropWnd = false;
 
 	xr_vector<CSceneObject*> m_pEditObjects;
 	UIPropertiesForm* PreviewProps = nullptr;
