@@ -524,20 +524,48 @@ void CActor::IR_OnKeyboardHold(int dik)
 
 	case kACCEL:	mstate_wishful |= mcAccel;									break;
 	case kL_STRAFE:	
-		leftStickThreshold.x = -1.0f;
 		mstate_wishful |= mcLStrafe;
+		if (mstate_wishful & mcRStrafe)
+		{
+			leftStickThreshold.x = 0.0f;
+		}
+		else
+		{
+			leftStickThreshold.x = -1.0f;
+		}
 		break;
 	case kR_STRAFE:	
-		leftStickThreshold.x = 1.0f;
 		mstate_wishful |= mcRStrafe;
+		if (mstate_wishful & mcLStrafe)
+		{
+			leftStickThreshold.x = 0.0f;
+		}
+		else
+		{
+			leftStickThreshold.x = 1.0f;
+		}
 		break;
 	case kFWD:		
-		leftStickThreshold.y = 1.0f;
 		mstate_wishful |= mcFwd;
+		if (mstate_wishful & mcBack)
+		{
+			leftStickThreshold.y = 0.0f;
+		}
+		else
+		{
+			leftStickThreshold.y = 1.0f;
+		}
 		break;
 	case kBACK:		
-		leftStickThreshold.y = -1.0f;
 		mstate_wishful |= mcBack;
+		if (mstate_wishful & mcFwd)
+		{
+			leftStickThreshold.y = 0.0f;
+		}
+		else
+		{
+			leftStickThreshold.y = -1.0f;
+		}
 		break;
 	case kCROUCH:
 		{
