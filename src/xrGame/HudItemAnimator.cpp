@@ -8,8 +8,11 @@
 #include "UIActorMenu.h"
 #include "ParticlesObject.h"
 #include "Actor.h"
+#include "ActorEffector.h"
+#include "EffectorDOF.h"
 
 extern bool m_AnimatorForceHideItems;
+bool EnableHudAnimatorDof = false;
 
 void CHudItemAnimator::StopAnimator()
 {
@@ -26,6 +29,8 @@ void CHudItemAnimator::Load()
 	}
 
 	m_bBlend = READ_IF_EXISTS(pSettings, r_bool, m_section, "blend", false);
+
+	Dof = READ_IF_EXISTS(pSettings, r_fvector4, m_section, "dof", Fvector4().set(-1.0f, -1.0f, -1.0f, -1.0f));
 }
 
 void CHudItemAnimator::Update()
@@ -166,6 +171,14 @@ void CHudItemAnimator::PlayMotion()
 	m_bNeedActivated = false;
 	m_bIsPlaying = true;
 
+	if (EnableHudAnimatorDof)
+	{
+		if (EnableHudAnimatorDof && !fsimilar(Dof.w, -1.0f))
+		{
+			m_manager->Parent()->Cameras().AddCamEffector(new CEffectorDOF(Dof));
+		}
+	}
+
 	if (m_manager->TargetAnimator() == this)
 	{
 		m_manager->SetTargetAnimator(nullptr);
@@ -203,7 +216,7 @@ void CHudItemAnimator::PlayMotion()
 		m_bStopAtEndAnimIsRunning = false;
 	}
 
-		g_player_hud->UpdateMovementLayers();
+	g_player_hud->UpdateMovementLayers();
 }
 
 void CHudItemAnimator::UpdateAnimation()
