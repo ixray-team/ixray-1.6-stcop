@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Terrain.h"
 
-CTerrain::CTerrain(LPVOID data, const char* name):
-	inherited(data,name), TerrainObject(new CEditableObject(name ? name : "terrain"))
+CTerrain::CTerrain(LPVOID data, const char* name)
+	: inherited(data, name ? name : "terrain"), TerrainObject(new CEditableObject(name ? name : "terrain"))
 {
 	Construct(data);
 	FScale.set(1, 1, 1);
@@ -12,6 +12,11 @@ CTerrain::CTerrain(LPVOID data, const char* name):
 void CTerrain::Construct(LPVOID data)
 {
 	FClassID = OBJCLASS_TERRAIN;
+
+	SurfaceShader = "levels\\zaton_earth";
+	SurfaceShaderXRLC = "default";
+	SurfaceGameMtl = "materials\\earth";
+	SurfaceTexture = "terrain\\terrain_mp_atp";
 }
 
 CTerrain::~CTerrain()
@@ -33,7 +38,7 @@ void CTerrain::OnUpdateTransform()
 	inherited::OnUpdateTransform();
 
 	// update bounding volume
-	if (TerrainObject) 
+	if (TerrainObject)
 	{
 		m_TBBox.set(TerrainObject->GetBox());
 		m_TBBox.xform(_Transform());
@@ -43,10 +48,23 @@ void CTerrain::OnUpdateTransform()
 bool CTerrain::LoadStream(IReader& F)
 {
 	if (F.length() == 0)
+	{
 		return false;
+	}
 
 	HMap.LoadSteam(&F);
-	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY);
+
+	char Buf[512];
+	F.r_stringZ(Buf, sizeof(Buf));
+	SurfaceShader = Buf;
+	F.r_stringZ(Buf, sizeof(Buf));
+	SurfaceShaderXRLC = Buf;
+	F.r_stringZ(Buf, sizeof(Buf));
+	SurfaceGameMtl = Buf;
+	F.r_stringZ(Buf, sizeof(Buf));
+	SurfaceTexture = Buf;
+
+	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY, SurfaceTemplate());
 
 	return true;
 }
@@ -54,7 +72,7 @@ bool CTerrain::LoadStream(IReader& F)
 void CTerrain::InitializeHeightmap(u32 w, u32 h, float fill)
 {
 	HMap.Create(w, h, fill);
-	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY);
+	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY, SurfaceTemplate());
 	HMap.MarkDirty();
 	OnUpdateTransform();
 }
@@ -63,9 +81,9 @@ void CTerrain::RebuildMesh()
 {
 	CEditableObject* Old = TerrainObject;
 	TerrainObject = new CEditableObject(GetName());
-	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY);
-	UI->CommandList[TUI::ECommandListID::NextFrame].push_back
-	(
+	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY, SurfaceTemplate());
+
+	UI->CommandList[TUI::ECommandListID::NextFrame].push_back(
 		[Old]()
 		{
 			Old->EvictObject();
@@ -79,19 +97,30 @@ void CTerrain::RebuildMesh()
 void CTerrain::OnChangePreview(PropValue* sender)
 {
 	if (IsPreview)
+	{
 		RebuildMesh();
+	}
 }
 
 void CTerrain::SaveStream(IWriter& F)
 {
 	HMap.SaveSteam(&F);
+
+	F.w_stringZ(*SurfaceShader);
+	F.w_stringZ(*SurfaceShaderXRLC);
+	F.w_stringZ(*SurfaceGameMtl);
+	F.w_stringZ(*SurfaceTexture);
+
 	inherited::SaveStream(F);
+}
+
+XRay::Editor::HeightmapUtils::STerrainSurfaceTemplate CTerrain::SurfaceTemplate() const
+{
+	return {*SurfaceShader, *SurfaceShaderXRLC, *SurfaceGameMtl, *SurfaceTexture};
 }
 
 void CTerrain::OnDeviceDestroy()
 {
-	// GPU-буфер высотной карты принадлежит устройству — сбрасываем его,
-	// иначе Draw будет указывать на освобождённый ресурс после ресета.
 	HMap.RenderData.InvalidateGpu();
 	HMap.RenderData.IsDirty = true;
 	inherited::OnDeviceDestroy();
@@ -122,13 +151,18 @@ void CTerrain::OnFrame()
 bool CTerrain::RayPick(float& dist, const Fvector& S, const Fvector& D, SRayPickInfo* pinf)
 {
 	if (!IsLoaded && !pinf->IsForcePickup)
+	{
 		return false;
+	}
 
 	if (LTools->GetTarget() == OBJCLASS_TERRAIN)
 	{
 		if (HMap.RayPick(dist, S, D, _ITransform(), pinf))
 		{
-			if (pinf) pinf->s_obj = this;
+			if (pinf)
+			{
+				pinf->s_obj = this;
+			}
 			return true;
 		}
 	}
@@ -136,7 +170,10 @@ bool CTerrain::RayPick(float& dist, const Fvector& S, const Fvector& D, SRayPick
 	{
 		if (TerrainObject->RayPick(dist, S, D, _ITransform(), pinf))
 		{
-			if (pinf) pinf->s_obj = this;
+			if (pinf)
+			{
+				pinf->s_obj = this;
+			}
 			return true;
 		}
 	}
@@ -185,46 +222,69 @@ void CTerrain::FillProp(const char* pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
 
-	SurfaceVec& s_lst = TerrainObject->m_Surfaces;
 	PropValue* PreviewVal = PHelper().CreateBool(items, "Height Map\\Preview", &IsPreview);
 	PreviewVal->OnChangeEvent.bind(this, &CTerrain::OnChangePreview);
-	
+
 	S32Value* ScaleEdit = PHelper().CreateS32(items, "Height Map\\Multiply Y", &ScaleY);
 	ScaleEdit->OnAfterEditEvent.bind(this, &CTerrain::OnChangeHMData);
 
 	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
-
-	for (SurfaceIt s_it = s_lst.begin(); s_it != s_lst.end(); s_it++)
+	shared_str Pref2 = PrepareKey(Pref1.c_str(), "terrain").c_str();
 	{
-		shared_str Pref2 = PrepareKey(Pref1.c_str(), (*s_it)->_Name()).c_str();
-		{
-			PropValue* V;
-			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &(*s_it)->m_Texture, smTexture);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
-			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &(*s_it)->m_ShaderName, smEShader);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
-			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &(*s_it)->m_ShaderXRLCName, smCShader); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
-			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &(*s_it)->m_GameMtlName, smGameMaterial); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
-		}
+		PropValue* V;
+		V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &SurfaceTexture, smTexture);
+		V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurfaceProp);
+		V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &SurfaceShader, smEShader);
+		V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurfaceProp);
+		V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &SurfaceShaderXRLC, smCShader);
+		V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurfaceProp);
+		V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &SurfaceGameMtl, smGameMaterial);
+		V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurfaceProp);
 	}
 }
 
-void CTerrain::OnChangeShader(PropValue* sender)
+void CTerrain::OnChangeSurfaceProp(PropValue* sender)
 {
-	OnChangeSurface(sender);
-	for (CSurface* i : TerrainObject->m_Surfaces) { i->OnDeviceDestroy(); }
+	ApplySurfaceTemplate();
 }
 
-void CTerrain::OnChangeSurface(PropValue* sender)
+void CTerrain::ApplySurfaceTemplate()
 {
-	//m_Flags.set(flUseSurface, 1);
+	if (!TerrainObject || TerrainObject->Surfaces().empty())
+	{
+		return;
+	}
+
+	CSurface* S = *TerrainObject->FirstSurface();
+	if (SurfaceTexture[0])
+	{
+		S->SetTexture(*SurfaceTexture);
+	}
+	if (SurfaceShader[0])
+	{
+		S->SetShader(*SurfaceShader);
+	}
+	if (SurfaceShaderXRLC[0])
+	{
+		S->SetShaderXRLC(*SurfaceShaderXRLC);
+	}
+	if (SurfaceGameMtl[0])
+	{
+		S->SetGameMtl(*SurfaceGameMtl);
+	}
 }
 
 bool CTerrain::OnChangeHMData(PropValue* sender, int& NewValue)
 {
 	if (NewValue < 0)
+	{
 		return false;
+	}
 
 	if (NewValue == m_AppliedHMScale)
+	{
 		return true;
+	}
 
 	m_AppliedHMScale = NewValue;
 	ScaleY = NewValue;
@@ -232,30 +292,39 @@ bool CTerrain::OnChangeHMData(PropValue* sender, int& NewValue)
 	HMap.MarkDirty();
 
 	if (IsPreview)
+	{
 		RebuildMesh();
+	}
 
 	return true;
 }
 
 void CTerrain::BoxQuery(SPickQuery& pinf)
 {
-	if (!TerrainObject) 
+	if (!TerrainObject)
+	{
 		return;
+	}
 
 	TerrainObject->BoxQuery(_Transform(), _ITransform(), pinf);
 }
 
 void CTerrain::RayQuery(SPickQuery& pinf)
 {
-	if (!TerrainObject) 
+	if (!TerrainObject)
+	{
 		return;
+	}
 
 	TerrainObject->RayQuery(_Transform(), _ITransform(), pinf);
 }
 
 bool CTerrain::GetBox(Fbox& box)
 {
-	if (!TerrainObject) return false;
+	if (!TerrainObject)
+	{
+		return false;
+	}
 	box.set(m_TBBox);
 	return true;
 }
@@ -263,14 +332,19 @@ bool CTerrain::GetBox(Fbox& box)
 bool CTerrain::BoxPick(const Fbox& box, SBoxPickInfoVec& pinf)
 {
 	if (!TerrainObject)
+	{
 		return false;
+	}
 
 	return TerrainObject->BoxPick(this, box, _ITransform(), pinf);
 }
 
 bool CTerrain::GetUTBox(Fbox& box)
 {
-	if (!TerrainObject) return false;
+	if (!TerrainObject)
+	{
+		return false;
+	}
 	box.set(TerrainObject->GetBox());
 
 	return true;
