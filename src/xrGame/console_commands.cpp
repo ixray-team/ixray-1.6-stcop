@@ -2598,7 +2598,6 @@ void CCC_RegisterCommands()
 	psHUD_Flags.set(HUD_DRAW, true);
 	psHUD_Flags.set(HUD_INFO, true);
 	psHUD_Flags.set(HUD_MINIMAP, true);
-	psHUD_Flags.set(HUD_HIDE_QUICK_SLOTS, true);
 
 	CMD3(CCC_Mask32, "hud_crosshair", &psHUD_Flags, HUD_CROSSHAIR);
 	CMD3(CCC_Mask32, "hud_crosshair_point", &psHUD_Flags, HUD_CROSSHAIR_POINT);
