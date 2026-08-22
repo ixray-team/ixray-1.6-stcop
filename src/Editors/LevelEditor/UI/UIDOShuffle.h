@@ -29,7 +29,7 @@ private:
 	EImageThumbnail* m_Thm;
 	ref_texture m_TextureNull;
 	ref_texture m_Texture;
-	ref_texture m_RealTexture;
+	ref_texture RealTexture;
 	ref_texture m_MaskTexture;
 
 	U8Vec Pixels;
