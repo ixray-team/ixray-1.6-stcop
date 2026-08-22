@@ -1,6 +1,6 @@
 <window>
 	<minimap>
-		<level_frame x="0.15" y="0.15" width="0.217" height="0.217" stretch="1" alignment="c"/>
+		<level_frame x="0.15" y="0.15" width="0.222" height="0.222" stretch="1" alignment="c"/>
 
 		<background width="0.30" height="0.30" stretch="1" alignment="c">
 			<texture>ui_inGame2_Radar_main_window</texture>
@@ -18,7 +18,7 @@
 			<texture >ui_minimap_point</texture>
 		</center>
 
-		<static_counter x="0.94" y="0.5" width="18" height="17" alignment="c">
+		<static_counter x="0.942" y="0.51" width="18" height="17" alignment="c">
 			<text_static width="18" height="17">
 				<text  align="c" font="graffiti19" color="ui_7"/>
 			</text_static>
