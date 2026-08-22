@@ -5,6 +5,7 @@
 #include "EditObject.h"
 #include "EditMesh.h"
 #include "ui_main.h"
+#include "../Layers/xrRender/SH_RT.h"
 #include "../xrEngine/xrHemisphere.h"
 
 using Fvector4Vec = xr_vector<Fvector4>;
@@ -82,7 +83,7 @@ const u32 lod_ss_quality  = 8;
 
 void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 {
-	U32Vec 	s_pixels,d_pixels;
+	U32Vec 	PixelsVec;
     Fmatrix save_projection		= EDevice->mProject;
     Fmatrix save_view			= EDevice->mView;
 
@@ -99,44 +100,116 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 	EDevice->dwFillMode			= D3DFILL_SOLID;
     EDevice->dwShadeMode			= D3DSHADE_GOURAUD;
 
-    Fvector vP,vD,vN,vR;
-    Fmatrix mV,mP;
+	Fvector Pos, Dir, Normals, VecR;
+	Fmatrix MatrixV, MatrixP;
     
     Fvector S;
-    bbox.getradius				(S);
-    float R 					= 2.f* std::max(S.x,S.z);
+	bbox.getradius(S);
+	float R = 2.f * std::max(S.x, S.z);
 
-    u32 pitch 					= tgt_w*LOD_SAMPLE_COUNT;
-    tgt_data.resize				(pitch*tgt_h);
-    for (int frame=0; frame<LOD_SAMPLE_COUNT; frame++){
-        float angle 			= frame*(PI_MUL_2/LOD_SAMPLE_COUNT);
+	u32 Pitch = tgt_w * LOD_SAMPLE_COUNT;
+	tgt_data.resize(Pitch * tgt_h);
 
-		Fbox bb 				= bbox;
-        // build camera matrix
-        bb.getcenter			( vP );
-        vN.set					( 0.f,1.f,0.f );
-        vD.setHP				( angle, 0 );
-        vR.crossproduct			( vN,vD );
-        mV.build_camera_dir		(vP,vD,vN);
-        bb.xform				(mV);
-        // build project matrix
-        mP.build_projection_ortho(R,bb.max.y-bb.min.y,bb.min.z,bb.max.z);
-	    RCache.set_xform_project(mP);
-	    RCache.set_xform_view	(mV);
-        EDevice->mFullTransform.mul(mP,mV);
-        EDevice->MakeScreenshot	(s_pixels,tgt_w*lod_ss_quality,tgt_h*lod_ss_quality);
-        d_pixels.resize 		(tgt_w*tgt_h);
-        DXTUtils::Filter::Process				(d_pixels.data(),tgt_w,tgt_h,s_pixels.data(),tgt_w*lod_ss_quality,tgt_h*lod_ss_quality, DXTUtils::Filter::imf_box);
-        // copy LOD to final
-		for (u32 y=0; y<tgt_h; y++)
-    		CopyMemory			(tgt_data.data()+y*pitch+frame*tgt_w,d_pixels.data()+y*tgt_w,tgt_w*sizeof(u32));
+	u32 SrcW = tgt_w * lod_ss_quality;
+	u32 SrcH = tgt_h * lod_ss_quality;
+
+	// Render each angle into its own offscreen render target on the GPU.
+	xr_vector<ref_rt> SrcRTs;
+	SrcRTs.resize(LOD_SAMPLE_COUNT);
+
+	xr_vector<ref_rt> DepRTs;
+	DepRTs.resize(LOD_SAMPLE_COUNT);
+
+	for (int Frame = 0; Frame < LOD_SAMPLE_COUNT; Frame++)
+	{
+		float Angle = Frame * (PI_MUL_2 / LOD_SAMPLE_COUNT);
+
+		Fbox BoundBox = bbox;
+
+		BoundBox.getcenter(Pos);
+		Normals.set(0.f, 1.f, 0.f);
+		Dir.setHP(Angle, 0);
+		VecR.crossproduct(Normals, Dir);
+		MatrixV.build_camera_dir(Pos, Dir, Normals);
+		BoundBox.xform(MatrixV);
+
+		MatrixP.build_projection_ortho(R, BoundBox.max.y - BoundBox.min.y, BoundBox.min.z, BoundBox.max.z);
+		RCache.set_xform_project(MatrixP);
+		RCache.set_xform_view(MatrixV);
+		EDevice->mFullTransform.mul(MatrixP, MatrixV);
+
+		string_path NormalTexPath;
+		xr_sprintf(NormalTexPath, "$user$lod_src_%d", Frame);
+		SrcRTs[Frame].create(NormalTexPath, SrcW, SrcH, ERHI_FORMAT::B8G8R8A8_UNORM);
+		xr_sprintf(NormalTexPath, "$user$lod_dep_%d", Frame);
+		DepRTs[Frame].create(NormalTexPath, SrcW, SrcH, ERHI_FORMAT::R24G8_TYPELESS);
+
+		EDevice->RenderScreenshotRT(SrcRTs[Frame], DepRTs[Frame]);
 	}
 
-    // flip data
-	for (u32 y=0; y<tgt_h/2; y++){
-		u32 y2 = tgt_h-y-1;
-		for (u32 x=0; x<pitch; x++){
-        	std::swap	(tgt_data[y*pitch+x],tgt_data[y2*pitch+x]);	
+	bool IsGPU = false;
+	ref_rt AtlasRT;
+	AtlasRT.create("$user$lod_atlas", Pitch, tgt_h, ERHI_FORMAT::R8G8B8A8_UNORM, 1, CRT::USE_UAV_FLAG);
+	if (EDevice->DownsampleLODAtlas(SrcRTs, AtlasRT, tgt_w, tgt_h, LOD_SAMPLE_COUNT, lod_ss_quality))
+	{
+		U32Vec AtlasPixels;
+		if (EDevice->ReadbackRT(AtlasRT, AtlasPixels) && AtlasPixels.size() == tgt_data.size())
+		{
+			bool IsEmpty = true;
+			for (u32 Idx = 0; Idx < AtlasPixels.size(); ++Idx)
+			{
+				if (AtlasPixels[Idx] != 0)
+				{
+					IsEmpty = false;
+					break;
+				}
+			}
+			if (!IsEmpty)
+			{
+				CopyMemory(tgt_data.data(), AtlasPixels.data(), tgt_data.size() * sizeof(u32));
+				IsGPU = true;
+			}
+			Msg("! LOD: compute atlas %s (nonzero=%u/%u)", IsEmpty ? "EMPTY->CPU" : "OK", (u32)AtlasPixels.size() - (IsEmpty ? AtlasPixels.size() : 0), (u32)AtlasPixels.size());
+		}
+		else
+		{
+			Msg("! LOD: compute readback failed -> CPU");
+		}
+	}
+	else
+	{
+		Msg("! LOD: compute path unavailable -> CPU");
+	}
+
+	if (!IsGPU)
+	{
+		u32 Quality = lod_ss_quality;
+		for (int Frame = 0; Frame < LOD_SAMPLE_COUNT; Frame++)
+		{
+			EDevice->ReadbackRT(SrcRTs[Frame], PixelsVec);
+			for (u32 y = 0; y < tgt_h; y++)
+			{
+				for (u32 x = 0; x < tgt_w; x++)
+				{
+					u32 B = 0, G = 0, R = 0, A = 0;
+					for (u32 IdxY = 0; IdxY < Quality; IdxY++)
+					{
+						for (u32 IdxX = 0; IdxX < Quality; IdxX++)
+						{
+							u32 Pixels = PixelsVec[(y * Quality + IdxY) * SrcW + (x * Quality + IdxX)];
+							B += (Pixels >> 0) & 0xFF;
+							G += (Pixels >> 8) & 0xFF;
+							R += (Pixels >> 16) & 0xFF;
+							A += (Pixels >> 24) & 0xFF;
+						}
+					}
+					u32 Q2 = Quality * Quality;
+					// Swap R/B: source is B8G8R8A8 (B in low byte, R in byte 2),
+					// but LOD/TGA consumers expect R,G,B,A, so swap the channels.
+					u32 Color = ((A / Q2) << 24) | ((B / Q2) << 16) | ((G / Q2) << 8) | (R / Q2);
+					tgt_data[y * Pitch + Frame * tgt_w + x] = Color;
+				}
+			}
 		}
 	}
 
