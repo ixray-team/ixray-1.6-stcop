@@ -2861,6 +2861,9 @@ void CCC_RegisterCommands()
 	extern bool EnableDof;
 	CMD2(CCC_Boolean, "enable_dof_reload", &EnableDof);
 
+	extern bool EnableHudAnimatorDof;
+	CMD2(CCC_Boolean, "enable_dof_hud_animator", &EnableHudAnimatorDof);
+
 	extern bool EnableTalkDof;
 	CMD2(CCC_Boolean, "enable_dof_talk", &EnableTalkDof);
 
