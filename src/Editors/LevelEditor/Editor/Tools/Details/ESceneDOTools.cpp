@@ -1,6 +1,56 @@
 #include "stdafx.h"
 
 static const u32 DETMGR_VERSION = 0x0003ul;
+
+static const char B64Alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static xr_string Base64Encode(const u8* In, size_t Len)
+{
+	xr_string Out;
+	Out.reserve(((Len + 2) / 3) * 4);
+	for (size_t Index = 0; Index < Len; Index += 3)
+	{
+		u32 OctetA = In[Index];
+		u32 OctetB = (Index + 1 < Len) ? In[Index + 1] : 0;
+		u32 OctetC = (Index + 2 < Len) ? In[Index + 2] : 0;
+		u32 Triple = (OctetA << 16) | (OctetB << 8) | OctetC;
+		Out += B64Alphabet[(Triple >> 18) & 0x3F];
+		Out += B64Alphabet[(Triple >> 12) & 0x3F];
+		Out += (Index + 1 < Len) ? B64Alphabet[(Triple >> 6) & 0x3F] : '=';
+		Out += (Index + 2 < Len) ? B64Alphabet[Triple & 0x3F] : '=';
+	}
+	return Out;
+}
+static int B64Val(char Ch)
+{
+	if (Ch >= 'A' && Ch <= 'Z') return Ch - 'A';
+	if (Ch >= 'a' && Ch <= 'z') return Ch - 'a' + 26;
+	if (Ch >= '0' && Ch <= '9') return Ch - '0' + 52;
+	if (Ch == '+') return 62;
+	if (Ch == '/') return 63;
+	return -1;
+}
+static xr_vector<u8> Base64Decode(const char* In, size_t Len)
+{
+	xr_vector<u8> Out;
+	Out.reserve((Len / 4) * 3);
+	for (size_t Index = 0; Index + 3 < Len + 1; Index += 4)
+	{
+		int Values[4];
+		for (int K = 0; K < 4; ++K)
+		{
+			Values[K] = (Index + K < Len) ? B64Val(In[Index + K]) : 0;
+			if (Values[K] < 0) Values[K] = 0;
+		}
+		u32 Triple = (Values[0] << 18) | (Values[1] << 12) | (Values[2] << 6) | Values[3];
+		Out.push_back((Triple >> 16) & 0xFF);
+		if (Index + 2 < Len && In[Index + 2] != '=')
+			Out.push_back((Triple >> 8) & 0xFF);
+		if (Index + 3 < Len && In[Index + 3] != '=')
+			Out.push_back(Triple & 0xFF);
+	}
+	return Out;
+}
+
 enum{
     DETMGR_CHUNK_VERSION		= 0x1000ul,
     DETMGR_CHUNK_HEADER 		= 0x0000ul,
@@ -12,6 +62,7 @@ enum{
     DETMGR_CHUNK_SNAP_OBJECTS 	= 0x1004ul,
     DETMGR_CHUNK_DENSITY	 	= 0x1005ul,
     DETMGR_CHUNK_FLAGS			= 0x1006ul,
+    DETMGR_CHUNK_BASE_TEXTURE_DATA= 0x1007ul,
 };
 
 
@@ -24,6 +75,13 @@ EDetailManager::EDetailManager():ESceneToolBase(OBJCLASS_DO)
 //.	EDevice->seqDevCreate.Add	(this,REG_PRIORITY_LOW);
 //.	EDevice->seqDevDestroy.Add(this,REG_PRIORITY_NORMAL);
     m_Flags.assign		(flObjectsDraw);
+
+	PaintColor.set	(1.f, 1.f, 1.f, 1.f);
+	BrushSize			= 10;
+	BrushStrength		= 0.5f;
+	PaintErase		= false;
+	BrushActive		= false;
+	BaseDataDirty		= false;
 }
 
 EDetailManager::~EDetailManager(){
@@ -62,6 +120,9 @@ void EDetailManager::Clear(bool bSpecific)
 
 void EDetailManager::InvalidateCache()
 {
+	// detail cache is rebuilt in a parallel render task (Device.DetailsTask);
+	// wait for it to finish before touching cache structures / dtSlots
+    Device.DetailsTask.wait();
 	// Initialize 'vis' and 'cache'
     cache_ReInitialize();
 }
@@ -102,7 +163,7 @@ void EDetailManager::OnRender(int priority, bool strictB2F)
                             c.x			= fromSlotX(x);
                             c.y			= slot->r_ybase()+slot->r_yheight()*0.5f; //(slot->y_max+slot->y_min)*0.5f;
                             float dist = UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(c);
-                         	if ((dist<dist_lim)&&::Render->ViewBase.testSphere_dirty(c,DETAIL_SLOT_SIZE_2)){
+                          	if ((dist<dist_lim)&&::Render->ViewBase.testSphere_dirty(c,DETAIL_SLOT_SIZE_2)){
 								bbox.min.set(c.x-DETAIL_SLOT_SIZE_2, slot->r_ybase(), 					c.z-DETAIL_SLOT_SIZE_2);
                             	bbox.max.set(c.x+DETAIL_SLOT_SIZE_2, slot->r_ybase()+slot->r_yheight(),	c.z+DETAIL_SLOT_SIZE_2);
                             	bbox.shrink	(0.05f);
@@ -111,6 +172,9 @@ void EDetailManager::OnRender(int priority, bool strictB2F)
                         }
                     }
                 }
+
+				if (GetSubTarget(0)==estDOPaint && BrushActive)
+					RenderBrush();
             }else{
 				RCache.set_xform_world				(Fidentity);
                 if (m_Flags.is(flBaseTextureDraw))	m_Base.Render			(m_Flags.is(flBaseTextureBlended));
@@ -424,11 +488,29 @@ bool EDetailManager::LoadLTX(CInifile& ini)
             ClearBase();
         }
     }
-    else
+        else
+        {
+            ELog.Msg(mtError, "EDetailManager: Can't find base texture.");
+            ClearSlots();
+            ClearBase();
+        }
+
+    // painted base texture data (grass mask)
+    if (ini.line_exist("main", "base_paint_data"))
     {
-        ELog.Msg(mtError, "EDetailManager: Can't find base texture.");
-        ClearSlots();
-        ClearBase();
+        u32 Width = ini.r_u32("main", "base_paint_w");
+        u32 Height = ini.r_u32("main", "base_paint_h");
+        const char* Encoded = ini.r_string("main", "base_paint_data");
+        xr_vector<u8> Bytes = Base64Decode(Encoded, xr_strlen(Encoded));
+        u32 Count = Width * Height;
+        if (Bytes.size() == Count * 4)
+        {
+            m_Base.w = Width;
+            m_Base.h = Height;
+            m_Base.data.resize(Count);
+            CopyMemory(m_Base.data.data(), Bytes.data(), Count * 4);
+            BaseDataDirty = true;
+        }
     }
 
     InvalidateCache();
@@ -530,6 +612,17 @@ void EDetailManager::SaveLTX(CInifile& ini, int id)
     // base texture
     ini.w_string("main", "base_texture", m_Base.Valid() ? m_Base.GetName() : NULL);
 
+    // painted base texture data (grass mask)
+    if (m_Base.Valid() && BaseDataDirty){
+		u32 Count = m_Base.w * m_Base.h;
+		xr_vector<u8> Bytes(Count * 4);
+		CopyMemory(Bytes.data(), m_Base.data.data(), Count * 4);
+		xr_string Encoded = Base64Encode(Bytes.data(), Bytes.size());
+		ini.w_u32("main", "base_paint_w", m_Base.w);
+		ini.w_u32("main", "base_paint_h", m_Base.h);
+		ini.w_string("main", "base_paint_data", Encoded.c_str());
+    }
+
     // detail density
     ini.w_float("main", "detail_density", ps_r__Detail_density);
 
@@ -613,6 +706,18 @@ bool EDetailManager::LoadStream(IReader& F)
         }
     }
 
+	// painted base texture data (grass mask)
+	if (F.find_chunk(DETMGR_CHUNK_BASE_TEXTURE_DATA)){
+		u32 Width = F.r_u32();
+		u32 Height = F.r_u32();
+		u32 Count = F.r_u32();
+		m_Base.w = Width;
+		m_Base.h = Height;
+		m_Base.data.resize(Count);
+		F.r				(m_Base.data.data(), (intptr_t)(Count * sizeof(u32)));
+		BaseDataDirty = true;
+	}
+
     InvalidateCache		();
 
     IsLoaded = true;
@@ -653,11 +758,21 @@ void EDetailManager::SaveStream(IWriter& F)
     // internal
     // bbox
 	F.w_chunk			(DETMGR_CHUNK_BBOX,&m_BBox,sizeof(Fbox));
-	// base texture
+    // base texture
     if (m_Base.Valid()){
 		F.open_chunk	(DETMGR_CHUNK_BASE_TEXTURE);
     	F.w_stringZ		(m_Base.GetName());
 	    F.close_chunk	();
+    }
+    // painted base texture data (grass mask)
+    if (m_Base.Valid() && BaseDataDirty){
+		F.open_chunk	(DETMGR_CHUNK_BASE_TEXTURE_DATA);
+		F.w_u32		(m_Base.w);
+		F.w_u32		(m_Base.h);
+		u32 Count	= m_Base.w * m_Base.h;
+		F.w_u32		(Count);
+		F.w			(m_Base.data.data(), (u32)(Count * sizeof(u32)));
+		F.close_chunk();
     }
     F.open_chunk		(DETMGR_CHUNK_DENSITY);
     F.w_float			(ps_r__Detail_density);
@@ -804,6 +919,171 @@ void EDetailManager::FillProp(const char* pref, PropItemVec& items)
     PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw base texture"),		&m_Flags,	flBaseTextureDraw);
     PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Base texture blended"),	&m_Flags,	flBaseTextureBlended);
     PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw slot boxes"),			&m_Flags,	flSlotBoxesDraw);
+}
+
+void EDetailManager::ClearMask()
+{
+	if (!m_Base.Valid())
+		return;
+	for (u32 Index = 0; Index < m_Base.data.size(); ++Index)
+	{
+		Fcolor Color; Color.set(m_Base.data[Index]);
+		Color.a = 0.f;
+		m_Base.data[Index] = Color.get();
+	}
+	BaseDataDirty = true;
+	InvalidateSlots();
+	ELog.DlgMsg(mtInformation, "Grass mask cleared. Press 'Reinit Objects Only' to apply.");
+}
+
+bool EDetailManager::PickPaintPoint(Fvector& Point)
+{
+	float BestDist = UI->ZFar();
+	bool Found = false;
+	SRayPickInfo PickInfo;
+	for (ObjectIt It = m_SnapObjects.begin(); It != m_SnapObjects.end(); ++It)
+	{
+		CCustomObject* Object = *It;
+		float Dist = BestDist;
+		if (Object->RayPick(Dist, UI->m_CurrentRStart, UI->m_CurrentRDir, &PickInfo) && Dist < BestDist)
+		{
+			BestDist = Dist;
+			Found = true;
+		}
+	}
+	if (Found)
+		Point.mad(UI->m_CurrentRStart, UI->m_CurrentRDir, BestDist);
+	return Found;
+}
+
+void EDetailManager::RegenerateSlotsUnderBrush(const Fvector& WorldPoint)
+{
+	if (!dtSlots || objects.empty() || m_ColorIndices.empty())
+		return;
+
+	// detail slots are read by the parallel cache-update task; finish it
+	// before mutating dtSlots to avoid a data race
+	Device.DetailsTask.wait();
+
+	int Sx = toSlotX(WorldPoint.x - BrushSize);
+	int Ex = toSlotX(WorldPoint.x + BrushSize);
+	int Sz = toSlotZ(WorldPoint.z - BrushSize);
+	int Ez = toSlotZ(WorldPoint.z + BrushSize);
+
+	Sx = clampr(Sx, 0, (int)dtH.size_x - 1);
+	Ex = clampr(Ex, 0, (int)dtH.size_x - 1);
+	Sz = clampr(Sz, 0, (int)dtH.size_z - 1);
+	Ez = clampr(Ez, 0, (int)dtH.size_z - 1);
+
+	for (int z = Sz; z <= Ez; ++z)
+		for (int x = Sx; x <= Ex; ++x)
+		{
+			float Cx = fromSlotX(x);
+			float Cz = fromSlotZ(z);
+			if (sqrtf((Cx - WorldPoint.x)*(Cx - WorldPoint.x) + (Cz - WorldPoint.z)*(Cz - WorldPoint.z)) <= BrushSize)
+			{
+				UpdateSlotObjects(x, z);
+				// refresh only the touched cache slot instead of rebuilding
+				// the whole detail cache (a full reinit resets the decompress
+				// queue and makes grass vanish until the stroke ends)
+				int Gx = w2cg_X(x - dtH.offs_x);
+				int Gz = w2cg_Z(z - dtH.offs_z);
+				if (Gx >= 0 && Gx < (int)dm_cache_line && Gz >= 0 && Gz < (int)dm_cache_line)
+				{
+					Slot* Slot = cache[Gz][Gx];
+					if (Slot) UnpackSlot(Gx, Gz, Slot);
+				}
+			}
+		}
+}
+
+void EDetailManager::PaintAt(const Fvector& WorldPoint)
+{
+	if (!m_Base.Valid())
+		return;
+
+	const Fbox& Box = m_BBox;
+	float WorldW = Box.max.x - Box.min.x;
+	float WorldH = Box.max.z - Box.min.z;
+	if (WorldW < EPS_L || WorldH < EPS_L)
+		return;
+
+	float TexW = (float)m_Base.w;
+	float TexH = (float)m_Base.h;
+	if (TexW < 2.f || TexH < 2.f)
+		return;
+
+	float Sx = (TexW - 1.f) / WorldW;	// текселей на мировую единицу по X
+	float Sz = (TexH - 1.f) / WorldH;	// текселей на мировую единицу по Z
+
+	int CenterU = m_Base.GetPixelUFromX(WorldPoint.x, Box);
+	int CenterV = m_Base.GetPixelVFromZ(WorldPoint.z, Box);
+	int RadiusPixX = iCeil(BrushSize * Sx);
+	int RadiusPixZ = iCeil(BrushSize * Sz);
+
+	Fcolor Paint = PaintColor;
+	for (int Dv = -RadiusPixZ; Dv <= RadiusPixZ; ++Dv)
+	{
+		int V = CenterV + Dv;
+		if (V < 0 || V >= (int)m_Base.h)
+			continue;
+		for (int Du = -RadiusPixX; Du <= RadiusPixX; ++Du)
+		{
+			int U = CenterU + Du;
+			if (U < 0 || U >= (int)m_Base.w)
+				continue;
+
+			float WorldX = Box.min.x + (float(U) / (TexW - 1.f)) * WorldW;
+			float WorldZ = Box.min.z + (1.f - (float(V) / (TexH - 1.f))) * WorldH;
+			float Dx = WorldX - WorldPoint.x;
+			float Dz = WorldZ - WorldPoint.z;
+			float Dist = sqrtf(Dx * Dx + Dz * Dz);
+			if (Dist > BrushSize)
+				continue;
+
+			float Falloff = 1.f - Dist / BrushSize;
+			Falloff = Falloff * Falloff * (3.f - 2.f * Falloff); // smoothstep
+
+			u32 Index = (u32)(U + V * m_Base.w);
+			Fcolor Current; Current.set(m_Base.data[Index]);
+
+			if (PaintErase)
+			{
+				Current.a = Current.a * (1.f - Falloff);
+			}
+			else
+			{
+				float TargetA = BrushStrength;
+				Current.a = Current.a + (TargetA - Current.a) * Falloff;
+				Current.r = Current.r + (Paint.r - Current.r) * Falloff;
+				Current.g = Current.g + (Paint.g - Current.g) * Falloff;
+				Current.b = Current.b + (Paint.b - Current.b) * Falloff;
+			}
+			m_Base.data[Index] = Current.get();
+		}
+	}
+
+	BaseDataDirty = true;
+	RegenerateSlotsUnderBrush(WorldPoint);
+}
+
+void EDetailManager::RenderBrush()
+{
+	if (!BrushActive)
+		return;
+
+	const int Segments = 32;
+	Fvector Prev, Current;
+	for (int Index = 0; Index <= Segments; ++Index)
+	{
+		float Angle = Index * PI * 2.f / Segments;
+		Current.set(BrushPos.x + cosf(Angle) * BrushSize, BrushPos.y + 0.2f, BrushPos.z + sinf(Angle) * BrushSize);
+
+		if (Index > 0)
+			DU_impl.DrawLine(Prev, Current, PaintErase ? 0xFFFF4040 : 0xFF40FF40);
+
+		Prev = Current;
+	}
 }
 
 bool EDetailManager::GetSummaryInfo(SSceneSummary* inf)
