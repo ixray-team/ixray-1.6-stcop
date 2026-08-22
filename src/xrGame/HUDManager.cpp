@@ -18,6 +18,7 @@
 #endif
 #include "../../xrUI/UIFontDefines.h"
 #include "pda_communication.h"
+#include "../../xrUI/UIHelper.h"
 
 extern CUIGameCustom* CurrentGameUI() {return HUD().GetGameUI();}
 
@@ -188,17 +189,25 @@ void  CHUDManager::RenderUI()
 		m_pHUDTarget->Render();
 
 
-	if( Device.Paused() && bShowPauseString){
-		CGameFont* pFont	= UI().Font().GetFont(GRAFFITI50_FONT_NAME);
-		pFont->SetColor		(0x80FF0000	);
-		const char* _str			= g_pStringTable->translate("st_game_paused").c_str();
-		
-		Fvector2			_pos;
-		_pos.set			(UI_BASE_WIDTH/2.0f, UI_BASE_HEIGHT/2.0f);
-		UI().ClientToScreenScaled(_pos);
-		pFont->SetAligment	(CGameFont::alCenter);
-		pFont->Out			(_pos.x, _pos.y, _str);
-		pFont->OnRender		();
+	if( Device.Paused() && bShowPauseString)
+	{
+		if (m_pPauseStatic)
+		{
+			m_pPauseStatic->Draw();
+		}
+		else
+		{
+			CGameFont* pFont = UI().Font().GetFont(GRAFFITI50_FONT_NAME);
+			pFont->SetColor(0x80FF0000);
+			const char* _str = g_pStringTable->translate("st_game_paused").c_str();
+
+			Fvector2 _pos;
+			_pos.set(UI_BASE_WIDTH / 2.0f, UI_BASE_HEIGHT / 2.0f);
+			UI().ClientToScreenScaled(_pos);
+			pFont->SetAligment(CGameFont::alCenter);
+			pFont->Out(_pos.x, _pos.y, _str);
+			pFont->OnRender();
+		}
 	}
 
 }
@@ -269,6 +278,16 @@ void CHUDManager::Load()
 	{
 		pUIGame->SetClGame	(&Game());
 	}
+	InitializePauseStatic();
+}
+
+void CHUDManager::InitializePauseStatic()
+{
+	CUIXml xml;
+	if (xml.Load(CONFIG_PATH, UI_PATH, "backend\\pause.xml"))
+	{
+		m_pPauseStatic = UIHelper::CreateStatic(xml, "pause_static", nullptr);
+	}
 }
 
 void CHUDManager::OnScreenResolutionChanged()
@@ -276,6 +295,8 @@ void CHUDManager::OnScreenResolutionChanged()
 	pUIGame->HideShownDialogs			();
 
 	xr_delete							(pWpnScopeXml);
+	xr_delete							(m_pPauseStatic);
+	InitializePauseStatic				();
 
 	pUIGame->UnLoad						();
 	pUIGame->Load						();
