@@ -30,7 +30,7 @@ private:
 	void LoadFromFile(xr_string& Outfile);
 
 private:
-	UIItemListForm* m_ObjectList;
+	UIItemListForm* ObjectList;
 	UIPropertiesForm* m_Props;
 
 	bool m_MultiAppend;
@@ -46,7 +46,7 @@ private:
 	xr_string RAIFile;
 
 	ref_texture m_TextureNull;
-	ref_texture m_RealTexture;
+	ref_texture RealTexture;
 	ref_texture m_RemoveTexture;
 	UIPropertiesForm PropsRandomAppend;
 };
