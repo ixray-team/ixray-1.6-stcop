@@ -10,6 +10,11 @@
 #include "../../xrEngine/xr_input.h"
 #include "../../xrUI/Widgets/UI3dStatic.h"
 #include "UIInventoryUtilities.h"
+#include "../../xrUI/Widgets/UIGamepadLegend.h"
+#include "../CustomOutfit.h"
+#include "../ActorHelmet.h"
+#include "../WeaponMagazined.h"
+#include "../Grenade.h"
 
 #define RADIAL_MENU_XML "radial_menu.xml"
 
@@ -276,4 +281,85 @@ CInventoryItem* CUIRadialMenuWeapon::GetSelectedItem(RadialMenuItem itm)
 	}
 	itm.background->InitTexture(backTexture.c_str());
 	return item;
+}
+
+void CUIRadialMenuWeapon::Update()
+{
+	inherited::Update();
+	UpdateGamepadLegend();
+}
+
+void CUIRadialMenuWeapon::UpdateGamepadLegend() 
+{
+	CActor* owner = g_pGameLevel->CurrentViewEntity()->cast_actor();
+
+	CUIWindow* dropWeapon = m_pGamepadLegend->FindChild("rmw_drop_weapon");
+	if (dropWeapon)
+	{
+		u16 slot = owner->inventory().GetActiveSlot();
+		dropWeapon->Show(slot == NO_ACTIVE_SLOT ? false : !owner->inventory().SlotIsPersistent(slot));
+	}
+
+	CUIWindow* nightVision = m_pGamepadLegend->FindChild("rmw_night_vision");
+	if (nightVision)
+	{
+		PIItem item_from_slot = owner->inventory().ItemFromSlot(NVG_SLOT);
+		CNVG* oNVG = item_from_slot != nullptr ? smart_cast<CNVG*>(item_from_slot) : nullptr;
+
+		bool has_nvg = owner->GetOutfit() && owner->GetOutfit()->GetNV_Sect().size() > 0 || owner->GetHelmet() && owner->GetHelmet()->GetNV_Sect().size() > 0 || oNVG;
+
+		nightVision->Show(has_nvg);
+	}
+
+	CUIWindow* wpnFunc = m_pGamepadLegend->FindChild("rmw_wpn_func");
+	if (wpnFunc)
+	{
+		wpnFunc->Show(owner->inventory().ActiveItem() && owner->inventory().ActiveItem()->cast_weapon_magazined_w_grenade());
+	}
+
+	CUIWindow* fireMode = m_pGamepadLegend->FindChild("rmw_fire_mode");
+	if (fireMode)
+	{
+		CWeaponMagazined* wpn = owner->inventory().ActiveItem() ? owner->inventory().ActiveItem()->cast_weapon_magazined() : nullptr;
+		fireMode->Show(wpn && wpn->HasFireModes());
+	}
+
+	CUIWindow* ammoNext = m_pGamepadLegend->FindChild("rmw_ammo_next");
+	if (ammoNext)
+	{
+		CInventoryItem* itm = owner->inventory().ActiveItem();
+		CGrenade* grenade = itm ? itm->cast_grenade() : nullptr;
+		CWeaponMagazined* wpn = itm ? itm->cast_weapon_magazined() : nullptr;
+		bool updateShow = true;
+		if (wpn)
+		{
+			ammoNext->Show(wpn->getAmmoTypes().size() > 1);
+			if (ammoNext->ui_cast_static())
+			{
+				ammoNext->ui_cast_static()->SetTextST("ui_rmw_ammo_next");
+			}
+			updateShow = false;
+		}
+		else if (grenade)
+		{
+			for (PIItem item : owner->inventory().m_ruck)
+			{
+				CGrenade* pGrenade = item->cast_grenade();
+				if (pGrenade && xr_strcmp(pGrenade->cNameSect(), grenade->cNameSect()))
+				{
+					ammoNext->Show(true);
+					if (ammoNext->ui_cast_static())
+					{
+						ammoNext->ui_cast_static()->SetTextST("ui_rmw_grenade_next");
+					}
+					updateShow = false;
+					break;
+				}
+			}
+		}
+		if (updateShow)
+		{
+			ammoNext->Show(false);
+		}
+	}
 }

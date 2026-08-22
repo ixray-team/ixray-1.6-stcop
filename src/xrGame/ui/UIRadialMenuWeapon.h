@@ -14,6 +14,7 @@ public:
 	virtual ~CUIRadialMenuWeapon();
 
 	virtual void Draw();
+	virtual void Update();
 	virtual void Init();
 	virtual void TryActivateSelectedSector();
 
@@ -22,6 +23,8 @@ public:
 	virtual bool StopAnyMove() { return false; }
 	virtual bool NeedCursor()const { return false; }
 	virtual bool NeedCenterCursor()const { return false; }
+
+	void UpdateGamepadLegend();
 
 protected:
 	virtual CInventoryItem* GetInventorySlotFromSector(CInventory& inventory, u32 sector_index);
