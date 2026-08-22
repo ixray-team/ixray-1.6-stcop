@@ -957,4 +957,7 @@
 	<string id="st_motion_blur_quality">
 		<text>Motion blur quality</text>
 	</string>
+	<string id="ui_rmw_grenade_next">
+		<text>$$ACTION_WPN_NEXT$$ Change grenade</text>
+	</string>
 </string_table>
