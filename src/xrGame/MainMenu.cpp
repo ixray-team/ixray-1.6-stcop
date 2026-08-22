@@ -836,16 +836,11 @@ const char* CMainMenu::GetGSVer()
 	static string256	buff;
 	if(m_pGameSpyFull && Engine.External.hGameSpy != 0)
 	{
-		xr_strcpy(buff, m_pGameSpyFull->GetGameVersion((int)EngineExternal().GetCurrentPlatform()));
+		xr_strcpy(buff, m_pGameSpyFull->GetGameVersion());
 	}
 	else
 	{
-		if (EngineExternal().ShadowOfChernobylMode())
-			xr_strcpy(buff, "1.0007(rc1)");
-		if (EngineExternal().ClearSkyMode())
-			xr_strcpy(buff, "1.5.10");
-		else
-			xr_strcpy(buff, "1.6.02");
+		xr_strcpy(buff, "1.6.02");
 	}
 
 	return buff;
