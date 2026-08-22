@@ -420,10 +420,6 @@ const char* CLevelTool::GetInfo()
 
 void CLevelTool::OnFrame()
 {
-	if (psDeviceFlags.is(rsEnvironment) && !UI->IsPlayInEditor() && g_pGamePersistent && g_pGamePersistent->pEnvironment)
-	{
-		g_pGamePersistent->Environment().SetGameTime(g_pGamePersistent->Environment().GetGameTime() + Device.fTimeDelta * g_pGamePersistent->Environment().fTimeFactor, g_pGamePersistent->Environment().fTimeFactor);
-	}
 	Scene->OnFrame(EDevice->fTimeDelta);
 	EEditorState est = UI->GetEState();
 	if ((est == esEditScene) || (est == esEditLibrary) || (est == esEditLightAnim))
