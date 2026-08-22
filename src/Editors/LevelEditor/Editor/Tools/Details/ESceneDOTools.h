@@ -28,6 +28,7 @@ class EDetailManager:
 //	public pureDeviceDestroy
 {
 	friend class TfrmDOShuffle;
+	friend class TUI_ControlDOPaint;
 	typedef ESceneToolBase inherited;
 
 	enum{
@@ -37,6 +38,19 @@ class EDetailManager:
         flObjectsDraw			= (1<<28),
     };
     Flags32				m_Flags;
+
+public:
+	// paint brush (grass mask)
+	enum{
+		estDOPaint				= 1,
+	};
+	Fcolor					PaintColor;		// цвет детали (тип травы)
+	int						BrushSize;		// радиус кисти в мировых единицах
+	float					BrushStrength;	// целевая альфа (плотность)
+	bool					PaintErase;		// режим стирания
+	bool					BrushActive;		// активен ли оверлей кисти
+	Fvector					BrushPos;			// позиция кисти (для оверлея)
+	bool					BaseDataDirty;	// данные маски изменены и требуют сохранения
 
     enum{
     	flRTGenerateBaseMesh	= (1<<0)
@@ -170,4 +184,11 @@ public:
     void				ClearSlots				();
     void				ClearBase				();
 
+	// paint brush (grass mask)
+	bool				PickPaintPoint		(Fvector& Point);
+	void				PaintAt				(const Fvector& WorldPoint);
+	void				RenderBrush			();
+	void				ClearMask			();
+protected:
+	void				RegenerateSlotsUnderBrush(const Fvector& WorldPoint);
 };
