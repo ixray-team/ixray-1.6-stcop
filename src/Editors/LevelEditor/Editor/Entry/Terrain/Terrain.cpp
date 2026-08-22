@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "Terrain.h"
 
+enum class ETerrainChunkIDs
+{
+	HMap,
+	Asset
+};
+
 CTerrain::CTerrain(LPVOID data, const char* name)
 	: inherited(data, name ? name : "terrain"), TerrainObject(new CEditableObject(name ? name : "terrain"))
 {
@@ -45,30 +51,6 @@ void CTerrain::OnUpdateTransform()
 	}
 }
 
-bool CTerrain::LoadStream(IReader& F)
-{
-	if (F.length() == 0)
-	{
-		return false;
-	}
-
-	HMap.LoadSteam(&F);
-
-	char Buf[512];
-	F.r_stringZ(Buf, sizeof(Buf));
-	SurfaceShader = Buf;
-	F.r_stringZ(Buf, sizeof(Buf));
-	SurfaceShaderXRLC = Buf;
-	F.r_stringZ(Buf, sizeof(Buf));
-	SurfaceGameMtl = Buf;
-	F.r_stringZ(Buf, sizeof(Buf));
-	SurfaceTexture = Buf;
-
-	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY, SurfaceTemplate());
-
-	return true;
-}
-
 void CTerrain::InitializeHeightmap(u32 w, u32 h, float fill)
 {
 	HMap.Create(w, h, fill);
@@ -104,14 +86,50 @@ void CTerrain::OnChangePreview(PropValue* sender)
 
 void CTerrain::SaveStream(IWriter& F)
 {
+	F.open_chunk(ETerrainChunkIDs::HMap);
 	HMap.SaveSteam(&F);
+	F.close_chunk();
 
+	F.open_chunk(ETerrainChunkIDs::Asset);
 	F.w_stringZ(*SurfaceShader);
 	F.w_stringZ(*SurfaceShaderXRLC);
 	F.w_stringZ(*SurfaceGameMtl);
 	F.w_stringZ(*SurfaceTexture);
+	F.close_chunk();
 
 	inherited::SaveStream(F);
+}
+
+bool CTerrain::LoadStream(IReader& F)
+{
+	if (F.length() == 0)
+	{
+		return false;
+	}
+
+	if (IReader* HMapChunk = F.open_chunk(ETerrainChunkIDs::HMap))
+	{
+		HMap.LoadSteam(HMapChunk);
+	}
+
+	if (IReader* HMapChunk = F.open_chunk(ETerrainChunkIDs::Asset))
+	{
+		char Buf[512];
+		F.r_stringZ(Buf, sizeof(Buf));
+		SurfaceShader = Buf;
+		F.r_stringZ(Buf, sizeof(Buf));
+		SurfaceShaderXRLC = Buf;
+		F.r_stringZ(Buf, sizeof(Buf));
+		SurfaceGameMtl = Buf;
+		F.r_stringZ(Buf, sizeof(Buf));
+		SurfaceTexture = Buf;
+	}
+
+	inherited::LoadStream(F);
+
+	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY, SurfaceTemplate());
+
+	return true;
 }
 
 XRay::Editor::HeightmapUtils::STerrainSurfaceTemplate CTerrain::SurfaceTemplate() const
