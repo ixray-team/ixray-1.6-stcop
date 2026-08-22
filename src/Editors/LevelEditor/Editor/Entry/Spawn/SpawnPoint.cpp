@@ -525,14 +525,14 @@ void CSpawnPoint::SSpawnData::FillProp(const char* pref, PropItemVec& items)
 	if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDDeathmatch|eGameIDTeamDeathmatch|eGameIDArtefactHunt|eGameIDCaptureTheArtefact))
 		PHelper().CreateFlag8		(items, PrepareKey(pref,"MP respawn"), &m_flags, eSDTypeRespawn);
 
-    if(m_Visual)
-    {
+	if(m_Visual)
+	{
 		ButtonValue* BV = PHelper().CreateButton	    (	items, 
 									PrepareKey(pref,m_Data->name(),"Model\\AnimationControl"),
 									"|<<,Play,Pause,Stop,>>|",
 									0);
 		BV->OnBtnClickEvent.bind(this,&CSpawnPoint::SSpawnData::OnAnimControlClick);
-    }
+	}
 
 	if (CSE_ALifeDynamicWallmark* DW = smart_cast<CSE_ALifeDynamicWallmark*>(m_Data);DW)
 	{
@@ -609,8 +609,8 @@ void CSpawnPoint::SSpawnData::OnFrame()
 		IKinematics* KinematicsObj = PKinematics(m_Visual->visual);
 		if (m_Visual->visual && KinematicsObj != nullptr)
 		{
-			float Dist = EDevice->vCameraPosition.distance_to(m_owner->FPosition);
-			KinematicsObj->CalculateBones(true);
+			bool IsForce = m_Data->m_editor_flags.is(CSE_Abstract::flVisualChange) || m_Data->m_editor_flags.is(CSE_Abstract::flVisualAnimationChange);
+			KinematicsObj->CalculateBones(IsForce);
 		}
 	}
 	// motion part
@@ -653,7 +653,8 @@ void CSpawnPoint::SSpawnData::OnFrame()
 		CLE_Visual* v = *it;
 		if (IKinematics* KinematicsObj = PKinematics(v->visual))
 		{
-			KinematicsObj->CalculateBones(true);
+			bool bForce = m_Data->m_editor_flags.is(CSE_Abstract::flVisualChange);
+			KinematicsObj->CalculateBones(bForce);
 		}
 	}
 
@@ -1114,10 +1115,10 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 
 u32 CSpawnPoint::RenderPriorityMask() const
 {
-    // Spawn visual & idle particle are drawn via model_Render(...,priority,...), which only
-    // renders when the passed priority matches the visual's surface priority. Cover all
-    // priorities so they always render (this matches the pre-Tier-B behaviour).
-    return (1u << 1) | (1u << 2) | (1u << 3);
+	// Spawn visual & idle particle are drawn via model_Render(...,priority,...), which only
+	// renders when the passed priority matches the visual's surface priority. Cover all
+	// priorities so they always render (this matches the pre-Tier-B behaviour).
+	return (1u << 1) | (1u << 2) | (1u << 3);
 }
 
 bool CSpawnPoint::FrustumPick(const CFrustum& frustum)
