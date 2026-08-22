@@ -399,7 +399,9 @@ bool EDetailManager::UpdateSlotObjects(int x, int z){
 
 bool EDetailManager::UpdateObjects(bool bUpdateTex, bool bUpdateSelectedOnly)
 {
-	m_Base.ReloadImage();
+	if (!BaseDataDirty)
+		m_Base.ReloadImage();
+
 	if (!m_Base.Valid()){ 
     	ELog.DlgMsg(mtError,"Invalid base texture!");
     	return false;
