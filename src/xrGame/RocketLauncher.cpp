@@ -102,10 +102,6 @@ void CRocketLauncher::LaunchRocket(const Fmatrix& xform, const Fvector& vel, con
 
 	if (CCustomRocket* Rocket = getCurrentRocket())
 	{
-		if (CInventoryItem* r = Rocket->cast_inventory_item(); r != nullptr)
-		{
-			r->SetCanTake(false);
-		}
 		Rocket->SetLaunchParams(xform, vel, angular_vel);
 		m_launched_rockets.push_back(Rocket);
 	}
