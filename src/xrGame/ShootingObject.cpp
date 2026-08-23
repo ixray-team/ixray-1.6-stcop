@@ -221,7 +221,7 @@ void CShootingObject::LoadParticle(const char* section, const char* line, xr_sha
 
 			particle = Particles::Details::Create(pname, false);
 			particle->m_bAutoStop = true;
-			particle->SetLiveUpdate(true);
+			particle->SetLiveUpdate(false);
 		}
 	}
 }
