@@ -25,6 +25,7 @@ private:
 			void	load					(void *buffer, const u32 &buffer_size, const char* file_name);
 
 public:
+	xr_vector<u8> marshal_save_data;
 	IC				CALifeStorageManager	(xrServer *server, const char* section);
 	virtual			~CALifeStorageManager	();
 			bool	load					(const char*	save_name = 0);
