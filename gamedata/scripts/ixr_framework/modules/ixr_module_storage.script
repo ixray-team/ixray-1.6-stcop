@@ -239,7 +239,7 @@ end
 
 function ixr_store.get_var(cell_name, var_name, def_value)
 	if IsEditor() or editor() then
-		ixr_store.save_log("GET VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		IXRLog("GET VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
 		return def_value
 	end
 	if not ixr_store.is_storage_loaded() then
