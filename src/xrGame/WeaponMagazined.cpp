@@ -2476,11 +2476,7 @@ shared_str CWeaponMagazined::SetCurrentAimAnimation()
 		u32 state = actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
 		if (state & ACTOR_DEFS::EMoveCommand::mcAnyMove)
 		{
-			if (IsScopeAttached())
-			{
-				AddSuffixName(anim, "_scope", "_moving");
-			}
-			else
+			if (!IsScopeAttached() || !AddSuffixName(anim, "_scope", "_moving"))
 			{
 				AddSuffixName(anim, "_moving");
 			}
