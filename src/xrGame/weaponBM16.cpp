@@ -23,6 +23,16 @@ void CWeaponBM16::LoadSounds(const char* section)
 	else
 	{
 		m_sounds.LoadSound(section, "snd_reload_1", "sndReload1", true, m_eSoundShot);
+
+		if (SoundExist(section, "snd_changeammo_1"))
+		{
+			m_sounds.LoadSound(section, "snd_changeammo_1", "sndChangeAmmo1", true, m_eSoundReload);
+		}
+
+		if (SoundExist(section, "snd_changeammo_2"))
+		{
+			m_sounds.LoadSound(section, "snd_changeammo_2", "sndChangeAmmo2", true, m_eSoundReload);
+		}
 	}
 }
 
@@ -94,11 +104,25 @@ void CWeaponBM16::PlayReloadSound()
 		{
 			if ((GetAmmoElapsed() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
 			{
-				PlaySound("sndReload1", get_LastFP());
+				if (IsChangeAmmoType() && m_sounds.FindSoundItem("sndChangeAmmo1", false))
+				{
+					PlaySound("sndChangeAmmo1", get_LastFP());
+				}
+				else
+				{
+					PlaySound("sndReload1", get_LastFP());
+				}
 			}
 			else
 			{
-				PlaySound("sndReload", get_LastFP());
+				if (GetAmmoElapsed() == 2 && IsChangeAmmoType() && m_sounds.FindSoundItem("sndChangeAmmo2", false))
+				{
+					PlaySound("sndChangeAmmo2", get_LastFP());
+				}
+				else
+				{
+					PlaySound("sndReload", get_LastFP());
+				}
 			}
 		}
 	}
@@ -156,9 +180,12 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 			{
 				if ((GetAmmoElapsed() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
 				{
-					anim = "anm_reload_1";
+					if (!IsChangeAmmoType() || !AddSuffixName(anim, "_ammochange"))
+					{
+						anim = "anm_reload_1";
+					}
 				}
-				else
+				else if (!IsChangeAmmoType() || !AddSuffixName(anim, "_ammochange"))
 				{
 					anim = HudAnimationExist("anm_reload_2") ? "anm_reload_2" : "anm_reload";
 				}
