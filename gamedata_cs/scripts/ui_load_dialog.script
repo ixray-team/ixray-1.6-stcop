@@ -1,5 +1,4 @@
 saved_game_extension	= save_extension()
-saved_game_extension_ex	= alife_storage_manager.saved_game_extension_ex
 
 class "load_item" (CUIListBoxItem)
 
@@ -138,12 +137,6 @@ function delete_save_game(filename)
 	local f = getFS()
 
     f:file_delete("$game_saves$", save_file)
-    
-    -- START IX-Ray
-	if (file_exist(filename..saved_game_extension_ex)) then
-		f:file_delete("$game_saves$",filename..saved_game_extension_ex)
-	end
-	-- END IX-Ray
 	
 	if file_exist(dds_file) then
 		f:file_delete("$game_saves$", dds_file)
