@@ -70,6 +70,12 @@ void CALifeStorageManager::save(const char* save_name_no_check, bool update_name
 	{
 		CMemoryWriter stream;
 		header().save(stream);
+		{
+			stream.open_chunk(MARSHAL_CHUNK_DATA);
+			stream.w_u32(marshal_save_data.size());
+			stream.w(marshal_save_data.data(), marshal_save_data.size());
+			stream.close_chunk();
+		}
 		time_manager().save(stream);
 		spawns().save(stream);
 		objects().save(stream);
@@ -99,13 +105,6 @@ void CALifeStorageManager::save(const char* save_name_no_check, bool update_name
 #endif // DEBUG
 
 	// To get the savegame fname to make our own custom save states
-	luabind::functor<void> funct2;
-	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_before_save", funct2))
-	{
-		funct2((const char*)m_save_name);
-	}
-
-	// To get the savegame fname to make our own custom save states
 	luabind::functor<void> funct3;
 	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_after_save", funct3))
 	{
@@ -118,6 +117,15 @@ void CALifeStorageManager::save(const char* save_name_no_check, bool update_name
 
 void CALifeStorageManager::load(void* buffer, const u32& buffer_size, const char* file_name)
 {
+	IReader source(buffer, buffer_size);
+	header().load(source);
+	
+	if (auto MarshalChunk = source.open_chunk(MARSHAL_CHUNK_DATA); MarshalChunk)
+	{
+		marshal_save_data.resize(MarshalChunk->r_u32());
+		std::memcpy(marshal_save_data.data(), MarshalChunk->pointer(), marshal_save_data.size());
+	}
+	
 	// So we can get the fname to make our own custom save states
 	luabind::functor<void> funct;
 	ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_load", funct);
@@ -126,8 +134,6 @@ void CALifeStorageManager::load(void* buffer, const u32& buffer_size, const char
 		funct(file_name);
 	}
 
-	IReader source(buffer, buffer_size);
-	header().load(source);
 	time_manager().load(source);
 	spawns().load(source, file_name);
 	graph().on_load();
