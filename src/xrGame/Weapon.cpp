@@ -1562,6 +1562,16 @@ void CWeapon::ForceUpdateHUD()
 		LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
 	}
 
+	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
+	{
+		MagAmmoBones->UpdateMagAmmoBones(this, type_to_update);
+	}
+
+	if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
+	{
+		GLAmmoBones->UpdateGLAmmoBones(this, GetTargetAmmoType(true));
+	}
+
 	if (GetState() == eShowing || GetState() == eIdle)
 	{
 		UpdateBonePartAnimations();
