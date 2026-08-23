@@ -87,10 +87,10 @@ void CWeaponMagazined::Load(LPCSTR section)
 	if (pSettings->line_exist(section, "fire_modes"))
 	{
 		shared_str FireModesList = pSettings->r_string(section, "fire_modes");
-		s8 ModesCount = _GetItemCount(FireModesList.c_str());
+		u8 ModesCount = _GetItemCount(FireModesList.c_str());
 		m_aFireModes.clear();
 
-		for (s8 i = 0; i < ModesCount; i++)
+		for (u8 i = 0; i < ModesCount; i++)
 		{
 			string16 sItem = {};
 			_GetItem(FireModesList.c_str(), i, sItem);
@@ -102,7 +102,7 @@ void CWeaponMagazined::Load(LPCSTR section)
 	else
 	{
 		m_aFireModes.push_back(1);
-		m_iCurFireMode = 1;
+		m_iCurFireMode = 0;
 	}
 
 	LoadSilencerKoeffs();
@@ -2740,13 +2740,15 @@ void CWeaponMagazined::ChangeFireMode(u16 cmd)
 
 	m_iPrevFireMode = GetQueueSize();
 
+	const u8 modes_count = static_cast<u8>(m_aFireModes.size());
+
 	if (cmd == kWPN_FIREMODE_NEXT)
 	{
-		m_iCurFireMode = (m_iCurFireMode + 1 + m_aFireModes.size()) % (s8)m_aFireModes.size();
+		m_iCurFireMode = (m_iCurFireMode + 1) % modes_count;
 	}
 	else
 	{
-		m_iCurFireMode = (m_iCurFireMode - 1 + m_aFireModes.size()) % (s8)m_aFireModes.size();
+		m_iCurFireMode = (m_iCurFireMode + modes_count - 1) % modes_count;
 	}
 
 	SetQueueSize(GetCurrentFireMode());

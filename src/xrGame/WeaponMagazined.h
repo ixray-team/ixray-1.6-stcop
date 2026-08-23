@@ -157,7 +157,7 @@ protected:
 	bool			m_bFireSingleShot;
 	//режимы стрельбы
 	xr_vector<s8>	m_aFireModes;
-	s8				m_iCurFireMode;
+	u8				m_iCurFireMode;
 	s8				m_iPrevFireMode;
 
 	//переменная блокирует использование
