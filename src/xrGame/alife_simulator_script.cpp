@@ -486,6 +486,26 @@ void set_start_game_vertex_id(int id)
     g_start_game_vertex_id = id;
 }
 
+int get_marshalized_data(lua_State* L)
+{
+	auto& buf = ai().alife().marshal_save_data;
+    lua_pushlstring(L, (const char*)buf.data(), buf.size());
+	return 1;
+}
+
+void set_marshalized_data(lua_State* L)
+{
+	size_t len;
+	const char *data = lua_tolstring(L, 1, &len);
+	if (!data)
+	{
+		return;
+	}
+	auto& buf = const_cast<CALifeSimulator&>(ai().alife()).marshal_save_data;
+	buf.resize(len);
+	std::memcpy(buf.data(), data, len);
+}
+
 #pragma optimize("s",on)
 void CALifeSimulator::script_register			(lua_State *L)
 {
@@ -539,7 +559,9 @@ void CALifeSimulator::script_register			(lua_State *L)
         def("alife", &alife),
         def("set_start_position_from_smart", &set_start_position_from_smart),
         def("set_start_position", &set_start_position),
-        def("set_start_game_vertex_id", &set_start_game_vertex_id)
+        def("set_start_game_vertex_id", &set_start_game_vertex_id),
+        def("get_marshalized_data", &get_marshalized_data, raw<1>()),
+        def("set_marshalized_data", &set_marshalized_data, raw<1>())
 	];
 
 	{
