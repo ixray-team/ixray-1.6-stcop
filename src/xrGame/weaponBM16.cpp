@@ -152,7 +152,7 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 		}
 		else
 		{
-			if (IsMisfire() && !AddSuffixName(anim, "_jammed") || !IsMisfire())
+			if (IsMisfire() && !AddSuffixName(anim, "_jammed") && !AddSuffixName(anim, "_misfire") || !IsMisfire())
 			{
 				if ((GetAmmoElapsed() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
 				{
