@@ -352,8 +352,7 @@ function animation:add_anim(anim, state)
 	--printf("[%s][%s] add_anim[%s] time[%s] no_rootmove[%s] %s", self.npc:name(), self.name, tostring(anim), time_global(), tostring(animation_props == nil or animation_props.moving ~= true), device():time_global())
 
 	if not (npc:weapon_unstrapped() or npc:weapon_strapped()) then
-		--callstack()
-		abort("Illegal call of add animation. Weapon is strapping now!!! %s", npc:name())
+		printf("Illegal call of add animation. Weapon is strapping now!!! %s", npc:name())
 	end
 	
 
