@@ -255,7 +255,9 @@ void CWeapon::Load		(const char* section)
 	iAmmoElapsed		= pSettings->r_s32		(section,"ammo_elapsed"		);
 	iMagazineSize		= pSettings->r_s32		(section,"ammo_mag_size"	);
 	
-	u8 rm = READ_IF_EXISTS( pSettings, r_u8, section, "cam_return", 1 );
+	cam_recoil.LegacyRecoil = zoom_cam_recoil.LegacyRecoil = pSettings->line_exist(section, "cam_dispertion_frac"); // do not confuse with cam_dispersion_frac param from CS/CoP
+
+	u8 rm = READ_IF_EXISTS(pSettings, r_u8, section, "cam_return", !EngineExternal().ShadowOfChernobylMode());
 	cam_recoil.ReturnMode = (rm == 1);
 	
 	rm = READ_IF_EXISTS( pSettings, r_u8, section, "cam_return_stop", 0 );

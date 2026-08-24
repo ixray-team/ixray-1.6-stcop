@@ -44,7 +44,7 @@ protected:
 	bool			m_shot_end;
 
 	bool			m_actived;
-
+	bool			m_single_shot = false;
 
 private:
 	CRandom			m_Random;
@@ -63,6 +63,8 @@ public:
 
 	IC	bool	IsActive() { return m_actived; }
 	IC	void	StopShoting() { m_shot_end = true; }
+	IC	bool	IsSingleShot() { return m_single_shot; }
+	void	SetSingleShoot(bool Single) { m_single_shot = Single; };
 
 	void	Update();
 

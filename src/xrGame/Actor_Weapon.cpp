@@ -355,6 +355,19 @@ void CActor::on_weapon_shot_start(CWeapon* weapon)
 
 	effector->m_WeaponID = weapon->ID();
 	R_ASSERT(effector);
+	CWeaponMagazined* pWM = weapon->cast_weapon_magazined();
+
+	if (pWM)
+	{
+		if (pWM->GetCurrentFireMode() == 1)
+		{
+			effector->SetSingleShoot(true);
+		}
+		else
+		{
+			effector->SetSingleShoot(false);
+		}
+	};
 
 	effector->SetRndSeed(GetShotRndSeed());
 	effector->SetActor(this);
