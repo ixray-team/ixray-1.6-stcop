@@ -2607,10 +2607,15 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Float, "fov", &g_base_fov, 5.0f, 180.0f);
 	CMD2(CCC_Boolean, "g_3d_scopes", &g_3d_scopes);
 
-		// Demo
+	// Demo
 	CMD1(CCC_DemoPlay, "demo_play");
 	CMD1(CCC_DemoRecord, "demo_record");
 	CMD1(CCC_DemoRecordSetPos, "demo_set_cam_position");
+
+	extern ENGINE_API float dr_cam_inert;
+	CMD4(CCC_Float, "demo_record_cam_inert", &dr_cam_inert, EPS_S, .999f);
+	extern ENGINE_API float dr_cam_pos_inert;
+	CMD4(CCC_Float, "demo_record_cam_pos_inert", &dr_cam_pos_inert, EPS_S, .999f);
 
 #ifndef MASTER_GOLD
 	CMD3(CCC_Mask64, "ai_obstacles_avoiding", &psAI_Flags, aiObstaclesAvoiding);
