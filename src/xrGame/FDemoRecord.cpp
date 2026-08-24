@@ -952,6 +952,11 @@ void CDemoRecord::IR_GamepadKeyPress(int id)
 			m_bEnableAcceleration = !m_bEnableAcceleration;
 			break;
 		}
+		case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+		{
+			RecordKey();
+			break;
+		}
 	}
 }
 
