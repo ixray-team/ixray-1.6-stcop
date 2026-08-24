@@ -32,6 +32,8 @@ int CApplication::Run()
 
 	// plat
 	std::jthread s(splash::Show);
+
+	SteamWorks.BeginPlay();
 	InitEngine();
 	splash::Close();
 
