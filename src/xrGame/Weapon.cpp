@@ -3264,6 +3264,19 @@ bool CWeapon::UseScopeTexture()
 	return !(g_3d_scopes && m_Allow3DScope) && !IsAltZoomed();
 }
 
+IC void CWeapon::SetNextState(u8 v)
+{
+	if (v != eSprintStart && v != eSprintEnd)
+	{
+		if (m_nextState == eSprintStart || m_nextState == eSprintEnd)
+		{
+			StopCurrentAnimWithoutCallback();
+		}
+	}
+
+	m_nextState = v;
+}
+
 void CWeapon::SwitchState(u8 S)
 {
 	if (OnClient()) return;
