@@ -146,7 +146,7 @@ void CWeaponMagazined::LoadSounds(const char* section)
 		m_layered_sounds.LoadSound(section, "snd_silencer_shot_last_actor", "sndSilencerShotLastActor", false, m_eSoundShot, st_Shooting);
 	}
 
-	m_sounds.LoadSound(section, "snd_empty", "sndEmptyClick", false, m_eSoundEmptyClick);
+	m_sounds.LoadSound(section, "snd_empty", "sndEmptyClick", true, m_eSoundEmptyClick);
 	m_sounds.LoadSound(section, "snd_reload", "sndReload", true, m_eSoundReload);
 
 	if (SoundExist(section, "snd_reload_empty"))
