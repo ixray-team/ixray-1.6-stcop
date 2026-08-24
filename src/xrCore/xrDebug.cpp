@@ -425,7 +425,7 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 		ExInfo.ClientPointers = false;
 
 		// write the dump
-		MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo);
+		MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo | MiniDumpWithPrivateReadWriteMemory);
 
 		bool bOK = MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr );
 		if (bOK)
