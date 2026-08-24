@@ -26,6 +26,9 @@ bool stored_red_text;
 CDemoRecord * xrDemoRecord = 0;
 CDemoRecord::force_position CDemoRecord:: g_position = { false, { 0, 0, 0 } };
 
+ENGINE_API float dr_cam_inert = EPS_S;
+ENGINE_API float dr_cam_pos_inert = EPS_S;
+
 Fbox curr_lm_fbox;
 
 void setup_lm_screenshot_matrices()
@@ -473,8 +476,14 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		CamMove.mul				(FrameTopDelta.y);
 		Position.add			(CamMove);
 
-		Camera.setHPB			(HPB.x,HPB.y,HPB.z);
-		Camera.translate_over	(Position);
+		static Fvector p_smoothed = Position;
+		static Fvector hpb_smoothed = HPB;
+
+		p_smoothed.inertion(Position, dr_cam_pos_inert);
+		hpb_smoothed.inertion(HPB, dr_cam_inert);
+
+		Camera.setHPB(hpb_smoothed.x, hpb_smoothed.y, hpb_smoothed.z);
+		Camera.translate_over(p_smoothed);
 
 		// update camera
 		info.n.set(Camera.j);
