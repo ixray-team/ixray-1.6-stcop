@@ -19,6 +19,8 @@ public:
 	CSteamOverlay();
 	~CSteamOverlay();
 
+	void BeginPlay();
+
 public:
 	ESteamAppID CurrentAppID = ESteamAppID::Unknown;
 

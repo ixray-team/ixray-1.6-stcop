@@ -5,10 +5,14 @@
 
 CSteamOverlay::CSteamOverlay()
 {
+}
+
+void CSteamOverlay::BeginPlay()
+{
 	bool HasEntryFile = std::filesystem::exists("steam_appid.txt");
 	if (!HasEntryFile)
 	{
-		// FX: Если нет `steam_appid.txt` - не запускаем стим 
+		// FX: Если нет `steam_appid.txt` - не запускаем стим
 		return;
 	}
 
