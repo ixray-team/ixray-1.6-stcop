@@ -84,7 +84,7 @@ void CTextureDescrMngr::LoadLTX()
 
 				string_path				bmode, bparallax;
 				int res = sscanf		(item.second.c_str(),"bump_mode[%[^]]], material[%f], parallax[%[^]]",bmode,&desc.m_spec->m_material,bparallax);
-				R_ASSERT(res==2);
+				R_ASSERT(res>=2);
 				if ((bmode[0]=='u')&&(bmode[1]=='s')&&(bmode[2]=='e')&&(bmode[3]==':'))
 				{
 					// bump-map specified
