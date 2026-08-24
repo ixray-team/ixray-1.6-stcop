@@ -4674,6 +4674,11 @@ void CWeapon::OnMotionMark(u8 state, const motion_marks& mark)
 			AmmoBones->UpdateAmmoBones(this, current_configuration, GetTargetAmmoType());
 		}
 
+		if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
+		{
+			MagAmmoBones->UpdateMagAmmoBones(this, GetTargetAmmoType(for_grenade));
+		}
+
 		if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
 		{
 			GLAmmoBones->UpdateGLAmmoBones(this, GetTargetAmmoType(true));
