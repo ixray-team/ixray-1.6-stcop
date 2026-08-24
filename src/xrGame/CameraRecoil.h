@@ -77,6 +77,7 @@ struct CameraRecoil
 	float		StepAngleHorz;
 	bool		ReturnMode;
 	bool		StopReturn;
+	bool		LegacyRecoil = false;
 
 	PatternParams	Pattern;
 
@@ -110,6 +111,7 @@ struct CameraRecoil
 
 		ReturnMode = clone.ReturnMode;
 		StopReturn = clone.StopReturn;
+		LegacyRecoil = clone.LegacyRecoil;
 
 		Pattern = clone.Pattern;
 
@@ -132,6 +134,7 @@ struct CameraRecoil
 		StepAngleHorz = 0.0f;
 		ReturnMode = false;
 		StopReturn = false;
+		LegacyRecoil = false;
 
 		// Сбрасываем параметры паттерна
 		Pattern.Reset();

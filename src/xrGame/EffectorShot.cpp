@@ -342,6 +342,30 @@ CCameraShotEffector::~CCameraShotEffector()
 
 bool CCameraShotEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	Update();
+	if (current_recoil.LegacyRecoil)
+	{
+		if (m_actived)
+		{
+			float h, p;
+			info.d.getHP(h, p);
+			if (m_single_shot)
+			{
+				if (!m_shot_end)
+				{
+					info.d.setHP(h + m_delta_horz, p + m_delta_vert);
+				}
+			}
+			else
+			{
+				info.d.setHP(h + m_angle_horz, p + m_angle_vert);
+			}
+
+			Update();
+		}
+	}
+	else
+	{
+		Update();
+	}
 	return true;
 }
