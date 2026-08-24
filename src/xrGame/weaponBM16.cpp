@@ -102,7 +102,7 @@ void CWeaponBM16::PlayReloadSound()
 		}
 		else
 		{
-			if ((GetAmmoElapsed() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
+			if (GetAmmoElapsed() == 1)
 			{
 				if (IsChangeAmmoType() && m_sounds.FindSoundItem("sndChangeAmmo1", false))
 				{
@@ -178,7 +178,7 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 		{
 			if (IsMisfire() && !AddSuffixName(anim, "_jammed") && !AddSuffixName(anim, "_misfire") || !IsMisfire())
 			{
-				if ((GetAmmoElapsed() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
+				if (GetAmmoElapsed() == 1)
 				{
 					if (!IsChangeAmmoType() || !AddSuffixName(anim, "_ammochange"))
 					{
