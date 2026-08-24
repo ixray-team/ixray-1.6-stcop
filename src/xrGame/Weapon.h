@@ -538,7 +538,7 @@ public:
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
 	void					OnSafemodeOut		();
-	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;}
+	IC virtual bool IsZoomed() const final override { return m_zoom_params.m_bIsZoomModeNow; }
 	IC		bool			IsAltZoomed			()	const		{return m_zoom_params.m_bIsAltZoomModeNow;}
 	CUIStatic*				ZoomTexture			();	
 
