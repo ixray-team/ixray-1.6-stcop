@@ -500,17 +500,23 @@ EDetail* EDetailManager::FindObjectInColorIndices(u32 index, const char* name)
     return 0;
 }
 
-void EDetailManager::AppendIndexObject(u32 color,const char* name, bool bTestUnique)
+void EDetailManager::AppendIndexObject(u32 color, const char* name, bool bTestUnique)
 {
-	if (bTestUnique){
-		EDetail* DO = FindObjectInColorIndices(color,name);
-        if (DO)
+	if (bTestUnique)
+	{
+		if (EDetail* DO = FindObjectInColorIndices(color, name))
+		{
 			m_ColorIndices[color].push_back(DO);
-    }else{
-		EDetail* DO = FindDOByName(name);
-	    R_ASSERT(DO);
+		}
+		return;
+	}
+	else if (EDetail* DO = FindDOByName(name))
+	{
 		m_ColorIndices[color].push_back(DO);
-    }
+		return;
+	}
+	
+    Msg("! Not found detail object: %s", name);
 }
 
 

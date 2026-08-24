@@ -649,8 +649,10 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 						}
 
 						Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
-						if (!c_sh->flags.bCollision)
+						if (c_sh == nullptr || !c_sh->flags.bCollision)
+						{
 							continue;
+						}
 
 						// collect tris
 						const IntVec& face_lst = sp_it->second;
