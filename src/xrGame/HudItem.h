@@ -120,6 +120,8 @@ public:
 	bool						GetHUDSoundMode		();
 	IC bool IsPending() const { return Pending; }
 
+	IC virtual bool IsZoomed() const { return false; }
+
 	virtual bool				ActivateItem		();
 	virtual void				DeactivateItem		();
 	virtual bool				SendDeactivateItem	(bool Force);
