@@ -8,6 +8,14 @@
   },
   "mods": [
     {
+      "id": "gran_myortvoe_ozero",
+      "title": "Gran: Dead Lake",
+      "description": "A short mod directly tied to the 'Gran' storyline. The protagonist heads to the outskirts of the Yantar lake to find her brother, who went into the Zone several years ago. About 1.5–2 hours of playtime, it expands and explains the events of the first episode. Two endings: True and False.",
+      "author": "ScR1pt, Ink",
+      "link": "https://ap-pro.ru/forums/topic/15148-gran-myortvoe-ozero/",
+      "image": "https://ap-pro.ru/uploads/monthly_2026_08/photo_2026-08-21_00-52-19.thumb.jpg.d2b831a561eb339d2d2f1e469929bd22.jpg"
+    },
+    {
       "id": "travis",
       "title": "Travis's Story: Episode 1 REMAKE",
       "description": "This is a story about return, about duty, and about how easily one can lose one's human form in a place that is itself an anomaly. The protagonist is Travis — no rookie, but no legend of the Zone either. He returns beyond the Perimeter not in search of the mythical Klondike of artifacts, but to find an old friend, Grisha.",
@@ -105,14 +113,6 @@
       "link": "https://ap-pro.ru/forums/topic/13361-chuzhoy-sredi-chuzhih-deluxe/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/чужойделюкс.png",
       "score": "Ap-Pro: 8.1"
-    },
-    {
-      "id": "project2",
-      "title": "[Project №2] (Beta | Project closed)",
-      "description": "An attempt to adapt the S.T.A.L.K.E.R. Mobile storyline.",
-      "author": "Graff46",
-      "link": "https://ap-pro.ru/forums/topic/2029-proekt-%E2%84%962/?do=findComment&comment=501744",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%822.png"
     },
     {
       "id": "one-way-ticket",

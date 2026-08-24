@@ -8,6 +8,22 @@
   },
   "mods": [
     {
+      "id": "solnce_myortvym",
+      "title": "STALKER: Sun to the Dead!",
+      "description": "The events of the mod take place in July 2012, after the events of 'Shadow of Chernobyl' and before 'Call of Pripyat'. The protagonist is a stalker nicknamed Sunshine (San). After her friend Tracy disappears, San sets out to find her, and the trail leads north, where rumors speak of a strange stalker who never sleeps. Set in the same universe as the 'A Stranger Among Strangers' and 'Dark Side of the Cordon' series.",
+      "author": "ChemicusOrdinarius",
+      "link": "https://ap-pro.ru/forums/topic/14581-stalker-solnce-myortvym/",
+      "image": "https://sun9-28.userapi.com/s/v1/ig2/1BiT0tre8LOHtlfimK2s9MTQoQBMesN7LYcAT3ChiYm_vNwQVM5BqtbNE1-zC2kdTrA7pQy7THDvOY0jSDSt25Vm.jpg?quality=95&crop=0,0,1672,941&as=32x18,48x27,72x41,108x61,160x90,240x135,360x203,480x270,540x304,640x360,720x405,1080x608,1280x720,1440x810,1672x941&from=bu&cs=1672x0"
+    },
+    {
+      "id": "porozhdenie_zony",
+      "title": "Porozhdenie Zony",
+      "description": "The events of this story-driven mod unfold on July 12, 2018. A mysterious red glow — the 'Crimson Haze' — appeared over the Zone. The protagonist is a lone stalker who wakes up deep inside a laboratory beneath the Dead City, and must walk a harsh path to find answers to difficult questions.",
+      "author": "Gr0weR",
+      "link": "https://ap-pro.ru/forums/topic/14867-porozhdenie-zony/",
+      "image": "https://i.ibb.co/BV2YWM3b/ss-denda-07-11-26-18-41-09-lab-x13.jpg"
+    },
+    {
       "id": "AnotherSide",
       "title": "Another Side",
       "description": "How to become a mercenary? Easy — if your fighting spirit is high and your moral outlook is low.",
