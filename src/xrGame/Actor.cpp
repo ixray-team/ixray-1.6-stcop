@@ -2081,9 +2081,14 @@ void CActor::UpdateCL()
 
 
 	if (mstate_real & mcSprint)
-		fSprintFactor += Device.fTimeDelta / 0.5f;
+	{
+		fSprintFactor += Device.fTimeDelta * fSprintFactorIncreaseFactor;
+	}
 	else
-		fSprintFactor -= Device.fTimeDelta / 0.1f;
+	{
+		fSprintFactor -= Device.fTimeDelta * fSprintFactorDecreaseFactor;
+	}
+
 	clamp(fSprintFactor, 0.0f, 1.0f);
 
 	if (!pInput->GetControllerMode() && !(mstate_real & mcAnyMove))
