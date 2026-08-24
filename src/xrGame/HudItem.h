@@ -56,17 +56,17 @@ enum EHudStates : u8
 
 private:
 	u8						m_hud_item_state = EHudStates::eHidden;
-	u8						m_nextState = EHudStates::eHidden;
 	u32						m_dw_curr_state_time;
 protected:
 	u32						m_dw_curr_substate_time;
+	u8 m_nextState = EHudStates::eHidden;
 public:
 							CHUDState			()					{SetState(eHidden);}
 	IC		u8				GetNextState		() const			{return		m_nextState;}
 	IC		u8				GetState			() const			{return		m_hud_item_state;}
 
 	IC		void			SetState			(u8 v)				{m_hud_item_state = v; m_dw_curr_state_time=Device.dwTimeGlobal;ResetSubStateTime();}
-	IC		void			SetNextState		(u8 v)				{m_nextState = v;}
+	IC		virtual void	SetNextState		(u8 v)				{m_nextState = v;}
 	IC		u32				CurrStateTime		() const			{return Device.dwTimeGlobal-m_dw_curr_state_time;}
 	IC		void			ResetSubStateTime	()					{m_dw_curr_substate_time=Device.dwTimeGlobal;}
 	virtual void			SwitchState			(u8 S)				= 0;
