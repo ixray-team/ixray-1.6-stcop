@@ -302,7 +302,7 @@ void CWeapon::Load		(const char* section)
 	temp_f						= pSettings->r_float( section, "cam_step_angle_horz" );
 	cam_recoil.StepAngleHorz	= deg2rad( temp_f );
 	
-	cam_recoil.DispersionFrac	= std::abs( READ_IF_EXISTS( pSettings, r_float, section, "cam_dispersion_frac", 0.7f ) );
+	cam_recoil.DispersionFrac	= std::abs( READ_IF_EXISTS( pSettings, r_float, section, "cam_dispersion_frac", READ_IF_EXISTS( pSettings, r_float, section, "cam_dispertion_frac", 0.7f ) ) );
 
 	
 	//zoom_cam_recoil.Clone( cam_recoil ); ==== ������ !!!!!!!!!!
