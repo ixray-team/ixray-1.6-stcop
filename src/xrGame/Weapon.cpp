@@ -3155,6 +3155,11 @@ void CWeapon::OnZoomIn()
 
 	if (HudItemData() != nullptr && (IsGrenadeMode() ? m_sGLAimBlendParams[0].has_motion : m_sAimBlendParams[0].has_motion))
 	{
+		if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && pActor && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & mcSprint) != 0 && GetNextState() != eSprintEnd && GetNextState() != eFire)
+		{
+			SwitchState(eSprintEnd);
+		}
+
 		g_player_hud->UpdateMovementLayers();
 		PlayBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[0].camera_name : m_sAimBlendParams[0].camera_name,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.x : m_sAimBlendParams[0].speed_power.x,
