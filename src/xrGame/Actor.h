@@ -980,8 +980,11 @@ public:
 	bool OnLadder = false;
 	IC bool is_ladder() const { return OnLadder; };
 
-	float fSprintFactor = 0;
-	float m_SprintFovFactor = 7.0f;
+	float fSprintFactor = 0.f;
+	float fSprintFactorIncreaseFactor = 4.f;
+	float fSprintFactorDecreaseFactor = 8.f;
+	float m_SprintFovFactor = 3.f;
+
 	bool IsActorBurning();
 };
 
