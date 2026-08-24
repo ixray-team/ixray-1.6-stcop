@@ -148,6 +148,7 @@ struct XRSOUND_API ref_sound
 {
 	u32 _unique_id;
 	ref_sound_data_ptr		_p;
+	float					TimeToPropagade = 0.0f;	//!< timer for periodic AI sound-event propagation
 public:
 							ref_sound				();
 							~ref_sound				();

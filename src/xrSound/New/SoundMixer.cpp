@@ -1,4 +1,4 @@
-﻿/**************************************************************************************
+/**************************************************************************************
 * Copyright (C) 2025 Anton Kovalev (vertver)
 * New Sound Engine
 ***************************************************************************************
@@ -32,6 +32,7 @@
 #include "SoundBackend.h"
 #include "SoundDSP.h"
 #include "../Sound.h"
+#include "../SoundRender.h"
 #include "../ai_sounds.h"
 #include "pffft.h"
 
@@ -175,7 +176,7 @@ struct sound_mixer_state
 	float read_buffer[SND_CHANNEL_COUNT][(SND_BLOCKSIZE+1) * 10];
 };
 
-static sound_mixer_state mixer = {};
+static sound_mixer_state GMixer = {};
 
 #ifndef DISABLE_STEAM_AUDIO
 void ConvertReverbSettings(
@@ -237,71 +238,71 @@ static void
 Snd_GrowCacheLines(bool lock_render)
 {
 	if (lock_render) {
-		mixer.render_lock.AcquireExclusive();
-		mixer.manage_lock.AcquireExclusive();
+		GMixer.render_lock.AcquireExclusive();
+		GMixer.manage_lock.AcquireExclusive();
 	}
 
-	xrSRWLockGuard guard0(mixer.update_lock, false);
-	bool locked = !mixer.source_lock.TryAcquireExclusive();
+	xrSRWLockGuard guard0(GMixer.update_lock, false);
+	bool locked = !GMixer.source_lock.TryAcquireExclusive();
 
-	size_t old_cache_lines = mixer.cache_lines.size();
-	size_t new_cache_lines = std::max((size_t)CACHE_LINES_COUNT, mixer.cache_lines.size() * 2);
+	size_t old_cache_lines = GMixer.cache_lines.size();
+	size_t new_cache_lines = std::max((size_t)CACHE_LINES_COUNT, GMixer.cache_lines.size() * 2);
 
-	mixer.cache_lines.resize(new_cache_lines);
-	mixer.free_cachelines.reserve(new_cache_lines);
+	GMixer.cache_lines.resize(new_cache_lines);
+	GMixer.free_cachelines.reserve(new_cache_lines);
 
 	for (size_t i = old_cache_lines; i < new_cache_lines; i++) {
-		mixer.free_cachelines.push_back(i + 1);
+		GMixer.free_cachelines.push_back(i + 1);
 	}
 
 	if (lock_render) {
-		mixer.render_lock.ReleaseExclusive();
-		mixer.manage_lock.ReleaseExclusive();
+		GMixer.render_lock.ReleaseExclusive();
+		GMixer.manage_lock.ReleaseExclusive();
 	}
 
 	if (!locked) {
-		mixer.source_lock.ReleaseExclusive();
+		GMixer.source_lock.ReleaseExclusive();
 	}
 
-	mixer.stats.cache_lines_total = new_cache_lines;
+	GMixer.stats.cache_lines_total = new_cache_lines;
 }
 
 static void
 Snd_GrowSlots(bool lock_update)
 {
-	xrSRWLockGuard guard0(mixer.render_lock, false);
-	xrSRWLockGuard guard1(mixer.manage_lock, false);
-	bool locked = !mixer.source_lock.TryAcquireExclusive();
+	xrSRWLockGuard guard0(GMixer.render_lock, false);
+	xrSRWLockGuard guard1(GMixer.manage_lock, false);
+	bool locked = !GMixer.source_lock.TryAcquireExclusive();
 
 	if (lock_update) {
-		mixer.update_lock.AcquireExclusive();
+		GMixer.update_lock.AcquireExclusive();
 	}
 
-	size_t old_size = mixer.slots.size();
-	size_t new_size = std::max((size_t)DEFAULT_SLOT_COUNT, mixer.slots.size() * 2);
+	size_t old_size = GMixer.slots.size();
+	size_t new_size = std::max((size_t)DEFAULT_SLOT_COUNT, GMixer.slots.size() * 2);
 
-	mixer.slots.resize(new_size);
-	mixer.free_slots.reserve(new_size);
+	GMixer.slots.resize(new_size);
+	GMixer.free_slots.reserve(new_size);
 
-	mixer.stats.possible_free_count += (new_size - old_size);
+	GMixer.stats.possible_free_count += (new_size - old_size);
 	for (size_t i = old_size; i < new_size; i++) {
-		mixer.free_slots.push_back(i + 1);
+		GMixer.free_slots.push_back(i + 1);
 	}
 
 	if (lock_update) {
-		mixer.update_lock.ReleaseExclusive();
+		GMixer.update_lock.ReleaseExclusive();
 	}
 
 	if (!locked) {
-		mixer.source_lock.ReleaseExclusive();
+		GMixer.source_lock.ReleaseExclusive();
 	}
 }
 
 ICF void Snd_AcquireHRTFSlot(u32 slot_idx)
 {
-	if (!mixer.hrtf_enabled) return;
+	if (!GMixer.hrtf_enabled) return;
 
-	auto& slot = mixer.slots[slot_idx - 1];
+	auto& slot = GMixer.slots[slot_idx - 1];
 	if ((slot.flags & (u16)Mixer::Flags::Spatial) == 0) {
 		return;
 	}
@@ -310,34 +311,34 @@ ICF void Snd_AcquireHRTFSlot(u32 slot_idx)
 		return;
 	}
 
-	if (mixer.free_hrtf_slots.empty()) {
+	if (GMixer.free_hrtf_slots.empty()) {
 		return;
 	}
 
-	slot.hrtf_slot = mixer.free_hrtf_slots[mixer.free_hrtf_slots.size() - 1];
-	mixer.free_hrtf_slots.pop_back();
+	slot.hrtf_slot = GMixer.free_hrtf_slots[GMixer.free_hrtf_slots.size() - 1];
+	GMixer.free_hrtf_slots.pop_back();
 
 #ifndef DISABLE_STEAM_AUDIO
-	if (mixer.ipl_hrtf != nullptr) {
-		iplBinauralEffectReset(mixer.hrtf_slots[slot.hrtf_slot - 1].effect);
+	if (GMixer.ipl_hrtf != nullptr) {
+		iplBinauralEffectReset(GMixer.hrtf_slots[slot.hrtf_slot - 1].effect);
 	}
 #endif
 }
 
 ICF void Snd_ReleaseHRTFSlot(u32 slot_idx)
 {
-	if (!mixer.hrtf_enabled) return;
+	if (!GMixer.hrtf_enabled) return;
 
-	auto& slot = mixer.slots[slot_idx - 1];
+	auto& slot = GMixer.slots[slot_idx - 1];
 	if ((slot.flags & (u16)Mixer::Flags::Spatial) == 0) {
 		return;
 	}
 
 	if (slot.hrtf_slot) {
-		mixer.free_hrtf_slots.emplace_back(slot.hrtf_slot);
+		GMixer.free_hrtf_slots.emplace_back(slot.hrtf_slot);
 #ifndef DISABLE_RESONANCE_AUDIO
 		// Optionally reset resonance source state (no explicit reset API)
-		if (mixer.ra_api != nullptr) {
+		if (GMixer.ra_api != nullptr) {
 			// we keep the source around and overwrite its buffer next use
 		}
 #endif
@@ -352,9 +353,9 @@ MixerNewState(u32 slot, Mixer::State state)
 		return;
 	}
 
-	mixer.slots[slot - 1].prev_state = mixer.slots[slot - 1].state;
-	mixer.slots[slot - 1].state = state;
-	mixer.slots[slot - 1].fake_state = state;
+	GMixer.slots[slot - 1].prev_state = GMixer.slots[slot - 1].state;
+	GMixer.slots[slot - 1].state = state;
+	GMixer.slots[slot - 1].fake_state = state;
 }
 
 #define in_range(x, start, end) ((x) >= start && (x) <= end)
@@ -371,11 +372,11 @@ ICF u32 Snd_Milliseconds()
 
 ICF void Snd_PurgeCacheLine(u32 cache_idx, bool purge_from_entry)
 {
-	auto& line = mixer.cache_lines[cache_idx - 1];
+	auto& line = GMixer.cache_lines[cache_idx - 1];
 
 	if (purge_from_entry && line.name.size()) {
-		auto found_source = mixer.snd_sources.find(line.name.c_str());
-		if (found_source != mixer.snd_sources.end()) {
+		auto found_source = GMixer.snd_sources.find(line.name.c_str());
+		if (found_source != GMixer.snd_sources.end()) {
 			for (u32& entry_cache_idx : found_source->second.cache_lines) {
 				if (entry_cache_idx == cache_idx) {
 					entry_cache_idx = 0;
@@ -387,14 +388,14 @@ ICF void Snd_PurgeCacheLine(u32 cache_idx, bool purge_from_entry)
 
 	line.name = nullptr;
 	memset(&line, 0, sizeof(line));
-	mixer.free_cachelines.push_back(cache_idx);
+	GMixer.free_cachelines.push_back(cache_idx);
 }
 
 ICF void Snd_DestroySourceCache(sound_source& source)
 {
 	if (source.pub.ref_count == 0) {
 		for (u32& cache_idx : source.cache_lines) {
-			if (cache_idx != 0 && mixer.cache_lines[cache_idx - 1].name.size()) {
+			if (cache_idx != 0 && GMixer.cache_lines[cache_idx - 1].name.size()) {
 				Snd_PurgeCacheLine(cache_idx, false);
 				cache_idx = 0;
 			}
@@ -405,12 +406,12 @@ ICF void Snd_DestroySourceCache(sound_source& source)
 ICF u32 Snd_NewCacheLine()
 {
 	u32 cache_idx = 0;
-	if (mixer.free_cachelines.empty())
+	if (GMixer.free_cachelines.empty())
 	{
 		u64 least_timestamp = (u64)-1;
-		for (size_t i = 0; i < mixer.cache_lines.size(); i++)
+		for (size_t i = 0; i < GMixer.cache_lines.size(); i++)
 		{
-			sound_cache_line& Line = mixer.cache_lines[i];
+			sound_cache_line& Line = GMixer.cache_lines[i];
 
 			if (Line.timestamp == 0)
 			{
@@ -437,9 +438,9 @@ ICF u32 Snd_NewCacheLine()
 	}
 
 	{
-		cache_idx = mixer.free_cachelines[mixer.free_cachelines.size() - 1];
-		mixer.free_cachelines.pop_back();
-		mixer.cache_lines[cache_idx - 1].timestamp = Snd_GetTimestamp();
+		cache_idx = GMixer.free_cachelines[GMixer.free_cachelines.size() - 1];
+		GMixer.free_cachelines.pop_back();
+		GMixer.cache_lines[cache_idx - 1].timestamp = Snd_GetTimestamp();
 	}
 	return cache_idx;
 }
@@ -549,9 +550,9 @@ ICF sound_source* Snd_FindSound(const xr_string& name)
 		return nullptr;
 	}
 
-	xrSRWLockGuard guard(mixer.source_lock, true);
-	auto found_source = mixer.snd_sources.find(name);
-	if (found_source == mixer.snd_sources.end()) {
+	xrSRWLockGuard guard(GMixer.source_lock, true);
+	auto found_source = GMixer.snd_sources.find(name);
+	if (found_source == GMixer.snd_sources.end()) {
 		return nullptr;
 	}
 
@@ -569,8 +570,8 @@ ICF sound_source* Snd_AcquireSound(const xr_string& name, bool fail_if_not_found
 	R_ASSERT(!fail_if_not_found);
 
 	// TODO: async file load?
-	xrSRWLockGuard guard(mixer.source_lock);
-	source = &mixer.snd_sources[name];
+	xrSRWLockGuard guard(GMixer.source_lock);
+	source = &GMixer.snd_sources[name];
 	if (source->reader == nullptr) {
 		Snd_LoadSource(*source, name.c_str());
 	}
@@ -586,9 +587,9 @@ ICF void Snd_ReleaseSound(const xr_string& name)
 	}
 
 	{
-		xrSRWLockGuard guard(mixer.source_lock, true);
-		auto found_source = mixer.snd_sources.find(name);
-		if (found_source == mixer.snd_sources.end()) {
+		xrSRWLockGuard guard(GMixer.source_lock, true);
+		auto found_source = GMixer.snd_sources.find(name);
+		if (found_source == GMixer.snd_sources.end()) {
 			return;
 		}
 
@@ -598,9 +599,9 @@ ICF void Snd_ReleaseSound(const xr_string& name)
 		}
 	}
 
-	xrSRWLockGuard guard(mixer.source_lock);
-	auto found_source = mixer.snd_sources.find(name);
-	if (found_source == mixer.snd_sources.end() || found_source->second.pub.ref_count != 0) {
+	xrSRWLockGuard guard(GMixer.source_lock);
+	auto found_source = GMixer.snd_sources.find(name);
+	if (found_source == GMixer.snd_sources.end() || found_source->second.pub.ref_count != 0) {
 		return;
 	}
 
@@ -610,7 +611,7 @@ ICF void Snd_ReleaseSound(const xr_string& name)
 	xr_free(source.data);
 
 	Snd_DestroySourceCache(source);
-	mixer.snd_sources.erase(found_source);
+	GMixer.snd_sources.erase(found_source);
 }
 
 ICF u32 Snd_ReadFromSource(sound_source& source, float** buffer, u32 frames)
@@ -658,7 +659,7 @@ enum class ESlotOcclusionResult
 
 ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, const sound_source& source, float dt, float* occ_volume)
 {
-	auto& slot = mixer.slots[slot_idx - 1];
+	auto& slot = GMixer.slots[slot_idx - 1];
 	if (slot.state != Mixer::State::Playing)
 	{
 		return ESlotOcclusionResult::False;
@@ -671,7 +672,7 @@ ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, const sound_source& sou
 		// Check range
 		Fvector& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
 		Fvector& distances = slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
-		float dist = mixer.P.distance_to(pos);
+		float dist = GMixer.P.distance_to(pos);
 		if (dist > distances.y)
 		{
 			if (occ_volume)
@@ -683,7 +684,7 @@ ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, const sound_source& sou
 
 		if (occ_volume != nullptr)
 		{
-			float occ = Sound->get_occlusion_to(mixer.P, pos);
+			float occ = Sound->get_occlusion_to(GMixer.P, pos);
 			clamp(occ, 0.f, 1.f);
 			*occ_volume = occ;
 
@@ -703,10 +704,10 @@ ICF u32 Snd_FindAvailableCacheLine(sound_source& source, u32 position)
 	u32 found_cache_idx = 0;
 	for (const u32& cache_idx : source.cache_lines) {
 		if (cache_idx != 0) {
-			auto& line = mixer.cache_lines[cache_idx - 1];
+			auto& line = GMixer.cache_lines[cache_idx - 1];
 			if (in_range(position, line.start, line.end) && in_range(position + needed_frames, line.start, line.end)) {
 				found_cache_idx = cache_idx;
-				mixer.stats.cache_hit_count++;
+				GMixer.stats.cache_hit_count++;
 				break;
 			}
 		}
@@ -721,12 +722,12 @@ ICF void Snd_UpdateCache(sound_source& source, u32 position)
 	PROF_EVENT("Sound: Update Slot Cache");
 
 	{
-		xrSRWLockGuard guard2(mixer.source_lock, true);
+		xrSRWLockGuard guard2(GMixer.source_lock, true);
 		u32 found_cache_idx = Snd_FindAvailableCacheLine(source, position);
 		if (found_cache_idx == 0 && source.file.datasource != nullptr) {
-			mixer.stats.cache_miss_count++;
+			GMixer.stats.cache_miss_count++;
 			found_cache_idx = Snd_NewCacheLine();
-			auto& line = mixer.cache_lines[found_cache_idx - 1];
+			auto& line = GMixer.cache_lines[found_cache_idx - 1];
 
 			u32 cache_size = ((SND_BLOCKSIZE + 1) * CACHE_LINE_WIDTH);
 
@@ -774,8 +775,8 @@ ICF void Snd_UpdateCache(sound_source& source, u32 position)
 						continue;
 					}
 
-					if (mixer.cache_lines[source.cache_lines[i] - 1].timestamp < least_timestamp) {
-						least_timestamp = mixer.cache_lines[source.cache_lines[i] - 1].timestamp;
+					if (GMixer.cache_lines[source.cache_lines[i] - 1].timestamp < least_timestamp) {
+						least_timestamp = GMixer.cache_lines[source.cache_lines[i] - 1].timestamp;
 						cache_entry_idx = i + 1;
 						continue;
 					}
@@ -794,7 +795,7 @@ ICF void Snd_UpdateCache(sound_source& source, u32 position)
 
 ICF u32 Snd_ReadSlotData(u32 slot_idx, sound_source& source, float** data, u32 frames_count)
 {
-	auto& slot = mixer.slots[slot_idx - 1];
+	auto& slot = GMixer.slots[slot_idx - 1];
 
 	u32 read_position = slot.position;
 	u32 frames_to_read = frames_count;
@@ -812,7 +813,7 @@ ICF u32 Snd_ReadSlotData(u32 slot_idx, sound_source& source, float** data, u32 f
 			break;
 		}
 
-		auto& cache_line = mixer.cache_lines[found_cache_idx - 1];
+		auto& cache_line = GMixer.cache_lines[found_cache_idx - 1];
 		u32 begin_offset = read_position - cache_line.start;
 		u32 cache_frames = std::min(frames_to_read, cache_line.end - read_position);
 		if (cache_frames == 0) {
@@ -832,7 +833,7 @@ ICF u32 Snd_ReadSlotData(u32 slot_idx, sound_source& source, float** data, u32 f
 
 ICF void Snd_ReadSlot(u32 slot_idx, sound_source& source, float** data, u32 frames_count)
 {
-	auto& slot = mixer.slots[slot_idx - 1];
+	auto& slot = GMixer.slots[slot_idx - 1];
 	if (source.pub.frames_total == 0) {
 		MixerNewState(slot_idx, Mixer::State::Stopped);
 		return;
@@ -870,25 +871,25 @@ ICF void Snd_ReadSlot(u32 slot_idx, sound_source& source, float** data, u32 fram
 
 ICF void Snd_ProcessSlot(u32 slot_idx, sound_source& source, float** data)
 {
-	auto& slot = mixer.slots[slot_idx - 1];
+	auto& slot = GMixer.slots[slot_idx - 1];
 	float pitch = slot.parameters[(u32)Mixer::ParameterId::Pitch].x;
 
 	u32 output_frames = SND_BLOCKSIZE;
-	float ratio = std::clamp(pitch * mixer.time_factor, 0.0f, (float)SND_MAX_PITCH);
+	float ratio = std::clamp(pitch * GMixer.time_factor, 0.0f, (float)SND_MAX_PITCH);
 	u32 input_frames = std::max((u32)((float)output_frames * ratio), 1u);
 
 	bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
 
 	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-		memset(mixer.read_buffer[ch], 0, (input_frames + 1) * sizeof(float));
+		memset(GMixer.read_buffer[ch], 0, (input_frames + 1) * sizeof(float));
 	}
 
-	if (is_music || fis_zero(1.0 - mixer.time_factor)) {
+	if (is_music || fis_zero(1.0 - GMixer.time_factor)) {
 		Snd_ReadSlot(slot_idx, source, data, SND_BLOCKSIZE);
 	} else {
 		float* offfseted_data[SND_CHANNEL_COUNT];
 		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-			offfseted_data[ch] = mixer.read_buffer[ch];
+			offfseted_data[ch] = GMixer.read_buffer[ch];
 		}
 
 		Snd_ReadSlot(slot_idx, source, offfseted_data, input_frames+1);
@@ -907,19 +908,19 @@ ICF void Snd_PrecacheRenderCallback()
 	static u64 counter = 0;
 	static u64 timestamp = Snd_GetTimestamp();
 
-	xrSRWLockGuard g1(mixer.manage_lock);
+	xrSRWLockGuard g1(GMixer.manage_lock);
 	float dt = (float)((double)(Snd_GetTimestamp() - timestamp) / 1000000000.0);
 
-	mixer.stats.frame_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
+	GMixer.stats.frame_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
 	timestamp = Snd_GetTimestamp();
 
 	if (counter % 100 == 0) {
-		mixer.stats.cache_hit_count = 0;
-		mixer.stats.cache_miss_count = 0;
+		GMixer.stats.cache_hit_count = 0;
+		GMixer.stats.cache_miss_count = 0;
 	}
 
-	for (size_t i = 0; i < mixer.slots.size(); i++) {
-		auto& slot = mixer.slots[i];
+	for (size_t i = 0; i < GMixer.slots.size(); i++) {
+		auto& slot = GMixer.slots[i];
 
 		sound_source* source = Snd_FindSound(slot.sound_name);
 		if (source != nullptr && Snd_SlotOcclusion(i + 1, *source, dt, nullptr) != ESlotOcclusionResult::False)
@@ -944,14 +945,14 @@ ICF void Snd_PrecacheRenderCallback()
 		}
 	}
 
-	mixer.stats.cache_lines_free = mixer.free_cachelines.size();
-	mixer.stats.precache_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
+	GMixer.stats.cache_lines_free = GMixer.free_cachelines.size();
+	GMixer.stats.precache_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
 	counter++;
 }
 
 ICF void Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 {
-	auto& slot = mixer.slots[slot_idx - 1];
+	auto& slot = GMixer.slots[slot_idx - 1];
 	if ((slot.flags & (u32)Mixer::Flags::Spatial) == 0) {
 		return;
 	}
@@ -961,11 +962,11 @@ ICF void Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 
 	if (slot.hrtf_slot == 0) {
 		dsp_stuff stuff = {
-			.dt = mixer.dt,
+			.dt = GMixer.dt,
 			.panning = slot.panning,
-			.camera_position = &mixer.P,
-			.camera_direction = &mixer.D,
-			.camera_normal = &mixer.N,
+			.camera_position = &GMixer.P,
+			.camera_direction = &GMixer.D,
+			.camera_normal = &GMixer.N,
 			.obj_position = &pos
 		};
 
@@ -973,7 +974,7 @@ ICF void Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 		return;
 	}
 
-	auto& hrtf_slot = mixer.hrtf_slots[slot.hrtf_slot - 1];
+	auto& hrtf_slot = GMixer.hrtf_slots[slot.hrtf_slot - 1];
 
 #ifndef DISABLE_STEAM_AUDIO
 	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
@@ -984,11 +985,11 @@ ICF void Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 	Fvector relative_pos;
 	float distance;
 	dsp_stuff stuff = {
-		.dt = mixer.dt,
+		.dt = GMixer.dt,
 		.panning = slot.panning,
-		.camera_position = &mixer.P,
-		.camera_direction = &mixer.D,
-		.camera_normal = &mixer.N,
+		.camera_position = &GMixer.P,
+		.camera_direction = &GMixer.D,
+		.camera_normal = &GMixer.N,
 		.obj_position = &pos
 	};
 
@@ -1001,19 +1002,19 @@ ICF void Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 	// HRTF
 	IPLBinauralEffectParams binaural_params = { 
 		.direction = {relative_pos.x, relative_pos.y, relative_pos.z}, 
-		.spatialBlend = 1.0f, .hrtf = mixer.ipl_hrtf
+		.spatialBlend = 1.0f, .hrtf = GMixer.ipl_hrtf
 	};
 
 	IPLAudioBuffer out_buf = { .numChannels = SND_CHANNEL_COUNT, .numSamples = SND_BLOCKSIZE, .data = data };
 	R_ASSERT(iplBinauralEffectApply(hrtf_slot.effect, &binaural_params, &hrtf_slot.buf_desc, &out_buf) == IPL_STATUS_SUCCESS);
 #elif !defined(DISABLE_RESONANCE_AUDIO)
 
-	mixer.ra_api->SetHeadPosition(mixer.P.x, mixer.P.y, mixer.P.z);
-	if (mixer.ra_api != nullptr)
+	GMixer.ra_api->SetHeadPosition(GMixer.P.x, GMixer.P.y, GMixer.P.z);
+	if (GMixer.ra_api != nullptr)
 	{
-		mixer.ra_api->SetSourcePosition(hrtf_slot.source_id, pos.x, pos.y, pos.z);
-		mixer.ra_api->SetPlanarBuffer(hrtf_slot.source_id, (const float* const*)data, SND_CHANNEL_COUNT, SND_BLOCKSIZE);
-		mixer.ra_api->FillPlanarOutputBuffer(SND_CHANNEL_COUNT, SND_BLOCKSIZE, data);
+		GMixer.ra_api->SetSourcePosition(hrtf_slot.source_id, pos.x, pos.y, pos.z);
+		GMixer.ra_api->SetPlanarBuffer(hrtf_slot.source_id, (const float* const*)data, SND_CHANNEL_COUNT, SND_BLOCKSIZE);
+		GMixer.ra_api->FillPlanarOutputBuffer(SND_CHANNEL_COUNT, SND_BLOCKSIZE, data);
 	}
 #endif
 
@@ -1035,7 +1036,7 @@ ICF void Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 
 ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buffer, float dt)
 {
-	auto& Slot = mixer.slots[slot_idx - 1];
+	auto& Slot = GMixer.slots[slot_idx - 1];
 
 	float occ_volume = 1.0f;
 	ESlotOcclusionResult OCCResult = Snd_SlotOcclusion(slot_idx, Source, dt, &occ_volume);
@@ -1043,7 +1044,8 @@ ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buff
 	{
 		// TODO: hack for simulated sounds
 		Slot.position = std::min(Slot.position + SND_BLOCKSIZE, Source.pub.frames_total);
-		if (Slot.position == Source.pub.frames_total && (Slot.flags & (u16)Mixer::Flags::Looped) == 0) {
+		if (Slot.position == Source.pub.frames_total && (Slot.flags & (u16)Mixer::Flags::Looped) == 0)
+		{
 			MixerNewState(slot_idx, Mixer::State::Stopped);
 		}
 
@@ -1051,7 +1053,8 @@ ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buff
 	}
 
 	// Clear process buffer and read data from source
-	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+	{
 		memset(process_buffer[ch], 0, SND_BLOCKSIZE * sizeof(float));
 	}
 
@@ -1069,20 +1072,22 @@ ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buff
 	}
 
 	// Update fade volume for non-intro sounds (fade in on startup)
-	//if (!is_music) {
+	// if (!is_music) {
 	//	slot.fade_volume += dt * 10.0f;
 	//	clamp(slot.fade_volume, 0.0f, 1.0f);
 	//}
-	//else
+	// else
 	{
 		Slot.fade_volume = 1.f;
 	}
 
-	if (Slot.stopping_position != (u32)-1) {
+	if (Slot.stopping_position != (u32)-1)
+	{
 		u32 stopping_total = Source.pub.frames_total - Slot.stopping_position;
-		if (stopping_total > 1 && Slot.position >= Slot.stopping_position) {
+		if (stopping_total > 1 && Slot.position >= Slot.stopping_position)
+		{
 			u32 begin_offset = Slot.position - Slot.stopping_position;
-			u32 write_count = IsMusic ? SND_BLOCKSIZE : (u32)((float)SND_BLOCKSIZE * mixer.time_factor);
+			u32 write_count = IsMusic ? SND_BLOCKSIZE : (u32)((float)SND_BLOCKSIZE * GMixer.time_factor);
 			u32 end_offset = std::min(begin_offset + write_count, Source.pub.frames_total - 1);
 			begin_factor = 1.0f - ((float)begin_offset / (float)(stopping_total - 1));
 			end_factor = 1.0f - ((float)end_offset / (float)(stopping_total - 1));
@@ -1094,11 +1099,14 @@ ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buff
 	// Apply final volumes
 	float slot_volume = volumes.x * volumes.y * volumes.z;
 
-	float vol_mixer = mixer.effect_volume;
-	if (Slot.flags & (u16)Mixer::Flags::Music) {
-		vol_mixer = mixer.music_volume;
-	} else if (Slot.flags & (u16)Mixer::Flags::Shooting) {
-		vol_mixer = mixer.shooting_volume;
+	float vol_mixer = GMixer.effect_volume;
+	if (Slot.flags & (u16)Mixer::Flags::Music)
+	{
+		vol_mixer = GMixer.music_volume;
+	}
+	else if (Slot.flags & (u16)Mixer::Flags::Shooting)
+	{
+		vol_mixer = GMixer.shooting_volume;
 	}
 
 	float volume_final = occ_volume * slot_volume * vol_mixer * Slot.fade_volume;
@@ -1109,24 +1117,26 @@ ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buff
 	float right_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].y;
 
 	// Spatial processing
-	if (!(Slot.flags & (u32)Mixer::Flags::Intro) && Source.pub.channels_count == 1) {
+	if (!(Slot.flags & (u32)Mixer::Flags::Intro) && Source.pub.channels_count == 1)
+	{
 		PROF_EVENT("Slot Spatial");
 
-		if (Slot.flags & (u32)Mixer::Flags::Spatial) {
-#if !defined(DISABLE_STEAM_AUDIO) || 0//!defined(DISABLE_RESONANCE_AUDIO)
-			if (psSoundFlags.is(ss_HRTF) && mixer.hrtf_enabled)
+		if (Slot.flags & (u32)Mixer::Flags::Spatial)
+		{
+#if !defined(DISABLE_STEAM_AUDIO) || 0 //! defined(DISABLE_RESONANCE_AUDIO)
+			if (psSoundFlags.is(ss_HRTF) && GMixer.hrtf_enabled)
 			{
-				Snd_PhononSpatialProcess(process_buffer, slot_idx);
+				Snd_PhononSpatialProcess(process_buffer, SlotIdx);
 			}
 			else
 #endif
 			{
 				dsp_stuff stuff = {
-					.dt = mixer.dt,
+					.dt = GMixer.dt,
 					.panning = Slot.panning,
-					.camera_position = &mixer.P,
-					.camera_direction = &mixer.D,
-					.camera_normal = &mixer.N,
+					.camera_position = &GMixer.P,
+					.camera_direction = &GMixer.D,
+					.camera_normal = &GMixer.N,
 					.obj_position = &pos
 				};
 
@@ -1134,18 +1144,21 @@ ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buff
 			}
 		}
 
-		if (mixer.editor_zone) {
+		if (GMixer.editor_zone)
+		{
 			Slot.zone_idx = 1;
 		}
 
 		u32 zone_idx = Slot.zone_idx;
-		if (zone_idx && zone_idx <= mixer.zones.size()) {
-			sound_zone_params& zone = mixer.zones[zone_idx - 1];
+		if (zone_idx && zone_idx <= GMixer.zones.size())
+		{
+			sound_zone_params& zone = GMixer.zones[zone_idx - 1];
 			zone.use_count++;
 			zone.last_use_ms = Snd_Milliseconds();
 
 			float* reverb_buffer[SND_CHANNEL_COUNT] = {};
-			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+			{
 				reverb_buffer[ch] = zone.data[ch];
 			}
 
@@ -1157,8 +1170,9 @@ ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buff
 	// TODO(vertver): push data to buses instead of main
 	int bus_idx = IsMusic ? SND_BUS_MUSIC : SND_BUS_EFFECTS;
 	float* bus_buffer[SND_CHANNEL_COUNT] = {};
-	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-		bus_buffer[ch] = mixer.buses[bus_idx].data[ch];
+	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+	{
+		bus_buffer[ch] = GMixer.buses[bus_idx].data[ch];
 	}
 
 	// Bus mixing
@@ -1169,7 +1183,7 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 {
 	PROF_EVENT("Sound: Render Stage");
 
-	xrSRWLockGuard guard(mixer.render_lock, true);
+	xrSRWLockGuard guard(GMixer.render_lock, true);
 
 	static u64 timestamp = Snd_GetTimestamp();
 	float dt = (float)((double)(Snd_GetTimestamp() - timestamp) / 1000000000.0);
@@ -1179,45 +1193,56 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 	static float _process_buffer[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
 
 	float* process_buffer[SND_CHANNEL_COUNT] = {};
-	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
+	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+	{
 		process_buffer[i] = _process_buffer[i];
 	}
 
-	for (size_t i = 0; i < SND_BUS_COUNT; i++) {	
-		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-			memset(mixer.buses[i].data[ch], 0, SND_BLOCKSIZE * sizeof(float));
+	for (size_t i = 0; i < SND_BUS_COUNT; i++)
+	{
+		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+		{
+			memset(GMixer.buses[i].data[ch], 0, SND_BLOCKSIZE * sizeof(float));
 		}
 	}
 
-	for (auto& zone : mixer.zones) {
+	for (auto& zone : GMixer.zones)
+	{
 		zone.use_count = 0;
 		memset(zone.data, 0, sizeof(zone.data));
 	}
 
-	for (size_t i = 0; i < mixer.slots.size(); i++) {
+	for (size_t i = 0; i < GMixer.slots.size(); i++)
+	{
 		PROF_EVENT("Slot Render");
-		if (mixer.slots[i].state != Mixer::State::Playing) {
+		if (GMixer.slots[i].state != Mixer::State::Playing)
+		{
 			continue;
 		}
 
-		sound_source* source = Snd_FindSound(mixer.slots[i].sound_name);
-		if (source == nullptr) {
+		sound_source* source = Snd_FindSound(GMixer.slots[i].sound_name);
+		if (source == nullptr)
+		{
 			MixerNewState(i + 1, Mixer::State::Stopped);
 			continue;
 		}
 
 		Snd_RenderSlot(i + 1, *source, process_buffer, dt);
-		Snd_ReleaseSound(mixer.slots[i].sound_name);
+		Snd_ReleaseSound(GMixer.slots[i].sound_name);
 	}
 
-	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
+	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+	{
 		process_buffer[i] = _process_buffer[i];
 	}
 
 	// Reverb mixing
-	if (psSoundFlags.is(ss_EFX)) {
-		for (auto& zone : mixer.zones) {
-			if (zone.use_count == 0 && (zone.last_use_ms + 3000) < Snd_Milliseconds()) {
+	if (psSoundFlags.is(ss_EFX))
+	{
+		for (auto& zone : GMixer.zones)
+		{
+			if (zone.use_count == 0 && (zone.last_use_ms + 3000) < Snd_Milliseconds())
+			{
 				continue;
 			}
 
@@ -1225,9 +1250,10 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 			float* reverb_buffer[SND_CHANNEL_COUNT] = {};
 			float* bus_buffer[SND_CHANNEL_COUNT] = {};
 
-			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+			{
 				reverb_buffer[ch] = zone.data[ch];
-				bus_buffer[ch] = mixer.buses[SND_BUS_REVERB].data[ch];
+				bus_buffer[ch] = GMixer.buses[SND_BUS_REVERB].data[ch];
 			}
 
 #ifndef DISABLE_RESONANCE_AUDIO
@@ -1238,9 +1264,10 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 #endif
 
 #ifndef DISABLE_STEAM_AUDIO
-			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-				IPLAudioBuffer reverb_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &reverb_buffer[ch] };
-				IPLAudioBuffer out_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &process_buffer[ch] };
+			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+			{
+				IPLAudioBuffer reverb_buf = {.numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &reverb_buffer[ch]};
+				IPLAudioBuffer out_buf = {.numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &process_buffer[ch]};
 				IPLReflectionEffectParams params = {};
 				ConvertReverbSettings(&zone.settings, &params, SND_SAMPLERATE);
 				iplReflectionEffectApply(zone.state.effect[ch], &params, &reverb_buf, &out_buf, nullptr);
@@ -1254,127 +1281,137 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 	{
 		PROF_EVENT("Sound Mixing");
 		float* master_buffer[SND_CHANNEL_COUNT] = {};
-		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-			master_buffer[ch] = mixer.buses[SND_BUS_MASTER].data[ch];
+		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+		{
+			master_buffer[ch] = GMixer.buses[SND_BUS_MASTER].data[ch];
 		}
 
 		// Master mixing
-		for (size_t i = 0; i < SND_BUS_COUNT; i++) {
+		for (size_t i = 0; i < SND_BUS_COUNT; i++)
+		{
 			float* bus_buffer[SND_CHANNEL_COUNT] = {};
-			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-				bus_buffer[ch] = mixer.buses[i].data[ch];
+			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+			{
+				bus_buffer[ch] = GMixer.buses[i].data[ch];
 			}
 
 			DSP_MixBuffer(master_buffer, bus_buffer, 1.0f, 1.0f, SND_BLOCKSIZE);
 		}
 
-		DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, master_buffer, mixer.compression, SND_BLOCKSIZE, mixer.compressor_envelope);
+		DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, master_buffer, GMixer.compression, SND_BLOCKSIZE, GMixer.compressor_envelope);
 
 		// Clipping and master volume adjust
-		for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
-			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+		for (size_t i = 0; i < SND_BLOCKSIZE; i++)
+		{
+			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+			{
 				float sample = master_buffer[ch][i];
-				sample = std::clamp(sample, -1.0f, 1.0f) * mixer.master_volume;
+				sample = std::clamp(sample, -1.0f, 1.0f) * GMixer.master_volume;
 				buffer[i * SND_CHANNEL_COUNT + ch] = sample;
 			}
 		}
 	}
 
 #ifdef DEBUG_DRAW
-	for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
+	for (size_t i = 0; i < SND_BLOCKSIZE; i++)
+	{
 		float sample = 0.0f;
-		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+		{
 			sample += buffer[i * SND_CHANNEL_COUNT + ch];
 		}
-		
+
 		sample /= float(SND_CHANNEL_COUNT);
-		mixer.aligned_input_fft[i] = mixer.fft_window[i] * sample;
+		GMixer.aligned_input_fft[i] = GMixer.fft_window[i] * sample;
 	}
 
-	pffft_transform_ordered(mixer.fft_setup, mixer.aligned_input_fft, mixer.aligned_output_fft, nullptr, PFFFT_FORWARD);
-	mixer.stats.spectral_data[0] = lin2dB(fabs(mixer.aligned_output_fft[0]) / float(SND_BLOCKSIZE));
+	pffft_transform_ordered(GMixer.fft_setup, GMixer.aligned_input_fft, GMixer.aligned_output_fft, nullptr, PFFFT_FORWARD);
+	GMixer.stats.spectral_data[0] = lin2dB(fabs(GMixer.aligned_output_fft[0]) / float(SND_BLOCKSIZE));
 
 	for (size_t k = 1; k < SND_BLOCKSIZE / 2; k++)
 	{
-		float re = mixer.aligned_output_fft[k];
-		float im = mixer.aligned_output_fft[SND_BLOCKSIZE + k - 1];
+		float re = GMixer.aligned_output_fft[k];
+		float im = GMixer.aligned_output_fft[SND_BLOCKSIZE + k - 1];
 		float mag = sqrtf(re * re + im * im) / float(SND_BLOCKSIZE);
-		mixer.stats.spectral_data[k] = lin2dB(mag);
+		GMixer.stats.spectral_data[k] = lin2dB(mag);
 	}
 
-	mixer.stats.spectral_data[SND_BLOCKSIZE / 2] = lin2dB(fabs(mixer.aligned_output_fft[SND_BLOCKSIZE / 2]) / float(SND_BLOCKSIZE));
+	GMixer.stats.spectral_data[SND_BLOCKSIZE / 2] = lin2dB(fabs(GMixer.aligned_output_fft[SND_BLOCKSIZE / 2]) / float(SND_BLOCKSIZE));
 
 	float volumes[SND_CHANNEL_COUNT] = {};
-	for (size_t j = 0; j < SND_BLOCKSIZE; j++) {
-		for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
+	for (size_t j = 0; j < SND_BLOCKSIZE; j++)
+	{
+		for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+		{
 			volumes[i] = (volumes[i] + fabs(buffer[j * SND_CHANNEL_COUNT + i])) * 0.5f;
 		}
 	}
 
-	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
+	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+	{
 		volumes[i] = lin2dB(volumes[i]);
 	}
 
-	memcpy(mixer.stats.channel_volumes, volumes, sizeof(volumes));
+	memcpy(GMixer.stats.channel_volumes, volumes, sizeof(volumes));
 #endif
 
-	mixer.stats.render_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
+	GMixer.stats.render_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
 }
 
 void 
 Mixer::Initialize()
 {
-	mixer.slots.clear();
-	mixer.free_slots.clear();
-	mixer.free_cachelines.clear();
-	mixer.cache_lines.clear();
-	mixer.sounds.clear();
-	mixer.cmd.clear();
-	mixer.cmd.reserve(256);
+	GMixer.slots.clear();
+	GMixer.free_slots.clear();
+	GMixer.free_cachelines.clear();
+	GMixer.cache_lines.clear();
+	GMixer.sounds.clear();
+	GMixer.cmd.clear();
+	GMixer.cmd.reserve(256);
 	Snd_GrowSlots(true);
 	Snd_GrowCacheLines(true);
 	
 #ifndef DISABLE_STEAM_AUDIO
-	mixer.hrtf_enabled = true;
+	GMixer.hrtf_enabled = true;
 	IPLContextSettings ipl_settings = { .version = STEAMAUDIO_VERSION, .simdLevel = IPL_SIMDLEVEL_SSE2 };
 	IPLAudioSettings settings = { .samplingRate = SND_SAMPLERATE, .frameSize = SND_BLOCKSIZE };
-	IPLerror err = iplContextCreate(&ipl_settings, &mixer.ipl_context);
+	IPLerror err = iplContextCreate(&ipl_settings, &GMixer.ipl_context);
 	R_ASSERT(err == IPL_STATUS_SUCCESS);
 
-	mixer.free_hrtf_slots.resize(SND_HRTF_SLOT_COUNT);
+	GMixer.free_hrtf_slots.resize(SND_HRTF_SLOT_COUNT);
 	for (size_t i = 0; i < SND_HRTF_SLOT_COUNT; i++) {
-		mixer.free_hrtf_slots[i] = i + 1;
+		GMixer.free_hrtf_slots[i] = i + 1;
 	}
 
 	IPLHRTFSettings hrtf_settings = { .type = IPL_HRTFTYPE_DEFAULT, .volume = 1.0f };
-	R_ASSERT(iplHRTFCreate(mixer.ipl_context, &settings, &hrtf_settings, &mixer.ipl_hrtf) == IPL_STATUS_SUCCESS);
+	R_ASSERT(iplHRTFCreate(GMixer.ipl_context, &settings, &hrtf_settings, &GMixer.ipl_hrtf) == IPL_STATUS_SUCCESS);
 
-	mixer.hrtf_slots.resize(SND_HRTF_SLOT_COUNT);
+	GMixer.hrtf_slots.resize(SND_HRTF_SLOT_COUNT);
 	for (size_t i = 0; i < SND_HRTF_SLOT_COUNT; i++) {
-		IPLBinauralEffectSettings binaural = { .hrtf = mixer.ipl_hrtf };
-		R_ASSERT(iplBinauralEffectCreate(mixer.ipl_context, &settings, &binaural, &mixer.hrtf_slots[i].effect) == IPL_STATUS_SUCCESS);
+		IPLBinauralEffectSettings binaural = { .hrtf = GMixer.ipl_hrtf };
+		R_ASSERT(iplBinauralEffectCreate(GMixer.ipl_context, &settings, &binaural, &GMixer.hrtf_slots[i].effect) == IPL_STATUS_SUCCESS);
 		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-			mixer.hrtf_slots[i].process_buffer[ch] = mixer.hrtf_slots[i]._process_buffer[ch];
+			GMixer.hrtf_slots[i].process_buffer[ch] = GMixer.hrtf_slots[i]._process_buffer[ch];
 		}
 
-		mixer.hrtf_slots[i].buf_desc = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = mixer.hrtf_slots[i].process_buffer };
+		GMixer.hrtf_slots[i].buf_desc = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = GMixer.hrtf_slots[i].process_buffer };
 	}
 #elif !defined(DISABLE_RESONANCE_AUDIO)
 	// Initialize Resonance Audio API and HRTF slots
-	mixer.hrtf_enabled = true;
-	mixer.ra_api = vraudio::CreateResonanceAudioApi(SND_CHANNEL_COUNT, SND_BLOCKSIZE, SND_SAMPLERATE);
+	GMixer.hrtf_enabled = true;
+	GMixer.ra_api = vraudio::CreateResonanceAudioApi(SND_CHANNEL_COUNT, SND_BLOCKSIZE, SND_SAMPLERATE);
 	
-	R_ASSERT(mixer.ra_api != nullptr);
+	R_ASSERT(GMixer.ra_api != nullptr);
 
-	mixer.free_hrtf_slots.resize(SND_HRTF_SLOT_COUNT);
+	GMixer.free_hrtf_slots.resize(SND_HRTF_SLOT_COUNT);
 	for (size_t i = 0; i < SND_HRTF_SLOT_COUNT; i++) {
-		mixer.free_hrtf_slots[i] = i + 1;
+		GMixer.free_hrtf_slots[i] = i + 1;
 	}
 
-	mixer.hrtf_slots.resize(SND_HRTF_SLOT_COUNT);
+	GMixer.hrtf_slots.resize(SND_HRTF_SLOT_COUNT);
 	for (size_t i = 0; i < SND_HRTF_SLOT_COUNT; i++) {
 		// Create a Resonance sound object source for this slot
-		mixer.hrtf_slots[i].source_id = mixer.ra_api->CreateSoundObjectSource(vraudio::RenderingMode::kBinauralHighQuality);
+		GMixer.hrtf_slots[i].source_id = GMixer.ra_api->CreateSoundObjectSource(vraudio::RenderingMode::kBinauralHighQuality);
 	}
 #endif
 
@@ -1382,12 +1419,12 @@ Mixer::Initialize()
 #pragma todo(replace with aligned allocators)
 	// Blackman-Harris window
 	for (int i = 0; i < SND_BLOCKSIZE; ++i) {
-		mixer.fft_window[i] = .5 * (1. - cosf(2. * 3.1415926535897932384 * (f64)i / (f64)(SND_BLOCKSIZE-1)));
+		GMixer.fft_window[i] = .5 * (1. - cosf(2. * 3.1415926535897932384 * (f64)i / (f64)(SND_BLOCKSIZE-1)));
 	}
 
-	mixer.aligned_input_fft = (float*)aligned_alloc(16, SND_BLOCKSIZE * sizeof(float));
-	mixer.aligned_output_fft = (float*)aligned_alloc(16, SND_BLOCKSIZE * 2 * sizeof(float));
-	mixer.fft_setup = pffft_new_setup(SND_BLOCKSIZE, PFFFT_REAL);
+	GMixer.aligned_input_fft = (float*)aligned_alloc(16, SND_BLOCKSIZE * sizeof(float));
+	GMixer.aligned_output_fft = (float*)aligned_alloc(16, SND_BLOCKSIZE * 2 * sizeof(float));
+	GMixer.fft_setup = pffft_new_setup(SND_BLOCKSIZE, PFFFT_REAL);
 #endif
 
 	Backend::Initialize(Snd_MixerRenderCallback, Snd_PrecacheRenderCallback);
@@ -1399,45 +1436,45 @@ Mixer::Shutdown()
 	Backend::Shutdown();
 
 #ifdef DEBUG_DRAW
-	if (mixer.fft_setup) {
-		pffft_destroy_setup(mixer.fft_setup);
-		mixer.fft_setup = nullptr;
+	if (GMixer.fft_setup) {
+		pffft_destroy_setup(GMixer.fft_setup);
+		GMixer.fft_setup = nullptr;
 	}
 #endif
 
 #ifndef DISABLE_STEAM_AUDIO
 	for (size_t i = 0; i < SND_HRTF_SLOT_COUNT; i++) {
-		if (mixer.hrtf_slots[i].effect != nullptr) {
-			iplBinauralEffectRelease(&mixer.hrtf_slots[i].effect);
+		if (GMixer.hrtf_slots[i].effect != nullptr) {
+			iplBinauralEffectRelease(&GMixer.hrtf_slots[i].effect);
 		}
 	}
 
-	if (mixer.ipl_hrtf) iplHRTFRelease(&mixer.ipl_hrtf);
-	if (mixer.ipl_context) iplContextRelease(&mixer.ipl_context);
+	if (GMixer.ipl_hrtf) iplHRTFRelease(&GMixer.ipl_hrtf);
+	if (GMixer.ipl_context) iplContextRelease(&GMixer.ipl_context);
 #endif
 
 #ifndef DISABLE_RESONANCE_AUDIO
-	if (mixer.ra_api) {
-		for (size_t i = 0; i < mixer.hrtf_slots.size(); ++i) {
-			auto id = mixer.hrtf_slots[i].source_id;
+	if (GMixer.ra_api) {
+		for (size_t i = 0; i < GMixer.hrtf_slots.size(); ++i) {
+			auto id = GMixer.hrtf_slots[i].source_id;
 			if (id != vraudio::ResonanceAudioApi::kInvalidSourceId) {
-				mixer.ra_api->DestroySource(id);
+				GMixer.ra_api->DestroySource(id);
 			}
 		}
-		delete mixer.ra_api;
-		mixer.ra_api = nullptr;
+		delete GMixer.ra_api;
+		GMixer.ra_api = nullptr;
 	}
 #endif
 
-	mixer.hrtf_slots.clear();
-	mixer.free_hrtf_slots.clear();
+	GMixer.hrtf_slots.clear();
+	GMixer.free_hrtf_slots.clear();
 
-	mixer.slots.clear();
-	mixer.free_slots.clear();
-	mixer.free_cachelines.clear();
-	mixer.cache_lines.clear();
-	mixer.sounds.clear();
-	mixer.cmd.clear();
+	GMixer.slots.clear();
+	GMixer.free_slots.clear();
+	GMixer.free_cachelines.clear();
+	GMixer.cache_lines.clear();
+	GMixer.sounds.clear();
+	GMixer.cmd.clear();
 }
 
 ICF void DestroyInternal(int slot)
@@ -1446,21 +1483,21 @@ ICF void DestroyInternal(int slot)
 		return;
 	}
 
-	if (!mixer.slots[slot - 1].sound_name.empty()) {
-		Snd_ReleaseSound(mixer.slots[slot - 1].sound_name);
-		mixer.slots[slot - 1].sound_name.clear();
+	if (!GMixer.slots[slot - 1].sound_name.empty()) {
+		Snd_ReleaseSound(GMixer.slots[slot - 1].sound_name);
+		GMixer.slots[slot - 1].sound_name.clear();
 	}
 
-	memset(mixer.slots[slot - 1].parameters, 0, sizeof(mixer.slots[slot - 1].parameters));
-	memset(mixer.slots[slot - 1].history, 0, sizeof(mixer.slots[slot - 1].history));
-	mixer.slots[slot - 1].position = 0;
-	mixer.slots[slot - 1].stopping_position = (u32)-1;
-	mixer.slots[slot - 1].flags = 0;
-	mixer.slots[slot - 1].state = Mixer::State::Stopped;
-	mixer.slots[slot - 1].prev_state = Mixer::State::Stopped;
-	mixer.slots[slot - 1].fake_state = Mixer::State::Stopped;
-	mixer.slots[slot - 1].fade_volume = 1.0f;
-	mixer.free_slots.push_back(slot);
+	memset(GMixer.slots[slot - 1].parameters, 0, sizeof(GMixer.slots[slot - 1].parameters));
+	memset(GMixer.slots[slot - 1].history, 0, sizeof(GMixer.slots[slot - 1].history));
+	GMixer.slots[slot - 1].position = 0;
+	GMixer.slots[slot - 1].stopping_position = (u32)-1;
+	GMixer.slots[slot - 1].flags = 0;
+	GMixer.slots[slot - 1].state = Mixer::State::Stopped;
+	GMixer.slots[slot - 1].prev_state = Mixer::State::Stopped;
+	GMixer.slots[slot - 1].fake_state = Mixer::State::Stopped;
+	GMixer.slots[slot - 1].fade_volume = 1.0f;
+	GMixer.free_slots.push_back(slot);
 }
 void 
 Mixer::Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, float shooting_volume, float compression, const Fmatrix& mtx, Fvector P, Fvector D, Fvector N)
@@ -1469,66 +1506,103 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 	sound_event* handler = (sound_event*)event_handler;
 
 	static u64 timestamp = Snd_GetTimestamp();
-	mixer.dt = (float)((Snd_GetTimestamp() - timestamp) / 1000000) * 0.001f;
+	GMixer.dt = (float)((Snd_GetTimestamp() - timestamp) / 1000000) * 0.001f;
 	timestamp = Snd_GetTimestamp();
 
-	mixer.time_factor = std::clamp(time_factor, 0.1f, 10.0f);
-	mixer.compression = compression;
-	mixer.master_volume = volume;
-	mixer.effect_volume = eff_volume;
-	mixer.music_volume = mus_volume;
-	mixer.shooting_volume = shooting_volume;
-	mixer.m_V = mtx;
-	mixer.P = P;
-	mixer.D = D;
-	mixer.N = N;
+	GMixer.time_factor = std::clamp(time_factor, 0.1f, 10.0f);
+	GMixer.compression = compression;
+	GMixer.master_volume = volume;
+	GMixer.effect_volume = eff_volume;
+	GMixer.music_volume = mus_volume;
+	GMixer.shooting_volume = shooting_volume;
+	GMixer.m_V = mtx;
+	GMixer.P = P;
+	GMixer.D = D;
+	GMixer.N = N;
 
-	mixer.render_lock.AcquireExclusive();
-	mixer.manage_lock.AcquireExclusive();
-	mixer.update_lock.AcquireExclusive();
+	GMixer.render_lock.AcquireExclusive();
+	GMixer.manage_lock.AcquireExclusive();
+	GMixer.update_lock.AcquireExclusive();
 
-	for (auto sound : mixer.sounds) {
-		if (sound == nullptr || !sound->slot() || sound->_g_object() == nullptr || !sound->unique_id()) {
+	for (auto& RefSound : GMixer.sounds)
+	{
+		if (RefSound == nullptr || !RefSound->slot() || RefSound->_g_object() == nullptr || !RefSound->unique_id())
+		{
 			continue;
 		}
 
-		auto& slot = mixer.slots[sound->slot() - 1];
+		auto& Slot = GMixer.slots[RefSound->slot() - 1];
 
-		if (slot.fake_state != State::Playing || slot.state != State::Playing) {
+		if (Slot.fake_state != State::Playing || Slot.state != State::Playing)
+		{
 			continue;
 		}
-		CObject* object = sound->_g_object();
-		if (slot.flags & (u16)Flags::Spatial && (slot.flags & (u16)Flags::NoPosUpdate) == 0) {
-			if (object != nullptr) {
-				auto& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
-				pos = ((IRenderable*)object)->renderable.xform.c;
+
+		CObject* Object = RefSound->_g_object();
+		if (Slot.flags & (u16)Flags::Spatial && (Slot.flags & (u16)Flags::NoPosUpdate) == 0)
+		{
+			if (Object != nullptr)
+			{
+				auto& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
+				Pos = ((IRenderable*)Object)->renderable.xform.c;
+			}
+		}
+
+		// Periodic AI sound-event propagation:
+		// re-emit the sound event every s_f_def_event_pulse seconds while the sound
+		// is playing so NPCs keep tracking ongoing / moving / looped fire.
+		if (RefSound->_p != nullptr && RefSound->_p->g_type != 0)
+		{
+			RefSound->TimeToPropagade -= GMixer.dt;
+			if (RefSound->TimeToPropagade <= 0.0f)
+			{
+				RefSound->TimeToPropagade = s_f_def_event_pulse;
+				if (handler != nullptr)
+				{
+					const Fvector& Dist = Slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
+					const float SndVolume = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].y;
+					float Clip = Dist.z * SndVolume;
+					float Range = std::min(Dist.z, Clip);
+					if (Range >= 0.1f)
+					{
+						handler(RefSound->_p, Range);
+					}
+				}
 			}
 		}
 	}
 
-	for (size_t i = 0; i < mixer.slots.size(); i++) {
-		auto& slot = mixer.slots[i];
-		if (slot.flags & (u16)Flags::NoFeedback && slot.state == State::Stopped) {
+	for (size_t i = 0; i < GMixer.slots.size(); i++)
+	{
+		auto& slot = GMixer.slots[i];
+		if (slot.flags & (u16)Flags::NoFeedback && slot.state == State::Stopped)
+		{
 			Destroy(i + 1);
-		} else {
+		}
+		else
+		{
 			bool occ_enable = ((slot.flags & ((u16)Flags::Intro | (u16)Flags::NoOCC)) == 0) && slot.state == State::Playing;
-			if (occ_enable) {
-				Fvector pos = (slot.flags & (u16)Flags::Spatial) ? slot.parameters[(u32)Mixer::ParameterId::Position] : mixer.P;
-				float dist = mixer.P.distance_to(pos);
-				if (dist <= slot.parameters[(u32)Mixer::ParameterId::DistanceRange].y) {
-					float out_occ = ::Sound->get_occlusion(pos, 0.2f, &mixer.occ);
+			if (occ_enable)
+			{
+				Fvector pos = (slot.flags & (u16)Flags::Spatial) ? slot.parameters[(u32)Mixer::ParameterId::Position] : GMixer.P;
+				float dist = GMixer.P.distance_to(pos);
+				if (dist <= slot.parameters[(u32)Mixer::ParameterId::DistanceRange].y)
+				{
+					float out_occ = ::Sound->get_occlusion(pos, 0.2f, &GMixer.occ);
 					float& old_occ = slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
-					volume_lerp(old_occ, out_occ, 1.0f, mixer.dt);
+					volume_lerp(old_occ, out_occ, 1.0f, GMixer.dt);
 
 					CDB::MODEL* env_model = ::Sound->get_geometry_env();
 					CDB::COLLIDER* collider = ::Sound->get_geometry_db();
-					if (env_model != nullptr) {
-						Fvector	dir = { 0,-1,0 };
+					if (env_model != nullptr)
+					{
+						Fvector dir = {0, -1, 0};
 						collider->ray_options(CDB::OPT_ONLYNEAREST);
 						collider->ray_query(env_model, pos, dir, 1000.f);
 						xr_vector<Fvector>& Verts = env_model->get_verts();
 						xr_vector<CDB::TRI>& Tris = env_model->get_tris();
-						if (collider->r_count()) {
+						if (collider->r_count())
+						{
 							CDB::RESULT* r = collider->r_begin();
 							CDB::TRI& T = Tris[r->id];
 							auto& verts = T.verts;
@@ -1536,337 +1610,411 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 							Fvector tri_norm;
 							tri_norm.mknormal(Verts[verts[0]], Verts[verts[1]], Verts[verts[2]]);
 
-							R_ASSERT(T.dummy < mixer.zones.size());
+							R_ASSERT(T.dummy < GMixer.zones.size());
 							slot.zone_idx = T.dummy + 1;
-						} else slot.zone_idx = 0;
-					} else slot.zone_idx = 0;
-				}
-			}
-		}
-	}
-
-	xrCriticalSectionGuard guard(mixer.play_lock);
-	for (const auto& cmd : mixer.cmd) {
-		switch (cmd.id) {
-		case sound_cmd_id::play: {
-			bool sound_exists = (cmd.param1 && mixer.sounds.contains((ref_sound*)cmd.param1));
-			ref_sound* sound = sound_exists ? (ref_sound*)cmd.param1 : nullptr;
-			u16 flags = cmd.param0;
-			CObject* obj = (CObject*)cmd.param3;
-
-			auto& actial_slot = mixer.slots[cmd.slot - 1];
-			bool is_same_file = actial_slot.sound_name == cmd.string_storage.c_str();
-			if (!is_same_file && !actial_slot.sound_name.empty()) {
-				Snd_ReleaseSound(actial_slot.sound_name);
-				actial_slot.sound_name.clear();
-			}
-
-			sound_source* source_ptr = is_same_file ?
-				Snd_FindSound(actial_slot.sound_name) : Snd_AcquireSound(cmd.string_storage.c_str(), false);
-
-			if (source_ptr == nullptr) {
-				MixerNewState(cmd.slot, State::Stopped);
-				break;
-			}
-
-			if (is_same_file) {
-				// The slot already holds a reference on it
-				Snd_ReleaseSound(actial_slot.sound_name);
-			}
-
-			auto& source = *source_ptr;
-			memset(actial_slot.parameters, 0, sizeof(actial_slot.parameters));
-			memset(actial_slot.history, 0, sizeof(actial_slot.history));
-			actial_slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel] = Fvector(source.pub.volume, 1.0f, 1.0f);
-			actial_slot.parameters[(u32)Mixer::ParameterId::DistanceRange] = Fvector(source.pub.min_distance, source.pub.max_distance, source.pub.max_ai_distance);
-			actial_slot.parameters[(u32)Mixer::ParameterId::Pitch] = Fvector{1.0f, 1.0f, 1.0f};
-			actial_slot.parameters[(u32)Mixer::ParameterId::Panning] = Fvector{1.0f, 1.0f, 1.0f};
-			actial_slot.position = 0;
-			actial_slot.stopping_position = (u32)-1;
-			actial_slot.sound_name = cmd.string_storage.c_str();
-			actial_slot.flags = flags;
-			actial_slot.fade_volume = 0.0f;
-			
-			if (handler != nullptr) {
-				float clip = source.pub.max_ai_distance * source.pub.volume;
-				float range = std::min(source.pub.max_ai_distance, clip);
-
-				if (range >= 0.1f) {
-					if (flags & (u16)Flags::NoFeedback) {
-						if (obj) {
-							ref_sound_data_ptr data_ptr = new ref_sound_data();
-							data_ptr->slot = cmd.slot;
-							data_ptr->g_type = 0;
-							data_ptr->g_object = obj;
-							data_ptr->dont_destroy_slot = true;
-							data_ptr->fn_attached[0] = source.pub.path;
-							handler(data_ptr, range);
 						}
-					} else {
-						if (sound != nullptr && sound->_p != nullptr && sound->_p->g_object != nullptr) {
-							handler(sound->_p, range);
+						else
+						{
+							slot.zone_idx = 0;
 						}
+					}
+					else
+					{
+						slot.zone_idx = 0;
 					}
 				}
 			}
-
-			if (!fis_zero(cmd.param2)) {
-				actial_slot.delay = (float)*(double*)&cmd.param2;
-				MixerNewState(cmd.slot, State::Delay);
-			} else {
-				MixerNewState(cmd.slot, State::Playing);
-			}
-		} break;
-		case sound_cmd_id::pause: {
-			MixerNewState(cmd.slot, State::Paused);
-		} break;
-		case sound_cmd_id::stop: {
-			if (cmd.param0) {
-				mixer.slots[cmd.slot - 1].flags &= ~((u8)Flags::Looped);
-				mixer.slots[cmd.slot - 1].stopping_position = mixer.slots[cmd.slot - 1].position;
-			} else {
-				MixerNewState(cmd.slot, State::Stopped);
-				mixer.slots[cmd.slot - 1].position = 0;
-				mixer.slots[cmd.slot - 1].stopping_position = (u32)-1;
-			}
-		} break;
-		case sound_cmd_id::destroy: {
-			if (mixer.slots[cmd.slot - 1].state != State::Delay)
-			{
-				DestroyInternal(cmd.slot);
-			}
-		} break;
-		case sound_cmd_id::stop_all: {
-			for (size_t i = 0; i < mixer.slots.size(); i++) {
-				if (mixer.slots[i].sound_name.size() && mixer.slots[i].state != State::Stopped) {
-					mixer.slots[i].position = 0;
-					mixer.slots[i].stopping_position = (u32)-1;
-					mixer.slots[i].prev_state = mixer.slots[i].state;
-					mixer.slots[i].state = State::Stopped;
-					mixer.slots[i].fake_state = State::Stopped;
-				}
-			}
-		} break;
-		case sound_cmd_id::pause_all: {
-			for (size_t i = 0; i < mixer.slots.size(); i++) {
-				if (mixer.slots[i].sound_name.size() && mixer.slots[i].state != State::Stopped && mixer.slots[i].state != State::Paused) {
-					mixer.slots[i].prev_state = mixer.slots[i].state;
-					mixer.slots[i].state = State::Paused;
-				}
-			}
-		} break;
-		case sound_cmd_id::resume_all: {
-			for (size_t i = 0; i < mixer.slots.size(); i++) {
-				if (mixer.slots[i].state == State::Paused && mixer.slots[i].prev_state != State::Paused) {
-					mixer.slots[i].state = mixer.slots[i].prev_state;
-					mixer.slots[i].prev_state = State::Paused;
-				}
-			}
-		} break;
-		case sound_cmd_id::update_parameter: {
-			mixer.slots[cmd.slot - 1].parameters[(u32)cmd.param0] = Fvector{(float)*(double*)&cmd.param1, (float)*(double*)&cmd.param2, (float)*(double*)&cmd.param3};
-
-			auto& slot = mixer.slots[cmd.slot - 1];
-			if (slot.flags & (u16)Flags::Spatial && cmd.param0 == (u16)ParameterId::Position) {
-				auto& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
-				float out_occ = ::Sound->get_occlusion(pos, 0.2f, &mixer.occ);
-				float& old_occ = slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
-				volume_lerp(old_occ, out_occ, 1.0f, mixer.dt);
-			}
-		} break;
-		case sound_cmd_id::set_volume: {
-			mixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::VolumePerChannel].y = *(double*)&cmd.param1;
-		} break;
-		case sound_cmd_id::set_panning: {
-			mixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::Panning].x = *(double*)&cmd.param1;
-			mixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::Panning].y = *(double*)&cmd.param2;
-		} break;
 		}
 	}
 
-	mixer.cmd.resize(0);
-	mixer.stats.update_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
+	xrCriticalSectionGuard guard(GMixer.play_lock);
+	for (const auto& cmd : GMixer.cmd)
+	{
+		switch (cmd.id)
+		{
+			case sound_cmd_id::play:
+			{
+				bool sound_exists = (cmd.param1 && GMixer.sounds.contains((ref_sound*)cmd.param1));
+				ref_sound* sound = sound_exists ? (ref_sound*)cmd.param1 : nullptr;
+				u16 flags = cmd.param0;
+				CObject* obj = (CObject*)cmd.param3;
 
-	mixer.update_lock.ReleaseExclusive();
-	mixer.manage_lock.ReleaseExclusive();
-	mixer.render_lock.ReleaseExclusive();
+				auto& actial_slot = GMixer.slots[cmd.slot - 1];
+				bool is_same_file = actial_slot.sound_name == cmd.string_storage.c_str();
+				if (!is_same_file && !actial_slot.sound_name.empty())
+				{
+					Snd_ReleaseSound(actial_slot.sound_name);
+					actial_slot.sound_name.clear();
+				}
+
+				sound_source* source_ptr = is_same_file ? Snd_FindSound(actial_slot.sound_name) : Snd_AcquireSound(cmd.string_storage.c_str(), false);
+
+				if (source_ptr == nullptr)
+				{
+					MixerNewState(cmd.slot, State::Stopped);
+					break;
+				}
+
+				if (is_same_file)
+				{
+					// The slot already holds a reference on it
+					Snd_ReleaseSound(actial_slot.sound_name);
+				}
+
+				auto& source = *source_ptr;
+				memset(actial_slot.parameters, 0, sizeof(actial_slot.parameters));
+				memset(actial_slot.history, 0, sizeof(actial_slot.history));
+				actial_slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel] = Fvector(source.pub.volume, 1.0f, 1.0f);
+				actial_slot.parameters[(u32)Mixer::ParameterId::DistanceRange] = Fvector(source.pub.min_distance, source.pub.max_distance, source.pub.max_ai_distance);
+				actial_slot.parameters[(u32)Mixer::ParameterId::Pitch] = Fvector{1.0f, 1.0f, 1.0f};
+				actial_slot.parameters[(u32)Mixer::ParameterId::Panning] = Fvector{1.0f, 1.0f, 1.0f};
+				actial_slot.position = 0;
+				actial_slot.stopping_position = (u32)-1;
+				actial_slot.sound_name = cmd.string_storage.c_str();
+				actial_slot.flags = flags;
+				actial_slot.fade_volume = 0.0f;
+
+				if (actial_slot.flags & (u16)Flags::Spatial && obj != nullptr)
+				{
+					actial_slot.parameters[(u32)Mixer::ParameterId::Position] = ((IRenderable*)obj)->renderable.xform.c;
+				}
+
+				if (handler != nullptr)
+				{
+					float clip = source.pub.max_ai_distance * source.pub.volume;
+					float range = std::min(source.pub.max_ai_distance, clip);
+
+					if (range >= 0.1f)
+					{
+						if (flags & (u16)Flags::NoFeedback)
+						{
+							if (obj)
+							{
+								ref_sound_data_ptr data_ptr = new ref_sound_data();
+								data_ptr->slot = cmd.slot;
+								data_ptr->g_type = 0;
+								data_ptr->g_object = obj;
+								data_ptr->dont_destroy_slot = true;
+								data_ptr->fn_attached[0] = source.pub.path;
+								handler(data_ptr, range);
+							}
+						}
+						else
+						{
+							if (sound != nullptr && sound->_p != nullptr && sound->_p->g_object != nullptr)
+							{
+								handler(sound->_p, range);
+							}
+						}
+					}
+				}
+
+				if (!fis_zero(cmd.param2))
+				{
+					actial_slot.delay = (float)*(double*)&cmd.param2;
+					MixerNewState(cmd.slot, State::Delay);
+				}
+				else
+				{
+					MixerNewState(cmd.slot, State::Playing);
+				}
+			}
+			break;
+			case sound_cmd_id::pause:
+			{
+				MixerNewState(cmd.slot, State::Paused);
+			}
+			break;
+			case sound_cmd_id::stop:
+			{
+				if (cmd.param0)
+				{
+					GMixer.slots[cmd.slot - 1].flags &= ~((u8)Flags::Looped);
+					GMixer.slots[cmd.slot - 1].stopping_position = GMixer.slots[cmd.slot - 1].position;
+				}
+				else
+				{
+					MixerNewState(cmd.slot, State::Stopped);
+					GMixer.slots[cmd.slot - 1].position = 0;
+					GMixer.slots[cmd.slot - 1].stopping_position = (u32)-1;
+				}
+			}
+			break;
+			case sound_cmd_id::destroy:
+			{
+				if (GMixer.slots[cmd.slot - 1].state != State::Delay)
+				{
+					DestroyInternal(cmd.slot);
+				}
+			}
+			break;
+			case sound_cmd_id::stop_all:
+			{
+				for (size_t i = 0; i < GMixer.slots.size(); i++)
+				{
+					if (GMixer.slots[i].sound_name.size() && GMixer.slots[i].state != State::Stopped)
+					{
+						GMixer.slots[i].position = 0;
+						GMixer.slots[i].stopping_position = (u32)-1;
+						GMixer.slots[i].prev_state = GMixer.slots[i].state;
+						GMixer.slots[i].state = State::Stopped;
+						GMixer.slots[i].fake_state = State::Stopped;
+					}
+				}
+			}
+			break;
+			case sound_cmd_id::pause_all:
+			{
+				for (size_t i = 0; i < GMixer.slots.size(); i++)
+				{
+					if (GMixer.slots[i].sound_name.size() && GMixer.slots[i].state != State::Stopped && GMixer.slots[i].state != State::Paused)
+					{
+						GMixer.slots[i].prev_state = GMixer.slots[i].state;
+						GMixer.slots[i].state = State::Paused;
+					}
+				}
+			}
+			break;
+			case sound_cmd_id::resume_all:
+			{
+				for (size_t i = 0; i < GMixer.slots.size(); i++)
+				{
+					if (GMixer.slots[i].state == State::Paused && GMixer.slots[i].prev_state != State::Paused)
+					{
+						GMixer.slots[i].state = GMixer.slots[i].prev_state;
+						GMixer.slots[i].prev_state = State::Paused;
+					}
+				}
+			}
+			break;
+			case sound_cmd_id::update_parameter:
+			{
+				GMixer.slots[cmd.slot - 1].parameters[(u32)cmd.param0] = Fvector{(float)*(double*)&cmd.param1, (float)*(double*)&cmd.param2, (float)*(double*)&cmd.param3};
+
+				auto& slot = GMixer.slots[cmd.slot - 1];
+				if (slot.flags & (u16)Flags::Spatial && cmd.param0 == (u16)ParameterId::Position)
+				{
+					auto& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
+					float out_occ = ::Sound->get_occlusion(pos, 0.2f, &GMixer.occ);
+					float& old_occ = slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
+					volume_lerp(old_occ, out_occ, 1.0f, GMixer.dt);
+				}
+			}
+			break;
+			case sound_cmd_id::set_volume:
+			{
+				GMixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::VolumePerChannel].y = *(double*)&cmd.param1;
+			}
+			break;
+			case sound_cmd_id::set_panning:
+			{
+				GMixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::Panning].x = *(double*)&cmd.param1;
+				GMixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::Panning].y = *(double*)&cmd.param2;
+			}
+			break;
+		}
+	}
+
+	GMixer.cmd.resize(0);
+	GMixer.stats.update_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
+
+	GMixer.update_lock.ReleaseExclusive();
+	GMixer.manage_lock.ReleaseExclusive();
+	GMixer.render_lock.ReleaseExclusive();
 }
 
-void 
-Mixer::StopAll()
+void Mixer::StopAll()
 {
-	xrCriticalSectionGuard guard(mixer.play_lock);
-	mixer.cmd.emplace_back(sound_command{ .id = sound_cmd_id::stop_all });
+	xrCriticalSectionGuard guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(sound_command{.id = sound_cmd_id::stop_all});
 }
 
-void 
-Mixer::PauseAll()
+void Mixer::PauseAll()
 {
-	xrCriticalSectionGuard guard(mixer.play_lock);
-	mixer.cmd.emplace_back(sound_command{ .id = sound_cmd_id::pause_all });
+	xrCriticalSectionGuard guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(sound_command{ .id = sound_cmd_id::pause_all });
 }
 
-void
-Mixer::ResumeAll()
+void Mixer::ResumeAll()
 {
-	xrCriticalSectionGuard guard(mixer.play_lock);
-	mixer.cmd.emplace_back(sound_command{ .id = sound_cmd_id::resume_all });
+	xrCriticalSectionGuard guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(sound_command{ .id = sound_cmd_id::resume_all });
 }
 
-void 
-Mixer::DereferenceObjects(CObject** object, int count)
+void Mixer::DereferenceObjects(CObject** object, int count)
 {
-	xrSRWLockGuard g0(mixer.update_lock);
-	xrSRWLockGuard g1(mixer.manage_lock);
+	xrSRWLockGuard g0(GMixer.update_lock);
+	xrSRWLockGuard g1(GMixer.manage_lock);
 
-	for (auto sound : mixer.sounds) {
-		if (sound == nullptr || sound->_p == nullptr) {
+	for (auto& SoundRef : GMixer.sounds)
+	{
+		if (SoundRef == nullptr || SoundRef->_p == nullptr)
+		{
 			continue;
 		}
 
-		for (size_t i = 0; i < count; i++) {
-			if (object[i] == sound->_g_object()) {
-				sound->_p->g_object = nullptr;
+		for (size_t i = 0; i < count; i++)
+		{
+			if (object[i] == SoundRef->_g_object())
+			{
+				SoundRef->_p->g_object = nullptr;
 			}
 		}
 	}
 }
 
-u32
-Mixer::Create()
+u32 Mixer::Create()
 {
-	if (mixer.free_slots.empty()) {
+	if (GMixer.free_slots.empty())
+	{
 		Snd_GrowSlots(true);
 	}
 
-	xrSRWLockGuard g0(mixer.update_lock);
+	xrSRWLockGuard g0(GMixer.update_lock);
 
-	u32 slot_idx = mixer.free_slots[mixer.free_slots.size() - 1];
-	mixer.free_slots.pop_back();
-	mixer.stats.possible_free_count--;
+	u32 SlotIdx = GMixer.free_slots[GMixer.free_slots.size() - 1];
+	GMixer.free_slots.pop_back();
+	GMixer.stats.possible_free_count--;
 
-	return slot_idx;
+	return SlotIdx;
 }
 
-void
-Mixer::Destroy(u32 slot)
+void Mixer::Destroy(u32 slot)
 {
-	if (slot == 0 || mixer.slots[slot - 1].state == State::Delay) {
+	if (slot == 0 || GMixer.slots[slot - 1].state == State::Delay)
+	{
 		return;
 	}
 
-	mixer.slots[slot - 1].fake_state = State::Stopped;
+	GMixer.slots[slot - 1].fake_state = State::Stopped;
 
-	xrCriticalSectionGuard guard(mixer.play_lock);
-	mixer.cmd.emplace_back(sound_command{ .slot = slot, .id = sound_cmd_id::destroy });
-	mixer.stats.possible_free_count++;
+	xrCriticalSectionGuard guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(sound_command{ .slot = slot, .id = sound_cmd_id::destroy });
+	GMixer.stats.possible_free_count++;
 }
 
-void 
-Mixer::Play(u32 slot, u16 flags, ref_sound* sound, double delay)
+void Mixer::Play(u32 slot, u16 flags, ref_sound* sound, double delay)
 {
-	xrCriticalSectionGuard guard(mixer.play_lock);
+	xrCriticalSectionGuard guard(GMixer.play_lock);
 
 	if (slot == 0 || sound == nullptr || sound->_p == nullptr || sound->_p->fn_attached[0] == nullptr) {
 		return;
 	}
 
-	mixer.slots[slot - 1].fake_state = State::Playing;
-	mixer.cmd.emplace_back(sound_command{ 
+	GMixer.slots[slot - 1].fake_state = State::Playing;
+	GMixer.cmd.emplace_back(sound_command{ 
 		.slot = slot, .id = sound_cmd_id::play, .param0 = flags, .param1 = (u64)sound, 
 		.param2 = *(u64*)&delay, .param3 = (u64)sound->_g_object(), 
 		.string_storage = sound->_p->fn_attached[0]
 	});
 }
 
-void 
-Mixer::PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, float* pitch, float* volume, Fvector* distance, Fvector* pos)
+void Mixer::PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, float* pitch, float* volume, Fvector* distance, Fvector* pos)
 {
-	xrCriticalSectionGuard guard(mixer.play_lock);
+	xrCriticalSectionGuard guard(GMixer.play_lock);
 
 	u32 slot_idx = Create();
-	if (slot_idx == 0) {
+	if (slot_idx == 0)
+	{
 		return;
 	}
 
-	auto& slot = mixer.slots[slot_idx-1];
+	auto& slot = GMixer.slots[slot_idx - 1];
 	slot.state = State::Paused;
 
 	slot.fake_state = State::Playing;
-	mixer.cmd.emplace_back(sound_command { 
-		.slot = slot_idx, .id = sound_cmd_id::play, .param0 = flags, .param1 = (u64)sound,
-		.param2 = *(u64*)&delay, .param3 = (u64)obj, .string_storage = sound->_p->fn_attached[0]
+	GMixer.cmd.emplace_back(sound_command{
+		.slot = slot_idx, .id = sound_cmd_id::play, .param0 = flags, .param1 = (u64)sound, .param2 = *(u64*)&delay, .param3 = (u64)obj, .string_storage = sound->_p->fn_attached[0]
 	});
 
 	auto params = sound->_p->get_params();
-	Fvector distances = { params.min_distance, params.max_distance, params.max_ai_distance };
+	Fvector distances = {params.min_distance, params.max_distance, params.max_ai_distance};
 
-	if (sound->slot()) {
+	if (sound->slot())
+	{
 		pitch = (pitch ? pitch : &params.freq);
 		distance = (distance ? distance : &distances);
 		pos = (pos ? pos : &params.position);
 		volume = (volume ? volume : &params.volume);
 	}
 
-	if (pitch) Mixer::UpdateParameter(slot_idx, ParameterId::Pitch, Fvector{*pitch, 1.f, 1.f});
-	if (distance) Mixer::UpdateParameter(slot_idx, ParameterId::DistanceRange, *distance);
-	if (pos) Mixer::UpdateParameter(slot_idx, ParameterId::Position, *pos);
-	if (volume) Mixer::SetVolume(slot_idx, *volume);
+	if (pitch)
+	{
+		Mixer::UpdateParameter(slot_idx, ParameterId::Pitch, Fvector{*pitch, 1.f, 1.f});
+	}
+	if (distance)
+	{
+		Mixer::UpdateParameter(slot_idx, ParameterId::DistanceRange, *distance);
+	}
+	if (pos)
+	{
+		Mixer::UpdateParameter(slot_idx, ParameterId::Position, *pos);
+	}
+	if (volume)
+	{
+		Mixer::SetVolume(slot_idx, *volume);
+	}
 }
 
-void 
-Mixer::Pause(u32 slot)
+void Mixer::Pause(u32 slot)
 {
-	if (slot == 0) {
+	if (slot == 0) 
+	{
 		return;
 	}
 
-	xrCriticalSectionGuard guard(mixer.play_lock);
-	mixer.slots[slot - 1].fake_state = State::Paused;
-	mixer.cmd.emplace_back(sound_command{ .slot = slot, .id = sound_cmd_id::pause });
+	xrCriticalSectionGuard guard(GMixer.play_lock);
+	GMixer.slots[slot - 1].fake_state = State::Paused;
+	GMixer.cmd.emplace_back(sound_command{ .slot = slot, .id = sound_cmd_id::pause });
 }
 
-void
-Mixer::Stop(u32 slot, bool deferred)
+void Mixer::Stop(u32 slot, bool deferred)
 {
-	if (slot == 0 || mixer.slots[slot - 1].state == State::Delay) {
+	if (slot == 0)
+	{
 		return;
 	}
 
-	if (!deferred) {
-		mixer.slots[slot - 1].fake_state = State::Stopped;
+	auto& Slot = GMixer.slots[slot - 1];
+	if (Slot.state == State::Delay)
+	{
+		return;
 	}
 
-	xrCriticalSectionGuard guard(mixer.play_lock);
-	mixer.cmd.emplace_back(sound_command{ .slot = slot, .id = sound_cmd_id::stop, .param0 = deferred });
+	if (!deferred)
+	{
+		Slot.fake_state = State::Stopped;
+	}
+
+	xrCriticalSectionGuard guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(sound_command{.slot = slot, .id = sound_cmd_id::stop, .param0 = deferred});
 }
 
-void
-Mixer::UpdateParameter(u32 slot, ParameterId parameter, Fvector value)
+void Mixer::UpdateParameter(u32 slot, ParameterId parameter, Fvector value)
 {
-	if (slot == 0) {
+	if (slot == 0)
+	{
 		return;
 	}
 
 	double p0 = value.x, p1 = value.y, p2 = value.z;
-	xrCriticalSectionGuard guard(mixer.play_lock);
-	mixer.cmd.emplace_back(sound_command{.slot=slot,.id=sound_cmd_id::update_parameter,.param0=(u16)parameter,.param1=*(u64*)&p0,.param2=*(u64*)&p1,.param3=*(u64*)&p2});
+	xrCriticalSectionGuard guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(sound_command{.slot = slot, .id = sound_cmd_id::update_parameter, .param0 = (u16)parameter, .param1 = *(u64*)&p0, .param2 = *(u64*)&p1, .param3 = *(u64*)&p2});
 }
 
-void 
-Mixer::SetVolume(u32 slot, double volume)
+void Mixer::SetVolume(u32 slot, double volume)
 {
-	if (slot == 0) {
+	if (slot == 0)
+	{
 		return;
 	}
 
 	volume = std::clamp(volume, 0.0, 1.0);
-	xrCriticalSectionGuard guard(mixer.play_lock);
-	mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_volume, .param1 = *(u64*)&volume });
+	xrCriticalSectionGuard guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(sound_command{.slot = slot, .id = sound_cmd_id::set_volume, .param1 = *(u64*)&volume});
 }
 
-void
-Mixer::SetPanning(u32 slot, double left, double right)
+void Mixer::SetPanning(u32 slot, double left, double right)
 {
 	if (slot == 0) {
 		return;
@@ -1875,65 +2023,69 @@ Mixer::SetPanning(u32 slot, double left, double right)
 	left = std::clamp(left, 0.0, 1.0);
 	right = std::clamp(right, 0.0, 1.0);
 
-	xrCriticalSectionGuard guard(mixer.play_lock);
-	mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_panning, .param1 = *(u64*)&left, .param2 = *(u64*)&right });
+	xrCriticalSectionGuard guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_panning, .param1 = *(u64*)&left, .param2 = *(u64*)&right });
 }
 
-xr_vector<sound_slot_state>&
-Mixer::GetSlots()
+xr_vector<sound_slot_state>& Mixer::GetSlots()
 {
-	return mixer.slots;
+	return GMixer.slots;
 }
 
 xrSRWLock& Mixer::GetUpdateMutex()
 {
-	return mixer.update_lock;
+	return GMixer.update_lock;
 }
 
 xrSRWLock& Mixer::GetManageMutex()
 {
-	return mixer.manage_lock;
+	return GMixer.manage_lock;
 }
 
 sound_stats* Mixer::GetStats()
 {
-	return &mixer.stats;
+	return &GMixer.stats;
 }
 
 float Mixer::GetPlaytime(u32 slot)
 {
-	if (slot == 0) {
+	if (slot == 0)
+	{
 		return 0.0f;
 	}
 
-	return (((float)mixer.slots[slot - 1].position) / (float)SND_SAMPLERATE);
+	return (((float)GMixer.slots[slot - 1].position) / (float)SND_SAMPLERATE);
 }
 
 float Mixer::GetDuration(u32 slot)
 {
-	xrSRWLockGuard guard(mixer.source_lock, true);
+	xrSRWLockGuard guard(GMixer.source_lock, true);
 
-	if (slot == 0) {
+	if (slot == 0)
+	{
 		return 0.0f;
 	}
 
-	if (!mixer.slots[slot - 1].sound_name.size() || !mixer.snd_sources.contains(mixer.slots[slot - 1].sound_name)) {
+	if (!GMixer.slots[slot - 1].sound_name.size() || !GMixer.snd_sources.contains(GMixer.slots[slot - 1].sound_name))
+	{
 		return 0.0f;
 	}
 
-	auto& source = mixer.snd_sources.at(mixer.slots[slot - 1].sound_name);
+	auto& source = GMixer.snd_sources.at(GMixer.slots[slot - 1].sound_name);
 	return (float)source.pub.frames_total / (float)SND_SAMPLERATE;
 }
 
 bool Mixer::SlotIsRelated(u32 slot)
 {
-	if (slot == 0) {
+	if (slot == 0)
+	{
 		return false;
 	}
 
-	const xr_string& name = mixer.slots[slot - 1].sound_name;
+	const xr_string& name = GMixer.slots[slot - 1].sound_name;
 	sound_source* source = Snd_FindSound(name);
-	if (source == nullptr) {
+	if (source == nullptr)
+	{
 		return false;
 	}
 
@@ -1944,17 +2096,17 @@ bool Mixer::SlotIsRelated(u32 slot)
 
 u32 Mixer::GetGameType(u32 slot)
 {
-	xrSRWLockGuard guard(mixer.source_lock, true);
+	xrSRWLockGuard guard(GMixer.source_lock, true);
 
 	if (slot == 0) {
 		return 0.0f;
 	}
 
-	if (!mixer.slots[slot - 1].sound_name.size() || !mixer.snd_sources.contains(mixer.slots[slot - 1].sound_name)) {
+	if (!GMixer.slots[slot - 1].sound_name.size() || !GMixer.snd_sources.contains(GMixer.slots[slot - 1].sound_name)) {
 		return 0.0f;
 	}
 
-	auto& source = mixer.snd_sources.at(mixer.slots[slot - 1].sound_name);
+	auto& source = GMixer.snd_sources.at(GMixer.slots[slot - 1].sound_name);
 	return source.pub.game_type;
 }
 
@@ -1965,7 +2117,7 @@ Mixer::GetFlags(u32 slot)
 		return 0;
 	}
 
-	return mixer.slots[slot - 1].flags;
+	return GMixer.slots[slot - 1].flags;
 }
 
 Mixer::State
@@ -1975,24 +2127,24 @@ Mixer::GetState(u32 slot)
 		return State::Stopped;
 	}
 
-	return mixer.slots[slot - 1].fake_state;
+	return GMixer.slots[slot - 1].fake_state;
 }
 
 u32
 Mixer::GetSourceCount()
 {
-	xrSRWLockGuard guard(mixer.source_lock, true);
+	xrSRWLockGuard guard(GMixer.source_lock, true);
 
-	return mixer.snd_sources.size();
+	return GMixer.snd_sources.size();
 }
 
 const sound_source_public*
 Mixer::GetSource(u32 index)
 {
-	xrSRWLockGuard guard(mixer.source_lock, true);
+	xrSRWLockGuard guard(GMixer.source_lock, true);
 
 	u32 counter = 0;
-	for (const auto& [key, source] : mixer.snd_sources) {
+	for (const auto& [key, source] : GMixer.snd_sources) {
 		if (counter == index) {
 			return &source.pub;
 		}
@@ -2010,13 +2162,13 @@ Mixer::GetParameters(u32 slot)
 		return NULL;
 	}
 
-	return mixer.slots[slot - 1].parameters;
+	return GMixer.slots[slot - 1].parameters;
 }
 
 void 
 Mixer::AddEditorZone(sound_zone_params& params)
 {
-	mixer.editor_zone = true;
+	GMixer.editor_zone = true;
 	ResetZones();
 	AddZone(params);
 }
@@ -2099,7 +2251,7 @@ Mixer::AddZone(sound_zone_params& params)
 	};
 
 	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-		R_ASSERT(iplReflectionEffectCreate(mixer.ipl_context, &settings, &reflect_settings, &params.state.effect[ch]) == IPL_STATUS_SUCCESS);
+		R_ASSERT(iplReflectionEffectCreate(GMixer.ipl_context, &settings, &reflect_settings, &params.state.effect[ch]) == IPL_STATUS_SUCCESS);
 	}
 #endif
 
@@ -2115,15 +2267,15 @@ Mixer::AddZone(sound_zone_params& params)
 	params.state.buffer = params.state.ra_context->CreateSoundObjectSource(vraudio::RenderingMode::kStereoPanning);
 #endif
 
-	mixer.zones.emplace_back(std::move(params));
+	GMixer.zones.emplace_back(std::move(params));
 }
 
 void 
 Mixer::ResetZones()
 {
-	xrSRWLockGuard guard(mixer.render_lock);
+	xrSRWLockGuard guard(GMixer.render_lock);
 
-	for (auto& zone : mixer.zones) {
+	for (auto& zone : GMixer.zones) {
 #ifndef DISABLE_STEAM_AUDIO
 		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
 			if (zone.state.effect[ch] != nullptr) {
@@ -2138,28 +2290,28 @@ Mixer::ResetZones()
 #endif
 	}
 
-	mixer.zones.clear();
+	GMixer.zones.clear();
 }
 
 const xr_vector<sound_zone_params>& Mixer::GetZones()
 {
-	return mixer.zones;
+	return GMixer.zones;
 }
 
 ref_sound::ref_sound()
 {
-	xrSRWLockGuard g1(mixer.manage_lock);
+	xrSRWLockGuard g1(GMixer.manage_lock);
 
-	if (!mixer.sounds.contains(this)) {
-		mixer.sounds.emplace(this);
+	if (!GMixer.sounds.contains(this)) {
+		GMixer.sounds.emplace(this);
 	}
 }
 
 ref_sound::~ref_sound()
 {
-	xrSRWLockGuard g1(mixer.manage_lock);
+	xrSRWLockGuard g1(GMixer.manage_lock);
 
-	if (mixer.sounds.contains(this)) {
-		mixer.sounds.erase(this);
+	if (GMixer.sounds.contains(this)) {
+		GMixer.sounds.erase(this);
 	}
 }
