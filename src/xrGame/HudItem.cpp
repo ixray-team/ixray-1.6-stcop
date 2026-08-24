@@ -549,8 +549,13 @@ void CHudItem::on_a_hud_attach()
 
 bool CHudItem::HudAnimationExist(const shared_str& anim_name, bool only_for_actor)
 {
-	if (Level().CurrentControlEntity() != object().H_Parent() && only_for_actor)
-		return false;
+	if (OnClient())
+	{
+		if (Level().CurrentControlEntity() != object().H_Parent() && only_for_actor)
+		{
+			return false;
+		}
+	}
 
 	if (auto HID = HudItemData())
 	{
