@@ -76,18 +76,15 @@ void CWeaponMagazined::Load(const char* section)
 
 	if (pSettings->line_exist(section, "fire_modes"))
 	{
-		shared_str FireModesList = pSettings->r_string(section, "fire_modes");
-		u8 ModesCount = _GetItemCount(FireModesList.c_str());
+		auto FireModesList = xr_string(pSettings->r_string(section, "fire_modes")).RemoveWhitespaces().Split(',');
 		m_aFireModes.clear();
 
-		for (u8 i = 0; i < ModesCount; i++)
+		for (xr_string& FireMode : FireModesList)
 		{
-			string16 sItem = {};
-			_GetItem(FireModesList.c_str(), i, sItem);
-			m_aFireModes.push_back(static_cast<s8>(atoi(sItem)));
+			m_aFireModes.push_back(static_cast<s8>(atoi(FireMode.c_str())));
 		}
 
-		m_iCurFireMode = ModesCount - 1;
+		m_iCurFireMode = m_aFireModes.size() - 1;
 	}
 	else
 	{
