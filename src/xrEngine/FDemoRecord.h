@@ -15,9 +15,16 @@ class ENGINE_API CDemoRecord :
 	} g_position;
 
 	IWriter* file;
-	Fvector HPB;
-	Fvector Position;
 	Fmatrix Camera;
+
+	Fvector p_lap;
+
+	Fvector p_cam_pos;
+	Fvector p_cam_pos_smoothed;
+
+	Fvector hpb_current;
+	Fvector hpb_smoothed;
+
 	u32 Stage;
 
 	Fvector FrameTopDelta;
@@ -33,6 +40,7 @@ class ENGINE_API CDemoRecord :
 	bool m_bMakeLevelMap;
 	bool m_bEnableAcceleration = false;
 	bool NewInputSchema;
+	bool lap_lock;
 
 	float CameraTransformFactor;
 	float m_fSpeed0;
@@ -62,6 +70,8 @@ public:
 	virtual void IR_GamepadKeyPress(int id);
 
 	virtual bool ProcessCam(SCamEffectorInfo& info);
+	void UpdateLookAtPoint();
+	void UpdateLookUp();
 	static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
 	static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
 	bool m_b_redirect_input_to_level;
