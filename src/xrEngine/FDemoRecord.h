@@ -22,8 +22,8 @@ class ENGINE_API CDemoRecord :
 	Fvector p_cam_pos;
 	Fvector p_cam_pos_smoothed;
 
+	Fvector hpb;
 	Fvector hpb_current;
-	Fvector hpb_smoothed;
 
 	u32 Stage;
 
@@ -71,7 +71,8 @@ public:
 
 	virtual bool ProcessCam(SCamEffectorInfo& info);
 	void UpdateLookAtPoint();
-	void UpdateLookUp();
+	void UpdateFreeLook();
+	void ParseActorCam();
 	static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
 	static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
 	bool m_b_redirect_input_to_level;

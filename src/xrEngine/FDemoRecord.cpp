@@ -123,38 +123,19 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 {
 	stored_red_text = g_bDisableRedText;
 	g_bDisableRedText = true;
-	m_iLMScreenshotFragment = -1;
 
+	m_iLMScreenshotFragment = -1;
 	m_b_redirect_input_to_level = false;
+
 	Platform::Unlink(name);
 	file = FS.w_open(name);
+
 	if (file)
 	{
 		g_position.set_position = false;
+
 		IR_Capture();
-		Camera.invert(Device.mView);
-
-		// parse yaw
-		Fvector& dir = Camera.k;
-		Fvector DYaw;
-		DYaw.set(dir.x, 0.f, dir.z);
-		DYaw.normalize_safe();
-		if (DYaw.x < 0.f)
-		{
-			hpb_current.x = acosf(DYaw.z);
-		}
-		else
-		{
-			hpb_current.x = 2.f * PI - acosf(DYaw.z);
-		}
-
-		// parse pitch
-		dir.normalize_safe();
-		hpb_current.y = asinf(dir.y);
-		hpb_current.z = 0.f;
-
-		p_cam_pos.set(Device.vCameraPosition);
-		p_cam_pos_smoothed.set(Device.vCameraPosition);
+		ParseActorCam();
 
 		Velocity.set(0.f, 0.f, 0.f);
 		AngularVelocity.set(0.f, 0.f, 0.f);
@@ -428,7 +409,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("= Unset lookat point (unlocks cam dir at point)");
 			}
 		}
-		
+
 		if (!NewInputSchema)
 		{
 			if (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT))
@@ -483,7 +464,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		CamMove.mul(FrameTopDelta.y);
 		p_cam_pos.add(CamMove);
 
-		lap_lock ? UpdateLookAtPoint() : UpdateLookUp();
+		lap_lock ? UpdateLookAtPoint() : UpdateFreeLook();
 
 		p_cam_pos_smoothed.inertion(p_cam_pos, dr_cam_pos_inert);
 		Camera.translate_over(p_cam_pos_smoothed);
@@ -514,23 +495,38 @@ void CDemoRecord::UpdateLookAtPoint()
 	basis.getHPB(target_eulers);
 
 	target_eulers = {
-		hpb_smoothed.x + angle_difference_signed(target_eulers.x, hpb_smoothed.x),
-		hpb_smoothed.y + angle_difference_signed(target_eulers.y, hpb_smoothed.y),
+		hpb_current.x + angle_difference_signed(target_eulers.x, hpb_current.x),
+		hpb_current.y + angle_difference_signed(target_eulers.y, hpb_current.y),
 		0.f
 	};
 
-	hpb_smoothed.inertion(target_eulers, dr_cam_inert);
-	Camera.setHPB(hpb_smoothed.x, hpb_smoothed.y, hpb_smoothed.z);
+	hpb_current.inertion(target_eulers, dr_cam_inert);
+	Camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
 }
 
-void CDemoRecord::UpdateLookUp()
+void CDemoRecord::UpdateFreeLook()
 {
-	hpb_current.x -= FrameRightDelta.y;
-	hpb_current.y -= FrameRightDelta.x;
-	hpb_current.z += FrameRightDelta.z;
+	hpb.x -= FrameRightDelta.y;
+	hpb.y -= FrameRightDelta.x;
+	hpb.z += FrameRightDelta.z;
 
-	hpb_smoothed.inertion(hpb_current, dr_cam_inert);
-	Camera.setHPB(hpb_smoothed.x, hpb_smoothed.y, hpb_smoothed.z);
+	hpb_current.inertion(hpb, dr_cam_inert);
+	Camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
+}
+
+void CDemoRecord::ParseActorCam()
+{
+	Camera.invert(Device.mView);
+
+	p_cam_pos.set(Device.vCameraPosition);
+	p_cam_pos_smoothed.set(Device.vCameraPosition);
+
+	Fvector hpb_actor;
+	Camera.getHPB(hpb_actor);
+	hpb_actor.z = 0.f;
+
+	hpb.set(hpb_actor);
+	hpb_current.set(hpb_actor);
 }
 
 void CDemoRecord::IR_OnKeyboardPress(int dik)
@@ -540,8 +536,8 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 		Fvector cur_eulers;
 		Camera.getHPB(cur_eulers);
 
+		hpb.set(cur_eulers);
 		hpb_current.set(cur_eulers);
-		hpb_smoothed.set(cur_eulers);
 
 		p_lap.set(0.f, 0.f, 0.f);
 		lap_lock = false;
@@ -560,8 +556,8 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 			Fvector current_eulers;
 			Camera.getHPB(current_eulers);
 
+			hpb.set(current_eulers);
 			hpb_current.set(current_eulers);
-			hpb_smoothed.set(current_eulers);
 
 			lap_lock = true;
 		}
