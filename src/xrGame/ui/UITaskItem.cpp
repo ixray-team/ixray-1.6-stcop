@@ -14,6 +14,7 @@
 #include "../Level.h"
 #include "../Actor.h"
 #include "../GametaskManager.h"
+#include "../../xrUI/UIHelper.h"
 
 CUITaskItemLegacy::CUITaskItemLegacy(CUIEventsWnd* w)
 :m_GameTask			(nullptr),
@@ -73,23 +74,15 @@ void CUITaskRootItem::Init			()
 {
 	inherited::Init					();
 
-	m_taskImage					= new CUIStatic();		m_taskImage->SetAutoDelete(true);			AttachChild(m_taskImage);
-	m_captionStatic				= new CUIStatic();		m_captionStatic->SetAutoDelete(true);		AttachChild(m_captionStatic);
-	m_remTimeStatic				= new CUIStatic();		m_remTimeStatic->SetAutoDelete(true);		AttachChild(m_remTimeStatic);
-
-	m_switchDescriptionBtn		= new CUI3tButton();	m_switchDescriptionBtn->SetAutoDelete(true); AttachChild(m_switchDescriptionBtn);
-	m_captionTime				= new CUI3tButton();	m_captionTime->SetAutoDelete(true);			AttachChild(m_captionTime);
-	
-	CUIXmlInit xml_init;
 	CUIXml&						uiXml = m_EventsWnd->m_ui_task_item_xml;
-	xml_init.InitWindow			(uiXml,"task_root_item",0,this);
+	CUIXmlInit::InitWindow(uiXml, "task_root_item", 0, this);
 
-	xml_init.InitStatic			(uiXml,	"task_root_item:image",			0,	m_taskImage);
-	xml_init.InitStatic			(uiXml,	"task_root_item:caption",		0,	m_captionStatic);
-	xml_init.InitStatic			(uiXml,	"task_root_item:caption_time",	0,	m_captionTime);
-	xml_init.InitStatic			(uiXml,	"task_root_item:rem_time",		0,	m_remTimeStatic);
+	m_taskImage = UIHelper::CreateStatic(uiXml, "task_root_item:image", this);
+	m_captionStatic = UIHelper::CreateStatic(uiXml, "task_root_item:caption", this);
+	m_captionTime = UIHelper::CreateStatic(uiXml, "task_root_item:caption_time", this);
+	m_remTimeStatic = UIHelper::CreateStatic(uiXml, "task_root_item:rem_time", this);
 	
-	xml_init.Init3tButton		(uiXml,"task_root_item:switch_description_btn",0,m_switchDescriptionBtn);
+	m_switchDescriptionBtn = UIHelper::Create3tButton(uiXml, "task_root_item:switch_description_btn", this);
 
 	m_switchDescriptionBtn->SetWindowName("m_switchDescriptionBtn");
 	m_switchDescriptionBtn->SetMessageTarget(this);
