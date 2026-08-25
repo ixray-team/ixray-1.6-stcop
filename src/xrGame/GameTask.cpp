@@ -710,6 +710,12 @@ void SGameTaskObjective::load(IReader& stream)
 	load_data				(m_failInfos,		stream);
 	load_data				(m_infos_on_complete, stream);
 	load_data				(m_infos_on_fail,	stream);
+
+	if (m_idx != ROOT_TASK_OBJECTIVE && m_map_location.size() && m_map_object_id != u16(-1))
+	{
+		Level().MapManager().AddMapLocation(m_map_location, m_map_object_id);
+		LinkedMapLocation()->SetHint(m_map_hint);
+	}
 }
 
 void CGameTask::save(IWriter& stream)
@@ -732,11 +738,6 @@ void CGameTask::load(IReader& stream)
 {
 	load_data				(m_ID, stream);
 
-	if (EngineExternal().ShadowOfChernobylMode())
-	{
-		Load(m_ID);
-	}
-
 	load_data				(m_priority,		stream);
 	load_data				(m_remoteAllowed,	stream);
 	load_data				(m_hasPendingRewardDispatch,	stream);
@@ -755,12 +756,9 @@ void CGameTask::load(IReader& stream)
 
 	CommitScriptHelperContents();
 
-	if (EngineExternal().ShadowOfChernobylMode())
+	for (SGameTaskObjective& obj : m_Objectives)
 	{
-		for (SGameTaskObjective& obj : m_Objectives)
-		{
-			obj.CommitScriptHelperContents();
-		}
+		obj.CommitScriptHelperContents();
 	}
 
 	CreateMapLocation		(true);
