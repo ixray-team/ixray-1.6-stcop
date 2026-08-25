@@ -422,7 +422,10 @@ IRenderVisual* CRender::model_Duplicate(IRenderVisual* V) {
 
 void CRender::model_Delete(IRenderVisual*& V, bool bDiscard) {
 	dxRender_Visual* pVisual = (dxRender_Visual*)V;
-	Models->Delete(pVisual, bDiscard);
+	if (Models != nullptr)
+	{
+		Models->Delete(pVisual, bDiscard);
+	}
 	V = 0;
 }
 
