@@ -3148,14 +3148,13 @@ float LastZoomFactor = 0.f;
 
 void CWeapon::OnZoomIn()
 {
-	m_bSwitchSprint = false;
 	m_zoom_params.m_bIsZoomModeNow		= true;
 
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
 
 	if (HudItemData() != nullptr && (IsGrenadeMode() ? m_sGLAimBlendParams[0].has_motion : m_sAimBlendParams[0].has_motion))
 	{
-		if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && pActor && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & mcSprint) != 0 && GetNextState() != eSprintEnd && GetNextState() != eFire)
+		if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && pActor && ((pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & mcSprint) != 0 || m_bSwitchSprint) && GetNextState() != eFire)
 		{
 			SwitchState(eSprintEnd);
 		}
@@ -3177,6 +3176,8 @@ void CWeapon::OnZoomIn()
 			pActor->Cameras().AddCamEffector(e);
 		}
 	}
+
+	m_bSwitchSprint = false;
 
 	if (pActor != nullptr)
 	{
