@@ -936,6 +936,24 @@ void EDetailManager::ClearMask()
 	ELog.DlgMsg(mtInformation, "Grass mask cleared. Press 'Reinit Objects Only' to apply.");
 }
 
+void EDetailManager::EnsureBaseTexture()
+{
+	if (m_Base.Valid())
+		return;
+
+	if (m_Base.LoadImage("ed\\empty_details"))
+	{
+		m_Base.CreateShader();
+		m_RTFlags.set(flRTGenerateBaseMesh, true);
+		InvalidateSlots();
+		ELog.DlgMsg(mtInformation, "No base texture set. Using empty base texture 'ed/empty_details' to rebuild slot information.");
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "EDetailManager: Can't load empty base texture 'ed/empty_details'.");
+	}
+}
+
 bool EDetailManager::PickPaintPoint(Fvector& Point)
 {
 	float BestDist = UI->ZFar();
