@@ -185,6 +185,7 @@ public:
     void				ClearBase				();
 
 	// paint brush (grass mask)
+	void				EnsureBaseTexture	();
 	bool				PickPaintPoint		(Fvector& Point);
 	void				PaintAt				(const Fvector& WorldPoint);
 	void				RenderBrush			();
