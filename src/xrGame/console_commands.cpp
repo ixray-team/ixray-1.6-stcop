@@ -2613,9 +2613,9 @@ void CCC_RegisterCommands()
 	CMD1(CCC_DemoRecordSetPos, "demo_set_cam_position");
 
 	extern ENGINE_API float dr_cam_inert;
-	CMD4(CCC_Float, "demo_record_cam_inert", &dr_cam_inert, EPS_S, .999f);
+	CMD4(CCC_Float, "demo_record_cam_inert", &dr_cam_inert, 0.f, .999f);
 	extern ENGINE_API float dr_cam_pos_inert;
-	CMD4(CCC_Float, "demo_record_cam_pos_inert", &dr_cam_pos_inert, EPS_S, .999f);
+	CMD4(CCC_Float, "demo_record_cam_pos_inert", &dr_cam_pos_inert, 0.f, .999f);
 
 #ifndef MASTER_GOLD
 	CMD3(CCC_Mask64, "ai_obstacles_avoiding", &psAI_Flags, aiObstaclesAvoiding);
