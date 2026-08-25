@@ -18,6 +18,8 @@ bool TUI_ControlDOPaint::Start(TShiftState Shift)
 
 	EDetailManager* Manager = (EDetailManager*)parent_tool;
 
+	Manager->EnsureBaseTexture();
+
 	Fvector Point;
 	if (!Manager->PickPaintPoint(Point))
 	{
@@ -35,6 +37,8 @@ bool TUI_ControlDOPaint::Start(TShiftState Shift)
 void TUI_ControlDOPaint::Move(TShiftState Shift)
 {
 	EDetailManager* Manager = (EDetailManager*)parent_tool;
+
+	Manager->EnsureBaseTexture();
 
 	Fvector Point;
 	if (!Manager->PickPaintPoint(Point))
