@@ -26,8 +26,8 @@ bool stored_red_text;
 CDemoRecord * xrDemoRecord = 0;
 CDemoRecord::force_position CDemoRecord:: g_position = { false, { 0, 0, 0 } };
 
-ENGINE_API float dr_cam_inert = EPS_S;
-ENGINE_API float dr_cam_pos_inert = EPS_S;
+ENGINE_API float dr_cam_inert = 0.f;
+ENGINE_API float dr_cam_pos_inert = 0.f;
 
 Fbox curr_lm_fbox;
 
@@ -131,7 +131,7 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 	if (file)
 	{
 		g_position.set_position = false;
-		IR_Capture(); // capture input
+		IR_Capture();
 		Camera.invert(Device.mView);
 
 		// parse yaw
@@ -139,31 +139,34 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 		Fvector DYaw;
 		DYaw.set(dir.x, 0.f, dir.z);
 		DYaw.normalize_safe();
-		if (DYaw.x < 0)
+		if (DYaw.x < 0.f)
 		{
-			HPB.x = acosf(DYaw.z);
+			hpb_current.x = acosf(DYaw.z);
 		}
 		else
 		{
-			HPB.x = 2 * PI - acosf(DYaw.z);
+			hpb_current.x = 2.f * PI - acosf(DYaw.z);
 		}
 
 		// parse pitch
 		dir.normalize_safe();
-		HPB.y = asinf(dir.y);
-		HPB.z = 0;
+		hpb_current.y = asinf(dir.y);
+		hpb_current.z = 0.f;
 
-		Position.set(Camera.c);
+		p_cam_pos.set(Device.vCameraPosition);
+		p_cam_pos_smoothed.set(Device.vCameraPosition);
 
-		Velocity.set(0, 0, 0);
-		AngularVelocity.set(0, 0, 0);
+		Velocity.set(0.f, 0.f, 0.f);
+		AngularVelocity.set(0.f, 0.f, 0.f);
 
-		FrameTopDelta.set(0, 0, 0);
-		FrameRightDelta.set(0, 0, 0);
+		FrameTopDelta.set(0.f, 0.f, 0.f);
+		FrameRightDelta.set(0.f, 0.f, 0.f);
 		m_bMakeCubeMap = false;
 		m_bMakeScreenshot = false;
 		m_bMakeLevelMap = false;
 		CameraTransformFactor = 3.f;
+		p_lap.set(0.f, 0.f, 0.f);
+		lap_lock = false;
 
 		m_fSpeed0 = pSettings->r_float("demo_record", "speed0");
 		m_fSpeed1 = pSettings->r_float("demo_record", "speed1");
@@ -370,6 +373,8 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("Left Ctrl + F11");
 				SystemFont->OutNext("F12");
 				SystemFont->OutNext("Left Ctrl + F12");
+				SystemFont->OutNext("J");
+				SystemFont->OutNext("K");
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(0, +.05f);
 				SystemFont->OutNext("= Forward, Backward, Left, Right");
@@ -384,6 +389,8 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("= Level Map Screenshot");
 				SystemFont->OutNext("= Level Map Screenshot (High Quality)");
 				SystemFont->OutNext("= ScreenShot");
+				SystemFont->OutNext("= Set lookat point (locks cam dir at point)");
+				SystemFont->OutNext("= Unset lookat point (unlocks cam dir at point)");
 			}
 		}
 		else
@@ -407,6 +414,8 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("F11");
 				SystemFont->OutNext("Left Ctrl + F11");
 				SystemFont->OutNext("F12");
+				SystemFont->OutNext("J");
+				SystemFont->OutNext("K");
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(0, +.05f);
 				SystemFont->OutNext("= Append keyframe");
@@ -415,6 +424,8 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("= Level Map ScreenShot");
 				SystemFont->OutNext("= Level Map ScreenShot(High Quality)");
 				SystemFont->OutNext("= ScreenShot");
+				SystemFont->OutNext("= Set lookat point (locks cam dir at point)");
+				SystemFont->OutNext("= Unset lookat point (unlocks cam dir at point)");
 			}
 		}
 		
@@ -445,61 +456,121 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		FrameTopDelta.mul(Device.fTimeDelta);
 		FrameRightDelta.mul(1.f);
 
-		HPB.x -= FrameRightDelta.y;
-		HPB.y -= FrameRightDelta.x;
-		HPB.z += FrameRightDelta.z;
-
 		if (g_position.set_position)
 		{
-			Position.set(g_position.p);
+			p_cam_pos.set(g_position.p);
 			g_position.set_position = false;
 		}
 		else
 		{
-			g_position.p.set(Position);
+			g_position.p.set(p_cam_pos);
 		}
 
 		Fvector CamMove;
 
-		CamMove.set				(Camera.k);
-		CamMove.normalize_safe	();
-		CamMove.mul				(FrameTopDelta.z);
-		Position.add			(CamMove);
+		CamMove.set(Camera.k);
+		CamMove.normalize_safe();
+		CamMove.mul(FrameTopDelta.z);
+		p_cam_pos.add(CamMove);
 
-		CamMove.set				(Camera.i);
-		CamMove.normalize_safe	();
-		CamMove.mul				(FrameTopDelta.x);
-		Position.add			(CamMove);
+		CamMove.set(Camera.i);
+		CamMove.normalize_safe();
+		CamMove.mul(FrameTopDelta.x);
+		p_cam_pos.add(CamMove);
 
-		CamMove.set				(Camera.j);
-		CamMove.normalize_safe	();
-		CamMove.mul				(FrameTopDelta.y);
-		Position.add			(CamMove);
+		CamMove.set(Camera.j);
+		CamMove.normalize_safe();
+		CamMove.mul(FrameTopDelta.y);
+		p_cam_pos.add(CamMove);
 
-		static Fvector p_smoothed = Position;
-		static Fvector hpb_smoothed = HPB;
+		lap_lock ? UpdateLookAtPoint() : UpdateLookUp();
 
-		p_smoothed.inertion(Position, dr_cam_pos_inert);
-		hpb_smoothed.inertion(HPB, dr_cam_inert);
+		p_cam_pos_smoothed.inertion(p_cam_pos, dr_cam_pos_inert);
+		Camera.translate_over(p_cam_pos_smoothed);
 
-		Camera.setHPB(hpb_smoothed.x, hpb_smoothed.y, hpb_smoothed.z);
-		Camera.translate_over(p_smoothed);
-
-		// update camera
 		info.n.set(Camera.j);
 		info.d.set(Camera.k);
 		info.p.set(Camera.c);
 
 		fLifeTime -= Device.fTimeDelta;
 
-		FrameTopDelta.set(0, 0, 0);
-		FrameRightDelta.set(0, 0, 0);
+		FrameTopDelta.set(0.f, 0.f, 0.f);
+		FrameRightDelta.set(0.f, 0.f, 0.f);
 	}
 	return true;
 }
 
+void CDemoRecord::UpdateLookAtPoint()
+{
+	Fvector dir;
+	dir.sub(p_lap, Camera.c);
+
+	Fmatrix basis;
+	basis.identity();
+	basis.k.normalize_safe(dir);
+	Fvector::generate_orthonormal_basis(basis.k, basis.j, basis.i);
+
+	Fvector target_eulers;
+	basis.getHPB(target_eulers);
+
+	target_eulers = {
+		hpb_smoothed.x + angle_difference_signed(target_eulers.x, hpb_smoothed.x),
+		hpb_smoothed.y + angle_difference_signed(target_eulers.y, hpb_smoothed.y),
+		0.f
+	};
+
+	hpb_smoothed.inertion(target_eulers, dr_cam_inert);
+	Camera.setHPB(hpb_smoothed.x, hpb_smoothed.y, hpb_smoothed.z);
+}
+
+void CDemoRecord::UpdateLookUp()
+{
+	hpb_current.x -= FrameRightDelta.y;
+	hpb_current.y -= FrameRightDelta.x;
+	hpb_current.z += FrameRightDelta.z;
+
+	hpb_smoothed.inertion(hpb_current, dr_cam_inert);
+	Camera.setHPB(hpb_smoothed.x, hpb_smoothed.y, hpb_smoothed.z);
+}
+
 void CDemoRecord::IR_OnKeyboardPress(int dik)
 {
+	if (dik == SDL_SCANCODE_K)
+	{
+		Fvector cur_eulers;
+		Camera.getHPB(cur_eulers);
+
+		hpb_current.set(cur_eulers);
+		hpb_smoothed.set(cur_eulers);
+
+		p_lap.set(0.f, 0.f, 0.f);
+		lap_lock = false;
+	}
+
+	if (dik == SDL_SCANCODE_J)
+	{
+		collide::rq_result rq_result;
+
+		if (g_pGameLevel->ObjectSpace.RayPick(Camera.c, Camera.k, 1000.f, collide::rq_target::rqtBoth, rq_result, nullptr))
+		{
+			Fvector picked_pos;
+			picked_pos.set(Camera.c.mad(Camera.k, rq_result.range));
+			p_lap = picked_pos;
+
+			Fvector current_eulers;
+			Camera.getHPB(current_eulers);
+
+			hpb_current.set(current_eulers);
+			hpb_smoothed.set(current_eulers);
+
+			lap_lock = true;
+		}
+		else
+		{
+			Msg("! Demo record: Сan't pick any triangle on mesh, to set lookat point.");
+		}
+	}
+
 	if (dik == SDL_SCANCODE_0)
 	{
 		m_b_redirect_input_to_level = !m_b_redirect_input_to_level;
