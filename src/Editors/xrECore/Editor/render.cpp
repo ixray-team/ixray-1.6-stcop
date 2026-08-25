@@ -497,7 +497,16 @@ void CRender::add_Visual(IRenderVisual* visual, bool)
 
 IRenderVisual* CRender::model_Create(const char* name, IReader* data) { return Models->Create(name, data); }
 IRenderVisual* CRender::model_CreateChild(const char* name, IReader* data) { return Models->CreateChild(name, data); }
-void 			CRender::model_Delete(IRenderVisual*& V, bool bDiscard) { auto v = dynamic_cast<dxRender_Visual*>(V); Models->Delete(v, bDiscard); if (v == nullptr)V = nullptr; }
+void CRender::model_Delete(IRenderVisual*& V, bool bDiscard) 
+{
+	auto v = dynamic_cast<dxRender_Visual*>(V); 
+	if (Models != nullptr)
+	{
+		Models->Delete(v, bDiscard);
+	}
+	if (v == nullptr)
+		V = nullptr; 
+}
 IRenderVisual* CRender::model_Duplicate(IRenderVisual* V) { return Models->Instance_Duplicate(dynamic_cast<dxRender_Visual*>(V)); }
 void 			CRender::model_Render(IRenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD) { Models->Render(dynamic_cast<dxRender_Visual*>(m_pVisual), mTransform, priority, strictB2F, m_fLOD); }
 void 			CRender::model_RenderSingle(IRenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD) { Models->RenderSingle(dynamic_cast<dxRender_Visual*>(m_pVisual), mTransform, m_fLOD); }
