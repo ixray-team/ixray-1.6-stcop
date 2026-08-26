@@ -365,6 +365,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("Left Ctrl + F12");
 				SystemFont->OutNext("J");
 				SystemFont->OutNext("K");
+				SystemFont->OutNext("L");
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(0, +.05f);
 				SystemFont->OutNext("= Forward, Backward, Left, Right");
@@ -381,6 +382,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("= ScreenShot");
 				SystemFont->OutNext("= Set lookat point (locks cam dir at point)");
 				SystemFont->OutNext("= Unset lookat point (unlocks cam dir at point)");
+				SystemFont->OutNext("= Draw skeleton");
 			}
 		}
 		else
@@ -406,6 +408,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("F12");
 				SystemFont->OutNext("J");
 				SystemFont->OutNext("K");
+				SystemFont->OutNext("L");
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(0, +.05f);
 				SystemFont->OutNext("= Append keyframe");
@@ -416,6 +419,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("= ScreenShot");
 				SystemFont->OutNext("= Set lookat point (locks cam dir at point)");
 				SystemFont->OutNext("= Unset lookat point (unlocks cam dir at point)");
+				SystemFont->OutNext("= Draw skeleton");
 			}
 		}
 
@@ -524,7 +528,7 @@ void CDemoRecord::UpdateFreeLook()
 {
 	if (rq_result.O != nullptr)
 	{
-		if (IKinematics* kinematics = rq_result.O->Visual()->dcast_PKinematics())
+		if (IKinematics* kinematics = rq_result.O->Visual()->dcast_PKinematics(); kinematics != nullptr && draw_skeleton)
 		{
 			Flags32 old_flags = HUD().world_prims.m_skeleton_flags;
 
@@ -560,6 +564,11 @@ void CDemoRecord::ParseActorCam()
 
 void CDemoRecord::IR_OnKeyboardPress(int dik)
 {
+	if (dik == SDL_SCANCODE_L)
+	{
+		draw_skeleton = !draw_skeleton;
+	}
+
 	if (dik == SDL_SCANCODE_K)
 	{
 		Fvector cur_eulers;

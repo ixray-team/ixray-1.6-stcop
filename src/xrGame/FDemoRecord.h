@@ -47,6 +47,7 @@ class CDemoRecord :
 	bool m_bEnableAcceleration = false;
 	bool NewInputSchema;
 	bool lap_lock;
+	bool draw_skeleton = false;
 
 	float CameraTransformFactor;
 	float m_fSpeed0;
