@@ -245,37 +245,31 @@ void CWeaponMagazined::LoadSounds(const char* section)
 
 	if (SoundExist(section, "snd_breechblock_aim"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_aim, true);
-		m_sounds.LoadSound(section, "snd_breechblock_aim", "sndPumpAim", true, m_eSoundEmptyClick);
-	}
-
-	if (SoundExist(section, "snd_breechblock_aim"))
-	{
-		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_aim, true);
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_pump_aim, true);
 		m_sounds.LoadSound(section, "snd_breechblock_aim", "sndPumpAim", true, m_eSoundEmptyClick);
 	}
 
 	if (SoundExist(section, "snd_breechblock_last"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_last, true);
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_pump_last, true);
 		m_sounds.LoadSound(section, "snd_breechblock_last", "sndPumpLast", true, m_eSoundEmptyClick);
 	}
 
 	if (SoundExist(section, "snd_breechblock_aim_last"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_aim_last, true);
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_pump_aim_last, true);
 		m_sounds.LoadSound(section, "snd_breechblock_aim_last", "sndPumpAimLast", true, m_eSoundEmptyClick);
 	}
 
 	if (SoundExist(section, "snd_breechblock_empty"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_empty, true);
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_pump_empty, true);
 		m_sounds.LoadSound(section, "snd_breechblock_empty", "sndPumpEmpty", true, m_eSoundEmptyClick);
 	}
 
 	if (SoundExist(section, "snd_breechblock_aim_empty"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_aim_empty, true);
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_pump_aim_empty, true);
 		m_sounds.LoadSound(section, "snd_breechblock_aim_empty", "sndPumpAimEmpty", true, m_eSoundEmptyClick);
 	}
 
