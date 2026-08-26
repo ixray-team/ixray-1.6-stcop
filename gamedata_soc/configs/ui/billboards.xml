@@ -1,0 +1,7 @@
+<w>
+
+	<default_billboard у="0.5" width="0.5" height="0.5">
+		<texture shader="friendly_indicator">ui_inGame2_PDA_icon_Primary_mission</texture>
+	</default_billboard>
+
+</w>
