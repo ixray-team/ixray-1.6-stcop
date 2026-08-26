@@ -670,10 +670,14 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 	{
 		GameGraph::_GRAPH_ID		dest_graph_id;
 
-		if (!IsUserDefined())
+		if (!IsUserDefined() && m_owner_se_object != nullptr)
+		{
 			dest_graph_id = m_owner_se_object->m_tGraphID;
+		}
 		else
+		{
 			dest_graph_id = m_cached.m_graphID;
+		}
 
 		map_point_path.clear();
 
