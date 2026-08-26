@@ -2616,6 +2616,8 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Float, "demo_record_cam_inert", &dr_cam_inert, 0.f, .999f);
 	extern float dr_cam_pos_inert;
 	CMD4(CCC_Float, "demo_record_cam_pos_inert", &dr_cam_pos_inert, 0.f, .999f);
+	extern bool dr_disable_time_factor_influence;
+	CMD2(CCC_Boolean, "demo_record_disable_time_factor_influence", &dr_disable_time_factor_influence);
 
 #ifndef MASTER_GOLD
 	CMD3(CCC_Mask64, "ai_obstacles_avoiding", &psAI_Flags, aiObstaclesAvoiding);
