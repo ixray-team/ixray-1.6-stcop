@@ -1634,76 +1634,72 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 		{
 			case sound_cmd_id::play:
 			{
-				bool sound_exists = (cmd.param1 && GMixer.sounds.contains((ref_sound*)cmd.param1));
-				ref_sound* sound = sound_exists ? (ref_sound*)cmd.param1 : nullptr;
+				bool IsSoundExists = (cmd.param1 && GMixer.sounds.contains((ref_sound*)cmd.param1));
+				ref_sound* sound = IsSoundExists ? (ref_sound*)cmd.param1 : nullptr;
 				u16 flags = cmd.param0;
-				CObject* obj = (CObject*)cmd.param3;
 
-				auto& actial_slot = GMixer.slots[cmd.slot - 1];
-				bool is_same_file = actial_slot.sound_name == cmd.string_storage.c_str();
-				if (!is_same_file && !actial_slot.sound_name.empty())
+				auto& ActualSlot = GMixer.slots[cmd.slot - 1];
+				bool IsSameFile = ActualSlot.sound_name == cmd.string_storage.c_str();
+				if (!IsSameFile && !ActualSlot.sound_name.empty())
 				{
-					Snd_ReleaseSound(actial_slot.sound_name);
-					actial_slot.sound_name.clear();
+					Snd_ReleaseSound(ActualSlot.sound_name);
+					ActualSlot.sound_name.clear();
 				}
 
-				sound_source* source_ptr = is_same_file ? Snd_FindSound(actial_slot.sound_name) : Snd_AcquireSound(cmd.string_storage.c_str(), false);
+				sound_source* SourcePtr = IsSameFile ? Snd_FindSound(ActualSlot.sound_name) : Snd_AcquireSound(cmd.string_storage.c_str(), false);
 
-				if (source_ptr == nullptr)
+				if (SourcePtr == nullptr)
 				{
 					MixerNewState(cmd.slot, State::Stopped);
 					break;
 				}
 
-				if (is_same_file)
+				if (IsSameFile)
 				{
 					// The slot already holds a reference on it
-					Snd_ReleaseSound(actial_slot.sound_name);
+					Snd_ReleaseSound(ActualSlot.sound_name);
 				}
 
-				auto& source = *source_ptr;
-				memset(actial_slot.parameters, 0, sizeof(actial_slot.parameters));
-				memset(actial_slot.history, 0, sizeof(actial_slot.history));
-				actial_slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel] = Fvector(source.pub.volume, 1.0f, 1.0f);
-				actial_slot.parameters[(u32)Mixer::ParameterId::DistanceRange] = Fvector(source.pub.min_distance, source.pub.max_distance, source.pub.max_ai_distance);
-				actial_slot.parameters[(u32)Mixer::ParameterId::Pitch] = Fvector{1.0f, 1.0f, 1.0f};
-				actial_slot.parameters[(u32)Mixer::ParameterId::Panning] = Fvector{1.0f, 1.0f, 1.0f};
-				actial_slot.position = 0;
-				actial_slot.stopping_position = (u32)-1;
-				actial_slot.sound_name = cmd.string_storage.c_str();
-				actial_slot.flags = flags;
-				actial_slot.fade_volume = 0.0f;
+				auto& Source = *SourcePtr;
+				memset(ActualSlot.parameters, 0, sizeof(ActualSlot.parameters));
+				memset(ActualSlot.history, 0, sizeof(ActualSlot.history));
+				ActualSlot.parameters[(u32)Mixer::ParameterId::VolumePerChannel] = Fvector(Source.pub.volume, 1.0f, 1.0f);
+				ActualSlot.parameters[(u32)Mixer::ParameterId::DistanceRange] = Fvector(Source.pub.min_distance, Source.pub.max_distance, Source.pub.max_ai_distance);
+				ActualSlot.parameters[(u32)Mixer::ParameterId::Pitch] = Fvector{1.0f, 1.0f, 1.0f};
+				ActualSlot.parameters[(u32)Mixer::ParameterId::Panning] = Fvector{1.0f, 1.0f, 1.0f};
+				ActualSlot.position = 0;
+				ActualSlot.stopping_position = (u32)-1;
+				ActualSlot.sound_name = cmd.string_storage.c_str();
+				ActualSlot.flags = flags;
+				ActualSlot.fade_volume = 0.0f;
 
-				if (actial_slot.flags & (u16)Flags::Spatial && obj != nullptr)
+				if (ActualSlot.flags & (u16)Flags::Spatial && sound != nullptr && sound->_g_object() != nullptr)
 				{
-					actial_slot.parameters[(u32)Mixer::ParameterId::Position] = ((IRenderable*)obj)->renderable.xform.c;
+					ActualSlot.parameters[(u32)Mixer::ParameterId::Position] = ((IRenderable*)sound->_g_object())->renderable.xform.c;
 				}
 
 				if (handler != nullptr)
 				{
-					float clip = source.pub.max_ai_distance * source.pub.volume;
-					float range = std::min(source.pub.max_ai_distance, clip);
+					float Clip = Source.pub.max_ai_distance * Source.pub.volume;
+					float Range = std::min(Source.pub.max_ai_distance, Clip);
 
-					if (range >= 0.1f)
+					if (Range >= 0.1f && sound != nullptr && sound->_p != nullptr)
 					{
-						if (flags & (u16)Flags::NoFeedback)
+						if (CObject* Object = sound->_g_object())
 						{
-							if (obj)
+							if (flags & (u16)Flags::NoFeedback)
 							{
-								ref_sound_data_ptr data_ptr = new ref_sound_data();
-								data_ptr->slot = cmd.slot;
-								data_ptr->g_type = 0;
-								data_ptr->g_object = obj;
-								data_ptr->dont_destroy_slot = true;
-								data_ptr->fn_attached[0] = source.pub.path;
-								handler(data_ptr, range);
+								ref_sound_data_ptr DataPtr = new ref_sound_data();
+								DataPtr->slot = cmd.slot;
+								DataPtr->g_type = 0;
+								DataPtr->g_object = Object;
+								DataPtr->dont_destroy_slot = true;
+								DataPtr->fn_attached[0] = Source.pub.path;
+								handler(DataPtr, Range);
 							}
-						}
-						else
-						{
-							if (sound != nullptr && sound->_p != nullptr && sound->_p->g_object != nullptr)
+							else
 							{
-								handler(sound->_p, range);
+								handler(sound->_p, Range);
 							}
 						}
 					}
@@ -1711,7 +1707,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 
 				if (!fis_zero(cmd.param2))
 				{
-					actial_slot.delay = (float)*(double*)&cmd.param2;
+					ActualSlot.delay = (float)*(double*)&cmd.param2;
 					MixerNewState(cmd.slot, State::Delay);
 				}
 				else
