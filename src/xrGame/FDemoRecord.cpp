@@ -179,8 +179,6 @@ CDemoRecord::~CDemoRecord()
 	}
 
 	g_bDisableRedText = stored_red_text;
-
-	HUD().world_prims.hud_mode = true;
 }
 
 void CDemoRecord::MakeScreenshotFace()
