@@ -24,6 +24,7 @@ CDemoRecord::force_position CDemoRecord::g_position = {false, {0, 0, 0}};
 
 float dr_cam_inert = 0.f;
 float dr_cam_pos_inert = 0.f;
+bool dr_disable_time_factor_influence = false;
 
 Fbox curr_lm_fbox;
 
@@ -447,7 +448,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			FrameTopDelta.mul(CameraTransformFactor);
 		}
 
-		FrameTopDelta.mul(Device.fRealTimeDelta);
+		dr_disable_time_factor_influence ? FrameTopDelta.mul(Device.fRealTimeDelta) : FrameTopDelta.mul(Device.fTimeDelta);
 		FrameRightDelta.mul(1.f);
 
 		if (g_position.set_position)
