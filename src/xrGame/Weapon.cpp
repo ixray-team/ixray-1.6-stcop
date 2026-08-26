@@ -2898,7 +2898,7 @@ bool CWeapon::CanAimNow()
 		result = pDevice->IsHidden() && !pDevice->NeedActivation() || !!(state == CCustomDevice::eIdle || state == CCustomDevice::EDeviceStates::eHandAimStart || state == CCustomDevice::EDeviceStates::eHandAimEnd);
 	}
 
-	if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || GetState() == eSprintStart || GetState() == eSprintEnd || m_bSwitchSprint))
+	if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || GetNextState() == eSprintStart || GetNextState() == eSprintEnd || m_bSwitchSprint))
 	{
 		result = false;
 	}
