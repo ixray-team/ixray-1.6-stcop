@@ -738,6 +738,11 @@ void CGameTask::load(IReader& stream)
 {
 	load_data				(m_ID, stream);
 
+	if (EngineExternal().ShadowOfChernobylMode())
+	{
+		Load(m_ID);
+	}
+
 	load_data				(m_priority,		stream);
 	load_data				(m_remoteAllowed,	stream);
 	load_data				(m_hasPendingRewardDispatch,	stream);
