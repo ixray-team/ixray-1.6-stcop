@@ -52,10 +52,10 @@
             <right_anim x="268" y="10" width="55" height="55" heading="1">
                 <texture>ui_menu_smallroll_r</texture>
             </right_anim>
-			<left_grating x="0" y="4" width="55" height="67" stretch="1">
+			<left_grating x="10" y="4" width="35" height="67" stretch="1">
 				<texture>ui_menu_grating_l</texture>
 			</left_grating>
-			<right_grating x="284" y="4" width="55" height="67" stretch="1">
+			<right_grating x="294" y="4" width="35" height="67" stretch="1">
 				<texture>ui_menu_grating_r</texture>
 			</right_grating>		
 		</shniaga>
@@ -71,9 +71,9 @@
 	</menu_main>
 	
 	<menu_main_last_save btn_height="30" font="graffiti22" a="255" r="0" g="0" b="0">
+		<btn name="btn_lastsave"	caption="ui_mm_last_save" />
 		<btn name="btn_new_game"	caption="ui_mm_newgame" />
 		<btn name="btn_load"		caption="ui_mm_load_game" />
-		<btn name="btn_lastsave"	caption="ui_mm_last_save" />
 		<!--btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" /-->
 		<btn name="btn_options"		caption="ui_mm_options_n" />
 		<btn name="btn_credits"		caption="ui_mm_credits" />
