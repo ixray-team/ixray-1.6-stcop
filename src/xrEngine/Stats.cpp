@@ -7,13 +7,11 @@
 
 #include "../Include/xrRender/DrawUtils.h"
 
-int		g_ErrorLineCount	= 15;
-Flags32 g_stats_flags		= {0};
+int g_ErrorLineCount = 15;
+Flags32 g_stats_flags = {0};
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-bool			g_bDisableRedText	= false;
+ENGINE_API bool g_bDisableRedText = false;
+
 CStats::CStats	()
 {
 	fFPS = 0.f;

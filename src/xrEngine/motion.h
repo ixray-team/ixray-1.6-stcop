@@ -15,9 +15,10 @@ class IWriter;
 class IReader;
 class motion_marks;
 
-enum EChannelType{
+enum EChannelType
+{
 	ctUnsupported = -1,
-	ctPositionX=0,
+	ctPositionX = 0,
 	ctPositionY,
 	ctPositionZ,
 	ctRotationH,
@@ -28,14 +29,20 @@ enum EChannelType{
 
 struct st_BoneMotion
 {
-	enum {
-		flWorldOrient = 1<<0,
+	enum
+	{
+		flWorldOrient = 1 << 0,
 	};
-	shared_str		name;
-	CEnvelope*	envs			[ctMaxChannel];
-	Flags8		m_Flags;
-    			st_BoneMotion()	{name=0; m_Flags.zero(); ZeroMemory(envs,sizeof(CEnvelope*)*ctMaxChannel);}
-    void        SetName(const char* nm)	{	name=nm;	}
+	shared_str name;
+	CEnvelope* envs[ctMaxChannel];
+	Flags8 m_Flags;
+	st_BoneMotion()
+	{
+		name = 0;
+		m_Flags.zero();
+		ZeroMemory(envs, sizeof(CEnvelope*) * ctMaxChannel);
+	}
+	void SetName(const char* nm) { name = nm; }
 };
 
 // vector по костям
@@ -48,152 +55,192 @@ class ENGINE_API CCustomMotion
 protected:
 	enum EMotionType
 	{
-		mtObject	= 0,
+		mtObject = 0,
 		mtSkeleton,
-		ForceDWORD	= u32(-1)
+		ForceDWORD = u32(-1)
 	};
-	EMotionType		mtype;
-	int				iFrameStart, iFrameEnd;
-	float			fFPS;
+	EMotionType mtype;
+	int iFrameStart, iFrameEnd;
+	float fFPS;
+
 public:
-	shared_str		name;
+	shared_str name;
+
 public:
-					CCustomMotion	();
-					CCustomMotion	(CCustomMotion* src);
-	virtual			~CCustomMotion	();
+	CCustomMotion();
+	CCustomMotion(CCustomMotion* src);
+	virtual ~CCustomMotion();
 
-	void			SetName			(const char* n)	{string256 tmp; tmp[0]=0; if(n){xr_strcpy(tmp,n); _strlwr(tmp);} name=tmp;}
-	const char*			Name			()				{return name.c_str();}
-    int				FrameStart		()				{return iFrameStart;}
-    int				FrameEnd		()				{return iFrameEnd;}
-    float			FPS				()				{return fFPS;}
-    int				Length			()				{return iFrameEnd-iFrameStart+1;}
+	void SetName(const char* n)
+	{
+		string256 tmp;
+		tmp[0] = 0;
+		if (n)
+		{
+			xr_strcpy(tmp, n);
+			_strlwr(tmp);
+		}
+		name = tmp;
+	}
+	const char* Name() { return name.c_str(); }
+	int FrameStart() { return iFrameStart; }
+	int FrameEnd() { return iFrameEnd; }
+	float FPS() { return fFPS; }
+	int Length() { return iFrameEnd - iFrameStart + 1; }
 
-	void			SetParam		(int s, int e, float fps){iFrameStart=s; iFrameEnd=e; fFPS=fps;}
+	void SetParam(int s, int e, float fps)
+	{
+		iFrameStart = s;
+		iFrameEnd = e;
+		fFPS = fps;
+	}
 
-	virtual void	Save			(IWriter& F);
-	virtual bool	Load			(IReader& F);
+	virtual void Save(IWriter& F);
+	virtual bool Load(IReader& F);
 
-	virtual void	SaveMotion		(const char* buf)=0;
-	virtual bool	LoadMotion		(const char* buf)=0;
+	virtual void SaveMotion(const char* buf) = 0;
+	virtual bool LoadMotion(const char* buf) = 0;
 
 #ifdef _LW_EXPORT
-	CEnvelope*		CreateEnvelope	(LWChannelID chan, LWChannelID* chan_parent=0);
+	CEnvelope* CreateEnvelope(LWChannelID chan, LWChannelID* chan_parent = 0);
 #endif
 };
 
 //--------------------------------------------------------------------------
-class ENGINE_API COMotion: public CCustomMotion
+class ENGINE_API COMotion : public CCustomMotion
 {
-	CEnvelope*		envs			[ctMaxChannel];
+	CEnvelope* envs[ctMaxChannel];
+
 public:
-					COMotion		();
-					COMotion		(COMotion* src);
-	virtual			~COMotion		();
+	COMotion();
+	COMotion(COMotion* src);
+	virtual ~COMotion();
 
-	void			Clear			();
+	void Clear();
 
-	void			_Evaluate		(float t, Fvector& T, Fvector& R);
-	virtual void	Save			(IWriter& F);
-	virtual bool	Load			(IReader& F);
+	void _Evaluate(float t, Fvector& T, Fvector& R);
+	virtual void Save(IWriter& F);
+	virtual bool Load(IReader& F);
 
-	virtual void	SaveMotion		(const char* buf);
-	virtual bool	LoadMotion		(const char* buf);
+	virtual void SaveMotion(const char* buf);
+	virtual bool LoadMotion(const char* buf);
 
 #ifdef _LW_EXPORT
-	void			ParseObjectMotion(LWItemID object);
+	void ParseObjectMotion(LWItemID object);
 #endif
 
-	void 			FindNearestKey	(float t, float& min_k, float& max_k, float eps=EPS_L);
-	void			CreateKey		(float t, const Fvector& P, const Fvector& R);
-	void			DeleteKey		(float t);
-    void			NormalizeKeys	();
-    int				KeyCount		();
-	CEnvelope*		Envelope		(EChannelType et=ctPositionX);
-    bool			ScaleKeys		(float from_time, float to_time, float scale_factor);
-    bool			NormalizeKeys	(float from_time, float to_time, float speed);
-    float			GetLength		(float* mn=0, float* mx=0);
+	void FindNearestKey(float t, float& min_k, float& max_k, float eps = EPS_L);
+	void CreateKey(float t, const Fvector& P, const Fvector& R);
+	void DeleteKey(float t);
+	void NormalizeKeys();
+	int KeyCount();
+	CEnvelope* Envelope(EChannelType et = ctPositionX);
+	bool ScaleKeys(float from_time, float to_time, float scale_factor);
+	bool NormalizeKeys(float from_time, float to_time, float speed);
+	float GetLength(float* mn = 0, float* mx = 0);
 };
 
 //--------------------------------------------------------------------------
 
-enum ESMFlags{
-    esmFX				= 1<<0,
-    esmStopAtEnd		= 1<<1,
-    esmNoMix			= 1<<2,
-    esmSyncPart			= 1<<3,
-    esmUseFootSteps    	= 1<<4,
-	esmRootMover     	= 1<<5,
-	esmIdle             = 1<<6,
-	esmUseWeaponBone	= 1<<7,
+enum ESMFlags
+{
+	esmFX = 1 << 0,
+	esmStopAtEnd = 1 << 1,
+	esmNoMix = 1 << 2,
+	esmSyncPart = 1 << 3,
+	esmUseFootSteps = 1 << 4,
+	esmRootMover = 1 << 5,
+	esmIdle = 1 << 6,
+	esmUseWeaponBone = 1 << 7,
 };
 
 #if defined(_EDITOR)
-	#include "SkeletonMotions.h"
+#include "SkeletonMotions.h"
 
-class ECORE_API CSMotion: 
+class ECORE_API CSMotion :
 	public CCustomMotion
 {
-	BoneMotionVec	bone_mots;
-public:
-    u16			           	        m_BoneOrPart;
-    float		           	        fSpeed;
-    float		           	        fAccrue;
-    float		           	        fFalloff;
-    float		           	        fPower;
-	Flags8		           	        m_Flags;
+	BoneMotionVec bone_mots;
 
-	xr_vector<motion_marks>			marks;
+public:
+	u16 m_BoneOrPart;
+	float fSpeed;
+	float fAccrue;
+	float fFalloff;
+	float fPower;
+	Flags8 m_Flags;
+
+	xr_vector<motion_marks> marks;
 	editor_notify_data notify;
 	xr_stack<float> notifies_to_remove = {};
 
-    void			Clear			();
+	void Clear();
+
 public:
-					CSMotion		();
-					CSMotion		(CSMotion* src);
-	virtual			~CSMotion		();
+	CSMotion();
+	CSMotion(CSMotion* src);
+	virtual ~CSMotion();
 
-	void			_Evaluate		(int bone_idx, float t, Fvector& T, Fvector& R);
+	void _Evaluate(int bone_idx, float t, Fvector& T, Fvector& R);
 
-    void			CopyMotion		(CSMotion* src);
+	void CopyMotion(CSMotion* src);
 
-    st_BoneMotion*	FindBoneMotion	(shared_str name);
-    IC BoneMotionVec& BoneMotions		()				{return bone_mots;}
-	Flags8			GetMotionFlags	(int bone_idx)	{return bone_mots[bone_idx].m_Flags;}
-	void			add_empty_motion(shared_str const &bone_id);
+	st_BoneMotion* FindBoneMotion(shared_str name);
+	IC BoneMotionVec& BoneMotions() { return bone_mots; }
+	Flags8 GetMotionFlags(int bone_idx) { return bone_mots[bone_idx].m_Flags; }
+	void add_empty_motion(shared_str const& bone_id);
 
-	virtual void	Save			(IWriter& F);
-	virtual bool	Load			(IReader& F);
+	virtual void Save(IWriter& F);
+	virtual bool Load(IReader& F);
 
-	virtual void	SaveMotion		(const char* buf);
-	virtual bool	LoadMotion		(const char* buf);
+	virtual void SaveMotion(const char* buf);
+	virtual bool LoadMotion(const char* buf);
 
-    void			SortBonesBySkeleton(BoneVec& bones);
-    void			WorldRotate		(int boneId, float h, float p, float b);
+	void SortBonesBySkeleton(BoneVec& bones);
+	void WorldRotate(int boneId, float h, float p, float b);
 
-    void			Optimize		();
-	#ifdef _LW_EXPORT
-	void			ParseBoneMotion	(LWItemID bone);
-	#endif
+	void Optimize();
+#ifdef _LW_EXPORT
+	void ParseBoneMotion(LWItemID bone);
+#endif
 };
 #endif
 
-struct ECORE_API SAnimParams		{
-    float			t_current;
-    float			tmp;
-    float			min_t;
-    float			max_t;
-    bool			bPlay;
-	bool			bWrapped;
-public:
-					SAnimParams(){bWrapped=false;bPlay=false;t_current=0.f;min_t=0.f;max_t=0.f;tmp=0.f;}
-    void			Set		(CCustomMotion* M);
-	void 			Set		(float start_frame, float end_frame, float fps);
-    float			Frame	()			{ return t_current;}
-    void			Update	(float dt, float speed, bool loop);
-    void			Play	(){bPlay=true; t_current=min_t; tmp=min_t;}
-    void			Stop	(){bPlay=false; t_current=min_t; tmp=min_t;}
-    void			Pause	(bool val){bPlay=!val;}
+struct ENGINE_API SAnimParams
+{
+	float t_current;
+	float tmp;
+	float min_t;
+	float max_t;
+	bool bPlay;
+	bool bWrapped;
+
+	SAnimParams()
+	{
+		bWrapped = false;
+		bPlay = false;
+		t_current = 0.f;
+		min_t = 0.f;
+		max_t = 0.f;
+		tmp = 0.f;
+	}
+	void Set(CCustomMotion* M);
+	void Set(float start_frame, float end_frame, float fps);
+	float Frame() { return t_current; }
+	void Update(float dt, float speed, bool loop);
+	void Play()
+	{
+		bPlay = true;
+		t_current = min_t;
+		tmp = min_t;
+	}
+	void Stop()
+	{
+		bPlay = false;
+		t_current = min_t;
+		tmp = min_t;
+	}
+	void Pause(bool val) { bPlay = !val; }
 };
 
 #endif
