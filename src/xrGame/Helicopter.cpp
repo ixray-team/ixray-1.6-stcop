@@ -9,11 +9,8 @@
 #include "game_object_space.h"
 #include "script_game_object.h"
 #include "../xrEngine/LightAnimLibrary.h"
-//#include "physicscommon.h"
 #include "ParticlesObject.h"
 #include "../../xrUI/ui_base.h"
-//50fps fixed
-float STEP=0.02f;
 
 CHelicopter::CHelicopter()
 {
@@ -304,14 +301,14 @@ void CHelicopter::MoveStep()
 													-m_movement.LinearAcc_bk);
 
 
-		angle_lerp	(m_movement.currPathH, desired_H, m_movement.GetAngSpeedHeading(m_movement.curLinearSpeed), STEP);
-		angle_lerp	(m_movement.currPathP, desired_P, m_movement.GetAngSpeedPitch(m_movement.curLinearSpeed), STEP);
+		angle_lerp	(m_movement.currPathH, desired_H, m_movement.GetAngSpeedHeading(m_movement.curLinearSpeed), Device.fTimeDelta);
+		angle_lerp	(m_movement.currPathP, desired_P, m_movement.GetAngSpeedPitch(m_movement.curLinearSpeed), Device.fTimeDelta);
 		
 		dir.setHP(m_movement.currPathH, m_movement.currPathP);
 
-		float vp = m_movement.curLinearSpeed*STEP+(m_movement.curLinearAcc*STEP*STEP)/2.0f;
+		float vp = m_movement.curLinearSpeed*Device.fTimeDelta+(m_movement.curLinearAcc*Device.fTimeDelta*Device.fTimeDelta)/2.0f;
 		m_movement.currP.mad	(dir, vp);
-		m_movement.curLinearSpeed += m_movement.curLinearAcc*STEP;
+		m_movement.curLinearSpeed += m_movement.curLinearAcc*Device.fTimeDelta;
 		static bool aaa = false;
 		if(aaa)
 			Msg("1-m_movement.curLinearSpeed=%f",m_movement.curLinearSpeed);
@@ -322,13 +319,12 @@ void CHelicopter::MoveStep()
 		if( !fis_zero(m_movement.curLinearSpeed) ){
 			m_movement.curLinearAcc = -m_movement.LinearAcc_bk;
 
-			float vp = m_movement.curLinearSpeed*STEP+(m_movement.curLinearAcc*STEP*STEP)/2.0f;
+			float vp = m_movement.curLinearSpeed*Device.fTimeDelta+(m_movement.curLinearAcc*Device.fTimeDelta*Device.fTimeDelta)/2.0f;
 			dir.setHP(m_movement.currPathH, m_movement.currPathP);
 			dir.normalize_safe();
 			m_movement.currP.mad	(dir, vp);
-			m_movement.curLinearSpeed += m_movement.curLinearAcc*STEP;
+			m_movement.curLinearSpeed += m_movement.curLinearAcc*Device.fTimeDelta;
 			clamp(m_movement.curLinearSpeed,0.0f,1000.0f);
-//			clamp(m_movement.curLinearSpeed,0.0f,m_movement.maxLinearSpeed);
 
 		}else{
 			m_movement.curLinearAcc		= 0.0f;
@@ -343,25 +339,26 @@ void CHelicopter::MoveStep()
 
 		float center_desired_H,tmp_P;
 		desired_dir.getHP(center_desired_H, tmp_P);
-		angle_lerp			(m_body.currBodyHPB.x, center_desired_H, m_movement.GetAngSpeedHeading(m_movement.curLinearSpeed), STEP);
+		angle_lerp			(m_body.currBodyHPB.x, center_desired_H, m_movement.GetAngSpeedHeading(m_movement.curLinearSpeed), Device.fTimeDelta);
 	}else{
-		angle_lerp			(m_body.currBodyHPB.x, m_movement.currPathH, m_movement.GetAngSpeedHeading(m_movement.curLinearSpeed), STEP);
+		angle_lerp			(m_body.currBodyHPB.x, m_movement.currPathH, m_movement.GetAngSpeedHeading(m_movement.curLinearSpeed), Device.fTimeDelta);
 	}
 
-
-	float needBodyP = -m_body.model_pitch_k*m_movement.curLinearSpeed;
-	if(m_movement.curLinearAcc < 0) needBodyP*=-1;
-	angle_lerp	(m_body.currBodyHPB.y, needBodyP, m_body.model_angSpeedPitch, STEP);
-
+	float needBodyP = -m_body.model_pitch_k * m_movement.curLinearSpeed;
+	if (m_movement.curLinearAcc < 0)
+	{
+		needBodyP *= -1;
+	}
+	angle_lerp(m_body.currBodyHPB.y, needBodyP, m_body.model_angSpeedPitch, Device.fTimeDelta);
 
 	float sign;
 	Fvector cp;
-	cp.crossproduct (pathDir,dir);
-	(cp.y>0.0)?sign=1.0f:sign=-1.0f;
+	cp.crossproduct(pathDir, dir);
+	cp.y > 0.0 ? sign = 1.0f : sign = -1.0f;
 	float ang_diff = angle_difference (m_movement.currPathH, desired_H);
 	
 	float needBodyB = -ang_diff*sign*m_body.model_bank_k*m_movement.curLinearSpeed;
-	angle_lerp	(m_body.currBodyHPB.z, needBodyB, m_body.model_angSpeedBank, STEP);
+	angle_lerp	(m_body.currBodyHPB.z, needBodyB, m_body.model_angSpeedBank, Device.fTimeDelta);
 
 	XFORM().setHPB(m_body.currBodyHPB.x,m_body.currBodyHPB.y,m_body.currBodyHPB.z);
 	XFORM().translate_over(m_movement.currP);
@@ -393,11 +390,7 @@ void CHelicopter::UpdateCL()
 
 	m_stepRemains+=Device.fTimeDelta;
 
-	while(m_stepRemains>STEP)
-	{
-		MoveStep();
-		m_stepRemains-=STEP;
-	}
+	MoveStep();
 
 #ifdef DEBUG
 	if(bDebug){
