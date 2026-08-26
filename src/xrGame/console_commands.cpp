@@ -2,8 +2,8 @@
 #include "pch_script.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/CustomHUD.h"
-#include "../xrEngine/FDemoRecord.h"
-#include "../xrEngine/FDemoPlay.h"
+#include "../FDemoRecord.h"
+#include "../FDemoPlay.h"
 #include "xrMessages.h"
 #include "xrServer.h"
 #include "Level.h"
@@ -2612,9 +2612,9 @@ void CCC_RegisterCommands()
 	CMD1(CCC_DemoRecord, "demo_record");
 	CMD1(CCC_DemoRecordSetPos, "demo_set_cam_position");
 
-	extern ENGINE_API float dr_cam_inert;
+	extern float dr_cam_inert;
 	CMD4(CCC_Float, "demo_record_cam_inert", &dr_cam_inert, 0.f, .999f);
-	extern ENGINE_API float dr_cam_pos_inert;
+	extern float dr_cam_pos_inert;
 	CMD4(CCC_Float, "demo_record_cam_pos_inert", &dr_cam_pos_inert, 0.f, .999f);
 
 #ifndef MASTER_GOLD

@@ -9,11 +9,6 @@
 #define EOBJ_OMOTION_VERSION   	0x0005
 #define EOBJ_SMOTION_VERSION   	0x0007
 
-#ifdef _LW_EXPORT
-	extern void ReplaceSpaceAndLowerCase(shared_str& s);
-#endif
-
-
 //------------------------------------------------------------------------------------------
 // CCustomMotion
 //------------------------------------------------------------------------------------------
@@ -34,9 +29,6 @@ CCustomMotion::~CCustomMotion()
 
 void CCustomMotion::Save(IWriter& F)
 {
-#ifdef _LW_EXPORT
-	ReplaceSpaceAndLowerCase(name);
-#endif
 	F.w_stringZ	(name);
 	F.w_u32		(iFrameStart);
 	F.w_u32		(iFrameEnd);

@@ -3198,7 +3198,7 @@ void RenderOMFEditor_Draw_TableMain()
 
 
 #if IXRAY_OMF_EDITOR_TAB_GAME == 1
-inline const std::string_view& convert_EHudStates_to_string(u8 state) noexcept
+inline const std::string_view convert_EHudStates_to_string(u8 state) noexcept
 {
 	if (state <= CHUDState::EHudStates::eLastBaseState)
 	{
