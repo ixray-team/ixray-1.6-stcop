@@ -5,7 +5,7 @@
 #include "alife_simulator.h"
 #include "alife_simulator_header.h"
 #include "level_graph.h"
-#include "../xrEngine/FDemoRecord.h"
+#include "FDemoRecord.h"
 #include "Level.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "game_cl_base.h"
