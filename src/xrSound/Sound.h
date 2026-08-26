@@ -154,10 +154,17 @@ public:
 							~ref_sound				();
 
 	IC u32		            slot				    ()						{return _p?_p->slot:0;}
-	IC CObject*				_g_object				()						{VERIFY(_p); return _p->g_object;}
-	IC int					_g_type					()						{VERIFY(_p); return _p->g_type;}
-	IC esound_type			_sound_type				()						{VERIFY(_p); return _p->s_type;}
-	IC CSound_UserDataPtr	_g_userdata				()						{VERIFY(_p); return _p->g_userdata;}
+	IC CObject*				_g_object				()						{ if (_p == nullptr) return nullptr; return _p->g_object;}
+	IC int					_g_type					()						{ if (_p == nullptr) return 0; return _p->g_type;}
+	IC esound_type			_sound_type				()						{ if (_p == nullptr) return esound_type::st_Effect; return _p->s_type;}
+	IC CSound_UserDataPtr _g_userdata()
+	{
+		if (_p == nullptr)
+		{
+			return nullptr;
+		}
+		return _p->g_userdata;
+	}
 	IC u32                  unique_id               ()                      {return _unique_id;}
 
 	IC void					create					( const char* name, esound_type sound_type,	int	game_type);
