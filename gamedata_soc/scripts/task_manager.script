@@ -426,13 +426,13 @@ function CRandomTask:task_complete(p1, p2)
 			local oo = alife():object(sel_task.selected_target)
 
 			--' Проверка бага
-			if oo == nil then
-				printf("selected_target = %s", tostring(sel_task.selected_target))
-				abort("OBJ = nil for task %s", tostring(self.active_task_by_type[p1]))
-			elseif oo.alive == nil then	
-				printf("OBJ.ALIVE = nil for task %s", tostring(self.active_task_by_type[p1]))
-				abort("OBJ.NAME = %s", obj:name())				
-			end		
+			--if oo == nil then
+			--	printf("selected_target = %s", tostring(sel_task.selected_target))
+			--	abort("OBJ = nil for task %s", tostring(self.active_task_by_type[p1]))
+			--elseif oo.alive == nil then	
+			--	printf("OBJ.ALIVE = nil for task %s", tostring(self.active_task_by_type[p1]))
+			--	abort("OBJ.NAME = %s", obj:name())				
+			--end		
 
 			if oo and oo:alive() == false then
 				self.task_info[self.active_task_by_type[p1]].status = "completed"
