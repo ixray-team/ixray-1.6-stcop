@@ -145,7 +145,7 @@
     <texture id="ui_button_arrow_down_h" x="855" y="107" width="44" height="29" />
     <texture id="ui_button_arrow_down_t" x="899" y="107" width="44" height="29" />
     <texture id="ui_button_arrow_down_d" x="811" y="107" width="44" height="29" />
-    <texture id="ui_menu_options_dlg" x="164" y="232" width="566" height="461" />
+    <texture id="ui_menu_options_dlg" x="165" y="233" width="563" height="459" />
     <texture id="ui_options_tv" x="157" y="693" width="476" height="179" />
     <texture id="ui_options_rust_02" x="157" y="872" width="180" height="63" />
     <texture id="ui_options_rust_01" x="164" y="737" width="102" height="41" />
@@ -429,7 +429,7 @@
     <texture id="ui_scroll_PDA_btn_up_t" x="1006" y="275" width="17" height="21" />
     <texture id="ui_scroll_PDA_box_t" x="1006" y="326" width="17" height="30" />
     <texture id="ui_scroll_PDA_box_h" x="971" y="285" width="17" height="30" />
-    <texture id="ui_scroll_PDA_back" x="922" y="288" width="17" height="30" />
+    <texture id="ui_scroll_PDA_back" x="922" y="288" width="17" height="28" />
     <texture id="ui_scroll_btn_up" x="124" y="173" width="15" height="16" />
     <texture id="ui_scroll_back" x="124" y="189" width="15" height="15" />
     <texture id="ui_scroll_box" x="124" y="205" width="15" height="14" />
