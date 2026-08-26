@@ -130,8 +130,8 @@
         <cap_header_setup x="20" y="0" width="143" height="15">
 			<text font="letterica16" color="ui_6" vert_align="c"/>
         </cap_header_setup>
-        <header_setup x="0" y="7" width="446" height="17">
-            <texture a="150">ui_table_button_e</texture>
+        <header_setup x="0" y="7" width="446" height="15">
+            <texture>ui_brokenline</texture>
         </header_setup>
 
 		<btn_template x="342" y="325" width="111" height="29">
