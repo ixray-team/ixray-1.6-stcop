@@ -1,19 +1,21 @@
 #include "stdafx.h"
 #include "SteamAudio.h"
 
-struct AutoRegReverbSteamAudio
+struct AutoRegSteamAudio
 {
-	AutoRegReverbSteamAudio()
+	AutoRegSteamAudio()
 	{
+		GSpatializer = new CSteamAudioSpatializer;
 		GReverInterface = new CSteamAudioReverb;
 	}
 
-	~AutoRegReverbSteamAudio()
+	~AutoRegSteamAudio()
 	{
 		xr_delete(GReverInterface);
+		xr_delete(GSpatializer);
 	}
 };
-static AutoRegReverbSteamAudio RegCall;
+static AutoRegSteamAudio RegCall;
 
 void CSteamAudioReverb::ConvertReverbSettings(const sound_reverb_settings* ReverbIn, IPLReflectionEffectParams* ReverbOut, IPLint32 SampleRate)
 {
