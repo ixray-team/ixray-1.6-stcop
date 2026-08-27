@@ -326,6 +326,7 @@ void RenderUI()
 				ImGui::Text("    misses: %d", stats->cache_miss_count);
 				ImGui::Text("    free:   %d", stats->cache_lines_free);
 				ImGui::Text("    total:  %d", stats->cache_lines_total);
+				ImGui::Text("    render: %d", stats->render_cache_miss);
 				ImGui::Text("Timers: free %.1f%%", ((float)free_time_micros / (float)stats->frame_time_micros) * 100.0f);
 				ImGui::Text("    update:   %.2fms", (float)stats->update_time_micros / 1000.0f);
 				ImGui::Text("    frame:    %.2fms", (float)stats->frame_time_micros / 1000.0f);
