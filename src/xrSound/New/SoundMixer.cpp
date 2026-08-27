@@ -945,19 +945,19 @@ ICF void Snd_PhononSpatialProcess(float** Data, u32 slot_idx)
 	}
 }
 
-ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buffer, float dt)
+ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffer, float dt)
 {
-	auto& Slot = GMixer.slots[slot_idx - 1];
+	auto& Slot = GMixer.slots[SlotIdx - 1];
 
 	float OCCVolume = 1.0f;
-	ESlotOcclusionResult OCCResult = Snd_SlotOcclusion(slot_idx, Source, dt, &OCCVolume);
+	ESlotOcclusionResult OCCResult = Snd_SlotOcclusion(SlotIdx, Source, dt, &OCCVolume);
 	if (OCCResult == ESlotOcclusionResult::False)
 	{
 		// TODO: hack for simulated sounds
 		Slot.position = std::min(Slot.position + SND_BLOCKSIZE, Source.pub.frames_total);
 		if (Slot.position == Source.pub.frames_total && (Slot.flags & (u16)Mixer::Flags::Looped) == 0)
 		{
-			MixerNewState(slot_idx, Mixer::State::Stopped);
+			MixerNewState(SlotIdx, Mixer::State::Stopped);
 		}
 
 		return;
@@ -969,7 +969,7 @@ ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buff
 		memset(process_buffer[ch], 0, SND_BLOCKSIZE * sizeof(float));
 	}
 
-	Snd_ProcessSlot(slot_idx, Source, process_buffer);
+	Snd_ProcessSlot(SlotIdx, Source, process_buffer);
 
 	Fvector& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
 	Fvector& Volume = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
@@ -1026,11 +1026,11 @@ ICF void Snd_RenderSlot(u32 slot_idx, sound_source& Source, float** process_buff
 
 		if (Slot.flags & (u32)Mixer::Flags::Spatial)
 		{
-			//if (psSoundFlags.is(ss_HRTF) && GMixer.hrtf_enabled)
-			//{
-			//	Snd_PhononSpatialProcess(process_buffer, SlotIdx);
-			//}
-			//else
+			if (psSoundFlags.is(ss_HRTF) && GMixer.hrtf_enabled)
+			{
+				Snd_PhononSpatialProcess(process_buffer, SlotIdx);
+			}
+			else
 			{
 				dsp_stuff Stuff =
 				{

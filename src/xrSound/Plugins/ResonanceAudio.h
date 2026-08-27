@@ -43,9 +43,9 @@ public:
 private:
     struct HrtfSlot
     {
+        vraudio::ResonanceAudioApi* Api = nullptr;
         vraudio::ResonanceAudioApi::SourceId SourceId = vraudio::ResonanceAudioApi::kInvalidSourceId;
     };
 
-    vraudio::ResonanceAudioApi* Api = nullptr;
     xr_vector<HrtfSlot> Slots;
 };
