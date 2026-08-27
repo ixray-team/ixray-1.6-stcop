@@ -3818,7 +3818,7 @@ local actor_nightvision = false
 local actor_torch		= false
 
 function disable_actor_nightvision(actor, npc)
-	local nightvision = db.actor:object("device_torch")
+	local nightvision = db.actor
 	if not (nightvision) then
 		return
 	end
@@ -3829,7 +3829,7 @@ function disable_actor_nightvision(actor, npc)
 end
 
 function enable_actor_nightvision(actor, npc)
-	local nightvision = db.actor:object("device_torch")
+	local nightvision = db.actor
 	if not (nightvision) then
 		return
 	end

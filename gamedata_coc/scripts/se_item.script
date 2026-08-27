@@ -357,6 +357,11 @@ end
 function se_ammo:STATE_Read(stpk,size)
 	cse_alife_item_ammo.STATE_Read(self,stpk,size)
 end
+ -- IX-Ray START
+function se_ammo:keep_saved_data_anyway()
+	return false
+end
+ -- IX-Ray END
 -- GRENADES --------------------------------------------------------------------------------------------------------------------------
 class "se_grenade" (cse_alife_item_grenade)
 function se_grenade:__init (section) super (section)

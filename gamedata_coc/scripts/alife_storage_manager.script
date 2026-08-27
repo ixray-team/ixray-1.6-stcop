@@ -27,6 +27,8 @@ m_data.game_object = {}
 -- PDA known contacts
 m_data.actor_contacts = {}
 
+saved_game_extension_ex	= save_extension() .. "_data"
+
 local function on_pstor_load_all(obj,packet)
 	local id = obj:id()
 	local state = get_game_object_state(obj,false)
@@ -44,7 +46,7 @@ local function on_pstor_load_all(obj,packet)
 end
 
 function on_game_start()
-	if not (USE_MARSHAL) then 
+	if not isMarshal then 
 		return 
 	end
 	RegisterScriptCallback("on_pstor_load_all",on_pstor_load_all)
@@ -52,7 +54,7 @@ end
 
 -- called from engine!
 function CALifeStorageManager_before_save(fname)
-	if not (USE_MARSHAL) then 
+	if not isMarshal then 
 		return 
 	end
 
@@ -95,11 +97,10 @@ function CALifeStorageManager_before_save(fname)
 	end
 		
 	local path = getFS():update_path('$game_saves$', '')
-	
+
 	lfs.mkdir(path) -- incase savegame folder doesn't exist yet
-	
-	path = path .. fname:sub(0,-6):lower() .. ".scoc"
-	
+	path = path .. fname:sub(0,-6):lower() .. saved_game_extension_ex
+
 	local savegame = io.open(path,"wb")
 	if not (io.type(savegame) == "file") then
 		printf("Error: Unable to write to %s",path)
@@ -120,12 +121,12 @@ end
 
 -- called from engine
 function CALifeStorageManager_load(fname)
-	if not (USE_MARSHAL) then 
+	if not isMarshal then 
 		return 
 	end 
 
-	local path = fname:sub(0,-6) .. ".scoc"
-	
+	local path = fname:sub(0,-6) .. saved_game_extension_ex
+
 	--alun_utils.debug_write(strformat("CALifeStorageManager_load %s",path))
 	
 	local savegame = io.open(path,"rb")

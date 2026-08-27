@@ -1,0 +1,432 @@
+----------------------------------------------------------------------------------------------------------------------
+--	Схема лагерь. Чудак(и) у костра.
+--	автор: Диденко Руслан (Stohe)
+--	TODO:
+----------------------------------------------------------------------------------------------------------------------
+--function printf()
+--end
+
+local ActionToStateTable = 	{
+	idle = {director = { "sit", "sit_ass", "sit_knee", "eat_bread", "eat_kolbasa", "eat_vodka", "eat_energy"}, listener = {"sit", "sit_ass", "sit_knee", "eat_bread", "eat_kolbasa", "eat_vodka", "eat_energy"}},
+	harmonica = {director = {"harmonica"}, listener = {"sit", "sit_ass", "sit_knee", "eat_bread", "eat_kolbasa", "eat_vodka", "eat_energy"}},
+	guitar = {director = {"guitar"}, listener = {"sit", "sit_ass", "sit_knee", "eat_bread", "eat_kolbasa", "eat_vodka", "eat_energy"}},
+	story = {director = {"sit", "sit_ass", "sit_knee"}, listener = {"sit", "sit_ass", "sit_knee", "eat_bread", "eat_kolbasa", "eat_vodka", "eat_energy"}},
+}
+
+local ActionAvailabilityTable = {
+	eat_bread = "kamp_eat_bread",
+	eat_kolbasa = "kamp_eat_kolbasa",
+	eat_vodka = "kamp_drink_vodka",
+	eat_energy = "kamp_drink_energy",
+}
+
+local ActionTimingTable = {
+	sit = {min = 60*2*1000,max = 60*10*1000},
+	sit_ass = {min =60*2*1000,max = 60*10*1000},
+	sit_knee = {min = 60*2*1000,max = 60*10*1000}
+}
+
+
+kamps = {}
+---------------------------------------------------------------------------------------------------------------------
+--Evaluators
+----------------------------------------------------------------------------------------------------------------------
+--' Условие завершения скрипта
+class "evaluator_kamp_end" (property_evaluator)
+function evaluator_kamp_end:__init(name, storage) super (nil, name)
+	self.a = storage
+end
+function evaluator_kamp_end:evaluate()
+	return not xr_logic.is_active(self.object, self.a)
+end
+--' Находимся ли мы на заданной позиции
+class "evaluator_on_position" (property_evaluator)
+function evaluator_on_position:__init(name, storage) super (nil, name)
+	self.a = storage
+end
+function evaluator_on_position:evaluate()
+		if self.object:level_vertex_id() == self.a.pos_vertex then
+		return true
+	end
+	return false
+end
+----------------------------------------------------------------------------------------------------------------------
+--Actions
+----------------------------------------------------------------------------------------------------------------------
+--' Идет в заданную область
+class "action_go_position" (action_base)
+function action_go_position:__init (npc_name,action_name,storage) super (nil,action_name)
+	self.a = storage
+end
+function action_go_position:initialize()
+	action_base.initialize(self)
+--	self.object:set_node_evaluator()
+--	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+
+	self.a.pos_vertex = nil
+	self.a.npc_position_num = nil
+	self.a.signals = {}
+end
+function action_go_position:execute ()
+	action_base.execute (self)
+
+	-- Спрашиваем где сидеть
+	local tmp_pos_vertex, npc_position_num = kamps[self.a.center_point]:getDestVertex(self.object, self.a.radius)
+
+    if tmp_pos_vertex == nil then
+        return
+    end
+
+	if self.a.npc_position_num ~= npc_position_num then
+		self.a.npc_position_num = npc_position_num
+		self.a.pos_vertex = tmp_pos_vertex
+
+		--' Определяем куда смотреть.
+		self.a.pp = patrol(self.a.center_point):point(0)
+
+		local dir = vector():set(math.random(-1,1), 0, math.random(-1,1))
+		dir:normalize()
+
+		local delta_dist = math.random(0,0.5)
+ 		self.a.pp.x = self.a.pp.x + dir.x * delta_dist
+		self.a.pp.z = self.a.pp.z + dir.z * delta_dist
+
+
+
+		self.object:set_dest_level_vertex_id(self.a.pos_vertex)
+		--printf("vertex_position")
+		local desired_direction = vector():sub(self.a.pp,level.vertex_position(self.a.pos_vertex))
+		--printf("desired_direction = %s", vec_to_str(desired_direction))
+		if desired_direction ~= nil and not utils.vector_cmp(desired_direction, vector():set(0,0,0)) then
+			desired_direction:normalize()
+			self.object:set_desired_direction(desired_direction)
+		end
+		self.object:set_path_type(game_object.level_path)
+		state_mgr.set_state(self.object, self.a.def_state_moving)
+	end
+end
+function action_go_position:finalize ()
+	action_base.finalize (self)
+end
+
+--' Просто сидит и втыкает
+class "action_wait" (action_base)
+function action_wait:__init (npc_name,action_name,storage) super (nil,action_name)
+	self.a = storage
+end
+function action_wait:initialize()
+	action_base.initialize(self)
+--	self.object:set_node_evaluator()
+--	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+
+	local avail_actions = xr_animpoint_predicates.associations[self.a.description]
+	self.a.approved_actions = {}
+
+	for k,v in pairs(avail_actions) do
+		-- Убираем те действия, которые не подходят по прекондишну
+		if v.predicate(self.object:id(),true)==true then
+			table.insert(self.a.approved_actions, v)
+			kamps[self.a.center_point]:AddAvailableAction(self.object,v.name)
+		end
+	end
+	
+	kamps[self.a.center_point]:increasePops(self.object)
+	
+end
+function action_wait:activate_scheme()
+	self.a.signals = {}
+end
+function action_wait:execute()
+	-- action_base.execute (self)
+
+	-- --' повернуть его лицом к центру
+	-- state_mgr.set_state(self.object, "sit", nil, nil, {look_position = self.a.pp})
+
+	action_base.execute (self)
+	local state = kamps[self.a.center_point]:updateNpc(self.object)
+
+	--' повернуть его лицом к центру
+	state_mgr.set_state(self.object, state, nil, nil, {look_position = self.a.pp})
+end
+function action_wait:finalize()
+	kamps[self.a.center_point]:decreasePops(self.object)
+	action_base.finalize (self)
+end
+function action_wait:deactivate(npc)
+	kamps[self.a.center_point]:removeNpc(npc)
+end
+function action_wait:death_callback(npc)
+	kamps[self.a.center_point]:removeNpc(npc)
+end
+function action_wait:net_destroy(npc)
+	kamps[self.a.center_point]:removeNpc(npc)
+end
+
+
+class "CKampManager"
+function CKampManager:__init(path)
+	self.kamp_name = path
+	self.patrol = patrol(path)
+	--self.center = self.patrol:level_vertex_id(0)
+	self.position = {{dir = vector():set(1, 0, 0),	used = nil},
+					 {dir = vector():set(1, 0, 1),	used = nil},
+					 {dir = vector():set(0, 0, 1),	used = nil},
+					 {dir = vector():set(-1, 0, 1),	used = nil},
+					 {dir = vector():set(-1, 0, 0),	used = nil},
+					 {dir = vector():set(-1, 0, -1),used = nil},
+					 {dir = vector():set(0, 0, -1),	used = nil},
+					 {dir = vector():set(1, 0, -1),	used = nil}}
+	self.npc = {}
+	self.population = 0
+end
+function CKampManager:selectPosition(npc_id)
+	-- создаем список доступных позиций
+	--printf("KAMP. [%s] called select position", npc_id)
+	local free = {}
+	for k,v in pairs(self.position) do
+		if v.used == nil then
+			table.insert(free, k)
+		end
+	end
+	--' затем из доступных позиций выбрать рандомно одну.
+	if #free > 0 then
+		--printf("KAMP [%s] free node > 0", npc_id)
+		local rr = math.random(#free)
+		self.position[free[rr]].used = npc_id
+		self.npc[npc_id].position = free[rr]
+	end
+	--printf("KAMP [%s] npc table", npc_id)
+	--print_table(self.npc)
+	--printf("KAMP [%s] position table", npc_id)
+	--print_table(self.position)
+end
+function CKampManager:getDestVertex(npc, radius)
+	local npc_id = npc:id()
+	--printf("get dest Vertex called [%s]", npc_id)
+	if self.npc[npc_id].position == nil then
+		--printf("-------debug_info------------- %s", self.kamp_name)
+		--print_table(self.npc)
+		--printf("-------debug_info------------- %s", self.kamp_name)
+		--print_table(self.position)
+		--printf("-------debug_info------------- %s", self.kamp_name)
+		abort("get dest Vertex: nil [%s]", npc_id)
+		return nil
+	end
+
+	-- высчитываем вертех по направлению
+	-- Берем позицию в заданном направлении, затем берем ниарест точку от нее.
+
+	local pp = self.patrol:point(0)
+	local dir = self.position[self.npc[npc_id].position].dir
+
+	-- Считаем рандомное отклонение направления.
+	dir.x = dir.x + math.random(-1,1)/5
+	dir.z = dir.z + math.random(-1,1)/5
+	dir:normalize()
+
+	radius = radius + math.random(-0.3,0.3)
+
+ 	local dest_vertex = 4294967295
+	
+ 	while dest_vertex == 4294967295 do
+ 		local tmp_pos = vector():set(0,0,0)
+		tmp_pos.x = pp.x + dir.x * radius
+		tmp_pos.z = pp.z + dir.z * radius
+		tmp_pos.y = pp.y
+	 	dest_vertex = level.vertex_id(tmp_pos)
+	 	if dest_vertex == 4294967295 then
+	 		if radius < 1 then
+                SemiLog("Invalid AI map at kamp point ["..self.kamp_name.."]")
+                return nil
+	 		else
+	 			radius = radius - 0.5
+	 		end
+	 	end
+ 	end
+
+	if not npc:accessible(dest_vertex) then
+		--printf("vertex_position %s", tostring(dest_vertex))
+		local vp = level.vertex_position(dest_vertex)
+		--printf("Nearest for npc[%s] kamp [%s] position [%s:%s:%s]", npc:name(), tostring(self.kamp_name),tostring(vp.x), tostring(vp.y), tostring(vp.z))
+		local nearest_vertex = npc:accessible_nearest(vp, vector():set(0,0,0))
+		--printf("Nearest for npc[%s] kamp [%s] position [%s:%s:%s]", npc:name(), tostring(self.kamp_name), vec_to_str(nearest_vertex))
+		return nearest_vertex, self.npc[npc_id].position
+	end
+
+	return dest_vertex, self.npc[npc_id].position
+end
+
+function CKampManager:updateNpc(npc)
+
+	local tbl = {}
+	local npc_id = npc:id()
+	local camp_action, is_director
+
+	if not self.camp then 
+		camp_action = "idle"
+		is_director = false
+	else
+		camp_action, is_director = self.camp:get_camp_action(npc_id)
+	end
+
+		
+	if(is_director) then
+		tbl = ActionToStateTable[camp_action].director
+	else
+		tbl = ActionToStateTable[camp_action].listener
+	end
+
+	if self.npc[npc_id].begin == nil or time_global() - self.npc[npc_id].begin >= self.npc[npc_id].state_idle or self.npc[npc_id].is_director ~= is_director then
+		self.npc[npc_id].begin = time_global()
+		if (self.npc[npc_id].camp_action == "story" or self.npc[npc_id].camp_action == "idle") and (camp_action =="idle" or camp_action == "story") and self.npc[npc_id].is_director ~= is_director then
+			self.npc[npc_id].is_director  = is_director
+			self.npc[npc_id].camp_action = camp_action
+			return self.npc[npc_id].state_selected
+		end
+		local Action = "kamp"
+		repeat 
+			local rnd = math.random(#tbl)
+			self.npc[npc_id].state_selected = tbl[rnd]
+			if ActionAvailabilityTable[self.npc[npc_id].state_selected] then 
+				Action = ActionAvailabilityTable[self.npc[npc_id].state_selected]
+			else
+				Action = "kamp"
+			end
+		until self.npc[npc_id].AvailableActions[Action]
+
+		if ActionTimingTable[self.npc[npc_id].state_selected] ~= nil then
+			self.npc[npc_id].state_idle = math.random(ActionTimingTable[self.npc[npc_id].state_selected].min,ActionTimingTable[self.npc[npc_id].state_selected].max)
+		else
+			self.npc[npc_id].state_idle = math.random(15*1000,60*1000)
+		end
+		self.npc[npc_id].is_director  = is_director
+		self.npc[npc_id].camp_action = camp_action
+	end
+	return self.npc[npc_id].state_selected
+	
+end
+
+function CKampManager:addNpc(npc)
+	if self.npc[npc:id()] ~= nil then
+		return
+	end
+
+	self.npc[npc:id()] = {name = npc:name(), position = nil, AvailableActions = {}}
+	self:selectPosition(npc:id())
+	
+end
+function CKampManager:removeNpc(npc)
+	local npc_id = npc:id()
+	if self.npc[npc_id] ~= nil then
+		self.position[self.npc[npc_id].position].used = nil
+		self.npc[npc_id] = nil
+	end
+	
+	if self.camp ~= nil then
+		self.camp:unregister_npc(npc:id())
+	end
+end
+
+function CKampManager:increasePops(npc)
+	self.population = self.population + 1
+	
+	if not self.camp then
+		self.camp = sr_camp.get_current_camp(self.patrol:point(0))
+	end
+	
+	if self.camp ~= nil then
+		self.camp:register_npc(npc:id())
+	end
+	-- local campfire = bind_campfire.campfire_table[self.kamp_name.."_campfire"]
+	-- if self.population > 0 and campfire ~= nil and not campfire:is_on() then
+	-- 	campfire:turn_on()
+	-- end
+end
+function CKampManager:decreasePops(npc)
+	self.population = self.population - 1
+	-- local campfire = bind_campfire.campfire_table[self.kamp_name.."_campfire"]
+	-- if self.population < 1 and campfire ~= nil and campfire:is_on() then
+	-- 	campfire:turn_off()
+	-- end
+end
+
+function CKampManager:AddAvailableAction(NPC,StateName)
+	self.npc[NPC:id()].AvailableActions[StateName] = true
+end
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+--Kamp binder
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(object, ini, scheme, section, storage)
+	local operators		= {}
+	local properties	= {}
+
+	local manager = object:motivation_action_manager()
+
+	properties["kamp_end"]		= xr_evaluators_id.stohe_kamp_base + 1
+	properties["on_position"]	= xr_evaluators_id.stohe_kamp_base + 2
+	properties["contact"]		= xr_evaluators_id.stohe_meet_base + 1
+
+	operators["go_position"]	= xr_actions_id.stohe_kamp_base + 1
+	operators["wait"]		= xr_actions_id.stohe_kamp_base + 3
+	properties["state_mgr_logic_active"] 	= xr_evaluators_id.state_mgr + 4
+
+	-- Evaluators
+	manager:add_evaluator (properties["kamp_end"], 		this.evaluator_kamp_end		("kamp_end", storage, "kamp_end"))
+	manager:add_evaluator (properties["on_position"],	this.evaluator_on_position	("kamp_on_position", storage, "kamp_on_position"))
+
+	-- Actions
+	local action = this.action_wait (object:name(),"action_kamp_wait", storage)
+	action:add_precondition		(world_property(stalker_ids.property_alive, true))
+	action:add_precondition		(world_property(stalker_ids.property_danger,false))
+	action:add_precondition		(world_property(stalker_ids.property_enemy,	false))
+	action:add_precondition		(world_property(stalker_ids.property_anomaly,false))
+	xr_motivator.addCommonPrecondition(action)
+	action:add_precondition		(world_property(properties["on_position"], 	true))
+	action:add_effect 			(world_property(properties["kamp_end"], 	true))
+	action:add_effect			(world_property(properties["state_mgr_logic_active"], false))
+	manager:add_action (operators["wait"], action)
+	xr_logic.subscribe_action_for_events(object, storage, action)
+
+	action = this.action_go_position (object:name(),"action_go_kamp", storage)
+	action:add_precondition		(world_property(stalker_ids.property_alive, true))
+	action:add_precondition		(world_property(stalker_ids.property_danger,false))
+	action:add_precondition		(world_property(stalker_ids.property_enemy,	false))
+	action:add_precondition		(world_property(stalker_ids.property_anomaly,false))
+	xr_motivator.addCommonPrecondition(action)
+	action:add_precondition 	(world_property(properties["on_position"], 	false))
+	action:add_effect 			(world_property(properties["on_position"], 	true))
+	action:add_effect			(world_property(properties["state_mgr_logic_active"], false))
+	manager:add_action (operators["go_position"], action)
+
+	action = manager:action (xr_actions_id.alife)
+	action:add_precondition		(world_property(properties["kamp_end"],		true))
+
+end
+-- включение лагеря
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+
+	st.logic     = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+
+	st.center_point = utils.cfg_get_string(ini, section, "center_point", npc, true,  gulag_name)
+	st.radius		= utils.cfg_get_number(ini, section, "radius", npc, false, 2)
+	st.description  = "kamp"
+	st.base_action  = "kamp"
+
+
+
+	if kamps[st.center_point] == nil then
+		kamps[st.center_point] = CKampManager(st.center_point)
+	end
+	kamps[st.center_point]:addNpc(npc)
+	st.pos_vertex = nil
+
+	st.def_state_moving = utils.cfg_get_string(ini, section, "def_state_moving", npc, false, "", "walk")
+end

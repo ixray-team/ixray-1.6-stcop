@@ -1,0 +1,5 @@
+<w>
+    <file name="ui\ui_icons_npc" override="add">
+        <texture id="npc_icon_unknown_data" x="514" y="2" width="124" height="124" />
+    </file>
+</w>
