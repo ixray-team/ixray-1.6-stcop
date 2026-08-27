@@ -2,19 +2,21 @@
 #include "ResonanceAudio.h"
 #include "../New/SoundDSP.h"
 
-struct AutoRegReverbResonance
+struct AutoRegResonanceAudio
 {
-	AutoRegReverbResonance()
+	AutoRegResonanceAudio()
 	{
+		GSpatializer = new CResonanceAudioSpatializer;
 		GReverInterface = new CResonanceAudioReverb;
 	}
 
-	~AutoRegReverbResonance()
+	~AutoRegResonanceAudio()
 	{
 		xr_delete(GReverInterface);
+		xr_delete(GSpatializer);
 	}
 };
-static AutoRegReverbResonance RegCall;
+static AutoRegResonanceAudio RegCall;
 
 
 float CResonanceAudioReverb::DbToLinear(float Db)
@@ -123,48 +125,123 @@ void CResonanceAudioReverb::ProcessReverb(sound_zone_params& Zone, float** Rever
 
 void CResonanceAudioSpatializer::Initialize()
 {
-	Api = vraudio::CreateResonanceAudioApi(SND_CHANNEL_COUNT, SND_BLOCKSIZE, SND_SAMPLERATE);
-	R_ASSERT(Api != nullptr);
-
 	Slots.resize(SND_HRTF_SLOT_COUNT);
-	for (size_t i = 0; i < SND_HRTF_SLOT_COUNT; i++)
-	{
-		Slots[i].SourceId = Api->CreateSoundObjectSource(vraudio::RenderingMode::kBinauralHighQuality);
-	}
 }
 
 void CResonanceAudioSpatializer::Shutdown()
 {
-	if (Api)
+	auto DestroyAll = [](xr_vector<HrtfSlot>& List)
 	{
-		for (size_t i = 0; i < Slots.size(); i++)
+		for (HrtfSlot& Slot : List)
 		{
-			auto Id = Slots[i].SourceId;
-			if (Id != vraudio::ResonanceAudioApi::kInvalidSourceId)
+			if (Slot.Api != nullptr)
 			{
-				Api->DestroySource(Id);
+				if (Slot.SourceId != vraudio::ResonanceAudioApi::kInvalidSourceId)
+				{
+					Slot.Api->DestroySource(Slot.SourceId);
+					Slot.SourceId = vraudio::ResonanceAudioApi::kInvalidSourceId;
+				}
+				delete Slot.Api;
+				Slot.Api = nullptr;
 			}
 		}
-		delete Api;
-		Api = nullptr;
-	}
+		List.clear();
+	};
 
-	Slots.clear();
+	DestroyAll(Slots);
+	DestroyAll(FreeSlots);
 }
 
-void CResonanceAudioSpatializer::ResetSlot([[maybe_unused]] u32 SlotIndex)
+void CResonanceAudioSpatializer::ResetSlot(u32 SlotIndex)
 {
+	if (SlotIndex >= Slots.size())
+	{
+		return;
+	}
+
+	HrtfSlot& Slot = Slots[SlotIndex];
+	if (Slot.Api != nullptr)
+	{
+		return;
+	}
+
+	if (!FreeSlots.empty())
+	{
+		Slot = std::move(FreeSlots.back());
+		FreeSlots.pop_back();
+		return;
+	}
+
+	Slot.Api = vraudio::CreateResonanceAudioApi(SND_CHANNEL_COUNT, SND_BLOCKSIZE, SND_SAMPLERATE);
+	R_ASSERT(Slot.Api != nullptr);
+
+	Slot.SourceId = Slot.Api->CreateSoundObjectSource(vraudio::RenderingMode::kBinauralHighQuality);
+	R_ASSERT(Slot.SourceId != vraudio::ResonanceAudioApi::kInvalidSourceId);
+
+	Slot.Api->EnableRoomEffects(false);
+
+	Slot.Api->SetSourceDistanceModel(Slot.SourceId, vraudio::DistanceRolloffModel::kNone, 0.0f, 0.0f);
+	Slot.Api->SetSourceDistanceAttenuation(Slot.SourceId, 1.0f);
+
+	Slot.Api->SetHeadPosition(0.0f, 0.0f, 0.0f);
+	Slot.Api->SetHeadRotation(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void CResonanceAudioSpatializer::FreeSlot(u32 SlotIndex)
+{
+	if (SlotIndex >= Slots.size())
+	{
+		return;
+	}
+
+	HrtfSlot& Slot = Slots[SlotIndex];
+	if (Slot.Api == nullptr)
+	{
+		return;
+	}
+
+	FreeSlots.push_back(std::move(Slot));
+	Slot.Api = nullptr;
+	Slot.SourceId = vraudio::ResonanceAudioApi::kInvalidSourceId;
 }
 
 void CResonanceAudioSpatializer::ProcessHrtf(u32 SlotIndex, float** Data, const Fvector& SourcePosition, const Fvector& HeadPosition, const Fvector& RelativeDirection)
 {
-	Api->SetHeadPosition(HeadPosition.x, HeadPosition.y, HeadPosition.z);
-
-	auto Id = Slots[SlotIndex].SourceId;
-	if (Id != vraudio::ResonanceAudioApi::kInvalidSourceId)
+	if (SlotIndex >= Slots.size())
 	{
-		Api->SetSourcePosition(Id, SourcePosition.x, SourcePosition.y, SourcePosition.z);
-		Api->SetPlanarBuffer(Id, (const float* const*)Data, SND_CHANNEL_COUNT, SND_BLOCKSIZE);
-		Api->FillPlanarOutputBuffer(SND_CHANNEL_COUNT, SND_BLOCKSIZE, Data);
+		return;
 	}
+
+	HrtfSlot& Slot = Slots[SlotIndex];
+	if (Slot.Api == nullptr || Slot.SourceId == vraudio::ResonanceAudioApi::kInvalidSourceId)
+	{
+		return;
+	}
+
+	Fvector Dir = RelativeDirection;
+	const float Len = std::sqrt(Dir.x * Dir.x + Dir.y * Dir.y + Dir.z * Dir.z);
+	if (Len < EPS)
+	{
+		Dir.x = 0.0f;
+		Dir.y = 0.0f;
+		Dir.z = 1.0f;
+	}
+	else
+	{
+		const float Inv = 1.0f / Len;
+		Dir.x *= Inv;
+		Dir.y *= Inv;
+		Dir.z *= Inv;
+	}
+
+	Slot.Api->SetSourcePosition(Slot.SourceId, Dir.x, Dir.y, Dir.z);
+
+	float MonoBuffer[SND_BLOCKSIZE];
+	for (size_t i = 0; i < SND_BLOCKSIZE; i++)
+	{
+		MonoBuffer[i] = Data[0][i];
+	}
+	const float* MonoInput[1] = { MonoBuffer };
+	Slot.Api->SetPlanarBuffer(Slot.SourceId, MonoInput, 1, SND_BLOCKSIZE);
+	Slot.Api->FillPlanarOutputBuffer(SND_CHANNEL_COUNT, SND_BLOCKSIZE, Data);
 }
