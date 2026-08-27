@@ -46,12 +46,12 @@ inline double dB2lin(double dB)
 
 struct dsp_stuff
 {
-	f32 dt;
-	f32* panning;
-	const Fvector* camera_position;
-	const Fvector* camera_direction;
-	const Fvector* camera_normal;
-	const Fvector* obj_position;
+	f32 Dt;
+	f32* Panning;
+	const Fvector* CameraPosition;
+	const Fvector* CameraDirection;
+	const Fvector* CameraNormal;
+	const Fvector* ObjPosition;
 };
 
 void DSP_CalculateRelativePosition(const dsp_stuff& stuff, Fvector& out_pos, float& out_distance);
