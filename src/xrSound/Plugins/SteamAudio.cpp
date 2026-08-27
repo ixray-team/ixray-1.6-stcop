@@ -1,19 +1,21 @@
 #include "stdafx.h"
 #include "SteamAudio.h"
 
-struct AutoRegReverbSteamAudio
+struct AutoRegSteamAudio
 {
-	AutoRegReverbSteamAudio()
+	AutoRegSteamAudio()
 	{
+		GSpatializer = new CSteamAudioSpatializer;
 		GReverInterface = new CSteamAudioReverb;
 	}
 
-	~AutoRegReverbSteamAudio()
+	~AutoRegSteamAudio()
 	{
 		xr_delete(GReverInterface);
+		xr_delete(GSpatializer);
 	}
 };
-static AutoRegReverbSteamAudio RegCall;
+static AutoRegSteamAudio RegCall;
 
 void CSteamAudioReverb::ConvertReverbSettings(const sound_reverb_settings* ReverbIn, IPLReflectionEffectParams* ReverbOut, IPLint32 SampleRate)
 {
@@ -165,6 +167,14 @@ void CSteamAudioSpatializer::Shutdown()
 }
 
 void CSteamAudioSpatializer::ResetSlot(u32 SlotIndex)
+{
+    if (Hrtf != nullptr && SlotIndex < Slots.size())
+    {
+        iplBinauralEffectReset(Slots[SlotIndex].Effect);
+    }
+}
+
+void CSteamAudioSpatializer::FreeSlot(u32 SlotIndex)
 {
     if (Hrtf != nullptr && SlotIndex < Slots.size())
     {
