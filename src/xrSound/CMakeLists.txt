@@ -6,36 +6,23 @@ file(GLOB_RECURSE SND_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
 )
-file(GLOB_RECURSE SND_SOURCE_RENDER_FILES
-    "SoundRender*.cpp"
-    "SoundRender*.h"
-)
-file(GLOB_RECURSE SND_SOURCE_CORE_FILES
-    "SoundRender_Core*.cpp"
-    "SoundRender_Core*.h"
-)
-file(GLOB_RECURSE SND_SOURCE_3RDI_FILES
-    "ogg_utils.*"
-    "OpenALDeviceList.*"
-    "guids.*"
-    "cl_intersect.*"
-)
-file(GLOB_RECURSE SND_SOURCE_CORE_RECORD_FILES "Recorder/*.*")
-file(GLOB_RECURSE SND_SOURCE_CORE_NEW_FILES "New/*.*")
 
-# Source groups
-source_group("kernel" FILES ${SND_SOURCE_ALL_FILES})
-source_group("render" FILES ${SND_SOURCE_RENDER_FILES})
-source_group("core" FILES ${SND_SOURCE_CORE_FILES})
-source_group("recorder" FILES ${SND_SOURCE_CORE_RECORD_FILES})
-source_group("backend" FILES ${SND_SOURCE_CORE_NEW_FILES})
-source_group("3rd Interfaces" FILES ${SND_SOURCE_3RDI_FILES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SND_SOURCE_ALL_FILES})
 
 # Apply list
 list(APPEND SND_SRC_FILES ${SND_SOURCE_ALL_FILES})
 
 if(NOT IXRAY_MP)
     list(FILTER SND_SRC_FILES EXCLUDE REGEX "Recorder/*.*")
+endif()
+
+if (IXRAY_ENABLE_RESONANCEAUDIO)
+	list(FILTER SND_SRC_FILES EXCLUDE REGEX "Plugins/SteamAudio.*")
+elseif(DEVIXRAY_ENABLE_STEAMAUDIO)
+	list(FILTER SND_SRC_FILES EXCLUDE REGEX "Plugins/ResonanceAudio.*")
+else()
+	list(FILTER SND_SRC_FILES EXCLUDE REGEX "Plugins/SteamAudio.*")
+	list(FILTER SND_SRC_FILES EXCLUDE REGEX "Plugins/ResonanceAudio.*")
 endif()
 
 # xrSound project
@@ -56,14 +43,14 @@ target_link_libraries(xrSound PRIVATE Vorbis::vorbis)
 target_link_libraries(xrSound PRIVATE Vorbis::vorbisfile)
 
 if (IXRAY_ENABLE_RESONANCEAUDIO)
-    target_compile_definitions(xrSound PUBLIC DISABLE_STEAM_AUDIO)
+    target_compile_definitions(xrSound PRIVATE DISABLE_STEAM_AUDIO)
     target_link_libraries(xrSound PRIVATE ResonanceAudioStatic)
 elseif(DEVIXRAY_ENABLE_STEAMAUDIO)
-    target_compile_definitions(xrSound PUBLIC DISABLE_RESONANCE_AUDIO)
+    target_compile_definitions(xrSound PRIVATE DISABLE_RESONANCE_AUDIO)
     target_link_libraries(xrSound PRIVATE SteamAudio::phonon)
 else()
-    target_compile_definitions(xrSound PUBLIC DISABLE_STEAM_AUDIO)
-    target_compile_definitions(xrSound PUBLIC DISABLE_RESONANCE_AUDIO)
+    target_compile_definitions(xrSound PRIVATE DISABLE_STEAM_AUDIO)
+    target_compile_definitions(xrSound PRIVATE DISABLE_RESONANCE_AUDIO)
 endif()
 
 if (IXRAY_MP)
