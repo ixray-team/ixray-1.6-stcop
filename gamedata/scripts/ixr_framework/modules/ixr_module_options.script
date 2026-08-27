@@ -2023,6 +2023,7 @@ function IXRTrackBar:OnChangeState()
 end
 
 function IXRTrackBar:SetValue(value)
+	value = tonumber(value)
 	if value < self.min_value then
 		value = self.min_value
 	end
