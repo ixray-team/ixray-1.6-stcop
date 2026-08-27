@@ -38,9 +38,6 @@
 	<string id="actor_monster">
 		<text>Mutant</text>
 	</string>
-	<string id="actor_monolith">
-		<text>Monolith</text>
-	</string>
 	<string id="actor_zombied">
 		<text>Zombified</text>
 	</string>

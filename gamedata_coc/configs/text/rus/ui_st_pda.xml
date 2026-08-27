@@ -409,9 +409,6 @@
 	</string>
 	<string id="st_pda_action_1__2_4_3_off">
 		<text>Вкл. обыск тел</text>
-	</string>
-	<string id="st_pda_action_back">
-		<text>Назад</text>
 	</string>	
 	<string id="pda_btn_contacts">
 		<text>Контакты</text>
@@ -440,9 +437,6 @@
 	</string>
 	<string id="st_mm_pda_items_sold">
 		<text>Вещей продано</text>
-	</string>
-	<string id="st_mm_pda_statistics">
-		<text>Статистика</text>
 	</string>
 	<string id="st_mm_pda_level_travel">
 		<text>Переходы по локациям</text>

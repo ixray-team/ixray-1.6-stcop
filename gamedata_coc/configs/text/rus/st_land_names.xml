@@ -126,12 +126,6 @@
 	<string id="st_gen_2c_01_ss_anomaly_spot_name">
 		<text>Аномалия «Забытое кладбище»</text>
 	</string>
-  <string id="st_pri_b302_name">
-    <text>Аномалия «Лоза»</text>
-  </string>
-  <string id="st_pri_b307_name">
-    <text>Аномалия «Вулкан»</text>
-  </string>
   <string id="st_mar_smart_terrain_11_3_anomaly_spot_name">
     <text>Аномалия «Болотный Распадок»</text>
   </string>
