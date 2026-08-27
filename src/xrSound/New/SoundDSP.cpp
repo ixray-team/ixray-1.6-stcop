@@ -30,159 +30,170 @@
 #include "SoundDSP.h"
 #include <Sound.h>
 
-void
-DSP_CalculateRelativePosition(const dsp_stuff& stuff, Fvector& out_pos, float& out_distance)
+void DSP_CalculateRelativePosition(const dsp_stuff& Stuff, Fvector& OutPos, float& OutDistance)
 {
-    // Direction vector
-    Fvector pos = *stuff.obj_position; pos.sub(*stuff.camera_position);
-    if (fis_zero(pos.x) && fis_zero(pos.y) && fis_zero(pos.z)) {
-        out_distance = EPS;
-    } else {
-        out_distance = pos.magnitude();
-    }
+	// Direction vector
+	Fvector Pos = *Stuff.ObjPosition;
+	Pos.sub(*Stuff.CameraPosition);
+	if (fis_zero(Pos.x) && fis_zero(Pos.y) && fis_zero(Pos.z))
+	{
+		OutDistance = EPS;
+	}
+	else
+	{
+		OutDistance = Pos.magnitude();
+	}
 
-    // Look at matrix
-    Fmatrix m; m.build_camera_dir(*stuff.camera_position, *stuff.camera_direction, *stuff.camera_normal);
+	// Look at matrix
+	Fmatrix Matrix;
+	Matrix.build_camera_dir(*Stuff.CameraPosition, *Stuff.CameraDirection, *Stuff.CameraNormal);
 
-    // Transform only position without w component
-    m.transform_tiny_noadd(out_pos, pos);
-    out_pos.normalize_safe();
+	// Transform only position without w component
+	Matrix.transform_tiny_noadd(OutPos, Pos);
+	OutPos.normalize_safe();
 }
 
 static constexpr float SND_BACK_ATTENUATION = 0.3f;
 
-void
-DSP_SpatialProcess(float** buffer, const Fvector& distances, const dsp_stuff& stuff, bool disable_attenuation)
+void DSP_SpatialProcess(float** Buffer, const Fvector& Distances, const dsp_stuff& Stuff, bool DisableAttenuation)
 {
-    // LH coordinates
-    Fvector pos;
-    float distance;
+	// LH coordinates
+	Fvector Pos;
+	float Distance;
 
-    DSP_CalculateRelativePosition(stuff, pos, distance);
+	DSP_CalculateRelativePosition(Stuff, Pos, Distance);
 
-    // Broken ogg-comments give us zero/inverted ranges
-    float min_distance = std::max(distances.x, EPS_S);
-    float max_distance = std::max(distances.y, min_distance + EPS_S);
+	// Broken ogg-comments give us zero/inverted ranges
+	float MinDistance = std::max(Distances.x, EPS_S);
+	float MaxDistance = std::max(Distances.y, MinDistance + EPS_S);
 
-    // Panning level
-    float pl = std::min(distance / min_distance, 1.0f);
+	// Panning level
+	float Pl = std::min(Distance / MinDistance, 1.0f);
 
-    // Attenuation
-    distance = std::clamp(distance, min_distance, max_distance);
-    float att = 1.0f;
+	// Attenuation
+	Distance = std::clamp(Distance, MinDistance, MaxDistance);
+	float Attent = 1.0f;
 
-    if (!disable_attenuation) {
-        att = min_distance / (psSoundRolloff * distance);
-        att = powf(att, 1.3f);
-        att *= 1.0f - std::clamp(std::max(distance - min_distance, 0.0f) / (max_distance - min_distance), 0.0f, 1.0f);
-        att = std::clamp(att, 0.f, 1.f);
-    }
+	if (!DisableAttenuation)
+	{
+		Attent = MinDistance / (psSoundRolloff * Distance);
+		Attent = powf(Attent, 1.3f);
+		Attent *= 1.0f - std::clamp(std::max(Distance - MinDistance, 0.0f) / (MaxDistance - MinDistance), 0.0f, 1.0f);
+		Attent = std::clamp(Attent, 0.f, 1.f);
+	}
 
-    float pan_angle = (std::clamp(pos.x, -1.0f, 1.0f) + 1.0f) * PI_DIV_4;
-    float lc = cosf(pan_angle);
-    float rc = sinf(pan_angle);
+	float PanAngle = (std::clamp(Pos.x, -1.0f, 1.0f) + 1.0f) * PI_DIV_4;
+	float LeftChannel = cosf(PanAngle);
+	float RightChannel = sinf(PanAngle);
 
-    float back_gain = 1.0f - SND_BACK_ATTENUATION * std::clamp(-pos.z, 0.0f, 1.0f);
-    lc *= back_gain;
-    rc *= back_gain;
+	float BackGain = 1.0f - SND_BACK_ATTENUATION * std::clamp(-Pos.z, 0.0f, 1.0f);
+	LeftChannel *= BackGain;
+	RightChannel *= BackGain;
 
-    lc = lerp(1.0f, lc, std::min(distance, 1.0f) / 1.0f);
-    rc = lerp(1.0f, rc, std::min(distance, 1.0f) / 1.0f);
-    //volume_lerp(stuff.panning[0], lc, 10.0f, stuff.dt);
-    //volume_lerp(stuff.panning[1], rc, 10.0f, stuff.dt);
+	LeftChannel = lerp(1.0f, LeftChannel, std::min(Distance, 1.0f) / 1.0f);
+	RightChannel = lerp(1.0f, RightChannel, std::min(Distance, 1.0f) / 1.0f);
 
-    float sample_dt = 1.0f / (float)SND_SAMPLERATE;
+	float SampleDt = 1.0f / (float)SND_SAMPLERATE;
 
-    for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
-        buffer[0][i] *= att * (stuff.panning[0] * pl);
-        volume_lerp(stuff.panning[0], lc, 10.0f, sample_dt);
-    }
+	for (size_t i = 0; i < SND_BLOCKSIZE; i++)
+	{
+		Buffer[0][i] *= Attent * (Stuff.Panning[0] * Pl);
+		volume_lerp(Stuff.Panning[0], LeftChannel, 10.0f, SampleDt);
 
-    for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
-        buffer[1][i] *= att * (stuff.panning[1] * pl);
-        volume_lerp(stuff.panning[1], rc, 10.0f, sample_dt);
-    }
+		Buffer[1][i] *= Attent * (Stuff.Panning[1] * Pl);
+		volume_lerp(Stuff.Panning[1], RightChannel, 10.0f, SampleDt);
+	}
 }
 
-void
-DSP_ResampleBuffer(float** input, float** output, float history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY+1], u32 input_frames, u32 output_frames)
+void DSP_ResampleBuffer(float** Input, float** Output, float History[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY + 1], u32 InputFrames, u32 OutputFrames)
 {
-    float ratio = (float)input_frames / (float)output_frames;
+	float ratio = (float)InputFrames / (float)OutputFrames;
 
-    for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
-        history[i][0] = fmodf(history[i][0], 1.0f);
-    }
+	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+	{
+		History[i][0] = fmodf(History[i][0], 1.0f);
+	}
 
-    for (size_t k = 0; k < SND_CHANNEL_COUNT; k++) {
-        for (u32 i = 0; i < output_frames; ++i) {
-            float& phase = history[k][0];
+	for (size_t k = 0; k < SND_CHANNEL_COUNT; k++)
+	{
+		for (u32 i = 0; i < OutputFrames; ++i)
+		{
+			float& phase = History[k][0];
 
-            // input_frames is the last valid index: the caller decodes input_frames+1 frames
-            u32 idx0 = std::min((u32)phase, input_frames);
-            u32 idx1 = std::min(idx0 + 1, input_frames);
+			// InputFrames is the last valid index: the caller decodes InputFrames+1 frames
+			u32 idx0 = std::min((u32)phase, InputFrames);
+			u32 idx1 = std::min(idx0 + 1, InputFrames);
 
-            float delta = phase - (float)idx0;
-            float sample0 = input[k][idx0];
-            float sample1 = input[k][idx1];
+			float delta = phase - (float)idx0;
+			float sample0 = Input[k][idx0];
+			float sample1 = Input[k][idx1];
 
-            float sample = lerp(sample0, sample1, delta);
-            output[k][i] += sample;
-            phase += ratio;
-        }
-    }
+			float sample = lerp(sample0, sample1, delta);
+			Output[k][i] += sample;
+			phase += ratio;
+		}
+	}
 }
 
-void 
-DSP_MixBuffer(float** mix_buffer, float** data, float begin_factor, float end_factor, u32 frames)
+void DSP_MixBuffer(float** MixBuffer, float** Data, float BeginFactor, float EndFactor, u32 Frames)
 {
-    for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-        for (size_t k = 0; k < frames; k++) {
-            float factor = lerp(begin_factor, end_factor, (float)(k) / (float)(frames - 1));
-            float sample = data[ch][k];
-            mix_buffer[ch][k] += sample * factor;
-        }
-    }
+	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+	{
+		for (size_t Key = 0; Key < Frames; Key++)
+		{
+			float Factor = lerp(BeginFactor, EndFactor, (float)(Key) / (float)(Frames - 1));
+			float Sample = Data[Channel][Key];
+			MixBuffer[Channel][Key] += Sample * Factor;
+		}
+	}
 }
 
-void 
-DSP_MixBufferPanning(float** mix_buffer, float** data, float begin_factor, float end_factor, float left, float right, u32 frames)
+void DSP_MixBufferPanning(float** MixBuffer, float** Data, float BeginFactor, float EndFactor, float Left, float Right, u32 Frames)
 {
-    float factors[SND_CHANNEL_COUNT] = { left, right };
-    for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-        for (size_t k = 0; k < frames; k++) {
-            float factor = lerp(begin_factor, end_factor, (float)(k) / (float)(frames - 1)) * factors[ch];
-            float sample = data[ch][k];
-            mix_buffer[ch][k] += sample * factor;
-        }
-    }
+	float Factors[SND_CHANNEL_COUNT] = {Left, Right};
+	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+	{
+		for (size_t Key = 0; Key < Frames; Key++)
+		{
+			float Factor = lerp(BeginFactor, EndFactor, (float)(Key) / (float)(Frames - 1)) * Factors[Channel];
+			float Sample = Data[Channel][Key];
+			MixBuffer[Channel][Key] += Sample * Factor;
+		}
+	}
 }
 
-void 
-DSP_Compressor(float attack_ms, float release_ms, float threshold_db, float ratio, float** data, float drywet, u32 frames, float envelope[SND_CHANNEL_COUNT])
+void DSP_Compressor(float AttackMs, float ReleaseMs, float ThresholdDb, float Ratio, float** Data, float Drywet, u32 Frames, float Envelope[SND_CHANNEL_COUNT])
 {
-    float lin_attack = attack_ms == 0.0f ? 0.0 : (f32)exp(-1.0 / ((float)SND_SAMPLERATE * attack_ms));
-    float lin_release = release_ms == 0.0f ? 0.0 : (f32)exp(-1.0 / ((float)SND_SAMPLERATE * release_ms));
-    ratio = (1.0f - 1.0f / (ratio));
+	float LinAttack = AttackMs == 0.0f ? 0.0 : (f32)exp(-1.0 / ((float)SND_SAMPLERATE * AttackMs));
+	float LinRelease = ReleaseMs == 0.0f ? 0.0 : (f32)exp(-1.0 / ((float)SND_SAMPLERATE * ReleaseMs));
+	Ratio = (1.0f - 1.0f / (Ratio));
 
-    for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-        for (size_t k = 0; k < frames; k++) {
-            float& sample = data[ch][k];
+	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+	{
+		for (size_t k = 0; k < Frames; k++)
+		{
+			float& Sample = Data[ch][k];
 
-            float temp = lin2dB(std::abs(sample) + FLT_EPSILON);
-            float over_db = temp - threshold_db;
-            if (over_db < 0.0f) over_db = 0.0f;
-            over_db += FLT_EPSILON; 
+			float temp = lin2dB(std::abs(Sample) + FLT_EPSILON);
+			float OverDB = temp - ThresholdDb;
+			if (OverDB < 0.0f)
+			{
+				OverDB = 0.0f;
+			}
+			OverDB += FLT_EPSILON;
 
-            float theta = (over_db > envelope[ch]) ? lin_attack : lin_release;
-            envelope[ch] = over_db + theta * (envelope[ch] - over_db);
+			float theta = (OverDB > Envelope[ch]) ? LinAttack : LinRelease;
+			Envelope[ch] = OverDB + theta * (Envelope[ch] - OverDB);
 
-            float p_vart = envelope[ch] - FLT_EPSILON;
-            if (p_vart > 0.0f) p_vart -= envelope[ch] * envelope[ch] * 0.001f; // opto pseudo curve
-            float gain = 0.0f - p_vart * ratio;
+			float PVart = Envelope[ch] - FLT_EPSILON;
+			if (PVart > 0.0f)
+			{
+				PVart -= Envelope[ch] * Envelope[ch] * 0.001f; // opto pseudo curve
+			}
+			float Gain = 0.0f - PVart * Ratio;
 
-            float comp = lerp(1.0f, dB2lin(gain), drywet);
-            sample *= comp;
-        }
-    }
-
+			float Comp = lerp(1.0f, dB2lin(Gain), Drywet);
+			Sample *= Comp;
+		}
+	}
 }
