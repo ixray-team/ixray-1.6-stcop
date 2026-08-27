@@ -46,6 +46,7 @@ CEffectorBobbing::CEffectorBobbing() : CEffectorCam(eCEBobbing, 10000.0f)
     Run.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_run_speed", 0.0f);
 
     m_fAmplitudeDelta = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "amplitude_delta", 1.0f);
+	SetHudAffect(READ_IF_EXISTS(pSettings, r_bool, BOBBING_SECT, "affect_hud", true));
 }
 
 void CEffectorBobbing::SetState(u32 mstate, bool limping, bool ZoomMode)

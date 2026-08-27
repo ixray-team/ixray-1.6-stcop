@@ -1153,11 +1153,7 @@ bool CHudItem::NeedMovementBlend() const
 
 	const CHUDState::EHudStates state = static_cast<CHUDState::EHudStates>(GetState());
 
-	CActor* pActor = object().H_Parent() != nullptr ? object().H_Parent()->cast_actor() : nullptr;
-	u32 actorState = pActor ? pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) : 0;
-	bool isIdle = (!m_eAnimationsFlags.test(EAnimationsFlags::af_moving) && actorState & mcAnyMove && !(actorState & mcSprint)) ? true : state != CHUDState::EHudStates::eIdle;
-
-	return isIdle && state != CHUDState::EHudStates::eSprintStart && state != CHUDState::EHudStates::eSprintEnd;
+	return state != CHUDState::EHudStates::eIdle && state != CHUDState::EHudStates::eSprintStart && state != CHUDState::EHudStates::eSprintEnd;
 }
 
 THudLightTorch* CHudItem::GetHudLight()
