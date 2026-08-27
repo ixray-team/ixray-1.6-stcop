@@ -118,56 +118,6 @@ bool CUIActorMenu::DropAllItemsFromRuck( bool quest_force )
 	return true;
 }
 
-void CUIActorMenu::UpdateActorBagList()
-{
-	if (!m_pInventoryBagList || !m_pActorInvOwner)
-	{
-		return;
-	}
-
-	m_pInventoryBagList->ClearAll(true);
-
-	TIItemContainer ruck_list = m_pActorInvOwner->inventory().m_ruck;
-	if (m_pInventorySorter)
-	{
-		PrepareBagItemList(ruck_list, GetActiveBagListSlot());
-	}
-	else
-	{
-		std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
-	}
-
-	for (PIItem item : ruck_list)
-	{
-		CMPPlayersBag* bag = smart_cast<CMPPlayersBag*>(&item->object());
-		if (bag)
-		{
-			continue;
-		}
-
-		CUICellItem* itm = create_cell_item(item);
-		m_pInventoryBagList->SetItem(itm);
-		if (m_currMenuMode == mmTrade && m_pPartnerInvOwner)
-		{
-			ColorizeItem(itm, !CanMoveToPartner(item));
-		}
-	}
-
-	PIItem grenade_item = m_pActorInvOwner->inventory().ItemFromSlot(GRENADE_SLOT);
-	if (grenade_item)
-	{
-		if (ShouldDisplayGrenadeInBag())
-		{
-			CUICellItem* itm = create_cell_item(grenade_item);
-			m_pInventoryBagList->SetItem(itm);
-			if (m_currMenuMode == mmTrade && m_pPartnerInvOwner)
-			{
-				ColorizeItem(itm, !CanMoveToPartner(grenade_item));
-			}
-		}
-	}
-}
-
 bool CUIActorMenu::ToSlotScript(CScriptGameObject* GO, bool force_place, u16 slot_id)
 {
 	CInventoryItem* iitem = GO->object().dcast_CObject()->cast_inventory_item();

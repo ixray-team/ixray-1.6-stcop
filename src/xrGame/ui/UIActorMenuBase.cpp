@@ -2371,3 +2371,98 @@ LPCSTR CUIActorMenuBase::GetInventorySortSystemScript() const
 
 	return "categories";
 }
+
+void CUIActorMenuBase::UpdateTradeActorBagList()
+{
+	if (!GetTradeActorBagList() || !GetInventoryOwner())
+	{
+		return;
+	}
+
+	GetTradeActorBagList()->ClearAll(true);
+
+	TIItemContainer items_list = GetInventoryOwner()->inventory().m_ruck;
+	if (m_pInventorySorter)
+	{
+		PrepareBagItemList(items_list, eSortTabsTradeActor);
+	}
+	else
+	{
+		std::sort(items_list.begin(), items_list.end(), InventoryUtilities::GreaterRoomInRuck);
+	}
+
+	for (PIItem item : items_list)
+	{
+		CMPPlayersBag* bag = smart_cast<CMPPlayersBag*>(&item->object());
+		if (bag || is_item_in_list(GetTradeActorList(), item))
+		{
+			continue;
+		}
+
+		CUICellItem* itm = create_cell_item(item);
+		GetTradeActorBagList()->SetItem(itm);
+		ColorizeItem(itm, !CanMoveToPartner(item));
+	}
+}
+
+void CUIActorMenuBase::UpdateTradePartnerBagList()
+{
+	if (!GetTradePartnerBagList() || !GetPartner())
+	{
+		return;
+	}
+
+	InitPartnerInventoryContents();
+	UpdatePrices();
+}
+
+
+void CUIActorMenuBase::UpdateActorBagList()
+{
+	if (!GetActorList() || !GetInventoryOwner())
+	{
+		return;
+	}
+
+	GetActorList()->ClearAll(true);
+
+	TIItemContainer ruck_list = GetInventoryOwner()->inventory().m_ruck;
+	if (m_pInventorySorter)
+	{
+		PrepareBagItemList(ruck_list, GetActiveBagListSlot());
+	}
+	else
+	{
+		std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
+	}
+
+	for (PIItem item : ruck_list)
+	{
+		CMPPlayersBag* bag = smart_cast<CMPPlayersBag*>(&item->object());
+		if (bag)
+		{
+			continue;
+		}
+
+		CUICellItem* itm = create_cell_item(item);
+		GetActorList()->SetItem(itm);
+		if (m_currMenuMode == mmTrade && GetPartner())
+		{
+			ColorizeItem(itm, !CanMoveToPartner(item));
+		}
+	}
+
+	PIItem grenade_item = GetInventoryOwner()->inventory().ItemFromSlot(GRENADE_SLOT);
+	if (grenade_item)
+	{
+		if (ShouldDisplayGrenadeInBag())
+		{
+			CUICellItem* itm = create_cell_item(grenade_item);
+			GetActorList()->SetItem(itm);
+			if (m_currMenuMode == mmTrade && GetPartner())
+			{
+				ColorizeItem(itm, !CanMoveToPartner(grenade_item));
+			}
+		}
+	}
+}
