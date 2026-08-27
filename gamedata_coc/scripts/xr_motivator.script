@@ -61,9 +61,9 @@ function motivator_binder:net_spawn(sobject)
 	local visual = system_ini():r_string_ex(self.object:section(),"set_visual")
 	if (visual and visual ~= "") then
 		if visual == "actor_visual" then
-			self.object:set_visual_name(db.actor:get_visual_name())
+			self.object:set_visual_name(db.actor:get_visual_name(), true)
 		else
-			self.object:set_visual_name(visual)
+			self.object:set_visual_name(visual, true)
 		end
 	end
 	
@@ -71,7 +71,7 @@ function motivator_binder:net_spawn(sobject)
 	local m_data = alife_storage_manager.get_se_obj_state(se_obj)
 	if (m_data) then 
 		if (m_data.visual) then 
-			self.object:set_visual_name(m_data.visual)
+			self.object:set_visual_name(m_data.visual, true)
 		end  
 		if (m_data.icon_name) then 
 			self.object:set_character_icon(m_data.icon_name)

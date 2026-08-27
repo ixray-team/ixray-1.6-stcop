@@ -65,6 +65,8 @@ end
 ----------------------------------------------------------------
 function on_game_start()
 	RegisterScriptCallback("actor_on_reinit",actor_on_reinit)
-	RegisterScriptCallback("save_state",save_state)
-	RegisterScriptCallback("load_state",load_state)
+    if (USE_MARSHAL) then
+	    RegisterScriptCallback("save_state",save_state)
+	    RegisterScriptCallback("load_state",load_state)
+    end
 end

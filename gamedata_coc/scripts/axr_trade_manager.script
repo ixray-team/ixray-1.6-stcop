@@ -138,7 +138,8 @@ function npc_trade_buy_sell(npc)
 					end
 
 					itm_base_cost = system_ini():r_float_ex(sec,"cost") or 30
-					npc:money(itm_base_cost * (tonumber(buy_sell[4]) or 1))
+					local money = math.floor(itm_base_cost * (tonumber(buy_sell[4]) or 1))
+					npc:give_money(money)
 
 					-- Only sell enough till reach keep-in-stock count (param 1)
 					if (i <= tonumber(buy_sell[1])) then
