@@ -23,71 +23,71 @@
 	    </auto_static>
 	</left_background>
 
-	<!-- Player Information -->
-	<!-- Start -->
-	<actor_ch_info x="657" y="10" width="257" height="89">
-		<name_static x="5" y="-3" width="112" height="16">
-			<text align="l" font="letterica18" color="ui_2"/>
-		</name_static>
-		<rank_caption x="5" y="23" width="112" height="14">
-			<text align="l" font="letterica16" color="ui_3">ui_st_rank</text>
-		</rank_caption>
-		<rank_static x="38" y="23" width="112" height="14">
-			<text align="r" font="letterica16" color="ui_3"/>
-		</rank_static>
-		<community_caption x="5" y="12" width="112" height="14">
-			<text align="l" font="letterica16" color="ui_3">ui_st_community</text>
-		</community_caption>
-		<community_static x="38" y="12" width="112" height="14">
-			<text align="r" font="letterica16" color="ui_3"/>
-		</community_static>
-		<reputation_caption x="5" y="34" width="112" height="14">
-			<text align="l" font="letterica16" color="ui_3">ui_st_reputation</text>
-		</reputation_caption>
-		<reputation_static x="38" y="34" width="112" height="14">
-			<text align="r" font="letterica16" color="ui_3"/>
-		</reputation_static>
-		<icon x="158" y="1" width="99" height="87" stretch="1">
-			<deadbody r="255" g="160" b="160" a="205"/>
-		</icon>
-	</actor_ch_info>
-	<!-- Finish -->
+    <!-- Player Information -->
+    <!-- Start -->
+    <actor_ch_info x="657" y="10" width="257" height="89">
+        <name_static x="5" y="1" width="145" height="16">
+            <text align="l" font="letterica16" color="ui_2"/>
+        </name_static>
+        <community_caption x="5" y="14" width="145" height="14">
+            <text align="l" vert_align="c" font="arial_14" color="ui_3">ui_st_community</text>
+        </community_caption>
+        <community_static x="5" y="14" width="145" height="14">
+            <text align="r" vert_align="c" font="arial_14" color="ui_3"/>
+        </community_static>
+        <rank_caption x="5" y="25" width="145" height="14">
+            <text align="l" vert_align="c" font="arial_14" color="ui_3">ui_st_rank</text>
+        </rank_caption>
+        <rank_static x="5" y="25" width="145" height="14">
+            <text align="r" vert_align="c" font="arial_14" color="ui_3"/>
+        </rank_static>
+        <reputation_caption x="5" y="36" width="145" height="14">
+            <text align="l" vert_align="c" font="arial_14" color="ui_3">ui_st_reputation</text>
+        </reputation_caption>
+        <reputation_static x="5" y="36" width="145" height="14">
+            <text align="r" vert_align="c" font="arial_14" color="ui_3"/>
+        </reputation_static>
+        <icon x="158" y="1" width="99" height="87" stretch="1">
+            <deadbody r="255" g="160" b="160" a="205"/>
+        </icon>
+    </actor_ch_info>
+    <!-- Finish -->
 
-	<!-- NPC Information -->
-	<!-- Start -->
-	<partner_ch_info x="111" y="10" width="257" height="89">
-		<name_static x="5" y="-3" width="112" height="16">
-			<text align="l" font="letterica18" color="ui_2"/>
-		</name_static>
-		<rank_caption x="5" y="23" width="112" height="14">
-			<text align="l" font="letterica16" color="ui_3">ui_st_rank</text>
-		</rank_caption>
-		<rank_static x="38" y="23" width="112" height="14">
-			<text align="r" font="letterica16" color="ui_3"/>
-		</rank_static>
-		<community_caption x="5" y="12" width="112" height="14">
-			<text align="l" font="letterica16" color="ui_3">ui_st_community</text>
-		</community_caption>
-		<community_static x="38" y="12" width="112" height="14">
-			<text align="r" font="letterica16" color="ui_3"/>
-		</community_static>
-		<reputation_caption x="5" y="34" width="112" height="14">
-			<text align="l" font="letterica16" color="ui_3">ui_st_reputation</text>
-		</reputation_caption>
-		<reputation_static x="38" y="34" width="112" height="14">
-			<text align="r" font="letterica16" color="ui_3"/>
-		</reputation_static>
-		<relation_caption x="5" y="45" width="112" height="14">
-			<text align="l" font="letterica16" color="ui_3">ui_st_relation</text>
-		</relation_caption>
-		<relation_static x="38" y="45" width="112" height="14">
-			<text align="r" font="letterica16" color="ui_3"/>
-		</relation_static>
-		<icon x="158" y="1" width="99" height="87" stretch="1">
-			<deadbody r="255" g="160" b="160" a="205"/>
-		</icon>
-	</partner_ch_info>
-	<!-- Finish -->
+    <!-- NPC Information -->
+    <!-- Start -->
+    <partner_ch_info x="111" y="10" width="257" height="89">
+        <name_static x="5" y="1" width="145" height="16">
+            <text align="l" font="letterica16" color="ui_2"/>
+        </name_static>
+        <community_caption x="5" y="14" width="145" height="14">
+            <text align="l" vert_align="c" font="arial_14" color="ui_3">ui_st_community</text>
+        </community_caption>
+        <community_static x="5" y="14" width="145" height="14">
+            <text align="r" vert_align="c" font="arial_14" color="ui_3"/>
+        </community_static>
+        <rank_caption x="5" y="25" width="145" height="14">
+            <text align="l" vert_align="c" font="arial_14" color="ui_3">ui_st_rank</text>
+        </rank_caption>
+        <rank_static x="5" y="25" width="145" height="14">
+            <text align="r" vert_align="c" font="arial_14" color="ui_3"/>
+        </rank_static>
+        <reputation_caption x="5" y="36" width="145" height="14">
+            <text align="l" vert_align="c" font="arial_14" color="ui_3">ui_st_reputation</text>
+        </reputation_caption>
+        <reputation_static x="5" y="36" width="145" height="14">
+            <text align="r" vert_align="c" font="arial_14" color="ui_3"/>
+        </reputation_static>
+        <relation_caption x="5" y="47" width="145" height="14">
+            <text align="l" vert_align="c" font="arial_14" color="ui_3">ui_st_relation</text>
+        </relation_caption>
+        <relation_static x="5" y="47" width="145" height="14">
+            <text align="r" vert_align="c" font="arial_14" color="ui_3"/>
+        </relation_static>
+        <icon x="158" y="1" width="99" height="87" stretch="1">
+            <deadbody r="255" g="160" b="160" a="205"/>
+        </icon>
+    </partner_ch_info>
+    <!-- Finish -->
 
 	<actor_money_static x="701" y="75" width="104" height="22">
 		<text align="r" font="graffiti22"/>
@@ -97,21 +97,101 @@
 		<text align="r" font="graffiti22"/>
 	</partner_money_static>
 
-	<inv_slot2_highlight x="389" y="17" width="65" height="353" stretch="1">
-		<texture>ui_inGame2_weapon_highlighter</texture>
-	</inv_slot2_highlight>
-	<inv_slot3_highlight x="568" y="17" width="65" height="353" stretch="1">
-		<texture>ui_inGame2_weapon_highlighter</texture>
-	</inv_slot3_highlight>
-	<helmet_slot_highlight x="472" y="17" width="76" height="98" stretch="1">
-		<texture>ui_inGame2_helmet_highlighter</texture>
-	</helmet_slot_highlight>
-	<outfit_slot_highlight x="472" y="142" width="76" height="161" stretch="1">
-		<texture>ui_inGame2_armor_highlighter</texture>
-	</outfit_slot_highlight>
-	<detector_slot_highlight x="472" y="330" width="76" height="48" stretch="1">
-		<texture>ui_inGame2_detector_highlighter</texture>
-	</detector_slot_highlight>
+	<inventory_slot_wnd>
+		<slot> <!-- Knife -->
+		</slot>
+		<slot> <!-- Pistol -->
+			<slot_highlight x="389" y="17" width="65" height="353" stretch="1">
+				<texture>ui_inGame2_weapon_highlighter</texture>
+			</slot_highlight>
+			<slot_dragdrop x="384" y="14" width="74" height="368"
+				cell_width="33" cell_height="41" rows_num="6" cols_num="2"
+				custom_placement="0" vertical_placement="1" a="0"
+				virtual_cells="1" vc_vert_align="c" vc_horiz_align="c"/>
+    		<slot_progress x="398" y="378" width="47" height="5" horz="1" min="0" max="1" pos="0">
+    		    <progress stretch="1">
+    		        <texture r="142" g="149" b="149">ui_inGame2_inventory_status_bar</texture>
+    		    </progress>
+				<min_color r="196" g="18" b="18"/>
+				<middle_color r="255" g="255" b="118"/>
+				<max_color r="107" g="207" b="119"/>
+    		</slot_progress>
+		</slot>
+		<slot> <!-- Auto -->
+			<slot_highlight x="568" y="17" width="65" height="353" stretch="1">
+				<texture>ui_inGame2_weapon_highlighter</texture>
+			</slot_highlight>
+			<slot_dragdrop x="563" y="14" width="74" height="370"
+				cell_width="33" cell_height="41" rows_num="6" cols_num="2"
+				custom_placement="0" vertical_placement="1" a="0"
+				virtual_cells="1" vc_vert_align="c" vc_horiz_align="c" />
+    		<slot_progress x="578" y="378" width="47" height="5" horz="1" min="0" max="1" pos="0">
+    		    <progress stretch="1">
+    		        <texture r="142" g="149" b="149">ui_inGame2_inventory_status_bar</texture>
+    		    </progress>
+				<min_color r="196" g="18" b="18"/>
+				<middle_color r="255" g="255" b="118"/>
+				<max_color r="107" g="207" b="119"/>
+    		</slot_progress>
+		</slot>
+		<slot> <!-- Grenade -->
+		</slot>
+		<slot> <!-- Binoc -->
+		</slot>
+		<slot> <!-- Bolt -->
+		</slot>
+		<slot> <!-- Outfit -->
+			<slot_dragdrop x="469" y="137" width="85" height="178"
+				cell_width="33" cell_height="41" rows_num="3" cols_num="2"
+				custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
+				vc_horiz_align="c"/>
+    		<slot_progress x="488" y="309" width="47" height="5" horz="1" min="0" max="1" pos="0">
+    		    <progress stretch="1">
+    		        <texture r="142" g="149" b="149">ui_inGame2_inventory_status_bar</texture>
+    		    </progress>
+				<min_color r="196" g="18" b="18"/>
+				<middle_color r="255" g="255" b="118"/>
+				<max_color r="107" g="207" b="119"/>
+    		</slot_progress>
+			<slot_highlight x="472" y="142" width="76" height="161" stretch="1">
+				<texture>ui_inGame2_armor_highlighter</texture>
+			</slot_highlight>
+		</slot>
+		<slot> <!-- PDA -->
+		</slot>
+		<slot> <!-- Detector -->
+			<slot_dragdrop x="469" y="328" width="85" height="55"
+				cell_width="33" cell_height="41" rows_num="1" cols_num="2"
+				custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
+				vc_horiz_align="c"/>
+			<slot_highlight x="472" y="330" width="76" height="48" stretch="1">
+				<texture>ui_inGame2_detector_highlighter</texture>
+			</slot_highlight>
+		</slot>
+		<slot> <!-- Torch -->
+		</slot>
+		<slot> <!-- Artfake -->
+		</slot>
+		<slot> <!-- Helmet -->
+			<slot_highlight x="472" y="17" width="76" height="98" stretch="1">
+				<texture>ui_inGame2_helmet_highlighter</texture>
+			</slot_highlight>
+    		<slot_progress x="488" y="118" width="47" height="5" horz="1" min="0" max="1" pos="0">
+    		    <progress stretch="1">
+    		        <texture r="142" g="149" b="149">ui_inGame2_inventory_status_bar</texture>
+    		    </progress>
+				<min_color r="196" g="18" b="18"/>
+				<middle_color r="255" g="255" b="118"/>
+				<max_color r="107" g="207" b="119"/>
+    		</slot_progress>
+			<slot_dragdrop x="469" y="14" width="85" height="110" 
+				cell_width="33" cell_height="41" rows_num="2" cols_num="2" custom_placement="0" a="0" virtual_cells="1" 
+				vc_vert_align="c" vc_horiz_align="c" />
+		</slot>
+		<slot> <!-- Backpack -->
+		</slot>
+	</inventory_slot_wnd>
+
 	<quick_slot_highlight x="387" y="398" width="52" height="59" dx="64" stretch="1">
 		<texture>ui_inGame2_quick_item_highlighter</texture>
 	</quick_slot_highlight>
@@ -132,39 +212,6 @@
 		<text align="c" font="letterica16">quick_use_str_4</text>
 	</quick_slot4_text>
 
-    <progess_bar_weapon1 x="398" y="378" width="47" height="5" horz="1" min="0" max="1" pos="0">
-        <progress stretch="1">
-            <texture r="142" g="149" b="149">ui_inGame2_inventory_status_bar</texture>
-        </progress>
-		<min_color r="196" g="18" b="18"/>
-		<middle_color r="255" g="255" b="118"/>
-		<max_color r="107" g="207" b="119"/>
-    </progess_bar_weapon1>
-    <progess_bar_weapon2 x="578" y="378" width="47" height="5" horz="1" min="0" max="1" pos="0">
-        <progress stretch="1">
-            <texture r="142" g="149" b="149">ui_inGame2_inventory_status_bar</texture>
-        </progress>
-		<min_color r="196" g="18" b="18"/>
-		<middle_color r="255" g="255" b="118"/>
-		<max_color r="107" g="207" b="119"/>
-    </progess_bar_weapon2>
-    <progess_bar_outfit x="488" y="309" width="47" height="5" horz="1" min="0" max="1" pos="0">
-        <progress stretch="1">
-            <texture r="142" g="149" b="149">ui_inGame2_inventory_status_bar</texture>
-        </progress>
-		<min_color r="196" g="18" b="18"/>
-		<middle_color r="255" g="255" b="118"/>
-		<max_color r="107" g="207" b="119"/>
-    </progess_bar_outfit>
-    <progess_bar_helmet x="488" y="118" width="47" height="5" horz="1" min="0" max="1" pos="0">
-        <progress stretch="1">
-            <texture r="142" g="149" b="149">ui_inGame2_inventory_status_bar</texture>
-        </progress>
-		<min_color r="196" g="18" b="18"/>
-		<middle_color r="255" g="255" b="118"/>
-		<max_color r="107" g="207" b="119"/>
-    </progess_bar_helmet>
-
 	<actor_weight_caption x="750" y="736" width="57" height="16">
 		<text align="r" font="letterica16" color="ui_3">ui_total_weight</text>
 	</actor_weight_caption>
@@ -182,12 +229,12 @@
 		<text align="l" font="letterica16" color="ui_7"/>
 	</partner_weight>
 
-	<!-- partner  ---------------------------------------------------------------- -->
+	<!-- partner  -->
 	<left_delimiter x="102" y="226" width="273" height="163" stretch="1">
 		<texture>ui_inGame2_center_trade_devider</texture>
-		<trade_caption x="118" y="74" width="48" height="16">
+		<!--trade_caption x="123" y="74" width="48" height="16">
 			<text align="l" font="letterica16" color="ui_3">ui_total_price</text>
-		</trade_caption>
+		</trade_caption-->
 		<trade_price x="166" y="74" width="13" height="16">
 			<text align="l" font="letterica16"/>
 		</trade_price>
@@ -195,12 +242,12 @@
 			<text align="l" font="letterica16" color="ui_3"/>
 		</trade_weight_max>
 	</left_delimiter>
-	<!-- actor  ---------------------------------------------------------------- -->
+	<!-- actor -->
 	<right_delimiter x="648" y="226" width="273" height="163" stretch="1">
 	    <texture>ui_inGame2_center_trade_devider</texture>
-	    <trade_caption x="118" y="74" width="48" height="16">
+	    <!--trade_caption x="123" y="74" width="48" height="16">
 	    	<text align="r" font="letterica16" color="ui_3">ui_total_price</text>
-	    </trade_caption>
+	    </trade_caption-->
 	    <trade_price x="166" y="74" width="40" height="16">
 		    <text align="c" font="letterica16"/>
 	    </trade_price>
@@ -220,7 +267,7 @@
   <dragdrop_trash x="0" y="0" width="375" height="768"
     	cell_width="375" cell_height="768" rows_num="1" cols_num="1" a="0"/>
 
-  <dragdrop_bag x="662" y="119" width="250" height="574"
+  <dragdrop_bag x="662" y="119" width="247" height="574"
     	cell_width="33" cell_height="41" rows_num="14" cols_num="7"
 		unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
@@ -228,48 +275,23 @@
 		cell_width="33" cell_height="41" rows_num="1" cols_num="5"
 		cell_sp_x="19" cell_sp_y="0" a="0"/>
 
-	<dragdrop_outfit x="469" y="137" width="85" height="178"
-		cell_width="33" cell_height="41" rows_num="3" cols_num="2"
-		custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
-		vc_horiz_align="c"/>
-
-	<dragdrop_helmet x="469" y="14" width="85" height="110"
-		cell_width="33" cell_height="41" rows_num="2" cols_num="2"
-		custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
-		vc_horiz_align="c" />
-
-	<dragdrop_detector x="469" y="328" width="85" height="55"
-		cell_width="33" cell_height="41" rows_num="1" cols_num="2"
-		custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
-		vc_horiz_align="c"/>
-
-	<dragdrop_pistol x="384" y="14" width="74" height="368"
-		cell_width="33" cell_height="41" rows_num="6" cols_num="2"
-		custom_placement="0" vertical_placement="1" a="0"
-		virtual_cells="1" vc_vert_align="c" vc_horiz_align="c"/>
-
-	<dragdrop_automatic x="563" y="14" width="74" height="370"
-		cell_width="33" cell_height="41" rows_num="6" cols_num="2"
-		custom_placement="0" vertical_placement="1" a="0"
-		virtual_cells="1" vc_vert_align="c" vc_horiz_align="c" />
-
-	<dragdrop_actor_trade x="662" y="114" width="250" height="164"
+	<dragdrop_actor_trade x="662" y="114" width="247" height="164"
 		cell_width="33" cell_height="41" rows_num="4" cols_num="7"
 		unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
-	<dragdrop_actor_trade_bag x="662" y="340" width="250" height="369"
+	<dragdrop_actor_trade_bag x="662" y="340" width="247" height="369"
 		cell_width="33" cell_height="41" rows_num="9" cols_num="7"
 		unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
-	<dragdrop_partner_trade x="117" y="114" width="250" height="164"
+	<dragdrop_partner_trade x="117" y="114" width="247" height="164"
 	    cell_width="33" cell_height="41" rows_num="4" cols_num="7"
 	    unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
-	<dragdrop_partner_bag x="117" y="340" width="250" height="369"
+	<dragdrop_partner_bag x="117" y="340" width="247" height="369"
 	    cell_width="33" cell_height="41" rows_num="9" cols_num="7"
 	    unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
-	<dragdrop_deadbody_bag x="117" y="119" width="250" height="574"
+	<dragdrop_deadbody_bag x="117" y="119" width="247" height="574"
 	    cell_width="33" cell_height="41" rows_num="14" cols_num="7"
 	    unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
@@ -301,7 +323,7 @@
 	    </text_color>
 	</trade_sell_button>
 
-	<takeall_button x="115" y="695" width="249" height="24" stretch="1" hint="ui_st_take_all_hint">
+	<takeall_button x="116" y="694" width="248" height="24" stretch="1" hint="ui_st_take_all_hint">
 	    <window_name>takeall_button</window_name>
 	    <texture>ui_inGame2_big_inventory_button</texture>
 	    <text font="graffiti22" align="c">ui_st_take_all</text>
@@ -312,6 +334,18 @@
 	        <h color ="ui_black"/>
 	    </text_color>
 	</takeall_button>
+
+	<putall_button x="662" y="694" width="248" height="24" stretch="1" hint="ui_st_put_all_hint">
+	    <window_name>putall_button</window_name>
+	    <texture>ui_inGame2_big_inventory_button</texture>
+	    <text font="graffiti22" align="c">ui_st_put_all</text>
+	    <text_color>
+	        <e color ="ui_6"/>
+	        <t color ="ui_black"/>
+	        <d color ="ui_5"/>
+	        <h color ="ui_black"/>
+	    </text_color>
+	</putall_button>
 
 	<exit_button x="384" y="736" width="256" height="24" stretch="1" hint="ui_st_exit_hint">
 	    <window_name>exit_button</window_name>
@@ -359,7 +393,7 @@
 
 	    <health_state x="11" y="31" width="171" height="16">
 	        <hint_text delay="800">st_ui_health_sensor</hint_text>
-	        <state_progress x="0" y="0" width="171" height="16" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="0" y="0" width="171" height="16" horz="1" min="0" max="1" pos="0" expression="floor(fltPlayerHealth * 55.0) / 55.0">
 	    	    <progress stretch="1">
 	        		<texture r="194" g="8" b="8" a="200">ui_inGame2_inventory_health_bar</texture>
 		        </progress>
@@ -394,10 +428,8 @@
 
 	    <radia_sensor x="12" y="72" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_radiation_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitRadiationProtection + fltActorHelmetRadiationProtection + fltActorBoostRadiationProtection + fltArtefactsRadiationProtection / fltZoneMaxPowerRadiationProtection * 31.0) / 31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>
@@ -406,10 +438,8 @@
 
 	    <acid_sensor x="12" y="100" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_chemical_burn_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitChemicalBurnProtection + fltActorHelmetChemicalBurnProtection + fltActorBoostChemicalBurnProtection + fltArtefactsChemicalBurnProtection / fltZoneMaxPowerChemicalBurnProtection * 31.0) / 31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>
@@ -418,10 +448,8 @@
 
 	    <shock_sensor x="12" y="128" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_shock_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitShockProtection + fltActorHelmetShockProtection + fltArtefactsShockProtection / fltZoneMaxPowerShockProtection * 31.0) / 31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>
@@ -430,10 +458,8 @@
 
 	    <fire_sensor x="12" y="156" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_burn_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitBurnProtection + fltActorHelmetBurnProtection + fltArtefactsBurnProtection / fltZoneMaxPowerBurnProtection * 31.0) / 31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 		        </progress>
@@ -442,10 +468,8 @@
 
 	    <psi_sensor x="139" y="72" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_telepatic_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitTelepaticProtection + fltActorHelmetTelepaticProtection + fltActorBoostTelepaticProtection + fltArtefactsTelepaticProtection / fltZoneMaxPowerTelepaticProtection * 31.0) /31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>
@@ -454,11 +478,9 @@
 
 	    <wound_sensor x="139" y="100" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_wound_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
-		        <progress stretch="1">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitWoundProtection + fltActorHelmetWoundProtection + fltArtefactsWoundProtection / fltZoneMaxPowerWoundProtection * 31.0) / 31.0">
+		       <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>
 	        </state_progress>
@@ -478,10 +500,7 @@
 
 	    <power_sensor x="139" y="156" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_power_restore</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0" expression="floor(fltPlayerRestoreSpeed * 31.0) / 31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>

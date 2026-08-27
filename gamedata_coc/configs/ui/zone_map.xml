@@ -1,6 +1,6 @@
 <window>
 	<minimap>
-		<level_frame x="0.098" y="0.118" width="0.19" height="0.19" stretch="1" alignment="c"/>
+		<level_frame x="0.138" y="0.118" width="0.19" height="0.19" stretch="1" alignment="c"/>
 
 		<background width="0.305" height="0.305" stretch="1" alignment="c">
 			<texture>ui_inGame2_Radar_main_window</texture>
