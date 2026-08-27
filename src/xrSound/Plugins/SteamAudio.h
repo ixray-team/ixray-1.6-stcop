@@ -41,6 +41,7 @@ public:
     void Shutdown() override;
 
     void ResetSlot(u32 SlotIndex) override;
+    void FreeSlot(u32 SlotIndex) override;
     void ProcessHrtf(u32 SlotIndex, float** Data, const Fvector& SourcePosition, const Fvector& HeadPosition, const Fvector& RelativeDirection) override;
 
     IPLContext GetContext() { return Context; }
