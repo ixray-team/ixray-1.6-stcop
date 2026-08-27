@@ -75,6 +75,15 @@ function se_stalker:on_register()
 	--alun_utils.debug_write("\nse_stalker:on_register "..self:name().." START")
 	cse_alife_human_stalker.on_register( self )
 	
+	if(actor_stats.add_to_ranking~=nil)then
+		local community = self:community()
+		if not(community == "zombied" or
+		   community == "trader")
+		then
+			actor_stats.add_to_ranking(self.id)
+		end
+	end
+
 	-- persistent storage
 	alife_storage_manager.get_se_obj_state(self,true)
 	
@@ -123,6 +132,16 @@ function se_stalker:on_unregister()
 	end
 	unregister_story_object_by_id(self.id)
 	cse_alife_human_stalker.on_unregister(self)
+	if(actor_stats.remove_from_ranking~=nil)then
+		local community = self:community()
+		if community == "zombied" or
+		   community == "monolith" or
+		   community == "arena_enemy"
+		then
+			return
+		end
+		actor_stats.remove_from_ranking(self.id)
+	end
 end
 --------------------
 function se_stalker:on_spawn()

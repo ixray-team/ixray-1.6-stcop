@@ -168,8 +168,8 @@ function on_game_start()
 	    RegisterScriptCallback("save_state",save_state)
 	    RegisterScriptCallback("load_state",load_state)
     end
-   
-   	RegisterScriptCallback("on_game_load",on_game_load)
+    
+	RegisterScriptCallback("on_game_load",on_game_load)
 
 	allow_only_friends_as_companions = ini:r_bool_ex("main","allow_only_friends_as_companions",false)
 	allow_simulation_squads_as_companions = ini:r_bool_ex("main","allow_simulation_squads_as_companions",false)

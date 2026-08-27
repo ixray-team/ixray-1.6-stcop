@@ -1,143 +1,143 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
 
-	<string id="ui_st_abandoned_sawmill">
+	<string id="ui_st_zat_b104_zombied">
 		<text>Abandoned Sawmill (Zaton)</text>
 	</string>
 
-	<string id="ui_st_abandoned_school">
+	<string id="ui_st_cit_bandits">
 		<text>Abandoned School (Dead City)</text>
 	</string>
 
-	<string id="ui_st_abandoned_village">
+	<string id="ui_st_mil_smart_terrain_7_4">
 		<text>Abandoned Village (Army Warehouses)</text>
 	</string>
 
-	<string id="ui_st_brain_scorcher">
+	<string id="ui_st_rad_antenna_monolith">
 		<text>Brain Scorcher (Radar)</text>
 	</string>
 
-	<string id="ui_st_cultural_center">
+	<string id="ui_st_pri_monolith">
 		<text>Cultural Center (Pripyat)</text>
 	</string>
 
-	<string id="ui_st_construction_site">
+	<string id="ui_st_ros_smart_stalker_killers1">
 		<text>Construction Site (Wild Territory)</text>
 	</string>
 
-	<string id="ui_st_container_warehouse">
+	<string id="ui_st_jup_a12">
 		<text>Container Warehouse (Jupiter)</text>
 	</string>
 
-	<string id="ui_st_eastern_checkpoint">
+	<string id="ui_st_trc_sim_20">
 		<text>Eastern Checkpoint (Truck Cemetery)</text>
 	</string>
 
-	<string id="ui_st_eastern_factory">
+	<string id="ui_st_val_smart_terrain_1_2">
 		<text>Eastern Factory (Dark Valley)</text>
 	</string>
 
-	<string id="ui_st_factory_complex">
+	<string id="ui_st_agr_smart_terrain_4_4">
 		<text>Factory Complex (Agroprom)</text>
 	</string>
 
-	<string id="ui_st_hermanns_bunker">
+	<string id="ui_st_jup_b41">
 		<text>Hermann's Bunker (Jupiter)</text>
 	</string>
 
-	<string id="ui_st_hidden_base">
+	<string id="ui_st_mar_smart_terrain_base">
 		<text>Hidden Base (Great Swamp)</text>
 	</string>
 
-	<string id="ui_st_kopachy_village">
+	<string id="ui_st_jup_b19">
 		<text>Kopachy Village (Jupiter)</text>
 	</string>
 
-	<string id="ui_st_lodging_house">
+	<string id="ui_st_bar_visitors">
 		<text>Lodging House (Rostok)</text>
 	</string>
 
-	<string id="ui_st_machine_yard">
+	<string id="ui_st_mar_smart_terrain_10_5">
 		<text>Machine Yard (Great Swamp)</text>
 	</string>
 
-	<string id="ui_st_makeshift_barracks">
+	<string id="ui_st_bar_dolg_bunker">
 		<text>Makeshift Barracks (Rostok)</text>
 	</string>
 
-	<string id="ui_st_military_base">
+	<string id="ui_st_mil_smart_terrain_7_7">
 		<text>Military Base (Army Warehouses)</text>
 	</string>
 
-	<string id="ui_st_northern_factory">
+	<string id="ui_st_val_smart_terrain_7_4">
 		<text>Northern Factory (Dark Valley)</text>
 	</string>
 
-	<string id="ui_st_hideout">
+	<string id="ui_st_pri_b302">
 		<text>Hideout (Outskirts)</text>
 	</string>
 
-	<string id="ui_st_power_station">
+	<string id="ui_st_aes_smart_terrain_monolit_blockpost4">
 		<text>Power Station (Chernobyl NPP)</text>
 	</string>
 
-	<string id="ui_st_processing_station">
+	<string id="ui_st_zat_b40_smart_terrain">
 		<text>Processing Station (Zaton)</text>
 	</string>
 
-	<string id="ui_st_pumping_station">
+	<string id="ui_st_mar_smart_terrain_5_8">
 		<text>Pumping Station (Great Swamp)</text>
 	</string>
 	
-	<string id="ui_st_river_port">
+	<string id="ui_st_pri_b36_smart_terrain">
 		<text>River Port (Outskirts)</text>
 	</string>
 
-	<string id="ui_st_rookie_village">
+	<string id="ui_st_esc_smart_terrain_2_12">
 		<text>Rookie Village (Cordon)</text>
 	</string>
 
-	<string id="ui_st_research_institute">
+	<string id="ui_st_agr_smart_terrain_1_6_near_2">
 		<text>Research Institute (Agroprom)</text>
 	</string>
 
-	<string id="ui_st_sakharovs_bunker">
+	<string id="ui_st_yan_smart_terrain_6_4">
 		<text>Sakharov's Bunker (Yantar)</text>
 	</string>
 
-	<string id="ui_st_skadovsk_shipwreck">
+	<string id="ui_st_zat_stalker_base_smart">
 		<text>Skadovsk Shipwreck (Zaton)</text>
 	</string>
 
-	<string id="ui_st_southern_checkpoint">
+	<string id="ui_st_esc_smart_terrain_3_16">
 		<text>Southern Checkpoint (Cordon)</text>
 	</string>
 
-	<string id="ui_st_sports_center">
+	<string id="ui_st_cit_killers">
 		<text>Sports Center (Dead City)</text>
 	</string>
 
-	<string id="ui_st_train_hangar">
+	<string id="ui_st_gar_smart_terrain_3_5">
 		<text>Train Hangar (Garbage)</text>
 	</string>
 
-	<string id="ui_st_tunnel_entrance">
+	<string id="ui_st_jup_b203">
 		<text>Tunnel Entrance (Jupiter)</text>
 	</string>
 
-	<string id="ui_st_tunnel_refuge">
+	<string id="ui_st_agr_u_bandits">
 		<text>Tunnel Refuge (Agr. Underground)</text>
 	</string>
 
-	<string id="ui_st_tuzla_outpost">
+	<string id="ui_st_mar_smart_terrain_3_3">
 		<text>Tuzla Outpost (Great Swamp)</text>
 	</string>
 
-	<string id="ui_st_village_ruins">
+	<string id="ui_st_mar_smart_terrain_4_5">
 		<text>Village Ruins (Great Swamp)</text>
 	</string>
 
-	<string id="ui_st_yanov_station">
+	<string id="ui_st_jup_a6">
 		<text>Yanov Station (Jupiter)</text>
 	</string>
 	

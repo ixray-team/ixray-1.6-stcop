@@ -154,13 +154,13 @@
 		<text>был отключён защитой BattlEye:</text>
 	</string>
 	<string id="ui_st_kicked_by_server">
-		<text>Отключён. Причина - </text>
+		<text>Отключён. Причина -</text>
 	</string>
 	<string id="ui_st_leave">
 		<text>Уйти</text>
 	</string>
 	<string id="ui_st_load_game_confirm">
-		<text>Загрузка игры приведёт к потере несохраненных данных. Желаете продолжить?</text>
+		<text>Загрузка игры приведёт к потере несохранённых данных. Желаете продолжить?</text>
 	</string>
 	<string id="ui_st_mins">
 		<text>мин.</text>
@@ -464,7 +464,7 @@
 		<text>Пассивный режим</text>
 	</string>
 	<string id="st_set_companion_to_attack_only_actor_combat_enemy_state">
-		<text>Охранный режим</text>
+		<text>Режим охраны</text>
 	</string>
 	<string id="st_set_companion_to_wait_state">
 		<text>Режим ожидания</text>
@@ -482,25 +482,25 @@
 		<text>Держите, затем отпустите</text>
 	</string>
 		<string id="st_enable_looting">
-		<text>Мародёрство вкл.</text>
+		<text>Разрешено брать трофеи с тел</text>
 	</string>
 	<string id="st_disable_looting">
-		<text>Мародёрство откл.</text>
+		<text>Мародёрство запрещено</text>
 	</string>	
 	<string id="st_set_companion_to_loot_corpse_state">
-		<text>Брать трофеи</text>
+		<text>Обыск убитых</text>
 	</string>
 	<string id="st_set_companion_to_loot_items_state">
 		<text>Собирательство</text>
 	</string>
 	<string id="st_companion_state_stealth_enabled">
-		<text>Скрытность откл.</text>
+		<text>Открытое передвижение</text>
 	</string>
 	<string id="st_companion_state_stealth_disabled">
-		<text>Скрытность вкл.</text>
+		<text>Скрытное перемещение</text>
 	</string>
 	<string id="st_set_companion_to_stealth_state">
-		<text>Скрытное перемещение</text>
+		<text>Скрытность</text>
 	</string>
 	<!-- Sleep deprivation -->
 	<string id="st_sleep_awake">
@@ -519,7 +519,7 @@
 		<text>Вас убили. Вы уже не проснётесь.</text>
 	</string>
 	<string id="st_sleep_event">
-		<text>Это не возможно во время катаклизма</text>
+		<text>Это невозможно во время катаклизма</text>
 	</string>
 	<string id="st_sleep_exhausted">
 		<text>Вы устали и должны отдохнуть</text>

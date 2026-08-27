@@ -353,9 +353,6 @@
         <text>Task-related stalkers can't trade</text>
     </string>
 	<!-- PDA Relations Action list -->
-	<string id="st_pda_action_back">
-		<text>Back</text>
-	</string>
 	<string id="st_pda_action_1__1">
 		<text>Lend items</text>
 	</string>
@@ -410,6 +407,9 @@
 	<string id="st_pda_action_1__2_4_3_off">
 		<text>Corpses (enable)</text>
 	</string>
+	<string id="st_pda_action_back">
+		<text>Back</text>
+	</string>	
 	<string id="pda_btn_contacts">
 		<text>Contacts</text>
 	</string>
@@ -422,10 +422,6 @@
     <string id="pda_msg_all">
         <text>All</text>
     </string>
-	
-	<string id="st_mm_pda_statistics">
-		<text>Statistics</text>
-	</string>
 	<string id="st_mm_pda_stalkers_killed">
 		<text>Stalkers killed</text>
 	</string>
@@ -437,6 +433,9 @@
 	</string>
 	<string id="st_mm_pda_items_sold">
 		<text>Items sold</text>
+	</string>
+	<string id="st_mm_pda_statistics">
+		<text>Statistics</text>
 	</string>
 	<string id="st_mm_pda_level_travel">
 		<text>Level travel</text>

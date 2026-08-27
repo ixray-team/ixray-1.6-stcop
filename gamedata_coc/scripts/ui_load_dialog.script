@@ -1,4 +1,5 @@
-saved_game_extension	= ".scop"
+saved_game_extension	= save_extension()
+saved_game_extension_ex	= alife_storage_manager.saved_game_extension_ex
 
 class "load_item" (CUIListBoxItem)
 function load_item:__init(height) super(height)
@@ -26,7 +27,7 @@ end
 function load_dialog:FillList()
 	self.list_box:RemoveAll()
 	local f		= getFS()
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly),"*"..saved_game_extension)
+	local flist = f:file_list_open_ex("$game_saves$",bit.bor(FS.FS_ListFiles,FS.FS_RootOnly),"*"..saved_game_extension)
 	local f_cnt = flist:Size()
 
 	flist:Sort(FS.FS_sort_by_modif_down)
@@ -104,7 +105,7 @@ end
 
 function file_exist(fname)
 	local f = getFS();
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly) , fname)
+	local flist = f:file_list_open_ex("$game_saves$",bit.bor(FS.FS_ListFiles,FS.FS_RootOnly) , fname)
 	local f_cnt = flist:Size()
 
 	if f_cnt > 0 then
@@ -123,13 +124,16 @@ function delete_save_game(filename)
 
 	f:file_delete("$game_saves$",save_file)
 
+    -- START IX-Ray
+	if (file_exist(filename..saved_game_extension_ex)) then
+		f:file_delete("$game_saves$",filename..saved_game_extension_ex)
+	end
+	-- END IX-Ray
+	
 	if file_exist(dds_file) then
 		f:file_delete("$game_saves$", dds_file)
 	end
-
-	if (file_exist(filename..".scoc")) then
-		f:file_delete("$game_saves$",filename..".scoc")
-	end
+	
 end
 
 function AddTimeDigit(str, dig)
@@ -145,7 +149,7 @@ end
 
 function file_data(fname)
 	local f = getFS();
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly) , fname .. saved_game_extension)
+	local flist = f:file_list_open_ex("$game_saves$",bit.bor(FS.FS_ListFiles,FS.FS_RootOnly) , fname .. saved_game_extension)
 	local f_cnt = flist:Size()
 
 	if f_cnt > 0 then
@@ -210,7 +214,7 @@ function load_dialog:OnListItemClicked()
 	else
 		self.picture:InitTexture("ui\\ui_noise")
 	end
-	self.picture:SetTextureRect(Frect():set(r.x1,r.y1,r.x2,r.y2))
+--	self.picture:SetTextureRect(Frect():set(r.x1,r.y1,r.x2,r.y2))
 	
 	if (__show_scoc_debug) then
 		__show_scoc_debug = nil

@@ -49,7 +49,7 @@ function options_dialog:__init() super()
 				-- setup the list
 				if (t.list) then
 					for i,v in ipairs(t.list) do 
-						ctrl:AddItem(v,i-1)
+						ctrl:AddItem(tostring(v),i-1)
 					end
 				end
 		

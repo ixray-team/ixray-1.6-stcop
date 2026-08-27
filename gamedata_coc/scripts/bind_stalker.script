@@ -46,6 +46,14 @@ function actor_binder:net_spawn(data)
 		level.enable_input()
 	end
 
+	if (actor_stats.add_to_ranking ~= nil 
+		and self.object:alive() 
+		and self.object:character_community() ~= "zombied" 
+		and self.object:character_community() ~= "trader" 
+		) then
+		actor_stats.add_to_ranking(self.object:id())
+	end
+
 	death_manager.init_drop_settings()
 	self.spawn_frame = device().frame
 	self.already_jumped = false
@@ -59,6 +67,9 @@ function actor_binder:net_spawn(data)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_destroy()
+	if(actor_stats.remove_from_ranking~=nil)then
+		actor_stats.remove_from_ranking(self.object:id())
+	end
 	--alun_utils.debug_write("actor net destroy start")
 	
 	local sm = surge_manager.get_surge_manager()

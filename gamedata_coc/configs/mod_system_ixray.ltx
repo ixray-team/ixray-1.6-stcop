@@ -3,6 +3,10 @@
 ![wpn_knife]
 snd_draw = weapons\draw_silent
 
+; w_binoc.ltx
+![wpn_binoc]
+use_condition = false
+
 ![inventory]
 slot_persistent_4 = false ;grenades
 
@@ -102,76 +106,76 @@ stay_after_death_time_interval = 36 ; in hours
 
 ;defines.ltx
 ![hud_base] ; Gunslinger Style
-;РЅР°РєР»РѕРЅС‹ РѕСЂСѓР¶РёСЏ РїСЂРё С…РѕРґСЊР±Рµ
-hud_move_speed_rot = 3			;СЃРєРѕСЂРѕСЃС‚СЊ РґРѕРІРѕСЂРѕС‚Р° РґРѕ Р·Р°РґР°РЅРЅРѕРіРѕ СѓРіР»Р°			
-hud_move_speed_pos = 2		        ;СЃРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёСЏ РґРѕ Р·Р°РґР°РЅРЅРѕР№ РїРѕР·РёС†РёРё
-hud_move_stabilize_factor = 3.5		;РІРѕ СЃРєРѕР»СЊРєРѕ СЂР°Р· Р±С‹СЃС‚СЂРµРµ РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ РІ РЅРµР№С‚СЂР°Р»СЊРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ РїСЂРё РёРґР»Рµ
-hud_move_weaponhide_factor = 3.5	;РІРѕ СЃРєРѕР»СЊРєРѕ СЂР°Р· Р±С‹СЃС‚СЂРµРµ РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ РІ РЅРµР№С‚СЂР°Р»СЊРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ РїСЂРё СѓР±РёСЂР°РЅРёРё РѕСЂСѓР¶РёСЏ
+;наклоны оружия при ходьбе
+hud_move_speed_rot = 3			;скорость доворота до заданного угла			
+hud_move_speed_pos = 2		        ;скорость перемещения до заданной позиции
+hud_move_stabilize_factor = 3.5		;во сколько раз быстрее возвращаемся в нейтральное положение при идле
+hud_move_weaponhide_factor = 3.5	;во сколько раз быстрее возвращаемся в нейтральное положение при убирании оружия
 hud_move_unzoom_factor = 2.0
-hud_move_slow_factor = 0.5		;РІРѕ СЃРєРѕР»СЊРєРѕ СЂР°Р· РјРµРЅСЏС‚СЊ Р°РјРїР»РёС‚СѓРґСѓ РїСЂРё С€Р°РіРµ
-hud_move_crouch_factor = 0.5		;РІРѕ СЃРєРѕР»СЊРєРѕ СЂР°Р· РјРµРЅСЏС‚СЊ Р°РјРїР»РёС‚СѓРґСѓ РїСЂРё РїСЂРёСЃСЏРґРµ
-hud_move_slow_crouch_factor = 0.3	;РІРѕ СЃРєРѕР»СЊРєРѕ СЂР°Р· РјРµРЅСЏС‚СЊ Р°РјРїР»РёС‚СѓРґСѓ РїСЂРё РїРѕР»РЅРѕРј РїСЂРёСЃСЏРґРµ
+hud_move_slow_factor = 0.5		;во сколько раз менять амплитуду при шаге
+hud_move_crouch_factor = 0.5		;во сколько раз менять амплитуду при присяде
+hud_move_slow_crouch_factor = 0.3	;во сколько раз менять амплитуду при полном присяде
 
-;Р·Р°РґР°СЋС‚СЃСЏ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рµ РѕС‚РєР»РѕРЅРµРЅРёСЏ РѕС‚ С†РµРЅС‚СЂР°Р»СЊРЅРѕРіРѕ РІ СЂР°Р·РЅС‹С… СЂРµР¶РёРјР°С… С…РѕРґСЊР±С‹
-;РђРґРґРёС‚РёРІРЅРѕ!
+;задаются максимальные отклонения от центрального в разных режимах ходьбы
+;Аддитивно!
 
-;СЃС‚СЂРµР№С„ РІР»РµРІРѕ
+;стрейф влево
 hud_move_left_offset_pos = -0.03,-0.018,0
 hud_move_left_offset_rot = 0,0,-3.5
 
 hud_move_left_offset_pos_16x9 = -0.03,-0.018,0
 hud_move_left_offset_rot_16x9 = 0,0,-3.5
 
-;СЃС‚СЂРµР№С„ РІРїСЂР°РІРѕ
+;стрейф вправо
 hud_move_right_offset_pos = 0.03,-0.005,0
 hud_move_right_offset_rot = 0,0,5
 
 hud_move_right_offset_pos_16x9 = 0.03,-0.005,0
 hud_move_right_offset_rot_16x9 = 0,0,5
 
-;РґРІРёР¶РµРЅРёРµ РІРїРµСЂРµРґ
+;движение вперед
 hud_move_forward_offset_pos = 0,-0.005,-0.035
 hud_move_forward_offset_rot = 0,0,0
 
 hud_move_forward_offset_pos_16x9 = 0,-0.005,-0.035
 hud_move_forward_offset_rot_16x9 = 0,0,0
 
-;РґРІРёР¶РµРЅРёРµ РЅР°Р·Р°Рґ
+;движение назад
 hud_move_back_offset_pos = 0,-0.005,0.045
 hud_move_back_offset_rot = 0,0,0
 
 hud_move_back_offset_pos_16x9 = 0,-0.005,0.045
 hud_move_back_offset_rot_16x9 = 0,0,0
 
-;РїСЂС‹Р¶РѕРє
+;прыжок
 hud_move_jump_offset_pos = 0,0.05,0.03
 hud_move_jump_offset_rot = 0,-10,-10
 
 hud_move_jump_offset_pos_16x9 = 0,0.05,0.03
 hud_move_jump_offset_rot_16x9 = 0,-10,-10
 
-;РїР°РґРµРЅРёРµ
+;падение
 hud_move_fall_offset_pos = 0,-0.05,0.06
 hud_move_fall_offset_rot = 0,5,0
 
 hud_move_fall_offset_pos_16x9 = 0,-0.05,0.06
 hud_move_fall_offset_rot_16x9 = 0,5,0
 
-;РїСЂРёР·РµРјР»РµРЅРёРµ - РїРµСЂРІР°СЏ С„Р°Р·Р°
+;приземление - первая фаза
 hud_move_landing_offset_pos = 0,-0.2,0.03
 hud_move_landing_offset_rot = 0,-5,10
 
 hud_move_landing_offset_pos_16x9 = 0,-0.2,0.03
 hud_move_landing_offset_rot_16x9 = 0,-5,10
 
-;РїСЂРёР·РµРјР»РµРЅРёРµ - РІС‚РѕСЂР°СЏ С„Р°Р·Р°
+;приземление - вторая фаза
 hud_move_landing2_offset_pos = 0,-0.3,0.03
 hud_move_landing2_offset_rot = 0,-13,20
 
 hud_move_landing2_offset_pos_16x9 = 0,-0.3,0.03
 hud_move_landing2_offset_rot_16x9 = 0,-13,20
 
-;РїРµСЂРµС…РѕРґ РёР· СЃС‚РѕР№РєРё РІ РїСЂРёСЃСЏРґ
+;переход из стойки в присяд
 to_crouch_time = 0.15
 hud_move_to_crouch_offset_pos = 0,-0.02, 0
 hud_move_to_crouch_offset_rot = 0,1.5,-4
@@ -179,7 +183,7 @@ hud_move_to_crouch_offset_rot = 0,1.5,-4
 hud_move_to_crouch_offset_pos_16x9 = 0,-0.02, 0
 hud_move_to_crouch_offset_rot_16x9 = 0,1.5,-4
 
-;РїРµСЂРµС…РѕРґ РёР· РїСЂРёСЃСЏРґР° РІ СЃС‚РѕР№РєСѓ
+;переход из присяда в стойку
 from_crouch_time = 0.15
 hud_move_from_crouch_offset_pos = 0,-0.008,0
 hud_move_from_crouch_offset_rot = 0,-0.8,3
@@ -187,7 +191,7 @@ hud_move_from_crouch_offset_rot = 0,-0.8,3
 hud_move_from_crouch_offset_pos_16x9 = 0,-0.008,0
 hud_move_from_crouch_offset_rot_16x9 = 0,-0.8,3
 
-;РїРµСЂРµС…РѕРґ РёР· РїСЂРёСЃСЏРґР° РІ РЅРёР·РєРёР№ РїСЂРёСЃСЏРґ
+;переход из присяда в низкий присяд
 to_slow_crouch_time = 0.15
 hud_move_to_slow_crouch_offset_pos = 0,-0.05, 0
 hud_move_to_slow_crouch_offset_rot = 0,1,-2
@@ -195,7 +199,7 @@ hud_move_to_slow_crouch_offset_rot = 0,1,-2
 hud_move_to_slow_crouch_offset_pos_16x9 = 0,-0.05, 0
 hud_move_to_slow_crouch_offset_rot_16x9 = 0,1,-2
 
-;РїРµСЂРµС…РѕРґ РёР· РЅРёР·РєРѕРіРѕ РїСЂРёСЃСЏРґР° РІ РїСЂРёСЃСЏРґ
+;переход из низкого присяда в присяд
 from_slow_crouch_time = 0.15
 hud_move_from_slow_crouch_offset_pos = 0,0.02,0
 hud_move_from_slow_crouch_offset_rot = 0,-1,2
@@ -203,14 +207,14 @@ hud_move_from_slow_crouch_offset_rot = 0,-1,2
 hud_move_from_slow_crouch_offset_pos_16x9 = 0,0.02,0
 hud_move_from_slow_crouch_offset_rot_16x9 = 0,-1,2
 
-;РїРµСЂРµС…РѕРґ РёР· РѕР±С‹С‡РЅРѕРіРѕ РІ РЅР°РєР»РѕРЅ РІР»РµРІРѕ
+;переход из обычного в наклон влево
 to_llookout_time = 0.15
 hud_move_to_llookout_offset_pos 	= -0.01, 0, 0
 hud_move_to_llookout_offset_rot		= 0,0,0
 hud_move_to_llookout_offset_pos_16x9 	= -0.01, 0, 0
 hud_move_to_llookout_offset_rot_16x9	= 0,0,0
 
-;РїРµСЂРµС…РѕРґ РёР· РЅР°РєР»РѕРЅР° РІР»РµРІРѕ РІ РѕР±С‹С‡РЅС‹Р№
+;переход из наклона влево в обычный
 from_llookout_time = 0.15
 hud_move_from_llookout_offset_pos 	= -0.01, 0, 0
 hud_move_from_llookout_offset_rot	= 0,0,0
@@ -218,28 +222,28 @@ hud_move_from_llookout_offset_pos_16x9 	= -0.01, 0, 0
 hud_move_from_llookout_offset_rot_16x9	= 0,0,0
 
 
-;РїРµСЂРµС…РѕРґ РёР· РѕР±С‹С‡РЅРѕРіРѕ РІ РЅР°РєР»РѕРЅ РІРїСЂР°РІРѕ
+;переход из обычного в наклон вправо
 to_rlookout_time = 0.15
 hud_move_to_rlookout_offset_pos 	= 0.01, 0, 0
 hud_move_to_rlookout_offset_rot		= 0,0,0
 hud_move_to_rlookout_offset_pos_16x9 	= 0.01, 0, 0
 hud_move_to_rlookout_offset_rot_16x9	= 0,0,0
 
-;РїРµСЂРµС…РѕРґ РёР· РЅР°РєР»РѕРЅР° РІРїСЂР°РІРѕ РІ РѕР±С‹С‡РЅС‹Р№
+;переход из наклона вправо в обычный
 from_rlookout_time = 0.15
 hud_move_from_rlookout_offset_pos 	= 0.01, 0, 0
 hud_move_from_rlookout_offset_rot	= 0,0,0
 hud_move_from_rlookout_offset_pos_16x9 	= 0.01, 0, 0
 hud_move_from_rlookout_offset_rot_16x9	= 0,0,0
 
-;РЅР°РєР»РѕРЅ РІР»РµРІРѕ (РїРѕСЃС‚РѕСЏРЅРЅР°СЏ РєРѕРјРїРѕРЅРµРЅС‚Р°)
+;наклон влево (постоянная компонента)
 hud_move_llookout_offset_speed_factor = 2.8
 hud_move_llookout_offset_pos 		= -0.045, -0.03, 0
 hud_move_llookout_offset_pos_16x9 	= -0.045, -0.03, 0
 hud_move_llookout_offset_rot 		= 0, 0, -9
 hud_move_llookout_offset_rot_16x9 	= 0, 0, -9
 
-;РЅР°РєР»РѕРЅ РІРїСЂР°РІРѕ (РїРѕСЃС‚РѕСЏРЅРЅР°СЏ РєРѕРјРїРѕРЅРµРЅС‚Р°)
+;наклон вправо (постоянная компонента)
 hud_move_rlookout_offset_speed_factor = 2.8
 hud_move_rlookout_offset_pos 		= 0.04, -0.01, 0
 hud_move_rlookout_offset_pos_16x9 	= 0.04, -0.01, 0
@@ -247,55 +251,55 @@ hud_move_rlookout_offset_rot 		= 0, 0, 10
 hud_move_rlookout_offset_rot_16x9 	= 0, 0, 10
 
 
-;Р°РЅР°Р»РѕРіРёС‡РЅРѕ РґР»СЏ РїСЂРёС†РµР»РёРІР°РЅРёСЏ
-;РїРµСЂРµС…РѕРґ РёР· СЃС‚РѕР№РєРё РІ РїСЂРёСЃСЏРґ
+;аналогично для прицеливания
+;переход из стойки в присяд
 hud_aim_move_to_crouch_offset_pos = 0,0.003, 0
 hud_aim_move_to_crouch_offset_rot = 0,0.3,-0.5
 
 hud_aim_move_to_crouch_offset_pos_16x9 = 0,0.003, 0
 hud_aim_move_to_crouch_offset_rot_16x9 = 0,0.3,-0.5
 
-;РїРµСЂРµС…РѕРґ РёР· РїСЂРёСЃСЏРґР° РІ СЃС‚РѕР№РєСѓ
+;переход из присяда в стойку
 hud_aim_move_from_crouch_offset_pos = 0,-0.003,0
 hud_aim_move_from_crouch_offset_rot = 0,-0.3,0.5
 
 hud_aim_move_from_crouch_offset_pos_16x9 = 0,-0.003,0
 hud_aim_move_from_crouch_offset_rot_16x9 = 0,-0.3,0.5
 
-;РїРµСЂРµС…РѕРґ РёР· РїСЂРёСЃСЏРґР° РІ РЅРёР·РєРёР№ РїСЂРёСЃСЏРґ
+;переход из присяда в низкий присяд
 hud_aim_move_to_slow_crouch_offset_pos = 0,0.001, 0
 hud_aim_move_to_slow_crouch_offset_rot = 0,0.3,-0.5
 
 hud_aim_move_to_slow_crouch_offset_pos_16x9 = 0,0.002, 0
 hud_aim_move_to_slow_crouch_offset_rot_16x9 = 0,0.3,-0.5
 
-;РїРµСЂРµС…РѕРґ РёР· РЅРёР·РєРѕРіРѕ РїСЂРёСЃСЏРґР° РІ РїСЂРёСЃСЏРґ
+;переход из низкого присяда в присяд
 hud_aim_move_from_slow_crouch_offset_pos = 0,-0.001,0
 hud_aim_move_from_slow_crouch_offset_rot = 0,-0.3,0.5
 
 hud_aim_move_from_slow_crouch_offset_pos_16x9 = 0,-0.001,0
 hud_aim_move_from_slow_crouch_offset_rot_16x9 = 0,-0.3,0.5
 
-;РїРµСЂРµС…РѕРґ РёР· РѕР±С‹С‡РЅРѕРіРѕ РІ РЅР°РєР»РѕРЅ РІР»РµРІРѕ
+;переход из обычного в наклон влево
 hud_aim_move_to_llookout_offset_pos 	        = -0.003, 0, 0
 hud_aim_move_to_llookout_offset_rot		= 0,0,-0.6
 hud_aim_move_to_llookout_offset_pos_16x9 	= -0.003, 0, 0
 hud_aim_move_to_llookout_offset_rot_16x9	= 0,0,-0.6
 
-;РїРµСЂРµС…РѕРґ РёР· РЅР°РєР»РѕРЅР° РІР»РµРІРѕ РІ РѕР±С‹С‡РЅС‹Р№
+;переход из наклона влево в обычный
 hud_aim_move_from_llookout_offset_pos 	        = 0, 0, 0
 hud_aim_move_from_llookout_offset_rot	        = 0,0,-1
 hud_aim_move_from_llookout_offset_pos_16x9 	= 0, 0, 0
 hud_aim_move_from_llookout_offset_rot_16x9	= 0,0,-1
 
 
-;РїРµСЂРµС…РѕРґ РёР· РѕР±С‹С‡РЅРѕРіРѕ РІ РЅР°РєР»РѕРЅ РІРїСЂР°РІРѕ
+;переход из обычного в наклон вправо
 hud_aim_move_to_rlookout_offset_pos 	        = 0.003, 0, 0
 hud_aim_move_to_rlookout_offset_rot		= 0,0,0.6
 hud_aim_move_to_rlookout_offset_pos_16x9 	= 0.003, 0, 0
 hud_aim_move_to_rlookout_offset_rot_16x9	= 0,0,0.6
 
-;РїРµСЂРµС…РѕРґ РёР· РЅР°РєР»РѕРЅР° РІРїСЂР°РІРѕ РІ РѕР±С‹С‡РЅС‹Р№
+;переход из наклона вправо в обычный
 hud_aim_move_from_rlookout_offset_pos 	        = 0, 0, 0
 hud_aim_move_from_rlookout_offset_rot	        = 0,0,1
 hud_aim_move_from_rlookout_offset_pos_16x9 	= 0, 0, 0
@@ -310,40 +314,40 @@ hud_collision_offset_rot_16x9					= -0.8,0,0
 ;effectors.ltx
 ![bobbing_effector] ; Gunslinger Style
 
-;СЃРїСЂРёРЅС‚
+;спринт
 sprint_amplitude		= 	0.014
 sprint_speed			= 	10.0
 
-;Р±РµРі
+;бег
 run_amplitude			=	0.0075
 run_speed			=	10.0
 zoom_run_amplitude		=	0.005
 zoom_run_speed			=	7.0
 
-;Р·Р°РјРµРґР»РµРЅРёРµ/РїСЂРёС†РµР»РёРІР°РЅРёРµ
+;замедление/прицеливание
 walk_amplitude			=	0.005
 walk_speed				=   7.0
 zoom_walk_amplitude		=	0.005
 zoom_walk_speed			=   7.0
 
-;РїСЂРёСЃСЏРґ
+;присяд
 crouch_amplitude		=   0.0056
 crouch_speed			=   7.5
 zoom_crouch_amplitude	=   0.0056
 zoom_crouch_speed		=   7.5
 
-;РїСЂРёСЃСЏРґ+Р·Р°РјРµРґР»РµРЅРёРµ
+;присяд+замедление
 slow_crouch_amplitude   =   0.0042
 slow_crouch_speed       =   5.625
 zoom_slow_crouch_amplitude   =   0.0042
 zoom_slow_crouch_speed       =   5.625
 
-;С‚СЏР¶РµР»РѕРµ РґС‹С…Р°РЅРёРµ
+;тяжелое дыхание
 limp_amplitude			=	0.011
 limp_speed				=	6.0
 zoom_limp_amplitude		=	0.007
 zoom_limp_speed			=	6.0
 
 
-;РЎРєРѕСЂРѕСЃС‚СЊ РёР·РјРµРЅРµРЅРёСЏ Р°РјРїР»РёС‚СѓРґС‹ СЂР°СЃРєР°С‡РєРё РїСЂРё СЃРјРµРЅРµ СЂРµР¶РёРјР° РїРµСЂРµРјРµС‰РµРЅРёСЏ
+;Скорость изменения амплитуды раскачки при смене режима перемещения
 amplitude_delta			= 	0.01 

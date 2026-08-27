@@ -378,6 +378,17 @@ function motivator_binder:death_callback(victim, who)
 	victim:set_callback(callback.death,nil)
 	victim:set_callback(callback.sound,nil)
 	victim:set_patrol_extrapolate_callback(nil)
+	
+	if(actor_stats.remove_from_ranking~=nil)then
+		local community = self.object:character_community()
+		if community == "zombied" or
+		   community == "monolith" or
+		   community == "arena_enemy"
+		then
+			return
+		end
+		actor_stats.remove_from_ranking(self.object:id())
+	end
 end
 
 function motivator_binder:use_callback(obj, who)

@@ -492,13 +492,15 @@ function faction_ui:load_icon_list()
 	
 	local section = self.selected_faction.."_portraits"
 	local n = loc_ini:section_exist(section) and loc_ini:line_count(section) or 0
-	for i=1, n do
-		local result, id, value = loc_ini:r_line(section,i,"","" )
-		if (id ~= "") then
-			self.icon_list:AddItem(id,i)
-			table.insert(self.icon_table,id)
-		end
-	end
+
+    -- Индексы строк в X-Ray начинаются с 0, поэтому меняем диапазон
+    for i = 0, n - 1 do
+        local result, id, value = loc_ini:r_line(section, i, "", "")
+        if result and id and id ~= "" then
+            self.icon_list:AddItem(id, i + 1) -- Индекс в GUI лучше начинать с 1
+            table.insert(self.icon_table, id)
+        end
+    end
 	
 	self.icon_list:SetText(def_icon)
 	self.char_icon:InitTexture(def_icon)

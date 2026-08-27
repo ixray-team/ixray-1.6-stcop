@@ -85,7 +85,7 @@
 		<text>Условные обозначения</text>
 	</string>
 	<string id="pda_stat_1">
-		<text>Время в зоне:</text>
+		<text>Время в Зоне:</text>
 	</string>
 	<string id="pda_stat_2">
 		<text>Пережито выбросов:</text>
@@ -104,21 +104,21 @@
 	</string>
 	<string id="pda_stat_7">
 		<text>Найдено тайников:</text>
-  </string>
-  <string id="pda_stat_8">
-    <text>Пережито пси-штормов:</text>
-  </string>
-  <string id="pda_stat_9">
-    <text>Добыто ПДА:</text>
-  </string>
-  <string id="pda_stat_10">
-    <text>Сбито вертолётов:</text>
-  </string>
-  <string id="pda_stat_11">
-    <text>Найдено артефактов:</text>
-  </string>
-  <string id="pda_stat_12">
-    <text>Вылечено раненых:</text>
+	</string>
+	<string id="pda_stat_8">
+		<text>Пережито пси-штормов:</text>
+	</string>
+	<string id="pda_stat_9">
+		<text>Добыто ПДА:</text>
+	</string>
+	<string id="pda_stat_10">
+		<text>Сбито вертолётов:</text>
+	</string>
+	<string id="pda_stat_11">
+		<text>Найдено артефактов:</text>
+	</string>
+	<string id="pda_stat_12">
+		<text>Вылечено раненых:</text>
 	</string>
 	<string id="pda_stat_13">
 		<text>Переходы по локациям:</text>
@@ -137,9 +137,9 @@
 	</string>
 	<string id="pda_stat_18">
 		<text>Посещено локаций:</text>
-  </string>
-  <string id="pda_stat_money">
-	<text>Деньги:</text>
+	</string>
+	<string id="pda_stat_money">
+	        <text>Деньги:</text>
 	</string>
 	<string id="pda_stat_mutant_killed">
 		<text>Самый сильный убитый мутант</text>
@@ -180,9 +180,9 @@
 	<string id="st_ui_pda_legend_trader">
 		<text>Торговец</text>
 	</string>
-  	<string id="trader">
+	<string id="trader">
     		<text>Торговец</text>
-  	</string>
+	</string>
 	<string id="stalker">
 		<text>«Одиночки»</text>
 	</string>
@@ -267,16 +267,16 @@
 	<string id="st_ui_pda_sleep_place">
 		<text>Место сна</text>
 	</string>
-        <string id="st_ui_pda_legend_vip">
+	<string id="st_ui_pda_legend_vip">
                 <text>Важный персонаж</text>
-        </string>
-        <string id="zombie_name">
+	</string>
+	<string id="zombie_name">
                 <text>Бенито</text>
-        </string>
-        <string id="arena_enemy">
+	</string>
+	<string id="arena_enemy">
 	        <text>Участник</text>
-        </string>
-        <string id="st_ui_pda_task_unknown_enemy">
+	</string>
+	<string id="st_ui_pda_task_unknown_enemy">
                 <text>Неизвестный противник</text>
 	</string>
 	<string id="st_items_sold">
@@ -293,7 +293,7 @@
 	</string>
 	<string id="st_mutants_killed">
 		<text>Убито мутантов</text>
-        </string>
+	</string>
 	<string id="pda_btn_relations">
 		<text>Отношения</text>
 	</string>
@@ -350,7 +350,10 @@
         <text>Держаться рядом</text>
     </string>
     <string id="st_pda_cant_trade">
-        <text>Запрет торговли важным НПС</text>
+        <text>Важные НПС не торгуют</text>
+    </string>
+    <string id="st_pda_cant_trade_dist">
+        <text>Нельзя торговать на большом расстоянии</text>
     </string>
 	<!-- PDA Relations Action list -->
 	<string id="st_pda_action_back">
@@ -477,6 +480,6 @@
 	</string>
 	
 	<string id="st_distance_to">
-		<text>Расстояние до</text>
+		<text>Расстояние</text>
 	</string>
 </string_table>

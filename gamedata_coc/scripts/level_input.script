@@ -38,7 +38,7 @@ function action_quick_save()
 			local file_name = flist:GetAt(it):NameFull():sub(0,-6):lower()
 			
 			-- grab last modified quicksave increment count
-			local d = tonumber( string.match(file_name,"quicksave(%d+)") )
+			local d = tonumber( string.match(file_name, game.translate_string("quicksave") .. " (%d+)") )
 			if (d) then
 				inc = d
 				break 
@@ -48,7 +48,7 @@ function action_quick_save()
 	
 	inc = inc >= axr_main.config:r_value("mm_options","quicksave_cnt",2,5) and 1 or inc + 1
 	
-	get_console():execute("save " .. (user_name() or "") .. " - quicksave" .. inc)
+	get_console():execute("save " .. (user_name() or "") .. " - " .. game.translate_string("quicksave") .. " " .. inc)
 	
 	-- if (force_pause) then 
 		-- device():pause(false)
@@ -68,7 +68,7 @@ function action_quick_load()
 			local file_name = flist:GetAt(it):NameFull():sub(0,-6):lower()
 			
 			-- grab last modified quicksave
-			if (string.match(file_name,".* %- quicksave(%d+)")) then
+			if (string.match(file_name,".* %- " .. game.translate_string("quicksave") .. " (%d+)")) then
 				get_console():execute("load " .. file_name)
 				return true
 			end

@@ -482,7 +482,7 @@
 		<text>Данные о противнике</text>
 	</string>
 	<string id="ui_mm_quicksave_cnt">
-		<text>Быстрое сохранение</text>
+		<text>Быстрые сохранения</text>
 	</string>
 	<string id="ui_mm_actor_hud">
 		<text>Динамический HUD</text>

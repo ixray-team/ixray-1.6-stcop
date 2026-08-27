@@ -306,7 +306,7 @@ function simulation_board:fill_start_position()
 			end
 		end
         return false
-	end
+    end
 	)
 end
 
