@@ -94,6 +94,7 @@ struct sound_stats
 	u32 cache_lines_free;
 	u32 cache_miss_count;
 	u32 cache_hit_count;
+	u32 render_cache_miss; 
 
 #ifdef DEBUG_DRAW
 	float channel_volumes[SND_CHANNEL_COUNT];
