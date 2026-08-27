@@ -48,6 +48,8 @@ class CDemoRecord :
 	bool NewInputSchema;
 	bool lap_lock;
 	bool draw_skeleton = false;
+	bool attach_to_bone_mode = false;
+	bool view_from_bone_mode = false;
 
 	float CameraTransformFactor;
 	float m_fSpeed0;
@@ -79,6 +81,7 @@ public:
 	virtual bool ProcessCam(SCamEffectorInfo& info);
 	void UpdateLookAtPoint();
 	void UpdateFreeLook();
+	void UpdateLookFromBone();
 	void ParseActorCam();
 	static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
 	static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
