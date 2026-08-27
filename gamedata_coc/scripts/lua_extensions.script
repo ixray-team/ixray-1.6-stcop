@@ -1,7 +1,7 @@
 ----------------------
 -- For use with OpenX-ray CoC
 
-loaded = require("lua_extensions")
+loaded = false
 local lfs
 if (loaded) then 
 	lfs = require("lfs")
