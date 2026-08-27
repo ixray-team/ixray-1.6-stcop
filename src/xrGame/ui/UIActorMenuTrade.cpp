@@ -86,50 +86,6 @@ void CUIActorMenu::InitTradeMode()
 	SetAreaSelectionTo(m_pTradeActorBagList);
 }
 
-void CUIActorMenu::UpdateTradeActorBagList()
-{
-	if (!m_pTradeActorBagList || !m_pActorInvOwner)
-	{
-		return;
-	}
-
-	m_pTradeActorBagList->ClearAll(true);
-
-	TIItemContainer items_list = m_pActorInvOwner->inventory().m_ruck;
-	if (m_pInventorySorter)
-	{
-		PrepareBagItemList(items_list, eSortTabsTradeActor);
-	}
-	else
-	{
-		std::sort(items_list.begin(), items_list.end(), InventoryUtilities::GreaterRoomInRuck);
-	}
-
-	for (PIItem item : items_list)
-	{
-		CMPPlayersBag* bag = smart_cast<CMPPlayersBag*>(&item->object());
-		if (bag || is_item_in_list(m_pTradeActorList, item))
-		{
-			continue;
-		}
-
-		CUICellItem* itm = create_cell_item(item);
-		m_pTradeActorBagList->SetItem(itm);
-		ColorizeItem(itm, !CanMoveToPartner(item));
-	}
-}
-
-void CUIActorMenu::UpdateTradePartnerBagList()
-{
-	if (!m_pTradePartnerBagList || !m_pPartnerInvOwner)
-	{
-		return;
-	}
-
-	InitPartnerInventoryContents();
-	UpdatePrices();
-}
-
 void CUIActorMenu::DeInitTradeMode()
 {
 	if ( m_actor_trade )
