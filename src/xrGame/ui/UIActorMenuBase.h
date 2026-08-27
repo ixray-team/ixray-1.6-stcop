@@ -224,9 +224,9 @@ protected:
 	bool						CycleActiveOrderOption		(ESortTabsLayoutSlot slot);
 	void						UpdateOrderTabCaption		(ESortTabsLayoutSlot slot) const;
 	void						ApplySortForSlot			(ESortTabsLayoutSlot sortSlot);
-	virtual void				UpdateActorBagList			() {}
-	virtual void				UpdateTradeActorBagList		() {}
-	virtual void				UpdateTradePartnerBagList	() {}
+	virtual void UpdateActorBagList();
+	virtual void				UpdateTradeActorBagList		();
+	virtual void				UpdateTradePartnerBagList	();
 	virtual bool				ShouldPutArtefactsToBag		() { return false; }
 
 	void						OnPressUserKey				();
