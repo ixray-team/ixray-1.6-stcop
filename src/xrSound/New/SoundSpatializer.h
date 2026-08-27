@@ -11,6 +11,7 @@ public:
     virtual void Shutdown() = 0;
 
     virtual void ResetSlot(u32 slotIndex) = 0;
+    virtual void FreeSlot(u32 slotIndex) = 0;
     virtual void ProcessHrtf(u32 slotIndex, float** data, const Fvector& sourcePosition, const Fvector& headPosition, const Fvector& relativeDirection) = 0;
 };
 
