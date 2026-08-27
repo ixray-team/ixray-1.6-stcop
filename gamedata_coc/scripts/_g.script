@@ -32,8 +32,7 @@ DEACTIVATE_SIM_ON_NON_LINKED_LEVELS = true
 -- marshal library can encode tables, functions, strings and numbers to easily allow persistent data storage to file
 -- This is used for db.storage[id].pstor, surge_manager, mines, and coc_treasure_manager.script if enabled
 -- See alife_storage_manager.script for implementation
---require("lua_extensions")
-marshal = require "marshal"
+
 USE_MARSHAL = marshal ~= nil
 
 ----------------------------------------------------------------------
@@ -41,6 +40,15 @@ mus_vol = 0
 amb_vol = 0
 b_discard_settings_shown = false
 ----------------------------------------------------------------------
+
+function log(str) 
+    if DebugLog then
+        SemiLog(str)
+    end
+	if DebuggerMode then
+		LuaPanda.printToVSCode(str,1,2)
+	end
+end
 
 function start_game_callback()
 	math.randomseed(os.time())
