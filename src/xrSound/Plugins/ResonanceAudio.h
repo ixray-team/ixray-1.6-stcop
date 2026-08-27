@@ -38,14 +38,18 @@ public:
     void Shutdown() override;
 
     void ResetSlot(u32 SlotIndex) override;
+    void FreeSlot(u32 SlotIndex) override;
     void ProcessHrtf(u32 SlotIndex, float** Data, const Fvector& SourcePosition, const Fvector& HeadPosition, const Fvector& RelativeDirection) override;
 
 private:
     struct HrtfSlot
     {
+        vraudio::ResonanceAudioApi* Api = nullptr;
         vraudio::ResonanceAudioApi::SourceId SourceId = vraudio::ResonanceAudioApi::kInvalidSourceId;
     };
 
-    vraudio::ResonanceAudioApi* Api = nullptr;
+    // Always-valid slots indexed by the mixer's HRTF slot id (cheap, just pointers).
     xr_vector<HrtfSlot> Slots;
+    // Pool of detached engine instances ready to be reused by a new attach.
+    xr_vector<HrtfSlot> FreeSlots;
 };
