@@ -365,8 +365,9 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("F12");
 				SystemFont->OutNext("Left Ctrl + F12");
 				SystemFont->OutNext("J");
+				SystemFont->OutNext(" ");
 				SystemFont->OutNext("K");
-				SystemFont->OutNext("L");
+				SystemFont->OutNext("U");
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(0, +.05f);
 				SystemFont->OutNext("= Forward, Backward, Left, Right");
@@ -381,9 +382,10 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("= Level Map Screenshot");
 				SystemFont->OutNext("= Level Map Screenshot (High Quality)");
 				SystemFont->OutNext("= ScreenShot");
-				SystemFont->OutNext("= Set lookat point (locks cam dir at point)");
-				SystemFont->OutNext("= Unset lookat point (unlocks cam dir at point)");
-				SystemFont->OutNext("= Draw skeleton");
+				SystemFont->OutNext("= Lock camera look-at to a point in space or to a model bone — ");
+				SystemFont->OutNext("  the camera is always forced to face the selected target.");
+				SystemFont->OutNext("= Toggle model skeleton rendering");
+				SystemFont->OutNext("= Attach camera to a model bone");
 			}
 		}
 		else
@@ -408,19 +410,21 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("Left Ctrl + F11");
 				SystemFont->OutNext("F12");
 				SystemFont->OutNext("J");
+				SystemFont->OutNext(" ");
 				SystemFont->OutNext("K");
-				SystemFont->OutNext("L");
+				SystemFont->OutNext("U");
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(0, +.05f);
 				SystemFont->OutNext("= Append keyframe");
 				SystemFont->OutNext("= Cube Map");
 				SystemFont->OutNext("= Quit");
-				SystemFont->OutNext("= Level Map ScreenShot");
-				SystemFont->OutNext("= Level Map ScreenShot(High Quality)");
+				SystemFont->OutNext("= Level Map Screenshot");
+				SystemFont->OutNext("= Level Map Screenshot (HQ)");
 				SystemFont->OutNext("= ScreenShot");
-				SystemFont->OutNext("= Set lookat point (locks cam dir at point)");
-				SystemFont->OutNext("= Unset lookat point (unlocks cam dir at point)");
-				SystemFont->OutNext("= Draw skeleton");
+				SystemFont->OutNext("= Lock camera look-at to a point in space or to a model bone — ");
+				SystemFont->OutNext("  the camera is always forced to face the selected target.");
+				SystemFont->OutNext("= Toggle model skeleton rendering");
+				SystemFont->OutNext("= Attach camera to a model bone");
 			}
 		}
 
@@ -479,7 +483,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		p_cam_pos.add(CamMove);
 
 		Level().ObjectSpace.RayPick(Camera.c, Camera.k, 1000.f, collide::rq_target::rqtBoth, rq_result, nullptr);
-		lap_lock ? UpdateLookAtPoint() : UpdateFreeLook();
+		view_from_bone_mode ? UpdateLookFromBone() : lap_lock ? UpdateLookAtPoint() : UpdateFreeLook();
 
 		p_cam_pos_smoothed.inertion(p_cam_pos, dr_cam_pos_inert);
 		Camera.translate_over(p_cam_pos_smoothed);
@@ -548,6 +552,33 @@ void CDemoRecord::UpdateFreeLook()
 	Camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
 }
 
+void CDemoRecord::UpdateLookFromBone()
+{
+	Fvector bone_world_pos;
+	bone_holder_kinematics->LL_GetBoneWorldPosition(bone_id, bone_holder->XFORM(), bone_world_pos);
+
+	Fmatrix bone_world_xfrom;
+	bone_holder_kinematics->LL_GetBoneWorldTransform(bone_id, bone_holder->XFORM(), bone_world_xfrom);
+
+	Fvector head_bone_hpb;
+	bone_world_xfrom.getHPB(head_bone_hpb);
+	
+	if (bone_holder->cast_helicopter() == nullptr)
+	{
+		head_bone_hpb.z += PI_DIV_2;
+	}
+	
+	Fvector target_eulers = {
+		hpb_current.x + angle_difference_signed(head_bone_hpb.x, hpb_current.x),
+		hpb_current.y + angle_difference_signed(head_bone_hpb.y, hpb_current.y),
+		hpb_current.z + angle_difference_signed(head_bone_hpb.z, hpb_current.z),
+	};
+	
+	hpb_current.inertion(target_eulers, dr_cam_inert);
+	p_cam_pos.set(bone_world_pos);
+	Camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
+}
+
 void CDemoRecord::ParseActorCam()
 {
 	Camera.invert(Device.mView);
@@ -565,30 +596,18 @@ void CDemoRecord::ParseActorCam()
 
 void CDemoRecord::IR_OnKeyboardPress(int dik)
 {
-	if (dik == SDL_SCANCODE_L)
+	if (dik == SDL_SCANCODE_U && !lap_lock)
 	{
-		draw_skeleton = !draw_skeleton;
-	}
-
-	if (dik == SDL_SCANCODE_K)
-	{
-		Fvector cur_eulers;
-		Camera.getHPB(cur_eulers);
-
-		hpb.set(cur_eulers);
-		hpb_current.set(cur_eulers);
-
-		p_lap.set(0.f, 0.f, 0.f);
-		lap_lock = false;
-		bone_id = BI_NONE;
-	}
-
-	if (dik == SDL_SCANCODE_J)
-	{
-		if (rq_result.range > EPS_S)
+		if (view_from_bone_mode && bone_id != BI_NONE && bone_holder_kinematics != nullptr)
 		{
-			Fvector current_eulers;
-
+			bone_id = BI_NONE;
+			bone_holder = nullptr;
+			bone_holder_kinematics = nullptr;
+			
+			view_from_bone_mode = false;
+		}
+		else
+		{
 			if (rq_result.O != nullptr)
 			{
 				if (IRenderVisual* v = rq_result.O->Visual())
@@ -598,23 +617,70 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 						bone_holder = rq_result.O;
 						bone_holder_kinematics = k;
 						bone_id = (u16)rq_result.element;
-					}
-					else
-					{
-						p_lap.set(Camera.c.mad(Camera.k, rq_result.range));
+
+						view_from_bone_mode = true;
 					}
 				}
 			}
-			else
+		}
+	}
+	
+	if (dik == SDL_SCANCODE_K)
+	{
+		draw_skeleton = !draw_skeleton;
+	}
+	
+	if (dik == SDL_SCANCODE_J && !view_from_bone_mode)
+	{
+		if (lap_lock && p_lap != zero_vel)
+		{
+			Fvector cur_eulers;
+			Camera.getHPB(cur_eulers);
+
+			hpb.set(cur_eulers);
+			hpb_current.set(cur_eulers);
+
+			if (bone_id != BI_NONE)
 			{
-				p_lap.set(Camera.c.mad(Camera.k, rq_result.range));
+				bone_id = BI_NONE;
 			}
 
-			Camera.getHPB(current_eulers);
-			hpb.set(current_eulers);
-			hpb_current.set(current_eulers);
+			p_lap.set(zero_vel);
+			lap_lock = false;
+		}
+		else
+		{
+			if (rq_result.range > EPS_S)
+			{
+				Fvector current_eulers;
 
-			lap_lock = true;
+				if (rq_result.O != nullptr)
+				{
+					if (IRenderVisual* v = rq_result.O->Visual())
+					{
+						if (IKinematics* k = v->dcast_PKinematics())
+						{
+							bone_holder = rq_result.O;
+							bone_holder_kinematics = k;
+							bone_id = (u16)rq_result.element;
+						}
+						else
+						{
+							p_lap.set(Camera.c.mad(Camera.k, rq_result.range));
+						}
+					}
+				}
+				else
+				{
+					p_lap.set(Camera.c.mad(Camera.k, rq_result.range));
+				}
+
+				Camera.getHPB(current_eulers);
+				hpb.set(current_eulers);
+				hpb_current.set(current_eulers);
+
+				lap_lock = true;
+			}
 		}
 	}
 
