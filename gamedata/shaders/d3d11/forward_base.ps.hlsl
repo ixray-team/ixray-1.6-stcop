@@ -139,15 +139,10 @@ void main(p_bumped_new I, out OutStructure O)
 		float3 Lmap = I.lmap;
 	#endif
 	
-	float Luma = max(Lmap.y, max(Lmap.z, Lmap.x));
-	
-	Lmap *= Luma > 0.0f ? rcp(Luma) : 0.0f; Luma *= 1.6f;
-	Lmap = lerp(1.0f, Lmap, min(1.0f, Luma * 10.0f));
-	
 	#ifndef USE_LEGACY_LIGHT
-		Light += Luma * DirectLight(Lmap.xyzy, View, M.Normal, View, Diffuse, Specular, M.Roughness);
+		Light += 1.6f * DirectLight(Lmap.xyzy, View, M.Normal, View, Diffuse, Specular, M.Roughness);
 	#else
-		Light += Luma * DirectLightLegacy(Lmap.xyzy, View, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
+		Light += 1.6f * DirectLightLegacy(Lmap.xyzy, View, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
 	#endif
 #endif
 	
@@ -161,7 +156,7 @@ void main(p_bumped_new I, out OutStructure O)
 	
 	#ifndef DISABLE_MOTION_VECTORS
 		O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
-		O.Velocity.zw = saturate(M.Color.w * 3.0f - 1.0f);
+		O.Velocity.zw = saturate(M.Color.w * 2.0f - 1.0f);
 	#endif
 	
 	#if defined(ALLOW_WBOIT_TRANSPARENCY) && defined(USE_WBOIT_TRANSPARENCY)

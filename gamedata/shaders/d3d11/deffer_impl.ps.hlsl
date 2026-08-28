@@ -218,8 +218,6 @@ void main(p_bumped_new I, out OutStructure O)
 
 	float ViewLength = length(M.Point);
 	float3 View = M.Point.xyz * rcp(ViewLength);
-	
-	Lmap = Lmap * 4.0f;
 
 	#ifndef USE_LEGACY_LIGHT
 		M.Color.xyz = GammaToLinear(M.Color.xyz);
@@ -231,12 +229,12 @@ void main(p_bumped_new I, out OutStructure O)
 		float3 Light = GammaToLinear(M.Sun) * DirectLight(LightColor, mul((float3x3)m_V, L_sun_dir_w.xyz), M.Normal, View, Diffuse, Specular, M.Roughness);
 		float3 Ambient = GammaToLinear(M.AO) * AmbientLighting(View, M.Normal, Diffuse, Specular, M.Roughness, M.Hemi);
 		
-		Light += DirectLight(Lmap.xyzy, View, M.Normal, View, Diffuse, Specular, M.Roughness);
+		Light += 1.6f * DirectLight(Lmap.xyzy, View, M.Normal, View, Diffuse, Specular, M.Roughness);
 	#else
 		float3 Light = M.Sun * DirectLightLegacy(LightColor, mul((float3x3)m_V, L_sun_dir_w.xyz), M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
 		float3 Ambient = AmbientLightingLegcay(View, M.Normal, M.Color.xyz, M.Material, M.Gloss, M.Hemi);
 		
-		Light += DirectLightLegacy(Lmap.xyzy, View, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
+		Light += 1.6f * DirectLightLegacy(Lmap.xyzy, View, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
 	#endif
 	
     O.Color = Ambient + Light;
