@@ -6,6 +6,7 @@
 #include "EngineThreading.h"
 #include "FPSCounter.h"
 #include "IGame_Level.h"
+#include "Autotest.h"
 
 #include "../xrCore/FS_impl.h"
 #include "IGame_Persistent.h"
@@ -162,6 +163,9 @@ void CRenderDevice::on_idle		()
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && Focus);
 
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
+
+	if (Autotest::Active())
+		Autotest::FrameBegin();
 
 	if (!g_loading_events.empty())
 	{
