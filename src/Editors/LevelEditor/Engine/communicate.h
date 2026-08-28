@@ -118,9 +118,11 @@ struct b_lod
 struct b_mu_model
 {
 	string128 name;
-	xr_vector<b_vertex> vertices = {};
-	xr_vector<b_face> faces = {};
-	xr_vector<u32> smgroups = {};
+	int m_iVertexCount;
+	b_vertex* m_pVertices;
+	int m_iFaceCount;
+	b_face* m_pFaces;
+	u32* m_smgroups;
 	u16 lod_id;				// u16(-1) = no lod, just static geometry
 };
 

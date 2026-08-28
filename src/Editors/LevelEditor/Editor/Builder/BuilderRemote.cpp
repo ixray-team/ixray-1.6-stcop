@@ -420,11 +420,11 @@ void SceneBuilder::SaveBuild()
 		F->open_chunk(EB_MU_Mesh_LODs);
 		for (auto& elem : l_mu_mesh_lods)
 		{
-			F.w_u8(elem.UseMeshLods);
-			F.w_u32(elem.model_index[0]);
-			F.w_u32(elem.model_index[1]);
-			F.w_u32(elem.model_index[2]);
-			F.w_u32(elem.model_index[3]);
+			F->w_u8(elem.UseMeshLods);
+			F->w_u32(elem.model_index[0]);
+			F->w_u32(elem.model_index[1]);
+			F->w_u32(elem.model_index[2]);
+			F->w_u32(elem.model_index[3]);
 		}
 		F->close_chunk	();
 
@@ -996,13 +996,12 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 		debug_name += ":";
 	}
 	debug_name += obj->GetName();
-	l_mu_refs_debug.push_back(debug_name.c_str());
 
 	// scene statssm
 	b_mu_model& MStat = l_mu_models[model_idx];
-	for (u32 mu_vi=0; mu_vi<(u32)MStat.vertices.size(); ++mu_vi)
+	for (u32 mu_vi=0; mu_vi<(u32)MStat.m_iVertexCount; ++mu_vi)
 	{
-		l_scene_stat->add_muvert(obj->_Transform(),MStat.vertices[mu_vi]);
+		l_scene_stat->add_muvert(obj->_Transform(),MStat.m_pVertices[mu_vi]);
 	}
 	
 	return true;
@@ -1027,13 +1026,13 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 	M.lod_id = lod_id;
 	int vert_it=0, face_it=0;
 
-	auto FaceCount = obj->GetFaceCount();
-	auto VertexCount = obj->GetVertexCount();
+	M.m_iFaceCount = obj->GetFaceCount();
+	M.m_iVertexCount = obj->GetVertexCount();
 	strcpy(M.name,O->GetName());
 
-	M.faces.resize(FaceCount);
-	M.vertices.resize(VertexCount);
-	M.smgroups.resize(FaceCount);
+	M.m_pFaces = xr_alloc<b_face>(M.m_iFaceCount);
+	M.m_pVertices = xr_alloc<b_vertex>(M.m_iVertexCount);
+	M.m_smgroups = xr_alloc<u32>(M.m_iFaceCount);
 	// parse mesh data
 	Fmatrix T;
 	T.identity();
@@ -1055,11 +1054,11 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 
 	for(EditMeshIt MESH=O->FirstMesh();MESH!=O->LastMesh();++MESH)
 	{
-		if (M.vertices.empty() || M.faces.empty())
+		if (M.m_iVertexCount || M.m_iFaceCount)
 		{
 			continue;
 		}
-		if (!BuildMesh(T, O, *MESH, sect_num, M.vertices, vert_it, M.faces, face_it, M.smgroups, obj->_Transform(), obj))
+		if (!BuildMesh(T, O, *MESH, sect_num, M.m_pVertices, M.m_iVertexCount, vert_it, M.m_pFaces, M.m_iVertexCount, face_it, M.m_smgroups, obj->_Transform(), obj))
 		{
 			return u32(-1);
 		}
