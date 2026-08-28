@@ -28,6 +28,7 @@ XRSOUND_API extern int				psSoundRecorderMode		;
 XRSOUND_API extern int				psSoundRecorderDenoise	;
 XRSOUND_API extern float			psSoundRolloff			;
 XRSOUND_API extern float			psSoundOcclusionScale	;
+XRSOUND_API extern float			psSoundDoppler			;
 XRSOUND_API extern Flags32			psSoundFlags			;
 XRSOUND_API extern float			psSoundVPlayers			;
 XRSOUND_API extern int				psSoundTargets			;
