@@ -182,7 +182,7 @@ namespace
 		int code = Autotest::Verdict();
 		xrLogger::FlushLog();
 		xrLogger::CloseLog();
-		TerminateProcess(GetCurrentProcess(), (UINT)code);
+		exit(code);
 		for (;;) {}
 	}
 }
