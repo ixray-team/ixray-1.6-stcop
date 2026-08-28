@@ -251,7 +251,8 @@ static void Snd_GrowSlots(bool IsLockUpdate)
 
 ICF void Snd_AcquireHRTFSlot(u32 slot_idx)
 {
-	if (!GMixer.hrtf_enabled)
+	PROF_EVENT("Sound: AcquireHRTFSlot");
+	if (!GMixer.hrtf_enabled || !psSoundFlags.is(ss_HRTF))
 	{
 		return;
 	}
@@ -283,7 +284,7 @@ ICF void Snd_AcquireHRTFSlot(u32 slot_idx)
 
 ICF void Snd_ReleaseHRTFSlot(u32 SlotIdx)
 {
-	if (!GMixer.hrtf_enabled)
+	if (!GMixer.hrtf_enabled || !psSoundFlags.is(ss_HRTF))
 	{
 		return;
 	}
@@ -599,6 +600,7 @@ static void Snd_DecodeThreadProc(void*)
 
 	while (!GMixer.DecodeStop)
 	{
+		PROF_EVENT("DecodeThread Scope");
 		sound_decode_request Request;
 		bool IsRequested = false;
 		{
@@ -671,6 +673,7 @@ enum class ESlotOcclusionResult
 
 ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, const sound_source& source, float dt, float* occ_volume)
 {
+	PROF_EVENT("Sound: SlotOcclusion");
 	auto& slot = GMixer.slots[slot_idx - 1];
 	if (slot.state != Mixer::State::Playing)
 	{
@@ -712,6 +715,7 @@ ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, const sound_source& sou
 
 ICF u32 Snd_FindAvailableCacheLine(sound_source& source, u32 position)
 {
+	PROF_EVENT("Sound: FindAvailableCacheLine");
 	u32 needed_frames = std::min((u32)SND_BLOCKSIZE, source.pub.frames_total - position);
 	u32 found_cache_idx = 0;
 	for (const u32& cache_idx : source.cache_lines) {
@@ -927,50 +931,61 @@ ICF void Snd_PrecacheRenderCallback()
 	static u64 counter = 0;
 	static u64 timestamp = Snd_GetTimestamp();
 
-	xrSRWLockGuard g1(GMixer.manage_lock);
-	float dt = (float)((double)(Snd_GetTimestamp() - timestamp) / 1000000000.0);
+	{
+		xrSRWLockGuard g1(GMixer.manage_lock);
+		float dt = (float)((double)(Snd_GetTimestamp() - timestamp) / 1000000000.0);
 
-	GMixer.stats.frame_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
-	timestamp = Snd_GetTimestamp();
+		GMixer.stats.frame_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
+		timestamp = Snd_GetTimestamp();
 
-	if (counter % 100 == 0) {
-		GMixer.stats.cache_hit_count = 0;
-		GMixer.stats.cache_miss_count = 0;
-	}
-
-	for (size_t i = 0; i < GMixer.slots.size(); i++) {
-		auto& slot = GMixer.slots[i];
-
-		sound_source* source = Snd_FindSound(slot.sound_name);
-		if (source != nullptr && Snd_SlotOcclusion(i + 1, *source, dt, nullptr) != ESlotOcclusionResult::False)
+		if (counter % 100 == 0)
 		{
-			Snd_AcquireHRTFSlot(i + 1);
-			// Hand the decode off to the decode thread; only enqueue if the cache
-			// line for the current position isn't already filled.
-			if (Snd_FindAvailableCacheLine(*source, slot.position) == 0) {
-				Snd_QueueDecode(slot.sound_name, slot.position);
-			}
-		} else {
-			Snd_ReleaseHRTFSlot(i + 1);
+			GMixer.stats.cache_hit_count = 0;
+			GMixer.stats.cache_miss_count = 0;
 		}
 
-		if (source != nullptr) {
-			Snd_ReleaseSound(slot.sound_name);
-		}
-
-		if (slot.state == Mixer::State::Delay)
+		for (size_t i = 0; i < GMixer.slots.size(); i++)
 		{
-			slot.delay -= dt;
-			if (slot.delay <= 0.f)
+			PROF_EVENT("Sound: GMixer.slot");
+			auto& slot = GMixer.slots[i];
+
+			sound_source* source = Snd_FindSound(slot.sound_name);
+			if (source != nullptr && Snd_SlotOcclusion(i + 1, *source, dt, nullptr) != ESlotOcclusionResult::False)
 			{
-				MixerNewState(i + 1, Mixer::State::Playing);
+				Snd_AcquireHRTFSlot(i + 1);
+				// Hand the decode off to the decode thread; only enqueue if the cache
+				// line for the current position isn't already filled.
+				if (Snd_FindAvailableCacheLine(*source, slot.position) == 0)
+				{
+					PROF_EVENT("Sound: QueueDecode");
+					Snd_QueueDecode(slot.sound_name, slot.position);
+				}
+			}
+			else
+			{
+				Snd_ReleaseHRTFSlot(i + 1);
+			}
+
+			if (source != nullptr)
+			{
+				PROF_EVENT("Sound: ReleaseSound");
+				Snd_ReleaseSound(slot.sound_name);
+			}
+
+			if (slot.state == Mixer::State::Delay)
+			{
+				slot.delay -= dt;
+				if (slot.delay <= 0.f)
+				{
+					MixerNewState(i + 1, Mixer::State::Playing);
+				}
 			}
 		}
-	}
 
-	GMixer.stats.cache_lines_free = GMixer.free_cachelines.size();
-	GMixer.stats.precache_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
-	counter++;
+		GMixer.stats.cache_lines_free = GMixer.free_cachelines.size();
+		GMixer.stats.precache_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
+		counter++;
+	}
 }
 
 ICF Fvector Snd_Velocity(const Fvector& From, const Fvector& To)
