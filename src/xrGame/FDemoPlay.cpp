@@ -8,14 +8,16 @@
 
 CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo, life_time)
 {
+	IR_Capture();
+	
 	Msg("*** Playing demo: %s", name);
 	Console->Execute("hud_weapon 0");
 
 	fSpeed = ms;
 	dwCyclesLeft = cycles ? cycles : 1;
 
-	m_pMotion = 0;
-	m_MParam = 0;
+	m_pMotion = nullptr;
+	m_MParam = nullptr;
 	string_path nm, fn;
 	xr_strcpy(nm, sizeof(nm), name);
 	LPSTR extp = strext(nm);
@@ -60,10 +62,21 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 
 CDemoPlay::~CDemoPlay()
 {
+	IR_Release();
 	stat_Stop();
+
 	xr_delete(m_pMotion);
 	xr_delete(m_MParam);
+
 	Console->Execute("hud_weapon 1");
+}
+
+void CDemoPlay::IR_OnKeyboardPress(int dik)
+{
+	if (dik == SDL_SCANCODE_ESCAPE)
+	{
+		fLifeTime = -1;
+	}
 }
 
 void CDemoPlay::stat_Start()
