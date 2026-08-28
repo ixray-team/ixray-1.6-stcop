@@ -82,6 +82,9 @@ void CRHIRenderViewManager::SetDepthStencilView(IRHIDepthStencilView* pDepthSten
 
 void CRHIRenderViewManager::ApplyRenderTargetChange()
 {
+	if (!ChangedRTorZB)
+		return;
+
 	if (GRHI->APILevel != ERHI_API_LAYER::D3D9)
 	{
 		GRHI->DevicePtr->SetDSV(DepthStencilView);

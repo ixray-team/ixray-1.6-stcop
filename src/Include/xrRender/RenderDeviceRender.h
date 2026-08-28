@@ -59,6 +59,7 @@ public:
 	virtual DeviceState GetDeviceState() = 0;
 	virtual bool	GetForceGPU_REF() = 0;
 	virtual u32		GetCacheStatPolys() = 0;
+	virtual void	GetCacheStats(u32& calls, u32& verts, u32& polys, u32& static_dips) { calls = verts = polys = static_dips = 0; }
 	virtual void	Begin() = 0;
 	virtual void	Clear() = 0;
 	virtual void	End() = 0;

@@ -63,9 +63,9 @@ void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 		m_ctable->m_CBTable[i].second->Flush();
 	}
 
-	xr_vector<IRHIBuffer*> tempBuffer;
-	tempBuffer.resize(CBackend::MaxCBuffers);
+	VERIFY(count <= CBackend::MaxCBuffers);
 
+	IRHIBuffer* tempBuffer[CBackend::MaxCBuffers];
 	for (u32 i = 0; i < count; ++i)
 	{
 		tempBuffer[i] = m_ctable->m_CBTable[i].second->GetBuffer();

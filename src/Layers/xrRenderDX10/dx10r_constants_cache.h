@@ -52,6 +52,8 @@ public:
 		flush_cache();
 	}
 
+	void					MarkDirty(dx10ConstantBuffer& Buffer);
+
 	ICF void				access_direct(RHIShaderConstant* C, u32 DataSize, void** ppVData, void** ppGData, void** ppPData)
 	{
 		if (ppPData)
@@ -119,5 +121,10 @@ private:
 	}
 
 	dx10ConstantBuffer& GetCBuffer(RHIShaderConstant* C, BufferType BType);
+
+	// Every write reaches a buffer through GetCBuffer, so registering there is exact and
+	// avoids rescanning all MaxCBuffers slots of all six stages on every draw call.
+	dx10ConstantBuffer*		m_dirty[RHI_MAX_CONSTANT_BUFFERS * RHI_SHADERS_TYPE_SIZE];
+	u32						m_dirty_count = 0;
 };
 #endif	//	dx10r_constants_cacheH
