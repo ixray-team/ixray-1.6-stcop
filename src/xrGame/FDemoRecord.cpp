@@ -147,8 +147,8 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 		Velocity.set(0.f, 0.f, 0.f);
 		AngularVelocity.set(0.f, 0.f, 0.f);
 
-		FrameTopDelta.set(0.f, 0.f, 0.f);
-		FrameRightDelta.set(0.f, 0.f, 0.f);
+		frame_pos_delta.set(0.f, 0.f, 0.f);
+		frame_hpb_delta.set(0.f, 0.f, 0.f);
 		m_bMakeCubeMap = false;
 		m_bMakeScreenshot = false;
 		m_bMakeLevelMap = false;
@@ -432,28 +432,28 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		{
 			if (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT))
 			{
-				FrameTopDelta.mul(m_fSpeed0);
+				frame_pos_delta.mul(m_fSpeed0);
 			}
 			else if (IR_GetKeyState(SDL_SCANCODE_LALT) || IR_GetKeyState(SDL_SCANCODE_RALT))
 			{
-				FrameTopDelta.mul(m_fSpeed2);
+				frame_pos_delta.mul(m_fSpeed2);
 			}
 			else if (m_bEnableAcceleration)
 			{
-				FrameTopDelta.mul(m_fSpeed3);
+				frame_pos_delta.mul(m_fSpeed3);
 			}
 			else
 			{
-				FrameTopDelta.mul(10.f);
+				frame_pos_delta.mul(10.f);
 			}
 		}
 		else
 		{
-			FrameTopDelta.mul(CameraTransformFactor);
+			frame_pos_delta.mul(CameraTransformFactor);
 		}
 
-		dr_disable_time_factor_influence ? FrameTopDelta.mul(Device.fRealTimeDelta) : FrameTopDelta.mul(Device.fTimeDelta);
-		FrameRightDelta.mul(1.f);
+		dr_disable_time_factor_influence ? frame_pos_delta.mul(Device.fRealTimeDelta) : frame_pos_delta.mul(Device.fTimeDelta);
+		frame_hpb_delta.mul(1.f);
 
 		if (g_position.set_position)
 		{
@@ -465,29 +465,14 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			g_position.p.set(p_cam_pos);
 		}
 
-		Fvector CamMove;
-
-		CamMove.set(Camera.k);
-		CamMove.normalize_safe();
-		CamMove.mul(FrameTopDelta.z);
-		p_cam_pos.add(CamMove);
-
-		CamMove.set(Camera.i);
-		CamMove.normalize_safe();
-		CamMove.mul(FrameTopDelta.x);
-		p_cam_pos.add(CamMove);
-
-		CamMove.set(Camera.j);
-		CamMove.normalize_safe();
-		CamMove.mul(FrameTopDelta.y);
-		p_cam_pos.add(CamMove);
+		MovePosition(frame_pos_delta);
 
 		Level().ObjectSpace.RayPick(Camera.c, Camera.k, 1000.f, collide::rq_target::rqtBoth, rq_result, nullptr);
 		view_from_bone_mode ? UpdateLookFromBone() : lap_lock ? UpdateLookAtPoint()
 															  : UpdateFreeLook();
 
-		p_cam_pos_smoothed.inertion(p_cam_pos, dr_cam_pos_inert);
-		Camera.translate_over(p_cam_pos_smoothed);
+		p_cam_pos_current.inertion(p_cam_pos, dr_cam_pos_inert);
+		Camera.translate_over(p_cam_pos_current);
 
 		info.n.set(Camera.j);
 		info.d.set(Camera.k);
@@ -495,8 +480,8 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 
 		fLifeTime -= Device.fTimeDelta;
 
-		FrameTopDelta.set(0.f, 0.f, 0.f);
-		FrameRightDelta.set(0.f, 0.f, 0.f);
+		frame_pos_delta.set(0.f, 0.f, 0.f);
+		frame_hpb_delta.set(0.f, 0.f, 0.f);
 	}
 	return true;
 }
@@ -545,9 +530,9 @@ void CDemoRecord::UpdateFreeLook()
 		}
 	}
 
-	hpb.x -= FrameRightDelta.y;
-	hpb.y -= FrameRightDelta.x;
-	hpb.z += FrameRightDelta.z;
+	hpb.x -= frame_hpb_delta.y;
+	hpb.y -= frame_hpb_delta.x;
+	hpb.z += frame_hpb_delta.z;
 
 	hpb_current.inertion(hpb, dr_cam_inert);
 	Camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
@@ -591,6 +576,11 @@ void CDemoRecord::UpdateLookFromBone()
 
 	hpb_current.inertion(target_eulers, dr_cam_inert);
 	p_cam_pos.set(bone_world_pos);
+
+	Fvector blend_pos_offset;
+	Camera.transform_dir(blend_pos_offset, p_cam_pos_view_from_bone_offset);
+
+	p_cam_pos.add(blend_pos_offset);
 	Camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
 }
 
@@ -599,7 +589,7 @@ void CDemoRecord::ParseActorCam()
 	Camera.invert(Device.mView);
 
 	p_cam_pos.set(Device.vCameraPosition);
-	p_cam_pos_smoothed.set(Device.vCameraPosition);
+	p_cam_pos_current.set(Device.vCameraPosition);
 
 	Fvector hpb_actor;
 	Camera.getHPB(hpb_actor);
@@ -609,11 +599,32 @@ void CDemoRecord::ParseActorCam()
 	hpb_current.set(hpb_actor);
 }
 
+void CDemoRecord::MovePosition(Fvector d)
+{
+	Fvector new_pos;
+
+	new_pos.set(Camera.k);
+	new_pos.normalize_safe();
+	new_pos.mul(d.z);
+	p_cam_pos.add(new_pos);
+
+	new_pos.set(Camera.i);
+	new_pos.normalize_safe();
+	new_pos.mul(d.x);
+	p_cam_pos.add(new_pos);
+
+	new_pos.set(Camera.j);
+	new_pos.normalize_safe();
+	new_pos.mul(d.y);
+	p_cam_pos.add(new_pos);
+}
+
 void CDemoRecord::IR_OnKeyboardPress(int dik)
 {
 	if (dik == SDL_SCANCODE_R && view_from_bone_mode)
 	{
 		hpb_view_from_bone_offset.set(zero_vel);
+		p_cam_pos_view_from_bone_offset.set(zero_vel);
 	}
 
 	if (dik == SDL_SCANCODE_U && !lap_lock)
@@ -709,20 +720,28 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 		m_b_redirect_input_to_level = !m_b_redirect_input_to_level;
 	}
 
+	if (dik == SDL_SCANCODE_GRAVE)
+	{
+		Console->Show();
+	}
+	
+	if (dik == SDL_SCANCODE_PAUSE)
+	{
+		Device.Pause(!Device.Paused(), true, true, "demo_record");
+	}
+
 	if (m_b_redirect_input_to_level)
 	{
-		g_pGameLevel->IR_OnKeyboardPress(dik);
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_OnKeyboardPress(dik);
+		}
 		return;
 	}
 
 	if (dik == SDL_SCANCODE_LCTRL || dik == SDL_SCANCODE_RCTRL)
 	{
 		m_bEnableAcceleration = true;
-	}
-
-	if (dik == SDL_SCANCODE_GRAVE)
-	{
-		Console->Show();
 	}
 
 	if (NewInputSchema && dik == SDL_SCANCODE_F || !NewInputSchema && dik == SDL_SCANCODE_SPACE)
@@ -760,11 +779,6 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 		}
 	}
 #endif
-
-	if (dik == SDL_SCANCODE_PAUSE)
-	{
-		Device.Pause(!Device.Paused(), true, true, "demo_record");
-	}
 }
 
 void CDemoRecord::IR_OnKeyboardHold(int dik)
@@ -778,14 +792,26 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 		return;
 	}
 
-	if (dik == SDL_SCANCODE_Q && view_from_bone_mode)
+	if (view_from_bone_mode)
 	{
-		hpb_view_from_bone_offset.z -= 1.f * Device.fTimeDelta;
-	}
+		switch (dik)
+		{
+			case SDL_SCANCODE_W:
+				p_cam_pos_view_from_bone_offset.z += 1.0f * Device.fTimeDelta;
+				break;
 
-	if (dik == SDL_SCANCODE_E && view_from_bone_mode)
-	{
-		hpb_view_from_bone_offset.z += 1.f * Device.fTimeDelta;
+			case SDL_SCANCODE_A:
+				p_cam_pos_view_from_bone_offset.x -= 1.0f * Device.fTimeDelta;
+				break;
+
+			case SDL_SCANCODE_S:
+				p_cam_pos_view_from_bone_offset.z -= 1.0f * Device.fTimeDelta;
+				break;
+
+			case SDL_SCANCODE_D:
+				p_cam_pos_view_from_bone_offset.x += 1.0f * Device.fTimeDelta;
+				break;
+		}
 	}
 
 	Fvector Delta = Fvector();
@@ -843,7 +869,7 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 		}
 	}
 
-	FrameTopDelta.add(Delta);
+	frame_pos_delta.add(Delta);
 }
 
 void CDemoRecord::IR_OnMousePress(int btn)
@@ -902,7 +928,7 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 		RightDelta.x += (psMouseInvert ? -1 : 1) * static_cast<float>(dy) * Sensitivity * 3.0f / 4.0f;
 	}
 
-	FrameRightDelta.add(RightDelta);
+	frame_hpb_delta.add(RightDelta);
 }
 
 void CDemoRecord::IR_OnMouseRelease(int btn)
@@ -957,7 +983,7 @@ void CDemoRecord::IR_OnMouseHold(int btn)
 		}
 	}
 
-	FrameTopDelta.add(Delta);
+	frame_pos_delta.add(Delta);
 }
 
 void CDemoRecord::RecordKey()
@@ -967,7 +993,7 @@ void CDemoRecord::RecordKey()
 	ViewMatrix.invert(Camera);
 	file->w(&ViewMatrix, sizeof(Fmatrix));
 
-	KeyframesPositions.emplace_back(p_cam_pos_smoothed);
+	KeyframesPositions.emplace_back(p_cam_pos_current);
 }
 
 void CDemoRecord::MakeCubemap()
@@ -1070,8 +1096,8 @@ void CDemoRecord::IR_GamepadUpdateStick(int id, Fvector2 value)
 		}
 		break;
 	}
-	update_whith_timescale(FrameRightDelta, vR_delta);
-	update_whith_timescale(FrameTopDelta, vT_delta);
+	update_whith_timescale(frame_hpb_delta, vR_delta);
+	update_whith_timescale(frame_pos_delta, vT_delta);
 }
 
 void CDemoRecord::IR_GamepadKeyPress(int id)
