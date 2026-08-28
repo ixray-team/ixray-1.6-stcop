@@ -57,6 +57,9 @@ struct sound_slot_state
     f32 delay = 0.f;
     xr_string sound_name;
     Fvector parameters[(u32)XRay::Sound::Mixer::ParameterId::Count];
+    Fvector prev_position = {};
+    Fvector velocity = {};
+    f32 doppler = 1.0f;
     f32 fade_volume = 1.0f;
 };
 

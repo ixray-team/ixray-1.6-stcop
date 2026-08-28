@@ -54,6 +54,26 @@ void DSP_CalculateRelativePosition(const dsp_stuff& Stuff, Fvector& OutPos, floa
 }
 
 static constexpr float SND_BACK_ATTENUATION = 0.3f;
+static constexpr float SND_SPEED_OF_SOUND = 343.0f;
+static constexpr float SND_DOPPLER_SMOOTH = 4.0f;
+
+void DSP_Doppler(const dsp_stuff& Stuff, float Distance)
+{
+	float Target = 1.0f;
+
+	if (Distance > EPS_S)
+	{
+		Fvector ToListener;
+		ToListener.sub(*Stuff.CameraPosition, *Stuff.ObjPosition).mul(1.0f / Distance);
+
+		float Closing = ToListener.dotproduct(*Stuff.CameraVelocity) * psSoundDoppler;
+		float Approach = ToListener.dotproduct(*Stuff.ObjVelocity) * psSoundDoppler;
+
+		Target = std::clamp((SND_SPEED_OF_SOUND - Closing) / std::max(SND_SPEED_OF_SOUND - Approach, 1.0f), 0.5f, 2.0f);
+	}
+
+	volume_lerp(*Stuff.Doppler, Target, SND_DOPPLER_SMOOTH, (float)SND_BLOCKSIZE / (float)SND_SAMPLERATE);
+}
 
 void DSP_SpatialProcess(float** Buffer, const Fvector& Distances, const dsp_stuff& Stuff, bool DisableAttenuation)
 {
@@ -62,6 +82,7 @@ void DSP_SpatialProcess(float** Buffer, const Fvector& Distances, const dsp_stuf
 	float Distance;
 
 	DSP_CalculateRelativePosition(Stuff, Pos, Distance);
+	DSP_Doppler(Stuff, Distance);
 
 	// Broken ogg-comments give us zero/inverted ranges
 	float MinDistance = std::max(Distances.x, EPS_S);
