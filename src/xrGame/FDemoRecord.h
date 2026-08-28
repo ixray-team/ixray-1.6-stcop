@@ -24,7 +24,8 @@ class CDemoRecord :
 	u16 bone_id;
 
 	Fvector p_cam_pos;
-	Fvector p_cam_pos_smoothed;
+	Fvector p_cam_pos_current;
+	Fvector p_cam_pos_view_from_bone_offset;
 
 	Fvector hpb;
 	Fvector hpb_current;
@@ -34,8 +35,8 @@ class CDemoRecord :
 
 	u32 Stage;
 
-	Fvector FrameTopDelta;
-	Fvector FrameRightDelta;
+	Fvector frame_pos_delta;
+	Fvector frame_hpb_delta;
 	Fvector Velocity;
 	Fvector AngularVelocity;
 
@@ -86,6 +87,7 @@ public:
 	void UpdateFreeLook();
 	void UpdateLookFromBone();
 	void ParseActorCam();
+	void MovePosition(Fvector d);
 	static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
 	static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
 	bool m_b_redirect_input_to_level;
