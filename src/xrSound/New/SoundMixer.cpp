@@ -58,6 +58,7 @@ ISoundSpatializer* GSpatializer = nullptr;
 
 #define DEFAULT_SLOT_COUNT (512)
 #define SND_MAX_PITCH (4)
+#define SND_MAX_VELOCITY (100.0f)
 #define CACHE_LINES_COUNT (1024)
 #define CACHE_LINE_WIDTH (12)
 #define CACHE_LINE_ENTRY_COUNT (32)
@@ -145,6 +146,7 @@ struct sound_mixer_state
 	float compression = 0.0f;
 	float compressor_envelope[SND_CHANNEL_COUNT] = { FLT_EPSILON, FLT_EPSILON };
 	Fvector P, D, N;             
+	Fvector listener_velocity;
 	Fvector occ;
 	Fmatrix m_V;
 
@@ -892,7 +894,7 @@ ICF void Snd_ProcessSlot(u32 slot_idx, sound_source& source, float** data)
 	float pitch = slot.parameters[(u32)Mixer::ParameterId::Pitch].x;
 
 	u32 output_frames = SND_BLOCKSIZE;
-	float ratio = std::clamp(pitch * GMixer.time_factor, 0.0f, (float)SND_MAX_PITCH);
+	float ratio = std::clamp(pitch * slot.doppler * GMixer.time_factor, 0.0f, (float)SND_MAX_PITCH);
 	u32 input_frames = std::max((u32)((float)output_frames * ratio), 1u);
 
 	bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
@@ -901,7 +903,7 @@ ICF void Snd_ProcessSlot(u32 slot_idx, sound_source& source, float** data)
 		memset(GMixer.read_buffer[ch], 0, (input_frames + 1) * sizeof(float));
 	}
 
-	if (is_music || fis_zero(1.0 - GMixer.time_factor)) {
+	if (is_music || fis_zero(1.0f - ratio)) {
 		Snd_ReadSlot(slot_idx, source, data, SND_BLOCKSIZE);
 	} else {
 		float* offfseted_data[SND_CHANNEL_COUNT];
@@ -971,6 +973,24 @@ ICF void Snd_PrecacheRenderCallback()
 	counter++;
 }
 
+ICF Fvector Snd_Velocity(const Fvector& From, const Fvector& To)
+{
+	Fvector Out;
+	Out.set(0.0f, 0.0f, 0.0f);
+
+	if (GMixer.dt > EPS_S)
+	{
+		Out.sub(To, From).mul(1.0f / GMixer.dt);
+	}
+
+	if (Out.square_magnitude() > SND_MAX_VELOCITY * SND_MAX_VELOCITY)
+	{
+		Out.set(0.0f, 0.0f, 0.0f);
+	}
+
+	return Out;
+}
+
 ICF void Snd_PhononSpatialProcess(float** Data, u32 slot_idx)
 {
 	auto& Slot = GMixer.slots[slot_idx - 1];
@@ -989,7 +1009,10 @@ ICF void Snd_PhononSpatialProcess(float** Data, u32 slot_idx)
 		.CameraPosition = &GMixer.P,
 		.CameraDirection = &GMixer.D,
 		.CameraNormal = &GMixer.N,
-		.ObjPosition = &Pos
+		.CameraVelocity = &GMixer.listener_velocity,
+		.ObjPosition = &Pos,
+		.ObjVelocity = &Slot.velocity,
+		.Doppler = &Slot.doppler
 	};
 
 	if (Slot.hrtf_slot == 0)
@@ -1001,6 +1024,7 @@ ICF void Snd_PhononSpatialProcess(float** Data, u32 slot_idx)
 	float Distance;
 	Fvector RelativePos;
 	DSP_CalculateRelativePosition(Stuff, RelativePos, Distance);
+	DSP_Doppler(Stuff, Distance);
 	Distance = std::max(Distance, 0.1f);
 
 	if (GSpatializer)
@@ -1120,7 +1144,10 @@ ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffe
 					.CameraPosition = &GMixer.P,
 					.CameraDirection = &GMixer.D,
 					.CameraNormal = &GMixer.N,
-					.ObjPosition = &Pos
+					.CameraVelocity = &GMixer.listener_velocity,
+					.ObjPosition = &Pos,
+					.ObjVelocity = &Slot.velocity,
+					.Doppler = &Slot.doppler
 				};
 
 				DSP_SpatialProcess(process_buffer, Slot.parameters[(u32)Mixer::ParameterId::DistanceRange], Stuff, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
@@ -1455,6 +1482,8 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 	GMixer.music_volume = mus_volume;
 	GMixer.shooting_volume = shooting_volume;
 	GMixer.m_V = mtx;
+
+	GMixer.listener_velocity = Snd_Velocity(GMixer.P, P);
 	GMixer.P = P;
 	GMixer.D = D;
 	GMixer.N = N;
@@ -1520,6 +1549,13 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 		}
 		else
 		{
+			if (Slot.flags & (u16)Flags::Spatial)
+			{
+				const Fvector& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
+				Slot.velocity = Snd_Velocity(Slot.prev_position, Pos);
+				Slot.prev_position = Pos;
+			}
+
 			bool IsOCCEnabled = ((Slot.flags & ((u16)Flags::Intro | (u16)Flags::NoOCC)) == 0) && Slot.state == State::Playing;
 			if (IsOCCEnabled)
 			{
@@ -1619,6 +1655,10 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 				{
 					ActualSlot.parameters[(u32)Mixer::ParameterId::Position] = ((IRenderable*)RefSound->_g_object())->renderable.xform.c;
 				}
+
+				ActualSlot.doppler = 1.0f;
+				ActualSlot.velocity.set(0.0f, 0.0f, 0.0f);
+				ActualSlot.prev_position = ActualSlot.parameters[(u32)Mixer::ParameterId::Position];
 
 				if (Handler != nullptr)
 				{
