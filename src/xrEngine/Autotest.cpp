@@ -183,7 +183,6 @@ namespace
 		xrLogger::FlushLog();
 		xrLogger::CloseLog();
 		exit(code);
-		for (;;) {}
 	}
 }
 
