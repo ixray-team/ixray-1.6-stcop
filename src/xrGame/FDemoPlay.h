@@ -4,7 +4,7 @@
 class COMotion;
 struct SAnimParams;
 
-class CDemoPlay : public CEffectorCam
+class CDemoPlay : public CEffectorCam, public IInputReceiver
 {
 	COMotion* m_pMotion;
 	SAnimParams* m_MParam;
@@ -30,4 +30,6 @@ public:
 
 	CDemoPlay(const char* name, float ms, u32 cycles, float life_time = 60 * 60 * 1000);
 	virtual ~CDemoPlay();
+	
+	virtual void IR_OnKeyboardPress(int dik) override;
 };
