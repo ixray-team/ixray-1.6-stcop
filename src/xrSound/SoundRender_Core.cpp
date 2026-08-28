@@ -15,6 +15,7 @@ using namespace XRay::Sound;
 int		psSoundTargets = 256;
 Flags32	psSoundFlags = { ss_Hardware };
 float	psSoundOcclusionScale = 0.5f;
+float	psSoundDoppler = 1.0f;
 float	psSoundCull = 0.01f;
 float	psSoundRolloff = 0.75f;
 u32		psSoundModel = 0;
