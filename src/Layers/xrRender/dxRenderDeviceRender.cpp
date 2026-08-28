@@ -7,6 +7,7 @@
 #include "ResourceManager.h"
 #ifndef _EDITOR
 #include "imgui.h"
+#include "../../xrEngine/Autotest.h"
 #endif
 
 dxRenderDeviceRender::dxRenderDeviceRender()
@@ -364,6 +365,18 @@ u32 dxRenderDeviceRender::GetCacheStatPolys()
 #endif
 }
 
+void dxRenderDeviceRender::GetCacheStats(u32& calls, u32& verts, u32& polys, u32& static_dips)
+{
+#ifndef _EDITOR
+	calls		= RCache.stat.calls;
+	verts		= RCache.stat.verts;
+	polys		= RCache.stat.polys;
+	static_dips	= RCache.stat.r.s_static.dips;
+#else
+	calls = verts = polys = static_dips = 0;
+#endif
+}
+
 void dxRenderDeviceRender::Begin()
 {
 #ifndef _EDITOR
@@ -440,6 +453,9 @@ void dxRenderDeviceRender::End()
 #endif
 
 #endif
+
+	if (Autotest::Active())
+		Autotest::FrameEnd();
 
 	PROF_EVENT("Present");
 

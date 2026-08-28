@@ -52,6 +52,27 @@ public:
 	typedef xr_vector<ref_constant>		c_table;
 	c_table					table;
 
+	// Only a minority of constants carry a Setup handler; walking the whole table to find
+	// them was the largest single cost in set_Constants. Built on demand, dropped on any
+	// mutation of `table`.
+	xr_vector<RHIShaderConstant*>	handlers;
+	bool							handlers_valid = false;
+
+	const xr_vector<RHIShaderConstant*>& get_handlers()
+	{
+		if (!handlers_valid)
+		{
+			handlers.clear();
+			for (ref_constant& C : table)
+				if (C->handler)
+					handlers.push_back(&*C);
+
+			handlers_valid = true;
+		}
+
+		return handlers;
+	}
+
 #ifdef USE_DX11
 	typedef std::pair<u32,ref_cbuffer>	cb_table_record;
 	typedef xr_vector<cb_table_record>	cb_table;

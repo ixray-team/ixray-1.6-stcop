@@ -6,6 +6,7 @@
 #include "../../xrEngine/IRenderable.h"
 
 #include "FLOD.h"
+#include "FVisual.h"
 #include "ParticleGroup.h"
 #include "FTreeVisual.h"
 #include "ParticleEffect.h"
@@ -126,6 +127,30 @@ ICF bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fm
 	}
 
 	return CheckLevelLabmda(dynamic_sizes, dynamic_dists, std::size(dynamic_sizes), opt_level, sphere_volume, adjusted_distance);
+}
+
+ICF R_dsgraph::_NormalItem MakeNormalItem(float ssa, dxRender_Visual* pVisual)
+{
+	R_dsgraph::_NormalItem I = { ssa, pVisual->vis.sphere.R, pVisual, nullptr, 0, 0, 0, 0 };
+
+	if (MT_NORMAL != pVisual->Type)
+		return I;
+
+	Fvisual* V = (Fvisual*)pVisual;
+	IRender_Mesh* M = V;
+
+#if (RENDER==R_R2) || (RENDER==R_R4)
+	if (V->m_fast && RImplementation.phase == CRender::PHASE_SMAP)
+		M = V->m_fast;
+#endif
+
+	I.geom		= M->rm_geom._get();
+	I.vBase		= M->vBase;
+	I.vCount	= M->vCount;
+	I.iBase		= M->iBase;
+	I.pCount	= M->dwPrimitives;
+
+	return I;
 }
 
 ICF	float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
@@ -443,7 +468,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 		mapNormalStates::TNode*		Nstate	= Ncs->val.insert	(pass.state->state);
 		mapNormalTextures::TNode*	Ntex	= Nstate->val.insert(pass.T._get());
 
-		Ntex->val.push_back({SSA,pVisual});
+		Ntex->val.push_back(MakeNormalItem(SSA, pVisual));
 	}
 }
 

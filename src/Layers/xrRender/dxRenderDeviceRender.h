@@ -46,6 +46,7 @@ public:
 	DeviceState GetDeviceState() override;
 	bool GetForceGPU_REF() override;
 	u32 GetCacheStatPolys() override;
+	void GetCacheStats(u32& calls, u32& verts, u32& polys, u32& static_dips) override;
 	void Begin() override;
 	void Clear() override;
 	void End() override;

@@ -81,12 +81,13 @@ IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV
 
     GRHI->SetPrimitiveTopology(topology);
     GRHI->ShaderResourceCache->Apply();
-	GRHI->ApplyRenderTargetChange();
+    GRHI->ApplyRenderTargetChange();
     ApplyVertexLayout();
     GRHI->StateManager->Apply();
 
     // State manager may alter constants
     constants.flush();
+
     GRHI->DrawIndexed(baseV, startV, countV, startI, PC);
 }
 
@@ -188,27 +189,6 @@ ICF void CBackend::set_VS(SVS* _vs)
 	GRHI->SetShader(_vs->vs, ERHI_SHADER_TYPE::VS);
 }
 
-IC bool CBackend::CBuffersNeedUpdate( ref_cbuffer buf1[MaxCBuffers], ref_cbuffer buf2[MaxCBuffers], u32 &uiMin, u32 &uiMax)
-{
-	bool	bRes = false;
-	int i=0;
-	while ( (i<MaxCBuffers) && (buf1[i]==buf2[i]))
-		++i;
-
-	uiMin = i;
-
-	for ( ; i<MaxCBuffers; ++i)
-	{
-		if (buf1[i]!=buf2[i])
-		{
-			bRes = true;
-			uiMax = i;
-		}
-	}
-
-	return bRes;
-}
-
 IC void CBackend::set_Constants			(R_constant_table* C_)
 {
 	// caching
@@ -223,180 +203,78 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 	GRHI->StateManager->UnmapConstants();
 
 	if (0==C_)
+	{
 		return;
+	}
 
 	//	Setup constant tables
 	{
-		ref_cbuffer	aPixelConstants[MaxCBuffers];
-		ref_cbuffer	aVertexConstants[MaxCBuffers];
-		ref_cbuffer	aGeometryConstants[MaxCBuffers];
-		ref_cbuffer	aHullConstants[MaxCBuffers];
-		ref_cbuffer	aDomainConstants[MaxCBuffers];
-		ref_cbuffer	aComputeConstants[MaxCBuffers];
-
-		for (int i=0; i<MaxCBuffers; ++i)
+		ref_cbuffer* const dst[] =
 		{
-			aPixelConstants[i] = m_aPixelConstants[i];
-			aVertexConstants[i] = m_aVertexConstants[i];
-			aGeometryConstants[i] = m_aGeometryConstants[i];
-
-			aHullConstants[i] = m_aHullConstants[i];
-			aDomainConstants[i] = m_aDomainConstants[i];
-			aComputeConstants[i] = m_aComputeConstants[i];
-
-			m_aPixelConstants[i] = 0;
-			m_aVertexConstants[i] = 0;
-			m_aGeometryConstants[i] = 0;
-
-			m_aHullConstants[i] = 0;
-			m_aDomainConstants[i] = 0;
-			m_aComputeConstants[i] = 0;
-		}
-		R_constant_table::cb_table::iterator	it	= C_->m_CBTable.begin();
-		R_constant_table::cb_table::iterator	end	= C_->m_CBTable.end	();
-		for (; it!=end; ++it)
+			m_aPixelConstants, m_aVertexConstants, m_aGeometryConstants,
+			m_aHullConstants, m_aDomainConstants, m_aComputeConstants
+		};
+		static const ERHI_SHADER_TYPE stage[] =
 		{
-			//ID3DxxBuffer*	pBuffer = (it->second)->GetBuffer();
-			u32				uiBufferIndex = it->first; 
+			ERHI_SHADER_TYPE::PS, ERHI_SHADER_TYPE::VS, ERHI_SHADER_TYPE::GS,
+			ERHI_SHADER_TYPE::HS, ERHI_SHADER_TYPE::DS, ERHI_SHADER_TYPE::CS
+		};
 
-			if ( (uiBufferIndex&CB_BufferTypeMask) == CB_BufferPixelShader)
+		dx10ConstantBuffer* next[std::size(dst)][MaxCBuffers] = {};
+
+		for (const R_constant_table::cb_table_record& rec : C_->m_CBTable)
+		{
+			const u32 slot = rec.first & CB_BufferIndexMask;
+			VERIFY(slot < MaxCBuffers);
+
+			switch (rec.first & CB_BufferTypeMask)
 			{
-				VERIFY((uiBufferIndex&CB_BufferIndexMask)<MaxCBuffers);
-				m_aPixelConstants[uiBufferIndex&CB_BufferIndexMask] = it->second;
+			case CB_BufferPixelShader:		next[0][slot] = rec.second._get(); break;
+			case CB_BufferVertexShader:		next[1][slot] = rec.second._get(); break;
+			case CB_BufferGeometryShader:	next[2][slot] = rec.second._get(); break;
+			case CB_BufferHullShader:		next[3][slot] = rec.second._get(); break;
+			case CB_BufferDomainShader:		next[4][slot] = rec.second._get(); break;
+			case CB_BufferComputeShader:	next[5][slot] = rec.second._get(); break;
+			default:						VERIFY("Invalid enumeration");
 			}
-			else if ( (uiBufferIndex&CB_BufferTypeMask) == CB_BufferVertexShader)
-			{
-				VERIFY((uiBufferIndex&CB_BufferIndexMask)<MaxCBuffers);
-				m_aVertexConstants[uiBufferIndex&CB_BufferIndexMask] = it->second;
-			}
-			else if ( (uiBufferIndex&CB_BufferTypeMask) == CB_BufferGeometryShader)
-			{
-				VERIFY((uiBufferIndex&CB_BufferIndexMask)<MaxCBuffers);
-				m_aGeometryConstants[uiBufferIndex&CB_BufferIndexMask] = it->second;
-			}
-			else if ( (uiBufferIndex&CB_BufferTypeMask) == CB_BufferHullShader)
-			{
-				VERIFY((uiBufferIndex&CB_BufferIndexMask)<MaxCBuffers);
-				m_aHullConstants[uiBufferIndex&CB_BufferIndexMask] = it->second;
-			}
-			else if ( (uiBufferIndex&CB_BufferTypeMask) == CB_BufferDomainShader)
-			{
-				VERIFY((uiBufferIndex&CB_BufferIndexMask)<MaxCBuffers);
-				m_aDomainConstants[uiBufferIndex&CB_BufferIndexMask] = it->second;
-			}
-			else if ( (uiBufferIndex&CB_BufferTypeMask) == CB_BufferComputeShader)
-			{
-				VERIFY((uiBufferIndex&CB_BufferIndexMask)<MaxCBuffers);
-				m_aComputeConstants[uiBufferIndex&CB_BufferIndexMask] = it->second;
-			}
-			else
-				VERIFY("Invalid enumeration");
 		}
 
-		xr_vector<IRHIBuffer*> tempBuffer;
-		tempBuffer.resize(MaxCBuffers);
-
-		u32 uiMin;
-		u32 uiMax;
-
-		if (CBuffersNeedUpdate(m_aPixelConstants, aPixelConstants, uiMin, uiMax))
+		for (u32 s = 0; s < std::size(dst); ++s)
 		{
-			++uiMax;
-
-			for (u32 i=uiMin; i<uiMax; ++i)
+			u32 lo = MaxCBuffers, hi = 0;
+			for (u32 i = 0; i < MaxCBuffers; ++i)
 			{
-				if (m_aPixelConstants[i])
-					tempBuffer[i] = m_aPixelConstants[i]->GetBuffer();
-				else
-					tempBuffer[i] = 0;
+				if (dst[s][i]._get() == next[s][i])
+					continue;
+
+				if (lo == MaxCBuffers)
+					lo = i;
+				hi = i;
 			}
 
-			GRHI->SetConstantBuffers(uiMin, uiMax - uiMin, tempBuffer, ERHI_SHADER_TYPE::PS);
-		}
-		
+			if (lo == MaxCBuffers)
+				continue;
 
-		if (CBuffersNeedUpdate(m_aVertexConstants, aVertexConstants, uiMin, uiMax))
-		{
-			++uiMax;
-
-			for (u32 i=uiMin; i<uiMax; ++i)
+			IRHIBuffer* bind[MaxCBuffers];
+			for (u32 i = lo; i <= hi; ++i)
 			{
-				if (m_aVertexConstants[i])
-					tempBuffer[i] = m_aVertexConstants[i]->GetBuffer();
-				else
-					tempBuffer[i] = 0;
+				dst[s][i] = next[s][i];
+				bind[i - lo] = nullptr;
+
+				if (next[s][i])
+				{
+					bind[i - lo] = next[s][i]->GetBuffer();
+					constants.MarkDirty(*next[s][i]);
+				}
 			}
-			GRHI->SetConstantBuffers(uiMin, uiMax - uiMin, tempBuffer, ERHI_SHADER_TYPE::VS);
-		}
 
-			
-		if (CBuffersNeedUpdate(m_aGeometryConstants, aGeometryConstants, uiMin, uiMax))
-		{
-			++uiMax;
-
-			for (u32 i=uiMin; i<uiMax; ++i)
-			{
-				if (m_aGeometryConstants[i])
-					tempBuffer[i] = m_aGeometryConstants[i]->GetBuffer();
-				else
-					tempBuffer[i] = 0;
-			}
-			GRHI->SetConstantBuffers(uiMin, uiMax-uiMin, tempBuffer, ERHI_SHADER_TYPE::CS);
-		}
-
-		if (CBuffersNeedUpdate(m_aHullConstants, aHullConstants, uiMin, uiMax))
-		{
-			++uiMax;
-
-			for (u32 i=uiMin; i<uiMax; ++i)
-			{
-				if (m_aHullConstants[i])
-					tempBuffer[i] = m_aHullConstants[i]->GetBuffer();
-				else
-					tempBuffer[i] = 0;
-			}
-			GRHI->SetConstantBuffers(uiMin, uiMax-uiMin, tempBuffer, ERHI_SHADER_TYPE::HS);
-		}
-
-		if (CBuffersNeedUpdate(m_aDomainConstants, aDomainConstants, uiMin, uiMax))
-		{
-			++uiMax;
-
-			for (u32 i=uiMin; i<uiMax; ++i)
-			{
-				if (m_aDomainConstants[i])
-					tempBuffer[i] = m_aDomainConstants[i]->GetBuffer();
-				else
-					tempBuffer[i] = 0;
-			}
-			GRHI->SetConstantBuffers(uiMin, uiMax-uiMin, tempBuffer, ERHI_SHADER_TYPE::DS);
-		}
-
-		if (CBuffersNeedUpdate(m_aComputeConstants, aComputeConstants, uiMin, uiMax))
-		{
-			++uiMax;
-
-			for (u32 i=uiMin; i<uiMax; ++i)
-			{
-				if (m_aComputeConstants[i])
-					tempBuffer[i] = m_aComputeConstants[i]->GetBuffer();
-				else
-					tempBuffer[i] = 0;
-			}
-			GRHI->SetConstantBuffers(uiMin, uiMax-uiMin, tempBuffer, ERHI_SHADER_TYPE::CS);
+			GRHI->SetConstantBuffers(lo, hi - lo + 1, bind, stage[s]);
 		}
 	}
 
 	// process constant-loaders
-	R_constant_table::c_table::iterator	it	= C_->table.begin();
-	R_constant_table::c_table::iterator	end	= C_->table.end	();
-	for (; it!=end; it++)	
-	{
-		RHIShaderConstant*		Cs	= &**it;
-		VERIFY(Cs);
-		if (Cs && Cs->handler)
-			Cs->handler->setup(Cs);
-	}
+	for (RHIShaderConstant* Cs : C_->get_handlers())
+		Cs->handler->setup(Cs);
 }
 
 IC	void CBackend::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData)
@@ -453,4 +331,4 @@ IC void CBackend::DrawTriangleFan(ERHI_PRIMITIVE_TOPOLOGY topology, ref_geom geo
 	set_Indices(Index.Buffer()); // overwrite geom IB with dyn IB
 	
 	Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, 0, cnt_indices, of_indices, pc);
-}
+}
