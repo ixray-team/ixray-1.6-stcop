@@ -12,6 +12,11 @@ public:
 
 	void			Flush();
 
+	// Queue membership for R_constants' dirty list. Distinct from m_bChanged, which starts
+	// true at construction and would otherwise mask a buffer out of the list forever.
+	bool			IsQueued() const	{ return m_bQueued; }
+	void			SetQueued(bool q)	{ m_bQueued = q; }
+
 	//	Set copy data into constant buffer
 	//	Plain buffer member
 	void			set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, const Fmatrix& A);
@@ -40,6 +45,7 @@ private:
 	u32									m_uiBufferSize;	//	Cache buffer size for debug validation
 	void*								m_pBufferData = nullptr;
 	bool								m_bChanged;
+	bool								m_bQueued = false;
 
 	static const u32					lineSize = sizeof(Fvector4);
 

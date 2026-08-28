@@ -439,41 +439,26 @@ IRHIShaderDeclaration* CRHI::CreateDecl(const RHIInputElementDesc* Desc, size_t 
 	return Decl;
 }
 
-void CRHI::SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*> Buffers, ERHI_SHADER_TYPE Type)
+void CRHI::SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type)
 {
-	if (APILevel == ERHI_API_LAYER::D3D11)
+	if (APILevel != ERHI_API_LAYER::D3D11)
+		return;
+
+	VERIFY(Count <= RHI_MAX_CONSTANT_BUFFERS);
+
+	ID3D11Buffer* DXBuffer[RHI_MAX_CONSTANT_BUFFERS];
+	for (u32 i = 0; i < Count; ++i)
+		DXBuffer[i] = Buffers[i] ? ((CD3D11Buffer*)Buffers[i])->GetD3DObject() : nullptr;
+
+	ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
+	switch (Type)
 	{
-		ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
-
-		xr_vector<ID3D11Buffer*> DXBuffer;
-		DXBuffer.resize(Buffers.size());
-
-		u32 Iter = 0;
-		for (IRHIBuffer* Buffer : Buffers)
-		{
-			if (Min > Iter)
-			{
-				continue;
-			}
-
-			if (Buffer == nullptr)
-			{
-				break;
-			}
-
-			DXBuffer[Iter] = (((CD3D11Buffer*)Buffer)->GetD3DObject());
-			Iter++;
-		}
-
-		switch (Type)
-		{
-			case ERHI_SHADER_TYPE::PS: Context->PSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
-			case ERHI_SHADER_TYPE::VS: Context->VSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
-			case ERHI_SHADER_TYPE::GS: Context->GSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
-			case ERHI_SHADER_TYPE::HS: Context->HSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
-			case ERHI_SHADER_TYPE::DS: Context->DSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
-			case ERHI_SHADER_TYPE::CS: Context->CSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
-		}
+		case ERHI_SHADER_TYPE::PS: Context->PSSetConstantBuffers(Start, Count, DXBuffer); break;
+		case ERHI_SHADER_TYPE::VS: Context->VSSetConstantBuffers(Start, Count, DXBuffer); break;
+		case ERHI_SHADER_TYPE::GS: Context->GSSetConstantBuffers(Start, Count, DXBuffer); break;
+		case ERHI_SHADER_TYPE::HS: Context->HSSetConstantBuffers(Start, Count, DXBuffer); break;
+		case ERHI_SHADER_TYPE::DS: Context->DSSetConstantBuffers(Start, Count, DXBuffer); break;
+		case ERHI_SHADER_TYPE::CS: Context->CSSetConstantBuffers(Start, Count, DXBuffer); break;
 	}
 }
 

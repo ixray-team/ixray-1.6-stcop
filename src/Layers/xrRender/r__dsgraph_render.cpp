@@ -85,12 +85,22 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 										mapNormalItems&				items	= Ntex.val;
 										for (_NormalItem& Ni : items)
 										{
-											float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
+											float LOD = calcLOD(Ni.ssa, Ni.R);
 	#ifdef USE_DX11
 											RCache.LOD.set_LOD(LOD);
 	#endif
-											Ni.pVisual->Render(LOD);
-										}if(_clear)items.clear();
+											if (Ni.geom)
+											{
+												RCache.set_Geometry(Ni.geom);
+												RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Ni.vBase, 0, Ni.vCount, Ni.iBase, Ni.pCount);
+												RCache.stat.r.s_static.add(Ni.vCount);
+											}
+											else
+											{
+												Ni.pVisual->Render(LOD);
+											}
+										}
+										if(_clear)items.clear();
 									}if(_clear) tex.clear();
 								}if(_clear) states.clear();
 							}if(_clear) cs.clear();

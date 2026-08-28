@@ -10,6 +10,7 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
 		VERIFY(RCache.m_aPixelConstants[iBufferIndex]);
+		MarkDirty(*RCache.m_aPixelConstants[iBufferIndex]);
 		return *RCache.m_aPixelConstants[iBufferIndex];
 	}
 	else if (BType == BT_VertexBuffer)
@@ -19,6 +20,7 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
 		VERIFY(RCache.m_aVertexConstants[iBufferIndex]);
+		MarkDirty(*RCache.m_aVertexConstants[iBufferIndex]);
 		return *RCache.m_aVertexConstants[iBufferIndex];
 	}
 	else if (BType == BT_GeometryBuffer)
@@ -28,6 +30,7 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
 		VERIFY(RCache.m_aGeometryConstants[iBufferIndex]);
+		MarkDirty(*RCache.m_aGeometryConstants[iBufferIndex]);
 		return *RCache.m_aGeometryConstants[iBufferIndex];
 	}
 	else if (BType == BT_HullBuffer)
@@ -37,6 +40,7 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
 		VERIFY(RCache.m_aHullConstants[iBufferIndex]);
+		MarkDirty(*RCache.m_aHullConstants[iBufferIndex]);
 		return *RCache.m_aHullConstants[iBufferIndex];
 	}
 	else if (BType == BT_DomainBuffer)
@@ -46,6 +50,7 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
 		VERIFY(RCache.m_aDomainConstants[iBufferIndex]);
+		MarkDirty(*RCache.m_aDomainConstants[iBufferIndex]);
 		return *RCache.m_aDomainConstants[iBufferIndex];
 	}
 	else if (BType == BT_Compute)
@@ -55,6 +60,7 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
 		VERIFY(RCache.m_aComputeConstants[iBufferIndex]);
+		MarkDirty(*RCache.m_aComputeConstants[iBufferIndex]);
 		return *RCache.m_aComputeConstants[iBufferIndex];
 	}
 
@@ -64,26 +70,23 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 	return *ptr;
 }
 
+void R_constants::MarkDirty(dx10ConstantBuffer& Buffer)
+{
+	if (Buffer.IsQueued())
+		return;
+
+	VERIFY(m_dirty_count < std::size(m_dirty));
+	Buffer.SetQueued(true);
+	m_dirty[m_dirty_count++] = &Buffer;
+}
+
 void R_constants::flush_cache()
 {
-	for (int i = 0; i < CBackend::MaxCBuffers; ++i)
+	for (u32 i = 0; i < m_dirty_count; ++i)
 	{
-		if (RCache.m_aVertexConstants[i])
-			RCache.m_aVertexConstants[i]->Flush();
-
-		if (RCache.m_aPixelConstants[i])
-			RCache.m_aPixelConstants[i]->Flush();
-
-		if (RCache.m_aGeometryConstants[i])
-			RCache.m_aGeometryConstants[i]->Flush();
-
-		if (RCache.m_aHullConstants[i])
-			RCache.m_aHullConstants[i]->Flush();
-
-		if (RCache.m_aDomainConstants[i])
-			RCache.m_aDomainConstants[i]->Flush();
-
-		if (RCache.m_aComputeConstants[i])
-			RCache.m_aComputeConstants[i]->Flush();
+		m_dirty[i]->SetQueued(false);
+		m_dirty[i]->Flush();
 	}
-}
+
+	m_dirty_count = 0;
+}

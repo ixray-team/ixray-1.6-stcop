@@ -51,8 +51,8 @@ public:
     void ReleaseDeferredContext(ID3D11DeviceContext* context);
 
 private:
-    D3D_PRIMITIVE_TOPOLOGY d3dTopology;
-    ERHI_PRIMITIVE_TOPOLOGY currentTopology;
+    D3D_PRIMITIVE_TOPOLOGY d3dTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+    ERHI_PRIMITIVE_TOPOLOGY currentTopology = (ERHI_PRIMITIVE_TOPOLOGY)-1;
 	IRHIDepthStencilView* DepthStencilView = nullptr;
 
 public:
