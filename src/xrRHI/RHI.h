@@ -116,7 +116,7 @@ public:
 	[[nodiscard]] IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr);
 	[[nodiscard]] IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize);
 
-	void SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*>, ERHI_SHADER_TYPE Type);
+	void SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type);
 	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
 	void SetViewport(RHIViewport& VP);
 	void SetScissorRect(Irect* R);

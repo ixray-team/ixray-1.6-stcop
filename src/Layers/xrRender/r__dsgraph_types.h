@@ -65,10 +65,15 @@ class dxRender_Visual;
 namespace R_dsgraph
 {
 	// Elementary types
+	// geom==nullptr selects the virtual Render() path; MT_NORMAL visuals resolve their draw
+	// parameters at insert time so the render walk never dereferences the visual at all.
 	struct _NormalItem
 	{
 		float ssa;
+		float R;
 		dxRender_Visual* pVisual;
+		SGeometry* geom;
+		u32 vBase, vCount, iBase, pCount;
 	};
 
 	struct _MatrixItem

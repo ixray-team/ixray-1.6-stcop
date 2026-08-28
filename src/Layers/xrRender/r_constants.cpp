@@ -34,6 +34,7 @@ void	R_constant_table::fatal(const char* S)
 void R_constant_table::_copy(const R_constant_table& Other)
 {
 	table = Other.table;
+	handlers_valid = false;
 #ifdef USE_DX11
 	m_CBTable = Other.m_CBTable;
 #endif
@@ -155,6 +156,7 @@ bool	R_constant_table::parse(void* _desc, u32 destination)
 					L.index = u16(r_index + ((destination & 1) ? 0 : D3DVERTEXTEXTURESAMPLER0));
 					L.cls = RC_sampler;
 					table.push_back(C);
+					handlers_valid = false;
 				}
 				else {
 					R_ASSERT(C->destination == RC_dest_sampler);
@@ -189,6 +191,7 @@ bool	R_constant_table::parse(void* _desc, u32 destination)
 			L.index = r_index;
 			L.cls = r_type;
 			table.push_back(C);
+			handlers_valid = false;
 		}
 		else {
 			C->destination |= destination;
@@ -207,6 +210,8 @@ bool	R_constant_table::parse(void* _desc, u32 destination)
 void R_constant_table::merge(R_constant_table* T)
 {
 	if (nullptr == T)		return;
+
+	handlers_valid = false;
 
 	// Real merge
 	static xr_vector<ref_constant> table_tmp;
@@ -270,6 +275,7 @@ void R_constant_table::clear()
 	for (u32 it = 0; it < table.size(); it++)
 		table[it] = nullptr;//.g_constant_allocator.destroy(table[it]);
 	table.clear();
+	handlers_valid = false;
 #ifdef USE_DX11
 	m_CBTable.clear();
 #endif //USE_DX11

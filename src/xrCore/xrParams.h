@@ -43,6 +43,9 @@ enum ECoreParams
 	// Lua
 	keep_lua = 1 << 28, // Не выгружать Lua при смене уровней
 	no_debug_panel = 1 << 29, // Отключить ImGui панель отладки
+
+	// Test
+	autotest = 1 << 30, // Прогнать N кадров без окна и записать отчёт
 };
 
 void LoadParams();
