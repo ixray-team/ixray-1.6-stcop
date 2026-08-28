@@ -302,7 +302,9 @@ void CGamePersistent::WeathersUpdate()
 				}else
 				if(Device.dwTimeGlobal > ambient_sound_next_time[idx])
 				{
-					ref_sound& snd					= ch.get_rnd_sound();
+					ref_sound& snd = ch.get_rnd_sound();
+					if (!snd._p)
+						continue;
 
 					Fvector	pos;
 					float	angle		= ::Random.randF(PI_MUL_2);
