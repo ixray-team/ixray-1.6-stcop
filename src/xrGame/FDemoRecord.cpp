@@ -483,7 +483,8 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		p_cam_pos.add(CamMove);
 
 		Level().ObjectSpace.RayPick(Camera.c, Camera.k, 1000.f, collide::rq_target::rqtBoth, rq_result, nullptr);
-		view_from_bone_mode ? UpdateLookFromBone() : lap_lock ? UpdateLookAtPoint() : UpdateFreeLook();
+		view_from_bone_mode ? UpdateLookFromBone() : lap_lock ? UpdateLookAtPoint()
+															  : UpdateFreeLook();
 
 		p_cam_pos_smoothed.inertion(p_cam_pos, dr_cam_pos_inert);
 		Camera.translate_over(p_cam_pos_smoothed);
@@ -614,7 +615,7 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 			bone_id = BI_NONE;
 			bone_holder = nullptr;
 			bone_holder_kinematics = nullptr;
-			
+
 			view_from_bone_mode = false;
 		}
 		else
@@ -635,12 +636,12 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 			}
 		}
 	}
-	
+
 	if (dik == SDL_SCANCODE_K)
 	{
 		draw_skeleton = !draw_skeleton;
 	}
-	
+
 	if (dik == SDL_SCANCODE_J && !view_from_bone_mode)
 	{
 		if (lap_lock && p_lap != zero_vel)
@@ -700,18 +701,15 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 		m_b_redirect_input_to_level = !m_b_redirect_input_to_level;
 	}
 
+	if (m_b_redirect_input_to_level)
+	{
+		g_pGameLevel->IR_OnKeyboardPress(dik);
+		return;
+	}
+
 	if (dik == SDL_SCANCODE_LCTRL || dik == SDL_SCANCODE_RCTRL)
 	{
 		m_bEnableAcceleration = true;
-	}
-
-	if (m_b_redirect_input_to_level)
-	{
-		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
-		{
-			ControlEntityIR->IR_OnKeyboardPress(dik);
-		}
-		return;
 	}
 
 	if (dik == SDL_SCANCODE_GRAVE)
@@ -840,6 +838,15 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 	FrameTopDelta.add(Delta);
 }
 
+void CDemoRecord::IR_OnMousePress(int btn)
+{
+	if (m_b_redirect_input_to_level)
+	{
+		g_pGameLevel->IR_OnMousePress(btn);
+		return;
+	}
+}
+
 void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 {
 	if (m_b_redirect_input_to_level)
@@ -888,6 +895,15 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 	}
 
 	FrameRightDelta.add(RightDelta);
+}
+
+void CDemoRecord::IR_OnMouseRelease(int btn)
+{
+	if (m_b_redirect_input_to_level)
+	{
+		g_pGameLevel->IR_OnMouseRelease(btn);
+		return;
+	}
 }
 
 void CDemoRecord::IR_OnMouseWheel(int direction)
