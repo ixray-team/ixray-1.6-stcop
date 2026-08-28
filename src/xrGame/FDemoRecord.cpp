@@ -564,10 +564,18 @@ void CDemoRecord::UpdateLookFromBone()
 	Fvector bone_world_hpb;
 	bone_world_xfrom.getHPB(bone_world_hpb);
 
-	if (bone_holder->cast_helicopter() == nullptr)
-	{
-		bone_world_hpb.z += PI_DIV_2;
-	}
+	Fvector r, n, d;
+
+	d = bone_world_xfrom.k;
+	r.crossproduct(d, {0.f, 1.f, 0.f}).normalize_safe();
+	n.crossproduct(r, d).normalize_safe();
+
+	Fmatrix restored_basis;
+	restored_basis.i = r;
+	restored_basis.j = n;
+	restored_basis.k = d;
+
+	restored_basis.getHPB(bone_world_hpb);
 
 	Fvector blend_view_offset = {
 		bone_world_hpb.x + -hpb_view_from_bone_offset.x,
