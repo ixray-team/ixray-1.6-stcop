@@ -560,18 +560,18 @@ void CDemoRecord::UpdateLookFromBone()
 	Fmatrix bone_world_xfrom;
 	bone_holder_kinematics->LL_GetBoneWorldTransform(bone_id, bone_holder->XFORM(), bone_world_xfrom);
 
-	Fvector head_bone_hpb;
-	bone_world_xfrom.getHPB(head_bone_hpb);
+	Fvector bone_world_hpb;
+	bone_world_xfrom.getHPB(bone_world_hpb);
 	
 	if (bone_holder->cast_helicopter() == nullptr)
 	{
-		head_bone_hpb.z += PI_DIV_2;
+		bone_world_hpb.z += PI_DIV_2;
 	}
 	
 	Fvector target_eulers = {
-		hpb_current.x + angle_difference_signed(head_bone_hpb.x, hpb_current.x),
-		hpb_current.y + angle_difference_signed(head_bone_hpb.y, hpb_current.y),
-		hpb_current.z + angle_difference_signed(head_bone_hpb.z, hpb_current.z),
+		hpb_current.x + angle_difference_signed(bone_world_hpb.x, hpb_current.x),
+		hpb_current.y + angle_difference_signed(bone_world_hpb.y, hpb_current.y),
+		hpb_current.z + angle_difference_signed(bone_world_hpb.z, hpb_current.z),
 	};
 	
 	hpb_current.inertion(target_eulers, dr_cam_inert);
