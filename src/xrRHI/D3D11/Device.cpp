@@ -621,6 +621,9 @@ void InternalDevice11::SetViewport(RHIViewport& VP)
 
 void InternalDevice11::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
 {
+	if (currentTopology == topology)
+		return;
+
 	currentTopology = topology;
 	d3dTopology = (D3D_PRIMITIVE_TOPOLOGY)(topology);
 	HWRenderContext->IASetPrimitiveTopology(d3dTopology);

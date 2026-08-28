@@ -4,6 +4,7 @@ constexpr u32 RHI_VERTEX_TEXTURESAMPLER = 256;
 constexpr u32 RHI_REQ_TEXTURE2D_U_OR_V_DIMENSION = 16384;
 constexpr u32 RHI_SHADERS_TYPE_SIZE = 6;
 constexpr u32 RHI_MAX_RENDER_TARGETS = 6;
+constexpr u32 RHI_MAX_CONSTANT_BUFFERS = 22;
 constexpr u32 RHI_APPEND_ALIGNED_ELEMENT = 0xffffffff;
 
 // Legacy shit

@@ -3,6 +3,7 @@
 #include "UIEditorMain.h"
 
 #include "../xrEngine/x_ray.h"
+#include "../xrEngine/Autotest.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/string_table.h"
@@ -44,7 +45,7 @@ int CApplication::Run()
 
 	s.join();
 
-	return 0;
+	return Autotest::Verdict();
 }
 
 void CApplication::InitEngine()
@@ -191,6 +192,9 @@ void CApplication::MigrateToGameWindow()
 	Console->Execute("vid_restart");
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Device.Width, &Device.Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
+
+	if (Autotest::Active())
+		SDL_HideWindow(g_AppInfo.Window);
 }
 
 void CApplication::LoadCustomSettings()
