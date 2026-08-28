@@ -362,8 +362,22 @@ u32	CMonsterHome::get_place()
 		VERIFY	(m_path);		
 
 		//get_random_point
-		const CPatrolPath::CVertex *vertex = m_path->vertex(Random.randI(m_path->vertex_count()));
-		
+		s32 vertex_id = Random.randI(m_path->vertex_count());
+
+		// check vertex is valid
+		if (vertex_id >= m_path->vertex_count())
+		{
+			return m_object->ai_location().level_vertex_id();
+		}
+
+		const CPatrolPath::CVertex* vertex = m_path->vertex(vertex_id);
+
+		// check level vertex is valid
+		if (!ai().level_graph().valid_vertex_id(vertex->data().level_vertex_id()))
+		{
+			return m_object->ai_location().level_vertex_id();
+		}
+
 		//get_random node
 		m_object->control().path_builder().get_node_in_radius(vertex->data().level_vertex_id(), m_radius_min, m_radius_min + (m_radius_max - m_radius_min)/2, 5, result);
 		if (result == u32(-1)) {
