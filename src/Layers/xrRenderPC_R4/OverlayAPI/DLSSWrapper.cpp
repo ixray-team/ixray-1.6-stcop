@@ -46,13 +46,13 @@ void DLSSWrapper::Create()
 	}
 
 #ifdef IXR_X64
-	NVSDK_NGX_Result result;
+	NVSDK_NGX_Result Result;
 
 	if (!DLSSInited)
 	{
-		result = NVSDK_NGX_D3D11_Init(1602, L"", RDevice);
+		Result = NVSDK_NGX_D3D11_Init(1602, L"", RDevice);
 
-		if (result != NVSDK_NGX_Result_Success)
+		if (Result != NVSDK_NGX_Result_Success)
 		{
 			return;
 		}
@@ -60,25 +60,25 @@ void DLSSWrapper::Create()
 		DLSSInited = true;
 	}
 
-	result = NVSDK_NGX_D3D11_GetCapabilityParameters(&NgxParameters);
+	Result = NVSDK_NGX_D3D11_GetCapabilityParameters(&NgxParameters);
 
-	if (result != NVSDK_NGX_Result_Success)
+	if (Result != NVSDK_NGX_Result_Success)
 	{
 		return;
 	}
 
-	uint32_t needsUpdatedDriver = 1;
-	result = NgxParameters->Get(NVSDK_NGX_Parameter_SuperSampling_NeedsUpdatedDriver, &needsUpdatedDriver);
+	uint32_t NeedsUpdatedDriver = 1;
+	Result = NgxParameters->Get(NVSDK_NGX_Parameter_SuperSampling_NeedsUpdatedDriver, &NeedsUpdatedDriver);
 
-	if (needsUpdatedDriver)
+	if (NeedsUpdatedDriver)
 	{
 		Msg("! PLEASE UPDATE YOUR DRIVER");
 	}
 
-	uint32_t dlssAvailable = 0;
-	result = NgxParameters->Get(NVSDK_NGX_Parameter_SuperSampling_Available, &dlssAvailable);
+	uint32_t DlssAvailable = 0;
+	Result = NgxParameters->Get(NVSDK_NGX_Parameter_SuperSampling_Available, &DlssAvailable);
 
-	if (!dlssAvailable)
+	if (!DlssAvailable)
 	{
 		NVSDK_NGX_D3D11_DestroyParameters(NgxParameters);
 		NgxParameters = nullptr;
@@ -99,48 +99,47 @@ bool DLSSWrapper::GetRenderScale(float& RenderScale)
 
 	u32 PresetID = GetOptimalPresetForScale(ps_render_scale);
 
-	NVSDK_NGX_PerfQuality_Value perfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
+	NVSDK_NGX_PerfQuality_Value PerfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
 
 	switch (PresetID)
 	{
 		case 4:
 		{
-			perfQualityValue = NVSDK_NGX_PerfQuality_Value_UltraPerformance;
+			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_UltraPerformance;
 			break;
 		}
 		case 3:
 		{
-			perfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxPerf;
+			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxPerf;
 			break;
 		}
 		case 2:
 		{
-			perfQualityValue = NVSDK_NGX_PerfQuality_Value_Balanced;
+			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_Balanced;
 			break;
 		}
 		case 1:
 		{
-			perfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxQuality;
+			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxQuality;
 			break;
 		}
 		default:
 		{
-			perfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
+			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
 			break;
 		}
 	}
 
+	u32 RenderW = 0, RenderH = 0, MaxW = 0, MinW = 0, MaxH = 0, MinH = 0; float Sharp = 0;
+	NVSDK_NGX_Result Result = NGX_DLSS_GET_OPTIMAL_SETTINGS(NgxParameters, Device.TargetWidth, Device.TargetHeight, PerfQualityValue, &RenderW, &RenderH, &MaxW, &MaxH, &MinW, &MinH, &Sharp);
 
-	u32 RenderW = 0, RenderH = 0, MaxW = 0, MinW = 0, MaxH = 0, MinH = 0; float sharp = 0;
-	NVSDK_NGX_Result result = NGX_DLSS_GET_OPTIMAL_SETTINGS(NgxParameters, Device.TargetWidth, Device.TargetHeight, perfQualityValue, &RenderW, &RenderH, &MaxW, &MaxH, &MinW, &MinH, &sharp);
-
-	if (result != NVSDK_NGX_Result_Success)
+	if (Result != NVSDK_NGX_Result_Success)
 	{
 		Msg("! NGX_DLSS_GET_OPTIMAL_SETTINGS not valid. Fallback!");
 		return false;
 	}
 
-	Msg("* DLSS Target - %dx%d, Min - %dx%d, Max - %dx%d, Sharp - %f", RenderW, RenderH, MaxW, MaxH, MinW, MinH, sharp);
+	Msg("* DLSS Target - %dx%d, Min - %dx%d, Max - %dx%d, Sharp - %f", RenderW, RenderH, MaxW, MaxH, MinW, MinH, Sharp);
 	RenderScale = float(RenderH) / float(Device.TargetHeight);
 
 	return true;
@@ -148,7 +147,7 @@ bool DLSSWrapper::GetRenderScale(float& RenderScale)
 
 void DLSSWrapper::Resize(const ContextParameters& Parameters)
 {
-	PROF_EVENT("DLSSWrapper::Create");
+	PROF_EVENT("DLSSWrapper::Resize");
 
 	if (!Created)
 	{
@@ -159,63 +158,65 @@ void DLSSWrapper::Resize(const ContextParameters& Parameters)
 	// Устанавливаем пресет для выбранного режима качества
 	u32 PresetID = GetOptimalPresetForScale(ps_render_scale);
 
-	NVSDK_NGX_PerfQuality_Value perfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
-	shared_str presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_DLAA;
+	NVSDK_NGX_PerfQuality_Value PerfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
+	shared_str RenderPreset = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_DLAA;
 
 	switch (PresetID)
 	{
 		case 4:
 		{
-			perfQualityValue = NVSDK_NGX_PerfQuality_Value_UltraPerformance;
-			presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraPerformance;
+			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_UltraPerformance;
+			RenderPreset = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraPerformance;
 			break;
 		}
 		case 3:
 		{
-			perfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxPerf;
-			presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Performance;
+			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxPerf;
+			RenderPreset = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Performance;
 			break;
 		}
 		case 2:
 		{
-			perfQualityValue = NVSDK_NGX_PerfQuality_Value_Balanced;
-			presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Balanced;
+			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_Balanced;
+			RenderPreset = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Balanced;
 			break;
 		}
 		case 1:
 		{
-			perfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxQuality;
-			presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Quality;
+			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxQuality;
+			RenderPreset = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Quality;
 			break;
 		}
 		default:
 		{
-			perfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
-			presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_DLAA;
+			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
+			RenderPreset = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_DLAA;
 			break;
 		}
 	}
 
-	NgxParameters->Set(presetParameter.c_str(), static_cast<int>(NVSDK_NGX_DLSS_Hint_Render_Preset_F));
+	NgxParameters->Set(*RenderPreset, static_cast<int>(NVSDK_NGX_DLSS_Hint_Render_Preset_K));
 
-	int32_t flags = 0; // NVSDK_NGX_DLSS_Feature_Flags_DoSharpening
-	flags |= NVSDK_NGX_DLSS_Feature_Flags_MVLowRes;
-	flags |= NVSDK_NGX_DLSS_Feature_Flags_IsHDR;
+	Msg("* Resize DLSSWrapper Render Preset [%s]", *RenderPreset);
 
-	NVSDK_NGX_DLSS_Create_Params dlssCreateParams = {};
+	NVSDK_NGX_DLSS_Create_Params DLSSCreateParams = {};
 
-	dlssCreateParams.Feature.InWidth = Parameters.renderSize.x;
-	dlssCreateParams.Feature.InHeight = Parameters.renderSize.y;
+	DLSSCreateParams.Feature.InWidth = Parameters.renderSize.x;
+	DLSSCreateParams.Feature.InHeight = Parameters.renderSize.y;
 
-	dlssCreateParams.Feature.InTargetWidth = Parameters.displaySize.x;
-	dlssCreateParams.Feature.InTargetHeight = Parameters.displaySize.y;
+	DLSSCreateParams.Feature.InTargetWidth = Parameters.displaySize.x;
+	DLSSCreateParams.Feature.InTargetHeight = Parameters.displaySize.y;
 
-	dlssCreateParams.Feature.InPerfQualityValue = perfQualityValue;
-	dlssCreateParams.InFeatureCreateFlags = flags;
+	DLSSCreateParams.Feature.InPerfQualityValue = PerfQualityValue;
+	DLSSCreateParams.InFeatureCreateFlags = 0;
 
-	NVSDK_NGX_Result result = NGX_D3D11_CREATE_DLSS_EXT(RContext, &Handle, NgxParameters, &dlssCreateParams);
+	DLSSCreateParams.InFeatureCreateFlags |= NVSDK_NGX_DLSS_Feature_Flags_IsHDR;
+	DLSSCreateParams.InFeatureCreateFlags |= NVSDK_NGX_DLSS_Feature_Flags_MVLowRes;
+	DLSSCreateParams.InFeatureCreateFlags |= NVSDK_NGX_DLSS_Feature_Flags_AutoExposure;
 
-	if (result != NVSDK_NGX_Result_Success)
+	NVSDK_NGX_Result Result = NGX_D3D11_CREATE_DLSS_EXT(RContext, &Handle, NgxParameters, &DLSSCreateParams);
+
+	if (Result != NVSDK_NGX_Result_Success)
 	{
 		Msg("! NGX_D3D11_CREATE_DLSS_EXT not valid. Need use FSR");
 		Created = false;
@@ -258,36 +259,32 @@ bool DLSSWrapper::Draw(const DrawParameters& params)
 	}
 
 #ifdef IXR_X64
-	ID3D11Resource* resourceInput = params.unresolvedColorResource;
-	ID3D11Resource* resourceMv = params.motionvectorResource;
-	ID3D11Resource* resourceDepth = params.depthbufferResource;
-	ID3D11Resource* resourceOutput = params.resolvedColorResource;
+	NVSDK_NGX_D3D11_DLSS_Eval_Params DLSSEvalParams = {};
 
-	NVSDK_NGX_D3D11_DLSS_Eval_Params dlssEvalParams = {};
+	DLSSEvalParams.Feature.pInColor = params.unresolvedColorResource;
+	DLSSEvalParams.Feature.pInOutput = params.resolvedColorResource;
+	DLSSEvalParams.Feature.InSharpness = params.sharpness;
 
-	dlssEvalParams.Feature.pInColor = resourceInput;
-	dlssEvalParams.Feature.pInOutput = resourceOutput;
-	dlssEvalParams.Feature.InSharpness = params.sharpness;
+	DLSSEvalParams.pInDepth = params.depthbufferResource;
+	DLSSEvalParams.pInMotionVectors = params.motionvectorResource;
 
-	dlssEvalParams.pInDepth = resourceDepth;
-	dlssEvalParams.pInMotionVectors = resourceMv;
+	DLSSEvalParams.InRenderSubrectDimensions.Width = params.renderWidth;
+	DLSSEvalParams.InRenderSubrectDimensions.Height = params.renderHeight;
 
-	dlssEvalParams.InRenderSubrectDimensions.Width = params.renderWidth;
-	dlssEvalParams.InRenderSubrectDimensions.Height = params.renderHeight;
+	DLSSEvalParams.InJitterOffsetX = params.cameraJitterX;
+	DLSSEvalParams.InJitterOffsetY = params.cameraJitterY;
 
-	dlssEvalParams.InJitterOffsetX = params.cameraJitterX;
-	dlssEvalParams.InJitterOffsetY = params.cameraJitterY;
+	DLSSEvalParams.InReset = params.cameraReset;
 
-	dlssEvalParams.InReset = params.cameraReset;
+	DLSSEvalParams.InMVScaleX = -(float)params.renderWidth * 0.5f;
+	DLSSEvalParams.InMVScaleY = (float)params.renderHeight * 0.5f;
 
-	// adjust the x direction in motion vector to fit FSR2's requirement
-	dlssEvalParams.InMVScaleX = -(float)params.renderWidth * 0.5f;
-	dlssEvalParams.InMVScaleY = (float)params.renderHeight * 0.5f;
-
-	dlssEvalParams.pInTransparencyMask = params.transparencyAndCompositionResource;
+	DLSSEvalParams.pInTransparencyMask = params.transparencyAndCompositionResource;
+	DLSSEvalParams.InFrameTimeDeltaInMsec = params.frameTimeDelta;
 	
-	NVSDK_NGX_Result result = NGX_D3D11_EVALUATE_DLSS_EXT(RContext, Handle, NgxParameters, &dlssEvalParams);
-	if(result != NVSDK_NGX_Result_Success)
+	NVSDK_NGX_Result Result = NGX_D3D11_EVALUATE_DLSS_EXT(RContext, Handle, NgxParameters, &DLSSEvalParams);
+
+	if(Result != NVSDK_NGX_Result_Success)
 	{
 		Msg("! NGX_D3D11_EVALUATE_DLSS_EXT not valid. Need use FSR");
 		return false;
