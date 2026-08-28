@@ -68,18 +68,20 @@ class CDemoRecord :
 
 public:
 	CDemoRecord(const char* name, float life_time = 60 * 60 * 1000);
-	virtual ~CDemoRecord();
+	~CDemoRecord() override;
 
-	virtual void IR_OnKeyboardPress(int dik);
-	virtual void IR_OnKeyboardRelease(int dik);
-	virtual void IR_OnKeyboardHold(int dik);
-	virtual void IR_OnMouseMove(int dx, int dy);
-	virtual void IR_OnMouseWheel(int direction);
-	virtual void IR_OnMouseHold(int btn);
-	virtual void IR_GamepadUpdateStick(int id, Fvector2 value);
-	virtual void IR_GamepadKeyPress(int id);
+	virtual void IR_OnKeyboardPress(int dik) override;
+	virtual void IR_OnKeyboardRelease(int dik) override;
+	virtual void IR_OnKeyboardHold(int dik) override;
+	virtual void IR_OnMousePress(int btn) override;
+	virtual void IR_OnMouseMove(int dx, int dy) override;
+	virtual void IR_OnMouseRelease(int btn) override;
+	virtual void IR_OnMouseWheel(int direction) override;
+	virtual void IR_OnMouseHold(int btn) override;
+	virtual void IR_GamepadUpdateStick(int id, Fvector2 value) override;
+	virtual void IR_GamepadKeyPress(int id) override;
 
-	virtual bool ProcessCam(SCamEffectorInfo& info);
+	bool ProcessCam(SCamEffectorInfo& info) override;
 	void UpdateLookAtPoint();
 	void UpdateFreeLook();
 	void UpdateLookFromBone();
@@ -87,5 +89,5 @@ public:
 	static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
 	static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
 	bool m_b_redirect_input_to_level;
-	virtual void OnRender();
+	void OnRender() override;
 };
