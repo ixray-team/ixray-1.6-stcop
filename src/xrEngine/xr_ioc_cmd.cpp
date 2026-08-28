@@ -805,6 +805,7 @@ void CCC_Register()
 	
 	// Sound
 	CMD4(CCC_Float,     "snd_compression",      &psSoundCompression, 0.0f, 1.0f);
+	CMD4(CCC_Float,     "snd_doppler",          &psSoundDoppler, 0.0f, 10.0f);
 	CMD2(CCC_Float,		"snd_volume_eff",		&psSoundVEffects);
 	CMD2(CCC_Float,		"snd_volume_music",		&psSoundVMusic);
 	CMD2(CCC_Float,		"snd_volume_shooting",	&psSoundVShooting);
