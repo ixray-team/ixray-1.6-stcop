@@ -28,6 +28,7 @@ class CDemoRecord :
 
 	Fvector hpb;
 	Fvector hpb_current;
+	Fvector hpb_view_from_bone_offset;
 
 	collide::rq_result rq_result;
 

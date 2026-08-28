@@ -562,18 +562,24 @@ void CDemoRecord::UpdateLookFromBone()
 
 	Fvector bone_world_hpb;
 	bone_world_xfrom.getHPB(bone_world_hpb);
-	
+
 	if (bone_holder->cast_helicopter() == nullptr)
 	{
 		bone_world_hpb.z += PI_DIV_2;
 	}
-	
-	Fvector target_eulers = {
-		hpb_current.x + angle_difference_signed(bone_world_hpb.x, hpb_current.x),
-		hpb_current.y + angle_difference_signed(bone_world_hpb.y, hpb_current.y),
-		hpb_current.z + angle_difference_signed(bone_world_hpb.z, hpb_current.z),
+
+	Fvector blend_view_offset = {
+		bone_world_hpb.x + -hpb_view_from_bone_offset.x,
+		bone_world_hpb.y + -hpb_view_from_bone_offset.y,
+		bone_world_hpb.z + hpb_view_from_bone_offset.z,
 	};
-	
+
+	Fvector target_eulers = {
+		hpb_current.x + angle_difference_signed(blend_view_offset.x, hpb_current.x),
+		hpb_current.y + angle_difference_signed(blend_view_offset.y, hpb_current.y),
+		hpb_current.z + angle_difference_signed(blend_view_offset.z, hpb_current.z),
+	};
+
 	hpb_current.inertion(target_eulers, dr_cam_inert);
 	p_cam_pos.set(bone_world_pos);
 	Camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
@@ -596,6 +602,11 @@ void CDemoRecord::ParseActorCam()
 
 void CDemoRecord::IR_OnKeyboardPress(int dik)
 {
+	if (dik == SDL_SCANCODE_R && view_from_bone_mode)
+	{
+		hpb_view_from_bone_offset.set(zero_vel);
+	}
+
 	if (dik == SDL_SCANCODE_U && !lap_lock)
 	{
 		if (view_from_bone_mode && bone_id != BI_NONE && bone_holder_kinematics != nullptr)
@@ -761,6 +772,16 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 		return;
 	}
 
+	if (dik == SDL_SCANCODE_Q && view_from_bone_mode)
+	{
+		hpb_view_from_bone_offset.z -= 1.f * Device.fTimeDelta;
+	}
+
+	if (dik == SDL_SCANCODE_E && view_from_bone_mode)
+	{
+		hpb_view_from_bone_offset.z += 1.f * Device.fTimeDelta;
+	}
+
 	Fvector Delta = Fvector();
 
 	if (!NewInputSchema)
@@ -828,6 +849,23 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 			ControlEntityIR->IR_OnMouseMove(dx, dy);
 		}
 		return;
+	}
+
+	if (view_from_bone_mode && IR_GetKeyState(SDL_SCANCODE_LSHIFT))
+	{
+		float d_scale = Actor()->cam_Active()->f_fov / g_fov * psMouseSens * psMouseSensScale / 50.f;
+
+		if (dx)
+		{
+			float d = static_cast<float>(dx) * d_scale;
+			hpb_view_from_bone_offset.x += d < 0.f ? -std::abs(d) : std::abs(d);
+		}
+
+		if (dy)
+		{
+			float d = (psMouseInvert ? -1.f : 1.f) * static_cast<float>(dy) * d_scale * (3.f / 4.f);
+			hpb_view_from_bone_offset.y += d > 0.f ? std::abs(d) : -std::abs(d);
+		}
 	}
 
 	Fvector RightDelta = Fvector();
