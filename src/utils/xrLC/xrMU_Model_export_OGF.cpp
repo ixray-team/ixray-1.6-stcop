@@ -128,7 +128,6 @@ void export_ogf( xrMU_Reference& mu_reference )
 			pOGF->c_bias = Ref.c_bias;
 
 			pOGF->CalcBounds();
-			generated_ids.push_back((u32)g_tree.size());
 
 			csThreadLock.Enter();
 			GeneratedIds.push_back((u32)g_tree.size());
@@ -178,25 +177,25 @@ void export_ogf( xrMU_Reference& mu_reference )
 	AttackLOD(new OGF_LOD_MU0(1, mu_reference.sector));
 	{
 		generated_ids.clear();
-		auto& LOD1Model = *CBuild::mu_models()[mu_reference.model->LODsID[0]];
+		auto& LOD1Model = *pBuild->mu_models()[mu_reference.model->LODsID[0]];
 		MakeRef(LOD1Model, generated_ids, mu_reference);
 		AttackLOD(new OGF_LOD_MU1(1, mu_reference.sector));
 	}
 	{
 		generated_ids.clear();
-		auto& LOD2Model = *CBuild::mu_models()[mu_reference.model->LODsID[1]];
+		auto& LOD2Model = *pBuild->mu_models()[mu_reference.model->LODsID[1]];
 		MakeRef(LOD2Model, generated_ids, mu_reference);
 		AttackLOD(new OGF_LOD_MU2(1, mu_reference.sector));
 	}
 	{
 		generated_ids.clear();
-		auto& LOD3Model = *CBuild::mu_models()[mu_reference.model->LODsID[2]];
+		auto& LOD3Model = *pBuild->mu_models()[mu_reference.model->LODsID[2]];
 		MakeRef(LOD3Model, generated_ids, mu_reference);
 		AttackLOD(new OGF_LOD_MU3(1, mu_reference.sector));
 	}
 	{
 		generated_ids.clear();
-		auto& LOD4Model = *CBuild::mu_models()[mu_reference.model->LODsID[3]];
+		auto& LOD4Model = *pBuild->mu_models()[mu_reference.model->LODsID[3]];
 		MakeRef(LOD4Model, generated_ids, mu_reference);
 		AttackLOD(new OGF_LOD_MU4(1, mu_reference.sector));
 	} 

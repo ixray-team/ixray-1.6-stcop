@@ -453,25 +453,23 @@ void OGF_MESH_LODS::Save(IWriter& fs)
 	OGF_Base::Save		(fs);
 
 	// Header
-	fs.make_chunk(OGF_HEADER, [this](IWriter& F)
-	{
-		ogf_header H;
-		H.format_version	= xrOGF_FormatVersion;
-		H.type				= MT_MESH_LODS;
-		H.shader_id			= 0;
-		H.bb.min			= bbox.min;
-		H.bb.max			= bbox.max;
-		H.bs.c				= C;
-		H.bs.r				= R;
-		F.w				(&H,sizeof(H));
-	});
+	fs.open_chunk(OGF_HEADER);
+	ogf_header H;
+	H.format_version	= xrOGF_FormatVersion;
+	H.type				= MT_MESH_LODS;
+	H.shader_id			= 0;
+	H.bb.min			= bbox.min;
+	H.bb.max			= bbox.max;
+	H.bs.c				= C;
+	H.bs.r				= R;
+	fs.w				(&H,sizeof(H));
+	fs.close_chunk();
 
 	// Children
-	fs.make_chunk(OGF_CHILDREN_L, [this](IWriter& F)
-	{
-		F.w_u32(chields.size());
-		F.w(chields.data(),chields.size()*sizeof(u32));
-	});
+	fs.open_chunk(OGF_CHILDREN_L);
+	fs.w_u32(chields.size());
+	fs.w(chields.data(),chields.size()*sizeof(u32));
+	fs.close_chunk();
 }
 
 void OGF_LOD_MU0::Save(IWriter& fs)
@@ -479,25 +477,23 @@ void OGF_LOD_MU0::Save(IWriter& fs)
 	OGF_Base::Save		(fs);
 
 	// Header
-	fs.make_chunk(OGF_HEADER, [this](IWriter& F)
-	{
-		ogf_header H;
-		H.format_version	= xrOGF_FormatVersion;
-		H.type				= MT_LOD0;
-		H.shader_id			= 0;
-		H.bb.min			= bbox.min;
-		H.bb.max			= bbox.max;
-		H.bs.c				= C;
-		H.bs.r				= R;
-		F.w				(&H,sizeof(H));
-	});
+	fs.open_chunk(OGF_HEADER);
+	ogf_header H;
+	H.format_version	= xrOGF_FormatVersion;
+	H.type				= MT_LOD0;
+	H.shader_id			= 0;
+	H.bb.min			= bbox.min;
+	H.bb.max			= bbox.max;
+	H.bs.c				= C;
+	H.bs.r				= R;
+	fs.w				(&H,sizeof(H));
+	fs.close_chunk();
 
 	// Children
-	fs.make_chunk(OGF_CHILDREN_L, [this](IWriter& F)
-	{
-		F.w_u32(chields.size());
-		F.w(chields.data(),chields.size()*sizeof(u32));
-	});
+	fs.open_chunk(OGF_CHILDREN_L);
+	fs.w_u32(chields.size());
+	fs.w(chields.data(),chields.size()*sizeof(u32));
+	fs.close_chunk();
 }
 
 //LOD1
@@ -506,25 +502,23 @@ void OGF_LOD_MU1::Save	(IWriter &fs)
 	OGF_Base::Save		(fs);
 
 	// Header
-	fs.make_chunk(OGF_HEADER, [this](IWriter& F)
-	{
-		ogf_header H;
-		H.format_version	= xrOGF_FormatVersion;
-		H.type				= MT_LOD1;
-		H.shader_id			= 0;
-		H.bb.min			= bbox.min;
-		H.bb.max			= bbox.max;
-		H.bs.c				= C;
-		H.bs.r				= R;
-		F.w				(&H,sizeof(H));
-	});
+	fs.open_chunk(OGF_HEADER);
+	ogf_header H;
+	H.format_version	= xrOGF_FormatVersion;
+	H.type				= MT_LOD1;
+	H.shader_id			= 0;
+	H.bb.min			= bbox.min;
+	H.bb.max			= bbox.max;
+	H.bs.c				= C;
+	H.bs.r				= R;
+	fs.w				(&H,sizeof(H));
+	fs.close_chunk();
 
 	// Children
-	fs.make_chunk(OGF_CHILDREN_L, [this](IWriter& F)
-	{
-		F.w_u32(chields.size());
-		F.w(chields.data(),chields.size()*sizeof(u32));
-	});
+	fs.open_chunk(OGF_CHILDREN_L);
+	fs.w_u32(chields.size());
+	fs.w(chields.data(),chields.size()*sizeof(u32));
+	fs.close_chunk();
 }
 
 //LOD2
@@ -533,25 +527,23 @@ void OGF_LOD_MU2::Save	(IWriter &fs)
 	OGF_Base::Save		(fs);
 
 	// Header
-	fs.make_chunk(OGF_HEADER, [this](IWriter& F)
-	{
-		ogf_header H;
-		H.format_version	= xrOGF_FormatVersion;
-		H.type				= MT_LOD2;
-		H.shader_id			= 0;
-		H.bb.min			= bbox.min;
-		H.bb.max			= bbox.max;
-		H.bs.c				= C;
-		H.bs.r				= R;
-		F.w				(&H,sizeof(H));
-	});
+	fs.open_chunk(OGF_HEADER);
+	ogf_header H;
+	H.format_version	= xrOGF_FormatVersion;
+	H.type				= MT_LOD2;
+	H.shader_id			= 0;
+	H.bb.min			= bbox.min;
+	H.bb.max			= bbox.max;
+	H.bs.c				= C;
+	H.bs.r				= R;
+	fs.w				(&H,sizeof(H));
+	fs.close_chunk();
 
 	// Children
-	fs.make_chunk(OGF_CHILDREN_L, [this](IWriter& F)
-	{
-		F.w_u32(chields.size());
-		F.w(chields.data(),chields.size()*sizeof(u32));
-	});
+	fs.open_chunk(OGF_CHILDREN_L);
+	fs.w_u32(chields.size());
+	fs.w(chields.data(),chields.size()*sizeof(u32));
+	fs.close_chunk();
 }
 
 //LOD3
@@ -560,25 +552,23 @@ void OGF_LOD_MU3::Save	(IWriter &fs)
 	OGF_Base::Save		(fs);
 
 	// Header
-	fs.make_chunk(OGF_HEADER, [this](IWriter& F)
-	{
-		ogf_header H;
-		H.format_version	= xrOGF_FormatVersion;
-		H.type				= MT_LOD3;
-		H.shader_id			= 0;
-		H.bb.min			= bbox.min;
-		H.bb.max			= bbox.max;
-		H.bs.c				= C;
-		H.bs.r				= R;
-		F.w				(&H,sizeof(H));
-	});
+	fs.open_chunk(OGF_HEADER);
+	ogf_header H;
+	H.format_version	= xrOGF_FormatVersion;
+	H.type				= MT_LOD3;
+	H.shader_id			= 0;
+	H.bb.min			= bbox.min;
+	H.bb.max			= bbox.max;
+	H.bs.c				= C;
+	H.bs.r				= R;
+	fs.w				(&H,sizeof(H));
+	fs.close_chunk();
 
 	// Children
-	fs.make_chunk(OGF_CHILDREN_L, [this](IWriter& F)
-	{
-		F.w_u32(chields.size());
-		F.w(chields.data(),chields.size()*sizeof(u32));
-	});
+	fs.open_chunk(OGF_CHILDREN_L);
+	fs.w_u32(chields.size());
+	fs.w(chields.data(),chields.size()*sizeof(u32));
+	fs.close_chunk();
 }
 
 //LOD4
@@ -587,23 +577,21 @@ void OGF_LOD_MU4::Save	(IWriter &fs)
 	OGF_Base::Save		(fs);
 
 	// Header
-	fs.make_chunk(OGF_HEADER, [this](IWriter& F)
-	{
-		ogf_header H;
-		H.format_version	= xrOGF_FormatVersion;
-		H.type				= MT_LOD4;
-		H.shader_id			= 0;
-		H.bb.min			= bbox.min;
-		H.bb.max			= bbox.max;
-		H.bs.c				= C;
-		H.bs.r				= R;
-		F.w				(&H,sizeof(H));
-	});
+	fs.open_chunk(OGF_HEADER);
+	ogf_header H;
+	H.format_version	= xrOGF_FormatVersion;
+	H.type				= MT_LOD4;
+	H.shader_id			= 0;
+	H.bb.min			= bbox.min;
+	H.bb.max			= bbox.max;
+	H.bs.c				= C;
+	H.bs.r				= R;
+	fs.w				(&H,sizeof(H));
+	fs.close_chunk();
 
 	// Children
-	fs.make_chunk(OGF_CHILDREN_L, [this](IWriter& F)
-	{
-		F.w_u32(chields.size());
-		F.w(chields.data(),chields.size()*sizeof(u32));
-	});
+	fs.open_chunk(OGF_CHILDREN_L);
+	fs.w_u32(chields.size());
+	fs.w(chields.data(),chields.size()*sizeof(u32));
+	fs.close_chunk();
 }
