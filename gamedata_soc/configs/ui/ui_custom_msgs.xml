@@ -42,11 +42,11 @@
 		<text font="graffiti22"  r="240" g="217" b="182" a="255" align="c"/>
 	</game_saved>
 
-	<autosave  x="100" y="700" width="800" height="30">
+	<autosave  x="100" y="730" width="800" height="30">
 		<text font="graffiti22"  r="240" g="217" b="182" a="255" align="c">st_autosave</text>
 	</autosave>
 	
-	<item_used  x="100" y="730" width="800" height="30">
+	<item_used  x="100" y="700" width="800" height="30">
 		<text font="graffiti22"  r="240" g="217" b="182" a="255" align="c"/>
 	</item_used>
 
@@ -58,7 +58,7 @@
 		<text font="graffiti22"  r="240" g="217" b="182" a="255" align="c">cant_walk</text>
 	</cant_walk>
 	
-	<cant_walk_weight x="20" y="650" width="600" height="30" ttl="3">
+	<cant_walk_weight x="200" y="650" width="600" height="30" ttl="3">
 		<text font="graffiti22"  r="240" g="217" b="182" a="255" align="c">cant_walk_weight</text>
 	</cant_walk_weight>
 	
