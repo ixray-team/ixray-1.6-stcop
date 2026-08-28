@@ -350,7 +350,7 @@ void CWeaponShotgun::PlayAnimAddOneCartridgeWeapon()
 {
 	VERIFY(GetState() == eReload);
 
-	PlayHUDMotion(SelectAddCartridgeWeaponAnimation(), EHudMixType::eNoMix, eReload);
+	PlayHUDMotion(SelectAddCartridgeWeaponAnimation(), m_disable_random_animations ? EHudMixType::eMixAll : EHudMixType::eNoMix, eReload);
 }
 
 shared_str CWeaponShotgun::SelectCloseWeaponAnimation()
@@ -378,7 +378,7 @@ void CWeaponShotgun::PlayAnimCloseWeapon()
 {
 	VERIFY(GetState() == eReload);
 
-	PlayHUDMotion(SelectCloseWeaponAnimation(), EHudMixType::eNoMix, eReload);
+	PlayHUDMotion(SelectCloseWeaponAnimation(), m_disable_random_animations ? EHudMixType::eMixAll : EHudMixType::eNoMix, eReload);
 }
 
 bool CWeaponShotgun::net_Spawn(CSE_Abstract* DC)
