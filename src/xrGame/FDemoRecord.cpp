@@ -621,7 +621,7 @@ void CDemoRecord::MovePosition(Fvector d)
 
 void CDemoRecord::IR_OnKeyboardPress(int dik)
 {
-	if (dik == SDL_SCANCODE_R && view_from_bone_mode)
+	if (dik == SDL_SCANCODE_Z && view_from_bone_mode)
 	{
 		hpb_view_from_bone_offset.set(zero_vel);
 		p_cam_pos_view_from_bone_offset.set(zero_vel);
@@ -810,6 +810,14 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 
 			case SDL_SCANCODE_D:
 				p_cam_pos_view_from_bone_offset.x += 1.0f * Device.fTimeDelta;
+				break;
+
+			case SDL_SCANCODE_Q:
+				hpb_view_from_bone_offset.z -= 1.0f * Device.fTimeDelta;
+				break;
+
+			case SDL_SCANCODE_E:
+				hpb_view_from_bone_offset.z += 1.0f * Device.fTimeDelta;
 				break;
 		}
 	}
