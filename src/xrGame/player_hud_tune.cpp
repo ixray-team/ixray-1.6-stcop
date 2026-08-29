@@ -184,11 +184,12 @@ void attachable_hud_item::tune(Fvector values)
 bool forceFPDraw = false;
 bool forceFP2Draw = false;
 bool forceSPDraw = false;
+bool forceCBDraw = false;
 
 void attachable_hud_item::debug_draw_firedeps()
 {
 #ifdef DEBUG_DRAW
-	bool bForce = (hud_adj_mode==3||hud_adj_mode==4||forceFPDraw||forceFP2Draw||forceSPDraw);
+	bool bForce = (hud_adj_mode == 3 || hud_adj_mode == 4 || forceFPDraw || forceFP2Draw || forceSPDraw || forceCBDraw);
 
 	if(hud_adj_mode==5||hud_adj_mode==6||hud_adj_mode==7 ||bForce)
 	{
@@ -236,6 +237,13 @@ void attachable_hud_item::debug_draw_firedeps()
 			obb.m_translate.set(SP);
 			obb.xform_full(trans);
 			render.draw_obb(trans, color_xrgb(0, 255, 0));
+		}
+
+		if (forceCBDraw)
+		{
+			obb = m_collision_box;
+			obb.xform_full(trans);
+			render.draw_obb(trans, color_rgba(0, 255, 0, 150));
 		}
 	}
 #endif // DEBUG
