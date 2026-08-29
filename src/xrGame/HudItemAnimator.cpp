@@ -332,7 +332,7 @@ void CBackpackAnimator::OnAnimationEnd(u8 state)
 		{
 			if (auto ui = CurrentGameUI())
 			{
-				if (!ui->ActorMenu()->IsShown())
+				if (!ui->GetActiveInventoryWindow())
 				{
 					ui->ShowActorMenu();
 				}

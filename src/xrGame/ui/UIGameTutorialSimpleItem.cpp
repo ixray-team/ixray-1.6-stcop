@@ -360,9 +360,9 @@ bool CUISequenceSimpleItem::Stop			(bool bForce)
 			CurrentGameUI()->PdaMenu()->HideDialog();
 		}
 
-		if (CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->IsShown())
+		if (CurrentGameUI()->GetActiveInventoryWindow())
 		{
-			CurrentGameUI()->ActorMenu()->HideDialog();
+			CurrentGameUI()->GetActiveInventoryWindow()->HideDialog();
 		}
 	}
 

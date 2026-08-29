@@ -513,7 +513,7 @@ bool game_cl_ArtefactHunt::CanCallBuyMenu			()
 	{
 		return false;
 	};
-	if ( m_game_ui && m_game_ui->ActorMenu()->IsShown() )
+	if ( m_game_ui && m_game_ui->GetActiveInventoryWindow() )
 	{
 		return false;
 	}

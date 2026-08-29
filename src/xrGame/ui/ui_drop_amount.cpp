@@ -387,58 +387,37 @@ void CUIItemDropAmountWnd::PerformDrop()
     {
     case eModeDrop:
     {
-        if (CurrentGameUI()->ActorMenu())
-            CurrentGameUI()->ActorMenu()->DropAllCurrentItem((u32)amount);
-        else
-            CurrentGameUI()->InventoryWnd()->DropAllCurrentItem((u32)amount);
+		CurrentGameUI()->GetInventoryMenu()->DropAllCurrentItem((u32)amount);
         break;
     }
     case eModeMove:
     {
-        if (CurrentGameUI()->ActorMenu())
-            CurrentGameUI()->ActorMenu()->MoveAllCurrentItem((u32)amount);
-        else
-            CurrentGameUI()->CarBodyWnd()->MoveAllCurrentItem((u32)amount);
+		CurrentGameUI()->GetCarbodyMenu()->MoveAllCurrentItem((u32)amount);
         break;
     }
     case eModeTake:
     {
-        if (CurrentGameUI()->ActorMenu())
-            CurrentGameUI()->ActorMenu()->TakeAllCurrentItem((u32)amount);
-        else
-            CurrentGameUI()->CarBodyWnd()->TakeAllCurrentItem((u32)amount);
+		CurrentGameUI()->GetCarbodyMenu()->TakeAllCurrentItem((u32)amount);
         break;
     }
     case eModeFromOffer:
     {
-        if (CurrentGameUI()->ActorMenu())
-            CurrentGameUI()->ActorMenu()->ToBagAll((u32)amount);
-        else
-            CurrentGameUI()->TradeWnd()->ToBagAll((u32)amount);
+		CurrentGameUI()->GetTradeMenu()->ToBagAll((u32)amount);
         break;
     }
     case eModeToOffer:
     {
-        if (CurrentGameUI()->ActorMenu())
-            CurrentGameUI()->ActorMenu()->ToActorTradeAll((u32)amount);
-        else
-            CurrentGameUI()->TradeWnd()->ToActorTradeAll((u32)amount);
+		CurrentGameUI()->GetTradeMenu()->ToActorTradeAll((u32)amount);
         break;
     }
     case eModeToCart:
     {
-        if (CurrentGameUI()->ActorMenu())
-            CurrentGameUI()->ActorMenu()->ToPartnerTradeAll((u32)amount);
-        else
-            CurrentGameUI()->TradeWnd()->ToPartnerTradeAll((u32)amount);
+        CurrentGameUI()->GetTradeMenu()->ToPartnerTradeAll((u32)amount);
         break;
     }
     case eModeFromCart:
     {
-        if (CurrentGameUI()->ActorMenu())
-            CurrentGameUI()->ActorMenu()->ToPartnerTradeBagAll((u32)amount);
-        else
-            CurrentGameUI()->TradeWnd()->ToPartnerTradeBagAll((u32)amount);
+		CurrentGameUI()->GetTradeMenu()->ToPartnerTradeBagAll((u32)amount);
         break;
     }
     }
