@@ -909,7 +909,7 @@ public:
 	bool bUseAltScope{};
 	bool bScopeIsHasTexture{};
 
-	float GetAimFactor() const { return m_zoom_params.m_fZoomRotationFactor; }
+	virtual float GetAimFactor() const final override { return m_zoom_params.m_fZoomRotationFactor; }
 	float GetAltAimFactor() const { return m_zoom_params.m_fZoomRotationFactor2; }
 	bool GetScopeBack();
 	void UpdateCollimatorSight();
