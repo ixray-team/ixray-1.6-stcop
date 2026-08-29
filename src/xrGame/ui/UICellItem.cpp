@@ -726,7 +726,7 @@ void CUICellItem::UpdateConditionProgressBar()
 		return;
 	}
 
-	if (!m_pParentList || !m_pParentList->GetConditionProgBarVisibility())
+	if (!IsOwnerListValid() || !m_pParentList->GetConditionProgBarVisibility())
 	{
 		m_pConditionState->Show(false);
 		return;
