@@ -234,28 +234,27 @@ bool CAddonManager::CanApply(xr_string& TempPath, CLocatorAPI::file& Desc)
         return false;
     }
 
-    for (auto& Addon : Addons)
-    {
-        xr_string AddonRoot = Addon.EntryDir.c_str();
-        xr_strlwr(AddonRoot);
+	for (auto& Addon : Addons)
+	{
+		xr_string AddonRoot = Addon.EntryDir.c_str();
+		xr_strlwr(AddonRoot);
 
-        if (TempPath.starts_with(AddonRoot))
-        {
-            Desc.wrap = xr_strdup(TempPath.c_str());
+		const size_t AddonRootLength = AddonRoot.length();
+		const bool IsFileInsideAddon = TempPath.starts_with(AddonRoot) && TempPath.length() > AddonRootLength &&
+									   TempPath[AddonRootLength] == Platform::kPreferredSeparator[0];
 
-            xr_path TempOutPath = DataPath;
-            xr_string FilePath = TempPath.substr(AddonRoot.length());
+		if (IsFileInsideAddon)
+		{
+			Desc.wrap = xr_strdup(TempPath.c_str());
 
-            if (FilePath.starts_with('\\'))
-            {
-                FilePath = FilePath.substr(1);
-            }
+			xr_path TempOutPath = DataPath;
+			xr_string FilePath = TempPath.substr(AddonRootLength + 1);
 
-            TempOutPath.append(FilePath.c_str());
-            TempPath = TempOutPath.xstring();
-            return true;
-        }
-    }
+			TempOutPath.append(FilePath.c_str());
+			TempPath = TempOutPath.xstring();
+			return true;
+		}
+	}
 
-    return false;
+	return false;
 }
