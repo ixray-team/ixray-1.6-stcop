@@ -1027,17 +1027,9 @@ bool CScriptGameObject::Use(CScriptGameObject* obj)
 		return ret;
 	}
 
-	CUIActorMenu* ActorMenu = CurrentGameUI()->ActorMenu();
-
 	if (CInventoryBox* pBox = object().cast_inventory_box())
 	{
-		ActorMenu->SetActor(pActorInv);
-		ActorMenu->SetInvBox(pBox);
-
-		ActorMenu->SetMenuMode(mmDeadBodySearch);
-		ActorMenu->ShowDialog(true);
-
-		return true;
+		return CurrentGameUI()->StartCarBody(pActorInv, pBox);
 	}
 	else
 	{
@@ -1046,16 +1038,8 @@ bool CScriptGameObject::Use(CScriptGameObject* obj)
 		{
 			return ret;
 		}
-
-		ActorMenu->SetActor(pActorInv);
-		ActorMenu->SetPartner(pOtherOwner);
-
-		ActorMenu->SetMenuMode(mmDeadBodySearch);
-		ActorMenu->ShowDialog(true);
-
-		return true;
+		return CurrentGameUI()->StartCarBody(pActorInv, pOtherOwner);
 	}
-
 	return false;
 }
 
