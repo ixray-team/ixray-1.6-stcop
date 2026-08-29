@@ -404,16 +404,9 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 		{
 			current_ui->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
 		}
-		else if (current_ui->ActorMenu() && current_ui->ActorMenu()->GetMenuMode() == mmDeadBodySearch)
+		else if (current_ui->GetCarbodyMenu() && current_ui->GetCarbodyMenu()->GetMenuMode() == mmDeadBodySearch)
 		{
-			if (m_pOwner == current_ui->ActorMenu()->GetPartner())
-			{
-				current_ui->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
-			}
-		}
-		else if (current_ui->CarBodyWnd())
-		{
-			if (m_pOwner == current_ui->CarBodyWnd()->GetPartner())
+			if (m_pOwner == current_ui->GetCarbodyMenu()->GetPartner())
 			{
 				current_ui->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
 			}
@@ -1491,12 +1484,15 @@ bool CInventory::Eat(PIItem pIItem)
 				Actor()->callback(GameObject::eUseObject)(pIItem->cast_game_object()->lua_game_object());
 			}
 
-			if (pItemToEat->IsUsingCondition() && pItemToEat->GetRemainingUses() < 1 && pItemToEat->GetMaxUses() > 1 && pItemToEat->CanDelete())
+			if (CurrentGameUI()->GetActiveInventoryWindow())
 			{
-				CurrentGameUI()->ActorMenu()->RefreshCurrentItemCell();
-			}
+				if (pItemToEat->IsUsingCondition() && pItemToEat->GetRemainingUses() < 1 && pItemToEat->GetMaxUses() > 1 && pItemToEat->CanDelete())
+				{
+					CurrentGameUI()->GetActiveInventoryWindow()->RefreshCurrentItemCell();
+				}
 
-			CurrentGameUI()->ActorMenu()->SetCurrentItem(nullptr);
+				CurrentGameUI()->GetActiveInventoryWindow()->SetCurrentItem(nullptr);
+			}
 		}
 	}
 	else if (IsGameTypeSingle() && Actor()->m_inventory == this)

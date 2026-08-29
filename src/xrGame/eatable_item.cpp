@@ -226,9 +226,9 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 			}
 		}
 
-		if (CurrentGameUI()->ActorMenu() && GetMaxUses() > 1)
+		if (CurrentGameUI()->GetActiveInventoryWindow() && GetMaxUses() > 1)
 		{
-			CurrentGameUI()->ActorMenu()->RefreshCurrentItemCell();
+			CurrentGameUI()->GetActiveInventoryWindow()->RefreshCurrentItemCell();
 		}
 	}
 
@@ -283,9 +283,9 @@ void CEatableItem::EatableEffects()
 		}
 	}
 
-	if (CurrentGameUI() && GetMaxUses() > 1)
+	if (CurrentGameUI() && CurrentGameUI()->GetActiveInventoryWindow() && GetMaxUses() > 1)
 	{
-		CurrentGameUI()->ActorMenu()->RefreshCurrentItemCell();
+		CurrentGameUI()->GetActiveInventoryWindow()->RefreshCurrentItemCell();
 	}
 
 	if (Empty() && CanDelete())

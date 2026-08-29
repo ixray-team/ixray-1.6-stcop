@@ -75,9 +75,9 @@ CUIGameCustom::~CUIGameCustom()
 	g_pGameCustom = nullptr;
 }
 
-bool CUIGameCustom::HasShownDialogs() const
+bool CUIGameCustom::HasShownDialogs()
 {
-	return ActorMenu()->IsShown() || PdaMenu()->IsShown();
+	return GetActiveInventoryWindow() != nullptr || PdaMenu()->IsShown();
 }
 
 void CUIGameCustom::OnFrame()
@@ -251,12 +251,10 @@ void CUIGameCustom::RemoveCustomStatic(const char* id)
 
 void CUIGameCustom::OnInventoryAction(PIItem item, u16 action_type)
 {
-	if (m_ActorMenu != nullptr && m_ActorMenu->IsShown() )
-		m_ActorMenu->OnInventoryAction( item, action_type );
-	else if (m_InventoryMenu != nullptr && m_InventoryMenu->IsShown())
-		m_InventoryMenu->OnInventoryAction( item, action_type );
-	else if (m_CarBodyMenu && m_CarBodyMenu->IsShown())
-		m_CarBodyMenu->OnInventoryAction( item, action_type );
+	if (GetActiveInventoryWindow())
+	{
+		GetActiveInventoryWindow()->OnInventoryAction(item, action_type);
+	}
 }
 
 #include "ui/UIGameTutorial.h"
@@ -297,21 +295,9 @@ bool CUIGameCustom::ShowActorMenu()
 
 void CUIGameCustom::HideActorMenu()
 {
-	if (m_ActorMenu && m_ActorMenu->IsShown() )
+	if (GetActiveInventoryWindow())
 	{
-		m_ActorMenu->HideDialog();
-	}
-	else if (m_InventoryMenu && m_InventoryMenu->IsShown())
-	{
-		m_InventoryMenu->HideDialog();
-	}
-	else if (m_CarBodyMenu && m_CarBodyMenu->IsShown())
-	{
-		m_CarBodyMenu->HideDialog();
-	}
-	else if (m_TradeMenu && m_TradeMenu->IsShown())
-	{
-		m_TradeMenu->HideDialog();
+		GetActiveInventoryWindow()->HideDialog();
 	}
 
 	CInventoryOwner* pIOActor = Level().CurrentViewEntity() != nullptr ? Level().CurrentViewEntity()->cast_inventory_owner() : nullptr;
@@ -327,16 +313,20 @@ void CUIGameCustom::UpdateActorMenu()
 	if (m_ActorMenu && m_ActorMenu->IsShown())
 	{
 		m_ActorMenu->UpdateActor();
-		m_ActorMenu->RefreshCurrentItemCell();
+	}
+
+	if (GetActiveInventoryWindow())
+	{
+		GetActiveInventoryWindow()->RefreshCurrentItemCell();
 	}
 }
 
 CScriptGameObject* CUIGameCustom::CurrentItemAtCell()
 {
-	if (!m_ActorMenu)
+	if (!GetActiveInventoryWindow())
 		return (0);
 
-	CUICellItem* itm = m_ActorMenu->CurrentItem();
+	CUICellItem* itm = GetActiveInventoryWindow()->CurrentItem();
 	if (!itm->m_pData)
 	{
 		return 0;
@@ -462,10 +452,12 @@ void CUIGameCustom::HideShownDialogs()
 	}
 }
 
-void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner) //Deadbody search
+bool CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner) //Deadbody search
 {
-	if (TopInputReceiver())		return;
-
+	if (TopInputReceiver())
+	{
+		return false;
+	}
 	CBackpackAnimator* backpack_animator = pActorInv->cast_actor()->HudAnimator()->BackpackAnimator();
 
 	if (backpack_animator != nullptr
@@ -488,12 +480,15 @@ void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryOwner* pO
 		m_CarBodyMenu->InitCarBody(pActorInv, pOtherOwner);
 		m_CarBodyMenu->ShowDialog(true);
 	}
+	return true;
 }
 
-void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox) //Deadbody search
+bool CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox) //Deadbody search
 {
-	if (TopInputReceiver())		return;
-
+	if (TopInputReceiver())
+	{
+		return false;
+	}
 	CBackpackAnimator* backpack_animator = pActorInv->cast_actor()->HudAnimator()->BackpackAnimator();
 
 	if (backpack_animator != nullptr
@@ -516,6 +511,7 @@ void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox
 		m_CarBodyMenu->InitCarBody(pActorInv, pBox);
 		m_CarBodyMenu->ShowDialog(true);
 	}
+	return true;
 }
 
 void CUIGameCustom::SetClGame(game_cl_GameState* g)
@@ -666,6 +662,65 @@ void CUIGameCustom::ReloadGamepadLegends()
 			m_RadialMenuWeapon->m_pGamepadLegend->ReloadLegend();
 		}
 	}
+}
+
+CUIActorMenuBase* CUIGameCustom::GetInventoryMenu()
+{
+	if (m_ActorMenu)
+	{
+		return m_ActorMenu;
+	}
+	else
+	{
+		return m_InventoryMenu;
+	}
+}
+
+CUIActorMenuBase* CUIGameCustom::GetCarbodyMenu()
+{
+	if (m_ActorMenu)
+	{
+		return m_ActorMenu;
+	}
+	else
+	{
+		return m_CarBodyMenu;
+	}
+}
+
+CUIActorMenuBase* CUIGameCustom::GetTradeMenu()
+{
+	if (m_ActorMenu)
+	{
+		return m_ActorMenu;
+	}
+	else
+	{
+		return m_TradeMenu;
+	}
+}
+
+// Get any inventory window opened for now
+// You can't have more than one window opened, isn't it?
+CUIActorMenuBase* CUIGameCustom::GetActiveInventoryWindow()
+{
+	if (m_ActorMenu && m_ActorMenu->IsShown())
+	{
+		return m_ActorMenu;
+	}
+	else if (m_InventoryMenu && m_InventoryMenu->IsShown())
+	{
+		return m_InventoryMenu;
+	}
+	else if (m_CarBodyMenu && m_CarBodyMenu->IsShown())
+	{
+		return m_CarBodyMenu;
+	}
+	else if (m_TradeMenu && m_TradeMenu->IsShown())
+	{
+		return m_TradeMenu;
+	}
+	return nullptr;
 }
 
 SDrawStaticStruct::SDrawStaticStruct	()

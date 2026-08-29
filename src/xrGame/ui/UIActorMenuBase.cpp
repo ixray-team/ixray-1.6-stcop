@@ -31,6 +31,7 @@
 #include "../../xrUI/Widgets/UIBtnHint.h"
 #include "UIInventoryUpgradeWnd.h"
 #include "UIInventoryInvalidation.h"
+#include "../../xrUI/UICursor.h"
 
 void move_item_from_to (u16 from_id, u16 to_id, u16 what_id)
 {
@@ -2463,6 +2464,33 @@ void CUIActorMenuBase::UpdateActorBagList()
 			{
 				ColorizeItem(itm, !CanMoveToPartner(grenade_item));
 			}
+		}
+	}
+}
+
+void CUIActorMenuBase::RefreshCurrentItemCell()
+{
+	CUICellItem* ci = CurrentItem();
+	if (!ci)
+	{
+		return;
+	}
+
+	if (ci->ChildsCount() > 0)
+	{
+		CUIDragDropListEx* invlist = GetListByType(iActorBag);
+
+		if (invlist->IsOwner(ci))
+		{
+			CUICellItem* parent = invlist->RemoveItem(ci, true);
+
+			while (parent->ChildsCount())
+			{
+				CUICellItem* child = parent->PopChild(nullptr);
+				invlist->SetItem(child);
+			}
+
+			invlist->SetItem(parent, GetUICursor().GetCursorPosition());
 		}
 	}
 }

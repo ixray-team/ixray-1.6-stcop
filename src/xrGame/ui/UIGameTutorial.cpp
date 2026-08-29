@@ -473,12 +473,7 @@ bool CUISequencer::ButtonPress(int id)
 			}
 		}
 
-		if (CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->IsShown())
-		{
-			CurrentGameUI()->HideActorMenu();
-			return false;
-		}
-		if (CurrentGameUI()->InventoryWnd() && CurrentGameUI()->InventoryWnd()->IsShown())
+		if (CurrentGameUI()->GetActiveInventoryWindow())
 		{
 			CurrentGameUI()->HideActorMenu();
 			return false;

@@ -153,7 +153,7 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 				pActor->SetIcon(m_character_portrait, true);
 				if (auto current_ui = CurrentGameUI())
 				{
-					if (current_ui->ActorMenu()->IsShown())
+					if (current_ui->ActorMenu() && current_ui->ActorMenu()->IsShown())
 					{
 						current_ui->ActorMenu()->ReloadActorInfo();
 					}

@@ -256,12 +256,6 @@ bool CUIActorMenuBase::OnItemDropped(PIItem itm, CUIDragDropListEx* new_owner, C
 		return false;
 	}
 
-	#pragma todo("St4lker0k765: Unordinary crashes happen after attaching addon in SoC trade menu, fix later")
-	if (!ShouldPutArtefactsToBag() && m_currMenuMode == mmTrade)
-	{
-		return false;
-	}
-
 	AttachAddon						(_iitem);
 
 	return							true;
