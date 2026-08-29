@@ -13,4 +13,8 @@
     <texture id="ui_statOne_tabdiv" x="0" y="503" width="411" height="25" />
     <texture id="ui_statOne_back" x="447" y="350" width="440" height="163" />
     <texture id="ui_statTwo_back" x="11" y="98" width="832" height="162" />
+
+ 	<texture id="ui_statSingle_b" x="0" y="350" width="447" height="95" />
+	<texture id="ui_statSingle_e" x="0" y="445" width="447" height="58" />
+	<texture id="ui_statSingle_back" x="439" y="350" width="447" height="163" />
 </ui_texture>
