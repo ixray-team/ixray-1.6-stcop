@@ -308,6 +308,14 @@ void CDemoRecord::MakeCubeMapFace(Fvector& D, Fvector& N)
 
 bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
+	if (CObject* cce = Level().CurrentControlEntity())
+	{
+		if (CEntityAlive* ea = smart_cast<CEntityAlive*>(cce); ea != nullptr && !ea->g_Alive())
+		{
+			fLifeTime = -1;
+		}
+	}
+	
 	info.dont_apply = false;
 
 	if (nullptr == file)
