@@ -90,7 +90,7 @@ void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 
 	if (It_l != m_launched_rockets.end())
 	{
-		(*It)->m_bLaunched = bLaunch;
+		(*It_l)->m_bLaunched = bLaunch;
 		(*It_l)->H_SetParent(nullptr);
 		m_launched_rockets.erase(It_l);
 	}
