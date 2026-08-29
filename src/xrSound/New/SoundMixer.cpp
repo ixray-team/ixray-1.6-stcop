@@ -1,32 +1,32 @@
 /**************************************************************************************
-* Copyright (C) 2025 Anton Kovalev (vertver)
-* New Sound Engine
-***************************************************************************************
-* Source code is licensed under the following terms:
-*
-* 1. IX-Ray Team License
-*    Non-exclusive, royalty-free, perpetual license is hereby granted to:
-*      - ForserX   (https://github.com/ForserX)
-*      - Drombeys  (https://github.com/Drombeys)
-*      - v2v3v4    (https://github.com/v2v3v4)
-*
-*    Permitted rights:
-*      - Copy, modify, merge, publish and distribute this Software
-*        and its documentation.
-*
-* 2. Public Access License
-*    Non-exclusive, "access-view-study" rights granted to everyone else.
-*
-*    Permitted rights:
-*      - Private copying is allowed, provided that no distribution occurs.
-*      - Public cloning (i.e. "forking") is allowed, but any source code
-*        modification or binary redistribution is prohibited.
-*
-* Usage of this Software beyond the rights granted above is strictly prohibited.
-*
-* The above copyright notice and this license text must be included in all
-* copies or substantial portions of the Software.
-**************************************************************************************/
+ * Copyright (C) 2025 Anton Kovalev (vertver)
+ * New Sound Engine
+ ***************************************************************************************
+ * Source code is licensed under the following terms:
+ *
+ * 1. IX-Ray Team License
+ *    Non-exclusive, royalty-free, perpetual license is hereby granted to:
+ *      - ForserX   (https://github.com/ForserX)
+ *      - Drombeys  (https://github.com/Drombeys)
+ *      - v2v3v4    (https://github.com/v2v3v4)
+ *
+ *    Permitted rights:
+ *      - Copy, modify, merge, publish and distribute this Software
+ *        and its documentation.
+ *
+ * 2. Public Access License
+ *    Non-exclusive, "access-view-study" rights granted to everyone else.
+ *
+ *    Permitted rights:
+ *      - Private copying is allowed, provided that no distribution occurs.
+ *      - Public cloning (i.e. "forking") is allowed, but any source code
+ *        modification or binary redistribution is prohibited.
+ *
+ * Usage of this Software beyond the rights granted above is strictly prohibited.
+ *
+ * The above copyright notice and this license text must be included in all
+ * copies or substantial portions of the Software.
+ **************************************************************************************/
 #include "SoundMixer.h"
 #include "SoundMixerInternal.h"
 #include "SoundBackend.h"
@@ -37,6 +37,7 @@
 #include "../Sound.h"
 #include "../SoundRender.h"
 #include "../ai_sounds.h"
+#include "SoundConvolution.h"
 
 #include <pffft.h>
 
@@ -47,10 +48,10 @@
 #include "SoundSpatializer.h"
 
 #ifndef DISABLE_STEAM_AUDIO
-#	include "../Plugins/SteamAudio.h"
+#include "../Plugins/SteamAudio.h"
 #endif
 #ifndef DISABLE_RESONANCE_AUDIO
-#	include "../Plugins/ResonanceAudio.h"
+#include "../Plugins/ResonanceAudio.h"
 #endif
 
 IReverInterface* GReverInterface = nullptr;
@@ -115,10 +116,10 @@ struct sound_cache_line
 	u32 end;
 	u64 timestamp;
 	shared_str name;
-	float data[SND_CHANNEL_COUNT][(SND_BLOCKSIZE+1) * CACHE_LINE_WIDTH];
+	float data[SND_CHANNEL_COUNT][(SND_BLOCKSIZE + 1) * CACHE_LINE_WIDTH];
 };
 
-struct sound_bus_state 
+struct sound_bus_state
 {
 	float data[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
 };
@@ -136,7 +137,7 @@ struct sound_mixer_state
 	bool DecodeStop = false;
 	ThreadID DecodeThread = 0;
 
-	sound_stats stats = { 0 };
+	sound_stats stats = {0};
 	float dt;
 	float time_factor = 1.0f;
 	float master_volume = 0.0f;
@@ -144,8 +145,8 @@ struct sound_mixer_state
 	float music_volume = 0.0f;
 	float shooting_volume = 0.0f;
 	float compression = 0.0f;
-	float compressor_envelope[SND_CHANNEL_COUNT] = { FLT_EPSILON, FLT_EPSILON };
-	Fvector P, D, N;             
+	float compressor_envelope[SND_CHANNEL_COUNT] = {FLT_EPSILON, FLT_EPSILON};
+	Fvector P, D, N;
 	Fvector listener_velocity;
 	Fvector occ;
 	Fmatrix m_V;
@@ -164,6 +165,16 @@ struct sound_mixer_state
 
 	sound_bus_state buses[SND_BUS_COUNT];
 
+	CConvolutionReverb ShootingReverbFar;
+	CConvolutionReverb ShootingReverbIndoor;
+	float* ShootingSendFar[SND_CHANNEL_COUNT] = {nullptr};
+	float* ShootingSendIndoor[SND_CHANNEL_COUNT] = {nullptr};
+
+	bool IsOutdoorSend = false;
+	bool IsIndoorSend = false;
+
+	float IndoorFactor = 0.0f;
+
 	bool editor_zone = false;
 	bool hrtf_enabled;
 
@@ -174,7 +185,7 @@ struct sound_mixer_state
 	float fft_window[SND_BLOCKSIZE];
 #endif
 
-	float read_buffer[SND_CHANNEL_COUNT][(SND_BLOCKSIZE+1) * 10];
+	float read_buffer[SND_CHANNEL_COUNT][(SND_BLOCKSIZE + 1) * 10];
 };
 
 static sound_mixer_state GMixer = {};
@@ -334,11 +345,15 @@ ICF void Snd_PurgeCacheLine(u32 cache_idx, bool purge_from_entry)
 {
 	auto& line = GMixer.cache_lines[cache_idx - 1];
 
-	if (purge_from_entry && line.name.size()) {
+	if (purge_from_entry && line.name.size())
+	{
 		auto found_source = GMixer.snd_sources.find(line.name.c_str());
-		if (found_source != GMixer.snd_sources.end()) {
-			for (u32& entry_cache_idx : found_source->second.cache_lines) {
-				if (entry_cache_idx == cache_idx) {
+		if (found_source != GMixer.snd_sources.end())
+		{
+			for (u32& entry_cache_idx : found_source->second.cache_lines)
+			{
+				if (entry_cache_idx == cache_idx)
+				{
 					entry_cache_idx = 0;
 					break;
 				}
@@ -353,9 +368,12 @@ ICF void Snd_PurgeCacheLine(u32 cache_idx, bool purge_from_entry)
 
 ICF void Snd_DestroySourceCache(sound_source& source)
 {
-	if (source.pub.ref_count == 0) {
-		for (u32& cache_idx : source.cache_lines) {
-			if (cache_idx != 0 && GMixer.cache_lines[cache_idx - 1].name.size()) {
+	if (source.pub.ref_count == 0)
+	{
+		for (u32& cache_idx : source.cache_lines)
+		{
+			if (cache_idx != 0 && GMixer.cache_lines[cache_idx - 1].name.size())
+			{
 				Snd_PurgeCacheLine(cache_idx, false);
 				cache_idx = 0;
 			}
@@ -413,10 +431,14 @@ Snd_TellSource(sound_source& source)
 
 ICF u32 Snd_SeekSource(sound_source& source, u32 position, bool precise)
 {
-	if (ov_pcm_tell(&source.file) != position) {
-		if (precise) {
+	if (ov_pcm_tell(&source.file) != position)
+	{
+		if (precise)
+		{
 			ov_pcm_seek(&source.file, position);
-		} else {
+		}
+		else
+		{
 			ov_pcm_seek_page(&source.file, position);
 		}
 	}
@@ -431,12 +453,19 @@ ICF void Snd_LoadSource(sound_source& source, const char* name)
 	string_path fn, N;
 	xr_strcpy(N, name);
 	_strlwr(N);
-	if (strext(N)) *strext(N) = 0;
+	if (strext(N))
+	{
+		*strext(N) = 0;
+	}
 	source.pub.name = N;
 
 	xr_strconcat(fn, N, ".ogg");
-	if (!FS.exist("$level$", fn))	FS.update_path(fn, _game_sounds_, fn);
-	if (!FS.exist(fn)) {
+	if (!FS.exist("$level$", fn))
+	{
+		FS.update_path(fn, _game_sounds_, fn);
+	}
+	if (!FS.exist(fn))
+	{
 		FS.update_path(fn, _game_sounds_, "$no_sound.ogg");
 		Msg("! Can't find sound '%s'", source.pub.name.c_str());
 	}
@@ -444,7 +473,8 @@ ICF void Snd_LoadSource(sound_source& source, const char* name)
 	source.pub.path = fn;
 	IReader* m_wavefile = FS.r_open(source.pub.path.c_str());
 	R_ASSERT3(m_wavefile && m_wavefile->length(), "Can't open wave file:", source.pub.path.c_str());
-	if (source.data != nullptr) {
+	if (source.data != nullptr)
+	{
 		xr_free(source.data);
 	}
 
@@ -473,31 +503,41 @@ ICF void Snd_LoadSource(sound_source& source, const char* name)
 	source.pub.max_ai_distance = 300.0f;
 
 	vorbis_comment* ovm = ov_comment(&source.file, -1);
-	if (ovm->comments) {
+	if (ovm->comments)
+	{
 		IReader F(ovm->user_comments[0], ovm->comment_lengths[0]);
 		u32 vers = F.r_u32();
-		if (vers == 0x0001) {
+		if (vers == 0x0001)
+		{
 			source.pub.min_distance = F.r_float();
 			source.pub.max_distance = F.r_float();
 			source.pub.volume = 1.0f;
 			source.pub.game_type = F.r_u32();
 			source.pub.max_ai_distance = 300.0f;
-		} else if (vers == 0x0002) {
+		}
+		else if (vers == 0x0002)
+		{
 			source.pub.min_distance = F.r_float();
 			source.pub.max_distance = F.r_float();
 			source.pub.volume = F.r_float();
 			source.pub.game_type = F.r_u32();
 			source.pub.max_ai_distance = 300.0f;
-		} else if (vers == OGG_COMMENT_VERSION) {
+		}
+		else if (vers == OGG_COMMENT_VERSION)
+		{
 			source.pub.min_distance = F.r_float();
 			source.pub.max_distance = F.r_float();
 			source.pub.volume = F.r_float();
 			source.pub.game_type = F.r_u32();
 			source.pub.max_ai_distance = F.r_float();
-		} else {
+		}
+		else
+		{
 			Msg("! Invalid ogg-comment version, file: %s", source.pub.name.c_str());
 		}
-	} else {
+	}
+	else
+	{
 		Msg("~ Missing ogg-comment, file: %s", source.pub.name.c_str());
 	}
 
@@ -506,13 +546,15 @@ ICF void Snd_LoadSource(sound_source& source, const char* name)
 
 ICF sound_source* Snd_FindSound(const xr_string& name)
 {
-	if (name.empty()) {
+	if (name.empty())
+	{
 		return nullptr;
 	}
 
 	xrSRWLockGuard guard(GMixer.source_lock, true);
 	auto found_source = GMixer.snd_sources.find(name);
-	if (found_source == GMixer.snd_sources.end()) {
+	if (found_source == GMixer.snd_sources.end())
+	{
 		return nullptr;
 	}
 
@@ -523,7 +565,8 @@ ICF sound_source* Snd_FindSound(const xr_string& name)
 ICF sound_source* Snd_AcquireSound(const xr_string& name, bool fail_if_not_found)
 {
 	sound_source* source = Snd_FindSound(name);
-	if (source != nullptr || name.empty()) {
+	if (source != nullptr || name.empty())
+	{
 		return source;
 	}
 
@@ -532,7 +575,8 @@ ICF sound_source* Snd_AcquireSound(const xr_string& name, bool fail_if_not_found
 	// TODO: async file load?
 	xrSRWLockGuard guard(GMixer.source_lock);
 	source = &GMixer.snd_sources[name];
-	if (source->reader == nullptr) {
+	if (source->reader == nullptr)
+	{
 		Snd_LoadSource(*source, name.c_str());
 	}
 
@@ -542,26 +586,30 @@ ICF sound_source* Snd_AcquireSound(const xr_string& name, bool fail_if_not_found
 
 ICF void Snd_ReleaseSound(const xr_string& name)
 {
-	if (name.empty()) {
+	if (name.empty())
+	{
 		return;
 	}
 
 	{
 		xrSRWLockGuard guard(GMixer.source_lock, true);
 		auto found_source = GMixer.snd_sources.find(name);
-		if (found_source == GMixer.snd_sources.end()) {
+		if (found_source == GMixer.snd_sources.end())
+		{
 			return;
 		}
 
 		R_ASSERT(found_source->second.pub.ref_count);
-		if (--found_source->second.pub.ref_count != 0) {
+		if (--found_source->second.pub.ref_count != 0)
+		{
 			return;
 		}
 	}
 
 	xrSRWLockGuard guard(GMixer.source_lock);
 	auto found_source = GMixer.snd_sources.find(name);
-	if (found_source == GMixer.snd_sources.end() || found_source->second.pub.ref_count != 0) {
+	if (found_source == GMixer.snd_sources.end() || found_source->second.pub.ref_count != 0)
+	{
 		return;
 	}
 
@@ -632,31 +680,41 @@ ICF u32 Snd_ReadFromSource(sound_source& source, float** buffer, u32 frames)
 {
 	PROF_EVENT("Sound: Decode Vorbis");
 
-	if (source.file.datasource == nullptr) {
+	if (source.file.datasource == nullptr)
+	{
 		return 0;
 	}
 
-	float** pcm; int section; u32 last_frames = frames;
+	float** pcm;
+	int section;
+	u32 last_frames = frames;
 	u32 offset = 0;
-	do {
+	do
+	{
 		int status = ov_read_float(&source.file, &pcm, last_frames, &section);
-		if (status == 0) {
+		if (status == 0)
+		{
 			break;
-		} else {
+		}
+		else
+		{
 			R_ASSERT2(status >= 0, "Decoding error");
 			last_frames -= status;
 		}
 
-		for (size_t ch = 0; ch < std::min((u8)SND_CHANNEL_COUNT, source.pub.channels_count); ch++) {
-			for (size_t idx = 0; idx < status; idx++) {
-				buffer[ch][offset + idx] = std::clamp(pcm[ch][idx], -1.0f, 1.0f);
+		for (size_t Channel = 0; Channel < std::min((u8)SND_CHANNEL_COUNT, source.pub.channels_count); Channel++)
+		{
+			for (size_t idx = 0; idx < status; idx++)
+			{
+				buffer[Channel][offset + idx] = std::clamp(pcm[Channel][idx], -1.0f, 1.0f);
 			}
 		}
 
 		offset += status;
 	} while (last_frames);
 
-	if (source.pub.channels_count == 1) {
+	if (source.pub.channels_count == 1)
+	{
 		memcpy(buffer[1], buffer[0], frames * sizeof(float));
 	}
 
@@ -718,10 +776,13 @@ ICF u32 Snd_FindAvailableCacheLine(sound_source& source, u32 position)
 	PROF_EVENT("Sound: FindAvailableCacheLine");
 	u32 needed_frames = std::min((u32)SND_BLOCKSIZE, source.pub.frames_total - position);
 	u32 found_cache_idx = 0;
-	for (const u32& cache_idx : source.cache_lines) {
-		if (cache_idx != 0) {
+	for (const u32& cache_idx : source.cache_lines)
+	{
+		if (cache_idx != 0)
+		{
 			auto& line = GMixer.cache_lines[cache_idx - 1];
-			if (in_range(position, line.start, line.end) && in_range(position + needed_frames, line.start, line.end)) {
+			if (in_range(position, line.start, line.end) && in_range(position + needed_frames, line.start, line.end))
+			{
 				found_cache_idx = cache_idx;
 				GMixer.stats.cache_hit_count++;
 				break;
@@ -740,7 +801,8 @@ ICF void Snd_UpdateCache(sound_source& source, u32 position)
 	{
 		xrSRWLockGuard guard2(GMixer.source_lock, true);
 		u32 found_cache_idx = Snd_FindAvailableCacheLine(source, position);
-		if (found_cache_idx == 0 && source.file.datasource != nullptr) {
+		if (found_cache_idx == 0 && source.file.datasource != nullptr)
+		{
 			GMixer.stats.cache_miss_count++;
 			found_cache_idx = Snd_NewCacheLine();
 			auto& line = GMixer.cache_lines[found_cache_idx - 1];
@@ -751,57 +813,69 @@ ICF void Snd_UpdateCache(sound_source& source, u32 position)
 				// TODO: parallel decoding for each slot
 				u32 begin_pos = Snd_SeekSource(source, position, false);
 				u32 end_pos = begin_pos + cache_size;
-				if (end_pos < (position + SND_BLOCKSIZE)) {
+				if (end_pos < (position + SND_BLOCKSIZE))
+				{
 					begin_pos = Snd_SeekSource(source, position, true);
 				}
 
 				memset(line.data, 0, sizeof(line.data));
 
 				float* ch_data[SND_CHANNEL_COUNT];
-				for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
+				for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+				{
 					ch_data[i] = line.data[i];
 				}
 				end_pos = begin_pos + Snd_ReadFromSource(source, ch_data, cache_size);
 
-				//VERIFY(in_range(slot.position, begin_pos, end_pos));
+				// VERIFY(in_range(slot.position, begin_pos, end_pos));
 				line.name = source.pub.name;
 				line.start = begin_pos;
 				line.end = end_pos;
 			}
 
 			bool inserted = false;
-			for (u32& cache_idx : source.cache_lines) {
-				if (cache_idx == found_cache_idx) {
+			for (u32& cache_idx : source.cache_lines)
+			{
+				if (cache_idx == found_cache_idx)
+				{
 					inserted = true;
 					break;
 				}
 
-				if (cache_idx == 0) {
+				if (cache_idx == 0)
+				{
 					cache_idx = found_cache_idx;
 					inserted = true;
 					break;
 				}
 			}
 
-			if (!inserted) {
+			if (!inserted)
+			{
 				u64 least_timestamp = (u64)-1;
 				u32 cache_entry_idx = 0;
-				for (size_t i = 0; i < CACHE_LINE_ENTRY_COUNT; i++) {
-					if (source.cache_lines[i] == 0 || source.cache_lines[i] == found_cache_idx) {
+				for (size_t i = 0; i < CACHE_LINE_ENTRY_COUNT; i++)
+				{
+					if (source.cache_lines[i] == 0 || source.cache_lines[i] == found_cache_idx)
+					{
 						continue;
 					}
 
-					if (GMixer.cache_lines[source.cache_lines[i] - 1].timestamp < least_timestamp) {
+					if (GMixer.cache_lines[source.cache_lines[i] - 1].timestamp < least_timestamp)
+					{
 						least_timestamp = GMixer.cache_lines[source.cache_lines[i] - 1].timestamp;
 						cache_entry_idx = i + 1;
 						continue;
 					}
 				}
 
-				if (cache_entry_idx != 0) {
+				if (cache_entry_idx != 0)
+				{
 					Snd_PurgeCacheLine(source.cache_lines[cache_entry_idx - 1], false);
 					source.cache_lines[cache_entry_idx - 1] = found_cache_idx;
-				} else {
+				}
+				else
+				{
 					Snd_GrowCacheLines(false);
 				}
 			}
@@ -857,16 +931,19 @@ ICF u32 Snd_ReadSlotData(u32 SlotIdx, sound_source& Source, float** Data, u32 Fr
 ICF void Snd_ReadSlot(u32 slot_idx, sound_source& source, float** data, u32 frames_count)
 {
 	auto& slot = GMixer.slots[slot_idx - 1];
-	if (source.pub.frames_total == 0) {
+	if (source.pub.frames_total == 0)
+	{
 		MixerNewState(slot_idx, Mixer::State::Stopped);
 		return;
 	}
 
 	u32 last_frames = frames_count;
-	while (last_frames) {
+	while (last_frames)
+	{
 		float* offfseted_data[SND_CHANNEL_COUNT];
 		u32 buf_offset = (frames_count - last_frames);
-		for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
+		for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+		{
 			offfseted_data[i] = &data[i][buf_offset];
 		}
 
@@ -875,8 +952,10 @@ ICF void Snd_ReadSlot(u32 slot_idx, sound_source& source, float** data, u32 fram
 		last_frames -= read_frames;
 		slot.position = std::min(slot.position + read_frames, source.pub.frames_total);
 
-		if (slot.position < source.pub.frames_total) {
-			if (read_frames == 0) {
+		if (slot.position < source.pub.frames_total)
+		{
+			if (read_frames == 0)
+			{
 				MixerNewState(slot_idx, Mixer::State::Stopped);
 				break;
 			}
@@ -885,7 +964,8 @@ ICF void Snd_ReadSlot(u32 slot_idx, sound_source& source, float** data, u32 fram
 		}
 
 		slot.position = 0;
-		if ((slot.flags & (u32)Mixer::Flags::Looped) == 0) {
+		if ((slot.flags & (u32)Mixer::Flags::Looped) == 0)
+		{
 			MixerNewState(slot_idx, Mixer::State::Stopped);
 			break;
 		}
@@ -903,20 +983,26 @@ ICF void Snd_ProcessSlot(u32 slot_idx, sound_source& source, float** data)
 
 	bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
 
-	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-		memset(GMixer.read_buffer[ch], 0, (input_frames + 1) * sizeof(float));
+	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+	{
+		memset(GMixer.read_buffer[Channel], 0, (input_frames + 1) * sizeof(float));
 	}
 
-	if (is_music || fis_zero(1.0f - ratio)) {
+	if (is_music || fis_zero(1.0f - ratio))
+	{
 		Snd_ReadSlot(slot_idx, source, data, SND_BLOCKSIZE);
-	} else {
+	}
+	else
+	{
 		float* offfseted_data[SND_CHANNEL_COUNT];
-		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-			offfseted_data[ch] = GMixer.read_buffer[ch];
+		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+		{
+			offfseted_data[Channel] = GMixer.read_buffer[Channel];
 		}
 
-		Snd_ReadSlot(slot_idx, source, offfseted_data, input_frames+1);
-		if (slot.position > 0) {
+		Snd_ReadSlot(slot_idx, source, offfseted_data, input_frames + 1);
+		if (slot.position > 0)
+		{
 			slot.position -= 1; // account 1 sample of tail for interpolation
 		}
 
@@ -1018,17 +1104,17 @@ ICF void Snd_PhononSpatialProcess(float** Data, u32 slot_idx)
 	Fvector& Distances = Slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
 
 	dsp_stuff Stuff =
-	{
-		.Dt = GMixer.dt,
-		.Panning = Slot.panning,
-		.CameraPosition = &GMixer.P,
-		.CameraDirection = &GMixer.D,
-		.CameraNormal = &GMixer.N,
-		.CameraVelocity = &GMixer.listener_velocity,
-		.ObjPosition = &Pos,
-		.ObjVelocity = &Slot.velocity,
-		.Doppler = &Slot.doppler
-	};
+		{
+			.Dt = GMixer.dt,
+			.Panning = Slot.panning,
+			.CameraPosition = &GMixer.P,
+			.CameraDirection = &GMixer.D,
+			.CameraNormal = &GMixer.N,
+			.CameraVelocity = &GMixer.listener_velocity,
+			.ObjPosition = &Pos,
+			.ObjVelocity = &Slot.velocity,
+			.Doppler = &Slot.doppler
+		};
 
 	if (Slot.hrtf_slot == 0)
 	{
@@ -1065,6 +1151,53 @@ ICF void Snd_PhononSpatialProcess(float** Data, u32 slot_idx)
 	}
 }
 
+static float Snd_HemiIndoorFactor(const Fvector& Pos)
+{
+	PROF_EVENT("Sound: Indoor Hemi");
+
+	CDB::MODEL* EnvModel = ::Sound->get_geometry_env();
+	CDB::COLLIDER* Collider = ::Sound->get_geometry_db();
+	if (EnvModel == nullptr || Collider == nullptr)
+	{
+		return 0.0f;
+	}
+
+	constexpr u32 kRayCount = 12;
+	constexpr float kGoldenAngle = 2.39996322972865332f;
+	constexpr float kMaxRange = 1000.0f;
+
+	float blocked = 0.0f;
+	for (u32 i = 0; i < kRayCount; i++)
+	{
+		const float h = (float)(i + 1) / (float)(kRayCount + 1);
+		const float r = std::sqrt(std::max(1.0f - h * h, 0.0f));
+		const float a = (float)i * kGoldenAngle;
+
+		Fvector dir = {std::cos(a) * r, h, std::sin(a) * r};
+		Collider->ray_options(CDB::OPT_ONLYNEAREST);
+		Collider->ray_query(EnvModel, Pos, dir, kMaxRange);
+		if (Collider->r_count())
+		{
+			blocked += 1.0f;
+		}
+	}
+
+	blocked /= (float)kRayCount;
+
+	// Smoothstep over [0.1, 0.7]: partial cover (trees, wire fences) should not
+	// flip the sound to the indoor reverb.
+	const float t = std::clamp((blocked - 0.1f) / 0.6f, 0.0f, 1.0f);
+	return t * t * (3.0f - 2.0f * t);
+}
+
+// Updates the per-slot indoor factor from the SOUND's own position (not the listener's) and smooths it to avoid abrupt IR switches.
+static void Snd_UpdateSlotIndoorFactor(sound_slot_state& Slot, const Fvector& Pos)
+{
+	const float target = Snd_HemiIndoorFactor(Pos);
+	const float k = std::clamp(GMixer.dt * 3.0f, 0.0f, 1.0f);
+	Slot.IndoorFactor += (target - Slot.IndoorFactor) * k;
+}
+
 ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffer, float dt)
 {
 	auto& Slot = GMixer.slots[SlotIdx - 1];
@@ -1084,9 +1217,9 @@ ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffe
 	}
 
 	// Clear process buffer and read data from source
-	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
 	{
-		memset(process_buffer[ch], 0, SND_BLOCKSIZE * sizeof(float));
+		memset(process_buffer[Channel], 0, SND_BLOCKSIZE * sizeof(float));
 	}
 
 	Snd_ProcessSlot(SlotIdx, Source, process_buffer);
@@ -1139,6 +1272,78 @@ ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffe
 	float left_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].x;
 	float right_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].y;
 
+	// Convolution reverb send. The indoor set uses its own near IR; the
+	// outdoor set uses ONLY the FAR IR (the outdoor near field is removed).
+	// The send follows the dry signal's own distance attenuation (matching
+	// DSP_SpatialProcess), so the tail can never be louder than the gunshot
+	// and fades to zero at extreme range.
+	constexpr float IndoorNearEndDistance = 5.0f; // indoor near IR owns [0, 5] m
+	constexpr float OutdoorGateDistance = 10.0f; // outdoor far IR gate opens at 10 m
+	constexpr float NearWetScale = 0.5f; // near tail is too loud: -6 dB on its wet send
+	bool ReverbSendActive = false;
+	float Attent = 0.0f;
+	float WetFar = 0.0f;
+	float WetIndoorNear = 0.0f;
+
+	if ((Slot.flags & (u16)Mixer::Flags::Shooting))
+	{
+		Fvector& ReverbPos = Slot.parameters[(u32)Mixer::ParameterId::Position];
+		Fvector& ReverbDist = Slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
+
+		Fvector ReverbDelta;
+		ReverbDelta.set(ReverbPos.x - GMixer.P.x, ReverbPos.y - GMixer.P.y, ReverbPos.z - GMixer.P.z);
+		float ReverbDistance = ReverbDelta.magnitude();
+		float MinD = std::max(ReverbDist.x, EPS_S);
+		float MaxD = std::max(ReverbDist.y, MinD + EPS_S);
+		float D = std::clamp(ReverbDistance, MinD, MaxD);
+
+		// Wet level: dry signal distance attenuation. MUST match
+		// DSP_SpatialProcess (power 1.3, NOT squared) so the wet send sits at the same level as the dry path; a squared falloff here makes the tail inaudible.
+		float Base = MinD / (psSoundRolloff * D);
+		Attent = std::pow(Base, 1.3f);
+		Attent *= 1.0f - std::clamp(std::max(D - MinD, 0.0f) / (MaxD - MinD), 0.0f, 1.0f);
+		Attent = std::clamp(Attent, 0.0f, 1.0f);
+
+		// Indoor near IR plays from 0 to 5 m (no indoor far IR).
+		float AlphaIndoor = std::clamp(ReverbDistance / IndoorNearEndDistance, 0.0f, 1.0f);
+		AlphaIndoor = AlphaIndoor * AlphaIndoor * (3.0f - 2.0f * AlphaIndoor);
+
+		// Outdoor has a soft gate at OutdoorGateDistance (no room tail for point-blank shots in the open field).
+		constexpr float WetGateWidth = 2.0f;
+		float WetGateOutdoor = std::clamp((ReverbDistance - OutdoorGateDistance) / WetGateWidth, 0.0f, 1.0f);
+		WetGateOutdoor = WetGateOutdoor * WetGateOutdoor * (3.0f - 2.0f * WetGateOutdoor);
+
+		// Indoor factor of the SOUND's own position (hemi) splits the send
+		// between the recorded (outdoor) far IR and the synthesized indoor IR.
+		const float WetIndoor = std::clamp(Slot.IndoorFactor, 0.0f, 1.0f);
+		WetFar = 1.0f - WetIndoor;
+		WetIndoorNear = AlphaIndoor * WetIndoor;
+
+		Attent *= WetGateOutdoor;
+		ReverbSendActive = true;
+	}
+
+	if (ReverbSendActive)
+	{
+		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+		{
+			for (u32 i = 0; i < SND_BLOCKSIZE; i++)
+			{
+				float s = process_buffer[Channel][i] * VolumeFinal;
+				if (WetFar > 0.0f)
+				{
+					GMixer.ShootingSendFar[Channel][i] += s * Attent * WetFar;
+					GMixer.IsOutdoorSend = true;
+				}
+				if (WetIndoorNear > 0.0f)
+				{
+					GMixer.ShootingSendIndoor[Channel][i] += s * Attent * WetIndoorNear * NearWetScale;
+					GMixer.IsIndoorSend = true;
+				}
+			}
+		}
+	}
+
 	// Spatial processing
 	if (!(Slot.flags & (u32)Mixer::Flags::Intro) && Source.pub.channels_count == 1)
 	{
@@ -1153,17 +1358,17 @@ ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffe
 			else
 			{
 				dsp_stuff Stuff =
-				{
-					.Dt = GMixer.dt,
-					.Panning = Slot.panning,
-					.CameraPosition = &GMixer.P,
-					.CameraDirection = &GMixer.D,
-					.CameraNormal = &GMixer.N,
-					.CameraVelocity = &GMixer.listener_velocity,
-					.ObjPosition = &Pos,
-					.ObjVelocity = &Slot.velocity,
-					.Doppler = &Slot.doppler
-				};
+					{
+						.Dt = GMixer.dt,
+						.Panning = Slot.panning,
+						.CameraPosition = &GMixer.P,
+						.CameraDirection = &GMixer.D,
+						.CameraNormal = &GMixer.N,
+						.CameraVelocity = &GMixer.listener_velocity,
+						.ObjPosition = &Pos,
+						.ObjVelocity = &Slot.velocity,
+						.Doppler = &Slot.doppler
+					};
 
 				DSP_SpatialProcess(process_buffer, Slot.parameters[(u32)Mixer::ParameterId::DistanceRange], Stuff, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
 			}
@@ -1182,22 +1387,22 @@ ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffe
 			zone.last_use_ms = Snd_Milliseconds();
 
 			float* reverb_buffer[SND_CHANNEL_COUNT] = {};
-			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+			for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
 			{
-				reverb_buffer[ch] = zone.data[ch];
+				reverb_buffer[Channel] = zone.data[Channel];
 			}
 
-			// TODO(vertver): better volume attenutation for reverb stuff
-			DSP_MixBufferPanning(reverb_buffer, process_buffer, BeginFactor, EndFactor, left_panning, right_panning, SND_BLOCKSIZE);
+			float ZoneFade = std::clamp(Slot.IndoorFactor, 0.0f, 1.0f);
+			DSP_MixBufferPanning(reverb_buffer, process_buffer, BeginFactor * ZoneFade, EndFactor * ZoneFade, left_panning, right_panning, SND_BLOCKSIZE);
 		}
 	}
 
 	// TODO(vertver): push data to buses instead of main
 	int bus_idx = IsMusic ? SND_BUS_MUSIC : SND_BUS_EFFECTS;
 	float* bus_buffer[SND_CHANNEL_COUNT] = {};
-	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
 	{
-		bus_buffer[ch] = GMixer.buses[bus_idx].data[ch];
+		bus_buffer[Channel] = GMixer.buses[bus_idx].data[Channel];
 	}
 
 	// Bus mixing
@@ -1227,9 +1432,9 @@ void Snd_MixerRenderCallback(float* buffer)
 
 	for (size_t i = 0; i < SND_BUS_COUNT; i++)
 	{
-		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
 		{
-			memset(GMixer.buses[i].data[ch], 0, SND_BLOCKSIZE * sizeof(float));
+			memset(GMixer.buses[i].data[Channel], 0, SND_BLOCKSIZE * sizeof(float));
 		}
 	}
 
@@ -1277,10 +1482,10 @@ void Snd_MixerRenderCallback(float* buffer)
 			float* reverb_buffer[SND_CHANNEL_COUNT] = {};
 			float* bus_buffer[SND_CHANNEL_COUNT] = {};
 
-			for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+			for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
 			{
-				reverb_buffer[ch] = Zone.data[ch];
-				bus_buffer[ch] = GMixer.buses[SND_BUS_REVERB].data[ch];
+				reverb_buffer[Channel] = Zone.data[Channel];
+				bus_buffer[Channel] = GMixer.buses[SND_BUS_REVERB].data[Channel];
 			}
 
 			if (GReverInterface)
@@ -1288,9 +1493,46 @@ void Snd_MixerRenderCallback(float* buffer)
 				GReverInterface->ProcessReverb(Zone, reverb_buffer, process_buffer, bus_buffer);
 			}
 
-			float reverb_gain = std::clamp(Zone.settings.reverb, 0.0f, 1.0f) * 0.010f;
+			// Algorithmic (Resonance / Steam Audio) reverb is attenuated by
+			// -6 dB (x0.5) relative to its configured level.
+			float reverb_gain = std::clamp(Zone.settings.reverb, 0.0f, 1.0f) * 0.010f * 0.5f;
 			DSP_MixBuffer(bus_buffer, process_buffer, reverb_gain, reverb_gain, SND_BLOCKSIZE);
 		}
+	}
+
+	// Convolution reverb tail for shooting sounds (impulse-response based).
+	// The outdoor far and indoor near IR sets are convolved separately; each is
+	// skipped when its send was silent this block. Indoor-ness is a property of
+	// the SOUND's position, so both sets can be active at once.
+	if (GMixer.IsOutdoorSend || GMixer.IsIndoorSend)
+	{
+		float* bus_buffer[SND_CHANNEL_COUNT] = {};
+		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+		{
+			bus_buffer[Channel] = GMixer.buses[SND_BUS_REVERB].data[Channel];
+		}
+
+		GMixer.ShootingReverbFar.SetWetGain(psSoundShootingReverb);
+		GMixer.ShootingReverbIndoor.SetWetGain(psSoundShootingReverb);
+
+		if (GMixer.IsOutdoorSend)
+		{
+			GMixer.ShootingReverbFar.Process(GMixer.ShootingSendFar, bus_buffer, SND_BLOCKSIZE);
+		}
+
+		if (GMixer.IsIndoorSend)
+		{
+			GMixer.ShootingReverbIndoor.Process(GMixer.ShootingSendIndoor, bus_buffer, SND_BLOCKSIZE);
+		}
+
+		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+		{
+			memset(GMixer.ShootingSendFar[Channel], 0, SND_BLOCKSIZE * sizeof(float));
+			memset(GMixer.ShootingSendIndoor[Channel], 0, SND_BLOCKSIZE * sizeof(float));
+		}
+
+		GMixer.IsOutdoorSend = false;
+		GMixer.IsIndoorSend = false;
 	}
 
 	{
@@ -1397,12 +1639,21 @@ void Mixer::Initialize()
 		GMixer.free_hrtf_slots[i] = i + 1;
 	}
 
+	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+	{
+		GMixer.ShootingSendFar[Channel] = new float[SND_BLOCKSIZE]();
+		GMixer.ShootingSendIndoor[Channel] = new float[SND_BLOCKSIZE]();
+	}
+
+	GMixer.ShootingReverbFar.Initialize("ir\\ir_default_far.ogg", psSoundShootingReverb, ReverbField::Far);
+	GMixer.ShootingReverbIndoor.InitializeProcedural(psSoundShootingReverb, ReverbField::IndoorNear);
+
 #ifdef DEBUG_DRAW
 #pragma todo(replace with aligned allocators)
 	// Blackman-Harris window
-	for (int i = 0; i < SND_BLOCKSIZE; ++i) 
+	for (int i = 0; i < SND_BLOCKSIZE; ++i)
 	{
-		GMixer.fft_window[i] = .5 * (1. - cosf(2. * 3.1415926535897932384 * (f64)i / (f64)(SND_BLOCKSIZE-1)));
+		GMixer.fft_window[i] = .5 * (1. - cosf(2. * 3.1415926535897932384 * (f64)i / (f64)(SND_BLOCKSIZE - 1)));
 	}
 
 	GMixer.aligned_input_fft = (float*)aligned_alloc(16, SND_BLOCKSIZE * sizeof(float));
@@ -1427,8 +1678,18 @@ void Mixer::Shutdown()
 
 	Backend::Shutdown();
 
+	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+	{
+		delete[] GMixer.ShootingSendFar[Channel];
+		GMixer.ShootingSendFar[Channel] = nullptr;
+		delete[] GMixer.ShootingSendIndoor[Channel];
+		GMixer.ShootingSendIndoor[Channel] = nullptr;
+	}
+	GMixer.ShootingReverbFar.Free();
+	GMixer.ShootingReverbIndoor.Free();
+
 #ifdef DEBUG_DRAW
-	if (GMixer.fft_setup) 
+	if (GMixer.fft_setup)
 	{
 		pffft_destroy_setup(GMixer.fft_setup);
 		GMixer.fft_setup = nullptr;
@@ -1460,11 +1721,13 @@ void Mixer::Shutdown()
 
 ICF void DestroyInternal(int slot)
 {
-	if (slot == 0) {
+	if (slot == 0)
+	{
 		return;
 	}
 
-	if (!GMixer.slots[slot - 1].sound_name.empty()) {
+	if (!GMixer.slots[slot - 1].sound_name.empty())
+	{
 		Snd_ReleaseSound(GMixer.slots[slot - 1].sound_name);
 		GMixer.slots[slot - 1].sound_name.clear();
 	}
@@ -1506,6 +1769,10 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 	GMixer.render_lock.AcquireExclusive();
 	GMixer.manage_lock.AcquireExclusive();
 	GMixer.update_lock.AcquireExclusive();
+
+	// Listener hemi -> indoor factor (kept for reference / global use).
+	GMixer.IndoorFactor += (Snd_HemiIndoorFactor(GMixer.P) - GMixer.IndoorFactor) *
+		std::clamp(GMixer.dt * 3.0f, 0.0f, 1.0f);
 
 	for (auto& RefSound : GMixer.sounds)
 	{
@@ -1576,6 +1843,14 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 			{
 				Fvector Pos = (Slot.flags & (u16)Flags::Spatial) ? Slot.parameters[(u32)Mixer::ParameterId::Position] : GMixer.P;
 				float Dist = GMixer.P.distance_to(Pos);
+
+				// Indoor factor of the SOUND's position: a shot fired inside a
+				// room gets the indoor tail even if the listener stands outside.
+				if (Slot.flags & (u16)Flags::Shooting)
+				{
+					Snd_UpdateSlotIndoorFactor(Slot, Pos);
+				}
+
 				if (Dist <= Slot.parameters[(u32)Mixer::ParameterId::DistanceRange].y)
 				{
 					float OutOCC = ::Sound->get_occlusion(Pos, 0.2f, &GMixer.occ);
@@ -1825,13 +2100,13 @@ void Mixer::StopAll()
 void Mixer::PauseAll()
 {
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
-	GMixer.cmd.emplace_back(SoundCommand{ .id = ESoundMixerCommands::pause_all });
+	GMixer.cmd.emplace_back(SoundCommand{.id = ESoundMixerCommands::pause_all});
 }
 
 void Mixer::ResumeAll()
 {
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
-	GMixer.cmd.emplace_back(SoundCommand{ .id = ESoundMixerCommands::resume_all });
+	GMixer.cmd.emplace_back(SoundCommand{.id = ESoundMixerCommands::resume_all});
 }
 
 void Mixer::DereferenceObjects(CObject** object, int count)
@@ -1882,7 +2157,7 @@ void Mixer::Destroy(u32 SlotID)
 	GMixer.slots[SlotID - 1].fake_state = State::Stopped;
 
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
-	GMixer.cmd.emplace_back(SoundCommand{ .slot = SlotID, .id = ESoundMixerCommands::destroy });
+	GMixer.cmd.emplace_back(SoundCommand{.slot = SlotID, .id = ESoundMixerCommands::destroy});
 	GMixer.stats.possible_free_count++;
 }
 
@@ -1897,11 +2172,8 @@ void Mixer::Play(u32 SlotID, u16 flags, ref_sound* SoundRef, double Delay)
 
 	GMixer.slots[SlotID - 1].fake_state = State::Playing;
 
-	GMixer.cmd.emplace_back(SoundCommand
-	{ 
-		.slot = SlotID, .id = ESoundMixerCommands::play, .param0 = flags, .param1 = (u64)SoundRef, 
-		.param2 = *(u64*)&Delay, .param3 = (u64)SoundRef->_g_object(), 
-		.string_storage = SoundRef->_p->fn_attached[0]
+	GMixer.cmd.emplace_back(SoundCommand{
+		.slot = SlotID, .id = ESoundMixerCommands::play, .param0 = flags, .param1 = (u64)SoundRef, .param2 = *(u64*)&Delay, .param3 = (u64)SoundRef->_g_object(), .string_storage = SoundRef->_p->fn_attached[0]
 	});
 }
 
@@ -1920,8 +2192,7 @@ void Mixer::PlayNoFeedback(u16 Flags, ref_sound* SoundRef, CObject* Obj, double 
 
 	Slot.fake_state = State::Playing;
 
-	GMixer.cmd.emplace_back(SoundCommand
-	{
+	GMixer.cmd.emplace_back(SoundCommand{
 		.slot = SlotIdx, .id = ESoundMixerCommands::play, .param0 = Flags, .param1 = (u64)SoundRef, .param2 = *(u64*)&Delay, .param3 = (u64)Obj, .string_storage = SoundRef->_p->fn_attached[0]
 	});
 
@@ -1956,14 +2227,14 @@ void Mixer::PlayNoFeedback(u16 Flags, ref_sound* SoundRef, CObject* Obj, double 
 
 void Mixer::Pause(u32 slot)
 {
-	if (slot == 0) 
+	if (slot == 0)
 	{
 		return;
 	}
 
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
 	GMixer.slots[slot - 1].fake_state = State::Paused;
-	GMixer.cmd.emplace_back(SoundCommand{ .slot = slot, .id = ESoundMixerCommands::pause });
+	GMixer.cmd.emplace_back(SoundCommand{.slot = slot, .id = ESoundMixerCommands::pause});
 }
 
 void Mixer::Stop(u32 SlotID, bool IsDeferred)
@@ -2023,7 +2294,7 @@ void Mixer::SetPanning(u32 slot, double Left, double Right)
 	Right = std::clamp(Right, 0.0, 1.0);
 
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
-	GMixer.cmd.emplace_back(SoundCommand{ .slot = slot,.id = ESoundMixerCommands::set_panning, .param1 = *(u64*)&Left, .param2 = *(u64*)&Right });
+	GMixer.cmd.emplace_back(SoundCommand{.slot = slot, .id = ESoundMixerCommands::set_panning, .param1 = *(u64*)&Left, .param2 = *(u64*)&Right});
 }
 
 xr_vector<sound_slot_state>& Mixer::GetSlots()
@@ -2163,6 +2434,56 @@ Fvector* Mixer::GetParameters(u32 SlotID)
 	}
 
 	return GMixer.slots[SlotID - 1].parameters;
+}
+
+void Mixer::LoadImpulseResponse(const char* name, xr_vector<xr_vector<float>>& ch_audio, u32& sample_rate, u16& num_channels)
+{
+	sound_source source{};
+	Snd_LoadSource(source, name);
+	if (source.file.datasource == nullptr)
+	{
+		return;
+	}
+
+	num_channels = (u16)source.pub.channels_count;
+	sample_rate = SND_SAMPLERATE;
+	const u32 total = source.pub.frames_total;
+
+	ch_audio.resize(SND_CHANNEL_COUNT);
+	float* read_buf[SND_CHANNEL_COUNT] = {};
+	for (u32 c = 0; c < SND_CHANNEL_COUNT; c++)
+	{
+		read_buf[c] = xr_alloc<float>(SND_BLOCKSIZE);
+	}
+
+	u32 pos = 0;
+	while (pos < total)
+	{
+		u32 to_read = std::min((u32)SND_BLOCKSIZE, total - pos);
+		u32 got = Snd_ReadFromSource(source, read_buf, to_read);
+		if (got == 0)
+		{
+			break;
+		}
+		for (u32 c = 0; c < SND_CHANNEL_COUNT; c++)
+		{
+			if (ch_audio[c].size() < pos + got)
+			{
+				ch_audio[c].resize(pos + got);
+			}
+			memcpy(ch_audio[c].data() + pos, read_buf[c], got * sizeof(float));
+		}
+		pos += got;
+	}
+
+	for (u32 c = 0; c < SND_CHANNEL_COUNT; c++)
+	{
+		xr_free(read_buf[c]);
+	}
+
+	ov_clear(&source.file);
+	xr_delete(source.reader);
+	xr_free(source.data);
 }
 
 void Mixer::AddEditorZone(sound_zone_params& params)
