@@ -193,13 +193,6 @@ void attachable_hud_item::debug_draw_firedeps()
 
 	if(hud_adj_mode==5||hud_adj_mode==6||hud_adj_mode==7 ||bForce)
 	{
-		if (!m_measures.m_prop_flags.test(hud_item_measures::e_fire_point) &&
-			!m_measures.m_prop_flags.test(hud_item_measures::e_fire_point2) &&
-			!m_measures.m_prop_flags.test(hud_item_measures::e_shell_point))
-		{
-			return;
-		}
-
 		CDebugRenderer			&render = Level().debug_renderer();
 
 		firedeps			fd;
