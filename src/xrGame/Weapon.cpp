@@ -3533,6 +3533,8 @@ EHudOffsetType CWeapon::GetCurrentHudOffsetIdx() const
 
 void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 {
+	CHudItem::UpdateHudAdditonal(trans);
+
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
 	if (pActor == nullptr)
 	{
