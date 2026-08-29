@@ -79,11 +79,6 @@ void CUIActorMenu::DeInitInventoryMode()
 	clear_highlight_lists();
 }
 
-CInventory* CUIActorMenu::GetInventory()
-{
-	return &m_pActorInvOwner->inventory();
-}
-
 bool CUIActorMenu::DropAllItemsFromRuck( bool quest_force )
 {
 	if ( !IsShown() || !m_pInventoryBagList || m_currMenuMode != mmInventory )

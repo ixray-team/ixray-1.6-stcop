@@ -38,7 +38,6 @@ public:
 	void						DisableAll					();
 	void						EnableAll					();
 
-	virtual CInventory*			GetInventory				();
 	virtual CInventoryOwner*	GetInventoryOwner			() { return m_pOurObject; }
 	virtual CInventoryOwner*	GetPartner					() { return m_pOthersObject; }
 
