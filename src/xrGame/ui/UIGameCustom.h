@@ -17,6 +17,7 @@ class CUICaption;
 class CUIStatic;
 class CUIWindow;
 class CUIXml;
+class CUIActorMenuBase;
 class CUIActorMenu;
 class CUIPdaWnd;			
 struct KillMessageStruct;
@@ -152,7 +153,7 @@ public:
 						CUIGameCustom			();
 	virtual				~CUIGameCustom			();
 
-	bool				HasShownDialogs			() const;
+	bool				HasShownDialogs			();
 
 	virtual	void		Init					(int stage)	{};
 	
@@ -165,6 +166,12 @@ public:
 	IC CUITradeWnd*		TradeWnd				() const { return m_TradeMenu; }
 	IC CUIPdaWnd*		PdaMenu					() const { return m_PdaMenu;   }
 	IC CUIRadialMenuWeapon*	RadialMenuWeapon	() const { return m_RadialMenuWeapon;   }
+
+	CUIActorMenuBase*	GetInventoryMenu		();
+	CUIActorMenuBase*	GetCarbodyMenu			();
+	CUIActorMenuBase*	GetTradeMenu			();
+	CUIActorMenuBase*	GetActiveInventoryWindow();
+
 			bool		ShowActorMenu			();
 			void		HideActorMenu			();
 			void		UpdateActorMenu			(); //Alundaio
@@ -186,8 +193,8 @@ public:
 	void				StartTalk				(bool disable_break);
 	void				StartTrade				(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
 	void				StartUpgrade			(CInventoryOwner* pActorInv, CInventoryOwner* pMech);
-	void				StartCarBody			(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
-	void				StartCarBody			(CInventoryOwner* pActorInv, CInventoryBox* pBox);
+	bool				StartCarBody			(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
+	bool				StartCarBody			(CInventoryOwner* pActorInv, CInventoryBox* pBox);
 
 	virtual void		HideShownDialogs		();
 
