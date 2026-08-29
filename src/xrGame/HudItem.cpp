@@ -47,6 +47,16 @@ void CHudItem::Load(const char* section)
 	m_fLookOutSpeedKoef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "lookout_speed_koef", 1.0f);
 	m_fLookOutAmplK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "lookout_ampl_k", 1.0f);
 
+	BaseYPRParams.m_fHudYawInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_yaw_inertia_k", 0.0f);
+	BaseYPRParams.m_fHudPitchInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_pitch_inertia_k", 0.0f);
+	BaseYPRParams.m_fHudRollInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_roll_inertia_k", 0.0f);
+	BaseYPRParams.m_fHudInertiaSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_inertia_speed", 10.0f);
+
+	ZoomYPRParams.m_fHudYawInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_zoom_yaw_inertia_k", 0.0f);
+	ZoomYPRParams.m_fHudPitchInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_zoom_pitch_inertia_k", 0.0f);
+	ZoomYPRParams.m_fHudRollInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_zoom_roll_inertia_k", 0.0f);
+	ZoomYPRParams.m_fHudInertiaSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_zoom_inertia_speed", 10.0f);
+
 	m_fActorCamSpeedFactor = READ_IF_EXISTS(pSettings, r_float, section, "actor_camera_speed_factor", 1.0f);
 
 	m_current_inertion.PitchOffsetR = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_r", PITCH_OFFSET_R);
@@ -402,7 +412,36 @@ void CHudItem::SendHiddenItem()
 
 void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 {
-	//TODO: Implement new yaw & pitch inertion
+	CActor* pActor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr;
+	if (pActor == nullptr)
+		return;
+
+	const float dt = Device.fTimeDelta;
+
+	const float fYawTarget = -pActor->fFPCamYawMagnitude * lerp(BaseYPRParams.m_fHudYawInertiaK, ZoomYPRParams.m_fHudYawInertiaK, GetAimFactor());
+	const float fPitchTarget = -pActor->fFPCamPitchMagnitude * lerp(BaseYPRParams.m_fHudPitchInertiaK, ZoomYPRParams.m_fHudPitchInertiaK, GetAimFactor());
+	const float fRollTarget = -pActor->fFPCamYawMagnitude * lerp(BaseYPRParams.m_fHudRollInertiaK, ZoomYPRParams.m_fHudRollInertiaK, GetAimFactor());
+
+	const float fLerp = 1.0f - exp(-dt * lerp(BaseYPRParams.m_fHudInertiaSpeed, ZoomYPRParams.m_fHudInertiaSpeed, GetAimFactor()));
+	m_fHudYawInertia += (fYawTarget - m_fHudYawInertia) * fLerp;
+	m_fHudPitchInertia += (fPitchTarget - m_fHudPitchInertia) * fLerp;
+	m_fHudRollInertia += (fRollTarget - m_fHudRollInertia) * fLerp;
+
+	Fmatrix hud_inertia;
+	hud_inertia.identity();
+	hud_inertia.rotateY(m_fHudYawInertia);
+
+	Fmatrix hud_inertia_p;
+	hud_inertia_p.identity();
+	hud_inertia_p.rotateX(m_fHudPitchInertia);
+	hud_inertia.mulA_43(hud_inertia_p);
+
+	Fmatrix hud_inertia_r;
+	hud_inertia_r.identity();
+	hud_inertia_r.rotateZ(m_fHudRollInertia);
+	hud_inertia.mulA_43(hud_inertia_r);
+
+	trans.mulB_43(hud_inertia);
 }
 
 void CHudItem::UpdateCL()

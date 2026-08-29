@@ -371,6 +371,18 @@ protected:
 	float						m_fLookOutAmplK = 1.0f;
 	float						m_fActorCamSpeedFactor = 1.0f;
 
+	struct SHudYPRParams
+	{
+		float m_fHudYawInertiaK = 0.0f;
+		float m_fHudPitchInertiaK = 0.0f;
+		float m_fHudRollInertiaK = 0.0f;
+		float m_fHudInertiaSpeed = 10.0f;
+	} BaseYPRParams, ZoomYPRParams;
+
+	float						m_fHudYawInertia = 0.0f;
+	float						m_fHudPitchInertia = 0.0f;
+	float						m_fHudRollInertia = 0.0f;
+
 	bool						m_bDisableBore;
 	bool						m_bSwitchSprint = false;
 	bool						m_bBlendMovement = false;
@@ -410,6 +422,8 @@ public:
 	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
+
+	virtual float GetAimFactor() const { return 0.0f; }
 
 protected:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
