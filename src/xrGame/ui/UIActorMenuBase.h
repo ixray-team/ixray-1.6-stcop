@@ -161,7 +161,6 @@ protected:
 	bool						RemoveItemFromList			(CUIDragDropListEx* lst, PIItem pItem);
 
 	EDDListType					GetListType					(CUIDragDropListEx* l);
-	virtual void				SetCurrentItem				(CUICellItem* itm) = 0;
 
 	void						SendEvent_Item2Slot			(PIItem	pItem, u16 parent, u16 slot_id);
 	void						SendEvent_Item2Belt			(PIItem	pItem, u16 parent);
@@ -367,6 +366,8 @@ public:
 
 	CUICellItem*				CurrentItem					();
 	PIItem						CurrentIItem				();
+	virtual void				SetCurrentItem				(CUICellItem* itm) = 0;
+	void						RefreshCurrentItemCell		();
 
 	void						OnInventoryAction			(PIItem pItem, u16 action_type);
 	virtual void				Update						();

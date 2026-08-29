@@ -241,7 +241,6 @@ public:
 	virtual void				UpdateActor							();
 	void						UpdatePartnerBag					();
 	virtual void				UpdateDeadBodyBag					();
-	void						RefreshCurrentItemCell				();
 
 	void						OnBtnPerformTradeBuy				(CUIWindow* w, void* d);
 	void						OnBtnPerformTradeSell				(CUIWindow* w, void* d);

@@ -84,7 +84,7 @@ void game_cl_freemp::shedule_Update(u32 dt)
 	{
 		const bool started = m_pVoiceChat->IsStarted();
 		const bool is_dead = !local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
-		const bool has_shown_dialogs = CurrentGameUI()->HasShownDialogs();
+		bool has_shown_dialogs = CurrentGameUI()->HasShownDialogs();
 		if (started && (is_dead || has_shown_dialogs))
 		{
 			m_pVoiceChat->Stop();

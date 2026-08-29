@@ -29,16 +29,10 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 		VERIFY(pIItem);
 		if (CurrentGameUI())
 		{
-			if(CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->GetMenuMode()==mmDeadBodySearch)
+			// DO NOT remove menu mode check, since CoP inventory is not always used for deadbody, unlike SoC one
+			if (CurrentGameUI()->GetCarbodyMenu() && CurrentGameUI()->GetCarbodyMenu()->GetMenuMode() == mmDeadBodySearch)
 			{
-				if (this == CurrentGameUI()->ActorMenu()->GetInvBox())
-				{
-					CurrentGameUI()->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
-				}
-			}
-			else if (CurrentGameUI()->CarBodyWnd())
-			{
-				if (this == CurrentGameUI()->CarBodyWnd()->GetInvBox())
+				if (this == CurrentGameUI()->GetCarbodyMenu()->GetInvBox())
 				{
 					CurrentGameUI()->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
 				}
@@ -65,16 +59,10 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 
 		if (!IsGameTypeSingle() && CurrentGameUI())
 		{
-			if (CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->GetMenuMode() == mmDeadBodySearch)
+			// DO NOT remove menu mode check, since CoP inventory is not always used for deadbody, unlike SoC one
+			if (CurrentGameUI()->GetCarbodyMenu() && CurrentGameUI()->GetCarbodyMenu()->GetMenuMode() == mmDeadBodySearch)
 			{
-				if (this == CurrentGameUI()->ActorMenu()->GetInvBox())
-				{
-					CurrentGameUI()->OnInventoryAction(itm->cast_inventory_item(), GE_OWNERSHIP_REJECT);
-				}
-			}
-			else if (CurrentGameUI()->CarBodyWnd())
-			{
-				if (this == CurrentGameUI()->CarBodyWnd()->GetInvBox())
+				if (this == CurrentGameUI()->GetCarbodyMenu()->GetInvBox())
 				{
 					CurrentGameUI()->OnInventoryAction(itm->cast_inventory_item(), GE_OWNERSHIP_REJECT);
 				}
