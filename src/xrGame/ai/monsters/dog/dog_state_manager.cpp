@@ -14,6 +14,7 @@
 #include "../group_states/group_state_eat.h"
 #include "../group_states/group_state_panic.h"
 #include "../group_states/group_state_hear_danger_sound.h"
+#include "../states/monster_state_rest.h"
 
 namespace detail
 {
@@ -28,7 +29,14 @@ namespace dog
 
 CStateManagerDog::CStateManagerDog(CAI_Dog *monster) : inherited(monster)
 {
-	add_state(eStateRest,					new CStateGroupRest<CAI_Dog> 				(monster));
+	if (EngineExternal().ShadowOfChernobylMode())
+	{
+		add_state(eStateRest, new CStateMonsterRest<CAI_Dog>(monster));
+	}
+	else
+	{
+		add_state(eStateRest, new CStateGroupRest<CAI_Dog>(monster));
+	}
 	add_state(eStatePanic,					new CStateGroupPanic<CAI_Dog>				(monster));
 	add_state(eStateAttack,					new CStateGroupAttack<CAI_Dog>				(monster));
 	add_state(eStateEat,					new CStateGroupEat<CAI_Dog>					(monster));
