@@ -72,6 +72,14 @@ __IX-Ray__ is fork of __X-Ray 1.6__ engine that aims to improve gaming experienc
 
 Common purposes of the project is improving developer and gaming experience, fixing a lot of bugs of the original engine and extending support for new features
 
+## Support the Project
+
+If you like this project, you can support its development on Boosty. Subscribe to get exclusive content and participate in project development polls!
+
+We would also appreciate a Star on the repository!
+
+[![Boosty](https://img.shields.io/badge/Support%20on-Boosty-F15F2C?style=flat-square&logo=boosty&logoColor=white)](https://boosty.to/ixray_platform)
+
 ## Quick start
 
 Latest release of the engine can be downloaded on the [releases page](https://github.com/ixray-team/ixray-1.6-stcop/releases)
