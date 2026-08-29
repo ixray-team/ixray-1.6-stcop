@@ -753,14 +753,26 @@ void add_pp_effector(LPCSTR fn, int id, bool cyclic)
 
 void remove_pp_effector(int id)
 {
-	CPostprocessAnimator*	pp	= smart_cast<CPostprocessAnimator*>(Actor()->Cameras().GetPPEffector((EEffectorPPType)id));
+	if (Actor() == nullptr)
+	{
+		return;
+	}
 
-	if(pp) pp->Stop(1.0f);
+	CPostprocessAnimator* pp = smart_cast<CPostprocessAnimator*>(Actor()->Cameras().GetPPEffector((EEffectorPPType)id));
 
+	if (pp)
+	{
+		pp->Stop(1.0f);
+	}
 }
 
 void set_pp_effector_factor(int id, float f, float f_sp)
 {
+	if (Actor() == nullptr)
+	{
+		return;
+	}
+
 	CPostprocessAnimator*	pp	= smart_cast<CPostprocessAnimator*>(Actor()->Cameras().GetPPEffector((EEffectorPPType)id));
 
 	if(pp) pp->SetDesiredFactor(f,f_sp);
@@ -768,6 +780,11 @@ void set_pp_effector_factor(int id, float f, float f_sp)
 
 void set_pp_effector_factor2(int id, float f)
 {
+	if (Actor() == nullptr)
+	{
+		return;
+	}
+
 	CPostprocessAnimator*	pp	= smart_cast<CPostprocessAnimator*>(Actor()->Cameras().GetPPEffector((EEffectorPPType)id));
 
 	if(pp) pp->SetCurrentFactor(f);
