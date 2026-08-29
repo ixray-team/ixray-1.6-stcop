@@ -41,11 +41,6 @@ void CHudItem::Load(const char* section)
 	else // if it doesn't, then crash if line is missing from config
 		m_animation_slot		= pSettings->r_u32			(section,"animation_slot");
 
-	m_nearwall_dist_min = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min", .2f);
-	m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max", 1.f);
-	m_nearwall_target_hud_fov = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_target_hud_fov", 0.27f);
-	m_nearwall_speed_mod = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_speed_mod", 10.f);
-
 	m_fHudFov = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov", 0.0f);
 	m_fHudFovFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_factor", 1.0f);
 
@@ -915,31 +910,7 @@ attachable_hud_item* CHudItem::HudItemData()
 
 float CHudItem::GetHudFov()
 {
-	if (Level().CurrentViewEntity() == object().H_Parent())
-	{
-		float dist = HUD().GetCurrentRayQuery().range;
-
-		clamp(dist, m_nearwall_dist_min, m_nearwall_dist_max);
-		float fDistanceMod = ((dist - m_nearwall_dist_min) / (m_nearwall_dist_max - m_nearwall_dist_min));
-
-		float fBaseFov = m_fHudFov ? m_fHudFov : psHUD_FOV_def;
-		clamp(fBaseFov, 5.f, 180.f);
-		const static bool isCollision = EngineExternal()[EEngineExternalGame::EnableWeaponCollision];
-		if (isCollision)
-		{
-			float src = m_nearwall_speed_mod * Device.fTimeDelta;
-			clamp(src, 0.f, 1.f);
-
-			float fTrgFov = m_nearwall_target_hud_fov + fDistanceMod * (fBaseFov - m_nearwall_target_hud_fov);
-			m_nearwall_last_hud_fov = m_nearwall_last_hud_fov * (1.f - src) + fTrgFov * src;
-		}
-		else
-		{
-			m_nearwall_last_hud_fov = fBaseFov;
-		}
-	}
-
-	return m_nearwall_last_hud_fov * m_fHudFovFactor;
+	return (m_fHudFov ? m_fHudFov : psHUD_FOV_def) * m_fHudFovFactor;
 }
 
 void CHudItem::PlaySoundIfExist(const char* alias, const Fvector& position, bool allowOverlap)
