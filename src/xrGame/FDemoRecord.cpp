@@ -802,90 +802,86 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 
 	if (view_from_bone_mode)
 	{
+		float dt = dr_disable_time_factor_influence ? Device.fRealTimeDelta : Device.fTimeDelta;
+		
 		switch (dik)
 		{
 			case SDL_SCANCODE_W:
-				p_cam_pos_view_from_bone_offset.z += 1.0f * Device.fTimeDelta;
+				p_cam_pos_view_from_bone_offset.z += 1.f * dt;
 				break;
 
 			case SDL_SCANCODE_A:
-				p_cam_pos_view_from_bone_offset.x -= 1.0f * Device.fTimeDelta;
+				p_cam_pos_view_from_bone_offset.x -= 1.f * dt;
 				break;
 
 			case SDL_SCANCODE_S:
-				p_cam_pos_view_from_bone_offset.z -= 1.0f * Device.fTimeDelta;
+				p_cam_pos_view_from_bone_offset.z -= 1.f * dt;
 				break;
 
 			case SDL_SCANCODE_D:
-				p_cam_pos_view_from_bone_offset.x += 1.0f * Device.fTimeDelta;
+				p_cam_pos_view_from_bone_offset.x += 1.f * dt;
 				break;
 
 			case SDL_SCANCODE_Q:
-				hpb_view_from_bone_offset.z -= 1.0f * Device.fTimeDelta;
+				hpb_view_from_bone_offset.z -= 1.f * dt;
 				break;
 
 			case SDL_SCANCODE_E:
-				hpb_view_from_bone_offset.z += 1.0f * Device.fTimeDelta;
+				hpb_view_from_bone_offset.z += 1.f * dt;
 				break;
 		}
 	}
 
-	Fvector Delta = Fvector();
-
-	if (!NewInputSchema)
+	if (NewInputSchema)
 	{
-		switch (dik)
+		switch (get_binded_action(dik))
 		{
-			case SDL_SCANCODE_W:
-				Delta.y += 1.0f;
+			case kFWD:
+				frame_pos_delta.z += 1.0f;
 				break;
 
-			case SDL_SCANCODE_A:
-				Delta.x -= 1.0f;
+			case kBACK:
+				frame_pos_delta.z -= 1.0f;
 				break;
 
-			case SDL_SCANCODE_S:
-				Delta.y -= 1.0f;
+			case kL_STRAFE:
+				frame_pos_delta.x -= 1.0f;
 				break;
 
-			case SDL_SCANCODE_D:
-				Delta.x += 1.0f;
+			case kR_STRAFE:
+				frame_pos_delta.x += 1.0f;
+				break;
+
+			case kCROUCH:
+				frame_pos_delta.y -= 1.0f;
+				break;
+
+			case kJUMP:
+				frame_pos_delta.y += 1.0f;
 				break;
 		}
 	}
 	else
 	{
-		EGameActions action = get_binded_action(dik);
-
-		switch (action)
+		switch (dik)
 		{
-			case kFWD:
-				Delta.z += 1.0f;
+			case SDL_SCANCODE_W:
+				frame_pos_delta.y += 1.0f;
 				break;
 
-			case kBACK:
-				Delta.z -= 1.0f;
+			case SDL_SCANCODE_A:
+				frame_pos_delta.x -= 1.0f;
 				break;
 
-			case kL_STRAFE:
-				Delta.x -= 1.0f;
+			case SDL_SCANCODE_S:
+				frame_pos_delta.y -= 1.0f;
 				break;
 
-			case kR_STRAFE:
-				Delta.x += 1.0f;
-				break;
-
-			case kCROUCH:
-				Delta.y -= 1.0f;
-				break;
-
-			case kJUMP:
-				Delta.y += 1.0f;
+			case SDL_SCANCODE_D:
+				frame_pos_delta.x += 1.0f;
 				break;
 		}
 	}
-
-	frame_pos_delta.add(Delta);
 }
 
 void CDemoRecord::IR_OnMousePress(int btn)
