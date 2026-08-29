@@ -7,11 +7,11 @@
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "InventorySorter.h"
 #include "../../xrUI/Widgets/UIFocusSystem.h"
+#include "../InventoryOwner.h"
 
 class CUIPropertiesBox;
 class CUIActorMenu;
 class CInventory;
-class CInventoryOwner;
 class CInventoryBox;
 class CTrade;
 class CUIDragDropReferenceList;
@@ -335,7 +335,7 @@ public:
 	CUIDragDropReferenceList*	m_pQuickSlot = nullptr;
 	EMenuMode					GetMenuMode					() {return m_currMenuMode;}
 	CUIPropertiesBox*			m_UIPropertiesBox = nullptr;
-	virtual CInventory*			GetInventory				() { return nullptr; }
+			CInventory*			GetInventory				() { return GetInventoryOwner() ? &GetInventoryOwner()->inventory() : nullptr; }
 	virtual CInventoryOwner*	GetInventoryOwner			() { return nullptr; }
 	virtual CInventoryOwner*	GetPartner					() { return nullptr; }
 	virtual CInventoryBox*		GetInvBox					() { return nullptr; }

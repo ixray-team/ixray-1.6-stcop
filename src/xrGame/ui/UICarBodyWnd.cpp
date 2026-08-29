@@ -193,11 +193,6 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryBox* pInvBox)
 	SetAreaSelectionTo								(m_pUIOthersBagList);
 }
 
-CInventory* CUICarBodyWnd::GetInventory()
-{
-	return &m_pOurObject->inventory();
-}
-
 void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 {
 	m_pOurObject									= pOur;

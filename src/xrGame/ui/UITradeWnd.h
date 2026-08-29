@@ -83,8 +83,6 @@ protected:
 	bool				m_bDealControlsVisible;
 
 	//указатели игрока и того с кем торгуем
-	CInventory*			m_pInv;
-	CInventory*			m_pOthersInv;
 	CInventoryOwner*	m_pInvOwner;
 	CInventoryOwner*	m_pOthersInvOwner;
 	CTrade*				m_pTrade;
@@ -99,7 +97,6 @@ protected:
 	virtual void		TradeShowMessage			(s64 money_actor, s64 money_patner);
 
 public:
-	virtual CInventory*			GetInventory				() { return m_pInv; }
 	virtual CInventoryOwner*	GetInventoryOwner			() { return m_pInvOwner; }
 	virtual CInventoryOwner*	GetPartner					() { return m_pOthersInvOwner; }
 	virtual CUIDragDropListEx*	GetTradeActorList			() { return &UIOurTradeList; }
