@@ -65,7 +65,7 @@
 			</text_color>
 		</btn_back>		
 		<btn_autoselect x="295" y="504" width="118" height="48" stretch="1">
-			<texture stretch="1">ui_button_main02</texture>
+			<texture>ui_button_main02</texture>
 			<text font="graffiti19" align="c">mp_auto_select</text>
 			<text_color>
 				<e r="227" g="199" b="178"/>				
