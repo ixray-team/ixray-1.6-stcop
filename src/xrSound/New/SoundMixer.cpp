@@ -297,6 +297,10 @@ ICF void Snd_ReleaseHRTFSlot(u32 SlotIdx)
 
 	if (Slot.hrtf_slot)
 	{
+		if (GSpatializer)
+		{
+			GSpatializer->FreeSlot(Slot.hrtf_slot - 1);
+		}
 		GMixer.free_hrtf_slots.emplace_back(Slot.hrtf_slot);
 		Slot.hrtf_slot = 0;
 	}
@@ -1118,19 +1122,19 @@ ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffe
 	// Apply final volumes
 	float slot_volume = Volume.x * Volume.y * Volume.z;
 
-	float vol_mixer = GMixer.effect_volume;
+	float VolumeMixer = GMixer.effect_volume;
 	if (Slot.flags & (u16)Mixer::Flags::Music)
 	{
-		vol_mixer = GMixer.music_volume;
+		VolumeMixer = GMixer.music_volume;
 	}
 	else if (Slot.flags & (u16)Mixer::Flags::Shooting)
 	{
-		vol_mixer = GMixer.shooting_volume;
+		VolumeMixer = GMixer.shooting_volume;
 	}
 
-	float volume_final = OCCVolume * slot_volume * vol_mixer * Slot.fade_volume;
-	BeginFactor *= volume_final;
-	EndFactor *= volume_final;
+	float VolumeFinal = OCCVolume * slot_volume * VolumeMixer * Slot.fade_volume;
+	BeginFactor *= VolumeFinal;
+	EndFactor *= VolumeFinal;
 
 	float left_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].x;
 	float right_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].y;
@@ -1142,7 +1146,7 @@ ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffe
 
 		if (Slot.flags & (u32)Mixer::Flags::Spatial)
 		{
-			if (psSoundFlags.is(ss_HRTF) && GMixer.hrtf_enabled)
+			if (psSoundFlags.is(ss_HRTF) && GMixer.hrtf_enabled && !(Slot.flags & (u32)Mixer::Flags::Shooting))
 			{
 				Snd_PhononSpatialProcess(process_buffer, SlotIdx);
 			}

@@ -130,20 +130,26 @@ void CResonanceAudioSpatializer::Initialize()
 
 void CResonanceAudioSpatializer::Shutdown()
 {
-	for (HrtfSlot& Slot : Slots)
+	auto DestroyAll = [](xr_vector<HrtfSlot>& List)
 	{
-		if (Slot.Api != nullptr)
+		for (HrtfSlot& Slot : List)
 		{
-			if (Slot.SourceId != vraudio::ResonanceAudioApi::kInvalidSourceId)
+			if (Slot.Api != nullptr)
 			{
-				Slot.Api->DestroySource(Slot.SourceId);
-				Slot.SourceId = vraudio::ResonanceAudioApi::kInvalidSourceId;
+				if (Slot.SourceId != vraudio::ResonanceAudioApi::kInvalidSourceId)
+				{
+					Slot.Api->DestroySource(Slot.SourceId);
+					Slot.SourceId = vraudio::ResonanceAudioApi::kInvalidSourceId;
+				}
+				delete Slot.Api;
+				Slot.Api = nullptr;
 			}
-			delete Slot.Api;
-			Slot.Api = nullptr;
 		}
-	}
-	Slots.clear();
+		List.clear();
+	};
+
+	DestroyAll(Slots);
+	DestroyAll(FreeSlots);
 }
 
 void CResonanceAudioSpatializer::ResetSlot(u32 SlotIndex)
@@ -154,23 +160,49 @@ void CResonanceAudioSpatializer::ResetSlot(u32 SlotIndex)
 	}
 
 	HrtfSlot& Slot = Slots[SlotIndex];
+	if (Slot.Api != nullptr)
+	{
+		return;
+	}
+
+	if (!FreeSlots.empty())
+	{
+		Slot = std::move(FreeSlots.back());
+		FreeSlots.pop_back();
+		return;
+	}
+
+	Slot.Api = vraudio::CreateResonanceAudioApi(SND_CHANNEL_COUNT, SND_BLOCKSIZE, SND_SAMPLERATE);
+	R_ASSERT(Slot.Api != nullptr);
+
+	Slot.SourceId = Slot.Api->CreateSoundObjectSource(vraudio::RenderingMode::kBinauralHighQuality);
+	R_ASSERT(Slot.SourceId != vraudio::ResonanceAudioApi::kInvalidSourceId);
+
+	Slot.Api->EnableRoomEffects(false);
+
+	Slot.Api->SetSourceDistanceModel(Slot.SourceId, vraudio::DistanceRolloffModel::kNone, 0.0f, 0.0f);
+	Slot.Api->SetSourceDistanceAttenuation(Slot.SourceId, 1.0f);
+
+	Slot.Api->SetHeadPosition(0.0f, 0.0f, 0.0f);
+	Slot.Api->SetHeadRotation(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void CResonanceAudioSpatializer::FreeSlot(u32 SlotIndex)
+{
+	if (SlotIndex >= Slots.size())
+	{
+		return;
+	}
+
+	HrtfSlot& Slot = Slots[SlotIndex];
 	if (Slot.Api == nullptr)
 	{
-		// Create one engine with a single binaural source for this slot.
-		Slot.Api = vraudio::CreateResonanceAudioApi(SND_CHANNEL_COUNT, SND_BLOCKSIZE, SND_SAMPLERATE);
-		R_ASSERT(Slot.Api != nullptr);
-
-		Slot.SourceId = Slot.Api->CreateSoundObjectSource(vraudio::RenderingMode::kBinauralHighQuality);
-		R_ASSERT(Slot.SourceId != vraudio::ResonanceAudioApi::kInvalidSourceId);
-
-		Slot.Api->EnableRoomEffects(false);
-
-		Slot.Api->SetSourceDistanceModel(Slot.SourceId, vraudio::DistanceRolloffModel::kNone, 0.0f, 0.0f);
-		Slot.Api->SetSourceDistanceAttenuation(Slot.SourceId, 1.0f);
-
-		Slot.Api->SetHeadPosition(0.0f, 0.0f, 0.0f);
-		Slot.Api->SetHeadRotation(0.0f, 0.0f, 0.0f, 1.0f);
+		return;
 	}
+
+	FreeSlots.push_back(std::move(Slot));
+	Slot.Api = nullptr;
+	Slot.SourceId = vraudio::ResonanceAudioApi::kInvalidSourceId;
 }
 
 void CResonanceAudioSpatializer::ProcessHrtf(u32 SlotIndex, float** Data, const Fvector& SourcePosition, const Fvector& HeadPosition, const Fvector& RelativeDirection)
@@ -188,7 +220,7 @@ void CResonanceAudioSpatializer::ProcessHrtf(u32 SlotIndex, float** Data, const 
 
 	Fvector Dir = RelativeDirection;
 	const float Len = std::sqrt(Dir.x * Dir.x + Dir.y * Dir.y + Dir.z * Dir.z);
-	if (Len < 1e-4f)
+	if (Len < EPS)
 	{
 		Dir.x = 0.0f;
 		Dir.y = 0.0f;

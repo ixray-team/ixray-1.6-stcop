@@ -174,6 +174,14 @@ void CSteamAudioSpatializer::ResetSlot(u32 SlotIndex)
     }
 }
 
+void CSteamAudioSpatializer::FreeSlot(u32 SlotIndex)
+{
+    if (Hrtf != nullptr && SlotIndex < Slots.size())
+    {
+        iplBinauralEffectReset(Slots[SlotIndex].Effect);
+    }
+}
+
 void CSteamAudioSpatializer::ProcessHrtf(u32 SlotIndex, float** Data, const Fvector& SourcePosition, const Fvector& HeadPosition, const Fvector& RelativeDirection)
 {
     auto& Slot = Slots[SlotIndex];
