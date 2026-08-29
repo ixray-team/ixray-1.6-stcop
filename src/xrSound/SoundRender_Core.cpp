@@ -22,6 +22,7 @@ u32		psSoundModel = 0;
 float	psSoundVEffects = 1.0f;
 float	psSoundVFactor = 1.0f;
 float	psSoundVShooting = 1.0f;
+float	psSoundShootingReverb = 0.6f;
 float	psSoundCompression = 0.5f;
 
 float	psSoundVMusic = 1.0f;

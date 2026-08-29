@@ -63,4 +63,6 @@ namespace XRay::Sound::Mixer
     XRSOUND_API float GetDuration(u32 slot);
     XRSOUND_API State GetState(u32 slot);
     XRSOUND_API Fvector* GetParameters(u32 slot);
+
+	XRSOUND_API void LoadImpulseResponse(const char* name, xr_vector<xr_vector<float>>& ch_audio, u32& sample_rate, u16& num_channels);
 }
