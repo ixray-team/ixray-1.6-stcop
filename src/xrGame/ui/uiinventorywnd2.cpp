@@ -53,7 +53,6 @@ void CUIInventoryWnd::InitInventory()
 		return;
 	}
 
-	m_pInv						= &pInvOwner->inventory();
 	m_pInvOwner					= pInvOwner;
 
 	InitInventoryContents		(GetActorList());
