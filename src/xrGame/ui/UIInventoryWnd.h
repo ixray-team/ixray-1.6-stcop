@@ -38,7 +38,6 @@ public:
 	virtual void			SendMessage						(CUIWindow *pWnd, s16 msg, void *pData);
 
 	virtual CInventoryOwner* GetInventoryOwner			() { return m_pInvOwner; }
-	virtual CInventory*		GetInventory					() { return m_pInv; }
 
 	virtual void			Update							();
 
@@ -80,7 +79,6 @@ protected:
 	//информация о персонаже
 	CUIOutfitInfo				UIOutfitInfo;
 
-	CInventory*					m_pInv;
 	CInventoryOwner*			m_pInvOwner;
 	
 	virtual void				SetCurrentItem				(CUICellItem* itm);

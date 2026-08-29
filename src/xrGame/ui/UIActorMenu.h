@@ -214,7 +214,6 @@ public:
 								CUIActorMenu						();
 	virtual						~CUIActorMenu						();
 
-	virtual CInventory*			GetInventory						();
 	virtual CInventoryOwner*	GetInventoryOwner					() { return m_pActorInvOwner; }
 	virtual CInventoryOwner*	GetPartner							() { return m_pPartnerInvOwner; }
 	virtual bool				ShouldPutArtefactsToBag				() { return true; }

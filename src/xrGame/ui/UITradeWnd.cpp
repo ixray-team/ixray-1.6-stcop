@@ -191,19 +191,18 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
 	UICharacterInfoLeft.InitCharacter(m_pInvOwner);
 	UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
+	
+	EnableAll							();
 
-	m_pInv								= &m_pInvOwner->inventory();
-	m_pOthersInv						= &m_pOthersInvOwner->inventory();
+	m_pOthersInvOwner->StartTrading		();
+	UpdateLists							(eBoth);
 		
 	m_pTrade							= pOur->GetTrade();
 	m_pOthersTrade						= pOthers->GetTrade();
 
    	m_pTrade->StartTradeEx				(pOthers);
 	m_pOthersTrade->StartTradeEx		(pOur);
-	
-	EnableAll							();
 
-	UpdateLists							(eBoth);
 	SetAreaSelectionTo					(&UIOurBagList);
 }  
 
@@ -372,7 +371,6 @@ void CUITradeWnd::UpdateLists(EListType mode)
 
 void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 {
-	if(m_pCurrentCellItem == itm) return;
 	m_pCurrentCellItem				= itm;
 
 	CUIDragDropListEx* owner	= itm ? itm->OwnerList() : nullptr;
@@ -380,6 +378,7 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 	bool bBuying				= (owner==&UIOurBagList) || (owner==&UIOurTradeList);
 
 	m_ItemInfo->InitItem	(CurrentItem(), nullptr, itm ? m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying) : u32(-1));
+	TryHidePropertiesBox();
 }
 
 void CUITradeWnd::SwitchToTalk()
