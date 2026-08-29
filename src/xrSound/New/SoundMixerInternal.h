@@ -61,6 +61,11 @@ struct sound_slot_state
     Fvector velocity = {};
     f32 doppler = 1.0f;
     f32 fade_volume = 1.0f;
+
+    // Hemi-derived indoor factor of the SOUND's own position (not the
+    // listener's): 0 = open sky, 1 = fully enclosed. Computed on the update
+    // thread (raycast against the sound environment geometry) and smoothed.
+    f32 IndoorFactor = 0.0f;
 };
 
 namespace XRay::Sound::Mixer
