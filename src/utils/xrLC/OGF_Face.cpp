@@ -86,12 +86,20 @@ void OGF::_BuildFace	(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_)
 	F.v[1]	= _BuildVertex(V2);
 	F.v[2]	= _BuildVertex(V3);
 	if (!F.Degenerate()) {
-		for (itOGF_F I=data.faces.begin(); I!=data.faces.end(); I++)		if (I->Equal(F)) return;
+		for (auto& face : data.faces)
+		{
+			if (face.Equal(F))
+			{
+				return;
+			}
+		}
 		data.faces.push_back	(F);
 		x_BuildFace		(V1,V2,V3,_tc_);
 	} else {
-		if (data.vertices.size()>VertCount) 
-				data.vertices.erase(data.vertices.begin()+VertCount,data.vertices.end());
+		if (data.vertices.size()>VertCount)
+		{
+			data.vertices.erase(data.vertices.begin()+VertCount,data.vertices.end());
+		}
 	}
 }
 bool OGF::dbg_SphereContainsVertex(Fvector& c, float R)

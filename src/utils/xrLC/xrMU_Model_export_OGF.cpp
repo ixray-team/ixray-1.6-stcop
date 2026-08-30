@@ -187,25 +187,25 @@ void export_ogf( xrMU_Reference& mu_reference )
 		LODNode->AddChield(ID);
 	};
 	AttachLOD(new OGF_LOD_MU0(1, mu_reference.sector));
-	{
+	if (mu_reference.model->LODsID[0] != u32(-1)){
 		generated_ids.clear();
 		auto& LOD1Model = *CBuild::mu_models()[mu_reference.model->LODsID[0]];
 		MakeRef(LOD1Model, generated_ids, mu_reference);
 		AttachLOD(new OGF_LOD_MU1(1, mu_reference.sector));
 	}
-	{
+	if (mu_reference.model->LODsID[1] != u32(-1)){
 		generated_ids.clear();
 		auto& LOD2Model = *CBuild::mu_models()[mu_reference.model->LODsID[1]];
 		MakeRef(LOD2Model, generated_ids, mu_reference);
 		AttachLOD(new OGF_LOD_MU2(1, mu_reference.sector));
 	}
-	{
+	if (mu_reference.model->LODsID[2] != u32(-1)){
 		generated_ids.clear();
 		auto& LOD3Model = *CBuild::mu_models()[mu_reference.model->LODsID[2]];
 		MakeRef(LOD3Model, generated_ids, mu_reference);
 		AttachLOD(new OGF_LOD_MU3(1, mu_reference.sector));
 	}
-	{
+	if (mu_reference.model->LODsID[3] != u32(-1)){
 		generated_ids.clear();
 		auto& LOD4Model = *CBuild::mu_models()[mu_reference.model->LODsID[3]];
 		MakeRef(LOD4Model, generated_ids, mu_reference);

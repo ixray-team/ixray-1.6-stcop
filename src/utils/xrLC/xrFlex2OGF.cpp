@@ -113,7 +113,7 @@ void CBuild::Flex2OGF()
 			{
 				// Common data
 				pOGF->Sector		= Sector;
-				pOGF->Sector		= Sector;
+				pOGF->bSharedMaterial		= F->flags.bSharedMaterial;
 				pOGF->material		= F->dwMaterial;
 			
 				// Collect textures

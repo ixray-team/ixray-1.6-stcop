@@ -41,6 +41,7 @@ set_target_properties(xrLevelFilesConverter PROPERTIES DISABLE_PRECOMPILE_HEADER
 target_include_directories(xrLevelFilesConverter PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrEngine/")
 target_include_directories(xrLevelFilesConverter PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 target_include_directories(xrLevelFilesConverter PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
+target_include_directories(xrLevelFilesConverter PRIVATE "../../xrServerEntities/")
 
 # Project defines
 target_compile_definitions(xrLevelFilesConverter PRIVATE UTILS_FORMS_EXPORTS)

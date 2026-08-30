@@ -5,8 +5,15 @@
 
 bool	cmp_face_material		(_face* f1, _face* f2)
 {
+	if (f1->flags.bSharedMaterial != f2->flags.bSharedMaterial)
+	{
+		return f1->flags.bSharedMaterial < f2->flags.bSharedMaterial;
+	}
+	
 	if (f1->dwMaterial != f2->dwMaterial)
-	    return f1->dwMaterial < f2->dwMaterial;
+	{
+		return f1->dwMaterial < f2->dwMaterial;
+	}
 
     //Seakad: Grouping of polygons to cut more evenly
     Fvector ca, cb;
@@ -73,7 +80,7 @@ void xrMU_Model::calc_materials	()
 	for (u32 it=1; it<temp_vector.size(); it++)
 	{
 		_face* F = temp_vector[it];
-		if ((current.material != F->dwMaterial) || (face_new_vert_count(F) > MAX_SUBDIV_VERTS))
+		if ((current.material != F->dwMaterial) || (current.bSharedMaterial != F->flags.bSharedMaterial) || (face_new_vert_count(F) > MAX_SUBDIV_VERTS))
 		{
 			// end of strip 
 			m_subdivs.push_back	(current);
