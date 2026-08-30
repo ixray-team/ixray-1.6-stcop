@@ -114,11 +114,16 @@ public:
 	void RefreshTranslations();
 
 	// Дополнение описания предмета для кастомизации через скрипты к основному описанию в UIItemInfo.cpp
+	void RebuildExtendedDescription();
 	void SetAdditionalDescription(const char* additionalDescription);
+	void SetPrependDescription(const char* prependDescription);
 	bool IsDrawCost() { return m_draw_cost; }
 	void UnsetAdditionalDescription() { SetAdditionalDescription(""); }
 	bool IsUsedAdditionalDescription() const { return m_IsUsedAdditionalDescription; }
+	bool IsUsedPrependDescription() const { return m_IsUsedPrependDescription; }
+	bool IsUsedExtendedDescription() const { return m_IsUsedPrependDescription || m_IsUsedAdditionalDescription; }
 	const char* GetAdditionalDescription() const { return m_AdditionalDescription.c_str(); }
+	const char* GetPrependDescription() const { return m_PrependDescription.c_str(); }
 	shared_str GetExtendedUnionDescription() const { return m_ExtendedUnionDescription; }
 
 	const char* NameItem() const { return m_name.c_str(); }
@@ -274,8 +279,10 @@ protected:
 	float m_weight = 0.0f;
 	float m_fCondition = 1.0f;
 	shared_str m_Description;
+	shared_str m_PrependDescription;
 	shared_str m_AdditionalDescription;
 	shared_str m_ExtendedUnionDescription;
+	bool m_IsUsedPrependDescription = false;
 	bool m_IsUsedAdditionalDescription = false;
 protected:
 	ALife::_TIME_ID m_dwItemIndependencyTime;

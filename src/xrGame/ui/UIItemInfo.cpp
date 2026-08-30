@@ -356,7 +356,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 			pItem->SetFont						(m_desc_info.pDescFont);
 			pItem->SetWidth						(UIDesc->GetDesiredChildWidth());
 			pItem->SetTextComplexMode			(true);
-			pItem->SetText(pInvItem->IsUsedAdditionalDescription() ? *pInvItem->GetExtendedUnionDescription() : *pInvItem->ItemDescription());
+			pItem->SetText(pInvItem->IsUsedExtendedDescription() ? *pInvItem->GetExtendedUnionDescription() : *pInvItem->ItemDescription());
 			pItem->AdjustHeightToText			();
 			UIDesc->AddWindow					(pItem, true);
 		}
