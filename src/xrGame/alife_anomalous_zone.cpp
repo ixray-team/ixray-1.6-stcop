@@ -105,11 +105,6 @@ void CSE_ALifeAnomalousZone::spawn_artefacts				()
 				break;
 		}
 
-		if (weights[p].first.size() > 0 && !pSettings->section_exist(weights[p].first))
-		{
-			continue;
-		}
-
 		if (p < n) {
 			CSE_Abstract		*l_tpSE_Abstract = alife().spawn_item(*weights[p].first,position(),m_tNodeID,m_tGraphID,0xffff);
 			R_ASSERT3			(l_tpSE_Abstract,"Can't spawn artefact ",*weights[p].first);
