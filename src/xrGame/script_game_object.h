@@ -461,6 +461,10 @@ public:
 			void				SetItemAdditionalDescription(const char* additionalDescription);
 			void				UnsetItemAdditionalDescription();
 			bool				IsItemUsedAdditionalDescription();
+			const char*				GetItemPrependDescription();
+			void				SetItemPrependDescription(const char* prependDescription);
+			void				UnsetItemPrependDescription();
+			bool				IsItemUsedPrependDescription();
 
 			u32					GetAmmoElapsed		();
 
