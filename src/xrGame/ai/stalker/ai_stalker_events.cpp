@@ -46,7 +46,7 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 			{
 				if (IsGameTypeSingle())
 				{
-					if (CActor* actor = Actor())
+					if (CActor* actor = g_actor)
 					{
 						if (CInventoryItem* inventoryItem = _O->cast_inventory_item())
 						{
