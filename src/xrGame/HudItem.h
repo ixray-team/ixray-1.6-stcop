@@ -216,7 +216,7 @@ public:
 		df_laser = (1 << 4),
 	};
 
-	enum EAnimationsFlags
+	enum EAnimationsFlags : u64
 	{
 		af_torch = (1 << 0),
 		af_nvg = (1 << 1),
@@ -329,7 +329,7 @@ public:
 	};
 
 	Flags32 m_eDevicesFlags;
-	Flags32 m_eAnimationsFlags;
+	Flags64 m_eAnimationsFlags;
 	Flags32 m_eBonePartAnimationsFlags;
 	Flags64 m_eSoundsFlags;
 	Flags64 m_eSoundsFlags2;
