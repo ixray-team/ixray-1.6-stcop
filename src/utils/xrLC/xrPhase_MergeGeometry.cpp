@@ -168,11 +168,12 @@ struct SplitKey
 	CLightmap* lmapLayer;
 	u32 tcSize;
 	u16 material;
+	bool SharedMaterial;
 };
 
 bool operator==(const SplitKey& l, const SplitKey& r)
 {
-	return l.material == r.material && l.tcSize == r.tcSize && l.lmapLayer == r.lmapLayer;
+	return l.material == r.material && l.tcSize == r.tcSize && l.lmapLayer == r.lmapLayer && l.SharedMaterial == r.SharedMaterial;
 }
 
 template <>
@@ -180,7 +181,7 @@ struct std::hash<SplitKey>
 {
 	std::size_t operator()(SplitKey const& key) const noexcept
 	{
-		return std::hash<std::string_view>{}(std::string_view((const char*)&key, sizeof(void*) + 6));
+		return std::hash<std::string_view>{}(std::string_view((const char*)&key, sizeof(SplitKey)));
 	};
 };
 
@@ -247,7 +248,7 @@ using SplitMap = std::unordered_map<SplitKey, SplitValue>;
 SplitKey CalcSplitKey(const vecFace* split)
 {
 	auto& face = split->front();
-	return {face->lmap_layer, face->tc.size(), face->dwMaterial};
+	return {face->lmap_layer, face->tc.size(), face->dwMaterial, (bool)face->flags.bSharedMaterial};
 }
 
 struct SplitInfo
