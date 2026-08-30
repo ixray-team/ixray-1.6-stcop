@@ -98,7 +98,14 @@ void CSector::BuildHierrarhy()
 	Fbox& scene_bb = pBuild->scene_bb;
 	scene_bb.invalidate();
 	for (int I = 0; I < s32(g_tree.size()); I++)
+	{
+		auto elem = g_tree[I];
+		IVERIFY(elem->bbox.is_valid());
+		// If any of these triggers - might be something wrong with AABB
+		IVERIFY(elem->bbox.min.x > -1000000.0f && elem->bbox.min.y > -1000000.0f && elem->bbox.min.z > -1000000.0f);
+		IVERIFY(elem->bbox.max.x < 1000000.0f && elem->bbox.max.y < 1000000.0f && elem->bbox.max.z < 1000000.0f);
 		scene_bb.merge(g_tree[I]->bbox);
+	}
 	scene_bb.grow(EPS_L);
 
 	// 

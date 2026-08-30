@@ -175,16 +175,17 @@ bool CEditableMesh::LoadMesh(IReader& F){
     {
         F.r_stringZ		(surf_name,sizeof(surf_name));
         int surf_id;
-        CSurface* surf	= m_Parent->FindSurfaceByName(surf_name, &surf_id); VERIFY(surf);
-        IntVec&			face_lst = m_SurfFaces[surf];
+        CSurface* surf	= m_Parent->FindSurfaceByName(surf_name, &surf_id); 
+    	VERIFY(surf);
+        IntVec& face_lst = m_SurfFaces[surf];
         face_lst.resize	(F.r_u32());
         if (face_lst.empty())
         {
-	        Log			("!Empty surface found: %s",surf->_Name());
+	        Log("!Empty surface found: %s",surf->_Name());
     	 	return false;
         }
-        F.r				(&*face_lst.begin(), face_lst.size()*sizeof(int));
-        std::sort		(face_lst.begin(),face_lst.end());
+        F.r(face_lst.data(), face_lst.size()*sizeof(int));
+        std::ranges::sort(face_lst);
     }
 
     if(F.find_chunk(EMESH_CHUNK_VMAPS_2))

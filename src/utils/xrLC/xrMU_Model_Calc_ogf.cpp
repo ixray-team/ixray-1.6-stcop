@@ -11,7 +11,7 @@ void MModel_face2OGF_Vertices( const _face &FF, OGF_Vertex	V[3], const xrMU_Mode
 	for (u32 k=0; k<3; k++)
 	{
 		_vertex*	_V		= FF.v[k];	
-		u32 id			= (u32)(std::find(model.m_vertices.begin(),model.m_vertices.end(),_V)-model.m_vertices.begin());
+		u32 id			= (u32)(std::ranges::find(model.m_vertices,_V)-model.m_vertices.begin());
 		V[k].P			= _V->P;
 		V[k].N			= _V->N; 
 		V[k].Color		= model.color[id];
@@ -49,7 +49,7 @@ void calc_ogf( xrMU_Model &	mu_model )
 			pOGF->debug_name += std::to_string(it-mu_model.m_subdivs.begin()).c_str();
 
 			// Collect textures
-			auto& Tex = pBuild->GetTexture(it->material, it->bSharedMaterial);
+			auto& Tex = CBuild::GetTexture(it->material, it->bSharedMaterial);
 			OGF_Texture T;
 			T.name = Tex.name;
 			T.pBuildSurface = &Tex;
@@ -57,6 +57,7 @@ void calc_ogf( xrMU_Model &	mu_model )
 
 			// Collect faces & vertices
 			try {
+				VERIFY(it->count);
 				xrMU_Model::v_faces_it	_beg	= mu_model.m_faces.begin() + it->start;
 				xrMU_Model::v_faces_it	_end	= _beg + it->count;
 				for (xrMU_Model::v_faces_it Fit =_beg; Fit!=_end; Fit++)
@@ -64,6 +65,12 @@ void calc_ogf( xrMU_Model &	mu_model )
 					_face* FF = *Fit;
 					R_ASSERT(FF);
 					OGF_AddFace( *pOGF, *FF, mu_model ); 
+				}
+				if (pOGF->data.faces.empty())
+				{
+					xr_delete(pOGF);
+					mu_model.m_subdivs.erase(it--);
+					continue;
 				}
 			} catch (...) {  clMsg("* ERROR: MU2OGF, model %s, *faces*",*(mu_model.m_name)); }
 		} catch (...)
@@ -88,6 +95,7 @@ void calc_ogf( xrMU_Model &	mu_model )
 			pOGF->Stripify			();
 		} catch (...)	{ clMsg	("* ERROR: MU2OGF, [stripify], model %s",*(mu_model.m_name)); }
 #endif
+		VERIFY(pOGF->data.faces.size());
 
 		it->ogf		=	pOGF;
 	}
