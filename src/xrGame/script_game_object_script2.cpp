@@ -153,6 +153,9 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("set_item_additional_description", &CScriptGameObject::SetItemAdditionalDescription)
 		.def("unset_item_additional_description", &CScriptGameObject::UnsetItemAdditionalDescription)
 		.def("is_item_used_additional_description", &CScriptGameObject::IsItemUsedAdditionalDescription)
+		.def("get_item_prepend_description", &CScriptGameObject::GetItemPrependDescription)
+		.def("set_item_prepend_description", &CScriptGameObject::SetItemPrependDescription)
+		.def("is_item_used_prepend_description", &CScriptGameObject::IsItemUsedPrependDescription)
 
 		.def("get_ammo_in_magazine",		&CScriptGameObject::GetAmmoElapsed)
 		.def("get_ammo_in_magazine_and_chamber", &CScriptGameObject::GetAmmoElapsedWithChamber) //FFx0001++
