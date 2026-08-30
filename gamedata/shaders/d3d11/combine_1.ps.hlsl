@@ -19,9 +19,9 @@ float4 main(PSInputFullscreen I) : SV_Target
 
 #ifdef USE_R2_STATIC_SUN
 	#ifdef USE_LEGACY_LIGHT
-		Light += O.Sun * DirectLightLegacy(Ldynamic_color, LightDirection, O.Normal, O.View.xyz, O.Color, O.Material, O.Gloss);
+		Light += O.Sun * DirectLightLegacy(Ldynamic_color, Ldynamic_dir, O.Normal, O.View.xyz, O.Color, O.Material, O.Gloss);
 	#else
-		Light += O.Sun * DirectLight(Ldynamic_color, LightDirection, O.Normal, O.View.xyz, O.Color, O.Specular, O.Roughness);
+		Light += O.Sun * DirectLight(Ldynamic_color, Ldynamic_dir, O.Normal, O.View.xyz, O.Color, O.Specular, O.Roughness);
 	#endif
 #endif
 

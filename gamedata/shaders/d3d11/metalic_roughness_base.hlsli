@@ -189,7 +189,7 @@ inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 	O.Material = 0.0f;
 	
 	#ifdef USE_R2_STATIC_SUN
-		M.Material.x = M.Sun;
+		O.Material.x = M.Sun;
 	#else
 		O.Material.x = float(((uint(M.SSS) & 1) << 7) | (uint(M.Material * 0x7F) & 0x7F)) / 255.0f;
 	#endif
@@ -214,15 +214,15 @@ inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 	O.Normal.w = float(M.MaterialID) / MAX_ID;
 	O.Normal.z = M.Hemi;
 	
-	float2 Jitter = Hash32(cos(M.Point * 124.0f) * 1245.0f);
+	// float2 Jitter = Hash32(cos(M.Point * 124.0f) * 1245.0f);
 	
-	Jitter = frac(Jitter + timers.x) - 0.5f;
-	Jitter *= rcp(256.0f);
+	// Jitter = frac(Jitter + timers.x) - 0.5f;
+	// Jitter *= rcp(256.0f);
 	
-	O.Material += Jitter.yxyx;
-	O.Color += Jitter.yxyx;
+	// O.Material += Jitter.yxyx;
+	// O.Color += Jitter.yxyx;
 	
-	O.Normal.xyz += Jitter.yxyx * 0.25f;
+	// O.Normal.xyz += Jitter.yxyx * 0.25f;
 }
 
 inline void GbufferUnpackMaterial(inout IXRayGbufferPack O, inout IXRayMaterial M)
@@ -234,8 +234,8 @@ inline void GbufferUnpackMaterial(inout IXRayGbufferPack O, inout IXRayMaterial 
     M.Gloss = O.Color.w;
 
 	#ifdef USE_R2_STATIC_SUN
-		M.Sun = 0.0f;
-		M.Material = 0.0f;
+		M.Sun = O.Material.x;
+		M.Material = 0.25f;
 	#else
 		uint packed = uint(O.Material.x * 255.0f);
 	
