@@ -1786,9 +1786,34 @@ void player_hud::update(const Fmatrix& cam_trans)
 		return;
 	}
 
-	Fmatrix	trans					= cam_trans;
-	update_inertion					(trans);
-	update_additional				(trans);
+	Fmatrix trans = cam_trans;
+	update_inertion(trans);
+
+	Fmatrix trans_2 = trans;
+
+	if (m_animator_item)
+	{
+		m_animator_item->update_hud_additional(trans);
+	}
+
+	if (m_attached_items[0])
+	{
+		m_attached_items[0]->update_hud_additional(trans);
+	}
+
+	if (m_attached_items[1])
+	{
+		m_attached_items[1]->update_hud_additional(trans_2);
+
+		if (m_attached_items[0] == nullptr)
+		{
+			trans = trans_2;
+		}
+	}
+	else
+	{
+		trans_2 = trans;
+	}
 
 	{
 		m_attach_offsetr.setHPB(VPUSH(Fvector(attach_rot()).mul(PI / 180.0f)));//generate and set Euler angles
@@ -1802,7 +1827,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		Fmatrix attach_offset;
 		attach_offset.setHPB(VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.f)));//generate and set Euler angles
 		attach_offset.c.set(left_hand_active ? m_attached_items[1]->hands_attach_pos() : attach_pos());
-		m_transformL.mul(trans, m_attach_offsetl.set(attach_offset));
+		m_transformL.mul(trans_2, m_attach_offsetl.set(attach_offset));
 	}
 
 	for (script_layer* anm : m_script_layers)
@@ -1960,25 +1985,6 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, bool bMixIn, const CMotio
 	}
 
 	return				motion_length(M, md, speed, itemModel);
-}
-
-void player_hud::update_additional(Fmatrix& trans)
-{
-	if (m_animator_item != nullptr)
-	{
-		m_animator_item->update_hud_additional(trans);
-	}
-	if (m_attached_items[0] || m_attached_items[0] && m_attached_items[1])
-	{
-		m_attached_items[0]->update_hud_additional(trans);
-	}
-	else
-	{
-		if (m_attached_items[1])
-		{
-			m_attached_items[1]->update_hud_additional(trans);
-		}
-	}
 }
 
 void player_hud::update_inertion(Fmatrix& trans)
