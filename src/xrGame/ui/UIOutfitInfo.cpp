@@ -263,18 +263,12 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 
 		float cur = cur_outfit->GetDefHitTypeProtection( hit_type );
 		cur /= max_power; // = 0..1
-		if (cur_outfit->m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
-			cur = 1 - cur;
 		float slot = cur;
 		
 		if ( slot_outfit )
 		{
 			slot = slot_outfit->GetDefHitTypeProtection( hit_type );
 			slot /= max_power; //  = 0..1
-			if (slot_outfit->m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
-			{
-				slot = 1 - slot;
-			}
 		}
 
 		float _val_af = Actor()->HitArtefactsOnBeltLegacy(1.0f, hit_type);
