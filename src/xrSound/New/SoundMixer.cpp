@@ -648,7 +648,6 @@ static void Snd_DecodeThreadProc(void*)
 
 	while (!GMixer.DecodeStop)
 	{
-		PROF_EVENT("DecodeThread Scope");
 		sound_decode_request Request;
 		bool IsRequested = false;
 		{
@@ -663,10 +662,11 @@ static void Snd_DecodeThreadProc(void*)
 
 		if (!IsRequested)
 		{
-			Sleep(1);
+			std::this_thread::yield();
 			continue;
 		}
 
+		PROF_EVENT("Decode OGG");
 		sound_source* Source = Snd_FindSound(Request.name);
 		if (Source != nullptr)
 		{
@@ -896,16 +896,15 @@ ICF u32 Snd_ReadSlotData(u32 SlotIdx, sound_source& Source, float** Data, u32 Fr
 
 		if (FoundCacheIndex == 0)
 		{
+			PROF_EVENT("Decode OGG Wait");
 			GMixer.stats.render_cache_miss++;
+
 			Snd_QueueDecode(Slot.sound_name, ReadPostion);
-			u32 Silent = std::min(Frames2Read, Source.pub.frames_total - ReadPostion);
-			for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+			while (FoundCacheIndex == 0)
 			{
-				memset(&Data[Channel][FramesCount - Frames2Read], 0, Silent * sizeof(float));
+				FoundCacheIndex = Snd_FindAvailableCacheLine(Source, ReadPostion);
+				std::this_thread::yield();
 			}
-			Frames2Read -= Silent;
-			ReadPostion += Silent;
-			continue;
 		}
 
 		auto& CacheLine = GMixer.cache_lines[FoundCacheIndex - 1];
