@@ -331,7 +331,7 @@ void	CSoundRender_Core::play					( ref_sound& S, CObject* O, u32 flags, float de
 	if (S._feedback())	((CSoundRender_Emitter*)S._feedback())->rewind ();
 	else				i_play					(&S,flags&sm_Looped,delay);
 
-	if ((flags & sm_2D) || (S._handle()->channels_num() == 2))
+	if (flags & sm_2D)
 		S._feedback()->switch_to_2D();
 
 	if (flags & sm_Intro)
@@ -356,7 +356,7 @@ void	CSoundRender_Core::play_no_feedback		( ref_sound& S, CObject* O, u32 flags,
 
 	i_play				(&S,flags&sm_Looped,delay);
 	
-	if (flags&sm_2D || S._handle()->channels_num()==2)	
+	if (flags&sm_2D)	
 		S._feedback()->switch_to_2D();
 
 	if (flags & sm_Intro)
@@ -385,7 +385,7 @@ void	CSoundRender_Core::play_at_pos			( ref_sound& S, CObject* O, const Fvector 
 	
 	S._feedback()->set_position					(pos);
 	
-	if ((flags & sm_2D) || (S._handle()->channels_num() == 2))
+	if (flags & sm_2D)
 		S._feedback()->switch_to_2D();
 
 	if (flags & sm_Intro)
