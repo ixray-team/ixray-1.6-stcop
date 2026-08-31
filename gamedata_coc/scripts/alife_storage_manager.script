@@ -25,7 +25,7 @@ m_data.se_object = {}
 m_data.game_object = {}
 
 -- PDA known contacts
-m_data.actor_contacts = {}
+-- m_data.actor_contacts = {}
 
 saved_game_extension_ex	= save_extension() .. "_data"
 
