@@ -1023,6 +1023,17 @@ void CUITaskItem::InitTask(CGameTask* task)
 		{
 			S->InitTexture			(task->m_icon_texture_name.c_str());
 			S->TextureOn();
+			Frect emptyRect = Frect().set(0.f, 0.f, 0.f, 0.f);
+			if (!task->m_icon_rect.cmp(emptyRect))
+			{
+				Frect r = task->m_icon_rect;
+				Frect texture_rect;
+
+				texture_rect.lt.set(r.x1, r.y1);
+				texture_rect.rb.set(r.x2, r.y2);
+				texture_rect.rb.add(texture_rect.lt);
+				S->SetTextureRect(texture_rect);
+			}
 			S->SetStretchTexture	(true);
 			m_info["t_icon_over"]->Show(true);
 		}

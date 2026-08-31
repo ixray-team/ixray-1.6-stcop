@@ -653,7 +653,20 @@ void UITaskListWndItem::update_view()
 	{
 		if (m_task->m_icon_texture_name.size())
 		{
-			m_task_icon->InitTexture(m_task->m_icon_texture_name.c_str());
+			m_task_icon->InitTexture(m_task->m_icon_texture_name.c_str());	
+
+			Frect emptyRect = Frect().set(0.f, 0.f, 0.f, 0.f);
+			if (!m_task->m_icon_rect.cmp(emptyRect))
+			{
+				Frect r = m_task->m_icon_rect;
+				Frect texture_rect;
+
+				texture_rect.lt.set(r.x1, r.y1);
+				texture_rect.rb.set(r.x2, r.y2);
+				texture_rect.rb.add(texture_rect.lt);
+				m_task_icon->SetTextureRect(texture_rect);
+			}
+
 			m_task_icon->TextureOn();
 			m_task_icon->SetStretchTexture(true);
 			m_task_icon->Show(true);
