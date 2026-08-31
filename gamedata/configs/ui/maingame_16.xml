@@ -108,7 +108,7 @@
 	</disk_io>
 
 	<flashing_icons>
-		<flashing_icon x="13" y="210" width="48" height="29" type="pda" light_anim="ui_slow_blinking_alpha">
+		<flashing_icon x="13" y="230" width="39" height="29" type="pda" light_anim="ui_slow_blinking_alpha" stretch="1">
 			<texture>ui_hud_icon_PDA</texture>
 		</flashing_icon>
 	</flashing_icons>
