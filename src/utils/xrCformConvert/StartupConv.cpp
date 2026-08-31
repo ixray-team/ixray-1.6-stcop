@@ -5,19 +5,54 @@
 #include "FormatParsers/LevelCForm/CFormIO.h"
 #include "FormatParsers/LevelGeom/GeomIO.h"
 #include "ConverterUI.h"
+#include "graph_abstract.h"
+#include "../xrServerEntities/server_entity_wrapper.h"
+#include "../xrServerEntities/xrServer_Object_Base.h"
+#include "luabind/luabind_memory.h"
+#include "Save/MemoryBuffer.h"
+#include "Save/SaveManager.h"
+#include "../xrAI/factory_api.h"
 
 // SWIContainer g_SWI, x_SWI;
 // VBContainer g_VB, x_VB;
 // IBContainer g_IB, x_IB;
- 
 
-void StartupConv()
+static LPVOID __cdecl luabind_allocator(luabind::memory_allocation_function_parameter const, void const* const pointer, size_t const size)
 {
-	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
-	
-	// Load project
-	//FS.update_path(INI_FILE, "$game_config$", GAME_CONFIG);
+	if (!size)
+	{
+		LPVOID	non_const_pointer = const_cast<LPVOID>(pointer);
+		xr_free(non_const_pointer);
+		return	(0);
+	}
 
+	if (!pointer)
+	{
+		return	(Memory.mem_alloc(size));
+	}
+
+	LPVOID non_const_pointer = const_cast<LPVOID>(pointer);
+	return (Memory.mem_realloc(non_const_pointer, size));
+}
+
+void setup_luabind_allocator()
+{
+	luabind::allocator = &luabind_allocator;
+	luabind::allocator_parameter = nullptr;
+}
+
+SEFactory_Create* create_entity = nullptr;
+SEFactory_Destroy* destroy_entity = nullptr;
+
+bool UseAdvancedSerialization = false;
+
+bool IsAdvancedSerialization()
+{
+	return UseAdvancedSerialization;
+}
+
+void StartupLevel()
+{
 	for (const auto& [Name, Selected] : CFormConverter::GetConverterSettings().Files)
 	{
 		if (!Selected)
@@ -48,18 +83,18 @@ void StartupConv()
 
 			switch (CFormConverter::GetConverterSettings().LC_CformType)
 			{
-			case CFormVersions::Vanilla:
+				case CFormVersions::Vanilla:
 				{
 					xr_vector<Fvector> Verts;
 					xr_vector<CDB::TRI> Tris;
 					CForm->GetStaticGeom(Verts, Tris);
-				
+			
 					XRay::CForm::CFormatVanilla TargetCForm;
 					TargetCForm.AddStaticGeom(Verts, Tris);
 					XRay::CForm::Write(prjName.c_str(), TargetCForm);
 					break;
 				}
-			case CFormVersions::VanillaChunked:
+				case CFormVersions::VanillaChunked:
 				{
 					xr_vector<Fvector> Verts;
 					xr_vector<CDB::TRI> Tris;
@@ -80,7 +115,7 @@ void StartupConv()
 					}
 					break;
 				}
-			default:
+				default:
 				{
 					FATAL("Invalid target CForm type!");
 				}
@@ -97,7 +132,7 @@ void StartupConv()
 				{
 					return;
 				}
-				
+			
 				xr_vector<u8> VB, IB, SWI;
 
 				auto read_func = [&](xr_vector<u8>& Buff, IReaderBase& Data)
@@ -119,16 +154,16 @@ void StartupConv()
 				}
 
 				Geom.reset();
-				
+			
 				xr_unique_ptr<XRay::Geom::IFormat> FormatPtr = nullptr;
 				switch (CFormConverter::GetConverterSettings().LC_GeomType)
 				{
-				case GeomVanillaType::Vanilla:
+					case GeomVanillaType::Vanilla:
 					{
 						FormatPtr.reset(new XRay::Geom::CGeomVanillaFormat);
 						break;
 					}
-				case GeomVanillaType::Chunked:
+					case GeomVanillaType::Chunked:
 					{
 						size_t mem_bytes = VB.size() + IB.size() + SWI.size();
 						u32 Number = (mem_bytes/(1024ull*1024ull))/CFormConverter::GetConverterSettings().LC_GeomChunkSize;
@@ -141,7 +176,7 @@ void StartupConv()
 						}
 						break;
 					}
-				default:
+					default:
 					{
 						FATAL("Invalid Geom type!");
 					}
@@ -157,5 +192,90 @@ void StartupConv()
 			func(".geom");
 			func(".geomx");
 		}
+	}
+}
+
+void StartupSpawn()
+{
+	setup_luabind_allocator();
+	const char* g_name = "xrSE_Factory.dll";
+	Msg("Loading DLL: %s", g_name);
+	auto hFactory = LoadLibraryA(g_name);
+
+	if (!hFactory)
+	{
+		R_CHK(GetLastError());
+		R_ASSERT2(hFactory, "Factory DLL raised exception during loading or there is no factory DLL at all");
+		return;
+	}
+	xr_scope_exit hFactoryGuard = [&](){FreeModule(hFactory);};
+
+	create_entity = (SEFactory_Create*)GetProcAddress(hFactory, "create_entity"); R_ASSERT(create_entity);
+	destroy_entity = (SEFactory_Destroy*)GetProcAddress(hFactory, "destroy_entity");	R_ASSERT(destroy_entity);
+	
+	string_path file_name;
+	bool file_exists = !!FS.exist(file_name, "$game_spawn$", CFormConverter::GetConverterSettings().SpawnOrig.c_str(), ".spawn");
+	if (!I_ASSERT_M(file_exists, "Can't find spawn file:", CFormConverter::GetConverterSettings().SpawnOrig.c_str()))
+	{
+		return;
+	}
+	
+	auto file = FS.rg_open(file_name);
+	if (!I_ASSERT(file->find_chunk(SpawnFileChunks::SpawnGraphOld)))
+	{
+		return;
+	}
+	
+	UseAdvancedSerialization = false;
+	CMemoryWriter stream;
+	auto CopyChunk = [&]<XRay::Concepts::Enum E>(E ChunkID)
+	{
+		stream.open_chunk(ChunkID);
+		//stream.make_chunk(ChunkID, [&file, ChunkID](IWriter& stream)
+		//{
+			auto OrigChunk = file->open_chunk(ChunkID);
+			stream.w(OrigChunk->pointer(), OrigChunk->length());
+			OrigChunk->close();
+		//});
+		stream.close_chunk();
+	};
+	CopyChunk(SpawnFileChunks::Header);
+	CopyChunk(SpawnFileChunks::LevelPoints);
+	CopyChunk(SpawnFileChunks::PatrolPathStorage);
+	CopyChunk(SpawnFileChunks::GameGraph);
+	
+	
+	CGraphAbstractSerialize<CServerEntityWrapper*,float,ALife::_SPAWN_ID> SpawnGraph;
+	auto OldGraphData = file->open_chunk(SpawnFileChunks::SpawnGraphOld);
+	IVERIFY(OldGraphData);
+	load_data(SpawnGraph, *OldGraphData);
+	OldGraphData->close();
+	
+	UseAdvancedSerialization = true;
+	stream.open_chunk(SpawnFileChunks::SpawnGraphNew);
+	//stream.make_chunk(SpawnFileChunks::SpawnGraphNew, [&SpawnGraph](IWriter& stream){
+		save_data(SpawnGraph, stream);
+	//});
+	stream.close_chunk();
+	
+	FS.update_path(file_name, "$game_spawn$", CFormConverter::GetConverterSettings().SpawnDest.c_str());
+	xr_strcat(file_name, ".spawn");
+	stream.save_to(file_name);
+}
+
+void StartupConv()
+{
+	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+	
+	// Load project
+	//FS.update_path(INI_FILE, "$game_config$", GAME_CONFIG);
+
+	if (CFormConverter::GetConverterSettings().Geom || CFormConverter::GetConverterSettings().CForm)
+	{
+		StartupLevel();
+	}
+	if (CFormConverter::GetConverterSettings().Spawn)
+	{
+		StartupSpawn();
 	}
 }

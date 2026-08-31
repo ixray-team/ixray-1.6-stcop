@@ -23,9 +23,13 @@ namespace CFormConverter
 
 		bool Geom;
 		bool CForm;
+		bool Spawn;
 
 		xr_vector<LevelFileData> Files;
 		ImFont* CompilerIconsFont;
+		
+		xr_stack_string256 SpawnOrig = "all";
+		xr_stack_string256 SpawnDest = "all_conv";
 	};
 
 	inline ConverterSettings& GetConverterSettings()
