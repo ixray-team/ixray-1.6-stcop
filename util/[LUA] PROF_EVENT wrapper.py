@@ -142,95 +142,62 @@ class FuncInfo:
     indent: str
 
 def find_function_end(lines, start_idx, header_match):
-    balance = 1
-    prev_keyword = None
-    in_long = None
-    i = start_idx
-    pos = header_match.end()
-    while i < len(lines):
-        line = lines[i]
-        text = line[pos:]
-        if in_long:
-            idx = text.find(in_long)
-            if idx != -1:
-                pos = pos + idx + len(in_long)
-                in_long = None
-                continue
-            i += 1
-            pos = 0
+    """Return the exact ``end`` that closes a named Lua function.
+
+    Keep block state explicitly instead of inferring it from the previously
+    scanned keyword.  The old implementation lost that state when a loop
+    header contained a string, so code such as
+    ``for value in ipairs({"a", "b"}) do`` counted both ``for`` and ``do`` as
+    independent blocks and could consume every following function in the file.
+    """
+    blocks = [('function', start_idx)]
+    tokens = tokenize_lines(lines[start_idx:])
+
+    for token in tokens:
+        line_idx = start_idx + token.line
+
+        # The outer function is already represented by the initial stack item.
+        if token.line == 0 and token.col < header_match.end():
             continue
-        t = 0
-        while t < len(text):
-            while t < len(text) and text[t].isspace():
-                t += 1
-            if t >= len(text):
-                break
-            if text.startswith('--', t):
-                m = re.match(r'--\[(=*)\[', text[t:])
-                if m:
-                    close = ']' + m.group(1) + ']'
-                    end_idx = text.find(close, t + len(m.group(0)))
-                    if end_idx != -1:
-                        t = end_idx + len(close)
-                        continue
-                    else:
-                        break
-                break
-            if text.startswith('[', t):
-                m = re.match(r'\[(=*)\[', text[t:])
-                if m:
-                    close = ']' + m.group(1) + ']'
-                    end_idx = text.find(close, t + len(m.group(0)))
-                    if end_idx != -1:
-                        t = end_idx + len(close)
-                        continue
-                    else:
-                        in_long = close
-                        break
-            if text[t] in '"\'':
-                quote = text[t]
-                t += 1
-                while t < len(text):
-                    if text[t] == '\\':
-                        t += 2
-                        continue
-                    if text[t] == quote:
-                        t += 1
-                        break
-                    t += 1
-                prev_keyword = None
-                continue
-            if text[t].isalpha() or text[t] == '_':
-                j = t
-                while j < len(text) and (text[j].isalnum() or text[j] == '_'):
-                    j += 1
-                word = text[t:j]
-                if word in {'function', 'if', 'for', 'while', 'repeat'}:
-                    balance += 1
-                    prev_keyword = word
-                elif word == 'end':
-                    balance -= 1
-                    if balance == 0:
-                        end_pos = pos + j
-                        return (i, end_pos)
-                    prev_keyword = word
-                elif word == 'until':
-                    balance -= 1
-                    prev_keyword = word
-                elif word == 'do':
-                    if prev_keyword not in {'for', 'while', 'if', 'elseif', 'else', 'repeat'}:
-                        balance += 1
-                    prev_keyword = word
-                elif word == 'elseif':
-                    prev_keyword = word
-                elif word == 'else':
-                    prev_keyword = word
-                t = j
-                continue
-            t += 1
-        i += 1
-        pos = 0
-    return (len(lines) - 1, len(lines[-1]) if lines else 0)
+        if token.kind != 'keyword':
+            continue
+
+        word = token.value
+        if word in {'function', 'if', 'repeat'}:
+            blocks.append((word, line_idx))
+        elif word in {'for', 'while'}:
+            blocks.append((word + '_pending_do', line_idx))
+        elif word == 'do':
+            if blocks and blocks[-1][0] in {'for_pending_do', 'while_pending_do'}:
+                kind, opening_line = blocks[-1]
+                blocks[-1] = (kind[:-len('_pending_do')], opening_line)
+            else:
+                blocks.append(('do', line_idx))
+        elif word == 'until':
+            if not blocks or blocks[-1][0] != 'repeat':
+                raise ValueError(
+                    f"Неожиданный 'until' в строке {line_idx + 1}"
+                )
+            blocks.pop()
+        elif word == 'end':
+            if not blocks or blocks[-1][0] == 'repeat':
+                raise ValueError(
+                    f"Неожиданный 'end' в строке {line_idx + 1}"
+                )
+            if blocks[-1][0] in {'for_pending_do', 'while_pending_do'}:
+                raise ValueError(
+                    f"Не найден 'do' для цикла, открытого в строке "
+                    f"{blocks[-1][1] + 1}"
+                )
+            blocks.pop()
+            if not blocks:
+                return line_idx, token.col + len(token.value)
+
+    opening_kind, opening_line = blocks[-1]
+    raise ValueError(
+        f"Не найден конец блока '{opening_kind}', открытого в строке "
+        f"{opening_line + 1}"
+    )
 
 def is_already_wrapped(lines, start, end):
     segment = lines[start + 1:end + 1]
