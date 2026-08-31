@@ -469,7 +469,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 			m_position_on_map = tmp;
 		}
 		CMapSpot* s = GetSpotBorder(sp);
-		if (s)
+		if (s && map->IsRectVisible(wnd_rect))
 		{
 			s->SetWndPos(sp->GetWndPos());
 			map->AttachChild(s);
