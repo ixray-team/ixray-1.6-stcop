@@ -18,7 +18,7 @@ CHudAnimatorManager::~CHudAnimatorManager()
 
 void CHudAnimatorManager::Load()
 {
-	m_sounds.~HUD_SOUND_COLLECTION();
+	m_sounds.Clear();
 
 	if (pSettings->line_exist(m_section, "sound_1"))
 	{

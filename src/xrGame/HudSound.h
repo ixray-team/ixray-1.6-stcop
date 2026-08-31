@@ -69,6 +69,8 @@ class HUD_SOUND_COLLECTION
 public:
 	xr_string m_alias; // Alundaio: For use when it's part of a layered Collection
 	~HUD_SOUND_COLLECTION();
+
+    void Clear();
 	
     HUD_SOUND_COLLECTION();
 

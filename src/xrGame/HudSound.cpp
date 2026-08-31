@@ -141,6 +141,12 @@ HUD_SOUND_COLLECTION::HUD_SOUND_COLLECTION() : m_alias("")
 //----------------------------------------------------------
 HUD_SOUND_COLLECTION::~HUD_SOUND_COLLECTION()
 {
+	Clear();
+}
+
+void HUD_SOUND_COLLECTION::Clear()
+{
+
 	for (HUD_SOUND_ITEM& it : m_sound_items)
 	{
 		HUD_SOUND_ITEM::StopSound(it);
