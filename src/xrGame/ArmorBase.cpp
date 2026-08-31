@@ -292,7 +292,7 @@ float CArmorBase::HitThroughArmor(float hit_power, u16 element, float ap, bool& 
 			{
 				one = 1.0f;
 			}
-			const float protect = GetDefHitTypeProtection(hit_type);
+			float protect = GetDefHitTypeProtection(hit_type);
 			NewHitPower -= protect * one;
 
 			if (NewHitPower < 0.f)
@@ -378,12 +378,7 @@ float CArmorBase::HitThroughArmor(float hit_power, u16 element, float ap, bool& 
 
 float CArmorBase::GetDefHitTypeProtection(ALife::EHitType hit_type)
 {
-	float base = m_HitTypeProtection[hit_type] * GetCondition();
-
-	if (m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
-		return 1.0f - base; // SOC
-
-	return base; // CS/COP
+	return m_HitTypeProtection[hit_type] * GetCondition();
 }
 
 float CArmorBase::GetHitTypeProtection(ALife::EHitType hit_type, u16 element)
