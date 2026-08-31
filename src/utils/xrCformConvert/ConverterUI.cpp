@@ -89,21 +89,22 @@ void CFormConverter::RenderMainUI()
 	}
 
 
-	if (Size[0] != 1000 || Size[1] != 675)
+	if (Size[0] != 1200 || Size[1] != 675)
 	{
-		SDL_SetWindowSize(g_AppInfo.Window, 1000, 675);
+		SDL_SetWindowSize(g_AppInfo.Window, 1200, 675);
 	}
 	
 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
 		ImVec2 ListBoxSize = { float(Size[0] - 20), float ( Size[1] - 115) };
-		if (ImGui::BeginTable("##Levels", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
+		if (ImGui::BeginTable("##Levels", 4, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
 		{
 			// 
 			ImGui::TableSetupColumn("Levels");
 			ImGui::TableSetupColumn("Geom");
 			ImGui::TableSetupColumn("CForm");
+			ImGui::TableSetupColumn("Spawn");
 
 			ImGui::TableHeadersRow();
 
@@ -175,6 +176,17 @@ void CFormConverter::RenderMainUI()
 				ImGui::InputInt("Chunk size (MB)", &GetConverterSettings().LC_CFormChunkSize);
 				GetConverterSettings().LC_CFormChunkSize = std::max(GetConverterSettings().LC_CFormChunkSize, 1);
 				ImGui::EndDisabled();
+				ImGui::PopID();
+			}
+			
+			ImGui::TableNextColumn();
+			
+			{
+				ImGui::PushID("Spawn");
+				ImGui::Checkbox("Spawn Converter", &GetConverterSettings().Spawn);
+				ImGui::Separator();
+				ImGui::InputText("Spawn from", GetConverterSettings().SpawnOrig.data(), GetConverterSettings().SpawnOrig.Length);
+				ImGui::InputText("Spawn to", GetConverterSettings().SpawnDest.data(), GetConverterSettings().SpawnDest.Length);
 				ImGui::PopID();
 			}
 

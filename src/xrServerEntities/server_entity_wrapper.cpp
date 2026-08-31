@@ -15,9 +15,21 @@
 
 #ifdef AI_COMPILER
 #	include "factory_api.h"
+#elif UTILS_FORMS_EXPORTS
+# include "utils/xrAI/factory_api.h"
 #endif
 
 struct ISE_Abstract;
+
+#ifdef UTILS_FORMS_EXPORTS
+extern bool IsAdvancedSerialization();
+#else
+IC bool IsAdvancedSerialization()
+{
+	return EngineExternal()[EEngineExternalSystem::AdvancedSerialization];
+}
+#endif
+
 
 CServerEntityWrapper::~CServerEntityWrapper	()
 {
@@ -28,7 +40,7 @@ CServerEntityWrapper::~CServerEntityWrapper	()
 
 void CServerEntityWrapper::save				(IWriter &stream)
 {
-	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	if (IsAdvancedSerialization())
 	{
 		SSaveTask dummy;
 		{
@@ -94,7 +106,7 @@ void CServerEntityWrapper::load				(IReader &stream)
 {
 #ifndef _LEVEL_EDITOR
 	
-	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	if (IsAdvancedSerialization())
 	{
 		{
 			auto chunk = stream.open_chunk(0);

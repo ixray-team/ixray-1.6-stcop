@@ -18,8 +18,9 @@ file(GLOB_RECURSE UTILS_LVLFCONV_SOURCE_LOG_FILES CONFIGURE_DEPENDS
     "../xrForms/cl_log.h"
     "../xrForms/imgui_impl_sdlrenderer3.cpp"
     "../xrForms/imgui_impl_sdlrenderer3.h"
-    "../../Editors/xrEUI/imgui_impl_sdl3.h" # I don't understand why I don't need to explicitly include this in xrLevelBuilder
-    "../../Editors/xrEUI/imgui_impl_sdl3.cpp"
+    "../../xrServerEntities/server_entity_wrapper.h"
+    "../../xrServerEntities/server_entity_wrapper.cpp"
+    "../../xrServerEntities/server_entity_wrapper_inline.h"
 )
 
 # Source groups
@@ -52,8 +53,8 @@ target_compile_definitions(xrLevelFilesConverter PRIVATE XRLC_LIGHT_API=)
 # Linker list
 target_link_libraries(xrLevelFilesConverter PUBLIC xrCore)
 target_link_libraries(xrLevelFilesConverter PUBLIC MagicFM)
-target_link_libraries(xrLevelFilesConverter PUBLIC imgui)
 target_link_libraries(xrLevelFilesConverter PUBLIC xrEngineCore)
+target_link_libraries(xrLevelFilesConverter PUBLIC xrSE_Factory)
 
 if (WIN32)
     target_link_libraries(xrLevelFilesConverter PUBLIC WindowsSDK::WinMM)
