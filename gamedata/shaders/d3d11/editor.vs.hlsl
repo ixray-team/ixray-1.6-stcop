@@ -12,7 +12,6 @@ struct v2p
     float4 P : SV_POSITION;
 };
 
-uniform float4 tfactor;
 
 v2p main(vf i)
 {
