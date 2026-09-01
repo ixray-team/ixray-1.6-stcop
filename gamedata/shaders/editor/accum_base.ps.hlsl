@@ -11,16 +11,9 @@
 // USE_SHADOW
 //////////////////////////////////////////////////////////////////////////////////////////
 
-uniform float4x4 m_shadow;
-
 Texture2D s_position;
 Texture2D s_normal;
 
-uniform float4 Ldynamic_color;
-uniform float4 Ldynamic_pos;
-uniform float4 Ldynamic_dir;
-
-uniform float4 screen_res;
 float4 main( float4 hpos : SV_Position, float4 tc : TEXCOORD0) : SV_Target
 {
 	float2 tcproj = hpos.xy * screen_res.zw;

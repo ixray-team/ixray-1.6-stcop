@@ -44,19 +44,19 @@
 // //	float2 	distort	= s_distort.Sample( smp_rtlinear, I.tc);
 // //	float3	image 	= s_base.Sample( smp_rtlinear, I.tc + offset);
 	
-	// float4	t_base 		= s_base.Sample		( smp_base, I.tc0);		// Текстура сетки	
- // //	float4	t_skymap 	= s_skymap.Sample	( smp_base, I.tc0); 	// Карта отражения неба
+	// float4	t_base 		= s_base.Sample		( smp_base, I.tc0);		// РўРµРєСЃС‚СѓСЂР° СЃРµС‚РєРё	
+ // //	float4	t_skymap 	= s_skymap.Sample	( smp_base, I.tc0); 	// РљР°СЂС‚Р° РѕС‚СЂР°Р¶РµРЅРёСЏ РЅРµР±Р°
 	
-	// //сдвиг от состояния оружия
+	// //СЃРґРІРёРі РѕС‚ СЃРѕСЃС‚РѕСЏРЅРёСЏ РѕСЂСѓР¶РёСЏ
 	// I.tc0.x	= I.tc0.x+m_zoom_deviation.x;
 	// I.tc0.y	= I.tc0.y+m_zoom_deviation.y;	
 	
-	// // Растягиваем картинку в линзе так, чтобы на любом разрешении экрана были правильные пропорции
+	// // Р Р°СЃС‚СЏРіРёРІР°РµРј РєР°СЂС‚РёРЅРєСѓ РІ Р»РёРЅР·Рµ С‚Р°Рє, С‡С‚РѕР±С‹ РЅР° Р»СЋР±РѕРј СЂР°Р·СЂРµС€РµРЅРёРё СЌРєСЂР°РЅР° Р±С‹Р»Рё РїСЂР°РІРёР»СЊРЅС‹Рµ РїСЂРѕРїРѕСЂС†РёРё
 	// I.tc0.x = resize(I.tc0.x, screen_res.x/screen_res.y, 0);
 	
-	// float4	t_vp2	 = s_vp2.Sample	( smp_base, I.tc0);  			// Изображение со второго вьюпорта
+	// float4	t_vp2	 = s_vp2.Sample	( smp_base, I.tc0);  			// РР·РѕР±СЂР°Р¶РµРЅРёРµ СЃРѕ РІС‚РѕСЂРѕРіРѕ РІСЊСЋРїРѕСЂС‚Р°
 
-	// //абберация
+	// //Р°Р±Р±РµСЂР°С†РёСЏ
 	// float2 offset = distance(I.tc0, float2( .5f, .5f ))*float2(m_hud_params.z, m_hud_params.z);
 	
 	// t_vp2.r = s_vp2.Sample	( smp_base, I.tc0+offset).r;
@@ -64,7 +64,7 @@
 	
 	// float3	final	 = float3(0, 0, 0);
 	
-	// // Рассчитываем случайный шум пикселя
+	// // Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј СЃР»СѓС‡Р°Р№РЅС‹Р№ С€СѓРј РїРёРєСЃРµР»СЏ
 	// float noise		= random(I.tc0*timers.z) * m_zoom_deviation.w;
 	
 	// float gray = ((t_vp2.r + t_vp2.g + t_vp2.b))*m_zoom_deviation.z*7;	
@@ -74,14 +74,14 @@
 	
 	// t_vp2.b+= (0.4 + noise)*m_zoom_deviation.z;
 		
-	// // Шум при выбросе
+	// // РЁСѓРј РїСЂРё РІС‹Р±СЂРѕСЃРµ
 	// float blow_noise	= get_noise(I.tc0*timers.z) * m_affects.x * m_affects.x * 30;	
 	// t_vp2.r += blow_noise;
 	// t_vp2.g += blow_noise;
 	// t_vp2.b += blow_noise;		
 	// t_base.xyz = detonemap(t_base.xyz);
 		
-	// // Миксуем с сеткой
+	// // РњРёРєСЃСѓРµРј СЃ СЃРµС‚РєРѕР№
 	// final	= lerp	(t_vp2, t_base, t_base.a);		
 	
 	// // out
@@ -90,7 +90,6 @@
 
 #include "common.hlsli"
 
-uniform float4 m_hud_params;
 
 struct v2p
 {

@@ -132,6 +132,7 @@ void dxUIRender::FlushPrimitive()
 
 		RCache.Vertex.Unlock		(u32(p_cnt),hGeom_TL.stride());
 		RCache.set_Geometry	 		(hGeom_TL);
+		RCache.set_Z				(FALSE);
 		break;
 	case pttL:
 		p_cnt = L_pv - L_start_pv;

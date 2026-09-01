@@ -58,6 +58,11 @@ int ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::strin
 
 	int button_id = -1;
 
+	// Nothing can answer a modal dialog in a headless run
+	extern XRCORE_API bool ignore_error_window;
+	if (ignore_error_window)
+		return button_id;
+
 	int ret = SDL_ShowMessageBox(&messageboxdata, &button_id);
 
 	if (ret < 0)

@@ -15,6 +15,8 @@ public:
 	// Queue membership for R_constants' dirty list. Distinct from m_bChanged, which starts
 	// true at construction and would otherwise mask a buffer out of the list forever.
 	bool			IsQueued() const	{ return m_bQueued; }
+
+	bool			IsFixed() const		{ return m_bFixed; }
 	void			SetQueued(bool q)	{ m_bQueued = q; }
 
 	//	Set copy data into constant buffer
@@ -46,6 +48,7 @@ private:
 	void*								m_pBufferData = nullptr;
 	bool								m_bChanged;
 	bool								m_bQueued = false;
+	bool								m_bFixed;
 
 	static const u32					lineSize = sizeof(Fvector4);
 

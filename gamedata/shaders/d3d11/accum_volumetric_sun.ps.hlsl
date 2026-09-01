@@ -11,22 +11,22 @@ struct PSInput
 #define RAY_PATH 2.0h
 #define JITTER_TEXTURE_SIZE 64.0f
 
-#ifdef SUN_SHAFTS_QUALITY
-    #if SUN_SHAFTS_QUALITY == 1
-        // #define FILTER_LOW
-        #define RAY_SAMPLES 20
-    #elif SUN_SHAFTS_QUALITY == 2
-        // #define FILTER_LOW
-        #define RAY_SAMPLES 20
-    #elif SUN_SHAFTS_QUALITY == 3
-        // #define FILTER_LOW
-        #define RAY_SAMPLES 40
-    #endif
-#endif
-
 #include "shadow.hlsli"
 
-float4 sun_shafts_intensity;
+#if SUN_SHAFTS_QUALITY == 1
+#define RAY_SAMPLES 6
+#elif SUN_SHAFTS_QUALITY == 2
+#define RAY_SAMPLES 12
+#elif SUN_SHAFTS_QUALITY == 3
+#define RAY_SAMPLES 18
+#endif
+
+// --- Medium/scattering tuning knobs ---
+static const float PHASE_G = 0.5f; // Schlick g (0 isotropic, higher = forward)
+static const float SCATTER_RATIO = 0.5f; // fraction of extinction that goes to scattering
+static const float ABSORB_TINT_STRENGTH = 0.5f; // 0 = gray absorption, 1 = tinted by fog_color
+
+// Sun shafts intensity param (x used as density scale)
 
 float4 main(PSInput I) : SV_Target
 {
