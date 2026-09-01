@@ -704,43 +704,10 @@ public:
 	void StopAllBlendAnms(bool bForce);
 	bool IsBlendAnmActive(const shared_str& name);
 
-	IKinematics* GetWatchesModel() const { return m_model_watches; }
-	bool HasWatchesBone(const shared_str& boneName) const;
-	bool HasWatchesLcdSlots() const { return m_watchesBones.hasLcdSlots; }
-	void SetWatchesBoneVisible(const shared_str& boneName, bool visible, bool silent = false);
-	void ApplyWatchesBoneVisibility(bool showAnalog, bool showLcd, bool hideStaticDialForLcd);
-
-	Fmatrix m_attach_offset_watches = Fidentity, m_transform_watches = Fidentity;
-	Fvector m_watches_pos = zero_vel, m_watches_rot = zero_vel;
-	float m_watches_scale = 1.0f;
-	u16 m_watches_bone = BI_NONE;
-	IKinematics* m_model_watches = nullptr;
-
 private:
-	struct SWatchesBones
-	{
-		u16 watchHud = BI_NONE;
-		u16 watchUi = BI_NONE;
-		u16 watchHandsH = BI_NONE;
-		u16 watchHandsM = BI_NONE;
-		u16 watchHandsS = BI_NONE;
-		u16 watchLcdHh = BI_NONE;
-		u16 watchLcdHl = BI_NONE;
-		u16 watchLcdMh = BI_NONE;
-		u16 watchLcdMl = BI_NONE;
-		u16 watchTritium = BI_NONE;
-		bool hasLcdSlots = false;
-
-		void Reset();
-		void Cache(IKinematics* model);
-	};
-
-	void CacheWatchesBones();
-	void SetWatchesBoneVisibleById(u16 boneId, bool visible);
-	SWatchesBones m_watchesBones;
-
 	void			update_inertion		(Fmatrix& trans);
 	void			update_additional	(Fmatrix& trans);
+private:
 	const Fvector&	attach_rot			() const;
 	const Fvector&	attach_pos			() const;
 
