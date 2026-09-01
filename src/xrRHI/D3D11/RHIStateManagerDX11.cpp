@@ -107,7 +107,6 @@ void RHIStateManagerDX11::ResetRDesc()
 void RHIStateManagerDX11::UnmapConstants()
 {
 	BindAlphaCallback = nullptr;
-	AlphaRef = 0;
 }
 
 void RHIStateManagerDX11::SetContext(ID3D11DeviceContext* InContext)
@@ -408,13 +407,13 @@ void RHIStateManagerDX11::SetRenderState(u32 p1, u32 p2)
 		break;
 
 	case D3DRS_ALPHATESTENABLE:
-		// В DirectX 11 alpha test реализуется через шейдеры или blend state
-		// Можно сохранять для обратной совместимости
+		// Р’ DirectX 11 alpha test СЂРµР°Р»РёР·СѓРµС‚СЃСЏ С‡РµСЂРµР· С€РµР№РґРµСЂС‹ РёР»Рё blend state
+		// РњРѕР¶РЅРѕ СЃРѕС…СЂР°РЅСЏС‚СЊ РґР»СЏ РѕР±СЂР°С‚РЅРѕР№ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё
 		break;
 
 	case D3DRS_TEXTUREFACTOR:
-		// Texture factor используется в шейдерах, должен устанавливаться через константы
-		// Можно вызвать callback или сохранить для использования в шейдерах
+		// Texture factor РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ С€РµР№РґРµСЂР°С…, РґРѕР»Р¶РµРЅ СѓСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊСЃСЏ С‡РµСЂРµР· РєРѕРЅСЃС‚Р°РЅС‚С‹
+		// РњРѕР¶РЅРѕ РІС‹Р·РІР°С‚СЊ callback РёР»Рё СЃРѕС…СЂР°РЅРёС‚СЊ РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РІ С€РµР№РґРµСЂР°С…
 		break;
 
 	case D3DRS_CULLMODE:
@@ -459,7 +458,7 @@ void RHIStateManagerDX11::SetRenderState(u32 p1, u32 p2)
 		break;
 
 	case D3DRS_ALPHAFUNC:
-		// Alpha func используется в alpha test, сохраняем для совместимости
+		// Alpha func РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ alpha test, СЃРѕС…СЂР°РЅСЏРµРј РґР»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё
 		break;
 
 	case D3DRS_ALPHABLENDENABLE:
@@ -593,7 +592,7 @@ void RHIStateManagerDX11::SetRenderState(u32 p1, u32 p2)
 
 	case D3DRS_SEPARATEALPHABLENDENABLE:
 		ValidateBDesc();
-		// В D3D11 это всегда TRUE для отдельных настроек альфы
+		// Р’ D3D11 СЌС‚Рѕ РІСЃРµРіРґР° TRUE РґР»СЏ РѕС‚РґРµР»СЊРЅС‹С… РЅР°СЃС‚СЂРѕРµРє Р°Р»СЊС„С‹
 		BDesc.IndependentBlendEnable = TRUE;
 		break;
 

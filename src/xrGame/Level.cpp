@@ -1216,6 +1216,10 @@ ALife::_TIME_ID CLevel::GetStartGameTime()
 
 ALife::_TIME_ID CLevel::GetGameTime()
 {
+	// the level exists before the game state does, and the renderer polls this every frame
+	if (!game)
+		return 0;
+
 	return			(game->GetGameTime());
 }
 

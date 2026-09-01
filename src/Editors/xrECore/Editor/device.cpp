@@ -15,6 +15,8 @@
 CEditorRenderDevice 	*	EDevice;
 bool g_bIsEditor;
 
+float r_dtex_range = 50.f;
+
 void CEditorRenderDevice::AddSeqFrame(pureFrame* f, bool mt) { seqFrame.Add(f, REG_PRIORITY_LOW); }
 void CEditorRenderDevice::RemoveSeqFrame(pureFrame* f) { seqFrame.Remove(f); }
 

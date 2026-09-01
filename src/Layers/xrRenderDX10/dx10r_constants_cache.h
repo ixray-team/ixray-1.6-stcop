@@ -19,6 +19,7 @@ public:
 public:
 	template<typename T>
 	ICF void				set(RHIShaderConstant* C, const T& A) {
+		if (C->fixed_id > 0) return;
 		if (C->destination & RC_dest_pixel) { set(C, C->ps, A, BT_PixelBuffer); }	// a_pixel.b_dirty=true;		}
 		if (C->destination & RC_dest_vertex) { set(C, C->vs, A, BT_VertexBuffer); }	//  a_vertex.b_dirty=true;		}
 		if (C->destination & RC_dest_geometry) { set(C, C->gs, A, BT_GeometryBuffer); }	//  a_vertex.b_dirty=true;		}
@@ -29,6 +30,7 @@ public:
 
 	template<typename T>
 	ICF void				seta(RHIShaderConstant* C, u32 e, const T& A) {
+		if (C->fixed_id > 0) return;
 		if (C->destination & RC_dest_pixel) { seta(C, C->ps, e, A, BT_PixelBuffer); }	//  a_pixel.b_dirty=true;	}
 		if (C->destination & RC_dest_vertex) { seta(C, C->vs, e, A, BT_VertexBuffer); }	//  a_vertex.b_dirty=true;	}
 		if (C->destination & RC_dest_geometry) { seta(C, C->gs, e, A, BT_GeometryBuffer); }	//  a_vertex.b_dirty=true;	}
@@ -80,47 +82,48 @@ private:
 
 	void					set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, const Fmatrix& A, BufferType BType)
 	{
-		dx10ConstantBuffer& Buffer = GetCBuffer(C, BType);
-		Buffer.set(C, L, A);
+		dx10ConstantBuffer* Buffer = GetCBuffer(C, BType);
+		if (Buffer) Buffer->set(C, L, A);
 	}
 
 	void					set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, const Fvector4& A, BufferType BType)
 	{
-		dx10ConstantBuffer& Buffer = GetCBuffer(C, BType);
-		Buffer.set(C, L, A);
+		dx10ConstantBuffer* Buffer = GetCBuffer(C, BType);
+		if (Buffer) Buffer->set(C, L, A);
 	}
 
 	void					set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, float A, BufferType BType)
 	{
-		dx10ConstantBuffer& Buffer = GetCBuffer(C, BType);
-		Buffer.set(C, L, A);
+		dx10ConstantBuffer* Buffer = GetCBuffer(C, BType);
+		if (Buffer) Buffer->set(C, L, A);
 	}
 
 	void					set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, int A, BufferType BType)
 	{
-		dx10ConstantBuffer& Buffer = GetCBuffer(C, BType);
-		Buffer.set(C, L, A);
+		dx10ConstantBuffer* Buffer = GetCBuffer(C, BType);
+		if (Buffer) Buffer->set(C, L, A);
 	}
 
 	void					seta(RHIShaderConstant* C, RHIShaderConstant::Loader& L, u32 e, const Fmatrix& A, BufferType BType)
 	{
-		dx10ConstantBuffer& Buffer = GetCBuffer(C, BType);
-		Buffer.seta(C, L, e, A);
+		dx10ConstantBuffer* Buffer = GetCBuffer(C, BType);
+		if (Buffer) Buffer->seta(C, L, e, A);
 	}
 
 	void					seta(RHIShaderConstant* C, RHIShaderConstant::Loader& L, u32 e, const Fvector4& A, BufferType BType)
 	{
-		dx10ConstantBuffer& Buffer = GetCBuffer(C, BType);
-		Buffer.seta(C, L, e, A);
+		dx10ConstantBuffer* Buffer = GetCBuffer(C, BType);
+		if (Buffer) Buffer->seta(C, L, e, A);
 	}
 
 	void					access_direct(RHIShaderConstant* C, RHIShaderConstant::Loader& L, void** ppData, u32 DataSize, BufferType BType)
 	{
-		dx10ConstantBuffer& Buffer = GetCBuffer(C, BType);
-		*ppData = Buffer.AccessDirect(L, DataSize);
+		if (C->fixed_id > 0) { *ppData = nullptr; return; }
+		dx10ConstantBuffer* Buffer = GetCBuffer(C, BType);
+		*ppData = Buffer ? Buffer->AccessDirect(L, DataSize) : nullptr;	// fixed buffers included: the caller writes through this
 	}
 
-	dx10ConstantBuffer& GetCBuffer(RHIShaderConstant* C, BufferType BType);
+	dx10ConstantBuffer*		GetCBuffer(RHIShaderConstant* C, BufferType BType);
 
 	// Every write reaches a buffer through GetCBuffer, so registering there is exact and
 	// avoids rescanning all MaxCBuffers slots of all six stages on every draw call.

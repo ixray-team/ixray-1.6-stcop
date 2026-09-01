@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "R_Backend_hemi.h"
+#ifdef USE_DX11
+#include "../xrRenderDX10/dx10FixedConstants.h"
+#endif
 
 R_hemi::R_hemi()
 {
@@ -21,39 +24,42 @@ void R_hemi::unmap()
 void	R_hemi::set_pos_faces		(float posx, float posy, float posz)
 {
 	if (c_pos_faces) RCache.set_c(c_pos_faces, posx, posy, posz, 0);
+#ifdef USE_DX11
+	FixedConstants::SetHemiPosFaces(posx,posy,posz);
+#endif
 }
 void	R_hemi::set_neg_faces		(float negx, float negy, float negz)
 {
 	if (c_neg_faces) RCache.set_c(c_neg_faces, negx, negy, negz, 0);
+#ifdef USE_DX11
+	FixedConstants::SetHemiNegFaces(negx,negy,negz);
+#endif
 }
 
 void	R_hemi::set_material		(float x, float y, float z, float w)
 {
 	if (c_material) RCache.set_c(c_material, x, y, z, w);
+#ifdef USE_DX11
+	FixedConstants::SetHemiMaterial(x,y,z,w);
+#endif
 }
 
 void R_hemi::set_lit_color(Fvector color, Fvector dir) 
 {
 	RCache.xforms.m_v.transform_tiny(dir);
-
-	if (c_lit_color) 
-	{
-		RCache.set_c(c_lit_color, color.x, color.y, color.z, 0);
-	}
-
-	if (c_lit_dir) 
-	{
-		RCache.set_c(c_lit_dir, dir.x, dir.y, dir.z, 0);
-	}
+	if (c_lit_color) RCache.set_c(c_lit_color, color.x, color.y, color.z, 0);
+	if (c_lit_dir) RCache.set_c(c_lit_dir, dir.x, dir.y, dir.z, 0);
+#ifdef USE_DX11
+	FixedConstants::SetLitColor(color, dir);
+#endif
 }
 void R_hemi::set_tfactor(float x, float y, float z, float w)
 {
 	m_tfactor.set(x, y, z, w);
-
-	if (c_tfactor) 
-	{
-		RCache.set_c(c_tfactor, x, y, z, w);
-	}
+	if (c_tfactor) RCache.set_c(c_tfactor, x, y, z, w);
+#ifdef USE_DX11
+	FixedConstants::SetHemiTfactor(x,y,z,w);
+#endif
 }
 
 void R_hemi::set_tfactor(u32 tfactor)

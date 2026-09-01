@@ -1,7 +1,6 @@
 #include "common.hlsli"
 #include "fxaa.hlsli"
 
-uniform float4 scaled_screen_res;
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

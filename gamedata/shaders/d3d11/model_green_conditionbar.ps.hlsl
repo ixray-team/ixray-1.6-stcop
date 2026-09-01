@@ -1,7 +1,5 @@
 #include "common.hlsli"
 
-uniform	float4 		m_actor_params;
-uniform	float4 		m_affects;
 
 struct 	v2p
 {
@@ -26,7 +24,6 @@ float4 main( v2p I ) : SV_Target
 	t_base.r += (0.5 < m_actor_params.z) ? 0 : 0.5;
 	t_base.g -= (0.25 < m_actor_params.z) ? 0 : 0.5;	
 	
-	// Шум при выбросе
 	float noise	= get_noise(I.tc0*timers.z) * m_affects.x * m_affects.x * 30;		
 	t_base.r += noise;
 	t_base.g += noise;

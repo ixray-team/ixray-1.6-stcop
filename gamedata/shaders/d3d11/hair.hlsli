@@ -11,8 +11,6 @@
 
 #include "common.hlsli"
 
-uniform float3x4 m_invW;
-float4 env_wind;
 Texture2D s_hair;
 
 void hair_wave_anim(float2 tc, float indoor_factor, inout float3 pos, inout float3 pos_old, float3 normal)

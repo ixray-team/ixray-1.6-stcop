@@ -1,7 +1,5 @@
 #include "common.hlsli"
 
-uniform float4 m_hud_params;
-uniform float4 m_zoom_deviation;
 
 struct v2p
 {

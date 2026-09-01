@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "../xrRender/r_constants_cache.h"
+#include "dx10FixedConstants.h"
 
-dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BType)
+dx10ConstantBuffer* R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BType)
 {
 	if (BType == BT_PixelBuffer)
 	{
@@ -9,9 +10,10 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 		int iBufferIndex = (C->destination & RC_dest_pixel_cb_index_mask) >> RC_dest_pixel_cb_index_shift;
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aPixelConstants[iBufferIndex]);
-		MarkDirty(*RCache.m_aPixelConstants[iBufferIndex]);
-		return *RCache.m_aPixelConstants[iBufferIndex];
+		dx10ConstantBuffer* buf = RCache.m_aPixelConstants[iBufferIndex]._get();
+		if (!buf) return nullptr;
+		MarkDirty(*buf);
+		return buf;
 	}
 	else if (BType == BT_VertexBuffer)
 	{
@@ -19,9 +21,10 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 		int iBufferIndex = (C->destination & RC_dest_vertex_cb_index_mask) >> RC_dest_vertex_cb_index_shift;
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aVertexConstants[iBufferIndex]);
-		MarkDirty(*RCache.m_aVertexConstants[iBufferIndex]);
-		return *RCache.m_aVertexConstants[iBufferIndex];
+		dx10ConstantBuffer* buf = RCache.m_aVertexConstants[iBufferIndex]._get();
+		if (!buf) return nullptr;
+		MarkDirty(*buf);
+		return buf;
 	}
 	else if (BType == BT_GeometryBuffer)
 	{
@@ -29,9 +32,10 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 		int iBufferIndex = (C->destination & RC_dest_geometry_cb_index_mask) >> RC_dest_geometry_cb_index_shift;
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aGeometryConstants[iBufferIndex]);
-		MarkDirty(*RCache.m_aGeometryConstants[iBufferIndex]);
-		return *RCache.m_aGeometryConstants[iBufferIndex];
+		dx10ConstantBuffer* buf = RCache.m_aGeometryConstants[iBufferIndex]._get();
+		if (!buf) return nullptr;
+		MarkDirty(*buf);
+		return buf;
 	}
 	else if (BType == BT_HullBuffer)
 	{
@@ -39,9 +43,10 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 		int iBufferIndex = (C->destination & RC_dest_hull_cb_index_mask) >> RC_dest_hull_cb_index_shift;
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aHullConstants[iBufferIndex]);
-		MarkDirty(*RCache.m_aHullConstants[iBufferIndex]);
-		return *RCache.m_aHullConstants[iBufferIndex];
+		dx10ConstantBuffer* buf = RCache.m_aHullConstants[iBufferIndex]._get();
+		if (!buf) return nullptr;
+		MarkDirty(*buf);
+		return buf;
 	}
 	else if (BType == BT_DomainBuffer)
 	{
@@ -49,9 +54,10 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 		int iBufferIndex = (C->destination & RC_dest_domain_cb_index_mask) >> RC_dest_domain_cb_index_shift;
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aDomainConstants[iBufferIndex]);
-		MarkDirty(*RCache.m_aDomainConstants[iBufferIndex]);
-		return *RCache.m_aDomainConstants[iBufferIndex];
+		dx10ConstantBuffer* buf = RCache.m_aDomainConstants[iBufferIndex]._get();
+		if (!buf) return nullptr;
+		MarkDirty(*buf);
+		return buf;
 	}
 	else if (BType == BT_Compute)
 	{
@@ -59,20 +65,19 @@ dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BTy
 		int iBufferIndex = (C->destination & RC_dest_compute_cb_index_mask) >> RC_dest_compute_cb_index_shift;
 
 		VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aComputeConstants[iBufferIndex]);
-		MarkDirty(*RCache.m_aComputeConstants[iBufferIndex]);
-		return *RCache.m_aComputeConstants[iBufferIndex];
+		dx10ConstantBuffer* buf = RCache.m_aComputeConstants[iBufferIndex]._get();
+		if (!buf) return nullptr;
+		MarkDirty(*buf);
+		return buf;
 	}
 
 	FATAL("Unreachable code");
-	//Just hack to avoid warning;
-	dx10ConstantBuffer* ptr = 0;
-	return *ptr;
+	return nullptr;
 }
 
 void R_constants::MarkDirty(dx10ConstantBuffer& Buffer)
 {
-	if (Buffer.IsQueued())
+	if (Buffer.IsQueued() || Buffer.IsFixed())
 		return;
 
 	VERIFY(m_dirty_count < std::size(m_dirty));
@@ -82,6 +87,8 @@ void R_constants::MarkDirty(dx10ConstantBuffer& Buffer)
 
 void R_constants::flush_cache()
 {
+	FixedConstants::Flush();
+
 	for (u32 i = 0; i < m_dirty_count; ++i)
 	{
 		m_dirty[i]->SetQueued(false);

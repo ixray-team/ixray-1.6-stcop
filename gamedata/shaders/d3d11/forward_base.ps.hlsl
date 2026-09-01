@@ -9,10 +9,6 @@
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 
-#ifdef FORWARD_LIGHT
-	uniform float4 L_model_light_color;
-	uniform float4 L_model_light_dir;
-#endif
 	
 #ifndef USE_LENGTH_BUFFER
 	#define OutStructure IXRayForward

@@ -526,7 +526,7 @@ static class cl_rain_params : public RHIShaderConstant::Setup {
 #endif
 		float rainDensity = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 		float rainWetness = g_pGamePersistent->Environment().wetness_factor;
-		RCache.set_c(C, rainDensity, rainWetness, 0.0f, (float)g_pGameLevel->UseSnowmask);
+		RCache.set_c(C, rainDensity, rainWetness, 0.0f, g_pGameLevel ? (float)g_pGameLevel->UseSnowmask : 0.f);
 	}
 } binder_rain_params;
 
@@ -601,6 +601,9 @@ static class cl_m_timearrow : public RHIShaderConstant::Setup
 	virtual void setup(RHIShaderConstant* C)
 	{
 		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
+		if (!g_pGameLevel || !g_pGameLevel->bReady || Device.dwPrecacheFrame)
+			return;
+
 		split_time(g_pGameLevel->GetGameTime(), year, month, day, hours, mins, secs, milisecs);
 
 		float s_f = secs / 60.f;
@@ -621,6 +624,9 @@ static class cl_m_timearrow2 : public RHIShaderConstant::Setup
 	virtual void setup(RHIShaderConstant* C)
 	{
 		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
+		if (!g_pGameLevel || !g_pGameLevel->bReady || Device.dwPrecacheFrame)
+			return;
+
 		split_time(g_pGameLevel->GetGameTime(), year, month, day, hours, mins, secs, milisecs);
 
 		float s_f = secs / 60.f;
@@ -638,6 +644,9 @@ static class cl_digiclock : public RHIShaderConstant::Setup
 	virtual void setup(RHIShaderConstant* C)
 	{
 		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
+		if (!g_pGameLevel || !g_pGameLevel->bReady || Device.dwPrecacheFrame)
+			return;
+
 		split_time(g_pGameLevel->GetGameTime(), year, month, day, hours, mins, secs, milisecs);
 
 		float hh = (hours / 10) / 10.0f;

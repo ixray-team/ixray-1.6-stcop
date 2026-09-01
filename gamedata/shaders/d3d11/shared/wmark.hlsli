@@ -7,7 +7,6 @@
 #define MAX_SHIFT 0.011f
 #define RANGE 100.f
 
-uniform float3 eye_direction;
 
 float4 wmark_shift(float3 P, float3 N)
 {

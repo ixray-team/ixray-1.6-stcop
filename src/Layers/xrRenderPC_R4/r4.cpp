@@ -216,7 +216,7 @@ public:
 
 	virtual void setup(RHIShaderConstant* C)
 	{
-		RCache.set_c(C, *value);
+		RCache.set_c(C, *value, 0.f, 0.f, 0.f);
 	}
 };
 
