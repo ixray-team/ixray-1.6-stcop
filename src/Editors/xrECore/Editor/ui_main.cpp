@@ -90,7 +90,8 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 
 	if (TextureStack.contains(Texture))
 	{
-		return TextureStack[Texture]->get_SRView()->GetRawSRV();
+		auto elem = TextureStack[Texture];
+		return elem ? (elem->get_SRView() ? elem->get_SRView()->GetRawSRV() : nullptr) : nullptr;
 	}
 
 	TextureStack[Texture] = EDevice->Resources->_CreateTexture(Texture);
@@ -101,7 +102,7 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 		Tex->apply_load(0);
 	}
 
-	return (void*)Tex->get_SRView()->GetRawSRV();
+	return Tex ? (Tex->get_SRView() ? Tex->get_SRView()->GetRawSRV() : nullptr) : nullptr;
 }
 
 void TUI::OnDeviceCreate()
