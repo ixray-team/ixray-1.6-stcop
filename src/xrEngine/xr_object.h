@@ -111,6 +111,7 @@ public:
 			u32 net_SV_Update	:	1;
 			u32 crow			:	1;
 			u32	bPreDestroy		:	1;
+			u32 bRainCollide    :   1;
 		};
 		u32	storage;
 	};
@@ -147,6 +148,9 @@ public:
 		void							DBGGetProps			(ObjectProperties &p ) const { p = Props; }
 #endif
 		void							MakeMeCrow			();
+
+	ICF void SetRainCollide(bool val) { Props.bRainCollide = val; }
+	ICF bool GetRainCollide() { return Props.bRainCollide; }
 
 	ICF	void							IAmNotACrowAnyMore	()					{ Props.crow = false;		}
 	virtual bool						AlwaysTheCrow		()					{ return false;				}

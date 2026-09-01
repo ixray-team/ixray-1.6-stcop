@@ -29,6 +29,7 @@ public:
 	void OnRainCollide(Fvector rainCollisionPosition);
 	void Update();
 	bool AlwaysTheCrow() { return false; }
+	bool IsUseRainCollide() { return m_use_ground_rain_collide_particles || m_use_air_rain_collide_particles; };
 
 private:
 	ECS_COMPONENT(TAnomalyRainCollide)
