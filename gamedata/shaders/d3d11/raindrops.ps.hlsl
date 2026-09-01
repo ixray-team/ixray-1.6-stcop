@@ -1,7 +1,6 @@
 #include "common.hlsli"
 
 Texture2D s_droplets;
-uniform float4 rain_params;
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

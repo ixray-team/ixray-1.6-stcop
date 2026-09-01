@@ -3,6 +3,9 @@
 using namespace DirectX;
 
 #include "../../xrCore/Collision/Frustum.h"
+#ifdef USE_DX11
+#include "../xrRenderDX10/dx10FixedConstants.h"
+#endif
 
 void CBackend::OnFrameEnd	()
 {
@@ -30,18 +33,18 @@ void CBackend::OnFrameBegin	()
 	{
 #ifdef USE_DX11
 		Invalidate();
-		//	DX9 sets base rt nd base zb by default
 		RImplementation.rmNormal();
 #ifndef _EDITOR
 		set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
 #endif
-#endif //USE_DX11
-		Memory.mem_fill		(&stat,0,sizeof(stat));
-		Vertex.Flush		();
-		Index.Flush			();
-		set_Stencil			(false);
+		FixedConstants::UpdateFrame();
+		FixedConstants::UpdateView();
+#endif
+		Memory.mem_fill(&stat,0,sizeof(stat));
+		Vertex.Flush();
+		Index.Flush();
+		set_Stencil(false);
 	}
-//#endif
 }
 
 void CBackend::Invalidate	()

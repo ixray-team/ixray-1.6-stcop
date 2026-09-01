@@ -14,15 +14,12 @@
 #define NV_SCANLINES
 
 //effect settings
-#define FLICKERING_INTENSITY 0.003    // Интенсивность мерцания
-#define FLICKERING_FREQ 60.0          // Частота  мерцания
-#define NOISE_INTENSITY 0.13          // Интенсивность шума
-#define SCANLINES_INTENSITY 0.015     // Растровая  Интенсивность
-#define VIGNETTE_RADIUS 1.0           //
+#define FLICKERING_INTENSITY 0.003
+#define FLICKERING_FREQ 60.0      
+#define NOISE_INTENSITY 0.13      
+#define SCANLINES_INTENSITY 0.015 
+#define VIGNETTE_RADIUS 1.0       
 
-// Pixel
-uniform	float4		screen_res;
-uniform	float4 		m_zoom_deviation;
 
 float4 calc_night_vision_effect(float2 tc0, float4 color, float3 NV_COLOR)
 {

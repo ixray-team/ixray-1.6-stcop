@@ -1,7 +1,5 @@
 #include "common.hlsli"
 
-uniform	float4 		m_affects;
-
 float4 main(p_bumped_new I) : SV_Target
 {
 	float3 Color = s_base.Sample(smp_base, I.tcdh.xy).xyz;

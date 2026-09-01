@@ -64,7 +64,7 @@ public:
 		{
 			handlers.clear();
 			for (ref_constant& C : table)
-				if (C->handler)
+				if (C->handler && C->fixed_id != 1)
 					handlers.push_back(&*C);
 
 			handlers_valid = true;
@@ -82,7 +82,7 @@ private:
 	void					fatal		(const char* s);
 
 #ifdef USE_DX11
-	bool					parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
+	bool					parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination, int fixed);
 	bool					parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
 #endif //USE_DX11
 
