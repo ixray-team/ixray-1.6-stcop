@@ -20,7 +20,6 @@
 
 #include "common.hlsli"
 
-uniform float4 screen_res;
 float sharpening_intensity;
 
 float4 main(PSInputFullscreen I) : SV_Target

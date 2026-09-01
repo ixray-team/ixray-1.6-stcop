@@ -1,7 +1,5 @@
 #include "common.hlsli"
 
-uniform float4 screen_res;
-
 #ifdef SM_5
     #define FXAA_HLSL_5 1
 #else

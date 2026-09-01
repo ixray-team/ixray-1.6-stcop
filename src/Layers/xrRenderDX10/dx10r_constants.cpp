@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "dx10FixedConstants.h"
 
 
 #include "../xrRender/ResourceManager.h"
@@ -15,7 +16,7 @@ IC bool	p_sort		(ref_constant C1, ref_constant C2)
 	return xr_strcmp(C1->name,C2->name)<0;
 }
 
-bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination)
+bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination, int fixed)
 {
 	//VERIFY(_desc);
 	//ID3D10ShaderReflectionConstantBuffer *pTable = (ID3D10ShaderReflectionConstantBuffer *)_desc;
@@ -162,6 +163,7 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 				if (!C)	{
 				C					=	new RHIShaderConstant();//.g_constant_allocator.create();
 				C->name				=	name;
+				C->name_hash		=	FixedConstants::NameHash(*C->name);
 				C->destination		=	RC_dest_sampler;
 				C->type				=	RC_sampler;
 				RHIShaderConstant::Loader& L	=	C->samp;
@@ -196,8 +198,10 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 		if (!C)	{
 			C					=	new RHIShaderConstant();//.g_constant_allocator.create();
 			C->name				=	name;
+			C->name_hash		=	FixedConstants::NameHash(*C->name);
 			C->destination		=	destination;
 			C->type				=	type;
+			C->fixed_id			=	(s8)fixed;
 			//RHIShaderConstant::Loader& L	=	(destination&1)?C->ps:C->vs;
 			RHIShaderConstant::Loader& L	=	C->get_load(destination);/*((destination&RC_dest_pixel)
 									? C->ps : (destination&RC_dest_vertex)
@@ -206,6 +210,7 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 			L.cls				=	r_type;
 			table.push_back		(C);
 		} else {
+			if (fixed) C->fixed_id = (s8)fixed;
 			C->destination		|=	destination;
 			VERIFY	(C->type	==	type);
 			//RHIShaderConstant::Loader& L	=	(destination&1)?C->ps:C->vs;
@@ -283,6 +288,7 @@ bool R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
 		{
 			C					=	new RHIShaderConstant();//.g_constant_allocator.create();
 			C->name				=	ResDesc.Name;
+			C->name_hash		=	FixedConstants::NameHash(*C->name);
 			C->destination		=	RC_dest_sampler;
 			C->type				=	type;
 			RHIShaderConstant::Loader& L	=	C->samp;
@@ -365,19 +371,24 @@ bool	R_constant_table::parse	(void* _desc, u32 destination)
 			pTable = pReflection->GetConstantBufferByIndex(iBuf);
 			if (pTable)
 			{
-				//	Encode buffer index into destination
+				D3D_SHADER_BUFFER_DESC TableDesc;
+				pTable->GetDesc(&TableDesc);
+
+				D3D_SHADER_INPUT_BIND_DESC ResDesc{};
+				HRESULT hr = pReflection->GetResourceBindingDescByName(TableDesc.Name, &ResDesc);
+				u32 bindSlot = SUCCEEDED(hr) ? ResDesc.BindPoint : iBuf;
+
 				u32	updatedDest = destination;
-				updatedDest |= iBuf << dest_to_shift_value(destination);/*((destination&RC_dest_pixel)
-					? RC_dest_pixel_cb_index_shift : (destination&RC_dest_vertex)
-					? RC_dest_vertex_cb_index_shift : RC_dest_geometry_cb_index_shift);*/
+				updatedDest |= bindSlot << dest_to_shift_value(destination);
+				
+				const int fixed = FixedConstants::FixedClass(TableDesc.Name);
+				parseConstants(pTable, updatedDest, fixed);
+				if (fixed)
+					continue;
 
-				//	Encode bind dest (pixel/vertex buffer) and bind point index
-				u32	uiBufferIndex = iBuf;
-				uiBufferIndex |= dest_to_cbuf_type(destination);/*(destination&RC_dest_pixel) 
-					? CB_BufferPixelShader : (destination&RC_dest_vertex)
-					? CB_BufferVertexShader : CB_BufferGeometryShader;*/
+				u32	uiBufferIndex = bindSlot;
+				uiBufferIndex |= dest_to_cbuf_type(destination);
 
-				parseConstants(pTable,updatedDest);
 				ref_cbuffer	tempBuffer = DEV->_CreateConstantBuffer(pTable);
 				m_CBTable.push_back(cb_table_record(uiBufferIndex, tempBuffer));
 			}

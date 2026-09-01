@@ -28,7 +28,6 @@ void RHIStateManagerDX11::Reset()
 	BlendState = 0;
 
 	StencilRef = 0;
-	AlphaRef = 0;
 
 	bRSNeedApply = true;
 	bDSSNeedApply = true;
@@ -111,7 +110,6 @@ void RHIStateManagerDX11::ResetRDesc()
 void RHIStateManagerDX11::UnmapConstants()
 {
 	BindAlphaCallback = nullptr;
-	AlphaRef = 0;
 }
 
 void RHIStateManagerDX11::SetContext(ID3D11DeviceContext* InContext)
