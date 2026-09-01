@@ -14,8 +14,6 @@ struct vf
 	float4 c0 : COLOR;
 };
 
-uniform float3 water_intensity;
-
 Texture2D s_image;
 Texture2D s_nmap;
 TextureCube s_env0;
@@ -24,7 +22,6 @@ TextureCube env_s0;
 TextureCube env_s1;
 Texture2D s_leaves;
 Texture2D s_caustic;
-uniform float4 screen_res;
 
 float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 {

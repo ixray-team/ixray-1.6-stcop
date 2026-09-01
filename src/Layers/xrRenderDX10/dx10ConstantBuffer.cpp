@@ -2,6 +2,7 @@
 #include "dx10ConstantBuffer.h"
 
 #include "dx10BufferUtils.h"
+#include "dx10FixedConstants.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
 dx10ConstantBuffer::~dx10ConstantBuffer()
@@ -22,6 +23,7 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
 	m_strBufferName._set(Desc.Name);
 	m_eBufferType = Desc.Type;
 	m_uiBufferSize = Desc.Size;
+	m_bFixed = FixedConstants::IsFixedName(Desc.Name);
 
 	//	Fill member list with variable descriptions
 	m_MembersList.resize(Desc.Variables);

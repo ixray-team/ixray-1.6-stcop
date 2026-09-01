@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 
 #include "../xrEngine/GameFont.h"
@@ -14,6 +14,8 @@
 #include "device_win_custom.h"
 CEditorRenderDevice 	*	EDevice;
 bool g_bIsEditor;
+
+float r_dtex_range = 50.f;
 
 void CEditorRenderDevice::AddSeqFrame(pureFrame* f, bool mt) { seqFrame.Add(f, REG_PRIORITY_LOW); }
 void CEditorRenderDevice::RemoveSeqFrame(pureFrame* f) { seqFrame.Remove(f); }
@@ -207,6 +209,7 @@ void CEditorRenderDevice::Clear()
 
 //---------------------------------------------------------------------------
 void CEditorRenderDevice::RenderNearer(float n){
+    m_fNearer=mProject._43;
     mProject._43=m_fNearer-n;
     RCache.set_xform_project(mProject);
 }
@@ -480,6 +483,7 @@ void CEditorRenderDevice::UpdateView()
 		UI->CurrentView().m_Camera.GetView(mView);
 	}
     RCache.set_xform_view(mView);
+    RCache.set_xform_project(mProject);
     mFullTransform.mul(mProject,mView);
 
 // frustum culling sets

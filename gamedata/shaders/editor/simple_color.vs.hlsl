@@ -6,8 +6,6 @@ struct vf
     float4 C : COLOR0;
 };
 
-uniform float4 tfactor;
-
 vf main(float4 P : POSITION)
 {
     vf o;

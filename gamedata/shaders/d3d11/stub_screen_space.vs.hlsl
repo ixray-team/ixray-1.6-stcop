@@ -1,7 +1,6 @@
 #include "common.hlsli"
 
 // Vertex
-uniform float4 screen_res;
 
 p_shadow main(v2p_screen I)
 {

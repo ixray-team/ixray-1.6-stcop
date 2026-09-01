@@ -97,6 +97,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRenderDX10/dx11ResourceManager_Scripting.*"
 	"../../Layers/xrRenderDX10/dx10StateUtils.*"
 	"../../Layers/xrRenderDX10/dx10BufferUtils.*"
+	"../../Layers/xrRenderDX10/dx10FixedConstants.*"
 	"../../Layers/xrRenderDX10/StateManager/*.*"
 	"../../Layers/xrRender/R_Backend.*"
 	"../../Layers/xrRender/Utils/*.*"
