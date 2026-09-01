@@ -55,23 +55,10 @@ float4 main(PSInputFullscreen I) : SV_Target
 #endif
 
     float3 Color = Occ * Ambient + Light;
-    float Fog = 0.0f;
 	
-#ifndef NEW_FOGGIN
-    Fog = saturate(O.ViewDist * fog_params.w + fog_params.x);
-    Fog *= Fog;
-#else  //NEW_FOGGIN
-    float denom = F_base - exp(-F_dens * (fog_params.z - fog_params.y));
-    Fog = (F_base - exp(-F_dens * (O.ViewDist - fog_params.y))) / denom;
-    Fog = saturate(Fog);
-#endif
-
-	// Color = O.Roughness * 0.5f;
-
-#ifdef USE_LEGACY_LIGHT
-	Fog *= Fog;
-#endif
-
-    return float4(Color, Fog);
+    float Fog = saturate(O.ViewDist * fog_params.w + fog_params.x);
+	Color = lerp(Color, GammaToLinear(fog_color.xyz), Fog);
+	
+    return float4(Color, Fog * Fog);
 }
 
