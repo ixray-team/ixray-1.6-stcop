@@ -226,8 +226,10 @@ void R_constant_table::merge(R_constant_table* T)
 		{
 			C = new RHIShaderConstant();//.g_constant_allocator.create();
 			C->name = src->name;
+			C->name_hash = src->name_hash;
 			C->destination = src->destination;
 			C->type = src->type;
+			C->fixed_id = src->fixed_id;
 			C->ps = src->ps;
 			C->vs = src->vs;
 #ifdef USE_DX11
@@ -244,6 +246,7 @@ void R_constant_table::merge(R_constant_table* T)
 		{
 			VERIFY2(!(C->destination & src->destination & RC_dest_sampler), "Can't have samplers or textures with the same name for PS, VS and GS.");
 			C->destination |= src->destination;
+			if (src->fixed_id > 0) C->fixed_id = src->fixed_id;
 			VERIFY(C->type == src->type);
 			RHIShaderConstant::Loader& sL = src->get_load(src->destination);
 			RHIShaderConstant::Loader& dL = C->get_load(src->destination);

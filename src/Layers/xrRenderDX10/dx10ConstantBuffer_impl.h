@@ -89,7 +89,7 @@ IC void dx10ConstantBuffer::set(RHIShaderConstant* C, RHIShaderConstant::Loader&
 IC void dx10ConstantBuffer::set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, float A)
 {
 	VERIFY		(RC_float	== C->type);
-	VERIFY		(RC_1x1		== L.cls);
+	VERIFY2		(RC_1x1		== L.cls, C->name.c_str());
 	float*		it	= (float*)Access(L.index);
 	VERIFY( u32((u32)L.index+sizeof(float)) <= m_uiBufferSize );
 	*it			= A;

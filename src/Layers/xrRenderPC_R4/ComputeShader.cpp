@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "../xrRenderDX10/dx10FixedConstants.h"
 #include "ComputeShader.h"
 
 void ComputeShader::Construct(
@@ -81,6 +82,7 @@ void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 	}
 
 	GRHI->SetConstantBuffers(0, count, tempBuffer, ERHI_SHADER_TYPE::CS);
+	FixedConstants::InvalidateBindings();
 
 	if (!m_Textures.empty())
 		RContext->CSSetShaderResources(0, (u32)m_Textures.size(), &m_Textures[0]);

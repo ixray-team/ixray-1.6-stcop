@@ -32,18 +32,25 @@ int CApplication::Run()
 	}
 
 	// plat
-	std::jthread s(splash::Show);
+	const bool headless = Autotest::Active();
+
+	std::jthread s;
+	if (!headless)
+		s = std::jthread(splash::Show);
 
 	SteamWorks.BeginPlay();
 	InitEngine();
-	splash::Close();
+
+	if (!headless)
+		splash::Close();
 
 	MigrateToGameWindow();
 	EngineLoopAndDestroy();
 
 	EndPlay();
 
-	s.join();
+	if (s.joinable())
+		s.join();
 
 	return Autotest::Verdict();
 }

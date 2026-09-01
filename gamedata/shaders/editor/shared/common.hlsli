@@ -1,30 +1,7 @@
 #ifndef SHARED_COMMON_H
 #define SHARED_COMMON_H
 
-cbuffer static_globals
-{
-    float3x4 m_W;
-    float3x4 m_V;
-    float3x4 m_invV;
-    float4x4 m_P;
-    float3x4 m_WV;
-    float4x4 m_VP;
-    float4x4 m_WVP;
-    float4 timers;
-    float4 fog_plane;
-    float4 fog_params; // x=near*(1/(far-near)), ?,?, w = -1/(far-near)
-    float4 fog_color;
-    float4 L_sky_color;
-    float3 L_sun_color;
-    float3 L_sun_dir_w;
-    float4 L_sun_dir_e;
-    float4 L_hemi_color;
-    float4 L_ambient; // L_ambient.w = skynbox-lerp-factor
-    float3 eye_position;
-    float3 eye_direction;
-    float3 eye_normal;
-    float4 dt_params;
-}
+#include "common_decl.hlsli"
 
 float3 unpack_normal(float3 v)
 {

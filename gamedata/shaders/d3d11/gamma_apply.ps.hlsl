@@ -1,7 +1,5 @@
 #include "common.hlsli"
 
-uniform float4 color_params;
-uniform float4 color_grading;
 
 float3 main(PSInputFullscreen I) : SV_Target
 {
