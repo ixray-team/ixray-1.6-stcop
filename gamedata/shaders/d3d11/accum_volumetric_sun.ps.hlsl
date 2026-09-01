@@ -34,8 +34,6 @@ float PhaseFunction_Schlick(float g, float cos_theta)
     return nom / denom;
 }
 
-
-
 float4 main(PSInputFullscreen I) : SV_Target
 {
 #ifndef SUN_SHAFTS_QUALITY
@@ -52,6 +50,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 	
 	float zFar = min(PviewSqr * PviewSqrDiv, fog_params.z); 
 	float3 viewDir = Pview * PviewSqrDiv;
+	
 	Pview = viewDir * zFar;
 
     float4 J0 = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)];
@@ -69,8 +68,13 @@ float4 main(PSInputFullscreen I) : SV_Target
     float4 current = mul(m_shadow_sun[2], float4(PW, 1.f));
     float4 deltaS = mul(m_shadow_sun[2], float4(deltaW, 0.f));
 
+#ifndef USE_LEGACY_LIGHT
     float3 fogTint = GammaToLinear(fog_color.rgb);
-    fogTint /= max(max(fogTint.r, fogTint.g), fogTint.b + 1e-6f);
+#else
+    float3 fogTint = fog_color.xyz * fog_color.xyz;
+#endif
+
+    fogTint /= max(max(fogTint.r, fogTint.g), fogTint.b + EPS_S);
 
     float density = 0.1f * max(sun_shafts_intensity.x, 0.f);
     float sigma_t = density;
@@ -118,6 +122,10 @@ float4 main(PSInputFullscreen I) : SV_Target
     float3 fogNeutral = lerp(fogTint, Luminance(fogTint), 0.6f);
     radiance = lerp(radiance, fogNeutral * Luminance(radiance), tFar);
     
+#ifdef USE_LEGACY_LIGHT
+	radiance = sqrt(radiance);
+#endif
+
     return float4(radiance, 1.0f);
 
 #endif //SUN_SHAFTS_QUALITY
