@@ -249,7 +249,7 @@ public:
 		af_safemode_in_out = (1 << 28),
 		af_sprint = (1 << 29),
 		af_moving = (1 << 30),
-		af_alt_kick = (1 << 31),
+		af_alt_kick = (1u << 31),
 	};
 
 	enum EBPAnimsFlags : u64
@@ -293,7 +293,7 @@ public:
 		sf_tacticaltorch = (1 << 28),
 		sf_laser = (1 << 29),
 		sf_breechblock = (1 << 30),
-		sf_jam = (1ull << 31),
+		sf_jam = (1u << 31),
 	};
 
 	enum ESoundsFlags2 : u64
@@ -325,7 +325,7 @@ public:
 		sf_sprint_start = (1 << 24),
 		sf_sprint_end = (1 << 25),
 		sf_safemode_in_out = (1 << 26),
-		sf_mag_shot = (1 << 27),
+		sf_mag_shot = (1u << 27),
 	};
 
 	Flags32 m_eDevicesFlags;
