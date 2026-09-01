@@ -506,8 +506,6 @@ void CActor::Load	(const char* section )
 
 	if (IsGameTypeSingle())
 		OnDifficultyChanged		();
-
-	_wristwatchController.LoadSettings();
 	//////////////////////////////////////////////////////////////////////////
 	
 	SpatialComponent->type	|=	ESPATIAL_TYPE::VISIBLEFORAI;
@@ -1944,7 +1942,6 @@ void CActor::UpdateCL()
 
 	Device.hudViewportData.ActorHealth = GetfHealth();
 	Device.hudViewportData.ActorOutfitCondition = GetOutfit() != nullptr ? GetOutfit()->GetCondition() : -1.0f;
-	_wristwatchController.Update(*this);
 
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
