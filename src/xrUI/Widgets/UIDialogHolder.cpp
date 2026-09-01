@@ -70,18 +70,15 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 	if( pDialog->NeedCursor() )
 		GetUICursor().Show();
 
-	if(g_pGameLevel)
-	{
-		IGame_Actor* A	= GActorInterface == (void*)g_pGameLevel->CurrentViewEntity() ? GActorInterface : nullptr;
-		if ( A && pDialog->StopAnyMove() )
+	if (g_pGameLevel && GActorInterface)
+	{	
+		if (pDialog->StopAnyMove())
 		{
-			A->StopAnyMove				();
-		};
-		if(A)
-		{	
-			A->IR_OnKeyboardRelease		(get_action_dik(kWPN_ZOOM));
-			A->IR_OnKeyboardRelease		(get_action_dik(kWPN_FIRE));
+			GActorInterface->StopAnyMove();
 		}
+
+		GActorInterface->IR_OnKeyboardRelease(get_action_dik(kWPN_ZOOM));
+		GActorInterface->IR_OnKeyboardRelease(get_action_dik(kWPN_FIRE));
 	}
 }
 

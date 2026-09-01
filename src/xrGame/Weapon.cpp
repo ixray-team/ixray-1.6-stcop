@@ -34,6 +34,7 @@
 #include "ai/monsters/bloodsucker/bloodsucker.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
 #include "WeaponAmmo.h"
+#include "ui/UIGameCustom.h"
 
 #include <algorithm>
 
@@ -1967,6 +1968,16 @@ bool CWeapon::SwitchZoom(u32 flags)
 	}
 
 	bool result = false;
+
+	if (CurrentGameUI() && CurrentGameUI()->TopInputReceiver())
+	{
+		if (IsZoomed())
+		{
+			OnZoomOut();
+		}
+
+		return false;
+	}
 
 	if (flags & CMD_START)
 	{
