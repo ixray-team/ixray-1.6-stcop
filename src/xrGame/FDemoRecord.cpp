@@ -463,25 +463,22 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			frame_pos_delta.mul(CameraTransformFactor);
 		}
 
-		dr_disable_time_factor_influence ? frame_pos_delta.mul(Device.fRealTimeDelta) : frame_pos_delta.mul(Device.fTimeDelta);
+		float dt = dr_disable_time_factor_influence ? Device.fRealTimeDelta : Device.fTimeDelta;
 		
-		float angle_per_second = CCC_Float::FastCommand("angle_per_second", 1.f);
-		float cam_speed = frame_pos_delta.magnitude() > EPS_S ? frame_pos_delta.magnitude() : 1.f;
+		float pos_dt_magnitude = frame_pos_delta.magnitude();
+		float scaled_fov = (pos_dt_magnitude > EPS_S ? pos_dt_magnitude : 5.f) * dt;
 		
 		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_R))
 		{
-			float target_fov = g_base_fov * angle_per_second * Device.fTimeDelta;
-			g_base_fov += (target_fov - g_base_fov) * dr_cam_inert * Device.fTimeDelta;
-			g_base_fov = std::clamp(g_base_fov, 5.f, 179.f);
+			clamp(g_base_fov += scaled_fov, 5.f, 179.f);
 		}
 	
 		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_T))
 		{
-			float target_fov = g_base_fov * angle_per_second * Device.fTimeDelta;
-			g_base_fov -= (target_fov - g_base_fov) * dr_cam_inert * Device.fTimeDelta;
-			g_base_fov = std::clamp(g_base_fov, 5.f, 179.f);
+			clamp(g_base_fov -= scaled_fov, 5.f, 179.f);
 		}
-
+		
+		frame_pos_delta.mul(dt);
 		frame_hpb_delta.mul(1.f);
 
 		if (g_position.set_position)
