@@ -52,6 +52,7 @@ class CDemoRecord :
 	bool draw_skeleton = false;
 	bool attach_to_bone_mode = false;
 	bool view_from_bone_mode = false;
+	bool show_help = false;
 
 	float CameraTransformFactor;
 	float m_fSpeed0;
@@ -60,6 +61,8 @@ class CDemoRecord :
 	float m_fSpeed3;
 	
 	float stored_fov;
+
+	float dt;
 
 	void MakeCubeMapFace(Fvector& D, Fvector& N);
 	void MakeLevelMapProcess();

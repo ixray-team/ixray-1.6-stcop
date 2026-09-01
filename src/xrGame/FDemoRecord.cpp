@@ -319,6 +319,8 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		}
 	}
 	
+	dt = dr_disable_time_factor_influence ? Device.fRealTimeDelta : Device.fTimeDelta;
+	
 	info.dont_apply = false;
 
 	if (nullptr == file)
@@ -463,8 +465,6 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			frame_pos_delta.mul(CameraTransformFactor);
 		}
 
-		float dt = dr_disable_time_factor_influence ? Device.fRealTimeDelta : Device.fTimeDelta;
-		
 		float pos_dt_magnitude = frame_pos_delta.magnitude();
 		float scaled_fov = (pos_dt_magnitude > EPS_S ? pos_dt_magnitude : 5.f) * dt;
 		
@@ -836,7 +836,6 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 		return;
 	}
 
-	float dt = dr_disable_time_factor_influence ? Device.fRealTimeDelta : Device.fTimeDelta;
 	float roll_angle_per_second = CCC_Float::FastCommand("roll_angle_per_second", 1.f);
 
 	if (view_from_bone_mode)
