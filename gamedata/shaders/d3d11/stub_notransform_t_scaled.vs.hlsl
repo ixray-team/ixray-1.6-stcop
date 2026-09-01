@@ -1,6 +1,6 @@
+#include "common.hlsli"
 #include "common_iostructs.hlsli"
 
-uniform float4 scaled_screen_res; // Screen resolution (x-Width,y-Height, zw - 1/resolution)
 
 // Vertex
 v2p_TL main(v_TL_positiont I)

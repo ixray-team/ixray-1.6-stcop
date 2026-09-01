@@ -8,7 +8,6 @@ float4 unpack_D3DCOLOR(float4 c)
     return c.bgra;
 }
 
-uniform float4 L_material; // per object, xyz=sun,w=hemi
 uniform float4 L_dynamic_props; // per object, xyz=sun,w=hemi
 uniform float4 L_dynamic_color; // dynamic light color (rgb1)	- spot/point
 uniform float4 L_dynamic_pos; // dynamic light pos+1/range(w) - spot/point
@@ -18,7 +17,6 @@ uniform float4x4 m_plmap_xform;
 uniform float4 m_plmap_clamp[2]; // 0.w = factor
 uniform Texture3D s_material;
 
-#define def_aref 0.5f
 #define def_gloss 0.04f
 
 #ifndef xmaterial
@@ -57,44 +55,44 @@ float4 calc_spot(out float4 tc_lmap, out float2 tc_att, float4 w_pos, float3 w_n
     float4 s_pos = mul(L_dynamic_xform, w_pos);
     tc_lmap = s_pos.xyww; // projected in ps/ttf
     tc_att = s_pos.z; // z=distance * (1/range)
-    float3 L_dir_n = normalize(w_pos - L_dynamic_pos.xyz);
+    float3 L_dir_n = normalize(w_pos.xyz - L_dynamic_pos.xyz);
     float L_scale = dot(w_norm, -L_dir_n);
-    return L_dynamic_color * L_scale * saturate(calc_fogging(w_pos));
+    return L_dynamic_color * L_scale * saturate(calc_fogging(w_pos.xyz));
 }
 
 float4 calc_point(out float2 tc_att0, out float2 tc_att1, float4 w_pos, float3 w_norm)
 {
-    float3 L_dir_n = normalize(w_pos - L_dynamic_pos.xyz);
+    float3 L_dir_n = normalize(w_pos.xyz - L_dynamic_pos.xyz);
     float L_scale = dot(w_norm, -L_dir_n);
-    float3 L_tc = (w_pos - L_dynamic_pos.xyz) * L_dynamic_pos.w + .5f; // tc coords
+    float3 L_tc = (w_pos.xyz - L_dynamic_pos.xyz) * L_dynamic_pos.w + .5f; // tc coords
     tc_att0 = L_tc.xz;
     tc_att1 = L_tc.xy;
-    return L_dynamic_color * L_scale * saturate(calc_fogging(w_pos));
+    return L_dynamic_color * L_scale * saturate(calc_fogging(w_pos.xyz));
 }
 
 float3 calc_sun(float3 norm_w)
 {
-    return L_sun_color * max(dot((norm_w), -L_sun_dir_w), 0);
+    return L_sun_color.xyz * max(dot((norm_w), -L_sun_dir_w.xyz), 0);
 }
 
 float3 calc_model_hemi(float3 norm_w)
 {
-    return (norm_w.y * 0.5 + 0.5) * L_dynamic_props.w * L_hemi_color;
+    return (norm_w.y * 0.5 + 0.5) * L_dynamic_props.w * L_hemi_color.xyz;
 }
 
 float3 calc_model_lq_lighting(float3 norm_w)
 {
-    return calc_model_hemi(norm_w) + L_ambient + L_dynamic_props.xyz * calc_sun(norm_w);
+    return calc_model_hemi(norm_w) + L_ambient.xyz + L_dynamic_props.xyz * calc_sun(norm_w);
 }
 
 float3 _calc_model_hemi(float3 norm_w)
 {
-    return max(0, norm_w.y) * .2 * L_hemi_color;
+    return max(0, norm_w.y) * .2 * L_hemi_color.xyz;
 }
 
 float3 _calc_model_lq_lighting(float3 norm_w)
 {
-    return calc_model_hemi(norm_w) + L_ambient + .5 * calc_sun(norm_w);
+    return calc_model_hemi(norm_w) + L_ambient.xyz + .5 * calc_sun(norm_w);
 }
 
 float4 calc_model_lmap(float3 pos_w)
@@ -226,22 +224,22 @@ uniform Texture2D s_detail;
 
 float3 v_hemi(float3 n)
 {
-    return L_hemi_color /* *(.5f + .5f*n.y) */;
+    return L_hemi_color.xyz /* *(.5f + .5f*n.y) */;
 }
 
 float3 v_hemi_wrap(float3 n, float w)
 {
-    return L_hemi_color /* *(w + (1-w)*n.y) */;
+    return L_hemi_color.xyz /* *(w + (1-w)*n.y) */;
 }
 
 float3 v_sun(float3 n)
 {
-    return L_sun_color * max(0, dot(n, -L_sun_dir_w));
+    return L_sun_color.xyz * max(0, dot(n, -L_sun_dir_w.xyz));
 }
 
 float3 v_sun_wrap(float3 n, float w)
 {
-    return L_sun_color * (w + (1 - w) * dot(n, -L_sun_dir_w));
+    return L_sun_color.xyz * (w + (1 - w) * dot(n, -L_sun_dir_w.xyz));
 }
 
 float3 p_hemi(float2 tc)

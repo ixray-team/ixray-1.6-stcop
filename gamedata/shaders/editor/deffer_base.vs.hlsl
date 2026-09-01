@@ -11,9 +11,9 @@ void main(in v_model I, out p_bumped_new O)
     O.tcdh = float4(I.tc.xy, 0.7f, 0.5f);
     O.position = float4(Pe, 1.0f);
 
-    float3 N = normalize(mul(m_W, I.N.zyx));
+    float3 N = normalize(mul((float3x3)m_W, I.N.zyx));
 	O.tcdh.z = N.y * 0.3f + 0.5f;
-    N = normalize(mul(m_V, N));
+    N = normalize(mul((float3x3)m_V, N));
 
     O.M1 = N;
     O.M2 = N;

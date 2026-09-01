@@ -2,7 +2,6 @@
 #include "reflections.hlsli"
 #include "metalic_roughness_light.hlsli"
 
-uniform float4 scaled_screen_res;
 
 #define mirror(x) saturate(1.0 - abs(abs(x) - 1.0))
 
