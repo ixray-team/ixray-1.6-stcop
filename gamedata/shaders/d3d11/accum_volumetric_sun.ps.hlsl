@@ -23,7 +23,6 @@ static const float SCATTER_RATIO = 0.5f; // fraction of extinction that goes to 
 static const float ABSORB_TINT_STRENGTH = 0.5f; // 0 = gray absorption, 1 = tinted by fog_color
 
 // Sun shafts intensity param (x used as density scale)
-float4 sun_shafts_intensity;
 
 // Schlick phase function (normalized form)
 float PhaseFunction_Schlick(float g, float cos_theta)

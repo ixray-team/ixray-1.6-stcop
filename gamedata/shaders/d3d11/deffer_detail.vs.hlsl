@@ -2,8 +2,6 @@
 
 cbuffer DetailConstants
 {
-    float4 wave;
-    float4 wave_old;
     float4 dir2D;
     float4 dir2D_old;
 };

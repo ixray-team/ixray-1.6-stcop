@@ -27,7 +27,6 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-uniform float4x4 m_texgen;
 
 void main(in v_vert v, out vf o)
 {

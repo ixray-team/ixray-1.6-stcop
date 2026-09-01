@@ -130,10 +130,7 @@ void xrDebug::do_exit(const std::string& message)
 		}
 	}
 
-	if (!ignore_error_window)
-	{
-		exit(1);
-	}
+	exit(1);
 }
 
 void xrDebug::backend	(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, bool &ignore_always)
@@ -590,7 +587,10 @@ void _terminate()
 	LPSTR buffer = assertion_info + xr_strlen(assertion_info);
 	buffer += xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
 
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error", assertion_info, nullptr);
+	extern XRCORE_API bool ignore_error_window;
+	if (!ignore_error_window)
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error", assertion_info, nullptr);
+
 	exit(-1);
 }
 

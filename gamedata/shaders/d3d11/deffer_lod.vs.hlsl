@@ -1,24 +1,5 @@
 #include "common.hlsli"
 
-cbuffer LodConstants
-{
-    float3x4 m_xform;
-    float3x4 m_xform_v;
-
-    float4 consts;
-    float4 wind;
-    float4 wave;
-
-    float4 consts_old;
-    float4 wave_old;
-    float4 wind_old;
-
-    float4 c_scale;
-    float4 c_bias;
-
-    float2 c_sun;
-}
-
 void main(in v_tree I, out p_bumped_new O)
 {
     float4 pos = float4(mul(m_xform, I.P).xyz, 1.0);

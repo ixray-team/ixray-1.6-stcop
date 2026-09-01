@@ -15,7 +15,6 @@ struct PSInput
 	float2 texcoord : TEXCOORD0;
 };
 
-uniform float4 nvg_color;
 
 float4 main(PSInput I) : SV_Target
 {

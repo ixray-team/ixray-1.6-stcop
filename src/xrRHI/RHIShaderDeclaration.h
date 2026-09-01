@@ -61,8 +61,10 @@ struct RHI_API RHIShaderConstant :
 
 	RHIShaderConstant::Loader samp;
 	Setup* handler;
+	s8 fixed_id;
+	u32 name_hash;
 
-	RHIShaderConstant() : type(u16(-1)), destination(0), handler(nullptr) {};
+	RHIShaderConstant() : type(u16(-1)), destination(0), handler(nullptr), fixed_id(-1), name_hash(0) {};
 	RHIShaderConstant& operator=(const RHIShaderConstant& Other) = delete;
 
 	IC RHIShaderConstant::Loader& get_load(u32 destination_)

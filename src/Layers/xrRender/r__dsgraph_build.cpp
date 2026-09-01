@@ -712,6 +712,18 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 	}
 }
 
+IC float fog_cull_distance()
+{
+	static u32   frame = u32(-1);
+	static float cached = 0.f;
+	if (frame != Device.dwFrame)
+	{
+		frame = Device.dwFrame;
+		cached = g_pGamePersistent->Environment().CurrentEnv->fog_distance;
+	}
+	return cached;
+}
+
 void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 {
 	//PROF_EVENT("add_Static")
@@ -740,7 +752,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 	if (!RImplementation.HOM.visible(vis))
 		return;
 
-	if (Device.vCameraPosition.distance_to_sqr(vis.sphere.P) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
+	if (Device.vCameraPosition.distance_to_sqr(vis.sphere.P) > _sqr(fog_cull_distance() + vis.sphere.R))
 		return;
 
 	float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);

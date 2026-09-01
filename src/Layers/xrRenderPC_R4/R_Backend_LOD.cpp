@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "R_Backend_LOD.h"
+#include "../xrRenderDX10/dx10FixedConstants.h"
 
 R_LOD::R_LOD()
 {
@@ -8,9 +9,6 @@ R_LOD::R_LOD()
 
 void	R_LOD::set_LOD(float LOD)
 {
-	if (c_LOD)
-	{
-		float factor = clampr<float>(ceil(LOD*LOD*LOD*LOD*LOD*8.0f), 1, 7);
-		RCache.set_c(c_LOD, factor);
-	}
+	float factor = clampr<float>(ceil(LOD*LOD*LOD*LOD*LOD*8.0f), 1, 7);
+	FixedConstants::SetTriLOD(factor);
 }

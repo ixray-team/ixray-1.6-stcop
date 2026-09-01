@@ -1,4 +1,7 @@
 #pragma once
+#ifdef USE_DX11
+#include "dx10FixedConstants.h"
+#endif
 
 IC void CBackend::set_xform( u32 ID, const Fmatrix& M_ )
 {
@@ -55,6 +58,8 @@ IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 b
 	//	State manager may alter constants
 	if(flush_constants)
 		constants.flush();
+	else
+		FixedConstants::Flush();
 
 	RContext->DrawIndexedInstanced(iIndexCount, instanceCount, startI, baseV, startInstanceLocation);
 }
@@ -191,90 +196,60 @@ ICF void CBackend::set_VS(SVS* _vs)
 
 IC void CBackend::set_Constants			(R_constant_table* C_)
 {
-	// caching
 	if (ctable==C_)
 		return;
-
-	ctable			= C_;
-	xforms.unmap	();
-	hemi.unmap		();
-	tree.unmap		();
-	LOD.unmap		();
+	ctable = C_;
+	xforms.unmap();
+	hemi.unmap();
+	tree.unmap();
+	LOD.unmap();
 	GRHI->StateManager->UnmapConstants();
-
-	if (0==C_)
-	{
+	if (!C_)
 		return;
-	}
-
-	//	Setup constant tables
+#ifdef USE_DX11
+	FixedConstants::BindAll();
+#endif
 	{
-		ref_cbuffer* const dst[] =
-		{
-			m_aPixelConstants, m_aVertexConstants, m_aGeometryConstants,
-			m_aHullConstants, m_aDomainConstants, m_aComputeConstants
-		};
-		static const ERHI_SHADER_TYPE stage[] =
-		{
-			ERHI_SHADER_TYPE::PS, ERHI_SHADER_TYPE::VS, ERHI_SHADER_TYPE::GS,
-			ERHI_SHADER_TYPE::HS, ERHI_SHADER_TYPE::DS, ERHI_SHADER_TYPE::CS
-		};
-
+		ref_cbuffer* const dst[] = { m_aPixelConstants, m_aVertexConstants, m_aGeometryConstants, m_aHullConstants, m_aDomainConstants, m_aComputeConstants };
+		static const ERHI_SHADER_TYPE stage[] = { ERHI_SHADER_TYPE::PS, ERHI_SHADER_TYPE::VS, ERHI_SHADER_TYPE::GS, ERHI_SHADER_TYPE::HS, ERHI_SHADER_TYPE::DS, ERHI_SHADER_TYPE::CS };
 		dx10ConstantBuffer* next[std::size(dst)][MaxCBuffers] = {};
-
-		for (const R_constant_table::cb_table_record& rec : C_->m_CBTable)
+		for (const auto& rec : C_->m_CBTable)
 		{
 			const u32 slot = rec.first & CB_BufferIndexMask;
 			VERIFY(slot < MaxCBuffers);
 
 			switch (rec.first & CB_BufferTypeMask)
 			{
-			case CB_BufferPixelShader:		next[0][slot] = rec.second._get(); break;
-			case CB_BufferVertexShader:		next[1][slot] = rec.second._get(); break;
-			case CB_BufferGeometryShader:	next[2][slot] = rec.second._get(); break;
-			case CB_BufferHullShader:		next[3][slot] = rec.second._get(); break;
-			case CB_BufferDomainShader:		next[4][slot] = rec.second._get(); break;
-			case CB_BufferComputeShader:	next[5][slot] = rec.second._get(); break;
-			default:						VERIFY("Invalid enumeration");
+			case CB_BufferPixelShader: next[0][slot]=rec.second._get(); break;
+			case CB_BufferVertexShader: next[1][slot]=rec.second._get(); break;
+			case CB_BufferGeometryShader: next[2][slot]=rec.second._get(); break;
+			case CB_BufferHullShader: next[3][slot]=rec.second._get(); break;
+			case CB_BufferDomainShader: next[4][slot]=rec.second._get(); break;
+			case CB_BufferComputeShader: next[5][slot]=rec.second._get(); break;
+			default: VERIFY("Invalid enumeration");
 			}
 		}
-
-		for (u32 s = 0; s < std::size(dst); ++s)
+		for (u32 s=0; s<std::size(dst); ++s)
 		{
-			u32 lo = MaxCBuffers, hi = 0;
-			for (u32 i = 0; i < MaxCBuffers; ++i)
+			for (u32 i=0; i<MaxCBuffers; ++i)
 			{
-				if (dst[s][i]._get() == next[s][i])
-					continue;
-
-				if (lo == MaxCBuffers)
-					lo = i;
-				hi = i;
-			}
-
-			if (lo == MaxCBuffers)
-				continue;
-
-			IRHIBuffer* bind[MaxCBuffers];
-			for (u32 i = lo; i <= hi; ++i)
-			{
-				dst[s][i] = next[s][i];
-				bind[i - lo] = nullptr;
-
-				if (next[s][i])
+				if (dst[s][i]._get() != next[s][i])
 				{
-					bind[i - lo] = next[s][i]->GetBuffer();
-					constants.MarkDirty(*next[s][i]);
+					dst[s][i] = next[s][i];
+					IRHIBuffer* bind = next[s][i] ? next[s][i]->GetBuffer() : nullptr;
+					if (next[s][i])
+						constants.MarkDirty(*next[s][i]);
+
+#ifdef USE_DX11
+					if (i < FixedConstants::kSlots)
+						continue;
+#endif
+					GRHI->SetConstantBuffers(i, 1, &bind, stage[s]);
 				}
 			}
-
-			GRHI->SetConstantBuffers(lo, hi - lo + 1, bind, stage[s]);
 		}
 	}
-
-	// process constant-loaders
-	for (RHIShaderConstant* Cs : C_->get_handlers())
-		Cs->handler->setup(Cs);
+	for (RHIShaderConstant* Cs : C_->get_handlers()) Cs->handler->setup(Cs);
 }
 
 IC	void CBackend::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData)
@@ -331,4 +306,4 @@ IC void CBackend::DrawTriangleFan(ERHI_PRIMITIVE_TOPOLOGY topology, ref_geom geo
 	set_Indices(Index.Buffer()); // overwrite geom IB with dyn IB
 	
 	Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, 0, cnt_indices, of_indices, pc);
-}
+}

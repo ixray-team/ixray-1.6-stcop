@@ -7,9 +7,7 @@
 Texture2DArray<float> s_smap_sun; //Sun, three cascades
 Texture2D<float> s_smap; //Point-spot, rain
 
-//LVutner: This should go into the same cbuffer as sunmask
-float4x4 m_shadow_sun[3];
-float4x4 m_shadow;
+
 
 SamplerComparisonState smp_smap;
 
@@ -71,8 +69,6 @@ float shadow_sun(float3 texcoord, int cascade_index)
 	return pcf_7x7(s_smap_sun, smp_smap, texcoord, smap_dims, bias, cascade_index);
 #endif
 }
-
-float3x4 m_sunmask;
 
 float sunmask(float4 P)
 {

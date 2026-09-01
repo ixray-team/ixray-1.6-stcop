@@ -139,8 +139,6 @@ inline float2 UpdateTC(inout p_bumped_new I, in float2 texCoord, Texture2D heigh
 	return texCoord;
 }
 
-uniform float test_exp_to_shaders_1;
-uniform float test_exp_to_shaders_2;
 
 inline void SloadNew(inout p_bumped_new I, inout IXRayMaterial M)
 {
@@ -266,8 +264,8 @@ inline void SloadNew(inout p_bumped_new I, inout IXRayMaterial M)
 
 #ifndef USE_PBR
 	#ifndef USE_LEGACY_LIGHT
-		M.Roughness = test_exp_to_shaders_1; //L_material.w * 0.50f + 0.25f;
-		M.Specular = M.Specular * M.Specular * test_exp_to_shaders_2;
+		M.Roughness = test_exp_to_shaders_1.x; //L_material.w * 0.50f + 0.25f;
+		M.Specular = M.Specular * M.Specular * test_exp_to_shaders_2.x;
 	#endif
 
 	#ifndef USE_TRUE_NORMAL_MAP

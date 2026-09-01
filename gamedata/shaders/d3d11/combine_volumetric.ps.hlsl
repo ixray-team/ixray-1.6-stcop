@@ -1,7 +1,6 @@
 #include "common.hlsli"
 Texture2D s_vollight;
 
-uniform float4 scaled_screen_res;
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

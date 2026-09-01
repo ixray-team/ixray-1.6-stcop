@@ -13,6 +13,9 @@
 #endif
 
 #include "FVF.h"
+#ifdef USE_DX11
+#include "../xrRenderDX10/dx10FixedConstants.h"
+#endif
 
 /// detailed statistic
 struct R_statistics_element
@@ -251,41 +254,80 @@ public:
 	ICF	ref_constant				get_c				(shared_str&	n)													{ if (ctable) return ctable->get(n); return nullptr;}
 
 	// constants - direct (fast)
-	ICF	void						set_c				(RHIShaderConstant* C_, const Fmatrix& A)									{ if (C_) constants.set(C_,A);					}
-	ICF	void						set_c				(RHIShaderConstant* C_, const Fvector4& A)									{ if (C_) constants.set(C_,A);					}
-	ICF	void						set_c				(RHIShaderConstant* C_, float x, float y, float z, float w)					{ if (C_) constants.set(C_,x,y,z,w);			}
-	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fmatrix& A)							{ if (C_) constants.seta(C_,e,A);				}
-	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fvector4& A)							{ if (C_) constants.seta(C_,e,A);				}
-	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, float x, float y, float z, float w)			{ if (C_) constants.seta(C_,e,x,y,z,w);			}
+	ICF	void						set_c				(RHIShaderConstant* C_, const Fmatrix& A)									{ if (C_) { constants.set(C_,A); 
 #ifdef USE_DX11
-	ICF	void						set_c				(RHIShaderConstant* C_, float A)											{ if (C_) constants.set(C_,A);					}
-	ICF	void						set_c				(RHIShaderConstant* C_, int A)												{ if (C_) constants.set(C_,A);					}
+		FixedConstants::OnSet(C_,A);
+#endif
+	} }
+	ICF	void						set_c				(RHIShaderConstant* C_, const Fvector4& A)									{ if (C_) { constants.set(C_,A);
+#ifdef USE_DX11
+		FixedConstants::OnSet(C_,A);
+#endif
+	} }
+	ICF	void						set_c				(RHIShaderConstant* C_, float x, float y, float z, float w)					{ if (C_) { Fvector4 v; v.set(x,y,z,w); constants.set(C_,x,y,z,w);
+#ifdef USE_DX11
+		FixedConstants::OnSet(C_,v);
+#endif
+	} }
+	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fmatrix& A)							{ if (C_) { constants.seta(C_,e,A);
+#ifdef USE_DX11
+		FixedConstants::OnSetA(C_,e,A);
+#endif
+	} }
+	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fvector4& A)							{ if (C_) { constants.seta(C_,e,A);
+#ifdef USE_DX11
+		FixedConstants::OnSetA(C_,e,A);
+#endif
+	} }
+	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, float x, float y, float z, float w)			{ if (C_) { Fvector4 v; v.set(x,y,z,w); constants.seta(C_,e,x,y,z,w);
+#ifdef USE_DX11
+		FixedConstants::OnSetA(C_,e,v);
+#endif
+	} }
+#ifdef USE_DX11
+	ICF	void						set_c				(RHIShaderConstant* C_, float A)											{ if (C_) { constants.set(C_,A);
+		FixedConstants::OnSet(C_,A);
+	} }
+	ICF	void						set_c				(RHIShaderConstant* C_, int A)												{ if (C_) { constants.set(C_,A);
+		FixedConstants::OnSet(C_,A);
+	} }
 #endif //USE_DX11
 
 
 	// constants - const char* (slow)
+#ifdef USE_DX11
+	ICF	void						set_c				(const char* n, const Fmatrix& A)										{ FixedConstants::OnSet(FixedConstants::NameHash(n),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
+	ICF	void						set_c				(const char* n, const Fvector4& A)										{ FixedConstants::OnSet(FixedConstants::NameHash(n),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
+	ICF	void						set_c				(const char* n, float x, float y, float z, float w)						{ Fvector4 v; v.set(x,y,z,w); FixedConstants::OnSet(FixedConstants::NameHash(n),v); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,x,y,z,w);	}
+	ICF	void						set_ca				(const char* n, u32 e, const Fmatrix& A)								{ FixedConstants::OnSetA(FixedConstants::NameHash(n),e,A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,A);		}
+	ICF	void						set_ca				(const char* n, u32 e, const Fvector4& A)								{ FixedConstants::OnSetA(FixedConstants::NameHash(n),e,A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,A);		}
+	ICF	void						set_ca				(const char* n, u32 e, float x, float y, float z, float w)				{ Fvector4 v; v.set(x,y,z,w); FixedConstants::OnSetA(FixedConstants::NameHash(n),e,v); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,x,y,z,w);}
+	ICF	void						set_c				(const char* n, float A)												{ FixedConstants::OnSet(FixedConstants::NameHash(n),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
+	ICF	void						set_c				(const char* n, int A)													{ FixedConstants::OnSet(FixedConstants::NameHash(n),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
+
+	ICF	void						set_c				(shared_str& n, const Fmatrix& A)									{ FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);			}
+	ICF	void						set_c				(shared_str& n, const Fvector4& A)									{ FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);			}
+	ICF	void						set_c				(shared_str& n, float x, float y, float z, float w)					{ Fvector4 v; v.set(x,y,z,w); FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),v); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,x,y,z,w);	}
+	ICF	void						set_ca				(shared_str& n, u32 e, const Fmatrix& A)							{ FixedConstants::OnSetA(FixedConstants::NameHash(n.c_str()),e,A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,A);		}
+	ICF	void						set_ca				(shared_str& n, u32 e, const Fvector4& A)							{ FixedConstants::OnSetA(FixedConstants::NameHash(n.c_str()),e,A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,A);		}
+	ICF	void						set_ca				(shared_str& n, u32 e, float x, float y, float z, float w)			{ Fvector4 v; v.set(x,y,z,w); FixedConstants::OnSetA(FixedConstants::NameHash(n.c_str()),e,v); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,x,y,z,w);}
+	ICF	void						set_c				(shared_str& n, float A)											{ FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
+	ICF	void						set_c				(shared_str& n, int A)												{ FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
+#else
 	ICF	void						set_c				(const char* n, const Fmatrix& A)										{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
 	ICF	void						set_c				(const char* n, const Fvector4& A)										{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
 	ICF	void						set_c				(const char* n, float x, float y, float z, float w)						{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,x,y,z,w);	}
 	ICF	void						set_ca				(const char* n, u32 e, const Fmatrix& A)									{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,A);		}
 	ICF	void						set_ca				(const char* n, u32 e, const Fvector4& A)								{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,A);		}
 	ICF	void						set_ca				(const char* n, u32 e, float x, float y, float z, float w)				{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,x,y,z,w);}
-#ifdef USE_DX11																															 
-	ICF	void						set_c				(const char* n, float A)													{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
-	ICF	void						set_c				(const char* n, int A)													{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
-#endif //USE_DX11
 
-	// constants - shared_str (average)
 	ICF	void						set_c				(shared_str& n, const Fmatrix& A)									{ if(!ctable) return; ref_constant c = ctable->get(n); set_c(c ? &*c : nullptr,A);			}
 	ICF	void						set_c				(shared_str& n, const Fvector4& A)									{ if(!ctable) return; ref_constant c = ctable->get(n); set_c(c ? &*c : nullptr,A);			}
 	ICF	void						set_c				(shared_str& n, float x, float y, float z, float w)					{ if(!ctable) return; ref_constant c = ctable->get(n); set_c(c ? &*c : nullptr,x,y,z,w);	}
 	ICF	void						set_ca				(shared_str& n, u32 e, const Fmatrix& A)							{ if(!ctable) return; ref_constant c = ctable->get(n); set_ca(c ? &*c : nullptr,e,A);		}
 	ICF	void						set_ca				(shared_str& n, u32 e, const Fvector4& A)							{ if(!ctable) return; ref_constant c = ctable->get(n); set_ca(c ? &*c : nullptr,e,A);		}
 	ICF	void						set_ca				(shared_str& n, u32 e, float x, float y, float z, float w)			{ if(!ctable) return; ref_constant c = ctable->get(n); set_ca(c ? &*c : nullptr,e,x,y,z,w);}
-#ifdef USE_DX11
-	ICF	void						set_c				(shared_str& n, float A)											{ if(!ctable) return; ref_constant c = ctable->get(n); set_c(c ? &*c : nullptr,A);		}
-	ICF	void						set_c				(shared_str& n, int A)												{ if(!ctable) return; ref_constant c = ctable->get(n); set_c(c ? &*c : nullptr,A);		}
-#endif //USE_DX11
+#endif
 
 	ICF	void						Render				(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
 	ICF	void						Render				(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC);

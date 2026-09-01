@@ -1,7 +1,5 @@
 #include "common.hlsli"
 
-uniform float4x4 m_invVP_old;
-uniform float4 scaled_screen_res;
 
 inline void get_3x3_depth(float2 texcoord, inout float d_3x3[9])
 {

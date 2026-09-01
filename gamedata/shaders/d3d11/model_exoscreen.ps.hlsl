@@ -6,7 +6,6 @@ struct 	v2p
 	float4	c0: COLOR0; // sun
 };
 
-uniform	float4 m_affects;
 
 float get_noise(float2 co)
 {
@@ -19,7 +18,6 @@ float4 main( v2p I ) : SV_Target
 {
 	float4	t_base 	= s_base.Sample( smp_base, I.tc0 );
 
-	// Шум при выбросе
 	float noise	= get_noise(I.tc0*timers.z) * m_affects.x * 2;		
 	t_base.r += noise;
 	t_base.g += noise;
