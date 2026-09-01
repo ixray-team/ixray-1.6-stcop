@@ -21,6 +21,8 @@ class CDemoPlay : public CEffectorCam, public IInputReceiver
 	CTimer stat_Timer_total;
 	u32 stat_StartFrame;
 	xr_vector<float> stat_table;
+	
+	bool redirect_input_to_level = true;
 
 	void stat_Start();
 	void stat_Stop();
@@ -32,4 +34,9 @@ public:
 	virtual ~CDemoPlay();
 	
 	virtual void IR_OnKeyboardPress(int dik) override;
+	virtual void IR_OnKeyboardHold(int dik) override;
+	virtual void IR_OnKeyboardRelease(int dik) override;
+	virtual void IR_OnMousePress(int btn) override;
+	virtual void IR_OnMouseMove(int x, int y) override;
+	virtual void IR_OnMouseRelease(int btn) override; 
 };
