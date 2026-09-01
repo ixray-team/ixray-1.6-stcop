@@ -1,4 +1,3 @@
-uniform float4 screen_res;
 uniform Texture2D s_occ;
 
 float ssao_blur_ps(float2 centerTC)

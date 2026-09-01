@@ -1,6 +1,5 @@
 #include "common.hlsli"
 
-uniform float4 screen_res;
 
 // vertex output
 struct v2p_L

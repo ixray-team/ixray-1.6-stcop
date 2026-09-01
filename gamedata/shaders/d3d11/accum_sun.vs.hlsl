@@ -1,6 +1,5 @@
 #include "common.hlsli"
 
-uniform float4x4 m_texgen;
 
 // Vertex
 v2p_volume main(float4 P : POSITION)

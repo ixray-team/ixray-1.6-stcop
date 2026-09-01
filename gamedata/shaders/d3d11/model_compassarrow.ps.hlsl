@@ -7,9 +7,6 @@ struct 	v2p
   	float4	c0:			COLOR0;		// sun.(fog*fog)
 };
 
-uniform float4	m_affects;
-uniform	float4 	m_timearrow2;
-
 float4 main( v2p I ) : SV_Target
 {
 	float2 coords = I.tc0;

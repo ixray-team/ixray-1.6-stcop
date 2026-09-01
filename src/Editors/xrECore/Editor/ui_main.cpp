@@ -521,8 +521,6 @@ void TUI::Redraw()
 			EDevice->Statistic->RenderDUMP_RT.End();
 			EDevice->Statistic->Show();
 
-			g_FontManager->Render();
-
 			EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 			EDevice->seqRender.Process<&pureRender::OnRender>();
 
@@ -530,6 +528,8 @@ void TUI::Redraw()
 			{
 				g_pGamePersistent->OnRenderPPUI_main();
 			}
+
+			g_FontManager->Render();
 
 			RCache.set_RT(0, 1);
 			RCache.set_RT(0, 2);

@@ -33,7 +33,7 @@
 	// O.PointZ = float4(M.Point.xyz, MaterialID);
 // #endif
 
-    // float4 Light = float4(L_sun_color, 1.0f) * M.Sun * plight_infinity(MaterialID, M.Point, M.Normal, L_sun_dir_e);
+    // float4 Light = float4(L_sun_color.xyz, 1.0f) * M.Sun * plight_infinity(MaterialID, M.Point, M.Normal, L_sun_dir_e.xyz);
     // float3 Diffuse, Specular;
 
     // hmodel(Diffuse, Specular, MaterialID, M.Hemi, Gloss, M.Point, M.Normal);
@@ -130,7 +130,7 @@ void main(p_bumped_new I, out f_editor_gbuffer O)
 	O.PointZ = float4(M.Point.xyz, MaterialID);
 #endif
 
-    float4 Light = float4(L_sun_color, 1.0f) * M.Sun * plight_infinity(MaterialID, M.Point, M.Normal, L_sun_dir_e);
+    float4 Light = float4(L_sun_color.xyz, 1.0f) * M.Sun * plight_infinity(MaterialID, M.Point, M.Normal, L_sun_dir_e.xyz);
     float3 Diffuse, Specular;
 
     hmodel(Diffuse, Specular, MaterialID, M.Hemi, Gloss, M.Point, M.Normal);

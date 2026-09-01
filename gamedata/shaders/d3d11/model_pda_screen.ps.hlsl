@@ -1,6 +1,5 @@
 #include "common.hlsli"
 
-uniform	float4 		m_affects;
 
 struct 	v2p
 {

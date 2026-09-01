@@ -1,15 +1,7 @@
 #include "common.hlsli"
 
-cbuffer DetailConstants
-{
-    float4 consts;
-
-    float4 wave;
-    float4 wave_old;
-
-    float4 dir2D;
-    float4 dir2D_old;
-};
+#define dir2D wind
+#define dir2D_old wind_old
 
 struct InstanceData
 {

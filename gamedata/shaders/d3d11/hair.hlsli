@@ -11,8 +11,6 @@
 
 #include "common.hlsli"
 
-uniform float3x4 m_invW;
-float4 env_wind;
 Texture2D s_hair;
 
 #ifndef DISABLE_MOTION_VECTORS

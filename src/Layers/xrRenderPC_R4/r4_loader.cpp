@@ -36,6 +36,9 @@ void CRender::level_Load(IReader* fs)
 	dxRenderDeviceRender::Instance().Resources->DeferredLoad(ps_r__common_flags.test(RFLAG_DD_TEX_LOAD));
 	IReader*						chunk;
 
+	o.dx11_disable_motion_vectors = !NeedMotionVectors() || !!EngineExternal().ShadersOptions.contains(xr_string("DISABLE_MOTION_VECTORS"));
+	clearAllShaderOptions();
+
 	// Shaders
 	g_pGamePersistent->SetLoadStageTitle("st_loading_shaders");
 	g_pGamePersistent->LoadTitle		();

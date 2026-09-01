@@ -118,6 +118,7 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 	if (C.bEditor)
 	{
 		uber_deffer(C, false, "deffer_detail", "deffer_base", true, 0, true);
+		C.r_CullMode(D3DCULL_NONE);
 		C.r_End();
 		return;
 	}
