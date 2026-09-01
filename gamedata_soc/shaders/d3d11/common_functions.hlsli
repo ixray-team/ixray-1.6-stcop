@@ -313,23 +313,9 @@ float4 combine_bloom(float3 low, float4 high)
     return float4(low.xyz + high.xyz * high.w, 1.f);
 }
 
-//#define NEW_FOGGIN
-#ifdef NEW_FOGGIN
-    #define F_base 1.f
-    #define F_dens 0.002f
-#endif
-
 float calc_fogging(float3 pos)
 {
-    #ifndef NEW_FOGGIN
-        return saturate(length(pos - eye_position) * fog_params.w + fog_params.x);
-    #else // NEW_FOGGIN
-        //float a = 1.0f;
-        //float b = 0.002f;
-        float denom = F_base - exp(-F_dens * (fog_params.z - fog_params.y));
-        float dist = length(pos - eye_position);
-        return saturate((F_base - exp(-F_dens * (dist - fog_params.y))) / denom);
-    #endif
+	return saturate(length(pos - eye_position) * fog_params.w + fog_params.x);
 }
 
 float2 unpack_tc_base(float2 tc, float du, float dv)
