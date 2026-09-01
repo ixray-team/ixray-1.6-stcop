@@ -73,9 +73,79 @@ CDemoPlay::~CDemoPlay()
 
 void CDemoPlay::IR_OnKeyboardPress(int dik)
 {
+	if (dik == SDL_SCANCODE_0)
+	{
+		redirect_input_to_level = !redirect_input_to_level;
+	}
+	
 	if (dik == SDL_SCANCODE_ESCAPE)
 	{
 		fLifeTime = -1;
+	}
+	
+	if (redirect_input_to_level)
+	{
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_OnKeyboardPress(dik);
+			return;
+		}
+	}
+	
+}
+
+void CDemoPlay::IR_OnKeyboardHold(int dik)
+{
+	if (redirect_input_to_level)
+	{
+		g_pGameLevel->IR_OnKeyboardHold(dik);
+	}
+	
+	if (redirect_input_to_level)
+	{
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_OnKeyboardHold(dik);
+		}
+		return;
+	}
+}
+
+void CDemoPlay::IR_OnKeyboardRelease(int dik)
+{
+	if (redirect_input_to_level)
+	{
+		g_pGameLevel->IR_OnKeyboardHold(dik);
+	}
+}
+
+void CDemoPlay::IR_OnMousePress(int btn)
+{
+	if (redirect_input_to_level)
+	{
+		g_pGameLevel->IR_OnMousePress(btn);
+		return;
+	}
+}
+
+void CDemoPlay::IR_OnMouseMove(int x, int y)
+{
+	if (redirect_input_to_level)
+	{
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_OnMouseMove(x, y);
+		}
+		return;
+	}
+}
+
+void CDemoPlay::IR_OnMouseRelease(int btn)
+{
+	if (redirect_input_to_level)
+	{
+		g_pGameLevel->IR_OnMouseRelease(btn);
+		return;
 	}
 }
 
