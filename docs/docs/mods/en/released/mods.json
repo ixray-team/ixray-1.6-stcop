@@ -8,6 +8,14 @@
   },
   "mods": [
     {
+      "id": "chronicles_of_pripyat",
+      "title": "Chronicles of Pripyat",
+      "description": "A gameplay-narrative project. Free exploration of Pripyat without a mandatory storyline, notes about the city's residents, stashes, vehicles, PDA and other mechanics.",
+      "author": "Kord_in",
+      "link": "https://ap-pro.ru/forums/topic/15193-chronicles-of-pripyat/",
+      "image": "https://github.com/user-attachments/assets/227bfa1d-fe52-4465-9092-7513cd6053bd"
+    },
+    {
       "id": "gran_myortvoe_ozero",
       "title": "Gran: Dead Lake",
       "description": "A short mod directly tied to the 'Gran' storyline. The protagonist heads to the outskirts of the Yantar lake to find her brother, who went into the Zone several years ago. About 1.5–2 hours of playtime, it expands and explains the events of the first episode. Two endings: True and False.",
