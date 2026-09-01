@@ -26,11 +26,6 @@ build*/
 # Common logs
 *.log
 
-# Migrating report files
-_UpgradeReport_Files/
-UpgradeLog*.XML
-UpgradeLog*.htm
-
 # C++ Builder backups
 *.~*
 
@@ -40,7 +35,7 @@ UpgradeLog*.htm
 # X-Ray user files
 _appdata_/
 _appdata_ixray_/
-ixr_addons/
+ixr_addons*/
 fs_*.ltx
 fsgame_*.ltx
 !fsgame_coc.ltx
@@ -59,11 +54,6 @@ bin/
 build/
 publish/
 
-# Dependencies
-sdk/3d_sdk/
-dep/
-packages/
-
 # Temporary files
 temp/
 gamedata*_origin/
@@ -74,6 +64,7 @@ imgui.ini
 git_version.h
 changelog.txt
 axr_options.ltx
+atmosfear_options.ltx
 
 # CLion cache
 cmake-build*/
@@ -81,3 +72,5 @@ cmake-build*/
 # Optick
 *.opt
 linux/sal.h
+*.TMP
+util/wrap_config.json

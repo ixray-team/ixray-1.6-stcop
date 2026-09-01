@@ -12,6 +12,119 @@
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 1.3.5 (September 2026)
+
+### Common
+
+- Added alternative platform packaging during release (@Drombeys)
+- Added publish build for Clear Sky, Shadow of Chernobyl and Call of Chernobyl to GitHub Actions (@Drombeys)
+- Fixed build on newest Visual Studio 2026 version (@wh1t3lord, @Drombeys)
+- Fixed GitHub Actions workflows (@Drombeys, @mnelenpridumivat)
+- Improved editor packaging for releases (@Drombeys)
+- Reworked mod cards in website (@GladiatorVS)
+- Updated root documents (@Drombeys)
+- Updated website (@Drombeys, @ForserX, @FFx0001, @mrGlock5 (Desert Cliff), @LostAlphaRus, @kola2451)
+
+### Engine
+
+- Added existence check for ShellHolder in `CScriptGameObject::set_const_force` method (@Drombeys)
+- Added logging for missing path (@Drombeys)
+- Added object existence checks to script exports (@ForserX)
+- Added safety check to `CStalkerMovementRestrictor::weight` method (@St4lker0k765)
+- Fixed crash after multiplayer game exit (@St4lker0k765)
+- Fixed crash during object destruction with RayPick (@ForserX)
+- Fixed crash when launching with `-nosound` flag (@Drombeys)
+- Fixed save crash when dynamic space restrictor is deleted instead of deactivated (@mnelenpridumivat)
+- Improved script exports for `Five Nights at Sidorovich's` mod (@ForserX)
+- Increased `GAMEMTL_STEPSOUND_SUBITEM_COUNT` limits (@Shtrecker)
+- Increased script string limit beyond 256 characters (@mnelenpridumivat)
+- Made `CPHJoint` creation and destruction thread-safe (@ForserX)
+- Prevented returning nullptr to scripts (@Drombeys)
+
+### Gameplay
+
+- Added `fltPlayerHealthRegeneration` expression field (@St4lker0k765)
+- Added `sign_inverse` flag for booster information (@St4lker0k765)
+- Added multiplayer `Capture points` mode (@VodkaNET)
+- Fixed aim method (@Shtrecker)
+- Fixed aim moving animations (@Shtrecker)
+- Fixed aim with active detector (@Shtrecker)
+- Fixed ammo bone visibility (@Shtrecker)
+- Fixed booster effectiveness for radiation, psi, and chemical protection (@Shtrecker)
+- Fixed crosshair hiding (@Shtrecker)
+- Fixed detector in weapon action (@Shtrecker)
+- Fixed empty click (@Shtrecker)
+- Fixed empty link handling (@Shtrecker)
+- Fixed firemode action (@Shtrecker)
+- Fixed firemode iteration (@Shtrecker)
+- Fixed game input handling in ImGui mode (@St4lker0k765)
+- Fixed harmful bandage effects (@St4lker0k765)
+- Fixed hud sound cleanup (@ForserX)
+- Fixed item disassembly (@Shtrecker)
+- Fixed mag shot sound (@Shtrecker)
+- Fixed misfire animation in `CWeaponBM16` (@Shtrecker)
+- Fixed NPC reload action (@Shtrecker)
+- Fixed original crash related to mutant pathfinding (@Drombeys, @vertver)
+- Fixed RPG rocket iterator (@Drombeys)
+- Fixed scopes hands positions (@Shtrecker)
+- Fixed slot switching after drop weapon (@Shtrecker)
+- Fixed sound playback for random animations (@Shtrecker)
+- Fixed spot border visibility (@St4lker0k765)
+- Fixed stationary machine gun crashes (@St4lker0k765)
+- Fixed torch attachment after equipment (@St4lker0k765)
+- Fixed typos in inertia initialization (@St4lker0k765)
+- Fixed unmisfire motion mark (@Shtrecker)
+- Fixed upgrade state handling (@St4lker0k765)
+- Fixed weapon camera animations (@Shtrecker)
+- Fixed weapon quick kick (@Shtrecker)
+- Improved contact grenade explosion (@Shtrecker)
+- Played stereo sounds in world space (@Shtrecker)
+
+### Graphics
+
+- Fixed dynamic object disintegration in editors (@ForserX)
+- Fixed GTAO implementation (@LVutner)
+- Fixed original random crash related to skybox replacement (@ForserX)
+- Fixed striped shadows from light sources (@v2v3v4)
+- Reduced maximum grass draw distance (@Drombeys)
+
+### Resources
+
+- Adapted UI for Call of Chernobyl (@St4lker0k765)
+- Added `log` function in `_g` script in Call of Chernobyl (@Drombeys)
+- Added Call of Chernobyl fsgame configuration (@St4lker0k765)
+- Added localizable strings for saves (@St4lker0k765)
+- Added missing `ffx_path_utils` script (@Drombeys, @FFx0001)
+- Added missing textures  (@Drombeys)
+- Added resources for Call of Chernobyl 1.4.22 (@Drombeys)
+- Added resources for Shadow of Chernobyl (@Drombeys)
+- Deleted duplicates in localization files (@Drombeys)
+- Deleted unused files from gamedata (@Drombeys)
+- Enabled automatically registering new XML files in Shadow of Chernobyl (@St4lker0k765)
+- Fixed ammo icon size on widescreen (@St4lker0k765)
+- Fixed broken comments in Shadow of Chernobyl resources (@St4lker0k765)
+- Fixed broken weapon animations in Call of Chernobyl (@St4lker0k765)
+- Fixed broken XMLs in Call of Chernobyl (@St4lker0k765)
+- Fixed broken zombied models in Call of Chernobyl (@Drombeys,@St4lker0k765)
+- Fixed crash on loading save in Shadow of Chernobyl (@Drombeys, @morrazzzz)
+- Fixed duplicates in localization (@Drombeys)
+- Fixed incorrect syntax and strings in configs (@Drombeys, @Hrusteckiy, @vadvalskiy)
+- Fixed invalid cast in `death_manager.script` (@St4lker0k765)
+- Fixed maximum squad popularity in smart terrains (@Drombeys)
+- Fixed multiple script errors in Call of Chernobyl (@Drombeys)
+- Fixed original interface bugs in Shadow of Chernobyl (@Hrusteckiy)
+- Fixed original mutant spawn bug at stalker bases (@Drombeys, @Hozar_2002)
+- Fixed UI issues and adapt for widescreen in Shadow of Chernobyl (@St4lker0k765)
+- Renamed config folder in Shadow of Chernobyl (@Drombeys)
+- Replaced C-style comments with Lua-style comments in scripts and shaders (@Drombeys, @vadvalskiy)
+- Synchronized Call of Chernobyl with base resources (@Drombeys)
+- Synchronized shaders (@Drombeys)
+- Unlocked unique content in Shadow of Chernobyl (@St4lker0k765)
+
+### Toolchain
+
+- Fixed typo in editors choose form (@TheParaziT)
+
 ## Release 1.3.4 (April 2026)
 
 ### Common
