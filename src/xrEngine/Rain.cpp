@@ -38,6 +38,7 @@ CEffect_Rain::CEffect_Rain()
 
 CEffect_Rain::~CEffect_Rain()
 {
+	rainCollideObjects.clear();
 	snd_Ambient.destroy();
 	snd_RoofDroplets.destroy();
 	snd_RoofDropletsHard.destroy();
@@ -46,6 +47,20 @@ CEffect_Rain::~CEffect_Rain()
 	// Cleanup
 	p_destroy();
 	::Render->ros_destroy(Rain_ROS);
+}
+
+void CEffect_Rain::AddRainCollidableObject(CObject* obj)
+{
+	rainCollideObjects.push_back(obj);
+}
+
+void CEffect_Rain::RemoveRainCollidableObject(CObject* obj)
+{
+	auto iter = std::find(rainCollideObjects.begin(), rainCollideObjects.end(), obj);
+	if (iter != rainCollideObjects.end())
+	{
+		rainCollideObjects.erase(iter);
+	}
 }
 
 ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
@@ -68,17 +83,35 @@ ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_t
 			return false;
 	}
 
-	 u32 mask = (u32)tgt;
-	mask |= (u32)collide::rq_target::rqtShape;
-
-	bool bRes;
+	float rangeFirstTrace = 0.f;
+	bool bRes = false;
 	collide::rq_result RQ;
-	bRes = !!g_pGameLevel->ObjectSpace.RayPick(s, d, range, collide::rq_target(mask), RQ, g_pGameLevel->CurrentViewEntity());
-	if (bRes) range = RQ.range;
 
-	if (range > 0 && RQ.O != nullptr)
+	bRes = !!g_pGameLevel->ObjectSpace.RayPick(s, d, range, tgt, RQ, g_pGameLevel->CurrentViewEntity());
+	if (bRes)
 	{
-		RQ.O->OnRainCollide(Fvector().mad(s, d, range));
+		range = RQ.range;
+		rangeFirstTrace = RQ.range;
+
+		if (g_pGamePersistent->Environment().eff_Rain->rainCollideObjects.empty())
+		{
+			return bRes;
+		}
+
+		Fvector scanPosition;
+		Fvector contactPosition;
+
+		for (CObject* obj : g_pGamePersistent->Environment().eff_Rain->rainCollideObjects)
+		{
+			scanPosition.mad(s, d, rangeFirstTrace - (obj->Radius() / 3));
+
+			if (obj->XFORM().c.distance_to(scanPosition) <= obj->Radius())
+			{
+				contactPosition.mad(obj->XFORM().c, scanPosition.sub(obj->XFORM().c).normalize(), obj->Radius());
+				obj->OnRainCollide(contactPosition);
+				break;
+			}
+		}
 	}
 
 	return bRes;

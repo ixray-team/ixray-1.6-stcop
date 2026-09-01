@@ -45,6 +45,8 @@ public:
 	};
 	FactoryPtr<IRainRender>	m_pRender;
 
+	xr_vector<CObject*> rainCollideObjects;
+
 private:
 
 	xr_vector<Item>					items;
@@ -65,6 +67,8 @@ private:
 	float m_rainVolume = 0.0f;
 public:
 	// Utilities
+	void AddRainCollidableObject(CObject* obj);
+	void RemoveRainCollidableObject(CObject* obj);
 	void							p_create		();
 	void							p_destroy		();
 

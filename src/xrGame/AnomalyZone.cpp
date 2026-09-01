@@ -24,6 +24,7 @@
 #include "AnomalyRainCollide.h"
 #include "AnomalyGravity.h"
 #include "AnomalyRandomHudVertexParticles.h"
+#include "..\xrEngine\Rain.h"
 
 #define WIND_RADIUS (4*Radius())	//расстояние до актера, когда появляется ветер 
 #define FASTMODE_DISTANCE (50.f)	//distance to camera from sphere, when zone switches to fast update sequence
@@ -366,6 +367,11 @@ void CAnomalyZone::Load(const char* section)
 	if (TAnomalyRainCollide* AnomalyRainCollide = GetComponent<TAnomalyRainCollide>())
 	{
 		AnomalyRainCollide->Load(section);
+		if (AnomalyRainCollide->IsUseRainCollide())
+		{
+			SetRainCollide(true);
+			g_pGamePersistent->Environment().eff_Rain->AddRainCollidableObject(dcast_CObject());
+		}
 	}
 
 	if (TAnomalyGravity* AnomalyGravity = GetComponent<TAnomalyGravity>())
@@ -489,12 +495,11 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 
 void CAnomalyZone::net_Destroy() 
 {
+	g_pGamePersistent->Environment().eff_Rain->RemoveRainCollidableObject(this);
+
 	StopIdleParticles		();
-
 	inherited::net_Destroy	();
-
 	StopWind				();
-
 	m_pLight.destroy		();
 	m_pIdleLight.destroy	();
 
