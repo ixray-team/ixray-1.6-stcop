@@ -58,6 +58,8 @@ class CDemoRecord :
 	float m_fSpeed1;
 	float m_fSpeed2;
 	float m_fSpeed3;
+	
+	float stored_fov;
 
 	void MakeCubeMapFace(Fvector& D, Fvector& N);
 	void MakeLevelMapProcess();

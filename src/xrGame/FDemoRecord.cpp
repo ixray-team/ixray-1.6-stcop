@@ -125,6 +125,8 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 
 	HUD().world_prims.hud_mode = false;
 
+	stored_fov = g_base_fov;
+	
 	bone_id = BI_NONE;
 	bone_holder_kinematics = nullptr;
 
@@ -179,6 +181,7 @@ CDemoRecord::~CDemoRecord()
 		FS.w_close(file);
 	}
 
+	g_base_fov = stored_fov;
 	g_bDisableRedText = stored_red_text;
 }
 
@@ -461,6 +464,24 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		}
 
 		dr_disable_time_factor_influence ? frame_pos_delta.mul(Device.fRealTimeDelta) : frame_pos_delta.mul(Device.fTimeDelta);
+		
+		float angle_per_second = CCC_Float::FastCommand("angle_per_second", 1.f);
+		float cam_speed = frame_pos_delta.magnitude() > EPS_S ? frame_pos_delta.magnitude() : 1.f;
+		
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_R))
+		{
+			float target_fov = g_base_fov * angle_per_second * Device.fTimeDelta;
+			g_base_fov += (target_fov - g_base_fov) * dr_cam_inert * Device.fTimeDelta;
+			g_base_fov = std::clamp(g_base_fov, 5.f, 179.f);
+		}
+	
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_T))
+		{
+			float target_fov = g_base_fov * angle_per_second * Device.fTimeDelta;
+			g_base_fov -= (target_fov - g_base_fov) * dr_cam_inert * Device.fTimeDelta;
+			g_base_fov = std::clamp(g_base_fov, 5.f, 179.f);
+		}
+
 		frame_hpb_delta.mul(1.f);
 
 		if (g_position.set_position)
@@ -629,10 +650,28 @@ void CDemoRecord::MovePosition(Fvector d)
 
 void CDemoRecord::IR_OnKeyboardPress(int dik)
 {
-	if (dik == SDL_SCANCODE_Z && view_from_bone_mode)
+	if (view_from_bone_mode)
 	{
-		hpb_view_from_bone_offset.set(zero_vel);
-		p_cam_pos_view_from_bone_offset.set(zero_vel);
+		switch (dik)
+		{
+			case SDL_SCANCODE_Z:
+			{
+				hpb_view_from_bone_offset.set(zero_vel);
+				p_cam_pos_view_from_bone_offset.set(zero_vel);
+			}
+			break;
+		}
+	}
+	else
+	{
+		switch (dik)
+		{
+			case SDL_SCANCODE_Z:
+			{
+				g_base_fov = stored_fov;
+			}
+			break;
+		}
 	}
 
 	if (dik == SDL_SCANCODE_U && !lap_lock)
@@ -800,10 +839,11 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 		return;
 	}
 
+	float dt = dr_disable_time_factor_influence ? Device.fRealTimeDelta : Device.fTimeDelta;
+	float roll_angle_per_second = CCC_Float::FastCommand("roll_angle_per_second", 1.f);
+
 	if (view_from_bone_mode)
 	{
-		float dt = dr_disable_time_factor_influence ? Device.fRealTimeDelta : Device.fTimeDelta;
-		
 		switch (dik)
 		{
 			case SDL_SCANCODE_W:
@@ -828,6 +868,19 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 
 			case SDL_SCANCODE_E:
 				hpb_view_from_bone_offset.z += 1.f * dt;
+				break;
+		}
+	}
+	else
+	{
+		switch (dik)
+		{
+			case SDL_SCANCODE_Q:
+				frame_hpb_delta.z -= roll_angle_per_second* dt;
+				break;
+
+			case SDL_SCANCODE_E:
+				frame_hpb_delta.z += roll_angle_per_second * dt;
 				break;
 		}
 	}
