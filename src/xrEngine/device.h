@@ -47,29 +47,6 @@ public:
 	virtual				bool				IsEditorMode() { return false; }
 };
 
-struct SWristwatchHudData
-{
-	u64 displayGameTime = 0;
-	u32 countdownSeconds = 0;
-	u8 displayType = 2;
-	u8 surgeMode = 0;
-	float radiationGlow = 0.0f;
-	float motionIconLuminosity = 0.0f;
-	float glitchStrength = 0.0f;
-	bool isActive = false;
-	bool showAnalogHands = true;
-	bool showLcd = false;
-	bool fontReady = false;
-	Fvector4 lcdDigits = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 lcdLayout = { 0.5f, 0.5f, 0.128f, 0.078f };
-	Fvector4 fontGlyph0 = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 fontGlyph1 = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 fontGlyph2 = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 fontGlyph3 = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 fontGlyphColon = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 fontGlyphEight = { 0.0f, 0.0f, 0.0f, 0.0f };
-};
-
 class ENGINE_API CRenderDeviceData
 {
 
@@ -98,8 +75,6 @@ public:
 		float ActorOutfitCondition = -1.0f;
 		float ActorWeaponCondition = -1.0f;
 		float ActorWeaponLoading = 1.0f;
-
-		SWristwatchHudData wristwatch;
 	} hudViewportData;
 
 	// Engine flow-control
