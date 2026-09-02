@@ -59,11 +59,6 @@ CWeapon::~CWeapon()
 	delete_data(m_scopes);
 }
 
-void CWeapon::Hit					(SHit* pHDS)
-{
-	inherited::Hit(pHDS);
-}
-
 void CWeapon::UpdateXForm	()
 {
 	if (!H_Parent())
@@ -90,7 +85,7 @@ void CWeapon::UpdateXForm	()
 	} 
 
 	const CInventoryOwner* parent = go->cast_inventory_owner(); //smart_cast<const CInventoryOwner*>(go);
-	if (!parent || (parent && parent->use_simplified_visual()))
+	if (!parent || parent->use_simplified_visual())
 		return;
 
 	if (!m_can_be_strapped_rifle) {
@@ -745,7 +740,7 @@ void CWeapon::Load		(const char* section)
 	m_mags_capacity.clear();
 	for (int i = 0; i < m_ammoTypes.size(); i++)
 	{
-		static shared_str capacity_value;
+		shared_str capacity_value;
 		capacity_value.printf("ammo_mag_size_for_type_%d", i);
 		if (pSettings->line_exist(section, *capacity_value))
 		{
@@ -763,7 +758,7 @@ void CWeapon::Load		(const char* section)
 	}
 	else for (int i = 0; i < m_ammoTypes.size(); i++)
 	{
-		static shared_str params_section;
+		shared_str params_section;
 		params_section.printf("ammo_params_section_%d", i);
 		if (pSettings->line_exist(ReachInAllSections(*params_section), *params_section))
 		{
@@ -1369,7 +1364,7 @@ void CWeapon::UpdateCL		()
 	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
 
 	bool need_update_hud = false;
-	bool isHudItemData = !!GetHUDmode() && HudItemData() != nullptr;
+	bool isHudItemData = GetHUDmode() && HudItemData() != nullptr;
 	
 	if (isHudItemData && !bUpdateHUDBonesVisibility)
 	{
@@ -3967,14 +3962,13 @@ bool CWeapon::MovingAnimAllowedNow()
 
 bool CWeapon::IsHudModeNow()
 {
-	return !!GetHUDmode() && HudItemData() && !HudItemData()->m_model_combined;
+	return GetHUDmode() && HudItemData() && !HudItemData()->m_model_combined;
 }
 
 void CWeapon::ZoomInc()
 {
 	float dt = m_lens_zoom_params.delta;
 	float oldpos = m_lens_zoom_params.target_position;
-	bool force_zoom_sound = false;
 
 	m_lens_zoom_params.target_position += dt;
 
@@ -4009,7 +4003,6 @@ void CWeapon::ZoomDec()
 {
 	float dt = m_lens_zoom_params.delta;
 	float oldpos = m_lens_zoom_params.target_position;
-	bool force_zoom_sound = false;
 
 	m_lens_zoom_params.target_position -= dt;
 

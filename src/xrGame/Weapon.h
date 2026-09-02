@@ -92,8 +92,6 @@ public:
 
 	virtual void			OnMoveToRuck		(const SInvItemPlace& prev) override;
 
-	virtual	void			Hit					(SHit* pHDS);
-
 	virtual void			reinit				();
 	virtual void			reload				(const char* section);
 	virtual void			create_physic_shell	();

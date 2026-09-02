@@ -1583,7 +1583,7 @@ void CWeaponMagazined::SelectShotSound()
 		}
 	}
 
-	m_layered_sounds.PlaySound(m_sSndShotCurrent.c_str(), get_LastFP(), H_Parent(), !!GetHUDmode(), false, true);
+	m_layered_sounds.PlaySound(m_sSndShotCurrent.c_str(), get_LastFP(), H_Parent(), GetHUDmode(), false, true);
 
 	if (m_eSoundsFlags2.test(ESoundsFlags2::sf_mag_shot))
 	{
@@ -1604,7 +1604,7 @@ void CWeaponMagazined::SelectShotSound()
 	{
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_jam) && IsMisfire())
 		{
-			m_layered_sounds.PlaySound("sndJam", get_LastFP(), H_Parent(), !!GetHUDmode(), false);
+			m_layered_sounds.PlaySound("sndJam", get_LastFP(), H_Parent(), GetHUDmode(), false);
 		}
 		else
 		{
@@ -1669,7 +1669,7 @@ void CWeaponMagazined::OnShotJammed()
 {
 	if (m_eSoundsFlags.test(ESoundsFlags::sf_jam))
 	{
-		m_layered_sounds.PlaySound("sndJam", get_LastFP(), H_Parent(), !!GetHUDmode(), false);
+		m_layered_sounds.PlaySound("sndJam", get_LastFP(), H_Parent(), GetHUDmode(), false);
 	}
 
 	PlayAnimShoot();
@@ -2750,8 +2750,6 @@ void CWeaponMagazined::InitAddons()
 			m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
 			m_lens_zoom_params.need_lens_frame = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "need_lens_frame", false);
 
-			m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
-			m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
 			m_lens_zoom_params.speed = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_speed", 0.0f);
 			m_lens_zoom_params.gyro_period = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_gyro_sound_period", 0.0f);
 
