@@ -19,7 +19,7 @@ bool stored_weapon;
 bool stored_cross;
 bool stored_red_text;
 
-CDemoRecord* xrDemoRecord = nullptr;
+CDemoRecord* demo_record = nullptr;
 CDemoRecord::force_position CDemoRecord::g_position = {false, {0, 0, 0}};
 
 float dr_cam_inert = 0.f;
@@ -121,12 +121,14 @@ static Fvector cmDir[6] = {{1.f, 0.f, 0.f}, {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {
 
 CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDemo, life_time)
 {
+	demo_record = this;
+
 	Device.seqRender.Add(this, REG_PRIORITY_LOW);
 
 	HUD().world_prims.hud_mode = false;
 
 	stored_fov = g_base_fov;
-	
+
 	bone_id = BI_NONE;
 	bone_holder_kinematics = nullptr;
 
@@ -134,7 +136,7 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 	g_bDisableRedText = true;
 
 	m_iLMScreenshotFragment = -1;
-	m_b_redirect_input_to_level = false;
+	redirect_input_to_level = false;
 
 	Platform::Unlink(name);
 	file = FS.w_open(name);
@@ -144,25 +146,30 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 		g_position.set_position = false;
 
 		IR_Capture();
-		ParseActorCam();
-
-		Velocity.set(0.f, 0.f, 0.f);
+		parse_actor_cam();
 
 		frame_pos_delta.set(0.f, 0.f, 0.f);
 		frame_hpb_delta.set(0.f, 0.f, 0.f);
 		m_bMakeCubeMap = false;
 		m_bMakeScreenshot = false;
 		m_bMakeLevelMap = false;
-		CameraTransformFactor = 3.f;
-		p_lap.set(0.f, 0.f, 0.f);
-		lap_lock = false;
+		camera_transform_speed = 3.f;
+		look_at_point.set(0.f, 0.f, 0.f);
+		look_at_point_mode = false;
 
 		m_fSpeed0 = pSettings->r_float("demo_record", "speed0");
 		m_fSpeed1 = pSettings->r_float("demo_record", "speed1");
 		m_fSpeed2 = pSettings->r_float("demo_record", "speed2");
 		m_fSpeed3 = pSettings->r_float("demo_record", "speed3");
 
-		NewInputSchema = EngineExternal()[EEngineExternalGame::NewDemoRecordInputSchema];
+		stored_camera_transform_speed = camera_transform_speed;
+		stored_fSpeed0 = m_fSpeed0;
+		stored_fSpeed1 = m_fSpeed1;
+		stored_fSpeed2 = m_fSpeed2;
+		stored_fSpeed3 = m_fSpeed3;
+		stored_fov_scale_speed = fov_scale_speed;
+
+		new_input_schema = EngineExternal()[EEngineExternalGame::NewDemoRecordInputSchema];
 	}
 	else
 	{
@@ -172,6 +179,7 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 
 CDemoRecord::~CDemoRecord()
 {
+	demo_record = nullptr;
 	Device.seqRender.Remove(this);
 
 	if (file)
@@ -184,7 +192,7 @@ CDemoRecord::~CDemoRecord()
 	g_bDisableRedText = stored_red_text;
 }
 
-void CDemoRecord::MakeScreenshotFace()
+void CDemoRecord::make_screenshot_face()
 {
 	switch (Stage)
 	{
@@ -201,7 +209,7 @@ void CDemoRecord::MakeScreenshotFace()
 	Stage++;
 }
 
-void CDemoRecord::MakeLevelMapProcess()
+void CDemoRecord::make_level_map_process()
 {
 	static float psOldVidMode[2];
 
@@ -277,7 +285,7 @@ void CDemoRecord::MakeLevelMapProcess()
 	Stage++;
 }
 
-void CDemoRecord::MakeCubeMapFace(Fvector& D, Fvector& N)
+void CDemoRecord::make_cube_map_face(Fvector& D, Fvector& N)
 {
 	string32 buf;
 	switch (Stage)
@@ -299,8 +307,8 @@ void CDemoRecord::MakeCubeMapFace(Fvector& D, Fvector& N)
 			break;
 		case 6:
 			Render->Screenshot(IRender_interface::SM_FOR_CUBEMAP, _itoa(Stage, buf, 10));
-			N.set(Camera.j);
-			D.set(Camera.k);
+			N.set(camera.j);
+			D.set(camera.k);
 			psHUD_Flags.assign(s_hud_flag);
 			m_bMakeCubeMap = false;
 			break;
@@ -317,9 +325,9 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			fLifeTime = -1;
 		}
 	}
-	
+
 	dt = dr_disable_time_factor_influence ? Device.fRealTimeDelta : Device.fTimeDelta;
-	
+
 	info.dont_apply = false;
 
 	if (nullptr == file)
@@ -329,26 +337,26 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 
 	if (m_bMakeScreenshot)
 	{
-		MakeScreenshotFace();
+		make_screenshot_face();
 		// update camera
-		info.n.set(Camera.j);
-		info.d.set(Camera.k);
-		info.p.set(Camera.c);
+		info.n.set(camera.j);
+		info.d.set(camera.k);
+		info.p.set(camera.c);
 	}
 	else if (m_bMakeLevelMap)
 	{
-		MakeLevelMapProcess();
+		make_level_map_process();
 		info.dont_apply = true;
 	}
 	else if (m_bMakeCubeMap)
 	{
-		MakeCubeMapFace(info.d, info.n);
-		info.p.set(Camera.c);
+		make_cube_map_face(info.d, info.n);
+		info.p.set(camera.c);
 		info.fAspect = 1.f;
 	}
 	else
 	{
-		if (NewInputSchema)
+		if (new_input_schema)
 		{
 			if (IR_GetKeyState(SDL_SCANCODE_F1))
 			{
@@ -359,7 +367,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutSetI(0, -.05f);
 
 				SystemFont->OutNext("RECORDING");
-				SystemFont->OutNext("Key frames count: %d", KeyframesPositions.size());
+				SystemFont->OutNext("Key frames count: %d", keyframes.size());
 
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(-0.2f, +.05f);
@@ -411,7 +419,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutSetI(0, -.05f);
 
 				SystemFont->OutNext("RECORDING");
-				SystemFont->OutNext("Key frames count: %d", KeyframesPositions.size());
+				SystemFont->OutNext("Key frames count: %d", keyframes.size());
 
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(-0.2f, +.05f);
@@ -440,7 +448,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			}
 		}
 
-		if (!NewInputSchema)
+		if (!new_input_schema)
 		{
 			if (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT))
 			{
@@ -450,7 +458,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			{
 				frame_pos_delta.mul(m_fSpeed2);
 			}
-			else if (m_bEnableAcceleration)
+			else if (enable_acceleration)
 			{
 				frame_pos_delta.mul(m_fSpeed3);
 			}
@@ -461,22 +469,24 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		}
 		else
 		{
-			frame_pos_delta.mul(CameraTransformFactor);
+			frame_pos_delta.mul(camera_transform_speed);
 		}
 
 		float pos_dt_magnitude = frame_pos_delta.magnitude();
-		float scaled_fov = (pos_dt_magnitude > EPS_S ? pos_dt_magnitude : 5.f) * dt;
-		
+		float scaled_fov = fov_auto_scale
+							   ? (pos_dt_magnitude > EPS_S ? pos_dt_magnitude : 5.f) * dt
+							   : fov_scale_speed * dt;
+
 		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_R))
 		{
 			clamp(g_base_fov += scaled_fov, 5.f, 179.f);
 		}
-	
+
 		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_T))
 		{
 			clamp(g_base_fov -= scaled_fov, 5.f, 179.f);
 		}
-		
+
 		frame_pos_delta.mul(dt);
 		frame_hpb_delta.mul(1.f);
 
@@ -490,18 +500,18 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			g_position.p.set(p_cam_pos);
 		}
 
-		MovePosition(frame_pos_delta);
+		move_position(frame_pos_delta);
 
-		Level().ObjectSpace.RayPick(Camera.c, Camera.k, 1000.f, collide::rq_target::rqtBoth, rq_result, nullptr);
-		view_from_bone_mode ? UpdateLookFromBone() : lap_lock ? UpdateLookAtPoint()
-															  : UpdateFreeLook();
+		Level().ObjectSpace.RayPick(camera.c, camera.k, 1000.f, collide::rq_target::rqtBoth, rq_result, nullptr);
+		view_from_bone_mode ? update_look_from_bone() : look_at_point_mode ? update_look_at_point()
+																		   : update_free_look();
 
 		p_cam_pos_current.inertion(p_cam_pos, dr_cam_pos_inert);
-		Camera.translate_over(p_cam_pos_current);
+		camera.translate_over(p_cam_pos_current);
 
-		info.n.set(Camera.j);
-		info.d.set(Camera.k);
-		info.p.set(Camera.c);
+		info.n.set(camera.j);
+		info.d.set(camera.k);
+		info.p.set(camera.c);
 
 		fLifeTime -= Device.fTimeDelta;
 
@@ -511,16 +521,16 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 	return true;
 }
 
-void CDemoRecord::UpdateLookAtPoint()
+void CDemoRecord::update_look_at_point()
 {
 	Fvector dir;
 
 	if (bone_holder_kinematics != nullptr && bone_holder != nullptr && bone_id != BI_NONE)
 	{
-		bone_holder_kinematics->LL_GetBoneWorldPosition(bone_id, bone_holder->XFORM(), p_lap);
+		bone_holder_kinematics->LL_GetBoneWorldPosition(bone_id, bone_holder->XFORM(), look_at_point);
 	}
 
-	dir.sub(p_lap, Camera.c);
+	dir.sub(look_at_point, camera.c);
 
 	Fmatrix basis;
 	basis.identity();
@@ -537,10 +547,10 @@ void CDemoRecord::UpdateLookAtPoint()
 	};
 
 	hpb_current.inertion(target_eulers, dr_cam_inert);
-	Camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
+	camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
 }
 
-void CDemoRecord::UpdateFreeLook()
+void CDemoRecord::update_free_look()
 {
 	if (rq_result.O != nullptr)
 	{
@@ -560,10 +570,10 @@ void CDemoRecord::UpdateFreeLook()
 	hpb.z += frame_hpb_delta.z;
 
 	hpb_current.inertion(hpb, dr_cam_inert);
-	Camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
+	camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
 }
 
-void CDemoRecord::UpdateLookFromBone()
+void CDemoRecord::update_look_from_bone()
 {
 	Fvector bone_world_pos;
 	bone_holder_kinematics->LL_GetBoneWorldPosition(bone_id, bone_holder->XFORM(), bone_world_pos);
@@ -603,42 +613,77 @@ void CDemoRecord::UpdateLookFromBone()
 	p_cam_pos.set(bone_world_pos);
 
 	Fvector blend_pos_offset;
-	Camera.transform_dir(blend_pos_offset, p_cam_pos_view_from_bone_offset);
+	camera.transform_dir(blend_pos_offset, p_cam_pos_view_from_bone_offset);
 
 	p_cam_pos.add(blend_pos_offset);
-	Camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
+	camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
 }
 
-void CDemoRecord::ParseActorCam()
+void CDemoRecord::parse_actor_cam()
 {
-	Camera.invert(Device.mView);
+	camera.invert(Device.mView);
 
 	p_cam_pos.set(Device.vCameraPosition);
 	p_cam_pos_current.set(Device.vCameraPosition);
 
 	Fvector hpb_actor;
-	Camera.getHPB(hpb_actor);
+	camera.getHPB(hpb_actor);
 	hpb_actor.z = 0.f;
 
 	hpb.set(hpb_actor);
 	hpb_current.set(hpb_actor);
 }
 
-void CDemoRecord::MovePosition(Fvector d)
+bool CDemoRecord::try_attach_bone()
+{
+	if (rq_result.O == nullptr)
+	{
+		return false;
+	}
+
+	if (IRenderVisual* v = rq_result.O->Visual())
+	{
+		if (IKinematics* k = v->dcast_PKinematics())
+		{
+			bone_holder = rq_result.O;
+			bone_holder_kinematics = k;
+			bone_id = (u16)rq_result.element;
+			view_from_bone_mode = true;
+			look_at_point_mode = false;
+			return true;
+		}
+	}
+	return false;
+}
+
+void CDemoRecord::detach_bone()
+{
+	bone_id = BI_NONE;
+	bone_holder = nullptr;
+	bone_holder_kinematics = nullptr;
+	view_from_bone_mode = false;
+
+	Fvector cur_eulers;
+	camera.getHPB(cur_eulers);
+	hpb.set(cur_eulers);
+	hpb_current.set(cur_eulers);
+}
+
+void CDemoRecord::move_position(Fvector d)
 {
 	Fvector new_pos;
 
-	new_pos.set(Camera.k);
+	new_pos.set(camera.k);
 	new_pos.normalize_safe();
 	new_pos.mul(d.z);
 	p_cam_pos.add(new_pos);
 
-	new_pos.set(Camera.i);
+	new_pos.set(camera.i);
 	new_pos.normalize_safe();
 	new_pos.mul(d.x);
 	p_cam_pos.add(new_pos);
 
-	new_pos.set(Camera.j);
+	new_pos.set(camera.j);
 	new_pos.normalize_safe();
 	new_pos.mul(d.y);
 	p_cam_pos.add(new_pos);
@@ -673,32 +718,15 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 	switch (dik)
 	{
 		case K_TOGGLE_BONE_ATTACH:
-			if (!lap_lock)
+			if (!look_at_point_mode)
 			{
-				if (view_from_bone_mode && bone_id != BI_NONE && bone_holder_kinematics != nullptr)
+				if (view_from_bone_mode)
 				{
-					bone_id = BI_NONE;
-					bone_holder = nullptr;
-					bone_holder_kinematics = nullptr;
-
-					view_from_bone_mode = false;
+					detach_bone();
 				}
 				else
 				{
-					if (rq_result.O != nullptr)
-					{
-						if (IRenderVisual* v = rq_result.O->Visual())
-						{
-							if (IKinematics* k = v->dcast_PKinematics())
-							{
-								bone_holder = rq_result.O;
-								bone_holder_kinematics = k;
-								bone_id = (u16)rq_result.element;
-
-								view_from_bone_mode = true;
-							}
-						}
-					}
+					try_attach_bone();
 				}
 			}
 			break;
@@ -710,10 +738,10 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 		case K_TOGGLE_LOOKAT_LOCK:
 			if (!view_from_bone_mode)
 			{
-				if (lap_lock && p_lap != zero_vel)
+				if (look_at_point_mode && look_at_point != zero_vel)
 				{
 					Fvector cur_eulers;
-					Camera.getHPB(cur_eulers);
+					camera.getHPB(cur_eulers);
 
 					hpb.set(cur_eulers);
 					hpb_current.set(cur_eulers);
@@ -723,8 +751,8 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 						bone_id = BI_NONE;
 					}
 
-					p_lap.set(zero_vel);
-					lap_lock = false;
+					look_at_point.set(zero_vel);
+					look_at_point_mode = false;
 				}
 				else
 				{
@@ -744,27 +772,27 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 								}
 								else
 								{
-									p_lap.set(Camera.c.mad(Camera.k, rq_result.range));
+									look_at_point.set(camera.c.mad(camera.k, rq_result.range));
 								}
 							}
 						}
 						else
 						{
-							p_lap.set(Camera.c.mad(Camera.k, rq_result.range));
+							look_at_point.set(camera.c.mad(camera.k, rq_result.range));
 						}
 
-						Camera.getHPB(current_eulers);
+						camera.getHPB(current_eulers);
 						hpb.set(current_eulers);
 						hpb_current.set(current_eulers);
 
-						lap_lock = true;
+						look_at_point_mode = true;
 					}
 				}
 			}
 			break;
 
 		case K_TOGGLE_REDIRECT_INPUT:
-			m_b_redirect_input_to_level = !m_b_redirect_input_to_level;
+			redirect_input_to_level = !redirect_input_to_level;
 			break;
 
 		case K_SHOW_CONSOLE:
@@ -777,33 +805,33 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 
 		case K_ENABLE_ACCELERATION:
 		case K_ENABLE_ACCELERATION_R:
-			m_bEnableAcceleration = true;
+			enable_acceleration = true;
 			break;
 
 		case K_RECORD_KEYFRAME:
-			if (NewInputSchema)
+			if (new_input_schema)
 			{
-				RecordKey();
+				record_keyframe();
 			}
 			break;
 
 		case K_RECORD_KEYFRAME_OLD:
-			if (!NewInputSchema)
+			if (!new_input_schema)
 			{
-				RecordKey();
+				record_keyframe();
 			}
 			break;
 
 		case K_MAKE_CUBEMAP:
-			MakeCubemap();
+			make_cubemap();
 			break;
 
 		case K_MAKE_LEVELMAP:
-			MakeLevelMapScreenshot(IR_GetKeyState(SDL_SCANCODE_LCTRL));
+			make_level_map_screenshot(IR_GetKeyState(SDL_SCANCODE_LCTRL));
 			break;
 
 		case K_MAKE_SCREENSHOT:
-			MakeScreenshot();
+			make_screenshot();
 			break;
 
 		case K_QUIT:
@@ -814,14 +842,14 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 		case K_FORCE_TRANSFORM:
 			if (g_pGameLevel->CurrentEntity())
 			{
-				g_pGameLevel->CurrentEntity()->ForceTransform(Camera);
+				g_pGameLevel->CurrentEntity()->ForceTransform(camera);
 				fLifeTime = -1;
 			}
 			break;
 #endif
 	}
 
-	if (m_b_redirect_input_to_level)
+	if (redirect_input_to_level)
 	{
 		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
 		{
@@ -833,7 +861,7 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 
 void CDemoRecord::IR_OnKeyboardHold(int dik)
 {
-	if (m_b_redirect_input_to_level)
+	if (redirect_input_to_level)
 	{
 		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
 		{
@@ -878,7 +906,7 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 		switch (dik)
 		{
 			case K_ROLL_LEFT:
-				frame_hpb_delta.z -= roll_angle_per_second* dt;
+				frame_hpb_delta.z -= roll_angle_per_second * dt;
 				break;
 
 			case K_ROLL_RIGHT:
@@ -887,7 +915,7 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 		}
 	}
 
-	if (NewInputSchema)
+	if (new_input_schema)
 	{
 		switch (get_binded_action(dik))
 		{
@@ -941,7 +969,7 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 
 void CDemoRecord::IR_OnMousePress(int btn)
 {
-	if (m_b_redirect_input_to_level)
+	if (redirect_input_to_level)
 	{
 		g_pGameLevel->IR_OnMousePress(btn);
 		return;
@@ -950,7 +978,7 @@ void CDemoRecord::IR_OnMousePress(int btn)
 
 void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 {
-	if (m_b_redirect_input_to_level)
+	if (redirect_input_to_level)
 	{
 		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
 		{
@@ -975,7 +1003,7 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 			hpb_view_from_bone_offset.y += d > 0.f ? std::abs(d) : -std::abs(d);
 		}
 	}
-	
+
 	float ensitivity = .5f;
 
 	if (IGame_Actor* IGameActor = smart_cast<IGame_Actor*>(g_pGameLevel->CurrentControlEntity()))
@@ -997,7 +1025,7 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 
 void CDemoRecord::IR_OnMouseRelease(int btn)
 {
-	if (m_b_redirect_input_to_level)
+	if (redirect_input_to_level)
 	{
 		g_pGameLevel->IR_OnMouseRelease(btn);
 		return;
@@ -1011,19 +1039,19 @@ void CDemoRecord::IR_OnMouseWheel(int direction)
 	switch (direction)
 	{
 		case -1:
-			CameraTransformFactor -= ModifierIncluded ? 15.f : 5.f;
+			camera_transform_speed -= ModifierIncluded ? 15.f : 5.f;
 			break;
 
 		case 1:
-			CameraTransformFactor += ModifierIncluded ? 15.f : 5.f;
+			camera_transform_speed += ModifierIncluded ? 15.f : 5.f;
 			break;
 	}
-	clamp(CameraTransformFactor, 1.f, FLT_MAX);
+	clamp(camera_transform_speed, 1.f, FLT_MAX);
 }
 
 void CDemoRecord::IR_OnMouseHold(int btn)
 {
-	if (m_b_redirect_input_to_level)
+	if (redirect_input_to_level)
 	{
 		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
 		{
@@ -1031,7 +1059,7 @@ void CDemoRecord::IR_OnMouseHold(int btn)
 		}
 	}
 
-	if (!NewInputSchema)
+	if (!new_input_schema)
 	{
 		switch (btn)
 		{
@@ -1046,29 +1074,29 @@ void CDemoRecord::IR_OnMouseHold(int btn)
 	}
 }
 
-void CDemoRecord::RecordKey()
+void CDemoRecord::record_keyframe()
 {
 	Fmatrix ViewMatrix;
 
-	ViewMatrix.invert(Camera);
+	ViewMatrix.invert(camera);
 	file->w(&ViewMatrix, sizeof(Fmatrix));
 
-	KeyframesPositions.emplace_back(p_cam_pos_current);
+	keyframes.emplace_back(p_cam_pos_current);
 }
 
-void CDemoRecord::MakeCubemap()
+void CDemoRecord::make_cubemap()
 {
 	m_bMakeCubeMap = true;
 	Stage = 0;
 }
 
-void CDemoRecord::MakeScreenshot()
+void CDemoRecord::make_screenshot()
 {
 	m_bMakeScreenshot = true;
 	Stage = 0;
 }
 
-void CDemoRecord::MakeLevelMapScreenshot(bool bHQ)
+void CDemoRecord::make_level_map_screenshot(bool bHQ)
 {
 	//	Console->Execute("run_string level.set_weather(\"map\",true)");
 
@@ -1090,12 +1118,12 @@ void CDemoRecord::MakeLevelMapScreenshot(bool bHQ)
 
 void CDemoRecord::OnRender()
 {
-	if (!KeyframesPositions.empty())
+	if (!keyframes.empty())
 	{
-		for (size_t i = 0; i < KeyframesPositions.size(); i++)
+		for (size_t i = 0; i < keyframes.size(); i++)
 		{
-			HUD().world_prims.append_sphere(KeyframesPositions.at(i), .1f, color_rgba(10, 10, 10, 255), color_rgba(255, 70, 70, 50));
-			HUD().world_prims.append_text3d(KeyframesPositions.at(i), shared_str().printf("Keyframe #%d", i));
+			HUD().world_prims.append_sphere(keyframes.at(i), .1f, color_rgba(10, 10, 10, 255), color_rgba(255, 70, 70, 50));
+			HUD().world_prims.append_text3d(keyframes.at(i), shared_str().printf("Keyframe #%d", i));
 		}
 	}
 }
@@ -1169,16 +1197,16 @@ void CDemoRecord::IR_GamepadKeyPress(int id)
 			fLifeTime = -1;
 			break;
 		}
-		
+
 		case GP_TOGGLE_ACCELERATION:
 		{
-			m_bEnableAcceleration = !m_bEnableAcceleration;
+			enable_acceleration = !enable_acceleration;
 			break;
 		}
 
 		case GP_RECORD_KEYFRAME:
 		{
-			RecordKey();
+			record_keyframe();
 			break;
 		}
 	}
@@ -1191,7 +1219,7 @@ void CDemoRecord::IR_OnKeyboardRelease(int dik)
 		case K_ENABLE_ACCELERATION:
 		case K_ENABLE_ACCELERATION_R:
 		{
-			m_bEnableAcceleration = false;
+			enable_acceleration = false;
 			break;
 		}
 	}
