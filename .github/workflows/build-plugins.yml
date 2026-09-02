@@ -75,7 +75,7 @@ jobs:
         run: |
           cmake `
             --build build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} `
-            --target MayaTools_2024 MayaTools_2025 `
+            --target MayaTools_2024 MayaTools_2025 MayaTools_2026 MayaTools_2027 `
             --config ${{ matrix.config }}
 
       - name: Upload binaries
