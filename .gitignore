@@ -1,5 +1,10 @@
 # Global ignoring of different binaries and another temporary files
 
+# System directories
+.*/
+!.github/
+!.vscode/
+
 # Visual Studio cache and settings
 .vs/
 .idea/
