@@ -88,8 +88,8 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 
 | Платформа | Сборка | Система | Файлы | Описание |
 | :--- | :--- | :--- | :--- | :--- |
-| Зов Припяти | Игровая | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.5/ixray-1.6-r1.3.5-engine-x64-game.zip) | Готовая сборка движка для игроков или необходимая для выпуска модификаций. Архив содержит движок и ресурсы для запуска игры |
-| Зов Припяти | Для разработки | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.5/ixray-1.6-r1.3.5-engine-x64-develop.zip) | Готовая сборка движка для разработчиков, необходимая для удобной разработки модификаций. Архив содержит движок и ресурсы для запуска игры |
+| Зов Припяти | Игровая | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.5/ixray-1.6-r1.3.5-engine-x64-game-cop.zip) | Готовая сборка движка для игроков или необходимая для выпуска модификаций. Архив содержит движок и ресурсы для запуска игры |
+| Зов Припяти | Для разработки | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.5/ixray-1.6-r1.3.5-engine-x64-develop-cop.zip) | Готовая сборка движка для разработчиков, необходимая для удобной разработки модификаций. Архив содержит движок и ресурсы для запуска игры |
 
 Прочитать о различиях можно в [FAQ](https://github.com/ixray-team/ixray-1.6-stcop/blob/default/doc/faq.rus.md#%D1%87%D0%B5%D0%BC-%D0%BE%D1%82%D0%BB%D0%B8%D1%87%D0%B0%D0%B5%D1%82%D1%81%D1%8F-%D0%B1%D0%B8%D0%BB%D0%B4-%D0%B4%D0%BB%D1%8F-%D0%B8%D0%B3%D1%80%D0%BE%D0%BA%D0%B0-%D0%B8-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%D0%B0)
 
