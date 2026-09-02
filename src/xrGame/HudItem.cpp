@@ -160,7 +160,7 @@ void CHudItem::LoadSounds(const char* section)
 
 void CHudItem::PlaySound(const char* alias, const Fvector& position, bool allowOverlap)
 {
-	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDSoundMode(), false, allowOverlap, m_started_rnd_anim_idx);
+	m_sounds.PlaySound(alias, position, object().H_Root(), GetHUDSoundMode(), false, allowOverlap, m_started_rnd_anim_idx);
 }
 
 void CHudItem::renderable_Render()
@@ -168,17 +168,14 @@ void CHudItem::renderable_Render()
 	UpdateXForm					();
 	bool _hud_render			= ::Render->get_HUD() && GetHUDSoundMode();
 	
-	if(_hud_render && !IsHidden())
-	{
-	}
-	else 
+	if (!_hud_render || IsHidden())
 	{
 		if (!object().H_Parent() || (!_hud_render && !IsHidden()))
 		{
 			on_renderable_Render		();
 			debug_draw_firedeps			();
-		}else
-		if (m_object&&object().H_Parent())
+		}
+		else if (m_object&&object().H_Parent())
 		{
 			if ((m_object->H_Parent()->cast_inventory_owner() && 
 				m_object->H_Parent()->cast_inventory_owner()->attached(m_object->cast_inventory_item())) 
@@ -625,7 +622,7 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, EHudMixType bMixIn, u8 state, b
 	snd.printf("snd_%s", *M);
 	if (m_object->H_Parent() != nullptr && pSettings->line_exist(HudSection(), snd))
 	{
-		m_sounds.LoadSound(*HudSection(), *snd.printf("snd_%s", *M), "sndByMotion", false);
+		m_sounds.LoadSound(*HudSection(), *snd, "sndByMotion", false);
 		PlaySound("sndByMotion", m_object->Position());
 	}
 
@@ -957,7 +954,7 @@ void CHudItem::PlaySoundIfExist(const char* alias, const Fvector& position, bool
 	HUD_SOUND_ITEM* SndIter = m_sounds.FindSoundItem(alias, false);
 	if (SndIter != nullptr)
 	{
-		m_sounds.PlaySound(SndIter, position, object().H_Root(), !!GetHUDSoundMode(), false, allowOverlap, u8(-1));
+		m_sounds.PlaySound(SndIter, position, object().H_Root(), GetHUDSoundMode(), false, allowOverlap, u8(-1));
 	}
 }
 
@@ -984,7 +981,7 @@ void CHudItem::SetMultipleBonesStatus(const char* section, const char* line, boo
 		return;
 	}
 
-	if (!!pSettings->line_exist(section, line))
+	if (pSettings->line_exist(section, line))
 	{
 		const char*	S = pSettings->r_string(section, line);
 		if (S && S[0])
