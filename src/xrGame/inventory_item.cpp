@@ -186,11 +186,40 @@ void CInventoryItem::SetAdditionalDescription(const char* additionalDescription)
 {
 	m_AdditionalDescription = additionalDescription;
 	m_IsUsedAdditionalDescription = xr_strcmp(m_AdditionalDescription, "") != 0;
+	RebuildExtendedDescription();
+}
+
+void CInventoryItem::SetPrependDescription(const char* prependDescription)
+{
+	m_PrependDescription = prependDescription ? prependDescription : "";
+	m_IsUsedPrependDescription = prependDescription && prependDescription[0];
+	RebuildExtendedDescription();
+}
+
+void CInventoryItem::RebuildExtendedDescription()
+{
+	xr_string description;
+
+	auto appendDescriptionBlock = [&description](const char* text)
+	{
+		if (!text || !text[0])
+			return;
+
+		if (!description.empty())
+			description += "\\n\\n";
+
+		description += text;
+	};
+
+	if (m_IsUsedPrependDescription)
+		appendDescriptionBlock(m_PrependDescription.c_str());
+
+	appendDescriptionBlock(m_Description.c_str());
 
 	if (m_IsUsedAdditionalDescription)
-	{
-		m_ExtendedUnionDescription = make_string<const char*>("%s\\n\\n%s", m_Description.c_str(), m_AdditionalDescription.c_str());
-	}
+		appendDescriptionBlock(m_AdditionalDescription.c_str());
+
+	m_ExtendedUnionDescription = description.c_str();
 }
 
 CInventoryItem::EInvCellAnchor CInventoryItem::ParseInvCellAnchor(const char* value)
@@ -280,6 +309,9 @@ void CInventoryItem::RefreshTranslations()
 	{
 		m_Description = g_pStringTable->translate(pSettings->r_string(section, "description"));
 	}
+
+	if (IsUsedExtendedDescription())
+		RebuildExtendedDescription();
 }
 
 void CInventoryItem::ChangeCondition(float fDeltaCondition)

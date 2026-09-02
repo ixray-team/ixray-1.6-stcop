@@ -566,7 +566,35 @@ bool CScriptGameObject::IsItemUsedAdditionalDescription()
 {
 	if (CInventoryItem* inventory_item = object().cast_inventory_item())
 	{
-		inventory_item->IsUsedAdditionalDescription();
+		return inventory_item->IsUsedAdditionalDescription();
+	}
+
+	return false;
+}
+
+const char* CScriptGameObject::GetItemPrependDescription()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		return inventory_item->GetPrependDescription();
+	}
+
+	return "";
+}
+
+void CScriptGameObject::SetItemPrependDescription(const char* prependDescription)
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->SetPrependDescription(prependDescription);
+	}
+}
+
+bool CScriptGameObject::IsItemUsedPrependDescription()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		return inventory_item->IsUsedPrependDescription();
 	}
 
 	return false;
