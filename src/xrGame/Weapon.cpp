@@ -632,6 +632,8 @@ void CWeapon::Load		(const char* section)
 	LoadVector(m_bDefHideBones, "def_hide_bones");
 	LoadVector(m_bDefShowBones, "def_show_bones");
 	LoadVector(m_bDefHideBonesGLAttached, "def_hide_bones_override_when_gl_attached");
+	LoadVector(m_bDefHideBonesSilencerAttached, "def_hide_bones_override_when_silencer_attached");
+	LoadVector(m_bDefHideBonesScopeAttached, "def_hide_bones_override_when_scope_attached");
 	LoadVector(m_bScopeShowBones, "no_scope_overriding_show_bones");
 	LoadVector(m_bScopeHideBones, "no_scope_overriding_hide_bones");
 	LoadVector(m_sCollimatorSightsBones, "collimator_sights_bones");
@@ -2669,9 +2671,25 @@ void CWeapon::UpdateHUDAddonsVisibility()
 		}
 	}
 
+	if (IsSilencerAttached())
+	{
+		for (auto& bone : m_bDefHideBonesSilencerAttached)
+		{
+			HudItemData()->set_bone_visible(bone, false, true);
+		}
+	}
+
 	if (IsScopeAttached())
 	{
 		for (auto& bone : m_bHideBonesScopeAttached)
+		{
+			HudItemData()->set_bone_visible(bone, false, true);
+		}
+	}
+
+	if (IsScopeAttached())
+	{
+		for (auto& bone : m_bDefHideBonesScopeAttached)
 		{
 			HudItemData()->set_bone_visible(bone, false, true);
 		}
@@ -2783,9 +2801,25 @@ void CWeapon::UpdateAddonsVisibility()
 		}
 	}
 
+	if (IsSilencerAttached())
+	{
+		for (auto& bone : m_bDefHideBonesSilencerAttached)
+		{
+			ChangeBoneVisible(bone, false, false);
+		}
+	}
+
 	if (IsScopeAttached())
 	{
 		for (auto& bone : m_bHideBonesScopeAttached)
+		{
+			ChangeBoneVisible(bone, false, false);
+		}
+	}
+
+	if (IsScopeAttached())
+	{
+		for (auto& bone : m_bDefHideBonesScopeAttached)
 		{
 			ChangeBoneVisible(bone, false, false);
 		}
