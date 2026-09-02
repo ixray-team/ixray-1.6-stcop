@@ -693,11 +693,11 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 
 			if (m_eSoundsFlags.test(ESoundsFlags::sf_shoot_grenade_actor))
 			{
-				m_layered_sounds.PlaySound("sndShotGActor", get_LastFP2(), H_Root(), !!GetHUDmode(), false, true);
+				m_layered_sounds.PlaySound("sndShotGActor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
 			}
 			else
 			{
-				m_layered_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), !!GetHUDmode(), false, true);
+				m_layered_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
 			}
 
 			if (H_Parent())
