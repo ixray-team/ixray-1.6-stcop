@@ -663,6 +663,7 @@ void RenderTextureEditor();
 void RenderQuestEditor();
 void RenderPPEEditor();
 void Render3rdAdjust();
+void RenderDemoRecordEditorWindow();
 
 /* MISCELLANEOUS */
 

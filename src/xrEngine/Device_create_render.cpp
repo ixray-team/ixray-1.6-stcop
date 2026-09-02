@@ -143,7 +143,8 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_HudAdjustManager)]);
 				ImGui::MenuItem("Hud Adjust (Legacy)", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
 				ImGui::MenuItem("3rd Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_3rdAdjust)]);
-				ImGui::MenuItem("LevelInspector", nullptr, &States[static_cast<u8>(EditorUI::LevelInspector)]);
+				ImGui::MenuItem("Level Inspector", nullptr, &States[static_cast<u8>(EditorUI::LevelInspector)]);
+				ImGui::MenuItem("Demo record", nullptr, &States[static_cast<u8>(EditorUI::Game_DemoRecord)]);
 				if (ImGui::BeginMenu("Editors##InGame"))
 				{
 				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);

@@ -49,6 +49,56 @@ public:
 		GP_RECORD_KEYFRAME		= SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,
 	};
 
+	bool draw_skeleton = false;
+	bool view_from_bone_mode = false;
+	bool look_at_point_mode = false;
+	bool enable_acceleration = false;
+	bool new_input_schema = false;
+	bool show_help = false;
+	bool fov_auto_scale = true;
+	bool redirect_input_to_level;
+
+	float camera_transform_speed = 3.f;
+	float m_fSpeed0 = 0.f;
+	float m_fSpeed1 = 0.f;
+	float m_fSpeed2 = 0.f;
+	float m_fSpeed3 = 0.f;
+
+	float stored_fov = 0.f;
+	float fov_scale_speed = 5.f;
+	float stored_camera_transform_speed = 3.f;
+	float stored_fSpeed0 = 0.f;
+	float stored_fSpeed1 = 0.f;
+	float stored_fSpeed2 = 0.f;
+	float stored_fSpeed3 = 0.f;
+	float stored_fov_scale_speed = 5.f;
+
+	xr_vector<Fvector> keyframes;
+
+	Fvector hpb;
+	Fvector p_cam_pos;
+	Fvector hpb_view_from_bone_offset;
+	Fvector p_cam_pos_view_from_bone_offset;
+
+	CObject* bone_holder = nullptr;
+	IKinematics* bone_holder_kinematics = nullptr;
+	u16 bone_id = BI_NONE;
+	collide::rq_result rq_result{};
+
+	Fvector look_at_point{};
+
+	bool try_attach_bone();
+	void detach_bone();
+
+	void get_camera_hpb(Fvector& out) { camera.getHPB(out); }
+	void set_camera_hpb(float h, float p, float b) { camera.setHPB(h, p, b); }
+
+	void make_cubemap();
+	void make_screenshot();
+	void make_level_map_screenshot(bool bHQ);
+	void record_keyframe();
+
+private:
 	static struct force_position
 	{
 		bool set_position;
@@ -56,61 +106,27 @@ public:
 	} g_position;
 
 	IWriter* file;
-	Fmatrix Camera;
+	Fmatrix camera;
 
-	Fvector p_lap;
-	CObject* bone_holder;
-	IKinematics* bone_holder_kinematics;
-	u16 bone_id;
-
-	Fvector p_cam_pos;
-	Fvector p_cam_pos_current;
-	Fvector p_cam_pos_view_from_bone_offset;
-
-	Fvector hpb;
 	Fvector hpb_current;
-	Fvector hpb_view_from_bone_offset;
-
-	collide::rq_result rq_result;
+	Fvector p_cam_pos_current;
 
 	u32 Stage;
 
 	Fvector frame_pos_delta;
 	Fvector frame_hpb_delta;
-	Fvector Velocity;
-	Fvector AngularVelocity;
-
-	xr_vector<Fvector> KeyframesPositions;
 
 	bool m_bMakeCubeMap;
 	bool m_bMakeScreenshot;
 	int m_iLMScreenshotFragment;
 	bool m_bMakeLevelMap;
-	bool m_bEnableAcceleration = false;
-	bool NewInputSchema;
-	bool lap_lock;
-	bool draw_skeleton = false;
 	bool attach_to_bone_mode = false;
-	bool view_from_bone_mode = false;
-	bool show_help = false;
-
-	float CameraTransformFactor;
-	float m_fSpeed0;
-	float m_fSpeed1;
-	float m_fSpeed2;
-	float m_fSpeed3;
-	
-	float stored_fov;
 
 	float dt;
 
-	void MakeCubeMapFace(Fvector& D, Fvector& N);
-	void MakeLevelMapProcess();
-	void MakeScreenshotFace();
-	void RecordKey();
-	void MakeCubemap();
-	void MakeScreenshot();
-	void MakeLevelMapScreenshot(bool bHQ);
+	void make_cube_map_face(Fvector& D, Fvector& N);
+	void make_level_map_process();
+	void make_screenshot_face();
 
 public:
 	CDemoRecord(const char* name, float life_time = 60 * 60 * 1000);
@@ -128,13 +144,14 @@ public:
 	virtual void IR_GamepadKeyPress(int id) override;
 
 	bool ProcessCam(SCamEffectorInfo& info) override;
-	void UpdateLookAtPoint();
-	void UpdateFreeLook();
-	void UpdateLookFromBone();
-	void ParseActorCam();
-	void MovePosition(Fvector d);
+	void update_look_at_point();
+	void update_free_look();
+	void update_look_from_bone();
+	void parse_actor_cam();
+	void move_position(Fvector d);
 	static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
 	static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
-	bool m_b_redirect_input_to_level;
 	void OnRender() override;
 };
+
+extern CDemoRecord* demo_record;
