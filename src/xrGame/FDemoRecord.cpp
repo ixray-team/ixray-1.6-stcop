@@ -15,10 +15,6 @@ extern ENGINE_API bool g_bDisableRedText;
 static Flags32 s_hud_flag = {0};
 static Flags32 s_dev_flags = {0};
 
-bool stored_weapon;
-bool stored_cross;
-bool stored_red_text;
-
 CDemoRecord* demo_record = nullptr;
 CDemoRecord::force_position CDemoRecord::g_position = {false, {0, 0, 0}};
 
@@ -132,7 +128,6 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 	bone_id = BI_NONE;
 	bone_holder_kinematics = nullptr;
 
-	stored_red_text = g_bDisableRedText;
 	g_bDisableRedText = true;
 
 	m_iLMScreenshotFragment = -1;
@@ -189,7 +184,6 @@ CDemoRecord::~CDemoRecord()
 	}
 
 	g_base_fov = stored_fov;
-	g_bDisableRedText = stored_red_text;
 }
 
 void CDemoRecord::make_screenshot_face()
@@ -500,11 +494,13 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			g_position.p.set(p_cam_pos);
 		}
 
-		move_position(frame_pos_delta);
-
 		Level().ObjectSpace.RayPick(camera.c, camera.k, 1000.f, collide::rq_target::rqtBoth, rq_result, nullptr);
 		view_from_bone_mode ? update_look_from_bone() : look_at_point_mode ? update_look_at_point()
 																		   : update_free_look();
+
+		Fvector new_pos;
+		camera.transform_dir(new_pos, frame_pos_delta);
+		p_cam_pos.add(new_pos);
 
 		p_cam_pos_current.inertion(p_cam_pos, dr_cam_pos_inert);
 		camera.translate_over(p_cam_pos_current);
@@ -667,26 +663,6 @@ void CDemoRecord::detach_bone()
 	camera.getHPB(cur_eulers);
 	hpb.set(cur_eulers);
 	hpb_current.set(cur_eulers);
-}
-
-void CDemoRecord::move_position(Fvector d)
-{
-	Fvector new_pos;
-
-	new_pos.set(camera.k);
-	new_pos.normalize_safe();
-	new_pos.mul(d.z);
-	p_cam_pos.add(new_pos);
-
-	new_pos.set(camera.i);
-	new_pos.normalize_safe();
-	new_pos.mul(d.x);
-	p_cam_pos.add(new_pos);
-
-	new_pos.set(camera.j);
-	new_pos.normalize_safe();
-	new_pos.mul(d.y);
-	p_cam_pos.add(new_pos);
 }
 
 void CDemoRecord::IR_OnKeyboardPress(int dik)

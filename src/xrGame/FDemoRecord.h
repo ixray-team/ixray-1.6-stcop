@@ -148,7 +148,6 @@ public:
 	void update_free_look();
 	void update_look_from_bone();
 	void parse_actor_cam();
-	void move_position(Fvector d);
 	static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
 	static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
 	void OnRender() override;
