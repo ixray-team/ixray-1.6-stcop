@@ -505,33 +505,6 @@ void CWeapon::Load		(const char* section)
 	m_bAimActions = READ_IF_EXISTS(pSettings, r_bool, section, "enable_aim_actions", false);
 
 	{
-		string_path	ce_path = {};
-		shared_str tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_safemode_in", "camera_effects\\actor_move\\safemode_in.anm");
-		if (FS.exist(ce_path, "$game_anims$", *tmp))
-		{
-			m_safemode_cams[0] = tmp;
-		}
-
-		tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_safemode_out", "camera_effects\\actor_move\\safemode_out.anm");
-		if (FS.exist(ce_path, "$game_anims$", *tmp))
-		{
-			m_safemode_cams[1] = tmp;
-		}
-
-		tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_aim_in", "camera_effects\\actor_move\\aim_in.anm");
-		if (FS.exist(ce_path, "$game_anims$", *tmp))
-		{
-			m_aim_cams[0] = tmp;
-		}
-
-		tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_aim_out", "camera_effects\\actor_move\\aim_out.anm");
-		if (FS.exist(ce_path, "$game_anims$", *tmp))
-		{
-			m_aim_cams[1] = tmp;
-		}
-	}
-	
-	{
 		auto LoadMoreCameras = [&](RStringVec& vector, const char* param_name, const char* base_camera_name)
 		{
 			string_path	ce_path = {};
@@ -555,6 +528,11 @@ void CWeapon::Load		(const char* section)
 
 		LoadMoreCameras(m_shot_cams[0], "cam_shoot", "camera_effects\\weapon\\base_shoot.anm");
 		LoadMoreCameras(m_shot_cams[1], "cam_aim_shoot", "camera_effects\\weapon\\base_aim_shoot.anm");
+
+		LoadMoreCameras(m_safemode_cams[0], "cam_safemode_in", "camera_effects\\actor_move\\safemode_in.anm");
+		LoadMoreCameras(m_safemode_cams[1], "cam_safemode_out", "camera_effects\\actor_move\\safemode_out.anm");
+		LoadMoreCameras(m_aim_cams[0], "cam_aim_in", "camera_effects\\actor_move\\aim_in.anm");
+		LoadMoreCameras(m_aim_cams[1], "cam_aim_out", "camera_effects\\actor_move\\aim_out.anm");
 	}
 
 	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",false);
@@ -1903,12 +1881,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 						if (m_safemode_cams[0].size() > 0 && m_safemode_cams[1].size() > 0)
 						{
-							CAnimatorCamEffector* e = new CAnimatorCamEffector();
-							e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
-							e->SetCyclic(false);
-							e->SetHudAffect(true);
-							e->Start(*m_safemode_cams[cur_status ? 1 : 0]);
-							pActor->Cameras().AddCamEffector(e);
+							StartCamEffector(m_safemode_cams[cur_status ? 1 : 0]);
 						}
 
 						pActor->SetSafemodeStatus(!cur_status);
@@ -3159,6 +3132,21 @@ void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 
 float LastZoomFactor = 0.f;
 
+void CWeapon::StartCamEffector(const RStringVec& cams, bool hud_affect, int type_min, int type_max)
+{
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+	if (pActor == nullptr || cams.empty())
+		return;
+
+	const shared_str& cam = cams[Random.randI(cams.size())];
+	CAnimatorCamEffector* e = new CAnimatorCamEffector();
+	e->SetType(ECamEffectorType(Random.randI(type_min, type_max)));
+	e->SetCyclic(false);
+	e->SetHudAffect(hud_affect);
+	e->Start(*cam);
+	pActor->Cameras().AddCamEffector(e);
+}
+
 void CWeapon::OnZoomIn()
 {
 	m_zoom_params.m_bIsZoomModeNow		= true;
@@ -3181,12 +3169,7 @@ void CWeapon::OnZoomIn()
 
 		if (pActor != nullptr && m_aim_cams[0].size() > 0 && m_aim_cams[1].size() > 0)
 		{
-			CAnimatorCamEffector* e = new CAnimatorCamEffector();
-			e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
-			e->SetCyclic(false);
-			e->SetHudAffect(true);
-			e->Start(*m_aim_cams[0]);
-			pActor->Cameras().AddCamEffector(e);
+			StartCamEffector(m_aim_cams[0]);
 		}
 	}
 
@@ -3246,12 +3229,7 @@ void CWeapon::OnZoomOut()
 
 		if (pActor != nullptr && m_aim_cams[0].size() > 0 && m_aim_cams[1].size() > 0)
 		{
-			CAnimatorCamEffector* e = new CAnimatorCamEffector();
-			e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
-			e->SetCyclic(false);
-			e->SetHudAffect(true);
-			e->Start(*m_aim_cams[1]);
-			pActor->Cameras().AddCamEffector(e);
+			StartCamEffector(m_aim_cams[1]);
 		}
 	}
 
@@ -5203,12 +5181,7 @@ void CWeapon::OnSafemodeOut()
 
 		if (m_safemode_cams[0].size() > 0 && m_safemode_cams[1].size() > 0)
 		{
-			CAnimatorCamEffector* e = new CAnimatorCamEffector();
-			e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
-			e->SetCyclic(false);
-			e->SetHudAffect(true);
-			e->Start(*m_safemode_cams[1]);
-			pActor->Cameras().AddCamEffector(e);
+			StartCamEffector(m_safemode_cams[1]);
 		}
 	}
 }

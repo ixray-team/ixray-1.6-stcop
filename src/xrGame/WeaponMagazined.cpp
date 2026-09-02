@@ -1643,15 +1643,8 @@ void CWeaponMagazined::OnShot()
 
 	if (pActor != nullptr && m_shot_cams[0].size() > 0)
 	{
-		CAnimatorCamEffector* e = new CAnimatorCamEffector();
-		e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
-		e->SetCyclic(false);
-		e->SetHudAffect(false);
-
 		bool aim = IsZoomed() && m_shot_cams[1].size() > 0;
-
-		e->Start(*m_shot_cams[aim ? 1 : 0][Random.randI(m_shot_cams[aim ? 1 : 0].size())]);
-		pActor->Cameras().AddCamEffector(e);
+		StartCamEffector(m_shot_cams[aim ? 1 : 0], false, 33000, 33999);
 	}
 
 	StartFlameParticle();
