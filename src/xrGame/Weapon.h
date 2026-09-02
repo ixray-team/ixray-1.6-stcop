@@ -515,7 +515,7 @@ protected:
 	RStringVec m_bDefHideBones {}, m_bDefShowBones {}, m_bHideBonesOverride {}, m_bDefHideBonesGLAttached {},
 		m_bHideBonesGLAttached {}, m_bHideBonesSilAttached {}, m_bHideBonesScopeAttached {},
 		m_bHideBonesUpgrade {}, m_bScopeShowBones{}, m_bScopeHideBones{}, m_bShowBonesUpgToHide{}, m_bShowBonesUpgToShow{},
-		m_sCollimatorSightsBones{};
+		m_sCollimatorSightsBones{}, m_bDefHideBonesSilencerAttached{}, m_bDefHideBonesScopeAttached{};
 
 	bool m_bDisableFireModeAim = false;
 	bool m_bIsReloaded = false;
