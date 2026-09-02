@@ -442,9 +442,9 @@ protected:
 	shared_str hud_silencer;
 	shared_str hud_scope;
 	shared_str hud_gl;
+	RStringVec m_safemode_cams[2] = {};
 
-	shared_str m_safemode_cams[2] = {};
-	shared_str m_aim_cams[2] = {};
+	RStringVec m_aim_cams[2] = {};
 
 	RStringVec m_shot_cams[2] = {};
 
@@ -538,6 +538,7 @@ public:
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
 	void					OnSafemodeOut		();
+	void					StartCamEffector	(const RStringVec& cams, bool hud_affect = true, int type_min = 32000, int type_max = 32999);
 	IC virtual bool IsZoomed() const final override { return m_zoom_params.m_bIsZoomModeNow; }
 	IC		bool			IsAltZoomed			()	const		{return m_zoom_params.m_bIsAltZoomModeNow;}
 	CUIStatic*				ZoomTexture			();	
