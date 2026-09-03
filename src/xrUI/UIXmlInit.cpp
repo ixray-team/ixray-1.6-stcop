@@ -633,7 +633,7 @@ bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, const char* path,
 	if( xml_doc.NavigateToNode(buf,index) ){
 		pWnd->m_bUseColor			= true;
 	
-		u32 color = GetColor	(xml_doc, buf, index, 0xff);
+		u32 color = GetColor	(xml_doc, buf, index, 0xFFFFFFFF);
 		pWnd->m_minColor.set(color);
 
 		xr_strconcat(buf,path,":middle_color");
@@ -641,13 +641,13 @@ bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, const char* path,
 		if (xml_doc.NavigateToNode(buf, index))
 		{
 			pWnd->m_bUseMidColor = true;
-			color = GetColor(xml_doc, buf, index, 0xff);
+			color = GetColor(xml_doc, buf, index, 0xFFFFFFFF);
 			pWnd->m_middleColor.set(color);
 		}
 
 		xr_strconcat(buf,path,":max_color");
 	
-		color = GetColor	(xml_doc, buf, index, 0xff);
+		color = GetColor	(xml_doc, buf, index, 0xFFFFFFFF);
 		pWnd->m_maxColor.set(color);
 	}
 
@@ -708,7 +708,7 @@ bool CUIXmlInit::InitItemStateDisplay(CUIXml& xml_doc, const char* path, int ind
 				if (texture && texture[0])
 				{
 					pWnd->_percentBackground->InitTexture(texture, false);
-					u32 color = GetColor(xml_doc, texPath, index, 255);
+					u32 color = GetColor(xml_doc, texPath, index, 0xFFFFFFFF);
 					pWnd->_percentBackground->SetTextureColor(color);
 				}
 				int stretchFlag = xml_doc.ReadAttribInt(subPath, index, "stretch", 0);
@@ -761,7 +761,7 @@ bool CUIXmlInit::InitItemStateDisplay(CUIXml& xml_doc, const char* path, int ind
 					pWnd->_percentText->SetWndSize(pWnd->_percentBackground->GetWndSize());
 				}
 
-				u32 color = GetColor(xml_doc, subPath, index, 0xff);
+				u32 color = GetColor(xml_doc, subPath, index, 0xFFFFFFFF);
 				CUILines* pLines = pWnd->_percentText->TextItemControl();
 				pLines->SetTextColor(color);
 				pLines->SetFont(pFont);
@@ -792,19 +792,19 @@ bool CUIXmlInit::InitItemStateDisplay(CUIXml& xml_doc, const char* path, int ind
 		if (xml_doc.NavigateToNode(subPath, index))
 		{
 			pWnd->_useTextColor = true;
-			u32 color = GetColor(xml_doc, subPath, index, 0xff);
+			u32 color = GetColor(xml_doc, subPath, index, 0xFFFFFFFF);
 			pWnd->_minTextColor.set(color);
 
 			xr_strconcat(subPath, path, ":middle_color");
 			if (xml_doc.NavigateToNode(subPath, index))
 			{
 				pWnd->_useMiddleTextColor = true;
-				color = GetColor(xml_doc, subPath, index, 0xff);
+				color = GetColor(xml_doc, subPath, index, 0xFFFFFFFF);
 				pWnd->_middleTextColor.set(color);
 			}
 
 			xr_strconcat(subPath, path, ":max_color");
-			color = GetColor(xml_doc, subPath, index, 0xff);
+			color = GetColor(xml_doc, subPath, index, 0xFFFFFFFF);
 			pWnd->_maxTextColor.set(color);
 		}
 
@@ -992,7 +992,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, const char* path, int inde
 
 bool CUIXmlInit::InitFont(CUIXml &xml_doc, const char* path, int index, u32 &color, CGameFont *&pFnt)
 {
-	color = GetColor	(xml_doc, path, index, 0xff);
+	color = GetColor	(xml_doc, path, index, 0xFFFFFFFF);
 
 	const char* font_name = xml_doc.ReadAttrib(path, index, "font", nullptr);
 	if(!font_name)
@@ -1133,7 +1133,7 @@ bool CUIXmlInit::InitFrameLine(CUIXml& xml_doc, const char* path, int index, CUI
 		return false;
 	}
 
-	u32 color		= GetColor	(xml_doc,buf,index,0xff);
+	u32 color		= GetColor	(xml_doc,buf,index,0xFFFFFFFF);
 	pWnd->SetTextureColor	(color);
 
 	InitWindow		(xml_doc, path, index, pWnd);
@@ -1308,7 +1308,7 @@ bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IText
 	bool stretch_flag = xml_doc.ReadAttribInt(path, index, "stretch") ? true : false;
 	pWnd->SetStretchTexture(stretch_flag);
 
-	u32 color = GetColor(xml_doc, buf, index, 0xff);
+	u32 color = GetColor(xml_doc, buf, index, 0xFFFFFFFF);
 	pWnd->SetTextureColor(color);
 
 	if (rect.width() != 0 && rect.height() != 0)
@@ -1825,9 +1825,9 @@ u32	CUIXmlInit::GetColor(CUIXml& xml_doc, const char* path, int index, u32 def_c
 		VERIFY(GetColorDefs()->find(clr_def) != GetColorDefs()->end());
 		return 	(*m_pColorDefs)[clr_def];
 	}else	{
-		int r = xml_doc.ReadAttribInt(path, index, "r", def_clr);
-		int g = xml_doc.ReadAttribInt(path, index, "g", def_clr);
-		int b = xml_doc.ReadAttribInt(path, index, "b", def_clr);
+		int r = xml_doc.ReadAttribInt(path, index, "r", color_get_R(def_clr));
+		int g = xml_doc.ReadAttribInt(path, index, "g", color_get_G(def_clr));
+		int b = xml_doc.ReadAttribInt(path, index, "b", color_get_B(def_clr));
 		int a = xml_doc.ReadAttribInt(path, index, "a", 0xff);
 		return color_argb(a,r,g,b);
 	}
