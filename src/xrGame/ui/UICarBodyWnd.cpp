@@ -28,7 +28,7 @@
 #include "../BottleItem.h"
 #include "../../xrUI/UICursor.h"
 #include "UIHelperGame.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "../WeaponBinoculars.h"
 #include "../WeaponKnife.h"
 #include "../WeaponMagazinedWGrenade.h"
@@ -286,12 +286,18 @@ void CUICarBodyWnd::Update()
 	if(	m_pOurObject->inventory().ModifyFrame()==Device.dwFrame || 
 		(m_pOthersObject&&m_pOthersObject->inventory().ModifyFrame()==Device.dwFrame))
 		InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);
-
 	
 	if(m_pOthersObject && m_pOurObject->cast_game_object()->Position().distance_to(m_pOthersObject->cast_game_object()->Position()) > 3.0f)
 	{
 		HideDialog();
 	}
+
+	m_pUITakeAll->SetVisible(!pInput->GetControllerMode());
+	if (m_pUIPutAll)
+	{
+		m_pUIPutAll->SetVisible(!pInput->GetControllerMode());
+	}
+
 	inherited::Update();
 }
 
