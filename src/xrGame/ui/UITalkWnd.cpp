@@ -693,7 +693,7 @@ bool CUITalkWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 				{
 					CurrentGameUI()->PdaMenu()->HideDialog();
 				}
-				else
+				else if (m_pOthersInvOwner && !m_pOthersInvOwner->NeedOsoznanieMode())
 				{
 					StopTalk();
 				}
@@ -736,7 +736,7 @@ bool CUITalkWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 					{
 						CurrentGameUI()->PdaMenu()->HideDialog();
 					}
-					else
+					else if (m_pOthersInvOwner && !m_pOthersInvOwner->NeedOsoznanieMode())
 					{
 						StopTalk();
 					}
@@ -901,11 +901,6 @@ void CUITalkWnd::AddIconedMessage(const char* text, const char* texture_name, Fr
 
 void CUITalkWnd::StopTalk()
 {
-	if (m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode())
-	{
-		return;
-	}
-
 	if (PdaCommunication_IsSessionActive() || IsPdaMode() || IsEmbeddedInPda())
 	{
 		StopPdaDialog();
