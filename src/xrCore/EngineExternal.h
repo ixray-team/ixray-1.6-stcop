@@ -61,6 +61,7 @@ enum class EEngineExternalGame
 	EnablePolterStaminaLooseOnHit,
 	EnablePolterDrop,
 	EnableWindEffectOnABullet,
+	EnableSaveOnNewGame,
 	None
 };
 
