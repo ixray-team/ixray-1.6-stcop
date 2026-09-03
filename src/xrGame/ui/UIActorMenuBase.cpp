@@ -249,6 +249,10 @@ void CUIActorMenuBase::InitBase(CUIXml& uiXml)
 	m_allowed_drops[iQuickSlot].push_back(iActorBag);
 	m_allowed_drops[iQuickSlot].push_back(iActorTrade);
 
+	m_cell_item_color_default = CUIXmlInit::GetColor(uiXml, "item_colors:default", 0, 0xFFFFFFFF);
+	m_cell_item_color_slot = CUIXmlInit::GetColor(uiXml, "item_colors:slot", 0, m_cell_item_color_default);
+	m_cell_item_color_unavaliable = CUIXmlInit::GetColor(uiXml, "item_colors:unavaliable", 0, 0xFFFF6464);
+
 	XML_NODE* stored_root							= uiXml.GetLocalRoot	();
 	uiXml.SetLocalRoot					(uiXml.NavigateToNode	("action_sounds",0));
 	::Sound->create						(sounds[eSndOpen],		uiXml.Read("snd_open",			0,	"interface\\inv_open"), st_Effect, sg_SourceType);
@@ -397,15 +401,15 @@ void CUIActorMenuBase::ColorizeItem(CUICellItem* itm, bool colorize)
 	PIItem iitm = (PIItem)itm->m_pData;
 	if( colorize )
 	{
-		itm->SetTextureColor( color_rgba(255,100,100,255) );
+		itm->SetTextureColor( m_cell_item_color_unavaliable );
 	}
 	else if (iitm && !m_pInvList[iitm->CurrSlot()] && iitm->m_pInventory && iitm->m_pInventory->ItemFromSlot(iitm->BaseSlot()) == iitm)
 	{
-		itm->SetTextureColor( color_rgba(180,255,180,255) );
+		itm->SetTextureColor( m_cell_item_color_slot );
 	}
 	else
 	{
-		itm->SetTextureColor( color_rgba(255,255,255,255) );
+		itm->SetTextureColor( m_cell_item_color_default );
 	}
 }
 

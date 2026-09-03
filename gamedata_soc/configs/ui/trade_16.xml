@@ -1,5 +1,10 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window x="0" y="0" w="640" h="480" r="227" g="121" b="222" texture="1">
+	<item_colors>
+		<default r="255" g="255" b="255"/>
+		<slot r="180" g="255" b="180"/>
+		<unavaliable r="255" g="100" b="100"/>
+	</item_colors>
 
 	<static_icon x="111" y="32" width="150" height="220"  stretch="1">
 		<texture>ui_charinfo_left</texture>

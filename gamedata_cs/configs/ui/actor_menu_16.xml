@@ -1,4 +1,9 @@
 <w>
+	<item_colors>
+		<default r="255" g="255" b="255"/>
+		<unavaliable r="255" g="100" b="100"/>
+	</item_colors>
+
   <main x="0" y="0" width="1024" height="768">
     <auto_static x="334" y="0" width="604" height="768" stretch="1">
       <texture>ui_inGame2_inventory_back</texture>

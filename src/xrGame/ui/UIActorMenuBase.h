@@ -330,6 +330,11 @@ protected:
 
 	const char* m_onItemFocusReceive = {};
 	bool m_isItemFocusReceive = false;
+
+	u32 m_cell_item_color_default = 0xFFFFFFFF;
+	u32 m_cell_item_color_slot = 0xFFB4FFB4;
+	u32 m_cell_item_color_unavaliable = 0xFFFF6464;
+
 public:
 	CUIDragDropReferenceList*	m_pQuickSlot = nullptr;
 	EMenuMode					GetMenuMode					() {return m_currMenuMode;}

@@ -53,7 +53,7 @@ const char* CUIVectorBinding::QueryFileNameFromXml(CUIXml& xmlDoc, const char* e
 
 void CUIVectorBinding::LoadTintFromXml(SVGTintRGBA& outTint, CUIXml& xmlDoc, const char* elementPath, int index)
 {
-    outTint.SetFromColourDword(CUIXmlInit::GetColor(xmlDoc, elementPath, index, 255));
+	outTint.SetFromColourDword(CUIXmlInit::GetColor(xmlDoc, elementPath, index, 0xFFFFFFFF));
 }
 
 void CUIVectorBinding::LoadFromXml(CUIXml& xmlDoc, const char* elementPath, int index)
