@@ -2106,3 +2106,8 @@ function on_tutor_gameover_stop()
 	printf("main_menu on console command is executed")
 	c:execute("main_menu on")
 end
+
+function on_tutor_gameover_quickload()
+	local c = get_console()
+	c:execute("load_last_save")
+end
