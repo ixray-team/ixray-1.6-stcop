@@ -6,6 +6,8 @@
 #include "../xrEUI/ImGuizmo.h"
 
 #include "Editor/Utils/Gizmo/IM_Manipulator.h"
+#include "Editor/Utils/GitIntegration.h"
+#include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Terrain/HeightmapUtils.h"
 
 #include "IconsFontAwesome6.h"
