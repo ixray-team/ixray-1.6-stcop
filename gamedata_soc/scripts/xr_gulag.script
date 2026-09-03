@@ -234,6 +234,13 @@ function gulag:get_job_path_name( job )
 	local active_section = self.ltx:r_string( section, "active" )
 	local path_field
 
+	for k, v in pairs( self.npc_info ) do
+		local sv_obj = alife():object(k)
+		if db.offline_objects[sv_obj.id] and db.offline_objects[sv_obj.id].active_section ~= nil then
+			active_section = db.offline_objects[sv_obj.id].active_section
+		end
+	end
+
 	for i, v in ipairs( path_fields ) do
 		if self.ltx:line_exist( active_section, v ) then
 			path_field = v
@@ -933,6 +940,8 @@ function gulag:beginJob( obj_id )
 
 	if self.Object[obj_id] ~= true then
 		local obj = self.Object[obj_id]
+		-- Смена работы, очищаем память для оффлайнового обьекта.
+		db.offline_objects[se_obj.id] = {}
 
 		self:set_restrictions( obj, job.out_rest, job.in_rest, job.info_rest )
 		self:setup_logic( obj, job.section )
