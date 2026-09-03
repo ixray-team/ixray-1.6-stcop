@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #include "dx10FixedConstants.h"
-#include <cstring>
 
-static constexpr u32 chash(const char* s, u32 h = 2166136261u)
-{
-	return *s ? chash(s + 1, (h ^ (u32)(u8)*s) * 16777619u) : h;
-}
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "../xrRender/xrRender_console.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/Environment.h"
 #include "../../xrEngine/date_time.h"
-#include "../xrRenderPC_R4/r4.h"
+
+static constexpr u32 chash(const char* s, u32 h = 2166136261u)
+{
+	return *s ? chash(s + 1, (h ^ (u32)(u8)*s) * 16777619u) : h;
+}
+
 extern float r_dtex_range;
 extern ENGINE_API Fcolor nvg_color;
 
@@ -232,6 +232,8 @@ void FixedConstants::UpdateView()
 	cpu_view.screen_res.set(float(RDEVICE.TargetWidth), float(RDEVICE.TargetHeight), 1.0f / float(RDEVICE.TargetWidth), 1.0f / float(RDEVICE.TargetHeight));
 	cpu_view.scaled_screen_res.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 	cpu_view.pos_decompression_params2.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
+
+#ifndef _EDITOR
 	for (int i = 0; i < 3 && i < (int)RImplementation.m_sun_cascades.size(); ++i)
 	{
 		Fmatrix adj{0.5f, 0, 0, 0, 0, -0.5f, 0, 0, 0, 0, 1, 0, 0.5f, 0.5f, RImplementation.m_sun_cascades[i].bias, 1};
@@ -239,6 +241,8 @@ void FixedConstants::UpdateView()
 		xf.mul(adj, RImplementation.m_sun_cascades[i].xform);
 		store_Float4x4(&cpu_light.m_shadow_sun[i * 4], xf);
 	}
+#endif
+
 	dirty_view = true;
 	dirty_pass = true;
 	dirty_light = true;
