@@ -574,6 +574,17 @@ void CWeaponMagazined::FireStart()
 			else
 			{
 				OnEmptyClick();
+
+				if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+				{
+					if (CCustomDevice* pDevice = pActor->GetDevice())
+					{
+						if (IsMisfire() && pDevice->CanJammed() || pDevice->CanShooting(true))
+						{
+							pDevice->SwitchState(IsMisfire() ? CCustomDevice::EDeviceStates::eHandJammed : CCustomDevice::EDeviceStates::eHandDry);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -599,6 +610,17 @@ void CWeaponMagazined::FireStart()
 		else
 		{
 			OnEmptyClick();
+
+			if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+			{
+				if (CCustomDevice* pDevice = pActor->GetDevice())
+				{
+					if (IsMisfire() && pDevice->CanJammed() || pDevice->CanShooting(true))
+					{
+						pDevice->SwitchState(IsMisfire() ? CCustomDevice::EDeviceStates::eHandJammed : CCustomDevice::EDeviceStates::eHandDry);
+					}
+				}
+			}
 		}
 	}
 }
