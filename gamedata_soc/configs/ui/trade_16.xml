@@ -61,7 +61,7 @@
 	</our_money_static>
 
 	<dragdrop_list x="18" y="35" width="248" height="410"
-			cell_width = "31" cell_height="41" rows_num="10" cols_num="8" 
+			cell_width = "29" cell_height="39" rows_num="10" cols_num="8" 
 			unlimited="1" group_similar="1" condition_progress_bar="1"/>
 
 
@@ -75,7 +75,7 @@
 	</other_money_static>
 
 	<dragdrop_list x="18" y="35" width="248" height="410"
-			cell_width="31" cell_height="41" rows_num="10" cols_num="8" 
+			cell_width="29" cell_height="39" rows_num="10" cols_num="8" 
 			unlimited="1" group_similar="1" condition_progress_bar="1"/>
 
 	<static x="370" y="260" width="280" height="212" stretch="1">
