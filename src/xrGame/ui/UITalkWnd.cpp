@@ -901,6 +901,11 @@ void CUITalkWnd::AddIconedMessage(const char* text, const char* texture_name, Fr
 
 void CUITalkWnd::StopTalk()
 {
+	if (m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode())
+	{
+		return;
+	}
+
 	if (PdaCommunication_IsSessionActive() || IsPdaMode() || IsEmbeddedInPda())
 	{
 		StopPdaDialog();
