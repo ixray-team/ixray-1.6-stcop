@@ -1,4 +1,10 @@
 <w>
+	<item_colors>
+		<default r="255" g="255" b="255"/>
+		<slot r="180" g="255" b="180"/>
+		<unavaliable r="255" g="100" b="100"/>
+	</item_colors>
+
 	<properties_box>
 		<texture>ui_cb_listbox</texture>
 		<list x="0" y="0" width="10" height="10" item_height="18"  always_show_scroll="0" can_select="1" bottom_indent="10" right_ident="10" left_ident="20">				

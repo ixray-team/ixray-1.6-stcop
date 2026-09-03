@@ -380,25 +380,8 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
         m_use_adaptive_ammo_widget = false;
     }
 
-    // HACK: St4lker0k765: idk why, but default values in CUIXmlInit::GetColor are glitchy as hell, so i'll try this instead
-    if (xml.NavigateToNode("active_ammo_color", 0))
-    {
-        m_ui_weapon_ammo_color_active = CUIXmlInit::GetColor(xml, "active_ammo_color", 0, color_rgba(238, 155, 23, 255));
-    }
-    else
-    {
-        m_ui_weapon_ammo_color_active = color_rgba(238, 155, 23, 255);
-    }
-
-    if (xml.NavigateToNode("inactive_ammo_color", 0))
-    {
-        m_ui_weapon_ammo_color_inactive = CUIXmlInit::GetColor(xml, "inactive_ammo_color", 0, color_rgba(238, 155, 23, 150));
-    }
-    else
-    {
-        m_ui_weapon_ammo_color_inactive = color_rgba(238, 155, 23, 150);
-    }
-
+    m_ui_weapon_ammo_color_active = CUIXmlInit::GetColor(xml, "active_ammo_color", 0, color_rgba(238, 155, 23, 255));
+    m_ui_weapon_ammo_color_inactive = CUIXmlInit::GetColor(xml, "inactive_ammo_color", 0, color_rgba(238, 155, 23, 150));
 
     // Fire mode HUD: optional icon mode or localized text labels (explicit XML flags).
     if (xml.NavigateToNode("static_fire_mode", 0))
