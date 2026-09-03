@@ -112,7 +112,8 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, const shared_
 		return true;
 	}
 	// Step 2 - if texture is not in XML, try to load existing file
-	bool texExist = FS.TryLoad(xr_string(texture_name.c_str()));
+	string_path tmp;
+	bool texExist = FS.exist(tmp, _game_textures_, texture_name.c_str());
 	if (texExist || warn_about_missing_tex)
 	{
 		out_shader->create(shader_name.c_str(), texture_name.c_str());
@@ -141,7 +142,8 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, CUIStaticItem
 		return true;
 	}
 	// Step 2 - if texture is not in XML, try to load existing file
-	bool texExist = FS.TryLoad(xr_string(texture_name.c_str()));
+	string_path tmp;
+	bool texExist = FS.exist(tmp, _game_textures_, texture_name.c_str());
 	if (texExist || warn_about_missing_tex)
 	{
 		tc->CreateShader(texture_name.c_str(), shader_name.c_str());
