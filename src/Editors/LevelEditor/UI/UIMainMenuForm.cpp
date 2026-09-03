@@ -3,6 +3,8 @@
 
 #include "../Nodes/UIMacroView.h"
 #include "../Editor/Utils/ReferenceReplacer.h"
+#include "../Editor/Utils/GitIntegration.h"
+#include "UIGitWindow.h"
 
 #include "../../xrEUI/xrUITheme.h"
 #include "../../xrEUI/Windows/Help.h"
@@ -701,6 +703,22 @@ void UIMainMenuForm::Draw()
 				else
 				{
 					UIObjectList::Show();
+				}
+			}
+			
+			ImGui::SameLine();
+			
+			// Git icon button
+			if (Git && Git->IsRepository)
+			{
+				ImGui::SetCursorPosY((UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);
+				if (ImGui::Button(ICON_FA_CODE_BRANCH "##GitButton"))
+				{
+					UIGitWindow::Show();
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Git Integration");
 				}
 			}
 		}
