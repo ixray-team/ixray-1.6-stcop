@@ -79,6 +79,12 @@ enum class EEngineExternalEnvironment
 	None
 };
 
+enum class EEngineExternalSound
+{
+	EnableWorldAmbientOcclusion,
+	None
+};
+
 enum class EEngineExternalPlatform : u8
 {
 	ShadowOfChernobyl,
@@ -189,11 +195,11 @@ public:
 		return CachedGetSettings<EEngineExternalEnvironment>(pOptions, Type, ID);
 	}
 
-	//ICF bool operator[](const EEngineExternalSound& ID) const
-	//{
-	//	static xr_stack_string16 Type = "sound";
-	//	return CachedGetSettings<EEngineExternalSound>(pOptions, Type, ID);
-	//}
+	ICF bool operator[](const EEngineExternalSound& ID) const
+	{
+		static xr_stack_string16 Type = "sound";
+		return CachedGetSettings<EEngineExternalSound>(pOptions, Type, ID);
+	}
 
 	ICF bool operator[](const EEngineExternalPlatform& ID) const
 	{

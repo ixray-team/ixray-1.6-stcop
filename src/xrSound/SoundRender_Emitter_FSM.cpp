@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-
+#include "../xrCore/EngineExternal.h"
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
@@ -290,7 +290,7 @@ bool CSoundRender_Emitter::update_culling(float dt)
 		//v2v3v4 out
 
 		// Update occlusion
-		float occ = (owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT) ? 1.0f : SoundRender->get_occlusion(p_source.position, .2f, occluder);
+		float occ = (owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT && !EngineExternal()[EEngineExternalSound::EnableWorldAmbientOcclusion]) ? 1.0f : SoundRender->get_occlusion(p_source.position, .2f, occluder);
 		volume_lerp(occluder_volume, occ, 1.f, dt);
 		clamp(occluder_volume, 0.f, 1.f);
 	}
