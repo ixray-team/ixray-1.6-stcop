@@ -3,7 +3,7 @@
 
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/UIXmlInit.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "../Entity.h"
 #include "../HUDManager.h"
 #include "../WeaponAmmo.h"
@@ -239,6 +239,9 @@ void CUITradeWnd::Update()
 		InitPartnerInventoryContents();
 
 	inherited::Update				();
+
+	UIPerformTradeButton.SetVisible(!pInput->GetControllerMode());
+	UIToTalkButton.SetVisible(!pInput->GetControllerMode());
 
 	if(UIDealMsg)
 	{
