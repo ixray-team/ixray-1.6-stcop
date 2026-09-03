@@ -112,11 +112,21 @@ CUICellItem::~CUICellItem()
 
 void CUICellItem::init()
 {
-	if (!uiXml.Load(CONFIG_PATH, UI_PATH, "actor_menu_item.xml"))
+	static CUIXml uiXml;
+	static bool isActorMenuItem = false;
+	static bool isInitialized = false;
+
+	if (!isInitialized)
+	{
+		isActorMenuItem = uiXml.Load(CONFIG_PATH, UI_PATH, "actor_menu_item.xml");
+		isInitialized = true;
+	}
+
+	if (!isActorMenuItem)
 	{
 		return;
 	}
-	
+
 	m_text					= new CUIStatic();
 	m_text->SetAutoDelete	( true );
 	AttachChild				( m_text );
