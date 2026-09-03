@@ -164,6 +164,9 @@ function motivator_binder:net_destroy()
 		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy", self.object)
 	end
 
+	if db.offline_objects[self.object:id()] then
+		db.offline_objects[self.object:id()].active_section = db.storage[self.object:id()].active_section
+	end
 	db.del_obj(self.object)
 
 	db.storage[self.object:id()] = nil
