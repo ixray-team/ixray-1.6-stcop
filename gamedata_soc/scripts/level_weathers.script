@@ -1,3 +1,5 @@
+local weather_manager = nil
+
 class "WeatherManager"
 function WeatherManager:__init()
 	--printf					("WeatherManager:WeatherManager()")
@@ -60,4 +62,11 @@ function WeatherManager:update()
 		end
 		self.update_time = self.update_time + 10000
 	end
+end
+
+function get_weather_manager ()
+	if weather_manager == nil then
+		weather_manager = WeatherManager()
+	end
+	return weather_manager
 end
