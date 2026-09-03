@@ -145,10 +145,12 @@ function Crelease_body:inspection_result(obj)
             return false
         end
         
-        if get_object_story_id(obj:id()) ~= nil then
-            printf("Object << "..obj:name().." >> presence_in_story") -- помечен как сюжетный
-            return false
-        end
+		if get_object_story_id then
+			if get_object_story_id(obj:id()) ~= nil then
+				printf("Object << "..obj:name().." >> presence_in_story") -- помечен как сюжетный
+				return false
+			end
+		end
         if self:check_for_known_info(obj) then
             printf("Object << "..obj:name().." >> presence_in_known_info")
             return false
