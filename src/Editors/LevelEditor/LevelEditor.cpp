@@ -6,6 +6,8 @@
 #include "Engine/XRayEditor.h"
 
 #include "Editor/Utils/ContentView.h"
+#include "Editor/Utils/GitIntegration.h"
+#include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Scene/LEPhysics.h"
 #include "Nodes/UIDialogsView.h"
 #include "UI/UIEditLibrary.h"
@@ -87,6 +89,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	splash::SetProgressStatus(25, "Initializing Content View");
 
 	GContentView = new CContentView;
+
+	splash::SetProgressStatus(26, "Initializing Git Integration");
+
+	static CGitIntegration GitIntegration;
+	GitIntegration.Initialize();
+	CGitLFSConfig::Instance().Load();
 
 	splash::SetProgressStatus(30, "Creating Main UI Form");
 
@@ -270,6 +278,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			g_pGamePersistent->UpdateParticles();
 	}
 	s.join();
+	
+	CGitLFSConfig::Instance().Save();
+	GitIntegration.Shutdown();
+	
 	xr_delete(g_FontManager);
 
 	g_scene_physics.DestroyAll();
