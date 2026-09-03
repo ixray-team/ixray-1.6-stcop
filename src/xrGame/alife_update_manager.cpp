@@ -281,9 +281,11 @@ void CALifeUpdateManager::new_game			(const char* save_name)
 	for ( ; I != E; ++I)
 		(*I).second->on_register		();
 
-#ifdef DEBUG
-	save								(save_name);
-#endif // #ifdef DEBUG
+	static bool saveOnNewGame = EngineExternal()[EEngineExternalGame::EnableSaveOnNewGame];
+	if (saveOnNewGame)
+	{
+		save(save_name);
+	}
 
 	Msg									("* New game is successfully created!");
 
