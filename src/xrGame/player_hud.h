@@ -606,6 +606,7 @@ struct movement_layer
 
 		if (name != anim_name)
 		{
+			Stop(true);
 			name = anim_name;
 			anim->Clear();
 			anim->Load(anim_name.c_str());
