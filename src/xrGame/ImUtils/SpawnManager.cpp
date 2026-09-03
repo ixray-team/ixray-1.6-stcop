@@ -1375,6 +1375,8 @@ Section FilterSectionsWithSearch(const Section& sections, const char* searchBuff
 			xr_string lowerSectionName = xr_strlwr_rus(sectionKey);
 
 			const char* rawName = READ_IF_EXISTS(pSettings, r_string, sectionKey, "inv_name", sectionKey);
+			if (!rawName || !*rawName)
+				rawName = sectionKey;
 
 			xr_string lowerTranslated = xr_strlwr_rus(g_pStringTable->translate(rawName).c_str());
 
