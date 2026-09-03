@@ -4,6 +4,9 @@
 #include "UI\UIEditLibrary.h"
 #include "Editor/Utils/ContentView.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
+#include "Editor/Utils/GitIntegration.h"
+#include "Editor/Utils/GitLFSConfig.h"
+#include "UI/UIGitWindow.h"
 
 ECORE_API extern bool bIsLevelEditor;
 CLevelMain* LUI = (CLevelMain*)UI;
@@ -280,6 +283,17 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 
 				UI->SetStatus("Level saving...");
 				Scene->SaveLTX(temp_fn.c_str(), false, (p2 == 66));
+
+				// Track saved file with Git LFS if applicable
+				if (Git && Git->IsRepository && Git->LfsAvailable)
+				{
+					Git->ProcessFileForLFS(temp_fn.c_str());
+					
+					// Also track associated part files
+					string_path partName;
+					xr_strconcat(partName, temp_fn.c_str(), ".level");
+					Git->ProcessFileForLFS(partName);
+				}
 
 				UI->ResetStatus();
 				// set new name
@@ -1488,6 +1502,7 @@ void CLevelMain::OnDrawUI()
 {
 	inherited::OnDrawUI();
 	UIObjectList::Update();
+	UIGitWindow::Update();
 	if (LTools->GetToolForm())
 	{
 		LTools->GetToolForm()->OnDrawUI();
