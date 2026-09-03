@@ -80,7 +80,7 @@
 		<text x="25" y="60" font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
 	</frame_bottom>
 
-	<questions_list x="17" y="100" width="467" height="125" right_ident="5" always_show_scroll="0"/>
+	<questions_list x="17" y="97" width="467" height="117" right_ident="5" always_show_scroll="0"/>
 
 	<answers_list x="17" y="46" width="467" height="377" right_ident="0" always_show_scroll="0"/>
 
