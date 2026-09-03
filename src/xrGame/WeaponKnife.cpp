@@ -332,6 +332,12 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 void CWeaponKnife::OnMotionMark(u8 state, const motion_marks& M)
 {
 	inherited::OnMotionMark(state, M);
+
+	if (M.name == "mm_unpend")
+	{
+		return;
+	}
+
 	if (state == eFire)
 	{
 		m_hit_dist		=	m_Hit1Distance;
