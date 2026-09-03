@@ -399,11 +399,11 @@ void CCustomDevice::OnStateSwitch(u8 S)
 	{
 		if (m_bIsZoomed)
 		{
-			PlayHUDMotion("anm_hand_jammed_aim", EHudMixType::eMixAll, eHandJammed);
+			PlayHUDMotion(HudAnimationExist("anm_hand_jammed_aim") ? "anm_hand_jammed_aim" : "anm_hand_dry_aim", EHudMixType::eMixAll, eHandJammed);
 		}
 		else
 		{
-			PlayHUDMotion("anm_hand_jammed", EHudMixType::eMixAll, eHandJammed);
+			PlayHUDMotion(HudAnimationExist("anm_hand_jammed") ? "anm_hand_jammed" : "anm_hand_dry", EHudMixType::eMixAll, eHandJammed);
 		}
 		break;
 	}
