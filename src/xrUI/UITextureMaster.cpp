@@ -102,12 +102,7 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, const shared_
 	xr_map<shared_str, TEX_INFO>::iterator it	= m_textures.find(texture_name);
 	if (it != m_textures.end())
 	{
-		sh_pair p={it->second.file, shader_name};
-		xr_map<sh_pair, ui_shader>::iterator sh_it = m_shaders.find(p);
-		if(sh_it==m_shaders.end())
-			m_shaders[p]->create(shader_name.c_str(), it->second.file.c_str());
-
-		out_shader			= m_shaders[p];
+		out_shader			= CreateTextureShader(it->second.file, shader_name);
 		out_rect			= (*it).second.rect;
 		return true;
 	}
@@ -116,11 +111,11 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, const shared_
 	bool texExist = FS.exist(tmp, _game_textures_, texture_name.c_str());
 	if (texExist || warn_about_missing_tex)
 	{
-		out_shader->create(shader_name.c_str(), texture_name.c_str());
+		out_shader = CreateTextureShader(texture_name, shader_name);
 	}
 	else
 	{
-		out_shader->create(shader_name.c_str(), "ed\\ed_not_existing_texture");
+		out_shader = CreateTextureShader("ed\\ed_not_existing_texture", shader_name);
 	}
 	return false;
 }
@@ -131,12 +126,7 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, CUIStaticItem
 	xr_map<shared_str, TEX_INFO>::iterator it = m_textures.find(texture_name);
 	if (it != m_textures.end())
 	{
-		sh_pair p = { it->second.file, shader_name };
-		xr_map<sh_pair, ui_shader>::iterator sh_it = m_shaders.find(p);
-		if (sh_it == m_shaders.end())
-			m_shaders[p]->create(shader_name.c_str(), it->second.file.c_str());
-
-		tc->SetShader(m_shaders[p]);
+		tc->SetShader(CreateTextureShader(it->second.file, shader_name));
 		tc->SetTextureRect((*it).second.rect);
 		tc->SetSize(Fvector2().set(it->second.rect.width(), it->second.rect.height()));
 		return true;
@@ -146,11 +136,11 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, CUIStaticItem
 	bool texExist = FS.exist(tmp, _game_textures_, texture_name.c_str());
 	if (texExist || warn_about_missing_tex)
 	{
-		tc->CreateShader(texture_name.c_str(), shader_name.c_str());
+		tc->SetShader(CreateTextureShader(texture_name, shader_name));
 	}
 	else
 	{
-		tc->CreateShader("ed\\ed_not_existing_texture", shader_name.c_str());
+		tc->SetShader(CreateTextureShader("ed\\ed_not_existing_texture", shader_name));
 	}
 
 	return false;
@@ -214,4 +204,15 @@ void CUITextureMaster::GetTextureShader(const shared_str&  texture_name, ui_shad
 	R_ASSERT3(it != m_textures.end(), "can't find texture", texture_name.c_str());
 
 	sh->create("hud\\default", *((*it).second.file));	
+}
+
+ui_shader CUITextureMaster::CreateTextureShader(const shared_str& texture_name, const shared_str& shader_name)
+{
+	sh_pair p = {texture_name, shader_name};
+	xr_map<sh_pair, ui_shader>::iterator sh_it = m_shaders.find(p);
+	if (sh_it == m_shaders.end())
+	{
+		m_shaders[p]->create(shader_name.c_str(), texture_name.c_str());
+	}
+	return m_shaders[p];
 }

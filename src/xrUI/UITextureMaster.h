@@ -50,6 +50,8 @@ public:
 	static void		GetTextureShader	(const shared_str&  texture_name, ui_shader& sh);
 	static TEX_INFO	FindItem			(const shared_str&  texture_name);
 	static bool		ItemExist			(const shared_str&	texture_name);
+	static ui_shader CreateTextureShader	(const shared_str& texture_name, const shared_str& shader_name);
+
 protected:
 	IC	static bool IsSh				(const shared_str& texture_name);
 
