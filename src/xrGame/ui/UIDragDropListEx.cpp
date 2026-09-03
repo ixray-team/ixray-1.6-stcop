@@ -864,6 +864,12 @@ bool CUICellContainer::AddSimilar(CUICellItem* itm)
 	if (i == nullptr || i == itm || itm->ChildsCount() > 0)
 		return false;
 
+	const PIItem iitem_parent = static_cast<PIItem>(i->m_pData);
+	if (iitem && iitem->BaseSlot() != GRENADE_SLOT && iitem->CurrSlot() != iitem_parent->CurrSlot())
+	{
+		return false;
+	}
+
 	i->PushChild(itm);
 	itm->SetOwnerList(m_pParentDragDropList);
 
