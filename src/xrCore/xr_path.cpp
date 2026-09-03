@@ -9,23 +9,29 @@ namespace
 	xr_string pathToXrString(const std::filesystem::path& p)
 	{
 #ifdef IXR_WINDOWS
-		try
+		const std::wstring wide = p.wstring();
+		if (wide.empty())
+			return xr_string();
+
+		// Prefer ANSI, matching path::string() semantics when representable.
+		BOOL usedDefaultChar = FALSE;
+		const int ansiSize = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), (int)wide.size(), nullptr, 0, nullptr, &usedDefaultChar);
+		if (ansiSize > 0 && !usedDefaultChar)
 		{
-			return p.string().c_str();
-		}
-		catch (const std::exception&)
-		{
-			const std::wstring wide = p.wstring();
-			if (wide.empty())
-				return xr_string();
-			int size = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), (int)wide.size(), nullptr, 0, nullptr, nullptr);
-			if (size <= 0)
-				return xr_string();
-			xr_vector<char> buf(size + 1);
-			WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), (int)wide.size(), buf.data(), size, nullptr, nullptr);
-			buf[size] = '\0';
+			xr_vector<char> buf(ansiSize + 1);
+			WideCharToMultiByte(CP_ACP, 0, wide.c_str(), (int)wide.size(), buf.data(), ansiSize, nullptr, nullptr);
+			buf[ansiSize] = '\0';
 			return xr_string(buf.data());
 		}
+
+		// Fallback: UTF-8.
+		const int size = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), (int)wide.size(), nullptr, 0, nullptr, nullptr);
+		if (size <= 0)
+			return xr_string();
+		xr_vector<char> buf(size + 1);
+		WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), (int)wide.size(), buf.data(), size, nullptr, nullptr);
+		buf[size] = '\0';
+		return xr_string(buf.data());
 #else
 		return p.string().c_str();
 #endif
@@ -65,7 +71,8 @@ CFilePath& CFilePath::operator=(const char* Right)
 
 bool CFilePath::exists(const CFilePath& Path)
 {
-	return std::filesystem::exists(Path);
+	std::error_code ec;
+	return std::filesystem::exists(Path, ec);
 }
 
 XRCORE_API CFilePath operator/(const CFilePath& _Left, const CFilePath& _Right)
