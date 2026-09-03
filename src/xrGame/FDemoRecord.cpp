@@ -632,16 +632,16 @@ void CDemoRecord::parse_actor_cam()
 
 bool CDemoRecord::try_attach_bone()
 {
-	if (rq_result.O == nullptr)
+	if (rq_result.IsStatic())
 	{
 		return false;
 	}
 
-	if (IRenderVisual* v = rq_result.O->Visual())
+	if (IRenderVisual* v = rq_result.GetDynamic()->Visual())
 	{
 		if (IKinematics* k = v->dcast_PKinematics())
 		{
-			bone_holder = rq_result.O;
+			bone_holder = const_cast<CObject*>(rq_result.GetDynamic());
 			bone_holder_kinematics = k;
 			bone_id = (u16)rq_result.element;
 			view_from_bone_mode = true;
