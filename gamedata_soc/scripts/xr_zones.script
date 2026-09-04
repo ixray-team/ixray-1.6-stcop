@@ -76,7 +76,7 @@ end
 --' callback на вход в зону. Нужно регистрить все объекты, кроме игрока.
 --' Так как есть глюк, то этот коллбек вызывается и на вход и на выход из скриптовой зоны
 function arena_zone_binder:on_enter(zone, obj)
-	if obj:clsid() == clsid.actor then
+	if not isWeapon(obj) and obj:clsid() ~= clsid.script_stalker then
 		return
 	end
 
@@ -84,7 +84,7 @@ function arena_zone_binder:on_enter(zone, obj)
 	self.saved_obj[obj:id()] = true
 end
 function arena_zone_binder:on_exit(zone, obj)
-	if obj:clsid() == clsid.actor then
+	if not isWeapon(obj) and obj:clsid() ~= clsid.script_stalker then
 		return
 	end
 
