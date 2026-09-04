@@ -1775,6 +1775,12 @@ void ws_element_show(u16 id, const char* section, bool show = true)
 	}
 }
 
+extern int g_keypress_on_start;
+static bool isUsedKeypressOnStart()
+{
+	return g_keypress_on_start == 1;
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1802,6 +1808,10 @@ void CLevel::script_register(lua_State *L)
 			.def("next_bool_probability", &CFFxRandom::next_bool_probability)
 	];
 
+	module(L, "splash_screen")
+	[
+		def("is_used_key_press_on_start_game", isUsedKeypressOnStart)
+	],
 	module(L,"level")
 	[
 		class_<enum_exporter<ESPATIAL_TYPE>>("e_spatial_type")
