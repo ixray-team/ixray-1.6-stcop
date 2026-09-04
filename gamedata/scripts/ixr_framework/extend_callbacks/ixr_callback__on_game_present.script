@@ -8,7 +8,7 @@ function on_game_start()
 end
 
 function check()
-	if db.actor and db.actor:alive() and actor_loaded and actor_controll_recieved then
+	if db.actor and db.actor:alive() and ((not splash_screen.is_used_key_press_on_start_game()) or actor_loaded) and actor_controll_recieved then
 		SendScriptCallback("on_game_present")
 	end
 end
