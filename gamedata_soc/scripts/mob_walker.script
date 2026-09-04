@@ -246,17 +246,12 @@ function mob_walker:update_standing_state()
 	end
 end
 
-function mob_walker:deactivate()
-	xr_logic.mob_capture(self.object, true)
-	action(self.object, move(move.steal, self.patrol_walk:point(0)), cond(cond.move_end))
-end
 function mob_walker:look_at_waypoint(pt)
 	if not self.patrol_look then
 		return
 	end
 
 	local look_pt = utils.vector_copy_by_val(self.patrol_look:point(pt)):sub(self.object:position())
-	look_pt:normalize()
 	--self.object:set_sight(look.direction, look_pt, 0)
 
 	xr_logic.mob_capture(self.object, true)
