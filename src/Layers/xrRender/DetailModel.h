@@ -24,7 +24,9 @@ public:
 #endif
 	
 	xr_vector<SlotItem> m_items[2][3];
+	CDetail();
 	void Load(IReader* S);
+	bool LoadFromDM(const char* dm_path);
 	void Optimize();
 	virtual void Unload();
 
