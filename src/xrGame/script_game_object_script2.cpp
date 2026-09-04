@@ -149,6 +149,21 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("patrol",						&CScriptGameObject::GetPatrolPathName)
 
 		//FFx0001++
+		.def("get_item_prepend_name", &CScriptGameObject::GetItemPrependName)
+		.def("set_item_prepend_name", &CScriptGameObject::SetItemPrependName)
+		.def("unset_item_prepend_name", &CScriptGameObject::UnsetItemPrependName)
+		.def("is_item_used_prepend_name", &CScriptGameObject::IsItemUsedPrependName)
+
+		.def("get_item_additional_name", &CScriptGameObject::GetItemAdditionalName)
+		.def("set_item_additional_name", &CScriptGameObject::SetItemAdditionalName)
+		.def("unset_item_additional_name", &CScriptGameObject::UnsetItemAdditionalName)
+		.def("is_item_used_additional_name", &CScriptGameObject::IsItemUsedAdditionalName)
+
+		.def("get_item_prepend_description", &CScriptGameObject::GetItemPrependDescription)
+		.def("set_item_prepend_description", &CScriptGameObject::SetItemPrependDescription)
+		.def("unset_item_prepend_description", &CScriptGameObject::UnsetItemPrependDescription)
+		.def("is_item_used_prepend_description", &CScriptGameObject::IsItemUsedPrependDescription)
+
 		.def("get_item_additional_description", &CScriptGameObject::GetItemAdditionalDescription)
 		.def("set_item_additional_description", &CScriptGameObject::SetItemAdditionalDescription)
 		.def("unset_item_additional_description", &CScriptGameObject::UnsetItemAdditionalDescription)
