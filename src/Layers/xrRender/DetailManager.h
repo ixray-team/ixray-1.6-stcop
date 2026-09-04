@@ -113,6 +113,10 @@ public:
 
 	xr_atomic_bool task_finished = true;
 	int render_key = 1, calc_key = 0;
+	u32 alt_models_start = 0;
+	u32 alt_models_count = 0;
+	u32 vanilla_grass_indices[64] = {};
+	u32 vanilla_grass_count = 0;
 #ifndef _EDITOR    
 	xr_vector<CDetail> objects;
 	CDB::COLLIDER xrc;
@@ -129,8 +133,20 @@ public:
 	int								cache_cx;
 	int								cache_cz;
 
+	// Precomputed cluster-noise field indexed by detail-DB slot (world cell = dm_slot_size).
+	// One byte per DB slot (value in [0, 255] used as deterministic 0..1 sample).
+	xr_vector<u8>					cluster_field;
+
+	void							BuildClusterField	();
+	u32								SampleClusterField	(float world_x, float world_z, u32 asset_count) const;
+
 #ifdef _EDITOR
 	virtual ObjectList* 			GetSnapList		()=0;
+#else
+	// Deferred rebuild: console changes set a flag; cache_Update applies it once per frame
+	// so a cfg_load (series of r__detail_* commands) rebuilds all slots a single time.
+	void RequestCacheRebuild();
+	bool ConsumeCacheRebuildRequest();
 #endif
 
 	void							hw_Load			();
