@@ -137,7 +137,7 @@ function send_artefact (npc, actor)
 end
 
 function send_desert_eagle (actor, npc)
-    dialogs.relocate_item_section(npc, "wpn_walther", "in") 
+    dialogs.relocate_item_section(npc, "wpn_desert_eagle", "in") 
 end
 
 function set_snipers_spots (npc, actor)

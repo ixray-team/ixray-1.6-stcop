@@ -50,7 +50,7 @@ function action_teleport:update(delta)
 					local dir = patrol(v.look):point(0):sub(patrol(v.point):point(0))
 					db.actor:set_actor_direction(-dir:getH())
 					local snd_obj = xr_sound.get_safe_sound_object([[affects\tinnitus3a]])
-					snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)					
+					snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector():set(0,0,0), 1.0)			
 					break
 				end
 			end
