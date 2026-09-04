@@ -766,6 +766,31 @@ CCommandVar CommandMakePuddles(CCommandVar p1, CCommandVar p2)
 	else {
 		ELog.DlgMsg( mtError, "Scene sharing violation" );
 	}
+    return false;
+}
+
+CCommandVar CommandMakePlanars(CCommandVar p1, CCommandVar p2)
+{
+	if (!Scene->locked())
+	{
+		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export planars?"))
+		{
+			LUI->LoaderEvent.wait();
+
+			LUI->LoaderEvent.run
+			(
+				[]()
+				{
+					Builder.MakePlanars();
+				}
+			);
+
+			return true;
+		}
+	}
+	else {
+		ELog.DlgMsg(mtError, "Scene sharing violation");
+	}
 	return false;
 }
 
@@ -1158,6 +1183,7 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_SE	    (COMMAND_BUILD,              		"Compile\\Build",		        CommandBuild,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_GAME,              	"Compile\\Make Game",	        CommandMakeGame,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_PUDDLES,             	"Compile\\Make Puddles",	    CommandMakePuddles,false);
+	REGISTER_CMD_SE	    (COMMAND_MAKE_PLANARS,             	"Compile\\Make Planars",	    CommandMakePlanars,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP,              	"Compile\\Make AI Map",	        CommandMakeAIMap,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP_LEGACY,        	"Compile\\Make AI Map Legacy",  CommandMakeAIMapLegacy,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_DETAILS,              "Compile\\Make Details",        CommandMakeDetails,false);
