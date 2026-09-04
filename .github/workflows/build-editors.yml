@@ -7,7 +7,7 @@ on:
     paths:
       - '.github/workflows/**'
       - 'cmake/**'
-      - 'gamedata/**'
+      - 'gamedata*/**'
       - 'sdk/**'
       - 'src/**'
       - '**/CMakeLists.txt'
@@ -19,7 +19,7 @@ on:
     paths:
       - '.github/workflows/**'
       - 'cmake/**'
-      - 'gamedata/**'
+      - 'gamedata*/**'
       - 'sdk/**'
       - 'src/**'
       - '**/CMakeLists.txt'
