@@ -147,6 +147,7 @@ public:
 	bool	Compile            		(bool b_selected_only,bool show_message=true);
 	bool 	MakeGame				();
 	bool 	MakePuddles				();
+	bool 	MakePlanars				();
     bool 	MakeDetails				();
     bool 	MakeHOM					();
 	bool 	MakeSOM					();
