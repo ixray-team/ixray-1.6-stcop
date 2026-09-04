@@ -650,9 +650,6 @@ void CWeapon::Load		(const char* section)
 
 	m_bGaussScheme = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_gauss_scheme", false);
 
-	m_bullet_point_offset_hud = READ_IF_EXISTS(pSettings, r_float, section, "bullet_point_offset_hud", -1.0f);
-	m_bullet_point_offset_world = READ_IF_EXISTS(pSettings, r_float, section, "bullet_point_offset_world", -0.3f);
-
 	m_bAmmoInChamber = READ_IF_EXISTS(pSettings, r_bool, section, "ammo_in_chamber", false);
 	
 	m_bRestGlSil = READ_IF_EXISTS(pSettings, r_bool, section, "restricted_gl_and_sil", false);
