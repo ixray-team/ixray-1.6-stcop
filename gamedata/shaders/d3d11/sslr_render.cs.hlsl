@@ -118,7 +118,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	}
 	
 	Point.xyz = lerp(Point.xyz, SSLR.xyz, SSLR.w);
-	Final.xyz = LinearToGamma(Final.xyz);
+	
 	
 	Hemi.w = max(length(Point.xyz), length(StartPoint.xyz) + length(Point.xyz - StartPoint.xyz));
 	Hemi.w = saturate(Hemi.w * fog_params.w + fog_params.x);
@@ -127,9 +127,6 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	Point.xyz = length(Point.xyz - StartPoint.xyz) * Reflection.xyz + ReflectPoint;
 	
 	Point.w = rcp(max(EPS_S, H.w));
-	
-	Final.xyz *= rcp(1.0f + Final.xyz);
-	Final.xyz = saturate(Final.xyz);
 	
 	Final.w = isHUDRender;
 
