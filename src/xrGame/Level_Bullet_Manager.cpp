@@ -100,10 +100,12 @@ void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const Fvec
 	{
 		return;
 	}
+
 	if (bullet->m_whine_snd.is_playing())
 	{
 		return;
 	}
+
 	if (bullet->hit_type != ALife::eHitTypeFireWound)
 	{
 		return;
@@ -111,6 +113,27 @@ void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const Fvec
 
 	bullet->m_whine_snd = m_WhineSounds[Random.randI(0, (u32)m_WhineSounds.size())];
 	bullet->m_whine_snd.play_at_pos(object, pos);
+}
+
+void CBulletManager::PlayRicochetSound(SBullet* bullet, CObject* object, const Fvector& pos)
+{
+	if (m_RicochetSounds.empty())
+	{
+		return;
+	}
+
+	if (bullet->m_ricochet_snd.is_playing())
+	{
+		return;
+	}
+
+	if (bullet->hit_type != ALife::eHitTypeFireWound)
+	{
+		return;
+	}
+
+	bullet->m_ricochet_snd = m_RicochetSounds[Random.randI(0, (u32)m_RicochetSounds.size())];
+	bullet->m_ricochet_snd.play_at_pos(object, pos);
 }
 
 void CBulletManager::PlayExplodePS(const Fmatrix& xf)
@@ -194,6 +217,7 @@ CBulletManager::~CBulletManager()
 {
 	m_Bullets.clear();
 	m_WhineSounds.clear();
+	m_RicochetSounds.clear();
 	m_Events.clear();
 	Device.seqFrame.Remove(this);
 }
@@ -224,20 +248,28 @@ void CBulletManager::Load()
 	}
 
 
-	const char* whine_sounds = pSettings->r_string(bullet_manager_sect, "whine_sounds");
-	int cnt = _GetItemCount(whine_sounds);
-	xr_string tmp;
-	for (int k = 0; k < cnt; ++k)
+	auto List = xr_string(pSettings->r_string(bullet_manager_sect, "whine_sounds")).RemoveWhitespaces().Split(',');
+
+	for (const auto& WhineSound : List)
 	{
-		m_WhineSounds.emplace_back();
-		m_WhineSounds.back().create(_GetItem(whine_sounds, k, tmp), st_Effect, sg_SourceType);
+		m_WhineSounds.emplace_back().create(WhineSound.c_str(), st_Effect, sg_SourceType);
 	}
 
-	const char* explode_particles = pSettings->r_string(bullet_manager_sect, "explode_particles");
-	cnt = _GetItemCount(explode_particles);
-	for (int k = 0; k < cnt; ++k)
+	if (pSettings->line_exist(bullet_manager_sect, "ricochet_sounds"))
 	{
-		m_ExplodeParticles.emplace_back(_GetItem(explode_particles, k, tmp));
+		List = xr_string(pSettings->r_string(bullet_manager_sect, "ricochet_sounds")).RemoveWhitespaces().Split(',');
+
+		for (const auto& RicochetSound : List)
+		{
+			m_RicochetSounds.emplace_back().create(RicochetSound.c_str(), st_Effect, sg_SourceType);
+		}
+	}
+
+	List = xr_string(pSettings->r_string(bullet_manager_sect, "explode_particles")).RemoveWhitespaces().Split('i');
+
+	for (const auto& ExplodeParticle : List)
+	{
+		m_ExplodeParticles.emplace_back(ExplodeParticle.c_str());
 	}
 
 	const char* sh_name = READ_IF_EXISTS(pSettings, r_string, bullet_manager_sect, "tracer_shader", "effects\\bullet_tracer");
@@ -276,6 +308,7 @@ void CBulletManager::Clear()
 	m_Events.clear();
 	m_Bullets_Tracers.clear();
 	m_WhineSounds.clear();
+	m_RicochetSounds.clear();
 }
 
 void CBulletManager::AddBullet(
