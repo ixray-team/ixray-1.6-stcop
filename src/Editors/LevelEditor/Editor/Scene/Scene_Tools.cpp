@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../Tools/Puddles/EScenePuddlesTools.h"
+#include "../Tools/Planars/EScenePlanarsTools.h"
 #include "../Tools/Terrain/ESceneTerrainTools.h"
 
 void EScene::RegisterSceneTools(ESceneToolBase* mt)
@@ -24,6 +25,7 @@ void EScene::CreateSceneTools()
     RegisterSceneTools(new ESceneSectorTool());
     RegisterSceneTools(new EScenePortalTool());
     RegisterSceneTools(new EScenePuddlesTool());
+    RegisterSceneTools(new EScenePlanarsTool());
     RegisterSceneTools(new ESceneTerrainTool());
     RegisterSceneTools(new EScenePSTool());
     RegisterSceneTools(new EDetailManager());

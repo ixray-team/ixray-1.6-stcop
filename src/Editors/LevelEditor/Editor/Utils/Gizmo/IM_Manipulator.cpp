@@ -117,7 +117,7 @@ void IM_Manipulator::CommandScale(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatri
 		{
 			Obj->GetUTBox(localBox);
 		}
-		else if (LTools->CurrentClassID() == OBJCLASS_SHAPE || LTools->CurrentClassID() == OBJCLASS_SOUND_ENV || LTools->CurrentClassID() == OBJCLASS_PUDDLES)
+		else if (LTools->CurrentClassID() == OBJCLASS_SHAPE || LTools->CurrentClassID() == OBJCLASS_SOUND_ENV || LTools->CurrentClassID() == OBJCLASS_PUDDLES || LTools->CurrentClassID() == OBJCLASS_PLANARS)
 		{
 			CEditShape* Shape = (CEditShape*)Obj;
 
