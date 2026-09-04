@@ -3106,6 +3106,21 @@ void CWeaponMagazined::PlayAnimReload()
 		if (IsMisfire() && (HudAnimationExist("anm_reload_misfire") || HudAnimationExist("anm_reload_jammed")))
 		{
 			bMisfireReload = true;
+
+			if (m_bJamNotShot)
+			{
+				u8 type = !m_chamber.empty() ? m_chamber.back().m_LocalAmmoType : !m_magazine.empty() ? m_magazine.back().m_LocalAmmoType : m_ammoType;
+
+				if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+				{
+					AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type);
+				}
+
+				if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
+				{
+					MagAmmoBones->UpdateMagAmmoBones(this, type);
+				}
+			}
 		}
 
 		CActor* actor = Level().CurrentControlEntity()->cast_actor();
