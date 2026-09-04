@@ -152,7 +152,7 @@ function Crelease_body:save(packet)
 		packet:w_u16(v.id)
 		packet:w_u16(v.death_time)
 	end
-	local level_id = game_graph():vertex(alife():object(0).m_game_vertex_id):level_id()
+	local level_id = gg_vertex_level_id(alife():object(0).m_game_vertex_id)
 	packet:w_u16(level_id)
 	set_save_marker(packet, "save", true, "Crelease_body")
 end
@@ -169,7 +169,7 @@ function Crelease_body:load(reader)
 		self.release_objects_table[i].death_time = dt
 	end
 	local level_id = reader:r_u16()
-	if level_id ~= game_graph():vertex(alife():object(0).m_game_vertex_id):level_id() then
+	if level_id ~= gg_vertex_level_id(alife():object(0).m_game_vertex_id) then
 		self.release_objects_table = {}
 	end
 	set_save_marker(reader, "load", true, "Crelease_body")

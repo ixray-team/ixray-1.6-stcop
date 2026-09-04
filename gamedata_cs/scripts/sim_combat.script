@@ -443,10 +443,7 @@ function CCombat_manager:update_squad(id, data)
 	--	printf("Sim_Combat[%s]: squad [%s] quest [%s] stage [%s] squad_online [%s]", self.smart:name(), id, tostring(self.combat_quest), data._stage, tostring(squad.squad_online))
 	--end
 	local function is_same_level(obj1, obj2)
-		local gg = game_graph()
-		local gv1 = gg:vertex(obj1.m_game_vertex_id)
-		local gv2 = gg:vertex(obj2.m_game_vertex_id)
-		return (gv1:level_id() == gv2:level_id())
+		return (gg_vertex_level_id(obj1.m_game_vertex_id) == gg_vertex_level_id(obj2.m_game_vertex_id))
 	end
 
 	if data._stage == "move" then

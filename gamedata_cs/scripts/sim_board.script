@@ -442,7 +442,7 @@ function sim_board:register_spawn_smart(smart)
 end
 --' Заполнение логов монстров
 function sim_board:register_mutant_lair(smart)
-        self.mutant_lair[smart.id] =  game_graph():vertex(smart.m_game_vertex_id):level_id()
+        self.mutant_lair[smart.id] =  gg_vertex_level_id(smart.m_game_vertex_id)
 end
 --' Поиск точки для спауна.
 function sim_board:get_spawn_smart(player)
@@ -462,7 +462,7 @@ function sim_board:get_spawn_smart(player)
                 if spawn_player == "all" or spawn_player == player.player_name then
                 	--printf("    owner suit")
                     if (smart.player_name == "none" or smart.player_name == player.player_name) and
-                      (alife():level_id() ~= game_graph():vertex(smart.m_game_vertex_id):level_id() or
+                      (alife():level_id() ~= gg_vertex_level_id(smart.m_game_vertex_id) or
                        db.actor:position():distance_to_sqr(smart.position) > smart.respawn_radius*smart.respawn_radius)
                     then
                         --' Среди остальных берем смарт, который наиболее близок к незахваченной целевой точке группировки.

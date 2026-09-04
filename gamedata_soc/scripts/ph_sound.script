@@ -66,9 +66,22 @@ function snd_source:update(delta)
 		else
 			self.played_sound = xr_sound.get_sound_object(self.st.theme, "seq")
 		end
+		
+		if self.played_sound:playing() then
+			-- [FL][STTR-758] [SOC] The arena announcer sound is corrupted at any round
+			-- On arena there are 4 game objects with this script set up to play arena fight sounds.
+			-- They are all assigned single audio object and each overrides it's position resulting in audio glitches
+			-- To work around that, only first object will play the sound
+			self.played_sound = nil
+		end
 
 		if self.played_sound ~= nil then
-			self.played_sound:play_at_pos (self.object, self.object:position ())
+			-- MTB-jan.rudol: play looped sound when self.st.looped
+			if self.st.looped then
+				self.played_sound:play_at_pos (self.object, self.object:position (), 0, sound_object.s3d + sound_object.looped)
+			else
+				self.played_sound:play_at_pos (self.object, self.object:position ())
+			end
 		else
 			self.st.signals["theme_end"] = true
 		end

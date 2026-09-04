@@ -39,10 +39,12 @@
 	</group>
 	<group name="kb_grp_inventory">
 		<command id="kb_inventory"					exe="inventory"/>
+		<command id="kb_inv_unload_ruck"			exe="inv_unload_ruck"/>
 		<command id="kb_active_jobs"				exe="active_jobs"/>
 		<command id="kb_map"						exe="map"/>
 		<command id="kb_contacts"					exe="contacts"/>
 		<command id="kb_torch"						exe="torch"/>
+		<command id="kb_clear_gasmask"			exe="clear_gasmask"/>
 		<command id="kb_night_vision"				exe="night_vision"/>
 		<command id="kb_use_bandage"				exe="use_bandage"/>
 		<command id="kb_use_medkit"					exe="use_medkit"/>
