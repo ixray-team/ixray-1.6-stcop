@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DetailManager.h"
+#include "xrRender_console.h"
 
 u32 dm_size = 24;
 u32 dm_slide_window_line = 12;
@@ -13,6 +14,28 @@ u32 dm_current_cache_size = 2401;
 float dm_current_fade = 47.5;
 float ps_current_detail_density = 0.6;
 float ps_current_detail_scale = 1.f;
+
+#ifndef _EDITOR
+// Set by r__detail_* console changes while the level is loaded.
+// Deferred so that a whole cfg_load (many commands in one frame) triggers a
+// single cache_ReInitialize instead of one full slot rebuild per command.
+// Set from the console thread, consumed on the render thread.
+std::atomic<bool> g_details_need_rebuild = false;
+
+void CDetailManager::RequestCacheRebuild()
+{
+	if (RImplementation.b_loaded)
+		g_details_need_rebuild.store(true);
+}
+
+bool CDetailManager::ConsumeCacheRebuildRequest()
+{
+	if (!g_details_need_rebuild.load())
+		return false;
+	g_details_need_rebuild.store(false);
+	return true;
+}
+#endif
 
 void CDetailManager::cache_Alloc()
 {
@@ -89,6 +112,46 @@ void CDetailManager::Load()
 	}
 	m_fs->close();
 
+	vanilla_grass_count = 0;
+	for (u32 m_id = 0; m_id < m_count; m_id++)
+	{
+		if (vanilla_grass_count >= 64)
+			break;
+		if (objects[m_id].number_vertices >= 8 && !objects[m_id].m_Flags.is(DO_NO_WAVING))
+		{
+			vanilla_grass_indices[vanilla_grass_count++] = m_id;
+		}
+	}
+
+	alt_models_start = (u32)objects.size();
+	if (ps_r__detail_use_alternative_tree_assets)
+	{
+		FS_FileSet dm_files;
+		FS.file_list(dm_files, "$level$", FS_ListFiles, "alternative_tree_dm\\*.dm");
+		constexpr u32 kMaxObjects = u32(u8(-1));
+		u32 obj_count = (u32)objects.size();
+		for (const auto& dmf : dm_files)
+		{
+			if (obj_count >= kMaxObjects)
+				break;
+			string_path full_path;
+			FS.update_path(full_path, "$level$", dmf.name.c_str());
+			CDetail& dt = objects.emplace_back();
+			obj_count++;
+			if (!dt.LoadFromDM(full_path))
+			{
+				objects.pop_back();
+				obj_count--;
+				Msg("! CDetailManager::Load: alt model failed to load '%s'", full_path);
+			}
+		}
+		alt_models_count = (u32)objects.size() - alt_models_start;
+		if (alt_models_count == 0)
+			Msg("* CDetailManager::Load: no alt DM files in alternative_tree_dm, using vanilla assets");
+		else
+			Msg("* CDetailManager::Load: loaded %d alt DM models (start index: %d)", alt_models_count, alt_models_start);
+	}
+
 	// Get pointer to database (slots)
 	IReader* m_slots = dtFS->open_chunk(2);
 	dtSlots = (DetailSlot*)m_slots->pointer();
@@ -142,6 +205,17 @@ void CDetailManager::Render()
 #ifndef _EDITOR
 	if (!dtFS) return;
 	if (!psDeviceFlags.is(rsDetails)) return;
+
+	// Deferred rebuild: a whole cfg_load sets the flag for every r__detail_* command;
+	// apply it here once per frame on the render thread (batched) instead of inside the
+	// DetailsTask worker, where cache_Free/cache_Alloc would race hw_Render_dump's read
+	// of m_items[render_key]. wait() keeps the worker idle while we rebuild.
+	if (ConsumeCacheRebuildRequest())
+	{
+		Device.DetailsTask.wait();
+		cache_ReInitialize();
+	}
+
 	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
 	if(in_outdoor && task_finished.load())
 #else
