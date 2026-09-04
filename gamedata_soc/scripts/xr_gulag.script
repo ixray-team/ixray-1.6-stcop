@@ -721,11 +721,11 @@ function gulag:find_obj_on_jobLow_for_jobHigh( Job_avail, job_high )
 	local priority     = nil
 	local obj_suitable = nil
 
-	while i > job_high_num and (not priority or priority == Job_avail[i].prior) and (Job_avail[i].prior < job_high.prior) do
+	while i > job_high_num and (priority == nil or not priority or priority == Job_avail[i].prior) and (Job_avail[i].prior < job_high.prior) do
 		job_low = Job_avail[i]
 
 		if job_low.object ~= nil and ( not predicate or predicate(self.npc_info[job_low.object], self) ) then
-			if not obj_suitable then
+			if obj_suitable == nil or not obj_suitable then
 				priority     = job_low.prior
 				obj_suitable = {}
 			end
