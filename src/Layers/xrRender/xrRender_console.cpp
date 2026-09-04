@@ -257,6 +257,11 @@ float		ps_r4_cas_sharpening = 0.0f;
 float		ps_r__detail_rnd_scale_min = 0.5f;
 float		ps_r__detail_rnd_scale_max = 0.9f;
 
+bool		ps_r__detail_use_perlin_noise = false;
+float		ps_r__detail_perlin_noise_frequency = 0.5f;
+float		ps_r__detail_perlin_noise_amplitude = 0.6f;
+float		ps_r__detail_perlin_noise_random_height = 0.15f;
+
 // Test float exported to shaders for development
 float		ps_r__test_exp_to_shaders_1	= 1.0f;
 float		ps_r__test_exp_to_shaders_2	= 1.0f;
@@ -797,6 +802,12 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask32, "r__fast_details_update",&ps_r2_ls_flags, R2FLAG_FAST_DETAILS_UPDATE);
 	CMD4(CCC_DetailReloadDetails, "r__detail_density", &ps_current_detail_density, 0.15f, 1.0f);
 	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 50, 2000);
+
+	CMD2(CCC_Boolean, "r__detail_use_perlin_noise", &ps_r__detail_use_perlin_noise);
+	CMD4(CCC_DetailReloadDetails, "r__detail_perlin_noise_frequency", &ps_r__detail_perlin_noise_frequency, 0.0f, 1.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_perlin_noise_amplitude", &ps_r__detail_perlin_noise_amplitude, 0.0f, 10.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_perlin_noise_random_height", &ps_r__detail_perlin_noise_random_height, 0.0f, 1.0f);
+
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_min", &ps_r__detail_rnd_scale_min, 0.0f, 100.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_max", &ps_r__detail_rnd_scale_max, 0.0f, 100.0f);
 
