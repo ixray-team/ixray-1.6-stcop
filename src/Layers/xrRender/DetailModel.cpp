@@ -17,6 +17,23 @@ static RHIInputElementDesc dwDecl[] =
 	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
 };
 
+CDetail::CDetail()
+{
+	vertices = nullptr;
+	number_vertices = 0;
+	indices = nullptr;
+	number_indices = 0;
+	m_fMinScale = 0.5f;
+	m_fMaxScale = 2.f;
+#ifdef USE_DX11
+	hw_VB = nullptr;
+	hw_IB = nullptr;
+	for (u32 i = 0; i < 2; i++)
+		for (u32 j = 0; j < 3; j++)
+			DetailGPUBoundBuffers[i][j] = {nullptr, nullptr};
+#endif
+}
+
 CDetail::~CDetail()
 {
 }
@@ -299,6 +316,33 @@ void CDetail::Load(IReader* S)
 #ifdef USE_DX11
 	LoadGeom();
 #endif
+}
+
+bool CDetail::LoadFromDM(const char* dm_path)
+{
+	string_path fn;
+	if (!FS.exist(fn, "$game_meshes$", dm_path))
+	{
+		if (!FS.exist(dm_path))
+		{
+			Msg("! CDetail::LoadFromDM: cannot find '%s'", dm_path);
+			return false;
+		}
+		xr_strcpy(fn, sizeof(fn), dm_path);
+	}
+
+	IReader* F = FS.r_open(fn);
+	if (!F)
+	{
+		Msg("! CDetail::LoadFromDM: failed to open '%s'", fn);
+		return false;
+	}
+
+	Load(F);
+	FS.r_close(F);
+
+	Msg("* CDetail::LoadFromDM: loaded '%s' (%d verts, %d indices)", fn, number_vertices, number_indices);
+	return true;
 }
 
 #ifndef _EDITOR

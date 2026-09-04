@@ -2,6 +2,33 @@
 #include "xrRender_console.h"
 #include "dxRenderDeviceRender.h"
 
+bool ps_r__detail_use_alternative_tree_assets = false;
+bool ps_r__detail_use_cluster_mix_tree_assets = false;
+float ps_r__detail_cluster_seed = 2790.817f;
+float ps_r__detail_cluster_patch_size_min = 31.808f;
+float ps_r__detail_cluster_patch_size_max = 36.098f;
+float ps_r__detail_cluster_sharpness = 16.063f;
+float ps_r__detail_cluster_warp_min = 0.062f;
+float ps_r__detail_cluster_warp_max = 0.057f;
+
+bool ps_r__detail_fmb_use_layer_1 = false;
+float ps_r__detail_fmb_layer_1_frequency = 0.076f;
+float ps_r__detail_fmb_layer_1_amplitude = 1.414f;
+float ps_r__detail_fmb_layer_1_seed = 2752.25f;
+float ps_r__detail_fmb_layer_1_power = 0.831f;
+
+bool ps_r__detail_fmb_use_layer_2 = false;
+float ps_r__detail_fmb_layer_2_frequency = 0.313f;
+float ps_r__detail_fmb_layer_2_amplitude = 0.783f;
+float ps_r__detail_fmb_layer_2_seed = 1515.0f;
+float ps_r__detail_fmb_layer_2_power = 0.745f;
+
+bool ps_r__detail_fmb_use_layer_3 = false;
+float ps_r__detail_fmb_layer_3_frequency = 0.593f;
+float ps_r__detail_fmb_layer_3_amplitude = 1.288f;
+float ps_r__detail_fmb_layer_3_seed = 4671.25f;
+float ps_r__detail_fmb_layer_3_power = 0.417f;
+
 u32 ps_Preset =	2;
 xr_token							qpreset_token							[ ]={
 	{ "Minimum",					0											},
@@ -255,7 +282,7 @@ float		ps_r2_gloss_factor = 3.14f;
 int			ps_r__detail_radius = 120;
 float		ps_r4_cas_sharpening = 0.0f;
 
-float		ps_r__detail_rnd_scale_min = 0.5f;
+float		ps_r__detail_rnd_scale_min = 0.3f;
 float		ps_r__detail_rnd_scale_max = 0.9f;
 
 // Test float exported to shaders for development
@@ -644,16 +671,23 @@ public:
 
 	virtual void Execute(LPCSTR args) {
 		CCC_Float::Execute(args);
-
-		if (RImplementation.b_loaded)
-		{
-			Device.DetailsTask.wait();
-			RImplementation.Details->cache_ReInitialize();
-		}
+		RImplementation.Details->RequestCacheRebuild();
 	}
 
 	virtual void Status(TStatus& S) {
 		CCC_Float::Status(S);
+	}
+};
+
+class CCC_DetailReloadDetails_Boolean : public CCC_Boolean
+{
+public:
+	CCC_DetailReloadDetails_Boolean(LPCSTR N, bool* V)
+		: CCC_Boolean(N, V) {}
+
+	virtual void Execute(LPCSTR args) {
+		CCC_Boolean::Execute(args);
+		RImplementation.Details->RequestCacheRebuild();
 	}
 };
 
@@ -798,6 +832,35 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask32, "r__fast_details_update",&ps_r2_ls_flags, R2FLAG_FAST_DETAILS_UPDATE);
 	CMD4(CCC_DetailReloadDetails, "r__detail_density", &ps_current_detail_density, 0.15f, 1.0f);
 	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 50, 2000);
+
+	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_use_alternative_tree_assets", &ps_r__detail_use_alternative_tree_assets);
+	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_use_cluster_mix_tree_assets", &ps_r__detail_use_cluster_mix_tree_assets);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_seed", &ps_r__detail_cluster_seed, 0, 9999);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_patch_size_min", &ps_r__detail_cluster_patch_size_min, 1.0f, 200.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_patch_size_max", &ps_r__detail_cluster_patch_size_max, 1.0f, 200.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_sharpness", &ps_r__detail_cluster_sharpness, 1.0f, 20.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_warp_min", &ps_r__detail_cluster_warp_min, 0.0f, 3.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_warp_max", &ps_r__detail_cluster_warp_max, 0.0f, 3.0f);
+
+
+	CMD2(CCC_Boolean, "r__detail_fmb_use_layer_1", &ps_r__detail_fmb_use_layer_1);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_frequency", &ps_r__detail_fmb_layer_1_frequency, 0.0f, 1.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_amplitude", &ps_r__detail_fmb_layer_1_amplitude, 0.0f, 10.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_seed", &ps_r__detail_fmb_layer_1_seed, 0, 9999);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_power", &ps_r__detail_fmb_layer_1_power, 0.0f, 1.0f);
+
+	CMD2(CCC_Boolean, "r__detail_fmb_use_layer_2", &ps_r__detail_fmb_use_layer_2);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_frequency", &ps_r__detail_fmb_layer_2_frequency, 0.0f, 1.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_amplitude", &ps_r__detail_fmb_layer_2_amplitude, 0.0f, 10.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_seed", &ps_r__detail_fmb_layer_2_seed, 0, 9999);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_power", &ps_r__detail_fmb_layer_2_power, 0.0f, 1.0f);
+
+	CMD2(CCC_Boolean, "r__detail_fmb_use_layer_3", &ps_r__detail_fmb_use_layer_3);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_frequency", &ps_r__detail_fmb_layer_3_frequency, 0.0f, 1.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_amplitude", &ps_r__detail_fmb_layer_3_amplitude, 0.0f, 10.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_seed", &ps_r__detail_fmb_layer_3_seed, 0, 9999);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_power", &ps_r__detail_fmb_layer_3_power, 0.0f, 1.0f);
+
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_min", &ps_r__detail_rnd_scale_min, 0.0f, 100.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_max", &ps_r__detail_rnd_scale_max, 0.0f, 100.0f);
 
