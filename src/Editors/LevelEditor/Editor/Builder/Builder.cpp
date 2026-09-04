@@ -207,6 +207,32 @@ bool SceneBuilder::MakePuddles()
 }
 
 
+bool SceneBuilder::MakePlanars()
+{
+    ELog.Msg(mtInformation, "Making started...");
+
+    ESceneCustomOTool* ToolPtr = (ESceneCustomOTool*)Scene->GetTool(OBJCLASS_PLANARS);
+    auto& ObjectList = ToolPtr->GetObjects();
+
+    if (ObjectList.empty())
+    {
+        ELog.Msg(mtError, "Empty planars...");
+        return false;
+    }
+
+    PreparePath();
+
+    if (!ToolPtr->Export(m_LevelPath))
+    {
+        ELog.DlgMsg(mtError, "Failed to export planars.");
+        return false;
+    }
+
+    ELog.DlgMsg(mtInformation, "Planars succesfully exported.");
+    return true;
+}
+
+
 bool SceneBuilder::MakeAIMap(bool Legacy)
 {
 	xr_string error_text;
