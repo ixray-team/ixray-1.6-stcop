@@ -487,6 +487,8 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 		bullet->bullet_pos			= end_point;
 		bullet->flags.ricochet_was	= 1;
 
+		PlayRicochetSound(bullet, nullptr, bullet->bullet_pos);
+
 	}
 	else if ( shoot_factor < EPS )
 	{
