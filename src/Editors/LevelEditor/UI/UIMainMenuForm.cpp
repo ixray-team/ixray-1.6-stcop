@@ -215,6 +215,7 @@ void UIMainMenuForm::Draw()
 				ImGui::Separator();
 				DrawMenuItem("Make Game", COMMAND_MAKE_GAME);
 				DrawMenuItem("Make Puddles", COMMAND_MAKE_PUDDLES);
+				DrawMenuItem("Make Planars", COMMAND_MAKE_PLANARS);
 				DrawMenuItem("Make Details", COMMAND_MAKE_DETAILS);
 				DrawMenuItem("Make Hom", COMMAND_MAKE_HOM);
 				DrawMenuItem("Make SOM", COMMAND_MAKE_SOM);
