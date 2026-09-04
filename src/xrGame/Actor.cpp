@@ -2587,21 +2587,17 @@ void CActor::shedule_Update	(u32 DT)
 
 	//что актер видит перед собой
 	collide::rq_result& RQ				= HUD().GetCurrentRayQuery();
-	
-	Fvector ActorPos, PickPos = { 0.0f, 0.0f, 0.0f };
-	//Center(ActorPos);
-	ActorPos = Position();
-	ActorPos.y += ACTOR_HEIGHT * 0.5f;
 
-	PickPos.mad(Device.vCameraPosition, Device.vCameraDirection, RQ.range);
-	if (RQ.O)
-	{
-		//PickPos = RQ.O->Position();
-		RQ.O->Center(PickPos);
-	}
 	const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
 
-	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && ActorPos.distance_to_sqr(PickPos) < 60.0f && 
+	IKinematics* V = Visual()->dcast_PKinematics();
+	Fmatrix bone_transform;
+	bone_transform = V->LL_GetTransform(V->LL_BoneID("bip01_head"));
+
+	Fmatrix global_transform;
+	global_transform.mul_43(XFORM(), bone_transform);
+
+	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && RQ.range < (2.0f + Device.vCameraPosition.distance_to(global_transform.c)) && 
 		!(HudAnimator() && HudAnimator()->PdaAnimator() && HudAnimator()->PdaAnimator()->IsActive()))
 	{
 		m_pObjectWeLookingAt = RQ.O->cast_game_object();
