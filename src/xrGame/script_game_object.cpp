@@ -532,6 +532,17 @@ u32 CScriptGameObject::GetAmmoElapsed()
 	return 0;
 }
 
+// FFx0001++
+const char* CScriptGameObject::GetItemAdditionalName()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		return inventory_item->GetAdditionalName();
+	}
+
+	return "";
+}
+
 //FFx0001++
 const char* CScriptGameObject::GetItemAdditionalDescription()
 {
@@ -543,12 +554,70 @@ const char* CScriptGameObject::GetItemAdditionalDescription()
 	return "";
 }
 
-//FFx0001++
-void CScriptGameObject::SetItemAdditionalDescription(const char* additionalDescription)
+// FFx0001++
+const char* CScriptGameObject::GetItemPrependName()
 {
 	if (CInventoryItem* inventory_item = object().cast_inventory_item())
 	{
-		inventory_item->SetAdditionalDescription(additionalDescription);
+		return inventory_item->GetPrependName();
+	}
+
+	return "";
+}
+
+// FFx0001++
+const char* CScriptGameObject::GetItemPrependDescription()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		return inventory_item->GetPrependDescription();
+	}
+
+	return "";
+}
+
+// FFx0001++
+void CScriptGameObject::SetItemAdditionalName(const char* text)
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->SetAdditionalName(text);
+	}
+}
+
+//FFx0001++
+void CScriptGameObject::SetItemAdditionalDescription(const char* text)
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->SetAdditionalDescription(text);
+	}
+}
+
+// FFx0001++
+void CScriptGameObject::SetItemPrependName(const char* text)
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->SetPrependName(text);
+	}
+}
+
+// FFx0001++
+void CScriptGameObject::SetItemPrependDescription(const char* text)
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->SetPrependDescription(text);
+	}
+}
+
+// FFx0001++
+void CScriptGameObject::UnsetItemAdditionalName()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->SetAdditionalName("");
 	}
 }
 
@@ -557,8 +626,37 @@ void CScriptGameObject::UnsetItemAdditionalDescription()
 {
 	if (CInventoryItem* inventory_item = object().cast_inventory_item())
 	{
-		inventory_item->UnsetAdditionalDescription();
+		inventory_item->SetAdditionalDescription("");
 	}
+}
+
+// FFx0001++
+void CScriptGameObject::UnsetItemPrependName()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->SetPrependName("");
+	}
+}
+
+// FFx0001++
+void CScriptGameObject::UnsetItemPrependDescription()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->SetPrependDescription("");
+	}
+}
+
+// FFx0001++
+bool CScriptGameObject::IsItemUsedAdditionalName()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->IsUsedAdditionalName();
+	}
+
+	return false;
 }
 
 //FFx0001++
@@ -567,6 +665,28 @@ bool CScriptGameObject::IsItemUsedAdditionalDescription()
 	if (CInventoryItem* inventory_item = object().cast_inventory_item())
 	{
 		inventory_item->IsUsedAdditionalDescription();
+	}
+
+	return false;
+}
+
+// FFx0001++
+bool CScriptGameObject::IsItemUsedPrependName()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->IsUsedPrependName();
+	}
+
+	return false;
+}
+
+// FFx0001++
+bool CScriptGameObject::IsItemUsedPrependDescription()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->IsUsedPrependDescription();
 	}
 
 	return false;
