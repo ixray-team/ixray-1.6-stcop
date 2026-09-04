@@ -660,6 +660,8 @@ void CWeapon::Load		(const char* section)
 	m_bBlockFiremodeinGLM = READ_IF_EXISTS(pSettings, r_bool, section, "block_firemode_glm", false);
 
 	DisableLastAmmoMisfire = READ_IF_EXISTS(pSettings, r_bool, section, "disable_last_ammo_misfire", false);
+	DisableEmptyFiremode = READ_IF_EXISTS(pSettings, r_bool, section, "disable_empty_firemode", false);
+
 	m_fMisfireAfterProblemsLevel = READ_IF_EXISTS(pSettings, r_float, section, "misfire_after_problems_level", 10.0f);
 
 	m_bNoJamFirstShot = READ_IF_EXISTS(pSettings, r_bool, section, "no_jam_in_first_shot", false);

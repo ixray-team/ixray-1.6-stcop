@@ -3401,6 +3401,11 @@ void CWeaponMagazined::ChangeFireMode(u16 cmd)
 		return;
 	}
 
+	if (DisableEmptyFiremode && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	{
+		return;
+	}
+
 	if (IsZoomed() && m_eAnimationsFlags.test(EAnimationsFlags::af_firemode) && m_bDisableFireModeAim)
 	{
 		return;

@@ -418,6 +418,7 @@ protected:
 	bool m_bAimActions = false;
 	bool NeedMisfireAmmo = false;
 	bool DisableLastAmmoMisfire = false;
+	bool DisableEmptyFiremode = false;
 
 	bool m_bHaveShell = false;
 	bool m_bNeedPumpState = false;
