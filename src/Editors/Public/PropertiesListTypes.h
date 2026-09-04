@@ -161,6 +161,7 @@ public:
         flDrawThumbnail	= (1<<4),
         flSorted		= (1<<5),
         flIgnoreMixed   = (1<<6),
+        flSlider		= (1<<7),
     };
     Flags32				m_Flags;
 public:

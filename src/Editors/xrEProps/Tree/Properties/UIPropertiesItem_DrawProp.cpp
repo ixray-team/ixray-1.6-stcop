@@ -67,7 +67,18 @@ inline bool DrawNumeric<float>(PropItem* item, bool& change, bool read_only)
 	float temp = *V->value;
 	item->BeforeEdit<NumericValue<float>, float>(temp);
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, { 1.f, 1.f });
-	change = ImGui::InputFloat("##value", &temp, 0.01, 0.1, V->dec, read_only ? ImGuiInputTextFlags_ReadOnly : 0);
+	if (item->m_Flags.test(PropItem::flSlider) && !isinf(V->lim_mn) && !isinf(V->lim_mx))
+	{
+		string16 fmt;
+		xr_sprintf(fmt, "%%.%df", V->dec);
+		change = ImGui::SliderFloat("##value", &temp, V->lim_mn, V->lim_mx, fmt);
+		if (read_only)
+			change = false;
+	}
+	else
+	{
+		change = ImGui::InputFloat("##value", &temp, 0.01, 0.1, V->dec, read_only ? ImGuiInputTextFlags_ReadOnly : 0);
+	}
 	ImGui::PopStyleVar(1);
 	if (change)
 	{

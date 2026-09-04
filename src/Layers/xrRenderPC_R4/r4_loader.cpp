@@ -137,6 +137,7 @@ void CRender::level_Load(IReader* fs)
 	// pApp->LoadTitle			("Loading lights...");
 	LoadLights					(fs);
 	LoadPuddles					();
+	LoadPlanars					();
 
 	// End
 	pApp->LoadEnd				();
@@ -225,6 +226,49 @@ void CRender::LoadPuddles()
 	}
 }
 
+void CRender::LoadPlanars()
+{
+	m_levels_planars.resize(0);
+
+	string_path ini_file;
+
+	if (!FS.exist(ini_file, "$level$", "level.planars"))
+		return;
+
+	CInifile ini(ini_file);
+	CInifile::Root& sections = ini.sections();
+	for (CInifile::Sect& sect : sections)
+	{
+		shared_str& sect_name = sect.Name;
+		PlanarBase& planar = m_levels_planars.emplace_back();
+
+		Fvector position = ini.r_fvector3(sect_name, "position");
+		float influence = ini.r_float(sect_name, "influence");
+		Fvector2 size_xz = ini.r_fvector2(sect_name, "size_xz");
+
+		float rotX = 0.0f, rotY = 0.0f, rotZ = 0.0f;
+		int rotArg = sscanf(ini.r_string(sect_name, "rotation"), "%0.3f, %0.3f, %0.3f", &rotX, &rotY, &rotZ);
+		if (rotArg == 3)
+		{
+			planar.m_world.rotateX(-rotX);
+			planar.m_world.rotateY(-rotY);
+			planar.m_world.rotateZ(-rotZ);
+		}
+		else
+		{
+			planar.m_world.rotateY(rotX);
+		}
+
+		planar.m_world.mulB_43(Fmatrix().scale(size_xz.x, std::max(influence, EPS), size_xz.y));
+		planar.m_world.translate_over(position);
+
+		planar.m_influence = influence;
+		planar.m_stiffness = ini.line_exist(sect_name, "stiffness") ? ini.r_float(sect_name, "stiffness") : 1.f;
+		clamp(planar.m_stiffness, 0.f, 1.f);
+		planar.m_radius = _sqrt(size_xz.x * size_xz.x + influence * influence + size_xz.y * size_xz.y);
+	}
+}
+
 void CRender::level_Unload()
 {
 	if (0==g_pGameLevel)		return;
@@ -281,6 +325,7 @@ void CRender::level_Unload()
 	xr_delete					(Wallmarks);
 
 	m_levels_puddles.resize(0);
+	m_levels_planars.resize(0);
 
 	//*** Shaders
 	Shaders.clear();
