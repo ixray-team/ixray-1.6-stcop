@@ -468,19 +468,13 @@ if type == "esc_specnaz" then
 		t = { section = "logic@esc_lager_defend9",
 			idle = 0,
 			prior = 16, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_novice_attacker1"
-						end
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
 		table.insert(sj, t)
 		t = { section = "logic@esc_lager_defend10",
 			idle = 0,
 			prior = 16, state = {2},
-			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
-			predicate = function(obj_info)
-        					return obj_info.name == "esc_vagon_wounded"
-						end
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
 		table.insert(sj, t)
 		t = { section = "logic@esc_lager_defend11",
@@ -503,7 +497,7 @@ if type == "esc_specnaz" then
 			prior = 20, state = {2},
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
 			predicate = function(obj_info)
-        					return obj_info.profile_name == "esc_wolf" and not (has_alife_info("agroprom_military_case_have") and has_alife_info("esc_fanat_spawn"))
+        					return obj_info.profile_name == "esc_shustryi"
 						end
 		}
 		table.insert(sj, t)
@@ -2051,7 +2045,7 @@ function load_states(gname, type)
 			if not actor then
 				return gulag.state
 			end
-			if has_alife_info("escape_lager_help") and has_alife_info("escape_lager_killers_die") then
+			if has_alife_info("escape_lager_help") and not has_alife_info("escape_lager_killers_die") then
 				return 2 -- оборона лагеря
 			elseif level.get_time_hours() >= 5 and level.get_time_hours() <= 22 then
 				return 0  -- день

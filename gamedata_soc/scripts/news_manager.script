@@ -109,8 +109,8 @@ tips_icons = {
 	o_soznanie = { 498, 893},
 	monolith = { 0, 658},
     saharov  = { 332, 470},
-    prizrak  = { 0, 658},
-    killer   = { 0, 658}
+    prizrak  = { 415, 705},
+    killer   = { 332, 517}
 }
 
 

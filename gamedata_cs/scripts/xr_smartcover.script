@@ -362,7 +362,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 		local smart = sim_board.get_sim_board():get_smart_by_name(gulag_name)
 		local tcover = cover_manager.get_cover(npc, smart)
 		if tcover ~= nil and tcover.is_smart_cover then
-			local level_id = game_graph():vertex(smart.m_game_vertex_id):level_id()
+			local level_id = gg_vertex_level_id(smart.m_game_vertex_id)
 			printf("precalc cover:lvl_id[%s] vertex_id[%s]", tostring(level_id), tostring(tcover.cover_vertex_id))
 			cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][tcover.cover_vertex_id]
 			printf("precalc cover_name [%s]", cover:name())

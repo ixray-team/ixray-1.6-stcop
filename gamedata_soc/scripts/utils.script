@@ -585,9 +585,7 @@ function level_changing()
 		return false
 	end
 
-	local actor_gv = game_graph():vertex( sim:actor().m_game_vertex_id )
-
-	return actor_gv:level_id() ~= sim:level_id()
+	return gg_vertex_level_id(sim:actor().m_game_vertex_id) ~= sim:level_id()
 end
 
 function parse_data_1v(npc,s)

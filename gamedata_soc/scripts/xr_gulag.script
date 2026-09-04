@@ -157,7 +157,7 @@ function gulag:prepare_jobs()
 
 		job.path_name        = path_name
 		job.game_vertex_id   = ptrl:game_vertex_id( 0 )
-		job.level_id		 = game_graph():vertex(job.game_vertex_id):level_id()
+		job.level_id		 = gg_vertex_level_id(job.game_vertex_id)
 		job.position         = ptrl:point( 0 )
 
 		job_loaded           = self.JobLoaded[i] or empty_table
@@ -476,12 +476,21 @@ function gulag:can_obj_begin_job( obj_id, obj )
 
 	if jobN and not self.Object_begin_job[obj_id] then
 		local job = self.Job[jobN]
+		local obj_idx, obj_pos
 		
 		--' Спешл кейс, проверка только по вертексам графа
 		if job.position_threshold == "graph" then
-			local obj_gv, obj_pos = self:get_obj_game_vertex_and_position( obj_id )
-			local job_gv          = game_graph():vertex( job.game_vertex_id )
-			if obj_gv:level_vertex_id() == job_gv:level_vertex_id() then
+			local obj = self.Object[obj_id]
+
+			if obj == true then
+				obj = self.npc_info[obj_id].se_obj
+
+				obj_idx, obj_pos = obj.m_game_vertex_id, obj.position
+			else
+				obj_idx, obj_pos = obj:game_vertex_id(), obj:position()
+			end
+
+			if gg_level_vertex_id(obj_idx) == gg_level_vertex_id(job.game_vertex_id) then
 				return true
 			end
 			return false
@@ -617,28 +626,22 @@ end
 -- если на одном уровне, то считать по локальным позициям, иначе по глобальным позициям вершин гейм-графа.
 -- используется для определения ближайшего к месту работы персонажа.
 function gulag:distance_to_job_location( obj_id, job )
-	local obj_gv, obj_pos = self:get_obj_game_vertex_and_position( obj_id )
-	local job_gv          = game_graph():vertex( job.game_vertex_id )
-
-	if obj_gv:level_id() == job_gv:level_id() then
-		return obj_pos:distance_to( job.position )
-	else
-		--'return obj_gv:game_point():distance_to( job_gv:game_point() )
-		return 10000
-	end
-end
-
--- получить точку графа, на которой находится персонаж и его локальные координаты на уровне
--- в зависимости от того, в офлайне или в онлайне персонаж, берётся по разному
-function gulag:get_obj_game_vertex_and_position( obj_id )
 	local obj = self.Object[obj_id]
+	local obj_idx, obj_pos
 
 	if obj == true then
 		obj = self.npc_info[obj_id].se_obj
 
-		return game_graph():vertex( obj.m_game_vertex_id ), obj.position
+		obj_idx, obj_pos = obj.m_game_vertex_id, obj.position
 	else
-		return game_graph():vertex( obj:game_vertex_id() ), obj:position()
+		obj_idx, obj_pos = obj:game_vertex_id(), obj:position()
+	end
+
+	if gg_vertex_level_id(obj_idx) == gg_vertex_level_id(job.game_vertex_id) then
+		return obj_pos:distance_to( job.position )
+	else
+		--'return obj_gv:game_point():distance_to( job_gv:game_point() )
+		return 10000
 	end
 end
 

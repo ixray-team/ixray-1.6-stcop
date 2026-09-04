@@ -439,7 +439,7 @@ function se_smart_terrain:smart_terrain_accepts_obj( obj, obj_agreement )
 
         --' Проверка что смарттеррейн и НПС находятся в одном кластере уровней (чтобы не ходили через БАР)
         local smart_level_group = self:get_level_name()
-        local npc_level_group = alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
+        local npc_level_group = alife():level_name(gg_vertex_level_id(obj.m_game_vertex_id))
 
 --'		if obj:name() == "esc_wolf" then
 --'			printf("smart=%s stalker=%s", tostring(smart_level_group), tostring(npc_level_group))
@@ -907,36 +907,7 @@ end
 
 -- возвращает название уровня, на котором находится smart terrain
 function se_smart_terrain:get_level_name()
---	return "chugai_test"
-
---	printf( "[smart_terrain %s] is on level %s", self:name(), alife():level_name( game_graph():vertex( self.m_game_vertex_id ):level_id() ) )
-
-	return alife():level_name( game_graph():vertex( self.m_game_vertex_id ):level_id() )
-
---[[	local gvid = self.m_game_vertex_id
-	printf( "self.m_game_vertex_id=%s", tostring( gvid ) )
-
-	local gg = game_graph()
-	if gg == nil then
-		printf( "game_graph() == nil" )
-	else
-		printf( "game_graph() ok" )
-	end
-
-	local v = gg:vertex( gvid )
-	if v == nil then
-		printf( "game_graph():vertex( gvid ) == nil" )
-	else
-		printf( "game_graph():vertex( gvid ) ok" )
-	end
-
-	local lid = v:level_id()
-	printf( "v:level_id()=%s", tostring( lid ) )
-
-	local ln = alife():level_name( lid )
-	printf( "alife():level_name( ln )=%s", tostring( ln ) )
-
-	return ln]]
+	return alife():level_name( gg_vertex_level_id( self.m_game_vertex_id ) )
 end
 
 -- регистрация объекта в симуляторе.

@@ -68,6 +68,11 @@ void ExportEELayer(lua_State* L)
 		{
 			return ai().game_graph().vertex(VertexID)->level_id();
 		}),
+
+		luabind::def("gg_level_vertex_id", +[](u32 VertexID) 
+		{
+			return ai().game_graph().vertex(VertexID)->level_vertex_id();
+		}),
 			
 		luabind::def("gg_levels_count", +[]() 
 		{
