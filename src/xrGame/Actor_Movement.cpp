@@ -706,7 +706,7 @@ bool CActor::CanRun()
 bool CActor::CanSprint()
 {
 	bool is_animator = (HudAnimator() != nullptr && (HudAnimator()->IsAnyAnimatorActive() && HudAnimator()->CanSprint() || !HudAnimator()->IsAnyAnimatorActive()) || HudAnimator() == nullptr);
-	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() && Game().PlayerCanSprint(this) && (abs(leftStickThreshold.x) <= 0.5f) && CanRun() && InventoryAllowSprint() && !bBlockSprint && is_animator;
+	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() && Game().PlayerCanSprint(this) && (abs(leftStickThreshold.x) <= 0.5f) && leftStickThreshold.y >= 0.f && CanRun() && InventoryAllowSprint() && !bBlockSprint && is_animator;
 
 	return can_Sprint && (m_block_sprint_counter<=0);
 }
