@@ -283,6 +283,19 @@ public:
 
 	void							LoadPuddles();
 
+	struct PlanarBase
+	{
+		Fmatrix m_world = Fidentity;
+
+		float m_influence = EPS;
+		float m_stiffness = 1.f;
+		float m_radius = EPS;
+	};
+
+	xr_vector<PlanarBase> m_levels_planars;
+
+	void							LoadPlanars();
+
 	// Information
 	virtual void					Statistics					(CGameFont* F);
 	virtual const char*					getShaderPath				()									{ return "d3d11\\";	}
