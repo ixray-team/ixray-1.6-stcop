@@ -12,16 +12,15 @@ void	R_xforms::set_W			(const Fmatrix& m)
 	m_wv.mul_43		(m_v,m_w);
 	m_wvp.mul		(m_p,m_wv);
 	m_bInvWValid	= false;
+	if (c_w)		RCache.set_c(c_w,	m_w);
+	if (c_wv)		RCache.set_c(c_wv,	m_wv);
+	if (c_wvp)		RCache.set_c(c_wvp,	m_wvp);
+	if (c_invw)		apply_invw();
 #ifdef USE_DX11
 	m_w_old.set(Fidentity);
 	m_wv_old.set(m_v_old);
 	m_wvp_old.set(m_vp_old);
 	FixedConstants::UpdateObject(m);
-#else
-	if (c_w)		RCache.set_c(c_w,	m_w);
-	if (c_wv)		RCache.set_c(c_wv,	m_wv);
-	if (c_wvp)		RCache.set_c(c_wvp,	m_wvp);
-	if (c_invw)		apply_invw();
 #endif
 	RCache.set_xform(D3DTS_WORLD,m);
 }

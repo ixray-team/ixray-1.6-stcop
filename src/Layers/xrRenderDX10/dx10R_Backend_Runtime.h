@@ -229,6 +229,9 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 			default: VERIFY("Invalid enumeration");
 			}
 		}
+#ifdef USE_DX11
+		bool written = false;
+#endif
 		for (u32 s=0; s<std::size(dst); ++s)
 		{
 			for (u32 i=0; i<MaxCBuffers; ++i)
@@ -242,12 +245,20 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 
 #ifdef USE_DX11
 					if (i < FixedConstants::kSlots)
-						continue;
+					{
+						if (!next[s][i])
+							continue;
+						written = true;
+					}
 #endif
 					GRHI->SetConstantBuffers(i, 1, &bind, stage[s]);
 				}
 			}
 		}
+#ifdef USE_DX11
+		if (written)
+			FixedConstants::InvalidateBindings();
+#endif
 	}
 	for (RHIShaderConstant* Cs : C_->get_handlers()) Cs->handler->setup(Cs);
 }
