@@ -1,6 +1,7 @@
 local CONST_TRACE_LEVEL = 3
 local CONST_LOG_FOLDER = nil
 local CONST_LOG_FILE_NAME_POSTFIX = ".txt"
+local CONST_LOGS_SUBFOLDER_NAME = "ixr_framework_logs"
 
 --[[
 Description:
@@ -140,8 +141,11 @@ Parameters:
 Returns: boolean - true if write succeeded, false otherwise.
 ]]
 function write_to_file_log(text, overwrite, log_prefix)
+	local folder = ""
 	if CONST_LOG_FOLDER == nil then
-		CONST_LOG_FOLDER = getFS():update_path('$logs$', '')
+		folder = getFS():update_path('$logs$', '')
+	else
+		folder = CONST_LOG_FOLDER
 	end
 	
 	local mode = "a+"
@@ -158,7 +162,11 @@ function write_to_file_log(text, overwrite, log_prefix)
 		mode = "w+"
 	end
 	
-	local file = io.open(tostring(CONST_LOG_FOLDER) .. tostring(log_prefix) .. tostring(CONST_LOG_FILE_NAME_POSTFIX), mode)
+	if not lfs.attributes(tostring(folder) .. CONST_LOGS_SUBFOLDER_NAME) then
+		lfs.mkdir(tostring(folder) .. CONST_LOGS_SUBFOLDER_NAME)
+	end
+	
+	local file = io.open(tostring(folder) .. CONST_LOGS_SUBFOLDER_NAME.."\\".. tostring(log_prefix) .. tostring(CONST_LOG_FILE_NAME_POSTFIX), mode)
 	if file then
 		file:write(text.."\n")
 		file:close()
