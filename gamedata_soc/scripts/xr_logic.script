@@ -1086,7 +1086,7 @@ function cfg_get_npc_and_zone(ini, section, field, npc)
 				t.npc_id = se_obj.id
 			else
 				t.npc_id = -1
-				abort("object '%s': section '%s': field '%s': there is no object with story_id '%s'",
+				printf("object '%s': section '%s': field '%s': there is no object with story_id '%s'",
 				            npc:name(), section, field, t.v1)
 			end
 		else
