@@ -842,10 +842,6 @@ protected:
 	u32						m_ef_main_weapon_type = u32(-1);
 	u32						m_ef_weapon_type = u32(-1);
 
-protected:
-	float					m_bullet_point_offset_hud;
-	float					m_bullet_point_offset_world;
-
 public:
 	virtual u32				ef_main_weapon_type	() const;
 	virtual u32				ef_weapon_type		() const;
