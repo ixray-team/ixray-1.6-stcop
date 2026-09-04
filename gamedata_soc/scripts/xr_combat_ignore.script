@@ -1,43 +1,39 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Игнорирование врагов
-Чугай Александр
+РРіРЅРѕСЂРёСЂРѕРІР°РЅРёРµ РІСЂР°РіРѕРІ
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 --------------------------------------------------------------------------------------------------------------------]]
 
 function is_enemy( obj, enemy, st )
 
-	if not obj:alive() then
-		return false
-	end
-
 	if obj:critically_wounded() then
 		return true
 	end
-	
-	if st.enabled == false then
-		return true
-	end
-	
-	local overrides = st.overrides
-	local obj_id = obj:id()
-	local storage = db.storage[obj_id]
-	if storage == nil then
-		return true
-	end
-	storage.enemy_id = enemy:id()
-	
-	--printf("checking combat_ignore for stalker[%s] enemy name [%s] in section[%s]",obj:name(), enemy:name(),storage.active_section)
-	--' Если есть оверрайды, то работаем по ним.
-	if overrides and
-		 overrides.combat_ignore
-	then
-		local ret_value = xr_logic.pick_section_from_condlist( enemy, obj, overrides.combat_ignore.condlist )
-		if ret_value == "true" then
-			--printf("pl:Disabling_memory_object[1] for stalker[%s] enemy name [%s] in section[%s]",obj:name(), enemy:name(),storage.active_section)
---			obj:enable_memory_object( enemy, false )
-			return false
+
+	if not st then
+		st = db.storage[obj:id()].combat_ignore
+
+		if not st then
+			return true
 		end
+	end
+
+	if not st.enabled then
 		return true
 	end
+
+	local overrides = xr_logic.generic_scheme_overrides( obj )
+
+	db.storage[obj:id()].enemy = enemy
+
+	if overrides and
+	   overrides.combat_ignore and
+	   db.actor and
+	   xr_logic.pick_section_from_condlist( db.actor, obj, overrides.combat_ignore.condlist ) ~= nil
+	then
+		obj:enable_memory_object( enemy, false )
+		return false
+	end
+
 	return true
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -50,31 +46,33 @@ function action_process_enemy:__init( obj, storage )
 end
 
 function action_process_enemy:enemy_callback( obj, enemy )
-	--local obj_pos = self.object:position()
-	--local ene_pos = enemy:position()
-	--printf("FOUND ENEMY [%s](%s,%s,%s) -> [%s](%s,%s,%s)", self.object:name(), obj_pos.x, obj_pos.y, obj_pos.z,
-	--													   enemy:name(), ene_pos.x, ene_pos.y, ene_pos.z)
+	if not db.actor then
+		return false
+	end
+	
+	if enemy:id() == db.actor:id() then
+		SendScriptCallback("npc_on_fighting_actor", obj)		
+	end
 
-	local is_obj_enemy = is_enemy( obj, enemy, self.st )
-	return is_obj_enemy
+	return is_enemy( obj, enemy, self.st )
 end
 
 function action_process_enemy:hit_callback(obj, amount, local_direction, who, bone_index)
-	if who == nil then
+	if who == nil then	
 		return
 	end
 
-	--printf("_bp: action_process_enemy: hit_callback(): obj='%s'", obj:name())
+--	printf("_bp: action_process_enemy: hit_callback(): obj='%s'", obj:name())
 	if amount == 0 then
-		-- Кто-то стрельнул в воздух
+		-- РљС‚Рѕ-С‚Рѕ СЃС‚СЂРµР»СЊРЅСѓР» РІ РІРѕР·РґСѓС…
 		return
 	end
 
 	
 	if who:id() == db.actor:id() then
-		local overrides = self.st.overrides
+		local overrides = xr_logic.generic_scheme_overrides( obj )
 		if not overrides or not overrides.combat_ignore_keep_when_attacked then
-			--printf("_bp: action_process_enemy: hit_callback(): obj='%s': SCHEME DISABLED", obj:name())
+			printf("_bp: action_process_enemy: hit_callback(): obj='%s': SCHEME DISABLED", obj:name())
 			self.st.enabled = false
 		end
 	end
@@ -88,36 +86,27 @@ function add_to_binder( npc, ini, scheme, section, storage )
 	storage.action = new_action
 end
 
-function set_combat_ignore_checker( npc, ini, scheme)
-	local st = xr_logic.assign_storage_and_bind( npc, ini, scheme )
-end
+function set_combat_ignore_checker( npc, ini, scheme, section )
+--	printf("_bp: set_combat_ignore_checker: npc='%s'", npc:name())
+	local st = xr_logic.assign_storage_and_bind( npc, ini, scheme, section )
+--	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	st.enabled = true
 
-function reset_combat_ignore_checker(npc, scheme, st, section)
-	local storage = st.combat_ignore
-	
-	if npc:clsid() ~= clsid.script_trader then
+--	printf( "xr_combat_ignore: SET ENEMY_CALLBACK, obj=%s", npc:name() )
+	npc:set_enemy_callback( st.action.enemy_callback, st.action )
 
+	-- РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° hit callback-Рё:
+	xr_logic.subscribe_action_for_events( npc, st, st.action )
 
-		npc:set_enemy_callback( storage.action.enemy_callback, storage.action )
-
-		-- Подписываемся на hit callback-и:
-		xr_logic.subscribe_action_for_events( npc, storage, storage.action )
-
-		storage.overrides = xr_logic.generic_scheme_overrides(npc)
-
-		storage.enabled = true
-	end
 end
 
 function disable_scheme( npc, scheme )
-	if npc:clsid() ~= clsid.script_trader then
-		npc:set_enemy_callback()
+	npc:set_enemy_callback()
 
-		-- Отписываемся от hit callback. Это делать обязательно, потому что иначе при переключении на другой набор
-		-- схем, в котором нет перехвата боя, продолжится вызываться callback в старом подписанном action-е.
-		local st = db.storage[npc:id()][scheme]
-		if st then
-			xr_logic.unsubscribe_action_from_events(npc, st, st.action)
-		end
+	-- РћС‚РїРёСЃС‹РІР°РµРјСЃСЏ РѕС‚ hit callback. Р­С‚Рѕ РґРµР»Р°С‚СЊ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РёРЅР°С‡Рµ РїСЂРё РїРµСЂРµРєР»СЋС‡РµРЅРёРё РЅР° РґСЂСѓРіРѕР№ РЅР°Р±РѕСЂ
+	-- СЃС…РµРј, РІ РєРѕС‚РѕСЂРѕРј РЅРµС‚ РїРµСЂРµС…РІР°С‚Р° Р±РѕСЏ, РїСЂРѕРґРѕР»Р¶РёС‚СЃСЏ РІС‹Р·С‹РІР°С‚СЊСЃСЏ callback РІ СЃС‚Р°СЂРѕРј РїРѕРґРїРёСЃР°РЅРЅРѕРј action-Рµ.
+	local st = db.storage[npc:id()][scheme]
+	if st then
+		xr_logic.unsubscribe_action_from_events(npc, st, st.action)
 	end
 end

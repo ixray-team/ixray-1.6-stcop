@@ -28,7 +28,6 @@ function se_monster:__init (section) super (section)
 
 	-- посещал ли сталкер хоть один smart_terrain
 	self.was_in_smart_terrain = false
-	db.offline_objects[self.id] = {}
 end
 --------------------
 function se_monster:get_ini()
@@ -143,7 +142,6 @@ function se_monster:STATE_Write(packet)
 	end
 
 	packet:w_bool(self.was_in_smart_terrain)
-	packet:w_stringZ(tostring(db.offline_objects[self.id] and db.offline_objects[self.id].active_section))
 end
 --------------------
 function se_monster:STATE_Read(packet, size)
@@ -168,13 +166,6 @@ function se_monster:STATE_Read(packet, size)
 	if self.script_version >= 5 then
 		self.was_in_smart_terrain = packet:r_bool()
 	end
-	if db.offline_objects[self.id] == nil then
-		db.offline_objects[self.id] = {}
-	end
-	db.offline_objects[self.id].active_section = packet:r_stringZ()
-	if db.offline_objects[self.id].active_section == "nil" then
-		db.offline_objects[self.id].active_section = nil
-	end
 end
 --------------------
 function se_monster:on_before_register()
@@ -185,10 +176,6 @@ function se_monster:on_register()
 	cse_alife_monster_base.on_register( self )
 
 	SendScriptCallback("server_entity_on_register", self, "se_monster")
-	
-	if db.offline_objects[self.id] == nil then
-		db.offline_objects[self.id] = {}
-	end
 
 	--'self:fill_exclusives()
 
@@ -208,7 +195,6 @@ function se_monster:on_unregister()
 --'		local community, rank = sim_statistic.getNpcType(self)
 --'		level.map_remove_object_spot(self.id, "alife_presentation_monstr")
 --'	end
-	db.offline_objects[self.id] = nil
 
 	smart_terrain.unregister_npc(self)
 end

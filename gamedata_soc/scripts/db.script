@@ -16,7 +16,6 @@ smart_terrain_by_id = {}
 trader				= nil
 info_restr          = {}
 strn_by_respawn     = {}
-offline_objects     = {}
 
 function add_obj( obj )
 end
