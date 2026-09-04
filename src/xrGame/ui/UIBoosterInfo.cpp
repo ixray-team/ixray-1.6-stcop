@@ -167,8 +167,8 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 	{
 		if(pSettings->line_exist(section.c_str(), ef_boosters_section_names[i]) && ef_boosters_section_names[i] && m_booster_items[i])
 		{
-			val	= pSettings->r_float(section, ef_boosters_section_names[i]);
-			if(fis_zero(val))
+			val = pSettings->r_float(section, ef_boosters_section_names[i]) * m_booster_items[i]->m_magnitude;
+			if(val < 1.f)
 				continue;
 
 			EBoostParams type = (EBoostParams)i;
@@ -216,8 +216,8 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 
 	if(pSettings->line_exist(section.c_str(), "eat_satiety"))
 	{
-		val	= pSettings->r_float(section, "eat_satiety");
-		if(!fis_zero(val))
+		val = pSettings->r_float(section, "eat_satiety") * m_booster_satiety->m_magnitude;
+		if(val >= 1.f)
 		{
 			m_booster_satiety->SetValue(val);
 			pos.set(m_booster_satiety->GetWndPos());
@@ -230,8 +230,8 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 	}
 	if (pSettings->line_exist(section.c_str(), "eat_thirst") && m_booster_thirst)
 	{
-		val = pSettings->r_float(section, "eat_thirst");
-		if (!fis_zero(val))
+		val = pSettings->r_float(section, "eat_thirst") * m_booster_thirst->m_magnitude;
+		if (val >= 1.f)
 		{
 			m_booster_thirst->SetValue(val);
 			pos.set(m_booster_thirst->GetWndPos());
@@ -246,8 +246,8 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 
 	if(pSettings->line_exist(section.c_str(), "eat_sleepiness") && m_booster_sleepiness)
 	{
-		val	= pSettings->r_float(section, "eat_sleepiness");
-		if(!fis_zero(val))
+		val = pSettings->r_float(section, "eat_sleepiness") * m_booster_sleepiness->m_magnitude;
+		if (val >= 1.f)
 		{
 			m_booster_sleepiness->SetValue(val);
 			pos.set(m_booster_sleepiness->GetWndPos());
@@ -312,7 +312,7 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 		val	= pSettings->r_float(section, "boost_time");
 		if(!fis_zero(val))
 		{
-			m_booster_time->SetValue(val);
+			m_booster_time->SetValue(val * m_booster_time->m_magnitude);
 			pos.set(m_booster_time->GetWndPos());
 			pos.y = h;
 			m_booster_time->SetWndPos(pos);
@@ -374,7 +374,6 @@ void UIBoosterInfoItem::SetCaption(const char* name)
 
 void UIBoosterInfoItem::SetValue(float value)
 {
-	value *= m_magnitude;
 	string32 buf;
 	if(m_show_sign)
 		xr_sprintf(buf, "%+.0f", value);
