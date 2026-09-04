@@ -126,6 +126,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 #else
 		for (CDetail& Object : objects)
 		{
+			RCache.set_Element(Object.shader->E[lod_id], 0);
 #endif
 			auto& items = Object.m_items[render_key][var_id];
 			u32 totalInstances = items.size();
@@ -197,13 +198,14 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		if (ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))//experimental
 		{
 #ifdef _EDITOR
-			for (CDetail* DPtr : objects)
-			{
-				CDetail& D = *DPtr;
-				RCache.set_Element(D.shader->E[lod_id], 0);
+		for (CDetail* DPtr : objects)
+		{
+			CDetail& D = *DPtr;
+			RCache.set_Element(D.shader->E[lod_id], 0);
 #else
-			for (CDetail& D : objects)
-			{
+		for (CDetail& D : objects)
+		{
+			RCache.set_Element(D.shader->E[lod_id], 0);
 #endif
 				u32 buff_size = D.m_items[render_key][var_id].size();
 				if (buff_size)
@@ -224,6 +226,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 #else
 			for (CDetail& Object : objects)
 			{
+				RCache.set_Element(Object.shader->E[lod_id], 0);
 #endif
 				auto& items = Object.m_items[render_key][var_id];
 				u32 totalInstances = items.size();
