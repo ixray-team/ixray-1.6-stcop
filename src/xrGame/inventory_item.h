@@ -113,13 +113,33 @@ public:
 	void Read3dStaticsData(const char* section);
 	void RefreshTranslations();
 
+	// Дополнение названия предмета для кастомизации через скрипты к основному имени в UIItemInfo.cpp
+	void SetAdditionalName(const char* text);
+	void SetPrependName(const char* text);
+	void BuildName();
+
 	// Дополнение описания предмета для кастомизации через скрипты к основному описанию в UIItemInfo.cpp
 	void SetAdditionalDescription(const char* additionalDescription);
+	void SetPrependDescription(const char* text);
+	void BuildDescription();
+
 	bool IsDrawCost() { return m_draw_cost; }
-	void UnsetAdditionalDescription() { SetAdditionalDescription(""); }
+
+	bool IsUsedAdditionalName() const { return m_IsUsedAdditionalName; }
+	bool IsUsedPrependName() const { return m_IsUsedPrependName; }
+
 	bool IsUsedAdditionalDescription() const { return m_IsUsedAdditionalDescription; }
+	bool IsUsedPrependDescription() const { return m_IsUsedPrependDescription; }
+
+	const char* GetAdditionalName() const { return m_AdditionalName.c_str(); }
+	const char* GetPrependName() const { return m_PrependName.c_str(); }
+
 	const char* GetAdditionalDescription() const { return m_AdditionalDescription.c_str(); }
+	const char* GetPrependDescription() const { return m_PrependDescription.c_str(); }
+
+	shared_str GetExtendedUnionName() const { return m_ExtendedUnionName; }
 	shared_str GetExtendedUnionDescription() const { return m_ExtendedUnionDescription; }
+
 
 	const char* NameItem() const { return m_name.c_str(); }
 	const char* NameShort() const { return m_nameShort.c_str(); }
@@ -273,10 +293,24 @@ protected:
 	u32 m_cost = 0;
 	float m_weight = 0.0f;
 	float m_fCondition = 1.0f;
+
 	shared_str m_Description;
-	shared_str m_AdditionalDescription;
+
+	shared_str m_ExtendedUnionName;
 	shared_str m_ExtendedUnionDescription;
+
+	shared_str m_AdditionalName;
+	bool m_IsUsedAdditionalName = false;
+
+	shared_str m_AdditionalDescription;
 	bool m_IsUsedAdditionalDescription = false;
+
+	shared_str m_PrependName;
+	bool m_IsUsedPrependName = false;
+
+	shared_str m_PrependDescription;
+	bool m_IsUsedPrependDescription = false;
+
 protected:
 	ALife::_TIME_ID m_dwItemIndependencyTime;
 

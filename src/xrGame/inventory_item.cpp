@@ -182,10 +182,105 @@ void CInventoryItem::Load(const char* section)
 	Read3dStaticsData(section);
 }
 
-void CInventoryItem::SetAdditionalDescription(const char* additionalDescription)
+void CInventoryItem::SetAdditionalName(const char* text)
 {
-	m_AdditionalDescription = additionalDescription;
+	m_AdditionalName = text;
+	m_IsUsedAdditionalName = xr_strcmp(m_AdditionalName, "") != 0;
+
+	if (m_IsUsedAdditionalName)
+	{
+		shared_str translated = g_pStringTable->translate(m_AdditionalName);
+		if (xr_strcmp(translated.c_str(), "") != 0)
+		{
+			m_AdditionalName = translated.c_str();
+		}
+	}
+
+	BuildName();
+}
+
+void CInventoryItem::SetPrependName(const char* text)
+{
+	m_PrependName = text;
+	m_IsUsedPrependName = xr_strcmp(m_PrependName, "") != 0;
+
+	if (m_IsUsedPrependName)
+	{
+		shared_str translated = g_pStringTable->translate(m_PrependName);
+		if (xr_strcmp(translated.c_str(), "") != 0)
+		{
+			m_PrependName = translated.c_str();
+		}
+	}
+
+	BuildName();
+}
+
+void CInventoryItem::BuildName()
+{
+	if (m_IsUsedAdditionalName && m_IsUsedPrependName)
+	{
+		m_ExtendedUnionName = make_string<const char*>("%s%s%s", m_PrependName.c_str(), m_name.c_str(), m_AdditionalName.c_str());
+		return;
+	}
+
+	if (m_IsUsedPrependName)
+	{
+		m_ExtendedUnionName = make_string<const char*>("%s%s", m_PrependName.c_str(), m_name.c_str());
+	}
+
+	if (m_IsUsedAdditionalName)
+	{
+		m_ExtendedUnionName = make_string<const char*>("%s%s", m_name.c_str(), m_AdditionalName.c_str());
+	}
+}
+
+void CInventoryItem::SetAdditionalDescription(const char* text)
+{
+	m_AdditionalDescription = text;
 	m_IsUsedAdditionalDescription = xr_strcmp(m_AdditionalDescription, "") != 0;
+	
+	if (m_IsUsedAdditionalDescription)
+	{
+		shared_str translated = g_pStringTable->translate(m_AdditionalDescription);
+		if (xr_strcmp(translated.c_str(), "") != 0)
+		{
+			m_AdditionalDescription = translated.c_str();
+		}
+	}
+
+	BuildDescription();
+}
+
+void CInventoryItem::SetPrependDescription(const char* text)
+{
+	m_PrependDescription = text;
+	m_IsUsedPrependDescription = xr_strcmp(m_PrependDescription, "") != 0;
+	
+	if (m_IsUsedPrependDescription)
+	{
+		shared_str translated = g_pStringTable->translate(m_PrependDescription);
+		if (xr_strcmp(translated.c_str(), "") != 0)
+		{
+			m_PrependDescription = translated.c_str();
+		}
+	}
+
+	BuildDescription();
+}
+
+void CInventoryItem::BuildDescription()
+{
+	if (m_IsUsedAdditionalDescription && m_IsUsedPrependDescription)
+	{
+		m_ExtendedUnionDescription = make_string<const char*>("%s\\n\\n%s\\n\\n%s", m_PrependDescription.c_str(), m_Description.c_str(), m_AdditionalDescription.c_str());
+		return;
+	}
+
+	if (m_IsUsedPrependDescription)
+	{
+		m_ExtendedUnionDescription = make_string<const char*>("%s\\n\\n%s", m_PrependDescription.c_str(), m_Description.c_str());
+	}
 
 	if (m_IsUsedAdditionalDescription)
 	{
@@ -280,6 +375,9 @@ void CInventoryItem::RefreshTranslations()
 	{
 		m_Description = g_pStringTable->translate(pSettings->r_string(section, "description"));
 	}
+
+	BuildName();
+	BuildDescription();
 }
 
 void CInventoryItem::ChangeCondition(float fDeltaCondition)
@@ -506,27 +604,6 @@ void CInventoryItem::net_Destroy()
 	}
 }
 
-void CInventoryItem::save(NET_Packet& packet)
-{
-	packet.w_u16(m_ItemCurrPlace.value);
-	packet.w_float(m_fCondition);
-
-	packet.w_stringZ(m_AdditionalDescription);
-	packet.w_u8(m_IsUsedAdditionalDescription ? 1 : 0);
-
-	if (object().H_Parent())
-	{
-		packet.w_u8(0);
-		return;
-	}
-
-	u8 _num_items = (u8)object().PHGetSyncItemsNumber();
-	packet.w_u8(_num_items);
-	object().PHSaveState(packet);
-
-	packet.w_u8(IsDrawCost() ? 1 : 0);
-}
-
 void CInventoryItem::net_Import(NET_Packet& P)
 {
 	u8 NumItems = 0;
@@ -663,8 +740,6 @@ void CInventoryItem::net_Export(NET_Packet& P)
 			NET_Packet stpk;
 			obj->u_EventGen(stpk, GE_SYNC_ALIFEITEM, obj->ID());
 			stpk.w_float(m_fCondition);
-			stpk.w_stringZ(m_AdditionalDescription);
-			stpk.w_u8(m_IsUsedAdditionalDescription ? 1 : 0);
 			obj->u_EventSend(stpk, net_flags(false));
 		}
 
@@ -719,17 +794,42 @@ void CInventoryItem::net_Export(NET_Packet& P)
 	P.w_u8(!!object().PPhysicsShell() && object().PPhysicsShell()->isEnabled());	//not freezed
 };
 
+void CInventoryItem::save(NET_Packet& packet)
+{
+	packet.w_u16(m_ItemCurrPlace.value);
+	packet.w_float(m_fCondition);
+	packet.w_u8(IsDrawCost() ? 1 : 0);
+
+	packet.w_stringZ(m_PrependName);
+	packet.w_stringZ(m_AdditionalName);
+	packet.w_stringZ(m_PrependDescription);
+	packet.w_stringZ(m_AdditionalDescription);
+
+	if (object().H_Parent())
+	{
+		packet.w_u8(0);
+		return;
+	}
+
+	u8 _num_items = (u8)object().PHGetSyncItemsNumber();
+	packet.w_u8(_num_items);
+	object().PHSaveState(packet);
+}
+
 void CInventoryItem::load(IReader& packet)
 {
 	m_ItemCurrPlace.value = packet.r_u16();
 	m_fCondition = packet.r_float();
-	packet.r_stringZ(m_AdditionalDescription);
-	m_IsUsedAdditionalDescription = packet.r_u8() == 1 ? true : false;
+	SetDrawCost(packet.r_u8() == 1);
 
-	if (m_IsUsedAdditionalDescription)
-	{
-		SetAdditionalDescription(m_AdditionalDescription.c_str());
-	}
+	packet.r_stringZ(m_PrependName);
+	SetPrependName(m_PrependName.c_str());
+	packet.r_stringZ(m_AdditionalName);
+	SetAdditionalName(m_AdditionalName.c_str());
+	packet.r_stringZ(m_PrependDescription);
+	SetPrependDescription(m_PrependDescription.c_str());
+	packet.r_stringZ(m_AdditionalDescription);
+	SetAdditionalDescription(m_AdditionalDescription.c_str());
 
 	u8 tmp = packet.r_u8();
 	if (!tmp)
@@ -745,8 +845,6 @@ void CInventoryItem::load(IReader& packet)
 
 	object().PHLoadState(packet);
 	object().PPhysicsShell()->Disable();
-
-	SetDrawCost(packet.r_u8() == 1);
 }
 
 ///////////////////////////////////////////////

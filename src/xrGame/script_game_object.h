@@ -457,10 +457,30 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 			const char*				GetPatrolPathName	();
-			const char*				GetItemAdditionalDescription();
-			void				SetItemAdditionalDescription(const char* additionalDescription);
+
+			const char*			GetItemAdditionalName();
+			const char*			GetItemAdditionalDescription();
+
+			const char*			GetItemPrependDescription();
+			const char*			GetItemPrependName();
+
+			void				SetItemAdditionalName(const char* text);
+			void				SetItemAdditionalDescription(const char* text);
+
+			void				SetItemPrependName(const char* text);
+			void				SetItemPrependDescription(const char* text);
+
+			void				UnsetItemAdditionalName();
 			void				UnsetItemAdditionalDescription();
+
+			void				UnsetItemPrependName();
+			void				UnsetItemPrependDescription();
+
+			bool				IsItemUsedAdditionalName();
 			bool				IsItemUsedAdditionalDescription();
+
+			bool				IsItemUsedPrependName();
+			bool				IsItemUsedPrependDescription();
 
 			u32					GetAmmoElapsed		();
 
