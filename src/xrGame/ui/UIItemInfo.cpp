@@ -251,7 +251,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	string256				str;
 	if ( UIName )
 	{
-		UIName->SetText		(pInvItem->NameItem());
+		UIName->SetText((pInvItem->IsUsedAdditionalName() || pInvItem->IsUsedPrependName()) ? pInvItem->GetExtendedUnionName().c_str() : pInvItem->NameItem());
 		UIName->AdjustHeightToText();
 		pos.y = UIName->GetWndPos().y + UIName->GetHeight() + 4.0f;
 	}
@@ -356,7 +356,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 			pItem->SetFont						(m_desc_info.pDescFont);
 			pItem->SetWidth						(UIDesc->GetDesiredChildWidth());
 			pItem->SetTextComplexMode			(true);
-			pItem->SetText(pInvItem->IsUsedAdditionalDescription() ? *pInvItem->GetExtendedUnionDescription() : *pInvItem->ItemDescription());
+			pItem->SetText((pInvItem->IsUsedPrependDescription() || pInvItem->IsUsedAdditionalDescription()) ? *pInvItem->GetExtendedUnionDescription() : *pInvItem->ItemDescription());
 			pItem->AdjustHeightToText			();
 			UIDesc->AddWindow					(pItem, true);
 		}
