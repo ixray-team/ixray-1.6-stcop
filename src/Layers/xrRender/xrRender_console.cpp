@@ -210,7 +210,7 @@ float		ps_r2_ls_bloom_kernel_scale	= .7f;				// r2-only	// gauss
 float		ps_r2_ls_bloom_threshold	= 0.1f;				// r2-only
 float		ps_r2_ls_depth_scale = 0.9999f; // 1.00001f
 float		ps_r2_ls_depth_bias = 0.00001f; // -0.0001f
-float		ps_r2_ls_squality			= 6.0f;				// 1.00f
+float		ps_r2_ls_squality			= 10.0f;				// 1.00f
 
 float		ps_r2_sun_bias				= -0.01f;			// 
 float		ps_r2_sun_far				= 160.f;
