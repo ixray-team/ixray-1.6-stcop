@@ -45,10 +45,10 @@ public:
 	
 	virtual CUIWindow* ui_cast_window() { return this; }
 
+	float		m_magnitude;
 private:
 	CUIStatic*	m_caption;
 	CUIStatic*	m_value;
-	float		m_magnitude;
 	bool		m_show_sign;
 	bool		m_sign_inverse = false;
 	shared_str	m_unit_str;
