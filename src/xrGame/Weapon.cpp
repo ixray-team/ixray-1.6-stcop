@@ -35,7 +35,7 @@
 #include "Weapons/Components/WeaponAmmoBones.h"
 #include "WeaponAmmo.h"
 #include "ui/UIGameCustom.h"
-
+#include "../xrEngine/xr_input.h"
 #include <algorithm>
 
 #define WEAPON_REMOVE_TIME		60000
@@ -3257,6 +3257,17 @@ void CWeapon::OnZoomOut()
 
 	if (pActor != nullptr)
 	{
+		if (pInput->GetControllerMode())
+		{
+			if (!(pActor->mstate_wishful & mcLLookout))
+			{
+				pActor->mstate_wishful &= mcLLookout;
+			}
+			if (!(pActor->mstate_wishful & mcRLookout))
+			{
+				pActor->mstate_wishful &= mcRLookout;
+			}
+		}
 		if (CCustomDevice* pDevice = pActor->GetDevice())
 		{
 			pDevice->SwitchZoom();
