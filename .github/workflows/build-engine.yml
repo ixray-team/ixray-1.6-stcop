@@ -43,9 +43,7 @@ jobs:
         platform:
           - x64
         config:
-          - Debug
           - RelWithDebInfo
-          - Release
 
     runs-on: ${{ matrix.system }}
 
@@ -108,13 +106,13 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
 
   pack-assets:
-    name: 'Pack assets'
+    name: 'Pack assets (${{ matrix.variant }})'
     needs: [build-engine]
     strategy:
       matrix:
         system: [windows-2022]
+        variant: [cop, cs, soc, coc]
     runs-on: ${{ matrix.system }}
-  
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -131,58 +129,32 @@ jobs:
           ${{ github.workspace }}/util/generate-patch.bat xrCompress.exe
           type *.log
   
-      - name: Upload assets (CoP)
-        shell: cmd
+      - name: Prepare assets for ${{ matrix.variant }}
+        shell: pwsh
         run: |
-          if exist gamedata rd /s /q gamedata
-          xcopy /e /i patch gamedata
-      - uses: actions/upload-artifact@v7
-        with:
-          name: engine-assets-cop-${{ github.sha }}
-          path: |
-            gamedata/
-            .xrignore
-            fsgame.ltx
-          include-hidden-files: true
+          # Удаляем старую gamedata если есть
+          if (Test-Path gamedata) { Remove-Item -Recurse -Force gamedata }
+          
+          # Копируем правильную папку патчей
+          $patchFolder = if ("${{ matrix.variant }}" -eq "cop") { "patch" } else { "patch_${{ matrix.variant }}" }
+          Copy-Item -Recurse -Force $patchFolder gamedata
+          
+          # Обрабатываем fsgame.ltx
+          if ("${{ matrix.variant }}" -eq "coc") {
+            if (Test-Path fsgame.ltx) { Remove-Item -Force fsgame.ltx }
+            Copy-Item fsgame_coc.ltx fsgame.ltx
+          } elseif ("${{ matrix.variant }}" -eq "soc") {
+            # Для SoC просто проверяем что fsgame.ltx существует
+            if (-not (Test-Path fsgame.ltx)) {
+              Write-Host "Warning: fsgame.ltx not found for SoC"
+            }
+          }
+          # Для cop и cs ничего не делаем с fsgame.ltx
   
-      - name: Upload assets (CS)
-        shell: cmd
-        run: |
-          if exist gamedata rd /s /q gamedata
-          xcopy /e /i patch_cs gamedata
-      - uses: actions/upload-artifact@v7
+      - name: Upload assets (${{ matrix.variant }})
+        uses: actions/upload-artifact@v7
         with:
-          name: engine-assets-cs-${{ github.sha }}
-          path: |
-            gamedata/
-            .xrignore
-            fsgame.ltx
-          include-hidden-files: true
-
-      - name: Upload assets (CoC)
-        shell: cmd
-        run: |
-          if exist gamedata rd /s /q gamedata
-          xcopy /e /i patch_coc gamedata
-          if exist fsgame.ltx del fsgame.ltx
-          copy fsgame_coc.ltx fsgame.ltx
-      - uses: actions/upload-artifact@v7
-        with:
-          name: engine-assets-coc-${{ github.sha }}
-          path: |
-            gamedata/
-            .xrignore
-            fsgame.ltx
-          include-hidden-files: true
-
-      - name: Upload assets (SoC)
-        shell: cmd
-        run: |
-          if exist gamedata rd /s /q gamedata
-          xcopy /e /i patch_soc gamedata
-      - uses: actions/upload-artifact@v7
-        with:
-          name: engine-assets-soc-${{ github.sha }}
+          name: engine-assets-${{ matrix.variant }}-${{ github.sha }}
           path: |
             gamedata/
             .xrignore
