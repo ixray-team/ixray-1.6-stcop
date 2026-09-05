@@ -2283,8 +2283,11 @@ void CActor::UpdatePlayerView()
 			mstate_wishful &= ~mcAccel;
 			mstate_wishful &= ~mcLStrafe;
 			mstate_wishful &= ~mcRStrafe;
-			mstate_wishful &= ~mcLLookout;
-			mstate_wishful &= ~mcRLookout;
+			if (!pInput->GetControllerMode())
+			{
+				mstate_wishful &= ~mcLLookout;
+				mstate_wishful &= ~mcRLookout;
+			}
 			mstate_wishful &= ~mcFwd;
 			mstate_wishful &= ~mcBack;
 			if (!psActorFlags.test(AF_CROUCH_TOGGLE) && !pInput->GetControllerMode())
