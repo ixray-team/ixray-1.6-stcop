@@ -20,6 +20,7 @@
 #include "../../xrCore/git_version.h"
 #include "../../xrEngine/IGame_Actor.h"
 #include "../xrRender/RenderInterfaceShared.h"
+#include "../xrRender/dxUIRender.h"
 using namespace R_dsgraph;
 
 CRender RImplementation;
@@ -491,15 +492,20 @@ void CRender::Calculate				()
 
 void CRender::RenderUI(bool) 
 {
-	//CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
-	//rmNormal();
-//	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), Target->rt_Position->pRT, RTarget, NULL, RDepth);
+	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+
+	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), nullptr, nullptr, RTarget, RDepth);
+	rmNormal();
+
 	r_dsgraph_render_ui();
 
-//	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, 0, 0, RDepth);
+	Target->u_setrt(RCache.get_width(), RCache.get_height(), RTarget, nullptr, nullptr, RDepth);
+	rmNormal();
+
 	r_dsgraph_render_sorted_ui();
 
 	marker++;
+	Target->u_setrt(RCache.get_width(), RCache.get_height(), RTarget, nullptr, nullptr, nullptr);
 }
 
 void CRender::Render()
