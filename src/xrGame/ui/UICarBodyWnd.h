@@ -70,8 +70,6 @@ protected:
 	CUI3tButton*				m_pUITakeAll;
 	CUI3tButton*				m_pUIPutAll;
 
-	bool						m_highlight_clear;
-
 	void						UpdateLists					();
 
 	virtual void				SetCurrentItem				(CUICellItem* itm);

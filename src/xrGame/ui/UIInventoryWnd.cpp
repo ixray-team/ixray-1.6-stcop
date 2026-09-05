@@ -47,7 +47,6 @@ CUIInventoryWnd::CUIInventoryWnd()
 	Init								();
 	SetCurrentItem						(nullptr);
 
-	m_b_need_reinit						= false;
 	Show								(false);	
 	m_currMenuMode						= mmInventory;
 }
@@ -175,7 +174,6 @@ void CUIInventoryWnd::Init()
 
 	m_gamepad_legend					= UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 
-	m_highlight_clear = true;
 	clear_highlight_lists();
 		
 	const char* pSelectorTextureName = "ui_inv_item_selector_sec";
@@ -195,9 +193,6 @@ void CUIInventoryWnd::Init()
 
 void CUIInventoryWnd::Update()
 {
-	if(m_b_need_reinit)
-		InitInventory					();
-
 	CObject* current_entity = Level().CurrentEntity();
 	CEntityAlive *pEntityAlive			= current_entity != nullptr ? GetInventoryOwner()->cast_entity_alive() : nullptr;
 

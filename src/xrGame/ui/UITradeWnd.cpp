@@ -161,7 +161,6 @@ void CUITradeWnd::Init()
 	}
 	m_gamepad_legend = UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 
-	m_highlight_clear = true;
 	clear_highlight_lists();
 
 	const char* pSelectorTextureName = "ui_inv_item_selector_sec";
