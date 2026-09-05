@@ -500,6 +500,7 @@ function add_to_binder(object, ini, scheme, section, storage)
 	  	local properties  = {}
 		
 	   	local manager = object:motivation_action_manager()
+		if manager == nil then return end
 
 		operators["patrol"]			= xr_actions_id.stohe_camper_base + 1
 	
