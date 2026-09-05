@@ -76,17 +76,6 @@ enum EMoveCommand
 	mcJumpSeq	= (mcJump | mcFall | mcLanding | mcLanding2),
 };
 
-// enum дл€ определени€ действи€ над вещью на которую наведен в текущее врем€ прицел.
-// »спользуетс€ дл€ показа всплывающих динамических подсказок
-enum EActorAction
-{
-	eaaNoAction			= 0,
-	eaaPickup,
-	eaaTalk,
-	eaaOpenDoor,
-	eaaSearchCorpse,
-};
-
 extern 	string32		g_quick_use_slots[4];
 
 //---------------------------------------------
