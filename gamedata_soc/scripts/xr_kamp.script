@@ -726,7 +726,8 @@ function add_to_binder(object, ini, scheme, section, storage)
 	local properties	= {}
 
 	local manager = object:motivation_action_manager()
-
+	if manager == nil then return end
+	
 	properties["kamp_end"]		= xr_evaluators_id.stohe_kamp_base + 1
 	properties["on_position"]	= xr_evaluators_id.stohe_kamp_base + 2
 	properties["contact"]		= xr_evaluators_id.stohe_meet_base + 1
