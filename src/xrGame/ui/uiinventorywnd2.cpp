@@ -38,12 +38,6 @@ void CUIInventoryWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	inherited::SendMessage(pWnd, msg, pData);
 }
 
-
-void CUIInventoryWnd::InitInventory_delayed()
-{
-	m_b_need_reinit = true;
-}
-
 void CUIInventoryWnd::InitInventory()
 {
 	CObject* current_entity = Level().CurrentEntity();
@@ -67,5 +61,4 @@ void CUIInventoryWnd::InitInventory()
 	}
 
 	SetAreaSelectionTo				(m_pUIBagList);
-	m_b_need_reinit					= false;
 }  
