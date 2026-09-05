@@ -1063,6 +1063,50 @@ void CActor::IR_GamepadKeyPress(int id)
 	EGameActions bindAim = get_binded_action(id, agAiming);
 	switch (bindAim)
 	{
+		case kL_LOOKOUT:
+		{
+			if (IsZoomAimingMode())
+			{
+				if (eacLookAt != cam_active)
+				{
+					if (!(mstate_wishful & mcLLookout))
+					{
+						mstate_wishful |= mcLLookout;
+					}
+					else
+					{
+						mstate_wishful &= mcLLookout;
+					}
+				}
+				else
+				{
+					psActorFlags.set(AF_RIGHT_SHOULDER, true);
+				}
+			}
+			break;
+		}
+		case kR_LOOKOUT:
+		{
+			if (IsZoomAimingMode())
+			{
+				if (eacLookAt != cam_active)
+				{
+					if (!(mstate_wishful & mcRLookout))
+					{
+						mstate_wishful |= mcRLookout;
+					}
+					else
+					{
+						mstate_wishful &= mcRLookout;
+					}
+				}
+				else
+				{
+					psActorFlags.set(AF_RIGHT_SHOULDER, false);
+				}
+			}
+			break;
+		}
 		case kWPN_ZOOM_INC:
 		case kWPN_ZOOM_DEC:
 		{
@@ -1202,32 +1246,6 @@ void CActor::IR_GamepadKeyHold(int id)
 		case kUSE:
 		{
 			UpdatePickupMode();
-			break;
-		}
-	}
-
-	switch (get_binded_action(id, agAiming))
-	{
-		case kL_LOOKOUT:
-		{
-			if (IsZoomAimingMode())
-			{
-				if (eacLookAt != cam_active)
-					mstate_wishful |= mcLLookout;
-				else
-					psActorFlags.set(AF_RIGHT_SHOULDER, true);
-			}
-			break;
-		}
-		case kR_LOOKOUT:
-		{
-			if (IsZoomAimingMode())
-			{
-				if (eacLookAt != cam_active)
-					mstate_wishful |= mcRLookout;
-				else
-					psActorFlags.set(AF_RIGHT_SHOULDER, false);
-			}
 			break;
 		}
 	}
