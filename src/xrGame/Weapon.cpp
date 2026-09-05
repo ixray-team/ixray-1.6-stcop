@@ -1255,6 +1255,7 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	m_strapped_mode_rifle = false;
 	m_zoom_params.m_bIsZoomModeNow	= false;
 	bDisablePrepareAnimation = false;
+	m_set_next_ammoType_on_reload = undefined_ammo_type;
 	UpdateXForm					();
 
 	if (THudLightLaser* LaserLight = GetComponent<THudLightLaser>())
@@ -1301,6 +1302,7 @@ void CWeapon::OnActiveItem ()
 
 	bStopReloadSignal = false;
 	bDisablePrepareAnimation = false;
+	m_set_next_ammoType_on_reload = undefined_ammo_type;
 
 	inherited::OnActiveItem		();
 	//если мы занружаемся и оружие было в руках
