@@ -1397,12 +1397,25 @@ void CWeaponMagazined::state_Fire(float dt)
 		StopShotEffector(); 
 	}
 
-	if(fShotTimeCounter<0)
+	if (fShotTimeCounter < 0)
 	{
-		if(iAmmoElapsed == 0)
+		if (iAmmoElapsed == 0)
+		{
 			OnMagazineEmpty();
+		}
 
-		StopShooting();
+		if (ParentIsActor())
+		{
+			if (m_bStopedAfterQueueFired || iAmmoElapsed == 0)
+			{
+				StopShooting();
+				SetPending(false);
+			}
+		}
+		else
+		{
+			StopShooting();
+		}
 
 		if (ParentIsActor() && is_shooting_end_callback)
 		{
@@ -1413,7 +1426,7 @@ void CWeaponMagazined::state_Fire(float dt)
 	}
 	else
 	{
-		fShotTimeCounter			-=	dt;
+		fShotTimeCounter -= dt;
 	}
 }
 
@@ -1527,9 +1540,22 @@ void CWeaponMagazined::state_FireChamber(float dt)
 	if (fShotTimeCounter < 0)
 	{
 		if (iAmmoChamberElapsed == 0)
+		{
 			OnMagazineEmpty();
+		}
 
-		StopShooting();
+        if (ParentIsActor())
+		{
+			if (m_bStopedAfterQueueFired || iAmmoChamberElapsed == 0)
+			{
+				StopShooting();
+				SetPending(false);
+			}
+		}
+		else
+		{
+			StopShooting();
+		}
 
 		if (ParentIsActor() && is_shooting_end_callback)
 		{
@@ -1784,6 +1810,7 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 				if (IsGrenadeMode())
 				{
 					bWorking = false;
+					SetPending(false);
 					SwitchState(eIdle);
 				}
 				else
@@ -1874,13 +1901,21 @@ void CWeaponMagazined::switch2_Fire	()
 	}
 #endif
 	
+	SetPending(false);
+
 	m_bStopedAfterQueueFired = false;
 	m_bFireSingleShot = true;
 	m_iShotNum = 0;
 
-    if ((OnClient() || Level().IsDemoPlay())&& !IsWorking())
-		FireStart();
+	if (ParentIsActor() && GetQueueSize() > 1)
+	{
+		SetPending(true);
+	}
 
+	if ((OnClient() || Level().IsDemoPlay()) && !IsWorking())
+	{
+		FireStart();
+	}
 }
 
 void CWeaponMagazined::switch2_Empty()
