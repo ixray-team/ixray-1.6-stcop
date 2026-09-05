@@ -3855,7 +3855,7 @@ extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
 	const u8 NextState = GetNextState();
-	return hud_adj_crosshair || !m_bTacticalLaserStatus && (!IsPending() || NextState == eEmptyClick || NextState == eSprintStart || NextState == eSprintEnd || NextState == ePump || NextState == eSafemodeSwitch) && NextState != eHidden && (!IsZoomed() || !ZoomHideCrosshair());
+	return hud_adj_crosshair || !m_bTacticalLaserStatus && (!IsPending() || NextState == eFire && !cast_weapon_knife() || NextState == eEmptyClick || NextState == eSprintStart || NextState == eSprintEnd || NextState == ePump || NextState == eSafemodeSwitch) && NextState != eHidden && (!IsZoomed() || !ZoomHideCrosshair());
 }
 
 bool CWeapon::use_crosshair() const
