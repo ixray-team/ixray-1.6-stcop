@@ -135,6 +135,31 @@ bool CRenderTarget::Create()
 	return	RT->valid() && RT_distort->valid();
 }
 
+void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb)
+{
+	VERIFY									(_1);
+	curWidth								= _1->dwWidth;
+	curHeight								= _1->dwHeight;
+	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT(nullptr,0);
+	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT(nullptr,1);
+	if (_3) RCache.set_RT(_3->pRT,	2); else RCache.set_RT(nullptr,2);
+	GRHI->SetDepthStencilView				(zb);
+//	RImplementation.rmNormal				();
+}
+
+void	CRenderTarget::u_setrt			(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIDepthStencilView* zb)
+{
+	VERIFY									(_1);
+	curWidth								= W;
+	curHeight								= H;
+	VERIFY									(_1);
+	RCache.set_RT							(_1,	0);
+	RCache.set_RT							(_2,	1);
+	RCache.set_RT							(_3,	2);
+	GRHI->SetDepthStencilView				(zb);
+//	RImplementation.rmNormal				();
+}
+
 void CRenderTarget::set_default_target()
 {
 	RCache.set_RT(RT->pRT);

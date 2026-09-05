@@ -90,6 +90,8 @@ public:
 	virtual void		set_color_base		(u32	f)		{ param_color_base=f;										}
 	virtual void		set_color_gray		(u32	f)		{ param_color_gray=f;										}
 	virtual void		set_color_add		(const Fvector &f)		{ param_color_add=f;								}
+	void				u_setrt				(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb);
+	void				u_setrt				(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIDepthStencilView* zb);
 
 	virtual void		set_cm_imfluence	(float	f)		{ param_color_map_influence = f;							}
 	virtual void		set_cm_interpolate	(float	f)		{ param_color_map_interpolate = f;							}
