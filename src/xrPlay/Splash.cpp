@@ -363,7 +363,14 @@ namespace splash
 		WINDOW_WIDTH = surface->w;
 		WINDOW_HEIGHT = surface->h;
 
-		if (!SDL_CreateWindowAndRenderer("chezze/renderer/ixray_splash", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_BORDERLESS | SDL_WINDOW_NOT_FOCUSABLE /* | SDL_WINDOW_TRANSPARENT*/, &window, &renderer))
+        u32 window_flags = SDL_WINDOW_BORDERLESS | SDL_WINDOW_NOT_FOCUSABLE;
+#ifdef IXR_WINDOWS
+        if (!IsDebuggerPresent())
+#endif
+        {
+			window_flags |= SDL_WINDOW_ALWAYS_ON_TOP;
+        }
+		if (!SDL_CreateWindowAndRenderer("chezze/renderer/ixray_splash", WINDOW_WIDTH, WINDOW_HEIGHT, window_flags, &window, &renderer))
 		{
 			SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
 			return;
