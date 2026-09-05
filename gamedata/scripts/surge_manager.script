@@ -58,7 +58,7 @@ function CSurgeManager:initialize()
 
 	--Sin! - откатим время последнего выброса, дабы сразу после загрузки игры ПДА не начинал глючить
 	dt = game.CTime()
-	dt:setHMSms(2, 0, 0, 0)	 
+	dt:setHMSms(0, 2, 0, 0)	 
 	self.last_surge_time:sub(dt);
 
 	self.count = 0
