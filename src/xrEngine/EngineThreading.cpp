@@ -74,6 +74,11 @@ void XRay::Engine::GameThread()
 
 	// Device.GCThread.Run();
 
+	if (g_pGamePersistent != nullptr)
+	{
+		g_pGamePersistent->OnFrameMT();
+	}
+
 	if (Device.LuaGC)
 	{
 		Device.LuaGC();
