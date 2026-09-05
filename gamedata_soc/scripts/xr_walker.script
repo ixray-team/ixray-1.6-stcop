@@ -74,6 +74,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	  	local properties  = {}
 
 	   	local manager = npc:motivation_action_manager()
+		if manager == nil then return end
 
 		properties["event"] = xr_evaluators_id.reaction
 	 	properties["need_walker"] = xr_evaluators_id.zmey_walker_base + 1
