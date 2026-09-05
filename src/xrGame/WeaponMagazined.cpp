@@ -1517,7 +1517,7 @@ void CWeaponMagazined::state_FireChamber(float dt)
 		UpdateSounds();
 	}
 
-	if (iAmmoElapsed == 0 ||
+	if (iAmmoChamberElapsed == 0 ||
 		(m_iQueueSize > 0 && m_iShotNum >= m_iQueueSize) ||
 		!IsWorking() && H_Parent())
 	{
