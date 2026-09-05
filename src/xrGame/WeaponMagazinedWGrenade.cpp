@@ -953,7 +953,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& 
 		int GetElapsed = m_bGrenadeMode ? iAmmoElapsed2 : iAmmoElapsed;
 		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 && GetElapsed == 0 : GetElapsed == 0;
 
-		const char* end_suffix = m_bGrenadeMode ? "_g" : m_disable_random_animations ? "_gl" : "_w_gl";
+		const char* end_suffix = m_bGrenadeMode ? "_g" : ((HudAnimationExist("anm_draw_gl") && !HudAnimationExist("anm_show_w_gl")) || m_disable_random_animations) ? "_gl" : "_w_gl";
 
 		if (IsZoomed() && IsMisfire())
 		{
