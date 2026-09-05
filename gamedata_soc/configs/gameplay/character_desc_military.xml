@@ -294,6 +294,7 @@
 		
 		<class>mil_Svoboda_trader</class>
 		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+		<money min="100000" max="110000" infinitive="1"></money>
 
         <snd_config>characters_voice\human_02\freedom\</snd_config>
 		<crouch_type>-1</crouch_type>
