@@ -1979,12 +1979,15 @@ void CWeaponMagazined::PlayReloadSound()
 	}
 
 	s32 elapsed = iAmmoElapsed + iAmmoChamberElapsed;
-	const shared_str name = shared_str().printf("sndReloadR%d", elapsed);
-
-	if (m_bUseRevolverScheme && !IsGrenadeMode() && !IsMisfire() && elapsed > 0 && m_sounds.FindSoundItem(*name, false))
+	if (m_bUseRevolverScheme)
 	{
-		PlaySound(*name, get_LastFP());
-		return;
+		const shared_str name = shared_str().printf("sndReloadR%d", elapsed);
+
+		if (!IsChangeAmmoType() && !IsGrenadeMode() && !IsMisfire() && elapsed > 0 && m_sounds.FindSoundItem(*name, false))
+		{
+			PlaySound(*name, get_LastFP());
+			return;
+		}
 	}
 
 	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
