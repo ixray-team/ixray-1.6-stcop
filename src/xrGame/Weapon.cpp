@@ -661,6 +661,7 @@ void CWeapon::Load		(const char* section)
 
 	DisableLastAmmoMisfire = READ_IF_EXISTS(pSettings, r_bool, section, "disable_last_ammo_misfire", false);
 	DisableEmptyFiremode = READ_IF_EXISTS(pSettings, r_bool, section, "disable_empty_firemode", false);
+	DisableGrenadeChange = READ_IF_EXISTS(pSettings, r_bool, section, "disable_grenade_change", false);
 
 	m_fMisfireAfterProblemsLevel = READ_IF_EXISTS(pSettings, r_float, section, "misfire_after_problems_level", 10.0f);
 
@@ -2025,6 +2026,11 @@ bool CWeapon::SwitchZoom(u32 flags)
 bool CWeapon::SwitchAmmoType(u32 flags)
 {
 	if (OnClient() || !(flags & CMD_START))
+	{
+		return false;
+	}
+
+	if (DisableGrenadeChange && (IsGrenadeMode() || cast_weapon_rg6() && !m_bTriStateReload) && iAmmoElapsed > 0)
 	{
 		return false;
 	}
