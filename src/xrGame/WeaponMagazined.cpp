@@ -294,7 +294,6 @@ void CWeaponMagazined::LoadSounds(const char* section)
 		m_sounds.LoadSound(section, "snd_chamber_check_empty", "sndChamberCheckEmpty", true, m_eSoundReload);
 	}
 
-	//Only for improve misfire external!
 	if (SoundExist(section, "snd_jam"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_jam, true);
@@ -1075,7 +1074,14 @@ void CWeaponMagazined::OnStateSwitch	(u8 S)
 		}
 		else
 		{
-			OnEmptyClick();
+			if (m_eSoundsFlags.test(ESoundsFlags::sf_jam))
+			{
+				m_layered_sounds.PlaySound("sndJam", get_LastFP(), H_Parent(), GetHUDmode(), false);
+			}
+			else
+			{
+				OnEmptyClick();
+			}
 			SwitchState(eIdle);
 		}
 
