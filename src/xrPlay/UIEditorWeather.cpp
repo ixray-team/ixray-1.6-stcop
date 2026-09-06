@@ -36,6 +36,13 @@ bool enumWeather(void* data, int idx, const char** item)
 	return true;
 }
 
+bool enumShared(void* data, int idx, const char** item)
+{
+	shared_str* vec = (shared_str*)data;
+	*item = vec[idx].c_str();
+	return true;
+}
+
 const char* empty = "";
 bool enumIniWithEmpty(void* data, int idx, const char** item)
 {
@@ -446,19 +453,18 @@ void RenderUIWeather() {
 	ImGui::Separator();
 	bool changed = false;
 	sel = -1;
-	CInifile* ambConfig = env.m_ambients_config;
-	if (!ambConfig)
-		ambConfig = pSettings;
-	CInifile::Root& ambsections = ambConfig->sections();
-	for (int i = 0; i != ambsections.size(); i++)
+
+	for (int i = 0; i != env.m_ambients_sections.size(); i++)
 	{
-		if (cur->env_ambient && cur->env_ambient->name() == ambsections[i].Name) {
+		if (cur->env_ambient && cur->env_ambient->name() == env.m_ambients_sections[i]) 
+		{
 			sel = i;
 		}
 	}
 
-	if (ImGui::Combo("ambient", &sel, enumIni, ambConfig, (int)ambsections.size())) {
-		cur->env_ambient = env.AppendEnvAmb(ambsections[sel].Name);
+	if (ImGui::Combo("ambient", &sel, enumShared, env.m_ambients_sections.data(), (int)env.m_ambients_sections.size())) 
+	{
+		cur->env_ambient = env.AppendEnvAmb(env.m_ambients_sections[sel], env.m_ambients_config ? nullptr : pSettings);
 		changed = true;
 	}
 
@@ -564,22 +570,24 @@ void RenderUIWeather() {
 	CInifile* sunsConfig = env.m_suns_config;
 	if (!sunsConfig)
 		sunsConfig = pSettings;
-	CInifile::Root& sunssections = sunsConfig->sections();
-	for (int i = 0; i != sunssections.size(); i++)
+	for (int i = 0; i != env.m_flares_sections.size(); i++)
 	{
-		if (cur->lens_flare_id == sunssections[i].Name)
+		if (cur->lens_flare_id == env.m_flares_sections[i])
+		{
 			sel = i;
+		}
 	}
 
-	if (ImGui::Combo("sun", &sel, enumIni, sunsConfig, (int)sunssections.size()))
+	if (ImGui::Combo("sun", &sel, enumShared, env.m_flares_sections.data(), (int)env.m_flares_sections.size()))
 	{
 		cur->lens_flare_id
-			= env.eff_LensFlare->AppendDef(env, sunsConfig, sunssections[sel].Name.c_str());
+			= env.eff_LensFlare->AppendDef(env, sunsConfig, env.m_flares_sections[sel].c_str());
 		env.eff_LensFlare->Invalidate();
 		changed = true;
 	}
 
-	if (ImGui::ColorEdit4("sun_color", (float*)&cur->sun_color, ImGuiColorEditFlags_AlphaBar)) {
+	if (ImGui::ColorEdit4("sun_color", (float*)&cur->sun_color, ImGuiColorEditFlags_AlphaBar)) 
+	{
 		changed = true;
 	}
 	static float editor_altitude = 0.f;
@@ -603,7 +611,8 @@ void RenderUIWeather() {
 		editor_altitude = cur->sun_dir.getP();
 	}
 
-	if (ImGui::SliderFloat("sun_longitude", &editor_longitude, -360.0f, 360.0f)) {
+	if (ImGui::SliderFloat("sun_longitude", &editor_longitude, -360.0f, 360.0f)) 
+	{
 		changed = true;
 		cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
 	}
@@ -614,31 +623,32 @@ void RenderUIWeather() {
 	}
 	ImGui::EndDisabled();
 
-	if (ImGui::SliderFloat("sun_shafts_intensity", &cur->m_fSunShaftsIntensity, 0.0f, 1.0f)) {
+	if (ImGui::SliderFloat("sun_shafts_intensity", &cur->m_fSunShaftsIntensity, 0.0f, 1.0f)) 
+	{
 		changed = true;
 	}
 
-	sel = 0;
+	sel = -1;
 
 	CInifile* thunderboltCollectionsConfig = env.m_thunderbolt_collections_config;
 	if (!thunderboltCollectionsConfig)
 		thunderboltCollectionsConfig = pSettings;
-	CInifile::Root& tbsections = thunderboltCollectionsConfig->sections();
-	for (int i = 0; i != tbsections.size(); i++)
+
+	for (int i = 0; i != env.m_thunderbolts_sections.size(); i++)
 	{
-		if (cur->tb_id == tbsections[i].Name)
-			sel = i + 1;
+		if (cur->tb_id == env.m_thunderbolts_sections[i])
+		{
+			sel = i;
+		}
 	}
 
 	CInifile* thunderboltsConfig = env.m_thunderbolts_config;
 	if (!thunderboltsConfig)
 		thunderboltsConfig = pSettings;
 
-	if (ImGui::Combo("thunderbolt_collection", &sel, enumIniWithEmpty, thunderboltCollectionsConfig, (int)tbsections.size() + 1))
+	if (ImGui::Combo("thunderbolt_collection", &sel, enumShared, env.m_thunderbolts_sections.data(), (int)env.m_thunderbolts_sections.size()))
 	{
-		cur->tb_id = (sel == 0)
-			? env.eff_Thunderbolt->AppendDef(env, thunderboltCollectionsConfig, thunderboltsConfig, "")
-			: env.eff_Thunderbolt->AppendDef(env, thunderboltCollectionsConfig, thunderboltsConfig, tbsections[sel - 1].Name.c_str());
+		cur->tb_id = env.eff_Thunderbolt->AppendDef(env, thunderboltCollectionsConfig, thunderboltsConfig, env.m_thunderbolts_sections[sel].c_str());
 		changed = true;
 	}
 
