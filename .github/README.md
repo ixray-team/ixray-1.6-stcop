@@ -90,6 +90,10 @@ Latest release of the engine can be downloaded on the [releases page](https://gi
 | :--- | :--- | :--- | :--- | :--- |
 | Call of Pripyat | Gamer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.5/ixray-1.6-r1.3.5-engine-x64-game-cop.zip) | Ready-made engine build for players or necessary for the release of modifications. Archive contains the engine and assets for running the game |
 | Call of Pripyat | Developer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.5/ixray-1.6-r1.3.5-engine-x64-develop-cop.zip) | Ready-made engine build for developers, necessary for convenient modification development. Archive contains the engine and assets for launching the game |
+| Clear Sky | Gamer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.5/ixray-1.6-r1.3.5-engine-x64-game-cs.zip) | Ready-made engine build for players or necessary for the release of modifications. Archive contains the engine and assets for running the game |
+| Clear Sky | Developer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.5/ixray-1.6-r1.3.5-engine-x64-develop-cs.zip) | Ready-made engine build for developers, necessary for convenient modification development. Archive contains the engine and assets for launching the game |
+| Shadow of Chernobyl | Gamer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.5/ixray-1.6-r1.3.5-engine-x64-game-soc.zip) | Ready-made engine build for players or necessary for the release of modifications. Archive contains the engine and assets for running the game |
+| Shadow of Chernobyl | Developer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.5/ixray-1.6-r1.3.5-engine-x64-develop-soc.zip) | Ready-made engine build for developers, necessary for convenient modification development. Archive contains the engine and assets for launching the game |
 
 You can read about the differences in [FAQ](https://github.com/ixray-team/ixray-1.6-stcop/blob/default/doc/faq.md#what-is-the-difference-between-the-game-player-and-developer-builds)
 
@@ -100,19 +104,31 @@ You can read about the differences in [FAQ](https://github.com/ixray-team/ixray-
 - __CMake__ build system
 - Supported renderers: __DirectX 9.0c__, __DirectX 11__
 - Improved performance and better FPS
-- [Extended opportunities for modmakers](ixray-team.github.io/ixray-1.6-stcop/)
 - Fixed original bugs
 - Increased level loading speed by 3-4 times
-- [Debugging tools support: __ASAN__, __RenderDoc__ and __LuaPanda__](https://github.com/ixray-team/ixray-1.6-stcop/wiki/%D0%98%D0%BD%D1%82%D0%B5%D0%B3%D1%80%D0%B0%D1%86%D0%B8%D0%B8)
-- [Supported __DLTX__ and __XMLOverride__](https://github.com/ixray-team/ixray-1.6-stcop/wiki#addons)
-- Supported in-game debugging tools
-- [Supported __TTF__ font system](https://github.com/ixray-team/ixray-1.6-stcop/wiki/Fonts)
-- Extended rendering features
-- Supported __BC7__ compression format
-- Supported NVIDIA DLSS and AMD FidelityFX Super Resolution 2 (FSR2) Technologies
 - Extended gameplay features
+- Extended rendering features
+    - Supported NVIDIA DLSS and AMD FidelityFX Super Resolution 3 (FSR3) Technologies
+    - Supported PBR
+    - Ambient Occlusion: SSAO, GTAO
+    - Hashed Alpha-Test
+    - Screen Space Local Reflections
+    - Viewer Space Local Reflections
+    - Cubemap 
+    - Anti-aliasing: FXAA, SMAA, TAA
+    - Supported __BC7__ compression format
+- [Supported __TTF__ font system](https://github.com/ixray-team/ixray-1.6-stcop/wiki/Fonts)
+- Supported in-game debugging tools
+- [Extended opportunities for modmakers](ixray-team.github.io/ixray-1.6-stcop/)
+- [Debugging tools support: __ASAN__, __RenderDoc__ and __LuaPanda__](https://ixray-team.github.io/ixray-1.6-stcop/main/integrations.html)
 - [Extended __UI__ features](https://github.com/ixray-team/ixray-1.6-stcop/wiki/UI-%D0%9E%D0%B1%D1%89%D0%B5%D0%B5)
 - [Extended __Lua__ features](https://github.com/ixray-team/ixray-1.6-stcop/wiki#%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D1%8B-lua)
+
+- Система аддонов
+- Модульные партиклы
+- [Lua Framework](https://ixray-team.github.io/ixray-1.6-stcop/scripting/ixr-framework/general-info.html)
+- [__DLTX__ system](https://ixray-team.github.io/ixray-1.6-stcop/configs/dltx.html)
+- [__XMLOverride__ system](https://ixray-team.github.io/ixray-1.6-stcop/configs/xml-override.html)
 
 ## Addons
 
