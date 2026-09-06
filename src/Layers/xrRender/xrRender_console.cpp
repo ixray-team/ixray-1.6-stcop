@@ -233,7 +233,7 @@ int			ps_r2_dhemi_count			= 5;				// 5
 int			ps_r2_wait_sleep			= 0;
 
 float		ps_r4_mblur_power = 0.25f;
-float		ps_r4_full_detail_distance_scale = 1.f;
+float		ps_r4_full_detail_distance_scale = 0.5f;
 
 float		ps_r2_lt_smooth				= 1.f;				// 1.f
 float		ps_r2_slight_fade			= 0.6f;				// 1.f
