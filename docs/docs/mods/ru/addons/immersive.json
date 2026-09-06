@@ -1,7 +1,6 @@
 ﻿{
   "eyebrow": "Аддоны · Иммерсивность",
   "title": "Иммерсивные аддоны",
-  "subtitle": "Пример данных для аддонов. Замените на реальные иммерсивные пакеты.",
   "labels": {
     "view": "Скачать / открыть",
     "soon": "Скоро"
@@ -13,7 +12,7 @@
       "description": "Этот аддон исправляет один из самых заметных визуальных недостатков оригинала — отсутствие ног у главного героя. Теперь при взгляде вниз вы увидите ноги, соответствующие выбранному костюму. Добавлена анимация движения, благодаря чему игра выглядит более реалистично и завершенно.",
       "author": "IX-Ray Team",
       "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-legs-addon",
-      "image": "https://dummyimage.com/524x482/0f172a/e5e7eb&text=legs"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Immersive/LegA.png"
     },
     {
       "id": "puddles",
@@ -21,7 +20,7 @@
       "description": "Аддон содержит 3D-лужи, размещенные в локациях оригинальной игры Call of Pripyat. Совместим со всеми модами и не требует адаптации.",
       "author": "IX-Ray Team, MSR",
       "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-puddles-addon",
-      "image": "https://dummyimage.com/524x482/0f172a/e5e7eb&text=puddles"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Immersive/PAa.png"
     }
   ]
 }
