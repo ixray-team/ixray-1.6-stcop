@@ -47,13 +47,13 @@ ICF bool R4FullDetailRejectStatic(dxRender_Visual* pVisual)
 	}
 
 	const float far_plane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
-	const float full_detail_distance = _max(100.f, far_plane * ps_r4_full_detail_distance_scale);
+	const float full_detail_distance = std::max(100.f, far_plane * ps_r4_full_detail_distance_scale);
 	const float dist_sq = Device.vCameraPosition.distance_to_sqr(pVisual->vis.sphere.P) + EPS;
 	const float nearest_distance = _sqrt(dist_sq) - pVisual->vis.sphere.R;
 	if (nearest_distance <= full_detail_distance)
 		return false;
 
-	const float transition_range = _max(1.f, far_plane - full_detail_distance);
+	const float transition_range = std::max(1.f, far_plane - full_detail_distance);
 	const float transition = clampr((nearest_distance - full_detail_distance) / transition_range, 0.f, 1.f);
 	const float ssa = pVisual->vis.sphere.R / dist_sq;
 	return ssa <= r_ssaDISCARD * (1.f + transition * 11.f);

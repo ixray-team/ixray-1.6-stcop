@@ -150,7 +150,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 		PROF_EVENT("add_dynamic")
 		const bool use_full_detail_distance = ps_r4_full_detail_distance_scale < 1.f;
 		const float full_detail_distance = use_full_detail_distance ?
-			_max(100.f, g_pGamePersistent->Environment().CurrentEnv->far_plane * ps_r4_full_detail_distance_scale) : 0.f;
+			std::max(100.f, g_pGamePersistent->Environment().CurrentEnv->far_plane * ps_r4_full_detail_distance_scale) : 0.f;
 		// Traverse frustums
 		for (u32 o_it=0; o_it<lstRenderablesMain.size(); o_it++)
 		{
