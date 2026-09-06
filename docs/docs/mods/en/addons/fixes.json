@@ -1,7 +1,6 @@
 ﻿{
   "eyebrow": "Addon · Fixes",
   "title": "Fixes vanilla resources Add-ons",
-  "subtitle": "Example addon data. Replace with real addon data.",
   "labels": {
     "view": "Download / Open",
     "soon": "Coming soon"
@@ -13,7 +12,7 @@
       "description": "This addon fixes the front sight position when aiming and corrects animations for certain weapons that caused issues in original Stalker Call of Pripyat and when playing with the IX-Ray Engine. It's designed to fix original weapon bugs.",
       "author": "IX-Ray Team, MSR",
       "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-fixed-weapons",
-      "image": "https://dummyimage.com/524x482/0f172a/e5e7eb&text=fixed-weapons"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Fixes/FW.png"
     }
   ]
 }
