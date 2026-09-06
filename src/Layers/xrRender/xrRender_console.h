@@ -168,6 +168,7 @@ extern ECORE_API int r_debug_render_depth;
 
 extern ECORE_API u32 ps_r4_mblur_quality;
 extern ECORE_API float ps_r4_mblur_power;
+extern ECORE_API float ps_r4_full_detail_distance_scale;
 
 enum
 {
