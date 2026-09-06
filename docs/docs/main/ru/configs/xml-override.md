@@ -1,4 +1,5 @@
-# XLMOverride
+# XMLOverride
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.0
