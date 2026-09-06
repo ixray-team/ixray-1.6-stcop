@@ -1,7 +1,6 @@
 ﻿{
   "eyebrow": "Аддоны · Исправления",
   "title": "Аддоны на исправления ванильных ресурсов",
-  "subtitle": "Пример данных для аддонов.",
   "labels": {
     "view": "Скачать / открыть",
     "soon": "Скоро"
@@ -13,7 +12,7 @@
       "description": "Это дополнение исправляет положение мушки при прицеливании и корректирует анимации для определенных видов оружия, которые вызывали проблемы в оригинальной игре Stalker Call of Pripyat и при игре с IX-Ray Engine. Оно предназначено для исправления ошибок оригинального оружия.",
       "author": "IX-Ray Team, MSR",
       "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-fixed-weapons",
-      "image": "https://dummyimage.com/524x482/0f172a/e5e7eb&text=fixed-weapons"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Fixes/FW.png"
     }
   ]
 }
