@@ -297,16 +297,23 @@ public:
 		return *this;	
 	}
 
-	// SQ magnitude
-	ICF	T	square_magnitude(void) const
-	{
-		return x*x + y*y + z*z;
-	}
-	// magnitude
-	ICF	T	magnitude(void) const
-	{
-		return _sqrt(square_magnitude());
-	}
+	// magnitude^2
+	ICF T square_magnitude() const { return x*x + y*y + z*z; }
+	ICF T square_magnitude_x() const { return x*x; }
+	ICF T square_magnitude_y() const { return y*y; }
+	ICF T square_magnitude_z() const { return z*z; }
+	ICF T square_magnitude_xy() const { return x*x + y*y; }
+	ICF T square_magnitude_xz() const { return x*x + z*z; }
+	ICF T square_magnitude_yz() const { return y*y + z*z; }
+
+	// sqrt(magnitude^2)
+	ICF T magnitude() const { return _sqrt(square_magnitude()); }
+	ICF T magnitude_x() const { return _sqrt(square_magnitude_x()); }
+	ICF T magnitude_y() const { return _sqrt(square_magnitude_y()); }
+	ICF T magnitude_z() const { return _sqrt(square_magnitude_z()); }
+	ICF T magnitude_xy() const { return _sqrt(square_magnitude_xy()); }
+	ICF T magnitude_xz() const { return _sqrt(square_magnitude_xz()); }
+	ICF T magnitude_yz() const { return _sqrt(square_magnitude_yz()); }
 
 	// Normalize
 	ICF	T	normalize_magn(void)
