@@ -369,6 +369,10 @@ public:
 	CInifile*				m_thunderbolt_collections_config;
 	CInifile*				m_thunderbolts_config;
 
+	xr_vector<shared_str>	m_ambients_sections;
+	xr_vector<shared_str>	m_flares_sections;
+	xr_vector<shared_str>	m_thunderbolts_sections;
+
 protected:
 		CEnvDescriptor* create_descriptor	(shared_str const& identifier, CInifile* config, const char* section = nullptr);
 		void load_weathers					();

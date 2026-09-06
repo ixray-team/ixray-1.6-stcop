@@ -140,20 +140,70 @@ CEnvironment::CEnvironment	() :
 	multiplier_clouds_color = READ_IF_EXISTS(config, r_u32, "clouds_params", "multiplier", 1);
 
     if (environmentFolderExist)
-        xr_delete(config);
-    else
-        return;
-
+	{
+		xr_delete(config);
+	}
+	else
+	{
+		for (auto sect : pSettings->sections())
+		{
+			if (!pSettings->line_exist(sect.Name, "effects"))
+			{
+				continue;
+			}
+			m_ambients_sections.push_back(sect.Name);
+		}
+		m_flares_sections.push_back("");
+		for (auto sect : pSettings->sections())
+		{
+			if (!pSettings->line_exist(sect.Name, "flare_shader"))
+			{
+				continue;
+			}
+			m_flares_sections.push_back(sect.Name);
+		}
+		m_thunderbolts_sections.push_back("");
+		for (auto sect : pSettings->sections())
+		{
+			xr_string NameStr = sect.Name.c_str();
+			if (!NameStr.StartWith("thunderbolt_collection"))
+			{
+				continue;
+			}
+			m_thunderbolts_sections.push_back(sect.Name);
+		}
+		return;
+	}
     m_ambients_config =
         new CInifile(FS.update_path(filePath, _game_config_, "environment\\ambients.ltx"), true, true, false);
-    m_sound_channels_config =
+  
+	for (auto sect : m_ambients_config->sections())
+	{
+		m_ambients_sections.push_back(sect.Name);
+	}
+
+	m_sound_channels_config =
         new CInifile(FS.update_path(filePath, _game_config_, "environment\\sound_channels.ltx"), true, true, false);
     m_effects_config =
         new CInifile(FS.update_path(filePath, _game_config_, "environment\\effects.ltx"), true, true, false);
     m_suns_config =
         new CInifile(FS.update_path(filePath, _game_config_, "environment\\suns.ltx"), true, true, false);
-    m_thunderbolt_collections_config = new CInifile(
+
+	m_flares_sections.push_back("");
+	for (auto sect : m_suns_config->sections())
+	{
+		m_flares_sections.push_back(sect.Name);
+	}
+
+	m_thunderbolt_collections_config = new CInifile(
         FS.update_path(filePath, _game_config_, "environment\\thunderbolt_collections.ltx"), true, true, false);
+
+	m_thunderbolts_sections.push_back("");
+	for (auto sect : m_thunderbolt_collections_config->sections())
+	{
+		m_thunderbolts_sections.push_back(sect.Name);
+	}
+
     m_thunderbolts_config =
         new CInifile(FS.update_path(filePath, _game_config_, "environment\\thunderbolts.ltx"), true, true, false);
 }
