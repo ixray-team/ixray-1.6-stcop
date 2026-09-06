@@ -10,6 +10,7 @@
 #include "../WeaponMagazined.h"
 #include "../PDA.h"
 #include "../Inventory.h"
+#include "../PowerCell.h"
 #include "../../xrEngine/string_table.h"
 #include "../ai_object_location.h"
 #include "../game_sv_single.h"
@@ -150,11 +151,50 @@ void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 		}
 	}
 
-	if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item))
+	IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item);
+	if (oPowerManager != nullptr)
 	{
 		if (oPowerManager->OnPropertiesBoxForUsing(m_UIPropertiesBox))
 		{
 			b_show = true;
+		}
+	}
+
+	CInventory* inventory = GetInventory();
+	if (inventory != nullptr && item->parent_id() == GetInventoryOwner()->object_id())
+	{
+		PowerCell* power_cell = smart_cast<PowerCell*>(item);
+		PIItem equipped_device = inventory->ItemFromSlot(DEVICE_SLOT);
+		IPowerManager* equipped_power_manager = equipped_device != nullptr ? smart_cast<IPowerManager*>(equipped_device) : nullptr;
+
+		if (power_cell != nullptr && equipped_power_manager != nullptr && !equipped_power_manager->IsPowerCellInstalled() &&
+			equipped_power_manager->IsPowerCellInWhiteList(power_cell->GetPowerCellData().section))
+		{
+			m_UIPropertiesBox->AddItem("st_install_power_cell", equipped_device, ATTACH_POWER_CELL);
+			b_show = true;
+		}
+		else if (oPowerManager != nullptr && item == equipped_device && !oPowerManager->IsPowerCellInstalled())
+		{
+			PowerCell* best_power_cell = nullptr;
+			for (PIItem inventory_item : inventory->m_ruck)
+			{
+				PowerCell* candidate = smart_cast<PowerCell*>(inventory_item);
+				if (candidate == nullptr || !oPowerManager->IsPowerCellInWhiteList(candidate->GetPowerCellData().section))
+				{
+					continue;
+				}
+
+				if (best_power_cell == nullptr || candidate->GetPowerCellData().current_power > best_power_cell->GetPowerCellData().current_power)
+				{
+					best_power_cell = candidate;
+				}
+			}
+
+			if (best_power_cell != nullptr)
+			{
+				m_UIPropertiesBox->AddItem("st_install_power_cell", best_power_cell, ATTACH_POWER_CELL);
+				b_show = true;
+			}
 		}
 	}
 
@@ -736,6 +776,31 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 
 	switch ( m_UIPropertiesBox->GetClickedItem()->GetTAG() )
 	{
+	case ATTACH_POWER_CELL:
+	{
+		PIItem related_item = static_cast<PIItem>(m_UIPropertiesBox->GetClickedItem()->GetData());
+		PowerCell* power_cell = smart_cast<PowerCell*>(item);
+		IPowerManager* power_manager = related_item != nullptr ? smart_cast<IPowerManager*>(related_item) : nullptr;
+
+		if (power_cell == nullptr)
+		{
+			power_cell = related_item != nullptr ? smart_cast<PowerCell*>(related_item) : nullptr;
+			power_manager = smart_cast<IPowerManager*>(item);
+		}
+
+		if (power_cell != nullptr && power_manager != nullptr && power_manager->IstallPowerCell(power_cell))
+		{
+			CUIDragDropListEx* power_cell_list = GetDisplayListForItem(power_cell, power_cell->m_ItemCurrPlace);
+			if (power_cell_list != nullptr)
+			{
+				RemoveItemFromList(power_cell_list, power_cell);
+			}
+
+			SetCurrentItem(nullptr);
+			PlaySnd(eItemUse);
+		}
+		break;
+	}
 	case INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, (u16)m_UIPropertiesBox->GetClickedItem()->GetData() );		break;
 	case INVENTORY_TO_BELT_ACTION:	
 		ToBelt( cell_item, false );		break;
