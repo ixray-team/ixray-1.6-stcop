@@ -33,6 +33,30 @@ protected:
 	// General
 	//кадр момента пересчета UpdateSounds
 	u32				dwUpdateSounds_Frame;
+
+	enum ESoundsShotFlags : u32
+	{
+		ssf_shoot_actor = (1 << 0),
+		ssf_shoot_actor_last = (1 << 1),
+		ssf_shoot_last = (1 << 2),
+		ssf_shoot_actor_sil = (1 << 3),
+		ssf_shoot_last_sil = (1 << 4),
+		ssf_shoot_actor_last_sil = (1 << 5),
+		ssf_shoot_grenade_actor = (1 << 6),
+		ssf_shoot_indoor = (1 << 7),
+		ssf_shoot_indoor_sil = (1 << 8),
+		ssf_shoot_indoor_actor = (1 << 9),
+		ssf_shoot_indoor_actor_last = (1 << 10),
+		ssf_shoot_indoor_last = (1 << 11),
+		ssf_shoot_indoor_actor_sil = (1 << 12),
+		ssf_shoot_indoor_last_sil = (1 << 13),
+		ssf_shoot_indoor_actor_last_sil = (1 << 14),
+		ssf_shoot_indoor_grenade = (1 << 15),
+		ssf_shoot_indoor_grenade_actor = (1 << 16)
+	};
+
+	Flags32 m_eSoundsShotFlags;
+
 protected:
 
 	virtual void	switch2_Idle	();
