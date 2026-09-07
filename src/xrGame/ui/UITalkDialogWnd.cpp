@@ -453,8 +453,10 @@ void CUITalkDialogWnd::AddQuestion(const char* str, const char* value, int numbe
 	CScopedPdaDialogXmlRoot xmlScope(m_uiXml, _pdaDialogLayoutRoot);
 	CUIQuestionItem* itm			= new CUIQuestionItem(m_uiXml,"question_item");
 	itm->Init						(value, str, phInfo.bFinalizer);
-	++number; //zero-based index
-
+	if (!fis_zero(itm->GetHeight()))
+	{
+		++number; // zero-based index
+	}
 	string16 buff;
 	xr_sprintf(buff, "%d.", number);
 	float x_offset = 0.f;
