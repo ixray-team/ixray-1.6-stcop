@@ -78,8 +78,19 @@ void CWeaponMagazinedWGrenade::LoadSounds(const char* section)
 
 	if (SoundExist(section, "snd_shoot_grenade_actor"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_grenade_actor, true);
+		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_grenade_actor, true);
 		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot, st_Shooting);
+	}
+
+	if (SoundExist(section, "snd_shoot_grenade_indoor"))
+	{
+		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_grenade, true);
+		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_indoor", "sndShotGIndoor", false, m_eSoundShot);
+		if (SoundExist(section, "snd_shoot_grenade_actor_indoor"))
+		{
+			m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_grenade_actor, true);
+			m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor_indoor", "sndShotGActorIndoor", false, m_eSoundShot);
+		}
 	}
 
 	if (SoundExist(section, "snd_load_grenade"))
@@ -691,13 +702,27 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 		{
 			PlayAnimShoot();
 
-			if (m_eSoundsFlags.test(ESoundsFlags::sf_shoot_grenade_actor))
+			if ((ParentIsActor() && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_grenade_actor) || m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_grenade)) && Sound->object_in_audiozone(get_LastFP2()))
 			{
-				m_layered_sounds.PlaySound("sndShotGActor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+				if (ParentIsActor() && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_grenade_actor))
+				{
+					m_layered_sounds.PlaySound("sndShotGActorIndoor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+				}
+				else
+				{
+					m_layered_sounds.PlaySound("sndShotGIndoor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+				}
 			}
 			else
 			{
-				m_layered_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+				if (m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_grenade_actor))
+				{
+					m_layered_sounds.PlaySound("sndShotGActor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+				}
+				else
+				{
+					m_layered_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+				}
 			}
 
 			if (H_Parent())
@@ -1006,7 +1031,7 @@ void CWeaponMagazinedWGrenade::UpdateSounds()
 	if (Device.dwFrame % 3 == 0)
 	{
 		m_layered_sounds.SetPosition("sndShotG", P);
-		if (m_eSoundsFlags.test(ESoundsFlags::sf_shoot_grenade_actor))
+		if (m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_grenade_actor))
 		{
 			m_layered_sounds.SetPosition("sndShotGActor", P);
 		}
@@ -1169,7 +1194,7 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(const char* section, bool te
 	result2 = process_if_exists_set(section, "snd_shoot_grenade_actor", str, test);
 	if (result2 && !test)
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_grenade_actor, true);
+		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_grenade_actor, true);
 		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot, st_Shooting);
 	}
 	result |= result2;

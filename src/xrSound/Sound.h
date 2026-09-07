@@ -293,6 +293,7 @@ public:
 
 	virtual void					object_relcase			( CObject* obj )																		= 0;
 	virtual const Fvector&			listener_position		()																						= 0;
+	virtual bool object_in_audiozone(const Fvector& P) = 0;
 	virtual ISoundVoiceChat*		GetSoundVoiceChat		()																						= 0;
 //#ifdef __BORLANDC__
 	virtual SoundEnvironment_LIB*	get_env_library			()																						= 0;
