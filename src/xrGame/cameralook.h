@@ -17,7 +17,7 @@ public:
 	virtual void	Move			( int cmd, float val=0, float factor=1.0f );
 
 	virtual	void	OnActivate		( CCameraBase* old_cam );
-	virtual void	Update			( Fvector& point, Fvector& noise_dangle );
+	virtual void	Update			( Fvector& point, Fvector& noise_dangle, bool force_update_pos );
 
 	virtual float	GetWorldYaw		( )	{ return -yaw;	};
 	virtual float	GetWorldPitch	( )	{ return pitch; };
@@ -31,6 +31,9 @@ protected:
 
 class CCameraLook2	: public CCameraLook
 {
+	using base = CCameraBase;
+	using inherited = CCameraLook;
+	
 public:
 	static Fvector	m_cam_offset_r;
 	static Fvector	m_cam_offset_l;
@@ -40,7 +43,7 @@ public:
 
 	virtual			~CCameraLook2	(){}
 	virtual	void	OnActivate		( CCameraBase* old_cam );
-	virtual void	Update			( Fvector& point, Fvector& noise_dangle );
+	virtual void	Update			( Fvector& point, Fvector& noise_dangle, bool force_update_pos );
 	virtual void	Load			(const char* section);
 protected:
 	void	UpdateDistance(Fvector& pivot, Fvector& correction);
@@ -48,14 +51,15 @@ protected:
 
 class CCameraFixedLook : public CCameraLook
 {
-	typedef CCameraLook inherited;
+	using base = CCameraBase;
+	using inherited = CCameraLook;
 public:
 					CCameraFixedLook(CObject* p, u32 flags=0) : CCameraLook(p, flags) {};
 	virtual			~CCameraFixedLook() {};
 	virtual void	Load			(const char* section);
 	virtual void	Move			(int cmd, float val=0, float factor=1.0f);
 	virtual	void	OnActivate		(CCameraBase* old_cam);
-	virtual void	Update			(Fvector& point, Fvector& noise_dangle);
+	virtual void	Update			(Fvector& point, Fvector& noise_dangle, bool force_update_pos );
 	virtual void	Set				(float Y, float P, float R);
 private:
 	Fquaternion		m_final_dir;

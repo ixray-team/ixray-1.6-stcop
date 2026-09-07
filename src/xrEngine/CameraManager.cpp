@@ -16,8 +16,10 @@
 #include "GameFont.h"
 #include "Render.h"
 
-float	psCamInert		= 0.f;
-float	psCamSlideInert	= 0.25f;
+float psCamInert = 0.f;
+float psCamFovInert = 0.9f;
+float psCamFarInert = 0.9f;
+float psCamAspectInert = 0.9f;
 
 SPPInfo		pp_identity;
 SPPInfo		pp_zero;
@@ -345,51 +347,40 @@ void CCameraManager::UpdateFromCamera(const CCameraBase* C)
 void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags)
 {
 #ifdef DEBUG
-	if (!Device.Paused()) {
-		VERIFY				(dbg_upd_frame!=Device.dwFrame);// already updated !!!
-		dbg_upd_frame		= Device.dwFrame;
-	}
-#endif // DEBUG
-	// camera
-	float dt = psCamInert - 10.f * Device.fTimeDelta;
-	clamp(dt, 0.f, 0.99f);
-
-	if (flags&CCameraBase::flPositionRigid)
-		m_cam_info.p.set		(P);
-	else
-		m_cam_info.p.inertion	(P, dt);
-	if (flags&CCameraBase::flDirectionRigid)
+	if (!Device.Paused())
 	{
-		m_cam_info.d.set		(D);
-		m_cam_info.n.set		(N);
-	}else{
-		m_cam_info.d.inertion	(D, dt);
-		m_cam_info.n.inertion	(N, dt);
+		VERIFY(dbg_upd_frame != Device.dwFrame); // already updated !!!
+		dbg_upd_frame = Device.dwFrame;
 	}
+#endif
 	
-	// Normalize
-	m_cam_info.d.normalize	();
-	m_cam_info.n.normalize	();
-	m_cam_info.r.crossproduct	(m_cam_info.n, m_cam_info.d);
-	m_cam_info.n.crossproduct	(m_cam_info.d, m_cam_info.r);
+	m_cam_info.p.set(P);
+	m_cam_info.d.set(D).normalize();
+	m_cam_info.n.set(N).normalize();
+	
+	m_cam_info.r.crossproduct(m_cam_info.n, m_cam_info.d);
+	m_cam_info.n.crossproduct(m_cam_info.d, m_cam_info.r);
 
 	float aspect = float(Device.TargetHeight) / float(Device.TargetWidth);
-	float src = 10 * Device.fTimeDelta;	clamp(src, 0.f, 1.f);
-	float dst = 1 - src;
-	
-	m_cam_info.fFov = m_cam_info.first_init ? fFOV_Dest : m_cam_info.fFov * dst + fFOV_Dest * src;
-	m_cam_info.fFar				= m_cam_info.first_init ? fFAR_Dest : m_cam_info.fFar*dst + fFAR_Dest*src;
-	m_cam_info.fAspect			= m_cam_info.first_init ? fASPECT_Dest * aspect : m_cam_info.fAspect*dst + (fASPECT_Dest*aspect)*src;
-	m_cam_info.dont_apply			= false;
 
-	UpdateCamEffectors			();
+	float smoothed_fov = _inertion(m_cam_info.fFov, fFOV_Dest, psCamFovInert);
+	float smoothed_far = _inertion(m_cam_info.fFar, fFAR_Dest, psCamFarInert);
+	float smoothed_aspect = _inertion(m_cam_info.fAspect, fASPECT_Dest * aspect, psCamAspectInert);
 
-	UpdatePPEffectors			();
+	m_cam_info.fFov = m_cam_info.first_init ? fFOV_Dest : smoothed_fov;
+	m_cam_info.fFar = m_cam_info.first_init ? fFAR_Dest : smoothed_far;
+	m_cam_info.fAspect = m_cam_info.first_init ? fASPECT_Dest * aspect : smoothed_aspect;
+	m_cam_info.dont_apply = false;
 
-	if (false==m_cam_info.dont_apply && m_bAutoApply)
-			ApplyDevice		(Device.fViewportNear);
+	UpdateCamEffectors();
+	UpdatePPEffectors();
 
-	UpdateDeffered			();
+	if (false == m_cam_info.dont_apply && m_bAutoApply)
+	{
+		ApplyDevice(Device.fViewportNear);
+	}
+
+	UpdateDeffered();
 	m_cam_info.first_init = false;
 }
 
