@@ -13,7 +13,7 @@
 #include "SoundRender_Emitter.h"
 #include <AL/efx.h>
 
-int		psSoundTargets			= 256 - 32;
+int		psSoundTargets			= 1024 - 32;
 Flags32	psSoundFlags			= { ss_Hardware };
 float	psSoundOcclusionScale	= 0.5f;
 float	psSoundCull				= 0.01f;
