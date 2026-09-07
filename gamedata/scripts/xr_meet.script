@@ -373,7 +373,7 @@ function notify_on_use(victim, who)
         local meet_manager = st.meet_manager
     
         if meet_manager.use == "false" and meet_manager.abuse_mode == "true" and
-            game_relations.get_npcs_relation(victim, db.actor) == game_object.friend
+            game_relations.get_npcs_relation(victim, db.actor) ~= game_object.friend
         then
             xr_abuse.add_abuse(victim, 1)
         end

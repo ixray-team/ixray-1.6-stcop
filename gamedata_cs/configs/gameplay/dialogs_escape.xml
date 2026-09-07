@@ -820,7 +820,6 @@
         </phrase_list>
     </dialog>
     <dialog id="esc_wolf_stalker_novice">
-        <dont_has_info>esc_wolf_brother_2</dont_has_info>
         <phrase_list>
             <phrase id="0">
                 <text>esc_wolf_stalker_novice_0</text>
@@ -1006,6 +1005,7 @@
     <dialog id="esc_wolf_brother_complete">
         <has_info>esc_wolf_brother_3</has_info>
         <dont_has_info>esc_wolf_brother_4</dont_has_info>
+		<dont_has_info>esc_wolf_brother_fail</dont_has_info>
         <phrase_list>
             <phrase id="0">
                 <text>esc_wolf_brother_complete_0</text>

@@ -3475,6 +3475,7 @@
                 <action>bar_dialogs.give_darklab_documents</action>
                 <action>bar_dialogs.give_darklab_reward</action>
                 <give_info>bar_darklab_document_done</give_info>
+				<give_info>esc_trader_return</give_info>
                 <next>1721</next>
             </phrase>
             <phrase id="17213">

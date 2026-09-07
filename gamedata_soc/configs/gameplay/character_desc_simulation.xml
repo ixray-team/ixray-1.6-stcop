@@ -248,7 +248,7 @@
 					
 		<start_dialog>hello_dialog</start_dialog>
 		
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
 	</specific_character>
 
 	<specific_character id="sim_bandit_veteran_default2" team_default = "1">
@@ -423,6 +423,7 @@
 		
 		<rank>34</rank>
 		<reputation>6</reputation>
+		<money min="200" max="600" infinitive="0"/>
 		
 		<snd_config>characters_voice\human_01\newbie\</snd_config>
 		<crouch_type>-1</crouch_type>		
@@ -451,6 +452,7 @@
 		
 		<rank>142</rank>
 		<reputation>-10</reputation>
+		<money min="200" max="600" infinitive="0"/>
 		
 		<snd_config>characters_voice\human_01\newbie\</snd_config>
 		<crouch_type>-1</crouch_type>				
@@ -479,6 +481,7 @@
 		
 		<rank>65</rank>
 		<reputation>18</reputation>
+		<money min="200" max="600" infinitive="0"/>
 		
 		<snd_config>characters_voice\human_01\stalker\</snd_config>
 		<crouch_type>-1</crouch_type>				
@@ -506,6 +509,7 @@
 		
 		<rank>112</rank>
 		<reputation>-15</reputation>
+		<money min="200" max="600" infinitive="0"/>
 		
 		<snd_config>characters_voice\human_01\stalker\</snd_config>
 		<crouch_type>-1</crouch_type>
@@ -534,6 +538,7 @@
 		
 		<rank>98</rank>
 		<reputation>19</reputation>
+		<money min="200" max="600" infinitive="0"/>
 		
 		<snd_config>characters_voice\human_02\newbie\</snd_config>
 		<crouch_type>-1</crouch_type>
@@ -562,6 +567,7 @@
 		
 		<rank>12</rank>
 		<reputation>20</reputation>
+		<money min="200" max="600" infinitive="0"/>
 		
 		<snd_config>characters_voice\human_02\newbie\</snd_config>
 		<crouch_type>-1</crouch_type>		
@@ -593,6 +599,7 @@
 		
 		<rank>135</rank>
 		<reputation>-20</reputation>
+		<money min="200" max="600" infinitive="0"/>
 		
 		<snd_config>characters_voice\human_02\stalker\</snd_config>
 		<crouch_type>-1</crouch_type>		
@@ -622,6 +629,7 @@
 		
 		<rank>78</rank>
 		<reputation>6</reputation>
+		<money min="200" max="600" infinitive="0"/>
 		
 		<snd_config>characters_voice\human_02\stalker\</snd_config>
 		<crouch_type>-1</crouch_type>		
@@ -653,6 +661,7 @@
 			
 			<rank>305</rank>
 			<reputation>35</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 			<visual>actors\neytral\stalker_neytral_hood_uzor</visual>
 			<snd_config>characters_voice\human_01\stalker\</snd_config>
@@ -685,6 +694,7 @@
 		
 		<rank>360</rank>
 		<reputation>46</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_balon_8</visual>
 		<snd_config>characters_voice\human_01\stalker\</snd_config>
@@ -716,6 +726,7 @@
 		
 		<rank>435</rank>
 		<reputation>63</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_rukzak_2</visual>
 		<snd_config>characters_voice\human_01\stalker\</snd_config>
@@ -747,6 +758,7 @@
 		
 		<rank>365</rank>
 		<reputation>86</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_hood_2</visual>
 		<snd_config>characters_voice\human_01\stalker\</snd_config>
@@ -778,6 +790,7 @@
 		
 		<rank>426</rank>
 		<reputation>42</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_hood_8</visual>
 		<snd_config>characters_voice\human_01\stalker\</snd_config>
@@ -809,6 +822,7 @@
 		
 		<rank>399</rank>
 		<reputation>-20</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_rukzak_2</visual>
 		<snd_config>characters_voice\human_01\stalker\</snd_config>
@@ -841,6 +855,7 @@
 			
 		<rank>630</rank>
 		<reputation>55</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_hood_9</visual>
 		<snd_config>characters_voice\human_03\stalker\</snd_config>
@@ -872,6 +887,7 @@
 			
 		<rank>750</rank>
 		<reputation>101</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_rukzak_2</visual>
 		<snd_config>characters_voice\human_02\stalker\</snd_config>
@@ -903,6 +919,7 @@
 		
 		<rank>698</rank>
 		<reputation>123</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_nauchniy</visual>
 		<snd_config>characters_voice\human_03\stalker\</snd_config>
@@ -934,6 +951,7 @@
 	
 		<rank>763</rank>
 		<reputation>123</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_hood_9</visual>
 		<snd_config>characters_voice\human_03\stalker\</snd_config>
@@ -965,6 +983,7 @@
 			
 		<rank>623</rank>
 		<reputation>-53</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_hood_8</visual>
 		<snd_config>characters_voice\human_02\stalker\</snd_config>
@@ -998,6 +1017,7 @@
 				
 		<rank>920</rank>
 		<reputation>145</reputation>
+		<money min="5000" max="10000" infinitive="0"/>
 
 		<snd_config>characters_voice\human_03\stalker\</snd_config>
 		<crouch_type>0</crouch_type>
@@ -1032,6 +1052,7 @@
 		<crouch_type>0</crouch_type>
 		<rank>910</rank>
 		<reputation>-63</reputation>
+		<money min="5000" max="10000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
 		<supplies>
@@ -1063,6 +1084,7 @@
 			
 		<rank>732</rank>
 		<reputation>89</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_hood_9</visual>
 		<snd_config>characters_voice\human_03\stalker\</snd_config>
@@ -1100,6 +1122,7 @@
 		
 		<rank>360</rank>
 		<reputation>55</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_mask</visual>
 		<snd_config>characters_voice\human_01\dolg\</snd_config>
@@ -1131,6 +1154,7 @@
 		
 		<rank>420</rank>
 		<reputation>65</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_balon_8</visual>
 		<snd_config>characters_voice\human_01\dolg\</snd_config>
@@ -1162,6 +1186,7 @@
 		
 		<rank>389</rank>
 		<reputation>73</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_mask_1</visual>
 		<snd_config>characters_voice\human_03\dolg\</snd_config>
@@ -1194,6 +1219,7 @@
 
 		<rank>630</rank>
 		<reputation>89</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_nauchniy</visual>
 		<snd_config>characters_voice\human_03\dolg\</snd_config>
@@ -1224,6 +1250,7 @@
 
 		<rank>750</rank>
 		<reputation>96</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_antigas</visual>
 		<snd_config>characters_voice\human_03\dolg\</snd_config>
@@ -1254,6 +1281,7 @@
 
 		<rank>688</rank>
 		<reputation>114</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_nauchniy</visual>
 		<snd_config>characters_voice\human_03\dolg\</snd_config>
@@ -1286,6 +1314,7 @@
 
 		<rank>796</rank>
 		<reputation>124</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_antigas</visual>
 		<snd_config>characters_voice\human_03\dolg\</snd_config>
@@ -1318,6 +1347,7 @@
 		
 		<rank>923</rank>
 		<reputation>136</reputation>
+		<money min="5000" max="10000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_exoskeleton</visual>
 		<snd_config>characters_voice\human_03\dolg\</snd_config>
@@ -1348,6 +1378,7 @@
 		
 		<rank>901</rank>
 		<reputation>143</reputation>
+		<money min="5000" max="10000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_nauchniy</visual>
 		<snd_config>characters_voice\human_03\dolg\</snd_config>
@@ -1380,6 +1411,7 @@
 		
 		<rank>550</rank>
 		<reputation>64</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_balon_8</visual>
 		<snd_config>characters_voice\human_02\dolg\</snd_config>
@@ -1411,6 +1443,7 @@
 	
 		<rank>640</rank>
 		<reputation>87</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_mask_1</visual>
 		<snd_config>characters_voice\human_01\dolg\</snd_config>
@@ -1442,6 +1475,7 @@
 	
 		<rank>610</rank>
 		<reputation>74</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_mask</visual>
 		<snd_config>characters_voice\human_02\dolg\</snd_config>
@@ -1482,6 +1516,7 @@
 		
 		<rank>321</rank>
 		<reputation>73</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\svoboda\stalker_sv_rukzak_1_1</visual>
 		<crouch_type>-1</crouch_type>
@@ -1517,6 +1552,7 @@
 
 		<rank>657</rank>
 		<reputation>113</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\svoboda\stalker_sv_hood_9</visual>
 		<crouch_type>-1</crouch_type>
@@ -1551,6 +1587,7 @@
 		
 		<rank>925</rank>
 		<reputation>142</reputation>
+		<money min="5000" max="10000" infinitive="0"/>
 
 		<visual>actors\svoboda\stalker_sv_exoskeleton</visual>
 		<crouch_type>0</crouch_type>
@@ -1585,6 +1622,7 @@
 
 		<rank>746</rank>
 		<reputation>125</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\svoboda\stalker_sv_rukzak_3_1</visual>
 		<supplies>
@@ -2999,7 +3037,7 @@
 #include "gameplay\character_criticals_5.xml"	
 					
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
 	</specific_character>
 
 
@@ -3018,6 +3056,7 @@
 			
 		<rank>789</rank>
 		<reputation>78</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_hood_9</visual>
 		<snd_config>characters_voice\human_03\stalker\</snd_config>
@@ -3056,6 +3095,7 @@
 
 		<rank>811</rank>
 		<reputation>113</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\svoboda\stalker_sv_hood_9</visual>
 		<supplies>
@@ -3086,6 +3126,7 @@
 				
 		<rank>920</rank>
 		<reputation>145</reputation>
+		<money min="5000" max="10000" infinitive="0"/>
 
 		<snd_config>characters_voice\human_03\stalker\</snd_config>
 		<crouch_type>-1</crouch_type>
@@ -3120,6 +3161,7 @@
 		
 		<rank>396</rank>
 		<reputation>-34</reputation>
+		<money min="600" max="2000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_hood_uzor</visual>
 		<snd_config>characters_voice\human_01\stalker\</snd_config>
@@ -3154,6 +3196,7 @@
 		
 		<rank>908</rank>
 		<reputation>156</reputation>
+		<money min="5000" max="10000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
 		<crouch_type>0</crouch_type>
@@ -3218,6 +3261,7 @@
 		
 		<rank>167</rank>
 		<reputation>-6</reputation>
+		<money min="200" max="600" infinitive="0"/>
 		
 		<snd_config>characters_voice\human_01\newbie\</snd_config>
 		<crouch_type>-1</crouch_type>		
@@ -3282,6 +3326,7 @@
 
 		<rank>651</rank>
 		<reputation>-35</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_antigas</visual>
 		<snd_config>characters_voice\human_03\dolg\</snd_config>
@@ -3315,9 +3360,10 @@
 			
 		<rank>789</rank>
 		<reputation>78</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_hood_9</visual>
-		<snd_config>characters_voice\human_02\stalker\</snd_config>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
 		<crouch_type>-1</crouch_type>
 		<supplies>
 			[spawn] \n
@@ -3350,6 +3396,7 @@
 		<crouch_type>0</crouch_type>		
 		<rank>912</rank>
 		<reputation>156</reputation>
+		<money min="5000" max="10000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
 		<supplies>
@@ -3381,6 +3428,7 @@
 
 		<rank>667</rank>
 		<reputation>-67</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\dolg\stalker_do_antigas</visual>
 		<snd_config>characters_voice\human_03\dolg\</snd_config>
@@ -3420,6 +3468,7 @@
 
 		<rank>764</rank>
 		<reputation>154</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\svoboda\stalker_sv_hood_9</visual>
 		<supplies>
@@ -3449,6 +3498,7 @@
 			
 		<rank>864</rank>
 		<reputation>110</reputation>
+		<money min="2000" max="5000" infinitive="0"/>
 
 		<visual>actors\neytral\stalker_neytral_hood_9</visual>
 		<snd_config>characters_voice\human_03\stalker\</snd_config>

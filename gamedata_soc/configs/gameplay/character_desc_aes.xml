@@ -36,7 +36,7 @@
 #include "gameplay\character_criticals_1.xml"
 					
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
 	</specific_character>
 
 <!---------------------------MONOLIT SPECNAZ---------------------->
@@ -70,7 +70,7 @@
 #include "gameplay\character_criticals_1.xml"
 					
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
   </specific_character>
 
 <!---------------------------MONOLIT SPECNAZ RG6---------------------->
@@ -86,7 +86,7 @@
     <rank>700</rank>
     <reputation>0</reputation>
 
-    <snd_config>characters_voice\human_02\monolith\</snd_config>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
 	<crouch_type>-1</crouch_type>
 
     <visual>actors\monolit\stalker_mo_hood_9</visual>
@@ -99,7 +99,7 @@
 #include "gameplay\character_criticals_1.xml"
 					
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
   </specific_character>
   
 <!---------------------------MONOLIT SNIPER---------------------->
@@ -133,7 +133,7 @@
 #include "gameplay\character_criticals_1.xml"
 					
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
   </specific_character>
 <!---------------------------MONOLIT SNIPER GAUSS---------------------->
   <specific_character id="aes_Monolit_sniper_gauss" team_default = "1">
@@ -166,7 +166,7 @@
 #include "gameplay\character_criticals_1.xml"	
 
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
   </specific_character>
 <!---------------------------MONOLIT MASTER----------------------->
   <specific_character id="aes_Monolit_master" team_default = "1">
@@ -202,7 +202,7 @@
 #include "gameplay\character_criticals_1.xml"
 
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
   </specific_character>
 	
 <!---------------------------SOLDIERS PROFILES----------------------->
@@ -239,7 +239,7 @@
 #include "gameplay\character_criticals_5.xml"
 					
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
 	</specific_character>
 <!---------------------------SOLDIER MASTER----------------------->
 	<specific_character id="aes_Soldier_military" team_default = "1">
@@ -276,7 +276,7 @@
 #include "gameplay\character_criticals_6.xml"
 					
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
 	</specific_character>
 <!---------------------------SOLDIER SPECNAZ---------------------->
 	<specific_character id="aes_Soldier_specnaz" team_default = "1">
@@ -313,7 +313,7 @@
 #include "gameplay\character_criticals_6.xml"
 											
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
 	</specific_character>
 <!---------------------------SOLDIER SPECNAZ AES---------------------->
 	<specific_character id="aes_Soldier_specnaz_aes" team_default = "1">
@@ -387,7 +387,7 @@
 					
 		<start_dialog>hello_dialog</start_dialog>
 		
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
 	</specific_character>
 
 <!---------------------------SOLDIER SNIPER---------------------->
@@ -425,7 +425,7 @@
 					
 		<start_dialog>hello_dialog</start_dialog>
 		
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
 	</specific_character>
 <!---------------------------SOLDIER SNIPER---------------------->
 	<specific_character id="aes_x_2" team_default = "1">
@@ -463,7 +463,7 @@
 					
 		<start_dialog>hello_dialog</start_dialog>
 		
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<!--actor_dialog>esc_stalker_talk_level</actor_dialog-->
 	</specific_character>
 
 	

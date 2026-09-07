@@ -530,7 +530,7 @@ function CRandomTask:action_task_show(npc, actor)
 	local parent = self:get_parent(npc)	
 	for k,v in pairs(self.task_id_by_parent[parent]) do		
 		if self:task_avail(actor, npc, nil, nil, self.task_info[v].init_phrase_id, false) then
-			local task_texture, task_rect = get_texture_info("ui_icons_task_"..self.task_info[v].type, "ui_iconsTotal_locations")
+			local task_texture, task_rect = get_texture_info("ui_iconsTotal_"..self.task_info[v].type, "ui_iconsTotal_locations")
 			db.actor:give_talk_message(self.task_info[v].name, task_texture, task_rect,"iconed_trade_info")
 		end
 	end
@@ -774,7 +774,7 @@ function CRandomTask:task_reward(npc, actor, p1, p2)
 				end
 
 				if task_desc.reward_reputation ~= nil then
-					db.actor:change_character_reputation(db.actor:character_reputation() + task_desc.reward_reputation)
+					db.actor:change_character_reputation(task_desc.reward_reputation)
 				end
 
 				if task_desc.reward_relation ~= nil then
@@ -799,7 +799,7 @@ function CRandomTask:task_reward_storyline(task)
 	end
 
 	if task_desc.reward_reputation ~= nil then
-		db.actor:change_character_reputation(db.actor:character_reputation() + task_desc.reward_reputation)
+		db.actor:change_character_reputation(task_desc.reward_reputation)
 	end
 
 	if task_desc.reward_relation ~= nil then

@@ -120,6 +120,8 @@ function action_help_wounded:execute ()
 	--printf("hw %s", vec_to_str(self.a.vertex_position))
 	state_mgr.set_state(self.object, "help_wounded", nil, nil, {look_position = self.a.vertex_position})
 
+	xr_sound.set_sound_play(self.object:id(), "wounded_medkit")
+
 end
 function action_help_wounded:finalize ()
 	action_base.finalize(self)
@@ -146,8 +148,6 @@ function help_wounded(npc)
 	db.storage[selected_id].wounded_already_selected = -1 
 	
 	--xr_wounded.eat_medkit(selected_npc)
-	
-	xr_sound.set_sound_play(npc:id(), "wounded_medkit")
 end
 
 ----------------------------------------------------------------------------------------------------------------------

@@ -10,7 +10,7 @@
 		<text>Как мне попасть в эти подвалы?</text>
 	</string>
 	<string id="agr_factory_krot_start_15001">
-		<text>Тайник Стрелка?\n</text>
+		<text>Тайник Стрелка?</text>
 	</string>
 	<string id="agr_factory_krot_start_15002">
 		<text>Спасибо за информацию.</text>
@@ -163,7 +163,7 @@
 		<text>Расскажи подробнее о коллекторах.</text>
 	</string>
 	<string id="agr_stalker_talk_about_ratcatcher1_11121">
-		<text>Коллекторы... Да обычная вонючая канализация. Отводит агропромовские стоки к ближайшему водоему. \n</text>
+		<text>Коллекторы... Да обычная вонючая канализация. Отводит агропромовские стоки к ближайшему водоему. </text>
 	</string>
 	<string id="agr_stalker_talk_about_ratcatcher1_111211">
 		<text>Отлично. Пока. Береги себя.</text>
@@ -223,7 +223,7 @@
 		<text>Катакомбы?</text>
 	</string>
 	<string id="agr_swamp_ratcatcher_talks_130">
-		<text>Ты знаешь где в НИИ Агропром хранятся документы?\n</text>
+		<text>Ты знаешь где в НИИ Агропром хранятся документы?</text>
 	</string>
 	<string id="agr_swamp_ratcatcher_talks_140">
 		<text>Что дальше делать собираешься?</text>

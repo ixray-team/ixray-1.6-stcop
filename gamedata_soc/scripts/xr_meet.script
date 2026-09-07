@@ -134,6 +134,7 @@ function action_meet_wait:execute ()
 	then
 		game.start_tutorial("part_15_hide_weapon")
 		db.actor:give_info_portion("tutorial_part_15_hide_weapon")		
+		db.actor:give_info_portion("encyclopedy_tutorial_hide_weapon")
 	end
 
 	local tt = db.storage[self.object:id()]

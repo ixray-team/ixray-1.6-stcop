@@ -1,0 +1,28 @@
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_first_update", this.actor_on_first_update)
+end
+
+function actor_on_first_update(binder, delta)
+	fix_ai_locations_flags()
+end
+
+local ai_locations_flag_objects =
+{
+	"pripyat_conserva",
+	"pripyat_bread",
+}
+
+function fix_ai_locations_flags()
+	for i = 1, 65535 do
+		local sobj = alife():object(i)
+		if sobj and sobj.parent_id == 65535 then
+			for _, name in pairs(ai_locations_flag_objects) do
+				if sobj:name() == name then
+					sobj:use_ai_locations(false)
+					break
+				end
+			end
+		end
+	end
+end

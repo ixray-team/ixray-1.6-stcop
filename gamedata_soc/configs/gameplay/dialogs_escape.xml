@@ -689,7 +689,7 @@
             </phrase>
             <phrase id="6">
                 <text>escape_trader_talk_info_6</text>
-                <has_info>agroprom_find_stalker_phantom</has_info>
+                <has_info>agr_find_ghost_start</has_info>
                 <next>61</next>
             </phrase>
             <phrase id="2">
@@ -1049,7 +1049,7 @@
             <phrase id="13">
                 <text />
                 <precondition>escape_dialog.trader_dont_give_job</precondition>
-                <precondition>bar_dialogs.hasnt_darklab_documents</precondition>
+                <has_info>escape_blockpost_case_done</has_info>
                 <has_info>esc_return</has_info>
                 <next>4</next>
             </phrase>
@@ -1116,7 +1116,6 @@
             <phrase id="19111">
                 <text>escape_trader_start_dialog_19111</text>
                 <action>escape_dialog.give_documents_reward</action>
-                <disable_info>esc_return</disable_info>
             </phrase>
         </phrase_list>
     </dialog>
