@@ -7,7 +7,7 @@ void CRenderTarget::phase_cas()
     RCache.set_Stencil(false);
 
 	// Draw COLOR
-    RCache.set_Element(s_cas->E[0]);
+	RCache.set_Element(ps_r4_sharpening_mode == 0 ? s_cas->E[1] : s_cas->E[0]);
 	RCache.set_c("sharpening_intensity", ps_r4_cas_sharpening);
 	RCache.set_Geometry(FSTriangleGeom);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
@@ -18,7 +18,7 @@ void CRenderTarget::phase_cas()
 
 void CRenderTarget::phase_ui_postprocess(Fcolor* color)
 {
-	RCache.set_Element(s_cas->E[2]);
+	RCache.set_Element(s_cas->E[3]);
 	RCache.set_Geometry(FSTriangleGeom);
 
 	if(color)
@@ -36,7 +36,7 @@ void CRenderTarget::phase_ui_postprocess(Fcolor* color)
 
 void CRenderTarget::phase_ui_postprocess_copy()
 {
-	RCache.set_Element(s_cas->E[1]);
+	RCache.set_Element(s_cas->E[2]);
 	RCache.set_Geometry(FSTriangleGeom);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 }
