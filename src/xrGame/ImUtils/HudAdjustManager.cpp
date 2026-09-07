@@ -56,15 +56,23 @@ static void HudAdjustDrawSaveButton()
 		string64 _prefix = {};
 		xr_sprintf(_prefix, "%s", UI().is_widescreen() ? "_16x9" : "");
 		string128 val_name = {};
-	
-		xr_strconcat(val_name, "hands_position", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_attach_real[0]);
-		xr_strconcat(val_name, "hands_orientation", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_attach_real[1]);
-	
-		file.w_fvector3(sect, "item_position", p_item->m_measures.m_item_attach[0]);
-		file.w_fvector3(sect, "item_orientation", p_item->m_measures.m_item_attach[1]);
-	
+
+		if (!p_item->m_model_combined)
+		{
+			xr_strconcat(val_name, "hands_position", _prefix);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_attach_real[0]);
+			xr_strconcat(val_name, "hands_orientation", _prefix);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_attach_real[1]);
+
+			file.w_fvector3(sect, "item_position", p_item->m_measures.m_item_attach[0]);
+			file.w_fvector3(sect, "item_orientation", p_item->m_measures.m_item_attach[1]);
+		}
+		else
+		{
+			file.w_fvector3(sect, "position", p_item->m_measures.m_item_attach[0]);
+			file.w_fvector3(sect, "orientation", p_item->m_measures.m_item_attach[1]);
+		}
+
 		if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_shell_point))
 		{
 			file.w_fvector3(sect, "shell_point", p_item->m_measures.m_shell_point_offset);
@@ -79,17 +87,32 @@ static void HudAdjustDrawSaveButton()
 		{
 			file.w_fvector3(sect, "fire_point2", p_item->m_measures.m_fire_point2_offset);
 		}
-	
-		xr_strconcat(val_name, "aim_hud_offset_pos", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAim]);
-		xr_strconcat(val_name, "aim_hud_offset_rot", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAim]);
-	
-		xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAimGL]);
-		xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAimGL]);
-	
+
+		if (!p_item->m_model_combined)
+		{
+			xr_strconcat(val_name, "aim_hud_offset_pos", _prefix);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAim]);
+			xr_strconcat(val_name, "aim_hud_offset_rot", _prefix);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAim]);
+
+			xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAimGL]);
+			xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAimGL]);
+		}
+		else
+		{
+			file.w_fvector3(sect, "zoom_offset", p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAim]);
+			file.w_float(sect, "zoom_rotate_x", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAim].x);
+			file.w_float(sect, "zoom_rotate_y", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAim].y);
+			file.w_float(sect, "zoom_rotate_z", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAim].z);
+
+			file.w_fvector3(sect, "grenade_zoom_offset", p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAimGL]);
+			file.w_float(sect, "grenade_zoom_rotate_x", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAimGL].x);
+			file.w_float(sect, "grenade_zoom_rotate_y", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAimGL].y);
+			file.w_float(sect, "grenade_zoom_rotate_z", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAimGL].z);
+		}
+
 		xr_strconcat(val_name, "alter_aim_hud_offset_pos", _prefix);
 		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAimAlt]);
 		xr_strconcat(val_name, "alter_aim_hud_offset_rot", _prefix);
@@ -340,14 +363,13 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 			{
 			case EHudOffsetType::eAim:
 			{
-				xr_strconcat(val_name, "aim_hud_offset_pos", _prefix);
-				position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "zoom_offset", zero_vel));
 				break;
 			}
 			case EHudOffsetType::eAimGL:
 			{
 				xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
-				position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "grenade_zoom_offset", zero_vel));
 				break;
 			}
 			case EHudOffsetType::eAimAlt:
@@ -491,9 +513,12 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		}
 	};
 
-	if (ImGui::CollapsingHeader("Offset 0 (default)"))
+	if (!item->m_model_combined)
 	{
-		drawPositions(EHudOffsetType::eDefault);
+		if (ImGui::CollapsingHeader("Offset 0 (default)"))
+		{
+			drawPositions(EHudOffsetType::eDefault);
+		}
 	}
 	
 	if (ImGui::CollapsingHeader("Offset 1 (aim)"))
@@ -532,7 +557,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 
 		if (ImGui::Button("Reset##IPosition"))
 		{
-			position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "item_position", zero_vel);
+			position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "item_position", pSettings->r_fvector3(item->m_sect_name, "position"));
 		}
 
 		if (ImGui::BeginTable("Data##HUDPI", 1))
@@ -552,7 +577,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		Fvector& rotation = item->m_measures.m_item_attach[1];
 		if (ImGui::Button("Reset##IRotation"))
 		{
-			rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "item_orientation", zero_vel);
+			rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "item_orientation", pSettings->r_fvector3(item->m_sect_name, "orientation"));
 		}
 
 		if (ImGui::BeginTable("Data##HUDR", 1))
