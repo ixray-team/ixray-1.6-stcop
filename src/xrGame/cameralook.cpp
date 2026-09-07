@@ -12,49 +12,20 @@
 #include "Missile.h"
 #include "Car.h"
 
-CCameraLook::CCameraLook(CObject* p, u32 flags ) 
-:CCameraBase(p, flags)
-{
-}
+#include "../xrEngine/xr_input.h"
+#include "visual_memory_manager.h"
+#include "actor_memory.h"
 
-void CCameraLook::Load(const char* section)
-{
-	inherited::Load		(section);
-	style				= csLookAt;
-	lim_zoom			= pSettings->r_fvector2	(section,"lim_zoom");
-	dist				= (lim_zoom[0]+lim_zoom[1])*0.5f;
-	prev_d				= 0.0f;
-}
+#include "Actor.h"
+#include "Inventory.h"
+#include "Weapon.h"
 
-CCameraLook::~CCameraLook()
-{
-}
+int cam_dik = SDL_SCANCODE_LSHIFT;
 
-void CCameraLook::save(NET_Packet& packet) 
-{
-	save_data(pitch, packet);
-}
-
-void CCameraLook::load(IReader& packet) 
-{
-	load_data(pitch, packet);
-}
-
-void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
-{
-	vPosition.set		(point);
-	Fmatrix mR;
-	mR.setHPB			(-yaw,-pitch,-roll);
-
-	vDirection.set		(mR.k);
-	vNormal.set			(mR.j);
-
-	if (m_Flags.is(flRelativeLink)){
-		parent->XFORM().transform_dir(vDirection);
-		parent->XFORM().transform_dir(vNormal);
-	}
-	UpdateDistance		(point);
-}
+Fvector CCameraLook2::m_cam_offset_r;
+Fvector CCameraLook2::m_cam_offset_l;
+bool CCameraLook2::m_use_inertion;
+Fvector m_cam_offset_curr = {0.f, 0.f, 0.f};
 
 ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 {
@@ -115,6 +86,49 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 	return RQ;
 }
 
+// CAM_3
+CCameraLook::CCameraLook(CObject* p, u32 flags ) 
+:CCameraBase(p, flags)
+{
+}
+
+void CCameraLook::Load(const char* section)
+{
+	inherited::Load		(section);
+	style				= csLookAt;
+	lim_zoom			= pSettings->r_fvector2	(section,"lim_zoom");
+	dist				= (lim_zoom[0]+lim_zoom[1])*0.5f;
+	prev_d				= 0.0f;
+}
+
+CCameraLook::~CCameraLook()
+{
+}
+
+void CCameraLook::save(NET_Packet& packet) 
+{
+	save_data(pitch, packet);
+}
+
+void CCameraLook::load(IReader& packet) 
+{
+	load_data(pitch, packet);
+}
+
+void CCameraLook::Update(Fvector& point, Fvector& noise_dangle, bool force_update_pos)
+{
+	Fvector placeholder = zero_vel;
+	inherited::Update(point, placeholder, false);
+	
+	if (m_Flags.is(flRelativeLink))
+	{
+		parent->XFORM().transform_dir(vDirection);
+		parent->XFORM().transform_dir(vNormal);
+	}
+
+	UpdateDistance(point);
+}
+
 void CCameraLook::UpdateDistance(Fvector& point) 
 {
 	Fvector vDir;
@@ -131,7 +145,7 @@ void CCameraLook::UpdateDistance(Fvector& point)
 	vPosition.add(point);
 }
 
-void CCameraLook::Move( int cmd, float val, float factor)
+void CCameraLook::Move(int cmd, float val, float factor)
 {
 	switch (cmd){
 	case kCAM_ZOOM_IN:	dist	-= val?val:(rot_speed.z*Device.fTimeDelta);	break;
@@ -146,7 +160,7 @@ void CCameraLook::Move( int cmd, float val, float factor)
 	clamp			(dist,lim_zoom[0],lim_zoom[1]);	
 }
 
-void CCameraLook::OnActivate( CCameraBase* old_cam )
+void CCameraLook::OnActivate(CCameraBase* old_cam)
 {
 	if (old_cam) {
 		if (m_Flags.is(flRelativeLink) == old_cam->m_Flags.is(flRelativeLink))
@@ -159,18 +173,8 @@ void CCameraLook::OnActivate( CCameraBase* old_cam )
 	if (yaw<-PI_MUL_2)yaw+=PI_MUL_2;
 }
 
-#include "../xrEngine/xr_input.h"
-#include "visual_memory_manager.h"
-#include "actor_memory.h"
-
-int cam_dik = SDL_SCANCODE_LSHIFT;
-
-Fvector CCameraLook2::m_cam_offset_r;
-Fvector CCameraLook2::m_cam_offset_l;
-bool CCameraLook2::m_use_inertion;
-Fvector m_cam_offset_curr = {0.f, 0.f, 0.f};
-
-void CCameraLook2::OnActivate( CCameraBase* old_cam )
+// CAM_2
+void CCameraLook2::OnActivate(CCameraBase* old_cam)
 {
 	CCameraLook::OnActivate( old_cam );
 	vPosition.set(old_cam->vPosition);
@@ -208,28 +212,9 @@ void CCameraLook2::UpdateDistance(Fvector& pivot, Fvector& correction)
 	}
 }
 
-#include "Actor.h"
-#include "Inventory.h"
-#include "Weapon.h"
-void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle)
+void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle, bool force_update_pos)
 {
-	Fmatrix mR, R;
-	Fmatrix rX, rY, rZ;
-	rX.rotateX(noise_dangle.x);
-	rY.rotateY(-noise_dangle.y);
-	rZ.rotateZ(noise_dangle.z);
-	R.mul_43(rY, rX);
-	R.mulB_43(rZ);
-
-	mR.identity();
-	Fquaternion Q;
-	Q.rotationYawPitchRoll(roll, yaw, pitch);
-	mR.rotation(Q);
-	mR.transpose();
-	mR.mulB_43(R);
-
-	vDirection.set					(mR.k);
-	vNormal.set						(mR.j);
+	CCameraBase::Update(point, noise_dangle, false);
 
 	if (CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr)
 	{
@@ -283,7 +268,7 @@ void CCameraLook2::Load(const char* section)
 	prev_d = 0.0f;
 }
 
-void CCameraFixedLook::Load	(const char* section)
+void CCameraFixedLook::Load(const char* section)
 {
 	CCameraLook::Load(section);
 	style = csFixed;
@@ -311,23 +296,14 @@ void CCameraFixedLook::Move	(int cmd, float val, float factor)
 {
 }
 
-void CCameraFixedLook::Update(Fvector& point, Fvector& noise_dangle)
+void CCameraFixedLook::Update(Fvector& point, Fvector& noise_dangle, bool force_update_pos)
 {
-	Fquaternion	new_dir;
-	new_dir.slerp		(m_current_dir, m_final_dir, Device.fTimeDelta);	//1 sec
-	m_current_dir.set	(new_dir);
-	
-	Fmatrix	rm;
-	rm.rotation			(m_current_dir);
-	vPosition.set		(point);
-	vDirection.set		(rm.k);
-	vNormal.set			(rm.j);
-
-	UpdateDistance		(point);
+	CCameraLook::Update(point, noise_dangle, force_update_pos);
+	UpdateDistance(point);
 }
 
 void CCameraFixedLook::Set(float Y, float P, float R)
- {
+{
 	inherited::Set(Y, P, R);
 	Fmatrix	rm;
 	rm.setXYZ			(-P, -Y, -R);	

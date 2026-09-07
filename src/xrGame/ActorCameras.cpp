@@ -522,11 +522,8 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	if (Level().CurrentEntity() == this)
 	{
-		for (CCameraBase* cam : cameras)
-		{
-			cam->Update(point, dangle);
-			cam->f_fov = fFOV;
-		}
+		cam_Active()->f_fov = fFOV;
+		cam_Active()->Update(point, dangle);
 	}
 
 	if (Level().CurrentEntity() == this)
