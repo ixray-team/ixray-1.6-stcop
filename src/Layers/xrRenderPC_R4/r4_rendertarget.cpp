@@ -587,9 +587,9 @@ CRenderTarget::CRenderTarget()
 		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
 	}
 
-	//Contrast Adaptive Sharpening
+	//Sharpening
 	{
-		b_cas = new CBlender_cas();
+		b_cas = new CBlender_Sharpening();
 		s_cas.create(b_cas);
 	}
 
