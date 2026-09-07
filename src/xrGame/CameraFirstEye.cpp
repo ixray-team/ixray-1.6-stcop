@@ -1,16 +1,11 @@
 #include "StdAfx.h"
-
-
 #include "CameraFirstEye.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/xr_object.h"
 #include "object_broker.h"
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-CCameraFirstEye::CCameraFirstEye(CObject* p, u32 flags ) : CCameraBase(p, flags),lookat_active(false)
+// CAM_1
+CCameraFirstEye::CCameraFirstEye(CObject* p, u32 flags ) : CCameraBase(p, flags)
 {
 }
 
@@ -34,67 +29,14 @@ void CCameraFirstEye::load(IReader& packet)
 	load_data(pitch, packet); 
 }
 
-void CCameraFirstEye::UpdateLookat()
+void CCameraFirstEye::Update(Fvector& point, Fvector& noise_dangle, bool force_update_pos)
 {
-	if(!lookat_active)
-		return;
+	inherited::Update(point, noise_dangle, force_update_pos);
 
-	Fvector								_dest_dir;
-	_dest_dir.sub						(lookat_point, vPosition);
-	
-	Fmatrix								_m;
-	_m.identity							();
-	_m.k.normalize_safe					(_dest_dir);
-	Fvector::generate_orthonormal_basis	(_m.k, _m.j, _m.i);
-
-	Fvector								xyz;
-	_m.getXYZi							(xyz);
-
-	if(fsimilar(yaw, xyz.y, EPS) && fsimilar(pitch, xyz.x, EPS))
-		lookat_active = false;
-
-	yaw				= angle_inertion_var(	yaw, xyz.y,
-											turn_speed_min,
-											turn_speed_max,
-											PI,
-											Device.fTimeDelta);
-
-	pitch			= angle_inertion_var(	pitch, xyz.x,
-											turn_speed_min,
-											turn_speed_max,
-											PI,
-											Device.fTimeDelta);
-
-}
-
-void CCameraFirstEye::Update(Fvector& point, Fvector& noise_dangle)
-{
-	vPosition.set	(point);
-
-	UpdateLookat	();
-
-	Fmatrix			mR, R;
-	Fmatrix			rX, rY, rZ;
-	rX.rotateX		(noise_dangle.x);
-	rY.rotateY		(-noise_dangle.y);
-	rZ.rotateZ		(noise_dangle.z);
-	R.mul_43		(rY,rX);
-	R.mulB_43		(rZ);
-	
-	mR.identity		();
-	Fquaternion		Q;
-	Q.rotationYawPitchRoll(roll,yaw,pitch);
-	mR.rotation		(Q);
-	mR.transpose	();
-	mR.mulB_43		(R);
-	
-	vDirection.set	(mR.k);
-	vNormal.set		(mR.j);
-
-	if (m_Flags.is(flRelativeLink))	
+	if (m_Flags.is(flRelativeLink))
 	{
-		parent->XFORM().transform_dir	(vDirection);
-		parent->XFORM().transform_dir	(vNormal);
+		parent->XFORM().transform_dir(vDirection);
+		parent->XFORM().transform_dir(vNormal);
 	}
 }
 
@@ -126,12 +68,4 @@ void CCameraFirstEye::OnActivate( CCameraBase* old_cam )
 		if (m_Flags.is(flKeepPitch))
 			pitch = (old_cam)->pitch;
 	}
-}
-
-void CCameraFirstEye::LookAtPoint(Fvector p, float turnSpeedMin, float turnSpeedMax)
-{
-	lookat_point = p;
-	turn_speed_min = turnSpeedMin;
-	turn_speed_max = turnSpeedMax;
-	lookat_active = true;
 }

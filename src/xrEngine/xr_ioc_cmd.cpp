@@ -847,8 +847,10 @@ void CCC_Register()
 #endif
 
 	// Camera
-	CMD4(CCC_Float,		"cam_inert", &psCamInert, 0.0f, 100.0f);
-	CMD2(CCC_Float,		"cam_slide_inert",		&psCamSlideInert);
+	CMD4(CCC_Float, "cam_inert", &psCamInert, 0.f, .999f);
+	CMD4(CCC_Float, "cam_fov_inert", &psCamFovInert, 0.f, .999f);
+	CMD4(CCC_Float, "cam_far_inert", &psCamFarInert, 0.f, .999f);
+	CMD4(CCC_Float, "cam_aspect_inert", &psCamAspectInert, 0.f, .999f);
 
 	CMD4(CCC_Float, "cam_viewport_near", &Device.fViewportNear, 0.05f, 0.2f);
 	CMD4(CCC_Float, "cam_hud_viewport_near", &Device.fHUDViewportNear, 0.001f, 0.1f);

@@ -136,5 +136,7 @@ public:
 ENGINE_API extern SPPInfo					pp_identity;
 ENGINE_API extern SPPInfo					pp_zero;
 
-ENGINE_API extern float						psCamInert;
-ENGINE_API extern float						psCamSlideInert;
+ENGINE_API extern float psCamInert;
+ENGINE_API extern float psCamFovInert;
+ENGINE_API extern float psCamFarInert;
+ENGINE_API extern float psCamAspectInert;
