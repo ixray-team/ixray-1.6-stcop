@@ -16,6 +16,12 @@
 #include "../game_sv_single.h"
 #include "../InventoryWeaponSlotLayout.h"
 
+struct ConfigUseAction
+{
+	const char* key;
+	u32 action;
+};
+
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
 void CUIActorMenuBase::TryHidePropertiesBox()
@@ -100,10 +106,10 @@ void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 {
 	const char* act_str = nullptr;
 	CGameObject* GO = smart_cast<CGameObject*>(item);
-	shared_str	section_name = GO->cNameSect();
+	shared_str	section = GO->cNameSect();
 
 	//ability to set eat string from settings
-	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "default_use_text", 0);
+	act_str = READ_IF_EXISTS(pSettings, r_string, section, "default_use_text", 0);
 	if (act_str)
 	{
 		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT_ACTION);
@@ -206,36 +212,35 @@ void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 		}
 	}
 
-	//1st Custom Use action
-	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use1_text", 0);
-	if (act_str)
-	{
-		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT2_ACTION);
-		b_show = true;
-	}
+	// Config-defined additional actions
+	static constexpr ConfigUseAction actions[] =
+		{
+			{"use1_text", INVENTORY_EAT2_ACTION},
+			{"use2_text", INVENTORY_EAT3_ACTION},
+			{"use3_text", INVENTORY_EAT4_ACTION},
+			{"use4_text", INVENTORY_EAT5_ACTION},
+		};
 
-	//2nd Custom Use action
-	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use2_text", 0);
-	if (act_str)
+	for (const auto& action : actions)
 	{
-		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT3_ACTION);
-		b_show = true;
-	}
+		const char* text = READ_IF_EXISTS(
+			pSettings,
+			r_string,
+			section,
+			action.key,
+			nullptr
+		);
 
-	//3rd Custom Use action
-	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use3_text", 0);
-	if (act_str)
-	{
-		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT4_ACTION);
-		b_show = true;
-	}
+		if (text)
+		{
+			m_UIPropertiesBox->AddItem(
+				text,
+				nullptr,
+				action.action
+			);
 
-	//4th Custom Use action
-	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use4_text", 0);
-	if (act_str)
-	{
-		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT5_ACTION);
-		b_show = true;
+			b_show = true;
+		}
 	}
 }
 
