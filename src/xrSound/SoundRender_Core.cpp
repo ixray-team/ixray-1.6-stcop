@@ -476,6 +476,30 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
 	}
 }
 
+bool CSoundRender_Core::object_in_audiozone(const Fvector& P)
+{
+	if (geom_ENV)
+	{
+		Fvector dir = {0.0f, -1.0f, 0.0f};
+		geom_DB.ray_options(CDB::OPT_ONLYNEAREST);
+		geom_DB.ray_query(geom_ENV, P, dir, 1000.0f);
+		if (geom_DB.r_count())
+		{
+			CDB::RESULT* r = geom_DB.r_begin();
+			CDB::TRI& T = geom_ENV->get_tris()[r->id];
+			FvectorVec& V = geom_ENV->get_verts();
+			Fvector tri_norm = zero_vel;
+			tri_norm.mknormal(V[T.verts[0]], V[T.verts[1]], V[T.verts[2]]);
+			float dot = dir.dotproduct(tri_norm);
+			if (dot >= 0.0f)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void CSoundRender_Core::env_apply		()
 {
     bListenerMoved			= true;
