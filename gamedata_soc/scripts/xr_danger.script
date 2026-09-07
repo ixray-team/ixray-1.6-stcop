@@ -234,6 +234,11 @@ function reset_danger(npc, scheme, st, section)
 			st.danger.ignore_types[v] = true
 		end
 	end
+		
+	--nv130301 keep zombies from panicking at grenades
+	-- this overrides any zombie danger_section grenade entry; move above check if needed
+	if npc:character_community() == "zombied" then st.danger.ignore_types["grenade"] = true end
+	
 	st.danger.ignore_distance			=  math.pow(utils.cfg_get_number(st.ini, danger_section, "ignore_distance", npc, false, def_ignore_distance), 2)
 	st.danger.ignore_distance_grenade	=  math.pow(utils.cfg_get_number(st.ini, danger_section, "ignore_distance_grenade", npc, false, def_ignore_distance_grenade), 2)
 	st.danger.ignore_distance_corpse	=  math.pow(utils.cfg_get_number(st.ini, danger_section, "ignore_distance_corpse", npc, false, def_ignore_distance_corpse), 2)

@@ -1264,13 +1264,13 @@
 		<text>Понял. Спасибо.</text>
 	</string>
 	<string id="mil_zoneguard_dialog_10">
-		<text>Тебе того же. Что тебя сюда привело ?\n</text>
+		<text>Тебе того же. Что тебя сюда привело ?</text>
 	</string>
 	<string id="mil_zoneguard_dialog_100">
 		<text>Кто у вас тут старший ? Дело к нему есть.</text>
 	</string>
 	<string id="mil_zoneguard_dialog_1000">
-		<text>Старший у нас Лукаш, находится в главном здании. Но, когда в него войдешь - спрячь оружие, а то могут и пристрелить.\n</text>
+		<text>Старший у нас Лукаш, находится в главном здании. Но, когда в него войдешь - спрячь оружие, а то могут и пристрелить.</text>
 	</string>
 	<string id="mil_zoneguard_dialog_10000">
 		<text>Чего так ?</text>

@@ -61,7 +61,7 @@ local gulags = {pri_followers       = {comm = {"stalker"}},
                 pri_corner          = {comm = {"monolith"}},
                 pri_depot           = {comm = {"psy_dog", "pseudodog", "controller"}},
                 pri_monolith        = {comm = {"monolith"}},
-                pri_stadium         = {comm = {"pseudo_gigant"}}}
+                pri_stadium         = {comm = {"monolith"}}}
 
 -- Job -------------------------------------------------------------------
 function load_job(sj, gname, type, squad, groups)
@@ -108,15 +108,12 @@ local function checkCommon(npc_community, gulag_type, npc_rank, se_obj, stalker)
                 return g.comm == stalker
             end
 
-            local i, v = 0, 0
-            for i, v in pairs(g.comm) do
+            for k,v in pairs(g.comm) do
                 if npc_community == v then
                     return true
                 end
             end
-            if i > 0 then
-                return false
-            end
+            return false
         end
         return true
     end
@@ -1369,7 +1366,7 @@ gulags.pri_stadium.job = function(sj, gname, type, squad, groups)
             prior = 1, state = {0}, squad = squad, group = groups[1],
             in_rest = "", out_rest = "pri_stadium_snipers_restr",
             online = "{+pri_stadium_scene_start}",
-            predicate = m_predicate_e
+            predicate = m_predicate_e_rpg
         }
         table.insert(sj, t)
 

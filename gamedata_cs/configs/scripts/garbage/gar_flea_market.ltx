@@ -138,7 +138,7 @@ use_wpn = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
 
 [logic@work5] ;digger leader
 active = walker@old_pda_work5
-suitable = {=check_npc_name(gar_digger_quester) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {=check_npc_name(gar_digger_quester)}
 prior = 130
 on_death = death@work5
 job_online = true
@@ -293,27 +293,27 @@ def_state_moving3 = walk
 [logic@work9] ; unique kamp work
 active = kamp
 suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
-prior = 115
+prior = 34
 
 [logic@work10] ; unique kamp work
 active = kamp
 suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
-prior = 115
+prior = 34
 
 [logic@work11] ; unique kamp work
 active = kamp
 suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
-prior = 115
+prior = 34
 
 [logic@work12] ; unique kamp work
 active = kamp
 suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
-prior = 115
+prior = 34
 
 [logic@work13] ; unique kamp work
 active = kamp
 suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
-prior = 115
+prior = 34
 
 
 [kamp]

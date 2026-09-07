@@ -723,7 +723,7 @@ end
 -- —гЈ ©
 function parse_names( s )
     local t = {}
-    for name in string.gfind( s, "([%w_\\]+)%p*" ) do
+    for name in string.gfind( s, "([%w_\\-]+)%p*" ) do
     --for name in string.gfind( s, "%s*([^%,]+)%s*" ) do
         table.insert( t, name )
     end
@@ -738,7 +738,7 @@ function parse_key_value( s )
 		return nil
 	end
     local key, nam = nil, nil
-    for name in string.gfind( s, "([%w_\\]+)%p*" ) do
+    for name in string.gfind( s, "([%w_\\-]+)%p*" ) do
 		if key == nil then
 			key = name
 		else

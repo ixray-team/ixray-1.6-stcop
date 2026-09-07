@@ -706,31 +706,10 @@ end
 function military_dolg_dead (actor, npc)
     -- если нет актера, то вылетаем с грохотом и треском
     if actor == nil then return end
-    -- если данные не существуют, то создадим
-    local id = actor:id ()
-    if db.storage[id] == nil then
-       db.storage[id] = {}
-    end    
-    
-    if db.storage[id].mil_dolg_killed == nil then
-       db.storage[id].mil_dolg_killed = 0
-       db.storage[id].mil_dolg_killed_by_actor = false
-    end    
     -- проапдейтим количество мертвых долговцев
-    db.storage[id].mil_dolg_killed = db.storage[id].mil_dolg_killed + 1
-
-    --printf ("!!! DOLG STALKER IS DEAD, KILLED %d STALKERS !!!", db.storage[db.actor:id ()].mil_dolg["killed"])
-
-    -- взведем флажок, что мужика замочили мы (нужно для Свободы) 
-    local st = db.storage[npc:id ()]
-    if st.death.killer == -1 then return end
-    if id == st.death.killer then 
-       db.storage[id].mil_dolg_killed_by_actor = true
-    end
-    
-    -- если все умерли и была задача мочить снайпера, но сообщать не кому, то
-    -- ставим задачу, как не выполненую
-    if db.storage[id].mil_dolg_killed == 8 then
+    local mil_dolg_killed = xr_logic.pstor_retrieve(actor, "mil_dolg_killed", 0) + 1
+    xr_logic.pstor_store(actor, "mil_dolg_killed", mil_dolg_killed)
+    if mil_dolg_killed == 8 then
        actor:give_info_portion ("mil_dolg_dead")
     end   
     
@@ -890,8 +869,8 @@ function bar_territory_logic(actor, npc)
 				xr_gulag.setGulagEnemy("bar_dolg_general", db.actor)
 				xr_gulag.setGulagEnemy("bar_dolg_veterans", db.actor)
 				xr_gulag.setGulagEnemy("bar_dolg_bunker", db.actor)
-				xr_gulag.setGulagEnemy("bar_dolg_zastava", db.actor)
-				xr_gulag.setGulagEnemy("bar_dolg_zastava_2", db.actor)
+				xr_gulag.setGulagEnemy("bar_zastava", db.actor)
+				xr_gulag.setGulagEnemy("bar_zastava_2", db.actor)
 				xr_gulag.setGulagEnemy("bar_visitors", db.actor)
 				return
 			end
@@ -900,8 +879,8 @@ function bar_territory_logic(actor, npc)
 				xr_gulag.setGulagEnemy("bar_dolg_general", db.actor)
 				xr_gulag.setGulagEnemy("bar_dolg_veterans", db.actor)
 				xr_gulag.setGulagEnemy("bar_dolg_bunker", db.actor)
-				xr_gulag.setGulagEnemy("bar_dolg_zastava", db.actor)
-				xr_gulag.setGulagEnemy("bar_dolg_zastava_2", db.actor)
+				xr_gulag.setGulagEnemy("bar_zastava", db.actor)
+				xr_gulag.setGulagEnemy("bar_zastava_2", db.actor)
 				return
 			end
 			if has_alife_info("bar_dolg_territory_2_hit") then
@@ -919,8 +898,8 @@ function bar_territory_logic(actor, npc)
 				xr_gulag.setGulagEnemy("bar_dolg_general", db.actor)
 				xr_gulag.setGulagEnemy("bar_dolg_veterans", db.actor)
 				xr_gulag.setGulagEnemy("bar_dolg_bunker", db.actor)
-				xr_gulag.setGulagEnemy("bar_dolg_zastava", db.actor)
-				xr_gulag.setGulagEnemy("bar_dolg_zastava_2", db.actor)
+				xr_gulag.setGulagEnemy("bar_zastava", db.actor)
+				xr_gulag.setGulagEnemy("bar_zastava_2", db.actor)
 				xr_gulag.setGulagEnemy("bar_visitors", db.actor)
 				return
 			end
@@ -930,8 +909,8 @@ function bar_territory_logic(actor, npc)
 				xr_gulag.setGulagEnemy("bar_dolg_general", db.actor)
 				xr_gulag.setGulagEnemy("bar_dolg_veterans", db.actor)
 				xr_gulag.setGulagEnemy("bar_dolg_bunker", db.actor)
-				xr_gulag.setGulagEnemy("bar_dolg_zastava", db.actor)
-				xr_gulag.setGulagEnemy("bar_dolg_zastava_2", db.actor)
+				xr_gulag.setGulagEnemy("bar_zastava", db.actor)
+				xr_gulag.setGulagEnemy("bar_zastava_2", db.actor)
 				xr_gulag.setGulagEnemy("bar_visitors", db.actor)
 				return
 			end
@@ -1917,7 +1896,7 @@ function yan_ghost_pda (actor, npc)
     if has_alife_info("agr_gunslinger_flash_have") then 
         db.actor:give_info_portion("yan_provodnik_spawn")
     end
-    news_manager.send_tip(db.actor, "storyline_ghost_tip", nil, "wolf")
+    news_manager.send_tip(db.actor, "storyline_ghost_tip", nil, "prizrak")
 end
 
 function start_yantar_dream(actor, npc)

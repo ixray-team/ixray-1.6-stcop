@@ -520,6 +520,14 @@ function se_smart_terrain:obj_accepts_smart_terrain( obj )
 			end
 		end
 
+		--' Если объекту запрещено переходить в online и эксклюзивные
+		--' смарты недоступны, то не пускаем его никуда. Это исключает
+		--' переброску отключенных до (или после) определённого события
+		--' людей и мутантов в другой неэксклюзивный смарт.
+		if obj:can_switch_online() == false then
+			return disagreed
+		end
+
 		--' Надо убедиться что эксклюзивный смарттеррейн доступен, прежде чем запрещать все остальные
 --'		if any_exclusive then
 --'			if obj:name() == "gar_bandit_agr_10" then

@@ -300,7 +300,7 @@
 
   <specific_character id="kat_enemy_sniper_strong" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
-    <icon>ui_npc_u_monolith_2</icon>
+    <icon>ui_npc_u_monolith_4</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio></bio>
 

@@ -197,7 +197,7 @@ on_info3 = {!trading !trade_exchanged} mob_trader@new_trade_bad
 anim_global = chair_hack_idle
 anim_head = angry
 sound_phrase = trader_bad_trade
-on_signal = sound_phrase_end | mob_trader@new_idle2
+on_signal = sound_phrase_end | mob_trader@new_idle3
 on_actor_dist_ge_nvis = 12 | mob_trader@new_wait
 
 [mob_trader@new_trade_exchanged]
@@ -205,7 +205,7 @@ on_actor_dist_ge_nvis = 12 | mob_trader@new_wait
 anim_global = chair_hack_idle
 anim_head = normal
 sound_phrase = trader_exchanged
-on_signal = sound_phrase_end | mob_trader@new_idle2
+on_signal = sound_phrase_end | mob_trader@new_idle3
 on_actor_dist_ge_nvis = 12 | mob_trader@new_wait
 
 [mob_trader@new_trade_good]
@@ -213,7 +213,7 @@ on_actor_dist_ge_nvis = 12 | mob_trader@new_wait
 anim_global = chair_hack_idle
 anim_head = good
 sound_phrase = trader_good_trade
-on_signal = sound_phrase_end | mob_trader@new_idle2
+on_signal = sound_phrase_end | mob_trader@new_idle3
 on_actor_dist_ge_nvis = 12 | mob_trader@new_wait
 
 

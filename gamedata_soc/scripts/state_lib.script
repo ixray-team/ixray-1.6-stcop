@@ -571,7 +571,7 @@ states = {
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.crouch,
-				animstate = "wounded",
+				animstate = "stand",
 				animation = "help_me"
 			},
 	trans_0 = {	weapon = "strapped",

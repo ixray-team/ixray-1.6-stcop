@@ -849,7 +849,7 @@ function load_states(gname, type)
 	
 	if type == "bun_camper19" then
 		return function(gulag)
-			if has_alife_info("+bun_actor_vstal") then
+			if has_alife_info("bun_antenna_off") then
 				return 1
 			else
 				return 0

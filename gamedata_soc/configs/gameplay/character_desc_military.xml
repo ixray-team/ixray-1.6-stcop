@@ -20,6 +20,7 @@
 
 		<rank>679</rank>
 		<reputation>110</reputation>
+		<money min="2000" max="5000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_hood_9</visual>
 		<supplies>
@@ -54,6 +55,7 @@
 
 		<rank>896</rank>
 		<reputation>139</reputation>
+		<money min="2000" max="5000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_rukzak_3</visual>
 		<supplies>
@@ -91,6 +93,7 @@
 		
 		<rank>368</rank>
 		<reputation>74</reputation>
+		<money min="600" max="2000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_rukzak_1_1</visual>
 		<supplies>
@@ -125,6 +128,7 @@
 
 		<rank>560</rank>
 		<reputation>81</reputation>
+		<money min="600" max="2000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_rukzak_3_1</visual>
 		<supplies>
@@ -158,6 +162,7 @@
 
 		<rank>540</rank>
 		<reputation>58</reputation>
+		<money min="600" max="2000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_rukzak_1</visual>
 		<supplies>
@@ -192,6 +197,7 @@
 
 		<rank>910</rank>
 		<reputation>125</reputation>
+		<money min="5000" max="10000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_exoskeleton</visual>
 		<supplies>
@@ -229,6 +235,7 @@
 		
 		<rank>903</rank>
 		<reputation>101</reputation>
+		<money min="5000" max="10000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_exoskeleton</visual>
 		<supplies>
@@ -262,6 +269,7 @@
 		
 		<rank>914</rank>
 		<reputation>136</reputation>
+		<money min="5000" max="10000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_leader</visual>
 		<supplies>
@@ -294,13 +302,13 @@
 		
 		<class>mil_Svoboda_trader</class>
 		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
-		<money min="100000" max="110000" infinitive="1"></money>
 
         <snd_config>characters_voice\human_02\freedom\</snd_config>
 		<crouch_type>-1</crouch_type>
 
 		<rank>730</rank>
 		<reputation>96</reputation>
+		<money min="100000" max="110000" infinitive="1"></money>
 
 		<visual>actors\svoboda\stalker_sv_balon_1</visual>
 		<supplies>
@@ -331,9 +339,9 @@
 		<class>mil_Svoboda_master_Max</class>
 		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
 
-		
 		<rank>912</rank>
 		<reputation>145</reputation>
+		<money min="5000" max="10000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_max</visual>
 		<supplies>
@@ -342,7 +350,6 @@
 			ammo_11.43x23_hydro = 1 \n
 			wpn_svu \n
 			ammo_7.62x54_7h14 = 1 \n
-			wpn_walther \n
 #include "gameplay\character_items.xml" \n
 #include "gameplay\character_drugs.xml" \n
 #include "gameplay\character_food.xml"			
@@ -370,6 +377,7 @@
 		
 		<rank>930</rank>
 		<reputation>126</reputation>
+		<money min="5000" max="10000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_rukzak_1_1</visual>
 		<supplies>
@@ -401,6 +409,7 @@
 		
 		<rank>644</rank>
 		<reputation>84</reputation>
+		<money min="2000" max="5000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_cook</visual>
 		<supplies>
@@ -447,6 +456,7 @@
 
 		<rank>916</rank>
 		<reputation>149</reputation>
+		<money min="5000" max="10000" infinitive="0"></money>
 
         <snd_config>characters_voice\human_02\freedom\</snd_config>
 		<crouch_type>-1</crouch_type>
@@ -485,6 +495,7 @@
 		
 		<rank>902</rank>
 		<reputation>113</reputation>
+		<money min="5000" max="10000" infinitive="0"></money>
 
 		<visual>actors\svoboda\stalker_sv_nauchniy</visual>
 		<supplies>
@@ -519,6 +530,7 @@
 
 		<rank>720</rank>
 		<reputation>96</reputation>
+		<money min="2000" max="5000" infinitive="0"></money>
 
         <snd_config>characters_voice\human_03\dolg\</snd_config>
   		<crouch_type>0</crouch_type>
@@ -555,6 +567,7 @@
 
 		<rank>932</rank>
 		<reputation>79</reputation>
+		<money min="5000" max="10000" infinitive="0"></money>
 		
 		<panic_threshold>0.0</panic_threshold>
 
@@ -587,6 +600,7 @@
 
 		<rank>915</rank>
 		<reputation>135</reputation>
+		<money min="5000" max="10000" infinitive="0"></money>
 		
 		<panic_threshold>0.0</panic_threshold>
 
@@ -764,6 +778,7 @@
 		
 		<rank>924</rank>
 		<reputation>19</reputation>
+		<money min="5000" max="10000" infinitive="0"></money>
 
         <snd_config>characters_voice\human_03\stalker\</snd_config>
   		<crouch_type>0</crouch_type>
@@ -796,6 +811,7 @@
 			
 		<rank>856</rank>
 		<reputation>-2</reputation>
+		<money min="2000" max="5000" infinitive="0"></money>
 
         <snd_config>characters_voice\human_03\stalker\</snd_config>
   		<crouch_type>-1</crouch_type>
@@ -835,7 +851,7 @@
                 <rank>569</rank>
                 <reputation>-40</reputation>
 
-                <visual>actors\stalker_zombi\stalker_zombie5</visual>
+                <visual>actors\stalker_zombi\stalker_zombie5_fresh</visual>
                 <supplies>
                         [spawn] \n
 						wpn_walther \n
@@ -905,7 +921,7 @@
       wpn_fort \n
       ammo_9x18_fmj = 1 \n
 	  wpn_val \n
-	
+      ammo_9x39_sp5 = 1 \n
 #include "gameplay\character_items.xml" \n
 #include "gameplay\character_drugs.xml" \n
 #include "gameplay\character_food.xml"	
@@ -914,7 +930,6 @@
 #include "gameplay\character_criticals_1.xml"
 	
 		<start_dialog>hello_dialog</start_dialog>
-		<actor_dialog>esc_stalker_talk_level</actor_dialog>
   </specific_character>
 	
 </xml>

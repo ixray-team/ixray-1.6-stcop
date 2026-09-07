@@ -15,7 +15,7 @@ local killCountProps = {
 	boar_weak = 1, boar_normal = 2, boar_strong = 3,
 	dog_weak = 1, dog_normal = 2, dog_strong = 3,
 	pseudodog_weak = 1, pseudodog_normal = 2, pseudodog_strong = 3,
-	psy_dog_weak = 1, psy_dog_normal = 2, psy_dog_strong = 3,
+	psy_dog = 3,
 	snork_weak = 2, snork_normal = 3, snork_strong = 4,
 	poltergeist_weak = 2,
 	pseudo_gigant_weak = 4,

@@ -218,7 +218,7 @@
         <text>barmen_kill_stalker_3_descr</text>
 </article>
 <article id="barmen_kill_stalker_4_descr" name="kill_stalker" article_type="task">
-        <text>barmen_kill_stalker_5_descr</text>
+        <text>barmen_kill_stalker_4_descr</text>
 </article>
 <article id="barmen_kill_stalker_5_descr" name="kill_stalker" article_type="task">
         <text>barmen_kill_stalker_5_descr</text>
@@ -286,8 +286,8 @@
         <text>freedom_find_item_3_descr</text>
 </article>
 ;---------ecolog--------
-<article id="ecolog_find_item_2_descr" name="find_item" article_type="task">
-        <text>ecolog_find_item_2_descr</text>
+<article id="ecolog_find_item_1_descr" name="find_item" article_type="task">
+        <text>ecolog_find_item_1_descr</text>
 </article>
 
 ;---------Monster Part--------------
@@ -300,10 +300,10 @@
 </article>
 ;----------Barmen-----------
 <article id="barmen_monster_part_1_descr" name="monster_part" article_type="task">
-        <text>tm_monster_part_1_descr</text>
+        <text>barmen_monster_part_1_descr</text>
 </article>
 <article id="barmen_monster_part_2_descr" name="monster_part" article_type="task">
-        <text>tm_monster_part_2_descr</text>
+        <text>barmen_monster_part_2_descr</text>
 </article>
 ;--------Ecolog---------
 <article id="ecolog_monster_part_1_descr" name="monster_part" article_type="task">

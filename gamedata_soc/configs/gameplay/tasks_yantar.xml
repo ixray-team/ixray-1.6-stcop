@@ -88,7 +88,7 @@
 		<title>yan_find_scientist</title>
 		<objective>
 			<text>yan_find_scientist</text>
-			<icon x="450" y="150" width="50" height="50">ui\ui_icons_task</icon>
+			<icon>ui_iconsTotal_yan_find_scientist_semenov</icon>
 			<map_location_type hint="yan_find_scientist">green_location</map_location_type>
 			<object_story_id>yan_semenov_help</object_story_id>
 			<infoportion_complete>yan_find_scientist_done</infoportion_complete>
@@ -119,7 +119,7 @@
 		<title>yan_scientist_return_task</title>
 		<objective>
 			<text>yan_scientist_return_task</text>
-			<icon x="450" y="150" width="50" height="50">ui\ui_icons_task</icon>
+			<icon>ui_iconsTotal_yan_scientist_return_task</icon>
 			<infoportion_complete>yan_find_vasilyev_start</infoportion_complete>
 			<article>descr_yan_scientist_return_task</article>
 		</objective>
@@ -159,7 +159,7 @@
 		<title>yan_find_ghost_task</title>
 		<objective>
 			<text>yan_find_ghost_task</text>
-			<icon x="350" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<icon>ui_iconsTotal_yan_find_ghost_task</icon>
 			<infoportion_complete>yantar_find_ghost_task_end</infoportion_complete>
 			<article>descr_yan_find_ghost_task</article>
 		</objective>

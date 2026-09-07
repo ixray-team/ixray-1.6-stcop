@@ -213,7 +213,7 @@
 
 		<class>bar_stalker_dolg</class>
 		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
-		<money min="200" max="600" infinitive="0"></money>
+		<money min="600" max="2000" infinitive="0"></money>
 		
 		<rank>307</rank>
 		<reputation>0</reputation>
@@ -794,7 +794,7 @@
 		<reputation>90</reputation>
 
 		<visual>actors\ecolog\stalker_ecolog_military</visual>
-		<snd_config>characters_voice\human_03\eco\</snd_config>
+		<snd_config>characters_voice\human_03\ecolog\</snd_config>
 		<crouch_type>1</crouch_type>
 
 		<supplies>
@@ -1009,7 +1009,7 @@
 
 		<class>bar_Dolg_regular</class>
 		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
-		<money min="200" max="600" infinitive="0"></money>
+		<money min="600" max="2000" infinitive="0"></money>
 		
 		<rank>310</rank>
 		<reputation>20</reputation>
@@ -1078,7 +1078,7 @@
 		
 		<class>bar_Dolg_regular</class>
 		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
-		<money min="200" max="600" infinitive="0"></money>
+		<money min="600" max="2000" infinitive="0"></money>
 		
 		<rank>340</rank>
 		<reputation>20</reputation>
@@ -1340,7 +1340,7 @@
 
 		<class>bar_Dolg_master</class>
 		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
-		<money min="2000" max="5000" infinitive="0"></money>
+		<money min="5000" max="10000" infinitive="0"></money>
 		
 		<rank>914</rank>
 		<reputation>60</reputation>
@@ -1941,7 +1941,7 @@
 		<reputation>0</reputation>
 
 		<visual>actors\neytral\stalker_neytral_hood_8</visual>
-		<snd_config>characters_voice\human_03\stalker\</snd_config>
+		<snd_config>characters_voice\human_02\stalker\</snd_config>
 		<crouch_type>0</crouch_type>
 		<supplies>
 			[spawn] \n
