@@ -8,6 +8,14 @@ if(WIN32)
     set(OPENAL_LIBRARY "${SND_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib")
     set(OPENAL_DLL "${SND_OAL}/native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.dll")
 
+    set(SOFT_OAL_SDK_URL "https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/soft_oal_1.23.1.zip")
+    set(SOFT_OAL_SDK_ZIP "${DEP_DIR}/soft_oal_1.23.1.zip")
+    set(SOFT_OAL_SDK_DIR "${DEP_DIR}/soft_oal")
+    download_and_extract_sdk(${SOFT_OAL_SDK_URL} ${SOFT_OAL_SDK_ZIP} ${SOFT_OAL_SDK_DIR})
+
+    set(SOFT_OAL_DLL "${SOFT_OAL_SDK_DIR}/soft_oal.dll")
+    set(SOFT_OAL_INI "${SOFT_OAL_SDK_DIR}/alsoft.ini")
+
     if(EXISTS "${OPENAL_INCLUDE_DIR}" AND EXISTS "${OPENAL_LIBRARY}")
         # Используем готовый NuGet‑пакет
         add_imported_lib(
@@ -31,6 +39,16 @@ if(WIN32)
         FetchContent_MakeAvailable(openal-soft)
         # openal-soft сам создаёт цель OpenAL::OpenAL, поэтому НЕ создаём алиас
     endif()
+
+    foreach(_soft_oal_file IN LISTS SOFT_OAL_DLL SOFT_OAL_INI)
+        if(EXISTS "${_soft_oal_file}")
+            add_custom_command(TARGET copy_all_dlls PRE_BUILD
+                COMMAND ${CMAKE_COMMAND} -E make_directory "${IXRAY_OUTPUT}"
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "${_soft_oal_file}" "${IXRAY_OUTPUT}/"
+            )
+        endif()
+    endforeach()
 else()
     # Не-Windows: сначала ищем системный OpenAL
     find_package(OpenAL QUIET)
