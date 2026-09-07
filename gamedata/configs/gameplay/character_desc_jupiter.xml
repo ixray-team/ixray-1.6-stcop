@@ -1941,7 +1941,7 @@
 		<supplies>
       [spawn] \n
       wpn_g36 \n
-      ammo_5.45x39_ap = 1 \n
+      ammo_5.56x45_ss190 = 1 \n
       wpn_usp \n
       ammo_11.43x23_hydro = 1 \n
       grenade_f1 = 1 \n

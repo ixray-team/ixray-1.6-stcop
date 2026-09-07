@@ -198,7 +198,7 @@
     <reputation>0</reputation>
 
     <visual>actors\stalker_freedom\stalker_freedom_3</visual>
-    <snd_config>characters_voice\human_03\freedom\</snd_config>
+    <snd_config>characters_voice\human_01\freedom\</snd_config>
     <supplies>
       [spawn] \n
       device_torch \n
@@ -232,7 +232,7 @@
     <reputation>0</reputation>
 
     <visual>actors\stalker_freedom\stalker_freedom_3</visual>
-    <snd_config>characters_voice\human_03\freedom\</snd_config>
+    <snd_config>characters_voice\human_01\freedom\</snd_config>
     <supplies>
       [spawn] \n
       device_torch \n
@@ -271,7 +271,7 @@
       [spawn] \n
       device_torch \n
       wpn_l85 \n
-      ammo_7.62x54_ap = 3 \n
+      ammo_5.56x45_ss190 = 1 \n
       wpn_hpsa \n
       ammo_9x19_fmj = 5 \n
       grenade_f1 = 1 \n
@@ -331,7 +331,7 @@
     <reputation>0</reputation>
 
     <visual>actors\stalker_freedom\stalker_freedom_3</visual>
-    <snd_config>characters_voice\human_03\freedom\</snd_config>
+    <snd_config>characters_voice\human_01\freedom\</snd_config>
     <supplies>
       [spawn] \n
       device_torch \n
@@ -457,7 +457,7 @@
 
     <class>val_freedom_attack_commander</class>
     <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
-    <snd_config>characters_voice\human_03\freedom\</snd_config>
+    <snd_config>characters_voice\human_01\freedom\</snd_config>
 
     <rank>600</rank>
     <reputation>0</reputation>

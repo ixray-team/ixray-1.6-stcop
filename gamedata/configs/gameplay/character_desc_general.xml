@@ -2023,7 +2023,7 @@
       [spawn] \n
       
       wpn_vintorez = 1 \n
-      ammo_7.62x54_7h1 = 1 \n
+      ammo_9x39_ap = 1 \n
       wpn_sig220 = 1, silencer \n
       ammo_11.43x23_hydro = 1 \n
 
@@ -3930,7 +3930,7 @@
       [spawn] \n
       
       wpn_ak74  \n
-      ammo_12x70_buck  = 1 \n
+      ammo_5.45x39_fmj  = 1 \n
       wpn_fort \n
       ammo_9x18_fmj = 1 \n
       grenade_rgd5 = 1 \n

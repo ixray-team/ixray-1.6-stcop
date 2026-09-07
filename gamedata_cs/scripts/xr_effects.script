@@ -91,11 +91,14 @@ function stop_cam_effector(actor, npc, p)
 end
 
 function run_cam_effector_global(actor, npc, p)
-	local num = 1000 + math.random(100)
+	local loop, num = false, (1000 + math.random(100))
 	if p[2] and type(p[2]) == "number" and p[2] > 0 then
 		 num = p[2]
 	end
-	level.add_cam_effector2("camera_effects\\" .. p[1] .. ".anm", num, false, "xr_effects.cam_effector_callback")
+	if p[3] and p[3] == "true" then
+		loop = true
+	end
+	level.add_cam_effector2("camera_effects\\" .. p[1] .. ".anm", num, loop, "xr_effects.cam_effector_callback")
 	cam_effector_playing_object_id = npc:id()
 end
 

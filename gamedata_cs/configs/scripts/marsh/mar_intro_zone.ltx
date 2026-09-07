@@ -103,7 +103,7 @@ on_info = {+mar_tutorial_surge_warned} sr_idle@tutorial_final_wait ;2nd iteratio
 on_info = {+mar_tutorial_return_to_base_reversed} sr_idle@tutorial_final_time_1
 
 [sr_idle@tutorial_final_time_1]
-on_timer = 4500 | sr_idle@tutorial_final_time_2 %=update_weather(true) =teleport_actor(mar_intro_scene_2_actor_walk:mar_intro_scene_2_actor_look) +mar_tutorial_returned_to_base%
+on_timer = 4500 | sr_idle@tutorial_final_time_2 %=update_weather(true) =teleport_actor(mar_intro_scene_2_actor_walk:mar_intro_scene_2_actor_look) =run_cam_effector_global(scenario_cam\Marsh\camera_mar_03_idle:3:true) +mar_tutorial_returned_to_base%
 on_info = {+mar_tutorial_returned_to_base} sr_idle@tutorial_final_time_2 ;2nd iteration
 
 [sr_idle@tutorial_final_time_2]

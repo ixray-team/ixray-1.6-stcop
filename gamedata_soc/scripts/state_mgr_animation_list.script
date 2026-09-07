@@ -314,9 +314,9 @@ animations = {
 		help_me		= {	prop	= { maxidle = 5,
 									sumidle = 10,
 									rnd = 100 },
-						into	= nil,
-						out		= nil,
-						idle	= nil,
+						into	= { [0]	= {"idle_to_wounded_0"}},
+						out		= { [0]	= {"wounded_to_idle_0"}},
+						idle	= { [0]	= "wounded_idle_0" },
 						rnd		= {	[0]	= {	"wounded_ruka_0" }}},
 
 		wounded		= {	prop	= { maxidle = 5,

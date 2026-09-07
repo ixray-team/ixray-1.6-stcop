@@ -1062,6 +1062,14 @@ function bar_dolg_alarm(actor,npc)
 	end
 	return false
 end
+function bar_hostile_npc(actor,npc)
+	-- на бармена забьём, всё равно его не убить.
+	local c = npc:character_community()
+	if c == "stalker" or c == "dolg" or c == "ecolog" then
+		return false
+	end
+	return true
+end
 
 
 function is_courier_time (actor, npc)

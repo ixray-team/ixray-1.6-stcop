@@ -157,7 +157,7 @@
 		<title>tutorial_help_wounded</title>
 		<objective>
 			<text>tutorial_help_wounded</text>
-			<icon>ui_iconsTotal_tutorial_help_wounded</icon>
+			<icon>ui_iconsTotal_esc_flash_task</icon>
 			<infoportion_complete>esc_serious_talk</infoportion_complete>
 			<article>esc_flash_task_descr</article>
 		</objective>

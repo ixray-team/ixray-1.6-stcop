@@ -570,7 +570,7 @@
 		<reputation>120</reputation>
 		<money min="600" max="2000" infinitive="0"/>
 		
-		<snd_config>characters_voice\human_03\dolg\</snd_config>
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
 		<crouch_type>0</crouch_type>
 
 		<visual>actors\dolg\stalker_do_mask_1</visual>

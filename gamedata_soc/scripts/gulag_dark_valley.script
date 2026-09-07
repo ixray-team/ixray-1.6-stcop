@@ -119,6 +119,9 @@ if gulag_type == "val_escort" then
 end
 
 function checkMonster(npc_community, gulag_type, npc_rank, se_obj)
+	if gulag_type == "val_sos" then
+		return npc_community == "bloodsucker"
+	end
     return false
 end
 
@@ -487,7 +490,8 @@ function sos_predicate_w(npc_info) -- wounded
 end
 
 function sos_predicate_bs(npc_info) -- bloodsucker
-    return npc_info.community == "bloodsucker"
+    -- нужен не абы какой кровосос, а вполне конкретный val_sos_bs
+    return npc_info.story_id == 436
 end
 
 -- Jobs ------------------------------------------------------------------
@@ -757,6 +761,7 @@ gulags.val_lager_bandits.job = function(sj, gname, type, squad, groups)
 
                "[logic@" .. gname .. "_leader_alarm]\n" ..
                "active = camper@" .. gname .. "_leader_alarm\n" ..
+               "on_death = death@" .. gname .. "_borov\n" ..
                "combat_ignore = combat_ignore\n" ..
 
                "[camper@" .. gname .. "_leader_alarm]\n" ..
@@ -1319,6 +1324,7 @@ gulags.val_watchtower.job = function(sj, gname, type, squad, groups)
             idle = 0,
             prior = 1, state = {0}, squad = squad, group = groups[1],
             position_threshold = 10,
+            predicate = wt_predicate_g,
             in_rest = "", out_rest = gname .. "_restr"
         }
         table.insert(sj, t)
@@ -1326,9 +1332,11 @@ gulags.val_watchtower.job = function(sj, gname, type, squad, groups)
         -- добавляем описание должности в лтх.
         ltx = ltx.."[logic@" .. idstr .. "]\n" ..
                    "active = walker@" .. idstr .. "\n" ..
+                   "combat_ignore = combat_ignore\n" ..
 
                    "[walker@" .. idstr .. "]\n" ..
                    --"meet                = meet@generic_lager_guard\n" ..
+                   "combat_ignore_cond  = {=check_fighting(400) -val_escort_captive_enemy}, {=check_fighting(401) -val_sacrifice_finish}\n" ..
                    "path_walk           = guard_" .. i .. "_walk\n" ..
                    "def_state_moving1   = patrol\n" ..
                    "def_state_moving2   = patrol\n"

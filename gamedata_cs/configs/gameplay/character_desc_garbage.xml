@@ -358,7 +358,7 @@
     <reputation>0</reputation>
 
     <visual>actors\stalker_neutral\stalker_neutral_2</visual>
-    <snd_config>characters_voice\human_02\stalker\</snd_config>
+    <snd_config>characters_voice\human_03\stalker\</snd_config>
     <supplies>
       [spawn] \n
       wpn_fort \n

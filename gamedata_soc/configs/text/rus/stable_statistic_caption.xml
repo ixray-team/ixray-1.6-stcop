@@ -49,14 +49,23 @@
 	<string id="dolg_master">
 		<text>"Долг", мастер</text>
 	</string>
+	<string id="dolg_novice">
+		<text>"Долг", новичок</text>
+	</string>
 	<string id="dolg_veteran">
 		<text>"Долг", ветеран</text>
 	</string>
 	<string id="ecolog_experienced">
 		<text>ученый, опытный</text>
 	</string>
+	<string id="ecolog_master">
+		<text>ученый, мастер</text>
+	</string>
 	<string id="ecolog_novice">
 		<text>ученый, новичок</text>
+	</string>
+	<string id="ecolog_veteran">
+		<text>ученый, ветеран</text>
 	</string>
 	<string id="flesh_normal">
 		<text>лесная плоть</text>
@@ -73,6 +82,9 @@
 	<string id="freedom_master">
 		<text>"Свобода", мастер</text>
 	</string>
+	<string id="freedom_novice">
+		<text>"Свобода", новичок</text>
+	</string>
 	<string id="freedom_veteran">
 		<text>"Свобода", ветеран</text>
 	</string>
@@ -81,6 +93,9 @@
 	</string>
 	<string id="killer_master">
 		<text>наемник, мастер</text>
+	</string>
+	<string id="killer_novice">
+		<text>наемник, новичок</text>
 	</string>
 	<string id="killer_veteran">
 		<text>наемник, ветеран</text>

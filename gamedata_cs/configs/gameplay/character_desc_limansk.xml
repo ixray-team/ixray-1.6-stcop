@@ -49,6 +49,7 @@
 
     <supplies>
       [spawn] \n
+	  ammo_9x19_fmj = 1 \n
       wpn_beretta = 1 \n
       device_torch \n
       wpn_svd \n
@@ -230,7 +231,7 @@
 
     <class>lim_bandit_minigunner</class>
     <community>bandit</community> <terrain_sect>stalker_terrain</terrain_sect>
-    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <snd_config>characters_voice\human_03\bandit\</snd_config>
 
     <rank>450</rank>
     <reputation>0</reputation>

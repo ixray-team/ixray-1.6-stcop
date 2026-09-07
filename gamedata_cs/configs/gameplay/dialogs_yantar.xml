@@ -121,6 +121,7 @@
                 <text>yan_scientist_hello_dialog_14</text>
                 <dont_has_info>yan_vzyal_quest_doc</dont_has_info>
                 <has_info>yan_quest_levsha</has_info>
+				<dont_has_info>yan_stop_spawn_cut6</dont_has_info>
             </phrase>
             <phrase id="1">
                 <text></text>
@@ -133,11 +134,12 @@
                 <text>yan_scientist_hello_dialog_13</text>
                 <dont_has_info>yan_vzyal_quest_doc</dont_has_info>
                 <has_info>yan_quest_levsha</has_info>
-                <has_info>yan_stop</has_info>
+                <has_info>yan_stop_spawn_cut6</has_info>
             </phrase>
             <phrase id="12">
                 <text>yan_scientist_hello_dialog_12</text>
                 <has_info>yan_quest_doc</has_info>
+				<dont_has_info>yan_quest_levsha</dont_has_info>
             </phrase>
             <phrase id="11">
                 <text>yan_scientist_hello_dialog_11</text>

@@ -307,7 +307,7 @@ target = 5009
 name = esc_secret_0009_name
 description = esc_secret_0009_descr
 items = bandit_outfit, ammo_9x18_pmm, 40, wpn_pb
-condlist = {=actor_on_level(l01_escape) npc_rank(novice)} 3
+condlist = {=actor_on_level(l01_escape) =npc_rank(novice)} 3
 community = bandit
 
 [esc_secret_village_rucksack]
@@ -315,7 +315,7 @@ target = 5010
 name = esc_secret_0010_name
 description = esc_secret_0010_descr
 items = wpn_pb, ammo_9x18_fmj, 50
-condlist = {npc_rank(novice)} 3
+condlist = {=npc_rank(novice)} 3
 community = stalker, bandit
 
 [esc_secret_village_roof]
@@ -1544,7 +1544,7 @@ target = 5204
 name = mil_secret_0004_name
 description = mil_secret_0004_description
 items = ammo_9x39_ap, 120, medkit, 1
-condlist = {+mil_miser_task_complete =npc_rank(veteran)} 5, {+mil_miser_task_complete =npc_rank(master)} 5, {+mil_miser_task_failed =npc_rank(veteran)}, {+mil_miser_task_failed =npc_rank(master)} 5
+condlist = {+mil_miser_task_complete =npc_rank(veteran)} 5, {+mil_miser_task_complete =npc_rank(master)} 5, {+mil_miser_task_failed =npc_rank(veteran)} 5, {+mil_miser_task_failed =npc_rank(master)} 5
 community = stalker, freedom, killer
 
 [mil_secret_0005]
@@ -1552,7 +1552,7 @@ target = 5205
 name = mil_secret_0005_name
 description = mil_secret_0005_description
 items = medkit, 3, af_gold_fish, 1
-condlist = {+mil_miser_task_complete =npc_rank(veteran)} 5, {+mil_miser_task_complete =npc_rank(master)} 5, {+mil_miser_task_failed =npc_rank(veteran)}, {+mil_miser_task_failed =npc_rank(master)} 5
+condlist = {+mil_miser_task_complete =npc_rank(veteran)} 5, {+mil_miser_task_complete =npc_rank(master)} 5, {+mil_miser_task_failed =npc_rank(veteran)} 5, {+mil_miser_task_failed =npc_rank(master)} 5
 community = stalker, freedom, killer
 
 [mil_secret_0006]
