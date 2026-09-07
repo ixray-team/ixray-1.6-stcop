@@ -281,6 +281,14 @@ float		ps_r2_gloss_factor = 3.14f;
 
 int			ps_r__detail_radius = 120;
 float		ps_r4_cas_sharpening = 0.0f;
+u32			ps_r4_sharpening_mode = 0;
+
+xr_token sharpening_mode_token[] =
+{
+	{ "tiny_sharpening", 0},
+	{ "amd_cas", 1},
+	{ nullptr, 0}
+};
 
 float		ps_r__detail_rnd_scale_min = 0.3f;
 float		ps_r__detail_rnd_scale_max = 0.9f;
@@ -300,11 +308,11 @@ int			r_debug_render_depth		= 0;
 #include	"../../xrEngine/xr_ioc_cmd.h"
 
 #ifdef USE_DX11
-#include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
-#endif //USE_DX11
+#	include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
+#endif
 
 //-----------------------------------------------------------------------
-class CCC_tf_Aniso		: public CCC_Integer
+class CCC_tf_Aniso : public CCC_Integer
 {
 public:
 	void	apply	()	{
@@ -358,7 +366,7 @@ public:
 	}
 };
 
-class CCC_R2GM		: public CCC_Float
+class CCC_R2GM : public CCC_Float
 {
 public:
 	CCC_R2GM(const char* N, float*	v) : CCC_Float(N, v, 0.f, 4.f) { *v = 0; };
@@ -711,6 +719,7 @@ void		xrRender_initconsole	()
 
 #if RENDER == R_R4
 	CMD2(CCC_Vector3, "r4_ssfx_volumetric", &ps_ssfx_volumetric);
+	CMD3(CCC_Token, "r4.sharpening.mode", &ps_r4_sharpening_mode, sharpening_mode_token);
 #endif
 
 #ifdef DEBUG
@@ -982,7 +991,8 @@ void		xrRender_initconsole	()
 #endif
 }
 
-void xrRender_apply_tf() {
+void xrRender_apply_tf()
+{
 	Console->Execute("r__tf_aniso");
 	Console->Execute("r__tf_mipbias");
 }
