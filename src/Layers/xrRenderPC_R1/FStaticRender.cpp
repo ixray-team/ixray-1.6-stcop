@@ -409,12 +409,34 @@ void CRender::Calculate				()
 					if (R)		R->update			(O);
 				}
 			}
+
+			const bool use_full_detail_distance = ps_r1_full_detail_distance_scale < 1.f;
+			const float full_detail_distance = use_full_detail_distance ? std::max(100.f, g_pGamePersistent->Environment().CurrentEnv->far_plane * ps_r1_full_detail_distance_scale) : 0.f;
+		
 			for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
 			{
-				ISpatial*	spatial		= lstRenderables[o_it].get();		spatial->spatial_updatesector	();
-				CSector*	sector		= (CSector*)spatial->sector	;
-				if	(0==sector)										
-					continue;	// disassociated from S/P structure
+				ISpatial* spatial = lstRenderables[o_it].get();
+				if (0 == spatial)
+				{
+					continue;
+				}
+
+				if (use_full_detail_distance &&
+					Device.vCameraPosition.distance_to_sqr(spatial->sphere.P) > _sqr(full_detail_distance + spatial->sphere.R))
+				{
+					light* L = (spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE ? (light*)spatial->dcast_Light() : nullptr;
+					if (!L || !L->flags.bHudMode)
+					{
+						continue;
+					}
+				}
+
+				spatial->spatial_updatesector();
+				CSector* sector = (CSector*)spatial->sector;
+				if (0 == sector)
+				{
+					continue;
+				}
 
 				// Filter only not light spatial
 				if (PortalTraverser.i_marker != sector->r_marker && ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE || (spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE))	continue;	// inactive (untouched) sector
