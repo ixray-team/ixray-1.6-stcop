@@ -726,27 +726,30 @@ void CMissile::Destroy()
 	if (Local())		DestroyObject();
 }
 
-bool CMissile::Action(u16 cmd, u32 flags) 
+bool CMissile::Action(u16 cmd, u32 flags)
 {
-	if(inherited::Action(cmd, flags)) return true;
-
-	switch(cmd) 
+	if (inherited::Action(cmd, flags))
 	{
-	case kWPN_FIRE:
+		return true;
+	}
+
+	switch (cmd)
+	{
+		case kWPN_FIRE:
 		{
-			m_constpower = true;			
-			if(flags&CMD_START) 
+			m_constpower = true;
+			if (flags & CMD_START)
 			{
-				if (!m_bNeedQuick && (GetState() == eIdle || GetState() == eBore))
+				if (!m_bNeedQuick && (!IsPending() || GetState() == eIdle))
 				{
 					m_throw = true;
 					SwitchState(eThrowStart);
 				}
-			} 
+			}
 			return true;
-		}break;
-
-	case kWPN_ZOOM:
+		}
+		break;
+		case kWPN_ZOOM:
 		{
 			if (m_bNeedQuick)
 			{
@@ -754,27 +757,29 @@ bool CMissile::Action(u16 cmd, u32 flags)
 			}
 
 			m_constpower = false;
-        	if(flags&CMD_START) 
+			if (flags & CMD_START)
 			{
 				m_throw = false;
-				if (GetState() == eIdle || GetState() == eBore)
-					SwitchState(eThrowStart);
-				else 
-				if(GetState()==eReady)
+				if (!IsPending() || GetState() == eIdle)
 				{
-					m_throw = true; 
+					SwitchState(eThrowStart);
 				}
-
-			} 
-			else 
-			if(GetState()==eReady || GetState()==eThrowStart || GetState()==eIdle) 
+				else if (GetState() == eReady)
+				{
+					m_throw = true;
+				}
+			}
+			else if (GetState() == eReady || GetState() == eThrowStart || GetState() == eIdle)
 			{
-				m_throw = true; 
-				if(GetState()==eReady) 
+				m_throw = true;
+				if (GetState() == eReady)
+				{
 					SwitchState(eThrow);
+				}
 			}
 			return true;
-		}break;
+		}
+		break;
 	}
 	return false;
 }
