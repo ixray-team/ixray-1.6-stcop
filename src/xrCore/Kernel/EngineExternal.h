@@ -70,6 +70,7 @@ enum class EEngineExternalGame
 	EnableWindEffectOnABullet,
 	EnableSaveOnNewGame,
 	EnableSuicideByController,
+	EnablePowerCellContextMenu,
 	None
 };
 

@@ -2,6 +2,7 @@
 
 #include "inventory_item_object.h"
 #include "../xrScripts/script_export_space.h"
+#include "IInventoryUseActions.h"
 
 // CLSID_IITEM_POWER_CELL PWR_CELL
 
@@ -11,7 +12,7 @@ struct PowerCellData {
 	float current_power = 0.0f;
 };
 
-class PowerCell final : public CInventoryItemObject
+class PowerCell final : public CInventoryItemObject, public IInventoryUseActions
 {
 private:
 	PowerCellData m_power_cell_data = {};
@@ -26,6 +27,8 @@ public:
 	virtual void Load(const char* section) override;
 	PowerCellData GetPowerCellData() { return m_power_cell_data; };
 	void SetPowerCellData(PowerCellData power_cell_data) { m_power_cell_data = power_cell_data; };
+
+	bool FillUseActions(CUIPropertiesBox* box, const UseActionContext& context) override;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

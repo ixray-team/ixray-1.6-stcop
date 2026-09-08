@@ -506,19 +506,23 @@ void IAntigas::UpdateState()
 	}
 }
 
-bool IAntigas::OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox)
+bool IAntigas::FillUseActions(
+	CUIPropertiesBox* box,
+	const UseActionContext& /* context */
+)
 {
-	if (IsAllowed() && IsFilterInstalled())
+	if (box == nullptr || !IsAllowed() || !IsFilterInstalled())
 	{
-		m_UIPropertiesBox->AddItem(
-			"antigas_detach_filter",
-			nullptr, 
-			DETACH_ANTIGAS_FILTER
-		);
-		return true;
+		return false;
 	}
 
-	return false;
+	box->AddItem(
+		"antigas_detach_filter",
+		nullptr,
+		DETACH_ANTIGAS_FILTER
+	);
+
+	return true;
 }
 
 bool IAntigas::OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox)

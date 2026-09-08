@@ -3,8 +3,9 @@
 #include "hit_immunity_space.h"
 #include "../xrUI/Widgets/UIPropertiesBox.h"
 #include "../xrUI/Widgets/UIListBoxItem.h"
+#include "IInventoryUseActions.h"
 
-class IAntigas
+class IAntigas : public IInventoryUseActions
 {
 private:
 	bool bIsHelmet;
@@ -79,7 +80,7 @@ public:
 	float GetFilterCondition();
 	void SetFilterCondition(float new_condition);
 
-	bool OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox);
+	bool FillUseActions(CUIPropertiesBox* box, const UseActionContext& context) override;
 	bool OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox);
 
 	void Hit(float hit_power, ALife::EHitType hit_type, float targetImmunity);
