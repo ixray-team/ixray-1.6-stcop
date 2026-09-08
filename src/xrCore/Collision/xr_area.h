@@ -23,6 +23,21 @@ private:
 	// Debug
 	CDB::MODEL							Static;
 	Fbox								m_BoundingVolume;
+
+	// Streaming (see XRay::CForm::CFormatStreamed / CFormatStreamedInstanced). Kept alive
+	// after Load() only when the on-disk cform is a streamed format, so LoadStreamedTile()/
+	// LoadStreamedSector() can be called on-demand at runtime.
+	xr_unique_ptr<XRay::CForm::IFormat>	StreamingFormat;
+	CDB::build_callback*				StreamingBuildCallback = nullptr;
+	void*								StreamingBuildCallbackParams = nullptr;
+
+	xr_hash_map<u64, CDB::MODEL*>		StreamedTileModels;
+	xr_hash_map<u32, CDB::MODEL*>		StreamedSectorModels;
+	xr_vector<CDB::MODEL*>				ActiveStreamedModels;	// flat cache of the two maps above, kept in sync
+
+	static u64							EncodeTileKey		( s32 TileX, s32 TileZ );
+	void								RebuildActiveStreamedModelsCache();
+
 public:
 
 #ifdef DEBUG
@@ -52,8 +67,40 @@ public:
 	//ICF xr_vector<CDB::TRI>&			GetStaticTris		() { return Static.get_tris();	}
 	//ICF xr_vector<Fvector>&				GetStaticVerts		() { return Static.get_verts(); }
 	ICF CDB::MODEL*						GetStaticModel		() { return &Static;			}
+	CDB::MODEL* GetStaticStreamedTileModel(const Fvector& Location);
 
 	ICF const Fbox&						GetBoundingVolume	() { return m_BoundingVolume;}
+
+	//--------------------------------------------------------------------------------
+	// Streaming collision API (low-level, must be called manually unless UpdateStreaming()
+	// is used). See CDB::TRI::StreamedSectorID for the sector 0 (automatic) vs sector != 0
+	// (manual, e.g. underground levels) distinction.
+	//--------------------------------------------------------------------------------
+	ICF bool							IsStreamingEnabled	() const { return StreamingFormat && StreamingFormat->IsStreamed(); }
+	ICF float							GetStreamTileSize	() const { return StreamingFormat ? StreamingFormat->GetTileSize() : 0.f; }
+	void								GetStreamedSectorIDs( xr_vector<u32>& OutIDs ) const;
+
+	ICF const xr_vector<CDB::MODEL*>&	GetActiveStreamedModels() const { return ActiveStreamedModels; }
+
+	bool								IsStreamedTileLoaded( s32 TileX, s32 TileZ ) const;
+	bool								IsStreamedSectorLoaded( u32 SectorID ) const;
+
+	// Loads/unloads a single N*N meter automatic-streaming (sector 0) tile. Returns false if
+	// streaming isn't enabled for this level, the tile has no geometry, or it is already
+	// loaded/unloaded.
+	bool								LoadStreamedTile	( s32 TileX, s32 TileZ );
+	bool								UnloadStreamedTile	( s32 TileX, s32 TileZ );
+
+	// Loads/unloads a whole manually-streamed (sector != 0) chunk of collision geometry.
+	bool								LoadStreamedSector	( u32 SectorID );
+	bool								UnloadStreamedSector( u32 SectorID );
+
+	void								UnloadAllStreamedTiles();
+
+	// Simple automatic distance-based streaming hook for sector 0 tiles: loads every tile
+	// within LoadRadius of ViewerPosition and unloads every currently-loaded tile further
+	// than UnloadRadius away. Manually-streamed sectors (!=0) are never touched by this call.
+	void								UpdateStreaming		( const Fvector& ViewerPosition, float LoadRadius, float UnloadRadius );
 
 	// Debugging
 #ifdef DEBUG

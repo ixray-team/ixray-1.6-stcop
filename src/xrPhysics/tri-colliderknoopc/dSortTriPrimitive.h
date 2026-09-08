@@ -111,7 +111,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(
 	box.setb(cast_fv(p), AABB);
 
 	//VERIFY( g_pGameLevel );
-	auto& Model = *inl_ph_world().ObjectSpace().GetStaticModel();
+	auto& OS = inl_ph_world().ObjectSpace();
 	if (no_last_pos || !last_box.contains(box))
 	{
 		Fvector aabb;
@@ -120,7 +120,17 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		thread_local CDB::COLLIDER XRC;
 		XRC.box_options(0);
-		XRC.box_query(&Model, cast_fv(p), aabb);
+		if (OS.IsStreamingEnabled())
+		{
+			auto Model = OS.GetStaticStreamedTileModel(cast_fv(p));
+			if (Model)
+			{
+				XRC.box_query(Model, cast_fv(p), aabb);
+			}
+		} else
+		{
+			XRC.box_query(OS.GetStaticModel(), cast_fv(p), aabb);
+		}
 
 #ifdef DEBUG
 

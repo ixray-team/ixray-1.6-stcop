@@ -3862,7 +3862,14 @@ void LevelInspector::DrawCFORM()
 				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
 				{
 					xrc.ray_options(CDB::OPT_ONLYNEAREST);
-					xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(), Device.vCameraPosition, Device.vCameraDirection);
+					if (g_pGameLevel->ObjectSpace.IsStreamingEnabled())
+					{
+						xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticStreamedTileModel(Device.vCameraPosition), Device.vCameraPosition, Device.vCameraDirection);
+					}
+					else
+					{
+						xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(), Device.vCameraPosition, Device.vCameraDirection);
+					}
 					if (!xrc.r_vec().empty())
 					{
 						selected_prim = xrc.r_vec()[0];
@@ -3883,150 +3890,164 @@ void LevelInspector::DrawCFORM()
 				static float max_dist; max_dist = g_pGamePersistent->Environment().CurrentEnv->fog_distance;
 				static CFrustum ViewBaseCopy; ViewBaseCopy = Render->ViewBase;
 
-				xrc.custom_query(g_pGameLevel->ObjectSpace.GetStaticModel(),
-				[](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, const CDB::BVHNode& Node, void* ptr)
+				auto query_func = [&](CDB::MODEL* Model)
 				{
-					LevelInspector* LE = (LevelInspector*)ptr;
-
-					Fbox WorldAABB;
-					WorldAABB.invalidate();
-					if (Node.GetParent())
+					xrc.custom_query(Model,
+					[](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, const CDB::BVHNode& Node, void* ptr)
 					{
-						auto Parent = Node.GetParent();
-						for (size_t i = 0; i < Parent->GetSize(); ++i)
+						LevelInspector* LE = (LevelInspector*)ptr;
+
+						Fbox WorldAABB;
+						WorldAABB.invalidate();
+						if (Node.GetParent())
 						{
-							if (Parent->GetElement(i).p == &Node)
+							auto Parent = Node.GetParent();
+							for (size_t i = 0; i < Parent->GetSize(); ++i)
+							{
+								if (Parent->GetElement(i).p == &Node)
+								{
+									for (int j = 0; j < 8; ++j)
+									{
+										Fvector p;
+										Parent->GetAABB(i).getpoint(j, p);
+										ToWorldTransform.transform_tiny(p);
+										WorldAABB.modify(p);
+									}
+									break;
+								}
+							}
+						} else
+						{
+							for (size_t i = 0; i < Node.GetSize(); ++i)
 							{
 								for (int j = 0; j < 8; ++j)
 								{
 									Fvector p;
-									Parent->GetAABB(i).getpoint(j, p);
+									Node.GetAABB(i).getpoint(j, p);
 									ToWorldTransform.transform_tiny(p);
 									WorldAABB.modify(p);
 								}
-								break;
 							}
 						}
-					} else
-					{
-						for (size_t i = 0; i < Node.GetSize(); ++i)
+						Fvector center, extents;
+						WorldAABB.get_CD(center, extents);
+						const Fvector& cam_pos = Device.vCameraPosition;
+						float distsqr = cam_pos.distance_to_sqr(center) + EPS;
+						float radius = extents.magnitude();
+						if (radius / distsqr <= LE->cform_ssa || distsqr > _sqr(max_dist + radius))
 						{
-							for (int j = 0; j < 8; ++j)
-							{
-								Fvector p;
-								Node.GetAABB(i).getpoint(j, p);
-								ToWorldTransform.transform_tiny(p);
-								WorldAABB.modify(p);
-							}
+							return false;
 						}
-					}
-					Fvector center, extents;
-					WorldAABB.get_CD(center, extents);
-					const Fvector& cam_pos = Device.vCameraPosition;
-					float distsqr = cam_pos.distance_to_sqr(center) + EPS;
-					float radius = extents.magnitude();
-					if (radius / distsqr <= LE->cform_ssa || distsqr > _sqr(max_dist + radius))
-					{
-						return false;
-					}
 
-					auto Copy = mask;
-					if (fcvNone == Render->ViewBase.testAABB(WorldAABB.data(), Copy))
-					{
-						return false;
-					}
-					
-					for (int i = 0; i < Node.GetSize(); ++i)
-					{
-						// TODO: Инстансы потом
-						bool IsLeaf = !Node.HasNode(i);
-						if (LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) 
-							&& (IsLeaf || LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_ALL)) 
-							&& !Node.GetAABB(i).contains(cam_pos))
+						auto Copy = mask;
+						if (fcvNone == ViewBaseCopy.testAABB(WorldAABB.data(), Copy))
 						{
-							Fvector vertices[8];
-							if (IsLeaf)
+							return false;
+						}
+					
+						for (int i = 0; i < Node.GetSize(); ++i)
+						{
+							// TODO: Инстансы потом
+							bool IsLeaf = !Node.HasNode(i);
+							if (LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) 
+								&& (IsLeaf || LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_ALL)) 
+								&& !Node.GetAABB(i).contains(cam_pos))
 							{
-								if (Node.GetElement(i).IsInstance)
+								Fvector vertices[8];
+								if (IsLeaf)
 								{
-									auto& Inst = Model.get_instances()[Node.GetElement(i).Index];
-									for (int j = 0; j < 8; ++j)
+									if (Node.GetElement(i).IsInstance)
 									{
-										Inst.GlobalAABB.getpoint(j, vertices[j]);
-										ToWorldTransform.transform_tiny(vertices[j]);
+										auto& Inst = Model.get_instances()[Node.GetElement(i).Index];
+										for (int j = 0; j < 8; ++j)
+										{
+											Inst.GlobalAABB.getpoint(j, vertices[j]);
+											ToWorldTransform.transform_tiny(vertices[j]);
+										}
+									} else
+									{
+										Fbox ChildAABB = Node.GetAABB(i);
+										auto& Tris = Model.get_tris()[Node.GetElement(i).Index];
+										ToWorldTransform.transform_tiny(vertices[0], Model.get_verts()[Tris.verts[0]]);
+										ToWorldTransform.transform_tiny(vertices[1], Model.get_verts()[Tris.verts[1]]);
+										ToWorldTransform.transform_tiny(vertices[2], Model.get_verts()[Tris.verts[2]]);
+										ChildAABB.modify(vertices[0]);
+										ChildAABB.modify(vertices[1]);
+										ChildAABB.modify(vertices[2]);
+										for (int j = 0; j < 8; j++)
+										{
+											ChildAABB.getpoint(j, vertices[j]);
+										}
 									}
-								} else
+								}
+								else
 								{
-									Fbox ChildAABB = Node.GetAABB(i);
-									auto& Tris = Model.get_tris()[Node.GetElement(i).Index];
-									ToWorldTransform.transform_tiny(vertices[0], Model.get_verts()[Tris.verts[0]]);
-									ToWorldTransform.transform_tiny(vertices[1], Model.get_verts()[Tris.verts[1]]);
-									ToWorldTransform.transform_tiny(vertices[2], Model.get_verts()[Tris.verts[2]]);
-									ChildAABB.modify(vertices[0]);
-									ChildAABB.modify(vertices[1]);
-									ChildAABB.modify(vertices[2]);
 									for (int j = 0; j < 8; j++)
 									{
-										ChildAABB.getpoint(j, vertices[j]);
+										Node.GetAABB(i).getpoint(j, vertices[j]);
+										ToWorldTransform.transform_tiny(vertices[j]);
+									}
+								}
+
+								constexpr size_t line_count = std::size(aabb_lindices);
+								constexpr size_t tri_count = std::size(aabb_tindices);
+								for (size_t j = 0; j < std::max(line_count, tri_count); ++j)
+								{
+									if (j < tri_count)
+									{
+										temp_prims[prims_calc].temp_tris.push_back({
+											vertices[aabb_tindices[j].i1], 
+											vertices[aabb_tindices[j].i2], 
+											vertices[aabb_tindices[j].i3],
+											positionToColorWithAlpha(center) });
+									}
+									if (j < line_count)
+									{
+										temp_prims[prims_calc].temp_lines.push_back({
+											vertices[aabb_lindices[j].i1], 
+											vertices[aabb_lindices[j].i2],
+											color_rgba(10, 10, 10, 122) });
 									}
 								}
 							}
-							else
-							{
-								for (int j = 0; j < 8; j++)
-								{
-									Node.GetAABB(i).getpoint(j, vertices[j]);
-									ToWorldTransform.transform_tiny(vertices[j]);
-								}
-							}
-
-							constexpr size_t line_count = std::size(aabb_lindices);
-							constexpr size_t tri_count = std::size(aabb_tindices);
-							for (size_t j = 0; j < std::max(line_count, tri_count); ++j)
-							{
-								if (j < tri_count)
-								{
-									temp_prims[prims_calc].temp_tris.push_back({
-										vertices[aabb_tindices[j].i1], 
-										vertices[aabb_tindices[j].i2], 
-										vertices[aabb_tindices[j].i3],
-										positionToColorWithAlpha(center) });
-								}
-								if (j < line_count)
-								{
-									temp_prims[prims_calc].temp_lines.push_back({
-										vertices[aabb_lindices[j].i1], 
-										vertices[aabb_lindices[j].i2],
-										color_rgba(10, 10, 10, 122) });
-								}
-							}
 						}
-					}
-					return true;
-				}, this,
-				m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS) ?
-				[](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, CDB::ElementID InPrim, void* ptr)
-				{
-					VERIFY(InPrim.IsNotPointer);
-					if ((selected_prim.model == &Model && selected_prim.tris_id == InPrim.Index) || InPrim.IsInstance)
+						return true;
+					}, this,
+					m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS) ?
+					[](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, CDB::ElementID InPrim, void* ptr)
 					{
-						return;
+						VERIFY(InPrim.IsNotPointer);
+						if ((selected_prim.model == &Model && selected_prim.tris_id == InPrim.Index) || InPrim.IsInstance)
+						{
+							return;
+						}
+
+						auto& StaticTris = Model.tris;
+						auto& verts = Model.verts;
+						auto& TriVerts = StaticTris[InPrim.Index].verts;
+						Fvector tri_verts[3];
+						ToWorldTransform.transform_tiny(tri_verts[0], verts[TriVerts[0]]);
+						ToWorldTransform.transform_tiny(tri_verts[1], verts[TriVerts[1]]);
+						ToWorldTransform.transform_tiny(tri_verts[2], verts[TriVerts[2]]);
+
+						temp_prims[prims_calc].temp_tris.push_back({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(100, 100, 100, 45) });
+						temp_prims[prims_calc].temp_lines.push_back({ tri_verts[0], tri_verts[1], color_rgba(20, 20, 20, 255) });
+						temp_prims[prims_calc].temp_lines.push_back({ tri_verts[0], tri_verts[2], color_rgba(20, 20, 20, 255) });
+						temp_prims[prims_calc].temp_lines.push_back({ tri_verts[2], tri_verts[1], color_rgba(20, 20, 20, 255) });
+
+					} : nullptr, nullptr);
+				};
+				if (g_pGameLevel->ObjectSpace.IsStreamingEnabled())
+				{
+					auto Copy = g_pGameLevel->ObjectSpace.GetActiveStreamedModels();
+					for (auto Model : Copy)
+					{
+						query_func(Model);
 					}
-
-					auto& StaticTris = Model.tris;
-					auto& verts = Model.verts;
-					auto& TriVerts = StaticTris[InPrim.Index].verts;
-					Fvector tri_verts[3];
-					ToWorldTransform.transform_tiny(tri_verts[0], verts[TriVerts[0]]);
-					ToWorldTransform.transform_tiny(tri_verts[1], verts[TriVerts[1]]);
-					ToWorldTransform.transform_tiny(tri_verts[2], verts[TriVerts[2]]);
-
-					temp_prims[prims_calc].temp_tris.push_back({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(100, 100, 100, 45) });
-					temp_prims[prims_calc].temp_lines.push_back({ tri_verts[0], tri_verts[1], color_rgba(20, 20, 20, 255) });
-					temp_prims[prims_calc].temp_lines.push_back({ tri_verts[0], tri_verts[2], color_rgba(20, 20, 20, 255) });
-					temp_prims[prims_calc].temp_lines.push_back({ tri_verts[2], tri_verts[1], color_rgba(20, 20, 20, 255) });
-
-				} : nullptr, nullptr);
+				} else
+				{
+					query_func(g_pGameLevel->ObjectSpace.GetStaticModel());
+				}
 				task_finished.store(true);
 			});
 		}

@@ -203,14 +203,16 @@ const char* lightmap_resolution[] = { "1024", "2048", "4096", "8192", "16384"};
 
 const char* cform_types[] = {
 	magic_enum::enum_name<CFormVersions>(CFormVersions::Vanilla).data(),
-	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data()
+	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data(),
+	magic_enum::enum_name<CFormVersions>(CFormVersions::Streamed).data()
 };
 const char* cform_types_external[] = {
 	magic_enum::enum_name<CFormVersions>(CFormVersions::Instanced).data(),
-	magic_enum::enum_name<CFormVersions>(CFormVersions::InstancedChunked).data()
+	magic_enum::enum_name<CFormVersions>(CFormVersions::InstancedChunked).data(),
+	magic_enum::enum_name<CFormVersions>(CFormVersions::StreamedInstanced).data()
 };
 constexpr int cform_types_num = std::size(cform_types);
-constexpr int cform_types_external_num = std::size(cform_types);
+constexpr int cform_types_external_num = std::size(cform_types_external);
 
 const char* geom_types[] = {
 	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Vanilla).data(),
@@ -254,11 +256,12 @@ void DrawLCConfig()
 			gCompilerMode.LC_GeomType = type.value();
 		}
 		
-		ImGui::BeginDisabled(gCompilerMode.LC_GeomType != GeomVanillaType::Chunked);
-		ImGui::SetNextItemWidth(100);
-		ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_GeomChunkSize);
-		gCompilerMode.LC_GeomChunkSize = std::max(gCompilerMode.LC_GeomChunkSize, 1);
-		ImGui::EndDisabled();
+		if (gCompilerMode.LC_GeomType == GeomVanillaType::Chunked)
+		{
+			ImGui::SetNextItemWidth(100);
+			ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_GeomChunkSize);
+			gCompilerMode.LC_GeomChunkSize = std::max(gCompilerMode.LC_GeomChunkSize, 1);
+		}
 		ImGui::PopID();
 
 		ImGui::Separator();
@@ -291,12 +294,25 @@ void DrawLCConfig()
 				gCompilerMode.LC_CformType = type.value();
 			}
 		}
-		
-		ImGui::BeginDisabled(gCompilerMode.LC_CformType != CFormVersions::VanillaChunked || gCompilerMode.LC_CformType == CFormVersions::InstancedChunked);
-		ImGui::SetNextItemWidth(100);
-		ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_CFormChunkSize);
-		gCompilerMode.LC_CFormChunkSize = std::max(gCompilerMode.LC_CFormChunkSize, 1);
-		ImGui::EndDisabled();
+
+		switch (gCompilerMode.LC_CformType)
+		{
+			case CFormVersions::VanillaChunked:
+			{
+				ImGui::SetNextItemWidth(100);
+				ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_CFormChunkSize);
+				gCompilerMode.LC_CFormChunkSize = std::max(gCompilerMode.LC_CFormChunkSize, 1);
+				break;
+			}
+			case CFormVersions::Streamed:
+			case CFormVersions::StreamedInstanced:
+			{
+				ImGui::SetNextItemWidth(100);
+				ImGui::InputInt("Tile size (m)", &gCompilerMode.LC_CFormTileSize);
+				gCompilerMode.LC_CFormTileSize = std::max(gCompilerMode.LC_CFormTileSize, 10);
+				break;
+			}
+		}
 		ImGui::PopID();
  
 		ImGui::Separator();

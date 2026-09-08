@@ -17,6 +17,7 @@ namespace CDB::Internal
 			Node->GetAABB(i).invalidate();
 			Node->GetElement(i).p = nullptr;
 		}
+		*((BuilderConfig::Data*)userPtr)->Ptr = Node;
 		return Node;
 	}
 

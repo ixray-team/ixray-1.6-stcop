@@ -65,6 +65,11 @@ public:
 	CObjectSpace				ObjectSpace;
 	CCameraManager&				Cameras			()				{return *m_pCameras;};
 
+	// Automatic streaming tuning (see CObjectSpace::UpdateStreaming(), called from OnFrame()
+	// whenever ObjectSpace.IsStreamingEnabled() is true for the loaded level).
+	float						StreamingLoadRadius		= 250.f;
+	float						StreamingUnloadRadius	= 300.f;
+
 	bool						bReady;
 	bool						UseSnowmask = true;
 

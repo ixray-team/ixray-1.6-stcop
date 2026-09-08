@@ -66,6 +66,7 @@ class CSector :
 	void 			OnDestroy	();
     void			UpdateVolume();
 public:
+	u32 CollisionStreamingID = 0;
 	u8    			m_map_idx;
 
 					CSector		(LPVOID data, const char* name);

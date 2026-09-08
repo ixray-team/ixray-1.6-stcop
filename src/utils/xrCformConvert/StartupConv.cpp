@@ -88,6 +88,7 @@ void StartupLevel()
 					xr_vector<Fvector> Verts;
 					xr_vector<CDB::TRI> Tris;
 					CForm->GetStaticGeom(Verts, Tris);
+					CForm.reset();
 			
 					XRay::CForm::CFormatVanilla TargetCForm;
 					TargetCForm.AddStaticGeom(Verts, Tris);
@@ -99,6 +100,7 @@ void StartupLevel()
 					xr_vector<Fvector> Verts;
 					xr_vector<CDB::TRI> Tris;
 					CForm->GetStaticGeom(Verts, Tris);
+					CForm.reset();
 
 					size_t mem_bytes = Tris.size()*sizeof(CDB::TRI) + Verts.size()*sizeof(Fvector);
 					u32 Number = (mem_bytes / (1024ull*1024ull)) / CFormConverter::GetConverterSettings().LC_CFormChunkSize;
@@ -113,6 +115,19 @@ void StartupLevel()
 						TargetCForm.AddStaticGeom(Verts, Tris);
 						XRay::CForm::Write(prjName.c_str(), TargetCForm);
 					}
+					break;
+				}
+				case CFormVersions::Streamed:
+				{
+					xr_vector<Fvector> Verts;
+					xr_vector<CDB::TRI> Tris;
+					CForm->GetStaticGeom(Verts, Tris);
+					CForm.reset();
+			
+					XRay::CForm::CFormatStreamed TargetCForm;
+					TargetCForm.SetTileSize(CFormConverter::GetConverterSettings().LC_CFormTileSize);
+					TargetCForm.AddStaticGeom(Verts, Tris);
+					XRay::CForm::Write(prjName.c_str(), TargetCForm);
 					break;
 				}
 				default:

@@ -151,11 +151,12 @@ struct b_mu_model
 */
 struct b_mu_reference
 {
-	u32					model_index;
-    Fmatrix				transform;
-    Flags32				flags;
-	u16					sector;
-    u32					reserved	[8];
+	u32 model_index;
+    Fmatrix transform;
+    Flags32 flags;
+	u16 sector;
+	u32 CollisionStreamingSector;
+    u32 reserved[7];
 };
 
 struct b_mu_mesh_lods

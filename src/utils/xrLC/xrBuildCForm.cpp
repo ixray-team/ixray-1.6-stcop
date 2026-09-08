@@ -175,6 +175,13 @@ void CBuild::BuildCForm	()
 			}
 			break;
 		}
+	case CFormVersions::Streamed:
+		{
+			auto Ptr = new XRay::CForm::CFormatStreamed();
+			Ptr->SetTileSize(gCompilerMode.LC_CFormTileSize);
+			FormatPtr.reset(Ptr);
+			break;
+		}
 	default:
 		{
 			FATAL("Invalid CForm type!");
@@ -310,6 +317,13 @@ void CBuild::BuildCTree()
 			FormatPtr.reset(new XRay::CForm::CFormatInstanced());
 			break;
 		}
+		case CFormVersions::StreamedInstanced:
+		{
+			auto Ptr = new XRay::CForm::CFormatStreamedInstanced();
+			Ptr->SetTileSize(gCompilerMode.LC_CFormTileSize);
+			FormatPtr.reset(Ptr);
+			break;
+		}
 		/*case CFormVersions::VanillaChunked:
 		{
 			size_t mem_bytes = CL.getTS()*sizeof(*CL.getT()) + CL.getVS()*sizeof(*CL.getV());
@@ -344,7 +358,7 @@ void CBuild::BuildCTree()
 				elem->xform.transform_tiny(gv, v);
 				GlobalAABB.modify(gv);
 			}
-			FormatPtr->AddInstanceRef(elem->model->m_name, elem->xform, GlobalAABB, elem->model->CollisionModel, elem->sector);
+			FormatPtr->AddInstanceRef(elem->model->m_name, elem->xform, GlobalAABB, elem->model->CollisionModel, elem->RenderSector, elem->CollisionStreamingSector);
 		}
 	}
 	xr_stack_string_path level_path = pBuild->path;
