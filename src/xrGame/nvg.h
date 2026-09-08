@@ -49,7 +49,7 @@ public:
 	void OnItemToSlot();
 	void OnItemDrop();
 
-	bool OnVNGPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox);
+	bool FillUseActions(CUIPropertiesBox* box, const UseActionContext& context) override;
 	bool OnVNGPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
