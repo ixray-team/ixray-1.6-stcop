@@ -25,10 +25,9 @@ float r_ssaGLOD_start;
 float r_ssaGLOD_end;
 float r_ssaHZBvsTEX;
 
-ICF bool R4FullDetailRejectStatic(dxRender_Visual* pVisual)
+ICF bool FullDetailRejectStatic(dxRender_Visual* pVisual)
 {
-#if RENDER == R_R4
-	if (ps_r4_full_detail_distance_scale >= 1.f ||
+	if (ps_r1_full_detail_distance_scale >= 1.f ||
 		RImplementation.phase != CRender::PHASE_NORMAL ||
 		pVisual->IsIgnoreOptimize || !g_pGamePersistent ||
 		!g_pGamePersistent->Environment().CurrentEnv)
@@ -46,7 +45,7 @@ ICF bool R4FullDetailRejectStatic(dxRender_Visual* pVisual)
 	}
 
 	const float far_plane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
-	const float full_detail_distance = std::max(100.f, far_plane * ps_r4_full_detail_distance_scale);
+	const float full_detail_distance = std::max(100.f, far_plane * ps_r1_full_detail_distance_scale);
 	const float dist_sq = Device.vCameraPosition.distance_to_sqr(pVisual->vis.sphere.P) + EPS;
 	const float nearest_distance = _sqrt(dist_sq) - pVisual->vis.sphere.R;
 	if (nearest_distance <= full_detail_distance)
@@ -56,9 +55,6 @@ ICF bool R4FullDetailRejectStatic(dxRender_Visual* pVisual)
 	const float transition = clampr((nearest_distance - full_detail_distance) / transition_range, 0.f, 1.f);
 	const float ssa = pVisual->vis.sphere.R / dist_sq;
 	return ssa <= r_ssaDISCARD * (1.f + transition * 11.f);
-#else
-	return false;
-#endif
 }
 
 // Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
@@ -622,7 +618,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 	for(dxRender_Visual* pVisual : children)
 	{
 		vis_data& vis = pVisual->vis;
-		if (R4FullDetailRejectStatic(pVisual))
+		if (FullDetailRejectStatic(pVisual))
 			continue;
 
 #if RENDER!=R_R1
@@ -679,7 +675,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 	if (fcvNone==VIS)		
 		return;
 
-	if (R4FullDetailRejectStatic(pVisual))
+	if (FullDetailRejectStatic(pVisual))
 		return;
 #if RENDER!=R_R1
 	if(phase==CRender::PHASE_NORMAL)
