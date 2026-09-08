@@ -25,6 +25,42 @@ float r_ssaGLOD_start;
 float r_ssaGLOD_end;
 float r_ssaHZBvsTEX;
 
+ICF bool R4FullDetailRejectStatic(dxRender_Visual* pVisual)
+{
+#if RENDER == R_R4
+	if (ps_r4_full_detail_distance_scale >= 1.f ||
+		RImplementation.phase != CRender::PHASE_NORMAL ||
+		pVisual->IsIgnoreOptimize || !g_pGamePersistent ||
+		!g_pGamePersistent->Environment().CurrentEnv)
+		return false;
+
+	switch (pVisual->Type)
+	{
+	case MT_LOD:
+	//case MT_LOD1:
+	//case MT_LOD2:
+	//case MT_LOD3:
+	//case MT_LOD4:
+	//case MT_MESH_LODS:
+		return false;
+	}
+
+	const float far_plane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
+	const float full_detail_distance = std::max(100.f, far_plane * ps_r4_full_detail_distance_scale);
+	const float dist_sq = Device.vCameraPosition.distance_to_sqr(pVisual->vis.sphere.P) + EPS;
+	const float nearest_distance = _sqrt(dist_sq) - pVisual->vis.sphere.R;
+	if (nearest_distance <= full_detail_distance)
+		return false;
+
+	const float transition_range = std::max(1.f, far_plane - full_detail_distance);
+	const float transition = clampr((nearest_distance - full_detail_distance) / transition_range, 0.f, 1.f);
+	const float ssa = pVisual->vis.sphere.R / dist_sq;
+	return ssa <= r_ssaDISCARD * (1.f + transition * 11.f);
+#else
+	return false;
+#endif
+}
+
 // Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
 ICF float GetDistFromCamera(const Fvector& from_position)
 {
@@ -586,6 +622,8 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 	for(dxRender_Visual* pVisual : children)
 	{
 		vis_data& vis = pVisual->vis;
+		if (R4FullDetailRejectStatic(pVisual))
+			continue;
 
 #if RENDER!=R_R1
 		if (RI.phase == CRender::PHASE_NORMAL)
@@ -639,6 +677,9 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 	vis_data& vis = pVisual->vis;
 	VIS = View->testSAABB(vis.sphere.P,vis.sphere.R,vis.box.data(),planes);
 	if (fcvNone==VIS)		
+		return;
+
+	if (R4FullDetailRejectStatic(pVisual))
 		return;
 #if RENDER!=R_R1
 	if(phase==CRender::PHASE_NORMAL)
