@@ -15,6 +15,8 @@ class CGameObject;
 class CDangerObjectLocation : public CDangerLocation {
 private:
 	const CGameObject		*m_object;
+	u16						m_object_id;
+	mutable Fvector			m_cached_position;
 
 public:
 	IC						CDangerObjectLocation	(const CGameObject *object, u32 level_time, u32 interval, float radius, const u64 &mask = u64(-1));
