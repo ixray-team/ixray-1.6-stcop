@@ -33,8 +33,47 @@ namespace CDB
 // Triangle
 
 	RTCDevice GetEmbreeDevice();
+
+	// Old triangle for backward-compatibility
+	struct XRCORE_API TRI_Vanilla final
+	{
+		u32 verts[3];		// 3*4 = 12b
+		union	
+		{
+			u32 dummy;				// 4b
+			struct 
+			{
+				u32 material:14;		// 
+				u32 suppress_shadows:1;	// 
+				u32 suppress_wm:1;		// 
+				u32 sector:15;			//
+				u32 shared_material:1;
+			};
+		};
+	};
+
+	static_assert(sizeof(TRI_Vanilla) == 16);
 	// Triangle
-	struct XRCORE_API TRI final //*** 16 bytes total (was 32 :)
+	struct XRCORE_API TRI final //*** 20 bytes total (was 16, 32 :)
+	{
+		u32 verts[3]; // 3*4 = 12b
+		union
+		{
+			u32 dummy; // 4b
+			struct 
+			{
+				u32 material:14;		// 
+				u32 suppress_shadows:1;	// 
+				u32 suppress_wm:1;		// 
+				u32 sector:15;			//
+				u32 shared_material:1;
+			};
+		};
+	};
+
+	static_assert(sizeof(TRI_Vanilla) == 16);
+	// Triangle
+	struct XRCORE_API TRI final						//*** 16 bytes total (was 32 :)
 	{
 		u32 verts[3]; // 3*4 = 12b
 		union
@@ -49,6 +88,11 @@ namespace CDB
 				u32 shared_material:1;
 			};
 		};
+		// Streaming sector marker. 0 == automatic distance-based streaming (level split into
+		// N*N meter tiles at compile time, see CFormatStreamed/CFormatStreamedInstanced).
+		// Non-zero == manually loaded/unloaded streaming sector (e.g. underground levels),
+		// whole sector saved into its own .cform tile regardless of tile grid.
+		u32 StreamedSectorID = 0;		// 4b
 		ICF u32 IDvert(u32 ID) { return verts[ID]; }
 	};
 

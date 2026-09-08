@@ -12,6 +12,7 @@
 
 // refs
 class	CObject;
+class CObjectSpace;
 class	XRSOUND_API					CSound_params;
 class	XRSOUND_API					CSound_stream_interface;
 class	XRSOUND_API					CSound_environment;
@@ -280,13 +281,13 @@ public:
 	virtual void					set_master_volume		( float f=1.f )																			= 0;
 	virtual void					set_geometry_env		( IReader* I )																			= 0;
 	virtual void					set_geometry_som		( IReader* I )																			= 0;
-	virtual void					set_geometry_occ		( CDB::MODEL* M )																		= 0;
+	virtual void					set_geometry_occ		( CObjectSpace* M )																		= 0;
 	virtual void					set_handler				( sound_event* E )																		= 0;
 	
 	virtual CDB::COLLIDER*			get_geometry_db         ()                                                                                      = 0;
 	virtual CDB::MODEL*				get_geometry_env		()																						= 0;
 	virtual CDB::MODEL*				get_geometry_som		()																						= 0;
-	virtual CDB::MODEL*				get_geometry_occ		()																						= 0;
+	virtual CObjectSpace*			get_geometry_occ		()																						= 0;
 
 	virtual void                    debug_draw              ()                                                                                      = 0;
 	virtual void					update					( const Fmatrix& m_V, const Fvector& P, const Fvector& D, const Fvector& N)				= 0;

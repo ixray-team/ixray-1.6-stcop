@@ -1054,6 +1054,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	R.transform = obj->_Transform();
 	R.flags.zero();
 	R.sector = (u16)sect_num;
+	R.CollisionStreamingSector = S?S->CollisionStreamingID:0;
 
 	xr_stack_string256 debug_name;
 	if (obj->m_pOwnerObject)

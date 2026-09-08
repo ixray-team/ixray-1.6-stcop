@@ -154,17 +154,27 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 	{
 		return;
 	}
-	if (!m_def->IsBuilt)
 	{
-		m_def->load_task.wait();
+		PROF_EVENT("COLLIDER::ray_query::wait_check");
+		if (!m_def->IsBuilt)
+		{
+			PROF_EVENT("COLLIDER::ray_query::wait");
+			m_def->load_task.wait();
+		}
 	}
 	if (!m_def->InstaceScene)
 	{
 		return;
 	}
 	
-	r_clear();
-	r_vec().reserve(16);
+	{
+		PROF_EVENT("COLLIDER::ray_query::r_clear");
+		r_clear();
+	}
+	{
+		PROF_EVENT("COLLIDER::ray_query::reserve");
+		r_vec().reserve(16);
+	}
 	
 	struct ColliderContext : public RTCRayQueryContext
 	{

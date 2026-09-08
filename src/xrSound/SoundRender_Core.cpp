@@ -9,6 +9,7 @@
 #include "../xrEngine/IRenderable.h"
 #include "Recorder/SoundVoiceChat.h"
 #include "ai_sounds.h"
+#include "Collision/xr_area.h"
 #include "Collision/override/Model.h"
 
 using namespace XRay::Sound;
@@ -113,17 +114,42 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 		if (bNeedFullTest)
 		{
 			geom_DB.ray_options(CDB::OPT_ONLYNEAREST);
-			geom_DB.ray_query(geom_MODEL, base, dir, range);
-			if (0 != geom_DB.r_count())
+			if (!geom_MODEL->IsStreamingEnabled())
 			{
-				// cache polygon
-				const CDB::RESULT& R_ = geom_DB.r_any();
-				const CDB::TRI& T = R_.model->tris[R_.tris_id];
-				const xr_vector<Fvector>& V = R_.model->verts;
-				R_.ModelWorldTransform.transform_tiny(occ[0], V[T.verts[0]]);
-				R_.ModelWorldTransform.transform_tiny(occ[1], V[T.verts[1]]);
-				R_.ModelWorldTransform.transform_tiny(occ[2], V[T.verts[2]]);
-				occ_value = OcclusionMaterialCallback(T.material);
+				geom_DB.ray_query(geom_MODEL->GetStaticModel(), base, dir, range);
+				if (0 != geom_DB.r_count())
+				{
+					// cache polygon
+					const CDB::RESULT& R_ = geom_DB.r_any();
+					const CDB::TRI& T = R_.model->tris[R_.tris_id];
+					const xr_vector<Fvector>& V = R_.model->verts;
+					R_.ModelWorldTransform.transform_tiny(occ[0], V[T.verts[0]]);
+					R_.ModelWorldTransform.transform_tiny(occ[1], V[T.verts[1]]);
+					R_.ModelWorldTransform.transform_tiny(occ[2], V[T.verts[2]]);
+					occ_value = OcclusionMaterialCallback(T.material);
+				}
+			} else
+			{
+				for (auto elem : geom_MODEL->GetActiveStreamedModels())
+				{
+					if (!elem->IsBuilt)
+					{
+						continue;
+					}
+					geom_DB.ray_query(elem, base, dir, range);
+					if (0 != geom_DB.r_count())
+					{
+						// cache polygon
+						const CDB::RESULT& R_ = geom_DB.r_any();
+						const CDB::TRI& T = R_.model->tris[R_.tris_id];
+						const xr_vector<Fvector>& V = R_.model->verts;
+						R_.ModelWorldTransform.transform_tiny(occ[0], V[T.verts[0]]);
+						R_.ModelWorldTransform.transform_tiny(occ[1], V[T.verts[1]]);
+						R_.ModelWorldTransform.transform_tiny(occ[2], V[T.verts[2]]);
+						occ_value = OcclusionMaterialCallback(T.material);
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -274,7 +300,7 @@ CDB::MODEL*CSoundRender_Core::get_geometry_som()
 	return geom_SOM;
 }
 
-CDB::MODEL* CSoundRender_Core::get_geometry_occ()
+CObjectSpace* CSoundRender_Core::get_geometry_occ()
 {
 	return geom_MODEL;
 }
@@ -284,7 +310,7 @@ void CSoundRender_Core::set_handler(sound_event* E)
 	Handler = E;
 }
 
-void CSoundRender_Core::set_geometry_occ(CDB::MODEL* M)
+void CSoundRender_Core::set_geometry_occ(CObjectSpace* M)
 {
 	geom_MODEL = M;
 }

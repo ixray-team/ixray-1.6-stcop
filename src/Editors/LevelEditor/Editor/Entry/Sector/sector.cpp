@@ -1,13 +1,16 @@
 #include "stdafx.h"
 
-#define SECTOR_VERSION   					0x0012
+constexpr u32 SECTOR_VERSION = 0x0012;
 
-#define SECTOR_CHUNK_VERSION				0xF010
-#define SECTOR_CHUNK_COLOR					0xF020
-#define SECTOR_CHUNK_PRIVATE				0xF025
-#define SECTOR_CHUNK_ITEMS					0xF030
-#define 	SECTOR_CHUNK_ONE_ITEM			0xF031
-#define 	SECTOR_CHUNK_MAP_IDX			0xF032
+enum class SectorChunks : u32{
+	VERSION = 0xF010,
+	COLOR = 0xF020,
+	PRIVATE = 0xF025,
+	ITEMS = 0xF030,
+	ONE_ITEM = 0xF031,
+	MAP_IDX = 0xF032,
+	COLLISION_STREAMING_ID,
+};
 
 CSectorItem::CSectorItem()
 {
@@ -428,7 +431,7 @@ void CSector::LoadSectorDef(IReader* F)
 	CSectorItem sitem;
 
 	// sector item
-	R_ASSERT(F->find_chunk(SECTOR_CHUNK_ONE_ITEM));
+	R_ASSERT(F->find_chunk(SectorChunks::ONE_ITEM));
 	F->r_stringZ(o_name, sizeof(o_name));
 	sitem.object = (CSceneObject*)Scene->FindObjectByName(o_name, OBJCLASS_SCENEOBJECT);
 	if (sitem.object == NULL)
@@ -528,6 +531,8 @@ bool CSector::LoadLTX(CInifile& ini, const char* sect_name)
 
 	if(version>=0x0012)
 		m_map_idx 				= ini.r_u8(sect_name, "change_map_to_idx");
+	
+	CollisionStreamingID = ini.read_if_exists<u32>(sect_name, "CollisionStreamingID", 0);
 		
 	if (sector_items.empty()) return false;
 
@@ -559,6 +564,7 @@ void CSector::SaveLTX(CInifile& ini, const char* sect_name)
 			++count;
 	}
 	ini.w_u8(sect_name, "change_map_to_idx", m_map_idx);
+	ini.w_u32(sect_name, "CollisionStreamingID", CollisionStreamingID);
 	
 }
 
@@ -567,7 +573,7 @@ bool CSector::LoadStream(IReader& F)
 	u16 version = 0;
 
 	char buf[1024];
-	R_ASSERT(F.r_chunk(SECTOR_CHUNK_VERSION,&version));
+	R_ASSERT(F.r_chunk(SectorChunks::VERSION,&version));
 	if( version!=0x0011 ){
 		ELog.Msg( mtError, "CSector: Unsupported version.");
 		return false;
@@ -575,13 +581,13 @@ bool CSector::LoadStream(IReader& F)
 
 	CCustomObject::LoadStream(F);
 
-	R_ASSERT(F.r_chunk(SECTOR_CHUNK_COLOR,&sector_color));
+	R_ASSERT(F.r_chunk(SectorChunks::COLOR,&sector_color));
 
-	R_ASSERT(F.find_chunk(SECTOR_CHUNK_PRIVATE));
+	R_ASSERT(F.find_chunk(SectorChunks::PRIVATE));
 	m_bDefault 		= F.r_u8();
 
 	// Objects
-	IReader* OBJ 	= F.open_chunk(SECTOR_CHUNK_ITEMS);
+	IReader* OBJ 	= F.open_chunk(SectorChunks::ITEMS);
 	if(OBJ){
 		IReader* O   	= OBJ->open_chunk(0);
 		for (int count=1; O; count++) {
@@ -592,8 +598,15 @@ bool CSector::LoadStream(IReader& F)
 		OBJ->close();
 	}
 
-	if(F.find_chunk	(SECTOR_CHUNK_MAP_IDX))
-		m_map_idx		= F.r_u8();
+	if(F.find_chunk	(SectorChunks::MAP_IDX))
+	{
+		m_map_idx = F.r_u8();
+	}
+	
+	if (F.find_chunk(SectorChunks::COLLISION_STREAMING_ID))
+	{
+		CollisionStreamingID = F.r_u32();
+	}
 
 	if (sector_items.empty()) return false;
 
@@ -605,21 +618,21 @@ void CSector::SaveStream(IWriter& F)
 {
 	CCustomObject::SaveStream(F);
 
-	F.open_chunk	(SECTOR_CHUNK_VERSION);
+	F.open_chunk	(SectorChunks::VERSION);
 	F.w_u16			(SECTOR_VERSION);
 	F.close_chunk	();
 
-	F.w_chunk		(SECTOR_CHUNK_COLOR,&sector_color,sizeof(Fcolor));
+	F.w_chunk		(SectorChunks::COLOR,&sector_color,sizeof(Fcolor));
 
-	F.open_chunk	(SECTOR_CHUNK_PRIVATE);
+	F.open_chunk	(SectorChunks::PRIVATE);
 	F.w_u8			(m_bDefault);
 	F.close_chunk	();
 
-	F.open_chunk	(SECTOR_CHUNK_ITEMS);
+	F.open_chunk	(SectorChunks::ITEMS);
 	int count=0;
 	for(SItemIt it=sector_items.begin(); it!=sector_items.end(); it++){
 		F.open_chunk(count); count++;
-			F.open_chunk	(SECTOR_CHUNK_ONE_ITEM);
+			F.open_chunk	(SectorChunks::ONE_ITEM);
 			F.w_stringZ		(it->object->GetName());
 			F.w_stringZ		(it->mesh->Name());
 			F.close_chunk	();
@@ -627,9 +640,14 @@ void CSector::SaveStream(IWriter& F)
 	}
 	F.close_chunk	();
 
-	F.open_chunk	(SECTOR_CHUNK_MAP_IDX);
-	F.w_u8			(m_map_idx);
-	F.close_chunk	();
+	F.open_chunk(SectorChunks::MAP_IDX);
+	F.w_u8(m_map_idx);
+	F.close_chunk();
+	
+	F.make_chunk(SectorChunks::COLLISION_STREAMING_ID, [this](IWriter& F)
+	{
+		F.w_u32(CollisionStreamingID);
+	});
 }
 
 
@@ -675,10 +693,11 @@ void CSector::FillProp(const char* pref, PropItemVec& items)
 	PHelper().CreateFColor(items, PrepareKey(pref,"Color"), &sector_color);
 	int faces, objects, meshes;
 	GetCounts(&objects,&meshes,&faces);
-	PHelper().CreateCaption(items,PrepareKey(pref,GetName(),"Contents\\Objects"),	xr_string::ToString(objects).c_str());
-	PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Meshes"), 	xr_string::ToString(meshes).c_str());
-	PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Faces"), 	xr_string::ToString(faces).c_str());
+	PHelper().CreateCaption(items, PrepareKey(pref,GetName(),"Contents\\Objects"), xr_string::ToString(objects).c_str());
+	PHelper().CreateCaption(items, PrepareKey(pref, GetName(),"Contents\\Meshes"), xr_string::ToString(meshes).c_str());
+	PHelper().CreateCaption(items, PrepareKey(pref, GetName(),"Contents\\Faces"), xr_string::ToString(faces).c_str());
 	PHelper().CreateToken8(items, PrepareKey(pref, GetName(),"Change LevelMap to"), &m_map_idx, level_sub_map);
+	PHelper().CreateU32(items, PrepareKey(pref, GetName(), "Collision streaming ID"), &CollisionStreamingID);
 }
 
 

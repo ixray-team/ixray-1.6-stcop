@@ -13,8 +13,9 @@
 #include "GameMtlLib.h"
 #include "../xrGame/AnimNotify/AnimNotifyGame.h"
 
-ENGINE_API	IGame_Level*	g_pGameLevel	= nullptr;
+ENGINE_API IGame_Level*	g_pGameLevel	= nullptr;
 extern	bool g_bLoaded;
+static bool FirstUpdate = true;
 
 IGame_Level::IGame_Level	()
 {
@@ -26,6 +27,7 @@ IGame_Level::IGame_Level	()
 	pCurrentEntity				= nullptr;
 	pCurrentViewEntity			= nullptr;
 	pCurrentControlEntity		= nullptr;
+	FirstUpdate = true;
 #ifdef DEBUG
 	if (!Device.IsEditorMode())
 	{
@@ -216,7 +218,7 @@ bool IGame_Level::Load			(u32 dwNum)
 	);
 
 	//Sound->set_geometry_occ		( &Static );
-	Sound->set_geometry_occ		(ObjectSpace.GetStaticModel	());
+	Sound->set_geometry_occ		(&ObjectSpace);
 	Sound->set_handler			( _sound_event );
 
 	pApp->LoadSwitch			();
@@ -281,7 +283,42 @@ void	IGame_Level::OnFrame		( )
 	{
 		IAnimNotifyHandler::Get().Update();
 	}
+	
+	// Automatic-streaming (sector 0) tiles: keep tiles around the camera loaded/unloaded
+	// based on distance. Manually-streamed sectors (!=0) are never touched here - use
+	// ObjectSpace.LoadStreamedSector()/UnloadStreamedSector() explicitly for those.
+	static xr_atomic_bool StreamingTaskRunning = true;
+	if (FirstUpdate)
+	{
+		StreamingTaskRunning = true;
+	}
+	auto CollisionStreamingTask = [this]()
+	{
+		PROF_EVENT("IGame_Level::OnFrame::UpdateStreaming");
+		auto Pos = Device.vCameraPosition;
+		//auto Pos = Actor()->XFORM().c;
+		ObjectSpace.UpdateStreaming(Pos, StreamingLoadRadius, StreamingUnloadRadius);
+		StreamingTaskRunning = false;
+	};
+	if (ObjectSpace.IsStreamingEnabled() && !StreamingTaskRunning)
+	{
+		StreamingTaskRunning = true;
+		Device.async_tasks.run([CollisionStreamingTask]()
+		{
+			PROF_START_THREAD("CollisionStreamingTask");
+			CollisionStreamingTask();
+			PROF_STOP_THREAD();
+		});
+	}
+
 	Objects.Update				(false);
+	
+	if (FirstUpdate)
+	{
+		CollisionStreamingTask();
+		FirstUpdate = false;
+	}
+	
 	g_hud->OnFrame				();
 
 	// Ambience

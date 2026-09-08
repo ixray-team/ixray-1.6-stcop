@@ -78,7 +78,26 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 			}
 
 			// 2. Polygon doesn't pick - real database query
-			CObjectSpaceThreadData::xrc.ray_query(&Static, start, dir, range);
+			if (!IsStreamingEnabled())
+			{
+				CObjectSpaceThreadData::xrc.ray_query(&Static, start, dir, range);
+			} else
+			{
+				// also check currently loaded streaming tiles/sectors
+				for (auto* StreamedModel : ActiveStreamedModels)
+				{
+					if (!StreamedModel->IsBuilt)
+					{
+						continue;
+					}
+					CObjectSpaceThreadData::xrc.ray_query(StreamedModel, start, dir, range);
+					auto Num = CObjectSpaceThreadData::xrc.r_count();
+					if (Num)
+					{
+						break;
+					}
+				}
+			}
 			auto Num = CObjectSpaceThreadData::xrc.r_count();
 			if (!Num) {
 				cache->set(start, dir, range, false);
@@ -101,8 +120,26 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 			}
 		}
 		else {
-			CObjectSpaceThreadData::xrc.ray_query(&Static, start, dir, range);
-			return CObjectSpaceThreadData::xrc.r_count();
+			if (!IsStreamingEnabled())
+			{
+				CObjectSpaceThreadData::xrc.ray_query(&Static, start, dir, range);
+				if (CObjectSpaceThreadData::xrc.r_count())
+				{
+					return true;
+				}
+			}
+			else
+			{
+				for (auto* StreamedModel : ActiveStreamedModels)
+				{
+					CObjectSpaceThreadData::xrc.ray_query(StreamedModel, start, dir, range);
+					if (CObjectSpaceThreadData::xrc.r_count())
+					{
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 	}
 	return false;
@@ -124,11 +161,28 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 	if (tgt & rqtStatic)
 	{
 		CObjectSpaceThreadData::xrc.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
-		CObjectSpaceThreadData::xrc.ray_query(&Static, start, dir, range);
-
-		if (CObjectSpaceThreadData::xrc.r_count())
+		if (!IsStreamingEnabled())
 		{
-			R.set_if_less(CObjectSpaceThreadData::xrc.r_any());
+			CObjectSpaceThreadData::xrc.ray_query(&Static, start, dir, range);
+
+			if (CObjectSpaceThreadData::xrc.r_count())
+			{
+				R.set_if_less(CObjectSpaceThreadData::xrc.r_any());
+			}
+		} else
+		{
+			for (auto* StreamedModel : ActiveStreamedModels)
+			{
+				if (!StreamedModel->IsBuilt)
+				{
+					continue;
+				}
+				CObjectSpaceThreadData::xrc.ray_query(StreamedModel, start, dir, R.range);
+				if (CObjectSpaceThreadData::xrc.r_count())
+				{
+					R.set_if_less(CObjectSpaceThreadData::xrc.r_any());
+				}
+			}
 		}
 	}
 
@@ -203,10 +257,28 @@ bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& 
 	if (R.tgt & s_mask)
 	{
 		CObjectSpaceThreadData::xrc.ray_options(R.flags);
-		CObjectSpaceThreadData::xrc.ray_query(&Static, R.start, R.dir, R.range);
-		for (auto& elem : CObjectSpaceThreadData::xrc.r_vec())
+		if (!IsStreamingEnabled())
 		{
-			CObjectSpaceThreadData::r_temp.append_result(rq_result().set(elem.ModelWorldTransform, *elem.model, elem.range, elem.tris_id));
+			CObjectSpaceThreadData::xrc.ray_query(&Static, R.start, R.dir, R.range);
+			for (auto& elem : CObjectSpaceThreadData::xrc.r_vec())
+			{
+				CObjectSpaceThreadData::r_temp.append_result(rq_result().set(elem.ModelWorldTransform, *elem.model, elem.range, elem.tris_id));
+			}
+		}
+		else
+		{
+			for (auto* StreamedModel : ActiveStreamedModels)
+			{
+				if (!StreamedModel->IsBuilt)
+				{
+					continue;
+				}
+				CObjectSpaceThreadData::xrc.ray_query(StreamedModel, R.start, R.dir, R.range);
+				for (auto& elem : CObjectSpaceThreadData::xrc.r_vec())
+				{
+					CObjectSpaceThreadData::r_temp.append_result(rq_result().set(elem.ModelWorldTransform, *elem.model, elem.range, elem.tris_id));
+				}
+			}
 		}
 	}
 	// Test dynamic

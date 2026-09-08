@@ -57,9 +57,16 @@ enum class CFormVersions : u32 // because old CForm version was just an 4-b int
 	Vanilla = 4,
 	VanillaChunked,
 	VanillaChunkedData,
+	Streamed,			// level cform split into N*N meter tiles (auto-streamed sector 0)
+						// + separate whole-mesh files for manual streaming sectors (!=0).
+						// Each tile/sector sub-file is itself a plain CFormatVanilla file
+						// (i.e. tagged with CFormVersions::Vanilla), the master "Streamed"
+						// header only stores the tile grid index + sector id list.
 	Instanced,
 	InstancedChunked,
-	InstancedChunkedData
+	InstancedChunkedData,
+	StreamedInstanced	// same tiling scheme, but each tile/sector sub-file is a plain
+						// CFormatInstanced file (tagged with CFormVersions::Instanced).
 };
 
 #pragma pack(push,8)

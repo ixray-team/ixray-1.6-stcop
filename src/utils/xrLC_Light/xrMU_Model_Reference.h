@@ -11,11 +11,12 @@ namespace CDB { class CollectorPacked; }
 class XRLC_LIGHT_API xrMU_Reference
 {
 public:
-	xrMU_Model*				model;
+	xrMU_Model* model;
 	u32 ModelID = u32(-1);
-    Fmatrix					xform;
-    Flags32					flags;
-	u16						sector;
+    Fmatrix xform;
+    Flags32 flags;
+	u32 CollisionStreamingSector;
+	u16 RenderSector;
 
 	xr_vector<base_color>	color;
 
@@ -28,7 +29,7 @@ public:
  	xr_concurrent_unordered_map<size_t, base_color_c> colors_cuda;
 
 public:
-							xrMU_Reference		(): model(0), sector(u16(-1)), flags(Flags32().assign(0)), xform(Fidentity){}
+							xrMU_Reference		(): model(0), RenderSector(u16(-1)), flags(Flags32().assign(0)), xform(Fidentity){}
 							~xrMU_Reference() 
 							{ 
  								colors_cuda.clear(); 

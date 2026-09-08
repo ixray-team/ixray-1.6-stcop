@@ -12,6 +12,18 @@ struct _vector2
 	T x = 0;
 	T y = 0;
 
+	template<XRay::Concepts::Arithmetic T1>
+	ICF bool operator==(_vector2<T1> ls) const
+	{
+		return x == ls.x && y == ls.y;
+	}
+
+	template<XRay::Concepts::Arithmetic T1>
+	ICF bool operator!=(_vector2<T1> ls) const
+	{
+		return x != ls.x || y != ls.y;
+	}
+
 	ICF  SelfRef set(float _u, float _v)			{ x=T(_u); y=T(_v);								return *this;	}
 	ICF  SelfRef set(double _u, double _v)			{ x=T(_u); y=T(_v);								return *this;	}
 	ICF  SelfRef set(int _u, int _v)				{ x=T(_u); y=T(_v);								return *this;	}

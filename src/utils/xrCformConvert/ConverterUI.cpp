@@ -63,15 +63,16 @@ int item_current_geom = 0;
 
 const char* cform_types[] = {
 	magic_enum::enum_name<CFormVersions>(CFormVersions::Vanilla).data(),
-	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data()
+	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data(),
+	magic_enum::enum_name<CFormVersions>(CFormVersions::Streamed).data()
 };
-constexpr int cform_types_num = sizeof(cform_types) / sizeof(cform_types[0]);
+constexpr int cform_types_num = std::size(cform_types);
 
 const char* geom_types[] = {
 	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Vanilla).data(),
 	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Chunked).data()
 };
-constexpr int geom_types_num = sizeof(geom_types) / sizeof(geom_types[0]);
+constexpr int geom_types_num = std::size(geom_types);
 
 void CFormConverter::RenderMainUI()
 {
@@ -171,11 +172,23 @@ void CFormConverter::RenderMainUI()
 					VERIFY(type.has_value());
 					GetConverterSettings().LC_CformType = type.value();
 				}
-		
-				ImGui::BeginDisabled(GetConverterSettings().LC_CformType != CFormVersions::VanillaChunked);
-				ImGui::InputInt("Chunk size (MB)", &GetConverterSettings().LC_CFormChunkSize);
-				GetConverterSettings().LC_CFormChunkSize = std::max(GetConverterSettings().LC_CFormChunkSize, 1);
-				ImGui::EndDisabled();
+
+				switch (GetConverterSettings().LC_CformType)
+				{
+					case CFormVersions::VanillaChunked:
+					{
+						ImGui::InputInt("Chunk size (MB)", &GetConverterSettings().LC_CFormChunkSize);
+						GetConverterSettings().LC_CFormChunkSize = std::max(GetConverterSettings().LC_CFormChunkSize, 1);
+						break;
+					}
+					case CFormVersions::Streamed:
+					{
+						ImGui::SetNextItemWidth(100);
+						ImGui::InputInt("Tile size (m)", &GetConverterSettings().LC_CFormTileSize);
+						GetConverterSettings().LC_CFormTileSize = std::max(GetConverterSettings().LC_CFormTileSize, 10);
+						break;
+					}
+				}
 				ImGui::PopID();
 			}
 			

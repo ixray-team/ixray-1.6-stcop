@@ -62,6 +62,10 @@ struct CompilersMode
 	CFormVersions LC_CformType = CFormVersions::Vanilla;
 	int LC_CFormChunkSize = 75;
 	int LC_GeomChunkSize = 75;
+	// Streamed CForm tile size, in meters (only used for CFormVersions::Streamed /
+	// StreamedInstanced - the mesh is split into a grid of LC_CFormTileSize*LC_CFormTileSize
+	// meter tiles for automatic (sector 0) streaming, see CDB::TRI::StreamedSectorID).
+	int LC_CFormTileSize = 100;
 	 
 	// Lightmaps
  	int  LC_BORDER = 1;
