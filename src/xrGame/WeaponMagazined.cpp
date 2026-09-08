@@ -3862,10 +3862,10 @@ bool CWeaponMagazined::install_upgrade_impl(const char* section, bool test)
 		const char* sil_ps = nullptr;
 		result |= process_if_exists_set(section, "silencer_flame_particles", sil_ps, test);
 		if(sil_ps)
-			LoadParticle(section, sil_ps, m_pFlameSilencerParticles);
+			m_sFlameSilencerParticles = sil_ps;
 		result |= process_if_exists_set(section, "silencer_smoke_particles", sil_ps, test);
 		if (sil_ps)
-			LoadParticle(section, sil_ps, m_pSmokeSilencerParticles);
+			m_sSmokeSilencerParticles = sil_ps;
 
 		result2 = process_if_exists_set(section, "snd_silncer_shot", str, test);
 		if (result2 && !test)
