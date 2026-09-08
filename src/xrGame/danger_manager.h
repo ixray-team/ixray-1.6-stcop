@@ -30,7 +30,7 @@ public:
 private:
 	DANGERS				m_objects;
 	IGNORED				m_ignored;
-	const CDangerObject	*m_selected;
+	ptrdiff_t			m_selected_index;
 	u32					m_time_line;
 
 private:

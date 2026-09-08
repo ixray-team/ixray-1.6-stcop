@@ -37,6 +37,23 @@ CShootingObject::CShootingObject(void)
 	light_render					= 0;
 }
 
+CShootingObject::~CShootingObject()
+{
+	for (auto& Particle : smoke_particles)
+	{
+		Particle->Destroy();
+	}
+
+	smoke_particles.clear();
+
+	for (auto& Particle : flame_particles)
+	{
+		Particle->Destroy();
+	}
+
+	flame_particles.clear();
+}
+
 ICF void LoadParticleStr(const char* section, const char* line, shared_str& str)
 {
 	if (pSettings->line_exist(section, line))
