@@ -265,7 +265,7 @@ void CBulletManager::Load()
 		}
 	}
 
-	List = xr_string(pSettings->r_string(bullet_manager_sect, "explode_particles")).RemoveWhitespaces().Split('i');
+	List = xr_string(pSettings->r_string(bullet_manager_sect, "explode_particles")).RemoveWhitespaces().Split(',');
 
 	for (const auto& ExplodeParticle : List)
 	{
