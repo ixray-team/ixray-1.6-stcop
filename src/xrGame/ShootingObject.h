@@ -151,8 +151,6 @@ protected:
 	virtual const Fvector&	get_CurrentShellPoint()	{ return get_CurrentFirePoint(); };
 	virtual const Fmatrix&	get_ParticlesXFORM()	{ return Fidentity; };
 
-			void			LoadParticle		(const char* section, const char* line, xr_shared_ptr<CParticlesObject>& particle);
-
 			void			StartFlameParticle();
 			void			StartSmokeParticle(const Fvector& parent_vel);
 			void			StartShellParticle(const Fvector& parent_vel);
@@ -163,14 +161,16 @@ public:
 	bool					m_bUseAimBullet;
 protected:
 
-	shared_str						m_sShellParticles;
+	shared_str m_sShellParticles;
 
-	xr_shared_ptr<CParticlesObject> m_pSmokeParticles;
-	xr_shared_ptr<CParticlesObject> m_pFlameParticles;
+	shared_str m_sSmokeParticles;
+	shared_str m_sSmokeSilencerParticles;
+	shared_str m_sSmokeGlauncherParticles;
 
-	xr_shared_ptr<CParticlesObject> m_pSmokeSilencerParticles;
-	xr_shared_ptr<CParticlesObject> m_pFlameSilencerParticles;
-	xr_shared_ptr<CParticlesObject> m_pFlameGlaucherParticles;
+	shared_str m_sFlameParticles;
+	shared_str m_sFlameSilencerParticles;
+	shared_str m_sFlameGlauncherParticles;
+	xr_vector<xr_shared_ptr<CParticlesObject>> flame_particles, smoke_particles;
 
 	ALife::_OBJECT_ID initiator_id;
 
