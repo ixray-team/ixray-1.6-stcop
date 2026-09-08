@@ -137,6 +137,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("Spawn Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SpawnManager)]);
 				ImGui::MenuItem("Weapon Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_WeaponManager)]);
 				ImGui::MenuItem("Search Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SearchManager)]);
+				ImGui::MenuItem("Graph Editor", nullptr, &States[static_cast<u8>(EditorUI::Game_GraphEditor)]);
 
 
 				//ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);

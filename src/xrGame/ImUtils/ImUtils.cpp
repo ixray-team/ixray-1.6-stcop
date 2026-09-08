@@ -76,6 +76,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("Spawn Manager", CImGuiManager::ERenderPriority::eMedium, RenderSpawnManagerWindow);
 		CImGuiManager::Instance().Subscribe("Weapon Manager", CImGuiManager::ERenderPriority::eMedium, RenderWeaponManagerWindow);
 		CImGuiManager::Instance().Subscribe("Search Manager", CImGuiManager::ERenderPriority::eMedium, RenderSearchManagerWindow);
+		CImGuiManager::Instance().Subscribe("Graph Editor", CImGuiManager::ERenderPriority::eMedium, RenderGraphEditorWindow);
 		CImGuiManager::Instance().Subscribe("OMF Editor", CImGuiManager::ERenderPriority::eMedium, RenderToolsOMFEditorWindow);
 		CImGuiManager::Instance().Subscribe("Car Editor", CImGuiManager::ERenderPriority::eMedium, RenderCarConfigEditor);
 		CImGuiManager::Instance().Subscribe("Texture Editor", CImGuiManager::ERenderPriority::eMedium, RenderTextureEditor);
