@@ -17,11 +17,13 @@ class IRender_Sector;
 
 #define WEAPON_MATERIAL_NAME "objects\\bullet"
 
-class CShootingObject : public IAnticheatDumpable, public IDamageSource
+class CShootingObject : 
+	public IAnticheatDumpable,
+	public IDamageSource
 {
 protected:
 	CShootingObject();
-	virtual ~CShootingObject() = default;
+	virtual ~CShootingObject();
 
 	void	reload(const char* section) {};
 	void	Load(const char* section);
@@ -170,7 +172,9 @@ protected:
 	shared_str m_sFlameParticles;
 	shared_str m_sFlameSilencerParticles;
 	shared_str m_sFlameGlauncherParticles;
-	xr_vector<xr_shared_ptr<CParticlesObject>> flame_particles, smoke_particles;
+
+	xr_vector<xr_shared_ptr<CParticlesObject>> smoke_particles;
+	xr_vector<xr_shared_ptr<CParticlesObject>> flame_particles;
 
 	ALife::_OBJECT_ID initiator_id;
 
