@@ -715,6 +715,7 @@ void CCC_Register()
 	CMD2(CCC_Boolean, "ui_dbg_draw",		&Engine.External.EditorStates[(int)EditorUI::DebugDraw]);
 	CMD2(CCC_Boolean, "ui_dbg_cmd_vars",	&Engine.External.EditorStates[(int)EditorUI::CmdVars]);
 	CMD2(CCC_Boolean, "ui_dbg_cmd_console", &Engine.External.EditorStates[(int)EditorUI::CmdConsole]);
+	CMD2(CCC_Boolean, "ui_dbg_graph_editor", &Engine.External.EditorStates[(int)EditorUI::Game_GraphEditor]);
 
 #ifdef IXRAY_PROFILER
 	CMD1(CCC_Profiler, "profiler_switch");
