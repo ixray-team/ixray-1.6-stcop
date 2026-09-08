@@ -1063,6 +1063,11 @@ void CHudItem::OnMotionMark(u8 state, const motion_marks& mark)
 			}
 		}
 	}
+
+	if (mark.name == "mm_unpend")
+	{
+		SetPending(false);
+	}
 }
 
 bool CHudItem::SoundExist(const char* section, const char* sound_name)

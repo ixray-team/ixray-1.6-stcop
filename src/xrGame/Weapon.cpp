@@ -4765,11 +4765,6 @@ void CWeapon::OnMotionMark(u8 state, const motion_marks& mark)
 	{
 		MakeWeaponKick(Device.vCameraPosition, Device.vCameraDirection);
 	}
-
-	if (mark.name == "mm_unpend")
-	{
-		SetPending(false);
-	}
 }
 
 bool CWeapon::ScopeFit(CScope* pIItem) const
