@@ -668,12 +668,12 @@ void CLocatorAPI::setup_fs_path		(const char* fs_name)
 
 IReader *CLocatorAPI::setup_fs_ltx	(const char* fs_name)
 {
-	setup_fs_path	(fs_name);
-
 	const char*			fs_file_name = FSLTX;
 	if (fs_name && *fs_name)
 		fs_file_name= fs_name;
 				
+	setup_fs_path	(fs_file_name);
+
 	Msg("using fs-ltx %s", fs_file_name);
 
 	int				file_handle;
