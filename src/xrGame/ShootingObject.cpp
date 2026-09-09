@@ -283,17 +283,26 @@ void CShootingObject::StartFlameParticle()
 	{
 		case eGlauncherFire:
 			if (*m_sFlameGlauncherParticles)
+			{
 				flame_particles.push_back(Particles::Details::Create(*m_sFlameGlauncherParticles));
+				flame_particles.back().get()->SetLiveUpdate(true);
+			}
 			else return;
 			break;
 		case eSilencerFire:
 			if (*m_sFlameSilencerParticles)
+			{
 				flame_particles.push_back(Particles::Details::Create(*m_sFlameSilencerParticles));
+				flame_particles.back().get()->SetLiveUpdate(true);
+			}
 			else return;
 			break;
 		case eDefaultFire:
 			if (*m_sFlameParticles)
+			{
 				flame_particles.push_back(Particles::Details::Create(*m_sFlameParticles));
+				flame_particles.back().get()->SetLiveUpdate(true);
+			}
 			else return;
 			break;
 	}
