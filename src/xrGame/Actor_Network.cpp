@@ -399,7 +399,6 @@ void		CActor::net_Import_Physic			( NET_Packet& P)
 		{
 			SPHNetState state, stateL;
 			PHGetSyncItem(i)->get_State(state);
-//			stateL.net_Load(P, min, max);
 			r_vec_q8(P, stateL.position, min, max);
 			r_qt_q8(P, stateL.quaternion);
 			//---------------------------------------

@@ -6,13 +6,14 @@
 //	Description : Physic item
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "GameObject.h"
-#include "PHShellCreator.h"
-#include "PhysicsShellHolder.h"
 
-class CPhysicItem : 
-			public CPhysicsShellHolder,
-			public CPHShellSimpleCreator
+#include "GameObject.h"
+#include "PhysicsShellHolder.h"
+#include "ph_shell_interface.h"
+
+class CPhysicItem :
+	public CPhysicsShellHolder,
+	public IPhysicShellCreator
 {
 	typedef CPhysicsShellHolder inherited;
 public:
@@ -37,4 +38,5 @@ public:
 	virtual void	create_physic_shell				();
 	virtual CPhysicItem* cast_physics_item() { return this; }
 	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
+	virtual void CreatePhysicsShell() override;
 };

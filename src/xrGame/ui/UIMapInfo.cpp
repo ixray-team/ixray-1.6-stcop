@@ -1,16 +1,20 @@
 #include "StdAfx.h"
+#include "pch_script.h"
+
 #include "UIMapInfo.h"
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrEngine/string_table.h"
 
-CUIMapInfo::CUIMapInfo(){
-	m_view = new CUIScrollView();	
+CUIMapInfo::CUIMapInfo()
+{
+	m_view = new CUIScrollView();
 	AttachChild(m_view);
 }
 
-CUIMapInfo::~CUIMapInfo(){
+CUIMapInfo::~CUIMapInfo()
+{
 	xr_delete(m_view);
 }
 
@@ -18,7 +22,6 @@ void CUIMapInfo::InitMapInfo(Fvector2 pos, Fvector2 size)
 {
 	SetWndPos(pos);
 	SetWndSize(size);
-//.	m_view->SetWndPos(pos);
 	m_view->SetWndSize(size);
 	m_view->InitScrollView();
 	m_view->SetFixedScrollBar(false);
@@ -147,6 +150,19 @@ void CUIMapInfo::InitMap(const char* map_name, const char* map_ver)
 	}
 }
 
-const char*	 CUIMapInfo::GetLargeDesc(){
+const char*	 CUIMapInfo::GetLargeDesc()
+{
 	return *m_large_desc;
+}
+
+using namespace luabind;
+
+#pragma optimize("s", on)
+void CUIMapInfo::script_register(lua_State* L)
+{
+	module(L)
+		[class_<CUIMapInfo, CUIWindow>("CUIMapInfo")
+			 .def(constructor<>())
+			 .def("Init", &CUIMapInfo::InitMapInfo)
+			 .def("InitMap", &CUIMapInfo::InitMap)];
 }

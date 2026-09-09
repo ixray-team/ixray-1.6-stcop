@@ -19,7 +19,6 @@ void CMosquitoBald::Load(const char* section)
 	inherited::Load(section);
 }
 
-
 bool CMosquitoBald::BlowoutState()
 {
 	bool result = inherited::BlowoutState();
@@ -36,14 +35,6 @@ bool CMosquitoBald::BlowoutState()
 
 	return result;
 }
-//bool CMosquitoBald::SecondaryHitState()
-//{
-//	bool result = inherited::SecondaryHitState();
-//	if(!result)
-//		UpdateBlowout();
-//
-//	return result;
-//}
 
 void CMosquitoBald::Affect(SZoneObjectInfo* O) 
 {

@@ -144,7 +144,7 @@ void CBaseMonster::update_pos_by_grouping_behaviour ()
 		return;
 	}
 
-	Fvector acc = get_steer_manager()->calc_acceleration();
+	Fvector acc = m_steer_manager->calc_acceleration();
 
 	acc.y = 0; // remove vertical component
 
@@ -295,37 +295,40 @@ bool CBaseMonster::at_home ()
 												(Device.dwTimeGlobal < m_first_tick_object_not_at_home + 4000);
 }
 
-void CBaseMonster::update_enemy_accessible_and_at_home_info	()
+void CBaseMonster::update_enemy_accessible_and_at_home_info()
 {
-	if ( !Home->at_home() )
+	if (!Home->at_home())
 	{
-		if ( !m_first_tick_object_not_at_home )
-			m_first_tick_object_not_at_home	=	Device.dwTimeGlobal;
+		if (!m_first_tick_object_not_at_home)
+		{
+			m_first_tick_object_not_at_home = Device.dwTimeGlobal;
+		}
 	}
 	else
-		m_first_tick_object_not_at_home		=	0;
-
-	if ( !EnemyMan.get_enemy() )
 	{
-		m_first_tick_enemy_inaccessible		=	0;
-		m_last_tick_enemy_inaccessible		=	0;
+		m_first_tick_object_not_at_home = 0;
+	}
+
+	if (!EnemyMan.get_enemy())
+	{
+		m_first_tick_enemy_inaccessible = 0;
+		m_last_tick_enemy_inaccessible = 0;
 		return;
 	}
 
-	if ( ::enemy_inaccessible(this) )
+	if (::enemy_inaccessible(this))
 	{
-		if ( !m_first_tick_enemy_inaccessible )
-			m_first_tick_enemy_inaccessible	=	Device.dwTimeGlobal;
-
-		m_last_tick_enemy_inaccessible		=	Device.dwTimeGlobal;
-	}
-	else
-	{
-		if ( m_last_tick_enemy_inaccessible && Device.dwTimeGlobal - m_last_tick_enemy_inaccessible > 3000 )
+		if (!m_first_tick_enemy_inaccessible)
 		{
-			m_first_tick_enemy_inaccessible	=	0;
-			m_last_tick_enemy_inaccessible	=	0;
+			m_first_tick_enemy_inaccessible = Device.dwTimeGlobal;
 		}
+
+		m_last_tick_enemy_inaccessible = Device.dwTimeGlobal;
+	}
+	else if (m_last_tick_enemy_inaccessible && Device.dwTimeGlobal - m_last_tick_enemy_inaccessible > 3000)
+	{
+		m_first_tick_enemy_inaccessible = 0;
+		m_last_tick_enemy_inaccessible = 0;
 	}
 }
 
