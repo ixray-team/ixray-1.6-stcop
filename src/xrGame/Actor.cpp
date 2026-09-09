@@ -706,6 +706,15 @@ void CActor::Load	(const char* section )
 		}
 	}
 
+	if (pGameGlobals->line_exist("quick_throws", "quick_bolt_animator"))
+	{
+		const char* quick_bolt_animator = pGameGlobals->r_string("quick_throws", "quick_bolt_animator");
+		if (pSettings->section_exist(quick_bolt_animator))
+		{
+			m_sQuickBoltAnimator = quick_bolt_animator;
+		}
+	}
+
 	if (pGameGlobals->line_exist("mutant_kicks", "burer_kick_animator"))
 	{
 		const char* burer_kick_animator = pGameGlobals->r_string("mutant_kicks", "burer_kick_animator");
