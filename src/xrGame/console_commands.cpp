@@ -1983,6 +1983,104 @@ public:
 	}
 };
 
+class CCC_GSpawnOnDistance : public IConsole_Command
+{
+public:
+	CCC_GSpawnOnDistance(const char* N)
+		: IConsole_Command(N)
+	{
+	}
+
+	virtual void Execute(const char* args) override
+	{
+		if (!IsGameTypeSingle())
+		{
+			return;
+		}
+
+		CActor* actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
+		if (actor == nullptr)
+		{
+			return;
+		}
+
+		int count = 1;
+		int distance = -1;
+		string128 nameSection = {};
+		auto sc = sscanf_s(args, "%s %d %d", nameSection, (unsigned)sizeof(nameSection), &count, &distance);
+		if (sc > 3)
+		{
+			Msg("! Failed to parse input");
+			return;
+		}
+
+		if (!pSettings->section_exist(nameSection))
+		{
+			Msg("! Can't find section: %s", nameSection);
+			return;
+		}
+
+		if (pSettings->line_exist(nameSection, "visual"))
+		{
+			if (!isValidSection(nameSection))
+			{
+				std::string_view visual = pSettings->r_string(nameSection, "visual");
+				Msg("! Failed insert [%s] visual not found", nameSection);
+				return;
+			}
+		}
+
+		float dst = HUD().GetCurrentRayQuery().range;
+
+		if (distance == -1 || dst <= distance)
+		{
+			distance = dst;
+		}
+
+		Fvector3 point = point.mad(Device.vCameraPosition, Device.vCameraDirection, distance);
+
+		for (size_t i = 0; i < count; i++)
+		{
+			auto item = Level().Server->game->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), u16(-1));
+			item->cast_alife_object()->use_ai_locations(false);
+
+			auto anomaly = item->cast_anomalous_zone();
+			if (anomaly != nullptr)
+			{
+				CShapeData::shape_def _shape{};
+				_shape.data.sphere.P.set(0.0f, 0.0f, 0.0f);
+				_shape.data.sphere.R = 3;
+				_shape.type = CShapeData::cfSphere;
+
+				anomaly->assign_shapes(&_shape, 1);
+				anomaly->m_owner_id = u32(-1);
+				anomaly->m_space_restrictor_type = RestrictionSpace::eRestrictorTypeNone;
+			}
+		}
+		
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
+		if (IsGameTypeSingle())
+		{
+			if (!ai().get_alife())
+			{
+				Msg("! ALife simulator is needed to perform specified command!");
+				return;
+			}
+		}
+
+		for (CInifile::Sect& sect : pSettings->sections())
+		{
+			if (sect.line_exist("class"))
+			{
+				tips.push_back(sect.Name.c_str());
+			}
+		}
+	}
+};
+
 #include "alife_smart_terrain_registry.h"
 class CCC_SpawnSquad : public IConsole_Command {
 public:
@@ -2534,12 +2632,14 @@ void CCC_RegisterCommands()
 	CMD1(CCC_DisableInfo, "d_info");
 	CMD1(CCC_GiveMoney, "g_money");
 	CMD1(CCC_GSpawn, "g_spawn");
+	CMD1(CCC_GSpawnOnDistance, "g_spawn_on_distance");
 	CMD1(CCC_GSpawnToInventory, "g_spawn_inv");
 	CMD1(CCC_SpawnSquad, "g_spawn_squad");
 	CMD1(CCC_SetCharComm, "g_character_community");
 	CMD1(CCC_SetMonstComm, "g_monster_community");
 
 	CMD1(CCC_Particle_TEST, "g_ps_test");
+	CMD1(CCC_Particle_TEST, "g_spawn_particles");
 
 	CMD3(CCC_Mask32, "dbg_draw_lchangers", &dbg_net_Draw_Flags, dbg_draw_lchangers);
 
