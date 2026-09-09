@@ -91,7 +91,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 
 		if (strstr(data.first.c_str(), "anm_bp_") == data.first.c_str())
 		{
-			load_bonepart_motions(item_model, data);
+			load_bonepart_motions(item_model, data, sect);
 		}
 		else if (strstr(res.c_str(), "anm_") == res.c_str())
 		{
@@ -100,7 +100,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 			itmTemp.first = res.c_str();
 			itmTemp.second = data.second;
 
-			load_default_motions(model, itmTemp);
+			load_default_motions(model, itmTemp, sect);
 		}
 	}
 
@@ -196,7 +196,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 #endif
 }
 
-void player_hud_motion_container::load_default_motions(IKinematicsAnimated* model, const CInifile::Item& data)
+void player_hud_motion_container::load_default_motions(IKinematicsAnimated* model, const CInifile::Item& data, const shared_str& sect)
 {
 	player_hud_motion* pm = nullptr;
 
@@ -257,7 +257,7 @@ void player_hud_motion_container::load_default_motions(IKinematicsAnimated* mode
 		if (!motion_ID.valid() && i == 0)
 		{
 			motion_ID = model->ID_Cycle_Safe("hand_idle_doun");
-			Msg("! motion not found[% s]", pm->m_base_name.c_str());
+			Msg("! motion not found[%s] section [%s]", pm->m_base_name.c_str(), sect.c_str());
 		}
 
 		if (motion_ID.valid())
@@ -271,7 +271,7 @@ void player_hud_motion_container::load_default_motions(IKinematicsAnimated* mode
 	R_ASSERT2(pm->m_animations.size(), make_string<const char*>("motion not found [%s]", pm->m_base_name.c_str()));
 }
 
-void player_hud_motion_container::load_bonepart_motions(IKinematicsAnimated* model, const CInifile::Item& data)
+void player_hud_motion_container::load_bonepart_motions(IKinematicsAnimated* model, const CInifile::Item& data, const shared_str& sect)
 {
 	if (model == nullptr)
 	{
@@ -332,7 +332,7 @@ void player_hud_motion_container::load_bonepart_motions(IKinematicsAnimated* mod
 		if (!motion_ID.valid() && i == 0)
 		{
 			motion_ID = model->ID_Cycle_Safe("idle");
-			Msg("! motion not found[% s]", ahim->m_name.c_str());
+			Msg("! motion not found[%s] section [%s]", ahim->m_name.c_str(), sect.c_str());
 		}
 
 		if (motion_ID.valid())
