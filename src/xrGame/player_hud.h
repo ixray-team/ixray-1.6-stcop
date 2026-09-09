@@ -79,8 +79,8 @@ struct player_hud_motion_container final
 	attachable_hud_item_motion* find_item_motion(const shared_str& name);
 	bool has_motion(const shared_str& name);
 	void load(IKinematicsAnimated* model, const shared_str& sect, IKinematicsAnimated* item_model = nullptr);
-	void load_default_motions(IKinematicsAnimated* model, const CInifile::Item& data);
-	void load_bonepart_motions(IKinematicsAnimated* model, const CInifile::Item& data);
+	void load_default_motions(IKinematicsAnimated* model, const CInifile::Item& data, const shared_str& sect);
+	void load_bonepart_motions(IKinematicsAnimated* model, const CInifile::Item& data, const shared_str& sect);
 };
 
 struct weapon_inertion final
