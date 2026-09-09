@@ -26,8 +26,6 @@
 #include "PhysicsShellHolder.h"
 
 CUIProgressShape* g_MissileForceShape = nullptr;
-u8 CMissile::m_uSlotToRestore = NO_ACTIVE_SLOT;
-bool CMissile::m_bNeedRestoreDevice = false;
 
 void create_force_progress()
 {
@@ -114,11 +112,6 @@ void CMissile::LoadSounds(const char* section)
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_throw, true);
 		m_sounds.LoadSound(section, "snd_throw", "sndThrow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
-	}
-
-	if (SoundExist(section, "snd_throw_quick"))
-	{
-		m_sounds.LoadSound(section, "snd_throw_quick", "sndThrowQuick", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 	}
 }
 
@@ -243,8 +236,6 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
 		DestroyObject		();
 		return;
 	}
-
-	m_bNeedQuick = false;
 }
 
 extern u32 hud_adj_mode;
@@ -305,18 +296,6 @@ void CMissile::UpdateCL()
 		m_sounds.SetPosition("sndThrowBegin", P);
 }
 
-void CMissile::SetQuickThrow()
-{
-	m_bNeedQuick = true;
-	
-	m_uSlotToRestore = m_pInventory != nullptr ? m_pInventory->GetActiveSlot() : NO_ACTIVE_SLOT;
-
-	if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
-	{
-		m_bNeedRestoreDevice = pActor->GetDevice() != nullptr;
-	}
-}
-
 void CMissile::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
@@ -340,24 +319,9 @@ void CMissile::State(u8 state)
 		{
 			SetPending(true);
 
-			if (m_bNeedQuick)
-			{
-				m_constpower = true;
-				m_throw = false;
+			PlayHUDMotion("anm_show", EHudMixType::eNoMix, GetState(), m_disable_random_animations);
 
-				if (H_Parent() != nullptr && m_fake_missile == nullptr && H_Parent()->cast_missile() == nullptr)
-				{
-					spawn_fake_missile();
-				}
-			}
-
-			PlayHUDMotion(m_bNeedQuick ? "anm_throw_quick" : "anm_show", EHudMixType::eNoMix, GetState(), m_disable_random_animations);
-
-			if (m_bNeedQuick)
-			{
-				PlaySound("sndThrowQuick", Position());
-			}
-			else if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
+			if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
 			{
 				PlaySound("SndShow", Position());
 			}
@@ -381,8 +345,6 @@ void CMissile::State(u8 state)
 		} break;
 	case eHidden:
 		{
-			
-			m_bNeedQuick = false;
 			if (1 /*GetHUD()*/) 
 			{
 				StopCurrentAnimWithoutCallback	();
@@ -490,48 +452,8 @@ void CMissile::OnAnimationEnd(u8 state)
 		} break;
 	case eShowing:
 		{
-			if (m_bNeedQuick)
-			{
-				SwitchState(eHidden);
-				m_bNeedQuick = false;
-
-				u16 saved_old_slot = NO_ACTIVE_SLOT;
-
-				if (m_pInventory != nullptr)
-				{
-					if (m_pInventory->ItemFromSlot(m_uSlotToRestore) != nullptr)
-					{
-						saved_old_slot = m_pInventory->ItemFromSlot(m_uSlotToRestore)->BaseSlot();
-					}
-					m_pInventory->SetActiveSlot(m_uSlotToRestore);
-					m_uSlotToRestore = NO_ACTIVE_SLOT;
-				}
-
-				bool bres = (saved_old_slot == NO_ACTIVE_SLOT || IsSidearmPhysicalSlot(saved_old_slot) || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
-
-				if (!bres)
-				{
-					m_bNeedRestoreDevice = false;
-				}
-
-				if (m_bNeedRestoreDevice)
-				{
-					if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
-					{
-						if (CCustomDevice* pDevice = pActor->GetDevice(true))
-						{
-							pDevice->switch_device();
-						}
-					}
-
-					m_bNeedRestoreDevice = false;
-				}
-			}
-			else
-			{
-				setVisible(true);
-				SwitchState(eIdle);
-			}
+			setVisible(true);
+			SwitchState(eIdle);
 		} break;
 	case eThrowStart:
 		{
@@ -618,7 +540,7 @@ void CMissile::UpdateXForm	()
 	}
 }
 
-void CMissile::setup_throw_params()
+void CMissile::setup_throw_params(bool bForce = false)
 {
 	if (!H_Parent()) return;
 	CGameObject* GO = H_Parent()->cast_game_object();
@@ -630,7 +552,7 @@ void CMissile::setup_throw_params()
 	Fmatrix					trans;
 	trans.identity			();
 	Fvector					FirePos, FireDir;
-	if (this == inventory_owner->inventory().ActiveItem())
+	if (this == inventory_owner->inventory().ActiveItem() || bForce)
 	{
 		entity->g_fireParams(this, FirePos, FireDir);
 	}
@@ -649,7 +571,7 @@ void CMissile::setup_throw_params()
 void CMissile::OnMotionMark(u8 state, const motion_marks& M)
 {
 	inherited::OnMotionMark(state, M);
-	if ((state == eThrow || state == eShowing && m_bNeedQuick) && !m_throw)
+	if (state == eThrow && !m_throw)
 	{
 		if (H_Parent())
 		{
@@ -668,7 +590,7 @@ void CMissile::Throw()
 	if (pActor && pActor == Level().CurrentControlEntity() || Local())
 	{
 		VERIFY(H_Parent()->cast_entity());
-		setup_throw_params();
+		setup_throw_params(IsHidden() && GetHUDmode());
 
 		m_fake_missile->m_throw_direction = m_throw_direction;
 		m_fake_missile->m_throw_matrix = m_throw_matrix;
@@ -764,11 +686,6 @@ bool CMissile::Action(u16 cmd, u32 flags)
 
 bool CMissile::ThrowAction(u16 cmd, u32 flags)
 {
-	if (m_bNeedQuick)
-	{
-		return false;
-	}
-
 	const u8 NextState = GetNextState();
 
 	if (NextState == eHiding)

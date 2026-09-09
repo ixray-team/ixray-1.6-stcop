@@ -367,6 +367,7 @@ private:
 	shared_str				m_sHeadlampAnimator;
 	shared_str				m_sClearMaskAnimator;
 	shared_str				m_sQuickKickAnimator;
+	shared_str				m_sQuickGrenadeAnimator;
 	shared_str				m_sBurerKickAnimator;
 	shared_str				m_sFrontKickAnimator;
 	shared_str				m_sBackKickAnimator;
@@ -868,6 +869,7 @@ public:
 			void				ClearMask						();
 			void				ClearMaskCB						();
 			void				MakeKick						();
+			void				MakeThrowGrenade				();
 			void				UpdatePickupMode				();
 	CNightVisionEffector*		GetNightVisionEffector			() { return m_night_vision;}
 

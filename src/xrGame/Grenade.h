@@ -52,6 +52,9 @@ public:
 	virtual bool			GetBriefInfo						(II_BriefInfo& info);
 
 	virtual bool			SendDeactivateItem					(bool Force);
+
+	void FastThrow();
+
 protected:
 	ALife::_TIME_ID			m_dwGrenadeRemoveTime;
 	ALife::_TIME_ID			m_dwGrenadeIndependencyTime;
