@@ -2,7 +2,6 @@
 
 #include "../xrPhysics/PhysicsShell.h"
 #include "WeaponAmmo.h"
-#include "PHShellCreator.h"
 
 #include "ShootingObject.h"
 #include "hud_item_object.h"
