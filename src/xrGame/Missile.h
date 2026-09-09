@@ -64,6 +64,7 @@ protected:
 	virtual void			UpdateXForm						();
 	void					UpdatePosition					(const Fmatrix& trans);
 	void					spawn_fake_missile				();
+	bool ThrowAction(u16 cmd, u32 flags);
 
 	virtual void			OnActiveItem		();
 	virtual void			OnHiddenItem		();
@@ -91,6 +92,7 @@ protected:
 	xr_vector<shared_str>	m_sCheckoutBones;
 
 	bool					m_bNeedQuick = false;
+	bool					m_bUseAltThrow = false;
 
 	static u8				m_uSlotToRestore;
 	static bool				m_bNeedRestoreDevice;
