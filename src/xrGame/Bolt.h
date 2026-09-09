@@ -24,5 +24,8 @@ public:
 	virtual bool UsedAI_Locations	() {return false;}
 	virtual IDamageSource*	cast_IDamageSource			()	{return this;}
 
-	virtual CBolt* cast_bolt() { return this; }
+	void FastThrow();
+
+	virtual CBolt* cast_bolt() override { return this; }
+	virtual CMissile* cast_missile() override { return this; }
 };

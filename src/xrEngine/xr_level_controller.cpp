@@ -178,6 +178,7 @@ ENGINE_API _action  actions[]		= {
 	{ "actormenu_action",	kACTORMENU_ACTION		,_both,			agUIGeneral},
 	{ "safemode",			kSAFEMODE				,_both,			agDefault },
 	{ "inv_unload_ruck",	kINV_UNLOAD_RUCK		,_both,			agUIGeneral},
+	{ "quick_bolt",			kQUICK_BOLT				,_both,			agDefault},
 
 	{ nullptr, 				kLASTACTION				,_both,			agDefault}
 };															
