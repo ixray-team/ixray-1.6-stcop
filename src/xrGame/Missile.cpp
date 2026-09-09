@@ -56,6 +56,7 @@ void CMissile::Load(const char* section)
 	inherited::Load(section);
 
 	pSettings->read_if_exists<bool>(m_bUseAltThrow, section, "use_alt_throw");
+	pSettings->read_if_exists<bool>(m_bUseHudPosition, section, "use_hud_position");
 
 	if (!m_bUseAltThrow)
 	{
@@ -591,6 +592,31 @@ void CMissile::Throw()
 	{
 		VERIFY(H_Parent()->cast_entity());
 		setup_throw_params(IsHidden() && GetHUDmode());
+
+		if (m_bUseHudPosition && GetHUDmode() && !IsHidden())
+		{
+			attachable_hud_item* HID = HudItemData();
+			auto Animator = g_player_hud->GetAnimator();
+
+			if (HID || Animator)
+			{
+				m_throw_matrix.set(HID ? HID->m_item_transform : Animator && Animator->m_item ? Animator->m_item_transform : Fidentity);
+
+				Fvector cam_pos = Device.vCameraPosition;
+				Fvector throw_pos = m_throw_matrix.c;
+				Fvector dir = Fvector().set(throw_pos).sub(cam_pos);
+				float dist = dir.magnitude();
+				if (dist > EPS)
+				{
+					dir.normalize();
+					collide::rq_result RQ;
+					if (g_pGameLevel->ObjectSpace.RayPick(cam_pos, dir, dist, collide::rqtBoth, RQ, H_Parent()))
+					{
+						m_throw_matrix.c.sub(dir.mul(dist - RQ.range + 0.01f));
+					}
+				}
+			}
+		}
 
 		m_fake_missile->m_throw_direction = m_throw_direction;
 		m_fake_missile->m_throw_matrix = m_throw_matrix;
