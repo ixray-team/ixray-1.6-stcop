@@ -36,6 +36,8 @@ function opt_gameplay:InitControls(x, y, xml, handler)
 	end	
 	handler:addCheck(self, true, "ui_mm_show_weapon", "hud_weapon", system_depends.sdNothing)
 	handler:addCheck(self, true, "ui_mm_crouch_toggle", "g_crouch_toggle", system_depends.sdNothing)
+	handler:addCheck(self, true, "st_autosaves_enabled", "g_autosaves_enabled", system_depends.sdNothing)
+	handler:addTrack(self, true, "st_autosaves_interval", "g_autosaves_interval", 1, false, "int", true, system_depends.sdNothing, nil)
 
 	handler:lineFrame(self, true, "st_ui_settings")
 

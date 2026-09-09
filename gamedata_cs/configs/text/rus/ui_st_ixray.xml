@@ -960,4 +960,10 @@
 	<string id="ui_rmw_grenade_next">
 		<text>$$ACTION_WPN_NEXT$$ Сменить гранату</text>
 	</string>
+	<string id="st_autosaves_enabled">
+		<text>Автосохранения по времени</text>
+	</string>
+	<string id="st_autosaves_interval">
+		<text>Интервал автосохранений</text>
+	</string>
 </string_table>
