@@ -955,7 +955,10 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
             {
                 if (m_ui_weapon_icon)
                 {
-                    SetAmmoIcon(item->m_section_id);
+					m_ui_weapon_icon->TextureOn();
+					m_ui_weapon_icon->SetText("");
+					m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 255));
+					SetAmmoIcon(item->m_section_id);
                 }
             }
             if (m_static_weapon)
