@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window>
 
-	<gamepad_legend x="-171" y="614" width="1024" height="30" spacing="5">
+	<gamepad_legend x="-213" y="614" width="1024" height="30" spacing="5">
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_pda_tabs</text>
 		</auto_static>
@@ -17,13 +17,13 @@
 	</gamepad_legend>
 	
 	<map_wnd>
-		<main_wnd x="93" y="90" width="761" height="475"> 
-			<text_hint x="700" y="450" width="70" height="22" complex_mode="1">
+		<main_wnd x="82" y="90" width="761" height="475"> 
+			<text_hint x="680" y="450" width="70" height="22" complex_mode="1">
 				<text font="graffiti22"/>
 			</text_hint>
 
 
-			<map_header_frame_line x="5" y="17" width="622" height="17">
+			<map_header_frame_line x="6" y="17" width="561" height="17">
 				<title x="10" y="1" width="435" height="18">
 					<text font="letterica16" r="255" g="255" b="255"/>
 				</title>
@@ -43,12 +43,12 @@
 						<texture>ui_icons_newPDA_perssign</texture>
 					</notused_add_spot_btn>								
 
-					<zoom_in_btn x="100" y="2" width="15" height="15" check_mode="1" hint="zoom_in_btn_hint">
+					<zoom_in_btn x="90" y="2" width="15" height="15" check_mode="1" hint="zoom_in_btn_hint">
 						<window_name>zoom_in_btn</window_name>
 						<texture>ui_icons_newPDA_zoom</texture>
 					</zoom_in_btn>								
 
-					<zoom_out_btn x="116" y="2" width="15" height="15" check_mode="1" hint="zoom_out_btn_hint">
+					<zoom_out_btn x="106" y="2" width="15" height="15" check_mode="1" hint="zoom_out_btn_hint">
 						<window_name>zoom_out_btn</window_name>
 						<texture>ui_icons_newPDA_ZoomMin</texture>
 					</zoom_out_btn>												
@@ -56,9 +56,9 @@
 				
 			</map_header_frame_line>
 
-			<main_map_frame x="0" y="0" width="634" height="475" a="90">
+			<main_map_frame x="0" y="0" width="572" height="475" a="90">
 				<texture>ui_pda_frame_sub</texture>				
-				<level_frame x="5" y="41" width="604" height="406"/>
+				<level_frame x="6" y="41" width="543" height="406"/>
 			</main_map_frame>
 		</main_wnd>
 	</map_wnd>

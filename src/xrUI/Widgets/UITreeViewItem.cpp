@@ -30,8 +30,12 @@ CUITreeViewItem::CUITreeViewItem()
 {
 	AttachChild(&UIBkg);
 	UIBkg.InitTexture(treeItemBackgroundTexture);
+	Fvector2 sz{256.f, 32.f};
+	sz.x *= UI().get_current_kx();
+	UIBkg.SetStretchTexture(true);
+	UIBkg.SetWndSize(sz);
 	UIBkg.TextureOff();
-	UIBkg.SetTextureOffset(-20, 0);
+	UIBkg.SetTextureOffset(-20 * UI().get_current_kx(), 0);
 	EnableTextHighlighting(false);
 
 	m_bManualSetColor = false;
