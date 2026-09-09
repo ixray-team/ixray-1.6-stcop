@@ -92,6 +92,7 @@ protected:
 	xr_vector<shared_str>	m_sCheckoutBones;
 
 	bool					m_bUseAltThrow = false;
+	bool					m_bUseHudPosition = false;
 
 	//параметры броска
 	
