@@ -8,26 +8,26 @@
 
 
 	<main x="0" y="0" width="1024" height="768"/>
-	<background_static x="88" y="20" width="851" height="700" stretch="1">
+	<background_static x="131" y="20" width="765" height="700" stretch="1">
 		<texture>ui_PDA</texture>
 	</background_static>
 
 
 	<!-- Main buttons background -->
-	<mbbackground_frame_line x="93" y="574" width="488" height="32">
+	<mbbackground_frame_line x="82" y="574" width="443" height="32">
 		<texture>ui_string_01</texture>		
 	</mbbackground_frame_line>
 
 	<!-- TIME DISPLAY BACKGROUND -->
-	<timer_frame_line x="583" y="573" width="144" height="32">
+	<timer_frame_line x="532" y="573" width="120" height="32">
 		<texture>ui_string_01</texture>		
-		<title x="6" y="7" width="140" height="18">
+		<title x="7" y="7" width="140" height="18">
 			<text font="letterica18" r="255" g="255" b="255" complex_mode="0"/>
 		</title>
 	</timer_frame_line>
                    
 	<!-- TAB CONTROL -->
-	<tab x="100" y="573" width="550" height="30">
+	<tab x="95" y="573" width="550" height="30">
 		<!-- BUTTONS -->
 		<button x="0" y="7" width="50" height="20" hint="pda_btn_quests_hint">
 			<text align="l" x="0" y="0" font="letterica18" r="255" g="255" b="255">pda_btn_quests</text>

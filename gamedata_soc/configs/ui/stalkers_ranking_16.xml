@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window>
 
-	<gamepad_legend x="-171" y="614" width="1024" height="30" spacing="5">
+	<gamepad_legend x="-213" y="614" width="1024" height="30" spacing="5">
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_pda_tabs</text>
 		</auto_static>
@@ -10,24 +10,24 @@
 		</auto_static>
 	</gamepad_legend>
 	
-	<main_wnd x="93" y="90" width="761" height="455"/>
+	<main_wnd x="82" y="90" width="761" height="455"/>
 
-	<character_info x="20" y="58" width="270" height="450"/>
+	<character_info x="16" y="58" width="270" height="450"/>
 
-	<list x="15" y="50" width="328" height="419" top_indent="23" always_show_scroll="1" can_select="1" scroll_profile="pda"/>
+	<list x="15" y="50" width="313" height="419" top_indent="23" always_show_scroll="1" can_select="1" scroll_profile="pda"/>
 
-	<chicon_frame_window x="351" y="0" width="283" height="475" a="80">
+	<chicon_frame_window x="347" y="0" width="223" height="475" a="80">
 		<texture>ui_pda_frame_sub</texture>		
 	</chicon_frame_window>
 
-	<chicon_frame_line x="5" y="17" width="274" height="21">
+	<chicon_frame_line x="5" y="17" width="214" height="21">
         <texture>ui_string_03</texture>		
 	</chicon_frame_line>
 
-	<info_frame_window x="0" y="0" width="346" height="475" a="80">
+	<info_frame_window x="0" y="0" width="336" height="475" a="80">
 		<texture>ui_pda_frame_sub</texture>		
 	</info_frame_window>
-	<info_frame_line x="8" y="17" width="333" height="27">
+	<info_frame_line x="8" y="17" width="323" height="27">
 		<title x="8" y="1" width="435" height="18">
 			<text font="letterica25" r="255" g="255" b="255">st_pda_top20</text>
 		</title>
@@ -37,7 +37,7 @@
 		<auto_static x="6" y="52" width="4" height="388">
 			<texture>ui\ui_pda_vertical_line_r_l</texture>
 		</auto_static>
-		<auto_static x="326" y="52" width="4" height="388">
+		<auto_static x="310" y="52" width="4" height="388">
 			<texture>ui\ui_pda_vertical_line_r_r</texture>
 		</auto_static>
 		<auto_static x="6" y="50" width="322" height="2" stretch="1">
@@ -49,32 +49,32 @@
 		<auto_static align="r" x="10" y="50" width="30" height="20" >
 			<text font="letterica18" r="180" g="180" b="180">##</text>
 		</auto_static>
-		<auto_static align="r" x="48" y="50" width="100" height="20" >
+		<auto_static align="r" x="75" y="50" width="100" height="20" >
 			<text font="letterica18" r="180" g="180" b="180">Name</text>
 		</auto_static>
-		<auto_static x="228" y="50" width="100" height="20" >
+		<auto_static x="200" y="50" width="100" height="20" >
 			<text align="r" font="letterica18" r="180" g="180" b="180">Rank</text>
 		</auto_static>
     </left_auto>
 
 
 
-    <a_static x="303" y="-3" width="24" height="32" frames="16" duration="1000" columns="8" frame_width="32" frame_height="32" cyclic="1" autoplay="1" stretch="1">
+    <a_static x="295" y="-3" width="24" height="32" frames="16" duration="1000" columns="8" frame_width="32" frame_height="32" cyclic="1" autoplay="1" stretch="1">
         <texture>ui\ui_pda_anims_03</texture>
     </a_static>
 
     
     <right_auto>
-		<auto_static x="8" y="52" width="4" height="420">
+		<auto_static x="6" y="52" width="4" height="420">
 			<texture>ui\ui_pda_vertical_line_r_l</texture>
 		</auto_static>
-		<auto_static x="269" y="52" width="4" height="420">
+		<auto_static x="202" y="52" width="4" height="420">
 			<texture>ui\ui_pda_vertical_line_r_r</texture>
 		</auto_static>
-		<auto_static x="8" y="48" width="262" height="2" stretch="1">
+		<auto_static x="6" y="48" width="202" height="2" stretch="1">
 			<texture>ui\ui_pda_horizontal_line</texture>
 		</auto_static>
-		<auto_static x="14" y="189" width="249" height="2" stretch="1">
+		<auto_static x="14" y="189" width="189" height="2" stretch="1">
 			<texture>ui\ui_pda_horizontal_line</texture>
 		</auto_static>
     </right_auto>
@@ -86,11 +86,11 @@
 				<text align="l" font="letterica18" r="180" g="180" b="180" a="160"/>
 			</text_1>
 			
-			<text_2 x="33" y="0" width="280" height="19" highlight_text="1" hA="255" hR="255" hB="255" hG="255">
+			<text_2 x="37" y="0" width="280" height="19" highlight_text="1" hA="255" hR="255" hB="255" hG="255">
 				<text align="l" font="letterica18" r="180" g="180" b="180" a="160"/>
 			</text_2>
 			
-			<text_3 x="160" y="0" width="150" height="19">
+			<text_3 x="135" y="0" width="150" height="19">
 				<text align="r" font="letterica18" r="180" g="180" b="180" a="160"/>
 			</text_3>
 		</item_human>
@@ -100,11 +100,11 @@
 				<text align="l" font="letterica18" r="255" g="0" b="0"/>
 			</text_1>
 			
-			<text_2 x="33" y="0" width="280" height="19" highlight_text="1" hA="255" hR="255" hB="255" hG="255">
+			<text_2 x="37" y="0" width="280" height="19" highlight_text="1" hA="255" hR="255" hB="255" hG="255">
 				<text align="l" font="letterica18" r="200" g="180" b="180" a="160"/>
 			</text_2>
 			
-			<text_3 x="160" y="0" width="150" height="19">
+			<text_3 x="135" y="0" width="150" height="19">
 				<text align="r" font="letterica18" r="255" g="180" b="180" a="160"/>
 			</text_3>
 			<auto>
