@@ -206,20 +206,22 @@ void CActor::IR_OnKeyboardPress(int dik)
 	}break;
 	case kQUICK_GRENADE:
 	{
-		PIItem item_from_slot = inventory().EnsureSlotItemFromRuck(GRENADE_SLOT);
-		CGrenade* grenade_item = item_from_slot != nullptr ? item_from_slot->cast_grenade() : nullptr;
-
-		if (grenade_item != nullptr && !inventory().IsSlotBlocked(grenade_item) && grenade_item->HudAnimationExist("anm_throw_quick"))
+		PIItem grenade_item = inventory().ItemFromSlot(GRENADE_SLOT);
+		if (m_sQuickGrenadeAnimator.size() > 0 && grenade_item != nullptr)
 		{
-			if (item_from_slot != inventory().ActiveItem())
+			if (!HudAnimator()->IsAnyAnimatorActive())
 			{
-				grenade_item->SetQuickThrow();
-				inventory().Activate(GRENADE_SLOT);
-			}
-			else
-			{
-				grenade_item->Action(kWPN_FIRE, CMD_START);
-				grenade_item->Action(kWPN_FIRE, CMD_STOP);
+				if (grenade_item != inventory().ActiveItem())
+				{
+					grenade_item->cast_grenade()->spawn_fake_missile();
+					StartAnimator(m_sQuickGrenadeAnimator);
+					HudAnimator()->ItemAnimator()->SetLeftCallback({this, &CActor::MakeThrowGrenade});
+				}
+				else
+				{
+					grenade_item->Action(kWPN_FIRE, CMD_START);
+					grenade_item->Action(kWPN_FIRE, CMD_STOP);
+				}
 			}
 		}
 	}break;
@@ -2138,6 +2140,17 @@ void CActor::MakeKick()
 	if (CWeaponKnife* pWeaponKnife = knife_item != nullptr ? knife_item->cast_weapon_knife() : nullptr)
 	{
 		pWeaponKnife->FastKick();
+	}
+}
+
+void CActor::MakeThrowGrenade()
+{
+	PIItem grenade_item = inventory().ItemFromSlot(GRENADE_SLOT);
+	if (CGrenade* pGrenade = grenade_item != nullptr ? grenade_item->cast_grenade() : nullptr)
+	{
+		u8 slot = HudAnimator()->SlotToRestore();
+		pGrenade->FastThrow();
+		HudAnimator()->SlotToRestore() = slot;
 	}
 }
 

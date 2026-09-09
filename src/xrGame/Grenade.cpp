@@ -210,7 +210,7 @@ void CGrenade::DiscardState()
 bool CGrenade::SendDeactivateItem(bool Force)
 {
 	CActor* pActor = m_pInventory->GetOwner() ? m_pInventory->GetOwner()->cast_actor() : nullptr;
-	if (pActor && (GetState() == eReady || GetState() == eThrow || m_bNeedQuick))
+	if (pActor && (GetState() == eReady || GetState() == eThrow))
 	{
 		return false;
 	}
@@ -240,7 +240,30 @@ void CGrenade::Throw()
 	m_thrown = true;
 }
 
+void CGrenade::FastThrow()
+{
+	m_constpower = true;
+	m_throw = false;
+	m_thrown = false;
 
+	setup_throw_params(true);
+	Throw();
+
+	if (m_thrown)
+	{
+		if (m_pPhysicsShell)
+		{
+			m_pPhysicsShell->Deactivate();
+		}
+		xr_delete(m_pPhysicsShell);
+		m_dwDestroyTime = 0xffffffff;
+
+		if (Local())
+		{
+			DestroyObject();
+		}
+	};
+}
 
 void CGrenade::Destroy() 
 {
@@ -343,68 +366,8 @@ void CGrenade::OnAnimationEnd(u8 state)
 	}
 	case eShowing:
 	{
-		if (m_bNeedQuick)
-		{
-			if (m_thrown)
-			{
-				if (m_pPhysicsShell != nullptr)
-				{
-					m_pPhysicsShell->Deactivate();
-				}
-
-				xr_delete(m_pPhysicsShell);
-				m_dwDestroyTime = 0xffffffff;
-
-				//PutNextToSlot();
-
-				if (Local())
-				{
-					DestroyObject();
-				}
-			}
-
-			u16 saved_old_slot = NO_ACTIVE_SLOT;
-
-			if (m_pInventory != nullptr)
-			{
-				if (m_uSlotToRestore != NO_ACTIVE_SLOT && m_pInventory->ItemFromSlot(m_uSlotToRestore) != nullptr)
-				{
-					saved_old_slot = m_pInventory->ItemFromSlot(m_uSlotToRestore)->BaseSlot();
-				}
-
-				m_pInventory->SetActiveSlot(m_uSlotToRestore);
-				m_uSlotToRestore = NO_ACTIVE_SLOT;
-			}
-
-			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || IsSidearmPhysicalSlot(saved_old_slot) || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
-
-			if (!bres)
-			{
-				m_bNeedRestoreDevice = false;
-			}
-
-			if (m_bNeedRestoreDevice)
-			{
-				if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
-				{
-					if (CCustomDevice* pDevice = pActor->GetDevice(true))
-					{
-						pDevice->switch_device();
-					}
-				}
-
-				m_bNeedRestoreDevice = false;
-			}
-
-			SwitchState(eHidden);
-			SetState(eHidden);
-			m_bNeedQuick = false;
-		}
-		else
-		{
-			setVisible(true);
-			SwitchState(eIdle);
-		}
+		setVisible(true);
+		SwitchState(eIdle);
 		break;
 	}
 	default : inherited::OnAnimationEnd(state);
