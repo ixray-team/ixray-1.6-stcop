@@ -1171,9 +1171,23 @@ bool CChangeLevelWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if (keyboard_action == WINDOW_KEY_PRESSED)
 	{
+		if (is_binded(kUI_ACCEPT, dik))
+		{
+			if (m_b_allow_change_level)
+			{
+				OnOk();
+			}
+			else
+			{
+				OnCancel();
+			}
+			return true;
+		}
 		if (is_binded(kQUIT, dik))
+		{
 			OnCancel();
-		return true;
+			return true;
+		}
 	}
 	return inherited::OnKeyboardAction(dik, keyboard_action);
 }
