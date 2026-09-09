@@ -484,37 +484,32 @@ void CGameObject::net_Save		(NET_Packet &net_packet)
 	net_packet.w_chunk_close16	(position);
 }
 
-void CGameObject::net_Load		(IReader &ireader)
+void CGameObject::net_Load(IReader& ireader)
 {
-	load					(ireader);
+	load(ireader);
 
 	// Script Binder Load ---------------------------------------
-#ifdef DEBUG	
-	if (psAI_Flags.test(aiSerialize))	{
+#ifdef DEBUG
+	if (psAI_Flags.test(aiSerialize))
+	{
 		Msg(">> **** Load script object [%s] *****", *cName());
 		Msg(">> Before load :: reader position = [%i]", ireader.tell());
 	}
-
 #endif
 
-	CScriptBinder::load		(ireader);
+	CScriptBinder::load(ireader);
 
-
-#ifdef DEBUG	
-
-	if (psAI_Flags.test(aiSerialize))	{
+#ifdef DEBUG
+	if (psAI_Flags.test(aiSerialize))
+	{
 		Msg(">> After load :: reader position = [%i]", ireader.tell());
 	}
-#endif
-	// ----------------------------------------------------------
-#ifdef DEBUG
-	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&_stricmp(PH_DBG_ObjectTrackName(),*cName())==0)
+
+	if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && _stricmp(PH_DBG_ObjectTrackName(), *cName()) == 0)
 	{
-		Msg("CGameObject::net_Load obj %s (loaded) %f,%f,%f",PH_DBG_ObjectTrackName(),Position().x,Position().y,Position().z);
+		Msg("CGameObject::net_Load obj %s (loaded) %f,%f,%f", PH_DBG_ObjectTrackName(), Position().x, Position().y, Position().z);
 	}
-
 #endif
-
 }
 
 void CGameObject::save			(NET_Packet &output_packet) 

@@ -61,7 +61,7 @@ void SetActorVisibility(u16 who, float value);
 extern int g_AI_inactive_time;
 
 #ifndef MASTER_GOLD
-	Flags64 psAI_Flags = {aiObstaclesAvoiding | aiUseSmartCovers};
+Flags64 psAI_Flags = {aiObstaclesAvoiding | aiUseSmartCovers};
 #endif // MASTER_GOLD
 
 void CCreature::SAnimState::Create(IKinematicsAnimated* K, const char* base)
@@ -72,15 +72,6 @@ void CCreature::SAnimState::Create(IKinematicsAnimated* K, const char* base)
 	ls		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_ls"));
 	rs		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_rs"));
 }
-
-//void  CCreature::TorsoSpinCallback(CBoneInstance* B)
-//{
-//	CCreature*		M = static_cast<CCreature*> (B->Callback_Param);
-//
-//	Fmatrix					spin;
-//	spin.setXYZ				(0, M->NET_Last.o_torso.pitch, 0);
-//	B->mTransform.mulB_43	(spin);
-//}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -100,97 +91,49 @@ CCreature::CCreature() :
 	m_moving_object				= 0;
 }
 
-CCreature::~CCreature	()
+CCreature::~CCreature()
 {
-	xr_delete					(m_sound_user_data_visitor);
-	xr_delete					(m_memory_manager);
-	xr_delete					(m_movement_manager);
-	xr_delete					(m_sound_player);
+	xr_delete(m_sound_user_data_visitor);
+	xr_delete(m_memory_manager);
+	xr_delete(m_movement_manager);
+	xr_delete(m_sound_player);
 
 	// Lain: added (asking GameLevel to forget about self)
-	if ( g_pGameLevel )
+	if (g_pGameLevel)
 	{
 		g_pGameLevel->SoundEvent_OnDestDestroy(this);
 	}
 
 #ifdef DEBUG
-	Msg							("dumping client spawn manager stuff for object with id %d",ID());
-	if(!g_dedicated_server)
-		Level().client_spawn_manager().dump	(ID());
+	Msg("dumping client spawn manager stuff for object with id %d", ID());
+	if (!g_dedicated_server)
+	{
+		Level().client_spawn_manager().dump(ID());
+	}
 #endif // DEBUG
-	if(!g_dedicated_server)
+	if (!g_dedicated_server)
+	{
 		Level().client_spawn_manager().clear(ID());
-
+	}
 }
 
-void CCreature::Load		(const char* section)
+void CCreature::Load(const char* section)
 {
-	inherited::Load				(section);
-	
-	if (character_physics_support()) {
-		material().Load			(section);
-		character_physics_support()->movement()->Load	(section);
+	inherited::Load(section);
+
+	if (character_physics_support())
+	{
+		material().Load(section);
+		character_physics_support()->movement()->Load(section);
 	}
 
-	memory().Load				(section);
-	movement().Load				(section);
-	//////////////////////////////////////////////////////////////////////////
+	memory().Load(section);
+	movement().Load(section);
 
-	///////////
-	// m_PhysicMovementControl: General
+	Position().y += EPS_L;
 
-	//Fbox	bb;
-
-	//// m_PhysicMovementControl: BOX
-	//Fvector	vBOX0_center= pSettings->r_fvector3	(section,"ph_box0_center"	);
-	//Fvector	vBOX0_size	= pSettings->r_fvector3	(section,"ph_box0_size"		);
-	//bb.set	(vBOX0_center,vBOX0_center); bb.grow(vBOX0_size);
-	//m_PhysicMovementControl->SetBox		(0,bb);
-
-	//// m_PhysicMovementControl: BOX
-	//Fvector	vBOX1_center= pSettings->r_fvector3	(section,"ph_box1_center"	);
-	//Fvector	vBOX1_size	= pSettings->r_fvector3	(section,"ph_box1_size"		);
-	//bb.set	(vBOX1_center,vBOX1_center); bb.grow(vBOX1_size);
-	//m_PhysicMovementControl->SetBox		(1,bb);
-
-	//// m_PhysicMovementControl: Foots
-	//Fvector	vFOOT_center= pSettings->r_fvector3	(section,"ph_foot_center"	);
-	//Fvector	vFOOT_size	= pSettings->r_fvector3	(section,"ph_foot_size"		);
-	//bb.set	(vFOOT_center,vFOOT_center); bb.grow(vFOOT_size);
-	//m_PhysicMovementControl->SetFoots	(vFOOT_center,vFOOT_size);
-
-	//// m_PhysicMovementControl: Crash speed and mass
-	//float	cs_min		= pSettings->r_float	(section,"ph_crash_speed_min"	);
-	//float	cs_max		= pSettings->r_float	(section,"ph_crash_speed_max"	);
-	//float	mass		= pSettings->r_float	(section,"ph_mass"				);
-	//m_PhysicMovementControl->SetCrashSpeeds	(cs_min,cs_max);
-	//m_PhysicMovementControl->SetMass		(mass);
-
-
-	// m_PhysicMovementControl: Frictions
-	/*
-	float af, gf, wf;
-	af					= pSettings->r_float	(section,"ph_friction_air"	);
-	gf					= pSettings->r_float	(section,"ph_friction_ground");
-	wf					= pSettings->r_float	(section,"ph_friction_wall"	);
-	m_PhysicMovementControl->SetFriction	(af,wf,gf);
-
-	// BOX activate
-	m_PhysicMovementControl->ActivateBox	(0);
-	*/
-	////////
-
-	Position().y			+= EPS_L;
-
-	//	m_current			= 0;
-
-	eye_fov					= pSettings->r_float(section,"eye_fov");
-	eye_range				= pSettings->r_float(section,"eye_range");
-
-	// Health & Armor
-//	fArmor					= 0;
-
-	// Msg				("! cmonster size: %d",sizeof(*this));
+	eye_fov = pSettings->r_float(section, "eye_fov");
+	eye_range = pSettings->r_float(section, "eye_range");
 }
 
 void CCreature::reinit		()
@@ -745,11 +688,12 @@ void CCreature::Exec_Action(float /**dt/**/)
 {
 }
 
-//void CCreature::Hit(float P, Fvector &dir,CObject* who, s16 element,Fvector position_in_object_space, float impulse, ALife::EHitType hit_type)
-void			CCreature::Hit					(SHit* pHDS)
+void CCreature::Hit(SHit* pHDS)
 {
 	if (!invulnerable())
-		inherited::Hit		(pHDS);
+	{
+		inherited::Hit(pHDS);
+	}
 }
 
 void CCreature::OnEvent(NET_Packet& P, u16 type)
@@ -764,12 +708,7 @@ void CCreature::net_Destroy()
 	sound().unload				();
 	movement().net_Destroy		();
 	
-	Device.remove_from_seq_parallel	(
-		xr_make_delegate(
-			this,
-			&CCreature::update_sound_player
-		)
-	);
+	Device.remove_from_seq_parallel(xr_make_delegate(this, &CCreature::update_sound_player));
 	
 #ifdef DEBUG
 	if (Level().m_level_debug != nullptr)
@@ -1028,19 +967,6 @@ bool CCreature::update_critical_wounded	(const u16 &bone_id, const float &power)
 	m_critical_wound_accumulator	+= power - m_critical_wound_decrease_quant*time_delta;
 	clamp							(m_critical_wound_accumulator,0.f,m_critical_wound_threshold);
 
-#if 0//def _DEBUG
-	Msg								(
-		"%6d [%s] update_critical_wounded: %f[%f] (%f,%f) [%f]",
-		Device.dwTimeGlobal,
-		*cName(),
-		m_critical_wound_accumulator,
-		power,
-		m_critical_wound_threshold,
-		m_critical_wound_decrease_quant,
-		time_delta
-	);
-#endif // DEBUG
-
 	m_last_hit_time					= Device.dwTimeGlobal;
 	if (m_critical_wound_accumulator < m_critical_wound_threshold)
 		return						(false);
@@ -1157,49 +1083,6 @@ void CCreature::OnRender()
 	
 	if (bDebug)
 		PKinematics(Visual())->DebugRender(XFORM());
-
-
-#if 0
-	DBG().get_text_tree().clear			();
-	debug::text_tree& text_tree		=	DBG().get_text_tree().find_or_add("ActorView");
-
-	Fvector collide_position;
-	collide::rq_results	temp_rq_results;
-	Fvector sizes			=	{ 0.2f, 0.2f, 0.2f };
-
-	for ( u32 i=0; i<2; ++i )
-	{
-		Fvector start		=	{ -8.7, 1.6, -4.67 };
-		Fvector end			=	{ -9.45, 1.3, -0.24 };
-
-		bool use_p2			=	false;
-		ai_dbg::get_var			("p2", use_p2);
-
-		if ( use_p2 ^ i )
-		{
-			start.x			+=	-1.f;
-			end.x			+=	-1.f;
-		}
-
-		Fvector velocity	=	end - start;
-		float const jump_time	=	0.3f;
-		TransferenceToThrowVel	(velocity,jump_time,physics_world()->Gravity());
-
-		bool const result	=	trajectory_intersects_geometry	(jump_time, 
-																 start,
-																 end,
-																 velocity,
-																 collide_position,
-																 this,
-																 nullptr,
-																 temp_rq_results,
-																 & m_jump_picks,
-																 & m_jump_collide_tris,
-																 sizes);
-
-		text_tree.add_line(i ? "box1" : "box2", result);
-	}
-#endif // #if 0
 
 #ifdef DEBUG
 	if (m_jump_picks.size() < 1)
@@ -1343,4 +1226,50 @@ void CCreature::ForceTransform(const Fmatrix& m)
 Fvector	CCreature::spatial_sector_point()
 {
 	return ISpatialOwner::spatial_sector_point().add(Fvector().set(0.f, Radius() * .5f, 0.f));
+}
+
+
+void CCreature::mk_rotation(Fvector& dir, SRotation& R)
+{
+	// parse yaw
+	Fvector DYaw;
+	DYaw.set(dir.x, 0.f, dir.z);
+	DYaw.normalize_safe();
+	clamp(DYaw.x, -0.9999999f, 0.9999999f);
+	clamp(DYaw.y, -0.9999999f, 0.9999999f);
+	clamp(DYaw.z, -0.9999999f, 0.9999999f);
+
+	if (DYaw.x >= 0)
+	{
+		R.yaw = acosf(DYaw.z);
+	}
+	else
+	{
+		R.yaw = 2 * PI - acosf(DYaw.z);
+	}
+
+	// parse pitch
+	dir.normalize_safe();
+	R.pitch = -asinf(dir.y);
+}
+
+void CCreature::Exec_Look(float dt)
+{
+	if (animation_movement_controlled())
+	{
+		return;
+	}
+
+	movement().m_body.current.yaw = angle_normalize_signed(movement().m_body.current.yaw);
+	movement().m_body.current.pitch = angle_normalize_signed(movement().m_body.current.pitch);
+	movement().m_body.target.yaw = angle_normalize_signed(movement().m_body.target.yaw);
+	movement().m_body.target.pitch = angle_normalize_signed(movement().m_body.target.pitch);
+
+	float pitch_speed = get_custom_pitch_speed(movement().m_body.speed);
+	angle_lerp_bounds(movement().m_body.current.yaw, movement().m_body.target.yaw, movement().m_body.speed, dt);
+	angle_lerp_bounds(movement().m_body.current.pitch, movement().m_body.target.pitch, pitch_speed, dt);
+
+	Fvector P = Position();
+	XFORM().setHPB(-NET_Last.o_model, -NET_Last.o_torso.pitch, 0);
+	Position() = P;
 }

@@ -41,6 +41,3 @@ void CPHConstForceAction::script_register(lua_State *L)
 			.def(constructor<CPhysicsShell*,const Fvector&>())
 		];
 }
-//(CPhysicsJoint*(CPhysicsShell::*)(u16))(&CPhysicsShell::get_Joint))
-//.def("set_gravity",					&CPHWorld::SetGravity),
-//.def("add_call",					&CPHWorld::AddCall)

@@ -1,9 +1,6 @@
 #include "StdAfx.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "PHSimpleCalls.h"
-//#include	"phobject.h"
-//#include	"PHWorld.h"
-//extern		CPHWorld			*ph_world;
 #include "../xrPhysics/IPHWorld.h"
 
 CPHCallOnStepCondition::CPHCallOnStepCondition()
@@ -84,15 +81,3 @@ CPHReqComparerHasShell::CPHReqComparerHasShell(CPhysicsShell	*shell)
 	VERIFY(shell);
 	m_shell=shell;
 }
-//CPHTimeCondition::CPHTimeCondition(u32 time)
-//{
-//	//m_step=u64(ph_world->CalcNumSteps(time))+ph_world->m_steps_num;
-//}
-//
-//CPHTimeCondition::CPHTimeCondition(float time)
-//{
-//	///if (dTime < m_frame_time*1000) return 0;
-//	u32 res = iCeil((float(dTime) - m_frame_time*1000) / (fixed_step*1000));
-//	m_step=
-//}
-

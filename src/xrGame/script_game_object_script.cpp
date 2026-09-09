@@ -11,8 +11,8 @@
 #include "script_game_object.h"
 #include "game_object_space.h"
 #include "sight_manager_space.h"
+#include "ScriptsSubsystems/Compability/EnhancementEditionLuaLayer.h"
 #include "../xrScripts/exports/script_ini_file.h"
-#include "EnhancementEditionLuaLayer.h"
 
 using namespace luabind;
 

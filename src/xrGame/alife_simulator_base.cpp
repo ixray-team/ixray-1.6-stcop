@@ -24,11 +24,6 @@
 #include "inventory_upgrade_manager.h"
 #include "Level.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
-
 using namespace ALife;
 
 CALifeSimulatorBase::CALifeSimulatorBase	(xrServer *server, const char* section)
@@ -99,7 +94,6 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 	R_ASSERT3					(abstract,"Cannot find item with section",section);
 
 	abstract->s_name			= section;
-//.	abstract->s_gameid			= u8(GAME_SINGLE);
 	abstract->s_RP				= 0xff;
 	abstract->ID				= server().PerformIDgen(0xffff);
 	abstract->ID_Parent			= parent_id;
@@ -137,7 +131,6 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 	dynamic_object->spawn_supplies	();
 	dynamic_object->on_spawn		();
 
-//	Msg							("LSS : SPAWN : [%s],[%s], level %s",*dynamic_object->s_name,dynamic_object->name_replace(),*ai().game_graph().header().level(ai().game_graph().vertex(dynamic_object->m_tGraphID)->level_id()).name());
 	return						(dynamic_object);
 }
 
@@ -228,35 +221,37 @@ void CALifeSimulatorBase::create(CSE_ALifeDynamicObject *&i, CSE_ALifeDynamicObj
 	i->on_spawn					();
 }
 
-void CALifeSimulatorBase::create	(CSE_ALifeObject *object)
+void CALifeSimulatorBase::create(CSE_ALifeObject* object)
 {
 	CSE_ALifeDynamicObject* dynamic_object = object->cast_alife_dynamic_object();
 	if (!dynamic_object)
-		return;
-	
-	if (!dynamic_object->can_save()) {
-		dynamic_object->m_bALifeControl	= false;
+	{
 		return;
 	}
-	VERIFY						(dynamic_object->m_bOnline);
 
-#ifdef DEBUG
-//	Msg							("Creating object from client spawn [%d][%d][%s][%s]",dynamic_object->ID,dynamic_object->ID_Parent,dynamic_object->name(),dynamic_object->name_replace());
-#endif
-
-	if (0xffff != dynamic_object->ID_Parent) {
-		u16							id = dynamic_object->ID_Parent;
-		CSE_ALifeDynamicObject		*parent = objects().object(id);
-		VERIFY						(parent);
-		dynamic_object->m_tGraphID	= parent->m_tGraphID;
-		dynamic_object->o_Position	= parent->o_Position;
-		dynamic_object->m_tNodeID	= parent->m_tNodeID;
-		dynamic_object->ID_Parent	= 0xffff;
-		register_object				(dynamic_object,true);
-		dynamic_object->ID_Parent	= id;
+	if (!dynamic_object->can_save())
+	{
+		dynamic_object->m_bALifeControl = false;
+		return;
 	}
-	else
-		register_object				(dynamic_object,true);
+	VERIFY(dynamic_object->m_bOnline);
+
+
+	if (0xffff != dynamic_object->ID_Parent)
+	{
+		u16 id = dynamic_object->ID_Parent;
+		CSE_ALifeDynamicObject* parent = objects().object(id);
+		VERIFY(parent);
+		dynamic_object->m_tGraphID = parent->m_tGraphID;
+		dynamic_object->o_Position = parent->o_Position;
+		dynamic_object->m_tNodeID = parent->m_tNodeID;
+		dynamic_object->ID_Parent = 0xffff;
+		register_object(dynamic_object, true);
+		dynamic_object->ID_Parent = id;
+		return;
+	}
+
+	register_object(dynamic_object, true);
 }
 
 void CALifeSimulatorBase::release	(CSE_Abstract *abstract, bool alife_query)
@@ -339,7 +334,7 @@ void CALifeSimulatorBase::assign_death_position(CSE_ALifeCreatureAbstract *tpALi
 		l_tpALifeMonsterAbstract->m_tPrevGraphID = l_tpALifeMonsterAbstract->m_tNextGraphID = l_tpALifeMonsterAbstract->m_tGraphID;
 }
 
-shared_str CALifeSimulatorBase::level_name		() const
+shared_str CALifeSimulatorBase::level_name() const
 {
-	return		(ai().game_graph().header().level(ai().level_graph().level_id()).name());
+	return (ai().game_graph().header().level(ai().level_graph().level_id()).name());
 }
