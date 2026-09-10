@@ -562,6 +562,7 @@ void CRender::Render()
 		r_dsgraph_render_graph					(0);
 		r_dsgraph_render_lods					(true,true);
 		if(Details)	Details->Render				();
+		DetailLayers_RenderBrush3D			();
 		Target->phase_scene_end					();
 	} 
 	else 
@@ -649,6 +650,7 @@ void CRender::Render()
 		r_dsgraph_render_hud					();
 		r_dsgraph_render_lods					(true,true);
 		if(Details)	Details->Render				();
+		DetailLayers_RenderBrush3D			();
 		Target->phase_scene_end					();
 	}
 

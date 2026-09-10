@@ -61,6 +61,10 @@ void CDetailManager::cache_ReInitialize()
 		if (m_detail_layers_baking)
 			DetailLayers_SaveToBake();
 	}
+	// Snapshot the generated/baked fields, then overlay the sparse user strokes
+	// (user_mask_*.bin) so painted cells overwrite the generator and untouched ones keep it.
+	DetailLayers_CommitBaseFields();
+	DetailLayers_ApplyUserMasks();
 #else
 	BuildClusterField();
 	BuildFMBField();
@@ -135,6 +139,14 @@ void CDetailManager::UnpackSlot(int gx, int gz, Slot* D)
 void CDetailManager::cache_Update(const Fvector& view)
 {
 	PROF_EVENT("cache_Update");
+
+	// Deferred brush rebuild (requested from the render thread's editor). Runs here on
+	// the DetailsTask worker so schedule_Update/UnpackSlot/UnpackSlotItems and the item
+	// pool are only ever touched by this single thread - no more cross-thread pool
+	// corruption when the brush circle sits over slots the streaming pipeline is shifting.
+	if (m_brush_rebuild_around.exchange(false, std::memory_order_acquire))
+		DetailLayers_RebuildSlotsAround(m_brush_rebuild_center, m_brush_rebuild_radius);
+
 	int v_x = iFloor(view.x / dm_slot_size + .5f);
 	int v_z = iFloor(view.z / dm_slot_size + .5f);
 
@@ -287,6 +299,59 @@ void CDetailManager::cache_Update(const Fvector& view)
 			}
         }
     }
+}
+
+void CDetailManager::DetailLayers_RebuildSlotsAround(const Fvector& center, float radius)
+{
+	if (cache.empty() || cache.front().size() != dm_cache_line)
+		return;
+
+	const int expand = iCeil(radius / dm_slot_size) + 1;
+	const int slot_x = iFloor(center.x / dm_slot_size);
+	const int slot_z = iFloor(center.z / dm_slot_size);
+
+	for (int sz = slot_z - expand; sz <= slot_z + expand; sz++)
+	{
+		for (int sx = slot_x - expand; sx <= slot_x + expand; sx++)
+		{
+			// World slot cell [sx*slot, (sx+1)*slot); quick circle rejection on the center.
+			const float cx = ((float)sx + 0.5f) * dm_slot_size;
+			const float cz = ((float)sz + 0.5f) * dm_slot_size;
+			const float dx = cx - center.x;
+			const float dz = cz - center.z;
+			if ((dx * dx + dz * dz) > radius * radius)
+				continue;
+
+			const int gx = w2cg_X(sx);
+			const int gz = w2cg_Z(sz);
+			if (gx < 0 || gz < 0 || gx >= (int)dm_cache_line || gz >= (int)dm_cache_line)
+				continue;
+
+			Slot*& S = cache[gz][gx];
+			if (!S || S->empty)
+				continue;
+			if (S->type == stPending)
+				continue; // queued by streaming; will read fresh masks
+
+			UnpackSlot(gx, gz, S);
+			// UnpackSlot re-queued it; decompress right away instead of letting the
+			// pipeline redo it (double decompress would leak slot items).
+			auto it = std::find(unpacked_slots.begin(), unpacked_slots.end(), S);
+			if (it != unpacked_slots.end())
+				unpacked_slots.erase(it);
+			UnpackSlotItems(S);
+		}
+	}
+}
+
+// Publish a per-stroke slot rebuild to the DetailsTask worker (see cache_Update).
+// Editor strokes write the mask one frame and the rebuild kicks in on the same frame
+// the worker next runs - effectively immediate, but pooled/queued on the safe thread.
+void CDetailManager::DetailLayers_RequestRebuildAround(const Fvector& center, float radius)
+{
+	m_brush_rebuild_center = center;
+	m_brush_rebuild_radius = radius;
+	m_brush_rebuild_around.store(true, std::memory_order_release);
 }
 
 DetailSlot&	CDetailManager::QueryDB(int sx, int sz)
