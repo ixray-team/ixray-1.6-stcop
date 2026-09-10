@@ -458,22 +458,7 @@ void CPHElement::PhDataUpdate(dReal step)
 #endif
 	VERIFY(!fis_zero(m_l_scale));
 	VERIFY(!fis_zero(m_w_scale));
-	dBodySetLinearVel(
-		m_body,
-		linear_velocity[0]			/m_l_scale		,
-		linear_velocity[1]			/m_l_scale		,
-		linear_velocity[2]			/m_l_scale
-		);
-	dBodySetAngularVel(
-		m_body,
-		angular_velocity[0]			/m_w_scale		,
-		angular_velocity[1]			/m_w_scale		,
-		angular_velocity[2]			/m_w_scale
-		);
 
-	
-	///////////////////scale changes values directly so get base values after it/////////////////////////
-	/////////////////////////////base values////////////////////////////////////////////////////////////
 	dReal linear_velocity_smag	=		dDOT(linear_velocity,linear_velocity);
 	dReal linear_velocity_mag		=	_sqrt(linear_velocity_smag);
 
@@ -488,7 +473,7 @@ void CPHElement::PhDataUpdate(dReal step)
 	////////////////limit linear vel////////////////////////////////////////////////////////////////////////////////////////
 
 	//VERIFY(dV_valid(linear_velocity));
-	if(linear_velocity_mag>m_l_limit)
+	if(linear_velocity_mag>m_l_limit*m_l_scale)
 	{
 		CutVelocity(m_l_limit,m_w_limit);
 		VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)),phBoundaries,PhysicsRefObject(),"PhDataUpdate end, body position");
@@ -498,7 +483,7 @@ void CPHElement::PhDataUpdate(dReal step)
 		angular_velocity_mag	=	_sqrt(angular_velocity_smag);
 	}
 
-	if(angular_velocity_mag>m_w_limit)
+	if(angular_velocity_mag>m_w_limit*m_w_scale)
 	{
 		CutVelocity(m_l_limit,m_w_limit);
 		angular_velocity_smag	=	dDOT(angular_velocity,angular_velocity);
