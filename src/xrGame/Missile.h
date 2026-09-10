@@ -14,7 +14,8 @@ class CMissile : public CHudItemObject
 public:
 	enum EMissileStates : u8
 	{
-		eThrowStart = eLastBaseState+1,
+		eThrowCancel = eLastBaseState+1,
+		eThrowStart,
 		eReady,
 		eThrow,
 		eThrowEnd,
