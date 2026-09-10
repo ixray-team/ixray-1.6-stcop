@@ -44,7 +44,7 @@ void CHudItem::Load(const char* section)
 	else
 	{
 		// if it doesn't, then crash if line is missing from config
-		m_animation_slot = pSepSettings, r_float, ttings->r_u32(section,"animation_slot");
+		m_animation_slot = pSettings->r_u32(section,"animation_slot");
 	}
 
 	m_fHudFov = pSettings->read_if_exists<float>(hud_sect, "hud_fov", 0.0f);
