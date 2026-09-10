@@ -71,6 +71,7 @@
 
 #	include "WeaponAmmo.h"
 #	include "WeaponBinoculars.h"
+#	include "WeaponPistol.h"
 #	include "WeaponShotgun.h"
 #	include "WeaponRPG7.h"
 #	include "WeaponKnife.h"
@@ -313,7 +314,7 @@ void CObjectFactory::register_classes	()
 	ADD(CWeaponBinoculars		,CSE_ALifeItemWeaponMagazined	,CLSID_OBJECT_W_BINOCULAR		,"wpn_binocular");
 	ADD(CWeaponShotgun			,CSE_ALifeItemWeaponShotGun		,CLSID_OBJECT_W_SHOTGUN			,"wpn_shotgun");
 	ADD(CWeaponSVD,CSE_ALifeItemWeaponMagazined	,CLSID_OBJECT_W_SVD				,"wpn_svd");
-	ADD(CWeaponCustomPistol,CSE_ALifeItemWeaponMagazined	,CLSID_OBJECT_W_SVU				,"wpn_svu");
+	ADD(CWeaponMagazined, CSE_ALifeItemWeaponMagazined, CLSID_OBJECT_W_SVU, "wpn_svu");
 	ADD(CWeaponRPG7				,CSE_ALifeItemWeaponMagazined	,CLSID_OBJECT_W_RPG7			,"wpn_rpg7");
 	ADD(CWeaponMagazined				,CSE_ALifeItemWeaponMagazined	,CLSID_OBJECT_W_VAL				,"wpn_val");
 	ADD(CWeaponMagazined,CSE_ALifeItemWeaponMagazined	,CLSID_OBJECT_W_VINTOREZ		,"wpn_vintorez");
@@ -459,7 +460,7 @@ void CObjectFactory::register_classes	()
 	ADD(CWeaponRG6				,CSE_ALifeItemWeaponShotGun		,TEXT2CLSID("WP_RG6")			,"wpn_rg6_s");
 	ADD(CWeaponRPG7				,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_RPG7")			,"wpn_rpg7_s");
 	ADD(CWeaponShotgun			,CSE_ALifeItemWeaponShotGun		,TEXT2CLSID("WP_SHOTG")			,"wpn_shotgun_s");
-	ADD(CWeaponCustomPistol,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_SVU")			,"wpn_svu_s");
+	ADD(CWeaponMagazined, CSE_ALifeItemWeaponMagazined, TEXT2CLSID("WP_SVU"), "wpn_svu_s");
 	ADD(CWeaponPistol,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_USP45")			,"wpn_usp45_s");
 	ADD(CWeaponMagazined		,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_VAL")			,"wpn_val_s");
 	ADD(CWeaponMagazined		,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_VINT")			,"wpn_vintorez_s");

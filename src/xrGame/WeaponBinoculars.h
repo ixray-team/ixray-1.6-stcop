@@ -1,14 +1,14 @@
 #pragma once
 
-#include "WeaponCustomPistol.h"
+#include "WeaponMagazined.h"
 #include "../xrScripts/script_export_space.h"
 
 class CUIFrameWindow;
 class CUIStatic;
 
-class CWeaponBinoculars final : public CWeaponCustomPistol
+class CWeaponBinoculars final : public CWeaponMagazined
 {
-	using inherited = CWeaponCustomPistol;
+	using inherited = CWeaponMagazined;
 
 	bool m_bVision = false;
 
