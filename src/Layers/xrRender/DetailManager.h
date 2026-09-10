@@ -153,6 +153,16 @@ public:
 	void							BuildFMBField		();
 	float							SampleFMBField		(float world_x, float world_z) const;
 
+#ifndef _EDITOR
+	// Persist precomputed fields to $level$\detail_layers\ so a reload with unchanged
+	// detail settings skips the noise rebuild. All I/O is best-effort: a read-only
+	// level folder simply falls back to regenerating.
+	bool							DetailLayers_LoadFromBake();	// true => fields came from disk
+	void							DetailLayers_SaveToBake();
+	void							DetailLayers_ApplySettingsFromBake();	// restore r__detail_* to baked values
+	bool							m_detail_layers_baking = false;	// true during level Load() only
+#endif
+
 #ifdef _EDITOR
 	virtual ObjectList* 			GetSnapList		()=0;
 #else
