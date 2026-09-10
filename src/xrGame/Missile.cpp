@@ -372,7 +372,6 @@ void CMissile::State(u8 state)
 		break;
 		case eThrowCancel:
 		{
-			m_constpower = false;
 			SetPending(true);
 			PlayHUDMotion((!m_bUseAltThrow || m_constpower) ? "anm_throw_cancel" : "anm_throw_cancel_low", EHudMixType::eMixAll, GetState());
 
@@ -380,6 +379,9 @@ void CMissile::State(u8 state)
 			{
 				PlaySound((!m_bUseAltThrow || m_constpower) ? "sndThrowCancel" : "sndThrowCancelLow", Position());
 			}
+
+			m_constpower = false;
+
 			break;
 		}
 		case eThrowStart:
