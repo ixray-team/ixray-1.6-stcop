@@ -37,7 +37,7 @@ const float base_fixed_step											=	0.02f				;
 const float base_erp												=	0.54545456f			;
 const float base_cfm												=	1.1363636e-006f		;
 //base params
-float 			fixed_step											=	0.01f;
+float 			fixed_step											=	.00666666667f; // 150hz
 float 			world_cfm											=	Cfm(Spring(base_cfm,base_erp,base_fixed_step), Damping(base_cfm,base_erp));
 float 			world_erp											=	Erp(Spring(base_cfm,base_erp,base_fixed_step), Damping(base_cfm,base_erp));
 float			world_spring										=	1.0f* Spring(world_cfm,world_erp);

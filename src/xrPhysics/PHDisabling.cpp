@@ -140,22 +140,22 @@ void	CPHDisablingBase::UpdateValues(const Fvector &new_pos,const Fvector &new_ve
 
 	if(m_count<m_frames)
 	{
-		float			velocity_param		=	m_mean_velocity		.Update(new_pos)		;
-		float			acceleration_param	=	m_mean_acceleration	.Update(new_vel)		;
+		float			velocity_param		=	m_mean_velocity		.Update(new_pos)		/ fixed_step;
+		float			acceleration_param	=	m_mean_acceleration	.Update(new_vel)		/ fixed_step;
 		CheckState						(m_stateL1,velocity_param*m_frames,acceleration_param*m_frames)	;
 	}
 	else
 	{
-		float			velocity_param		=	m_mean_velocity		.UpdatePrevious(new_pos)		;
-		float			acceleration_param	=	m_mean_acceleration	.UpdatePrevious(new_vel)		;
+		float			velocity_param		=	m_mean_velocity		.UpdatePrevious(new_pos)		/ fixed_step;
+		float			acceleration_param	=	m_mean_acceleration	.UpdatePrevious(new_vel)		/ fixed_step;
 		CheckState						(m_stateL1,velocity_param*m_frames,acceleration_param*m_frames)	;
 	}
 }
 void	CPHDisablingBase::UpdateL2()
 {
 					m_stateL2			.	Reset						()							;
-	float			velocity_param		=	m_mean_velocity		.SumMagnitude()/m_frames			;
-	float			acceleration_param	=	m_mean_acceleration	.SumMagnitude()/m_frames			;
+	float			velocity_param		=	m_mean_velocity		.SumMagnitude()/m_frames			/ fixed_step;
+	float			acceleration_param	=	m_mean_acceleration	.SumMagnitude()/m_frames			/ fixed_step;
 
 	CheckState						(m_stateL2,velocity_param,acceleration_param)					;
 
