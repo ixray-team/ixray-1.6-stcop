@@ -61,6 +61,14 @@ public:
 	const fvector3&		bind_rotate() const;
 	std::string&		gamemtl();
 	const std::string&	gamemtl() const;
+	s_bone_shape&		shape() { return m_shape; }
+	const s_bone_shape&	shape() const { return m_shape; }
+	s_joint_ik_data&		joint_ik_data() { return m_joint_ik_data; }
+	const s_joint_ik_data&	joint_ik_data() const { return m_joint_ik_data; }
+	float&			mass() { return m_mass; }
+	float			mass() const { return m_mass; }
+	fvector3&		center_of_mass() { return m_center_of_mass; }
+	const fvector3&		center_of_mass() const { return m_center_of_mass; }
 
 protected:
 	uint16_t		m_id;

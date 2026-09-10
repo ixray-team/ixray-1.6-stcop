@@ -1,0 +1,2 @@
+#pragma once
+static const char xray_re_object_options_script[] = R"IXR_MEL(@MAYA_OBJECT_OPTIONS_SCRIPT@)IXR_MEL";
