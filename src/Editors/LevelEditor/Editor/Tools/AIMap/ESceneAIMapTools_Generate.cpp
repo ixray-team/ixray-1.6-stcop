@@ -650,7 +650,6 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 						Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
 						if (c_sh == nullptr || !c_sh->flags.bCollision)
 						{
-						{
 							continue;
 						}
 
