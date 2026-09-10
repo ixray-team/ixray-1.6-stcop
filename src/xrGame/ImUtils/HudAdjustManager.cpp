@@ -130,6 +130,9 @@ static void HudAdjustDrawSaveButton()
 
 		file.w_fvector3(sect, "collision_box_pos", p_item->m_measures.m_collision_params.obb_pos);
 		file.w_fvector3(sect, "collision_box_scale", p_item->m_measures.m_collision_params.obb_scale);
+		
+		file.w_float(sect, "collision_box_stifness", p_item->m_measures.m_collision_params.stifness);
+		file.w_float(sect, "collision_box_damping", p_item->m_measures.m_collision_params.damping);
 	};
 	
 	if (p_hud_item_first)
@@ -506,6 +509,21 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 				ImGui::DragFloat("X##OBBC", &obb_center.x, _delta_pos, -360.0f, 360.0f, "%.6f");
 				ImGui::DragFloat("Y##OBBC", &obb_center.y, _delta_pos, -360.0f, 360.0f, "%.6f");
 				ImGui::DragFloat("Z##OBBC", &obb_center.z, _delta_pos, -360.0f, 360.0f, "%.6f");
+				ImGui::TableNextColumn();
+
+				ImGui::EndTable();
+			}
+			
+			ImGui::SeparatorText("Spring inertion params##SIP");
+
+			if (ImGui::BeginTable("Data##SIP", 1))
+			{
+				ImGui::TableNextRow();
+
+				ImGui::TableNextColumn();
+				
+				ImGui::DragFloat("Stifness##SIP", &item->m_measures.m_collision_params.stifness, _delta_pos, EPS_S, FLT_MAX, "%.6f");
+				ImGui::DragFloat("Damping##SIP", &item->m_measures.m_collision_params.damping, _delta_pos, EPS_S, FLT_MAX, "%.6f");
 				ImGui::TableNextColumn();
 
 				ImGui::EndTable();
