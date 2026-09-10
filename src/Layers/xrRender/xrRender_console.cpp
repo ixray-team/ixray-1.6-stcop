@@ -693,9 +693,53 @@ public:
 	CCC_DetailReloadDetails_Boolean(LPCSTR N, bool* V)
 		: CCC_Boolean(N, V) {}
 
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(const char* args) {
 		CCC_Boolean::Execute(args);
 		RImplementation.Details->RequestCacheRebuild();
+	}
+};
+
+// Manual bake: regenerate the precomputed fields from the current console settings
+// and persist them to disk immediately. Useful when tweaking r__detail_* via console
+// and wanting the files updated without waiting for the next level load.
+class CCC_DetailLayersForceBake : public IConsole_Command
+{
+public:
+	CCC_DetailLayersForceBake(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(const char* args)
+	{
+		if (!RImplementation.Details|| !RImplementation.b_loaded)
+		{
+			Msg("! detail_layers: no loaded level, nothing to bake");
+			return;
+		}
+		Device.DetailsTask.wait();
+		// Rebuild first so stale in-memory fields never hit the disk, then persist.
+		RImplementation.Details->cache_ReInitialize();
+		RImplementation.Details->DetailLayers_SaveToBake();
+	}
+};
+
+// Rollback: restore the r__detail_* console state from the baked settings.txt and load
+// the last bake from disk. Restoring the settings first keeps crc consistent - otherwise
+// a later console flag flip or level restart would recompute/overwrite the bake.
+class CCC_DetailLayersForceLoad : public IConsole_Command
+{
+public:
+	CCC_DetailLayersForceLoad(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(const char* args)
+	{
+		if (!RImplementation.Details|| !RImplementation.b_loaded)
+		{
+			Msg("! detail_layers: no loaded level, nothing to load");
+			return;
+		}
+		Device.DetailsTask.wait();
+		RImplementation.Details->DetailLayers_ApplySettingsFromBake();
+		// crc now matches the baked settings -> fields come back from disk.
+		RImplementation.Details->cache_ReInitialize();
 	}
 };
 
@@ -872,6 +916,9 @@ void		xrRender_initconsole	()
 
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_min", &ps_r__detail_rnd_scale_min, 0.0f, 100.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_max", &ps_r__detail_rnd_scale_max, 0.0f, 100.0f);
+
+	CMD1(CCC_DetailLayersForceBake, "r__detail_bake_force");
+	CMD1(CCC_DetailLayersForceLoad, "r__detail_bake_force_load");
 
 
 	CMD3(CCC_Mask32, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
