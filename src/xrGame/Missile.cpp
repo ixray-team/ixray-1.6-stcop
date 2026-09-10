@@ -114,6 +114,16 @@ void CMissile::LoadSounds(const char* section)
 		m_eSoundsFlags.set(ESoundsFlags::sf_throw, true);
 		m_sounds.LoadSound(section, "snd_throw", "sndThrow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 	}
+
+	if (pSettings->line_exist(section, "snd_throw_cancel"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_throw_cancel, true);
+		m_sounds.LoadSound(section, "snd_throw_cancel", "sndThrowCancel", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+		if (pSettings->line_exist(section, "snd_throw_cancel_low"))
+		{
+			m_sounds.LoadSound(section, "snd_throw_cancel_low", "sndThrowCancelLow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+		}
+	}
 }
 
 bool CMissile::net_Spawn(CSE_Abstract* DC) 
@@ -311,10 +321,10 @@ void CMissile::shedule_Update(u32 dt)
 		}
 	}
 }
-#include "player_hud.h"
-void CMissile::State(u8 state) 
+
+void CMissile::State(u8 state)
 {
-	switch(GetState()) 
+	switch (GetState())
 	{
 		case eShowing:
 		{
@@ -326,42 +336,56 @@ void CMissile::State(u8 state)
 			{
 				PlaySound("SndShow", Position());
 			}
-		} break;
-	case eIdle:
+		}
+		break;
+		case eIdle:
 		{
-			SetPending			(false);
-			PlayAnimIdle		();
-		} break;
-	case eHiding:
+			SetPending(false);
+			PlayAnimIdle();
+		}
+		break;
+		case eHiding:
 		{
-			if(H_Parent())
+			if (H_Parent())
 			{
-				PlayHUDMotion		("anm_hide", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
-				SetPending			(true);
+				PlayHUDMotion("anm_hide", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
+				SetPending(true);
 				if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
 				{
 					PlaySound("SndHide", Position());
 				}
 			}
-		} break;
-	case eHidden:
+		}
+		break;
+		case eHidden:
 		{
-			if (1 /*GetHUD()*/) 
-			{
-				StopCurrentAnimWithoutCallback	();
-			};
-			
+			StopCurrentAnimWithoutCallback();
+
 			if (H_Parent())
-			{				
+			{
 				setVisible(false);
-				setEnabled(false);				
+				setEnabled(false);
 			};
-			SetPending			(false);
-		} break;
-	case eThrowStart:
+
+			SetPending(false);
+		}
+		break;
+		case eThrowCancel:
 		{
-			SetPending			(true);
-			m_fThrowForce		= m_fMinForce;
+			m_constpower = false;
+			SetPending(true);
+			PlayHUDMotion((!m_bUseAltThrow || m_constpower) ? "anm_throw_cancel" : "anm_throw_cancel_low", EHudMixType::eMixAll, GetState());
+
+			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw_cancel))
+			{
+				PlaySound((!m_bUseAltThrow || m_constpower) ? "sndThrowCancel" : "sndThrowCancelLow", Position());
+			}
+			break;
+		}
+		case eThrowStart:
+		{
+			SetPending(true);
+			m_fThrowForce = m_fMinForce;
 			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw_begin))
 			{
 				PlaySound("sndThrowBegin", Position());
@@ -379,8 +403,9 @@ void CMissile::State(u8 state)
 					}
 				}
 			}
-		} break;
-	case eReady:
+		}
+		break;
+		case eReady:
 		{
 			PlayHUDMotion((!m_bUseAltThrow || m_constpower) ? "anm_throw_idle" : "anm_throw_idle_low", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
@@ -393,11 +418,12 @@ void CMissile::State(u8 state)
 					}
 				}
 			}
-		} break;
-	case eThrow:
+		}
+		break;
+		case eThrow:
 		{
-			SetPending			(true);
-			m_throw				= false;
+			SetPending(true);
+			m_throw = false;
 			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw))
 			{
 				PlaySound("sndThrow", Position());
@@ -415,22 +441,17 @@ void CMissile::State(u8 state)
 					}
 				}
 			}
-
-		} break;
-	case eThrowEnd:
+		}
+		break;
+		case eThrowEnd:
 		{
 			if (!m_motion_marks_available)
 			{
 				PlayHUDMotion("anm_throw_end", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
 			}
-			SwitchState			(eShowing); 
-		} break;
-/*	case eBore:
-		{
-			PlaySound			(sndPlaying,Position());
-			PlayHUDMotion		("anm_bore", true, GetState());
-		} break;
-*/
+			SwitchState(eShowing);
+		}
+		break;
 	}
 }
 
@@ -441,49 +462,67 @@ void CMissile::OnStateSwitch	(u8 S)
 	State						(S);
 }
 
-
-void CMissile::OnAnimationEnd(u8 state) 
+void CMissile::OnAnimationEnd(u8 state)
 {
-	switch(state) 
+	switch (state)
 	{
-	case eHiding:
+		case eHiding:
 		{
 			setVisible(false);
 			SwitchState(eHidden);
-		} break;
-	case eShowing:
+		}
+		break;
+		case eShowing:
 		{
 			setVisible(true);
 			SwitchState(eIdle);
-		} break;
-	case eThrowStart:
+		}
+		break;
+		case eThrowStart:
 		{
-			if(H_Parent() && !m_fake_missile && !H_Parent()->cast_missile())
-				spawn_fake_missile	();
+			if (H_Parent() && !m_fake_missile && !H_Parent()->cast_missile())
+			{
+				spawn_fake_missile();
+			}
 
-			if(m_throw) 
-				SwitchState(eThrow); 
-			else 
+			if (m_throw)
+			{
+				SwitchState(eThrow);
+			}
+			else
+			{
 				SwitchState(eReady);
-		} break;
-	case eThrow:
+			}
+		}
+		break;
+		case eThrow:
 		{
-			SwitchState	(eThrowEnd);
+			SwitchState(eThrowEnd);
 			if (!m_motion_marks_available && !m_throw)
 			{
 				if (H_Parent())
+				{
 					Throw();
+				}
 			}
-		} break;
-	case eThrowEnd:
+		}
+		break;
+		case eThrowEnd:
 		{
-			SwitchState	(eShowing);
-		} break;
-	default:
-		inherited::OnAnimationEnd(state);
+			SwitchState(eShowing);
+		}
+		break;
+		case eThrowCancel:
+		{
+			SwitchState(eIdle);
+			break;
+		}
+		default:
+		{
+			inherited::OnAnimationEnd(state);
+		}
 	}
 }
-
 
 void CMissile::UpdatePosition(const Fmatrix& trans)
 {
@@ -705,6 +744,14 @@ bool CMissile::Action(u16 cmd, u32 flags)
 			return ThrowAction(cmd, flags);
 			break;
 		}
+		case kWPN_RELOAD:
+		{
+			if (HudAnimationExist("anm_throw_cancel") && GetNextState() == eReady && !m_throw)
+			{
+				SwitchState(eThrowCancel);
+			}
+			break;
+		}
 	}
 
 	return false;
@@ -748,7 +795,7 @@ bool CMissile::ThrowAction(u16 cmd, u32 flags)
 			}
 		}
 	}
-	else if ((!IsConst || m_bUseAltThrow) && (NextState == eReady || NextState == eThrowStart || NextState == eIdle))
+	else if ((!IsConst || m_bUseAltThrow) && (NextState == eReady || NextState == eThrowStart))
 	{
 		if (m_bUseAltThrow && m_constpower != IsConst)
 		{

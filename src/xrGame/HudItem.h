@@ -286,7 +286,8 @@ public:
 		sf_tacticaltorch = (1 << 21),
 		sf_laser = (1 << 22),
 		sf_breechblock = (1 << 23),
-		sf_jam = (1ull << 24),
+		sf_jam = (1 << 24),
+		sf_throw_cancel = (1ull << 25),
 	};
 
 	enum ESoundsFlags2 : u64
