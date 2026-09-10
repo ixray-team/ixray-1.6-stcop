@@ -477,6 +477,8 @@ void CRender::Render()
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(false);
 
+	Target->phase_procedural_sky();
+	Target->phase_procedural_clouds();
 	g_pGamePersistent->Environment().RenderSky();
 
 	RCache.set_xform_world(Fidentity);

@@ -89,7 +89,7 @@
 	#define r2_RT_luminance_pool "$user$luminance"
 #endif //USE_DX11
 
-#define r2_RT_luminance_cur	"$user$tonemap"
+#define		r2_RT_luminance_cur	"$user$tonemap"
 
 #define		r2_RT_dof_focus			"$user$dof_focus"		// --- 24 bit, 1x1, current focus distance
 #define		r2_RT_dof_focus_prev	"$user$dof_focus_prev"	// --- 24 bit, 1x1, previous frame focus distance
@@ -98,6 +98,23 @@
 #define 	r2_RT_dof_blur1			"$user$dof_blur1"		// --- 32 bit, dim, blur pass1
 #define 	r2_RT_dof_blur2			"$user$dof_blur2"		// --- 32 bit, dim, blur pass2
 #define 	r2_RT_dof_blur3			"$user$dof_blur3"		// --- 32 bit, dim, blur pass3
+
+#define		r4_RT_sky_view				"$user$procedural_sky_view"			// --- 16 bit, 200x100 atmosphere lookup texture
+#define		r4_RT_aerial_perspective	"$user$procedural_aerial"			// --- 16 bit, 32x32x32 aerial perspective volume
+#define		r4_RT_sky_octo_map			"$user$procedural_sky_octo"			// --- 16 bit, 512x512 procedural sky octahedral map
+#define		r4_RT_sky_octo_map_middle	"$user$procedural_sky_octo_middle"	// --- 16 bit, 128x128 procedural sky octahedral map
+#define		r4_RT_sky_octo_map_small	"$user$procedural_sky_octo_small"	// --- 16 bit, 32x32 procedural sky octahedral map
+#define		r4_RT_sky_octo_diffuse		"$user$procedural_sky_octo_diffuse"
+
+#define		r4_RT_procedural_clouds_raw "$user$procedural_clouds_raw"
+#define		r4_RT_procedural_clouds_depth "$user$procedural_clouds_depth"
+#define		r4_RT_procedural_clouds_history_0 "$user$procedural_clouds_history_0"
+#define		r4_RT_procedural_clouds_history_1 "$user$procedural_clouds_history_1"
+#define		r4_RT_procedural_clouds_history_depth_0 "$user$procedural_clouds_history_depth_0"
+#define		r4_RT_procedural_clouds_history_depth_1 "$user$procedural_clouds_history_depth_1"
+#define		r4_RT_procedural_clouds_resolved "$user$procedural_clouds_resolved"
+#define r4_RT_procedural_clouds_shadow "$user$procedural_clouds_shadow"
+#define r4_RT_procedural_clouds_shadow_filtered "$user$procedural_clouds_shadow_filtered"
 
 #define		r2_RT_smap_surf		"$user$smap_surf"		// --- directional
 #define		r2_RT_smap_depth	"$user$smap_depth"		// ---directional
@@ -191,4 +208,3 @@ IC float u_diffuse2s(Fcolor& c)
 {
 	return u_diffuse2s(c.r, c.g, c.b);
 }
-

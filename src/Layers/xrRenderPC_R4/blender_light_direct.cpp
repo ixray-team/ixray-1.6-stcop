@@ -27,6 +27,7 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
 	C.r_dx10Texture("s_accumulator", r2_RT_accum);
 	C.r_dx10Texture("s_lmap", r2_sunmask);
 	C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
+	C.r_dx10Texture("s_transmittance_lut", "shaders\\sky\\transmittance_lut");
 
 	jitter(C);
 
@@ -34,6 +35,7 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
 	C.r_dx10Sampler("smp_material");
 	C.r_dx10Sampler("smp_linear");
 	C.r_dx10Sampler("smp_smap");
+	C.r_dx10Sampler("smp_rtlinear");
 
 	C.r_End();
 }

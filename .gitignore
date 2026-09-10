@@ -74,3 +74,7 @@ cmake-build*/
 linux/sal.h
 *.TMP
 util/wrap_config.json
+
+# Local experimental material excluded from renderer checkpoints
+/docs/
+/tests/

@@ -5,6 +5,7 @@
 #include "../../Include/xrRender/EnvironmentRender.h"
 
 #include "blenders/Blender.h"
+#include "r__types.h"
 class CBlender_skybox		: public IBlender  
 {
 public:
@@ -14,11 +15,21 @@ public:
 
 	virtual		void		Compile			(CBlender_Compile& C)
 	{
+		#if RENDER == R_R4
+				// Compile the procedural branch of sky.vs/sky.ps.
+				// r_End() clears this local shader option after the pass.
+				RImplementation.addShaderOption("USE_PROCEDURAL_SKY_VIEW", "1");
+		#endif
 		C.r_Pass("sky", "sky", false, true, false);
 
 #ifdef USE_DX11
 		C.r_dx10Texture("s_sky0", "$null");
 		C.r_dx10Texture("s_sky1", "$null");
+
+		#if RENDER == R_R4 
+			C.r_dx10Texture("s_sky_view_lut", r4_RT_sky_view); // doenitz add procedural sky view LUT
+			C.r_dx10Texture("s_procedural_clouds", r4_RT_procedural_clouds_resolved);
+		#endif
 
 		C.r_dx10Sampler("smp_rtlinear");
 		C.r_dx10Sampler("smp_linear");
@@ -45,6 +56,8 @@ private:
 	ref_texture			sky_texture		;
 	ref_texture			sky_texture_env	;
 	ref_texture			clouds_texture	;
+	
+	
 };
 
 class dxEnvDescriptorMixerRender : public IEnvDescriptorMixerRender
@@ -59,7 +72,9 @@ public:
 public:
 	STextureList		sky_r_textures;		
 	STextureList		sky_r_textures_env;	
-	STextureList		clouds_r_textures;	
+	STextureList		clouds_r_textures;
+	ref_texture sky_view_lut; // doenitz add procedural sky view LUT
+	ref_texture procedural_clouds_resolved;
 };
 
 class dxEnvironmentRender : public IEnvironmentRender

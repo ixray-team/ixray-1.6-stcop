@@ -13,6 +13,9 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 	switch (C.iElement)
 	{
 	case 0:	// combine
+		RImplementation.addShaderOption("USE_PROCEDURAL_SKY_IBL", "1");
+		RImplementation.addShaderOption("USE_PROCEDURAL_AERIAL_PERSPECTIVE", "1");
+
 		C.r_Pass("stub_fullscreen_triangle", "combine_1", false, false,	false, true, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);
 		C.r_Stencil(TRUE, D3DCMP_LESSEQUAL, 0xff, 0x00);
 		C.r_StencilRef(0x01);
@@ -27,6 +30,12 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("env_s1",			r2_T_envs1			);
 		C.r_dx10Texture		("sky_s0",			r2_T_sky0			);
 		C.r_dx10Texture		("sky_s1",			r2_T_sky1			);
+		//======
+		C.r_dx10Texture		("s_sky_octo_ibl",	r4_RT_sky_octo_map	);
+		C.r_dx10Texture		("s_sky_octo_ibl_small",	r4_RT_sky_octo_map_small	);
+		C.r_dx10Texture		("s_sky_octo_ibl_diffuse", r4_RT_sky_octo_diffuse);
+		C.r_dx10Texture		("s_aerial_perspective_lut",r4_RT_aerial_perspective);
+		//======
 		C.r_dx10Texture		("s_env_fwd",		r2_RT_env_fwd		);
 		C.r_dx10Texture		("s_occ",			r2_RT_ssao_temp		);
 		C.r_dx10Texture		("s_half_depth",	r2_RT_half_depth	);

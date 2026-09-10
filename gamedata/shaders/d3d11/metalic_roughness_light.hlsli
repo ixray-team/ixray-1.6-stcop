@@ -60,7 +60,7 @@ float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, fl
     float3 F = FresnelSchlick(Specular, HdotV);
 
     float3 BRDF = lerp(Diffuse, 0.25f * D * G, F);
-    return GammaToLinear(Radiance.xyz) * NdotL * BRDF;
+    return (Radiance.xyz) * NdotL * BRDF;
 }
 
 float3 DirectLightLegacy(float4 Radiance, float3 Light, float3 Normal, float3 View, float3 Color, float Material, float Gloss)
@@ -83,7 +83,7 @@ float3 SimpleTranslucency(float3 Radiance, float3 Light, float3 Normal)
 	float Factor = 1.0f - saturate(abs(Scale) * 13.0f - 1.0f);
 
 	float SSS = lerp(saturate(NdotL), Attention, Factor * Factor);
-	return GammaToLinear(Radiance.xyz * saturate(3.5f * SSS + 0.1f));
+	return (Radiance.xyz * saturate(3.5f * SSS + 0.1f));
 }
 
 float3 sample_vndf_isotropic(float3 n, float3 wi, float2 u, float alpha)

@@ -92,7 +92,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		
 		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
 		
-		float4 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f);
+		float4 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f) + 1e-8f;
 		float3 Light = ReflectPoint - SSLR.xyz;
 		
 		float Length = length(Light);
@@ -120,7 +120,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	}
 
 	FinalColor *= rcp(FinalWeight);
-	FinalColor.xyz = saturate(FinalColor.xyz);
+	FinalColor.xyz = FinalColor.xyz;
 
 	FinalColor.w += O.ViewDist;
 

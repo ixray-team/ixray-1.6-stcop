@@ -59,6 +59,10 @@ public:
 	//============== new Depth of Field ==============
 	IBlender* b_new_dof = nullptr;
 
+	//============== new procedural sky ==============
+	IBlender* b_procedural_sky = nullptr;
+	IBlender* b_procedural_clouds = nullptr;
+
 #ifdef DEBUG
 	struct		dbg_line_t		{
 		Fvector	P0,P1;
@@ -140,6 +144,39 @@ public:
 	ref_rt						rt_dof_blur2;			// 32bit, dim,		blur pass2
 	ref_rt						rt_dof_blur3;			// 32bit, dim,		blur pass3
 
+	//============== procedural sky ==============
+	ref_rt						rt_procedural_sky_view;		  // 200x100
+	ref_rt						rt_procedural_sky_octo;		  // 520x520
+	ref_rt						rt_procedural_sky_octo_middle; // 130x130
+	ref_rt						rt_procedural_sky_octo_small;  // 34x34
+	ref_rt						rt_procedural_sky_octo_diffuse;
+	ref_rt						rt_procedural_clouds_raw;
+	ref_rt						rt_procedural_clouds_depth; // weighted ray distance, km; 0 = empty
+	ref_rt						rt_procedural_clouds_history_0;
+	ref_rt						rt_procedural_clouds_history_1;
+	ref_rt rt_procedural_clouds_history_depth_0;
+	ref_rt rt_procedural_clouds_history_depth_1;
+	ref_rt rt_procedural_clouds_resolved;
+	static constexpr u32 clouds_shadow_map_size = 1024;
+	ref_rt rt_procedural_clouds_shadow; // one 2D layer: tau, light Z start/end, T
+	ref_rt rt_procedural_clouds_shadow_filtered; // edge-aware filtered tau; center interval is retained
+	u32 clouds_history_frame = 0;
+	u32 clouds_history_frames = 0;
+	u32 clouds_history_write = 0;
+	u32 clouds_history_width = 0;
+	u32 clouds_history_height = 0;
+	Fmatrix clouds_previous_view_projection;
+	Fvector clouds_previous_camera;
+	Fvector clouds_previous_direction;
+	float clouds_previous_fov = 0.0f;
+	Fvector clouds_previous_jitter; // clip-space scene jitter, not trace phase
+	u32 clouds_previous_scale_mode = 0;
+	u32 clouds_previous_aa_type = 0;
+
+	IRHISurface* s_procedural_aerial_perspective = nullptr;
+	IRHIUnorderedAccessView* u_procedural_aerial_perspective = nullptr;
+	ref_texture t_procedural_aerial_perspective;
+
 	// env
 	ref_texture				t_envmap_0		;	// env-0
 	ref_texture				t_envmap_1		;	// env-1
@@ -207,29 +244,29 @@ private:
 
 	//	DX10 Rain
 	ref_shader					s_rain;
-	ref_geom						g_accum_point	;
-	ref_geom						g_accum_spot	;
-	ref_geom						g_accum_omnipart;
-	ref_geom						g_accum_volumetric;
+	ref_geom					g_accum_point	;
+	ref_geom					g_accum_spot	;
+	ref_geom					g_accum_omnipart;
+	ref_geom					g_accum_volumetric;
 
-	IRHIBuffer*		g_accum_point_vb;
-	IRHIBuffer*		g_accum_point_ib;
+	IRHIBuffer*					g_accum_point_vb;
+	IRHIBuffer*					g_accum_point_ib;
 
-	IRHIBuffer*		g_accum_omnip_vb;
-	IRHIBuffer*		g_accum_omnip_ib;
+	IRHIBuffer*					g_accum_omnip_vb;
+	IRHIBuffer*					g_accum_omnip_ib;
 
-	IRHIBuffer*		g_accum_spot_vb	;
-	IRHIBuffer*		g_accum_spot_ib	;
+	IRHIBuffer*					g_accum_spot_vb	;
+	IRHIBuffer*					g_accum_spot_ib	;
 
-	IRHIBuffer*		g_accum_volumetric_vb;
-	IRHIBuffer*		g_accum_volumetric_ib;
+	IRHIBuffer*					g_accum_volumetric_vb;
+	IRHIBuffer*					g_accum_volumetric_ib;
 
-	ID3DBlendState*			g_debug_blend_state = nullptr;
+	ID3DBlendState*				g_debug_blend_state = nullptr;
 
-	float							f_bloom_factor;
+	float						f_bloom_factor;
 
 	// Luminance
-	ref_shader			s_luminance;
+	ref_shader					s_luminance;
 	float						f_luminance_adapt;
 
 	//================= new bloom and lum =================
@@ -247,6 +284,9 @@ private:
 	ref_shader					s_dof_blur2;
 	ref_shader					s_dof_blur3;
 	
+	//============== Procedural Sky ==================
+	ref_shader					s_procedural_sky;
+	ref_shader					s_procedural_clouds;
 
 	// FX: ScreenQuad
 	IRHIBuffer* FSTriangleVB = nullptr;
@@ -258,13 +298,13 @@ private:
 	ref_geom					g_combine_2UV;
 	ref_geom					g_combine_cuboid;
 	ref_geom					g_aa_AA;
-	ref_shader				s_combine_volumetric;
+	ref_shader					s_combine_volumetric;
 public:
-	ref_shader				s_combine;
-	ref_geom				FSTriangleGeom;
-	ref_shader				s_postprocess;
+	ref_shader					s_combine;
+	ref_geom					FSTriangleGeom;
+	ref_shader					s_postprocess;
 	ref_geom					g_postprocess;
-	ref_shader				s_menu;
+	ref_shader					s_menu;
 	ref_geom					g_menu;
 private:
 	float						im_noise_time;
@@ -401,6 +441,9 @@ public:
 	void						phase_bloom_upsample();
 	void						phase_new_luminance();
 	void						phase_new_dof();
+	void						phase_procedural_sky();
+	void						phase_procedural_clouds();
+	//void						phase_procedural_clouds_composite();
 	//==========================================================
 
 

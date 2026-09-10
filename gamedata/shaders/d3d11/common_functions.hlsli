@@ -61,6 +61,13 @@ void RemapVector(inout float3 View)
     View.y = View.y * 2.0 - 1.0;
 }
 
+float3 safe_normalize(float3 value)
+{
+    const float length_squared = dot(value, value);
+
+    return length_squared > 1e-12f ? value * rsqrt(length_squared) : float3(0.0f, 1.0f, 0.0f);
+}
+
 float3 CommerceToneMapping(float3 color, float startCompression, float desaturation)
 {
     // Lisence Creative Commons Attribution 4.0 International CC BY 4.0

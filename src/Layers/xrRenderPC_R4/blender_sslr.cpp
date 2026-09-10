@@ -11,6 +11,7 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0:
+		RImplementation.addShaderOption("USE_PROCEDURAL_SKY_IBL", "1");
         C.r_ComputePass("sslr_render");
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -29,6 +30,10 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("sky_s1", r2_T_sky1);
         C.r_dx10Texture("env_s0", r2_T_envs0);
         C.r_dx10Texture("env_s1", r2_T_envs1);
+		//======
+		C.r_dx10Texture("s_sky_octo_ibl",r4_RT_sky_octo_map);
+		C.r_dx10Texture("s_sky_octo_ibl_small",r4_RT_sky_octo_map_small);
+		//======
 
 		C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
         C.r_dx10Sampler("smp_linear");

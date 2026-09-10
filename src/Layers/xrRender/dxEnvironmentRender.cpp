@@ -92,6 +92,10 @@ void dxEnvDescriptorMixerRender::Copy(IEnvDescriptorMixerRender& _in) {
 
 	sky_r_textures_env.assign(other->sky_r_textures_env.begin(), other->sky_r_textures_env.end());
 	sky_r_textures_env.dwReference++;
+	#if RENDER == R_R4
+		sky_view_lut = other->sky_view_lut;
+		procedural_clouds_resolved = other->procedural_clouds_resolved;
+	#endif
 }
 
 void dxEnvironmentRender::Copy(IEnvironmentRender& _in) {
@@ -106,11 +110,16 @@ void dxEnvDescriptorMixerRender::Destroy() {
 	sky_r_textures.clear();
 	sky_r_textures_env.clear();
 	clouds_r_textures.clear();
+	#if RENDER == R_R4
+		sky_view_lut.destroy();
+		procedural_clouds_resolved.destroy();
+	#endif
 }
 
 void dxEnvDescriptorMixerRender::Clear() {
 	std::pair<u32, ref_texture>	zero = std::make_pair(u32(0), ref_texture(nullptr));
 	sky_r_textures.clear();
+	sky_r_textures.push_back(zero);
 	sky_r_textures.push_back(zero);
 	sky_r_textures.push_back(zero);
 	sky_r_textures.push_back(zero);
@@ -142,6 +151,21 @@ void dxEnvDescriptorMixerRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorR
 	clouds_r_textures.clear();
 	clouds_r_textures.push_back(std::make_pair(0, pA->clouds_texture));
 	clouds_r_textures.push_back(std::make_pair(1, pB->clouds_texture));
+	#if RENDER == R_R4
+
+		if (!sky_view_lut)
+		{
+			sky_view_lut.create(r4_RT_sky_view);
+		}
+		if (!procedural_clouds_resolved)
+		{
+			procedural_clouds_resolved.create(r4_RT_procedural_clouds_resolved);
+		}
+
+		sky_r_textures.push_back(std::make_pair(2, sky_view_lut));
+		sky_r_textures.push_back(std::make_pair(3, procedural_clouds_resolved));
+
+	#endif
 }
 
 void dxEnvDescriptorRender::OnDeviceCreate(CEnvDescriptor& owner) {

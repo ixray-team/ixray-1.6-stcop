@@ -27,7 +27,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		Point.xyz = ViewVec * fog_params.z;
 		Point.w = EPS_S;
 		
-		Final.xyz = CompureSpecularIrradance(ViewVec.xyz, 1.0f, 0.2f).xyz;
+		Final.xyz = CompureSpecularIrradance(ViewVec.xyz, 1.0f, 0.2f).xyz; // 1.0, 0.2
 		
 		Final.xyz *= rcp(1.0f + Final.xyz);
 		Final.xyz = saturate(Final.xyz);
@@ -45,8 +45,8 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	float4 H;
 	
 #ifndef USE_LEGACY_LIGHT
-	H.xyz = sample_vndf_isotropic(O.Normal, -ViewVec, Jitter * float2(1.0, 0.7), O.Roughness * O.Roughness);
-	H.w = pdf_vndf_isotropic(O.Normal, -ViewVec, reflect(ViewVec, H.xyz), O.Roughness * O.Roughness);
+    H.xyz = sample_vndf_isotropic(O.Normal, -ViewVec, Jitter * float2(1.0, 0.7), O.Roughness * O.Roughness);
+    H.w = pdf_vndf_isotropic(O.Normal, -ViewVec, reflect(ViewVec, H.xyz), O.Roughness * O.Roughness);
 #else
 	H.xyz = O.Normal;
 	H.w = EPS;
@@ -96,7 +96,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	} 
 	else
 	{
-		Point.xyz = Reflection.xyz * s_env_dist.SampleLevel(smp_linear, Point.xyz, 0.0f).x;
+		Point.xyz = Reflection.xyz * 0.0f * s_env_dist.SampleLevel(smp_linear, Point.xyz, 0.0f).x;
 #endif
 	}
 	
@@ -118,7 +118,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	}
 	
 	Point.xyz = lerp(Point.xyz, SSLR.xyz, SSLR.w);
-	Final.xyz = LinearToGamma(Final.xyz);
+	//Final.xyz = LinearToGamma(Final.xyz);
 	
 	Hemi.w = max(length(Point.xyz), length(StartPoint.xyz) + length(Point.xyz - StartPoint.xyz));
 	Hemi.w = saturate(Hemi.w * fog_params.w + fog_params.x);
@@ -128,8 +128,8 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	Point.w = rcp(max(EPS_S, H.w));
 	
-	Final.xyz *= rcp(1.0f + Final.xyz);
-	Final.xyz = saturate(Final.xyz);
+	//Final.xyz *= rcp(1.0f + Final.xyz);
+	//Final.xyz = saturate(Final.xyz);
 	
 	Final.w = isHUDRender;
 

@@ -22,6 +22,8 @@
 #include "blender_bloom_upsample.h"
 #include "blender_new_adaptation.h"
 #include "blender_new_dof.h"
+#include "blender_procedural_sky.h"
+#include "blender_procedural_clouds.h"
 
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
@@ -624,6 +626,78 @@ CRenderTarget::CRenderTarget()
 		s_nvg.create(b_nvg);
 	}
 
+	//sky
+	{
+		b_procedural_sky = new CBlender_procedural_sky();
+		s_procedural_sky.create(b_procedural_sky);
+		//s_compute_ap_lut.create(b_procedural_sky);
+		//s_compute_sky_octomap.create(b_procedural_sky);
+		//s_compute_sky_octomap_downsample.create(b_procedural_sky);
+		rt_procedural_sky_view.create(r4_RT_sky_view, 200, 100, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_sky_octo.create(r4_RT_sky_octo_map, 520, 520, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_sky_octo_middle.create(r4_RT_sky_octo_map_middle, 130, 130, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_sky_octo_small.create(r4_RT_sky_octo_map_small, 34, 34, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_sky_octo_diffuse.create(r4_RT_sky_octo_diffuse, 34, 34, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+
+		constexpr u32 kAerialLutSize = 32;
+
+		RHITextureDesc desc = {};
+		desc.Width = kAerialLutSize;
+		desc.Height = kAerialLutSize;
+		desc.Depth = kAerialLutSize;
+		desc.MipLevels = 1;
+		desc.Format = ERHI_FORMAT::R16G16B16A16_FLOAT;
+		desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+		desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE | ERHI_BIND_FLAG::UNORDERED_ACCESS;
+
+		s_procedural_aerial_perspective = GRHI->CreateTexture3D(desc, nullptr);
+		R_ASSERT(s_procedural_aerial_perspective);
+
+		t_procedural_aerial_perspective =dxRenderDeviceRender::Instance().Resources->_CreateTexture(r4_RT_aerial_perspective);
+		t_procedural_aerial_perspective->surface_set(s_procedural_aerial_perspective);
+
+		RHIUAVDesc uav_desc = {};
+		uav_desc.Format = ERHI_FORMAT::R16G16B16A16_FLOAT;
+		uav_desc.ViewDimension = ERHI_VIEW_DIMENSION::Texture3D;
+		uav_desc.MipSlice = 0;
+		uav_desc.FirstWSlice = 0;
+		uav_desc.WSize = kAerialLutSize;
+
+		u_procedural_aerial_perspective = GRHI->CreateUAV(s_procedural_aerial_perspective, uav_desc);
+		R_ASSERT(u_procedural_aerial_perspective);
+	}
+	//clouds
+	{
+		// Raw output of the procedural-cloud raymarch.
+		// RGB = premultiplied radiance.
+		// A   = transmittance.
+		const u32 cloud_width = (s_dwWidth + 1u) / 2u;
+		const u32 cloud_height = (s_dwHeight + 1u) / 2u;
+		rt_procedural_clouds_raw.create(r4_RT_procedural_clouds_raw, cloud_width, cloud_height, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		// Current-frame cloud depth for future temporal reprojection (not scene depth).
+		// ref_rt owns this texture and handles destruction/device reset like raw.
+		rt_procedural_clouds_depth.create(r4_RT_procedural_clouds_depth, cloud_width, cloud_height,
+			ERHI_FORMAT::R32_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_clouds_history_0.create(r4_RT_procedural_clouds_history_0, s_dwWidth, s_dwHeight,
+			ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_clouds_history_1.create(r4_RT_procedural_clouds_history_1, s_dwWidth, s_dwHeight,
+			ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_clouds_history_depth_0.create(r4_RT_procedural_clouds_history_depth_0, s_dwWidth, s_dwHeight,
+			ERHI_FORMAT::R32_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_clouds_history_depth_1.create(r4_RT_procedural_clouds_history_depth_1, s_dwWidth, s_dwHeight,
+			ERHI_FORMAT::R32_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_clouds_resolved.create(r4_RT_procedural_clouds_resolved, s_dwWidth, s_dwHeight,
+			ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_clouds_shadow.create(r4_RT_procedural_clouds_shadow,
+			clouds_shadow_map_size, clouds_shadow_map_size,
+			ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_clouds_shadow_filtered.create(r4_RT_procedural_clouds_shadow_filtered,
+			clouds_shadow_map_size, clouds_shadow_map_size,
+			ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		b_procedural_clouds = new CBlender_procedural_clouds();
+		s_procedural_clouds.create(b_procedural_clouds);
+	}
+
 	//SSLR
 	{
 		if(RImplementation.o.deffered_reflecitons) 
@@ -1096,6 +1170,16 @@ CRenderTarget::~CRenderTarget	()
 		_RELEASE(t_noise_surf[it]);
 	}
 
+	_RELEASE(u_procedural_aerial_perspective);
+
+	if (t_procedural_aerial_perspective)
+	{
+		t_procedural_aerial_perspective->surface_set(nullptr);
+	}
+	t_procedural_aerial_perspective.destroy();
+
+	_RELEASE(s_procedural_aerial_perspective);
+
 	accum_spot_geom_destroy();
 	accum_omnip_geom_destroy();
 	accum_point_geom_destroy();
@@ -1125,6 +1209,9 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_bloom_upsample);
 	xr_delete(b_new_adaptation);
 	xr_delete(b_sslr);
+	xr_delete(b_new_dof);
+	xr_delete(b_procedural_sky);
+	xr_delete(b_procedural_clouds);
 
 	g_Fsr3Wrapper.Destroy();
 #if 0
