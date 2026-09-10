@@ -46,6 +46,7 @@ void CDetailManager::cache_ReInitialize()
 	cache_cx = 0;
 	cache_cz = 0;
 	BuildClusterField();
+	BuildFMBField();
 
 	// Initialize cache-grid
 	for (u32 i = 0; i < dm_cache_line; i++)
