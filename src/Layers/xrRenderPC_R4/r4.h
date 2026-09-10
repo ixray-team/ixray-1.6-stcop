@@ -247,6 +247,10 @@ public:
 			eye, target, min_height, opaque_distance, sample_step);
 	}
 
+	// Detail Layers Editor tool (brush overlay + ImGui window)
+	void renderImGuiDebugWindow_DetailLayersEditor() override;
+	void DetailLayers_RenderBrush3D();
+
 	// Loading / Unloading
 	virtual void create();
 	virtual void destroy();
