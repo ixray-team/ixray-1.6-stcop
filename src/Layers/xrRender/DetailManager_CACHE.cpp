@@ -45,8 +45,26 @@ void CDetailManager::cache_ReInitialize()
 	bwdithermap(2, dither);
 	cache_cx = 0;
 	cache_cz = 0;
+#ifndef _EDITOR
+	// Reuse the baked fields when the level + settings still match; otherwise regenerate
+	// and, during an actual level Load(), persist the fresh bake for the next session.
+	// Runtime-only rebuilds (console changes) stay in memory so a momentary tweak cannot
+	// corrupt the on-disk bake; it is overwritten on the next level load instead.
+	if (DetailLayers_LoadFromBake())
+	{
+		// fields already populated from disk
+	}
+	else
+	{
+		BuildClusterField();
+		BuildFMBField();
+		if (m_detail_layers_baking)
+			DetailLayers_SaveToBake();
+	}
+#else
 	BuildClusterField();
 	BuildFMBField();
+#endif
 
 	// Initialize cache-grid
 	for (u32 i = 0; i < dm_cache_line; i++)
