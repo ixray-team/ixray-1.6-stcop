@@ -852,19 +852,19 @@ void		xrRender_initconsole	()
 	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_warp_max", &ps_r__detail_cluster_warp_max, 0.0f, 3.0f);
 
 
-	CMD2(CCC_Boolean, "r__detail_fmb_use_layer_1", &ps_r__detail_fmb_use_layer_1);
+	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_fmb_use_layer_1", &ps_r__detail_fmb_use_layer_1);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_frequency", &ps_r__detail_fmb_layer_1_frequency, 0.0f, 1.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_amplitude", &ps_r__detail_fmb_layer_1_amplitude, 0.0f, 10.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_seed", &ps_r__detail_fmb_layer_1_seed, 0, 9999);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_power", &ps_r__detail_fmb_layer_1_power, 0.0f, 1.0f);
 
-	CMD2(CCC_Boolean, "r__detail_fmb_use_layer_2", &ps_r__detail_fmb_use_layer_2);
+	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_fmb_use_layer_2", &ps_r__detail_fmb_use_layer_2);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_frequency", &ps_r__detail_fmb_layer_2_frequency, 0.0f, 1.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_amplitude", &ps_r__detail_fmb_layer_2_amplitude, 0.0f, 10.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_seed", &ps_r__detail_fmb_layer_2_seed, 0, 9999);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_power", &ps_r__detail_fmb_layer_2_power, 0.0f, 1.0f);
 
-	CMD2(CCC_Boolean, "r__detail_fmb_use_layer_3", &ps_r__detail_fmb_use_layer_3);
+	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_fmb_use_layer_3", &ps_r__detail_fmb_use_layer_3);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_frequency", &ps_r__detail_fmb_layer_3_frequency, 0.0f, 1.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_amplitude", &ps_r__detail_fmb_layer_3_amplitude, 0.0f, 10.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_seed", &ps_r__detail_fmb_layer_3_seed, 0, 9999);
