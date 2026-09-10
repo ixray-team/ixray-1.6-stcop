@@ -736,6 +736,7 @@ void RenderToolsOMFEditorWindow();
 void RenderCarConfigEditor();
 void RenderToolsInputManagerWindow();
 void RenderToolsRenderDebugSVGStorageViewerWindow();
+void RenderDetailLayersEditorWindow();
 void RenderTextureEditor();
 void RenderQuestEditor();
 void RenderPPEEditor();

@@ -234,6 +234,10 @@ public:
 	virtual bool					is_sun_static			()	{ return o.sunstatic;}
 	virtual DWORD					get_dx_level			()	{ return 0x000A0001; }
 
+	// Detail Layers Editor tool (brush overlay + ImGui window)
+	void renderImGuiDebugWindow_DetailLayersEditor() override;
+	void DetailLayers_RenderBrush3D();
+
 	// Loading / Unloading
 	virtual void create();
 	virtual void destroy();
