@@ -27,7 +27,7 @@ typedef xr_surface_map::iterator xr_surface_map_it;
 
 class maya_export_tools {
 public:
-					maya_export_tools(const MString& options = "");
+				maya_export_tools(const MString& options = "");
 
 	MStatus			export_object(const char* path, bool selection_only = false);
 	MStatus			export_skl_object(const char* path, bool selection_only = false);

@@ -27,6 +27,7 @@ enum s_bone_shape_flag {
 	SF_NO_PICKABLE		= 0x1,
 	SF_REMOVE_AFTER_BREAK	= 0x2,
 	SF_NO_PHYSICS		= 0x4,
+	SF_NO_FOG_COLLIDER	= 0x8,
 };
 
 struct s_bone_shape {
