@@ -575,7 +575,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 
 		if (ImGui::Button("Reset##IPosition"))
 		{
-			position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "item_position", pSettings->r_fvector3(item->m_sect_name, "position"));
+			position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, "item_position", pSettings->r_fvector3(item->m_sect_name, "position"));
 		}
 
 		if (ImGui::BeginTable("Data##HUDPI", 1))
@@ -595,7 +595,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		Fvector& rotation = item->m_measures.m_item_attach[1];
 		if (ImGui::Button("Reset##IRotation"))
 		{
-			rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "item_orientation", pSettings->r_fvector3(item->m_sect_name, "orientation"));
+			rotation = pSettings->read_if_exists<Fvector3>(item->m_sect_name, "item_orientation", pSettings->r_fvector3(item->m_sect_name, "orientation"));
 		}
 
 		if (ImGui::BeginTable("Data##HUDR", 1))
