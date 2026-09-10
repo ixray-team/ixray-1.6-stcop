@@ -31,9 +31,9 @@ struct ENGINE_API SPPInfo {
 			return *this;
 		}
 	};
-	float		blur, gray;
+	float		blur = 0, gray = 0;
 	struct SDuality { 
-		float h, v; 
+		float h = 0, v = 0; 
 		SDuality() = default;
 		SDuality				(float _h, float _v):h(_h),v(_v){}
 		IC SDuality& set		(float _h, float _v)			{
@@ -52,9 +52,9 @@ struct ENGINE_API SPPInfo {
 		}
 	} noise;
 
-	SColor				color_base;
-	SColor				color_gray;
-	SColor				color_add;
+	SColor color_base = {};
+	SColor color_gray = {};
+	SColor color_add = {};
 	float				cm_influence;
 	float				cm_interpolate;
 	shared_str			cm_tex1;
