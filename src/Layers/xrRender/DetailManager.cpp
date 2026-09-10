@@ -158,7 +158,9 @@ void CDetailManager::Load()
 	m_slots->close();
 
 	// Initialize 'vis' and 'cache'
+	m_detail_layers_baking = true; // allow persisting the freshly generated bake
 	cache_ReInitialize();
+	m_detail_layers_baking = false;
 
 	// Hardware specific optimizations
 	hw_Load();
