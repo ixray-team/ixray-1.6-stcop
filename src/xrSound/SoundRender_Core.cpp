@@ -773,8 +773,8 @@ bool CSoundRender_Core::object_in_audiozone(const Fvector& P)
 		geom_DB.ray_query(geom_ENV, P, dir, 1000.0f);
 		if (geom_DB.r_count())
 		{
-			CDB::RESULT* r = geom_DB.r_begin();
-			CDB::TRI& T = geom_ENV->get_tris()[r->id];
+			auto& r = geom_DB.r_any();
+			CDB::TRI& T = geom_ENV->get_tris()[r.tris_id];
 			FvectorVec& V = geom_ENV->get_verts();
 			Fvector tri_norm = zero_vel;
 			tri_norm.mknormal(V[T.verts[0]], V[T.verts[1]], V[T.verts[2]]);
