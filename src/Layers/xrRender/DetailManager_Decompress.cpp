@@ -65,7 +65,8 @@ static u32 select_clustered_asset(
 	float world_x, float world_z,
 	u32 seed, u32 asset_count,
 	float sharpness, float warp,
-	float patch_size_min, float patch_size_max
+	float patch_size_min, float patch_size_max,
+	u8* raw_out = nullptr
 )
 {
 	if (asset_count == 0)
@@ -123,7 +124,10 @@ static u32 select_clustered_asset(
 	u32 cell_z = (u32)iFloor(world_z / dm_slot_size);
 	u32 h = hash_u32(hash_u32(seed) ^ (cell_x * 374761393u + 668265263u));
 	h = hash_u32(h ^ (cell_z * 2246822519u + 3266489917u));
-	float rnd = hash01(h) * sum;
+	float rnd_raw = hash01(h);
+	if (raw_out)
+		*raw_out = (u8)(rnd_raw * 255.0f);
+	float rnd = rnd_raw * sum;
 
 	float acc = 0.0f;
 	for (u32 t = 0; t < count; t++)
@@ -151,10 +155,12 @@ void CDetailManager::BuildClusterField()
 	u32 sx = dtH.size_x;
 	u32 sz = dtH.size_z;
 	cluster_field.resize(sx * sz);
+	cluster_rnd_field.resize(sx * sz);
 
 	if (!ps_r__detail_use_cluster_mix_tree_assets || cluster_field.size() == 0)
 	{
 		fill(cluster_field.begin(), cluster_field.end(), u8(255));
+		fill(cluster_rnd_field.begin(), cluster_rnd_field.end(), u8(255));
 		return;
 	}
 
@@ -171,13 +177,16 @@ void CDetailManager::BuildClusterField()
 			float world_z = ((float)int(z) - (float)dtH.offs_z) * dm_slot_size + dm_slot_size * 0.5f;
 
 			u32 use_count = (alt_models_count > 0) ? alt_models_count : vanilla_grass_count;
+			u8 rnd_raw = 255;
 			u32 idx = select_clustered_asset(
 				world_x, world_z,
 				seed, use_count,
 				ps_r__detail_cluster_sharpness, avg_warp,
-				ps_r__detail_cluster_patch_size_min, ps_r__detail_cluster_patch_size_max
+				ps_r__detail_cluster_patch_size_min, ps_r__detail_cluster_patch_size_max,
+				&rnd_raw
 			);
 			cluster_field[z * sx + x] = (u8)idx;
+			cluster_rnd_field[z * sx + x] = rnd_raw;
 		}
 	}
 }
@@ -200,6 +209,111 @@ u32 CDetailManager::SampleClusterField(float world_x, float world_z, u32 asset_c
 	if (raw == 255 || raw >= asset_count)
 		return 0;
 	return (u32)raw;
+}
+
+// Precompute the combined FMB height factor over the whole detail DB grid.
+// One float per DB slot CORNER (grid of (size_x+1)*(size_z+1)), bilinearly sampled
+// per instance, so decompress has zero per-instance noise calls. The factor t is
+// object-independent: final scale = minScale + (maxScale-minScale)*t.
+// Rebuilt on cache_ReInitialize (level load and any r__detail_* console change).
+void CDetailManager::BuildFMBField()
+{
+	extern bool ps_r__detail_fmb_use_layer_1;
+	extern bool ps_r__detail_fmb_use_layer_2;
+	extern bool ps_r__detail_fmb_use_layer_3;
+
+	extern float ps_r__detail_fmb_layer_1_frequency;
+	extern float ps_r__detail_fmb_layer_1_amplitude;
+	extern float ps_r__detail_fmb_layer_1_seed;
+	extern float ps_r__detail_fmb_layer_1_power;
+
+	extern float ps_r__detail_fmb_layer_2_frequency;
+	extern float ps_r__detail_fmb_layer_2_amplitude;
+	extern float ps_r__detail_fmb_layer_2_seed;
+	extern float ps_r__detail_fmb_layer_2_power;
+
+	extern float ps_r__detail_fmb_layer_3_frequency;
+	extern float ps_r__detail_fmb_layer_3_amplitude;
+	extern float ps_r__detail_fmb_layer_3_seed;
+	extern float ps_r__detail_fmb_layer_3_power;
+
+	u32 sx = dtH.size_x;
+	u32 sz = dtH.size_z;
+	fmb_field.resize((sx + 1) * (sz + 1));
+
+	if (!(ps_r__detail_fmb_use_layer_1 || ps_r__detail_fmb_use_layer_2 || ps_r__detail_fmb_use_layer_3))
+	{
+		fill(fmb_field.begin(), fmb_field.end(), 0.0f); // mid t; never sampled while all layers are off
+		return;
+	}
+
+	for (u32 z = 0; z <= sz; z++)
+	{
+		for (u32 x = 0; x <= sx; x++)
+		{
+			// Slot corner world pos (mirrors QueryDB grid mapping).
+			float world_x = ((float)int(x) - (float)dtH.offs_x) * dm_slot_size;
+			float world_z = ((float)int(z) - (float)dtH.offs_z) * dm_slot_size;
+
+			float t = -1e30f;
+
+			if (ps_r__detail_fmb_use_layer_1)
+			{
+				float n = fastNoise2D(world_x * ps_r__detail_fmb_layer_1_frequency + ps_r__detail_fmb_layer_1_seed, world_z * ps_r__detail_fmb_layer_1_frequency + ps_r__detail_fmb_layer_1_seed);
+				float mapped = n * ps_r__detail_fmb_layer_1_amplitude + (1 - ps_r__detail_fmb_layer_1_amplitude) * 0.5f;
+				t = fmaxf(t, mapped * ps_r__detail_fmb_layer_1_power);
+			}
+
+			if (ps_r__detail_fmb_use_layer_2)
+			{
+				float n = fastNoise2D(world_x * ps_r__detail_fmb_layer_2_frequency + ps_r__detail_fmb_layer_2_seed, world_z * ps_r__detail_fmb_layer_2_frequency + ps_r__detail_fmb_layer_2_seed);
+				float mapped = n * ps_r__detail_fmb_layer_2_amplitude + (1 - ps_r__detail_fmb_layer_2_amplitude) * 0.5f;
+				t = fmaxf(t, mapped * ps_r__detail_fmb_layer_2_power);
+			}
+
+			if (ps_r__detail_fmb_use_layer_3)
+			{
+				float n = fastNoise2D(world_x * ps_r__detail_fmb_layer_3_frequency + ps_r__detail_fmb_layer_3_seed, world_z * ps_r__detail_fmb_layer_3_frequency + ps_r__detail_fmb_layer_3_seed);
+				float mapped = n * ps_r__detail_fmb_layer_3_amplitude + (1 - ps_r__detail_fmb_layer_3_amplitude) * 0.5f;
+				t = fmaxf(t, mapped * ps_r__detail_fmb_layer_3_power);
+			}
+
+			fmb_field[z * (sx + 1) + x] = t;
+		}
+	}
+}
+
+// Bilinear lookup of the combined FMB factor t at a world position.
+// Field is one float per slot corner; falls back to 1.0f (== maxScale) when absent.
+float CDetailManager::SampleFMBField(float world_x, float world_z) const
+{
+	if (fmb_field.empty())
+		return 1.0f;
+
+	u32 sx = dtH.size_x;
+	u32 sz = dtH.size_z;
+
+	float c_x = clampr(world_x / dm_slot_size + (float)dtH.offs_x, 0.f, (float)sx);
+	float c_z = clampr(world_z / dm_slot_size + (float)dtH.offs_z, 0.f, (float)sz);
+
+	u32 ix0 = (u32)iFloor(c_x);
+	u32 iz0 = (u32)iFloor(c_z);
+	u32 ix1 = std::min(ix0 + 1, sx);
+	u32 iz1 = std::min(iz0 + 1, sz);
+	float fx = c_x - (float)ix0;
+	float fz = c_z - (float)iz0;
+
+	u32 row0 = iz0 * (sx + 1);
+	u32 row1 = iz1 * (sx + 1);
+
+	float v00 = fmb_field[row0 + ix0];
+	float v10 = fmb_field[row0 + ix1];
+	float v01 = fmb_field[row1 + ix0];
+	float v11 = fmb_field[row1 + ix1];
+
+	float v0 = v00 + (v10 - v00) * fx;
+	float v1 = v01 + (v11 - v01) * fx;
+	return v0 + (v1 - v0) * fz;
 }
 
 
@@ -504,33 +618,10 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 				minScale = Dobj.m_fMinScale * rnd_scale_min;
 				maxScale = Dobj.m_fMaxScale * rnd_scale_max;
 
-				float max_scale = 0;
-
-				if (ps_r__detail_fmb_use_layer_1)
-				{
-					float n1 = fastNoise2D(Item_P.x * ps_r__detail_fmb_layer_1_frequency + ps_r__detail_fmb_layer_1_seed, Item_P.z * ps_r__detail_fmb_layer_1_frequency + ps_r__detail_fmb_layer_1_seed);
-					float mapped1 = n1 * ps_r__detail_fmb_layer_1_amplitude + (1 - ps_r__detail_fmb_layer_1_amplitude) * 0.5f;
-					float s1 = minScale + (maxScale - minScale) * mapped1 * ps_r__detail_fmb_layer_1_power;
-					if (s1 > max_scale) max_scale = s1;
-				}
-
-				if (ps_r__detail_fmb_use_layer_2)
-				{
-					float n2 = fastNoise2D(Item_P.x * ps_r__detail_fmb_layer_2_frequency + ps_r__detail_fmb_layer_2_seed, Item_P.z * ps_r__detail_fmb_layer_2_frequency + ps_r__detail_fmb_layer_2_seed);
-					float mapped2 = n2 * ps_r__detail_fmb_layer_2_amplitude + (1 - ps_r__detail_fmb_layer_2_amplitude) * 0.5f;
-					float s2 = minScale + (maxScale - minScale) * mapped2 * ps_r__detail_fmb_layer_2_power;
-					if (s2 > max_scale) max_scale = s2;
-				}
-
-				if (ps_r__detail_fmb_use_layer_3)
-				{
-					float n3 = fastNoise2D(Item_P.x * ps_r__detail_fmb_layer_3_frequency + ps_r__detail_fmb_layer_3_seed, Item_P.z * ps_r__detail_fmb_layer_3_frequency + ps_r__detail_fmb_layer_3_seed);
-					float mapped3 = n3 * ps_r__detail_fmb_layer_3_amplitude + (1 - ps_r__detail_fmb_layer_3_amplitude) * 0.5f;
-					float s3 = minScale + (maxScale - minScale) * mapped3 * ps_r__detail_fmb_layer_3_power;
-					if (s3 > max_scale) max_scale = s3;
-				}
-
-				scale = max_scale;
+				// FMB поле предрассчитано на cache_ReInitialize (как cluster_field):
+				// билинейная выборка вместо вызова шума на каждый инстанс.
+				float t = SampleFMBField(Item_P.x, Item_P.z);
+				scale = minScale + (maxScale - minScale) * t;
 			}
 
 			mResult.k.x = r_yaw.randF(-0.99, 0.99);
