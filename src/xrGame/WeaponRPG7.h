@@ -1,13 +1,13 @@
 #pragma once
 
-#include "WeaponPistol.h"
+#include "WeaponMagazined.h"
 #include "RocketLauncher.h"
 #include "../xrScripts/script_export_space.h"
 
-class CWeaponRPG7 final : public CWeaponCustomPistol,
+class CWeaponRPG7 final : public CWeaponMagazined,
 	public CRocketLauncher
 {
-	using inherited = CWeaponCustomPistol;
+	using inherited = CWeaponMagazined;
 public:
 	CWeaponRPG7();
 	virtual	~CWeaponRPG7() = default;

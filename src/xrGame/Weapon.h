@@ -30,7 +30,6 @@ class CWeaponBM16;
 class CWeaponRPG7;
 class CWeaponRG6;
 class CWeaponPistol;
-class CWeaponCustomPistol;
 class CParticlesObject;
 class CUIStatic;
 struct TAmmoBones;
