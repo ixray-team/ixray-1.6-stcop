@@ -149,6 +149,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				if (ImGui::BeginMenu("Editors##InGame"))
 				{
 					ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
+					ImGui::MenuItem("Detail Layers Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_DetailLayersEditor)]);
 					ImGui::MenuItem("Car Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_CarEditor)]);
 					ImGui::MenuItem("PPE Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_PostProcessEffectorEditor)]);
 					ImGui::SetItemTooltip("Post-Process Effector");
