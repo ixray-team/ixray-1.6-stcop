@@ -12,13 +12,23 @@ endforeach()
 
 project(MayaTools)
 
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/xray_bone_collision.py"
+    "${CMAKE_CURRENT_SOURCE_DIR}/xray_re_object_options.mel")
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/xray_bone_collision.py" MAYA_BONE_COLLISION_SCRIPT)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/xray_re_object_options.mel" MAYA_OBJECT_OPTIONS_SCRIPT)
+string(REPLACE "\n" "\n)IXR_PY\"\nR\"IXR_PY(" MAYA_BONE_COLLISION_SCRIPT "${MAYA_BONE_COLLISION_SCRIPT}")
+string(REPLACE "\n" "\n)IXR_MEL\"\nR\"IXR_MEL(" MAYA_OBJECT_OPTIONS_SCRIPT "${MAYA_OBJECT_OPTIONS_SCRIPT}")
+configure_file(maya_bone_collision_script.h.in maya_bone_collision_script.h @ONLY)
+configure_file(maya_options_script.h.in maya_options_script.h @ONLY)
+
 file(GLOB_RECURSE MAYA_TOOLS_ALL_FILES CONFIGURE_DEPENDS "*.cpp" "*.cxx" "*.h")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${MAYA_TOOLS_ALL_FILES})
 
 function(add_maya_tools_target TARGET_NAME MAYA_VERSION MAYA_SDK_DIR)
     add_library(${TARGET_NAME} SHARED ${MAYA_TOOLS_ALL_FILES})
 
-    target_include_directories(${TARGET_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${MAYA_SDK_DIR}")
+    target_include_directories(${TARGET_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}" "${MAYA_SDK_DIR}")
     target_link_directories(${TARGET_NAME} PRIVATE "${MAYA_SDK_DIR}/lib")
 
     target_link_libraries(${TARGET_NAME} PUBLIC

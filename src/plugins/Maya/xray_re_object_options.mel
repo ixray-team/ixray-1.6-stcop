@@ -1,0 +1,184 @@
+// IX-Ray Maya file translator options.
+// One file defines the MEL procedures used by both the importers (.object/.ogf)
+// and the exporters (.object); it is embedded into the plugin and executed on load.
+// All widget state is round-tripped through the options string AND stored in
+// optionVar so the last used values survive a Maya restart.
+
+global proc int xray_re_object_import_options(string $parent, string $action, string $options, string $callback)
+{
+	string $smoothing_params[] = { "normals", "soc", "cscop" };
+	string $smoothing_names[]  = { "smoothing_normals", "smoothing_soc", "smoothing_cscop" };
+	string $smoothing_labels[] = { "Normals", "SoC", "CS/CoP" };
+	int $i, $j;
+
+	if ($action == "post")
+	{
+		setParent $parent;
+		columnLayout -adj true;
+
+		int $split_parts = 1;
+		if (`optionVar -exists "ixrayImportSplitParts"`)
+			$split_parts = `optionVar -q "ixrayImportSplitParts"`;
+		checkBox -label "Split mesh into parts" -value $split_parts "split_parts";
+
+		text -label "Smoothing:" -align "left";
+		radioCollection "smoothing_mode";
+		for ($i = 0; $i < size($smoothing_params); $i++)
+			radioButton -label $smoothing_labels[$i] $smoothing_names[$i];
+
+		string $smoothing = "normals";
+		if (`optionVar -exists "ixrayImportSmoothingMode"`)
+			$smoothing = `optionVar -q "ixrayImportSmoothingMode"`;
+		for ($i = 0; $i < size($smoothing_params); $i++)
+			if ($smoothing_params[$i] == $smoothing)
+				radioCollection -edit -select $smoothing_names[$i] "smoothing_mode";
+
+		string $params[];
+		tokenize($options, ";", $params);
+		for ($i = 0; $i < size($params); $i++)
+		{
+			string $kv[];
+			tokenize($params[$i], "=", $kv);
+			if (size($kv) < 2)
+				continue;
+
+			if ($kv[0] == "split_parts")
+				checkBox -edit -value (($kv[1] == "true") ? true : false) "split_parts";
+
+			if ($kv[0] == "smoothing_mode")
+				for ($j = 0; $j < size($smoothing_params); $j++)
+					if ($smoothing_params[$j] == $kv[1])
+						radioCollection -edit -select $smoothing_names[$j] "smoothing_mode";
+		}
+	}
+	else if ($action == "query")
+	{
+		$options = "";
+
+		if (`checkBox -q -value "split_parts"`)
+		{
+			$options += "split_parts=true;";
+			optionVar -iv "ixrayImportSplitParts" 1;
+		}
+		else
+		{
+			$options += "split_parts=false;";
+			optionVar -iv "ixrayImportSplitParts" 0;
+		}
+
+		string $selected = `radioCollection -q -sl "smoothing_mode"`;
+		for ($i = 0; $i < size($smoothing_names); $i++)
+		{
+			if ($smoothing_names[$i] == $selected)
+			{
+				$options += "smoothing_mode=" + $smoothing_params[$i] + ";";
+				optionVar -sv "ixrayImportSmoothingMode" $smoothing_params[$i];
+			}
+		}
+
+		eval($callback + " \"" + $options + "\"");
+	}
+
+	return 1;
+}
+
+global proc int xray_re_object_export_options(string $parent, string $action, string $options, string $callback)
+{
+	string $sdk_ver_params[] = { "1850", "0.4", "0.6" };
+	string $sdk_ver_names[]  = { "ver_1850", "ver_0_4", "ver_0_6" };
+	string $sdk_ver_labels[] = { "1850", "ShoC", "CSky/CoP" };
+	int $i, $j;
+
+	if ($action == "post")
+	{
+		setParent $parent;
+		columnLayout -adj true;
+
+		text -label "Target version:";
+
+		radioCollection "sdk_ver";
+		for ($i = 0; $i < size($sdk_ver_params); $i++)
+			radioButton -label $sdk_ver_labels[$i] $sdk_ver_names[$i];
+
+		string $sdk_version = "";
+		if (`optionVar -exists "ixrayExportSdkVersion"`)
+			$sdk_version = `optionVar -q "ixrayExportSdkVersion"`;
+		for ($j = 0; $j < size($sdk_ver_params); $j++)
+			if ($sdk_ver_params[$j] == $sdk_version)
+				radioCollection -edit -select $sdk_ver_names[$j] "sdk_ver";
+
+		checkBox -label "Compressed" "compressed";
+		checkBox -label "Custom normals (export vnormals)" "vnormals";
+
+		int $compressed = 0;
+		if (`optionVar -exists "ixrayExportCompressed"`)
+			$compressed = `optionVar -q "ixrayExportCompressed"`;
+		checkBox -edit -value ($compressed != 0) "compressed";
+
+		int $vnormals = 0;
+		if (`optionVar -exists "ixrayExportVNormals"`)
+			$vnormals = `optionVar -q "ixrayExportVNormals"`;
+		checkBox -edit -value ($vnormals != 0) "vnormals";
+
+		string $params[];
+		tokenize($options, ";", $params);
+		for ($i = 0; $i < size($params); $i++)
+		{
+			string $kv[];
+			tokenize($params[$i], "=", $kv);
+			if (size($kv) < 2)
+				continue;
+
+			if ($kv[0] == "sdk_ver")
+				for ($j = 0; $j < size($sdk_ver_params); $j++)
+					if ($sdk_ver_params[$j] == $kv[1])
+						radioCollection -edit -select $sdk_ver_names[$j] "sdk_ver";
+
+			if ($kv[0] == "compressed")
+				checkBox -edit -value (($kv[1] == "true") ? true : false) "compressed";
+
+			if ($kv[0] == "vnormals")
+				checkBox -edit -value (($kv[1] == "true") ? true : false) "vnormals";
+		}
+	}
+	else if ($action == "query")
+	{
+		$options = "";
+
+		string $sdk_version = `radioCollection -q -sl "sdk_ver"`;
+		for ($i = 0; $i < size($sdk_ver_names); $i++)
+		{
+			if ($sdk_ver_names[$i] == $sdk_version)
+			{
+				$options += "sdk_ver=" + $sdk_ver_params[$i] + ";";
+				optionVar -sv "ixrayExportSdkVersion" $sdk_ver_params[$i];
+			}
+		}
+
+		if (`checkBox -q -value "compressed"`)
+		{
+			$options += "compressed=true;";
+			optionVar -iv "ixrayExportCompressed" 1;
+		}
+		else
+		{
+			$options += "compressed=false;";
+			optionVar -iv "ixrayExportCompressed" 0;
+		}
+
+		if (`checkBox -q -value "vnormals"`)
+		{
+			$options += "vnormals=true;";
+			optionVar -iv "ixrayExportVNormals" 1;
+		}
+		else
+		{
+			$options += "vnormals=false;";
+			optionVar -iv "ixrayExportVNormals" 0;
+		}
+
+		eval($callback + " \"" + $options + "\"");
+	}
+
+	return 1;
+}
