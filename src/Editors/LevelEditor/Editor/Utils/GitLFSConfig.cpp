@@ -46,7 +46,10 @@ void CGitLFSConfig::Load()
 		}
 	}
 
-	AutoTrackEnabled = Ini.r_bool("Settings", "AutoTrackEnabled");
+	if (Ini.section_exist("Patterns"))
+	{
+		AutoTrackEnabled = Ini.r_bool("Settings", "AutoTrackEnabled");
+	}
 
 	if (Patterns.empty())
 	{
