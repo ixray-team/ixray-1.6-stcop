@@ -1,9 +1,9 @@
 #pragma once
-#include "WeaponCustomPistol.h"
+#include "WeaponMagazined.h"
 
-class CWeaponPistol : public CWeaponCustomPistol
+class CWeaponPistol : public CWeaponMagazined
 {
-	using inherited = CWeaponCustomPistol;
+	using inherited = CWeaponMagazined;
 public:
 	CWeaponPistol() = default;
 	virtual	~CWeaponPistol() = default;
@@ -13,7 +13,7 @@ public:
 
 	virtual void	UpdateSounds	();
 protected:	
-	virtual bool	AllowFireWhileWorking() {return true;}
+	//virtual bool	AllowFireWhileWorking() {return true;}
 
 	ESoundTypes	m_eSoundClose = SOUND_TYPE_WEAPON_RECHARGING;
 };
