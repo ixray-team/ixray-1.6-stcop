@@ -609,6 +609,25 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 #else
 			const CDetail& Dobj = *objects[obj_id];
 #endif
+			#ifndef _EDITOR
+			if (!(ps_r__detail_fmb_use_layer_1 || ps_r__detail_fmb_use_layer_2 ||  ps_r__detail_fmb_use_layer_3) && user_fmb_mask.empty())
+			{
+				scale = r_scale.randF(Dobj.m_fMinScale * rnd_scale_min, Dobj.m_fMaxScale * rnd_scale_max);
+			}
+			else
+			{
+				minScale = Dobj.m_fMinScale * rnd_scale_min;
+				maxScale = Dobj.m_fMaxScale * rnd_scale_max;
+
+				// FMB поле предрассчитано на cache_ReInitialize (как cluster_field):
+				// билинейная выборка вместо вызова шума на каждый инстанс.
+				// Отрицательные значения — очистка травы пользователем (t<0 => без травы).
+				float t = SampleFMBField(Item_P.x, Item_P.z);
+				if (t < 0.f)
+					continue;
+				scale = minScale + (maxScale - minScale) * t;
+			}
+#else
 			if (!(ps_r__detail_fmb_use_layer_1 || ps_r__detail_fmb_use_layer_2 ||  ps_r__detail_fmb_use_layer_3))
 			{
 				scale = r_scale.randF(Dobj.m_fMinScale * rnd_scale_min, Dobj.m_fMaxScale * rnd_scale_max);
@@ -623,6 +642,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 				float t = SampleFMBField(Item_P.x, Item_P.z);
 				scale = minScale + (maxScale - minScale) * t;
 			}
+#endif
 
 			mResult.k.x = r_yaw.randF(-0.99, 0.99);
 			mResult.k.z = r_yaw.randF(-0.99, 0.99);

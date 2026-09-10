@@ -159,6 +159,7 @@ void CDetailManager::Load()
 
 	// Initialize 'vis' and 'cache'
 	m_detail_layers_baking = true; // allow persisting the freshly generated bake
+	DetailLayers_LoadUserMasks(); // sparse user strokes from $level$\detail_layers\user_mask_*.bin
 	cache_ReInitialize();
 	m_detail_layers_baking = false;
 
