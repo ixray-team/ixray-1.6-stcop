@@ -323,7 +323,8 @@ public:
 	virtual bool get_texture_metadata(const char* fname, RHITextureMetadata* p_data) = 0;
 
 	virtual void renderImGuiDebugWindow_SVGStorage() {}
-		
+	virtual void renderImGuiDebugWindow_DetailLayersEditor() {}
+	
 	// Constructor/destructor
 	virtual ~IRender_interface() = default;
 protected:
