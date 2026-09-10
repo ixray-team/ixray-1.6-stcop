@@ -135,10 +135,23 @@ public:
 
 	// Precomputed cluster-noise field indexed by detail-DB slot (world cell = dm_slot_size).
 	// One byte per DB slot (value in [0, 255] used as deterministic 0..1 sample).
+	// cluster_field stores the resolved asset index (fast O(1) at unpack; if the raw
+	// value was 255 no mix is used -> index 0 / native). cluster_rnd_field stores the
+	// raw deterministic pick hash01(h) in [0,255] so a bake can be re-resolved against
+	// a different asset count/mode without recomputing the per-slot noise.
 	xr_vector<u8>					cluster_field;
+	xr_vector<u8>					cluster_rnd_field;
+
+	// Precomputed combined FMB height factor t (max over enabled layers of
+	// mapped*power), one float per detail-DB slot CORNER (grid of
+	// (size_x+1)*(size_z+1)), bilinearly sampled at instance position so
+	// decompress does no per-instance noise calls.
+	xr_vector<float>				fmb_field;
 
 	void							BuildClusterField	();
 	u32								SampleClusterField	(float world_x, float world_z, u32 asset_count) const;
+	void							BuildFMBField		();
+	float							SampleFMBField		(float world_x, float world_z) const;
 
 #ifdef _EDITOR
 	virtual ObjectList* 			GetSnapList		()=0;
