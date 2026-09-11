@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "xrCDB.h"
 #include "override/Model.h"
-#include "API/xrAPI.h"
+
 namespace Opcode 
 {
 #	include <OPC_TreeBuilders.h>

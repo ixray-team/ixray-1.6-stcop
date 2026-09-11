@@ -7,7 +7,7 @@
 // that uses this DLL. This way any other project whose source files include this file see
 // XRCORE_API functions as being imported from a DLL, wheras this DLL sees symbols
 // defined with this macro as being exported.
-#ifdef M_VISUAL
+#ifdef _MSC_VER
 #define ALIGN(a) __declspec(align(a))
 #else
 #define ALIGN(a)
@@ -26,21 +26,21 @@ class CDB_Model;
 namespace CDB
 {
 	// Triangle
-	struct XRCORE_API TRI final						//*** 16 bytes total (was 32 :)
+	struct XRCORE_API TRI final //*** 16 bytes total (was 32 :)
 	{
-		u32				verts	[3];		// 3*4 = 12b
-		union	
+		u32 verts[3]; // 3*4 = 12b
+		union
 		{
-			u32			dummy;				// 4b
-			struct 
+			u32 dummy; // 4b
+			struct
 			{
-				u32		material:14;		// 
-				u32		suppress_shadows:1;	// 
-				u32		suppress_wm:1;		// 
-				u32		sector:16;			// 
+				u32 material : 14;		  //
+				u32 suppress_shadows : 1; //
+				u32 suppress_wm : 1;	  //
+				u32 sector : 16;		  //
 			};
 		};
-		ICF u32			IDvert	(u32 ID)		{ return verts[ID];	}
+		ICF u32 IDvert(u32 ID) { return verts[ID]; }
 	};
 
 	// Build callback

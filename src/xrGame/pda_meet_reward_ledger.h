@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../xrCore/_types.h"
 #include "../xrEngine/AI/alife_space.h"
 
 // Phase 2: pending physical rewards (save/load, issue on face-to-face talk).

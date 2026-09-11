@@ -5,7 +5,7 @@
 #include "UIZoneMap.h"
 #include "UICompassBar.h"
 #include "UINavigationOwnership.h"
-#include "../../xrCore/EngineExternal.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
 
 
 #include "../Actor.h"

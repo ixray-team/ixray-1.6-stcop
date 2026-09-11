@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RenderFactory.h"
-#include "../../xrCore/API/xrAPI.h"
+#include "../../xrCore/Kernel/xrAPI.h"
 
 #define FACTORY_PTR_DECL(Class)                             \
 	template <> void FactoryPtr<I##Class>::CreateObject();  \

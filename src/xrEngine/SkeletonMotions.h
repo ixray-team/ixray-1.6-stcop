@@ -5,7 +5,6 @@
 //#include		"skeletoncustom.h"
 #include "bone.h"
 #include "SkeletonMotionDefs.h"
-#include "../xrCore/_stl_extensions.h"
 
 // refs
 class CKinematicsAnimated;

@@ -9,18 +9,12 @@
 #include "../../xrEngine/GameFont.h"
 #include "../../xrEngine/string_table.h"
 #include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
-#include "../../xrCore/_stl_extensions.h"
-#include "../../xrCore/_color.h"
-#include "../../xrCore/vector.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrUI/UIXmlInit.h"
-#include "../../xrUI/Widgets/UILines.h"
 #include "../../xrUI/Widgets/UILines.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/UITextureMaster.h"
 #include "../../xrUI/ui_defs.h"
-#include <algorithm>
-#include <cmath>
 
 // --- Init / XML ---
 
