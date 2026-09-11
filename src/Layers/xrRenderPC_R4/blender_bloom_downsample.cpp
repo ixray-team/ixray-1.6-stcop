@@ -11,7 +11,7 @@ void CBlender_bloom_downsample::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0:
-        RImplementation.addShaderOption("USE_TH");
+        RImplementation.addShaderOption("USE_GAMMA_FIX");
 
         C.r_Pass("stub_fullscreen_triangle", "bloom_downsample", false, false, false);
         C.r_dx10Texture("s_image", r2_RT_generic);
