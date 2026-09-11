@@ -169,6 +169,7 @@ CPhysicsShell* create_camera_shell( IPhysicsShellHolder *actor )
 	root_geom->set_local_form_bt( Fidentity );
 	shell->DisableCollision();
 	shell->Disable();
+	shell->SetIgnoreSmall();
 	return shell;
 }
 
