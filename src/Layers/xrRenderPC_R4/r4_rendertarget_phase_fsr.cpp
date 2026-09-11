@@ -2,8 +2,6 @@
 
 #include "OverlayAPI/FSR3Wrapper.h"
 
-extern Fvector3 ps_r_taa_jitter_full;
-
 void CRenderTarget::init_fsr()
 {
 	g_Fsr3Wrapper.Destroy();
