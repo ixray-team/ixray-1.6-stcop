@@ -791,6 +791,12 @@ void CRender::render_forward()
 	bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size();
 	bSpecial |= mapNormalPasses[1][1].size() || mapMatrixPasses[1][1].size();
 
+	if (ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
+	{
+		GPU_EVENT(Forward_rendering_puddles);
+		bSpecial |= Target->phase_puddles();
+	}
+
 	// May be WBOIT
 	r_dsgraph_render_graph(1);
 
