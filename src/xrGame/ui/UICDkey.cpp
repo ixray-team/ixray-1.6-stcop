@@ -12,7 +12,7 @@
 
 #include "gamespy/GameSpy_GP.h"
 
-#include "../xrCore/os_clipboard.h"
+#include "../xrCore/Kernel/os_clipboard.h"
 
 extern string64	gsCDKey;
 const char* AddHyphens( const char* c );

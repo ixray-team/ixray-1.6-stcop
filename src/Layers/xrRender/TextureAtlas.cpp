@@ -8,13 +8,6 @@
 #include <lunasvg.h>
 #include "smol-atlas.h"
 
-#include <algorithm>
-#include <cmath>
-#include <cstddef>
-#include <cstdlib>
-
-#include "../../xrCore/_math.h"
-
 constexpr int SVGStorage_DefaultAtlasSize = 512;
 
 namespace

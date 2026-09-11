@@ -1,7 +1,5 @@
 #pragma once
-
 #include "../../xrCore/_color.h"
-#include "../../xrCore/_types.h"
 
 struct SVGTintRGBA
 {
