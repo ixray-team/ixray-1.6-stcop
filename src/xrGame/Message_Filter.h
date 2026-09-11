@@ -1,7 +1,6 @@
 #ifndef DEMO_MESSAGE_FILER
 #define DEMO_MESSAGE_FILER
 
-#include "../xrCore/fastdelegate.h"
 #include "../xrCore/net_utils.h"
 #include "../xrCore/Containers/associative_vector.h"
 

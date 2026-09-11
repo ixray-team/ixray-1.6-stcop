@@ -1,7 +1,6 @@
 #ifndef SERVER_INFO_UPLOADER
 #define SERVER_INFO_UPLOADER
 
-#include "../xrCore/fastdelegate.h"
 #include "file_transfer.h"
 
 typedef xr_delegate<void (ClientID const &)>	svinfo_upload_complete_cb;

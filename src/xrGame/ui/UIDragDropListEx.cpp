@@ -8,7 +8,7 @@
 #include "../Inventory.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrEngine/xr_input.h"
-#include "../../xrCore/EngineExternal.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
 
 CUIDragItem* CUIDragDropListEx::m_drag_item = nullptr;
 

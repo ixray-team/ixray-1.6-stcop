@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UIMinimapEditorForm.h"
-#include "../../../xrCore/os_clipboard.h"
+#include "../../../xrCore/Kernel/os_clipboard.h"
 #include "ui_main.h"
 #include "imgui.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
-#include "profiler.h"
+#include "Kernel/profiler.h"
 #include "Platform/Platform.h"
 
 // Our headers
@@ -64,10 +64,13 @@
 #include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #define smart_cast fast_dynamic_cast
 
+#include <magic_enum/magic_enum.hpp>
+
 // stl
 #pragma warning (push)
 #pragma warning (disable:4702)
 #include <typeinfo>
+#include <bit>
 #include <algorithm>
 #include <ranges>
 #include <limits>
@@ -91,19 +94,19 @@
 
 // Engine
 #include "Platform/PlatformAPI.h"
-#include "xr_delegate.h"
-#include "_noncopyable.h"
+#include "Template/xr_delegate.h"
+#include "Template/_noncopyable.h"
 
 #include "xrDebug.h"
-#include "vector.h"
+#include "math/vector.h"
 
-#include "clsid.h"
-#include "xrSyncronize.h"
+#include "Kernel/clsid.h"
+#include "Kernel/xrSyncronize.h"
 #include "Containers/RingBuffer.h"
 #include "memory/xrMemory.h"
 
-#include "_stl_extensions.h"
-#include "xrsharedmem.h"
+#include "Containers/_stl_extensions.h"
+#include "memory/xrsharedmem.h"
 #include "_thread_types.h"
 #include "shared_string.h"
 #include "xrstring.h"
@@ -114,7 +117,6 @@
 #include "string_concatenations.h"
 #include "xr_path.h"
 #include "stack_string.h"
-#include <magic_enum/magic_enum.hpp>
 #include "_static_thread.h"
 
 // stl ext
@@ -164,14 +166,13 @@ using RTokenVecIt = RTokenVec::iterator;
 template<typename T>
 using xr_optional = std::optional<T>;
 
-#include "TimeUtils.h"
-#include "xr_delegate.h"
+#include "Template/TimeUtils.h"
 
 #include "FS.h"
 #include "log.h"
 #include "xr_trims.h"
 #include "xr_ini.h"
-#include "appinfo.h"
+#include "Kernel/appinfo.h"
 #include "LocatorAPI.h"
 #include "FileSystem.h"
 #include "FTimer.h"

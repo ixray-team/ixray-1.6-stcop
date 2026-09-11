@@ -9,12 +9,15 @@
 #define SCRIPTS_API
 #define ECORE_API
 #define XR_EPROPS_API
-#include "../../../xrCore/clsid.h"
+#include "../../../xrCore/Kernel/clsid.h"
 #include "../../../xrEngine/defines.h"
 #include "../Common/cl_log.h"
 #include "../../../xrCore/Collision/xrCDB.h"
 #include "../../../xrEngine/_d3d_extensions.h"
 #include "../../../xrEngine/stdafx.h"
+
+#define READ_IF_EXISTS(ltx,method,section,name,default_value)\
+	(ltx->line_exist(section,name)) ? ltx->method(section,name) : default_value
 
 #undef		THROW
 

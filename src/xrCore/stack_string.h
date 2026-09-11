@@ -16,8 +16,8 @@
 #include <cwctype>
 
 #include "xrDebug_macros.h"
-#include "_std_c_undefs.h"
-#include "_stl_extensions_nonalloc.h"
+#include "Template/_std_c_undefs.h"
+#include "Containers/_stl_extensions_nonalloc.h"
 
 #ifdef UNICODE
 #ifdef IXR_WINDOWS

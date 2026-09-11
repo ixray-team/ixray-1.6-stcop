@@ -6,7 +6,7 @@
 #include "UICompassBar.h"
 #include "UINavigationOwnership.h"
 #include "UINavigationHudController.h"
-#include "../../xrCore/EngineExternal.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
 
 
 #include "../Actor.h"

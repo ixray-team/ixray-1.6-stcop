@@ -10,7 +10,7 @@
 
 #include <utility>
 
-#include "../xrCore/os_clipboard.h"
+#include "../xrCore/Kernel/os_clipboard.h"
 #include "../xrServerEntities/object_broker.h"
 #include "xr_input.h"
 

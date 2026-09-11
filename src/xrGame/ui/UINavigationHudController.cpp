@@ -6,7 +6,7 @@
 #include "UIMotionIcon.h"
 #include "UIZoneMap.h"
 #include "UINavigationOwnership.h"
-#include "../../xrCore/EngineExternal.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
 #include "../../xrEngine/CustomHUD.h"
 #include "../Actor.h"
 #include "../ActorHelmet.h"

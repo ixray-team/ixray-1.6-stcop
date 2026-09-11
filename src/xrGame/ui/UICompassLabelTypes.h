@@ -1,8 +1,5 @@
 #pragma once
 
-#include "../../xrCore/vector.h"
-#include "../../xrCore/_stl_extensions.h"
-
 enum class ECompassLabelKind : u8
 {
 	Cardinal = 0,
