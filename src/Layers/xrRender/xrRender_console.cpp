@@ -134,6 +134,7 @@ float		ps_r2_ssaLOD_A				= 48.f	;
 float		ps_r2_ssaLOD_B				= 32.f	;
 
 Fvector3	ps_r_taa_jitter = { 0,0,0 };
+Fvector3	ps_r_taa_jitter_full = { 0,0,0 };
 Fvector3	ps_r_taa_jitter_scale = { 1,1,0 };
 
 // R2-specific
