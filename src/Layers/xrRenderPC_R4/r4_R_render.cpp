@@ -375,8 +375,6 @@ void CRender::render_menu() {
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 }
 
-Fvector3 ps_r_taa_jitter_full = {0,0,0};
-
 #include "../../Include/xrRender/UIRender.h"
 
 void CRender::RenderUI(bool is_debug)

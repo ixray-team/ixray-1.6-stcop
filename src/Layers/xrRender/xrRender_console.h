@@ -60,6 +60,7 @@ extern ECORE_API	float		ps_r1_fog_luminance;	//1.f r1-only
 extern ECORE_API	int			ps_r1_use_terrain_mask;
 
 extern ECORE_API	Fvector3	ps_r_taa_jitter;
+extern ECORE_API	Fvector3	ps_r_taa_jitter_full;
 extern ECORE_API	Fvector3	ps_r_taa_jitter_scale;
 
 enum
