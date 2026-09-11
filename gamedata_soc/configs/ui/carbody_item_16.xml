@@ -14,7 +14,7 @@
 		</auto_static>
 	</auto>
 
-	<static_name x="10" y="-4" width="200" height="60">
+	<static_name x="15" y="-2" width="200" height="60">
 		<text x="0" y="0" font="graffiti22" r="238" g="155" b="23" complex_mode="0"/>
 	</static_name>
 
