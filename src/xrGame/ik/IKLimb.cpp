@@ -529,41 +529,43 @@ IC void blend_speed_accel( SCalculateData& cd )
 		cd.a = cd.state.speed_blend_a * Device.fTimeDelta;
 }
 
-
-
-void	CIKLimb::SetNewGoal	( const SIKCollideData &cld, SCalculateData& cd )
+void CIKLimb::SetNewGoal(const SIKCollideData& cld, SCalculateData& cd)
 {
-	if(!cd.do_collide)
-						return;
-	get_blend_speed_limits(cd.l, cd.a, cd, sv_state );
-	cd.state.foot_step		= m_foot.GetFootStepMatrix( cd.state.goal, cd, cld, true, !!ik_allign_free_foot ) && cd.state.foot_step;
-
-	VERIFY2(fsimilar( 1.f , DET( cd.state.goal.get() ), det_tolerance ), dump_string( "cd.state.goal", cd.state.goal.get() ).c_str() );
+	if (!cd.do_collide)
+	{
+		return;
+	}
+	get_blend_speed_limits(cd.l, cd.a, cd, sv_state);
+	cd.state.foot_step = m_foot.GetFootStepMatrix(cd.state.goal, cd, cld, true, !!ik_allign_free_foot) && cd.state.foot_step;
 
 	cd.state.blend_to = cd.state.goal;
-	sv_state.get_calculate_state( cd.state );
-	if( cd.state.foot_step ) //the foot in animation on ground
-			SetNewStepGoal( cld, cd );
-	else if( ik_blend_free_foot )
+	sv_state.get_calculate_state(cd.state);
+	if (cd.state.foot_step) // the foot in animation on ground
+	{
+		SetNewStepGoal(cld, cd);
+	}
+	else if (ik_blend_free_foot)
 	{
 		cd.state.blending = sv_state.valide();
-		//cd.l = 0; cd.a = 0;^
+		// cd.l = 0; cd.a = 0;^
 	}
-	cd.cl_shift.sub( cd.state.goal.get().c, cd.state.anim_pos.c );
+	cd.cl_shift.sub(cd.state.goal.get().c, cd.state.anim_pos.c);
 
 #ifdef DEBUG
-	DBGDrawSetNewGoal( cd, cld );
+	DBGDrawSetNewGoal(cd, cld);
 #endif
 
-	if( cd.state.blending )
-		Blending( cd );
-	
+	if (cd.state.blending)
+	{
+		Blending(cd);
+	}
 
-#ifdef	IK_DBG_STATE_SEQUENCE
-	m_dbg_matrises.next_state( cd );
+
+#ifdef IK_DBG_STATE_SEQUENCE
+	m_dbg_matrises.next_state(cd);
 #endif
 
-	sv_state.save_new_state( cd.state );
+	sv_state.save_new_state(cd.state);
 }
 
 static const float linear_tolerance = 0.0000001f, angualar_tolerance = 0.00005f;

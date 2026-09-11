@@ -24,3 +24,4 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(imgui_node_editor)
+set_target_properties(imgui_node_editor PROPERTIES FOLDER "3rd Party")

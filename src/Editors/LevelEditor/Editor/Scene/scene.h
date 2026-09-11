@@ -1,10 +1,12 @@
 #pragma once
 #include "Engine/communicate.h"
+#include "../xrCore/memory/doug_lea_allocator.h"
 
-extern doug_lea_area_allocator	g_render_lua_allocator_area;
+extern doug_lea_area_allocator g_render_lua_allocator_area;
 
 template <class T>
-class doug_lea_alloc {
+class doug_lea_alloc
+{
 public:
 	typedef	size_t		size_type;
 	typedef ptrdiff_t	difference_type;

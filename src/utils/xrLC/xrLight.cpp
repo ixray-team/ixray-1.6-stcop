@@ -7,12 +7,11 @@
 #include "../xrLC_Light/xrLightVertex.h"
 #include "../xrLC_Light/xrFace.h"
 
-#include "../../xrCore/xrSyncronize.h"
 #include "../xrLC_Light/mu_model_light.h"
 #include "../xrLC_Light/light_point.h"
 
 #ifdef LCCUDA_BUILD
-#include "../xrLC_Light/CUDA/CUDARayCast.h"
+#	include "../xrLC_Light/CUDA/CUDARayCast.h"
 #endif 
 
 extern XRCORE_API bool			g_bEnableStatGather;

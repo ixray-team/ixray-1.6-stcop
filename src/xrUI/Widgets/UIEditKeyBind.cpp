@@ -5,7 +5,6 @@
 #include "../../xrEngine/XR_IOConsole.h"
 #include "../UIFontDefines.h"
 #include "../UITextureMaster.h"
-#include "../../xrCore/EngineExternal.h"
 
 CUIEditKeyBind::CUIEditKeyBind(bool bPrim)
 {

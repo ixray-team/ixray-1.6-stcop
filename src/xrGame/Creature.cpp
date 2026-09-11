@@ -48,7 +48,7 @@
 
 // Lain: added
 #include "../xrEngine/IGame_Level.h"
-#include "../xrCore/_vector3d_ext.h"
+#include "../xrCore/math/_vector3d_ext.h"
 #include "debug_text_tree.h"
 #include "../xrPhysics/IPHWorld.h"
 

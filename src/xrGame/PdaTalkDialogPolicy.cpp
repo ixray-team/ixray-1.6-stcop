@@ -6,9 +6,7 @@
 #include "pda_talk_reward_guard.h"
 #include "Phrase.h"
 
-#include "../xrCore/EngineExternal.h"
-#include "../xrCore/xr_ini.h"
-#include "../xrCore/FS.h"
+#include "../xrCore/Kernel/EngineExternal.h"
 
 namespace
 {

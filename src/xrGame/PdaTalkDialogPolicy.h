@@ -1,8 +1,5 @@
 #pragma once
 
-#include "../xrCore/_types.h"
-
-class CInifile;
 class CPhrase;
 
 enum class EPdaTalkDialogPolicy : u8

@@ -23,7 +23,7 @@
 #include "../../../../xrEngine/xr_level_controller.h"
 #include "../../../Weapon.h"
 
-#include "../../../../xrCore/_vector3d_ext.h"
+#include "../../../../xrCore/math/_vector3d_ext.h"
 #include "../control_direction_base.h"
 
 bool CBurer::can_scan = true;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../xrCore/xr_delegate.h"
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
 #include "../../xrEngine/AI/alife_space.h"
