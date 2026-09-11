@@ -206,6 +206,14 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 
 		return;
 	}
+	else if (C.iElement == SE_R2_REFLECTIONS)
+	{
+		RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
+		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
+		uber_forward(C, false, "deffer_model", "forward_base", true, false, 0);
+
+		return;
+	}
 
 	if (oBlend.value)	
 	{

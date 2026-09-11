@@ -77,6 +77,15 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 
 		return;
 	}
+	else if (C.iElement == SE_R2_REFLECTIONS)
+	{
+		RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
+		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
+
+		uber_forward(C, false, "deffer_model", "forward_base", oBlend.value, false, 0);
+
+		return;
+	}
 
 	if (oStrictSorting.value || (oBlend.value && oAREF.value < 16)) 
 	{

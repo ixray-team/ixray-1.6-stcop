@@ -405,16 +405,16 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 	if (_dynamic && psDeviceFlags.test(rsDrawDynamic))
 	{
 		PROF_EVENT("add_dynamic")
-		set_Object						(0);
+		set_Object(0);
 
 		// Traverse object database
 		g_SpatialSpace->q_frustum
-			(
+		(
 			lstRenderables,
 			ISpatial_DB::O_ORDERED,
 			ESPATIAL_TYPE::RENDERABLE | ESPATIAL_TYPE::RENDERABLESHADOW,
 			ViewBase
-			);
+		);
 
 		// Determine visibility for dynamic part of scene
 		for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
@@ -429,8 +429,8 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 				if (!View->testSphere_dirty(spatial->sphere.P,spatial->sphere.R))	continue;
 
 				// renderable
-				IRenderable*	renderable		= spatial->dcast_Renderable	();
-				if (0==renderable)				continue;					// unknown, but renderable object (r1_glow???)
+				IRenderable* renderable = spatial->dcast_Renderable();
+				if (0 == renderable)				continue;					// unknown, but renderable object (r1_glow???)
 #if RENDER!=R_R1
 				if(Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
 				{
@@ -453,14 +453,21 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 #endif
 				if(O && O->dcast_Renderable()==renderable) continue;
 
-				renderable->renderable_Render	();
+				if (phase != CRender::PHASE_SMAP)
+				{
+					set_Object(renderable);
+				}
+
+				renderable->renderable_Render();
 			}
 		}
+
+		set_Object(0);
 	}
 
 	// Restore
-	ViewBase						= ViewSave;
-	View							= 0;
+	ViewBase = ViewSave;
+	View = 0;
 }
 
 #include "FHierrarhyVisual.h"
