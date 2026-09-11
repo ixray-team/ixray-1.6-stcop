@@ -196,6 +196,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	handler:addCheck(self, mode_4, "ui_mm_sslr_water", "r4_sslr_water", system_depends.sdSystemRestart)
 	handler:addCheck(self, mode_4, "ui_mm_r3_volumetric_smoke", "r3_volumetric_smoke", system_depends.sdNothing)
 	handler:addCheck(self, mode_4, "ui_mm_puddles", "r4_puddles", system_depends.sdNothing)
+	handler:addCheck(self, all_modes, "ui_mm_dynamic_wallmarks", "r__wallmark_dyn", system_depends.sdNothing)
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------

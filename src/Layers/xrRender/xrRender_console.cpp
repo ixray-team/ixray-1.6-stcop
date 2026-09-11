@@ -104,7 +104,7 @@ float		ps_r__Tree_SBC				= 1.5f	;	// scale bias correct
 float		ps_r__WallmarkTTL			= 50.f	;
 float		ps_r__WallmarkSHIFT			= 0.001f;
 float		ps_r__WallmarkSHIFT_V		= 0.001f;
-bool		ps_r__WallmarkDyn			= false;
+bool		ps_r__WallmarkDyn			= true;
 
 float		ps_r__GLOD_ssa_start		= 256.f	;
 float		ps_r__GLOD_ssa_end			=  64.f	;

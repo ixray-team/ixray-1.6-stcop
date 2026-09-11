@@ -961,9 +961,12 @@
 		<text>$$ACTION_WPN_NEXT$$ Сменить гранату</text>
 	</string>
 	<string id="st_autosaves_enabled">
-		<text>Автосохранения по времени</text>
+		<text>Автосохранения по таймеру</text>
 	</string>
 	<string id="st_autosaves_interval">
 		<text>Интервал автосохранений</text>
+	</string>
+	<string id="ui_mm_dynamic_wallmarks">
+		<text>Динамические следы от пуль</text>
 	</string>
 </string_table>
