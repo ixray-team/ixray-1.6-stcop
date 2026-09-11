@@ -645,7 +645,7 @@ virtual				~CSE_ALifeInteractiveObject();
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_Shell, CSE_ALifeObjectPhysic)
-	u8 is_parent_actor;
+	ALife::_OBJECT_ID weapon_id;
 	Fvector eject_dir;
 	Fvector parent_vel;
 	float eject_speed;

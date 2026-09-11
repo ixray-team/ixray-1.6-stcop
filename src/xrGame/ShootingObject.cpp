@@ -256,7 +256,10 @@ void CShootingObject::StartShellEjection(const Fvector& parent_vel, const shared
 
 	if (CSE_Shell* se_shell = smart_cast<CSE_Shell*>(o))
 	{
-		se_shell->is_parent_actor = ParentIsActor() ? 1u : 0u;
+		if (CObject* weapon = smart_cast<CObject*>(this))
+		{
+			se_shell->weapon_id = weapon->ID();
+		}
 		se_shell->eject_dir = eject_dir;
 		se_shell->parent_vel = parent_vel;
 		se_shell->eject_speed = m_fShellEjectionSpeed;
