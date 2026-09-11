@@ -307,16 +307,22 @@ float CArmorBase::HitThroughArmor(float hit_power, u16 element, float ap, bool& 
 	{
 		if (hit_type == ALife::eHitTypeFireWound)
 		{
-			const float BoneArmor = m_boneProtection->getBoneArmor(element) * GetCondition();
+			const float ba = m_boneProtection->getBoneArmor(element);
+			// Negative armor means this item does not cover the hit bone.
+			if (ba < 0.0f)
+				return NewHitPower;
+
+			const float BoneArmor = ba * GetCondition();
 
 			if (ap > EPS && ap > BoneArmor)
 			{
 				//пуля пробила бронь
-				const float d_ap = ap - BoneArmor;
-				NewHitPower *= (d_ap / ap);
+				float hit_fraction = (ap - BoneArmor) / ap;
+				// Like COP, hit_fraction_actor is a fraction of the incoming hit power.
+				if (hit_fraction < m_boneProtection->m_fHitFrac)
+					hit_fraction = m_boneProtection->m_fHitFrac;
 
-				if (NewHitPower < m_boneProtection->m_fHitFrac)
-					NewHitPower = m_boneProtection->m_fHitFrac;
+				NewHitPower *= hit_fraction;
 
 				if (!IsGameTypeSingle())
 				{
