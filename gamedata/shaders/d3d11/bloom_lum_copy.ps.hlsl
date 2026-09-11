@@ -15,11 +15,13 @@ float main(PSInputFullscreen I) : SV_Target
     float3 Color = s_image.SampleLevel(smp_rtlinear, I.texcoord.xy, 0).rgb;
     float Final = dot(Color, LUMINANCE_VECTOR);
 	
+#ifdef USE_LEGACY_LIGHT
+	Final = sqrt(Final);
+#endif
+	
 #ifndef USE_CLASSIQUE_TONEMAP
     Final = max(Final, 0.001); // just protec low before log
     Final = log2(Final);
-#else
-	Final = LinearToGamma(Final);
 #endif
 
     return Final;
