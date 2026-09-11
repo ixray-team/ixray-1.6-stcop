@@ -219,6 +219,11 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 	RImplementation.addShaderOption("USE_LM_HEMI", "1");
 	RImplementation.addShaderOption("USE_TDETAIL_BUMP", "1");
 
+	bool isSpecularR = false;
+	bool isSpecularG = false;
+	bool isSpecularB = false;
+	bool isSpecularA = false;
+
 	switch(C.iElement) {
 	case SE_R2_NORMAL_HQ:
 	case SE_R2_NORMAL_LQ:
@@ -233,6 +238,40 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		if(C.iElement == SE_R2_NORMAL_HQ)
 		{
 			RImplementation.addShaderOption("USE_4_BUMP", "");
+
+			string_path temp { };
+
+			auto IsSpecularExist = [&temp](LPCSTR texture)
+			{
+				bool specular_texture = FS.exist(temp, "$textures$", texture, "_spec.dds");
+				specular_texture = specular_texture || FS.exist(temp, "$level$", texture, "_spec.dds");
+
+				return specular_texture;
+			};
+
+			if (IsSpecularExist(oR_Name))
+			{
+				isSpecularR = true;
+				RImplementation.addShaderOption("USE_4_R_IOR_TEXTURE", "1");
+			}
+
+			if (IsSpecularExist(oG_Name))
+			{
+				isSpecularG = true;
+				RImplementation.addShaderOption("USE_4_G_IOR_TEXTURE", "1");
+			}
+
+			if (IsSpecularExist(oB_Name))
+			{
+				isSpecularB = true;
+				RImplementation.addShaderOption("USE_4_B_IOR_TEXTURE", "1");
+			}
+
+			if (IsSpecularExist(oA_Name))
+			{
+				isSpecularA = true;
+				RImplementation.addShaderOption("USE_4_A_IOR_TEXTURE", "1");
+			}
 		}
 
 		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
@@ -240,7 +279,8 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 
 		C.r_dx10Texture("s_lmap", C.L_textures[1]);
 
-		if(C.iElement == SE_R2_NORMAL_HQ) {
+		if(C.iElement == SE_R2_NORMAL_HQ) 
+		{
 			C.r_dx10Texture("s_mask", mask);
 
 			C.r_dx10Texture("s_dt_r", oR_Name);
@@ -257,6 +297,26 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 			C.r_dx10Texture("s_dn_gX", xr_strconcat(mask, oG_Name, "_bump#"));
 			C.r_dx10Texture("s_dn_bX", xr_strconcat(mask, oB_Name, "_bump#"));
 			C.r_dx10Texture("s_dn_aX", xr_strconcat(mask, oA_Name, "_bump#"));
+
+			if (isSpecularR)
+			{
+				C.r_dx10Texture("s_dt_spec_r", xr_strconcat(mask, oR_Name, "_spec"));
+			}
+
+			if (isSpecularG)
+			{
+				C.r_dx10Texture("s_dt_spec_g", xr_strconcat(mask, oG_Name, "_spec"));
+			}
+
+			if (isSpecularB)
+			{
+				C.r_dx10Texture("s_dt_spec_b", xr_strconcat(mask, oB_Name, "_spec"));
+			}
+
+			if (isSpecularA)
+			{
+				C.r_dx10Texture("s_dt_spec_a", xr_strconcat(mask, oA_Name, "_spec"));
+			}
 		}
 
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
