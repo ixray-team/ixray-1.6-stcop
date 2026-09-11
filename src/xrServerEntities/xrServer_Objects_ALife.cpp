@@ -2536,6 +2536,61 @@ void CSE_ALifeInteractiveObject::UPDATE_Write(NET_Packet& tNetPacket)
 	inherited::UPDATE_Write(tNetPacket);
 }
 
+CSE_Shell::CSE_Shell(const char* section) : CSE_ALifeObjectPhysic(section)
+{
+}
+
+CSE_Shell::~CSE_Shell()
+{
+}
+
+bool CSE_Shell::Spawn_Read(NET_Packet& tNetPacket)
+{
+	if (!inherited::Spawn_Read(tNetPacket))
+	{
+		return false;
+	}
+
+	tNetPacket.r_u8(is_parent_actor);
+	tNetPacket.r_vec3(eject_dir);
+	tNetPacket.r_vec3(parent_vel);
+	tNetPacket.r_float(eject_speed);
+	tNetPacket.r_float(eject_dispersion_angle);
+
+	return true;
+}
+
+void CSE_Shell::Spawn_Write(NET_Packet& tNetPacket, bool bLocal)
+{
+	inherited::Spawn_Write(tNetPacket, true);
+	
+	tNetPacket.w_u8(is_parent_actor);
+	tNetPacket.w_vec3(eject_dir);
+	tNetPacket.w_vec3(parent_vel);
+	tNetPacket.w_float(eject_speed);
+	tNetPacket.w_float(eject_dispersion_angle);
+}
+
+void CSE_Shell::STATE_Read(NET_Packet& P, u16 size)
+{
+	inherited::STATE_Read(P, size);
+}
+
+void CSE_Shell::STATE_Write(NET_Packet& P)
+{
+	inherited::STATE_Write(P);
+}
+
+void CSE_Shell::UPDATE_Read(NET_Packet& P)
+{
+	inherited::UPDATE_Read(P);
+}
+
+void CSE_Shell::UPDATE_Write(NET_Packet& P)
+{
+	inherited::UPDATE_Write(P);
+}
+
 #ifndef XRGAME_EXPORTS
 void CSE_ALifeInteractiveObject::FillProps(const char* pref, PropItemVec& values)
 {

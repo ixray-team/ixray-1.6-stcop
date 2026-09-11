@@ -644,6 +644,20 @@ CSE_ALifeInteractiveObject(const char* caSection);
 virtual				~CSE_ALifeInteractiveObject();
 SERVER_ENTITY_DECLARE_END
 
+SERVER_ENTITY_DECLARE_BEGIN(CSE_Shell, CSE_ALifeObjectPhysic)
+	u8 is_parent_actor;
+	Fvector eject_dir;
+	Fvector parent_vel;
+	float eject_speed;
+	float eject_dispersion_angle;
+
+	CSE_Shell(const char* section);
+	virtual ~CSE_Shell() override;
+
+	virtual bool Spawn_Read(NET_Packet& tNetPacket) override;
+	virtual void Spawn_Write(NET_Packet& tNetPacket, bool bLocal) override;
+SERVER_ENTITY_DECLARE_END
+
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeInventoryBox,CSE_ALifeDynamicObjectVisual)
 	bool				m_can_take;
 	bool				m_closed;

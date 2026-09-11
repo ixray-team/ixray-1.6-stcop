@@ -217,7 +217,11 @@ void CShootingObject::Light_Render	(const Fvector& P)
 
 void CShootingObject::StartShellParticle(const Fvector& parent_vel)
 {
-	if(!m_sShellParticles || Device.vCameraPosition.distance_to_sqr(get_CurrentShellPoint())>25.f ) return;
+	if (m_sShellParticles == nullptr || Device.vCameraPosition.distance_to_sqr(get_CurrentShellPoint()) > 25.f)
+	{
+		return;
+	}
+
 	xr_shared_ptr<CParticlesObject> m_pShellParticles = Particles::Details::Create(*m_sShellParticles, true);
 	m_pShellParticles->SetLiveUpdate(true);
 	Fmatrix pos;
@@ -233,6 +237,36 @@ void CShootingObject::StartShellParticle(const Fvector& parent_vel)
 
 	m_pShellParticles->Play(in_hud_mode);
 	
+}
+
+void CShootingObject::StartShellEjection(const Fvector& parent_vel, const shared_str& section)
+{
+	Fmatrix xform_shell_point = get_ParticlesXFORM();
+	xform_shell_point.c.set(get_CurrentShellPoint());
+
+	Fvector eject_dir;
+	xform_shell_point.transform_dir(eject_dir, m_vShellDir);
+	eject_dir.normalize_safe();
+
+	CSE_Abstract* o = F_entity_Create(*section);
+	xform_shell_point.getXYZ(o->o_Angle);
+	o->o_Position.set(xform_shell_point.c);
+	o->ID = o->ID_Phantom;
+	o->ID_Parent = o->ID_Phantom;
+
+	if (CSE_Shell* se_shell = smart_cast<CSE_Shell*>(o))
+	{
+		se_shell->is_parent_actor = ParentIsActor() ? 1u : 0u;
+		se_shell->eject_dir = eject_dir;
+		se_shell->parent_vel = parent_vel;
+		se_shell->eject_speed = m_fShellEjectionSpeed;
+		se_shell->eject_dispersion_angle = m_fShellEjectionDispersionAngle;
+	}
+
+	NET_Packet p;
+	o->Spawn_Write(p, true);
+	Level().Send(p, net_flags(true));
+	F_entity_Destroy(o);
 }
 
 void CShootingObject::StartSmokeParticle(const Fvector& parent_vel)

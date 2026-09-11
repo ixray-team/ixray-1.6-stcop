@@ -119,6 +119,7 @@ CLevel::CLevel():
 	eEntitySpawn				= g_pEventManager->Event.Handler_Attach	("LEVEL:spawn",this);
 
 	m_pBulletManager			= new CBulletManager();
+	shell_manager				= new SShellManager();
 
 	m_map_manager				= new CMapManager();
 	m_game_task_manager			= new CGameTaskManager();
@@ -286,6 +287,7 @@ CLevel::~CLevel()
 //	xr_delete					(m_pFogOfWar);
 	//destroy bullet manager
 	xr_delete					(m_pBulletManager);
+	xr_delete					(shell_manager);
 	//-----------------------------------------------------------
 	xr_delete					(pStatGraphR);
 	xr_delete					(pStatGraphS);
