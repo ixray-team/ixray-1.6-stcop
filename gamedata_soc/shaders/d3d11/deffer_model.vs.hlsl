@@ -48,6 +48,10 @@ void skinned_main(in v_model I, out p_bumped_new O)
     O.hpos_old = mul(m_WVP_old, I.P_old);
 #endif
 
+#ifdef USE_LENGTH_BUFFER
+	O.lmap = 0.0f;
+#endif
+
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 }
 
