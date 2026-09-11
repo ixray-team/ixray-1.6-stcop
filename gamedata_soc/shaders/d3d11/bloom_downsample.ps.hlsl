@@ -10,10 +10,10 @@ Jorge Jimenez http://www.iryoku.com/publications
 #include "common.hlsli"
 float4 downsample_params;
 
-float4 main(PSInputFullscreen I) : SV_Target
+void main(in PSInputFullscreen I, out float3 downsample : SV_Target)
 {
-    float4 res = 0.f;
     float2 center = I.texcoord.xy;
+	
     float x = 0.5f * downsample_params.z;
     float y = 0.5f * downsample_params.w;
     
@@ -34,25 +34,42 @@ float4 main(PSInputFullscreen I) : SV_Target
     float3 l = s_image.Sample(smp_rtlinear, float2(center.x - x, center.y - y)).rgb;
     float3 m = s_image.Sample(smp_rtlinear, float2(center.x + x, center.y - y)).rgb;
     
-	a = clamp(a, 0.0f, 16.0f);
-	b = clamp(b, 0.0f, 16.0f);
-	c = clamp(c, 0.0f, 16.0f);
-	d = clamp(d, 0.0f, 16.0f);
-	e = clamp(e, 0.0f, 16.0f);
-	f = clamp(f, 0.0f, 16.0f);
-	g = clamp(g, 0.0f, 16.0f);
-	h = clamp(h, 0.0f, 16.0f);
-	i = clamp(i, 0.0f, 16.0f);
-	j = clamp(j, 0.0f, 16.0f);
-	k = clamp(k, 0.0f, 16.0f);
-	l = clamp(l, 0.0f, 16.0f);
-	m = clamp(m, 0.0f, 16.0f);
+#ifdef USE_LEGACY_LIGHT
+	#ifdef USE_GAMMA_FIX
+		a *= a;
+		b *= b;
+		c *= c;
+		d *= d;
+		e *= e;
+		f *= f;
+		g *= g;
+		h *= h;
+		i *= i;
+		j *= j;
+		k *= k;
+		l *= l;
+		m *= m;
+	#endif
+#endif
 	
-    float3 downsample = 0.f;
-    downsample += e * 0.125f;
+	a = clamp(a, 0.0f, 64.0f);
+	b = clamp(b, 0.0f, 64.0f);
+	c = clamp(c, 0.0f, 64.0f);
+	d = clamp(d, 0.0f, 64.0f);
+	e = clamp(e, 0.0f, 64.0f);
+	f = clamp(f, 0.0f, 64.0f);
+	g = clamp(g, 0.0f, 64.0f);
+	h = clamp(h, 0.0f, 64.0f);
+	i = clamp(i, 0.0f, 64.0f);
+	j = clamp(j, 0.0f, 64.0f);
+	k = clamp(k, 0.0f, 64.0f);
+	l = clamp(l, 0.0f, 64.0f);
+	m = clamp(m, 0.0f, 64.0f);
+	
+    downsample = e * 0.125f;
+	
     downsample += (a + c + g + i) * 0.03125f;
     downsample += (b + d + f + h) * 0.0625f;
     downsample += (j + k + l + m) * 0.125f;
-
-    return res = float4 (downsample, 1.f);
 }
+

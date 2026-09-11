@@ -22,7 +22,7 @@ void main(p_bumped_new I, out OutStructure O)
     M.Point = I.position.xyz;
 
 #ifndef USE_LEGACY_LIGHT
-	M.Specular = F0_BASE;
+	M.Specular = 0.0f;
 	M.Roughness = 0.5f;
 	M.Metalness = 0.0f;
 	M.SSS = 0.0f;
@@ -75,6 +75,32 @@ void main(p_bumped_new I, out OutStructure O)
 		float4 g_bumpX = s_dn_gX.Sample(smp_base, tcdbump) * Mask.y;
 		float4 b_bumpX = s_dn_bX.Sample(smp_base, tcdbump) * Mask.z;
 		float4 a_bumpX = s_dn_aX.Sample(smp_base, tcdbump) * Mask.w;
+		
+		#ifndef USE_LEGACY_LIGHT
+			#ifdef USE_4_R_IOR_TEXTURE
+				M.Specular += s_dt_spec_r.Sample(smp_base, tcdbump).x * Mask.x;
+			#else
+				M.Specular += F0_BASE * Mask.x;
+			#endif
+			
+			#ifdef USE_4_G_IOR_TEXTURE
+				M.Specular += s_dt_spec_g.Sample(smp_base, tcdbump).x * Mask.y;
+			#else
+				M.Specular += F0_BASE * Mask.y;
+			#endif
+			
+			#ifdef USE_4_B_IOR_TEXTURE
+				M.Specular += s_dt_spec_b.Sample(smp_base, tcdbump).x * Mask.z;
+			#else
+				M.Specular += F0_BASE * Mask.z;
+			#endif
+			
+			#ifdef USE_4_A_IOR_TEXTURE
+				M.Specular += s_dt_spec_a.Sample(smp_base, tcdbump).x * Mask.w;
+			#else
+				M.Specular += F0_BASE * Mask.w;
+			#endif
+		#endif
 
 		//Unpack normals (if something is wrong - unpack and then blend them)
 		M.Normal.xy = (r_bump.wy + g_bump.wy + b_bump.wy + a_bump.wy) * 2.0 - 1.0;
@@ -100,8 +126,11 @@ void main(p_bumped_new I, out OutStructure O)
 		#ifndef USE_LEGACY_LIGHT
 			M.Roughness = DetailBumpX.y;
 			M.Metalness = DetailBumpX.x;
+			
 			M.SSS = DetailBumpX.z;
 			M.AO = DetailBumpX.w;
+			
+			M.Specular = F0_BASE;
 		#endif
 		
 		M.Normal.xy = DetailBump.wy * 2.0 - 1.0;

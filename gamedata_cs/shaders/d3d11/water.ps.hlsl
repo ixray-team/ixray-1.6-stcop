@@ -11,7 +11,7 @@ struct vf
 	float3 M2 : TEXCOORD4;
 	float3 M3 : TEXCOORD5;
 	float3 v2point : TEXCOORD6;
-	float4 tctexgen : TEXCOORD7;
+	float3 tctexgen : TEXCOORD7;
 	float3 pos : TEXCOORD8;
 	float4 c0 : COLOR0;
 	float4 hpos : SV_POSITION;

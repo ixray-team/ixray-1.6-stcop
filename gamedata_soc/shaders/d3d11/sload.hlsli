@@ -266,8 +266,8 @@ inline void SloadNew(inout p_bumped_new I, inout IXRayMaterial M)
 
 #ifndef USE_PBR
 	#ifndef USE_LEGACY_LIGHT
-		M.Roughness = test_exp_to_shaders_1; //L_material.w * 0.50f + 0.25f;
-		M.Specular = M.Specular * M.Specular * test_exp_to_shaders_2;
+		M.Roughness = L_material.w * 0.25f + 0.15f;
+		M.Specular = M.Specular * M.Specular;
 	#endif
 
 	#ifndef USE_TRUE_NORMAL_MAP
