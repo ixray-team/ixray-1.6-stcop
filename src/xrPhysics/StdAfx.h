@@ -9,7 +9,7 @@
 #define ECORE_API
 
 #include "../xrCore/xrCore.h"
-#include "../xrCore/API/xrAPI.h"
+#include "../xrCore/Kernel/xrAPI.h"
 
 #include "../xrCore/Collision/xrCDB.h"
 #include "../xrSound/Sound.h"

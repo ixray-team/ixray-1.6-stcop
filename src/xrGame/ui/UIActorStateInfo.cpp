@@ -35,7 +35,7 @@
 #include "../ActorHelmet.h"
 #include "../Inventory.h"
 #include "../Artefact.h"
-#include "../../xrCore/EngineExternal.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
 
 namespace
 {

@@ -1,6 +1,4 @@
 #pragma once
-#include "../../xrCore/vector.h"
-#include "../../xrCore/_stl_extensions.h"
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/uiabstract.h"

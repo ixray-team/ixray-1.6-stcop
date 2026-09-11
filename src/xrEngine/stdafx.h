@@ -11,14 +11,14 @@
 
 #include "ExportDefines.h"
 
-#include "../xrCore/API/xrAPI.h"
+#include "../xrCore/Kernel/xrAPI.h"
+#include "../xrCore/Kernel/EngineExternal.h"
 
 #ifndef ECORE_API
 #	define ECORE_API
 #endif
 
 // Our headers
-#include "../xrCore/EngineExternal.h"
 #include "Engine.h"
 #include "defines.h"
 #ifndef NO_XRLOG

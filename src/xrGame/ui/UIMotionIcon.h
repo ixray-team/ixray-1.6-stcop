@@ -1,5 +1,5 @@
 #pragma once
-#include "../../xrCore/vector.h"
+
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIProgressShape.h"
 

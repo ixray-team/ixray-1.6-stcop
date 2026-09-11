@@ -1,14 +1,9 @@
 // SkeletonX.cpp: implementation of the CSkeletonX class.
-//
 //////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 
-
 #ifndef _EDITOR
-	#include	"../../xrEngine/Render.h"
-#else
-	#include "../../xrCore/API/xrAPI.h"
+#	include "../../xrEngine/Render.h"
 #endif
 
 #include "SkeletonX.h"

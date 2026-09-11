@@ -3,17 +3,9 @@
 #include "Physics.h"
 #include "tri-colliderknoopc/dTriList.h"
 #include "PHJointDestroyInfo.h"
-///////////////////////////////////////////////////////////////
-///#pragma warning(disable:4995)
-////#include "../xrEngine/ode/src/collision_kernel.h"
-//#include <../ode/src/joint.h>
-//#include <../ode/src/objects.h>
-
-//#pragma warning(default:4995)
-///////////////////////////////////////////////////////////////////
 
 #include "ExtendedGeom.h"
-#include "../xrCore/EngineExternal.h"
+#include "../xrCore/Kernel/EngineExternal.h"
 #include "PHElement.h"
 #include "PHJoint.h"
 #include "PHShell.h"
@@ -25,58 +17,56 @@ IC dBodyID body_for_joint(CPhysicsElement* ee)
 {
 	VERIFY(smart_cast<CPHElement *>(ee));
 	CPHElement * e = static_cast<CPHElement *> (ee);
-	return e->isFixed() ? 0 : e->get_body();//return e->get_body();//
+	return e->isFixed() ? 0 : e->get_body();
 }
+
 IC void SwapLimits(float &lo,float &hi)
 {
 	float t=-lo;
 	lo=-hi;
 	hi=t;
 }
-CPHJoint::~CPHJoint(){
+
+CPHJoint::~CPHJoint()
+{
 	xr_delete(m_destroy_info);
 	VERIFY(!bActive);
 	axes.clear();
 	if(m_back_ref)*m_back_ref=nullptr;
-};
+}
 
 void CPHJoint::SetBackRef(CPhysicsJoint** j)
 {
 	R_ASSERT2(*j==static_cast<CPhysicsJoint*>(this),"wronng reference");
 	m_back_ref=j;
 }
+
 void CPHJoint::CreateBall()
 {
-
-	m_joint=dJointCreateBall(0,0);
+	m_joint = dJointCreateBall(0, 0);
 	Fvector pos;
-	Fmatrix first_matrix,second_matrix;
-	CPHElement* first=(pFirst_element);
-	CPHElement* second=(pSecond_element);
-	
-	VERIFY(first&&second);
+	Fmatrix first_matrix, second_matrix;
+	CPHElement* first = (pFirst_element);
+	CPHElement* second = (pSecond_element);
+
+	VERIFY(first && second);
 	first->GetGlobalTransformDynamic(&first_matrix);
 	second->GetGlobalTransformDynamic(&second_matrix);
-pos.set(0,0,0);
-	switch(vs_anchor){
-case vs_first :first_matrix.transform_tiny(pos,anchor); break;
-case vs_second:second_matrix.transform_tiny(pos,anchor); break;
-case vs_global:pShell->mXFORM.transform_tiny(pos,anchor);break;				
-default:NODEFAULT;	
+	pos.set(0, 0, 0);
+	switch (vs_anchor)
+	{
+		case vs_first:  first_matrix.transform_tiny(pos, anchor); break;
+		case vs_second: second_matrix.transform_tiny(pos, anchor); break;
+		case vs_global: pShell->mXFORM.transform_tiny(pos, anchor); break;
+		default: NODEFAULT;
 	}
 
-
-	
-	dJointAttach(m_joint,body_for_joint(first),body_for_joint(second));
-	dJointSetBallAnchor(m_joint,pos.x,pos.y,pos.z);
-
+	dJointAttach(m_joint, body_for_joint(first), body_for_joint(second));
+	dJointSetBallAnchor(m_joint, pos.x, pos.y, pos.z);
 }
-
-
 
 void CPHJoint::CreateHinge()
 {
-
 	m_joint=dJointCreateHinge(0,0);
 
 	Fvector pos;
