@@ -8,7 +8,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrEngine/string_table.h"
-#include "../../xrCore/EngineExternal.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
 
 CUIBoosterInfo::CUIBoosterInfo()
 {

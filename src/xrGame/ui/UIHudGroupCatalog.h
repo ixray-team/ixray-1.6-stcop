@@ -1,8 +1,5 @@
 #pragma once
 
-#include "../../xrCore/_stl_extensions.h"
-#include "../../xrCore/xrstring.h"
-
 struct SHudGroupDesc final
 {
     shared_str _shortLabel;

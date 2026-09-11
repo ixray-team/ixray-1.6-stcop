@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../xrCore/_stl_extensions_nonalloc.h"
+#include "../xrCore/Containers/_stl_extensions_nonalloc.h"
 #include "../xrServerEntities/inventory_space.h"
 
 inline constexpr u16 kWeaponCycleNoGameAction = u16(-1);

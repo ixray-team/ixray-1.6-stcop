@@ -4,7 +4,7 @@
 #include "actor_memory.h"
 
 #include "../xrCore/_flags.h"
-#include "../xrCore/_vector3d.h"
+#include "../xrCore/math/_vector3d.h"
 
 class CActor;
 class CActorMemory;

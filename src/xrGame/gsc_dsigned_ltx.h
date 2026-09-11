@@ -1,6 +1,5 @@
 #pragma once
 #ifdef XR_MP_BUILD
-#include "../xrCore/fastdelegate.h"
 #include "xr_dsa_signer.h"
 #include "xr_dsa_verifyer.h"
 

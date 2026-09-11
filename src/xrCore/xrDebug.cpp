@@ -2,8 +2,8 @@
 #include "EventManager.h"
 #include "xrDebug.h"
 
-#include "EngineExternal.h"
-#include "os_clipboard.h"
+#include "Kernel/EngineExternal.h"
+#include "Kernel/os_clipboard.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -19,7 +19,6 @@ XRCORE_API xrDebug Debug;
 #ifndef DEBUG
 #	define USE_OWN_MINI_DUMP
 #endif // DEBUG
-
 
 static bool	error_after_dialog = false;
 

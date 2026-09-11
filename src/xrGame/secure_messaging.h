@@ -1,7 +1,7 @@
 #ifndef SECRET_KEY_GENERATOR_INCLUDED
 #define SECRET_KEY_GENERATOR_INCLUDED
 
-#include "../xrCore/_random.h"
+#include "../xrCore/math/_random.h"
 
 namespace secure_messaging
 {
