@@ -343,7 +343,7 @@ public:
 
 	void						phase_nvg				();
 
-	void						phase_puddles			();
+	bool						phase_puddles			();
 
 	void						RenderEffect			(ScreenPostProcessType postProcessType, bool = true);
 	void						PhaseAberration			();
