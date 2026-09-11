@@ -1810,14 +1810,38 @@ void CWeaponMagazined::OnShot()
 		StartCamEffector(m_shot_cams[aim ? 1 : 0], false, 33000, 33999);
 	}
 
-	StartFlameParticle();
+	Fvector cce_lin_vel;
 
-	// Shell Drop
-	Fvector vel;
-	PHGetLinearVell(vel);
-
-	StartShellParticle(vel);
-	StartSmokeParticle(vel);
+	if (CObject* parent = H_Parent())
+	{
+		if (auto* psh = smart_cast<CPhysicsShellHolder*>(parent))
+		{
+			psh->PHGetLinearVell(cce_lin_vel);
+		}
+		else
+		{
+			cce_lin_vel.set(0.f, 0.f, 0.f);
+		}
+	}
+	else
+	{
+		cce_lin_vel.set(0.f, 0.f, 0.f);
+	}
+	
+	if (!IsMisfire())
+	{
+		if (!m_ShellMeshes.empty())
+		{
+			StartShellEjection(cce_lin_vel, m_ShellMeshes.find(GetAmmoType())->second);
+		}
+		else
+		{
+			StartShellParticle(cce_lin_vel);
+		}
+		
+		StartFlameParticle();
+		StartSmokeParticle(cce_lin_vel);
+	}
 
 	if (H_Parent())
 	{

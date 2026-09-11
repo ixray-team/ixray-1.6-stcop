@@ -165,42 +165,46 @@ void CWeapon::UpdateXForm	()
 		UpdatePosition(mRes);
 }
 
-void CWeapon::UpdateFireDependencies_internal()
+void CWeapon::UpdateFireDependencies_internal(bool need_invalidate)
 {
-	if (Device.dwFrame == dwFP_Frame)
+	if (Device.dwFrame == dwFP_Frame && !need_invalidate)
+	{
 		return;
+	}
+
+	PROF_EVENT(__FUNCTION__);
 
 	dwFP_Frame = Device.dwFrame;
 
-	UpdateXForm			();
+	UpdateXForm();
 
 	if ((GetHUDmode() || render_item_ui_query()) && HudItemData() != nullptr)
 	{
 		HudItemData()->setup_firedeps(m_current_firedeps);
 		VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
 	}
-	else 
+	else
 	{
 		// 3rd person or no parent
-		Fmatrix& parent			= XFORM();
+		Fmatrix& parent = XFORM();
 
-		if(H_Parent() && H_Parent()->cast_actor() && render_item_ui_query())
+		if (H_Parent() && H_Parent()->cast_actor() && render_item_ui_query())
 		{
 			Level().Cameras().camera_Matrix(parent);
 			parent.j.invert();
 			parent.i.invert();
 		}
 
-		Fvector& fp				= vLoadedFirePoint;
-		Fvector& fp2			= vLoadedFirePoint2;
-		Fvector& sp				= vLoadedShellPoint;
+		Fvector& fp = vLoadedFirePoint;
+		Fvector& fp2 = vLoadedFirePoint2;
+		Fvector& sp = vLoadedShellPoint;
 
-		parent.transform_tiny	(m_current_firedeps.vLastFP,fp);
-		parent.transform_tiny	(m_current_firedeps.vLastFP2,fp2);
-		parent.transform_tiny	(m_current_firedeps.vLastSP,sp);
-		
-		m_current_firedeps.vLastFD.set	(0.f,0.f,1.f);
-		parent.transform_dir	(m_current_firedeps.vLastFD);
+		parent.transform_tiny(m_current_firedeps.vLastFP, fp);
+		parent.transform_tiny(m_current_firedeps.vLastFP2, fp2);
+		parent.transform_tiny(m_current_firedeps.vLastSP, sp);
+
+		m_current_firedeps.vLastFD.set(0.f, 0.f, 1.f);
+		parent.transform_dir(m_current_firedeps.vLastFD);
 
 		m_current_firedeps.m_FireParticlesXForm.set(parent);
 		VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
@@ -799,6 +803,31 @@ void CWeapon::Load		(const char* section)
 
 	// Загрузка паттернов отдачи
 	LoadRecoilPatterns(section);
+
+	if (m_ammoTypes.size() != undefined_ammo_type)
+	{
+		for (u8 i = 0u; i < m_ammoTypes.size(); ++i)
+		{
+			shared_str index_shell;
+			index_shell.printf("shell_section_%u", i);
+
+			if (pSettings->line_exist(section, *index_shell))
+			{
+				m_ShellMeshes.insert({i, pSettings->r_string(section, *index_shell)});
+			}
+		}
+	}
+	
+	m_vShellDir = READ_IF_EXISTS(pSettings, r_fvector3, section, "shell_dir", Fvector(1.f, 0.f, 0.f));
+	m_fShellEjectionSpeed = READ_IF_EXISTS(pSettings, r_float, section, "shell_ejection_speed", 8.f);
+	m_sShellBone = READ_IF_EXISTS(pSettings, r_string, section, "shell_bone", nullptr);
+	m_fShellEjectionDispersionAngle = READ_IF_EXISTS(pSettings, r_float, section, "shell_ejection_dispersion_angle", 30.f);
+	
+	if (m_sShellBone)
+	{
+		IKinematics* k = Visual()->dcast_PKinematics();
+		m_mShellBone = k->LL_GetTransform(k->LL_BoneID(*m_sShellBone));
+	}
 }
 
 void CWeapon::LoadFireParams		(const char* section)

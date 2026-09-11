@@ -19,6 +19,7 @@
 #include "FreeMP/ScriptEvents.h"
 
 #include "UIWorldSpace.h"
+#include "ShellManager.h"
 
 // always try to forward declare your script implementations
 class CRandomManager;
@@ -417,13 +418,13 @@ public:
 	IC CGameTaskManager* GameTaskManager() const { return m_game_task_manager; }
 	void					OnAlifeSimulatorLoaded		();
 	void					OnAlifeSimulatorUnLoaded	();
-	//работа с пулями
-protected:	
-	CBulletManager*		m_pBulletManager;
+protected:
+	CBulletManager* m_pBulletManager;
+	SShellManager* shell_manager;
 public:
-	IC CBulletManager&	BulletManager() {return	*m_pBulletManager;}
+	ICF CBulletManager& BulletManager() { return *m_pBulletManager; }
+	ICF SShellManager& ShellManager() { return *shell_manager; }
 
-	//by Mad Max 
 			bool			IsServer					();
 			bool			IsClient					();
 			CSE_Abstract	*spawn_item					(const char* section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item = false);

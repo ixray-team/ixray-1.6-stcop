@@ -615,26 +615,67 @@ private:
 	firedeps				m_current_firedeps;
 
 protected:
-			void UpdateFireDependencies_internal	();
+	void UpdateFireDependencies_internal(bool need_invalidate);
 	virtual void UpdatePosition(const Fmatrix& transform);
 	virtual void UpdatePosition_alt(const Fmatrix& transform);
-	virtual void			UpdateXForm				();
+	virtual void UpdateXForm();
 
-	virtual void			UpdateHudAdditonal		(Fmatrix&);
-	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
+	virtual void UpdateHudAdditonal(Fmatrix&);
 
-	virtual void			LoadFireParams		(const char* section);
-public:	
-	IC		const Fvector&	get_LastFP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP;	}
-	IC		const Fvector&	get_LastFP2				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP2;	}
-	IC		const Fvector&	get_LastFD				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFD;	}
-	IC		const Fvector&	get_LastSP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastSP;	}
+	ICF void UpdateFireDependencies(bool need_invalidate)
+	{
+		UpdateFireDependencies_internal(need_invalidate);
+	}
 
-	virtual const Fvector&	get_CurrentFirePoint	()			{ return get_LastFP(); }
-	virtual const Fvector&	get_CurrentFirePoint2	()			{ return get_LastFP2(); }
-	virtual const Fvector&	get_CurrentShellPoint	()			{ return get_LastSP(); };
-	virtual const Fmatrix&	get_ParticlesXFORM		()			{ UpdateFireDependencies(); return m_current_firedeps.m_FireParticlesXForm;	}
-	virtual void			debug_draw_firedeps		();
+	virtual void LoadFireParams(const char* section);
+
+public:
+	ICF const Fvector& get_LastFP(bool need_invalidate = false)
+	{
+		UpdateFireDependencies_internal(need_invalidate);
+		return m_current_firedeps.vLastFP;
+	}
+
+	ICF const Fvector& get_LastFP2(bool need_invalidate = false)
+	{
+		UpdateFireDependencies_internal(need_invalidate);
+		return m_current_firedeps.vLastFP2;
+	}
+
+	ICF const Fvector& get_LastFD(bool need_invalidate = false)
+	{
+		UpdateFireDependencies_internal(need_invalidate);
+		return m_current_firedeps.vLastFD;
+	}
+
+	ICF const Fvector& get_LastSP(bool need_invalidate = false)
+	{
+		UpdateFireDependencies_internal(need_invalidate);
+		return m_current_firedeps.vLastSP;
+	}
+
+	virtual const Fvector& get_CurrentFirePoint(bool need_invalidate = false) override
+	{
+		return get_LastFP(need_invalidate);
+	}
+
+	virtual const Fvector& get_CurrentFirePoint2(bool need_invalidate = false) override
+	{
+		return get_LastFP2(need_invalidate);
+	}
+
+	virtual const Fvector& get_CurrentShellPoint(bool need_invalidate = false) override
+	{
+		return get_LastSP(need_invalidate);
+	}
+
+	virtual const Fmatrix& get_ParticlesXFORM(bool need_invalidate = false) override
+	{
+		UpdateFireDependencies(need_invalidate);
+		return m_current_firedeps.m_FireParticlesXForm;
+	}
+
+	virtual void debug_draw_firedeps();
 
 protected:
 	virtual void			SetDefaults				();

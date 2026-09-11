@@ -180,6 +180,7 @@
 #	include "../xrGame/PowerBank.h"
 #	include "../xrGame/PowerCell.h"
 #	include "nvg.h"
+#	include "Shell.h"
 
 #endif // NO_XR_GAME
 
@@ -434,6 +435,7 @@ void CObjectFactory::register_classes	()
 #ifndef NO_SINGLE
 	ADD(smart_cover::object		,CSE_SmartCover					,TEXT2CLSID("SMRTCOVR")			,"smart_cover");
 #endif // #ifndef NO_SINGLE
+	ADD(CShell					,CSE_Shell						,TEXT2CLSID("SHELL_S_")			,"shell");
 
 #ifndef NO_XR_GAME
 	// hack, for dedicated server only

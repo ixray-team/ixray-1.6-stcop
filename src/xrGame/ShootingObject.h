@@ -147,16 +147,16 @@ protected:
 			void			DestroyEffects		();
 			void			StopLight			();
 	virtual bool			IsHudModeNow		() { return false; };
-protected:
-	virtual const Fvector&	get_CurrentFirePoint()	{ return zero_vel; };
-	virtual const Fvector&	get_CurrentFirePoint2() { return get_CurrentFirePoint(); };
-	virtual const Fvector&	get_CurrentShellPoint()	{ return get_CurrentFirePoint(); };
-	virtual const Fmatrix&	get_ParticlesXFORM()	{ return Fidentity; };
+public:
+	virtual const Fvector&	get_CurrentFirePoint(bool need_invalidate = false)	{ return zero_vel; };
+	virtual const Fvector&	get_CurrentFirePoint2(bool need_invalidate = false) { return get_CurrentFirePoint(need_invalidate); };
+	virtual const Fvector&	get_CurrentShellPoint(bool need_invalidate = false)	{ return get_CurrentFirePoint(need_invalidate); };
+	virtual const Fmatrix&	get_ParticlesXFORM(bool need_invalidate = false)	{ return Fidentity; };
 
 			void			StartFlameParticle();
 			void			StartSmokeParticle(const Fvector& parent_vel);
 			void			StartShellParticle(const Fvector& parent_vel);
-public:
+			void			StartShellEjection(const Fvector& parent_vel, const shared_str& section);
 	Fvector					vLoadedShellPoint;
 	float					m_fPredBulletTime;
 	float					m_fTimeToAim;
@@ -168,6 +168,16 @@ protected:
 	shared_str m_sSmokeParticles;
 	shared_str m_sSmokeSilencerParticles;
 	shared_str m_sSmokeGlauncherParticles;
+
+	xr_hash_map<u8, shared_str> m_ShellMeshes;
+
+	shared_str m_sShellBone;
+	Fmatrix m_mShellBone;
+	
+	Fvector m_vShellDir;
+	float m_fShellEjectionSpeed;
+	
+	float m_fShellEjectionDispersionAngle;
 
 	shared_str m_sFlameParticles;
 	shared_str m_sFlameSilencerParticles;
