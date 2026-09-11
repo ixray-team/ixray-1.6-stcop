@@ -111,7 +111,7 @@ float3 Uncharted2Tonemap(float3 Color)
     float D = 0.4f;
     float E = 0.02f;
     float F = 0.3f;
-    float WhitePoint = 1.7f;
+    float WhitePoint = 1.35f; //1.7f; CGIM
 
     return Uncharted2Tonemap(Color, A, B, C, D, E, F, WhitePoint);
 }
