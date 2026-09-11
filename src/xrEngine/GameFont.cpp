@@ -3,7 +3,6 @@
 #include "GameFont.h"
 #include "string_table.h"
 #include "IGame_Persistent.h"
-#include "../xrCore/API/xrAPI.h"
 #include "../Include/xrRender/RenderFactory.h"
 #include "../Include/xrRender/FontRender.h"
 #include <freetype/freetype.h>

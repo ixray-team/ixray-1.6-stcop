@@ -15,7 +15,7 @@
 #define ECORE_API				// fake, to enable sharing with editors
 #define XR_EPROPS_API
 #define MU_LODS_TRUE
-#include "../../xrCore/clsid.h"
+#include "../../xrCore/Kernel/clsid.h"
 #include "defines.h"
 #include "../xrForms/cl_log.h"
 

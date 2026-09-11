@@ -3,7 +3,7 @@
 
 #include "../monster_velocity_space.h"
 
-#include "../../../../xrCore/_vector3d_ext.h"
+#include "../../../../xrCore/math/_vector3d_ext.h"
 #include "../../../level_graph.h"
 #include "ai_object_location.h"
 

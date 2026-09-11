@@ -7,7 +7,7 @@
 #include "../ui/UICellItem.h"
 
 #include "../../xrCore/FS.h"
-#include "../../xrCore/EngineExternal.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
 
 extern bool g_Adjust3dIcon;
 extern float g_Adjust3dIconValue;

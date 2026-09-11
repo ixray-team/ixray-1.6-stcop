@@ -6,24 +6,15 @@
 
 #include "../../xrCore/xrCore.h"
 
-#pragma warning(disable:4995)
-#include <commctrl.h>
-#pragma warning(default:4995)
-
 #define SCRIPTS_API
 #define ECORE_API
 #define XR_EPROPS_API
-#include "../../xrCore/clsid.h"
+#include "../../xrCore/Kernel/clsid.h"
 #include "../../xrEngine/defines.h"
 #include "../xrForms/cl_log.h"
 #include "../../xrCore/Collision/xrCDB.h"
 #include "../../xrEngine/_d3d_extensions.h"
 #include "../../xrEngine/stdafx.h"
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <io.h>
-#include <stdio.h>
 
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	(ltx->line_exist(section,name)) ? ltx->method(section,name) : default_value

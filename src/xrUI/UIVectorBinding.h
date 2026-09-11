@@ -1,8 +1,7 @@
 #pragma once
 
 #include "../Include/xrRender/SVGTypes.h"
-#include "../xrCore/_rect.h"
-#include "../xrCore/_stl_extensions_nonalloc.h"
+#include "../xrCore/math/_rect.h"
 #include "ui_defs.h"
 #include "xrUIXmlParser.h"
 
