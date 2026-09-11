@@ -67,8 +67,7 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 	}
 	else if (CRender::PHASE_REFLECT == RImplementation.phase) 
 	{
-		Msg("! This is no implemented");
-		id = SE_R2_NORMAL_LQ;
+		id = SE_R2_REFLECTIONS;
 	}
 
 	return pVisual->shader->E[id]._get();
