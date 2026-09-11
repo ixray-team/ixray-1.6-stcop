@@ -1,13 +1,13 @@
 #pragma once
-#include "DateTime.hpp"
-#include <atomic>
-#define VPUSH(a)	((a).x), ((a).y), ((a).z)
+#include "Kernel/DateTime.hpp"
 
-void 	XRCORE_API		Msg	(const char* format, ...);
+#define VPUSH(a) ((a).x), ((a).y), ((a).z)
+
+void XRCORE_API Msg(const char* format, ...);
 // Old shit
-void 	XRCORE_API		Log			(const char* msg);
-void 	XRCORE_API		Log			(const char* msg, const Fvector& dop);
-void 	XRCORE_API		Log			(const char* msg, const Fmatrix& dop);
+void XRCORE_API Log(const char* msg);
+void XRCORE_API Log(const char* msg, const Fvector& dop);
+void XRCORE_API Log(const char* msg, const Fmatrix& dop);
 
 #include "ChZGlobalLogger.h"
 

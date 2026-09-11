@@ -1,13 +1,8 @@
 #pragma once
-
 #include "../../Include/xrRender/SVGTypes.h"
-#include "../../xrCore/xrstring.h"
-#include "../../xrCore/_stl_extensions.h"
 #include "TextureAtlas.h"
 
 #include <lunasvg.h>
-
-#include <memory>
 
 enum class eSVGStorageFlags : u32
 {

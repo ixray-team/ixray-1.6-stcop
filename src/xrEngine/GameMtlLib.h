@@ -360,6 +360,4 @@ public:
 	_res_.clone(GET_RANDOM(_mtl_pair_->_a_vector_),st_Effect,sg_SourceType);\
 	}
 
-extern MTL_EXPORT_API CGameMtlLibrary		GMLib;
-
-#include "../xrCore/API/xrAPI.h"
+extern MTL_EXPORT_API CGameMtlLibrary GMLib;

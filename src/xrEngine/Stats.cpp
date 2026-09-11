@@ -224,10 +224,6 @@ void CStats::Show()
 		F.OutNext	("TEST 2:      %2.2fms, %d",TEST2.result,TEST2.count);
 		F.OutNext	("TEST 3:      %2.2fms, %d",TEST3.result,TEST3.count);
 		F.OutSkip	();
-		F.OutNext	("qpc[%3d]",CPU::qpc_counter);
-		
-		CPU::qpc_counter	=	0		;
-		F.OutSkip	();
 		m_pRender->OutData4(F);
 		//////////////////////////////////////////////////////////////////////////
 		// Renderer specific

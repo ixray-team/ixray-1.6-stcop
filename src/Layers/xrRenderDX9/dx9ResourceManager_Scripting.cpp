@@ -1,19 +1,19 @@
 #include "stdafx.h"
 
-#include "../../xrCore/doug_lea_allocator.h"
+#include "../../xrCore/memory/doug_lea_allocator.h"
 
-#include	"../../xrEngine/Render.h"
-#include	"../xrRender/ResourceManager.h"
-#include	"../xrRender/tss.h"
+#include "../../xrEngine/Render.h"
+#include "../xrRender/ResourceManager.h"
+#include "../xrRender/tss.h"
 #include "../xrRender/blenders/Blender.h"
 #include "../xrRender/blenders/Blender_Recorder.h"
-#include	"../../xrEngine/ai_script_space.h"
-#include	"../../xrEngine/ai_script_lua_extension.h"
-#include	"luabind/return_reference_to_policy.hpp"
+#include "../../xrEngine/ai_script_space.h"
+#include "../../xrEngine/ai_script_lua_extension.h"
 
-#include	"../xrRender/dxRenderDeviceRender.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
-using namespace				luabind;
+#include <luabind/return_reference_to_policy.hpp>
+using namespace luabind;
 
 // wrapper
 class	adopt_sampler

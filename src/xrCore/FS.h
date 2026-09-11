@@ -1,16 +1,12 @@
 // FS.h: interface for the CFS class.
-//
 //////////////////////////////////////////////////////////////////////
-
 #pragma once
+#include "Template/Concepts.h"
 
 #define CFS_CompressMark	(1ul << 31ul)
 #define CFS_HeaderChunkID	(666)
-#include "Concepts.h"
 
 XRCORE_API void VerifyPath	(const char* path);
-
-#include "Concepts.h"
 
 //------------------------------------------------------------------------------------
 // Write

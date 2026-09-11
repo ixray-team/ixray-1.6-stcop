@@ -2,7 +2,7 @@
 
 #include "pda_communication.h"
 
-#include "../xrCore/EngineExternal.h"
+#include "../xrCore/Kernel/EngineExternal.h"
 #include "Actor.h"
 #include "GameObject.h"
 #include "InventoryOwner.h"

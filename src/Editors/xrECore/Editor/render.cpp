@@ -1,19 +1,15 @@
 #include "stdafx.h"
 
-
 #include "../Layers/xrRenderDX9/dx9ShaderUtils.h"
 #include "render.h"
 
-
 #include "../Layers/xrRender/ResourceManager.h"
-#include "../../xrCore/API/xrAPI.h"
 #include "../../xrEngine/irenderable.h"
 #include "../../xrEngine/xr_object.h"
 #include "../../xrEngine/CustomHUD.h"
 
 #include "..\Layers\xrRender\uber_deffer.h"
 #include "..\Layers\xrRender\uber_deffer.cpp"
-//#include "../../../Layers/xrRender/Light_Render_Direct_ComputeXFS.cpp"
 
 #include "../../../Layers/xrRender/du_sphere_part.h"
 #include "../../../Layers/xrRender/du_cone.h"

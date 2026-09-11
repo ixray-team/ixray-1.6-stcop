@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "xrAddons.h"
 
-#include "EngineExternal.h"
-#include <FormatParsers/YAML/xr_yaml_reader.h>
-#include <filesystem>
+#include "Kernel/EngineExternal.h"
+#include "FormatParsers/YAML/xr_yaml_reader.h"
 
 XRCORE_API CAddonManager* GAddonsManager = nullptr;
 
@@ -11,8 +10,8 @@ void CAddonManager::Initialize()
 {
     FS.IsAddonPhase = true;
 
-    CEngineExternal engineExternal; // Hack
-    currentPlatform = engineExternal.GetCurrentPlatformName();
+    CEngineExternal EngineExternalVar; // Hack
+    currentPlatform = EngineExternalVar.GetCurrentPlatformName();
 
     CollectAddons();
     ResolveDependencies();

@@ -3,7 +3,7 @@
 #include "basemonster/base_monster.h"
 #include "../../Actor.h"
 #include "../../ActorEffector.h"
-#include "../../../xrCore/_vector3d_ext.h"
+#include "../../../xrCore/math/_vector3d_ext.h"
 #include "control_animation_base.h"
 #include "../../Inventory.h"
 #include "../../Weapon.h"

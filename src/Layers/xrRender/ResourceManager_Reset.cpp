@@ -1,14 +1,11 @@
 #include "stdafx.h"
-
-
 #include "ResourceManager.h"
+
 #ifndef _EDITOR
-#include	"../../xrEngine/Render.h"
-#else
-	#include "../../xrCore/API/xrAPI.h"
+#	include "../../xrEngine/Render.h"
 #endif
 
-void	CResourceManager::reset_begin			()
+void CResourceManager::reset_begin()
 {
 	// destroy everything, renderer may use
 	::Render->reset_begin		();

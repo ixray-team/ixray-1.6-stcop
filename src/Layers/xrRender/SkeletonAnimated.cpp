@@ -1,43 +1,53 @@
 //---------------------------------------------------------------------------
-#include 	"stdafx.h"
+#include "stdafx.h"
 
+#include "SkeletonAnimated.h"
+#include "AnimationKeyCalculate.h"
+#include "SkeletonX.h"
 
-#include 	"SkeletonAnimated.h"
-
-#include	"AnimationKeyCalculate.h"
-#include	"SkeletonX.h"
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrCore/AnimNotify/AnimNotify.h"
-#ifdef DEBUG
-#include "../../xrCore/dump_string.h"
-#endif
-extern int	psSkeletonUpdate;
-using	namespace animation;
+
+extern int psSkeletonUpdate;
+using namespace animation;
 //////////////////////////////////////////////////////////////////////////
 // BoneInstance methods
-void		CBlendInstance::construct()
-{	
-	ZeroMemory			(this,sizeof(*this));
+void CBlendInstance::construct()
+{
+	ZeroMemory(this, sizeof(*this));
 }
-void		CBlendInstance::blend_add	(CBlend* H)
-{	
-	xrSRWLockGuard guard(&blend_lock, false);
-	if ( Blend.size() == MAX_BLENDED )	{
-		if(H->fall_at_end)
-						return;
-		BlendSVecIt _d	= Blend.begin();
-		for (BlendSVecIt it=Blend.begin()+1; it!=Blend.end(); it++)
-			if ((*it)->blendAmount<(*_d)->blendAmount) _d=it;
-		Blend.erase		(_d);
-	}
-	VERIFY (Blend.size()<MAX_BLENDED);
-	Blend.push_back(H);
-}
-void		CBlendInstance::blend_remove	(CBlend* H)
+
+void CBlendInstance::blend_add(CBlend* H)
 {
 	xrSRWLockGuard guard(&blend_lock, false);
-	CBlend** I = std::find(Blend.begin(),Blend.end(),H);
-	if (I!=Blend.end())	Blend.erase(I);
+	if (Blend.size() == MAX_BLENDED)
+	{
+		if (H->fall_at_end)
+		{
+			return;
+		}
+		BlendSVecIt _d = Blend.begin();
+		for (BlendSVecIt it = Blend.begin() + 1; it != Blend.end(); it++)
+		{
+			if ((*it)->blendAmount < (*_d)->blendAmount)
+			{
+				_d = it;
+			}
+		}
+		Blend.erase(_d);
+	}
+	VERIFY(Blend.size() < MAX_BLENDED);
+	Blend.push_back(H);
+}
+
+void CBlendInstance::blend_remove(CBlend* H)
+{
+	xrSRWLockGuard guard(&blend_lock, false);
+	CBlend** I = std::find(Blend.begin(), Blend.end(), H);
+	if (I != Blend.end())
+	{
+		Blend.erase(I);
+	}
 }
 
 // Motion control
@@ -957,42 +967,32 @@ const	CBlendInstance::BlendSVec	&Blend				= BLEND_INST.blend_vector();
 }
 
 // calculate single bone with key blending 
-void	CKinematicsAnimated::LL_BoneMatrixBuild	( CBoneInstance &bi, const Fmatrix *parent, const SKeyTable	&keys )
+void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* parent, const SKeyTable& keys)
 {
 	// Blend them together
-	CKey					channel_keys[MAX_CHANNELS];
-	animation::channel_def	BC			[MAX_CHANNELS];
-	u16						ch_count = 0;
+	CKey channel_keys[MAX_CHANNELS];
+	animation::channel_def BC[MAX_CHANNELS];
+	u16 ch_count = 0;
 
-	for(u16 j= 0;MAX_CHANNELS>j;++j)
+	for (u16 j = 0; MAX_CHANNELS > j; ++j)
 	{
-		if(j!=0&&keys.chanel_blend_conts[j]==0)
+		if (j != 0 && keys.chanel_blend_conts[j] == 0)
+		{
 			continue;
-		//data for channel mix cycle based on ch_count
-		channels.get_def ( j, BC[ch_count]	);
-		process_single_channel( channel_keys[ch_count], BC[ch_count], keys.keys[j], keys.blends[j], keys.chanel_blend_conts[j] );
+		}
+
+		// data for channel mix cycle based on ch_count
+		channels.get_def(j, BC[ch_count]);
+		process_single_channel(channel_keys[ch_count], BC[ch_count], keys.keys[j], keys.blends[j], keys.chanel_blend_conts[j]);
 		++ch_count;
 	}
-	CKey	Result;
-	//Mix channels
-	MixChannels( Result, channel_keys,  BC, ch_count );
+	CKey Result;
+	// Mix channels
+	MixChannels(Result, channel_keys, BC, ch_count);
 
-	Fmatrix					RES;
-	RES.mk_xform			(Result.Q,Result.T);
-	bi.mTransform.mul_43	(*parent,RES);
-#ifdef DEBUG
-#ifndef _EDITOR
-		if(!check_scale(RES))
-		{
-			VERIFY(check_scale(bi.mTransform));
-		}
-		VERIFY( _valid( bi.mTransform ) );
-		Fbox dbg_box;
-		float box_size = 100000.f;
-		dbg_box.set( -box_size, -box_size, -box_size, box_size, box_size, box_size );
-		VERIFY2( dbg_box.contains(bi.mTransform.c), (make_string<const char*>( "model: %s has strange bone position, matrix : ", getDebugName().c_str() ) + get_string( bi.mTransform ) ).c_str() );
-#endif
-#endif
+	Fmatrix RES;
+	RES.mk_xform(Result.Q, Result.T);
+	bi.mTransform.mul_43(*parent, RES);
 }
 
 void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /*= (1<<0)*/)

@@ -353,47 +353,47 @@ void CSheduler::ProcessStep			()
 void CSheduler::Update()
 {
 	PROF_EVENT("CSheduler: Update")
-	R_ASSERT						(Device.Statistic);
+	R_ASSERT(Device.Statistic);
 	// Initialize
 	Device.Statistic->Sheduler.Begin();
-	cycles_start					= CPU::QPC			();
-	cycles_limit					= CPU::qpc_freq * u64 (iCeil(psShedulerCurrent)) / 1000i64 + cycles_start;
-	internal_Registration			();
-	g_bSheduleInProgress			= true;
+	cycles_start = CPU::QPC();
+	cycles_limit = CPU::qpc_freq * u64(iCeil(psShedulerCurrent)) / 1000i64 + cycles_start;
+	internal_Registration();
+	g_bSheduleInProgress = true;
 
 	// Realtime priority
-	m_processing_now				= true;
-	u32	dwTime						= Device.dwTimeGlobal;
-	for (u32 it=0; it<ItemsRT.size(); it++)
+	m_processing_now = true;
+	u32 dwTime = Device.dwTimeGlobal;
+	for (u32 it = 0; it < ItemsRT.size(); it++)
 	{
-		Item&	T					= ItemsRT[it];
-		R_ASSERT					(T.Object);
+		Item& T = ItemsRT[it];
+		R_ASSERT(T.Object);
 
-		if(!T.Object->shedule_Needed())
+		if (!T.Object->shedule_Needed())
 		{
-			T.dwTimeOfLastExecute	= dwTime;
+			T.dwTimeOfLastExecute = dwTime;
 			continue;
 		}
 
-		u32	Elapsed					= dwTime-T.dwTimeOfLastExecute;
+		u32 Elapsed = dwTime - T.dwTimeOfLastExecute;
 #ifdef DEBUG
-		VERIFY						(T.Object->dbg_startframe != Device.dwFrame);
-		T.Object->dbg_startframe	= Device.dwFrame;
+		VERIFY(T.Object->dbg_startframe != Device.dwFrame);
+		T.Object->dbg_startframe = Device.dwFrame;
 #endif
-		T.Object->shedule_Update	(Elapsed);
-		T.dwTimeOfLastExecute		= dwTime;
+		T.Object->shedule_Update(Elapsed);
+		T.dwTimeOfLastExecute = dwTime;
 	}
 
 	// Normal (sheduled)
-	ProcessStep						();
-	m_processing_now				= false;
+	ProcessStep();
+	m_processing_now = false;
 
-	clamp							(psShedulerTarget,3.f,66.f);
-	psShedulerCurrent				= 0.9f*psShedulerCurrent + 0.1f*psShedulerTarget;
-	Device.Statistic->fShedulerLoad	= psShedulerCurrent;
+	clamp(psShedulerTarget, 3.f, 66.f);
+	psShedulerCurrent = 0.9f * psShedulerCurrent + 0.1f * psShedulerTarget;
+	Device.Statistic->fShedulerLoad = psShedulerCurrent;
 
 	// Finalize
-	g_bSheduleInProgress			= false;
-	internal_Registration			();
-	Device.Statistic->Sheduler.End	();
+	g_bSheduleInProgress = false;
+	internal_Registration();
+	Device.Statistic->Sheduler.End();
 }

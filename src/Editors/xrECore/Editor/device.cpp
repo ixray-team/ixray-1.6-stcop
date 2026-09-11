@@ -101,11 +101,9 @@ CEditorRenderDevice::~CEditorRenderDevice()
 	GameMaterialLibraryEditors = nullptr;
 }
 
-#include "../../../xrCore/API/xrAPI.h"
 #include "../../../Layers/xrRender/dxRenderFactory.h"
 #include "../../../Layers/xrRender/dxUIRender.h"
 #include "../../../Layers/xrRender/dxDebugRender.h"
-#include "../xrCore/appinfo.h"
 
 typedef void __cdecl ttapi_Done_func(void);
 

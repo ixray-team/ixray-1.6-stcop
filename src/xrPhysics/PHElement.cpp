@@ -742,25 +742,20 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 	Fmatrix parent;
 	VERIFY2( isActive(),"the element is not active");
 	VERIFY(_valid(m_shell->mXFORM));
-	//VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback resive 0 matrix");
-	VERIFY_RMATRIX(B->mTransform);
+
 	VERIFY(valid_pos(B->mTransform.c,phBoundaries));
 	if(m_flags.test(flActivating))
 	{
-		//if(!dBodyIsEnabled(m_body))
-		//	dBodyEnable(m_body);
 		VERIFY(!ph_world->Processing());
 		VERIFY(_valid(B->mTransform));
 		VERIFY(!m_shell->dSpace()->lock_count);
 		mXFORM.set(B->mTransform);
-		//m_start_time=Device.fTimeGlobal;
+
 		Fmatrix global_transform;
-		//if(m_parent_element)
 		global_transform.mul_43(m_shell->mXFORM,mXFORM);
 		SetTransform(global_transform, mh_unspecified );
 
 		FillInterpolation();
-		//bActivating=false;
 		m_flags.set(flActivating,false);
 		if(!m_parent_element) 
 		{
@@ -769,13 +764,9 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 			m_shell->SetNotActivating();
 		}
 		B->set_callback_overwrite(true);
-		//VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback returns 0 matrix");
-		VERIFY_RMATRIX(B->mTransform);
 		VERIFY(valid_pos(B->mTransform.c,phBoundaries));
-		//return;
 	}
 
-	VERIFY_RMATRIX(B->mTransform);
 	VERIFY(valid_pos(B->mTransform.c,phBoundaries));
 
 	{
@@ -783,12 +774,10 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 		B->mTransform.mul_43	(parent,mXFORM);
 	}
 
-	VERIFY_RMATRIX(B->mTransform);
 	VERIFY(valid_pos(B->mTransform.c,phBoundaries));
 	VERIFY2(_valid(B->mTransform),"Bones callback returns bad matrix");
 }
 
-//void CPHElement::BoneGlPos(Fmatrix &m, const CBoneInstance* B) const
 void CPHElement::BoneGlPos(Fmatrix &m, const Fmatrix &BoneTransform) const
 {
 	VERIFY(m_shell);
@@ -799,8 +788,6 @@ void CPHElement::GetAnimBonePos(Fmatrix &bp)
 {
 	VERIFY(m_shell->PKinematics());
 	IKinematics *pK = m_shell->PKinematics();
-	//IKinematicsAnimated *ak = pK->dcast_PKinematicsAnimated();
-	//VERIFY(ak);
 	CBoneInstance *BI = &pK->LL_GetBoneInstance(m_SelfID);
 	if(!BI->callback())//.
 	{
@@ -901,30 +888,24 @@ void	CPHElement::SetBoneCallbackOverwrite( bool v )
 	m_shell->PKinematics()->LL_GetBoneInstance(m_SelfID).set_callback_overwrite (v);
 }
 
-void CPHElement::BonesCallBack( CBoneInstance* B )
+void CPHElement::BonesCallBack(CBoneInstance* B)
 {
-	
-	VERIFY ( isActive() );
-	VERIFY( _valid( m_shell->mXFORM ) );
-	//VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback receive 0 matrix");
-	VERIFY_RMATRIX( B->mTransform );
-	VERIFY_BOUNDARIES2( B->mTransform.c, phBoundaries, PhysicsRefObject(), "BonesCallBack incoming bone position" );
+	VERIFY(isActive());
+	VERIFY(_valid(m_shell->mXFORM));
+	VERIFY_BOUNDARIES2(B->mTransform.c, phBoundaries, PhysicsRefObject(), "BonesCallBack incoming bone position");
 
-	if( m_flags.test( flActivating ) )
+	if (m_flags.test(flActivating))
 	{
 		ActivatingPos(B->mTransform);
-		B->set_callback_overwrite( true );
+		B->set_callback_overwrite(true);
 	}
 
-	VERIFY_RMATRIX( B->mTransform );
-	VERIFY( valid_pos( B->mTransform.c, phBoundaries ) );
+	VERIFY(valid_pos(B->mTransform.c, phBoundaries));
 
-	CalculateBoneTransform( B->mTransform );
+	CalculateBoneTransform(B->mTransform);
 
-	VERIFY_RMATRIX( B->mTransform );
-	VERIFY( valid_pos( B->mTransform.c, phBoundaries ) );
-	VERIFY2( _valid( B->mTransform ), "Bones callback returns bad matrix" );
-
+	VERIFY(valid_pos(B->mTransform.c, phBoundaries));
+	VERIFY2(_valid(B->mTransform), "Bones callback returns bad matrix");
 }
 
 void CPHElement::set_PhysicsRefObject(IPhysicsShellHolder* ref_object)

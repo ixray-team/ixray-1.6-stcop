@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../xrCore/_vector2.h"
+#include "../../xrCore/math/_vector2.h"
 
 class CUIPdaContactsWnd;
 class CUITalkWnd;

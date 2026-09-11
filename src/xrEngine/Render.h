@@ -4,10 +4,9 @@
 #include "../xrCore/Collision/Frustum.h"
 #include "../xrCore/Collision/ISpatial.h"
 #include "vis_common.h"
-//#include "IRenderDetailModel.h"
 
 #include "WallmarkHandle.h"
-#include "../xrCore/API/xrAPI.h"
+#include "../xrCore/Kernel/xrAPI.h"
 #include "../Include/xrRender/FactoryPtr.h"
 class IUIShader;
 typedef FactoryPtr<IUIShader> wm_shader;
@@ -24,9 +23,9 @@ class IRHISurface;
 struct RHITextureMetadata;
 
 #ifndef _EDITOR
-extern const	float		fLightSmoothFactor;
+extern const float fLightSmoothFactor;
 #else
-const	float		fLightSmoothFactor = 4.f;
+const float fLightSmoothFactor = 4.f;
 #endif
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Light)
