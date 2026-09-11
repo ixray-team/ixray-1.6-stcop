@@ -53,7 +53,7 @@ void DrawDownUI()
 	ImGui::Separator();
 
 	ImGui::Checkbox("SwitchUI", &ShowMainUI);			ImGui::SameLine();
-	ImGui::Checkbox("auto-scrool", &autoScroll);		ImGui::SameLine();
+	ImGui::Checkbox("auto-scroll", &autoScroll);		ImGui::SameLine();
 	ImGui::SameLine();
 	ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
 }
