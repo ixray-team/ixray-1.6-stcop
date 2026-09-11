@@ -1,6 +1,9 @@
 ﻿#pragma once
 
 #include "PhysicObject.h"
+#include "ode/contact.h"
+
+struct SGameMtl;
 
 class CShell : public CPhysicObject
 {
@@ -8,7 +11,7 @@ class CShell : public CPhysicObject
 
 	struct
 	{
-		bool is_parent_actor;
+		ALife::_OBJECT_ID weapon_id;
 		Fvector dir;
 		Fvector lin_vel;
 		float speed;
@@ -16,6 +19,9 @@ class CShell : public CPhysicObject
 	} params;
 	
 	bool need_eject = false;
+
+	float bounce;
+	float bounce_vel;
 
 public:
 	virtual bool net_Spawn(CSE_Abstract* e) override;
@@ -26,4 +32,6 @@ public:
 
 private:
 	void Eject();
+
+	static void ContactCallback(bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
 };

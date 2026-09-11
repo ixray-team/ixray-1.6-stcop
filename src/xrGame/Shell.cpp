@@ -2,10 +2,15 @@
 
 #include "Shell.h"
 
+#include "Level.h"
+#include "Weapon.h"
 #include "HUDManager.h"
 #include "PhysicsShellHolder.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrPhysics/PHShell.h"
+#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/PhysicsExternalCommon.h"
+#include "../xrEngine/GameMtlLib.h"
 
 bool CShell::net_Spawn(CSE_Abstract* e)
 {
@@ -16,18 +21,22 @@ bool CShell::net_Spawn(CSE_Abstract* e)
 
 	if (CSE_Shell* se = smart_cast<CSE_Shell*>(e))
 	{
-		params.is_parent_actor = se->is_parent_actor ? true : false;
+		params.weapon_id = se->weapon_id;
 		params.dir = se->eject_dir;
 		params.lin_vel = se->parent_vel;
 		params.speed = se->eject_speed;
 		params.dispersion = se->eject_dispersion_angle;
 	}
 
+	bounce = .5f;
+	bounce_vel = 1.5f;
+
 	CPhysicsShell* ph_shell = PPhysicsShell();
 	ph_shell->DisableCharacterCollision();
 	ph_shell->SetAirResistance(0.f, 0.f);
 	ph_shell->set_DynamicLimits(default_l_limit, 100.f);
 	ph_shell->SetSmall();
+	ph_shell->set_ObjectContactCallback(ContactCallback);
 	need_eject = true;
 
 	return true;
@@ -52,6 +61,27 @@ void CShell::PH_B_CrPr()
 {
 }
 
+void CShell::ContactCallback(bool& do_collide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
+{
+	dxGeomUserData* data = retrieveGeomUserData(bo1 ? c.geom.g1 : c.geom.g2);
+
+	if (data == nullptr || data->ph_ref_object == nullptr)
+	{
+		return;
+	}
+
+	CShell* shell = smart_cast<CShell*>(data->ph_ref_object);
+
+	if (shell == nullptr)
+	{
+		return;
+	}
+
+	c.surface.bounce = shell->bounce;
+	c.surface.bounce_vel = shell->bounce_vel;
+	c.surface.mode |= dContactBounce;
+}
+
 void CShell::Eject()
 {
 	if (CPhysicsShell* physic_shell = PPhysicsShell())
@@ -68,15 +98,18 @@ void CShell::Eject()
 		impulse_dir.mul(params.speed);
 		impulse_dir.add(Fvector().set(params.lin_vel).mul(physic_shell->getMass()));
 
-		if (CPHSynchronize* p_sync_obj = PHGetSyncItem(0); p_sync_obj != nullptr && params.is_parent_actor)
+		if (auto p_sync_obj = PHGetSyncItem(0))
 		{
-			if (CWeaponMagazined* weapon_magazined = Actor()->inventory().ActiveItem()->cast_weapon_magazined())
+			if (auto object = Level().Objects.net_Find(params.weapon_id))
 			{
-				SPHNetState state;
-				p_sync_obj->get_State(state);
-				state.position = weapon_magazined->get_CurrentShellPoint(true);
-				state.previous_position = Position();
-				p_sync_obj->set_State(state);
+				if (auto weapon = object->cast_weapon())
+				{
+					SPHNetState state;
+					p_sync_obj->get_State(state);
+					state.position = weapon->get_CurrentShellPoint(true);
+					state.previous_position = Position();
+					p_sync_obj->set_State(state);
+				}
 			}
 		}
 
