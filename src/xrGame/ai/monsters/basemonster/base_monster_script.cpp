@@ -20,14 +20,12 @@
 #include "../../../patrol_path_manager.h"
 #include "../../../patrol_path_manager_space.h"
 
-// #include "ai/monsters/ai_monster_squad.h"
-// #include "ai/monsters/ai_monster_squad_manager.h"
 #include "../../../level_graph.h"
 #include "../../../game_path_manager.h"
 #include "../../../alife_simulator.h"
 #include "../../../alife_group_registry.h"
 #include "../../../alife_object_registry.h"
-#include "../../../../xrCore/_vector3d_ext.h"
+#include "../../../../xrCore/math/_vector3d_ext.h"
 #include "../../../../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
 
 using namespace MonsterSpace;

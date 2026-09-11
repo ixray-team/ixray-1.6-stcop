@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include <time.h>
-#include "resource.h"
 #include "log.h"
 
 static xrLogger* theLogger = nullptr;
@@ -25,26 +24,22 @@ void Msg(const char *format, ...)
     va_end		(mark);
 }
 
-void Log				(const char *msg, const Fvector &dop) {
-	u32			buffer_size = (xr_strlen(msg) + 2 + 3*(64 + 1) + 1) * sizeof(char);
-    char* buf	= (char*)_alloca( buffer_size );
+void Log(const char* msg, const Fvector& dop)
+{
+	u32 buffer_size = (xr_strlen(msg) + 2 + 3 * (64 + 1) + 1) * sizeof(char);
+	char* buf = (char*)_alloca(buffer_size);
 
-	xr_sprintf	(buf, buffer_size,"%s (%f,%f,%f)",msg, VPUSH(dop) );
-	Log			(buf);
+	xr_sprintf(buf, buffer_size, "%s (%f,%f,%f)", msg, VPUSH(dop));
+	Log(buf);
 }
 
-void Log				(const char *msg, const Fmatrix &dop)	{
-	u32			buffer_size = (xr_strlen(msg) + 2 + 4*( 4*(64 + 1) + 1 ) + 1) * sizeof(char);
-	char* buf	= (char*)_alloca( buffer_size );
+void Log(const char* msg, const Fmatrix& dop)
+{
+	u32 buffer_size = (xr_strlen(msg) + 2 + 4 * (4 * (64 + 1) + 1) + 1) * sizeof(char);
+	char* buf = (char*)_alloca(buffer_size);
 
-	xr_sprintf	(buf, buffer_size,"%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n",
-		msg,
-		dop.i.x, dop.i.y, dop.i.z, dop._14_,
-		dop.j.x, dop.j.y, dop.j.z, dop._24_,
-		dop.k.x, dop.k.y, dop.k.z, dop._34_,
-		dop.c.x, dop.c.y, dop.c.z, dop._44_
-	);
-	Log			(buf);
+	xr_sprintf(buf, buffer_size, "%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n", msg, dop.i.x, dop.i.y, dop.i.z, dop._14_, dop.j.x, dop.j.y, dop.j.z, dop._24_, dop.k.x, dop.k.y, dop.k.z, dop._34_, dop.c.x, dop.c.y, dop.c.z, dop._44_);
+	Log(buf);
 }
 
 void xrLogger::Msg(const char* Msg, va_list argList)

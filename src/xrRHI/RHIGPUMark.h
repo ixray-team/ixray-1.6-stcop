@@ -1,6 +1,5 @@
 #pragma once
 #include "../xrCore/xrCore.h"
-#include "../xrCore/_types.h"
 
 extern RHI_API void* g_pAnnotation;
 

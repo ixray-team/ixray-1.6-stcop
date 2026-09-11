@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../../xrCore/vector.h"
-
 namespace CompassProjection
 {
 	inline float AngleDelta(float targetRad, float currentRad)

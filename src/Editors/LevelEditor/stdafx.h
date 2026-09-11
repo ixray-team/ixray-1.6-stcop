@@ -29,7 +29,6 @@
 #include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcLinearSystem.h"
 #include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcConvexHull2D.h"
 
-#include "../xrCore/doug_lea_allocator.h"
 #include "../xrCore/Containers/FixedMap.h"
 
 #include "../../xrEngine/LightAnimLibrary.h"
@@ -42,7 +41,6 @@
 #include "../../xrEngine/xr_efflensflare.h"
 #include "../xrECore/Editor/du_box.h"
 #include "../../xrEngine/pure.h"
-#include "../../xrEngine/xrLevel.h"
 #include "../../xrEngine/std_classes.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/XR_IOConsole.h"
@@ -145,13 +143,9 @@
 #include "Editor/Scene/SceneSummaryInfo.h"
 #include "Editor/Builder/Builder.h"
 
-#include "Editor/Utils/XrSEFactoryManager.h"
-
-#include "UI/UIMainForm.h"
 #include "UI/UIMainMenuForm.h"
 #include "UI/UIDOOneColor.h"
 #include "UI/UIDOShuffle.h"
-#include "UI/UILeftBarForm.h"
 #include "UI/UIWorldPropertiesFrom.h"
 #include "UI/ObjectList/UIObjectListItem.h"
 #include "UI/ObjectList/UIObjectList.h"
@@ -167,7 +161,6 @@
 #include "UI/Tools/UIParticlesTool.h"
 #include "UI/Tools/UIPortalTool.h"
 #include "UI/Tools/UISectorTool.h"
-#include "UI/Tools/UIShapeTool.h"
 #include "UI/Tools/UISpawnTool.h"
 #include "UI/Tools/UITerrainTool.h"
 #include "UI/Tools/UIToolCustom.h"

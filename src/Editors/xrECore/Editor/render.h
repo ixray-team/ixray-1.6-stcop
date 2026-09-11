@@ -13,7 +13,7 @@
 #include "../../../Layers/xrRender/DetailModel.h"
 #include "../../../Layers/xrRender/ModelPool.h"
 #include "../../../Layers/xrRender/SkeletonCustom.h"
-#include "../../../xrCore/API/xrAPI.h"
+#include "../../../xrCore/Kernel/xrAPI.h"
 #include <d3dcompiler.h>
 #include "../../../Layers/xrRender/light.h"
 #include "../Render/LightSpot.h"

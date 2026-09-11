@@ -10,9 +10,6 @@
 #include "pch_script.h"
 #include "script_storage.h"
 #include "script_thread.h"
-#include <stdarg.h>
-#include "../xrCore/doug_lea_allocator.h"
-#include <sstream>
 #include "lua_ext.h"
 #include "script_process.h"
 
