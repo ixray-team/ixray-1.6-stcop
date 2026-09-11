@@ -1,8 +1,7 @@
 #include "StdAfx.h"
-
-//#include "Actor.h"
 #include "ActorCameraCollision.h"
 
+#include "../xrCore/Kernel/EngineExternal.h"
 #include "../xrEngine/CameraBase.h"
 #include "../xrEngine/GameMtlLib.h"
 
@@ -12,13 +11,11 @@
 #include "matrix_utils.h"
 #include "IPhysicsShellHolder.h"
 
-//#include "ai/stalker/ai_stalker.h"
 #include "GeometryBits.h"
-//#include "characterphysicssupport.h"
 #ifdef DEBUG
 #	include	"debug_output.h"
 #endif
-#include "../xrCore/EngineExternal.h"
+
 CPhysicsShell*	actor_camera_shell = nullptr;
 #ifdef	DEBUG
 bool dbg_draw_camera_collision = false;
@@ -117,18 +114,6 @@ static void get_viewport_geom(Fvector &box, Fmatrix &form, const CCameraBase &ca
 	form.j.set( camera.Up() );
 	form.k.set( camera.Direction() );
 	form.c.mad( camera.Position(), camera.Direction(), _viewport_near/2.f );
-#ifdef DEBUG
-	if( !_valid( form ) )
-	{
-		dump( "form", form );
-		dump( "camera.Right()", camera.Right() );
-		dump( "camera.Up()", camera.Up() );
-		dump( "camera.Direction()", camera.Direction() );
-		dump( "camera.Position()", camera.Position() );
-		dump( "box", box );
-		VERIFY(false);
-	}
-#endif
 }
 
 static const float actor_camera_hudge_mass = 10.f;

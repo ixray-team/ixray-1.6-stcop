@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "xrParams.h"
 
-
 template <>
 struct magic_enum::customize::enum_range<ECoreParams> 
 {

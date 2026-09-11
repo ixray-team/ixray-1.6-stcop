@@ -28,8 +28,6 @@
 * copies or substantial portions of the Software.
 **************************************************************************************/
 #pragma once
-#include "../xrCore/vector.h"
-#include "../xrCore/_matrix.h"
 #include "SoundMixerInternal.h"
 
 // linear -> dB conversion

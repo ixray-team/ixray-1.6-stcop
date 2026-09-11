@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../../sound_player.h"
-#include "../../../../xrCore/_vector3d_ext.h"
+#include "../../../../xrCore/math/_vector3d_ext.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\

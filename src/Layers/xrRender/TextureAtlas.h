@@ -1,5 +1,4 @@
 #pragma once
-#include "../../xrCore/xr_rtree.h"
 #include <memory_resource>
 
 constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;

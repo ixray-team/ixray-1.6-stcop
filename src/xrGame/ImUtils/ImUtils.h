@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../xrCore/clsid.h"
+#include "../xrCore/Kernel/clsid.h"
 
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/string_table.h"

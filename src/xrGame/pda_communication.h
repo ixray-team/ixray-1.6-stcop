@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../xrCore/_types.h"
-
 class CInventoryOwner;
 
 enum class EPdaCommunicationStatus : u8

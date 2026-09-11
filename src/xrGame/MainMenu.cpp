@@ -15,7 +15,7 @@
 #include "gamespy/GameSpy_Available.h"
 #include "gamespy/CdkeyDecode/cdkeydecode.h"
 #include "../xrEngine/string_table.h"
-#include "../xrCore/os_clipboard.h"
+#include "../xrCore/Kernel/os_clipboard.h"
 
 #include "DemoInfo.h"
 #include "DemoInfo_Loader.h"

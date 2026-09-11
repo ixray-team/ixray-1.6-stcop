@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "ELog.h"
 #include "UILogForm.h"
-#include "..\XrCore\os_clipboard.h"
-#include "..\XrEngine\XR_IOConsole.h"
+#include "..\xrCore\Kernel/os_clipboard.h"
+#include "..\xrEngine\XR_IOConsole.h"
 #include "..\xrEUI\xrUITheme.h"
 
 #define MSG_ERROR 	0x00C4C4FF
