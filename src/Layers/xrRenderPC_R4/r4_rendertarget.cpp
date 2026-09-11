@@ -553,6 +553,9 @@ CRenderTarget::CRenderTarget()
 	rt_ui_depth.create(r2_RT_ui_depth, get_target_width() * 2.0f, get_target_height() * 2.0f, ERHI_FORMAT::D16_UNORM);
 	rt_ui_color.create(r2_RT_ui_color, get_target_width() * 2.0f, get_target_height() * 2.0f, ERHI_FORMAT::R10G10B10A2_UNORM);
 
+	rt_planar_depth.create(r2_RT_planar_depth, s_dwWidth, s_dwHeight, ERHI_FORMAT::D16_UNORM);
+	rt_planar_color.create(r2_RT_planar_color, s_dwWidth, s_dwHeight, ERHI_FORMAT::R11G11B10_FLOAT);
+
 	init_fsr();
 	init_dlss();
 	init_xess();

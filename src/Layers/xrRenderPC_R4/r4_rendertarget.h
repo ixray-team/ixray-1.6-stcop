@@ -84,8 +84,12 @@ public:
 	ref_rt						rt_Surface;
 	ref_rt						rt_Velocity;
 	ref_rt						rt_ui_pda;
+
 	ref_rt						rt_ui_depth;
 	ref_rt						rt_ui_color;
+
+	ref_rt						rt_planar_depth;
+	ref_rt						rt_planar_color;
 
 	ref_rt						rt_upscaled_depth;
 	ref_rt						rt_upscaled_depth_old;
@@ -343,7 +347,8 @@ public:
 
 	void						phase_nvg				();
 
-	void						phase_puddles			();
+	bool						phase_puddles			();
+	void						phase_planar			();
 
 	void						RenderEffect			(ScreenPostProcessType postProcessType, bool = true);
 	void						PhaseAberration			();
