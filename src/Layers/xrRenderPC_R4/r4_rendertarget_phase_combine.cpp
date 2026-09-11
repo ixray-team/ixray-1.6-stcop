@@ -164,13 +164,8 @@ void CRenderTarget::phase_combine()
 		GPU_EVENT(Forward_rendering);
 		phase_scene_forward();
 
-		if (ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
-		{
-			GPU_EVENT(Forward_rendering_puddles);
-			phase_puddles();
-		}
-
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+
 		RCache.set_Stencil(FALSE);
 		RCache.set_ColorWriteEnable();
 
