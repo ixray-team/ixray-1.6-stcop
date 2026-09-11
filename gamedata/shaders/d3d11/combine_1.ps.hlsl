@@ -57,6 +57,8 @@ float4 main(PSInputFullscreen I) : SV_Target
     float3 Color = Occ * Ambient + Light;
 	
     float Fog = saturate(O.ViewDist * fog_params.w + fog_params.x);
+	Fog = GammaToLinear(Fog);
+	
 	Color = lerp(Color, GammaToLinear(fog_color.xyz), Fog);
 	
     return float4(Color, Fog * Fog);
