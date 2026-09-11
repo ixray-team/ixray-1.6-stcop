@@ -263,9 +263,26 @@ void CConsole::ReadLastCmds()
 	}
 }
 
-void CConsole::AddLogEntry(const char* line) 
+void CConsole::AddLogEntry(const char* line)
 {
 	xrCriticalSectionGuard guard(&m_log_history_guard);
+
+	if (m_last_log_repeat > 0u && m_last_log_line == line)
+	{
+		++m_last_log_repeat;
+
+		string1024 repeated_str;
+		xr_sprintf(repeated_str, "%s [%u]", line, m_last_log_repeat);
+
+		u32 size = m_log_history.GetSize();
+		u32 head = (m_log_history.GetHead() - 1u + size) % size;
+		m_log_history.Get(head)._set(repeated_str);
+
+		return;
+	}
+
+	m_last_log_line._set(line);
+	m_last_log_repeat = 1;
 
 	m_log_history.Get(m_log_history.GetHead())._set(line);
 	m_log_history.MoveHead(1);

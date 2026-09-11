@@ -85,8 +85,11 @@ protected:
 	static constexpr int VIEW_TIPS_COUNT = 14;
 	static constexpr int MAX_TIPS_COUNT = 220;
 	static constexpr u32  RING_BUFFER_SIZE = 262144;
-	
+
 	RingBuffer<shared_str, RING_BUFFER_SIZE> m_log_history;
+	shared_str m_last_log_line;
+	u32 m_last_log_repeat = 0u;
+
 	xrCriticalSection m_log_history_guard;
 	FactoryPtr<IUIShader>* m_hShader_back;
 	
