@@ -197,7 +197,7 @@ enum _key_group
 	_sp		=	_both | (1<<1)	,
 	_mp		=	_both | (1<<2)	,
 };
-enum _action_group
+enum _action_group : u32
 {
 	agDefault	=	(1<<0),
 	agTransport	=	(1<<2),
@@ -206,6 +206,7 @@ enum _action_group
 	agUILogMenu	=	(1<<5),
 	agUITaskMenu	=	(1<<6),
 	agAiming	=	(1<<7),
+	agAny		= u32(-1)
 };
 
 extern ENGINE_API _key_group g_current_keygroup;
