@@ -51,6 +51,7 @@
 #include "../xrEngine/GamepadService.h"
 #include "ai/stalker/ai_stalker.h"
 #include "HudVertexAssignedPatricles.h"
+#include "ai/monsters/controller/controller_psy_hit.h"
 
 namespace
 {
@@ -246,6 +247,8 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	}
 
 	CreateComponent<THudVertexAssignedPatricles>();
+
+	ReturnInputAfterController();
 }
 
 CActor::~CActor()
@@ -279,6 +282,8 @@ CActor::~CActor()
 
 	old_slot = NO_ACTIVE_SLOT;
 	need_restore_detector = false;
+
+	ActiveControllers.clear();
 }
 
 THudVertexAssignedPatricles* CActor::GetHudVertexAssignedPatriclesComponent()
@@ -652,6 +657,16 @@ void CActor::Load	(const char* section )
 	m_burn_restore_material_speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "burn_restore_material_speed", 0.0f);
 	m_actor_burn_restore_speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_burn_restore_speed", 0.000001f);
 
+	ActorShockedTime = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_shock_time", 10.0f) * 1000.0f);
+	ControllerPrepareTime = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_prepare_time", 3.0f) * 1000.0f);
+	pSettings->read_if_exists<float>(ControlledActorSpeedKoef, "gunslinger_base", "controlled_actor_speed_koef");
+
+	ControllerMouseControl.MinSenseScale = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_mouse_sense_min", 0.1f);
+	ControllerMouseControl.MaxSenseScale = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_mouse_sense_max", 0.5f);
+	ControllerMouseControl.MinOffset = READ_IF_EXISTS(pSettings, r_s32, "gunslinger_base", "controller_mouse_offset_min", -5);
+	ControllerMouseControl.MaxOffset = READ_IF_EXISTS(pSettings, r_s32, "gunslinger_base", "controller_mouse_offset_max", 5);
+	ControllerMouseControl.KeyboardMoveK = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_mouse_keyboard_move_k", 3.0f);
+
 	if (pSettings->line_exist("gunslinger_base", "burn_restore_materials"))
 	{
 		xr_string materialList = pSettings->r_string("gunslinger_base", "burn_restore_materials");
@@ -961,6 +976,13 @@ void	CActor::Hit(SHit* pHDS)
 			);
 
 			HitArtefactsCondition(HDS);
+
+			if (g_Alive() && HDS.whoID == HDS.DestID && ControlledTimeRemains > 0 && (HDS.hit_type == ALife::EHitType::eHitTypeFireWound || HDS.hit_type == ALife::EHitType::eHitTypeExplosion))
+			{
+				HDS.impulse = 0.0f;
+				KillEntity(ID());
+			}
+
 			inherited::Hit(&HDS);
 		}
 	}
@@ -1775,6 +1797,13 @@ void CActor::UpdateCL()
 	_last_update_time = ct;
 	clamp(dt, 0u, 1000u);
 
+	static const bool EnableControllerSuicide = EngineExternal()[EEngineExternalGame::EnableSuicideByController];
+
+	if (EnableControllerSuicide)
+	{
+		UpdateSuicide(dt);
+	}
+
 	g_player_hud->UpdateWeaponOffset(dt);
 	ProcessKeys(item);
 
@@ -1785,6 +1814,31 @@ void CActor::UpdateCL()
 	else
 	{
 		_jitter_time_remains = 0;
+	}
+
+	if (EnableControllerSuicide && GetCurrentControllerInputCorrectionParams().Active)
+	{
+		ControllerMouseControlParams ContrK = ControllerMouseControl;
+	
+		float KeyboardMoveKCorrected = ContrK.KeyboardMoveK / (psMouseSens * psMouseSensScale);
+		
+		if (GetMovementState(eReal) & mcLStrafe)
+		{
+			IR_OnMouseMove(floor(KeyboardMoveKCorrected * ContrK.MinOffset), floor(KeyboardMoveKCorrected * ContrK.MaxOffset));
+		}
+		else if (GetMovementState(eReal) & mcRStrafe)
+		{
+			IR_OnMouseMove(floor(KeyboardMoveKCorrected * ContrK.MaxOffset), floor(KeyboardMoveKCorrected * ContrK.MaxOffset));
+		}
+	
+		if (GetMovementState(eReal) & mcFwd)
+		{
+			IR_OnMouseMove(floor(KeyboardMoveKCorrected * ContrK.MinOffset), floor(KeyboardMoveKCorrected * ContrK.MaxOffset));
+		}
+		else if (GetMovementState(eReal) & mcBack)
+		{
+			IR_OnMouseMove(floor(KeyboardMoveKCorrected * ContrK.MinOffset), floor(KeyboardMoveKCorrected * ContrK.MinOffset));
+		}
 	}
 
 	CCustomDevice* dev = GetDevice();
@@ -1963,7 +2017,7 @@ void CActor::UpdateCL()
 
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
-	bBlockSprint = isDelayedWeaponActions && m_iKeyFlags != 0 || pWeapon != nullptr && pWeapon->NeedBlockSprint() || dev != nullptr && dev->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint();
+	bBlockSprint = IsControllerPreparing() || isDelayedWeaponActions && m_iKeyFlags != 0 || pWeapon != nullptr && pWeapon->NeedBlockSprint() || dev != nullptr && dev->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint();
 
 	if (IsSafemode() && (pWeapon == nullptr || !pWeapon->AllowSafemode()))
 	{
@@ -3802,12 +3856,18 @@ float CActor::GetHandJitterScale(CHudItem* itm) const
 {
 	u32 restore_time = itm->GetCurJitterParams().stop_time;
 
-	/*if (IsActorControlled() || itm->IsSuicideAnimPlaying() || IsControllerPreparing() || (_jitter_time_remains > restore_time))
+	if (ControlledTimeRemains > 0 || IsControllerPreparing() || (_jitter_time_remains > restore_time))
+	{
 		return 1.0f;
-	else */if (_jitter_time_remains == 0)
+	}
+	else if (_jitter_time_remains == 0)
+	{
 		return 0.0f;
+	}
 	else
+	{
 		return _jitter_time_remains / restore_time;
+	}
 }
 
 float CActor::GetNoclipSpeedScale() const
@@ -3896,4 +3956,502 @@ float CActor::GetMaterialBurnRestoreSpeed(const char* mtl)
 		}
 	}
 	return 0.f;
+}
+
+#include "ai/monsters/controller/controller.h"
+#include "WeaponBinoculars.h"
+
+void CActor::AddActiveController(CController* monster_controller)
+{
+	if (ActiveControllers.empty())
+	{
+		luabind::functor<void> funct;
+		if (ai().script_engine().functor("gunsl_controller.on_suicide_scheme_start", funct))
+		{
+			funct("", monster_controller->ID());
+		}
+	}
+
+	ActiveControllers.push_back(monster_controller);
+	luabind::functor<void> funct;
+	if (ai().script_engine().functor("gunsl_controller.on_suicide_selected_by_controller", funct))
+	{
+		funct("", monster_controller->ID());
+	}
+}
+
+bool CActor::IsPsiBlocked() const
+{
+	return conditions().GetCurBoosterInfluences()[eBoostTelepaticProtection].fBoostTime > 0.0f;
+}
+
+bool CActor::IsControllerPreparing() const
+{
+	if (IsPsiBlocked() && !PsiBlockFailed)
+	{
+		return false;
+	}
+
+	return Device.GetTimeDeltaSafe(ControllerPreparingStartTime) < ControllerPrepareTime + 1000.0f;
+}
+
+bool CActor::CanUseItemForSuicide(CHudItem* item)
+{
+	if (!item)
+	{
+		return false;
+	}
+
+	if (item->ProhibitSuicide)
+	{
+		return false;
+	}
+
+	if (item->WpnCanShoot())
+	{
+		CWeapon* SuicideWeapon = item->cast_weapon();
+		if (SuicideWeapon->IsGrenadeMode())
+		{
+			bool CanSwitchGL = SuicideWeapon->ControllerCanSwitchGL;
+			bool CanShootGL = SuicideWeapon->ControllerCanShootGL;
+
+			if (SuicideWeapon->GetCurrentElapsed(true) > 0)
+			{
+				return CanSwitchGL || CanShootGL;
+			}
+			else if (SuicideWeapon->GetCurrentElapsed(false) + SuicideWeapon->GetAmmoChamberElapsed() > 0)
+			{
+				return CanSwitchGL;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		return SuicideWeapon->GetAmmoElapsed() + SuicideWeapon->GetAmmoChamberElapsed() > 0 && !SuicideWeapon->IsMisfire() && SuicideWeapon->GetNextState() != CWeapon::eReload;
+	}
+
+	return item->cast_weapon_knife() || item->cast_grenade();
+}
+
+bool CActor::IsControllerSeeActor(CController* monster_controller)
+{
+	return monster_controller->m_psy_hit->see_enemy(this) || DistToSelectedContr(monster_controller) <= 2.0f;
+}
+
+float CActor::DistToSelectedContr(CController* controller)
+{
+	return controller->Position().distance_to(Position());
+}
+
+float CActor::DistToContr()
+{
+	float result = 1000.0f;
+
+	for (const auto& Contr : ActiveControllers)
+	{
+		const float dist = DistToSelectedContr(Contr);
+
+		if (dist < result)
+		{
+			result = dist;
+		}
+	}
+
+	return result;
+}
+
+void CActor::UpdateSuicide(u32 dt)
+{
+	if (!g_Alive())
+	{
+		ResetActorControl();
+		return;
+	}
+
+	CHudItem* SuicideItem = inventory().ActiveItem() ? inventory().ActiveItem()->cast_hud_item() : nullptr;
+	CWeapon* SuicideWeapon = SuicideItem ? SuicideItem->cast_weapon() : nullptr;
+
+	u32 LastContrTime = ControlledTimeRemains;
+	ControlledTimeRemains = (ControlledTimeRemains > dt) ? (ControlledTimeRemains - dt) : 0;
+
+	if (ControlledTimeRemains == 0 && LastShotDoneTime == 0 && !DeathActionStarted)
+	{
+		if (inventory_disabled())
+		{
+			set_inventory_disabled(false);
+			set_pda_disabled(false);
+			set_use_disabled(false);
+			ReturnInputAfterController();
+		}
+
+		if (LastContrTime > 0)
+		{
+			SetHandsJitterTime(ActorShockedTime);
+		}
+
+		ResetActorControl();
+	}
+	else if (LastShotDoneTime > 0)
+	{
+		SetMovementState(eWishful, mcFwd, false);
+		SetMovementState(eWishful, mcBack, false);
+		SetMovementState(eWishful, mcLStrafe, false);
+		SetMovementState(eWishful, mcRStrafe, false);
+
+		if (!SuicideItem || SuicideWeapon && Device.GetTimeDeltaSafe(LastShotDoneTime, Device.dwTimeGlobal) > SuicideWeapon->SuicideDelay)
+		{
+			KillEntity(ID());
+			LastShotDoneTime = 0;
+		}
+	}
+
+	if (ControlledTimeRemains > 0)
+	{
+		if (CCustomDevice* Dev = GetDevice())
+		{
+			const u8 NextState = Dev->GetNextState();
+			if (NextState != CCustomDevice::eHiding && NextState != CCustomDevice::eHidden)
+			{
+				Dev->SwitchState(CCustomDevice::eHiding);
+			}
+		}
+
+		if (SuicideItem && (SuicideItem->WpnCanShoot() || SuicideItem->cast_weapon_binoculars()) && SuicideItem->IsZoomed())
+		{
+			SetActorKeyRepeatFlag(kfUNZOOM, true, true);
+		}
+
+		if (SuicideItem && SuicideItem->WpnCanShoot())
+		{
+			if (SuicideWeapon && SuicideWeapon->IsWorking() && LastShotDoneTime == 0 && SuicideWeapon->GetAmmoElapsed() + SuicideWeapon->GetAmmoChamberElapsed() <= 3)
+			{
+				SuicideWeapon->StopShooting();
+			}
+		}
+
+		CGrenade* SuicideGrenade = SuicideItem ? SuicideItem->cast_grenade() : nullptr;
+
+		if (SuicideGrenade)
+		{
+			PlanningSuicide = true;
+			SuicideNow = false;
+
+			if (SuicideGrenade->GetNextState() == CMissile::eReady)
+			{
+				SuicideGrenade->SwitchState(CMissile::eThrow);
+				SuicideGrenade->PrepareGrenadeForSuicideThrow(SuicideGrenade->SuicideReadyForce);
+				SuicideGrenade->Action(kWPN_ZOOM, CMD_STOP);
+			}
+			else if (SuicideGrenade->GetNextState() == CMissile::eThrowStart)
+			{
+				if (!SuicideGrenade->SuicideThrow)
+				{
+					SuicideGrenade->m_constpower = true;
+					SuicideGrenade->m_throw = true;
+				}
+				else
+				{
+					SuicideGrenade->PrepareGrenadeForSuicideThrow(SuicideGrenade->SuicideReadyForce);
+					SuicideGrenade->Action(kWPN_ZOOM, CMD_STOP);
+				}
+			}
+			else if (DistToContr() > SuicideGrenade->ControllerGAttackMinDist &&
+				(SuicideGrenade->GetState() == CHUDState::eIdle || SuicideGrenade->GetState() == CHUDState::eSprintStart || SuicideGrenade->GetState() == CHUDState::eSprintEnd))
+			{
+				SuicideGrenade->SwitchState(CMissile::eThrowStart);
+			}
+			else if (CanUseItemForSuicide(inventory().ItemFromSlot(KNIFE_SLOT) ? inventory().ItemFromSlot(KNIFE_SLOT)->cast_hud_item() : nullptr))
+			{
+				inventory().Activate(KNIFE_SLOT);
+			}
+			else
+			{
+				inventory().Activate(NO_ACTIVE_SLOT);
+			}
+		}
+		else
+		{
+			PlanningSuicide = CanUseItemForSuicide(SuicideItem);
+			if (!PlanningSuicide)
+			{
+				if (SuicideItem)
+				{
+					g_PerformDrop();
+				}
+
+				if (CanUseItemForSuicide(inventory().ItemFromSlot(KNIFE_SLOT) ? inventory().ItemFromSlot(KNIFE_SLOT)->cast_hud_item() : nullptr))
+				{
+					inventory().Activate(KNIFE_SLOT);
+					PlanningSuicide = true;
+					SuicideNow = false;
+				}
+				else
+				{
+					inventory().Activate(NO_ACTIVE_SLOT);
+					SuicideNow = false;
+				}
+			}
+		}
+	}
+}
+
+bool CActor::CheckActorVisibilityForController()
+{
+	if (g_SingleGameDifficulty >= egdVeteran)
+	{
+		return true;
+	}
+
+	for (const auto& Contr : ActiveControllers)
+	{
+		if (IsControllerSeeActor(Contr))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void CActor::OnSuicideAnimEnd()
+{
+	CWeapon* SuicideWeapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
+
+	if (!SuicideWeapon)
+	{
+		return;
+	}
+
+	if ((!IsPsiBlocked() || PsiBlockFailed) && (SuicideNow || PlanningSuicide) && CheckActorVisibilityForController())
+	{
+		DoSuicideShot();
+	}
+	else
+	{
+		SuicideNow = false;
+		PlanningSuicide = false;
+		NotifySuicideStopCallbackIfNeeded();
+		ActiveControllers.clear();
+		SuicideWeapon->SetWorking(false);
+		SuicideWeapon->SwitchState(CWeapon::eSuicideStop);
+		SetHandsJitterTime(ActorShockedTime);
+	}
+}
+
+void CActor::DoSuicideShot()
+{
+	CWeapon* SuicideWeapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
+
+	if (!SuicideWeapon)
+	{
+		return;
+	}
+
+	if (LastShotDoneTime > 0)
+	{
+		return;
+	}
+
+	extern bool g_bDisableAllInput;
+	g_bDisableAllInput = true;
+	LastShotDoneTime = Device.dwTimeGlobal;
+	DeathActionStarted = true;
+
+	SuicideWeapon->SetWorking(true);
+	SuicideWeapon->SwitchState(CWeapon::eFire);
+	NotifySuicideShotCallbackIfNeeded();
+}
+
+void CActor::NotifySuicideStopCallbackIfNeeded()
+{
+	if (!ActiveControllers.empty())
+	{
+		luabind::functor<void> funct;
+		if (ai().script_engine().functor("gunsl_controller.on_stop_suicide", funct))
+		{
+			funct("", 0);
+		}
+	}
+}
+
+void CActor::NotifySuicideShotCallbackIfNeeded()
+{
+	if (!ActiveControllers.empty())
+	{
+		luabind::functor<void> funct;
+		if (ai().script_engine().functor("gunsl_controller.on_suicide_shot", funct))
+		{
+			funct("", 0);
+		}
+	}
+}
+
+void CActor::ResetActorControl()
+{
+	ActiveControllers.clear();
+	ControlledTimeRemains = 0;
+	SuicideNow = false;
+	PlanningSuicide = false;
+	LastShotDoneTime = 0;
+	DeathActionStarted = false;
+}
+
+void CActor::ChangeInputRotateAngle()
+{
+	static const float MIN_ANGLE = 70.0f / 180.0f * PI;
+	static const float MAX_ANGLE = 290.0f / 180.0f * PI;
+
+	InputCorrection.RotateAngle = Random.randF(0.0f, 1.0f) * (MAX_ANGLE - MIN_ANGLE) + MIN_ANGLE;
+	InputCorrection.SenseScalerX = Random.randF(0.0f, 1.0f) * (ControllerMouseControl.MaxSenseScale - ControllerMouseControl.MinSenseScale) + ControllerMouseControl.MinSenseScale;
+	InputCorrection.SenseScalerY = Random.randF(0.0f, 1.0f) * (ControllerMouseControl.MaxSenseScale - ControllerMouseControl.MinSenseScale) + ControllerMouseControl.MinSenseScale;
+	InputCorrection.ReverseAxisY = Random.randF(0.0f, 1.0f) < 0.5f;
+}
+
+CActor::ControllerInputCorrectionParams CActor::GetCurrentControllerInputCorrectionParams()
+{
+	ControllerInputCorrectionParams Result = {};
+
+	if (!IsPsiBlocked() && (PlanningSuicide || SuicideNow))
+	{
+		Result = InputCorrection;
+		Result.Active = true;
+	}
+	else
+	{
+		Result.Active = false;
+		Result.RotateAngle = 0.0f;
+		Result.SenseScalerX = 1.0f;
+		Result.SenseScalerY = 1.0f;
+		Result.ReverseAxisY = false;
+	}
+
+	return Result;
+}
+
+CActor::ControllerInputRandomOffset CActor::GetControllerInputRandomOffset()
+{
+	ControllerInputRandomOffset Result = {};
+
+	if (!IsPsiBlocked() && (ControlledTimeRemains > 0 || SuicideNow || PlanningSuicide || DeathActionStarted))
+	{
+		Result.OffsetX = floor(Random.randF(0.0f, 1.0f) * (ControllerMouseControl.MaxOffset - ControllerMouseControl.MinOffset) + ControllerMouseControl.MinOffset);
+		Result.OffsetY = floor(Random.randF(0.0f, 1.0f) * (ControllerMouseControl.MaxOffset - ControllerMouseControl.MinOffset) + ControllerMouseControl.MinOffset);
+	}
+	else
+	{
+		Result.OffsetX = 0;
+		Result.OffsetY = 0;
+	}
+
+	return Result;
+}
+
+void CActor::ReturnInputAfterController()
+{
+	if (Level().is_block_action(kWPN_1))
+	{
+		Level().unblock_action(kWPN_1);
+	}
+
+	if (Level().is_block_action(kWPN_2))
+	{
+		Level().unblock_action(kWPN_2);
+	}
+
+	if (Level().is_block_action(kWPN_3))
+	{
+		Level().unblock_action(kWPN_3);
+	}
+
+	if (Level().is_block_action(kWPN_4))
+	{
+		Level().unblock_action(kWPN_4);
+	}
+
+	if (Level().is_block_action(kWPN_5))
+	{
+		Level().unblock_action(kWPN_5);
+	}
+
+	if (Level().is_block_action(kWPN_6))
+	{
+		Level().unblock_action(kWPN_6);
+	}
+
+	if (Level().is_block_action(kWPN_7))
+	{
+		Level().unblock_action(kWPN_7);
+	}
+
+	if (Level().is_block_action(kDROP))
+	{
+		Level().unblock_action(kDROP);
+	}
+
+	if (Level().is_block_action(kUSE))
+	{
+		Level().unblock_action(kUSE);
+	}
+
+	if (Level().is_block_action(kQUICK_USE_1))
+	{
+		Level().unblock_action(kQUICK_USE_1);
+	}
+
+	if (Level().is_block_action(kQUICK_USE_2))
+	{
+		Level().unblock_action(kQUICK_USE_2);
+	}
+
+	if (Level().is_block_action(kQUICK_USE_3))
+	{
+		Level().unblock_action(kQUICK_USE_3);
+	}
+
+	if (Level().is_block_action(kQUICK_USE_4))
+	{
+		Level().unblock_action(kQUICK_USE_4);
+	}
+
+	if (Level().is_block_action(kUSE_BANDAGE))
+	{
+		Level().unblock_action(kUSE_BANDAGE);
+	}
+
+	if (Level().is_block_action(kUSE_MEDKIT))
+	{
+		Level().unblock_action(kUSE_MEDKIT);
+	}
+
+	if (Level().is_block_action(kINVENTORY))
+	{
+		Level().unblock_action(kINVENTORY);
+	}
+
+	if (Level().is_block_action(kACTIVE_JOBS))
+	{
+		Level().unblock_action(kACTIVE_JOBS);
+	}
+
+	if (Level().is_block_action(kMAP))
+	{
+		Level().unblock_action(kMAP);
+	}
+
+	if (Level().is_block_action(kCONTACTS))
+	{
+		Level().unblock_action(kCONTACTS);
+	}
+
+	if (Level().is_block_action(kQUICK_BOLT))
+	{
+		Level().unblock_action(kQUICK_BOLT);
+	}
+
+	if (Level().is_block_action(kQUICK_GRENADE))
+	{
+		Level().unblock_action(kQUICK_GRENADE);
+	}
 }

@@ -43,6 +43,7 @@ class CWeaponList;
 class CEffectorBobbing;
 class CHolderCustom;
 class CUsableScriptObject;
+class CController;
 
 class CInventoryBox;
 
@@ -989,7 +990,63 @@ public:
 	float fSprintFactorDecreaseFactor = 8.f;
 	float m_SprintFovFactor = 3.f;
 
+	struct ControllerInputRandomOffset
+	{
+		int OffsetX = 0;
+		int OffsetY = 0;
+	};
+
+	struct ControllerInputCorrectionParams
+	{
+		bool Active = false;
+		float RotateAngle = 0.0f;
+		float SenseScalerX = 1.0f;
+		float SenseScalerY = 1.0f;
+		bool ReverseAxisY = false;
+	} InputCorrection;
+
+	struct ControllerMouseControlParams
+	{
+		float MinSenseScale = 0.0f;
+		float MaxSenseScale = 0.0f;
+		int MinOffset = 0;
+		int MaxOffset = 0;
+		float KeyboardMoveK = 0.0f;
+	} ControllerMouseControl;
+
+	u32 ControlledTimeRemains = 0;
+	u32 ControllerPreparingStartTime = 0;
+	u32 LastShotDoneTime = 0;
+	float ControllerPrepareTime = 3.0f;
+	float ActorShockedTime = 10.0f;
+	float ControlledActorSpeedKoef = 1.0f;
+	xr_vector<CController*> ActiveControllers = {};
+	bool PlanningSuicide = false;
+	bool SuicideNow = false;
+	bool DeathActionStarted = false;
+	bool PsiBlockFailed;
+
 	bool IsActorBurning();
+	void AddActiveController(CController* monster_controller);
+	bool IsControllerSeeActor(CController* monster_controller);
+	bool IsControllerPreparing() const;
+	bool IsPsiBlocked() const;
+	bool CanUseItemForSuicide(CHudItem* item);
+	bool IsSuicideInreversible() const { return LastShotDoneTime > 0 || DeathActionStarted; }
+	float DistToSelectedContr(CController* controller);
+	float DistToContr();
+	void UpdateSuicide(u32 dt);
+	void OnSuicideAnimEnd();
+	bool CheckActorVisibilityForController();
+	void DoSuicideShot();
+	void NotifySuicideStopCallbackIfNeeded();
+	void NotifySuicideShotCallbackIfNeeded();
+	void ResetActorControl();
+	ControllerInputRandomOffset GetControllerInputRandomOffset();
+	ControllerInputCorrectionParams GetCurrentControllerInputCorrectionParams();
+	void ChangeInputRotateAngle();
+	void IR_OnMouseMoveCorrectMouseSense(int& dx, int& dy, float& scale);
+	void ReturnInputAfterController();
 };
 
 extern bool		isActorAccelerated			(u32 mstate, bool ZoomMode);

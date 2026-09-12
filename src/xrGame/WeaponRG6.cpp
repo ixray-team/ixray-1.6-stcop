@@ -81,6 +81,11 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 		}
 	};
 
+	if (H_Parent() && H_Parent()->cast_actor() && H_Parent()->cast_actor()->ControlledTimeRemains > 0)
+	{
+		d.set(0.0f, -2.0f, 0.0f);
+	}
+
 	d.normalize();
 	d.mul(m_fLaunchSpeed);
 	VERIFY2(_valid(launch_matrix),"CWeaponRG6::FireStart. Invalid launch_matrix");

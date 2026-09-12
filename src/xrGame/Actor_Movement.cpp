@@ -332,6 +332,11 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 						scale *= m_fWalk_StrafeFactor;
 				}
 
+				if (ControlledTimeRemains > 0 || SuicideNow || PlanningSuicide || IsControllerPreparing() || DeathActionStarted)
+				{
+					scale *= ControlledActorSpeedKoef;
+				}
+
 				vControlAccel.mul			(scale);
 			}//scale>EPS
 		}//(mstate_real&mcAnyMove)
@@ -713,7 +718,7 @@ bool CActor::CanSprint()
 
 bool CActor::CanJump()
 {
-	bool can_Jump = !character_physics_support()->movement()->PHCapture() && ((mstate_real & mcJump) == 0) && (m_fJumpTime <= 0.0f) && !m_bJumpKeyPressed;
+	bool can_Jump = !character_physics_support()->movement()->PHCapture() && ((mstate_real & mcJump) == 0) && (m_fJumpTime <= 0.0f) && !m_bJumpKeyPressed && !IsControllerPreparing() && !PlanningSuicide && !SuicideNow;
 	return can_Jump;
 }
 

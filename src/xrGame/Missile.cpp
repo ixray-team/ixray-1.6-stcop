@@ -15,6 +15,7 @@
 #include "InventoryWeaponSlotLayout.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrSound/ai_sounds.h"
+#include "Grenade.h"
 #ifdef DEBUG
 #	include "PHDebug.h"
 #endif
@@ -74,6 +75,11 @@ void CMissile::Load(const char* section)
 
 	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
 
+	SuicideFailDestroyTime = pSettings->read_if_exists<u32>(section, "suicide_fail_destroy_time", 700);
+	SuicideFailForce = pSettings->read_if_exists<float>(section, "suicide_ready_force", 20.0f);
+	SuicideReadyForce = pSettings->read_if_exists<float>(section, "suicide_ready_force", 8.0f);
+	ControllerGAttackMinDist = pSettings->read_if_exists<float>(section, "controller_g_attack_min_dist", 10.0f);
+
 	if (pSettings->line_exist(section, "checkout_bones"))
 	{
 		m_sCheckoutBones.clear();
@@ -113,6 +119,11 @@ void CMissile::LoadSounds(const char* section)
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_throw, true);
 		m_sounds.LoadSound(section, "snd_throw", "sndThrow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+
+		if (pSettings->line_exist(section, "snd_throw_low"))
+		{
+			m_sounds.LoadSound(section, "snd_throw_low", "sndThrowLow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+		}
 	}
 
 	if (pSettings->line_exist(section, "snd_throw_cancel"))
@@ -123,6 +134,16 @@ void CMissile::LoadSounds(const char* section)
 		{
 			m_sounds.LoadSound(section, "snd_throw_cancel_low", "sndThrowCancelLow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 		}
+	}
+
+	if (pSettings->line_exist(section, "snd_suicide_begin"))
+	{
+		m_sounds.LoadSound(section, "snd_suicide_begin", "sndSuicideBegin", true, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+	}
+
+	if (pSettings->line_exist(section, "snd_suicide_stop"))
+	{
+		m_sounds.LoadSound(section, "snd_suicide_stop", "sndSuicideStop", true, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 	}
 }
 
@@ -387,21 +408,33 @@ void CMissile::State(u8 state)
 		case eThrowStart:
 		{
 			SetPending(true);
-			m_fThrowForce = m_fMinForce;
-			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw_begin))
+
+			if (Actor() == H_Parent() && Actor()->ControlledTimeRemains > 0)
 			{
-				PlaySound("sndThrowBegin", Position());
+				PlayHUDMotion("anm_suicide_begin", EHudMixType::eMixAll, GetState());
+				PlaySound("sndSuicideBegin", Position());
+				m_constpower = true;
+				m_throw = false;
+				SuicideThrow = true;
 			}
-
-			PlayHUDMotion((!m_bUseAltThrow || m_constpower) ? "anm_throw_begin" : "anm_throw_begin_low", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
-
-			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+			else
 			{
-				if (CCustomDevice* dev = actor->GetDevice())
+				m_fThrowForce = m_fMinForce;
+				if (m_eSoundsFlags.test(ESoundsFlags::sf_throw_begin))
 				{
-					if (dev->CanThrowHand())
+					PlaySound("sndThrowBegin", Position());
+				}
+
+				PlayHUDMotion((!m_bUseAltThrow || m_constpower) ? "anm_throw_begin" : "anm_throw_begin_low", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
+
+				if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+				{
+					if (CCustomDevice* dev = actor->GetDevice())
 					{
-						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowStart);
+						if (dev->CanThrowHand())
+						{
+							dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowStart);
+						}
 					}
 				}
 			}
@@ -426,20 +459,34 @@ void CMissile::State(u8 state)
 		{
 			SetPending(true);
 			m_throw = false;
-			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw))
-			{
-				PlaySound("sndThrow", Position());
-			}
-			PlayHUDMotion((!m_bUseAltThrow || m_constpower) ? "anm_throw" : "anm_throw_low", "anm_throw_act", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
-			m_motion_marks_available = m_current_motion_def ? !m_current_motion_def->marks.empty() : false;
 
-			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+			if (Actor() == H_Parent() && SuicideThrow)
 			{
-				if (CCustomDevice* dev = actor->GetDevice())
+				Actor()->NotifySuicideStopCallbackIfNeeded();
+				set_destroy_time_max(SuicideFailDestroyTime);
+				PrepareGrenadeForSuicideThrow(SuicideFailForce);
+
+				PlayHUDMotion("anm_suicide_stop", EHudMixType::eMixAll, GetState());
+				PlaySound("sndSuicideStop", Position());
+			}
+			else
+			{
+				if (m_eSoundsFlags.test(ESoundsFlags::sf_throw))
 				{
-					if (dev->CanThrowHand())
+					PlaySound((!m_bUseAltThrow || m_constpower) ? "sndThrow" : "sndThrowLow", Position());
+				}
+
+				PlayHUDMotion((!m_bUseAltThrow || m_constpower) ? "anm_throw" : "anm_throw_low", "anm_throw_act", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
+				m_motion_marks_available = m_current_motion_def ? !m_current_motion_def->marks.empty() : false;
+
+				if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+				{
+					if (CCustomDevice* dev = actor->GetDevice())
 					{
-						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowEnd);
+						if (dev->CanThrowHand())
+						{
+							dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowEnd);
+						}
 					}
 				}
 			}
@@ -466,6 +513,16 @@ void CMissile::OnStateSwitch	(u8 S)
 
 void CMissile::OnAnimationEnd(u8 state)
 {
+	if (SuicideThrow && Actor()->ControlledTimeRemains > 0)
+	{
+		Actor()->NotifySuicideShotCallbackIfNeeded();
+		m_dwDestroyTime = 0xffffffff;
+		cast_grenade()->SetInitiator(H_Parent()->ID());
+		XFORM().set(HudItemData()->m_item_transform);
+		Destroy();
+		return;
+	}
+
 	switch (state)
 	{
 		case eHiding:
@@ -1090,4 +1147,11 @@ bool CMissile::NeedBlockSprint() const
 	}
 
 	return false;//state == eSprintEnd;
+}
+
+void CMissile::PrepareGrenadeForSuicideThrow(float force)
+{
+	m_fMinForce = force;
+	m_fMaxForce = force;
+	m_fConstForce = force;
 }

@@ -76,7 +76,6 @@ protected:
 
 	//время нахождения в текущем состоянии
 	u32						m_dwStateTime = 0;
-	bool					m_throw;
 	bool					m_motion_marks_available = true;
 
 	//время уничтожения
@@ -99,7 +98,6 @@ protected:
 	
 	float m_fMinForce, m_fConstForce, m_fMaxForce, m_fForceGrowSpeed;
 //private:
-	bool					m_constpower;
 	float					m_fThrowForce;
 protected:
 	//относительная точка и направление вылета гранаты
@@ -116,6 +114,14 @@ public:
 	IC		void			set_destroy_time		(u32 delta_destroy_time) {m_dwDestroyTime = delta_destroy_time + Device.dwTimeGlobal;}
 	virtual void			PH_A_CrPr				();
 
+	bool m_constpower;
+	bool m_throw;
+	bool SuicideThrow = false;
+	u32 SuicideFailDestroyTime = 0;
+	float SuicideFailForce = 0.0f;
+	float SuicideReadyForce = 0.0f;
+	float ControllerGAttackMinDist = 0.0f;
+
 protected:
 	u32						m_ef_weapon_type;
 
@@ -123,6 +129,8 @@ public:
 	virtual u32				ef_weapon_type			() const;
 	IC		u32				destroy_time			() const { return m_dwDestroyTime; }
 	IC		u32				destroy_time_max		() const { return m_dwDestroyTimeMax; }
+			void			set_destroy_time_max		(u32 time) { m_dwDestroyTimeMax = time; }
+	void PrepareGrenadeForSuicideThrow(float force);
 	IC		int				time_from_begin_throw	() const { return (Device.dwTimeGlobal + m_dwDestroyTimeMax - m_dwDestroyTime); }
 	IC		void			set_destroy_time_now	(u32 time) { m_dwDestroyTime = time; }
 	static	void			ExitContactCallback		(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
