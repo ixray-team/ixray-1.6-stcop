@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "MissileSam.h"
-#include "../xrCore/_vector3d_ext.h"
+#include "xrCore/math/_vector3d_ext.h"
 #include "Level.h"
-#include "../xrPhysics/PhysicsCommon.h"
-#include "../xrPhysics/PhysicsShell.h"
+#include "xrPhysics/PhysicsCommon.h"
+#include "xrPhysics/PhysicsShell.h"
 
 void CMissileSam::UpdateEnginePh()
 {

@@ -2,9 +2,9 @@
 
 #include "stdafx.h"
 
-#include "../xrCore/_stl_extensions.h"
-#include "../xrEngine/Feel_Touch.h"
-#include "../xrCore/Save/SaveObject.h"
+#include "xrCore/Containers/_stl_extensions.h"
+#include "xrEngine/Feel_Touch.h"
+#include "xrCore/Save/SaveObject.h"
 
 class CBulletManager;
 

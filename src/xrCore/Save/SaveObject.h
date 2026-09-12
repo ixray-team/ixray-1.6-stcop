@@ -1,7 +1,6 @@
 #pragma once
 #include "SaveInterface.h"
 #include "SaveChunk.h"
-#include "xrCore/fastdelegate.h"
 #include "type_traits"
 #include "xrCore/Containers/associative_vector.h"
 #include "xrCore/shared_string.h"

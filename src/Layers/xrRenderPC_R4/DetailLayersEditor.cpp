@@ -368,18 +368,30 @@ CTexture* dv_create_texture(u32 size)
 static bool dv_static_normal(const collide::rq_result& RQ, Fvector& normal)
 {
 	if (!g_pGameLevel || RQ.element < 0)
+	{
 		return false;
-	const xr_vector<CDB::TRI>& tris = g_pGameLevel->ObjectSpace.GetStaticTris();
-	const xr_vector<Fvector>& verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+	}
+	const xr_vector<CDB::TRI>& tris = RQ.GetStatic()->get_tris();
+	const xr_vector<Fvector>& verts = RQ.GetStatic()->get_verts();
 	if ((u32)RQ.element >= tris.size())
+	{
 		return false;
+	}
 	const CDB::TRI& t = tris[RQ.element];
 	if (t.verts[0] >= (int)verts.size() || t.verts[1] >= (int)verts.size() || t.verts[2] >= (int)verts.size())
+	{
 		return false;
-	normal.mknormal(verts[t.verts[0]], verts[t.verts[1]], verts[t.verts[2]]);
+	}
+	Fvector verts_copy[3];
+	RQ.xform.transform(verts_copy[0], verts[t.verts[0]]);
+	RQ.xform.transform(verts_copy[1], verts[t.verts[1]]);
+	RQ.xform.transform(verts_copy[2], verts[t.verts[2]]);
+	normal.mknormal(verts_copy[0], verts_copy[1], verts_copy[2]);
 	const float l = normal.magnitude();
 	if (l < 1e-5f)
+	{
 		return false;
+	}
 	normal.div(l);
 	return true;
 }

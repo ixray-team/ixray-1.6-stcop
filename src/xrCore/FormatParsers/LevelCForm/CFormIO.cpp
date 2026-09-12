@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "CFormIO.h"
 
-#include "API/xrAPI.h"
 #include "xrEngine/Render.h"
 
 using namespace XRay;

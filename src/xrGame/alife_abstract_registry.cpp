@@ -5,13 +5,11 @@
 #include "encyclopedia_article_defs.h"
 #include "relation_registry_defs.h"
 #include "InfoPortionDefs.h"
-#include "../xrCore/_stl_extensions.h"
 #include "map_location_defs.h"
 #include "map_location.h"
 #include "GameTaskDefs.h"
 #include "actor_statistic_defs.h"
-#include "../xrCore/fastdelegate.h"
-#include "../xrCore/Save/SaveObject.h"
+#include "xrCore/Save/SaveObject.h"
 
 namespace SaveSystemDefined {
 
