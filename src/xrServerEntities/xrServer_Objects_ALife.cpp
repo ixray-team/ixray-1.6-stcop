@@ -2536,6 +2536,13 @@ void CSE_ALifeInteractiveObject::UPDATE_Write(NET_Packet& tNetPacket)
 	inherited::UPDATE_Write(tNetPacket);
 }
 
+#ifndef XRGAME_EXPORTS
+void CSE_ALifeInteractiveObject::FillProps(const char* pref, PropItemVec& values)
+{
+	inherited::FillProps(pref, values);
+}
+#endif // #ifndef XRGAME_EXPORTS
+
 CSE_Shell::CSE_Shell(const char* section) : CSE_ALifeObjectPhysic(section)
 {
 }
@@ -2592,7 +2599,7 @@ void CSE_Shell::UPDATE_Write(NET_Packet& P)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_ALifeInteractiveObject::FillProps(const char* pref, PropItemVec& values)
+void CSE_Shell::FillProps(const char* pref, PropItemVec& values)
 {
 	inherited::FillProps(pref, values);
 }
