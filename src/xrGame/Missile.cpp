@@ -56,8 +56,8 @@ void CMissile::Load(const char* section)
 {
 	inherited::Load(section);
 
-	pSettings->read_if_exists<bool>(m_bUseAltThrow, section, "use_alt_throw");
-	pSettings->read_if_exists<bool>(m_bUseHudPosition, section, "use_hud_position");
+	m_bUseAltThrow = pSettings->read_if_exists<bool>(section, "use_alt_throw", m_bUseAltThrow);
+	m_bUseHudPosition = pSettings->read_if_exists<bool>(section, "use_hud_position", m_bUseHudPosition);
 
 	if (!m_bUseAltThrow)
 	{

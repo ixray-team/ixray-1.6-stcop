@@ -51,27 +51,8 @@ namespace CDB
 			};
 		};
 	};
-
 	static_assert(sizeof(TRI_Vanilla) == 16);
-	// Triangle
-	struct XRCORE_API TRI final //*** 20 bytes total (was 16, 32 :)
-	{
-		u32 verts[3]; // 3*4 = 12b
-		union
-		{
-			u32 dummy; // 4b
-			struct 
-			{
-				u32 material:14;		// 
-				u32 suppress_shadows:1;	// 
-				u32 suppress_wm:1;		// 
-				u32 sector:15;			//
-				u32 shared_material:1;
-			};
-		};
-	};
 
-	static_assert(sizeof(TRI_Vanilla) == 16);
 	// Triangle
 	struct XRCORE_API TRI final						//*** 16 bytes total (was 32 :)
 	{

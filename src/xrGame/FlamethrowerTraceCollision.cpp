@@ -2,10 +2,10 @@
 #include "FlamethrowerTraceCollision.h"
 #include "Creature.h"
 #include "Flamethrower.h"
-#include "../xrEngine/xr_collide_form.h"
+#include "xrEngine/xr_collide_form.h"
 #include "Level_Bullet_Manager.h"
-#include "../xrEngine/GameMtlLib.h"
-#include "../xrCore/_vector3d_ext.h"
+#include "xrEngine/GameMtlLib.h"
+#include "xrCore/math/_vector3d_ext.h"
 
 void FlamethrowerTrace::CPoint::UpdateAir(float delta_time)
 {
