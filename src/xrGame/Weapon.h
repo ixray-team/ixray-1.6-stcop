@@ -159,6 +159,8 @@ public:
 		eChamberCheck,
 		ePump,
 		eSafemodeSwitch,
+		eSuicide,
+		eSuicideStop,
 	};
 
 	enum EWeaponSubStates : u8
@@ -683,6 +685,9 @@ protected:
 	virtual bool			MovingAnimAllowedNow	();
 	virtual void			OnStateSwitch			(u8 S);
 
+	virtual void			switch2_Suicide();
+	virtual void			switch2_SuicideStop();
+
 	//трассирование полета пули
 	virtual	void			FireTrace			(const Fvector& P, const Fvector& D);
 	virtual	void			FireTraceChamber			(const Fvector& P, const Fvector& D);
@@ -692,7 +697,6 @@ protected:
 	virtual void			FireEnd				();
 
 	virtual void			Reload				();
-			void			StopShooting		();
     
 
 	// обработка визуализации выстрела
@@ -708,9 +712,6 @@ public:
 	float getFireDispersionConditionFactor(void) const;
 	void setFireDispersionConditionFactor(float value);
 
-
-
-
 	virtual float			GetFireDispersion	(float cartridge_k, bool for_crosshair = false);
 	virtual	int				ShotsFired			() { return 0; }
 	virtual	int				GetCurrentFireMode	() { return 1; }
@@ -725,6 +726,16 @@ public:
 public:
 	CameraRecoil			cam_recoil;			// simple mode (walk, run)
 	CameraRecoil			zoom_cam_recoil;	// using zoom =(ironsight or scope)
+
+	float SuicideDelay = 0.1f;
+	float ControllerShootGLMinDist = 10.0f;
+	float ControllerShootExplMinDist = 10.0f;
+
+	bool ControllerCanSwitchGL = false;
+	bool ControllerCanShootGL = false;
+	bool SuicideByAnimation = false;
+
+	void StopShooting();
 
 protected:
 	bool					useLegacyMisfire = false;

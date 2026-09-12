@@ -501,6 +501,15 @@ void CWeapon::Load		(const char* section)
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
 
+	SuicideDelay = floor(1000.0f * READ_IF_EXISTS(pSettings, r_float, hud_sect, "suicide_delay", 0.1f));
+
+	pSettings->read_if_exists<float>(ControllerShootGLMinDist, hud_sect, "controller_shoot_gl_min_dist");
+	pSettings->read_if_exists<float>(ControllerShootExplMinDist, hud_sect, "controller_shoot_expl_min_dist");
+
+	pSettings->read_if_exists<bool>(ControllerCanSwitchGL, hud_sect, "controller_can_switch_gl");
+	pSettings->read_if_exists<bool>(ControllerCanShootGL, hud_sect, "controller_can_shoot_gl");
+	pSettings->read_if_exists<bool>(SuicideByAnimation, hud_sect, "suicide_by_animation");
+
 	m_bAimActions = READ_IF_EXISTS(pSettings, r_bool, section, "enable_aim_actions", false);
 
 	{
@@ -734,6 +743,16 @@ void CWeapon::Load		(const char* section)
 	if (SoundExist(section, "snd_scope_zoom_gyro"))
 	{
 		m_sounds.LoadSound(section, "snd_scope_zoom_gyro", "sndScopeZoomGyro", false, SOUND_TYPE_ITEM_TAKING);
+	}
+
+	if (SoundExist(section, "snd_suicide"))
+	{
+		m_sounds.LoadSound(section, "snd_suicide", "sndSuicide", false, ESoundTypes(SOUND_TYPE_ITEM_USING));
+	}
+
+	if (SoundExist(section, "snd_stop_suicide"))
+	{
+		m_sounds.LoadSound(section, "snd_stop_suicide", "sndStopSuicide", false, ESoundTypes(SOUND_TYPE_ITEM_USING));
 	}
 
 	shared_str scope_sect = section;
@@ -2044,7 +2063,9 @@ bool CWeapon::SwitchZoom(u32 flags)
 			pActor->SetSafemodeStatus(false);
 		}
 
-		if (!m_sAimBlendParams[0].has_motion && GetState() != eIdle)
+		const u8 NextState = GetNextState();
+
+		if (!m_sAimBlendParams[0].has_motion && NextState != eIdle && NextState != eSuicide && NextState != eSuicideStop)
 		{
 			SwitchState(eIdle);
 			StopShooting();
@@ -2419,13 +2440,6 @@ bool CWeapon::OnWeaponJam()
 {
 	CActor* pActor = H_Parent()->cast_actor();
 
-	//_wanim_force_assign = true;
-
-	//if (pActor->IsActorSuicideNow())
-	//{
-	//	return false;
-	//}
-
 	if (m_bUseLightMis && !(pActor->GetDevice() != nullptr && m_bDisableLightMisDet))
 	{
 		float curcond = GetCondition();
@@ -2451,7 +2465,6 @@ bool CWeapon::OnWeaponJam()
 
 		if (::Random.randF(0.0f, 1.0f) < curprob)
 		{
-			//ApplyLensRecoil(GetMisfireRecoil());
 			SetState(eLightMis);
 			SetNextState(eLightMis);
 			SwitchState(eLightMis);
@@ -2507,7 +2520,15 @@ bool CWeapon::CheckForMisfire()
 		return false;
 	}
 
-	float rnd = ::Random.randF(0.f, 1.f);
+	if (CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr)
+	{
+		if (Actor->SuicideNow && Actor->IsSuicideInreversible())
+		{
+			return false;
+		}
+	}
+
+	float rnd = ::Random.randF(0.0f, 1.0f);
 	float mp = GetConditionMisfireProbability();
 
 	const static bool isImproveMis = EngineExternal()[EEngineExternalGame::EnableImproveWeaponMisfire];
@@ -2936,6 +2957,11 @@ bool CWeapon::CanAimNow()
 		return true;
 	}
 
+	if (pActor->SuicideNow || pActor->PlanningSuicide || pActor->IsControllerPreparing())
+	{
+		return false;
+	}
+
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
 	if (!isDelayedWeaponActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
@@ -2988,17 +3014,17 @@ bool CWeapon::CanLeaveAimNow()
 		return true;
 	}
 
+	if (pActor->SuicideNow || pActor->PlanningSuicide || pActor->IsControllerPreparing())
+	{
+		return true;
+	}
+
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
 	if (!isDelayedWeaponActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
 	{
 		return IsZoomed();
 	}
-
-	//if (pActor->IsActorSuicideNow() || pActor->IsActorPlanningSuicide() || pActor->IsControllerPreparing())
-	//{
-	//	return true;
-	//}
 
 	if (IsActionProcessing() || m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) && GetState() != eIdle)
 	{
@@ -3991,6 +4017,20 @@ void CWeapon::OnStateSwitch	(u8 S)
 	inherited::OnStateSwitch(S);
 	m_BriefInfo_CalcFrame = 0;
 
+	switch (S)
+	{
+		case eSuicide:
+		{
+			switch2_Suicide();
+			break;
+		}
+		case eSuicideStop:
+		{
+			switch2_SuicideStop();
+			break;
+		}
+	}
+
 	if (S == eBore)
 	{
 		u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
@@ -4010,6 +4050,20 @@ void CWeapon::OnStateSwitch	(u8 S)
 				current_actor->Cameras().AddCamEffector(new CEffectorDOF(m_zoom_params.m_ReloadDof));
 		}
 	}
+}
+
+void CWeapon::switch2_Suicide()
+{
+	SetPending(true);
+	PlaySound("sndSuicide", get_LastFP());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_suicide"), EHudMixType::eMixAll, eSuicide);
+}
+
+void CWeapon::switch2_SuicideStop()
+{
+	SetPending(true);
+	PlaySound("sndStopSuicide", get_LastFP());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_stop_suicide"), EHudMixType::eMixAll, eSuicideStop);
 }
 
 void CWeapon::SetSilencerX(int value)
@@ -4034,7 +4088,7 @@ bool CWeapon::NeedBlockSprint() const
 
 	const static bool IsBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 
-	return State == eFire || State == eFire2 || State == eKick || IsBlockSprintInReload && State == eReload || m_bIsAimAnimationPlaying;
+	return State == eFire || State == eFire2 || State == eKick || State == eSuicide || State == eSuicideStop || IsBlockSprintInReload && State == eReload || m_bIsAimAnimationPlaying;
 }
 
 void CWeapon::render_hud_mode()

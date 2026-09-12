@@ -619,6 +619,56 @@ void CActor::IR_OnKeyboardHold(int dik)
 	}
 }
 
+void CActor::IR_OnMouseMoveCorrectMouseSense(int& p_dx, int& p_dy, float& sense)
+{
+	static const bool EnableControllerSuicide = EngineExternal()[EEngineExternalGame::EnableSuicideByController];
+
+	if (!EnableControllerSuicide)
+	{
+		return;
+	}
+
+	const auto& InputCorrectionParams = GetCurrentControllerInputCorrectionParams();
+	if (InputCorrectionParams.ReverseAxisY)
+	{
+		p_dy = -(p_dy);
+	}
+
+	float RotAng = InputCorrectionParams.RotateAngle;
+	float SenseScaleX = InputCorrectionParams.SenseScalerX;
+	float SenseScaleY = InputCorrectionParams.SenseScalerY;
+
+	static const float ROTATE_SCALER = 10.0f;
+
+	if (fabs(RotAng) > EPS || fabs(SenseScaleX - 1) > EPS || fabs(SenseScaleY - 1) > EPS)
+	{
+		sense /= ROTATE_SCALER;
+		float dx = ROTATE_SCALER * p_dx * SenseScaleX;
+		float dy = ROTATE_SCALER * p_dy * SenseScaleY;
+
+		if (fabs(RotAng) > EPS)
+		{
+			p_dx = floor(dx * cos(RotAng) + dy * sin(RotAng));
+			p_dy = floor(dy * cos(RotAng) - dx * sin(RotAng));
+		}
+		else
+		{
+			p_dx = floor(dx);
+			p_dy = floor(dy);
+		}
+
+		ControllerInputRandomOffset ControllerOffset = GetControllerInputRandomOffset();
+		p_dx += floor(ControllerOffset.OffsetX * ROTATE_SCALER);
+		p_dy += floor(ControllerOffset.OffsetY * ROTATE_SCALER);
+	}
+	else
+	{
+		ControllerInputRandomOffset ControllerOffset = GetControllerInputRandomOffset();
+		p_dx += ControllerOffset.OffsetX;
+		p_dy += ControllerOffset.OffsetY;
+	}
+}
+
 void CActor::IR_OnMouseMove(int dx, int dy)
 {
 	if (hud_adj_mode)
@@ -668,6 +718,8 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 			scale = _lerp(scale, zoom_scale, wpn->GetAimFactor());
 		}
 	}
+
+	IR_OnMouseMoveCorrectMouseSense(dx, dy, scale);
 
 	if (dx)
 	{
@@ -1311,10 +1363,10 @@ bool CActor::IsActionKeyPressedInGame(const EGameActions& EGameAction) const
 
 void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide)
 {
-	//if (!ignore_suicide && IsActorSuicideNow())
-	//{
-	//	return;
-	//}
+	if (!ignore_suicide && SuicideNow)
+	{
+		return;
+	}
 
 	if (state)
 	{

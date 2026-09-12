@@ -128,6 +128,13 @@ void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& 
 		fire_pos = Cameras().Position();
 		fire_dir = Cameras().Direction();
 
+		if ((pWeap != nullptr && pWeap->cast_weapon_knife() == nullptr) && SuicideNow && IsSuicideInreversible())
+		{
+			fire_pos = pWeap->get_LastFP();
+			fire_dir = pWeap->get_LastFD();
+			return;
+		}
+
 		const CMissile* pMissile = casted_hud_item != nullptr ? casted_hud_item->cast_missile() : nullptr;
 		const static bool bRealPosEnabled = EngineExternal()[EEngineExternalGame::EnableRealBulletPos];
 		if (pMissile)
