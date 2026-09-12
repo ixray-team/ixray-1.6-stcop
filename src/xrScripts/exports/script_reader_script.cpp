@@ -35,6 +35,11 @@ static void r_fvector3_semi(IReader *self_, Fvector *arg0)
 	self_->r_fvector3(*arg0);
 }
 
+static void r_fvector4_semi(IReader* self_, Fvector4* arg0)
+{
+	self_->r_fvector4(*arg0);
+}
+
 static luabind::internal_string r_file_as_string(const char* path)
 {
 	IReader* reader = FS.r_open(path);
@@ -93,6 +98,7 @@ void CScriptReader::script_register(lua_State *L)
 			.def("r_seek",			&IReader::seek			)
 			.def("r_tell",			&IReader::tell			)
 			.def("r_vec3",			&::r_fvector3_semi		)
+			.def("r_vec4",			&::r_fvector4_semi		)
 			.def("r_bool",			&r_bool_semi			)
 			.def("r_stringZ",		&r_stringZ_semi			)
 			.def("r_elapsed",		&IReader::elapsed		)
