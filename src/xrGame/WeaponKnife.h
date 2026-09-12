@@ -55,6 +55,9 @@ protected:
 
 protected:
 	virtual void		LoadFireParams					(const char* section);
+
+	virtual void		switch2_Suicide() override;
+	virtual void		switch2_SuicideStop() override;
 public:
 	CWeaponKnife(); 
 	virtual ~CWeaponKnife() = default; 
@@ -100,6 +103,8 @@ public:
 	bool				m_bShowKnifeStats;
 
 	void				FastKick();
+
+	virtual bool WpnCanShoot() const override { return false; }
 
 	virtual CWeaponKnife* cast_weapon_knife() { return this; }
 

@@ -1982,6 +1982,14 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 			SwitchState(eIdle);
 			break;
 		}
+		case eSuicide:
+		{
+			if (CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr)
+			{
+				Actor->OnSuicideAnimEnd();
+			}
+			break;
+		}
 		case eChamberCheck:
 		case eShowing:
 		case eSwitchMode:
@@ -1993,6 +2001,7 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 		case eFiremodeCheck:
 		case eSafemodeSwitch:
 		case eEmptyClick:
+		case eSuicideStop:
 		{
 			if (state == eSwitchMode)
 			{
@@ -3465,6 +3474,11 @@ shared_str CWeaponMagazined::SetCurrentShootAnimation()
 		if (m_bJustAfterReload)
 		{
 			AddSuffixName(anim, "_first");
+		}
+
+		if (Actor()->SuicideNow && Actor()->IsSuicideInreversible())
+		{
+			AddSuffixName(anim, "_suicide");
 		}
 	}
 

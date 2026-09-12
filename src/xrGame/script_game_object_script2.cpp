@@ -452,6 +452,8 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("IsSafemode", (bool (CScriptGameObject::*)() const)& CScriptGameObject::IsActorSafemode)
 		.def("SetSafemode", &CScriptGameObject::SetActorSafemode)
 			
+		.def("is_psi_blocked", (bool(CScriptGameObject::*)() const) & CScriptGameObject::IsPsiBlocked)
+
 		.def("SetCharacterMaxWeight",			&CScriptGameObject::SetCharacterMaxWeight)
 
 		.property("mechanic",					&CScriptGameObject::getMechanic, &CScriptGameObject::setMechanic)

@@ -343,6 +343,9 @@ public:
 	jitter_params& GetCurJitterParams() { return m_jitter_params; }
 	THudLightTorch* GetHudLight();
 
+	float ControllerTime = 0.0f;
+	bool ProhibitSuicide = true;
+
 	bool m_disable_random_animations = false;
 protected:
 
@@ -416,7 +419,6 @@ public:
 	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
-
 	virtual float GetAimFactor() const { return 0.0f; }
 
 protected:

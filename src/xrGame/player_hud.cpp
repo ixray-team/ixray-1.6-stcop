@@ -1347,6 +1347,8 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 	bool IsZooming = m_attach_place_idx == 1 && static_cast<CCustomDevice*>(m_parent_hud_item)->IsZoomed()
 		|| ((itm->WpnCanShoot() || itm->cast_weapon_binoculars() != nullptr) && (static_cast<CWeapon*>(itm)->IsZoomed() || static_cast<CWeapon*>(itm)->m_bIsAimStarted));
 
+	bool ActorVisForContr = actor->CheckActorVisibilityForController();
+
 	if (itm->GetState() == CHUDState::eHiding || det != nullptr && det->GetState() == CHUDState::eHiding)
 	{
 		factor = current_params.move_weaponhide_factor;
@@ -1359,12 +1361,10 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 	else
 	{
 		GetCurrentTargetOffset(current_params, targetpos, targetrot, factor, real);
-		/*if (actor->IsActorSuicideNow() && actor->CheckActorVisibilityForController())
-			AddSuicideOffset(current_params, section, targetpos, targetrot);
-		else if (HID != nullptr)
+		if (actor->SuicideNow && ActorVisForContr)
 		{
-			// TODO: Смещение в идле
-		}*/
+			AddSuicideOffset(current_params, section, targetpos, targetrot);
+		}
 	}
 
 	targetpos.add(pos);
@@ -1373,16 +1373,16 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 	float speed_pos = 0.0f;
 	float speed_rot = 0.0f;
 
-	//if (!actor->IsActorSuicideNow() && !itm->IsSuicideAnimPlaying())
+	if (!actor->SuicideNow && !actor->PlanningSuicide)
 	{
 		speed_rot = current_params.move_speed_rot * factor / 100.0f;
 		speed_pos = current_params.move_speed_pos * factor / 100.0f;
 	}
-	//else
-	//{
-		//speed_rot = current_params.move_suicide_speed_rot;
-		//speed_pos = current_params.move_suicide_speed_pos;
-	//}
+	else
+	{
+		speed_rot = current_params.move_suicide_speed_rot;
+		speed_pos = current_params.move_suicide_speed_pos;
+	}
 
 	CHudItem::jitter_params& jitter = itm->GetCurJitterParams();
 
@@ -1397,19 +1397,19 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		pos.sub(cur_pos);
 		rot.sub(cur_rot);
 
-		//if (actor->IsActorSuicideNow())
-		//{
-		//	if (pos.magnitude() > speed_pos)
-		//	{
-		//		pos.set_length(speed_pos);
-		//	}
-		//
-		//	if (rot.magnitude() > speed_rot)
-		//	{
-		//		rot.set_length(speed_rot);
-		//	}
-		//}
-		//else
+		if (actor->SuicideNow)
+		{
+			if (pos.magnitude() > speed_pos)
+			{
+				pos.set_length(speed_pos);
+			}
+		
+			if (rot.magnitude() > speed_rot)
+			{
+				rot.set_length(speed_rot);
+			}
+		}
+		else
 		{
 			if (pos.magnitude() > 0.0001f)
 			{
@@ -1448,17 +1448,19 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		time_accumulator -= 8;
 	}
 
-	//if (actor->IsActorSuicideNow() && actor->CheckActorVisibilityForController() && !(READ_IF_EXISTS(pSettings, r_bool, section, "prohibit_suicide", false) || READ_IF_EXISTS(pSettings, r_bool, section, "suicide_by_animation", false)))
-	//{
-	//	pos = HID->hands_attach_pos();
-	//	rot = HID->hands_attach_rot();
-	//
-	//	pos.sub(targetpos);
-	//	rot.sub(targetrot);
-	//
-	//	if (pos.magnitude() < jitter.pos_amplitude * 2.0f && rot.magnitude() < jitter.rot_amplitude * 2.0f)
-	//		actor->DoSuicideShot();
-	//}
+	if (actor->SuicideNow && ActorVisForContr && !(itm->ProhibitSuicide || itm->cast_weapon() && itm->cast_weapon()->SuicideByAnimation))
+	{
+		pos = hands_attach_pos();
+		rot = hands_attach_rot();
+	
+		pos.sub(targetpos);
+		rot.sub(targetrot);
+	
+		if (pos.magnitude() < jitter.pos_amplitude * 2.0f && rot.magnitude() < jitter.rot_amplitude * 2.0f)
+		{
+			actor->DoSuicideShot();
+		}
+	}
 
 	fromcrouch_time_remains = (fromcrouch_time_remains > delta) ? fromcrouch_time_remains - delta : 0;
 	tocrouch_time_remains = (tocrouch_time_remains > delta) ? tocrouch_time_remains - delta : 0;
