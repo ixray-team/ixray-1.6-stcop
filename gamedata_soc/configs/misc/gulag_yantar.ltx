@@ -297,7 +297,7 @@ active = walker@scientist_return_out_rest
 
 [walker@scientist_return_out_rest]
 path_walk = door_2_walk
-on_signal = doors_close | walker@go_to_scientist %-yan_scientist_door_2_open%
+on_signal = doors_close | {-yan_find_scientist_done} walker@go_to_scientist %-yan_scientist_door_2_open%
 combat_ignore_cond = always
 danger = danger_condition@1
 def_state_moving1 = walk
@@ -305,6 +305,7 @@ def_state_moving2 = walk
 def_state_moving3 = walk
 wounded = wounded@ignore_scientist
 meet = no_meet
+on_info = {+yan_find_scientist_done} walker@go_away
 
 [walker@go_to_scientist]
 path_walk = ucheniy_talk_walk
