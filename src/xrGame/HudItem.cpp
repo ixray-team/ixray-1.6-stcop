@@ -84,6 +84,9 @@ void CHudItem::Load(const char* section)
 
 	pSettings->read_if_exists<bool>(m_bBlendMovement, hud_sect, "use_blending_movement");
 
+	pSettings->read_if_exists<float>(ControllerTime, hud_sect, "controller_time");
+	pSettings->read_if_exists<bool>(ProhibitSuicide, hud_sect, "prohibit_suicide");
+
 	if (m_bBlendMovement)
 	{
 		m_sMovementBlendParams[EMovementLayers::eWalk].Load(hud_sect, "anim_blend_walk");

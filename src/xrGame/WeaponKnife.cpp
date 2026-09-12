@@ -174,6 +174,16 @@ void CWeaponKnife::LoadSounds(const char* section)
 		m_eSoundsFlags.set(ESoundsFlags::sf_holster, true);
 		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 	}
+
+	if (SoundExist(section, "snd_start_suicide"))
+	{
+		m_sounds.LoadSound(section, "snd_start_suicide", "sndPrepareSuicide", false, ESoundTypes(SOUND_TYPE_ITEM_USING));
+	}
+
+	if (SoundExist(section, "snd_selfkill"))
+	{
+		m_sounds.LoadSound(section, "snd_selfkill", "sndSelfkill", false, ESoundTypes(SOUND_TYPE_ITEM_USING));
+	}
 }
 
 void CWeaponKnife::OnStateSwitch	(u8 S)
@@ -381,34 +391,74 @@ void CWeaponKnife::OnAnimationEnd(u8 state)
 {
 	switch (state)
 	{
-	case eHiding:	SwitchState(eHidden);	break;
+		case eHiding:
+			SwitchState(eHidden);
+			break;
 
-	case eFire:
-    case eFire2:
-    {
-        u32 time = 0;
-        if (attackStarted)
-        {
-            attackStarted = false;
+		case eFire:
+		case eFire2:
+		{
+			if (CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr)
+			{
+				if (Actor->DeathActionStarted)
+				{
+					Actor->KillEntity(Actor->ID());
+					break;
+				}
+			}
 
-            if (state == eFire && HudAnimationExist("anm_shoot1_end", false))
-                time = PlayHUDMotion("anm_shoot1_end", EHudMixType::eNoMix, state);
-			else if (HudAnimationExist("anm_shoot2_end", false))
-                time = PlayHUDMotion("anm_shoot2_end", EHudMixType::eNoMix, state);
+			u32 time = 0;
+			if (attackStarted)
+			{
+				attackStarted = false;
 
-            if (time != 0 && !attackMotionMarksAvailable)
-                OnKnifeStrike();
-        }
-        if (time == 0)
-        {
-        	SwitchState(UseAlt ? eShowing : eIdle);
-        }
-        break;
-    }
-	case eShowing:
-	case eIdle:		SwitchState(eIdle);		break;
+				if (state == eFire && HudAnimationExist("anm_shoot1_end", false))
+				{
+					time = PlayHUDMotion("anm_shoot1_end", EHudMixType::eNoMix, state);
+				}
+				else if (HudAnimationExist("anm_shoot2_end", false))
+				{
+					time = PlayHUDMotion("anm_shoot2_end", EHudMixType::eNoMix, state);
+				}
 
-	default:		inherited::OnAnimationEnd(state);
+				if (time != 0 && !attackMotionMarksAvailable)
+				{
+					OnKnifeStrike();
+				}
+			}
+			if (time == 0)
+			{
+				SwitchState(UseAlt ? eShowing : eIdle);
+			}
+			break;
+		}
+		case eSuicide:
+		{
+			if (CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr)
+			{
+				if (Actor->PlanningSuicide && Actor->CheckActorVisibilityForController())
+				{
+					SwitchState(eFire);
+				}
+				else
+				{
+					SwitchState(eSuicideStop);
+				}
+			}
+			else
+			{
+				SwitchState(eIdle);
+			}
+			break;
+		}
+		case eSuicideStop:
+		case eShowing:
+		case eIdle:
+			SwitchState(eIdle);
+			break;
+
+		default:
+			inherited::OnAnimationEnd(state);
 	}
 
 	bWorking = false;
@@ -416,9 +466,22 @@ void CWeaponKnife::OnAnimationEnd(u8 state)
 
 void CWeaponKnife::switch2_Attacking(u8 state)
 {
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+	if (pActor && pActor->PlanningSuicide && pActor->CheckActorVisibilityForController())
+	{
+		pActor->DeathActionStarted = true;
+		pActor->NotifySuicideShotCallbackIfNeeded();
+		extern bool g_bDisableAllInput;
+		g_bDisableAllInput = true;
+		SetPending(true);
+		PlayHUDMotion("anm_selfkill", EHudMixType::eMixAll, state);
+		PlaySound("sndSelfkill", Position());
+		return;
+	}
+
 	if (state == eFire)
 	{
-		if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+		if (pActor)
 		{
 			if (CCustomDevice* pDev = pActor->GetDevice())
 			{
@@ -438,7 +501,7 @@ void CWeaponKnife::switch2_Attacking(u8 state)
 	}
 	else
 	{
-		if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+		if (pActor)
 		{
 			if (CCustomDevice* pDev = pActor->GetDevice())
 			{
@@ -491,13 +554,36 @@ void CWeaponKnife::switch2_Hidden()
 void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion("anm_show", "anm_draw", UseAlt ? EHudMixType::eMixAll : EHudMixType::eNoMix, GetState());
+
+	CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+
+	PlayHUDMotion((Actor && (Actor->PlanningSuicide || Actor->SuicideNow) ? "anm_show_suicide" : "anm_show"), "anm_draw", UseAlt ? EHudMixType::eMixAll : EHudMixType::eNoMix, GetState());
 
 	UseAlt = false;
 
 	if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
 	{
 		PlaySound("SndShow", get_LastFP());
+	}
+
+	SetPending(true);
+}
+
+void CWeaponKnife::switch2_Suicide()
+{
+	SetPending(true);
+	PlaySound("sndPrepareSuicide", get_LastFP());
+	PlayHUDMotion("anm_prepare_suicide", EHudMixType::eMixAll, eSuicide);
+}
+
+void CWeaponKnife::switch2_SuicideStop()
+{
+	inherited::switch2_SuicideStop();
+	if (CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr)
+	{
+		Actor->NotifySuicideStopCallbackIfNeeded();
+		Actor->ResetActorControl();
+		Actor->SetHandsJitterTime(Actor->ActorShockedTime);
 	}
 }
 
@@ -521,7 +607,15 @@ void CWeaponKnife::UpdateCL()
 
 void CWeaponKnife::FireStart()
 {	
-	if (IsPending() && GetState() != eShowing)
+	if (CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr)
+	{
+		if (Actor->ControlledTimeRemains > 0)
+		{
+			return;
+		}
+	}
+
+	if (IsPending() && GetNextState() != eShowing)
 	{
 		return;
 	}
@@ -537,7 +631,15 @@ void CWeaponKnife::FireStart()
 
 void CWeaponKnife::Fire2Start()
 {
-	if (IsPending() && GetState() != eShowing)
+	if (CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr)
+	{
+		if (Actor->ControlledTimeRemains > 0)
+		{
+			return;
+		}
+	}
+
+	if (IsPending() && GetNextState() != eShowing)
 	{
 		return;
 	}

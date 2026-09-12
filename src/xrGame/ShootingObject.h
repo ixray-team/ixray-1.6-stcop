@@ -58,6 +58,7 @@ protected:
 	virtual void			FireEnd				();
 public:
 	IC bool					IsWorking			()	const	{return bWorking;}
+	void SetWorking(bool status) { bWorking = status; }
 	virtual bool			ParentMayHaveAimBullet()		{return false;}
 	virtual bool			ParentIsActor()					{return false;}
 

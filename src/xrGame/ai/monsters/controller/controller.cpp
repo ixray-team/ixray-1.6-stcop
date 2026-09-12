@@ -233,7 +233,6 @@ void CController::Load(const char* section)
 	particles_fire		= pSettings->r_string(section,"Control_Hit");
 	
 	m_tube_damage		= pSettings->r_float(section,"tube_damage");
-	m_tube_at_once		= !!pSettings->r_bool(section,"tube_at_once");
 
 	if (pSettings->line_exist(section, "aura_effector"))
 	{
@@ -631,11 +630,11 @@ void CController::tube_fire()
 
 bool CController::can_tube_fire()
 {
-	using namespace controller::detail;
+	static const bool IsSuicideLogic = EngineExternal()[EEngineExternalGame::EnableSuicideByController];
 
-	if ( 0 && m_tube_at_once )
+	if (IsSuicideLogic)
 	{
-		if ( EnemyMan.get_enemy() && EnemyMan.see_enemy_now() && m_psy_hit->check_start_conditions() )
+		if (EnemyMan.get_enemy() && m_psy_hit->check_start_conditions())
 		{
 			return true;
 		}
@@ -643,17 +642,25 @@ bool CController::can_tube_fire()
 		return false;
 	}
 
-	if ( !EnemyMan.get_enemy() )
+	if (!EnemyMan.get_enemy())
+	{
 		return false;
-	
-	if ( EnemyMan.see_enemy_duration() < m_tube_condition_see_duration ) 
-		return false;
+	}
 
-	if ( !m_psy_hit->check_start_conditions() )
+	if (EnemyMan.see_enemy_duration() < m_tube_condition_see_duration)
+	{
 		return false;
+	}
 
-	if ( EnemyMan.get_enemy()->Position().distance_to(Position()) < m_tube_condition_min_distance ) 
+	if (!m_psy_hit->check_start_conditions())
+	{
 		return false;
+	}
+
+	if (EnemyMan.get_enemy()->Position().distance_to(Position()) < m_tube_condition_min_distance)
+	{
+		return false;
+	}
 
 	return true;
 }

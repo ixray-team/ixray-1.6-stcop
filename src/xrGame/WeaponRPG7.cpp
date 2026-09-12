@@ -54,6 +54,11 @@ bool CWeaponRPG7::AllowBore()
 
 void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
 {
+	if (CheckRLMisfireRocket())
+	{
+		return;
+	}
+
 	inherited::FireTrace(P, D);
 
 	m_iShotNum = 0;
@@ -173,6 +178,8 @@ bool CWeaponRPG7::CheckRLMisfireRocket()
 		return false;
 	}
 
+	CActor* Actor = H_Parent()->cast_actor();
+
 	shared_str sect = cNameSect();
 	
 	float start_tr = m_rocket_explode_params.start_tr;
@@ -195,8 +202,8 @@ bool CWeaponRPG7::CheckRLMisfireRocket()
 	{
 		is_expl = ::Random.randF(0.0f, 1.0f) < start_prob + (end_prob - start_prob) * (start_tr - cond) / (start_tr - end_tr);
 	}
-	
-	if (is_expl)
+
+	if (is_expl || Actor->ControlledTimeRemains > 0)
 	{
 		Fvector p = Position();
 		Fvector n = { 0.0f, 1.0f, 0.0f };
@@ -212,9 +219,10 @@ bool CWeaponRPG7::CheckRLMisfireRocket()
 		m_magazine.pop_back();
 		--iAmmoElapsed;
 		UpdateMissileVisibility();
+		return true;
 	}
 
-	return is_expl;
+	return false;
 }
 
 void CWeaponRPG7::FireStart()

@@ -335,6 +335,11 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentShootAnimation()
 			AddSuffixName(anim, "_l");
 		}
 
+		if (Actor()->SuicideNow && Actor()->IsSuicideInreversible())
+		{
+			AddSuffixName(anim, "_suicide");
+		}
+
 		AddSuffixName(anim, m_bGrenadeMode ? "_g" : m_disable_random_animations ? "_gl" : "_w_gl");
 	}
 
@@ -607,6 +612,11 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 					LaunchGrenade_Correct(&d);
 			}
 		};
+
+		if (H_Parent() && H_Parent()->cast_actor() && H_Parent()->cast_actor()->ControlledTimeRemains > 0)
+		{
+			d.set(0.0f, -2.0f, 0.0f);
+		}
 
 		d.normalize();
 		d.mul(CRocketLauncher::m_fLaunchSpeed);

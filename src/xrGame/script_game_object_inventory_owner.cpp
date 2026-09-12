@@ -2775,6 +2775,19 @@ bool CScriptGameObject::IsActorSafemode() const
 	return pActor->IsSafemode();
 }
 
+bool CScriptGameObject::IsPsiBlocked() const
+{
+	CActor* pActor = object().cast_actor();
+
+	if (pActor == nullptr)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member IsPsiBlocked!");
+		return false;
+	}
+
+	return pActor->IsPsiBlocked();
+}
+
 void CScriptGameObject::SetActorSafemode(bool status)
 {
 	CActor* pActor = object().cast_actor();
