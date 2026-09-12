@@ -53,6 +53,8 @@ local all_callbacks = {
 	["on_actor_hit_fall"]		= "actor_on_hit_fall",
 	["on_actor_jump_begin"]		= "actor_on_jump_begin",
 	["on_actor_jump_end"]		= "actor_on_jump_end",
+	["level_border_enter"]		= "level_border_enter",
+	["level_border_exit"]		= "level_border_exit",
 	
 	["hud_animation_end"]		= "actor_on_hud_animation_end",
 }
