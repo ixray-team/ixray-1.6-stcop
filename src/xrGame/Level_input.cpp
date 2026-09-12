@@ -177,7 +177,7 @@ extern float g_separate_radius;
 
 void CLevel::IR_OnKeyboardPress	(int key)
 {
-	auto _curr = get_binded_action(key);
+	auto _curr = get_binded_action(key, agAny);
 	if (_curr != kNOTBINDED) {
 		if (is_block_action(static_cast<int>(_curr))) {
 			return;
@@ -614,7 +614,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 void CLevel::IR_OnKeyboardRelease(int key)
 {
-	auto bind = get_binded_action(key);
+	auto bind = get_binded_action(key, agAny);
 	if (bind != kNOTBINDED) {
 		if (is_block_action(static_cast<int>(bind))) {
 			return;
@@ -644,7 +644,7 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
 void CLevel::IR_OnKeyboardHold(int key)
 {
-	EGameActions bind = get_binded_action(key);
+	EGameActions bind = get_binded_action(key, agAny);
 	if (bind != kNOTBINDED)
 	{
 		if (is_block_action(static_cast<int>(bind)))
@@ -764,7 +764,7 @@ void CLevel::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 void CLevel::IR_GamepadKeyPress(int id)
 {
-	auto _curr = get_binded_action(id);
+	auto _curr = get_binded_action(id, agAny);
 	if (_curr != kNOTBINDED) 
 	{
 		if (is_block_action(static_cast<int>(_curr))) 
@@ -847,7 +847,7 @@ void CLevel::IR_GamepadKeyPress(int id)
 
 void CLevel::IR_GamepadKeyHold(int id)
 {
-	EGameActions bind = get_binded_action(id);
+	EGameActions bind = get_binded_action(id, agAny);
 	if (bind != kNOTBINDED)
 	{
 		if (is_block_action(static_cast<int>(bind)))
@@ -880,7 +880,7 @@ void CLevel::IR_GamepadKeyHold(int id)
 
 void CLevel::IR_GamepadKeyRelease(int id)
 {
-	auto bind = get_binded_action(id);
+	auto bind = get_binded_action(id, agAny);
 	if (bind != kNOTBINDED) 
 	{
 		if (is_block_action(static_cast<int>(bind))) 

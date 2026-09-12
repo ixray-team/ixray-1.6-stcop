@@ -740,31 +740,38 @@ ENGINE_API int get_action_dik(EGameActions _action_id, int idx)
 	return 0;
 }
 
-ENGINE_API EGameActions get_binded_action(int _dik, _action_group _ai)
+ENGINE_API EGameActions get_binded_action(int _dik, _action_group _action_id)
 {
 	for(int idx=0; idx<bindings_count; ++idx)
 	{
 		_binding*	binding = &g_key_bindings[idx];
 
 		bool b_is_group_matching	= is_group_matching(binding->m_action->key_group,g_current_keygroup);
-		
+		bool actionGroupMatching = _action_id == agAny ? true : is_action_group_matching(binding->m_action->action_group, _action_id);
+	
 		if(!b_is_group_matching)	continue;
 
 		if (pInput->GetControllerMode())
 		{
-			if (binding->m_gamepad[0] && binding->m_gamepad[0]->dik == _dik && b_is_group_matching && binding->m_action->action_group == _ai)
+			if (binding->m_gamepad[0] && binding->m_gamepad[0]->dik == _dik && b_is_group_matching && actionGroupMatching)
+			{
 				return binding->m_action->id;
-
-			if (binding->m_gamepad[1] && binding->m_gamepad[1]->dik == _dik && b_is_group_matching && binding->m_action->action_group == _ai)
+			}
+			if (binding->m_gamepad[1] && binding->m_gamepad[1]->dik == _dik && b_is_group_matching && actionGroupMatching)
+			{
 				return binding->m_action->id;
+			}
 		}
 		else
 		{
-			if (binding->m_keyboard[0] && binding->m_keyboard[0]->dik == _dik && b_is_group_matching && binding->m_action->action_group == _ai)
+			if (binding->m_keyboard[0] && binding->m_keyboard[0]->dik == _dik && b_is_group_matching && actionGroupMatching)
+			{
 				return binding->m_action->id;
-
-			if (binding->m_keyboard[1] && binding->m_keyboard[1]->dik == _dik && b_is_group_matching && binding->m_action->action_group == _ai)
+			}
+			if (binding->m_keyboard[1] && binding->m_keyboard[1]->dik == _dik && b_is_group_matching && actionGroupMatching)
+			{
 				return binding->m_action->id;
+			}
 		}
 	}
 	return kNOTBINDED;
