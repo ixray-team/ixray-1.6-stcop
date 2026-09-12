@@ -8,6 +8,7 @@
 #include "alife_simulator.h"
 #include "UICellItem.h"
 #include "../xrUI/UIXmlInit.h"
+#include "../xrEngine/string_table.h"
 
 IPowerManager::IPowerManager()
 {
@@ -27,7 +28,7 @@ void IPowerManager::Load(const char* section, CInventoryItem* iitem)
 	}
 
 	SetUsePowerCell(READ_IF_EXISTS(pSettings, r_bool, section, "use_power_cells", false));
-	if (GetUsePowerCell()) 
+	if (GetUsePowerCell())
 	{
 		m_allowed_power_cells_sections.clear();
 		if (pSettings->line_exist(section, "allowed_power_cells_sections"))
@@ -185,13 +186,13 @@ bool IPowerManager::UnistallPowerCell()
 
 			CALifeSimulator* sim = const_cast<CALifeSimulator*>(&ai().alife());
 			if (CSE_Abstract* s_obj = CALifeSimulator__spawn_item2(
-				sim,
-				m_power_cell.section.c_str(),
-				m_parent->Position(),
-				m_parent->cast_game_object()->ai_location().level_vertex_id(),
-				m_parent->cast_game_object()->ai_location().game_vertex_id(),
-				m_parent->ID()
-			))
+					sim,
+					m_power_cell.section.c_str(),
+					m_parent->Position(),
+					m_parent->cast_game_object()->ai_location().level_vertex_id(),
+					m_parent->cast_game_object()->ai_location().game_vertex_id(),
+					m_parent->ID()
+				))
 			{
 				await_object_id = s_obj->ID;
 
@@ -234,15 +235,21 @@ void IPowerManager::OnFrame()
 				}
 			}
 		}
-
 	}
 }
 
-bool IPowerManager::OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox)
+bool IPowerManager::FillUseActions(CUIPropertiesBox* box, const UseActionContext& context)
 {
+	if (box == nullptr)
+	{
+		return false;
+	}
+
+	bool added = false;
+
 	if (GetUsePowerCell() && IsPowerCellInstalled())
 	{
-		m_UIPropertiesBox->AddItem(
+		box->AddItem(
 			"detach_power_cell",
 			nullptr,
 			DETACH_POWER_CELL
@@ -251,7 +258,104 @@ bool IPowerManager::OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox)
 		return true;
 	}
 
-	return false;
+	const static bool enable_power_cell_context_menu =
+		EngineExternal()[EEngineExternalGame::EnablePowerCellContextMenu];
+
+	if (!enable_power_cell_context_menu ||
+		!GetUsePowerCell() ||
+		context.inventory == nullptr)
+	{
+		return false;
+	}
+
+	xr_map<xr_string, PowerCell*> best_by_section;
+
+	for (PIItem candidate : context.inventory->m_ruck)
+	{
+		PowerCell* power_cell = smart_cast<PowerCell*>(candidate);
+		if (power_cell == nullptr ||
+			power_cell->parent_id() != context.owner->object_id())
+		{
+			continue;
+		}
+
+		const PowerCellData candidate_data =
+			power_cell->GetPowerCellData();
+
+		// Проверка совместимости с устройством или PowerBank.
+		if (!IsPowerCellInWhiteList(candidate_data.section))
+		{
+			continue;
+		}
+
+		const xr_string section = candidate_data.section.c_str();
+		const auto found = best_by_section.find(section);
+
+		if (found == best_by_section.end())
+		{
+			best_by_section.emplace(section, power_cell);
+			continue;
+		}
+
+		PowerCell* current_best = found->second;
+		const PowerCellData best_data =
+			current_best->GetPowerCellData();
+
+		const float candidate_charge =
+			candidate_data.max_power > 0.0f
+				? candidate_data.current_power /
+					  candidate_data.max_power
+				: 0.0f;
+
+		const float best_charge =
+			best_data.max_power > 0.0f
+				? best_data.current_power /
+					  best_data.max_power
+				: 0.0f;
+
+		if (candidate_charge > best_charge)
+		{
+			found->second = power_cell;
+		}
+	}
+
+	for (const auto& [section, power_cell] : best_by_section)
+	{
+		const PowerCellData data =
+			power_cell->GetPowerCellData();
+
+		const int charge_percent =
+			data.max_power > 0.0f
+				? iFloor(
+					  data.current_power /
+						  data.max_power *
+						  100.0f +
+					  0.5f
+				  )
+				: 0;
+
+		shared_str text =
+			g_pStringTable->translate(
+				"st_install_power_cell"
+			);
+
+		text.printf(
+			"%s %s (%d%%)",
+			text.c_str(),
+			power_cell->NameItem(),
+			charge_percent
+		);
+
+		box->AddItem(
+			text.c_str(),
+			power_cell,
+			ATTACH_POWER_CELL
+		);
+
+		added = true;
+	}
+
+	return added;
 }
 
 bool IPowerManager::OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox)
@@ -260,9 +364,9 @@ bool IPowerManager::OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIProperti
 	{
 		switch (m_UIPropertiesBox->GetClickedItem()->GetTAG())
 		{
-		case DETACH_POWER_CELL:
-			UnistallPowerCell();
-			return true;
+			case DETACH_POWER_CELL:
+				UnistallPowerCell();
+				return true;
 		}
 	}
 

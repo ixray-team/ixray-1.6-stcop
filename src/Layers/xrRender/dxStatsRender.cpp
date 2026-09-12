@@ -59,5 +59,6 @@ void dxStatsRender::SetDrawParams (IRenderDeviceRender *pRender)
 
 	RCache.set_xform_world  (Fidentity);
 	RCache.set_Shader		(pR->m_SelectionShader);
-	RCache.set_c			("tfactor",1,1,1,1);
+//	RCache.set_c			("tfactor",1,1,1,1);
+	RCache.hemi.set_tfactor(1, 1, 1, 1);
 }

@@ -117,13 +117,13 @@ struct b_lod
 */
 struct b_mu_model
 {
-	string128			name;
-    int					m_iVertexCount;
-    b_vertex*			m_pVertices;
-    int					m_iFaceCount;
-    b_face*				m_pFaces;
-    u32*				m_smgroups;
-	u16					lod_id;				// u16(-1) = no lod, just static geometry
+	string128 name;
+	int m_iVertexCount;
+	b_vertex* m_pVertices;
+	int m_iFaceCount;
+	b_face* m_pFaces;
+	u32* m_smgroups;
+	u16 lod_id;				// u16(-1) = no lod, just static geometry
 };
 
 /*
@@ -136,6 +136,12 @@ struct b_mu_reference
     Flags32				flags;
 	u16					sector;
     u32					reserved	[8];
+};
+
+struct b_mu_mesh_lods
+{
+	u32 model_index[4] = {u32(-1), u32(-1), u32(-1), u32(-1)};
+	bool UseMeshLods = false;
 };
 
 struct b_params
@@ -240,6 +246,7 @@ enum EBUILD_CHUNKS
     EB_MU_models,
     EB_MU_refs,
     EB_SmoothGroups,
+    EB_MU_Mesh_LODs,
 
 	EB_FORCE_DWORD = u32(-1)
 };

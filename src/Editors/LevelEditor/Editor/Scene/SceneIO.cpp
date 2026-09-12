@@ -1,5 +1,7 @@
 #include "stdafx.h"
-#include <fstream>
+#include "IconsFontAwesome6.h"
+#include "Editor/Utils/GitIntegration.h"
+#include "Editor/Utils/GitLFSConfig.h"
 
 // file: SceneChunks.h
 #define CURRENT_FILE_VERSION    	0x00000005
@@ -429,6 +431,10 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 					{
 						EFS.MarkFile			(part_name.c_str(),true);
 						SaveToolLTX				(_I->second->FClassID, part_name.c_str());
+						
+						// Track part file with Git LFS if applicable
+						if (Git && Git->IsRepository && Git->LfsAvailable)
+							Git->ProcessFileForLFS(part_name.c_str());
 					}  //can_use_ini_file
 					else
 					{
@@ -447,6 +453,10 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 						FF->close_chunk		();
 
 						FS.w_close			(FF);
+						
+						// Track part file with Git LFS if applicable
+						if (Git && Git->IsRepository && Git->LfsAvailable)
+							Git->ProcessFileForLFS(part_name.c_str());
 
 					}//  ! can_use_ini_file
 			}
@@ -811,8 +821,10 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 		SDL_SetWindowTitle(g_AppInfo.Window, Name.c_str());
 	}
 
-	shared_str LevelPath = xr_path(map_name).stem().string().c_str();
-	UI->GeneralTabs[0] = { LevelPath, []()->bool {return Scene->IsUnsaved(); } };
+	xr_string LevelPath = xr_string(ICON_FA_MOUNTAIN) + " " + xr_path(map_name).stem().string().c_str();
+	UI->GeneralTabs[0] = { LevelPath.c_str(), []()->bool {return Scene->IsUnsaved(); } };
+	UI->ActiveTabIndex = 0;
+	
 	full_name = map_name;
 
 	ELog.Msg( mtInformation, "EScene: loading '%s'", map_name);

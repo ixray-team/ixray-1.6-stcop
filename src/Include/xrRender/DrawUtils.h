@@ -14,7 +14,6 @@ public:
     //----------------------------------------------------
     virtual void  DrawCross			(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, bool bRot45=false)=0;
     virtual void  DrawCross			(const Fvector& p, float sz, u32 clr, bool bRot45=false)=0;
-    virtual void  DrawFlag				(const Fvector& p, float heading, float height, float sz, float sz_fl, u32 clr, bool bDrawEntity)=0;
     virtual void  DrawRomboid			(const Fvector& p, float radius, u32 clr)=0;
     virtual void  DrawJoint			(const Fvector& p, float radius, u32 clr)=0;
 

@@ -6,6 +6,8 @@
 #include "../xrEUI/ImGuizmo.h"
 
 #include "Editor/Utils/Gizmo/IM_Manipulator.h"
+#include "Editor/Utils/GitIntegration.h"
+#include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Terrain/HeightmapUtils.h"
 
 #include "IconsFontAwesome6.h"
@@ -28,7 +30,6 @@ UIMainForm::UIMainForm()
 		exit(-1);
 	}
 	ExecCommand(COMMAND_UPDATE_GRID);
-	ExecCommand(COMMAND_RENDER_FOCUS);
 	FillChooseEvents();
 	m_TopBar = new UITopBarForm();
 	m_Render = new UIRenderForm();
@@ -263,11 +264,14 @@ void UIMainForm::Draw()
 	bOpen = true;
 	m_MainMenu->Draw();
 	m_TopBar->Draw();
-	m_LeftBar->Draw();
-	m_Properties->Draw();
-	m_WorldProperties->Draw();
 
-	m_Render->Draw();
+	if (UI->ActiveTabIndex == 0)
+	{
+		m_LeftBar->Draw();
+		m_Properties->Draw();
+		m_WorldProperties->Draw();
+		m_Render->Draw();
+	}
 }
 
 bool UIMainForm::Frame()

@@ -3,10 +3,7 @@
 #define CHUNK_OBJECT_BODY   0x7777
 
 struct SRayPickInfo;
-struct FSChunkDef;
 class CFrustum;
-class IReader;
-class IWriter;
 class COMotion;
 class CCustomMotion;
 class SAnimParams;
@@ -158,6 +155,7 @@ public:
 
 	virtual bool 	IsRender		();
 	virtual void 	Render			(int priority, bool strictB2F);
+	virtual u32		RenderPriorityMask() const { return 1u<<1; } // default: priority 1
 	virtual void 	OnFrame			();
 	virtual void 	OnUpdateTransform();
 

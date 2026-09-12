@@ -30,6 +30,33 @@ extern ECORE_API	float		ps_r__Detail_l_ambient;
 extern ECORE_API	float		ps_r__Detail_l_aniso;
 extern ECORE_API	float		ps_r__Detail_density;
 
+extern ECORE_API bool ps_r__detail_use_alternative_tree_assets;
+extern ECORE_API bool ps_r__detail_use_cluster_mix_tree_assets;
+extern ECORE_API float ps_r__detail_cluster_seed;
+extern ECORE_API float ps_r__detail_cluster_patch_size_min;
+extern ECORE_API float ps_r__detail_cluster_patch_size_max;
+extern ECORE_API float ps_r__detail_cluster_sharpness;
+extern ECORE_API float ps_r__detail_cluster_warp_min;
+extern ECORE_API float ps_r__detail_cluster_warp_max;
+
+extern ECORE_API bool ps_r__detail_fmb_use_layer_1;
+extern ECORE_API float ps_r__detail_fmb_layer_1_frequency;
+extern ECORE_API float ps_r__detail_fmb_layer_1_amplitude;
+extern ECORE_API float ps_r__detail_fmb_layer_1_seed;
+extern ECORE_API float ps_r__detail_fmb_layer_1_power;
+
+extern ECORE_API bool ps_r__detail_fmb_use_layer_2;
+extern ECORE_API float ps_r__detail_fmb_layer_2_frequency;
+extern ECORE_API float ps_r__detail_fmb_layer_2_amplitude;
+extern ECORE_API float ps_r__detail_fmb_layer_2_seed;
+extern ECORE_API float ps_r__detail_fmb_layer_2_power;
+
+extern ECORE_API bool ps_r__detail_fmb_use_layer_3;
+extern ECORE_API float ps_r__detail_fmb_layer_3_frequency;
+extern ECORE_API float ps_r__detail_fmb_layer_3_amplitude;
+extern ECORE_API float ps_r__detail_fmb_layer_3_seed;
+extern ECORE_API float ps_r__detail_fmb_layer_3_power;
+
 extern ECORE_API	float		ps_r__Tree_SBC;		// scale bias correct
 
 extern ECORE_API	float		ps_r__WallmarkTTL		;
@@ -39,6 +66,8 @@ extern ECORE_API	float		ps_r__WallmarkSHIFT_V	;
 extern ECORE_API	float		ps_r__GLOD_ssa_start;
 extern ECORE_API	float		ps_r__GLOD_ssa_end	;
 extern ECORE_API	float		ps_r__LOD			;
+extern ECORE_API	float		ps_r__LOD_MU_X		;
+extern ECORE_API	float		ps_r__LOD_MU4_discard;
 extern ECORE_API	float		ps_r__ssaDISCARD	;
 extern ECORE_API	float		ps_r__ssaDONTSORT	;
 extern ECORE_API	float		ps_r__ssaHZBvsTEX	;
@@ -123,6 +152,8 @@ extern ECORE_API float			ps_r3_dyn_wet_surf_far;		// 30.0f
 extern ECORE_API int			ps_r3_dyn_wet_surf_sm_res;	// 256
 
 extern ECORE_API float			ps_r4_cas_sharpening;
+extern ECORE_API u32			ps_r4_sharpening_mode;
+extern ECORE_API xr_token		sharpening_mode_token[];
 
 // Test float exported to shaders for development
 extern  float					ps_r__test_exp_to_shaders_1;

@@ -43,10 +43,10 @@ void UIImageEditorForm::Draw()
 		m_bUpdateProperties = false;
 	}
 
-	if (m_TextureRemove)
+	if (TextureRemove)
 	{
-		m_TextureRemove.destroy();
-		m_TextureRemove = nullptr;
+		TextureRemove.destroy();
+		TextureRemove = nullptr;
 	}
 
 	ImGui::Columns(2);
@@ -117,7 +117,7 @@ void UIImageEditorForm::Draw()
 				if (baseTexture)
 				{
 					m_Texture = new CTexture;
-					m_Texture->surface_set(GRHI->CreateTextureFromMemory(baseTexture, 0, {}));
+					m_Texture->surface_set(baseTexture);
 					baseTexture->Release();
 				}
 			}
@@ -440,7 +440,7 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 
 	RegisterModifiedTHM();
 	m_THM_Current.clear();
-	m_TextureRemove = m_Texture;
+	TextureRemove = m_Texture;
 	m_Texture = nullptr;
 
 	m_ItemProps->ClearProperties();

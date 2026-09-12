@@ -3,6 +3,7 @@
 #define UI_ActorToolsH
 #include "../../Include/xrRender/animation_motion.h"
 #include "../xrEProps/UIBoneView.h"
+#include "UIUVView.h"
 
 // refs
 class UIPropertiesForm;
@@ -87,7 +88,7 @@ class PreviewModel:
 	Fvector			m_vPosition;
 	xr_string 		m_LastObjectName;
 public:
-	CEditableObject*m_pObject;
+	CEditableObject*SelectedObject;
 public:
 	enum{
 		pmScroll	= (1<<0),
@@ -102,7 +103,7 @@ public:
 	};
 	EScrollAxis		m_ScrollAxis;
 public:
-					PreviewModel		(){m_pObject=0;m_fSpeed=5.f;m_fSegment=50.f;m_Flags.zero();m_Props=0;m_vPosition.set(0,0,0);m_ScrollAxis=saZp;}
+					PreviewModel		(){SelectedObject=0;m_fSpeed=5.f;m_fSegment=50.f;m_Flags.zero();m_Props=0;m_vPosition.set(0,0,0);m_ScrollAxis=saZp;}
 	virtual void	OnCreate			();
 	virtual void	OnDestroy			();
 	virtual void	Draw    			();
@@ -198,6 +199,7 @@ public:
 	EngineModel			m_RenderObject;
 	PreviewModel		m_PreviewObject;
 	CUIBoneView*        BoneView;
+	CUIUVView*          UVView;
 
 	UIPropertiesForm*		m_Props;
 	UIItemListForm*			m_ObjectItems;
@@ -270,6 +272,7 @@ public:
 
 	void 				ShowClipMaker		();
 	bool				Import				(const char* path, const char* name);
+	bool				ImportOMF			(const char* name);
 	bool				ExportOBJ			(const char* name);
 	bool				ExportOGF			(const char* name);
 	bool				ExportOMF			(const char* name);
@@ -332,6 +335,7 @@ public:
 	CCommandVar         CommandSaveBackup	(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandSave			(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandImport		(CCommandVar p1, CCommandVar p2);
+	CCommandVar         CommandImportOMF	(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandExportDM		(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandExportOBJ	(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandExportOGF	(CCommandVar p1, CCommandVar p2);

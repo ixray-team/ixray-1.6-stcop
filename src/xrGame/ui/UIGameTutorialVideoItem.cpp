@@ -107,7 +107,7 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 		{
 			string_path			_l, _r;
 			xr_strconcat(_l, snd_name, "_l");
-				xr_strconcat(_r, snd_name, "_r");
+			xr_strconcat(_r, snd_name, "_r");
 			m_sound_mono[0].create(_l, st_Effect, sg_Undefined);
 			m_sound_mono[1].create(_r, st_Effect, sg_Undefined);
 		}
@@ -159,15 +159,10 @@ void CUISequenceVideoItem::Update()
 					m_sound.play		(nullptr, sm_Intro);
 				else
 				{
-#ifdef IXR_HYPESOUND
 					m_sound_mono[0].play(nullptr, sm_Intro);
 					m_sound_mono[0].set_panning(1.0f, 0.f);
 					m_sound_mono[1].play(nullptr, sm_Intro);
 					m_sound_mono[1].set_panning(0.f, 1.0f);
-#else
-					m_sound_mono[0].play_at_pos(nullptr, Fvector().set(-0.5f, 0.f, 0.3f), sm_Intro);
-					m_sound_mono[1].play_at_pos(nullptr, Fvector().set(+0.5f, 0.f, 0.3f), sm_Intro);
-#endif
 				}
 				m_texture->video_Play	(false, m_sync_time);
 				m_flags.set				(etiNeedStart,false);

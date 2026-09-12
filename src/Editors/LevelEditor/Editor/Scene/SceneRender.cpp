@@ -1,24 +1,12 @@
 #include "stdafx.h"
 
-static constexpr size_t	s_arena_size = 8 * 1024 * 1024;
-static char s_fake_array[s_arena_size];
+struct RenderBuckets
+{
+    xr_vector<CCustomObject*> Normal[4];
+    xr_vector<CCustomObject*> Alpha[4];
+};
 
-doug_lea_area_allocator	g_render_lua_allocator_area(s_fake_array,"render:sdk", s_arena_size);
-//doug_lea_allocator g_render_lua_allocator("render:lua");
-
-#define RENDER_OBJECT(P,B)\
-{\
-    (N->val)->Render(P,B);\
-}
-    
-void  object_Normal_0(EScene::mapObject_Node *N)	 {RENDER_OBJECT(0,false); }
-void  object_Normal_1(EScene::mapObject_Node *N)	 {RENDER_OBJECT(1,false); }
-void  object_Normal_2(EScene::mapObject_Node *N)	 {RENDER_OBJECT(2,false); }
-void  object_Normal_3(EScene::mapObject_Node *N)	 {RENDER_OBJECT(3,false); }
-void  object_StrictB2F_0(EScene::mapObject_Node *N){RENDER_OBJECT(0,true);}
-void  object_StrictB2F_1(EScene::mapObject_Node *N){RENDER_OBJECT(1,true);}
-void  object_StrictB2F_2(EScene::mapObject_Node *N){RENDER_OBJECT(2,true);}
-void  object_StrictB2F_3(EScene::mapObject_Node *N){RENDER_OBJECT(3,true);}
+static RenderBuckets* RenderBucketsData = nullptr;
 
 struct tools_rp_pred
 {
@@ -26,121 +14,126 @@ struct tools_rp_pred
     {	return x->RenderPriority()<y->RenderPriority();	}
 };
 
-#define DEFINE_MSET_PRED(T,N,I,P)	typedef xr_multiset< T, P > N;		typedef N::iterator I;
+#define DEFINE_MSET_PRED(T, N, I, Priority) \
+	typedef xr_multiset<T, Priority> N;     \
+	typedef N::iterator I;
 
 DEFINE_MSET_PRED(ESceneToolBase*,SceneMToolsSet,SceneMToolsIt,tools_rp_pred);
 DEFINE_MSET_PRED(ESceneCustomOTool*,SceneOToolsSet,SceneOToolsIt,tools_rp_pred);
 
-
-void EScene::Render( const Fmatrix& camera )
+void EScene::Render(const Fmatrix& camera)
 {
-	if( !valid() )	return;
-
-//	if( locked() )	return;
-
-    // extract and sort object tools
-    SceneOToolsSet object_tools;
-    SceneMToolsSet scene_tools;
-    {
-        SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
-        SceneToolsMapPairIt t_end 	= m_SceneTools.end();
-        for (; t_it!=t_end; t_it++)
-            if (t_it->second){
-            	// before render
-            	t_it->second->BeforeRender(); 
-                // sort tools
-                ESceneCustomOTool* mt = smart_cast<ESceneCustomOTool*>(t_it->second);
-                if (mt)           	
-                    object_tools.insert(mt);
-                scene_tools.insert	(t_it->second);
-            }
-    }
-
-    // insert objects
-    for (auto SceneTool : object_tools)
-    {
-        if (!SceneTool->IsLoaded || !SceneTool->IsVisible())
-            continue;
-
-        ObjectList& lst = SceneTool->GetObjects();
-
-        for (CCustomObject* Obj : lst)
-        {
-            if (Obj->Visible() && Obj->IsRender())
-            {
-                float distSQ = EDevice->vCameraPosition.distance_to_sqr(Obj->FPosition);
-                mapRenderObjects.insertInAnyWay(distSQ, Obj);
-            }
-        }
-    }
-
-	auto RENDER_SCENE_TOOLS = [scene_tools](int P, bool B)
+	if (!valid())
 	{
-		SceneMToolsIt s_it = scene_tools.begin();
-		SceneMToolsIt s_end = scene_tools.end();
-		for (; s_it != s_end; s_it++) 
-        {
-			EDevice->SetShader(B ? EDevice->m_SelectionShader : EDevice->m_WireShader);
-			RCache.set_xform_world(Fidentity);
-			try 
-            {
-				(*s_it)->OnRenderRoot(P, B);
-			}
-			catch (...) 
-            {
-				ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B] - Tools: '%s'", (*s_it)->ClassName()); \
+		return;
+	}
+
+	// extract and sort object tools
+	SceneOToolsSet ObjTools;
+	SceneMToolsSet SceneTools;
+	{
+		SceneToolsMapPairIt t_it = m_SceneTools.begin();
+		SceneToolsMapPairIt t_end = m_SceneTools.end();
+		for (; t_it != t_end; t_it++)
+		{
+			if (t_it->second)
+			{
+				// before render
+				t_it->second->BeforeRender();
+				// sort tools
+				ESceneCustomOTool* CustomTool = smart_cast<ESceneCustomOTool*>(t_it->second);
+				if (CustomTool)
+				{
+					ObjTools.insert(CustomTool);
+				}
+				SceneTools.insert(t_it->second);
 			}
 		}
-	};;
+	}
 
-// priority #0
-    // normal
-    mapRenderObjects.traverseLR		(object_Normal_0);
-    RENDER_SCENE_TOOLS				(0,false);
-    FlushDU();
-    // alpha
-    mapRenderObjects.traverseRL		(object_StrictB2F_0);
-    RENDER_SCENE_TOOLS				(0,true);
-    FlushDU();
+	// collect visible objects into a reusable vector (no per-frame sort)
+	static xr_vector<CCustomObject*> RenderList;
+	RenderList.reserve(8192);
+	RenderList.clear();
 
-// priority #1
-    // normal
-    mapRenderObjects.traverseLR		(object_Normal_1);
-    RENDER_SCENE_TOOLS				(1,false);
-    FlushDU();
-    // alpha
-    mapRenderObjects.traverseRL		(object_StrictB2F_1);
-    RENDER_SCENE_TOOLS				(1,true);
-    FlushDU();
-// priority #2
-    // normal
-    mapRenderObjects.traverseLR		(object_Normal_2);
-    RENDER_SCENE_TOOLS				(2,false);
-    FlushDU();
-    // alpha
-    mapRenderObjects.traverseRL		(object_StrictB2F_2);
-    RENDER_SCENE_TOOLS				(2,true);
-    FlushDU();
-// priority #3
-    // normal
-    mapRenderObjects.traverseLR		(object_Normal_3);
-    RENDER_SCENE_TOOLS				(3,false);
-    FlushDU();
-    // alpha
-    mapRenderObjects.traverseRL		(object_StrictB2F_3);
-    RENDER_SCENE_TOOLS				(3,true);
-    FlushDU();
+	for (auto SceneTool : ObjTools)
+	{
+		if (!SceneTool->IsLoaded || !SceneTool->IsVisible())
+		{
+			continue;
+		}
 
-    // render snap
-    RenderSnapList			();
+		ObjectList& lst = SceneTool->GetObjects();
 
-    // clear
-    mapRenderObjects.clear			();
+		for (CCustomObject* Obj : lst)
+		{
+			if (Obj->Visible() && Obj->IsRender())
+			{
+				RenderList.push_back(Obj);
+			}
+		}
+	}
+
+	auto RENDER_SCENE_TOOLS = [&SceneTools](int P, bool B)
+	{
+		SceneMToolsIt s_it = SceneTools.begin();
+		SceneMToolsIt s_end = SceneTools.end();
+		for (; s_it != s_end; s_it++)
+		{
+			EDevice->SetShader(B ? EDevice->m_SelectionShader : EDevice->m_WireShader);
+			RCache.set_xform_world(Fidentity);
+			(*s_it)->OnRenderRoot(P, B);
+		}
+	};
+
+	RenderBuckets RBucket;
+	RenderBucketsData = &RBucket;
+	for (CCustomObject* Object : RenderList)
+	{
+		u32 RenderPriorityMask = Object->RenderPriorityMask();
+		for (u32 P = 1; P <= 3; ++P)
+		{
+			if (RenderPriorityMask & (1u << P))
+			{
+				RenderBucketsData->Normal[P].push_back(Object);
+				RenderBucketsData->Alpha[P].push_back(Object);
+			}
+		}
+	}
+
+	RenderBucketsData = nullptr;
+
+	for (u32 Priority = 1; Priority <= 3; ++Priority)
+	{
+		// normal pass: near-to-far
+		for (CCustomObject* Object : RBucket.Normal[Priority])
+		{
+			Object->Render((int)Priority, false);
+		}
+
+		// alpha (strict B2F) pass: far-to-near -> reverse the near-to-far bucket
+		for (int Iter = (int)RBucket.Alpha[Priority].size() - 1; Iter >= 0; --Iter)
+		{
+			RBucket.Alpha[Priority][Iter]->Render((int)Priority, true);
+		}
+
+		RENDER_SCENE_TOOLS((int)Priority, false);
+		RENDER_SCENE_TOOLS((int)Priority, true);
+	}
+
+	FlushDU();
+
+	// render snap
+	RenderSnapList();
+
+	// clear
+	RenderList.clear();
 
 
-    SceneMToolsIt s_it 	= scene_tools.begin();
-    SceneMToolsIt s_end	= scene_tools.end();
-    for (; s_it!=s_end; s_it++) (*s_it)->AfterRender();
+	SceneMToolsIt s_it = SceneTools.begin();
+	SceneMToolsIt s_end = SceneTools.end();
+	for (; s_it != s_end; s_it++)
+	{
+		(*s_it)->AfterRender();
+	}
 }
-
- 

@@ -14,6 +14,7 @@ file(GLOB_RECURSE ELE_SOURCE_EDITOR_UTILS_FILES CONFIGURE_DEPENDS "Editor/Utils/
 file(GLOB_RECURSE ELE_SOURCE_ENGINE_FILES CONFIGURE_DEPENDS "Engine/*.*")
 
 file(GLOB_RECURSE ELE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
+    "../../Layers/xrRenderDX10/dx10DetailManager_VS*"
     "../../Layers/xrRender/DetailManager*"
     "../../Layers/xrRender/stats_manager*"
 )
@@ -58,6 +59,7 @@ target_link_libraries(LevelEditor PUBLIC xrECore)
 target_link_libraries(LevelEditor PUBLIC xrSound)
 target_link_libraries(LevelEditor PUBLIC xrEngineCore)
 target_link_libraries(LevelEditor PUBLIC xrScripts)
+target_link_libraries(LevelEditor PUBLIC imgui_node_editor)
 target_link_libraries(LevelEditor PUBLIC "Shell32.lib")
 add_dependencies(LevelEditor xrGame)
 add_dependencies(LevelEditor xrSE_Factory)

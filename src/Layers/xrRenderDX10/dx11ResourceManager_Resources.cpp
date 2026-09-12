@@ -208,9 +208,13 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);
 
+#ifdef _EDITOR
+		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
+#else
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+#endif
 
-		// Оптимизация макросов в шейдрах
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 #if 0 //ndef _EDITOR
 		for (const auto& [_, vs] : m_vs)
 		{
@@ -302,8 +306,9 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 		FS.r_close(R);
 
 		// Select target
-		const char*						c_target	= "ps_2_0";
-		const char*						c_entry		= "main";
+		const char* c_target	= "ps_5_0";
+		const char* c_entry		= "main";
+		
 		if (strstr(data,"main_ps_1_1"))			{ c_target = "ps_1_1"; c_entry = "main_ps_1_1";	}
 		if (strstr(data,"main_ps_1_2"))			{ c_target = "ps_1_2"; c_entry = "main_ps_1_2";	}
 		if (strstr(data,"main_ps_1_3"))			{ c_target = "ps_1_3"; c_entry = "main_ps_1_3";	}
@@ -322,9 +327,13 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps);
 
+#ifdef _EDITOR
+		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
+#else
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+#endif
 
-		// Оптимизация макросов в шейдрах
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 #if 0 //ndef _EDITOR
 		for (const auto& [_, ps] : m_ps)
@@ -415,7 +424,11 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs);
 
+#ifdef _EDITOR
+		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
+#else
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+#endif
 
 		FS.r_close				( file );
 
@@ -466,6 +479,7 @@ SDeclaration* CResourceManager::_CreateDecl(const RHIInputElementDesc* dcl, size
 
 	SDeclaration* Declaration = new SDeclaration();
 	Declaration->dx10_dcl_code.assign(dcl, dcl + declSize);
+	Declaration->dx10_dcl_code_pristine = Declaration->dx10_dcl_code;
 	Declaration->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	v_declarations.push_back(Declaration);
 	return Declaration;
@@ -488,6 +502,7 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 	//CHK_DX					(RDevice->CreateVertexDeclaration(dcl,&D->dcl));
 	D->dcl_code.assign		(dcl,dcl+dcl_size);
 	dx10BufferUtils::ConvertVertexDeclaration(D->dcl_code, D->dx10_dcl_code);
+	D->dx10_dcl_code_pristine = D->dx10_dcl_code;
 	D->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
 	v_declarations.push_back(D);
 	return D;

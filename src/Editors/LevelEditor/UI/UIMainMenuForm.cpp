@@ -3,6 +3,8 @@
 
 #include "../Nodes/UIMacroView.h"
 #include "../Editor/Utils/ReferenceReplacer.h"
+#include "../Editor/Utils/GitIntegration.h"
+#include "UIGitWindow.h"
 
 #include "../../xrEUI/xrUITheme.h"
 #include "../../xrEUI/Windows/Help.h"
@@ -213,6 +215,7 @@ void UIMainMenuForm::Draw()
 				ImGui::Separator();
 				DrawMenuItem("Make Game", COMMAND_MAKE_GAME);
 				DrawMenuItem("Make Puddles", COMMAND_MAKE_PUDDLES);
+				DrawMenuItem("Make Planars", COMMAND_MAKE_PLANARS);
 				DrawMenuItem("Make Details", COMMAND_MAKE_DETAILS);
 				DrawMenuItem("Make Hom", COMMAND_MAKE_HOM);
 				DrawMenuItem("Make SOM", COMMAND_MAKE_SOM);
@@ -280,10 +283,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Objects")) {
-			DrawMenuItemI("Library Editor", ICON_FA_BOOK, COMMAND_LIBRARY_EDITOR);
-			ImGui::Separator();
-
+		if (ImGui::BeginMenu("Objects"))
+		{
 			DrawMenuItem("Clip Editor", COMMAND_SHOW_CLIP_EDITOR);
 			DrawMenuItem("Multi Rename", COMMAND_MULTI_RENAME_OBJECTS);
 
@@ -298,7 +299,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Images")) {
+		if (ImGui::BeginMenu("Images"))
+		{
 			DrawMenuItemI("Image Editor", ICON_FA_IMAGE, COMMAND_IMAGE_EDITOR);
 			ImGui::Separator();
 
@@ -328,7 +330,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Sounds")) {
+		if (ImGui::BeginMenu("Sounds"))
+		{
 			DrawMenuItemI("Sound Editor", ICON_FA_MUSIC, COMMAND_SOUND_EDITOR, "");
 			ImGui::Separator();
 
@@ -341,7 +344,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Options")) {
+		if (ImGui::BeginMenu("Options"))
+		{
 			if (ImGui::BeginMenu("Render"))
 			{
 				if (ImGui::BeginMenu("Quality"))
@@ -375,12 +379,7 @@ void UIMainMenuForm::Draw()
 				}
 				if (ImGui::BeginMenu("Fill Mode"))
 				{
-					bool selected[3] = { EDevice->dwFillMode == D3DFILL_POINT,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
-					if (ImGui::MenuItem("Point", "", &selected[0]))
-					{
-						EDevice->dwFillMode = D3DFILL_POINT;
-						UI->RedrawScene();
-					}
+					bool selected[3] = { false,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
 					if (ImGui::MenuItem("Wireframe", "", &selected[1]))
 					{
 						EDevice->dwFillMode = D3DFILL_WIREFRAME;
@@ -557,7 +556,7 @@ void UIMainMenuForm::Draw()
 
 		if (ImGui::BeginMenu("Windows"))
 		{
-			DrawMenuItemI("Light Anim Editor", ICON_FA_LIGHTBULB, COMMAND_LIGHTANIM_EDITOR);
+			//DrawMenuItemI("Light Anim Editor", ICON_FA_LIGHTBULB, COMMAND_LIGHTANIM_EDITOR);
 
 			if (ImGui::MenuItemI("Macro Editor", ICON_FA_SQUARE_SHARE_NODES, ""))
 			{
@@ -632,7 +631,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Help")) {
+		if (ImGui::BeginMenu("Help"))
+		{
 			if (ImGui::MenuItem("Wiki", ""))
 			{
 
@@ -647,7 +647,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Plugins", "")) {
+		if (ImGui::BeginMenu("Plugins", ""))
+		{
 			CPluginsManagers& PlugMngr = CPluginsManagers::Instance();
 
 			bool NeedReinit = false;
@@ -703,6 +704,22 @@ void UIMainMenuForm::Draw()
 				else
 				{
 					UIObjectList::Show();
+				}
+			}
+			
+			ImGui::SameLine();
+			
+			// Git icon button
+			if (Git && Git->IsRepository)
+			{
+				ImGui::SetCursorPosY((UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);
+				if (ImGui::Button(ICON_FA_CODE_BRANCH "##GitButton"))
+				{
+					UIGitWindow::Show();
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Git Integration");
 				}
 			}
 		}

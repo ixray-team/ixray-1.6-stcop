@@ -3,9 +3,11 @@
 #include "PowerCell.h"
 #include "Actor.h"
 #include "Inventory.h"
+#include "InventoryOwner.h"
 #include "ai_object_location.h"
 #include "alife_simulator_base.h"
 #include "alife_simulator.h"
+#include "../xrEngine/string_table.h"
 #include "../xrUI/Widgets/UIProgressBar.h"
 #include "UICellItem.h"
 #include "../xrUI/UIXmlInit.h"
@@ -98,13 +100,13 @@ void PowerBank::EjectPowerCells()
 		for (PowerCellData& power_cell : m_power_cells)
 		{
 			if (CSE_Abstract* s_obj = CALifeSimulator__spawn_item2(
-				sim,
-				power_cell.section.c_str(),
-				obj_parent->Position(),
-				obj_parent->cast_game_object()->ai_location().level_vertex_id(),
-				obj_parent->cast_game_object()->ai_location().game_vertex_id(),
-				obj_parent->ID()
-			))
+					sim,
+					power_cell.section.c_str(),
+					obj_parent->Position(),
+					obj_parent->cast_game_object()->ai_location().level_vertex_id(),
+					obj_parent->cast_game_object()->ai_location().game_vertex_id(),
+					obj_parent->ID()
+				))
 			{
 				AwaitAlifeObject& await_object = m_await_objects_apply_params.emplace_back();
 				await_object.id = s_obj->ID;
@@ -126,7 +128,7 @@ void PowerBank::UpdateCL()
 
 void PowerBank::OnFrame()
 {
-	if (!m_await_objects_apply_params.empty()) 
+	if (!m_await_objects_apply_params.empty())
 	{
 		bool all_used = true;
 		for (AwaitAlifeObject& await_object : m_await_objects_apply_params)
@@ -165,7 +167,7 @@ float PowerBank::GetPower()
 	{
 		result += power_cell.current_power;
 	}
-	
+
 	return result;
 }
 
@@ -271,20 +273,78 @@ void PowerBank::load(IReader& input_packet)
 	}
 }
 
-bool PowerBank::OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox)
+bool PowerBank::FillUseActions(CUIPropertiesBox* box, const UseActionContext& context)
 {
-	if (m_power_cells.size() > 0)
+	if (box == nullptr)
 	{
-		m_UIPropertiesBox->AddItem(
+		return false;
+	}
+
+	bool added = false;
+
+	if (!m_power_cells.empty())
+	{
+		box->AddItem(
 			"detach_power_cell",
 			nullptr,
 			DETACH_POWER_CELL
 		);
 
-		return true;
+		added = true;
 	}
 
-	return false;
+	const static bool enable_power_cell_context_menu =
+		EngineExternal()[EEngineExternalGame::EnablePowerCellContextMenu];
+
+	if (!enable_power_cell_context_menu ||
+		m_power_cells.size() >= m_max_count_power_cells ||
+		context.inventory == nullptr ||
+		context.owner == nullptr ||
+		context.item == nullptr ||
+		context.item->parent_id() != context.owner->object_id())
+	{
+		return added;
+	}
+
+	for (PIItem candidate : context.inventory->m_ruck)
+	{
+		PowerCell* power_cell = smart_cast<PowerCell*>(candidate);
+		if (power_cell == nullptr ||
+			power_cell->parent_id() != context.owner->object_id() ||
+			!IsPowerCellInWhiteList(power_cell->GetPowerCellData().section))
+		{
+			continue;
+		}
+
+		const PowerCellData cell_data = power_cell->GetPowerCellData();
+		const int charge_percent =
+			cell_data.max_power > 0.0f
+				? iFloor(cell_data.current_power / cell_data.max_power * 100.0f + 0.5f)
+				: 0;
+
+		shared_str text =
+			g_pStringTable->translate(
+				"st_install_power_cell"
+			);
+
+
+		text.printf(
+			"%s %s (%d%%)",
+			text.c_str(),
+			power_cell->NameItem(),
+			charge_percent
+		);
+
+		box->AddItem(
+			text.c_str(),
+			power_cell,
+			ATTACH_POWER_CELL
+		);
+
+		added = true;
+	}
+
+	return added;
 }
 
 bool PowerBank::OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox)
@@ -293,9 +353,9 @@ bool PowerBank::OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBo
 	{
 		switch (m_UIPropertiesBox->GetClickedItem()->GetTAG())
 		{
-		case DETACH_POWER_CELL:
-			EjectPowerCells();
-			return true;
+			case DETACH_POWER_CELL:
+				EjectPowerCells();
+				return true;
 		}
 	}
 
@@ -304,12 +364,10 @@ bool PowerBank::OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBo
 
 
 using namespace luabind;
-#pragma optimize("s",on)
+#pragma optimize("s", on)
 void PowerBank::script_register(lua_State* L)
 {
 	module(L)
-		[
-			class_<PowerBank, CGameObject>("PowerBank")
-				.def(constructor<>())
-		];
+		[class_<PowerBank, CGameObject>("PowerBank")
+			 .def(constructor<>())];
 }

@@ -37,34 +37,20 @@ public:
 template<class _Ty, class _Other>	inline	bool operator==(const doug_lea_alloc<_Ty>&, const doug_lea_alloc<_Other>&) { return (true); }
 template<class _Ty, class _Other>	inline	bool operator!=(const doug_lea_alloc<_Ty>&, const doug_lea_alloc<_Other>&) { return (false); }
 
-struct doug_lea_allocator_wrapper {
-	template <typename T>
-	struct helper {
-		typedef doug_lea_alloc<T>	result;
-	};
-
-	static	void* alloc(const u32& n) { return g_render_lua_allocator_area.malloc_impl((u32)n); }
-	template <typename T>
-	static	void	dealloc(T*& p) { g_render_lua_allocator_area.free_impl((void*&)p); }
-};
-
-#	define render_alloc				doug_lea_alloc
-typedef doug_lea_allocator_wrapper	render_allocator;
-
-struct FSChunkDef;
 class PropValue;
 struct SPBItem;
 
-
 #pragma pack( push,1 )
-struct UndoItem {
+struct UndoItem 
+{
 	char m_FileName[MAX_PATH];
 };
 #pragma pack( pop )
 
 class TProperties;
 
-struct st_LevelOptions{
+struct st_LevelOptions
+{
 	shared_str		m_FNLevelPath;
 	shared_str		m_LevelPrefix;
 	shared_str 		m_BOPText;
@@ -95,10 +81,6 @@ class EScene :
 	public pureFrame
 {
 	CMemoryWriter 	m_SaveCache;
-public:
-	typedef	FixedMAP<float, CCustomObject*, render_allocator>	mapObject_D;
-	typedef mapObject_D::TNode	 	    	mapObject_Node;
-	mapObject_D						    	mapRenderObjects;
 public:
 	st_LevelOptions	m_LevelOp;
 protected:

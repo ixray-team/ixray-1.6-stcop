@@ -23,13 +23,13 @@ private:
 	ref_texture			m_TextureNull;
 	ImTextureID			m_Texture;
 
-	ID3DTexture2D* m_ItemTexture;
+	ref_texture m_ItemTexture;
+	ref_texture  m_PointerTexture;
 	CLAItem* m_CurrentItem;
 	bool m_Modife;
 
 	float m_PointerWeight;
 	bool m_PointerResize;
-	ID3DTexture2D* m_PointerTexture;
 	u32* m_PointerRawImage;
 	int m_PointerValue;
 	bool m_RenderAlpha;

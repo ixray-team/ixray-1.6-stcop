@@ -76,6 +76,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("Spawn Manager", CImGuiManager::ERenderPriority::eMedium, RenderSpawnManagerWindow);
 		CImGuiManager::Instance().Subscribe("Weapon Manager", CImGuiManager::ERenderPriority::eMedium, RenderWeaponManagerWindow);
 		CImGuiManager::Instance().Subscribe("Search Manager", CImGuiManager::ERenderPriority::eMedium, RenderSearchManagerWindow);
+		CImGuiManager::Instance().Subscribe("Graph Editor", CImGuiManager::ERenderPriority::eMedium, RenderGraphEditorWindow);
 		CImGuiManager::Instance().Subscribe("OMF Editor", CImGuiManager::ERenderPriority::eMedium, RenderToolsOMFEditorWindow);
 		CImGuiManager::Instance().Subscribe("Car Editor", CImGuiManager::ERenderPriority::eMedium, RenderCarConfigEditor);
 		CImGuiManager::Instance().Subscribe("Texture Editor", CImGuiManager::ERenderPriority::eMedium, RenderTextureEditor);
@@ -83,6 +84,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("PPE Editor", CImGuiManager::ERenderPriority::eMedium, RenderPPEEditor);
 		CImGuiManager::Instance().Subscribe("Input Manager", CImGuiManager::ERenderPriority::eMedium, RenderToolsInputManagerWindow);
 		CImGuiManager::Instance().Subscribe("SVGStorageViewer", CImGuiManager::ERenderPriority::eMedium, RenderToolsRenderDebugSVGStorageViewerWindow);
+		CImGuiManager::Instance().Subscribe("DetailLayersEditor", CImGuiManager::ERenderPriority::eMedium, RenderDetailLayersEditorWindow);
 		CImGuiManager::Instance().Subscribe("Hud Adjust", CImGuiManager::ERenderPriority::eMedium, RenderHUDAdjustManager);
 		CImGuiManager::Instance().Subscribe("3rd Person Adjust", CImGuiManager::ERenderPriority::eMedium, Render3rdAdjust);
 		CImGuiManager::Instance().Subscribe("Demo Record", CImGuiManager::ERenderPriority::eMedium, RenderDemoRecordEditorWindow);

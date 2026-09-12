@@ -285,7 +285,7 @@ void CObjectList::Update		(bool bForce)
 			}
 		}
 
-		for (int it = (int)destroy_queue.size()-1; it>=0; it--)	Sound->object_relcase	(destroy_queue[it]);
+		Sound->objects_relcase(destroy_queue.data(), destroy_queue.size());
 		
 		RELCASE_CALLBACK_VEC::iterator It	= m_relcase_callbacks.begin();
 		RELCASE_CALLBACK_VEC::iterator Ite	= m_relcase_callbacks.end();

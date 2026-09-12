@@ -12,8 +12,8 @@
 
 CContentView* GContentView = nullptr;
 
-CContentView::CContentView():
-	WatcherPtr(nullptr)
+CContentView::CContentView(xr_string NewWindowName)
+	: WatcherPtr(nullptr), WindowName(NewWindowName)
 {
 	string_path Dir = {};
 	FS.update_path(Dir, "$fs_root$", "");
@@ -280,7 +280,7 @@ void CContentView::Draw()
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(250, 100));
-	if (ImGui::Begin("Content Browser"))
+	if (ImGui::Begin(WindowName.c_str()))
 	{
 		if ((NeedRescan || Files.empty()) && !IsFindResult && !IsSpawnElement && !IsParticles)
 		{
@@ -947,7 +947,7 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 					auto Iter = std::find(GameDialogs.begin(), GameDialogs.end(), FileName);
 					if (Iter != GameDialogs.end())
 					{
-						CUIDialogView::OpenFile(FilePath.File.xfilename());
+						DialogEditor::OpenFile(FilePath.File.xfilename());
 					}
 				}
 				if (FilePath.File.extension() == ".thm")
@@ -2019,6 +2019,7 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 		else if (IconPath.ends_with(".png") || IconPath.ends_with(".tga"))
 		{
 			U8Vec Pixels = DXTUtils::GitPixels(IconPath.c_str(), BtnSize.x, BtnSize.y);
+
 			if (!Pixels.empty())
 			{
 				CTexture* TempTexture = new CTexture();
@@ -2027,18 +2028,15 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				RHITextureDesc Desc;
 				Desc.Width = BtnSize.x;
 				Desc.Height = BtnSize.x;
-				Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+				Desc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 				Desc.MipLevels = 1;
 				Desc.ArraySize = 1;
 				Desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
 				Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 
 				RHISubResource SubResource{};
-				SubResource.Width = BtnSize.x;
-				SubResource.Height = BtnSize.x;
-				SubResource.TextureFormat = Desc.Format;
-				SubResource.RowPitch = BtnSize.x * 4;
 				SubResource.Data = Pixels.data();
+				SubResource.DataSize = BtnSize.x * 4;
 
 				IRHISurface* Surf = GRHI->CreateTexture2D(Desc, SubResource);
 				TempTexture->surface_set(Surf);
@@ -2205,7 +2203,7 @@ void CContentView::PasteAction(const xr_string& Path) /*const*/
 		IsCutting = false;
 
 	CopiedObjects.clear();
-	FS.rescan_path(OutDir.parent_path().string().c_str(), true);
+	//FS.rescan_path(OutDir.parent_path().string().c_str(), true);
 }
 
 void CContentView::DeleteAction(const xr_path& Path) /*const*/
@@ -2268,7 +2266,7 @@ void CContentView::RenameAction(const xr_path& FilePath, const xr_string NewName
 		}
 	}
 
-	FS.rescan_path(NewFileName.parent_path().string().c_str(), true);
+	//FS.rescan_path(NewFileName.parent_path().string().c_str(), true);
 
 }
 

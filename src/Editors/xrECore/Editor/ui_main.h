@@ -43,7 +43,9 @@ public:
 typedef xr_vector<EEditorState> EStateList;
 typedef EStateList::iterator EStateIt;
 
-class ECORE_API TUI: public IInputReceiver,public XrUIManager
+class ECORE_API TUI: 
+	public IInputReceiver,
+	public XrUIManager
 {
 	bool m_AppClosed;
 	inline void	RealQuit() { m_AppClosed = true; }
@@ -98,7 +100,6 @@ public:
 	Fvector m_ContextRStart;
 	Fvector m_ContextRDir;
 
-	Fvector m_StartRStart;
 	Fvector m_StartRDir;
 
 	// hidden ops
@@ -134,7 +135,7 @@ public:
 	xr_hash_map<ECommandListID, xr_vector<std::function<void()>>> CommandList;
 
 protected:
-	virtual void 	RealUpdateScene	()=0;
+	virtual void 	RealUpdateScene	();
 	void			RealRedrawScene	();
 	void			RealResize		();
 	void			OnFrame			();
@@ -147,8 +148,8 @@ public:
 	bool            NeedQuit        () const { return m_Flags.test(flNeedQuit);}
 	u32 			&GetRenderWidth	()	{   return EDevice->TargetWidth; }
 	u32&GetRenderHeight	()	{   return EDevice->TargetHeight; }
-	int 			GetRealWidth	()	{   return EDevice->dwRealWidth; }
-	int 			GetRealHeight	()  {   return EDevice->dwRealHeight; }
+	int 			GetRealWidth	()	{   return EDevice->Width; }
+	int 			GetRealHeight	()  {   return EDevice->Height; }
 
 	IC float 		ZFar			()	{	return CurrentView().m_Camera.m_Zfar; }
 	IC TShiftState	GetShiftState 	()	{	return m_ShiftState; }
@@ -182,6 +183,7 @@ public:
    virtual bool  KeyDown     		(WORD Key, TShiftState Shift);
 	bool  KeyUp       		(WORD Key, TShiftState Shift);
 	bool  KeyPress    		(WORD Key, TShiftState Shift);
+	virtual void IR_OnMouseWheel	(int direction);
 	void  MousePress			(TShiftState Shift, int X, int Y);
 	void  MouseRelease		(TShiftState Shift, int X, int Y);
 	void  MouseMove			(TShiftState Shift, int X, int Y);
@@ -199,8 +201,8 @@ public:
 	EEditorState 	GetEState			() const { return m_EditorState.back(); }
 	bool 			ContainEState		(EEditorState st){ return std::find(m_EditorState.begin(),m_EditorState.end(),st)!=m_EditorState.end(); }
 
-	virtual void 	SetStatus			(const char* s, bool bOutLog=true)=0;
-	virtual void 	ResetStatus			()=0;
+	virtual void SetStatus(const char* s, bool bOutLog = true) {};
+	virtual void ResetStatus() {};
 	
 	// direct input
 	virtual void 	IR_OnMouseMove		(int x, int y);
@@ -212,8 +214,8 @@ public:
 	void 			NeedBreak			(){bNeedAbort = true;}
 	void 			ResetBreak			(){bNeedAbort = false;}
 
-	virtual bool 	ApplyShortCut		(DWORD Key, TShiftState Shift)=0;
-	virtual bool 	ApplyGlobalShortCut	(DWORD Key, TShiftState Shift)=0;
+	virtual bool ApplyShortCut(u32 Key, TShiftState Shift);
+	virtual bool ApplyGlobalShortCut(u32 Key, TShiftState Shift);
 
 	void			SetGradient			(u32 color){;}
 
@@ -227,9 +229,7 @@ public:
 	virtual	void	RegisterCommands			()=0; 
 	void			ClearCommands				();
 	
-	CCommandVar		CommandRenderFocus			(CCommandVar p1, CCommandVar p2);
 	CCommandVar		CommandBreakLastOperation	(CCommandVar p1, CCommandVar p2);
-	CCommandVar		CommandRenderResize			(CCommandVar p1, CCommandVar p2);
 
 	virtual void	SaveSettings				(nlohmann::json&){}
 	virtual void	LoadSettings				(nlohmann::json&){}

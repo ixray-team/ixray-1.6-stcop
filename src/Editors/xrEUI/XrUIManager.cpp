@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "../../xrEngine/stdafx.h"
-#include "imgui_impl_dx9.h"
 #include "imgui_impl_sdl3.h"
 #include "spectrum.h"
 #include <SDL3/SDL.h>
@@ -52,7 +51,7 @@ void LoadImGuiFontBase(const char* Font, float scale)
 	}
 }
 
-void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* ini_path)
+void XrUIManager::Initialize(HWND hWnd, const char* ini_path)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -107,12 +106,12 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 
 	//ImGui_ImplWin32_Init(hWnd);
 	ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window);
-	ImGui_ImplDX9_Init(device);
+	RHIUtils::ImGui::Init();
 }
 
 void XrUIManager::Destroy()
 {
-	ImGui_ImplDX9_Shutdown();
+	RHIUtils::ImGui::Destroy();
 	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
 }
@@ -135,24 +134,24 @@ void XrUIManager::BeginFrame()
 	LazyFonts.clear();
 
 	ImGui_ImplSDL3_NewFrame();
-	ImGui_ImplDX9_NewFrame();
+	RHIUtils::ImGui::NewFrame();
 }
 
 void XrUIManager::EndFrame()
 {
 	ImGui::Render();
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+	RHIUtils::ImGui::DrawData();
 
-	for (size_t i = m_UIArray.size(); i > 0; i--)
+	for (size_t i = ActualWindows.size(); i > 0; i--)
 	{
-		if (m_UIArray[i - 1]->IsClosed())
+		if (ActualWindows[i - 1]->IsClosed())
 		{
-			if (!m_UIArray[i - 1]->Flags.test(IEditorWnd::F_NoDelete))
+			if (!ActualWindows[i - 1]->Flags.test(IEditorWnd::F_NoDelete))
 			{
-				xr_delete(m_UIArray[i - 1]);
+				xr_delete(ActualWindows[i - 1]);
 			}
-			m_UIArray.erase(m_UIArray.begin() + (i - 1));
-			i = m_UIArray.size();
+			ActualWindows.erase(ActualWindows.begin() + (i - 1));
+			i = ActualWindows.size();
 			if (i == 0)return;
 		}
 	}
@@ -170,19 +169,17 @@ void XrUIManager::MDIUpdate()
 
 void XrUIManager::ResetBegin()
 {
-	for (auto Ptr : m_UIArray)
+	for (auto Ptr : ActualWindows)
 	{
 		Ptr->ResetBegin();
 	}
 
-	ImGui_ImplDX9_InvalidateDeviceObjects();
+	RHIUtils::ImGui::Reset();
 }
 
 void XrUIManager::ResetEnd(void* NewDevice)
 {
-	ImGui_ImplDX9_CreateDeviceObjects();
-
-	for (auto Ptr : m_UIArray)
+	for (auto Ptr : ActualWindows)
 	{
 		Ptr->ResetEnd();
 	}
@@ -280,23 +277,33 @@ void XrUIManager::ApplyShortCutInput(DWORD Key)
 
 void XrUIManager::Push(IEditorWnd* ui, bool need_deleted)
 {
-	m_UIArray.push_back(ui);
-	ui->Flags.set(!need_deleted, IEditorWnd::F_NoDelete);
+	if (std::ranges::find(ActualWindows, ui) == ActualWindows.end())
+	{
+		ui->Flags.set(!need_deleted, IEditorWnd::F_NoDelete);
+
+		if (Rendering)
+		{
+			NextWindows.push_back(ui);
+			return;
+		}
+
+		ActualWindows.push_back(ui);
+	}
 }
 
 void XrUIManager::Remove(IEditorWnd* ui)
 {
-	auto Iter = std::find(m_UIArray.begin(), m_UIArray.end(), ui);
+	auto Iter = std::find(ActualWindows.begin(), ActualWindows.end(), ui);
 	
-	if (Iter != m_UIArray.end())
+	if (Iter != ActualWindows.end())
 	{
-		m_UIArray.erase(Iter);
+		ActualWindows.erase(Iter);
 	}
 }
 
 void XrUIManager::PushBegin(IEditorWnd* ui, bool need_deleted)
 {
-	m_UIArray.insert(m_UIArray.begin(), ui);
+	ActualWindows.insert(ActualWindows.begin(), ui);
 	ui->Flags.set(!need_deleted, IEditorWnd::F_NoDelete);
 }
 
@@ -334,13 +341,11 @@ void XrUIManager::Draw()
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(separatorSize, separatorSize));
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
 		ImGui::PushStyleColor(ImGuiCol_Border, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
+
 		ImGui::Begin("MyDockspace", NULL, window_flags);
-		ImGuiID dockMain = ImGui::GetID("MyDockspace");
-
-		////// Save off menu bar height for later.
-
-		ImGui::DockSpace(dockMain);
+		ImGui::DockSpace(ImGui::GetID("MyDockspace"));
 		ImGui::End();
+
 		ImGui::PopStyleColor(2); // Border, WindowBG
 		ImGui::PopStyleVar(1); // WindowPadding
 
@@ -352,15 +357,26 @@ void XrUIManager::Draw()
 	{
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	}
-	
+
+	if (!NextWindows.empty())
+	{
+		ActualWindows.insert(ActualWindows.end(), NextWindows.begin(), NextWindows.end());
+		NextWindows.clear();
+	}
+
 	OnDrawUI();
 	
-	for (IEditorWnd* ui : m_UIArray)
+	Rendering = true;
+	for (IEditorWnd* ui : ActualWindows)
 	{
-		ui->BeginDraw();
-		ui->Draw();
-		ui->EndDraw();
+		if (ui->TabIndex < 0 || ui->TabIndex == ActiveTabIndex)
+		{
+			ui->BeginDraw();
+			ui->Draw();
+			ui->EndDraw();
+		}
 	}
+	Rendering = false;
 
 	if (!CopyBool)
 	{

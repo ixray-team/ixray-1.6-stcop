@@ -1,5 +1,4 @@
 #pragma once
-#include <d3d9.h>
 
 enum TShiftState_
 {
@@ -24,7 +23,7 @@ public:
 		
 	virtual ~XrUIManager();
 
-	void Initialize(HWND hWnd, IDirect3DDevice9* device,const char*ini_path);
+	void Initialize(HWND hWnd, const char*ini_path);
 	void Destroy();
 
 	bool ProcessEvent(void* Event);
@@ -35,7 +34,7 @@ public:
 
 	void ResetBegin();
 	void ResetEnd(void* NewDevice);
-	virtual bool 	ApplyShortCut(DWORD Key, TShiftState Shift)=0;
+	virtual bool ApplyShortCut(u32 Key, TShiftState Shift) = 0;
 
 	inline float GetMenuBarHeight()const { return m_MenuBarHeight; }
 
@@ -55,10 +54,15 @@ protected:
 private:
 	float m_MenuBarHeight;
 	float m_MenuBarButtonHeight;
-	TShiftState m_ShiftState;
-	xr_vector<IEditorWnd*> m_UIArray;
-	string_path m_name_ini;
 	float m_ScaleDpi;
+	
+	TShiftState m_ShiftState;
+	xr_atomic_bool Rendering = false;
+
+	xr_vector<IEditorWnd*> ActualWindows;
+	xr_vector<IEditorWnd*> NextWindows;
+
+	string_path m_name_ini;
 
 public: 
 	template<typename T> 
@@ -66,7 +70,7 @@ public:
 	{
 		return std::any_of
 		(
-			m_UIArray.begin(), m_UIArray.end(),
+			ActualWindows.begin(), ActualWindows.end(),
 			[](IEditorWnd* Form)
 			{
 				return smart_cast<T*>(Form);
@@ -75,6 +79,7 @@ public:
 	}
 
 	bool IsEnableInput = true;
+	int ActiveTabIndex = 0;
 	EDragDropType DnDType = EDragDropType::None;
 	virtual void* LoadTexture(const char*) const { return nullptr; };
 	void* SearchIcon = nullptr;

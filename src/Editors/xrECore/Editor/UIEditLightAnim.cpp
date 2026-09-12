@@ -6,8 +6,10 @@
 #include "ui_main.h"
 #define POINTER_HEIGHT 35
 UIEditLightAnim* UIEditLightAnim::Form = nullptr;
+
 UIEditLightAnim::UIEditLightAnim()
 {
+	TabIndex = 2;
 	m_Modife = false;
 	m_Items = new UIItemListForm();
 	m_Items->m_Flags.set(UIItemListForm::fMenuEdit, true);
@@ -20,10 +22,26 @@ UIEditLightAnim::UIEditLightAnim()
 	m_Texture = nullptr;
 	m_PointerWeight = -1;
 	m_PointerResize = true;
-	m_PointerTexture = nullptr;
+	m_PointerTexture = new CTexture;
 	m_PointerValue = 0;
 	m_RenderAlpha = false;
-	R_CHK(REDevice->CreateTexture(32, 32, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_ItemTexture, nullptr));
+
+	RHITextureDesc textureDesc = {};
+	textureDesc.Width = 32;
+	textureDesc.Height = 32;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+	textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+	textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
+
+	RHISubResource subResource = {}; 
+
+	IRHISurface* surf = GRHI->CreateTexture2D(textureDesc, subResource);
+	m_ItemTexture = new CTexture;
+	m_ItemTexture->surface_set(surf);
+	surf->Release();
 
 	m_Items->SetOnItemCreaetEvent(xr_make_delegate(this, &UIEditLightAnim::OnCreateItem));
 	m_Items->SetOnItemRemoveEvent({this, &UIEditLightAnim::OnRemoveItem});
@@ -47,9 +65,19 @@ UIEditLightAnim::~UIEditLightAnim()
 			LALib.Reload();
 		}
 	}
-	m_ItemTexture->Release();
-	if (m_PointerTexture) { m_PointerTexture->Release(); xr_delete(m_PointerRawImage); }
-	if (m_Texture) { IM_TEXTURE_RELEASE(m_Texture); }
+	m_ItemTexture->surface_set(nullptr);
+
+	if (m_PointerTexture)
+	{
+		m_PointerTexture->surface_set(nullptr); 
+		xr_delete(m_PointerRawImage);
+	}
+
+	if (m_Texture) 
+	{
+		IM_TEXTURE_RELEASE(m_Texture);
+	}
+
 	m_TextureNull.destroy();
 	xr_delete(m_Props);
 	xr_delete(m_Items);
@@ -60,11 +88,22 @@ void UIEditLightAnim::Draw()
 	IsDocked = ImGui::IsWindowDocked();
 	IsFocused = ImGui::IsWindowFocused();
 
-	if(ImGui::BeginChild("Left", ImVec2(230, 0)))
+	if (ImGui::BeginChild("Left", ImVec2(250, 0)))
 	{
-		
-		if (ImGui::Button("Save", ImVec2(0, ImGui::GetFrameHeight()))) { m_Modife = false; LALib.Save(); } ImGui::SameLine();
-		if (ImGui::Button("Reload", ImVec2(0, ImGui::GetFrameHeight()))) { m_Modife = false; LALib.Reload(); OnItemFocused(nullptr); InitializeItems(); } ImGui::SameLine();
+		if (ImGui::Button("Save", ImVec2(0, ImGui::GetFrameHeight())))
+		{
+			m_Modife = false;
+			LALib.Save();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reload", ImVec2(0, ImGui::GetFrameHeight())))
+		{
+			m_Modife = false;
+			LALib.Reload();
+			OnItemFocused(nullptr);
+			InitializeItems();
+		}
+		ImGui::SameLine();
 		ImGui::Checkbox("Render Alpha", &m_RenderAlpha);
 		if (ImGui::BeginChild("Left", ImVec2(0, 0), true))
 		{
@@ -72,26 +111,33 @@ void UIEditLightAnim::Draw()
 
 			IsContextMenu = m_Items->m_UseMenuEdit;
 			if (!IsDocked)
+			{
 				IsDocked = ImGui::IsWindowDocked();
+			}
 			if (!IsFocused)
+			{
 				IsFocused = ImGui::IsWindowFocused();
+			}
 		}
 		ImGui::EndChild();
 		if (!IsDocked)
+		{
 			IsDocked = ImGui::IsWindowDocked();
+		}
 		if (!IsFocused)
+		{
 			IsFocused = ImGui::IsWindowFocused();
+		}
 	}
 	ImGui::EndChild();
 	ImGui::SameLine();
-	if (ImGui::BeginChild("Midle", ImVec2(-230, 0)))
+	if (ImGui::BeginChild("Midle", ImVec2(-330, 0)))
 	{
 		{
 			ImGui::SetNextItemWidth(-1);
 			float width = ImGui::CalcItemWidth();
-			if (width>=1)
+			if (width >= 1)
 			{
-				
 				if (m_PointerWeight != floorf(width))
 				{
 					m_PointerWeight = floorf(width);
@@ -101,13 +147,16 @@ void UIEditLightAnim::Draw()
 				{
 					ImVec2 canvas_pos = ImGui::GetCursorScreenPos();
 					ImVec2 canvas_size = ImGui::GetContentRegionAvail();
-					if (canvas_size.x > m_PointerWeight-2)
-						canvas_size.x = m_PointerWeight-2;
+					if (canvas_size.x > m_PointerWeight - 2)
+					{
+						canvas_size.x = m_PointerWeight - 2;
+					}
 					if (canvas_size.y > POINTER_HEIGHT)
+					{
 						canvas_size.y = POINTER_HEIGHT;
+					}
 					if ((ImGui::GetIO().MousePos.x >= canvas_pos.x && ImGui::GetIO().MousePos.y >= canvas_pos.y) &&
-						(ImGui::GetIO().MousePos.x <= (canvas_pos.x + canvas_size.x) && ImGui::GetIO().MousePos.y <= (canvas_pos.y + canvas_size.y)) 
-						)
+						(ImGui::GetIO().MousePos.x <= (canvas_pos.x + canvas_size.x) && ImGui::GetIO().MousePos.y <= (canvas_pos.y + canvas_size.y)))
 					{
 						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 						{
@@ -116,25 +165,30 @@ void UIEditLightAnim::Draw()
 						if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 						{
 							if (float(ImGui::GetIO().MousePos.x - canvas_pos.x) >= 1)
+							{
 								m_PointerValue = iFloor(float(m_CurrentItem->iFrameCount) * float(ImGui::GetIO().MousePos.x - canvas_pos.x) / float(m_PointerWeight - 2));
+							}
 							UpdateProperties();
 						}
-						
 					}
-
 				}
 				RenderPointer();
-				ImGui::Image(m_PointerTexture, ImVec2(m_PointerWeight,POINTER_HEIGHT));
+				ImGui::Image(m_PointerTexture->get_SRView()->GetRawSRV(), ImVec2(m_PointerWeight, POINTER_HEIGHT));
 			}
 			m_Props->Draw();
 		}
 		if (!IsDocked)
+		{
 			IsDocked = ImGui::IsWindowDocked();
+		}
 		if (!IsFocused)
+		{
 			IsFocused = ImGui::IsWindowFocused();
+		}
 	}
-	ImGui::EndChild(); ImGui::SameLine();
-	if (ImGui::BeginChild("Right", ImVec2(230, 0)))
+	ImGui::EndChild();
+	ImGui::SameLine();
+	if (ImGui::BeginChild("Right", ImVec2(330, 0)))
 	{
 		ImGui::BeginGroup();
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
@@ -143,33 +197,40 @@ void UIEditLightAnim::Draw()
 			if (ImGui::Button("|<<", ImVec2(ImGui::GetFrameHeight() * 3, ImGui::GetFrameHeight())))
 			{
 				m_PointerValue = 0;
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			ImGui::SetNextItemWidth(-ImGui::GetFrameHeight() * 3);
 			if (ImGui::InputInt("##value", &m_PointerValue, 1, 2))
 			{
 				if (m_CurrentItem)
 				{
 					if (m_PointerValue > m_CurrentItem->iFrameCount - 1)
+					{
 						m_PointerValue = m_CurrentItem->iFrameCount - 1;
-					if (m_PointerValue < 0)m_PointerValue = 0;
+					}
+					if (m_PointerValue < 0)
+					{
+						m_PointerValue = 0;
+					}
 				}
 				else
 				{
 					m_PointerValue = 0;
 				}
-			  
 			}
 			ImGui::SameLine();
-			if (ImGui::Button(">>|", ImVec2(ImGui::GetFrameHeight() * 3, ImGui::GetFrameHeight()))&& m_CurrentItem)
+			if (ImGui::Button(">>|", ImVec2(ImGui::GetFrameHeight() * 3, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_PointerValue = m_CurrentItem->iFrameCount - 1;
 			}
 		}
 		{
-
 			float button_w = ImGui::GetWindowWidth() - (12 * ImGui::GetFrameHeight() + 6 * 2);
 			button_w = button_w / 2;
-			if (button_w < ImGui::GetFrameHeight())button_w = ImGui::GetFrameHeight();
+			if (button_w < ImGui::GetFrameHeight())
+			{
+				button_w = ImGui::GetFrameHeight();
+			}
 			if (ImGui::Button("<-", ImVec2(ImGui::GetFrameHeight() * 2, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				if ((m_PointerValue != 0) && (m_CurrentItem->IsKey(m_PointerValue)))
@@ -182,44 +243,55 @@ void UIEditLightAnim::Draw()
 						if (!(m_CurrentItem->IsKey(f1)))
 						{
 							m_CurrentItem->MoveKey(f0, f1);
-							m_PointerValue=f1;
+							m_PointerValue = f1;
 							OnModified();
 							break;
 						}
 						f1--;
 					}
-
 				}
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button("|<<", ImVec2(ImGui::GetFrameHeight() * 3, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_PointerValue = m_CurrentItem->FirstKeyFrame();
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button("<", ImVec2(ImGui::GetFrameHeight() * 1, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_PointerValue = m_CurrentItem->PrevKeyFrame(m_PointerValue);
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button("+", ImVec2(button_w, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				OnCreateKeyClick();
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button("-", ImVec2(button_w, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_CurrentItem->DeleteKey(m_PointerValue);
 				if (m_PointerValue > m_CurrentItem->iFrameCount - 1)
+				{
 					m_PointerValue = m_CurrentItem->iFrameCount - 1;
-				if (m_PointerValue < 0)m_PointerValue = 0;
+				}
+				if (m_PointerValue < 0)
+				{
+					m_PointerValue = 0;
+				}
 				UpdateProperties();
 				OnModified();
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button(">", ImVec2(ImGui::GetFrameHeight() * 1, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_PointerValue = m_CurrentItem->NextKeyFrame(m_PointerValue);
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button(">>|", ImVec2(ImGui::GetFrameHeight() * 3, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				m_PointerValue = m_CurrentItem->LastKeyFrame();
-			}ImGui::SameLine();
+			}
+			ImGui::SameLine();
 			if (ImGui::Button("->", ImVec2(ImGui::GetFrameHeight() * 2, ImGui::GetFrameHeight())) && m_CurrentItem)
 			{
 				if ((m_PointerValue != m_CurrentItem->iFrameCount - 1) && (m_CurrentItem->IsKey(m_PointerValue)))
@@ -227,7 +299,7 @@ void UIEditLightAnim::Draw()
 					int f0, f1;
 					f1 = f0 = m_PointerValue;
 					f1++;
-					while (f1 <=  m_CurrentItem->iFrameCount - 1)
+					while (f1 <= m_CurrentItem->iFrameCount - 1)
 					{
 						if (!(m_CurrentItem->IsKey(f1)))
 						{
@@ -238,23 +310,24 @@ void UIEditLightAnim::Draw()
 						}
 						f1++;
 					}
-
 				}
 			}
-
 		}
 		ImGui::PopStyleVar(2);
 		ImGui::EndGroup();
 		if (m_CurrentItem)
 		{
-	   
 			RenderItem();
 		}
-		ImGui::Image(m_CurrentItem?m_ItemTexture:m_TextureNull->get_SRView()->GetRawSRV(), ImGui::CalcItemSize(ImVec2(-1, -1), 32, 32));
+		ImGui::Image(m_CurrentItem ? m_ItemTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImGui::CalcItemSize(ImVec2(-1, -1), 32, 32));
 		if (!IsDocked)
+		{
 			IsDocked = ImGui::IsWindowDocked();
+		}
 		if (!IsFocused)
+		{
 			IsFocused = ImGui::IsWindowFocused();
+		}
 	}
 	ImGui::EndChild();
 }
@@ -265,6 +338,9 @@ void UIEditLightAnim::Update()
     {
         if (!Form->IsClosed())
         {
+            if (UI->ActiveTabIndex != Form->TabIndex)
+                return;
+
             Form->BeginDraw();
             ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 600));
             if (ImGui::Begin("Light Animations Editor", &Form->bOpen))
@@ -333,19 +409,19 @@ void UIEditLightAnim::RenderItem()
 			Color = subst_alpha(Color, 0xFF);
 	}
 	{
-		D3DLOCKED_RECT rect;
-		R_CHK(m_ItemTexture->LockRect(0, &rect, nullptr, 0));
+		u32 Pitch = 0;
+		void* pBits = m_ItemTexture->pSurface->Lock(0, &Pitch);
 		u32* dest = nullptr;
 
 		for (u32 y = 0; y < 32; y++)
 		{
-			dest = reinterpret_cast<u32*>(reinterpret_cast<char*>(rect.pBits) + (rect.Pitch * y));
+			dest = reinterpret_cast<u32*>(reinterpret_cast<char*>(pBits) + (Pitch * y));
 			for (u32 i = 0; i < 32; i++)
 			{
 				dest[i] = Color;
 			}
 		}
-		R_CHK(m_ItemTexture->UnlockRect(0));
+		m_ItemTexture->pSurface->Unlock();
 	}
 }
 
@@ -382,11 +458,23 @@ void UIEditLightAnim::OnItemFocused(ListItem*item)
 
 bool UIEditLightAnim::OnFrameCountAfterEdit(PropValue* v, s32& val)
 {
-	if (val != m_CurrentItem->iFrameCount) OnModified();
+	if (val != m_CurrentItem->iFrameCount)
+	{
+		OnModified();
+	}
+
 	m_CurrentItem->Resize(val);
+
 	if (m_PointerValue > m_CurrentItem->iFrameCount - 1)
+	{
 		m_PointerValue = m_CurrentItem->iFrameCount - 1;
-	if (m_PointerValue < 0)m_PointerValue = 0;
+	}
+
+	if (m_PointerValue < 0)
+	{
+		m_PointerValue = 0;
+	}
+
 	return true;
 }
 
@@ -435,10 +523,30 @@ void UIEditLightAnim::RenderPointer()
 {
 	if (m_PointerResize)
 	{
-		if (m_PointerTexture) {
-			m_PointerTexture->Release(); xr_delete(m_PointerRawImage);
+		if (m_PointerTexture)
+		{
+			m_PointerTexture->surface_set(nullptr);
+			xr_delete(m_PointerRawImage);
 		}
-		R_CHK(REDevice->CreateTexture(m_PointerWeight, POINTER_HEIGHT, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_PointerTexture, nullptr));
+
+
+		RHITextureDesc textureDesc = {};
+		textureDesc.Width = m_PointerWeight;
+		textureDesc.Height = POINTER_HEIGHT;
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+		textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+		textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+		textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
+
+		RHISubResource subResource = {};
+
+		IRHISurface* surf = GRHI->CreateTexture2D(textureDesc, subResource);
+
+		m_PointerTexture->surface_set(surf);
+		surf->Release();
+
 		m_PointerRawImage = xr_alloc<u32>(POINTER_HEIGHT* m_PointerWeight);
 	}
 	for (int x = 0; x < m_PointerWeight; x++)
@@ -534,19 +642,19 @@ void UIEditLightAnim::RenderPointer()
 		}
 	}
 	{
-		D3DLOCKED_RECT rect;
-		R_CHK(m_PointerTexture->LockRect(0, &rect, nullptr, 0));
+		u32 Pitch = 0;
+		void* pBits = m_PointerTexture->pSurface->Lock(0, &Pitch);
 		u32* dest = nullptr;
 
 		for (u32 y = 0; y < POINTER_HEIGHT; y++)
 		{
-			dest = reinterpret_cast<u32*>(reinterpret_cast<char*>(rect.pBits) + (rect.Pitch * y));
+			dest = reinterpret_cast<u32*>(reinterpret_cast<char*>(pBits) + (Pitch * y));
 			for (u32 i = 0; i < m_PointerWeight; i++)
 			{
 				dest[i] = m_PointerRawImage[y * int(m_PointerWeight) + i];
 			}
 		}
-		R_CHK(m_PointerTexture->UnlockRect(0));
+		m_PointerTexture->pSurface->Unlock();
 	}
 	
 }

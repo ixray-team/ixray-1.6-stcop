@@ -602,6 +602,8 @@ public:
 		GetToken				();
 		if(!tokens)				return;
 		inherited::Execute		(args);
+
+		::Sound->SwitchAuidoDevice(args);
 	}
 
 	virtual void	Status	(TStatus& S)
@@ -713,6 +715,7 @@ void CCC_Register()
 	CMD2(CCC_Boolean, "ui_dbg_draw",		&Engine.External.EditorStates[(int)EditorUI::DebugDraw]);
 	CMD2(CCC_Boolean, "ui_dbg_cmd_vars",	&Engine.External.EditorStates[(int)EditorUI::CmdVars]);
 	CMD2(CCC_Boolean, "ui_dbg_cmd_console", &Engine.External.EditorStates[(int)EditorUI::CmdConsole]);
+	CMD2(CCC_Boolean, "ui_dbg_graph_editor", &Engine.External.EditorStates[(int)EditorUI::Game_GraphEditor]);
 
 #ifdef IXRAY_PROFILER
 	CMD1(CCC_Profiler, "profiler_switch");
@@ -802,12 +805,16 @@ void CCC_Register()
 	CMD1(CCC_VID_Reset, "vid_restart"			);
 	
 	// Sound
+	CMD4(CCC_Float,     "snd_compression",      &psSoundCompression, 0.0f, 1.0f);
+	CMD4(CCC_Float,     "snd_doppler",          &psSoundDoppler, 0.0f, 10.0f);
 	CMD2(CCC_Float,		"snd_volume_eff",		&psSoundVEffects);
 	CMD2(CCC_Float,		"snd_volume_music",		&psSoundVMusic);
 	CMD2(CCC_Float,		"snd_volume_shooting",	&psSoundVShooting);
+	CMD4(CCC_Float,		"snd_shooting_reverb",	&psSoundShootingReverb, 0.0f, 1.0f);
 	CMD1(CCC_SND_Restart,"snd_restart"			);
 	CMD3(CCC_Mask32,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
 	CMD3(CCC_Mask32,		"snd_efx",				&psSoundFlags,		ss_EFX		);
+	CMD3(CCC_Mask32,		"snd_hrtf",				&psSoundFlags,		ss_HRTF		);
 
 #ifdef DEBUG
 	CMD3(CCC_Mask32,		"snd_stats",			&g_stats_flags,		st_sound	);

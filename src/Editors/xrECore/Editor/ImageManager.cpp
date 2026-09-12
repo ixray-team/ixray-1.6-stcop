@@ -164,13 +164,27 @@ bool CImageManager::MakeGameTexture(const char* game_name, u32* data, const STex
 	{
 		FS.file_delete(game_name);
 		switch(res){
-		case 0:		ELog.DlgMsg	(mtError,"Can't make game texture '%s'.",game_name);	break;
-		case -1000:	ELog.Msg	(mtError,"Invalid gloss mask '%s'.",game_name);			return true;
+		case 0:
+			{
+				ELog.DlgMsg(mtError,"Can't make game texture '%s'.",game_name);
+				break;
+			}
+		case -1000:
+			{
+				ELog.Msg	(mtError,"Invalid gloss mask '%s'.",game_name);
+				return true;
+			}
+		default:
+			{
+				ELog.DlgMsg(mtError,"Error [code %d] while making game texture '%s'.", res, game_name);
+			}
 		}
 		return false;
 	}
 
-	R_ASSERT((res==1)&&FS.file_length(game_name));
+	FS.file_update(game_name);
+	R_ASSERT(FS.file_length(game_name));
+	
 	return true;
 }
 bool CImageManager::MakeGameTexture(ETextureThumbnail* THM, const char* game_name, u32* load_data)
@@ -239,10 +253,10 @@ bool CImageManager::MakeGameTexture(ETextureThumbnail* THM, const char* game_nam
 		return false;
 	}
 
-	string_path Path = {};
-	FS.update_path(Path, _game_textures_, "");
+	//string_path Path = {};
+	//FS.update_path(Path, _game_textures_, "");
 
-	FS.rescan_path(Path, true);
+	//FS.rescan_path(Path, true);
 
 	//R_ASSERT((res == 1) && FS.file_length(game_name));
 	return res == 1;
@@ -461,10 +475,10 @@ int CImageManager::GetTexturesRaw(FS_FileSet& files, bool bFolders)
 //------------------------------------------------------------------------------
 int CImageManager::GetLocalNewTextures(FS_FileSet& files)
 {
-	string_path ImportPath = {};
+	//string_path ImportPath = {};
 
-	FS.update_path(ImportPath, _import_, "");
-	FS.rescan_path(ImportPath, true);
+	//FS.update_path(ImportPath, _import_, "");
+	//FS.rescan_path(ImportPath, true);
 
 	return FS.file_list(files,_import_,FS_ListFiles|FS_RootOnly,"*.tga,*.bmp,*.dds,*.png,*.jpg");
 }
@@ -625,6 +639,7 @@ void FlipVertical(xr_vector<u32>& pixels, int width, int height)
 
 bool GetRTDataU32(ref_rt& RT, xr_vector<u32>& outPixels, int& width, int& height)
 {
+#if 0
 	IDirect3DSurface9* pSrc = nullptr;
 	((IDirect3DTexture9*)RT->pTexture->pSurface->GetRawTexture())->GetSurfaceLevel(0, &pSrc);
 	if (!pSrc)
@@ -663,7 +678,8 @@ bool GetRTDataU32(ref_rt& RT, xr_vector<u32>& outPixels, int& width, int& height
 	}
 
 	FlipVertical(outPixels, width, height);
-
+#endif
+#pragma todo("FX to Hozar: Impl")
 	return true;
 }
 
@@ -747,10 +763,10 @@ void CImageManager::RefreshTextures(AStringVec* modif)
 {
 	if (FS.can_write_to_alias(_textures_))
 	{
-		string_path ImageDir = {};
-		FS.update_path(ImageDir, _textures_, "");
+		//string_path ImageDir = {};
+		//FS.update_path(ImageDir, _textures_, "");
 
-		FS.rescan_path(ImageDir, true);
+		//FS.rescan_path(ImageDir, true);
 
 		if (modif)
 		{

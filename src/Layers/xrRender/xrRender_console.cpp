@@ -2,6 +2,33 @@
 #include "xrRender_console.h"
 #include "dxRenderDeviceRender.h"
 
+bool ps_r__detail_use_alternative_tree_assets = false;
+bool ps_r__detail_use_cluster_mix_tree_assets = false;
+float ps_r__detail_cluster_seed = 2790.817f;
+float ps_r__detail_cluster_patch_size_min = 31.808f;
+float ps_r__detail_cluster_patch_size_max = 36.098f;
+float ps_r__detail_cluster_sharpness = 16.063f;
+float ps_r__detail_cluster_warp_min = 0.062f;
+float ps_r__detail_cluster_warp_max = 0.057f;
+
+bool ps_r__detail_fmb_use_layer_1 = false;
+float ps_r__detail_fmb_layer_1_frequency = 0.076f;
+float ps_r__detail_fmb_layer_1_amplitude = 1.414f;
+float ps_r__detail_fmb_layer_1_seed = 2752.25f;
+float ps_r__detail_fmb_layer_1_power = 0.831f;
+
+bool ps_r__detail_fmb_use_layer_2 = false;
+float ps_r__detail_fmb_layer_2_frequency = 0.313f;
+float ps_r__detail_fmb_layer_2_amplitude = 0.783f;
+float ps_r__detail_fmb_layer_2_seed = 1515.0f;
+float ps_r__detail_fmb_layer_2_power = 0.745f;
+
+bool ps_r__detail_fmb_use_layer_3 = false;
+float ps_r__detail_fmb_layer_3_frequency = 0.593f;
+float ps_r__detail_fmb_layer_3_amplitude = 1.288f;
+float ps_r__detail_fmb_layer_3_seed = 4671.25f;
+float ps_r__detail_fmb_layer_3_power = 0.417f;
+
 u32 ps_Preset =	2;
 xr_token							qpreset_token							[ ]={
 	{ "Minimum",					0											},
@@ -109,6 +136,8 @@ bool		ps_r__WallmarkDyn			= true;
 float		ps_r__GLOD_ssa_start		= 256.f	;
 float		ps_r__GLOD_ssa_end			=  64.f	;
 float		ps_r__LOD					=  0.75f	;
+float		ps_r__LOD_MU_X				= 1.0f;
+float		ps_r__LOD_MU4_discard		= 0.001f;
 float		ps_r__ssaDISCARD			=  3.5f	;					//RO
 float		ps_r__ssaDONTSORT			=  32.f	;					//RO
 float		ps_r__ssaHZBvsTEX			=  96.f	;					//RO
@@ -253,8 +282,16 @@ float		ps_r2_gloss_factor = 3.14f;
 
 int			ps_r__detail_radius = 120;
 float		ps_r4_cas_sharpening = 0.0f;
+u32			ps_r4_sharpening_mode = 0;
 
-float		ps_r__detail_rnd_scale_min = 0.5f;
+xr_token sharpening_mode_token[] =
+{
+	{ "tiny_sharpening", 0},
+	{ "amd_cas", 1},
+	{ nullptr, 0}
+};
+
+float		ps_r__detail_rnd_scale_min = 0.3f;
 float		ps_r__detail_rnd_scale_max = 0.9f;
 
 // Test float exported to shaders for development
@@ -272,11 +309,11 @@ int			r_debug_render_depth		= 0;
 #include	"../../xrEngine/xr_ioc_cmd.h"
 
 #ifdef USE_DX11
-#include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
-#endif //USE_DX11
+#	include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
+#endif
 
 //-----------------------------------------------------------------------
-class CCC_tf_Aniso		: public CCC_Integer
+class CCC_tf_Aniso : public CCC_Integer
 {
 public:
 	void	apply	()	{
@@ -330,7 +367,7 @@ public:
 	}
 };
 
-class CCC_R2GM		: public CCC_Float
+class CCC_R2GM : public CCC_Float
 {
 public:
 	CCC_R2GM(const char* N, float*	v) : CCC_Float(N, v, 0.f, 4.f) { *v = 0; };
@@ -602,7 +639,7 @@ public:
 
 		if (RImplementation.b_loaded && (dm_current_size != dm_size))
 		{
-			Device.details_task.wait();
+			Device.DetailsTask.wait();
 			RImplementation.Details->cache_ReInitialize();
 		}
 	}
@@ -624,7 +661,7 @@ public:
 
 		if (RImplementation.b_loaded)
 		{
-			Device.details_task.wait();
+			Device.DetailsTask.wait();
 			RImplementation.Details->cache_ReInitialize();
 		}
 	}
@@ -643,16 +680,67 @@ public:
 
 	virtual void Execute(LPCSTR args) {
 		CCC_Float::Execute(args);
-
-		if (RImplementation.b_loaded)
-		{
-			Device.details_task.wait();
-			RImplementation.Details->cache_ReInitialize();
-		}
+		RImplementation.Details->RequestCacheRebuild();
 	}
 
 	virtual void Status(TStatus& S) {
 		CCC_Float::Status(S);
+	}
+};
+
+class CCC_DetailReloadDetails_Boolean : public CCC_Boolean
+{
+public:
+	CCC_DetailReloadDetails_Boolean(LPCSTR N, bool* V)
+		: CCC_Boolean(N, V) {}
+
+	virtual void Execute(const char* args) {
+		CCC_Boolean::Execute(args);
+		RImplementation.Details->RequestCacheRebuild();
+	}
+};
+
+// Manual bake: regenerate the precomputed fields from the current console settings
+// and persist them to disk immediately. Useful when tweaking r__detail_* via console
+// and wanting the files updated without waiting for the next level load.
+class CCC_DetailLayersForceBake : public IConsole_Command
+{
+public:
+	CCC_DetailLayersForceBake(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(const char* args)
+	{
+		if (!RImplementation.Details|| !RImplementation.b_loaded)
+		{
+			Msg("! detail_layers: no loaded level, nothing to bake");
+			return;
+		}
+		Device.DetailsTask.wait();
+		// Rebuild first so stale in-memory fields never hit the disk, then persist.
+		RImplementation.Details->cache_ReInitialize();
+		RImplementation.Details->DetailLayers_SaveToBake();
+	}
+};
+
+// Rollback: restore the r__detail_* console state from the baked settings.txt and load
+// the last bake from disk. Restoring the settings first keeps crc consistent - otherwise
+// a later console flag flip or level restart would recompute/overwrite the bake.
+class CCC_DetailLayersForceLoad : public IConsole_Command
+{
+public:
+	CCC_DetailLayersForceLoad(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(const char* args)
+	{
+		if (!RImplementation.Details|| !RImplementation.b_loaded)
+		{
+			Msg("! detail_layers: no loaded level, nothing to load");
+			return;
+		}
+		Device.DetailsTask.wait();
+		RImplementation.Details->DetailLayers_ApplySettingsFromBake();
+		// crc now matches the baked settings -> fields come back from disk.
+		RImplementation.Details->cache_ReInitialize();
 	}
 };
 
@@ -672,12 +760,15 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
+	CMD4(CCC_Float,		"r__mu_lod",			&ps_r__LOD_MU_X,			0.1f,	3.0f);
 
 #if RENDER == R_R4
 	CMD2(CCC_Vector3, "r4_ssfx_volumetric", &ps_ssfx_volumetric);
+	CMD3(CCC_Token, "r4.sharpening.mode", &ps_r4_sharpening_mode, sharpening_mode_token);
 #endif
 
 #ifdef DEBUG
+	CMD4(CCC_Float,		"r__mu4_discard_lod",	&ps_r__LOD_MU4_discard,		0.001f, 10.0f);
 	CMD4(CCC_Float,		"r__detail_l_ambient",	&ps_r__Detail_l_ambient,	.5f,	.95f	);
 	CMD4(CCC_Float,		"r__detail_l_aniso",	&ps_r__Detail_l_aniso,		.1f,	.5f		);
 #endif // DEBUG
@@ -795,8 +886,40 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask32, "r__fast_details_update",&ps_r2_ls_flags, R2FLAG_FAST_DETAILS_UPDATE);
 	CMD4(CCC_DetailReloadDetails, "r__detail_density", &ps_current_detail_density, 0.15f, 1.0f);
 	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 50, 2000);
+
+	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_use_alternative_tree_assets", &ps_r__detail_use_alternative_tree_assets);
+	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_use_cluster_mix_tree_assets", &ps_r__detail_use_cluster_mix_tree_assets);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_seed", &ps_r__detail_cluster_seed, 0, 9999);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_patch_size_min", &ps_r__detail_cluster_patch_size_min, 1.0f, 200.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_patch_size_max", &ps_r__detail_cluster_patch_size_max, 1.0f, 200.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_sharpness", &ps_r__detail_cluster_sharpness, 1.0f, 20.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_warp_min", &ps_r__detail_cluster_warp_min, 0.0f, 3.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_warp_max", &ps_r__detail_cluster_warp_max, 0.0f, 3.0f);
+
+
+	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_fmb_use_layer_1", &ps_r__detail_fmb_use_layer_1);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_frequency", &ps_r__detail_fmb_layer_1_frequency, 0.0f, 1.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_amplitude", &ps_r__detail_fmb_layer_1_amplitude, 0.0f, 10.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_seed", &ps_r__detail_fmb_layer_1_seed, 0, 9999);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_power", &ps_r__detail_fmb_layer_1_power, 0.0f, 1.0f);
+
+	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_fmb_use_layer_2", &ps_r__detail_fmb_use_layer_2);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_frequency", &ps_r__detail_fmb_layer_2_frequency, 0.0f, 1.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_amplitude", &ps_r__detail_fmb_layer_2_amplitude, 0.0f, 10.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_seed", &ps_r__detail_fmb_layer_2_seed, 0, 9999);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_power", &ps_r__detail_fmb_layer_2_power, 0.0f, 1.0f);
+
+	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_fmb_use_layer_3", &ps_r__detail_fmb_use_layer_3);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_frequency", &ps_r__detail_fmb_layer_3_frequency, 0.0f, 1.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_amplitude", &ps_r__detail_fmb_layer_3_amplitude, 0.0f, 10.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_seed", &ps_r__detail_fmb_layer_3_seed, 0, 9999);
+	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_power", &ps_r__detail_fmb_layer_3_power, 0.0f, 1.0f);
+
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_min", &ps_r__detail_rnd_scale_min, 0.0f, 100.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_max", &ps_r__detail_rnd_scale_max, 0.0f, 100.0f);
+
+	CMD1(CCC_DetailLayersForceBake, "r__detail_bake_force");
+	CMD1(CCC_DetailLayersForceLoad, "r__detail_bake_force_load");
 
 
 	CMD3(CCC_Mask32, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
@@ -916,7 +1039,8 @@ void		xrRender_initconsole	()
 #endif
 }
 
-void xrRender_apply_tf() {
+void xrRender_apply_tf()
+{
 	Console->Execute("r__tf_aniso");
 	Console->Execute("r__tf_mipbias");
 }

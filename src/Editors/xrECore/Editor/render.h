@@ -67,15 +67,18 @@ public:
 		m_Texgen.mul(m_TexelAdjust, RCache.xforms.m_wvp);
 	}
 
-	void reset_light_marker(bool bResetStencil = false) {
+	void reset_light_marker(bool bResetStencil = false)
+	{
 		dwLightMarkerID = 5;
 
-		if(bResetStencil) {
-			CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+		if(bResetStencil)
+		{
+			GRHI->ClearDepthStencil(GRHI->GetDepthStencilView(), ERHI_CLEAR_TARGET::STENCIL, 1.f, 0);
 		}
 	}
 
-	void increment_light_marker() {
+	void increment_light_marker()
+	{
 		dwLightMarkerID += 2;
 
 		if(dwLightMarkerID > 255)
@@ -206,7 +209,7 @@ public:
 	void 					model_Render(IRenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);
 	void 					model_RenderSingle(IRenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD);
 	virtual	GenerationLevel	get_generation() { return GENERATION_R2; }
-	virtual bool			is_sun_static() { return true; };
+	virtual bool			is_sun_static() { return false; };
 
 	virtual void			add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) {};
 	virtual void			add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size) {};
@@ -223,7 +226,7 @@ public:
 		RHIShaderConstant* C = &*RCache.get_c("s_base"); // get sampler
 		if(nullptr == C)			return;
 		VERIFY(RC_dest_sampler == C->destination);
-		VERIFY(RC_sampler == C->type);
+		VERIFY(RC_dx10texture == C->type);
 		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
 		VERIFY(T);
 		float	mtl = T->m_material;
@@ -238,9 +241,9 @@ public:
 		return "editor\\";
 	}
 
-	IRHISurface* load_texture(const char* fname, u32& msize, bool bStaging = false) override;
-	bool get_texture_metadata(const char* fname, RHITextureMetadata* p_data) override;
-	virtual IDirect3DBaseTexture9* texture_load(const char*	fname, u32& mem_size);
+	IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging = false) override;
+	bool get_texture_metadata(LPCSTR fname, RHITextureMetadata* p_data) override;
+	IRHISurface* texture_load(LPCSTR fname, u32& msize, bool bStaging = false);
 
 	virtual DWORD					get_dx_level();
 
@@ -337,14 +340,11 @@ protected:
 	private:
 		xr_vector<ISpatialShared> lstRenderables;
 };
-#ifdef REDITOR
+
 #include "ui_main.h"
-IC  float   CalcSSA(Fvector& C, float R)
+IC float CalcSSA(Fvector& C, float R)
 {
     float distSQ  = UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(C);
     return  R*R/distSQ;
 }
-#endif
-extern ECORE_API CRender  	RImplementation;
-//.extern ECORE_API CRender*	Render;
-
+extern ECORE_API CRender RImplementation;

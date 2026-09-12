@@ -17,3 +17,7 @@ endif()
 
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(imgui PUBLIC xrCore)
+
+if (IXRAY_EDITORS)
+	target_link_libraries(imgui_node_editor PUBLIC imgui)
+endif()

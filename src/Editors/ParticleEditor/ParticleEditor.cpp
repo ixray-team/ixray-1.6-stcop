@@ -39,6 +39,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	splash::SetProgressStatus(20, "Core Initialization");
 
+	CFilewatcher::instance().SetFilewatcherActive(true);
     Core._initialize("Patricle", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
 	psDeviceFlags.set(rsFullscreen, false);
@@ -86,8 +87,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
 				if (UI && REDevice && Event.window.windowID == MainWndID)
 				{
-					UI->Resize(Event.window.data1, Event.window.data2, true);
-					EPrefs->SaveConfig();
+					if (Event.window.data1 != DevicePtr->Width || Event.window.data2 != DevicePtr->Height)
+					{
+						UI->Resize(Event.window.data1, Event.window.data2, true);
+						EPrefs->SaveConfig();
+					}
 				}
 				break;
 			}

@@ -6,7 +6,13 @@
 #include "Engine/XRayEditor.h"
 
 #include "Editor/Utils/ContentView.h"
+#include "Editor/Utils/GitIntegration.h"
+#include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Scene/LEPhysics.h"
+#include "Nodes/UIDialogsView.h"
+#include "UI/UIEditLibrary.h"
+#include "../xrECore/Editor/UIEditLightAnim.h"
+#include "../xrECore/Editor/UIMinimapEditorForm.h"
 
 #include "../../xrPlay/Splash.h"
 
@@ -19,8 +25,13 @@
 #include "../../xrEngine/xr_input.h"
 #include "../../xrEngine/FPSCounter.h"
 
+#include "IconsFontAwesome6.h"
+
 ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
+
+static DialogEditor* g_DialogEditor = nullptr;
+static UIEditLibrary* g_ObjectLibrary = nullptr;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
@@ -50,6 +61,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
 	}
 
+	CFilewatcher::instance().SetFilewatcherActive(true);
 	Core._initialize("LevelEditor", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
 	splash::SetProgressStatus(20, "Initializing Level Tools");
@@ -61,7 +73,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	UI = new CLevelMain();
 	UI->RegisterCommands();
-	UI->GeneralTabs.push_back({ "Scene View", nullptr });
+	UI->GeneralTabs.push_back({ICON_FA_MOUNTAIN " Scene View##scene_view", []()->bool {return Scene->IsUnsaved(); }});
+	UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialog Editor", nullptr});
+	UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Anim Editor", nullptr});
+	UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap Editor", nullptr});
+	UI->GeneralTabs.push_back({ICON_FA_CUBES " Object Library", nullptr});
 
 	LUI = static_cast<CLevelMain*>(UI);
 
@@ -73,6 +89,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	splash::SetProgressStatus(25, "Initializing Content View");
 
 	GContentView = new CContentView;
+
+	splash::SetProgressStatus(26, "Initializing Git Integration");
+
+	static CGitIntegration GitIntegration;
+	GitIntegration.Initialize();
+	CGitLFSConfig::Instance().Load();
 
 	splash::SetProgressStatus(30, "Creating Main UI Form");
 
@@ -111,9 +133,21 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	splash::SetProgressStatus(75, "Performing Final UI Setup");
 
 	::MainForm = MainForm;
+	MainForm->TabIndex = -1;
 	UI->Push(MainForm, false);
 
+	g_DialogEditor = new DialogEditor();
+	g_DialogEditor->TabIndex = 1;
+	g_DialogEditor->Show(true);
+	UI->Push(g_DialogEditor, false);
+
+	g_ObjectLibrary = UIEditLibrary::Init();
+	g_ObjectLibrary->TabIndex = (int)UI->GeneralTabs.size() - 1;
+	UI->Push(g_ObjectLibrary, false);
+
 	pFPSCounter = new XRay::Hardware::FPSCounter();
+	UIEditLightAnim::Show();
+	UIMinimapEditorForm::Show();
 
 	bool NeedExit = false;
 	splash::SetProgressStatus(85, "Performing Final Checks");
@@ -122,6 +156,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	splash::SetProgressStatus(90, "Finalizing UI Setup");
 	GContentView->Init();
 	UI->PushBegin(GContentView);
+
 	splash::SetProgressStatus(100, "Finalizing");
 	splash::Close();
 	while (!NeedExit)
@@ -147,8 +182,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
 				if (UI && REDevice && Event.window.windowID == MainWndID)
 				{
-					UI->Resize(Event.window.data1, Event.window.data2, true);
-					EPrefs->SaveConfig();
+					if (Event.window.data1 != DevicePtr->Width || Event.window.data2 != DevicePtr->Height)
+					{
+						UI->Resize(Event.window.data1, Event.window.data2, true);
+						EPrefs->SaveConfig();
+					}
 				}
 				break;
 			}
@@ -240,6 +278,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			g_pGamePersistent->UpdateParticles();
 	}
 	s.join();
+	
+	CGitLFSConfig::Instance().Save();
+	GitIntegration.Shutdown();
+	
 	xr_delete(g_FontManager);
 
 	g_scene_physics.DestroyAll();

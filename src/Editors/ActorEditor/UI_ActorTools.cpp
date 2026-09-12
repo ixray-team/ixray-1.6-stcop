@@ -8,6 +8,9 @@
 #include "../xrECore/Editor/EditMesh.h"
 #include "../../Layers/xrRender/KinematicAnimatedDefs.h"
 #include "../../Layers/xrRender/SkeletonAnimated.h"
+#include "../../plugins/PCore/xr_ogf.h"
+#include "../../plugins/PCore/xr_ogf_v4.h"
+#include "../../plugins/PCore/xr_writer.h"
 
 CActorTools*	ATools=(CActorTools*)Tools;
 //------------------------------------------------------------------------------
@@ -46,11 +49,13 @@ CActorTools::CActorTools()
 	dwFogColor = 0xffffffff;
 
 	BoneView = new CUIBoneView;
+	UVView = new CUIUVView;
 }
 
 CActorTools::~CActorTools()
 {
 	xr_delete(BoneView);
+	xr_delete(UVView);
 }
 
 #include "../../xrEngine/IGame_Persistent.h"
@@ -107,7 +112,7 @@ void CActorTools::Render()
 		{
 			// update transform matrix
 			if (!IsPhysics())World = m_AVTransform;
-			m_pEditObject->RenderSkeletonSingle(World);
+			m_pEditObject->RenderSkeletonSingle(NULL, World);
 		}
 	}
 
@@ -116,6 +121,11 @@ void CActorTools::Render()
 
 void CActorTools::RenderEnvironment()
 {
+	if (psDeviceFlags.is(rsEnvironment))
+	{
+		g_pGamePersistent->Environment().RenderSky();
+		g_pGamePersistent->Environment().RenderClouds();
+	}
 }
 
 void CActorTools::OnFrame()
@@ -137,9 +147,9 @@ void CActorTools::OnFrame()
 		{
 			m_pEditObject->OnFrame();
 
-			if (m_PreviewObject.m_pObject != nullptr)
+			if (m_PreviewObject.SelectedObject != nullptr)
 			{
-				m_PreviewObject.m_pObject->OnFrame();
+				m_PreviewObject.SelectedObject->OnFrame();
 			}
 		}
 
@@ -224,7 +234,8 @@ bool CActorTools::OnCreate()
 	// key bar
 	OnDeviceCreate();
 
-	UI->Push(BoneView);
+	UI->Push(BoneView, false);
+	UI->Push(UVView, false);
 
 	return true;
 }
@@ -334,14 +345,39 @@ bool CActorTools::Load(const char* obj_name)
 	xr_string Str = obj_name;
 	xr_strlwr(Str);
 
-	if (FS.TryLoad(Str) && O->Load(Str.c_str()))
+	UVView->SetSurface(nullptr, nullptr);
+	
+	bool loaded = false;
+	if (FS.TryLoad(Str))
+	{
+		if (0 == xr_stricmp(EFS.ExtractFileExt(Str.c_str()).c_str(), ".ogf"))
+		{
+			std::unique_ptr<xray_re::xr_ogf> ogf(xray_re::xr_ogf::load_ogf(Str.c_str()));
+			if (ogf)
+			{
+				ogf->to_object();
+				xray_re::xr_memory_writer writer;
+				ogf->save_object(writer);
+				IReader reader(const_cast<u8*>(writer.data()), writer.tell());
+				loaded = O->Load(reader);
+				if (loaded)
+					O->SetLoadInfo(Str.c_str(), FS.get_file_age(Str.c_str()));
+			}
+		}
+		else
+		{
+			loaded = O->Load(Str.c_str());
+		}
+	}
+
+	if (loaded)
 	{
 		xr_delete(m_pEditObject);
 		m_pEditObject = O;
-		  m_pEditObject->Optimize ();
-		  // delete visual
+		m_pEditObject->Optimize();
+		// delete visual
 		m_RenderObject.Clear();
-		
+
 		MainForm->GetLeftBarForm()->SetRenderMode(false);
 
 		UpdateProperties();
@@ -354,7 +390,7 @@ bool CActorTools::Load(const char* obj_name)
 
 		return true;
 	}
-	else 
+	else
 	{
 		ELog.DlgMsg(mtError, "Can't load object file '%s'.", obj_name);
 	}
@@ -369,7 +405,8 @@ bool CActorTools::Save(const char* obj_name, bool bInternal)
 	VERIFY(m_bReady);
 	if (m_pEditObject) {
 		EFS.MarkFile(full_name.c_str(), true);
-		if (m_pEditObject->Save(full_name.c_str()))
+		const bool ogf = 0 == xr_stricmp(EFS.ExtractFileExt(full_name.c_str()).c_str(), ".ogf");
+		if (ogf ? ExportOGF(full_name.c_str()) : m_pEditObject->Save(full_name.c_str()))
 		{
 			if (!bInternal)
 				m_bObjectModified = false;
@@ -652,10 +689,10 @@ bool CActorTools::Pick(TShiftState Shift)
 
 bool CActorTools::RayPick(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n)
 {
-	if (m_PreviewObject.m_pObject)
+	if (m_PreviewObject.SelectedObject)
 	{
 		SRayPickInfo pinf;
-		if (m_PreviewObject.m_pObject->RayPick(dist, start, dir, Fidentity, &pinf))
+		if (m_PreviewObject.SelectedObject->RayPick(dist, start, dir, Fidentity, &pinf))
 		{
 			if (pt) pt->set(pinf.pt);
 			if (n)
@@ -778,6 +815,66 @@ bool CActorTools::Import(const char* initial, const char* obj_name)
 	}
 	xr_delete(O);
 
+	return false;
+}
+
+bool CActorTools::ImportOMF(const char* obj_name)
+{
+	VERIFY(m_bReady);
+
+	xr_string Str = obj_name;
+	xr_strlwr(Str);
+
+	if (0 != xr_stricmp(EFS.ExtractFileExt(Str.c_str()).c_str(), ".omf"))
+	{
+		ELog.DlgMsg(mtError, "Can't load OMF file '%s'.", obj_name);
+		return false;
+	}
+
+	std::unique_ptr<xray_re::xr_ogf_v4> omf(new xray_re::xr_ogf_v4());
+	if (!omf->load_omf(Str.c_str()))
+	{
+		ELog.DlgMsg(mtError, "Can't load OMF file '%s'.", obj_name);
+		return false;
+	}
+
+	xray_re::xr_memory_writer writer;
+	omf->save_skls(writer);
+
+	string_path temp_fn;
+	FS.update_path(temp_fn, "$temp$", "temp_import.skls");
+	IWriter* temp_w = FS.w_open(temp_fn);
+	if (!temp_w)
+	{
+		ELog.DlgMsg(mtError, "Can't create temporary file.");
+		return false;
+	}
+	temp_w->w(writer.data(), writer.tell());
+	FS.w_close(temp_w);
+
+	SMotionVec appended_motions;
+	if (m_pEditObject)
+	{
+		m_pEditObject->AppendSMotion(temp_fn, &appended_motions);
+		if (!appended_motions.empty())
+		{
+			OnMotionDefsModified();
+			UpdateProperties();
+			Msg("Imported %d motion(s) from '%s'.", appended_motions.size(), obj_name);
+			EFS.MarkFile(temp_fn, true);
+			return true;
+		}
+		else
+		{
+			ELog.DlgMsg(mtError, "Failed to import motions from '%s'.", obj_name);
+		}
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "No object loaded. Load a skeleton first, then import OMF.");
+	}
+
+	EFS.MarkFile(temp_fn, true);
 	return false;
 }
 
@@ -911,11 +1008,11 @@ void CActorTools::SetCurrentMotion(const char* name, u16 slot)
 				m_pEditObject->SetActiveSMotion(M);
 			}
 
-			if (m_PreviewObject.m_pObject != nullptr)
+			if (m_PreviewObject.SelectedObject != nullptr)
 			{
-				if (CSMotion* PM = m_PreviewObject.m_pObject->FindSMotionByName(name))
+				if (CSMotion* PM = m_PreviewObject.SelectedObject->FindSMotionByName(name))
 				{
-					m_PreviewObject.m_pObject->SetActiveSMotion(PM);
+					m_PreviewObject.SelectedObject->SetActiveSMotion(PM);
 				}
 			}
 

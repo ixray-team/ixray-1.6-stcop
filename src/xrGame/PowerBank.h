@@ -6,6 +6,7 @@
 #include "pch_script.h"
 #include "../xrUI/Widgets/UIPropertiesBox.h"
 #include "../xrUI/Widgets/UIListBoxItem.h"
+#include "IInventoryUseActions.h"
 
 class CUIProgressBar;
 
@@ -21,7 +22,8 @@ struct AwaitAlifeObject {
 
 class PowerBank final :
 	public CInventoryItemObject,
-	public pureFrame
+	public pureFrame,
+	public IInventoryUseActions
 {
 private:
 	xr_vector<xr_string> m_allowed_power_cells_sections;
@@ -47,7 +49,7 @@ public:
 	bool IsEquiped();
 	CInventoryItem* GetEquipedPowerBank();
 	bool IsPowerCellInWhiteList(shared_str power_cell_section);
-	bool OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox);
+	bool FillUseActions(CUIPropertiesBox* box, const UseActionContext& context) override;
 	bool OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox);
 	void EjectPowerCells();
 

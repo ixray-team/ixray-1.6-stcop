@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "../xrECore/Editor/EditMesh.h"
+#include "IconsFontAwesome6.h"
 
 extern ECORE_API bool g_force16BitTransformQuant;
 extern ECORE_API bool g_force32BitTransformQuant;
@@ -51,8 +52,8 @@ void UILeftBarForm::Draw()
 {
     ImVec2	ItemSpacing = ImGui::GetStyle().ItemSpacing;
     ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 300, 100 });
-    ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ItemSpacing.y, ItemSpacing.y));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ItemSpacing.y, ItemSpacing.y));
+	ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
     if (ImGui::Begin("Object Tool", 0))
     {
         if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
@@ -101,28 +102,29 @@ void UILeftBarForm::Draw()
                     ImGui::PopStyleVar();
 
                     XRay::ImGui::TableNextRow();
-                    XRay::ImGui::TableNextColumn();     XRay::ImGui::TextFramed("Smooth:");
+                    XRay::ImGui::TableNextColumn();
+                    XRay::ImGui::TextFramed("Smooth:");
                     XRay::ImGui::TableNextColumn();
 
-                    bool edge = EPrefs->SmoothGroup == ESmoothGroup::Edges;
-                    bool normal = EPrefs->SmoothGroup == ESmoothGroup::Normals;
-                    bool other = EPrefs->SmoothGroup == ESmoothGroup::Other;
+                    bool Edge = EPrefs->SmoothGroup == ESmoothGroup::Edges;
+                    bool Normals = EPrefs->SmoothGroup == ESmoothGroup::Normals;
+                    bool Legacy = EPrefs->SmoothGroup == ESmoothGroup::Other;
 
-                    if (XRay::ImGui::ToolbarButton("edge", "Edges", &edge, { 0, 0 }, ImDrawFlags_RoundCornersLeft))
+                    if (XRay::ImGui::ToolbarButton("edge", "Edges", &Edge, { 0, 0 }, ImDrawFlags_RoundCornersLeft))
                     {
                         SetSmooth(ESmoothGroup::Edges);
                     }
 
                     ImGui::SameLine(0, 0);
 
-                    if (XRay::ImGui::ToolbarButton("normal", "Normals", &normal, { 0, 0 }, ImDrawFlags_RoundCornersNone))
+                    if (XRay::ImGui::ToolbarButton("normal", "Normals", &Normals, { 0, 0 }, ImDrawFlags_RoundCornersNone))
                     {
                         SetSmooth(ESmoothGroup::Normals);
                     }
 
                     ImGui::SameLine(0, 0);
 
-                    if (XRay::ImGui::ToolbarButton("other", "Legacy", &other, { 0, 0 }, ImDrawFlags_RoundCornersRight))
+                    if (XRay::ImGui::ToolbarButton("other", "Legacy", &Legacy, { 0, 0 }, ImDrawFlags_RoundCornersRight))
                     {
                         SetSmooth(ESmoothGroup::Other);
                     }
@@ -183,17 +185,23 @@ void UILeftBarForm::Draw()
                 UIBoneForm::Show();
             }
 
+            if (XRay::ImGui::Button("UV View", { -0.01, 0 }))
+            {
+				ATools->UVView->Show(true);
+				GUIManager->Push(ATools->UVView, false);
+            }
+
             XRay::ImGui::EndExpand();
         }
 
         ImGui::SetNextItemOpen(true, ImGuiCond_Once);
         if (XRay::ImGui::BeginExpand("Pick"))
         {
-            ImGui::AlignTextToFramePadding();             // âûðàâíèâàåì òåêñò ïî ñåðåäèíå ñòðîêè ïî Y
+            ImGui::AlignTextToFramePadding();             // Ð²Ñ‹Ñ€Ð°Ð²Ð½Ð¸Ð²Ð°ÐµÐ¼ Ñ‚ÐµÐºÑÑ‚ Ð¿Ð¾ ÑÐµÑ€ÐµÐ´Ð¸Ð½Ðµ ÑÑ‚Ñ€Ð¾ÐºÐ¸ Ð¿Ð¾ Y
             XRay::ImGui::TextFramed("Mode:");
             ImGui::SameLine(0, 1.f);
 
-            ImGui::SetNextItemWidth(-0.01);                  // ðàñòÿãèâàåì combo íà âñ¸ îñòàâøååñÿ ìåñòî
+            ImGui::SetNextItemWidth(-0.01);                  // Ñ€Ð°ÑÑ‚ÑÐ³Ð¸Ð²Ð°ÐµÐ¼ combo Ð½Ð° Ð²ÑÑ‘ Ð¾ÑÑ‚Ð°Ð²ÑˆÐµÐµÑÑ Ð¼ÐµÑÑ‚Ð¾
             static const char* PickModeList[] = { "None", "Surface", "Bone" };
             ImGui::Combo("##Mode", &m_PickMode, PickModeList, IM_ARRAYSIZE(PickModeList));
 
@@ -204,12 +212,36 @@ void UILeftBarForm::Draw()
     }
 
     ImGui::End();
+	ImGui::PopStyleVar();
 
     // OBJECT ITEMS
     if (ImGui::Begin("Object Properties"))
     {
         ImGui::BeginGroup();
+
+        ATools->m_ObjectItems->SetOnDrawItemExtraEvent(+[](UIItemListForm::Node& node)
+        {
+            if (node.Object && node.Object->Type() == emSurface && node.Object->m_Object)
+            {
+                CSurface* surf = (CSurface*)node.Object->m_Object;
+                const float ButtonWidth = ImGui::GetFrameHeight();
+                const float AvailWidth = ImGui::GetContentRegionAvail().x;
+                ImGui::SameLine();
+
+                ImGui::SetCursorPosX(AvailWidth - ButtonWidth);
+                ImGui::PushID(surf);
+                const char* icon = surf->m_bEditorVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
+                if (ImGui::SmallButton(icon))
+                {
+                    surf->m_bEditorVisible = !surf->m_bEditorVisible;
+                    UI->RedrawScene();
+                }
+                ImGui::PopID();
+            }
+        });
         ATools->m_ObjectItems->Draw();
+        ATools->m_ObjectItems->SetOnDrawItemExtraEvent(nullptr);
+
         ImGui::EndGroup();
 
 
@@ -223,9 +255,7 @@ void UILeftBarForm::Draw()
                 {
                     ATools->CurrentObject()->CreateBone("idle");
 
-                    for (EditMeshIt mesh_it = ATools->CurrentObject()->FirstMesh();
-                        mesh_it != ATools->CurrentObject()->LastMesh();
-                        mesh_it++)
+                    for (EditMeshIt mesh_it = ATools->CurrentObject()->FirstMesh(); mesh_it != ATools->CurrentObject()->LastMesh(); mesh_it++)
                     {
                         CEditableMesh* pMesh = *mesh_it;
                         pMesh->AssignMesh("idle");
@@ -238,6 +268,7 @@ void UILeftBarForm::Draw()
     }
     ImGui::End();
 
+	ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
     if (ImGui::Begin("Item Properties", 0))
     {
         ImGui::BeginGroup();

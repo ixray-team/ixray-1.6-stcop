@@ -192,7 +192,8 @@ end
 	
 function ixr_store.save_storage(save_directory_path, save_file_name, is_new_game)
 	local packed = marshal.encode(ixr_store.dynamic_vars.m_storage)
-	ffx_io_utils.write_binary_file(packed, ixr_store.build_path(save_directory_path, save_file_name))
+	set_marshalized_data(packed)
+	--ffx_io_utils.write_binary_file(packed, ixr_store.build_path(save_directory_path, save_file_name))
 	
 	local postfix = ""
 	if is_new_game then
@@ -215,7 +216,7 @@ end
 
 function ixr_store.load_storage(save_directory_path, save_file_name)
 	IXRLog("[mod_version]:"..tostring(ixr_store.dynamic_vars.mod_version)) 
-	local stored = ffx_io_utils.read_binary_file(ixr_store.build_path(save_directory_path, save_file_name), false)
+	local stored = get_marshalized_data() --ffx_io_utils.read_binary_file(ixr_store.build_path(save_directory_path, save_file_name), false)
 	if stored then
 		ixr_store.dynamic_vars.m_storage = marshal.decode(stored)
 		IXRLog("[READ] FILE: " ..tostring(ixr_store.build_path(save_directory_path, save_file_name)))

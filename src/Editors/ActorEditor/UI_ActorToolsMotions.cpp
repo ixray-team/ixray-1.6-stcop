@@ -144,8 +144,10 @@ bool EngineModel::UpdateVisual(CEditableObject* source, bool bUpdGeom, bool bUpd
 
 void EngineModel::PlayMotion(const char* name, u16 slot)
 {
-	for (int k=0; k<MAX_PARTS; k++)
+	for (int k = 0; k < MAX_PARTS; k++)
+	{
 	   m_BPPlayItems[k].name = "";
+	}
 
 	StopAnimation();
 
@@ -361,9 +363,9 @@ void CActorTools::PlayMotion()
 		if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor)
 		{
 			m_pEditObject->SkeletonPlay();
-			if (m_PreviewObject.m_pObject != nullptr)
+			if (m_PreviewObject.SelectedObject != nullptr)
 			{
-				m_PreviewObject.m_pObject->SkeletonPlay();
+				m_PreviewObject.SelectedObject->SkeletonPlay();
 			}
 		}
 		else if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine) 
@@ -385,9 +387,9 @@ void CActorTools::StopMotion()
 	{
 		m_pEditObject->SkeletonStop();
 
-		if (m_PreviewObject.m_pObject != nullptr)
+		if (m_PreviewObject.SelectedObject != nullptr)
 		{
-			m_PreviewObject.m_pObject->SkeletonStop();
+			m_PreviewObject.SelectedObject->SkeletonStop();
 		}
 	}
 	else if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine && m_RenderObject.m_pBlend) {
@@ -405,9 +407,9 @@ void CActorTools::PauseMotion()
 	{
 		m_pEditObject->SkeletonPause(true);
 
-		if (m_PreviewObject.m_pObject != nullptr)
+		if (m_PreviewObject.SelectedObject != nullptr)
 		{
-			m_PreviewObject.m_pObject->SkeletonPause(true);
+			m_PreviewObject.SelectedObject->SkeletonPause(true);
 		}
 	}
 	else if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine && m_RenderObject.m_pBlend) 

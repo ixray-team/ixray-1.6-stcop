@@ -2,12 +2,9 @@
 
 #include "../../xrEngine/Bone.h"
 #include "../../xrEngine/Motion.h"
-#if 1
 #	include "../../../Editors/Public/PropertiesListTypes.h"
-//	#include "PropertiesListHelper.h"
 #	include "..\Engine\XrGameMaterialLibraryEditors.h"
 #	include "pick_defs.h"
-#endif
 #	include "..\..\..\Include\xrRender\Kinematics.h"
 
 #include "PhysicsShellHolderEditorBase.h"
@@ -20,18 +17,9 @@ class 	CFrustum;
 class 	CCustomMotion;
 class	CBone;
 class	Shader;
-class	Mtl;
-class	CExporter;
-class	CMayaTranslator;
 struct	st_ObjectDB;
-struct	SXRShaderData;
 struct  ogf_desc;
 class	CCustomObject;
-
-#if 0
-	class PropValue;
-	#define ref_shader LPVOID
-#endif
 
 #define LOD_SHADER_NAME 		"details\\lod"
 #define LOD_SAMPLE_COUNT 		8
@@ -39,7 +27,6 @@ class	CCustomObject;
 #define RENDER_SKELETON_LINKS	4
 
 // refs
-class XRayMtl;
 class SSimpleImage;
 
 class ECORE_API CSurface
@@ -64,14 +51,15 @@ public:
 
 	Flags32			m_RTFlags;
 	u32				tag;
-	SSimpleImage*	m_ImageData;
+	SSimpleImage*	ImageData;
 	u16				m_id = 0;
+	bool m_bEditorVisible = true;
 
 public:
 	CSurface		()
 	{
 		m_GameMtlName="default";
-		m_ImageData	= nullptr;
+		ImageData	= nullptr;
 		m_Shader	= nullptr;
 		m_RTFlags.zero	();
 		m_Flags.zero	();
@@ -83,7 +71,7 @@ public:
 		return (0!=xr_strlen(m_Texture))&&(0!=xr_strlen(m_ShaderName));
 	}
 #if 1
-					~CSurface		(){R_ASSERT(!m_Shader);xr_delete(m_ImageData);}
+					~CSurface		(){R_ASSERT(!m_Shader);xr_delete(ImageData);}
 	IC void			CopyFrom		(CSurface* surf){*this = *surf; m_Shader=nullptr; m_RTFlags.set(rtValidShader, false);}
 	IC int			_Priority		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.iPriority:1;}
 	IC bool			_StrictB2F		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.bStrictB2F:false;}
@@ -154,9 +142,9 @@ struct ECORE_API SBonePart{
 using BPVec = xr_vector<SBonePart>;
 using BPIt = BPVec::iterator;
 
-class ECORE_API CEditableObject:
-public IKinematics,
-public CPhysicsShellHolderEditorBase
+class ECORE_API CEditableObject :
+	public IKinematics,
+	public CPhysicsShellHolderEditorBase
 {
 	friend class CSceneObject;
 	friend class CEditableMesh;
@@ -340,13 +328,16 @@ public:
 	int 			GetSurfFaceCount		(const char* surf_name);
 
 	// render methods
-	void 			Render					(const Fmatrix& parent, int priority, bool strictB2F,SurfaceVec * surfaces=nullptr);
-	void 			RenderSelection			(const Fmatrix& parent, CEditableMesh* m=nullptr, CSurface* s=nullptr, u32 c=0x40E64646);
-	void 			RenderEdge				(const Fmatrix& parent, CEditableMesh* m=nullptr, CSurface* s=nullptr, u32 c=0xFFC0C0C0);
+	void 			Render					(CCustomObject*, const Fmatrix& parent, int priority, bool strictB2F,SurfaceVec * surfaces=nullptr);
+	u32				RenderPriorityMask() const;
+	
+	void 			RenderSelection			(CCustomObject*, CEditableMesh* m=0, u32 c=0x40E64646);
+	void 			RenderEdge				(CCustomObject*, CEditableMesh* m=0, u32 c=0xFFC0C0C0);
+
 	void 			RenderBones				(const Fmatrix& parent);
 	void 			RenderAnimation			(const Fmatrix& parent);
-	void 			RenderSingle			(const Fmatrix& parent);
-	void 			RenderSkeletonSingle	(const Fmatrix& parent);
+	void 			RenderSingle			(CCustomObject*, const Fmatrix& parent);
+	void 			RenderSkeletonSingle	(CCustomObject*, const Fmatrix& parent);
 	void 			RenderLOD				(const Fmatrix& parent);
 
 	// update methods
@@ -393,6 +384,7 @@ public:
 	bool 			Save					(const char* fname);
 	bool 			Load					(IReader&);
 	void 			Save					(IWriter&);
+	IC void			SetLoadInfo				(const char* fname, time_t version) { m_LoadName = fname; m_ObjectVersion = version; }
 #if 1
 	void 			FillMotionList			(const char* pref, ListItemsVec& items, int modeID);
 	void 			FillBoneList			(const char* pref, ListItemsVec& items, int modeID);
@@ -440,11 +432,6 @@ public:
 	bool			ExportOBJ				(const char* name);
 
 	const char*			GenerateSurfaceName		(const char* base_name);
-#ifdef _MAYA_EXPORT
-	bool			ParseMAMaterial			(CSurface* dest, SXRShaderData& d);
-	CSurface*		CreateSurface			(const char* m_name, SXRShaderData& d);
-	CSurface*		CreateSurface			(MObject shader);
-#endif
 	bool			ExportLWO				(const char* fname);
 	bool			Validate				();
 private:

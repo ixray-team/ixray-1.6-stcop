@@ -9,7 +9,7 @@ UIDOShuffle::UIDOShuffle()
 	m_TextureNull.create("ed\\ed_nodata");
 	m_TextureNull->Load();
 	m_Props = new UIPropertiesForm();
-	m_RealTexture = nullptr;
+	RealTexture = nullptr;
 }
 
 UIDOShuffle::~UIDOShuffle()
@@ -21,7 +21,7 @@ UIDOShuffle::~UIDOShuffle()
 	xr_delete(m_Props);
 
 	m_Texture.destroy();
-	m_RealTexture.destroy();
+	RealTexture.destroy();
 
 	ClearIndexForms();
 }
@@ -69,13 +69,13 @@ void UIDOShuffle::Draw()
 	ImGui::NextColumn();
 	ImGui::BeginChild("Left");
 	{
-		if (m_RealTexture != m_Texture)
+		if (RealTexture != m_Texture)
 		{
-			m_RealTexture.destroy();
-			m_RealTexture = m_Texture;
+			RealTexture.destroy();
+			RealTexture = m_Texture;
 		}
-		bool HaveTexture = m_RealTexture != nullptr && m_RealTexture->get_SRView() != nullptr;
-		ImGui::Image(HaveTexture ? m_RealTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImVec2(256, 256));
+		bool HaveTexture = RealTexture != nullptr && RealTexture->get_SRView() != nullptr;
+		ImGui::Image(HaveTexture ? RealTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImVec2(256, 256));
 
 		{
 			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight()))) { UIChooseForm::SelectItem(smObject, 8); m_ChooseObject = true; }; ImGui::SameLine();
@@ -270,18 +270,27 @@ void UIDOShuffle::FillData(bool ReloadTex)
 			if (!Pixels.empty())
 			{
 				m_MaskTexture = new CTexture();
-				ID3DTexture2D* pTexture = nullptr;
-				R_CHK(REDevice->CreateTexture(256, 256, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
-				{
-					D3DLOCKED_RECT rect;
-					R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
-					memcpy(rect.pBits, Pixels.data(), Pixels.size());
-					R_CHK(pTexture->UnlockRect(0));
 
-					IRHISurface* Surf = GRHI->CreateTextureFromMemory(pTexture, 0, {});
-					m_MaskTexture->surface_set(Surf);
-					Surf->Release();
-				}
+				RHITextureDesc textureDesc = {};
+				textureDesc.Width = 256;
+				textureDesc.Height = 256;
+				textureDesc.MipLevels = 1;
+				textureDesc.ArraySize = 1;
+				textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+				textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+				textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+				textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
+
+				RHISubResource subResource = {};
+
+				IRHISurface* Surf = GRHI->CreateTexture2D(textureDesc, subResource);
+
+				u32 Pitch = 0;
+				void* pBits = Surf->Lock(0, &Pitch);
+				memcpy(pBits, Pixels.data(), Pixels.size());
+				Surf->Unlock();
+				m_MaskTexture->surface_set(Surf);
+				Surf->Release();
 			}
 		}
 	}

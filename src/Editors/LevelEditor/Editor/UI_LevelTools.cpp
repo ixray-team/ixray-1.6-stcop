@@ -179,6 +179,16 @@ bool CLevelTool::KeyPress(WORD Key, TShiftState Shift)
 	return false;
 }
 
+bool CLevelTool::MouseWheel(int direction, TShiftState Shift)
+{
+	if (CurrentTool && CurrentTool->pCurControl)
+	{
+		return CurrentTool->pCurControl->Wheel(direction, Shift);
+	}
+
+	return false;
+}
+
 void CLevelTool::RealSetAction(ETAction act)
 {
 	inherited::SetAction(act);
@@ -410,10 +420,6 @@ const char* CLevelTool::GetInfo()
 
 void CLevelTool::OnFrame()
 {
-	if (psDeviceFlags.is(rsEnvironment) && !UI->IsPlayInEditor() && g_pGamePersistent && g_pGamePersistent->pEnvironment)
-	{
-		g_pGamePersistent->Environment().SetGameTime(g_pGamePersistent->Environment().GetGameTime() + Device.fTimeDelta * g_pGamePersistent->Environment().fTimeFactor, g_pGamePersistent->Environment().fTimeFactor);
-	}
 	Scene->OnFrame(EDevice->fTimeDelta);
 	EEditorState est = UI->GetEState();
 	if ((est == esEditScene) || (est == esEditLibrary) || (est == esEditLightAnim))

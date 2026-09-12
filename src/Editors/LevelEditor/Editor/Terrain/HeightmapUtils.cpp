@@ -2,7 +2,7 @@
 #include "HeightmapUtils.h"
 #include <RedImage/RedImage.hpp>
 
-void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Heightmap, CEditableObject* OutMesh, int ScaleY)
+void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Heightmap, CEditableObject* OutMesh, int ScaleY, const STerrainSurfaceTemplate& Template)
 {
 	if (!Heightmap.Data || Heightmap.Width < 2 || Heightmap.Height < 2 || !OutMesh)
 	{
@@ -15,64 +15,57 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 
 	const u32 Width = Heightmap.Width;
 	const u32 Height = Heightmap.Height;
-	constexpr float SizeHM = 512;
+
+	const float StepX = Heightmap.Size.x > 0.f ? Heightmap.Size.x : 1.f;
+	const float StepZ = Heightmap.Size.z > 0.f ? Heightmap.Size.z : 1.f;
 
 	xr_vector<Fvector> Vertices;
 	Vertices.resize(Width * Height);
 
-	xr_atomic_float minY(FLT_MAX);
-	xr_atomic_float maxY(-FLT_MAX);
-
-	const float StepHM = SizeHM / (Width - 1);
-	constexpr float HalfHM = SizeHM / 2.0f;
+	const float SizeX = (Width - 1) * StepX;
+	const float HalfX = SizeX / 2.0f;
+	const float SizeZ = (Height - 1) * StepZ;
+	const float HalfZ = SizeZ / 2.0f;
 
 	xr_vector<bool> IsHoleVertex(Width * Height, false);
 
 	// Параллельное заполнение вершин
-	xr_parallel_for(u32(0), Height, [&](u32 z) 
-	{
+	xr_parallel_for(u32(0), Height, [&](u32 z)
+					{
 		for (u32 x = 0; x < Width; x++)
 		{
 			float h = Heightmap.GetHeight(x, z);
 
 			Fvector V;
-			V.x = -(x * StepHM - HalfHM);
-			V.z = (z * StepHM - HalfHM);
-			V.y = h * ScaleY;
+			V.x = -(x * StepX - HalfX);
+			V.z = (z * StepZ - HalfZ);
+			V.y = h * ScaleY * Heightmap.Size.y;
 			Vertices[z * Width + x] = V;
 
 			if (h <= 0.0f)
 			{
 				IsHoleVertex[z * Width + x] = true;
 			}
-			else
-			{
-				float currentMinY = minY.load();
-				while (V.y < currentMinY && !minY.compare_exchange_weak(currentMinY, V.y)) {}
-
-				float currentMaxY = maxY.load();
-				while (V.y > currentMaxY && !maxY.compare_exchange_weak(currentMaxY, V.y)) {}
-			}
-		}
-	});
+		} });
 
 	xr_vector<st_Face> Faces;
 	const u32 QuadsX = Width - 1;
 	const u32 QuadsZ = Height - 1;
 	Faces.resize(QuadsX * QuadsZ * 2); // Резервируем с запасом
 
-	float centerY = (minY.load() + maxY.load()) * 0.5f;
+	// Тот же вертикальный центр, что и в отрисовке высотной карты:
+	// середина номинального диапазона [0,1], а не текущий min/max,
+	// чтобы меш совпадал по высоте с HMap (иначе scene object "прыгает" по Y).
+	float centerY = 0.5f * ScaleY * Heightmap.Size.y;
 
 	// Параллельная нормализация высот
 	xr_parallel_for(size_t(0), Vertices.size(), [&](size_t i)
-	{
-		Vertices[i].y -= centerY;
-	});
+					{ Vertices[i].y -= centerY; });
 
 	// Параллельное создание граней
 	xr_atomic_u32 faceCounter(0);
 	xr_parallel_for(u32(0), QuadsZ, [&](u32 z)
-	{
+					{
 		for (u32 x = 0; x < QuadsX; x++)
 		{
 			const u32 V0 = z * Width + x;
@@ -80,8 +73,9 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 			const u32 V2 = (z + 1) * Width + x;
 			const u32 V3 = (z + 1) * Width + x + 1;
 
-			if (IsHoleVertex[V0] || IsHoleVertex[V1] || IsHoleVertex[V2] || IsHoleVertex[V3])
+			if (IsHoleVertex[V0] || IsHoleVertex[V1] || IsHoleVertex[V2] || IsHoleVertex[V3]){
 				continue;
+}
 
 			u32 faceIndex = faceCounter.fetch_add(2);
 
@@ -98,13 +92,11 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 			Face2.pv[1].pindex = V3;
 			Face2.pv[2].pindex = V2;
 			Faces[faceIndex + 1] = Face2;
-		}
-	});
+		} });
 
 	Faces.resize(faceCounter);
 
-	Mesh->Create
-	(
+	Mesh->Create(
 		Faces.data(),
 		static_cast<u32>(Faces.size()),
 		Vertices.data(),
@@ -130,18 +122,17 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 	}
 	Mesh->m_VMaps.push_back(mainUvMap);
 
-	Mesh->m_VMRefs.resize
-	(
-		Vertices.size());
-		xr_parallel_for(u32(0), static_cast<u32>(Vertices.size()), [&](u32 vertIdx)
-		{
-			st_VMapPtLst& vmref = Mesh->m_VMRefs[vertIdx];
-			vmref.count = 1; // Один UV-слой на вершину
-			vmref.pts = xr_alloc<st_VMapPt>(1);
-			vmref.pts[0].vmap_index = 0;  // Индекс нашей UV-карты
-			vmref.pts[0].index = vertIdx; // UV = индексу вершины
-		}
+	Mesh->m_VMRefs.resize(
+		Vertices.size()
 	);
+	xr_parallel_for(u32(0), static_cast<u32>(Vertices.size()), [&](u32 vertIdx)
+					{
+						st_VMapPtLst& vmref = Mesh->m_VMRefs[vertIdx];
+						vmref.count = 1; // Один UV-слой на вершину
+						vmref.pts = xr_alloc<st_VMapPt>(1);
+						vmref.pts[0].vmap_index = 0;  // Индекс нашей UV-карты
+						vmref.pts[0].index = vertIdx; // UV = индексу вершины
+					});
 
 	for (u32 faceIdx = 0; faceIdx < Faces.size(); ++faceIdx)
 	{
@@ -153,12 +144,16 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 	}
 
 	CSurface* Surface = Mesh->GetSurfaceByFaceID(0);
+
+	// Surface properties are owned by the CTerrain object and supplied via
+	// the template — never hardcoded here.
 	Surface->SetName("terrain");
-	Surface->SetShader("levels\\zaton_earth");
-	Surface->SetShaderXRLC("default");
-	Surface->SetGameMtl("materials\\earth");
-	Surface->SetTexture("terrain\\terrain_mp_atp");
+	if (Template.Shader && Template.Shader[0])			Surface->SetShader(Template.Shader);
+	if (Template.ShaderXRLC && Template.ShaderXRLC[0])	Surface->SetShaderXRLC(Template.ShaderXRLC);
+	if (Template.GameMtl && Template.GameMtl[0])			Surface->SetGameMtl(Template.GameMtl);
+	if (Template.Texture && Template.Texture[0])			Surface->SetTexture(Template.Texture);
 	Surface->SetVMap("Texture");
+
 	Surface->SetFVF(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1);
 	Surface->OnDeviceCreate();
 

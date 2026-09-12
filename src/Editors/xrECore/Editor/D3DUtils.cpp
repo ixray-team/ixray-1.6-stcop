@@ -86,7 +86,13 @@ static const WORD identboxindiceswire[identboxindexwirecount] = {
 using FLvertexVec = xr_vector<FVF::L>;
 using FLvertexIt = FLvertexVec::iterator;
 
-static FLvertexVec 	m_GridPoints;
+// New grid system parameters
+static inline float GridCellSize = 1.0f;
+static inline float GridSize = 100.0f;
+static inline int GridSubdiv = 10;
+static inline int GridThickInterval = 10;
+static inline float GridFadeStart = 50.0f;
+static inline float GridFarPlane = 500.0f;
 
 u32 m_ColorAxis	= 0xff000000;
 u32 m_ColorGrid	= 0xff909090;
@@ -111,11 +117,11 @@ void SPrimitiveBuffer::CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u
     for (u32 k = 0; k < v_cnt; ++k)
         verts[k].set(((Fvector*)vertices)[k], 0xFFFFFFFF);
 
-    R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, verts.data(), v_cnt * stride));
+    R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, verts.data(), v_cnt * stride, false));
 
     if (i_cnt)
     {
-        R_ASSERT(RHIUtils::CreateIndexBuffer(&pIB, indices, i_cnt * sizeof(u16)));
+        R_ASSERT(RHIUtils::CreateIndexBuffer(&pIB, indices, i_cnt * sizeof(u16), false));
         OnRender.bind(this, &SPrimitiveBuffer::RenderDIP);
     }
     else
@@ -124,7 +130,7 @@ void SPrimitiveBuffer::CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u
     }
 
     RHIMappedSubresource mapped = {};
-    if (pVB->Map(ERHI_BUFFER_MAP::WRITE, 0, &mapped))
+    if (pVB->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &mapped))
     {
         Memory.mem_copy(mapped.pData, verts.data(), v_cnt * stride);
         pVB->Unmap();
@@ -132,7 +138,7 @@ void SPrimitiveBuffer::CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u
 
     if (pIB && i_cnt > 0)
     {
-        if (pIB->Map(ERHI_BUFFER_MAP::WRITE, 0, &mapped))
+        if (pIB->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &mapped))
         {
             Memory.mem_copy(mapped.pData, indices, i_cnt * sizeof(u16));
             pIB->Unmap();
@@ -151,48 +157,14 @@ void SPrimitiveBuffer::Destroy()
 	}
 }
 
-void CDrawUtilities::UpdateGrid(int number_of_cell, float square_size, int subdiv){
-	m_GridPoints.clear();
-// grid
-	int m_GridSubDiv[2];
-	int m_GridCounts[2];
-    Fvector2 m_GridStep;
-
-    m_GridStep.set(square_size,square_size);
-	m_GridSubDiv[0] = subdiv;
-	m_GridSubDiv[1] = subdiv;
-	m_GridCounts[0] = number_of_cell;//iFloor(size/step)*subdiv;
-	m_GridCounts[1] = number_of_cell;//iFloor(size/step)*subdiv;
-
-	FVF::L left,right;
-	left.p.y = right.p.y = 0;
-
-	for(int thin=0; thin<2; thin++){
-		for(int i=-m_GridCounts[0]; i<=m_GridCounts[0]; i++){
-			if( (!!thin) != !!(i%m_GridSubDiv[0]) ){
-				left.p.z = -m_GridCounts[1]*m_GridStep.y;
-				right.p.z = m_GridCounts[1]*m_GridStep.y;
-				left.p.x = i*m_GridStep.x;
-				right.p.x = left.p.x;
-				left.color = (i%m_GridSubDiv[0]) ? m_ColorGrid : m_ColorGridTh;
-				right.color = left.color;
-				m_GridPoints.push_back( left );
-				m_GridPoints.push_back( right );
-			}
-		}
-		for(int i=-m_GridCounts[1]; i<=m_GridCounts[1]; i++){
-			if( (!!thin) != !!(i%m_GridSubDiv[1]) ){
-				left.p.x = -m_GridCounts[0]*m_GridStep.x;
-				right.p.x = m_GridCounts[0]*m_GridStep.x;
-				left.p.z = i*m_GridStep.y;
-				right.p.z = left.p.z;
-				left.color = (i%m_GridSubDiv[1]) ? m_ColorGrid : m_ColorGridTh;
-				right.color = left.color;
-				m_GridPoints.push_back( left );
-				m_GridPoints.push_back( right );
-			}
-		}
-	}
+void CDrawUtilities::UpdateGrid(int number_of_cell, float square_size, int subdiv)
+{
+    GridCellSize = square_size;
+    GridSize = number_of_cell * square_size * 2.0f;
+    GridSubdiv = subdiv;
+    GridThickInterval = subdiv;
+    GridFadeStart = GridSize * 0.5f;
+    GridFarPlane = GridSize * 2.0f;
 }
 
 void CDrawUtilities::OnDeviceCreate()
@@ -238,8 +210,8 @@ void CDrawUtilities::OnDeviceCreate()
     	boxvert[i*6+4].set(p);
     	boxvert[i*6+5].set(p.x,p.y,p.z-S.z*0.25f);
     }
-    // create render stream
-	vs_L.create		(FVF::F_L,RCache.Vertex.Buffer(),RCache.Index.Buffer());
+// create render stream
+ 	vs_L.create		(FVF::F_L,RCache.Vertex.Buffer(),RCache.Index.Buffer());
     vs_TL.create	(FVF::F_TL,RCache.Vertex.Buffer(),RCache.Index.Buffer());
     vs_LIT.create	(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.Index.Buffer());
 
@@ -255,22 +227,22 @@ void CDrawUtilities::DestroyObjects()
 
 void CDrawUtilities::OnDeviceDestroy()
 {
-	EDevice->seqRender.Remove		(this);
+ 	EDevice->seqRender.Remove		(this);
 
     m_SolidBox.Destroy			();
-	m_SolidCone.Destroy			();
-	m_SolidSphere.Destroy		();
-	m_SolidSpherePart.Destroy	();
+ 	m_SolidCone.Destroy			();
+ 	m_SolidSphere.Destroy		();
+ 	m_SolidSpherePart.Destroy	();
     m_SolidCylinder.Destroy		();
     m_WireBox.Destroy			();
-	m_WireCone.Destroy			();
-	m_WireSphere.Destroy		();
-	m_WireSpherePart.Destroy	();
+ 	m_WireCone.Destroy			();
+ 	m_WireSphere.Destroy		();
+ 	m_WireSpherePart.Destroy	();
     m_WireCylinder.Destroy		();
 
-	vs_L.destroy		();
-	vs_TL.destroy		();
-	vs_LIT.destroy		();
+ 	vs_L.destroy		();
+ 	vs_TL.destroy		();
+ 	vs_LIT.destroy		();
 }
 //----------------
 
@@ -378,66 +350,33 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
     if (s) DU_DRAW_SH(s);
     {
         // fill VB
-        FVF::LIT*	pv	 = (FVF::LIT*)Stream->Lock(6,vs_LIT->vb_stride,vBase);
-        pv->set		(0.f,1.f,0.f,clr,0.f,0.f);	pv++;
-        pv->set		(0.f,1.f,.5f,clr,1.f,0.f);	pv++;
-        pv->set		(0.f,.5f,.5f,clr,1.f,1.f);	pv++;
-        pv->set		(0.f,.5f,0.f,clr,0.f,1.f);	pv++;
-        pv->set		(0.f,.5f,.5f,clr,1.f,1.f);	pv++;
-        pv->set		(0.f,1.f,.5f,clr,1.f,0.f);	pv++;
-        Stream->Unlock	(6,vs_LIT->vb_stride);
-        // and Render it as line list
-        DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_FAN,vs_LIT,vBase,4);
+
+        FVF::LIT* pv = (FVF::LIT*)Stream->Lock(12, vs_LIT->vb_stride, vBase);
+
+        // TRIANGLE 1 (front)
+        pv[0].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+        pv[1].set(0.f, 1.f, .5f, clr, 1.f, 0.f); // v1
+        pv[2].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+
+        // TRIANGLE 2 (front)
+        pv[3].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+        pv[4].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+        pv[5].set(0.f, .5f, 0.f, clr, 0.f, 1.f); // v3
+
+        // TRIANGLE 1 (back, reversed winding)
+        pv[6].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+        pv[7].set(0.f, 1.f, .5f, clr, 1.f, 0.f); // v1
+        pv[8].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+
+        // TRIANGLE 2 (back, reversed winding)
+        pv[9].set(0.f, .5f, 0.f, clr, 0.f, 1.f); // v3
+        pv[10].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+        pv[11].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+
+        Stream->Unlock(12, vs_LIT->vb_stride);
+        DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vs_LIT, vBase, 4);
     }
 }
-
-void CDrawUtilities::DrawFlag(const Fvector& p, float heading, float height, float sz, float sz_fl, u32 clr, bool bDrawEntity){
-    Fvector p0;
-    Fvector p1;
-    p1.set(p.x, p.y + height, p.z);
-    DrawLine(p, p1, clr);
-    
-	_VertexStream*	Stream	= &RCache.Vertex;
-	u32			    vBase;
-
-    if (bDrawEntity){
-        float rx = std::sin(heading);
-        float rz = std::cos(heading);
-
-        sz *= 0.8f;
-        
-        // seg 0
-        p0.set(p.x, p.y + height, p.z);
-        p1.set(p.x + rx * sz, p.y + height, p.z + rz * sz);
-        DrawLine(p0, p1, clr);
-
-        sz *= 0.5f;
-
-        // seg 1
-        p0.set(p.x, p.y + height * (1.f - sz_fl * .5f), p.z);
-        p1.set(p.x + rx * sz * 0.6f, p.y + height * (1.f - sz_fl * .5f), p.z + rz * sz * 0.75f);
-        DrawLine(p0, p1, clr);
-
-        // seg 2
-        p0.set(p.x, p.y + height * (1.f - sz_fl), p.z);
-        p1.set(p.x + rx * sz, p.y + height * (1.f - sz_fl), p.z + rz * sz);
-        DrawLine(p0, p1, clr);
-    }else{
-		// fill VB
-		FVF::L*	pv	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
-	    pv->set			(p.x,p.y+height*(1.f-sz_fl),p.z,clr); 								pv++;
-    	pv->set			(p.x,p.y+height,p.z,clr); 											pv++;
-	    pv->set			(p.x+ std::sin(heading)*sz,((pv-2)->p.y+(pv-1)->p.y)/2,p.z+ std::cos(heading)*sz,clr); pv++;
-    	pv->set			(*(pv-3)); 															pv++;
-	    pv->set			(*(pv-2)); 															pv++;
-    	pv->set			(*(pv-4)); 															pv++;
-		Stream->Unlock	(6,vs_L->vb_stride);
-		// and Render it as triangle list
-    	DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vs_L,vBase,2);
-    }
-}
-
-//------------------------------------------------------------------------------
 
 void CDrawUtilities::DrawRomboid(const Fvector& p, float r, u32 c)
 {
@@ -636,7 +575,10 @@ void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, const c
 	Stream->Unlock(5,vs_TL->vb_stride);
 
 	// Render it as line strip
-    DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_TL,vBase,4);
+    ref_shader Shader = EDevice->GetShader();
+    EDevice->SetShader(EDevice->ShaderTL);
+    DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP, vs_TL, vBase, 4);
+    EDevice->SetShader(Shader);
 
     if (caption)
     {
@@ -1071,7 +1013,7 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
     UI->CurrentView().m_Camera.MouseRayFromPoint(M.c, dir, pt);
 
     M.c.mad(dir, _kl);
-    m_axis_object->Render	(M, 2, false);
+    m_axis_object->Render(NULL, M, 2, false);
 }
 
 void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
@@ -1122,10 +1064,10 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
 	Stream->Unlock(6,vs_TL->vb_stride);
 
 	// Render it as line list
-	DU_DRAW_RS	(D3DRS_SHADEMODE,D3DSHADE_GOURAUD);
-	DU_DRAW_SH	(EDevice->m_WireShader);
+	//DU_DRAW_RS	(D3DRS_SHADEMODE,D3DSHADE_GOURAUD);
+	DU_DRAW_SH	(EDevice->ShaderTL);
     DU_DRAW_DP	(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_TL,vBase,3);
-	DU_DRAW_RS	(D3DRS_SHADEMODE,SHADE_MODE);
+	//DU_DRAW_RS	(D3DRS_SHADEMODE,SHADE_MODE);
 
     m_Font->SetColor(sel ? 0xFF000000 : 0xFF909090);
     m_Font->Out(r.x, r.y, "x");
@@ -1139,41 +1081,125 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
 
 void CDrawUtilities::DrawGrid()
 {
-	VERIFY( EDevice->b_is_Ready );
-	_VertexStream*	Stream	= &RCache.Vertex;
-    u32 vBase;
-	// fill VB
-	FVF::L*	pv	= (FVF::L*)Stream->Lock(m_GridPoints.size(),vs_L->vb_stride,vBase);
-    for (FLvertexIt v_it=m_GridPoints.begin(); v_it!=m_GridPoints.end(); v_it++,pv++) pv->set(*v_it);
-	Stream->Unlock(m_GridPoints.size(),vs_L->vb_stride);
-	// Render it as triangle list
-    Fmatrix ddd;
-    ddd.identity();
-    RCache.set_xform_world(ddd);
-	DU_DRAW_SH(EDevice->m_WireShader);
-    DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,m_GridPoints.size()/2);
+	VERIFY(EDevice->b_is_Ready);
 
-    RCache.stat.calls--;
-    RCache.stat.verts -= (m_GridPoints.size() / 2) * 3;
-    RCache.stat.polys -= (m_GridPoints.size() / 2);
+	Fvector CamPos = EDevice->vCameraPosition;
+
+	const float CamGridX = floorf(CamPos.x / GridCellSize) * GridCellSize;
+	const float CamGridZ = floorf(CamPos.z / GridCellSize) * GridCellSize;
+	const float HalfGrid = GridSize * 0.5f;
+
+	const int LinesPerAxis = int(GridSize / GridCellSize) + 1;
+	const int TotalLines = LinesPerAxis * 2;
+
+	DU_DRAW_SH(EDevice->m_WireShader);
+
+	Fmatrix World;
+	World.identity();
+	RCache.set_xform_world(World);
+
+	_VertexStream* Stream = &RCache.Vertex;
+	u32 VBase;
+
+	const u32 VertexCount = TotalLines * 2;
+	FVF::L* Pv = (FVF::L*)Stream->Lock(VertexCount, vs_L->vb_stride, VBase);
+
+	FVF::L Vertex;
+	Vertex.p.y = 0.0f;
+
+	for (int I = -LinesPerAxis / 2; I <= LinesPerAxis / 2; I++)
+	{
+		float Z = CamGridZ + I * GridCellSize;
+
+		const bool IsAxis = (I == 0);
+		const bool IsThick = (I % GridThickInterval == 0);
+
+		u32 Color;
+		if (IsAxis)
+		{
+			Color = 0xFF0000FF;
+		}
+		else if (IsThick)
+		{
+			Color = m_ColorGridTh;
+		}
+		else
+		{
+			Color = m_ColorGrid;
+		}
+
+		// Start point
+		Vertex.p.x = CamGridX - HalfGrid;
+		Vertex.p.z = Z;
+		Vertex.color = Color;
+		Pv->set(Vertex);
+		Pv++;
+
+		// End point
+		Vertex.p.x = CamGridX + HalfGrid;
+		Pv->set(Vertex);
+		Pv++;
+	}
+
+	for (int I = -LinesPerAxis / 2; I <= LinesPerAxis / 2; I++)
+	{
+		float X = CamGridX + I * GridCellSize;
+
+		bool IsAxis = (I == 0);
+		bool IsThick = (I % GridThickInterval == 0);
+
+		u32 Color = m_ColorGrid;
+
+		if (IsAxis)
+		{
+			Color = 0xFFFF0000;
+		}
+		else if (IsThick)
+		{
+			Color = m_ColorGridTh;
+		}
+
+		// Start point
+		Vertex.p.x = X;
+		Vertex.p.z = CamGridZ - HalfGrid;
+		Vertex.color = Color;
+		Pv->set(Vertex);
+		Pv++;
+
+		// End point
+		Vertex.p.z = CamGridZ + HalfGrid;
+		Pv->set(Vertex);
+		Pv++;
+	}
+
+	Stream->Unlock(VertexCount, vs_L->vb_stride);
+
+	// Render as line list
+	DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, vs_L, VBase, TotalLines);
 }
 
-void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd){
-	VERIFY( EDevice->b_is_Ready );
-	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
+void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd)
+{
+    VERIFY(EDevice->b_is_Ready);
+    _VertexStream* Stream = &RCache.Vertex;
     u32 vBase;
-	FVF::TL* pv	= (FVF::TL*)Stream->Lock(4,vs_TL->vb_stride,vBase);
-    pv->set(m_SelStart.x*SCREEN_QUALITY, m_SelStart.y*SCREEN_QUALITY, m_SelectionRect,0.f,0.f); pv++;
-    pv->set(m_SelStart.x*SCREEN_QUALITY, m_SelEnd.y*SCREEN_QUALITY,   m_SelectionRect,0.f,0.f); pv++;
-    pv->set(m_SelEnd.x*SCREEN_QUALITY,   m_SelEnd.y*SCREEN_QUALITY,   m_SelectionRect,0.f,0.f); pv++;
-    pv->set(m_SelEnd.x*SCREEN_QUALITY,   m_SelStart.y*SCREEN_QUALITY, m_SelectionRect,0.f,0.f); pv++;
-	Stream->Unlock(4,vs_TL->vb_stride);
-	// Render it as triangle list
-    DU_DRAW_RS(D3DRS_CULLMODE,D3DCULL_NONE);
-	DU_DRAW_SH(EDevice->m_SelectionShader);
-    DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_FAN,vs_TL,vBase,2);
-    DU_DRAW_RS(D3DRS_CULLMODE,D3DCULL_CCW);
+    FVF::TL* pv = (FVF::TL*)Stream->Lock(6, vs_TL->vb_stride, vBase);
+
+    pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+    pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelEnd.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+    pv->set(m_SelEnd.x * SCREEN_QUALITY, m_SelEnd.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+
+    pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+    pv->set(m_SelEnd.x * SCREEN_QUALITY, m_SelEnd.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+    pv->set(m_SelEnd.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+
+    Stream->Unlock(6, vs_TL->vb_stride);
+
+    const u32 OldFillMode = EDevice->dwFillMode;
+    EDevice->dwFillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+    DU_DRAW_SH(EDevice->ShaderTL);
+    DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vs_TL, vBase, 2);
+    EDevice->dwFillMode = OldFillMode;
 }
 
 void CDrawUtilities::DrawPrimitiveL	(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, Fvector* vertices, int vc, u32 color, bool bCull, bool bCycle)
@@ -1192,6 +1218,12 @@ void CDrawUtilities::DrawPrimitiveL	(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, Fvector
     if (!bCull) DU_DRAW_RS(D3DRS_CULLMODE,D3DCULL_CCW);
 }
 
+xr_vector<FVF::L> g_idxVerts[2]; // 0 = LINE_LIST, 1 = TRIANGLE_LIST
+xr_vector<u16>    g_idxIdx[2];
+u32               g_idxPrims[2] = {0, 0};
+
+static void FlushIndexBatch(int slot);
+
 void CDrawUtilities::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY pt,
 											u32 pc, 
                                             const Fvector& pos, 
@@ -1202,27 +1234,56 @@ void CDrawUtilities::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY pt,
                                             const u32& clr_argb, 
                                             float scale)
 {
-	_VertexStream* Stream	= &RCache.Vertex;
-	_IndexStream*	StreamI	= &RCache.Index;
+	int slot = (pt == ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST) ? 0 : 1;
 
-	u32 vBase, iBase;
-    WORD* i;
+	// Batch all indexed primitives and emit them as a single draw call per
+	// topology at FlushDU(). This avoids one draw call per CSE_ALifeGraphPoint
+	// (on_render issues 2 calls each), which previously cost dozens of FPS.
+	if (g_idxVerts[slot].size() + vb_size > 65000)
+		FlushIndexBatch(slot);
 
-	FVF::L* pv				= (FVF::L*)Stream->Lock(vb_size, vs_L->vb_stride, vBase);
-    for(int k=0; k<vb_size; ++k,++pv)
-    	pv->set		(Fvector().add(pos, Fvector().mul(vb[k],scale)), clr_argb);
-        
-	Stream->Unlock(vb_size, vs_L->vb_stride);
+	u32 base = (u32)g_idxVerts[slot].size();
+	for (int k = 0; k < vb_size; ++k)
+	{
+		FVF::L v;
+		v.set(Fvector().add(pos, Fvector().mul(vb[k], scale)), clr_argb);
+		g_idxVerts[slot].push_back(v);
+	}
+	for (int k = 0; k < ib_size; ++k)
+		g_idxIdx[slot].push_back((u16)(base + ib[k]));
+	g_idxPrims[slot] += pc;
+}
 
-    i 				= StreamI->Lock(ib_size,iBase);
-    for (int k=0; k<ib_size; ++k,++i) 
-    	*i= ib[k];
-        
-    StreamI->Unlock(ib_size);
+static void FlushIndexBatch(int slot)
+{
+	if (g_idxVerts[slot].empty())
+		return;
 
-    EDevice->SetShader	(EDevice->m_SelectionShader);
-	// and Render it as triangle list
-	DU_DRAW_DIP	((ERHI_PRIMITIVE_TOPOLOGY)pt, vs_L, vBase, 0, vb_size, iBase, pc);
+	_VertexStream* Stream = &RCache.Vertex;
+	u32 vBase;
+	FVF::L* pv = (FVF::L*)Stream->Lock(g_idxVerts[slot].size(), DU_impl.vs_L->vb_stride, vBase);
+	memcpy(pv, g_idxVerts[slot].data(), g_idxVerts[slot].size() * sizeof(FVF::L));
+	Stream->Unlock(g_idxVerts[slot].size(), DU_impl.vs_L->vb_stride);
+
+	_IndexStream* StreamI = &RCache.Index;
+	u32 iBase;
+	u16* i = StreamI->Lock(g_idxIdx[slot].size(), iBase);
+	memcpy(i, g_idxIdx[slot].data(), g_idxIdx[slot].size() * sizeof(u16));
+	StreamI->Unlock(g_idxIdx[slot].size());
+
+	EDevice->SetShader(EDevice->m_SelectionShader);
+	DU_DRAW_DIP(
+		(slot == 0) ? ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST : ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
+		DU_impl.vs_L,
+		vBase, 0,
+		(u32)g_idxVerts[slot].size(),
+		iBase,
+		g_idxPrims[slot]
+	);
+
+	g_idxVerts[slot].clear();
+	g_idxIdx[slot].clear();
+	g_idxPrims[slot] = 0;
 }
 
 void CDrawUtilities::DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::TL* vertices, int vc, bool bCull, bool bCycle)
@@ -1350,28 +1411,31 @@ ECORE_API void AddLine(const Fvector& p0, const Fvector& p1, u32 c)
 
 ECORE_API void FlushDU()
 {
-    if (g_lineVerts.empty())
-        return;
+    if (!g_lineVerts.empty())
+    {
+        _VertexStream* Stream = &RCache.Vertex;
 
-    _VertexStream* Stream = &RCache.Vertex;
+        u32 vBase;
+        FVF::L* pv = (FVF::L*)Stream->Lock(
+            g_lineVerts.size(),
+            DU_impl.vs_L->vb_stride,
+            vBase
+        );
 
-    u32 vBase;
-    FVF::L* pv = (FVF::L*)Stream->Lock(
-        g_lineVerts.size(),
-        DU_impl.vs_L->vb_stride,
-        vBase
-    );
+        memcpy(pv, g_lineVerts.data(), g_lineVerts.size() * sizeof(FVF::L));
 
-    memcpy(pv, g_lineVerts.data(), g_lineVerts.size() * sizeof(FVF::L));
+        Stream->Unlock(g_lineVerts.size(), DU_impl.vs_L->vb_stride);
 
-    Stream->Unlock(g_lineVerts.size(), DU_impl.vs_L->vb_stride);
+        DU_DRAW_DP(
+            ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+            DU_impl.vs_L,
+            vBase,
+            g_lineVerts.size() / 2
+        );
 
-    DU_DRAW_DP(
-        ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
-        DU_impl.vs_L,
-        vBase,
-        g_lineVerts.size() / 2
-    );
+        g_lineVerts.clear();
+    }
 
-    g_lineVerts.clear();
+    FlushIndexBatch(0);
+    FlushIndexBatch(1);
 }

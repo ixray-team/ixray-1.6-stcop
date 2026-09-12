@@ -295,7 +295,7 @@ void EScene::Unload(bool bEditableOnly)
 ECORE_API xrGUID generate_guid();
 void EScene::Clear(bool bEditableToolsOnly)
 {
-	Device.details_task.wait();
+	Device.DetailsTask.wait();
 
 	// clear snap
 	ClearSnapList(false);
@@ -332,7 +332,6 @@ void EScene::Clear(bool bEditableToolsOnly)
 
 	if (!bEditableToolsOnly)
 	{
-		UI->GeneralTabs[0] = { "Scene View", []()->bool {return Scene->IsUnsaved(); }};
 		SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Level Editor");
 	}
 }
@@ -619,13 +618,13 @@ xr_string EScene::LevelPath()
 
 void EScene::SelectLightsForObject(CCustomObject* obj)
 {
-	ESceneCustomOTool* t 			= Scene->GetOTool(OBJCLASS_LIGHT);
-	if(!t)
-		return;
-
-	ESceneLightTool* lt 		= smart_cast<ESceneLightTool*>(t);
-	VERIFY						(lt);
-	lt->SelectLightsForObject	(obj);
+	//ESceneCustomOTool* t 			= Scene->GetOTool(OBJCLASS_LIGHT);
+	//if(!t)
+	//	return;
+	//
+	//ESceneLightTool* lt 		= smart_cast<ESceneLightTool*>(t);
+	//VERIFY						(lt);
+	//lt->SelectLightsForObject	(obj);
 }
 
 void EScene::HighlightTexture(const char* t_name, bool allow_ratio, u32 t_width, u32 t_height, bool leave_previous)

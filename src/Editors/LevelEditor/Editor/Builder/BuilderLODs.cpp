@@ -27,17 +27,20 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha)
     uv.x = cuv[0]->x * B.x + cuv[1]->x * B.y + cuv[2]->x * B.z;
     uv.y = cuv[0]->y * B.x + cuv[1]->y * B.y + cuv[2]->y * B.z;
 
-    int U = iFloor(uv.x * float(surf->m_ImageData->w) + .5f);
-    int V = iFloor(uv.y * float(surf->m_ImageData->h) + .5f);
-    U %= surf->m_ImageData->w;	if (U < 0) U += surf->m_ImageData->w;
-    V %= surf->m_ImageData->h;	if (V < 0) V += surf->m_ImageData->h;
+    int U = iFloor(uv.x * float(surf->ImageData->w) + .5f);
+    int V = iFloor(uv.y * float(surf->ImageData->h) + .5f);
+    U %= surf->ImageData->w;	if (U < 0) U += surf->ImageData->w;
+    V %= surf->ImageData->h;	if (V < 0) V += surf->ImageData->h;
 
-    alpha = color_get_A(surf->m_ImageData->layers.back()[V * surf->m_ImageData->w + U]);
+    alpha = color_get_A(surf->ImageData->layers.back()[V * surf->ImageData->w + U]);
     return true;
 }
 
 int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int sector_num)
 {
+    if (EPrefs->DisableBillboardLOD)
+        return -1;
+
     if (!E->m_objectFlags.is(CEditableObject::eoUsingLOD)) 
         return -1;
 
@@ -59,8 +62,8 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
         mtl_idx = l_materials.size() - 1;
     }
 
-    l_lods.push_back(e_b_lod());
-    e_b_lod& b = l_lods.back();
+    e_b_lod new_lod;
+
     Fvector p[4];
     Fvector2 t[4];
 
@@ -68,29 +71,46 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
     {
         E->GetLODFrame(frame, p, t, &parent);
         for (int k = 0; k < 4; k++) {
-            b.lod.faces[frame].v[k].set(p[k]);
-            b.lod.faces[frame].t[k].set(t[k]);
+            new_lod.lod.faces[frame].v[k].set(p[k]);
+            new_lod.lod.faces[frame].t[k].set(t[k]);
         }
     }
 
-    b.lod.dwMaterial = mtl_idx;
-    b.lod_name = lod_name.c_str();
+    new_lod.lod.dwMaterial = mtl_idx;
+    new_lod.lod_name = lod_name.c_str();
 
     xr_string l_name = lod_name.c_str();
     u32 w, h;
     time_t age;
-    if (!ImageLib.LoadTextureData(l_name.c_str(), b.data, w, h, &age))
+    if (!EPrefs->UseMULODs)
     {
-        Msg("!Can't find LOD texture: '%s'", l_name.c_str());
-        return -2;
-    }
+        if (!ImageLib.LoadTextureData(l_name.c_str(), new_lod.data, w, h, &age))
+        {
+            Msg("!Can't find LOD texture: '%s'", l_name.c_str());
+            return -2;
+        }
 
-    l_name += "_nm";
-    if (!ImageLib.LoadTextureData(l_name.c_str(), b.ndata, w, h, &age))
+        l_name += "_nm";
+        if (!ImageLib.LoadTextureData(l_name.c_str(), new_lod.ndata, w, h, &age))
+        {
+            Msg("!Can't find LOD normal texture: '%s'", l_name.c_str());
+            return -2;
+        }
+    }
+    else
     {
-        Msg("!Can't find LOD texture: '%s'", l_name.c_str());
-        return -2;
-    }
+        if (!ImageLib.LoadTextureData("lod_stub", new_lod.data, w, h, &age))
+        {
+            Msg("!Can't load LOD texture: 'lod_stub'");
+            return -2;
+        }
 
+        if (!ImageLib.LoadTextureData("lod_stub", new_lod.ndata, w, h, &age))
+        {
+            Msg("!Can't load LOD normal texture: 'lod_stub'");
+            return -2;
+        }
+    }
+    l_lods.push_back(std::move(new_lod));
     return l_lods.size() - 1;
 }

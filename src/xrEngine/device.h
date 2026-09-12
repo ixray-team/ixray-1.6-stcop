@@ -79,6 +79,7 @@ public:
 
 	// Engine flow-control
 	u32										dwFrame;
+	u32										dwRenderFrame = 0;
 
 	float									fTimeDeltaSmoothing;
 	float									fRealTimeDelta;
@@ -214,6 +215,7 @@ public:
 	xr_vector		<xr_delegate<void()>>	seqParallelRender;
 
 	xr_delegate<void()> ModelDefferClear;
+	xr_delegate<void()> LuaGC;
 
 	xr_vector<xr_pair<u32,std::function<void()>>> m_time_callbacks;
 	ICF void callback(u32 cb_time, const std::function<void()>& func)
@@ -247,7 +249,7 @@ public:
 	// Creation & Destroying
 	void ConnectToRender();
 	void Create								(void);
-	void Run								(void);
+	void Run(void);
 	void Destroy							(void);
 	void Reset								(bool precache = true);
 
@@ -264,17 +266,24 @@ public:
 	}
 
 	// Multi-threading
-	xr_task_group secondary_tasks, details_task;
+	xr_task_group DetailsTask;
+	xr_task_group SecondaryTasks;
 
-	ICF		void			remove_from_seq_parallel	(const xr_delegate<void()> &delegate)
+	//XRayWorkerThread GCThread;
+	XRayWorkerThread PreRenderThread;
+	XRayWorkerThread GameThread;
+
+	ICF void remove_from_seq_parallel(const xr_delegate<void()>& delegate)
 	{
-		xr_vector<xr_delegate<void()> >::iterator I = std::find(
+		xr_vector<xr_delegate<void()>>::iterator I = std::find(
 			seqParallel.begin(),
 			seqParallel.end(),
 			delegate
 		);
 		if (I != seqParallel.end())
-			seqParallel.erase	(I);
+		{
+			seqParallel.erase(I);
+		}
 	}
 
 	ICF void transform_hud2world(Fmatrix& xf)

@@ -48,6 +48,8 @@
 #include "Message_Filter.h"
 #include "DemoPlay_Control.h"
 #include "DemoInfo.h"
+#include "CustomDetector.h"
+#include "../xrSound/New/SoundMixerInternal.h"
 
 #include "../xrPhysics/IPHWorld.h"
 #include "../xrPhysics/console_vars.h"
@@ -80,13 +82,15 @@
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
+int psLUA_GCSTEP = 10;
+
 float g_cl_lvInterp	= 0.1f;
 u32 lvInterpSteps	= 0;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CLevel::CLevel():
+CLevel::CLevel() :
 	IPureClient(Device.GetTimerGlobal())
 {
 	PROF_EVENT("CLevel::CLevel");
@@ -213,6 +217,17 @@ CLevel::CLevel():
 	m_pScriptXREffects = new CScriptXREffectsStorage();
 	m_pScriptXRParser = new CScriptXRParser();
 #endif
+
+	Device.LuaGC = xr_make_delegate(+[]()->void
+	{
+		try
+		{
+			lua_gc(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);
+		}
+		catch (...)
+		{
+		}
+	});
 }
 
 extern CAI_Space *g_ai_space;
@@ -220,6 +235,8 @@ extern CAI_Space *g_ai_space;
 CLevel::~CLevel()
 {
 	PROF_EVENT("CLevel::~CLevel");
+	
+	Device.LuaGC.clear();
 
 	xr_delete					(g_player_hud);
 	delete_data					(hud_zones_list);
@@ -591,11 +608,6 @@ void CLevel::OnFrame()
 	DBG_RenderUpdate();
 #endif // #ifdef DEBUG
 
-	if (GCondlistGC != nullptr)
-	{
-		GCondlistGC->Update();
-	}
-
 	Fvector	temp_vector;
 	m_feel_deny.feel_touch_update(temp_vector, 0.f);
 
@@ -628,7 +640,6 @@ void CLevel::OnFrame()
 	}
 
 	ProcessGameEvents();
-
 
 	if (m_bNeed_CrPr)
 	{
@@ -752,21 +763,19 @@ void CLevel::OnFrame()
 	}
 }
 
-int		psLUA_GCSTEP					= 10			;
-void	CLevel::script_gc				()
+void CLevel::script_gc()
 {
+	PROF_EVENT("m_ph_commander");
+	try
 	{
-		PROF_EVENT("m_ph_commander");
-		try
-		{
-			ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
+		ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
 
-			m_ph_commander->update();
-			m_ph_commander_scripts->update();
-		}catch (...) {}
+		m_ph_commander->update();
+		m_ph_commander_scripts->update();
 	}
-	PROF_EVENT("CLevel::script_gc");
-	try{lua_gc	(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);}catch (...) {}
+	catch (...)
+	{
+	}
 }
 
 #ifdef DEBUG_PRECISE_PATH
@@ -809,6 +818,39 @@ void CLevel::OnRender()
 #endif // DEBUG
 
 #ifdef DEBUG_DRAW
+	CDB::MODEL* env_model = Sound->get_geometry_env();
+	if (bDebug && env_model) {
+		for (const auto& zone : XRay::Sound::Mixer::GetZones()) {
+			m_debug_renderer->draw_aabb(zone.min, zone.max, 0xFF00FFFF);
+		}
+	}
+
+	if (bDebug) {
+		for (const auto& slot : XRay::Sound::Mixer::GetSlots()) {
+			if ((slot.flags & (u16)XRay::Sound::Mixer::Flags::Spatial) == 0) {
+				continue;
+			}
+
+			const Fvector& pos = slot.parameters[(u32)XRay::Sound::Mixer::ParameterId::Position];
+			const Fvector& distances = slot.parameters[(u32)XRay::Sound::Mixer::ParameterId::DistanceRange];
+
+			u32 color = 0;
+			float dist = Device.vCameraPosition.distance_to(pos);
+			if (dist > distances.y) {
+				if (slot.state == XRay::Sound::Mixer::State::Playing) {
+					color = 0x752DA6FF;
+				} else {
+					color = 0xFC9D03FF;
+				}
+			} else {
+				color = 0x45A62DFF;
+			}
+
+			Fmatrix mtx; mtx.translate(pos);
+			m_debug_renderer->draw_ellipse(mtx, color);
+		}
+	}
+
 #ifdef DEBUG_PRECISE_PATH
 	test_precise_path		();
 #endif

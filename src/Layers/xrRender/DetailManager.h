@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <atomic>
 #include "../../xrCore/xrPool.h"
 #include "DetailFormat.h"
 #include "DetailModel.h"
@@ -113,6 +114,10 @@ public:
 
 	xr_atomic_bool task_finished = true;
 	int render_key = 1, calc_key = 0;
+	u32 alt_models_start = 0;
+	u32 alt_models_count = 0;
+	u32 vanilla_grass_indices[64] = {};
+	u32 vanilla_grass_count = 0;
 #ifndef _EDITOR    
 	xr_vector<CDetail> objects;
 	CDB::COLLIDER xrc;
@@ -129,8 +134,88 @@ public:
 	int								cache_cx;
 	int								cache_cz;
 
+	// Precomputed cluster-noise field indexed by detail-DB slot (world cell = dm_slot_size).
+	// One byte per DB slot (value in [0, 255] used as deterministic 0..1 sample).
+	// cluster_field stores the resolved asset index (fast O(1) at unpack; if the raw
+	// value was 255 no mix is used -> index 0 / native). cluster_rnd_field stores the
+	// raw deterministic pick hash01(h) in [0,255] so a bake can be re-resolved against
+	// a different asset count/mode without recomputing the per-slot noise.
+	xr_vector<u8>					cluster_field;
+	xr_vector<u8>					cluster_rnd_field;
+
+	// Precomputed combined FMB height factor t (max over enabled layers of
+	// mapped*power), one float per detail-DB slot CORNER (grid of
+	// (size_x+1)*(size_z+1)), bilinearly sampled at instance position so
+	// decompress does no per-instance noise calls.
+	// Negative values are reserved for user "clear grass" strokes (t<0 => no grass).
+	xr_vector<float>				fmb_field;
+	xr_vector<float>				fmb_field_base;		// snapshot before user masks overlay
+	xr_vector<u8>					cluster_field_base;
+	xr_vector<u8>					cluster_rnd_field_base;
+
+	void							BuildClusterField	();
+	u32								SampleClusterField	(float world_x, float world_z, u32 asset_count) const;
+	void							BuildFMBField		();
+	float							SampleFMBField		(float world_x, float world_z) const;
+
+#ifndef _EDITOR
+	// Persist precomputed fields to $level$\detail_layers\ so a reload with unchanged
+	// detail settings skips the noise rebuild. All I/O is best-effort: a read-only
+	// level folder simply falls back to regenerating.
+	bool							DetailLayers_LoadFromBake();	// true => fields came from disk
+	void							DetailLayers_SaveToBake();
+	void							DetailLayers_ApplySettingsFromBake();	// restore r__detail_* to baked values
+	bool							m_detail_layers_baking = false;	// true during level Load() only
+
+	// User paint masks: sparse per-cell overrides layered ON TOP of the baked/generated
+	// fields. Files live next to the bakes ($level$\detail_layers\) with a user_mask_
+	// prefix and are re-applied on every cache_ReInitialize, so the generated bake stays
+	// clean and the user strokes simply overwrite it where drawn.
+	struct FMBMaskEntry { u32 idx; float value; };
+	struct CLUMaskEntry { u32 idx; u8 value; };
+	xr_vector<FMBMaskEntry>			user_fmb_mask;
+	xr_vector<CLUMaskEntry>			user_clu_mask;
+
+	void							DetailLayers_LoadUserMasks();	// read user_mask_*.bin, replace current
+	void							DetailLayers_SaveUserMasks();	// write user_mask_*.bin
+	void							DetailLayers_ClearUserMasks();	// wipe masks, restore base fields
+	void							DetailLayers_CommitBaseFields();	// snapshot working fields (pre-mask)
+	void							DetailLayers_ApplyUserMasks();	// overlay sparse masks onto fields
+	// Stroke helpers. strength in [0,1] is the shared brush intensity for both paint and
+	// erase; the stroke blends from the current cell value toward the target (paint) or
+	// toward the generated base (erase). A cell that lands back on the base value drops
+	// its sparse entry entirely, so full erases leave no stale overrides.
+	bool							DetailLayers_PaintFMB(float world_x, float world_z, float value, float strength);
+	bool							DetailLayers_EraseFMB(float world_x, float world_z, float strength);
+	bool							DetailLayers_PaintCluster(float world_x, float world_z, u8 value, float strength);
+	bool							DetailLayers_EraseCluster(float world_x, float world_z, float strength);
+#endif
+
+	// Re-unpack ONLY the visible cache slots touched by the brush circle. Called per
+	// stroke (throttled by the tool) so edits appear in real time without a full
+	// cache_ReInitialize stall. Pending slots are left to the streaming pipeline.
+	// Never call this directly from the render thread: cache_Update (and thus the pool
+	// / unpacked_slots bookkeeping) runs on the DetailsTask worker, so the rebuild is
+	// deferred through DetailLayers_RequestRebuildAround and consumed at the top of
+	// cache_Update on that same worker. Direct cross-thread UnpackSlot/UnpackSlotItems
+	// corrupted the items pool freelist and crashed.
+	void							DetailLayers_RebuildSlotsAround(const Fvector& center, float radius);
+	void							DetailLayers_RequestRebuildAround(const Fvector& center, float radius);
+
+	// Brush-rebuild request published by the editor (render thread), consumed by the
+	// DetailsTask worker. Fields are written before the release-store of the flag and
+	// read after its acquire-load, so the plain members never race.
+	std::atomic<bool>				m_brush_rebuild_around{ false };
+	Fvector							m_brush_rebuild_center{ 0.f, 0.f, 0.f };
+	float							m_brush_rebuild_radius = 0.f;
+
 #ifdef _EDITOR
 	virtual ObjectList* 			GetSnapList		()=0;
+#else
+	// Deferred rebuild: console changes set a flag; cache_Update applies it once per frame
+	// so a cfg_load (series of r__detail_* commands) rebuilds all slots a single time.
+	void RequestCacheRebuild();
+	bool ConsumeCacheRebuildRequest();
 #endif
 
 	void							hw_Load			();

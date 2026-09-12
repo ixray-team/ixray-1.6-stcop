@@ -15,8 +15,9 @@ CCommandVar CActorTools::CommandSave(CCommandVar p1, CCommandVar p2)
 {
 	if (p2==1){
 		xr_string temp_fn	= ATools->m_LastFileName.c_str();
-		if (EFS.GetSaveName	( _objects_, temp_fn )){
-			temp_fn			= EFS.ChangeFileExt(temp_fn,".object");
+		if (EFS.GetSaveName(_objects_, temp_fn, nullptr, -1, "*.object;*.ogf")){
+			if (!strext(temp_fn.c_str()))
+				temp_fn += ".object";
 			return 			ExecCommand(COMMAND_SAVE,temp_fn,0);
 		}
 	}else{
@@ -83,6 +84,29 @@ CCommandVar CActorTools::CommandImport(CCommandVar p1, CCommandVar p2)
 		else {
 			ELog.Msg(mtError, "Invalid file path. ");
 		}
+	}
+	return false;
+}
+
+CCommandVar CActorTools::CommandImportOMF(CCommandVar p1, CCommandVar p2)
+{
+	xr_string temp_fn = p1.IsString() ? xr_string(p1) : xr_string("");
+	if (p1.IsString() || EFS.GetOpenName(_import_, temp_fn, false, nullptr, -1, "*.omf"))
+	{
+		if (!FS.TryLoad(temp_fn))
+		{
+			return false;
+		}
+
+		CTimer T;
+		T.Start();
+		if (!ATools->ImportOMF(temp_fn.c_str()))
+		{
+			return false;
+		}
+
+		ELog.Msg(mtInformation, "Motions from '%s' successfully imported. Loading time - %3.2f(s).", temp_fn.c_str(), T.GetElapsed_sec());
+		return true;
 	}
 	return false;
 }
@@ -199,47 +223,14 @@ char* CActorMain::GetCaption()
 	return (char*)(ATools->GetEditFileName().empty() ? "noname" : ATools->GetEditFileName().c_str());
 }
 
-bool  CActorMain::ApplyShortCut(DWORD Key, TShiftState Shift)
-{
-	return inherited::ApplyShortCut(Key,Shift);
-}
-//---------------------------------------------------------------------------
-
-bool  CActorMain::ApplyGlobalShortCut(DWORD Key, TShiftState Shift)
-{
-	return inherited::ApplyGlobalShortCut(Key,Shift);
-}
-//---------------------------------------------------------------------------
-
-void CActorMain::RealUpdateScene()
-{
-	inherited::RealUpdateScene	();
-}
-//---------------------------------------------------------------------------
-
 void CActorMain::ResetStatus()
 {
 	VERIFY(m_bReady);
-	
-   /* if (fraBottomBar->paStatus->Caption!=""){
-		fraBottomBar->paStatus->Caption=""; fraBottomBar->paStatus->Repaint();
-	}*/
 }
+
 void CActorMain::SetStatus(const char* s, bool bOutLog)
 {
 	VERIFY(m_bReady);
-	
-	/*if (fraBottomBar->paStatus->Caption!=s)
-	{
-		fraBottomBar->paStatus->Caption=s; fraBottomBar->paStatus->Repaint();
-		if (bOutLog&&s&&s[0]) ELog.Msg(mtInformation,s);
-	}*/
-}
-
-void CActorMain::ProgressDraw()
-{
-	inherited::ProgressDraw();
-	/*fraBottomBar->RedrawBar();*/
 }
 
 //---------------------------------------------------------------------------
@@ -251,15 +242,21 @@ constexpr size_t ConfigVer = 2;
 
 void CAEPreferences::Load()
 {
-	PrefConfigVer = JSONData["ae_prefs"]["version"];
-
 	inherited::Load();
 
-	bAlwaysShowKeyBar12 = JSONData["ae_prefs"]["always_show_keybar12"];
-	bAlwaysShowKeyBar34 = JSONData["ae_prefs"]["always_show_keybar34"];
+	const auto& AePrefs = JSONData["ae_prefs"];
+	PrefConfigVer = AePrefs["version"];
 
-	g_force16BitTransformQuant = JSONData["ae_prefs"]["anims_bit"]["16"];
-	g_force32BitTransformQuant = JSONData["ae_prefs"]["anims_bit"]["32"];
+	bAlwaysShowKeyBar12 = AePrefs["always_show_keybar12"];
+	bAlwaysShowKeyBar34 = AePrefs["always_show_keybar34"];
+
+	g_force16BitTransformQuant = AePrefs["anims_bit"]["16"];
+	g_force32BitTransformQuant = AePrefs["anims_bit"]["32"];
+
+	if (AePrefs.contains("SmoothGroup"))
+	{
+		SmoothGroup = (ESmoothGroup)AePrefs["SmoothGroup"].get<int>();
+	}
 }
 
 void CAEPreferences::Save()
@@ -271,6 +268,7 @@ void CAEPreferences::Save()
 
 	JSONData["ae_prefs"]["anims_bit"]["16"] = g_force16BitTransformQuant;
 	JSONData["ae_prefs"]["anims_bit"]["32"] = g_force32BitTransformQuant;
+	JSONData["ae_prefs"]["SmoothGroup"] = (int)SmoothGroup;
 
 	JSONData["ae_prefs"]["version"] = ConfigVer;
 }
@@ -370,7 +368,7 @@ CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
 	if (!p1.IsString()) 
 	{
 		temp_fn = ChangeFileExt(m_LastFileName, "").c_str();
-		if (!EFS.GetOpenName(_objects_, temp_fn))
+		if (!EFS.GetOpenName(_objects_, temp_fn, false, nullptr, -1, "*.object;*.ogf"))
 			return false;
 	}
 
@@ -424,6 +422,7 @@ void CActorMain::RegisterCommands()
 	APPEND_SUB_CMD("Save As", 0, 1);
 	REGISTER_SUB_CMD_END;
 	REGISTER_CMD_CE(COMMAND_IMPORT, "File\\Import", ATools, CActorTools::CommandImport, true);
+	REGISTER_CMD_CE(COMMAND_IMPORT_OMF, "File\\Import OMF", ATools, CActorTools::CommandImportOMF, true);
 	REGISTER_CMD_CE(COMMAND_EXPORT_DM, "File\\Export DM", ATools, CActorTools::CommandExportDM, true);
 	REGISTER_CMD_CE(COMMAND_EXPORT_OBJ, "File\\Export OBJ", ATools, CActorTools::CommandExportOBJ, true);
 	REGISTER_CMD_CE(COMMAND_EXPORT_OGF, "File\\Export OGF", ATools, CActorTools::CommandExportOGF, true);
