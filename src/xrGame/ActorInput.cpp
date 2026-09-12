@@ -981,15 +981,11 @@ void CActor::IR_GamepadKeyPress(int id)
 
 				if (pAutoaim->auto_aim_pick_target(this, m_memory, pAim))
 				{
-					CCameraFirstEye* pCamera = smart_cast<CCameraFirstEye*>(cam_Active());
-					if (pCamera)
-					{
-						Fvector pos;
-						pAutoaim->look_at_pos_for_aiming(pos, pAim);
-						pCamera->LookAtPoint(pos, PI_DIV_2, PI);
+					Fvector pos;
+					pAutoaim->look_at_pos_for_aiming(pos, pAim);
+					cam_Active()->LookAtPoint(pos, PI_DIV_2, PI);
 
-						lastTimeAutoAimStarted = Device.dwTimeContinual;
-					}
+					lastTimeAutoAimStarted = Device.dwTimeContinual;
 				}
 			}
 		}
