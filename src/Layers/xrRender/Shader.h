@@ -182,6 +182,7 @@ enum	SE_R1				{
 	SE_R1_LPOINT			= 2,	// add: point light
 	SE_R1_LSPOT				= 3,	// add:	spot light
 	SE_R1_LMODELS			= 4,	// lighting info for models or shadowing from models
+	SE_R1_UI				= 5,	// 
 };
 
 //#define		SE_R2_NORMAL_HQ		0	// high quality/detail

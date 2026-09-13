@@ -28,6 +28,16 @@ CRender RImplementation;
 //////////////////////////////////////////////////////////////////////////
 ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq, bool is_hud)
 {
+	if (!!RImplementation.val_bUI)
+	{
+		if (auto pSh = pVisual->shader->E[SE_R1_UI]._get())
+		{
+			return pSh;
+		}
+
+		return pVisual->shader->E[SE_R1_NORMAL_LQ]._get();
+	}
+
 	switch (phase)		{
 	case PHASE_NORMAL:	return (RImplementation.L_Projector->shadowing()?pVisual->shader->E[SE_R1_NORMAL_HQ]:pVisual->shader->E[SE_R1_NORMAL_LQ])._get();
 	case PHASE_POINT:	return pVisual->shader->E[SE_R1_LPOINT]._get();
@@ -514,20 +524,20 @@ void CRender::Calculate				()
 
 void CRender::RenderUI(Fcolor* color)
 {
-	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
-
-	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), nullptr, nullptr, RTarget, RDepth);
-	rmNormal();
-
-	r_dsgraph_render_ui();
-
 	Target->u_setrt(RCache.get_width(), RCache.get_height(), RTarget, nullptr, nullptr, RDepth);
 	rmNormal();
 
+	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+
+	r_dsgraph_render_ui();
 	r_dsgraph_render_sorted_ui();
 
 	marker++;
 	Target->u_setrt(RCache.get_width(), RCache.get_height(), RTarget, nullptr, nullptr, nullptr);
+
+	rmNormal();
+
+	mapDistort.clear();
 }
 
 void CRender::Render()
