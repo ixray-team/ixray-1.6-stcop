@@ -306,7 +306,7 @@ public:
 	// Main
 	virtual void					Calculate				()											= 0;
 	virtual void					Render					()											= 0;
-	virtual void					RenderUI				(bool = false)								= 0;
+	virtual void					RenderUI				(Fcolor* = nullptr)							= 0;
 	
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, const char* name = 0) {};
 	virtual	void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer) {};

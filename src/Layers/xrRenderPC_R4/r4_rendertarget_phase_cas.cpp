@@ -16,10 +16,20 @@ void CRenderTarget::phase_cas()
 	GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
 }
 
-void CRenderTarget::phase_ui_postprocess()
+void CRenderTarget::phase_ui_postprocess(Fcolor* color)
 {
 	RCache.set_Element(s_cas->E[2]);
 	RCache.set_Geometry(FSTriangleGeom);
+
+	if(color)
+	{
+		RCache.set_c("static_color", color->r, color->g, color->b, color->a);
+	}
+	else
+	{
+		RCache.set_c("static_color", 1, 1, 1, 1);
+	}
+
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 }
 
