@@ -127,14 +127,13 @@ Upgrade* Root::get_upgrade_by_index(Ivector2 const& index)
 	return nullptr;
 }
 
-void Root::highlight_hierarchy(shared_str const& upgrade_id)
+void Root::highlight_hierarchy(shared_str const& upgrade_id, bool legacy_upgrade_mode)
 {
 	for (const auto& contained_upgrade : m_contained_upgrades)
 	{
 		if (contained_upgrade->id()._get() == upgrade_id._get())
 		{
-			const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
-			if (isLegacyUpgrade)
+			if (legacy_upgrade_mode)
 			{
 				contained_upgrade->highlight_up();
 			}

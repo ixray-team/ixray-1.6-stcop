@@ -77,8 +77,7 @@ UpgradeStateResult Group::can_install(CInventoryItem& item, UpgradeBase& test_up
 		}
 
         bool cant_install = false;
-		const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
-		if (isLegacyUpgrade)
+		if (item.m_legacy_upgrade_mode)
 		{
 			cant_install = !item.has_upgrade(upgrade_base->id());
 		}

@@ -424,7 +424,7 @@ void Manager::highlight_hierarchy(CInventoryItem& item, shared_str const& upgrad
 	Root* root_p = get_root(item.m_section_id);
 	if (root_p)
 	{
-		root_p->highlight_hierarchy(upgrade_id);
+		root_p->highlight_hierarchy(upgrade_id, item.m_legacy_upgrade_mode);
 	}
 }
 

@@ -37,7 +37,7 @@ public:
 	bool verify_scheme_index(const Ivector2& scheme_index);
 	Upgrade* get_upgrade_by_index(Ivector2 const& index);
 
-	void highlight_hierarchy(shared_str const& upgrade_id);
+	void highlight_hierarchy(shared_str const& upgrade_id, bool legacy_upgrade_mode);
 	void reset_highlight();
 
 protected:
