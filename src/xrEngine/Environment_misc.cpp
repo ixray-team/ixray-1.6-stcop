@@ -734,32 +734,35 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 
 	hemi_color.lerp			(A.hemi_color,B.hemi_color,f);
 
-	if(Mdf.use_flags.test(eHemiColor))
+	if (Mdf.use_flags.test(eHemiColor))
 	{
-		hemi_color.x			+= Mdf.hemi_color.x;
-		hemi_color.y			+= Mdf.hemi_color.y; 
-		hemi_color.z			+= Mdf.hemi_color.z;
-		hemi_color.x			*= modif_power;
-		hemi_color.y			*= modif_power;
-		hemi_color.z			*= modif_power;
+		hemi_color.x += Mdf.hemi_color.x;
+		hemi_color.y += Mdf.hemi_color.y;
+		hemi_color.z += Mdf.hemi_color.z;
+		hemi_color.x *= modif_power;
+		hemi_color.y *= modif_power;
+		hemi_color.z *= modif_power;
 	}
 
-	sun_color.lerp			(A.sun_color,B.sun_color,f);
+	sun_color.lerp(A.sun_color, B.sun_color, f);
 
-	if (rain_density > 0.f) {
-		Env->wetness_factor += (rain_density * 4.0) / 10000.f;
-	} else {
-		Env->wetness_factor -= 0.0001f * 2.0;
+	if (rain_density > 0.f)
+	{
+		Env->wetness_factor += rain_density * Device.fTimeDelta * 0.025f;
+	}
+	else
+	{
+		Env->wetness_factor -= 0.0125f * Device.fTimeDelta;
 	}
 
 	clamp(Env->wetness_factor, 0.f, 1.f);
 
-	R_ASSERT				( _valid(A.sun_dir) );
-	R_ASSERT				( _valid(B.sun_dir) );
-	sun_dir.lerp			(A.sun_dir,B.sun_dir,f).normalize();
-	R_ASSERT				( _valid(sun_dir) );
+	R_ASSERT(_valid(A.sun_dir));
+	R_ASSERT(_valid(B.sun_dir));
+	sun_dir.lerp(A.sun_dir, B.sun_dir, f).normalize();
+	R_ASSERT(_valid(sun_dir));
 
-	VERIFY2					(sun_dir.y<0,"Invalid sun direction settings while lerp");}
+	VERIFY2(sun_dir.y < 0, "Invalid sun direction settings while lerp"); }
 
 //-----------------------------------------------------------------------------
 // Environment IO
