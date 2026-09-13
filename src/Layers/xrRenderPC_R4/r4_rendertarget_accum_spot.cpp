@@ -350,15 +350,8 @@ void CRenderTarget::accum_volumetric_lv(light* L)
 	if (L == nullptr)
 		return;
 	GPU_EVENT(accum_volumetric_lv);
-	// [ SSS ] Fade through distance volumetric lights.
-	if (ps_ssfx_volumetric.x > 0)
-	{
-		float Falloff = ps_ssfx_volumetric.y - std::min(std::max((L->vis.distance - 20) * 0.01f, 0.0f), 1.0f) * ps_ssfx_volumetric.y;
-		L->m_volumetric_intensity = Falloff;
-		L->flags.bVolumetric = Falloff <= 0 ? false : true;
-	}
 
-	if (!L->flags.bVolumetric)
+	if (!L->flags.bVolumetric || (ps_ssfx_volumetric.x > 0 && ps_ssfx_volumetric.y > 0))
 	{
 		return;
 	}
@@ -403,7 +396,7 @@ void CRenderTarget::accum_volumetric_lv(light* L)
 	//Light direction (spot), color, and position. All in world space
 	Fvector L_dir, L_clr, L_pos;
 	L_clr.set(L->color.r, L->color.g, L->color.b);
-	L_clr.mul(L->m_volumetric_intensity);
+	L_clr.mul(std::max(ps_ssfx_volumetric.y, L->m_volumetric_intensity));
 	L_clr.mul(L->m_volumetric_distance);
 	L_clr.mul(L->get_LOD());
 
