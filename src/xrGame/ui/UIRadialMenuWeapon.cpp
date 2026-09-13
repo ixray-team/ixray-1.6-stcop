@@ -164,7 +164,7 @@ void	CUIRadialMenuWeapon::Draw()
 					texture_rect.rb.add(texture_rect.lt);
 					itm.icon->SetTextureRect(texture_rect);
 
-					shared_str sect_name = item->object().cNameSect();
+					shared_str sect_name = item->Get3DIconSectionName();
 					InventoryUtilities::InventoryIconParams icons_struct = InventoryUtilities::GetInventoryIconParams(sect_name.c_str());
 					if (psActorFlags.test(AF_3D_ICONS_INV))
 					{

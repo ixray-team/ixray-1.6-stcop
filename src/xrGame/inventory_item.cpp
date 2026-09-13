@@ -347,8 +347,6 @@ void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 
 void CInventoryItem::Read3dStaticsData(const char* section)
 {
-	m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, section, "3d_static_visual_name", *object().cNameVisual());
-
 	m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, section, "3d_static_rotate", m_3d_static_rotate.set(0,0,0));
 	m_3d_static_rotate.mul(M_PI / 180.0f);
 
@@ -1287,4 +1285,9 @@ void CInventoryItem::SetDropManual(bool val)
 bool CInventoryItem::has_network_synchronization() const
 {
 	return false;
+}
+
+shared_str CInventoryItem::Get3DIconSectionName()
+{
+	return object().cNameSect();
 }
