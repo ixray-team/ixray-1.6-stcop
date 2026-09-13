@@ -215,6 +215,8 @@ public:
 	// Used on next Take() to restore sidearm to holster after kG drop (see CInventory::Take / DropItem).
 	u16 m_preferredSlotAfterPickup = 0xffff;
 
+	bool m_legacy_upgrade_mode = false;
+
 	enum class EInvCellAnchor : u8
 	{
 		BottomRight = 0,
