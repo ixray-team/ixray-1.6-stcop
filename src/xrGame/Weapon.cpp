@@ -823,17 +823,18 @@ void CWeapon::Load		(const char* section)
 	// Загрузка паттернов отдачи
 	LoadRecoilPatterns(section);
 
-	if (m_ammoTypes.size() != undefined_ammo_type)
+	if (pSettings->line_exist(section, "shell_section"))
 	{
-		for (u8 i = 0u; i < m_ammoTypes.size(); ++i)
-		{
-			shared_str index_shell;
-			index_shell.printf("shell_section_%u", i);
+		m_ShellMeshes.insert({undefined_ammo_type, pSettings->r_string(section, "shell_section")});
+	}
+	else for (u8 i = 0u; i < m_ammoTypes.size(); ++i)
+	{
+		shared_str index_shell;
+		index_shell.printf("shell_section_%u", i);
 
-			if (pSettings->line_exist(section, *index_shell))
-			{
-				m_ShellMeshes.insert({i, pSettings->r_string(section, *index_shell)});
-			}
+		if (pSettings->line_exist(section, *index_shell))
+		{
+			m_ShellMeshes.insert({i, pSettings->r_string(section, *index_shell)});
 		}
 	}
 	
