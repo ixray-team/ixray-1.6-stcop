@@ -12,6 +12,11 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 
 	RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
 
+	if (!C.L_textures.empty())
+	{
+		RImplementation.addShaderOption("USE_RAIN_MASK", "1");
+	}
+
 	C.r_ComputePass("rain_render");
 
 	C.r_dx10Texture("s_diffuse", r2_RT_albedo);
@@ -27,7 +32,10 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 	C.r_dx10Texture("s_waterFall", "water\\water_flowing_nmap");
 	C.r_dx10Texture("s_water", "water\\water_SBumpVolume");
 
-	C.r_dx10Texture("s_mask", "rain_mask");
+	if(!C.L_textures.empty())
+	{
+		C.r_dx10Texture("s_mask", C.L_textures[0]);
+	}
 
 	C.r_dx10Sampler("smp_nofilter");
 	C.r_dx10Sampler("smp_rtlinear");

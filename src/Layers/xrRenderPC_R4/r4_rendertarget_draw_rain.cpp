@@ -5,6 +5,7 @@ void CRenderTarget::draw_rain(light& RainSetup)
 	GPU_EVENT(draw_rain);
 
 	float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+	float fWetnessFactor = g_pGamePersistent->Environment().wetness_factor;
 
 	const UINT tgroupsX = (RCache.get_width() + 7u) / 8u;
 	const UINT tgroupsY = (RCache.get_height() + 7u) / 8u;
@@ -96,7 +97,7 @@ void CRenderTarget::draw_rain(light& RainSetup)
 
 		AngleFactor = AngleFactor - std::floor(AngleFactor);
 
-		RCache.set_c("RainDensity", fRainFactor, AngleFactor, 0, 0);
+		RCache.set_c("RainDensity", fRainFactor, AngleFactor, fWetnessFactor, 0);
 		RCache.set_c("RainFallof", ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0);
 
 		RCache.set_c

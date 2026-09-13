@@ -32,8 +32,9 @@ void CRender::render_rain()
 	static float fRainFov = Device.fFOV;
 
 	//bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+	float fWetnessFactor = g_pGamePersistent->Environment().wetness_factor;
 
-	if (fRainFactor < EPS_L)
+	if (std::max(fWetnessFactor, fRainFactor) < EPS_L)
 	{
 		fRainFov = Device.fFOV;
 		return;
