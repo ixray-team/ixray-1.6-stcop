@@ -7,6 +7,7 @@
 
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
 #include "UIRankFaction.h"
 #include "UIAchievements.h"
@@ -59,7 +60,7 @@ private:
 	CUIStatic*			m_monster_icon_back = nullptr;
 	CUIStatic*			m_monster_icon = nullptr;
 	CUIStatic*			m_favorite_weapon_bckgrnd = nullptr;
-	CUIStatic*			m_favorite_weapon_icon = nullptr;
+	CUI3dStatic*		m_favorite_weapon_icon = nullptr;
 
 	CUIStatic*			m_valuable_artifact_icon = nullptr;
 	CUICharacterInfo*	m_ranking_actor_identity = nullptr;
@@ -124,6 +125,8 @@ private:
 	const char* m_onGetRankingsArraySize = {};
 	bool m_isGetPdaStatById = false;
 	const char* m_onGetPdaStatById = {};
+
+	bool m_use_3d_icon = false;
 
 public:
 						CUIRankingWnd			();
