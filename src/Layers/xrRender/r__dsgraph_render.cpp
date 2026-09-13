@@ -300,6 +300,8 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 	PROF_EVENT("r_dsgraph_render_sorted_hud");
 
 	CHudInitializer initalizer(true, true);
+	RenderMap(mapHUDEmissive);
+
 	mapHUDSorted.traverseRL(sorted_L1);
 	mapHUDSorted.clear();
 }
@@ -310,9 +312,6 @@ void R_dsgraph_structure::r_dsgraph_render_emissive()
 
 #if	RENDER!=R_R1
 	RenderMap(mapEmissive);
-
-	CHudInitializer initalizer(true, true);
-	RenderMap(mapHUDEmissive);
 #endif
 }
 

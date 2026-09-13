@@ -843,9 +843,13 @@ void CRender::render_forward()
 	g_pGamePersistent->Environment().RenderLast();
 	Target->phase_combine_volumetric();
 
-	if(mapHUDSorted.size() > 0)
+	if(bSpecial = mapHUDSorted.size() > 0; bSpecial || mapHUDEmissive.size() > 0)
 	{
-	 	GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+		if(bSpecial)
+		{
+			GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+		}
+
 		r_dsgraph_render_sorted_hud();
 	}
 }
