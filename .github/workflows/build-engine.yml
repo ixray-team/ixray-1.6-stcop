@@ -120,7 +120,7 @@ jobs:
           fetch-depth: 0
   
       - name: Setup compressor
-        uses: ixray-team/setup-compressor@v0.2
+        uses: ixray-team/setup-compressor@v0.3
         with:
           codebase: '1.6-stcop'
   
