@@ -379,6 +379,16 @@ void CRender::render_menu() {
 
 void CRender::RenderUI(Fcolor* color)
 {
+	auto pRT_0 = RCache.get_RT(0);
+	auto pRT_1 = RCache.get_RT(1);
+	auto pRT_2 = RCache.get_RT(2);
+	auto pRT_3 = RCache.get_RT(3);
+
+	auto dwWidth = Target->get_width();
+	auto dwHeight = Target->get_height();
+
+	auto pZRT = GRHI->GetDepthStencilView();
+
 	ps_r_taa_jitter.set(0, 0, -1);
 	ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 
@@ -391,14 +401,21 @@ void CRender::RenderUI(Fcolor* color)
 	UIRender->SetScissor(&Scissor);
 	rmNormal();
 
-	Target->phase_ui_postprocess_copy();
+	if(Target->rt_BackbufferLUT->pRT == pRT_0)
+	{
+		Target->phase_ui_postprocess_copy();
+	}
+	else
+	{
+		GRHI->ClearTarget(Target->rt_ui_color->pRT, ERTColor::Transparent);
+	}
 
 	r_dsgraph_render_ui();
 	r_dsgraph_render_sorted_ui();
 
 	Scissor.div(2, 2);
 
-	Target->u_setrt(Target->rt_BackbufferLUT, nullptr, nullptr, nullptr);
+	Target->u_setrt(dwWidth, dwHeight, pRT_0, pRT_1, pRT_2, pRT_3, pZRT);
 
 	UIRender->SetScissor(&Scissor);
 	RImplementation.rmNormal();
