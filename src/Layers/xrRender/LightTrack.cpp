@@ -308,7 +308,7 @@ void	CROS_impl::update	(IRenderable* O)
 			float a = (1 / (L->attenuation0 + L->attenuation1 * d + L->attenuation2 * d * d) - d * L->falloff) * (L->flags.bStatic ? 1.f : 2.f);
 			a = (a > 0) ? a : 0.0f;
 
-			Fvector3 dir;
+			Fvector3 dir { };
 			dir.sub(L->position, position);
 			dir.normalize_safe();
 
@@ -580,7 +580,7 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 
 			if (position.distance_to(source->position) < R)
 			{
-				if((spatial->type != ESPATIAL_TYPE::LIGHTSOURCE) || !source->flags.bStatic)
+				if((spatial->type & ESPATIAL_TYPE::LIGHTSOURCEHEMI) == ESPATIAL_TYPE::LIGHTSOURCEHEMI || !source->flags.bStatic)
 				{
 					add(source);
 				}
@@ -663,17 +663,8 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 
 			if (E > EPS) 
 			{
-				CROS_impl::Light* L = NULL;
-
-				if (xrL->flags.bStatic) 
-				{
-					lights.insert(lights.begin(), CROS_impl::Light());
-					L = &lights[0];
-				}
-				else 
-				{
-					L = &lights.emplace_back();
-				}
+				lights.push_back(CROS_impl::Light());
+				CROS_impl::Light*  L = &lights.back();
 
 				L->source = xrL;
 
