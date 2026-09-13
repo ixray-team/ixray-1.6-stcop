@@ -1832,7 +1832,16 @@ void CWeaponMagazined::OnShot()
 	{
 		if (!m_ShellMeshes.empty())
 		{
-			StartShellEjection(cce_lin_vel, m_ShellMeshes.find(GetAmmoType())->second);
+			u8 lastShell = !m_chamber.empty() ? m_chamber.back().m_LocalAmmoType : !m_magazine.empty() ? m_magazine.back().m_LocalAmmoType : GetAmmoType();
+			auto it = m_ShellMeshes.find(lastShell);
+			if (it != m_ShellMeshes.end())
+			{
+				StartShellEjection(cce_lin_vel, it->second);
+			}
+			else
+			{
+				StartShellEjection(cce_lin_vel, m_ShellMeshes.begin()->second);
+			}
 		}
 		else
 		{
