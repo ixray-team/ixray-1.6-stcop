@@ -300,7 +300,9 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 	PROF_EVENT("r_dsgraph_render_sorted_hud");
 
 	CHudInitializer initalizer(true, true);
+#if	RENDER!=R_R1
 	RenderMap(mapHUDEmissive);
+#endif
 
 	mapHUDSorted.traverseRL(sorted_L1);
 	mapHUDSorted.clear();
