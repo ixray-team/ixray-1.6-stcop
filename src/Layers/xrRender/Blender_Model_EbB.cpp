@@ -101,6 +101,14 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		const char*	psname			= nullptr;
 		switch (C.iElement)
 		{
+		case SE_R1_UI:
+			vsname = psname =	"model_env_hq"; 
+			if (oBlend.value)	C.r_Pass	(vsname,"model_env_sl",true,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
+			else				C.r_Pass	(vsname,"model_env_sl",true);
+			C.r_Sampler			("s_base",	C.L_textures[0]);
+			C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
+			C.r_End				();
+			break;
 		case SE_R1_NORMAL_HQ:	
 			vsname = psname =	"model_env_hq"; 
 			if (oBlend.value)	C.r_Pass	(vsname,psname,true,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);

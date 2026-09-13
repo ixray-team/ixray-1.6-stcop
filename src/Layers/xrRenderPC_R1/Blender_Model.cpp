@@ -100,6 +100,13 @@ void	CBlender_Model::Compile	(CBlender_Compile& C)
 		const char*	psname		= nullptr;
 		switch (C.iElement)
 		{
+		case SE_R1_UI:
+			vsname = psname =	"model_def_hq";
+			if (oBlend.value)	C.r_Pass	(vsname,"simple",true,true,true,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,oAREF.value);
+			else				C.r_Pass	(vsname,"simple",true);
+			C.r_Sampler			("s_base",	C.L_textures[0]);
+			C.r_End				();
+			break;
 		case SE_R1_NORMAL_HQ:	
 			vsname = psname =	"model_def_hq";
 			if (oBlend.value)	C.r_Pass	(vsname,psname,true,true,true,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,oAREF.value);
