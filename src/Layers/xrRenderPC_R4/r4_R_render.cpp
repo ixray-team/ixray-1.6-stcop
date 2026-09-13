@@ -377,7 +377,7 @@ void CRender::render_menu() {
 
 #include "../../Include/xrRender/UIRender.h"
 
-void CRender::RenderUI(bool is_debug)
+void CRender::RenderUI(Fcolor* color)
 {
 	ps_r_taa_jitter.set(0, 0, -1);
 	ps_r_taa_jitter_full.set(ps_r_taa_jitter);
@@ -391,15 +391,7 @@ void CRender::RenderUI(bool is_debug)
 	UIRender->SetScissor(&Scissor);
 	rmNormal();
 
-	if (!is_debug) 
-	{
-		Target->phase_ui_postprocess_copy();
-	}
-	else 
-	{
-		static Fvector4 debug_icon_color = { 0.5, 0, 0, 1 };
-		GRHI->ClearTarget(Target->rt_ui_color->pRT, &debug_icon_color.x);
-	}
+	Target->phase_ui_postprocess_copy();
 
 	r_dsgraph_render_ui();
 	r_dsgraph_render_sorted_ui();
@@ -407,11 +399,11 @@ void CRender::RenderUI(bool is_debug)
 	Scissor.div(2, 2);
 
 	Target->u_setrt(Target->rt_BackbufferLUT, nullptr, nullptr, nullptr);
+
 	UIRender->SetScissor(&Scissor);
 	RImplementation.rmNormal();
 
-	Target->phase_ui_postprocess();
-
+	Target->phase_ui_postprocess(color);
 	++marker;
 }
 

@@ -173,7 +173,7 @@ public:
 
 	virtual	void					Calculate();
 	virtual void					Render();
-	virtual void					RenderUI(bool = false);
+	virtual void					RenderUI(Fcolor* = nullptr);
 
 	virtual void					set_Transform(Fmatrix* M);
 	virtual void					add_Visual(IRenderVisual* visual, bool) override;

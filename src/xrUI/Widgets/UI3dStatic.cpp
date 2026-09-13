@@ -223,8 +223,11 @@ void CUI3dStatic::Draw()
 		::Render->set_Transform(&matrix);
 		::Render->add_Visual(pCurrentVisual, true);
 
+		Fcolor static_color { };
+		static_color.set(GetTextureColor());
+
 		::Render->set_UI(false);
-		::Render->RenderUI();
+		::Render->RenderUI(&static_color);
 
 		UI().PopScissor();
 

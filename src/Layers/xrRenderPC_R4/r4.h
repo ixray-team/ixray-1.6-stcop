@@ -340,7 +340,7 @@ public:
 	// Main
 	virtual void					Calculate					();
 	virtual void					Render						();
-	virtual void					RenderUI					(bool = false);
+	virtual void					RenderUI					(Fcolor* = nullptr);
 
 	virtual void					Screenshot					(ScreenshotMode mode=SM_NORMAL, const char* name = 0);
 	virtual void					Screenshot					(ScreenshotMode mode, CMemoryWriter& memory_writer);

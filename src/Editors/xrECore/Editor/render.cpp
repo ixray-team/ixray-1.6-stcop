@@ -469,7 +469,7 @@ void	CRender::rmNormal()
 	CHK_DX(REDevice->SetViewport(&VP));
 }
 
-void CRender::RenderUI(bool) 
+void CRender::RenderUI(Fcolor* color) 
 {
 }
 
