@@ -7,6 +7,11 @@
 #include "../../xrRHI/RHIUtils.h"
 #include "../../xrCore/Collision/xrCDB.h"
 
+#include "../../xrEngine/GameMtlLib.h"
+#include "../../xrCore/Collision/cl_intersect.h"
+
+
+
 // Defined in xrRender_console.cpp. Kept external (not via the console header) so this
 // file does not pull the console machinery; declared outside the anonymous namespace
 // because a namespace-internal extern would demand a definition inside it (C7631).
@@ -195,8 +200,10 @@ xr_vector<ClusterAssetDesc>& dv_cluster_assets(CDetailManager* m)
 				xr_string tex = name;
 				size_t ext = tex.rfind('.');
 				if (ext != xr_string::npos && ext > 0)
+				{
 					tex.erase(ext);
-				d.tex_name = "alternative_tree_dm\\";
+				}
+
 				d.tex_name += tex;
 			}
 			s.push_back(d);
@@ -384,6 +391,70 @@ static bool dv_static_normal(const collide::rq_result& RQ, Fvector& normal)
 	return true;
 }
 
+void MouseRayFromPoint(Fvector& direction)
+{
+	float mouse_x, mouse_y;
+	SDL_GetMouseState(&mouse_x, &mouse_y);
+	int x = (int)mouse_x;
+	int y = (int)mouse_y;
+
+	Fmatrix m_CamMat;
+	//= Device.mView;
+
+	m_CamMat.k = Device.vCameraDirection;
+	m_CamMat.j = Device.vCameraTop;
+	m_CamMat.i = Device.vCameraRight;
+	m_CamMat.c = Device.vCameraPosition;
+
+	int halfwidth = Device.GetSwapchainWidth() / 2;
+	int halfheight = Device.GetSwapchainHeight() / 2;
+
+	if (!halfwidth || !halfheight)
+	{
+		return;
+	}
+
+	Ivector2 point2;
+	point2.set(x - halfwidth, halfheight - y);
+
+	float size_y = Device.fViewportNear * tan(deg2rad(Device.fFOV) * 0.5f);
+	float size_x = size_y / Device.fASPECT;
+
+	float r_pt = float(point2.x) * size_x / (float)halfwidth;
+	float u_pt = float(point2.y) * size_y / (float)halfheight;
+
+	direction.mul(m_CamMat.k, Device.fViewportNear);
+	direction.mad(direction, m_CamMat.j, u_pt);
+	direction.mad(direction, m_CamMat.i, r_pt);
+	direction.normalize();
+}
+
+ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
+{
+	collide::rq_result* RQ = (collide::rq_result*)params;
+
+	CDB::TRI& T = g_pGameLevel->ObjectSpace.GetStaticTris()[result.element];
+	SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
+	if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
+	{
+		return true;
+	}
+
+	*RQ = result;
+	return false;
+}
+
+collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore)
+{
+	collide::rq_result RQ;
+	RQ.set(nullptr, range, -1);
+	static collide::rq_results RQR;
+	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtStatic);
+	g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, nullptr, ignore);
+	return RQ;
+}
+
+
 // ---------------------------------------------------------------------------
 // World raycast from camera center, returns hit point (or false). When `normal`
 // is given it is filled with the terrain plane normal at the hit point (falls
@@ -392,13 +463,21 @@ static bool dv_static_normal(const collide::rq_result& RQ, Fvector& normal)
 bool dv_raycast(Fvector& hit, Fvector* normal = nullptr)
 {
 	const Fvector& cam = Device.vCameraPosition;
-	const Fvector& dir = Device.vCameraDirection;
+	Fvector dir;
 	float dist = 500.f;
-	collide::rq_result RQ;
+	
 	if (!g_pGameLevel)
 		return false;
-	if (!g_pGameLevel->ObjectSpace.RayPick(cam, dir, dist, collide::rqtStatic, RQ, nullptr))
+
+	MouseRayFromPoint(dir);
+
+	collide::rq_result RQ = GetPickResult(cam, dir, dist, nullptr);
+	if (RQ.element < 0)
+	{
 		return false;
+	}
+
+
 	hit.mad(cam, dir, RQ.range);
 	if (normal)
 	{
