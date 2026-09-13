@@ -722,8 +722,12 @@ CRenderTarget::CRenderTarget()
 	//	TODO: DX10: Create resources only when DX10 rain is enabled.
 	//	Or make DX10 rain switch dynamic?
 	{
-		CBlender_rain	TempBlender;
-		s_rain.create(&TempBlender, "null");
+		CBlender_rain TempBlender; string_path temp { };
+
+		bool b_rain_mask_texture = FS.exist(temp, "$textures$", "rain_mask", ".dds");
+		b_rain_mask_texture = b_rain_mask_texture || FS.exist(temp, "$level$", "rain_mask", ".dds");
+
+		s_rain.create(&TempBlender, "null", b_rain_mask_texture ? "rain_mask" : nullptr);
 	}
 
 	// POINT
