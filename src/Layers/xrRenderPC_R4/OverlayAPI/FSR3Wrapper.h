@@ -49,6 +49,7 @@ public:
 	};
 
 public:
+	bool GetRenderScale(float& RenderScale);
 	bool Create(ContextParameters params);
 	void Destroy();
 
@@ -65,6 +66,8 @@ private:
 	FfxFsr3UpscalerContext Context = {};
 	FfxFsr3UpscalerContextDescription ContextDesc = {};
 	ContextParameters ContextParams;
+
+	u32 GetOptimalPresetForScale(float scale);
 
 	// FSR3 shared resources (see ffxFsr3UpscalerGetSharedResourceDescriptions in the component
 	// source - getting the formats wrong is not caught at creation, only later as corrupt output).
