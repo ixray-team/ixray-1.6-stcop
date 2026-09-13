@@ -21,14 +21,23 @@ dxRenderDeviceRender::dxRenderDeviceRender()
 
 #ifdef USE_DX11
 #include "..\xrRenderPC_R4\OverlayAPI\DLSSWrapper.h"
+#include "..\xrRenderPC_R4\OverlayAPI\FSR3Wrapper.h"
 #endif
 
 void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 {
 #ifdef USE_DX11
-	if (ps_r_scale_mode == 2)
+	switch(ps_r_scale_mode)
 	{
-		g_DLSSWrapper.GetRenderScale(RenderScale);
+		case 2:
+		{
+			g_DLSSWrapper.GetRenderScale(RenderScale);
+		}
+		case 3:
+		{
+			g_Fsr3Wrapper.GetRenderScale(RenderScale);
+		}
+		break;
 	}
 #else
 	RenderScale = 1.0f;
