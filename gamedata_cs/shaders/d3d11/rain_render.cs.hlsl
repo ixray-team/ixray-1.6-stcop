@@ -140,9 +140,6 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 
 	float r = saturate(RainDensity.x);
 
-    //	Apply rain density
-    s *= r;
-
     float fIsUp = -dot(Ldynamic_dir.xyz, N.xyz);
     s *= saturate(fIsUp * 10.0f + 5.5);
 	
@@ -150,6 +147,9 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	{
 		return;
 	}
+
+    //	Apply rain density
+    s *= r;
 	
     fIsUp = max(0, fIsUp);
 
@@ -187,19 +187,20 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	float F90 = saturate(dot(M.Color, 0.333f));
 	
+	float3 Jitter = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].xyz;
+	
+	Jitter = Jitter - 0.5f;
+	Jitter *= rcp(1024.0f);
+	
+#ifdef USE_RAIN_MASK
 	[branch]
 	if(!object_mask)
 	{
 		WorldP = mul(m_invV, P).xyz;
-		float2 tc = WorldP.xz * m_level_scale.zw - m_level_scale.xy;	
-	
-		float3 Jitter = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].xyz;
-		
-		Jitter = Jitter - 0.5f;
-		Jitter *= rcp(1024.0f);
+		float2 tc = WorldP.xz * m_level_scale.zw - m_level_scale.xy;
 	
 		float mask = s_mask.SampleLevel(smp_linear, tc + Jitter.xy * 0.01f, 0).x;
-		mask = lerp(0.0f, smoothstep(r, r * 0.9f, mask), saturate(r * 10.0f));
+		mask = lerp(0.0f, smoothstep(RainDensity.z, max(RainDensity.z - 0.1f, 0.0f), mask), saturate(RainDensity.z * 10.0f));
 		
 		float3 RainNormal = GetFlatNormal(TexCoord);
 		fIsUp = -dot(Ldynamic_dir.xyz, RainNormal.xyz);
@@ -209,7 +210,6 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		M.Specular = lerp(M.Specular, 0.5f, mask);
 		
 		M.Color.xyz *= lerp(1.0f, 0.3f * M.AO, mask);
-		M.Color.xyz += Jitter * 4.0f;
 		
 		M.AO = lerp(M.AO, 1.0f, mask);
 		
@@ -217,8 +217,10 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		
 		s *= 1.0f - mask;
 	}
+#endif
 
 	M.Color *= lerp(1.0f, lerp(0.66f, 1.0f, M.Metalness), s);
+	M.Color.xyz += Jitter * 4.0f;
 	
 	M.Roughness = lerp(M.Roughness, min(0.2f, M.Roughness), s); 
 	M.Specular = lerp(M.Specular, 0.5f * max(0.5f * F90, M.Specular), s);

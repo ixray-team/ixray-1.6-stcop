@@ -21,7 +21,7 @@ float4 main(PSInput I) : SV_Target
 {
 	//consts
 	const float neg_sqr_rad = -1.0 / (65. * 65.);
-	const float2 min_max_bright = float2(2, 4);
+	const float2 min_max_bright = float2(4, 8);
 
 	//Sample blue noise texture
 	//You can replace 0 with m_taa_jitter.w % 32 to animate it (texture contains 32 frames)
