@@ -55,7 +55,7 @@ public:
 		float MaxDist = 0.0f;
 	} FeelParams = {};
 
-	struct ÑontrollerPsiUnBlockParams
+	struct ControllerPsiUnBlockParams
 	{
 		float MinDist = 0.0f;
 		float MaxDist = 0.0f;
