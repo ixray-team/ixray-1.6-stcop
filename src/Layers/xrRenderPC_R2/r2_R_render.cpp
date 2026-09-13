@@ -336,7 +336,7 @@ void CRender::render_menu	()
 	RCache.Render					(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 }
 
-void CRender::RenderUI(bool)
+void CRender::RenderUI(Fcolor* color)
 {
 	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
 

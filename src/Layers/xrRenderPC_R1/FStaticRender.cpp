@@ -512,7 +512,7 @@ void CRender::Calculate				()
 	Device.Statistic->RenderCALC.End	();
 }
 
-void CRender::RenderUI(bool) 
+void CRender::RenderUI(Fcolor* color)
 {
 	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
 

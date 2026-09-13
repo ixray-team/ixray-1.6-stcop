@@ -276,7 +276,7 @@ void CDS0_RenderInterface::Render()
 	GModelPool->Render();
 }
 
-void CDS0_RenderInterface::RenderUI(bool)
+void CDS0_RenderInterface::RenderUI(Fcolor*)
 {
 }
 
