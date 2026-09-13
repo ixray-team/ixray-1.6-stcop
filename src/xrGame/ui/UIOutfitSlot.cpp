@@ -30,25 +30,8 @@ void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 
 	if (current_entity)
 	{
-		if (psDeviceFlags.test(rsR4))
-		{
-			m_background->SetVisual(current_entity->Visual());
-			m_background->SetXYZ(0, M_PI, 0);
-		}
-		else
-		{
-			if (itm)
-			{
-				PIItem _iitem = (PIItem)itm->m_pData;
-				CCustomOutfit* pOutfit = _iitem != nullptr ? _iitem->cast_outfit() : nullptr;
-				VERIFY(pOutfit);
-				m_background->InitTexture(pOutfit->GetFullIconName().c_str());
-			}
-			else
-			{
-				m_background->InitTexture("npc_icon_without_outfit");
-			}
-		}
+		m_background->SetVisual(current_entity->Visual());
+		m_background->SetXYZ(0, M_PI, 0);
 	}
 	else
 	{
