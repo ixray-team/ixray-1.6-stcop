@@ -836,26 +836,78 @@ args: int
 ```
 
 ## CScriptGameObject
-Теперь можно добавлять кастомный вычисляемый дополнительный текст к описанию предмета.
+Теперь можно добавлять кастомный вычисляемый дополнительный текст к описанию и названию предмета как до так и после.
 Полезно для авто генерации дополнительных динамических характеристик предмета.
 
 ```lua
---// Получить строку дополнительного описания установленного на инвентарный предмет
+--// Получить текст перед названием предмета
+object:get_item_prepend_name()
+retval: string
+
+--// Дописать текст перед названием предмета
+object:set_item_prepend_name(text)
+retval: none
+args: string
+
+--// Очистить текст перед названием предмета
+object:unset_item_prepend_name()
+retval: none
+
+--// Проверить, установлен ли текст перед названием предмета
+object:is_item_used_prepend_name()
+retval: bool
+
+--// Получить текст после названия предмета
+object:get_item_additional_name()
+retval: string
+
+--// Дописать текст после названия предмета
+object:set_item_additional_name(text)
+retval: none
+args: string
+
+--// Очистить текст после названия предмета
+object:unset_item_additional_name()
+retval: none
+
+--// Проверить, установлен ли текст после названия предмета
+object:is_item_used_additional_name()
+retval: bool
+
+--// Получить текст перед описанием предмета
+object:get_item_prepend_description()
+retval: string
+
+--// Установить текст предшествующий описанию предмета
+object:set_item_prepend_description(text)
+retval: none
+args: string
+
+--// Очистить текст предшествующий описанию предмета
+object:unset_item_prepend_description()
+retval: none
+
+--// Проверить, установлен ли текст предшествующий описанию предмета
+object:is_item_used_prepend_description()
+retval: bool
+
+--// Получить текст после описания предмета
 object:get_item_additional_description()
 retval: string
 
---// Установить строку дополнительного описания на инвентарный предмет
+--// Установить текст после описания предмета
 object:set_item_additional_description(text)
 retval: none
 args: string
 
---// Очистить строку дополнительного описания установленного на инвентарный предмет
+--// Очистить текст после описания предмета
 object:unset_item_additional_description()
 retval: none
 
---// Проверить, установлена ли строка дополнительного описания на инвентарный предмет
+--// Проверить, установлен ли текст после описания предмета
 object:is_item_used_additional_description()
 retval: bool
+
 
 --// Проверить, активен ли флаг автовзятия в слот при подборе
 object:is_ruck_to_default()
