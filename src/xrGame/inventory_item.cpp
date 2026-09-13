@@ -177,6 +177,8 @@ void CInventoryItem::Load(const char* section)
 	IconsTexture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
 
 	m_inv_rect.set(inv_grid_x, inv_grid_y, inv_grid_width, inv_grid_height);
+	const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
+	m_legacy_upgrade_mode = READ_IF_EXISTS(pSettings, r_bool, section, "legacy_upgrade_mode", isLegacyUpgrade);
 
 	ReadCustomTextAndMarks(section);
 	Read3dStaticsData(section);
