@@ -10,6 +10,8 @@ class FTreeVisual_Prototype final : public dxRender_Visual
 	CDB::MODEL Collision = {};
 	
 public:
+	~FTreeVisual_Prototype() noexcept override = default;
+	
 	void Load(const char* N, IReader *data, u32 dwFlags) override;
 	void Release() override;
 	
