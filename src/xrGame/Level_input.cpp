@@ -780,7 +780,8 @@ void CLevel::IR_GamepadKeyPress(int id)
 
 	if (g_bDisableAllInput)
 	{
-		if (_curr == kQUIT)
+		static bool enableMM = EngineExternal()[EEngineExternalGame::EnableMainMenuForDisabledControls];
+		if (enableMM && _curr == kQUIT)
 		{
 			Console->Execute("main_menu");
 		}
