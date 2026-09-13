@@ -260,7 +260,7 @@ void CCustomDevice::switch_device()
 
 	bool need_fx = active_item == nullptr || active_item->cast_hud_item() == nullptr || !active_item->cast_hud_item()->m_eAnimationsFlags.test(af_prepare_detector);
 
-	if (!CheckCompatibilityInt(active_item ? active_item->cast_hud_item() : nullptr, nullptr))
+	if (active_item && active_item->cast_missile() && active_item->cast_hud_item()->GetNextState() >= CMissile::EMissileStates::eThrowStart)
 	{
 		return;
 	}
