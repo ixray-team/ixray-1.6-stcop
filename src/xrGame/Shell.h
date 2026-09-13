@@ -29,6 +29,7 @@ public:
 	
 	virtual void PH_A_CrPr() override;
 	virtual void PH_B_CrPr() override;
+	virtual void net_Relcase(CObject* O) override;
 
 private:
 	void Eject();
