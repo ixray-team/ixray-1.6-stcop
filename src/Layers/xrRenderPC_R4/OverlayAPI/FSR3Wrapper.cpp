@@ -6,10 +6,99 @@ Fsr3Wrapper g_Fsr3Wrapper;
 
 static void fsr3_message(FfxMsgType type, const wchar_t* message)
 {
-	string512 text;
+	string512 text { };
+
 	const int written = WideCharToMultiByte(CP_ACP, 0, message, -1, text, sizeof(text) - 1, nullptr, nullptr);
 	text[written > 0 ? written : 0] = 0;
+
 	Msg("%s [FSR3] %s", type == FFX_MESSAGE_TYPE_ERROR ? "!" : "~", text);
+}
+
+extern ENGINE_API u32 ps_render_scale_preset;
+extern ENGINE_API float ps_render_scale;
+
+u32 Fsr3Wrapper::GetOptimalPresetForScale(float scale)
+{
+	if (ps_render_scale_preset == 5)
+	{
+		if (scale >= 0.9f)
+		{
+			return 0;
+		}
+		else if (scale >= 0.7f)
+		{
+			return 1;
+		}
+		else if (scale >= 0.6f)
+		{
+			return 2;
+		}
+		else if (scale >= 0.5f)
+		{
+			return 3;
+		}
+		else
+		{
+			return 4;
+		}
+	}
+
+	return ps_render_scale_preset;
+}
+
+bool Fsr3Wrapper::GetRenderScale(float& RenderScale)
+{
+	if (!Created)
+	{
+		Msg("! GetRenderScale Fsr3Wrapper not valid. Fallback!");
+		return false;
+	}
+
+	u32 PresetID = GetOptimalPresetForScale(ps_render_scale);
+	FfxFsr3UpscalerQualityMode PerfQualityValue = FFX_FSR3UPSCALER_QUALITY_MODE_NATIVEAA;
+
+	switch (PresetID)
+	{
+		case 4:
+		{
+			PerfQualityValue = FFX_FSR3UPSCALER_QUALITY_MODE_ULTRA_PERFORMANCE;
+			break;
+		}
+		case 3:
+		{
+			PerfQualityValue = FFX_FSR3UPSCALER_QUALITY_MODE_PERFORMANCE;
+			break;
+		}
+		case 2:
+		{
+			PerfQualityValue = FFX_FSR3UPSCALER_QUALITY_MODE_BALANCED;
+			break;
+		}
+		case 1:
+		{
+			PerfQualityValue = FFX_FSR3UPSCALER_QUALITY_MODE_QUALITY;
+			break;
+		}
+		default:
+		{
+			PerfQualityValue = FFX_FSR3UPSCALER_QUALITY_MODE_NATIVEAA;
+			break;
+		}
+	}
+
+	u32 RenderW = 0, RenderH = 0;
+	FfxErrorCode Result = ffxFsr3UpscalerGetRenderResolutionFromQualityMode(&RenderW, &RenderH, Device.TargetWidth, Device.TargetHeight, PerfQualityValue);
+
+	if (Result != FFX_OK)
+	{
+		Msg("! ffxFsr3UpscalerGetRenderResolutionFromQualityMode not valid. Fallback!");
+		return false;
+	}
+
+	Msg("* FSR Target - %dx%d", RenderW, RenderH);
+	RenderScale = float(RenderH) / float(Device.TargetHeight);
+
+	return true;
 }
 
 bool Fsr3Wrapper::Create(ContextParameters params)
@@ -27,6 +116,7 @@ bool Fsr3Wrapper::Create(ContextParameters params)
 	ScratchBuffer.resize(scratchSize);
 
 	FfxErrorCode errorCode = ffxGetInterfaceDX11(&ContextDesc.backendInterface, ffxGetDeviceDX11(params.device), ScratchBuffer.data(), ScratchBuffer.size(), 1);
+
 	if (errorCode != FFX_OK)
 	{
 		Msg("! [FSR3] cannot create the DX11 interface (%d)", errorCode);
@@ -44,10 +134,12 @@ bool Fsr3Wrapper::Create(ContextParameters params)
 		TexDesc.SampleDesc.Count = 1;
 		TexDesc.Usage = D3D11_USAGE_DEFAULT;
 		TexDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+
 		if (renderTarget)
 		{
 			TexDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
 		}
+
 		return SUCCEEDED(params.device->CreateTexture2D(&TexDesc, nullptr, out));
 	};
 
@@ -55,6 +147,7 @@ bool Fsr3Wrapper::Create(ContextParameters params)
 	{
 		Msg("! [FSR3] cannot create the shared buffers");
 		Destroy();
+
 		return false;
 	}
 
@@ -68,11 +161,16 @@ bool Fsr3Wrapper::Create(ContextParameters params)
 	ContextDesc.flags |= FFX_FSR3UPSCALER_ENABLE_DEBUG_CHECKING;
 #endif
 
+	ContextDesc.flags |= FFX_FSR3UPSCALER_ENABLE_HIGH_DYNAMIC_RANGE;
+	ContextDesc.flags |= FFX_FSR3UPSCALER_ENABLE_AUTO_EXPOSURE;
+
 	errorCode = ffxFsr3UpscalerContextCreate(&Context, &ContextDesc);
+
 	if (errorCode != FFX_OK)
 	{
 		Msg("! [FSR3] context creation failed (%d)", errorCode);
 		Destroy();
+
 		return false;
 	}
 
