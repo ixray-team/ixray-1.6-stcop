@@ -4,12 +4,12 @@
 
 struct SShellManager
 {
-	static constexpr u32 MAX_SHELLS = 128;
+	static constexpr int MAX_SHELLS = 128;
 
-	u32 head, tail, count;
+	int head, tail, count;
 	xr_vector<CShell*> managed_shells;
 
-	SShellManager(): head(0u), tail(0u), count(0u)
+	SShellManager(): head(0), tail(0), count(0)
 	{
 		managed_shells.resize(MAX_SHELLS);
 	}
@@ -20,12 +20,26 @@ struct SShellManager
 		{
 			managed_shells[head]->DestroyObject();
 			managed_shells[head] = nullptr;
-			head = (head + 1u) % MAX_SHELLS;
+			head = (head + 1) % MAX_SHELLS;
 			--count;
 		}
 
 		managed_shells[tail] = shell;
-		tail = (tail + 1u) % MAX_SHELLS;
+		tail = (tail + 1) % MAX_SHELLS;
 		++count;
+	}
+	
+	void net_Relcase(const CObject* to_remove)
+	{
+		for (auto& managed_shell : managed_shells)
+		{
+			if (managed_shell == to_remove)
+			{
+				managed_shell = nullptr;
+				clamp(--head, 0, MAX_SHELLS);
+				clamp(--tail, 0, MAX_SHELLS);
+				clamp(--count, 0, MAX_SHELLS);
+			}
+		}
 	}
 };

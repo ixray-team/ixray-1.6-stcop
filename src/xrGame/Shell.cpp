@@ -61,6 +61,12 @@ void CShell::PH_B_CrPr()
 {
 }
 
+void CShell::net_Relcase(CObject* O)
+{
+	CPhysicObject::net_Relcase(O);
+	Level().ShellManager().net_Relcase(O);
+}
+
 void CShell::ContactCallback(bool& do_collide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
 {
 	dxGeomUserData* data = retrieveGeomUserData(bo1 ? c.geom.g1 : c.geom.g2);
