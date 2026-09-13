@@ -120,6 +120,20 @@ void CRenderTarget::u_setrt(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTa
 	RCache.set_RT(_2, 1);
 	RCache.set_RT(_3, 2);
 	RCache.set_RT(nullptr, 3);
+
+	GRHI->SetDepthStencilView(zb);
+}
+
+void CRenderTarget::u_setrt(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIRenderTargetView* _4, IRHIDepthStencilView* zb)
+{
+	dwWidth = W;
+	dwHeight = H;
+
+	RCache.set_RT(_1, 0);
+	RCache.set_RT(_2, 1);
+	RCache.set_RT(_3, 2);
+	RCache.set_RT(_4, 3);
+
 	GRHI->SetDepthStencilView(zb);
 }
 
