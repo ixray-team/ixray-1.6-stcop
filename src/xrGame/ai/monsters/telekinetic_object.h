@@ -77,11 +77,7 @@ struct SCollisionHitCallback :
 	{
 	}
 
-	void call(IPhysicsShellHolder* ph_shell, float min_collision_speed, float max_collision_speed, float& collision_speed, float& health_loss, ICollisionDamageInfo* di) override
-	{
-		health_loss = 0.f;
-		object->set_collision_hit_callback(nullptr);
-	}
+	void call(IPhysicsShellHolder* ph_shell, float min_collision_speed, float max_collision_speed, float& collision_speed, float& health_loss, ICollisionDamageInfo* di) override;
 };
 
 struct STelekineticObject
@@ -156,14 +152,15 @@ struct STelekineticWeaponObject : STelekineticObject
 	
 	STelekineticWeaponParams weapon_params;
 	CWeaponMagazined* weapon;
+	float initial_weapon_condition;
 
-	u32 weapon_phase_start_time; // Когда оружие начало/перестало стрелять.
-	u32 weapon_next_phase_time;	 // Когда оружию перестать/начать стрелять.
+	u32 weapon_phase_start_time;
+	u32 weapon_next_phase_time;
 	
 	u32 first_shot_delay_ms = 0;
 	s8 backup_weapon_fire_mode = s8(-1);
 
-	STelekineticWeaponObject(STelekineticWeaponParams weapon_params, const STelekineticObjectParams& tele_params);
+	STelekineticWeaponObject(const STelekineticWeaponParams& weapon_params, const STelekineticObjectParams& tele_params);
 
 	void setup_local_weapon_things();
 	void restore_global_weapon_things();
