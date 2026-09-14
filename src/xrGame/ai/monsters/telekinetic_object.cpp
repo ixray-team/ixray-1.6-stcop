@@ -15,6 +15,12 @@
 #include "../../Inventory.h"
 #include "../../ActorCondition.h"
 
+void SCollisionHitCallback::call(IPhysicsShellHolder* ph_shell, float min_collision_speed, float max_collision_speed, float& collision_speed, float& health_loss, ICollisionDamageInfo* di)
+{
+	health_loss = 0.f;
+	object->set_collision_hit_callback(nullptr);
+}
+
 STelekineticObject::STelekineticObject(const STelekineticObjectParams& tele_params) : params(tele_params)
 {
 	STelekineticObject::switch_state(ETelekineticState::TS_RAISE);
@@ -103,6 +109,13 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 		return;
 	}
 
+	auto tele = static_cast<STelekineticObject*>(self->callback_data);
+	
+	if (tele == nullptr)
+	{
+		return;
+	}
+
 	CPhysicsShellHolder* ph_self_object = smart_cast<CPhysicsShellHolder*>(self->ph_ref_object);
 	if (ph_self_object == nullptr || ph_self_object->m_pPhysicsShell == nullptr)
 	{
@@ -131,48 +144,35 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 		Fvector linear_vel;
 		ph_self_object->PHGetLinearVell(linear_vel);
 
-		float vel = linear_vel.magnitude();
-		float pure_j = EPS_L;
-
-		if (PIItem item = ph_self_object->cast_inventory_item())
-		{
-			pure_j = item->Weight() * pow(vel, 2.f) * .5f;
-		}
-		else
-		{
-			pure_j = ph_self_object->GetMass() * pow(vel, 2.f) * .5f;
-		}
-
-		float kinetic_energy = fabsf(1.f - expf(-EPS_L * pure_j));
-		float difficulty_modifier = 1.f;
+		float health_loss = 0.f;
 
 		if (actor)
 		{
 			switch (g_SingleGameDifficulty)
 			{
 				case egdNovice:
-					difficulty_modifier = 0.50f;
+					health_loss = tele->params.novice_difficulty_object_hit_factor;
 					break;
 
 				case egdStalker:
-					difficulty_modifier = 0.70f;
+					health_loss = tele->params.stalker_difficulty_object_hit_factor;
 					break;
 
 				case egdVeteran:
-					difficulty_modifier = 0.80f;
+					health_loss = tele->params.veteran_difficulty_object_hit_factor;
 					break;
 
 				case egdMaster:
-					difficulty_modifier = 1.0f;
+					health_loss = tele->params.master_difficulty_object_hit_factor;
 					break;
 			}
 		}
 		else if (ai_stalker)
 		{
-			difficulty_modifier = .3f;
+			health_loss = tele->params.stalker_difficulty_object_hit_factor;
 		}
-		
-		float health_loss = kinetic_energy * difficulty_modifier;
+
+		health_loss *= entity_alive->conditions().GetMaxHealth();
 
 		if (actor && EngineExternal()[EEngineExternalGame::EnablePolterStaminaLooseOnHit])
 		{
@@ -408,6 +408,7 @@ void STelekineticObject::throw_object_time(const Fvector& target, float time)
 	// Aphile: хак, задаём new SCollisionHitCallback, чтобы физика не считала урон от столкновения, 
 	// а все рассчёт проходили в кастомном collide_callback.
 	params.object->set_collision_hit_callback(new SCollisionHitCallback(params.object));
+	params.object->m_pPhysicsShell->set_CallbackData(this);
 	params.object->m_pPhysicsShell->add_ObjectContactCallback(collision_callback);
 
 	params.object->m_pPhysicsShell->applyImpulseTrace(params.object->Position(), transference, params.object->m_pPhysicsShell->getMass());
@@ -504,10 +505,11 @@ void STelekineticObject::update_hold_sound()
 
 // -------------------- WEAPON CONTROLLER --------------------
 
-STelekineticWeaponObject::STelekineticWeaponObject(STelekineticWeaponParams weapon_params, const STelekineticObjectParams& tele_params) : 
+STelekineticWeaponObject::STelekineticWeaponObject(const STelekineticWeaponParams& weapon_params, const STelekineticObjectParams& tele_params) : 
 	STelekineticObject(tele_params), weapon_params(weapon_params), weapon(smart_cast<CWeaponMagazined*>(tele_params.object))
 {
 	STelekineticWeaponObject::switch_state(ETelekineticState::TS_RAISE);
+	initial_weapon_condition = weapon ? weapon->GetCondition() : 1.f;
 }
 
 void STelekineticWeaponObject::setup_local_weapon_things()
@@ -857,6 +859,26 @@ void STelekineticWeaponObject::perform_keep_object()
 {
 	inherited::perform_keep_object();
 
+	if (weapon->H_Parent())
+	{
+		weapon->set_collision_hit_callback(nullptr);
+
+		if (weapon->m_pPhysicsShell)
+		{
+			weapon->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
+		}
+
+		stop_object_particles();
+		switch_state(ETelekineticState::TS_NONE);
+		return;
+	}
+
+	if (weapon->GetCondition() < initial_weapon_condition)
+	{
+		release();
+		return;
+	}
+
 	update_auto_aim();
 
 	if (!can_shoot())
@@ -870,9 +892,9 @@ void STelekineticWeaponObject::perform_keep_object()
 bool STelekineticWeaponObject::can_be_thrown()
 {
 	u32 current_elapsed = weapon->GetCurrentElapsed(weapon->IsGrenadeMode());
-	u32 current_champer = weapon->GetAmmoChamberElapsed();
+	u32 current_chamber = weapon->GetAmmoChamberElapsed();
 
-	return current_elapsed + current_champer <= 0 || weapon->IsMisfire();
+	return current_elapsed + current_chamber <= 0 || weapon->IsMisfire();
 }
 
 void STelekineticWeaponObject::release()
@@ -887,13 +909,12 @@ void STelekineticWeaponObject::switch_state(ETelekineticState new_state)
 
 	if (state == ETelekineticState::TS_RAISE)
 	{
-		weapon->SetCanTake(false);
+		weapon->SetCanTake(true);
 		setup_local_weapon_things();
 	}
 
 	if (state == ETelekineticState::TS_THROW || new_state == ETelekineticState::TS_NONE)
 	{
-		weapon->SetCanTake(true);
 		weapon_end_shooting();
 		restore_global_weapon_things();
 	}
