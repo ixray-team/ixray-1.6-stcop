@@ -1,11 +1,9 @@
 #include "common.hlsli"
 
-float4 brush_worldpos; // xy = brush center (world XZ)
-float4 brush_params;   // x = radius, y = soft (0..1), z = press/alpha, w = mode:
-                       //   0 hover, 1 erase (red), 2 paint warning, 3 mask overlay
+float4 brush_worldpos; // xy = stamp center (world XZ)
+float4 brush_params;   // x = radius, y = soft, z = stamp alpha, w = unused
 float4 brush_noise;    // x = seed, y = pattern freq, z = threshold, w = sharp/0=off
-float4 brush_color;    // rgb = tint, a = edge hardness (falloff at rim, 0..0.9)
-float4 brush_extra;    // x = cursor circle alpha, y = pattern preview alpha
+float4 brush_color;    // rgb = tint, a = edge hardness
 
 struct v2p
 {
@@ -64,13 +62,6 @@ static float pattern_local(float2 p, float freq, float seed)
 	return v * v * (3.0 - 2.0 * v);
 }
 
-// Thin ring-line falloff: 1 right on the circle, 0 at `ringw` away.
-static float lineMask(float d, float ringw)
-{
-	float t = saturate(d / ringw);
-	return (1.0 - t) * (1.0 - t);
-}
-
 float4 main(v2p I) : SV_TARGET
 {
 	float2 dv = I.wp.xz - brush_worldpos.xy;
@@ -79,17 +70,12 @@ float4 main(v2p I) : SV_TARGET
 	float soft = clamp(brush_params.y, 0.01, 0.99);
 	float innerR = radius * (1.0 - soft);
 
-	// Mode 3: mask overlay of already-painted cells (early return, unrelated to brush).
-	if (brush_params.w >= 2.5 && brush_params.w < 3.5)
-		return float4(I.color.rgb, clamp(brush_params.z, 0.0, 1.0));
-
-	// Falloff identical to the CPU stroke: 1.0 inside the hard core (innerR), drops
-	// to edge_hardness at the outer radius.
+	// Falloff identical to the CPU stroke: 1.0 inside the hard core, drops to
+	// edge_hardness at the outer radius.
 	float h = clamp(brush_color.a, 0.0, 0.99);
 	float fall = lerp(1.0, h, smoothstep(innerR, radius, dist));
 
-	// Noise mask clipped by the threshold/sharpness, modulated 0.35..1.0 over the
-	// WHOLE disk - continuous field, never gated away or cut by an inner ring.
+	// Noise mask, modulated 0.35..1.0 across the stamp.
 	float patternVis = 1.0;
 	if (brush_noise.w > 0.0001)
 	{
@@ -99,37 +85,11 @@ float4 main(v2p I) : SV_TARGET
 		patternVis = lerp(0.35, 1.0, stroke);
 	}
 
-	// Guide circles: outer = brush radius, inner = hard-core edge. Thin, sharp lines
-	// (fixed width relative to the radius, nothing adaptive). The mesh overhangs the
-	// brush radius (padding), so the rings always have triangles under them and can
-	// never be clipped as the brush moves.
-	float ringw = max(0.12, radius * 0.04);
-	float ringO = lineMask(abs(radius - dist), ringw);
-	float ringI = 0.0;
-	if (innerR > ringw * 3.0)
-		ringI = lineMask(abs(innerR - dist), ringw);
-	float ring = max(ringO, ringI);
-	float ringA = ring * brush_extra.x; // driven by the show_cursor toggle
-
-	// Tint: wipe/erode red, everything else the overlay hue.
-	float3 tint = brush_color.rgb;
-	if (brush_params.w >= 0.5 && brush_params.w < 1.5)
-		tint = float3(1.0, 0.3, 0.2);
-
-	// Content: the live brush cursor = noise preview inside the radius (fades over the
-	// ring line width at the edge, so the padding mesh beyond the circles stays clean).
-	// Painted strokes are a SEPARATE shader layer (detail_brush_trail) and never come
-	// through this shader.
-	float inside = 1.0 - smoothstep(radius - ringw, radius + ringw, dist);
-	float contentA = fall * patternVis * brush_extra.y;
-	contentA *= inside;
-
-	// Rings sit on top as bright lines.
-	float3 ringTint = float3(1.0, 0.98, 0.9);
-	float3 col = lerp(tint, ringTint, brush_extra.x * smoothstep(0.0, 0.35, ring));
-
-	float a = max(ringA, contentA);
-	if (a <= 0.001)
+	// The imprint layer: painted strokes only. Fades with the stamp alpha (settled by
+	// the editor from age/lifetime/intensity). No rings, no cursor - the brush is a
+	// separate shader layer on top.
+	float contentA = fall * patternVis * saturate(brush_params.z);
+	if (contentA <= 0.001)
 		discard;
-	return float4(col, saturate(a));
+	return float4(brush_color.rgb, saturate(contentA));
 }
