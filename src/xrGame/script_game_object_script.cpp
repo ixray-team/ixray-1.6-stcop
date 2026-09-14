@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "script_game_object.h"
+#include "WeaponsModifiers.h"
 #include "game_object_space.h"
 #include "sight_manager_space.h"
 #include "../xrScripts/exports/script_ini_file.h"
@@ -126,6 +127,18 @@ void CScriptGameObject::script_register(lua_State *L)
 {
 	module(L)
 	[
+		class_<enum_exporter<WeaponModifier>>("wpn_modifiers").enum_("type")
+		[
+			value("bullet_speed", (int)WeaponModifier::eBulletSpeedCoeff),
+			value("crosshair_inertion", (int)WeaponModifier::eCrosshairInertionCoeff),
+			value("fire_dispersion_base", (int)WeaponModifier::eFireDispersionBaseCoeff),
+			value("hit_impulse", (int)WeaponModifier::eHitImpulseCoeff),
+			value("hit_power", (int)WeaponModifier::eHitPowerCoeff),
+			value("recoil", (int)WeaponModifier::eRecoilCoeff),
+			value("rpm", (int)WeaponModifier::eRpmCoeff),
+			value("silencer_hit_power", (int)WeaponModifier::eSilencerHitPowerCoeff),
+			value("unsilenced_hit_power", (int)WeaponModifier::eUnsilencedHitPowerCoeff)
+		],
 		class_<CSightParams>("CSightParams")
 			.enum_("bla-bla")
 			[
@@ -1051,6 +1064,8 @@ void CScriptGameObject::script_register(lua_State *L)
 			.def("item_on_belt",				&CScriptGameObject::ItemOnBelt) 
 			.def("belt_count",					&CScriptGameObject::BeltSize)  													   
 			.def("get_actor_max_weight",		&CScriptGameObject::GetActorMaxWeight)
+			.def("get_weapon_modifier",		&CScriptGameObject::GetWeaponModifier)
+			.def("set_weapon_modifier",		&CScriptGameObject::SetWeaponModifier)
 			.def("set_actor_max_weight",		&CScriptGameObject::SetActorMaxWeight)
 			.def("get_actor_max_walk_weight",	&CScriptGameObject::GetActorMaxWalkWeight)
 			.def("set_actor_max_walk_weight",	&CScriptGameObject::SetActorMaxWalkWeight)

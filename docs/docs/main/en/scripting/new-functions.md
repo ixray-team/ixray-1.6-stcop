@@ -38,6 +38,8 @@ args: value (boolean)
 
 Scripted look-at, zoom and tracking: [Camera focus](camera-focus.md).
 
+Actor weapon modifiers: `db.actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF)` reads a coefficient; adding a second argument sets it. Coefficients are saved with the actor. See [Actor weapon modifiers](/en/weapon-system/actor-weapon-modifiers) for the complete API and save compatibility.
+
 ### New
 
 * Actor Status

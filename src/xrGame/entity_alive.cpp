@@ -88,7 +88,12 @@ STR_VECTOR* CEntityAlive::m_pFireParticlesVector = nullptr;
 CEntityAlive::CEntityAlive() :
 	m_hit_bone_surface_areas_actual	( false )
 {
-	
+	WeaponModifierCoefficients.resize(WeaponModifier::eWpnModifierTypeMax);
+	for (float& Coefficient : WeaponModifierCoefficients)
+	{
+		Coefficient = 1.0f;
+	}
+
 	monster_community		= new MONSTER_COMMUNITY	();
 
 	m_ef_weapon_type		= u32(-1);
@@ -683,12 +688,20 @@ void CEntityAlive::save	(NET_Packet &output_packet)
 {
 	inherited::save(output_packet);
 	conditions().save(output_packet);
+	for (float Coefficient : WeaponModifierCoefficients)
+	{
+		output_packet.w_float(Coefficient);
+	}
 }
 
 void CEntityAlive::load	(IReader &input_packet)
 {
 	inherited::load(input_packet);
 	conditions().load(input_packet);
+	for (float& Coefficient : WeaponModifierCoefficients)
+	{
+		Coefficient = input_packet.r_float();
+	}
 }
 
 void CEntityAlive::Serialize(ISaveObject& Object)

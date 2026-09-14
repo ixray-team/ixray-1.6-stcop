@@ -1032,6 +1032,8 @@ public:
 			//Phantom
 			void				PhantomSetEnemy(CScriptGameObject*);
 			//Actor
+			float GetWeaponModifier(u32 Type) const;
+			bool SetWeaponModifier(u32 Type, float Value);
 			float		GetActorMaxWeight() const;
 			void		SetActorMaxWeight(float max_weight);
 			float		GetActorMaxWalkWeight() const;
