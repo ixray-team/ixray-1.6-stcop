@@ -319,6 +319,10 @@ void CRender::create()
 
 void CRender::destroy() 
 {
+	// Release the editor's lazily created brush resources while the device is still
+	// alive - their destructors dereference DEV, which is null by DLL detach time.
+	DetailLayers_EditorDestroy();
+
 	m_bMakeAsyncSS = false;
 	FluidManager.Destroy();
 	::PortalTraverser.destroy();

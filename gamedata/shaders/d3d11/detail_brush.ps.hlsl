@@ -1,9 +1,11 @@
 #include "common.hlsli"
 
-float4 brush_worldpos; // xy = world-space brush center
-float4 brush_params;   // x = radius, y = soft (0..1), z = alpha, w = mode (0 paint, 1 erase, 2 white press, 3 mask overlay)
-float4 brush_noise;    // x = seed, y = frequency (pattern scale inside the brush, 1/m), z = threshold, w = sharp/0=off
-float4 brush_color;    // rgba
+float4 brush_worldpos; // xy = brush center (world XZ)
+float4 brush_params;   // x = radius, y = soft (0..1), z = press/alpha, w = mode:
+                       //   0 hover, 1 erase (red), 2 paint warning, 3 mask overlay
+float4 brush_noise;    // x = seed, y = pattern freq, z = threshold, w = sharp/0=off
+float4 brush_color;    // rgb = tint, a = edge hardness (falloff at rim, 0..0.9)
+float4 brush_extra;    // x = cursor circle alpha, y = pattern preview alpha
 
 struct v2p
 {
@@ -14,8 +16,6 @@ struct v2p
 
 // Integer-lattice value noise, bit-identical to fastNoise2D() in
 // DetailManager_Decompress.cpp - the exact noise the grass scale generator uses.
-// Same hash constants, same smoothed bilinear patch, so the brush shows the same
-// noise the terrain itself is built from.
 static float fnoise2(float x, float y)
 {
 	int ix = int(floor(x));
@@ -45,11 +45,7 @@ static float fnoise2(float x, float y)
 	return nx0 * (1.0 - fy) + nx1 * fy;
 }
 
-// World-anchored pattern (p = world-space meters, freq 1/m): the noise is glued to the
-// terrain, so it scrolls through the brush as the brush rolls over the ground and the
-// painted imprint stays continuous. Same domain warp as the cluster generator: two
-// offset warp lattices bend a master lattice into organic patches - no flat tones, no
-// repetitive round dots, and it scales down to sub-meter detail for fine work.
+// World-anchored pattern, bit-compatible with dv_pattern in DetailLayersEditor.cpp.
 static float pattern_local(float2 p, float freq, float seed)
 {
 	float x = p.x * freq;
@@ -58,7 +54,21 @@ static float pattern_local(float2 p, float freq, float seed)
 	float sz = z + seed * 0.3;
 	float wa = fnoise2(x * 1.7 + 500.0, z * 1.7 + 500.0);
 	float wb = fnoise2(x * 1.7 + 1500.0, z * 1.7 + 1500.0);
-	return saturate(fnoise2(sx + (wa - 0.5) * 0.4, sz + (wb - 0.5) * 0.4));
+	float mx = sx + (wa - 0.5) * 0.4;
+	float mz = sz + (wb - 0.5) * 0.4;
+	float v = fnoise2(mx, mz);
+	v += 0.5 * fnoise2(mx * 2.13 + 137.7, mz * 2.13 + 273.1);
+	v += 0.25 * fnoise2(mx * 4.71 + 107.3, mz * 4.71 + 531.7);
+	v *= 0.5714286;
+	v = saturate(v);
+	return v * v * (3.0 - 2.0 * v);
+}
+
+// Thin ring-line falloff: 1 right on the circle, 0 at `ringw` away.
+static float lineMask(float d, float ringw)
+{
+	float t = saturate(d / ringw);
+	return (1.0 - t) * (1.0 - t);
 }
 
 float4 main(v2p I) : SV_TARGET
@@ -67,59 +77,59 @@ float4 main(v2p I) : SV_TARGET
 	float dist = length(dv);
 	float radius = max(brush_params.x, 0.001);
 	float soft = clamp(brush_params.y, 0.01, 0.99);
+	float innerR = radius * (1.0 - soft);
 
-	float fall = saturate((radius - dist) / max(radius * (1.0 - soft), 0.001));
-	if (fall <= 0.0)
-		discard;
-
-	// Mask overlay (mode 3): persistent highlight of already-painted cells. The tint is
-	// per-vertex from the editor (green = painted, red = cleared, amber = asset mix).
-	if (brush_params.w >= 2.5)
+	// Mode 3: mask overlay of already-painted cells (early return, unrelated to brush).
+	if (brush_params.w >= 2.5 && brush_params.w < 3.5)
 		return float4(I.color.rgb, clamp(brush_params.z, 0.0, 1.0));
 
-	// World-anchored modulation, not gating: the pattern only scales the strength
-	// (0.35..1) so every cell under the brush is affected - strokes always land where
-	// the player points, and the imprint scrolls with the terrain while rolling.
-	float stroke = 1.0;
-	float sharp = brush_noise.w;
-	if (sharp > 0.0001)
+	// Falloff identical to the CPU stroke: 1.0 inside the hard core (innerR), drops
+	// to edge_hardness at the outer radius.
+	float h = clamp(brush_color.a, 0.0, 0.99);
+	float fall = lerp(1.0, h, smoothstep(innerR, radius, dist));
+
+	// Noise mask clipped by the threshold/sharpness, modulated 0.35..1.0 over the
+	// WHOLE disk - continuous field, never gated away or cut by an inner ring.
+	float patternVis = 1.0;
+	if (brush_noise.w > 0.0001)
 	{
-		stroke = smoothstep(brush_noise.z - sharp * 0.5, brush_noise.z + sharp * 0.5,
-			pattern_local(I.wp.xz, brush_noise.y, brush_noise.x));
+		float v = pattern_local(I.wp.xz, brush_noise.y, brush_noise.x);
+		float stroke = smoothstep(brush_noise.z - brush_noise.w * 0.5,
+			brush_noise.z + brush_noise.w * 0.5, v);
+		patternVis = lerp(0.35, 1.0, stroke);
 	}
 
-	// Concentric rings for the white press imprint (mode 2): a crisp outer edge plus
-	// two inner guide rings, drawn even where the pattern modulates the cells.
-	float ring = 0.0;
-	if (brush_params.w >= 1.5)
-	{
-		float ww = max(radius * 0.035, 0.02);
-		ring = max(1.0 - saturate(abs(radius - dist) / ww),
-				max(1.0 - saturate(abs(radius * 0.72 - dist) / ww),
-					1.0 - saturate(abs(radius * 0.45 - dist) / ww)));
-	}
-	else if (brush_params.w < 0.5f)
-	{
-		// Passive hover: crisp outer boundary ring so the brush circle is always obvious
-		// even where the pattern silhouette leaves cells transparent.
-		float ww = max(radius * 0.03, 0.02);
-		ring = 1.0 - saturate(abs(radius - dist) / ww);
-	}
+	// Guide circles: outer = brush radius, inner = hard-core edge. Thin, sharp lines
+	// (fixed width relative to the radius, nothing adaptive). The mesh overhangs the
+	// brush radius (padding), so the rings always have triangles under them and can
+	// never be clipped as the brush moves.
+	float ringw = max(0.12, radius * 0.04);
+	float ringO = lineMask(abs(radius - dist), ringw);
+	float ringI = 0.0;
+	if (innerR > ringw * 3.0)
+		ringI = lineMask(abs(innerR - dist), ringw);
+	float ring = max(ringO, ringI);
+	float ringA = ring * brush_extra.x; // driven by the show_cursor toggle
 
-	float3 tint;
-	if (brush_params.w >= 1.5)
-		tint = float3(1.0, 1.0, 1.0);
-	else
-		tint = (brush_params.w < 0.5f) ? brush_color.rgb : float3(1.0, 0.35, 0.25);
-	// Hover shows the exact stamp: cells below the threshold stay transparent, above it
-	// light up - a silhouette of what the stroke will plant BEFORE the mouse is pressed.
-	// Painting modes keep the 0.35..1 modulation floor so the imprint is always visible.
-	float patternVis = (sharp > 0.0001)
-		? (brush_params.w < 0.5f ? stroke : lerp(0.35, 1.0, stroke))
-		: 1.0;
-	float press = saturate(brush_params.z);
-	float coreA = fall * patternVis * press;
-	float ringA = ring * press;
-	float a = max(coreA, ringA);
-	return float4(tint, a * brush_color.a);
+	// Tint: wipe/erode red, everything else the overlay hue.
+	float3 tint = brush_color.rgb;
+	if (brush_params.w >= 0.5 && brush_params.w < 1.5)
+		tint = float3(1.0, 0.3, 0.2);
+
+	// Content: the live brush cursor = noise preview inside the radius (fades over the
+	// ring line width at the edge, so the padding mesh beyond the circles stays clean).
+	// Painted strokes are a SEPARATE shader layer (detail_brush_trail) and never come
+	// through this shader.
+	float inside = 1.0 - smoothstep(radius - ringw, radius + ringw, dist);
+	float contentA = fall * patternVis * brush_extra.y;
+	contentA *= inside;
+
+	// Rings sit on top as bright lines.
+	float3 ringTint = float3(1.0, 0.98, 0.9);
+	float3 col = lerp(tint, ringTint, brush_extra.x * smoothstep(0.0, 0.35, ring));
+
+	float a = max(ringA, contentA);
+	if (a <= 0.001)
+		discard;
+	return float4(col, saturate(a));
 }
