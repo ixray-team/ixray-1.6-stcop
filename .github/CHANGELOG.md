@@ -12,6 +12,24 @@
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 1.3.6 (September 2026)
+
+### Common
+
+- Updated GitHub Actions workflows (@Drombeys)
+- Updated website (@Drombeys, @FFx0001, @MafiosiGhost)
+- Updated root documents (@Drombeys)
+
+### Engine 
+
+- Fixed rain sound playback (@Drombeys)
+- Fixed Spawn Manager crash on empty `inv_name` (@MiS)
+- Fixed script effector memory allocation (@Shtrecker)
+
+### Gameplay
+
+- Fixed detector switching (@Shtrecker)
+
 ## Release 1.3.5 (September 2026)
 
 ### Common

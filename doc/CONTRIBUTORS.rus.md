@@ -30,6 +30,7 @@
   - kola2451
   - FFx0001
   - Desert Cliff (mrGlock5)
+  - vertver
 
 - IX-Ray Partners:
   - _V_O_IN_
@@ -99,6 +100,8 @@
 - Emmis
 - wikiraccoon
 - SaloEater
+- MiS
+- gunslingermod
 
 ## Бывшие участники
 
