@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "GraphEditor.h"
 #include "ImUtils.h"
 
