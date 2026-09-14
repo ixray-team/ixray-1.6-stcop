@@ -118,6 +118,18 @@ Final DOF reads raw G-buffer depth (`r2_RT_P`) with point sampling. HUD pixels a
 
 Advanced video options in all four distributions (`gamedata`, `gamedata_soc`, `gamedata_cs`, `gamedata_coc`) call the same `ui_mm_dof_options` module. Each package includes its copy, Russian and English strings, and the matching DOF/lens shaders. The section exposes every DOF console setting. Disabling the master preserves subordinate settings; base-distance sliders preserve profile ordering during apply/cancel. Per-item animation tuning remains in HUD configs.
 
+## Living entity weapon modifiers
+
+`CEntityAlive::WeaponModifierCoefficients` stores nine coefficients in `WeaponModifiers::WpnModifierType`, a `FixedVector<float, WeaponModifier::eWpnModifierTypeMax>`. `WeaponModifier` uses `u32` as its underlying type, so coefficients are indexed directly without casts. The constructor sets the vector size and initializes every coefficient to `1.0`; subsequent changes persist until they are explicitly replaced or loaded from an entity save. Lua reads them through `actor:get_weapon_modifier(modifier)` and assigns them through `actor:set_weapon_modifier(modifier, value)`, with a `wpn_modifiers.*` constant as `modifier`; the getter and setter bind `CScriptGameObject::GetWeaponModifier` and `SetWeaponModifier`. String lookup is not exposed. See the [modder guide](../docs/main/en/weapon-system/actor-weapon-modifiers.md) for all constants and examples.
+
+`CEntityAlive::save(NET_Packet&)` writes all nine coefficients directly with `w_float` after `conditions().save`. `CEntityAlive::load(IReader&)` reads them directly with `r_float` after `conditions().load`. The fixed layout is nine consecutive floats (36 bytes) in `WeaponModifier` order, with no signature, count or legacy-format detection. The actor does not serialize a second copy. Changing the owner class, enum order or count changes the save format. Earlier actor-only saves and saves without these values are incompatible; start a new game.
+
+`CGameObject::net_Save` serializes the entity before `CScriptBinder::save`; `net_Load` restores it before `CScriptBinder::load`. The loader assigns stored values directly. `CEntityAlive::SetWeaponModifier` clamps the incoming value once with `clamp(Value, 0.001f, FLT_MAX)` and assigns it by enum index. Lua validates the `CEntityAlive` receiver and enum ID. The standard clamp does not normalize NaN.
+
+`CWeapon::OnH_A_Chield` caches the living owner and binds the shooting object's coefficient pointer directly to that owner's public storage. Detachment, destruction and owner release clear the cached owner and restore a shared neutral set. Bullet creation, base dispersion and shot intervals dereference the coefficient pointer without owner lookup or type checks. Camera recoil reads `weapon->Owner()->WeaponModifierCoefficients` through a const reference to the live container and directly multiplies each pattern offset by `eRecoilCoeff`. Crosshair inertion also multiplies its base value directly by the cached owner's coefficient. Damage, impulse, bullet speed and base dispersion use direct multiplication at their call sites; only `ApplyRecoilKick` remains as an `ICF` helper for accumulated recoil and angle limits.
+
+Sources: [entity save/load and initialization](../../src/xrGame/entity_alive.cpp), [entity accessors](../../src/xrGame/entity_alive.h), [coefficient definitions](../../src/xrGame/WeaponsModifiers.h), [owner binding](../../src/xrGame/Weapon.cpp), [Lua bindings](../../src/xrGame/script_game_object_script.cpp), [binder serialization order](../../src/xrGame/GameObject.cpp).
+
 ## Files
 
 | Area | Path under `src/xrGame` |

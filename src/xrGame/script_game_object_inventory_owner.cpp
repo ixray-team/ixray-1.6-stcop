@@ -476,6 +476,27 @@ void CScriptGameObject::MakeItemActive(CScriptGameObject* pItem)
 
 }
 
+float CScriptGameObject::GetWeaponModifier(u32 Type) const
+{
+	if (const CEntityAlive* Owner = object().cast_entity_alive(); Owner && Type < WeaponModifier::eWpnModifierTypeMax)
+	{
+		return Owner->GetWeaponModifier((WeaponModifier)Type);
+	}
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "get_weapon_modifier: expected a living entity and a valid modifier type");
+	return 1.0f;
+}
+
+bool CScriptGameObject::SetWeaponModifier(u32 Type, float Value)
+{
+	if (CEntityAlive* Owner = object().cast_entity_alive(); Owner && Type < WeaponModifier::eWpnModifierTypeMax)
+	{
+		Owner->SetWeaponModifier((WeaponModifier)Type, Value);
+		return true;
+	}
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "set_weapon_modifier: expected a living entity and a valid modifier type");
+	return false;
+}
+
 float CScriptGameObject::GetActorMaxWeight() const
 {
 	if (CActor* pActor = object().cast_actor())
