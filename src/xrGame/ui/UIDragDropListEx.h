@@ -10,6 +10,7 @@ class CUIStatic;
 class CUICellItem;
 class CUIDragItem;
 class CUIFrameWindow;
+class CUIOutfitDragDropList;
 
 struct CUICell{
 							CUICell					()						{m_item=NULL; Clear();}
@@ -167,6 +168,7 @@ public:
 				void		SetControllerFocusOut();
 				void		UpdateSelector		();
 	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIOutfitDragDropList* ui_cast_outfit_dragdrop_list() { return nullptr; }
 };
 
 class CUICellContainer final :public CUIWindow
