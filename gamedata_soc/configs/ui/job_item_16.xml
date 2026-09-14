@@ -4,7 +4,7 @@
 	<task_root_item x="0" y="0" width="320" height="40">
 		<image x="7" y="16" width="63" height="47"/>
 		
-		<caption x="72" y="16" width="150" height="18" complex_mode="1">
+		<caption x="72" y="16" width="135" height="18" complex_mode="1">
 			<text align="l" x="0" y="0" font="letterica18"/>
 		</caption>
 
