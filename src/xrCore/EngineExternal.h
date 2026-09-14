@@ -59,7 +59,6 @@ enum class EEngineExternalGame
 	EnableMainMenuForDisabledControls,
 	NewDemoRecordInputSchema,
 	EnablePolterStaminaLooseOnHit,
-	EnablePolterDrop,
 	EnableWindEffectOnABullet,
 	EnableSaveOnNewGame,
 	EnableSuicideByController,
