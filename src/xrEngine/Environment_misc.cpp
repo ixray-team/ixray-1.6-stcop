@@ -460,11 +460,13 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, const ch
 		);
 		R_ASSERT(_valid(sun_dir));
 	}
-	else
-		sun_dir.setHP			(
-			deg2rad(config.r_fvector2(identifier,"sun_dir").y),
-			deg2rad(config.r_fvector2(identifier,"sun_dir").x)
+	else if (config.line_exist(identifier, "sun_dir"))
+	{
+		sun_dir.setHP(
+			deg2rad(config.r_fvector2(identifier, "sun_dir").y),
+			deg2rad(config.r_fvector2(identifier, "sun_dir").x)
 		);
+	}
 
 	if (sun_dir.y >= 0)
 	{
