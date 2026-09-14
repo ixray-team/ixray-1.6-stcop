@@ -85,7 +85,10 @@ protected:
 	float					fOneShotTime = 0.0f;
 	float					fOneShotTimeSaved = 0.0f;
 	Fvector4				fvHitPower;
+	Fvector4				fvBaseHitPower;
 	Fvector4				fvHitPowerCritical;
+	shared_str				m_actorBaseHitPowerBonusInfo;
+	float					m_actorBaseHitPowerBonus = 0.0f;
 	float					fHitImpulse;
 
 	//скорость вылета пули из ствола
