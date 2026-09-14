@@ -976,7 +976,8 @@ void CUIMainIngameWnd::SyncNavigationVisibility()
 {
 	const bool showNav = psHUD_Flags.test(HUD_MINIMAP);
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
-	const bool renderHUD = noHUDonMaster ? (g_SingleGameDifficulty < egdVeteran) : true;
+	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
+	const bool renderHUD = noHUDonMaster ? (g_SingleGameDifficulty < egdVeteran || (pActor && pActor->GetHelmet() && !fis_zero(pActor->GetHelmet()->m_fShowNearestEnemiesDistance))) : true;
 	const bool navVisible = showNav && renderHUD;
 
 	if (IsCompassBarActive())
