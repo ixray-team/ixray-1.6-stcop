@@ -135,6 +135,10 @@ void CUIActorMenuBase::InitSlots(CUIXml& uiXml)
 		if (i == OUTFIT_SLOT && uiXml.ReadAttribBool("slot_dragdrop", 0, "use_full_scale_icon", false))
 		{
 			m_pInvList[i] = new CUIOutfitDragDropList();
+			if (CUIOutfitDragDropList* outfitSlot = m_pInvList[OUTFIT_SLOT]->ui_cast_outfit_dragdrop_list())
+			{
+				outfitSlot->SetVisualAnimation(uiXml.ReadAttrib("slot_dragdrop", 0, "full_scale_animation", "$editor"));
+			}
 		}
 		else
 		{

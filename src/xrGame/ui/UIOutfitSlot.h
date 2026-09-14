@@ -7,8 +7,8 @@ class CUIOutfitDragDropList :public CUIDragDropListEx
 {
 	typedef CUIDragDropListEx						inherited;
 	CUI3dStatic*									m_background;
-	shared_str										m_default_outfit;
-	
+	shared_str										m_visual_animation = "$editor";
+
 public:
 							CUIOutfitDragDropList	();
 	virtual					~CUIOutfitDragDropList	();
@@ -19,5 +19,7 @@ public:
 	virtual CUICellItem*	RemoveItem				(CUICellItem* itm, bool force_root);
 	void					SetOutfit				(CUICellItem* itm);
 	virtual	void			Draw					();
-			void			SetDefaultOutfit		(const char* default_outfit);
+			void			SetVisualAnimation		(const char* animation);
+
+	virtual CUIOutfitDragDropList* ui_cast_outfit_dragdrop_list() { return this; }
 };
