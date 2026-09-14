@@ -26,6 +26,7 @@
 #include "ui/UICellItem.h"
 #include "ui/UITalkDialogWnd.h"
 #include "ui/UISleepWnd.h"
+#include "ActorHelmet.h"
 
 EGameIDs ParseStringToGameType(const char* str);
 
@@ -152,7 +153,7 @@ void CUIGameCustom::Render()
 		}
 
 		const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
-		bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty != egdMaster : true;
+		bool renderHUD = noHUDonMaster ? (g_SingleGameDifficulty != egdMaster || (pActor && pActor->GetHelmet() && !fis_zero(pActor->GetHelmet()->m_fShowNearestEnemiesDistance))) : true;
 
 		if( GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT) && renderHUD )
 			UIMainIngameWnd->Draw();
