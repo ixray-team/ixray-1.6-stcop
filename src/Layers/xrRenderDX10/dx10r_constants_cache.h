@@ -126,6 +126,6 @@ private:
 	// Every write reaches a buffer through GetCBuffer, so registering there is exact and
 	// avoids rescanning all MaxCBuffers slots of all six stages on every draw call.
 	dx10ConstantBuffer*		m_dirty[RHI_MAX_CONSTANT_BUFFERS * RHI_SHADERS_TYPE_SIZE];
-	u32						m_dirty_count = 0;
+	xr_atomic_u32						m_dirty_count = 0;
 };
 #endif	//	dx10r_constants_cacheH
