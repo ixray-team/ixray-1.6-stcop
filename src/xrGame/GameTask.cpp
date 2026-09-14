@@ -75,7 +75,7 @@ SGameTaskObjective::SGameTaskObjective()
 	m_linked_map_location = nullptr;
 	m_parent = nullptr;
 	m_map_object_id = u16(-1);
-	m_def_location_enabled = false;
+	m_def_location_enabled = true;
 	m_ReceiveTime = 0;
 	m_FinishTime = 0;
 	m_TimeToComplete = 0;
@@ -92,7 +92,7 @@ SGameTaskObjective::SGameTaskObjective(CGameTask* parent, u16 idx)
 {
 	m_linked_map_location = nullptr;
 	m_map_object_id = u16(-1);
-	m_def_location_enabled = false;
+	m_def_location_enabled = true;
 	m_ReceiveTime = 0;
 	m_FinishTime = 0;
 	m_TimeToComplete = 0;
@@ -201,7 +201,7 @@ void CGameTask::Load(const shared_str& id)
 		const char* object_story_id = g_gameTaskXml->Read(l_root, "object_story_id", 0, nullptr);
 
 		//*
-		objective.m_def_location_enabled = !g_gameTaskXml->ReadInt(l_root, "map_location_hidden", 0, 0);
+		objective.m_def_location_enabled = !g_gameTaskXml->ReadInt(l_root, "map_location_hidden", 0, false);
 
 		const bool b1 = (0 == objective.m_map_location.size());
 		const bool b2 = (nullptr == object_story_id);
@@ -711,7 +711,7 @@ void SGameTaskObjective::load(IReader& stream)
 	load_data				(m_infos_on_complete, stream);
 	load_data				(m_infos_on_fail,	stream);
 
-	if (m_idx != ROOT_TASK_OBJECTIVE && m_map_location.size() && m_map_object_id != u16(-1))
+	if (m_idx != ROOT_TASK_OBJECTIVE && m_map_location.size() && m_map_object_id != u16(-1) && m_def_location_enabled)
 	{
 		Level().MapManager().AddMapLocation(m_map_location, m_map_object_id);
 		LinkedMapLocation()->SetHint(m_map_hint);
