@@ -191,79 +191,14 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 			0.0f,
 			false
 		};
+
 		NET_Packet	l_P;
 		HDS.GenHeader(GE_HIT, entity_alive->ID());
 		HDS.whoID = ph_self_object->ID();
 		HDS.weaponID = ph_self_object->ID();
 		HDS.Write_Packet(l_P);
-		entity_alive->u_EventSend(l_P);
-		//entity_alive->conditions().SetHealth(entity_alive->conditions().GetHealth() - health_loss);
 
-		if (actor && EngineExternal()[EEngineExternalGame::EnablePolterDrop])
-		{
-			PIItem item = actor->inventory().ActiveItem();
-			CCustomDevice* device = actor->GetDevice();
-
-			constexpr float porog_stamini_4tobi_vironit_pushky_iz_arms = 33;
-			constexpr float porog_health_4tobi_vironit_pushky_iz_arms = 50;
-			bool need_kick_animator = false;
-			
-			bool need_drop_gun_by_power = actor->conditions().GetPower() < porog_stamini_4tobi_vironit_pushky_iz_arms / 100.f;
-			bool need_drop_gun_by_health = actor->conditions().GetHealth() < porog_health_4tobi_vironit_pushky_iz_arms / 100.f;
-			
-			if (item != nullptr && (need_drop_gun_by_power || need_drop_gun_by_health))
-			{
-				u16 slot = actor->inventory().ActiveItem()->BaseSlot();
-
-				if (!actor->inventory().SlotIsPersistent(slot) && !actor->inventory().Action(kDROP, CMD_STOP))
-				{
-					actor->g_PerformDrop();
-					need_kick_animator = true;
-				}
-			}
-
-			constexpr float porog_stamini_4tobi_vironit_detektor_iz_arms = 33;
-			constexpr float porog_health_4tobi_vironit_detektor_iz_arms = 50;
-			
-			bool need_drop_detector_by_power = actor->conditions().GetPower() < porog_stamini_4tobi_vironit_detektor_iz_arms / 100.f;
-			bool need_drop_detector_by_health = actor->conditions().GetHealth() < porog_health_4tobi_vironit_detektor_iz_arms / 100.f;
-			
-			if (device != nullptr && (need_drop_detector_by_power || need_drop_detector_by_health))
-			{
-				device->SetDropManual(true);
-				need_kick_animator = true;
-			}
-
-			if (need_kick_animator && !actor->HudAnimator()->ItemAnimator()->IsActive())
-			{
-				actor->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-
-				const shared_str& front_kick_animator = actor->m_sFrontKickAnimator;
-				const shared_str& back_kick_animator = actor->m_sBackKickAnimator;
-
-				Fvector object_pos = Fvector().set(self->last_pos);
-				Fvector damage_receiver_pos = Fvector().set(damage_receiver->last_pos);
-
-				Fvector hit_dir;
-				hit_dir.sub(damage_receiver_pos, object_pos);
-				hit_dir.normalize();
-
-				if (hit_dir.dotproduct(Device.vCameraDirection) < 0.f)
-				{
-					if (front_kick_animator != nullptr)
-					{
-						actor->HudAnimator()->ItemAnimator()->StartAnimator(front_kick_animator);
-					}
-				}
-				else
-				{
-					if (back_kick_animator != nullptr)
-					{
-						Actor()->HudAnimator()->ItemAnimator()->StartAnimator(back_kick_animator);
-					}
-				}
-			}
-		}
+		CEntityAlive::u_EventSend(l_P);
 	}
 }
 
