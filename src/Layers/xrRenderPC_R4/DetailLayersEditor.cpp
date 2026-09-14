@@ -17,6 +17,30 @@
 // because a namespace-internal extern would demand a definition inside it (C7631).
 extern bool ps_r__detail_use_alternative_tree_assets;
 extern bool ps_r__detail_use_cluster_mix_tree_assets;
+extern float ps_r__detail_rnd_scale_min;
+extern float ps_r__detail_rnd_scale_max;
+extern int ps_r__detail_radius;
+extern float ps_r__detail_cluster_seed;
+extern float ps_r__detail_cluster_patch_size_min;
+extern float ps_r__detail_cluster_patch_size_max;
+extern float ps_r__detail_cluster_sharpness;
+extern float ps_r__detail_cluster_warp_min;
+extern float ps_r__detail_cluster_warp_max;
+extern bool ps_r__detail_fmb_use_layer_1;
+extern float ps_r__detail_fmb_layer_1_frequency;
+extern float ps_r__detail_fmb_layer_1_amplitude;
+extern float ps_r__detail_fmb_layer_1_seed;
+extern float ps_r__detail_fmb_layer_1_power;
+extern bool ps_r__detail_fmb_use_layer_2;
+extern float ps_r__detail_fmb_layer_2_frequency;
+extern float ps_r__detail_fmb_layer_2_amplitude;
+extern float ps_r__detail_fmb_layer_2_seed;
+extern float ps_r__detail_fmb_layer_2_power;
+extern bool ps_r__detail_fmb_use_layer_3;
+extern float ps_r__detail_fmb_layer_3_frequency;
+extern float ps_r__detail_fmb_layer_3_amplitude;
+extern float ps_r__detail_fmb_layer_3_seed;
+extern float ps_r__detail_fmb_layer_3_power;
 
 // Detail Layers Editor - in-game (render R4) brush tool.
 //
@@ -38,8 +62,10 @@ constexpr float DV_MINIMAP_SPAN_M = 110.f; // half-width, meters
 constexpr u32 DV_DISK_SEGMENTS = 72;
 constexpr u32 DV_DISK_VERTS = DV_DISK_SEGMENTS * 6; // both windings: survives any cull
 constexpr u32 DV_TRAIL_MAX = 256;
-constexpr u32 DV_CURSOR_SIZE = 256;
 constexpr u64 DV_STROKE_THROTTLE_MS = 80;
+// The 3D brush preview is pulled back to this camera range so it always stays on
+// screen and readable; strokes/wipe still hit the true surface when you click.
+constexpr float DV_BRUSH_MAX_DRAW = 250.f;
 
 using FMBE = CDetailManager::FMBMaskEntry;
 using CLUE = CDetailManager::CLUMaskEntry;
@@ -86,6 +112,9 @@ inline float dv_fnoise(float x, float y)
 // World-anchored pattern, bit-compatible with pattern_local in detail_brush.ps.hlsl:
 // wx/wz are world meters, freq is 1/m. Same value noise + domain warp as the grass
 // scale generator (fastNoise2D), so the brush previews exactly what the terrain uses.
+// FMB cascades: three octaves are summed (base + 2x + 4x) and post-processed with a
+// smooth contrast curve, so the mask reads as layered organic patches instead of one
+// flat noise tone - exactly the same arithmetic the shader applies per fragment.
 inline float dv_pattern(float wx, float wz, float seed, float freq)
 {
 	const float x = wx * freq;
@@ -94,7 +123,24 @@ inline float dv_pattern(float wx, float wz, float seed, float freq)
 	const float sz = z + seed * 0.3f;
 	const float wa = dv_fnoise(x * 1.7f + 500.0f, z * 1.7f + 500.0f);
 	const float wb = dv_fnoise(x * 1.7f + 1500.0f, z * 1.7f + 1500.0f);
-	return clampr(dv_fnoise(sx + (wa - 0.5f) * 0.4f, sz + (wb - 0.5f) * 0.4f), 0.f, 1.f);
+	float v = dv_fnoise(sx + (wa - 0.5f) * 0.4f, sz + (wb - 0.5f) * 0.4f);
+	v += 0.5f * dv_fnoise((sx + (wa - 0.5f) * 0.4f) * 2.13f + 137.7f, (sz + (wb - 0.5f) * 0.4f) * 2.13f + 273.1f);
+	v += 0.25f * dv_fnoise((sx + (wa - 0.5f) * 0.4f) * 4.71f + 107.3f, (sz + (wb - 0.5f) * 0.4f) * 4.71f + 531.7f);
+	v *= 0.5714286f; // 1/1.75 - weighted average of the three octaves
+	v = clampr(v, 0.f, 1.f);
+	return v * v * (3.f - 2.f * v); // nonlinear cascade: push the mid-tones apart
+}
+
+// Effective pattern frequency for a given brush radius. st.frequency means "noise cells
+// across the brush radius", so freq_eff = frequency / radius keeps the number of cells
+// under the brush constant at any size - a 2m brush and a 30m brush both read the noise
+// at the same relative density, and neither degrades to a flat tint (a fixed 1/m value
+// put the whole 12m default disk inside one ~16m noise cell). World-anchored: only the
+// scale is radius-relative, the sample position is still world meters.
+inline float dv_pattern_freq(float frequency, float radius)
+{
+	const float r = std::max(radius, 0.5f);
+	return frequency / r;
 }
 
 inline float dv_smoothstep(float edge0, float edge1, float x)
@@ -237,38 +283,50 @@ struct BrushState
 	int tab = 0; // 0 = scale (FMB), 1 = mix (cluster)
 
 	float radius = 6.0f;
-	float soft = 0.35f;
+	float soft = 0.35f; // width of the soft rim as a fraction of the radius
 	// Signed press intensity: -1 = maximum push-in (erode), 0 = no change (default,
 	// middle of the trackbar), +1 = maximum build-up (paint). Slider only - the mouse
 	// wheel drives no-clip flight speed, so it is not touched by the editor.
 	float intensity = 0.0f;
+	// Press at the outer rim of the brush. Always below 1 so the falloff between the
+	// hard core (radius*(1-soft)) and the rim never reaches full strength.
+	float edge_hardness = 0.35f;
 
 	bool use_pattern = true;
 	float seed = 1.0f;
-	float frequency = 0.06f;
+	// Pattern scale as "noise cells across the brush radius" (4 = 4 organic patches over
+	// the radius -> 8 across the diameter). Relative to the radius, not to world meters:
+	// with a fixed 1/m frequency the whole 12m brush fell inside one ~16m noise cell and
+	// the preview degraded to a flat tint. The same tolerance is used by the CPU stroke
+	// and the 3D shader, so the preview is exactly what gets imprinted at any brush size.
+	float frequency = 4.0f;
 	float threshold = 0.52f;
 	float sharpness = 0.12f;
 
 	float scale_value = 0.8f;
 	int cluster_index = 255;
 
-	float overlay_alpha = 0.9f;
 	float overlay_hue[3] = { 1.0f, 0.72f, 0.15f };
 
-	// Ground pattern preview: the noise mask is drawn on the terrain under the brush
-	// (see pattern_opacity) so you always see what is already painted beneath it; the
-	// on-screen cursor is just rings + intensity readout.
-	float pattern_opacity = 0.7f;
-
-	// Screen-center brush cursor: inner circle = hard core where the noise pattern is
-	// fully opaque, outer circle = soft falloff ring (gradient to 0 at the edge).
+	// 3D brush cursor, drawn entirely by the brush shader on the terrain itself (no 2D
+	// screen circles). Two independent toggles:
+	//  - show_cursor           = the two guide circles (outer brush size + hard-core edge)
+	//  - show_pattern_preview  = the actual painted noise mask under the brush, before
+	//                            it is released. This is the same 0..1 gradient that gets
+	//                            imprinted, so you always see exactly what you paint.
+	// Turning the circles off while keeping the pattern preview gives a lighter look.
 	bool show_cursor = true;
-	float cursor_scale = 1.0f; // screen radius = projected world brush radius * this
-	float cursor_inner = 0.55f; // fraction of the outer radius where opacity == 1
+	bool show_pattern_preview = true;
+	float pattern_opacity = 0.6f; // alpha of the noise preview under the brush
 
 	// 3D stroke trail: stamps of the painted pattern left on the terrain while brushing.
+	// By default they FADE OUT over trail_lifetime - the painted look is a short-term
+	// preview, the brush cursor (separate shader layer) is the always-visible tool.
+	// "Draw noise always" switches to permanent stamps until you click "Clear trail".
 	bool trail_enabled = true;
+	bool trail_forever = false; // "draw noise always" - keep the stamps instead of fading
 	float trail_lifetime = 1.5f; // seconds
+	float imprint_opacity = 0.85f; // opacity of the terrain stamp (2D-ish multiplier on the trail)
 
 	bool painting = false; // LMB/RMB down this frame (updated by the UI pass)
 	bool erasing = false;   // RMB down this frame
@@ -280,6 +338,7 @@ struct BrushState
 	u64 last_stroke_time = 0;
 	u64 last_wipe_time = 0; // RMB hard erase throttle
 	Fvector last_hit = { 0.f, 0.f, 0.f };
+	Fvector last_normal = { 0.f, 1.f, 0.f };
 	bool have_hit = false;
 	xr_string status;
 };
@@ -290,11 +349,14 @@ BrushState& s_state()
 }
 
 // Lazily created render objects / textures.
-ref_shader s_brush_shader;
+ref_shader s_brush_shader;   // live brush cursor: rings + pattern preview (always visible)
+ref_shader s_trail_shader;   // painted imprint: fading stroke stamps (separate layer)
 ref_geom s_brush_geom;
 IRHIBuffer* s_brush_vb = nullptr;
 CTexture* s_preview_tex = nullptr;
 CTexture* s_minimap_tex = nullptr;
+CTexture* s_minimap_base_fmb = nullptr; // clean base FMB field (Detail options tab)
+CTexture* s_minimap_base_clu = nullptr; // clean base cluster field (Detail options tab)
 bool s_preview_dirty = true;
 
 // One stamped brush disk of the 3D stroke trail. intensity stores |press| so the
@@ -366,6 +428,13 @@ CTexture* dv_create_texture(u32 size)
 	CTexture* t = new CTexture();
 	t->surface_set(surf);
 	surf->Release();
+
+	// Clear to transparent black right away: a DYNAMIC texture created without
+	// initial data shows leftover GPU memory (random magenta garbage in the panel)
+	// until the first dv_fill_preview / dv_fill_minimap writes into it.
+	xr_vector<u8> zero((size_t)size * size * 4, 0);
+	dv_write_texture_px(t, zero.data(), size);
+
 	return t;
 }
 
@@ -539,7 +608,9 @@ void dv_apply_stroke(CDetailManager* m, const Fvector& hit, const BrushState& st
 	const int iz0 = iFloor((hit.z - r) / step);
 	const int iz1 = iFloor((hit.z + r) / step);
 
-	const float edge = r * (1.0f - st.soft);
+	const float innerR = r * (1.0f - st.soft); // hard core of the brush (gradient starts here)
+	const float hardness = clampr(st.edge_hardness, 0.f, 0.99f);
+	const float rim = std::max(r - innerR, 0.001f);
 	for (int iz = iz0; iz <= iz1; iz++)
 	{
 		const float wz = (float)iz * step;
@@ -552,19 +623,27 @@ void dv_apply_stroke(CDetailManager* m, const Fvector& hit, const BrushState& st
 			if (d > r)
 				continue;
 
-			float fall = (r - d) / (edge > 0.001f ? edge : 1.f);
-			if (fall < 0.f)
-				fall = 0.f;
-			if (fall > 1.f)
+			// Same falloff the brush shader uses per fragment: press == 1 inside the hard
+			// core (radius*(1-soft)), then a smooth gradient down to edge_hardness at the
+			// rim. edge_hardness stays below 1, so the very edge never reaches full press.
+			float fall;
+			if (d <= innerR)
 				fall = 1.f;
+			else
+			{
+				const float u = clampr((d - innerR) / rim, 0.f, 1.f);
+				const float c = u * u * (3.f - 2.f * u);
+				fall = 1.f + (hardness - 1.f) * c; // == lerp(1, hardness, c)
+			}
 
 			float strength = fall;
+			float pass = 1.f; // pattern silhouette: 1 = no pattern, full target
 			if (st.use_pattern)
 			{
 				// World-anchored pattern: rolls with the terrain, continuous while the
 				// brush glides, no tearing and no missed cells when re-stroking.
-				const float n = dv_pattern(wx, wz, st.seed, st.frequency);
-				const float pass = dv_smoothstep(
+				const float n = dv_pattern(wx, wz, st.seed, dv_pattern_freq(st.frequency, r));
+				pass = dv_smoothstep(
 					st.threshold - st.sharpness * 0.5f,
 					st.threshold + st.sharpness * 0.5f, n);
 				if (mix)
@@ -577,9 +656,24 @@ void dv_apply_stroke(CDetailManager* m, const Fvector& hit, const BrushState& st
 				}
 				else
 				{
-					// Modulation, not gating: every cell inside the falloff is affected, the
-					// pattern shapes the strength (0.35..1). No holes the brush "misses".
-					strength *= dv_lerp(0.35f, 1.f, pass);
+					// Positive press is a stencil too: the transparent islands of the noise
+					// pattern are never touched, so strokes made with different brush
+					// settings layer on top of each other without damaging the previous
+					// drawing - grass only grows where this brush's mask is opaque. The
+					// negative (cut-grass) direction alone still modulates through the
+					// pattern so the erode fades smoothly over the whole disk.
+					if (amount > 0.f)
+					{
+						if (pass < 0.5f)
+							continue;
+					}
+					else
+					{
+						// Modulation weight: below-threshold cells barely move, strong peaks are
+						// pushed right up. This is the "how much of the 0..1 pattern to apply"
+						// factor for the press intensity.
+						strength *= dv_lerp(0.35f, 1.f, pass);
+					}
 				}
 			}
 			if (!mix)
@@ -589,15 +683,22 @@ void dv_apply_stroke(CDetailManager* m, const Fvector& hit, const BrushState& st
 					continue;
 			}
 
-if (st.tab == 0)
-		{
-			if (amount < 0.f)
-				m->DetailLayers_PaintFMB(wx, wz, -1.f, strength); // below base -> bare ground
+			if (st.tab == 0)
+			{
+				if (amount < 0.f)
+					m->DetailLayers_PaintFMB(wx, wz, -1.f, strength); // below base -> bare ground
+				else
+				{
+					// The set-point rides the wave above the stencil edge: cells that pass
+					// the mask converge to scale_value * pass, so the painted grass keeps
+					// the exact shape of the gated brush preview. Transparent islands are
+					// skipped entirely above, so the wave is what is imprinted and nothing
+					// under a valley is ever flattened.
+					m->DetailLayers_PaintFMB(wx, wz, st.scale_value * pass, strength);
+				}
+			}
 			else
-				m->DetailLayers_PaintFMB(wx, wz, st.scale_value, strength);
-		}
-		else
-			m->DetailLayers_PaintCluster(wx, wz, (u8)st.cluster_index, strength);
+				m->DetailLayers_PaintCluster(wx, wz, (u8)st.cluster_index, strength);
 		}
 	}
 }
@@ -656,17 +757,19 @@ void dv_fill_preview(const BrushState& st)
 		const float wz = center.z + ((float)py - (float)(N / 2)) * mpp;
 		for (u32 px_ = 0; px_ < N; px_++)
 		{
-			// World-anchored pattern over the terrain around the brush - the preview shows
-			// exactly the same mask the stroke will stamp (scrolls with the world).
+			// World-anchored pattern over the terrain around the brush. This is the static
+			// rectangular field preview (not the 3D brush canvas): sampled at a fixed world
+			// frequency so the 400 m overview stays readable regardless of brush radius -
+			// the paint mask on the ground itself is drawn by the 3D brush shader.
 			const float wx = center.x + ((float)px_ - (float)(N / 2)) * mpp;
-			const float n = dv_pattern(wx, wz, st.seed, st.frequency);
+			const float n = dv_pattern(wx, wz, st.seed, 0.08f);
 			const float pass = st.use_pattern
 				? dv_smoothstep(st.threshold - st.sharpness * 0.5f, st.threshold + st.sharpness * 0.5f, n)
 				: 1.f;
-			// Scale modulates with a 0.35 floor; Mix is an opaque stencil (matches stroke).
-			const float vis = st.use_pattern
-				? (st.tab == 1 ? (pass < 0.5f ? 0.f : 1.f) : dv_lerp(0.35f, 1.f, pass))
-				: 1.f;
+			// Scale and Mix both paint on an opaque stencil now (strokes only touch cells
+			// where the mask passes), so the panel shows the same gated silhouette the
+			// brush imprints instead of a 0.35 modulated wash.
+			const float vis = st.use_pattern ? (pass < 0.5f ? 0.f : (st.tab == 1 ? 1.f : pass)) : 1.f;
 
 			if (st.tab == 1)
 			{
@@ -693,14 +796,17 @@ void dv_fill_preview(const BrushState& st)
 // ---------------------------------------------------------------------------
 // Minimap: current field state around the player. Red = cleared, green = painted.
 // ---------------------------------------------------------------------------
-void dv_fill_minimap(CDetailManager* m, int mode)
+void dv_fill_minimap(CDetailManager* m, int mode, CTexture* tex, bool baseOnly, float zoom = 1.f)
 {
 	const u32 N = DV_MINIMAP_SIZE;
 	xr_vector<u8> px(N * N * 4);
-	const float mpp = DV_MINIMAP_SPAN_M * 2.f / (float)N;
+	const float mpp = (DV_MINIMAP_SPAN_M * 2.f / std::max(zoom, 0.1f)) / (float)N;
 	const Fvector& center = Device.vCameraPosition;
 
-	const bool haveField = (mode == 0) ? !m->fmb_field.empty() : !m->cluster_field.empty();
+	// baseOnly = clean first layer (as the generator made it), no painted brush slots.
+	const bool haveField = baseOnly
+		? ((mode == 0) ? !m->fmb_field_base.empty() : !m->cluster_field_base.empty())
+		: ((mode == 0) ? !m->fmb_field.empty() : !m->cluster_field.empty());
 
 	for (u32 py = 0; py < N; py++)
 	{
@@ -714,21 +820,56 @@ void dv_fill_minimap(CDetailManager* m, int mode)
 			{
 				if (mode == 0)
 				{
-					const float t = m->SampleFMBField(wx, wz);
+					float t;
+					if (baseOnly)
+					{
+						// Bilinear over fmb_field_base, mirroring SampleFMBField.
+						const auto& fb = m->fmb_field_base;
+						if (!fb.empty())
+						{
+							const u32 sx = m->dtH.size_x;
+							const u32 sz = m->dtH.size_z;
+							const float c_x = clampr(wx / dm_slot_size + (float)m->dtH.offs_x, 0.f, (float)sx);
+							const float c_z = clampr(wz / dm_slot_size + (float)m->dtH.offs_z, 0.f, (float)sz);
+							const u32 ix0 = (u32)iFloor(c_x);
+							const u32 iz0 = (u32)iFloor(c_z);
+							const u32 ix1 = std::min(ix0 + 1, sx);
+							const u32 iz1 = std::min(iz0 + 1, sz);
+							const float fx = c_x - (float)ix0;
+							const float fz = c_z - (float)iz0;
+							const u32 row0 = iz0 * (sx + 1);
+							const u32 row1 = iz1 * (sx + 1);
+							const float v00 = fb[row0 + ix0];
+							const float v10 = fb[row0 + ix1];
+							const float v01 = fb[row1 + ix0];
+							const float v11 = fb[row1 + ix1];
+							const float v0 = v00 + (v10 - v00) * fx;
+							const float v1 = v01 + (v11 - v01) * fx;
+							t = v0 + (v1 - v0) * fz;
+						}
+						else
+							t = 1.0f;
+					}
+					else
+						t = m->SampleFMBField(wx, wz);
+
 					const u8 grey = (u8)clampr(t * 255.f, 0.f, 255.f);
 					r = g = b = grey;
-					const u32 idx = dv_world_to_fmb_idx(m, wx, wz);
-					if (idx != 0xffffffff && dv_has_fmb(m, idx))
+					if (!baseOnly)
 					{
-						const auto& v = m->user_fmb_mask;
-						auto it = std::lower_bound(v.begin(), v.end(), idx,
-							[](const FMBE& a, u32 bv) { return a.idx < bv; });
-						if (it != v.end())
+						const u32 idx = dv_world_to_fmb_idx(m, wx, wz);
+						if (idx != 0xffffffff && dv_has_fmb(m, idx))
 						{
-							if (it->value < 0.f)
-								r = 255, g = 20, b = 20;
-							else
-								r = 30, g = 230, b = 60;
+							const auto& v = m->user_fmb_mask;
+							auto it = std::lower_bound(v.begin(), v.end(), idx,
+								[](const FMBE& a, u32 bv) { return a.idx < bv; });
+							if (it != v.end())
+							{
+								if (it->value < 0.f)
+									r = 255, g = 20, b = 20;
+								else
+									r = 30, g = 230, b = 60;
+							}
 						}
 					}
 				}
@@ -737,7 +878,9 @@ void dv_fill_minimap(CDetailManager* m, int mode)
 					const u32 idx = dv_world_to_cluster_idx(m, wx, wz);
 					if (idx != 0xffffffff)
 					{
-						const u8 v = m->cluster_field[idx];
+						const u8 v = baseOnly
+							? ((idx < m->cluster_field_base.size()) ? m->cluster_field_base[idx] : u8(255))
+							: m->cluster_field[idx];
 						if (v == 255)
 						{
 							r = g = b = 70;
@@ -750,7 +893,7 @@ void dv_fill_minimap(CDetailManager* m, int mode)
 							const int c = v % 4;
 							r = pal[c][0]; g = pal[c][1]; b = pal[c][2];
 						}
-						if (dv_has_clu(m, idx))
+						if (!baseOnly && dv_has_clu(m, idx))
 						{
 							r = 30; g = 230; b = 60;
 						}
@@ -765,10 +908,92 @@ void dv_fill_minimap(CDetailManager* m, int mode)
 		}
 	}
 
-	dv_write_texture_px(s_minimap_tex, px.data(), N);
+	dv_write_texture_px(tex, px.data(), N);
+}
+
+// Per-minimap zoom + refresh state for the overlay-slider minimaps.
+struct MinimapUI
+{
+	float zoom = 1.f;
+	u64 next = 0;
+};
+
+// Renders a minimap at full window width (square if h < 0) with a zoom slider
+// overlaid at its top. Refresh is throttled to ~800ms like the brush-tab map;
+// moving the zoom forces an immediate refill.
+void dv_minimap_ui(CDetailManager* m, int mode, CTexture* tex, bool baseOnly, MinimapUI& ui, float h)
+{
+	const u64 now = Device.dwTimeGlobal;
+	if (now >= ui.next)
+	{
+		dv_fill_minimap(m, mode, tex, baseOnly, ui.zoom);
+		ui.next = now + 800;
+	}
+	const float w = ImGui::GetContentRegionAvail().x;
+	const float ih = (h < 0.f) ? w : h;
+	if (tex && tex->get_SRView())
+	{
+		const ImVec2 p0 = ImGui::GetCursorScreenPos();
+		ImGui::Image(tex->get_SRView()->GetRawSRV(), ImVec2(w, ih));
+		ImGui::SetCursorScreenPos(ImVec2(p0.x + 8.f, p0.y + 6.f));
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.9f);
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.f, 0.f, 0.f, 0.45f));
+		ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(0.7f, 0.7f, 0.9f, 0.9f));
+		ImGui::SetNextItemWidth(w - 16.f);
+		ImGui::PushID(&ui);
+		const bool zoomMoved = ImGui::SliderFloat("##minimap zoom", &ui.zoom, 1.f, 8.f, "x%.1f");
+		ImGui::PopID();
+		ImGui::PopStyleColor(2);
+		ImGui::PopStyleVar();
+		if (zoomMoved)
+			ui.next = 0; // refill next frame with the new span
+		// Restore the cursor below the minimap so the following widgets (captions,
+		// next section) never float over the image.
+		ImGui::SetCursorScreenPos(ImVec2(p0.x, p0.y + ih + 4.f));
+	}
+	else
+		ImGui::Text("minimap texture unavailable");
 }
 
 } // namespace
+
+// ---------------------------------------------------------------------------
+// Early destruction of the lazily created brush render objects. Called from
+// CRender::destroy() while the RHI/device is still alive: the SGeometry/Shader
+// refs and raw buffers must not survive until DLL detach, where *DevicePtr is
+// already null and their destructors crash dereferencing DEV (DEV->DeleteGeom,
+// DEV->_DeleteTexture, ...). Shader.cpp guards its dtors with `if (DEV)`, but
+// the DEV macro itself dereferences the dead pointer first.
+// ---------------------------------------------------------------------------
+void CRender::DetailLayers_EditorDestroy()
+{
+	// Geometry/shader refs: dropping them now runs ~SGeometry / ~Shader against a
+	// live device. ref_geom::destroy()/ref_shader::destroy() are _set(nullptr),
+	// which _dec()s and deletes at zero refs - exactly the path that crashes later.
+	s_brush_shader.destroy();
+	s_trail_shader.destroy();
+	s_brush_geom.destroy();
+	s_trail_geom.destroy();
+
+	// Raw RHI buffers this tool allocated with RHIUtils::CreateVertexBuffer. The
+	// editor owns them (CreateBuffer starts ownership at ref 1); SGeometry only
+	// stores the raw pointer, so release the ownership ref explicitly.
+	if (s_brush_vb) { s_brush_vb->Release(); s_brush_vb = nullptr; }
+	if (s_trail_vb) { s_trail_vb->Release(); s_trail_vb = nullptr; }
+
+	// Preview/minimap textures are plain `new CTexture` (never registered with the
+	// resource manager), so delete them directly. ~CTexture calls Unload() (releases
+	// its SRV/surface on the live device) and _DeleteTexture() - a no-op since these
+	// were never RF_REGISTERED. Guarded: may not exist if the tool never ran.
+	if (s_preview_tex) { xr_delete(s_preview_tex); s_preview_tex = nullptr; }
+	if (s_minimap_tex) { xr_delete(s_minimap_tex); s_minimap_tex = nullptr; }
+	if (s_minimap_base_fmb) { xr_delete(s_minimap_base_fmb); s_minimap_base_fmb = nullptr; }
+	if (s_minimap_base_clu) { xr_delete(s_minimap_base_clu); s_minimap_base_clu = nullptr; }
+
+	// Forget the painted stamp list; nothing device-bound in here.
+	s_trail.clear();
+	s_preview_dirty = true;
+}
 
 // ---------------------------------------------------------------------------
 // World-space brush overlay. Called from r4_R_render.cpp after Details->Render().
@@ -786,10 +1011,50 @@ void CRender::DetailLayers_RenderBrush3D()
 
 	Fvector hit;
 	Fvector groundN;
+	// The brush must be visible the moment the editor opens and must always follow the
+	// cursor. The mouse ray can miss (cursor over the ImGui panel, aiming at open
+	// sky/water, or beyond the 500m pick range) - instead of freezing at the last hit
+	// the brush drops to a horizontal plane at the last ground height, so it sweeps
+	// the screen with the cursor 1:1 and never disappears off the side.
 	if (!dv_raycast(hit, &groundN))
-		return;
+	{
+		if (!st.have_hit)
+		{
+			// First frame never has a ground level yet: anchor under the camera.
+			hit.mad(Device.vCameraPosition, Device.vCameraDirection, 20.f);
+			groundN.set(0.f, 1.f, 0.f);
+		}
+		else
+		{
+			Fvector dir;
+			MouseRayFromPoint(dir);
+			const float planeY = st.last_hit.y;
+			// Distance to the imaginary ground plane: clamp so a nearly-horizontal ray
+			// aimed at the horizon cannot project the brush past the far plane and
+			// (invisibly) into the sky.
+			const float tPlane = (fabsf(dir.y) > 1e-4f) ? (planeY - Device.vCameraPosition.y) / dir.y : 30.f;
+			hit.mad(Device.vCameraPosition, dir, clampr(tPlane, 3.f, 150.f));
+			groundN.set(0.f, 1.f, 0.f);
+		}
+	}
+	// Display clamp: the brush must never fly into invisible territory. Real static
+	// hits beyond ~250m (and the plane fallback) shrink to sub-pixel and read as
+	// "the brush vanished into the distance" - pull the *preview* back to a readable
+	// range. The stroke/wipe still raycast to the true hit when you click.
+	{
+		const Fvector& cam = Device.vCameraPosition;
+		if (cam.distance_to(hit) > DV_BRUSH_MAX_DRAW)
+		{
+			Fvector d;
+			d.sub(hit, cam);
+			d.normalize();
+			hit.mad(cam, d, DV_BRUSH_MAX_DRAW);
+			groundN.set(0.f, 1.f, 0.f);
+		}
+	}
 	st.have_hit = true;
 	st.last_hit = hit;
+	st.last_normal = groundN;
 
 	if (st.radius <= 0.f)
 		return;
@@ -806,6 +1071,17 @@ if (!s_brush_shader)
 		{
 			reported = true;
 			Msg("!! detail layers editor: brush shader 'detail_brush' failed to load");
+		}
+	}
+	if (!s_trail_shader)
+		s_trail_shader.create("detail_brush_trail");
+	if (!s_trail_shader)
+	{
+		static bool trailReported = false;
+		if (!trailReported)
+		{
+			trailReported = true;
+			Msg("!! detail layers editor: imprint shader 'detail_brush_trail' failed to load");
 		}
 	}
 	if (!s_brush_vb)
@@ -827,7 +1103,7 @@ if (!s_brush_shader)
 	if (!s_minimap_tex)
 		s_minimap_tex = dv_create_texture(DV_MINIMAP_SIZE);
 
-	if (!s_brush_vb || !s_trail_vb || !s_brush_shader || !s_brush_geom || !s_trail_geom || !s_brush_shader->E[4])
+	if (!s_brush_vb || !s_trail_vb || !s_brush_shader || !s_trail_shader || !s_brush_geom || !s_trail_geom || !s_brush_shader->E[4] || !s_trail_shader->E[4])
 	{
 		if (s_brush_shader && !s_brush_shader->E[4])
 		{
@@ -838,13 +1114,24 @@ if (!s_brush_shader)
 				Msg("!! detail layers editor: brush shader has no l_special element (check detail_brush.lua)");
 			}
 		}
+		if (s_trail_shader && !s_trail_shader->E[4])
+		{
+			static bool trailReported = false;
+			if (!trailReported)
+			{
+				trailReported = true;
+				Msg("!! detail layers editor: imprint shader has no l_special element (check detail_brush_trail.lua)");
+			}
+		}
 		return;
 	}
 
 	// Brush disk lives in the terrain tangent plane (perpendicular to the ground normal
-	// at the hit), so it lies flat on the slope like the painted pattern - not a
-	// camera-facing billboard, which tilted out of the terrain plane at grazing angles
-	// and covered distant grass the brush never reaches.
+	// at the hit), so it lies flat on the slope like the painted pattern. Rings and the
+	// noise mask are both sampled in world XZ, so this disk is the only orientation that
+	// previews them undistorted. (A camera-facing billboard distorted them as shown on
+	// user tests.) The shader fills the ENTIRE disk with the noise mask - no inner-ring
+	// gating - so the brush never reads as "cut off by an invisible circle".
 	const float stepAng = PI_MUL_2 / (float)DV_DISK_SEGMENTS;
 
 	Fvector right, up2;
@@ -859,9 +1146,12 @@ if (!s_brush_shader)
 	}
 
 	// Current brush halo: terrain-aligned disk, lifted slightly along the normal so it
-	// never z-fights with the ground patch it sits on.
+	// never z-fights with the ground patch it sits on. The mesh is built with PADDING
+	// around the brush radius so both guide rings always have triangles under them -
+	// an edge-aligned disk clipped the outer ring where it ran off the mesh.
 	FVF::L verts[DV_DISK_VERTS];
 	const Fvector centerHit = Fvector().mad(hit, groundN, 0.15f);
+	const float geoRadius = st.radius * 1.6f;
 	{
 		u32 vi = 0;
 		for (u32 i = 0; i < DV_DISK_SEGMENTS; i++)
@@ -871,8 +1161,8 @@ if (!s_brush_shader)
 			const float s0 = sinf(a0), c0 = cosf(a0);
 			const float s1 = sinf(a1), c1 = cosf(a1);
 			Fvector p0, p1;
-			p0.mad(centerHit, right, s0 * st.radius).mad(p0, up2, c0 * st.radius);
-			p1.mad(centerHit, right, s1 * st.radius).mad(p1, up2, c1 * st.radius);
+			p0.mad(centerHit, right, s0 * geoRadius).mad(p0, up2, c0 * geoRadius);
+			p1.mad(centerHit, right, s1 * geoRadius).mad(p1, up2, c1 * geoRadius);
 
 			// Both windings (c,p0,p1) and (c,p1,p0): the terrain-aligned disk renders
 			// from above and below regardless of the rasterizer cull state.
@@ -894,13 +1184,18 @@ if (!s_brush_shader)
 	RCache.set_xform_project(Device.mProject);
 
 	// ---------------------------------------------------------------- trail
-	// Prune expired stamps unconditionally so the list cannot grow forever.
+	// Expired stamps are pruned unless "draw noise always" is on. When it is, painted
+	// strokes stay on the terrain indefinitely (an overpaint layer) until you click
+	// "Clear trail" - the list stays tiny, the physical props are not touched.
 	const u64 now = Device.dwTimeGlobal;
 	const float lifeMs = std::max(st.trail_lifetime, 0.1f) * 1000.f;
-	for (int i = (int)s_trail.size() - 1; i >= 0; i--)
+	if (!st.trail_forever)
 	{
-		if (now - s_trail[i].time_ms >= (u64)lifeMs)
-			s_trail.erase(s_trail.begin() + i);
+		for (int i = (int)s_trail.size() - 1; i >= 0; i--)
+		{
+			if (now - s_trail[i].time_ms >= (u64)lifeMs)
+				s_trail.erase(s_trail.begin() + i);
+		}
 	}
 
 	if (st.trail_enabled && !s_trail.empty())
@@ -954,55 +1249,75 @@ if (!s_brush_shader)
 		}
 		s_trail_vb->UpdateSubresource(tverts.data(), (u32)tverts.size() * sizeof(FVF::L));
 
-		RCache.set_Element(s_brush_shader->E[4]);
+RCache.set_Element(s_trail_shader->E[4]);
 		RCache.set_Geometry(s_trail_geom);
 		for (u32 i = 0; i < active; i++)
 		{
 			const TrailStamp& s = s_trail[i];
+			// "Draw noise always" keeps every stamp at full strength; otherwise the patch
+			// fades out over trail_lifetime (square falloff) so the terrain quickly reads
+			// what was painted most recently.
 			const float age = (float)(now - s.time_ms);
-			const float f = clampr(1.f - age / lifeMs, 0.f, 1.f);
-			const float alpha = s.intensity * f * f * 0.85f;
+			const float f = st.trail_forever ? 1.f : clampr(1.f - age / lifeMs, 0.f, 1.f);
+			const float alpha = s.intensity * f * f * st.imprint_opacity;
 			if (alpha <= 0.002f)
 				continue;
 			RCache.set_c("brush_worldpos", s.center.x, s.center.z, 0.f, 0.f);
-			RCache.set_c("brush_params", s.radius, s.soft, alpha, (float)s.mode);
-			RCache.set_c("brush_noise", st.seed, st.frequency, st.threshold, st.use_pattern ? st.sharpness : 0.f);
-			RCache.set_c("brush_color", st.overlay_hue[0], st.overlay_hue[1], st.overlay_hue[2], 1.f);
+		// The imprint layer (detail_brush_trail): painted strokes only - full-disk
+		// pattern, no guide circles. Build stamps carry the overlay tint, erode stamps
+		// the red wipe (red is pushed through brush_color instead of a special mode).
+		RCache.set_c("brush_params", s.radius, s.soft, alpha, 4.f);
+		RCache.set_c("brush_noise", st.seed, dv_pattern_freq(st.frequency, s.radius), st.threshold, st.use_pattern ? st.sharpness : 0.f);
+		if (s.mode != 0)
+			RCache.set_c("brush_color", 1.f, 0.35f, 0.25f, st.edge_hardness);
+		else
+			RCache.set_c("brush_color", st.overlay_hue[0], st.overlay_hue[1], st.overlay_hue[2], st.edge_hardness);
 			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, i * DV_DISK_VERTS, 2 * DV_DISK_SEGMENTS);
 		}
 	}
 
-	RCache.set_c("brush_worldpos", hit.x, hit.z, 0.f, 0.f);
-	// Live brush disk: white translucent imprint + concentric rings while painting
-	// (mode 2), red while RMB-wiping (mode 1), faint colored while hovering (mode 0).
 	float dMode;
 	float dAlpha;
 	Fvector dColor;
+	float cursorA;
+	float patternA;
 	if (st.painting)
 	{
 		dMode = 2.f;
-		dAlpha = std::max(fabsf(st.intensity), 0.2f);
-		dColor.set(1.f, 1.f, 1.f);
+		dAlpha = clampr(fabsf(st.intensity), 0.1f, 1.f); // press only affects the imprint, not the preview
+		dColor.set(st.overlay_hue[0], st.overlay_hue[1], st.overlay_hue[2]);
+		cursorA = st.show_cursor ? 0.9f : 0.f;
+		patternA = st.show_pattern_preview ? st.pattern_opacity : 0.f;
 	}
 	else if (st.erasing)
 	{
 		dMode = 1.f;
 		dAlpha = 0.6f;
 		dColor.set(1.f, 0.35f, 0.25f);
+		cursorA = st.show_cursor ? 0.9f : 0.f;
+		patternA = st.show_pattern_preview ? st.pattern_opacity : 0.f;
 	}
 	else
 	{
 		dMode = 0.f;
-		// Passive hover preview: always show the noise pattern on the brush circle so
-		// you see exactly what the stroke will plant BEFORE pressing the brush.
-		dAlpha = st.pattern_opacity;
+		dAlpha = 1.f;
+		// Passive hover: the shader lays the painted noise stencil under the brush at
+		// pattern_opacity, so the preview is exactly what the stroke imprints.
 		dColor.set(st.overlay_hue[0], st.overlay_hue[1], st.overlay_hue[2]);
+		cursorA = st.show_cursor ? 0.9f : 0.f;
+		patternA = st.show_pattern_preview ? st.pattern_opacity : 0.f;
 	}
-	RCache.set_c("brush_params", st.radius, st.soft, dAlpha, dMode);
-	RCache.set_c("brush_noise", st.seed, st.frequency, st.threshold, st.use_pattern ? st.sharpness : 0.f);
-	RCache.set_c("brush_color", dColor.x, dColor.y, dColor.z, 1.f);
-
+	// Bind the cursor element BEFORE any set_c: in this backend set_c resolves
+	// constants against the CURRENT element, so shouting them while the trail element
+	// was still bound would drop brush_extra (missing from the trail shader) and the
+	// whole cursor would discard away.
 	RCache.set_Element(s_brush_shader->E[4]);
+	RCache.set_c("brush_worldpos", hit.x, hit.z, 0.f, 0.f);
+	RCache.set_c("brush_params", st.radius, st.soft, dAlpha, dMode);
+	RCache.set_c("brush_noise", st.seed, dv_pattern_freq(st.frequency, st.radius), st.threshold, st.use_pattern ? st.sharpness : 0.f);
+	RCache.set_c("brush_color", dColor.x, dColor.y, dColor.z, st.edge_hardness);
+	RCache.set_c("brush_extra", cursorA, patternA, Device.vCameraPosition.distance_to(hit), 0.f);
+
 	RCache.set_Geometry(s_brush_geom);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 2 * DV_DISK_SEGMENTS);
 }
@@ -1036,11 +1351,17 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 		s_preview_tex = dv_create_texture(DV_PREVIEW_SIZE);
 	if (!s_minimap_tex)
 		s_minimap_tex = dv_create_texture(DV_MINIMAP_SIZE);
+	if (!s_minimap_base_fmb)
+		s_minimap_base_fmb = dv_create_texture(DV_MINIMAP_SIZE);
+	if (!s_minimap_base_clu)
+		s_minimap_base_clu = dv_create_texture(DV_MINIMAP_SIZE);
 
 	// -------------------------------------------------------------- tab select
 	ImGui::RadioButton("Scale (FMB)", &st.tab, 0);
 	ImGui::SameLine();
 	ImGui::RadioButton("Mix (Cluster)", &st.tab, 1);
+	ImGui::SameLine();
+	ImGui::RadioButton("Detail options", &st.tab, 2);
 
 	bool dirty = false;
 
@@ -1058,25 +1379,23 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 	else
 		s_mix_entered = false;
 
-	ImGui::SeparatorText("Brush");
-	dirty |= ImGui::DragFloat("Radius, m", &st.radius, 0.2f, 0.5f, 30.f);
-	dirty |= ImGui::SliderFloat("Soft edge", &st.soft, 0.0f, 0.9f);
-	dirty |= ImGui::SliderFloat("Press intensity", &st.intensity, -1.0f, 1.0f);
-	ImGui::TextDisabled("Middle = 0 (inert). Negative cuts the grass down to the\nground, positive grows it. RMB ignores it and wipes the\nbrush mask entirely. Mix mode ignores it (see below).");
-
-	if (ImGui::BeginCombo("Channels", st.tab == 0 ? "Scale only" : "Asset mix only"))
+	if (st.tab <= 1)
 	{
-		ImGui::Text("Separate channels are not required - masks affect\nwhichever field is active for the current tab.");
-		ImGui::EndCombo();
+		ImGui::SeparatorText("Brush");
+		dirty |= ImGui::DragFloat("Radius, m", &st.radius, 0.2f, 0.5f, 30.f);
+		dirty |= ImGui::SliderFloat("Soft edge", &st.soft, 0.0f, 0.9f);
+		dirty |= ImGui::SliderFloat("Press intensity", &st.intensity, -1.0f, 1.0f);
+		dirty |= ImGui::SliderFloat("Edge hardness", &st.edge_hardness, 0.0f, 0.9f);
+		ImGui::TextDisabled("Press inside the hard core (radius*(1-Soft edge)) is full.\nOutside it falls smoothly to Edge hardness at the rim.\nMiddle = 0 (inert). Negative cuts the grass down to the\nground, positive grows it. RMB wipes the mask entirely.\nMix mode ignores intensity (see below).");
 	}
 
 	if (st.tab == 0)
 	{
 		ImGui::SeparatorText("Painted scale");
 		dirty |= ImGui::SliderFloat("Scale value", &st.scale_value, 0.0f, 1.0f);
-		ImGui::TextDisabled("Positive press grows grass toward this height,\nnegative press cuts it down to bare ground.\nRMB wipes the brush mask back to the generator.");
+		ImGui::TextDisabled("Positive press grows grass toward this height,\nnegative press cuts it down to bare ground.\nRMB wipes the brush mask back to the generator.\nGenerator height random range lives in the\n'Detail options' tab.");
 	}
-	else
+	else if (st.tab == 1)
 	{
 		ImGui::SeparatorText("Painted asset mix");
 		// Live switch: on = cluster_field replaces grass, off = native. Each flip asks for
@@ -1093,7 +1412,7 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 		if (!mixOn)
 			ImGui::TextColored(ImVec4(1.f, 0.65f, 0.25f, 1.f),
 				"Disabled: the slots are written, but the renderer still shows\nnative grass. Enable the checkbox above to see the mix.");
-		ImGui::TextDisabled("LMB stamps the selected asset wherever the noise pattern\npasses (opaque stencil); press slider is ignored. RMB\nwipes replaced slots back to the generator.");
+		ImGui::TextDisabled("LMB stamps the selected asset wherever the noise pattern\npasses (opaque stencil); press slider is ignored. RMB\nwipes replaced slots back to the generator.\nGenerator cluster/FMB settings live in the\n'Detail options' tab.");
 		const auto& assets = dv_cluster_assets(D);
 		int sel = (st.cluster_index == 255) ? 0 : st.cluster_index + 1;
 		{
@@ -1120,7 +1439,7 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 					}
 					if (tex)
 					{
-						ImGui::Image(tex->get_SRView()->GetRawSRV(), ImVec2(48.f, 48.f));
+						ImGui::Image(tex->get_SRView()->GetRawSRV(), ImVec2(64.f, 64.f));
 						ImGui::SameLine();
 					}
 					if (ImGui::Selectable(items[k].c_str(), isSel))
@@ -1139,119 +1458,222 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 		if (st.cluster_index != 255 && st.cluster_index < (int)assets.size())
 			ImGui::TextDisabled("Painting with: %s", assets[st.cluster_index].name.c_str());
 	}
-
-	ImGui::SeparatorText("Noise pattern");
-	dirty |= ImGui::Checkbox("Use pattern", &st.use_pattern);
-	if (st.use_pattern)
+	else // tab 2: Detail options - mirrors of the r__detail_* console commands
 	{
-		dirty |= ImGui::SliderFloat("Seed", &st.seed, 0.0f, 100.0f);
-		dirty |= ImGui::SliderFloat("Frequency", &st.frequency, 0.002f, 3.0f, "%.3f");
-		dirty |= ImGui::SliderFloat("Threshold", &st.threshold, 0.0f, 1.0f);
-		dirty |= ImGui::SliderFloat("Sharpness", &st.sharpness, 0.02f, 0.4f);
-		ImGui::TextDisabled("High frequency = very fine detail for thin spots,\nlow frequency = broad patches.");
+		ImGui::SeparatorText("Detail options");
+		ImGui::TextDisabled("Mirrors of the r__detail_* console commands; any\nchange regenerates the mixed fields from scratch.");
+
+		bool dgt = false;
+		bool ddRadius = false;
+
+		// ------------------------------------------------------------- 1
+		ImGui::SeparatorText("Detail use alternative DM assets in level folder");
+		dgt |= ImGui::Checkbox("Use cluster mix tree assets", &ps_r__detail_use_cluster_mix_tree_assets);
+
+		// ------------------------------------------------------------- 2
+		ImGui::SeparatorText("Detail noise mix assets");
+		dgt |= ImGui::Checkbox("Use alternative tree assets", &ps_r__detail_use_alternative_tree_assets);
+		dgt |= ImGui::SliderFloat("Cluster patch size max", &ps_r__detail_cluster_patch_size_max, 1.f, 100.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Cluster patch size min", &ps_r__detail_cluster_patch_size_min, 1.f, 100.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Cluster seed", &ps_r__detail_cluster_seed, 0.f, 9999.f, "%.0f");
+		dgt |= ImGui::SliderFloat("Cluster sharpness", &ps_r__detail_cluster_sharpness, 1.f, 20.f, "%.1f");
+		dgt |= ImGui::SliderFloat("Cluster warp max", &ps_r__detail_cluster_warp_max, 0.f, 3.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Cluster warp min", &ps_r__detail_cluster_warp_min, 0.f, 3.f, "%.2f");
+
+		// ------------------------------------------------------------- 2b
+		if (D)
+		{
+			// Clean first layer: the generator's cluster field, no brush strokes.
+			ImGui::SeparatorText("Mix field minimap (clean base)");
+			static MinimapUI s_mm_clu_base;
+			dv_minimap_ui(D, 1, s_minimap_base_clu, true, s_mm_clu_base, 512.f);
+			ImGui::TextDisabled("What the generator put before any brush stroke.");
+		}
+
+		// ------------------------------------------------------------- 3
+		ImGui::SeparatorText("Detail macro scale variations (FMB)");
+		dgt |= ImGui::Checkbox("Layer 1 used", &ps_r__detail_fmb_use_layer_1);
+		dgt |= ImGui::SliderFloat("Layer 1 amplitude", &ps_r__detail_fmb_layer_1_amplitude, 0.f, 10.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Layer 1 frequency", &ps_r__detail_fmb_layer_1_frequency, 0.f, 1.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Layer 1 power", &ps_r__detail_fmb_layer_1_power, 0.f, 1.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Layer 1 seed", &ps_r__detail_fmb_layer_1_seed, 0.f, 9999.f, "%.0f");
+		dgt |= ImGui::Checkbox("Layer 2 used", &ps_r__detail_fmb_use_layer_2);
+		dgt |= ImGui::SliderFloat("Layer 2 amplitude", &ps_r__detail_fmb_layer_2_amplitude, 0.f, 10.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Layer 2 frequency", &ps_r__detail_fmb_layer_2_frequency, 0.f, 1.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Layer 2 power", &ps_r__detail_fmb_layer_2_power, 0.f, 1.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Layer 2 seed", &ps_r__detail_fmb_layer_2_seed, 0.f, 9999.f, "%.0f");
+		dgt |= ImGui::Checkbox("Layer 3 used", &ps_r__detail_fmb_use_layer_3);
+		dgt |= ImGui::SliderFloat("Layer 3 amplitude", &ps_r__detail_fmb_layer_3_amplitude, 0.f, 10.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Layer 3 frequency", &ps_r__detail_fmb_layer_3_frequency, 0.f, 1.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Layer 3 power", &ps_r__detail_fmb_layer_3_power, 0.f, 1.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Layer 3 seed", &ps_r__detail_fmb_layer_3_seed, 0.f, 9999.f, "%.0f");
+
+		// ------------------------------------------------------------- 3b
+		if (D)
+		{
+			// Clean first layer: the generator's FMB scale field, no brush strokes.
+			ImGui::SeparatorText("Scale field minimap (clean base)");
+			static MinimapUI s_mm_fmb_base;
+			dv_minimap_ui(D, 0, s_minimap_base_fmb, true, s_mm_fmb_base, 512.f);
+			ImGui::TextDisabled("FMB height the generator produced before any brush stroke.");
+		}
+
+		// ------------------------------------------------------------- 4
+		ImGui::SeparatorText("Detail size");
+		dgt |= ImGui::SliderFloat("Random scale max", &ps_r__detail_rnd_scale_max, 0.f, 3.f, "%.2f");
+		dgt |= ImGui::SliderFloat("Random scale min", &ps_r__detail_rnd_scale_min, 0.f, 3.f, "%.2f");
+
+		// ------------------------------------------------------------- 5
+		ImGui::SeparatorText("Detail performance");
+		dgt |= ImGui::SliderFloat("Density (r__detail_density)", &ps_current_detail_density, 0.15f, 1.0f, "%.2f");
+		ddRadius |= ImGui::SliderInt("Grass radius, m (r__detail_radius)", &ps_r__detail_radius, 50, 2000);
+		dgt |= ddRadius;
+
+		if (dgt && D)
+		{
+			if (ddRadius)
+			{
+				// Mirror CCC_DetailRadius::Execute: recompute the slot-matrix metrics so the
+				// new radius is actually applied, then reload the cache.
+				dm_current_size = iFloor((float)ps_r__detail_radius / 4.f) * 2;
+				dm_current_slide_window_line = dm_current_size * 2 / 4;
+				dm_current_cache_line = dm_current_size + 1 + dm_current_size;
+				dm_current_cache_size = dm_current_cache_line * dm_current_cache_line;
+				dm_current_fade = float(2 * dm_current_size) - 0.5f;
+				if (RImplementation.b_loaded && (dm_current_size != dm_size))
+				{
+					Device.DetailsTask.wait();
+					D->cache_ReInitialize();
+				}
+				else
+				{
+					D->RequestCacheRebuild();
+				}
+			}
+			else
+			{
+				D->RequestCacheRebuild();
+			}
+		}
+		dirty |= dgt;
 	}
 
-	ImGui::SeparatorText("Overlay");
-	dirty |= ImGui::SliderFloat("Opacity", &st.overlay_alpha, 0.0f, 1.0f);
-	dirty |= ImGui::ColorEdit3("Color", st.overlay_hue);
-	dirty |= ImGui::SliderFloat("Ground pattern opacity", &st.pattern_opacity, 0.05f, 0.9f);
-	dirty |= ImGui::Checkbox("Preview", &st.show_preview);
-	dirty |= ImGui::Checkbox("Minimap", &st.show_minimap);
+	if (st.tab <= 1)
+	{
+		ImGui::SeparatorText("Noise pattern");
+		dirty |= ImGui::Checkbox("Use pattern", &st.use_pattern);
+		if (st.use_pattern)
+		{
+			dirty |= ImGui::SliderFloat("Seed", &st.seed, 0.0f, 100.0f);
+			dirty |= ImGui::SliderFloat("Frequency", &st.frequency, 0.5f, 128.0f, "%.1f", ImGuiSliderFlags_Logarithmic);
+			dirty |= ImGui::SliderFloat("Threshold", &st.threshold, 0.0f, 1.0f);
+			dirty |= ImGui::SliderFloat("Sharpness", &st.sharpness, 0.02f, 0.4f);
+			ImGui::TextDisabled("Pattern density as noise cells across the brush\nradius, e.g. 4 = four patches over the radius\n(eight over the diameter). Same for the preview\nand the printed stroke at any brush size.");
+		}
+	}
 
-	ImGui::SeparatorText("Brush cursor (screen)");
-	dirty |= ImGui::Checkbox("Show cursor", &st.show_cursor);
-	dirty |= ImGui::SliderFloat("Cursor outer radius", &st.cursor_scale, 0.5f, 2.5f);
-	dirty |= ImGui::SliderFloat("Cursor hard core", &st.cursor_inner, 0.05f, 1.0f);
-	ImGui::TextDisabled("Rings mark the brush size; the noise pattern itself is\ndrawn on the ground (Overlay > Ground pattern opacity).\nThe number above the outer circle shows the press\nintensity (slider), +1 build-up / -1 push-in.");
+	if (st.tab <= 1)
+	{
+		ImGui::SeparatorText("Overlay");
+		dirty |= ImGui::ColorEdit3("Color", st.overlay_hue);
+		dirty |= ImGui::Checkbox("Preview", &st.show_preview);
+		dirty |= ImGui::Checkbox("Minimap", &st.show_minimap);
+	}
 
-	ImGui::SeparatorText("Stroke trail (3D)");
-	dirty |= ImGui::Checkbox("Show trail on terrain", &st.trail_enabled);
-	dirty |= ImGui::SliderFloat("Trail lifetime, s", &st.trail_lifetime, 0.3f, 5.0f);
+	if (st.tab <= 1)
+	{
+		ImGui::SeparatorText("Brush cursor (3D)");
+		dirty |= ImGui::Checkbox("Show cursor circles", &st.show_cursor);
+		dirty |= ImGui::Checkbox("Show noise preview on brush", &st.show_pattern_preview);
+		dirty |= ImGui::SliderFloat("Brush preview opacity", &st.pattern_opacity, 0.05f, 0.9f);
+		ImGui::TextDisabled("Everything is drawn on the terrain by the brush shader\n(no 2D screen circles). The toggles are independent:\ncircles = outer size + hard-core edge, noise preview =\nthe real 0..1 mask the stroke imprints on the grass.");
+	}
+
+	if (st.tab <= 1)
+	{
+		ImGui::SeparatorText("Stroke trail (3D)");
+		const bool trailWas = st.trail_enabled;
+		dirty |= ImGui::Checkbox("Show trail on terrain", &st.trail_enabled);
+		if (st.trail_enabled != trailWas)
+			s_trail.clear(); // flipping the switch must visibly take effect instantly
+		dirty |= ImGui::Checkbox("Draw noise always (keep stamps)", &st.trail_forever);
+		dirty |= ImGui::SliderFloat("Trail lifetime, s", &st.trail_lifetime, 0.3f, 5.0f);
+		dirty |= ImGui::SliderFloat("Imprint opacity", &st.imprint_opacity, 0.05f, 1.0f);
+	}
 
 	if (dirty)
 		s_preview_dirty = true; // live-refresh the pattern preview on any control change
 
-	ImGui::SeparatorText("Actions");
-	if (!hasData)
+	if (st.tab <= 1)
 	{
-		ImGui::BeginDisabled();
-	}
-	if (ImGui::Button("Save masks"))
-	{
-		if (D)
+		ImGui::SeparatorText("Actions");
+		if (!hasData)
 		{
-			D->DetailLayers_SaveUserMasks();
-			st.status = "Masks saved.";
+			ImGui::BeginDisabled();
 		}
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Clear masks"))
-	{
-		if (D)
+		if (ImGui::Button("Save masks"))
 		{
-			D->DetailLayers_ClearUserMasks();
-			D->RequestCacheRebuild();
-			st.status = "Masks cleared.";
+			if (D)
+			{
+				D->DetailLayers_SaveUserMasks();
+				st.status = "Masks saved.";
+			}
 		}
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Rebuild cache"))
-	{
-		if (D)
-		{
-			D->RequestCacheRebuild();
-			st.status = "Cache rebuild requested.";
-		}
-	}
-	if (!hasData)
-	{
-		ImGui::EndDisabled();
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Clear trail"))
-		s_trail.clear();
-
-	if (D)
-		ImGui::Text("entries: %zu fmb + %zu cluster", D->user_fmb_mask.size(), D->user_clu_mask.size());
-
-	// --------------------------------------------------------------- preview
-	if (D && st.show_preview)
-	{
-		ImGui::SeparatorText("Brush pattern preview");
-		if (s_preview_dirty)
-		{
-			dv_fill_preview(st);
-			s_preview_dirty = false;
-		}
-		if (s_preview_tex && s_preview_tex->get_SRView())
-			ImGui::Image(s_preview_tex->get_SRView()->GetRawSRV(), ImVec2(DV_PREVIEW_SIZE, DV_PREVIEW_SIZE));
-		else
-			ImGui::Text("preview texture unavailable");
-	}
-
-	// -------------------------------------------------------------- minimap
-	if (D && st.show_minimap)
-	{
-		ImGui::SeparatorText("Field minimap");
-		ImGui::RadioButton("FMB", &st.minimap_mode, 0);
 		ImGui::SameLine();
-		ImGui::RadioButton("Cluster", &st.minimap_mode, 1);
-		// 1024x1024 = ~1M SampleXXXField per pass, so refresh on a ~800ms timer instead of
-		// every frame. Edits under the brush still land within a second.
-		static u64 s_minimap_next = 0;
-		const u64 now = Device.dwTimeGlobal;
-		if (now >= s_minimap_next)
+		if (ImGui::Button("Clear masks"))
 		{
-			dv_fill_minimap(D, st.minimap_mode);
-			s_minimap_next = now + 800;
+			if (D)
+			{
+				D->DetailLayers_ClearUserMasks();
+				D->RequestCacheRebuild();
+				st.status = "Masks cleared.";
+			}
 		}
-		if (s_minimap_tex && s_minimap_tex->get_SRView())
+		ImGui::SameLine();
+		if (ImGui::Button("Rebuild cache"))
 		{
-			const float w = ImGui::GetContentRegionAvail().x;
-			ImGui::Image(s_minimap_tex->get_SRView()->GetRawSRV(), ImVec2(w, w));
+			if (D)
+			{
+				D->RequestCacheRebuild();
+				st.status = "Cache rebuild requested.";
+			}
 		}
-		else
-			ImGui::Text("minimap texture unavailable");
+		if (!hasData)
+		{
+			ImGui::EndDisabled();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Clear trail"))
+			s_trail.clear();
+
+		if (D)
+			ImGui::Text("entries: %zu fmb + %zu cluster", D->user_fmb_mask.size(), D->user_clu_mask.size());
+
+		// --------------------------------------------------------------- preview
+		if (D && st.show_preview)
+		{
+			ImGui::SeparatorText("Brush pattern preview");
+			if (s_preview_dirty)
+			{
+				dv_fill_preview(st);
+				s_preview_dirty = false;
+			}
+			if (s_preview_tex && s_preview_tex->get_SRView())
+				ImGui::Image(s_preview_tex->get_SRView()->GetRawSRV(), ImVec2(DV_PREVIEW_SIZE, DV_PREVIEW_SIZE));
+			else
+				ImGui::Text("preview texture unavailable");
+		}
+
+		// -------------------------------------------------------------- minimap
+		if (D && st.show_minimap)
+		{
+			// Each brush tab shows only its own map: Scale (FMB) -> FMB field,
+			// Mix (Cluster) -> cluster field.
+			const int mmode = (st.tab == 0) ? 0 : 1;
+			ImGui::SeparatorText(mmode == 0 ? "Scale field minimap (FMB)" : "Mix field minimap (Cluster)");
+			static MinimapUI s_mm_brush;
+			dv_minimap_ui(D, mmode, s_minimap_tex, false, s_mm_brush, -1.f);
+		}
 	}
 
 	ImGui::End();
@@ -1289,6 +1711,7 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 			{
 				st.have_hit = true;
 				st.last_hit = hit;
+				st.last_normal = hitN;
 				// Mix replaces by the opaque noise mask regardless of press intensity, so
 				// the stroke (and its trail) runs even with a neutral wheel.
 				const bool mixStroke = (st.tab == 1);
@@ -1323,37 +1746,5 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 				D->DetailLayers_RequestRebuildAround(hit, st.radius);
 			}
 		}
-	}
-
-	// ------------------------------------------- screen-center brush cursor
-	// Draw last so it sits above all editor windows. Just two rings (outer brush size,
-	// inner soft-core) plus the signed press readout - the noise pattern itself is drawn
-	// UNDER the terrain by the ground overlay shader (Overlay > Ground pattern preview),
-	// so the screen never occludes what is being painted.
-	if (st.show_cursor && st.have_hit && D)
-	{
-		const Fvector& cam = Device.vCameraPosition;
-		const float d = st.last_hit.distance_to(cam);
-		const float halfH = (float)Device.TargetHeight * 0.5f;
-		const float tanHalf = tanf(deg2rad(Device.fFOV) * 0.5f);
-		float outerPx = (st.radius / std::max(d * tanHalf, 0.05f)) * halfH * st.cursor_scale;
-		outerPx = clampr(outerPx, 8.f, halfH * 1.8f);
-
-		const ImVec2 C((float)Device.TargetWidth * 0.5f, (float)Device.TargetHeight * 0.5f);
-		ImDrawList* dl = ImGui::GetForegroundDrawList();
-		const ImU32 ring = IM_COL32(255, 255, 255, 230);
-		dl->AddCircle(C, outerPx, ring, 96, 1.5f);
-		dl->AddCircle(C, outerPx * st.cursor_inner, ring, 96, 1.5f);
-
-		// Signed intensity readout (+1.00 .. -1.00, 2 decimals) above the biggest circle.
-		char ibuf[16];
-		xr_sprintf(ibuf, "%+.2f", st.intensity);
-		const ImVec2 iSize = ImGui::GetFont()->CalcTextSizeA(ImGui::GetFontSize(), FLT_MAX, 0.f, ibuf);
-		const ImVec2 iPos(C.x - iSize.x * 0.5f, C.y - outerPx - iSize.y - 6.f);
-		const ImU32 iCol = (st.intensity > 0.005f) ? IM_COL32(120, 235, 120, 255)
-			: (st.intensity < -0.005f) ? IM_COL32(255, 120, 95, 255)
-			: IM_COL32(225, 225, 225, 255);
-		dl->AddText(ImVec2(iPos.x + 1.f, iPos.y + 1.f), IM_COL32(0, 0, 0, 220), ibuf);
-		dl->AddText(iPos, iCol, ibuf);
 	}
 }

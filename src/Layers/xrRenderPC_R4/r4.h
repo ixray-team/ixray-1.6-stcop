@@ -250,6 +250,10 @@ public:
 	// Detail Layers Editor tool (brush overlay + ImGui window)
 	void renderImGuiDebugWindow_DetailLayersEditor() override;
 	void DetailLayers_RenderBrush3D();
+	// Releases the lazily created brush render objects while the RHI/device is still
+	// alive (called from destroy()). Never leave these statics to DLL detach - the
+	// device is gone by then and their destructors crash on the imported DevicePtr.
+	void DetailLayers_EditorDestroy();
 
 	// Loading / Unloading
 	virtual void create();
