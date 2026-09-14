@@ -1,6 +1,6 @@
 <ui_texture>
     <file_name>ui\ui_hud</file_name>
-    <texture id="ui_hud_map" x="0" y="0" width="185" height="192" />
+    <texture id="ui_hud_map" x="0" y="0" width="184" height="192" />
     <texture id="ui_hud_map_counter" x="0" y="192" width="35" height="28" />
     <texture id="ui_hud_shkala_car" x="35" y="192" width="155" height="34" />
     <texture id="ui_hud_shkala_armor" x="185" y="0" width="164" height="38" />
