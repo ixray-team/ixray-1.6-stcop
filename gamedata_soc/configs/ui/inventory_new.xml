@@ -72,7 +72,7 @@
 		<slot> <!-- Outfit -->
 			<slot_dragdrop x="858" y="290" width="104" height="260" 
             cell_width = "57" cell_height="57" rows_num="4" cols_num="4" 
-            custom_placement="0" use_full_scale_icon="true"/>
+            custom_placement="0" use_full_scale_icon="true" full_scale_animation="$editor"/>
 		</slot>
 		<slot> <!-- PDA -->
 		</slot>
