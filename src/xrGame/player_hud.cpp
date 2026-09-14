@@ -497,16 +497,11 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 		fire_mat.transform_tiny							(fd.vLastFP, m_measures.m_fire_point_offset);
 		m_item_transform.transform_tiny					(fd.vLastFP);
 
-		fd.vLastFD.set									(0.f,0.f,1.f);
-		m_item_transform.transform_dir					(fd.vLastFD);
+		fd.vLastFD.set									(m_item_transform.k);
 		VERIFY(_valid(fd.vLastFD));
 
 		fd.m_FireParticlesXForm.identity				();
-		fd.m_FireParticlesXForm.k.set					(fd.vLastFD);
-
-		Fvector hpb;
-		m_item_transform.getHPB(hpb);
-		fd.m_FireParticlesXForm.setHPB(hpb.x, hpb.y, hpb.z);
+		fd.m_FireParticlesXForm.set(m_item_transform);
 		VERIFY(_valid(fd.m_FireParticlesXForm));
 	}
 
