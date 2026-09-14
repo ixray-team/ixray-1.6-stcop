@@ -240,29 +240,12 @@ end
 
 -- Проверка, что лучшее оружие персонажа - пистолет
 function best_pistol(actor, npc)
-	local pistol = npc:item_in_slot(1)
+	local pistol = npc:item_in_slot(2)
 	if pistol ~= nil then
 		return true
 	else
 		return false
 	end
---[[
-	local wpn = npc:best_weapon()
-	if wpn == nil then
-		return false
-	end
-	wpn = get_clsid(wpn)
-	if wpn == nil then
-		return false
-	end
-	if wpn == clsid.wpn_hpsa then return true
-    elseif wpn == clsid.wpn_hpsa then return true
-    elseif wpn == clsid.wpn_pm then return true
-    elseif wpn == clsid.wpn_fort then return true
-    elseif wpn == clsid.wpn_walther then return true
-    elseif wpn == clsid.wpn_usp45 then return true
-    else return false end
-]]
 end
 
 -- Проверка того что персонаж был убит кем-то из npc указанных в списке.
