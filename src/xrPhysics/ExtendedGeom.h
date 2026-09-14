@@ -68,7 +68,7 @@ public:
 		{
 			CObjectContactCallback* del = callbacks;
 			callbacks = callbacks->next;
-			del->next = NULL;
+			del->next = nullptr;
 			xr_delete(del);
 			VERIFY(!callbacks || !callbacks->HasCallback(c));
 		}
@@ -84,7 +84,8 @@ public:
 				if (c == i->callback)
 				{
 					CObjectContactCallback* del = i;
-					p->next = i->next; del->next = NULL; xr_delete(del);
+					p->next = i->next; del->next = nullptr; 
+					xr_delete(del);
 					VERIFY(!callbacks->HasCallback(c));
 					break;
 				}
@@ -95,12 +96,14 @@ public:
 		}
 	}
 
-	void	Call(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+	void Call(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 	{
-		for (CObjectContactCallback* i = this; i; i = i->next)
+		for (auto* i = this; i;)
 		{
 			VERIFY(i->callback);
+			auto* next = i->next;
 			i->callback(do_colide, bo1, c, material_1, material_2);
+			i = next;
 		}
 	}
 };
