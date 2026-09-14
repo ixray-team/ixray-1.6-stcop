@@ -76,7 +76,7 @@ void CMissile::Load(const char* section)
 	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
 
 	SuicideFailDestroyTime = pSettings->read_if_exists<u32>(section, "suicide_fail_destroy_time", 700);
-	SuicideFailForce = pSettings->read_if_exists<float>(section, "suicide_ready_force", 20.0f);
+	SuicideFailForce = pSettings->read_if_exists<float>(section, "suicide_fail_force", 20.0f);
 	SuicideReadyForce = pSettings->read_if_exists<float>(section, "suicide_ready_force", 8.0f);
 	ControllerGAttackMinDist = pSettings->read_if_exists<float>(section, "controller_g_attack_min_dist", 10.0f);
 
