@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "WeaponsModifiers.h"
 
 
 // Igor 
@@ -35,6 +36,14 @@ public:
 	virtual CInventoryOwner* cast_inventory_owner() { return nullptr; }
 	virtual CGameObject* cast_game_object() { return this; }
 public:
+	WeaponModifiers::WpnModifierType WeaponModifierCoefficients = {};
+	ICF float GetWeaponModifier(WeaponModifier Type) const { return WeaponModifierCoefficients[Type]; }
+	ICF void SetWeaponModifier(WeaponModifier Type, float Value)
+	{
+		clamp(Value, 0.001f, FLT_MAX);
+		WeaponModifierCoefficients[Type] = Value;
+	}
+
 	bool					m_bEntityIgnoredByMonsters = false;
 	bool					m_bMobility;
 	float					m_fAccuracy;

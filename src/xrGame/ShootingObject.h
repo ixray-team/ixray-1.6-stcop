@@ -10,6 +10,7 @@
 #include "../xrEngine/Render.h"
 #include "anticheat_dumpable_object.h"
 #include "../xrPhysics/DamageSource.h"
+#include "WeaponsModifiers.h"
 
 class CCartridge;
 class CParticlesObject;
@@ -34,6 +35,8 @@ private:
 // Fire Params
 //////////////////////////////////////////////////////////////////////////
 protected:
+	const WeaponModifiers::WpnModifierType* OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+	bool UseSinglePlayerHitPower = false;
 
 	enum
 	{

@@ -502,6 +502,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("item_on_belt",				&CScriptGameObject::ItemOnBelt) 
 		.def("belt_count",					&CScriptGameObject::BeltSize)  													   
 		.def("get_actor_max_weight",		&CScriptGameObject::GetActorMaxWeight)
+		.def("get_weapon_modifier", &CScriptGameObject::GetWeaponModifier)
+		.def("set_weapon_modifier", &CScriptGameObject::SetWeaponModifier)
 		.def("set_actor_max_weight",		&CScriptGameObject::SetActorMaxWeight)
 		.def("get_actor_max_walk_weight",	&CScriptGameObject::GetActorMaxWalkWeight)
 		.def("set_actor_max_walk_weight",	&CScriptGameObject::SetActorMaxWalkWeight)

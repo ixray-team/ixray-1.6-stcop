@@ -1454,7 +1454,7 @@ ACTOR_DEFS::SMemoryPos*				CActor::FindMemoryPos (u32 Time)
 };
 */
 
-void CActor::save(NET_Packet &output_packet)
+void CActor::save(NET_Packet& output_packet)
 {
 	inherited::save(output_packet);
 	CInventoryOwner::save(output_packet);
@@ -1496,7 +1496,7 @@ void CActor::save(NET_Packet &output_packet)
 	//output_packet.w_u8(u8(m_use_disabled));
 }
 
-void CActor::load(IReader &input_packet)
+void CActor::load(IReader& input_packet)
 {
 	ResetCameraFocus();
 	inherited::load(input_packet);
