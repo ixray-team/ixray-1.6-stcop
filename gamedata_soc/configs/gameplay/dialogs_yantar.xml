@@ -1,50 +1,5 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <game_dialogs>
-    <dialog id="yantar_wounded_scientist">
-        <phrase_list>
-            <phrase id="21">
-                <text>yantar_wounded_scientist_21</text>
-            </phrase>
-            <phrase id="1">
-                <text />
-                <dont_has_info>yan_find_scientist_done</dont_has_info>
-                <dont_has_info>yan_scientist_return_to_bunker</dont_has_info>
-                <next>11</next>
-            </phrase>
-            <phrase id="11">
-                <text>yantar_wounded_scientist_11</text>
-                <next>111</next>
-            </phrase>
-            <phrase id="111">
-                <text>yantar_wounded_scientist_111</text>
-                <action>dialogs.break_dialog</action>
-                <give_info>yan_scientist_return_to_bunker</give_info>
-            </phrase>
-            <phrase id="2">
-                <text />
-                <dont_has_info>yan_find_scientist_done</dont_has_info>
-                <has_info>yan_scientist_return_to_bunker</has_info>
-                <next>211</next>
-            </phrase>
-            <phrase id="211">
-                <text>yantar_wounded_scientist_211</text>
-            </phrase>
-            <phrase id="3">
-                <text />
-                <has_info>yan_find_scientist_done</has_info>
-                <next>31</next>
-            </phrase>
-            <phrase id="31">
-                <text>yantar_wounded_scientist_31</text>
-            </phrase>
-            <phrase id="0">
-                <text />
-                <next>1</next>
-                <next>2</next>
-                <next>3</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="yantar_help_scientist">
         <phrase_list>
             <phrase id="4">
@@ -648,22 +603,6 @@
                 <has_info>bar_x16_documents_start</has_info>
                 <next>11</next>
             </phrase>
-            <phrase id="0">
-                <text></text>
-                <next>1</next>
-                <next>3</next>
-                <next>4</next>
-                <next>5</next>
-                <next>6</next>
-                <next>7</next>
-                <next>8</next>
-                <next>9</next>
-                <next>10</next>
-                <next>2</next>
-                <next>22</next>
-                <next>23</next>
-                <next>24</next>
-            </phrase>
             <phrase id="8">
                 <text></text>
                 <dont_has_info>yantar_scientist_talk_helmet</dont_has_info>
@@ -686,6 +625,68 @@
                 <has_info>yan_scientist_die</has_info>
                 <has_info>bar_heli_scene_professor_die</has_info>
                 <next>51</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+                <next>6</next>
+                <next>7</next>
+                <next>8</next>
+                <next>9</next>
+                <next>10</next>
+                <next>2</next>
+                <next>22</next>
+                <next>23</next>
+                <next>24</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="yantar_wounded_scientist">
+        <phrase_list>
+            <phrase id="21">
+                <text>yantar_wounded_scientist_21</text>
+            </phrase>
+            <phrase id="3">
+                <text></text>
+                <has_info>yan_find_scientist_done</has_info>
+                <next>31</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <dont_has_info>yan_find_scientist_done</dont_has_info>
+                <dont_has_info>yan_scientist_return_to_bunker</dont_has_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>yantar_wounded_scientist_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="2">
+                <text></text>
+                <dont_has_info>yan_find_scientist_done</dont_has_info>
+                <has_info>yan_scientist_return_to_bunker</has_info>
+                <next>211</next>
+            </phrase>
+            <phrase id="31">
+                <text>yantar_wounded_scientist_31</text>
+            </phrase>
+            <phrase id="211">
+                <text>yantar_wounded_scientist_211</text>
+            </phrase>
+            <phrase id="111">
+                <text>yantar_wounded_scientist_111</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>yan_scientist_return_to_bunker</give_info>
+                <give_info>yan_spawn_ghost</give_info>
             </phrase>
         </phrase_list>
     </dialog>
