@@ -439,8 +439,8 @@ function actor_punch(npc)
 	end
 
 	local active_slot = db.actor:active_slot()
-	if active_slot ~= 1 and
-	   active_slot ~= 2
+	if active_slot ~= 2 and
+	   active_slot ~= 3
 	then
 		return 
 	end
