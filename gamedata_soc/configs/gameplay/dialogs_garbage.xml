@@ -443,10 +443,6 @@
             <phrase id="11112111">
                 <text>gar_dolg_blokpost_11112111</text>
             </phrase>
-            <phrase id="11">
-                <text>gar_dolg_blokpost_11</text>
-                <next>111</next>
-            </phrase>
             <phrase id="111">
                 <text>gar_dolg_blokpost_111</text>
                 <next>1111</next>
@@ -455,6 +451,27 @@
                 <text>gar_dolg_blokpost_1111</text>
                 <next>11111</next>
                 <next>11112</next>
+            </phrase>
+            <phrase id="3">
+                <text></text>
+                <precondition>garbage_dialogs.blokpost_pass</precondition>
+                <next>33</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+                <next>3</next>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <precondition>dialogs.actor_not_in_dolg</precondition>
+                <dont_has_info>gar_free_pass</dont_has_info>
+                <dont_has_info>gar_kill_boars_quest</dont_has_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>gar_dolg_blokpost_11</text>
+                <next>111</next>
             </phrase>
             <phrase id="11111">
                 <text>gar_dolg_blokpost_11111</text>
@@ -475,42 +492,25 @@
                 <next>123</next>
                 <next>124</next>
             </phrase>
-            <phrase id="0">
+            <phrase id="123">
                 <text></text>
-                <next>1</next>
-                <next>3</next>
-            </phrase>
-            <phrase id="12311">
-                <text>gar_dolg_blokpost_12311</text>
-            </phrase>
-            <phrase id="3">
-                <text></text>
-                <precondition>garbage_dialogs.blokpost_pass</precondition>
-                <next>33</next>
-            </phrase>
-            <phrase id="33">
-                <text>gar_dolg_blokpost_33</text>
+                <has_info>gar_kill_boars_request</has_info>
+                <next>1231</next>
             </phrase>
             <phrase id="1231">
                 <text>gar_dolg_blokpost_1231</text>
                 <next>12311</next>
-            </phrase>
-            <phrase id="1">
-                <text></text>
-                <precondition>dialogs.actor_not_in_dolg</precondition>
-                <dont_has_info>gar_free_pass</dont_has_info>
-                <dont_has_info>gar_kill_boars_quest</dont_has_info>
-                <next>11</next>
             </phrase>
             <phrase id="124">
                 <text></text>
                 <dont_has_info>gar_kill_boars_request</dont_has_info>
                 <next>33</next>
             </phrase>
-            <phrase id="123">
-                <text></text>
-                <has_info>gar_kill_boars_request</has_info>
-                <next>1231</next>
+            <phrase id="33">
+                <text>gar_dolg_blokpost_33</text>
+            </phrase>
+            <phrase id="12311">
+                <text>gar_dolg_blokpost_12311</text>
             </phrase>
         </phrase_list>
     </dialog>

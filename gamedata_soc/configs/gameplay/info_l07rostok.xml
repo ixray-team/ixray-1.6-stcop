@@ -6,7 +6,8 @@
 	<info_portion id="bar_scared_novice_start"></info_portion>
 	<info_portion id="bar_scared_novice_hide"></info_portion>
 	<info_portion id="bar_scared_novice_attack"></info_portion>
-	<info_portion id="bar_scared_novice_done"></info_portion>
+	
+	<info_portion id="bar_zastava_about_zastava"></info_portion>
 
 
 	<!-- BAR -->

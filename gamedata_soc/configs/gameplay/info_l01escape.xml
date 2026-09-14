@@ -122,6 +122,8 @@
 	<info_portion id="esc_wolf_dead"></info_portion>
 	<info_portion id="esc_assault_to_lager"></info_portion>
 	
+	<info_portion id="esc_fanat_about_wolf"></info_portion>
+	
 	<!-- Порядок фраз торговца -->
 	<info_portion id="esc_trader_talked_about_zone"></info_portion>
 	<info_portion id="esc_trader_talked_about_me"></info_portion>
