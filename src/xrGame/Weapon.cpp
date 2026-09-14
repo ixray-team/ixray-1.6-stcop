@@ -839,9 +839,11 @@ void CWeapon::Load		(const char* section)
 	}
 	
 	m_vShellDir = READ_IF_EXISTS(pSettings, r_fvector3, section, "shell_dir", Fvector(1.f, 0.f, 0.f));
-	m_fShellEjectionSpeed = READ_IF_EXISTS(pSettings, r_float, section, "shell_ejection_speed", 8.f);
+	m_fShellEjectionSpeed = READ_IF_EXISTS(pSettings, r_float, section, "shell_ejection_speed", 20.f);
 	m_sShellBone = READ_IF_EXISTS(pSettings, r_string, section, "shell_bone", nullptr);
 	m_fShellEjectionDispersionAngle = READ_IF_EXISTS(pSettings, r_float, section, "shell_ejection_dispersion_angle", 30.f);
+	clamp(m_fShellEjectionDispersionAngle, 0.f, 90.f);
+	
 	
 	if (m_sShellBone)
 	{
