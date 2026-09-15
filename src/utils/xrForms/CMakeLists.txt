@@ -49,6 +49,14 @@ target_link_libraries(xrLevelBuilder PUBLIC MagicFM)
 target_link_libraries(xrLevelBuilder PUBLIC imgui)
 target_link_libraries(xrLevelBuilder PUBLIC xrEngineCore)
 
+target_include_directories(xrLevelBuilder PRIVATE
+    "${WINTOAST_INCLUDE_DIR}"
+)
+
+target_link_libraries(xrLevelBuilder PRIVATE
+    "${WINTOAST_LIBRARY}"
+)
+
 if (WIN32)
     target_link_libraries(xrLevelBuilder PUBLIC WindowsSDK::WinMM)
 endif()

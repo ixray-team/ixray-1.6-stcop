@@ -8,15 +8,23 @@
 
 #include "xrLevel.h"
 
-const char* texture_formats[] = 
+// >>> Local clamp helper
+template <typename T>
+static inline T Clamp(T v, T lo, T hi)
 {
-	"RGBA (No compression)",
-	"BC7 (DX11 Only)",
-	"BC5 (Original)"
+	return (v < lo) ? lo : (v > hi) ? hi
+									: v;
+}
+
+const char* texture_formats[] =
+	{
+		"RGBA (No compression)",
+		"BC7 (DX11 Only)",
+		"BC5 (Original)"
 };
 
-//Ex: 25, 200, 50, 255 -> 0.0980392, 0.784314, 0.196078, 1
-#define RGBAColor(r,g,b,a) r/(float)255, g/(float)255, b/(float)255, a/(float)255
+// Ex: 25, 200, 50, 255 -> 0.0980392, 0.784314, 0.196078, 1
+#define RGBAColor(r, g, b, a) r / (float)255, g / (float)255, b / (float)255, a / (float)255
 extern size_t GetHeapMemory();
 
 bool ShowMainUI = true;
@@ -28,60 +36,105 @@ void InitializeUIData()
 	string_path LevelsDir = {};
 	FS.update_path(LevelsDir, "$game_levels$", "");
 
-	for (const xr_path& Dir : std::filesystem::directory_iterator{ LevelsDir })
+	for (const xr_path& Dir : std::filesystem::directory_iterator{LevelsDir})
 	{
 		if (!std::filesystem::is_directory(Dir))
+		{
 			continue;
+		}
 
 		auto& LevelInfo = gCompilerMode.Files.emplace_back();
 		LevelInfo.Name = Dir.xfilename();
-
 	}
 }
 
 int current_format = 0;
 static bool autoScroll = true;
 static bool hideLogSection = false;
- 
+
 void DrawCompilerConfig();
 void DrawAIConfig();
 void DrawDOConfig();
 void DrawLCConfig();
- 
+
 void DrawDownUI()
 {
 	ImGui::Separator();
 
-	ImGui::Checkbox("SwitchUI", &ShowMainUI);			ImGui::SameLine();
-	ImGui::Checkbox("auto-scroll", &autoScroll);		ImGui::SameLine();
+	ImGui::Checkbox("SwitchUI", &ShowMainUI);
 	ImGui::SameLine();
-	ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
+	ImGui::Checkbox("auto-scroll", &autoScroll);
+	ImGui::SameLine();
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4{0, 0.9, 0, 1}, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
 }
 
 void RenderMainUI()
 {
+	// Считаем выбранные уровни для счётчика в тулбаре.
+	auto CountSelected = []() -> int
+	{
+		int n = 0;
+		for (auto& [Name, Sel] : gCompilerMode.Files)
+		{
+			if (Sel)
+			{
+				++n;
+			}
+		}
+		return n;
+	};
+
+	// Действия над списком уровней — используются и в кнопках, и в горячих клавишах.
+	auto SelectAll = []()
+	{
+		for (auto& [Name, Sel] : gCompilerMode.Files)
+		{
+			Sel = true;
+		}
+	};
+
+	auto SelectNone = []()
+	{
+		for (auto& [Name, Sel] : gCompilerMode.Files)
+		{
+			Sel = false;
+		}
+	};
+
+	auto SelectInvert = []()
+	{
+		for (auto& [Name, Sel] : gCompilerMode.Files)
+		{
+			Sel = !Sel;
+		}
+	};
+
 	int Size[2] = {};
 	if (Size[0] != 1100 || Size[1] != 700)
+	{
 		SDL_SetWindowSize(g_AppInfo.Window, 1100, 700);
+	}
 	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
 
+	ImGui::SetNextWindowPos({0, 0});
+	ImGui::SetNextWindowSize({(float)Size[0], (float)Size[1]});
 
-	ImGui::SetNextWindowPos({ 0, 0 });
-	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1] });
- 
-	if (!ShowMainUI) 
+	if (!ShowMainUI)
 	{
 		RenderCompilerUI(Size[0], Size[1]);
 		return;
 	}
-	 
+
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
-		ImVec2 ListBoxSize = { float(Size[0] - 20), float ( Size[1] - 115) };
+		ImVec2 ListBoxSize = {float(Size[0] - 20), float(Size[1] - 115)};
 		if (ImGui::BeginTable("##Levels", 5, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
 		{
-			// 
-			ImGui::TableSetupColumn("Levels");
+			// >>> FIX: фиксируем ширину первой колонки.
+			//     Без этого счётчик "N / M" внутри тулбара растягивал
+			//     ячейку до всей ширины окна и выдавливал остальные колонки вправо.
+			ImGui::TableSetupColumn("Levels", ImGuiTableColumnFlags_WidthFixed, 260.f);
 			ImGui::TableSetupColumn("Settings");
 			ImGui::TableSetupColumn("xrLC");
 			ImGui::TableSetupColumn("xrAI");
@@ -91,9 +144,62 @@ void RenderMainUI()
 
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
-			
-			ImVec2 ListBoxSize2 = { 250, float(Size[1] - 155) };
-			if (  ImGui::BeginTable("##Levels", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize2)  )
+
+			// >>> SELECT-TOOLBAR
+			{
+				const float spacing = ImGui::GetStyle().ItemSpacing.x;
+
+				if (ImGui::SmallButton("All"))
+				{
+					SelectAll();
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Select all levels (Ctrl+A)");
+				}
+
+				ImGui::SameLine(0.f, spacing);
+				if (ImGui::SmallButton("None"))
+				{
+					SelectNone();
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Deselect all levels (Ctrl+D)");
+				}
+
+				ImGui::SameLine(0.f, spacing);
+				if (ImGui::SmallButton("Invert"))
+				{
+					SelectInvert();
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Invert selection (Ctrl+I)");
+				}
+
+				// Счётчик справа — теперь точно внутри 260px-колонки.
+				{
+					char counter[64];
+					snprintf(counter, sizeof(counter), "%d / %d", CountSelected(), (int)gCompilerMode.Files.size());
+
+					ImVec2 tsz = ImGui::CalcTextSize(counter);
+					float avail = ImGui::GetContentRegionAvail().x;
+					if (avail > tsz.x + 8.f)
+					{
+						ImGui::SameLine();
+						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - tsz.x);
+						ImGui::TextColored(ImVec4(0.66f, 0.66f, 0.66f, 1.f), "%s", counter);
+					}
+				}
+			}
+			// <<< SELECT-TOOLBAR
+
+			// Тулбар отъел по высоте — уменьшаем таблицу ровно на его размер.
+			const float toolbarH = ImGui::GetFrameHeightWithSpacing();
+
+			ImVec2 ListBoxSize2 = {250, float(Size[1] - 155) - toolbarH};
+			if (ImGui::BeginTable("##LevelsList", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize2))
 			{
 				ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 205);
 				ImGui::TableSetupColumn("Prop");
@@ -103,7 +209,12 @@ void RenderMainUI()
 				{
 					ImGui::TableNextColumn();
 					xr_string U8Str = Platform::ANSI_TO_UTF8(File);
-					ImGui::Selectable(U8Str.c_str());
+
+					// Клик по имени — тоже переключает выбор.
+					if (ImGui::Selectable(U8Str.c_str(), Selected))
+					{
+						Selected = !Selected;
+					}
 
 					ImGui::TableNextColumn();
 					ImGui::Checkbox(("##check" + File).c_str(), &Selected);
@@ -119,23 +230,46 @@ void RenderMainUI()
 
 			ImGui::TableNextColumn();
 			DrawCompilerConfig();
-			
+
 			ImGui::TableNextColumn();
-			
 			DrawLCConfig();
-			ImGui::TableNextColumn();
 
+			ImGui::TableNextColumn();
 			DrawAIConfig();
-			ImGui::TableNextColumn();
 
+			ImGui::TableNextColumn();
 			DrawDOConfig();
-			ImGui::EndTable();  
+
+			ImGui::EndTable();
 		}
+
+		// >>> HOTKEYS: Ctrl+A / Ctrl+D / Ctrl+I
+		if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
+			!ImGui::GetIO().WantTextInput)
+		{
+			const bool ctrl = ImGui::GetIO().KeyCtrl;
+
+			if (ctrl && ImGui::IsKeyPressed(ImGuiKey_A, false))
+			{
+				SelectAll();
+			}
+
+			if (ctrl && ImGui::IsKeyPressed(ImGuiKey_D, false))
+			{
+				SelectNone();
+			}
+
+			if (ctrl && ImGui::IsKeyPressed(ImGuiKey_I, false))
+			{
+				SelectInvert();
+			}
+		}
+		// <<< HOTKEYS
 	}
-	 
+
 	auto BSize = ImGui::GetContentRegionAvail();
 
-	if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
+	if (ImGui::Button("Run Compiler", {BSize.x, 50}))
 	{
 		GetIterationData().clear();
 
@@ -147,7 +281,6 @@ void RenderMainUI()
 
 		if (gCompilerMode.AI)
 		{
-
 			if (gCompilerMode.AI_BuildLevel)
 			{
 				isReady = true;
@@ -161,7 +294,9 @@ void RenderMainUI()
 
 		if (isReady)
 		{
-			static bool levelsEmpty = true;
+			// >>> FIX: убрано static — иначе второй запуск без выбранных
+			//          уровней не показывал предупреждение.
+			bool levelsEmpty = true;
 			for (auto& FILE : gCompilerMode.Files)
 			{
 				if (FILE.Select)
@@ -179,14 +314,13 @@ void RenderMainUI()
 				ClearLogVector();
 				StartCompile();
 			}
- 			else
+			else
 			{
 				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning!", "No levels selected.", nullptr);
- 			}
+			}
 		}
-
 	}
-	 
+
 	DrawDownUI();
 	ImGui::End();
 }
@@ -198,8 +332,8 @@ int item_current_jitter = 2;
 int item_current_jitter_mu = 6;
 
 // Index Add (changed list)
-int			max_resolution = 5;
-const char* lightmap_resolution[] = { "1024", "2048", "4096", "8192", "16384"};
+int max_resolution = 5;
+const char* lightmap_resolution[] = {"1024", "2048", "4096", "8192", "16384"};
 
 const char* cform_types[] = {
 	magic_enum::enum_name<CFormVersions>(CFormVersions::Vanilla).data(),
@@ -214,29 +348,39 @@ const char* geom_types[] = {
 constexpr int geom_types_num = sizeof(geom_types) / sizeof(geom_types[0]);
 
 // Jitters
-const char* itemsJitter[] = { "1", "4", "9" };
-const char* itemsJitterMU[] = { "0", "1", "2", "3", "4", "5", "6"};
+const char* itemsJitter[] = {"1", "4", "9"};
+const char* itemsJitterMU[] = {"0", "1", "2", "3", "4", "5", "6"};
 
 void DrawLCConfig()
 {
-	//if (ImGui::BeginChild("LC", { 200, 415 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	// if (ImGui::BeginChild("LC", { 200, 415 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::PushID("xrLC");
 		ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
+		ImGui::SetItemTooltip("Compile Game Level (Collision, Lighting).");
+
 		ImGui::Separator();
 
 		ImGui::BeginDisabled(!gCompilerMode.LC);
- 		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
-		ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
-		ImGui::Checkbox("Skip invalid faces", &gCompilerMode.LC_SkipInvalidFaces);
- 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
+		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
+		ImGui::SetItemTooltip("Ignore smoothing groups.");
+
+		ImGui::Checkbox("Tessellation", &gCompilerMode.LC_Tess);
+		ImGui::SetItemTooltip("Geometric tessellation.");
+
+		ImGui::Checkbox("Skip Invalid Faces", &gCompilerMode.LC_SkipInvalidFaces);
+		ImGui::SetItemTooltip("Skip invalid faces.");
+
+		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
+		ImGui::SetItemTooltip("Skip welding adjacent vertices.");
+
 		ImGui::Separator();
 
- 		ImGui::Text( "OGF Optimize: " );
- 		ImGui::Checkbox("Make TangentBasis", &gCompilerMode.LC_OGF_TANGENT);
-		ImGui::Checkbox("Make Progressive",  &gCompilerMode.LC_OGF_PROGRESSIVE);
-		ImGui::Checkbox("Make Striptify",    &gCompilerMode.LC_OGF_STRIPTIFY);
- 		ImGui::Separator();
+		ImGui::Text("OGF Optimize: ");
+		ImGui::Checkbox("Make TangentBasis", &gCompilerMode.LC_OGF_TANGENT);
+		ImGui::Checkbox("Make Progressive", &gCompilerMode.LC_OGF_PROGRESSIVE);
+		ImGui::Checkbox("Make Striptify", &gCompilerMode.LC_OGF_STRIPTIFY);
+		ImGui::Separator();
 
 		ImGui::PushID("geom");
 		ImGui::Text("Geom format:");
@@ -247,7 +391,7 @@ void DrawLCConfig()
 			VERIFY(type.has_value());
 			gCompilerMode.LC_GeomType = type.value();
 		}
-		
+
 		ImGui::BeginDisabled(gCompilerMode.LC_GeomType != GeomVanillaType::Chunked);
 		ImGui::SetNextItemWidth(100);
 		ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_GeomChunkSize);
@@ -266,59 +410,65 @@ void DrawLCConfig()
 			VERIFY(type.has_value());
 			gCompilerMode.LC_CformType = type.value();
 		}
-		
+
 		ImGui::BeginDisabled(gCompilerMode.LC_CformType != CFormVersions::VanillaChunked);
 		ImGui::SetNextItemWidth(100);
 		ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_CFormChunkSize);
 		gCompilerMode.LC_CFormChunkSize = std::max(gCompilerMode.LC_CFormChunkSize, 1);
 		ImGui::EndDisabled();
 		ImGui::PopID();
- 
+
 		ImGui::Separator();
 
 		ImGui::Spacing();
 		ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "Lightmaps");
 		ImGui::Spacing();
 
-		ImGui::Text("Border:");		ImGui::SameLine(0, 20);
+		ImGui::Text("Border:");
+		ImGui::SameLine(0, 20);
 		ImGui::InputInt("##LM-Border", &gCompilerMode.LC_BORDER, 1, 1);
 
-		ImGui::Text("Size:");		 ImGui::SameLine(0, 35);
+		ImGui::Text("Size:");
+		ImGui::SameLine(0, 35);
 		ImGui::SetNextItemWidth(180);
 		if (ImGui::Combo("##lmaps", &item_current_lightmap, lightmap_resolution, max_resolution))
 		{
 			gCompilerMode.LC_sizeLmaps = atoi(lightmap_resolution[item_current_lightmap]);
+			ImGui::SetItemTooltip("Lightmap size.");
 		}
 
-		ImGui::Text("Format:");		ImGui::SameLine(0, 20);
+		ImGui::Text("Format:");
+		ImGui::SameLine(0, 20);
 		ImGui::SetNextItemWidth(180);
 		if (ImGui::Combo("##Texture Format", &current_format, texture_formats, IM_ARRAYSIZE(texture_formats)))
 		{
 			gCompilerMode.LmapsFormat = static_cast<LCLightmapFormat>(current_format);
 		}
-	
-		ImGui::Checkbox("Fast LMaps",		&gCompilerMode.LC_fast_way);
-  		ImGui::Checkbox("SoC LMaps",		&gCompilerMode.LC_legacyLM);
-		ImGui::Checkbox("Skip Static map",  &gCompilerMode.LC_SkipStaticMap);
-		ImGui::Checkbox("Skip Sun",         &gCompilerMode.LC_NoSun);
+
+		ImGui::Checkbox("Fast LMaps", &gCompilerMode.LC_fast_way);
+		ImGui::Checkbox("SoC LMaps", &gCompilerMode.LC_legacyLM);
+		ImGui::Checkbox("Skip Static map", &gCompilerMode.LC_SkipStaticMap);
+		ImGui::Checkbox("Skip Sun", &gCompilerMode.LC_NoSun);
+		ImGui::SetItemTooltip("Disable sunlight calculation.");
 
 		ImGui::EndDisabled();
-		
+
 		ImGui::PopID();
-		//ImGui::EndChild();
+		// ImGui::EndChild();
 	}
-
-
 }
 
 void DrawDOConfig()
 {
 	ImGui::PushID("xrDO");
 	ImGui::Checkbox("Details Compiler", &gCompilerMode.DO);
+	ImGui::SetItemTooltip("Compile Detail Objects.");
+
 	ImGui::Separator();
 
 	ImGui::BeginDisabled(!gCompilerMode.DO);
 	ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
+	ImGui::SetItemTooltip("Disable sunlight calculation.");
 	ImGui::EndDisabled();
 
 	ImGui::PopID();
@@ -327,6 +477,7 @@ void DrawDOConfig()
 void DrawAIConfig()
 {
 	ImGui::Checkbox("AI Compiler", &gCompilerMode.AI);
+	ImGui::SetItemTooltip("Compile AI-map.");
 
 	ImGui::BeginDisabled(!gCompilerMode.AI);
 	ImGui::Separator();
@@ -376,38 +527,49 @@ void DrawCompilerConfig()
 			RadioID += 2 * (int)gCompilerMode.CUDA;
 		}
 
- 		ImGui::RadioButton("Use Intel Embree", &RadioID, 1);
+		ImGui::RadioButton("Use Intel Embree", &RadioID, 1);
+		ImGui::SetItemTooltip("Use Intel Embree for ray tracing");
 #ifdef LCCUDA_BUILD
 		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 2);
 #endif
 
 		switch (RadioID)
 		{
- 		case 1: gCompilerMode.CUDA = false; gCompilerMode.Embree = true; break;
-		case 2: gCompilerMode.CUDA = true;  gCompilerMode.Embree = false; break;
-		default: break;
+			case 1:
+				gCompilerMode.CUDA = false;
+				gCompilerMode.Embree = true;
+				break;
+			case 2:
+				gCompilerMode.CUDA = true;
+				gCompilerMode.Embree = false;
+				break;
+			default:
+				break;
 		}
 	}
 	ImGui::PopID();
 	ImGui::Separator();
-	
+
 
 	ImGui::BeginDisabled(!gCompilerMode.Embree);
-  		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);		// Замедляет скорость Траверсера
-		ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);			// Замедляет скорость Траверсера
-		ImGui::Checkbox("Embree Instaces MU", &gCompilerMode.EmbreeInstaces);		// Замедляет скорость Траверсера
-  		ImGui::Checkbox("Embree RayPack8", &gCompilerMode.EmbreeRays8);				// x2 скорость Траверсера (AVX2)
+	ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact); // Замедляет скорость Траверсера
+	ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);	  // Замедляет скорость Траверсера
+	ImGui::Checkbox("Embree Instaces MU", &gCompilerMode.EmbreeInstaces); // Замедляет скорость Траверсера
+	ImGui::Checkbox("Embree RayPack8", &gCompilerMode.EmbreeRays8);		  // x2 скорость Траверсера (AVX2)
+	ImGui::SetItemTooltip("AVX2 Batch Ray Tracing. Speeds up BVH traversal by approximately a factor of 2.");
 
 	ImGui::EndDisabled();
 
 	ImGui::Separator();
 
-	ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
+	ImGui::Checkbox("Clear Temporary Files", &gCompilerMode.ClearTemp);
+	ImGui::SetItemTooltip("Delete temporary files after compilation.");
 	ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
-	ImGui::Checkbox("Save cform to obj", &SaveCForm);
+	ImGui::Checkbox("Save CForm to obj", &SaveCForm);
 
 	ImGui::Separator();
 	ImGui::Text("Threads Max");
+	ImGui::SetItemTooltip("Maximum number of threads.");
 
 	if (ImGui::InputInt("##Threads Max", &gCompilerMode.ThreadsPerWork))
 	{
@@ -416,17 +578,23 @@ void DrawCompilerConfig()
 
 	ImGui::Separator();
 	ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
+	ImGui::SetItemTooltip("Overrides the settings specified in the Level Editor.");
 
 	ImGui::BeginDisabled(!gCompilerMode.IsOverloadedSettings);
 
 	ImGui::SetNextItemWidth(100);
 	ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 7);
+
 	ImGui::SetNextItemWidth(100);
 	ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
+
 	ImGui::SetNextItemWidth(100);
 	ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
+	ImGui::SetItemTooltip("Pixels per meter of the lightmap.");
+
 	ImGui::SetNextItemWidth(100);
-	ImGui::InputFloat("Dist Weld", &gCompilerMode.WeldDistance);
+	ImGui::InputFloat("Welding Distance", &gCompilerMode.WeldDistance);
+	ImGui::SetItemTooltip("Vertices welding distance.");
 
 	gCompilerMode.LC_JSample = atoi(itemsJitter[item_current_jitter]);
 	gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[item_current_jitter_mu]);
@@ -438,43 +606,43 @@ void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, cha
 {
 	switch (status)
 	{
-	case Complete:
-		text = "Complete";
-		textCol = { 0, 0.9, 0, 1 };
-
-		icon = 'C';
-		break;
-	case InProgress:
-		text = "In Progress";
-		textCol = { 0.9, 0.9, 0, 1 };
-
-		icon = 'B';
-		break;
-	case Pending:
-		text = "Pending";
-		textCol = { 0.8, 0.8, 0.8, 0.8 };
-
-		icon = 'A';
-		break;
-	case Skip:
-		text = "Skip";
-		textCol = { 0.9, 0.9, 0.9, 0.6 };
-
-		icon = 'D';
-		break;
-	default:
-		text = "";
-		textCol = { 1,1,1,1 };
-
-		icon = 'A';
-		break;
+		case Complete:
+			text = "Complete";
+			textCol = {0.42f, 0.85f, 0.5f, 1.f};
+			icon = 'C';
+			break;
+		case InProgress:
+			text = "In Progress";
+			textCol = {0.97f, 0.85f, 0.38f, 1.f};
+			icon = 'B';
+			break;
+		case Pending:
+			text = "Pending";
+			textCol = {0.65f, 0.65f, 0.65f, 0.85f};
+			icon = 'A';
+			break;
+		case Skip:
+			text = "Skip";
+			textCol = {0.55f, 0.55f, 0.55f, 0.6f};
+			icon = 'D';
+			break;
+		default:
+			text = "";
+			textCol = {1, 1, 1, 1};
+			icon = 'A';
+			break;
 	}
 }
 
+// =========================================================================
+// >>> PRETTY: палитра лога + контекстные правила
+// =========================================================================
 const ImVec4 getLogColor(char* text)
 {
 	if (text == nullptr || xr_strlen(text) == 0)
+	{
 		return ImVec4(RGBAColor(230, 230, 230, 255));
+	}
 
 	xr_string TextEx = text;
 	TextEx = TextEx.RemoveWhitespaces();
@@ -486,31 +654,70 @@ const ImVec4 getLogColor(char* text)
 		Pos = TextEx.find('|');
 	}
 
+	if (TextEx.empty())
+	{
+		return ImVec4(RGBAColor(230, 230, 230, 255));
+	}
+
 	char Word = TextEx[0];
 
 	switch (Word)
 	{
-	case '~': return ImVec4(RGBAColor(248, 248, 49, 255));
-	case '!': return ImVec4(RGBAColor(204, 102, 102, 255));
-	case '@': return ImVec4(RGBAColor(125, 125, 241, 255));
-	case '#': return ImVec4(RGBAColor(0, 222, 205, 155));
-	case '%': return ImVec4(RGBAColor(202, 85, 219, 155));
-	case '$': return ImVec4(RGBAColor(172, 172, 255, 255));
-	case '*': return ImVec4(RGBAColor(248, 248, 49, 255));
-	case '^': return ImVec4(RGBAColor(100, 246, 121, 255));
-	case '&': return ImVec4(RGBAColor(255, 255, 0, 255));
-	case '-': return ImVec4(RGBAColor(0, 255, 0, 255));
-	case '+': return ImVec4(RGBAColor(84, 255, 255, 255));
-	case '=': return ImVec4(RGBAColor(205, 205, 105, 255));
-	case '/': return ImVec4(RGBAColor(146, 146, 252, 255));
+		case '~':
+			return ImVec4(RGBAColor(248, 248, 49, 255));
+		case '!':
+			return ImVec4(RGBAColor(235, 100, 100, 255));
+		case '@':
+			return ImVec4(RGBAColor(160, 160, 255, 255));
+		case '#':
+			return ImVec4(RGBAColor(0, 222, 205, 235));
+		case '%':
+			return ImVec4(RGBAColor(202, 85, 219, 235));
+		case '$':
+			return ImVec4(RGBAColor(172, 172, 255, 255));
+		case '*':
+			return ImVec4(RGBAColor(248, 216, 96, 255));
+		case '^':
+			return ImVec4(RGBAColor(100, 246, 121, 255));
+		case '&':
+			return ImVec4(RGBAColor(255, 255, 0, 255));
+		case '-':
+			return ImVec4(RGBAColor(120, 220, 120, 255));
+		case '+':
+			return ImVec4(RGBAColor(84, 255, 255, 255));
+		case '=':
+			return ImVec4(RGBAColor(205, 205, 105, 255));
+		case '/':
+			return ImVec4(RGBAColor(146, 146, 252, 255));
+	}
+
+	// Контекстная подсветка для строк без спец-префикса
+	if (TextEx.find("New phase started") != xr_string::npos)
+	{
+		return ImVec4(RGBAColor(122, 168, 232, 255));
+	}
+
+	if (TextEx.find("Compilation is Ended") != xr_string::npos)
+	{
+		return ImVec4(RGBAColor(100, 246, 121, 255));
+	}
+
+	if (TextEx.find("Validate errors") != xr_string::npos)
+	{
+		return ImVec4(RGBAColor(248, 216, 96, 255));
 	}
 
 	return ImVec4(RGBAColor(230, 230, 230, 255));
 }
+// <<< PRETTY
+// =========================================================================
 
 void DrawGpuGraph(const float* values, int count, float maxValue = 100.0f)
 {
-	if (count == 0)return;
+	if (count == 0)
+	{
+		return;
+	}
 
 	ImVec2 size = ImVec2(500, 100);
 	ImVec2 p = ImGui::GetCursorScreenPos();
@@ -563,11 +770,70 @@ void DrawGpuGraph(const float* values, int count, float maxValue = 100.0f)
 	ImGui::Dummy(size);
 }
 
+
+// =========================================================================
+// >>> PRETTY: хелперы для отрисовки строк таблицы
+// =========================================================================
+
+namespace UITheme
+{
+const ImVec4 Text = ImVec4(RGBAColor(230, 230, 230, 255));
+const ImVec4 TextDim = ImVec4(RGBAColor(170, 170, 170, 220));
+const ImVec4 Accent = ImVec4(RGBAColor(239, 88, 88, 255));
+const ImVec4 Green = ImVec4(RGBAColor(104, 210, 122, 255));
+const ImVec4 Yellow = ImVec4(RGBAColor(248, 216, 96, 255));
+const ImVec4 Red = ImVec4(RGBAColor(228, 96, 96, 255));
+const ImVec4 Gray = ImVec4(RGBAColor(150, 150, 150, 200));
+const ImVec4 RowBg = ImVec4(RGBAColor(30, 30, 34, 120));
+const ImVec4 PhaseText = ImVec4(RGBAColor(200, 200, 210, 235));
+} // namespace UITheme
+
+// Маленькое цветное «поло» + текст — быстро сканируется взглядом
+static void DrawStatusBadge(const char* status, const ImVec4& color)
+{
+	const float h = ImGui::GetTextLineHeight();
+	ImVec2 p = ImGui::GetCursorScreenPos();
+
+	ImGui::GetWindowDrawList()->AddCircleFilled(
+		ImVec2(p.x + 5.f, p.y + h * 0.5f), 4.f, ImGui::ColorConvertFloat4ToU32(color), 16
+	);
+
+	ImGui::Dummy({14.f, h});
+	ImGui::SameLine(0.f, 0.f);
+	ImGui::TextColored(color, "%s", status);
+}
+
+// Компактный прогресс-бар с процентом поверх
+static void DrawPhaseProgressBar(float percent, const ImVec4& color, ImVec2 size)
+{
+	percent = Clamp(percent, 0.f, 1.f);
+
+	char overlay[16];
+	if (percent >= 0.999f)
+	{
+		snprintf(overlay, sizeof(overlay), "done");
+	}
+	else
+	{
+		snprintf(overlay, sizeof(overlay), "%d%%", (int)(percent * 100.f));
+	}
+
+	ImGui::PushStyleColor(ImGuiCol_PlotHistogram, color);
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, UITheme::RowBg);
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.f);
+	ImGui::ProgressBar(percent, size, overlay);
+	ImGui::PopStyleVar();
+	ImGui::PopStyleColor(2);
+}
+
+// <<< PRETTY
+// =========================================================================
+
+
 void RenderCompilerUI(int X, int Y)
 {
-	//static const char* levelName = "LevelTextName";
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 
-	// Set up the window
 	ImGui::Begin("Compile Split Screen", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus);
 
 	// Calculate sizes for the top and bottom parts
@@ -577,78 +843,98 @@ void RenderCompilerUI(int X, int Y)
 	// Top section
 	ImGui::BeginChild("TopSection", ImVec2(windowSize.x, topHeight), true);
 
-	// Level name
-	xr_string Levels;
-
-	for (auto& [Name, Selected] : gCompilerMode.Files)
+	// >>> PRETTY: заголовок с акцентом
 	{
-		if (Selected)
-			Levels += (!Levels.empty() ? ", " : "") + Name;
+		xr_string Levels;
+		for (auto& [Name, Selected] : gCompilerMode.Files)
+		{
+			if (Selected)
+			{
+				Levels += (!Levels.empty() ? ", " : "") + Name;
+			}
+		}
+		ImGui::TextColored(UITheme::Accent, "Building:");
+		ImGui::SameLine();
+		ImGui::TextUnformatted(Levels.empty() ? "<none>" : Levels.c_str());
 	}
-	ImGui::Text("%s", Levels.c_str());
+	// <<< PRETTY
 	ImGui::Separator();
 
-	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
+	ImVec4 phaseTextCol = UITheme::PhaseText;
+
 	int Flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedSame;
- 
+
 	// Table
- 	if ( ImGui::BeginTable("IterationsTable", 8, Flags) )
+	if (ImGui::BeginTable("IterationsTable", 8, Flags))
 	{
- 		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
+		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 20.0f);
 		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 50.f);
 		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
-		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
-		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 60.0f);
- 		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 75.f);
-		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 60.f);
+		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 100.f);
+		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 110.f);
+		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 70.f);
 		ImGui::TableSetupColumn("Info", ImGuiTableColumnFlags_WidthFixed, 350.0f);
 
 		ImGui::TableHeadersRow();
 
 		for (auto& row : GetIterationData())
 		{
- 			xr_string rowStatus;
+			xr_string rowStatus;
 			ImVec4 rowStatusColor;
- 			char rowIcon;
- 			getStatusInfo(row.status, rowStatus, rowStatusColor, rowIcon);
- 			ImGui::TableNextRow();
+			char rowIcon;
+			getStatusInfo(row.status, rowStatus, rowStatusColor, rowIcon);
 
-			// Status icon
- 			ImGui::TableSetColumnIndex(0);
+			// ============================================================
+			// >>> PRETTY: заголовок итерации — заметный, отделён от фаз
+			// ============================================================
+			ImGui::TableNextRow(0, ImGui::GetTextLineHeight() + 8.f);
+
+			// Иконка статуса
+			ImGui::TableSetColumnIndex(0);
 			ImGui::PushFont(gCompilerMode.CompilerIconsFont);
 			ImGui::TextColored(rowStatusColor, "%c", rowIcon);
 			ImGui::PopFont();
 
-			// TASK
+			// Название итерации
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text("%s", row.iterationName.c_str());
+			ImGui::TextColored(UITheme::Text, "%s", row.iterationName.c_str());
 
+			// Прогресс итерации (%)
 			ImGui::TableSetColumnIndex(3);
-			ImGui::Text("%0.f", row.Persent * 100);
+			{
+				float p = Clamp(row.Persent, 0.f, 1.f);
+				DrawPhaseProgressBar(p, rowStatusColor, ImVec2(-1.f, ImGui::GetTextLineHeight() * 0.85f));
+			}
 
-  			// Status text
+			// Общий статус
 			ImGui::TableSetColumnIndex(5);
-			ImGui::TextColored(rowStatusColor, rowStatus.c_str());
- 
+			DrawStatusBadge(rowStatus.c_str(), rowStatusColor);
+			// <<< PRETTY
+
+
 			for (auto& phase : row.phases)
 			{
 				xr_string status;
 				ImVec4 statusColor;
 				char phaseIcon;
- 				getStatusInfo(phase.status, status, statusColor, phaseIcon);
- 				ImGui::TableNextRow();
+				getStatusInfo(phase.status, status, statusColor, phaseIcon);
+				ImGui::TableNextRow();
 
+				// Иконка фазы
 				ImGui::TableSetColumnIndex(1);
 				ImGui::PushFont(gCompilerMode.CompilerIconsFont);
- 				float column_width = ImGui::GetColumnWidth();
+				float column_width = ImGui::GetColumnWidth();
 				float text_size = ImGui::CalcTextSize("A").x;
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + column_width - text_size);
- 				ImGui::TextColored(statusColor, "%c", phaseIcon);
- 				ImGui::PopFont();
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + column_width - text_size - 6.f);
+				ImGui::TextColored(statusColor, "%c", phaseIcon);
+				ImGui::PopFont();
 
+				// Название фазы
 				ImGui::TableSetColumnIndex(2);
-				ImGui::TextColored(phaseTextCol, phase.PhaseName.c_str());
-				//PHASE %
+				ImGui::TextColored(phaseTextCol, "%s", phase.PhaseName.c_str());
+
+				// Обновляем таймеры активной фазы
 				auto pers = phase.PhasePersent;
 
 				if (phase.status != Complete)
@@ -660,66 +946,85 @@ void RenderCompilerUI(int X, int Y)
 
 					phase.elapsed_time = secElapsed;
 					if (pers > 0.005f)
+					{
 						phase.remain_time = secRemain;
+					}
 				}
 
-				//
-				if (phase.status == Complete) pers = 1;
-				else if (pers > 1.f)	pers = 1;
-				else if (pers < 0.f)	pers = 0;
-			 
-				ImGui::TableSetColumnIndex(3);
-				ImGui::TextColored(phaseTextCol, "%0.f", pers * 100);
+				if (phase.status == Complete)
+				{
+					pers = 1;
+				}
+				else if (pers > 1.f)
+				{
+					pers = 1;
+				}
+				else if (pers < 0.f)
+				{
+					pers = 0;
+				}
 
+				// >>> PRETTY: прогресс-бар вместо текста
+				ImGui::TableSetColumnIndex(3);
+				DrawPhaseProgressBar(pers, statusColor, ImVec2(-1.f, ImGui::GetTextLineHeight() * 0.85f));
+				// <<< PRETTY
+
+				// Время
 				ImGui::TableSetColumnIndex(4);
 				ImGui::TextColored(phaseTextCol, "%s", make_time(phase.elapsed_time).c_str());
- 				 
+
+				// Статус
 				ImGui::TableSetColumnIndex(5);
- 				ImGui::TextColored(statusColor, status.c_str());
+				ImGui::TextColored(statusColor, "%s", status.c_str());
 
+				// Память
 				ImGui::TableSetColumnIndex(6);
-				ImGui::Text("%u MB", u32(size_t(phase.used_memory / 1024 / 1024)));
+				ImGui::TextColored(UITheme::TextDim, "%u MB", u32(size_t(phase.used_memory / 1024 / 1024)));
 
+				// Доп. данные
 				ImGui::TableSetColumnIndex(7);
-				ImGui::Text("%s", phase.AdditionalData.c_str() );
+				ImGui::TextColored(UITheme::TextDim, "%s", phase.AdditionalData.c_str());
 			}
 		}
 
 		if (autoScroll)
+		{
 			ImGui::SetScrollY(ImGui::GetScrollMaxY());
+		}
 		ImGui::EndTable();
 
 
 		ImGui::EndChild();
 	}
- 
+
 	ImGui::Separator();
 
 	// Окно лога
 	{
-		ImGui::Text("Log");	ImGui::SameLine();
+		ImGui::TextColored(UITheme::Accent, "Log");
+		ImGui::SameLine();
 
 		const char* buttonText = (hideLogSection) ? "+" : "-";
 		ImVec2 textSize = ImGui::CalcTextSize(buttonText);
 
-		ImVec2 buttonSize = ImVec2(	textSize.x + ImGui::GetStyle().FramePadding.x * 2,
-									textSize.y + ImGui::GetStyle().FramePadding.y * 2);
+		ImVec2 buttonSize = ImVec2(textSize.x + ImGui::GetStyle().FramePadding.x * 2, textSize.y + ImGui::GetStyle().FramePadding.y * 2);
 
 		auto ZSize = ImGui::GetContentRegionAvail();
 
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ZSize.x - buttonSize.x);
 
 		if (ImGui::Button(buttonText))
+		{
 			hideLogSection = !hideLogSection;
+		}
 
 		u32 nSize = windowSize.x / 4;
 
 		if (!hideLogSection)
 		{
-
 #ifdef LCCUDA_BUILD
 			if (ImGui::BeginChild("LogSection", ImVec2(nSize * 3, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
-#else 
+#else
 			if (ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
 #endif
 			{
@@ -739,7 +1044,9 @@ void RenderCompilerUI(int X, int Y)
 				}
 
 				if (autoScroll)
+				{
 					ImGui::SetScrollY(ImGui::GetScrollMaxY());
+				}
 
 				ImGui::EndChild();
 			}
@@ -750,9 +1057,9 @@ void RenderCompilerUI(int X, int Y)
 			if (ImGui::BeginChild("GPU USAGE", ImVec2(nSize, windowSize.y - topHeight - (buttonSize.y * 2) - 30), ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
 			{
 				extern void CudaUsage(unsigned int& UsageCuda, unsigned int& UsageMemory);
-				extern  void CudaStatisticThread();
-				extern	xr_vector<float> get_cuda_usage();
-				extern  xr_vector<float> get_mem_usage();
+				extern void CudaStatisticThread();
+				extern xr_vector<float> get_cuda_usage();
+				extern xr_vector<float> get_mem_usage();
 
 				static bool isGpuStarted = false;
 				if (!isGpuStarted)
@@ -760,7 +1067,7 @@ void RenderCompilerUI(int X, int Y)
 					isGpuStarted = true;
 					CudaStatisticThread();
 				}
-				 
+
 				unsigned int UsageCuda = 0, UsageMemory = 0;
 				CudaUsage(UsageCuda, UsageMemory);
 
@@ -774,7 +1081,7 @@ void RenderCompilerUI(int X, int Y)
 				ImGui::Text("VRAM Usage: %u", UsageMemory);
 				auto data_mem = get_mem_usage();
 				DrawGpuGraph(data_mem.data(), data_mem.size(), 100.0f);
-  
+
 				ImGui::EndChild();
 			}
 #endif
@@ -784,4 +1091,6 @@ void RenderCompilerUI(int X, int Y)
 	DrawDownUI();
 
 	ImGui::End();
+
+	ImGui::PopStyleVar();
 }
