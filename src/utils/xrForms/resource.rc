@@ -199,6 +199,16 @@ END
 // remains consistent on all systems.
 IDI_ICON1               ICON                    "application.ico"
 
+IDI_OVERLAY_ERROR       ICON                    "overlay_error.ico"
+
+IDI_OVERLAY_SUCCESS     ICON                    "overlay_success.ico"
+
+IDI_OVERLAY_XRAI        ICON                    "overlay_xrai.ico"
+
+IDI_OVERLAY_XRDO        ICON                    "overlay_xrdo.ico"
+
+IDI_OVERLAY_XRLC        ICON                    "overlay_xrlc.ico"
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
