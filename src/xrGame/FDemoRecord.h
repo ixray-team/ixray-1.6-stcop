@@ -82,7 +82,19 @@ public:
 
 	CObject* bone_holder = nullptr;
 	IKinematics* bone_holder_kinematics = nullptr;
+	const Fmatrix* bone_holder_xform = nullptr;
 	u16 bone_id = BI_NONE;
+
+	enum class e_bone_holder_type : u8
+	{
+		none,
+		world_object,
+		hands,
+		item0,
+		item1,
+		animator
+	};
+	e_bone_holder_type bone_holder_type = e_bone_holder_type::none;
 	collide::rq_result rq_result{};
 
 	Fvector look_at_point{};
@@ -144,6 +156,7 @@ public:
 	virtual void IR_GamepadKeyPress(int id) override;
 
 	bool ProcessCam(SCamEffectorInfo& info) override;
+	void update_frustum_capture();
 	void update_look_at_point();
 	void update_free_look();
 	void update_look_from_bone();
