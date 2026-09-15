@@ -273,11 +273,7 @@ function enable_generic_schemes(ini, npc, stype, section)
 		local heli_hunter_section = utils.cfg_get_string(ini, section, "heli_hunter", npc, false, "")
 		xr_heli_hunter.set_scheme(npc, ini, "heli_hunter", heli_hunter_section)
 
-		local combat_ignore_section = utils.cfg_get_string(ini, section, "combat_ignore", npc, false, "")
-		if combat_ignore_section then
-			printf("combat_ignore_section= '%s'", combat_ignore_section )
-			xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore", combat_ignore_section)
-		end
+        xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
 
 
 	elseif stype == modules.stype_mobile then
@@ -299,6 +295,7 @@ function enable_generic_schemes(ini, npc, stype, section)
 			xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
 		end
 
+        xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
 		mob_panic.set_scheme(npc, ini, "mob_panic")
 
 	elseif stype == modules.stype_item then
@@ -411,6 +408,8 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
 		xr_wounded.reset_wounded(npc, scheme, st, section)
 		xr_death.reset_death(npc, scheme, st, section)
 		xr_danger.reset_danger(npc, scheme, st, section)
+        xr_combat_ignore.reset_combat_ignore_checker(npc, scheme, st, section)
+    
 		stalker_generic.reset_threshold(npc, scheme, st, section)
 		stalker_generic.reset_show_spot(npc, scheme, st, section)
 
@@ -429,6 +428,7 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
 			end
 		end
 
+        xr_combat_ignore.reset_combat_ignore_checker(npc, scheme, st, section)
 		mob_panic.reset_panic(npc, scheme, st, section)
 
 	elseif st.stype == modules.stype_item then
