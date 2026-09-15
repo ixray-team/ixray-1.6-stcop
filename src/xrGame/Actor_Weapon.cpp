@@ -136,17 +136,19 @@ void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& 
 		}
 
 		const CMissile* pMissile = casted_hud_item != nullptr ? casted_hud_item->cast_missile() : nullptr;
-		const static bool bRealPosEnabled = EngineExternal()[EEngineExternalGame::EnableRealBulletPos];
+
 		if (pMissile)
 		{
 			Fvector offset;
 			XFORM().transform_dir(offset, pMissile->throw_point_offset());
 			fire_pos.add(offset);
 		}
-		else if (bRealPosEnabled && (pWeap != nullptr && pWeap->cast_weapon_knife() == nullptr))
+		else if (pWeap != nullptr && pWeap->cast_weapon_knife() == nullptr)
 		{
+			const static bool bRealPosEnabled = EngineExternal()[EEngineExternalGame::EnableRealBulletPos];
+
 			fire_pos = pWeap->get_LastFP();
-			fire_dir = Cameras().Direction();
+			fire_dir = bRealPosEnabled ? pWeap->get_LastFD() : Cameras().Direction();
 
 			fire_pos.lerp(fire_pos, Cameras().Position(), pWeap->GetAimFactor());
 
