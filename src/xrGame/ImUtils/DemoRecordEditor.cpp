@@ -2,6 +2,7 @@
 #include "ImUtils.h"
 #include "FDemoRecord.h"
 #include "../Include/xrRender/Kinematics.h"
+#include "player_hud.h"
 
 extern float dr_cam_inert;
 extern float dr_cam_pos_inert;
@@ -42,7 +43,7 @@ static void drag_float3_reset(const char* label, Fvector& v, float step, const F
 	}
 }
 
-static void render_bone_tree(IKinematics* kinematics, u16 bone_id, CDemoRecord* rec, CObject* obj)
+static void render_bone_tree(IKinematics* kinematics, u16 bone_id, CDemoRecord* rec, CObject* obj, const Fmatrix* obj_xform, CDemoRecord::e_bone_holder_type holder_type)
 {
 	if (!kinematics || bone_id >= kinematics->LL_BoneCount())
 	{
@@ -91,6 +92,8 @@ static void render_bone_tree(IKinematics* kinematics, u16 bone_id, CDemoRecord* 
 		{
 			rec->bone_holder = obj;
 			rec->bone_holder_kinematics = kinematics;
+			rec->bone_holder_xform = obj_xform;
+			rec->bone_holder_type = holder_type;
 			rec->bone_id = bone_id;
 			rec->view_from_bone_mode = true;
 			rec->look_at_point_mode = false;
@@ -106,7 +109,7 @@ static void render_bone_tree(IKinematics* kinematics, u16 bone_id, CDemoRecord* 
 				}
 				if (kinematics->GetBoneData(j).GetParentID() == bone_id)
 				{
-					render_bone_tree(kinematics, j, rec, obj);
+					render_bone_tree(kinematics, j, rec, obj, obj_xform, holder_type);
 				}
 			}
 			ImGui::TreePop();
@@ -126,6 +129,8 @@ static void render_bone_tree(IKinematics* kinematics, u16 bone_id, CDemoRecord* 
 		{
 			rec->bone_holder = obj;
 			rec->bone_holder_kinematics = kinematics;
+			rec->bone_holder_xform = obj_xform;
+			rec->bone_holder_type = holder_type;
 			rec->bone_id = bone_id;
 			rec->view_from_bone_mode = true;
 			rec->look_at_point_mode = false;
@@ -508,9 +513,99 @@ void RenderDemoRecordEditorWindow()
 
 			if (ImGui::TreeNode("Bone tree"))
 			{
+				ImGui::PushID("world_bones");
 				u16 root = kin->LL_GetBoneRoot();
-				render_bone_tree(kin, root, demo_record, target_obj);
+				render_bone_tree(kin, root, demo_record, target_obj, &target_obj->XFORM(), CDemoRecord::e_bone_holder_type::world_object);
+				ImGui::PopID();
 				ImGui::TreePop();
+			}
+		}
+	}
+
+	if (ImGui::CollapsingHeader("HUD Bones", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		if (!g_player_hud)
+		{
+			ImGui::TextDisabled("No active player HUD");
+		}
+		else
+		{
+			bool has_any = false;
+
+			// Hands model
+			IKinematicsAnimated* hands_model = g_player_hud->GetModel();
+			if (hands_model)
+			{
+				IKinematics* hands_kin = hands_model->dcast_PKinematics();
+				if (hands_kin)
+				{
+					has_any = true;
+					if (ImGui::CollapsingHeader("Hands - Model bones"))
+					{
+						ImGui::PushID("hands_bones");
+						ImGui::Text("Bones: %d", hands_kin->LL_BoneCount());
+						u16 root = hands_kin->LL_GetBoneRoot();
+						render_bone_tree(hands_kin, root, demo_record, nullptr, &g_player_hud->GetTransform(), CDemoRecord::e_bone_holder_type::hands);
+						ImGui::PopID();
+					}
+				}
+			}
+
+			// Attached item 0 (left hand / primary)
+			if (attachable_hud_item* item0 = g_player_hud->attached_item(0))
+			{
+				if (item0->need_renderable() && item0->m_model)
+				{
+					has_any = true;
+					if (ImGui::CollapsingHeader("Item 0 (primary) - Model bones"))
+					{
+						ImGui::PushID("item0_bones");
+						ImGui::Text("Bones: %d", item0->m_model->LL_BoneCount());
+						u16 root = item0->m_model->LL_GetBoneRoot();
+						render_bone_tree(item0->m_model, root, demo_record, nullptr, &item0->m_item_transform, CDemoRecord::e_bone_holder_type::item0);
+						ImGui::PopID();
+					}
+				}
+			}
+
+			// Attached item 1 (right hand / secondary)
+			if (attachable_hud_item* item1 = g_player_hud->attached_item(1))
+			{
+				if (item1->need_renderable() && item1->m_model)
+				{
+					has_any = true;
+					if (ImGui::CollapsingHeader("Item 1 (secondary) - Model bones"))
+					{
+						ImGui::PushID("item1_bones");
+						ImGui::Text("Bones: %d", item1->m_model->LL_BoneCount());
+						u16 root = item1->m_model->LL_GetBoneRoot();
+						render_bone_tree(item1->m_model, root, demo_record, nullptr, &item1->m_item_transform, CDemoRecord::e_bone_holder_type::item1);
+						ImGui::PopID();
+					}
+				}
+			}
+
+			// Animator item (during animations)
+			if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying)
+			{
+				IKinematics* anim_kin = g_player_hud->GetAnimator()->m_item;
+				if (anim_kin)
+				{
+					has_any = true;
+					if (ImGui::CollapsingHeader("Animator - Model bones"))
+					{
+						ImGui::PushID("anim_bones");
+						ImGui::Text("Bones: %d", anim_kin->LL_BoneCount());
+						u16 root = anim_kin->LL_GetBoneRoot();
+						render_bone_tree(anim_kin, root, demo_record, nullptr, &g_player_hud->GetAnimator()->m_item_transform, CDemoRecord::e_bone_holder_type::animator);
+						ImGui::PopID();
+					}
+				}
+			}
+
+			if (!has_any)
+			{
+				ImGui::TextDisabled("No HUD items with bones");
 			}
 		}
 	}
