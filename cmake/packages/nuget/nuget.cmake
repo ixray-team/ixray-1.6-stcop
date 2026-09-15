@@ -77,6 +77,11 @@ set(IXR_TBB_INC ${IXR_TBB_SDK}build/native/include/)
 set(IXR_TBB_BIN ${IXR_TBB_SDK}runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/${IXR_TBB_NAME})
 set(IXR_TBB_LIB ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.lib)
 
+# WinToast
+set(WINTOAST_DIR ${CMAKE_BINARY_DIR}/packages/WinToast.1.3.2)
+set(WINTOAST_INCLUDE_DIR ${WINTOAST_DIR}/build/native/include)
+set(WINTOAST_LIBRARY ${WINTOAST_DIR}/build/native/lib/x64/WinToast.lib)
+
 # LZO
 set(LZO ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Lzo.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.10.0)
 set(LZO_LIB ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.lib)
