@@ -75,6 +75,8 @@ void CBackend::Invalidate	()
 	hemi.unmap	();
 
 #ifdef USE_DX11
+	constants.clear_dirty();
+
 	m_pInputLayout				= nullptr;
 	m_PrimitiveTopology			= D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
 	m_bChangedRTorZB			= false;

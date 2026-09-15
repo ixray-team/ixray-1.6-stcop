@@ -86,6 +86,8 @@ void dxRenderDeviceRender::OnDeviceDestroy( bool bKeepTextures)
 #endif // #ifdef DEBUG_DRAW
 #endif // USE_DX11
 
+	RCache.Invalidate();
+
 	m_WireShader.destroy();
 	m_SelectionShader.destroy();
 

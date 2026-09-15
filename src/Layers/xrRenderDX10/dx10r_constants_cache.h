@@ -53,6 +53,7 @@ public:
 	}
 
 	void					MarkDirty(dx10ConstantBuffer& Buffer);
+	void					clear_dirty();
 
 	ICF void				access_direct(RHIShaderConstant* C, u32 DataSize, void** ppVData, void** ppGData, void** ppPData)
 	{
