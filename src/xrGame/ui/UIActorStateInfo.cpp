@@ -308,7 +308,7 @@ void ui_actor_state_wnd::UpdateActorInfo(CInventoryOwner* owner)
 	//fire wound protection progress bar
 	{
 		const float max_power = getProtection(fwou_value, ALife::eHitTypeFireWound);
-		update_round_states(stt_fire_wound, shoc_value, max_power);
+		update_round_states(stt_fire_wound, fwou_value, max_power);
 	}
 	//power restore speed progress bar
 	{
