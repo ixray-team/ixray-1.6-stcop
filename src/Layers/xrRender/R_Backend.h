@@ -125,8 +125,8 @@ private:
 	CMatrix*						matrices	[8	];	// matrices are supported only for FFP
 #endif
 
-	void							Invalidate	();
 public:
+	void Invalidate();
 	struct _stats
 	{
 		u32								polys;
