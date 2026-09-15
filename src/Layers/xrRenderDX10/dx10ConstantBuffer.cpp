@@ -84,7 +84,7 @@ void dx10ConstantBuffer::Flush()
 {
 	// Будучи посланным нахуй с этим крашем + необходимостью работоспособности SE здесь и сейчас
 	// Внедряю этот ебанный костыль сюда
-	if (!m_pBuffer || m_eBufferType > 3 || m_eBufferType < 0)
+	if (!m_pBuffer || m_eBufferType > 3)
 	{
 		return;
 	}
