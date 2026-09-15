@@ -66,7 +66,6 @@ private:
 			bool				simulate_path_navigation	();
 
 public:
-	virtual	void				build_level_path			();
 	virtual	const float			&prediction_speed			() const;
 #ifdef DEBUG_DRAW
 	inline	doors::actor const&	get_doors_actor				() const { return *m_doors_actor; }
