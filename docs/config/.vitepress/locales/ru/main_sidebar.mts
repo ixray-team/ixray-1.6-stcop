@@ -43,6 +43,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
           { text: 'Симуляция жизни', link: '/gameplay/general/life-simulation' },
           { text: 'Используемые предметы', link: '/gameplay/general/items-used' },
           { text: 'Зоны, костры, аномалии', link: '/gameplay/general/zones-bonfires-anomalies' },
+          { text: 'Геймпады', link: '/gameplay/general/gamepads' },
         ],
       },
       {
