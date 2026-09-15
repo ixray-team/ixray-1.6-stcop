@@ -84,6 +84,9 @@ void dx10ConstantBuffer::Flush()
 {
 	if (m_bChanged)
 	{
+		if (!m_pBuffer)
+			return;
+
 		RHIMappedSubresource pSubRes = {};
 		R_ASSERT(m_pBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
 

@@ -348,6 +348,8 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 	b_is_Ready 						= false;
     m_CurrentShader				= nullptr;
 
+	RCache.Invalidate();
+
     UI->OnDeviceDestroy			();
 
 	m_WireShader.destroy		();
