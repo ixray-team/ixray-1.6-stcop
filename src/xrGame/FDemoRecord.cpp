@@ -3,6 +3,7 @@
 
 #include "Actor.h"
 #include "HUDManager.h"
+#include "player_hud.h"
 #include "../xrEngine/CameraBase.h"
 #include "../xrEngine/Effector.h"
 #include "../xrEngine/xr_level_controller.h"
@@ -494,6 +495,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			g_position.p.set(p_cam_pos);
 		}
 
+		update_frustum_capture();
 		Level().ObjectSpace.RayPick(camera.c, camera.k, 1000.f, collide::rq_target::rqtBoth, rq_result, nullptr);
 		view_from_bone_mode ? update_look_from_bone() : look_at_point_mode ? update_look_at_point()
 																		   : update_free_look();
@@ -515,6 +517,85 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		frame_hpb_delta.set(0.f, 0.f, 0.f);
 	}
 	return true;
+}
+
+void CDemoRecord::update_frustum_capture()
+{
+	if (draw_skeleton)
+	{
+		Fmatrix project, view, transform;
+		view.build_camera_dir(camera.c, camera.k, camera.j);
+		project.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear, 10.f);
+		transform.mul(project, view);
+
+		CFrustum frustum;
+		frustum.CreateFromMatrix(transform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+
+		xr_vector<ISpatialShared> picked_spatials;
+		ESPATIAL_TYPE query = ESPATIAL_TYPE::AI | ESPATIAL_TYPE::ACTOR | ESPATIAL_TYPE::PHYSIC_SHELL_HOLDER;
+		g_SpatialSpace->q_frustum(picked_spatials, 0, query, frustum);
+
+		xr_vector<CObject*> objects;
+
+		for (ISpatialShared& spatial : picked_spatials)
+		{
+			ISpatial* s = spatial.get();
+			CObject* o = s->dcast_CObject();
+
+			if (o == nullptr || o->getDestroy())
+			{
+				continue;
+			}
+
+			if (IKinematics* kinematics = o->Visual()->dcast_PKinematics())
+			{
+				objects.push_back(o);
+			}
+		}
+
+		std::ranges::sort(objects, [&](auto& a, auto& b) 
+		{
+			return camera.c.distance_to(a->Position()) < camera.c.distance_to(b->Position());
+		});
+
+		if (!objects.empty())
+		{
+			CObject* target = objects.front();
+			if (IKinematics* nk = target->Visual()->dcast_PKinematics())
+			{
+				Flags32 old_flags = HUD().world_prims.m_skeleton_flags;
+				HUD().world_prims.m_skeleton_flags.set(LevelInspector::ESI_BONES | LevelInspector::ESI_BONES_LINKS, true);
+				HUD().world_prims.DrawSkeleton(nk, target->XFORM());
+
+				if (g_player_hud)
+				{
+					bool b_r0 = (g_player_hud->attached_item(0) && g_player_hud->attached_item(0)->need_renderable());
+					bool b_r1 = (g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->need_renderable());
+				
+					if (b_r0)
+					{
+						HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(0)->m_model, g_player_hud->attached_item(0)->m_item_transform);
+					}
+				
+					if (b_r1)
+					{
+						HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(1)->m_model, g_player_hud->attached_item(1)->m_item_transform);
+					}
+				
+					if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying || g_player_hud->GetHandsVisible() || b_r0 || b_r1)
+					{
+						HUD().world_prims.DrawSkeleton(g_player_hud->GetModel()->dcast_PKinematics(), g_player_hud->GetTransform());
+					}
+				
+					if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying)
+					{
+						HUD().world_prims.DrawSkeleton(g_player_hud->GetAnimator()->m_item, g_player_hud->GetAnimator()->m_item_transform);
+					}
+				}
+				HUD().world_prims.m_skeleton_flags = old_flags;
+			}
+		}
+	}
 }
 
 void CDemoRecord::update_look_at_point()
@@ -548,18 +629,46 @@ void CDemoRecord::update_look_at_point()
 
 void CDemoRecord::update_free_look()
 {
-	if (rq_result.O != nullptr)
-	{
-		if (IKinematics* kinematics = rq_result.O->Visual()->dcast_PKinematics(); kinematics != nullptr && draw_skeleton)
-		{
-			Flags32 old_flags = HUD().world_prims.m_skeleton_flags;
-
-			HUD().world_prims.m_skeleton_flags.set(LevelInspector::ESI_BONES | LevelInspector::ESI_BONES_LINKS, TRUE);
-			HUD().world_prims.DrawSkeleton(kinematics, rq_result.O->XFORM());
-
-			HUD().world_prims.m_skeleton_flags = old_flags;
-		}
-	}
+	// if (rq_result.O != nullptr)
+	// {
+	// 	if (IKinematics* kinematics = rq_result.O->Visual()->dcast_PKinematics(); kinematics != nullptr && draw_skeleton)
+	// 	{
+	// 		Flags32 old_flags = HUD().world_prims.m_skeleton_flags;
+	//
+	// 		// HUD().world_prims.m_skeleton_flags.set(LevelInspector::ESI_BONES | LevelInspector::ESI_BONES_LINKS, true);
+	// 		// // HUD().world_prims.DrawSkeleton(kinematics, rq_result.O->XFORM());
+	// 		//
+	// 		// if (g_player_hud && )
+	// 		// {
+	// 		// 	bool b_r0 = (g_player_hud->attached_item(0) && g_player_hud->attached_item(0)->need_renderable());
+	// 		// 	bool b_r1 = (g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->need_renderable());
+	// 		//
+	// 		// 	if (b_r0)
+	// 		// 	{
+	// 		// 		HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(0)->m_model, g_player_hud->attached_item(0)->m_item_transform);
+	// 		// 	}
+	// 		//
+	// 		// 	if (b_r1)
+	// 		// 	{
+	// 		// 		HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(1)->m_model, g_player_hud->attached_item(1)->m_item_transform);
+	// 		// 	}
+	// 		//
+	// 		// 	if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying || g_player_hud->GetHandsVisible() || b_r0 || b_r1)
+	// 		// 	{
+	// 		// 		HUD().world_prims.DrawSkeleton(g_player_hud->GetModel()->dcast_PKinematics(), g_player_hud->GetTransform());
+	// 		// 	}
+	// 		//
+	// 		// 	if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying)
+	// 		// 	{
+	// 		// 		HUD().world_prims.DrawSkeleton(g_player_hud->GetAnimator()->m_item, g_player_hud->GetAnimator()->m_item_transform);
+	// 		// 	}
+	// 		// }
+	// 		
+	// 		
+	//
+	// 		HUD().world_prims.m_skeleton_flags = old_flags;
+	// 	}
+	// }
 
 	hpb.x -= frame_hpb_delta.y;
 	hpb.y -= frame_hpb_delta.x;
@@ -571,11 +680,88 @@ void CDemoRecord::update_free_look()
 
 void CDemoRecord::update_look_from_bone()
 {
+	switch (bone_holder_type)
+	{
+	case e_bone_holder_type::world_object:
+		if (!bone_holder || bone_holder->getDestroy())
+		{
+			detach_bone();
+			return;
+		}
+		bone_holder_xform = &bone_holder->XFORM();
+		break;
+
+	case e_bone_holder_type::hands:
+		if (!g_player_hud || !g_player_hud->GetModel())
+		{
+			detach_bone();
+			return;
+		}
+		bone_holder_xform = &g_player_hud->GetTransform();
+		bone_holder_kinematics = g_player_hud->GetModel()->dcast_PKinematics();
+		if (!bone_holder_kinematics)
+		{
+			detach_bone();
+			return;
+		}
+		break;
+
+	case e_bone_holder_type::item0:
+	{
+		attachable_hud_item* item = g_player_hud ? g_player_hud->attached_item(0) : nullptr;
+		if (!item || !item->m_model)
+		{
+			detach_bone();
+			return;
+		}
+		bone_holder_xform = &item->m_item_transform;
+		bone_holder_kinematics = item->m_model;
+		break;
+	}
+
+	case e_bone_holder_type::item1:
+	{
+		attachable_hud_item* item = g_player_hud ? g_player_hud->attached_item(1) : nullptr;
+		if (!item || !item->m_model)
+		{
+			detach_bone();
+			return;
+		}
+		bone_holder_xform = &item->m_item_transform;
+		bone_holder_kinematics = item->m_model;
+		break;
+	}
+
+	case e_bone_holder_type::animator:
+	{
+		animator_item* anim = g_player_hud ? g_player_hud->GetAnimator() : nullptr;
+		if (!anim || !anim->IsPlaying || !anim->m_item)
+		{
+			detach_bone();
+			return;
+		}
+		bone_holder_xform = &anim->m_item_transform;
+		bone_holder_kinematics = anim->m_item;
+		break;
+	}
+
+	case e_bone_holder_type::none:
+	default:
+		detach_bone();
+		return;
+	}
+
+	if (!bone_holder_kinematics || !bone_holder_xform || bone_id >= bone_holder_kinematics->LL_BoneCount())
+	{
+		detach_bone();
+		return;
+	}
+
 	Fvector bone_world_pos;
-	bone_holder_kinematics->LL_GetBoneWorldPosition(bone_id, bone_holder->XFORM(), bone_world_pos);
+	bone_holder_kinematics->LL_GetBoneWorldPosition(bone_id, *bone_holder_xform, bone_world_pos);
 
 	Fmatrix bone_world_xfrom;
-	bone_holder_kinematics->LL_GetBoneWorldTransform(bone_id, bone_holder->XFORM(), bone_world_xfrom);
+	bone_holder_kinematics->LL_GetBoneWorldTransform(bone_id, *bone_holder_xform, bone_world_xfrom);
 
 	Fvector bone_world_hpb;
 	bone_world_xfrom.getHPB(bone_world_hpb);
@@ -643,6 +829,8 @@ bool CDemoRecord::try_attach_bone()
 		{
 			bone_holder = rq_result.O;
 			bone_holder_kinematics = k;
+			bone_holder_xform = &rq_result.O->XFORM();
+			bone_holder_type = e_bone_holder_type::world_object;
 			bone_id = (u16)rq_result.element;
 			view_from_bone_mode = true;
 			look_at_point_mode = false;
@@ -657,6 +845,8 @@ void CDemoRecord::detach_bone()
 	bone_id = BI_NONE;
 	bone_holder = nullptr;
 	bone_holder_kinematics = nullptr;
+	bone_holder_xform = nullptr;
+	bone_holder_type = e_bone_holder_type::none;
 	view_from_bone_mode = false;
 
 	Fvector cur_eulers;
@@ -744,6 +934,8 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 								{
 									bone_holder = rq_result.O;
 									bone_holder_kinematics = k;
+									bone_holder_xform = &rq_result.O->XFORM();
+									bone_holder_type = e_bone_holder_type::world_object;
 									bone_id = (u16)rq_result.element;
 								}
 								else
