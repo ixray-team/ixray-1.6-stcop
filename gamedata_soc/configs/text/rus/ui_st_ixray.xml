@@ -967,6 +967,18 @@
 		<text>Интервал автосохранений</text>
 	</string>
 	<string id="ui_mm_dynamic_wallmarks">
-		<text>Динамические следы от пуль</text>
+		<text>Нательные следы</text>
+	</string>
+	<string id="kb_weapon7">
+		<text>Пистолет</text>
+	</string>
+	<string id="kb_cam_2">
+		<text>Смена перспективы</text>
+	</string>
+	<string id="ui_mm_fov">
+		<text>Угол обзора</text>
+	</string>
+	<string id="ui_mm_bloom_amount">
+		<text>Интенсивность Bloom</text>
 	</string>
 </string_table>

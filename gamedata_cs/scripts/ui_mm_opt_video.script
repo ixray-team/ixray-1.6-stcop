@@ -26,6 +26,7 @@ function opt_video:InitControls(x, y, xml, handler)
 	handler:addTrack(self, true, "ui_mm_brightness", "rs_c_brightness", 0.1, false, "float", false, system_depends.sdApplyOnChange)
 	handler:addTrack(self, true, "ui_mm_contrast", "rs_c_contrast", 0.1, false, "float", false, system_depends.sdApplyOnChange)
 	handler:addTrack(self, true, "ui_mm_gamma", "rs_c_gamma", 0.1, false, "float", false, system_depends.sdApplyOnChange)
+	handler:addTrack(self, true, "ui_mm_bloom_amount", "r2_bloom_amount", 0.01, false, "float", true, system_depends.sdNothing)
 	
 	handler:addCheck(self, true, "ui_mm_fullscreen", "rs_fullscreen", system_depends.sdVidRestart)
 	handler:addCheck(self, true, "ui_rs_device_active", "rs_device_active", system_depends.sdNothing)
