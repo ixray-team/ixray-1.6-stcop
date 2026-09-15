@@ -852,7 +852,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r2_autoexposure_soft_limiter", &ps_r2_autoexposure_soft_limiter, 0.0f, 10.0f);
 	CMD4(CCC_Float, "r2_autoexposure_soft_sensetivity", &ps_r2_autoexposure_sensitivity, 0.0f, 10.0f);
 
-	CMD4(CCC_Float, "r2_bloom_amount", &ps_r2_bloom_amount, 0.0f, 10.0f);
+	CMD4(CCC_Float, "r2_bloom_amount", &ps_r2_bloom_amount, 0.0f, 3.0f);
 	CMD4(CCC_Float, "r2_bloom_desaturation", &ps_r2_bloom_desaturation, 0.0f, 1.0f);
 	CMD4(CCC_Float, "r2_bloom_tint_amount", &ps_r2_bloom_tint_amount, 0.0f, 1.0f);
 	CMD4(CCC_Vector3, "r2_bloom_tint_color", &ps_r2_bloom_tint_color, Fvector().set(0.0f, 0.0f, 0.0f), Fvector().set(1.0f, 1.0f, 1.0f));

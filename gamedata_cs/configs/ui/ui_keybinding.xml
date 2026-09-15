@@ -25,6 +25,7 @@
 		<command id="kb_weapon4"					exe="wpn_4"/>
 		<command id="kb_weapon5"					exe="wpn_5"/>
 		<command id="kb_weapon6"					exe="wpn_6"/>
+		<command id="kb_weapon7"					exe="wpn_7"/>
 		<command id="kb_wpn_next"					exe="wpn_next"/>
 		<command id="kb_next_slot"				exe="next_slot"/>
 		<command id="kb_prev_slot"				exe="prev_slot"/>
@@ -48,6 +49,7 @@
 		<command id="kb_drop"						  exe="drop"/>		
 	</group>
 	<group name="kb_grp_common">
+		<command id="kb_cam_2"						exe="cam_2"/>
 		<command id="kb_alife_command"	  exe="alife_command"/>			
 		<command id="kb_pause"						exe="pause"/>
 		<command id="kb_use"						  exe="use"/>			
