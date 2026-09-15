@@ -18,6 +18,12 @@
 #define IDD_STEP                        105
 #define IDD_NVIEW                       107
 #define IDI_ICON1                       108
+#define IDI_ICON3                       110
+#define IDI_OVERLAY_XRLC                201
+#define IDI_OVERLAY_XRAI                202
+#define IDI_OVERLAY_XRDO                203
+#define IDI_OVERLAY_SUCCESS             204
+#define IDI_OVERLAY_ERROR               205
 #define IDC_LOG                         1000
 #define IDC_FILE                        1001
 #define IDC_LINE                        1002
@@ -38,7 +44,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        109
+#define _APS_NEXT_RESOURCE_VALUE        114
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
