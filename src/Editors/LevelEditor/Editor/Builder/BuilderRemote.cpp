@@ -1054,11 +1054,11 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 
 	for(EditMeshIt MESH=O->FirstMesh();MESH!=O->LastMesh();++MESH)
 	{
-		if (M.m_iVertexCount || M.m_iFaceCount)
+		if (!M.m_iVertexCount || !M.m_iFaceCount)
 		{
 			continue;
 		}
-		if (!BuildMesh(T, O, *MESH, sect_num, M.m_pVertices, M.m_iVertexCount, vert_it, M.m_pFaces, M.m_iVertexCount, face_it, M.m_smgroups, obj->_Transform(), obj))
+		if (!BuildMesh(T, O, *MESH, sect_num, M.m_pVertices, M.m_iVertexCount, vert_it, M.m_pFaces, M.m_iFaceCount, face_it, M.m_smgroups, obj->_Transform(), obj))
 		{
 			return u32(-1);
 		}
