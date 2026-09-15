@@ -80,6 +80,14 @@ void R_constants::MarkDirty(dx10ConstantBuffer& Buffer)
 	m_dirty[m_dirty_count++] = &Buffer;
 }
 
+void R_constants::clear_dirty()
+{
+	for (u32 i = 0; i < m_dirty_count; ++i)
+		m_dirty[i]->SetQueued(false);
+
+	m_dirty_count = 0;
+}
+
 void R_constants::flush_cache()
 {
 	for (u32 i = 0; i < m_dirty_count; ++i)
