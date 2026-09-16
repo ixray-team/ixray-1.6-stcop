@@ -315,7 +315,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
 	if (CObject* cce = Level().CurrentControlEntity())
 	{
-		if (CEntityAlive* ea = smart_cast<CEntityAlive*>(cce); ea != nullptr && !ea->g_Alive())
+		if (CEntityAlive* ea = cce->cast_entity_alive(); ea != nullptr && !ea->g_Alive())
 		{
 			fLifeTime = -1;
 		}
