@@ -9,6 +9,7 @@
 #include "../xrEngine/CustomHUD.h"
 #include "../xrEngine/xr_object.h"
 #include "../../xrEngine/GamepadService.h"
+#include "Widgets/UIStatic.h"
 
 dlgItem::dlgItem(CUIWindow* pWnd)
 {
@@ -118,6 +119,7 @@ void CDialogHolder::StopMenu(CUIDialogWnd* pDialog)
 	RemoveDialogToRender	(pDialog);
 	pDialog->SetHolder		(nullptr);
 
+	GetUICursor().m_static_text->SetText("");
 	if(!TopInputReceiver() || !TopInputReceiver()->NeedCursor() )
 		GetUICursor().Hide();
 }
