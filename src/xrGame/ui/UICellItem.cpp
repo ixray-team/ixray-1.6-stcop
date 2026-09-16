@@ -544,13 +544,12 @@ void CUICellItem::UpdateCustomMarksAndText()
 		m_with_custom_mark = item->m_custom_mark;
 		if (m_with_custom_mark)
 		{
+			R_ASSERT3(item->m_custom_mark_size.x > 0.f && item->m_custom_mark_size.y > 0.f, "Invalid custom mark size", item->object().cNameSect().c_str());
 			if (item->m_custom_mark_size.x > 0.f && item->m_custom_mark_size.y > 0.f)
 			{
-				m_custom_mark->SetWndSize(item->m_custom_mark_size);
-			}
-			else if (item->m_custom_mark_size.x < 0.f || item->m_custom_mark_size.y < 0.f)
-			{
-				R_ASSERT(!"item_custom_mark_size < 0.f");
+				Fvector2 sz = item->m_custom_mark_size;
+				sz.x *= UI().get_current_kx();
+				m_custom_mark->SetWndSize(sz);
 			}
 
 			const Fvector2 markSize = m_custom_mark->GetWndSize();
