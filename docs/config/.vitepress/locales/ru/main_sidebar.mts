@@ -92,6 +92,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
       { text: 'Шрифты', link: '/interface/fonts' },
       { text: 'XML Expression', link: '/interface/xml-expression' },
       { text: 'SVG иконки', link: '/interface/svg-icons' },
+      { text: '3D иконки', link: '/interface/3d-icons' },
       {
         text: 'Новые возможности UI',
         collapsed: true,
