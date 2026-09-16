@@ -241,6 +241,7 @@ public:
 
 	Fvector m_3d_static_rotate{};
 	float m_3d_static_scale = 1.f;
+	const char* m_3d_static_visual_name = "";
 
 	SInvItemPlace m_ItemCurrPlace = {};
 	RStringVec m_HiglightRelatedItemSections = {}; // FFx0001 ++
@@ -261,8 +262,6 @@ public:
 	Irect GetUpgrIconRect() const;
 	const shared_str& GetIconName() const { return m_icon_name; };
 	Frect GetKillMsgRect() const;
-
-	virtual shared_str Get3DIconSectionName();
 	//---------------------------------------------------------------------
 	IC float GetCondition() const { return m_fCondition; }
 	virtual	float GetConditionToShow() const { return GetCondition(); }
