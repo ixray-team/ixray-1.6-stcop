@@ -207,6 +207,7 @@ public:
 	virtual bool NeedMovementBlend() const override;
 	bool AllowSafemode() const;
 
+	bool Allow3DScopes() const;
 	virtual bool UseScopeTexture();
 
 	public:

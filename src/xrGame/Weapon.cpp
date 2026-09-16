@@ -3367,9 +3367,14 @@ CUIStatic* CWeapon::ZoomTexture()
 	return UseScopeTexture() ? m_UIScope : nullptr;
 }
 
+bool CWeapon::Allow3DScopes() const
+{
+	return psDeviceFlags.test(rsR4) && g_3d_scopes && m_Allow3DScope;
+}
+
 bool CWeapon::UseScopeTexture()
 {
-	return !(g_3d_scopes && m_Allow3DScope) && !IsAltZoomed();
+	return !Allow3DScopes() && !IsAltZoomed();
 }
 
 IC void CWeapon::SetNextState(u8 v)
@@ -3946,7 +3951,7 @@ bool CWeapon::show_indicators()
 {
 	if (!IsGrenadeMode() && !IsRotatingToZoom())
 	{
-		if (bUseAltScope && bScopeIsHasTexture && IsScopeAttached() && (ZoomTexture() != nullptr || g_3d_scopes))
+		if (bUseAltScope && bScopeIsHasTexture && IsScopeAttached() && (ZoomTexture() != nullptr || Allow3DScopes()))
 		{
 			return false;
 		}
@@ -4213,7 +4218,7 @@ u32 CWeapon::Cost() const
 float CWeapon::GetHudFov()
 {
 	float get = inherited::GetHudFov() / m_fHudFovFactor;
-	float zoom = m_HudFovZoom ? m_HudFovZoom : g_3d_scopes && IsLensedScopeInstalled() ? get : (get * Device.fFOV / g_fov);
+	float zoom = m_HudFovZoom ? m_HudFovZoom : Allow3DScopes() && IsLensedScopeInstalled() ? get : (get * Device.fFOV / g_fov);
 	get += (zoom - get) * m_zoom_params.m_fZoomRotationFactor;
 
 	float hud_fov = m_fHudFovFactor;
@@ -4269,7 +4274,7 @@ bool CWeapon::IsCollimatorInstalled() const
 
 bool CWeapon::IsHudModelForceUnhide() const
 {
-	return IsCollimatorInstalled() || IsLensedScopeInstalled() && g_3d_scopes /*|| IsAlterZoomMode() */;
+	return IsCollimatorInstalled() || IsLensedScopeInstalled() && Allow3DScopes() /*|| IsAlterZoomMode() */;
 }
 
 bool CWeapon::IsUIForceUnhiding() const
