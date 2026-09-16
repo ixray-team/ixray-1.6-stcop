@@ -314,10 +314,20 @@ void CUISequencer::OnFrame()
 	m_UIWindow->Update			();
 }
 
+static u32 g_tutorial_render_frame = 0;
 void CUISequencer::OnRender	()
 {
-	if (m_UIWindow->IsShown())	
+	if (g_tutorial_render_frame == Device.dwFrame)
+	{
+		return;
+	}
+
+	g_tutorial_render_frame = Device.dwFrame;
+
+	if (m_UIWindow->IsShown())
+	{
 		m_UIWindow->Draw();
+	}
 
 	VERIFY(m_sequencer_items.size());
 	m_sequencer_items.front()->OnRender	();
@@ -535,5 +545,19 @@ void CUISequencer::IR_OnActivate()
 				}break;
 			};
 		};
+	}
+}
+
+
+bool CUISequencer::Need3DRender()
+{
+	if (m_sequencer_items.size())
+	{
+		static const bool Use3DPDA = EngineExternal()[EEngineExternalGame::Enable3DPDA];
+		return xr_strlen(m_sequencer_items.front()->m_pda_section) != 0 && Use3DPDA;
+	}
+	else
+	{
+		return false;
 	}
 }

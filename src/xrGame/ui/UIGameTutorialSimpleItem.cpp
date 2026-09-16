@@ -326,9 +326,25 @@ void CUISequenceSimpleItem::Start()
 		
 		if (CurrentGameUI())
 		{
-			if ( ( !CurrentGameUI()->PdaMenu()->IsShown() &&  bShowPda ) || (CurrentGameUI()->PdaMenu()->IsShown() && !bShowPda ) )
+			CObject* current_entity = Level().CurrentEntity();
+
+			CActor* pActor = current_entity ? current_entity->cast_actor() : nullptr;
+			if (pActor == nullptr)
 			{
-				CurrentGameUI()->PdaMenu()->ShowOrHideDialog(true);
+				return;
+			}
+
+			bool isPDAShown = pActor->HudAnimator()->PdaAnimator() != nullptr ? pActor->HudAnimator()->PdaAnimator()->IsActive() : CurrentGameUI()->PdaMenu()->IsShown();
+			if ( ( !isPDAShown && bShowPda ) || (isPDAShown && !bShowPda ) )
+			{
+				if (pActor->HudAnimator()->PdaAnimator() != nullptr)
+				{
+					pActor->HudAnimator()->PdaAnimator()->SwitchAnimator();
+				}
+				else
+				{
+					CurrentGameUI()->PdaMenu()->ShowOrHideDialog(true);
+				}
 			}
 		}
 	}
@@ -355,14 +371,29 @@ bool CUISequenceSimpleItem::Stop			(bool bForce)
 
 	if (g_pGameLevel)
 	{
-		if (CurrentGameUI() && CurrentGameUI()->PdaMenu()->IsShown())
+		if (CurrentGameUI())
 		{
-			CurrentGameUI()->PdaMenu()->HideDialog();
-		}
+			CObject* current_entity = Level().CurrentEntity();
 
-		if (CurrentGameUI()->GetActiveInventoryWindow())
-		{
-			CurrentGameUI()->GetActiveInventoryWindow()->HideDialog();
+			CActor* pActor = current_entity ? current_entity->cast_actor() : nullptr;
+			if (pActor == nullptr)
+			{
+				return false;
+			}
+
+			bool isPDAShown = pActor->HudAnimator()->PdaAnimator() != nullptr ? pActor->HudAnimator()->PdaAnimator()->IsActive() : CurrentGameUI()->PdaMenu()->IsShown();
+			if (isPDAShown)
+			{
+				if (pActor->HudAnimator()->PdaAnimator() == nullptr)
+				{
+					CurrentGameUI()->PdaMenu()->HideDialog();
+				}
+			}
+
+			if (CurrentGameUI()->GetActiveInventoryWindow())
+			{
+				CurrentGameUI()->GetActiveInventoryWindow()->HideDialog();
+			}
 		}
 	}
 
