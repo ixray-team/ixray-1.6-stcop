@@ -52,6 +52,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "HudVertexAssignedPatricles.h"
 #include "ai/monsters/controller/controller_psy_hit.h"
+#include "ui/UIGameTutorial.h"
 
 namespace
 {
@@ -2804,6 +2805,7 @@ void CActor::renderable_Render()
 	VERIFY(_valid(XFORM()));
 }
 
+extern CUISequencer* g_tutorial;
 void CActor::RenderItemUI()
 {
 	CHudPdaAnimator* pdaAnimator = HudAnimator()->PdaAnimator();
@@ -2860,8 +2862,11 @@ void CActor::RenderItemUI()
 		{
 			PdaSpot->Draw();
 		}
-
-		if (PdaMenu == TopInputReceiver || (PdaSpot && PdaSpot == TopInputReceiver))
+		if (g_tutorial && g_tutorial->Need3DRender())
+		{
+			g_tutorial->OnRender();
+		}
+		if (PdaMenu == TopInputReceiver || (PdaSpot && PdaSpot == TopInputReceiver) || (g_tutorial && g_tutorial->Need3DRender()))
 		{
 			GetUICursor().OnRender();
 		}
