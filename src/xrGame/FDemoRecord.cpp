@@ -547,9 +547,12 @@ void CDemoRecord::update_frustum_capture()
 				continue;
 			}
 
-			if (IKinematics* kinematics = o->Visual()->dcast_PKinematics())
+			if (IRenderVisual* visual = o->Visual())
 			{
-				objects.push_back(o);
+				if (IKinematics* kinematics = visual->dcast_PKinematics())
+				{
+					objects.push_back(o);
+				}
 			}
 		}
 
