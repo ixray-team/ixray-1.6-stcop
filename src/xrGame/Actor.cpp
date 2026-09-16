@@ -104,7 +104,6 @@ static Fvector	vFootExt;
 Flags32			psActorFlags={AF_DISABLE_CONDITION_TEST|AF_AUTO_PICKUP|AF_RUN_BACKWARD|AF_IMPORTANT_SAVE|AF_DISPLAY_VOICE_ICON| AF_HIT_SLOWMO };
 
 ENGINE_API extern float		psHUD_FOV;
-ENGINE_API extern bool g_3d_scopes;
 
 void CActor::OnFrame()
 {
@@ -1737,7 +1736,7 @@ void CActor::UpdateLensFOV(CWeapon* wpn, float value)
 	}
 
 	const float aim_factor = wpn->GetAimFactor();
-	bool use_smooth = g_3d_scopes && aim_factor > 0.0f && aim_factor <= 1.0f;
+	bool use_smooth = wpn->Allow3DScopes() && aim_factor > 0.0f && aim_factor <= 1.0f;
 	const float alt_aim_factor = wpn->GetAltAimFactor();
 	if ((use_smooth || aim_factor > 0.999f && alt_aim_factor == 0.0f) && !wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled() && !wpn->IsAltZoomed())
 	{
