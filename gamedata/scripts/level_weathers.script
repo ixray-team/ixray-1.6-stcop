@@ -449,7 +449,7 @@ function WeatherManager:Serialize(F)
 end
 
 function WeatherManager:Serialize_state(m_data)
-    if F:IsSave() then
+    if m_data:IsSave() then
     	SetStorageVar(STORAGE_KEY, self.storage)
     end
 end
