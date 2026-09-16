@@ -11,6 +11,8 @@
 
 #include "common.hlsli"
 
+uniform float4 m_affects;
+
 // Important:
 // In perfect world OFFSET constants should be 0, but most of reflex sight lenses
 // are not actually parallel to screen, so we compensate it. For PROJECT_DISTANCE=100
@@ -79,14 +81,12 @@ float4 main(vf I) : COLOR
     float3 V = -I.v_pos;
     
     // Build cotangent frame
-    // Important: In theory, you don't need to do this. It should be possible to pass TBN straight from VS
     float3x3 TBN = cotangent_frame(offset_normal(I.v_nrm), I.v_pos, I.tc0.xy);
     
     // Transform view direction to tangent space, and normalize (Just in case)
     float3 V_tangent = normalize(float3(dot(V, TBN[0]), dot(V, TBN[1]), dot(V, TBN[2])));
 	
     // Calculate texture coordinates used to fetch the mark texture
-    // Important: PROJECT_DISTANCE can be positive or negative, 0 = no projection at all
     float2 parallax_tc = I.tc0 - V_tangent.xy * PROJECT_DISTANCE;
 	
 	// Upscaling the texture
@@ -94,7 +94,35 @@ float4 main(vf I) : COLOR
 	parallax_tc.y = (parallax_tc.y + (SIZE_FACTOR - 1) / 2) / SIZE_FACTOR;
 
     // Fetch the mark texture
-    // Important: We do not want texture to repeat itself, so we use sampler with CLAMP address
-    // Important2: We do not want to sample mip levels of the mark texture, let's keep this thing sharp as fuck
-    return tex2Dlod(s_base, float4(parallax_tc, 0.0, 0.0));
+    float4 mark_texture = tex2Dlod(s_base, float4(parallax_tc, 0.0, 0.0));
+
+    // === Скрытие метки при выбросе ===
+    const float MARK_MAX_STAGE = 0.3; // третья стадия (3/10)
+
+    float mark_visibility = 1.0;
+
+    if (m_affects.x >= MARK_MAX_STAGE)
+    {
+        // Стадия превышена — метка полностью выключена
+        mark_visibility = 0.0;
+    }
+    else if (m_affects.x > 0.1)
+    {
+        // Нормированная стадия 0..1
+        float stage = m_affects.x / MARK_MAX_STAGE;
+
+        // Шанс выключения растёт квадратично
+        float off_chance = stage * stage;
+
+        // Мерцание
+        float flicker_rate = 5.0 + 25.0 * stage;
+        float flicker = frac(timers.z * flicker_rate + m_affects.y);
+
+        if (flicker < off_chance)
+            mark_visibility = 0.0;
+    }
+
+    mark_texture *= mark_visibility;
+
+    return mark_texture;
 }
