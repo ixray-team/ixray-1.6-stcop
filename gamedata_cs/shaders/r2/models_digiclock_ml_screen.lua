@@ -7,7 +7,7 @@ function normal		(shader, t_base, t_second, t_detail)
 end
 
 function l_special	(shader, t_base, t_second, t_detail)
-    shader:begin("deffer_model", "accum_emissive")
+    shader:begin("deffer_model", "accum_emissivel")
 			: zb 		(true,false)
 			: fog		(false)
 			: emissive 	(true)
