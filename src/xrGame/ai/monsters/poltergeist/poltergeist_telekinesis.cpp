@@ -85,7 +85,6 @@ void CTelekineticPoltergeist::load(LPCSTR section)
 	shooting_from_weapon_enable = READ_IF_EXISTS(pSettings, r_bool, section, "Tele_Shooting_From_Weapon_Enable", true);
 	activate_n_throw_grenade = READ_IF_EXISTS(pSettings, r_bool, section, "Tele_Activate_N_Throw_Grenade", true);
 	max_pickuped_weapons = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Max_Pickuped_Weapons", 2);
-	delay_before_first_shot = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Delay_Before_First_Shoot", 0);
 	particle_tele_object = READ_IF_EXISTS(pSettings, r_string, section, "Particle_Tele_Object", "static\\fire_distort");
 
 	novice_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 180.f);
@@ -334,7 +333,6 @@ bool CTelekineticPoltergeist::tele_raise_objects()
 		STelekineticWeaponParams weapon_params
 		{
 			.telekinetic_enemy = poltergeist,
-			.delay_before_first_shot = delay_before_first_shot,
 
 			.novice_difficulty_angular_speed = novice_difficulty_angular_speed,
 			.stalker_difficulty_angular_speed = stalker_difficulty_angular_speed,

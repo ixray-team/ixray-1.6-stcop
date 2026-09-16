@@ -468,7 +468,6 @@ void STelekineticWeaponObject::setup_local_weapon_things()
 	
 	backup_weapon_fire_mode = weapon->GetQueueSize();
 	weapon->SetInitiator(weapon_params.telekinetic_enemy->get_self()->ID());
-	first_shot_delay_ms = time() + weapon_params.delay_before_first_shot;
 	// WEAPON_ININITE_QUEUE (-1) = auto, 1 = single, 2 = burst
 	weapon->SetQueueSize(WEAPON_ININITE_QUEUE); // чтобы пистолетам задать режим стрельбы auto
 }
@@ -668,11 +667,6 @@ bool STelekineticWeaponObject::can_shoot()
 	}
 
 	if (!enemy_->g_Alive())
-	{
-		return false;
-	}
-
-	if (first_shot_delay_ms > time())
 	{
 		return false;
 	}

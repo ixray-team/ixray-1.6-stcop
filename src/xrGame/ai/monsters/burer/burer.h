@@ -118,7 +118,6 @@ public:
 	bool shooting_from_weapon_enable;
 	bool activate_n_throw_grenade;
 	u32 max_pickuped_weapons;
-	u32 delay_before_first_shot;
 
 	float novice_difficulty_angular_speed;
 	float stalker_difficulty_angular_speed;

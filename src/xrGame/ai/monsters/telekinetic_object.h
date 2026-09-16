@@ -33,7 +33,6 @@ enum ETelekineticTimings : u16
 struct STelekineticWeaponParams
 {
 	ITelekineticEnemy* telekinetic_enemy;
-	u32 delay_before_first_shot;
 
 	// Угловая скорость наведения оружия на врага. Указывается в градусах/с.
 	// Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив в конфигах 360 для всех сложностей.
@@ -156,8 +155,7 @@ struct STelekineticWeaponObject : STelekineticObject
 
 	u32 weapon_phase_start_time;
 	u32 weapon_next_phase_time;
-	
-	u32 first_shot_delay_ms = 0;
+
 	s8 backup_weapon_fire_mode = s8(-1);
 
 	STelekineticWeaponObject(const STelekineticWeaponParams& weapon_params, const STelekineticObjectParams& tele_params);

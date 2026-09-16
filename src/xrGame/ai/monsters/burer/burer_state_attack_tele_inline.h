@@ -475,7 +475,6 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 			STelekineticWeaponParams weapon_params
 			{
 				.telekinetic_enemy = this->object,
-				.delay_before_first_shot = this->object->delay_before_first_shot,
 
 				.novice_difficulty_angular_speed = this->object->novice_difficulty_angular_speed,
 				.stalker_difficulty_angular_speed = this->object->stalker_difficulty_angular_speed,
