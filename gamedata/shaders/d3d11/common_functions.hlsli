@@ -376,5 +376,10 @@ float3 v_sun(float3 N)
     return L_sun_color.xyz * dot(N, -L_sun_dir_w.xyz);
 }
 
+float get_noise(float2 co)
+{
+    return (frac(sin(dot(co.xy ,float2(12.9898f,78.233f))) * 43758.5453f))*0.5f;
+}
+
 #endif //	common_functions_h_included
 

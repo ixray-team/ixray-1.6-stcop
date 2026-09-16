@@ -7,11 +7,6 @@ struct 	v2p
   	float4	c0:			COLOR0;		// sun.(fog*fog)
 };
 
-float get_noise(float2 co)
-{
-	return (frac(sin(dot(co.xy ,float2(12.9898,78.233))) * 43758.5453))*0.5;
-};
-
 uniform float4	m_affects;
 uniform	float4 	m_timearrow;
 

@@ -8,18 +8,13 @@ struct 	v2p
 
 uniform	float4 m_affects;
 
-float get_noise(float2 co)
-{
-	return (frac(sin(dot(co.xy ,float2(12.9898,78.233))) * 43758.5453))*0.5;
-};
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
 float4 main( v2p I ) : SV_Target
 {
 	float4	t_base 	= s_base.Sample( smp_base, I.tc0 );
 
-	// Шум при выбросе
+	// пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	float noise	= get_noise(I.tc0*timers.z) * m_affects.x * 2;		
 	t_base.r += noise;
 	t_base.g += noise;
