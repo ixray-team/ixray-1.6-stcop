@@ -685,17 +685,11 @@ void CPHElement::applyImpact(const SPHImpact& I)
 	}
 }
 
-void CPHElement::InterpolateGlobalTransform(Fmatrix* m){
-	if(!m_flags.test(flUpdate))
-	{
-		GetGlobalTransformDynamic(m);
-		VERIFY(_valid(*m));
-		return;
-	}
+void CPHElement::InterpolateGlobalTransform(Fmatrix* m)
+{
 	m_body_interpolation.InterpolateRotation(*m);
 	m_body_interpolation.InterpolatePosition(m->c);
 	MulB43InverceLocalForm(*m);
-	m_flags.set(flUpdate,false);
 	VERIFY(_valid(*m));
 }
 
