@@ -34,7 +34,7 @@ bool CShell::net_Spawn(CSE_Abstract* e)
 	CPhysicsShell* ph_shell = PPhysicsShell();
 	ph_shell->DisableCharacterCollision();
 	ph_shell->SetAirResistance(0.f, 0.f);
-	ph_shell->set_DynamicLimits(default_l_limit, 100.f);
+	ph_shell->set_DynamicLimits(default_l_limit, 40.f);
 	ph_shell->SetSmall();
 	ph_shell->set_ObjectContactCallback(ContactCallback);
 	need_eject = true;
