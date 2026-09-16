@@ -10,6 +10,8 @@
 
 #include "common.hlsli"
 
+uniform float4 m_affects;
+
 // Important:
 // In perfect world OFFSET constants should be 0, but most of reflex sight lenses
 // are not actually parallel to screen, so we compensate it. For PROJECT_DISTANCE=100
@@ -101,13 +103,41 @@ void main(in vf I, out IXRayForward O)
 	mark_texture.w = 1.0f;
 	
 	O.Color = mark_texture;
+
+    const float MARK_MAX_STAGE = 0.34;
+
+    float mark_visibility = 1.0;
+
+    if (m_affects.x >= MARK_MAX_STAGE)
+    {
+        mark_visibility = 0.0;
+    }
+    else if (m_affects.x > 0.1)
+    {
+        float stage = m_affects.x / MARK_MAX_STAGE;
+
+        float off_chance = stage * stage;
+
+        float flicker_rate = 5.0 + 25.0 * stage;
+        float flicker = frac(timers.z * flicker_rate + m_affects.y);
+
+        if (flicker < off_chance)
+            mark_visibility = 0.0;
+    }
+
+
+    mark_texture.xyz *= mark_visibility;
+    mark_texture.w = 1.0;
+
+    O.Color = mark_texture;
 	
 #ifndef DISABLE_MOTION_VECTORS
-	float Fade = saturate(max(mark_texture.x, max(mark_texture.y, mark_texture.z)) * 2.0f);
-	
-	O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
-	O.Velocity.w = 1.0f - Fade; O.Velocity.xy *= Fade / SIZE_FACTOR;
-	O.Velocity.z = 1.0f;
+    float Fade = saturate(max(mark_texture.x, max(mark_texture.y, mark_texture.z)) * 2.0f);
+    
+    O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+    O.Velocity.w = 1.0f - Fade; 
+    O.Velocity.xy *= Fade / SIZE_FACTOR;
+    O.Velocity.z = 1.0f;
 #endif
 }
 
