@@ -332,7 +332,7 @@ public:
 
 	u32 max_pickuped_weapons;
 	float autoaim_torque_factor;
-	u32 delay_before_first_shot;
+
 	shared_str particle_tele_object;
 	bool shooting_from_weapon_enable;
 	bool activate_n_throw_grenade;

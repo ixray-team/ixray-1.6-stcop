@@ -167,7 +167,6 @@ void CBurer::Load(const char* section)
 	shooting_from_weapon_enable = READ_IF_EXISTS(pSettings, r_bool, section, "Tele_Shooting_From_Weapon_Enable", true);
 	activate_n_throw_grenade = READ_IF_EXISTS(pSettings, r_bool, section, "Tele_Activate_N_Throw_Grenade", true);
 	max_pickuped_weapons = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Max_Pickuped_Weapons", 2);
-	delay_before_first_shot = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Delay_Before_First_Shoot", 0);
 
 	novice_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 180.f);
 	stalker_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 200.f);

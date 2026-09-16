@@ -10,7 +10,6 @@ Section: `![m_poltergeist_normal_tele]`
 |-----------|------|---------|-------------|
 | `Tele_Shooting_From_Weapon_Enable` | bool | off | Enables shooting from telekinetically held weapons at enemies. `on`/`off` |
 | `Tele_Max_Pickuped_Weapons` | int | 3 | Maximum number of firearms the poltergeist can hold simultaneously |
-| `Tele_Delay_Before_First_Shoot` | int (ms) | 0 | Delay before the first shot from a held weapon |
 
 ## Grenades
 
