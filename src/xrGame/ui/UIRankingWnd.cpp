@@ -987,6 +987,70 @@ void CUIRankingWnd::get_favorite_weapon()
 				rot.mul(M_PI / 180.0f);
 				m_favorite_weapon_icon->SetXYZ(rot);
 				m_favorite_weapon_icon->SetScaleFactor(READ_IF_EXISTS(pSettings, r_float, str, "3d_static_scale", 1.f));
+
+				RStringVec m_bDefHideBones{}, m_bDefShowBones{};
+
+				auto LoadVector = [&](RStringVec& vec, const char* sect)
+				{
+					if (pSettings->line_exist(str, sect))
+					{
+						const char* S = pSettings->r_string(str, sect);
+						if (S && S[0])
+						{
+							string128 Item = "";
+							int count = _GetItemCount(S);
+							for (int it = 0; it < count; ++it)
+							{
+								_GetItem(S, it, Item);
+								vec.push_back(Item);
+							}
+						}
+					}
+				};
+
+				LoadVector(m_bDefHideBones, "def_hide_bones");
+				LoadVector(m_bDefShowBones, "def_show_bones");
+
+				IKinematics* K = m_favorite_weapon_icon->GetVisual()->dcast_PKinematics();
+				for (auto& bone : m_bDefHideBones)
+				{
+					u16 bone_id = K->LL_BoneID(bone);
+					if (bone_id == BI_NONE)
+					{
+						continue;
+					}
+					bool bVisibleNow = K->LL_GetBoneVisible(bone_id);
+					if (bVisibleNow != false)
+					{
+						K->LL_SetBoneVisible(bone_id, false, false);
+					}
+				}
+
+				for (auto& bone : m_bDefShowBones)
+				{
+					u16 bone_id = K->LL_BoneID(bone);
+					if (bone_id == BI_NONE)
+					{
+						continue;
+					}
+					bool bVisibleNow = K->LL_GetBoneVisible(bone_id);
+					if (bVisibleNow != true)
+					{
+						K->LL_SetBoneVisible(bone_id, true, false);
+					}
+				}
+
+				u16 bone_id = K->LL_BoneID("wpn_launcher");
+				if (bone_id != BI_NONE)
+				{
+					K->LL_SetBoneVisible(bone_id, false, false);
+				}
+
+				bone_id = K->LL_BoneID("wpn_silencer");
+				if (bone_id != BI_NONE)
+				{
+					K->LL_SetBoneVisible(bone_id, false, false);
+				}
 			}
 			else
 			{
