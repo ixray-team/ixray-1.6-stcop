@@ -96,5 +96,35 @@ float4 main(vf I) : COLOR
     // Fetch the mark texture
     // Important: We do not want texture to repeat itself, so we use sampler with CLAMP address
     // Important2: We do not want to sample mip levels of the mark texture, let's keep this thing sharp as fuck
-    return tex2Dlod(s_base, float4(parallax_tc, 0.0, 0.0));
+    float4 mark_texture = tex2Dlod(s_base, float4(parallax_tc, 0.0, 0.0));
+
+    // === Скрытие метки при выбросе ===
+    const float MARK_MAX_STAGE = 0.3; // третья стадия (3/10)
+
+    float mark_visibility = 1.0;
+
+    if (m_affects.x >= MARK_MAX_STAGE)
+    {
+        // Стадия превышена — метка полностью выключена
+        mark_visibility = 0.0;
+    }
+    else if (m_affects.x > 0.1)
+    {
+        // Нормированная стадия 0..1
+        float stage = m_affects.x / MARK_MAX_STAGE;
+
+        // Шанс выключения растёт квадратично
+        float off_chance = stage * stage;
+
+        // Мерцание
+        float flicker_rate = 5.0 + 25.0 * stage;
+        float flicker = frac(timers.z * flicker_rate + m_affects.y);
+
+        if (flicker < off_chance)
+            mark_visibility = 0.0;
+    }
+
+    mark_texture *= mark_visibility;
+
+    return mark_texture;
 }
