@@ -62,6 +62,7 @@ enum class EEngineExternalGame
 	EnableWindEffectOnABullet,
 	EnableSaveOnNewGame,
 	EnableSuicideByController,
+	Enable3DIcons,
 	None
 };
 

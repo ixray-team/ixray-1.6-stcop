@@ -37,7 +37,8 @@ void CUIArtefactPanel::InitIcons(const xr_vector<const CArtefact*>& artefacts)
 
 		CUI3dStatic* tmp = new CUI3dStatic();
 		tmp->SetShader(GetEquipmentIconsShader(af->IconsTexture.c_str()));
-        if (psActorFlags.test(AF_3D_ICONS_INV))
+		static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+		if (enable3DIcons)
         {
 			tmp->SetVisual(icons_struct._3d_static_visual);
 			tmp->SetXYZ(icons_struct._3d_static_rotate);

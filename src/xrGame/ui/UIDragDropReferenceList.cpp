@@ -102,7 +102,8 @@ bool CUIDragDropReferenceList::SetItemAtQuickSlotCell(CUICellItem* itm, u8 slotI
 void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 {
 	CUI3dStatic *ref = m_references[cell_pos.x];
-	if (psActorFlags.test(AF_3D_ICONS_INV))
+	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+	if (enable3DIcons)
 	{
 		const PIItem iitem = static_cast<PIItem>(itm->m_pData);
 		ref->SetVisual(iitem->m_3d_static_visual_name);
@@ -159,7 +160,8 @@ void CUIDragDropReferenceList::LoadItemTexture(const char* section, Ivector2 cel
 {
 	CUI3dStatic* ref = m_references[cell_pos.x];
 	InventoryIconParams icons_struct = GetInventoryIconParams(section);
-	if (psActorFlags.test(AF_3D_ICONS_INV))
+	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+	if (enable3DIcons)
 	{
         ref->SetVisual(icons_struct._3d_static_visual);
         ref->SetXYZ(icons_struct._3d_static_rotate);

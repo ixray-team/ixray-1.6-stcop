@@ -172,7 +172,8 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 		}
 
 		InventoryIconParams icons_struct = GetInventoryIconParams(m_inv_item->m_section_id.c_str());
-        if (psActorFlags.test(AF_3D_ICONS_INV))
+		static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+		if (enable3DIcons)
         {
 			IRenderVisual* prevVisual = m_item->GetVisual();
             m_item->SetVisual(icons_struct._3d_static_visual);

@@ -1563,7 +1563,8 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
 
     InventoryUtilities::InventoryIconParams icons_struct =
         InventoryUtilities::GetInventoryIconParams(sect_name.c_str());
-    if (psActorFlags.test(AF_3D_ICONS_INV))
+	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+	if (enable3DIcons)
     {
         m_ui_weapon_icon->SetVisual(icons_struct._3d_static_visual);
         m_ui_weapon_icon->SetXYZ(icons_struct._3d_static_rotate);
@@ -1584,7 +1585,7 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
     m_ui_weapon_icon->GetUIStaticItem().SetTextureRect(texture_rect);
     m_ui_weapon_icon->SetStretchTexture(true);
 
-    if (psActorFlags.test(AF_3D_ICONS_INV))
+    if (enable3DIcons)
     {
         m_ui_weapon_icon->SetVisual(icons_struct._3d_static_visual);
 

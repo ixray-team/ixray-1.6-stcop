@@ -166,7 +166,8 @@ void	CUIRadialMenuWeapon::Draw()
 
 					shared_str sect_name = item->object().cNameSect();
 					InventoryUtilities::InventoryIconParams icons_struct = InventoryUtilities::GetInventoryIconParams(sect_name.c_str());
-					if (psActorFlags.test(AF_3D_ICONS_INV))
+					static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+					if (enable3DIcons)
 					{
 						itm.icon->SetVisual(icons_struct._3d_static_visual);
 						itm.icon->SetXYZ(icons_struct._3d_static_rotate);
