@@ -35,6 +35,7 @@ public:
 	virtual void			OnRender			();
 	CUIWindow*				MainWnd				()				{return m_UIWindow;}
 	bool					IsActive			()				{return !!m_flags.test(etsActive);}
+	bool					Need3DRender		();
 
 
 	const char*					m_name;
@@ -122,6 +123,7 @@ public:
 
 	shared_str				m_check_lua_function;
 	shared_str				m_onframe_lua_function;
+	string64				m_pda_section{};
 };
 
 class CUISequenceSimpleItem final : public CUISequenceItem
@@ -151,7 +153,6 @@ public:
 	ref_sound				m_sound;
 	float					m_time_start;
 	float					m_time_length;
-	string64				m_pda_section;
 	Fvector2				m_desired_cursor_pos;
 	EGameActions			m_continue_dik_guard;
 	xr_vector<SActionItem>	m_actions;
