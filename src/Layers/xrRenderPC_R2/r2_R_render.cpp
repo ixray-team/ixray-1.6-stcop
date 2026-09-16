@@ -338,9 +338,8 @@ void CRender::render_menu	()
 
 void CRender::RenderUI(Fcolor* color)
 {
-	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
-
 	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), Target->rt_Position->pRT, Target->rt_Normal->pRT, RTarget, RDepth);
+	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
 	rmNormal();
 
 	r_dsgraph_render_ui();
