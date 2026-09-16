@@ -11,35 +11,30 @@ uniform sampler2D	s_vp2;
 uniform sampler2D	s_load;
 uniform	float4 		m_affects;
 
-float get_noise(float2 co)
-{
-	return (frac(sin(dot(co.xy ,float2(12.9898,78.233))) * 43758.5453))*0.5;
-};
-
 float4 problems_main( v2p I )
 {
 	
-	// узкая полоска искажений
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	float problems = frac(timers.z * 5*(1 + 2 * m_affects.x) );	
 	I.tc0.x+= ( m_affects.x > 0.09 && I.tc0.y > problems-0.01 && I.tc0.y < problems) ? sin((I.tc0.y-problems)*5*m_affects.y)  : 0;
 
-	// широкая полоска искажений	
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ	
 	problems = cos( ( frac( timers.z *2 ) - 0.5 ) * 3.1416 )*2 - 0.8;
 	float AMPL = 0.13;
 	I.tc0.x -= ( m_affects.x > 0.15 && I.tc0.y > problems-AMPL && I.tc0.y < problems+AMPL) ? cos(4.71*(I.tc0.y-problems)/AMPL) * sin( frac(timers.z)*6.2831*90 )  * 0.02 * (AMPL-abs(I.tc0.y-problems))/AMPL : 0;			
 	
-	// тряска влево-вправо в финальной стадии
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	I.tc0.x += ( m_affects.x > 0.38 ) ? (m_affects.y - 0.5) * 0.04 : 0;	
 	
-	float4	t_vp2	 = ( m_affects.x < 0.27 ) ? tex2D( s_vp2, I.tc0) : tex2D( s_base, I.tc0) ;			// Изображение со второго вьюпорта		
+	float4	t_vp2	 = ( m_affects.x < 0.27 ) ? tex2D( s_vp2, I.tc0) : tex2D( s_base, I.tc0) ;			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ		
 	
-	// шум при выбросе
+	// пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	float noise	= get_noise(I.tc0*timers.z) *  m_affects.x * m_affects.x * 20;		
 	t_vp2.r += noise;
 	t_vp2.g += noise;
 	t_vp2.b += noise;
 	
-	//отключение экрана
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	t_vp2.rgb = (m_affects.x > 0.41) ? 0 : t_vp2.rgb;
 	
 	return  float4	(t_vp2.r, t_vp2.g, t_vp2.b, 1);

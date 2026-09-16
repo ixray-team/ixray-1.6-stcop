@@ -4,11 +4,6 @@
 uniform	float4 		m_digiclock;
 uniform	float4 		m_affects;
 
-float get_noise(float2 co)
-{
-	return (frac(sin(dot(co.xy ,float2(12.9898,78.233))) * 43758.5453))*0.5;
-};
-
 f_deffer 	main	( p_flat I )
 {
   f_deffer	O;

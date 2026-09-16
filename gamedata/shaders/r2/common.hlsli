@@ -340,6 +340,11 @@ f_deffer pack_gbuffer(float4 Normal, float4 Point, float4 Color)
     return Output;
 }
 
+float get_noise(float2 co)
+{
+    return (frac(sin(dot(co.xy ,float2(12.9898f,78.233f))) * 43758.5453f))*0.5f;
+}
+
 #define FXPS \
     technique _render \
     { \
