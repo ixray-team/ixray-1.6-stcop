@@ -105,19 +105,17 @@ void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 	if (psActorFlags.test(AF_3D_ICONS_INV))
 	{
 		const PIItem iitem = static_cast<PIItem>(itm->m_pData);
-		InventoryIconParams icons_struct = GetInventoryIconParams(iitem->Get3DIconSectionName().c_str());
-
-		ref->SetVisual(icons_struct._3d_static_visual);
-		ref->SetScaleFactor(icons_struct._3d_static_scale);
-		Fvector fRot = icons_struct._3d_static_rotate;
+		ref->SetVisual(iitem->m_3d_static_visual_name);
+		ref->SetScaleFactor(iitem->m_3d_static_scale);
+		Fvector fRot = iitem->m_3d_static_rotate;
 		if (GetVerticalPlacement())
 		{
 			fRot.x += deg2rad(90.f);
 			fRot.y -= deg2rad(180.f);
 		}
 		ref->SetXYZ(fRot);
-		itm->SetVisual(icons_struct._3d_static_visual);
-		itm->SetScaleFactor(icons_struct._3d_static_scale);
+		itm->SetVisual(iitem->m_3d_static_visual_name);
+		itm->SetScaleFactor(iitem->m_3d_static_scale);
 		if (GetVerticalPlacement())
 		{
 			fRot.x += deg2rad(90.f);

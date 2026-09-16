@@ -389,9 +389,10 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
     {
         if (psActorFlags.test(AF_3D_ICONS_INV))
         {
-            UIItemImage->SetVisual(pInvItem->object().Visual());
+            UIItemImage->SetVisual(pInvItem->m_3d_static_visual_name);
             UIItemImage->SetScaleFactor(pInvItem->m_3d_static_scale);
             UIItemImage->SetXYZ(pInvItem->m_3d_static_rotate);
+			UIItemImage->SetBonesVisible(pInvItem->object().Visual()->dcast_PKinematics());
         }
         else
             UIItemImage->SetVisual(nullptr);

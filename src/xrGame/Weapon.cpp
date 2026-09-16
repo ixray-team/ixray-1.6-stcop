@@ -5346,12 +5346,3 @@ float CWeapon::GetAddonRecoil() const
 
 	return finalRecoil;
 }
-
-shared_str CWeapon::Get3DIconSectionName()
-{
-	if (bUseAltScope && m_eScopeStatus != ALife::eAddonPermanent && IsScopeAttached())
-	{
-		return GetNameWithAttachmentScope();
-	}
-	return inherited::Get3DIconSectionName();
-}

@@ -1563,7 +1563,7 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		return;
 	};
 
-	shared_str sect_name = m_pPickUpItem->Get3DIconSectionName();
+	shared_str sect_name = m_pPickUpItem->object().cNameSect();
 	InventoryIconParams icons_struct = GetInventoryIconParams(sect_name.c_str());
 	if (psActorFlags.test(AF_3D_ICONS_INV))
 	{

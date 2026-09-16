@@ -969,7 +969,5 @@ public:
 	float GetHandling() const;
 	float GetAccuracy() const;
 
-	virtual shared_str Get3DIconSectionName();
-
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

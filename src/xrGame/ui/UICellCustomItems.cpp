@@ -76,7 +76,8 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
     // Для 3d иконок
     if (psActorFlags.test(AF_3D_ICONS_INV))
     {
-		SetVisual(itm->object().Visual());
+        SetVisual(itm->m_3d_static_visual_name);
+		SetBonesVisible(itm->object().Visual()->dcast_PKinematics());
     }
 }
 
@@ -431,13 +432,6 @@ void CUIWeaponCellItem::Update()
 				pWeapon->ProcessScope();
 			}
 
-			if (psActorFlags.test(AF_3D_ICONS_INV))
-			{
-				if (GetVisual() != pItem->object().Visual())
-				{
-					SetVisual(pItem->object().Visual());
-				}
-			}
 			SetBonesVisible(pItem->object().Visual()->dcast_PKinematics());
 		}
 	}
@@ -486,13 +480,6 @@ void CUIWeaponCellItem::OnAfterChild(CUIDragDropListEx* parent_list)
 			pWeapon->ProcessScope();
 		}
 
-		if (psActorFlags.test(AF_3D_ICONS_INV))
-		{
-			if (GetVisual() != pItem->object().Visual())
-			{
-				SetVisual(pItem->object().Visual());
-			}
-		}
 		SetBonesVisible(pItem->object().Visual()->dcast_PKinematics());
 	}
 }
