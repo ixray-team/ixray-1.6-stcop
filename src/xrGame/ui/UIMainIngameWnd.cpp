@@ -1565,7 +1565,8 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	shared_str sect_name = m_pPickUpItem->object().cNameSect();
 	InventoryIconParams icons_struct = GetInventoryIconParams(sect_name.c_str());
-	if (psActorFlags.test(AF_3D_ICONS_INV))
+	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+	if (enable3DIcons)
 	{
 		UIPickUpItemIcon->SetVisual(icons_struct._3d_static_visual);
 		UIPickUpItemIcon->SetXYZ(icons_struct._3d_static_rotate);
@@ -2087,14 +2088,17 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 			if (item_name.size())
 			{
 				InventoryIconParams icons_struct = GetInventoryIconParams(item_name.c_str());
-				if (psActorFlags.test(AF_3D_ICONS_INV))
+				static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+				if (enable3DIcons)
 				{
 					slot->SetVisual(icons_struct._3d_static_visual);
 					slot->SetXYZ(icons_struct._3d_static_rotate);
 					slot->SetScaleFactor(icons_struct._3d_static_scale);
 				}
 				else
+				{
 					slot->SetVisual(nullptr);
+				}
 
 				const u32 count = pActor->inventory().dwfGetSameItemCount(item_name.c_str(), true);
 				string32 str;

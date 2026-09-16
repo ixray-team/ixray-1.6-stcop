@@ -151,10 +151,11 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 				m_textAmmoUsedType->SetTextST(str);
 			}
 
+			static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
 			if (m_stAmmoType1)
 			{
 				InventoryIconParams icons_struct = GetInventoryIconParams(ammo_types[0].c_str());
-				if (psActorFlags.test(AF_3D_ICONS_INV))
+				if (enable3DIcons)
 				{
 					m_stAmmoType1->SetVisual(icons_struct._3d_static_visual);
 					m_stAmmoType1->SetXYZ(icons_struct._3d_static_rotate);
@@ -189,7 +190,7 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 			if (enable_ammo_type_2 && m_stAmmoType2)
 			{
 				InventoryIconParams icons_struct = GetInventoryIconParams(ammo_types[1].c_str());
-				if (psActorFlags.test(AF_3D_ICONS_INV))
+				if (enable3DIcons)
 				{
 					m_stAmmoType2->SetVisual(icons_struct._3d_static_visual);
 					m_stAmmoType2->SetXYZ(icons_struct._3d_static_rotate);
@@ -224,7 +225,7 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 			if (enable_ammo_type_3 && m_stAmmoType3)
 			{
 				InventoryIconParams icons_struct = GetInventoryIconParams(ammo_types[2].c_str());
-				if (psActorFlags.test(AF_3D_ICONS_INV))
+				if (enable3DIcons)
 				{
 					m_stAmmoType3->SetVisual(icons_struct._3d_static_visual);
 					m_stAmmoType3->SetXYZ(icons_struct._3d_static_rotate);

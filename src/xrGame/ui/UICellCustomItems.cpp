@@ -74,7 +74,8 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 	}
 
     // Для 3d иконок
-    if (psActorFlags.test(AF_3D_ICONS_INV))
+	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+	if (enable3DIcons)
     {
         SetVisual(itm->m_3d_static_visual_name);
 		SetBonesVisible(itm->object().Visual()->dcast_PKinematics());
@@ -356,9 +357,10 @@ void CUIWeaponCellItem::Update()
 
 	bool reinit_3d_icon = false;
 
+	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
 	if (object()->SilencerAttachable())
 	{
-		if (object()->IsSilencerAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
+		if (object()->IsSilencerAttached() && !enable3DIcons)
 		{
 			if (!GetIcon(eSilencer) || bForceReInitAddons)
 			{
@@ -387,7 +389,7 @@ void CUIWeaponCellItem::Update()
 			reinit_3d_icon = true;
 		}
 
-		if (object()->IsScopeAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
+		if (object()->IsScopeAttached() && !enable3DIcons)
 		{
 			if (!GetIcon(eScope) || bForceReInitAddons)
 			{
@@ -401,7 +403,7 @@ void CUIWeaponCellItem::Update()
 
 	if (object()->GrenadeLauncherAttachable())
     {
-		if (object()->IsGrenadeLauncherAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
+		if (object()->IsGrenadeLauncherAttached() && !enable3DIcons)
 		{
 			if (!GetIcon(eLauncher) || bForceReInitAddons)
 			{

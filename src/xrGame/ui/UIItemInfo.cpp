@@ -387,7 +387,8 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	}
 	if(UIItemImage)
     {
-        if (psActorFlags.test(AF_3D_ICONS_INV))
+		static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+		if (enable3DIcons)
         {
             UIItemImage->SetVisual(pInvItem->m_3d_static_visual_name);
             UIItemImage->SetScaleFactor(pInvItem->m_3d_static_scale);

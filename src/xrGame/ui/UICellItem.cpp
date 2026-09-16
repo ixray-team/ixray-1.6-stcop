@@ -692,7 +692,8 @@ CUIDragItem* CUICellItem::CreateDragItem()
 		r.y2			= r.y1 + t1;
 	}
 	tmp->Init(GetShader(), r, GetUIStaticItem().GetTextureRect());
-	if (psActorFlags.test(AF_3D_ICONS_INV))
+	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+	if (enable3DIcons)
 	{
 		tmp->wnd()->SetVisual(GetVisual());
 		Fvector xyz = GetXYZ();

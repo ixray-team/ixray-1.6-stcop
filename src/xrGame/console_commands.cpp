@@ -2739,7 +2739,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "g_dynamic_music", &psActorFlags, AF_DYNAMIC_MUSIC);
 	CMD3(CCC_Mask32, "g_important_save", &psActorFlags, AF_IMPORTANT_SAVE);
 	CMD3(CCC_Mask32, "g_hit_slowmo", &psActorFlags, AF_HIT_SLOWMO);
-	CMD3(CCC_Mask32, "g_3d_icons_inv", &psActorFlags, AF_3D_ICONS_INV);
 	CMD2(CCC_Boolean, "3d_icons_adjust", &g_Adjust3dIcon);
     CMD4(CCC_Float, "3d_icons_adjust_value", &g_Adjust3dIconValue, 0.f, 10.f);
 
