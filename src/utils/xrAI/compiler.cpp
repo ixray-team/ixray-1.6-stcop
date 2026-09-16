@@ -25,7 +25,9 @@ Shader_xrLC& IComputeData::GetShaderXRLC(u32 ID, bool Shared)
 				comp_data.g_materials_shared[ID].Name)->m_ShaderXRLCName.c_str()
 				);
 	}
-	return *comp_data.g_shaders_xrlc->Get(comp_data.g_shader_compile[comp_data.g_materials[ID].surfidx].name);
+	R_ASSERT(ID < comp_data.g_materials.size());
+	R_ASSERT(comp_data.g_materials[ID].reserved < comp_data.g_shader_compile.size());
+	return *comp_data.g_shaders_xrlc->Get(comp_data.g_shader_compile[comp_data.g_materials[ID].reserved].name);
 }
 
 void vertex::PointLF(Fvector& D)

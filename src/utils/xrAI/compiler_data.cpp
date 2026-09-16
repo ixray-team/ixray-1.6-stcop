@@ -295,7 +295,15 @@ void IComputeData::xrLoadGeometry(IReader* fs)
  		for (u32 i = 0; i < f_count; i++)
 		{
 			b_face B;
-			ChunkFaces->r(&B, sizeof(B));
+			B.v[0] = ChunkFaces->r_u32();
+ 			B.v[1] = ChunkFaces->r_u32();
+ 			B.v[2] = ChunkFaces->r_u32();
+ 			ChunkFaces->r(&B.t[0], sizeof(Fvector2));
+ 			ChunkFaces->r(&B.t[1], sizeof(Fvector2));
+ 			ChunkFaces->r(&B.t[2], sizeof(Fvector2));
+ 			B.dwMaterial = ChunkFaces->r_u16();
+ 			ChunkFaces->r(&B.flags, sizeof(b_face_flags));
+ 			B.dwMaterialGame = ChunkFaces->r_u32();
 			R_ASSERT(B.dwMaterialGame < 65536);
 
 			const Shader_xrLC& SH = GetShaderXRLC(B.dwMaterial, (bool)(B.flags&b_face_flags::UseSharedMaterial));
@@ -326,19 +334,30 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 			// READ: vertices
 			xr_vector<b_vertex> b_vertices;
 			b_vertices.resize(F.r_u32());
-			F.r(&*b_vertices.begin(), (u32)b_vertices.size() * sizeof(b_vertex));
+			F.r(b_vertices.data(), (u32)b_vertices.size() * sizeof(b_vertex));
 
 			// READ: faces
 			xr_vector<b_face> b_faces;
 			b_faces.resize(F.r_u32());
-			F.r(&*b_faces.begin(), (u32)b_faces.size() * sizeof(b_face));
+			for (auto& elem : b_faces)
+			{
+				elem.v[0] = F.r_u32();
+				elem.v[1] = F.r_u32();
+				elem.v[2] = F.r_u32();
+				F.r(&elem.t[0], sizeof(Fvector2));
+				F.r(&elem.t[1], sizeof(Fvector2));
+				F.r(&elem.t[2], sizeof(Fvector2));
+				elem.dwMaterial = F.r_u16();
+				F.r(&elem.flags, sizeof(b_face_flags));
+				elem.dwMaterialGame = F.r_u32();
+			}
 
  			// READ: lod-ID
 			F.r(&lodID, 2);
 
 			xr_vector<u32> sm_groups;
 			sm_groups.resize(b_faces.size());
-			F.r(&*sm_groups.begin(), (u32)sm_groups.size() * sizeof(u32));
+			F.r(sm_groups.data(), (u32)sm_groups.size() * sizeof(u32));
 
 			for (auto& bFace : b_faces)
 			{
