@@ -628,8 +628,8 @@ static class cl_digiclock : public RHIShaderConstant::Setup
 
 		float hh = (hours / 10) / 10.0f;
 		float hl = (hours % 10) / 10.0f;
-		float mh = (month / 10) / 10.0f;
-		float ml = (month % 10) / 10.0f;
+		float mh = (mins / 10) / 10.0f;
+		float ml = (mins % 10) / 10.0f;
 
 		RCache.set_c(C, hh, hl, mh, ml);
 	}
