@@ -105,8 +105,11 @@ void CALifeMonsterBrain::process_task			()
 {
 	CALifeSmartTerrainTask			*task = smart_terrain().task(&object());
 	THROW3							(task,"smart terrain returned nil task, while npc is registered in it",smart_terrain().name_replace());
-	movement().path_type			(MovementManager::ePathTypeGamePath);
-	movement().detail().target		(*task);
+	if (task != nullptr)
+	{
+		movement().path_type(MovementManager::ePathTypeGamePath);
+		movement().detail().target(*task);
+	}
 }
 
 void CALifeMonsterBrain::select_task			()
