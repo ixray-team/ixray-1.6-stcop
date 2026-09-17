@@ -117,7 +117,7 @@ void CParticlesObject::Stop(bool bDefferedStop)
 		m_bPlaying = false;
 }
 
-void CParticlesObject::Update(u32 _dt, CFrustum& viewbase)
+void CParticlesObject::Update(u32 _dt, CFrustum* viewbase)
 {
 	if (m_NeedDestroy || (!m_bPlaying && !m_bAutoRemove)) return;
 	PROF_EVENT(__FUNCTION__);
@@ -169,7 +169,7 @@ void CParticlesObject::Update(u32 _dt, CFrustum& viewbase)
 			if (RDEVICE.vCameraPosition_saved.distance_to_sqr(P) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
 				return;
 			
-			if (!viewbase.testSphere_dirty(P, R))
+			if (viewbase && !viewbase->testSphere_dirty(P, R))
 				return;
 		}
 		V->UpdateCache();
@@ -200,7 +200,31 @@ bool CParticlesObject::GetLiveUpdate()
 		return false;
 
 	IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
-	return !!V->GetLiveUpdate();
+	return V->GetLiveUpdate();
+}
+
+void CParticlesObject::SetHudMode(bool b)
+{
+	if (g_dedicated_server || renderable.visual == nullptr)
+	{
+		return;
+	}
+
+	IParticleCustom* V = renderable.visual->dcast_ParticleCustom();
+	VERIFY(V);
+	V->SetHudMode(b);
+}
+
+bool CParticlesObject::GetHudMode()
+{
+	if (g_dedicated_server || renderable.visual == nullptr)
+	{
+		return false;
+	}
+
+	IParticleCustom* V = renderable.visual->dcast_ParticleCustom();
+	VERIFY(V);
+	return V->GetHudMode();
 }
 
 void CParticlesObject::UpdateParent(const Fmatrix& m, const Fvector& vel)

@@ -18,7 +18,7 @@ public:
 	virtual				~CParticlesObject	();
 
 	virtual void		renderable_Render	();
-	virtual void		Update				(u32 dt, CFrustum& viewbase);
+	virtual void		Update				(u32 dt, CFrustum* viewbase = nullptr);
 	virtual	IRenderable* dcast_Renderable	() { return this; }
 
 	Fvector&			Position			();
@@ -27,6 +27,8 @@ public:
 	void				UpdateParent		(const Fmatrix& m, const Fvector& vel);
 	void				SetLiveUpdate		(bool b);
 	bool				GetLiveUpdate		();
+	void				SetHudMode			(bool b);
+	bool				GetHudMode			();
 	u32					GetSpriteCount		();
 	void				play_at_pos			(const Fvector& pos, bool xform=false);
 	void				Play				(bool bHudMode);
