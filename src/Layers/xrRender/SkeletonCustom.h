@@ -287,6 +287,9 @@ public:
 	void							LL_SetBonesVisible	(VisMask mask);
 	void							LL_SetBonesVisibleAll() { visimask.set_all(); };
 
+	virtual void					LL_SetSimpleBoneVisible	(u16 bone_id, bool val);
+	virtual bool					LL_GetSimpleBoneVisible	(u16 bone_id);
+
 	virtual void					BonesHistory_Invalidate() override;
 
 	// Main functionality

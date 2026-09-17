@@ -206,6 +206,7 @@ protected:
 	u16 RenderMode = RM_SKINNING_SOFT;
 	u16 ChildIDX = u16(-1);
 	bool progressive_mesh = false;
+	bool visible = true;
 	// render-mode specifics
 	union {
 		struct {			// soft-skinning only
@@ -224,6 +225,25 @@ protected:
 	void _CollectBoneFaces();
 	void _DuplicateIndices(IReader* data);
 public:
+	ICF u16 get_child_id() { return ChildIDX; };
+	ICF void set_simple_visible(bool val) { visible = val; };
+	ICF bool get_simple_visible() { return visible; };
+	ICF bool uses_bone(u16 bone_id)
+	{
+		if (RM_SINGLE == RenderMode)
+		{
+			return (u16)RMS_boneid == bone_id;
+		}
+		for (u32 i = 0; i < BonesUsed.size(); i++)
+		{
+			if (BonesUsed[i] == bone_id)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool has_visible_bones();
 	CSkeletonX(bool val) : progressive_mesh(val) {}
 

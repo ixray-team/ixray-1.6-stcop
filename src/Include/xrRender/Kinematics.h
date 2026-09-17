@@ -84,6 +84,9 @@ virtual	const IBoneData&		_BCL	GetBoneData(u16 bone_id) const = 0;
 	virtual void						LL_SetBonesVisible(VisMask mask) = 0;
 	virtual void						LL_SetBonesVisibleAll() = 0;
 
+	virtual void						LL_SetSimpleBoneVisible(u16 bone_id, bool val){};
+	virtual bool						LL_GetSimpleBoneVisible(u16 bone_id){return false;};
+
 	virtual void						BonesHistory_Invalidate() = 0;
 
 	// Main functionality
