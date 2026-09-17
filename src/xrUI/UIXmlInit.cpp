@@ -448,28 +448,32 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3
 
 	bool single_color = true;
 	xr_strconcat(buf,path,":text_color:e");
-	if (xml_doc.NavigateToNode(buf,index)){
+	if (xml_doc.NavigateToNode(buf,index))
+	{
 		color			= GetColor(xml_doc, buf, index, 0x00);
 		pWnd->SetStateTextColor(color, S_Enabled);
 		single_color = false;
 	}
 
 	xr_strconcat(buf,path,":text_color:d");
-	if (xml_doc.NavigateToNode(buf,index)){
+	if (xml_doc.NavigateToNode(buf,index))
+	{
 		color			= GetColor(xml_doc, buf, index, 0x00);
 		pWnd->SetStateTextColor(color,S_Disabled);
 		single_color = false;
 	}
 
 	xr_strconcat(buf,path,":text_color:t");
-	if (xml_doc.NavigateToNode(buf, index)){
+	if (xml_doc.NavigateToNode(buf, index))
+	{
 		color			= GetColor(xml_doc, buf, index, 0x00);
 		pWnd->SetStateTextColor(color,S_Touched);
 		single_color = false;
 	}
 
 	xr_strconcat(buf,path,":text_color:h");
-	if (xml_doc.NavigateToNode(buf,index)){
+	if (xml_doc.NavigateToNode(buf,index))
+	{
 		color			= GetColor(xml_doc, buf, index, 0x00);
 		pWnd->SetStateTextColor(color,S_Highlighted);
 		single_color = false;
@@ -502,8 +506,17 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3
 	}
 
 	const char* text_hint		= xml_doc.ReadAttrib	(path, index, "hint", nullptr);
-	if(text_hint)
-		pWnd->m_hint_text	= g_pStringTable->translate(text_hint);
+	if (text_hint)
+	{
+		pWnd->m_hint_text = g_pStringTable->translate(text_hint);
+	}
+
+	xr_strconcat(buf, path, ":hint_text");
+	if (xml_doc.NavigateToNode(buf, index))
+	{
+		pWnd->m_hint_text = g_pStringTable->translate(xml_doc.Read(buf, index, "no hint"));
+		pWnd->m_hint_delay = xml_doc.ReadAttribInt(buf, index, "delay", 700);
+	}
 
 	float shadowOffsetX = xml_doc.ReadAttribFlt(path, index, "shadow_offset_x", 0);
 	float shadowOffsetY = xml_doc.ReadAttribFlt(path, index, "shadow_offset_y", 0);
