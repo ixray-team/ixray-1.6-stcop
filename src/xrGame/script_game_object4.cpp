@@ -28,6 +28,7 @@
 #include "helicopter.h"
 #include "Car.h"
 #include "level_changer.h"
+#include "Weapon.h"
 
 class CWeapon;
 
@@ -491,6 +492,7 @@ CFoodItem* CScriptGameObject::cast_FoodItem()
 
 SPECIFIC_CAST(CScriptGameObject::cast_Artefact, CArtefact);
 SPECIFIC_CAST(CScriptGameObject::cast_Ammo, CWeaponAmmo);
+SPECIFIC_CAST(CScriptGameObject::cast_Weapon, CWeapon);
 //SPECIFIC_CAST(CScriptGameObject::cast_Missile, CMissile);
 SPECIFIC_CAST(CScriptGameObject::cast_PhysicsShellHolder, CPhysicsShellHolder);
 //SPECIFIC_CAST(CScriptGameObject::cast_Grenade, CGrenade);

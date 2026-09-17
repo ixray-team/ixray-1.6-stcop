@@ -905,6 +905,7 @@ public:
 			_DECLARE_FUNCTION14(cast_FoodItem, CFoodItem);
 			_DECLARE_FUNCTION14(cast_Artefact, CArtefact);
 			_DECLARE_FUNCTION14(cast_Ammo, CWeaponAmmo);
+			_DECLARE_FUNCTION14(cast_Weapon, CWeapon);
 			//_DECLARE_FUNCTION14(cast_Missile, CMissile);
 			_DECLARE_FUNCTION14(cast_PhysicsShellHolder, CPhysicsShellHolder);
 			//_DECLARE_FUNCTION14(cast_Grenade, CGrenade);

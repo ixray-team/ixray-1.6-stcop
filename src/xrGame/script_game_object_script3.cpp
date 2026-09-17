@@ -35,6 +35,7 @@
 #include "sight_manager_space.h"
 #include "../xrScripts/exports/script_ini_file.h"
 #include "ActorHelmet.h"
+#include "Weapon.h"
 
 using namespace luabind;
 
@@ -472,6 +473,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("cast_FoodItem", &CScriptGameObject::cast_FoodItem)
 		.def("cast_Artefact", &CScriptGameObject::cast_Artefact)
 		.def("cast_Ammo", &CScriptGameObject::cast_Ammo)
+		.def("cast_Weapon", &CScriptGameObject::cast_Weapon)
 		//.def("cast_Missile", &CScriptGameObject::cast_Missile)
 		.def("cast_PhysicsShellHolder", &CScriptGameObject::cast_PhysicsShellHolder)
 		//.def("cast_Grenade", &CScriptGameObject::cast_Grenade)
