@@ -37,7 +37,7 @@ CScriptParticlesCustom::~CScriptParticlesCustom()
 
 void CScriptParticlesCustom::Update(u32 _dt, CFrustum& viewbase)
 {
-	CParticlesObject::Update(_dt, viewbase);
+	CParticlesObject::Update(_dt, &viewbase);
 	if (m_animator)
 	{
 		float dt				= float(_dt)/1000.f; 
