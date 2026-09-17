@@ -632,50 +632,24 @@ void CDemoRecord::update_look_at_point()
 
 void CDemoRecord::update_free_look()
 {
-	// if (rq_result.O != nullptr)
-	// {
-	// 	if (IKinematics* kinematics = rq_result.O->Visual()->dcast_PKinematics(); kinematics != nullptr && draw_skeleton)
-	// 	{
-	// 		Flags32 old_flags = HUD().world_prims.m_skeleton_flags;
-	//
-	// 		// HUD().world_prims.m_skeleton_flags.set(LevelInspector::ESI_BONES | LevelInspector::ESI_BONES_LINKS, true);
-	// 		// // HUD().world_prims.DrawSkeleton(kinematics, rq_result.O->XFORM());
-	// 		//
-	// 		// if (g_player_hud && )
-	// 		// {
-	// 		// 	bool b_r0 = (g_player_hud->attached_item(0) && g_player_hud->attached_item(0)->need_renderable());
-	// 		// 	bool b_r1 = (g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->need_renderable());
-	// 		//
-	// 		// 	if (b_r0)
-	// 		// 	{
-	// 		// 		HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(0)->m_model, g_player_hud->attached_item(0)->m_item_transform);
-	// 		// 	}
-	// 		//
-	// 		// 	if (b_r1)
-	// 		// 	{
-	// 		// 		HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(1)->m_model, g_player_hud->attached_item(1)->m_item_transform);
-	// 		// 	}
-	// 		//
-	// 		// 	if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying || g_player_hud->GetHandsVisible() || b_r0 || b_r1)
-	// 		// 	{
-	// 		// 		HUD().world_prims.DrawSkeleton(g_player_hud->GetModel()->dcast_PKinematics(), g_player_hud->GetTransform());
-	// 		// 	}
-	// 		//
-	// 		// 	if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying)
-	// 		// 	{
-	// 		// 		HUD().world_prims.DrawSkeleton(g_player_hud->GetAnimator()->m_item, g_player_hud->GetAnimator()->m_item_transform);
-	// 		// 	}
-	// 		// }
-	// 		
-	// 		
-	//
-	// 		HUD().world_prims.m_skeleton_flags = old_flags;
-	// 	}
-	// }
-
 	hpb.x -= frame_hpb_delta.y;
 	hpb.y -= frame_hpb_delta.x;
 	hpb.z += frame_hpb_delta.z;
+
+	if (force_restore_roll)
+	{
+		hpb.z = 0.f;
+	}
+
+	if (force_restore_pitch)
+	{
+		hpb.y = 0.f;
+	}
+
+	if (force_restore_yaw)
+	{
+		hpb.x = 0.f;
+	}
 
 	hpb_current.inertion(hpb, dr_cam_inert);
 	camera.setHPB(hpb_current.x, hpb_current.y, hpb_current.z);
@@ -769,18 +743,20 @@ void CDemoRecord::update_look_from_bone()
 	Fvector bone_world_hpb;
 	bone_world_xfrom.getHPB(bone_world_hpb);
 
-	Fvector r, n, d;
+	if (force_restore_roll)
+	{
+		bone_world_hpb.z = 0.f;
+	}
+	
+	if (force_restore_pitch)
+	{
+		bone_world_hpb.y = 0.f;
+	}
 
-	d = bone_world_xfrom.k;
-	r.crossproduct(d, {0.f, 1.f, 0.f}).normalize_safe();
-	n.crossproduct(r, d).normalize_safe();
-
-	Fmatrix restored_basis;
-	restored_basis.i = r;
-	restored_basis.j = n;
-	restored_basis.k = d;
-
-	restored_basis.getHPB(bone_world_hpb);
+	if (force_restore_yaw)
+	{
+		bone_world_hpb.x = 0.f;
+	}
 
 	Fvector blend_view_offset = {
 		bone_world_hpb.x + -hpb_view_from_bone_offset.x,
@@ -1063,6 +1039,14 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 				p_cam_pos_view_from_bone_offset.x += 1.f * dt;
 				break;
 
+			case K_MOVE_UP:
+				p_cam_pos_view_from_bone_offset.y += 1.f * dt;
+				break;
+
+			case K_MOVE_DOWN:
+				p_cam_pos_view_from_bone_offset.y -= 1.f * dt;
+				break;
+				
 			case K_ROLL_LEFT:
 				hpb_view_from_bone_offset.z -= 1.f * dt;
 				break;

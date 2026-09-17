@@ -436,6 +436,27 @@ void RenderDemoRecordEditorWindow()
 			ImGui::Text("Position offset");
 		}
 		
+		ImGui::SeparatorText("Lock Axes");
+		tip("Lock individual rotation axes to their world-aligned defaults.\n"
+					"Yaw: forces heading to 0 (camera faces +Z world direction).\n"
+					"Pitch: forces pitch to 0 (camera looks horizontally).\n"
+					"Roll: forces roll to 0 (camera is level with the horizon).");
+
+		ImGui::Checkbox("Lock Yaw", &demo_record->force_restore_yaw);
+		ImGui::SameLine();
+		tip("When enabled, camera heading is forced to 0 each frame.\n"
+					"Camera always faces the +Z world direction regardless of mouse input.");
+
+		ImGui::Checkbox("Lock Pitch", &demo_record->force_restore_pitch);
+		ImGui::SameLine();
+		tip("When enabled, camera pitch is forced to 0 each frame.\n"
+					"Camera always looks horizontally regardless of mouse input.");
+
+		ImGui::Checkbox("Lock Roll", &demo_record->force_restore_roll);
+		ImGui::SameLine();
+		tip("When enabled, camera roll is forced to 0 each frame.\n"
+					"Camera stays level with the horizon regardless of mouse input.");
+
 		ImGui::SeparatorText("Field of View");
 		ImGui::DragFloat("FOV", &g_base_fov, s_slider_step * 10.f, 5.f, 179.f, "%.1f");
 		ImGui::SameLine();

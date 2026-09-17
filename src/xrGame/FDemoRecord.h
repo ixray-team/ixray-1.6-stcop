@@ -35,6 +35,8 @@ public:
 		K_MOVE_LEFT				= SDL_SCANCODE_A,
 		K_MOVE_BACKWARD			= SDL_SCANCODE_S,
 		K_MOVE_RIGHT			= SDL_SCANCODE_D,
+		K_MOVE_UP				= SDL_SCANCODE_SPACE,
+		K_MOVE_DOWN				= SDL_SCANCODE_LCTRL,
 		K_ROLL_LEFT				= SDL_SCANCODE_Q,
 		K_ROLL_RIGHT			= SDL_SCANCODE_E,
 		K_SLOW_SPEED			= SDL_SCANCODE_LSHIFT,
@@ -56,7 +58,10 @@ public:
 	bool new_input_schema = false;
 	bool show_help = false;
 	bool fov_auto_scale = true;
-	bool redirect_input_to_level;
+	bool redirect_input_to_level = false;
+	bool force_restore_roll = false;
+	bool force_restore_pitch = false;
+	bool force_restore_yaw = false;
 
 	float camera_transform_speed = 3.f;
 	float m_fSpeed0 = 0.f;
