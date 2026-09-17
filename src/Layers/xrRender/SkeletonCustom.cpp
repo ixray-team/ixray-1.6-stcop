@@ -540,6 +540,32 @@ void CKinematics::Visibility_Update()
 	}
 }
 
+void CKinematics::LL_SetSimpleBoneVisible(u16 bone_id, bool val)
+{
+	for (u32 c_it = 0; c_it < children.size(); c_it++)
+	{
+		CSkeletonX* _c = static_cast<CSkeletonX*>(children[c_it]);
+		if (_c->uses_bone(bone_id))
+		{
+			_c->set_simple_visible(val);
+		}
+	}
+}
+
+bool CKinematics::LL_GetSimpleBoneVisible(u16 bone_id)
+{
+	for (u32 c_it = 0; c_it < children.size(); c_it++)
+	{
+		CSkeletonX* _c = static_cast<CSkeletonX*>(children[c_it]);
+		if (_c->uses_bone(bone_id))
+		{
+			return _c->get_simple_visible();
+		}
+	}
+
+	return true;
+}
+
 void RecursiveBindTransform(CKinematics* K, xr_vector<Fmatrix>& matrices, u16 bone_id, const Fmatrix& parent)
 {
 	CBoneData& BD = K->LL_GetData	(bone_id);

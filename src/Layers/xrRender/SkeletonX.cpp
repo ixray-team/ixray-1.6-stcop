@@ -253,6 +253,7 @@ void CSkeletonX::Release()
 void CSkeletonX::Render(float LOD)
 {
 	//PROF_EVENT("CSkeletonX_PM::Render");
+	if (!visible) return;
 	if (progressive_mesh)
 	{
 		int lod_id = FProgressive::last_lod;
