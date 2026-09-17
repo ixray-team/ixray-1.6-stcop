@@ -488,9 +488,9 @@ void CGamePersistent::UpdateParticles()
 		{
 			for (xr_shared_ptr<CParticlesObject> particle : ps_active)
 			{
-				if (!particle->m_NeedDestroy)
+				if (!particle->m_NeedDestroy && !particle->GetHudMode())
 				{
-					particle->Update(dwTime - particle->dwLastTime, frustum);
+					particle->Update(dwTime - particle->dwLastTime, &frustum);
 					particle->dwLastTime = dwTime;
 				}
 			}
@@ -523,9 +523,11 @@ void CGamePersistent::UpdateParticles()
 				if (workers[i].first < workers[min_group].first)
 					min_group = i;
 			}
-
-			workers[min_group].second.push_back(particle);
-			workers[min_group].first += particle->GetSpriteCount();
+			if (!particle->m_NeedDestroy && !particle->GetHudMode())
+			{
+				workers[min_group].second.push_back(particle);
+				workers[min_group].first += particle->GetSpriteCount();
+			}
 		}
 
 		for (u32 i = 0; i < last_count; ++i)
@@ -539,7 +541,8 @@ void CGamePersistent::UpdateParticles()
 
 				for (xr_shared_ptr<CParticlesObject>& particle : workers[i].second)
 				{
-					particle->Update(dwTime - particle->dwLastTime, frustum);
+					if (particle->m_NeedDestroy) continue;
+					particle->Update(dwTime - particle->dwLastTime, &frustum);
 					particle->dwLastTime = dwTime;
 				}
 			});
