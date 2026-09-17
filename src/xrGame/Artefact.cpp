@@ -84,10 +84,8 @@ void CArtefact::Load(const char* section)
 				
 				if (m_ParticlesBoneID == BI_NONE)
 				{
-					shared_str message;
-					message.printf("Can`t find particle bone [%s] in [%s] section", m_sParticlesBone.c_str(), section);
-					
-					R_ASSERT2(m_ParticlesBoneID  != BI_NONE, message.c_str());
+					Msg(make_string<const char* >("! Can`t find particle bone [%s] in [%s] section", m_sParticlesBone.c_str(), section));
+					//R_ASSERT2(m_ParticlesBoneID  != BI_NONE, message.c_str());
 				}
 
 				PPlayer->AppendBone(m_ParticlesBoneID);
