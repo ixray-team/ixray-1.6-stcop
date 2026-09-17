@@ -622,28 +622,23 @@ void	CKinematicsAnimated::LL_UpdateFxTracks( float dt )
 }
 void CKinematicsAnimated::UpdateTracks	()
 {
-	if (fsimilar(Update_LastTime, RDEVICE.fTimeGlobal))
-	{
+	if (Update_LastTime==RDEVICE.dwTimeGlobal)
 		return;
-	}
 
 	PROF_EVENT("Update Tracks");
 
-	float UpdateDelta = RDEVICE.fTimeGlobal - Update_LastTime;
-	float UpdateConst = .066f * RDEVICE.time_factor();
-	UpdateDelta = std::min(UpdateDelta, UpdateConst);
+	u32 DT	= RDEVICE.dwTimeGlobal-Update_LastTime;
+	if (DT>66) DT=66;
+	float dt = float(DT)/1000.f;
 	
-	if (GetUpdateTracksCalback())
+	if( GetUpdateTracksCalback()  )
 	{
-		if ((*GetUpdateTracksCalback())(UpdateDelta, *this))
-		{
-			Update_LastTime = RDEVICE.fTimeGlobal;
-		}
+		if( ( *GetUpdateTracksCalback() )( float(RDEVICE.dwTimeGlobal-Update_LastTime)/1000.f, *this ) )
+					Update_LastTime = RDEVICE.dwTimeGlobal;
 		return;
 	}
-
-	Update_LastTime = RDEVICE.fTimeGlobal;
-	LL_UpdateTracks(UpdateDelta, false, false);
+	Update_LastTime 	= RDEVICE.dwTimeGlobal;
+	LL_UpdateTracks	( dt, false, false );
 }
 
 void CKinematicsAnimated::Release()
@@ -662,7 +657,7 @@ CKinematicsAnimated::CKinematicsAnimated():
     m_Partition	( nullptr ),
 	m_blend_destroy_callback( nullptr ),
 	m_update_tracks_callback( nullptr ),
-	Update_LastTime ( 0.f )
+	Update_LastTime ( 0 )
 {
 	
 }
@@ -827,7 +822,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags) {
 	// Globals
 	blend_instances = nullptr;
 	m_Partition = nullptr;
-	Update_LastTime = 0.f;
+	Update_LastTime = 0;
 
 	// Load animation
 	if (data->find_chunk(OGF_S_MOTION_REFS))
