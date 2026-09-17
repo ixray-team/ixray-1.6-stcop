@@ -738,6 +738,12 @@ void set_snd_volume(float v)
 	clamp(psSoundVFactor,0.0f,1.0f);
 }
 
+float get_rain_volume()
+{
+	CEffect_Rain* rain = g_pGamePersistent->pEnvironment->eff_Rain;
+	return rain ? rain->GetRainVolume() : 0.0f;
+}
+
 bool is_inventory_volume_enabled()
 {
 	return CInventoryVolumeSystem::Get().IsEnabled();
@@ -1982,6 +1988,7 @@ void CLevel::script_register(lua_State *L)
 		def("physics_world",					&physics_world_scripted),
 		def("get_snd_volume",					&get_snd_volume),
 		def("set_snd_volume",					&set_snd_volume),
+		def("get_rain_volume",					&get_rain_volume),
 		def("is_inventory_volume_enabled",		&is_inventory_volume_enabled),
 		def("set_inventory_volume_enabled",		&set_inventory_volume_enabled),
 		def("add_cam_effector",					&add_cam_effector),
