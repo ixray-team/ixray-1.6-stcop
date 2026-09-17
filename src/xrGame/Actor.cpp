@@ -2549,6 +2549,11 @@ void CActor::shedule_Update	(u32 DT)
 	PROF_EVENT("CActor shedule_Update");
 	setSVU							(OnServer());
 
+	if (cam_active == eacFirstEye && !psGameFlags.test(rsActorShadow))
+	{
+		PKinematics(Visual())->CalculateBones();
+	}
+
 	if(m_holder || !getEnabled() || !Ready())
 	{
 		m_sDefaultObjAction				= nullptr;
