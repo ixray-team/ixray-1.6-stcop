@@ -10,7 +10,7 @@ extern bool dr_disable_time_factor_influence;
 extern float g_base_fov;
 
 static int s_help_marker_counter = 0;
-static float s_slider_step = 0.01f;
+static float s_slider_step = 0.001f;
 
 static void tip(const char* desc)
 {
@@ -51,7 +51,7 @@ static void render_bone_tree(IKinematics* kinematics, u16 bone_id, CDemoRecord* 
 	}
 
 	const char* bone_name = kinematics->LL_BoneName_dbg(bone_id);
-	bool selected = (bone_id == rec->bone_id && rec->view_from_bone_mode);
+	bool selected = (bone_id == rec->bone_id && rec->camera_mode.is(CDemoRecord::eViewFromBone));
 	bool has_children = false;
 
 	for (u16 j = 0; j < kinematics->LL_BoneCount(); j++)
@@ -95,8 +95,7 @@ static void render_bone_tree(IKinematics* kinematics, u16 bone_id, CDemoRecord* 
 			rec->bone_holder_xform = obj_xform;
 			rec->bone_holder_type = holder_type;
 			rec->bone_id = bone_id;
-			rec->view_from_bone_mode = true;
-			rec->look_at_point_mode = false;
+			rec->camera_mode.assign(CDemoRecord::eViewFromBone);
 		}
 
 		if (open)
@@ -132,8 +131,7 @@ static void render_bone_tree(IKinematics* kinematics, u16 bone_id, CDemoRecord* 
 			rec->bone_holder_xform = obj_xform;
 			rec->bone_holder_type = holder_type;
 			rec->bone_id = bone_id;
-			rec->view_from_bone_mode = true;
-			rec->look_at_point_mode = false;
+			rec->camera_mode.assign(CDemoRecord::eViewFromBone);
 		}
 	}
 }
@@ -196,7 +194,7 @@ void RenderDemoRecordEditorWindow()
 
 		if (demo_record->new_input_schema)
 		{
-			ImGui::SliderFloat("Camera movement speed", &demo_record->camera_transform_speed, 1.0f, 100.0f, "%.1f");
+			ImGui::SliderFloat("Camera movement speed", &demo_record->camera_transform_speed, 0.01f, 1000.f, "%.2f");
 			ImGui::SameLine();
 			tip("Unified movement speed multiplier. Applied to all camera movement axes equally. "
 						"Higher values = faster camera. Default: 3.0");
@@ -208,7 +206,7 @@ void RenderDemoRecordEditorWindow()
 		}
 		else
 		{
-			ImGui::SliderFloat("Speed 0 (slow)", &demo_record->m_fSpeed0, 0.0f, 50.0f, "%.1f");
+			ImGui::SliderFloat("Speed 0 (slow)", &demo_record->m_fSpeed0, 0.01f, 1000.f, "%.2f");
 			ImGui::SameLine();
 			tip("Speed multiplier when holding Shift. Used for slow, precise camera movement. "
 						"Value is read from [demo_record] speed0 in user.ltx.");
@@ -218,7 +216,7 @@ void RenderDemoRecordEditorWindow()
 				demo_record->m_fSpeed0 = demo_record->stored_fSpeed0;
 			}
 
-			ImGui::SliderFloat("Speed 2 (fast)", &demo_record->m_fSpeed2, 0.0f, 500.0f, "%.1f");
+			ImGui::SliderFloat("Speed 2 (fast)", &demo_record->m_fSpeed2, 0.01f, 1000.f, "%.2f");
 			ImGui::SameLine();
 			tip("Speed multiplier when holding Alt. Used for fast camera traversal. "
 						"Value is read from [demo_record] speed2 in user.ltx.");
@@ -228,7 +226,7 @@ void RenderDemoRecordEditorWindow()
 				demo_record->m_fSpeed2 = demo_record->stored_fSpeed2;
 			}
 
-			ImGui::SliderFloat("Speed 3 (accel)", &demo_record->m_fSpeed3, 0.0f, 1000.0f, "%.1f");
+			ImGui::SliderFloat("Speed 3 (accel)", &demo_record->m_fSpeed3, 0.01f, 1000.f, "%.2f");
 			ImGui::SameLine();
 			tip("Speed multiplier when holding Ctrl (acceleration). "
 						"Value is read from [demo_record] speed3 in user.ltx.");
@@ -304,25 +302,25 @@ void RenderDemoRecordEditorWindow()
 	{
 		ImGui::SeparatorText("Mode");
 
-		int current_mode = demo_record->view_from_bone_mode ? 2 : (demo_record->look_at_point_mode ? 1 : 0);
+		int current_mode = demo_record->camera_mode.is(CDemoRecord::eViewFromBone) ? 2 : (demo_record->camera_mode.is(CDemoRecord::eLookAtPoint) ? 1 : 0);
 		const char* mode_names[] = {"FreeLook", "LookAtPoint", "LookFromBone"};
 		ImGui::Combo("Camera mode", &current_mode, mode_names, 3);
 
 		if (current_mode == 0)
 		{
-			if (demo_record->view_from_bone_mode || demo_record->look_at_point_mode)
+			if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone) || demo_record->camera_mode.is(CDemoRecord::eLookAtPoint))
 			{
 				demo_record->detach_bone();
-				demo_record->look_at_point_mode = false;
+				demo_record->camera_mode.zero();
 			}
 		}
 		else if (current_mode == 1)
 		{
-			if (!demo_record->look_at_point_mode)
+			if (!demo_record->camera_mode.is(CDemoRecord::eLookAtPoint))
 			{
 				if (demo_record->rq_result.range > EPS_S)
 				{
-					demo_record->view_from_bone_mode = false;
+					demo_record->camera_mode.zero();
 
 					if (demo_record->rq_result.O != nullptr)
 					{
@@ -353,27 +351,27 @@ void RenderDemoRecordEditorWindow()
 					demo_record->get_camera_hpb(current_eulers);
 					demo_record->hpb.set(current_eulers);
 
-					demo_record->look_at_point_mode = true;
+					demo_record->camera_mode.bor(CDemoRecord::eLookAtPoint);
 				}
 			}
 		}
 		else if (current_mode == 2)
 		{
-			if (!demo_record->view_from_bone_mode)
+			if (!demo_record->camera_mode.is(CDemoRecord::eViewFromBone))
 			{
-				demo_record->look_at_point_mode = false;
+				demo_record->camera_mode.band(~CDemoRecord::eLookAtPoint);
 				demo_record->try_attach_bone();
 			}
 		}
 
-		if (demo_record->view_from_bone_mode)
+		if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone))
 		{
 			ImGui::SameLine();
 			tip("ViewFromBone: camera is attached to a bone.\n"
 						"Use the offset controls below to adjust rotation and position\n"
 						"relative to the bone. Press U to detach (or switch mode above).");
 		}
-		else if (demo_record->look_at_point_mode)
+		else if (demo_record->camera_mode.is(CDemoRecord::eLookAtPoint))
 		{
 			ImGui::SameLine();
 			tip("LookAtPoint: camera always faces a locked target point.\n"
@@ -408,7 +406,7 @@ void RenderDemoRecordEditorWindow()
 			dr_cam_pos_inert = 0.f;
 		}
 
-		if (!demo_record->view_from_bone_mode)
+		if (!demo_record->camera_mode.is(CDemoRecord::eViewFromBone))
 		{
 			ImGui::SeparatorText("Orientation");
 			tip("Camera heading/pitch/roll angles. Updated from mouse input each frame.");
@@ -417,7 +415,7 @@ void RenderDemoRecordEditorWindow()
 			drag_float3_reset("##hpb", demo_record->hpb, s_slider_step, hpb_zero);
 		}
 
-		if (demo_record->view_from_bone_mode)
+		if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone))
 		{
 			ImGui::SeparatorText("Bone View Offsets");
 			tip("Offsets applied on top of the bone's world transform.\n"
@@ -492,7 +490,7 @@ void RenderDemoRecordEditorWindow()
 		CObject* target_obj = nullptr;
 		IKinematics* kin = nullptr;
 
-		if (demo_record->view_from_bone_mode && demo_record->bone_holder_kinematics != nullptr)
+		if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone) && demo_record->bone_holder_kinematics != nullptr)
 		{
 			target_obj = demo_record->bone_holder;
 			kin = demo_record->bone_holder_kinematics;
@@ -506,7 +504,7 @@ void RenderDemoRecordEditorWindow()
 			target_obj = demo_record->rq_result.O;
 		}
 
-		if (demo_record->view_from_bone_mode && demo_record->bone_holder_kinematics != nullptr && demo_record->bone_id != BI_NONE)
+		if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone) && demo_record->bone_holder_kinematics != nullptr && demo_record->bone_id != BI_NONE)
 		{
 			ImGui::SeparatorText("Attached to bone:");
 			ImGui::Text("Bone: %d - %s", demo_record->bone_id, demo_record->bone_holder_kinematics->LL_BoneName_dbg(demo_record->bone_id));
@@ -526,7 +524,7 @@ void RenderDemoRecordEditorWindow()
 			ImGui::Text("Object: %s", target_obj->cName().c_str());
 			ImGui::Text("Bones: %d", kin->LL_BoneCount());
 
-			if (demo_record->view_from_bone_mode)
+			if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone))
 			{
 				ImGui::SameLine();
 				ImGui::TextDisabled("(attached)");

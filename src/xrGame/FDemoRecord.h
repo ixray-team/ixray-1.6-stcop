@@ -51,9 +51,15 @@ public:
 		GP_RECORD_KEYFRAME		= SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,
 	};
 
+	enum ECameraMode : u8
+	{
+		eFreeLook    = 0,
+		eLookAtPoint = (1 << 0),
+		eViewFromBone = (1 << 1),
+	};
+
 	bool draw_skeleton = false;
-	bool view_from_bone_mode = false;
-	bool look_at_point_mode = false;
+	Flags8 camera_mode;
 	bool enable_acceleration = false;
 	bool new_input_schema = false;
 	bool show_help = false;
