@@ -1854,6 +1854,13 @@ function parse_cse_alife_item_weapon_properties_packet(ret,stpk)
 	ret.addon_flags = stpk:r_u8()
 	ret.ammo_type = stpk:r_u8()
 	ret.xz1 = stpk:r_u8()
+
+	--ixray
+	ret.misfire = stpk:r_u8()
+	ret.zoom_factor = stpk:r_float()
+	ret.cur_scope = stpk:r_u8()
+	ret.chamber_ammo_type = stpk:r_u8()
+	ret.chamber_elapsed = stpk:r_u16()
 	return ret
 end
 
@@ -1864,6 +1871,13 @@ function fill_cse_alife_item_weapon_properties_packet(ret,stpk)
 	stpk:w_u8(ret.addon_flags)
 	stpk:w_u8(ret.ammo_type)
 	stpk:w_u8(ret.xz1)
+
+	--ixray
+	stpk:w_u8(ret.misfire)
+	stpk:w_float(ret.zoom_factor)
+	stpk:w_u8(ret.cur_scope)
+	stpk:w_u8(ret.chamber_ammo_type)
+	stpk:w_u16(ret.chamber_elapsed)
 	return ret
 end
 
