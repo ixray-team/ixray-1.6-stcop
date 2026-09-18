@@ -297,15 +297,6 @@ protected:
 	bool CanAimNow();
 	bool CanLeaveAimNow();
 
-	struct conditional_breaking_params
-	{
-		float start_condition = 0.0f;     // при каком состоянии начнутся проблемы
-		float end_condition = 0.0f;       // при каком состоянии отрубится вообще
-		float start_probability = 0.0f;   // вероятность проблем в стартовом состоянии
-	};
-
-	conditional_breaking_params CollimatorBreakingParams;
-
 	struct light_misfire_params
 	{
 		float startcond = 1.0f;
@@ -373,7 +364,6 @@ protected:
 	float GetNightPPEFactor();
 
 
-	float m_fCollimatorLevelsProblem = 0.0f;
 	float m_fMisfireAfterProblemsLevel = 10.0f;
 	float m_fRechargeTime = 0.0f;
 	float m_fLastRechargeTime = 0.0f;
@@ -970,7 +960,6 @@ public:
 	virtual float GetAimFactor() const final override { return m_zoom_params.m_fZoomRotationFactor; }
 	float GetAltAimFactor() const { return m_zoom_params.m_fZoomRotationFactor2; }
 	bool GetScopeBack();
-	void UpdateCollimatorSight();
 
 	//UIWpnParams stuff
 	float GetRPM() const;

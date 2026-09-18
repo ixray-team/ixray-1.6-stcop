@@ -21,7 +21,6 @@ bool CWeapon::install_upgrade_impl(const char* section, bool test)
 	result |= install_upgrade_torch_laser(section, test);
 	result |= install_upgrade_scope_zoom(section, test);
 	result |= install_upgrade_fast_knife(section, test);
-	result |= process_if_exists_set(section, "collimator_problems_level", m_fCollimatorLevelsProblem, test) && !test;
 
 	bool result2 = process_if_exists_set(section, "use_gauss_scheme", m_bGaussScheme, test);
 
