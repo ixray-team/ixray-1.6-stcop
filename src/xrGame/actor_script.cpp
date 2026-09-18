@@ -10,6 +10,7 @@
 #include "pch_script.h"
 #include "Actor.h"
 #include "level_changer.h"
+#include "ActorCondition.h"
 
 using namespace luabind;
 
@@ -27,7 +28,10 @@ void CActor::script_register(lua_State* L)
 	module(L)
 		[
 			class_<CActor, CGameObject>("CActor")
-				.def(constructor<>()),
+				.def(constructor<>())
+			 .def("conditions", &CActor::conditions)
+			 .def("inventory_disabled", &CActor::inventory_disabled)
+			 .def("set_inventory_disabled", &CActor::set_inventory_disabled),
 				class_<CLevelChanger, CGameObject>("CLevelChanger")
 				.def(constructor<>()),
 				def("is_first_person", isFirstPerson),
