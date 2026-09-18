@@ -23,8 +23,6 @@
 #include "ai/monsters/basemonster/base_monster.h"
 #include "AnomalyZone.h"
 
-#include <math3d.h>
-
 //константы ShootFactor, определяющие 
 //поведение пули при столкновении с объектом
 #define RICOCHET_THRESHOLD		0.1
@@ -69,7 +67,7 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 				CActor* actor = entity->cast_actor();
 				CAI_Stalker* stalker = entity->cast_stalker();
 				// в кого попали?
-				if (actor != nullptr && IsGameTypeSingle() || stalker != nullptr)
+				if (actor != nullptr && IsGameTypeSingle())
 				{
 					// попали в актера или сталкера
 					Fsphere S = cform->getSphere();
@@ -86,20 +84,7 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 							// попали в актера
 							float hpf = 1.f;
 							float ahp = actor->HitProbability();
-#if 1
-#	if 0
-							CObject* weapon_object = Level().Objects.net_Find(bullet->weapon_id);
-							if (weapon_object != nullptr)
-							{
-								CWeapon* weapon = weapon_object->cast_weapon();
-								if (weapon != nullptr)
-								{
-									float fly_dist = bullet->fly_dist + dist;
-									float dist_factor = _min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
-									ahp = dist_factor * weapon->hit_probability() + (1.f - dist_factor) * 1.f;
-								}
-							}
-#	else
+
 							float game_difficulty_hit_probability = actor->HitProbability();
 							CAI_Stalker* stalker_ = initiator != nullptr ? initiator->cast_stalker() : nullptr;
 							if (stalker_ != nullptr)
@@ -121,18 +106,7 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 							}
 
 							ahp = dist_factor * game_difficulty_hit_probability + (1.f - dist_factor) * 1.f;
-#	endif
-#else
-							CAI_Stalker* i_stalker = initiator != nullptr ? initiator->cast_stalker() : nullptr;
-							// если стрелял сталкер, учитываем - hit_probability_factor сталкерa иначе - 1.0
-							if (i_stalker != nullptr)
-							{
-								hpf = i_stalker->SpecificCharacter().hit_probability_factor();
-								float fly_dist = bullet->fly_dist + dist;
-								float dist_factor = _min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
-								ahp = dist_factor * actor->HitProbability() + (1.f - dist_factor) * 1.f;
-							}
-#endif
+							
 							if (Random.randF(0.f, 1.f) > (ahp * hpf))
 							{
 								bRes = false;	// don't hit actor
@@ -168,7 +142,6 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 						// don't test this object again (return false)
 						bRes = false;
 					}
-
 				}
 			}
 		}
