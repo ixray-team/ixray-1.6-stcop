@@ -48,10 +48,6 @@ bool IGameGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>&
 
 		if (!VertexTypes||VertexTypes->empty()) 
 		{
-		#ifndef MASTER_GOLD
-			Msg("! warning : empty vertex types");
-		#endif // MASTER_GOLD
-
 			return true;
 		}
 
