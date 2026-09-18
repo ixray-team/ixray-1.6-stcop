@@ -651,14 +651,6 @@ void CWeapon::Load		(const char* section)
 	LoadVector(m_bScopeHideBones, "no_scope_overriding_hide_bones");
 	LoadVector(m_sCollimatorSightsBones, "collimator_sights_bones");
 
-	Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
-	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "collimator_breaking_params", tmp_vector);
-	CollimatorBreakingParams.start_condition = tmp_vector.x;
-	CollimatorBreakingParams.end_condition = tmp_vector.y;
-	CollimatorBreakingParams.start_probability = tmp_vector.z;
-
-	m_fCollimatorLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "collimator_problems_level", 0.0f);
-
 	m_fRechargeTime = READ_IF_EXISTS(pSettings, r_float, section, "recharge_time", 0.0f);
 
 	m_bGaussScheme = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_gauss_scheme", false);
@@ -1461,8 +1453,6 @@ void CWeapon::UpdateCL		()
 	{
 		ForceUpdateHUD();
 	}
-
-	UpdateCollimatorSight();
 
 	if (THudLightTorch* LightTorch = GetComponent<THudLightTorch>())
 	{
@@ -4774,60 +4764,6 @@ bool CWeapon::GetScopeBack()
 	}
 
 	return !!READ_IF_EXISTS(pSettings, r_bool, ScopeAttachable() ? GetScopeName() : cNameSect(), "scope_back", false);
-}
-
-void CWeapon::UpdateCollimatorSight()
-{
-	if (!ParentIsActor())
-		return;
-
-	if (HudItemData() == nullptr)
-		return;
-
-	if (m_sCollimatorSightsBones.empty())
-		return;
-
-	conditional_breaking_params bp = CollimatorBreakingParams;
-	float current_problems_cnt = Level().GetElectronicsProblemsManager()->CurrentElectronicsProblemsCnt();
-
-	if (GetCondition() < bp.end_condition)
-	{
-		for (auto& bone : m_sCollimatorSightsBones)
-		{
-			HudItemData()->set_bone_visible(bone, false, true);
-		}
-	}
-	else if (GetCondition() < bp.start_condition || current_problems_cnt > 0.0f)
-	{
-		float probability = 0.0f;
-		float probability2 = 0.0f;
-
-		if (bp.start_condition == bp.end_condition)
-			probability = bp.end_condition;
-		else
-			probability = bp.start_probability + (bp.start_condition - GetCondition()) * (1.0f - bp.start_probability) / (bp.start_condition - bp.end_condition);
-
-		const int collimProblemsCnt = m_fCollimatorLevelsProblem;
-		if (current_problems_cnt > 0 && collimProblemsCnt > 0.0f)
-		{
-			if (current_problems_cnt >= collimProblemsCnt)
-				probability = 1.0f;
-			else
-			{
-				probability2 = current_problems_cnt / collimProblemsCnt;
-				probability = std::max(probability2, probability);
-			}
-		}
-
-		for (auto& bone : m_sCollimatorSightsBones)
-		{
-			HudItemData()->set_bone_visible(bone, !(::Random.randF(0.0f, 1.0f) < probability), true);
-		}
-	}
-	else for (auto& bone : m_sCollimatorSightsBones)
-	{
-		HudItemData()->set_bone_visible(bone, true, true);
-	}
 }
 
 u32 CWeapon::FakeReload()
