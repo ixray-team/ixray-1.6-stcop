@@ -33,6 +33,7 @@ private:
 	typedef xr_map<dxRender_Visual*,shared_str>					REGISTRY;
 	typedef REGISTRY::iterator									REGISTRY_IT;
 private:
+	xrSRWLock ModelsSRWLock;
 	xr_vector<ModelDef>			Models;				// Reference / Base
 	xr_vector<dxRender_Visual*>	ModelsToDelete;		// 
 	xr_set<dxRender_Visual*>	ModelsToDeleteDeffer;		// 

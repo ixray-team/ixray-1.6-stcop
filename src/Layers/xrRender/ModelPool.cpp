@@ -124,12 +124,15 @@ dxRender_Visual*	CModelPool::Instance_Duplicate	(dxRender_Visual* V)
 	N->Copy			(V);
 	N->Spawn		();
     // inc ref counter
-	for (xr_vector<ModelDef>::iterator I=Models.begin(); I!=Models.end(); I++) 
-		if (I->model==V)
-		{ 
-			I->refs++; 
+	xrSRWLockGuard g(ModelsSRWLock);
+	for (auto& elem : Models)
+	{
+		if (elem.model == V)
+		{
+			elem.refs++;
 			break;
 		}
+	}
 	return N;
 }
 
@@ -213,6 +216,7 @@ void CModelPool::Instance_Register(const char* N, dxRender_Visual* V)
 	ModelDef			M;
 	M.name				= N;
 	M.model				= V;
+	xrSRWLockGuard g(ModelsSRWLock);
 	Models.push_back	(M);
 }
 
@@ -234,15 +238,15 @@ void CModelPool::Destroy()
 	}
 
 	// Base/Reference
-	xr_vector<ModelDef>::iterator	I = Models.begin();
-	xr_vector<ModelDef>::iterator	E = Models.end();
-	for (; I!=E; I++)
 	{
-		I->model->Release();
-		xr_delete(I->model);
+		xrSRWLockGuard g(ModelsSRWLock);
+		for (auto& elem : Models)
+		{
+			elem.model->Release();
+			xr_delete(elem.model);
+		}
+		Models.clear();
 	}
-	
-	Models.clear();
 
 	// cleanup motions container
 	g_pMotionsContainer->clean(false);
@@ -263,12 +267,12 @@ CModelPool::~CModelPool()
 
 dxRender_Visual* CModelPool::Instance_Find(const char* N)
 {
-	dxRender_Visual*				Model=nullptr;
-	xr_vector<ModelDef>::iterator	I;
-	for (I=Models.begin(); I!=Models.end(); I++)
+	dxRender_Visual* Model=nullptr;
+	xrSRWLockGuard g(ModelsSRWLock, true);
+	for (auto elem : Models)
 	{
-		if (I->name[0]&&(0==xr_strcmp(*I->name,N))) {
-			Model = I->model;
+		if (elem.name[0]&&(0==xr_strcmp(*elem.name,N))) {
+			Model = elem.model;
 			break;
 		}
 	}
@@ -433,6 +437,7 @@ void CModelPool::Discard(dxRender_Visual*& V, bool b_complete)
 	{
 		// Base
 		const shared_str& name = it->second;
+		xrSRWLockGuard g(ModelsSRWLock);
 		xr_vector<ModelDef>::iterator I = Models.begin();
 		xr_vector<ModelDef>::iterator I_e = Models.end();
 
