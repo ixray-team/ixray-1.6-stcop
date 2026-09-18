@@ -481,7 +481,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("cast_Torch", &CScriptGameObject::cast_Torch)
 		.def("cast_InventoryBox", &CScriptGameObject::cast_InventoryBox)
 
-		.def("cast_CHelmet", &CScriptGameObject::cast_CHelmet)
+		.def("cast_Helmet", &CScriptGameObject::cast_CHelmet)
 		.def("cast_AntigasFilter", &CScriptGameObject::cast_AntigasFilter)
 
 		.def("bones_protection_sect", &CScriptGameObject::bones_protection_sect)	
