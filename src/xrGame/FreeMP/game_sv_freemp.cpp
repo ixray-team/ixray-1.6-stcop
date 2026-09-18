@@ -58,7 +58,7 @@ void game_sv_freemp::SpawnItemToActor(u16 actorId, const char* name)
 	if (pWeapon)
 	{
 		u16 ammo_magsize = pWeapon->get_ammo_magsize();
-		pWeapon->a_elapsed = ammo_magsize;
+		pWeapon->a_elapsed.MagazineElapsed = ammo_magsize;
 	}
 
 	CSE_ALifeItemPDA* pPda = E->cast_item_pda();

@@ -172,7 +172,7 @@ public:
 
 	enum { undefined_ammo_type = u8(-1) };
 
-	IC bool					IsValid				()	const		{	return iAmmoElapsed;						}
+	IC bool					IsValid				()	const		{	return AmmoElapsed.MagazineElapsed;						}
 	// Does weapon need's update?
 	bool					IsUpdating			();
 
@@ -784,15 +784,15 @@ protected:
 	int						GetAmmoCount		(u8 ammo_type) const;
 
 public:
-	IC int					GetAmmoElapsed		()	const		{ return iAmmoElapsed; }
-	virtual int				GetCurrentElapsed	(bool for_grenade_mode = false)	const { return iAmmoElapsed; }
+	IC int					GetAmmoElapsed		()	const		{ return AmmoElapsed.MagazineElapsed; }
+	virtual int				GetCurrentElapsed	(bool for_grenade_mode = false)	const { return AmmoElapsed.MagazineElapsed; }
 	int						GetAmmoChamberElapsed()	const		{ return iAmmoChamberElapsed; }
 	IC int					GetAmmoMagSize		()	const		{ return iMagazineSize; }
 	bool					IsChamber			()  const		{ return m_bAmmoInChamber; }
-	bool					IsChangeAmmoType	()	const		{ return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
+	bool					IsChangeAmmoType	()	const		{ return (m_set_next_ammoType_on_reload != undefined_ammo_type || AmmoType.MagazineType == m_set_next_ammoType_on_reload); }
 
 	virtual u8				GetTargetAmmoType(bool for_grenade_mode = false) const { return m_set_next_ammoType_on_reload != undefined_ammo_type ? m_set_next_ammoType_on_reload : GetAmmoType(for_grenade_mode); }
-	virtual u8				GetAmmoType(bool for_grenade_mode = false) const { return m_ammoType; }
+	virtual u8				GetAmmoType(bool for_grenade_mode = false) const { return AmmoType.MagazineType; }
 	u8						GetSetNextAmmoType() const { return m_set_next_ammoType_on_reload; }
 
 	void SetAmmoMagSize(int size);
@@ -829,7 +829,6 @@ public:
 	virtual void OnChangeVisual() final override;
 
 protected:
-	int						iAmmoElapsed = 0;		// ammo in magazine, currently
 	int						iMagazineSize = 0;		// size (in bullets) of magazine
 
 	int						iAmmoChamberElapsed = 0;
@@ -851,29 +850,42 @@ protected:
 public:
 	virtual const xr_vector<shared_str>& getAmmoTypes(bool for_grenade_mode = false) const { return m_ammoTypes; }
 	xr_vector<shared_str>	m_ammoTypes;
-/*
-	struct SScopes
-	{
-		shared_str			m_sScopeName;
-		int					m_iScopeX;
-		int					m_iScopeY;
-	};
 
-	using SCOPES_VECTOR = xr_vector<SScopes*>;
-	using SCOPES_VECTOR_IT = SCOPES_VECTOR::iterator;
-	
-	SCOPES_VECTOR			m_scopes;
-
-	u8						cur_scope;
-*/
 	using SCOPES_VECTOR = xr_vector<shared_str>;
 	using SCOPES_VECTOR_IT = SCOPES_VECTOR::iterator;
 
 	SCOPES_VECTOR			m_scopes = {};
 	u8						m_cur_scope = 0;
 
+	struct AmmoElapsedType
+	{
+		union
+		{
+			u16 data = 0;
+
+			struct
+			{
+				u16 MagazineElapsed : 8;
+				u16 GrenadeElapsed : 8;
+			};
+		};
+	} AmmoElapsed;
+
+	struct AmmoTypesType
+	{
+		union
+		{
+			u8 data = 0;
+
+			struct
+			{
+				u8 MagazineType : 4;
+				u8 GrenadeType : 4;
+			};
+		};
+	} AmmoType;
+
 	CWeaponAmmo*			m_pCurrentAmmo = nullptr;
-	u8						m_ammoType = 0;
 	u8						m_ChamberAmmoType = 0;
 //-	shared_str				m_ammoName; <== deleted
 	bool					m_bHasTracers;
@@ -902,8 +914,8 @@ public:
 	
 	virtual void			set_ef_main_weapon_type(u32 type){ m_ef_main_weapon_type = type; };
 	virtual void			set_ef_weapon_type(u32 type){ m_ef_weapon_type = type; };
-	virtual void			SetAmmoType(u8 type) { m_ammoType = type; };
-	u8						GetAmmoType() { return m_ammoType; };
+	virtual void			SetAmmoType(u8 type) { AmmoType.MagazineType = type; };
+	u8						GetAmmoType() { return AmmoType.MagazineType; };
 
 protected:
 	// This is because when scope is attached we can't ask scope for these params

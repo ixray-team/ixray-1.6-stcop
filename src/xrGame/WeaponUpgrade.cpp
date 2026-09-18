@@ -64,7 +64,7 @@ bool CWeapon::install_upgrade_ammo_class(const char* section, bool test)
 			_GetItem(str, i, ammoItem);
 			m_ammoTypes.push_back(ammoItem);
 		}
-		m_ammoType = 0;
+		AmmoType.MagazineType = 0;
 	}
 	result |= result2;
 

@@ -135,7 +135,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 		m_bJustAfterReload = false;
 		m_LastShotAmmoType = m_magazine.back().m_LocalAmmoType;
 		m_magazine.pop_back();
-		--iAmmoElapsed;
+		--AmmoElapsed.MagazineElapsed;
 
 		if (m_bIsPumpEnabled)
 		{
@@ -154,12 +154,12 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 
 			if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 			{
-				AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+				AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 			}
 		}
 	}
 
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 }
 
 void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
@@ -259,7 +259,7 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 
 			if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 			{
-				AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+				AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 			}
 		}
 	}
@@ -278,7 +278,7 @@ void CWeapon::StopShooting()
 
 	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 	{
-		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 	}
 
 	StopShotEffector();

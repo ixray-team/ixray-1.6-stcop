@@ -118,10 +118,12 @@ CSE_Abstract* item_respawn_manager::make_respawn_entity(shared_str const & secti
 	
 	if (pWeapon)
 	{
-		pWeapon->a_elapsed	= pWeapon->get_ammo_magsize();
+		pWeapon->a_elapsed.MagazineElapsed = pWeapon->get_ammo_magsize();
 		
-		if (count_of_ammo < pWeapon->a_elapsed)
-			pWeapon->a_elapsed = count_of_ammo;
+		if (count_of_ammo < pWeapon->a_elapsed.MagazineElapsed)
+		{
+			pWeapon->a_elapsed.MagazineElapsed = count_of_ammo;
+		}
 
 		pWeapon->m_addon_flags.assign(addons);
 	};
