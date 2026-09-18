@@ -47,7 +47,7 @@ protected:
 	virtual void	switch2_Showing();
 
 	void	OnShot() override;
-	virtual void	StopShooting() override;
+	virtual void	StopShooting();
 
 	virtual void	OnEmptyClick();
 
