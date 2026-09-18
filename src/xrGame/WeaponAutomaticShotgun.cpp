@@ -133,7 +133,7 @@ void CWeaponAutomaticShotgun::Reload()
 		bMisfireReload = true;
 	}
 
-	bool empty_reload = m_bUseMosinScheme && !IsScopeAttached() && iAmmoChamberElapsed + iAmmoElapsed == 0 && HaveCartridgeInInventory(GetMagCapacity());
+	bool empty_reload = m_bUseMosinScheme && !IsScopeAttached() && iAmmoChamberElapsed + AmmoElapsed.MagazineElapsed == 0 && HaveCartridgeInInventory(GetMagCapacity());
 
 	if (empty_reload)
 	{
@@ -208,7 +208,7 @@ void CWeaponAutomaticShotgun::switch2_StartReload()
 
 	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 	{
-		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 	}
 
 	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
@@ -219,7 +219,7 @@ void CWeaponAutomaticShotgun::switch2_StartReload()
 	PlayAnimOpenWeapon();
 	SetPending(true);
 
-	if (ParentIsActor() && m_sounds.FindSoundItem("sndOpenEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	if (ParentIsActor() && m_sounds.FindSoundItem("sndOpenEmpty", false) && AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed == 0)
 	{
 		PlaySound("sndOpenEmpty", get_LastFP());
 	}
@@ -233,7 +233,7 @@ void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 {
 	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 	{
-		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, GetTargetAmmoType());
+		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 	}
 
 	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
@@ -242,7 +242,7 @@ void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 	}
 	m_bIsReloaded = false;
 
-	if (ParentIsActor() && m_sounds.FindSoundItem("sndAddCartridgeEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	if (ParentIsActor() && m_sounds.FindSoundItem("sndAddCartridgeEmpty", false) && AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed == 0)
 	{
 		PlaySound("sndAddCartridgeEmpty", get_LastFP());
 	}
@@ -263,7 +263,7 @@ void CWeaponAutomaticShotgun::switch2_EndReload()
 {
 	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 	{
-		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, GetTargetAmmoType());
+		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 	}
 
 	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
@@ -274,7 +274,7 @@ void CWeaponAutomaticShotgun::switch2_EndReload()
 
 	PlayAnimCloseWeapon();
 
-	if (ParentIsActor() && m_sounds.FindSoundItem("sndCloseEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	if (ParentIsActor() && m_sounds.FindSoundItem("sndCloseEmpty", false) && AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed == 0)
 	{
 		PlaySound("sndCloseEmpty", get_LastFP());
 	}
@@ -294,7 +294,7 @@ shared_str CWeaponAutomaticShotgun::SelectOpenWeaponAnimation()
 
 	if (ParentIsActor())
 	{
-		if (iAmmoElapsed + iAmmoChamberElapsed == 0)
+		if (AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed == 0)
 		{
 			AddSuffixName(anim, "_empty");
 			m_bIsPreloaded = true;
@@ -326,7 +326,7 @@ shared_str CWeaponAutomaticShotgun::SelectAddCartridgeWeaponAnimation()
 
 	if (ParentIsActor())
 	{
-		if (iAmmoElapsed + iAmmoChamberElapsed == 0)
+		if (AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed == 0)
 		{
 			AddSuffixName(anim, "_empty");
 		}
@@ -358,7 +358,7 @@ shared_str CWeaponAutomaticShotgun::SelectCloseWeaponAnimation()
 			m_bIsPreloaded = false;
 		}
 
-		if (iAmmoElapsed + iAmmoChamberElapsed >= GetMagCapacity() && AddSuffixName(anim, "_final"))
+		if (AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed >= GetMagCapacity() && AddSuffixName(anim, "_final"))
 		{
 			m_bJustAfterReload = true;
 		}
@@ -448,7 +448,7 @@ void CWeaponAutomaticShotgun::OnMotionMark(u8 state, const motion_marks& mark)
 	{
 		if (m_sub_state == EWeaponSubStates::eSubstateReloadBegin)
 		{
-			if (iAmmoElapsed < GetMagCapacity())
+			if (AmmoElapsed.MagazineElapsed < GetMagCapacity())
 			{
 				m_bIsReloaded = true;
 				AddCartridge(1);
@@ -456,7 +456,7 @@ void CWeaponAutomaticShotgun::OnMotionMark(u8 state, const motion_marks& mark)
 		}
 		else if (m_sub_state == EWeaponSubStates::eSubstateReloadInProcess)
 		{
-			if (iAmmoElapsed < GetMagCapacity())
+			if (AmmoElapsed.MagazineElapsed < GetMagCapacity())
 			{
 				m_bIsReloaded = true;
 				AddCartridge(1);
@@ -466,7 +466,7 @@ void CWeaponAutomaticShotgun::OnMotionMark(u8 state, const motion_marks& mark)
 
 	if (ParentIsActor() && state == eReload && m_bTriStateReload && mark.name == "Left")
 	{
-		u32 current_configuration = iAmmoElapsed + 1;
+		u32 current_configuration = AmmoElapsed.MagazineElapsed + 1;
 
 		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 		{

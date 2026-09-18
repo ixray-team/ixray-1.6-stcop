@@ -18,14 +18,14 @@ bool CWeaponRG6::net_Spawn(CSE_Abstract* DC)
 	bool l_res = inheritedSG::net_Spawn(DC);
 	if (!l_res) return l_res;
 
-	if (iAmmoElapsed && !getCurrentRocket())
+	if (AmmoElapsed.MagazineElapsed && !getCurrentRocket())
 	{
 		shared_str grenade_name = m_ammoTypes[0];
 		shared_str fake_grenade_name = pSettings->r_string(grenade_name, "fake_grenade_name");
 
 		if (fake_grenade_name.size())
 		{
-			int k = iAmmoElapsed;
+			int k = AmmoElapsed.MagazineElapsed;
 			while (k)
 			{
 				k--;
@@ -112,7 +112,7 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 
 	if (infinite_fire())
 	{
-		shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
+		shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name");
 		inheritedRL::SpawnRocket(*fake_grenade_name, this);
 	}
 }
@@ -130,16 +130,16 @@ void CWeaponRG6::ReloadMagazine()
 
 	if (m_set_next_ammoType_on_reload != undefined_ammo_type)
 	{
-		m_ammoType = m_set_next_ammoType_on_reload;
+		AmmoType.MagazineType = m_set_next_ammoType_on_reload;
 		m_set_next_ammoType_on_reload = undefined_ammo_type;
 	}
 
 	if (!unlimited_ammo())
 	{
-		if (m_ammoTypes.size() <= m_ammoType)
+		if (m_ammoTypes.size() <= AmmoType.MagazineType)
 			return;
 
-		const char* tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
+		const char* tmp_sect_name = m_ammoTypes[AmmoType.MagazineType].c_str();
 
 		if (!tmp_sect_name)
 			return;
@@ -158,7 +158,7 @@ void CWeaponRG6::ReloadMagazine()
 
 				if (m_pCurrentAmmo)
 				{
-					m_ammoType = i;
+					AmmoType.MagazineType = i;
 					break;
 				}
 			}
@@ -174,40 +174,40 @@ void CWeaponRG6::ReloadMagazine()
 			*m_magazine.back().m_ammoSect)))
 		UnloadMagazine();
 
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 
-	if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
-		m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), m_ammoType);
+	if (m_DefaultCartridge.m_LocalAmmoType != AmmoType.MagazineType)
+		m_DefaultCartridge.Load(m_ammoTypes[AmmoType.MagazineType].c_str(), AmmoType.MagazineType);
 	CCartridge l_cartridge = m_DefaultCartridge;
 
-	shared_str fake_grenade_name = pSettings->r_string(*m_ammoTypes[m_ammoType], "fake_grenade_name");
+	shared_str fake_grenade_name = pSettings->r_string(*m_ammoTypes[AmmoType.MagazineType], "fake_grenade_name");
 
-	while (iAmmoElapsed < iMagazineSize)
+	while (AmmoElapsed.MagazineElapsed < iMagazineSize)
 	{
 		if (!unlimited_ammo())
 		{
 			if (!m_pCurrentAmmo->Get(l_cartridge)) break;
 		}
-		++iAmmoElapsed;
-		l_cartridge.m_LocalAmmoType = m_ammoType;
+		++AmmoElapsed.MagazineElapsed;
+		l_cartridge.m_LocalAmmoType = AmmoType.MagazineType;
 		m_magazine.push_back(l_cartridge);
 		inheritedRL::SpawnRocket(*fake_grenade_name, this);
 	}
 
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 
 	//выкинуть коробку патронов, если она пустая
 	if (m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer())
 		m_pCurrentAmmo->SetDropManual(true);
 
-	if (iMagazineSize > iAmmoElapsed)
+	if (iMagazineSize > AmmoElapsed.MagazineElapsed)
 	{
 		m_bLockType = true;
 		ReloadMagazine();
 		m_bLockType = false;
 	}
 
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 }
 
 void CWeaponRG6::UnloadMagazine(bool spawn_ammo)
@@ -224,7 +224,7 @@ u8 CWeaponRG6::AddCartridge		(u8 cnt)
 {
 	u8 t = inheritedSG::AddCartridge(cnt);
 	u8 k = cnt-t;
-	shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
+	shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name");
 	while(k){
 		--k;
 		inheritedRL::SpawnRocket(*fake_grenade_name, this);
@@ -255,7 +255,7 @@ void CWeaponRG6::OnEvent(NET_Packet& P, u16 type)
 static u32 iDoReloadElapsed = 0;
 void CWeaponRG6::PlayAnimOpenWeapon()
 {
-	iDoReloadElapsed = iAmmoElapsed;
+	iDoReloadElapsed = AmmoElapsed.MagazineElapsed;
 	inheritedSG::PlayAnimOpenWeapon();
 }
 
@@ -264,7 +264,7 @@ void CWeaponRG6::PlayAnimAddOneCartridgeWeapon()
 	if (m_bAlternateReloadScheme)
 	{
 		shared_str anm;
-		anm.printf("anm_add_cartridge_%d_%d", iDoReloadElapsed, iAmmoElapsed + 1);
+		anm.printf("anm_add_cartridge_%d_%d", iDoReloadElapsed, AmmoElapsed.MagazineElapsed + 1);
 		PlayHUDMotion(anm, EHudMixType::eNoMix, GetState());
 	}
 	else

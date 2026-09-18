@@ -455,7 +455,7 @@ CSE_Abstract* try_to_clone_object(CALifeSimulator* self, CSE_Abstract* object, c
 		clone->wpn_flags = wpnmag->wpn_flags;
 		clone->m_addon_flags = wpnmag->m_addon_flags;
 		clone->m_fCondition = wpnmag->m_fCondition;
-		clone->ammo_type = wpnmag->ammo_type;
+		clone->a_ammo_type = wpnmag->a_ammo_type;
 		clone->m_upgrades = wpnmag->m_upgrades;
 		clone->a_elapsed = wpnmag->a_elapsed;
 

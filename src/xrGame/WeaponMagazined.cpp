@@ -561,7 +561,7 @@ void CWeaponMagazined::FireStart()
 				SwitchState(ePump);
 			}
 		}
-		else if (iAmmoElapsed + iAmmoChamberElapsed > 0)
+		else if (AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed > 0)
 		{
 			if (!IsWorking() || AllowFireWhileWorking())
 			{
@@ -684,7 +684,7 @@ void CWeaponMagazined::FireEnd()
 	const static bool isAutoreload = EngineExternal()[EEngineExternalGame::EnableAutoreload];
 	if (isAutoreload && H_Parent())
 	{
-		bool is_empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+		bool is_empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : AmmoElapsed.MagazineElapsed == 0;
 		if (m_pInventory && is_empty && H_Parent()->cast_actor() && GetState() != eReload)
 		{
 			Reload();
@@ -708,7 +708,7 @@ bool CWeaponMagazined::TryReload()
 			Actor()->callback(GameObject::eWeaponNoAmmoAvailable)(lua_game_object(), AC);
 		}
 
-		PIItem get_any = m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str());
+		PIItem get_any = m_pInventory->GetAny(m_ammoTypes[AmmoType.MagazineType].c_str());
 
 		m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
 
@@ -725,7 +725,7 @@ bool CWeaponMagazined::TryReload()
 			SwitchState(eReload);
 			return true;
 		}
-		else if (m_set_next_ammoType_on_reload == undefined_ammo_type && iAmmoElapsed + (IsGrenadeMode() ? 0 : iAmmoChamberElapsed) == 0 || m_set_next_ammoType_on_reload != undefined_ammo_type)
+		else if (m_set_next_ammoType_on_reload == undefined_ammo_type && AmmoElapsed.MagazineElapsed + (IsGrenadeMode() ? 0 : iAmmoChamberElapsed) == 0 || m_set_next_ammoType_on_reload != undefined_ammo_type)
 		{
 			for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 			{
@@ -797,7 +797,7 @@ bool CWeaponMagazined::TryReloadChamber()
 
 bool CWeaponMagazined::IsAmmoAvailable()
 {
-	PIItem get_any = m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str());
+	PIItem get_any = m_pInventory->GetAny(m_ammoTypes[AmmoType.MagazineType].c_str());
 
 	if (get_any != nullptr && get_any->cast_weapon_ammo())
 	{
@@ -839,10 +839,10 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 
 		if(l_it == l_ammo.end()) l_ammo[l_cartridge.m_ammoSect] = 1;
 		m_magazine.pop_back(); 
-		--iAmmoElapsed;
+		--AmmoElapsed.MagazineElapsed;
 	}
 
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 
 	if (spawn_ammo)
 	{
@@ -884,7 +884,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	{
 		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 		{
-			AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, m_ammoType);
+			AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, AmmoType.MagazineType);
 		}
 
 		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
@@ -910,18 +910,18 @@ void CWeaponMagazined::ReloadMagazine()
 
 	if ( m_set_next_ammoType_on_reload != undefined_ammo_type )
 	{
-		m_ammoType						= m_set_next_ammoType_on_reload;
+		AmmoType.MagazineType						= m_set_next_ammoType_on_reload;
 		m_set_next_ammoType_on_reload	= undefined_ammo_type;
 	}
 	
 	if (!unlimited_ammo())
 	{
-		if (m_ammoTypes.size() <= m_ammoType)
+		if (m_ammoTypes.size() <= AmmoType.MagazineType)
 		{
 			return;
 		}
 
-		const char* tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
+		const char* tmp_sect_name = m_ammoTypes[AmmoType.MagazineType].c_str();
 
 		if (!tmp_sect_name)
 		{
@@ -941,7 +941,7 @@ void CWeaponMagazined::ReloadMagazine()
 				m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
 				if (m_pCurrentAmmo)
 				{
-					m_ammoType = i;
+					AmmoType.MagazineType = i;
 					break;
 				}
 			}
@@ -957,30 +957,30 @@ void CWeaponMagazined::ReloadMagazine()
 					 *m_magazine.back().m_ammoSect)))
 		UnloadMagazine();
 
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 
-	if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
-		m_DefaultCartridge.Load( m_ammoTypes[m_ammoType].c_str(), m_ammoType );
+	if (m_DefaultCartridge.m_LocalAmmoType != AmmoType.MagazineType)
+		m_DefaultCartridge.Load( m_ammoTypes[AmmoType.MagazineType].c_str(), AmmoType.MagazineType );
 
 	CCartridge l_cartridge = m_DefaultCartridge;
-	while(iAmmoElapsed < iMagazineSize)
+	while(AmmoElapsed.MagazineElapsed < iMagazineSize)
 	{
 		if (!unlimited_ammo())
 		{
 			if (!m_pCurrentAmmo->Get(l_cartridge)) break;
 		}
-		++iAmmoElapsed;
-		l_cartridge.m_LocalAmmoType = m_ammoType;
+		++AmmoElapsed.MagazineElapsed;
+		l_cartridge.m_LocalAmmoType = AmmoType.MagazineType;
 		m_magazine.push_back(l_cartridge);
 	}
 
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 
 	//выкинуть коробку патронов, если она пустая
 	if(m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer()) 
 		m_pCurrentAmmo->SetDropManual(true);
 
-	if(iMagazineSize > iAmmoElapsed) 
+	if(iMagazineSize > AmmoElapsed.MagazineElapsed) 
 	{ 
 		m_bLockType = true; 
 		ReloadMagazine(); 
@@ -991,7 +991,7 @@ void CWeaponMagazined::ReloadMagazine()
 	{
 		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 		{
-			AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, m_ammoType);
+			AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, AmmoType.MagazineType);
 		}
 
 		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
@@ -1000,7 +1000,7 @@ void CWeaponMagazined::ReloadMagazine()
 		}
 	}
 
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 }
 
 bool CWeaponMagazined::HaveCartridgeInInventory(u8 cnt)
@@ -1017,11 +1017,11 @@ bool CWeaponMagazined::HaveCartridgeInInventory(u8 cnt)
 
 	u32 ac = GetAmmoCount(GetTargetAmmoType());
 
-	if (m_set_next_ammoType_on_reload == undefined_ammo_type && ac < cnt && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	if (m_set_next_ammoType_on_reload == undefined_ammo_type && ac < cnt && AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed == 0)
 	{
 		for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 		{
-			if (m_ammoType == i)
+			if (AmmoType.MagazineType == i)
 			{
 				continue;
 			}
@@ -1048,7 +1048,7 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 
 	if (m_set_next_ammoType_on_reload != undefined_ammo_type)
 	{
-		m_ammoType = m_set_next_ammoType_on_reload;
+		AmmoType.MagazineType = m_set_next_ammoType_on_reload;
 		m_set_next_ammoType_on_reload = undefined_ammo_type;
 	}
 
@@ -1057,14 +1057,14 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 		return 0;
 	}
 
-	PIItem get_any = m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str());
+	PIItem get_any = m_pInventory->GetAny(m_ammoTypes[AmmoType.MagazineType].c_str());
 	m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
 
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 
-	if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
+	if (m_DefaultCartridge.m_LocalAmmoType != AmmoType.MagazineType)
 	{
-		m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), m_ammoType);
+		m_DefaultCartridge.Load(m_ammoTypes[AmmoType.MagazineType].c_str(), AmmoType.MagazineType);
 	}
 
 	CCartridge l_cartridge = m_DefaultCartridge;
@@ -1079,12 +1079,12 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 		}
 
 		--cnt;
-		++iAmmoElapsed;
-		l_cartridge.m_LocalAmmoType = m_ammoType;
+		++AmmoElapsed.MagazineElapsed;
+		l_cartridge.m_LocalAmmoType = AmmoType.MagazineType;
 		m_magazine.push_back(l_cartridge);
 	}
 
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 
 	if (m_pCurrentAmmo != nullptr && !m_pCurrentAmmo->m_boxCurr && OnServer())
 	{
@@ -1310,7 +1310,7 @@ void CWeaponMagazined::UpdateSounds	()
 
 void CWeaponMagazined::state_Fire(float dt)
 {
-	if(iAmmoElapsed > 0)
+	if(AmmoElapsed.MagazineElapsed > 0)
 	{
 		VERIFY(fOneShotTime>0.f);
 
@@ -1395,11 +1395,11 @@ void CWeaponMagazined::state_Fire(float dt)
 
 				if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 				{
-					AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+					AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 				}
 			}
 
-			if (cast_weapon_bm16() && iAmmoElapsed == 2 && GetQueueSize() == 2)
+			if (cast_weapon_bm16() && AmmoElapsed.MagazineElapsed == 2 && GetQueueSize() == 2)
 			{
 				for (u8 i = 0; i < 2; i++)
 				{
@@ -1449,7 +1449,7 @@ void CWeaponMagazined::state_Fire(float dt)
 		UpdateSounds			();
 	}
 
-	if (iAmmoElapsed == 0 ||
+	if (AmmoElapsed.MagazineElapsed == 0 ||
 		(m_iQueueSize > 0 && m_iShotNum >= m_iQueueSize) ||
 		!IsWorking() && H_Parent())
 	{
@@ -1458,14 +1458,14 @@ void CWeaponMagazined::state_Fire(float dt)
 
 	if (fShotTimeCounter < 0)
 	{
-		if (iAmmoElapsed == 0)
+		if (AmmoElapsed.MagazineElapsed == 0)
 		{
 			OnMagazineEmpty();
 		}
 
 		if (ParentIsActor())
 		{
-			if (m_bStopedAfterQueueFired || iAmmoElapsed == 0)
+			if (m_bStopedAfterQueueFired || AmmoElapsed.MagazineElapsed == 0)
 			{
 				StopShooting();
 				SetPending(false);
@@ -1856,7 +1856,7 @@ void CWeaponMagazined::OnShot()
 	{
 		if (CGameObject* object = H_Parent()->cast_game_object())
 		{
-			object->callback(GameObject::eOnWeaponFired)(object->lua_game_object(), this->lua_game_object(), iAmmoElapsed, m_ammoType);
+			object->callback(GameObject::eOnWeaponFired)(object->lua_game_object(), this->lua_game_object(), (u16)AmmoElapsed.MagazineElapsed, (u8)AmmoType.MagazineType);
 		}
 	}
 }
@@ -1896,7 +1896,7 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 				bMisfireReload = false;
 				m_bJustAfterReload = true;
 
-				if (NeedMisfireAmmo && iAmmoElapsed + iAmmoChamberElapsed > 0)
+				if (NeedMisfireAmmo && AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed > 0)
 				{
 					if (m_bAmmoInChamber)
 					{
@@ -1905,7 +1905,7 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 					}
 					else
 					{
-						SetAmmoElapsed(iAmmoElapsed - 1);
+						SetAmmoElapsed(AmmoElapsed.MagazineElapsed - 1);
 					}
 				}
 			}
@@ -2170,7 +2170,7 @@ void CWeaponMagazined::PlayReloadSound()
 		return;
 	}
 
-	s32 elapsed = iAmmoElapsed + iAmmoChamberElapsed;
+	s32 elapsed = AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed;
 	if (m_bUseRevolverScheme)
 	{
 		const shared_str name = shared_str().printf("sndReloadR%d", elapsed);
@@ -2182,7 +2182,7 @@ void CWeaponMagazined::PlayReloadSound()
 		}
 	}
 
-	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : AmmoElapsed.MagazineElapsed == 0;
 	CActor* actor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr;
 	bool detector = actor != nullptr && actor->GetDevice() != nullptr;
 
@@ -2260,7 +2260,7 @@ void CWeaponMagazined::switch2_Bore()
 	{
 		PlaySound("sndBoreMis", root->Position());
 	}
-	else if (iAmmoChamberElapsed + iAmmoElapsed == 0 && m_eSoundsFlags2.test(ESoundsFlags2::sf_bore_empty))
+	else if (iAmmoChamberElapsed + AmmoElapsed.MagazineElapsed == 0 && m_eSoundsFlags2.test(ESoundsFlags2::sf_bore_empty))
 	{
 		PlaySound("sndBoreEmpty", root->Position());
 	}
@@ -2378,7 +2378,7 @@ void CWeaponMagazined::switch2_FireMode()
 	{
 		if (CCustomDevice* Dev = pActor->GetDevice(true); Dev && (!Dev->IsHidden() || Dev->NeedActivation()))
 		{
-			bDisablePrepareAnimation = iAmmoElapsed + iAmmoChamberElapsed == 0;
+			bDisablePrepareAnimation = AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed == 0;
 			if (Dev->CanFiremode())
 			{
 				Dev->SwitchState(CCustomDevice::EDeviceStates::eHandFiremode);
@@ -2421,7 +2421,7 @@ void CWeaponMagazined::switch2_MagCheck()
 {
 	SetPending(true);
 	PlaySound("sndMagCheck", get_LastFP());
-	const shared_str anim = IsGrenadeMode() ? (iAmmoElapsed == 0 ? "anm_grenade_empty_inspect" : "anm_grenade_inspect") : "anm_magazine_inspect";
+	const shared_str anim = IsGrenadeMode() ? (AmmoElapsed.MagazineElapsed == 0 ? "anm_grenade_empty_inspect" : "anm_grenade_inspect") : "anm_magazine_inspect";
 	PlayHUDMotion(SetCurrentStateAnimation(anim), EHudMixType::eMixAll, eMagCheck);
 }
 
@@ -2448,7 +2448,7 @@ void CWeaponMagazined::switch2_ChamberLoad()
 
 	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 	{
-		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, GetTargetAmmoType());
+		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 	}
 }
 
@@ -2469,7 +2469,7 @@ void CWeaponMagazined::switch2_ChamberUnload()
 
 	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 	{
-		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, m_chamber.back().m_LocalAmmoType);
+		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, m_chamber.back().m_LocalAmmoType);
 	}
 }
 
@@ -2477,7 +2477,7 @@ void CWeaponMagazined::switch2_ChamberCheck()
 {
 	SetPending(true);
 
-	bool is_empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+	bool is_empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : AmmoElapsed.MagazineElapsed == 0;
 
 	if (m_eSoundsFlags2.test(ESoundsFlags2::sf_chamber_check_empty) && is_empty)
 	{
@@ -2513,7 +2513,7 @@ void CWeaponMagazined::switch2_ChamberCheck()
 
 	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 	{
-		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, is_empty ? undefined_ammo_type : m_bAmmoInChamber ? m_chamber.back().m_LocalAmmoType : m_magazine.back().m_LocalAmmoType);
+		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, is_empty ? undefined_ammo_type : m_bAmmoInChamber ? m_chamber.back().m_LocalAmmoType : m_magazine.back().m_LocalAmmoType);
 	}
 
 	if (TShellBones* ShellBones = GetComponent<TShellBones>())
@@ -2526,11 +2526,11 @@ shared_str CWeaponMagazined::SetCurrentPumpAnimation()
 {
 	shared_str anm = "anm_pump";
 
-	if (m_bHaveShell && iAmmoChamberElapsed + iAmmoElapsed == 0)
+	if (m_bHaveShell && iAmmoChamberElapsed + AmmoElapsed.MagazineElapsed == 0)
 	{
 		AddSuffixName(anm, "_last");
 	}
-	else if (!m_bHaveShell && (m_bAmmoInChamber && iAmmoChamberElapsed == 0 && iAmmoElapsed != 0 || iAmmoElapsed == 0))
+	else if (!m_bHaveShell && (m_bAmmoInChamber && iAmmoChamberElapsed == 0 && AmmoElapsed.MagazineElapsed != 0 || AmmoElapsed.MagazineElapsed == 0))
 	{
 		AddSuffixName(anm, "_empty");
 	}
@@ -2547,8 +2547,8 @@ void CWeaponMagazined::switch2_Pump()
 {
 	SetPending(true);
 
-	bool is_shell = m_bHaveShell && iAmmoChamberElapsed + iAmmoElapsed == 0;
-	bool is_chamber_empty = !m_bHaveShell && (m_bAmmoInChamber && iAmmoChamberElapsed == 0 && iAmmoElapsed != 0 || iAmmoElapsed == 0);
+	bool is_shell = m_bHaveShell && iAmmoChamberElapsed + AmmoElapsed.MagazineElapsed == 0;
+	bool is_chamber_empty = !m_bHaveShell && (m_bAmmoInChamber && iAmmoChamberElapsed == 0 && AmmoElapsed.MagazineElapsed != 0 || AmmoElapsed.MagazineElapsed == 0);
 
 	if (IsZoomed() && m_eSoundsFlags2.test(ESoundsFlags2::sf_pump_aim))
 	{
@@ -2612,7 +2612,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 					return false;
 				}
 
-				if ((iAmmoElapsed < GetMagCapacity() || IsMisfire()))
+				if ((AmmoElapsed.MagazineElapsed < GetMagCapacity() || IsMisfire()))
 				{
 					if (!SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfRELOAD))
 					{
@@ -3137,7 +3137,7 @@ void CWeaponMagazined::PlayAnimShow()
 void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
-	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : AmmoElapsed.MagazineElapsed == 0;
 	PlayHUDMotion(SetCurrentStateAnimation("anm_hide"), empty && HudAnimationExist("anm_close", false) && !HudAnimationExist("anm_add_cartridge", false) ? "anm_close" : SetCurrentStateAnimation("anm_holster"), EHudMixType::eMixAll, GetState());
 }
 
@@ -3149,7 +3149,7 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 	{
 		if (m_bUseRevolverScheme && !IsGrenadeMode() && !IsMisfire() && !IsChangeAmmoType())
 		{
-			if (AddSuffixName(anim, shared_str().printf("_%d", iAmmoElapsed).c_str()))
+			if (AddSuffixName(anim, shared_str().printf("_%d", AmmoElapsed.MagazineElapsed).c_str()))
 			{
 				return anim;
 			}
@@ -3169,7 +3169,7 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 			AddSuffixName(anim, "_mui");
 		}
 
-		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : AmmoElapsed.MagazineElapsed == 0;
 		if (IsMisfire())
 		{
 			AddSuffixName(anim, "_misfire");
@@ -3219,7 +3219,7 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
-		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : AmmoElapsed.MagazineElapsed == 0;
 
 		if (IsZoomed())
 		{
@@ -3283,7 +3283,7 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 
 shared_str CWeaponMagazined::SetCurrentIdleAnimation()
 {
-	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : AmmoElapsed.MagazineElapsed == 0;
 	if (empty && HudAnimationExist("anm_empty"))
 	{
 		return "anm_empty";
@@ -3304,11 +3304,11 @@ void CWeaponMagazined::PlayAnimReload()
 
 			if (m_bJamNotShot)
 			{
-				u8 type = !m_chamber.empty() ? m_chamber.back().m_LocalAmmoType : !m_magazine.empty() ? m_magazine.back().m_LocalAmmoType : m_ammoType;
+				u8 type = !m_chamber.empty() ? m_chamber.back().m_LocalAmmoType : !m_magazine.empty() ? m_magazine.back().m_LocalAmmoType : AmmoType.MagazineType;
 
 				if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 				{
-					AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type);
+					AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type);
 				}
 
 				if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
@@ -3440,7 +3440,7 @@ void CWeaponMagazined::PlayAnimIdle()
 
 shared_str CWeaponMagazined::SetCurrentShootAnimation()
 {
-	bool last = m_bAmmoInChamber ? iAmmoChamberElapsed == 1 && iAmmoElapsed == 0 : iAmmoElapsed == 1;
+	bool last = m_bAmmoInChamber ? iAmmoChamberElapsed == 1 && AmmoElapsed.MagazineElapsed == 0 : AmmoElapsed.MagazineElapsed == 1;
 	shared_str anim = HudAnimationExist("anm_shoot") ? "anm_shoot" : HudAnimationExist("anm_shot_l") && last ? "anm_shot_l" : "anm_shots";
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
@@ -3616,7 +3616,7 @@ void CWeaponMagazined::ChangeFireMode(u16 cmd)
 		return;
 	}
 
-	if (DisableEmptyFiremode && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	if (DisableEmptyFiremode && AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed == 0)
 	{
 		return;
 	}
@@ -3816,7 +3816,7 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
     }
 	
 	auto& CurrVector = m_bAmmoInChamber ? m_chamber : m_magazine;
-	u8 CurrAmmoType = m_bAmmoInChamber ? m_ChamberAmmoType : m_ammoType;
+	u8 CurrAmmoType = m_bAmmoInChamber ? m_ChamberAmmoType : AmmoType.MagazineType;
 
 	if ( ae != 0 && CurrVector.size() != 0 )
 	{
@@ -4009,7 +4009,7 @@ void CWeaponMagazined::OnMotionMark(u8 state, const motion_marks& mark)
 			bMisfire = false;
 			bMisfireReload = false;
 
-			if (NeedMisfireAmmo && iAmmoElapsed + iAmmoChamberElapsed > 0)
+			if (NeedMisfireAmmo && AmmoElapsed.MagazineElapsed + iAmmoChamberElapsed > 0)
 			{
 				if (m_bAmmoInChamber)
 				{
@@ -4018,7 +4018,7 @@ void CWeaponMagazined::OnMotionMark(u8 state, const motion_marks& mark)
 				}
 				else
 				{
-					SetAmmoElapsed(iAmmoElapsed - 1);
+					SetAmmoElapsed(AmmoElapsed.MagazineElapsed - 1);
 				}
 			}
 		}
@@ -4065,7 +4065,7 @@ void CWeaponMagazined::OnMotionMark(u8 state, const motion_marks& mark)
 			if (auto magcheck = ui->AddCustomStatic("mag_check", true))
 			{
 				int CurrMagSize = GetMagCapacity();
-				int Elapsed = iAmmoElapsed;
+				int Elapsed = AmmoElapsed.MagazineElapsed;
 
 				if (Elapsed == 0)
 				{
