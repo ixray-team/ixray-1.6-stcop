@@ -38,6 +38,7 @@ struct FaceDataEmbree
 		bOpaque = false;
 		dwMaterial	   = F.dwMaterial;
 		dwMaterialGame = F.dwMaterialGame;
+		bSharedMaterial = !!(F.flags&b_face_flags::UseSharedMaterial);
 		TC[0].set(F.t[0].x, F.t[0].y);
 		TC[1].set(F.t[1].x, F.t[1].y);
 		TC[2].set(F.t[2].x, F.t[2].y);
