@@ -399,6 +399,13 @@ void CUIActorMenu::Update()
 				if (!m_pPartnerInvOwner || !m_pPartnerInvOwner->cast_game_object() || m_pPartnerInvOwner->cast_game_object()->getDestroy())
 				{
 					g_btnHint->Discard();
+					for (u8 i = 1; i <= LAST_SLOT; ++i)
+					{
+						if (m_pInvSlotHighlight[i])
+						{
+							m_pInvSlotHighlight[i]->Show(false);
+						}
+					}
 					HideDialog();
 
 					if (m_pActorInvOwner->IsTalking())
@@ -453,10 +460,19 @@ void CUIActorMenu::CheckDistance()
 		if ((pActorGO->Position().distance_to(pPartnerGO->Position()) > 3.0f) && !m_pPartnerInvOwner->NeedOsoznanieMode())
 		{
 			g_btnHint->Discard();
+			for (u8 i = 1; i <= LAST_SLOT; ++i)
+			{
+				if (m_pInvSlotHighlight[i])
+				{
+					m_pInvSlotHighlight[i]->Show(false);
+				}
+			}
 			HideDialog();
 
 			if (m_pActorInvOwner->IsTalking())
+			{
 				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
+			}
 		}
 	}
 	else if (pBoxGO)
@@ -464,10 +480,19 @@ void CUIActorMenu::CheckDistance()
 		if (pActorGO->Position().distance_to( pBoxGO->Position() ) > 3.0f)
 		{
 			g_btnHint->Discard();
+			for (u8 i = 1; i <= LAST_SLOT; ++i)
+			{
+				if (m_pInvSlotHighlight[i])
+				{
+					m_pInvSlotHighlight[i]->Show(false);
+				}
+			}
 			HideDialog();
 
 			if (m_pActorInvOwner->IsTalking())
+			{
 				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
+			}
 		}
 	}
 }

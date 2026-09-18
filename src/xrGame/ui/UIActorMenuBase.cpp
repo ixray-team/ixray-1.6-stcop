@@ -1798,10 +1798,19 @@ bool CUIActorMenuBase::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		if ( WINDOW_KEY_PRESSED == keyboard_action )
 		{
 			g_btnHint->Discard();
+			for (u8 i = 1; i <= LAST_SLOT; ++i)
+			{
+				if (m_pInvSlotHighlight[i])
+				{
+					m_pInvSlotHighlight[i]->Show(false);
+				}
+			}
 			HideDialog();
 
 			if (GetInventoryOwner()->IsTalking())
+			{
 				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
+			}
 		}
 		return true;
 	}	
@@ -1811,10 +1820,19 @@ bool CUIActorMenuBase::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		if ( WINDOW_KEY_PRESSED == keyboard_action )
 		{
 			g_btnHint->Discard();
+			for (u8 i = 1; i <= LAST_SLOT; ++i)
+			{
+				if (m_pInvSlotHighlight[i])
+				{
+					m_pInvSlotHighlight[i]->Show(false);
+				}
+			}
 			HideDialog();
 
 			if (GetInventoryOwner()->IsTalking())
+			{
 				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
+			}
 		}
 		return true;
 	}
@@ -1996,10 +2014,19 @@ bool CUIActorMenuBase::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 		else if (is_binded(kUI_BACK, id) || is_binded(kQUIT, id))
 		{
 			g_btnHint->Discard();
+			for (u8 i = 1; i <= LAST_SLOT; ++i)
+			{
+				if (m_pInvSlotHighlight[i])
+				{
+					m_pInvSlotHighlight[i]->Show(false);
+				}
+			}
 			HideDialog();
 
 			if (GetInventoryOwner()->IsTalking())
+			{
 				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
+			}
 			return true;
 		}
 		else if (is_binded(kUI_TAB_SECONDARY_LEFT, id))
