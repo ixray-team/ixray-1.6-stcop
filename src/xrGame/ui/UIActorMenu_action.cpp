@@ -118,10 +118,19 @@ bool CUIActorMenu::AnyInfoWindowOpen() const
 void CUIActorMenu::OnBtnExitClicked(CUIWindow* w, void* d)
 {
 	g_btnHint->Discard();
+	for (u8 i = 1; i <= LAST_SLOT; ++i)
+	{
+		if (m_pInvSlotHighlight[i])
+		{
+			m_pInvSlotHighlight[i]->Show(false);
+		}
+	}
 	HideDialog();
 
 	if (m_pActorInvOwner->IsTalking())
+	{
 		CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
+	}
 }
 
 void CUIActorMenu::OnMesBoxYes( CUIWindow*, void* )
