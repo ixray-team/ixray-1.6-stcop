@@ -60,6 +60,14 @@ public:
 
 	void				ShowBackground				(bool status)				{ m_bBackgroundPresent = status; }
 	bool				IsShownBackground			()							{ return m_bBackgroundPresent; }
+	virtual void SetColor(u32 color) { m_UIProgressItem.SetTextureColor(color); }
+
+	void UseColor(bool status) { m_bUseColor = status; }
+	virtual void SetMinColor(u32 color) { m_minColor.set(color); }
+	virtual void SetMiddleColor(u32 color) { m_middleColor.set(color); }
+	virtual void SetMaxColor(u32 color) { m_maxColor.set(color); }
+	CUIStatic& GetProgressStatic() { return m_UIProgressItem; }
+	void SnapProgressPos() { m_ProgressPos.x = m_ProgressPos.y; }
 
 	virtual void		Draw						();
 	virtual void		Update						();
