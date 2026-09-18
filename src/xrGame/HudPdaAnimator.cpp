@@ -149,6 +149,11 @@ void CHudPdaAnimator::Update()
 	}
 
 	UpdateAnimation();
+	if (m_bZoomPending && GetState() == eIdle)
+	{
+		SwitchZoom();
+		m_bZoomPending = false;
+	}
 }
 
 void CHudPdaAnimator::OnAnimationEnd(u8 state)
@@ -392,6 +397,7 @@ bool CHudPdaAnimator::SwitchZoom()
 {
 	if (GetState() != eIdle)
 	{
+		m_bZoomPending = true;
 		return false;
 	}
 

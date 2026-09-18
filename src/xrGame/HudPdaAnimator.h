@@ -52,6 +52,7 @@ protected:
 	bool m_bNeedBlowoutAnim = false;
 	bool m_bIsZoomed = false;
 	bool m_bIsEnabled = false;
+	bool m_bZoomPending = false;
 
 	InertionData m_base_inertion;
 	InertionData m_zoom_inertion;
