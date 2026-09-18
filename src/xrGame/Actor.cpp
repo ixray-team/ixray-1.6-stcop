@@ -746,15 +746,15 @@ void CActor::Load	(const char* section )
 	m_burn_restore_material_speed = pSettings->read_if_exists<float>("gunslinger_base","burn_restore_material_speed",0.0f);
 	m_actor_burn_restore_speed = pSettings->read_if_exists<float>("gunslinger_base","actor_burn_restore_speed",0.000001f);
 
-	ActorShockedTime = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_shock_time", 10.0f) * 1000.0f);
-	ControllerPrepareTime = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_prepare_time", 3.0f) * 1000.0f);
-	pSettings->read_if_exists<float>(ControlledActorSpeedKoef, "gunslinger_base", "controlled_actor_speed_koef");
+	ActorShockedTime = floor(pSettings->read_if_exists<float>("gunslinger_base", "actor_shock_time", 10.0f) * 1000.0f);
+	ControllerPrepareTime = floor(pSettings->read_if_exists<float>("gunslinger_base", "controller_prepare_time", 3.0f) * 1000.0f);
+	ControlledActorSpeedKoef = pSettings->read_if_exists<float>("gunslinger_base", "controlled_actor_speed_koef", ControlledActorSpeedKoef);
 
-	ControllerMouseControl.MinSenseScale = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_mouse_sense_min", 0.1f);
-	ControllerMouseControl.MaxSenseScale = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_mouse_sense_max", 0.5f);
-	ControllerMouseControl.MinOffset = READ_IF_EXISTS(pSettings, r_s32, "gunslinger_base", "controller_mouse_offset_min", -5);
-	ControllerMouseControl.MaxOffset = READ_IF_EXISTS(pSettings, r_s32, "gunslinger_base", "controller_mouse_offset_max", 5);
-	ControllerMouseControl.KeyboardMoveK = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_mouse_keyboard_move_k", 3.0f);
+	ControllerMouseControl.MinSenseScale = pSettings->read_if_exists<float>("gunslinger_base", "controller_mouse_sense_min", 0.1f);
+	ControllerMouseControl.MaxSenseScale = pSettings->read_if_exists<float>("gunslinger_base", "controller_mouse_sense_max", 0.5f);
+	ControllerMouseControl.MinOffset = pSettings->read_if_exists<s32>("gunslinger_base", "controller_mouse_offset_min", -5);
+	ControllerMouseControl.MaxOffset = pSettings->read_if_exists<s32>("gunslinger_base", "controller_mouse_offset_max", 5);
+	ControllerMouseControl.KeyboardMoveK = pSettings->read_if_exists<float>("gunslinger_base", "controller_mouse_keyboard_move_k", 3.0f);
 
 	if (pSettings->line_exist("gunslinger_base", "burn_restore_materials"))
 	{

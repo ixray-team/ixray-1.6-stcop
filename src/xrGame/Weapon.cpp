@@ -505,7 +505,7 @@ void CWeapon::Load		(const char* section)
 		m_hit_probability[i] = pSettings->read_if_exists<float>(section,temp,1.f);
 	}
 
-	SuicideDelay = floor(1000.0f * READ_IF_EXISTS(pSettings, r_float, hud_sect, "suicide_delay", 0.1f));
+	SuicideDelay = floor(1000.0f * pSettings->read_if_exists<float>(hud_sect, "suicide_delay", 0.1f));
 
 	ControllerShootGLMinDist = pSettings->read_if_exists<float>(hud_sect, "controller_shoot_gl_min_dist", ControllerShootGLMinDist);
 	ControllerShootExplMinDist = pSettings->read_if_exists<float>(hud_sect, "controller_shoot_expl_min_dist", ControllerShootExplMinDist);
@@ -842,10 +842,10 @@ void CWeapon::Load		(const char* section)
 		}
 	}
 	
-	m_vShellDir = READ_IF_EXISTS(pSettings, r_fvector3, section, "shell_dir", Fvector(1.f, 0.f, 0.f));
-	m_fShellEjectionSpeed = READ_IF_EXISTS(pSettings, r_float, section, "shell_ejection_speed", 8.f);
-	m_sShellBone = READ_IF_EXISTS(pSettings, r_string, section, "shell_bone", nullptr);
-	m_fShellEjectionDispersionAngle = READ_IF_EXISTS(pSettings, r_float, section, "shell_ejection_dispersion_angle", 30.f);
+	m_vShellDir = pSettings->read_if_exists<Fvector3>(section, "shell_dir", Fvector(1.f, 0.f, 0.f));
+	m_fShellEjectionSpeed = pSettings->read_if_exists<float>(section, "shell_ejection_speed", 8.f);
+	m_sShellBone = pSettings->read_if_exists<str_c>(section, "shell_bone", nullptr);
+	m_fShellEjectionDispersionAngle = pSettings->read_if_exists<float>(section, "shell_ejection_dispersion_angle", 30.f);
 	
 	if (m_sShellBone)
 	{

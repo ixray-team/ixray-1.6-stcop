@@ -29,16 +29,16 @@ void CControllerPsyHit::load(const char* section)
 	if (EngineExternal()[EEngineExternalGame::EnableSuicideByController])
 	{
 		EnableSuicide = true;
-		FeelParams.MinDist = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_min_feel_dist", 10.0f);
-		FeelParams.MaxDist = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_max_feel_dist", 30.0f);
-		ControllerPsyBlockedTime = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_psyblocked_time", 5.0f);
-		ControllerTime = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_time", 3.0f);
-		ControllerQueueStopProb = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_queue_stop_prob", 0.95f);
+		FeelParams.MinDist = pSettings->read_if_exists<float>("gunslinger_base", "controller_min_feel_dist", 10.0f);
+		FeelParams.MaxDist = pSettings->read_if_exists<float>("gunslinger_base", "controller_max_feel_dist", 30.0f);
+		ControllerPsyBlockedTime = pSettings->read_if_exists<float>("gunslinger_base", "controller_psyblocked_time", 5.0f);
+		ControllerTime = pSettings->read_if_exists<float>("gunslinger_base", "controller_time", 3.0f);
+		ControllerQueueStopProb = pSettings->read_if_exists<float>("gunslinger_base", "controller_queue_stop_prob", 0.95f);
 
-		PsiUnBlockParams.MinDist = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_psi_unblock_mindist", 7.0f);
-		PsiUnBlockParams.MaxDist = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_psi_unblock_maxdist", 60.0f);
-		PsiUnBlockParams.MinDistProb = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_psi_unblock_mindist_prob", 0.95f);
-		PsiUnBlockParams.MaxDistProb = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_psi_unblock_maxdist_prob", 0.1f);
+		PsiUnBlockParams.MinDist = pSettings->read_if_exists<float>("gunslinger_base", "controller_psi_unblock_mindist", 7.0f);
+		PsiUnBlockParams.MaxDist = pSettings->read_if_exists<float>("gunslinger_base", "controller_psi_unblock_maxdist", 60.0f);
+		PsiUnBlockParams.MinDistProb = pSettings->read_if_exists<float>("gunslinger_base", "controller_psi_unblock_mindist_prob", 0.95f);
+		PsiUnBlockParams.MaxDistProb = pSettings->read_if_exists<float>("gunslinger_base", "controller_psi_unblock_maxdist_prob", 0.1f);
 	}
 }
 
