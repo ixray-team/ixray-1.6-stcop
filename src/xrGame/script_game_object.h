@@ -348,6 +348,9 @@ public:
 			void				MarkItemDropped		(CScriptGameObject *item);
 			bool				MarkedDropped		(CScriptGameObject *item);
 			void				UnloadMagazine		();
+			void IterateBelt(::luabind::functor<bool> functor, ::luabind::object object);
+			void IterateRuck(::luabind::functor<bool> functor, ::luabind::object object);
+
 
 			void				DropItem			(CScriptGameObject* pItem);
 			void				DropItemAndTeleport	(CScriptGameObject* pItem, Fvector position);
