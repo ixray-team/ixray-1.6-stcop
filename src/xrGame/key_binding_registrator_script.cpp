@@ -66,11 +66,19 @@ void trigger_resistance(bool RightTrigger, u8 StartPosition, u8 Force, float Tim
 	GGamepadService->SetTriggerResistance(RightTrigger, StartPosition, Force, Time);
 }
 
+bool key_state(int key)
+{
+	return pInput->iGetAsyncKeyState(key);
+}
+
 #pragma optimize("s",on)
 void key_binding_registrator::script_register(lua_State *L)
 {
 	module(L)
 	[
+        def("dik_to_keyname",   &dik_to_keyname),
+		def("bind_to_dik",      &get_action_dik),
+		def("key_state",        &key_state),
 		def("dik_to_bind",		&dik_to_bind),
         def("dik_to_bind",      +[](int dik)
             {
