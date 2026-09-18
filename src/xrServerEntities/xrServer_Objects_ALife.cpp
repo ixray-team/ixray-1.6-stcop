@@ -3065,7 +3065,7 @@ bool CSE_Shell::Spawn_Read(NET_Packet& tNetPacket)
 		return false;
 	}
 
-	tNetPacket.r_u16(weapon_id);
+	tNetPacket >> weapon_id;
 	tNetPacket.r_vec3(eject_dir);
 	tNetPacket.r_vec3(parent_vel);
 	tNetPacket.r_float(eject_speed);
@@ -3078,7 +3078,7 @@ void CSE_Shell::Spawn_Write(NET_Packet& tNetPacket, bool bLocal)
 {
 	inherited::Spawn_Write(tNetPacket, true);
 	
-	tNetPacket.w_u16(weapon_id);
+	tNetPacket << weapon_id;
 	tNetPacket.w_vec3(eject_dir);
 	tNetPacket.w_vec3(parent_vel);
 	tNetPacket.w_float(eject_speed);
