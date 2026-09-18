@@ -83,16 +83,16 @@ EnableSuicideByController = false ; Gunslinger Mod Style
 DialogFovScale = 0.75 ; Increasing fov during dialogue
 TalkDof = 0.0, 0.5, 5.0, 0.0 ; Degree of background blurring in dialogue
 
+; Sprint
+EnableBlockSprintInReload = true        ; Enable block sprint in reload
+DisableSprintWhileOverweight = false    ; Disable Sprint while overweight
+SprintFovFactor = 3.0                   ; FOV magnification power while running
+
 [pda_talk]
 enabled = false
 ignore_switch_distance = true
 ; Optional comma-separated policy tables (configs/*.ltx), merged after [pda_talk_dialog]/[pda_talk_phrase].
 ; policy_files = pda_talk_policies
-
-; Sprint
-EnableBlockSprintInReload = true        ; Enable block sprint in reload
-DisableSprintWhileOverweight = false    ; Disable Sprint while overweight
-SprintFovFactor = 3.0                   ; FOV magnification power while running
 
 [spawn_supplies]
 EnableLoadoutsSupplies 						= true; Use loadouts for npc profiles
