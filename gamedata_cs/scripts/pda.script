@@ -276,9 +276,9 @@ end
 -- 11 =  Talk dialog  hide
 
 local last_mode = 0
-local dialog_closed = false
-local trade_closed = false
-local upgrade_closed = false
+dialog_closed = false
+trade_closed = false
+upgrade_closed = false
 local npc_dlg_id = nil
 
 function actor_menu_mode(mode)
