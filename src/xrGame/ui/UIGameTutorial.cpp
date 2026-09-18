@@ -271,19 +271,36 @@ void CUISequencer::Stop()
 		{
 			Next				();
 			return;
-		}else
+		}
+		else
 		{
 			CUISequenceItem* pCurrItem	= m_sequencer_items.front();
 			pCurrItem->Stop				(true);
 		}
 	}
-	{
-	if(m_flags.test(etsNeedPauseOn) && !m_flags.test(etsStoredPauseState))
-		Device.Pause			(false, true, true, "tutorial_stop");
 
-	if(m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
-		Device.Pause			(true, true, false, "tutorial_stop");
+	if (m_flags.test(etsNeedPauseOn) && !m_flags.test(etsStoredPauseState))
+	{
+		Device.Pause(false, true, true, "tutorial_stop");
 	}
+
+	if (m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
+	{
+		Device.Pause(true, true, false, "tutorial_stop");
+	}
+
+	if (Need3DRender())
+	{
+		CObject* current_entity = Level().CurrentEntity();
+
+		CActor* pActor = current_entity ? current_entity->cast_actor() : nullptr;
+
+		if (pActor && pActor->HudAnimator()->PdaAnimator() && pActor->HudAnimator()->PdaAnimator()->IsActive())
+		{
+			CurrentGameUI()->PdaMenu()->HideDialog();
+		}
+	}
+
 	Destroy			();
 }
 
