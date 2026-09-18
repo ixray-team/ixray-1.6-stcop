@@ -136,7 +136,7 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 
 	if (ParentIsActor())
 	{
-		xr_sprintf(new_suffix, "_%d", iAmmoElapsed);
+		xr_sprintf(new_suffix, "_%d", AmmoElapsed.MagazineElapsed);
 
 		m_iAmmoCountToReload = iMagazineSize;
 
@@ -196,7 +196,7 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 	}
 	else
 	{
-		if ((GetAmmoElapsed() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
+		if ((GetAmmoElapsed() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || AmmoType.MagazineType == m_set_next_ammoType_on_reload))
 		{
 			anim = "anm_reload_1";
 		}
@@ -223,7 +223,7 @@ shared_str CWeaponBM16::SetCurrentShootAnimation()
 
 	if (ParentIsActor())
 	{
-		xr_sprintf(new_suffix, "_%d", iAmmoElapsed);
+		xr_sprintf(new_suffix, "_%d", AmmoElapsed.MagazineElapsed);
 
 		if (IsMisfire() && IsZoomed())
 		{
@@ -246,7 +246,7 @@ shared_str CWeaponBM16::SetCurrentShootAnimation()
 	}
 	else
 	{
-		xr_sprintf(new_suffix, "%s_%d", *anim, iAmmoElapsed);
+		xr_sprintf(new_suffix, "%s_%d", *anim, AmmoElapsed.MagazineElapsed);
 		anim = new_suffix;
 	}
 
@@ -261,7 +261,7 @@ shared_str CWeaponBM16::SetCurrentStateAnimation(const shared_str& first_name)
 
 	if (ParentIsActor())
 	{
-		xr_sprintf(new_suffix, "_%d", iAmmoElapsed);
+		xr_sprintf(new_suffix, "_%d", AmmoElapsed.MagazineElapsed);
 
 		if (IsMisfire() && IsZoomed())
 		{
@@ -292,7 +292,7 @@ shared_str CWeaponBM16::SetCurrentStateAnimation(const shared_str& first_name)
 	}
 	else
 	{
-		xr_sprintf(new_suffix, "%s_%d", *anim, iAmmoElapsed);
+		xr_sprintf(new_suffix, "%s_%d", *anim, AmmoElapsed.MagazineElapsed);
 		if (HudAnimationExist(new_suffix, false))
 			anim = new_suffix;
 	}
@@ -303,7 +303,7 @@ shared_str CWeaponBM16::SetCurrentStateAnimation(const shared_str& first_name)
 bool CWeaponBM16::HudAnimationExist(const shared_str& anim_name, bool only_for_actor)
 {
 	string128 new_name;
-	xr_sprintf(new_name, "%s_%d", *anim_name, iAmmoElapsed);	
+	xr_sprintf(new_name, "%s_%d", *anim_name, AmmoElapsed.MagazineElapsed);	
 
 	bool has_anim = inherited::HudAnimationExist(new_name, only_for_actor);
 

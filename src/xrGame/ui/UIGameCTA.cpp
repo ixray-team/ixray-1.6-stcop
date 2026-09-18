@@ -404,24 +404,24 @@ void TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * weapon,
 		return;
 
 	xr_vector<shared_str> const *	tmp_ammo_types = nullptr;
-	u8 const *						tmp_ammo_type = nullptr;
+	u8								tmp_ammo_type = 0;
 	u16								ammo_elapsed = 0;
 	if (weapon->m_bGrenadeMode)
 	{
 		tmp_ammo_types	= &weapon->m_ammoTypes;
-		tmp_ammo_type	= &weapon->m_ammoType;
+		tmp_ammo_type	= weapon->AmmoType.MagazineType;
 		ammo_elapsed	= (u16)weapon->GetAmmoElapsed();
 	} else
 	{
 		tmp_ammo_types	= &weapon->m_ammoTypes2;
-		tmp_ammo_type	= &weapon->m_ammoType2;
+		tmp_ammo_type	= weapon->AmmoType.GrenadeType;
 		ammo_elapsed	= (u16)weapon->m_magazine2.size();
 	}
 	
-	if (tmp_ammo_types->size() <= u32(*tmp_ammo_type))
+	if (tmp_ammo_types->size() <= u32(tmp_ammo_type))
 		return;
 
-	shared_str ammo_section = (*tmp_ammo_types)[*tmp_ammo_type];
+	shared_str ammo_section = (*tmp_ammo_types)[tmp_ammo_type];
 
 	VERIFY2(ammo_section.size(), make_string<const char*>(
 		"grenade ammo type of [%s] hasn't section name", weapon->cNameSect().c_str()));
@@ -474,24 +474,24 @@ void TryToDefuseWeapon(CWeapon const * weapon,
 		TryToDefuseGrenadeLauncher(tmp_gl_weapon, all_items, dest_ammo);
 
 	xr_vector<shared_str> const *	tmp_ammo_types = nullptr;
-	u8 const *						tmp_ammo_type = nullptr;
+	u8								tmp_ammo_type = 0;
 	u16								ammo_elapsed = 0;
 	if (tmp_gl_weapon && tmp_gl_weapon->m_bGrenadeMode)
 	{
 		tmp_ammo_types	= &tmp_gl_weapon->m_ammoTypes2;
-		tmp_ammo_type	= &tmp_gl_weapon->m_ammoType2;
+		tmp_ammo_type	= tmp_gl_weapon->AmmoType.GrenadeType;
 		ammo_elapsed	= (u16)tmp_gl_weapon->m_magazine2.size();
 	} else
 	{
 		tmp_ammo_types	= &weapon->m_ammoTypes;
-		tmp_ammo_type	= &weapon->m_ammoType;
+		tmp_ammo_type	= weapon->AmmoType.MagazineType;
 		ammo_elapsed	= (u16)weapon->GetAmmoElapsed();
 	}
 	
-	if (tmp_ammo_types->size() <= u32(*tmp_ammo_type))
+	if (tmp_ammo_types->size() <= u32(tmp_ammo_type))
 		return;
 
-	shared_str ammo_section = (*tmp_ammo_types)[*tmp_ammo_type];
+	shared_str ammo_section = (*tmp_ammo_types)[tmp_ammo_type];
 
 	VERIFY2(ammo_section.size(), make_string<const char*>(
 		"ammo type of [%s] hasn't section name", weapon->cName().c_str()));

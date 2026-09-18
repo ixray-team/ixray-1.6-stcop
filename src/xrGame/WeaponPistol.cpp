@@ -12,7 +12,7 @@ void CWeaponPistol::Load(const char* section)
 void CWeaponPistol::PlayAnimHide()
 {
 	VERIFY(GetState() == eHiding);
-	if (!iAmmoElapsed)
+	if (!AmmoElapsed.MagazineElapsed)
 	{
 		PlaySound("sndClose", get_LastFP());
 		PlayHUDMotion(SetCurrentStateAnimation("anm_hide"), SetCurrentStateAnimation("anm_holster"), EHudMixType::eMixAll, GetState());

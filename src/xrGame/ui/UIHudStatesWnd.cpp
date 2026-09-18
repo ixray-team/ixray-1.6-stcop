@@ -1271,15 +1271,15 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
                             }
                         }
                         const char* ammoStr = nullptr;
-                        if (wpnM->m_ammoType == 0 && m_item_info.fmj_ammo.size())
+                        if (wpnM->AmmoType.MagazineType == 0 && m_item_info.fmj_ammo.size())
                         {
                             ammoStr = m_item_info.fmj_ammo.c_str();
                         }
-                        else if (wpnM->m_ammoType == 1 && m_item_info.ap_ammo.size())
+                        else if (wpnM->AmmoType.MagazineType == 1 && m_item_info.ap_ammo.size())
                         {
                             ammoStr = m_item_info.ap_ammo.c_str();
                         }
-                        else if (wpnM->m_ammoType == 2 && m_item_info.third_ammo.size())
+                        else if (wpnM->AmmoType.MagazineType == 2 && m_item_info.third_ammo.size())
                         {
                             ammoStr = m_item_info.third_ammo.c_str();
                         }
@@ -1417,15 +1417,15 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
         {
             if (wpnm)
             {
-                if (wpnm->m_ammoType == 0 && m_ui_weapon_fmj_ammo)
+                if (wpnm->AmmoType.MagazineType == 0 && m_ui_weapon_fmj_ammo)
                 {
                     m_ui_weapon_fmj_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
                 }
-                else if (wpnm->m_ammoType == 1 && m_ui_weapon_ap_ammo)
+                else if (wpnm->AmmoType.MagazineType == 1 && m_ui_weapon_ap_ammo)
                 {
                     m_ui_weapon_ap_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
                 }
-                else if (wpnm->m_ammoType == 2 && m_ui_weapon_third_ammo)
+                else if (wpnm->AmmoType.MagazineType == 2 && m_ui_weapon_third_ammo)
                 {
                     m_ui_weapon_third_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
                 }
@@ -1433,7 +1433,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
         }
         else if (wpnm && m_ui_weapon_third_ammo)
         {
-            if (wpnm->m_ammoType == 2)
+            if (wpnm->AmmoType.MagazineType == 2)
             {
                 m_ui_weapon_third_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
             }

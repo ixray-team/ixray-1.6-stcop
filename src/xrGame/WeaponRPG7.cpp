@@ -49,7 +49,7 @@ void CWeaponRPG7::Load	(const char* section)
 
 bool CWeaponRPG7::AllowBore()
 {
-	return inherited::AllowBore() && 0!=iAmmoElapsed;
+	return inherited::AllowBore() && 0!=AmmoElapsed.MagazineElapsed;
 }
 
 void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
@@ -127,8 +127,8 @@ void CWeaponRPG7::on_a_hud_attach()
 void CWeaponRPG7::UpdateMissileVisibility()
 {
 	bool vis_hud, vis_weap;
-	vis_hud = (!!iAmmoElapsed || GetState() == eReload);
-	vis_weap = !!iAmmoElapsed;
+	vis_hud = (!!AmmoElapsed.MagazineElapsed || GetState() == eReload);
+	vis_weap = !!AmmoElapsed.MagazineElapsed;
 
 	if (HudItemData() != nullptr)
 	{
@@ -145,7 +145,7 @@ bool CWeaponRPG7::net_Spawn(CSE_Abstract* DC)
 	bool l_res = inherited::net_Spawn(DC);
 
 	UpdateMissileVisibility();
-	if(iAmmoElapsed && !getCurrentRocket())
+	if(AmmoElapsed.MagazineElapsed && !getCurrentRocket())
 		CRocketLauncher::SpawnRocket(m_sRocketSection, this);
 
 	return l_res;
@@ -167,7 +167,7 @@ void CWeaponRPG7::ReloadMagazine()
 {
 	inherited::ReloadMagazine();
 
-	if(iAmmoElapsed && !getRocketCount()) 
+	if(AmmoElapsed.MagazineElapsed && !getRocketCount()) 
 		CRocketLauncher::SpawnRocket(m_sRocketSection.c_str(), this);
 }
 
@@ -217,7 +217,7 @@ bool CWeaponRPG7::CheckRLMisfireRocket()
 		}
 	
 		m_magazine.pop_back();
-		--iAmmoElapsed;
+		--AmmoElapsed.MagazineElapsed;
 		UpdateMissileVisibility();
 		return true;
 	}
@@ -227,7 +227,7 @@ bool CWeaponRPG7::CheckRLMisfireRocket()
 
 void CWeaponRPG7::FireStart()
 {
-	if (!iAmmoElapsed)
+	if (!AmmoElapsed.MagazineElapsed)
 	{
 		if (infinite_fire())
 		{
@@ -246,7 +246,7 @@ void CWeaponRPG7::FireStart()
 
 void CWeaponRPG7::ReactiveHit()
 {
-	if (iAmmoElapsed == 0)
+	if (AmmoElapsed.MagazineElapsed == 0)
 	{
 		return;
 	}

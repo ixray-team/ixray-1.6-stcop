@@ -87,7 +87,6 @@ public:
 	//дополнительные параметры патронов 
 	//для подствольника
 	xr_vector<shared_str>	m_ammoTypes2 = {};
-	u8						m_ammoType2 = 0;
 
 	int						iMagazineSize2 = 0;
 	xr_vector<CCartridge>	m_magazine2 = {};
@@ -95,7 +94,6 @@ public:
 	bool					m_bGrenadeMode = false;
 
 	CCartridge				m_DefaultCartridge2;
-	u8						iAmmoElapsed2 = 0;
 
 	virtual u8				GetTargetAmmoType(bool for_grenade_mode = false) const override;
 	virtual u8				GetAmmoType(bool for_grenade_mode = false) const override;

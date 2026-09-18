@@ -119,7 +119,7 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 	//оружие спавним с полным магазинои
 	CSE_ALifeItemWeapon* weapon = dynamic_object->cast_item_weapon();
 	if(weapon)
-		weapon->a_elapsed		= weapon->get_ammo_magsize();
+		weapon->a_elapsed.MagazineElapsed		= weapon->get_ammo_magsize();
 
 	dynamic_object->m_tNodeID	= level_vertex_id;
 	dynamic_object->m_tGraphID	= game_vertex_id;

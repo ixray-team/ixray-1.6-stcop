@@ -145,41 +145,49 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	EWeaponAddonStatus				m_grenade_launcher_status;
 
 	u32								timestamp;
-	u8								wpn_flags;
-	u8								wpn_state;
-	u8								ammo_type;
+	u8								wpn_flags = 0;
+	u8								wpn_state = 0;
 	u8								chamber_ammo_type = 0;
-	u16								a_current;
-	u16								a_elapsed;
+	u16								a_current = 0;
 	u16								a_chamber_elapsed = 0;
-	u8								misfire;
-	float							rt_zoom_factor;
-	u8								cur_scope;
+	u8								misfire = 0;
+	float							rt_zoom_factor = 0.0f;
+	u8								cur_scope = 0;
 
-	//count of grenades to spawn in grenade launcher [ttcccccc]
-	//WARNING! hight 2 bits (tt bits) indicate type of grenade, so maximum grenade count is 2^6 = 64
-	struct grenade_count_t
+	struct ammo_elapsed_t
 	{
-		u8	grenades_count	:	6;
-		u8	grenades_type	:	2;
-		u8	pack_to_byte() const
+		union
 		{
-			return (grenades_type << 6) | grenades_count;
-		}
-		void unpack_from_byte(u8 const b)
+			u16 data = 0;
+
+			struct
+			{
+				u16 MagazineElapsed : 8;
+				u16 GrenadesElapsed : 8;
+			};
+		};
+	} a_elapsed;
+
+	struct ammo_type_t
+	{
+		union
 		{
-			grenades_type	=	(b >> 6);
-			grenades_count	=	b & 0x3f; //111111
-		}
-	}; //struct grenade_count_t
-	grenade_count_t					a_elapsed_grenades;
+			u8 data = 0;
+
+			struct
+			{
+				u8 MagazinedType : 4;
+				u8 GrenadeType : 4;
+			};
+		};
+	} a_ammo_type;
 
 	float							m_fHitPower;
 	ALife::EHitType					m_tHitType;
 	const char*							m_caAmmoSections;
 	u32								m_dwAmmoAvailable;
 	Flags8							m_addon_flags;
-	u8								m_bZoom;
+	u8								m_bZoom = false;
 	u32								m_ef_main_weapon_type;
 	u32								m_ef_weapon_type;
 
@@ -210,11 +218,12 @@ virtual CSE_ALifeItemWeapon		*cast_item_weapon	() {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponMagazinedWGL, CSE_ALifeItemWeaponMagazined)
-bool			m_bGrenadeMode;
+bool			m_bGrenadeMode = false;
 CSE_ALifeItemWeaponMagazinedWGL(const char* caSection);
 virtual							~CSE_ALifeItemWeaponMagazinedWGL();
 
 virtual CSE_ALifeItemWeapon		*cast_item_weapon	() {return this;}
+virtual CSE_ALifeItemWeaponMagazinedWGL	*cast_item_weapon_magazined_wgl	() {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponShotGun,CSE_ALifeItemWeaponMagazined)

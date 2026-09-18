@@ -188,10 +188,10 @@ CSE_Abstract *CLevel::spawn_item		(const char* section, const Fvector &position,
 	//оружие спавним с полным магазинои
 	CSE_ALifeItemWeapon* weapon = abstract->cast_item_weapon();
 	if(weapon)
-		weapon->a_elapsed	= weapon->get_ammo_magsize();
+		weapon->a_elapsed.MagazineElapsed	= weapon->get_ammo_magsize();
 	
 	// Fill
-	abstract->s_name.printf("%s", section);
+	abstract->s_name._set(section);
 	abstract->set_name_replace	(section);
 //.	abstract->s_gameid		= u8(GameID());
 	abstract->o_Position	= position;
