@@ -3084,6 +3084,14 @@ void CSE_Shell::Spawn_Write(NET_Packet& tNetPacket, bool bLocal)
 	tNetPacket.w_float(eject_speed);
 	tNetPacket.w_float(eject_dispersion_angle);
 }
+void CSE_Shell::STATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_Shell::STATE")
+	{
+		inherited::STATE_Serialize(Object);
+		Object << weapon_id << eject_dir << parent_vel << eject_speed << eject_dispersion_angle;
+	}
+}
 
 void CSE_Shell::STATE_Read(NET_Packet& P, u16 size)
 {
@@ -3103,6 +3111,14 @@ void CSE_Shell::UPDATE_Read(NET_Packet& P)
 void CSE_Shell::UPDATE_Write(NET_Packet& P)
 {
 	inherited::UPDATE_Write(P);
+}
+
+void CSE_Shell::UPDATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_Shell::UPDATE")
+	{
+		inherited::UPDATE_Serialize(Object);
+	}
 }
 
 #ifndef XRGAME_EXPORTS
