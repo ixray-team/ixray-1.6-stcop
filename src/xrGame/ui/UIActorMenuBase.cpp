@@ -32,6 +32,8 @@
 #include "UIInventoryUpgradeWnd.h"
 #include "UIInventoryInvalidation.h"
 #include "../../xrUI/UICursor.h"
+#include "UIInvUpgradeInfo.h"
+#include "UIMessageBoxEx.h"
 
 void move_item_from_to (u16 from_id, u16 to_id, u16 what_id)
 {
@@ -97,6 +99,8 @@ CUIActorMenuBase::~CUIActorMenuBase()
 
 	xr_delete(m_ui_navigation_selector);
 	xr_delete(m_ui_aux_selector);
+	xr_delete(m_message_box_yes_no);
+	xr_delete(m_message_box_ok);
 
 	ClearAllLists();
 
@@ -996,7 +1000,6 @@ void CUIActorMenuBase::UpdateItemsPlace()
 	case mmUndefined:
 		break;
 	case mmInventory:
-		
 		break;
 	case mmTrade:
 		UpdatePrices();
@@ -2528,4 +2531,352 @@ void CUIActorMenuBase::RefreshCurrentItemCell()
 			invlist->SetItem(parent, GetUICursor().GetCursorPosition());
 		}
 	}
+}
+
+void CUIActorMenuBase::SetupUpgradeItem()
+{
+	if (m_upgrade_selected)
+	{
+		m_upgrade_selected->Mark(false);
+	}
+
+	bool can_upgrade = false;
+	PIItem item = CurrentIItem();
+	if (item)
+	{
+		m_upgrade_selected = CurrentItem();
+		m_upgrade_selected->Mark(true);
+		can_upgrade = CanUpgradeItem(item);
+	}
+	else
+	{
+		m_upgrade_selected = nullptr;
+	}
+
+	m_pUpgradeWnd->InitInventory(CurrentItem(), can_upgrade);
+	if (m_upgrade_info)
+	{
+		m_upgrade_info->Show(false);
+	}
+}
+
+void CUIActorMenuBase::TrySetCurUpgrade()
+{
+	if (!m_upgrade_info)
+	{
+		return;
+	}
+	Upgrade_type const* upgr = m_upgrade_info->get_upgrade();
+	if (!upgr)
+	{
+		return;
+	}
+	m_pUpgradeWnd->DBClickOnUIUpgrade(upgr);
+}
+
+void CUIActorMenuBase::SetAuxMode(eActorMenuControllerAuxMode mode)
+{
+	m_AuxMode = mode;
+
+	switch (mode)
+	{
+	case eActorMenuControllerAuxMode::eAuxMode_Upgrade:
+		{
+			if (m_ui_aux_selector)
+			{
+				Fvector2 frmSize = m_pUpgradeWnd->GetWndSize();
+				Fvector2 frmPos = m_pUpgradeWnd->GetWndPos();
+
+				if (frmSize.x > 0 && frmSize.y > 0)
+				{
+					m_ui_aux_selector->SetWndSize(frmSize);
+					m_ui_aux_selector->SetWndPos(frmPos);
+					m_ui_aux_selector_shown = true;
+				}
+				else
+					m_ui_aux_selector_shown = false;
+			}
+			m_pUpgradeWnd->SetActiveForController(true);
+			m_upgrade_info->init_upgrade(nullptr, nullptr);
+		}
+		break;
+	default:
+		m_ui_aux_selector_shown = false;
+		if (m_pUpgradeWnd)
+		{
+			m_pUpgradeWnd->SetActiveForController(false);
+		}
+	}
+}
+
+bool CUIActorMenuBase::AnyInfoWindowOpen() const
+{
+	if (m_ItemInfo && m_ItemInfo->CurrentItem())
+	{
+		return true;
+	}
+	if (m_upgrade_info && m_upgrade_info->get_upgrade())
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void CUIActorMenuBase::InvalidateDerivedCellRefsForList(CUIDragDropListEx* list)
+{
+	if (m_upgrade_selected == nullptr)
+	{
+		return;
+	}
+
+	if (list == nullptr || m_upgrade_selected->OwnerList() == list)
+	{
+		m_upgrade_selected->Mark(false);
+		m_upgrade_selected = nullptr;
+	}
+}
+
+void CUIActorMenuBase::InvalidateDerivedCellRefsForCell(CUICellItem* cell)
+{
+	if (m_upgrade_selected == nullptr || m_upgrade_selected != cell)
+	{
+		return;
+	}
+
+	m_upgrade_selected->Mark(false);
+	m_upgrade_selected = nullptr;
+}
+
+PIItem CUIActorMenuBase::get_upgrade_item()
+{
+	if (m_upgrade_selected == nullptr || !m_upgrade_selected->HasValidInventoryBinding())
+	{
+		return nullptr;
+	}
+
+	return (PIItem)m_upgrade_selected->m_pData;
+}
+
+void CUIActorMenuBase::TryRepairItem(CUIWindow* w, void* d)
+{
+	PIItem item = get_upgrade_item();
+	if (!item)
+	{
+		return;
+	}
+	if (item->GetCondition() > 0.99f)
+	{
+		return;
+	}
+
+	if (!IsGameTypeSingle())
+	{
+		const char* item_name = item->m_section_id.c_str();
+		luabind::functor<int> funct;
+		R_ASSERT2(ai().script_engine().functor("inventory_upgrades.how_much_repair", funct), make_string<const char*>("Failed to get functor <inventory_upgrades.how_much_repair>, item = %s", item_name));
+		int cost = funct(item_name, item->GetCondition());
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GE_GAME_EVENT, item->object().ID());
+		P.w_u16(GAME_EVENT_MP_REPAIR);
+		P.w_u16(item->object().ID());
+		P.w_s32(cost);
+		CGameObject::u_EventSend(P);
+		return;
+	}
+
+	const char* item_name = item->m_section_id.c_str();
+
+	CEatableItem* EItm = item->cast_eatable_item();
+	if (EItm)
+	{
+		bool allow_repair = !!READ_IF_EXISTS(pSettings, r_bool, item_name, "allow_repair", false);
+		if (!allow_repair)
+		{
+			return;
+		}
+	}
+	const char* partner = GetPartner() ? GetPartner()->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
+
+	luabind::functor<bool> funct;
+	R_ASSERT2(
+		ai().script_engine().functor("inventory_upgrades.can_repair_item", funct),
+		make_string<const char*>("Failed to get functor <inventory_upgrades.can_repair_item>, item = %s", item_name)
+	);
+	bool can_repair = funct(item_name, item->GetCondition(), partner);
+
+	luabind::functor<const char*> funct2;
+	R_ASSERT2(
+		ai().script_engine().functor("inventory_upgrades.question_repair_item", funct2),
+		make_string<const char*>("Failed to get functor <inventory_upgrades.question_repair_item>, item = %s", item_name)
+	);
+	const char* question = funct2(item_name, item->GetCondition(), can_repair, partner);
+
+	if (can_repair)
+	{
+		m_repair_mode = 1;
+		CallMessageBoxYesNo(question);
+	}
+	else
+	{
+		CallMessageBoxOK(question);
+	}
+}
+
+void CUIActorMenuBase::CallMessageBoxYesNo( const char* text )
+{
+	m_bShowInfoWnds = false;
+	m_message_box_yes_no->SetText(text);
+	m_message_box_yes_no->func_on_ok = CUIWndCallback::void_function( this, &CUIActorMenuBase::OnMesBoxYes );
+	m_message_box_yes_no->func_on_no = CUIWndCallback::void_function( this, &CUIActorMenuBase::OnMesBoxNo );
+	m_message_box_yes_no->ShowDialog(false);
+}
+
+void CUIActorMenuBase::CallMessageBoxOK( const char* text )
+{
+	m_bShowInfoWnds = false;
+	m_message_box_ok->SetText(text);
+	m_message_box_ok->ShowDialog(false);
+}
+
+void CUIActorMenuBase::OnMesBoxYes( CUIWindow*, void* )
+{
+	switch( m_currMenuMode )
+	{
+	case mmUndefined:
+		break;
+	case mmInventory:
+		break;
+	case mmTrade:
+		break;
+	case mmUpgrade:
+		if (m_repair_mode == 1)
+		{
+			RepairEffect_CurItem();
+			m_repair_mode = 0;
+		}
+		else if (m_repair_mode == 2)
+		{
+			PerformDisassemble();
+			m_repair_mode = 0;
+		}
+		else
+		{
+			m_pUpgradeWnd->OnMesBoxYes();
+		}
+		break;
+	case mmDeadBodySearch:
+		break;
+	default:
+		R_ASSERT(0);
+		break;
+	}
+	UpdateItemsPlace();
+}
+
+void CUIActorMenuBase::OnMesBoxNo(CUIWindow*, void*)
+{
+	switch(m_currMenuMode)
+	{
+	case mmUndefined:
+		break;
+	case mmInventory:
+		break;
+	case mmTrade:
+		break;
+	case mmUpgrade:
+		m_repair_mode = 0;
+		break;
+	case mmDeadBodySearch:
+		break;
+	default:
+		R_ASSERT(0);
+		break;
+	}
+	UpdateItemsPlace();
+}
+
+void CUIActorMenuBase::RepairEffect_CurItem()
+{
+	PIItem item = CurrentIItem();
+	if (!item)
+	{
+		return;
+	}
+
+	const char* item_name = item->m_section_id.c_str();
+
+	luabind::functor<void> funct;
+	R_ASSERT(ai().script_engine().functor("inventory_upgrades.effect_repair_item", funct));
+	funct(item_name, item->GetCondition());
+
+	item->SetCondition(1.0f);
+	UpdateConditionProgressBars();
+	SeparateUpgradeItem();
+	CUICellItem* itm = CurrentItem();
+
+	if (itm)
+	{
+		itm->UpdateConditionProgressBar();
+	}
+
+	if (CWeapon* wpn = item->cast_weapon())
+	{
+		wpn->SetMisfireStatus(false);
+		if (wpn->GetState() == CWeapon::eIdle)
+		{
+			wpn->SwitchState(CWeapon::eIdle);
+		}
+	}
+}
+
+void CUIActorMenuBase::SeparateUpgradeItem()
+{
+	VERIFY( m_upgrade_selected );
+	if ( !m_upgrade_selected || !m_upgrade_selected->HasValidInventoryBinding() )
+	{
+		return;
+	}
+	CUIDragDropListEx* list_owner = m_upgrade_selected->OwnerList();
+	if ( list_owner && (GetListType( list_owner ) != iActorBag) )
+	{
+		return;
+	}
+
+	if (!pInput->GetControllerMode())
+	{
+		m_upgrade_selected->Mark(false);
+		CUICellItem* ci = list_owner->RemoveItem(m_upgrade_selected, false);
+		list_owner->SetItem(ci);
+	}
+}
+
+bool CUIActorMenuBase::SetInfoCurUpgrade(Upgrade_type* upgrade_type, CInventoryItem* inv_item)
+{
+	if (!m_upgrade_info)
+	{
+		return false;
+	}
+	bool res = m_upgrade_info->init_upgrade(upgrade_type, inv_item);
+
+	if (!upgrade_type)
+	{
+		return false;
+	}
+
+	if (!pInput->GetControllerMode())
+	{
+		fit_in_rect(m_upgrade_info, Frect().set(0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT), 0.0f, GetWndRect().left);
+	}
+	else
+	{
+		UIUpgrade* uiu = m_pUpgradeWnd->FindUIUpgrade(upgrade_type);
+		if (uiu)
+		{
+			Frect stickToRect;
+			uiu->GetAbsoluteRect(stickToRect);
+			fit_infownd_in_rect(m_upgrade_info, stickToRect, Frect().set(0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT), 10.0f);
+		}
+	}
+	return res;
 }

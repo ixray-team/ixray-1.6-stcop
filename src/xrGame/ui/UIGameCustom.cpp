@@ -27,6 +27,7 @@
 #include "ui/UITalkDialogWnd.h"
 #include "ui/UISleepWnd.h"
 #include "ActorHelmet.h"
+#include "UIUpgradeWnd.h"
 
 EGameIDs ParseStringToGameType(const char* str);
 
@@ -53,6 +54,7 @@ CUIGameCustom::CUIGameCustom()
 	m_InventoryMenu(nullptr),
 	m_CarBodyMenu(nullptr),
 	m_TradeMenu(nullptr),
+	m_UpgradeMenu(nullptr),
 	m_PdaMenu(nullptr),
 	m_window(nullptr), 
 	UIMainIngameWnd(nullptr), 
@@ -417,14 +419,19 @@ void  CUIGameCustom::StartTrade(CInventoryOwner* pActorInv, CInventoryOwner* pOt
 
 void  CUIGameCustom::StartUpgrade(CInventoryOwner* pActorInv, CInventoryOwner* pMech)
 {
-	R_ASSERT2(m_ActorMenu, "No actor menu detected - cannot initialize upgrade window");
-	//.	if( MainInputReceiver() )	return;
+	if (m_ActorMenu)
+	{
+		m_ActorMenu->SetActor(pActorInv);
+		m_ActorMenu->SetPartner(pMech);
 
-	m_ActorMenu->SetActor(pActorInv);
-	m_ActorMenu->SetPartner(pMech);
-
-	m_ActorMenu->SetMenuMode(mmUpgrade);
-	m_ActorMenu->ShowDialog(true);
+		m_ActorMenu->SetMenuMode(mmUpgrade);
+		m_ActorMenu->ShowDialog(true);
+	}
+	else
+	{
+		m_UpgradeMenu->StartUpgrade(pActorInv, pMech);
+		m_UpgradeMenu->ShowDialog(true);
+	}
 }
 
 void CUIGameCustom::StartTalk(bool disable_break)
@@ -533,6 +540,7 @@ void CUIGameCustom::UnLoad()
 	xr_delete					(m_InventoryMenu);
 	xr_delete					(m_CarBodyMenu);
 	xr_delete					(m_TradeMenu);
+	xr_delete					(m_UpgradeMenu);
 	xr_delete					(TalkMenu);
 	xr_delete					(m_PdaMenu);
 	xr_delete					(m_window);
@@ -563,6 +571,7 @@ void CUIGameCustom::Load()
 			m_CarBodyMenu			= new CUICarBodyWnd		();
 			m_InventoryMenu			= new CUIInventoryWnd	();
 			m_TradeMenu				= new CUITradeWnd		();
+			m_UpgradeMenu			= new CUIUpgradeWnd		();
 		}
 		
 		R_ASSERT				(nullptr==TalkMenu);
@@ -642,6 +651,10 @@ void CUIGameCustom::ReloadGamepadLegends()
 	{
 		m_TradeMenu->ReloadGamepadLegend();
 	}
+	if (m_UpgradeMenu)
+	{
+		m_UpgradeMenu->ReloadGamepadLegend();
+	}
 	// Talk menu
 	if (TalkMenu)
 	{
@@ -720,6 +733,10 @@ CUIActorMenuBase* CUIGameCustom::GetActiveInventoryWindow()
 	else if (m_TradeMenu && m_TradeMenu->IsShown())
 	{
 		return m_TradeMenu;
+	}
+	else if (m_UpgradeMenu && m_UpgradeMenu->IsShown())
+	{
+		return m_UpgradeMenu;
 	}
 	return nullptr;
 }

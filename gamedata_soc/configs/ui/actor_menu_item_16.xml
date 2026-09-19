@@ -238,7 +238,7 @@
 		<main_frame x="0" y="0" width="300" height="100"/>
 
 		<background_frame x="0" y="0" width="300" height="100">
-			<texture>ui_inGame2_hint_wnd_main_window</texture>
+			<texture>ui_frame_01</texture>
 		</background_frame>
 
 		<info_name x="16" y="20" width="258" height="20" complex_mode="1">
@@ -258,9 +258,6 @@
 		</info_prerequisites>
 
 		<properties x="16" y="20" width="252" height="20" sec_col_pos="135" next_line_pos="20">
-	        <upgr_line x="0" y="0" width="260" height="9" stretch="1">
-	            <texture>ui_inGame2_hint_wnd_upgrades</texture>
-	        </upgr_line>
 			<icon x="0"  y="0" width="16"  height="20" stretch="1"/>
 			<text x="20" y="3" width="188" height="18">
 				<text font="letterica16" r="170" g="170" b="170"/>

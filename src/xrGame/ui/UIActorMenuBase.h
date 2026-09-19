@@ -20,6 +20,8 @@ class CUIItemStateDisplay;
 class CUIItemInfo;
 class CUITabControl;
 class CUIInventoryUpgradeWnd;
+class UIInvUpgradeInfo;
+class CUIMessageBoxEx;
 
 const u64 INVENTORY_ALL_CODE = 33;
 const u64 INVENTORY_AMOUNT_CODE = 77;
@@ -57,6 +59,10 @@ enum EDDListType
 	iListTypeMax
 };
 
+namespace inventory { namespace upgrade {
+	class Upgrade;
+} } // namespace upgrade, inventory
+
 class CUIActorMenuBase : public CUIDialogWnd
 {
 private:
@@ -74,6 +80,8 @@ protected:
 								eItemUse,
 								eUnloadMagazine,
 								eSndMax};
+
+	typedef inventory::upgrade::Upgrade 	Upgrade_type;
 
 	ref_sound					sounds						[eSndMax];
 	void						InitBase					(CUIXml& xml);
@@ -118,9 +126,9 @@ protected:
 
 	void						UpdateItemsPlace			();
 	void						UpdateConditionProgressBars	();
-	virtual void				TryRepairItem				(CUIWindow* w, void* d) {}
+	void						TryRepairItem				(CUIWindow* w, void* d);
 	virtual void				UpdateDeadBodyBag			() {}
-	virtual void				SetAuxMode					(eActorMenuControllerAuxMode mode) {}
+	void						SetAuxMode					(eActorMenuControllerAuxMode mode);
 	CUIDragDropListEx*			GetSlotList					(u16 slot_idx);
 	CUIDragDropListEx*			GetDisplayListForItem		(PIItem item, const SInvItemPlace& place);
 	bool						IsSlotHiddenInUi			(u16 slot_idx) const;
@@ -132,13 +140,12 @@ protected:
 	void						InvalidateTransientCellRefsForList(CUIDragDropListEx* list);
 	void						InvalidateTransientCellRefsForCell(CUICellItem* cell);
 	void						InvalidateAllTransientCellRefs();
-	virtual void				InvalidateDerivedCellRefsForList(CUIDragDropListEx* list) {}
-	virtual void				InvalidateDerivedCellRefsForCell(CUICellItem* cell) {}
+	virtual void				InvalidateDerivedCellRefsForList(CUIDragDropListEx* list);
+	virtual void				InvalidateDerivedCellRefsForCell(CUICellItem* cell);
 	void						OnDragDropListContentReset	(CUIDragDropListEx* list);
-	virtual	void				SetupUpgradeItem			() {}
-	virtual void				TrySetCurUpgrade			() {}
+	void						SetupUpgradeItem			();
+	void						TrySetCurUpgrade			();
 	virtual void				UpdateOutfit				() {}
-	virtual void				UpdateActor					() {}
 	virtual void				TradeShowMessage			(s64 money_actor, s64 money_patner) {}
 	void						InitPartnerInventoryContents();
 
@@ -241,7 +248,7 @@ protected:
 	void						ApplySortTabCaptions		(CUITabControl* tabControl, EInventorySortSystem system) const;
 	CUITabControl*				GetActiveSortTabControl		() const;
 	bool						ProcessSortTabKeyboardSwitch(int dik, EUIMessages keyboard_action);
-	virtual bool				AnyInfoWindowOpen			() const { return false; }
+	bool						AnyInfoWindowOpen			() const;
 			void				CheckSelectors				();
 
 	u8							GetActiveSortSystemIndex	() const;
@@ -251,6 +258,9 @@ protected:
 	void						SetInventorySortSystem		(EInventorySortSystem system);
 	void						SetInventorySortSystemScript(LPCSTR system);
 	LPCSTR						GetInventorySortSystemScript() const;
+
+	void						RepairEffect_CurItem				();
+	virtual void				PerformDisassemble					() {}
 
 	EMenuMode					m_currMenuMode = mmUndefined;
 	CUIItemDropAmountWnd*		m_pItemDropAmountWnd = nullptr;
@@ -289,6 +299,12 @@ protected:
 	u32							m_trade_partner_inventory_state = 0;
 	
 	CUIInventoryUpgradeWnd*		m_pUpgradeWnd = nullptr;
+	
+	UIInvUpgradeInfo*			m_upgrade_info = nullptr;
+	CUIMessageBoxEx*			m_message_box_yes_no = nullptr;
+	CUIMessageBoxEx*			m_message_box_ok = nullptr;
+	CUICellItem*				m_upgrade_selected = nullptr;
+	u8							m_repair_mode = 0;
 
 	// Controller UI
 	xr_map<EMenuMode, xr_vector<WND_SELECTOR_INFO>>	m_ui_navigation_lists;
@@ -371,8 +387,10 @@ public:
 
 	CUICellItem*				CurrentItem					();
 	PIItem						CurrentIItem				();
+	PIItem						get_upgrade_item			();
 	virtual void				SetCurrentItem				(CUICellItem* itm) = 0;
 	void						RefreshCurrentItemCell		();
+	virtual void				UpdateActor					() {}
 
 	void						OnInventoryAction			(PIItem pItem, u16 action_type);
 	virtual void				Update						();
@@ -385,6 +403,17 @@ public:
 	virtual bool				StopAnyMove					();
 	virtual void				UpdatePrices				() {}
 	void						ReloadGamepadLegend			();
+	bool						NeedToShowInfos				() const { return m_bShowInfoWnds; }
+
+	void						CallMessageBoxYesNo			(const char* text);
+	void						CallMessageBoxOK			(const char* text);
+	void						OnMesBoxYes					(CUIWindow*, void*);
+	void						OnMesBoxNo					(CUIWindow*, void*);
+
+	void						SeparateUpgradeItem			();
+	bool						SetInfoCurUpgrade			(Upgrade_type* upgrade_type, CInventoryItem* inv_item );
+
+	const UIInvUpgradeInfo* GetUpgradeInfo() const { return m_upgrade_info; }
 	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 	bool m_should_show_gamepad_legend = true;
 };
