@@ -3,12 +3,17 @@
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
 #include <algorithm>
+#include "../../../gamedata/shaders/d3d11/atmosphere_config.h"
 
 namespace
 {
-	constexpr float kCloudWorldToKm = 0.001f;
-	constexpr float kCloudBottomKm = 1.5f;
-	constexpr float kCloudTopKm = 4.0f;
+	constexpr u32 kCloudShadowMapTextureSlot = 2u; // ComputeCloudsView: register(t2)
+	constexpr u32 kCloudCurrentSlot = 3u; // ComputeCloudsTemporal: register(t3)
+	constexpr u32 kCloudHistorySlot = 4u; // ComputeCloudsTemporal: register(t4)
+
+	constexpr float kCloudWorldToKm = SKY_WORLD_TO_KM;
+	constexpr float kCloudBottomKm = SKY_CLOUD_BOTTOM_KM;
+	constexpr float kCloudTopKm = SKY_CLOUD_TOP_KM;
 	constexpr float kCloudEarthRadiusKm = 6371.0f; // Match SKY_EARTH_RADIUS in common_sky.hlsli.
 	constexpr float kCloudShadowHalfExtentKm = 50.0f;
 	constexpr float kCloudShadowDepthMarginKm = 0.25f;
@@ -18,7 +23,7 @@ namespace
 	void SetupCloudLayer()
 	{
 		RCache.set_c("cloud_layer_params", kCloudBottomKm, kCloudTopKm, kCloudWorldToKm, 0.0f);
-		RCache.set_c("cloud_shadow_params", kCloudShadowSteps, float(Device.dwFrame & 3u), 0.0f, kCloudShadowMode);
+		RCache.set_c("cloud_shadow_params", kCloudShadowSteps, 0.0f, 0.0f, kCloudShadowMode);
 	}
 
 	Fmatrix CloudShadowViewProjection()
@@ -88,7 +93,7 @@ namespace
 		RCache.set_Constants(pass.constants);
 		RCache.set_Textures(pass.T);
 		RCache.set_CS(pass.cs);
-		// Flush SRV removals before UAV binding (raw/history change roles each frame).
+		// Flush SRV removals before a texture changes from read-only to UAV usage.
 		GRHI->ShaderResourceCache->Apply();
 	}
 
@@ -101,9 +106,73 @@ namespace
 	}
 } // namespace
 
+void CRenderTarget::set_clouds_block_size(u32 block_size)
+{
+	R_ASSERT(block_size == 2u || block_size == 4u);
+	if (clouds_block_size != block_size)
+	{
+		clouds_block_size = block_size;
+		clouds_history_valid = false;
+		clouds_frame_phase = 0u;
+	}
+}
+
 void CRenderTarget::phase_procedural_clouds()
 {
 	GPU_EVENT(phase_procedural_clouds);
+
+	// Clear the backend's texture tracking AND the manually bound SRVs before
+	// resizing or reusing any cloud texture as an UAV. Do not bypass RCache.
+	static STextureList empty_textures;
+	RCache.set_Textures(&empty_textures);
+	GRHI->ShaderResourceCache->SetCSResource(kCloudShadowMapTextureSlot, nullptr);
+	GRHI->ShaderResourceCache->SetCSResource(kCloudCurrentSlot, nullptr);
+	GRHI->ShaderResourceCache->SetCSResource(kCloudHistorySlot, nullptr);
+	GRHI->ShaderResourceCache->Apply();
+
+	R_ASSERT(clouds_block_size == 2u || clouds_block_size == 4u);
+	const u32 width = rt_Generic_0->dwWidth;
+	const u32 height = rt_Generic_0->dwHeight;
+	const u32 raw_width = (width + clouds_block_size - 1u) / clouds_block_size;
+	const u32 raw_height = (height + clouds_block_size - 1u) / clouds_block_size;
+	if (rt_procedural_clouds_raw->dwWidth != raw_width || rt_procedural_clouds_raw->dwHeight != raw_height)
+	{
+		rt_procedural_clouds_raw->destroy();
+		rt_procedural_clouds_raw->create(r4_RT_procedural_clouds_raw, raw_width, raw_height,
+			ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		clouds_history_valid = false;
+	}
+	const char* history_names[2] = { r4_RT_procedural_clouds_history0, r4_RT_procedural_clouds_history1 };
+	for (u32 i = 0u; i < 2u; ++i)
+	{
+		if (rt_procedural_clouds_history[i]->dwWidth != width || rt_procedural_clouds_history[i]->dwHeight != height)
+		{
+			rt_procedural_clouds_history[i]->destroy();
+			rt_procedural_clouds_history[i]->create(history_names[i], width, height,
+				ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+			clouds_history_valid = false;
+		}
+	}
+
+	const Fvector& sun = g_pGamePersistent->Environment().CurrentEnv->sun_dir;
+	// Conservative first-version cut detection. Normal movement uses reprojection.
+	if (clouds_history_valid &&
+		(clouds_last_frame + 1u != Device.dwFrame ||
+		 clouds_previous_camera.distance_to(Device.vCameraPosition) > 100.0f ||
+		 clouds_previous_direction.dotproduct(Device.vCameraDirection) < 0.85f ||
+		 clouds_previous_up.dotproduct(Device.vCameraTop) < 0.85f ||
+		 clouds_previous_sun.dotproduct(sun) < 0.999f ||
+		 std::abs(clouds_previous_projection._11 - Device.mProject._11) > 0.05f ||
+		 std::abs(clouds_previous_projection._22 - Device.mProject._22) > 0.05f))
+		clouds_history_valid = false;
+	// The current marcher supports cameras below the layer only.
+	if (Device.vCameraPosition.y * kCloudWorldToKm >= kCloudBottomKm)
+		clouds_history_valid = false;
+	if (!clouds_history_valid)
+		clouds_frame_phase = 0u;
+
+	const bool stationary = clouds_history_valid &&
+		memcmp(&clouds_previous_view_projection, &Device.mFullTransform, sizeof(Fmatrix)) == 0;
 
 	const Fmatrix shadow_view_projection = CloudShadowViewProjection();
 	{
@@ -112,8 +181,7 @@ void CRenderTarget::phase_procedural_clouds()
 		SetupCloudLayer();
 		Fmatrix inverse; inverse.invert44(shadow_view_projection);
 		RCache.set_c("cloud_shadow_inverse_view_projection", inverse);
-		ID3D11UnorderedAccessView* shadow_uav =
-			reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_shadow->pUAView->GetRaw());
+		ID3D11UnorderedAccessView* shadow_uav = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_shadow->pUAView->GetRaw());
 		UINT count = 0;
 		RContext->CSSetUnorderedAccessViews(0, 1, &shadow_uav, &count);
 		RCache.Compute((clouds_shadow_map_size + 7u) / 8u, (clouds_shadow_map_size + 3u) / 4u, 1);
@@ -122,99 +190,68 @@ void CRenderTarget::phase_procedural_clouds()
 	{
 		GPU_EVENT(clouds_shadow_blur);
 		SetupComputePass(s_procedural_clouds, 4);
-		ID3D11UnorderedAccessView* shadow_blur_uav =
-			reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_shadow_filtered->pUAView->GetRaw());
+		ID3D11UnorderedAccessView* shadow_blur_uav = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_shadow_filtered->pUAView->GetRaw());
 		UINT count = 0;
 		RContext->CSSetUnorderedAccessViews(0, 1, &shadow_blur_uav, &count);
 		RCache.Compute((clouds_shadow_map_size + 7u) / 8u, (clouds_shadow_map_size + 3u) / 4u, 1);
 		UnbindComputeResources(1);
 	}
-
-
-	GPU_EVENT(clouds_shadow_raymarch);
-	SetupComputePass(s_procedural_clouds, 0);
-	SetupCloudLayer();
-	RCache.set_c("cloud_shadow_view_projection", shadow_view_projection);
-
-	RCache.set_c("cloud_render_params", 4.0f, float(Device.dwFrame % 65536u), 32.0f, 0.0f); // x overridden in shader, frame, horizon steps, reserved
-	// Local full-res means the internal scene size, never the FSR/DLSS display size.
-	const u32 width = rt_procedural_clouds_resolved->dwWidth;
-	const u32 height = rt_procedural_clouds_resolved->dwHeight;
-	RCache.set_c("cloud_screen_params", float(width), float(height), float(Device.dwFrame & 3u), 0.0f);
-
-	ID3D11UnorderedAccessView* uavs[2] = {
-		reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_raw->pUAView->GetRaw()),
-		reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_depth->pUAView->GetRaw())
-	};
-	UINT initial_counts[2] = {};
-
-	RContext->CSSetUnorderedAccessViews(0, 2, uavs, initial_counts);
-
-	const u32 groups_x = (width + 7u) / 8u;
-	const u32 groups_y = (height + 3u) / 4u;
-
-	RCache.Compute((rt_procedural_clouds_raw->dwWidth + 7u) / 8u,
-		(rt_procedural_clouds_raw->dwHeight + 3u) / 4u, 1);
-
-	UnbindComputeResources(2);
-
-	GPU_EVENT(clouds_temporal_resolve);
-	// Match the actual constant binders: m_invP = inverse(mProject_saved),
-	// m_invV = inverse(Device.mView), not inverse(RCache.xforms.get_V()).
-	// Matrices stay unjittered; shaders remove current/add previous raster jitter in UV.
-	Fmatrix cloud_view_projection;
-	cloud_view_projection.mul(Device.mProject_saved, Device.mView);
-	const bool history_valid = clouds_history_frames != 0
-		&& Device.dwFrame == clouds_history_frame + 1u
-		&& width == clouds_history_width && height == clouds_history_height
-		&& ps_r_scale_mode == clouds_previous_scale_mode && ps_r2_aa_type == clouds_previous_aa_type
-		&& Device.vCameraPosition.distance_to_sqr(clouds_previous_camera) < 100.0f * 100.0f
-		&& Device.vCameraDirection.dotproduct(clouds_previous_direction) > 0.7071f
-		&& std::abs(Device.fFOV - clouds_previous_fov) < 0.01f;
-	if (!history_valid)
 	{
-		clouds_history_frames = 0;
-		clouds_previous_view_projection = cloud_view_projection;
-		clouds_previous_camera = Device.vCameraPosition;
-		clouds_previous_jitter = ps_r_taa_jitter;
+		GPU_EVENT(clouds_raymarch_low_res);
+		SetupComputePass(s_procedural_clouds, 0);
+		SetupCloudLayer();
+		RCache.set_c("cloud_screen_params", float(width), float(height), float(clouds_frame_phase), float(clouds_block_size));
+		RCache.set_c("cloud_shadow_view_projection", shadow_view_projection);
+		// The filtered map was an UAV in the preceding blur pass. Bind its SRV
+		// explicitly after that UAV has been removed, using the RHI resource cache.
+		IRHIShaderResourceView* shadow_map_srv = rt_procedural_clouds_shadow_filtered->pTexture->get_SRView();
+		R_ASSERT(shadow_map_srv);
+		GRHI->ShaderResourceCache->SetCSResource(kCloudShadowMapTextureSlot, shadow_map_srv);
+		GRHI->ShaderResourceCache->Apply();
+
+		ID3D11UnorderedAccessView* clouds_uav = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_raw->pUAView->GetRaw());
+		UINT initial_count = 0;
+		RContext->CSSetUnorderedAccessViews(0, 1, &clouds_uav, &initial_count);
+
+		RCache.Compute((rt_procedural_clouds_raw->dwWidth + 7u) / 8u, (rt_procedural_clouds_raw->dwHeight + 3u) / 4u, 1);
+		UnbindComputeResources(1);
+
+		// The same texture becomes the blur output UAV again on the next frame.
+		GRHI->ShaderResourceCache->SetCSResource(kCloudShadowMapTextureSlot, nullptr);
+		GRHI->ShaderResourceCache->Apply();
 	}
-	if (clouds_history_frames < 4u)
-		++clouds_history_frames;
 
-	SetupComputePass(s_procedural_clouds, 1u + clouds_history_write);
-	RCache.set_c("cloud_previous_view_projection", clouds_previous_view_projection);
-	Fmatrix previous_inverse;
-	previous_inverse.invert44(clouds_previous_view_projection);
-	RCache.set_c("cloud_previous_inverse_view_projection", previous_inverse);
-	RCache.set_c("cloud_previous_jitter", clouds_previous_jitter.x, clouds_previous_jitter.y, 0.0f, 0.0f);
-	RCache.set_c("cloud_screen_params", float(width), float(height), float(Device.dwFrame & 3u), 0.0f);
-	RCache.set_c("cloud_previous_camera", clouds_previous_camera.x, clouds_previous_camera.y, clouds_previous_camera.z, 0.0f);
-	// Fresh measurements arrive once per 4 frames. Keep local history responsive,
-	// especially before a second temporal accumulator (FSR/DLSS/XeSS/scene TAA).
-	const float current_weight = ps_r_scale_mode > 1u || ps_r2_aa_type == 3u ? 0.8f : 0.5f;
-	RCache.set_c("cloud_temporal_params", history_valid ? 1.0f : 0.0f, current_weight, kCloudWorldToKm, 0.05f);
+	{
+		GPU_EVENT(clouds_temporal_upsample);
+		SetupComputePass(s_procedural_clouds, 1);
+		SetupCloudLayer();
+		RCache.set_c("cloud_screen_params", float(width), float(height), float(clouds_frame_phase), float(clouds_block_size));
+		RCache.set_c("cloud_temporal_params", clouds_history_valid ? 1.0f : 0.0f, stationary ? 1.0f : 0.0f, 0.0f, 0.0f);
+		RCache.set_c("cloud_previous_view_projection", clouds_previous_view_projection);
 
-	const ref_rt& history = clouds_history_write == 0u ? rt_procedural_clouds_history_0 : rt_procedural_clouds_history_1;
-	const ref_rt& history_depth = clouds_history_write == 0u ? rt_procedural_clouds_history_depth_0 : rt_procedural_clouds_history_depth_1;
-	ID3D11UnorderedAccessView* temporal_uavs[3] = {
-		reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_resolved->pUAView->GetRaw()),
-		reinterpret_cast<ID3D11UnorderedAccessView*>(history->pUAView->GetRaw()),
-		reinterpret_cast<ID3D11UnorderedAccessView*>(history_depth->pUAView->GetRaw())
-	};
-	UINT temporal_counts[3] = {};
-	RContext->CSSetUnorderedAccessViews(0, 3, temporal_uavs, temporal_counts);
-	RCache.Compute(groups_x, groups_y, 1);
-	UnbindComputeResources(3);
+		const u32 write_index = clouds_history_index ^ 1u;
+		GRHI->ShaderResourceCache->SetCSResource(kCloudCurrentSlot, rt_procedural_clouds_raw->pTexture->get_SRView());
+		GRHI->ShaderResourceCache->SetCSResource(kCloudHistorySlot, rt_procedural_clouds_history[clouds_history_index]->pTexture->get_SRView());
+		GRHI->ShaderResourceCache->Apply();
 
-	clouds_history_write ^= 1u;
-	clouds_history_frame = Device.dwFrame;
-	clouds_history_width = width;
-	clouds_history_height = height;
-	clouds_previous_view_projection = cloud_view_projection;
+		ID3D11UnorderedAccessView* history_uav = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_history[write_index]->pUAView->GetRaw());
+		UINT count = 0;
+		RContext->CSSetUnorderedAccessViews(0, 1, &history_uav, &count);
+		RCache.Compute((width + 7u) / 8u, (height + 3u) / 4u, 1);
+		UnbindComputeResources(1);
+		GRHI->ShaderResourceCache->SetCSResource(kCloudCurrentSlot, nullptr);
+		GRHI->ShaderResourceCache->SetCSResource(kCloudHistorySlot, nullptr);
+		GRHI->ShaderResourceCache->Apply();
+		clouds_history_index = write_index;
+	}
+
+	clouds_previous_view_projection = Device.mFullTransform;
+	clouds_previous_projection = Device.mProject;
 	clouds_previous_camera = Device.vCameraPosition;
 	clouds_previous_direction = Device.vCameraDirection;
-	clouds_previous_fov = Device.fFOV;
-	clouds_previous_jitter = ps_r_taa_jitter;
-	clouds_previous_scale_mode = ps_r_scale_mode;
-	clouds_previous_aa_type = ps_r2_aa_type;
+	clouds_previous_up = Device.vCameraTop;
+	clouds_previous_sun = sun;
+	clouds_last_frame = Device.dwFrame;
+	clouds_history_valid = true;
+	clouds_frame_phase = (clouds_frame_phase + 1u) % (clouds_block_size * clouds_block_size);
 }

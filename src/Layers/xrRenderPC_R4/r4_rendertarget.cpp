@@ -639,55 +639,20 @@ CRenderTarget::CRenderTarget()
 		rt_procedural_sky_octo_small.create(r4_RT_sky_octo_map_small, 34, 34, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 		rt_procedural_sky_octo_diffuse.create(r4_RT_sky_octo_diffuse, 34, 34, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 
-		constexpr u32 kAerialLutSize = 32;
-
-		RHITextureDesc desc = {};
-		desc.Width = kAerialLutSize;
-		desc.Height = kAerialLutSize;
-		desc.Depth = kAerialLutSize;
-		desc.MipLevels = 1;
-		desc.Format = ERHI_FORMAT::R16G16B16A16_FLOAT;
-		desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
-		desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE | ERHI_BIND_FLAG::UNORDERED_ACCESS;
-
-		s_procedural_aerial_perspective = GRHI->CreateTexture3D(desc, nullptr);
-		R_ASSERT(s_procedural_aerial_perspective);
-
-		t_procedural_aerial_perspective =dxRenderDeviceRender::Instance().Resources->_CreateTexture(r4_RT_aerial_perspective);
-		t_procedural_aerial_perspective->surface_set(s_procedural_aerial_perspective);
-
-		RHIUAVDesc uav_desc = {};
-		uav_desc.Format = ERHI_FORMAT::R16G16B16A16_FLOAT;
-		uav_desc.ViewDimension = ERHI_VIEW_DIMENSION::Texture3D;
-		uav_desc.MipSlice = 0;
-		uav_desc.FirstWSlice = 0;
-		uav_desc.WSize = kAerialLutSize;
-
-		u_procedural_aerial_perspective = GRHI->CreateUAV(s_procedural_aerial_perspective, uav_desc);
-		R_ASSERT(u_procedural_aerial_perspective);
+		create_aerial_perspective(s_dwWidth, s_dwHeight);
 	}
 	//clouds
 	{
 		// Raw output of the procedural-cloud raymarch.
 		// RGB = premultiplied radiance.
 		// A   = transmittance.
-		const u32 cloud_width = (s_dwWidth + 1u) / 2u;
-		const u32 cloud_height = (s_dwHeight + 1u) / 2u;
+		const u32 cloud_width = (s_dwWidth + clouds_block_size - 1u) / clouds_block_size;
+		const u32 cloud_height = (s_dwHeight + clouds_block_size - 1u) / clouds_block_size;
 		rt_procedural_clouds_raw.create(r4_RT_procedural_clouds_raw, cloud_width, cloud_height, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
-		// Current-frame cloud depth for future temporal reprojection (not scene depth).
-		// ref_rt owns this texture and handles destruction/device reset like raw.
-		rt_procedural_clouds_depth.create(r4_RT_procedural_clouds_depth, cloud_width, cloud_height,
-			ERHI_FORMAT::R32_FLOAT, 1, CRT::USE_UAV_FLAG);
-		rt_procedural_clouds_history_0.create(r4_RT_procedural_clouds_history_0, s_dwWidth, s_dwHeight,
-			ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
-		rt_procedural_clouds_history_1.create(r4_RT_procedural_clouds_history_1, s_dwWidth, s_dwHeight,
-			ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
-		rt_procedural_clouds_history_depth_0.create(r4_RT_procedural_clouds_history_depth_0, s_dwWidth, s_dwHeight,
-			ERHI_FORMAT::R32_FLOAT, 1, CRT::USE_UAV_FLAG);
-		rt_procedural_clouds_history_depth_1.create(r4_RT_procedural_clouds_history_depth_1, s_dwWidth, s_dwHeight,
-			ERHI_FORMAT::R32_FLOAT, 1, CRT::USE_UAV_FLAG);
-		rt_procedural_clouds_resolved.create(r4_RT_procedural_clouds_resolved, s_dwWidth, s_dwHeight,
-			ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_clouds_history[0].create(r4_RT_procedural_clouds_history0,
+			s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_procedural_clouds_history[1].create(r4_RT_procedural_clouds_history1,
+			s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 		rt_procedural_clouds_shadow.create(r4_RT_procedural_clouds_shadow,
 			clouds_shadow_map_size, clouds_shadow_map_size,
 			ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
@@ -1170,15 +1135,14 @@ CRenderTarget::~CRenderTarget	()
 		_RELEASE(t_noise_surf[it]);
 	}
 
-	_RELEASE(u_procedural_aerial_perspective);
-
-	if (t_procedural_aerial_perspective)
+	for (u32 i = 0; i < 3; ++i)
 	{
-		t_procedural_aerial_perspective->surface_set(nullptr);
+		_RELEASE(u_procedural_aerial_perspective[i]);
+		if (t_procedural_aerial_perspective[i])
+			t_procedural_aerial_perspective[i]->surface_set(nullptr);
+		t_procedural_aerial_perspective[i].destroy();
+		_RELEASE(s_procedural_aerial_perspective[i]);
 	}
-	t_procedural_aerial_perspective.destroy();
-
-	_RELEASE(s_procedural_aerial_perspective);
 
 	accum_spot_geom_destroy();
 	accum_omnip_geom_destroy();

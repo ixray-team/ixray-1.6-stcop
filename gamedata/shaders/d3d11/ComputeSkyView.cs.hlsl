@@ -143,7 +143,7 @@ void main(uint3 dispatch_id : SV_DispatchThreadID)
         spectral_radiance = compute_sky_inscattering(ray_origin, ray_direction, ray_length, sun_direction);
     }
 #if SKY_ENABLE_SPECTRAL
-    const float3 linear_rgb = 4.0 * sky_linear_srgb_from_spectral_samples(spectral_radiance);
+    const float3 linear_rgb = SKY_RADIANCE_SCALE * sky_linear_srgb_from_spectral_samples(spectral_radiance);
 #else
     float3 linear_rgb = max(spectral_radiance.rgb, 0.0f);
 #endif

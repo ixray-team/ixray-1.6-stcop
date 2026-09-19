@@ -35,6 +35,8 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("s_sky_octo_ibl_small",	r4_RT_sky_octo_map_small	);
 		C.r_dx10Texture		("s_sky_octo_ibl_diffuse", r4_RT_sky_octo_diffuse);
 		C.r_dx10Texture		("s_aerial_perspective_lut",r4_RT_aerial_perspective);
+		C.r_dx10Texture("s_aerial_direct_lut", r4_RT_aerial_direct);
+		C.r_dx10Texture("s_aerial_transmittance_lut", r4_RT_aerial_transmittance);
 		//======
 		C.r_dx10Texture		("s_env_fwd",		r2_RT_env_fwd		);
 		C.r_dx10Texture		("s_occ",			r2_RT_ssao_temp		);

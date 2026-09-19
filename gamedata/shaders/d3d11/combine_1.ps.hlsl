@@ -5,34 +5,16 @@
 #endif
 
 #ifdef USE_PROCEDURAL_AERIAL_PERSPECTIVE
+    #include "common_aerial.hlsli"
     Texture3D<float4> s_aerial_perspective_lut;
+    Texture3D<float4> s_aerial_direct_lut;
+    Texture3D<float4> s_aerial_transmittance_lut;
 #endif
 
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 #include "reflections.hlsli"
 
-float sky_aerial_distance_to_texture_w(float distance_km, float maximum_distance_km, float depth_resolution)
-{
-    float unit_depth = sqrt(saturate(distance_km / maximum_distance_km));
-    // ComputeAP сохраняет slice i для:
-    // unit_depth = i / (depth_resolution - 1).
-    // Здесь переводим это значение в координату центра texel.
-    return (unit_depth * (depth_resolution - 1.0f) + 0.5f) / depth_resolution;
-}
-
-float4 sky_sample_aerial_perspective(Texture3D<float4> aerial_lut, SamplerState linear_sampler, float2 screen_uv, float view_distance)
-{
-    float world_to_km = 0.009f;
-    float maximum_distance_km = 32.0f;
-    float depth_resolution = 32.0f;
-
-    float distance_km = view_distance * world_to_km;
-
-    float texture_w = sky_aerial_distance_to_texture_w(distance_km, maximum_distance_km, depth_resolution);
-
-    return aerial_lut.SampleLevel(linear_sampler, float3(saturate(screen_uv), texture_w), 0.0f);
-}
 
 Texture2D s_occ;
 
@@ -103,11 +85,13 @@ float4 main(PSInputFullscreen I) : SV_Target
 #endif
     
     #ifdef USE_PROCEDURAL_AERIAL_PERSPECTIVE
-        float4 aerial = sky_sample_aerial_perspective(s_aerial_perspective_lut, smp_rtlinear, I.texcoord, O.ViewDist);
-
-        float atmospheric_transmittance = saturate(1.0f - aerial.a);
-
-        Color = Color * atmospheric_transmittance + aerial.rgb;
+        uint ap_width, ap_height, ap_depth;
+        s_aerial_perspective_lut.GetDimensions(ap_width, ap_height, ap_depth);
+        float3 ap_uv = sky_aerial_uv(I.texcoord, O.ViewDist * SKY_WORLD_TO_KM, ap_depth);
+        float3 ap_ambient = s_aerial_perspective_lut.SampleLevel(smp_rtlinear, ap_uv, 0.0f).rgb;
+        float3 ap_direct = s_aerial_direct_lut.SampleLevel(smp_rtlinear, ap_uv, 0.0f).rgb;
+        float3 ap_T = s_aerial_transmittance_lut.SampleLevel(smp_rtlinear, ap_uv, 0.0f).rgb;
+        Color = Color * saturate(ap_T) + ap_ambient + ap_direct;
     #endif
     
 #define DEBUG_IBL_REFLECTION_VECTOR 0

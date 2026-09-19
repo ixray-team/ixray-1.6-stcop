@@ -28,7 +28,7 @@ public:
 
 		#if RENDER == R_R4 
 			C.r_dx10Texture("s_sky_view_lut", r4_RT_sky_view); // doenitz add procedural sky view LUT
-			C.r_dx10Texture("s_procedural_clouds", r4_RT_procedural_clouds_resolved);
+			C.r_dx10Texture("s_procedural_clouds", r4_RT_procedural_clouds_history0);
 		#endif
 
 		C.r_dx10Sampler("smp_rtlinear");
@@ -74,7 +74,7 @@ public:
 	STextureList		sky_r_textures_env;	
 	STextureList		clouds_r_textures;
 	ref_texture sky_view_lut; // doenitz add procedural sky view LUT
-	ref_texture procedural_clouds_resolved;
+	ref_texture procedural_clouds;
 };
 
 class dxEnvironmentRender : public IEnvironmentRender

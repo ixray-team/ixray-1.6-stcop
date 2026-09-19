@@ -151,31 +151,30 @@ public:
 	ref_rt						rt_procedural_sky_octo_small;  // 34x34
 	ref_rt						rt_procedural_sky_octo_diffuse;
 	ref_rt						rt_procedural_clouds_raw;
-	ref_rt						rt_procedural_clouds_depth; // weighted ray distance, km; 0 = empty
-	ref_rt						rt_procedural_clouds_history_0;
-	ref_rt						rt_procedural_clouds_history_1;
-	ref_rt rt_procedural_clouds_history_depth_0;
-	ref_rt rt_procedural_clouds_history_depth_1;
-	ref_rt rt_procedural_clouds_resolved;
+	ref_rt rt_procedural_clouds_history[2]; // full internal resolution, RGB radiance / A transmittance
+	static constexpr u32 clouds_default_block_size = 4u; // 2: half res / 4 frames; 4: quarter res / 16 frames
+	u32 clouds_block_size = clouds_default_block_size;
+	u32 clouds_history_index = 0u; // most recently resolved image, also consumed by sky.ps
+	u32 clouds_frame_phase = 0u;
+	u32 clouds_last_frame = 0u;
+	bool clouds_history_valid = false;
+	Fmatrix clouds_previous_view_projection = Fidentity;
+	Fmatrix clouds_previous_projection = Fidentity;
+	Fvector clouds_previous_camera = {};
+	Fvector clouds_previous_direction = {};
+	Fvector clouds_previous_up = {};
+	Fvector clouds_previous_sun = {};
+	void set_clouds_block_size(u32 block_size); // settings hook; resize occurs at next cloud render
 	static constexpr u32 clouds_shadow_map_size = 1024;
 	ref_rt rt_procedural_clouds_shadow; // one 2D layer: tau, light Z start/end, T
 	ref_rt rt_procedural_clouds_shadow_filtered; // edge-aware filtered tau; center interval is retained
-	u32 clouds_history_frame = 0;
-	u32 clouds_history_frames = 0;
-	u32 clouds_history_write = 0;
-	u32 clouds_history_width = 0;
-	u32 clouds_history_height = 0;
-	Fmatrix clouds_previous_view_projection;
-	Fvector clouds_previous_camera;
-	Fvector clouds_previous_direction;
-	float clouds_previous_fov = 0.0f;
-	Fvector clouds_previous_jitter; // clip-space scene jitter, not trace phase
-	u32 clouds_previous_scale_mode = 0;
-	u32 clouds_previous_aa_type = 0;
 
-	IRHISurface* s_procedural_aerial_perspective = nullptr;
-	IRHIUnorderedAccessView* u_procedural_aerial_perspective = nullptr;
-	ref_texture t_procedural_aerial_perspective;
+	// Ambient scattering, direct scattering, coloured transmittance.
+	IRHISurface* s_procedural_aerial_perspective[3] = {};
+	IRHIUnorderedAccessView* u_procedural_aerial_perspective[3] = {};
+	ref_texture t_procedural_aerial_perspective[3];
+	u32 aerial_width = 0, aerial_height = 0;
+	void create_aerial_perspective(u32 width, u32 height);
 
 	// env
 	ref_texture				t_envmap_0		;	// env-0

@@ -94,7 +94,7 @@ void dxEnvDescriptorMixerRender::Copy(IEnvDescriptorMixerRender& _in) {
 	sky_r_textures_env.dwReference++;
 	#if RENDER == R_R4
 		sky_view_lut = other->sky_view_lut;
-		procedural_clouds_resolved = other->procedural_clouds_resolved;
+		procedural_clouds = other->procedural_clouds;
 	#endif
 }
 
@@ -112,7 +112,7 @@ void dxEnvDescriptorMixerRender::Destroy() {
 	clouds_r_textures.clear();
 	#if RENDER == R_R4
 		sky_view_lut.destroy();
-		procedural_clouds_resolved.destroy();
+		procedural_clouds.destroy();
 	#endif
 }
 
@@ -157,13 +157,13 @@ void dxEnvDescriptorMixerRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorR
 		{
 			sky_view_lut.create(r4_RT_sky_view);
 		}
-		if (!procedural_clouds_resolved)
+		if (!procedural_clouds)
 		{
-			procedural_clouds_resolved.create(r4_RT_procedural_clouds_resolved);
+			procedural_clouds.create(r4_RT_procedural_clouds_history0);
 		}
 
 		sky_r_textures.push_back(std::make_pair(2, sky_view_lut));
-		sky_r_textures.push_back(std::make_pair(3, procedural_clouds_resolved));
+		sky_r_textures.push_back(std::make_pair(3, procedural_clouds));
 
 	#endif
 }
@@ -285,6 +285,25 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 
 #ifdef USE_DX11
 	RCache.set_xform_world_old(mSkyOld);
+#endif
+
+#if RENDER == R_R4
+	// The environment mixer is updated before the cloud pass. Select the newly
+	// written ping-pong image here, immediately before the sky texture list binds.
+	mixRen.procedural_clouds = RImplementation.Target->rt_procedural_clouds_history[
+		RImplementation.Target->clouds_history_index]->pTexture;
+	bool has_cloud_binding = false;
+	for (auto& binding : mixRen.sky_r_textures)
+	{
+		if (binding.first == 3u)
+		{
+			binding.second = mixRen.procedural_clouds;
+			has_cloud_binding = true;
+			break;
+		}
+	}
+	if (!has_cloud_binding)
+		mixRen.sky_r_textures.push_back(std::make_pair(3u, mixRen.procedural_clouds));
 #endif
 
 	RCache.set_Geometry(sh_2geom);

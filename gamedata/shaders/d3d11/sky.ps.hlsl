@@ -42,21 +42,11 @@ void main(in v2p I, out sky O)
     // Must match ComputeSkyView.cs.hlsl.
     const float camera_elevation = max(0.002f * eye_position.y + 0.2f, 0.0f);
     const float3 sky_color = sky_sample_view_lut(s_sky_view_lut, smp_rtlinear, ray_direction, sun_direction, camera_elevation).rgb;
-    // Display-only centered radius-1 blur. It remains after temporal accumulation,
-    // so it cannot contaminate history or shift the cloud silhouette by half a pixel.
-    uint cloud_width, cloud_height;
-    s_procedural_clouds.GetDimensions(cloud_width, cloud_height);
-    const int2 cloud_offsets[5] = { int2(0, 0), int2(-1, 0), int2(1, 0), int2(0, -1), int2(0, 1) };
-    const float cloud_weights[5] = { 0.5f, 0.125f, 0.125f, 0.125f, 0.125f };
-    float4 clouds = 0.0f;
-    [unroll]
-    for (uint cloud_tap = 0u; cloud_tap < 5u; ++cloud_tap)
-    {
-        int2 cloud_pixel = clamp(int2(I.hpos.xy) + cloud_offsets[cloud_tap],
-            int2(0, 0), int2(cloud_width, cloud_height) - 1);
-        clouds += s_procedural_clouds.Load(int3(cloud_pixel, 0)) * cloud_weights[cloud_tap];
-    }
-    // Filter linear premultiplied radiance and transmittance with identical weights.
+    // Full internal-resolution history uses an unjittered grid. Invert the shift
+    // applied by sky.vs exactly once, here at composition (also for FSR/DLSS).
+    const float2 cloud_uv = I.hpos.xy * pos_decompression_params2.zw
+        - m_taa_jitter.xy * float2(0.5f, -0.5f);
+    const float4 clouds = s_procedural_clouds.SampleLevel(smp_rtlinear, cloud_uv, 0.0f);
     float3 final_sky = clouds.rgb + sky_color * saturate(clouds.a);
     // SkyView is already stored in linear HDR.
     // Do not call GammaToLinear, LinearToGamma, detonemap or tonemap.
