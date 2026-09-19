@@ -981,4 +981,7 @@
 	<string id="ui_mm_bloom_amount">
 		<text>Интенсивность Bloom</text>
 	</string>
+	<string id="st_repair">
+		<text>починить</text>
+	</string>
 </string_table>
