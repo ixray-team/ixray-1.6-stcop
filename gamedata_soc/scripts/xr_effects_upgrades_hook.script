@@ -1,0 +1,14 @@
+function on_game_start()
+
+	xr_effects.upgrade_hint = function(actor, npc, p)
+		if(p) then
+			inventory_upgrades.cur_hint = p
+		end
+	end
+
+	xr_effects.mech_discount = function(actor, npc, p)
+		if(p[1]) then
+			inventory_upgrades.mech_discount(tonumber(p[1]))
+		end
+	end
+end

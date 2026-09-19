@@ -528,31 +528,6 @@ void CUIActorMenu::SetCurrentItem(CUICellItem* itm)
 	}
 }
 
-void CUIActorMenu::InvalidateDerivedCellRefsForList(CUIDragDropListEx* list)
-{
-	if (m_upgrade_selected == nullptr)
-	{
-		return;
-	}
-
-	if (list == nullptr || m_upgrade_selected->OwnerList() == list)
-	{
-		m_upgrade_selected->Mark(false);
-		m_upgrade_selected = nullptr;
-	}
-}
-
-void CUIActorMenu::InvalidateDerivedCellRefsForCell(CUICellItem* cell)
-{
-	if (m_upgrade_selected == nullptr || m_upgrade_selected != cell)
-	{
-		return;
-	}
-
-	m_upgrade_selected->Mark(false);
-	m_upgrade_selected = nullptr;
-}
-
 void CUIActorMenu::InfoCurItem( CUICellItem* cell_item )
 {
 	if ( !cell_item || !cell_item->HasValidInventoryBinding() )
@@ -627,22 +602,6 @@ void CUIActorMenu::InfoCurItem( CUICellItem* cell_item )
 		const float border = 10.0f;
 		fit_infownd_in_rect(m_ItemInfo, stickToRect, Frect().set(0, 0, UI_BASE_WIDTH - dx_pos, UI_BASE_HEIGHT), border, dx_pos);
 	}
-}
-
-void CUIActorMenu::CallMessageBoxYesNo( const char* text )
-{
-	m_bShowInfoWnds = false;
-	m_message_box_yes_no->SetText(text);
-	m_message_box_yes_no->func_on_ok = CUIWndCallback::void_function( this, &CUIActorMenu::OnMesBoxYes );
-	m_message_box_yes_no->func_on_no = CUIWndCallback::void_function( this, &CUIActorMenu::OnMesBoxNo );
-	m_message_box_yes_no->ShowDialog(false);
-}
-
-void CUIActorMenu::CallMessageBoxOK( const char* text )
-{
-	m_bShowInfoWnds = false;
-	m_message_box_ok->SetText(text);
-	m_message_box_ok->ShowDialog(false);
 }
 
 void CUIActorMenu::ResetMode()
@@ -737,38 +696,6 @@ void CUIActorMenu::HideDialog()
 	}
 
 	GetHolder()->StopDialog(this);
-}
-
-void CUIActorMenu::SetAuxMode(eActorMenuControllerAuxMode mode)
-{
-	m_AuxMode = mode;
-
-	switch (mode)
-	{
-	case eActorMenuControllerAuxMode::eAuxMode_Upgrade:
-		{
-			if (m_ui_aux_selector)
-			{
-				Fvector2 frmSize = m_pUpgradeWnd->GetWndSize();
-				Fvector2 frmPos = m_pUpgradeWnd->GetWndPos();
-
-				if (frmSize.x > 0 && frmSize.y > 0)
-				{
-					m_ui_aux_selector->SetWndSize(frmSize);
-					m_ui_aux_selector->SetWndPos(frmPos);
-					m_ui_aux_selector_shown = true;
-				}
-				else
-					m_ui_aux_selector_shown = false;
-			}
-			m_pUpgradeWnd->SetActiveForController(true);
-			m_upgrade_info->init_upgrade(nullptr, nullptr);
-		}
-		break;
-	default:
-		m_ui_aux_selector_shown = false;
-		m_pUpgradeWnd->SetActiveForController(false);
-	}
 }
 
 namespace

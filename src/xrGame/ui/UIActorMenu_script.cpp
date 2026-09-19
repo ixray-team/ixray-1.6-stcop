@@ -171,67 +171,6 @@ void CUIActorMenu::HighlightForEachInSlot(const luabind::functor<bool>& functor,
 	m_highlight_clear = false;
 }
 
-void CUIActorMenu::TryRepairItem(CUIWindow* w, void* d)
-{
-	PIItem item = get_upgrade_item();
-	if ( !item )
-	{
-		return;
-	}
-	if ( item->GetCondition() > 0.99f )
-	{
-		return;
-	}
-	
-	if (!IsGameTypeSingle())
-	{
-		const char* item_name = item->m_section_id.c_str();
-		luabind::functor<int> funct;
-		R_ASSERT2(ai().script_engine().functor("inventory_upgrades.how_much_repair", funct), make_string<const char*>("Failed to get functor <inventory_upgrades.how_much_repair>, item = %s", item_name));
-		int cost = funct(item_name, item->GetCondition());
-		NET_Packet P;
-		CGameObject::u_EventGen(P, GE_GAME_EVENT, item->object().ID());
-		P.w_u16(GAME_EVENT_MP_REPAIR);
-		P.w_u16(item->object().ID());
-		P.w_s32(cost);
-		CGameObject::u_EventSend(P);
-		return;
-	}
-
-	const char* item_name = item->m_section_id.c_str();
-
-	CEatableItem* EItm = item->cast_eatable_item();
-	if (EItm)
-	{
-		bool allow_repair = !!READ_IF_EXISTS(pSettings, r_bool, item_name, "allow_repair", false);
-		if (!allow_repair)
-			return;
-	}
-	const char* partner = m_pPartnerInvOwner ? m_pPartnerInvOwner->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
-
-	luabind::functor<bool> funct;
-	R_ASSERT2(
-		ai().script_engine().functor( "inventory_upgrades.can_repair_item", funct ),
-		make_string<const char*>( "Failed to get functor <inventory_upgrades.can_repair_item>, item = %s", item_name )
-		);
-	bool can_repair = funct( item_name, item->GetCondition(), partner );
-
-	luabind::functor<const char*> funct2;
-	R_ASSERT2(
-		ai().script_engine().functor( "inventory_upgrades.question_repair_item", funct2 ),
-		make_string<const char*>( "Failed to get functor <inventory_upgrades.question_repair_item>, item = %s", item_name )
-		);
-	const char* question = funct2( item_name, item->GetCondition(), can_repair, partner );
-
-	if(can_repair)
-	{
-		m_repair_mode = 1;
-		CallMessageBoxYesNo( question );
-	} 
-	else
-		CallMessageBoxOK( question );
-}
-
 void CUIActorMenu::TryDisassembleItem(CUIWindow* w, void* d)
 {
 	PIItem item = get_upgrade_item();
@@ -280,40 +219,6 @@ void CUIActorMenu::TryDisassembleItem(CUIWindow* w, void* d)
 	}
 	else
 		CallMessageBoxOK(question);
-}
-
-void CUIActorMenu::RepairEffect_CurItem()
-{
-	PIItem item = CurrentIItem();
-	if (!item)
-	{
-		return;
-	}
-
-	const char* item_name = item->m_section_id.c_str();
-
-	luabind::functor<void> funct;
-	R_ASSERT(ai().script_engine().functor("inventory_upgrades.effect_repair_item", funct));
-	funct(item_name, item->GetCondition());
-
-	item->SetCondition(1.0f);
-	UpdateConditionProgressBars();
-	SeparateUpgradeItem();
-	CUICellItem* itm = CurrentItem();
-
-	if (itm)
-	{
-		itm->UpdateConditionProgressBar();
-	}
-
-	if (CWeapon* wpn = item->cast_weapon())
-	{
-		wpn->SetMisfireStatus(false);
-		if (wpn->GetState() == CWeapon::eIdle)
-		{
-			wpn->SwitchState(CWeapon::eIdle);
-		}
-	}
 }
 
 void CUIActorMenu::PerformDisassemble()

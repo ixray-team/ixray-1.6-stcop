@@ -27,6 +27,7 @@ class CUIInventoryWnd;
 class CUICarBodyWnd;
 class CUITradeWnd;
 class CUIRadialMenuWeapon;
+class CUIUpgradeWnd;
 
 struct SDrawStaticStruct :public IPureDestroyableObject
 {
@@ -137,6 +138,7 @@ protected:
 	CUIInventoryWnd*	m_InventoryMenu;
 	CUICarBodyWnd*		m_CarBodyMenu;
 	CUITradeWnd*		m_TradeMenu;
+	CUIUpgradeWnd*		m_UpgradeMenu;
 	CUIPdaWnd*			m_PdaMenu;
 	CUIRadialMenuWeapon* m_RadialMenuWeapon;
 

@@ -105,16 +105,6 @@ void CUIActorMenu::UpdateInfoWindowVisibility()
 	}
 }
 
-bool CUIActorMenu::AnyInfoWindowOpen() const
-{
-	if (m_ItemInfo && m_ItemInfo->CurrentItem())
-		return true;
-	if (m_upgrade_info && m_upgrade_info->get_upgrade())
-		return true;
-
-	return false;
-}
-
 void CUIActorMenu::OnBtnExitClicked(CUIWindow* w, void* d)
 {
 	g_btnHint->Discard();
@@ -131,61 +121,4 @@ void CUIActorMenu::OnBtnExitClicked(CUIWindow* w, void* d)
 	{
 		CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
 	}
-}
-
-void CUIActorMenu::OnMesBoxYes( CUIWindow*, void* )
-{
-	switch( m_currMenuMode )
-	{
-	case mmUndefined:
-		break;
-	case mmInventory:
-		break;
-	case mmTrade:
-		break;
-	case mmUpgrade:
-		if (m_repair_mode == 1)
-		{
-			RepairEffect_CurItem();
-			m_repair_mode = 0;
-		}
-		else if (m_repair_mode == 2)
-		{
-			PerformDisassemble();
-			m_repair_mode = 0;
-		}
-		else
-		{
-			m_pUpgradeWnd->OnMesBoxYes();
-		}
-		break;
-	case mmDeadBodySearch:
-		break;
-	default:
-		R_ASSERT(0);
-		break;
-	}
-	UpdateItemsPlace();
-}
-
-void CUIActorMenu::OnMesBoxNo(CUIWindow*, void*)
-{
-	switch(m_currMenuMode)
-	{
-	case mmUndefined:
-		break;
-	case mmInventory:
-		break;
-	case mmTrade:
-		break;
-	case mmUpgrade:
-		m_repair_mode = 0;
-		break;
-	case mmDeadBodySearch:
-		break;
-	default:
-		R_ASSERT(0);
-		break;
-	}
-	UpdateItemsPlace();
 }

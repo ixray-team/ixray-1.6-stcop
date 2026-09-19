@@ -132,4 +132,154 @@
 	<string id="month_september">
 		<text>Сентябрь</text>
 	</string>
+	<string id="ui_st_inv_repair">
+		<text>Ремонт</text>
+	</string>
+	<string id="ui_repair_button_hint">
+		<text>Починить выбранную вещь</text>
+	</string>
+	<string id="st_prop_bullet_speed">
+		<text>Настильность</text>
+	</string>
+	<string id="st_prop_calibre">
+		<text>Калибр</text>
+	</string>
+	<string id="st_prop_recoil">
+		<text>Отдача</text>
+	</string>
+	<string id="st_prop_reliability">
+		<text>Надёжность</text>
+	</string>
+	<string id="st_prop_scope_1.6x">
+		<text>Коллиматорный прицел 1,6x</text>
+	</string>
+	<string id="st_prop_scope_4x">
+		<text>Оптический прицел 4x</text>
+	</string>
+	<string id="st_prop_silencer">
+		<text>Крепление глушителя</text>
+	</string>
+	<string id="st_prop_underbarrel_slot">
+		<text>Крепление подствольника</text>
+	</string>
+	<string id="st_prop_weight">
+		<text>Масса</text>
+	</string>
+	<string id="st_upgr_cost">
+		<text>Стоимость</text>
+	</string>
+	<string id="st_upgr_disable">
+		<text>Невозможно установить</text>
+	</string>
+	<string id="st_upgr_installed">
+		<text>Установлен</text>
+	</string>
+	<string id="st_upgrade_install">
+		<text>Вы действительно хотите установить:</text>
+	</string>
+	<string id="st_prop_autolock">
+		<text>Система автозахвата целей</text>
+	</string>
+	<string id="st_prop_autolockscope">
+		<text>Система автозахвата целей</text>
+	</string>
+	<string id="st_prop_scope_5x">
+		<text>Оптический прицел 5x</text>
+	</string>
+	<string id="st_prop_scope_6x">
+		<text>Оптический прицел 6x</text>
+	</string>
+	<string id="st_prop_scanner">
+		<text>Инфракрасный сканер</text>
+	</string>
+	<string id="st_prop_weightoutfit">
+		<text>Вес бронежилета</text>
+	</string>
+	<string id="st_prop_night_vision_2">
+		<text>ПНВ 2-го поколения</text>
+	</string>
+	<string id="st_prop_night_vision_3">
+		<text>ПНВ 3-го поколения</text>
+	</string>
+	<string id="st_prop_scope_attach">
+		<text>Крепление оптики</text>
+	</string>
+	<string id="st_int_silencer">
+		<text>Интегрированный глушитель</text>
+	</string>
+	<string id="st_prop_grenade_launcher">
+		<text>Подствольный гранатомёт</text>
+	</string>
+	<string id="st_prop_restore_bleeding">
+		<text>Заживление ран</text>
+	</string>
+	<string id="st_prop_restore_health">
+		<text>Восстановление здоровья</text>
+	</string>
+	<string id="st_prop_night_vision">
+		<text>ПНВ 1-го поколения</text>
+	</string>
+	<string id="st_prop_scope">
+		<text>Регулируемый прицел</text>
+	</string>
+	<string id="st_prop_contrast">
+		<text>Высококонтрастный прицел</text>
+	</string>
+	<string id="st_prop_sprint">
+		<text>Усилители сервоприводов </text>
+	</string>
+	<string id="st_prop_durability">
+		<text>Прочность костюма</text>
+	</string>
+	<string id="st_upgr_cant_do">
+		<text>техник не делает такую модификацию</text>
+	</string>
+	<string id="st_upgr_group">
+		<text>эта часть уже модифицирована</text>
+	</string>
+	<string id="st_upgr_enough_money">
+		<text>недостаточно денег</text>
+	</string>
+	<string id="st_no_buck">
+		<text>Не стреляет дробью</text>
+	</string>
+	<string id="st_auto_fire">
+		<text>Режим авт. огня</text>
+	</string>
+	<string id="st_semi_auto_fire">
+		<text>Режим по 3 выстрела</text>
+	</string>
+	<string id="st_prop_artefact">
+		<text>Кол-во контейнеров</text>
+	</string>
+	<string id="st_upgr_vodka">
+		<text>технику нужно выпить водки</text>
+	</string>
+	<string id="st_upgr_toolkit_1">
+		<text>технику нужны инструменты для грубой работы</text>
+	</string>
+	<string id="st_upgr_toolkit_2">
+		<text>технику нужны инструменты для тонкой работы</text>
+	</string>
+	<string id="st_upgr_toolkit_3">
+		<text>технику нужны инструменты для калибровки</text>
+	</string>
+	<string id="st_upgr_condlist">
+		<text>технику нужны дополнительные данные</text>
+	</string>
+	<string id="st_upgr_parents">
+		<text>нужны предшествующие модификации</text>
+	</string>
+	<string id="ui_inv_repair">
+		<text>Починить</text>
+	</string>
+	<string id="ui_st_upgrade">
+		<text>Улучшить</text>
+	</string>
+	<string id="ui_inv_effect_time">
+		<text>Время действия</text>
+	</string>
+	<string id="ui_inv_seconds_short">
+		<text>сек.</text>
+	</string>
 </string_table>

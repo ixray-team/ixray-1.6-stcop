@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+	<item_colors>
+		<default r="255" g="255" b="255"/>
+		<slot r="180" g="255" b="180"/>
+		<unavaliable r="255" g="100" b="100"/>
+	</item_colors>
+
+	<main x="0" y="0" width="1024" height="768"/>
+
+	<gamepad_legend x="0" y="730" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_use</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_use</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_actions</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_actions</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_info</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_info_soc</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_action</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_take_all</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
+	<static_icon x="111" y="32" width="150" height="220"  stretch="1">
+		<texture>ui_charinfo_left</texture>
+		<texture_offset x="-4" y="0"/>
+	</static_icon>
+	
+	<static_icon x="777" y="32" width="150" height="220" stretch="1">
+		<texture>ui_charinfo_right</texture>
+		<texture_offset x="4" y="0"/>
+	</static_icon>
+
+	<our_bag_static x="100" y="270" width="270" height="450" stretch="1">
+		<texture width="305" height="455">ui\ui_dg_inventory_exchange_trade</texture>
+		<text x="25" y="8" font="graffiti22" r="238" g="153" b="26" complex_mode="1"/>
+	</our_bag_static>
+
+	<our_money_static x="20" y="-17" width="100" height="46" stretch="1">
+		<texture>ui_hud_frame_moneyNumber</texture>
+		<text align="c" y="10" font="graffiti22" r="238" g="155" b="23" complex_mode="0"/>
+	</our_money_static>
+
+	<dragdrop_list_our x="18" y="35" width="248" height="410"
+			cell_width = "29" cell_height="39" rows_num="10" cols_num="8" 
+			unlimited="1" group_similar="1" condition_progress_bar="1"/>
+
+	<frame_window x="375" y="274" width="252" height="460">
+		<texture>ui_frame</texture>		
+		<auto_static x="5" y="-10" width="191" height="64" stretch="1">
+			<texture>ui\ui_inv_info_over_lt</texture>
+		</auto_static>	
+	</frame_window>
+
+	<descr_static x="5" y="184" width="245" height="270" stretch="1">
+		<texture width="258" height="271">ui\ui_inv_info_over_b</texture>
+	</descr_static>
+
+	<auto_static x="405" y="461" width="220" height="30">
+		<text font="graffiti22" r="255" g="255" b="255" a="128">ui_st_description</text>
+	</auto_static>
+
+	<top_background x="85" y="0" width="854" height="32" stretch="1">
+		<texture>ui\ui_top_background</texture>
+	</top_background>
+
+	<bottom_background x="85" y="736" width="854" height="32" stretch="1">
+		<texture>ui\ui_bottom_background</texture>
+	</bottom_background>
+	
+	<button x="447" y="726" width="131" height="48" hR="255" hB="83" hG="179" highlight_text="1" stretch="1">
+		<texture>ui_button_main01</texture>
+		<text align="c"	font="graffiti22" r="238" g="153" b="26">ui_inv_exit</text>
+	</button>
+	
+	<ui_c_navi_upgrade>
+		<wnd_selector_info wnd="BagList" 				wnd_l=""				wnd_r=""/>
+	</ui_c_navi_upgrade>
+
+</window>
+

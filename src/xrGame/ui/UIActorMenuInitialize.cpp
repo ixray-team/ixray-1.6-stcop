@@ -39,8 +39,6 @@ CUIActorMenu::CUIActorMenu()
 
 CUIActorMenu::~CUIActorMenu()
 {
-	xr_delete			(m_message_box_yes_no);
-	xr_delete			(m_message_box_ok);
 	xr_delete			(m_UIPropertiesBox);
 	xr_delete			(m_hint_wnd);
 	xr_delete			(m_ItemInfo);
@@ -290,7 +288,6 @@ void CUIActorMenu::Construct()
 //-	AttachChild							(m_ItemInfo);
 	m_ItemInfo->InitItemInfo			("actor_menu_item.xml");
 
-	m_upgrade_info						= nullptr;
 	if ( ai().get_alife() )
 	{
 		m_upgrade_info						= new UIInvUpgradeInfo();
@@ -467,7 +464,6 @@ void CUIActorMenu::Construct()
 	if (m_pQuickSlot)
 	BindDragDropListEvents(m_pQuickSlot);
 
-	m_upgrade_selected				= nullptr;
 	SetCurrentItem					(nullptr);
 	SetActor						(nullptr);
 	SetPartner						(nullptr);
@@ -475,7 +471,6 @@ void CUIActorMenu::Construct()
 
 	m_actor_trade					= nullptr;
 	m_partner_trade					= nullptr;
-	m_repair_mode					= 0;
 
 	DeInitInventoryMode				();
 	DeInitTradeMode					();
