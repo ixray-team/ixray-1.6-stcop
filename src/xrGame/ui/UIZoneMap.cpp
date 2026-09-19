@@ -183,6 +183,10 @@ void CUIZoneMap::Render			()
 
 	m_clipFrame.Draw	();
 	m_background.Draw	();
+	if (!m_compass.GetParent())
+	{
+		m_compass.Draw();
+	}
 }
 
 void CUIZoneMap::Update()
