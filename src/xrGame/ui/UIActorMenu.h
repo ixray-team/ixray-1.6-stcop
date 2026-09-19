@@ -22,8 +22,6 @@ class CUIStatic;
 class CUI3tButton;
 class CInventoryOwner;
 class CInventoryBox;
-class UIInvUpgradeInfo;
-class CUIMessageBoxEx;
 class CTrade;
 class CUIProgressBar;
 class CUIItemDropAmountWnd;
@@ -32,22 +30,16 @@ class CUIXml;
 class CUIXmlInit;
 class CGameFont;
 
-namespace inventory { namespace upgrade {
-	class Upgrade;
-} } // namespace upgrade, inventory
-
 class CUIActorMenu final : 
 						public CUIWndCallback,
 						public CUIActorMenuBase
 {
 	typedef CUIActorMenuBase inherited;
-	typedef inventory::upgrade::Upgrade 	Upgrade_type;
 
 protected:
 	UIHint*						m_hint_wnd;
 	CUICellItem*				m_InfoCellItem;
 	u32							m_InfoCellItem_timer;
-	CUICellItem*				m_upgrade_selected;
 
 	ui_actor_state_wnd*			m_ActorStateInfo;
 	CUICharacterInfo*			m_ActorCharacterInfo;
@@ -65,10 +57,6 @@ protected:
 	CUIStatic*					m_HelmetOver;
 	
 	CUIStatic*					m_LeftBackground = nullptr;
-
-	UIInvUpgradeInfo*			m_upgrade_info = nullptr;
-	CUIMessageBoxEx*			m_message_box_yes_no = nullptr;
-	CUIMessageBoxEx*			m_message_box_ok = nullptr;
 
 	CInventoryOwner*			m_pActorInvOwner = nullptr;
 	CInventoryOwner*			m_pPartnerInvOwner = nullptr;
@@ -127,7 +115,6 @@ protected:
 	CUIStatic*					m_clock_value = nullptr;
 
 	u32							m_last_time;
-	u8							m_repair_mode;
 	
 private:
 	const char* m_onCanDisassembleItem = {};
@@ -183,15 +170,12 @@ protected:
 	void						DeInitDeadBodySearchMode			();
 
 	void						CurModeToScript						();
-	void						RepairEffect_CurItem				();
-	void						PerformDisassemble					();
+	virtual void				PerformDisassemble					();
 
 	virtual	void				InfoCurItem							(CUICellItem* cell_item); //on update item
 	
 	void						CheckDistance						();
 
-	virtual void				SetupUpgradeItem					();
-	virtual void				TrySetCurUpgrade					();
 	void						UpdateButtonsLayout					();
 
 	// inventory
@@ -201,12 +185,8 @@ protected:
 	void						SetActorInfoMP();
 	void						UpdateActorMoneyMP();
 	virtual void				UpdateOutfit						();
-	virtual void				TryRepairItem						(CUIWindow* w, void* d);
 	void						TryDisassembleItem					(CUIWindow* w, void* d);
 	
-
-	// Controller UI
-	virtual void				SetAuxMode							(eActorMenuControllerAuxMode mode);
 
 	virtual void				TradeShowMessage					(s64 money_actor, s64 money_patner);
 
@@ -218,8 +198,6 @@ public:
 	virtual CInventoryOwner*	GetPartner							() { return m_pPartnerInvOwner; }
 	virtual bool				ShouldPutArtefactsToBag				() { return true; }
 	virtual void				SetCurrentItem						(CUICellItem* itm);
-	virtual void				InvalidateDerivedCellRefsForList	(CUIDragDropListEx* list) override;
-	virtual void				InvalidateDerivedCellRefsForCell	(CUICellItem* cell) override;
 	virtual void				SendMessage							(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 	virtual void				Draw								();
 	virtual void				Update								();
@@ -228,14 +206,6 @@ public:
 	// trade
 	virtual void				UpdatePrices						();
 
-	void						CallMessageBoxYesNo					(const char* text);
-	void						CallMessageBoxOK					(const char* text);
-	void						OnMesBoxYes							(CUIWindow*, void*);
-	void						OnMesBoxNo							(CUIWindow*, void*);
-
-	bool						SetInfoCurUpgrade					(Upgrade_type* upgrade_type, CInventoryItem* inv_item );
-	void						SeparateUpgradeItem					();
-	PIItem						get_upgrade_item					();
 	bool						DropAllItemsFromRuck				(bool quest_force = false); //debug func
 
 	virtual void				UpdateActor							();
@@ -249,14 +219,10 @@ public:
 	virtual void				HideDialog							();
 
 	void OnSuccessRepairMP(PIItem item);
-	const UIInvUpgradeInfo* GetUpgradeInfo() const { return m_upgrade_info; }
 
 	IC	UIHint*					get_hint_wnd				() { return m_hint_wnd; }
-
 	
 	void						UpdateInfoWindowVisibility	();
-	bool						NeedToShowInfos				() const { return m_bShowInfoWnds; }
-	virtual bool				AnyInfoWindowOpen			() const;
 
 	void HighlightSectionInSlot(const char* section, u8 type, u16 slot_id = 0);
 	CScriptGameObject* GetCurrentItemAsGameObject();

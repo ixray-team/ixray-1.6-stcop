@@ -132,4 +132,157 @@
 	<string id="month_september">
 		<text>September</text>
 	</string>
+	<string id="ui_st_inv_repair">
+		<text>Repair</text>
+	</string>
+	<string id="ui_repair_button_hint">
+		<text>Repair selected item</text>
+	</string>
+	<string id="st_prop_bullet_speed">
+		<text>Flatness</text>
+	</string>
+	<string id="st_prop_calibre">
+		<text>Caliber</text>
+	</string>
+	<string id="st_prop_recoil">
+		<text>Recoil</text>
+	</string>
+	<string id="st_prop_reliability">
+		<text>Reliability</text>
+	</string>
+	<string id="st_prop_scope_1.6x">
+		<text>1.6x reflex sight</text>
+	</string>
+	<string id="st_prop_scope_4x">
+		<text>4x optical scope</text>
+	</string>
+	<string id="st_prop_silencer">
+		<text>Silencer</text>
+	</string>
+	<string id="st_prop_underbarrel_slot">
+		<text>underbarrel mount</text>
+	</string>
+	<string id="st_prop_weight">
+		<text>Weight</text>
+	</string>
+	<string id="st_upgr_cost">
+		<text>Cost</text>
+	</string>
+	<string id="st_upgr_disable">
+		<text>Cannot be installed</text>
+	</string>
+	<string id="st_upgr_installed">
+		<text>Installed</text>
+	</string>
+	<string id="st_upgrade_install">
+		<text>Are you sure you want to install:</text>
+	</string>
+	<string id="st_prop_autolock">
+		<text>Automatic target acquisition system</text>
+	</string>
+	<string id="st_prop_autolockscope">
+		<text>Automatic target acquisition system</text>
+	</string>
+	<string id="st_prop_scope_5x">
+		<text>x5 optical scope</text>
+	</string>
+	<string id="st_prop_scope_6x">
+		<text>x6 optical scope</text>
+	</string>
+	<string id="st_prop_scanner">
+		<text>Infrared scanner</text>
+	</string>
+	<string id="st_prop_weightoutfit">
+		<text>Body armor weight</text>
+	</string>
+	<string id="st_prop_night_vision_2">
+		<text>Second generation night vision device</text>
+	</string>
+	<string id="st_prop_night_vision_3">
+		<text>Third generation night vision device</text>
+	</string>
+	<string id="st_prop_scope_attach">
+		<text>Optical scope mount</text>
+	</string>
+	<string id="st_int_silencer">
+		<text>Integrated silencer</text>
+	</string>
+	<string id="st_prop_grenade_launcher">
+		<text>Underbarrel grenade launcher</text>
+	</string>
+	<string id="st_prop_restore_bleeding">
+		<text>Wound healing</text>
+	</string>
+	<string id="st_prop_restore_health">
+		<text>Health restoration</text>
+	</string>
+	<string id="st_prop_night_vision">
+		<text>First generation night vision device</text>
+	</string>
+	<string id="st_prop_scope">
+		<text>Adjustable sight</text>
+	</string>
+	<string id="st_prop_contrast">
+		<text>High contrast sight</text>
+	</string>
+	<string id="st_prop_sprint">
+		<text>Servomotor boosters </text>
+	</string>
+	<string id="st_prop_durability">
+		<text>Suit durability</text>
+	</string>
+	<string id="st_gauss_cannot_be_repaired">
+		<text>It’s not clear how the weapon works. It can’t be repaired without additional information about its design.</text>
+	</string>
+	<string id="st_upgr_cant_do">
+		<text>The technician cannot perform this modification</text>
+	</string>
+	<string id="st_upgr_group">
+		<text>This part has already been modified</text>
+	</string>
+	<string id="st_upgr_enough_money">
+		<text>Not enough money</text>
+	</string>
+	<string id="st_no_buck">
+		<text>Does not use shot</text>
+	</string>
+	<string id="st_auto_fire">
+		<text>Automatic fire mode</text>
+	</string>
+	<string id="st_semi_auto_fire">
+		<text>3-round burst mode</text>
+	</string>
+	<string id="st_prop_artefact">
+		<text>Number of containers</text>
+	</string>
+	<string id="st_upgr_vodka">
+		<text>the technician needs vodka</text>
+	</string>
+	<string id="st_upgr_toolkit_1">
+		<text>the technician needs tools for basic work</text>
+	</string>
+	<string id="st_upgr_toolkit_2">
+		<text>the technician needs tools for fine work</text>
+	</string>
+	<string id="st_upgr_toolkit_3">
+		<text>the technician needs tools for calibration</text>
+	</string>
+	<string id="st_upgr_condlist">
+		<text>the technician needs additional information</text>
+	</string>
+	<string id="st_upgr_parents">
+		<text>preceding modifications required</text>
+	</string>
+	<string id="ui_inv_repair">
+		<text>Repair</text>
+	</string>
+	<string id="ui_st_upgrade">
+		<text>Upgrade</text>
+	</string>
+	<string id="ui_inv_effect_time">
+		<text>Duration</text>
+	</string>
+	<string id="ui_inv_seconds_short">
+		<text>sec</text>
+	</string>
 </string_table>

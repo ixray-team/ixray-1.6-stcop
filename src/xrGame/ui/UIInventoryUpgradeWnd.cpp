@@ -103,12 +103,6 @@ void CUIInventoryUpgradeWnd::Init()
 	}
 
 	m_btn_repair = UIHelper::Create3tButton(uiXml, "repair_button", this);
-	CUIActorMenu* parent_wnd = smart_cast<CUIActorMenu*>(m_pParentWnd);
-	if (parent_wnd)
-	{
-		// XXX: restore set_hind_wnd?
-		//m_btn_repair->set_hint_wnd(parent_wnd->get_hint_wnd());
-	}
 
 	if (uiXml.NavigateToNode("disassemble_button", 0))
 	{
@@ -435,7 +429,7 @@ void CUIInventoryUpgradeWnd::AskUsing(const char* text, const char* upgrade_name
 
 	m_cur_upgrade_id = upgrade_name;
 
-	CUIActorMenu* parent_wnd = smart_cast<CUIActorMenu*>(m_pParentWnd);
+	CUIActorMenuBase* parent_wnd = smart_cast<CUIActorMenuBase*>(m_pParentWnd);
 	if (parent_wnd)
 	{
 		parent_wnd->CallMessageBoxYesNo(text);
@@ -447,7 +441,7 @@ void CUIInventoryUpgradeWnd::OnMesBoxYes()
 	if (Level().m_upgrade_manager->upgrade_install(*m_inv_item, m_cur_upgrade_id, false))
 	{
 		VERIFY(m_pParentWnd);
-		CUIActorMenu* parent_wnd = smart_cast<CUIActorMenu*>(m_pParentWnd);
+		CUIActorMenuBase* parent_wnd = smart_cast<CUIActorMenuBase*>(m_pParentWnd);
 		if (parent_wnd)
 		{
 			//Alundaio: tell script that item has been upgraded
@@ -493,7 +487,7 @@ void CUIInventoryUpgradeWnd::set_info_cur_upgrade(Upgrade_type* upgrade)
 		upgrade = nullptr;
 	}
 
-	CUIActorMenu* parent_wnd = smart_cast<CUIActorMenu*>(m_pParentWnd);
+	CUIActorMenuBase* parent_wnd = smart_cast<CUIActorMenuBase*>(m_pParentWnd);
 	if (parent_wnd)
 	{
 		if (parent_wnd->SetInfoCurUpgrade(upgrade, m_inv_item))
@@ -672,7 +666,7 @@ bool CUIInventoryUpgradeWnd::SelectorMove(eUIDirection4 dir)
 	{
 		SetUpgradeSelected(pDstWnd);
 
-		CUIActorMenu* pMenu = static_cast<CUIActorMenu*>(GetParent());
+		CUIActorMenuBase* pMenu = static_cast<CUIActorMenuBase*>(GetParent());
 		SetInfoVisible(pMenu->NeedToShowInfos());
 		return true;
 	}
@@ -723,7 +717,7 @@ void CUIInventoryUpgradeWnd::SetActiveForController(bool status)
 		if (m_current_scheme->cells.size() > 0)
 		{
 			SetUpgradeSelected(m_current_scheme->cells.front());
-			CUIActorMenu* pMenu = static_cast<CUIActorMenu*>(GetParent());
+			CUIActorMenuBase* pMenu = static_cast<CUIActorMenuBase*>(GetParent());
 			SetInfoVisible(pMenu->NeedToShowInfos());
 		}
 	}
