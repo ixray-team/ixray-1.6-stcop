@@ -78,6 +78,7 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 		{
   			while (true)
 			{
+				Progress(float(ThreadWorkID_Adaptive) / float(lc_global_data()->g_vertices().size()));
  				u32 taskID = ThreadWorkID_Adaptive.fetch_add(1);
 				if (taskID >= lc_global_data()->g_vertices().size())	break;
  
