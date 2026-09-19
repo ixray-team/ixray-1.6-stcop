@@ -967,6 +967,21 @@
 		<text>Autosaves interval</text>
 	</string>
 	<string id="ui_mm_dynamic_wallmarks">
-		<text>Dynamic wall marks</text>
+		<text>Body bullet holes</text>
+	</string>
+	<string id="kb_weapon7">
+		<text>Pistol</text>
+	</string>
+	<string id="kb_cam_2">
+		<text>Change camera</text>
+	</string>
+	<string id="ui_mm_fov">
+		<text>Field of view</text>
+	</string>
+	<string id="ui_mm_bloom_amount">
+		<text>Bloom intensity</text>
+	</string>
+	<string id="st_repair">
+		<text>repair</text>
 	</string>
 </string_table>
