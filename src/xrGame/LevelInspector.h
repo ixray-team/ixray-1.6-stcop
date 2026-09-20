@@ -254,6 +254,54 @@ struct LevelInspector final
 		append_text3d(pos_y, "y", color_rgba(0, 255, 0, 255));
 	}
 
+	ICF void append_selection_box(const Fobb& obb, u32 color = color_rgba(255, 255, 255, 255), float scale = 2.f)
+	{
+		extern Fvector aabb_selection_vertices[32];
+		extern lindex aabb_selection_lindices[24];
+
+		Fmatrix transform;
+		obb.xform_full(transform);
+		transform.i.mul(scale);
+		transform.j.mul(scale);
+		transform.k.mul(scale);
+
+		Fvector world_vertices[32];
+		for (size_t i = 0; i < 32; ++i)
+		{
+			transform.transform_tiny(world_vertices[i], aabb_selection_vertices[i]);
+		}
+
+		for (const lindex& idx : aabb_selection_lindices)
+		{
+			append_line({world_vertices[idx.i1], world_vertices[idx.i2], color});
+		}
+	}
+
+	ICF void append_selection_box(const Fbox& box, u32 color = color_rgba(255, 255, 255, 255), float scale = 2.f)
+	{
+		Fvector c, hs;
+		box.get_CD(c, hs);
+		Fobb obb;
+		obb.identity();
+		obb.m_translate = c;
+		obb.m_halfsize = hs;
+		append_selection_box(obb, color, scale);
+	}
+
+	ICF void append_selection_box(const Fvector& center, const Fvector& halfsize, u32 color = color_rgba(255, 255, 255, 255), float scale = 2.f)
+	{
+		Fobb obb;
+		obb.identity();
+		obb.m_translate = center;
+		obb.m_halfsize = halfsize;
+		append_selection_box(obb, color, scale);
+	}
+
+	ICF void append_selection_box(const Fsphere& sphere, u32 color = color_rgba(255, 255, 255, 255), float scale = 2.f)
+	{
+		append_selection_box(sphere.P, Fvector{sphere.R, sphere.R, sphere.R}, color, scale);
+	}
+
 	//RGBA=>BGRA
 	ICF void swap_color_channels(u32& color)
 	{

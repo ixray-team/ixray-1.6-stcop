@@ -17,8 +17,7 @@ CMPPlayersBag::~CMPPlayersBag()
 
 void CMPPlayersBag::OnEvent(NET_Packet& P, u16 type) 
 {
-	CInventoryItemObject::OnEvent		(P,type);
-	ALife::_OBJECT_ID						id;
+	ALife::_OBJECT_ID id;
 	switch (type) {
 		case GE_OWNERSHIP_TAKE : 
 			{
@@ -45,7 +44,10 @@ void CMPPlayersBag::OnEvent(NET_Packet& P, u16 type)
 
 				O->H_SetParent(0,!P.r_eof() && P.r_u8());
 			}break;
-
+			default:
+			{
+				CInventoryItemObject::OnEvent(P, type);
+			}break;
 	}
 }
 

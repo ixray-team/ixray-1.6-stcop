@@ -2,6 +2,7 @@
 #include "UIActorMenuBase.h"
 #include "UIDragDropListEx.h"
 #include "UICellItem.h"
+#include "../Inventory.h"
 #include "../InventoryOwner.h"
 #include "../IPowerManager.h"
 #include "../antigas_filter.h"
@@ -462,6 +463,7 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 				}
 				break;
 			}
+
 			if ( m_currMenuMode == mmTrade )
 			{
 				bool bResult = ToActorTrade( itm, false );
@@ -469,51 +471,71 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 					SetCurrentItem(nullptr);
 				break;
 			}
-			else
-				if ( m_currMenuMode == mmDeadBodySearch )
+			else if ( m_currMenuMode == mmDeadBodySearch )
+			{
+				bool bResult = ToDeadBodyBag( itm, false );
+				if (pInput->GetControllerMode() && bResult && !bItemPack)
+					SetCurrentItem(nullptr);
+				break;
+			}
+
+			if(m_currMenuMode!=mmUpgrade && TryUseItem( itm ))
+			{
+				if (pInput->GetControllerMode() && !bItemPack)
+					SetCurrentItem(nullptr);
+				break;
+			}
+			if (!bItemPack && TryHolsterPistolBagDbClick(itm))
+			{
+				if (pInput->GetControllerMode())
+					SetCurrentItem(nullptr);
+				break;
+			}
+			if ( TryActiveSlot( itm ) )
+			{
+				break;
+			}
+			PIItem iitem_to_place = (PIItem)itm->m_pData;
+			if ( !ToSlot( itm, false, iitem_to_place->BaseSlot() ) )
+			{
+				if ( !ToBelt( itm, false ) )
 				{
-					bool bResult = ToDeadBodyBag( itm, false );
-					if (pInput->GetControllerMode() && bResult && !bItemPack)
-						SetCurrentItem(nullptr);
-					break;
-				}
-				if(m_currMenuMode!=mmUpgrade && TryUseItem( itm ))
-				{
-					if (pInput->GetControllerMode() && !bItemPack)
-						SetCurrentItem(nullptr);
-					break;
-				}
-				if (!bItemPack && TryHolsterPistolBagDbClick(itm))
-				{
-					if (pInput->GetControllerMode())
-						SetCurrentItem(nullptr);
-					break;
-				}
-				if ( TryActiveSlot( itm ) )
-				{
-					break;
-				}
-				PIItem iitem_to_place = (PIItem)itm->m_pData;
-				if ( !ToSlot( itm, false, iitem_to_place->BaseSlot() ) )
-				{
-					if ( !ToBelt( itm, false ) )
+					bool bResult = false;
+					PIItem item_slot_2 = GetInventoryOwner()->inventory().ItemFromSlot(INV_SLOT_2);
+					PIItem item_slot_3 = GetInventoryOwner()->inventory().ItemFromSlot(INV_SLOT_3);
+					PIItem item_slot_pistol = GetInventoryOwner()->inventory().ItemFromSlot(PISTOL_SLOT_NEW);
+					if (item_slot_2 && item_slot_2->CanAttach(iitem_to_place))
 					{
-						bool bResult = ToSlot( itm, true, iitem_to_place->BaseSlot() );
-						if (pInput->GetControllerMode() && bResult)
-							SetCurrentItem(nullptr);
+						AttachAddon(item_slot_2);
+						bResult = true;
 					}
-					else
+					else if (item_slot_3 && item_slot_3->CanAttach(iitem_to_place))
 					{
-						if (pInput->GetControllerMode())
-							SetCurrentItem(nullptr);
+						AttachAddon(item_slot_3);
+						bResult = true;
 					}
+					else if (item_slot_pistol && item_slot_pistol->CanAttach(iitem_to_place))
+					{
+						AttachAddon(item_slot_pistol);
+						bResult = true;
+					}
+					if (!bResult)
+						bResult = ToSlot(itm, true, iitem_to_place->BaseSlot());
+					if (pInput->GetControllerMode() && bResult)
+						SetCurrentItem(nullptr);
 				}
 				else
 				{
 					if (pInput->GetControllerMode())
 						SetCurrentItem(nullptr);
 				}
-				break;
+			}
+			else
+			{
+				if (pInput->GetControllerMode())
+					SetCurrentItem(nullptr);
+			}
+			break;
 		}
 	case iActorBelt:
 		{
