@@ -371,9 +371,25 @@ void CShootingObject::UpdateEffects()
 	pos.set(get_ParticlesXFORM());
 	pos.c.set(fire_mode == eGlauncherFire ? get_CurrentFirePoint2() : get_CurrentFirePoint());
 
+	CSpectator* tmp_spectr = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_spectator() : nullptr;
+	bool in_hud_mode = IsHudModeNow();
+	if (in_hud_mode && tmp_spectr && (tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))
+	{
+		in_hud_mode = false;
+	}
+
+	u32 dwTime = Device.dwTimeGlobal;
+
 	for (size_t i = 0; i < flame_particles.size();)
 	{
 		flame_particles[i]->SetXFORM(pos);
+
+		if (in_hud_mode)
+		{
+			flame_particles[i]->Update(dwTime - flame_particles[i]->dwLastTime);
+			flame_particles[i]->dwLastTime = dwTime;
+		}
+
 		if (!flame_particles[i]->IsPlaying() || flame_particles[i]->m_NeedDestroy)
 			fast_erase(flame_particles, i);
 		else
@@ -383,6 +399,13 @@ void CShootingObject::UpdateEffects()
 	for (size_t i = 0; i < smoke_particles.size();)
 	{
 		smoke_particles[i]->UpdateParent(pos, zero_vel);
+
+		if (in_hud_mode)
+		{
+			smoke_particles[i]->Update(dwTime - smoke_particles[i]->dwLastTime);
+			smoke_particles[i]->dwLastTime = dwTime;
+		}
+
 		if (!smoke_particles[i]->IsPlaying() || smoke_particles[i]->m_NeedDestroy)
 			fast_erase(smoke_particles, i);
 		else
