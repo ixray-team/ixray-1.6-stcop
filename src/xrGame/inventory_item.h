@@ -14,7 +14,7 @@
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "../xrScripts/script_export_space.h"
-
+#include "item_attachment.h"
 enum EHandDependence {
 	hdNone = 0,
 	hd1Hand = 1,
@@ -75,7 +75,7 @@ struct net_updateInvData
 };
 
 
-class CInventoryItem : public CAttachableItem, public CHitImmunity
+class CInventoryItem : public CAttachableItem, public CHitImmunity, public item_attachments_manager
 #ifdef DEBUG_DRAW
 	, public pureRender
 #endif
@@ -152,12 +152,11 @@ public:
 	virtual bool Useful() const { return CanTake(); }
 	virtual bool IsUsingCondition() const { return m_flags.test(FUsingCondition); }
 	virtual bool CanStack() const { return (m_flags.test(FCanStack)); };
-	virtual bool Attach(PIItem pIItem, bool b_send_event) { return false; }
-	virtual bool Detach(PIItem pIItem) { return false; }
-	//при детаче спаунится новая вещь при заданно названии секции
-	virtual bool Detach(const char* item_section_name, bool b_spawn_item);
-	virtual bool CanAttach(PIItem pIItem) { return false; }
-	virtual bool CanDetach(const char* item_section_name) { return false; }
+
+	virtual bool Attach(PIItem pIItem);
+	virtual bool Detach(PIItem pIItem);
+	virtual bool CanAttach(PIItem pIItem) { return get_attachment(pIItem->m_section_id); }
+	virtual bool CanDetach(PIItem pIItem) { return GetChildByID(pIItem->object().ID()); }
 
 	virtual EHandDependence HandDependence()	const { return hd1Hand; };
 	virtual bool IsSingleHanded()	const { return true; };
@@ -198,6 +197,31 @@ public:
 	{
 		return m_3d_static_rotate;
 	}
+
+	xr_hash_map<u32, CGameObject*> m_children_storage;
+
+	ICF void append_child(u32 id, CGameObject* O)
+	{
+		m_children_storage.insert({id, O});
+		item_attachments_manager::enable_attachment(O->cNameSect());
+	}
+
+	ICF void erase_child(u32 id)
+	{
+		if (m_children_storage.find(id) != m_children_storage.end())
+		{
+			item_attachments_manager::disable_attachment(m_children_storage[id]->cNameSect());
+			m_children_storage.erase(id);
+		}
+	}
+
+	CGameObject* GetChildBySectName(shared_str child_sect_name) const;
+
+	CGameObject* GetChildByName(shared_str child_name) const;
+
+	CGameObject* GetChildByID(u32 child_id) const;
+
+	CGameObject* GetWeaponattachment(shared_str child_sect_name, EattachmentType type = eTypeNone) const;
 
 public:
 	bool m_draw_cost = true;
@@ -365,6 +389,8 @@ public:
 #ifdef DEBUG_DRAW
 	virtual void OnRender();
 #endif
+
+	virtual void renderable_Render();
 
 public:
 	virtual DLL_Pure* _construct();

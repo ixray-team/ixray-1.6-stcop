@@ -129,7 +129,7 @@ LevelInspector::lindex obb_lindices[12]
 	{1,5}, {2,6},
 	{3,7}, {0,4}
 };
-constexpr int obb_lvertices_max = std::size(obb_lindices) * 3;
+constexpr int obb_lvertices_max = std::size(obb_lindices) * 2;
 
 LevelInspector::tindex obb_tindices[12]
 {
@@ -2532,7 +2532,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 					Fvector text_pos = pKinematics->LL_GetTransform(bone.second).c;
 					xform.transform_tiny(text_pos);
 					text_pos.y += 0.008f;
-					append_text3d(text_pos, shared_str().printf("%s [%d]", *bone.first, bone.second));
+					append_text3d(text_pos, shared_str().printf("%s [%d] [%s]", *bone.first, bone.second, pKinematics->LL_GetBoneVisible(bone.second) ? "visible" : "hidden"));
 				}
 				if (m_skeleton_flags.test(ESKELETON_INFO::ESI_BONES_LINKS))
 				{
@@ -2716,20 +2716,54 @@ void LevelInspector::DrawHud()
 		if (b_r0)
 		{
 			DrawSkeleton(g_player_hud->attached_item(0)->m_model, g_player_hud->attached_item(0)->m_item_transform);
+			Fmatrix attachment_offset, attachment_final_transform;
+			for (auto& child : g_player_hud->attached_item(0)->m_parent_hud_item->item().m_children_storage)
+			{
+				if (auto attachment = g_player_hud->attached_item(0)->m_parent_hud_item->item().get_attachment(child.second->cNameSect_str()))
+				{
+					const item_attachment::placement& place = attachment->hud_place;
+
+					attachment_offset.setXYZ(deg2rad(place.direction.x), deg2rad(place.direction.y), deg2rad(place.direction.z));
+					attachment_offset.translate_over(place.position);
+					attachment_offset.i.mul(place.scale.x);
+					attachment_offset.j.mul(place.scale.y);
+					attachment_offset.k.mul(place.scale.z);
+					attachment_final_transform.mul(g_player_hud->attached_item(0)->m_model->LL_GetTransform(place.parent_bone_id), attachment_offset);
+					attachment_final_transform.mulA_43(g_player_hud->attached_item(0)->m_item_transform);
+
+					DrawSkeleton(attachment->hud_place.m_model, attachment_final_transform);
+				}
+			}
 			if(m_skeleton_flags.test(ESKELETON_INFO::ESI_FIRE_POINTS))
 				draw_fdeps(g_player_hud->attached_item(0), *this);
 		}
 		if (b_r1)
 		{
 			DrawSkeleton(g_player_hud->attached_item(1)->m_model, g_player_hud->attached_item(1)->m_item_transform);
+			Fmatrix attachment_offset, attachment_final_transform;
+			for (auto& child : g_player_hud->attached_item(1)->m_parent_hud_item->item().m_children_storage)
+			{
+				if (auto attachment = g_player_hud->attached_item(1)->m_parent_hud_item->item().get_attachment(child.second->cNameSect_str()))
+				{
+					const item_attachment::placement& place = attachment->hud_place;
+
+					attachment_offset.setXYZ(deg2rad(place.direction.x), deg2rad(place.direction.y), deg2rad(place.direction.z));
+					attachment_offset.translate_over(place.position);
+					attachment_offset.i.mul(place.scale.x);
+					attachment_offset.j.mul(place.scale.y);
+					attachment_offset.k.mul(place.scale.z);
+					attachment_final_transform.mul(g_player_hud->attached_item(1)->m_model->LL_GetTransform(place.parent_bone_id), attachment_offset);
+					attachment_final_transform.mulA_43(g_player_hud->attached_item(1)->m_item_transform);
+
+					DrawSkeleton(attachment->hud_place.m_model, attachment_final_transform);
+				}
+			}
+
 			if (m_skeleton_flags.test(ESKELETON_INFO::ESI_FIRE_POINTS))
 				draw_fdeps(g_player_hud->attached_item(1), *this);
 		}
-		if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying || g_player_hud->GetHandsVisible() || b_r0 || b_r1)
+		if ((g_player_hud->GetAnimator() && (g_player_hud->GetAnimator()->IsPlaying || g_player_hud->GetHandsVisible())) || b_r0 || b_r1)
 			DrawSkeleton(g_player_hud->GetModel()->dcast_PKinematics(), g_player_hud->GetTransform());
-
-		if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying)
-			DrawSkeleton(g_player_hud->GetAnimator()->m_item, g_player_hud->GetAnimator()->m_item_transform);
 	}
 }
 
@@ -3340,6 +3374,18 @@ void LevelInspector::DrawObjectsInfo()
 					C.y += RQ.O->Radius();
 					DrawObjectInfo(RQ.O->cast_game_object(), C, { 0.f, 0.f });
 				}
+				Fbox box = RQ.O->BoundingBox();
+				Fvector box_c, box_hs;
+				box.get_CD(box_c, box_hs);
+				Fobb obb;
+				obb.m_rotate.identity();
+				obb.m_halfsize = box_hs;
+				obb.m_translate = box_c;
+				Fmatrix obb_xform;
+				obb.xform_get(obb_xform);
+				obb_xform.mulA_43(RQ.O->XFORM());
+				obb.xform_set(obb_xform);
+				append_selection_box(obb, color_rgba(255, 255, 255, 255), 2.f);
 			}
 		}
 	}

@@ -326,6 +326,8 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	virtual void						net_MigrateInactive	(NET_Packet& P)	{ Props.net_Local = false;		};
 	virtual void						net_MigrateActive	(NET_Packet& P)	{ Props.net_Local = true;		};
 	virtual void						net_Relcase			(CObject*	 O) { };				// destroy all links to another objects
+	virtual void						net_AfterSpawn		(CSE_Abstract* data){};
+	virtual void						net_AlifeSwitch		(CSE_Abstract* data){};
 
 	// Position stack
 	IC u32								ps_Size				()			const	{ return PositionStack.size(); }

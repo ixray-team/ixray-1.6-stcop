@@ -36,7 +36,8 @@ net_updateInvData* CInventoryItem::NetSync()
 	return m_net_updateData;
 }
 
-CInventoryItem::CInventoryItem()
+CInventoryItem::CInventoryItem() :
+	item_attachments_manager(this)
 {
 	m_flags.set(Fbelt, false);
 	m_flags.set(Fruck, true);
@@ -182,6 +183,8 @@ void CInventoryItem::Load(const char* section)
 
 	ReadCustomTextAndMarks(section);
 	Read3dStaticsData(section);
+
+	item_attachments_manager::load_attachments(nullptr);
 }
 
 void CInventoryItem::SetAdditionalName(const char* text)
@@ -455,22 +458,23 @@ void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 	{
 	case GE_ADDON_ATTACH:
 	{
-		ALife::_OBJECT_ID ItemID;
-		P >> ItemID;
-		CObject* finded = Level().Objects.net_Find(ItemID);
-		PIItem ItemToAttach = finded != nullptr ? finded->cast_inventory_item() : nullptr;
+		CObject* finded_addon = Level().Objects.net_Find(P.r_u32());
+		PIItem ItemToAttach = finded_addon != nullptr ? finded_addon->cast_inventory_item() : nullptr;
 		if (ItemToAttach == nullptr)
 		{
 			break;
 		}
-
-		Attach(ItemToAttach, true);
+		Attach(ItemToAttach);
 	}break;
 	case GE_ADDON_DETACH:
 	{
-		string64 i_name = {};
-		P.r_stringZ(i_name);
-		Detach(i_name, true);
+		CObject* finded_addon = Level().Objects.net_Find(P.r_u32());
+		PIItem ItemToDetach = finded_addon != nullptr ? finded_addon->cast_inventory_item() : nullptr;
+		if (ItemToDetach == nullptr)
+		{
+			break;
+		}
+		Detach(ItemToDetach);
 	}break;
 
 	case GE_REPAIR_ITEM:
@@ -495,63 +499,145 @@ void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 		pSyncObj->set_State(state);
 
 	}break;
+
+	case GE_OWNERSHIP_TAKE:
+	{
+		u32 id = P.r_u32();
+		CObject* O = Level().Objects.net_Find(id);
+
+		O->H_SetParent(m_object);
+		append_child(id, O->cast_game_object());
+		O->processing_deactivate();
+	}
+	break;
+	case GE_OWNERSHIP_REJECT:
+	{
+		u32 id = P.r_u32();
+		CObject* O = Level().Objects.net_Find(id);
+
+		bool just_before_destroy = !P.r_eof() && P.r_u8();
+
+		O->SetTmpPreDestroy(just_before_destroy);
+		erase_child(id);
+		O->processing_activate();
+		O->H_SetParent(0, true);
+	}
+	break;
 	}
 }
 
-//процесс отсоединения вещи заключается в спауне новой вещи 
-//в инвентаре и установке соответствующих флагов в родительском
-//объекте, поэтому функция должна быть переопределена
-bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
+bool CInventoryItem::Attach(PIItem pIItem)
 {
 	if (OnClient())
 	{
 		return true;
 	}
 
-	if (b_spawn_item)
-	{
-		CSE_Abstract* D = F_entity_Create(item_section_name);
-		R_ASSERT(D);
-		CSE_ALifeDynamicObject* l_tpALifeDynamicObject = D->cast_alife_dynamic_object();
-		R_ASSERT(l_tpALifeDynamicObject);
-
-		l_tpALifeDynamicObject->m_tNodeID = (g_dedicated_server) ? u32(-1) : object().ai_location().level_vertex_id();
-
-		// Fill
-		D->s_name = item_section_name;
-		D->set_name_replace("");
-
-		D->s_RP = 0xff;
-		D->ID = ALife::INVALID_OBJECT_ID;
-		if (IsGameTypeSingle())
-		{
-			D->ID_Parent = object().H_Parent()->ID();
-		}
-		else	// i'm not sure this is right
-		{		// but it is simpliest way to avoid exception in MP BuyWnd... [Satan]
-			if (object().H_Parent())
-			{
-				D->ID_Parent = object().H_Parent()->ID();
-			}
-			else
-			{
-				D->ID_Parent = 0;
-			}
-		}
-
-		D->ID_Phantom = ALife::INVALID_OBJECT_ID;
-		D->o_Position = object().Position();
-		D->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
-		D->RespawnTime = 0;
-
-		// Send
-		NET_Packet P;
-		D->Spawn_Write(P, true);
-		Level().Send(P, net_flags(true));
-		// Destroy
-		F_entity_Destroy(D);
+	NET_Packet P;
+	if (pIItem->object().H_Parent())
+	{ // заставим парента выбросить предмет
+		CGameObject::u_EventGen(P, GE_OWNERSHIP_REJECT, parent_id());
+		P.w_u32(pIItem->object_id());
+		CGameObject::u_EventSend(P);
 	}
+	// заставим итем поднять предмет
+	CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE, object_id());
+	P.w_u32(pIItem->object_id());
+	CGameObject::u_EventSend(P);
+
 	return true;
+}
+
+bool CInventoryItem::Detach(PIItem pIItem)
+{
+	if (OnClient())
+	{
+		return true;
+	}
+
+	NET_Packet P;
+	// выбросим из инвентаря предмета
+	CGameObject::u_EventGen(P, GE_OWNERSHIP_REJECT, object_id());
+	P.w_u32(pIItem->object_id());
+	CGameObject::u_EventSend(P);
+
+	// подбираем его в инвентаре парента если он есть или выбросим на землю
+	CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE, parent_id());
+	P.w_u32(pIItem->object_id());
+	CGameObject::u_EventSend(P);
+
+	return true;
+}
+
+CGameObject* CInventoryItem::GetChildBySectName(shared_str child_sect_name) const
+{
+	for (auto& pair : m_children_storage)
+	{
+		if (!pair.second)
+		{
+			continue;
+		}
+		if (pair.second->getDestroy())
+		{
+			continue;
+		}
+		if (child_sect_name == pair.second->cNameSect())
+		{
+			return pair.second;
+		}
+	}
+	return nullptr;
+}
+
+CGameObject* CInventoryItem::GetChildByName(shared_str child_name) const
+{
+	for (auto& pair : m_children_storage)
+	{
+		if (!pair.second)
+		{
+			continue;
+		}
+		if (pair.second->getDestroy())
+		{
+			continue;
+		}
+		if (child_name == pair.second->Name())
+		{
+			return pair.second;
+		}
+	}
+	return nullptr;
+}
+
+CGameObject* CInventoryItem::GetChildByID(u32 child_id) const
+{
+	auto it = m_children_storage.find(child_id);
+	if (it != m_children_storage.end())
+	{
+		return it->second;
+	}
+
+	return nullptr;
+}
+
+CGameObject* CInventoryItem::GetWeaponattachment(shared_str child_sect_name, EattachmentType type) const
+{
+	for (auto& pair : m_children_storage)
+	{
+		if (!pair.second)
+		{
+			continue;
+		}
+		if (pair.second->getDestroy())
+		{
+			continue;
+		}
+		if (child_sect_name == pair.second->cNameSect() && get_attachment(child_sect_name, type))
+		{
+			return pair.second;
+		}
+	}
+	return nullptr;
 }
 
 /////////// network ///////////////////////////////
@@ -598,6 +684,8 @@ bool CInventoryItem::net_Spawn(CSE_Abstract* DC)
 
 void CInventoryItem::net_Destroy()
 {
+	item_attachments_manager::unload_attachments();
+
 	if (m_pInventory)
 	{
 		VERIFY(std::find(m_pInventory->m_all.begin(), m_pInventory->m_all.end(), this) == m_pInventory->m_all.end());
@@ -1125,6 +1213,13 @@ void CInventoryItem::OnRender()
 	};
 }
 #endif
+
+void CInventoryItem::renderable_Render()
+{
+	CAttachableItem::renderable_Render();
+
+	item_attachments_manager::render_attachments(object().XFORM(), PKinematics(object().Visual()), false);
+}
 
 DLL_Pure* CInventoryItem::_construct()
 {

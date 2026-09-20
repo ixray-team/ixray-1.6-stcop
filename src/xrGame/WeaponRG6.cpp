@@ -234,21 +234,50 @@ u8 CWeaponRG6::AddCartridge		(u8 cnt)
 
 void CWeaponRG6::OnEvent(NET_Packet& P, u16 type) 
 {
-	inheritedSG::OnEvent(P,type);
-
 	ALife::_OBJECT_ID id;
-	switch (type) {
-		case GE_OWNERSHIP_TAKE : {
+	switch (type)
+	{
+		case GE_OWNERSHIP_TAKE:
+		{
 			P >> id;
-			inheritedRL::AttachRocket(id, this);
-		} break;
-		case GE_OWNERSHIP_REJECT : 
-		case GE_LAUNCH_ROCKET : 
+			CObject* O = Level().Objects.net_Find(id);
+			if (O->cast_custom_rocket())
 			{
-			bool bLaunch = (type==GE_LAUNCH_ROCKET);
+				inheritedRL::AttachRocket(id, this);
+			}
+			else
+			{
+				O->H_SetParent(this);
+				append_child(id, O->cast_game_object());
+				O->processing_deactivate();
+			}
+		}
+		break;
+		case GE_OWNERSHIP_REJECT:
+		case GE_LAUNCH_ROCKET:
+		{
 			P >> id;
-			inheritedRL::DetachRocket	(id, bLaunch);
-		} break;
+			CObject* O = Level().Objects.net_Find(id);
+			if (O->cast_custom_rocket())
+			{
+				inheritedRL::DetachRocket(id, !!(type == GE_LAUNCH_ROCKET));
+			}
+			else
+			{
+				bool just_before_destroy = !P.r_eof() && P.r_u8();
+
+				O->SetTmpPreDestroy(just_before_destroy);
+				erase_child(id);
+				O->processing_activate();
+				O->H_SetParent(0, true);
+			}
+		}
+		break;
+		default:
+		{
+			inheritedSG::OnEvent(P, type);
+		}
+		break;
 	}
 }
 

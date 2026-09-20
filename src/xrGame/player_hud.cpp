@@ -626,6 +626,8 @@ void attachable_hud_item::render()
 	::Render->set_Transform		(&m_item_transform);
 	::Render->add_Visual		(m_model->dcast_RenderVisual(), true);
 	debug_draw_firedeps			();
+
+	m_parent_hud_item->item().render_attachments(m_item_transform, m_model, true);
 	m_parent_hud_item->render_hud_mode();
 }
 
@@ -878,6 +880,8 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType
 		}
 
 		m_model->CalculateBones_Invalidate();
+
+		m_parent_hud_item->item().anim_play_attachment(item_anm_name, speed, bMixIn > EHudMixType::eMixHands);
 	}
 }
 
@@ -2205,7 +2209,7 @@ void player_hud::attach_item(CHudItem* item)
 		{
 			m_attached_items[1]->m_parent_hud_item->CheckCompatibility(item);
 		}
-
+		item->item().load_attachments(pi->m_model);
 		item->on_a_hud_attach();
 		UpdateMovementLayers(true);
 	}

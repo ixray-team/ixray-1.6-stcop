@@ -2722,219 +2722,104 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 
 bool CWeaponMagazined::CanAttach(PIItem pIItem)
 {
-	CScope* pScope = pIItem->cast_addon_scope();
+	if (ScopeFit(pIItem->cast_addon_scope()) && IsScopeAttachable())
+	{
+		return true;
+	}
+	else if (pIItem->cast_addon_silencer() && IsSilencerAttachable() && (m_sSilencerName == pIItem->object().cNameSect()))
+	{
+		return true;
+	}
+	else if (pIItem->cast_addon_grenade_launcher() && IsGrenadeLauncherAttachable() && (m_sGrenadeLauncherName == pIItem->object().cNameSect()))
+	{
+		return true;
+	}
+
+	return inherited::CanAttach(pIItem);
+}
+
+bool CWeaponMagazined::Attach(PIItem pIItem)
+{
 	CSilencer* pSilencer = pIItem->cast_addon_silencer();
 	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
 
-	if (pScope && m_eScopeStatus == ALife::eAddonAttachable)
+	if (pSilencer && IsSilencerAttachable() && IsSilencerAttached())
 	{
-		if (IsScopeAttached() && pIItem->object().cNameSect() == GetScopeName())
-		{
-			return false;
-		}
+		Detach(GetSilencerAttached());
+	}
 
-		return ScopeFit(pScope);
-	}
-	else if (pSilencer && m_eSilencerStatus == ALife::eAddonAttachable && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0 && (m_sSilencerName == pIItem->object().cNameSect()))
+	if (pGrenadeLauncher && IsGrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
 	{
-		return true;
+		Detach(GetGrenadeLauncherAttached());
 	}
-	else if (pGrenadeLauncher && m_eGrenadeLauncherStatus == ALife::eAddonAttachable && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0 && (m_sGrenadeLauncherName == pIItem->object().cNameSect()))
-	{
-		return true;
-	}
-	else
-	{
-		return inherited::CanAttach(pIItem);
-	}
-}
 
-bool CWeaponMagazined::CanDetach(const char* item_section_name)
-{
-	if (m_eScopeStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope))
-	{
-		SCOPES_VECTOR_IT it = m_scopes.begin();
-		for (; it != m_scopes.end(); it++)
-		{
-			if (bUseAltScope)
-			{
-				if (*it == item_section_name)
-					return true;
-			}
-			else
-			{
-				if (pSettings->r_string((*it), "scope_name") == item_section_name)
-					return true;
-			}
-		}
-		return false;
-	}
-	else if (m_eSilencerStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) && (m_sSilencerName == item_section_name))
-	{
-		return true;
-	}
-	else if (m_eGrenadeLauncherStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && (m_sGrenadeLauncherName == item_section_name))
-	{
-		return true;
-	}
-	else
-	{
-		return inherited::CanDetach(item_section_name);
-	}
-}
-
-bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
-{
-	bool result = false;
-
-	CScope* pScope = pIItem->cast_addon_scope();
-	CSilencer* pSilencer = pIItem->cast_addon_silencer();
-	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
-	
-	if (pScope && m_eScopeStatus == ALife::eAddonAttachable)
+	if (pIItem->cast_addon_scope() && IsScopeAttachable())
 	{
 		if (IsScopeAttached())
 		{
-			Detach(GetScopeName().c_str(), true);
+			Detach(GetScopeAttached());
 		}
-
-		SCOPES_VECTOR_IT it = m_scopes.begin();
-		for (; it != m_scopes.end(); it++)
+		auto scope_attachment = get_attachment(pIItem->object().cNameSect(), eTypeScope);
+		for (SCOPES_VECTOR_IT it = m_scopes.begin(); it != m_scopes.end(); it++)
 		{
-			if (bUseAltScope)
+			if (bUseAltScope || scope_attachment)
 			{
 				if (*it == pIItem->object().cNameSect())
 					m_cur_scope = u8(it - m_scopes.begin());
 			}
 			else
 			{
-				if (pSettings->r_string((*it), "scope_name") == pIItem->object().cNameSect())
+				if (pSettings->line_exist((*it), "scope_name") && pSettings->r_string((*it), "scope_name") == pIItem->object().cNameSect())
+				{
 					m_cur_scope = u8(it - m_scopes.begin());
+				}
 			}
 		}
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonScope;
-		result = true;
 	}
-	else if (pSilencer && m_eSilencerStatus == ALife::eAddonAttachable && (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0 && (m_sSilencerName == pIItem->object().cNameSect()))
+	else if (pSilencer && IsSilencerAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0 && (m_sSilencerName == pIItem->object().cNameSect() || get_attachment(pIItem->object().cNameSect(), eTypeMuzzle)))
 	{
-		if (m_bRestGlSil && GrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
+		if (m_bRestGlSil && IsGrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
 		{
-			Detach(*GetGrenadeLauncherName(), true);
+			Detach(GetGrenadeLauncherAttached());
 		}
 
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonSilencer;
-		result = true;
 	}
-	else if (pGrenadeLauncher && m_eGrenadeLauncherStatus == ALife::eAddonAttachable && (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0 && (m_sGrenadeLauncherName == pIItem->object().cNameSect()))
+	else if (pGrenadeLauncher && IsGrenadeLauncherAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0 && (m_sGrenadeLauncherName == pIItem->object().cNameSect() || get_attachment(pIItem->object().cNameSect(), eTypeGLauncher)))
 	{
-		if (m_bRestGlSil && SilencerAttachable() && IsSilencerAttached())
+		if (m_bRestGlSil && IsSilencerAttachable() && IsSilencerAttached())
 		{
-			Detach(*GetSilencerName(), true);
+			Detach(GetSilencerAttached());
 		}
 
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
-		result = true;
 	}
-
-	if(result)
+	else if (CGameObject* GO = GetChildBySectName(pIItem->object().cNameSect()))
 	{
-		if (b_send_event && OnServer())
-		{
-			//уничтожить подсоединенную вещь из инвентаря
-//.			pIItem->Drop					();
-			pIItem->object().DestroyObject	();
-		};
-		UpdateAltScope();
-		UpdateAddonsVisibility();
-		UpdateHUDAddonsVisibility();
-		ProcessScope();
-		InitAddons();
-
-		return true;
+		Detach(GO->cast_inventory_item());
 	}
-	else
-        return inherited::Attach(pIItem, b_send_event);
+
+	return inherited::Attach(pIItem);
 }
 
-bool CWeaponMagazined::DetachScope(const char* item_section_name, bool b_spawn_item)
+bool CWeaponMagazined::Detach(PIItem pIItem)
 {
-	bool detached = false;
-	SCOPES_VECTOR_IT it = m_scopes.begin();
-	shared_str iter_scope_name = "none";
-
-	for(; it!=m_scopes.end(); it++)
+	if (pIItem->cast_addon_scope())
 	{
-		if (bUseAltScope)
-		{
-			iter_scope_name = (*it);
-		}
-		else
-		{
-			iter_scope_name = pSettings->r_string((*it), "scope_name");
-		}
-
-		if(!xr_strcmp(iter_scope_name, item_section_name))
-		{
-			m_cur_scope = 0;
-			detached = true;
-		}
-	}
-	return detached;
-}
-
-bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
-{
-	auto UpdateHudInfo = [this]()
-	{
-		UpdateAddonsVisibility();
-		UpdateHUDAddonsVisibility();
-		ProcessScope();
-		InitAddons();
-	};
-
-	if (m_eScopeStatus == ALife::eAddonAttachable && DetachScope(item_section_name, b_spawn_item))
-	{
-		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope) == 0)
-		{
-			Msg("ERROR: scope addon already detached.");
-			return true;
-		}
-
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
-		UpdateAltScope();
-		UpdateHudInfo();
-
-		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
+		m_cur_scope = 0;
 	}
-	else if (m_eSilencerStatus == ALife::eAddonAttachable && (m_sSilencerName == item_section_name))
+	else if (pIItem->cast_addon_silencer())
 	{
-		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0)
-		{
-			Msg("ERROR: silencer addon already detached.");
-			return true;
-		}
-
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
-		UpdateHudInfo();
-
-		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
-	else if (m_eGrenadeLauncherStatus == ALife::eAddonAttachable && (m_sGrenadeLauncherName == item_section_name))
+	else if (pIItem->cast_addon_grenade_launcher())
 	{
-		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0)
-		{
-			Msg("ERROR: grenade launcher addon already detached.");
-			return true;
-		}
-
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
-
-		UpdateHudInfo();
-
-		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
 
-	return inherited::Detach(item_section_name, b_spawn_item);;
+	return inherited::Detach(pIItem);
 }
 /*
 void CWeaponMagazined::LoadAddons()
@@ -2945,48 +2830,46 @@ void CWeaponMagazined::LoadAddons()
 */
 void CWeaponMagazined::InitAddons()
 {
-	shared_str get_scope_section = cNameSect();
+	shared_str get_scope_section = GetScopeName();
 
 	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "ironsight_zoom_factor", 50.0f);
 
-	if (IsScopeAttached())
+	if (GetScopeAttached() || IsScopePermanent())
 	{
-		if (m_eScopeStatus == ALife::eAddonAttachable)
-		{
-			get_scope_section = GetScopeName();
-			LoadCurrentScopeParams(*get_scope_section);
+		LoadCurrentScopeParams(*get_scope_section);
 
-			m_scope_recoil.m_fScopeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_factor", 1.0f);
+		m_scope_recoil.m_fScopeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_factor", 1.0f);
 
-			m_scope_recoil.m_fScopeAttachedRecoilReduction = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_reduction", 1.0f);
+		m_scope_recoil.m_fScopeAttachedRecoilReduction = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_reduction", 1.0f);
 		
 
-			m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
-			m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
-			m_lens_zoom_params.need_lens_frame = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "need_lens_frame", false);
+		m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
+		m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
+		m_lens_zoom_params.need_lens_frame = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "need_lens_frame", false);
 
-			m_lens_zoom_params.speed = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_speed", 0.0f);
-			m_lens_zoom_params.gyro_period = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_gyro_sound_period", 0.0f);
+		m_lens_zoom_params.speed = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_speed", 0.0f);
+		m_lens_zoom_params.gyro_period = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_gyro_sound_period", 0.0f);
 
-			m_lens_zoom_params.lens_factor_levels_count = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_factor_levels_count", 5.0f);
-			m_lens_zoom_params.delta = 1.0f / m_lens_zoom_params.lens_factor_levels_count;
+		m_lens_zoom_params.lens_factor_levels_count = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_factor_levels_count", 5.0f);
+		m_lens_zoom_params.delta = 1.0f / m_lens_zoom_params.lens_factor_levels_count;
 
-			m_lens_zoom_params.force_zoom_sound = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "force_zoom_sound", false);
+		m_lens_zoom_params.force_zoom_sound = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "force_zoom_sound", false);
 
-			LoadNightBrightnessParamsFromSection(get_scope_section);
+		LoadNightBrightnessParamsFromSection(get_scope_section);
 
-			get_scope_section = GetNameWithAttachmentScope();
+		get_scope_section = GetNameWithAttachmentScope();
 
-			if (SoundExist(get_scope_section.c_str(), "snd_reload"))
-			{
-				m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload", "sndReload", true, m_eSoundReload);
-			}
-
-			if (SoundExist(get_scope_section.c_str(), "snd_reload_empty"))
-			{
-				m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload_empty", "sndReloadEmpty", true, m_eSoundReload);
-			}
+		if (SoundExist(get_scope_section.c_str(), "snd_reload"))
+		{
+			m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload", "sndReload", true, m_eSoundReload);
 		}
+
+		if (SoundExist(get_scope_section.c_str(), "snd_reload_empty"))
+		{
+			m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload_empty", "sndReloadEmpty", true, m_eSoundReload);
+		}
+
+		LoadScopeXY();
 	}
 	else
 	{
@@ -2997,7 +2880,7 @@ void CWeaponMagazined::InitAddons()
 
 		if (IsZoomEnabled())
 		{
-			m_zoom_params.m_fIronSightZoomFactor = pSettings->r_float(get_scope_section, "scope_zoom_factor");
+			m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_zoom_factor", 1.0f);
 		}
 
 		m_scope_recoil.m_fScopeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_factor", 1.0f);
@@ -3059,12 +2942,13 @@ void CWeaponMagazined::InitAddons()
 		}
 	}
 
-	if (IsSilencerAttached())
+	if (GetSilencerAttached() || IsSilencerPermanent())
 	{
 		CShootingObject::fire_mode = eSilencerFire;
 		//подсветка от выстрела
 		LoadLights(*cNameSect(), "silencer_");
 		ApplySilencerKoeffs();
+		LoadSilencerXY();
 	}
 	else
 	{
@@ -3081,11 +2965,11 @@ void CWeaponMagazined::InitAddons()
 
 void CWeaponMagazined::HudSelector()
 {
-	if (m_bUseSilHud && SilencerAttachable() && IsSilencerAttached())
+	if (m_bUseSilHud && IsSilencerAttachable() && IsSilencerAttached())
 		hud_sect = hud_silencer;
-	else if (m_bUseScopeHud && ScopeAttachable() && IsScopeAttached())
+	else if (m_bUseScopeHud && IsScopeAttachable() && IsScopeAttached())
 		hud_sect = hud_scope;
-	else if (m_bUseGLHud && GrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
+	else if (m_bUseGLHud && IsGrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
 		hud_sect = hud_gl;
 	else
 		hud_sect = hud_sect_cache;
@@ -3095,7 +2979,7 @@ void CWeaponMagazined::HudSelector()
 
 void CWeaponMagazined::LoadSilencerKoeffs()
 {
-	if ( m_eSilencerStatus == ALife::eAddonAttachable )
+	if (IsSilencerAttachable())
 	{
 		const char* sect = m_sSilencerName.c_str();
 		m_silencer_koef.hit_power		= READ_IF_EXISTS( pSettings, r_float, sect, "bullet_hit_power_k", 1.0f );
@@ -3202,7 +3086,7 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 			}
 		}
 
-		if (ScopeAttachable() && !IsScopeAttached())
+		if (IsScopeAttachable() && !IsScopeAttached())
 		{
 			AddSuffixName(anim, "_noscope");
 		}
@@ -3260,7 +3144,7 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 			}
 		}
 
-		if (ScopeAttachable() && !IsScopeAttached())
+		if (IsScopeAttachable() && !IsScopeAttached())
 		{
 			AddSuffixName(anim, "_noscope");
 		}
@@ -3744,6 +3628,8 @@ void CWeaponMagazined::OnEvent(NET_Packet& P, u16 type)
 			}
 		}
 	}break;
+	case GE_OWNERSHIP_TAKE:
+	case GE_OWNERSHIP_REJECT:
 	default:
 	{
 		inherited::OnEvent(P, type);
@@ -3903,7 +3789,7 @@ bool CWeaponMagazined::install_upgrade_impl(const char* section, bool test)
 	if (result2 && !test) { m_sounds.LoadSound(section, "snd_reload", "sndReload", true, m_eSoundReload); }
 	result |= result2;
 
-	if (m_eSilencerStatus == ALife::eAddonAttachable || m_eSilencerStatus == ALife::eAddonPermanent)
+	if (IsSilencerAttachable() || IsSilencerPermanent())
 	{
 		const char* sil_ps = nullptr;
 		result |= process_if_exists_set(section, "silencer_flame_particles", sil_ps, test);

@@ -191,7 +191,7 @@ void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject* I)
 
 	I->try_switch_offline();
 }
-
+#include "Level.h"
 void CALifeSwitchManager::switch_object	(CSE_ALifeDynamicObject	*I)
 {
 	if (I->redundant())
@@ -210,4 +210,10 @@ void CALifeSwitchManager::switch_object	(CSE_ALifeDynamicObject	*I)
 
 	if (I->redundant())
 		release				(I);
+
+	CObject* O = Level().Objects.net_Find(I->ID);
+	if (O && !O->getDestroy())
+	{
+		O->net_AlifeSwitch(I);
+	}
 }

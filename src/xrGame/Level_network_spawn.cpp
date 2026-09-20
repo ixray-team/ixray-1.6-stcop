@@ -175,6 +175,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 
 	//---------------------------------------------------------
 	Game().OnSpawn(O);
+	O->net_AfterSpawn(E);
 }
 
 CSE_Abstract *CLevel::spawn_item		(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id, bool return_item)

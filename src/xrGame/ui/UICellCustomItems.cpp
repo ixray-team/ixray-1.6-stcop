@@ -240,18 +240,18 @@ CUIWeaponCellItem::CUIWeaponCellItem(CWeapon* itm)
 	m_addons[eScope]		= nullptr;
 	m_addons[eLauncher]		= nullptr;
 
-	if(itm->SilencerAttachable())
+	if(itm->IsSilencerAttachable())
 	{
 		m_addon_offset[eSilencer].set(object()->GetSilencerX(), object()->GetSilencerY());
 	}
 
-	if(itm->ScopeAttachable())
+	if (itm->IsScopeAttachable())
 	{
 		m_addon_offset[eScope].set(object()->GetScopeX(), object()->GetScopeY());
 		mScopeBack = object()->GetScopeBack();
 	}
 
-	if(itm->GrenadeLauncherAttachable())
+	if (itm->IsGrenadeLauncherAttachable())
 	{
 		m_addon_offset[eLauncher].set(object()->GetGrenadeLauncherX(), object()->GetGrenadeLauncherY());
 	}
@@ -264,17 +264,17 @@ CUIWeaponCellItem::~CUIWeaponCellItem()
 
 bool CUIWeaponCellItem::is_scope()
 {
-	return object()->ScopeAttachable()&&object()->IsScopeAttached();
+	return object()->IsScopeAttachable() && object()->IsScopeAttached();
 }
 
 bool CUIWeaponCellItem::is_silencer()
 {
-	return object()->SilencerAttachable()&&object()->IsSilencerAttached();
+	return object()->IsSilencerAttachable() && object()->IsSilencerAttached();
 }
 
 bool CUIWeaponCellItem::is_launcher()
 {
-	return object()->GrenadeLauncherAttachable()&&object()->IsGrenadeLauncherAttached();
+	return object()->IsGrenadeLauncherAttachable() && object()->IsGrenadeLauncherAttached();
 }
 
 void CUIWeaponCellItem::CreateIcon(eAddonType t)
@@ -297,6 +297,8 @@ void CUIWeaponCellItem::CreateIcon(eAddonType t)
 
 void CUIWeaponCellItem::DestroyIcon(eAddonType t)
 {
+	if (!m_addons[t]) return;
+
 	DetachChild		(m_addons[t]);
 	m_addons[t]		= nullptr;
 }
@@ -307,18 +309,18 @@ CUIStatic* CUIWeaponCellItem::GetIcon(eAddonType t)
 }
 void CUIWeaponCellItem::RefreshOffset()
 {
-	if(object()->SilencerAttachable())
+	if (object()->IsSilencerAttachable())
 	{
 		m_addon_offset[eSilencer].set(object()->GetSilencerX(), object()->GetSilencerY());
 	}
 
-	if(object()->ScopeAttachable())
+	if (object()->IsScopeAttachable())
 	{
 		m_addon_offset[eScope].set(object()->GetScopeX(), object()->GetScopeY());
 		mScopeBack = object()->GetScopeBack();
 	}
 
-	if(object()->GrenadeLauncherAttachable())
+	if (object()->IsGrenadeLauncherAttachable())
 	{
 		m_addon_offset[eLauncher].set(object()->GetGrenadeLauncherX(), object()->GetGrenadeLauncherY());
 	}
@@ -353,74 +355,69 @@ void CUIWeaponCellItem::Update()
 	
 	bool bForceReInitAddons		= (b!=Heading());
 
-	bool reinit_3d_icon = false;
-
-	if (object()->SilencerAttachable())
+	if (object()->IsSilencerAttachable())
 	{
 		if (object()->IsSilencerAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
 		{
+			if (m_last_icons[eSilencer] != object()->GetSilencerName())
+			{
+				m_last_icons[eSilencer] = object()->GetSilencerName();
+				DestroyIcon(eSilencer);
+			}
+
 			if (!GetIcon(eSilencer) || bForceReInitAddons)
 			{
 				CreateIcon	(eSilencer);
 				RefreshOffset();
 				InitAddon	(GetIcon(eSilencer), *object()->GetSilencerName(), m_addon_offset[eSilencer], Heading());
-
-				reinit_3d_icon = true;
 			}
         }
-		else
-		{
-			if (m_addons[eSilencer])
-			{
-				DestroyIcon(eSilencer);
-				reinit_3d_icon = true;
-			}
-		}
+		else if (GetIcon(eSilencer))
+			DestroyIcon(eSilencer);
 	}
 
-	if (object()->ScopeAttachable())
+	if (object()->IsScopeAttachable())
 	{
-		if (m_addons[eScope])
-		{
-			DestroyIcon(eScope);
-			reinit_3d_icon = true;
-		}
-
 		if (object()->IsScopeAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
 		{
+			if (m_last_icons[eScope] != object()->GetScopeName())
+			{
+				m_last_icons[eScope] = object()->GetScopeName();
+				DestroyIcon(eScope);
+			}
+
 			if (!GetIcon(eScope) || bForceReInitAddons)
 			{
 				CreateIcon(eScope);
 				RefreshOffset();
 				InitAddon(GetIcon(eScope), *object()->GetScopeName(), m_addon_offset[eScope], Heading());
-				reinit_3d_icon = true;
 			}
 		}
+		else if (GetIcon(eScope))
+			DestroyIcon(eScope);
 	}
 
-	if (object()->GrenadeLauncherAttachable())
+	if (object()->IsGrenadeLauncherAttachable())
     {
 		if (object()->IsGrenadeLauncherAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
 		{
+			if (m_last_icons[eLauncher] != object()->GetGrenadeLauncherName())
+			{
+				m_last_icons[eLauncher] = object()->GetGrenadeLauncherName();
+				DestroyIcon(eLauncher);
+			}
+
 			if (!GetIcon(eLauncher) || bForceReInitAddons)
 			{
 				CreateIcon	(eLauncher);
 				RefreshOffset();
 				InitAddon	(GetIcon(eLauncher), *object()->GetGrenadeLauncherName(), m_addon_offset[eLauncher], Heading());
-				reinit_3d_icon = true;
 			}
 		}
-		else
-		{
-			if (m_addons[eLauncher])
-			{
-				DestroyIcon(eLauncher);
-				reinit_3d_icon = true;
-			}
-		}
+		else if (GetIcon(eLauncher))
+			DestroyIcon(eLauncher);
 	}
 
-  //	if (reinit_3d_icon) 
 	{
 		if (auto pItem = (CInventoryItem*)m_pData)
 		{

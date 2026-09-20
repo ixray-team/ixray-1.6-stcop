@@ -266,7 +266,7 @@ bool CWeapon::install_upgrade_addon(const char* section, bool test)
 	if (result2 && !test)
 	{
 		m_eScopeStatus = (ALife::EWeaponAddonStatus)temp_int;
-		if (m_eScopeStatus == ALife::eAddonAttachable || m_eScopeStatus == ALife::eAddonPermanent)
+		if (IsScopeAttachable() || IsScopePermanent())
 		{
 			result |= process_if_exists(section, "holder_range_modifier", m_addon_holder_range_modifier, test);
 			result |= process_if_exists(section, "holder_fov_modifier", m_addon_holder_fov_modifier, test);
@@ -292,7 +292,7 @@ bool CWeapon::install_upgrade_addon(const char* section, bool test)
 			}
 			else
 			{
-				if (m_eScopeStatus == ALife::eAddonAttachable)
+				if (IsScopeAttachable())
 				{
 					if (pSettings->line_exist(section, "scopes_sect"))
 					{
@@ -312,7 +312,7 @@ bool CWeapon::install_upgrade_addon(const char* section, bool test)
 				else
 				{
 					m_scopes.push_back(section);
-					if (m_eScopeStatus == ALife::eAddonPermanent)
+					if (IsScopePermanent())
 						InitAddons();
 				}
 			}
@@ -346,14 +346,14 @@ bool CWeapon::install_upgrade_addon(const char* section, bool test)
 	if (result2 && !test)
 	{
 		m_eSilencerStatus = (ALife::EWeaponAddonStatus)temp_int;
-		if (m_eSilencerStatus == ALife::eAddonAttachable || m_eSilencerStatus == ALife::eAddonPermanent)
+		if (IsSilencerAttachable() || IsSilencerPermanent())
 		{
 			m_sSilencerName = pSettings->r_string(section, "silencer_name");
 
 			m_iSilencerX = pSettings->r_s32(section, "silencer_x") * ScaleIcon;
 			m_iSilencerY = pSettings->r_s32(section, "silencer_y") * ScaleIcon;
 
-			if (m_eSilencerStatus == ALife::eAddonPermanent)
+			if (IsSilencerPermanent())
 				InitAddons();
 		}
 	}
@@ -364,14 +364,14 @@ bool CWeapon::install_upgrade_addon(const char* section, bool test)
 	if (result2 && !test)
 	{
 		m_eGrenadeLauncherStatus = (ALife::EWeaponAddonStatus)temp_int;
-		if (m_eGrenadeLauncherStatus == ALife::eAddonAttachable || m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
+		if (IsGrenadeLauncherAttachable() || IsGrenadeLauncherPermanent())
 		{
 			m_sGrenadeLauncherName = pSettings->r_string(section, "grenade_launcher_name");
 
 			m_iGrenadeLauncherX = pSettings->r_s32(section, "grenade_launcher_x") * ScaleIcon;
 			m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y") * ScaleIcon;
 
-			if (m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
+			if (IsGrenadeLauncherPermanent())
 				InitAddons();
 		}
 	}

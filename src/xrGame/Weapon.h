@@ -54,6 +54,8 @@ public:
 	virtual void			net_Export			(NET_Packet& P);
 	virtual void			net_Import			(NET_Packet& P);
 	virtual void			net_Relcase			(CObject* object);
+	virtual void			net_AfterSpawn		(CSE_Abstract* DC);
+	virtual void			net_AlifeSwitch		(CSE_Abstract* DC);
 
 	virtual bool			AlwaysTheCrow       ();
 	virtual CWeapon			*cast_weapon			()					{return this;}
@@ -192,17 +194,56 @@ protected:
 
 	bool					m_bAutoSpawnAmmo;
 public:
-			bool IsGrenadeLauncherAttached	() const;
-			bool IsScopeAttached			() const;
-			bool IsSilencerAttached			() const;
+	ICF bool IsGrenadeLauncherAttached() const
+	{
+		return (ALife::eAddonAttachable == m_eGrenadeLauncherStatus &&
+				0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)) ||
+			   ALife::eAddonPermanent == m_eGrenadeLauncherStatus;
+	}
 
-	virtual bool GrenadeLauncherAttachable();
-	virtual bool ScopeAttachable();
-	virtual bool SilencerAttachable();
+	ICF bool IsScopeAttached() const
+	{
+		return (ALife::eAddonAttachable == m_eScopeStatus &&
+				0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope)) ||
+			   ALife::eAddonPermanent == m_eScopeStatus;
+	}
+
+	ICF bool IsSilencerAttached() const
+	{
+		return (ALife::eAddonAttachable == m_eSilencerStatus &&
+				0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer)) ||
+			   ALife::eAddonPermanent == m_eSilencerStatus;
+	}
+
+	ICF bool IsGrenadeLauncherAttachable() const
+	{
+		return (ALife::eAddonAttachable == m_eGrenadeLauncherStatus);
+	}
+	ICF bool IsScopeAttachable() const
+	{
+		return (ALife::eAddonAttachable == m_eScopeStatus);
+	}
+	ICF bool IsSilencerAttachable() const
+	{
+		return (ALife::eAddonAttachable == m_eSilencerStatus);
+	}
+
+	ICF bool IsGrenadeLauncherPermanent() const
+	{
+		return (ALife::eAddonPermanent == m_eGrenadeLauncherStatus);
+	}
+	ICF bool IsScopePermanent() const
+	{
+		return (ALife::eAddonPermanent == m_eScopeStatus);
+	}
+	ICF bool IsSilencerPermanent() const
+	{
+		return (ALife::eAddonPermanent == m_eSilencerStatus);
+	}
 			
-	ALife::EWeaponAddonStatus	get_GrenadeLauncherStatus	() const { return m_eGrenadeLauncherStatus; }
-	ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
-	ALife::EWeaponAddonStatus	get_SilencerStatus			() const { return m_eSilencerStatus; }
+	ICF ALife::EWeaponAddonStatus	get_GrenadeLauncherStatus	() const { return m_eGrenadeLauncherStatus; }
+	ICF ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
+	ICF ALife::EWeaponAddonStatus	get_SilencerStatus			() const { return m_eSilencerStatus; }
 
 	virtual bool NeedMovementBlend() const override;
 	bool AllowSafemode() const;
@@ -261,26 +302,37 @@ protected:
 	virtual void InitAddons();
 
 	//для отоброажения иконок апгрейдов в интерфейсе
+	void LoadScopeXY();
+	void LoadSilencerXY();
+	void LoadGrenadeLauncherXY();
 
-	int	GetScopeX();
-	int	GetScopeY();
+	ICF int GetScopeX() {return m_iScopeX;}
+	ICF int GetScopeY() {return m_iScopeY;}
+	ICF int	GetSilencerX() {return m_iSilencerX;}
+	ICF int	GetSilencerY() {return m_iSilencerY;}
+	ICF int	GetGrenadeLauncherX() {return m_iGrenadeLauncherX;}
+	ICF int	GetGrenadeLauncherY() {return m_iGrenadeLauncherY;}
+	ICF void SetScopeX(int value) {m_iScopeX = value;}
+	ICF void SetScopeY(int value) {m_iScopeY = value;}
+	ICF void SetSilencerX(int value) { m_iSilencerX = value; }
+	ICF void SetSilencerY(int value) { m_iSilencerY = value; }
+	ICF void SetGrenadeLauncherX(int value) { m_iGrenadeLauncherX = value; }
+	ICF void SetGrenadeLauncherY(int value) { m_iGrenadeLauncherY = value; }
 
-	int	GetSilencerX() {return m_iSilencerX;}
-	int	GetSilencerY() {return m_iSilencerY;}
-	void SetSilencerX(int value);
-	void SetSilencerY(int value);
-	int	GetGrenadeLauncherX() {return m_iGrenadeLauncherX;}
-	int	GetGrenadeLauncherY() {return m_iGrenadeLauncherY;}
 
-	const shared_str& GetGrenadeLauncherName	() const{return m_sGrenadeLauncherName;}
-	const shared_str GetScopeName() const;
+	CScope* GetScopeAttached() const;
+	CSilencer* GetSilencerAttached() const;
+	CGrenadeLauncher* GetGrenadeLauncherAttached() const;
+
+	const shared_str& GetGrenadeLauncherName() const;
+	const shared_str& GetScopeName() const;
 	void UpdateAltScope();
 	shared_str GetNameWithAttachmentScope();
 	bool bReloadSectionScope(const char* section);
 	bool bLoadAltScopesParams(const char* section);
 	void LoadOriginalScopesParams(const char* section);
 	void LoadCurrentScopeParams(const char* section);
-	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
+	const shared_str& GetSilencerName() const;
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
 

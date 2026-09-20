@@ -25,7 +25,7 @@ void CWeaponMagazinedWGrenade::Load(const char* section)
 	inherited::Load(section);
 	CRocketLauncher::Load(section);
 
-	if (m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
+	if (IsGrenadeLauncherPermanent())
 	{
 		CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(section, "grenade_vel");
 	}
@@ -243,7 +243,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 			AddSuffixName(anim, "_ammochange", end_suffix);
 		}
 
-		if (ScopeAttachable() && !IsScopeAttached())
+		if (IsScopeAttachable() && !IsScopeAttached())
 		{
 			AddSuffixName(anim, "_noscope", end_suffix);
 		}
@@ -699,52 +699,84 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 	case GE_OWNERSHIP_TAKE:
 	{
 		P >> id;
-		CRocketLauncher::AttachRocket(id, this);
-	}
-	break;
+		CObject* O = Level().Objects.net_Find(id);
+		if (O->cast_custom_rocket())
+		{
+			CRocketLauncher::AttachRocket(id, this);
+		}
+		else
+		{
+			O->H_SetParent(this);
+			append_child(id, O->cast_game_object());
+			O->processing_deactivate();
+
+			UpdateAltScope();
+			UpdateAddonsVisibility();
+			UpdateHUDAddonsVisibility();
+			ProcessScope();
+			InitAddons();
+		}
+	}break;
 	case GE_OWNERSHIP_REJECT:
 	case GE_LAUNCH_ROCKET:
 	{
-		bool bLaunch = (type == GE_LAUNCH_ROCKET);
 		P >> id;
-		CRocketLauncher::DetachRocket(id, bLaunch);
-		if (bLaunch)
+		CObject* O = Level().Objects.net_Find(id);
+		if (O->cast_custom_rocket())
 		{
-			PlayAnimShoot();
-
-			if ((ParentIsActor() && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_grenade_actor) || m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_grenade)) && Sound->object_in_audiozone(get_LastFP2()))
+			bool bLaunch = (type == GE_LAUNCH_ROCKET);
+			CRocketLauncher::DetachRocket(id, bLaunch);
+			if (bLaunch)
 			{
-				if (ParentIsActor() && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_grenade_actor))
+				PlayAnimShoot();
+
+				if ((ParentIsActor() && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_grenade_actor) || m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_grenade)) && Sound->object_in_audiozone(get_LastFP2()))
 				{
-					m_layered_sounds.PlaySound("sndShotGActorIndoor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+					if (ParentIsActor() && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_grenade_actor))
+					{
+						m_layered_sounds.PlaySound("sndShotGActorIndoor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+					}
+					else
+					{
+						m_layered_sounds.PlaySound("sndShotGIndoor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+					}
 				}
 				else
 				{
-					m_layered_sounds.PlaySound("sndShotGIndoor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+					if (m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_grenade_actor))
+					{
+						m_layered_sounds.PlaySound("sndShotGActor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+					}
+					else
+					{
+						m_layered_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
+					}
 				}
-			}
-			else
-			{
-				if (m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_grenade_actor))
-				{
-					m_layered_sounds.PlaySound("sndShotGActor", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
-				}
-				else
-				{
-					m_layered_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), GetHUDmode(), false, true);
-				}
-			}
 
-			if (H_Parent())
-				AddShotEffector();
-			
-			StartFlameParticle();
+				if (H_Parent())
+					AddShotEffector();
+				
+				StartFlameParticle();
+			}
 		}
-		break;
-	}
+		else if (type == GE_OWNERSHIP_REJECT)
+		{
+			bool just_before_destroy = !P.r_eof() && P.r_u8();
+
+			O->SetTmpPreDestroy(just_before_destroy);
+			erase_child(id);
+			O->processing_activate();
+			O->H_SetParent(0, true);
+
+			UpdateAltScope();
+			UpdateAddonsVisibility();
+			UpdateHUDAddonsVisibility();
+			ProcessScope();
+			InitAddons();
+		}
+	}break;
 	default:
-	inherited::OnEvent(P, type);
-	break;
+		inherited::OnEvent(P, type); break;
 	}
 }
 
@@ -835,88 +867,61 @@ bool CWeaponMagazinedWGrenade::CanAttach(PIItem pIItem)
 {
 	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
 
-	if (pGrenadeLauncher && ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
+	if (pGrenadeLauncher && IsGrenadeLauncherAttachable() && (m_sGrenadeLauncherName == pIItem->object().cNameSect() || get_attachment(pIItem->object().cNameSect(), eTypeGLauncher)))
 	{
 		return true;
 	}
-	else
-	{
-		return inherited::CanAttach(pIItem);
-	}
+
+	return inherited::CanAttach(pIItem);
 }
 
-bool CWeaponMagazinedWGrenade::CanDetach(const char* item_section_name)
+bool CWeaponMagazinedWGrenade::CanDetach(PIItem pIItem)
 {
-	if (ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
-	{
-		return true;
-	}
-	else
-	{
-		return inherited::CanDetach(item_section_name);
-	}
+	return inherited::CanDetach(pIItem);
 }
 
-bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
+bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem)
 {
 	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
 
-	if (pGrenadeLauncher && ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
+	if (pGrenadeLauncher && IsGrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
 	{
-		if (m_bRestGlSil && SilencerAttachable() && IsSilencerAttached())
+		Detach(GetGrenadeLauncherAttached());
+	}
+
+	if (pGrenadeLauncher && IsGrenadeLauncherAttachable() && 0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && (m_sGrenadeLauncherName == pIItem->object().cNameSect() || get_attachment(pIItem->object().cNameSect(), eTypeGLauncher)))
+	{
+		if (m_bRestGlSil && IsSilencerAttachable() && IsSilencerAttached())
 		{
-			Detach(*GetSilencerName(), true);
+			Detach(GetSilencerAttached());
 		}
 
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
 		CRocketLauncher::m_fLaunchSpeed = pGrenadeLauncher->GetGrenadeVel();
 
-		//уничтожить подствольник из инвентаря
-		if (b_send_event)
-		{
-			if (OnServer())
-			{
-				pIItem->object().DestroyObject();
-			}
-		}
-
-		InitAddons();
-		UpdateAddonsVisibility();
-		UpdateHUDAddonsVisibility();
-		ProcessScope();
-
 		if (GetState() == eIdle)
 		{
 			PlayAnimIdle();
 		}
 
-		return true;
+		return CInventoryItem::Attach(pIItem);
 	}
-	else
-	{
-		return inherited::Attach(pIItem, b_send_event);
-	}
+
+	return inherited::Attach(pIItem);
 }
 
-bool CWeaponMagazinedWGrenade::Detach(const char* item_section_name, bool b_spawn_item)
+bool CWeaponMagazinedWGrenade::Detach(PIItem pIItem)
 {
-	if (ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
+	if (IsGrenadeLauncherAttachable() && pIItem->cast_addon_grenade_launcher())
 	{
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
-		// Now we need to unload GL's magazine
-		if (!m_bGrenadeMode)
+		if (m_bGrenadeMode)
 		{
+			UnloadMagazine();
 			PerformSwitchGL();
 		}
-
-		UnloadMagazine();
-		PerformSwitchGL();
-
-		UpdateAddonsVisibility();
-		UpdateHUDAddonsVisibility();
-		ProcessScope();
 
 		if (GetState() == eIdle)
 		{
@@ -925,25 +930,40 @@ bool CWeaponMagazinedWGrenade::Detach(const char* item_section_name, bool b_spaw
 
 		m_fGrenadeAttachedRecoil = 1.0f;
 
-		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
+		return CInventoryItem::Detach(pIItem);
 	}
-	else
-	{
-		return inherited::Detach(item_section_name, b_spawn_item);
-	}
+
+	return inherited::Detach(pIItem);
 }
 
 void CWeaponMagazinedWGrenade::InitAddons()
 {
 	inherited::InitAddons();
 
-	if (GrenadeLauncherAttachable())
+	if (GetGrenadeLauncherAttached() || IsGrenadeLauncherPermanent())
 	{
-		if (IsGrenadeLauncherAttached())
+		if (pSettings->line_exist(GetGrenadeLauncherName(), "grenade_class"))
 		{
-			CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(*m_sGrenadeLauncherName, "grenade_vel");
-			m_fGrenadeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, *m_sGrenadeLauncherName, "grenade_attached_recoil", 1.0f);
+			xr_vector<shared_str>& ammoTypes = m_bGrenadeMode ? m_ammoTypes : m_ammoTypes2;
+
+			ammoTypes.clear();
+			const char* S = pSettings->r_string(GetGrenadeLauncherName(), "grenade_class");
+			if (S && S[0])
+			{
+				string128 _ammoItem;
+				int count = _GetItemCount(S);
+				for (int it = 0; it < count; ++it)
+				{
+					_GetItem(S, it, _ammoItem);
+					ammoTypes.push_back(_ammoItem);
+				}
+			}
 		}
+
+		CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(*GetGrenadeLauncherName(), "grenade_vel");
+		m_fGrenadeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, *GetGrenadeLauncherName(), "grenade_attached_recoil", 1.0f);
+
+		LoadGrenadeLauncherXY();
 	}
 
 }
@@ -1021,7 +1041,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& 
 
 		AddSuffixName(anim, end_suffix);
 
-		if (ScopeAttachable() && !IsScopeAttached())
+		if (IsScopeAttachable() && !IsScopeAttached())
 		{
 			AddSuffixName(anim, "_noscope");
 		}

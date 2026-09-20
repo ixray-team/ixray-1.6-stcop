@@ -134,15 +134,52 @@ static void HudAdjustDrawSaveButton()
 		file.w_float(sect, "collision_box_stifness", p_item->m_measures.m_collision_params.stifness);
 		file.w_float(sect, "collision_box_damping", p_item->m_measures.m_collision_params.damping);
 	};
+
+	FS.update_path(fn, "$app_data_root$", "hud_adjust\\saved_attachments.ltx");
+	CInifile file_att(fn, false, true, true);
+	file_att.set_override_names(true);
+
+	auto writeAttParams = [](attachable_hud_item* p_item, CInifile& file)
+	{
+		for (auto& pair : p_item->m_parent_hud_item->item().m_attachments)
+		{
+			xr_string addon_modifers_sect = xr_string(p_item->m_parent_hud_item->object().cNameSect_str()) + '_' + xr_string(*pair.first);
+
+			file.w_u8(addon_modifers_sect.c_str(), "attachment_type", pair.second.attachment_type);
+			if (pair.second.state.test(eAStatePermanent))
+			{
+				file.w_bool(addon_modifers_sect.c_str(), "attachment_permanent", true);
+			}
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_hud_position", pair.second.hud_place.position);
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_hud_direction", pair.second.hud_place.direction);
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_hud_scale", pair.second.hud_place.scale);
+			file.w_string(addon_modifers_sect.c_str(), "attachment_hud_bone_name", p_item->m_model->LL_BoneName_dbg(pair.second.hud_place.parent_bone_id));
+			if (pair.second.hud_place.m_model)
+			{
+				file.w_string(addon_modifers_sect.c_str(), "attachment_hud_visual", xr_string(xr_string(pair.second.hud_place.m_model->getDebugName().c_str()) + xr_string(".ogf")).c_str());
+			}
+
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_position", pair.second.place.position);
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_direction", pair.second.place.direction);
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_scale", pair.second.place.scale);
+			file.w_string(addon_modifers_sect.c_str(), "attachment_bone_name", PKinematics(p_item->m_parent_hud_item->object().Visual())->LL_BoneName_dbg(pair.second.place.parent_bone_id));
+			if (pair.second.place.m_model)
+			{
+				file.w_string(addon_modifers_sect.c_str(), "attachment_visual", xr_string(xr_string(pair.second.place.m_model->getDebugName().c_str()) + xr_string(".ogf")).c_str());
+			}
+		}
+	};
 	
 	if (p_hud_item_first)
 	{
 		writeParams(p_hud_item_first, file);
+		writeAttParams(p_hud_item_first, file);
 	}
 
 	if (p_hud_item_second)
 	{
 		writeParams(p_hud_item_second, file);
+		writeAttParams(p_hud_item_second, file);
 	}
 
 	/*{
@@ -239,6 +276,385 @@ static void HudAdjustDrawHandsSettings()
 	}
 }
 */
+
+static void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bool hud_mode)
+{
+	if (ImGui::CollapsingHeader("Attachments"))
+	{
+		u8 mode = hud_mode ? 0 : 1;
+
+		static FS_Path* pMeshesFolder = FS.get_path(_game_meshes_);
+		static FS_FileSet files[2];
+		FS.file_list(files[mode], _game_meshes_, FS_ListFiles, "*.ogf");
+
+		static shared_str pending_model_sect[2];
+		static bool show_model_popup[2] = {false, false};
+		static char model_search_buf[2][64] = {"", ""};
+
+		static xr_vector<shared_str> to_delete[2];
+		static xr_vector<const char*> bones_names[2];
+		bones_names[mode].resize(pK->LL_BoneCount());
+		for (auto& pair : *pK->LL_Bones())
+		{
+			bones_names[mode][pair.second] = *pair.first;
+		}
+
+		static bool show_add_attach_window[2] = {false, false};
+		static char attach_search_buf[2][64] = {"", ""};
+		static EattachmentType pending_attachment_type[2] = {eTypeCustom, eTypeCustom};
+		static bool select_type_step[2] = {true, true};
+
+		static const std::pair<const char*, EattachmentType> kTypes[] = {
+			{"None", eTypeNone},
+			{"Scope", eTypeScope},
+			{"Muzzle", eTypeMuzzle},
+			{"Mount", eTypeMount},
+			{"GLauncher", eTypeGLauncher},
+			{"Magazine", eTypeMagazine},
+			{"Custom", eTypeCustom},
+			{"Decore", eTypeDecore},
+		};
+		static constexpr int kTypeCount = std::size(kTypes);
+
+		static const char* kTypeNames[kTypeCount] = {};
+		static EattachmentType kTypeValues[kTypeCount] = {};
+		static bool kTypesInit = false;
+		if (!kTypesInit)
+		{
+			for (int i = 0; i < kTypeCount; ++i)
+			{
+				kTypeNames[i] = kTypes[i].first;
+				kTypeValues[i] = kTypes[i].second;
+			}
+			kTypesInit = true;
+		}
+
+		if (ImGui::Button("Add new attach"))
+		{
+			show_add_attach_window[mode] = true;
+			select_type_step[mode] = true;
+			pending_attachment_type[mode] = EattachmentType(-1);
+			attach_search_buf[mode][0] = '\0';
+		}
+
+		if (show_add_attach_window[mode])
+		{
+			ImGui::SetNextWindowSize(ImVec2(340, 420), ImGuiCond_FirstUseEver);
+			if (ImGui::Begin("Add new attach", &show_add_attach_window[mode]))
+			{
+				if (select_type_step[mode])
+				{
+					ImGui::TextUnformatted("Select attachment type:");
+					ImGui::Separator();
+
+					for (auto& [label, type] : kTypes)
+					{
+						bool selected = (pending_attachment_type[mode] == type);
+						if (ImGui::Selectable(label, selected))
+						{
+							pending_attachment_type[mode] = type;
+							select_type_step[mode] = false;
+						}
+					}
+
+					ImGui::Separator();
+					if (ImGui::Button("Cancel"))
+					{
+						show_add_attach_window[mode] = false;
+					}
+				}
+				else
+				{
+					ImGui::Text("Type: %s", kTypeNames[pending_attachment_type[mode]]);
+					ImGui::SameLine();
+					if (ImGui::SmallButton("< Back"))
+					{
+						select_type_step[mode] = true;
+					}
+
+					ImGui::Separator();
+					ImGui::InputTextWithHint("##attach_search", "Search...", attach_search_buf[mode], std::size(attach_search_buf[mode]));
+
+					ImGui::BeginChild("##attach_list", ImVec2(0, 260), true);
+					for (const auto& sect : pSettings->sections())
+					{
+						const char* sect_name = sect.Name.c_str();
+
+						if (attach_search_buf[mode][0] != '\0' &&
+							strstr(sect_name, attach_search_buf[mode]) == nullptr)
+						{
+							continue;
+						}
+
+						if (item->m_attachments.find(sect.Name.c_str()) !=
+							item->m_attachments.end())
+						{
+							continue;
+						}
+
+						if (!pSettings->line_exist(sect_name, "inv_name"))
+						{
+							continue;
+						}
+
+						if (ImGui::Selectable(sect_name))
+						{
+							item_attachment new_attach{};
+							new_attach.m_parent = item;
+
+							xr_string attachment_modifiers_sect =
+								xr_string(item->object().cNameSect_str()) + '_' + xr_string(sect_name);
+							new_attach.mod_sect_name = attachment_modifiers_sect.c_str();
+
+							new_attach.state.set(eAStateMCombined, !pSettings->line_exist(*new_attach.mod_sect_name, "attachment_hud_visual"));
+
+							new_attach.place.m_model = PKinematics(::Render->model_Create(
+								pSettings->line_exist(*new_attach.mod_sect_name, "attachment_visual")
+									? pSettings->r_string(*new_attach.mod_sect_name, "attachment_visual")
+									: pSettings->r_string(sect_name, "visual")
+							));
+
+							new_attach.hud_place.m_model = new_attach.state.test(eAStateMCombined)
+															   ? new_attach.place.m_model
+															   : PKinematics(::Render->model_Create(
+																	 pSettings->r_string(*new_attach.mod_sect_name, "attachment_hud_visual")
+																 ));
+
+							new_attach.attachment_type = pending_attachment_type[mode];
+
+							item->m_attachments.emplace(
+								sect.Name.c_str(), new_attach
+							);
+							if (CWeapon* wpn = item->cast_weapon())
+							{
+								if (new_attach.attachment_type == eTypeScope)
+								{
+									wpn->m_scopes.push_back(sect_name);
+								}
+							}
+							show_add_attach_window[mode] = false;
+							select_type_step[mode] = true;
+						}
+					}
+					ImGui::EndChild();
+
+					ImGui::Separator();
+					if (ImGui::Button("Cancel"))
+					{
+						show_add_attach_window[mode] = false;
+					}
+				}
+			}
+			ImGui::End();
+		}
+		if (!item->m_attachments.empty())
+		{
+			ImGui::Separator();
+			ImGui::Indent(20.0f);
+			for (auto& pair : item->m_attachments)
+			{
+				xr_string attach_sect_name = *pair.first;
+				if (ImGui::CollapsingHeader(attach_sect_name.c_str()))
+				{
+					ImGui::SeparatorText(xr_string("Offset##" + attach_sect_name).c_str());
+
+					Fvector& position = hud_mode ? pair.second.hud_place.position : pair.second.place.position;
+					if (ImGui::BeginTable(xr_string("Data##P" + attach_sect_name).c_str(), 1))
+					{
+						ImGui::TableNextRow();
+						ImGui::TableNextColumn();
+
+						ImGui::DragFloat(xr_string("X##P" + attach_sect_name).c_str(), &position.x, _delta_pos, -10.0f, 10.0f, "%.6f");
+						ImGui::DragFloat(xr_string("Y##P" + attach_sect_name).c_str(), &position.y, _delta_pos, -10.0f, 10.0f, "%.6f");
+						ImGui::DragFloat(xr_string("Z##P" + attach_sect_name).c_str(), &position.z, _delta_pos, -10.0f, 10.0f, "%.6f");
+
+						ImGui::EndTable();
+					}
+
+					ImGui::SeparatorText(xr_string("Direction##" + attach_sect_name).c_str());
+
+					Fvector& direction = hud_mode ? pair.second.hud_place.direction : pair.second.place.direction;
+					if (ImGui::BeginTable(xr_string("Data##D" + attach_sect_name).c_str(), 1))
+					{
+						ImGui::TableNextRow();
+						ImGui::TableNextColumn();
+
+						ImGui::DragFloat(xr_string("X##D" + attach_sect_name).c_str(), &direction.x, 5, 0, 360, "%.0f");
+						ImGui::DragFloat(xr_string("Y##D" + attach_sect_name).c_str(), &direction.y, 5, 0, 360, "%.0f");
+						ImGui::DragFloat(xr_string("Z##D" + attach_sect_name).c_str(), &direction.z, 5, 0, 360, "%.0f");
+
+						ImGui::EndTable();
+					}
+
+					ImGui::SeparatorText(xr_string("Scale##" + attach_sect_name).c_str());
+
+					Fvector& scale = hud_mode ? pair.second.hud_place.scale : pair.second.place.scale;
+					if (ImGui::BeginTable(xr_string("Data##S" + attach_sect_name).c_str(), 1))
+					{
+						ImGui::TableNextRow();
+						ImGui::TableNextColumn();
+
+						ImGui::DragFloat(xr_string("X##S" + attach_sect_name).c_str(), &scale.x, _delta_pos, 0.0f, 10.0f, "%.2f");
+						ImGui::DragFloat(xr_string("Y##S" + attach_sect_name).c_str(), &scale.y, _delta_pos, 0.0f, 10.0f, "%.2f");
+						ImGui::DragFloat(xr_string("Z##S" + attach_sect_name).c_str(), &scale.z, _delta_pos, 0.0f, 10.0f, "%.2f");
+
+						ImGui::EndTable();
+					}
+
+					// ---- attachment Type ----
+					ImGui::SeparatorText(xr_string("attachment Type##" + attach_sect_name).c_str());
+
+					int current_idx = 0;
+					for (int i = 0; i < kTypeCount; ++i)
+					{
+						if (kTypeValues[i] == pair.second.attachment_type)
+						{
+							current_idx = i;
+							break;
+						}
+					}
+
+					if (ImGui::Combo(xr_string("##Type" + attach_sect_name).c_str(), &current_idx, kTypeNames, kTypeCount))
+					{
+						EattachmentType old_type = pair.second.attachment_type;
+						EattachmentType new_type = kTypeValues[current_idx];
+
+						if (old_type != new_type)
+						{
+							if (CWeapon* wpn = item->cast_weapon())
+							{
+								if (old_type == eTypeScope)
+								{
+									auto it = std::find(wpn->m_scopes.begin(), wpn->m_scopes.end(), pair.first);
+									if (it != wpn->m_scopes.end())
+									{
+										wpn->m_scopes.erase(it);
+									}
+								}
+								if (new_type == eTypeScope)
+								{
+									if (std::find(wpn->m_scopes.begin(), wpn->m_scopes.end(), pair.first) == wpn->m_scopes.end())
+									{
+										wpn->m_scopes.push_back(pair.first);
+									}
+								}
+							}
+							pair.second.attachment_type = new_type;
+						}
+					}
+
+					ImGui::SeparatorText(xr_string("Select Bone##" + attach_sect_name).c_str());
+					int& selectable_bone_id = hud_mode ? pair.second.hud_place.parent_bone_id : pair.second.place.parent_bone_id;
+					ImGui::Combo(xr_string("##SelectBone" + attach_sect_name).c_str(), &selectable_bone_id, &bones_names[mode][0], bones_names[mode].size());
+
+					if (ImGui::Button(xr_string("Change model##" + attach_sect_name).c_str()))
+					{
+						pending_model_sect[mode] = pair.first;
+						show_model_popup[mode] = true;
+						model_search_buf[mode][0] = '\0';
+						ImGui::OpenPopup("##model_pick");
+					}
+
+					if (ImGui::Button(xr_string("Remove Attach##" + attach_sect_name).c_str()))
+					{
+						if (pair.second.place.m_model)
+						{
+							IRenderVisual* visual = pair.second.place.m_model->dcast_RenderVisual();
+							::Render->model_Delete(visual);
+						}
+						if (pair.second.hud_place.m_model != pair.second.place.m_model)
+						{
+							IRenderVisual* visual = pair.second.hud_place.m_model->dcast_RenderVisual();
+							::Render->model_Delete(visual);
+						}
+
+						to_delete[mode].push_back(pair.first);
+						if (CWeapon* wpn = item->cast_weapon())
+						{
+							if (pair.second.attachment_type == eTypeScope)
+							{
+								auto it = std::find(wpn->m_scopes.begin(), wpn->m_scopes.end(), pair.first);
+								if (it != wpn->m_scopes.end())
+								{
+									wpn->m_scopes.erase(it);
+								}
+							}
+						}
+					}
+					ImGui::CheckboxFlags("Show attachment", &pair.second.state.flags, eAStateVisible);
+					ImGui::CheckboxFlags("Permanent attachment", &pair.second.state.flags, eAStatePermanent);
+				}
+			}
+
+			if (show_model_popup[mode])
+			{
+				ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
+				ImGui::SetNextWindowSizeConstraints(ImVec2(250, 200), ImVec2(FLT_MAX, FLT_MAX));
+
+				if (ImGui::Begin("Select model", &show_model_popup[mode]))
+				{
+					ImGui::TextUnformatted("Select model:");
+					ImGui::Separator();
+					ImGui::InputTextWithHint("##_search", "Search...", model_search_buf[mode], std::size(model_search_buf[mode]));
+
+					ImGui::BeginChild("##models_list", ImVec2(0, 0), true);
+
+					for (auto& file : files[mode])
+					{
+						const char* fname = file.name.c_str();
+						if (!fname)
+						{
+							continue;
+						}
+
+						if (model_search_buf[mode][0] != '\0' &&
+							strstr(fname, model_search_buf[mode]) == nullptr)
+						{
+							continue;
+						}
+
+						if (ImGui::Selectable(fname))
+						{
+							auto it = item->m_attachments.find(pending_model_sect[mode]);
+							if (it != item->m_attachments.end())
+							{
+								item_attachment& att = it->second;
+								item_attachment::placement& other_place = hud_mode ? att.place : att.hud_place;
+								item_attachment::placement& curr_place = hud_mode ? att.hud_place : att.place;
+								if (curr_place.m_model && curr_place.m_model != other_place.m_model)
+								{
+									IRenderVisual* visual = curr_place.m_model->dcast_RenderVisual();
+									::Render->model_Delete(visual);
+									curr_place.m_model = nullptr;
+								}
+
+								curr_place.m_model = PKinematics(::Render->model_Create(fname));
+								att.state.set(eAStateMCombined, curr_place.m_model == other_place.m_model);
+							}
+						}
+					}
+					ImGui::EndChild();
+
+					ImGui::Separator();
+					if (ImGui::Button("Cancel"))
+					{
+						show_model_popup[mode] = false;
+					}
+				}
+				ImGui::End();
+			}
+
+			for (auto& k : to_delete[mode])
+			{
+				item->m_attachments.erase(k);
+			}
+			to_delete[mode].clear();
+			ImGui::Unindent(20.0f);
+			ImGui::Separator();
+		}
+	}
+}
+
 static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 {
 	if (item == nullptr)
@@ -347,6 +763,8 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 			}
 		}
 	}
+
+	AdjustDrawItemAttachmentsSettings(item->m_parent_hud_item->cast_inventory_item(), item->m_model, true);
 
 	auto drawPositions = [&](EHudOffsetType offset_type) -> void
 	{
