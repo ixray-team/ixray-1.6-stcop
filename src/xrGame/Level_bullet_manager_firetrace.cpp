@@ -160,6 +160,8 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 
 void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const Fvector &vEnd, collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark)
 {
+	PROF_EVENT(__FUNCTION__);
+	
 	SGameMtlPair* mtl_pair	= GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
 	Fvector particle_dir	= vNormal;
 
@@ -244,24 +246,26 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 
 void CBulletManager::StaticObjectHit	(CBulletManager::_event& E)
 {
-//	Fvector hit_normal;
+	PROF_EVENT(__FUNCTION__);
 	FireShotmark(&E.bullet, E.bullet.dir,	E.point, E.R, E.tgt_material, E.normal);
-//	ObjectHit	(&E.bullet,					E.point, E.R, E.tgt_material, hit_normal);
 }
 
 static bool g_clear = false;
 void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 {
-	//только для динамических объектов
-	CObject* ERO = E.R.O;
-	VERIFY(ERO);
+	PROF_EVENT(__FUNCTION__);
 
-	if (CEntity* entity = ERO->cast_entity())
+	CObject* ERO = E.R.O;
+	VERIFY(ERO || !ERO->getDestroy());
+
+	if (ERO->getDestroy())
 	{
-		if (!entity->in_solid_state())
-		{
-			return;
-		}
+		return;
+	}
+
+	if (CEntity* entity = ERO->cast_entity(); entity && !entity->in_solid_state())
+	{
+		return;
 	}
 
 	if (g_clear)
@@ -282,7 +286,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
 		{
 			NeedShootmark = false;
-		};
+		}
 	}
 	else if (CBaseMonster* monster = ERO->cast_base_monster())
 	{
@@ -320,7 +324,6 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 	//отправить хит пораженному объекту
 	if (E.bullet.flags.allow_sendhit && !E.Repeated)
 	{
-		//-------------------------------------------------
 		bool AddStatistic = false;
 		if (!IsGameTypeSingle() && E.bullet.flags.allow_sendhit && Game().m_WeaponUsageStatistic->CollectData())
 		{
@@ -328,14 +331,14 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 			{
 				Game().m_WeaponUsageStatistic->OnBullet_Hit(&E.bullet, ERO->ID(), (s16)E.R.element, E.point);
 				AddStatistic = true;
-			};
-		};
+			}
+		}
 
 		SHit Hit = SHit(hit_param.power, original_dir, nullptr,
 		u16(E.R.element), position_in_bone_space, hit_param.impulse,
 		E.bullet.hit_type, E.bullet.armor_piercing, E.bullet.flags.aim_bullet);
 
-		Hit.GenHeader(u16((AddStatistic) ? GE_HIT_STATISTIC : GE_HIT) & 0xffff, ERO->ID());
+		Hit.GenHeader(u16(AddStatistic ? GE_HIT_STATISTIC : GE_HIT) & 0xffff, ERO->ID());
 		Hit.whoID = E.bullet.parent_id;
 		Hit.weaponID = E.bullet.weapon_id;
 		Hit.BulletID = E.bullet.m_dwID;
