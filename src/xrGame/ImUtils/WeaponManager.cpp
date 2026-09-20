@@ -40,9 +40,13 @@ enum
 	inv_grid_y,
 	inv_grid_width,
 	inv_grid_height,
+	scope_x,
+	scope_y,
 	silencer_x,
 	silencer_y,
-	
+	glauncher_x,
+	glauncher_y,
+
 	hit_impulse_2,
 	hit_power_2,
 	hit_power_critical_2,
@@ -174,11 +178,23 @@ struct
 	int inv_grid_y{};
 	u32 cfg_inv_grid_y{};
 
+	int scope_x{};
+	int cfg_scope_x{};
+
+	int scope_y{};
+	int cfg_scope_y{};
+
 	int silencer_x{};
 	int cfg_silencer_x{};
 
 	int silencer_y{};
 	int cfg_silencer_y{};
+
+	int glauncher_x{};
+	int cfg_glauncher_x{};
+
+	int glauncher_y{};
+	int cfg_glauncher_y{};
 
 	Fvector4 hit_power;
 	Fvector4 cfg_hit_power;
@@ -331,8 +347,12 @@ void RenderWeaponManagerWindow()
 					imgui_weapon_manager.upgrade_disp_crouch = pWeapon->Get_PDM_Crouch();
 					imgui_weapon_manager.upgrade_disp_crouch_no_acc = pWeapon->Get_PDM_Crouch_NA();
 					imgui_weapon_manager.fire_dispersion_condition_factor = pWeapon->getFireDispersionConditionFactor();
+					imgui_weapon_manager.scope_x = pWeapon->GetScopeX();
+					imgui_weapon_manager.scope_y = pWeapon->GetScopeY();
 					imgui_weapon_manager.silencer_x = pWeapon->GetSilencerX();
 					imgui_weapon_manager.silencer_y = pWeapon->GetSilencerY();
+					imgui_weapon_manager.glauncher_x = pWeapon->GetGrenadeLauncherX();
+					imgui_weapon_manager.glauncher_y = pWeapon->GetGrenadeLauncherY();
 				}
 
 				// icons
@@ -638,23 +658,26 @@ void RenderWeaponManagerWindow()
 							imgui_weapon_manager.can_show[inv_grid_height] = true;
 							imgui_weapon_manager.cfg_inv_grid_height = pSettings->r_u32(pSectionName, "inv_grid_height");
 						}
-
-						if (pSettings->line_exist(pSectionName, "silencer_x"))
+						if (pWeapon)
 						{
-							if (pWeapon)
-							{
-								imgui_weapon_manager.can_show[silencer_x] = true;
-								imgui_weapon_manager.cfg_silencer_x = pSettings->r_s32(pSectionName, "silencer_x");
-							}
-						}
+							pWeapon->LoadScopeXY();
+							pWeapon->LoadSilencerXY();
+							pWeapon->LoadGrenadeLauncherXY();
 
-						if (pSettings->line_exist(pSectionName, "silencer_y"))
-						{
-							if (pWeapon)
-							{
-								imgui_weapon_manager.can_show[silencer_y] = true;
-								imgui_weapon_manager.cfg_silencer_y = pSettings->r_s32(pSectionName, "silencer_y");
-							}
+							imgui_weapon_manager.can_show[scope_x] = true;
+							imgui_weapon_manager.cfg_scope_x = pWeapon->GetScopeX();
+							imgui_weapon_manager.can_show[scope_y] = true;
+							imgui_weapon_manager.cfg_scope_y = pWeapon->GetScopeY();
+
+							imgui_weapon_manager.can_show[silencer_x] = true;
+							imgui_weapon_manager.cfg_silencer_x = pWeapon->GetSilencerX();
+							imgui_weapon_manager.can_show[silencer_y] = true;
+							imgui_weapon_manager.cfg_silencer_y = pWeapon->GetSilencerY();
+
+							imgui_weapon_manager.can_show[glauncher_x] = true;
+							imgui_weapon_manager.cfg_glauncher_x = pWeapon->GetGrenadeLauncherX();
+							imgui_weapon_manager.can_show[glauncher_y] = true;
+							imgui_weapon_manager.cfg_glauncher_y = pWeapon->GetGrenadeLauncherY();
 						}
 					}
 				}
@@ -704,8 +727,21 @@ void RenderWeaponManagerWindow()
 						{
 							if (pWeapon)
 							{
-								ImGui::Text("Silencer X: %d", pWeapon->GetSilencerX());
-								ImGui::Text("Silencer Y: %d", pWeapon->GetSilencerY());
+								if (pWeapon->IsScopeAttached())
+								{
+									ImGui::Text("Scope X: %d", pWeapon->GetScopeX());
+									ImGui::Text("Scope Y: %d", pWeapon->GetScopeY());
+								}
+								if (pWeapon->IsSilencerAttached())
+								{
+									ImGui::Text("Silencer X: %d", pWeapon->GetSilencerX());
+									ImGui::Text("Silencer Y: %d", pWeapon->GetSilencerY());
+								}
+								if (pWeapon->IsGrenadeLauncherAttached())
+								{
+									ImGui::Text("Glauncher X: %d", pWeapon->GetGrenadeLauncherX());
+									ImGui::Text("Glauncher Y: %d", pWeapon->GetGrenadeLauncherY());
+								}
 							}
 							ImGui::TreePop();
 						}
@@ -946,8 +982,12 @@ void RenderWeaponManagerWindow()
 						imgui_weapon_manager.inv_grid_width = imgui_weapon_manager.cfg_inv_grid_width;
 						imgui_weapon_manager.inv_grid_x = imgui_weapon_manager.cfg_inv_grid_x;
 						imgui_weapon_manager.inv_grid_y = imgui_weapon_manager.cfg_inv_grid_y;
+						imgui_weapon_manager.scope_x = imgui_weapon_manager.cfg_scope_x;
+						imgui_weapon_manager.scope_y = imgui_weapon_manager.cfg_scope_y;
 						imgui_weapon_manager.silencer_x = imgui_weapon_manager.cfg_silencer_x;
 						imgui_weapon_manager.silencer_y = imgui_weapon_manager.cfg_silencer_y;
+						imgui_weapon_manager.glauncher_x = imgui_weapon_manager.cfg_glauncher_x;
+						imgui_weapon_manager.glauncher_y = imgui_weapon_manager.cfg_glauncher_y;
 						imgui_weapon_manager.splash1_direction = imgui_weapon_manager.cfg_splash1_direction;
 						imgui_weapon_manager.splash2_direction = imgui_weapon_manager.cfg_splash2_direction;
 						imgui_weapon_manager.splash1_dist = imgui_weapon_manager.cfg_splash1_dist;
@@ -1082,6 +1122,27 @@ void RenderWeaponManagerWindow()
 
 							if (ImGui::TreeNode("Addons"))
 							{
+								if (imgui_weapon_manager.can_show[scope_x])
+								{
+									if (ImGui::SliderInt("Scope X##Editing", &imgui_weapon_manager.scope_x, -4096, 4096, "%d", flags))
+									{
+										if (pWeapon && !pKnife)
+										{
+											pWeapon->SetScopeX(imgui_weapon_manager.scope_x);
+										}
+									}
+								}
+								if (imgui_weapon_manager.can_show[scope_y])
+								{
+									if (ImGui::SliderInt("Scope Y##Editing", &imgui_weapon_manager.scope_y, -4096, 4096, "%d", flags))
+									{
+										if (pWeapon && !pKnife)
+										{
+											pWeapon->SetScopeY(imgui_weapon_manager.scope_y);
+										}
+									}
+								}
+
 								if (imgui_weapon_manager.can_show[silencer_x])
 								{
 									if (ImGui::SliderInt("Silencer X##Editing", &imgui_weapon_manager.silencer_x, -4096, 4096, "%d", flags))
@@ -1099,6 +1160,27 @@ void RenderWeaponManagerWindow()
 										if (pWeapon && !pKnife)
 										{
 											pWeapon->SetSilencerY(imgui_weapon_manager.silencer_y);
+										}
+									}
+								}
+
+								if (imgui_weapon_manager.can_show[glauncher_x])
+								{
+									if (ImGui::SliderInt("Glauncher X##Editing", &imgui_weapon_manager.glauncher_x, -4096, 4096, "%d", flags))
+									{
+										if (pWeapon && !pKnife)
+										{
+											pWeapon->SetGrenadeLauncherX(imgui_weapon_manager.glauncher_x);
+										}
+									}
+								}
+								if (imgui_weapon_manager.can_show[glauncher_y])
+								{
+									if (ImGui::SliderInt("Glauncher Y##Editing", &imgui_weapon_manager.glauncher_y, -4096, 4096, "%d", flags))
+									{
+										if (pWeapon && !pKnife)
+										{
+											pWeapon->SetGrenadeLauncherY(imgui_weapon_manager.glauncher_y);
 										}
 									}
 								}

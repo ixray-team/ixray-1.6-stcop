@@ -313,17 +313,17 @@ bool CUIMpTradeWnd::IsAddonAttached(SBuyItemInfo* itm, item_addon_type at)
 	{
 	case at_scope:
 	{
-		b_res = (w->ScopeAttachable() && w->IsScopeAttached());
+		b_res = (w->IsScopeAttachable() && w->IsScopeAttached());
 	}break;
 
 	case at_silencer:
 	{
-		b_res = (w->SilencerAttachable() && w->IsSilencerAttached());
+		b_res = (w->IsSilencerAttachable() && w->IsSilencerAttached());
 	}break;
 
 	case at_glauncher:
 	{
-		b_res = (w->GrenadeLauncherAttachable() && w->IsGrenadeLauncherAttached());
+		b_res = (w->IsGrenadeLauncherAttachable() && w->IsGrenadeLauncherAttached());
 	}break;
 	};
 
@@ -350,17 +350,17 @@ bool CUIMpTradeWnd::CanAttachAddon(SBuyItemInfo* itm, item_addon_type at)
 	{
 	case at_scope:
 	{
-		b_res = (w->ScopeAttachable() && !w->IsScopeAttached());
+		b_res = (w->IsScopeAttachable() && !w->IsScopeAttached());
 	}break;
 
 	case at_silencer:
 	{
-		b_res = (w->SilencerAttachable() && !w->IsSilencerAttached());
+		b_res = (w->IsSilencerAttachable() && !w->IsSilencerAttached());
 	}break;
 
 	case at_glauncher:
 	{
-		b_res = (w->GrenadeLauncherAttachable() && !w->IsGrenadeLauncherAttached());
+		b_res = (w->IsGrenadeLauncherAttachable() && !w->IsGrenadeLauncherAttached());
 	}break;
 	};
 
