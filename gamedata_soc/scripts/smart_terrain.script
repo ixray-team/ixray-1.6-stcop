@@ -126,7 +126,7 @@ function se_smart_terrain:STATE_Write( packet )
 		packet:w_u8( n )
 
 		for id, v in pairs( self.npc_info ) do
-			packet:w_u16  ( id )
+			packet:w_u32  ( id )
 			packet:w_u8   ( v.o_group )
 			packet:w_u8   ( v.o_squad )
 			packet:w_bool ( v.exclusive )
@@ -175,7 +175,7 @@ function se_smart_terrain:STATE_Read( packet, size )
 --		printf( "npc_info=%s", tostring( n ) )
 
 		for i = 1, n do
-			o_id = packet:r_u16()
+			o_id = packet:r_u32()
 			self.npc_info[o_id] = {}
 			o = self.npc_info[o_id]
 
@@ -1119,7 +1119,7 @@ function on_death( obj_id )
 		local obj     = sim:object( obj_id )
 		local strn_id = obj:smart_terrain_id()
 
-		if strn_id ~= 65535 then
+		if strn_id ~= alife_const.invalid_object_id then
 			sim:object( strn_id ).gulag:clear_dead(obj_id)
 		end
 	end
@@ -1134,7 +1134,7 @@ function unregister_npc(npc)
 		local obj     = sim:object(npc.id)
 		local strn_id = obj:smart_terrain_id()
 
-		if strn_id ~= 65535 then
+		if strn_id ~= alife_const.invalid_object_id then
 			if sim:object(strn_id) then
 				sim:object(strn_id):unregister_npc(obj)
 			end

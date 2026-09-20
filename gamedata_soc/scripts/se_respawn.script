@@ -182,7 +182,7 @@ function se_respawn:STATE_Write( packet )
 	
 	packet:w_u8(table_size)
 	for i=1,table_size do
-		packet:w_u16(self.spawned_obj[i])
+		packet:w_u32(self.spawned_obj[i])
 	end
 end
 -- восстановление
@@ -195,7 +195,7 @@ function se_respawn:STATE_Read( packet, size )
 
 	local table_size = packet:r_u8()
 	for i=1,table_size do
-		table.insert(self.spawned_obj, packet:r_u16())
+		table.insert(self.spawned_obj, packet:r_u32())
 	end
 
 --	printf("SPAWNER READ table_size[%d]", table_size)
@@ -360,7 +360,7 @@ function se_respawn:create(prob)
 				obj:brain():update()
 				local smart_terrain_id = obj:smart_terrain_id()
 	--			printf("SPAWN [%s] move_offline [%s], interactive [%s], smart_terrain_id [%s]", tostring(self:name()), tostring(self:move_offline()), tostring(self:interactive()), smart_terrain_id)
-				if smart_terrain_id ~= 65535 then		
+				if smart_terrain_id ~= alife_const.invalid_object_id then		
 					table.insert(self.spawned_obj ,obj.id)
 					local pos = obj.position
 --					printf("SPAWNING [%s] -> [%s], position [%s][%s][%s]", tostring(self:name()), spawn_section, pos.x, pos.y, pos.z)
