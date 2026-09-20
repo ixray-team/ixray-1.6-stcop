@@ -111,6 +111,8 @@ class CBulletManager : public pureFrame
 	using BulletVec = xr_vector<SBullet>;
 	using BulletVecIt = BulletVec::iterator;
 
+	float accumulated_delta = 0.f;
+
 	friend CLevel;
 
 	enum EventType
@@ -230,7 +232,9 @@ protected:
 		SBullet& bullet,
 		float dt
 	);
-	void UpdateWorkload();
+
+	void Step();
+	void Update(float dt);
 
 public:
 	static Fvector wind;

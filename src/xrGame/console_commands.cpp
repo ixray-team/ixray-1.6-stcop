@@ -2932,16 +2932,19 @@ void CCC_RegisterCommands()
 	CMD2(CCC_Boolean, "g_autosaves_enabled", &g_autosaves_enabled);
 	CMD4(CCC_Integer, "g_autosaves_interval", &g_autosaves_interval, 1, 120);
 
+	extern float bullet_manager_time_factor;
+	CMD4(CCC_Float, "bullet_manager_time_factor", &bullet_manager_time_factor, EPS_L, 10.f);
+
+	extern int bullet_manager_frequency;
+	CMD4(CCC_Integer, "bullet_manager_frequency", &bullet_manager_frequency, 10.f, 1000.f);
+
+	extern bool bullet_manager_debug_trajectory;
+	CMD2(CCC_Boolean, "bullet_manager_debug_trajectory", &bullet_manager_debug_trajectory);
+
+	extern bool bullet_manager_simulation_stop;
+	CMD2(CCC_Boolean, "bullet_manager_simulation_stop", &bullet_manager_simulation_stop);
+
 #ifndef MASTER_GOLD
-	extern float g_bullet_time_factor;
-	CMD4(CCC_Float, "g_bullet_time_factor", &g_bullet_time_factor, 0.f, 10.f);
-
-	extern bool g_bullet_debug_trj;
-	CMD2(CCC_Boolean, "g_bullet_debug_trj", &g_bullet_debug_trj);
-
-	extern bool g_bullets_stop;
-	CMD2(CCC_Boolean, "g_bullets_stop", &g_bullets_stop);
-
 	CMD1(CCC_HudNavOwnershipSmoke, "hud_nav_ownership_smoke");
 #endif
 
