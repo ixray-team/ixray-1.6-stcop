@@ -157,10 +157,7 @@ CUIWindow::~CUIWindow()
 
 void CUIWindow::Draw()
 {
-	// Same rationale as Update(): another thread may hold csUi while touching this subtree;
-	// block on Enter() would stall the render thread (see CUIPdaWnd::Draw / dialog trees).
-	if (!csUi.TryEnter())
-		return;
+	xrCriticalSectionGuard guard(csUi);
 
 #ifdef DEBUG_DRAW
 	if (IsShown())
@@ -185,8 +182,6 @@ void CUIWindow::Draw()
 		add_rect_to_draw(r);
 	}
 #endif
-
-	csUi.Leave();
 }
 
 void CUIWindow::Draw(float x, float y)
@@ -230,18 +225,13 @@ void CUIWindow::Update()
 				OnFocusLost();
 		}
 	}
-	// Avoid deadlock when another thread (e.g. input dispatch) holds csUi on this window:
-	// skip this subtree for one frame instead of blocking the game thread indefinitely.
-	if (!csUi.TryEnter())
-		return;
-
+	xrCriticalSectionGuard guard(csUi);
 	for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
 	{
 		if (!(*it)->IsShown())
 			continue;
 		(*it)->Update();
 	}
-	csUi.Leave();
 }
 
 void CUIWindow::AttachChild(CUIWindow* pChild)
