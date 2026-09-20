@@ -24,6 +24,7 @@ struct vf
     float4 tctexgen : TEXCOORD7;
     float3 pos : TEXCOORD8;
     float4 c0 : COLOR0;
+    float3 sun_color : COLOR1;
     float4 hpos : SV_POSITION;
 };
 
@@ -79,7 +80,8 @@ void main(in v_vert v, out vf o)
 
     float3 L_rgb = v.color.xyz; // precalculated RGB lighting
     float3 L_sun = v_sun(N) * v.color.w; // sun
-    float3 L_final = L_rgb + L_sun + L_ambient.xyz;
+    float3 L_final = L_rgb + L_ambient.xyz;
+    o.sun_color = max(L_sun, 0.0f);
 
     // xform, input in world coords
     o.hpos = mul(m_VP, P);

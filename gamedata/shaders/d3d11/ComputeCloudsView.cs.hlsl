@@ -35,7 +35,7 @@ static const float CLOUD_MS_DEPTH_POWER = 0.25f;
 static const float CLOUD_MS_HEIGHT_POWER = 0.25f;
 static const float CLOUD_TYPE = 1.0f;
 static const float CLOUD_LIGHTING_SCALE = SKY_RADIANCE_SCALE;
-static const float CLOUD_AMBIENT_STRENGTH = 1.0f;
+static const float CLOUD_AMBIENT_STRENGTH = 2.0f;
 // The complete random interval is one texel wide: [-0.5, +0.5).
 static const float CLOUD_NOISE_OFFSET_RADIUS_TEXELS = 0.5f;
 

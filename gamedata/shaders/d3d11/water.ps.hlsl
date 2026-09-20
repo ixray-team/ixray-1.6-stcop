@@ -1,6 +1,7 @@
 #include "common.hlsli"
 #include "reflections.hlsli"
 #include "shadow.hlsli"
+#include "water_sky_ibl.hlsli"
 
 struct vf
 {
@@ -14,14 +15,13 @@ struct vf
 	float4 tctexgen : TEXCOORD7;
 	float3 pos : TEXCOORD8;
 	float4 c0 : COLOR0;
+	float3 sun_color : COLOR1;
 	float4 hpos : SV_POSITION;
 };
 
 uniform float3 water_intensity;
 
 Texture2D s_nmap;
-TextureCube s_env0;
-TextureCube s_env1;
 
 Texture2D s_leaves;
 Texture2D s_caustic;
@@ -35,6 +35,7 @@ float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 {
 	float4 base = s_base.Sample(smp_base, I.tbase);
+	base.xyz = GammaToLinear(base.xyz);
 	
 	float3 n0 = s_nmap.Sample(smp_base, I.tnorm0).xyz;
 	float3 n1 = s_nmap.Sample(smp_base, I.tnorm1).xyz;
@@ -43,11 +44,9 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 
     float3 Nw = normalize(mul(float3x3(I.M1, I.M2, I.M3), Navg).xyz);
 	
-	float3 envd0 = env_s0.SampleLevel(smp_rtlinear, Nw, 0).xyz;
-	float3 envd1 = env_s1.SampleLevel(smp_rtlinear, Nw, 0).xyz;
-	
-	float3 envd = lerp(envd0, envd1, L_ambient.w) * L_hemi_color.xyz;
-	float3 color = I.c0.xyz + envd * envd * I.c0.w;
+	float3 sun_filter = water_sun_transmittance();
+	float3 color = GammaToLinear(I.c0.xyz) + I.sun_color * sun_filter
+		+ water_sky_diffuse(Nw) * I.c0.w;
 	base.xyz *= color;
 			
 	float3 v2point = normalize(I.v2point);
@@ -83,31 +82,15 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	#endif
 #endif
 
-	float2 rotation = 0.0f;
-	sincos(L_sky_color.w, rotation.x, rotation.y);
-	vreflect.xz = float2(vreflect.x * rotation.y - vreflect.z * rotation.x, vreflect.x * rotation.x + vreflect.z * rotation.y);
-	
-#ifndef USE_FULL_SKY_SPHERE
-	RemapVector(vreflect);
-#endif
 
-	float3 env0 = s_env0.SampleLevel(smp_rtlinear, vreflect, 0).xyz;
-	float3 env1 = s_env1.SampleLevel(smp_rtlinear, vreflect, 0).xyz;
-	
-	float3 env = lerp(env0, env1, L_ambient.w);
-	
-#ifdef USE_BGRA_SKYCOLOR
-   	env *= L_sky_color.zyx;
-#else
-    env *= L_sky_color.xyz;
-#endif
+	float3 env = water_sky_reflection(vreflect);
 	
 #ifdef USE_SSLR_ON_WATER
 	#ifdef USE_OFFSCREEN_REFLECTIONS
-		env.xyz = lerp(env, LinearToGamma(vslr.xyz), vslr.w);
+		env.xyz = lerp(env, vslr.xyz, vslr.w);
 	#endif
 	
-	env = lerp(env, LinearToGamma(sslr.xyz), sslr.w);
+	env = lerp(env, sslr.xyz, sslr.w);
 #endif
 
     float power = pow(fresnel, 5.0f);
@@ -131,6 +114,7 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	alpha = max(1.0f - exp(-4.0f * waterDepth), alpha);
 
 	float4 leaves = s_leaves.Sample(smp_base, I.tbase);
+	leaves.xyz = GammaToLinear(leaves.xyz);
 	leaves.xyz *= water_intensity.xxx * color;
 	leaves.w *= 1.0f - base.w;
 	
@@ -163,7 +147,6 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 #endif
 
 	float3 Light = s_accumulator.Load(int3(pos2d.xy, 0), 0).xyz;
-	Light = LinearToGamma(Light);
 	Light *= 1.0f - base.w;
 	
 	float2 CausticTexcoord = mul(m_invV, float4(Point.xyz, 1.0f)).xz * 0.45f;
@@ -174,7 +157,7 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	Caustic += ddx(Caustic) * float3(1.25, 0.0, -1.25); 
 	Caustic += ddy(Caustic) * float3(1.25, 0.0, -1.25);
 
-	final += SpecularPhong(v2point, Nw, L_sun_dir_w.xyz) * Shadow;
+	final += SpecularPhong(v2point, Nw, L_sun_dir_w.xyz) * sun_filter * Shadow;
 	final += Caustic * Light * 0.25f;
 	
 	final = lerp(final, leaves.xyz, leaves.w * fLeavesFactor);
@@ -183,8 +166,7 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	
 	float fog_fade = calc_fogging(I.pos.xyz);
 	
-	O.Color = lerp(float4(final, alpha), fog_color, fog_fade * fog_fade);
-	O.Color.xyz = GammaToLinear(O.Color.xyz);
+	O.Color = lerp(float4(final, alpha), float4(GammaToLinear(fog_color.rgb), fog_color.a), fog_fade * fog_fade);
 	
 	O.Velocity = 0.0f;
 	

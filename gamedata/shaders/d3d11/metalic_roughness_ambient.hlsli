@@ -400,7 +400,12 @@ float3 AmbientLightingLegcay(float3 View, float3 Normal, float3 Color, float Mat
 	float2 Surface = s_material.SampleLevel(smp_material, float3(Hemi, Specular, Material), 0).xy;
 
 	float3 DiffuseIrradance = CompureDiffuseIrradance(Normal, Surface.x) + L_ambient.xyz;
+	#ifdef USE_PROCEDURAL_SKY_IBL
+		// Legacy gloss has no physical roughness: use an approximate mapping.
+		float3 SpecularIrradance = CompureSpecularIrradance(Reflect, Surface.y, 1.0f - saturate(Gloss));
+	#else
 	float3 SpecularIrradance = CompureDiffuseIrradance(Reflect, Surface.y);
+	#endif
 
 	return DiffuseIrradance * Color + SpecularIrradance * Gloss;
 }

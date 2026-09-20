@@ -5,6 +5,11 @@
 #include "sload.hlsli"
 #include "shadow.hlsli"
 
+#ifdef USE_PROCEDURAL_INTERIOR_IBL
+#include "common_sky.hlsli"
+Texture2D<float4> s_sky_octo_ibl_diffuse;
+#endif
+
 float3 CubemapParralax(float3 PositionWS, float3 ReflDirectionWS)
 {
 	float3 BoxMax = 2.5f; BoxMax.z = 0.0f;
@@ -145,7 +150,14 @@ void main(p_bumped_new I, out IXRayForward O)
 #endif
 	
 	float4 SampleRef = s_env.Sample(smp_base, -Point);
+#ifdef USE_PROCEDURAL_INTERIOR_IBL
+	// Approximate incoming sky irradiance through the outward-facing window.
+	float3 window_normal_world = normalize(mul((float3x3)m_invV, float3(I.M1.z, I.M2.z, I.M3.z)));
+	float3 LightColor = sky_sample_gt7_octahedral_map(s_sky_octo_ibl_diffuse, smp_rtlinear,
+		window_normal_world, 1.0f).rgb * Hemi + L_ambient.xyz;
+#else
 	float3 LightColor = CompureDiffuseIrradanceSimple(Point, Hemi) + L_ambient.xyz;
+#endif
 	
 	float3 PojectedPos = I.position.xyz + length(Point - PositionWS) * normalize(I.position.xyz);
 	float4 PrevUV = mul(m_VP_old, float4(mul(m_invV, float4(PojectedPos, 1.0f)).xyz, 1.0f));
@@ -172,7 +184,11 @@ void main(p_bumped_new I, out IXRayForward O)
 		LightColor += L_sun_color.xyz * min(Shadow, 1.0f - s_base.Sample(smp_base, saturate(Window.xy * 0.5f + 0.5f)).w);
 	}
 	
+#ifdef USE_PROCEDURAL_INTERIOR_IBL
+    O.Color.xyz = GammaToLinear(SampleRef.xyz) * LightColor;
+#else
     O.Color.xyz = GammaToLinear(SampleRef.xyz * LightColor);
+#endif
     O.Color.w = 1.0f - s_base.Sample(smp_base, I.tcdh.xy).w;
 
     float Fog = GammaToLinear(saturate(length(I.position.xyz) * fog_params.w + fog_params.x));
@@ -191,4 +207,3 @@ void main(p_bumped_new I, out IXRayForward O)
 	#endif
 #endif
 }
-

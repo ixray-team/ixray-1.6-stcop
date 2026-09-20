@@ -188,6 +188,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 #ifdef USE_DX11
 		if (hq && pShaderOptions->contains(xr_string("USE_PARRALAX_INTERIOR")))
 		{
+#if RENDER == R_R4 && !defined(_EDITOR)
+			RImplementation.addShaderOption("USE_PROCEDURAL_INTERIOR_IBL", "1");
+#endif
 			C.r_Pass(vs, "forwrad_interior", FALSE, TRUE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 
 			C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
@@ -208,6 +211,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 			C.r_dx10Texture("s_base", C.L_textures[0]);
 			C.r_dx10Texture("s_env", "newsky_reflection_lobby_room");
+#if RENDER == R_R4 && !defined(_EDITOR)
+			C.r_dx10Texture("s_sky_octo_ibl_diffuse", r4_RT_sky_octo_diffuse);
+#endif
 
 			C.r_dx10Texture("env_s0", r2_T_envs0);
 			C.r_dx10Texture("env_s1", r2_T_envs1);
@@ -225,6 +231,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		
 			C.r_dx10Sampler("smp_base");
 			C.r_dx10Sampler("smp_linear");
+			C.r_dx10Sampler("smp_rtlinear");
 		
 			C.r_End(false);
 			C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_LESS_EQUAL);
@@ -391,6 +398,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, bool aref, bool blend, const char* detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {
+#if RENDER == R_R4 && !defined(_EDITOR)
+	// Set before uber_deffer compiles the forward pass.
+	RImplementation.addShaderOption("USE_PROCEDURAL_SKY_IBL", "1");
+#endif
+
 #if defined(USE_DX11) && !defined(_EDITOR)
 	bool use_wboit = blend && !C.bHudElement && RImplementation.o.dx11_allow_wboit_transparency;
 
@@ -435,6 +447,13 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 		C.r_dx10Texture("sky_s1", r2_T_sky1);
 
 		C.r_dx10Texture("s_env_fwd", r2_RT_env_fwd);
+
+#if RENDER == R_R4
+		// Scene reflections retain their own octahedral projection.
+		C.r_dx10Texture("s_sky_octo_ibl", r4_RT_sky_octo_map);
+		C.r_dx10Texture("s_sky_octo_ibl_small", r4_RT_sky_octo_map_small);
+		C.r_dx10Texture("s_sky_octo_ibl_diffuse", r4_RT_sky_octo_diffuse);
+#endif
 
 		C.r_dx10Sampler("smp_material");
 	#elif RENDER==R_R2

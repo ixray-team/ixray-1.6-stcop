@@ -1,6 +1,7 @@
 #include "common.hlsli"
 #include "reflections.hlsli"
 #include "shadow.hlsli"
+#include "water_sky_ibl.hlsli"
 
 struct PSInput
 {
@@ -11,13 +12,11 @@ struct PSInput
 uniform float3 water_intensity;
 
 Texture2D s_nmap;
-TextureCube s_env0;
-TextureCube s_env1;
 
 float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 {
 	float3 LightColor = max(0.0f, L_sun_color.xyz * 4.0f - 1.0f);
-	return LightColor * pow(dot(normalize(Point + Light), -Normal), 256.0);
+	return LightColor * pow(saturate(dot(normalize(Point + Light), -Normal)), 256.0);
 }
 
 // Pixel
@@ -25,6 +24,7 @@ float4 main(PSInput I) : SV_Target
 {
 	float2 tcdh = I.world_position.xz * 0.3f;
 	float4 base = s_base.Sample(smp_base, tcdh);
+	base.xyz = GammaToLinear(base.xyz);
 	float3 normal = s_nmap.Sample(smp_base, tcdh).xyz * 2.0 - 1.0;
 
 	//Build cotangent frame and transform our normal to world space
@@ -34,11 +34,7 @@ float4 main(PSInput I) : SV_Target
 
     float3 Nw = normalize(mul(TBN, normal));
 
-	float3 envd0 = env_s0.Sample(smp_rtlinear, Nw).xyz;
-	float3 envd1 = env_s1.Sample(smp_rtlinear, Nw).xyz;
-	
-	float3 envd = lerp(envd0, envd1, L_ambient.w) * L_hemi_color.xyz;
-	base.xyz *= envd * envd; //Ambient
+	base.xyz *= water_sky_diffuse(Nw);
 	
 	float3 v2point = normalize(I.world_position - eye_position);
 	float3 vreflect = reflect(v2point, Nw);
@@ -59,40 +55,20 @@ float4 main(PSInput I) : SV_Target
 		vslr.w *= 1.f - Fog * Fog;
 		
 		vslr.xyz = s_env.SampleLevel(smp_rtlinear, vslr.xyz, 0.0f);
-		vslr.xyz *= rcp(1.00001f - vslr.xyz);
 	#endif
 #endif
 
-	float2 rotation = 0.0f;
-	sincos(L_sky_color.w, rotation.x, rotation.y);
-	vreflect.xz = float2(vreflect.x * rotation.y - vreflect.z * rotation.x, vreflect.x * rotation.x + vreflect.z * rotation.y);
-	
-#ifndef USE_FULL_SKY_SPHERE
-	RemapVector(vreflect);
-#endif
 
-	float3 env0 = s_env0.Sample(smp_rtlinear, vreflect).xyz;
-	float3 env1 = s_env1.Sample(smp_rtlinear, vreflect).xyz;
-	
-	float3 env = lerp(env0, env1, L_ambient.w);
-	
-#ifdef USE_BGRA_SKYCOLOR
-   	env *= L_sky_color.zyx;
-#else
-    env *= L_sky_color.xyz;
-#endif
+	float3 env = water_sky_reflection(vreflect);
 
 #ifdef USE_SSLR_ON_WATER
 	#ifdef USE_OFFSCREEN_REFLECTIONS
-		env.xyz = lerp(env, LinearToGamma(vslr.xyz), vslr.w);
+		env.xyz = lerp(env, vslr.xyz, vslr.w);
 	#endif
 	
-	env = lerp(env, LinearToGamma(sslr.xyz), sslr.w);
+	env = lerp(env, sslr.xyz, sslr.w);
 #endif
 	
-#ifdef USE_SSLR_ON_WATER
-	env = lerp(env, LinearToGamma(sslr.xyz), sslr.w);
-#endif
 
     float power = pow(fresnel, 5.0f);
 	float amount = 0.25f + 0.25f * power;
@@ -132,9 +108,9 @@ float4 main(PSInput I) : SV_Target
 	}
 #endif
 	
-	final += SpecularPhong(v2point, Nw, L_sun_dir_w.xyz) * Shadow;
+	final += SpecularPhong(v2point, Nw, L_sun_dir_w.xyz) * water_sun_transmittance() * Shadow;
 #endif
 	
-	return GammaToLinear(lerp(float4(final, LinearToGamma(alpha)), fog_color, calc_fogging(I.world_position)));
+	return lerp(float4(final, alpha), float4(GammaToLinear(fog_color.rgb), fog_color.a), calc_fogging(I.world_position));
 }
 
