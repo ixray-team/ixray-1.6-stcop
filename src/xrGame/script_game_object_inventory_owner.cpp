@@ -2116,7 +2116,7 @@ void CScriptGameObject::Weapon_AddonAttach(CScriptGameObject* item)
 
 	if (weapon->CanAttach(pItm))
 	{
-		weapon->Attach(pItm, true);
+		weapon->Attach(pItm);
 	}
 }
 
@@ -2124,9 +2124,10 @@ void CScriptGameObject::Weapon_AddonDetach(const char* item_section, bool b_spaw
 {
 	if (CWeaponMagazined* weapon = object().cast_weapon_magazined())
 	{
-		if (weapon->CanDetach(item_section))
+		CGameObject* attachment_obj = weapon->GetChildBySectName(item_section);
+		if (weapon->CanDetach(attachment_obj->cast_inventory_item()))
 		{
-			weapon->Detach(item_section, b_spawn_item);
+			weapon->Detach(attachment_obj->cast_inventory_item());
 		}
 	}
 	else

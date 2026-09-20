@@ -307,7 +307,7 @@ void game_cl_Deathmatch::CheckItem			(PIItem pItem, PRESET_ITEMS* pPresetItems, 
 	CWeapon* pWeapon = pItem->cast_weapon();
 	if (pWeapon)
 	{
-		if (pWeapon->ScopeAttachable())
+		if (pWeapon->IsScopeAttachable())
 		{
 			pCurBuyMenu->GetWeaponIndexByName(*pWeapon->GetScopeName(), SlotID, ItemID);
 			if (SlotID != 0xff && ItemID != 0xff)
@@ -325,7 +325,7 @@ void game_cl_Deathmatch::CheckItem			(PIItem pItem, PRESET_ITEMS* pPresetItems, 
 			}
 		};
 
-		if (pWeapon->GrenadeLauncherAttachable())
+		if (pWeapon->IsGrenadeLauncherAttachable())
 		{
 			pCurBuyMenu->GetWeaponIndexByName(*pWeapon->GetGrenadeLauncherName(), SlotID, ItemID);
 			if (SlotID != 0xff && ItemID != 0xff)
@@ -343,7 +343,7 @@ void game_cl_Deathmatch::CheckItem			(PIItem pItem, PRESET_ITEMS* pPresetItems, 
 			}
 		};
 
-		if (pWeapon->SilencerAttachable())
+		if (pWeapon->IsSilencerAttachable())
 		{
 			pCurBuyMenu->GetWeaponIndexByName(*pWeapon->GetSilencerName(), SlotID, ItemID);
 			if (SlotID != 0xff && ItemID != 0xff)
