@@ -67,6 +67,20 @@ CDB::MODEL::~MODEL()
 	rtcReleaseBVH(tree);
 }
 
+void MODEL::SetVertsSSE16(const xr_vector<Fvector>& verts)
+{
+	this->verts.reserve(verts.size() + 2);
+	this->verts.resize(verts.size());
+	std::memcpy(this->verts.data(), verts.data(), verts.size() * sizeof(Fvector));
+}
+
+void MODEL::SetTrisSSE16(const xr_vector<TRI>& tris)
+{
+	this->tris.reserve(tris.size() + 2);
+	this->tris.resize(tris.size());
+	std::memcpy(this->tris.data(), tris.data(), tris.size() * sizeof(CDB::TRI));
+}
+
 void MODEL::build_simple()
 {
 	load_task.run([&]()
@@ -141,6 +155,7 @@ void MODEL::build_simple()
 		IsBuilt = true;
 		PROF_STOP_THREAD()
 	});
+	load_task.wait();
 }
 
 // Collision queries
@@ -236,7 +251,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 				}
 				
 				auto PrimID = RTCHitN_primID(args->hit, 1, 0);
-				VERIFY(PrimID < model->tris.size());
+				VERIFY(PrimID < model->get_tris().size());
 				
 				RESULT& R = self->r_add();
 				R.model = model;
@@ -310,7 +325,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 				}
 
 				auto PrimID = RTCHitN_primID(args->hit, 1, 0);
-				VERIFY(PrimID < model->tris.size());
+				VERIFY(PrimID < model->get_tris().size());
 				
 				float Range = RTCRayN_tfar(args->ray, 1, 0);
 				RESULT* R;
@@ -337,7 +352,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 					R->Sector = Data->Sector;
 				} else
 				{
-					R->Sector = model->tris[PrimID].sector;
+					R->Sector = model->get_tris()[PrimID].sector;
 				}
 				
 				/*if(!!(self->ray_mode & OPT_ONLYNEAREST) && self->rd.size() > 1)
@@ -437,12 +452,12 @@ struct cform_frustum_collider final
 		}
 		
 		auto& CurModel = stack->GetCurrentTree();
-		auto& Tri = CurModel.tris[InPrim.Index];
+		auto& Tri = CurModel.get_tris()[InPrim.Index];
 		auto& TriVerts = Tri.verts;
 		Fvector tri_verts[3] = {
-			CurModel.verts[TriVerts[0]],
-			CurModel.verts[TriVerts[1]],
-			CurModel.verts[TriVerts[2]]
+			CurModel.get_verts()[TriVerts[0]],
+			CurModel.get_verts()[TriVerts[1]],
+			CurModel.get_verts()[TriVerts[2]]
 		};
 
 		if (bClass3)
@@ -581,12 +596,12 @@ struct cform_box_collider final
 			BC.Stab(*ChildModel->root, NewToWorld);
 			for (auto& elem : LocResult)
 			{
-				auto& Tri = elem.model->tris[elem.tris_id];
+				auto& Tri = elem.model->get_tris()[elem.tris_id];
 				auto& TriVerts = Tri.verts;
 				Fvector tri_verts[3] = {
-					elem.model->verts[TriVerts[0]],
-					elem.model->verts[TriVerts[1]],
-					elem.model->verts[TriVerts[2]]
+					elem.model->get_verts()[TriVerts[0]],
+					elem.model->get_verts()[TriVerts[1]],
+					elem.model->get_verts()[TriVerts[2]]
 				};
 				elem.ModelWorldTransform.transform_tiny(tri_verts[0]);
 				elem.ModelWorldTransform.transform_tiny(tri_verts[1]);
@@ -600,12 +615,12 @@ struct cform_box_collider final
 		}
 		
 		auto& CurModel = stack->GetCurrentTree();
-		auto& Tri = CurModel.tris[InPrim.Index];
+		auto& Tri = CurModel.get_tris()[InPrim.Index];
 		auto& TriVerts = Tri.verts;
 		Fvector tri_verts[3] = {
-			CurModel.verts[TriVerts[0]],
-			CurModel.verts[TriVerts[1]],
-			CurModel.verts[TriVerts[2]]
+			CurModel.get_verts()[TriVerts[0]],
+			CurModel.get_verts()[TriVerts[1]],
+			CurModel.get_verts()[TriVerts[2]]
 		};
 		if (!box.intersectTri(tri_verts, bClass3))
 		{
@@ -743,12 +758,12 @@ struct cform_obb_collider final
 		}
 		
 		auto& CurModel = stack->GetCurrentTree();
-		auto& Tri = CurModel.tris[prim.Index];
+		auto& Tri = CurModel.get_tris()[prim.Index];
 		auto& TriVerts = Tri.verts;
 		Fvector tri_verts[3] = {
-			CurModel.verts[TriVerts[0]],
-			CurModel.verts[TriVerts[1]],
-			CurModel.verts[TriVerts[2]]
+			CurModel.get_verts()[TriVerts[0]],
+			CurModel.get_verts()[TriVerts[1]],
+			CurModel.get_verts()[TriVerts[2]]
 		};
 
 		if (!obb.intersectTri(tri_verts, bClass3))
@@ -884,12 +899,12 @@ struct cform_sphere_collider final
 
 			for(auto& R : local_results)
 			{
-				auto& CurrentTris = R.model->tris[R.tris_id];
+				auto& CurrentTris = R.model->get_tris()[R.tris_id];
 				
 				Fvector tri_verts[3] = {};
-				NewToWorld.transform_tiny(tri_verts[0], R.model->verts[CurrentTris.verts[0]]);
-				NewToWorld.transform_tiny(tri_verts[1], R.model->verts[CurrentTris.verts[1]]);
-				NewToWorld.transform_tiny(tri_verts[2], R.model->verts[CurrentTris.verts[2]]);
+				NewToWorld.transform_tiny(tri_verts[0], R.model->get_verts()[CurrentTris.verts[0]]);
+				NewToWorld.transform_tiny(tri_verts[1], R.model->get_verts()[CurrentTris.verts[1]]);
+				NewToWorld.transform_tiny(tri_verts[2], R.model->get_verts()[CurrentTris.verts[2]]);
 				
 				if (!sphere.intersectTri(tri_verts, bClass3))
 				{
@@ -900,12 +915,12 @@ struct cform_sphere_collider final
 		}
 		
 		auto& CurModel = stack->GetCurrentTree();
-		auto& Tri = CurModel.tris[prim.Index];
+		auto& Tri = CurModel.get_tris()[prim.Index];
 		auto& TriVerts = Tri.verts;
 		Fvector tri_verts[3] = {
-			CurModel.verts[TriVerts[0]],
-			CurModel.verts[TriVerts[1]],
-			CurModel.verts[TriVerts[2]]
+			CurModel.get_verts()[TriVerts[0]],
+			CurModel.get_verts()[TriVerts[1]],
+			CurModel.get_verts()[TriVerts[2]]
 		};
 
 		if (!sphere.intersectTri(tri_verts, bClass3))

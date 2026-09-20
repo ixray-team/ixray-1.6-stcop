@@ -112,7 +112,7 @@ ICF static bool pick_trace_callback(const collide::rq_result& result, LPVOID par
 	}else
 	{
 		//получить треугольник и узнать его материал
-		auto& T		= result.GetStatic()->tris[result.element];
+		auto& T		= result.GetStatic()->get_tris()[result.element];
 		
 		SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
 		pp->power *= mtl->fVisTransparencyFactor;

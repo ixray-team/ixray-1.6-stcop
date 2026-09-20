@@ -1001,7 +1001,7 @@ bool CBulletManager::firetrace_callback(const collide::rq_result& result, LPVOID
 
 	//статический объект
 	if (result.IsStatic()) {
-		auto& triangle	= result.GetStatic()->tris[result.element];
+		auto& triangle	= result.GetStatic()->get_tris()[result.element];
 		bullet_manager.RegisterEvent(EVENT_HIT, false, &bullet, collide_position, result, triangle.material);
 		return false;
 	}

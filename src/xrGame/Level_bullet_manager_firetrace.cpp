@@ -222,8 +222,8 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
 			//вычислить нормаль к пораженной поверхности
-			auto& pVerts = R.GetStatic()->verts;
-			auto& pTri = R.GetStatic()->tris[R.element];
+			auto& pVerts = R.GetStatic()->get_verts();
+			auto& pTri = R.GetStatic()->get_tris()[R.element];
 			
 			Fvector Verts[3];
 			R.xform.transform_tiny(Verts[0], pVerts[pTri.verts[0]]);
@@ -408,11 +408,11 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 	else
 	{
 		//вычислить нормаль к поверхности
-		auto& pTri = R.GetStatic()->tris[R.element];
+		auto& pTri = R.GetStatic()->get_tris()[R.element];
 		Fvector Verts[3];
-		R.xform.transform_tiny(Verts[0], R.GetStatic()->verts[pTri.verts[0]]);
-		R.xform.transform_tiny(Verts[1], R.GetStatic()->verts[pTri.verts[1]]);
-		R.xform.transform_tiny(Verts[2], R.GetStatic()->verts[pTri.verts[2]]);
+		R.xform.transform_tiny(Verts[0], R.GetStatic()->get_verts()[pTri.verts[0]]);
+		R.xform.transform_tiny(Verts[1], R.GetStatic()->get_verts()[pTri.verts[1]]);
+		R.xform.transform_tiny(Verts[2], R.GetStatic()->get_verts()[pTri.verts[2]]);
 		hit_normal.mknormal	(Verts[0],Verts[1],Verts[2]);
 		if ( bullet->density_mode )
 		{

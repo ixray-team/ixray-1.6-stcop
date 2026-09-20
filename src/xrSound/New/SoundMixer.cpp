@@ -1866,8 +1866,8 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 						if (Collider->r_count())
 						{
 							auto& r = Collider->r_any();
-							auto& Verts = r.model->verts;
-							auto& Tris = r.model->tris;
+							auto& Verts = r.model->get_verts();
+							auto& Tris = r.model->get_tris();
 							auto& T = Tris[r.tris_id];
 							auto& verts = T.verts;
 

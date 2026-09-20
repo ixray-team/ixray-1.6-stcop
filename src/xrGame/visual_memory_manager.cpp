@@ -562,7 +562,7 @@ float CVisualMemoryManager::feel_vision_mtl_transp(const collide::rq_result& res
 	if (result.IsStatic())
 	{
 		auto SO = result.GetStatic();
-		auto& T = SO->tris[result.element];
+		auto& T = SO->get_tris()[result.element];
 		vis = GMLib.GetMaterialByIdx(T.material)->fVisTransparencyFactor;
 	} else
 	{

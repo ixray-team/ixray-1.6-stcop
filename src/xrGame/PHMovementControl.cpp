@@ -1271,7 +1271,7 @@ bool CPHMovementControl::BorderTraceCallback(const collide::rq_result& result, L
 	else
 	{
 		//получить треугольник и узнать его материал
-		T = &result.GetStatic()->tris[result.element];
+		T = &result.GetStatic()->get_tris()[result.element];
 		mtl_idx = T->material;
 	}
 
@@ -1283,9 +1283,9 @@ bool CPHMovementControl::BorderTraceCallback(const collide::rq_result& result, L
 		Fvector tri_norm;
 		{
 			Fvector Verts[3];
-			result.xform.transform_tiny(Verts[0], result.GetStatic()->verts[T->verts[0]]);
-			result.xform.transform_tiny(Verts[1], result.GetStatic()->verts[T->verts[1]]);
-			result.xform.transform_tiny(Verts[2], result.GetStatic()->verts[T->verts[2]]);
+			result.xform.transform_tiny(Verts[0], result.GetStatic()->get_verts()[T->verts[0]]);
+			result.xform.transform_tiny(Verts[1], result.GetStatic()->get_verts()[T->verts[1]]);
+			result.xform.transform_tiny(Verts[2], result.GetStatic()->get_verts()[T->verts[2]]);
 			Verts[2].sub(Verts[1]);
 			Verts[1].sub(Verts[0]);
 			tri_norm.crossproduct(Verts[1],Verts[2]);

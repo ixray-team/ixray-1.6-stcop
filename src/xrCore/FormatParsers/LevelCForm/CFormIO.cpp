@@ -105,19 +105,21 @@ void CForm::CFormatVanilla::GetStaticGeom(xr_vector<Fvector>& OutVertices, xr_ve
 
 void CForm::CFormatVanilla::ReadData(CDB::MODEL& Model, CDB::build_callback* bc, void* bcp) const
 {
-	Model.verts.resize(Header.vertcount);
-	std::memcpy(Model.verts.data(), VertsPtr, sizeof(Fvector) * Header.vertcount);
-	Model.tris.resize(Header.facecount);
+	Model.get_verts().reserve(Header.vertcount + 2);
+	Model.get_tris().reserve(Header.facecount + 2);
+	Model.get_verts().resize(Header.vertcount);
+	std::memcpy(Model.get_verts().data(), VertsPtr, sizeof(Fvector) * Header.vertcount);
+	Model.get_tris().resize(Header.facecount);
 	for (u32 i = 0; i < Header.facecount; ++i)
 	{
-		std::memcpy(Model.tris.data()+i, ((CDB::TRI_Vanilla*)TrisPtr)+i, sizeof(CDB::TRI_Vanilla));
-		Model.tris[i].StreamedSectorID = 0;
+		std::memcpy(Model.get_tris().data()+i, ((CDB::TRI_Vanilla*)TrisPtr)+i, sizeof(CDB::TRI_Vanilla));
+		Model.get_tris()[i].StreamedSectorID = 0;
 	}
 	//std::memcpy(Model.tris.data(), TrisPtr, sizeof(CDB::TRI) * Header.facecount);
 	
 	if (bc)
 	{
-		bc(Model.verts.data(), Header.vertcount, Model.tris.data(), Header.facecount, bcp);
+		bc(Model.get_verts().data(), Header.vertcount, Model.get_tris().data(), Header.facecount, bcp);
 	}
 
 	Model.build_simple();
@@ -258,11 +260,11 @@ void CForm::CFormatVanillaChunked::GetStaticGeom(xr_vector<Fvector>& OutVertices
 
 void CForm::CFormatVanillaChunked::ReadData(CDB::MODEL& Model, CDB::build_callback* bc, void* bcp) const
 {
-	GetStaticGeom(Model.verts, Model.tris);
+	GetStaticGeom(Model.get_verts(), Model.get_tris());
 	
 	if (bc)
 	{
-		bc(Model.verts.data(), Header.vertcount, Model.tris.data(), Header.facecount, bcp);
+		bc(Model.get_verts().data(), Header.vertcount, Model.get_tris().data(), Header.facecount, bcp);
 	}
 	
 	Model.build_simple();
@@ -312,21 +314,23 @@ bool CForm::CFormatInstanced::Write(xr_string_view FileName)
 	}
 	
 	CDB::MODEL PreBuild;
-	PreBuild.verts.resize(Header.vertcount);
-	std::memcpy(PreBuild.verts.data(), VertsPtr, Header.vertcount*sizeof(Fvector));
-	PreBuild.tris.resize(Header.facecount);
-	std::memcpy(PreBuild.tris.data(), TrisPtr, Header.facecount*sizeof(CDB::TRI));
+	PreBuild.get_verts().reserve(Header.vertcount + 2);
+	PreBuild.get_tris().reserve(Header.facecount + 2);
+	PreBuild.get_verts().resize(Header.vertcount);
+	std::memcpy(PreBuild.get_verts().data(), VertsPtr, Header.vertcount*sizeof(Fvector));
+	PreBuild.get_tris().resize(Header.facecount);
+	std::memcpy(PreBuild.get_tris().data(), TrisPtr, Header.facecount*sizeof(CDB::TRI));
 	
 	for (auto& [Name, Vec] : instances)
 	{
-		auto Index = PreBuild.models.size();
+		auto Index = PreBuild.get_models().size();
 		auto Model = Models[Name];
-		PreBuild.models.push_back(Model);
+		PreBuild.get_models().push_back(Model);
 		for (auto& Inst : Vec)
 		{
 			auto Inv = Inst.xform;
 			Inv.invert();
-			PreBuild.instances.emplace_back(Inst.xform, Inv, Inst.AABB, Index, Inst.RenderSector);
+			PreBuild.get_instances().emplace_back(Inst.xform, Inv, Inst.AABB, Index, Inst.RenderSector);
 		}
 	}
     
@@ -409,37 +413,31 @@ void CForm::CFormatInstanced::ReadData(CDB::MODEL& Model, CDB::build_callback* b
 			{
 				auto InstanceMesh = ReadInstance(elem.first, bc, bcp);
 				xrCriticalSectionGuard g(Model.ModelsCS);
-				Index = Model.models.size();
-				Model.models.emplace_back(InstanceMesh);
+				Index = Model.get_models().size();
+				Model.get_models().emplace_back(InstanceMesh);
 			}
 			for(auto& trans : elem.second)
 			{
 				Fmatrix Inv = trans.xform;
 				Inv.invert();
 				xrCriticalSectionGuard g(Model.InstancesCS);
-				Model.instances.emplace_back(trans.xform, Inv, trans.AABB, Index, trans.RenderSector);
+				Model.get_instances().emplace_back(trans.xform, Inv, trans.AABB, Index, trans.RenderSector);
 			}
 			PROF_STOP_THREAD()
 		});
-		/*auto InstanceMesh = ReadInstance(elem.first, bc, bcp);
-		Model.models.emplace_back(InstanceMesh);
-		for(auto& trans : elem.second)
-		{
-			Fmatrix Inv = trans.xform;
-			Inv.invert();
-			Model.instances.emplace_back(trans.xform, Inv, trans.AABB, Model.models.size()-1, trans.Sector);
-		}*/
 	}
 	LoadTaskGroup.wait();
 	
-	Model.verts.resize(Header.vertcount);
-	std::memcpy(Model.verts.data(), VertsPtr, sizeof(Fvector) * Header.vertcount);
-	Model.tris.resize(Header.facecount);
-	std::memcpy(Model.tris.data(), TrisPtr, sizeof(CDB::TRI) * Header.facecount);
+	Model.get_verts().reserve(Header.vertcount + 2);
+	Model.get_tris().reserve(Header.facecount + 2);
+	Model.get_verts().resize(Header.vertcount);
+	std::memcpy(Model.get_verts().data(), VertsPtr, sizeof(Fvector) * Header.vertcount);
+	Model.get_tris().resize(Header.facecount);
+	std::memcpy(Model.get_tris().data(), TrisPtr, sizeof(CDB::TRI) * Header.facecount);
 	
 	if (bc)
 	{
-		bc(Model.verts.data(), Header.vertcount, Model.tris.data(), Header.facecount, bcp);
+		bc(Model.get_verts().data(), Header.vertcount, Model.get_tris().data(), Header.facecount, bcp);
 	}
 
 	Model.build_simple();

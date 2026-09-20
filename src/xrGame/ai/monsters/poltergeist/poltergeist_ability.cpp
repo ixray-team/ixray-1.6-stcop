@@ -140,7 +140,7 @@ void CPoltergeist::StrangeSounds(const Fvector &position)
 			if (l_rq.IsStatic() && l_rq.range < TRACE_DISTANCE) {
 
 				// Получить пару материалов
-				const CDB::TRI&	pTri = l_rq.GetStatic()->tris[l_rq.element];
+				const CDB::TRI&	pTri = l_rq.GetStatic()->get_tris()[l_rq.element];
 				SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(material().self_material_idx(),pTri.material);
 				if (!mtl_pair) continue;
 

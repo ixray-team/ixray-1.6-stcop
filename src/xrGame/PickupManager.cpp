@@ -144,7 +144,7 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 				else
 				{
 					//получить треугольник и узнать его материал
-					auto& T = result.GetStatic()->tris[result.element];
+					auto& T = result.GetStatic()->get_tris()[result.element];
 					if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
 					{
 						return true;

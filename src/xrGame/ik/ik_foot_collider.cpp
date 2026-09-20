@@ -57,8 +57,8 @@ bool ignore_tri(const CDB::TRI& tri )
 
 bool ignore_static_tri(const collide::rq_result& tri )
 {
-	VERIFY(tri.GetStatic()->tris.size() > tri.element );
-	auto& triangle	= tri.GetStatic()->tris[tri.element];
+	VERIFY(tri.GetStatic()->get_tris().size() > tri.element );
+	auto& triangle	= tri.GetStatic()->get_tris()[tri.element];
 	return ignore_tri( triangle );
 }
 
@@ -98,12 +98,12 @@ IC void tri_plane(const Fvector &v0, const Fvector &v1, const Fvector &v2, Fplan
 IC bool	get_plane_static(  ik_pick_result &r, Fvector &next_pos, float &next_range, const collide::rq_result	&R, float pick_dist, const Fvector &pos, const Fvector &pick_v )
 {
 	auto Obj = R.GetStatic();
-	VERIFY( Obj->tris.size() > R.element );
-	auto& tri = Obj->tris[R.element];
+	VERIFY( Obj->get_tris().size() > R.element );
+	auto& tri = Obj->get_tris()[R.element];
 	
-	R.xform.transform_tiny(r.triangle[0], Obj->verts[tri.verts[0]]);
-	R.xform.transform_tiny(r.triangle[1], Obj->verts[tri.verts[1]]);
-	R.xform.transform_tiny(r.triangle[2], Obj->verts[tri.verts[2]]);
+	R.xform.transform_tiny(r.triangle[0], Obj->get_verts()[tri.verts[0]]);
+	R.xform.transform_tiny(r.triangle[1], Obj->get_verts()[tri.verts[1]]);
+	R.xform.transform_tiny(r.triangle[2], Obj->get_verts()[tri.verts[2]]);
 
 	tri_plane( r.triangle[0], r.triangle[1], r.triangle[2], r.p );
 

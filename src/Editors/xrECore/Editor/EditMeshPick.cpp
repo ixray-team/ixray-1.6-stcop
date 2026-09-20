@@ -42,8 +42,8 @@ void CEditableMesh::GenerateCFModel()
 	if (I_ASSERT(CL.getVS() >= 4 && CL.getTS() >= 2))
 	{
 		m_CFModel = new CDB::MODEL();
-		m_CFModel->verts = CL.verts;
-		m_CFModel->tris = CL.faces;
+		m_CFModel->SetVertsSSE16(CL.verts);
+		m_CFModel->SetTrisSSE16(CL.faces);
 		m_CFModel->build_simple();
 	}
 }

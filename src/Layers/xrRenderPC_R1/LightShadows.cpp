@@ -495,17 +495,17 @@ void CLightShadows::render	()
 			tess.clear				();
 			for (auto& elem : xrc.r_vec())
 			{
-				VERIFY(elem.tris_id<elem.model->tris.size());
+				VERIFY(elem.tris_id<elem.model->get_tris().size());
 				// 
-				auto& t = elem.model->tris[elem.tris_id];
+				auto& t = elem.model->get_tris()[elem.tris_id];
 				if (t.suppress_shadows)
 				{
 					continue;
 				}
 				sPoly A,B;
-				A.push_back(elem.model->verts[t.verts[0]]);
-				A.push_back(elem.model->verts[t.verts[1]]);
-				A.push_back(elem.model->verts[t.verts[2]]);
+				A.push_back(elem.model->get_verts()[t.verts[0]]);
+				A.push_back(elem.model->get_verts()[t.verts[1]]);
+				A.push_back(elem.model->get_verts()[t.verts[2]]);
 				elem.ModelWorldTransform.transform_tiny(A[0]);
 				elem.ModelWorldTransform.transform_tiny(A[1]);
 				elem.ModelWorldTransform.transform_tiny(A[2]);

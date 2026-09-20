@@ -378,7 +378,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 		RImplementation.Sectors_xrc.box_query	(RImplementation.rmPortals,_cop,box_radius);
 		for (auto& elem : RImplementation.Sectors_xrc.r_vec())
 		{
-			CPortal* pPortal = (CPortal*) RImplementation.Portals[elem.model->tris[elem.tris_id].dummy];
+			CPortal* pPortal = (CPortal*) RImplementation.Portals[elem.model->get_tris()[elem.tris_id].dummy];
 			pPortal->bDualRender = true;
 			
 		}

@@ -56,9 +56,9 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
 
 	float abs_sd, sg_sd;
 	Fvector Verts[3];
-	res.ModelWorldTransform.transform_tiny(Verts[0], res.model->verts[res.model->tris[res.tris_id].verts[0]]);
-	res.ModelWorldTransform.transform_tiny(Verts[1], res.model->verts[res.model->tris[res.tris_id].verts[1]]);
-	res.ModelWorldTransform.transform_tiny(Verts[2], res.model->verts[res.model->tris[res.tris_id].verts[2]]);
+	res.ModelWorldTransform.transform_tiny(Verts[0], res.model->get_verts()[res.model->get_tris()[res.tris_id].verts[0]]);
+	res.ModelWorldTransform.transform_tiny(Verts[1], res.model->get_verts()[res.model->get_tris()[res.tris_id].verts[1]]);
+	res.ModelWorldTransform.transform_tiny(Verts[2], res.model->get_verts()[res.model->get_tris()[res.tris_id].verts[2]]);
 	Fvector* v = nullptr;
 	if (sg_sd0 == sg_sd1)
 	{
@@ -870,14 +870,14 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 
 	for (auto& elem : XRC.r_vec())
 	{
-		auto& Tris = elem.model->tris[elem.tris_id];
+		auto& Tris = elem.model->get_tris()[elem.tris_id];
 		SGameMtl* m = GMLibrary().GetMaterialByIdx(Tris.material);
 		if (m->Flags.test(SGameMtl::flPassable))continue;
 		//CDB::TRI* T = T_array + Res->id;
 		Point vertices[3];
-		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[0], elem.model->verts[Tris.verts[0]]);
-		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[1], elem.model->verts[Tris.verts[1]]);
-		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[2], elem.model->verts[Tris.verts[2]]);
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[0], elem.model->get_verts()[Tris.verts[0]]);
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[1], elem.model->get_verts()[Tris.verts[1]]);
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[2], elem.model->get_verts()[Tris.verts[2]]);
 		if (__aabb_tri(Point((float*)&center_forbid), Point((float*)&AABB_forbid), vertices))
 		{
 			if (test_sides(center_forbid, sd_dir, accel, obb_fb, elem))
@@ -897,16 +897,16 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 
 	for (auto& elem : XRC.r_vec())
 	{
-		auto& Tris = elem.model->tris[elem.tris_id];
+		auto& Tris = elem.model->get_tris()[elem.tris_id];
 		SGameMtl* m = GMLibrary().GetMaterialByIdx(Tris.material);
 		if (m->Flags.test(SGameMtl::flPassable))
 		{
 			continue;
 		}
 		Point vertices[3];
-		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[0], elem.model->verts[Tris.verts[0]]);
-		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[1], elem.model->verts[Tris.verts[1]]);
-		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[2], elem.model->verts[Tris.verts[2]]);
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[0], elem.model->get_verts()[Tris.verts[0]]);
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[1], elem.model->get_verts()[Tris.verts[1]]);
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[2], elem.model->get_verts()[Tris.verts[2]]);
 		if (__aabb_tri(Point((float*)&center), Point((float*)&AABB_), vertices)) 
 		{
 			if (test_sides(center, sd_dir, accel, obb, elem))
@@ -1830,7 +1830,7 @@ IC bool valide_res( u16& res_material_idx, const collide::rq_result	&R )
 {
 	if(R.IsStatic())
 	{
-		auto& tri = R.GetStatic()->tris[R.element];
+		auto& tri = R.GetStatic()->get_tris()[R.element];
 		res_material_idx = tri.material;
 		return !ignore_material( res_material_idx );
 	}

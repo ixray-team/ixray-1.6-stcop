@@ -294,8 +294,9 @@ void FTreeVisual_Prototype::Load(const char* N, IReader* data, u32 dwFlags)
 		{
 			HasCollision = true;
 			auto Num = CFormVChunk->r_u64();
-			Collision.verts.resize(Num);
-			CFormVChunk->r(Collision.verts.data(), Collision.verts.size()*sizeof(Fvector));
+			Collision.get_verts().reserve(Num + 2);
+			Collision.get_verts().resize(Num);
+			CFormVChunk->r(Collision.get_verts().data(), Collision.get_verts().size()*sizeof(Fvector));
 		}
 	}
 	{
@@ -303,8 +304,9 @@ void FTreeVisual_Prototype::Load(const char* N, IReader* data, u32 dwFlags)
 		if (HasCollision && I_ASSERT(CFormTChunk))
 		{
 			auto Num = CFormTChunk->r_u64();
-			Collision.tris.resize(Num);
-			CFormTChunk->r(Collision.tris.data(), Collision.tris.size()*sizeof(CDB::TRI));
+			Collision.get_tris().reserve(Num + 2);
+			Collision.get_tris().resize(Num);
+			CFormTChunk->r(Collision.get_tris().data(), Collision.get_tris().size()*sizeof(CDB::TRI));
 		}
 	}
 	if (HasCollision)

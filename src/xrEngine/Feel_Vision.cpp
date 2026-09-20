@@ -193,8 +193,8 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 						if (result.IsStatic() && fis_zero(vis))
 						{
 							auto SO = result.GetStatic();
-							auto& Tidxs = SO->tris[result.element].verts;
-							auto& V = SO->verts;
+							auto& Tidxs = SO->get_tris()[result.element].verts;
+							auto& V = SO->get_verts();
 							result.xform.transform_tiny(fp->item->Cache.verts[0], V[Tidxs[0]]);
 							result.xform.transform_tiny(fp->item->Cache.verts[1], V[Tidxs[1]]);
 							result.xform.transform_tiny(fp->item->Cache.verts[2], V[Tidxs[2]]);

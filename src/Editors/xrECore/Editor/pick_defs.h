@@ -50,10 +50,10 @@ class CCustomObject;
             }
             SResult(const Fmatrix& parent, const CDB::RESULT& r, CEditableObject* obj, CEditableMesh* mesh)
             {
-            	auto& Tris = r.model->tris[r.tris_id];
-                parent.transform_tiny(verts[0],r.model->verts[Tris.verts[0]]);
-                parent.transform_tiny(verts[1],r.model->verts[Tris.verts[1]]);
-                parent.transform_tiny(verts[2],r.model->verts[Tris.verts[2]]);
+            	auto& Tris = r.model->get_tris()[r.tris_id];
+                parent.transform_tiny(verts[0],r.model->get_verts()[Tris.verts[0]]);
+                parent.transform_tiny(verts[1],r.model->get_verts()[Tris.verts[1]]);
+                parent.transform_tiny(verts[2],r.model->get_verts()[Tris.verts[2]]);
                 u = r.u;
                 v = r.v;
                 range = r.range;
@@ -63,10 +63,10 @@ class CCustomObject;
             }
             SResult(const CDB::RESULT& r, CEditableObject* obj, CEditableMesh* mesh)
             { 
-            	auto& Tris = r.model->tris[r.tris_id];
-            	verts[0] = r.model->verts[Tris.verts[0]];
-            	verts[1] = r.model->verts[Tris.verts[1]];
-            	verts[2] = r.model->verts[Tris.verts[2]];
+            	auto& Tris = r.model->get_tris()[r.tris_id];
+            	verts[0] = r.model->get_verts()[Tris.verts[0]];
+            	verts[1] = r.model->get_verts()[Tris.verts[1]];
+            	verts[2] = r.model->get_verts()[Tris.verts[2]];
                 u = r.u;
                 v = r.v;
                 range = r.range;

@@ -234,15 +234,17 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		for (i = 0; i < CollisionsNum; ++i)
 		{
 			auto& Model = vec[i]->CollisionModel;
-			auto& VertsArr = Model.verts;
-			auto& TrisArr = Model.tris;
+			auto& VertsArr = Model.get_verts();
+			auto& TrisArr = Model.get_tris();
 			{
 				u32 Size = F->r_u32();
+				VertsArr.reserve(Size + 16);
 				VertsArr.resize(Size);
 				F->r(VertsArr.data(), Size*sizeof(Fvector));
 			}
 			{
 				u32 Size = F->r_u32();
+				TrisArr.reserve(Size + 16);
 				TrisArr.resize(Size);
 				F->r(TrisArr.data(), Size*sizeof(CDB::TRI));
 			}

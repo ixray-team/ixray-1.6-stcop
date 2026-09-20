@@ -65,7 +65,7 @@ bool FlamethrowerTrace::CPoint::hit_callback(const collide::rq_result& result, L
 	TraceData* pData = static_cast<TraceData*>(params);
 	if (result.IsStatic())
 	{
-		auto& triangle = result.GetStatic()->tris[result.element];
+		auto& triangle = result.GetStatic()->get_tris()[result.element];
 		SGameMtl* mtl = GMLib.GetMaterialByIdx(triangle.material);
 		if (!fsimilar(mtl->fShootFactor, 0.0f)) // if not penetrate
 		{

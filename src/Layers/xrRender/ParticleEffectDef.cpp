@@ -109,11 +109,11 @@ void CPEDef::ExecuteCollision(Particles& particles, u32 p_cnt, float dt, CPartic
 					}
 					else
 					{
-						auto& Tidxs = RQ.GetStatic()->tris[RQ.element].verts;
+						auto& Tidxs = RQ.GetStatic()->get_tris()[RQ.element].verts;
 						Fvector verts[3];
-						RQ.xform.transform_tiny(verts[0], RQ.GetStatic()->verts[Tidxs[0]]);
-						RQ.xform.transform_tiny(verts[1], RQ.GetStatic()->verts[Tidxs[1]]);
-						RQ.xform.transform_tiny(verts[2], RQ.GetStatic()->verts[Tidxs[2]]);
+						RQ.xform.transform_tiny(verts[0], RQ.GetStatic()->get_verts()[Tidxs[0]]);
+						RQ.xform.transform_tiny(verts[1], RQ.GetStatic()->get_verts()[Tidxs[1]]);
+						RQ.xform.transform_tiny(verts[2], RQ.GetStatic()->get_verts()[Tidxs[2]]);
 						n.mknormal(verts[0],verts[1],verts[2]);
 					}
 #endif

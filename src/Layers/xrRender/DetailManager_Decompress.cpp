@@ -552,7 +552,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 				}
 #else
 				CDB::RESULT& R = results[tid];
-				auto& T = R.model->tris[R.tris_id];
+				auto& T = R.model->get_tris()[R.tris_id];
 				SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
 
 				if (mtl->Flags.test(SGameMtl::flPassable))
@@ -571,9 +571,9 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 					}
 				}
 				Fvector verts[3];
-				R.ModelWorldTransform.transform_tiny(verts[0], R.model->verts[T.verts[0]]);
-				R.ModelWorldTransform.transform_tiny(verts[1], R.model->verts[T.verts[1]]);
-				R.ModelWorldTransform.transform_tiny(verts[2], R.model->verts[T.verts[2]]);
+				R.ModelWorldTransform.transform_tiny(verts[0], R.model->get_verts()[T.verts[0]]);
+				R.ModelWorldTransform.transform_tiny(verts[1], R.model->get_verts()[T.verts[1]]);
+				R.ModelWorldTransform.transform_tiny(verts[2], R.model->get_verts()[T.verts[2]]);
 				if (CDB::TestRayTri(Item_P, dir,verts, r_u, r_v, r_range, true))
 				{
 					if (r_range >= 0)

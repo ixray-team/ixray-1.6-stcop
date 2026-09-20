@@ -224,11 +224,11 @@ IC bool material_callback(const collide::rq_result& result, LPVOID params)
 	else
 	{
 		auto SO = result.GetStatic();
-		auto& T	= SO->tris[result.element];
+		auto& T	= SO->get_tris()[result.element];
 		vis = g_pGamePersistent->MtlTransparent(T.material);
 		if (fis_zero(vis))
 		{
-			auto& V = SO->verts;
+			auto& V = SO->get_verts();
 			auto& Tidxs = T.verts;
 			fp->pray_cache->set(fp->P,fp->D,fp->f,true);
 			result.xform.transform_tiny(fp->pray_cache->verts[0], V[Tidxs[0]]);

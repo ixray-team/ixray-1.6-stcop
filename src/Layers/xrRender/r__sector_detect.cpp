@@ -50,7 +50,7 @@ IRender_Sector* CRender::detectLastSector(const Fvector& P)
 			if (sectors_detect_xrc.r_count())
 			{
 				auto& RP = sectors_detect_xrc.r_any();
-				auto& pTri = RP.model->tris[RP.tris_id];
+				auto& pTri = RP.model->get_tris()[RP.tris_id];
 				CPortal* pPortal = (CPortal*) Portals[pTri.dummy];
 				CSector* S = pPortal->getSectorFacing(P);
 				FHierrarhyVisual* pV = (FHierrarhyVisual*)S->root();
@@ -69,7 +69,7 @@ IRender_Sector* CRender::detectLastSector(const Fvector& P)
 		if (sectors_detect_xrc.r_count())
 		{
 			auto& RP = sectors_detect_xrc.r_any();
-			return getSector(RP.model->tris[RP.tris_id].sector);
+			return getSector(RP.model->get_tris()[RP.tris_id].sector);
 		}
 
 		return nullptr;

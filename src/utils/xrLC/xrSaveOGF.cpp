@@ -238,17 +238,17 @@ void CBuild::SaveTREE(IWriter& fs)
 		}
 		
 		auto& Collision = elem.first->CollisionModel;
-		if (!Collision.tris.empty())
+		if (!Collision.get_tris().empty())
 		{
 			file->make_chunk(OGF_STATIC_COLLISION_VERTS, [this, &Collision](IWriter& file)
 			{
-				file.w_u64(Collision.verts.size());
-				file.w(Collision.verts.data(), Collision.verts.size()*sizeof(Fvector));
+				file.w_u64(Collision.get_verts().size());
+				file.w(Collision.get_verts().data(), Collision.get_verts().size()*sizeof(Fvector));
 			});
 			file->make_chunk(OGF_STATIC_COLLISION_TRIS, [this, &Collision](IWriter& file)
 			{
-				file.w_u64(Collision.tris.size());
-				file.w(Collision.tris.data(), Collision.tris.size()*sizeof(CDB::TRI));
+				file.w_u64(Collision.get_tris().size());
+				file.w(Collision.get_tris().data(), Collision.get_tris().size()*sizeof(CDB::TRI));
 			});
 		}
 		

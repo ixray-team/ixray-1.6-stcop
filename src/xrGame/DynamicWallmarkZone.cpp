@@ -49,12 +49,12 @@ bool CDynamicWallmarkZone::trace_callback(const collide::rq_result& result, LPVO
 	
     Fvector collide_position = Fvector().mad(wm_trace_data->StartPos, wm_trace_data->Dir, result.range);
 	
-    auto& pTri = result.GetStatic()->tris[result.element];
+    auto& pTri = result.GetStatic()->get_tris()[result.element];
 	
 	Fvector Verts[3];
-	result.xform.transform_tiny(Verts[0], result.GetStatic()->verts[pTri.verts[0]]);
-	result.xform.transform_tiny(Verts[1], result.GetStatic()->verts[pTri.verts[1]]);
-	result.xform.transform_tiny(Verts[2], result.GetStatic()->verts[pTri.verts[2]]);
+	result.xform.transform_tiny(Verts[0], result.GetStatic()->get_verts()[pTri.verts[0]]);
+	result.xform.transform_tiny(Verts[1], result.GetStatic()->get_verts()[pTri.verts[1]]);
+	result.xform.transform_tiny(Verts[2], result.GetStatic()->get_verts()[pTri.verts[2]]);
 
     wm_trace_data->self->handler = ::Render->add_DynamicWallmark(
         CDynamicWallmarkRegistry::Instance().GetWallmarkShader(wm_trace_data->self->shader, wm_trace_data->self->texture),

@@ -98,13 +98,13 @@ namespace CDB
 	
 	class XRCORE_API MODEL final
 	{
-	public:
-		xrCriticalSection ModelsCS;
-		xrCriticalSection InstancesCS;
 		xr_vector<TRI> tris;
 		xr_vector<Fvector> verts;
 		xr_vector<MODEL*> models;
 		xr_vector<InstanceData> instances;
+	public:
+		xrCriticalSection ModelsCS;
+		xrCriticalSection InstancesCS;
 		RTCScene InstaceScene;
 		RTCBVH tree = nullptr;
 		BVHNode* root = nullptr;
@@ -113,6 +113,10 @@ namespace CDB
 		mutable xr_task_group load_task;
 		
 		~MODEL();
+		
+		// Полусоблюдение требований Embree по выравниванию (чтоб ASAN заткнулся) 
+		void SetVertsSSE16(const xr_vector<Fvector>& verts);
+		void SetTrisSSE16(const xr_vector<TRI>& tris);
 
 		ICF xr_vector<Fvector>& get_verts() { return verts; }
 		ICF xr_vector<TRI>& get_tris() { return tris; }

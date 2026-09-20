@@ -3244,7 +3244,7 @@ void LevelInspector::DrawObjectsInfo()
 
 		if (result.IsStatic() && result.element >=0)
 		{
-			auto& T = result.GetStatic()->tris[result.element];
+			auto& T = result.GetStatic()->get_tris()[result.element];
 			SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
 			if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
 				return true;
@@ -3799,11 +3799,11 @@ void LevelInspector::DrawHOM()
 	{
 		VERIFY(res.model);
 		auto& Model = *res.model;
-		auto& Tris = Model.tris[res.tris_id];
+		auto& Tris = Model.get_tris()[res.tris_id];
 		Fvector verts[] = {
-			Model.verts[Tris.verts[0]],
-			Model.verts[Tris.verts[1]],
-			Model.verts[Tris.verts[2]],
+			Model.get_verts()[Tris.verts[0]],
+			Model.get_verts()[Tris.verts[1]],
+			Model.get_verts()[Tris.verts[2]],
 		};
 		append_tri({ verts[0], verts[1], verts[2], color_rgba(150, 150, 150, 100) });
 		append_line({ verts[0], verts[1], hom_lclr });
@@ -3811,8 +3811,8 @@ void LevelInspector::DrawHOM()
 		append_line({ verts[2], verts[1], hom_lclr });
 	}
 
-	xr_vector<CDB::TRI>& hom_tris = Render->GetHOMModel()->tris;
-	xr_vector<Fvector>& hom_verts = Render->GetHOMModel()->verts;
+	xr_vector<CDB::TRI>& hom_tris = Render->GetHOMModel()->get_tris();
+	xr_vector<Fvector>& hom_verts = Render->GetHOMModel()->get_verts();
 	xr_vector<u32>& inv_v = *Render->GetHOMInvaltids();
 	for (u32 i : inv_v)
 	{
@@ -4022,8 +4022,8 @@ void LevelInspector::DrawCFORM()
 							return;
 						}
 
-						auto& StaticTris = Model.tris;
-						auto& verts = Model.verts;
+						auto& StaticTris = Model.get_tris();
+						auto& verts = Model.get_verts();
 						auto& TriVerts = StaticTris[InPrim.Index].verts;
 						Fvector tri_verts[3];
 						ToWorldTransform.transform_tiny(tri_verts[0], verts[TriVerts[0]]);
@@ -4055,12 +4055,12 @@ void LevelInspector::DrawCFORM()
 		if (selected_prim.model && selected_prim.tris_id != -1)
 		{
 			delete_last = true;
-			auto& tris = selected_prim.model->tris[selected_prim.tris_id];
+			auto& tris = selected_prim.model->get_tris()[selected_prim.tris_id];
 			auto& TriVerts = tris.verts;
 			Fvector tri_verts[3];
-			selected_prim.ModelWorldTransform.transform_tiny(tri_verts[0], selected_prim.model->verts[TriVerts[0]]);
-			selected_prim.ModelWorldTransform.transform_tiny(tri_verts[1], selected_prim.model->verts[TriVerts[1]]);
-			selected_prim.ModelWorldTransform.transform_tiny(tri_verts[2], selected_prim.model->verts[TriVerts[2]]);
+			selected_prim.ModelWorldTransform.transform_tiny(tri_verts[0], selected_prim.model->get_verts()[TriVerts[0]]);
+			selected_prim.ModelWorldTransform.transform_tiny(tri_verts[1], selected_prim.model->get_verts()[TriVerts[1]]);
+			selected_prim.ModelWorldTransform.transform_tiny(tri_verts[2], selected_prim.model->get_verts()[TriVerts[2]]);
 			temp_prims[prims_render].temp_tris.push_back({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(20, 20, 255, 45) });
 			temp_prims[prims_render].temp_lines.push_back({ tri_verts[0], tri_verts[1], color_rgba(10, 10, 10, 255) });
 			temp_prims[prims_render].temp_lines.push_back({ tri_verts[0], tri_verts[2], color_rgba(10, 10, 10, 255) });

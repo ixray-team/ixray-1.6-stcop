@@ -82,11 +82,11 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 			float r_u,r_v,r_range;
 			for (auto& elem : DB.r_vec())
 			{
-				auto& T = elem.model->tris[elem.tris_id];
+				auto& T = elem.model->get_tris()[elem.tris_id];
 				Fvector V[3];
-				elem.ModelWorldTransform.transform_tiny(V[0], elem.model->verts[T.verts[0]]);
-				elem.ModelWorldTransform.transform_tiny(V[1], elem.model->verts[T.verts[1]]);
-				elem.ModelWorldTransform.transform_tiny(V[2], elem.model->verts[T.verts[2]]);
+				elem.ModelWorldTransform.transform_tiny(V[0], elem.model->get_verts()[T.verts[0]]);
+				elem.ModelWorldTransform.transform_tiny(V[1], elem.model->get_verts()[T.verts[1]]);
+				elem.ModelWorldTransform.transform_tiny(V[2], elem.model->get_verts()[T.verts[2]]);
 				if (CDB::TestRayTri(start,dir,V,r_u,r_v,r_range,true))
 				{
 					if (r_range>=0.f)	

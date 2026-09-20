@@ -483,7 +483,7 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 	//если кровь долетела до статического объекта
 	if(reach_wall)
 	{
-		auto& pTri = result.GetStatic()->tris[result.element];
+		auto& pTri = result.GetStatic()->get_tris()[result.element];
 		SGameMtl* pMaterial = GMLib.GetMaterialByIdx(pTri.material);
 
 		if(pMaterial->Flags.is(SGameMtl::flBloodmark))
@@ -497,7 +497,7 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 			//ref_shader wallmarkShader = wallmarks_vector[::Random.randI(wallmarks_vector.size())];
 			VERIFY(!pwallmarks_vector->empty());
 			{
-				auto& Verts = result.GetStatic()->verts;
+				auto& Verts = result.GetStatic()->get_verts();
 				
 				Fvector mVerts[3];
 				result.xform.transform_tiny(mVerts[0], Verts[pTri.verts[0]]);

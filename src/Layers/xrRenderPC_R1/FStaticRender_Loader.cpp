@@ -320,8 +320,8 @@ void CRender::LoadSectors(IReader* fs) {
 
 		// build portal model
 		rmPortals = new CDB::MODEL();
-		rmPortals->verts = CL.verts;
-		rmPortals->tris = CL.faces;
+		rmPortals->SetVertsSSE16(CL.verts);
+		rmPortals->SetTrisSSE16(CL.faces)
 		rmPortals->build_simple();
 	}
 	else

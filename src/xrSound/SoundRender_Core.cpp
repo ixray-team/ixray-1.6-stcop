@@ -121,8 +121,8 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 				{
 					// cache polygon
 					const CDB::RESULT& R_ = geom_DB.r_any();
-					const CDB::TRI& T = R_.model->tris[R_.tris_id];
-					const xr_vector<Fvector>& V = R_.model->verts;
+					const CDB::TRI& T = R_.model->get_tris()[R_.tris_id];
+					const xr_vector<Fvector>& V = R_.model->get_verts();
 					R_.ModelWorldTransform.transform_tiny(occ[0], V[T.verts[0]]);
 					R_.ModelWorldTransform.transform_tiny(occ[1], V[T.verts[1]]);
 					R_.ModelWorldTransform.transform_tiny(occ[2], V[T.verts[2]]);
@@ -141,8 +141,8 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 					{
 						// cache polygon
 						const CDB::RESULT& R_ = geom_DB.r_any();
-						const CDB::TRI& T = R_.model->tris[R_.tris_id];
-						const xr_vector<Fvector>& V = R_.model->verts;
+						const CDB::TRI& T = R_.model->get_tris()[R_.tris_id];
+						const xr_vector<Fvector>& V = R_.model->get_verts();
 						R_.ModelWorldTransform.transform_tiny(occ[0], V[T.verts[0]]);
 						R_.ModelWorldTransform.transform_tiny(occ[1], V[T.verts[1]]);
 						R_.ModelWorldTransform.transform_tiny(occ[2], V[T.verts[2]]);
@@ -159,7 +159,7 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 		geom_DB.ray_query(geom_SOM, base, dir, range);
 		for (auto& elem : geom_DB.r_vec())
 		{
-			occ_value *= std::bit_cast<float>(elem.model->tris[elem.tris_id].dummy);
+			occ_value *= std::bit_cast<float>(elem.model->get_tris()[elem.tris_id].dummy);
 		}
 	}
 	return occ_value;
@@ -183,7 +183,7 @@ float CSoundRender_Core::get_occlusion_to(const Fvector& hear_pt, const Fvector&
 		geom_DB.ray_query(geom_SOM, hear_pt, dir, range);
 		for (auto& elem : geom_DB.r_vec())
 		{
-			occ_value *= std::bit_cast<float>(elem.model->tris[elem.tris_id].dummy);
+			occ_value *= std::bit_cast<float>(elem.model->get_tris()[elem.tris_id].dummy);
 		}
 	}
 	return occ_value;
@@ -350,8 +350,8 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 	}
 
 	geom_SOM = new CDB::MODEL();
-	geom_SOM->verts = CL.verts;
-	geom_SOM->tris = CL.faces;
+	geom_SOM->SetVertsSSE16(CL.verts);
+	geom_SOM->SetTrisSSE16(CL.faces);
 	geom_SOM->build_simple();
 
 	geom->close();
@@ -454,11 +454,13 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 	}
 
 	geom_ENV = new CDB::MODEL();
-	geom_SOM->verts.resize(H.vertcount);
-	std::memcpy(geom_SOM->verts.data(), verts, H.vertcount);
-	geom_SOM->tris.resize(H.facecount);
-	std::memcpy(geom_SOM->tris.data(), tris, H.facecount);
-	geom_SOM->build_simple();
+	geom_ENV->get_verts().reserve(H.vertcount + 2);
+	geom_ENV->get_tris().reserve(H.facecount + 2);
+	geom_ENV->get_verts().resize(H.vertcount);
+	std::memcpy(geom_SOM->get_verts().data(), verts, H.vertcount);
+	geom_ENV->get_tris().resize(H.facecount);
+	std::memcpy(geom_SOM->get_tris().data(), tris, H.facecount);
+	geom_ENV->build_simple();
 
 	GeomChunk->close();
 	//geom->close();

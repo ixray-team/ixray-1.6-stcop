@@ -673,7 +673,7 @@ ICF static bool check_hit_trace_callback(const collide::rq_result& result, LPVOI
 	}
 	else
 	{
-		auto& T = result.GetStatic()->tris[result.element];
+		auto& T = result.GetStatic()->get_tris()[result.element];
 		if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
 		{
 			return true;

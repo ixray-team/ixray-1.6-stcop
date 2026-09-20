@@ -104,11 +104,11 @@ void CWalmarkManager::StartWorkflow(const shared_str& sect, bool UseCamDir)
 
 		Fvector _tri[3];
 
-		auto& _t = elem.model->tris[elem.tris_id];
+		auto& _t = elem.model->get_tris()[elem.tris_id];
 
-		elem.ModelWorldTransform.transform_tiny(_tri[0], elem.model->verts[_t.verts[0]]);
-		elem.ModelWorldTransform.transform_tiny(_tri[1], elem.model->verts[_t.verts[1]]);
-		elem.ModelWorldTransform.transform_tiny(_tri[2], elem.model->verts[_t.verts[2]]);
+		elem.ModelWorldTransform.transform_tiny(_tri[0], elem.model->get_verts()[_t.verts[0]]);
+		elem.ModelWorldTransform.transform_tiny(_tri[1], elem.model->get_verts()[_t.verts[1]]);
+		elem.ModelWorldTransform.transform_tiny(_tri[2], elem.model->get_verts()[_t.verts[2]]);
 
 		float dist = Distance(m_pos, _tri, pfSParam, pfTParam, end_point, pdir);
 		float test = dist - EPS_L;

@@ -188,10 +188,10 @@ bool trajectory_check_collision (float 							low,
 		{
 			for (CDB::RESULT& R : obb_collider.r_vec())
 			{
-				auto& Tris = R.model->tris[R.tris_id];
-				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->verts[Tris.verts[0]]);
-				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->verts[Tris.verts[1]]);
-				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->verts[Tris.verts[2]]);
+				auto& Tris = R.model->get_tris()[R.tris_id];
+				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->get_verts()[Tris.verts[0]]);
+				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->get_verts()[Tris.verts[1]]);
+				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->get_verts()[Tris.verts[2]]);
 			}
 		}
 	}

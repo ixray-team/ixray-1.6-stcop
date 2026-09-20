@@ -47,21 +47,21 @@ struct TriabgleCDBData
 	
 	ICF bool Valid() const
 	{
-		return model && (tris_id < model->tris.size());
+		return model && (tris_id < model->get_tris().size());
 	}
 	
 	ICF const CDB::TRI& GetTri() const
 	{
 		VERIFY(Valid());
-		return model->tris[tris_id];
+		return model->get_tris()[tris_id];
 	}
 	
 	using VertsArr = Fvector[3];
 	ICF void GetVerts(VertsArr& Out) const
 	{
 		auto& Tri = GetTri();
-		InvXFORM.transform_tiny(Out[0], model->verts[Tri.verts[0]]);
-		InvXFORM.transform_tiny(Out[1], model->verts[Tri.verts[1]]);
-		InvXFORM.transform_tiny(Out[2], model->verts[Tri.verts[2]]);
+		InvXFORM.transform_tiny(Out[0], model->get_verts()[Tri.verts[0]]);
+		InvXFORM.transform_tiny(Out[1], model->get_verts()[Tri.verts[1]]);
+		InvXFORM.transform_tiny(Out[2], model->get_verts()[Tri.verts[2]]);
 	}
 };

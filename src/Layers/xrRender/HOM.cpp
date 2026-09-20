@@ -125,8 +125,8 @@ void CHOM::Load()
 
 	// Create AABB-tree
 	m_pModel = new CDB::MODEL();
-	m_pModel->verts = CL.verts;
-	m_pModel->tris = CL.faces;
+	m_pModel->SetVertsSSE16(CL.verts);
+	m_pModel->SetTrisSSE16(CL.faces);
 	m_pModel->build_simple();
 	
 	bEnabled = true;
@@ -230,8 +230,8 @@ void CHOM::Render_DB			(CFrustum& base)
 		{ T.skip=next; continue; }
 
 		// Access to triangle vertices
-		auto& t		= elem.model->tris[elem.tris_id];
-		auto& v = elem.model->verts;
+		auto& t		= elem.model->get_tris()[elem.tris_id];
+		auto& v = elem.model->get_verts();
 		src.clear		();	dst.clear	();
 		src.push_back	(v[t.verts[0]]);
 		src.push_back	(v[t.verts[1]]);
@@ -313,7 +313,7 @@ void CHOM::OnRender()
 
 			DebugRenderImpl.add_lines
 			(
-				m_pModel->verts.data(), m_pModel->tris.size(),
+				m_pModel->get_verts().data(), m_pModel->get_tris().size(),
 				pairs.data(), (u32)pairs.size() / 2, 0xFFFFFFFF
 			);
 		}

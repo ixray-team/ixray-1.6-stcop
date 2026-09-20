@@ -259,11 +259,11 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::AddWallmark_internal(const 
 	//sml_collector.add_face_packed_D(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]],0);
 	for (CDB::RESULT& result : xrc.r_vec())
 	{
-		auto& Tri = result.model->tris[result.tris_id];
+		auto& Tri = result.model->get_tris()[result.tris_id];
 		Fvector Verts[3];
-		result.ModelWorldTransform.transform_tiny(Verts[0], result.model->verts[Tri.verts[0]]);
-		result.ModelWorldTransform.transform_tiny(Verts[1], result.model->verts[Tri.verts[1]]);
-		result.ModelWorldTransform.transform_tiny(Verts[2], result.model->verts[Tri.verts[2]]);
+		result.ModelWorldTransform.transform_tiny(Verts[0], result.model->get_verts()[Tri.verts[0]]);
+		result.ModelWorldTransform.transform_tiny(Verts[1], result.model->get_verts()[Tri.verts[1]]);
+		result.ModelWorldTransform.transform_tiny(Verts[2], result.model->get_verts()[Tri.verts[2]]);
 		Verts[0] += Normal*0.01f;
 		Verts[1] += Normal*0.01f;
 		Verts[2] += Normal*0.01f;

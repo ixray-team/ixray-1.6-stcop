@@ -236,10 +236,10 @@ struct SPHDBGDrawTri :public SPHDBGDrawAbsract
 	bool solid;
 	SPHDBGDrawTri(const CDB::RESULT& T,u32 ac)
 	{
-		auto& Tri = T.model->tris[T.tris_id];
-		T.ModelWorldTransform.transform_tiny(v[0], T.model->verts[Tri.verts[0]]);
-		T.ModelWorldTransform.transform_tiny(v[1], T.model->verts[Tri.verts[1]]);
-		T.ModelWorldTransform.transform_tiny(v[2], T.model->verts[Tri.verts[2]]);
+		auto& Tri = T.model->get_tris()[T.tris_id];
+		T.ModelWorldTransform.transform_tiny(v[0], T.model->get_verts()[Tri.verts[0]]);
+		T.ModelWorldTransform.transform_tiny(v[1], T.model->get_verts()[Tri.verts[1]]);
+		T.ModelWorldTransform.transform_tiny(v[2], T.model->get_verts()[Tri.verts[2]]);
 		c=ac;
 		solid = false;
 	}

@@ -297,7 +297,7 @@ void CBuild::BuildCTree()
 		Progress(float(ref) / float(mu_refs_arr.size()));
 		auto MUModel = mu_refs_arr[ref]->model;
 		
-		for (auto& elem : MUModel->CollisionModel.verts)
+		for (auto& elem : MUModel->CollisionModel.get_verts())
 		{
 			Fvector TransformedVert;
 			mu_refs_arr[ref]->xform.transform_tiny(TransformedVert,elem);
@@ -347,12 +347,12 @@ void CBuild::BuildCTree()
 	FormatPtr->AddStaticGeom(CL.getVSpan(), CL.getTSpan());
 	for (auto elem : mu_refs())
 	{
-		VERIFY(elem->model->CollisionModel.instances.empty(), "Instances inside instances are not currently supported!");
-		if (!elem->model->CollisionModel.tris.empty())
+		VERIFY(elem->model->CollisionModel.get_instances().empty(), "Instances inside instances are not currently supported!");
+		if (!elem->model->CollisionModel.get_tris().empty())
 		{
 			Fbox GlobalAABB; 
 			GlobalAABB.invalidate();
-			for (auto& v : elem->model->CollisionModel.verts)
+			for (auto& v : elem->model->CollisionModel.get_verts())
 			{
 				Fvector gv;
 				elem->xform.transform_tiny(gv, v);

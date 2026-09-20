@@ -187,7 +187,7 @@ ICF static bool grenade_hit_callback(const collide::rq_result& result, LPVOID pa
 		}
 	}else{
 		//получить треугольник и узнать его материал
-		auto& T = result.GetStatic()->tris[result.element];
+		auto& T = result.GetStatic()->get_tris()[result.element];
 		mtl_idx = T.material;
 	}	
 	SGameMtl* mtl		= GMLib.GetMaterialByIdx(mtl_idx);
@@ -679,11 +679,11 @@ void CExplosive::FindNormal(Fvector& normal)
 	{
 		//если лежим на статике
 		//найти треугольник и вычислить нормаль по нему
-		auto& pTri = RQ.GetStatic()->tris[RQ.element];
+		auto& pTri = RQ.GetStatic()->get_tris()[RQ.element];
 		Fvector Verts[3];
-		RQ.xform.transform_tiny(Verts[0], RQ.GetStatic()->verts[pTri.verts[0]]);
-		RQ.xform.transform_tiny(Verts[1], RQ.GetStatic()->verts[pTri.verts[1]]);
-		RQ.xform.transform_tiny(Verts[2], RQ.GetStatic()->verts[pTri.verts[2]]);
+		RQ.xform.transform_tiny(Verts[0], RQ.GetStatic()->get_verts()[pTri.verts[0]]);
+		RQ.xform.transform_tiny(Verts[1], RQ.GetStatic()->get_verts()[pTri.verts[1]]);
+		RQ.xform.transform_tiny(Verts[2], RQ.GetStatic()->get_verts()[pTri.verts[2]]);
 		normal.mknormal	(Verts[0],Verts[1],Verts[2]);
 	}
 }

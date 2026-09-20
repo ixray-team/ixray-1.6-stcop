@@ -78,7 +78,7 @@ ICF static bool GetPickDist_Callback(const collide::rq_result& result, LPVOID pa
 	}
 	else
 	{
-		auto& T = result.GetStatic()->tris[result.element];
+		auto& T = result.GetStatic()->get_tris()[result.element];
 		SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
 		if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
 		{
