@@ -346,7 +346,7 @@ void CScriptGameObject::IterateInventoryBox(luabind::functor<bool> functor, luab
 {
 	if (CInventoryBox* inventory_box = this->object().cast_inventory_box())
 	{
-		for (const u16& id : inventory_box->m_items)
+		for (auto id : inventory_box->m_items)
 		{
 			if (CGameObject* GO = Level().Objects.net_Find(id)->cast_game_object())
 			{

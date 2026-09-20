@@ -1759,7 +1759,7 @@ const xr_vector<CScriptGameObject*>& GetOnlineGameObjectsByObbBoxSpatial(const F
 	return m_objects;
 }
 
-void ws_element_set_text(u16 id, const char* section, const char* text)
+void ws_element_set_text(ALife::_OBJECT_ID id, const char* section, const char* text)
 {
 	if (CGameObject* obj = smart_cast<CGameObject*>(Level().Objects.net_Find(id)))
 	{
@@ -1767,7 +1767,7 @@ void ws_element_set_text(u16 id, const char* section, const char* text)
 	}
 }
 
-void ws_element_show(u16 id, const char* section, bool show = true)
+void ws_element_show(ALife::_OBJECT_ID id, const char* section, bool show = true)
 {
 	if (CGameObject* obj = smart_cast<CGameObject*>(Level().Objects.net_Find(id)))
 	{

@@ -2183,7 +2183,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, ALife::_OBJECT_ID Par
 	CObject* parentObj = nullptr;
 	if (ParentID != ALife::INVALID_OBJECT_ID)
 	{
-		parentObj = Level().Objects.net_Find((u16)ParentID);
+		parentObj = Level().Objects.net_Find(ParentID);
 	}
 	if (!parentObj)
 	{

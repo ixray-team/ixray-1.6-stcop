@@ -833,7 +833,7 @@ void game_cl_CaptureTheArtefact::OnSpawn(CObject* pObj)
 	}
 }
 
-void game_cl_CaptureTheArtefact::SetInvinciblePlayer(u16 const gameId, bool const invincible)
+void game_cl_CaptureTheArtefact::SetInvinciblePlayer(ALife::_OBJECT_ID const gameId, bool const invincible)
 {
 	CObject* pObject	= Level().Objects.net_Find	(gameId);
 	
@@ -1511,7 +1511,7 @@ void game_cl_CaptureTheArtefact::OnRender()
 		for(;it!=players.end();++it)
 		{
 			game_PlayerState* ps = it->second;
-			u16 id = ps->GameID;
+			auto id = ps->GameID;
 			if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 				continue;
 

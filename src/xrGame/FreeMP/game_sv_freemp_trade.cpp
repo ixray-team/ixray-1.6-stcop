@@ -38,11 +38,11 @@ void game_sv_freemp::OnPlayerTrade(NET_Packet& P, ClientID const& clientID)
 		items.reserve(itemsCount);
 		s32 svTotalPrice = 0;
 		float itemCondition;
-		u16 itemId;
+		ALife::_OBJECT_ID itemId;
 
 		for (u32 i = 0; i != itemsCount; ++i)
 		{
-			P.r_u16(itemId);
+			P >> itemId;
 			P.r_float(itemCondition);
 			finded_object = Level().Objects.net_Find(itemId);
 			CInventoryItem* pItem = finded_object != nullptr ? finded_object->cast_inventory_item() : nullptr;
@@ -94,12 +94,13 @@ void game_sv_freemp::OnPlayerTrade(NET_Packet& P, ClientID const& clientID)
 		xr_map<shared_str, u16> sellMap;
 		s32 svTotalPrice = 0;
 		u32	itemsMapSize;
-		u16 itemId, itemCount;
+		ALife::_OBJECT_ID itemId;
+		u16 itemCount;
 		P.r_u32(itemsMapSize);
 
 		for (u32 i = 0; i != itemsMapSize; ++i)
 		{
-			P.r_u16(itemId);
+			P >> itemId;
 			P.r_u16(itemCount);
 			CObject* finded_object = Level().Objects.net_Find(itemId);
 			CInventoryItem* pItem = finded_object != nullptr ? finded_object->cast_inventory_item() : nullptr;

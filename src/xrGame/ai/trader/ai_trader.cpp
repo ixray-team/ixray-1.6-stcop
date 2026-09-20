@@ -177,7 +177,7 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 	inherited::OnEvent(P, type);
 	CInventoryOwner::OnEvent(P, type);
 
-	u16 id;
+	ALife::_OBJECT_ID id;
 	CObject* Obj;
 
 	switch (type)
@@ -185,7 +185,7 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
 	{
-		P.r_u16(id);
+		P >> id;
 		Obj = Level().Objects.net_Find(id);
 		if (inventory().CanTakeItem(Obj->cast_inventory_item()))
 		{
@@ -204,7 +204,7 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
 	{
-		P.r_u16(id);
+		P >> id;
 		Obj = Level().Objects.net_Find(id);
 		bool just_before_destroy = !P.r_eof() && P.r_u8();
 		bool dont_create_shell = (type == GE_TRADE_SELL) || just_before_destroy;

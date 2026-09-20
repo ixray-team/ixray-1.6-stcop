@@ -394,8 +394,8 @@ void CUIActorMenuBase::TransferItemsMp(CUIDragDropListEx* pSellList, CUIDragDrop
 	pPlayer->u_EventGen(P, GE_GAME_EVENT, pPlayer->ID());
 	P.w_u16(GAME_EVENT_MP_TRADE);
 	P.w_u8(bBuying);								// Set as buying
-	P.w_u16(pTrade->pThis.inv_owner->object_id());	// NPC ID
-	P.w_u16(pPlayer->ID());							// Actor ID
+	P << pTrade->pThis.inv_owner->object_id();	// NPC ID
+	P << pPlayer->ID();							// Actor ID
 
 	u32 totalPrice = 0;
 	if (bBuying)
@@ -421,14 +421,14 @@ void CUIActorMenuBase::TransferItemsMp(CUIDragDropListEx* pSellList, CUIDragDrop
 
 		for (PIItem Itm : items_to_destroy)
 		{
-			P.w_u16(Itm->object_id());		// Item ID
+			P << Itm->object_id();		// Item ID
 			P.w_float(Itm->GetCondition());	// Item condition (for correct price calculation)
 		}
 	}
 	else
 	{
 		// Buy from NPC
-		xr_map<u16, u16> sellMap;
+		xr_map<ALife::_OBJECT_ID, u16> sellMap;
 		while (pSellList->ItemsCount())
 		{
 			CUICellItem* cell_item = pSellList->GetItemIdx(0);
@@ -446,7 +446,7 @@ void CUIActorMenuBase::TransferItemsMp(CUIDragDropListEx* pSellList, CUIDragDrop
 
 		for (auto&[ID, Count] : sellMap)
 		{
-			P.w_u16(ID);  // Item ID
+			P << ID;  // Item ID
 			P.w_u16(Count); // Count
 		}
 	}
@@ -462,7 +462,7 @@ void CUIActorMenuBase::AttachAddon(PIItem item_to_upgrade)
 	{
 		NET_Packet								P;
 		CGameObject::u_EventGen					(P, GE_ADDON_ATTACH, item_to_upgrade->object().ID());
-		P.w_u16									(CurrentIItem()->object().ID());
+		P << CurrentIItem()->object().ID();
 		CGameObject::u_EventSend				(P);
 	};
 

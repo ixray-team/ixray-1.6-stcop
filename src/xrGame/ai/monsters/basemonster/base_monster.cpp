@@ -933,12 +933,12 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 	inherited::OnEvent			(P,type);
 	CInventoryOwner::OnEvent	(P,type);
 
-	u16			id;
+	ALife::_OBJECT_ID			id;
 	switch (type) {
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
 		{
-			P.r_u16		(id);
+			P >> id;
 			CObject		*O	= Level().Objects.net_Find	(id);
 			VERIFY		(O);
 
@@ -954,7 +954,7 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
 		{
-			P.r_u16		(id);
+			P >> id;
 			CObject* O	= Level().Objects.net_Find	(id);
 			VERIFY		(O);
 
@@ -971,7 +971,7 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 		break;
 
 	case GE_KILL_SOMEONE:
-		P.r_u16		(id);
+		P >> id;
 		CObject* O	= Level().Objects.net_Find	(id);
 
 		if (O)  {

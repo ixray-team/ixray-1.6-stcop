@@ -484,7 +484,8 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 	}
 	case GAME_EVENT_MP_CAR_INPUT:
 	{
-		u16 CarID = P.r_u16();
+		ALife::_OBJECT_ID CarID;
+		P >> CarID;
 		u8 KeyEvent = P.r_u8();
 		bool IsHold = !!P.r_u8();
 

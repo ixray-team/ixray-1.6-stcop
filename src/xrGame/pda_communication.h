@@ -56,7 +56,7 @@ private:
 private:
     CInventoryOwner* _npc;
     CInventoryOwner* _actorOwner;
-    u16 _npcId;
+    ALife::_OBJECT_ID _npcId;
 
     bool _active;
 

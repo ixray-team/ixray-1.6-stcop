@@ -964,7 +964,7 @@ void		game_cl_Deathmatch::OnRender				()
 		for(;it!=players.end();++it)
 		{
 			game_PlayerState* ps = it->second;
-			u16 id = ps->GameID;
+			auto id = ps->GameID;
 			if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) continue;
 			if (!ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE)) continue;
 			CObject* pObject = Level().Objects.net_Find(id);

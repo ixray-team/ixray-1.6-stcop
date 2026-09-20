@@ -810,10 +810,10 @@ void CBurer::OnEvent(NET_Packet& P, u16 type)
 	{
 		case GE_BURER_GRAVI_PARTICLES:
 		{
-			u16 target;
+			ALife::_OBJECT_ID target;
 			u8 start_particles;
 			P.r_u8(start_particles);
-			P.r_u16(target);
+			P >> target;
 
 			CObject* obj = Level().Objects.net_Find(target);
 			if (!obj)
@@ -845,8 +845,8 @@ void CBurer::OnEvent(NET_Packet& P, u16 type)
 		}
 		case GE_BURER_GRAVI_WAVE:
 		{
-			u16 target;
-			P.r_u16(target);
+			ALife::_OBJECT_ID target;
+			P >> target;
 
 			if (OnServer())
 			{

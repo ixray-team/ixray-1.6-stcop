@@ -15,7 +15,7 @@ class CGameObject;
 class CDangerObjectLocation : public CDangerLocation {
 private:
 	const CGameObject		*m_object;
-	u16						m_object_id;
+	ALife::_OBJECT_ID						m_object_id;
 	mutable Fvector			m_cached_position;
 
 public:

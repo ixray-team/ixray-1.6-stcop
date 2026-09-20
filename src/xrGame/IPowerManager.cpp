@@ -217,7 +217,7 @@ void IPowerManager::OnFrame()
 		return;
 	}
 
-	if (await_object_id != u32(-1))
+	if (await_object_id != ALife::INVALID_OBJECT_ID)
 	{
 		if (CObject* co = Level().Objects.net_Find(await_object_id))
 		{
@@ -227,7 +227,7 @@ void IPowerManager::OnFrame()
 				if (PowerCell* pcell = smart_cast<PowerCell*>(io))
 				{
 					pcell->SetPowerCellData(m_power_cell);
-					await_object_id = u32(-1);
+					await_object_id = ALife::INVALID_OBJECT_ID;
 					is_power_cell_installed = false;
 					m_power_cell.current_power = 0;
 					m_power_cell.max_power = 0;

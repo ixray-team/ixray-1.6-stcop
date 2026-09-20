@@ -1989,13 +1989,13 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 	CExplosive::OnEvent(P, type);
 
 	//обработка сообщений, нужных для работы с багажником машины
-	u16 id;
+	ALife::_OBJECT_ID id;
 	switch (type)
 	{
 		case GE_TRADE_BUY:
 		case GE_OWNERSHIP_TAKE:
 		{
-			P.r_u16(id);
+			P >> id;
 			CObject* O = Level().Objects.net_Find(id);
 			VERIFY(O);
 
@@ -2011,7 +2011,7 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 		case GE_TRADE_SELL:
 		case GE_OWNERSHIP_REJECT:
 		{
-			P.r_u16(id);
+			P >> id;
 			CObject* O = Level().Objects.net_Find(id);
 			VERIFY(O);
 

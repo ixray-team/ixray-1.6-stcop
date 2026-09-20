@@ -455,8 +455,8 @@ void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 	{
 	case GE_ADDON_ATTACH:
 	{
-		u16 ItemID;
-		P.r_u16(ItemID);
+		ALife::_OBJECT_ID ItemID;
+		P >> ItemID;
 		CObject* finded = Level().Objects.net_Find(ItemID);
 		PIItem ItemToAttach = finded != nullptr ? finded->cast_inventory_item() : nullptr;
 		if (ItemToAttach == nullptr)

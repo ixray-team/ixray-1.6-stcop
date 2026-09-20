@@ -848,7 +848,7 @@ void WeaponUsageStatistic::OnExplosionKill(game_PlayerState* ps, const SHit& hit
 	WeaponIt->add_hit(NewHit);
 }
 
-void WeaponUsageStatistic::OnBleedKill(game_PlayerState* killer_ps, game_PlayerState* victim_ps, u16 weapon_id)
+void WeaponUsageStatistic::OnBleedKill(game_PlayerState* killer_ps, game_PlayerState* victim_ps, ALife::_OBJECT_ID weapon_id)
 {
 	statistic_sync_quard syncg(m_mutex);
 	if (!killer_ps || !victim_ps)

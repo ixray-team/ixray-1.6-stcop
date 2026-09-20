@@ -252,7 +252,7 @@ struct WeaponUsageStatistic final
 	 void		OnPlayerBringArtefact		(game_PlayerState* ps);
 			void		OnPlayerKillPlayer			(game_PlayerState* ps, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType);
 	 void		OnExplosionKill				(game_PlayerState* ps, const SHit& hit);
-			void		OnBleedKill					(game_PlayerState* killer_ps, game_PlayerState* victim_ps, u16 weapon_id);
+			void		OnBleedKill					(game_PlayerState* killer_ps, game_PlayerState* victim_ps, ALife::_OBJECT_ID weapon_id);
 	//-----------------------------------------------
 	void				Update						();
 	void				OnUpdateRequest				(NET_Packet* P);

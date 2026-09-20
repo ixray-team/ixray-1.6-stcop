@@ -63,7 +63,7 @@ private:
 	void LoadSndMessages();
 	void OnPlayerEnterBase();
 	void OnPlayerLeaveBase();
-	void SetInvinciblePlayer(u16 const gameId, bool const invincible);
+	void SetInvinciblePlayer(ALife::_OBJECT_ID const gameId, bool const invincible);
 	void SpawnMe();
 
 	void PlayCapturedTheArtefact(game_PlayerState const * capturer);
