@@ -333,22 +333,55 @@ void CWeaponRPG7::ReactiveHit()
 
 void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
 {
-	inherited::OnEvent(P,type);
 	ALife::_OBJECT_ID id;
-	switch (type) {
-		case GE_OWNERSHIP_TAKE : {
+	switch (type)
+	{
+		case GE_OWNERSHIP_TAKE:
+		{
 			P >> id;
-			CRocketLauncher::AttachRocket(id, this);
-		} break;
-		case GE_OWNERSHIP_REJECT:
-		case GE_LAUNCH_ROCKET	: 
+			CObject* O = Level().Objects.net_Find(id);
+			if (O->cast_custom_rocket())
 			{
-			bool bLaunch = (type==GE_LAUNCH_ROCKET);
+				CRocketLauncher::AttachRocket(id, this);
+			}
+			else
+			{
+				O->H_SetParent(this);
+				append_child(id, O->cast_game_object());
+				O->processing_deactivate();
+			}
+		}
+		break;
+		case GE_OWNERSHIP_REJECT:
+		case GE_LAUNCH_ROCKET:
+		{
 			P >> id;
-			CRocketLauncher::DetachRocket(id, bLaunch);
-			if(bLaunch)
-				UpdateMissileVisibility();
-		} break;
+			CObject* O = Level().Objects.net_Find(id);
+			if (O->cast_custom_rocket())
+			{
+				bool bLaunch = (type == GE_LAUNCH_ROCKET);
+				CRocketLauncher::DetachRocket(id, bLaunch);
+				if (bLaunch)
+				{
+					UpdateMissileVisibility();
+				}
+			}
+			else
+			{
+				bool just_before_destroy = !P.r_eof() && P.r_u8();
+
+				O->SetTmpPreDestroy(just_before_destroy);
+				erase_child(id);
+				O->processing_activate();
+				O->H_SetParent(0, true);
+			}
+		}
+		break;
+		default:
+		{
+			inherited::OnEvent(P, type);
+		}
+		break;
 	}
 }
 

@@ -1929,6 +1929,23 @@ public:
 					anomaly->m_owner_id = u32(-1);
 					anomaly->m_space_restrictor_type = RestrictionSpace::eRestrictorTypeNone;
 				}
+
+
+				if (auto weapon = item->cast_item_weapon())
+				{
+					if (weapon->m_scope_status == ALife::eAddonAttachable)
+					{
+						weapon->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonScope, true);
+					}
+					if (weapon->m_silencer_status == ALife::eAddonAttachable)
+					{
+						weapon->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonSilencer, true);
+					}
+					if (weapon->m_grenade_launcher_status == ALife::eAddonAttachable)
+					{
+						weapon->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, true);
+					}
+				}
 			}
 		}
 

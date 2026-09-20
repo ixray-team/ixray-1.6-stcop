@@ -336,22 +336,7 @@ bool CUIActorMenuBase::highlight_addons_for_weapon(PIItem weapon_item, CUICellIt
 		return false;
 	}
 
-	CScope* pScope = item->cast_addon_scope();
-	if (pScope && weapon_item->CanAttach(item))
-	{
-		ci->m_select_armament = true;
-		return true;
-	}
-
-	CSilencer* pSilencer = item->cast_addon_silencer();
-	if (pSilencer && weapon_item->CanAttach(pSilencer))
-	{
-		ci->m_select_armament = true;
-		return true;
-	}
-
-	CGrenadeLauncher* pGrenadeLauncher = item->cast_addon_grenade_launcher();
-	if (pGrenadeLauncher && weapon_item->CanAttach(pGrenadeLauncher))
+	if (weapon_item && weapon_item->CanAttach(item))
 	{
 		ci->m_select_armament = true;
 		return true;
@@ -363,15 +348,6 @@ void CUIActorMenuBase::highlight_weapons_for_addon(PIItem addon_item, CUIDragDro
 {
 	VERIFY(addon_item);
 	VERIFY(ddlist);
-
-	CScope*	pScope = addon_item->cast_addon_scope();
-	CSilencer* pSilencer = addon_item->cast_addon_silencer();
-	CGrenadeLauncher* pGrenadeLauncher = addon_item->cast_addon_grenade_launcher();
-
-	if (!pScope && !pSilencer && !pGrenadeLauncher)
-	{
-		return;
-	}
 	
 	u32 const cnt = ddlist->ItemsCount();
 	for (u32 i = 0; i < cnt; ++i)
@@ -384,24 +360,7 @@ void CUIActorMenuBase::highlight_weapons_for_addon(PIItem addon_item, CUIDragDro
 		}
 
 		CWeapon* weapon = item->cast_weapon();
-		if (!weapon)
-		{
-			continue;
-		}
-
-		if (pScope && weapon->ScopeAttachable() && weapon->ScopeFit(pScope))
-		{
-			ci->m_select_armament = true;
-			continue;
-		}
-
-		if (pSilencer && weapon->CanAttach(pSilencer))
-		{
-			ci->m_select_armament = true;
-			continue;
-		}
-
-		if (pGrenadeLauncher && weapon->CanAttach(pGrenadeLauncher))
+		if (addon_item && weapon && weapon->CanAttach(addon_item))
 		{
 			ci->m_select_armament = true;
 			continue;

@@ -47,10 +47,11 @@ public:
 	enum eAddonType{	eSilencer=0, eScope, eLauncher, eMaxAddon};
 protected:
 	CUIStatic*					m_addons					[eMaxAddon];
+	shared_str					m_last_icons				[eMaxAddon];
 	Fvector2					m_addon_offset				[eMaxAddon];
 	bool mScopeBack = false;
 	void						CreateIcon					(eAddonType);
-	void						DestroyIcon					(eAddonType);
+
 	void						RefreshOffset				();
 	CUIStatic*					GetIcon						(eAddonType);
 	void						InitAddon					(CUIStatic* s, const char* section, Fvector2 offset, bool use_heading);
@@ -69,7 +70,7 @@ public:
 	virtual		CUIDragItem*	CreateDragItem				();
 	virtual		bool			EqualTo						(CUICellItem* itm);
 	CUIStatic*					get_addon_static			(u32 idx)				{return m_addons[idx];}
-
+	void						DestroyIcon					(eAddonType);
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIStatic* ui_cast_static() { return this; }
 	virtual CUICellItem* ui_cast_cell_item() { return this; }
