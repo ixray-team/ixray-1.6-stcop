@@ -48,7 +48,43 @@ static void ThirdAdjustDrawSaveButton()
 		writeAttachParams(item, file);
 	}
 
-	auto writeStrappedParams = [](u16 slot, CInifile& file) -> void
+	FS.update_path(fn, "$app_data_root$", "3rd_adjust\\saved_attachments.ltx");
+	CInifile file_att(fn, false, true, true);
+	file_att.set_override_names(true);
+
+	auto writeAttParams = [](attachable_hud_item* p_item, CInifile& file)
+	{
+		if (!p_item) return;
+		for (auto& pair : p_item->m_parent_hud_item->item().m_attachments)
+		{
+			xr_string addon_modifers_sect = xr_string(p_item->m_parent_hud_item->object().cNameSect_str()) + '_' + xr_string(*pair.first);
+
+			file.w_u8(addon_modifers_sect.c_str(), "attachment_type", pair.second.attachment_type);
+			if (pair.second.state.test(eAStatePermanent))
+			{
+				file.w_bool(addon_modifers_sect.c_str(), "attachment_permanent", true);
+			}
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_hud_position", pair.second.hud_place.position);
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_hud_direction", pair.second.hud_place.direction);
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_hud_scale", pair.second.hud_place.scale);
+			file.w_string(addon_modifers_sect.c_str(), "attachment_hud_bone_name", p_item->m_model->LL_BoneName_dbg(pair.second.hud_place.parent_bone_id));
+			if (pair.second.hud_place.m_model)
+			{
+				file.w_string(addon_modifers_sect.c_str(), "attachment_hud_visual", xr_string(xr_string(pair.second.hud_place.m_model->getDebugName().c_str()) + xr_string(".ogf")).c_str());
+			}
+
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_position", pair.second.place.position);
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_direction", pair.second.place.direction);
+			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_scale", pair.second.place.scale);
+			file.w_string(addon_modifers_sect.c_str(), "attachment_bone_name", PKinematics(p_item->m_parent_hud_item->object().Visual())->LL_BoneName_dbg(pair.second.place.parent_bone_id));
+			if (pair.second.place.m_model)
+			{
+				file.w_string(addon_modifers_sect.c_str(), "attachment_visual", xr_string(xr_string(pair.second.place.m_model->getDebugName().c_str()) + xr_string(".ogf")).c_str());
+			}
+		}
+	};
+
+	auto writeStrappedParams = [&](u16 slot, CInifile& file) -> void
 	{
 		if (PIItem item_from_slot = Actor()->inventory().ItemFromSlot(slot);
 			CWeapon * wpn = item_from_slot ? item_from_slot->cast_weapon() : nullptr)
@@ -69,6 +105,7 @@ static void ThirdAdjustDrawSaveButton()
 					file.w_fvector3(sect, "strap_position_alt", wpn->m_StrapOffsetAlt.StrapPosition);
 					file.w_fvector3(sect, "strap_orientation_alt", wpn->m_StrapOffsetAlt.StrapRotation);
 				}
+				writeAttParams(wpn->HudItemData(), file_att);
 			}
 		}
 	};
@@ -88,6 +125,8 @@ static void ThirdAdjustDrawSaveButton()
 		file.w_fvector3(sect, "fire_point", wpn->vLoadedFirePoint);
 		file.w_fvector3(sect, "fire_point2", wpn->vLoadedFirePoint2);
 		file.w_fvector3(sect, "shell_point", wpn->vLoadedShellPoint);
+
+		writeAttParams(wpn->HudItemData(), file_att);
 	}
 
 	GAME_NEWS_DATA news_data = {};
@@ -98,6 +137,8 @@ static void ThirdAdjustDrawSaveButton()
 	news_data.texture_name = "ui_iconsTotal_bar_darklab_documents2";
 	Actor()->AddGameNews(news_data);
 }
+
+extern void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bool hud_mode);
 
 void Render3rdAdjust()
 {
@@ -219,6 +260,7 @@ void Render3rdAdjust()
 
 				base_header_name = "Strapped Item: ";
 				base_header_name += *wpn->cNameSect();
+				base_header_name += " Slot[" + xr_string().ToString(slot) + "]";
 
 				if (ImGui::CollapsingHeader(base_header_name.c_str()))
 				{
@@ -248,6 +290,8 @@ void Render3rdAdjust()
 					ImGui::DragFloat("X##SR", &strap_position.StrapRotation.x, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
 					ImGui::DragFloat("Y##SR", &strap_position.StrapRotation.y, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
 					ImGui::DragFloat("Z##SR", &strap_position.StrapRotation.z, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
+
+					AdjustDrawItemAttachmentsSettings(wpn, PKinematics(wpn->Visual()), false);
 				}
 
 				ImGui::PopID();
@@ -327,6 +371,8 @@ void Render3rdAdjust()
 			ImGui::DragFloat("X##SP", &wpn->vLoadedShellPoint.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
 			ImGui::DragFloat("Y##SP", &wpn->vLoadedShellPoint.y, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
 			ImGui::DragFloat("Z##SP", &wpn->vLoadedShellPoint.z, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+
+			AdjustDrawItemAttachmentsSettings(wpn, PKinematics(wpn->Visual()), false);
 		}
 
 		ImGui::PopID();
