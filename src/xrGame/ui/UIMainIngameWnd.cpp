@@ -469,8 +469,7 @@ void CUIMainIngameWnd::Init()
 	{
 		m_ind_psy = UIHelper::CreateStatic(uiXml, "indicator_psy", indicatorParent);
 	}
-	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
-	if (enableThirst)
+	if (uiXml.NavigateToNode("indicator_thirst"))
 	{
 		m_ind_thirst = UIHelper::CreateStatic(uiXml, "indicator_thirst", indicatorParent);
 	}
