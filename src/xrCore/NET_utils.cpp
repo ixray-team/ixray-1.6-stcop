@@ -161,7 +161,7 @@ void NET_Packet_byte_vector::reserve(size_t size)
 		Buff = NewBuff;
 		BuffSize = NewBuffSize;
 	}
-	BuffSize = size;
+	//BuffSize = size;
 }
 
 void NET_Packet_byte_vector::resize(size_t size)
