@@ -2239,7 +2239,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, ALife::_OBJECT_ID Par
 	F_entity_Destroy				(D);
 }
 
-void CWeapon::ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo, xr_map<u16, u16>* ammos_to_sync)
+void CWeapon::ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo, xr_map<ALife::_OBJECT_ID, u16>* ammos_to_sync)
 {
 	bool ammoChanged = false;
 
