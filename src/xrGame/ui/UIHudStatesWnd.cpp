@@ -277,7 +277,11 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
     {
         m_resist_back_starvation = UIHelper::CreateStatic(xml, "resist_back_starvation", this);
     }
-    // electra = no has CStatic!!
+	if (xml.NavigateToNode("resist_back_thirst"))
+	{
+		m_resist_back_thirst = UIHelper::CreateStatic(xml, "resist_back_thirst", this);
+	}
+	// electra = no has CStatic!!
 
     if (xml.NavigateToNode("indik_stack_panel", 0))
     {
@@ -310,6 +314,10 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
     {
         m_ind_starvation = UIHelper::CreateStatic(xml, "indicator_starvation", this);
     }
+	if (xml.NavigateToNode("indicator_thirst"))
+	{
+		m_ind_thirst = UIHelper::CreateStatic(xml, "indicator_thirst", this);
+	}
 
     m_lanim_name                = xml.ReadAttrib( "indik_rad", 0, "light_anim", "" );
     if (xml.NavigateToNode("static_ammo", 0))
@@ -1780,6 +1788,7 @@ void CUIHudStatesWnd::UpdateIndicators( CActor* actor )
     }
 
     UpdateSatiety(actor);
+	UpdateThirst(actor);
 
     for ( int i = 0; i < it_max ; ++i ) // it_max = ALife::infl_max_count-1
     {
@@ -1792,7 +1801,8 @@ void CUIHudStatesWnd::UpdateIndicators( CActor* actor )
     }
 }
 
-void CUIHudStatesWnd::UpdateSatiety(CActor* actor) {
+void CUIHudStatesWnd::UpdateSatiety(CActor* actor) 
+{
     float satiety = actor->conditions().GetSatiety();
     float satiety_critical = actor->conditions().SatietyCritical();
     float satiety_koef = (satiety - satiety_critical) / (satiety >= satiety_critical ? 1 - satiety_critical : satiety_critical);
@@ -1807,13 +1817,48 @@ void CUIHudStatesWnd::UpdateSatiety(CActor* actor) {
         {
             m_ind_starvation->SetTextureColor(color_rgba(0, 255, 0, 255));
         }
-        else if (satiety_koef > -0.5f) {
+        else if (satiety_koef > -0.5f) 
+        {
             m_ind_starvation->SetTextureColor(color_rgba(255, 255, 0, 255));
         }
-        else {
+        else 
+        {
             m_ind_starvation->SetTextureColor(color_rgba(255, 0, 0, 255));
         }
     }
+}
+
+void CUIHudStatesWnd::UpdateThirst(CActor* actor)
+{
+	const static bool EnableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
+    if (!EnableThirst)
+    {
+		return;
+    }
+
+	float thirst = actor->conditions().GetThirst();
+	float thirst_critical = actor->conditions().ThirstCritical();
+	float thirst_koef = (thirst - thirst_critical) / (thirst >= thirst_critical ? 1 - thirst_critical : thirst_critical);
+
+	if (m_ind_thirst && thirst_koef > 0.5)
+	{
+		m_ind_thirst->SetTextureColor(color_rgba(255, 255, 255, 255));
+	}
+	else if (m_ind_thirst)
+	{
+		if (thirst_koef > 0.0f)
+		{
+			m_ind_thirst->SetTextureColor(color_rgba(0, 255, 0, 255));
+		}
+		else if (thirst_koef > -0.5f)
+		{
+			m_ind_thirst->SetTextureColor(color_rgba(255, 255, 0, 255));
+		}
+		else
+		{
+			m_ind_thirst->SetTextureColor(color_rgba(255, 0, 0, 255));
+		}
+	}
 }
 
 void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType type )
