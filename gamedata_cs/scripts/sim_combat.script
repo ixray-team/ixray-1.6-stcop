@@ -790,9 +790,9 @@ function CCombat_manager:save(packet)
 	packet:w_stringZ(self.combat_quest)
 
 	if self.task == nil then
-		packet:w_u16(-1)
+		packet:w_u32(-1)
 	else
-		packet:w_u16(self.task)
+		packet:w_u32(self.task)
 	end
 
 	packet:w_stringZ(tostring(self.see_actor_enemy))
@@ -861,8 +861,8 @@ function CCombat_manager:load(packet)
 	self.actor_defence_come = packet:r_bool()
 	self.combat_quest = packet:r_stringZ()
 
-	self.task = packet:r_u16()
-	if self.task == 65535 then
+	self.task = packet:r_u32()
+	if self.task == alife_const.invalid_object_id then
 		self.task = nil
 	end
 

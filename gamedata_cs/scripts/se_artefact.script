@@ -30,7 +30,7 @@ function se_artefact:can_switch_online ()
     --printf ("CAN_SWITCH_ONLINE called")
     
     -- если есть родитель, то ничего не ломаем.
-    if self.parent_id ~= 65535 then
+    if self.parent_id ~= alife_const.invalid_object_id then
        return true 
     end   
     

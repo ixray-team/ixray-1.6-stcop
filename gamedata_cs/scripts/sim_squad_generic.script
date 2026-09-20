@@ -398,7 +398,7 @@ function sim_squad_generic:assign_smart(smart)
 				return
 			end
 
-			if obj.m_smart_terrain_id ~= 65535 and obj.m_smart_terrain_id == old_smart then
+			if obj.m_smart_terrain_id ~= alife_const.invalid_object_id and obj.m_smart_terrain_id == old_smart then
 				self.board.smarts[old_smart].smrt:unregister_npc(obj)
 			end
 
@@ -834,27 +834,27 @@ function sim_squad_generic:save(packet)
 
 	-- Сохранение позиции отряда
 	if self.smart_id == nil then
-		packet:w_u16(-1)
+		packet:w_u32(-1)
 	else
-		packet:w_u16(self.smart_id)
+		packet:w_u32(self.smart_id)
 	end
 
 	if self.assigned_target_smart_id == nil then
-		packet:w_u16(-1)
+		packet:w_u32(-1)
 	else
-		packet:w_u16(self.assigned_target_smart_id)
+		packet:w_u32(self.assigned_target_smart_id)
 	end
 
 	if self.sim_combat_id == nil then
-		packet:w_u16(-1)
+		packet:w_u32(-1)
 	else
-		packet:w_u16(self.sim_combat_id)
+		packet:w_u32(self.sim_combat_id)
 	end
 
 	if self.delayed_attack_task == nil then
-		packet:w_u16(-1)
+		packet:w_u32(-1)
 	else
-		packet:w_u16(self.delayed_attack_task)
+		packet:w_u32(self.delayed_attack_task)
 	end
 
 	local n = 0
@@ -863,21 +863,21 @@ function sim_squad_generic:save(packet)
 	end
 	packet:w_u8(n)
 	for k,v in pairs(self.random_tasks) do
-		packet:w_u16(k)
-		packet:w_u16(v)
+		packet:w_u32(k)
+		packet:w_u32(v)
 	end
 
 	-- Сохранение членов отряда
 	packet:w_u8(self.npc_count)
 	packet:w_float(self.squad_power)	--Вариант для оптимизации, можно не сохранять, а считат на загрузке
-	packet:w_u16(self.commander_id)
+	packet:w_u32(self.commander_id)
 	n = 0
 	for k,v in pairs(self.squad_npc) do		--Вариант для оптимизации, можно сохранять в НПС ссылку на сквад
 		n = n + 1
 	end
 	packet:w_u8(n)
 	for k,v in pairs(self.squad_npc) do
-		packet:w_u16(v)
+		packet:w_u32(v)
 	end
 
 
@@ -909,7 +909,7 @@ function sim_squad_generic:save(packet)
 		packet:w_bool(true)
 		if self.current_action.name == "attack_point" then
 			packet:w_bool(true)
-			packet:w_u16(self.current_action.dest_smrt_id)
+			packet:w_u32(self.current_action.dest_smrt_id)
 		else
 			packet:w_bool(false)
 		end
@@ -923,33 +923,33 @@ end
 function sim_squad_generic:load(packet, registred)
 	set_save_marker(packet, "load", false, "sim_squad_generic")
 
-	self.smart_id = packet:r_u16()
-	if self.smart_id == 65535 then
+	self.smart_id = packet:r_u32()
+	if self.smart_id == alife_const.invalid_object_id then
 		self.smart_id = nil
 	end
 	--printf("load squad %s smart_id %s", self.squad_id, tostring(self.smart_id))
 
-	self.assigned_target_smart_id = packet:r_u16()
-	if self.assigned_target_smart_id == 65535 then
+	self.assigned_target_smart_id = packet:r_u32()
+	if self.assigned_target_smart_id == alife_const.invalid_object_id then
 		self.assigned_target_smart_id = nil
 	end
 
-	self.sim_combat_id = packet:r_u16()
-	if self.sim_combat_id == 65535 then
+	self.sim_combat_id = packet:r_u32()
+	if self.sim_combat_id == alife_const.invalid_object_id then
 		self.sim_combat_id = nil
 	end
 	--printf("load squad %s sim_com_id %s", self.squad_id, tostring(self.sim_combat_id))
 
-	self.delayed_attack_task = packet:r_u16()
-	if self.delayed_attack_task == 65535 then
+	self.delayed_attack_task = packet:r_u32()
+	if self.delayed_attack_task == alife_const.invalid_object_id then
 		self.delayed_attack_task = nil
 	end
 
 	local n = packet:r_u8()
 	self.random_tasks = {}
 	for i = 1,n do
-		local k = packet:r_u16()
-		local v = packet:r_u16()
+		local k = packet:r_u32()
+		local v = packet:r_u32()
 		self.random_tasks[k] = v
 	end
 
@@ -961,11 +961,11 @@ function sim_squad_generic:load(packet, registred)
 
 	--printf("load squad %s squad_power %s", self.squad_id, tostring(self.squad_power))
 
-	self.commander_id = packet:r_u16()
+	self.commander_id = packet:r_u32()
 	n =	packet:r_u8()
 	self.squad_npc = {}
 	for i = 1,n do
-		local k = packet:r_u16()
+		local k = packet:r_u32()
 		self.squad_npc[k] = k
 		-- Добавить в саундменеджер.
 		self.sound_manager:register_npc(k)
@@ -974,8 +974,8 @@ function sim_squad_generic:load(packet, registred)
 
 
 --[[
-	self.current_spot_id = packet:r_u16()
-	if self.current_spot_id == 65535 then
+	self.current_spot_id = packet:r_u32()
+	if self.current_spot_id == alife_const.invalid_object_id then
 		self.current_spot_id = nil
 	end
 	self.spot_section = packet:r_stringZ()
@@ -997,7 +997,7 @@ function sim_squad_generic:load(packet, registred)
 	if flag == true then
 		local class = packet:r_bool()
 		if class == true then
-			local dest_smrt_id = packet:r_u16()
+			local dest_smrt_id = packet:r_u32()
 			self.current_action = sim_attack_point(self, dest_smrt_id)
 		else
 			self.current_action = sim_stay_point(self)
@@ -1434,9 +1434,9 @@ function sim_stay_point:save(packet)
 	set_save_marker(packet, "save", false, "sim_stay_point")
 	packet:w_bool(self.stay_defended)
 	if self.next_point_id == nil then
-		packet:w_u16(-1)
+		packet:w_u32(-1)
 	else
-		packet:w_u16(self.next_point_id)
+		packet:w_u32(self.next_point_id)
 	end
 
 	if self.begin_time == nil then
@@ -1451,8 +1451,8 @@ end
 function sim_stay_point:load(packet)
 	set_save_marker(packet, "load", false, "sim_stay_point")
 	self.stay_defended = packet:r_bool()
-	self.next_point_id = packet:r_u16()
-	if self.next_point_id == 65535 then
+	self.next_point_id = packet:r_u32()
+	if self.next_point_id == alife_const.invalid_object_id then
 		self.next_point_id = nil
 	end
 
