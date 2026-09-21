@@ -541,6 +541,12 @@ void CALifeSimulator::script_register			(lua_State *L)
         def("set_start_position", &set_start_position),
         def("set_start_game_vertex_id", &set_start_game_vertex_id)
 	];
+	
+	module(L, "alife_const")[
+		def("dummy_alife", &alife)
+	];
+	object alife_consts = get_globals(L)["alife_const"];
+	alife_consts["invalid_object_id"] = ALife::_OBJECT_ID(-1);
 
 	{
 		if (story_ids.empty())
