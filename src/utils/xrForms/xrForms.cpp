@@ -359,7 +359,7 @@ void SDL_Application()
 	(void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-	XRay::ImGui::MakeRedTheme();
+	XRay::ImGui::MakeEditorTheme();
 
 	ImGui_ImplSDL3_InitForSDLRenderer(g_AppInfo.Window, renderer);
 	ImGui_ImplSDLRenderer3_Init(renderer);
