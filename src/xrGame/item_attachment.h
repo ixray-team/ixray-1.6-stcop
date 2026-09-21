@@ -1,5 +1,8 @@
 #pragma once
 
+#include "GameObject.h"
+#include "PhysicsShellHolder.h"
+
 enum EattachmentType : u8
 {
 	eTypeNone,

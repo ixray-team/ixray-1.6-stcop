@@ -277,7 +277,7 @@ static void HudAdjustDrawHandsSettings()
 }
 */
 
-static void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bool hud_mode)
+void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bool hud_mode)
 {
 	if (ImGui::CollapsingHeader("Attachments"))
 	{
