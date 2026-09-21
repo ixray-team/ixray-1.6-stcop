@@ -3648,12 +3648,16 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 			auto CurTime = Device.TimerAsync();
 			if(elem.first + ID_delete_delay > CurTime)
 			{
-				//Msg("Stop ID [%u] free because timeout is not ready [current time: %u; queue time: %u; timeout: %u]", elem.second, CurTime, elem.first, ID_delete_delay);
 				break;
 			}
-			//Msg("Free ID [%u] because timeout is ready [current time: %u; queue time: %u; timeout: %u]", elem.second, CurTime, elem.first, ID_delete_delay);
 			if (m_pending_delete_id_set.contains(elem.second))
 			{
+				// Rarely even after timeout client object still exists, so we cannot free ID yet
+				if (auto ExistingEntity = Level().Objects.net_Find(elem.second); 
+					IVERIFY_M(!ExistingEntity, "Object with ID [%u] still exists despite free timeout [%u] is over!", elem.second, ID_delete_delay))
+				{
+					break;
+				}
 				FreeIDImpl(elem.second);
 				m_pending_delete_id_set.erase(elem.second);
 			}
