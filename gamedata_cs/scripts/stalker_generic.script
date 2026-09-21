@@ -120,7 +120,7 @@ function reset_show_spot(npc, scheme, st, section)
 	            hint = "st_ui_pda_legend_scout"
 	            local smarts_tbl = sim_board.get_sim_board().smarts
 	            local npc_smrt_id = obj.m_smart_terrain_id
-	            if npc_smrt_id ~= 65535 and npc_smrt_id ~= nil then
+	            if npc_smrt_id ~= alife_const.invalid_object_id and npc_smrt_id ~= nil then
 	                local npc_smart = smarts_tbl[npc_smrt_id].smrt
 	                if npc_smart then
 	                    local smart_name = smart_names.get_smart_terrain_name(npc_smart)

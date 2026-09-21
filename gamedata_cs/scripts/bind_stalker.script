@@ -249,7 +249,7 @@ function actor_binder:on_item_take (obj)
 			SendScriptCallback("on_item_take", obj, db.actor ~= nil)
 			
 			if db.actor then
-				local is_take_from_ground = (m_last_dropped_owner_id == 65535 or m_last_dropped_owner_id == db.actor:id())
+				local is_take_from_ground = (m_last_dropped_owner_id == alife_const.invalid_object_id or m_last_dropped_owner_id == db.actor:id())
 				local before_transfer_parent_id = nil
 				
 				if not is_take_from_ground then
@@ -582,7 +582,7 @@ function actor_binder:save(packet)
 				end
 				packet:w_u8(n)
 				for k,v in pairs(sim_combat.wait_for_combat) do
-								packet:w_u16(k)
+								packet:w_object_id(k)
 								packet:w_stringZ(v)
 				end
 				xr_sound.actor_save(packet)
@@ -597,7 +597,7 @@ function actor_binder:save(packet)
 		packet:w_u8(n)
 		for k,v in pairs (delayed_alife_release_objects) do
 			printf("TO_RELEASING OBJ:[%s]", tostring(k))
-			packet:w_u16(k)
+			packet:w_object_id(k)
 		end
 		n = 0
 		for k,v in pairs(db.script_ids) do
@@ -605,7 +605,7 @@ function actor_binder:save(packet)
 		end
 		packet:w_u8(n)
 		for k,v in pairs (db.script_ids) do
-			packet:w_u16(k)
+			packet:w_object_id(k)
 			packet:w_stringZ(v)
 		end
 --		minigames_manager.get_minigames_manager():save(packet)
@@ -644,7 +644,7 @@ function actor_binder:load(reader)
 				local n = reader:r_u8()
 				sim_combat.wait_for_combat = {}
 				for i = 1,n do
-								sim_combat.wait_for_combat[reader:r_u16()] = reader:r_stringZ()
+								sim_combat.wait_for_combat[reader:r_object_id()] = reader:r_stringZ()
 				end
 
 				xr_sound.actor_load(reader)
@@ -657,13 +657,13 @@ function actor_binder:load(reader)
 		treasure_manager.load(reader)
 		n = reader:r_u8()
 		for i = 1,n do
-			to_delayed_alife_release_objects[reader:r_u16()] = true
+			to_delayed_alife_release_objects[reader:r_object_id()] = true
 		end
 		printf("delayed_alife_release_objects")
 		print_table(delayed_alife_release_objects)
 		n = reader:r_u8()
 		for i = 1,n do
-			db.script_ids[reader:r_u16()] = reader:r_stringZ()
+			db.script_ids[reader:r_object_id()] = reader:r_stringZ()
 		end
 --		minigames_manager.get_minigames_manager():load(reader)
 
