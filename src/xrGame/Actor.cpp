@@ -1345,7 +1345,7 @@ void CActor::TryRegisterHelpWounded(CAI_Stalker* targetStalker, const CInventory
 		return;
 	}
 
-	const u16 stalkerId = targetStalker->ID();
+	const auto stalkerId = targetStalker->ID();
 	const u32 now = Device.dwTimeGlobal;
 	if (stalkerId == m_lastHelpWoundedStalkerId
 		&& now - m_lastHelpWoundedGameTime < helpWoundedDedupMs)

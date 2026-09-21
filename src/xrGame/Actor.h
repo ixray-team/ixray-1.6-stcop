@@ -282,7 +282,7 @@ protected:
 	u32					m_statDeaths = 0;
 	u32					m_statDeathsSavedInLastLoad = 0;
 	u32					m_statHelpWounded = 0;
-	u16					m_lastHelpWoundedStalkerId = u16(-1);
+	ALife::_OBJECT_ID	m_lastHelpWoundedStalkerId = ALife::INVALID_OBJECT_ID;
 	u32					m_lastHelpWoundedGameTime = 0;
 	u32					m_pdaRankingStatRevision = 0;
 	bool				m_isMoneyStatInitialized = false;

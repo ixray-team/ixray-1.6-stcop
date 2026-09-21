@@ -31,12 +31,12 @@ private:
 
 	xr_vector<bind_particle_to_vertex> hudParticles;
 
-	u32 last_r0_item_id = 0;
+	ALife::_OBJECT_ID last_r0_item_id = 0;
 	u32 last_r0_faces_count = 0;
 	xr_vector<Fvector> m_last_r0_vertices;
 
 	u32 last_r1_faces_count = 0;
-	u32 last_r1_item_id = 0;
+	ALife::_OBJECT_ID last_r1_item_id = 0;
 	xr_vector<Fvector> m_last_r1_vertices;
 
 	xr_vector<_triangle> r0_triangles;

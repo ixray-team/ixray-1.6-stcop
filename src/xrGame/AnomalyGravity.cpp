@@ -88,7 +88,7 @@ void TAnomalyGravity::Update()
 			continue;
 		}
 
-		u32 id = obj->ID();
+		ALife::_OBJECT_ID id = obj->ID();
 		auto& state = m_wanderStates[id];
 
 		if (!state.initialized)

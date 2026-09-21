@@ -281,7 +281,7 @@ void CWeaponRPG7::ReactiveHit()
 		// Хитуем тех, кто сзади
 		tgt_dir.random_dir(dir, m_reactive_hit_params.buck_disp);
 
-		u16 id = ID();
+		ALife::_OBJECT_ID id = ID();
 		if (H_Parent())
 		{
 			id = H_Parent()->ID();

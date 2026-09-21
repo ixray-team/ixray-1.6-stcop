@@ -2414,7 +2414,7 @@ void CWeapon::ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo, xr_map<ALife:
 
 		if (entry.second)
 		{
-			u32 parentId = 0xffffffff;
+			ALife::_OBJECT_ID parentId = ALife::INVALID_OBJECT_ID;
 			if (CObject* parent = H_Parent())
 			{
 				parentId = parent->ID();

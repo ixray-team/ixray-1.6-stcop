@@ -23,7 +23,7 @@
 #include "restriction_space.h"
 #include "../xrEngine/IGame_Persistent.h"
 
-SArtefactActivation::SArtefactActivation(CArtefact* af,u32 owner_id)
+SArtefactActivation::SArtefactActivation(CArtefact* af,ALife::_OBJECT_ID owner_id)
 {
 	m_af			= af;
 	Load			();
