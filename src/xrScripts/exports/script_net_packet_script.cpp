@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "script_net_packet.h"
-#include "src/xrPhysics/PHSimpleCharacter.h"
+#include "alife_space.h"
 
 using namespace luabind;
 
