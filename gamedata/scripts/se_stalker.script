@@ -43,14 +43,14 @@ function se_stalker:get_ini()
 end
 --------------------
 function se_stalker:can_switch_offline()
-	if self.group_id ~= 65535 then
+	if self.group_id ~= alife_const.invalid_object_id then
 		return true
 	end
 	return cse_alife_human_stalker.can_switch_offline(self)
 end
 --------------------
 function se_stalker:can_switch_online()
-	if self.group_id ~= 65535 then
+	if self.group_id ~= alife_const.invalid_object_id then
 		return true
 	end
 	return cse_alife_human_stalker.can_switch_online(self)
@@ -129,7 +129,7 @@ end
 function se_stalker:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_stalker")
 	local strn_id = self:smart_terrain_id()
-	if strn_id ~= 65535 then
+	if strn_id ~= alife_const.invalid_object_id then
 		local smart = alife():object(strn_id)
 		if smart ~= nil then
 			smart:unregister_npc(self)
@@ -150,7 +150,7 @@ function se_stalker:on_death(killer)
 
 	smart_terrain.on_death(self)
 
-	if self.group_id ~= 65535 then
+	if self.group_id ~= alife_const.invalid_object_id then
 		local squad = alife():object(self.group_id)
 		if squad == nil then
 			--printf("sim_board squads")

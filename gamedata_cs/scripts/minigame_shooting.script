@@ -185,7 +185,7 @@ function CMGShooting:save(thread, params_list)
 	end
 	thread:w_u8(n)
 	for k,v in pairs(inventory_items) do
-		thread:w_u16(v)
+		thread:w_object_id(v)
 	end
 --------------------------------------------------------------------------------
 	thread:w_u32(self.prev_time)
@@ -248,7 +248,7 @@ function CMGShooting:load(thread, params_list)
 	n = thread:r_u8()
 	inventory_items = {}
 	for i=1,n do
-		inventory_items[i] = thread:r_u16()
+		inventory_items[i] = thread:r_object_id()
 	end
 --------------------------------------------------------------------------------
 	self.prev_time = thread:r_u32()

@@ -168,7 +168,7 @@ function CRandomTask:save(packet)
 		packet:w_u16(num)
 		for kk,vv in pairs(self.inited_find_upgrade_tasks[k]) do
 			packet:w_stringZ(kk)
-			packet:w_u16(vv.entity_id)
+			packet:w_object_id(vv.entity_id)
 		end
 	end
 --[[
@@ -262,7 +262,7 @@ function CRandomTask:load(reader)
 		local num = reader:r_u16()
 		for j=1,num do
 			kk = reader:r_stringZ()
-			ei = reader:r_u16()
+			ei = reader:r_object_id()
 			self.inited_find_upgrade_tasks[k][kk] = self:get_task_by_entity_id(ei)
 		end
 	end

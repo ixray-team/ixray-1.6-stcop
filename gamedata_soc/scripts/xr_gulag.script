@@ -1171,12 +1171,12 @@ function setup_gulag_and_logic_on_spawn( obj, st, sobject, stype, loaded )
 		if sobject.smart_terrain_id then
 			strn_id = sobject:smart_terrain_id()
 		else
-			strn_id = 65535
+			strn_id = alife_const.invalid_object_id
 		end
 
 		printf( "setup_gulag_and_logic_on_spawn obj=%s, strn_id=%s", obj:name(), tostring(strn_id) )
 
-		if strn_id ~= 65535 then
+		if strn_id ~= alife_const.invalid_object_id then
 			local strn                   = sim:object( strn_id )
 			local need_setup_logic       = strn.gulag.Object_begin_job[obj:id()] and not loaded
 			local need_setup_restrictors = strn.gulag.Object_begin_job[obj:id()]
@@ -1238,7 +1238,7 @@ function get_npc_gulag( obj )
 
 	obj = sim:object( obj:id() )
 
-	if obj:smart_terrain_id() ~= 65535 then
+	if obj:smart_terrain_id() ~= alife_const.invalid_object_id then
 		local strn = sim:object( obj:smart_terrain_id() )
 
 		strn:initialize_if_needed()

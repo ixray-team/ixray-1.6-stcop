@@ -227,7 +227,7 @@ function actor_binder:on_item_take (obj, m_last_dropped_owner_id)
 		SendScriptCallback("on_item_take", obj, db.actor ~= nil)
 		
 		if db.actor then
-			local is_take_from_ground = (m_last_dropped_owner_id == 65535 or m_last_dropped_owner_id == db.actor:id())
+			local is_take_from_ground = (m_last_dropped_owner_id == alife_const.invalid_object_id or m_last_dropped_owner_id == db.actor:id())
 			local before_transfer_parent_id = nil
 			
 			if not is_take_from_ground then
