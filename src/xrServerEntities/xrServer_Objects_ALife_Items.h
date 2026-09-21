@@ -207,6 +207,11 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	virtual bool					Net_Relevant		();
 
 	virtual CSE_ALifeItemWeapon		*cast_item_weapon	() {return this;}
+
+#ifndef XRGAME_EXPORTS
+	void OnEditorMagazineTypeChanged(PropValue*);
+	void OnEditorMagazineElapsedChanged(PropValue*);
+#endif // #ifndef XRGAME_EXPORTS
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponMagazined,CSE_ALifeItemWeapon)

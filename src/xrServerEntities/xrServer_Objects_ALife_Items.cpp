@@ -746,8 +746,8 @@ bool CSE_ALifeItemWeapon::Net_Relevant()
 void CSE_ALifeItemWeapon::FillProps			(const char* pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref, items);
-	PHelper().CreateU8(items, PrepareKey(pref, *s_name, "Ammo type:"), &a_ammo_type.MagazinedType, 0, 255, 1);
-	PHelper().CreateU16(items, PrepareKey(pref, *s_name, "Ammo: in magazine"), &a_elapsed.MagazineElapsed, 0, 30, 1);
+	PHelper().CreateU8(items, PrepareKey(pref, *s_name, "Ammo type:"), &a_ammo_type.data, 0, 30, 1)->OnChangeEvent.bind(this, &CSE_ALifeItemWeapon::OnEditorMagazineTypeChanged);
+	PHelper().CreateU16(items, PrepareKey(pref, *s_name, "Ammo: in magazine"), &a_elapsed.data, 0, 255, 1)->OnChangeEvent.bind(this, &CSE_ALifeItemWeapon::OnEditorMagazineElapsedChanged);
 	
 
 	if (m_scope_status == ALife::eAddonAttachable)
@@ -758,6 +758,17 @@ void CSE_ALifeItemWeapon::FillProps			(const char* pref, PropItemVec& items)
 
 	if (m_grenade_launcher_status == ALife::eAddonAttachable)
         PHelper().CreateFlag8	(items,PrepareKey(pref,*s_name,"Addons\\Podstvolnik"),&m_addon_flags,eWeaponAddonGrenadeLauncher);
+}
+
+// This might be not necessary, but made to ensure everyting set right
+void CSE_ALifeItemWeapon::OnEditorMagazineTypeChanged(PropValue* Value)
+{
+	a_ammo_type.MagazinedType = *((U8Value*)Value)->value;
+}
+	
+void CSE_ALifeItemWeapon::OnEditorMagazineElapsedChanged(PropValue* Value)
+{
+	a_elapsed.MagazineElapsed = *((U16Value*)Value)->value;
 }
 #endif // #ifndef XRGAME_EXPORTS
 
