@@ -281,6 +281,14 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
 	{
 		m_resist_back_thirst = UIHelper::CreateStatic(xml, "resist_back_thirst", this);
 	}
+	if (xml.NavigateToNode("resist_back_sleepiness"))
+	{
+		m_resist_back_sleepiness = UIHelper::CreateStatic(xml, "resist_back_sleepiness", this);
+	}
+	if (xml.NavigateToNode("resist_back_intoxication"))
+	{
+		m_resist_back_intoxication = UIHelper::CreateStatic(xml, "resist_back_intoxication", this);
+	}
 	// electra = no has CStatic!!
 
     if (xml.NavigateToNode("indik_stack_panel", 0))
@@ -317,6 +325,14 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
 	if (xml.NavigateToNode("indicator_thirst"))
 	{
 		m_ind_thirst = UIHelper::CreateStatic(xml, "indicator_thirst", this);
+	}
+	if (xml.NavigateToNode("indicator_sleepiness"))
+	{
+		m_ind_sleepiness = UIHelper::CreateStatic(xml, "indicator_sleepiness", this);
+	}
+	if (xml.NavigateToNode("indicator_intoxication"))
+	{
+		m_ind_intoxication = UIHelper::CreateStatic(xml, "indicator_intoxication", this);
 	}
 
     m_lanim_name                = xml.ReadAttrib( "indik_rad", 0, "light_anim", "" );
@@ -1789,6 +1805,8 @@ void CUIHudStatesWnd::UpdateIndicators( CActor* actor )
 
     UpdateSatiety(actor);
 	UpdateThirst(actor);
+	UpdateSleepiness(actor);
+	UpdateIntoxication(actor);
 
     for ( int i = 0; i < it_max ; ++i ) // it_max = ALife::infl_max_count-1
     {
@@ -1857,6 +1875,72 @@ void CUIHudStatesWnd::UpdateThirst(CActor* actor)
 		else
 		{
 			m_ind_thirst->SetTextureColor(color_rgba(255, 0, 0, 255));
+		}
+	}
+}
+
+void CUIHudStatesWnd::UpdateSleepiness(CActor* actor)
+{
+	const static bool EnableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
+	if (!EnableSleepiness)
+    {
+		return;
+    }
+
+	float sleepiness = actor->conditions().GetSleepiness();
+	float sleepiness_critical = actor->conditions().SleepinessCritical();
+	float sleepiness_koef = (sleepiness - sleepiness_critical) / (sleepiness >= sleepiness_critical ? 1 - sleepiness_critical : sleepiness_critical);
+
+	if (m_ind_sleepiness && sleepiness_koef > 0.5)
+	{
+		m_ind_sleepiness->SetTextureColor(color_rgba(255, 255, 255, 255));
+	}
+	else if (m_ind_sleepiness)
+	{
+		if (sleepiness_koef > 0.0f)
+		{
+			m_ind_sleepiness->SetTextureColor(color_rgba(0, 255, 0, 255));
+		}
+		else if (sleepiness_koef > -0.5f)
+		{
+			m_ind_sleepiness->SetTextureColor(color_rgba(255, 255, 0, 255));
+		}
+		else
+		{
+			m_ind_sleepiness->SetTextureColor(color_rgba(255, 0, 0, 255));
+		}
+	}
+}
+
+void CUIHudStatesWnd::UpdateIntoxication(CActor* actor)
+{
+	const static bool EnableMedIntoxication = EngineExternal()[EEngineExternalGame::EnableMedIntoxication];
+	if (!EnableMedIntoxication)
+	{
+		return;
+	}
+
+	float intoxication = actor->conditions().GetIntoxication();
+	float intoxication_critical = actor->conditions().IntoxicationCritical();
+	float intoxication_koef = (intoxication - intoxication_critical) / (intoxication >= intoxication_critical ? 1 - intoxication_critical : intoxication_critical);
+
+	if (m_ind_intoxication && intoxication_koef > 0.5)
+	{
+		m_ind_intoxication->SetTextureColor(color_rgba(255, 255, 255, 255));
+	}
+	else if (m_ind_intoxication)
+	{
+		if (intoxication_koef > 0.0f)
+		{
+			m_ind_intoxication->SetTextureColor(color_rgba(0, 255, 0, 255));
+		}
+		else if (intoxication_koef > -0.5f)
+		{
+			m_ind_intoxication->SetTextureColor(color_rgba(255, 255, 0, 255));
+		}
+		else
+		{
+			m_ind_intoxication->SetTextureColor(color_rgba(255, 0, 0, 255));
 		}
 	}
 }
