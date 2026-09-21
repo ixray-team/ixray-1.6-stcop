@@ -8,14 +8,6 @@
 
 #include "xrLevel.h"
 
-// >>> Local clamp helper
-template <typename T>
-static inline T Clamp(T v, T lo, T hi)
-{
-	return (v < lo) ? lo : (v > hi) ? hi
-									: v;
-}
-
 const char* texture_formats[] =
 	{
 		"RGBA (No compression)",
@@ -129,7 +121,7 @@ void RenderMainUI()
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
 		ImVec2 ListBoxSize = {float(Size[0] - 20), float(Size[1] - 115)};
-		if (ImGui::BeginTable("##Levels", 5, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
+		if (ImGui::BeginTable("##Levels", 5, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders, ListBoxSize))
 		{
 			// >>> FIX: фиксируем ширину первой колонки.
 			//     Без этого счётчик "N / M" внутри тулбара растягивал
@@ -201,7 +193,7 @@ void RenderMainUI()
 			ImVec2 ListBoxSize2 = {250, float(Size[1] - 155) - toolbarH};
 			if (ImGui::BeginTable("##LevelsList", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize2))
 			{
-				ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 205);
+				ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 195);
 				ImGui::TableSetupColumn("Prop");
 
 				size_t Iter = 1;
@@ -244,8 +236,7 @@ void RenderMainUI()
 		}
 
 		// >>> HOTKEYS: Ctrl+A / Ctrl+D / Ctrl+I
-		if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
-			!ImGui::GetIO().WantTextInput)
+		if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::GetIO().WantTextInput)
 		{
 			const bool ctrl = ImGui::GetIO().KeyCtrl;
 
@@ -353,7 +344,6 @@ const char* itemsJitterMU[] = {"0", "1", "2", "3", "4", "5", "6"};
 
 void DrawLCConfig()
 {
-	// if (ImGui::BeginChild("LC", { 200, 415 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::PushID("xrLC");
 		ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
@@ -430,7 +420,7 @@ void DrawLCConfig()
 
 		ImGui::Text("Size:");
 		ImGui::SameLine(0, 35);
-		ImGui::SetNextItemWidth(180);
+		ImGui::SetNextItemWidth(135);
 		if (ImGui::Combo("##lmaps", &item_current_lightmap, lightmap_resolution, max_resolution))
 		{
 			gCompilerMode.LC_sizeLmaps = atoi(lightmap_resolution[item_current_lightmap]);
@@ -439,7 +429,7 @@ void DrawLCConfig()
 
 		ImGui::Text("Format:");
 		ImGui::SameLine(0, 20);
-		ImGui::SetNextItemWidth(180);
+		ImGui::SetNextItemWidth(135);
 		if (ImGui::Combo("##Texture Format", &current_format, texture_formats, IM_ARRAYSIZE(texture_formats)))
 		{
 			gCompilerMode.LmapsFormat = static_cast<LCLightmapFormat>(current_format);
@@ -806,7 +796,7 @@ static void DrawStatusBadge(const char* status, const ImVec4& color)
 // Компактный прогресс-бар с процентом поверх
 static void DrawPhaseProgressBar(float percent, const ImVec4& color, ImVec2 size)
 {
-	percent = Clamp(percent, 0.f, 1.f);
+	percent = std::clamp(percent, 0.f, 1.f);
 
 	char overlay[16];
 	if (percent >= 0.999f)
@@ -885,9 +875,6 @@ void RenderCompilerUI(int X, int Y)
 			char rowIcon;
 			getStatusInfo(row.status, rowStatus, rowStatusColor, rowIcon);
 
-			// ============================================================
-			// >>> PRETTY: заголовок итерации — заметный, отделён от фаз
-			// ============================================================
 			ImGui::TableNextRow(0, ImGui::GetTextLineHeight() + 8.f);
 
 			// Иконка статуса
@@ -903,7 +890,7 @@ void RenderCompilerUI(int X, int Y)
 			// Прогресс итерации (%)
 			ImGui::TableSetColumnIndex(3);
 			{
-				float p = Clamp(row.Persent, 0.f, 1.f);
+				float p = std::clamp(row.Persent, 0.f, 1.f);
 				DrawPhaseProgressBar(p, rowStatusColor, ImVec2(-1.f, ImGui::GetTextLineHeight() * 0.85f));
 			}
 
@@ -911,7 +898,6 @@ void RenderCompilerUI(int X, int Y)
 			ImGui::TableSetColumnIndex(5);
 			DrawStatusBadge(rowStatus.c_str(), rowStatusColor);
 			// <<< PRETTY
-
 
 			for (auto& phase : row.phases)
 			{
@@ -935,17 +921,17 @@ void RenderCompilerUI(int X, int Y)
 				ImGui::TextColored(phaseTextCol, "%s", phase.PhaseName.c_str());
 
 				// Обновляем таймеры активной фазы
-				auto pers = phase.PhasePersent;
+				auto PerS = phase.PhasePersent;
 
 				if (phase.status != Complete)
 				{
 					u32 dwCurrentTime = timeGetTime();
 					u32 dwTimeDiff = dwCurrentTime - GetPhaseStartTime();
 					u32 secElapsed = dwTimeDiff / 1000;
-					u32 secRemain = u32(float(secElapsed) / pers) - secElapsed;
+					u32 secRemain = u32(float(secElapsed) / PerS) - secElapsed;
 
 					phase.elapsed_time = secElapsed;
-					if (pers > 0.005f)
+					if (PerS > 0.005f)
 					{
 						phase.remain_time = secRemain;
 					}
@@ -953,21 +939,16 @@ void RenderCompilerUI(int X, int Y)
 
 				if (phase.status == Complete)
 				{
-					pers = 1;
+					PerS = 1;
 				}
-				else if (pers > 1.f)
+				else
 				{
-					pers = 1;
-				}
-				else if (pers < 0.f)
-				{
-					pers = 0;
+					PerS = std::clamp(PerS, 0.f, 1.f);
 				}
 
 				// >>> PRETTY: прогресс-бар вместо текста
 				ImGui::TableSetColumnIndex(3);
-				DrawPhaseProgressBar(pers, statusColor, ImVec2(-1.f, ImGui::GetTextLineHeight() * 0.85f));
-				// <<< PRETTY
+				DrawPhaseProgressBar(PerS, statusColor, ImVec2(-1.f, ImGui::GetTextLineHeight() * 1.1f));
 
 				// Время
 				ImGui::TableSetColumnIndex(4);
@@ -1006,7 +987,6 @@ void RenderCompilerUI(int X, int Y)
 
 		const char* buttonText = (hideLogSection) ? "+" : "-";
 		ImVec2 textSize = ImGui::CalcTextSize(buttonText);
-
 		ImVec2 buttonSize = ImVec2(textSize.x + ImGui::GetStyle().FramePadding.x * 2, textSize.y + ImGui::GetStyle().FramePadding.y * 2);
 
 		auto ZSize = ImGui::GetContentRegionAvail();
@@ -1091,6 +1071,5 @@ void RenderCompilerUI(int X, int Y)
 	DrawDownUI();
 
 	ImGui::End();
-
 	ImGui::PopStyleVar();
 }
