@@ -442,13 +442,30 @@ void CConsole::OnRender()
 	outX += pFont2->SizeOf_(strSelected);
 	pFont->OutI(-1.0f + outX * relativeX, outY, "%s", strAfterSelected);
 
+
 	if (ec().cursor_view())
 	{
 		static float t = 0.f;
-		t += 5.f * Device.fTimeDelta;
+		static float delay = 0.f;
+		constexpr float blink_delay_after_input = .5f;
+		static u32 cursor_pos = 0u;
+
+		if (cursor_pos != ec().m_cur_pos)
+		{
+			cursor_pos = ec().m_cur_pos;
+			t = PI_DIV_2;
+			delay = blink_delay_after_input;
+		}
+
+		clamp(delay -= Device.fTimeDeltaContinual, 0.f, blink_delay_after_input);
+
+		if (delay <= 0.f)
+		{
+			t += 5.f * Device.fTimeDeltaContinual;
+		}
+
 		u32 color = color_rgba(255, 255, 255, 255u * fabsf(sin(t)));
-		
-		pFont->SetColor( color );		
+		pFont->SetColor(color);
 		pFont->OutI(-1.0f + strWidth * relativeX, outY, "%s", ch_cursor);
 	}
 	

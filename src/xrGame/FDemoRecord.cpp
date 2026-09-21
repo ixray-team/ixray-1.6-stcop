@@ -328,7 +328,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		}
 	}
 
-	dt = dr_disable_time_factor_influence ? Device.fRealTimeDelta : Device.fTimeDelta;
+	dt = dr_disable_time_factor_influence ? Device.fTimeDeltaContinual : Device.fTimeDelta;
 
 	info.dont_apply = false;
 

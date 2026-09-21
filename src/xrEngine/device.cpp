@@ -494,7 +494,7 @@ void CRenderDevice::FrameMove()
 	}
 	
 	float prev_dt = fTimeDelta;
-	fRealTimeDelta = dt * (1.f/time_factor());
+	fTimeDeltaContinual = dt * (1.f/time_factor());
 	constexpr float a = .1f;
 	fTimeDelta = a * dt + (1.f - a) * prev_dt;
 	fTimeDeltaSmoothing = fTimeDelta;
