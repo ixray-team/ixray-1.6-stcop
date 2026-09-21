@@ -159,7 +159,7 @@ void export_ogf( xrMU_Reference& mu_reference )
 	
 	// New way
 	auto LODNode = new OGF_MESH_LODS(1, mu_reference.sector);
-	auto AttackLOD = [&](OGF_Node* LOD)
+	auto AttachLOD = [&](OGF_Node* LOD)
 	{
 		for (auto Ref : generated_ids)
 		{
@@ -174,30 +174,30 @@ void export_ogf( xrMU_Reference& mu_reference )
 		csThreadLock.Leave();
 		LODNode->AddChield(ID);
 	};
-	AttackLOD(new OGF_LOD_MU0(1, mu_reference.sector));
-	{
+	AttachLOD(new OGF_LOD_MU0(1, mu_reference.sector));
+	if (mu_reference.model->LODsID[0] != u32(-1)){
 		generated_ids.clear();
 		auto& LOD1Model = *pBuild->mu_models()[mu_reference.model->LODsID[0]];
 		MakeRef(LOD1Model, generated_ids, mu_reference);
-		AttackLOD(new OGF_LOD_MU1(1, mu_reference.sector));
+		AttachLOD(new OGF_LOD_MU1(1, mu_reference.sector));
 	}
-	{
+	if (mu_reference.model->LODsID[1] != u32(-1)){
 		generated_ids.clear();
 		auto& LOD2Model = *pBuild->mu_models()[mu_reference.model->LODsID[1]];
 		MakeRef(LOD2Model, generated_ids, mu_reference);
-		AttackLOD(new OGF_LOD_MU2(1, mu_reference.sector));
+		AttachLOD(new OGF_LOD_MU2(1, mu_reference.sector));
 	}
-	{
+	if (mu_reference.model->LODsID[2] != u32(-1)){
 		generated_ids.clear();
 		auto& LOD3Model = *pBuild->mu_models()[mu_reference.model->LODsID[2]];
 		MakeRef(LOD3Model, generated_ids, mu_reference);
-		AttackLOD(new OGF_LOD_MU3(1, mu_reference.sector));
+		AttachLOD(new OGF_LOD_MU3(1, mu_reference.sector));
 	}
-	{
+	if (mu_reference.model->LODsID[3] != u32(-1)){
 		generated_ids.clear();
 		auto& LOD4Model = *pBuild->mu_models()[mu_reference.model->LODsID[3]];
 		MakeRef(LOD4Model, generated_ids, mu_reference);
-		AttackLOD(new OGF_LOD_MU4(1, mu_reference.sector));
+		AttachLOD(new OGF_LOD_MU4(1, mu_reference.sector));
 	} 
 	Fvector E;
 	LODNode->bbox.get_CD(LODNode->C, E);
