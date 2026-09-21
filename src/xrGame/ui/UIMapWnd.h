@@ -125,7 +125,7 @@ public:
 	// qweasdd: from lost alpha
 	bool						ConvertCursorPosToMap(Fvector*, CUILevelMap*);
 	void						CreateSpotWindow(Fvector, shared_str);
-	void						ShowSettingsWindow(u16 id, Fvector position, shared_str levelName);
+	void						ShowSettingsWindow(ALife::_OBJECT_ID id, Fvector position, shared_str levelName);
 	CMapLocation*				UnderSpot(Fvector RealPosition, CUILevelMap*);
 	//-qweasdd
 
