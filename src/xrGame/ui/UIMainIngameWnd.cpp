@@ -176,6 +176,9 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 	xr_delete					(UIStarvationIcon);
 	xr_delete					(UIRadiaitionIcon);
 	xr_delete					(UIWoundIcon);
+	xr_delete					(UIThirstIcon);
+	xr_delete					(UISleepinessIcon);
+	xr_delete					(UIIntoxicationIcon);
 }
 
 void CUIMainIngameWnd::Init()
@@ -297,6 +300,21 @@ void CUIMainIngameWnd::Init()
 			UIStarvationIcon = UIHelper::CreateStatic(uiXml, "starvation_static", nullptr);
 			UIStarvationIcon->Show(false);
 		}
+		if (uiXml.NavigateToNode("thirst_static"))
+		{
+			UIThirstIcon = UIHelper::CreateStatic(uiXml, "thirst_static", nullptr);
+			UIThirstIcon->Show(false);
+		}
+		if (uiXml.NavigateToNode("sleepiness_static"))
+		{
+			UISleepinessIcon = UIHelper::CreateStatic(uiXml, "sleepiness_static", nullptr);
+			UISleepinessIcon->Show(false);
+		}
+		if (uiXml.NavigateToNode("intoxication_static"))
+		{
+			UIIntoxicationIcon = UIHelper::CreateStatic(uiXml, "intoxication_static", nullptr);
+			UIIntoxicationIcon->Show(false);
+		}
 
 		if (uiXml.NavigateToNode("psy_health_static"))
 		{
@@ -332,7 +350,7 @@ void CUIMainIngameWnd::Init()
 		UIArtefactIcon->Show(false);
 	}
 
-	shared_str warningStrings[7] =
+	shared_str warningStrings[10] =
 	{
 		"jammed",
 		"radiation",
@@ -340,15 +358,23 @@ void CUIMainIngameWnd::Init()
 		"starvation",
 		"fatigue",
 		"invincible",
-		"artefact"
+		"artefact",
+		"thirst",
+		"sleepiness",
+		"intoxication"
 	};
 
 	// Загружаем пороговые значения для индикаторов
 	EWarningIcons j = ewiWeaponJammed;
-	while (j < ewiInvincible)
+	while (j != ewiCount)
 	{
+		if (j == ewiArtefact || j == ewiInvincible)
+		{
+			j = static_cast<EWarningIcons>(j + 1);
+			continue;
+		}
 		// Читаем данные порогов для каждого индикатора
-		shared_str cfgRecord = pSettings->r_string("main_ingame_indicators_thresholds", *warningStrings[static_cast<int>(j) - 1]);
+		shared_str cfgRecord = READ_IF_EXISTS(pSettings, r_string, "main_ingame_indicators_thresholds", *warningStrings[static_cast<int>(j) - 1], "0.5,0.6,0.7,0.8,0.9");
 		u32 count = _GetItemCount(*cfgRecord);
 
 		char	singleThreshold[8];
@@ -469,13 +495,14 @@ void CUIMainIngameWnd::Init()
 	{
 		m_ind_psy = UIHelper::CreateStatic(uiXml, "indicator_psy", indicatorParent);
 	}
-	if (uiXml.NavigateToNode("indicator_thirst"))
+	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
+	if (enableThirst && uiXml.NavigateToNode("indicator_thirst"))
 	{
 		m_ind_thirst = UIHelper::CreateStatic(uiXml, "indicator_thirst", indicatorParent);
 	}
 
 	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
-	if (enableSleepiness)
+	if (enableSleepiness && uiXml.NavigateToNode("indicator_sleepiness"))
 	{
 		m_ind_sleepiness = UIHelper::CreateStatic(uiXml, "indicator_sleepiness", indicatorParent);
 	}
@@ -1216,8 +1243,13 @@ void CUIMainIngameWnd::Update()
 
 	EWarningIcons i = ewiWeaponJammed;
 
-	while (i < ewiInvincible)
+	while (i != ewiCount)
 	{
+		if (i == ewiArtefact || i == ewiInvincible)
+		{
+			i = (EWarningIcons)(i + 1);
+			continue;
+		}
 		float value = 0;
 		switch (i)
 		{
@@ -1244,6 +1276,15 @@ void CUIMainIngameWnd::Update()
 			break;
 		case ewiPsyHealth:
 			value = 1 - pActor->conditions().GetPsyHealth();
+			break;
+		case ewiThirst:
+			value = 1 - pActor->conditions().GetThirst();
+			break;
+		case ewiSleepiness:
+			value = 1 - pActor->conditions().GetSleepiness();
+			break;
+		case ewiIntoxication:
+			value = 1 - pActor->conditions().GetIntoxication();
 			break;
 		default:
 			R_ASSERT(!"Unknown type of warning icon");
@@ -1466,8 +1507,43 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 		if (bMagicFlag) break;
 		break;
 	case ewiArtefact:
-		SetWarningIconColorUI	(UIArtefactIcon, cl);
+	{
+		SetWarningIconColorUI(UIArtefactIcon, cl);
 		break;
+	}
+	case ewiThirst:
+	{
+		if (UIThirstIcon)
+		{
+			SetWarningIconColorUI(UIThirstIcon, cl);
+		}
+		if (bMagicFlag)
+		{
+			break;
+		}
+	}
+	case ewiSleepiness:
+	{
+		if (UISleepinessIcon)
+		{
+			SetWarningIconColorUI(UISleepinessIcon, cl);
+		}
+		if (bMagicFlag)
+		{
+			break;
+		}
+	}
+	case ewiIntoxication:
+	{
+		if (UIIntoxicationIcon)
+		{
+			SetWarningIconColorUI(UIIntoxicationIcon, cl);
+		}
+		if (bMagicFlag)
+		{
+			break;
+		}
+	}
 
 	default:
 		R_ASSERT(!"Unknown warning icon type");

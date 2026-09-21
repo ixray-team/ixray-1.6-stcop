@@ -41,6 +41,10 @@ private:
 	CUIStatic*			m_resist_back_starvation = nullptr;
 	CUIStatic*			m_ind_thirst = nullptr;
 	CUIStatic*			m_resist_back_thirst = nullptr;
+	CUIStatic*			m_ind_sleepiness = nullptr;
+	CUIStatic*			m_resist_back_sleepiness = nullptr;
+	CUIStatic*			m_ind_intoxication = nullptr;
+	CUIStatic*			m_resist_back_intoxication = nullptr;
 
 	CUIProgressShape*	m_progress_self = nullptr;
 	CUIArrow*			m_arrow = nullptr;
@@ -180,6 +184,8 @@ public:
 			void	UpdateIndicators	( CActor* actor );
 			void	UpdateSatiety		(CActor* actor);
 			void	UpdateThirst		(CActor* actor);
+			void	UpdateSleepiness	(CActor* actor);
+			void	UpdateIntoxication	(CActor* actor);
 
 			float	get_zone_cur_power	( ALife::EHitType hit_type );
 			float	get_main_sensor_value()	{ return m_radia_hit; }

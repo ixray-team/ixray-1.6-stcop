@@ -153,6 +153,9 @@ protected:
 	CUIStatic* 			UIInvincibleIcon;
 //	CUIStatic			UISleepIcon;
 	CUIStatic* 			UIArtefactIcon;
+	CUIStatic* 			UIThirstIcon = nullptr;
+	CUIStatic* 			UISleepinessIcon = nullptr;
+	CUIStatic* 			UIIntoxicationIcon = nullptr;
 
 	CUIScrollView* m_UIIcons;
 	CUIWindow* m_pMPChatWnd;
@@ -214,6 +217,10 @@ public:
 //		ewiSleep,
 		ewiInvincible,
 		ewiArtefact,
+		ewiThirst,
+		ewiSleepiness,
+		ewiIntoxication,
+		ewiCount
 	};
 
 	void				SetMPChatLog(CUIWindow* pChat, CUIWindow* pLog);
