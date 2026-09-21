@@ -711,7 +711,7 @@ void SGameTaskObjective::load(IReader& stream)
 	load_data				(m_infos_on_complete, stream);
 	load_data				(m_infos_on_fail,	stream);
 
-	if (m_idx != ROOT_TASK_OBJECTIVE && m_map_location.size() && m_map_object_id != u16(-1) && m_def_location_enabled)
+	if (m_idx != ROOT_TASK_OBJECTIVE && m_map_location.size() && m_map_object_id != ALife::INVALID_OBJECT_ID && m_def_location_enabled)
 	{
 		Level().MapManager().AddMapLocation(m_map_location, m_map_object_id);
 		LinkedMapLocation()->SetHint(m_map_hint);

@@ -448,7 +448,7 @@ void CMapManager::Dump						()
 #endif
 
 using namespace luabind;
-void CMapManager::MapLocationsForEach(const char* spot_type, u16 id, const luabind::functor<bool>& functor)
+void CMapManager::MapLocationsForEach(const char* spot_type, ALife::_OBJECT_ID id, const luabind::functor<bool>& functor)
 {
 	xr_vector<CMapLocation*> res;
 	Level().MapManager().GetMapLocations(spot_type, id, res);

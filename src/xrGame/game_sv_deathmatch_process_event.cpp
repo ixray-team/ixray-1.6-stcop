@@ -10,7 +10,8 @@ void	game_sv_Deathmatch::OnEvent (NET_Packet &P, u16 type, u32 time, ClientID se
 	{
 	case GAME_EVENT_PLAYER_KILL: //dm only  (g_kill)
 		{
-			u16 ID = P.r_u16();
+			ALife::_OBJECT_ID ID;
+			P >> ID;
 			xrClientData *l_pC = (xrClientData*)get_client(ID);
 			if (!l_pC) break;			
 			KillPlayer(l_pC->ID, l_pC->ps->GameID);

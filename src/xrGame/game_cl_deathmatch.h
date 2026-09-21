@@ -154,7 +154,7 @@ public:
 	virtual		u8					GetTeamCount			() { return 1; };
 	
 	virtual		void				OnPlayerFlagsChanged	(game_PlayerState* ps);
-	virtual		void				SendPickUpEvent			(u16 ID_who, u16 ID_what);
+	virtual		void				SendPickUpEvent			(ALife::_OBJECT_ID ID_who, ALife::_OBJECT_ID ID_what);
 
 	virtual		void				OnGameRoundStarted				();
 	virtual		void				UpdateMapLocations		();
