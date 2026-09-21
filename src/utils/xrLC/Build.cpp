@@ -208,15 +208,15 @@ void CBuild::RunAfterLight(IWriter* fs)
  			}
 		}, gCompilerMode.ThreadsPerWork);
 
-		for (u32 m = 0; m < mu_models().size(); m++)
+		for (xrMU_Model* MuModel : mu_models())
 		{
-			export_geometry(*mu_models()[m]);
+			export_geometry(*MuModel);
 		}
 		
 		Status("MU : References...");
- 		for (u32 m = 0; m < mu_models().size(); m++)
+		for (xrMU_Reference* MuRef : mu_refs())
 		{
-			export_ogf(*mu_refs()[m]);
+			export_ogf(*MuRef);
 		}
 	}
  

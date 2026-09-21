@@ -163,44 +163,43 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	 
 	//*******
 	Status	("Models and References");
-	F = fs.open_chunk		(EB_MU_models);
+	F = fs.open_chunk(EB_MU_models);
 	if (F)
 	{
-		auto F_LODs = fs.open_chunk(EB_MU_Mesh_LODs);
 		while (!F->eof())
 		{
-			mu_models().push_back				(new xrMU_Model());
+			mu_models().push_back(new xrMU_Model());
 			auto Model = mu_models().back();
-			Model->Load			(*F, version );
-			if (F_LODs)
-			{
-				Model->UseBillboard = !F_LODs->r_u8();
-				if (Model->UseBillboard)
-				{
-					continue;
-				}
-				auto LODRead = [&](int ID)
-				{
-					Model->LODsID[ID] = F_LODs->r_u32();
-					if (Model->LODsID[ID] != u32(-1))
-					{
-						mu_models().push_back(new xrMU_Model());
-						auto LOD = mu_models().back();
-						LOD->Load(*F, version );
-						LOD->UseBillboard = false;
-						LOD->IsLOD = true;
-					}
-				};
-				LODRead(0);
-				LODRead(1);
-				LODRead(2);
-				LODRead(3);				
-			}
+			Model->Load(*F, version);
 		}
-		F->close				();
-		if (F_LODs)
+		F->close();
+
+		if (IReader* MeshLods = fs.open_chunk(EB_MU_Mesh_LODs))
 		{
-			F_LODs->close();
+			size_t idx = 0;
+			while (!MeshLods->eof() && idx < mu_models().size())
+			{
+				auto Model = mu_models()[idx];
+
+				Model->UseBillboard = !MeshLods->r_u8();
+				if (!Model->UseBillboard)
+				{
+					for (int i = 0; i < 4; ++i)
+					{
+						Model->LODsID[i] = MeshLods->r_u32();
+						if (Model->LODsID[i] != u32(-1))
+						{
+							mu_models().push_back(new xrMU_Model());
+							auto LOD = mu_models().back();
+							LOD->Load(*F, version);
+							LOD->UseBillboard = false;
+							LOD->IsLOD = true;
+						}
+					}
+				}
+				++idx;
+			}
+			MeshLods->close();
 		}
 	}
 	
