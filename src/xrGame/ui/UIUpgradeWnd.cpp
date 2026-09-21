@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIUpgradeWnd.h"
 #include "UIHelperGame.h"
 #include "../../xrUI/UIHelper.h"
