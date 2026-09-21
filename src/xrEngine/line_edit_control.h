@@ -79,7 +79,6 @@ public:
 	void set_selected_mode(bool status) { m_unselected_mode = !status; }
 	bool get_selected_mode() const { return !m_unselected_mode; }
 
-private:
 	line_edit_control(line_edit_control const&);
 	line_edit_control const& operator=(line_edit_control const&);
 
