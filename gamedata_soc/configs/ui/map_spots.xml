@@ -190,7 +190,7 @@
 		<level_map spot="actor_level_spot"/>
 	</actor_location>
 	
-	<actor_location_p hint="actor">
+	<actor_location_p hint="st_map_actor">
 		<level_map spot="actor_level_spot_p"></level_map>
 	</actor_location_p>
 
