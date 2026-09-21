@@ -47,15 +47,15 @@ ClientID r_clientID(NET_Packet *self_)
 	return clientID;
 }
 
-void w_object_id(NET_Packet* self, ALife::_OBJECT_ID id)
+static void w_object_id(NET_Packet* self_, ALife::_OBJECT_ID id)
 {
-	(*self) << id;
+	(*self_) << id;
 }
 
-ALife::_OBJECT_ID r_object_id(NET_Packet* self)
+static ALife::_OBJECT_ID r_object_id(NET_Packet* self_)
 {
 	ALife::_OBJECT_ID id;
-	(*self) >> id;
+	(*self_) >> id;
 	return id;
 }
 

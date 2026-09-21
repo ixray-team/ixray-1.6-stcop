@@ -11,6 +11,8 @@
 #include "script_reader.h"
 #include <script_engine.h>
 
+#include "alife_space.h"
+
 using namespace luabind;
 
 static bool r_eof_semi(IReader *self_)
@@ -38,6 +40,13 @@ static void r_fvector3_semi(IReader *self_, Fvector *arg0)
 static void r_fvector4_semi(IReader* self_, Fvector4* arg0)
 {
 	self_->r_fvector4(*arg0);
+}
+
+static ALife::_OBJECT_ID r_object_id(IReader* self_)
+{
+	ALife::_OBJECT_ID id;
+	self_->r(&id, sizeof(ALife::_OBJECT_ID));
+	return id;
 }
 
 static luabind::internal_string r_file_as_string(const char* path)
@@ -103,6 +112,7 @@ void CScriptReader::script_register(lua_State *L)
 			.def("r_stringZ",		&r_stringZ_semi			)
 			.def("r_elapsed",		&IReader::elapsed		)
 			.def("r_advance",		&IReader::advance		)
+			.def("r_object_id",		&r_object_id		)
 			.def("r_eof",			&r_eof_semi				),
 
 		def("r_file_as_string",			&r_file_as_string)
