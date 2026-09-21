@@ -21,7 +21,7 @@ xr_token fps_text_pos_tokens[5] = {
 
 void XRay::Hardware::FPSCounter::OnRender()
 {
-	float dt = Device.fRealTimeDelta;
+	float dt = Device.fTimeDeltaContinual;
 
 	if (dt < EPS_S)
 		return;
