@@ -787,7 +787,7 @@ function se_sim_faction:STATE_Write(packet)
 	packet:w_u8(n)
 	for k,v in pairs(self.squad_target_cache) do
 		packet:w_stringZ(k)
-		packet:w_u16(tonumber(v))
+		packet:w_object_id(tonumber(v))
 	end
 
 	-- Случайные задания
@@ -797,8 +797,8 @@ function se_sim_faction:STATE_Write(packet)
 	end
 	packet:w_u8(n)
 	for k,v in pairs(self.random_tasks) do
-		packet:w_u16(k)
-		packet:w_u16(v)
+		packet:w_object_id(k)
+		packet:w_object_id(v)
 	end
 
 	-- Сколько отрядов что атакуют
@@ -808,7 +808,7 @@ function se_sim_faction:STATE_Write(packet)
 	end
 	packet:w_u8(n)
 	for k,v in pairs(self.current_attack_quantity) do
-		packet:w_u16(k)
+		packet:w_object_id(k)
 		packet:w_u8(v)
 	end
 
@@ -861,7 +861,7 @@ function se_sim_faction:STATE_Read(packet, size)
 	self.squad_target_cache = {}
 	for i = 1,n do
 		local id = packet:r_stringZ()
-		local value = packet:r_u16()
+		local value = packet:r_object_id()
 		self.squad_target_cache[id] = value
 	end
 
@@ -869,8 +869,8 @@ function se_sim_faction:STATE_Read(packet, size)
 	n = packet:r_u8()
 	self.random_tasks = {}
 	for i = 1,n do
-		local k = packet:r_u16()
-		local v = packet:r_u16()
+		local k = packet:r_object_id()
+		local v = packet:r_object_id()
 		self.random_tasks[k] = v
 	end
 
@@ -878,7 +878,7 @@ function se_sim_faction:STATE_Read(packet, size)
 	n = packet:r_u8()
 	self.current_attack_quantity = {}
 	for i = 1,n do
-		local k = packet:r_u16()
+		local k = packet:r_object_id()
 		local v = packet:r_u8()
 		self.current_attack_quantity[k] = v
 	end

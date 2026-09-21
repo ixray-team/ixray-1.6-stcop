@@ -200,7 +200,7 @@ function CTreasure:save(p)
 	end
 	p:w_u16(size)
 	for k,v in pairs(self.treasure_info) do
-		p:w_u16(v.target)
+		p:w_object_id(v.target)
 		p:w_bool(v.active)
 		p:w_bool(v.done)
 	end
@@ -209,7 +209,7 @@ end
 function CTreasure:load(p)
 	local t = p:r_u16()
 	for i = 1,t do
-		local k = self.treasure_by_target[p:r_u16()]
+		local k = self.treasure_by_target[p:r_object_id()]
 		self.treasure_info[k].active = p:r_bool()
 		self.treasure_info[k].done = p:r_bool()
 	end

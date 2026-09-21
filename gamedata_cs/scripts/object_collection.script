@@ -53,6 +53,7 @@ function object_collection:save(packet)
 	
 	
 	packet:w_u16(self.m_count)	
+	-- А вот этот скрипт при переносе ID на u32 нахрен ломает ванильный ЧН, оставляю как есть...
 	packet:w_u16(self.m_last_id)
 
 	local n = 0

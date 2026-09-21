@@ -184,7 +184,7 @@ function evaluator_danger:evaluate()
 
 	-- Стремаем смарт террейн
 	local se_obj = alife():object(self.object:id())
-	if se_obj and se_obj.m_smart_terrain_id ~= 65535 then
+	if se_obj and se_obj.m_smart_terrain_id ~= alife_const.invalid_object_id then
 		alife():object(se_obj.m_smart_terrain_id):set_alarm()
 	end
 	
