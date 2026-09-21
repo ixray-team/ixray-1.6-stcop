@@ -9,6 +9,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "script_net_packet.h"
+#include "src/xrPhysics/PHSimpleCharacter.h"
 
 using namespace luabind;
 
@@ -44,6 +45,18 @@ ClientID r_clientID(NET_Packet *self_)
 	ClientID		clientID;
 	self_->r_clientID(clientID);
 	return clientID;
+}
+
+void w_object_id(NET_Packet* self, ALife::_OBJECT_ID id)
+{
+	(*self) << id;
+}
+
+ALife::_OBJECT_ID r_object_id(NET_Packet* self)
+{
+	ALife::_OBJECT_ID id;
+	(*self) >> id;
+	return id;
 }
 
 u32 r_begin(NET_Packet* self)
@@ -110,6 +123,7 @@ void CScriptNetPacket::script_register(lua_State *L)
 			.def("w_stringZ",		(void (NET_Packet::*)(const char*))(&NET_Packet::w_stringZ	))
 			.def("w_matrix",		&NET_Packet::w_matrix		)
 			.def("w_clientID",		&NET_Packet::w_clientID		)
+			.def("w_object_id",			&w_object_id		)
 			.def("w_chunk_open8",	&NET_Packet::w_chunk_open8, out_value<2>())
 			.def("w_chunk_close8",	&NET_Packet::w_chunk_close8	)
 			.def("w_chunk_open16",	&NET_Packet::w_chunk_open16, out_value<2>())
@@ -138,6 +152,7 @@ void CScriptNetPacket::script_register(lua_State *L)
 			.def("r_stringZ",		&r_stringZ)
 			.def("r_matrix",		&NET_Packet::r_matrix		)
 			.def("r_clientID",		&r_clientID					)
+			.def("r_object_id",		&r_object_id		)
 			.def("r_elapsed",		&NET_Packet::r_elapsed		)
 			.def("r_advance",		&NET_Packet::r_advance		)
 			.def("r_eof",			&r_eof						)
