@@ -13,6 +13,7 @@ void CBlender_procedural_clouds::Compile(CBlender_Compile& C)
 		case 0:
 			C.r_ComputePass("ComputeCloudsView");
 
+			C.r_dx10Texture("s_cloud_shadow_map", r4_RT_procedural_clouds_shadow_filtered);
 			C.r_dx10Texture("s_cloud_aerial_perspective", r4_RT_aerial_perspective);
 			C.r_dx10Texture("s_cloud_aerial_direct", r4_RT_aerial_direct);
 			C.r_dx10Texture("s_cloud_aerial_transmittance", r4_RT_aerial_transmittance);
@@ -26,9 +27,19 @@ void CBlender_procedural_clouds::Compile(CBlender_Compile& C)
 			C.r_End();
 			break;
 
-		case 1: // full-resolution reconstruction; explicit ping-pong SRVs
+		case 1: // read history0, write history1
+		case 2: // read history1, write history0
 			C.r_ComputePass("ComputeCloudsTemporal");
+			C.r_dx10Texture("s_cloud_current", r4_RT_procedural_clouds_raw);
+			C.r_dx10Texture("s_cloud_history", C.iElement == 1
+				? r4_RT_procedural_clouds_history0 : r4_RT_procedural_clouds_history1);
 			C.r_dx10Sampler("smp_rtlinear");
+			C.r_End();
+			break;
+
+		case 5: // unchanged view: sparse in-place update of the current history
+			C.r_ComputePass("ComputeCloudsTemporalStatic");
+			C.r_dx10Texture("s_cloud_current", r4_RT_procedural_clouds_raw);
 			C.r_End();
 			break;
 

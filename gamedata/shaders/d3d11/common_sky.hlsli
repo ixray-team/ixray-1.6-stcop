@@ -1,5 +1,11 @@
 #include "common.hlsli"
 #include "atmosphere_config.h"
+#include "atmosphere_config.h"
+
+// Weather source before atmospheric attenuation. Shared with surface lighting;
+// includes source_intensity and the renderer's sun luminance scale exactly once.
+uniform float4 celestial_source_color;
+
 //-----------------------------------------------------------------------------
 // Configuration
 //-----------------------------------------------------------------------------
@@ -28,6 +34,16 @@ static const float SKY_MIE_G_SQUARED = SKY_MIE_G * SKY_MIE_G;
 static const float SKY_EARTH_RADIUS = 6371.0f;
 static const float SKY_ATMOSPHERE_THICKNESS = 100.0f;
 static const float SKY_ATMOSPHERE_RADIUS = SKY_EARTH_RADIUS + SKY_ATMOSPHERE_THICKNESS;
+
+float sky_get_camera_elevation()
+{
+    return max(0.001f * eye_position.y + 0.2f, 0.0f);
+}
+
+float3 sky_atmosphere_camera_position()
+{
+    return float3(0.0f, SKY_EARTH_RADIUS + sky_get_camera_elevation(), 0.0f);
+}
 static const float SKY_AEROSOL_TURBIDITY = 1.0f; // make this depending on fog_amount
 // Mean ozone concentration for August.
 static const float SKY_OZONE_DOBSON = 317.0f;
@@ -169,8 +185,7 @@ float cloud_henyey_greenstein(float cos_theta, float g)
     g = clamp(g, -0.99f, 0.99f);
 
     const float g2 = g * g;
-    const float denominator =
-        max(1.0f + g2 - 2.0f * g * cos_theta, 1e-4f);
+    const float denominator = max(1.0f + g2 - 2.0f * g * cos_theta, 1e-4f);
 
     const float rsqrt_denom = rsqrt(denominator);
     return (1.0f - g2) * rsqrt_denom * rsqrt_denom * rsqrt_denom * (1.0f / (4.0f * PI));
@@ -499,6 +514,12 @@ float3 sky_linear_srgb_from_spectral_samples(float4 spectral_radiance)
     // Apply artistic Sky/Sun brightness to the returned RGB, not to the weights.
     float3 linear_rgb = mul(SKY_SPECTRAL_TO_REC709, spectral_radiance);
     return max(linear_rgb, 0.0f);
+}
+
+float3 sky_source_rgb(float4 spectral_radiance)
+{
+    // RGB weather tint is an artistic approximation applied after spectral integration.
+    return max(celestial_source_color.rgb, 0.0f) * sky_linear_srgb_from_spectral_samples(spectral_radiance);
 }
 
 float3 sky_sun_transmittance_rgb(float4 spectral_transmittance)

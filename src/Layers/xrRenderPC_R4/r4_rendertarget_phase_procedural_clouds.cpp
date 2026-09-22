@@ -2,15 +2,11 @@
 #include "r4_rendertarget.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
-#include <algorithm>
+//#include <algorithm>
 #include "../../../gamedata/shaders/d3d11/atmosphere_config.h"
 
 namespace
 {
-	constexpr u32 kCloudShadowMapTextureSlot = 2u; // ComputeCloudsView: register(t2)
-	constexpr u32 kCloudCurrentSlot = 3u; // ComputeCloudsTemporal: register(t3)
-	constexpr u32 kCloudHistorySlot = 4u; // ComputeCloudsTemporal: register(t4)
-
 	constexpr float kCloudWorldToKm = SKY_WORLD_TO_KM;
 	constexpr float kCloudBottomKm = SKY_CLOUD_BOTTOM_KM;
 	constexpr float kCloudTopKm = SKY_CLOUD_TOP_KM;
@@ -29,7 +25,7 @@ namespace
 	Fmatrix CloudShadowViewProjection()
 	{
 		// Same direction source as L_sun_dir_w, not a stale scene-cascade matrix.
-		Fvector direction = g_pGamePersistent->Environment().CurrentEnv->sun_dir;
+		Fvector direction = g_pGamePersistent->Environment().CurrentEnv->source_dir;
 		if (direction.square_magnitude() < 1e-12f)
 			direction.set(0.0f, -1.0f, 0.0f);
 		direction.normalize_safe(); // from Sun towards the scene
@@ -121,14 +117,9 @@ void CRenderTarget::phase_procedural_clouds()
 {
 	GPU_EVENT(phase_procedural_clouds);
 
-	// Clear the backend's texture tracking AND the manually bound SRVs before
-	// resizing or reusing any cloud texture as an UAV. Do not bypass RCache.
-	static STextureList empty_textures;
-	RCache.set_Textures(&empty_textures);
-	GRHI->ShaderResourceCache->SetCSResource(kCloudShadowMapTextureSlot, nullptr);
-	GRHI->ShaderResourceCache->SetCSResource(kCloudCurrentSlot, nullptr);
-	GRHI->ShaderResourceCache->SetCSResource(kCloudHistorySlot, nullptr);
-	GRHI->ShaderResourceCache->Apply();
+	// The shadow pass reads only FBM noise at t0. Its normal bindings remove
+	// previous readers of cloud RTs before resizing or reusing them as UAVs.
+	SetupComputePass(s_procedural_clouds, 3);
 
 	R_ASSERT(clouds_block_size == 2u || clouds_block_size == 4u);
 	const u32 width = rt_Generic_0->dwWidth;
@@ -154,10 +145,18 @@ void CRenderTarget::phase_procedural_clouds()
 		}
 	}
 
-	const Fvector& sun = g_pGamePersistent->Environment().CurrentEnv->sun_dir;
+	const CEnvDescriptor& environment = *g_pGamePersistent->Environment().CurrentEnv;
+	const Fvector& sun = environment.source_dir;
+	Fvector source_color = environment.get_source_color();
+	source_color.mul(ps_r2_sun_lumscale);
+	// Reject a mode switch or large lighting jump; gradual weather changes keep accumulating.
+	const float source_delta = source_color.distance_to(clouds_previous_source_color);
+	const float source_tolerance = std::max(0.001f, 0.15f * clouds_previous_source_color.magnitude());
 	// Conservative first-version cut detection. Normal movement uses reprojection.
 	if (clouds_history_valid &&
 		(clouds_last_frame + 1u != Device.dwFrame ||
+		 clouds_previous_celestial_mode != environment.celestial_mode ||
+		 source_delta > source_tolerance ||
 		 clouds_previous_camera.distance_to(Device.vCameraPosition) > 100.0f ||
 		 clouds_previous_direction.dotproduct(Device.vCameraDirection) < 0.85f ||
 		 clouds_previous_up.dotproduct(Device.vCameraTop) < 0.85f ||
@@ -177,7 +176,6 @@ void CRenderTarget::phase_procedural_clouds()
 	const Fmatrix shadow_view_projection = CloudShadowViewProjection();
 	{
 		GPU_EVENT(clouds_shadow_precompute);
-		SetupComputePass(s_procedural_clouds, 3);
 		SetupCloudLayer();
 		Fmatrix inverse; inverse.invert44(shadow_view_projection);
 		RCache.set_c("cloud_shadow_inverse_view_projection", inverse);
@@ -202,12 +200,6 @@ void CRenderTarget::phase_procedural_clouds()
 		SetupCloudLayer();
 		RCache.set_c("cloud_screen_params", float(width), float(height), float(clouds_frame_phase), float(clouds_block_size));
 		RCache.set_c("cloud_shadow_view_projection", shadow_view_projection);
-		// The filtered map was an UAV in the preceding blur pass. Bind its SRV
-		// explicitly after that UAV has been removed, using the RHI resource cache.
-		IRHIShaderResourceView* shadow_map_srv = rt_procedural_clouds_shadow_filtered->pTexture->get_SRView();
-		R_ASSERT(shadow_map_srv);
-		GRHI->ShaderResourceCache->SetCSResource(kCloudShadowMapTextureSlot, shadow_map_srv);
-		GRHI->ShaderResourceCache->Apply();
 
 		ID3D11UnorderedAccessView* clouds_uav = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_raw->pUAView->GetRaw());
 		UINT initial_count = 0;
@@ -216,33 +208,44 @@ void CRenderTarget::phase_procedural_clouds()
 		RCache.Compute((rt_procedural_clouds_raw->dwWidth + 7u) / 8u, (rt_procedural_clouds_raw->dwHeight + 3u) / 4u, 1);
 		UnbindComputeResources(1);
 
-		// The same texture becomes the blur output UAV again on the next frame.
-		GRHI->ShaderResourceCache->SetCSResource(kCloudShadowMapTextureSlot, nullptr);
-		GRHI->ShaderResourceCache->Apply();
 	}
 
 	{
 		GPU_EVENT(clouds_temporal_upsample);
-		SetupComputePass(s_procedural_clouds, 1);
-		SetupCloudLayer();
-		RCache.set_c("cloud_screen_params", float(width), float(height), float(clouds_frame_phase), float(clouds_block_size));
-		RCache.set_c("cloud_temporal_params", clouds_history_valid ? 1.0f : 0.0f, stationary ? 1.0f : 0.0f, 0.0f, 0.0f);
-		RCache.set_c("cloud_previous_view_projection", clouds_previous_view_projection);
+		R_ASSERT(clouds_history_index < 2u);
+		if (stationary)
+		{
+			// History is already a complete full-resolution image. The current
+			// raymarch adds only one new pixel per block, so update it in place.
+			SetupComputePass(s_procedural_clouds, 5);
+			RCache.set_c("cloud_screen_params", float(width), float(height),
+				float(clouds_frame_phase), float(clouds_block_size));
+			ID3D11UnorderedAccessView* history_uav = reinterpret_cast<ID3D11UnorderedAccessView*>(
+				rt_procedural_clouds_history[clouds_history_index]->pUAView->GetRaw());
+			UINT count = 0;
+			RContext->CSSetUnorderedAccessViews(0, 1, &history_uav, &count);
+			RCache.Compute((raw_width + 7u) / 8u, (raw_height + 3u) / 4u, 1);
+			UnbindComputeResources(1);
+		}
+		else
+		{
+			// Camera movement or invalid history needs a full reconstruction.
+			SetupComputePass(s_procedural_clouds, 1u + clouds_history_index);
+			SetupCloudLayer();
+			RCache.set_c("cloud_screen_params", float(width), float(height),
+				float(clouds_frame_phase), float(clouds_block_size));
+			RCache.set_c("cloud_temporal_params", clouds_history_valid ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
+			RCache.set_c("cloud_previous_view_projection", clouds_previous_view_projection);
 
-		const u32 write_index = clouds_history_index ^ 1u;
-		GRHI->ShaderResourceCache->SetCSResource(kCloudCurrentSlot, rt_procedural_clouds_raw->pTexture->get_SRView());
-		GRHI->ShaderResourceCache->SetCSResource(kCloudHistorySlot, rt_procedural_clouds_history[clouds_history_index]->pTexture->get_SRView());
-		GRHI->ShaderResourceCache->Apply();
-
-		ID3D11UnorderedAccessView* history_uav = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_clouds_history[write_index]->pUAView->GetRaw());
-		UINT count = 0;
-		RContext->CSSetUnorderedAccessViews(0, 1, &history_uav, &count);
-		RCache.Compute((width + 7u) / 8u, (height + 3u) / 4u, 1);
-		UnbindComputeResources(1);
-		GRHI->ShaderResourceCache->SetCSResource(kCloudCurrentSlot, nullptr);
-		GRHI->ShaderResourceCache->SetCSResource(kCloudHistorySlot, nullptr);
-		GRHI->ShaderResourceCache->Apply();
-		clouds_history_index = write_index;
+			const u32 write_index = clouds_history_index ^ 1u;
+			ID3D11UnorderedAccessView* history_uav = reinterpret_cast<ID3D11UnorderedAccessView*>(
+				rt_procedural_clouds_history[write_index]->pUAView->GetRaw());
+			UINT count = 0;
+			RContext->CSSetUnorderedAccessViews(0, 1, &history_uav, &count);
+			RCache.Compute((width + 7u) / 8u, (height + 3u) / 4u, 1);
+			UnbindComputeResources(1);
+			clouds_history_index = write_index;
+		}
 	}
 
 	clouds_previous_view_projection = Device.mFullTransform;
@@ -251,6 +254,8 @@ void CRenderTarget::phase_procedural_clouds()
 	clouds_previous_direction = Device.vCameraDirection;
 	clouds_previous_up = Device.vCameraTop;
 	clouds_previous_sun = sun;
+	clouds_previous_source_color = source_color;
+	clouds_previous_celestial_mode = environment.celestial_mode;
 	clouds_last_frame = Device.dwFrame;
 	clouds_history_valid = true;
 	clouds_frame_phase = (clouds_frame_phase + 1u) % (clouds_block_size * clouds_block_size);

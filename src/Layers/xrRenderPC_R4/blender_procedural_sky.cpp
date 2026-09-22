@@ -28,7 +28,6 @@ void CBlender_procedural_sky::Compile(CBlender_Compile& C)
 
 		case 1: // ComputeAerialPerspective
 			C.r_ComputePass("ComputeAP");
-			C.r_dx10Texture("s_cloud_fbm_noise", "shaders\\sky\\noise_fbm_128");
 
 			C.r_dx10Texture("s_transmittance_lut", kTransmittanceLut);
 			C.r_dx10Texture("s_multi_scattering_lut", kMultiScatteringLut);

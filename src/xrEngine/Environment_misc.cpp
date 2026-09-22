@@ -346,6 +346,13 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 	hemi_color.set		(1,1,1,1);
 	sun_color.set		(1,1,1);
 	sun_dir.set			(0,-1,0);
+	source_dir = sun_dir;
+	source_color = sun_color;
+	celestial_mode = 0u;
+	source_intensity = 1.0f;
+	source_angular_size = 0.53f;
+	disk_luminance_scale = 1.0f;
+	sun_corona_intensity = 0.00001f;
 
 	m_fSunShaftsIntensity = 0;
 	m_fWaterIntensity = 1;
@@ -429,6 +436,17 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, const ch
 		hemi_color = config.r_fvector4(identifier, "hemi_color");
 	}
 	sun_color				= config.r_fvector3	(identifier,"sun_color");
+	source_color = sun_color;
+	celestial_mode = config.line_exist(identifier, "celestial_mode") ? config.r_u32(identifier, "celestial_mode") : 0u;
+	R_ASSERT2(celestial_mode <= 2u, "celestial_mode must be 0 (sun), 1 (moon), or 2 (moonless)");
+	source_intensity = config.line_exist(identifier, "source_intensity") ? config.r_float(identifier, "source_intensity") : 1.0f;
+	source_angular_size = config.line_exist(identifier, "source_angular_size") ? config.r_float(identifier, "source_angular_size") : 0.53f;
+	disk_luminance_scale = config.line_exist(identifier, "disk_luminance_scale") ? config.r_float(identifier, "disk_luminance_scale") : 1.0f;
+	sun_corona_intensity = config.line_exist(identifier, "sun_corona_intensity") ? config.r_float(identifier, "sun_corona_intensity") : 0.00001f;
+	clamp(source_intensity, 0.0f, 100.0f);
+	clamp(source_angular_size, 0.05f, 10.0f);
+	clamp(disk_luminance_scale, 0.0f, 100.0f);
+	clamp(sun_corona_intensity, 0.0f, 1.0f);
 
 	if (oldStyle)
 	{
@@ -466,6 +484,8 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, const ch
 			deg2rad(config.r_fvector2(identifier,"sun_dir").x)
 		);
 
+	// Keep the physical direction before the legacy renderer's horizon fix.
+	source_dir = sun_dir;
 	if (sun_dir.y >= 0)
 	{
 		// Автофикс: если y >= 0, делаем его немного отрицательным
@@ -745,6 +765,19 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 	}
 
 	sun_color.lerp			(A.sun_color,B.sun_color,f);
+	source_color = sun_color;
+	// A discrete mode switches at the same midpoint as weather resource IDs.
+	// Weather keys must fade source_intensity to zero around a mode switch.
+	celestial_mode = f < 0.5f ? A.celestial_mode : B.celestial_mode;
+	source_intensity = fi * A.source_intensity + f * B.source_intensity;
+	source_angular_size = fi * A.source_angular_size + f * B.source_angular_size;
+	disk_luminance_scale = fi * A.disk_luminance_scale + f * B.disk_luminance_scale;
+	sun_corona_intensity = fi * A.sun_corona_intensity + f * B.sun_corona_intensity;
+	source_dir.lerp(A.source_dir, B.source_dir, f);
+	// Opposite weather directions have a zero midpoint; choose a valid endpoint.
+	if (source_dir.square_magnitude() < 1e-8f)
+		source_dir = f < 0.5f ? A.source_dir : B.source_dir;
+	source_dir.normalize();
 
 	if (rain_density > 0.f) {
 		Env->wetness_factor += (rain_density * 4.0) / 10000.f;

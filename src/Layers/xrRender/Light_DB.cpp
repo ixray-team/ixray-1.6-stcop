@@ -263,6 +263,14 @@ void			CLight_DB::Update			()
 		VERIFY2						(E.sun_dir.y<0,"Invalid sun direction settings in evironment-config");
 		Fvector						OD,OP,AD,AP;
 		OD.set						(E.sun_dir).normalize			();
+		Fvector source_color = E.sun_color;
+#if RENDER == R_R4
+		source_color = E.get_source_color();
+		if (E.source_dir.y < 0.0f)
+			OD.set(E.source_dir).normalize();
+		else
+			source_color.set(0.0f, 0.0f, 0.0f); // no ground directional light below horizon
+#endif
 		OP.mad						(Device.vCameraPosition,OD,-500.f);
 		AD.set(0,-.75f,0).add		(E.sun_dir);
 
@@ -275,14 +283,16 @@ void			CLight_DB::Update			()
 		AP.mad						(Device.vCameraPosition,AD,-500.f);
 		sun_original->set_rotation	(OD,_sun_original->right	);
 		sun_original->set_position	(OP);
-		sun_original->set_color		(E.sun_color.x,E.sun_color.y,E.sun_color.z);
+		sun_original->set_color		(source_color.x,source_color.y,source_color.z);
 		sun_original->set_range		(600.f);
 		sun_adapted->set_rotation	(AD, _sun_adapted->right	);
 		sun_adapted->set_position	(AP		);
-		sun_adapted->set_color		(E.sun_color.x*ps_r2_sun_lumscale,E.sun_color.y*ps_r2_sun_lumscale,E.sun_color.z*ps_r2_sun_lumscale);
+		sun_adapted->set_color		(source_color.x*ps_r2_sun_lumscale,source_color.y*ps_r2_sun_lumscale,source_color.z*ps_r2_sun_lumscale);
 		sun_adapted->set_range		(600.f	);
 		
+#if RENDER != R_R4
 		if (!::Render->is_sun_static() && !EngineExternal().ShadowOfChernobylMode())
+#endif
 		{
 			sun_adapted->set_rotation(OD, _sun_original->right);
 			sun_adapted->set_position (OP);

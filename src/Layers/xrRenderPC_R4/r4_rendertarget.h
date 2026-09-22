@@ -164,6 +164,8 @@ public:
 	Fvector clouds_previous_direction = {};
 	Fvector clouds_previous_up = {};
 	Fvector clouds_previous_sun = {};
+	Fvector clouds_previous_source_color = {}; // effective lighting, for history rejection
+	u32 clouds_previous_celestial_mode = 0u; // reject Sun/Moon/moonless transitions
 	void set_clouds_block_size(u32 block_size); // settings hook; resize occurs at next cloud render
 	static constexpr u32 clouds_shadow_map_size = 1024;
 	ref_rt rt_procedural_clouds_shadow; // one 2D layer: tau, light Z start/end, T

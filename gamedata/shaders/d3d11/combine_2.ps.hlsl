@@ -84,11 +84,11 @@ float3 main(PSInputFullscreen I) : SV_Target
 #endif
     
 #ifdef USE_CGIM_COLOR_TWEAK
-	Color = Uncharted2Tonemap(Color);
+	//Color = Uncharted2Tonemap(Color);
 #endif
 	
 #ifdef USE_LUT_TEXTURE
- 	Color = s_lut.Sample(smp_rtlinear, saturate(Color)).xyz;
+ 	//Color = s_lut.Sample(smp_rtlinear, saturate(Color)).xyz;
 #endif
     
 	return Color;

@@ -95,6 +95,7 @@ void dxEnvDescriptorMixerRender::Copy(IEnvDescriptorMixerRender& _in) {
 	#if RENDER == R_R4
 		sky_view_lut = other->sky_view_lut;
 		procedural_clouds = other->procedural_clouds;
+		celestial_transmittance_lut = other->celestial_transmittance_lut;
 	#endif
 }
 
@@ -113,6 +114,7 @@ void dxEnvDescriptorMixerRender::Destroy() {
 	#if RENDER == R_R4
 		sky_view_lut.destroy();
 		procedural_clouds.destroy();
+		celestial_transmittance_lut.destroy();
 	#endif
 }
 
@@ -161,9 +163,14 @@ void dxEnvDescriptorMixerRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorR
 		{
 			procedural_clouds.create(r4_RT_procedural_clouds_history0);
 		}
+		if (!celestial_transmittance_lut)
+		{
+			celestial_transmittance_lut.create("shaders\\sky\\transmittance_lut");
+		}
 
 		sky_r_textures.push_back(std::make_pair(2, sky_view_lut));
 		sky_r_textures.push_back(std::make_pair(3, procedural_clouds));
+		sky_r_textures.push_back(std::make_pair(4, celestial_transmittance_lut));
 
 	#endif
 }
@@ -313,7 +320,9 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 	RCache.set_Textures(&mixRen.sky_r_textures);
 
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, v_offset, 0, 12, i_offset, 20);
+#if RENDER != R_R4
 	env.eff_LensFlare->Render(true, false, false);
+#endif // R4 draws the source in sky.ps; legacy LensFlare is temporarily disabled.
 
 	// Sun
 	::Render->rmNormal();

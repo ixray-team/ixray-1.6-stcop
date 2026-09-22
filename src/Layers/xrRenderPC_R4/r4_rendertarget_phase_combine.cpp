@@ -298,7 +298,8 @@ void CRenderTarget::phase_combine()
 	RCache.set_Stencil		(FALSE);
 
 	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
-	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
+	// Legacy eff_LensFlare is temporarily disabled while testing procedural celestials.
+	// g_pGamePersistent->Environment().RenderFlares();
 
 	if(ps_r4_cas_sharpening > EPS) {
 		GPU_EVENT(phase_cas);

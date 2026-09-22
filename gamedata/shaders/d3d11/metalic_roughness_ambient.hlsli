@@ -174,7 +174,7 @@ float3 CompureDiffuseIrradance(float3 N, float3 Hemi)
         #endif
 
     #else
-        //Irradance *= L_hemi_color.xyz;
+        Irradance *= L_hemi_color.xyz;
     #endif
 
     #ifdef USE_IRRADANCE_SATURATION

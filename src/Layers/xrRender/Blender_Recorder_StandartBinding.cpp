@@ -335,7 +335,11 @@ class cl_sun0_color : public RHIShaderConstant::Setup {
 #endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-#if defined(_EDITOR) || RENDER != R_R1
+#if RENDER == R_R4
+			Fvector color = desc.get_source_color();
+			color.mul(desc.source_dir.y < 0.0f ? ps_r2_sun_lumscale : 0.0f);
+			result.set(color.x, color.y, color.z, 0.0f);
+#elif defined(_EDITOR) || RENDER != R_R1
 			result.set(desc.sun_color.x * ps_r2_sun_lumscale, desc.sun_color.y * ps_r2_sun_lumscale, desc.sun_color.z * ps_r2_sun_lumscale, 0);
 #else
 			result.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z, 0);
@@ -357,7 +361,11 @@ class cl_sun0_dir_w : public RHIShaderConstant::Setup {
 #endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
+#if RENDER == R_R4
+			result.set(desc.source_dir.x, desc.source_dir.y, desc.source_dir.z, 0);
+#else
 			result.set(desc.sun_dir.x, desc.sun_dir.y, desc.sun_dir.z, 0);
+#endif
 		}
 		RCache.set_c(C, result);
 	}
@@ -376,13 +384,53 @@ class cl_sun0_dir_e : public RHIShaderConstant::Setup {
 		if (marker != Device.dwFrame) {
 			Fvector D;
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
+#if RENDER == R_R4
+			Device.mView.transform_dir(D, desc.source_dir);
+#else
 			Device.mView.transform_dir(D, desc.sun_dir);
+#endif
 			D.normalize();
 			result.set(D.x, D.y, D.z, 0);
 		}
 		RCache.set_c(C, result);
 	}
 };	static cl_sun0_dir_e binder_sun0_dir_e;
+
+#if RENDER == R_R4
+class cl_celestial_source_color : public RHIShaderConstant::Setup {
+	void setup(RHIShaderConstant* C) override
+	{
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv)
+		{
+			RCache.set_c(C, 0.0f, 0.0f, 0.0f, 0.0f);
+			return;
+		}
+		// No horizon fade: sunlight below the horizon still lights the atmosphere.
+		Fvector color = g_pGamePersistent->Environment().CurrentEnv->get_source_color();
+		color.mul(ps_r2_sun_lumscale);
+		RCache.set_c(C, color.x, color.y, color.z, 0.0f);
+	}
+}; static cl_celestial_source_color binder_celestial_source_color;
+
+class cl_celestial_params : public RHIShaderConstant::Setup {
+	void setup(RHIShaderConstant* C) override
+	{
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv)
+		{
+			RCache.set_c(C, 2.0f, 1.0f, 0.0f, 0.0f);
+			return;
+		}
+		const CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
+		// Uniform angular-size work belongs on the CPU, not in every sky pixel.
+		const float angular_radius = deg2rad(0.5f * clampr(desc.source_angular_size, 0.05f, 10.0f));
+		const float chord_radius = 2.0f * sinf(0.5f * angular_radius);
+		const float inverse_radius_squared = 1.0f / (chord_radius * chord_radius);
+		// Solid angle = pi * chord_radius^2, exact and stable for small disks.
+		RCache.set_c(C, float(desc.celestial_mode), inverse_radius_squared,
+			desc.disk_luminance_scale * inverse_radius_squared / PI, desc.sun_corona_intensity);
+	}
+}; static cl_celestial_params binder_celestial_params;
+#endif
 
 class cl_amb_color : public RHIShaderConstant::Setup {
 	u32			marker;
@@ -908,6 +956,10 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("L_sun_color", &binder_sun0_color);
 	r_Constant("L_sun_dir_w", &binder_sun0_dir_w);
 	r_Constant("L_sun_dir_e", &binder_sun0_dir_e);
+#if RENDER == R_R4
+	r_Constant("celestial_source_color", &binder_celestial_source_color);
+	r_Constant("celestial_params", &binder_celestial_params);
+#endif
 
 	r_Constant("m_taa_jitter", &binder_taa_jitter);
 

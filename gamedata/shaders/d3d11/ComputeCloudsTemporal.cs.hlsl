@@ -1,9 +1,8 @@
 #include "common_clouds.hlsli"
 
-// Bound explicitly by phase_procedural_clouds after UAV removal.
-// t0 is reserved for the unused density texture in common_clouds.
-Texture2D<float4> s_cloud_current : register(t3);
-Texture2D<float4> s_cloud_history : register(t4);
+// Bound through the selected temporal pass.T; t0..t7 belong to the raymarch.
+Texture2D<float4> s_cloud_current : register(t8);
+Texture2D<float4> s_cloud_history : register(t9);
 RWTexture2D<float4> u_cloud_history : register(u0);
 
 uniform float4x4 cloud_previous_view_projection; // unjittered, engine units

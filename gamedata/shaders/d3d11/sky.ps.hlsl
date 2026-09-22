@@ -1,5 +1,9 @@
+#ifndef USE_PROCEDURAL_SKY_VIEW
+    #define USE_PROCEDURAL_SKY_VIEW
+#endif
+
 #ifdef USE_PROCEDURAL_SKY_VIEW
-    #include "common_sky.hlsli"
+    #include "common_celestial.hlsli"
 #else
     #include "common.hlsli"
 #endif
@@ -21,6 +25,7 @@ struct v2p
 #ifdef USE_PROCEDURAL_SKY_VIEW
 Texture2D<float4> s_sky_view_lut : register(t2);
 Texture2D<float4> s_procedural_clouds : register(t3);
+Texture2D<float4> s_celestial_transmittance_lut : register(t4);
 #else
 TextureCube s_sky0 : register(t0);
 TextureCube s_sky1 : register(t1);
@@ -35,19 +40,25 @@ struct sky
 void main(in v2p I, out sky O)
 {
 #ifdef USE_PROCEDURAL_SKY_VIEW
-    const float3 ray_direction = safe_normalize(I.world_direction);
+    float3 ray_direction = safe_normalize(I.world_direction);
     // X-Ray stores the sunlight propagation direction.
     // Atmospheric functions expect the direction towards the Sun.
-    const float3 sun_direction = safe_normalize(-L_sun_dir_w);
+    float3 sun_direction = safe_normalize(-L_sun_dir_w);
     // Must match ComputeSkyView.cs.hlsl.
-    const float camera_elevation = max(0.002f * eye_position.y + 0.2f, 0.0f);
-    const float3 sky_color = sky_sample_view_lut(s_sky_view_lut, smp_rtlinear, ray_direction, sun_direction, camera_elevation).rgb;
+    float camera_elevation = sky_get_camera_elevation();
+    float3 sky_color = sky_sample_view_lut(s_sky_view_lut, smp_rtlinear, ray_direction, sun_direction, camera_elevation).rgb;
     // Full internal-resolution history uses an unjittered grid. Invert the shift
     // applied by sky.vs exactly once, here at composition (also for FSR/DLSS).
-    const float2 cloud_uv = I.hpos.xy * pos_decompression_params2.zw
-        - m_taa_jitter.xy * float2(0.5f, -0.5f);
-    const float4 clouds = s_procedural_clouds.SampleLevel(smp_rtlinear, cloud_uv, 0.0f);
-    float3 final_sky = clouds.rgb + sky_color * saturate(clouds.a);
+    float2 cloud_uv = I.hpos.xy * pos_decompression_params2.zw - m_taa_jitter.xy * float2(0.5f, -0.5f);
+    float4 clouds = s_procedural_clouds.SampleLevel(smp_rtlinear, cloud_uv, 0.0f);
+    float3 sun_disk = sky_sun_disk(s_celestial_transmittance_lut, smp_rtlinear, ray_direction, sun_direction);
+    float cloud_transmittance = saturate(clouds.a);
+    float sun_visibility = sky_cloud_sun_visibility(cloud_transmittance);
+    float3 final_sky = clouds.rgb + sky_color * cloud_transmittance + sun_disk * sun_visibility;
+    // Keep extreme artistic disk settings finite in the RGBA16F scene target.
+    // Preserve hue; this is an HDR storage limit, not exposure or tone mapping.
+    float peak = max(max(final_sky.r, final_sky.g), final_sky.b);
+    final_sky *= min(1.0f, 60000.0f / max(peak, 60000.0f));
     // SkyView is already stored in linear HDR.
     // Do not call GammaToLinear, LinearToGamma, detonemap or tonemap.
     O.Color = float4(max(final_sky, 0.0f), 0.0f);

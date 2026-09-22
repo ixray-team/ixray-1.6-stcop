@@ -41,7 +41,7 @@ void main(uint3 dispatch_id : SV_DispatchThreadID)
     // X-Ray stores the direction in which sunlight propagates.
     // Sky functions expect the direction from the point to the Sun.
     const float3 sun_direction = safe_normalize(-L_sun_dir_w);
-    const float camera_elevation = max(0.002f * eye_position.y + 0.2f, 0.0f);
+    const float camera_elevation = sky_get_camera_elevation();
     const float4 sky_radiance = sky_sample_view_lut(s_sky_view_lut, smp_rtlinear, ray_direction, sun_direction, camera_elevation);
     // Keep the octahedral map in linear HDR.
     // Do not apply exposure, gamma correction or tone mapping here.

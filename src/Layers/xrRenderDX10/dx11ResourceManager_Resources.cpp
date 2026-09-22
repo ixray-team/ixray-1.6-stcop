@@ -198,12 +198,15 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 		if (strstr(data, "main_vs_4_0")) { c_target = "vs_4_0"; c_entry = "main_vs_4_0"; }
 
 		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+		
+		flags |= D3DCOMPILE_DEBUG;
+		flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
 
 		if (Core.ParamsData.test(ECoreParams::renderdoc) || Core.ParamsData.test(ECoreParams::dxdebug)) 
 		{
-			flags |= D3DCOMPILE_DEBUG;
+			
 			flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-			flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
+			
 		}
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);

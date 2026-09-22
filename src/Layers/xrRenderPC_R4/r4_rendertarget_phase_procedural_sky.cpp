@@ -14,6 +14,8 @@ void SetupComputePass(const ref_shader& shader, u32 element_index)
 	RCache.set_Constants(pass.constants);
 	RCache.set_Textures(pass.T);
 	RCache.set_CS(pass.cs);
+	// Flush SRV changes before binding UAVs or recreating their surfaces.
+	GRHI->ShaderResourceCache->Apply();
 }
 /*
 void UnbindComputeResources(u32 uav_count)
@@ -81,10 +83,9 @@ void CRenderTarget::create_aerial_perspective(u32 width, u32 height)
 void CRenderTarget::phase_procedural_sky()
 {
 	GPU_EVENT(phase_procedural_sky);
-	// Remove previous-frame readers through the backend cache before UAV writes/reallocation.
-	static STextureList empty_textures;
-	RCache.set_Textures(&empty_textures);
-	GRHI->ShaderResourceCache->Apply();
+	// The first pass reads only baked LUTs; its normal bindings remove previous
+	// readers of the generated sky/AP textures before UAV writes/reallocation.
+	SetupComputePass(s_procedural_sky, 0);
 	create_aerial_perspective(rt_Generic_0->dwWidth, rt_Generic_0->dwHeight);
 
 	ID3D11UnorderedAccessView* uav = nullptr;
@@ -93,7 +94,6 @@ void CRenderTarget::phase_procedural_sky()
 	// 1. Sky-view LUT: 200x100, [numthreads(8, 4, 1)].
 	{
 		GPU_EVENT(compute_sky_view);
-		SetupComputePass(s_procedural_sky, 0);
 		uav = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_procedural_sky_view->pUAView->GetRaw());
 		RContext->CSSetUnorderedAccessViews(0, 1, &uav, &initial_count);
 		RCache.Compute(25, 25, 1);
@@ -104,7 +104,6 @@ void CRenderTarget::phase_procedural_sky()
 	{
 		GPU_EVENT(compute_aerial_perspective);
 		SetupComputePass(s_procedural_sky, 1);
-		RCache.set_c("cloud_layer_params", SKY_CLOUD_BOTTOM_KM, SKY_CLOUD_TOP_KM, SKY_WORLD_TO_KM, 0.0f);
 		ID3D11UnorderedAccessView* views[3] = {};
 		UINT counts[3] = {};
 		for (u32 i = 0; i < 3; ++i)

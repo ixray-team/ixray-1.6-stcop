@@ -169,6 +169,21 @@ public:
 	Fvector4			hemi_color	;	// w = R2 correction
 	Fvector3			sun_color	;
 	Fvector3			sun_dir		;
+	// Unclamped source shared by the procedural atmosphere and celestial disk.
+	// sun_dir/sun_color retain the legacy horizon clamp/fade for older renderers.
+	Fvector3            source_dir;
+	Fvector3            source_color;
+	u32                 celestial_mode; // 0: sun, 1: moon, 2: moonless
+	float               source_intensity;
+	float               source_angular_size; // full angular diameter, degrees
+	float               disk_luminance_scale;
+	float               sun_corona_intensity;
+	Fvector3 get_source_color() const
+	{
+		Fvector3 color;
+		color.mul(source_color, celestial_mode == 2u ? 0.0f : source_intensity);
+		return color;
+	}
 	float				m_fSunShaftsIntensity;
 	float				m_fWaterIntensity;
 

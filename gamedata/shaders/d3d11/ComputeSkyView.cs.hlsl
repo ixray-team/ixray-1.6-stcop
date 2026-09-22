@@ -78,7 +78,7 @@ void main(uint3 dispatch_id : SV_DispatchThreadID)
     }
     float2 uv = (float2(dispatch_id.xy) + 0.5f) / float2(output_width, output_height);
 
-    float camera_elevation = max(0.002f * eye_position.y + 0.2f, 0.0f);
+    float camera_elevation = sky_get_camera_elevation();
 
     float3 up = float3(0.0f, 1.0f, 0.0f);
     float3 right;
@@ -143,9 +143,9 @@ void main(uint3 dispatch_id : SV_DispatchThreadID)
         spectral_radiance = compute_sky_inscattering(ray_origin, ray_direction, ray_length, sun_direction);
     }
 #if SKY_ENABLE_SPECTRAL
-    const float3 linear_rgb = SKY_RADIANCE_SCALE * sky_linear_srgb_from_spectral_samples(spectral_radiance);
+    const float3 linear_rgb = SKY_RADIANCE_SCALE * sky_source_rgb(spectral_radiance);
 #else
-    float3 linear_rgb = max(spectral_radiance.rgb, 0.0f);
+    float3 linear_rgb = SKY_RADIANCE_SCALE * max(celestial_source_color.rgb, 0.0f) * max(spectral_radiance.rgb, 0.0f);
 #endif
     // SkyView remains linear HDR. Gamma and tone mapping are applied
     // only during final image composition.

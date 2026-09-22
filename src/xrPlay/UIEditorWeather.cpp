@@ -108,8 +108,14 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
 		f.w_float(el->m_identifier.c_str(), "wind_direction", rad2deg(el->wind_direction));
 		f.w_float(el->m_identifier.c_str(), "wind_velocity", el->wind_velocity);
 		f.w_fvector4(el->m_identifier.c_str(), "hemisphere_color", el->hemi_color);
-		f.w_float(el->m_identifier.c_str(), "sun_altitude", rad2deg(el->sun_dir.getH()));
-		f.w_float(el->m_identifier.c_str(), "sun_longitude", rad2deg(el->sun_dir.getP()));
+		// Save the unclamped source, not the legacy direction reflected above the horizon.
+		f.w_float(el->m_identifier.c_str(), "sun_altitude", rad2deg(el->source_dir.getH()));
+		f.w_float(el->m_identifier.c_str(), "sun_longitude", rad2deg(el->source_dir.getP()));
+		f.w_u32(el->m_identifier.c_str(), "celestial_mode", el->celestial_mode);
+		f.w_float(el->m_identifier.c_str(), "source_intensity", el->source_intensity);
+		f.w_float(el->m_identifier.c_str(), "source_angular_size", el->source_angular_size);
+		f.w_float(el->m_identifier.c_str(), "disk_luminance_scale", el->disk_luminance_scale);
+		f.w_float(el->m_identifier.c_str(), "sun_corona_intensity", el->sun_corona_intensity);
 		f.w_float(el->m_identifier.c_str(), "tree_amplitude_intensity", el->trees_amplitude);
 	}
 	string_path fileName;
@@ -579,38 +585,53 @@ void RenderUIWeather() {
 		changed = true;
 	}
 
-	if (ImGui::ColorEdit4("sun_color", (float*)&cur->sun_color, ImGuiColorEditFlags_AlphaBar)) {
+	if (ImGui::ColorEdit3("sun_color", (float*)&cur->sun_color)) {
+		cur->source_color = cur->sun_color;
 		changed = true;
 	}
 	static float editor_altitude = 0.f;
 	static float editor_longitude = 0.f;
 
-	ImGui::BeginDisabled(!isReadSunConfig);
+	ImGui::BeginDisabled(!isReadSunConfig && !::Render->is_sun_static() && !cur->old_style && cur->celestial_mode == 0u);
 
 	if (update_itudes)
 	{
 		update_itudes = false;
-		cur->sun_dir.getHP(editor_longitude, editor_altitude);
+		// Preserve the legacy config naming: sun_altitude is H, sun_longitude is P.
+		// setHP/getHP use radians; the editor and weather config use degrees.
+		editor_altitude = rad2deg(cur->source_dir.getH());
+		editor_longitude = rad2deg(cur->source_dir.getP());
 	}
+	bool source_direction_changed = false;
 
 	if (ImGui::SliderFloat("sun_altitude", &editor_altitude, -360.0f, 360.0f)) {
-		changed = true;
-		cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
+		source_direction_changed = true;
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("update"))
+	if (ImGui::Button("update##sun_altitude"))
 	{
-		editor_altitude = cur->sun_dir.getP();
+		editor_altitude = rad2deg(cur->source_dir.getH());
 	}
 
 	if (ImGui::SliderFloat("sun_longitude", &editor_longitude, -360.0f, 360.0f)) {
-		changed = true;
-		cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
+		source_direction_changed = true;
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("update"))
+	if (ImGui::Button("update##sun_longitude"))
 	{
-		editor_longitude = cur->sun_dir.getH();
+		editor_longitude = rad2deg(cur->source_dir.getP());
+	}
+	if (source_direction_changed)
+	{
+		cur->source_dir.setHP(deg2rad(editor_altitude), deg2rad(editor_longitude));
+		cur->sun_dir = cur->source_dir;
+		// Keep old renderer assertions valid without changing the procedural source.
+		if (cur->sun_dir.y >= 0.0f)
+		{
+			cur->sun_dir.y = -fabsf(cur->sun_dir.y) - FLT_EPSILON;
+			cur->sun_dir.normalize();
+		}
+		changed = true;
 	}
 	ImGui::EndDisabled();
 

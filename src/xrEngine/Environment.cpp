@@ -501,7 +501,7 @@ void CEnvironment::OnFrame()
 
 	// Igor. Dynamic sun position. 
 	const static bool isReadSunConfig = EngineExternal()[EEngineExternalEnvironment::ReadSunConfig];
-	if (!isReadSunConfig && !::Render->is_sun_static() && !CurrentEnv->old_style)
+	if (!isReadSunConfig && !::Render->is_sun_static() && !CurrentEnv->old_style && CurrentEnv->celestial_mode == 0u)
 		calculate_dynamic_sun_dir();
 
 	VERIFY2(CurrentEnv->sun_dir.y < 0, "Invalid sun direction settings in lerp");
@@ -566,6 +566,8 @@ void CEnvironment::calculate_dynamic_sun_dir()
 
 	clamp( cosAZ, -1.0f, 1.0f);
 	float AZ = acosf(cosAZ);
+	// Procedural atmosphere needs the actual position, including below horizon.
+	CurrentEnv->source_dir.setHP(SHA < 0 ? 2 * PI - AZ : AZ, -SEA);
 
 	const Fvector2 minAngle = Fvector2().set(deg2rad(1.0f), deg2rad(3.0f));
 
