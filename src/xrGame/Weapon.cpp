@@ -1408,6 +1408,8 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	{
 		LaserLight->UpdateTorchFromObject(this);
 	}
+
+	CShootingObject::destroy_particles();
 }
 
 void CWeapon::OnMoveToRuck(const SInvItemPlace& prev)
