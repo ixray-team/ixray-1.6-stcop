@@ -374,6 +374,27 @@ private:
 	shared_str				m_sFrontKickAnimator;
 	shared_str				m_sBackKickAnimator;
 
+	bool m_bIsControllerSuicideSchemeStart = false;
+	const char* m_sControllerSuicideSchemeStart = {};
+
+	bool m_bIsControllerSuicideSelectedByController = false;
+	const char* m_sControllerSuicideSelectedByController = {};
+
+	bool m_bIsControllerStopSuicide = false;
+	const char* m_sControllerStopSuicide = {};
+
+	bool m_bIsControllerSuicideShot = false;
+	const char* m_sControllerSuicideShot = {};
+
+	bool m_bIsControllerPsiAttackPrepare = false;
+	const char* m_sControllerPsiAttackPrepare = {};
+
+	bool m_bIsControllerSuicideAttack = false;
+	const char* m_sControllerSuicideAttack = {};
+
+	bool m_bIsControllerStdAttack = false;
+	const char* m_sControllerStdAttack = {};
+
 	void SetHandsJitterTime(u32 time) { _jitter_time_remains = time; }
 	bool IsHandJitter() const { return _jitter_time_remains > 0; }
 	float GetHandJitterScale(CHudItem* itm) const;

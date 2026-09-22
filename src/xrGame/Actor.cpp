@@ -249,6 +249,14 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	CreateComponent<THudVertexAssignedPatricles>();
 
 	ReturnInputAfterController();
+
+	LoadCallbackGlobals(m_bIsControllerSuicideSchemeStart, m_sControllerSuicideSchemeStart, "OnControllerSuicideSchemeStart");
+	LoadCallbackGlobals(m_bIsControllerSuicideSelectedByController, m_sControllerSuicideSelectedByController, "OnControllerSuicideSelectedByController");
+	LoadCallbackGlobals(m_bIsControllerStopSuicide, m_sControllerStopSuicide, "OnControllerStopSuicide");
+	LoadCallbackGlobals(m_bIsControllerSuicideShot, m_sControllerSuicideShot, "OnControllerSuicideShot");
+	LoadCallbackGlobals(m_bIsControllerPsiAttackPrepare, m_sControllerPsiAttackPrepare, "OnControllerPsiAttackPrepare");
+	LoadCallbackGlobals(m_bIsControllerSuicideAttack, m_sControllerSuicideAttack, "OnControllerSuicideAttack");
+	LoadCallbackGlobals(m_bIsControllerStdAttack, m_sControllerStdAttack, "OnControllerStdAttack");
 }
 
 CActor::~CActor()
@@ -3972,20 +3980,24 @@ float CActor::GetMaterialBurnRestoreSpeed(const char* mtl)
 
 void CActor::AddActiveController(CController* monster_controller)
 {
-	if (ActiveControllers.empty())
+	if (ActiveControllers.empty() && m_bIsControllerSuicideSchemeStart)
 	{
 		luabind::functor<void> funct;
-		if (ai().script_engine().functor("gunsl_controller.on_suicide_scheme_start", funct))
+		if (ai().script_engine().functor(m_sControllerSuicideSchemeStart, funct))
 		{
 			funct("", monster_controller->ID());
 		}
 	}
 
 	ActiveControllers.push_back(monster_controller);
-	luabind::functor<void> funct;
-	if (ai().script_engine().functor("gunsl_controller.on_suicide_selected_by_controller", funct))
+
+	if (m_bIsControllerSuicideSelectedByController)
 	{
-		funct("", monster_controller->ID());
+		luabind::functor<void> funct;
+		if (ai().script_engine().functor(m_sControllerSuicideSelectedByController, funct))
+		{
+			funct("", monster_controller->ID());
+		}
 	}
 }
 
@@ -4274,10 +4286,10 @@ void CActor::DoSuicideShot()
 
 void CActor::NotifySuicideStopCallbackIfNeeded()
 {
-	if (!ActiveControllers.empty())
+	if (!ActiveControllers.empty() && m_bIsControllerStopSuicide)
 	{
 		luabind::functor<void> funct;
-		if (ai().script_engine().functor("gunsl_controller.on_stop_suicide", funct))
+		if (ai().script_engine().functor(m_sControllerStopSuicide, funct))
 		{
 			funct("", 0);
 		}
@@ -4286,10 +4298,10 @@ void CActor::NotifySuicideStopCallbackIfNeeded()
 
 void CActor::NotifySuicideShotCallbackIfNeeded()
 {
-	if (!ActiveControllers.empty())
+	if (!ActiveControllers.empty() && m_bIsControllerSuicideShot)
 	{
 		luabind::functor<void> funct;
-		if (ai().script_engine().functor("gunsl_controller.on_suicide_shot", funct))
+		if (ai().script_engine().functor(m_sControllerSuicideShot, funct))
 		{
 			funct("", 0);
 		}
