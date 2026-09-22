@@ -39,6 +39,11 @@ CShootingObject::CShootingObject(void)
 
 CShootingObject::~CShootingObject()
 {
+	destroy_particles();
+}
+
+void CShootingObject::destroy_particles()
+{
 	for (auto& Particle : smoke_particles)
 	{
 		Particle->Destroy();
