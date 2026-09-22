@@ -56,8 +56,17 @@ bool CLocatorAPI::CheckSkip(const xr_path& Path) const
 
 void CLocatorAPI::FileEventAdd(const char* file)
 {
-	size_t FileSize = std::filesystem::file_size(file);
-	size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(file));
+	std::error_code ec;
+	size_t FileSize = std::filesystem::file_size(file, ec);
+	if (!IVERIFY_M(!ec, "Error retrieving file size: %s", ec.message().c_str()))
+	{
+		return;
+	}
+	size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(file, ec));
+	if (!IVERIFY_M(!ec, "Error retrieving file modif time: %s", ec.message().c_str()))
+	{
+		return;
+	}
 	Register(file, 0xffffffff, 0, 0, FileSize, FileSize, FileModif);
 
 	ProcessTriggers(file, FilewatcherOnAddCS, FilewatcherOnAdd);
