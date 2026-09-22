@@ -319,28 +319,21 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
     Fvector p0;
     Fvector p1;
 
-    // render flagshtok
-
-    const Fmatrix& world = RCache.get_xform_world();
-
-    // seg 0
-    p0.set(0.f, 0.f, 0.f); world.transform_tiny(p0);
-    p1.set(0.f, 1.f, 0.f); world.transform_tiny(p1);
-    DrawLine(p0, p1, clr);
-    
-    // seg 1
-    p0.set(0.f, 1.f, 0.f); world.transform_tiny(p0);
-    p1.set(0.f, 1.f, .5f); world.transform_tiny(p1);
+    // render flagshtok. Lines are stored in local space; AddLine bakes the current world matrix.
+    p0.set(0.f, 0.f, 0.f);
+    p1.set(0.f, 1.f, 0.f);
     DrawLine(p0, p1, clr);
 
-    // seg 2
-    p0.set(0.f, 1.f, .5f); world.transform_tiny(p0);
-    p1.set(0.f, .5f, .5f); world.transform_tiny(p1);
+    p0.set(0.f, 1.f, 0.f);
+    p1.set(0.f, 1.f, .5f);
     DrawLine(p0, p1, clr);
 
-    // seg 3
-    p0.set(0.f, .5f, .5f); world.transform_tiny(p0);
-    p1.set(0.f, .5f, 0.f); world.transform_tiny(p1);
+    p0.set(0.f, 1.f, .5f);
+    p1.set(0.f, .5f, .5f);
+    DrawLine(p0, p1, clr);
+
+    p0.set(0.f, .5f, .5f);
+    p1.set(0.f, .5f, 0.f);
     DrawLine(p0, p1, clr);
 
 	// fill VB
@@ -1271,6 +1264,7 @@ static void FlushIndexBatch(int slot)
 	memcpy(i, g_idxIdx[slot].data(), g_idxIdx[slot].size() * sizeof(u16));
 	StreamI->Unlock(g_idxIdx[slot].size());
 
+	RCache.set_xform_world(Fidentity);
 	EDevice->SetShader(EDevice->m_SelectionShader);
 	DU_DRAW_DIP(
 		(slot == 0) ? ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST : ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
@@ -1368,7 +1362,23 @@ void CDrawUtilities::OutText(const Fvector& pos, const char* text, u32 color, u3
 
 const int kMaxLineVBSize = 10240;
 
-xr_vector<FVF::L> g_lineVerts(kMaxLineVBSize);
+xr_vector<FVF::L> g_lineVerts;
+
+static void PushLineVert(const Fvector& p, u32 clr)
+{
+    if (g_lineVerts.capacity() < (size_t)kMaxLineVBSize)
+        g_lineVerts.reserve(kMaxLineVBSize);
+
+    // Positions are in the caller's current world space. Bake that matrix now:
+    // FlushDU runs after other objects have replaced xform and the shader.
+    const Fmatrix& world = RCache.get_xform_world();
+    Fvector w;
+    world.transform_tiny(w, p);
+
+    FVF::L v;
+    v.set(w, clr);
+    g_lineVerts.push_back(v);
+}
 
 ECORE_API void AddCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, bool bRot45)
 {
@@ -1397,22 +1407,23 @@ ECORE_API void AddCross(const Fvector& p, float szx1, float szy1, float szz1, fl
         }
     }
 
-    g_lineVerts.insert(g_lineVerts.end(), v, v + count);
+    for (int i = 0; i < count; i++)
+        PushLineVert(v[i].p, v[i].color);
 }
 
 ECORE_API void AddLine(const Fvector& p0, const Fvector& p1, u32 c)
 {
-    FVF::L v;
-    v.set(p0, c);
-    g_lineVerts.push_back(v);
-    v.set(p1, c);
-    g_lineVerts.push_back(v);
+    PushLineVert(p0, c);
+    PushLineVert(p1, c);
 }
 
 ECORE_API void FlushDU()
 {
     if (!g_lineVerts.empty())
     {
+        RCache.set_xform_world(Fidentity);
+        EDevice->SetShader(EDevice->m_WireShader);
+
         _VertexStream* Stream = &RCache.Vertex;
 
         u32 vBase;
