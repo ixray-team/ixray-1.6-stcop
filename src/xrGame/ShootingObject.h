@@ -77,6 +77,7 @@ public:
 	virtual void setHitPower(const Fvector4& vec);
 	virtual const Fvector4& getHitPowerCritical() const { return fvHitPowerCritical; }
 	virtual void setHitPowerCritical(const Fvector4& vec);
+	void destroy_particles();
 
 protected:
 	// Weapon fires now
