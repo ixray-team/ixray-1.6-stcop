@@ -1782,9 +1782,12 @@ void xrServer::Perform_destroy(CSE_Abstract* object, u32 mode)
 	while (!object->children.empty())
 	{
 		CSE_Abstract* child = game->get_entity_from_eid(object->children.back());
-		R_ASSERT2(child, make_string<const char*>("child registered but not found [%d]", object->children.back()));
-		Perform_reject(child, object, 2 * NET_Latency);
-		Perform_destroy(child, mode);
+		// Если дочерний объект не найден, то мы уже фиг получим инфу о нём, но хотя бы есть инфа о родителе 
+		if (I_ASSERT_M(child, "Attempt to destroy non-existant child with ID [%d] in object [%s] (ID [%d])", object->children.back(), object->name(), object->ID))
+		{
+			Perform_reject(child, object, 2 * NET_Latency);
+			Perform_destroy(child, mode);
+		}
 	}
 
 	auto object_id = object->ID;
