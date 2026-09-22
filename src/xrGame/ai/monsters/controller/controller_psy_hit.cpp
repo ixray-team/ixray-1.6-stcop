@@ -125,10 +125,13 @@ void CControllerPsyHit::OnPsyHitActivate(CController* monster_controller)
 
 	Actor->ControllerPreparingStartTime = Device.dwTimeGlobal;
 
-	luabind::functor<void> funct;
-	if (ai().script_engine().functor("gunsl_controller.on_psi_attack_prepare", funct))
+	if (Actor->m_bIsControllerPsiAttackPrepare)
 	{
-		funct("", monster_controller->ID());
+		luabind::functor<void> funct;
+		if (ai().script_engine().functor(Actor->m_sControllerPsiAttackPrepare, funct))
+		{
+			funct("", monster_controller->ID());
+		}
 	}
 
 	if ((!Actor->IsPsiBlocked() || Actor->PsiBlockFailed) && Actor->ControlledTimeRemains > 0)
@@ -681,10 +684,10 @@ bool CControllerPsyHit::PsiStart(CController* monster_controller)
 			Actor->AddActiveController(monster_controller);
 		}
 
-		if (Actor->PlanningSuicide || Actor->SuicideNow)
+		if ((Actor->PlanningSuicide || Actor->SuicideNow) && Actor->m_bIsControllerSuicideAttack)
 		{
 			luabind::functor<void> funct;
-			if (ai().script_engine().functor("gunsl_controller.on_suicide_attack", funct))
+			if (ai().script_engine().functor(Actor->m_sControllerSuicideAttack, funct))
 			{
 				funct("", monster_controller->ID());
 			}
@@ -692,10 +695,13 @@ bool CControllerPsyHit::PsiStart(CController* monster_controller)
 	}
 	else
 	{
-		luabind::functor<void> funct;
-		if (ai().script_engine().functor("gunsl_controller.on_std_attack", funct))
+		if (Actor->m_bIsControllerStdAttack)
 		{
-			funct("", monster_controller->ID());
+			luabind::functor<void> funct;
+			if (ai().script_engine().functor(Actor->m_sControllerStdAttack, funct))
+			{
+				funct("", monster_controller->ID());
+			}
 		}
 	}
 
