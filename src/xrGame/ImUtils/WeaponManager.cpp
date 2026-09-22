@@ -1386,6 +1386,11 @@ void RenderWeaponManagerWindow()
 		{
 			CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 
+			if (pActor == nullptr)
+			{
+				return;
+			}
+			
 			xr_string slot1_tab_name{ "Knife (KNIFE_SLOT) - " };
 			xr_string slot2_tab_name{ "Slot 2 (INV_SLOT_2) - " };
 			xr_string slot3_tab_name{ "Slot 3 (INV_SLOT_3) - " };
