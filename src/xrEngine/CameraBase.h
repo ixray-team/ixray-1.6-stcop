@@ -71,9 +71,9 @@ public:
 
 		if (!m_Flags.test(flDirectionRigid))
 		{
-			prev_yaw = _inertion(prev_yaw, yaw, psCamInert);
-			prev_pitch = _inertion(prev_pitch, pitch, psCamInert);
-			prev_roll = _inertion(prev_roll, roll, psCamInert);
+			prev_yaw += angle_difference_signed(yaw, prev_yaw) * (1.f - psCamInert);
+			prev_pitch += angle_difference_signed(pitch, prev_pitch) * (1.f - psCamInert);
+			prev_roll += angle_difference_signed(roll, prev_roll) * (1.f - psCamInert);
 		}
 		else
 		{
