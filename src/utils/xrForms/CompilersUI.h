@@ -33,10 +33,10 @@ struct CompilersMode
 	bool Embree = true;
 	bool CUDA = true;
 
- 	bool EmbreeBVHCompact	= false; // Дольше Traversing
-	bool EmbreeBVHRobust	= false; // Дольше Traversing
+ 	bool EmbreeBVHCompact	= false; // ќќќќќќ Traversing
+	bool EmbreeBVHRobust	= false; // ќќќќќќ Traversing
 	bool EmbreeRays8		= true;  // x2 Speed
-	bool EmbreeInstaces     = false; // Дольше Traversing
+	bool EmbreeInstaces     = false; // ќќќќќќ Traversing
 
 	bool ClearTemp = false;
 	bool SkipTHM = false;
@@ -93,14 +93,14 @@ struct CompilersMode
 	xr_vector<LevelFileData> Files;
 	ImFont* CompilerIconsFont;
 
-	// Текущий уровень
+	// ќќќќќќќ ќќќќќќќ
 	xr_string compilation_level;
 	LPCSTR get_lname()
 	{
 		return compilation_level.c_str();
 	}
 
-	// Потоки !
+	// ќќќќќќ !
 	int ThreadsPerWork = 14;
 };
 
@@ -109,4 +109,22 @@ void RenderCompilerUI(int X, int Y);
 void InitializeUIData();
 void SaveCompilerCfg();
 
-extern CompilersMode gCompilerMode;;
+struct LightPreviewMap
+{
+	u32 Width = 0;
+	u32 Height = 0;
+	xr_vector<u8> Rgb;
+};
+
+void DrawLightPreview(float Width, float Height);
+
+void PublishLightPreviewScene(const xr_vector<Fvector>& Vertices, const xr_vector<u32>& Indices, const Fvector& Center, float Radius);
+bool TakeLightPreviewScene(u32 KnownGeneration, u32& Generation, xr_vector<Fvector>& Vertices, xr_vector<u32>& Indices, Fvector& Center, float& Radius);
+
+void PublishLightPreviewColors(const xr_vector<u8>& CornerRgb);
+bool TakeLightPreviewColors(u32 KnownGeneration, u32& Generation, xr_vector<u8>& CornerRgb);
+
+void PublishLightPreviewMaps(const xr_vector<float>& Uv, const xr_vector<u32>& Layers, const xr_vector<LightPreviewMap>& Maps);
+bool TakeLightPreviewMaps(u32 KnownGeneration, u32& Generation, xr_vector<float>& Uv, xr_vector<u32>& Layers, xr_vector<LightPreviewMap>& Maps);
+
+extern CompilersMode gCompilerMode;
