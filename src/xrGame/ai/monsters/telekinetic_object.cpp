@@ -669,21 +669,6 @@ void STelekineticWeaponObject::update_auto_aim()
 		return;
 	}
 
-	Fmatrix target_xf;
-	target_xf.k.set(enemy->Center() - weapon->get_LastFP());
-
-	Fvector::generate_orthonormal_basis_normalized(target_xf.k, target_xf.j, target_xf.i);
-
-	Fvector curr_eulers, target_eulers;
-	target_xf.getXYZi(target_eulers);
-	weapon->XFORM().getXYZi(curr_eulers);
-
-	Fvector angular_diff{
-		angle_difference_signed(target_eulers.x, curr_eulers.x),
-		angle_difference_signed(target_eulers.y, curr_eulers.y),
-		angle_difference_signed(target_eulers.z, curr_eulers.z)
-	};
-
 	float angular_speed = 0.f;
 	switch (g_SingleGameDifficulty)
 	{
@@ -708,15 +693,40 @@ void STelekineticWeaponObject::update_auto_aim()
 			angular_speed = 0.f;
 			break;
 	}
+	Fvector target_dir;
+	target_dir.normalize_safe(enemy->Center() - weapon->get_LastFP(true));
 
-	if (float velocity = angular_diff.magnitude(); velocity > EPS_L)
+	Fvector current_dir;
+	current_dir.normalize_safe(weapon->XFORM().k);
+	
+	Fvector rotation_axis;
+	rotation_axis.crossproduct(current_dir, target_dir);
+	
+	float sin = rotation_axis.magnitude();
+	float cos = current_dir.dotproduct(target_dir);
+
+	float angle;
+
+	if (sin < EPS_L)
 	{
-		Fvector angular_vel = angular_diff;
-		angular_vel.mul(deg2rad(angular_speed));
+		if (cos > 0.f)
+		{
+			return;
+		}
 
-		weapon->XFORM().transform_dir(angular_vel);
-		weapon->m_pPhysicsShell->set_AngularVel(angular_vel);
+		Fvector temp = fabsf(current_dir.x) < .9f ? Fvector().set(1.f, 0.f, 0.f) : Fvector().set(0.f, 1.f, 0.f);
+		rotation_axis.crossproduct(current_dir, temp).normalize_safe();
+		angle = PI;
 	}
+	else
+	{
+		rotation_axis.mul(1.f / sin);
+		angle = atan2f(sin, cos);
+	}
+
+	Fvector angular_vel;
+	angular_vel.mul(rotation_axis, angle * deg2rad(angular_speed));
+	weapon->m_pPhysicsShell->set_AngularVel(angular_vel);
 }
 
 bool STelekineticWeaponObject::can_shoot()
