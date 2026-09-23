@@ -58,12 +58,12 @@ void CLocatorAPI::FileEventAdd(const char* file)
 {
 	std::error_code ec;
 	size_t FileSize = std::filesystem::file_size(file, ec);
-	if (!IVERIFY_M(!ec, "Error retrieving file size: %s", ec.message().c_str()))
+	if (!IVERIFY_M(!ec, "[File %s] Error retrieving file size: %s", file, ec.message().c_str()))
 	{
 		return;
 	}
 	size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(file, ec));
-	if (!IVERIFY_M(!ec, "Error retrieving file modif time: %s", ec.message().c_str()))
+	if (!IVERIFY_M(!ec, "[File %s] Error retrieving file modif time: %s", file, ec.message().c_str()))
 	{
 		return;
 	}
