@@ -599,7 +599,7 @@ void CMissile::UpdateXForm	()
 		// Get access to entity and its visual
 		CGameObject* GO = H_Parent()->cast_game_object(); if (!GO || GO->cast_trader()) return;
 		CEntityAlive* E = GO->cast_entity_alive(); if(!E) return;
-		CInventoryOwner	*IO = GO->cast_inventory_owner(); if (IO && IO->use_simplified_visual()) return;
+		CInventoryOwner	*IO = GO->cast_inventory_owner();
 
 		if (IO->attached(this))
 			return;

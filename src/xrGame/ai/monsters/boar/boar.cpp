@@ -113,7 +113,6 @@ void CAI_Boar::Load(const char* section)
 void CAI_Boar::reinit()
 {
 	inherited::reinit();
-	if(CCreature::use_simplified_visual())	return;
 	com_man().add_rotation_jump_data("stand_jump_left_0",0,"stand_jump_right_0",0, PI - PI_DIV_6, SControlRotationJumpData::eStopAtOnce | SControlRotationJumpData::eRotateOnce);
 }
 

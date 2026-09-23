@@ -133,19 +133,6 @@ void CCharacterPhysicsSupport::in_Load(const char* section)
 void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 {
 	m_sv_hit = SHit();
-	if (m_EntityAlife.use_simplified_visual())
-	{
-		m_flags.set(fl_death_anim_on, true);
-		IKinematics* ka = PKinematics(m_EntityAlife.Visual());
-		VERIFY(ka);
-		ka->CalculateBones_Invalidate();
-		ka->CalculateBones(true);
-		CollisionCorrectObjPos(m_EntityAlife.Position());
-		m_pPhysicsShell = P_build_Shell(&m_EntityAlife, false);
-		ka->CalculateBones_Invalidate();
-		ka->CalculateBones(true);
-		return;
-	}
 
 	CPHDestroyable::Init();//this zerows colbacks !!;
 	IRenderVisual* pVisual = m_EntityAlife.Visual();
@@ -316,14 +303,7 @@ void CCharacterPhysicsSupport::in_Init()
 
 void CCharacterPhysicsSupport::in_shedule_Update(u32 DT)
 {
-	if (!m_EntityAlife.use_simplified_visual())
-	{
-		CPHDestroyable::SheduleUpdate(DT);
-	}
-	else if (m_pPhysicsShell && m_pPhysicsShell->isFullActive() && !m_pPhysicsShell->isEnabled())
-	{
-		m_EntityAlife.deactivate_physics_shell();
-	}
+	CPHDestroyable::SheduleUpdate(DT);
 	
 	movement()->in_shedule_Update(DT);
 }
@@ -417,7 +397,7 @@ void CCharacterPhysicsSupport::in_Hit(SHit& H, bool is_killing)
 {
 	m_sv_hit = H;
 	m_hit_valide_time = Device.dwTimeGlobal + hit_valide_time;
-	if (m_EntityAlife.use_simplified_visual() || esRemoved == m_eState)
+	if (esRemoved == m_eState)
 	{
 		return;
 	}
@@ -1234,9 +1214,6 @@ void CCharacterPhysicsSupport::in_Die()
 {
 	if (m_hit_valide_time < Device.dwTimeGlobal || !m_sv_hit.is_valide())
 	{
-		if (m_EntityAlife.use_simplified_visual())
-			return;
-
 		bool is_actor_holder = false;
 		if (m_eType == etActor)
 		{

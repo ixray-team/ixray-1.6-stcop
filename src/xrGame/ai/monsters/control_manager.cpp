@@ -82,7 +82,6 @@ void CControl_Manager::reload(const char* section)
 
 void CControl_Manager::reinit()
 {
-	if(	m_object->CCreature::use_simplified_visual() ) return;
 	// todo: make it simpler
 	// reinit pure first, base second, custom third
 	CONTROLLERS_MAP_IT it;

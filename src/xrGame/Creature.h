@@ -267,7 +267,6 @@ private:
 
 public:
 	IC		const bool				&already_dead			() const {return (m_already_dead);};
-	virtual	bool					use_simplified_visual	() const {return false;} //(already_dead());};
 	virtual void					on_enemy_change			(const CEntityAlive *enemy);
 	virtual	CVisualMemoryManager	*visual_memory			() const;
 

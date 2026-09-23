@@ -44,7 +44,6 @@ void CAI_PseudoDog::reinit()
 	m_time_became_angry				= 0;
 	time_growling					= 0;
 
-	if(CCreature::use_simplified_visual())	return;
 	com_man().add_rotation_jump_data	("1","2","3","4", deg(90));
 }
 
@@ -140,8 +139,6 @@ void CAI_PseudoDog::Load(const char* section)
 void CAI_PseudoDog::reload(const char* section)
 {
 	inherited::reload			(section);
-
-	if(CCreature::use_simplified_visual())	return;
 	
 	// load additional sounds
 	if (g_Alive())

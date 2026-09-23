@@ -444,8 +444,6 @@ void CArtefact::UpdateXForm()
 		if (!E)			return	;
 
 		const CInventoryOwner	*parent = E->cast_inventory_owner();
-		if (parent && parent->use_simplified_visual())
-			return;
 
 		VERIFY				(E);
 		IKinematics*		V		= PKinematics(E->Visual());

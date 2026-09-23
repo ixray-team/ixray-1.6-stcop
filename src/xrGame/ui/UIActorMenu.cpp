@@ -154,21 +154,18 @@ void CUIActorMenu::SetPartner(CInventoryOwner* io)
 	{
 		CBaseMonster* pMonster = m_pPartnerInvOwner->cast_base_monster();
 
-		if (pMonster != nullptr || m_pPartnerInvOwner->use_simplified_visual())
+		if (pMonster != nullptr)
 		{
 			m_PartnerCharacterInfo->ClearInfo();
 
-			if (pMonster != nullptr)
+			const char* icon = "npc_icon_unknown_data";
+
+			if (pSettings->line_exist(pMonster->cNameSect(), "icon"))
 			{
-				const char* icon = "npc_icon_unknown_data";
-
-				if (pSettings->line_exist(pMonster->cNameSect(), "icon"))
-				{
-					icon = pSettings->r_string(pMonster->cNameSect(), "icon");
-				}
-
-				m_PartnerCharacterInfo->InitCharacter("", icon);
+				icon = pSettings->r_string(pMonster->cNameSect(), "icon");
 			}
+
+			m_PartnerCharacterInfo->InitCharacter("", icon);
 		}
 		else if (CCar* pCar = m_pPartnerInvOwner->cast_car())
 		{
