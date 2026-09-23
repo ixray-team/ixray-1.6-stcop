@@ -33,11 +33,15 @@ namespace XRay::RayTrace::CUDA
     // Загрузить Faces
     void InitializeFaces(xr_vector<void*>& Faces);
 
+    void RememberPreviewFaces(const xr_vector<void*>& Faces, const xr_vector<u8>& Kinds, const xr_vector<void*>& Extras);
+    void CapturePreviewBakedColors(bool IncludeVertex);
+    void CapturePreviewMU();
+
     // Загрузить Альфу Текстур
     void InitializeTexturesAlpha();
 
     // Builder Scene
-	bool BuildSceneFromLCGlobalData(OptixDeviceContext context, OptixMeshBuffers& outScene);
+bool BuildSceneFromLCGlobalData(OptixDeviceContext Context, OptixMeshBuffers& OutScene);
 
     // RayTracing
     void InitializeModel();
