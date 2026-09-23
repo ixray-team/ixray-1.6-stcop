@@ -48,7 +48,7 @@ void	CBuild::LMaps					()
 					D->LightGPU();
 					AditionalData("*** [LMAPS] ID [%u/%u]", Index, deflectors.size());
 				}
-				GPUTaskinSystem.LightPointPacked_run_tasks(); // Ηΰβεπψΰεμ ηΰδΰχθ !
+				GPUTaskinSystem.LightPointPacked_run_tasks(); //   !
 			},
 			gCompilerMode.ThreadsPerWork );
 		GPUTaskinSystem.RestartALL();
@@ -97,6 +97,12 @@ void	CBuild::LMaps					()
 	}
 
 
+#ifdef LCCUDA_BUILD
+	if (gCompilerMode.CUDA)
+	{
+		XRay::RayTrace::CUDA::CapturePreviewBakedColors(false);
+	}
+#endif
 	xrPhase_MergeLM();
 }
  
@@ -144,7 +150,7 @@ void CBuild::Light()
 	BuildingUV();
 	InitModel();
   
-	//****************************************** AdaptiveHT πΰρωες
+	//****************************************** AdaptiveHT 
 	xrPhase_AdaptiveHT_calculate();		
 	
 	//****************************************** Implicit
@@ -155,9 +161,21 @@ void CBuild::Light()
 
 	//****************************************** Vertex
 	LightVertex();
+#ifdef LCCUDA_BUILD
+	if (gCompilerMode.CUDA)
+	{
+		XRay::RayTrace::CUDA::CapturePreviewBakedColors(true);
+	}
+#endif
 
 	//****************************************** Starting MU
 	run_mu_light();
+#ifdef LCCUDA_BUILD
+	if (gCompilerMode.CUDA)
+	{
+		XRay::RayTrace::CUDA::CapturePreviewMU();
+	}
+#endif
 
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");

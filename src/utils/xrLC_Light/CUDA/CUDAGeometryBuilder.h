@@ -54,6 +54,8 @@ private:
     {
         Fvector v[3];
         void* F;
+        u8 Kind;
+        void* Extra;
     };
     xr_vector<FaceRaw> raw_faces;
  
@@ -62,6 +64,8 @@ public:
     xr_vector<Fvector>        vertices;
     xr_vector<CDB::TRI>       triangles;
     xr_vector<void*>          facePointers;
+    xr_vector<u8>             FaceKinds;
+    xr_vector<void*>          FaceExtras;
 
     size_t RawFacesSize() { return raw_faces.size(); }
      
@@ -70,6 +74,8 @@ public:
         vertices.clear();
         triangles.clear();
         facePointers.clear();
+        FaceKinds.clear();
+        FaceExtras.clear();
      }
 
     void MemoryDealoc()
@@ -77,12 +83,13 @@ public:
         vertices.shrink_to_fit();
         triangles.shrink_to_fit();
         facePointers.shrink_to_fit();
+        FaceKinds.shrink_to_fit();
+        FaceExtras.shrink_to_fit();
     }
 
-    void AddFace(void* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
+    void AddFace(void* F, const Fvector& V1, const Fvector& V2, const Fvector& V3, u8 Kind, void* Extra = nullptr)
     {
-        // Добавляем вершины и получаем их индексы
-        raw_faces.push_back({ {v1, v2, v3}, F });
+        raw_faces.push_back({ {V1, V2, V3}, F, Kind, Extra });
     }
     
     // Remove Dublicates
@@ -112,8 +119,14 @@ public:
         //----------------------
         std::sort(std::execution::par, temp.begin(), temp.end(), [](const IndexedVertex& a, const IndexedVertex& b)
         {
-            if (a.v.x != b.v.x) return a.v.x < b.v.x;
-            if (a.v.y != b.v.y) return a.v.y < b.v.y;
+            if (a.v.x != b.v.x)
+            {
+                return a.v.x < b.v.x;
+            }
+            if (a.v.y != b.v.y)
+            {
+                return a.v.y < b.v.y;
+            }
             return a.v.z < b.v.z;
         });
          
@@ -143,8 +156,15 @@ public:
         vertices.clear(); vertices.shrink_to_fit();
         vertices.swap(unique_vertices);
          
-        triangles.clear();                       facePointers.clear();
-        triangles.reserve(raw_faces.size());     facePointers.reserve(raw_faces.size());
+        triangles.clear();
+        triangles.shrink_to_fit();
+        facePointers.clear();
+        FaceKinds.clear();
+        FaceExtras.clear();
+        triangles.reserve(raw_faces.size());
+        facePointers.reserve(raw_faces.size());
+        FaceKinds.reserve(raw_faces.size());
+        FaceExtras.reserve(raw_faces.size());
         for (size_t i = 0; i < raw_faces.size(); ++i)
         {
             CDB::TRI tri;
@@ -154,6 +174,8 @@ public:
             tri.dummy = 0;
             triangles.push_back(tri);
             facePointers.push_back(raw_faces[i].F);
+            FaceKinds.push_back(raw_faces[i].Kind);
+            FaceExtras.push_back(raw_faces[i].Extra);
         }
 
         //----------------------
@@ -166,47 +188,89 @@ public:
     // Remove Dublicate Faces
     void RemoveDublicateFaces()
     {
-        if (triangles.empty())        return;
-
-        // 1. Убираем дубликаты треугольников через сортировку
-        xr_vector<IndexFaces> temp;
-        temp.reserve(triangles.size());
-
-        for (size_t i = 0; i < triangles.size(); ++i)
+        if (triangles.empty())
         {
-            temp.emplace_back(triangles[i], static_cast<uint32_t>(i));
+            return;
         }
 
-        std::sort(std::execution::par, temp.begin(), temp.end());
+        // 1. Убираем дубликаты треугольников через сортировку
+        xr_vector<IndexFaces> Temp;
+        Temp.reserve(triangles.size());
 
-        // создаём новые массивы
-        xr_vector<CDB::TRI> new_faces;
-        xr_vector<void*> new_dummy;
-        new_faces.reserve(triangles.size());
-        new_dummy.reserve(facePointers.size());
-
-        // первый всегда берём
-        new_faces.push_back(triangles[temp[0].originalIndex]);
-        new_dummy.push_back(facePointers[temp[0].originalIndex]);
-
-        for (size_t i = 1; i < temp.size(); ++i)
+        for (size_t Index = 0; Index < triangles.size(); ++Index)
         {
-            if (!temp[i].similar(temp[i - 1]))
+            Temp.emplace_back(triangles[Index], static_cast<uint32_t>(Index));
+        }
+
+        std::sort(std::execution::par, Temp.begin(), Temp.end());
+
+        xr_vector<CDB::TRI> NewFaces;
+        xr_vector<void*> NewDummies;
+        xr_vector<u8> NewKinds;
+        xr_vector<void*> NewExtras;
+        NewFaces.reserve(triangles.size());
+        NewDummies.reserve(facePointers.size());
+        NewKinds.reserve(FaceKinds.size());
+        NewExtras.reserve(facePointers.size());
+
+        const auto Take = [&](uint32_t Idx)
+        {
+            NewFaces.push_back(triangles[Idx]);
+            NewDummies.push_back(facePointers[Idx]);
+            if (!FaceKinds.empty())
             {
-                new_faces.push_back(triangles[temp[i].originalIndex]);
-                new_dummy.push_back(facePointers[temp[i].originalIndex]);
+                NewKinds.push_back(FaceKinds[Idx]);
+            }
+            NewExtras.push_back(Idx < FaceExtras.size() ? FaceExtras[Idx] : nullptr);
+        };
+
+        Take(Temp[0].originalIndex);
+
+        for (size_t Index = 1; Index < Temp.size(); ++Index)
+        {
+            if (!Temp[Index].similar(Temp[Index - 1]))
+            {
+                Take(Temp[Index].originalIndex);
+            }
+            else
+            {
+                const uint32_t Idx = Temp[Index].originalIndex;
+                const u8 CandKind = (Idx < FaceKinds.size()) ? FaceKinds[Idx] : u8(0);
+                const bool CandLM = CandKind == 1 && facePointers[Idx] && ((Face*)facePointers[Idx])->pDeflector;
+                const bool KeptLM = !NewKinds.empty() && NewKinds.back() == 1
+                    && NewDummies.back() && ((Face*)NewDummies.back())->pDeflector;
+                if (CandLM && !KeptLM)
+                {
+                    NewFaces.back() = triangles[Idx];
+                    NewDummies.back() = facePointers[Idx];
+                    if (!NewKinds.empty())
+                    {
+                        NewKinds.back() = 1;
+                    }
+                    if (!NewExtras.empty())
+                    {
+                        NewExtras.back() = Idx < FaceExtras.size() ? FaceExtras[Idx] : nullptr;
+                    }
+                }
             }
         }
 
-        new_faces.shrink_to_fit();
-        new_dummy.shrink_to_fit();
+        NewFaces.shrink_to_fit();
+        NewDummies.shrink_to_fit();
 
-        // меняем местами
-        triangles.clear(); triangles.shrink_to_fit();
-        triangles.swap(new_faces);
-        
-        facePointers.clear(); facePointers.shrink_to_fit();
-        facePointers.swap(new_dummy);
+        triangles.clear();
+        triangles.shrink_to_fit();
+        triangles.swap(NewFaces);
+
+        facePointers.clear();
+        facePointers.shrink_to_fit();
+        facePointers.swap(NewDummies);
+        FaceKinds.clear();
+        FaceKinds.shrink_to_fit();
+        FaceKinds.swap(NewKinds);
+        FaceExtras.clear();
+        FaceExtras.shrink_to_fit();
+        FaceExtras.swap(NewExtras);
     }
 
     bool BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers);
