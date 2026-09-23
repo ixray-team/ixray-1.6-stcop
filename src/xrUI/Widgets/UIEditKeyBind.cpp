@@ -62,15 +62,15 @@ void CUIEditKeyBind::InitKeyBind(Fvector2 pos, Fvector2 size)
 	CUIStatic::SetWndPos	(pos);
 	CUIStatic::SetWndSize	(size);
 
-	if (EngineExternal().CallOfPripyatMode())
+	if (CUITextureMaster::ItemExist("ui_listline2"))
 	{
 		InitTexture("ui_listline2");
 	}
-	else if (EngineExternal().ShadowOfChernobylMode())
+	else if (CUITextureMaster::ItemExist("ui_options_string"))
 	{
 		InitTexture("ui_options_string");
 	}
-	else if (EngineExternal().ClearSkyMode())
+	else
 	{
 		InitTexture("ui_options_string_back");
 	}
