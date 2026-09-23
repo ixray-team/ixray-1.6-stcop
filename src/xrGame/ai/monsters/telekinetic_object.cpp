@@ -110,7 +110,7 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 	}
 
 	auto tele = static_cast<STelekineticObject*>(self->callback_data);
-	
+
 	if (tele == nullptr)
 	{
 		return;
@@ -174,13 +174,85 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 
 		health_loss *= entity_alive->conditions().GetMaxHealth();
 
-		if (actor && EngineExternal()[EEngineExternalGame::EnablePolterStaminaLooseOnHit])
+		// Для тестов оно пока что не под экстерналом
+		if (!GodMode())
 		{
-			entity_alive->conditions().SetPower(entity_alive->conditions().GetPower() - health_loss);
+			const float stamina = Actor()->conditions().GetPower();
+
+			bool need_kick_animator = false;
+
+			PIItem active_item = Actor()->inventory().ActiveItem();
+			CCustomDevice* device = Actor()->GetDevice();
+
+			if (stamina > health_loss)
+			{
+				Actor()->conditions().SetPower(stamina - health_loss);
+			}
+			else if (active_item != nullptr || device != nullptr)
+			{
+				if (::Random.randF(0.0f, 1.0f) < health_loss - stamina)
+				{
+					if (active_item != nullptr)
+					{
+						u16 slot = active_item->BaseSlot();
+						if (!Actor()->inventory().SlotIsPersistent(slot) && !Actor()->inventory().Action(kDROP, CMD_STOP))
+						{
+							Actor()->g_PerformDrop();
+							need_kick_animator = true;
+						}
+					}
+
+					if (device != nullptr)
+					{
+						device->SetDropManual(TRUE);
+						need_kick_animator = true;
+					}
+				}
+			}
+			else
+			{
+				need_kick_animator = true;
+			}
+
+			if (need_kick_animator && !Actor()->HudAnimator()->IsAnyAnimatorActive())
+			{
+				auto GetAngleCos = [&](const Fvector& v1, const Fvector& v2)
+				{
+					return v1.dotproduct(v2) / (v1.magnitude() * v2.magnitude());
+				};
+
+				Fvector object_pos = Fvector().set(self->last_pos);
+				Fvector damage_receiver_pos = Fvector().set(damage_receiver->last_pos);
+
+				Fvector hit_dir;
+				hit_dir.sub(damage_receiver_pos, object_pos);
+				hit_dir.normalize();
+
+				bool is_actor_see_monster = GetAngleCos(hit_dir, Device.vCameraDirection) < 0.0f;
+
+				Actor()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+
+				const shared_str& front_kick_animator = Actor()->m_sFrontKickAnimator;
+				const shared_str& back_kick_animator = Actor()->m_sBackKickAnimator;
+
+				if (hit_dir.dotproduct(Device.vCameraDirection) < 0.0f)
+				{
+					if (front_kick_animator.size() > 0)
+					{
+						Actor()->HudAnimator()->ItemAnimator()->StartAnimator(front_kick_animator);
+					}
+				}
+				else
+				{
+					if (back_kick_animator.size() > 0)
+					{
+						Actor()->HudAnimator()->ItemAnimator()->StartAnimator(back_kick_animator);
+					}
+				}
+			}
 		}
-		
-		SHit HDS
-		{
+
+		SHit HDS{
 			health_loss,
 			linear_vel.GetNormalizedCopy(),
 			ph_self_object,
@@ -192,7 +264,7 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 			false
 		};
 
-		NET_Packet	l_P;
+		NET_Packet l_P;
 		HDS.GenHeader(GE_HIT, entity_alive->ID());
 		HDS.whoID = ph_self_object->ID();
 		HDS.weaponID = ph_self_object->ID();
