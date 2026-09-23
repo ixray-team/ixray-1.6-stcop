@@ -21,7 +21,6 @@
 #	include "RadioactiveZone.h"
 #	include "ZoneCampfire.h"
 #	include "alife_online_offline_group_brain.h"
-#	include "ui/FractionState.h"
 #	include "../../xrUI/Widgets/UIListBox.h"
 #	include "ai/crow/ai_crow.h"
 #	include "ui/UIActorMenu.h"
@@ -210,7 +209,6 @@ void export_classes	(lua_State *L)
 	CStalkerOutfit::script_register(L);
 	CTorch::script_register(L);
 	FactionState::script_register(L);
-	FractionState::script_register(L);
 	CWeapon::script_register(L);
 	CWeaponBinoculars::script_register(L);
 	CWeaponBM16::script_register(L);
