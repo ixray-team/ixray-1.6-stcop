@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "../../PhysicsShellHolder.h"
 #include "telekinetic_object.h"
+
+#include "CharacterPhysicsSupport.h"
 #include "../../../xrPhysics/PhysicsShell.h"
 #include "../../../xrPhysics/MathUtils.h"
 #include "WeaponMagazined.h"
@@ -9,6 +11,15 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "../../Level.h"
 #include "poltergeist/poltergeist.h"
+#include "../../xrEngine/xr_ioc_cmd.h"
+#include "../../Inventory.h"
+#include "../../ActorCondition.h"
+
+void SCollisionHitCallback::call(IPhysicsShellHolder* ph_shell, float min_collision_speed, float max_collision_speed, float& collision_speed, float& health_loss, ICollisionDamageInfo* di)
+{
+	health_loss = 0.f;
+	object->set_collision_hit_callback(nullptr);
+}
 
 STelekineticObject::STelekineticObject(const STelekineticObjectParams& tele_params) : params(tele_params)
 {
@@ -85,6 +96,109 @@ void STelekineticObject::update_state()
 
 		case ETelekineticState::TS_NONE:
 			break;
+	}
+}
+
+void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+{
+	dxGeomUserData* self = bo1 ? PHRetrieveGeomUserData(c.geom.g1) : PHRetrieveGeomUserData(c.geom.g2);
+	dxGeomUserData* damage_receiver = bo1 ? PHRetrieveGeomUserData(c.geom.g2) : PHRetrieveGeomUserData(c.geom.g1);
+
+	if (self == nullptr || self->ph_ref_object == nullptr)
+	{
+		return;
+	}
+
+	auto tele = static_cast<STelekineticObject*>(self->callback_data);
+	
+	if (tele == nullptr)
+	{
+		return;
+	}
+
+	CPhysicsShellHolder* ph_self_object = smart_cast<CPhysicsShellHolder*>(self->ph_ref_object);
+	if (ph_self_object == nullptr || ph_self_object->m_pPhysicsShell == nullptr)
+	{
+		return;
+	}
+
+	ph_self_object->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
+
+	CPhysicsShellHolder* ph_damage_receiver = damage_receiver ? smart_cast<CPhysicsShellHolder*>(damage_receiver->ph_ref_object) : nullptr;
+	if (ph_damage_receiver == nullptr)
+	{
+		return;
+	}
+
+	CEntityAlive* entity_alive = ph_damage_receiver->cast_entity_alive();
+	if (entity_alive == nullptr)
+	{
+		return;
+	}
+
+	CActor* actor = ph_damage_receiver->cast_actor();
+	CAI_Stalker* ai_stalker = ph_damage_receiver->cast_stalker();
+
+	if (do_colide && (actor && !GodMode() || ai_stalker) && (entity_alive->g_Alive() && (!entity_alive->cast_creature() || !entity_alive->cast_creature()->invulnerable())))
+	{
+		Fvector linear_vel;
+		ph_self_object->PHGetLinearVell(linear_vel);
+
+		float health_loss = 0.f;
+
+		if (actor)
+		{
+			switch (g_SingleGameDifficulty)
+			{
+				case egdNovice:
+					health_loss = tele->params.novice_difficulty_object_hit_factor;
+					break;
+
+				case egdStalker:
+					health_loss = tele->params.stalker_difficulty_object_hit_factor;
+					break;
+
+				case egdVeteran:
+					health_loss = tele->params.veteran_difficulty_object_hit_factor;
+					break;
+
+				case egdMaster:
+					health_loss = tele->params.master_difficulty_object_hit_factor;
+					break;
+			}
+		}
+		else if (ai_stalker)
+		{
+			health_loss = tele->params.stalker_difficulty_object_hit_factor;
+		}
+
+		health_loss *= entity_alive->conditions().GetMaxHealth();
+
+		if (actor && EngineExternal()[EEngineExternalGame::EnablePolterStaminaLooseOnHit])
+		{
+			entity_alive->conditions().SetPower(entity_alive->conditions().GetPower() - health_loss);
+		}
+		
+		SHit HDS
+		{
+			health_loss,
+			linear_vel.GetNormalizedCopy(),
+			ph_self_object,
+			entity_alive->character_physics_support()->movement()->ContactBone(),
+			ph_self_object->Position(),
+			0.f,
+			ALife::EHitType::eHitTypeStrike,
+			0.0f,
+			false
+		};
+
+		NET_Packet	l_P;
+		HDS.GenHeader(GE_HIT, entity_alive->ID());
+		HDS.whoID = ph_self_object->ID();
+		HDS.weaponID = ph_self_object->ID();
+		HDS.Write_Packet(l_P);
+
+		CEntityAlive::u_EventSend(l_P);
 	}
 }
 
@@ -225,6 +339,12 @@ void STelekineticObject::throw_object_time(const Fvector& target, float time)
 	Fvector transference;
 	transference.sub(target, params.object->Position());
 	TransferenceToThrowVel(transference, time, params.object->EffectiveGravity());
+
+	// Aphile: хак, задаём new SCollisionHitCallback, чтобы физика не считала урон от столкновения, 
+	// а все рассчёт проходили в кастомном collide_callback.
+	params.object->set_collision_hit_callback(new SCollisionHitCallback(params.object));
+	params.object->m_pPhysicsShell->set_CallbackData(this);
+	params.object->m_pPhysicsShell->add_ObjectContactCallback(collision_callback);
 
 	params.object->m_pPhysicsShell->applyImpulseTrace(params.object->Position(), transference, params.object->m_pPhysicsShell->getMass());
 
@@ -671,6 +791,11 @@ void STelekineticWeaponObject::perform_keep_object()
 	if (weapon->H_Parent())
 	{
 		weapon->set_collision_hit_callback(nullptr);
+
+		if (weapon->m_pPhysicsShell)
+		{
+			weapon->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
+		}
 
 		stop_object_particles();
 		switch_state(ETelekineticState::TS_NONE);

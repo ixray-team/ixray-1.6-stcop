@@ -884,6 +884,17 @@ Tele_Activate_N_Throw_Grenade           = on;                   Разрешае
 Tele_Max_Pickuped_Weapons				= 3; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
 Particle_Tele_Object					= static\fire_distort;	Проигрываемый партикл под предметом, чисто для красоты.
 
+; Множители урона от попадания брошенными предметами в актёра.
+; Значение — процент от максимального HP цели (1.0 = 100% HP).
+; Итоговый урон = factor - (strike_protection * condition костюма). Если результат < 0, урон = 0.
+; 0.0 - урон от попаданий предметами отключается.
+; Пример: factor=0.25, костюм новичка (strike_protection=0.1) → 0.25-0.1 = 0.15 урона (15% HP).
+; Пример: factor=0.45, экзо (strike_protection=0.4) → 0.45-0.4 = 0.05 урона (5% HP).
+Novice_Difficulty_Throwed_Object_Hit_Factor = 0.25
+Stalker_Difficulty_Throwed_Object_Hit_Factor = 0.35
+Veteran_Difficulty_Throwed_Object_Hit_Factor = 0.45
+Master_Difficulty_Throwed_Object_Hit_Factor = 0.55
+
 ; Угловая скорость наведения оружия на врага.
 ; Указывается в градусах/с. 
 ; Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив везде 360.
@@ -910,6 +921,17 @@ Tele_Shooting_From_Weapon_Enable        = off;                   Разреша�
 Tele_Activate_N_Throw_Grenade           = on;                   Разрешает выдрать чеку и кинуть гранату во врага.
 Tele_Max_Pickuped_Weapons				= 1; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
 Particle_Tele_Object					= static\fire_distort;	Проигрываемый партикл под предметом, чисто для красоты.
+
+; Множители урона от попадания брошенными предметами в актёра.
+; Значение — процент от максимального HP цели (1.0 = 100% HP).
+; Итоговый урон = factor - (strike_protection * condition костюма). Если результат < 0, урон = 0.
+; 0.0 - урон от попаданий предметами отключается.
+; Пример: factor=0.25, костюм новичка (strike_protection=0.1) → 0.25-0.1 = 0.15 урона (15% HP).
+; Пример: factor=0.45, экзо (strike_protection=0.4) → 0.45-0.4 = 0.05 урона (5% HP).
+Novice_Difficulty_Throwed_Object_Hit_Factor = 0.25
+Stalker_Difficulty_Throwed_Object_Hit_Factor = 0.35
+Veteran_Difficulty_Throwed_Object_Hit_Factor = 0.45
+Master_Difficulty_Throwed_Object_Hit_Factor = 0.55
 
 ; Угловая скорость наведения оружия на врага. Указывается в градусах/с. 
 ; Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив везде 360.
