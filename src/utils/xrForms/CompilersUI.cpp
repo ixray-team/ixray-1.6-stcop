@@ -20,8 +20,110 @@ const char* texture_formats[] =
 extern size_t GetHeapMemory();
 
 bool ShowMainUI = true;
+bool ShowLightPreview = false;
 
 extern CompilersMode gCompilerMode;
+
+static xrCriticalSection LightPreviewCS;
+static xr_vector<Fvector> LightPreviewVertices;
+static xr_vector<u32> LightPreviewIndices;
+static Fvector LightPreviewCenter;
+static float LightPreviewRadius = 1.f;
+static u32 LightPreviewSceneGeneration = 0;
+static xr_vector<u8> LightPreviewColors;
+static u32 LightPreviewColorGeneration = 0;
+static xr_vector<float> LightPreviewUv;
+static xr_vector<u32> LightPreviewLayerId;
+static xr_vector<LightPreviewMap> LightPreviewMaps;
+static u32 LightPreviewMapGeneration = 0;
+
+struct LightPreviewLock
+{
+	LightPreviewLock()
+	{
+		LightPreviewCS.Enter();
+	}
+
+	~LightPreviewLock()
+	{
+		LightPreviewCS.Leave();
+	}
+};
+
+static bool HasNewGeneration(u32 Current, u32 Known)
+{
+	return Current != 0 && Current != Known;
+}
+
+void PublishLightPreviewScene(const xr_vector<Fvector>& Vertices, const xr_vector<u32>& Indices, const Fvector& Center, float Radius)
+{
+	LightPreviewLock Lock;
+	LightPreviewVertices = Vertices;
+	LightPreviewIndices = Indices;
+	LightPreviewCenter = Center;
+	LightPreviewRadius = Radius > 1.f ? Radius : 1.f;
+	LightPreviewSceneGeneration++;
+}
+
+bool TakeLightPreviewScene(u32 KnownGeneration, u32& Generation, xr_vector<Fvector>& Vertices, xr_vector<u32>& Indices, Fvector& Center, float& Radius)
+{
+	LightPreviewLock Lock;
+	if (!HasNewGeneration(LightPreviewSceneGeneration, KnownGeneration))
+	{
+		return false;
+	}
+
+	Vertices = LightPreviewVertices;
+	Indices = LightPreviewIndices;
+	Center = LightPreviewCenter;
+	Radius = LightPreviewRadius;
+	Generation = LightPreviewSceneGeneration;
+	return true;
+}
+
+void PublishLightPreviewColors(const xr_vector<u8>& CornerRgb)
+{
+	LightPreviewLock Lock;
+	LightPreviewColors = CornerRgb;
+	LightPreviewColorGeneration++;
+}
+
+bool TakeLightPreviewColors(u32 KnownGeneration, u32& Generation, xr_vector<u8>& CornerRgb)
+{
+	LightPreviewLock Lock;
+	if (!HasNewGeneration(LightPreviewColorGeneration, KnownGeneration))
+	{
+		return false;
+	}
+
+	CornerRgb = LightPreviewColors;
+	Generation = LightPreviewColorGeneration;
+	return true;
+}
+
+void PublishLightPreviewMaps(const xr_vector<float>& Uv, const xr_vector<u32>& Layers, const xr_vector<LightPreviewMap>& Maps)
+{
+	LightPreviewLock Lock;
+	LightPreviewUv = Uv;
+	LightPreviewLayerId = Layers;
+	LightPreviewMaps = Maps;
+	LightPreviewMapGeneration++;
+}
+
+bool TakeLightPreviewMaps(u32 KnownGeneration, u32& Generation, xr_vector<float>& Uv, xr_vector<u32>& Layers, xr_vector<LightPreviewMap>& Maps)
+{
+	LightPreviewLock Lock;
+	if (!HasNewGeneration(LightPreviewMapGeneration, KnownGeneration))
+	{
+		return false;
+	}
+
+	Uv = LightPreviewUv;
+	Layers = LightPreviewLayerId;
+	Maps = LightPreviewMaps;
+	Generation = LightPreviewMapGeneration;
+	return true;
+}
 
 void InitializeUIData()
 {
@@ -54,6 +156,8 @@ void DrawDownUI()
 	ImGui::Separator();
 
 	ImGui::Checkbox("SwitchUI", &ShowMainUI);
+	ImGui::SameLine();
+	ImGui::Checkbox("Preview", &ShowLightPreview);
 	ImGui::SameLine();
 	ImGui::Checkbox("auto-scroll", &autoScroll);
 	ImGui::SameLine();
@@ -111,6 +215,22 @@ void RenderMainUI()
 
 	ImGui::SetNextWindowPos({0, 0});
 	ImGui::SetNextWindowSize({(float)Size[0], (float)Size[1]});
+
+	if (ShowLightPreview)
+	{
+		ImGui::SetNextWindowPos({0, 0});
+		ImGui::SetNextWindowSize({(float)Size[0], (float)Size[1]});
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+		if (ImGui::Begin("LightPreview", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
+		{
+			const float Bar = ImGui::GetFrameHeightWithSpacing() + 6.f;
+			DrawLightPreview((float)Size[0] - 16.f, (float)Size[1] - 16.f - Bar);
+			DrawDownUI();
+		}
+		ImGui::End();
+		ImGui::PopStyleVar();
+		return;
+	}
 
 	if (!ShowMainUI)
 	{
