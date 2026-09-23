@@ -220,7 +220,7 @@ bool CEntity::net_Spawn		(CSE_Abstract* DC)
 	
 	if (ini)
 	{
-		if (ini->section_exist("damage_section") && !use_simplified_visual())
+		if (ini->section_exist("damage_section"))
 		{
 			TDamageManager* DmgManager = GetComponent<TDamageManager>();
 			DmgManager->reload(pSettings->r_string("damage_section", "damage"), ini);
@@ -311,11 +311,9 @@ void CEntity::reinit()
 void CEntity::reload(const char* section)
 {
 	inherited::reload(section);
-	if (!use_simplified_visual())
-	{
-		TDamageManager* DmgManager = GetComponent<TDamageManager>();
-		DmgManager->reload(section, "damage", pSettings);
-	}
+
+	TDamageManager* DmgManager = GetComponent<TDamageManager>();
+	DmgManager->reload(section, "damage", pSettings);
 }
 
 void CEntity::set_death_time	()

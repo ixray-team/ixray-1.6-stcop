@@ -1059,11 +1059,6 @@ void CInventoryItem::UpdateXForm()
 		return;
 	}
 
-	if (parent->use_simplified_visual())
-	{
-		return;
-	}
-
 	if (parent->attached(this))
 	{
 		return;

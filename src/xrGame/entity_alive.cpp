@@ -344,8 +344,7 @@ void CEntityAlive::Hit(SHit* pHDS)
 	if (HDS.hit_type != ALife::eHitTypeTelepatic && HDS.hit_type != ALife::eHitTypeRadiation)
 	{
 		//добавить кровь на стены
-		if (!use_simplified_visual())
-			BloodyWallmarks (HDS.damage(), HDS.dir, HDS.bone(), HDS.p_in_bone_space);
+		BloodyWallmarks (HDS.damage(), HDS.dir, HDS.bone(), HDS.p_in_bone_space);
 	}
 
 	//-------------------------------------------
