@@ -1,6 +1,4 @@
 #pragma once
-#include "../xrPhysics/ExtendedGeom.h"
-#include "PhysicsShellHolder.h"
 
 class CGameObject;
 class CPhysicsShellHolder;
@@ -67,18 +65,6 @@ struct STelekineticObjectParams
 	float master_difficulty_object_hit_factor;
 };
 
-struct SCollisionHitCallback : 
-	public ICollisionHitCallback
-{
-	CPhysicsShellHolder* object;
-
-	SCollisionHitCallback(CPhysicsShellHolder* object) : object(object)
-	{
-	}
-
-	void call(IPhysicsShellHolder* ph_shell, float min_collision_speed, float max_collision_speed, float& collision_speed, float& health_loss, ICollisionDamageInfo* di) override;
-};
-
 struct STelekineticObject
 {
 	STelekineticObjectParams params;
@@ -114,7 +100,6 @@ struct STelekineticObject
 	virtual void throw_object_time(const Fvector& target, float time);
 	virtual void throw_update();
 	virtual void update_state();
-	static  void collision_callback(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
 	ICF virtual bool is_released() const { return state == ETelekineticState::TS_NONE; }
 	virtual void switch_state(ETelekineticState new_state);
 	ICF virtual ETelekineticState get_state() const { return state; }
