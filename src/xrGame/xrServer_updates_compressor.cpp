@@ -18,7 +18,7 @@ last_updates_cache::last_updates_cache()
 	}
 }
 
-u16 last_updates_cache::add_update			(u16 const entity_id, NET_Packet const & update)
+u16 last_updates_cache::add_update			(ALife::_OBJECT_ID entity_id, NET_Packet const & update)
 {
 	last_update_t* tmp_entity = search_entity(entity_id);
 	u32 current_time = Device.dwTimeGlobal;
@@ -45,7 +45,7 @@ u16 last_updates_cache::add_update			(u16 const entity_id, NET_Packet const & up
 	return tmp_entity->first.m_eq_count;
 }
 
-u16 last_updates_cache::get_last_equpdates	(u16 const entity_id, NET_Packet const & update)
+u16 last_updates_cache::get_last_equpdates	(ALife::_OBJECT_ID entity_id, NET_Packet const & update)
 {
 	last_update_t* tmp_entity = search_entity(entity_id);
 	if (!tmp_entity)
@@ -53,7 +53,7 @@ u16 last_updates_cache::get_last_equpdates	(u16 const entity_id, NET_Packet cons
 	return tmp_entity->first.m_eq_count;
 }
 
-last_updates_cache::last_update_t* last_updates_cache::search_entity(u16 const entity_id)
+last_updates_cache::last_update_t* last_updates_cache::search_entity(ALife::_OBJECT_ID entity_id)
 {
 	for (u32 i = 0; i < cache_entities_size; ++i)
 	{
@@ -247,7 +247,7 @@ void server_updates_compressor::flush_accumulative_buffer()
 	m_acc_buff.w_begin(M_UPDATE_OBJECTS);
 }
 
-void server_updates_compressor::write_update_for(u16 const enity, NET_Packet & update)
+void server_updates_compressor::write_update_for(ALife::_OBJECT_ID enity, NET_Packet & update)
 {
 	if (g_sv_traffic_optimization_level & eto_last_change)
 	{

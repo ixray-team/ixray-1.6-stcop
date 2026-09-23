@@ -347,7 +347,7 @@ void xrServer::MakeUpdatePackets()
 
 		// write specific data
 		{
-			tmpPacket.w_u16(Test.ID);
+			tmpPacket << Test.ID;
 			tmpPacket.w_chunk_open8(position);
 			Test.UPDATE_Write(tmpPacket);
 			if (g_pGamePersistent->GameType() == eGameIDFreeMP)
