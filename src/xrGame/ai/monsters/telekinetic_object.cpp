@@ -870,20 +870,6 @@ void STelekineticWeaponObject::perform_keep_object()
 {
 	inherited::perform_keep_object();
 
-	if (weapon->H_Parent())
-	{
-		weapon->set_collision_hit_callback(nullptr);
-
-		if (weapon->m_pPhysicsShell)
-		{
-			weapon->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
-		}
-
-		stop_object_particles();
-		switch_state(ETelekineticState::TS_NONE);
-		return;
-	}
-
 	if (weapon->GetCondition() < initial_weapon_condition)
 	{
 		release();

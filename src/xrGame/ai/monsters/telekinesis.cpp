@@ -20,6 +20,15 @@ struct SFindPred
 
 static bool RemovePred(STelekineticObject* tele_object)
 {
+	if (auto ptr = tele_object->cast_telekinetic_weapon_object())
+	{
+		if (ptr->params.object->H_Parent())
+		{
+			ptr->stop_object_particles();
+			ptr->restore_global_weapon_things();
+		}
+	}
+
 	return !tele_object->get_object() ||
 		   tele_object->get_object()->getDestroy() ||
 		   !tele_object->get_object()->PPhysicsShell() ||
