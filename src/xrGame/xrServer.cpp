@@ -370,7 +370,8 @@ void xrServer::MakeUpdatePackets()
 #endif
 			UpdatePacket* NewPacket = &m_update_packets.emplace_back(UpdatePacket());
 			NewPacket->Entity = I->second;
-			std::memcpy(&(NewPacket->Packet), &tmpPacket, sizeof(NET_Packet));
+			NewPacket->Packet.B.data.resize(tmpPacket.B.data.size());
+			std::memcpy(NewPacket->Packet.B.data.data(), tmpPacket.B.data.data(), tmpPacket.B.data.size());
 		}
 	}
 
@@ -1651,7 +1652,8 @@ void xrServer::OnScriptEvent(NET_Packet& P, ClientID sender)
 	ScriptEvent* pEvent = &(script_server_events.back());
 
 	pEvent->SenderID = sender.value();
-	CopyMemory(&(pEvent->Packet), &P, sizeof(NET_Packet));
+	pEvent->Packet.B.data.resize(P.B.data.size());
+	CopyMemory(pEvent->Packet.B.data.data(), P.B.data.data(), P.B.data.size());
 }
 
 ScriptEvent* xrServer::GetFrontServerScriptEvent()

@@ -55,7 +55,8 @@ NET_Packet* INetQueue::Create(const NET_Packet& _other)
 		unused.pop_back();
 		P = ready.back();
 	}
-	CopyMemory(P, &_other, sizeof(NET_Packet));
+	P->B.data.resize(_other.B.data.size());
+	CopyMemory(P->B.data.data(), _other.B.data.data(), _other.B.data.size());
 	cs.Leave();
 	return			P;
 }

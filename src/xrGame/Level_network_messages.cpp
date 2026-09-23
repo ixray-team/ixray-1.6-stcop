@@ -408,9 +408,9 @@ void CLevel::ClientReceive()
 		{
 			if (OnClient())
 			{
-				script_client_events.push_back(NET_Packet());
-				NET_Packet* NewPacket = &(script_client_events.back());
-				CopyMemory(NewPacket, &(*P), sizeof(NET_Packet));
+				auto& NewPacket = script_client_events.emplace_back();
+				NewPacket.B.data.resize(P->B.data.size());
+				CopyMemory(NewPacket.B.data.data(), P->B.data.data(), P->B.data.size());
 			}
 		}break;
 		}
