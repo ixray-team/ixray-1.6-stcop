@@ -1514,22 +1514,6 @@ void set_pp_effector_factor2(int id, float f);
 
 void CWeapon::UpdateCL		()
 {
-	if (!m_children_storage.empty())
-	{
-		xr_string addons_info;
-		for (auto& pair : m_children_storage)
-		{
-			auto attachment = get_attachment(pair.second->cNameSect_str());
-			addons_info += pair.second->cNameSect_str();
-			if (attachment)
-				addons_info += attachment->state.test(eAStateVisible) ? "[1]" : "[0]";
-			addons_info += " ";
-		}
-		Level().dbg_text_renderer(Position(), color_rgba(0, 255, 100, 255), addons_info.c_str());
-	}
-	
-	//Level().dbg_text_renderer(Position(), color_rgba(0, 255, 100, 255), shared_str().printf("GetState[%s], GetNextState[%s]", magic_enum::enum_name(static_cast<CHUDState::EHudStates>(EHudStates(GetState()))).data(), magic_enum::enum_name(static_cast<CHUDState::EHudStates>(EHudStates(EHudStates(GetNextState())))).data()).c_str());
-
 	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
 
 	bool need_update_hud = false;
