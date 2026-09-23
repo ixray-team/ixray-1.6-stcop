@@ -229,8 +229,7 @@ void CBaseMonster::reload	(const char* section)
 {
 	CCreature::reload		(section);
 	
-	if (!CCreature::use_simplified_visual())
-		CStepManager::reload	(section);
+	CStepManager::reload	(section);
 
 	CInventoryOwner::reload		(section);
 	movement().reload	(section);

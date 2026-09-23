@@ -204,14 +204,11 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 	CBaseMonster *monster = nullptr;
 	if(m_pOthersObject) {
 		monster										= m_pOthersObject->cast_base_monster();
-		if (monster || m_pOthersObject->use_simplified_visual() ) 
+		if (monster ) 
 		{
 			m_pUICharacterInfoRight->ClearInfo		();
-			if(monster)
-			{
-				const char* monster_tex_name = READ_IF_EXISTS(pSettings, r_string, monster->cNameSect(), "icon", "npc_icon_unknown_data");
-				m_pUICharacterInfoRight->InitCharacter("", monster_tex_name);
-			}
+			const char* monster_tex_name = READ_IF_EXISTS(pSettings, r_string, monster->cNameSect(), "icon", "npc_icon_unknown_data");
+			m_pUICharacterInfoRight->InitCharacter("", monster_tex_name);
 		}else 
 		{
 			m_pUICharacterInfoRight->InitCharacter	(m_pOthersObject);

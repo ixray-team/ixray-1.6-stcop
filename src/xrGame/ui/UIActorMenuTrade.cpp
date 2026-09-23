@@ -244,7 +244,7 @@ void CUIActorMenu::UpdatePartnerBag()
 	CBaseMonster* monster = m_pPartnerInvOwner != nullptr ? m_pPartnerInvOwner->cast_base_monster() : nullptr;
 	CCar* pCar = m_pPartnerInvOwner != nullptr ? m_pPartnerInvOwner->cast_car() : nullptr;
 
-	if (pCar != nullptr || monster != nullptr || m_pPartnerInvOwner->use_simplified_visual())
+	if (pCar != nullptr || monster != nullptr)
 	{
 		m_PartnerWeight->SetText( "" );
 	}

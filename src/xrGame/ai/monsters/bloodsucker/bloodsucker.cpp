@@ -263,8 +263,6 @@ void CAI_Bloodsucker::reinit()
 	CControlledActor::reinit	();
 	m_visual_default			= cNameVisual();
 
-	if(CCreature::use_simplified_visual())	return;
-
 	Bones.Reset					();
 
 	com_man().ta_fill_data(anim_triple_vampire, "vampire_0", "vampire_1", "vampire_2", TA_EXECUTE_LOOPED, TA_DONT_SKIP_PREPARE, 0);//ControlCom::eCapturePath | ControlCom::eCaptureMovement);
@@ -506,8 +504,6 @@ void   CAI_Bloodsucker::force_visibility_state (int state)
 
 void   CAI_Bloodsucker::update_invisibility ()
 {
-	if(CCreature::use_simplified_visual())	return;
-
 	using namespace ::detail::bloodsucker;
 
 	if ( !g_Alive() )

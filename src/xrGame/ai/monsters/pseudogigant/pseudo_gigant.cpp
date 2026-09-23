@@ -174,8 +174,6 @@ void CPseudoGigant::reinit()
 
 	m_time_next_threaten = 0;
 
-	if(CCreature::use_simplified_visual())	return;
-
 	move().load_velocity(*cNameSect(), "Velocity_JumpPrepare",MonsterMovement::eGiantVelocityParameterJumpPrepare);
 	move().load_velocity(*cNameSect(), "Velocity_JumpGround",MonsterMovement::eGiantVelocityParameterJumpGround);
 	

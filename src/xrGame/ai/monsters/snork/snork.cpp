@@ -103,7 +103,6 @@ void CSnork::reinit()
 {
 	inherited::reinit	();
 	
-	if(CCreature::use_simplified_visual() ) return;
 	move().load_velocity(*cNameSect(), "Velocity_JumpGround",MonsterMovement::eSnorkVelocityParameterJumpGround);
 	com_man().load_jump_data("stand_attack_2_0",0, "stand_attack_2_1", "stand_somersault_0", u32(-1), MonsterMovement::eSnorkVelocityParameterJumpGround,0);
 

@@ -85,7 +85,7 @@ void CWeapon::UpdateXForm	()
 	} 
 
 	const CInventoryOwner* parent = go->cast_inventory_owner(); //smart_cast<const CInventoryOwner*>(go);
-	if (!parent || parent->use_simplified_visual())
+	if (!parent)
 		return;
 
 	if (!m_can_be_strapped_rifle) {
