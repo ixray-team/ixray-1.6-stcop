@@ -57,7 +57,7 @@ void CScriptPropertiesListHelper::script_register(lua_State *L)
 		class_<U8Value>		("u8_value"),
 		class_<U16Value>	("u16_value"),
 		class_<U32Value>	("u32_value"),
-		class_<FloatValue>	("u32_value"),
+		class_<FloatValue>	("float_value"),
 		class_<BoolValue>	("bool_value"),
 		class_<VectorValue>	("vector_value"),
 		class_<ColorValue>	("color_value"),
