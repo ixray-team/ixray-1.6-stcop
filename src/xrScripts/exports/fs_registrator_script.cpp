@@ -250,7 +250,7 @@ void fs_registrator::script_register(lua_State *L)
 			.def("r_close",								(void (CLocatorAPI::*)(IReader *&))(&CLocatorAPI::r_close))
 
 			.def("w_open",								(IWriter*	(CLocatorAPI::*)(const char*,const char*)) (&CLocatorAPI::w_open))
-			.def("w_open",								(IWriter*	(CLocatorAPI::*)(const char*)) (&CLocatorAPI::w_close))
+			.def("w_open",								(IWriter*	(CLocatorAPI::*)(const char*)) (&CLocatorAPI::w_open))
 			.def("w_close",								&CLocatorAPI::w_close)
 
 			.def("file_list_open",						&file_list_open_script)
