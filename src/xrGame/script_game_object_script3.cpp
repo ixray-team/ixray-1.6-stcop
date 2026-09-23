@@ -428,9 +428,6 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 
 		//
 		.def("iterate_feel_touch",			&CScriptGameObject::IterateFeelTouch)
-		.def("get_weapon_substate",			&CScriptGameObject::GetWeaponSubstate)
-		.def("get_ammo_count_for_type",     &CScriptGameObject::GetAmmoCount)
-		.def("get_main_weapon_type",		&CScriptGameObject::GetMainWeaponType)
 		.def("get_luminocity", 				&CScriptGameObject::GetLuminocity)
 		.def("bone_visible", 				&CScriptGameObject::IsBoneVisible)
 		.def("set_bone_visible", 			&CScriptGameObject::SetBoneVisible)
@@ -441,7 +438,6 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("remove_memory_sound_object", 	&CScriptGameObject::RemoveMemorySoundObject)
 		.def("remove_memory_visible_object", &CScriptGameObject::RemoveMemoryVisibleObject)
 		.def("remove_memory_hit_object", 	&CScriptGameObject::RemoveMemoryHitObject)
-		.def("get_weapon_type",				&CScriptGameObject::GetWeaponType)
 			
 		///////////////////////////////////////////////////////////////////////////////
 		// CoC
@@ -549,10 +545,6 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("weapon_addon_attach",			&CScriptGameObject::Weapon_AddonAttach)
 		.def("weapon_addon_detach",			&CScriptGameObject::Weapon_AddonDetach)
 		.def("addons_attach",				&CScriptGameObject::AddonsAttacher)
-		.def("get_ammo_count_for_type",     &CScriptGameObject::GetAmmoCount)
-		.def("get_main_weapon_type",		&CScriptGameObject::GetMainWeaponType)
-		.def("get_weapon_type",				&CScriptGameObject::GetWeaponType)
-		.def("get_weapon_substate",			&CScriptGameObject::GetWeaponSubstate)
 
 		// For CHudItem
 		.def("play_hud_motion",				&CScriptGameObject::PlayHudMotion)
