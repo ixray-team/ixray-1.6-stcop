@@ -456,7 +456,7 @@ void CRender::Render()
 
 	RImplementation.o.distortion = false;
 
-	if (o.offscreen_reflecitons)
+	if (o.offscreen_reflecitons && !o.dx11_use_legacy_light)
 	{
 		ps_r_taa_jitter.set(0, 0, -1);
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);

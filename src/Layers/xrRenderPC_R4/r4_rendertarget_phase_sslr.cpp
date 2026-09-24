@@ -4,6 +4,9 @@
 
 void CRenderTarget::phase_sslr()
 {
+	if (RImplementation.o.dx11_use_legacy_light || !RImplementation.o.deffered_reflecitons)
+		return;
+
 	GPU_EVENT(phase_sslr);
 
 	//groups
@@ -103,6 +106,9 @@ void CRenderTarget::phase_sslr()
 
 void CRender::render_reflections()
 {
+	if (o.dx11_use_legacy_light || !o.offscreen_reflecitons)
+		return;
+
 	GPU_EVENT(RENDER_REFLECTIONS);
 
 	if (RImplementation.pLastSector)
