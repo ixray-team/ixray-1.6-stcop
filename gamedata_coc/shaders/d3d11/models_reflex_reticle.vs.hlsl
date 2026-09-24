@@ -25,7 +25,7 @@ vf _main(v_model v)
     o.tc0 = v.tc.xy; //Texture coordinates
 
     o.v_pos = mul(m_WV, v.P).xyz; // Position in view space
-    o.v_nrm = mul(m_WV, v.N).xyz; // Normal in view space
+    o.v_nrm = mul((float3x3)m_WV, v.N); // Normal in view space
 
 #ifndef DISABLE_MOTION_VECTORS
 	o.hpos_curr = o.hpos;
