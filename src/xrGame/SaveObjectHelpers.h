@@ -1,7 +1,7 @@
 #pragma once
 #include "../xrCore/Save/SaveObject.h"
 
-struct XRCORE_API SaveObjectNetPacketHelper
+struct SaveObjectNetPacketHelper
 {
     static void PrepareLocalSpawnPacket(NET_Packet& P, CSE_Abstract& ServerObj);
     static void PrepareLocalSpawnPacketPossibleFull(NET_Packet& P, CSE_Abstract& ServerObj);
