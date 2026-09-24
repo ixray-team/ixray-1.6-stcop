@@ -289,6 +289,10 @@ void CRenderTarget::phase_combine()
 		RCache.set_c("bloom_params", ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.f);
 		RCache.set_c("tonemap_params", ps_r2_tonemap_compression, ps_r2_tonemap_desaturation, ps_r2_tonemap_crossfeed, ps_r2_tonemap_vibrance);
 		RCache.set_c("bloom_tint", ps_r2_bloom_tint_color.x, ps_r2_bloom_tint_color.y, ps_r2_bloom_tint_color.z, 1.f);
+		RCache.set_c("spp_params",
+			ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION) ? 1.0f : 0.0f,
+			ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE) ? 1.0f : 0.0f,
+			0.0f, 0.0f);
 		RCache.set_Geometry(FSTriangleGeom);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
 	}
@@ -312,16 +316,6 @@ void CRenderTarget::phase_combine()
 	extern bool UseRainDrops;
 	if (UseRainDrops) {
 		PhaseRaindrops();
-	}
-
-	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION)) {
-		GPU_EVENT(PhaseSaturation);
-		PhaseSaturation();
-	}
-
-	if(ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE)) {
-		GPU_EVENT(PhaseVignette);
-		PhaseVignette();
 	}
 
 	if(ps_r2_ls_flags_ext.test(R2FLAG_SPP_ABERRATION)) {
