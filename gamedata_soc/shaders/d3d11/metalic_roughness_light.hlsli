@@ -17,7 +17,7 @@ float DistributionGGX(float NdotH, float Roughness)
 float GetLightAttention(float3 PointToLight, float LightInvRadius2, float Falloff)
 {
     float DistanceSqr = dot(PointToLight, PointToLight);
-    float Factor = dot(PointToLight, PointToLight) * LightInvRadius2;
+    float Factor = DistanceSqr * LightInvRadius2;
     float Attention = max(1.0f - Factor, 0.0f);
 	
     return (Attention * Attention) / (1.0f + Falloff * Factor);

@@ -154,19 +154,27 @@ uint2 thread_remap_8x8(uint thread)
 // Функции генерации случайных чисел [0, 1]
 // START
 
-float Hash(float n)
+// Fast hash without sine (Dave Hoskins)
+float Hash(float p)
 {
-    return frac(sin(n) * 43758.5453123f);
+    p = frac(p * 0.1031f);
+    p *= p + 33.33f;
+    p *= p + p;
+    return frac(p);
 }
 
-float Hash(float2 n)
+float Hash(float2 p)
 {
-    return Hash(Hash(n.x) + n.y);
+    float3 p3 = frac(float3(p.xyx) * 0.1031f);
+    p3 += dot(p3, p3.yzx + 33.33f);
+    return frac((p3.x + p3.y) * p3.z);
 }
 
-float Hash(float3 n)
+float Hash(float3 p3)
 {
-    return Hash(Hash(dot(n.xy, float2(12.989, 78.233))) + n.z);
+    p3 = frac(p3 * 0.1031f);
+    p3 += dot(p3, p3.yzx + 33.33f);
+    return frac((p3.x + p3.y) * p3.z);
 }
 
 float2 Hash22(float2 value)

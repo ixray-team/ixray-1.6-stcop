@@ -8,6 +8,7 @@ float4 autoexposure_params; // x - ps_r2_autoexposure_key, y - ps_r2_autoexposur
 float4 bloom_params; // x - ps_r2_bloom_amount, y - ps_r2_bloom_desaturation, z - ps_r2_bloom_tint_amount
 float4 tonemap_params; // x - ps_r2_tonemap_compression, y - ps_r2_tonemap_desaturation, z - ps_r2_tonemap_crossfeed
 float4 bloom_tint; // x - ps_r2_bloom_tint_color.r, y - ps_r2_bloom_tint_color.g, z - ps_r2_bloom_tint_color.b
+float4 spp_params; // x - ps_r2_saturation, y - ps_r2_vignette
 /*
 constants buffer descr:
     autoexposure_key - commonly used value for middle gray, used as anchor point for exposure calculation, UE uses 0.148f, can be tweaked
@@ -99,6 +100,19 @@ float3 main(PSInputFullscreen I) : SV_Target
 #ifdef USE_LUT_TEXTURE
  	Color = s_lut.Sample(smp_rtlinear, saturate(Color)).xyz;
 #endif
+
+    [branch]
+    if (spp_params.x > 0.5f)
+    {
+        float Luma = dot(Color.xyz, 0.33f) + 0.001f;
+        Color.xyz = 1.2f * lerp(Luma.xxx, Color.xyz, 1.2f);
+    }
+
+    [branch]
+    if (spp_params.y > 0.5f)
+    {
+        Color.xyz *= 1.0f - saturate(distance(I.texcoord, float2(0.5f, 0.5f)));
+    }
     
 	return Color;
 }
