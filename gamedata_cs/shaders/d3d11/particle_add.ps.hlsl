@@ -12,10 +12,11 @@ struct v2p
 
 void main(v2p I, out IXRayForward O)
 {
+    O = (IXRayForward)0;
     float4 result = I.c * s_base.Sample(smp_base, I.tc);
 
 #if defined(USE_SOFT_PARTICLES) && !defined(DISABLE_SOFT_PARTICLES)
-    float3 Point = GbufferGetPoint(I.hpos.xy);
+    float3 Point = GbufferGetPoint(I.hpos.xy).xyz;
     float spaceDepth = Point.z - I.tctexgen.z;
     result *= Contrast(saturate(spaceDepth * 1.3f), 2.0f);
 #endif

@@ -45,8 +45,8 @@ float4 main(PSInput I) : SV_Target
     float depth = P.z;
     float deltaDepth = direction.z;
 
-    P = mul(m_invV, float4(P, 1.0f));
-    direction = mul(m_invV, direction);
+    P = mul(m_invV, float4(P, 1.0f)).xyz;
+    direction = mul((float3x3)m_invV, direction);
 
     float4 current = mul(m_shadow_sun[2], float4(P, 1.0f));
     float4 delta = mul(m_shadow_sun[2], float4(direction, 0.0f));

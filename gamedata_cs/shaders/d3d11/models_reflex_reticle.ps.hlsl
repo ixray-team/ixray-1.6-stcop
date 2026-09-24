@@ -72,6 +72,7 @@ float3 offset_normal(float3 N)
 
 void main(in vf I, out IXRayForward O)
 {
+    O = (IXRayForward)0;
     // Derive view direction from view space position
     float3 V = -I.v_pos;
     

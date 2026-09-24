@@ -34,6 +34,7 @@ float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 // Pixel
 void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 {
+	O = (IXRayForward)0;
 	float4 base = s_base.Sample(smp_base, I.tbase);
 	
 	float3 n0 = s_nmap.Sample(smp_base, I.tnorm0).xyz;
@@ -183,7 +184,7 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	
 	float fog_fade = calc_fogging(I.pos.xyz);
 	
-	O.Color.xyz = lerp(final, fog_color, fog_fade);
+	O.Color.xyz = lerp(final, fog_color.xyz, fog_fade);
 	O.Color.xyz = GammaToLinear(O.Color.xyz);
 	
 	O.Color.w = alpha * (1.0f - fog_fade * fog_fade);
