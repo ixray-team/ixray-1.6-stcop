@@ -71,7 +71,7 @@ float3 DirectLightLegacy(float4 Radiance, float3 Light, float3 Normal, float3 Vi
     float NdotH = max(0.0f, -dot(Normal, Half));
 
     float2 Surface = s_material.SampleLevel(smp_material, float3(NdotL, NdotH, Material), 0).xy;
-    return Radiance * float3(Surface.x * Color.xyz + Surface.y * Gloss * Radiance.w);
+    return Radiance.xyz * (Surface.x * Color.xyz + Surface.y * Gloss * Radiance.w);
 }
 
 float3 SimpleTranslucency(float3 Radiance, float3 Light, float3 Normal)

@@ -88,7 +88,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
     //GbufferUnpack((uint2)pos2d.xy, O);
 	
 	IXRayMaterial M = (IXRayMaterial)NULL;
-	M.Depth = s_position[DTid];
+	M.Depth = s_position[DTid].x;
 	
 	if(M.Depth > 0.9999f)
 	{
