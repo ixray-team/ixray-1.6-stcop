@@ -224,7 +224,7 @@ void CTelekinesis::PhDataUpdate(float step)
 				break;
 
 			case ETelekineticState::TS_KEEP:
-				object->perform_keep_object();
+				object->perform_keep_object(step);
 				break;
 
 			case ETelekineticState::TS_NONE:
