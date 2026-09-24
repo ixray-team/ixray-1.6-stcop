@@ -18,6 +18,7 @@
 -- addon_background_selected
 --AddonItem:SetSelectedState(is_selected)
 
+local DRAW_RUN_BUTTON = true
 local USE_FILE_LOG = true
 local USE_CONSOLE_LOG = false
 local USE_TIME_IN_LOGS = true
@@ -1302,11 +1303,13 @@ end
 function _on_main_menu_init_callbacks(_ref)
 	set_menu_ref(_ref)
 	
-	get_menu_ref().ixr_options_btn = get_menu_ref().options_xml:Init3tButton("ixr_options_btn", get_menu_ref())
-	get_menu_ref().ixr_options_btn:SetWndPos(vector2():set(get_menu_ref().ixr_options_btn:GetWndPos().x * ui.get_current_kx(), get_menu_ref().ixr_options_btn:GetWndPos().y))
-    get_menu_ref().ixr_options_btn:SetWidth(get_menu_ref().ixr_options_btn:GetWidth()*ui.get_current_kx())
-	get_menu_ref():Register(get_menu_ref().ixr_options_btn, "ixr_options_btn")
-	get_menu_ref():AddCallback("ixr_options_btn", ui_events.BUTTON_CLICKED, this.on_btn_options_ixr_clicked, get_menu_ref())
+	if DRAW_RUN_BUTTON then
+		get_menu_ref().ixr_options_btn = get_menu_ref().options_xml:Init3tButton("ixr_options_btn", get_menu_ref())
+		get_menu_ref().ixr_options_btn:SetWndPos(vector2():set(get_menu_ref().ixr_options_btn:GetWndPos().x * ui.get_current_kx(), get_menu_ref().ixr_options_btn:GetWndPos().y))
+		get_menu_ref().ixr_options_btn:SetWidth(get_menu_ref().ixr_options_btn:GetWidth()*ui.get_current_kx())
+		get_menu_ref():Register(get_menu_ref().ixr_options_btn, "ixr_options_btn")
+		get_menu_ref():AddCallback("ixr_options_btn", ui_events.BUTTON_CLICKED, this.on_btn_options_ixr_clicked, get_menu_ref())
+	end
 end
 
 function on_ixr_options_exit_btn_clicked()
