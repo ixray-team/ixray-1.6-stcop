@@ -71,6 +71,8 @@ void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	float2 vel = 0.0f;
 	
     O.Color = float4(final.xyz, alpha);
+#ifndef DISABLE_MOTION_VECTORS
 	O.Velocity = float4(vel, 0.0f, t_base.a * alpha);
+#endif
 }
 
