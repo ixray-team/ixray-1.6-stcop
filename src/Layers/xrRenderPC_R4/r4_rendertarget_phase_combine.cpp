@@ -60,7 +60,7 @@ void CRenderTarget::phase_combine()
 
 	RImplementation.rmNormal();
 
-	if(RImplementation.o.deffered_reflecitons)
+	if(RImplementation.o.deffered_reflecitons && !RImplementation.o.dx11_use_legacy_light)
 	{
 		phase_sslr();
 	}
