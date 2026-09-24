@@ -384,6 +384,8 @@ public:
 	void							addShaderOption				(const char* name, const char* value = "");
 	void							clearAllShaderOptions		();
 
+	bool							NeedMotionVectors			() const;
+
 	auto							ShaderOptionsCount			() { return m_ShaderOptions.size(); }
 
 	virtual bool					InIndoor					() { return pLastSector!=pOutdoorSector; };

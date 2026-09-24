@@ -5,8 +5,10 @@ struct v2p
     float4 factor : COLOR0;
     float3 p : TEXCOORD1;
 
+#ifndef DISABLE_MOTION_VECTORS
     float4 hpos_curr : TEXCOORD2;
     float4 hpos_old : TEXCOORD3;
+#endif
 
     float4 hpos : SV_POSITION;
 };
@@ -17,7 +19,9 @@ TextureCube s_sky1 : register(t1);
 struct sky
 {
     float4 Color : SV_Target0;
+#ifndef DISABLE_MOTION_VECTORS
     float2 Velocity : SV_Target1;
+#endif
 };
 
 void main(in v2p I, out sky O)
@@ -44,6 +48,8 @@ void main(in v2p I, out sky O)
 	O.Color = float4(GammaToLinear(sky), 0.0f);
 #endif
 
+#ifndef DISABLE_MOTION_VECTORS
 	O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+#endif
 }
 

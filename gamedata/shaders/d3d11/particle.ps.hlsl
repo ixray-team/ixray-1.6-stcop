@@ -33,6 +33,8 @@ void main(v2p I, out IXRayForward O)
 	
 	clip(O.Color.w - EPS);
 	
+#ifndef DISABLE_MOTION_VECTORS
 	O.Velocity = 0.0f;
+#endif
 }
 
