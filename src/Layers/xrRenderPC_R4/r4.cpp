@@ -251,8 +251,6 @@ void CRender::create()
 	o.distortion = o.distortion_enabled;
 	o.disasm = Core.ParamsData.test(ECoreParams::disasm);
 
-	clearAllShaderOptions();
-
 	if(!EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT")))
 	{
 		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
@@ -265,7 +263,9 @@ void CRender::create()
 		o.dx11_use_legacy_light = true;
 	}
 
-	o.dx11_disable_motion_vectors = !!EngineExternal().ShadersOptions.contains(xr_string("DISABLE_MOTION_VECTORS"));
+	o.dx11_disable_motion_vectors = !NeedMotionVectors() || !!EngineExternal().ShadersOptions.contains(xr_string("DISABLE_MOTION_VECTORS"));
+	clearAllShaderOptions();
+
 	o.dx11_allow_wboit_transparency = !!EngineExternal().ShadersOptions.contains(xr_string("ALLOW_WBOIT_TRANSPARENCY"));
 
 	o.dx11_enable_tessellation = RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
@@ -625,10 +625,23 @@ xr_string CRender::getShaderParamsDebug()
 	return "";
 }
 
+bool CRender::NeedMotionVectors() const
+{
+	return (ps_r_scale_mode >= 2) || 
+	       (ps_r2_aa_type == 3) || 
+	       ps_r4_mblur_quality > 0 || 
+	       o.deffered_reflecitons;
+}
+
 void CRender::clearAllShaderOptions()
 {
 	//GPU_EVENT(__FUNCTION__)
 	m_ShaderOptions = EngineExternal().ShadersOptions;
+
+	if (o.dx11_disable_motion_vectors || !NeedMotionVectors())
+	{
+		addShaderOption("DISABLE_MOTION_VECTORS", "1");
+	}
 }
 
 void CRender::addShaderOption(const char* name, const char* value) 
@@ -1082,6 +1095,16 @@ HRESULT	CRender::shader_compile(
 
 	if(ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX)) {
 		defines[def_it].Name = "ALLOW_STEEPPARALLAX";
+		defines[def_it].Definition = "1";
+		def_it++;
+		sh_name[len] = '1'; ++len;
+	}
+	else {
+		sh_name[len] = '0';	++len;
+	}
+
+	if(o.dx11_disable_motion_vectors || !NeedMotionVectors()) {
+		defines[def_it].Name = "DISABLE_MOTION_VECTORS";
 		defines[def_it].Definition = "1";
 		def_it++;
 		sh_name[len] = '1'; ++len;

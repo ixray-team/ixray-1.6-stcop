@@ -188,7 +188,9 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	
 	O.Color.w = alpha * (1.0f - fog_fade * fog_fade);
 	
+#ifndef DISABLE_MOTION_VECTORS
 	O.Velocity = 0.0f;
+#endif
 	
 #ifdef ALLOW_WBOIT_TRANSPARENCY
 	WboitBufferPack(O, I.tctexgen);

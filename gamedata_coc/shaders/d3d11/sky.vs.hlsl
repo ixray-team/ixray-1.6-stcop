@@ -14,8 +14,10 @@ struct v2p
     float4 factor : COLOR0;
     float3 p : TEXCOORD1;
 
+#ifndef DISABLE_MOTION_VECTORS
     float4 hpos_curr : TEXCOORD2;
     float4 hpos_old : TEXCOORD3;
+#endif
 
     float4 hpos : SV_POSITION;
 };
@@ -27,8 +29,10 @@ void main(in vi v, out v2p o)
     o.factor = v.c;
     o.p = v.p.xyz;
 
+#ifndef DISABLE_MOTION_VECTORS
     o.hpos_curr = o.hpos;
     o.hpos_old = mul(m_WVP_old, v.p);
+#endif
 	
     o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 }

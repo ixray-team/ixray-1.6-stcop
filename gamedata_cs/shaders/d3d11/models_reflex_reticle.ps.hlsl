@@ -34,8 +34,10 @@ struct vf
     float3 v_pos : TEXCOORD1;
     float3 v_nrm : TEXCOORD2;
 	
+#ifndef DISABLE_MOTION_VECTORS
     float4 hpos_curr : TEXCOORD3;
     float4 hpos_old  : TEXCOORD4;
+#endif
 };
 
 // This gives us cotangent basis that can be used instead of TBN.

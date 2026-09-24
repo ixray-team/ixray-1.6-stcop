@@ -489,11 +489,21 @@ void CRender::Render()
 		GActorInterface->RenderItemUI();
 	}
 
-	Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, 0, 0);
-	rmNormal();
+	if (NeedMotionVectors())
+	{
+		Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, 0, 0);
+		rmNormal();
 
-	GRHI->ClearTarget(Target->rt_Generic_0->pRT);
-	GRHI->ClearTarget(Target->rt_Velocity->pRT);
+		GRHI->ClearTarget(Target->rt_Generic_0->pRT);
+		GRHI->ClearTarget(Target->rt_Velocity->pRT);
+	}
+	else
+	{
+		Target->u_setrt(Target->rt_Generic_0, 0, 0, 0);
+		rmNormal();
+
+		GRHI->ClearTarget(Target->rt_Generic_0->pRT);
+	}
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(false);
@@ -663,7 +673,7 @@ void CRender::Render()
 
 	Target->copy_position();
 
-	if (!!o.dx11_disable_motion_vectors)
+	if (!!o.dx11_disable_motion_vectors && NeedMotionVectors())
 	{
 		Target->pharse_velocity();
 	}

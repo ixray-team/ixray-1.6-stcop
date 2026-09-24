@@ -12,7 +12,11 @@ void skinned_main(in v_model I, out p_bumped_new O)
     O.tcdh = float4(I.tc.xy, hemi_val, L_material.y);
 
 #if defined(USE_HAIRMASK)
+#ifndef DISABLE_MOTION_VECTORS
     hair_wave_anim(I.tc.xy, saturate(hemi_val * 4.0f - 1.0f), I.P.xyz, I.P_old.xyz, I.N);
+#else
+    hair_wave_anim(I.tc.xy, saturate(hemi_val * 4.0f - 1.0f), I.P.xyz, I.N);
+#endif
 #endif
 
     float3 Pe = mul(m_WV, I.P);
