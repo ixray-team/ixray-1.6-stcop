@@ -1933,7 +1933,7 @@ void game_sv_mp::DestroyGameItem(CSE_Abstract* entity)
 	P.w_begin(M_EVENT);
 	P.w_u32(Device.dwTimeGlobal - 2*NET_Latency);
 	P.w_u16(GE_DESTROY);
-	P.w_u16(entity->ID);
+	P << entity->ID;
 	Level().Send(P, net_flags(true,true));
 	//m_server->Perform_destroy(entity, net_flags(true,true));
 }
