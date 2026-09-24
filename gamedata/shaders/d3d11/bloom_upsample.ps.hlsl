@@ -32,7 +32,7 @@ void main(in PSInputFullscreen I, out float3 upsample : SV_Target)
     float3 h = s_image.Sample (smp_rtlinear, float2 (center.x,     center.y - y)).rgb;
     float3 i = s_image.Sample (smp_rtlinear, float2 (center.x + x, center.y - y)).rgb;
 	
-    upsample = t_image.Sample(smp_rtlinear, center);
+    upsample = t_image.Sample(smp_rtlinear, center).rgb;
 
     upsample += e * 0.25f;
     upsample += (b + d + f + h) * 0.125f;
