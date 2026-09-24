@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "SaveSystem_script.h"
 #include "../xrCore/Save/SaveChunk.h"

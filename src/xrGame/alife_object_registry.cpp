@@ -179,7 +179,7 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(ISaveObject& Object)
 		Object << s_name;
 #ifdef DEBUG
 		if (psAI_Flags.test(aiALife)) {
-			Msg("Loading object %s", s_name);
+			Msg("Loading object %s", s_name.c_str());
 		}
 #endif
 		// create entity

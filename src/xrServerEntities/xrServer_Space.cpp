@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "xrServer_Space.h"
 
 ISaveObject& operator<<(ISaveObject& Object, SRotation& Value) {

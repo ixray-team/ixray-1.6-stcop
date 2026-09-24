@@ -1,5 +1,5 @@
 #pragma once
-#include "memory/xrMemory_subst_msvc.h"
+#include "xrCore/memory/xrMemory_subst_msvc.h"
 
 class xr_string;
 class shared_str;

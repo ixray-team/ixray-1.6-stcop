@@ -1,10 +1,10 @@
 #pragma once
 #include "SaveInterface.h"
 #include "SaveChunk.h"
-#include "../xrCore/Template/fastdelegate.h"
+#include "xrCore/Template/fastdelegate.h"
 #include "type_traits"
-#include "../xrCore/shared_string.h"
-#include "../xrCore/Containers/associative_vector.h"
+#include "xrCore/shared_string.h"
+#include "xrCore/Containers/associative_vector.h"
 
 class CSaveObjectSave;
 class CSaveObjectLoad;
@@ -280,6 +280,39 @@ public:
 		GetCurrentChunk()->EndArray();
 		return *this;
 	}
+
+#ifndef IXR_WINDOWS
+	template<IsSaveObjectSerializable T, int Size>
+	ISaveObject& Serialize(FixedVector<T, Size>& Value) {
+		if (IsSave()) {
+			GetCurrentChunk()->WriteArray();
+			for (int i = 0; i < Size; ++i) {
+				if constexpr (std::is_pointer_v<T>) {
+					(*this) << *(Value[i]);
+				}
+				else {
+					(*this) << Value[i];
+				}
+			}
+		}
+		else {
+			u64 ArrSize;
+			GetCurrentChunk()->ReadArray(ArrSize);
+			for (int i = 0; i < ArrSize; ++i) {
+				if constexpr (std::is_pointer_v<T>) {
+					T Elem = new std::remove_pointer_t<T>();
+					(*this) << *(Value[i]);
+					Value[i] = Elem;
+				}
+				else {
+					(*this) << Value[i];
+				}
+			}
+		}
+		GetCurrentChunk()->EndArray();
+		return *this;
+	}
+#endif
 
 	template<IsSaveObjectSerializable Key, IsSaveObjectSerializable Mapped>
 	ISaveObject& Serialize(associative_vector<Key, Mapped>& Value) {
@@ -754,6 +787,13 @@ template<IsSaveObjectSerializable T, size_t Size>
 ISaveObject& operator<<(ISaveObject& Object, FixedVector<T, Size>& Value) {
 	return ((CSaveObject*)&Object)->Serialize(Value);
 }
+
+#ifndef IXR_WINDOWS
+template<IsSaveObjectSerializable T, int Size>
+ISaveObject& operator<<(ISaveObject& Object, FixedVector<T, Size>& Value) {
+	return ((CSaveObject*)&Object)->Serialize(Value);
+}
+#endif
 
 template<IsSaveObjectSerializable T, IsSaveObjectSerializable H, typename Eq>
 ISaveObject& operator<<(ISaveObject& Object, xr_hash_set<T, H, Eq>& Value) {
