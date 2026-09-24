@@ -70,7 +70,9 @@ void main(PSInput _I)
     I.M3 = xform[2];
 	
 	I.hpos = _I.hpos;
+#ifndef DISABLE_MOTION_VECTORS
     I.hpos_curr = I.hpos_old = I.hpos;
+#endif
 	
     SloadNew(I, M);
 

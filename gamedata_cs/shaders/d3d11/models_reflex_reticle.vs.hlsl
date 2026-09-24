@@ -9,8 +9,10 @@ struct vf
     float3 v_pos : TEXCOORD1;
     float3 v_nrm : TEXCOORD2;
 	
+#ifndef DISABLE_MOTION_VECTORS
     float4 hpos_curr : TEXCOORD3;
     float4 hpos_old  : TEXCOORD4;
+#endif
 	
     float4 hpos : SV_Position;
 };
@@ -25,8 +27,10 @@ vf _main(v_model v)
     o.v_pos = mul(m_WV, v.P).xyz; // Position in view space
     o.v_nrm = mul(m_WV, v.N).xyz; // Normal in view space
 
+#ifndef DISABLE_MOTION_VECTORS
 	o.hpos_curr = o.hpos;
     o.hpos_old = mul(m_WVP_old, v.P_old);
+#endif
 	
     o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 
