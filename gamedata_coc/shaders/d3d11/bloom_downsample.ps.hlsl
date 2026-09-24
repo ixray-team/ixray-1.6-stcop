@@ -52,19 +52,19 @@ void main(in PSInputFullscreen I, out float3 downsample : SV_Target)
 	#endif
 #endif
 	
-	a = clamp(a, 0.0f, 64.0f);
-	b = clamp(b, 0.0f, 64.0f);
-	c = clamp(c, 0.0f, 64.0f);
-	d = clamp(d, 0.0f, 64.0f);
-	e = clamp(e, 0.0f, 64.0f);
-	f = clamp(f, 0.0f, 64.0f);
-	g = clamp(g, 0.0f, 64.0f);
-	h = clamp(h, 0.0f, 64.0f);
-	i = clamp(i, 0.0f, 64.0f);
-	j = clamp(j, 0.0f, 64.0f);
-	k = clamp(k, 0.0f, 64.0f);
-	l = clamp(l, 0.0f, 64.0f);
-	m = clamp(m, 0.0f, 64.0f);
+	a = min(a, 64.0f);
+	b = min(b, 64.0f);
+	c = min(c, 64.0f);
+	d = min(d, 64.0f);
+	e = min(e, 64.0f);
+	f = min(f, 64.0f);
+	g = min(g, 64.0f);
+	h = min(h, 64.0f);
+	i = min(i, 64.0f);
+	j = min(j, 64.0f);
+	k = min(k, 64.0f);
+	l = min(l, 64.0f);
+	m = min(m, 64.0f);
 	
     downsample = e * 0.125f;
 	
