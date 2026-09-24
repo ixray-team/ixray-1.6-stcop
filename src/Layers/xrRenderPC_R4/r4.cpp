@@ -633,8 +633,7 @@ bool CRender::NeedMotionVectors() const
 {
 	return (ps_r_scale_mode >= 2) || 
 	       (ps_r2_aa_type == 3) || 
-	       ps_r4_mblur_quality > 0 || 
-	       o.deffered_reflecitons;
+	       ps_r4_mblur_quality > 0;
 }
 
 void CRender::clearAllShaderOptions()
