@@ -37,16 +37,6 @@ void CRenderTarget::PhaseAberration()
 	RenderEffect(ScreenPostProcessType::Aberration);
 }
 
-void CRenderTarget::PhaseVignette()
-{
-	RenderEffect(ScreenPostProcessType::Vignette);
-}
-
-void CRenderTarget::PhaseSaturation()
-{
-	RenderEffect(ScreenPostProcessType::Saturation);
-}
-
 void CRenderTarget::PhaseRaindrops()
 {
 	const bool ItemCfgHudRainDropsAvailable = g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable;
