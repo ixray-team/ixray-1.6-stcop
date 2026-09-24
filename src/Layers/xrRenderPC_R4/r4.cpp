@@ -364,6 +364,10 @@ void CRender::reset_begin() {
 		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
 		o.offscreen_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_OFFSCREEN_REFLECTIONS);
 	}
+	else
+	{
+		o.deffered_reflecitons = o.offscreen_reflecitons = false;
+	}
 }
 
 void CRender::reset_end() {
@@ -975,7 +979,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(!!o.offscreen_reflecitons) {
+	if(!o.dx11_use_legacy_light && !!o.offscreen_reflecitons) {
 		defines[def_it].Name = "USE_OFFSCREEN_REFLECTIONS";
 		defines[def_it].Definition = "1";
 
@@ -986,7 +990,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(!!o.deffered_reflecitons) {
+	if(!o.dx11_use_legacy_light && !!o.deffered_reflecitons) {
 		defines[def_it].Name = "USE_SSLR_REFLECTIONS";
 		defines[def_it].Definition = "1";
 
