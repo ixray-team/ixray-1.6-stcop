@@ -18,7 +18,7 @@ void main(PSInput _I)
 	
 	uint2 DTid = uint2(_I.hpos.xy);
 	
-	M.Depth = s_position[DTid];
+	M.Depth = s_position[DTid].x;
 	M.Point = GbufferGetPointRealJitter(_I.texcoord, M.Depth);
 	
 	O.Color = u_color[DTid];

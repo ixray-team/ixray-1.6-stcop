@@ -40,6 +40,7 @@ float parralax_fade(in float2 tc, in float3 Point)
 
 void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
 {
+	O = (IXRayForward)0;
     if (m_hud_params.y * m_hud_params.a < 0.0001f)
 	{
 		discard;
