@@ -29,6 +29,8 @@ void main(v2p I, out IXRayForward O)
 	O.Color.w = GammaToLinear(O.Color.w);
 #endif
 	
+#ifndef DISABLE_MOTION_VECTORS
 	O.Velocity = 0.0f;
+#endif
 }
 
