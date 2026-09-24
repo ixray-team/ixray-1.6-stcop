@@ -36,7 +36,7 @@ float main(PSInputFullscreen I) : SV_Target0
     IXRayGbuffer O = (IXRayGbuffer)NULL;
     GbufferUnpack((uint2)I.hpos.xy, O);
 	
-	float2 rotSample = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)].xyz;
+	float2 rotSample = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)].xy;
 	rotSample = normalize(rotSample - 0.5f);
 
 	float3 pos = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth) * 0.99f;

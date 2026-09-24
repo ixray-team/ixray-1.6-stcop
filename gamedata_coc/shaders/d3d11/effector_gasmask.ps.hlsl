@@ -32,7 +32,7 @@ float3 calc_visor_reflect(float3 color, float2 tc)
 	for (uint i = 0; i < VIS_GLASS_NUM; ++i)
 	{
 		N = 1.0f - p / 0.8f + 0.15f * (i / (VIS_GLASS_NUM - 1.0f)) * p;
-		res += s_image.SampleLevel(smp_rtlinear, ((center - tc) * -N + center), 0);
+		res += s_image.SampleLevel(smp_rtlinear, ((center - tc) * -N + center), 0).xyz;
 	}
 
 	res *= rcp(VIS_GLASS_NUM);
