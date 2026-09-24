@@ -22,6 +22,7 @@
 
 void main(p_bumped_new I, out OutStructure O)
 {
+    O = (OutStructure)0;
     IXRayMaterial M = (IXRayMaterial)NULL;
 
     M.Sun = I.tcdh.w;
@@ -123,7 +124,7 @@ void main(p_bumped_new I, out OutStructure O)
 	#endif
 	
 #ifdef FORWARD_LIGHT
-	float3 LocalLightDir = normalize(M.Point - L_model_light_dir);
+	float3 LocalLightDir = normalize(M.Point - L_model_light_dir.xyz);
 	
 	#ifndef USE_LEGACY_LIGHT
 		Light += DirectLight(L_model_light_color, LocalLightDir, M.Normal, View, Diffuse, Specular, M.Roughness);
