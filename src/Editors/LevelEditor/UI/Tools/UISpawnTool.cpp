@@ -128,9 +128,13 @@ void UISpawnTool::MultiSelByRefObject(bool clear_prev)
 void UISpawnTool::RefreshList()
 {
 	ListItemsVec items;
-	LHelper().CreateItem(items, RPOINT_CHOOSE_NAME, 0, 0, 0);
-	LHelper().CreateItem(items, ENVMOD_CHOOSE_NAME, 0, 0, 0);
+	LHelper().CreateItem(items, RPOINT_CHOOSE_NAME, 0, 0, nullptr);
+	LHelper().CreateItem(items, ENVMOD_CHOOSE_NAME, 0, 0, nullptr);
+	
+	xr_hash_map<shared_str, shared_str> Verification;
+	
 	CInifile::Root& sections = pSettings->sections();
+	Verification.reserve(sections.size());
 	for (CInifile::Sect& sect : sections)
 	{
 		shared_str& sect_name = sect.Name;
@@ -140,14 +144,16 @@ void UISpawnTool::RefreshList()
 			shared_str caption = pSettings->r_string_wb(sect_name, "$spawn");
 			if (caption.size())
 			{
+				I_ASSERT_M(!Verification.contains(caption), "Found exact match [%s] in $spawn key in sections [%s] and [%s]", caption.c_str(), sect_name.c_str(), Verification[caption].c_str());
 				ListItem* I = LHelper().CreateItem(items, caption.c_str(), 0, ListItem::flDrawThumbnail, (LPVOID)sect_name.c_str());
+				Verification[caption] = sect_name;
 				//m_caption_to_sect[caption] = sect_name;
 			}
 		}
 	}
 
 	// Sort motions 
-	std::sort(items.begin(), items.end(), [](ListItem* ItemA, ListItem* ItemB)
+	std::ranges::sort(items, [](ListItem* ItemA, ListItem* ItemB)
 	{
 		const std::string_view NameA = ItemA->Key();
 		const std::string_view NameB = ItemB->Key();
@@ -157,12 +163,17 @@ void UISpawnTool::RefreshList()
 		for (size_t Iter = 0; Iter < ALen; Iter++)
 		{
 			if (Iter >= BLen)
+			{
 				return false;
-
+			}
 			if (NameA[Iter] > NameB[Iter])
+			{
 				return false;
+			}
 			else if (NameA[Iter] < NameB[Iter])
+			{
 				return true;
+			}
 		}
 	});
 
