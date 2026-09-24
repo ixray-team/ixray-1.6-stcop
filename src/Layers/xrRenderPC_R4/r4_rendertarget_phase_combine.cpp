@@ -212,8 +212,11 @@ void CRenderTarget::phase_combine()
 		}
 	}
 
-	phase_depth_upscale();
-	phase_mblur();
+	if (RImplementation.NeedMotionVectors())
+	{
+		phase_depth_upscale();
+		phase_mblur();
+	}
 
 	u_setrt(get_width(), get_height(), 0, 0, 0, 0);
 	RImplementation.rmNormal();
