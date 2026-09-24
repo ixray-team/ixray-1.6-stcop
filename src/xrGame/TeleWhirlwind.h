@@ -17,7 +17,7 @@ struct CTeleWhirlwindObject : STelekineticObject
 	void set_throw_power(float throw_pow);
 	virtual void raise(float step);
 	virtual void raise_update();
-	virtual void perform_keep_object();
+	virtual void perform_keep_object(float ph_step);
 	virtual void release();
 	virtual void fire(const Fvector& target);
 	virtual void throw_object(const Fvector& target, float power);
