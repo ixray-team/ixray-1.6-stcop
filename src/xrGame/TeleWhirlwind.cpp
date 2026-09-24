@@ -231,7 +231,7 @@ void CTeleWhirlwindObject::raise(float step)
 		}
 }
 
-void CTeleWhirlwindObject::perform_keep_object()
+void CTeleWhirlwindObject::perform_keep_object(float ph_step)
 {
 	CPhysicsShell*	p					=	get_object()	->PPhysicsShell();
 	if(!p||!p->isActive())	

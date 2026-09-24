@@ -24,7 +24,7 @@ void SCollisionHitCallback::call(IPhysicsShellHolder* ph_shell, float min_collis
 STelekineticObject::STelekineticObject(const STelekineticObjectParams& tele_params) : params(tele_params)
 {
 	STelekineticObject::switch_state(ETelekineticState::TS_RAISE);
-	this->params.target_height = this->params.object->Position().y + this->params.target_height;
+	this->params.target_height = params.object->Position().y + this->params.target_height;
 }
 
 void STelekineticObject::set_sound(const ref_sound& snd_hold, const ref_sound& snd_throw)
@@ -296,20 +296,19 @@ void STelekineticObject::switch_state(ETelekineticState new_state)
 	state = new_state;
 }
 
-void STelekineticObject::raise(float step)
+void STelekineticObject::raise(float ph_step)
 {
 	if (!params.object || !params.object->m_pPhysicsShell || !params.object->m_pPhysicsShell->isActive())
 	{
 		return;
 	}
 
-	step *= params.strength;
+	ph_step *= params.strength;
 
 	Fvector dir;
-	dir.set(0.f, 1.0f, 0.f);
-
-	float elem_size = float(params.object->m_pPhysicsShell->Elements().size());
-	dir.mul(elem_size * elem_size * params.strength);
+	dir.set(0.f, 1.f, 0.f);
+	dir.mul(params.strength * params.strength);
+	dir.mul(ph_step);
 
 	if (OnServer())
 	{
@@ -335,7 +334,7 @@ bool STelekineticObject::throw_time_elapsed() const
 	return time_throw_started + DELAY_AFTER_THROW < time();
 }
 
-void STelekineticObject::perform_keep_object()
+void STelekineticObject::perform_keep_object(float ph_step)
 {
 	if (!params.object || !params.object->m_pPhysicsShell || !params.object->m_pPhysicsShell->isActive())
 	{
@@ -345,25 +344,17 @@ void STelekineticObject::perform_keep_object()
 	Fvector dir;
 	float current_height = params.object->Position().y;
 
-	if (current_height > params.target_height)
+	if (current_height >= params.target_height)
 	{
-		dir.set(0.f, -1.0f, 0.f);
+		dir.set(0.f, -1.f, 0.f);
 	}
-	else if (current_height < params.target_height)
+	
+	if (current_height <= params.target_height)
 	{
-		dir.set(0.f, 1.0f, 0.f);
-	}
-	else
-	{
-		dir.set(
-			Random.randF(-1.0f, 1.0f),
-			Random.randF(-1.0f, 1.0f),
-			Random.randF(-1.0f, 1.0f)
-		);
-		dir.normalize_safe();
+		dir.set(0.f, 1.f, 0.f);
 	}
 
-	dir.mul(5.0f);
+	dir.mul(5.f);
 
 	if (OnServer())
 	{
@@ -866,9 +857,9 @@ bool STelekineticWeaponObject::is_enemy_tracing(float threshold)
 	return rq_result.O == enemy && dot >= cosf(deg2rad(threshold));
 }
 
-void STelekineticWeaponObject::perform_keep_object()
+void STelekineticWeaponObject::perform_keep_object(float ph_step)
 {
-	inherited::perform_keep_object();
+	inherited::perform_keep_object(ph_step);
 
 	if (weapon->GetCondition() < initial_weapon_condition)
 	{
@@ -958,9 +949,9 @@ void STelekineticGrenadeObject::switch_state(ETelekineticState new_state)
 	inherited::switch_state(new_state);
 }
 
-void STelekineticGrenadeObject::perform_keep_object()
+void STelekineticGrenadeObject::perform_keep_object(float ph_step)
 {
-	inherited::perform_keep_object();
+	inherited::perform_keep_object(ph_step);
 
 	const CEntityAlive* enemy = telekinetic_enemy->get_enemy();
 

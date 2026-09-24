@@ -103,11 +103,11 @@ struct STelekineticObject
 	virtual void start_object_particles();
 	virtual void stop_object_particles();
 
-	virtual void raise(float step);
+	virtual void raise(float ph_step);
 	virtual void raise_update();
 
 	virtual void prepare_keep();
-	virtual void perform_keep_object();
+	virtual void perform_keep_object(float ph_step);
 	virtual void keep_update();
 	virtual void release();
 	virtual void throw_object(const Fvector& target, float power);
@@ -177,7 +177,7 @@ struct STelekineticWeaponObject : STelekineticObject
 	 * По умолчанию - 10 градусов.
 	 */
 	bool is_enemy_tracing(float threshold = 10.f);
-	void perform_keep_object() override;
+	void perform_keep_object(float ph_step) override;
 	bool can_be_thrown() override;
 	void release() override;
 	void switch_state(ETelekineticState new_state) override;
@@ -200,7 +200,7 @@ struct STelekineticGrenadeObject : STelekineticObject
 #ifdef DEBUG_DRAW
 	void debug_draw();
 #endif
-	void perform_keep_object() override;
+	void perform_keep_object(float ph_step) override;
 	void switch_state(ETelekineticState new_state) override;
 	bool can_be_thrown() override;
 	bool can_be_picked_up() override;
