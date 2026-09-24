@@ -33,8 +33,8 @@ float4 main(PSInputFullscreen I) : SV_Target
 
 #ifndef USE_LEGACY_LIGHT
 	#ifdef USE_SSLR_REFLECTIONS
-		float3 SpecularIrradance = saturate(s_refl.Load(int3(I.hpos.xy, 0)).xyz);
-		SpecularIrradance *= SpecularIrradance < 1.0f ? rcp(1.0f - SpecularIrradance) : 1.0f;
+		float3 SpecularIrradance = clamp(s_refl.Load(int3(I.hpos.xy, 0)).xyz, 0.0f, 0.95f);
+		SpecularIrradance *= rcp(1.0f - SpecularIrradance);
 	#else
 		float3 SpecularIrradance = CompureSpecularIrradance
 		(
