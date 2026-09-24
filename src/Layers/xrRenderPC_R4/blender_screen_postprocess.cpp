@@ -35,19 +35,9 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-        case ScreenPostProcessType::Vignette:
-        {
-            C.r_Pass("stub_fullscreen_triangle", "vignette", false, false, false);
-            break;
-        }
         case ScreenPostProcessType::Aberration:
         {
             C.r_Pass("stub_fullscreen_triangle", "chromatic_aberration", false, false, false);
-            break;
-        }
-        case ScreenPostProcessType::Saturation:
-        {
-            C.r_Pass("stub_fullscreen_triangle", "saturation", false, false, false);
             break;
         }
         case ScreenPostProcessType::Raindrops:

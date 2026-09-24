@@ -353,8 +353,6 @@ public:
 
 	void						RenderEffect			(ScreenPostProcessType postProcessType, bool = true);
 	void						PhaseAberration			();
-	void						PhaseVignette			();
-	void						PhaseSaturation			();
 	void						PhaseRaindrops();
 	void						PhaseGasmask			();
 	void						PhaseWinter				();
