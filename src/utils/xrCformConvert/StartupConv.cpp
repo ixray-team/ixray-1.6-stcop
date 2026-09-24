@@ -6,12 +6,12 @@
 #include "FormatParsers/LevelGeom/GeomIO.h"
 #include "ConverterUI.h"
 #include "graph_abstract.h"
-#include "server_entity_wrapper.h"
-#include "xrServer_Object_Base.h"
+#include "../xrServerEntities/server_entity_wrapper.h"
+#include "../xrServerEntities/xrServer_Object_Base.h"
 #include "luabind/luabind_memory.h"
 #include "Save/MemoryBuffer.h"
 #include "Save/SaveManager.h"
-#include "utils/xrAI/factory_api.h"
+#include "../xrAI/factory_api.h"
 
 // SWIContainer g_SWI, x_SWI;
 // VBContainer g_VB, x_VB;
@@ -230,12 +230,14 @@ void StartupSpawn()
 	CMemoryWriter stream;
 	auto CopyChunk = [&]<XRay::Concepts::Enum E>(E ChunkID)
 	{
-		stream.make_chunk(ChunkID, [&file, ChunkID](IWriter& stream)
-		{
+		stream.open_chunk(ChunkID);
+		//stream.make_chunk(ChunkID, [&file, ChunkID](IWriter& stream)
+		//{
 			auto OrigChunk = file->open_chunk(ChunkID);
 			stream.w(OrigChunk->pointer(), OrigChunk->length());
 			OrigChunk->close();
-		});
+		//});
+		stream.close_chunk();
 	};
 	CopyChunk(SpawnFileChunks::Header);
 	CopyChunk(SpawnFileChunks::LevelPoints);
@@ -250,67 +252,11 @@ void StartupSpawn()
 	OldGraphData->close();
 	
 	UseAdvancedSerialization = true;
-	stream.make_chunk(SpawnFileChunks::SpawnGraphNew, [&SpawnGraph](IWriter& stream){
+	stream.open_chunk(SpawnFileChunks::SpawnGraphNew);
+	//stream.make_chunk(SpawnFileChunks::SpawnGraphNew, [&SpawnGraph](IWriter& stream){
 		save_data(SpawnGraph, stream);
-	});
-	/*stream.make_chunk(SpawnFileChunks::SpawnGraphNew, [&SpawnGraph](IWriter& stream){
-		stream.make_chunk(GraphAbstractChunks::VerticesNum, [&SpawnGraph](IWriter& stream)
-		{
-			stream.w_u32(SpawnGraph.vertex_count());
-		});
-	
-		stream.make_chunk(GraphAbstractChunks::VerticesData, [&SpawnGraph](IWriter& stream)
-		{
-			auto I = SpawnGraph.vertices().begin();
-			auto E = SpawnGraph.vertices().end();
-			SSaveTask dummy;
-			for (int i=0; I != E; ++I)
-			{
-				stream.make_chunk(i, [&I, &dummy](IWriter& stream)
-				{
-					stream.make_chunk(GraphAbstractVertexChunks::ID, [&I, &dummy](IWriter& stream)
-					{
-						save_data(I->second->vertex_id(),stream);
-					});
-		
-					stream.make_chunk(GraphAbstractVertexChunks::Data, [&I, &dummy](IWriter& stream)
-					{
-						auto& obj = I->second->data()->object();
-						auto SaveObjPtr = CSaveManager::GetInstance().EditorBeginSave();
-						auto& SaveObj = *SaveObjPtr;
-						shared_str temp = obj.name();
-						SaveObj << temp;
-						obj.Spawn_Serialize(SaveObj, true);
-						obj.UPDATE_Serialize(SaveObj);
-						CMemoryBuffer buff;
-						buff.Write(ESaveVariableType::t_chunk);
-						SaveObj.Write(&buff, &dummy);
-						buff.Write(&stream);
-						xr_delete(SaveObjPtr);
-					});
-				});
-			}
-		});
-	
-		stream.make_chunk(GraphAbstractChunks::Edges, [&SpawnGraph](IWriter& stream)
-		{
-			for (auto& val : SpawnGraph.vertices() | std::views::values)
-			{
-				if (val->edges().empty())
-				{
-					continue;
-				}
-				save_data(val->vertex_id(),stream);
-	
-				stream.w_u32(val->edges().size());
-				for (auto& Edge : val->edges())
-				{
-					save_data(Edge.vertex_id(),stream);
-					save_data(Edge.weight(),stream);
-				}
-			}
-		});
-	});*/
+	//});
+	stream.close_chunk();
 	
 	FS.update_path(file_name, "$game_spawn$", CFormConverter::GetConverterSettings().SpawnDest.c_str());
 	xr_strcat(file_name, ".spawn");
