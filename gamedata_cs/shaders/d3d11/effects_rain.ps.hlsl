@@ -11,6 +11,7 @@ struct v2p
 
 void main(in v2p I, out IXRayForward O)
 {
+	O = (IXRayForward)0;
 	O.Color = s_base.Sample(smp_base, I.Tex0) * I.Color;
 	O.Color.xyz = GammaToLinear(O.Color.xyz * 0.8f);
 

@@ -26,6 +26,6 @@ float2 main(PSInput I) : SV_Target
 	I.TexCoord.x = I.TexCoord.x * 2.0f - 1.0f;
 	I.TexCoord.y = 1.0f - I.TexCoord.y * 2.0f;
 	
-	return I.TexCoord.xy - PrevTexCoord;
+	return I.TexCoord.xy - PrevTexCoord.xy;
 }
 

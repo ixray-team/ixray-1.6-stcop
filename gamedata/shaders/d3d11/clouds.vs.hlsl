@@ -31,7 +31,7 @@ vf main(vi v)
     o.tc1 = _1;
 
     o.color = v.color;
-    o.color.w *= pow(v.p.y, 25.0f);
+    o.color.w *= pow(abs(v.p.y), 25.0f);
 
     return o;
 }
