@@ -421,6 +421,7 @@ void CTelekineticPoltergeist::throw_objects()
 					enemy_head,
 					tele_object->get_object()->Position().distance_to(enemy_head) / fly_velocity
 				);
+				break;
 			}
 		}
 	}
