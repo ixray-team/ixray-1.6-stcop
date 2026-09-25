@@ -436,10 +436,15 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 				Position().y					= EPS_L + ai().level_graph().vertex_plane_y(*ai_location().level_vertex(),Position().x,Position().z);
 		}
 		else {
-			CSE_ALifeObject* const alife_object	= E->cast_alife_object();
-			if ( alife_object && ai().level_graph().valid_vertex_id(alife_object->m_tNodeID) ) {
-				ai_location().level_vertex		(alife_object->m_tNodeID);
-				ai_location().game_vertex		(alife_object->m_tGraphID);
+			CObject* parent_object = Level().Objects.net_Find(E->ID_Parent);
+			CGameObject* parent_go = parent_object ? parent_object->cast_game_object() : nullptr;
+			if (!copy_ai_location_from(parent_go))
+			{
+				CSE_ALifeObject* const alife_object	= E->cast_alife_object();
+				if ( alife_object && ai().level_graph().valid_vertex_id(alife_object->m_tNodeID) ) {
+					ai_location().level_vertex		(alife_object->m_tNodeID);
+					ai_location().game_vertex		(alife_object->m_tGraphID);
+				}
 			}
 		}
 	}
@@ -643,27 +648,34 @@ void CGameObject::setup_parent_ai_locations(bool assign_position)
 	//	)
 	//	Position().set		(l_tpGameObject->Position());
 
-	// setup its ai locations
+	// Attached object shares the parent's graph ids. Level-graph search is for independent objects.
 	if (!UsedAI_Locations())
 		return;
 
-	if (!ai().get_level_graph())
-		return;
+	copy_ai_location_from		(l_tpGameObject);
+}
 
-	if (l_tpGameObject->UsedAI_Locations() && ai().level_graph().valid_vertex_id(l_tpGameObject->ai_location().level_vertex_id()))
-		ai_location().level_vertex	(l_tpGameObject->ai_location().level_vertex_id());
-	else
-		validate_ai_locations	(false);
-//	VERIFY2						(l_tpGameObject->UsedAI_Locations(),*l_tpGameObject->cNameSect());
-//	VERIFY2						(ai().level_graph().valid_vertex_id(l_tpGameObject->ai_location().level_vertex_id()),*cNameSect());
-//	ai_location().level_vertex	(l_tpGameObject->ai_location().level_vertex_id());
+bool CGameObject::copy_ai_location_from(CGameObject* source)
+{
+	if (!source || !ai().get_level_graph())
+		return false;
 
-	if (ai().game_graph().valid_vertex_id(l_tpGameObject->ai_location().game_vertex_id()))
-		ai_location().game_vertex	(l_tpGameObject->ai_location().game_vertex_id());
-	else
-		ai_location().game_vertex	(ai().cross_table().vertex(ai_location().level_vertex_id()).game_vertex_id());
-//	VERIFY2						(ai().game_graph().valid_vertex_id(l_tpGameObject->ai_location().game_vertex_id()),*cNameSect());
-//	ai_location().game_vertex	(l_tpGameObject->ai_location().game_vertex_id());
+	const u32 parent_level_vertex = source->ai_location().level_vertex_id();
+	if (!ai().level_graph().valid_vertex_id(parent_level_vertex))
+		return false;
+
+	ai_location().level_vertex	(parent_level_vertex);
+
+	if (!ai().get_game_graph())
+		return true;
+
+	const GameGraph::_GRAPH_ID parent_game_vertex = source->ai_location().game_vertex_id();
+	if (ai().game_graph().valid_vertex_id(parent_game_vertex))
+		ai_location().game_vertex	(parent_game_vertex);
+	else if (ai().get_cross_table())
+		ai_location().game_vertex	(ai().cross_table().vertex(parent_level_vertex).game_vertex_id());
+
+	return true;
 }
 
 u32 CGameObject::new_level_vertex_id			() const

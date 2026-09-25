@@ -12,6 +12,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "patrol_path_params.h"
 #include "SaveObjectHelpers.h"
+#include "GameObject.h"
 
 void CLevel::cl_Process_Spawn(NET_Packet& P)
 {
@@ -239,7 +240,20 @@ CSE_Abstract *CLevel::spawn_item		(const char* section, const Fvector &position,
 	CSE_ALifeDynamicObject	*dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(abstract);
 	if (dynamic_object && ai().get_level_graph()) {
 		dynamic_object->m_tNodeID	= level_vertex_id;
-		if (ai().level_graph().valid_vertex_id(level_vertex_id) && ai().get_game_graph() && ai().get_cross_table())
+		CGameObject* parent_go = nullptr;
+		if (parent_id != ALife::INVALID_OBJECT_ID)
+		{
+			CObject* parent = Objects.net_Find(parent_id);
+			parent_go = parent ? parent->cast_game_object() : nullptr;
+		}
+
+		if (parent_go && ai().level_graph().valid_vertex_id(parent_go->ai_location().level_vertex_id()))
+		{
+			dynamic_object->m_tNodeID = parent_go->ai_location().level_vertex_id();
+			if (ai().get_game_graph() && ai().game_graph().valid_vertex_id(parent_go->ai_location().game_vertex_id()))
+				dynamic_object->m_tGraphID = parent_go->ai_location().game_vertex_id();
+		}
+		else if (ai().level_graph().valid_vertex_id(level_vertex_id) && ai().get_game_graph() && ai().get_cross_table())
 			dynamic_object->m_tGraphID	= ai().cross_table().vertex(level_vertex_id).game_vertex_id();
 	}
 

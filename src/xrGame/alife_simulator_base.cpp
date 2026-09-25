@@ -134,6 +134,15 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 
 	dynamic_object->m_tNodeID	= level_vertex_id;
 	dynamic_object->m_tGraphID	= game_vertex_id;
+	if (parent_id != ALife::INVALID_OBJECT_ID)
+	{
+		CSE_ALifeDynamicObject* parent = objects().object(parent_id, true);
+		if (parent && parent->m_tNodeID != u32(-1))
+		{
+			dynamic_object->m_tNodeID	= parent->m_tNodeID;
+			dynamic_object->m_tGraphID	= parent->m_tGraphID;
+		}
+	}
 	dynamic_object->m_tSpawnID	= ALife::INVALID_OBJECT_ID;
 
 	if (registration)
