@@ -755,12 +755,6 @@ void CRender::Render()
 		RImplementation.r_dsgraph_render_emissive();
 	}
 
-	if(g_hud && g_hud->RenderActiveItemUIQuery())
-	{
-		Target->phase_accumulator();
-		r_dsgraph_render_hud_ui();
-	}
-
 	// Lighting, non dependant on OCCQ
 	{
 		GPU_EVENT(DEFER_LIGHT_NO_OCCQ);
@@ -852,7 +846,8 @@ void CRender::render_forward()
 	g_pGamePersistent->Environment().RenderLast();
 	Target->phase_combine_volumetric();
 
-	if(bSpecial = mapHUDSorted.size() > 0; bSpecial || mapHUDEmissive.size() > 0)
+	const bool bHUD_UI = g_hud && g_hud->RenderActiveItemUIQuery();
+	if(bSpecial = mapHUDSorted.size() > 0; bSpecial || mapHUDEmissive.size() > 0 || bHUD_UI)
 	{
 		if(bSpecial)
 		{
