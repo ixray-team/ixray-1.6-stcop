@@ -1,4 +1,3 @@
-#pragma once
 #include "StdAfx.h"
 #include "IPowerManager.h"
 #include "Actor.h"

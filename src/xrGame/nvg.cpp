@@ -1,4 +1,3 @@
-#pragma once
 #include "StdAfx.h"
 #include "nvg.h"
 #include "UICellItem.h"

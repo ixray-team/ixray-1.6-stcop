@@ -1,4 +1,3 @@
-#pragma once
 #include "StdAfx.h"
 #include "object_broker.h"
 #include "AnomalyRainCollide.h"

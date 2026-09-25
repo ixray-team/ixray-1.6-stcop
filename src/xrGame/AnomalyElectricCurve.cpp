@@ -1,4 +1,3 @@
-#pragma once
 #include "StdAfx.h"
 #include "AnomalyElectricCurve.h"
 #include "object_broker.h"
@@ -43,7 +42,7 @@ void TAnomalyElectricCurve::InitElectricCurves()
 	}
 }
 
-// ГГ берет артефакт с земли где то в пределах 160 метров радиуса от аномалии
+// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 160 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 void TAnomalyElectricCurve::OnActorTakeArtefact(float scan_radius, CArtefact* artefact, Fvector actorPos)
 {
 
@@ -85,9 +84,9 @@ void TAnomalyElectricCurve::Load(const char* section)
 
 		if (m_use_electric_curve)
 		{
-			draw_dbg = READ_IF_EXISTS(pSettings, r_bool, sect, "draw_debug", false); // отладка
+			draw_dbg = READ_IF_EXISTS(pSettings, r_bool, sect, "draw_debug", false); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-			max_processing_distance = READ_IF_EXISTS(pSettings, r_float, sect, "max_processing_distance", max_processing_distance); // дистанция обновления
+			max_processing_distance = READ_IF_EXISTS(pSettings, r_float, sect, "max_processing_distance", max_processing_distance); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 			m_electric_curve_particle_path = READ_IF_EXISTS(pSettings, r_string, sect, "electric_curve_particle_path", "");
 			m_electric_curve_ground_contact_particle_path = READ_IF_EXISTS(pSettings, r_string, sect, "electric_curve_ground_contact_particle_path", "");
@@ -95,7 +94,7 @@ void TAnomalyElectricCurve::Load(const char* section)
 			max_trace_curve_distance = READ_IF_EXISTS(pSettings, r_float, sect, "max_trace_curve_distance", max_trace_curve_distance);
 
 			max_blastTimeProcessing = READ_IF_EXISTS(pSettings, r_float, sect, "max_curve_atack_damage_time", max_blastTimeProcessing);
-			m_max_curve_radius = READ_IF_EXISTS(pSettings, r_float, sect, "max_curve_atack_radius", m_max_curve_radius);// для атак
+			m_max_curve_radius = READ_IF_EXISTS(pSettings, r_float, sect, "max_curve_atack_radius", m_max_curve_radius);// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 			m_max_curve_damage = READ_IF_EXISTS(pSettings, r_float, sect, "max_curve_atack_damage", m_max_curve_damage);
 			m_max_curve_impulse = READ_IF_EXISTS(pSettings, r_float, sect, "max_curve_atack_impulse", m_max_curve_impulse);
 
@@ -103,10 +102,10 @@ void TAnomalyElectricCurve::Load(const char* section)
 			m_change_target_timeout_ms_max = READ_IF_EXISTS(pSettings, r_float, sect, "change_target_timeout_ms_max", m_change_target_timeout_ms_max);
 			m_curve_start_y_offset = READ_IF_EXISTS(pSettings, r_float, sect, "curve_start_y_offset", m_curve_start_y_offset);
 
-			m_cascade_curves = READ_IF_EXISTS(pSettings, r_bool, sect, "use_cascade_electric_curves", m_cascade_curves); // цепные молнии
+			m_cascade_curves = READ_IF_EXISTS(pSettings, r_bool, sect, "use_cascade_electric_curves", m_cascade_curves); // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			if (m_cascade_curves)
 			{
-				m_touch_objects_by_curves = READ_IF_EXISTS(pSettings, r_bool, sect, "use_touch_objects_by_curves", m_touch_objects_by_curves); // щупать неживые обьекты по близости
+				m_touch_objects_by_curves = READ_IF_EXISTS(pSettings, r_bool, sect, "use_touch_objects_by_curves", m_touch_objects_by_curves); // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			}
 
 			m_snd_emmiter_electric_core_loop.push_back(new CRandomSoundEmmiter(sect, "sounds_electric_core_loop"));
