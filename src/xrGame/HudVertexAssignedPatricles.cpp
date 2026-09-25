@@ -1,4 +1,3 @@
-#pragma once
 #include "StdAfx.h"
 #include "HudVertexAssignedPatricles.h"
 #include "Actor.h"

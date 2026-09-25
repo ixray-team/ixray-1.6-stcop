@@ -1,4 +1,3 @@
-#pragma once
 #include "StdAfx.h"
 #include "AnomalyMovement.h"
 #include "object_broker.h"
@@ -18,7 +17,7 @@ void TAnomalyMovement::BeginComponent(IECSOwner* O)
 
 void TAnomalyMovement::EndComponent() { }
 
-// ГГ берет артефакт с земли где то в пределах 160 метров от артефакта до аномалии
+// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 160 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 void TAnomalyMovement::OnActorTakeArtefact(float scan_radius, CArtefact* artefact, Fvector actorPos)
 {
 	if (!m_use_movement)
@@ -56,9 +55,9 @@ void TAnomalyMovement::Load(const char* section)
 		m_use_movement = READ_IF_EXISTS(pSettings, r_bool, sect, "use_movement", false);
 		if (m_use_movement)
 		{
-			draw_dbg = READ_IF_EXISTS(pSettings, r_bool, sect, "draw_debug", false); // отладка
+			draw_dbg = READ_IF_EXISTS(pSettings, r_bool, sect, "draw_debug", false); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-			max_processing_distance = READ_IF_EXISTS(pSettings, r_float, sect, "max_processing_distance", max_processing_distance); // дистанция обновления
+			max_processing_distance = READ_IF_EXISTS(pSettings, r_float, sect, "max_processing_distance", max_processing_distance); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 			m_use_movement_always_mode = READ_IF_EXISTS(pSettings, r_bool, sect, "use_movement_always_mode", false);
 
