@@ -162,6 +162,213 @@ static void HudAdjustDrawSaveButton()
 	Actor()->AddGameNews(news_data);
 }
 
+static bool hud_adj_show_golden_ratio = false;
+static ImVec4 hud_adj_golden_ratio_color = ImVec4(0.0f, 0.47f, 0.84f, 0.85f);
+static float hud_adj_golden_ratio_thickness = 1.5f;
+static int hud_adj_golden_ratio_depth = 3;
+static bool hud_adj_golden_ratio_flip_h = false;
+static bool hud_adj_golden_ratio_flip_v = false;
+static bool hud_adj_golden_ratio_show_rects = true;
+static bool hud_adj_golden_ratio_show_circles = false;
+static bool hud_adj_golden_ratio_fit_screen = true;
+
+static bool hud_adj_show_center_lines = false;
+static ImVec4 hud_adj_center_lines_color = ImVec4(1.0f, 0.2f, 0.2f, 0.8f);
+static float hud_adj_center_lines_thickness = 1.0f;
+
+static void HudAdjustRenderOverlays()
+{
+	if (!hud_adj_show_golden_ratio && !hud_adj_show_center_lines)
+		return;
+
+	ImGuiIO& io = ImGui::GetIO();
+	const float screen_w = io.DisplaySize.x;
+	const float screen_h = io.DisplaySize.y;
+
+	if (screen_w <= 0.0f || screen_h <= 0.0f)
+		return;
+
+	ImDrawList* draw_list = ImGui::GetForegroundDrawList();
+	if (!draw_list)
+		return;
+
+	if (hud_adj_show_golden_ratio)
+	{
+		const ImU32 col = ImGui::ColorConvertFloat4ToU32(hud_adj_golden_ratio_color);
+		const ImU32 col_sub = (col & 0x00FFFFFF) | ((u32)(((hud_adj_golden_ratio_color.w * 0.4f) * 255.0f)) << 24);
+
+		float start_x = 0.0f;
+		float start_y = 0.0f;
+		float rect_w = screen_w;
+		float rect_h = screen_h;
+
+		if (!hud_adj_golden_ratio_fit_screen)
+		{
+			const float phi = 1.618033988749895f;
+			rect_h = screen_w / phi;
+			if (rect_h > screen_h)
+			{
+				rect_h = screen_h;
+				rect_w = screen_h * phi;
+			}
+			start_x = (screen_w - rect_w) * 0.5f;
+			start_y = (screen_h - rect_h) * 0.5f;
+		}
+
+		float cur_x = start_x;
+		float cur_y = start_y;
+		float cur_w = rect_w;
+		float cur_h = rect_h;
+
+		auto transform_pt = [&](float px, float py) -> ImVec2
+		{
+			float nx = px;
+			float ny = py;
+			if (hud_adj_golden_ratio_flip_h)
+				nx = screen_w - nx;
+			if (hud_adj_golden_ratio_flip_v)
+				ny = screen_h - ny;
+			return ImVec2(nx, ny);
+		};
+
+		auto draw_transformed_line = [&](ImVec2 p1, ImVec2 p2, ImU32 lcol, float th)
+		{
+			draw_list->AddLine(transform_pt(p1.x, p1.y), transform_pt(p2.x, p2.y), lcol, th);
+		};
+
+		if (hud_adj_golden_ratio_show_rects)
+		{
+			draw_transformed_line(ImVec2(start_x, start_y), ImVec2(start_x + rect_w, start_y), col, hud_adj_golden_ratio_thickness);
+			draw_transformed_line(ImVec2(start_x + rect_w, start_y), ImVec2(start_x + rect_w, start_y + rect_h), col, hud_adj_golden_ratio_thickness);
+			draw_transformed_line(ImVec2(start_x + rect_w, start_y + rect_h), ImVec2(start_x, start_y + rect_h), col, hud_adj_golden_ratio_thickness);
+			draw_transformed_line(ImVec2(start_x, start_y + rect_h), ImVec2(start_x, start_y), col, hud_adj_golden_ratio_thickness);
+		}
+
+		const float phi_inv = 0.618033988749895f;
+
+		int orientation = 0;
+		for (int i = 0; i < hud_adj_golden_ratio_depth; ++i)
+		{
+			if (cur_w < 1.0f || cur_h < 1.0f)
+				break;
+
+			float s_w = 0.0f;
+			float s_h = 0.0f;
+			ImVec2 arc_center(0.0f, 0.0f);
+			float a_min = 0.0f;
+			float a_max = 0.0f;
+			ImVec2 sq_min, sq_max;
+
+			if (orientation == 0)
+			{
+				s_w = hud_adj_golden_ratio_fit_screen ? (cur_w * phi_inv) : cur_h;
+				s_h = cur_h;
+				sq_min = ImVec2(cur_x, cur_y);
+				sq_max = ImVec2(cur_x + s_w, cur_y + s_h);
+				arc_center = ImVec2(cur_x + s_w, cur_y + s_h);
+				a_min = M_PI;
+				a_max = 1.5f * M_PI;
+
+				if (hud_adj_golden_ratio_show_rects && i > 0)
+					draw_transformed_line(ImVec2(cur_x + s_w, cur_y), ImVec2(cur_x + s_w, cur_y + s_h), col, hud_adj_golden_ratio_thickness);
+
+				cur_x += s_w;
+				cur_w -= s_w;
+			}
+			else if (orientation == 1)
+			{
+				s_w = cur_w;
+				s_h = hud_adj_golden_ratio_fit_screen ? (cur_h * phi_inv) : cur_w;
+				sq_min = ImVec2(cur_x, cur_y);
+				sq_max = ImVec2(cur_x + s_w, cur_y + s_h);
+				arc_center = ImVec2(cur_x, cur_y + s_h);
+				a_min = 1.5f * M_PI;
+				a_max = 2.0f * M_PI;
+
+				if (hud_adj_golden_ratio_show_rects)
+					draw_transformed_line(ImVec2(cur_x, cur_y + s_h), ImVec2(cur_x + s_w, cur_y + s_h), col, hud_adj_golden_ratio_thickness);
+
+				cur_y += s_h;
+				cur_h -= s_h;
+			}
+			else if (orientation == 2)
+			{
+				s_w = hud_adj_golden_ratio_fit_screen ? (cur_w * phi_inv) : cur_h;
+				s_h = cur_h;
+				sq_min = ImVec2(cur_x + cur_w - s_w, cur_y);
+				sq_max = ImVec2(cur_x + cur_w, cur_y + s_h);
+				arc_center = ImVec2(cur_x + cur_w - s_w, cur_y);
+				a_min = 0.0f;
+				a_max = 0.5f * M_PI;
+
+				if (hud_adj_golden_ratio_show_rects)
+					draw_transformed_line(ImVec2(cur_x + cur_w - s_w, cur_y), ImVec2(cur_x + cur_w - s_w, cur_y + s_h), col, hud_adj_golden_ratio_thickness);
+
+				cur_w -= s_w;
+			}
+			else
+			{
+				s_w = cur_w;
+				s_h = hud_adj_golden_ratio_fit_screen ? (cur_h * phi_inv) : cur_w;
+				sq_min = ImVec2(cur_x, cur_y + cur_h - s_h);
+				sq_max = ImVec2(cur_x + s_w, cur_y + cur_h);
+				arc_center = ImVec2(cur_x + s_w, cur_y + cur_h - s_h);
+				a_min = 0.5f * M_PI;
+				a_max = M_PI;
+
+				if (hud_adj_golden_ratio_show_rects)
+					draw_transformed_line(ImVec2(cur_x, cur_y + cur_h - s_h), ImVec2(cur_x + s_w, cur_y + cur_h - s_h), col, hud_adj_golden_ratio_thickness);
+
+				cur_h -= s_h;
+			}
+
+			if (hud_adj_golden_ratio_show_circles)
+			{
+				ImVec2 sq_center((sq_min.x + sq_max.x) * 0.5f, (sq_min.y + sq_max.y) * 0.5f);
+				float rx = s_w * 0.5f;
+				float ry = s_h * 0.5f;
+				const int el_segs = 40;
+				ImVec2 prev_el;
+				for (int k = 0; k <= el_segs; ++k)
+				{
+					float ea = (float)k / (float)el_segs * 2.0f * M_PI;
+					ImVec2 el_pt = transform_pt(sq_center.x + rx * cosf(ea), sq_center.y + ry * sinf(ea));
+					if (k > 0)
+						draw_list->AddLine(prev_el, el_pt, col_sub, hud_adj_golden_ratio_thickness);
+					prev_el = el_pt;
+				}
+			}
+
+			const int segs = 20;
+			ImVec2 prev_pt;
+			for (int j = 0; j <= segs; ++j)
+			{
+				float a = a_min + (a_max - a_min) * ((float)j / (float)segs);
+				float px = arc_center.x + s_w * cosf(a);
+				float py = arc_center.y + s_h * sinf(a);
+				ImVec2 pt = transform_pt(px, py);
+				if (j > 0)
+				{
+					draw_list->AddLine(prev_pt, pt, col, hud_adj_golden_ratio_thickness * 1.5f);
+				}
+				prev_pt = pt;
+			}
+
+			orientation = (orientation + 1) % 4;
+		}
+	}
+
+	if (hud_adj_show_center_lines)
+	{
+		const ImU32 col = ImGui::ColorConvertFloat4ToU32(hud_adj_center_lines_color);
+		const float cx = screen_w * 0.5f;
+		const float cy = screen_h * 0.5f;
+
+		draw_list->AddLine(ImVec2(cx, 0.0f), ImVec2(cx, screen_h), col, hud_adj_center_lines_thickness);
+		draw_list->AddLine(ImVec2(0.0f, cy), ImVec2(screen_w, cy), col, hud_adj_center_lines_thickness);
+	}
+}
+
 static void HudAdjustDrawAdjustSettings()
 {
 	ImGui::Checkbox("Show crosshair", &hud_adj_crosshair);
@@ -172,6 +379,36 @@ static void HudAdjustDrawAdjustSettings()
 	ImGui::Checkbox("Show laser point box", &forceLPDraw);
 	ImGui::Checkbox("Show torch point box", &forceTPDraw);
 	ImGui::Checkbox("Show collision box", &forceCBDraw);
+
+	ImGui::SeparatorText("Screen Overlay Guides");
+	ImGui::Checkbox("Show golden spiral", &hud_adj_show_golden_ratio);
+	if (hud_adj_show_golden_ratio)
+	{
+		ImGui::ColorEdit4("Spiral color", (float*)&hud_adj_golden_ratio_color, ImGuiColorEditFlags_AlphaBar);
+		ImGui::SetNextItemWidth(80.0f);
+		ImGui::SliderFloat("Spiral thickness", &hud_adj_golden_ratio_thickness, 0.5f, 5.0f, "%.1f");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(80.0f);
+		ImGui::SliderInt("Depth", &hud_adj_golden_ratio_depth, 1, 9);
+		ImGui::Checkbox("Fit to screen", &hud_adj_golden_ratio_fit_screen);
+		ImGui::SameLine();
+		ImGui::Checkbox("Flip horizontal", &hud_adj_golden_ratio_flip_h);
+		ImGui::SameLine();
+		ImGui::Checkbox("Flip vertical", &hud_adj_golden_ratio_flip_v);
+		ImGui::Checkbox("Show rectangles", &hud_adj_golden_ratio_show_rects);
+		ImGui::SameLine();
+		ImGui::Checkbox("Show circles", &hud_adj_golden_ratio_show_circles);
+	}
+
+	ImGui::Checkbox("Show center lines", &hud_adj_show_center_lines);
+	if (hud_adj_show_center_lines)
+	{
+		ImGui::ColorEdit4("Center lines color", (float*)&hud_adj_center_lines_color, ImGuiColorEditFlags_AlphaBar);
+		ImGui::SetNextItemWidth(80.0f);
+		ImGui::SliderFloat("Center line thickness", &hud_adj_center_lines_thickness, 0.5f, 5.0f, "%.1f");
+	}
+
+	ImGui::Separator();
 	ImGui::SetNextItemWidth(80.0f);
 	ImGui::InputFloat("Position step", &_delta_pos, 0.0f, 0.0f, "%.6f");
 	ImGui::SetNextItemWidth(80.0f);
@@ -735,4 +972,6 @@ void RenderHUDAdjustManager()
 	ImGui::End();
 	ImGui::EndDisabled();
 	ImGui::PopStyleColor(1);
+
+	HudAdjustRenderOverlays();
 }
