@@ -619,10 +619,11 @@ bool CLocatorAPI::Recurse(const char* path)
 		{
 			auto& chache = GetScanCacheBuffer()->at(i);
 			
+			auto path_len = xr_strlen(path);
 			string_path N;
 			
-			VERIFY(path[xr_strlen(path)-1] == Platform::kPreferredSeparator[0]);
-			VERIFY(path[xr_strlen(path)-2] != Platform::kPreferredSeparator[0]);
+			VERIFY(path[path_len-1] == Platform::kPreferredSeparator[0]);
+			VERIFY(path_len <= 1 || path[path_len-2] != Platform::kPreferredSeparator[0]);
 			
 			xr_strcpy(N, sizeof(N), path);
 			xr_strcat(N, chache.fileName.c_str());
