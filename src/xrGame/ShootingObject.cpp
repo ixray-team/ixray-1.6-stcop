@@ -19,7 +19,7 @@
 #define HIT_POWER_EPSILON 0.05f
 #define WALLMARK_SIZE 0.04f
 
-CShootingObject::CShootingObject(void)
+CShootingObject::CShootingObject()
 {
 	fShotTimeCounter							= 0;
  	fOneShotTime						= 0;
@@ -34,12 +34,15 @@ CShootingObject::CShootingObject(void)
 	
 	bWorking						= false;
 
-	light_render					= 0;
+	light_render = nullptr;
+
+	m_ejection_manager = new SEjectionManager();
 }
 
 CShootingObject::~CShootingObject()
 {
 	destroy_particles();
+	xr_delete(m_ejection_manager);
 }
 
 void CShootingObject::destroy_particles()

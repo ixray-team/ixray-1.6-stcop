@@ -21,6 +21,35 @@ class CShootingObject :
 	public IAnticheatDumpable,
 	public IDamageSource
 {
+	struct SEjectionManager
+	{
+		using eject_time = float;
+		using task = std::function<void()>;
+		
+		xr_vector<xr_pair<eject_time, task>> scheduled_ejections;
+		
+		void schedule(eject_time time, task cb)
+		{
+			scheduled_ejections.push_back(std::make_pair(time, std::move(cb)));
+		}
+
+		void update_cl()
+		{
+			std::erase_if(scheduled_ejections, [&](const auto& entrie)
+			{
+				auto& [time, task] = entrie;
+
+				if (time <= Device.fTimeGlobal && task != nullptr)
+				{
+					task();
+					return true;
+				}
+
+				return false;
+			});
+		}
+	} *m_ejection_manager;
+
 protected:
 	CShootingObject();
 	virtual ~CShootingObject();
@@ -78,6 +107,11 @@ public:
 	virtual const Fvector4& getHitPowerCritical() const { return fvHitPowerCritical; }
 	virtual void setHitPowerCritical(const Fvector4& vec);
 	void destroy_particles();
+
+	SEjectionManager& EjectorManager()
+	{
+		return *m_ejection_manager;
+	}
 
 protected:
 	// Weapon fires now
@@ -177,9 +211,10 @@ protected:
 	Fmatrix m_mShellBone;
 	
 	Fvector m_vShellDir;
+
 	float m_fShellEjectionSpeed;
-	
 	float m_fShellEjectionDispersionAngle;
+	float m_fShellTime;
 
 	shared_str m_sFlameParticles;
 	shared_str m_sFlameSilencerParticles;
