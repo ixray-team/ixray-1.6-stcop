@@ -2,23 +2,39 @@
 
 #include "CHudInitializer.h"
 
+static u32 s_hud_depth = 0;
+static Fmatrix s_mView_saved;
+static Fmatrix s_mProject_saved;
+static Fmatrix s_mFullTransform_saved;
+
 CHudInitializer::CHudInitializer(bool setup, bool ajust)
 {
 	b_auto_setup = setup;
 	b_ajust = ajust;
 
-	mView_saved = Device.mView;
-	mProject_saved = Device.mProject;
-	mFullTransform_saved = Device.mFullTransform;
-
 	if (!b_auto_setup) return;
 
-	SetHudMode();
+	if (s_hud_depth == 0)
+	{
+		s_mView_saved = Device.mView;
+		s_mProject_saved = Device.mProject;
+		s_mFullTransform_saved = Device.mFullTransform;
+		SetHudMode();
+	}
+	s_hud_depth++;
 }
 
 CHudInitializer::~CHudInitializer()
 {
-	SetDefaultMode();
+	if (!b_auto_setup) return;
+
+	VERIFY(s_hud_depth > 0);
+	s_hud_depth--;
+
+	if (s_hud_depth == 0)
+	{
+		SetDefaultMode();
+	}
 }
 
 void CHudInitializer::SetHudMode()
@@ -46,9 +62,9 @@ void CHudInitializer::SetDefaultMode()
 		::Render->rmNormal();
 	}
 
-	Device.mView.set(mView_saved);
-	Device.mProject.set(mProject_saved);
-	Device.mFullTransform.set(mFullTransform_saved);
+	Device.mView.set(s_mView_saved);
+	Device.mProject.set(s_mProject_saved);
+	Device.mFullTransform.set(s_mFullTransform_saved);
 
 	if(Device.m_pRender) 
 	{
@@ -56,3 +72,4 @@ void CHudInitializer::SetDefaultMode()
 		Device.m_pRender->SetCacheXformOld(Device.mView_old, Device.mProject_old);
 	}
 }
+
