@@ -260,6 +260,7 @@ public:
 
 			void			setup_parent_ai_locations(bool assign_position = true);
 			void			validate_ai_locations(bool decrement_reference = true);
+			bool			copy_ai_location_from(CGameObject* source);
 
 	//animation_movement_controller
 	virtual	void			create_anim_mov_ctrl			( CBlend *b, Fmatrix *start_pose, bool local_animation  );
