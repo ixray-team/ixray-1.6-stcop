@@ -205,6 +205,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::EndMenu();
 			}
 
+			ImGui::MenuItem("Run new super cool game", nullptr, &States[static_cast<u8>(EditorUI::MikeGame)]);
 			ImGui::MenuItem("Click `Alt`");
 			ImGui::EndMainMenuBar();
 		}

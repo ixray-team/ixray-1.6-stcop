@@ -56,6 +56,7 @@ enum class EditorUI : u8
 	Tools_QuestEditor,
 	UI_General,
 	ECSViewer,
+	MikeGame,
 	Count
 };
 
