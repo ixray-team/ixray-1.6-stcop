@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+
+#include "ai_object_location.h"
 #include "pch_script.h"
 #include "xrServer_Objects_ALife_All.h"
 #include "Level.h"
