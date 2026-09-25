@@ -1,4 +1,3 @@
-#pragma once
 #include "StdAfx.h"
 #include "AnomalyRandomHudVertexParticles.h"
 #include "HudVertexAssignedPatricles.h"

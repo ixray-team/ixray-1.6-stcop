@@ -1,4 +1,3 @@
-#pragma once
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "Crypto_script.h"
