@@ -1827,20 +1827,55 @@ void CWeaponMagazined::OnShot()
 	{
 		cce_lin_vel.set(0.f, 0.f, 0.f);
 	}
-	
+
 	if (!IsMisfire())
 	{
 		if (!m_ShellMeshes.empty())
 		{
-			u8 lastShell = !m_chamber.empty() ? m_chamber.back().m_LocalAmmoType : !m_magazine.empty() ? m_magazine.back().m_LocalAmmoType : GetAmmoType();
+			u8 lastShell = !m_chamber.empty() ? m_chamber.back().m_LocalAmmoType : !m_magazine.empty() ? m_magazine.back().m_LocalAmmoType
+																									   : GetAmmoType();
 			auto it = m_ShellMeshes.find(lastShell);
 			if (it != m_ShellMeshes.end())
 			{
-				StartShellEjection(cce_lin_vel, it->second);
+				if (m_fShellTime == 0.f)
+				{
+					StartShellEjection(cce_lin_vel, it->second);
+				}
+				else
+				{
+					Fvector vel = cce_lin_vel;
+					shared_str sect = it->second;
+					float eject_time = Device.fTimeGlobal + m_fShellTime;
+
+					EjectorManager().schedule(
+						eject_time,
+						[this, vel, sect]
+						{
+							StartShellEjection(vel, sect);
+						}
+					);
+				}
 			}
 			else
 			{
-				StartShellEjection(cce_lin_vel, m_ShellMeshes.begin()->second);
+				if (m_fShellTime == 0.f)
+				{
+					StartShellEjection(cce_lin_vel, m_ShellMeshes.begin()->second);
+				}
+				else
+				{
+					Fvector vel = cce_lin_vel;
+					shared_str sect = m_ShellMeshes.begin()->second;
+					float eject_time = Device.fTimeGlobal + m_fShellTime;
+
+					EjectorManager().schedule(
+						eject_time,
+						[this, vel, sect]
+						{
+							StartShellEjection(vel, sect);
+						}
+					);
+				}
 			}
 		}
 		else
