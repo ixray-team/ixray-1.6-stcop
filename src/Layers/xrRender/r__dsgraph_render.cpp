@@ -302,6 +302,11 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 	CHudInitializer initalizer(true, true);
 #ifdef USE_DX11
 	RenderMap(mapHUDEmissive);
+
+	if (g_hud && g_hud->RenderActiveItemUIQuery())
+	{
+		r_dsgraph_render_hud_ui();
+	}
 #endif
 
 	mapHUDSorted.traverseRL(sorted_L1);
