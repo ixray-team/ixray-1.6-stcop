@@ -917,7 +917,7 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 			ResetSubStateTime();
 		}
 	}
-	else if (!IsZoomed())
+	else if (!IsZoomed() && GetNextState() != eHiding)
 	{
 		if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && GetNextState() != eSprintStart && GetNextState() == eSprintEnd)
 		{
