@@ -89,6 +89,9 @@ public:
 	u32										dwTimeGlobal;
 	u32										dwTimeContinual;
 
+	xr_vector<Fmatrix*> m_trees_poses_pm;
+	xr_vector<Fmatrix*> m_trees_poses_st;
+
 	Fvector									vCameraPosition;
 	Fvector									vCameraDirection;
 	Fvector									vCameraTop;
