@@ -27,7 +27,7 @@ FTreeVisual::~FTreeVisual	(void)
 
 void FTreeVisual::Release	()
 {
-	dxRender_Visual::Release	();
+	dxRender_Visual::Release();
 }
 
 void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
@@ -202,10 +202,12 @@ FTreeVisual_ST::~FTreeVisual_ST	(void)
 void FTreeVisual_ST::Release	()
 {
 	inherited::Release			();
+	Device.m_trees_poses_st.clear();
 }
 void FTreeVisual_ST::Load		(const char* N, IReader *data, u32 dwFlags)
 {
 	inherited::Load				(N,data,dwFlags);
+	Device.m_trees_poses_st.push_back(&xform);
 }
 void FTreeVisual_ST::Render		(float LOD)
 {
@@ -230,10 +232,13 @@ FTreeVisual_PM::FTreeVisual_PM(void)
 FTreeVisual_PM::~FTreeVisual_PM(void)
 {
 }
+
 void FTreeVisual_PM::Release	()
 {
 	inherited::Release			();
+	Device.m_trees_poses_pm.clear();
 }
+
 void FTreeVisual_PM::Load		(const char* N, IReader *data, u32 dwFlags)
 {
 	inherited::Load				(N,data,dwFlags);
@@ -245,7 +250,10 @@ void FTreeVisual_PM::Load		(const char* N, IReader *data, u32 dwFlags)
 		u32 ID					= data->r_u32				();
 		pSWI					= RImplementation.getSWI	(ID);
 	}
+
+	Device.m_trees_poses_pm.push_back(&xform);
 }
+
 void FTreeVisual_PM::Render		(float LOD)
 {
 	inherited::Render			(LOD);
@@ -260,6 +268,7 @@ void FTreeVisual_PM::Render		(float LOD)
 	RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vBase,0,SW.num_verts,iBase+SW.offset,SW.num_tris);
 	RCache.stat.r.s_flora.add	(SW.num_verts);
 }
+
 void FTreeVisual_PM::Copy		(dxRender_Visual *pSrc)
 {
 	inherited::Copy				(pSrc);
