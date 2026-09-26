@@ -57,8 +57,14 @@ function CALifeStorageManager_before_save(fname)
 	end
 	
 	m_data.GAME_VERSION = GAME_VERSION
+    if not m_data.se_object then
+        m_data.se_object = {}
+    end
+    if not m_data.game_object then
+        m_data.game_object = {}
+    end
 	
-	SendScriptCallback("save_state",m_data)
+	SendScriptCallback("save_state", m_data)
 	
 	-- save pstor
 	if m_data == nil then
@@ -81,7 +87,7 @@ function CALifeStorageManager_before_save(fname)
 			end
 		end
 	end
-	
+
 	for id,tbl in pairs(m_data.game_object) do 
 		for k,v in pairs(tbl) do
 			if (type(v) == "table" and is_empty(v)) then 
@@ -90,8 +96,8 @@ function CALifeStorageManager_before_save(fname)
 		end
 	end
 
-	SetStorageVar("pstor", m_data or {})
-
+   SetStorageVar("pstor", m_data or {})
+    
 	if ffx_path_utils then
 		fname = ffx_path_utils.get_file_name(fname, false)
 	end
@@ -126,13 +132,13 @@ function CALifeStorageManager_load(fname)
 	if not isMarshal then 
 		return 
 	end
-
+	
 	if ffx_path_utils then
 		fname = ffx_path_utils.get_file_name(fname, false)
 	end
 	local _path = getFS():update_path('$game_saves$', '')
 	SendScriptCallback("save_file_loaded", _path, fname)
-	
+
     m_data = GetStorageVar("pstor", {})
 	SendScriptCallback("load_state", m_data)
 end
