@@ -3269,7 +3269,7 @@ void CWeapon::OnZoomIn()
 	{
 		if (CCustomDevice* pDevice = pActor->GetDevice())
 		{
-			pDevice->SwitchZoom();
+			pDevice->SwitchZoom(true);
 		}
 	}
 
@@ -3338,7 +3338,7 @@ void CWeapon::OnZoomOut()
 		}
 		if (CCustomDevice* pDevice = pActor->GetDevice())
 		{
-			pDevice->SwitchZoom();
+			pDevice->SwitchZoom(false);
 		}
 	}
 

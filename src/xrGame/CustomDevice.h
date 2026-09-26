@@ -75,7 +75,7 @@ public:
 	virtual bool can_be_attached() const;
 	void PlayWpnFinishDetector();
 	virtual void TurnDetectorInternal(bool b);
-	void SwitchZoom();
+	void SwitchZoom(bool status);
 
 	bool NeedBlockSprint() const;
 	bool CanDrawHand() const;
