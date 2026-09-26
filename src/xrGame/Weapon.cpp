@@ -1332,6 +1332,11 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	}
 
 	CShootingObject::destroy_particles();
+
+	std::erase_if(g_pGameLevel->scheduled_tasks, [&](const IGame_Level::ScheduledCallbackItem& item)
+	{
+		return item.item_ptr == this;
+	});
 }
 
 void CWeapon::OnMoveToRuck(const SInvItemPlace& prev)
