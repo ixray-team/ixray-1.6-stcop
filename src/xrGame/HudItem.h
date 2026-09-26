@@ -175,8 +175,8 @@ public:
 	virtual void				on_b_hud_detach			();
 	virtual void				render_hud_mode			()					{};
 	virtual bool				need_renderable			()					{return true;};
-	virtual void				render_item_3d_ui		()					{}
-	virtual bool				render_item_3d_ui_query	()					{return false;}
+	virtual void render_item_3d_ui();
+	virtual bool render_item_3d_ui_query();
 
 	virtual bool				CheckCompatibility		(CHudItem*)			{return true;}
 
@@ -347,6 +347,11 @@ public:
 	bool ProhibitSuicide = true;
 
 	bool m_disable_random_animations = false;
+
+	Fmatrix ScriptUIMatrix = Fidentity;
+	shared_str ScriptUIBone;
+	shared_str ScriptUIFunctor;
+	CUIWindow* ScriptWindow = nullptr;
 
 	bool m_bSwitchSprint = false;
 
