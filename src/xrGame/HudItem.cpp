@@ -391,7 +391,7 @@ void CHudItem::OnMoveToRuck(const SInvItemPlace& prev)
 
 bool CHudItem::SendDeactivateItem(bool Force)
 {
-	if (GetState() == eHiding)
+	if (GetNextState() == eHiding)
 		return false;
 
 	SendHiddenItem();
@@ -407,6 +407,8 @@ void CHudItem::SendHiddenItem()
 		object().u_EventGen		(P,GE_WPN_STATE_CHANGE,object().ID());
 		P.w_u8					(eHiding);
 		object().u_EventSend	(P, net_flags(true, true, false, true));
+		SetPending(true);
+		SetNextState(eHiding);
 	}
 }
 
