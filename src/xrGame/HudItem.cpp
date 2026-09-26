@@ -761,7 +761,7 @@ bool CHudItem::TryPlayAnimIdle()
 			u32 state = pActor->GetMovementState(eReal);
 			if (state & ACTOR_DEFS::EMoveCommand::mcSprint)
 			{
-				if (GetState() == eSprintStart)
+				if (GetNextState() == eSprintStart)
 				{
 					return true;
 				}
@@ -770,6 +770,38 @@ bool CHudItem::TryPlayAnimIdle()
 				{
 					m_bSwitchSprint = true;
 					SwitchState(eSprintStart);
+
+					if (HudItemData() && g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->m_parent_hud_item != this)
+					{
+						if (GetHUDmode())
+						{
+							CActor* pActor = object().H_Parent() != nullptr ? object().H_Parent()->cast_actor() : nullptr;
+							if (CCustomDevice* pDevice = pActor ? pActor->GetDevice() : nullptr)
+							{
+								if (!pDevice->m_bSwitchSprint)
+								{
+									pDevice->m_bSwitchSprint = true;
+									pDevice->SwitchState(eSprintStart);
+								}
+							}
+						}
+					}
+
+					if (HudItemData() && g_player_hud->attached_item(0) && g_player_hud->attached_item(0)->m_parent_hud_item != this)
+					{
+						if (GetHUDmode())
+						{
+							if (CHudItem* pHudItem = g_player_hud->attached_item(0)->m_parent_hud_item)
+							{
+								if (!pHudItem->m_bSwitchSprint)
+								{
+									pHudItem->m_bSwitchSprint = true;
+									pHudItem->SwitchState(eSprintStart);
+								}
+							}
+						}
+					}
+
 					return true;
 				}
 
@@ -923,6 +955,37 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 		{
 			m_bSwitchSprint = true;
 			SwitchState(eSprintStart);
+
+			if (HudItemData() && g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->m_parent_hud_item != this)
+			{
+				if (GetHUDmode())
+				{
+					CActor* pActor = object().H_Parent() != nullptr ? object().H_Parent()->cast_actor() : nullptr;
+					if (CCustomDevice* pDevice = pActor ? pActor->GetDevice() : nullptr)
+					{
+						if (!pDevice->m_bSwitchSprint)
+						{
+							pDevice->m_bSwitchSprint = true;
+							pDevice->SwitchState(eSprintStart);
+						}
+					}
+				}
+			}
+
+            if (HudItemData() && g_player_hud->attached_item(0) && g_player_hud->attached_item(0)->m_parent_hud_item != this)
+			{
+				if (GetHUDmode())
+				{
+					if (CHudItem* pHudItem = g_player_hud->attached_item(0)->m_parent_hud_item)
+					{
+						if (!pHudItem->m_bSwitchSprint)
+						{
+							pHudItem->m_bSwitchSprint = true;
+							pHudItem->SwitchState(eSprintStart);
+						}
+					}
+				}
+			}
 		}
 		else if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) == 0 && GetNextState() != eSprintEnd && GetNextState() == eSprintStart)
 		{

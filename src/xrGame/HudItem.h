@@ -347,6 +347,9 @@ public:
 	bool ProhibitSuicide = true;
 
 	bool m_disable_random_animations = false;
+
+	bool m_bSwitchSprint = false;
+
 protected:
 
 	IC void SetPending(bool H) { Pending = H; }
@@ -381,7 +384,6 @@ protected:
 	float						m_fHudRollInertia = 0.0f;
 
 	bool						m_bDisableBore;
-	bool						m_bSwitchSprint = false;
 	bool						m_bBlendMovement = false;
 
 	virtual void				SetModelBoneStatus(const char* bone, bool show);
