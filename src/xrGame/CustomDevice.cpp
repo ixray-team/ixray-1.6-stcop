@@ -421,7 +421,14 @@ void CCustomDevice::OnStateSwitch(u8 S)
 	}
 	case eHandFiremode:
 	{
-		PlayHUDMotion("anm_hand_firemode", EHudMixType::eMixAll, eHandFiremode);
+		if (m_bIsZoomed)
+		{
+			PlayHUDMotion("anm_hand_firemode_aim", EHudMixType::eMixAll, eHandFiremode);
+		}
+		else
+		{
+			PlayHUDMotion("anm_hand_firemode", EHudMixType::eMixAll, eHandFiremode);
+		}
 		break;
 	}
 	}
