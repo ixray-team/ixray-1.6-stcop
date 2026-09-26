@@ -388,7 +388,7 @@ void CShootingObject::UpdateEffects()
 	for (size_t i = 0; i < flame_particles.size();)
 	{
 		flame_particles[i]->SetXFORM(pos);
-
+		flame_particles[i]->SetHudMode(in_hud_mode);
 		if (in_hud_mode)
 		{
 			flame_particles[i]->Update(dwTime - flame_particles[i]->dwLastTime);
@@ -404,7 +404,7 @@ void CShootingObject::UpdateEffects()
 	for (size_t i = 0; i < smoke_particles.size();)
 	{
 		smoke_particles[i]->UpdateParent(pos, zero_vel);
-
+		smoke_particles[i]->SetHudMode(in_hud_mode);
 		if (in_hud_mode)
 		{
 			smoke_particles[i]->Update(dwTime - smoke_particles[i]->dwLastTime);
