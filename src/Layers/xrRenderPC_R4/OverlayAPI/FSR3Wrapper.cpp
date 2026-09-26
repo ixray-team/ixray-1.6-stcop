@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "FSR3Wrapper.h"
+#include "../../../xrCore/Platform/OSVersion.h"
 
 Fsr3Wrapper g_Fsr3Wrapper;
 
@@ -105,7 +106,7 @@ bool Fsr3Wrapper::Create(ContextParameters params)
 {
 	Destroy();
 
-	if (RFeatureLevel < D3D_FEATURE_LEVEL_11_0 || !params.device || !params.maxRenderSize.width || !params.displaySize.width)
+	if (Platform::IsWindows7OrOlder() || RFeatureLevel < D3D_FEATURE_LEVEL_11_0 || !params.device || !params.maxRenderSize.width || !params.displaySize.width)
 	{
 		return false;
 	}
