@@ -443,16 +443,6 @@ void CMissile::State(u8 state)
 		case eReady:
 		{
 			PlayHUDMotion((!m_bUseAltThrow || m_constpower) ? "anm_throw_idle" : "anm_throw_idle_low", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
-			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
-			{
-				if (CCustomDevice* dev = actor->GetDevice())
-				{
-					if (dev->CanThrowHand())
-					{
-						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowIdle);
-					}
-				}
-			}
 		}
 		break;
 		case eThrow:
