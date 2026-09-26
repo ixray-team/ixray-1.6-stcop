@@ -1821,50 +1821,40 @@ void CWeaponMagazined::OnShot()
 			{
 				if (m_fShellTime == 0.f)
 				{
-					StartShellEjection(HolderLinVel(), it->second);
+					StartShellEjection(ParentLinearVelocity(), it->second);
 				}
 				else
 				{
 					shared_str sect = it->second;
-					float eject_time = Device.fTimeGlobal + m_fShellTime;
+					u32 eject_time = m_fShellTime * 1000u;
 
-					EjectorManager().schedule(
-						eject_time,
-						[this, sect]
-						{
-							StartShellEjection(HolderLinVel(), sect);
-						}
-					);
+					g_pGameLevel->schedule_callback(this, eject_time, [this, sect]
+													 { StartShellEjection(ParentLinearVelocity(), sect); });
 				}
 			}
 			else
 			{
 				if (m_fShellTime == 0.f)
 				{
-					StartShellEjection(HolderLinVel(), m_ShellMeshes.begin()->second);
+					StartShellEjection(ParentLinearVelocity(), m_ShellMeshes.begin()->second);
 				}
 				else
 				{
 					shared_str sect = m_ShellMeshes.begin()->second;
-					float eject_time = Device.fTimeGlobal + m_fShellTime;
+					u32 eject_time = m_fShellTime * 1000u;
 
-					EjectorManager().schedule(
-						eject_time,
-						[this, sect]
-						{
-							StartShellEjection(HolderLinVel(), sect);
-						}
-					);
+					g_pGameLevel->schedule_callback(this, eject_time, [this, sect]
+													 { StartShellEjection(ParentLinearVelocity(), sect); });
 				}
 			}
 		}
 		else
 		{
-			StartShellParticle(HolderLinVel());
+			StartShellParticle(ParentLinearVelocity());
 		}
 		
 		StartFlameParticle();
-		StartSmokeParticle(HolderLinVel());
+		StartSmokeParticle(ParentLinearVelocity());
 	}
 
 	if (H_Parent())

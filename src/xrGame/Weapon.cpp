@@ -1439,8 +1439,6 @@ void CWeapon::UpdateCL()
 {
 	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
 
-	EjectorManager().update_cl();
-
 	bool need_update_hud = false;
 	bool isHudItemData = GetHUDmode() && HudItemData() != nullptr;
 	

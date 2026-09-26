@@ -21,35 +21,6 @@ class CShootingObject :
 	public IAnticheatDumpable,
 	public IDamageSource
 {
-	struct SEjectionManager
-	{
-		using eject_time = float;
-		using task = std::function<void()>;
-		
-		xr_vector<xr_pair<eject_time, task>> scheduled_ejections;
-		
-		void schedule(eject_time time, task cb)
-		{
-			scheduled_ejections.push_back(std::make_pair(time, std::move(cb)));
-		}
-
-		void update_cl()
-		{
-			std::erase_if(scheduled_ejections, [&](const auto& entrie)
-			{
-				auto& [time, task] = entrie;
-
-				if (time <= Device.fTimeGlobal && task != nullptr)
-				{
-					task();
-					return true;
-				}
-
-				return false;
-			});
-		}
-	} *m_ejection_manager;
-
 protected:
 	CShootingObject();
 	virtual ~CShootingObject();
@@ -90,28 +61,6 @@ public:
 	void SetWorking(bool status) { bWorking = status; }
 	virtual bool			ParentMayHaveAimBullet()		{return false;}
 	virtual bool			ParentIsActor()					{return false;}
-	Fvector					HolderLinVel()
-	{
-		Fvector vel;
-
-		if (CObject* parent = smart_cast<CObject*>(this)->H_Parent(); parent != nullptr)
-		{
-			if (auto* psh = smart_cast<CPhysicsShellHolder*>(parent))
-			{
-				psh->PHGetLinearVell(vel);
-			}
-			else
-			{
-				vel.set(0.f, 0.f, 0.f);
-			}
-		}
-		else
-		{
-			vel.set(0.f, 0.f, 0.f);
-		}
-
-		return vel;
-	}
 
 	float getFireDistance(void) const { return fireDistance; }
 	void setFireDistance(float value);
@@ -129,11 +78,6 @@ public:
 	virtual const Fvector4& getHitPowerCritical() const { return fvHitPowerCritical; }
 	virtual void setHitPowerCritical(const Fvector4& vec);
 	void destroy_particles();
-
-	SEjectionManager& EjectorManager()
-	{
-		return *m_ejection_manager;
-	}
 
 protected:
 	// Weapon fires now
