@@ -102,7 +102,7 @@ bool CCustomDevice::CheckCompatibility(CHudItem* itm)
 
 	if (!CheckCompatibilityInt(itm, nullptr))
 	{
-		HideDetector(true);
+		HideDetector(true, true);
 		return false;
 	}
 
@@ -122,8 +122,11 @@ void CCustomDevice::HideDetector(bool bFastMode, bool force)
 {
 	if (force)
 	{
-		m_bFastAnimMode = bFastMode;
-		SwitchState(eHiding);
+		if (GetNextState() != eHiding)
+		{
+			m_bFastAnimMode = bFastMode;
+			SwitchState(eHiding);
+		}
 		return;
 	}
 
@@ -272,10 +275,11 @@ void CCustomDevice::switch_device()
 	}
 
 	PIItem active_item = m_pInventory->ActiveItem();
+	CHudItem* hud_item = active_item ? active_item->cast_hud_item() : nullptr;
 
 	bool need_fx = active_item == nullptr || active_item->cast_hud_item() == nullptr || !active_item->cast_hud_item()->m_eAnimationsFlags.test(af_prepare_detector);
 
-	if (active_item && active_item->cast_missile() && active_item->cast_hud_item()->GetNextState() >= CMissile::EMissileStates::eThrowStart)
+	if (hud_item && hud_item->IsPending() && hud_item->GetState() != CHUDState::eHiding && hud_item->GetState() != CHUDState::eShowing)
 	{
 		return;
 	}
@@ -448,7 +452,7 @@ void CCustomDevice::PlayWpnFinishDetector()
 
 	PIItem iitem = m_pInventory->ActiveItem();
 	CHudItem* itm = (iitem) ? iitem->cast_hud_item() : nullptr;
-	if (itm != nullptr && itm->GetState() == CHUDState::eIdle && itm->m_eAnimationsFlags.test(af_finish_detector))
+	if (itm != nullptr && !itm->IsPending() && itm->m_eAnimationsFlags.test(af_finish_detector))
 	{
 		itm->SwitchState(CHUDState::eFinishDetector);
 	}
