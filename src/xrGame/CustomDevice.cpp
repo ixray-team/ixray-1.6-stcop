@@ -190,6 +190,14 @@ void CCustomDevice::ToggleDetector(bool bFastMode, bool switching)
 				}
 				m_pInventory->Activate(slot_to_activate);
 				m_bNeedActivation = true;
+
+				if (PIItem PItemFromSlot = m_pInventory->ItemFromSlot(slot_to_activate))
+				{
+					if (PItemFromSlot->cast_hud_item())
+					{
+						PItemFromSlot->cast_hud_item()->bDisablePrepareAnimation = true;
+					}
+				}
 			}
 			else
 			{
