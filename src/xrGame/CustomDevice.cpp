@@ -546,7 +546,6 @@ void CCustomDevice::OnAnimationEnd(u8 state)
 		m_bIsZoomed = false;
 	} break;
 	case eHandThrowStart:
-	case eHandThrowIdle:
 	{
 		SwitchState(eHandThrowIdle);
 		break;
