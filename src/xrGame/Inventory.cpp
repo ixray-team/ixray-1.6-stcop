@@ -830,6 +830,7 @@ void CInventory::Activate(u16 slot, bool bForce, bool ForceHide)
 
 			if (tempItem == nullptr || !tempItem->SendDeactivateItem(ForceHide))
 			{
+				m_iNextActiveSlot = slot;
 				return;
 			}
 		}
