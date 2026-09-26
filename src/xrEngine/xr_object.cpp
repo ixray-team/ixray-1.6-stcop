@@ -267,19 +267,26 @@ bool CObject::net_Spawn			(CSE_Abstract* data)
 	return true					;
 }
 
-void CObject::net_Destroy		()
+void CObject::net_Destroy()
 {
-	VERIFY						(getDestroy());
-	PositionStack.clear();
-	xr_delete					(collidable.model);
-	if (register_schedule())
-		shedule_unregister		();
+	VERIFY(getDestroy());
 
-	spatial_unregister			();
+	std::erase_if(g_pGameLevel->scheduled_tasks, [&](const IGame_Level::ScheduledCallbackItem& item)
+	{
+		return item.item_ptr == this;
+	});
+
+	PositionStack.clear();
+	xr_delete(collidable.model);
+
+	if (register_schedule())
+	{
+		shedule_unregister();
+	}
+
+	spatial_unregister();
 	processing_deactivate();
-//	setDestroy					(true);
-	// remove visual
-	cNameVisual_set				( 0 );
+	cNameVisual_set(0);
 }
 
 //////////////////////////////////////////////////////////////////////////

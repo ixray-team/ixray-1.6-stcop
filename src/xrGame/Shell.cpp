@@ -34,7 +34,7 @@ bool CShell::net_Spawn(CSE_Abstract* e)
 	CPhysicsShell* ph_shell = PPhysicsShell();
 	ph_shell->DisableCharacterCollision();
 	ph_shell->SetAirResistance(0.f, 0.f);
-	ph_shell->set_DynamicLimits(default_l_limit, 100.f);
+	ph_shell->set_DynamicLimits(default_l_limit, 30.f);
 	ph_shell->SetSmall();
 	ph_shell->set_ObjectContactCallback(ContactCallback);
 	need_eject = true;
@@ -92,18 +92,6 @@ void CShell::Eject()
 {
 	if (CPhysicsShell* physic_shell = PPhysicsShell())
 	{
-		Fvector impulse_point, impulse_dir, impulse_eject_offset;
-
-		impulse_point.set(sin(Random.randF(PI_DIV_8, PI_DIV_3)), 0.f, cos(Random.randF(PI_DIV_8, PI_DIV_3)));
-
-		impulse_dir.set(params.dir);
-		impulse_eject_offset.random_dir(impulse_dir, deg2rad(params.dispersion));
-		impulse_dir.add(impulse_eject_offset);
-		impulse_dir.normalize();
-
-		impulse_dir.mul(params.speed);
-		impulse_dir.add(Fvector().set(params.lin_vel).mul(physic_shell->getMass()));
-
 		if (auto p_sync_obj = PHGetSyncItem(0))
 		{
 			if (auto object = Level().Objects.net_Find(params.weapon_id))
@@ -112,14 +100,40 @@ void CShell::Eject()
 				{
 					SPHNetState state;
 					p_sync_obj->get_State(state);
-					state.position = weapon->get_CurrentShellPoint(true);
-					state.previous_position = Position();
+
+					Fvector shell_point = weapon->get_CurrentShellPoint(true);
+					state.position = shell_point;
+					state.previous_position = shell_point;
+
 					p_sync_obj->set_State(state);
 				}
 			}
 		}
 
-		physic_shell->applyImpulseTrace(impulse_point, impulse_dir, 1.f);
+		Fvector impulse_dir;
+		impulse_dir.random_dir(params.dir, deg2rad(params.dispersion));
+
+		Fvector impulse_point;
+		impulse_point.set(
+			sin(Random.randF(PI_DIV_8, PI_DIV_3)),
+			0.f,
+			cos(Random.randF(PI_DIV_8, PI_DIV_3))
+		);
+
+		Fvector impulse;
+		impulse.set(impulse_dir).mul(params.speed);
+		impulse.add(params.lin_vel);
+		impulse.mul(physic_shell->getMass());
+
+		physic_shell->applyImpulseTrace(impulse_point, impulse, 1.f);
+
+		Fvector rotation_axis;
+		rotation_axis.normalize_safe(physic_shell->XFORM().j);
+
+		Fvector ang_vel;
+		ang_vel.set(rotation_axis).mul(Random.randF(10.f, 40.f));
+		physic_shell->set_AngularVel(ang_vel);
+
 		Level().ShellManager().Push(this);
 	}
 }
