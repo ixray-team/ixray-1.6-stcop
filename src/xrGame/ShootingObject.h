@@ -90,6 +90,28 @@ public:
 	void SetWorking(bool status) { bWorking = status; }
 	virtual bool			ParentMayHaveAimBullet()		{return false;}
 	virtual bool			ParentIsActor()					{return false;}
+	Fvector					HolderLinVel()
+	{
+		Fvector vel;
+
+		if (CObject* parent = smart_cast<CObject*>(this)->H_Parent(); parent != nullptr)
+		{
+			if (auto* psh = smart_cast<CPhysicsShellHolder*>(parent))
+			{
+				psh->PHGetLinearVell(vel);
+			}
+			else
+			{
+				vel.set(0.f, 0.f, 0.f);
+			}
+		}
+		else
+		{
+			vel.set(0.f, 0.f, 0.f);
+		}
+
+		return vel;
+	}
 
 	float getFireDistance(void) const { return fireDistance; }
 	void setFireDistance(float value);
@@ -209,7 +231,7 @@ protected:
 
 	shared_str m_sShellBone;
 	Fmatrix m_mShellBone;
-	
+
 	Fvector m_vShellDir;
 
 	float m_fShellEjectionSpeed;

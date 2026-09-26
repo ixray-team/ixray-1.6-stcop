@@ -1810,24 +1810,6 @@ void CWeaponMagazined::OnShot()
 		StartCamEffector(m_shot_cams[aim ? 1 : 0], false, 33000, 33999);
 	}
 
-	Fvector cce_lin_vel;
-
-	if (CObject* parent = H_Parent())
-	{
-		if (auto* psh = smart_cast<CPhysicsShellHolder*>(parent))
-		{
-			psh->PHGetLinearVell(cce_lin_vel);
-		}
-		else
-		{
-			cce_lin_vel.set(0.f, 0.f, 0.f);
-		}
-	}
-	else
-	{
-		cce_lin_vel.set(0.f, 0.f, 0.f);
-	}
-
 	if (!IsMisfire())
 	{
 		if (!m_ShellMeshes.empty())
@@ -1839,19 +1821,18 @@ void CWeaponMagazined::OnShot()
 			{
 				if (m_fShellTime == 0.f)
 				{
-					StartShellEjection(cce_lin_vel, it->second);
+					StartShellEjection(HolderLinVel(), it->second);
 				}
 				else
 				{
-					Fvector vel = cce_lin_vel;
 					shared_str sect = it->second;
 					float eject_time = Device.fTimeGlobal + m_fShellTime;
 
 					EjectorManager().schedule(
 						eject_time,
-						[this, vel, sect]
+						[this, sect]
 						{
-							StartShellEjection(vel, sect);
+							StartShellEjection(HolderLinVel(), sect);
 						}
 					);
 				}
@@ -1860,19 +1841,18 @@ void CWeaponMagazined::OnShot()
 			{
 				if (m_fShellTime == 0.f)
 				{
-					StartShellEjection(cce_lin_vel, m_ShellMeshes.begin()->second);
+					StartShellEjection(HolderLinVel(), m_ShellMeshes.begin()->second);
 				}
 				else
 				{
-					Fvector vel = cce_lin_vel;
 					shared_str sect = m_ShellMeshes.begin()->second;
 					float eject_time = Device.fTimeGlobal + m_fShellTime;
 
 					EjectorManager().schedule(
 						eject_time,
-						[this, vel, sect]
+						[this, sect]
 						{
-							StartShellEjection(vel, sect);
+							StartShellEjection(HolderLinVel(), sect);
 						}
 					);
 				}
@@ -1880,11 +1860,11 @@ void CWeaponMagazined::OnShot()
 		}
 		else
 		{
-			StartShellParticle(cce_lin_vel);
+			StartShellParticle(HolderLinVel());
 		}
 		
 		StartFlameParticle();
-		StartSmokeParticle(cce_lin_vel);
+		StartSmokeParticle(HolderLinVel());
 	}
 
 	if (H_Parent())
