@@ -830,6 +830,7 @@ void CWeapon::Load		(const char* section)
 		}
 	}
 
+	m_bSpawnShellOnLastShot = READ_IF_EXISTS(pSettings, r_bool, section, "spawn_shell_on_last_shot", true);
 	m_vShellDir = READ_IF_EXISTS(pSettings, r_fvector3, section, "shell_dir", Fvector(1.f, 0.f, 0.f));
 	m_fShellEjectionSpeed = READ_IF_EXISTS(pSettings, r_float, section, "shell_ejection_speed", 20.f);
 	m_sShellBone = READ_IF_EXISTS(pSettings, r_string, section, "shell_bone", nullptr);

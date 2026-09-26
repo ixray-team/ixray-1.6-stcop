@@ -1810,9 +1810,14 @@ void CWeaponMagazined::OnShot()
 		StartCamEffector(m_shot_cams[aim ? 1 : 0], false, 33000, 33999);
 	}
 
-	if (!IsMisfire())
+	u32 ammo_elapsed = GetCurrentElapsed(IsGrenadeMode());
+	u32 chamber_elapsed = GetAmmoChamberElapsed();
+
+	if (!IsMisfire() && !m_ShellMeshes.empty())
 	{
-		if (!m_ShellMeshes.empty())
+		bool last_ammo = ammo_elapsed + chamber_elapsed == 1u;
+		
+		if (!last_ammo || m_bSpawnShellOnLastShot)
 		{
 			u8 lastShell = !m_chamber.empty() ? m_chamber.back().m_LocalAmmoType : !m_magazine.empty() ? m_magazine.back().m_LocalAmmoType
 																									   : GetAmmoType();

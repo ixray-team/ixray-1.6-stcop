@@ -178,6 +178,7 @@ protected:
 
 	Fvector m_vShellDir;
 
+	bool m_bSpawnShellOnLastShot;
 	float m_fShellEjectionSpeed;
 	float m_fShellEjectionDispersionAngle;
 	float m_fShellTime;
