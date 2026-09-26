@@ -1414,10 +1414,10 @@ void CActor::ProcessKeys(CHudItem* itm)
 	
 	if (IsActionKeyPressedInGame(kWPN_ZOOM) && (wpn->GetState() == CWeapon::eIdle || wpn->GetState() == CWeapon::eFire))
 	{
+		SetActorKeyRepeatFlag(kfUNZOOM, false);
 		if (!b_toggle_weapon_aim && wpn->CanAimNow() && !wpn->IsZoomed())
 		{
 			wpn->Action(kWPN_ZOOM, CMD_START);
-			SetActorKeyRepeatFlag(kfUNZOOM, false);
 		}
 	}
 
