@@ -1416,6 +1416,7 @@ void CWeapon::SendHiddenItem()
 		P.w_u8(m_set_next_ammoType_on_reload);
 		CHudItem::object().u_EventSend(P, net_flags(true, true, false, true));
 		SetPending(true);
+		SetNextState(eHiding);
 	}
 }
 
