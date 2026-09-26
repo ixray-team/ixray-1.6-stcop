@@ -180,6 +180,12 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			while (!MeshLods->eof() && idx < mu_models().size())
 			{
 				auto Model = mu_models()[idx];
+				
+				if (Model->IsLOD)
+				{
+					++idx;
+					continue;
+				}
 
 				Model->UseBillboard = !MeshLods->r_u8();
 				if (!Model->UseBillboard)
@@ -189,9 +195,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 						Model->LODsID[i] = MeshLods->r_u32();
 						if (Model->LODsID[i] != u32(-1))
 						{
-							mu_models().push_back(new xrMU_Model());
-							auto LOD = mu_models().back();
-							LOD->Load(*F, version);
+							auto& LOD = mu_models()[Model->LODsID[i]];
+							//mu_models().push_back(new xrMU_Model());
+							//auto LOD = mu_models().back();
+							//LOD->Load(*F, version);
 							LOD->UseBillboard = false;
 							LOD->IsLOD = true;
 						}
