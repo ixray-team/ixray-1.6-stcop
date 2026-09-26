@@ -504,6 +504,30 @@ void RHIStateManagerDX11::SetRenderState(u32 p1, u32 p2)
 		DSDesc.BackFace.StencilFunc = (D3D11_COMPARISON_FUNC)p2;
 		break;
 
+	case D3DRS_CCW_STENCILFAIL:
+		ValidateDSDesc();
+		bDSSChanged = bDSSChanged || DSDesc.BackFace.StencilFailOp != (D3D11_STENCIL_OP)p2;
+		DSDesc.BackFace.StencilFailOp = (D3D11_STENCIL_OP)p2;
+		break;
+
+	case D3DRS_CCW_STENCILZFAIL:
+		ValidateDSDesc();
+		bDSSChanged = bDSSChanged || DSDesc.BackFace.StencilDepthFailOp != (D3D11_STENCIL_OP)p2;
+		DSDesc.BackFace.StencilDepthFailOp = (D3D11_STENCIL_OP)p2;
+		break;
+
+	case D3DRS_CCW_STENCILPASS:
+		ValidateDSDesc();
+		bDSSChanged = bDSSChanged || DSDesc.BackFace.StencilPassOp != (D3D11_STENCIL_OP)p2;
+		DSDesc.BackFace.StencilPassOp = (D3D11_STENCIL_OP)p2;
+		break;
+
+	case D3DRS_CCW_STENCILFUNC:
+		ValidateDSDesc();
+		bDSSChanged = bDSSChanged || DSDesc.BackFace.StencilFunc != (D3D11_COMPARISON_FUNC)p2;
+		DSDesc.BackFace.StencilFunc = (D3D11_COMPARISON_FUNC)p2;
+		break;
+
 	case D3DRS_STENCILREF:
 		SetStencilRef(p2);
 		break;
@@ -611,7 +635,6 @@ void RHIStateManagerDX11::SetRenderState(u32 p1, u32 p2)
 		break;
 
 	default:
-		Msg("Unsupported call!");
 		break;
 	}
 }

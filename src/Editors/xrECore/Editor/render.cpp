@@ -778,24 +778,19 @@ static HRESULT create_shader(
 			return		E_FAIL;
 		}
 
+		ID3DBlob* pSignatureBlob = nullptr;
+		CHK_DX(D3DGetInputSignatureBlob(buffer, buffer_size, &pSignatureBlob));
+		if (pSignatureBlob)
+		{
+			svs_result->signature = DEV->_CreateInputSignature(pSignatureBlob);
+			_RELEASE(pSignatureBlob);
+		}
+
 		ID3DShaderReflection* pReflection = 0;
 		_result = D3DReflect(buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
 
 		//	Parse constant, texture, sampler binding
-		//	Store input signature blob
 		if (SUCCEEDED(_result) && pReflection) {
-			//	TODO: DX10: share the same input signatures
-
-			//	Store input signature (need only for VS)
-			//CHK_DX( D3DxxGetInputSignatureBlob(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), &_vs->signature) );
-			ID3DBlob* pSignatureBlob;
-			CHK_DX(D3DGetInputSignatureBlob(buffer, buffer_size, &pSignatureBlob));
-			VERIFY(pSignatureBlob);
-
-			svs_result->signature = DEV->_CreateInputSignature(pSignatureBlob);
-
-			_RELEASE(pSignatureBlob);
-
 			//	Keep full VS bytecode so tools can reflect input parameters
 			ID3DBlob* pCodeBlob = nullptr;
 			if (SUCCEEDED(D3DCreateBlob(buffer_size, &pCodeBlob)))
@@ -811,7 +806,7 @@ static HRESULT create_shader(
 		}
 		else {
 			Msg("! VS: %s", file_name);
-			Msg("! D3DXFindShaderComment hr == 0x%08x", _result);
+			Msg("! D3DReflect hr == 0x%08x", _result);
 		}
 	}
 	else if (pTarget[0] == 'g') {

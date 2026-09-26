@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 
 #include "../xrEngine/GameFont.h"
@@ -482,6 +482,7 @@ void CEditorRenderDevice::UpdateView()
 		UI->CurrentView().m_Camera.GetView(mView);
 	}
     RCache.set_xform_view(mView);
+    RCache.set_xform_project(mProject);
     mFullTransform.mul(mProject,mView);
 
 // frustum culling sets

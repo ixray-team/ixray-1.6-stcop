@@ -86,6 +86,10 @@ void FixedConstants::Create()
 	RHIUtils::CreateConstantBuffer(&cb_material, sizeof(CBMaterial));
 	RHIUtils::CreateConstantBuffer(&cb_light, sizeof(CBLight));
 	RHIUtils::CreateConstantBuffer(&cb_pass, sizeof(CBPass));
+
+	UpdateMaterial();
+	UpdateObject(Fidentity);
+	UpdateView();
 }
 void FixedConstants::Destroy()
 {
@@ -243,6 +247,11 @@ void FixedConstants::UpdateView()
 	}
 #endif
 
+	const R_xforms& x = RCache.xforms;
+	store_Float3x4(cpu_object.m_WV, x.m_wv);
+	store_Float4x4(cpu_object.m_WVP, x.m_wvp);
+	dirty_object = true;
+
 	dirty_view = true;
 	dirty_pass = true;
 	dirty_light = true;
@@ -274,7 +283,7 @@ void FixedConstants::UpdateMaterial()
 	cpu_material.triLOD.set(0, 0, 0, 0);
 	cpu_material.m_lmap[0].set(0, 0, 0, 0);
 	cpu_material.m_lmap[1].set(0, 0, 0, 0);
-	cpu_material.tfactor.set(0, 0, 0, 0);
+	cpu_material.tfactor.set(1.0f, 1.0f, 1.0f, 1.0f);
 	dirty_material = true;
 	BindMaterial();
 }
@@ -671,6 +680,7 @@ bool FixedConstants::OnSet(u32 h, const Fvector4& A)
 		case chash("wave"):
 			SetTreeWave(A);
 			break;
+		case chash("dir2D"):
 		case chash("wind"):
 			SetTreeWind(A);
 			break;
@@ -680,6 +690,7 @@ bool FixedConstants::OnSet(u32 h, const Fvector4& A)
 		case chash("wave_old"):
 			SetTreeWaveOld(A);
 			break;
+		case chash("dir2D_old"):
 		case chash("wind_old"):
 			SetTreeWindOld(A);
 			break;

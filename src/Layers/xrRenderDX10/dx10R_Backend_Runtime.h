@@ -151,7 +151,8 @@ IC void CBackend::set_Geometry(SGeometry* _geom)
 IC void CBackend::ApplyVertexLayout()
 {
 	VERIFY(decl);
-	VERIFY(m_pInputSignature);
+	if (!decl || !m_pInputSignature)
+		return;
 
 	xr_map<ID3DBlob*, ID3DInputLayout*>::iterator	it;
 
@@ -184,14 +185,14 @@ IC void CBackend::ApplyVertexLayout()
 
 ICF void CBackend::set_VS(ref_vs& _vs)
 {
-	m_pInputSignature = _vs->signature->signature;
-	GRHI->SetShader(_vs->vs, ERHI_SHADER_TYPE::VS);
+	m_pInputSignature = (_vs && _vs->signature) ? _vs->signature->signature : nullptr;
+	GRHI->SetShader(_vs ? _vs->vs : nullptr, ERHI_SHADER_TYPE::VS);
 }
 
 ICF void CBackend::set_VS(SVS* _vs)
 {
-	m_pInputSignature = _vs->signature->signature;
-	GRHI->SetShader(_vs->vs, ERHI_SHADER_TYPE::VS);
+	m_pInputSignature = (_vs && _vs->signature) ? _vs->signature->signature : nullptr;
+	GRHI->SetShader(_vs ? _vs->vs : nullptr, ERHI_SHADER_TYPE::VS);
 }
 
 IC void CBackend::set_Constants			(R_constant_table* C_)

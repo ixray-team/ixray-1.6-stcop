@@ -907,12 +907,14 @@ ID3DBlob* CSHEngineTools::GetCurrentVSSignature()
 	CEditableObject* E = m_PreviewObject;
 	CSurface* surf = *E->FirstSurface(); R_ASSERT(surf);
 	ref_shader sh = surf->_Shader();
+	if (!sh) return nullptr;
 	for (u32 e = 0; e < 6; e++)
 	{
+		if (!sh->E[e]) continue;
 		for (u32 p = 0; p < sh->E[e]->passes.size(); p++)
 		{
 			auto& S = sh->E[e]->passes[p];
-			if (S->vs)
+			if (S && S->vs)
 				return (ID3DBlob*)S->vs->vs_code;
 		}
 	}
