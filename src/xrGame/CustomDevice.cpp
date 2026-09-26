@@ -773,24 +773,30 @@ void CCustomDevice::TurnDetectorInternal(bool b)
 	m_bWorking = b;
 }
 
-void CCustomDevice::SwitchZoom()
+void CCustomDevice::SwitchZoom(bool status)
 {
 	if (!m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
 	{
 		return;
 	}
 
-	StopCurrentAnimWithoutCallback();
-
-	if (m_bIsZoomed)
+	if (!status)
 	{
-		m_bIsZoomed = false;
-		SwitchState(eHandAimEnd);
+		if (m_bIsZoomed)
+		{
+			StopCurrentAnimWithoutCallback();
+			m_bIsZoomed = false;
+			SwitchState(eHandAimEnd);
+		}
 	}
 	else
 	{
-		m_bIsZoomed = true;
-		SwitchState(eHandAimStart);
+		if (!m_bIsZoomed)
+		{
+			StopCurrentAnimWithoutCallback();
+			m_bIsZoomed = true;
+			SwitchState(eHandAimStart);
+		}
 	}
 }
 
