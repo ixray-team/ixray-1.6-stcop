@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "DLSSWrapper.h"
+#include "../../../xrCore/Platform/OSVersion.h"
 
 DLSSWrapper g_DLSSWrapper;
 
@@ -38,6 +39,11 @@ u32 DLSSWrapper::GetOptimalPresetForScale(float scale)
 
 void DLSSWrapper::Create()
 {
+	if (Platform::IsWindows7OrOlder())
+	{
+		return;
+	}
+
 	Destroy();
 
 	if (RFeatureLevel < D3D_FEATURE_LEVEL_11_1)
@@ -281,7 +287,7 @@ bool DLSSWrapper::Draw(const DrawParameters& params)
 
 	DLSSEvalParams.pInTransparencyMask = params.transparencyAndCompositionResource;
 	DLSSEvalParams.InFrameTimeDeltaInMsec = params.frameTimeDelta;
-	
+
 	NVSDK_NGX_Result Result = NGX_D3D11_EVALUATE_DLSS_EXT(RContext, Handle, NgxParameters, &DLSSEvalParams);
 
 	if(Result != NVSDK_NGX_Result_Success)
