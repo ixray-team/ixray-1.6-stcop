@@ -2262,6 +2262,11 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, u32 ParentID)
 
 void CWeapon::ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo, xr_map<u16, u16>* ammos_to_sync)
 {
+	if (unlimited_ammo())
+	{
+		return;
+	}
+
 	bool ammoChanged = false;
 
 	for (auto& entry : ammo)
