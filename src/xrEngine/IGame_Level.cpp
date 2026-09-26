@@ -270,29 +270,42 @@ void	IGame_Level::OnRender		( )
 }
 
 
-void	IGame_Level::OnFrame		( ) 
+void IGame_Level::OnFrame()
 {
 	PROF_EVENT("IGame_Level::OnFrame");
-	// Update all objects
-	VERIFY						(bReady);
-	if(IAnimNotifyHandler::IsValid())
+
+	VERIFY(bReady);
+
+	if (IAnimNotifyHandler::IsValid())
 	{
 		IAnimNotifyHandler::Get().Update();
 	}
-	Objects.Update				(false);
-	g_hud->OnFrame				();
+
+	std::erase_if(scheduled_tasks, [&](const ScheduledCallbackItem& item)
+	{
+		if (Device.dwTimeGlobal >= item.execution_time)
+		{
+			item.task();
+			return true;
+		}
+		return false; 
+	});
+
+	Objects.Update(false);
+	g_hud->OnFrame();
 
 	// Ambience
-	if (Sounds_Random.size() && (Device.dwTimeGlobal > Sounds_Random_dwNextTime))
+	if (!Sounds_Random.empty() && Device.dwTimeGlobal > Sounds_Random_dwNextTime)
 	{
-		Sounds_Random_dwNextTime		= Device.dwTimeGlobal + ::Random.randI	(10000,20000);
-		Fvector	pos;
-		pos.random_dir().normalize().mul(::Random.randF(30,100)).add	(Device.vCameraPosition);
-		int		id						= ::Random.randI(Sounds_Random.size());
-		if (Sounds_Random_Enabled)		{
-			Sounds_Random[id].play_at_pos	(0,pos,0);
-			Sounds_Random[id].set_volume	(1.f);
-			Sounds_Random[id].set_range		(10,200);
+		Sounds_Random_dwNextTime = Device.dwTimeGlobal + Random.randI(10000, 20000);
+		Fvector pos;
+		pos.random_dir().normalize().mul(Random.randF(30, 100)).add(Device.vCameraPosition);
+		int id = Random.randI(Sounds_Random.size());
+		if (Sounds_Random_Enabled)
+		{
+			Sounds_Random[id].play_at_pos(nullptr, pos, 0);
+			Sounds_Random[id].set_volume(1.f);
+			Sounds_Random[id].set_range(10, 200);
 		}
 	}
 }

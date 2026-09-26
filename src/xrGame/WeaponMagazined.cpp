@@ -1810,27 +1810,14 @@ void CWeaponMagazined::OnShot()
 		StartCamEffector(m_shot_cams[aim ? 1 : 0], false, 33000, 33999);
 	}
 
-	Fvector cce_lin_vel;
+	u32 ammo_elapsed = GetCurrentElapsed(IsGrenadeMode());
+	u32 chamber_elapsed = GetAmmoChamberElapsed();
 
-	if (CObject* parent = H_Parent())
+	if (!IsMisfire() && !m_ShellMeshes.empty())
 	{
-		if (auto* psh = smart_cast<CPhysicsShellHolder*>(parent))
-		{
-			psh->PHGetLinearVell(cce_lin_vel);
-		}
-		else
-		{
-			cce_lin_vel.set(0.f, 0.f, 0.f);
-		}
-	}
-	else
-	{
-		cce_lin_vel.set(0.f, 0.f, 0.f);
-	}
-
-	if (!IsMisfire())
-	{
-		if (!m_ShellMeshes.empty())
+		bool last_ammo = ammo_elapsed + chamber_elapsed == 1u;
+		
+		if (!last_ammo || m_bSpawnShellOnLastShot)
 		{
 			u8 lastShell = !m_chamber.empty() ? m_chamber.back().m_LocalAmmoType : !m_magazine.empty() ? m_magazine.back().m_LocalAmmoType
 																									   : GetAmmoType();
@@ -1839,53 +1826,41 @@ void CWeaponMagazined::OnShot()
 			{
 				if (m_fShellTime == 0.f)
 				{
-					StartShellEjection(cce_lin_vel, it->second);
+					StartShellEjection(ParentLinearVelocity(), it->second);
 				}
 				else
 				{
-					Fvector vel = cce_lin_vel;
 					shared_str sect = it->second;
-					float eject_time = Device.fTimeGlobal + m_fShellTime;
+					u32 eject_time = m_fShellTime * 1000u;
 
-					EjectorManager().schedule(
-						eject_time,
-						[this, vel, sect]
-						{
-							StartShellEjection(vel, sect);
-						}
-					);
+					g_pGameLevel->schedule_callback(this, eject_time, [this, sect]
+													 { StartShellEjection(ParentLinearVelocity(), sect); });
 				}
 			}
 			else
 			{
 				if (m_fShellTime == 0.f)
 				{
-					StartShellEjection(cce_lin_vel, m_ShellMeshes.begin()->second);
+					StartShellEjection(ParentLinearVelocity(), m_ShellMeshes.begin()->second);
 				}
 				else
 				{
-					Fvector vel = cce_lin_vel;
 					shared_str sect = m_ShellMeshes.begin()->second;
-					float eject_time = Device.fTimeGlobal + m_fShellTime;
+					u32 eject_time = m_fShellTime * 1000u;
 
-					EjectorManager().schedule(
-						eject_time,
-						[this, vel, sect]
-						{
-							StartShellEjection(vel, sect);
-						}
-					);
+					g_pGameLevel->schedule_callback(this, eject_time, [this, sect]
+													 { StartShellEjection(ParentLinearVelocity(), sect); });
 				}
 			}
 		}
 		else
 		{
-			StartShellParticle(cce_lin_vel);
+			StartShellParticle(ParentLinearVelocity());
 		}
-		
-		StartFlameParticle();
-		StartSmokeParticle(cce_lin_vel);
 	}
+
+	StartFlameParticle();
+	StartSmokeParticle(ParentLinearVelocity());
 
 	if (H_Parent())
 	{

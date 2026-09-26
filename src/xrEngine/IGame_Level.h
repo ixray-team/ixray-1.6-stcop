@@ -60,7 +60,22 @@ protected:
 
 	// temporary
 	xr_vector<ISpatialShared>	snd_ER;
+
 public:
+	struct ScheduledCallbackItem
+	{
+		void* item_ptr;
+		u32 execution_time;
+		std::function<void()> task;
+	};
+
+	xr_vector<ScheduledCallbackItem> scheduled_tasks;
+
+	ICF void schedule_callback(void* object_ptr, u32 cb_time, const std::function<void()>& func)
+	{
+		scheduled_tasks.emplace_back(object_ptr, Device.dwTimeGlobal + cb_time, func);
+	}
+
 	CObjectList					Objects; 
 	CObjectSpace				ObjectSpace;
 	CCameraManager&				Cameras			()				{return *m_pCameras;};

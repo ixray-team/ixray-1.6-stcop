@@ -100,7 +100,6 @@ public:
 	virtual void			OnHiddenItem		();
 	virtual bool			SendDeactivateItem	(bool Force);
 
-public:
 	virtual bool			can_kill			() const;
 	virtual CInventoryItem	*can_kill			(CInventory *inventory) const;
 	virtual const CInventoryItem *can_kill		(const xr_vector<const CGameObject*> &items) const;
@@ -207,7 +206,6 @@ public:
 	bool Allow3DScopes() const;
 	virtual bool UseScopeTexture();
 
-	public:
 		struct SRecoilPoint {
 			float x; 
 			float y; 
@@ -246,9 +244,34 @@ protected:
 	void LoadBulletPattern(const char* section, const char* line, SRecoilPattern& pattern);
 	void StartRecoilPattern();
 	SRecoilPattern* GetPatternByName(const shared_str& name);
+	
+	Fvector	ParentLinearVelocity()
+	{
+		Fvector vel;
 
-	public:
+		if (auto* o = smart_cast<CObject*>(this))
+		{
+			if (auto* parent = o->H_Parent())
+			{
+				if (auto* psh = smart_cast<CPhysicsShellHolder*>(parent))
+				{
+					psh->PHGetLinearVell(vel);
+				}
+				else
+				{
+					vel.set(0.f, 0.f, 0.f);
+				}
+			}
+		}
+		else
+		{
+			vel.set(0.f, 0.f, 0.f);
+		}
 
+		return vel;
+	}
+
+public:
 	//обновление видимости для косточек аддонов
 	void UpdateAddonsVisibility();
 	void UpdateHUDAddonsVisibility();
@@ -442,7 +465,6 @@ protected:
 	bool m_bUseLastAmmoType = false;
 	bool m_bUseChamberInUpdateBones = false;
 
-protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState = 0;
 
@@ -460,8 +482,6 @@ protected:
 	int	m_iScopeX, m_iScopeY;
 	int	m_iSilencerX, m_iSilencerY;
 	int	m_iGrenadeLauncherX, m_iGrenadeLauncherY;
-
-protected:
 
 	struct SZoomParams
 	{
@@ -496,10 +516,6 @@ protected:
 	bool m_bIAmWeaponRPG7 = false;
 	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
-
-
-
-protected:
 
 	u8 m_LastShotAmmoType = 0;
 
@@ -551,7 +567,7 @@ public:
 
 	virtual float				Weight			() const;		
 	virtual	u32					Cost			() const;
-public:
+
     virtual EHandDependence		HandDependence		()	const		{	return eHandDependence;}
 			bool				IsSingleHanded		()	const		{	return m_bIsSingleHanded; }
 			void				SetMisfireStatus	(bool b)		{ bMisfire = b; }
@@ -711,7 +727,6 @@ public:
 
 	IC virtual void SetNextState(u8 v) final override;
 
-public:
 	CameraRecoil			cam_recoil;			// simple mode (walk, run)
 	CameraRecoil			zoom_cam_recoil;	// using zoom =(ironsight or scope)
 
@@ -760,7 +775,7 @@ protected:
 	
 	float					m_crosshair_inertion = 0.0f;
 	first_bullet_controller	m_first_bullet_controller;
-protected:
+
 	//для отдачи оружия
 	Fvector					m_vRecoilDeltaAngle;
 
@@ -945,15 +960,11 @@ private:
 public:
 	const float				&hit_probability			() const;
 
-private:
 	//bool					m_bRememberActorNVisnStatus; //оно тут в омп висело но я не знаю где используется. оставил что бы не запутаться
 
-public:
-	
 	virtual void				DumpActiveParams			(shared_str const & section_name, CInifile & dst_ini) const;
 	virtual shared_str const	GetAnticheatSectionName		() const { return cNameSect(); };
 
-public:
 	bool bUseAltScope{};
 	bool bScopeIsHasTexture{};
 

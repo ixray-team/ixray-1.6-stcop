@@ -35,14 +35,11 @@ CShootingObject::CShootingObject()
 	bWorking						= false;
 
 	light_render = nullptr;
-
-	m_ejection_manager = new SEjectionManager();
 }
 
 CShootingObject::~CShootingObject()
 {
 	destroy_particles();
-	xr_delete(m_ejection_manager);
 }
 
 void CShootingObject::destroy_particles()
