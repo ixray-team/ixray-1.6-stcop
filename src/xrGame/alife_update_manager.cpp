@@ -281,18 +281,18 @@ void CALifeUpdateManager::new_game			(const char* save_name)
 	for ( ; I != E; ++I)
 		(*I).second->on_register		();
 
-	static bool saveOnNewGame = EngineExternal()[EEngineExternalGame::EnableSaveOnNewGame];
-	if (saveOnNewGame)
-	{
-		save(save_name);
-	}
-
 	Msg									("* New game is successfully created!");
 
 	luabind::functor<void> funct;
 	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_new_game", funct))
 	{
 		funct((const char*)save_name);
+	}
+
+	static bool saveOnNewGame = EngineExternal()[EEngineExternalGame::EnableSaveOnNewGame];
+	if (saveOnNewGame)
+	{
+		save(save_name);
 	}
 }
 
