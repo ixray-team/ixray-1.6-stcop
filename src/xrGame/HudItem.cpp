@@ -14,6 +14,8 @@
 #include "HUDManager.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "Weapon.h"
+#include "../Include/xrRender/UIRender.h"
+#include "ui/UIScriptWnd.h"
 
 CHudItem::CHudItem()
 {
@@ -73,6 +75,19 @@ void CHudItem::Load(const char* section)
 	m_jitter_params.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_rot_amplitude", m_jitter_params.rot_amplitude);
 
 	m_jitter_params.stop_time = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_stop_time", 3.0f) * 1000.f);
+
+	ScriptUIFunctor = READ_IF_EXISTS(pSettings, r_string, section, "script_ui_functor", "");
+
+	if (ScriptUIFunctor.size())
+	{
+		ScriptUIBone = pSettings->r_string(section, "script_ui_bone");
+
+		Fvector ScriptUIPos = pSettings->r_fvector3(section, "script_ui_position");
+		Fvector ScriptUIRot = pSettings->r_fvector3(section, "script_ui_rotation");
+
+		ScriptUIRot.mul(PI / 180.0f);
+		ScriptUIMatrix.setHPB(ScriptUIRot.x, ScriptUIRot.y, ScriptUIRot.z).translate_over(ScriptUIPos);
+	}
 
 	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", false);
 
@@ -494,6 +509,11 @@ void CHudItem::UpdateCL()
 	{
 		LightTorch->UpdateTorchFromObject(this);
 	}
+
+	if (ScriptWindow)
+	{
+		ScriptWindow->Update();
+	}
 }
 
 void CHudItem::OnH_A_Chield		()
@@ -581,6 +601,18 @@ void CHudItem::on_a_hud_attach()
 	m_eBonePartAnimationsFlags.set(EBPAnimsFlags::abpf_idle_empty, HudAnimationExist("anm_bp_idle_empty"));
 	m_eBonePartAnimationsFlags.set(EBPAnimsFlags::abpf_idle_jammed, HudAnimationExist("anm_bp_idle_jammed"));
 	m_eBonePartAnimationsFlags.set(EBPAnimsFlags::abpf_firemode, (HudAnimationExist("anm_bp_firemode_state_auto") || HudAnimationExist("anm_bp_firemode_state_1")));
+
+	if (ScriptUIFunctor.size() && !ScriptWindow)
+	{
+		luabind::functor<CUIDialogWndEx*> funct;
+		if (ai().script_engine().functor(*ScriptUIFunctor, funct))
+		{
+			if (CUIDialogWndEx* ScriptWnd = funct())
+			{
+				ScriptWindow = ScriptWnd;
+			}
+		}
+	}
 }
 
 bool CHudItem::HudAnimationExist(const shared_str& anim_name, bool only_for_actor)
@@ -1251,3 +1283,38 @@ void CHudItem::StopBlendAnm(const shared_str& name, bool Force) { g_player_hud->
 void CHudItem::StopAllBlendAnms(bool Force, u8 part) { g_player_hud->StopAllBlendAnms(Force); }
 
 bool CHudItem::IsBlendAnmActive(const shared_str& name) { return g_player_hud->IsBlendAnmActive(name); }
+
+bool CHudItem::render_item_3d_ui_query()
+{
+	return HudItemData() && GetHUDmode() && ScriptWindow;
+}
+
+void CHudItem::render_item_3d_ui()
+{
+	if (render_item_3d_ui_query() && ScriptWindow)
+	{
+		Fmatrix LM = Fidentity;
+
+		attachable_hud_item* hid = HudItemData();
+		IKinematics* kin = hid->m_model;
+
+		u16 BoneID = kin->LL_BoneID(ScriptUIBone);
+
+		R_ASSERT2(BoneID != BI_NONE, "Invalid Script UI Bone");
+
+		LM.mul(hid->m_item_transform, kin->LL_GetTransform(BoneID)).mulB_43(ScriptUIMatrix);
+
+		IUIRender::ePointType bk = UI().m_currentPointType;
+
+		UI().m_currentPointType = IUIRender::pttLIT;
+
+		UIRender->CacheSetXformWorld(LM);
+		UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
+
+		ScriptWindow->Draw();
+
+		UI().m_currentPointType = bk;
+	}
+
+	UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
+}
