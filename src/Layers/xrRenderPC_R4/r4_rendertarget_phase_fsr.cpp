@@ -4,8 +4,6 @@
 
 void CRenderTarget::init_fsr()
 {
-	g_Fsr3Wrapper.Destroy();
-
 	Fsr3Wrapper::ContextParameters initParams = {};
 
 	initParams.displaySize.width = (u32)RCache.get_target_width();
@@ -21,6 +19,11 @@ void CRenderTarget::init_fsr()
 
 bool CRenderTarget::phase_fsr()
 {
+	if (!g_Fsr3Wrapper.IsCreated())
+	{
+		return false;
+	}
+
 	GPU_EVENT(FSR);
 
 	Fsr3Wrapper::DrawParameters fsr3Params = {};
