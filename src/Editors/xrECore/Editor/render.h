@@ -17,26 +17,32 @@
 #include <d3dcompiler.h>
 #include "../../../Layers/xrRender/light.h"
 #include "../Render/LightSpot.h"
+#include "EditorContext.h"
 
 class ISpatial;
 
-class CBlender_accum : public IBlender {
+class CBlender_accum : public IBlender
+{
 public:
-	virtual const char* getComment() {
+	virtual const char* getComment()
+	{
 		return "INTERNAL: accumulate light";
 	}
 
-	virtual bool canBeDetailed() {
+	virtual bool canBeDetailed()
+	{
 		return false;
 	}
 
-	virtual bool canBeLMAPped() {
+	virtual bool canBeLMAPped()
+	{
 		return false;
 	}
 
 	virtual void Compile(CBlender_Compile& C);
 
-	CBlender_accum() {
+	CBlender_accum()
+	{
 		description.CLS = 0;
 	};
 
@@ -44,26 +50,24 @@ public:
 };
 
 // definition (Renderer)
-class CRenderTarget :public IRender_Target
+class CRenderTarget : public IRender_Target
 {
 public:
 	CRenderTarget();
 	virtual ~CRenderTarget();
 
 	// 2D texgen (texture adjustment matrix)
-	void	u_compute_texgen_screen(Fmatrix& m_Texgen) {
-		float	_w = float(RCache.get_width());
-		float	_h = float(RCache.get_height());
-		float	o_w = (.5f / _w);
-		float	o_h = (.5f / _h);
+	void u_compute_texgen_screen(Fmatrix& m_Texgen)
+	{
+		float _w = float(RCache.get_width());
+		float _h = float(RCache.get_height());
+		float o_w = (.5f / _w);
+		float o_h = (.5f / _h);
 
-		Fmatrix			m_TexelAdjust =
-		{
-			0.5f,				0.0f,				0.0f,			0.0f,
-			0.0f,				-0.5f,				0.0f,			0.0f,
-			0.0f,				0.0f,				1.0f,			0.0f,
-			0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
-		};
+		Fmatrix m_TexelAdjust =
+			{
+				0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f
+			};
 		m_Texgen.mul(m_TexelAdjust, RCache.xforms.m_wvp);
 	}
 
@@ -71,7 +75,7 @@ public:
 	{
 		dwLightMarkerID = 5;
 
-		if(bResetStencil)
+		if (bResetStencil)
 		{
 			GRHI->ClearDepthStencil(GRHI->GetDepthStencilView(), ERHI_CLEAR_TARGET::STENCIL, 1.f, 0);
 		}
@@ -81,8 +85,10 @@ public:
 	{
 		dwLightMarkerID += 2;
 
-		if(dwLightMarkerID > 255)
+		if (dwLightMarkerID > 255)
+		{
 			reset_light_marker(true);
+		}
 	}
 
 	void accum_point_geom_create();
@@ -108,48 +114,49 @@ public:
 	IRHIBuffer* g_accum_spot_vb;
 	IRHIBuffer* g_accum_spot_ib;
 
-	virtual	void					set_blur(float	f) {}
-	virtual	void					set_gray(float	f) {}
-	virtual void					set_duality_h(float	f) {}
-	virtual void					set_duality_v(float	f) {}
-	virtual void					set_noise(float	f) {}
-	virtual void					set_noise_scale(float	f) {}
-	virtual void					set_noise_fps(float	f) {}
-	virtual void					set_color_base(u32	f) {}
-	virtual void					set_color_gray(u32	f) {}
-	//virtual void					set_color_add		(u32	f)							= 0;
-	virtual void					set_color_add(const Fvector& f) {}
-	virtual void					set_cm_imfluence(float	f) {}
-	virtual void					set_cm_interpolate(float	f) {}
-	virtual void					set_cm_textures(const shared_str& tex0, const shared_str& tex1) {}
+	virtual void set_blur(float f) {}
+	virtual void set_gray(float f) {}
+	virtual void set_duality_h(float f) {}
+	virtual void set_duality_v(float f) {}
+	virtual void set_noise(float f) {}
+	virtual void set_noise_scale(float f) {}
+	virtual void set_noise_fps(float f) {}
+	virtual void set_color_base(u32 f) {}
+	virtual void set_color_gray(u32 f) {}
+	// virtual void					set_color_add		(u32	f)							= 0;
+	virtual void set_color_add(const Fvector& f) {}
+	virtual void set_cm_imfluence(float f) {}
+	virtual void set_cm_interpolate(float f) {}
+	virtual void set_cm_textures(const shared_str& tex0, const shared_str& tex1) {}
 
-	virtual u32			get_width			()				{ return EDevice->TargetWidth;	}
-	virtual u32			get_height			()				{ return EDevice->TargetHeight;	}
+	virtual u32 get_width() { return EDevice->TargetWidth; }
+	virtual u32 get_height() { return EDevice->TargetHeight; }
 
-	virtual u32						get_target_width()	{ return EDevice->TargetWidth;	}
-	virtual u32						get_target_height() { return EDevice->TargetHeight;	}
-	virtual u32						get_core_width()	{ return EDevice->TargetWidth;	}
-	virtual u32						get_core_height()	{ return EDevice->TargetHeight;	}
+	virtual u32 get_target_width() { return EDevice->TargetWidth; }
+	virtual u32 get_target_height() { return EDevice->TargetHeight; }
+	virtual u32 get_core_width() { return EDevice->TargetWidth; }
+	virtual u32 get_core_height() { return EDevice->TargetHeight; }
 
-	CTexture* t_envmap_0;	// env-0
-	CTexture* t_envmap_1;	// env-1
+	CTexture* t_envmap_0; // env-0
+	CTexture* t_envmap_1; // env-1
 };
 
-class	ECORE_API CRender : public IRender_interface
+class ECORE_API CRender : public IRender_interface
 {
-	CRenderTarget* Target;
-	Fmatrix					current_matrix;
+	xr_unique_ptr<CRenderTarget> Target;
+	Fmatrix current_matrix;
 	bool val_bInvisible;
 	bool val_bUI;
 	u32 dwFrameCalc = 0;
+
 public:
 	// options
 
 	// Data
-	CFrustum				ViewBase;
-	CPSLibrary				PSLibrary;
+	CFrustum ViewBase;
+	CPSLibrary PSLibrary;
 
-	CModelPool* Models;
+	xr_unique_ptr<CModelPool> Models;
 
 	xr_vector<light*> m_pointlights;
 	xr_vector<light*> m_spotlights;
@@ -159,35 +166,35 @@ public:
 
 public:
 	// Occlusion culling
-	virtual bool			occ_visible(Fbox& B);
-	virtual bool			occ_visible(sPoly& P);
-	virtual bool			occ_visible(vis_data& P);
+	virtual bool occ_visible(Fbox& B);
+	virtual bool occ_visible(sPoly& P);
+	virtual bool occ_visible(vis_data& P);
 
 	// Constructor/destructor
 	CRender();
-	virtual 				~CRender();
+	virtual ~CRender();
 
 
-	void 					Initialize();
-	void 					ShutDown();
+	void Initialize();
+	void ShutDown();
 
-	void					OnDeviceCreate();
-	void					OnDeviceDestroy();
+	void OnDeviceCreate();
+	void OnDeviceDestroy();
 
-	virtual	void					Calculate();
-	virtual void					Render();
-	virtual void					RenderUI(Fcolor* = nullptr);
+	virtual void Calculate();
+	virtual void Render();
+	virtual void RenderUI(Fcolor* = nullptr);
 
-	virtual void					set_Transform(Fmatrix* M);
-	virtual void					add_Visual(IRenderVisual* visual, bool) override;
+	virtual void set_Transform(Fmatrix* M);
+	virtual void add_Visual(IRenderVisual* visual, bool) override;
 
-	virtual ref_shader		getShader(int id);
-	virtual	CRenderTarget* getTarget() { return Target; }
+	virtual ref_shader getShader(int id);
+	virtual CRenderTarget* getTarget() { return Target.get(); }
 	//.	virtual IRender_Target*	getTarget		(){return Target;}
 
 
-	void					reset_begin();
-	void					reset_end();
+	void reset_begin();
+	void reset_end();
 	virtual IRenderVisual* model_Create(const char* name, IReader* data = nullptr);
 	virtual IRenderVisual* model_CreateChild(const char* name, IReader* data);
 	virtual IRenderVisual* model_CreatePE(const char* name);
@@ -195,8 +202,8 @@ public:
 
 	virtual IRender_DetailModel* model_CreateDM(IReader* R);
 	virtual IRenderVisual* model_Duplicate(IRenderVisual* V);
-	virtual void			model_Delete(IRenderVisual*& V, bool bDiscard = true);
-	virtual void			model_Delete(IRender_DetailModel*& F)
+	virtual void model_Delete(IRenderVisual*& V, bool bDiscard = true);
+	virtual void model_Delete(IRender_DetailModel*& F)
 	{
 		if (F)
 		{
@@ -206,37 +213,44 @@ public:
 			F = nullptr;
 		}
 	}
-	void 					model_Render(IRenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);
-	void 					model_RenderSingle(IRenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD);
-	virtual	GenerationLevel	get_generation() { return GENERATION_R2; }
-	virtual bool			is_sun_static() { return false; };
+	void model_Render(IRenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);
+	void model_RenderSingle(IRenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD);
+	virtual GenerationLevel get_generation() { return GENERATION_R2; }
+	virtual bool is_sun_static() { return false; };
 
-	virtual void			add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) {};
-	virtual void			add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size) {};
+	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) {};
+	virtual void add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size) {};
 
-	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) override { return nullptr;}
+	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) override { return nullptr; }
 
-	virtual void			add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) {}
+	virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) {}
 	// Render mode
-	virtual void			rmNear();
-	virtual void			rmFar();
-	virtual void			rmNormal();
+	virtual void rmNear();
+	virtual void rmFar();
+	virtual void rmNormal();
 
-	IC void apply_lmaterial() {
+	IC void apply_lmaterial()
+	{
 		RHIShaderConstant* C = &*RCache.get_c("s_base"); // get sampler
-		if(nullptr == C)			return;
+		if (nullptr == C)
+		{
+			return;
+		}
 		VERIFY(RC_dest_sampler == C->destination);
 		VERIFY(RC_dx10texture == C->type);
 		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
 		VERIFY(T);
-		float	mtl = T->m_material;
-#ifdef	DEBUG_DRAW
-		if(ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	mtl = ps_r2_gmaterial;
+		float mtl = T->m_material;
+#ifdef DEBUG_DRAW
+		if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))
+		{
+			mtl = ps_r2_gmaterial;
+		}
 #endif
 		RCache.hemi.set_material(0.7, 1, 0, (mtl + .5f) / 4.f);
 	}
 
-	virtual const char*			getShaderPath()
+	virtual const char* getShaderPath()
 	{
 		return "editor\\";
 	}
@@ -245,69 +259,76 @@ public:
 	bool get_texture_metadata(LPCSTR fname, RHITextureMetadata* p_data) override;
 	IRHISurface* texture_load(LPCSTR fname, u32& msize, bool bStaging = false);
 
-	virtual DWORD					get_dx_level();
+	virtual DWORD get_dx_level();
 
 	// Loading / Unloading
-	virtual	void					create();
-	virtual	void					destroy();
+	virtual void create();
+	virtual void destroy();
 
-		virtual	void					level_Load(IReader*);
-	virtual void					level_Unload();
+	virtual void level_Load(IReader*);
+	virtual void level_Unload();
 
-	//virtual IDirect3DBaseTexture9*	texture_load			(const char*	fname, u32& msize)					= 0;
+	// virtual IDirect3DBaseTexture9*	texture_load			(const char*	fname, u32& msize)					= 0;
 
 	// Information
-	virtual	void					Statistics(CGameFont* F) {};
+	virtual void Statistics(CGameFont* F) {};
 
 	//	virtual ref_shader				getShader				(int id)									= 0;
 	virtual IRender_Sector* getSector(int id);
 	virtual IRenderVisual* getVisual(int id);
 	virtual IRender_Sector* detectSector(const Fvector& P);
 
-	// Main 
-	IC		void					set_Frustum(CFrustum* O) { VERIFY(O);	View = O; }
-	virtual	void					set_UI(bool 		V);
-	virtual void					set_HUD(bool 		V);
-	virtual bool					get_HUD();
-	virtual void					set_Invisible(bool 		V);
-	virtual void					flush();
-	virtual void					set_Object(IRenderable* O);
-	virtual	void					add_Occluder(Fbox2& bb_screenspace);	// mask screen region as oclluded (-1..1, -1..1)
-	virtual void					add_Geometry(IRenderVisual* V);	// add visual(s)	(all culling performed)
-	virtual void					add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}
+	// Main
+	IC void set_Frustum(CFrustum* O)
+	{
+		VERIFY(O);
+		View = O;
+	}
+	virtual void set_UI(bool V);
+	virtual void set_HUD(bool V);
+	virtual bool get_HUD();
+	virtual void set_Invisible(bool V);
+	virtual void flush();
+	virtual void set_Object(IRenderable* O);
+	virtual void add_Occluder(Fbox2& bb_screenspace); // mask screen region as oclluded (-1..1, -1..1)
+	virtual void add_Geometry(IRenderVisual* V);	  // add visual(s)	(all culling performed)
+	virtual void add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}
 
 	//	Prefer this function when possible
-	virtual void					add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}
-	virtual void					clear_static_wallmarks() {}
+	virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}
+	virtual void clear_static_wallmarks() {}
 	virtual IRender_ObjectSpecific* ros_create(IRenderable* parent);
-	virtual void					ros_destroy(IRender_ObjectSpecific*&);
+	virtual void ros_destroy(IRender_ObjectSpecific*&);
 
 	// Lighting/glowing
 	virtual IRender_Light* light_create();
-	virtual void					light_destroy(IRender_Light* p_);
+	virtual void light_destroy(IRender_Light* p_);
 	virtual IRender_Glow* glow_create();
-	virtual void					glow_destroy(IRender_Glow* p_);
+	virtual void glow_destroy(IRender_Glow* p_);
 
 	// Models
-	virtual void					models_Prefetch();
-	virtual void					models_Clear(bool b_complete);
+	virtual void models_Prefetch();
+	virtual void models_Clear(bool b_complete);
 
 	// Main
 
-	virtual void					Screenshot(ScreenshotMode mode = SM_NORMAL, const char* name = nullptr);
-	virtual	void					Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer);
-	virtual void					ScreenshotAsyncBegin();
-	virtual void					ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
+	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, const char* name = nullptr);
+	virtual void Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer);
+	virtual void ScreenshotAsyncBegin();
+	virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
 
 	// Render mode
-	virtual u32						memory_usage();
+	virtual u32 memory_usage();
 
-	xr_string getShaderParams() {
+	xr_string getShaderParams()
+	{
 		xr_string params = "";
-		if(!m_ShaderOptions.empty()) {
+		if (!m_ShaderOptions.empty())
+		{
 			params.append("(").append(m_ShaderOptions[0].Name);
 
-			for(auto i = 1u; i < m_ShaderOptions.size(); ++i) {
+			for (auto i = 1u; i < m_ShaderOptions.size(); ++i)
+			{
 				params.append(",").append(m_ShaderOptions[i].Name);
 			}
 
@@ -316,35 +337,39 @@ public:
 		return params;
 	};
 
-	void addShaderOption(const char* name, const char* value) {
+	void addShaderOption(const char* name, const char* value)
+	{
 		m_ShaderOptions.emplace_back(name, value);
 	};
 
-	void clearAllShaderOptions() {
+	void clearAllShaderOptions()
+	{
 		m_ShaderOptions.resize(0);
 	}
 
 protected:
 	xr_vector<D3D_SHADER_MACRO> m_ShaderOptions;
 
-	virtual	void					ScreenshotImpl(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) {};
-	HRESULT					shader_compile(
-		const char*							name,
+	virtual void ScreenshotImpl(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) {};
+	HRESULT shader_compile(
+		const char* name,
 		DWORD const* pSrcData,
-		UINT                            SrcDataLen,
-		const char*                          pFunctionName,
-		const char*                          pTarget,
-		DWORD                           Flags,
+		UINT SrcDataLen,
+		const char* pFunctionName,
+		const char* pTarget,
+		DWORD Flags,
 		void*& result
 	) override;
-	private:
-		xr_vector<ISpatialShared> lstRenderables;
+
+private:
+	xr_vector<ISpatialShared> lstRenderables;
 };
 
 #include "ui_main.h"
 IC float CalcSSA(Fvector& C, float R)
 {
-    float distSQ  = UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(C);
-    return  R*R/distSQ;
+	float distSQ = EContext.UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(C);
+	return R * R / distSQ;
 }
+
 extern ECORE_API CRender RImplementation;

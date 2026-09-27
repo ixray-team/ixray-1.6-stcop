@@ -1,5 +1,6 @@
 #pragma once
 #include "../../Public/VIMP_Processor.h"
+#include "Export/MeshVertPack.h"
 
 const int clpOGFMX = 48, clpOGFMY=16, clpOGFMZ=48;
 
@@ -47,10 +48,7 @@ struct SOGFFace{
 };
 
 using OGFVertVec = xr_vector<SOGFVert>;
-using OGFVertIt = OGFVertVec::iterator;
-
 using OGFFaceVec = xr_vector<SOGFFace>;
-using OGFFaceIt = OGFFaceVec::iterator;
 
 class CObjectOGFCollectorPacked
 {
@@ -64,11 +62,12 @@ public:
     // Progressive
     ArbitraryList<VIPM_SWR>	m_SWR;// The records of the collapses.
 
-    Fvector			m_VMmin, m_VMscale;
-    U32Vec			m_VM[clpOGFMX+1][clpOGFMY+1][clpOGFMZ+1];
-    Fvector			m_VMeps;
+    MeshVertPackGrid<clpOGFMX, clpOGFMY, clpOGFMZ> m_VertGrid;
 
-    u16				VPack			(SOGFVert& V);
+	u16 VPack(SOGFVert& V)
+	{
+		return m_VertGrid.Pack(m_Verts, V, [](SOGFVert& Vertex) -> Fvector& { return Vertex.P; }, true);
+	}
 	void			ComputeBounding	();
     void  			OptimizeTextureCoordinates();
 public:
@@ -104,15 +103,9 @@ public:
         }
         return true;
     }
-    IC OGFVertVec& 	getV_Verts	()	{return m_Verts;}
-   	IC OGFFaceVec& 	getV_Faces	()	{return m_Faces;}
-    IC SOGFVert*	getVert		() 	{return &m_Verts.front();}
-    IC u32			getVS		() 	{return m_Verts.size();}
-    IC u32			getTS		() 	{return m_Faces.size();}
 };
 //----------------------------------------------------
 using COGFCPVec = xr_vector<CObjectOGFCollectorPacked*>;
-using COGFCPIt = COGFCPVec::iterator;
 
 class ECORE_API CExportObjectOGF
 {
@@ -133,8 +126,8 @@ class ECORE_API CExportObjectOGF
 
         void			CalculateTB		()
         {
-            for (COGFCPIt it=m_Parts.begin(); it!=m_Parts.end(); it++)
-                (*it)->CalculateTB		();
+            for (CObjectOGFCollectorPacked* Part : m_Parts)
+                Part->CalculateTB();
         }
         
 		void 			MakeProgressive	();
@@ -143,29 +136,28 @@ class ECORE_API CExportObjectOGF
 		void 			ComputeBounding	()
         {
             m_Box.invalidate();
-            for (COGFCPIt it=m_Parts.begin(); it!=m_Parts.end(); it++){
-                CObjectOGFCollectorPacked* part = *it;
-                part->ComputeBounding	();
-                m_Box.merge				(part->m_Box);
+            for (CObjectOGFCollectorPacked* Part : m_Parts)
+            {
+                Part->ComputeBounding();
+                m_Box.merge(Part->m_Box);
             }
         }
     };
 
     using SplitVec = xr_vector<SSplit*>;
-    using SplitIt = SplitVec::iterator;
 
 	SplitVec			m_Splits;
 	CEditableObject*	m_Source;
     Fbox 				m_Box;   	
 //----------------------------------------------------
-//	void 	ComputeOBB			(Fobb &B, FvectorVec& V);
     SSplit*	FindSplit			(CSurface* surf);
     void 				ComputeBounding	()
     {
         m_Box.invalidate();
-        for (SplitIt it=m_Splits.begin(); it!=m_Splits.end(); it++){
-            (*it)->ComputeBounding	();
-            m_Box.merge				((*it)->m_Box);
+        for (SSplit* Split : m_Splits)
+        {
+            Split->ComputeBounding();
+            m_Box.merge(Split->m_Box);
         }
     }
     bool    PrepareMESH			(CEditableMesh* mesh);

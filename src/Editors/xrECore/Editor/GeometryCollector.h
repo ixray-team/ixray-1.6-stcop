@@ -5,14 +5,14 @@ struct ECORE_API GCVertex
 {
     Fvector pos;
     u32     refs;
-    GCVertex(const Fvector& p)
+    GCVertex(const Fvector& P)
     {
-        pos  = p;
+        pos  = P;
         refs = 1;
     }
-    bool similar(const GCVertex& v, float eps = EPS)
+    bool similar(const GCVertex& V, float /*Eps*/ = EPS)
     {
-        return pos.similar(v.pos);
+        return pos.similar(V.pos);
     }
 };
 
@@ -27,51 +27,30 @@ class ECORE_API VCPacked
 {
 protected:
     using GCHash = xr_vector<U32Vec>;
-    using GCHashIt = GCHash::iterator;
 
     xr_vector<GCVertex> verts;
 
     GCHash              VM;
     Fvector             VMmin, VMscale;
     Fvector             VMeps;
-    float               eps;
-    u32                 sx, sy, sz;
+    float               Eps;
+    u32                 Sx, Sy, Sz;
 
-    IC U32Vec&          get_element(u32 ix, u32 iy, u32 iz)
+    IC U32Vec& GetElement(u32 Ix, u32 Iy, u32 Iz)
     {
-        VERIFY((ix < sx) && (iy < sy) && (iz < sz));
-        return VM[iz * sy * sx + iy * sx + ix];
+        VERIFY((Ix < Sx) && (Iy < Sy) && (Iz < Sz));
+        return VM[Iz * Sy * Sx + Iy * Sx + Ix];
     }
 
 public:
-    VCPacked(const Fbox& bb, float eps = EPS, u32 clpSX = 24, u32 clpSY = 16, u32 clpSZ = 24, int apx_vertices = 5000);
+    VCPacked(const Fbox& Bb, float PackEps = EPS, u32 ClpSX = 24, u32 ClpSY = 16, u32 ClpSZ = 24, int ApxVertices = 5000);
     virtual ~VCPacked()
     {
-        clear();
+        Clear();
     }
-    virtual void clear();
+    virtual void Clear();
 
-    u32          add_vert(const Fvector& V);
-
-    GCVertex*    getV()
-    {
-        return &*verts.begin();
-    }
-    size_t getVS()
-    {
-        return verts.size();
-    }
-
-    void getHASH_size(u32& x, u32& y, u32& z)
-    {
-        x = sx;
-        y = sy;
-        z = sz;
-    }
-    U32Vec& getHASH_elem(u32 ix, u32 iy, u32 iz)
-    {
-        return get_element(ix, iy, iz);
-    }
+    u32 AddVert(const Fvector& V);
 
     xr_vector<GCVertex>& Vertices()
     {

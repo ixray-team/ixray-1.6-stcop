@@ -139,7 +139,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 
 			bool EditorTest = !Device.IsEditorMode();
 #ifdef _EDITOR
-			EditorTest = EditorTest || UI->IsPlayInEditor();
+			EditorTest = EditorTest || EContext.UI->IsPlayInEditor();
 #endif
 			if (m_Def->m_Flags.is(CPEDef::dfCollision) && EditorTest)
 				m_Def->ExecuteCollision(particles, p_cnt, fDT_STEP, this, m_CollisionCallback);

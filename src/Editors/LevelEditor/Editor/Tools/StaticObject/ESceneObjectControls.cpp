@@ -9,7 +9,12 @@ bool  TUI_ControlObjectAdd::Start(TShiftState Shift)
    if (Shift==ssRBOnly){ ExecCommand(COMMAND_SHOWCONTEXTMENU,OBJCLASS_SCENEOBJECT); return false;}
     UIObjectTool* fraObject = (UIObjectTool*)parent_tool->pForm; VERIFY(fraObject);
 	Fvector p,n;
-	if(!LUI->PickGround(p,UI->m_CurrentRStart,UI->m_CurrentRDir,1,&n)) return false;
+
+	if (!LUI->PickGround(p, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, 1, &n))
+	{
+		return false;
+	}
+
     { // pick already executed (see top)
 		ESceneObjectTool* ot = smart_cast<ESceneObjectTool*>(parent_tool);
     	const char* N;

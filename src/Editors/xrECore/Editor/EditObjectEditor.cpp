@@ -321,7 +321,8 @@ void CEditableObject::GetLODFrame(int frame, Fvector p[4], Fvector2 t[4], const 
 void CEditableObject::RenderLOD(const Fmatrix& parent)
 {
 	Fvector C;
-	C.sub(parent.c, UI->CurrentView().m_Camera.GetPosition()); C.y = 0;
+	C.sub(parent.c, EContext.UI->CurrentView().m_Camera.GetPosition());
+	C.y = 0;
 	float m = C.magnitude();
 	if (m < EPS)
 	{
@@ -413,19 +414,30 @@ void CEditableObject::DefferedLoadRP()
 }
 void CEditableObject::DefferedUnloadRP()
 {
-	if (!(m_LoadState.is(LS_RBUFFERS))) return;
+	if (!(m_LoadState.is(LS_RBUFFERS)))
+	{
+		return;
+	}
 	// skeleton
 	vs_SkeletonGeom.destroy();
 	// удалить буфера
-	for (EditMeshIt _M=m_Meshes.begin(); _M!=m_Meshes.end(); _M++)
-		if (*_M) (*_M)->GenerateRenderBuffers();
+	for (EditMeshIt _M = m_Meshes.begin(); _M != m_Meshes.end(); _M++)
+	{
+		if (*_M)
+		{
+			(*_M)->GenerateRenderBuffers();
+		}
+	}
 	// удалить shaders
-	for(SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
+	for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
+	{
 		(*s_it)->OnDeviceDestroy();
+	}
 	// LOD
 	m_LODShader.destroy();
-	m_LoadState.set(LS_RBUFFERS,false);
+	m_LoadState.set(LS_RBUFFERS, false);
 }
+
 void CEditableObject::EvictObject()
 {
 	EditMeshIt m 				= m_Meshes.begin();
@@ -438,9 +450,9 @@ void CEditableObject::EvictObject()
 	DefferedUnloadRP			();
 }
 
-void  CEditableObject::OnChangeTransform(PropValue*)
+void CEditableObject::OnChangeTransform(PropValue*)
 {
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 IC bool BE(bool A, bool B)
@@ -458,12 +470,12 @@ bool CEditableObject::CheckShaderCompatible()
 		IBlender* 		B = EDevice->Resources->_FindBlender(*(*s_it)->m_ShaderName);
 		Shader_xrLC* 	C = EDevice->ShaderXRLC.Get(*(*s_it)->m_ShaderXRLCName);
 		if (!B||!C){
-			ELog.Msg	(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",GetName(),(*s_it)->_ShaderName(),(*s_it)->_ShaderXRLCName());
+			ELog.Msg	(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",m_LibName.c_str(),(*s_it)->m_ShaderName.c_str(),(*s_it)->m_ShaderXRLCName.c_str());
 			bRes 		= false;
 		}else{
 			if (!BE(B->canBeLMAPped(),!C->flags.bLIGHT_Vertex)){
-				ELog.Msg	(mtError,"Object '%s', material '%s': engine shader '%s' non compatible with compiler shader '%s'", GetName(),
-					(*s_it)->_Name(), (*s_it)->_ShaderName(), (*s_it)->_ShaderXRLCName());
+				ELog.Msg	(mtError,"Object '%s', material '%s': engine shader '%s' non compatible with compiler shader '%s'", m_LibName.c_str(),
+					(*s_it)->m_Name.c_str(), (*s_it)->m_ShaderName.c_str(), (*s_it)->m_ShaderXRLCName.c_str());
 				
 				bRes 		= false;
 			}
@@ -589,8 +601,8 @@ void CEditableObject::DeleteBone(CBone* bone)
 
 BPIt CEditableObject::BonePart(CBone* B)
 {
-	BPIt it 		= FirstBonePart();
-	BPIt it_e 		= LastBonePart();
+	BPIt it 		= m_BoneParts.begin();
+	BPIt it_e 		= m_BoneParts.end();
 	for( ;it!=it_e; ++it)
 	{
 		RStringVec::iterator iit 	= (*it).bones.begin();
@@ -640,5 +652,5 @@ void CEditableObject::RenameBone(CBone* bone, const char* new_name)
 		}
 	}
 
-	Modified();
+	bOnModified = true;
 }

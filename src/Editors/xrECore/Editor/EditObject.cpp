@@ -17,8 +17,8 @@ float g_MinBoxSize = 0.05f;
 
 void CSurface::CreateImageData()
 {
-	VERIFY(0 == ImageData);
-	ImageData = new SSimpleImage();
+	VERIFY(!ImageData);
+	ImageData = xr_make_unique<SSimpleImage>();
 	ImageData->name = m_Texture;
 	ImageData->layers.push_back(U32Vec());
 	ImageLib.LoadTextureData(*ImageData->name, ImageData->layers.back(), ImageData->w, ImageData->h);
@@ -26,7 +26,30 @@ void CSurface::CreateImageData()
 
 void CSurface::RemoveImageData()
 {
-	xr_delete(ImageData);
+	ImageData.reset();
+}
+
+CSurface::~CSurface()
+{
+	R_ASSERT(!m_Shader);
+}
+
+void CSurface::CopyFrom(CSurface* surf)
+{
+	m_Name = surf->m_Name;
+	m_Texture = surf->m_Texture;
+	m_VMap = surf->m_VMap;
+	m_ShaderName = surf->m_ShaderName;
+	m_ShaderXRLCName = surf->m_ShaderXRLCName;
+	m_GameMtlName = surf->m_GameMtlName;
+	m_Flags = surf->m_Flags;
+	m_dwFVF = surf->m_dwFVF;
+	m_id = surf->m_id;
+	m_bEditorVisible = surf->m_bEditorVisible;
+	tag = surf->tag;
+	m_Shader = nullptr;
+	m_RTFlags.set(rtValidShader, false);
+	ImageData.reset();
 }
 
 CEditableObject::CEditableObject(const char* name) :
@@ -85,7 +108,7 @@ void CEditableObject::VerifyMeshNames()
 		{
 			sprintf(nm, "%s%2d", pref, idx++);
 		}
-		(*m_def)->SetName(nm);
+		(*m_def)->m_Name = (nm);
 	}
 }
 
@@ -106,7 +129,7 @@ CEditableMesh* CEditableObject::FindMeshByName(const char* name, CEditableMesh* 
 {
 	for (EditMeshIt m = m_Meshes.begin(); m != m_Meshes.end(); m++)
 	{
-		if ((Ignore != (*m)) && (stricmp((*m)->Name().c_str(), name) == 0))
+		if ((Ignore != (*m)) && (stricmp((*m)->m_Name.c_str(), name) == 0))
 		{
 			return (*m);
 		}
@@ -182,7 +205,7 @@ int CEditableObject::GetVertexCount()
 	m_VertexCount = 0;
 	for (EditMeshIt m = m_Meshes.begin(); m != m_Meshes.end(); m++)
 	{
-		m_VertexCount += (*m)->GetVertexCount();
+		m_VertexCount += (int)(*m)->m_Vertices.size();
 	}
 	return m_VertexCount;
 }
@@ -230,7 +253,7 @@ CSurface* CEditableObject::FindSurfaceByName(const char* surf_name, int* s_id)
 {
 	for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
 	{
-		if (stricmp((*s_it)->_Name(), surf_name) == 0)
+		if (stricmp((*s_it)->m_Name.c_str(), surf_name) == 0)
 		{
 			if (s_id)
 			{
@@ -260,7 +283,7 @@ const char* CEditableObject::GenerateSurfaceName(const char* base_name)
 
 bool CEditableObject::VerifyBoneParts()
 {
-	U8Vec b_use(BoneCount(), 0);
+	U8Vec b_use(m_Bones.size(), 0);
 	for (BPIt bp_it = m_BoneParts.begin(); bp_it != m_BoneParts.end(); bp_it++)
 	{
 		for (int i = 0; i < int(bp_it->bones.size()); i++)
@@ -340,7 +363,7 @@ bool CEditableObject::Validate()
 	{
 		if (false == (*s_it)->Validate())
 		{
-			Msg("!Invalid surface found: Object [%s], Surface [%s].", GetName(), (*s_it)->_Name());
+			Msg("!Invalid surface found: Object [%s], Surface [%s].", m_LibName.c_str(), (*s_it)->m_Name.c_str());
 			bRes = false;
 		}
 	}
@@ -348,7 +371,7 @@ bool CEditableObject::Validate()
 	{
 		if (false == (*m_def)->Validate())
 		{
-			Msg("!Invalid mesh found: Object [%s], Mesh [%s].", m_LibName.c_str(), (*m_def)->Name().c_str());
+			Msg("!Invalid mesh found: Object [%s], Mesh [%s].", m_LibName.c_str(), (*m_def)->m_Name.c_str());
 			bRes = false;
 		}
 	}

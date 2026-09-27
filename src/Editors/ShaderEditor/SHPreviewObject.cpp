@@ -350,7 +350,7 @@ bool CPreviewObject::Apply(CEditableObject* o)
 	// permanently overwrites dcl->dx10_dcl_code to satisfy the active VS, so using
 	// that as the source on the next shader switch would drift the channel set and
 	// produce bogus mappings (e.g. COLOR0 "found" at a normal's offset).
-	for (auto it = Object->FirstMesh(); it != Object->LastMesh(); ++it)
+	for (auto it = Object->m_Meshes.begin(); it != Object->m_Meshes.end(); ++it)
 	{
 		CEditableMesh* M = *it;
 		if (!M) continue;
@@ -389,13 +389,13 @@ void CPreviewObject::UpdateClipSpace(const Fmatrix& WVP)
 	const float KY = 0.003086f, BY = 0.9984f;
 
 	const bool clip = bNotransform;
-	for (auto it = Object->FirstMesh(); it != Object->LastMesh(); ++it)
+	for (auto it = Object->m_Meshes.begin(); it != Object->m_Meshes.end(); ++it)
 	{
 		CEditableMesh* M = *it;
 		if (!M)
 			continue;
 
-		const u32 vc = M->GetVCount();
+		const u32 vc = M->m_Vertices.size();
 		if (!vc)
 			continue;
 
@@ -404,7 +404,7 @@ void CPreviewObject::UpdateClipSpace(const Fmatrix& WVP)
 		{
 			Orig.resize(vc);
 			for (u32 i = 0; i < vc; ++i)
-				Orig[i] = M->Vertices()[i];
+				Orig[i] = M->m_Vertices[i];
 		}
 
 		if (clip)
@@ -417,7 +417,7 @@ void CPreviewObject::UpdateClipSpace(const Fmatrix& WVP)
 				const float ndcx = c.x * invw;
 				const float ndcy = c.y * invw;
 				const float ndcz = c.z * invw;
-				M->Vertices()[i].set((ndcx + BX) / KX, (BY - ndcy) / KY, ndcz);
+				M->m_Vertices[i].set((ndcx + BX) / KX, (BY - ndcy) / KY, ndcz);
 			}
 			M->UnloadRenderBuffers();
 			M->GenerateRenderBuffers();
@@ -426,7 +426,7 @@ void CPreviewObject::UpdateClipSpace(const Fmatrix& WVP)
 		else if (bWasClip)
 		{
 			for (u32 i = 0; i < vc; ++i)
-				M->Vertices()[i] = Orig[i];
+				M->m_Vertices[i] = Orig[i];
 			M->UnloadRenderBuffers();
 			M->GenerateRenderBuffers();
 			bWasClip = false;
@@ -443,7 +443,7 @@ void CPreviewObject::UpdateClipSpace(const Fmatrix& WVP)
 void CPreviewObject::ReapplyDeclarations(bool bLog)
 {
 	if (!Object) return;
-	for (auto it = Object->FirstMesh(); it != Object->LastMesh(); ++it)
+	for (auto it = Object->m_Meshes.begin(); it != Object->m_Meshes.end(); ++it)
 	{
 		CEditableMesh* M = *it;
 		if (!M) continue;

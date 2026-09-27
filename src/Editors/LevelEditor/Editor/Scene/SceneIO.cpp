@@ -383,8 +383,8 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 		ini.w_string		("level_tag","owner",m_OwnerName.c_str());
 		ini.w_u32			("level_tag","create_time",m_CreateTime);
 
-		ini.w_fvector3		("camera","hpb",UI->Views[0].m_Camera.GetHPB());
-		ini.w_fvector3		("camera","pos",UI->Views[0].m_Camera.GetPosition());
+		ini.w_fvector3		("camera","hpb",EContext.UI->Views[0].m_Camera.GetHPB());
+		ini.w_fvector3		("camera","pos",EContext.UI->Views[0].m_Camera.GetPosition());
 
 		for(ObjectIt SO=m_ESO_SnapObjects.begin(); SO!=m_ESO_SnapObjects.end(); ++SO)
 		{
@@ -546,8 +546,8 @@ void EScene::Save(const char* map_name, bool bUndo, bool bForceSaveAll)
 		F->close_chunk	();
 	
 		F->open_chunk	(CHUNK_CAMERA);
-		F->w_fvector3	(UI->CurrentView().m_Camera.GetHPB());
-		F->w_fvector3	(UI->CurrentView().m_Camera.GetPosition());
+		F->w_fvector3	(EContext.UI->CurrentView().m_Camera.GetHPB());
+		F->w_fvector3	(EContext.UI->CurrentView().m_Camera.GetPosition());
 		F->close_chunk	();
 
 		F->open_chunk		(CHUNK_SNAPOBJECTS);
@@ -822,8 +822,8 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 	}
 
 	xr_string LevelPath = xr_string(ICON_FA_MOUNTAIN) + " " + xr_path(map_name).stem().string().c_str();
-	UI->GeneralTabs[0] = { LevelPath.c_str(), []()->bool {return Scene->IsUnsaved(); } };
-	UI->ActiveTabIndex = 0;
+	EContext.UI->GeneralTabs[0] = { LevelPath.c_str(), []()->bool {return Scene->IsUnsaved(); } };
+	EContext.UI->ActiveTabIndex = 0;
 	
 	full_name = map_name;
 
@@ -841,7 +841,7 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 		if (version!=CURRENT_FILE_VERSION)
 		{
 			ELog.DlgMsg( mtError, "EScene: unsupported file version. Can't load Level.");
-			UI->UpdateScene();
+			EContext.UI->UpdateScene();
 			return false;
 		}
 
@@ -850,8 +850,8 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 		Fvector hpb, pos;
 		pos					= ini.r_fvector3("camera","pos");
 		hpb					= ini.r_fvector3("camera","hpb");
-		UI->Views[0].m_Camera.Set(hpb,pos);
-		UI->Views[0].m_Camera.SetStyle(UI->Views[0].m_Camera.GetStyle());
+		EContext.UI->Views[0].m_Camera.Set(hpb,pos);
+		EContext.UI->Views[0].m_Camera.SetStyle(EContext.UI->Views[0].m_Camera.GetStyle());
 
 		m_GUID.LoadLTX			(ini,"guid","guid");
 
@@ -894,7 +894,7 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 
 		Msg("EScene: %d objects loaded, %3.2f sec", ObjCount(), T.GetElapsed_sec() );
 
-		UI->UpdateScene(true);
+		EContext.UI->UpdateScene(true);
 
 		SynchronizeObjects();
 
@@ -940,7 +940,7 @@ bool EScene::Load(const char* map_name, bool bUndo)
 		if (version!=CURRENT_FILE_VERSION)
 		{
 			ELog.DlgMsg( mtError, "EScene: unsupported file version. Can't load Level.");
-			UI->UpdateScene();
+			EContext.UI->UpdateScene();
 			FS.r_close(F);
 			return false;
 		}
@@ -962,8 +962,8 @@ bool EScene::Load(const char* map_name, bool bUndo)
 			Fvector hpb, pos;
 			F->r_fvector3	(hpb);
 			F->r_fvector3	(pos);
-			UI->CurrentView().m_Camera.Set(hpb,pos);
-			UI->CurrentView().m_Camera.SetStyle(UI->CurrentView().m_Camera.GetStyle());
+			EContext.UI->CurrentView().m_Camera.Set(hpb,pos);
+			EContext.UI->CurrentView().m_Camera.SetStyle(EContext.UI->CurrentView().m_Camera.GetStyle());
 		}
 
 		if (F->find_chunk(CHUNK_TOOLS_GUID))
@@ -986,9 +986,9 @@ bool EScene::Load(const char* map_name, bool bUndo)
 		if (F->find_chunk(CHUNK_OBJECT_COUNT))
 			obj_cnt 		= F->r_u32();
 
-		SPBItem* pb 		= UI->ProgressStart(obj_cnt,"Loading objects...");
+		SPBItem* pb 		= EContext.UI->ProgressStart(obj_cnt,"Loading objects...");
 		ReadObjectsStream	(*F,CHUNK_OBJECT_LIST, TAppendObject(this, &EScene::OnLoadAppendObject),pb);
-		UI->ProgressEnd		(pb);
+		EContext.UI->ProgressEnd		(pb);
 
 		SceneToolsMapPairIt _I = m_SceneTools.begin();
 		SceneToolsMapPairIt _E = m_SceneTools.end();
@@ -1032,7 +1032,7 @@ bool EScene::Load(const char* map_name, bool bUndo)
 
 		Msg("EScene: %d objects loaded, %3.2f sec", ObjCount(), T.GetElapsed_sec() );
 
-		UI->UpdateScene(true); 
+		EContext.UI->UpdateScene(true); 
 
 		FS.r_close(F);
 
@@ -1125,7 +1125,7 @@ bool EScene::LoadSelection( const char* fname )
 		R_ASSERT(F->r_chunk(CHUNK_VERSION, &version));
 		if (version!=CURRENT_FILE_VERSION){
 			ELog.DlgMsg( mtError, "EScene: unsupported file version. Can't load Level.");
-			UI->UpdateScene();
+			EContext.UI->UpdateScene();
 			FS.r_close(F);
 			return false;
 		}

@@ -39,14 +39,9 @@ void ELibrary::OnDestroy()
 //	EDevice->seqDevDestroy.Remove(this);
 
     // remove all instance CEditableObject
-	EditObjPairIt O = m_EditObjects.begin();
-	EditObjPairIt E = m_EditObjects.end();
-    for(; O!=E; O++){
-    	if (0!=O->second->m_RefCount){
-//.        	ELog.DlgMsg(mtError,"Object '%s' still referenced.",O->first.c_str());
-//.	    	R_ASSERT(0==O->second->m_RefCount);
+    for (auto& O : m_EditObjects){
+    	if (0!=O.second->m_RefCount){
         }
-    	xr_delete(O->second);
     }
 	m_EditObjects.clear();
 }
@@ -59,7 +54,6 @@ void ELibrary::CleanLibrary()
     for(EditObjPairIt O = m_EditObjects.begin(); O!=m_EditObjects.end(); ){
     	if (0==O->second->m_RefCount){ 
         	EditObjPairIt D		= O; O++;
-        	xr_delete			(D->second);
             m_EditObjects.erase	(D);
         }else					O++;
     }
@@ -151,9 +145,16 @@ CEditableObject* ELibrary::CreateEditObject(const char* nm)
 	EditObjPairIt it 	= m_EditObjects.find(name);
 
     if (it!=m_EditObjects.end())
-        m_EditObject = it->second;
-    else if (nullptr!=(m_EditObject=LoadEditObject(name.c_str())))
-		m_EditObjects[name]	= m_EditObject;
+        m_EditObject = it->second.get();
+    else
+	{
+		xr_unique_ptr<CEditableObject> loaded(LoadEditObject(name.c_str()));
+		if (loaded)
+		{
+			m_EditObject = loaded.get();
+			m_EditObjects[name] = std::move(loaded);
+		}
+	}
 
     if (m_EditObject)	m_EditObject->m_RefCount++;
 	return m_EditObject;
@@ -166,7 +167,7 @@ void ELibrary::RemoveEditObject(CEditableObject*& object)
 	    object->m_RefCount--;
     	R_ASSERT(object->m_RefCount>=0);
 		if ((object->m_RefCount==0)&&EPrefs->object_flags.is(epoDiscardInstance))
-			if (!object->IsModified()) UnloadEditObject(object->GetName());
+			if (!object->bOnModified) UnloadEditObject(object->m_LibName.c_str());
         object=nullptr;
 	}
 }
@@ -180,10 +181,10 @@ void ELibrary::Save(FS_FileSet* modif_map)
     if (modif_map)
     {
         for(; O!=E; O++)
-        	if (modif_map->end()!=modif_map->find(FS_File(O->second->GetName())))
+        	if (modif_map->end()!=modif_map->find(FS_File(O->second->m_LibName.c_str())))
             {
                 string_path 			nm;
-                FS.update_path	(nm,_objects_,O->second->GetName());
+                FS.update_path	(nm,_objects_,O->second->m_LibName.c_str());
                 strcpy(nm, EFS.ChangeFileExt(nm,".object").c_str());
 
                 if (!O->second->Save(nm))
@@ -192,10 +193,10 @@ void ELibrary::Save(FS_FileSet* modif_map)
     }else
     {
         for(; O!=E; O++)
-            if (O->second->IsModified())
+            if (O->second->bOnModified)
             {
                 string_path		nm;
-                FS.update_path	(nm,_objects_,O->second->GetName());
+                FS.update_path	(nm,_objects_,O->second->m_LibName.c_str());
                 strcpy			(nm, EFS.ChangeFileExt(nm,".object").c_str());
 
                 if (!O->second->Save(nm))
@@ -262,7 +263,7 @@ void ELibrary::RenameObject(const char* nm0, const char* nm1, EItemType type)
         // rename in cache
         EditObjPairIt it 	= m_EditObjects.find(nm0);
 	    if (it!=m_EditObjects.end()){
-            m_EditObjects[nm1]	= it->second;
+            m_EditObjects[nm1]	= std::move(it->second);
             m_EditObjects.erase	(it);
         }
 	}
@@ -278,7 +279,6 @@ void ELibrary::UnloadEditObject(const char* full_name)
             THROW;
         }
     	m_EditObjects.erase(it);
-    	xr_delete		(it->second);
     }
 }
 //---------------------------------------------------------------------------

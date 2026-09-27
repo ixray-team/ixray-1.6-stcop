@@ -388,11 +388,10 @@ bool CEditableObject::GenerateBoneShape(bool bSelOnly)
 	R_ASSERT(IsSkeleton());
     xr_vector<FvectorVec>	bone_points;
 	bone_points.resize		(m_Bones.size());
-    for(EditMeshIt mesh_it=FirstMesh();mesh_it!=LastMesh();mesh_it++){
-        CEditableMesh* MESH = *mesh_it;
+    for (CEditableMesh* MESH : m_Meshes){
         // generate vertex offset
         MESH->GenerateSVertices	(1);
-        for (u32 f_id=0; f_id!=MESH->GetFCount(); f_id++){
+        for (u32 f_id=0; f_id!=MESH->m_Faces.size(); f_id++){
             for (int k=0; k<3; k++){
                 st_SVert& 		sv = MESH->m_SVertices[f_id*3+k];
                 VERIFY			(sv.bones.size()==1);

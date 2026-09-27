@@ -1,18 +1,11 @@
-//----------------------------------------------------
-// file: Library.h
-//----------------------------------------------------
+#pragma once
+#include "EditObject.h"
 
-#ifndef LibraryH
-#define LibraryH
-
-#include "../../xrEngine/pure.h"     
-//----------------------------------------------------
-class CEditableObject;
-
-using EditObjMap = xr_map<AnsiString, CEditableObject*, astr_pred>;
+using EditObjMap = xr_map<AnsiString, xr_unique_ptr<CEditableObject>, astr_pred>;
 using EditObjPairIt = EditObjMap::iterator;
-//----------------------------------------------------
-class ECORE_API ELibrary//:	public pureDeviceCreate, public pureDeviceDestroy
+
+class ECORE_API ELibrary:
+    xray::noncopyable
 {
 	bool				m_bReady;
 	friend class TfrmChoseObject;
@@ -39,7 +32,6 @@ public:
     void				RemoveEditObject	(CEditableObject*& object);
 
     int					GetObjects			(FS_FileSet& files);
-    int					ObjectCount			(){return m_EditObjects.size();}
 
     void				EvictObjects		();
 
@@ -48,6 +40,3 @@ public:
 };
 
 extern ECORE_API ELibrary Lib;
-//----------------------------------------------------
-#endif /*_INCDEF_Library_H_*/
-

@@ -1674,7 +1674,7 @@ bool CContentView::DrawContext(const xr_path& Path)
 				CViewportMesh* MeshView = new CViewportMesh;
 				MeshView->OpenModel(Path);
 
-				UI->Push(MeshView);
+				EContext.UI->Push(MeshView);
 			}
 		}
 		else if (Path.extension().string() == ".ltx" || Path.extension().string() == ".script")
@@ -1715,14 +1715,14 @@ bool CContentView::DrawContext(const xr_path& Path)
 					MeshView->OpenModel((PS::CPEDef*)Ptr);
 				}
 
-				UI->Push(MeshView);
+				EContext.UI->Push(MeshView);
 			}
 		}
 		else if (Path.extension().string() == ".level")
 		{
 			if (ImGui::MenuItem("Open"))
 			{
-				UI->SetStatus("Level loading...");
+				EContext.UI->SetStatus("Level loading...");
 				ExecCommand(COMMAND_CLEAR);
 				FS.TryLoad(Path.xstring());
 				IReader* R = FS.r_open(Path.xstring().c_str());
@@ -1763,7 +1763,7 @@ bool CContentView::DrawContext(const xr_path& Path)
 				CUITextureViewer* TexView = new CUITextureViewer;
 				TexView->LoadFromFile(Path);
 
-				UI->Push(TexView);
+				EContext.UI->Push(TexView);
 			}
 		}
 		ImGui::Separator();

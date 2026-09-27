@@ -135,7 +135,7 @@ void ESceneTerrainTool::RemoveControls()
 CTerrain* ESceneTerrainTool::PickTerrain(float& dist, Fvector& point)
 {
 	CTerrain* best = nullptr;
-	float bestDist = UI->ZFar();
+	float bestDist = EContext.UI->ZFar();
 
 	for (ObjectIt it = m_Objects.begin(); it != m_Objects.end(); ++it)
 	{
@@ -147,7 +147,7 @@ CTerrain* ESceneTerrainTool::PickTerrain(float& dist, Fvector& point)
 
 		float d = bestDist;
 		SRayPickInfo pinf;
-		if (t->TerrainObject->RayPick(d, UI->m_CurrentRStart, UI->m_CurrentRDir, t->_ITransform(), &pinf) && d < bestDist)
+		if (t->TerrainObject->RayPick(d, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, t->_ITransform(), &pinf) && d < bestDist)
 		{
 			bestDist = d;
 			best = t;
@@ -156,7 +156,7 @@ CTerrain* ESceneTerrainTool::PickTerrain(float& dist, Fvector& point)
 
 	if (best)
 	{
-		point.mad(UI->m_CurrentRStart, UI->m_CurrentRDir, bestDist);
+		point.mad(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, bestDist);
 	}
 
 	dist = bestDist;

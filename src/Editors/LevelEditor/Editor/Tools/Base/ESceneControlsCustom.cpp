@@ -88,7 +88,7 @@ bool TUI_CustomControl::HiddenMode()
 void DragDrop(const xr_string& Path, int Type)
 {
 	Fvector p, n;
-	if (LUI->PickGround(p, UI->m_ContextRStart, UI->m_ContextRDir, 1, &n))
+	if (LUI->PickGround(p, EContext.UI->m_ContextRStart, EContext.UI->m_ContextRDir, 1, &n))
 	{
 		// before callback
 		SBeforeAppendCallbackParams P;
@@ -197,7 +197,7 @@ CCustomObject* TUI_CustomControl::DefaultAddObject(TShiftState Shift, TBeforeApp
 	if (Shift==ssRBOnly){ ExecCommand(COMMAND_SHOWCONTEXTMENU,parent_tool->FClassID); return 0;}
 	Fvector p,n;
 	CCustomObject* obj=0;
-	if (LUI->PickGround(p,UI->m_CurrentRStart,UI->m_CurrentRDir,1,&n))
+	if (LUI->PickGround(p,EContext.UI->m_CurrentRStart,EContext.UI->m_CurrentRDir,1,&n))
 	{
 		// before callback
 		SBeforeAppendCallbackParams P;
@@ -242,7 +242,7 @@ bool  TUI_CustomControl::AddEnd(TShiftState _Shift)
 bool TUI_CustomControl::CheckSnapList(TShiftState Shift)
 {
 	if ( MainForm->GetLeftBarForm()->IsSnapListMode()){
-		CCustomObject* O=Scene->RayPickObject(UI->ZFar(),UI->m_CurrentRStart,UI->m_CurrentRDir,OBJCLASS_SCENEOBJECT,0,0);
+		CCustomObject* O=Scene->RayPickObject(EContext.UI->ZFar(),EContext.UI->m_CurrentRStart,EContext.UI->m_CurrentRDir,OBJCLASS_SCENEOBJECT,0,0);
 		if (O){
 			if (Scene->FindObjectInSnapList(O)){
 				if (Shift&ssAlt){
@@ -284,8 +284,8 @@ bool TUI_CustomControl::SelectStart(TShiftState Shift)
 	bBoxSelection    = ((0!=cnt) && ((Shift & ssCtrl)||(Shift & ssAlt))) || (0==cnt);
 	if( bBoxSelection )
 	{
-		UI->EnableSelectionRect( true );
-		UI->UpdateSelectionRect(UI->m_StartCp,UI->m_CurrentCp);
+		EContext.UI->EnableSelectionRect( true );
+		EContext.UI->UpdateSelectionRect(EContext.UI->m_StartCp,EContext.UI->m_CurrentCp);
 		return true;
 	}
 	return false;
@@ -294,14 +294,14 @@ bool TUI_CustomControl::SelectStart(TShiftState Shift)
 void  TUI_CustomControl::SelectProcess(TShiftState _Shift)
 {
 	if (bBoxSelection)
-		UI->UpdateSelectionRect(UI->m_StartCp,UI->m_CurrentCp);
+		EContext.UI->UpdateSelectionRect(EContext.UI->m_StartCp,EContext.UI->m_CurrentCp);
 }
 
 bool  TUI_CustomControl::SelectEnd(TShiftState _Shift)
 {
 	if (bBoxSelection)
 	{
-		UI->EnableSelectionRect( false );
+		EContext.UI->EnableSelectionRect( false );
 		bBoxSelection = false;
 		Scene->FrustumSelect(_Shift&ssAlt?0:1,LTools->CurrentClassID());
 	}
@@ -329,10 +329,10 @@ bool TUI_CustomControl::MovingStart(TShiftState Shift)
 			if (lst.size() == 1)
 			{
 				Fvector p, n;
-				// UI->IR_GetMousePosReal(EDevice->m_hWnd, UI->m_CurrentCp);
-				UI->GetRenderMousePosition();
-				UI->CurrentView().m_Camera.MouseRayFromPoint(UI->m_CurrentRStart, UI->m_CurrentRDir, UI->m_CurrentCp);
-				if (LUI->PickGround(p, UI->m_CurrentRStart, UI->m_CurrentRDir, 1, &n))
+
+				EContext.UI->GetRenderMousePosition();
+				EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, EContext.UI->m_CurrentCp);
+				if (LUI->PickGround(p, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, 1, &n))
 				{
 					for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
 						(*_F)->MoveTo(p, n);
@@ -363,9 +363,9 @@ bool TUI_CustomControl::MovingStart(TShiftState Shift)
 		}
 		else
 		{
-			m_MovingXVector.set(UI->CurrentView().m_Camera.GetRight());
+			m_MovingXVector.set(EContext.UI->CurrentView().m_Camera.GetRight());
 			m_MovingXVector.y = 0;
-			m_MovingYVector.set(UI->CurrentView().m_Camera.GetDirection());
+			m_MovingYVector.set(EContext.UI->CurrentView().m_Camera.GetDirection());
 			m_MovingYVector.y = 0;
 			m_MovingXVector.normalize_safe();
 			m_MovingYVector.normalize_safe();
@@ -379,8 +379,8 @@ bool TUI_CustomControl::DefaultMovingProcess(TShiftState Shift, Fvector& amount)
 {
 	if ((Shift & ssLeft) || (Shift & ssRight))
 	{
-		amount.mul(m_MovingXVector, UI->m_MouseSM * UI->m_DeltaCpH.x);
-		amount.mad(amount, m_MovingYVector, -UI->m_MouseSM * UI->m_DeltaCpH.y);
+		amount.mul(m_MovingXVector, EContext.UI->m_MouseSM * EContext.UI->m_DeltaCpH.x);
+		amount.mad(amount, m_MovingYVector, -EContext.UI->m_MouseSM * EContext.UI->m_DeltaCpH.y);
 
 		if (Tools->GetSettings(etfMSnap))
 		{
@@ -447,7 +447,7 @@ void TUI_CustomControl::RotateProcess(TShiftState _Shift)
 {
 	if (_Shift & ssLeft)
 	{
-		float amount = -UI->m_DeltaCpH.x * UI->m_MouseSR;
+		float amount = -EContext.UI->m_DeltaCpH.x * EContext.UI->m_MouseSR;
 
 		if (Tools->GetSettings(etfASnap))
 			CHECK_SNAP(m_fRotateSnapAngle, amount, Tools->m_RotateSnapAngle);
@@ -488,7 +488,7 @@ bool TUI_CustomControl::ScaleStart(TShiftState Shift)
 
 void TUI_CustomControl::ScaleProcess(TShiftState _Shift)
 {
-	float dy = UI->m_DeltaCpH.x * UI->m_MouseSS;
+	float dy = EContext.UI->m_DeltaCpH.x * EContext.UI->m_MouseSS;
 	if (dy > 1.f)
 		dy = 1.f;
 	else if (dy < -1.f)

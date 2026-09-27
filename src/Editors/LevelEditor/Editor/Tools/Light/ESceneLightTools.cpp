@@ -107,7 +107,7 @@ void  ESceneLightTool::OnRender(int priority, bool strictB2F)
                 dir.setHP(m_SunShadowDir.y, m_SunShadowDir.x);
 
 			Fvector p;
-			float fd = UI->ZFar() * 0.95f;
+			float fd = EContext.UI->ZFar() * 0.95f;
 			p.mad(EDevice->vCameraPosition, dir, -fd);
 			DU_impl.DrawPointLight(p, VIS_RADIUS * fd, 0x00FFE020);
 			DU_impl.DrawLineSphere(p, VIS_RADIUS * fd * 0.3f, 0x00FF3000, false);

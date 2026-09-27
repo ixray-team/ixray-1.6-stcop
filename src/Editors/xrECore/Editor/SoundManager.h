@@ -40,6 +40,7 @@ public:
     void 		RefreshSounds		(bool bSync, bool IsSoft);
 
 	xr_string	UpdateFileName		(xr_string& fn);
+	void		CommitSoundLib		(FS_FileSet& modif_map);
 };
 
 extern ECORE_API CSoundManager* SndLib;

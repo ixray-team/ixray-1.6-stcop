@@ -135,7 +135,7 @@ bool EngineModel::UpdateVisual(CEditableObject* source, bool bUpdGeom, bool bUpd
 	IReader R							(F.pointer(), F.size());
 	::Render->model_Delete				(m_pVisual,true);
 	g_pMotionsContainer->clean			(false);
-	m_pVisual = ::Render->model_Create	(ChangeFileExt(source->GetName(),"").c_str(),&R);
+	m_pVisual = ::Render->model_Create	(ChangeFileExt(source->m_LibName.c_str(),"").c_str(),&R);
 	m_pBlend = 0;
 	return bRes;
 }
@@ -208,12 +208,12 @@ void EngineModel::PlayMotion(const char* name, u16 slot)
 					if (D) D->PlayCycle(PSkeletonAnimated(m_pVisual),k,false,0,0);
 				}
 			}        
-			m_pBlend = PSkeletonAnimated(m_pVisual)->PlayFX(M->Name(),1.f);
+			m_pBlend = PSkeletonAnimated(m_pVisual)->PlayFX(M->m_Name,1.f);
 		}else{	
 			R_ASSERT((M->m_BoneOrPart==BI_NONE)||(M->m_BoneOrPart<MAX_PARTS));
 			u16 idx 		= M->m_BoneOrPart;
-			if (BI_NONE==idx)for (int k=0; k<MAX_PARTS; k++) m_BPPlayCache[k] = M->Name();
-			else			m_BPPlayCache[idx] = M->Name();
+			if (BI_NONE==idx)for (int k=0; k<MAX_PARTS; k++) m_BPPlayCache[k] = M->m_Name;
+			else			m_BPPlayCache[idx] = M->m_Name;
 			m_pBlend		= 0;
 
 			for (int k=0; k<MAX_PARTS; k++){
@@ -430,7 +430,7 @@ bool CActorTools::RenameMotion(const char* old_name, const char* new_name)
 
 void CActorTools::AddMarksChannel(bool b12)
 {
-	CSMotion* M 		= m_pEditObject->GetActiveSMotion();
+	CSMotion* M 		= m_pEditObject->m_ActiveSMotion;
 	if(M)
 	{
 		if(b12)
@@ -452,7 +452,7 @@ void CActorTools::AddMarksChannel(bool b12)
 
 void CActorTools::RemoveMarksChannel(bool b12)
 {
-	CSMotion* M 					= m_pEditObject->GetActiveSMotion();
+	CSMotion* M 					= m_pEditObject->m_ActiveSMotion;
 	if(M)
 	{
 		if(b12)

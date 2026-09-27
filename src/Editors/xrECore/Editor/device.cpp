@@ -87,11 +87,13 @@ CEditorRenderDevice::CEditorRenderDevice()
 	fASPECT 		= 1.f;
 	fFOV 			= 60.f;
     dwPrecacheFrame = 0;
-	GameMaterialLibraryEditors = new XrGameMaterialLibraryEditors();
+	m_MtlLib = xr_make_unique<XrGameMaterialLibraryEditors>();
+	GameMaterialLibraryEditors = m_MtlLib.get();
 	PGMLib = GameMaterialLibraryEditors;
 
 	DevicePtr = this;
 	g_bIsEditor = true;
+	BindEditorContext();
 
 	setup_luabind_allocator();
 	STextureParams::FillPropImpl = EditorFillPropTextureParams;
@@ -100,7 +102,9 @@ CEditorRenderDevice::CEditorRenderDevice()
 CEditorRenderDevice::~CEditorRenderDevice()
 {
 	VERIFY(!b_is_Ready);
+	PGMLib = nullptr;
 	GameMaterialLibraryEditors = nullptr;
+	m_MtlLib.reset();
 }
 
 #include "../../../Layers/xrRender/dxRenderFactory.h"
@@ -224,25 +228,22 @@ bool CEditorRenderDevice::Create()
 	psDeviceFlags.set(rsVSync, true);
 
 	TimerGlobal.Start();
-	//Statistic = EStatistic;
 	ELog.Msg(mtInformation,"Starting RENDER device...");
 
-
-	//HW.CreateDevice		(m_hWnd, true);
-	if (UI)
+	if (EContext.UI)
 	{
 		HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
 		string_path 		ini_path;
 		string_path			ini_name;
-		xr_strcpy			(ini_name, UI->EditorName());
+		xr_strcpy			(ini_name, EContext.UI->EditorName());
 		xr_strcat			(ini_name, "_imgui.ini");
 		FS.update_path(ini_path, "$app_data_root$", ini_name);
 		
 		if (!FS.exist(ini_path))
-			UI->ResetUI();
+			EContext.UI->ResetUI();
 		
 		InitRenderDeviceEditor();
-		UI->Initialize(hwnd, ini_path);
+		EContext.UI->Initialize(hwnd, ini_path);
 	}
 	
 	// after creation
@@ -289,7 +290,7 @@ void CEditorRenderDevice::Destroy()
 
 	xr_delete(Resources);
 
-	UI->Destroy();
+	EContext.UI->Destroy();
 
 	ELog.Msg(mtInformation, "D3D: device cleared");
 }
@@ -341,7 +342,7 @@ void CEditorRenderDevice::_Create(IReader* F)
 	UIChooseForm::SetNullTexture(texture_null->get_SRView()->GetRawSRV());
 
 	// signal another objects
-    UI->OnDeviceCreate			();       
+    EContext.UI->OnDeviceCreate			();       
 
 	EDevice->InitWindowStyle();
 }
@@ -353,7 +354,7 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 
 	RCache.Invalidate();
 
-    UI->OnDeviceDestroy			();
+    EContext.UI->OnDeviceDestroy			();
 
 	m_WireShader.destroy		();
 	m_SelectionShader.destroy	();
@@ -375,7 +376,7 @@ void CEditorRenderDevice::Resize(int w, int h, bool maximized)
 	Height = h;
 
 	Reset(false);
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 void CEditorRenderDevice::Reset(bool)
@@ -385,7 +386,7 @@ void CEditorRenderDevice::Reset(bool)
 
 	Resources->reset_begin();
 	Resources->DeferredUnload();
-	UI->ResetBegin();
+	EContext.UI->ResetBegin();
 
 	Memory.mem_compact();
 	ResizeBuffers(Width, Height);
@@ -394,7 +395,7 @@ void CEditorRenderDevice::Reset(bool)
 	Resources->reset_end();
 	Resources->DeferredUpload();
 
-	UI->ResetEnd(RDevice);
+	EContext.UI->ResetEnd(RDevice);
 	_SetupStates();
 
 	R_ASSERT(texture_null->get_SRView(), "Null texture not found!");
@@ -480,7 +481,7 @@ void CEditorRenderDevice::UpdateView()
 // set camera matrix
 	if (!Tools->UpdateCamera())
 	{
-		UI->CurrentView().m_Camera.GetView(mView);
+		EContext.UI->CurrentView().m_Camera.GetView(mView);
 	}
     RCache.set_xform_view(mView);
     RCache.set_xform_project(mProject);
@@ -506,7 +507,7 @@ void CEditorRenderDevice::FrameMove()
 
 	if (!Tools->UpdateCamera())
 	{
-		UI->CurrentView().m_Camera.Update(fTimeDelta);
+		EContext.UI->CurrentView().m_Camera.Update(fTimeDelta);
 	}
 
     // process objects
@@ -572,7 +573,7 @@ SDL_HitTestResult SDLCALL HitTest(
 
 void CEditorRenderDevice::InitWindowStyle()
 {
-	UI->InitWindowIcons();
+	EContext.UI->InitWindowIcons();
 
 #if _WINDOWS
 	SDL_SetWindowBordered(g_AppInfo.Window, false);
@@ -630,7 +631,7 @@ void CEditorRenderDevice::ReloadTextures()
 	//FS.rescan_path(Path, true);
 
 	Msg("* Reload textures...");
-	UI->Resize();
+	EContext.UI->Resize();
 }
 
 void CEditorRenderDevice::UnloadTextures()

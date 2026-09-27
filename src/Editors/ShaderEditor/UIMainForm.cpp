@@ -39,6 +39,10 @@ void UIMainForm::Draw()
 
 bool UIMainForm::Frame()
 {
-    if(UI)  return UI->Idle();
+	if (EContext.UI)
+	{
+		return EContext.UI->Idle();
+	}
+
     return false;
 }

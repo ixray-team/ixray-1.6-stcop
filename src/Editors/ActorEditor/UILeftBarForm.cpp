@@ -32,7 +32,7 @@ void UILeftBarForm::SetSmooth(ESmoothGroup mode)
     if (!ATools->CurrentObject())
         return;
 
-    for (CEditableMesh* Mesh : ATools->CurrentObject()->Meshes())
+    for (CEditableMesh* Mesh : ATools->CurrentObject()->m_Meshes)
     {
         u32 Count = Mesh->m_SVertInfl;
         Mesh->UnloadSVertices();
@@ -81,7 +81,7 @@ void UILeftBarForm::Draw()
                         ATools->PhysicsStopSimulate();
                         m_RenderMode = Render_Editor;
                         ExecCommand(COMMAND_UPDATE_PROPERTIES);
-                        UI->RedrawScene();
+						EContext.UI->RedrawScene();
                     }
                     ImGui::SameLine();
                     if (XRay::ImGui::ToolbarButton("engine", "Engine", &engine, { 0, 0 }, ImDrawFlags_RoundCornersRight))
@@ -97,7 +97,7 @@ void UILeftBarForm::Draw()
                             SetRenderMode(true);
 
                         ExecCommand(COMMAND_UPDATE_PROPERTIES);
-                        UI->RedrawScene();
+						EContext.UI->RedrawScene();
                     }
                     ImGui::PopStyleVar();
 
@@ -223,18 +223,18 @@ void UILeftBarForm::Draw()
         {
             if (node.Object && node.Object->Type() == emSurface && node.Object->m_Object)
             {
-                CSurface* surf = (CSurface*)node.Object->m_Object;
+                CSurface* Surf = (CSurface*)node.Object->m_Object;
                 const float ButtonWidth = ImGui::GetFrameHeight();
                 const float AvailWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::SameLine();
 
                 ImGui::SetCursorPosX(AvailWidth - ButtonWidth);
-                ImGui::PushID(surf);
-                const char* icon = surf->m_bEditorVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
+                ImGui::PushID(Surf);
+                const char* icon = Surf->m_bEditorVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
                 if (ImGui::SmallButton(icon))
                 {
-                    surf->m_bEditorVisible = !surf->m_bEditorVisible;
-                    UI->RedrawScene();
+                    Surf->m_bEditorVisible = !Surf->m_bEditorVisible;
+					EContext.UI->RedrawScene();
                 }
                 ImGui::PopID();
             }
@@ -255,7 +255,7 @@ void UILeftBarForm::Draw()
                 {
                     ATools->CurrentObject()->CreateBone("idle");
 
-                    for (EditMeshIt mesh_it = ATools->CurrentObject()->FirstMesh(); mesh_it != ATools->CurrentObject()->LastMesh(); mesh_it++)
+                    for (EditMeshIt mesh_it = ATools->CurrentObject()->m_Meshes.begin(); mesh_it != ATools->CurrentObject()->m_Meshes.end(); mesh_it++)
                     {
                         CEditableMesh* pMesh = *mesh_it;
                         pMesh->AssignMesh("idle");

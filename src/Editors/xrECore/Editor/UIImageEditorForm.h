@@ -1,7 +1,8 @@
-//---------------------------------------------------------------------------
 #pragma once
+class ETextureThumbnail;
 
-class UIImageEditorForm :public IEditorWnd
+class UIImageEditorForm :
+	public IEditorWnd
 {
 public:
 	UIImageEditorForm();

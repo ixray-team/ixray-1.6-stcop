@@ -18,6 +18,8 @@
 #include "ui_main.h"
 #include "UI_ToolsCustom.h"
 #include "../Engine/XrGameMaterialLibraryEditors.h"
+#include "Export/MeshMenderVertex.h"
+#include "Export/MeshExportCommon.h"
 
 #include <DirectXMesh.h>
 
@@ -27,107 +29,15 @@ ECORE_API bool g_force16BitTransformQuant = true;
 ECORE_API bool g_force32BitTransformQuant = false;
 ECORE_API float g_EpsSkelPositionDelta = EPS_L;
 
-u16 CSkeletonCollectorPacked::VPack(SSkelVert& V)
-{
-	u32 P = 0xffffffff;
-
-	u32 ix, iy, iz;
-	ix = iFloor(float(V.offs.x - m_VMmin.x) / m_VMscale.x * clpSMX);
-	iy = iFloor(float(V.offs.y - m_VMmin.y) / m_VMscale.y * clpSMY);
-	iz = iFloor(float(V.offs.z - m_VMmin.z) / m_VMscale.z * clpSMZ);
-	R_ASSERT(ix <= clpSMX && iy <= clpSMY && iz <= clpSMZ);
-
-	int similar_pos = -1;
-	{
-		U32Vec& vl = m_VM[ix][iy][iz];
-		for (U32It it = vl.begin(); it != vl.end(); it++)
-		{
-			SSkelVert& src = m_Verts[*it];
-			if (src.similar_pos(V))
-			{
-				if (src.similar(V))
-				{
-					P = *it;
-					break;
-				}
-				similar_pos = *it;
-			}
-		}
-	}
-	if (0xffffffff == P)
-	{
-		if (similar_pos >= 0)
-		{
-			V.offs.set(m_Verts[similar_pos].offs);
-		}
-		P = m_Verts.size();
-		m_Verts.push_back(V);
-
-		m_VM[ix][iy][iz].push_back(P);
-
-		u32 ixE, iyE, izE;
-		ixE = iFloor(float(V.offs.x + m_VMeps.x - m_VMmin.x) / m_VMscale.x * clpSMX);
-		iyE = iFloor(float(V.offs.y + m_VMeps.y - m_VMmin.y) / m_VMscale.y * clpSMY);
-		izE = iFloor(float(V.offs.z + m_VMeps.z - m_VMmin.z) / m_VMscale.z * clpSMZ);
-
-		R_ASSERT(ixE <= clpSMX && iyE <= clpSMY && izE <= clpSMZ);
-
-		if (ixE != ix)
-		{
-			m_VM[ixE][iy][iz].push_back(P);
-		}
-		if (iyE != iy)
-		{
-			m_VM[ix][iyE][iz].push_back(P);
-		}
-		if (izE != iz)
-		{
-			m_VM[ix][iy][izE].push_back(P);
-		}
-		if ((ixE != ix) && (iyE != iy))
-		{
-			m_VM[ixE][iyE][iz].push_back(P);
-		}
-		if ((ixE != ix) && (izE != iz))
-		{
-			m_VM[ixE][iy][izE].push_back(P);
-		}
-		if ((iyE != iy) && (izE != iz))
-		{
-			m_VM[ix][iyE][izE].push_back(P);
-		}
-		if ((ixE != ix) && (iyE != iy) && (izE != iz))
-		{
-			m_VM[ixE][iyE][izE].push_back(P);
-		}
-	}
-	VERIFY(P < u16(-1));
-	return (u16)P;
-}
-
 CSkeletonCollectorPacked::CSkeletonCollectorPacked(const Fbox& _bb, int apx_vertices, int apx_faces)
 {
-	Fbox bb;		bb.set(_bb); bb.grow(EPS_L);
-	// Params
-	m_VMscale.set(bb.max.x - bb.min.x + EPS, bb.max.y - bb.min.y + EPS, bb.max.z - bb.min.z + EPS);
-	m_VMmin.set(bb.min).sub(EPS);
-	m_VMeps.set(m_VMscale.x / clpSMX / 2, m_VMscale.y / clpSMY / 2, m_VMscale.z / clpSMZ / 2);
-	m_VMeps.x = (m_VMeps.x < EPS_L) ? m_VMeps.x : EPS_L;
-	m_VMeps.y = (m_VMeps.y < EPS_L) ? m_VMeps.y : EPS_L;
-	m_VMeps.z = (m_VMeps.z < EPS_L) ? m_VMeps.z : EPS_L;
-
+	Fbox bb;
+	bb.set(_bb);
+	bb.grow(EPS_L);
+	m_VertGrid.Init(bb, apx_vertices);
 	invalid_faces = 0;
-
-	// Preallocate memory
 	m_Verts.reserve(apx_vertices);
 	m_Faces.reserve(apx_faces);
-
-	int		_size = (clpSMX + 1) * (clpSMY + 1) * (clpSMZ + 1);
-	int		_average = (apx_vertices / _size) / 2;
-	for (int ix = 0; ix < clpSMX + 1; ix++)
-		for (int iy = 0; iy < clpSMY + 1; iy++)
-			for (int iz = 0; iz < clpSMZ + 1; iz++)
-				m_VM[ix][iy][iz].reserve(_average);
 }
 //----------------------------------------------------
 
@@ -142,8 +52,16 @@ CExportSkeleton::SSplit::SSplit(CSurface* surf, const Fbox& bb, u16 part):CSkele
 }
 //----------------------------------------------------
 
+void CExportSkeleton::SSplit::OptimizeTextureCoordinates()
+{
+	::OptimizeMeshUVs(m_Verts, [](SSkelVert& Vertex) -> Fvector2& { return Vertex.uv; }, *m_Texture, *m_Shader);
+}
 
-
+void CExportSkeleton::SSplit::CalculateTB()
+{
+	CalculateMeshTB(m_Verts, m_Faces);
+	OptimizeTextureCoordinates();
+}
 
 class VertexCache
 {
@@ -283,9 +201,8 @@ void CExportSkeleton::SSplit::Save(IWriter& F)
 
 	if(m_SkeletonLinkType==1)
 	{
-		for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); ++v_it)
+		for (SSkelVert& pV : m_Verts)
 		{
-			SSkelVert& pV 	= *v_it;
 			pV.sort_by_weight	();
 			F.w			(&pV.offs,sizeof(Fvector));		// position (offset)
 			F.w			(&pV.norm,sizeof(Fvector));		// normal
@@ -297,9 +214,8 @@ void CExportSkeleton::SSplit::Save(IWriter& F)
 	}else
 	if(m_SkeletonLinkType==2)
 	{
-		for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++)
+		for (SSkelVert& pV : m_Verts)
 		{
-			SSkelVert& pV 	= *v_it;
 			pV.sort_by_weight	();
 			float _weight_b0		= 0.0f;
 
@@ -328,9 +244,8 @@ void CExportSkeleton::SSplit::Save(IWriter& F)
 	if(m_SkeletonLinkType==3 || m_SkeletonLinkType==4)
 	{
 
-		for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++)
+		for (SSkelVert& pV : m_Verts)
 		{
-			SSkelVert& pV 		= *v_it;
 			pV.sort_by_weight	();
 			u32 i				= 0;
 
@@ -426,10 +341,10 @@ VIMP_Processor processor_skeleton;
 void CExportSkeleton::SSplit::MakeProgressive()
 {
 	processor_skeleton.VIPM_Init	();
-	for (SkelVertIt vert_it=m_Verts.begin(); vert_it!=m_Verts.end(); vert_it++)
-		processor_skeleton.VIPM_AppendVertex(vert_it->offs,vert_it->uv);
-	for (SkelFaceIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++)
-		processor_skeleton.VIPM_AppendFace(f_it->v[0],f_it->v[1],f_it->v[2]);
+	for (SSkelVert& Vert : m_Verts)
+		processor_skeleton.VIPM_AppendVertex(Vert.offs,Vert.uv);
+	for (SSkelFace& Face : m_Faces)
+		processor_skeleton.VIPM_AppendFace(Face.v[0],Face.v[1],Face.v[2]);
 
 	VIPM_Result* R = processor_skeleton.VIPM_Convert(u32(-1),1.f,1);
 
@@ -580,59 +495,15 @@ CExportSkeleton::CExportSkeleton(CEditableObject* object)
 	m_Source=object;
 }
 //----------------------------------------------------
-#include "../WildMagic/WmlMath.h"
-#include "../WildMagic/WmlContMinBox3.h"
-#include "../WildMagic/WmlContBox3.h"
-
-extern bool RAPIDMinBox(Fobb& B, Fvector* vertices, u32 v_count);
-void ComputeOBB_RAPID	(Fobb &B, FvectorVec& V, u32 t_cnt)
-{
-	VERIFY	(t_cnt==(V.size()/3));
-	if ((t_cnt<1)||(V.size()<3)) 
-	{ 
-		B.invalidate(); 
-		return; 
-	}
-	RAPIDMinBox			(B, &V.front(), V.size());
-
-	// Normalize rotation matrix (???? ???????? ContOrientedBox - ?????? ????? ???????)
-	B.m_rotate.i.crossproduct(B.m_rotate.j,B.m_rotate.k);
-	B.m_rotate.j.crossproduct(B.m_rotate.k,B.m_rotate.i);
-
-	VERIFY (_valid(B.m_rotate)&&_valid(B.m_translate)&&_valid(B.m_halfsize));
-}
-
-void ComputeOBB_WML		(Fobb &B, FvectorVec& V)
-{
-	if (V.size()<3) { B.invalidate(); return; }
-	float 	HV				= flt_max;
-	{
-		Wml::Box3<float> 	BOX;
-		Wml::MinBox3<float> mb(V.size(), (const Wml::Vector3<float>*) &V.front(), BOX);
-		float hv			= BOX.Extents()[0]*BOX.Extents()[1]*BOX.Extents()[2];
-		if (hv<HV){
-			HV 				= hv;
-			B.m_rotate.i.set(BOX.Axis(0));
-			B.m_rotate.j.set(BOX.Axis(1));
-			B.m_rotate.k.set(BOX.Axis(2));
-
-			B.m_translate.set(BOX.Center());
-			B.m_halfsize.set(BOX.Extents()[0],BOX.Extents()[1],BOX.Extents()[2]);
-		}
-	}
-
-	B.m_rotate.i.crossproduct(B.m_rotate.j,B.m_rotate.k);
-	B.m_rotate.j.crossproduct(B.m_rotate.k,B.m_rotate.i);
-	
-	VERIFY (_valid(B.m_rotate)&&_valid(B.m_translate)&&_valid(B.m_halfsize));
-}
+#include "ComputeMinBox.h"
 //----------------------------------------------------
 int CExportSkeletonCustom::FindSplit(shared_str shader, shared_str texture, u16 part_id, u16 surf_id)
 {
-	for (SplitIt it = m_Splits.begin(); it != m_Splits.end(); it++)
+	for (u32 Index = 0; Index < m_Splits.size(); ++Index)
 	{
-		if (it->m_Shader.equal(shader) && it->m_Texture.equal(texture) && (it->m_PartID == part_id) && (it->m_id == surf_id))
-			return it - m_Splits.begin();
+		SSplit& Split = m_Splits[Index];
+		if (Split.m_Shader.equal(shader) && Split.m_Texture.equal(texture) && (Split.m_PartID == part_id) && (Split.m_id == surf_id))
+			return (int)Index;
 	}
 	return -1;
 }
@@ -648,18 +519,18 @@ IC void BuildGroups(CBone* B, U16Vec& tgt, u16 id, u16& last_id)
 #define TO_STRING(x) #x
 bool CExportSkeleton::PrepareGeometry(u8 influence)
 {
-	if (m_Source->MeshCount() == 0)
+	if (m_Source->m_Meshes.size() == 0)
 	{
 		return false;
 	}
 
-	if (m_Source->BoneCount() < 1)
+	if (m_Source->m_Bones.size() < 1)
 	{
 		ELog.Msg(mtError, "There are no bones in the object.");
 		return false;
 	}
 
-	if (m_Source->BoneCount() > MAX_BONE)
+	if (m_Source->m_Bones.size() > MAX_BONE)
 	{
 		ELog.Msg(mtError, "Object cannot handle more than" TO_STRING(MAX_BONE) " bones.");
 		return false;
@@ -670,13 +541,13 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 
 	R_ASSERT(m_Source->IsDynamic() && m_Source->IsSkeleton());
 
-	SPBItem* pb = UI->ProgressStart(5 + m_Source->MeshCount() * 2 + m_Source->SurfaceCount(), "..Prepare skeleton geometry");
+	SPBItem* pb = EContext.UI->ProgressStart(5 + m_Source->m_Meshes.size() * 2 + m_Source->m_Surfaces.size(), "..Prepare skeleton geometry");
 	pb->Inc();
 
 	bool bBreakable = false;
-	U16Vec bone_brk_parts(m_Source->BoneCount());
+	U16Vec bone_brk_parts(m_Source->m_Bones.size());
 	CBone* root = nullptr;
-	for (BoneIt bone_it = m_Source->FirstBone(); bone_it != m_Source->LastBone(); bone_it++)
+	for (BoneIt bone_it = m_Source->m_Bones.begin(); bone_it != m_Source->m_Bones.end(); bone_it++)
 	{
 		CBone* B = *bone_it;
 		if (B->IK_data.ik_flags.is(SJointIKData::flBreakable))
@@ -702,18 +573,17 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 
 	bool bRes = true;
 
-	UI->SetStatus("..Split meshes");
+	EContext.UI->SetStatus("..Split meshes");
 
 	U16Vec tmp_bone_lst;
 
-	for (EditMeshIt mesh_it = m_Source->FirstMesh(); mesh_it != m_Source->LastMesh(); mesh_it++)
+	for (CEditableMesh* MESH : m_Source->m_Meshes)
 	{
 		if (!bRes)
 		{
 			break;
 		}
 
-		CEditableMesh* MESH = *mesh_it;
 		// generate vertex offset
 		MESH->GenerateVNormals(nullptr);
 		MESH->GenerateFNormals();
@@ -738,7 +608,7 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 			}
 			IntVec& face_lst = sp_it->second;
 			CSurface* surf = sp_it->first;
-			u32 dwTexCnt = ((surf->_FVF() & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
+			u32 dwTexCnt = ((surf->m_dwFVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
 			R_ASSERT(dwTexCnt == 1);
 
 			for (IntIt f_it = face_lst.begin(); f_it != face_lst.end(); f_it++)
@@ -847,7 +717,7 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 		pb->Inc();
 	}
 
-	UI->SetStatus("..Calculate TB");
+	EContext.UI->SetStatus("..Calculate TB");
 	Msg("Split statistic:");
 	for (int k = 0; k < (int)m_Splits.size(); k++)
 	{
@@ -866,14 +736,14 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 				std::sort(split.m_UsedBones.begin(), split.m_UsedBones.end());
 				U16It ne = std::unique(split.m_UsedBones.begin(), split.m_UsedBones.end());
 				split.m_UsedBones.erase(ne, split.m_UsedBones.end());
-				Msg(" - Split %d: [Bones: %d, Links: %d, Faces: %d, Verts: %d, BrPart: %d, Shader/Texture: '%s'/'%s']", k, split.m_UsedBones.size(), split.m_SkeletonLinkType, split.getTS(), split.getVS(), split.m_PartID, *m_Splits[k].m_Shader, *m_Splits[k].m_Texture);
+				Msg(" - Split %d: [Bones: %d, Links: %d, Faces: %d, Verts: %d, BrPart: %d, Shader/Texture: '%s'/'%s']", k, split.m_UsedBones.size(), split.m_SkeletonLinkType, split.m_Faces.size(), split.m_Verts.size(), split.m_PartID, *m_Splits[k].m_Shader, *m_Splits[k].m_Texture);
 			}
 		}
 	}
 	// calculate TB
-	for (SplitIt split_it = m_Splits.begin(); split_it != m_Splits.end(); split_it++)
+	for (SSplit& Split : m_Splits)
 	{
-		split_it->CalculateTB();
+		Split.CalculateTB();
 		pb->Inc();
 	}
 
@@ -882,9 +752,8 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 	// compute bounding
 	ComputeBounding();
 
-#if 1
-	UI->ProgressEnd(pb);
-#endif
+	EContext.UI->ProgressEnd(pb);
+
 	// restore active motion       6
 	m_Source->SetActiveSMotion(active_motion);
 
@@ -914,13 +783,13 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
 	if (!PrepareGeometry(infl)) return false;
 
 #if 1
-	SPBItem* pb = UI->ProgressStart(3+m_Splits.size(),"..Export skeleton geometry");
+	SPBItem* pb = EContext.UI->ProgressStart(3+m_Splits.size(),"..Export skeleton geometry");
 	pb->Inc		("Make Progressive...");
 #endif
 	// fill per bone vertices
-	BoneVec& bones 			= m_Source->Bones();
+	BoneVec& bones 			= m_Source->m_Bones;
 	xr_vector<FvectorVec>	bone_points;
-	bone_points.resize		(m_Source->BoneCount());
+	bone_points.resize		(m_Source->m_Bones.size());
 
 	for (SSplit& SplitMeshData : m_Splits)
 	{
@@ -933,11 +802,10 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
 			SplitMeshData.MakeStripify();
 		}
 
-		SkelVertVec& lst = SplitMeshData.getV_Verts();
-		for (SkelVertIt sv_it = lst.begin(); sv_it != lst.end(); sv_it++)
+		for (SSkelVert& Vert : SplitMeshData.m_Verts)
 		{
-			bone_points[sv_it->bones[0].id].push_back(sv_it->offs);
-			bones[sv_it->bones[0].id]->_RITransform().transform_tiny(bone_points[sv_it->bones[0].id].back());
+			bone_points[Vert.bones[0].id].push_back(Vert.offs);
+			bones[Vert.bones[0].id]->_RITransform().transform_tiny(bone_points[Vert.bones[0].id].back());
 		}
 
 		pb->Inc();
@@ -977,9 +845,9 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
 
 	// BoneNames
 	F.open_chunk(OGF_S_BONE_NAMES);
-	F.w_u32(m_Source->BoneCount());
+	F.w_u32(m_Source->m_Bones.size());
 	int bone_idx=0;
-	for (BoneIt bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); bone_it++,bone_idx++){
+	for (BoneIt bone_it=m_Source->m_Bones.begin(); bone_it!=m_Source->m_Bones.end(); bone_it++,bone_idx++){
 		F.w_stringZ	((*bone_it)->Name());
 		F.w_stringZ	((*bone_it)->Parent()?(*bone_it)->ParentName().c_str():"");
 		Fobb	obb;
@@ -991,43 +859,43 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
 	bool bRes = true;
 					
 	F.open_chunk(OGF_S_IKDATA);
-	for (auto bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); ++bone_it,++bone_idx)
+	for (auto bone_it=m_Source->m_Bones.begin(); bone_it!=m_Source->m_Bones.end(); ++bone_it,++bone_idx)
 		if (!(*bone_it)->ExportOGF(F)) 
 			bRes=false; 
 
 	F.close_chunk();
 
-	if (m_Source->GetClassScript().size())
+	if (m_Source->m_ClassScript.size())
 	{
 		F.open_chunk	(OGF_S_USERDATA);
-		F.w_stringZ		(m_Source->GetClassScript());
+		F.w_stringZ		(m_Source->m_ClassScript);
 		F.close_chunk	();
 	}
 
 #if 1
 	pb->Inc		();
 #endif
-	if (m_Source->GetLODs() && xr_strlen(m_Source->GetLODs())>0 && bRes)
+	if (m_Source->m_LODs.c_str() && xr_strlen(m_Source->m_LODs.c_str())>0 && bRes)
 	{
 		F.open_chunk	(OGF_S_LODS);
 #ifndef _string_lod
-			CEditableObject* lod_src = Lib.CreateEditObject( m_Source->GetLODs() );
+			CEditableObject* lod_src = Lib.CreateEditObject( m_Source->m_LODs.c_str() );
 			if (0==lod_src)
 			{
-				Log		("! Invalid LOD name:",m_Source->GetLODs());
+				Log		("! Invalid LOD name:",m_Source->m_LODs.c_str());
 				bRes	= false;
 			}else
 			{
 				CExportSkeleton	    E(lod_src);
 #else
 
-				F.w_string          ( m_Source->GetLODs() );
+				F.w_string          ( m_Source->m_LODs.c_str() );
 #endif
 
 #ifndef _string_lod
 				if (!E.ExportAsSimple(F))
 				{
-					Log		("! Invalid LOD object:",m_Source->GetLODs());
+					Log		("! Invalid LOD object:",m_Source->m_LODs.c_str());
 					bRes	= false;
 				}
 
@@ -1038,7 +906,7 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
 	}
 
 #if 1
-	UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
 #endif
 	return bRes;
 }
@@ -1072,13 +940,13 @@ struct bm_item{
 
 bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 {
-	if (!!m_Source->m_SMotionRefs.size() || (m_Source->SMotionCount() < 1))
+	if (!!m_Source->m_SMotionRefs.size() || (m_Source->m_SMotions.size() < 1))
 	{
 		Msg("!..Object doesn't have own motion");
 		return !!m_Source->m_SMotionRefs.size();
 	}
 
-	SPBItem* pb = UI->ProgressStart(1 + m_Source->SMotionCount(), "..Export skeleton motions keys");
+	SPBItem* pb = EContext.UI->ProgressStart(1 + m_Source->m_SMotions.size(), "..Export skeleton motions keys");
 	pb->Inc();
 
 	// mem active motion
@@ -1087,7 +955,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 	// Motions
 	F.open_chunk(OGF_S_MOTIONS);
 	F.open_chunk(0);
-	F.w_u32(m_Source->SMotionCount());
+	F.w_u32(m_Source->m_SMotions.size());
 	F.close_chunk();
 	int smot = 1;
 
@@ -1098,9 +966,9 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 	mGT.mul(mTranslate, mRotate);
 
 	NotifyVec PrefetchedData;
-	PrefetchedData.resize(m_Source->LastSMotion() - m_Source->FirstSMotion());
+	PrefetchedData.resize(m_Source->m_SMotions.end() - m_Source->m_SMotions.begin());
 
-	for (SMotionIt motion_it = m_Source->FirstSMotion(); motion_it != m_Source->LastSMotion(); motion_it++, smot++)
+	for (SMotionIt motion_it = m_Source->m_SMotions.begin(); motion_it != m_Source->m_SMotions.end(); motion_it++, smot++)
 	{
 		CSMotion* cur_motion = *motion_it;
 
@@ -1115,7 +983,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 		F.w_u32(cur_motion->Length());
 
 		u32 dwLen = cur_motion->Length();
-		BoneVec& b_lst = m_Source->Bones();
+		BoneVec& b_lst = m_Source->m_Bones;
 
 		bm_item* items = xr_alloc<bm_item>(b_lst.size());
 		for (u32 itm_idx = 0; itm_idx < b_lst.size(); itm_idx++)
@@ -1380,9 +1248,9 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 		xr_free(items);
 		F.close_chunk();
 
-		F.open_chunk(m_Source->SMotionCount() + 1 + smot);
+		F.open_chunk(m_Source->m_SMotions.size() + 1 + smot);
 
-		auto index = motion_it - m_Source->FirstSMotion();
+		auto index = motion_it - m_Source->m_SMotions.begin();
 		PrefetchedData[index] = {};
 
 		for (int itm_idx = 0; itm_idx < b_lst.size(); ++itm_idx)
@@ -1432,7 +1300,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 	}
 
 	F.close_chunk();
-	UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
 
 	// restore active motion
 	m_Source->SetActiveSMotion(active_motion);
@@ -1449,7 +1317,7 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
 
 	bool bRes = true;
 
-	SPBItem* pb = UI->ProgressStart(3, "..Export skeleton motions defs");
+	SPBItem* pb = EContext.UI->ProgressStart(3, "..Export skeleton motions defs");
 	pb->Inc();
 
 	if (m_Source->m_SMotionRefs.size())
@@ -1471,7 +1339,7 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
 		F.open_chunk(OGF_S_SMPARAMS);
 		F.w_u16(xrOGF_SMParamsVersion);
 		// bone parts
-		BPVec& bp_lst = m_Source->BoneParts();
+		BPVec& bp_lst = m_Source->m_BoneParts;
 		if (bp_lst.size())
 		{
 			if (m_Source->VerifyBoneParts())
@@ -1503,8 +1371,8 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
 		{
 			F.w_u16(1);
 			F.w_stringZ("default");
-			F.w_u16((u16)m_Source->BoneCount());
-			for (int i = 0; i < m_Source->BoneCount(); i++)
+			F.w_u16((u16)m_Source->m_Bones.size());
+			for (int i = 0; i < m_Source->m_Bones.size(); i++)
 			{
 				F.w_u32(i);
 			}
@@ -1513,9 +1381,9 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
 		pb->Inc();
 
 		// motion defs
-		SMotionVec& sm_lst = m_Source->SMotions();
+		SMotionVec& sm_lst = m_Source->m_SMotions;
 		F.w_u16((u16)sm_lst.size());
-		for (SMotionIt motion_it = m_Source->FirstSMotion(); motion_it != m_Source->LastSMotion(); ++motion_it)
+		for (SMotionIt motion_it = m_Source->m_SMotions.begin(); motion_it != m_Source->m_SMotions.end(); ++motion_it)
 		{
 			CSMotion* motion = *motion_it;
 			// verify
@@ -1554,7 +1422,7 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
 		F.close_chunk();
 	}
 
-	UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
 
 	return bRes;
 }

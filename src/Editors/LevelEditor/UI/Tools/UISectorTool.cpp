@@ -53,17 +53,10 @@ void UISectorTool::Draw()
 					}
 				);
 			}
-			ImGui::SameLine(0, ItemSpacingX);
-			if (XRay::ImGui::Button("Distribute Objects", { SizeX, 0 })) {
-				CSector* S = PortalUtils.GetSelectedSector();
-				if (S) {
-					S->DistributeInsideObjects();
-					Scene->UndoSave();
-				}
-			}
 
 			XRay::ImGui::Separator();
-			if (XRay::ImGui::Button("Create Default", { SizeX, 0 })) {
+			if (XRay::ImGui::Button("Create Default", { SizeX, 0 }))
+			{
 				CCustomObject* O = Scene->FindObjectByName(DEFAULT_SECTOR_NAME, OBJCLASS_SECTOR);
 				if (O) {
 					ELog.DlgMsg(mtInformation, "Default sector already present. Remove this and try again.");

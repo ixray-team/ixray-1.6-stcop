@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "UIImageEditorForm.h"
 #include "EThumbnail.h"
+#include "ImageManager.h"
 
 #include <RedImage/RedImage.hpp>
 
@@ -381,39 +382,7 @@ void UIImageEditorForm::UpdateLib()
 	VERIFY(!bReadonlyMode);
 	RegisterModifiedTHM();
 	SaveUsedTHM();
-	if (bImportMode && !texture_map.empty())
-	{
-		AStringVec modif;
-		ImageLib.SafeCopyLocalToServer(texture_map);
-		// rename with folder
-		FS_FileSet files = texture_map;
-		texture_map.clear();
-		xr_string               fn;
-		FS_FileSetIt it = files.begin();
-		FS_FileSetIt _E = files.end();
-
-		for (; it != _E; it++)
-		{
-			fn = EFS.ChangeFileExt(it->name.c_str(), "");
-			ImageLib.UpdateFileName(fn);
-			FS_File				F(*it);
-			F.name = fn;
-			texture_map.insert(F);
-		}
-		// sync
-		ImageLib.SynchronizeTextures(true, true, true, &texture_map, &modif);
-		ImageLib.RefreshTextures(&modif);
-	}
-	else
-	{
-		// save game textures
-		if (modif_map.size())
-		{
-			AStringVec modif;
-			ImageLib.SynchronizeTextures(true, true, true, &modif_map, &modif);
-			ImageLib.RefreshTextures(&modif);
-		}
-	}
+	ImageLib.CommitTextureLib(bImportMode, texture_map, modif_map);
 }
 
 void UIImageEditorForm::UpdateSelected() 

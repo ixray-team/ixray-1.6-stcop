@@ -345,7 +345,7 @@ CUIBatchTools& CUIBatchTools::Instance()
 	static bool registered = false;
 	if (!registered)
 	{
-		UI->Push(&form, false);
+		EContext.UI->Push(&form, false);
 		registered = true;
 	}
 	return form;

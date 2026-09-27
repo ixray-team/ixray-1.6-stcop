@@ -125,26 +125,26 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("25%", "", &selected[0]))
 					{
 						selected[1] = selected[2] = selected[3] = false;
-						UI->SetRenderQuality(1 / 4.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(1 / 4.f);
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("50%", "", &selected[1]))
 					{
 						selected[0] = selected[2] = selected[3] = false;
-						UI->SetRenderQuality(1 / 2.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(1 / 2.f);
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("100%", "", &selected[2]))
 					{
 						selected[1] = selected[0] = selected[3] = false;
-						UI->SetRenderQuality(1.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(1.f);
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("200%", "", &selected[3]))
 					{
 						selected[1] = selected[2] = selected[0] = false;
-						UI->SetRenderQuality(2.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(2.f);
+						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();
 				}
@@ -154,12 +154,12 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Wireframe", "", &selected[1]))
 					{
 						EDevice->dwFillMode = D3DFILL_WIREFRAME;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("Solid", "", &selected[2]))
 					{
 						EDevice->dwFillMode = D3DFILL_SOLID;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();
 				}
@@ -169,12 +169,12 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Flat", "", &selected[0]))
 					{
 						EDevice->dwShadeMode = D3DSHADE_FLAT;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("Gouraud", "", &selected[1]))
 					{
 						EDevice->dwShadeMode = D3DSHADE_GOURAUD;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();
 				}
@@ -183,7 +183,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Edged Faces", "", &selected))
 					{
 						psDeviceFlags.set(rsEdgedFaces, selected);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 				}
 				ImGui::Separator();
@@ -192,7 +192,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("RenderHW", "", &selected))
 					{
 						Caps.bForceGPU_SW = !selected;
-						UI->Resize();
+						EContext.UI->Resize();
 					}
 				}
 				ImGui::Separator();
@@ -201,7 +201,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Filter Linear", "", &selected))
 					{
 						psDeviceFlags.set(rsFilterLinear, selected);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 				}
 				{
@@ -209,7 +209,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Textures", "", &selected))
 					{
 						psDeviceFlags.set(rsRenderTextures, selected);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 				}
 				ImGui::EndMenu();
@@ -220,7 +220,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItem("Draw Safe Rect", "", &selected))
 				{
 					psDeviceFlags.set(rsDrawSafeRect, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 			}
 			{
@@ -228,7 +228,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItemI("Draw Grid", ICON_FA_TABLE_CELLS, "", &selected))
 				{
 					psDeviceFlags.set(rsDrawGrid, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 			}
 			ImGui::Separator();
@@ -237,7 +237,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItemI("Fog", ICON_FA_CLOUD, "", &selected))
 				{
 					psDeviceFlags.set(rsFog, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 			}
 			ImGui::Separator();
@@ -261,7 +261,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItem("Stats", "", &selected))
 				{
 					psDeviceFlags.set(rsStatistic, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 
 			}
@@ -283,9 +283,9 @@ void UIMainMenuForm::Draw()
 				{
 					if (selected2)
 					{
-						if (!UI->HasWindow<CUIThemeManager>())
+						if (!EContext.UI->HasWindow<CUIThemeManager>())
 						{
-							UI->Push(&ThemeInstance);
+							EContext.UI->Push(&ThemeInstance);
 						}
 						ThemeInstance.Show(true);
 					}
