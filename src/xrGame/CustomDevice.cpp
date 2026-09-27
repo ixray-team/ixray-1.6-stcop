@@ -261,7 +261,10 @@ void CCustomDevice::SwitchState(u8 S)
 
 void CCustomDevice::ShowingCallback(CBlend* B)
 {
-	ToggleDetector(g_player_hud->attached_item(0) != nullptr, true);
+	CObject* control_entity = Level().CurrentControlEntity();
+	CActor* actor = control_entity != nullptr ? control_entity->cast_actor() : nullptr;
+
+	ToggleDetector(g_player_hud->attached_item(0) != nullptr || actor != nullptr && actor->inventory().GetNextActiveSlot() != NO_ACTIVE_SLOT, true);
 	g_player_hud->ResetBlockedPartID();
 	g_player_hud->OnMovementChanged(mcAnyMove);
 	g_player_hud->RestoreHandBlends("right_hand");
@@ -299,7 +302,7 @@ void CCustomDevice::switch_device()
 	}
 	else
 	{
-		ToggleDetector(g_player_hud->attached_item(0) != nullptr, true);
+		ToggleDetector(g_player_hud->attached_item(0) != nullptr || actor != nullptr && actor->inventory().GetNextActiveSlot() != NO_ACTIVE_SLOT, true);
 	}
 }
 
