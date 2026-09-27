@@ -171,7 +171,7 @@ void UIKeyForm::Draw()
 
 				if (ImGui::BeginPopup("add_notify_bone")) {
 					int id = 0;
-					auto bones = ATools->CurrentObject()->Bones();
+					auto bones = ATools->CurrentObject()->m_Bones;
 					for (auto& bone : bones) {
 						ImGui::PushID(id);
 						if (ImGui::Button(bone->name.c_str()) && !NotifyData.NotifyTracks.contains(bone->name)) {

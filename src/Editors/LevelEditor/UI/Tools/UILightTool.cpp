@@ -50,5 +50,5 @@ void UILightTool::UseInD3D(bool bAll, bool bFlag)
 			if (L->Selected() && L->Visible()) L->AffectD3D(bFlag);
 		}
 	}
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }

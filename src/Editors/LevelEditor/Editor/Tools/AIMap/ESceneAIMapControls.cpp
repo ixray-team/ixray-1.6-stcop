@@ -8,7 +8,7 @@ bool TUI_ControlAIMapNodeAdd::Start(TShiftState Shift)
     append_nodes = 0;
     Fvector p;
     ESceneAIMapTool* S = (ESceneAIMapTool*)parent_tool;
-    if (S->PickObjects(p,UI->m_CurrentRStart,UI->m_CurrentRDir,UI->ZFar()))
+	if (S->PickObjects(p, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, EContext.UI->ZFar()))
     {
         S->SelectObjects(false);
         append_nodes = S->AddNode(p,((UIAIMapTool*)S->pForm)->IsIgnoreConstraints(),((UIAIMapTool*)S->pForm)->IsAutoLink(),S->m_BrushSize);
@@ -27,7 +27,7 @@ void TUI_ControlAIMapNodeAdd::Move(TShiftState _Shift)
 {
     Fvector p;
     ESceneAIMapTool* S 	= (ESceneAIMapTool*)parent_tool;
-    if (S->PickObjects(p,UI->m_CurrentRStart,UI->m_CurrentRDir,UI->ZFar()))
+	if (S->PickObjects(p, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, EContext.UI->ZFar()))
     {
         append_nodes+=S->AddNode(p,((UIAIMapTool*)S->pForm)->IsIgnoreConstraints(),((UIAIMapTool*)S->pForm)->IsAutoLink(),S->m_BrushSize);
     }
@@ -104,32 +104,41 @@ bool TUI_ControlAIMapNodeRotate::Start(TShiftState Shift)
 
 void TUI_ControlAIMapNodeRotate::Move(TShiftState _Shift)
 {
-    if (_Shift & ssLeft)
-    {
-        float amount = -UI->m_DeltaCpH.x * UI->m_MouseSR;
+	if (_Shift & ssLeft)
+	{
+		float Amount = -EContext.UI->m_DeltaCpH.x * EContext.UI->m_MouseSR;
 
-        if (Tools->GetSettings(etfASnap))
-            CHECK_SNAP(m_fRotateSnapAngle, amount, Tools->m_RotateSnapAngle);
+		if (Tools->GetSettings(etfASnap))
+		{
+			CHECK_SNAP(m_fRotateSnapAngle, Amount, Tools->m_RotateSnapAngle);
+		}
 
-        Fmatrix R;
-        if (fis_zero(m_RotateVector.x))
-            R.rotateZ(amount);
-        else
-            R.rotateX(amount);
+		Fmatrix R;
+		if (fis_zero(m_RotateVector.x))
+		{
+			R.rotateZ(Amount);
+		}
+		else
+		{
+			R.rotateX(Amount);
+		}
 
-        AINodeVec& lst = ((ESceneAIMapTool*)parent_tool)->Nodes();
-        for (AINodeIt _F = lst.begin(); _F != lst.end(); _F++)
-            if ((*_F)->flags.is(SAINode::flSelected))
-            {
-                Fvector new_n;
-                R.transform_dir(new_n, (*_F)->Plane.n);
-                if (Fvector().set(0, 1, 0).dotproduct(new_n) > 0.02f)
-                {
-                    (*_F)->Plane.build((*_F)->Pos, new_n);
-                }
-            }
-    }
+		AINodeVec& lst = ((ESceneAIMapTool*)parent_tool)->Nodes();
+		for (AINodeIt _F = lst.begin(); _F != lst.end(); _F++)
+		{
+			if ((*_F)->flags.is(SAINode::flSelected))
+			{
+				Fvector new_n;
+				R.transform_dir(new_n, (*_F)->Plane.n);
+				if (Fvector().set(0, 1, 0).dotproduct(new_n) > 0.02f)
+				{
+					(*_F)->Plane.build((*_F)->Pos, new_n);
+				}
+			}
+		}
+	}
 }
+
 bool TUI_ControlAIMapNodeRotate::End(TShiftState _Shift)
 {
     return RotateEnd(_Shift);

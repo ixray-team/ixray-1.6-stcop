@@ -299,6 +299,10 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 
 bool UIMainForm::Frame()
 {
-    if(UI)  return UI->Idle();
+	if (EContext.UI)
+	{
+		return EContext.UI->Idle();
+	}
+
     return false;
 }

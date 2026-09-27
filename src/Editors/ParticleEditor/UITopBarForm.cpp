@@ -50,7 +50,7 @@ UITopBarForm::~UITopBarForm() {}
 void UITopBarForm::Draw()
 {
     ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + UI->GetMenuBarHeight()));
+	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + EContext.UI->GetMenuBarHeight()));
     ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, UIToolBarSize));
     ImGui::SetNextWindowViewport(viewport->ID);
 

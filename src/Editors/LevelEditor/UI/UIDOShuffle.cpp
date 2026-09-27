@@ -100,7 +100,7 @@ void UIDOShuffle::Draw()
 				DM->InvalidateSlots();
 				DM->ClearColorIndices();
 				ClearIndexForms();
-				UI->RedrawScene();
+				EContext.UI->RedrawScene();
 				OnItemFocused(nullptr);
 				bModif = true;
 			}

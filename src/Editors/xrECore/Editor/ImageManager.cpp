@@ -338,7 +338,10 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 
 	// sync assoc
 	SPBItem* pb=nullptr;
-	if (bProgress) pb = UI->ProgressStart(M_BASE.size(),"Synchronize textures...");
+	if (bProgress)
+	{
+		pb = EContext.UI->ProgressStart(M_BASE.size(), "Synchronize textures...");
+	}
 	FS_FileSetIt it=M_BASE.begin();
 	FS_FileSetIt _E = M_BASE.end();
 	for (; it!=_E; it++){
@@ -391,8 +394,11 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 			}
 		}
 		if (THM) xr_delete(THM);
-		if (UI->NeedAbort()) break;
-		
+		if (EContext.UI->NeedAbort())
+		{
+			break;
+		}
+
 		if (bProgress) 
 			pb->Inc(bUpdated ? xr_string(base_name+(bFailed?" - FAILED":" - UPDATED.")).c_str() : base_name.c_str(), bFailed);
 			
@@ -413,37 +419,12 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 			}
 		}
 	}
-	if (bProgress) 	UI->ProgressEnd(pb);
-}
-/*
-void CImageManager::ChangeFileAgeTo(FS_FileSet* tgt_map, int age)
-{
-	VERIFY(tgt_map);
-	FS_FileSet* 	M_BASE 		= tgt_map;
-	
-	// lock rescanning
-	FS.lock_rescan	();
-	// change
-	SPBItem* pb=0;
-	if (M_BASE->size()>1) pb	= UI->ProgressStart(M_BASE->size(),"Change textures age...");
-	FS_FileSetIt it			= M_BASE->begin();
-	FS_FileSetIt _E 			= M_BASE->end();
-	for (; it!=_E; it++){
-		xr_string base_name	= EFS.ChangeFileExt(it->name,""); xr_strlwr(base_name);
-		xr_string	tga_fn,thm_fn,dds_fn;
-		FS.update_path			(tga_fn,_textures_,		EFS.ChangeFileExt(base_name,".tga").c_str());
-		FS.update_path			(thm_fn,_textures_,		EFS.ChangeFileExt(base_name,".thm").c_str());
-		FS.update_path			(dds_fn,_game_textures_,EFS.ChangeFileExt(base_name,".dds").c_str());
-		FS.set_file_age			(tga_fn.c_str(),age);
-		FS.set_file_age			(thm_fn.c_str(),age);
-		FS.set_file_age			(dds_fn.c_str(),age);
-		if (pb) 			    pb->Inc();
+	if (bProgress)
+	{
+		EContext.UI->ProgressEnd(pb);
 	}
-	if (pb) 					UI->ProgressEnd(pb);
-	// lock rescanning
-	FS.unlock_rescan			();
 }
-*/
+
 void CImageManager::WriteAssociation(CInifile* ltx_ini, const char* base_name, const STextureParams& fmt)
 {
 	ltx_ini->w_u32				("types", base_name,fmt.type);
@@ -542,21 +523,28 @@ bool CImageManager::CheckCompliance(const char* fname, int& compl_)
 }
 void CImageManager::CheckCompliance(FS_FileSet& files, FS_FileSet& compl_)
 {
-	SPBItem* pb = UI->ProgressStart(files.size(),"Check texture compliance: ");
-	FS_FileSetIt it	= files.begin();
-	FS_FileSetIt _E 	= files.end();
-	for (; it!=_E; it++){
-		int val	= 0;
-		string_path 		fname;
-		FS.update_path		(fname,_textures_,it->name.c_str());
-		if (!CheckCompliance(fname,val))
-			ELog.Msg(mtError,"Bad texture: '%s'",it->name.c_str());
-		FS_File 				F(*it); F.attrib = val;
-		compl_.insert			(F);
-		pb->Inc					();
-		if (UI->NeedAbort()) break;
+	SPBItem* pb = EContext.UI->ProgressStart(files.size(), "Check texture compliance: ");
+	FS_FileSetIt it = files.begin();
+	FS_FileSetIt _E = files.end();
+	for (; it != _E; it++)
+	{
+		int val = 0;
+		string_path fname;
+		FS.update_path(fname, _textures_, it->name.c_str());
+		if (!CheckCompliance(fname, val))
+		{
+			ELog.Msg(mtError, "Bad texture: '%s'", it->name.c_str());
+		}
+		FS_File F(*it);
+		F.attrib = val;
+		compl_.insert(F);
+		pb->Inc();
+		if (EContext.UI->NeedAbort())
+		{
+			break;
+		}
 	}
-	UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
 }
 
 IC void GET(U32Vec& pixels, u32 w, u32 h, u32 x, u32 y, u32 ref, u32 &count, u32 &r, u32 &g, u32 &b)
@@ -691,13 +679,13 @@ bool CImageManager::CreateOBJThumbnail(const char* tex_name, CEditableObject* ob
 	Flags32 old_flag = psDeviceFlags;
 
 	// set render params
-	psDeviceFlags.set(rsDrawGrid,false);
-	psDeviceFlags.set(rsStatistic,false);
+	psDeviceFlags.set(rsDrawGrid, false);
+	psDeviceFlags.set(rsStatistic, false);
 
 	U32Vec pixels;
-	int w=512,h=512;
+	int w = 512, h = 512;
 
-	if (GetRTDataU32(UI->RT, pixels, w, h))
+	if (GetRTDataU32(EContext.UI->RT, pixels, w, h))
 	{
 		EObjectThumbnail tex(tex_name, false);
 		tex.CreateFromData(pixels.data(), w, h, obj->GetFaceCount(), obj->GetVertexCount());
@@ -706,12 +694,11 @@ bool CImageManager::CreateOBJThumbnail(const char* tex_name, CEditableObject* ob
 	else
 	{
 		bResult = false;
-		ELog.DlgMsg(mtError,"Can't make screenshot.");
+		ELog.DlgMsg(mtError, "Can't make screenshot.");
 	}
 
 	// restore render params
-	psDeviceFlags 				= old_flag;
-//	EPrefs.scene_clear_color 	= cc;
+	psDeviceFlags = old_flag;
 	return bResult;
 }
 
@@ -763,24 +750,21 @@ void CImageManager::RefreshTextures(AStringVec* modif)
 {
 	if (FS.can_write_to_alias(_textures_))
 	{
-		//string_path ImageDir = {};
-		//FS.update_path(ImageDir, _textures_, "");
-
-		//FS.rescan_path(ImageDir, true);
-
 		if (modif)
 		{
 			EDevice->Resources->ED_UpdateTextures(modif);
 		}
 		else
 		{
-			UI->SetStatus("Refresh textures...");
+			EContext.UI->SetStatus("Refresh textures...");
 			AStringVec modif_files;
-			ImageLib.SynchronizeTextures(true,true,false,nullptr,&modif_files);
+			ImageLib.SynchronizeTextures(true, true, false, nullptr, &modif_files);
 			EDevice->Resources->ED_UpdateTextures(&modif_files);
-			UI->SetStatus("");
+			EContext.UI->SetStatus("");
 		}
-	}else{
+	}
+	else
+	{
 		Log("#!You don't have permisions to modify textures.");
 	}
 }
@@ -795,42 +779,76 @@ bool CImageManager::CreateSmallerCubeMap(const char* src_name, const char* dst_n
 {
 	U32Vec data;
 	u32 w, wf, h, a;
-	string_path 	full_name;
-	FS.update_path	(full_name,_textures_,src_name);
-	strcat			(full_name,".tga");
+	string_path full_name;
+	FS.update_path(full_name, _textures_, src_name);
+	strcat(full_name, ".tga");
 
-	if (LoadRawImage(full_name,data,wf,h,a)){
-		w				= wf/6;
-		u32 sm_w=32, sm_wf=6*sm_w, sm_h=32;
-		if (!btwIsPow2(h)||(h*6!=wf)||(wf<sm_wf)||(h<sm_h)){	
-			ELog.Msg(mtError,"Texture '%s' - invalid size: [%d, %d]",src_name,wf,h);
-			return 		false;
+	if (LoadRawImage(full_name, data, wf, h, a))
+	{
+		w = wf / 6;
+		u32 sm_w = 32, sm_wf = 6 * sm_w, sm_h = 32;
+		if (!btwIsPow2(h) || (h * 6 != wf) || (wf < sm_wf) || (h < sm_h))
+		{
+			ELog.Msg(mtError, "Texture '%s' - invalid size: [%d, %d]", src_name, wf, h);
+			return false;
 		}
 		// generate smaller
-		U32Vec sm_data	(sm_wf*sm_h,0);
-		SPBItem* PB		= UI->ProgressStart(1.f,"Cube Map: scale image...");
-		CTimer T; T.Start();
-		XRay::Editor::CubeMap::Simplify(data.data(),w,h,sm_data.data(),sm_w,sm_h,16.f,pb_callback,PB);
-		float tm_scm	= T.GetElapsed_sec();
-		UI->ProgressEnd	(PB);
+		U32Vec sm_data(sm_wf * sm_h, 0);
+		SPBItem* PB = EContext.UI->ProgressStart(1.f, "Cube Map: scale image...");
+		CTimer T;
+		T.Start();
+		XRay::Editor::CubeMap::Simplify(data.data(), w, h, sm_data.data(), sm_w, sm_h, 16.f, pb_callback, PB);
+		float tm_scm = T.GetElapsed_sec();
+		EContext.UI->ProgressEnd(PB);
 		// write texture
 		string_path out_name;
-		FS.update_path	(out_name,_game_textures_,dst_name);
+		FS.update_path(out_name, _game_textures_, dst_name);
 		strcat(out_name, ".dds");
 
-		STextureParams 	tp;
-		tp.width		= sm_wf;
-		tp.height		= sm_h;
-		tp.fmt			= STextureParams::tfRGBA;
-		tp.type			= STextureParams::ttCubeMap;
-		tp.flags.zero	();
-		if (!MakeGameTexture(out_name,&*sm_data.begin(),tp))
+		STextureParams tp;
+		tp.width = sm_wf;
+		tp.height = sm_h;
+		tp.fmt = STextureParams::tfRGBA;
+		tp.type = STextureParams::ttCubeMap;
+		tp.flags.zero();
+		if (!MakeGameTexture(out_name, &*sm_data.begin(), tp))
+		{
 			return false;
-		ELog.DlgMsg(mtInformation,"Smaller cubemap successfylly created [%3.2f sec].",tm_scm);
+		}
+		ELog.DlgMsg(mtInformation, "Smaller cubemap successfylly created [%3.2f sec].", tm_scm);
 		return true;
-	}else{
-		ELog.Msg(mtError,"Can't load texture '%s'.",src_name);
+	}
+	else
+	{
+		ELog.Msg(mtError, "Can't load texture '%s'.", src_name);
 	}
 	return false;
+}
+
+void CImageManager::CommitTextureLib(bool import_mode, FS_FileSet& texture_map, FS_FileSet& modif_map)
+{
+	if (import_mode && !texture_map.empty())
+	{
+		AStringVec modif;
+		SafeCopyLocalToServer(texture_map);
+		FS_FileSet files = texture_map;
+		texture_map.clear();
+		for (const FS_File& it : files)
+		{
+			xr_string fn = EFS.ChangeFileExt(it.name.c_str(), "");
+			UpdateFileName(fn);
+			FS_File F(it);
+			F.name = fn;
+			texture_map.insert(F);
+		}
+		SynchronizeTextures(true, true, true, &texture_map, &modif);
+		RefreshTextures(&modif);
+	}
+	else if (!modif_map.empty())
+	{
+		AStringVec modif;
+		SynchronizeTextures(true, true, true, &modif_map, &modif);
+		RefreshTextures(&modif);
+	}
 }
 

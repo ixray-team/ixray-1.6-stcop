@@ -307,7 +307,7 @@ void EParticlesObject::OnControlClick(ButtonValue* sender, bool& bModif, bool& b
     case 0: Play();	break;
     case 1: Stop();	break;
 	}
-    UI->RedrawScene();
+	EContext.UI->RedrawScene();
     bModif = false;
 }
 

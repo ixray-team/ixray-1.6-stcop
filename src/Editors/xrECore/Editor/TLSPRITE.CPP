@@ -19,52 +19,73 @@ CTLSprite::~CTLSprite( )
 {
 }
 
-void CTLSprite::Render(Fvector &pos, float radius, bool bFixedSize, u32 clr)
+void CTLSprite::Render(Fvector& pos, float radius, bool bFixedSize, u32 clr)
 {
-	FVF::TL			P;
-    float 			cx,cy,sz;
+	FVF::TL P;
+	float cx, cy, sz;
 
-	P.transform		( pos, EDevice->mFullTransform );
-    cx				= EDevice->_x2real(P.p.x);
-    cy				= EDevice->_y2real(P.p.y);
-    if (bFixedSize) sz = EDevice->_x2real(radius)-EDevice->_x2real(0);
-    else			sz = UI->GetRenderWidth()*radius/P.p.w;
-    mesh.m[0].p.x = cx-sz;	mesh.m[0].p.y = cy+sz;
-    mesh.m[1].p.x = cx-sz;	mesh.m[1].p.y = cy-sz;
-    mesh.m[3].p.x = cx+sz;	mesh.m[3].p.y = cy-sz;
-    mesh.m[2].p.x = cx+sz;	mesh.m[2].p.y = cy+sz;
-    mesh.setdepth	( P.p.z );
-    mesh.setcolor	( clr );
+	P.transform(pos, EDevice->mFullTransform);
+	cx = EDevice->_x2real(P.p.x);
+	cy = EDevice->_y2real(P.p.y);
+	if (bFixedSize)
+	{
+		sz = EDevice->_x2real(radius) - EDevice->_x2real(0);
+	}
+	else
+	{
+		sz = EContext.UI->GetRenderWidth() * radius / P.p.w;
+	}
 
-    DU_impl.DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP,2,(FVF::TL*)&mesh,4,false,false);
+	mesh.m[0].p.x = cx - sz;
+	mesh.m[0].p.y = cy + sz;
+	mesh.m[1].p.x = cx - sz;
+	mesh.m[1].p.y = cy - sz;
+	mesh.m[3].p.x = cx + sz;
+	mesh.m[3].p.y = cy - sz;
+	mesh.m[2].p.x = cx + sz;
+	mesh.m[2].p.y = cy + sz;
+	mesh.setdepth(P.p.z);
+	mesh.setcolor(clr);
+
+	DU_impl.DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, 2, (FVF::TL*)&mesh, 4, false, false);
 }
 
-void CTLSprite::Render(Fvector &pos, u32 color, float radius, float angle)
+void CTLSprite::Render(Fvector& pos, u32 color, float radius, float angle)
 {
-	FVF::TL			P;
+	FVF::TL P;
 
-	P.transform     (pos, EDevice->mFullTransform);
-    if (P.p.w<=0) 	return;
+	P.transform(pos, EDevice->mFullTransform);
+	if (P.p.w <= 0)
+	{
+		return;
+	}
 
-	float cx		= EDevice->_x2real(P.p.x);
-	float cy		= EDevice->_y2real(P.p.y);
+	float cx = EDevice->_x2real(P.p.x);
+	float cy = EDevice->_y2real(P.p.y);
 
-	float sz		= (UI->GetRenderWidth()*radius)/P.p.w;
-	if (sz<1.5f) 	return;
+	float sz = (EContext.UI->GetRenderWidth() * radius) / P.p.w;
+	if (sz < 1.5f)
+	{
+		return;
+	}
 
 	// Rotation
-	float			_sin1=std::sin(angle),_cos1= std::cos(angle);
-    float			_sin2=std::sin(angle+PI_DIV_2),_cos2= std::cos(angle+PI_DIV_2);
+	float _sin1 = std::sin(angle), _cos1 = std::cos(angle);
+	float _sin2 = std::sin(angle + PI_DIV_2), _cos2 = std::cos(angle + PI_DIV_2);
 
-	mesh.m[0].p.x = cx+sz*_sin1;	mesh.m[0].p.y = cy+sz*_cos1;
-	mesh.m[1].p.x = cx-sz*_sin2;	mesh.m[1].p.y = cy-sz*_cos2;
-	mesh.m[2].p.x = cx+sz*_sin2;	mesh.m[2].p.y = cy+sz*_cos2;
-	mesh.m[3].p.x = cx-sz*_sin1;	mesh.m[3].p.y = cy-sz*_cos1;
+	mesh.m[0].p.x = cx + sz * _sin1;
+	mesh.m[0].p.y = cy + sz * _cos1;
+	mesh.m[1].p.x = cx - sz * _sin2;
+	mesh.m[1].p.y = cy - sz * _cos2;
+	mesh.m[2].p.x = cx + sz * _sin2;
+	mesh.m[2].p.y = cy + sz * _cos2;
+	mesh.m[3].p.x = cx - sz * _sin1;
+	mesh.m[3].p.y = cy - sz * _cos1;
 
-	mesh.setdepth	(P.p.z);
-	mesh.setcolor	(color);
+	mesh.setdepth(P.p.z);
+	mesh.setcolor(color);
 
-    DU_impl.DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP,2,(FVF::TL*)&mesh,4,false,false);
+	DU_impl.DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, 2, (FVF::TL*)&mesh, 4, false, false);
 }
 
 void CTLSprite::Render( Fvector &pos, u32 color, float radius, const Fvector& D ){

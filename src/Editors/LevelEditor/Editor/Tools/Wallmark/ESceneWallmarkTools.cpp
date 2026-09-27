@@ -71,7 +71,7 @@ int ESceneWallmarkTool::FrustumSelect(int flag, const CFrustum& frustum)
             }
         }
     }
-    UI->RedrawScene		();
+    EContext.UI->RedrawScene		();
     return count;
 }
 
@@ -85,7 +85,7 @@ void ESceneWallmarkTool::SelectObjects(bool flag)
         for (WMVecIt m_it=(*p_it)->items.begin(); m_it!=(*p_it)->items.end(); m_it++)
             (*m_it)->flags.set(wallmark::flSelected,flag);
     }
-    UI->RedrawScene		();
+    EContext.UI->RedrawScene		();
 }
 
 void ESceneWallmarkTool::InvertSelection()
@@ -95,7 +95,7 @@ void ESceneWallmarkTool::InvertSelection()
         for (WMVecIt m_it=(*p_it)->items.begin(); m_it!=(*p_it)->items.end(); m_it++)
             (*m_it)->flags.invert(wallmark::flSelected);
     }
-    UI->RedrawScene		();
+    EContext.UI->RedrawScene		();
 }
 
 void ESceneWallmarkTool::RemoveSelection()
@@ -111,7 +111,7 @@ void ESceneWallmarkTool::RemoveSelection()
             	m_it++;
             }
     }
-    UI->RedrawScene		();
+    EContext.UI->RedrawScene		();
 }
 
 int ESceneWallmarkTool::SelectionCount(bool testflag)
@@ -181,7 +181,7 @@ void ESceneWallmarkTool::OnFrame()
 
 	if (HasRemoved)
 	{
-		UI->RedrawScene();
+		EContext.UI->RedrawScene();
 	}
 }
 
@@ -741,7 +741,7 @@ bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
     }
     // pick contact poly
     Fvector 				contact_pt;
-    float dist				= UI->ZFar();
+    float dist				= EContext.UI->ZFar();
     ObjectList* snap_list	= Scene->GetSnapList(true);
     if (!snap_list){
     	ELog.DlgMsg			(mtError,"Fill and activate snap list.");

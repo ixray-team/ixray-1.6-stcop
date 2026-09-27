@@ -25,11 +25,11 @@ UIRenderForm::UIRenderForm()
 
 	if (ViewportID != 0)
 	{
-		UI->CreateViewport(ViewportID, this);
+		EContext.UI->CreateViewport(ViewportID, this);
 	}
 	else
 	{
-		TUI::Viewport& MainView = UI->CurrentView();
+		TUI::Viewport& MainView = EContext.UI->CurrentView();
 		MainView.ViewGlobalIDX = ViewportID;
 		MainView.ViewportForm = this;
 	}
@@ -37,7 +37,7 @@ UIRenderForm::UIRenderForm()
 
 UIRenderForm::~UIRenderForm()
 {
-	UI->DestroyViewport(ViewportID);
+	EContext.UI->DestroyViewport(ViewportID);
 }
 
 void UIRenderForm::DrawStatistics()
@@ -46,20 +46,23 @@ void UIRenderForm::DrawStatistics()
 		+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding) * 2.f
 		+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
 	const float Gap = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::DockingGap);
-	if (!psDeviceFlags.is(rsStatistic))
-		return;
 
-	auto print = [](const char* param, const char* value_fmt, ...)
-		{
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text("%s:", param);
-			ImGui::TableSetColumnIndex(1);
-			va_list args;
-			va_start(args, value_fmt);
-			ImGui::TextV(value_fmt, args);
-			va_end(args);
-		};
+	if (!psDeviceFlags.is(rsStatistic))
+	{
+		return;
+	}
+
+	auto Print = [](const char* param, const char* value_fmt, ...)
+	{
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		ImGui::Text("%s:", param);
+		ImGui::TableSetColumnIndex(1);
+		va_list args;
+		va_start(args, value_fmt);
+		ImGui::TextV(value_fmt, args);
+		va_end(args);
+	};
 
 	ImGui::SetCursorPos(ImVec2(ToolbarHeight * 0.5f, ToolbarHeight * 1.5f));
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(Gap, Gap));
@@ -73,50 +76,50 @@ void UIRenderForm::DrawStatistics()
 	CEStats* s = static_cast<CEStats*>(EDevice->Statistic);
 
 	//color(0xFFFFFFFF);
-	print("FPS/RFPS", "%3.1f/%3.1f", (s->fFPS), s->fRFPS);
+	Print("FPS/RFPS", "%3.1f/%3.1f", (s->fFPS), s->fRFPS);
 	ImGui::NewLine();
 	//color(0xDDDDDDDD);
-	print("TPS", "%2.2f M", s->fTPS);
+	Print("TPS", "%2.2f M", s->fTPS);
 
-	print("VERT", "%d",		s->lastDPS_verts);
-	print("POLY", "%d",		s->lastDPS_polys);
-	print("DIP/DP", "%d",	s->lastDPS_calls);
+	Print("VERT", "%d",		s->lastDPS_verts);
+	Print("POLY", "%d",		s->lastDPS_polys);
+	Print("DIP/DP", "%d",	s->lastDPS_calls);
 
 	if (ViewportID == 0 && EPrefs->bMoreStats)
 	{
-		print("SH/T/M/C", "%d/%d/%d/%d", s->dwShader_Codes, s->dwShader_Textures, s->dwShader_Matrices, s->dwShader_Constants);
-		print("Skeletons", "%2.2fms, %d", s->Animation.result, s->Animation.count);
-		print("Skinning", "%2.2fms", s->RenderDUMP_SKIN.result);
+		Print("SH/T/M/C", "%d/%d/%d/%d", s->dwShader_Codes, s->dwShader_Textures, s->dwShader_Matrices, s->dwShader_Constants);
+		Print("Skeletons", "%2.2fms, %d", s->Animation.result, s->Animation.count);
+		Print("Skinning", "%2.2fms", s->RenderDUMP_SKIN.result);
 		ImGui::NewLine();
-		print("Input", "%2.2fms", s->Input.result);
-		print("clRAY", "%2.2fms, %d", s->clRAY.result, s->clRAY.count);
-		print("clBOX", "%2.2fms, %d", s->clBOX.result, s->clBOX.count);
-		print("clFRUSTUM", "%2.2fms, %d", s->clFRUSTUM.result, s->clFRUSTUM.count);
+		Print("Input", "%2.2fms", s->Input.result);
+		Print("clRAY", "%2.2fms, %d", s->clRAY.result, s->clRAY.count);
+		Print("clBOX", "%2.2fms, %d", s->clBOX.result, s->clBOX.count);
+		Print("clFRUSTUM", "%2.2fms, %d", s->clFRUSTUM.result, s->clFRUSTUM.count);
 		ImGui::NewLine();
-		print("RT", "%2.2fms, %d", s->RenderDUMP_RT.result, s->RenderDUMP_RT.count);
-		print("DT_Vis", "%2.2fms", s->RenderDUMP_DT_VIS.result);
-		print(" DT_Render", "%2.2fms", s->RenderDUMP_DT_Render.result);
-		print(" DT_Cache", "%2.2fms", s->RenderDUMP_DT_Cache.result);
+		Print("RT", "%2.2fms, %d", s->RenderDUMP_RT.result, s->RenderDUMP_RT.count);
+		Print("DT_Vis", "%2.2fms", s->RenderDUMP_DT_VIS.result);
+		Print(" DT_Render", "%2.2fms", s->RenderDUMP_DT_Render.result);
+		Print(" DT_Cache", "%2.2fms", s->RenderDUMP_DT_Cache.result);
 	}
     if (psDeviceFlags.test(rsEnvironment))
     {
         ImGui::NewLine();
         // color(0xFFC8DCAF);
-        print("GAME TIME", "%02d:%02d:%02d", s->hours, s->minutes, s->seconds);
+        Print("GAME TIME", "%02d:%02d:%02d", s->hours, s->minutes, s->seconds);
     }
 
     ImGui::NewLine();
-	print("Camera Pos", "%2.2f, %2.2f, %2.2f", UI->CurrentView().m_Camera.GetPosition().x, UI->CurrentView().m_Camera.GetPosition().y, UI->CurrentView().m_Camera.GetPosition().z);
+	Print("Camera Pos", "%2.2f, %2.2f, %2.2f", EContext.UI->CurrentView().m_Camera.GetPosition().x, EContext.UI->CurrentView().m_Camera.GetPosition().y, EContext.UI->CurrentView().m_Camera.GetPosition().z);
 
 	ImGui::EndTable();
 	ImGui::PopStyleVar();
 }
 void UIRenderForm::Draw()
 {
-	ImGuiWindowClass window_class;
+	ImGuiWindowClass WndClass;
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-	window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_HiddenTabBar | ImGuiDockNodeFlags_NoDockingOverMe | ImGuiDockNodeFlags_NoDockingOverOther;
-	ImGui::SetNextWindowClass(&window_class);
+	WndClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_HiddenTabBar | ImGuiDockNodeFlags_NoDockingOverMe | ImGuiDockNodeFlags_NoDockingOverOther;
+	ImGui::SetNextWindowClass(&WndClass);
 
 	if (!ImGui::Begin(ViewportName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
@@ -138,16 +141,16 @@ void UIRenderForm::DrawVP()
 
 	float ScreenDPI = GUIManager->GetScaleDpi();
 
-	if (UI->Views[ViewportID].ViewGlobalIDX != ViewportID)
+	if (EContext.UI->Views[ViewportID].ViewGlobalIDX != ViewportID)
 	{
 		return;
 	}
 
-	if (ImGui::IsWindowFocused() || UI->ViewID == ViewportID)
+	if (ImGui::IsWindowFocused() || EContext.UI->ViewID == ViewportID)
 	{
-		if ((UI->IsPlayInEditor() && ViewportID == 0) || !UI->IsPlayInEditor())
+		if ((EContext.UI->IsPlayInEditor() && ViewportID == 0) || !EContext.UI->IsPlayInEditor())
 		{
-			UI->ViewID = ViewportID;
+			EContext.UI->ViewID = ViewportID;
 
 			if (OnFocusCallback)
 			{
@@ -156,9 +159,9 @@ void UIRenderForm::DrawVP()
 		}
 	}
 
-	if ((UI->IsPlayInEditor() && ViewportID == 0) || UI->ViewID == ViewportID)
+	if ((EContext.UI->IsPlayInEditor() && ViewportID == 0) || EContext.UI->ViewID == ViewportID)
 	{
-		GRHI->CopySurface(UI->Views[ViewportID].RTFreez->pRT, UI->RT->pRT);
+		GRHI->CopySurface(EContext.UI->Views[ViewportID].RTFreez->pRT, EContext.UI->RT->pRT);
 	}
 
 	m_render_pos.right = ImGui::GetWindowSize().x;
@@ -167,15 +170,15 @@ void UIRenderForm::DrawVP()
 	m_render_pos.bottom = ImGui::GetWindowSize().y;
 	m_render_pos.top = ImGui::GetWindowPos().y;
 
-	bool cursor_in_zone = true;
-	if (UI && UI->Views[ViewportID].RTFreez->pSurface)
+	bool CursorInZone = true;
+	if (EContext.UI && EContext.UI->Views[ViewportID].RTFreez->pSurface)
 	{
 		int ShiftState = ssNone;
 
-		if (ViewportID == UI->ViewID)
+		if (ViewportID == EContext.UI->ViewID)
 		{
 			auto ViewHandle = ImGui::GetWindowViewport();
-			UI->Views[ViewportID].WndHandle = SDL_GetWindowFromID((SDL_WindowID)(size_t)ViewHandle->PlatformHandle);
+			EContext.UI->Views[ViewportID].WndHandle = SDL_GetWindowFromID((SDL_WindowID)(size_t)ViewHandle->PlatformHandle);
 
 			if (ImGui::GetIO().KeyShift)ShiftState |= ssShift;
 			if (ImGui::GetIO().KeyCtrl)	ShiftState |= ssCtrl;
@@ -192,37 +195,37 @@ void UIRenderForm::DrawVP()
 		ImVec2 mouse_pos = ImGui::GetIO().MousePos;
 		if (mouse_pos.x < canvas_pos.x)
 		{
-			cursor_in_zone = false;
+			CursorInZone = false;
 			mouse_pos.x = canvas_pos.x;
 		}
 		if (mouse_pos.y < canvas_pos.y)
 		{
-			cursor_in_zone = false;
+			CursorInZone = false;
 			mouse_pos.y = canvas_pos.y;
 		}
 
 		if (mouse_pos.x > canvas_pos.x + canvas_size.x)
 		{
-			cursor_in_zone = false;
+			CursorInZone = false;
 			mouse_pos.x = canvas_pos.x + canvas_size.x;
 		}
 		if (mouse_pos.y > canvas_pos.y + canvas_size.y)
 		{
-			cursor_in_zone = false;
+			CursorInZone = false;
 			mouse_pos.y = canvas_pos.y + canvas_size.y;
 		}
 
-		bool curent_shiftstate_down = UI->CurrentView().m_Camera.IsMoving();
+		bool curent_shiftstate_down = EContext.UI->CurrentView().m_Camera.IsMoving();
 
 
 		if (canvas_size.x < 32.0f * ScreenDPI) canvas_size.x = 32.0f * ScreenDPI;
 		if (canvas_size.y < 32.0f * ScreenDPI) canvas_size.y = 32.0f * ScreenDPI;
-		UI->Views[ViewportID].RTSize.set(canvas_size.x, canvas_size.y);
+		EContext.UI->Views[ViewportID].RTSize.set(canvas_size.x, canvas_size.y);
 
 		ImGui::SetCursorScreenPos(canvas_pos);
-		draw_list->AddImage(UI->Views[ViewportID].RTFreez->pTexture->get_SRView()->GetRawSRV(), canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
+		draw_list->AddImage(EContext.UI->Views[ViewportID].RTFreez->pTexture->get_SRView()->GetRawSRV(), canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
 
-		if (ViewportID != UI->ViewID && ImGui::IsWindowFocused())
+		if (ViewportID != EContext.UI->ViewID && ImGui::IsWindowFocused())
 		{
 			return;
 		}
@@ -230,7 +233,7 @@ void UIRenderForm::DrawVP()
 		if (m_OnToolBar)
 			m_OnToolBar(canvas_pos, canvas_size);
 
-		if (ViewportID == UI->ViewID && !UI->IsPlayInEditor())
+		if (ViewportID == EContext.UI->ViewID && !EContext.UI->IsPlayInEditor())
 		{
 			//Statistic
 			DrawStatistics();
@@ -252,7 +255,7 @@ void UIRenderForm::DrawVP()
 
 				if (ImGuizmo::IsUsingViewManipulate())
 				{
-					CUI_Camera& Camera = UI->CurrentView().m_Camera;
+					CUI_Camera& Camera = EContext.UI->CurrentView().m_Camera;
 
 					Fvector OldDir = Camera.GetDirection();
 					Fvector LookAt;
@@ -286,9 +289,9 @@ void UIRenderForm::DrawVP()
 
 		if (ImGui::IsItemFocused())
 		{
-			if ((ImGui::IsMouseDown(ImGuiMouseButton_Left) || ImGui::IsMouseDown(ImGuiMouseButton_Right)) && !m_mouse_down && cursor_in_zone)
+			if ((ImGui::IsMouseDown(ImGuiMouseButton_Left) || ImGui::IsMouseDown(ImGuiMouseButton_Right)) && !m_mouse_down && CursorInZone)
 			{
-				UI->MousePress(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
+				EContext.UI->MousePress(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 				m_mouse_down = true;
 			}
 
@@ -296,7 +299,7 @@ void UIRenderForm::DrawVP()
 			{
 				if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::IsMouseDown(ImGuiMouseButton_Right))
 				{
-					UI->MouseRelease(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
+					EContext.UI->MouseRelease(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 					m_mouse_down = false;
 					m_mouse_move = false;
 					m_shiftstate_down = false;
@@ -304,7 +307,7 @@ void UIRenderForm::DrawVP()
 			}
 			else if (m_mouse_down)
 			{
-				UI->MouseMove(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
+				EContext.UI->MouseMove(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 				m_mouse_move = true;
 				m_shiftstate_down = m_shiftstate_down || (ShiftState & (ssShift | ssCtrl | ssAlt));
 			}
@@ -318,7 +321,7 @@ void UIRenderForm::DrawVP()
 		{
 			if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::IsMouseDown(ImGuiMouseButton_Right))
 			{
-				UI->MouseRelease(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
+				EContext.UI->MouseRelease(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 				m_mouse_down = false;
 				m_mouse_move = false;
 				m_shiftstate_down = false;
@@ -327,7 +330,7 @@ void UIRenderForm::DrawVP()
 		m_mouse_position.set(mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 
 
-		if (!m_OnContextMenu.empty() && !curent_shiftstate_down && !UI->IsPlayInEditor())
+		if (!m_OnContextMenu.empty() && !curent_shiftstate_down && !EContext.UI->IsPlayInEditor())
 		{
 			if (ImGui::BeginPopupContextItem("Menu"))
 			{
@@ -336,8 +339,8 @@ void UIRenderForm::DrawVP()
 			}
 			else
 			{
-				UI->m_ContextRDir = UI->m_CurrentRDir;
-				UI->m_ContextRStart = UI->m_CurrentRStart;
+				EContext.UI->m_ContextRDir = EContext.UI->m_CurrentRDir;
+				EContext.UI->m_ContextRStart = EContext.UI->m_CurrentRStart;
 			}
 		}
 
@@ -347,9 +350,9 @@ void UIRenderForm::DrawVP()
 	// MainViewport
 	if (ViewportID == 0)
 	{
-		if (cursor_in_zone && UseHint)
+		if (CursorInZone && UseHint)
 		{
-			UI->ShowHint();
+			EContext.UI->ShowHint();
 		}
 	}
 }

@@ -23,15 +23,12 @@ void CCustomObject::AnimationDeleteKey(float t)
 	m_Motion->DeleteKey(t);
 }
 
-//float speed = 0.f;
 void CCustomObject::AnimationUpdate(float t)
 {
 	Fvector R,P,r;   
 	m_Motion->_Evaluate		(t,P,r);
 	R.set					(-r.x,-r.y,-r.z);
 
-//    speed					= speed*0.9f+(P.distance_to(GetPosition())/EDevice->fTimeDelta)*0.1f;
-//    Log("speed: ",speed);
 	SetPosition(P);
 	SetRotation(R);
 	bool bAK				= m_CO_Flags.is(flAutoKey);
@@ -39,7 +36,9 @@ void CCustomObject::AnimationUpdate(float t)
 	UpdateTransform			(true);
 	m_CO_Flags.set			(flAutoKey,bAK);
 	if (m_CO_Flags.is(flCameraView))
-		UI->CurrentView().m_Camera.Set	(-r.y,-r.x,-r.z,P.x,P.y,P.z);
+	{
+		EContext.UI->CurrentView().m_Camera.Set(-r.y, -r.x, -r.z, P.x, P.y, P.z);
+	}
 }
 
 void CCustomObject::AnimationOnFrame()
@@ -86,7 +85,7 @@ void CCustomObject::AnimationDrawPath()
 		{
 			m_Motion->_Evaluate((*k_it)->time, T, r);
 
-			if (UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(T) < 50.f * 50.f)
+			if (EContext.UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(T) < 50.f * 50.f)
 			{
 				DU_impl.DrawCross(T, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, clr, false);
 

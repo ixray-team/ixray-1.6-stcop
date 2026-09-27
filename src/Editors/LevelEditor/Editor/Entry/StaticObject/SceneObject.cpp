@@ -34,7 +34,7 @@ CSceneObject::~CSceneObject()
 {
 	if (m_pReference) 
 	{
-		for (auto _M : m_pReference->Meshes())
+		for (auto _M : m_pReference->m_Meshes)
 		{
 			_M->RemoveColor(this);
 		}
@@ -173,7 +173,7 @@ void CSceneObject::RenderBlink()
 			m_BlinkSurf = 0;
 		}
 
-		UI->RedrawScene();
+		EContext.UI->RedrawScene();
 	}
 }
 
@@ -307,7 +307,7 @@ void CSceneObject::OnFrame()
 void CSceneObject::ReferenceChange(PropValue* sender)
 {
 	CSector* OldSector = nullptr;
-	for (auto MeshObJ : m_pReference->Meshes())
+	for (auto MeshObJ : m_pReference->m_Meshes)
 	{
 		OldSector = PortalUtils.FindSector(this, MeshObJ);
 
@@ -320,7 +320,7 @@ void CSceneObject::ReferenceChange(PropValue* sender)
 
 	if (OldSector)
 	{
-		for (auto MeshObJ : m_pReference->Meshes())
+		for (auto MeshObJ : m_pReference->m_Meshes)
 		{
 			OldSector->AddMesh(this, MeshObJ);
 		}
@@ -371,13 +371,13 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 		SortedSurfaces.begin(), SortedSurfaces.end(),
 		[](const CSurface* a, const CSurface* b)
 		{
-			return xr_strcmp(a->_Name(), b->_Name()) < 0;
+			return xr_strcmp(a->m_Name.c_str(), b->m_Name.c_str()) < 0;
 		}
 	);
 
 	for (CSurface* s : SortedSurfaces)
 	{
-		shared_str Pref2 = PrepareKey(Pref1.c_str(), s->_Name()).c_str();
+		shared_str Pref2 = PrepareKey(Pref1.c_str(), s->m_Name.c_str()).c_str();
 		if (s->m_GameMtlName != occ_name)
 		{
 			MultiChooseValue* MultiValue = PHelper().CreateChooseTexture(items, PrepareKey(Pref2.c_str(), "TextureView"));
@@ -413,7 +413,7 @@ bool CSceneObject::GetSummaryInfo(SSceneSummary* inf)
 		for(SurfaceIt 	s_it=E->m_Surfaces.begin(); s_it!=E->m_Surfaces.end(); s_it++){
 			float area			= 0.f;
 			float pixel_area	= 0.f;
-			for(EditMeshIt m = E->Meshes().begin();m!=E->Meshes().end();m++){
+			for(EditMeshIt m = E->m_Meshes.begin();m!=E->m_Meshes.end();m++){
 				area			+= (*m)->CalculateSurfaceArea(*s_it,true);
 				pixel_area		+= (*m)->CalculateSurfacePixelArea(*s_it,true);
 			}
@@ -442,7 +442,7 @@ bool CSceneObject::GetSummaryInfo(SSceneSummary* inf)
 		inf->snd_occ_face_cnt += E->GetFaceCount();
 		inf->snd_occ_vert_cnt += E->GetVertexCount();
 	}
-	inf->AppendObject	(E->GetName());
+	inf->AppendObject	(E->m_LibName.c_str());
 	return true;
 }
 
@@ -451,36 +451,45 @@ extern xr_token ECORE_API eo_type_token[];
 void CSceneObject::OnShowHint(AStringVec& dest)
 {
 	inherited::OnShowHint(dest);
-	dest.push_back(xr_string("Reference: ")+*m_ReferenceName);
+	dest.push_back(xr_string("Reference: ") + *m_ReferenceName);
 	dest.push_back(xr_string("-------"));
-	float dist			= UI->ZFar();
+	float dist = EContext.UI->ZFar();
 	SRayPickInfo pinf;
-	if (m_pReference->RayPick(dist,UI->m_CurrentRStart,UI->m_CurrentRDir,_ITransform(),&pinf)){
-		dest.push_back(xr_string("Object Type: ")+get_token_name(eo_type_token,pinf.e_obj->m_objectFlags.flags));
+	if (m_pReference->RayPick(dist, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, _ITransform(), &pinf))
+	{
+		dest.push_back(xr_string("Object Type: ") + get_token_name(eo_type_token, pinf.e_obj->m_objectFlags.flags));
 		R_ASSERT(pinf.e_mesh);
-		CSurface* surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
-		dest.push_back(xr_string("Surface: ")+xr_string(surf->_Name()));
-		dest.push_back(xr_string("2 Sided: ")+xr_string(surf->m_Flags.is(CSurface::sf2Sided)?"on":"off"));
-		if (pinf.e_obj->m_objectFlags.is(CEditableObject::eoSoundOccluder)){
-			dest.push_back(xr_string("Game Mtl: ")+xr_string(surf->_GameMtlName()));
-			int gm_id			= surf->_GameMtl(); 
-			if (gm_id!=GAMEMTL_NONE_ID){ 
-				SGameMtl* mtl 	=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
+		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+		dest.push_back(xr_string("Surface: ") + xr_string(surf->m_Name.c_str()));
+		dest.push_back(xr_string("2 Sided: ") + xr_string(surf->m_Flags.is(CSurface::sf2Sided) ? "on" : "off"));
+		if (pinf.e_obj->m_objectFlags.is(CEditableObject::eoSoundOccluder))
+		{
+			dest.push_back(xr_string("Game Mtl: ") + xr_string(surf->m_GameMtlName.c_str()));
+			int gm_id = surf->_GameMtl();
+			if (gm_id != GAMEMTL_NONE_ID)
+			{
+				SGameMtl* mtl = GameMaterialLibraryEditors->GetMaterialByID(gm_id);
 				string256 Data = {};
 				sprintf(Data, "Occlusion Factor: %3.2f", mtl->fSndOcclusionFactor);
 
-				if (mtl)		dest.push_back(Data);
+				if (mtl)
+				{
+					dest.push_back(Data);
+				}
 			}
-		}else if (pinf.e_obj->m_objectFlags.is(CEditableObject::eoHOM)){
-		}else{
-			dest.push_back(xr_string("Texture: ")+xr_string(surf->_Texture()));
-			dest.push_back(xr_string("Shader: ")+xr_string(surf->_ShaderName()));
-			dest.push_back(xr_string("LC Shader: ")+xr_string(surf->_ShaderXRLCName()));
-			dest.push_back(xr_string("Game Mtl: ")+xr_string(surf->_GameMtlName()));
+		}
+		else if (pinf.e_obj->m_objectFlags.is(CEditableObject::eoHOM))
+		{
+		}
+		else
+		{
+			dest.push_back(xr_string("Texture: ") + xr_string(surf->m_Texture.c_str()));
+			dest.push_back(xr_string("Shader: ") + xr_string(surf->m_ShaderName.c_str()));
+			dest.push_back(xr_string("LC Shader: ") + xr_string(surf->m_ShaderXRLCName.c_str()));
+			dest.push_back(xr_string("Game Mtl: ") + xr_string(surf->m_GameMtlName.c_str()));
 		}
 	}
 }
-
 
 void CSceneObject::Blink(CSurface* surf)
 {
@@ -506,10 +515,10 @@ void CSceneObject::ClearSurface()
 
 	if (m_pReference)
 	{
-		for (size_t i = 0; i < m_pReference->SurfaceCount(); i++)
+		for (size_t i = 0; i < m_pReference->m_Surfaces.size(); i++)
 		{
 			CSurface* surf = new CSurface();
-			surf->CopyFrom(m_pReference->Surfaces()[i]);
+			surf->CopyFrom(m_pReference->m_Surfaces[i]);
 			m_Surfaces.push_back(surf);
 			if (surf->IsVoid())
 			{

@@ -21,7 +21,7 @@ void CEditableMesh::GenerateCFModel()
 	CL.clear();
 
 	// double sided
-	CL.reserve(m_FaceCount);
+	CL.reserve(m_Faces.size());
 	for (SurfFacesPairIt sp_it = m_SurfFaces.begin(); sp_it != m_SurfFaces.end(); sp_it++)
 	{
 		IntVec& face_lst = sp_it->second;
@@ -36,7 +36,7 @@ void CEditableMesh::GenerateCFModel()
 		}
 	}
 
-	m_CFModel = new CDB::MODEL();
+	m_CFModel = xr_make_unique<CDB::MODEL>();
 	m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, nullptr, false, false);
 }
 
@@ -48,7 +48,7 @@ void CEditableMesh::RayQuery(SPickQuery& pinf)
 		m_CFModel->wait_loading();
 	}
 
-	XRC.ray_query(m_CFModel, pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
+	XRC.ray_query(m_CFModel.get(), pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
 	for (int r = 0; r < XRC.r_count(); r++)
 	{
 		pinf.append(XRC.r_begin() + r, m_Parent, this);
@@ -67,7 +67,7 @@ void CEditableMesh::RayQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 	inv_parent.transform_tiny(S, pinf.m_Start);
 	inv_parent.transform_dir(D, pinf.m_Direction);
 
-	XRC.ray_query(m_CFModel, S, D, pinf.m_Dist);
+	XRC.ray_query(m_CFModel.get(), S, D, pinf.m_Dist);
 	for (int r = 0; r < XRC.r_count(); r++)
 	{
 		pinf.append_mtx(parent, XRC.r_begin() + r, m_Parent, this);
@@ -88,7 +88,7 @@ void CEditableMesh::BoxQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 	dest.getcenter(c);
 	dest.getradius(d);
 
-	XRC.box_query(m_CFModel, c, d);
+	XRC.box_query(m_CFModel.get(), c, d);
 	for (int r = 0; r < XRC.r_count(); r++)
 	{
 		pinf.append_mtx(parent, XRC.r_begin() + r, m_Parent, this);
@@ -116,7 +116,7 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 	inv_parent.transform_tiny(S, start);
 	inv_parent.transform_dir(D, direction);
 
-	XRC.ray_query(m_CFModel, S, D, _sqrt_flt_max);
+	XRC.ray_query(m_CFModel.get(), S, D, _sqrt_flt_max);
 
 	if (XRC.r_count())
 	{
@@ -125,7 +125,7 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 		{
 			if (pinf)
 			{
-				pinf->SetRESULT(m_CFModel, I);
+				pinf->SetRESULT(m_CFModel.get(), I);
 				pinf->e_obj = m_Parent;
 				pinf->e_mesh = this;
 				pinf->pt.mul(direction, pinf->inf.range);
@@ -143,8 +143,8 @@ bool CEditableMesh::CHullPickMesh(PlaneVec& pl, const Fmatrix& parent)
 {
 	Fvector p;
 	boolVec inside;
-	inside.assign(m_VertCount, true);
-	for (u32 v_id = 0; v_id < m_VertCount; v_id++)
+	inside.assign(m_Vertices.size(), true);
+	for (u32 v_id = 0; v_id < m_Vertices.size(); v_id++)
 	{
 		parent.transform_tiny(p, m_Vertices[v_id]);
 		for (PlaneIt p_it = pl.begin(); p_it != pl.end(); p_it++)
@@ -157,7 +157,7 @@ bool CEditableMesh::CHullPickMesh(PlaneVec& pl, const Fmatrix& parent)
 		}
 	}
 
-	for (u32 f_id = 0; f_id < m_FaceCount; f_id++)
+	for (u32 f_id = 0; f_id < m_Faces.size(); f_id++)
 	{
 		if (inside[m_Faces[f_id].pv[0].pindex] && inside[m_Faces[f_id].pv[1].pindex] && inside[m_Faces[f_id].pv[2].pindex])
 		{
@@ -196,11 +196,11 @@ void CEditableMesh::RecurseTri(int id)
 
 void CEditableMesh::GetTiesFaces(int start_id, U32Vec& fl, float fSoftAngle, bool bRecursive)
 {
-	R_ASSERT(start_id < int(m_FaceCount));
+	R_ASSERT(start_id < int(m_Faces.size()));
 	m_fSoftAngle = cosf(deg2rad(fSoftAngle));
 	GenerateFNormals();
 	GenerateAdjacency();
-	VERIFY(m_FaceNormals);
+	VERIFY(!m_FaceNormals.empty());
 
 	if (bRecursive)
 	{
@@ -236,7 +236,7 @@ bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPick
 	dest.getcenter(c);
 	dest.getradius(d);
 
-	XRC.box_query(m_CFModel, c, d);
+	XRC.box_query(m_CFModel.get(), c, d);
 	if (XRC.r_count())
 	{
 		pinf.push_back(SBoxPickInfo());
@@ -244,7 +244,7 @@ bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPick
 		pinf.back().e_mesh = this;
 		for (CDB::RESULT* I = XRC.r_begin(); I != XRC.r_end(); I++)
 		{
-			pinf.back().AddRESULT(m_CFModel, I);
+			pinf.back().AddRESULT(m_CFModel.get(), I);
 		}
 
 		return true;
@@ -261,7 +261,7 @@ bool CEditableMesh::FrustumPick(const CFrustum& frustum, const Fmatrix& parent)
 	}
 
 	Fvector p[3];
-	for (u32 i = 0; i < m_FaceCount; i++)
+	for (u32 i = 0; i < m_Faces.size(); i++)
 	{
 		for (int k = 0; k < 3; k++)
 		{
@@ -286,7 +286,7 @@ void CEditableMesh::FrustumPickFaces(const CFrustum& frustum, const Fmatrix& par
 
 	Fvector p[3];
 	bool bCulling = EPrefs->bp_cull;
-	for (u32 p_id = 0; p_id < m_FaceCount; p_id++)
+	for (u32 p_id = 0; p_id < m_Faces.size(); p_id++)
 	{
 		for (int k = 0; k < 3; ++k)
 		{
@@ -297,7 +297,7 @@ void CEditableMesh::FrustumPickFaces(const CFrustum& frustum, const Fmatrix& par
 		{
 			Fplane P;
 			P.build(p[0], p[1], p[2]);
-			if (P.classify(UI->CurrentView().m_Camera.GetPosition()) < 0)
+			if (P.classify(EContext.UI->CurrentView().m_Camera.GetPosition()) < 0)
 			{
 				continue;
 			}

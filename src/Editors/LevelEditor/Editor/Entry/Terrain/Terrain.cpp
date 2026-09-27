@@ -29,7 +29,7 @@ CTerrain::~CTerrain()
 {
 	if (TerrainObject)
 	{
-		for (auto _M : TerrainObject->Meshes())
+		for (auto _M : TerrainObject->m_Meshes)
 		{
 			_M->RemoveColor(this);
 		}
@@ -65,7 +65,8 @@ void CTerrain::RebuildMesh()
 	TerrainObject = new CEditableObject(GetName());
 	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY, SurfaceTemplate());
 
-	UI->CommandList[TUI::ECommandListID::NextFrame].push_back(
+	EContext.UI->CommandList[TUI::ECommandListID::NextFrame].push_back
+	(
 		[Old]()
 		{
 			Old->EvictObject();
@@ -268,12 +269,12 @@ void CTerrain::OnChangeSurfaceProp(PropValue* sender)
 
 void CTerrain::ApplySurfaceTemplate()
 {
-	if (!TerrainObject || TerrainObject->Surfaces().empty())
+	if (!TerrainObject || TerrainObject->m_Surfaces.empty())
 	{
 		return;
 	}
 
-	CSurface* S = *TerrainObject->FirstSurface();
+	CSurface* S = TerrainObject->m_Surfaces.front();
 	if (SurfaceTexture[0])
 	{
 		S->SetTexture(*SurfaceTexture);
@@ -284,11 +285,11 @@ void CTerrain::ApplySurfaceTemplate()
 	}
 	if (SurfaceShaderXRLC[0])
 	{
-		S->SetShaderXRLC(*SurfaceShaderXRLC);
+		S->m_ShaderXRLCName = (*SurfaceShaderXRLC);
 	}
 	if (SurfaceGameMtl[0])
 	{
-		S->SetGameMtl(*SurfaceGameMtl);
+		S->m_GameMtlName = (*SurfaceGameMtl);
 	}
 }
 

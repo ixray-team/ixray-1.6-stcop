@@ -65,7 +65,7 @@ DialogEditor::DialogEditor()
 	ContentBrowser = new CContentView("Content Browser##DE");
 	ContentBrowser->Init();
 	ContentBrowser->TabIndex = 1;
-	UI->Push(ContentBrowser, false);
+	EContext.UI->Push(ContentBrowser, false);
 }
 
 DialogEditor::~DialogEditor()
@@ -770,7 +770,7 @@ void DialogEditor::OpenFileInstance(const xr_path& Path)
 		return NameA < NameB; });
 
 	// Switch to Dialog Editor tab
-	UI->ActiveTabIndex = 1;
+	EContext.UI->ActiveTabIndex = 1;
 }
 
 void DialogEditor::ChangeHasInfo(PropValue*)
