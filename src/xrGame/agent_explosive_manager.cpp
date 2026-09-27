@@ -20,6 +20,7 @@
 #include "danger_object_location.h"
 
 const float GRENADE_RADIUS	= 10.f;
+const float GRENADE_SENSE_RADIUS = 20.f;
 const u32 AFTER_GRENADE_DESTROYED_INTERVAL = 1000;
 
 struct CRemoveExplosivesPredicate {
@@ -80,10 +81,15 @@ bool CAgentExplosiveManager::process_explosive			(CMemberOrder &member)
 	xr_vector<CDangerExplosive>::iterator	I = m_explosives.begin();
 	xr_vector<CDangerExplosive>::iterator	E = m_explosives.end();
 	for ( ; I != E; ++I) {
-		if (!member.object().memory().visual().visible_now((*I).m_game_object))
+		if (!(*I).m_game_object)
 			continue;
 
-		float		dist_sqr = (*I).m_game_object->Position().distance_to_sqr(member.object().Position());
+		const float dist_sqr = (*I).m_game_object->Position().distance_to_sqr(member.object().Position());
+		const bool visible = member.object().memory().visual().visible_now((*I).m_game_object);
+		const bool nearby = dist_sqr <= (GRENADE_SENSE_RADIUS * GRENADE_SENSE_RADIUS);
+		if (!visible && !nearby)
+			continue;
+
 		if (dist_sqr < min_dist_sqr) {
 			if	(
 				(*I).m_reactor && 
@@ -106,8 +112,8 @@ void CAgentExplosiveManager::react_on_explosives	()
 {
 	for (;;) {
 		bool						changed = false;
-		CAgentMemberManager::iterator	I = object().member().combat_members().begin();
-		CAgentMemberManager::iterator	E = object().member().combat_members().end();
+		CAgentMemberManager::iterator	I = object().member().members().begin();
+		CAgentMemberManager::iterator	E = object().member().members().end();
 		for ( ; I != E; ++I)
 			if (!(*I)->grenade_reaction().m_processing)
 				changed				= process_explosive(**I);

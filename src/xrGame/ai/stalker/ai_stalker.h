@@ -485,7 +485,9 @@ public:
 			bool						zoom_state						() const;
 			void						react_on_grenades				();
 			void						react_on_member_death			();
+			void						sense_nearby_grenades			();
 private:
+	u32									m_dwLastGrenadeSenseTime;
 	CWeaponShotEffector					*m_weapon_shot_effector;
 	s32									m_weapon_shot_random_seed;
 
