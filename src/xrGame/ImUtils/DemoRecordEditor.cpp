@@ -311,7 +311,6 @@ void RenderDemoRecordEditorWindow()
 			if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone) || demo_record->camera_mode.is(CDemoRecord::eLookAtPoint))
 			{
 				demo_record->detach_bone();
-				demo_record->camera_mode.zero();
 			}
 		}
 		else if (current_mode == 1)
@@ -320,30 +319,31 @@ void RenderDemoRecordEditorWindow()
 			{
 				if (demo_record->rq_result.range > EPS_S)
 				{
+					demo_record->clear_bone_attachment();
 					demo_record->camera_mode.zero();
 
-					if (demo_record->rq_result.O != nullptr)
+					CObject* hit = demo_record->rq_result.O;
+					if (hit != nullptr && !hit->getDestroy() && hit->Visual() != nullptr)
 					{
-						if (IRenderVisual* v = demo_record->rq_result.O->Visual())
+						if (IKinematics* k = hit->Visual()->dcast_PKinematics())
 						{
-							if (IKinematics* k = v->dcast_PKinematics())
-							{
-								demo_record->bone_holder = demo_record->rq_result.O;
-								demo_record->bone_holder_kinematics = k;
-								demo_record->bone_id = (u16)demo_record->rq_result.element;
-							}
-							else
-							{
-								Fvector cam_pos;
-								demo_record->GetGlobalPosition(cam_pos);
-								demo_record->look_at_point.set(cam_pos.mad(Device.vCameraDirection, demo_record->rq_result.range));
-							}
+							demo_record->bone_holder = hit;
+							demo_record->bone_holder_kinematics = k;
+							demo_record->bone_holder_xform = &hit->XFORM();
+							demo_record->bone_holder_type = CDemoRecord::e_bone_holder_type::world_object;
+							demo_record->bone_id = (u16)demo_record->rq_result.element;
+						}
+						else
+						{
+							Fvector cam_pos;
+							demo_record->GetGlobalPosition(cam_pos);
+							demo_record->look_at_point.set(cam_pos.mad(Device.vCameraDirection, demo_record->rq_result.range));
 						}
 					}
 					else
 					{
 						Fvector cam_pos;
-						CDemoRecord::GetGlobalPosition(cam_pos);
+						demo_record->GetGlobalPosition(cam_pos);
 						demo_record->look_at_point.set(cam_pos.mad(Device.vCameraDirection, demo_record->rq_result.range));
 					}
 
@@ -375,6 +375,7 @@ void RenderDemoRecordEditorWindow()
 		{
 			ImGui::SameLine();
 			tip("LookAtPoint: camera always faces a locked target point.\n"
+						"The camera can still be moved around with WASD while locked.\n"
 						"Press J to unlock (or switch mode above).");
 		}
 		else
@@ -415,25 +416,6 @@ void RenderDemoRecordEditorWindow()
 			drag_float3_reset("##hpb", demo_record->hpb, s_slider_step, hpb_zero);
 		}
 
-		if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone))
-		{
-			ImGui::SeparatorText("Bone View Offsets");
-			tip("Offsets applied on top of the bone's world transform.\n"
-						"Rotation offset: added to bone HPB angles (negated on X/Y).\n"
-						"Position offset: transformed by camera basis and added to bone world position.\n"
-						"Press Z to reset both to zero.");
-
-			Fvector hpb_zero = {0.f, 0.f, 0.f};
-			drag_float3_reset("##bone_hpb_off", demo_record->hpb_view_from_bone_offset, s_slider_step, hpb_zero);
-			ImGui::SameLine();
-			ImGui::Text("Rotation offset");
-
-			Fvector pos_zero = {0.f, 0.f, 0.f};
-			drag_float3_reset("##bone_pos_off", demo_record->p_cam_pos_view_from_bone_offset, s_slider_step, pos_zero);
-			ImGui::SameLine();
-			ImGui::Text("Position offset");
-		}
-		
 		ImGui::SeparatorText("Lock Axes");
 		tip("Lock individual rotation axes to their world-aligned defaults.\n"
 					"Yaw: forces heading to 0 (camera faces +Z world direction).\n"
@@ -485,34 +467,62 @@ void RenderDemoRecordEditorWindow()
 		}
 	}
 
-	if (ImGui::CollapsingHeader("Bone Browser", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::CollapsingHeader("Bone Attachment", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		CObject* target_obj = nullptr;
-		IKinematics* kin = nullptr;
+		bool attached = demo_record->camera_mode.is(CDemoRecord::eViewFromBone) && demo_record->refresh_bone_attachment();
 
-		if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone) && demo_record->bone_holder_kinematics != nullptr)
+		if (attached)
 		{
-			target_obj = demo_record->bone_holder;
-			kin = demo_record->bone_holder_kinematics;
-		}
-		else if (demo_record->rq_result.O != nullptr)
-		{
-			if (IRenderVisual* v = demo_record->rq_result.O->Visual())
-			{
-				kin = v->dcast_PKinematics();
-			}
-			target_obj = demo_record->rq_result.O;
-		}
-
-		if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone) && demo_record->bone_holder_kinematics != nullptr && demo_record->bone_id != BI_NONE)
-		{
-			ImGui::SeparatorText("Attached to bone:");
+			ImGui::SeparatorText("Attachment");
 			ImGui::Text("Bone: %d - %s", demo_record->bone_id, demo_record->bone_holder_kinematics->LL_BoneName_dbg(demo_record->bone_id));
 			ImGui::SameLine();
 			if (ImGui::SmallButton("Detach##bone"))
 			{
 				demo_record->detach_bone();
 			}
+			ImGui::SameLine();
+			tip("The camera is currently attached to this bone.\n"
+						"Press U or click Detach to release the attachment.");
+		}
+
+		if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone))
+		{
+			ImGui::SeparatorText("Offsets");
+			tip("Offsets applied on top of the bone's world transform.\n"
+						"Rotation offset: added to bone HPB angles (negated on X/Y).\n"
+						"Position offset: transformed by camera basis and added to bone world position.\n"
+						"Press Z to reset both to zero.");
+
+			Fvector hpb_zero = {0.f, 0.f, 0.f};
+			drag_float3_reset("##bone_hpb_off", demo_record->hpb_view_from_bone_offset, s_slider_step, hpb_zero);
+			ImGui::SameLine();
+			ImGui::Text("Rotation offset");
+
+			Fvector pos_zero = {0.f, 0.f, 0.f};
+			drag_float3_reset("##bone_pos_off", demo_record->p_cam_pos_view_from_bone_offset, s_slider_step, pos_zero);
+			ImGui::SameLine();
+			ImGui::Text("Position offset");
+		}
+
+		ImGui::SeparatorText("World Objects");
+		tip("Bone hierarchy of the object under the crosshair, or of the object the camera is currently attached to.\n"
+					"Click any bone to attach the camera to it (switches to LookFromBone mode).");
+
+		CObject* target_obj = nullptr;
+		IKinematics* kin = nullptr;
+
+		if (attached)
+		{
+			target_obj = demo_record->bone_holder;
+			kin = demo_record->bone_holder_kinematics;
+		}
+		else if (demo_record->rq_result.O != nullptr && !demo_record->rq_result.O->getDestroy())
+		{
+			if (IRenderVisual* v = demo_record->rq_result.O->Visual())
+			{
+				kin = v->dcast_PKinematics();
+			}
+			target_obj = demo_record->rq_result.O;
 		}
 		
 		if (target_obj == nullptr || kin == nullptr)
@@ -524,7 +534,7 @@ void RenderDemoRecordEditorWindow()
 			ImGui::Text("Object: %s", target_obj->cName().c_str());
 			ImGui::Text("Bones: %d", kin->LL_BoneCount());
 
-			if (demo_record->camera_mode.is(CDemoRecord::eViewFromBone))
+			if (attached)
 			{
 				ImGui::SameLine();
 				ImGui::TextDisabled("(attached)");
@@ -539,10 +549,12 @@ void RenderDemoRecordEditorWindow()
 				ImGui::TreePop();
 			}
 		}
-	}
 
-	if (ImGui::CollapsingHeader("HUD Bones", ImGuiTreeNodeFlags_DefaultOpen))
-	{
+		ImGui::SeparatorText("Player HUD");
+		tip("Bone hierarchies of the player HUD models: hands, attached items (primary/secondary) and the animator item.\n"
+					"Click any bone to attach the camera to it (switches to LookFromBone mode).\n"
+					"These trees are only shown while the corresponding model is present on the HUD.");
+
 		if (!g_player_hud)
 		{
 			ImGui::TextDisabled("No active player HUD");

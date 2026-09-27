@@ -112,6 +112,9 @@ public:
 
 	bool try_attach_bone();
 	void detach_bone();
+	void clear_bone_attachment();
+	bool refresh_bone_attachment();
+	float current_move_speed();
 
 	void get_camera_hpb(Fvector& out) { camera.getHPB(out); }
 	void set_camera_hpb(float h, float p, float b) { camera.setHPB(h, p, b); }

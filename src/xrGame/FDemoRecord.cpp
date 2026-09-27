@@ -62,7 +62,13 @@ static void apply_force_restore(Fvector& hpb, bool restore_roll, bool restore_pi
 
 static void update_whith_timescale(Fvector& v, const Fvector& v_delta)
 {
-	float scale = 1.f / Device.time_factor();
+	float tf = Device.time_factor();
+	if (fis_zero(tf))
+	{
+		return;
+	}
+
+	float scale = 1.f / tf;
 	v.mad(v, v_delta, scale);
 }
 
@@ -450,29 +456,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			}
 		}
 
-		if (!new_input_schema)
-		{
-			if (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT))
-			{
-				frame_pos_delta.mul(m_fSpeed0);
-			}
-			else if (IR_GetKeyState(SDL_SCANCODE_LALT) || IR_GetKeyState(SDL_SCANCODE_RALT))
-			{
-				frame_pos_delta.mul(m_fSpeed2);
-			}
-			else if (enable_acceleration)
-			{
-				frame_pos_delta.mul(m_fSpeed3);
-			}
-			else
-			{
-				frame_pos_delta.mul(10.f);
-			}
-		}
-		else
-		{
-			frame_pos_delta.mul(camera_transform_speed);
-		}
+		frame_pos_delta.mul(current_move_speed());
 
 		float pos_dt_magnitude = frame_pos_delta.magnitude();
 		float scaled_fov = fov_auto_scale
@@ -571,38 +555,53 @@ void CDemoRecord::update_frustum_capture()
 		if (!objects.empty())
 		{
 			CObject* target = objects.front();
-			if (IKinematics* nk = target->Visual()->dcast_PKinematics())
-			{
-				Flags32 old_flags = HUD().world_prims.m_skeleton_flags;
-				HUD().world_prims.m_skeleton_flags.set(LevelInspector::ESI_BONES | LevelInspector::ESI_BONES_LINKS, true);
-				HUD().world_prims.DrawSkeleton(nk, target->XFORM());
 
-				if (g_player_hud)
+			if (target->getDestroy())
+			{
+				return;
+			}
+
+			if (IRenderVisual* target_visual = target->Visual())
+			{
+				if (IKinematics* nk = target_visual->dcast_PKinematics())
 				{
-					bool b_r0 = (g_player_hud->attached_item(0) && g_player_hud->attached_item(0)->need_renderable());
-					bool b_r1 = (g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->need_renderable());
-				
-					if (b_r0)
+					Flags32 old_flags = HUD().world_prims.m_skeleton_flags;
+					HUD().world_prims.m_skeleton_flags.set(LevelInspector::ESI_BONES | LevelInspector::ESI_BONES_LINKS, true);
+					HUD().world_prims.DrawSkeleton(nk, target->XFORM());
+
+					if (g_player_hud)
 					{
-						HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(0)->m_model, g_player_hud->attached_item(0)->m_item_transform);
+						bool b_r0 = (g_player_hud->attached_item(0) && g_player_hud->attached_item(0)->need_renderable());
+						bool b_r1 = (g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->need_renderable());
+
+						if (b_r0)
+						{
+							HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(0)->m_model, g_player_hud->attached_item(0)->m_item_transform);
+						}
+
+						if (b_r1)
+						{
+							HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(1)->m_model, g_player_hud->attached_item(1)->m_item_transform);
+						}
+
+						if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying || g_player_hud->GetHandsVisible() || b_r0 || b_r1)
+						{
+							if (g_player_hud->GetModel() != nullptr)
+							{
+								if (IKinematics* hands_kin = g_player_hud->GetModel()->dcast_PKinematics())
+								{
+									HUD().world_prims.DrawSkeleton(hands_kin, g_player_hud->GetTransform());
+								}
+							}
+						}
+
+						if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying && g_player_hud->GetAnimator()->m_item != nullptr)
+						{
+							HUD().world_prims.DrawSkeleton(g_player_hud->GetAnimator()->m_item, g_player_hud->GetAnimator()->m_item_transform);
+						}
 					}
-				
-					if (b_r1)
-					{
-						HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(1)->m_model, g_player_hud->attached_item(1)->m_item_transform);
-					}
-				
-					if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying || g_player_hud->GetHandsVisible() || b_r0 || b_r1)
-					{
-						HUD().world_prims.DrawSkeleton(g_player_hud->GetModel()->dcast_PKinematics(), g_player_hud->GetTransform());
-					}
-				
-					if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying)
-					{
-						HUD().world_prims.DrawSkeleton(g_player_hud->GetAnimator()->m_item, g_player_hud->GetAnimator()->m_item_transform);
-					}
+					HUD().world_prims.m_skeleton_flags = old_flags;
 				}
-				HUD().world_prims.m_skeleton_flags = old_flags;
 			}
 		}
 	}
@@ -612,9 +611,16 @@ void CDemoRecord::update_look_at_point()
 {
 	Fvector dir;
 
-	if (bone_holder_kinematics != nullptr && bone_holder != nullptr && bone_id != BI_NONE)
+	if (bone_holder_type == e_bone_holder_type::world_object)
 	{
-		bone_holder_kinematics->LL_GetBoneWorldPosition(bone_id, bone_holder->XFORM(), look_at_point);
+		if (refresh_bone_attachment())
+		{
+			bone_holder_kinematics->LL_GetBoneWorldPosition(bone_id, *bone_holder_xform, look_at_point);
+		}
+		else
+		{
+			clear_bone_attachment();
+		}
 	}
 
 	dir.sub(look_at_point, camera.c);
@@ -651,78 +657,7 @@ void CDemoRecord::update_free_look()
 
 void CDemoRecord::update_look_from_bone()
 {
-	switch (bone_holder_type)
-	{
-	case e_bone_holder_type::world_object:
-		if (!bone_holder || bone_holder->getDestroy())
-		{
-			detach_bone();
-			return;
-		}
-		bone_holder_xform = &bone_holder->XFORM();
-		break;
-
-	case e_bone_holder_type::hands:
-		if (!g_player_hud || !g_player_hud->GetModel())
-		{
-			detach_bone();
-			return;
-		}
-		bone_holder_xform = &g_player_hud->GetTransform();
-		bone_holder_kinematics = g_player_hud->GetModel()->dcast_PKinematics();
-		if (!bone_holder_kinematics)
-		{
-			detach_bone();
-			return;
-		}
-		break;
-
-	case e_bone_holder_type::item0:
-	{
-		attachable_hud_item* item = g_player_hud ? g_player_hud->attached_item(0) : nullptr;
-		if (!item || !item->m_model)
-		{
-			detach_bone();
-			return;
-		}
-		bone_holder_xform = &item->m_item_transform;
-		bone_holder_kinematics = item->m_model;
-		break;
-	}
-
-	case e_bone_holder_type::item1:
-	{
-		attachable_hud_item* item = g_player_hud ? g_player_hud->attached_item(1) : nullptr;
-		if (!item || !item->m_model)
-		{
-			detach_bone();
-			return;
-		}
-		bone_holder_xform = &item->m_item_transform;
-		bone_holder_kinematics = item->m_model;
-		break;
-	}
-
-	case e_bone_holder_type::animator:
-	{
-		animator_item* anim = g_player_hud ? g_player_hud->GetAnimator() : nullptr;
-		if (!anim || !anim->IsPlaying || !anim->m_item)
-		{
-			detach_bone();
-			return;
-		}
-		bone_holder_xform = &anim->m_item_transform;
-		bone_holder_kinematics = anim->m_item;
-		break;
-	}
-
-	case e_bone_holder_type::none:
-	default:
-		detach_bone();
-		return;
-	}
-
-	if (!bone_holder_kinematics || !bone_holder_xform || bone_id >= bone_holder_kinematics->LL_BoneCount())
+	if (!refresh_bone_attachment())
 	{
 		detach_bone();
 		return;
@@ -778,7 +713,7 @@ void CDemoRecord::parse_actor_cam()
 
 bool CDemoRecord::try_attach_bone()
 {
-	if (rq_result.O == nullptr)
+	if (rq_result.O == nullptr || rq_result.O->getDestroy())
 	{
 		return false;
 	}
@@ -801,17 +736,119 @@ bool CDemoRecord::try_attach_bone()
 
 void CDemoRecord::detach_bone()
 {
-	bone_id = BI_NONE;
-	bone_holder = nullptr;
-	bone_holder_kinematics = nullptr;
-	bone_holder_xform = nullptr;
-	bone_holder_type = e_bone_holder_type::none;
+	clear_bone_attachment();
 	camera_mode.assign(eFreeLook);
 
 	Fvector cur_eulers;
 	camera.getHPB(cur_eulers);
 	hpb.set(cur_eulers);
 	hpb_current.set(cur_eulers);
+}
+
+void CDemoRecord::clear_bone_attachment()
+{
+	bone_id = BI_NONE;
+	bone_holder = nullptr;
+	bone_holder_kinematics = nullptr;
+	bone_holder_xform = nullptr;
+	bone_holder_type = e_bone_holder_type::none;
+}
+
+bool CDemoRecord::refresh_bone_attachment()
+{
+	switch (bone_holder_type)
+	{
+	case e_bone_holder_type::world_object:
+		if (bone_holder == nullptr || bone_holder->getDestroy())
+		{
+			return false;
+		}
+
+		bone_holder_xform = &bone_holder->XFORM();
+
+		if (IRenderVisual* v = bone_holder->Visual())
+		{
+			bone_holder_kinematics = v->dcast_PKinematics();
+		}
+		else
+		{
+			bone_holder_kinematics = nullptr;
+		}
+		break;
+
+	case e_bone_holder_type::hands:
+		if (g_player_hud == nullptr || g_player_hud->GetModel() == nullptr)
+		{
+			return false;
+		}
+
+		bone_holder_xform = &g_player_hud->GetTransform();
+		bone_holder_kinematics = g_player_hud->GetModel()->dcast_PKinematics();
+		break;
+
+	case e_bone_holder_type::item0:
+	case e_bone_holder_type::item1:
+	{
+		attachable_hud_item* item = g_player_hud != nullptr
+			? g_player_hud->attached_item(bone_holder_type == e_bone_holder_type::item0 ? 0 : 1)
+			: nullptr;
+
+		if (item == nullptr || item->m_model == nullptr)
+		{
+			return false;
+		}
+
+		bone_holder_xform = &item->m_item_transform;
+		bone_holder_kinematics = item->m_model;
+		break;
+	}
+
+	case e_bone_holder_type::animator:
+	{
+		animator_item* anim = g_player_hud != nullptr ? g_player_hud->GetAnimator() : nullptr;
+
+		if (anim == nullptr || !anim->IsPlaying || anim->m_item == nullptr)
+		{
+			return false;
+		}
+
+		bone_holder_xform = &anim->m_item_transform;
+		bone_holder_kinematics = anim->m_item;
+		break;
+	}
+
+	case e_bone_holder_type::none:
+	default:
+		return false;
+	}
+
+	return bone_holder_kinematics != nullptr && bone_holder_xform != nullptr
+		&& bone_id != BI_NONE && bone_id < bone_holder_kinematics->LL_BoneCount();
+}
+
+float CDemoRecord::current_move_speed()
+{
+	if (new_input_schema)
+	{
+		return camera_transform_speed;
+	}
+
+	if (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT))
+	{
+		return m_fSpeed0;
+	}
+
+	if (IR_GetKeyState(SDL_SCANCODE_LALT) || IR_GetKeyState(SDL_SCANCODE_RALT))
+	{
+		return m_fSpeed2;
+	}
+
+	if (enable_acceleration)
+	{
+		return m_fSpeed3;
+	}
+
+	return 10.f;
 }
 
 void CDemoRecord::IR_OnKeyboardPress(int dik)
@@ -871,10 +908,7 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 					hpb.set(cur_eulers);
 					hpb_current.set(cur_eulers);
 
-					if (bone_id != BI_NONE)
-					{
-						bone_id = BI_NONE;
-					}
+					clear_bone_attachment();
 
 					look_at_point.set(zero_vel);
 					camera_mode.band(~eLookAtPoint);
@@ -885,15 +919,18 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 					{
 						Fvector current_eulers;
 
-						if (rq_result.O != nullptr)
+						clear_bone_attachment();
+
+						CObject* hit = rq_result.O;
+						if (hit != nullptr && !hit->getDestroy())
 						{
-							if (IRenderVisual* v = rq_result.O->Visual())
+							if (IRenderVisual* v = hit->Visual())
 							{
 								if (IKinematics* k = v->dcast_PKinematics())
 								{
-									bone_holder = rq_result.O;
+									bone_holder = hit;
 									bone_holder_kinematics = k;
-									bone_holder_xform = &rq_result.O->XFORM();
+									bone_holder_xform = &hit->XFORM();
 									bone_holder_type = e_bone_holder_type::world_object;
 									bone_id = (u16)rq_result.element;
 								}
@@ -901,6 +938,10 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 								{
 									look_at_point.set(camera.c.mad(camera.k, rq_result.range));
 								}
+							}
+							else
+							{
+								look_at_point.set(camera.c.mad(camera.k, rq_result.range));
 							}
 						}
 						else
@@ -976,7 +1017,7 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 #endif
 	}
 
-	if (redirect_input_to_level)
+	if (redirect_input_to_level && dik != K_TOGGLE_REDIRECT_INPUT)
 	{
 		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
 		{
@@ -1001,22 +1042,7 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 
 	if (camera_mode.is(eViewFromBone))
 	{
-		float view_speed;
-		if (new_input_schema)
-		{
-			view_speed = camera_transform_speed;
-		}
-		else
-		{
-			if (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT))
-				view_speed = m_fSpeed0;
-			else if (IR_GetKeyState(SDL_SCANCODE_LALT) || IR_GetKeyState(SDL_SCANCODE_RALT))
-				view_speed = m_fSpeed2;
-			else if (enable_acceleration)
-				view_speed = m_fSpeed3;
-			else
-				view_speed = 10.f;
-		}
+		float view_speed = current_move_speed();
 
 		if (new_input_schema)
 		{
@@ -1094,7 +1120,7 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 		}
 	}
 
-	if (!camera_mode.is_any(eLookAtPoint | eViewFromBone))
+	if (!camera_mode.is(eViewFromBone))
 	{
 		if (new_input_schema)
 		{
@@ -1169,20 +1195,26 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 		return;
 	}
 
-	if (camera_mode.is(eViewFromBone) && IR_GetKeyState(SDL_SCANCODE_LSHIFT))
+	if (camera_mode.is(eViewFromBone) && (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT)))
 	{
-		float d_scale = Actor()->cam_Active()->f_fov / g_fov * psMouseSens * psMouseSensScale / 50.f;
+		CActor* actor = Actor();
+		CCameraBase* cam = actor != nullptr ? actor->cam_Active() : nullptr;
 
-		if (dx)
+		if (cam != nullptr)
 		{
-			float d = static_cast<float>(dx) * d_scale;
-			hpb_view_from_bone_offset.x += d < 0.f ? -std::abs(d) : std::abs(d);
-		}
+			float d_scale = cam->f_fov / g_fov * psMouseSens * psMouseSensScale / 50.f;
 
-		if (dy)
-		{
-			float d = (psMouseInvert ? -1.f : 1.f) * static_cast<float>(dy) * d_scale * (3.f / 4.f);
-			hpb_view_from_bone_offset.y += d > 0.f ? std::abs(d) : -std::abs(d);
+			if (dx)
+			{
+				float d = static_cast<float>(dx) * d_scale;
+				hpb_view_from_bone_offset.x += d < 0.f ? -std::abs(d) : std::abs(d);
+			}
+
+			if (dy)
+			{
+				float d = (psMouseInvert ? -1.f : 1.f) * static_cast<float>(dy) * d_scale * (3.f / 4.f);
+				hpb_view_from_bone_offset.y += d > 0.f ? std::abs(d) : -std::abs(d);
+			}
 		}
 	}
 
@@ -1192,8 +1224,11 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 
 		if (IGame_Actor* IGameActor = smart_cast<IGame_Actor*>(g_pGameLevel->CurrentControlEntity()))
 		{
-			float fov = IGameActor->cam_Active()->Fov();
-			ensitivity = fov / 67.5f * psMouseSens * psMouseSensScale / 50.0f;
+			if (CCameraBase* cam = IGameActor->cam_Active())
+			{
+				float fov = cam->Fov();
+				ensitivity = fov / 67.5f * psMouseSens * psMouseSensScale / 50.0f;
+			}
 		}
 
 		if (dx)
@@ -1219,19 +1254,37 @@ void CDemoRecord::IR_OnMouseRelease(int btn)
 
 void CDemoRecord::IR_OnMouseWheel(int direction)
 {
+	if (redirect_input_to_level)
+	{
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_OnMouseWheel(direction);
+		}
+		return;
+	}
+
 	bool ModifierIncluded = pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT) || pInput->iGetAsyncKeyState(SDL_SCANCODE_RSHIFT);
 
-	switch (direction)
-	{
-		case -1:
-			camera_transform_speed -= ModifierIncluded ? 15.f : 5.f;
-			break;
+	float step = ModifierIncluded ? 15.f : 5.f;
+	constexpr float fine_step = 0.05f;
 
-		case 1:
-			camera_transform_speed += ModifierIncluded ? 15.f : 5.f;
-			break;
+	if (direction < 0)
+	{
+		if (camera_transform_speed <= 1.f)
+		{
+			camera_transform_speed -= fine_step;
+		}
+		else
+		{
+			camera_transform_speed = std::max(camera_transform_speed - step, 1.f);
+		}
 	}
-	clamp(camera_transform_speed, 1.f, FLT_MAX);
+	else
+	{
+		camera_transform_speed += camera_transform_speed < 1.f ? fine_step : step;
+	}
+
+	clamp(camera_transform_speed, 0.01f, FLT_MAX);
 }
 
 void CDemoRecord::IR_OnMouseHold(int btn)
@@ -1245,19 +1298,11 @@ void CDemoRecord::IR_OnMouseHold(int btn)
 		}
 	}
 
-	if (!new_input_schema && !camera_mode.is(eLookAtPoint))
+	if (!new_input_schema)
 	{
 		if (camera_mode.is(eViewFromBone))
 		{
-			float view_speed;
-			if (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT))
-				view_speed = m_fSpeed0;
-			else if (IR_GetKeyState(SDL_SCANCODE_LALT) || IR_GetKeyState(SDL_SCANCODE_RALT))
-				view_speed = m_fSpeed2;
-			else if (enable_acceleration)
-				view_speed = m_fSpeed3;
-			else
-				view_speed = 10.f;
+			float view_speed = current_move_speed();
 
 			if (btn == M_MOVE_FORWARD)  p_cam_pos_view_from_bone_offset.z += view_speed * dt;
 			if (btn == M_MOVE_BACKWARD) p_cam_pos_view_from_bone_offset.z -= view_speed * dt;
@@ -1272,6 +1317,11 @@ void CDemoRecord::IR_OnMouseHold(int btn)
 
 void CDemoRecord::record_keyframe()
 {
+	if (file == nullptr)
+	{
+		return;
+	}
+
 	Fmatrix ViewMatrix;
 
 	ViewMatrix.invert(camera);
@@ -1326,6 +1376,15 @@ void CDemoRecord::OnRender()
 
 void CDemoRecord::IR_GamepadUpdateStick(int id, Fvector2 value)
 {
+	if (redirect_input_to_level)
+	{
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_GamepadUpdateStick(id, value);
+			return;
+		}
+	}
+
 	Fvector vR_delta = Fvector().set(0, 0, 0);
 	Fvector vT_delta = Fvector().set(0, 0, 0);
 	// Left stick
@@ -1380,12 +1439,32 @@ void CDemoRecord::IR_GamepadUpdateStick(int id, Fvector2 value)
 		}
 		break;
 	}
+	if (camera_mode.is(eViewFromBone))
+	{
+		float sp = current_move_speed() * dt;
+		p_cam_pos_view_from_bone_offset.add(Fvector().set(vT_delta.x, vT_delta.y, vT_delta.z).mul(sp));
+
+		float rs = dt * psGamepadSens * psMouseSensScale * 8;
+		hpb_view_from_bone_offset.x += vR_delta.y * rs;
+		hpb_view_from_bone_offset.y += vR_delta.x * rs;
+		return;
+	}
+
 	update_whith_timescale(frame_hpb_delta, vR_delta);
 	update_whith_timescale(frame_pos_delta, vT_delta);
 }
 
 void CDemoRecord::IR_GamepadKeyPress(int id)
 {
+	if (redirect_input_to_level)
+	{
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_GamepadKeyPress(id);
+			return;
+		}
+	}
+
 	switch (id)
 	{
 		case GP_QUIT:
@@ -1410,6 +1489,14 @@ void CDemoRecord::IR_GamepadKeyPress(int id)
 
 void CDemoRecord::IR_OnKeyboardRelease(int dik)
 {
+	if (redirect_input_to_level)
+	{
+		if (IInputReceiver* ControlEntityIR = smart_cast<IInputReceiver*>(g_pGameLevel->CurrentControlEntity()))
+		{
+			ControlEntityIR->IR_OnKeyboardRelease(dik);
+		}
+	}
+
 	switch (dik)
 	{
 		case K_ENABLE_ACCELERATION:
