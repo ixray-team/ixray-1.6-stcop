@@ -212,6 +212,7 @@ public:
 	Shader*							_cpp_Create			(const char*		s_shader,	const char* s_textures=nullptr,	const char* s_constants=nullptr,	const char* s_matrices=nullptr);
 	Shader*							_cpp_Create			(IBlender*	B,			const char* s_shader=nullptr,		const char* s_textures=nullptr,	const char* s_constants=nullptr, const char* s_matrices=nullptr);
 	Shader*							_lua_Create			(const char*		s_shader,	const char* s_textures);
+	Shader*							_Compile			(const char*		s_shader,	const char* s_textures,	const char* s_constants,	const char* s_matrices);
 	bool							_lua_HasShader		(const char*		s_shader);
 
 	xr_vector<SGeometry*>&			_GetGeoms			()		{	return v_geoms;	}
@@ -230,6 +231,7 @@ public:
 	Shader*			Create					(const char* s_shader=nullptr, const char* s_textures=nullptr,	const char* s_constants=nullptr,	const char* s_matrices=nullptr);
 	Shader*			Create					(IBlender*	B,		const char* s_shader=nullptr,		const char* s_textures=nullptr,	const char* s_constants=nullptr, const char* s_matrices=nullptr);
 	void			Delete					(const Shader*		S	);
+	void			RecompileShaders		();
 	void			RegisterConstantSetup	(const char* name,		RHIShaderConstant::Setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}
 
 	SGeometry*		CreateGeom				(RHIInputElementDesc* decl, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);

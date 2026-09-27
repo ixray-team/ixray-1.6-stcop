@@ -40,6 +40,9 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 		p_rm_Vertices		= RImplementation.getVB			(ID);
 		p_rm_Vertices->AddRef	();
+#if RENDER==R_R4
+		vBase				+= RImplementation.getVB_Base	(ID);
+#endif
 
 		vFormat				= RImplementation.getVB_Format	(ID, &FormatSize);
 		loaded_v			= true;
@@ -53,6 +56,9 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		VERIFY				(nullptr==p_rm_Indices);
 		p_rm_Indices		= RImplementation.getIB		(ID);
 		p_rm_Indices->AddRef();
+#if RENDER==R_R4
+		iBase				+= RImplementation.getIB_Base	(ID);
+#endif
 #endif
 #if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
 		// check for fast-vertices
@@ -74,6 +80,9 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			VERIFY(nullptr == m_fast->p_rm_Vertices);
 			m_fast->p_rm_Vertices = RImplementation.getVB(ID, true);
 			m_fast->p_rm_Vertices->AddRef();
+#if RENDER==R_R4
+			m_fast->vBase += RImplementation.getVB_Base(ID, true);
+#endif
 			fmt = RImplementation.getVB_Format(ID, &fmtSize, true);
 
 			// indices
@@ -85,6 +94,9 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			VERIFY(nullptr == m_fast->p_rm_Indices);
 			m_fast->p_rm_Indices = RImplementation.getIB(ID, true);
 			m_fast->p_rm_Indices->AddRef();
+#if RENDER==R_R4
+			m_fast->iBase += RImplementation.getIB_Base(ID, true);
+#endif
 
 			// geom
 			m_fast->rm_geom.create(fmt, fmtSize, m_fast->p_rm_Vertices, m_fast->p_rm_Indices);
