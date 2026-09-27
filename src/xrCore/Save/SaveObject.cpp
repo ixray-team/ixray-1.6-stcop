@@ -375,7 +375,7 @@ XRCORE_API ISaveObject& operator<<(ISaveObject& Object, LPSTR& Value)
 		xr_free(Value);
 		shared_str temp;
 		Object << temp;
-		Value = xr_strdup(temp.c_str());
+		Value = xr_strdup(temp.size() ? temp.c_str() : "");
 		//Value = (LPSTR)temp.c_str();
 	}
 	return Object;
