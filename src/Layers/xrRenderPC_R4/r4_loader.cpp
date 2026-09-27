@@ -36,7 +36,7 @@ void CRender::level_Load(IReader* fs)
 	dxRenderDeviceRender::Instance().Resources->DeferredLoad(ps_r__common_flags.test(RFLAG_DD_TEX_LOAD));
 	IReader*						chunk;
 
-	o.dx11_disable_motion_vectors = !NeedMotionVectors() || !!EngineExternal().ShadersOptions.contains(xr_string("DISABLE_MOTION_VECTORS"));
+	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
 	clearAllShaderOptions();
 
 	// Shaders
@@ -322,6 +322,7 @@ void CRender::level_Unload()
 	for (I=0; I<xIB.size(); I++)	_RELEASE(xIB[I]);
 	nIB.clear(); xIB.clear();
 	nDC.clear(); xDC.clear();
+	nVBBase.clear(); xVBBase.clear(); nIBBase.clear(); xIBBase.clear();
 
 	//*** Components
 	xr_delete					(Details);
@@ -345,26 +346,49 @@ void CRender::LoadVertexBuffers(IReaderBase& fs, bool _alternative)
 	_DC.resize(count);
 	_VB.resize(count);
 
-	ReadVBChunk(_VB, _DC, count, fs);
+	ReadVBChunk(_VB, _DC, count, fs, _alternative ? &xVBBase : &nVBBase);
 }
 
 void CRender::LoadIndexBuffers(IReaderBase& fs, bool _alternative)
 {
 	xr_vector<IRHIBuffer*>& _IB	= _alternative?xIB:nIB;
+	xr_vector<u32>& _Base		= _alternative?xIBBase:nIBBase;
 
 	// Index buffers
 	u32 count = fs.r_u32();
 	_IB.resize(count);
+	_Base.resize(count);
+
+	const intptr_t Start = fs.tell();
+	xr_vector<u32> PoolIndices, PoolOf(count);
 	for (u32 i=0; i<count; i++)
 	{
 		u32 iCount = fs.r_u32();
+		fs.advance(intptr_t(iCount)*2);
+		if (PoolIndices.empty() || u64(PoolIndices.back()) + iCount > (64ull << 20))
+			PoolIndices.push_back(0);
+		PoolOf[i] = u32(PoolIndices.size()) - 1;
+		_Base[i] = PoolIndices.back();
+		PoolIndices.back() += iCount;
+	}
+	fs.advance(Start - fs.tell());
 
-		//	TODO: DX10: Check fragmentation.
-		//	Check if buffer is less then 2048 kb
-		BYTE* pData = xr_alloc<BYTE>(iCount*2);
-		fs.r(pData,iCount*2);
-		RHIUtils::CreateIndexBuffer(&_IB[i], pData, iCount*2);
-		xr_free(pData);
+	u32 i = 0;
+	for (u32 p = 0; p < PoolIndices.size(); p++)
+	{
+		xr_vector<u16> Data(PoolIndices[p]);
+		const u32 First = i;
+		for (; i<count && PoolOf[i]==p; i++)
+		{
+			u32 iCount = fs.r_u32();
+			fs.r(Data.data() + _Base[i], iCount*2);
+		}
+		RHIUtils::CreateIndexBuffer(&_IB[First], Data.data(), PoolIndices[p]*2);
+		for (u32 j=First+1; j<i; j++)
+		{
+			_IB[j] = _IB[First];
+			_IB[j]->AddRef();
+		}
 	}
 }
 
