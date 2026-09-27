@@ -96,7 +96,7 @@ void vision_client::shedule_Update				(u32 dt)
 		default					: NODEFAULT;
 	}
 
-	visual().update				(Device.fTimeDelta);
+	visual().update				(float(dt)/1000.f);
 }
 
 shared_str vision_client::shedule_Name			() const

@@ -945,7 +945,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	Fvector				vNewPosition = Position();
 	VERIFY(_valid(Position()));
 	// *** general stuff
-	float dt = Device.fTimeDelta;
+	float dt = float(DT) / 1000.f;
 	CScriptEntity::process_sound_callbacks();
 
 	if (g_Alive())
