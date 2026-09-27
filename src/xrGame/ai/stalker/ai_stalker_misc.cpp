@@ -30,12 +30,17 @@
 #include "../../danger_manager.h"
 #include "../../visual_memory_manager.h"
 #include "../../agent_enemy_manager.h"
+#include "../../Grenade.h"
+#include "../../danger_object.h"
+#include "../../../xrCore/Collision/ISpatial.h"
 
 const u32 TOLLS_INTERVAL					= 2000;
 const u32 GRENADE_INTERVAL					= 0*1000;
 const float FRIENDLY_GRENADE_ALARM_DIST		= 5.f;
 const u32 DANGER_INFINITE_INTERVAL			= 60000000;
 const float DANGER_EXPLOSIVE_DISTANCE		= 10.f;
+const float GRENADE_SENSE_RADIUS			= 20.f;
+const u32 GRENADE_SENSE_INTERVAL			= 250;
 
 bool CAI_Stalker::useful		(const CItemManager *manager, const CGameObject *object) const
 {
@@ -109,6 +114,62 @@ ALife::ERelationType CAI_Stalker::tfGetRelationType	(const CEntityAlive *tpEntit
 		return inherited::tfGetRelationType(tpEntityAlive);
 }
 
+void CAI_Stalker::sense_nearby_grenades()
+{
+	if (!g_Alive() || Remote())
+		return;
+
+	if (Device.dwTimeGlobal < m_dwLastGrenadeSenseTime + GRENADE_SENSE_INTERVAL)
+		return;
+
+	m_dwLastGrenadeSenseTime = Device.dwTimeGlobal;
+
+	xr_vector<ISpatialShared> nearest;
+	g_SpatialSpace->q_sphere(nearest, 0, ESPATIAL_TYPE::MISSILE, Position(), GRENADE_SENSE_RADIUS);
+
+	for (ISpatialShared& spatial : nearest)
+	{
+		ISpatial* S = spatial.get();
+		if (!S)
+			continue;
+
+		CObject* object = S->dcast_CObject();
+		if (!object || object->getDestroy())
+			continue;
+
+		CGrenade* grenade = object->cast_grenade();
+		if (!grenade || grenade->H_Parent())
+			continue;
+
+		if (grenade->CurrentParentID() == 0xffff)
+			continue;
+
+		if (grenade->destroy_time() == 0xffffffff)
+			continue;
+
+		if (grenade->CurrentParentID() == ID())
+			continue;
+
+		agent_manager().explosive().register_explosive(grenade, grenade);
+
+		CObject* parent_obj = Level().Objects.net_Find(grenade->CurrentParentID());
+		CEntityAlive* initiator = parent_obj ? parent_obj->cast_entity_alive() : nullptr;
+		if (!initiator)
+			continue;
+
+		memory().danger().add(
+			CDangerObject(
+				initiator,
+				grenade->Position(),
+				Device.dwTimeGlobal,
+				CDangerObject::eDangerTypeGrenade,
+				CDangerObject::eDangerPerceiveTypeSound,
+				grenade
+			)
+		);
+	}
+}
+
 void CAI_Stalker::react_on_grenades		()
 {
 	CMemberOrder::CGrenadeReaction	&reaction = agent_manager().member().member(this).grenade_reaction();
@@ -118,28 +179,17 @@ void CAI_Stalker::react_on_grenades		()
 	if (Device.dwTimeGlobal < reaction.m_time + GRENADE_INTERVAL)
 		return;
 
-//	u32							interval = AFTER_GRENADE_DESTROYED_INTERVAL;
 	CExplosive* cast_explosive = const_cast<CExplosive*>(reaction.m_grenade);
 	const CMissile				*missile = cast_explosive != nullptr ? cast_explosive->cast_missile() : nullptr;
-//	if (missile && (missile->destroy_time() > Device.dwTimeGlobal))
-//		interval				= missile->destroy_time() - Device.dwTimeGlobal + AFTER_GRENADE_DESTROYED_INTERVAL;
-//	m_object->agent_manager().add_danger_location(reaction.m_game_object->Position(),Device.dwTimeGlobal,interval,GRENADE_RADIUS);
 
 	if (missile && agent_manager().member().group_behaviour()) {
-//		Msg						("%6d : Stalker %s : grenade reaction",Device.dwTimeGlobal,*m_object->cName());
 		CObject* O = Level().Objects.net_Find(reaction.m_grenade->CurrentParentID());
-		if (!O || O->getDestroy()) return;
+		if (!O || O->getDestroy())
+		{
+			reaction.clear();
+			return;
+		}
 		CEntityAlive			*initiator = O->cast_entity_alive();
-/*		VERIFY2					(
-			initiator,
-			make_string(
-				"grenade[%d][%s], parent[%d]",
-				missile->ID(),
-				missile->cName().c_str(),
-				reaction.m_grenade->CurrentParentID()
-			)
-		);
-*/
 		if (initiator) {
 			if (is_relation_enemy(initiator))
 				sound().play		(StalkerSpace::eStalkerSoundGrenadeAlarm);

@@ -80,17 +80,17 @@ bool FRbmkAgentManagerPlanner::IsDangerSelected() const
 
 void FRbmkAgentManagerPlanner::RefreshState(u32 NewState)
 {
+	Owner->explosive().react_on_explosives();
+
 	if(CurrentState == NewState)
 	{
 		if(CurrentState == 0)
 		{
 			Owner->enemy().distribute_enemies();
-			Owner->explosive().react_on_explosives();
 			Owner->corpse().react_on_member_death();
 		}
 		else if(CurrentState == 1)
 		{
-			Owner->explosive().react_on_explosives();
 			Owner->corpse().react_on_member_death();
 		}
 		return;

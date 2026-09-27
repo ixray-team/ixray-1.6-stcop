@@ -88,6 +88,7 @@ CObjectHandler(this),
 	m_sound_user_data_visitor		= 0;
 	m_movement_manager				= 0;
 	m_group_behaviour				= true;
+	m_dwLastGrenadeSenseTime		= 0;
 	m_boneHitProtection				= nullptr;
 	m_power_fx_factor				= flt_max;
 	m_wounded						= false;
@@ -959,6 +960,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 
 		PROF_EVENT("update memory");
 		memory().update(dt);
+		sense_nearby_grenades();
 	}
 
 	inherited::inherited::shedule_Update(DT);

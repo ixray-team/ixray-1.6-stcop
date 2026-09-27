@@ -276,7 +276,7 @@ void CGrenade::Destroy()
 		m_destroy_callback	=	destroy_callback(nullptr);
 	}
 
-	if (H_Parent() == nullptr)
+	if (H_Parent() == nullptr && CurrentParentID() == u16(-1))
 		SetInitiator(ID());
 	
 	FindNormal					(normal);
