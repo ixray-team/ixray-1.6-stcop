@@ -237,7 +237,7 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char*
 
 	u16									dummy;
 	packet.r_begin						(dummy);
-	VERIFY								(dummy == M_SPAWN);
+	VERIFY								(dummy == M_SPAWN || dummy == M_SPAWN_LOCAL);
 	return								(self_->server().Process_spawn(packet,clientID));
 }
 
@@ -317,7 +317,7 @@ CSE_Abstract *CALifeSimulator__spawn_ammo		(CALifeSimulator *self_, const char* 
 
 	u16									dummy;
 	packet.r_begin						(dummy);
-	VERIFY								(dummy == M_SPAWN);
+	VERIFY								(dummy == M_SPAWN || dummy == M_SPAWN_LOCAL);
 	return								(self_->server().Process_spawn(packet,clientID));
 }
 
