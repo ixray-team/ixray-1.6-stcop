@@ -47,6 +47,7 @@
 #include "../../stalker_sound_data.h"
 #include "../../stalker_sound_data_visitor.h"
 #include "ai_stalker_space.h"
+#include "BurningComponent.h"
 #include "RbmkObjectHandlerPlanner.h"
 #include "../../EffectorShot.h"
 #include "../../visual_memory_manager.h"
@@ -958,6 +959,19 @@ void CAI_Stalker::shedule_Update(u32 DT)
 
 		PROF_EVENT("update memory");
 		memory().update(dt);
+		
+		if (auto Comp = GetComponent<TBurningComponent>(); Comp && Comp->IsBurning())
+		{
+			memory().danger().add(
+				CDangerObject(
+					Comp->GetInitiator(),
+					Position(),
+					Device.dwTimeGlobal,
+					CDangerObject::eDangerTypeBurning,
+					CDangerObject::eDangerPerceiveTypeHit
+				)
+			);
+		}
 	}
 
 	inherited::inherited::shedule_Update(DT);

@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "dog.h"
 #include "dog_state_manager.h"
+
+#include "BurningComponent.h"
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
@@ -87,7 +89,10 @@ void CStateManagerDog::execute()
 
 	if ( !object->is_under_control() )
 	{
-		if ( atack )
+		if (auto BurningComp = object->GetComponent<TBurningComponent>(); BurningComp && BurningComp->IsBurning())
+		{
+			state_id = eStatePanic;
+		} else if ( atack )
 		{
 			CMonsterSquad* squad_ = monster_squad().get_squad(object);
 			switch ( object->EnemyMan.get_danger_type() ) 

@@ -752,6 +752,7 @@ public:
 #ifdef DEBUG
 			void				debug_planner						(const script_planner *planner);
 #endif
+			bool is_burning() const;
 
 			void				sell_condition						(CScriptIniFile *ini_file, const char* section);
 			void				sell_condition						(float friend_factor, float enemy_factor);

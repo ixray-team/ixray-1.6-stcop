@@ -17,7 +17,6 @@
 #include "../xrScripts/script_export_space.h"
 #include "item_attachment.h"
 
-class IRepackerInterface;
 
 enum EHandDependence {
 	hdNone = 0,
@@ -25,6 +24,9 @@ enum EHandDependence {
 	hd2Hand = 2
 };
 
+class IRepackerInterface;
+class CFlameCanister;
+class CFlamethrower;
 class CSE_Abstract;
 class CGameObject;
 class CFoodItem;
@@ -441,6 +443,8 @@ public:
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
 	virtual CBackpack* cast_backpack() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
+	virtual CFlameCanister* cast_flame_canister() { return nullptr; }
+	virtual CFlamethrower* cast_flamethrower() { return nullptr; }
 	virtual IRepackerInterface* cast_repacker_interface() {return nullptr;}
 
 	////////// upgrades //////////////////////////////////////////////////

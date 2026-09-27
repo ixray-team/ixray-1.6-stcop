@@ -21,6 +21,7 @@ public:
 		eDangerTypeAttacked,
 		eDangerTypeGrenade,
 		eDangerTypeEnemySound,
+		eDangerTypeBurning,
 		eDangerTypeDummy = u32(-1),
 	};
 

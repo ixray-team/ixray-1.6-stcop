@@ -14,6 +14,7 @@
 #include "memory_manager.h"
 #include "enemy_manager.h"
 #include "Actor.h"
+#include "BurningComponent.h"
 #include "object_broker.h"
 
 struct CDangerPredicate {
@@ -117,7 +118,7 @@ void CDangerManager::update()
 	m_selected_index = -1;
 	for (size_t i = 0; i < m_objects.size(); ++i)
 	{
-		float				value = do_evaluate(m_objects[i]);
+		float value = do_evaluate(m_objects[i]);
 		if (result > value) {
 			result			= value;
 			m_selected_index = (ptrdiff_t)i;
@@ -182,16 +183,25 @@ void CDangerManager::remove_links(const CObject* object)
 
 bool CDangerManager::useful			(const CDangerObject &object) const
 {
+	if (object.type() == CDangerObject::eDangerTypeBurning)
+	{
+		VERIFY(m_object->GetComponent<TBurningComponent>());
+		return m_object->GetComponent<TBurningComponent>()->IsBurning();
+	}
+	
 	if (object.object() && !object.dependent_object()) {
-		IGNORED::const_iterator	I = std::find(m_ignored.begin(),m_ignored.end(),object.object()->ID());
+		IGNORED::const_iterator	I = std::ranges::find(m_ignored,object.object()->ID());
 		if (I != m_ignored.end())
-			return				(false);
+		{
+			return false;
+		}
 	}
 
-	if (object.time() >= time_line())
-		return				(true);
+	if (object.time() >= time_line()){
+		return true;
+	}
 
-	return					(false);
+	return false;
 }
 
 bool CDangerManager::is_useful		(const CDangerObject &object) const
@@ -238,6 +248,11 @@ float CDangerManager::do_evaluate	(const CDangerObject &object) const
 		}
 		case CDangerObject::eDangerTypeEnemySound : { // grenade to explode nearby
 			result			+= 1000.f;
+			break;
+		}
+		case CDangerObject::eDangerTypeBurning :
+		{
+			result += 100.0f; // max prior?
 			break;
 		}
 		default : NODEFAULT;

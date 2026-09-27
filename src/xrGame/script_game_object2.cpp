@@ -30,6 +30,7 @@
 #include "danger_manager.h"
 #include "memory_space.h"
 #include "Actor.h"
+#include "BurningComponent.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/CameraBase.h"
 #include "ai/stalker/ai_stalker.h"
@@ -596,6 +597,21 @@ void CScriptGameObject::debug_planner(const script_planner* planner)
 	}
 }
 #endif
+
+bool CScriptGameObject::is_burning() const
+{
+	if (auto entity = object().cast_entity_alive())
+	{
+		if (auto Comp = entity->GetComponent<TBurningComponent>())
+		{
+			return Comp->IsBurning();
+		}
+	} else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CEntityAlife : cannot access class member is_burning!");
+	}
+	return false;
+}
 
 u32 CScriptGameObject::location_on_path(float distance, Fvector* location)
 {
