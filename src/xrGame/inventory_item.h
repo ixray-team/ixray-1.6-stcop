@@ -16,6 +16,8 @@
 #include "../xrScripts/script_export_space.h"
 #include "item_attachment.h"
 
+class IRepackerInterface;
+
 enum EHandDependence {
 	hdNone = 0,
 	hd1Hand = 1,
@@ -447,6 +449,7 @@ public:
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
 	virtual CBackpack* cast_backpack() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
+	virtual IRepackerInterface* cast_repacker_interface() {return nullptr;}
 
 	////////// upgrades //////////////////////////////////////////////////
 public:

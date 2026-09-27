@@ -2,6 +2,7 @@
 #include "inventory_item_object.h"
 #include "anticheat_dumpable_object.h"
 #include "../xrScripts/script_export_space.h"
+#include "RepackerInterface.h"
 
 struct SCartridgeParam
 {
@@ -54,7 +55,9 @@ public:
 	virtual shared_str const 	GetAnticheatSectionName	() const { return m_ammoSect; };
 };
 
-class CWeaponAmmo final : public CInventoryItemObject
+class CWeaponAmmo final : 
+	public CInventoryItemObject,
+	public IRepackerInterface
 {
 	using inherited = CInventoryItemObject;
 public:
@@ -62,6 +65,7 @@ public:
 	virtual ~CWeaponAmmo() = default;
 
 	virtual CWeaponAmmo				*cast_weapon_ammo	()	{return this;}
+	virtual IRepackerInterface* cast_repacker_interface() override {return this;}
 	virtual void					Load				(const char* section);
 	virtual bool					net_Spawn			(CSE_Abstract* DC);
 	virtual void					net_Destroy			();
@@ -78,6 +82,9 @@ public:
 
 	bool							Get					(CCartridge &cartridge);
 
+	virtual bool Repack(PIItem Other) override;
+	virtual bool IsValid() const override;
+	
 	SCartridgeParam cartridge_param;
 
 	u16			m_boxSize;
