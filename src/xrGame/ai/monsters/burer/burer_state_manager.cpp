@@ -16,6 +16,7 @@
 #include "../states/state_custom_action.h"
 
 #include "burer_state_attack.h"
+#include "BurningComponent.h"
 
 
 CStateManagerBurer::CStateManagerBurer(CBurer *monster) : inherited(monster)
@@ -36,7 +37,10 @@ void CStateManagerBurer::execute()
 {
 	u32 state = u32(-1);
 
-	if (object->EnemyMan.get_enemy()) {
+	if (auto BurningComp = object->GetComponent<TBurningComponent>(); BurningComp && BurningComp->IsBurning())
+	{
+		state = eStatePanic;
+	} else if (object->EnemyMan.get_enemy()) {
 		switch (object->EnemyMan.get_danger_type()) {
 				case eStrong:	state = eStatePanic; break;
 				case eWeak:		state = eStateAttack; break;

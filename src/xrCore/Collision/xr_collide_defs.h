@@ -48,7 +48,17 @@ namespace collide
 		u32 flags{0u};
 		rq_target tgt=rqtNone;
 		ICF ray_defs(const Fvector& _start, const Fvector& _dir, float _range, u32 _flags, rq_target _tgt) :
-			start(_start),dir(_dir),range(_range),flags(_flags),tgt(_tgt){}
+		start(_start),dir(_dir),range(_range),flags(_flags),tgt(_tgt){}
+
+		IC ray_defs(const Fvector& _start, const Fvector& _end, u32 _flags, rq_target _tgt)
+		{
+			start	= _start;
+			Fvector temp = _end;
+			dir		= temp.sub(_start).normalize();
+			range	= _start.distance_to(_end);
+			flags	= _flags;
+			tgt		= _tgt;
+		}
 	};
 	struct rq_result 
 	{

@@ -2,6 +2,7 @@
 #include "zombie.h"
 #include "zombie_state_manager.h"
 
+#include "BurningComponent.h"
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
@@ -50,7 +51,10 @@ void CStateManagerZombie::execute()
 	
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
-		if (enemy) {
+		if (auto BurningComp = object->GetComponent<TBurningComponent>(); BurningComp && BurningComp->IsBurning())
+		{
+			state_id = eStateAttack;
+		} else if (enemy) {
 			state_id = eStateAttack;
 		} else if (check_state(eStateHearHelpSound)) {
 			state_id = eStateHearHelpSound;

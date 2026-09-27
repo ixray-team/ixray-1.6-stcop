@@ -19,6 +19,7 @@
 #include "bloodsucker_predator.h"
 #include "bloodsucker_state_capture_jump.h"
 #include "bloodsucker_attack_state.h"
+#include "BurningComponent.h"
 
 
 CStateManagerBloodsucker::CStateManagerBloodsucker(CAI_Bloodsucker *monster) : inherited(monster)
@@ -95,8 +96,11 @@ void CStateManagerBloodsucker::execute ()
 	const CEntityAlive* enemy = object->EnemyMan.get_enemy();
 	if (!object->is_drag_anim_jump() && !object->is_animated())
 	{
-	if ( enemy ) 
-	{
+		if (auto BurningComp = object->GetComponent<TBurningComponent>(); BurningComp && BurningComp->IsBurning())
+		{
+			state_id = eStatePanic;
+		} else if ( enemy ) 
+		{
 		 if ( check_vampire() ) 
 		 {
 			state_id = eStateVampire_Execute;

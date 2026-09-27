@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+
+#include "BurningComponent.h"
 #include "stalker_animation_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "Inventory.h"
@@ -86,6 +88,12 @@ MotionID CStalkerAnimationManager::assign_global_animation	(bool &animation_move
 
 	if (eMentalStatePanic != object().movement().mental_state())
 		return					(global_critical_hit());
+	
+	if (auto Comp = object().GetComponent<TBurningComponent>(); Comp && Comp->IsBurning())
+	{
+		// TODO: Implement full animset for burning
+		return m_data_storage->TempBurningAnimation;
+	}
 
 	if (fis_zero(object().movement().speed(object().character_physics_support()->movement())))
 		return					(MotionID());

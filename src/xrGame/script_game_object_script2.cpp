@@ -359,6 +359,8 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("invulnerable",				(bool (CScriptGameObject::*)() const)&CScriptGameObject::invulnerable)
 		.def("invulnerable",				(void (CScriptGameObject::*)(bool))&CScriptGameObject::invulnerable)
 
+		.def("is_burning", 				&CScriptGameObject::is_burning)
+	
 		.def("get_smart_cover_description",	&CScriptGameObject::get_smart_cover_description)
 		.def("set_visual_name",				&CScriptGameObject::set_visual_name)
 		.def("set_visual_name",				&CScriptGameObject::set_visual_name_notForce)

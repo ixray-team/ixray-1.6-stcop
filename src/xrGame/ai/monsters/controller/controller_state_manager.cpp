@@ -2,6 +2,7 @@
 #include "controller.h"
 #include "controller_state_manager.h"
 
+#include "BurningComponent.h"
 #include "controller_animation.h"
 #include "controller_direction.h"
 #include "../control_direction_base.h"
@@ -68,7 +69,10 @@ void CStateManagerController::execute()
 		
 	const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
-	if (enemy) {
+	if (auto BurningComp = object->GetComponent<TBurningComponent>(); BurningComp && BurningComp->IsBurning())
+	{
+		state_id = eStatePanic;
+	} else if (enemy) {
 		state_id = eStateAttack;
 	} else if (object->HitMemory.is_hit()) {
 		state_id = eStateHitted;

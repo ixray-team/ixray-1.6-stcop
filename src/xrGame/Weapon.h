@@ -32,6 +32,7 @@ class CWeaponRG6;
 class CWeaponPistol;
 class CParticlesObject;
 class CUIStatic;
+class CFlamethrower;
 struct TAmmoBones;
 
 class CWeapon : public CHudItemObject,
@@ -67,6 +68,7 @@ public:
 	virtual CWeaponRPG7* cast_weapon_rpg7() { return nullptr; }
 	virtual CWeaponRG6* cast_weapon_rg6() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() override { return nullptr; }
+	virtual CFlamethrower* cast_flamethrower() override { return nullptr; }
 
 
 	// serialization
@@ -180,7 +182,7 @@ public:
 	bool					IsUpdating			();
 
 
-	bool					IsMisfire			() const;
+	virtual bool			IsMisfire			() const;
 	bool					CheckForMisfire		();
 
 
@@ -817,7 +819,7 @@ public:
 	bool ControllerCanShootGL = false;
 	bool SuicideByAnimation = false;
 
-	void StopShooting();
+	virtual void StopShooting();
 
 protected:
 	bool					useLegacyMisfire = false;
