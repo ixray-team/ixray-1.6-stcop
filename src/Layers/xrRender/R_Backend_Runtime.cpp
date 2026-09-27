@@ -32,6 +32,9 @@ void CBackend::OnFrameBegin	()
 	if (!g_dedicated_server)
 	{
 #ifdef USE_DX11
+#ifndef _EDITOR
+		RImplementation.SyncMotionVectors();
+#endif
 		Invalidate();
 		RImplementation.rmNormal();
 #ifndef _EDITOR

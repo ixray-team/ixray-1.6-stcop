@@ -188,10 +188,13 @@ void CRender::rmNormal()
 	GRHI->SetViewport(VP);
 }
 
-void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs)
+void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase)
 {
 	xr_vector<FixedVector<XRay::Legacy::LEGACYVERTEXELEMENT9, XRay::Legacy::LEGACYMAXDECLLENGTH + 1>> LegacyDeclBuffer;
 	LegacyDeclBuffer.resize(Count);
+
+	xr_vector<intptr_t> DataPos(Count);
+	xr_vector<u32> DataSize(Count), VertSize(Count), PoolOf(Count), Offset(Count), PoolBytes, PoolFirst;
 
 	for (u32 i = 0; i < Count; i++)
 	{
@@ -208,22 +211,70 @@ void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDec
 
 		// count, size
 		u32 vCount = fs.r_u32();
-		u32 vSize = (u32)ComputeVertexSize(dcl, 0);
+		VertSize[i] = (u32)ComputeVertexSize(dcl, 0);
+		R_ASSERT(u64(vCount) * VertSize[i] <= u32(-1));
+		DataSize[i] = vCount * VertSize[i];
+		DataPos[i] = fs.tell();
+		fs.advance(DataSize[i]);
+	}
+	const intptr_t End = fs.tell();
 
-		// Create and fill
+	constexpr u64 PoolCap = 128ull << 20;
+	for (u32 i = 0; i < Count; i++)
+	{
+		const auto& D = LegacyDeclBuffer[i];
+		u32 p = OutBase ? 0 : u32(PoolBytes.size());
+		for (; p < PoolBytes.size(); ++p)
+		{
+			const auto& F = LegacyDeclBuffer[PoolFirst[p]];
+			if (F.size() == D.size() && !memcmp(F.begin(), D.begin(), D.size() * sizeof(*D.begin())) && PoolBytes[p] + u64(DataSize[i]) <= PoolCap)
+				break;
+		}
+		if (p == PoolBytes.size())
+		{
+			PoolBytes.push_back(0);
+			PoolFirst.push_back(i);
+		}
+		PoolOf[i] = p;
+		Offset[i] = PoolBytes[p];
+		PoolBytes[p] += DataSize[i];
+	}
+
+	for (u32 p = 0; p < PoolBytes.size(); p++)
+	{
+		xr_vector<u8> tmpData(PoolBytes[p]);
+		for (u32 i = PoolFirst[p]; i < Count; i++)
+		{
+			if (PoolOf[i] != p) continue;
+			fs.advance(DataPos[i] - fs.tell());
+			fs.r(tmpData.data() + Offset[i], DataSize[i]);
+		}
+
 		RHIBufferDesc vbDesc{};
-		vbDesc.Size = vCount * vSize;
+		vbDesc.Size = PoolBytes[p];
 		vbDesc.Type = ERHI_BUFFER_TYPE::VERTEX;
 		vbDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
 		vbDesc.CPUAccessFlags = 0;
 
-		xr_vector<u8> tmpData(vCount * vSize);
-		fs.r(tmpData.data(), tmpData.size());
-
 		RHIBufferSubresource vbInit{};
 		vbInit.pSysMem = tmpData.data();
 
-		OutBuffer[i] = GRHI->CreateBuffer(vbDesc, &vbInit);
+		OutBuffer[PoolFirst[p]] = GRHI->CreateBuffer(vbDesc, &vbInit);
+	}
+	fs.advance(End - fs.tell());
+
+	for (u32 i = 0; i < Count; i++)
+	{
+		if (PoolFirst[PoolOf[i]] == i) continue;
+		OutBuffer[i] = OutBuffer[PoolFirst[PoolOf[i]]];
+		OutBuffer[i]->AddRef();
+	}
+
+	if (OutBase)
+	{
+		OutBase->resize(Count);
+		for (u32 i = 0; i < Count; i++)
+			(*OutBase)[i] = Offset[i] / VertSize[i];
 	}
 
 	for (u32 i = 0; i < Count; i++)
