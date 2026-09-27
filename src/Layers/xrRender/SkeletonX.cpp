@@ -291,7 +291,7 @@ ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 	{
 		for (u16 bid = 0; bid < bonecount; bid++)
 		{
-			Fmatrix& M = BI[bid].mRenderTransform;
+			Fmatrix& M = BI[bid].mRenderTransform_tmp;
 			array[bid] =
 			{
 				M.i.x, M.j.x, M.k.x, M.c.x,
@@ -361,14 +361,20 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 	case RM_SINGLE:	
 		{
 			//PROF_EVENT("RM_SINGLE")
-			Fmatrix	W;	W.mul_43(RCache.xforms.m_w, Parent->bone_instances[u16(RMS_boneid)].mRenderTransform);
+			CBoneInstance& B = Parent->bone_instances[u16(RMS_boneid)];
+#ifdef USE_DX11
+			const Fmatrix& R = phase_normal ? B.mRenderTransform_tmp : B.mRenderTransform;
+#else
+			const Fmatrix& R = B.mRenderTransform;
+#endif
+			Fmatrix	W;	W.mul_43(RCache.xforms.m_w, R);
 
 			RCache.set_xform_world	(W);
 
 #ifdef USE_DX11
 			if(phase_normal)
 			{
-				Fmatrix	O; O.mul_43(Parent->mOldWorldMartrix, Parent->bone_instances[u16(RMS_boneid)].mRenderTransform_old);
+				Fmatrix	O; O.mul_43(Parent->mOldWorldMartrix, B.mRenderTransform_old);
 				RCache.set_xform_world_old(O);
 			}
 #endif

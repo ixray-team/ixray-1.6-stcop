@@ -263,7 +263,7 @@ void CRender::create()
 		o.dx11_use_legacy_light = true;
 	}
 
-	o.dx11_disable_motion_vectors = !NeedMotionVectors() || !!EngineExternal().ShadersOptions.contains(xr_string("DISABLE_MOTION_VECTORS"));
+	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
 	clearAllShaderOptions();
 
 	o.dx11_allow_wboit_transparency = !!EngineExternal().ShadersOptions.contains(xr_string("ALLOW_WBOIT_TRANSPARENCY"));
@@ -637,12 +637,27 @@ bool CRender::NeedMotionVectors() const
 	       o.deffered_reflecitons;
 }
 
+bool CRender::MotionVectorsDisabled() const
+{
+	return !NeedMotionVectors() || EngineExternal().ShadersOptions.contains(xr_string("DISABLE_MOTION_VECTORS"));
+}
+
+void CRender::SyncMotionVectors()
+{
+	if (o.dx11_disable_motion_vectors == MotionVectorsDisabled())
+		return;
+
+	o.dx11_disable_motion_vectors = !o.dx11_disable_motion_vectors;
+	clearAllShaderOptions();
+	dxRenderDeviceRender::Instance().Resources->RecompileShaders();
+}
+
 void CRender::clearAllShaderOptions()
 {
 	//GPU_EVENT(__FUNCTION__)
 	m_ShaderOptions = EngineExternal().ShadersOptions;
 
-	if (o.dx11_disable_motion_vectors || !NeedMotionVectors())
+	if (o.dx11_disable_motion_vectors)
 	{
 		addShaderOption("DISABLE_MOTION_VECTORS", "1");
 	}
@@ -1107,7 +1122,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(o.dx11_disable_motion_vectors || !NeedMotionVectors()) {
+	if(o.dx11_disable_motion_vectors) {
 		defines[def_it].Name = "DISABLE_MOTION_VECTORS";
 		defines[def_it].Definition = "1";
 		def_it++;

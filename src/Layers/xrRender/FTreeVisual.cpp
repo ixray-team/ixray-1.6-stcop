@@ -52,6 +52,9 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 
 		p_rm_Vertices		= RImplementation.getVB			(ID);
 		p_rm_Vertices->AddRef();
+#if RENDER==R_R4
+		vBase				+= RImplementation.getVB_Base	(ID);
+#endif
 
 		// indices
 		dwPrimitives		= 0;
@@ -63,6 +66,9 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 		VERIFY				(nullptr==p_rm_Indices);
 		p_rm_Indices			= RImplementation.getIB		(ID);
 		p_rm_Indices->AddRef	();
+#if RENDER==R_R4
+		iBase				+= RImplementation.getIB_Base	(ID);
+#endif
 	}
 
 	// load tree-def

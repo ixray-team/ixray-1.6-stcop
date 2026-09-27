@@ -284,78 +284,111 @@ Shader*CResourceManager::Create(IBlender* B, const char* s_shader, const char* s
 	return nullptr;
 }
 
+Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+{
+#ifdef USE_DX11
+	if (CXMLBlend::Check(s_shader))
+		return xr_make_unique<CXMLBlend>(s_shader)->Compile(s_textures);
+
+	if (_lua_HasShader(s_shader))
+		return _lua_Create(s_shader, s_textures);
+
+	if (Shader* pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices))
+		return pShader;
+
+	if (!_lua_HasShader("stub_default"))
+		FATAL("Can't find stub_default.s");
+
+	return _lua_Create("stub_default", s_textures);
+#else
+	if (_lua_HasShader(s_shader))
+		return _lua_Create(s_shader, s_textures);
+
+	return _cpp_Create(s_shader, s_textures, s_constants, s_matrices);
+#endif
+}
+
 Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	const char* s_constants,	const char* s_matrices)
 {
 	xrCriticalSectionGuard guard(ResSafe);
 
-	if (!g_dedicated_server)
-	{
-		//	TODO: DX10: When all shaders are ready switch to common path
+	if (g_dedicated_server)
+		return nullptr;
+
+	Shader* pShader = nullptr;
 #ifdef USE_DX11
-		if (CXMLBlend::Check(s_shader))
-		{
-			xr_string key = MakeXMLBlendKey(s_shader, s_textures);
-			auto it = m_xmlBlendCache.find(key);
+	if (CXMLBlend::Check(s_shader))
+	{
+		xr_string key = MakeXMLBlendKey(s_shader, s_textures);
+		auto it = m_xmlBlendCache.find(key);
 
 #ifndef MASTER_GOLD
-			u32 current_crc = CalculateXMLCRC(s_shader);
+		u32 current_crc = CalculateXMLCRC(s_shader);
 #endif
 
-			if (it != m_xmlBlendCache.end())
-			{
+		if (it != m_xmlBlendCache.end())
+		{
 #ifndef MASTER_GOLD
-				if (it->second.crc == current_crc)
-					return it->second.shader;
-#else
+			if (it->second.crc == current_crc)
 				return it->second.shader;
+#else
+			return it->second.shader;
 #endif
-			}
+		}
 
-			// Компиляция
-			xr_unique_ptr<CXMLBlend> BlendXML = xr_make_unique<CXMLBlend>(s_shader);
-			Shader* pShader = BlendXML->Compile(s_textures);
+		pShader = _Compile(s_shader, s_textures, s_constants, s_matrices);
 
-			if (pShader)
-			{
-				XMLBlendCacheEntry entry;
-				entry.shader = pShader;
+		if (pShader)
+		{
+			XMLBlendCacheEntry entry;
+			entry.shader = pShader;
 
 #ifndef MASTER_GOLD
-				entry.crc = current_crc;
+			entry.crc = current_crc;
 #endif
 
-				m_xmlBlendCache[key] = entry;
-			}
-
-			return pShader;
+			m_xmlBlendCache[key] = entry;
 		}
-		else if	(_lua_HasShader(s_shader))		
-			return	_lua_Create	(s_shader,s_textures);
-		else
-		{
-			Shader* pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices);
-			if (pShader)
-				return pShader;
-			else
-			{
-				if (_lua_HasShader("stub_default"))
-					return	_lua_Create("stub_default", s_textures);
-				else
-				{
-					FATAL("Can't find stub_default.s");
-					return 0;
-				}
-			}
-		}
-#else //USE_DX11
-		if	(_lua_HasShader(s_shader))		
-			return	_lua_Create	(s_shader,s_textures);
-		else
-			return	_cpp_Create	(s_shader,s_textures,s_constants,s_matrices);
+	}
+	else
 #endif
+		pShader = _Compile(s_shader, s_textures, s_constants, s_matrices);
+
+	if (pShader && !pShader->src_shader)
+	{
+		pShader->src_shader = s_shader;
+		pShader->src_textures = s_textures;
+		pShader->src_constants = s_constants;
+		pShader->src_matrices = s_matrices;
+		pShader->src_skinning = Engine.External.GetSkinningMode();
 	}
 
-	return nullptr;
+	return pShader;
+}
+
+void CResourceManager::RecompileShaders()
+{
+	xrCriticalSectionGuard guard(ResSafe);
+
+	const int skinning = Engine.External.GetSkinningMode();
+
+	for (size_t i = 0; i < v_shaders.size(); ++i)
+	{
+		Shader* S = v_shaders[i];
+		if (!S->src_shader)
+			continue;
+
+		Engine.External.SetSkinningMode(S->src_skinning);
+		Shader* N = _Compile(S->src_shader.c_str(), S->src_textures.c_str(), S->src_constants.c_str(), S->src_matrices.c_str());
+		if (N == S)
+			continue;
+
+		S->_copy(*N);
+		if (!N->dwReference)
+			xr_delete(N);
+	}
+
+	Engine.External.SetSkinningMode(skinning);
 }
 
 void CResourceManager::Delete(const Shader* S)
