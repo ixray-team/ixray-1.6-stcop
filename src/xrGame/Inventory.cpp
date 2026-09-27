@@ -8,6 +8,7 @@
 #include "clsid_game.h"
 #include "WeaponMagazined.h"
 #include "Grenade.h"
+#include "RepackerInterface.h"
 #include "Actor.h"
 #include "InventoryVolumeSystem.h"
 #include "../xrScripts/script_callback_ex.h"
@@ -292,6 +293,24 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 			{
 				pWeapon->strapped_mode(false);
 				Ruck(pWeapon);
+			}
+		}
+	}
+
+	if (EngineExternal()[EEngineExternalSystem::EngineAmmoRepacker])
+	{
+		if (auto Repacker = pIItem->cast_repacker_interface())
+		{
+			for (auto& elem : m_all)
+			{
+				if (elem->m_section_id != pIItem->m_section_id)
+				{
+					continue;
+				}
+				if (!Repacker->Repack(elem))
+				{
+					return;
+				}
 			}
 		}
 	}
