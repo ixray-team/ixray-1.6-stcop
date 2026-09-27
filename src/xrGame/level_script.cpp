@@ -2225,7 +2225,8 @@ void CLevel::script_register(lua_State *L)
 			.def("set"					,&xrTime::set)
 			.def("get"					,&xrTime::get, out_value<2>() + out_value<3>() + out_value<4>() + out_value<5>() + out_value<6>() + out_value<7>() + out_value<8>())
 			.def("dateToString"			,&xrTime::dateToString)
-			.def("timeToString"			,&xrTime::timeToString),
+			.def("timeToString"			,&xrTime::timeToString)
+			.def("Serialize", &ctime_serialize),
 			// declarations
 			def("time",					get_time),
 			def("get_game_time",		get_time_struct),
