@@ -26,6 +26,7 @@
 #include "alife_registry_wrappers.h"
 #include "../xrEngine/xr_collide_form.h"
 #include "Actor.h"
+#include "BurningComponent.h"
 
 #define SMALL_ENTITY_RADIUS		0.6f
 #define BLOOD_MARKS_SECT		"bloody_marks"
@@ -109,24 +110,39 @@ CEntityAlive::~CEntityAlive()
 	xr_delete				(m_material_manager);
 }
 
-void CEntityAlive::Load		(const char* section)
+void CEntityAlive::Load(const char* section)
 {
-	CEntity::Load					(section);
-	conditions().LoadCondition		(section);
-	conditions().LoadImmunities		(pSettings->r_string(section,"immunities_sect"),pSettings);
+	CEntity::Load(section);
+	conditions().LoadCondition(section);
+	conditions().LoadImmunities(pSettings->r_string(section,"immunities_sect"),pSettings);
 
-	m_fFood					= 100*pSettings->r_float	(section,"ph_mass");
+	m_fFood = 100*pSettings->r_float(section,"ph_mass");
 
 	//bloody wallmarks
 	if(0==m_pBloodMarksVector)
+	{
 		LoadBloodyWallmarks (BLOOD_MARKS_SECT);
+	}
 
 	if(0==m_pFireParticlesVector)
+	{
 		LoadFireParticles	("entity_fire_particles");
+	}
 
 	//биолог. вид к торому принадлежит монстр или персонаж
 	if(pSettings->line_exist(section, "species"))
+	{
 		monster_community->set	(pSettings->r_string(section, "species"));
+	}
+	
+	auto BurningComponent = GetOrCreateComponent<TBurningComponent>();
+	if (pSettings->line_exist(section, "burning_data"))
+	{
+		BurningComponent->Load(pSettings->r_string(section, "burning_data"));
+	} else
+	{
+		BurningComponent->Load("default_burning_data");
+	}
 }
 
 void CEntityAlive::LoadBloodyWallmarks (const char* section)
@@ -256,10 +272,15 @@ void CEntityAlive::shedule_Update(u32 dt)
 	conditions().UpdateCondition		();
 	
 	//Обновление партиклов огня
-
 	if (TParticlesPlayer* PPlayer = GetComponent<TParticlesPlayer>())
 	{
 		PPlayer->UpdateParticles();
+	}
+	
+	//Обновление горения
+	if (auto Burning = GetComponent<TBurningComponent>())
+	{
+		Burning->Update(dt, this);
 	}
 
 	UpdateFireParticles	();

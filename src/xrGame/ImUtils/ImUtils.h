@@ -131,6 +131,7 @@ struct clsid_manager
 	CLASS_ID weapon_walther = TEXT2CLSID("WP_WALTH");
 	CLASS_ID weapon_magazine = TEXT2CLSID("WP_MAGAZ");
 	CLASS_ID weapon_stationary_machine_gun = TEXT2CLSID("W_STMGUN");
+	CLASS_ID weapon_flamethrower = CLSID_OBJECT_W_FLAMETHROWER;
 
 	CLASS_ID ammo_base = TEXT2CLSID("AMMO_S");
 	CLASS_ID ammo_vog25 = TEXT2CLSID("S_VOG25");
@@ -138,6 +139,7 @@ struct clsid_manager
 	CLASS_ID ammo_m209 = TEXT2CLSID("S_M209");
 	CLASS_ID ammo_f1 = TEXT2CLSID("G_F1_S");
 	CLASS_ID ammo_rgd5 = TEXT2CLSID("G_RGD5_S");
+	CLASS_ID ammo_flame_canister = CLSID_OBJECT_FLAME_CANISTER;
 
 	CLASS_ID addon_scope = TEXT2CLSID("WP_SCOPE");
 	CLASS_ID addon_silen = TEXT2CLSID("WP_SILEN");

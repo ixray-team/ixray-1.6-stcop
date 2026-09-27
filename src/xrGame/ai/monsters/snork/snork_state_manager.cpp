@@ -2,6 +2,7 @@
 #include "snork.h"
 #include "snork_state_manager.h"
 
+#include "BurningComponent.h"
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
@@ -47,7 +48,10 @@ void CStateManagerSnork::execute()
 
 	const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
-	if (enemy) {
+	if (auto BurningComp = object->GetComponent<TBurningComponent>(); BurningComp && BurningComp->IsBurning())
+	{
+		state_id = eStatePanic;
+	} else if (enemy) {
 		switch (object->EnemyMan.get_danger_type()) {
 				case eStrong:	state_id = eStatePanic; break;
 				case eWeak:		state_id = eStateAttack; break;

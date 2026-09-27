@@ -79,6 +79,7 @@
 #define CLSID_OBJECT_W_ASHOTGUN		MK_CLSID('W','_','A','S','H','T','G','N')
 //  [8/15/2006]
 #define CLSID_OBJECT_W_MAGAZINED	MK_CLSID('W','_','W','M','A','G','A','Z')
+#define CLSID_OBJECT_W_FLAMETHROWER	MK_CLSID('W','_','F','L','A','M','E','_')
 //  [8/15/2006]
 //  [8/17/2006]
 #define CLSID_OBJECT_W_MAGAZWGL		MK_CLSID('W','_','W','M','A','G','G','L')
@@ -98,6 +99,7 @@
 #define	CLSID_OBJECT_W_STATMGUN		MK_CLSID('W','_','S','T','M','G','U','N')
 // Weapons Ammo
 #define CLSID_OBJECT_AMMO			MK_CLSID('A','M','M','O',' ',' ',' ',' ')
+#define CLSID_OBJECT_FLAME_CANISTER	MK_CLSID('A','M','M','O','_','F','L','C')
 //-----------------------------------------------------------------------------
 #define CLSID_OBJECT_A_VOG25		MK_CLSID('A','_','V','O','G','2','5',' ')
 #define CLSID_OBJECT_A_OG7B			MK_CLSID('A','_','O','G','7','B',' ',' ')

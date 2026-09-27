@@ -22,6 +22,11 @@ public:
 	PART_ANIMATIONS		m_part_animations;
 	HEAD_ANIMATIONS		m_head_animations;
 	GLOBAL_ANIMATIONS	m_global_animations;
+	
+	// TODO: Implement full animset storage for burning
+	// Это уродство - следствие того, что у меня нет на руках фулл анимсета горения
+	// Как будет у меня это - переделаю
+	MotionID TempBurningAnimation;
 
 public:
 	CStalkerAnimationData	(IKinematicsAnimated *skeleton_animated);

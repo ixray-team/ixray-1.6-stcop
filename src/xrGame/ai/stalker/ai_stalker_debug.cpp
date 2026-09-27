@@ -236,6 +236,7 @@ const char* danger_type(const CDangerObject::EDangerType &danger_type)
 		case CDangerObject::eDangerTypeAttacked				: return	("I am attacked");
 		case CDangerObject::eDangerTypeGrenade				: return	("greande nearby");
 		case CDangerObject::eDangerTypeEnemySound			: return	("enemy sound");
+		case CDangerObject::eDangerTypeBurning				: return	("burning");
 		default												: NODEFAULT;
 	};
 	return				("");

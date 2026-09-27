@@ -35,6 +35,7 @@
 #include "../../visual_memory_manager.h"
 #include "../../Weapon.h"
 #include "ai_stalker_space.h"
+#include "BurningComponent.h"
 #include "../../EffectorShot.h"
 #include "../../BoneProtections.h"
 #include "../../RadioactiveZone.h"
@@ -1252,6 +1253,11 @@ bool CAI_Stalker::critically_wounded		()
 
 bool CAI_Stalker::critical_wound_external_conditions_suitable()
 {
+	if (auto Comp = GetComponent<TBurningComponent>(); Comp && Comp->IsBurning())
+	{
+		return false;
+	}
+	
 	if (movement().body_state() != eBodyStateStand)
 		return						(false);
 

@@ -124,7 +124,8 @@ void CMemoryInfo::script_register(lua_State *L)
 				value("entity_corpse",		CDangerObject::eDangerTypeFreshEntityCorpse),
 				value("attacked",			CDangerObject::eDangerTypeAttacked),
 				value("grenade",			CDangerObject::eDangerTypeGrenade),
-				value("enemy_sound",		CDangerObject::eDangerTypeEnemySound)
+				value("enemy_sound",		CDangerObject::eDangerTypeEnemySound),
+				value("burning", CDangerObject::eDangerTypeBurning)
 			]
 			.enum_("danger_perceive_type")
 			[

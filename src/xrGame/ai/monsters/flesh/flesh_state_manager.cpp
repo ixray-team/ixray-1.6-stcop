@@ -2,6 +2,7 @@
 #include "flesh.h"
 #include "flesh_state_manager.h"
 
+#include "BurningComponent.h"
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
@@ -44,7 +45,10 @@ void CStateManagerFlesh::execute()
 		
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
-		if (enemy) {
+		if (auto BurningComp = object->GetComponent<TBurningComponent>(); BurningComp && BurningComp->IsBurning())
+		{
+			state_id = eStatePanic;
+		} else if (enemy) {
 			state_id = object->EnemyMan.get_danger_type() == eStrong &&
 					   !object->HitMemory.is_hit() ? eStatePanic : eStateAttack;
 

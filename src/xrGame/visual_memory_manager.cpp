@@ -181,6 +181,10 @@ const CVisionParameters &CVisualMemoryManager::current_state() const
 
 u32	CVisualMemoryManager::visible_object_time_last_seen	(const CObject *object) const
 {
+	if (!m_objects)
+	{
+		return u32(-1);
+	}
 	VISIBLES::iterator	I = std::find(m_objects->begin(),m_objects->end(), CMemoryObject::object_id(object));
 	if (I != m_objects->end()) 
 		return (I->m_level_time);	

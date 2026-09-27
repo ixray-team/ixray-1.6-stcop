@@ -82,6 +82,8 @@
 #   include "WeaponMagazinedWGrenade.h"
 #	include "WeaponSVD.h"
 #	include "WeaponStatMgun.h"
+#	include "Flamethrower.h"
+#	include "FlameCanister.h"
 
 #	include "Scope.h"
 #	include "Silencer.h"
@@ -305,6 +307,7 @@ void CObjectFactory::register_classes	()
 
 	//  [8/15/2006]
 	ADD(CWeaponMagazined		,CSE_ALifeItemWeaponMagazined	,CLSID_OBJECT_W_MAGAZINED		,"wpn_wmagaz");
+	ADD(CFlamethrower			,CSE_ALifeItemFlamethrower		,CLSID_OBJECT_W_FLAMETHROWER	,"wpn_flamethrower");
 	//  [8/15/2006]
 	//  [8/17/2006]
 	ADD(CWeaponMagazinedWGrenade,CSE_ALifeItemWeaponMagazinedWGL,CLSID_OBJECT_W_MAGAZWGL		,"wpn_wmaggl");
@@ -333,6 +336,7 @@ void CObjectFactory::register_classes	()
 	ADD(CWeaponAmmo				,CSE_ALifeItemAmmo				,CLSID_OBJECT_A_VOG25			,"wpn_ammo_vog25");
 	ADD(CWeaponAmmo				,CSE_ALifeItemAmmo				,CLSID_OBJECT_A_OG7B			,"wpn_ammo_og7b");
 	ADD(CWeaponAmmo				,CSE_ALifeItemAmmo				,CLSID_OBJECT_A_M209			,"wpn_ammo_m209");
+	ADD(CFlameCanister			,CSE_ALifeItemFuel				,CLSID_OBJECT_FLAME_CANISTER	,"wpn_flame_canister");
 	//-----------------------------------------------------------------------------------------------------
 
 	//Weapons Add-on

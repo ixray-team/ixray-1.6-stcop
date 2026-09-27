@@ -15,4 +15,7 @@ CStalkerAnimationData::CStalkerAnimationData(IKinematicsAnimated* skeleton_anima
 	m_part_animations.Load(skeleton_animated, "");
 	m_head_animations.Load(skeleton_animated, "");
 	m_global_animations.Load(skeleton_animated, "item_");
+	
+	// TODO: Implement full animset loading for burning
+	TempBurningAnimation = skeleton_animated->ID_Cycle_Safe("ragdoll_anomaly_jarka_0"); // just placeholder
 }

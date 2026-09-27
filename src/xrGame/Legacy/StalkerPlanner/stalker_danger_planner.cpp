@@ -24,6 +24,8 @@
 #include "stalker_movement_restriction.h"
 #include "agent_member_manager.h"
 #include "stalker_base_action.h"
+#include "stalker_danger_by_burning_actions.h"
+#include "stalker_danger_by_burning_planner.h"
 #include "stalker_danger_unknown_planner.h"
 #include "stalker_danger_in_direction_planner.h"
 #include "stalker_danger_grenade_planner.h"
@@ -80,6 +82,7 @@ void CStalkerDangerPlanner::add_evaluators		()
 	add_evaluator			(eWorldPropertyDangerInDirection	,new CStalkerPropertyEvaluatorDangerInDirection	(m_object,"danger in direction"));
 	add_evaluator			(eWorldPropertyDangerGrenade		,new CStalkerPropertyEvaluatorDangerWithGrenade	(m_object,"danger with grenade"));
 	add_evaluator			(eWorldPropertyDangerBySound		,new CStalkerPropertyEvaluatorDangerBySound		(m_object,"danger by sound"));
+	add_evaluator(eWorldPropertyDangerByBurning, new CStalkerPropertyEvaluatorDangerByBurning		(m_object,"danger by burning"));
 }
 
 void CStalkerDangerPlanner::add_actions			()
@@ -105,4 +108,9 @@ void CStalkerDangerPlanner::add_actions			()
 	add_condition			(action,eWorldPropertyDangerBySound,true);
 	add_effect				(action,eWorldPropertyDanger,		false);
 	add_operator			(eWorldOperatorDangerBySoundPlanner,		action);
+	
+	auto action_ = new CStalkerActionDangerByBurningRunAway(m_object,"danger by burning");
+	add_condition(action_, eWorldPropertyDangerByBurning,true);
+	add_effect(action_, eWorldPropertyDanger, false);
+	add_operator(eWorldOperatorDangerByBurningPlanner, action_);
 }

@@ -2,6 +2,7 @@
 #include "chimera.h"
 #include "chimera_state_manager.h"
 
+#include "BurningComponent.h"
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
@@ -42,7 +43,10 @@ void CStateManagerChimera::execute()
 
 	const CEntityAlive* enemy	= object->EnemyMan.get_enemy	();
 
-	if (enemy) {
+	if (auto BurningComp = object->GetComponent<TBurningComponent>(); BurningComp && BurningComp->IsBurning())
+	{
+		state_id = eStateAttack;
+	} else if (enemy) {
 		//if (check_state(eStateThreaten)) state_id = eStateThreaten;
 		switch (object->EnemyMan.get_danger_type()) {
 			case eStrong:	state_id = eStatePanic; break;

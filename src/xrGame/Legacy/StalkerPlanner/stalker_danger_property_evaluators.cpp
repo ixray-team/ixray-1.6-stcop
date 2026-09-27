@@ -19,6 +19,7 @@
 #include "stalker_movement_manager_smart_cover.h"
 #include "cover_evaluators.h"
 #include "ai_space.h"
+#include "BurningComponent.h"
 #include "cover_manager.h"
 #include "cover_point.h"
 #include "stalker_movement_restriction.h"
@@ -129,6 +130,25 @@ bool CStalkerPropertyEvaluatorDangerBySound::evaluate	()
 
 	return				(false);
 //	return				(CDangerObject::eDangerTypeEnemySound == m_object->memory().danger().selected()->type());
+}
+
+//////////////////////////////////////////////////////////////////////////
+// CStalkerPropertyEvaluatorDangerBySound
+//////////////////////////////////////////////////////////////////////////
+
+CStalkerPropertyEvaluatorDangerByBurning::CStalkerPropertyEvaluatorDangerByBurning(CAI_Stalker *object, const char* evaluator_name) :
+	inherited(object ? object->lua_game_object() : nullptr,evaluator_name)
+{
+}
+
+bool CStalkerPropertyEvaluatorDangerByBurning::evaluate	()
+{
+	if (!m_object->memory().danger().selected())
+	{
+		return false;
+	}
+
+	return CDangerObject::eDangerTypeBurning == m_object->memory().danger().selected()->type();
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -30,6 +30,7 @@
 #include "agent_manager.h"
 #include "agent_enemy_manager.h"
 #include "agent_member_manager.h"
+#include "BurningComponent.h"
 #include "cover_point.h"
 #include "level_graph.h"
 #include "stalker_animation_manager.h"

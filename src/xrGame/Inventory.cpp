@@ -1333,6 +1333,29 @@ PIItem CInventory::item(CLASS_ID cls_id) const
 	return nullptr;
 }
 
+void CInventory::GetAll(LPCSTR name, xr_vector<PIItem>& Output) {
+	Output.clear();
+	for (TIItemContainer::const_iterator it = m_belt.begin(); m_belt.end() != it; ++it)
+	{
+		//PIItem pIItem = smart_cast<T*>(*it);
+		PIItem pIItem = *it;
+		if (pIItem
+			&& !xr_strcmp(pIItem->object().cNameSect(), name)
+			&& pIItem->Useful()) {
+			Output.push_back(pIItem);
+			}
+	}
+	for (TIItemContainer::const_iterator it = m_ruck.begin(); m_ruck.end() != it; ++it)
+	{
+		PIItem pIItem = *it;
+		if (pIItem
+			&& !xr_strcmp(pIItem->object().cNameSect(), name)
+			&& pIItem->Useful()) {
+			Output.push_back(pIItem);
+			}
+	}
+}
+
 float CInventory::TotalWeight() const
 {
 	VERIFY(m_fTotalWeight >= 0.f);

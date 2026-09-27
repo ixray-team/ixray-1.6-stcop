@@ -128,6 +128,8 @@ void CAI_Stalker::script_register(lua_State *L)
 				luabind::value("action_danger_grenade_look_around",			StalkerDecisionSpace::eWorldOperatorDangerGrenadeLookAround),
 				luabind::value("action_danger_grenade_search",				StalkerDecisionSpace::eWorldOperatorDangerGrenadeSearch),
 
+				luabind::value("action_danger_burning_run_away", StalkerDecisionSpace::eWorldOperatorDangerBurningRunAway),
+				
 				luabind::value("action_death_planner",						StalkerDecisionSpace::eWorldOperatorDeathPlanner),
 				luabind::value("action_alife_planner",						StalkerDecisionSpace::eWorldOperatorALifePlanner),
 				luabind::value("action_combat_planner",						StalkerDecisionSpace::eWorldOperatorCombatPlanner),

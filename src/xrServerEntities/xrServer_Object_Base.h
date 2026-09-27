@@ -46,6 +46,8 @@ class CSE_ALifeCreatureAbstract;
 class CSE_ALifeSmartZone;
 class CSE_ALifeOnlineOfflineGroup;
 class CSE_ALifeItemPDA;
+class CSE_ALifeItemFlamethrower;
+class CSE_ALifeItemFuel;
 
 #pragma warning(push)
 #pragma warning(disable:4005)
@@ -169,8 +171,10 @@ public:
 	virtual CSE_ALifeObject				*cast_alife_object			() {return nullptr;}
 	virtual CSE_ALifeDynamicObject		*cast_alife_dynamic_object	() {return nullptr;}
 	virtual CSE_ALifeItemAmmo			*cast_item_ammo				() {return nullptr;}
+	virtual CSE_ALifeItemFuel			*cast_item_fuel				() {return nullptr;}
 	virtual CSE_ALifeItemWeapon			*cast_item_weapon			() {return nullptr;}
 	virtual CSE_ALifeItemWeaponMagazinedWGL	*cast_item_weapon_magazined_wgl	() {return nullptr;}
+	virtual CSE_ALifeItemFlamethrower	*cast_item_flamethrower		() {return nullptr;}
 	virtual CSE_ALifeItemDetector		*cast_item_detector			() {return nullptr;}
 	virtual CSE_ALifeMonsterAbstract	*cast_monster_abstract		() {return nullptr;}
 	virtual CSE_ALifeHumanAbstract		*cast_human_abstract		() {return nullptr;}

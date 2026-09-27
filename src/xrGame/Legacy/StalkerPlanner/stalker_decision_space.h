@@ -56,6 +56,7 @@ namespace StalkerDecisionSpace {
 		eWorldPropertyDangerInDirection,
 		eWorldPropertyDangerGrenade,
 		eWorldPropertyDangerBySound,
+		eWorldPropertyDangerByBurning,
 
 		eWorldPropertyCoverActual,
 		eWorldPropertyCoverReached,
@@ -187,6 +188,7 @@ namespace StalkerDecisionSpace {
 		eWorldOperatorDangerInDirectionPlanner,
 		eWorldOperatorDangerGrenadePlanner,
 		eWorldOperatorDangerBySoundPlanner,
+		eWorldOperatorDangerByBurningPlanner,
 
 		eWorldOperatorDangerUnknownTakeCover,
 		eWorldOperatorDangerUnknownLookAround,
@@ -203,6 +205,8 @@ namespace StalkerDecisionSpace {
 		eWorldOperatorDangerGrenadeTakeCoverAfterExplosion,
 		eWorldOperatorDangerGrenadeLookAround,
 		eWorldOperatorDangerGrenadeSearch,
+		
+		eWorldOperatorDangerBurningRunAway,
 
 // global
 		eWorldOperatorDeathPlanner,
