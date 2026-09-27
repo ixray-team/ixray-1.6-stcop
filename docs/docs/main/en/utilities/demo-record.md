@@ -78,7 +78,7 @@ The camera always faces a chosen target: either a point in space or a model bone
 - if the crosshair is over a surface — a point on it is locked;
 - disable with `J` again.
 
-Camera rotation is smooth (with inertia), with no sharp "jumps" over 180°.
+Camera rotation is smooth (with inertia), with no sharp "jumps" over 180°. The camera can still be moved (W/A/S/D, up/down) — it travels while continuing to face the target.
 
 ### Bone attachment
 
@@ -93,7 +93,7 @@ What you can do in this mode:
 
 - **W/A/S/D**, crouch/jump — move the camera relative to the bone;
 - **Q/E** — rotate the camera around the bone;
-- **Mouse + Shift** — pan the view around the bone;
+- **Mouse + `Shift` (either one)** — pan the view around the bone;
 - **Z** — reset all offsets.
 
 If the model disappears (destroyed, weapon holstered, etc.), the camera detaches automatically and returns to free flight. Detach manually with `U`.
@@ -135,7 +135,7 @@ The change takes effect after restarting the game. During recording you can also
 | Pause | `Pause` |
 | Console | `` ` `` |
 
-A single movement speed applies to all directions; it is changed with the mouse wheel or in the settings window.
+A single movement speed applies to all directions; it is changed with the mouse wheel or in the settings window. The minimum speed is 0.01; below 1 the speed changes in small steps, above 1 in large steps (with `Shift` the step is even larger).
 
 ### Old schema
 
@@ -162,9 +162,11 @@ The three speed levels are configured in the settings window; the base speed (no
 | Left stick press | Toggle acceleration |
 | Right bumper (`RIGHT_SHOULDER`) | Record a keyframe |
 
+In bone attachment mode the sticks work differently: the left stick moves the camera relative to the bone, the right one rotates it around the bone.
+
 ### Passing control to the character (`0` key)
 
-A useful mode for recording demos with a live character: all input (keyboard and mouse) is forwarded to the game character as if demo record weren't there, while the camera keeps writing the demo. Pressing `0` again returns control to the camera.
+A useful mode for recording demos with a live character: all input (keyboard, mouse, mouse wheel and gamepad) is forwarded to the game character as if demo record weren't there, while the camera keeps writing the demo. Pressing `0` again returns control to the camera — the `0` key itself is never forwarded to the character, so you can always take control back.
 
 ---
 
@@ -232,20 +234,16 @@ Opened from the top menu bar of the game: **Game → Demo record**. If no record
 - **Mode** — camera mode selection: free flight / look at a point / bone attachment (the same actions as the `J` and `U` keys);
 - **Smoothing** — rotation and movement smoothness (inertia). `0` = instant response, the closer to `1` the smoother and "softer" the camera;
 - **Orientation** — direct input of camera rotation angles (unavailable in bone attachment mode);
-- **Bone View Offsets** — camera offset and rotation relative to the bone in attachment mode;
 - **Lock Axes** — axis locks: the camera always keeps the horizon / looks horizontally / keeps its heading;
 - **Field of View** — the current FOV; the `R` button restores the value from the moment recording started;
 - **Auto FOV change speed** — if enabled, the R/T FOV change speed depends on camera movement speed; if disabled, it is set manually.
 
-### Bone Browser
+### Bone Attachment
 
-- shows the object in the center of the screen (or the object the camera is attached to): name and bone count;
-- **Bone tree** — a tree of all model bones; clicking a bone attaches the camera to it. The current bone is marked with `[*]`;
-- the **Detach** button detaches the camera.
-
-### HUD Bones
-
-Bone trees of first-person models: hands, weapons in both hands, the item with an active animation. Clicking a bone also attaches the camera.
+- if the camera is attached to a bone — the top of the section shows the bone itself and a **Detach** button;
+- **Offsets** — camera offset and rotation relative to the bone (only in attachment mode), reset with `Z`;
+- **World Objects** — the object in the center of the screen (or the object the camera is attached to): name and bone count. **Bone tree** — a tree of all model bones; clicking a bone attaches the camera to it. The current bone is marked with `[*]`;
+- **Player HUD** — bone trees of first-person models: hands, weapons in both hands, the item with an active animation. Clicking a bone also attaches the camera. Shown while the corresponding model is visible on screen.
 
 ### State
 
