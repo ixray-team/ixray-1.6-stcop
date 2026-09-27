@@ -132,24 +132,30 @@ bool CPortal::FrustumPick(const CFrustum& frustum)
 
 bool CPortal::RayPick(float& distance, const Fvector& start, const Fvector& direction, SRayPickInfo* pinf)
 {
-	Fvector p[3];
-	float range;
-	bool bPick=false;
-	p[0].set(m_Center);
-	EScenePortalTool* lt = smart_cast<EScenePortalTool*>(FParentTools); VERIFY(lt);
-	FvectorVec& src=(lt->m_Flags.is(EScenePortalTool::flDrawSimpleModel))?m_SimplifyVertices:m_Vertices;
-	for(FvectorIt it=src.begin(); it!=src.end(); it++){
-		p[1].set(*it);
-		p[2].set(((it+1)==src.end())?src.front():*(it+1));
-		range=UI->ZFar();
-		if (CDB::TestRayTri2(start,direction,p,range)){
-			if ((range>=0)&&(range<distance)){
-				distance=range;
-				bPick=true;
+	Fvector Point[3];
+	float Range;
+	bool HasPick = false;
+	Point[0].set(m_Center);
+
+	EScenePortalTool* PortalTool = smart_cast<EScenePortalTool*>(FParentTools);
+	VERIFY(PortalTool);
+
+	FvectorVec& Src = (PortalTool->m_Flags.is(EScenePortalTool::flDrawSimpleModel)) ? m_SimplifyVertices : m_Vertices;
+	for (FvectorIt Iter = Src.begin(); Iter != Src.end(); Iter++)
+	{
+		Point[1].set(*Iter);
+		Point[2].set(((Iter + 1) == Src.end()) ? Src.front() : *(Iter + 1));
+		Range = EContext.UI->ZFar();
+		if (CDB::TestRayTri2(start, direction, Point, Range))
+		{
+			if ((Range >= 0) && (Range < distance))
+			{
+				distance = Range;
+				HasPick = true;
 			}
 		}
 	}
-	return bPick;
+	return HasPick;
 }
 
 bool CPortal::Update(bool bLoadMode){
@@ -209,11 +215,14 @@ bool CPortal::Update(bool bLoadMode){
 
 void CPortal::InvertOrientation(bool bUndo)
 {
-	std::reverse(m_Vertices.begin(),m_Vertices.end());
-	std::reverse(m_SimplifyVertices.begin(),m_SimplifyVertices.end());
+	std::reverse(m_Vertices.begin(), m_Vertices.end());
+	std::reverse(m_SimplifyVertices.begin(), m_SimplifyVertices.end());
 	m_Normal.invert();
-	UI->RedrawScene();
-	if (bUndo) Scene->UndoSave();
+	EContext.UI->RedrawScene();
+	if (bUndo)
+	{
+		Scene->UndoSave();
+	}
 }
 
 double tri_area(Fvector2 P0, Fvector2 P1, Fvector2 P2)
@@ -322,7 +331,7 @@ void CPortal::Simplify()
 	}
 	// compute 2D Convex Hull
 	Mgc::ConvexHull2D Hull(points.size(),(const Mgc::Vector2*)points.data());
-//    Hull.ByDivideAndConquer();
+
 	Hull.ByIncremental();
 	Hull.RemoveCollinear();
 	int Count   	= Hull.GetQuantity();
@@ -331,47 +340,7 @@ void CPortal::Simplify()
 	for (int ind_i=0; ind_i<Count; ind_i++){
 		vertices.push_back(points[indices[ind_i]]);
 	}
-//    R_ASSERT2(0,"Go to ALEXMX and say: ''Test portal simplifier. Please!''");
-/*
-	int* indices 	= Hull.GetIndices();
-	int CurVert 	= indices[0];
-	vertices.push_back(points[CurVert]);
-	CurVert 		= indices[1];
-	vertices.push_back(points[CurVert]);
 
-	vector<bool>    marks(Count,false);
-	marks[0]=true;
-	for (int A=0; A<Count; A++) {
-		for (int i=1; i<Count; i++){
-			if (marks[i]) continue;
-			const Mgc::ConvexHull2D::Edge &E = Hull.GetEdge(i);
-			if (E.m_aiVertex[0]==CurVert) {
-				CurVert = E.m_aiVertex[1];
-				vertices.push_back(points[CurVert]);
-				marks[i]=true;
-				break;
-			} else if (E.m_aiVertex[1]==CurVert) {
-				CurVert = E.m_aiVertex[0];
-				vertices.push_back(points[CurVert]);
-				marks[i]=true;
-				break;
-			}
-		}
-	}
-	vertices.pop_back();
-
-	// edge-collapse
-	for (k=0; k<vertices.size(); k++){
-		int k1=k-1, k2=k+1;
-		if (k==0) k1=vertices.size()-1;
-		if (k==vertices.size()-1) k2=0;
-		if (vertices[k].similar(vertices[k1])){ vertices.erase(vertices.begin()+k); k--; continue; }
-		Fvector2 e1,e2;
-		e1.sub(vertices[k1],vertices[k]); e1.norm();
-		e2.sub(vertices[k2],vertices[k]); e2.norm();
-		if ((1-fabsf(e1.dot(e2)))<=EPS){ vertices.erase(vertices.begin()+k); k--; continue; }
-	}
-*/
 	// simplify
 	while(vertices.size()>XR_MAX_PORTAL_VERTS){
 		int f_cnt=vertices.size();

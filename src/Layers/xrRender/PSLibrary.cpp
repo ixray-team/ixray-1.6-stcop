@@ -193,8 +193,10 @@ bool CPSLibrary::Load2()
 
 #ifdef _EDITOR
 	SPBItem* pb = nullptr;
-	if(UI->m_bReady)
-    pb 							= UI->ProgressStart(files.size(),"Loading particles...");
+	if (EContext.UI->m_bReady)
+	{
+		pb = EContext.UI->ProgressStart(files.size(), "Loading particles...");
+	}
 #endif
 	FS_FileSet::iterator it		= files.begin();
 	FS_FileSet::iterator it_e	= files.end();
@@ -300,7 +302,10 @@ bool CPSLibrary::Load2()
 	}
 
 #ifdef _EDITOR
-    if(pb) UI->ProgressEnd		(pb);
+	if (pb)
+	{
+		EContext.UI->ProgressEnd(pb);
+	}
 #endif
 	Msg				("Loaded particles :%d", files.size());
 	return true;

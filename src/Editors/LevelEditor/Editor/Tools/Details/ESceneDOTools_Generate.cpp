@@ -206,22 +206,24 @@ void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot)
 bool EDetailManager::UpdateSlots()
 {
 	// clear previous slots
-    xr_free				(dtSlots);
-    dtSlots				= xr_alloc<DetailSlot>(dtH.size_x*dtH.size_z);
+	xr_free(dtSlots);
+	dtSlots = xr_alloc<DetailSlot>(dtH.size_x * dtH.size_z);
 
-    SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,"Updating bounding boxes...");
-    for (u32 z=0; z<dtH.size_z; z++){
-        for (u32 x=0; x<dtH.size_x; x++){
-        	DetailSlot* slot = dtSlots+z*dtH.size_x+x;
-        	UpdateSlotBBox	(x,z,*slot);
-	        pb->Inc();
-        }
-    }
-    UI->ProgressEnd(pb);
+	SPBItem* pb = EContext.UI->ProgressStart(dtH.size_x * dtH.size_z, "Updating bounding boxes...");
+	for (u32 z = 0; z < dtH.size_z; z++)
+	{
+		for (u32 x = 0; x < dtH.size_x; x++)
+		{
+			DetailSlot* slot = dtSlots + z * dtH.size_x + x;
+			UpdateSlotBBox(x, z, *slot);
+			pb->Inc();
+		}
+	}
+	EContext.UI->ProgressEnd(pb);
 
-    m_Selected.resize	(dtH.size_x*dtH.size_z);
+	m_Selected.resize(dtH.size_x * dtH.size_z);
 
-    return true;
+	return true;
 }
 
 void EDetailManager::GetSlotRect(Frect& rect, int sx, int sz){
@@ -400,29 +402,38 @@ bool EDetailManager::UpdateSlotObjects(int x, int z){
 bool EDetailManager::UpdateObjects(bool bUpdateTex, bool bUpdateSelectedOnly)
 {
 	if (!BaseDataDirty)
+	{
 		m_Base.ReloadImage();
+	}
 
-	if (!m_Base.Valid()){ 
-    	ELog.DlgMsg(mtError,"Invalid base texture!");
-    	return false;
-    }
-	if (objects.empty()){
-    	ELog.DlgMsg(mtError,"Object list empty!");
-     	return false;
-    }
-    // update objects
-    SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,"Updating objects...");
-    for (u32 z=0; z<dtH.size_z; z++)
-        for (u32 x=0; x<dtH.size_x; x++){
-        	if (!bUpdateSelectedOnly||(bUpdateSelectedOnly&&m_Selected[z*dtH.size_x+x]))
-	        	UpdateSlotObjects(x,z);
-	        pb->Inc();
-        }
-    UI->ProgressEnd(pb);
+	if (!m_Base.Valid())
+	{
+		ELog.DlgMsg(mtError, "Invalid base texture!");
+		return false;
+	}
+	if (objects.empty())
+	{
+		ELog.DlgMsg(mtError, "Object list empty!");
+		return false;
+	}
+	// update objects
+	SPBItem* pb = EContext.UI->ProgressStart(dtH.size_x * dtH.size_z, "Updating objects...");
+	for (u32 z = 0; z < dtH.size_z; z++)
+	{
+		for (u32 x = 0; x < dtH.size_x; x++)
+		{
+			if (!bUpdateSelectedOnly || (bUpdateSelectedOnly && m_Selected[z * dtH.size_x + x]))
+			{
+				UpdateSlotObjects(x, z);
+			}
+			pb->Inc();
+		}
+	}
+	EContext.UI->ProgressEnd(pb);
 
-    InvalidateCache		();
+	InvalidateCache();
 
-    return true;
+	return true;
 }
 
 CDetailManager::DetailIt EDetailManager::FindDOByNameIt(const char* name)

@@ -9,7 +9,6 @@
 #define custom_proc 1
 
 extern CEditorRenderDevice* EDevice;
-extern ECORE_API TUI* UI;
 void RefreshFrame(HWND hwnd)
 {
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,

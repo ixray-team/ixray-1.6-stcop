@@ -57,10 +57,10 @@ void CEditableMesh::GenerateRenderBuffers()
 		return;
 	}
 
-	m_RenderBuffers = new RBMap();
+	m_RenderBuffers = xr_make_unique<RBMap>();
 
 	GenerateVNormals(nullptr);
-	VERIFY(m_VertexNormals || m_Normals);
+	VERIFY(!m_VertexNormals.empty() || !m_Normals.empty());
 
 	for (auto sp_it = m_SurfFaces.begin(); sp_it != m_SurfFaces.end(); ++sp_it)
 	{
@@ -68,7 +68,7 @@ void CEditableMesh::GenerateRenderBuffers()
 		CSurface* S = sp_it->first;
 
 		const int face_count = face_lst.size();
-		VERIFY3(face_count, "Empty surface arrive.", S->_Name());
+		VERIFY3(face_count, "Empty surface arrive.", S->m_Name.c_str());
 
 		int vertex_count = face_count * 3;
 		if (S->m_Flags.is(CSurface::sf2Sided))
@@ -117,7 +117,7 @@ void CEditableMesh::UnloadRenderBuffers()
 					rb_it->pGeom.destroy();
 				}
 		}
-		xr_delete					(m_RenderBuffers);
+		m_RenderBuffers.reset();
 	}
 }
 
@@ -125,14 +125,14 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 {
 	VERIFY(surf);
 
-	const u32 dwFVF = surf->_FVF();
+	const u32 dwFVF = surf->m_dwFVF;
 	const u32 dwTexCnt = ((dwFVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
 
 	auto* vtx = reinterpret_cast<svertRender*>(src_data);
 
 	auto ProcessVertex = [&](const st_FaceVert& fv, u32 norm_id, bool invert_normal)
 	{
-		VERIFY2(fv.pindex < (int)m_VertCount, "- Face index out of range");
+		VERIFY2(fv.pindex < (int)m_Vertices.size(), "- Face index out of range");
 		vtx->P.x = m_Vertices[fv.pindex].x;
 		vtx->P.y = m_Vertices[fv.pindex].y;
 		vtx->P.z = m_Vertices[fv.pindex].z;
@@ -144,18 +144,18 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 
 		if (dwFVF & D3DFVF_NORMAL)
 		{
-			if (EPrefs->SmoothGroup == ESmoothGroup::Normals && m_Normals != nullptr)
+			if (EPrefs->SmoothGroup == ESmoothGroup::Normals && !m_Normals.empty())
 			{
 				vtx->N = m_Normals[norm_id];
 			}
 			else
 			{
-				if (m_VertexNormals == nullptr)
+				if (m_VertexNormals.empty())
 				{
 					GenerateVNormals(nullptr, true);
 				}
 
-				vtx->N = m_VertexNormals ? m_VertexNormals[norm_id] : m_Normals[norm_id];
+				vtx->N = !m_VertexNormals.empty() ? m_VertexNormals[norm_id] : m_Normals[norm_id];
 			}
 
 			if (invert_normal)
@@ -176,12 +176,12 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 			for (int t = 0; t < (int)dwTexCnt; ++t)
 			{
 				int idx = t + offs;
-				VERIFY2(idx < (int)vmref.count, "- VMap layer index out of range");
+				VERIFY2(idx < (int)vmref.size(), "- VMap layer index out of range");
 
-				const st_VMapPt& vm_pt = vmref.pts[idx];
+				const st_VMapPt& vm_pt = vmref[idx];
 				VERIFY2(vm_pt.vmap_index < (int)m_VMaps.size(), "- VMap index out of range");
 
-				st_VMap* vmap = m_VMaps[vm_pt.vmap_index];
+				st_VMap* vmap = m_VMaps[vm_pt.vmap_index].get();
 				VERIFY2(vm_pt.index < vmap->size(), "- VMap point index out of range");
 
 				if (vmap->type != vmtUV)
@@ -210,13 +210,13 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 	for (int fl_i = start_face; fl_i < start_face + num_face; ++fl_i)
 	{
 		u32 f_index = face_lst[fl_i];
-		if (f_index >= m_FaceCount)
+		if (f_index >= m_Faces.size())
 		{
 			Msg("!Incorrect UV reference in mesh %s", m_Name.c_str());
 			continue;
 		}
 
-		VERIFY(f_index < m_FaceCount);
+		VERIFY(f_index < m_Faces.size());
 		const st_Face& face = m_Faces[f_index];
 
 		// Front
@@ -334,7 +334,6 @@ void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurf
 		GenerateSVertices(RENDER_SKELETON_LINKS);
 	}
 
-	R_ASSERT2(m_SVertices, "SVertices empty!");
 	SurfFacesPairIt sp_it = m_SurfFaces.find(S);
 
 	if (sp_it == m_SurfFaces.end())

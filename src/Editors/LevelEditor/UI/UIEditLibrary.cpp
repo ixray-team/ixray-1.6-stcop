@@ -80,7 +80,7 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 		OnPropertiesClick();
 	}
 
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 void UIEditLibrary::OnItemUnfocused(ListItem* item)
@@ -144,7 +144,7 @@ UIEditLibrary* UIEditLibrary::Init()
 
 void UIEditLibrary::Show()
 {
-	UI->BeginEState(esEditLibrary);
+	EContext.UI->BeginEState(esEditLibrary);
 
 	if (!Form)
 	{
@@ -152,12 +152,12 @@ void UIEditLibrary::Show()
 	}
 
 	Form->bOpen = true;
-	UI->ActiveTabIndex = Form->TabIndex;
+	EContext.UI->ActiveTabIndex = Form->TabIndex;
 }
 
 void UIEditLibrary::Close()
 {
-	UI->EndEState(esEditLibrary);
+	EContext.UI->EndEState(esEditLibrary);
 	Form->bOpen = false;
 }
 
@@ -217,7 +217,7 @@ void UIEditLibrary::DrawObjects()
 void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 {
 	u32 LodsCnt = 0;
-	SPBItem* ProgbarState = UI->ProgressStart(props.size(), "Making LOD");
+	SPBItem* ProgbarState = EContext.UI->ProgressStart(props.size(), "Making LOD");
 
 	for (const shared_str& PropStr : props)
 	{
@@ -231,11 +231,11 @@ void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 
 		if (O && O->IsMUStatic())
 		{
-			ProgbarState->Inc(O->GetName());
+			ProgbarState->Inc(O->m_LibName.c_str());
 			bool HasLod = O->m_objectFlags.is(CEditableObject::eoUsingLOD);
 			O->m_objectFlags.set(CEditableObject::eoUsingLOD, false);
 			xr_string TexName;
-			TexName = EFS.ChangeFileExt(O->GetName(), "");
+			TexName = EFS.ChangeFileExt(O->m_LibName.c_str(), "");
 
 			string_path TempPath;
 			strcpy(TempPath, TexName.c_str());
@@ -245,7 +245,7 @@ void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 			ImageLib.CreateLODTexture(O, TexName.c_str(), LOD_IMAGE_SIZE, LOD_IMAGE_SIZE, LOD_SAMPLE_COUNT, xr_chrono_to_time_t(std::chrono::system_clock::now()), bHighQuality ? 4 /*7*/ : 1);
 			O->OnDeviceDestroy();
 			O->m_objectFlags.set(CEditableObject::eoUsingLOD, HasLod);
-			ELog.Msg(mtInformation, "+ LOD for object '%s' successfully created.", O->GetName());
+			ELog.Msg(mtInformation, "+ LOD for object '%s' successfully created.", O->m_LibName.c_str());
 			LodsCnt++;
 		}
 		else
@@ -253,13 +253,13 @@ void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 			ELog.Msg(mtError, "! Can't create LOD texture from non 'Multiple Usage' object.", SO->RefName());
 		}
 
-		if (UI->NeedAbort())
+		if (EContext.UI->NeedAbort())
 		{
 			break;
 		}
 	}
 
-	UI->ProgressEnd(ProgbarState);
+	EContext.UI->ProgressEnd(ProgbarState);
 
 	if (LodsCnt)
 	{
@@ -311,7 +311,7 @@ void UIEditLibrary::OnMakeThmClick()
 		if (Object && IsPreview)
 		{
 			string_path Filename;
-			FS.update_path(Filename, _objects_, ChangeFileExt(Object->GetName(), ".thm").c_str());
+			FS.update_path(Filename, _objects_, ChangeFileExt(Object->m_LibName.c_str(), ".thm").c_str());
 
 			if (ImageLib.CreateOBJThumbnail(Filename, Object, Object->Version()))
 			{
@@ -343,7 +343,7 @@ void UIEditLibrary::OnPropertiesClick()
 
 		for (SurfaceIt Iter = NE->m_Surfaces.begin(); Iter != NE->m_Surfaces.end(); Iter++)
 		{
-			AnsiString	Pref = AnsiString("Surfaces\\") + (*Iter)->_Name();
+			AnsiString	Pref = AnsiString("Surfaces\\") + (*Iter)->m_Name.c_str();
 			PropValue* V = PHelper().CreateCaption(Info, Pref.c_str(), "");
 			V->tag = (int)*Iter;
 			NE->FillSurfaceProps(*Iter, Pref.c_str(), Info);
@@ -376,18 +376,18 @@ void UIEditLibrary::DrawRightBar()
 
 			if (ImGui::Button("Make Thumbnail", ImVec2(-1, 0)))
 			{
-				UI->RedrawScene(false);
+				EContext.UI->RedrawScene(false);
 
-				UI->CommandList[TUI::ECommandListID::CurrentFrame].push_back
+				EContext.UI->CommandList[TUI::ECommandListID::CurrentFrame].push_back
 				(
 					[this]()
 					{
-						UI->ViewID = View.ViewportID;
+						EContext.UI->ViewID = View.ViewportID;
 						View.OnFocusCallback(); 
 					}
 				);
 
-				UI->CommandList[TUI::ECommandListID::NextFrame].push_back
+				EContext.UI->CommandList[TUI::ECommandListID::NextFrame].push_back
 				(
 					[this]()
 					{
@@ -562,7 +562,7 @@ void UIEditLibrary::RefreshSelected()
 			mt = SelectionToReference(nullptr);
 	}
 
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 void UIEditLibrary::PickSurface()
@@ -587,11 +587,11 @@ void UIEditLibrary::PickCallback()
 		Itm->SetUnselect();
 	}
 
-	UI->CurrentView().m_Camera.MouseRayFromPoint(StartPos, StartDir, View.GetMousePos());
+	EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(StartPos, StartDir, View.GetMousePos());
 
 	for (CSceneObject* Obj : m_pEditObjects)
 	{
-		float dis = UI->ZFar();
+		float dis = EContext.UI->ZFar();
 		SRayPickInfo pinf;
 		pinf.IsForcePickup = true;
 
@@ -601,7 +601,7 @@ void UIEditLibrary::PickCallback()
 			continue;
 
 		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
-		PrevClick = AnsiString("Surfaces\\") + AnsiString(surf->_Name());
+		PrevClick = AnsiString("Surfaces\\") + AnsiString(surf->m_Name.c_str());
 
 		UIPropertiesItem* Itm = InternalProps->FindPropItem(PrevClick.c_str());
 		
@@ -648,7 +648,7 @@ void UIEditLibrary::ExportObj()
 {
 	if (!IsPreview)
 	{
-		SPBItem* ProgbarState = UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
+		SPBItem* ProgbarState = EContext.UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
 		CSceneObject* SO = new CSceneObject((LPVOID)0, (LPSTR)0);
 
 		for (ListItem* SelItem : ActualItemList().m_SelectedItems)
@@ -667,28 +667,28 @@ void UIEditLibrary::ExportObj()
 			}
 		}
 
-		if (UI->NeedAbort())
+		if (EContext.UI->NeedAbort())
 			xr_delete(SO);
 
-		UI->ProgressEnd(ProgbarState);
+		EContext.UI->ProgressEnd(ProgbarState);
 	}
 	else
 	{
-		SPBItem* ProgbarState = UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
+		SPBItem* ProgbarState = EContext.UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
 		for (CSceneObject* SO : m_pEditObjects)
 		{
 			CEditableObject* O = SO->GetReference();
-			ProgbarState->Inc(O->GetName());
+			ProgbarState->Inc(O->m_LibName.c_str());
 
 			if (O)
 			{
 				ExportOneOBJ(O);
 			}
 
-			if (UI->NeedAbort())
+			if (EContext.UI->NeedAbort())
 				break;
 		}
-		UI->ProgressEnd(ProgbarState);
+		EContext.UI->ProgressEnd(ProgbarState);
 	}
 	ELog.DlgMsg(mtInformation, "Done.");
 }
@@ -707,12 +707,12 @@ void UIEditLibrary::OnModified()
 		CEditableObject* E = SO->GetReference();
 		if (E)
 		{
-			ModifyMap.insert(FS_File(E->GetName()));
-			E->Modified();
+			ModifyMap.insert(FS_File(E->m_LibName.c_str()));
+			E->bOnModified = true;
 			SO->UpdateTransform();
 		}
 	}
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 void UIEditLibrary::ChangeReference(const RStringVec& items)
@@ -749,15 +749,15 @@ void UIEditLibrary::OnRender()
 {
 	if (!Form || !Form->bOpen)
 	{
-		if (UI->GetEState() == EEditorState::esEditLibrary)
+		if (EContext.UI->GetEState() == EEditorState::esEditLibrary)
 		{
-			UI->EndEState(EEditorState::esEditLibrary);
+			EContext.UI->EndEState(EEditorState::esEditLibrary);
 		}
 		return;
 	}
-	else if (UI->GetEState() != EEditorState::esEditLibrary)
+	else if (EContext.UI->GetEState() != EEditorState::esEditLibrary)
 	{
-		UI->BeginEState(EEditorState::esEditLibrary);
+		EContext.UI->BeginEState(EEditorState::esEditLibrary);
 	}
 
 	if (!Form->IsPreview)

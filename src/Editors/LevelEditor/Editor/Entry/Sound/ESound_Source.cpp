@@ -295,7 +295,7 @@ void ESoundSource::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
 		case 1: Stop();		break;
 		case 2: Simulate(); break;
 	}
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	bModif = false;
 }
 

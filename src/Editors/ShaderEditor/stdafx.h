@@ -3,6 +3,7 @@
 //----------------------------------------------------
 #pragma once
 #include "../xrECore/stdafx.h"
+#include "../xrECore/Public/xrECore.h"
 #include "../xrECore/Editor/device.h"
 #include "../xrECore/Editor/UI_MainCommand.h"
 #include "../xrECore/Editor/UI_ToolsCustom.h"

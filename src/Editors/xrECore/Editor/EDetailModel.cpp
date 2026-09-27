@@ -52,14 +52,14 @@ void EDetail::Unload()
 
 const char* EDetail::GetName	()
 {
-	return m_pRefs?m_pRefs->GetName():m_sRefs.c_str();
+	return m_pRefs?m_pRefs->m_LibName.c_str():m_sRefs.c_str();
 }
 
 const char* EDetail::GetTextureName()
 {
 	VERIFY(m_pRefs);
-	CSurface* surf		= *m_pRefs->FirstSurface(); VERIFY(surf);
-	return surf->_Texture();
+	CSurface* surf		= m_pRefs->m_Surfaces.front(); VERIFY(surf);
+	return surf->m_Texture.c_str();
 }
 
 void EDetail::DefferedLoad()
@@ -69,10 +69,10 @@ void EDetail::DefferedLoad()
 void EDetail::OnDeviceCreate()
 {
 	if (!m_pRefs)		return;
-	CSurface* surf		= *m_pRefs->FirstSurface();
+	CSurface* surf		= m_pRefs->m_Surfaces.front();
 	VERIFY				(surf);
-	xr_string	s_name	= surf->_ShaderName();
-	xr_string	t_name	= surf->_Texture();
+	xr_string	s_name	= surf->m_ShaderName.c_str();
+	xr_string	t_name	= surf->m_Texture.c_str();
 	shader.create		(s_name.c_str(),t_name.c_str());
 }
 
@@ -138,12 +138,12 @@ bool EDetail::Update(const char* name)
 		return false;
 	}
 
-	if (R->SurfaceCount() != 1) {
+	if (R->m_Surfaces.size() != 1) {
 		ELog.Msg(mtError, "Object must contain 1 material.");
 		Lib.RemoveEditObject(R);
 		return false;
 	}
-	if (R->MeshCount() == 0) {
+	if (R->m_Meshes.size() == 0) {
 		ELog.Msg(mtError, "Object must contain 1 mesh.");
 		Lib.RemoveEditObject(R);
 		return false;
@@ -157,23 +157,25 @@ bool EDetail::Update(const char* name)
 	m_pRefs = R;
 
 	// fill geometry
-	CEditableMesh* M = *m_pRefs->FirstMesh();
+	CEditableMesh* M = m_pRefs->m_Meshes.front();
 	U16Vec inds;
 
 	// fill vertices
 	bv_bb.invalidate();
 	u32 idx = 0;
-	for (u32 f_id = 0; f_id < M->GetFCount(); f_id++)
+	for (u32 f_id = 0; f_id < M->m_Faces.size(); f_id++)
 	{
-		const  st_Face& F = M->GetFaces()[f_id];
+		const  st_Face& F = M->m_Faces.data()[f_id];
 		u16 ind[3];
-		for (int k = 0; k < 3; k++, idx++) {
-			const Fvector& P = M->GetVertices()[F.pv[k].pindex];
-			st_VMapPt& vm = M->GetVMRefs()[F.pv[k].vmref].pts[0];
-			Fvector2& uv = M->GetVMaps()[vm.vmap_index]->getUV(vm.index);
+		for (int k = 0; k < 3; k++, idx++)
+		{
+			const Fvector& P = M->m_Vertices.data()[F.pv[k].pindex];
+			const st_VMapPt& vm = M->m_VMRefs[F.pv[k].vmref][0];
+			Fvector2& uv = M->m_VMaps[vm.vmap_index]->getUV(vm.index);
 			ind[k] = _AddVert(P, uv.x, uv.y);
 			bv_bb.modify(vertices[ind[k]].P);
 		}
+
 		if (isDegenerated(ind))	continue;
 		if (isEqual(inds, ind))	continue;
 		inds.push_back(ind[0]);
@@ -301,11 +303,11 @@ void EDetail::SaveLTX(CInifile& ini, const char* sect_name)
 void EDetail::Export(IWriter& F, const char* tex_name, const Fvector2& offs, const Fvector2& scale, bool rot)
 {
 	R_ASSERT			(m_pRefs);
-	CSurface* surf		= *m_pRefs->FirstSurface();
+	CSurface* surf		= m_pRefs->m_Surfaces.front();
 	R_ASSERT			(surf);
 	// write data
-	F.w_stringZ			(surf->_ShaderName());
-	F.w_stringZ			(tex_name);//surf->_Texture());
+	F.w_stringZ			(surf->m_ShaderName.c_str());
+	F.w_stringZ			(tex_name);//surf->m_Texture.c_str());
 
 	F.w_u32				(m_Flags.get());
 	F.w_float			(m_fMinScale);
@@ -326,13 +328,13 @@ void EDetail::Export(IWriter& F, const char* tex_name, const Fvector2& offs, con
 
 void EDetail::Export(const char* name)
 {
-	CSurface* surf		= *m_pRefs->FirstSurface();
+	CSurface* surf		= m_pRefs->m_Surfaces.front();
 	R_ASSERT			(surf);
 	IWriter* F 			= FS.w_open(name);
 	if (F){
 		Fvector2 offs	= {0,0};
 		Fvector2 scale	= {1,1};
-		Export			(*F,surf->_Texture(),offs,scale,false);
+		Export			(*F,surf->m_Texture.c_str(),offs,scale,false);
 		FS.w_close		(F);
 	}else{
 		Log				("!Can't export detail:",name);

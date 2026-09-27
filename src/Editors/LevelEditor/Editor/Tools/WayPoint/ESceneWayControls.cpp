@@ -35,7 +35,7 @@ bool  TUI_ControlWayPointAdd::Start(TShiftState Shift)
         return false;
     }
     Fvector p;
-    if (LUI->PickGround(p,UI->m_CurrentRStart,UI->m_CurrentRDir,1))
+	if (LUI->PickGround(p, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, 1))
     {
         CWayObject* obj = (CWayObject*)lst.front(); R_ASSERT(obj);
         CWayPoint* last_wp=obj->GetFirstSelected();

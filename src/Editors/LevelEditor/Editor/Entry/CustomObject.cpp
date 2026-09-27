@@ -91,7 +91,7 @@ void CCustomObject::Show( bool flag )
     if (!m_RT_Flags.is(flRT_Visible)) 
     	m_RT_Flags.set(flRT_Selected, false);
         
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
 };
 
 void CCustomObject::Lock( bool flag )
@@ -259,7 +259,7 @@ void CCustomObject::Render(int priority, bool strictB2F)
 }
 
 bool CCustomObject::RaySelect(int flag, const Fvector& start, const Fvector& dir, bool bRayTest){
-	float dist = UI->ZFar();
+	float dist = EContext.UI->ZFar();
 	if ((bRayTest&&RayPick(dist,start,dir))||!bRayTest){
 		Select(flag);
         return true;

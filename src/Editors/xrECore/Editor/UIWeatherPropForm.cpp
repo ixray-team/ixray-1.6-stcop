@@ -135,7 +135,7 @@ void UIWeatherPropForm::Draw()
 				if (ImGui::MenuItem("None", "", &SelectedNone))
 				{
 					psDeviceFlags.set(rsEnvironment, false);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -149,7 +149,7 @@ void UIWeatherPropForm::Draw()
 						psDeviceFlags.set(rsEnvironment, true);
 						env.SetWeather(Name.c_str(), true);
 						EPrefs->sWeather = env.CurrentCycleName;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 
 					if (ImGui::IsItemHovered())
@@ -176,7 +176,7 @@ void UIWeatherPropForm::Draw()
 				if (ImGui::Checkbox("Sun Visible", &m_sun_visible))
 				{
 					IsShowSunChanged();
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -193,34 +193,15 @@ void UIWeatherPropForm::Draw()
 				if (ImGui::Checkbox("Use Sun Dir", &m_use_sun_dir))
 				{
 					IsUseSunDirChanged();
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-					// ImGui::SetTooltip("Turn Off/on using the weather movement of the sun.\n If enabled, solar illumination will correspond to the position of the sun in weather cycles,\n otherwise the sun will be static and correspond to the position set in the global settings."_RU >>
-					// u8"Выкл/вкл использование погодного движения солнца.\n Если включить, то освещение солнцем будет сооответствовать положению солнца в погодных циклах,\n в ином случае солнце будет статично и соответствовать положению выставленному в глобальных настройках.");
 				}
 			}
-			/*/ --------------------------------------------------------------------------------------------
-			ImGui::Spacing();
-			ImGui::SameLine(10, 0);
-			// --------------------------------------------------------------------------------------------
-			// Использовать Hemi
-			{
-				if (ImGui::Checkbox("Use Hemi", &m_use_hemi))
-				{
-					IsUseHemiChanged();
-					UI->RedrawScene();
-				}
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-					ImGui::SetTooltip("Turn Off/on using Hemi lighting.");
-				}
-			}*/
 		}
-		// --------------------------------------------------------------------------------------------
+
 		ImGui::Spacing();
 		ImGui::Separator();
 		ImGui::Spacing();
@@ -238,7 +219,7 @@ void UIWeatherPropForm::Draw()
 			if (ImGui::Checkbox("Collision of raindrops", &m_raindrop_collision))
 			{
 				IsRaindropCollisionChanged();
-				UI->RedrawScene();
+				EContext.UI->RedrawScene();
 			}
 			if (ImGui::IsItemHovered())
 			{
@@ -256,7 +237,7 @@ void UIWeatherPropForm::Draw()
 			{
 				IsSndOnRoofChanged();
 				g_pGamePersistent->Environment().ED_Reload();
-				UI->RedrawScene();
+				EContext.UI->RedrawScene();
 			}
 			if (ImGui::IsItemHovered())
 			{
@@ -274,7 +255,7 @@ void UIWeatherPropForm::Draw()
 			if (ImGui::Checkbox("Fog", &UseFog))
 			{
 				psDeviceFlags.set(rsFog, UseFog);
-				UI->RedrawScene();
+				EContext.UI->RedrawScene();
 			}
 			if (ImGui::IsItemHovered())
 			{
@@ -323,7 +304,7 @@ void UIWeatherPropForm::Draw()
 			if (ImGui::Checkbox("Stats", &sStats))
 			{
 				psDeviceFlags.set(rsStatistic, sStats);
-				UI->RedrawScene();
+				EContext.UI->RedrawScene();
 			}
 			if (ImGui::IsItemHovered())
 			{
@@ -341,7 +322,7 @@ void UIWeatherPropForm::Draw()
 			if (ImGui::Checkbox("Draw Grid", &DrawGrid))
 			{
 				psDeviceFlags.set(rsDrawGrid, DrawGrid);
-				UI->RedrawScene();
+				EContext.UI->RedrawScene();
 			}
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -360,7 +341,7 @@ void UIWeatherPropForm::Draw()
 			if (selectedWeather)
 				env.SetWeather(EPrefs->sWeather, true);
 			env.fTimeFactor = m_speed_time;
-			UI->RedrawScene();
+			EContext.UI->RedrawScene();
 		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -373,7 +354,7 @@ void UIWeatherPropForm::Draw()
 		ImGui::SetCursorPosX((ImGui::GetWindowWidth() - sizeButton.x + (sizeButton.x + 3)) / 2);
 		if (ImGui::Button("Close", sizeButton))
 		{
-			UI->RedrawScene();
+			EContext.UI->RedrawScene();
 			bOpen = false;
 		}
 		if (ImGui::IsItemHovered())

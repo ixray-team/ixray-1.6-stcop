@@ -37,7 +37,7 @@ CCommandVar CShaderTool::CommandReload(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar CShaderTool::CommandClear(CCommandVar p1, CCommandVar p2)
 {
-    UI->CurrentView().m_Camera.Reset();
+	EContext.UI->CurrentView().m_Camera.Reset();
     return true;
 }
 CCommandVar CShaderTool::CommandUpdateList(CCommandVar p1, CCommandVar p2)
@@ -116,7 +116,7 @@ void CShaderMain::ProgressDraw()
 //---------------------------------------------------------------------------
 void CShaderMain::RealQuit()
 {
-    UI->Quit();
+	EContext.UI->Quit();
 }
 //---------------------------------------------------------------------------
 

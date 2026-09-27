@@ -11,7 +11,7 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 	}
 
 	CEditableMesh* Mesh = new CEditableMesh(OutMesh);
-	OutMesh->AppendMesh(Mesh);
+	OutMesh->m_Meshes.push_back(Mesh);
 
 	const u32 Width = Heightmap.Width;
 	const u32 Height = Heightmap.Height;
@@ -105,7 +105,8 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 		0
 	);
 
-	st_VMap* mainUvMap = new st_VMap("Texture", vmtUV, false);
+	Mesh->m_VMaps.push_back(xr_make_unique<st_VMap>("Texture", vmtUV, false));
+	st_VMap* mainUvMap = Mesh->m_VMaps.back().get();
 	const float uvStepX = 1.0f / (Width - 1);
 	const float uvStepZ = 1.0f / (Height - 1);
 
@@ -120,7 +121,6 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 			mainUvMap->appendUV(uv);
 		}
 	}
-	Mesh->m_VMaps.push_back(mainUvMap);
 
 	Mesh->m_VMRefs.resize(
 		Vertices.size()
@@ -128,10 +128,9 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 	xr_parallel_for(u32(0), static_cast<u32>(Vertices.size()), [&](u32 vertIdx)
 					{
 						st_VMapPtLst& vmref = Mesh->m_VMRefs[vertIdx];
-						vmref.count = 1; // Один UV-слой на вершину
-						vmref.pts = xr_alloc<st_VMapPt>(1);
-						vmref.pts[0].vmap_index = 0;  // Индекс нашей UV-карты
-						vmref.pts[0].index = vertIdx; // UV = индексу вершины
+						vmref.resize(1);
+						vmref[0].vmap_index = 0;
+						vmref[0].index = vertIdx;
 					});
 
 	for (u32 faceIdx = 0; faceIdx < Faces.size(); ++faceIdx)
@@ -147,21 +146,21 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 
 	// Surface properties are owned by the CTerrain object and supplied via
 	// the template — never hardcoded here.
-	Surface->SetName("terrain");
+	Surface->m_Name = ("terrain");
 	if (Template.Shader && Template.Shader[0])			Surface->SetShader(Template.Shader);
-	if (Template.ShaderXRLC && Template.ShaderXRLC[0])	Surface->SetShaderXRLC(Template.ShaderXRLC);
-	if (Template.GameMtl && Template.GameMtl[0])			Surface->SetGameMtl(Template.GameMtl);
+	if (Template.ShaderXRLC && Template.ShaderXRLC[0])	Surface->m_ShaderXRLCName = (Template.ShaderXRLC);
+	if (Template.GameMtl && Template.GameMtl[0])			Surface->m_GameMtlName = (Template.GameMtl);
 	if (Template.Texture && Template.Texture[0])			Surface->SetTexture(Template.Texture);
-	Surface->SetVMap("Texture");
+	Surface->m_VMap = ("Texture");
 
-	Surface->SetFVF(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1);
+	Surface->m_dwFVF = (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1);
 	Surface->OnDeviceCreate();
 
 	IntVec FaceIndices(Faces.size());
 	for (u32 i = 0; i < Faces.size(); ++i)
 		FaceIndices[i] = i;
 
-	Mesh->Surfaces()[Surface] = FaceIndices;
+	Mesh->m_SurfFaces[Surface] = FaceIndices;
 
 	Mesh->GenerateFNormals();
 	Mesh->GenerateVNormals(nullptr, true);

@@ -176,7 +176,7 @@ void IM_Manipulator::CommandScale(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatri
 			obj->SetScale(newScale);
 		}
 
-		UI->UpdateScene();
+		EContext.UI->UpdateScene();
 	}
 	else if (IsSingleObject && ImGuizmo::IsUsing())
 	{
@@ -211,7 +211,7 @@ void IM_Manipulator::CommandScale(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatri
 		Obj->SetScale(newScale);
 		Obj->FPosition = ObjectMatrix.c;
 
-		UI->UpdateScene();
+		EContext.UI->UpdateScene();
 	}
 
 	retFlag = false;
@@ -261,9 +261,8 @@ void IM_Manipulator::CommandRotate(Fmatrix& ObjectMatrix, Fmatrix& DeltaMatrix, 
 		(*it->*Handler)(axisZ, -DeltaXYZ.z);
 	}
 
-	UI->UpdateScene();
+	EContext.UI->UpdateScene();
 }
-
 
 void IM_Manipulator::CommandMove(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatrix& DeltaMatrix, SAINode* NodeObject)
 {
