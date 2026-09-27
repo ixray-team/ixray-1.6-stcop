@@ -220,7 +220,7 @@ public:
 	virtual void					rmFar					();
 	virtual void					rmNormal				();
 
-	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs);
+	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase = nullptr);
 
 	// Constructor/destructor/loader
 	CRender													();
