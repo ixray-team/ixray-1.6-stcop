@@ -13,7 +13,8 @@ class CBlend;
 class CMotionDef;
 class CMotion;
 
-enum EEditMode{
+enum EActorEditMode
+{
 	emObject,
 	emMotion,
 	emBone,
@@ -127,7 +128,7 @@ class CActorTools: public CToolCustom
 	u32                 m_pEditObjectType;
 	bool				m_bObjectModified;
 	shared_str			m_tmp_mot_refs;
-	EEditMode			m_EditMode;
+	EActorEditMode m_EditMode;
 	xr_string			m_CurrentMotion;
 	u16					m_CurrentSlot;
 

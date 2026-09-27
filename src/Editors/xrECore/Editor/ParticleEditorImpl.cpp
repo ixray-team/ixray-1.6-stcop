@@ -827,7 +827,7 @@ bool CPSLibrary::Save()
 bool CPSLibrary::Save2()
 {
     string_path fn;
-    SPBItem* pb = UI->ProgressStart(m_PEDs.size() + m_PGDs.size() + m_PACDs.size(), "Saving particles...");
+	SPBItem* pb = EContext.UI->ProgressStart(m_PEDs.size() + m_PGDs.size() + m_PACDs.size(), "Saving particles...");
 
     for (PS::PEDIt it = m_PEDs.begin(); it != m_PEDs.end(); ++it)
     {
@@ -884,7 +884,7 @@ bool CPSLibrary::Save2()
 		ini.save_as(fn);
 	}
 	
-    UI->ProgressEnd(pb);
+    EContext.UI->ProgressEnd(pb);
     return true;
 }
 

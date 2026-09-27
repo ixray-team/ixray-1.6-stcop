@@ -496,7 +496,7 @@ void ESceneAIMapTool::MotionSimulate(Fvector& result, Fvector& start, Fvector& e
                 CSurface* surf		= R->e_mesh->GetSurfaceByFaceID(R->tag);
 //.				SGameMtl* mtl 		=  GameMaterialLibrary->GetMaterialByID(surf->_GameMtl());
 //.				if (mtl->Flags.is(SGameMtl::flPassable))continue;
-                Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+                Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
                 if (!c_sh->flags.bCollision) 			continue;
             }
             clContactedT.push_back(cl_tri());

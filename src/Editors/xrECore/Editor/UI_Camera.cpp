@@ -45,7 +45,7 @@ void CUI_Camera::SetStyle(ECameraStyle new_style)
         BuildCamera		();
     }
 	m_Style				= new_style;
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
 }
 
 void CUI_Camera::Reset()
@@ -58,7 +58,7 @@ void CUI_Camera::Reset()
 
 const Fvector& CUI_Camera::GetPosition() const
 {
-    if (UI->IsPlayInEditor())
+    if (EContext.UI->IsPlayInEditor())
     {
         static Fvector LastPos;
         LastPos = g_pGameLevel->Cameras().Position();
@@ -70,7 +70,7 @@ const Fvector& CUI_Camera::GetPosition() const
 
 const Fvector& CUI_Camera::GetRight() const
 {
-	if (UI->IsPlayInEditor())
+	if (EContext.UI->IsPlayInEditor())
 	{
         static Fvector LastPos;
         LastPos = g_pGameLevel->Cameras().Right();
@@ -82,7 +82,7 @@ const Fvector& CUI_Camera::GetRight() const
 
 const Fvector& CUI_Camera::GetNormal() const
 {
-	if (UI->IsPlayInEditor())
+	if (EContext.UI->IsPlayInEditor())
 	{
         static Fvector LastPos;
         LastPos = g_pGameLevel->Cameras().Up();
@@ -94,7 +94,7 @@ const Fvector& CUI_Camera::GetNormal() const
 
 const Fvector& CUI_Camera::GetDirection() const
 {
-	if (UI->IsPlayInEditor())
+	if (EContext.UI->IsPlayInEditor())
 	{
         static Fvector LastPos;
         LastPos = g_pGameLevel->Cameras().Direction();
@@ -143,7 +143,7 @@ void CUI_Camera::BuildCamera()
 
 void CUI_Camera::SetDepth(float _far, bool bForcedUpdate)
 {
-    if (m_Zfar!=_far)	{m_Zfar=_far; UI->Resize(bForcedUpdate);}
+    if (m_Zfar!=_far)	{m_Zfar=_far; EContext.UI->Resize(bForcedUpdate);}
 }
 
 void CUI_Camera::SetViewport(float _near, float _far, float _fov, bool Silent)
@@ -153,7 +153,7 @@ void CUI_Camera::SetViewport(float _near, float _far, float _fov, bool Silent)
         m_Znear = _near;
 
         if (!Silent)
-            UI->Resize();
+            EContext.UI->Resize();
     }
 
     if (m_Zfar != _far)
@@ -161,7 +161,7 @@ void CUI_Camera::SetViewport(float _near, float _far, float _fov, bool Silent)
         m_Zfar = _far;
 
         if (!Silent)
-            UI->Resize();
+            EContext.UI->Resize();
     }
 
     if (EDevice->fFOV != _fov)
@@ -169,7 +169,7 @@ void CUI_Camera::SetViewport(float _near, float _far, float _fov, bool Silent)
         EDevice->fFOV = _fov;
 
         if (!Silent)
-            UI->Resize();
+            EContext.UI->Resize();
     }
 }
 
@@ -194,15 +194,15 @@ void CUI_Camera::Update(float dt)
     		else if (bRightDn) 	m_Position.sub( vmove );
 
             if (m_Shift&ssCtrl){
-                float dist = UI->ZFar();
-            	if (Tools->RayPick(m_Position,down_dir,dist))//UI->R PickGround(pos,m_Position,dir,-1))
+                float dist = EContext.UI->ZFar();
+            	if (Tools->RayPick(m_Position,down_dir,dist))//EContext.UI->R PickGround(pos,m_Position,dir,-1))
                 	m_Position.y = m_Position.y+down_dir.y*dist+m_FlyAltitude;
                 else
                 	m_Position.y = m_FlyAltitude;
                 	
             }
 
-        	UI->RedrawScene();
+        	EContext.UI->RedrawScene();
 	    }
         BuildCamera();
     }
@@ -248,7 +248,7 @@ bool CUI_Camera::MoveStart(TShiftState Shift)
     if (bTest && !m_bMoving)
     {
         ShowCursor(false);
-        UI->IR_GetMousePosReal(m_StartPos);
+        EContext.UI->IR_GetMousePosReal(m_StartPos);
         m_bMoving = true;
     }
 
@@ -261,7 +261,7 @@ bool CUI_Camera::MoveEnd(TShiftState Shift)
     m_Shift = Shift;
     if ((!Shift & ssLeft) || (!Shift & ssShift))
     {
-        SDL_WarpMouseInWindow(UI->CurrentView().WndHandle, m_StartPos.x, m_StartPos.y);
+        SDL_WarpMouseInWindow(EContext.UI->CurrentView().WndHandle, m_StartPos.x, m_StartPos.y);
         ShowCursor(true);
         m_bMoving = false;
         return true;
@@ -277,7 +277,7 @@ bool CUI_Camera::Process(TShiftState Shift, int dx, int dy)
 // camera move
         if( dx || dy )
         {
-            SDL_WarpMouseInWindow(UI->CurrentView().WndHandle, m_StartPos.x, m_StartPos.y);
+            SDL_WarpMouseInWindow(EContext.UI->CurrentView().WndHandle, m_StartPos.x, m_StartPos.y);
             switch (m_Style){
             case csPlaneMove:
                 if ((m_Shift & ssLeft) && (m_Shift & ssRight)) 
@@ -300,7 +300,7 @@ bool CUI_Camera::Process(TShiftState Shift, int dx, int dy)
             	ArcBall(m_Shift,dx,dy);
             break;
             }
-		    UI->RedrawScene();
+		    EContext.UI->RedrawScene();
         }
         return true;
 	}
@@ -334,8 +334,8 @@ bool CUI_Camera::KeyUp(WORD Key, TShiftState Shift)
 
 void CUI_Camera::MouseRayFromPoint( Fvector& start, Fvector& direction, const Ivector2& point )
 {
-	int halfwidth  = UI->CurrentView().RTSize.x * 0.5f;
-	int halfheight = UI->CurrentView().RTSize.y * 0.5f;
+	int halfwidth  = EContext.UI->CurrentView().RTSize.x * 0.5f;
+	int halfheight = EContext.UI->CurrentView().RTSize.y * 0.5f;
 
     if (!halfwidth||!halfheight) return;
 

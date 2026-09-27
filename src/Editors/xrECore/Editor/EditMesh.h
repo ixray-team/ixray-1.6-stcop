@@ -54,11 +54,9 @@ public:
 		// delete >max_influence weights
 		if (size()>max_influence) erase(begin()+max_influence,end()); 
 		// accumulate weights
-		float sum_weight=0;
-		WBIt it;
-		for (it=begin(); it!=end(); it++) sum_weight+=it->weight;
-		// normalize weights
-		for (it=begin(); it!=end(); it++) it->weight/=sum_weight;
+		float SumWeight=0;
+		for (st_WB& Weight : *this) SumWeight+=Weight.weight;
+		for (st_WB& Weight : *this) Weight.weight/=SumWeight;
 //		sort_by_bone	(); // need only for export (before add vertex sort_by_bone)
 	}
 };
@@ -66,13 +64,21 @@ public:
 using VWBVec = xr_vector<st_VertexWB>;
 using VWBIt = VWBVec::iterator;
 
-struct ECORE_API st_VMapPt{
-	int				vmap_index;	// ссылка на мапу
-	int				index;		// индекс в V-мапе на uv/w
-	st_VMapPt(){vmap_index=-1;index=-1;}
+struct ECORE_API st_VMapPt
+{
+	int vmap_index; // ссылка на мапу
+	int index;		// индекс в V-мапе на uv/w
+	st_VMapPt()
+	{
+		vmap_index = -1;
+		index = -1;
+	}
 };
+
 // uv's
-class ECORE_API st_VMap{
+class ECORE_API st_VMap:
+	public xray::noncopyable
+{
 	FloatVec    	vm;			// u,v - координаты или weight
 public:
 	shared_str		name;		// vertex uv map name
@@ -114,10 +120,7 @@ public:
 	IC void			copyfrom	(float* src, int cnt)	{resize(cnt); CopyMemory(&*vm.begin(),src,cnt*dim*4);}
 };
 
-struct st_VMapPtLst{
-	u8				count;
-	st_VMapPt*		pts;
-};
+using st_VMapPtLst = xr_vector<st_VMapPt>;
 using VMRefsVec = xr_vector<st_VMapPtLst>;
 using VMRefsIt = VMRefsVec::iterator;
 
@@ -176,7 +179,7 @@ struct ECORE_API st_MeshOptions{
 using AdjVec = xr_vector<IntVec>;
 using AdjIt = AdjVec::iterator;
 
-using VMapVec = xr_vector<st_VMap*>;
+using VMapVec = xr_vector<xr_unique_ptr<st_VMap>>;
 using VMapIt = VMapVec::iterator;
 
 using SurfFaces = xr_map<CSurface*, IntVec>;
@@ -217,10 +220,6 @@ class ECORE_API CEditableMesh
 	friend class CXRayObjectExport;
 	friend class CXRaySkinExport;
 
-	shared_str			m_Name;
-
-	CEditableObject*	m_Parent;
-
 	void            GenerateCFModel		();
 	void			UnloadCForm     	();
 
@@ -235,29 +234,27 @@ public:
 	void            GenerateSVertices	(u32 influence);
 	void 			GenerateAdjacency	();
 
-	bool			IsGeneratedSVertices(u32 influence)		{return (m_SVertices && (m_SVertInfl==influence));}
+	bool			IsGeneratedSVertices(u32 influence)		{return !m_SVertices.empty() && (m_SVertInfl==influence);}
 	
 	void			UnloadFNormals   	(bool force=false);
 	void			UnloadVNormals   	(bool force=false);
 	void			UnloadSVertices  	(bool force=false);
 	void			UnloadAdjacency  	(bool force=false);
-IC  Fvector*	    Vertices			()					{ return m_Vertices; }	//
-IC	st_Face*	    Faces				()					{ return m_Faces; }   // + some array size!!!
-IC  SurfFaces	    &Surfaces			()					{ return m_SurfFaces; }
-private:
-	// internal variables
+public:
 	enum{
 		flVisible	= (1<<0),
 		flLocked	= (1<<1),
 		flSGMask	= (1<<2),
 	};
 	Flags8			m_Flags;
-public:
+	shared_str		m_Name;
+	CEditableObject* m_Parent = nullptr;
+	SurfFaces	    m_SurfFaces;
 	st_MeshOptions	m_Ops;
 	VMapVec		    m_VMaps;
 	VMRefsVec	    m_VMRefs;
-	st_Face* m_Faces;    // + some array size!!!
-	Fvector* m_Vertices;	// |
+	xr_vector<st_Face> m_Faces;
+	xr_vector<Fvector> m_Vertices;
 
 	typedef xr_hash_map<u8, xr_pair<u32, Fcolor>> EditColor;
 	typedef xr_hash_map<CCustomObject*, EditColor> EditColorMesh;
@@ -270,23 +267,18 @@ protected:
 	int				m_AdjsRefs;
 	int				m_SVertRefs;
 
-	
-	u32				m_VertCount;
-	u32				m_FaceCount;
-	
-	AdjVec*			m_Adjs;    	// + some array size!!!
-	u32*			m_SmoothGroups;		// |
-	Fvector*		m_FaceNormals;	// |
-	Fvector*		m_VertexNormals;	// | *3
-	Fvector*        m_Normals;    // | *3
-	st_SVert*		m_SVertices;// | *3
-	SurfFaces	    m_SurfFaces;
+	xr_unique_ptr<AdjVec> m_Adjs;
+	xr_vector<u32>		m_SmoothGroups;
+	xr_vector<Fvector>	m_FaceNormals;
+	xr_vector<Fvector>	m_VertexNormals;
+	xr_vector<Fvector>	m_Normals;
+	xr_vector<st_SVert>	m_SVertices;
 
 #if 1
-	CDB::MODEL*		m_CFModel;
+	xr_unique_ptr<CDB::MODEL> m_CFModel;
 #endif
 public:
-	RBMap*			m_RenderBuffers;
+	xr_unique_ptr<RBMap> m_RenderBuffers;
 
 	EditColorMesh m_color_map;
 
@@ -306,31 +298,16 @@ public:
 	void			Clear					();
 	void			Create					(st_Face* faces, u32 face_count, Fvector* vertices, u32 vertex_count, Fvector* normals, u32 normal_count);
 
-	IC void			SetName					(const char* name){m_Name=name;}
-	IC shared_str	Name					(){return m_Name;}
 	void            GetBox					(Fbox& box){box.set(m_Box);}
 	CSurface*		GetSurfaceByFaceID		(u32 fid);
 	void			GetFaceTC				(u32 fid, const Fvector2* tc[3]);
 	void			GetFacePT				(u32 fid, const Fvector* pt[3]);
-	IC bool 		Visible					(){return m_Flags.is(flVisible); }
-	IC void 		Show					(bool bVisible){m_Flags.set(flVisible,bVisible);}
-
-	// mesh modify routine
 	void            Transform				(const Fmatrix& parent);
-
-	IC CEditableObject*	Parent				(){ return m_Parent;	}
-	IC u32				GetFCount			(){ return m_FaceCount;	}
-	IC const st_Face*	GetFaces			(){ return m_Faces;		}
-	IC const u32*		GetSmoothGroups		(){ return m_SmoothGroups;	}
-	IC const Fvector*	GetVertices			(){ return m_Vertices;		}
-	IC u32				GetVCount			(){ return m_VertCount;	}
-	IC const VMapVec&	GetVMaps			(){ return m_VMaps;		}
-	IC const VMRefsVec&	GetVMRefs			(){ return m_VMRefs;	}
-	IC const SurfFaces&	GetSurfFaces		(){ return m_SurfFaces;	}
-	IC const Fvector*	GetFNormals			(){ VERIFY(0!=m_FaceNormals); return m_FaceNormals;	}
-	IC const Fvector*	GetVNormals			(){ VERIFY(0!=m_VertexNormals); return m_VertexNormals;	}
-	IC const st_SVert*	GetSVertices		(){ VERIFY(0!=m_SVertices);return m_SVertices;	}
-	IC const Fvector*	GetNormals			(){ VERIFY(0!=m_Normals); return m_Normals; }
+	IC const u32*		GetSmoothGroups		(){ return m_SmoothGroups.empty() ? nullptr : m_SmoothGroups.data();	}
+	IC const Fvector*	GetFNormals			(){ VERIFY(!m_FaceNormals.empty()); return m_FaceNormals.data();	}
+	IC const Fvector*	GetVNormals			(){ VERIFY(!m_VertexNormals.empty()); return m_VertexNormals.data();	}
+	IC const st_SVert*	GetSVertices		(){ VERIFY(!m_SVertices.empty());return m_SVertices.data();	}
+	IC const Fvector*	GetNormals			(){ VERIFY(!m_Normals.empty()); return m_Normals.data(); }
 	// pick routine
 	bool            RayPick					(float& dist, const Fvector& start, const Fvector& dir, const Fmatrix& inv_parent, SRayPickInfo* pinf = nullptr);
 #if 1
@@ -356,7 +333,6 @@ public:
 
 	// statistics methods
 	int 			GetFaceCount			(bool bMatch2Sided=true, bool bIgnoreOCC=true);
-	int 			GetVertexCount			(){return m_VertCount;}
 	int 			GetSurfFaceCount		(CSurface* surf, bool bMatch2Sided=true);
 	float			CalculateSurfaceArea	(CSurface* surf, bool bMatch2Sided);
 	float			CalculateSurfacePixelArea(CSurface* surf, bool bMatch2Sided);

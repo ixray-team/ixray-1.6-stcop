@@ -96,7 +96,7 @@ CPlanar::~CPlanar()
 void CPlanar::MoveTo(const Fvector& pos, const Fvector& /*up*/)
 {
 	SetPosition(pos);
-	UI->UpdateScene();
+	EContext.UI->UpdateScene();
 }
 
 void CPlanar::RebuildProjection()
@@ -269,7 +269,7 @@ void CPlanar::OnStiffnessChange(PropValue* /*prop*/)
 {
 	clamp(m_Stiffness, 0.f, 1.f);
 	RebuildProjection();
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 void CPlanar::OnShowHint(AStringVec& dest)

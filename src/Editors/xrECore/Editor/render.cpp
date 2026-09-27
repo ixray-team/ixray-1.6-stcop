@@ -251,7 +251,7 @@ CRender::CRender()
 
 CRender::~CRender()
 {
-	xr_delete(Target);
+	Target.reset();
 }
 
 void CRender::Initialize()
@@ -265,12 +265,12 @@ void CRender::ShutDown()
 
 void CRender::OnDeviceCreate()
 {
-	Models = new CModelPool();
+	Models = xr_make_unique<CModelPool>();
 }
 
 void CRender::OnDeviceDestroy()
 {
-	xr_delete(Models);
+	Models.reset();
 }
 
 ref_shader	CRender::getShader(int id) { return 0; }
@@ -499,11 +499,11 @@ void 			CRender::model_Render(IRenderVisual* m_pVisual, const Fmatrix& mTransfor
 void 			CRender::model_RenderSingle(IRenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD) { Models->RenderSingle(dynamic_cast<dxRender_Visual*>(m_pVisual), mTransform, m_fLOD); }
 
 void CRender::reset_begin() {
-	xr_delete(Target);
+	Target.reset();
 }
 
 void CRender::reset_end() {
-	Target = new CRenderTarget();
+	Target = xr_make_unique<CRenderTarget>();
 }
 
 void CRender::set_HUD(bool V)
@@ -570,7 +570,7 @@ void CRender::create()
 
 void CRender::destroy()
 {
-	xr_delete(Target);
+	Target.reset();
 }
 
 void CRender::level_Load(IReader*)

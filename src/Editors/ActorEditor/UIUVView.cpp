@@ -43,12 +43,12 @@ void CUIUVView::UpdateTexture()
 		return;
 	}
 
-	if (CurrentSurface->_Texture() == nullptr)
+	if (CurrentSurface->m_Texture.c_str() == nullptr)
 	{
 		return;
 	}
 
-	xr_string TexName = CurrentSurface->_Texture();
+	xr_string TexName = CurrentSurface->m_Texture.c_str();
 	TexName += ".dds";
 
 	string_path FullPath = {};
@@ -132,9 +132,9 @@ void CUIUVView::Draw()
 			if (CurrentSurface)
 			{
 				ImGui::SameLine(0, 10.0f);
-				ImGui::Text("Surface: %s", CurrentSurface->_Name());
+				ImGui::Text("Surface: %s", CurrentSurface->m_Name.c_str());
 				ImGui::SameLine(0, 10.0f);
-				ImGui::Text("Texture: %s", CurrentSurface->_Texture());
+				ImGui::Text("Texture: %s", CurrentSurface->m_Texture.c_str());
 			}
 
 			ImGui::PopStyleVar(2);
@@ -193,9 +193,9 @@ void CUIUVView::DrawUVWireframe(ImDrawList* DrawList, const ImVec2& Origin, cons
 	const ImU32 WireColor = IM_COL32(0, 255, 0, 200);
 	const float LineWidth = 1.0f;
 
-	for (CEditableMesh* Mesh : SelectedObject->Meshes())
+	for (CEditableMesh* Mesh : SelectedObject->m_Meshes)
 	{
-		const SurfFaces& SurfFaces = Mesh->GetSurfFaces();
+		const SurfFaces& SurfFaces = Mesh->m_SurfFaces;
 		auto Iter = SurfFaces.find(CurrentSurface);
 		if (Iter == SurfFaces.end())
 		{

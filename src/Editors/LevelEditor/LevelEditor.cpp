@@ -71,15 +71,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	splash::SetProgressStatus(25, "Registering UI Commands");
 
-	UI = new CLevelMain();
-	UI->RegisterCommands();
-	UI->GeneralTabs.push_back({ICON_FA_MOUNTAIN " Scene View##scene_view", []()->bool {return Scene->IsUnsaved(); }});
-	UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialog Editor", nullptr});
-	UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Anim Editor", nullptr});
-	UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap Editor", nullptr});
-	UI->GeneralTabs.push_back({ICON_FA_CUBES " Object Library", nullptr});
+	EContext.UI = new CLevelMain();
+	EContext.UI->RegisterCommands();
+	EContext.UI->GeneralTabs.push_back({ICON_FA_MOUNTAIN " Scene View##scene_view", []()->bool {return Scene->IsUnsaved(); }});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialog Editor", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Anim Editor", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap Editor", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_CUBES " Object Library", nullptr});
 
-	LUI = static_cast<CLevelMain*>(UI);
+	LUI = static_cast<CLevelMain*>(EContext.UI);
 
 	splash::SetProgressStatus(30, "Creating Editor Scene");
 
@@ -134,16 +134,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	::MainForm = MainForm;
 	MainForm->TabIndex = -1;
-	UI->Push(MainForm, false);
+	EContext.UI->Push(MainForm, false);
 
 	g_DialogEditor = new DialogEditor();
 	g_DialogEditor->TabIndex = 1;
 	g_DialogEditor->Show(true);
-	UI->Push(g_DialogEditor, false);
+	EContext.UI->Push(g_DialogEditor, false);
 
 	g_ObjectLibrary = UIEditLibrary::Init();
-	g_ObjectLibrary->TabIndex = (int)UI->GeneralTabs.size() - 1;
-	UI->Push(g_ObjectLibrary, false);
+	g_ObjectLibrary->TabIndex = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->Push(g_ObjectLibrary, false);
 
 	pFPSCounter = new XRay::Hardware::FPSCounter();
 	UIEditLightAnim::Show();
@@ -155,7 +155,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	
 	splash::SetProgressStatus(90, "Finalizing UI Setup");
 	GContentView->Init();
-	UI->PushBegin(GContentView);
+	EContext.UI->PushBegin(GContentView);
 
 	splash::SetProgressStatus(100, "Finalizing");
 	splash::Close();
@@ -180,11 +180,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			case SDL_EVENT_WINDOW_RESIZED:
 			{
 				SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
-				if (UI && REDevice && Event.window.windowID == MainWndID)
+				if (EContext.UI && REDevice && Event.window.windowID == MainWndID)
 				{
 					if (Event.window.data1 != DevicePtr->Width || Event.window.data2 != DevicePtr->Height)
 					{
-						UI->Resize(Event.window.data1, Event.window.data2, true);
+						EContext.UI->Resize(Event.window.data1, Event.window.data2, true);
 						EPrefs->SaveConfig();
 					}
 				}
@@ -203,12 +203,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				break;
 
 			case SDL_EVENT_KEY_DOWN:
-				if (UI)
+				if (EContext.UI)
 				{
-					UI->KeyDown(Event.key.scancode, UI->GetShiftState());
-					UI->ApplyShortCutInput(Event.key.scancode);
+					EContext.UI->KeyDown(Event.key.scancode, EContext.UI->GetShiftState());
+					EContext.UI->ApplyShortCutInput(Event.key.scancode);
 
-					if (UI->IsPlayInEditor())
+					if (EContext.UI->IsPlayInEditor())
 					{
 						if (pInput->IsAcquire)
 						{
@@ -217,15 +217,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 						else if (Event.key.scancode == SDL_SCANCODE_LALT)
 						{
 							pInput->acquire();
-							UI->IsEnableInput = false;
+							EContext.UI->IsEnableInput = false;
 							ShowCursor(false);
 						}
 					}
 				}break;
 			case SDL_EVENT_KEY_UP:
-				if (UI) {
-					UI->KeyUp(Event.key.scancode, UI->GetShiftState());
-					if(UI->IsPlayInEditor() && pInput->IsAcquire) 
+				if (EContext.UI)
+				{
+					EContext.UI->KeyUp(Event.key.scancode, EContext.UI->GetShiftState());
+					if (EContext.UI->IsPlayInEditor() && pInput->IsAcquire) 
 					{
 						if (pInput->IsAcquire)
 						{
@@ -236,40 +237,56 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				break;
 			case SDL_EVENT_MOUSE_MOTION:
 			{
-				if (UI->IsPlayInEditor() && !pInput->IsAcquire)
+				if (EContext.UI->IsPlayInEditor() && !pInput->IsAcquire)
+				{
 					break;
-
+				}
 				pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
 			} break;
 			case SDL_EVENT_MOUSE_WHEEL:
 			{
-				if (UI->IsPlayInEditor() && !pInput->IsAcquire)
+				if (EContext.UI->IsPlayInEditor() && !pInput->IsAcquire)
+				{
 					break;
-
+				}
 				pInput->MouseScroll(Event.wheel.y);
 			}break;
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			case SDL_EVENT_MOUSE_BUTTON_UP:
 			{
-				if (UI->IsPlayInEditor() && !pInput->IsAcquire)
+				if (EContext.UI->IsPlayInEditor() && !pInput->IsAcquire)
+				{
 					break;
-
+				}
 				int mouse_button = 0;
-				if (Event.button.button == SDL_BUTTON_LEFT) { mouse_button = 0; }
-				if (Event.button.button == SDL_BUTTON_RIGHT) { mouse_button = 1; }
-				if (Event.button.button == SDL_BUTTON_MIDDLE) { mouse_button = 2; }
-				if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+				if (Event.button.button == SDL_BUTTON_LEFT)
+				{
+					mouse_button = 0;
+				}
+				if (Event.button.button == SDL_BUTTON_RIGHT)
+				{
+					mouse_button = 1;
+				}
+				if (Event.button.button == SDL_BUTTON_MIDDLE)
+				{
+					mouse_button = 2;
+				}
+				if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+				{
 					pInput->MousePressed(mouse_button);
 				}
-				else {
+				else
+				{
 					pInput->MouseReleased(mouse_button);
 				}
 			}
 			break;
 			}
 
-			if (!UI->ProcessEvent(&Event))
+			if (!EContext.UI->ProcessEvent(&Event))
+			{
 				break;
+			}
 		}
 
 		MainForm->Frame();
@@ -288,11 +305,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	g_scene_physics.DestroyObjectSpace();
 
 	xr_delete(MainForm);
+
 	//очищение памяти таблицы строк
 	CStringTable::Destroy();
+
 	xr_delete(pApp);
 	xr_delete(g_XrGameManager);
 	xr_delete(g_SEFactoryManager);
+
 	Core._destroy();
 	return 0;
 }

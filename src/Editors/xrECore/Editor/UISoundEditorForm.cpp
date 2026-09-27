@@ -113,14 +113,7 @@ void UISoundEditorForm::UpdateLib()
 {
     RegisterModifiedTHM();
     SaveUsedTHM();
-    // save game sounds
-    if (modif_map.size()) 
-    {
-        AStringVec modif;
-        SndLib->SynchronizeSounds(true, true, true, &modif_map, nullptr);
-        SndLib->RefreshSounds(false, false);
-        modif_map.clear();
-    }
+    SndLib->CommitSoundLib(modif_map);
 }
 
 void UISoundEditorForm::AppendModif(const char* nm)

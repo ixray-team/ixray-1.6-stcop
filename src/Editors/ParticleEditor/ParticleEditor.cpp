@@ -51,14 +51,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	splash::SetProgressStatus(55, "Registering UI Commands");
 
-	UI = new CParticleMain();
-	UI->RegisterCommands();
+	EContext.UI = new CParticleMain();
+	EContext.UI->RegisterCommands();
 	
 	splash::SetProgressStatus(75, "Creating Main UI Form");
 
 	UIMainForm* MainForm = new UIMainForm();
 	::MainForm = MainForm;
-	UI->Push(MainForm, false);
+	EContext.UI->Push(MainForm, false);
 
 	splash::SetProgressStatus(100, "Finalizing");
 	splash::Close();
@@ -85,11 +85,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			case SDL_EVENT_WINDOW_RESIZED:
 			{
 				SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
-				if (UI && REDevice && Event.window.windowID == MainWndID)
+				if (EContext.UI && REDevice && Event.window.windowID == MainWndID)
 				{
 					if (Event.window.data1 != DevicePtr->Width || Event.window.data2 != DevicePtr->Height)
 					{
-						UI->Resize(Event.window.data1, Event.window.data2, true);
+						EContext.UI->Resize(Event.window.data1, Event.window.data2, true);
 						EPrefs->SaveConfig();
 					}
 				}
@@ -98,24 +98,25 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			case SDL_EVENT_WINDOW_SHOWN:
 			case SDL_EVENT_WINDOW_MOUSE_ENTER:
 				Device.b_is_Active = true;
-				//if (UI) UI->OnAppActivate();
 
 				break;
 			case SDL_EVENT_WINDOW_HIDDEN:
 			case SDL_EVENT_WINDOW_MOUSE_LEAVE:
 				Device.b_is_Active = false;
-				//if (UI)UI->OnAppDeactivate();
 				break;
 
 			case SDL_EVENT_KEY_DOWN:
-				if (UI)
+				if (EContext.UI)
 				{
-					UI->KeyDown(Event.key.scancode, UI->GetShiftState());
-					UI->ApplyShortCutInput(Event.key.scancode);
+					EContext.UI->KeyDown(Event.key.scancode, EContext.UI->GetShiftState());
+					EContext.UI->ApplyShortCutInput(Event.key.scancode);
 				}
 				break;
 			case SDL_EVENT_KEY_UP:
-				if (UI)UI->KeyUp(Event.key.scancode, UI->GetShiftState());
+				if (EContext.UI)
+				{
+					EContext.UI->KeyUp(Event.key.scancode, EContext.UI->GetShiftState());
+				}
 				break;
 
 			case SDL_EVENT_MOUSE_MOTION:
@@ -142,7 +143,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			break;
 			}
 
-			if (!UI->ProcessEvent(&Event))
+			if (!EContext.UI->ProcessEvent(&Event))
 				break;
 		}
 		MainForm->Frame();

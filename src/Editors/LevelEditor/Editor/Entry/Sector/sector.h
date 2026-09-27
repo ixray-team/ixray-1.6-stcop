@@ -101,7 +101,6 @@ public:
 
     void            ReloadObjectsReferences();
     void			CaptureInsideVolume();
-	void 			DistributeInsideObjects	();
     void			CaptureAllUnusedMeshes	();
     void			GetCounts	(int* objects, int* meshes, int* faces);
     bool			IsEmpty		();

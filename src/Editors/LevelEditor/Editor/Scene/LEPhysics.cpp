@@ -20,7 +20,7 @@ bool GetStaticCformData(ObjectClass* obj, mesh_build_data& data, bool b_selected
 	Fmatrix T = obj->_Transform();
 	CEditableObject* O = obj->GetReference();
 
-	for (EditMeshIt M = O->FirstMesh(); M != O->LastMesh(); M++)
+	for (EditMeshIt M = O->m_Meshes.begin(); M != O->m_Meshes.end(); M++)
 	{
 		CSceneObject* SurfaceOwner = nullptr;
 		if constexpr (std::is_same_v<ObjectClass, CSceneObject>)

@@ -26,7 +26,7 @@ void CSectorItem::GetTransform(Fmatrix& parent){
 	object->GetFullTransformToWorld(parent);
 }
 bool CSectorItem::IsItem(const char* O, const char* M){
-	return (0==stricmp(O,object->GetName()))&&(0==stricmp(M,mesh->Name().c_str()));
+	return (0==stricmp(O,object->GetName()))&&(0==stricmp(M,mesh->m_Name.c_str()));
 }
 
 CSector::CSector(LPVOID data, const char* name):CCustomObject(data,name)
@@ -80,7 +80,7 @@ bool CSector::AddMesh	(CSceneObject* O, CEditableMesh* M)
 	if (!(O->IsStatic()||O->IsMUStatic())) return false;
 	if (!PortalUtils.FindSector(O,M))
 		if (!FindSectorItem(O, M, it)){
-			sector_items.push_back(CSectorItem(O, M, M->Name()));
+			sector_items.push_back(CSectorItem(O, M, M->m_Name));
 			m_Flags.set(flNeedUpdateVolume,true);
 			return true;
 		}
@@ -202,7 +202,7 @@ void CSector::UpdateVolume()
 	}
 	m_SectorBox.getsphere(m_SectorCenter,m_SectorRadius);
 
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 
 	m_Flags.set(flNeedUpdateVolume,false);
 }
@@ -215,16 +215,6 @@ void CSector::OnDestroy( )
 
 void CSector::OnSceneUpdate()
 {
-/*
-	bool bUpdate=false;
-	for(SItemIt it = sector_items.begin();it!=sector_items.end();it++){
-		if (!(Scene->ContainsObject(it->object,OBJCLASS_SCENEOBJECT)&&it->object->GetReference()->ContainsMesh(it->mesh))){
-			sector_items.erase(it); it--;
-			bUpdate=true;
-		}
-	}
-	if (bUpdate) PortalUtils.RemoveSectorPortal(this);
-*/
 	m_Flags.set(flNeedUpdateVolume,true);
 }
 
@@ -317,53 +307,10 @@ void CSector::CaptureInsideVolume(){
 			}
 		}
 		m_Flags.set		(flNeedUpdateVolume,true);
-		UI->RedrawScene	();
+		EContext.UI->RedrawScene();
 		ExecCommand		(COMMAND_UPDATE_PROPERTIES);
 	}
 }
-
-
-//. Fvector _dir[6]={{0,-1,0},{0,1,0},}
-
-void CSector::DistributeInsideObjects(){
-/*
-	// test all mesh faces
-	// fill object list (test bounding sphere intersection)
-	ObjectList lst;
-	if (Scene->SpherePick(m_SectorCenter, m_SectorRadius, OBJCLASS_SCENEOBJECT, lst)){
-	// test all object meshes
-		Fmatrix matrix;
-		CSceneObject *obj=NULL;
-		// ignore dynamic objects
-		for(ObjectIt _F = lst.begin();_F!=lst.end();_F++){
-			obj = (CSceneObject*)(*_F);
-			if (!(obj->IsStatic()||obj->IsMUStatic())) continue;
-			EditMeshVec* M = obj->Meshes();
-			R_ASSERT(M);
-			for(EditMeshIt m_def = M->begin();m_def!=M->end();m_def++){
-				obj->GetFullTransformToWorld(matrix);
-				Fbox bb;
-				(*m_def)->GetBox(bb);
-				bb.xform		(matrix);
-				EVisible vis=Intersect(bb);
-				if ((fvFully==vis)||(fvPartialInside==vis)){
-					float dist		= m_SectorRadius;
-					Fvector start,dir;
-					bb.getcenter	(start);
-					_f o r ()
-					Scene->RayPickObject(dist,start,dir,)
-					//.AddMesh(obj,*m_def);
-				}
-			}
-		}
-		m_Flags.set		(flNeedUpdateVolume,true);
-		UI->RedrawScene	();
-		ExecCommand		(COMMAND_UPDATE_PROPERTIES);
-	}
-*/    
-}
-
-
 
 void CSector::CaptureAllUnusedMeshes()
 {
@@ -371,7 +318,7 @@ void CSector::CaptureAllUnusedMeshes()
 	CSceneObject *obj=NULL;
 	ObjectList& lst=Scene->ListObj(OBJCLASS_SCENEOBJECT);
 	// ignore dynamic objects
-	SPBItem* pb = UI->ProgressStart(lst.size(),"Capturing unused face...");
+	SPBItem* pb = EContext.UI->ProgressStart(lst.size(), "Capturing unused face...");
 	for(ObjectIt _F = lst.begin();_F!=lst.end();_F++){
 		pb->Inc();
 		obj = (CSceneObject*)(*_F);
@@ -381,8 +328,8 @@ void CSector::CaptureAllUnusedMeshes()
 		for(EditMeshIt m_def = M->begin(); m_def!=M->end();m_def++)
 			AddMesh(obj,*m_def);
 	}
-	UI->ProgressEnd(pb);
-	UI->RedrawScene();
+	EContext.UI->ProgressEnd(pb);
+	EContext.UI->RedrawScene();
 }
 
 
@@ -555,7 +502,7 @@ void CSector::SaveLTX(CInifile& ini, const char* sect_name)
 			sprintf			(buff,"item_object_name_%.4d",count);
 			ini.w_string	(sect_name, buff, it->object->GetName());
 			sprintf			(buff,"item_mesh_name_%.4d",count);
-			ini.w_string	(sect_name, buff, it->mesh->Name().c_str());
+			ini.w_string	(sect_name, buff, it->mesh->m_Name.c_str());
 			++count;
 	}
 	ini.w_u8(sect_name, "change_map_to_idx", m_map_idx);
@@ -621,7 +568,7 @@ void CSector::SaveStream(IWriter& F)
 		F.open_chunk(count); count++;
 			F.open_chunk	(SECTOR_CHUNK_ONE_ITEM);
 			F.w_stringZ		(it->object->GetName());
-			F.w_stringZ		(it->mesh->Name());
+			F.w_stringZ		(it->mesh->m_Name);
 			F.close_chunk	();
 		F.close_chunk		();
 	}
@@ -704,10 +651,10 @@ bool CSector::Validate(bool bMsg)
 	for (SItemIt it=sector_items.begin();it!=sector_items.end();it++){
 		for (SurfFacesPairIt sf_it=it->mesh->m_SurfFaces.begin(); sf_it!=it->mesh->m_SurfFaces.end(); sf_it++){
 			CSurface* surf 		= sf_it->first;
-			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
 			if (c_sh == nullptr)
 			{
-				ELog.Msg(mtError, "*ERROR: Sector: '%s' - Shader '%s' does not exist on material '%s'", GetName(), surf->_ShaderXRLCName(), surf->_Name());
+				ELog.Msg(mtError, "*ERROR: Sector: '%s' - Shader '%s' does not exist on material '%s'", GetName(), surf->m_ShaderXRLCName.c_str(), surf->m_Name.c_str());
 				bRes = false;
 				continue;
 			}

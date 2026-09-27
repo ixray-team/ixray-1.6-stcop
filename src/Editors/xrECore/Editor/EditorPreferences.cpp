@@ -52,11 +52,11 @@ CCustomPreferences::CCustomPreferences()
 	scene_clear_color	= DEFAULT_CLEARCOLOR;
 	// objects
 	object_flags.zero	();
-    // Weather
-    env_speed           = 12.f;
-    env_from_time       = 0.f;
-    env_to_time         = 24.f * 60.f * 60.f;
-    // sWeather         = "";
+	// Weather
+	env_speed           = 12.f;
+	env_from_time       = 0.f;
+	env_to_time         = 24.f * 60.f * 60.f;
+	// sWeather         = "";
 	//sound
 	sound_volume		= 1.f;
 
@@ -85,19 +85,18 @@ void CCustomPreferences::ApplyValues()
 	Tools->m_RotateSnapAngle = snap_angle;
 	Tools->m_ScaleFixed = scale_fixed;
 
-	UI->CurrentView().m_Camera.SetViewport(view_np, view_fp, view_fov);
-	Tools->SetFog	(fog_color,fog_fogness);
+	EContext.UI->CurrentView().m_Camera.SetViewport(view_np, view_fp, view_fov);
+	Tools->SetFog(fog_color, fog_fogness);
 
-	UI->m_MouseSM	= 0.2f*tools_sens_move*tools_sens_move;
-	UI->m_MouseSR	= 0.02f*tools_sens_rot*tools_sens_rot;
-	UI->m_MouseSS	= 0.02f*tools_sens_scale*tools_sens_scale;
+	EContext.UI->m_MouseSM = 0.2f * tools_sens_move * tools_sens_move;
+	EContext.UI->m_MouseSR = 0.02f * tools_sens_rot * tools_sens_rot;
+	EContext.UI->m_MouseSS = 0.02f * tools_sens_scale * tools_sens_scale;
 
-	UI->CurrentView().m_Camera.SetSensitivity	(cam_sens_move, cam_sens_rot);
-	UI->CurrentView().m_Camera.SetFlyParams	(cam_fly_speed, cam_fly_alt);
+	EContext.UI->CurrentView().m_Camera.SetSensitivity(cam_sens_move, cam_sens_rot);
+	EContext.UI->CurrentView().m_Camera.SetFlyParams(cam_fly_speed, cam_fly_alt);
 
-	ExecCommand		(COMMAND_UPDATE_GRID);
+	ExecCommand(COMMAND_UPDATE_GRID);
 }
-//---------------------------------------------------------------------------
 
 void  CCustomPreferences::OnClose	()
 {
@@ -133,7 +132,7 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 	switch(B->btn_num)
 	{
 	case 0:
-	    if(EFS.GetOpenName("$import$", fn, false, nullptr, 6, "*.json"))
+		if(EFS.GetOpenName("$import$", fn, false, nullptr, 6, "*.json"))
 		{
 			json File;
 			if (std::filesystem::exists(xr_path(fn)))
@@ -142,13 +141,13 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 				f >> File;
 				LoadShortcuts(File);
 			}
-	    }
+		}
 	break;
 	case 1:
-	    if(EFS.GetSaveName("$import$", fn, nullptr, 6, "*.json"))
+		if(EFS.GetSaveName("$import$", fn, nullptr, 6, "*.json"))
 		{
 			json File;
-		    SaveShortcuts(File);
+			SaveShortcuts(File);
 
 			if (!fn.ends_with(".json"))
 			{
@@ -157,7 +156,7 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 
 			std::ofstream o(fn.data());
 			o << File;
-	    }
+		}
 	break;
 	}
 }
@@ -218,11 +217,11 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateFloat	(props,"Tools\\Snap\\Move To", 						&snap_moveto, 			0.01f, 	1000.f);
 	PHelper().CreateFloat	(props,"Tools\\Snap\\Scale Fixed", 					&scale_fixed, 			0.01f, 	1000.f);
 
-    /*/ Weather
-    PHelper().CreateFloat(props, "Weather\\Weather from Time", &env_from_time, 0.f, 86400.f);
-    PHelper().CreateFloat(props, "Weather\\Weather to Time", &env_to_time, 0.f, 24.f * 60.f * 60.f);
-    PHelper().CreateFloat(props, "Weather\\Weather time factor", &env_speed, 0.f, 10000.f);
-    PHelper().CreateRText(props, "Weather\\Weather Cycle", &sWeather);*/
+	/*/ Weather
+	PHelper().CreateFloat(props, "Weather\\Weather from Time", &env_from_time, 0.f, 86400.f);
+	PHelper().CreateFloat(props, "Weather\\Weather to Time", &env_to_time, 0.f, 24.f * 60.f * 60.f);
+	PHelper().CreateFloat(props, "Weather\\Weather time factor", &env_speed, 0.f, 10000.f);
+	PHelper().CreateRText(props, "Weather\\Weather Cycle", &sWeather);*/
 
 	PHelper().CreateSText	(props, "Compilers\\xrLC",						&Compiler_xrLC);
 	PHelper().CreateSText	(props,	"Compilers\\xrAI",						&Compiler_xrAI);
@@ -256,20 +255,19 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 void CCustomPreferences::Edit()
 {
 	if (bOpen)
+	{
 		return;
+	}
 
 	bOpen = true;
-	// fill prop
+
 	PropItemVec props;
+	FillProp(props);
 
-	FillProp						(props);
-
-	m_ItemProps->AssignItems		(props);
-	UI->Push(this, false);
-   // m_ItemProps->ShowPropertiesModal();
-
-	// save changed options
+	m_ItemProps->AssignItems(props);
+	EContext.UI->Push(this, false);
 }
+
 //---------------------------------------------------------------------------
 extern bool bAllowLogCommands;
 
@@ -475,7 +473,7 @@ void CCustomPreferences::Load()
 	}
 	// load shortcuts
 	LoadShortcuts(JSONData);
-	UI->LoadSettings(JSONData);
+	EContext.UI->LoadSettings(JSONData);
 }
 
 void CCustomPreferences::Save()
@@ -541,11 +539,11 @@ void CCustomPreferences::Save()
 
 	auto WndFlags = SDL_GetWindowFlags(g_AppInfo.Window);
 
-    // Weather
-    JSONData["editor_prefs"]["env_from_time"] = env_from_time;
-    JSONData["editor_prefs"]["env_to_time"] = env_to_time;
-    JSONData["editor_prefs"]["env_speed"] = env_speed;
-    JSONData["editor_prefs"]["weather"] = sWeather.c_str() ? sWeather.c_str() : "";
+	// Weather
+	JSONData["editor_prefs"]["env_from_time"] = env_from_time;
+	JSONData["editor_prefs"]["env_to_time"] = env_to_time;
+	JSONData["editor_prefs"]["env_speed"] = env_speed;
+	JSONData["editor_prefs"]["weather"] = sWeather.c_str() ? sWeather.c_str() : "";
 
 	JSONData["render"]["maximized"] = WndFlags & SDL_WINDOW_MAXIMIZED;
 
@@ -564,7 +562,7 @@ void CCustomPreferences::Save()
 	JSONData["ContentBrowser"]["file_custom_icon"] = custom_icons;
 	// load shortcuts
 	SaveShortcuts(JSONData);
-	UI->SaveSettings(JSONData);
+	EContext.UI->SaveSettings(JSONData);
 }
 
 void CCustomPreferences::Draw()
@@ -636,7 +634,7 @@ void CCustomPreferences::LoadConfig()
 	Load				();
 	ApplyValues			();
 
-	UI->m_Size.set((int)start_w, (int)start_h);
+	EContext.UI->m_Size.set((int)start_w, (int)start_h);
 }
 
 void CCustomPreferences::SaveConfig()
@@ -673,7 +671,6 @@ void CCustomPreferences::OnCreate()
 {
 	LoadConfig();
 	m_ItemProps = new UIPropertiesForm();
-	//m_ItemProps 		= TProperties::CreateModalForm("Editor Preferences",false,0,0,TOnCloseEvent(this,&CCustomPreferences::OnClose),TProperties::plItemFolders|TProperties::plFullSort); //TProperties::plFullExpand TProperties::plFullSort TProperties::plNoClearStore|TProperties::plFolderStore|
 }
 
 void CCustomPreferences::OnDestroy()

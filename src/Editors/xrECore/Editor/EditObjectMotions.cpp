@@ -64,8 +64,7 @@ void CEditableObject::OnFrame()
 
 void CEditableObject::OnBindTransformChange()
 {
-	for(EditMeshIt mesh_it=FirstMesh();mesh_it!=LastMesh();mesh_it++){
-		CEditableMesh* MESH = *mesh_it;
+	for (CEditableMesh* MESH : m_Meshes){
 		MESH->UnloadSVertices(true);
 	}
 	GotoBindPose();
@@ -76,9 +75,7 @@ void CEditableObject::GotoBindPose()
 	BoneVec& lst = m_Bones;
 	for (BoneIt b_it=lst.begin(); b_it!=lst.end(); b_it++) (*b_it)->Reset();
 	CalculateAnimation(nullptr);
-#if 1
-	UI->RedrawScene();
-#endif
+	EContext.UI->RedrawScene();
 }
 
 CSMotion* CEditableObject::ResetSAnimation(bool bGotoBindPose)
@@ -547,14 +544,14 @@ bool CEditableObject::CheckBoneCompliance(CSMotion* M)
 
 void CEditableObject::OptimizeSMotions()
 {
-	SPBItem* pb = UI->ProgressStart(m_SMotions.size(), "Motions optimizing...");
+	SPBItem* pb = EContext.UI->ProgressStart(m_SMotions.size(), "Motions optimizing...");
 	for (SMotionIt s_it = m_SMotions.begin(); s_it != m_SMotions.end(); s_it++)
 	{
 		(*s_it)->Optimize();
 		pb->Inc();
 	}
 
-	UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
 }
 
 u16 CEditableObject::BoneIDByName(shared_str name) const

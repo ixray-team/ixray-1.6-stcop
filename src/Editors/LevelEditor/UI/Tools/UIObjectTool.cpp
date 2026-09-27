@@ -492,7 +492,7 @@ void UIObjectTool::OnDrawUI()
 				Fvector up = { 0.f,1.f,0.f };
 				Scene->SelectObjects(false, OBJCLASS_SCENEOBJECT);
 
-				SPBItem* pb = UI->ProgressStart(lst.size(), "Append object: ");
+				SPBItem* pb = EContext.UI->ProgressStart(lst.size(), "Append object: ");
 				for (AStringIt it = lst.begin(); it != lst.end(); it++)
 				{
 					string256 namebuffer;
@@ -508,7 +508,7 @@ void UIObjectTool::OnDrawUI()
 					obj->MoveTo(pos, up);
 					Scene->AppendObject(obj);
 				}
-				UI->ProgressEnd(pb);
+				EContext.UI->ProgressEnd(pb);
 			}
 			m_MultiAppend = false;
 		}
