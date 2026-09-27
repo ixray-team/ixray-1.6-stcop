@@ -5,6 +5,7 @@
 
 #include "ui_main.h"
 #include "UI_ToolsCustom.h"
+#include "ImageManager.h"
 
 #include "UIIConPicker.h"
 #include "UIEditLightAnim.h"
@@ -225,11 +226,12 @@ CCommandVar TUI::CommandBreakLastOperation(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 {
 	EDevice = new CEditorRenderDevice();
+	BindEditorContext();
 	DevicePtr = EDevice;
 	CCommandVar res		= true;
 	{
 		string_path              fn;
-		xr_strconcat(fn, UI->EditorName(), ".log");
+		xr_strconcat(fn, EContext.UI->EditorName(), ".log");
 		FS.update_path(fn, _local_root_, fn);
 		string_path 			si_name;
 		FS.update_path(si_name, "$game_config$", "system.ltx");
@@ -245,7 +247,7 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 	// make interface
 	//----------------
 	if(EPrefs)EPrefs->OnCreate		();
-	if (UI->OnCreate())
+	if (EContext.UI->OnCreate())
 	{
 		ExecCommand		(COMMAND_CREATE_SOUND_LIB);	R_ASSERT(SndLib);
 		SndLib->OnCreate();
@@ -303,7 +305,7 @@ CCommandVar CommandDestroy(CCommandVar p1, CCommandVar p2)
 	xr_delete(SndLib);
 	DU_impl.DestroyObjects();
 	Lib.OnDestroy();
-	UI->OnDestroy();
+	EContext.UI->OnDestroy();
 
 	xr_delete(pSettings);
 	xr_delete(pGameIni);
@@ -324,7 +326,7 @@ CCommandVar CommandDestroy(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandQuit(CCommandVar p1, CCommandVar p2)
 {
-	UI->Quit();
+	EContext.UI->Quit();
 	return true;
 }
 
@@ -438,7 +440,7 @@ CCommandVar CommandRefreshTextures(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandReloadTextures(CCommandVar p1, CCommandVar p2)
 {
 	EDevice->ReloadTextures();
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	return true;
 }
 
@@ -493,7 +495,7 @@ CCommandVar CommandUpdateProperties(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandZoomExtents(CCommandVar p1, CCommandVar p2)
 {
 	Tools->ZoomObject(p1);
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	return true;
 }
 
@@ -507,28 +509,28 @@ CCommandVar CommandToggleRenderWire(CCommandVar p1, CCommandVar p2)
 	{
 		EDevice->dwFillMode = D3DFILL_SOLID;
 	}
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	return true;
 }
 
 CCommandVar CommandToggleSafeRect(CCommandVar p1, CCommandVar p2)
 {
 	psDeviceFlags.set(rsDrawSafeRect, !psDeviceFlags.is(rsDrawSafeRect));
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	return true;
 }
 
 CCommandVar CommandToggleGrid(CCommandVar p1, CCommandVar p2)
 {
 	psDeviceFlags.set(rsDrawGrid, !psDeviceFlags.is(rsDrawGrid));
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	return true;
 }
 
 CCommandVar CommandUpdateGrid(CCommandVar p1, CCommandVar p2)
 {
 	DU_impl.UpdateGrid(EPrefs->grid_cell_count, EPrefs->grid_cell_size);
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	return true;
 }
 
@@ -543,7 +545,7 @@ CCommandVar CommandGridNumberOfSlots(CCommandVar p1, CCommandVar p2)
 		EPrefs->grid_cell_count -= 2;
 	}
 	ExecCommand(COMMAND_UPDATE_GRID);
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	return true;
 }
 
@@ -568,7 +570,7 @@ CCommandVar CommandGridSlotSize(CCommandVar p1, CCommandVar p2)
 		EPrefs->grid_cell_size -= step;
 	}
 	ExecCommand(COMMAND_UPDATE_GRID);
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	return true;
 }
 
@@ -585,8 +587,8 @@ CCommandVar CommandMuteSound(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar CommandMoveCameraTo(CCommandVar p1, CCommandVar p2)
 {
-	if (!UI->HasWindow<UIMoveToCamera>())
-		UI->Push(new UIMoveToCamera(), true);
+	if (!EContext.UI->HasWindow<UIMoveToCamera>())
+		EContext.UI->Push(new UIMoveToCamera(), true);
 
 	return true;
 }

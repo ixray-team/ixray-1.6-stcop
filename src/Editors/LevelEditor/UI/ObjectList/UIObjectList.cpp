@@ -63,9 +63,11 @@ void UIObjectList::Draw()
 				RItem->Object->Select(true);
 				Fbox bb;
 				if (RItem->Object->GetBox(bb))
-					UI->CurrentView().m_Camera.ZoomExtents(bb);
+				{
+					EContext.UI->CurrentView().m_Camera.ZoomExtents(bb);
+				}
 
-				UI->RedrawScene();
+				EContext.UI->RedrawScene();
 				break;
 			}
 		}

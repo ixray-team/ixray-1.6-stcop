@@ -585,22 +585,11 @@ void CMainPPE::Draw()
 			SaveClick = true;
 
 		HeaderSize = BtnSize.y;
-#if 0
-		ImGui::BeginMainMenuBar();
-		ImGui::MenuItem("New", "", &NewClick);
-		ImGui::MenuItem("Load", "", &LoadClick);
-		ImGui::MenuItem("Save", "", &SaveClick);
-		bool Temp = false;
-		ImGui::MenuItem(FileName.c_str(), "", Temp, false);
 
-		HeaderSize = ImGui::GetWindowHeight();
-		ImGui::EndMainMenuBar();
-#endif
 		DrawChart();
 		DrawTool();
 
 		ClickHandle();
-		//Apply();
 	}
 
 	ImGui::End();
@@ -609,7 +598,7 @@ void CMainPPE::Draw()
 CMainPPE& CMainPPE::Instance()
 {
 	static bool Reg = false;
-	UI->Push(&MyForm, false);
+	EContext.UI->Push(&MyForm, false);
 
 	return MyForm;
 }

@@ -29,7 +29,7 @@ void CViewportMesh::Draw()
 
 	if (ImGui::IsWindowFocused())
 	{
-		UI->ViewID = View.ViewportID;
+		EContext.UI->ViewID = View.ViewportID;
 	}
 
 	View.DrawVP();
@@ -39,7 +39,7 @@ void CViewportMesh::Draw()
 
 void CViewportMesh::Render()
 {
-	if (UI->ViewID != View.ViewportID)
+	if (EContext.UI->ViewID != View.ViewportID)
 	{
 		return;
 	}

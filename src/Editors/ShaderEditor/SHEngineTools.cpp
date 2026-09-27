@@ -125,7 +125,7 @@ void CSHEngineTools::OnPreviewObjectRefChange(const char* fn)
 	string_path m_current;
 	string_path m_new;
 	xr_strcpy(m_current, fn);
-	xr_strcpy(m_new, m_PreviewObject ? m_PreviewObject->GetName() : "");
+	xr_strcpy(m_new, m_PreviewObject ? m_PreviewObject->m_LibName.c_str() : "");
 	_strlwr_s(m_current);
 	_strlwr_s(m_new);
 
@@ -137,7 +137,7 @@ void CSHEngineTools::OnPreviewObjectRefChange(const char* fn)
 		m_Preview.SetObject(m_PreviewObject);
 		UpdateObjectShader();
 		UpdatePreviewShader();
-		UI->RedrawScene();
+		EContext.UI->RedrawScene();
 	}
 }
 
@@ -264,7 +264,7 @@ void CSHEngineTools::ZoomObject(bool bOnlySel)
 {
 	if (m_PreviewObject){
 		Fbox bb = m_PreviewObject->GetBox();
-		UI->CurrentView().m_Camera.ZoomExtents(bb);
+		EContext.UI->CurrentView().m_Camera.ZoomExtents(bb);
 	}else{
 		ISHTools::ZoomObject(bOnlySel);
 	}
@@ -879,24 +879,21 @@ void CSHEngineTools::UpdateObjectShader()
 {
 	// apply this shader to non custom object
 	CEditableObject* E = m_PreviewObject;
-	if (E&&!m_bCustomEditObject){
-		CSurface* surf = *E->FirstSurface(); R_ASSERT(surf);
-/*
-		u32 cnt = _GetItemCount(surf->_Texture());
-		string512 	tex; 
-		string128 	elem;
-		if (0==cnt){
-			strcpy	(elem,"$shadertest");
-		}else{
-			_GetItem(surf->_Texture(),0,elem);
+	if (E && !m_bCustomEditObject)
+	{
+		CSurface* surf = E->m_Surfaces.front();
+		R_ASSERT(surf);
+
+		if (m_CurrentBlender)
+		{
+			surf->SetShader(m_CurrentBlender->getName());
 		}
-		strcpy		(tex,surf->_Texture());
-		for (int i=cnt; i<8; i++){ strcat(tex,","); strcat(tex,elem);}
-		surf->SetTexture(tex);
-*/
-		if (m_CurrentBlender)	surf->SetShader(m_CurrentBlender->getName());
-		else					surf->SetShader("editor\\wire");
-		UI->RedrawScene();
+		else
+		{
+			surf->SetShader("editor\\wire");
+		}
+
+		EContext.UI->RedrawScene();
 		E->OnDeviceDestroy();
 	}
 }
@@ -905,7 +902,7 @@ ID3DBlob* CSHEngineTools::GetCurrentVSSignature()
 {
 	if (!m_PreviewObject) return nullptr;
 	CEditableObject* E = m_PreviewObject;
-	CSurface* surf = *E->FirstSurface(); R_ASSERT(surf);
+	CSurface* surf = E->m_Surfaces.front(); R_ASSERT(surf);
 	ref_shader sh = surf->_Shader();
 	if (!sh) return nullptr;
 	for (u32 e = 0; e < 6; e++)
@@ -930,18 +927,20 @@ void CSHEngineTools::UpdatePreviewShader()
 
 void CSHEngineTools::OnShowHint(AStringVec& ss)
 {
- if (m_PreviewObject){
-		float dist=UI->ZFar();
+	if (m_PreviewObject)
+	{
+		float dist = EContext.UI->ZFar();
 		SRayPickInfo pinf;
-		if (m_PreviewObject->RayPick(dist,UI->m_CurrentRStart,UI->m_CurrentRDir,Fidentity,&pinf)){
+		if (m_PreviewObject->RayPick(dist, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, Fidentity, &pinf))
+		{
 			R_ASSERT(pinf.e_mesh);
-			CSurface* surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
-			ss.push_back(xr_string("Surface: ")+xr_string(surf->_Name()));
-			ss.push_back(xr_string("Texture: ")+xr_string(surf->_Texture()));
-			ss.push_back(xr_string("Shader: ")+xr_string(surf->_ShaderName()));
-			ss.push_back(xr_string("LC Shader: ")+xr_string(surf->_ShaderXRLCName()));
-			ss.push_back(xr_string("Game Mtl: ")+xr_string(surf->_GameMtlName()));
-			ss.push_back(xr_string("2 Sided: ")+xr_string(surf->m_Flags.is(CSurface::sf2Sided)?"on":"off"));
+			CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+			ss.push_back(xr_string("Surface: ") + xr_string(surf->m_Name.c_str()));
+			ss.push_back(xr_string("Texture: ") + xr_string(surf->m_Texture.c_str()));
+			ss.push_back(xr_string("Shader: ") + xr_string(surf->m_ShaderName.c_str()));
+			ss.push_back(xr_string("LC Shader: ") + xr_string(surf->m_ShaderXRLCName.c_str()));
+			ss.push_back(xr_string("Game Mtl: ") + xr_string(surf->m_GameMtlName.c_str()));
+			ss.push_back(xr_string("2 Sided: ") + xr_string(surf->m_Flags.is(CSurface::sf2Sided) ? "on" : "off"));
 		}
 	}
 }

@@ -213,7 +213,7 @@ void CActorTools::OnFrame()
 	if (m_Flags.is(flRefreshProps))
 		RealUpdateProperties();
 
-	/*if (fraLeftBar->ebRenderEditorStyle->Down && !m_CurrentMotion.IsEmpty() && NULL == m_pEditObject->GetActiveSMotion())
+	/*if (fraLeftBar->ebRenderEditorStyle->Down && !m_CurrentMotion.IsEmpty() && NULL == m_pEditObject->m_ActiveSMotion)
 	{
 		AnsiString	tmp = m_CurrentMotion;
 		m_CurrentMotion = "";
@@ -234,8 +234,8 @@ bool CActorTools::OnCreate()
 	// key bar
 	OnDeviceCreate();
 
-	UI->Push(BoneView, false);
-	UI->Push(UVView, false);
+	EContext.UI->Push(BoneView, false);
+	EContext.UI->Push(UVView, false);
 
 	return true;
 }
@@ -333,7 +333,7 @@ void CActorTools::ZoomObject(bool bSelOnly)
 		default:
 			BB = m_pEditObject->GetBox();
 		}
-		UI->CurrentView().m_Camera.ZoomExtents(BB);
+		EContext.UI->CurrentView().m_Camera.ZoomExtents(BB);
 	}
 }
 
@@ -458,7 +458,7 @@ void CActorTools::Clear()
 	m_EditMode = emObject;
 
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Actor Editor");
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 void CActorTools::OnShowHint(AStringVec& SS)
@@ -478,7 +478,7 @@ bool  CActorTools::MouseStart(TShiftState Shift)
 		{
 			case 2:
 			{
-				CBone* B = m_pEditObject->PickBone(UI->m_CurrentRStart, UI->m_CurrentRDir, m_AVTransform);
+				CBone* B = m_pEditObject->PickBone(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, m_AVTransform);
 				bool bVal = B ? (Shift | ssAlt) ? false : ((Shift | ssCtrl) ? !B->Selected() : true) : false;
 				if(B)
 				SelectListItem(BONES_PREFIX, B ? MakeFullBoneName(B).c_str() : 0, bVal, (Shift | ssCtrl) || (Shift | ssAlt), true);
@@ -487,13 +487,13 @@ bool  CActorTools::MouseStart(TShiftState Shift)
 			case 1:
 			{
 				SRayPickInfo pinf;
-				float dis = UI->ZFar();
+				float dis = EContext.UI->ZFar();
 				Fmatrix iTransform;
 				iTransform.invert(m_AVTransform);
-				if (m_pEditObject->RayPick(dis, UI->m_CurrentRStart, UI->m_CurrentRDir, iTransform, &pinf))
+				if (m_pEditObject->RayPick(dis, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, iTransform, &pinf))
 				{
 					CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
-					xr_string s_name = xr_string("Surfaces\\") + xr_string(surf->_Name());
+					xr_string s_name = xr_string("Surfaces\\") + xr_string(surf->m_Name.c_str());
 					m_ObjectItems->SelectItem(s_name.c_str());
 				}
 			}
@@ -735,7 +735,7 @@ void CActorTools::GetStatTime(float& a, float& b, float& c)
 	}
 	else
 	{
-		if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor && m_pEditObject && m_pEditObject->GetActiveSMotion())
+		if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor && m_pEditObject && m_pEditObject->m_ActiveSMotion)
 		{
 			SAnimParams& P = m_pEditObject->m_SMParam;
 			a = P.min_t;
@@ -904,7 +904,7 @@ bool CActorTools::ExportCPP(const char* name)
 {
 	if (m_pEditObject)
 	{
-		EditMeshVec& meshes = m_pEditObject->Meshes();
+		EditMeshVec& meshes = m_pEditObject->m_Meshes;
 		string128 tmp;
 		IWriter* W = FS.w_open(name);
 
@@ -913,26 +913,26 @@ bool CActorTools::ExportCPP(const char* name)
 			CEditableMesh* mesh = *m_it;
 			mesh->GenerateVNormals(0, true);
 
-			const st_Face* faces = mesh->GetFaces();
-			const Fvector* verts = mesh->GetVertices();
+			const st_Face* faces = mesh->m_Faces.data();
+			const Fvector* verts = mesh->m_Vertices.data();
 			const Fvector* vnormals = mesh->GetVNormals();
 			const Fvector* normals = mesh->GetNormals();
 
-			sprintf(tmp, "MESH %s {", mesh->Name().c_str());
+			sprintf(tmp, "MESH %s {", mesh->m_Name.c_str());
 			W->w_string(tmp);
-			sprintf(tmp, "\tVERTEX_COUNT %d", mesh->GetVCount());
+			sprintf(tmp, "\tVERTEX_COUNT %d", mesh->m_Vertices.size());
 			W->w_string(tmp);
-			sprintf(tmp, "\tFACE_COUNT %d", mesh->GetFCount());
+			sprintf(tmp, "\tFACE_COUNT %d", mesh->m_Faces.size());
 			W->w_string(tmp);
 			W->w_string("\tconst Fvector vertices[VERTEX_COUNT] = {");
-			for (u32 v_id = 0; v_id < mesh->GetVCount(); v_id++)
+			for (u32 v_id = 0; v_id < mesh->m_Vertices.size(); v_id++)
 			{
 				sprintf(tmp, "\t\t{% 3.6f,\t% 3.6f,\t% 3.6f},", VPUSH(verts[v_id]));
 				W->w_string(tmp);
 			}
 			W->w_string("\t}");
 			W->w_string("\tconst u16 faces[FACE_COUNT*3] = {");
-			for (u32 f_id = 0; f_id < mesh->GetFCount(); f_id++)
+			for (u32 f_id = 0; f_id < mesh->m_Faces.size(); f_id++)
 			{
 				sprintf(tmp, "\t\t%-d,\t\t%-d,\t\t%-d,", faces[f_id].pv[0].pindex, faces[f_id].pv[1].pindex, faces[f_id].pv[2].pindex);
 				W->w_string(tmp);
@@ -942,7 +942,7 @@ bool CActorTools::ExportCPP(const char* name)
 			if (normals)
 			{
 				W->w_string("\tconst Fvector normals[FACE_COUNT*3] = {");
-				for (u32 n_id = 0; n_id < mesh->GetFCount() * 3; n_id++)
+				for (u32 n_id = 0; n_id < mesh->m_Faces.size() * 3; n_id++)
 				{
 					sprintf(tmp, "\t\t{% 3.6f,\t% 3.6f,\t% 3.6f},", VPUSH(normals[n_id]));
 					W->w_string(tmp);
@@ -951,7 +951,7 @@ bool CActorTools::ExportCPP(const char* name)
 			}
 
 			W->w_string("\tconst Fvector vnormals[FACE_COUNT*3] = {");
-			for (u32 vn_id = 0; vn_id < mesh->GetFCount() * 3; vn_id++)
+			for (u32 vn_id = 0; vn_id < mesh->m_Faces.size() * 3; vn_id++)
 			{
 				sprintf(tmp, "\t\t{% 3.6f,\t% 3.6f,\t% 3.6f},", VPUSH(vnormals[vn_id]));
 				W->w_string(tmp);
@@ -974,7 +974,7 @@ bool CActorTools::ExportDM(const char* name)
 	{
 		EDetail DM(false);
 
-		if (!DM.Update(m_pEditObject->GetName()))
+		if (!DM.Update(m_pEditObject->m_LibName.c_str()))
 			return false;
 
 		DM.Export(name);
@@ -1094,8 +1094,8 @@ void CActorTools::RealMakeThumbnail()
 	{
 		CEditableObject* obj = CurrentObject();
 		xr_string tex_name, obj_name;
-		tex_name = ChangeFileExt(obj->GetName(), ".thm");
-		obj_name = ChangeFileExt(obj->GetName(), ".object");
+		tex_name = ChangeFileExt(obj->m_LibName.c_str(), ".thm");
+		obj_name = ChangeFileExt(obj->m_LibName.c_str(), ".object");
 		FS_File 	F;
 		string_path	fname;
 		//.     FS.update_path(fname,_objects_,obj_name.c_str());
@@ -1127,7 +1127,7 @@ void CActorTools::RealGenerateLOD(bool hq)
 			bool bLod = O->m_objectFlags.is(CEditableObject::eoUsingLOD);
 			O->m_objectFlags.set(CEditableObject::eoUsingLOD, false);
 			xr_string tex_name;
-			tex_name = EFS.ChangeFileExt(O->GetName(), "");
+			tex_name = EFS.ChangeFileExt(O->m_LibName.c_str(), "");
 
 			string_path fname;
 			FS.update_path(fname, _objects_, "");
@@ -1144,11 +1144,11 @@ void CActorTools::RealGenerateLOD(bool hq)
 			ImageLib.CreateLODTexture(O, tex_name.c_str(), LOD_IMAGE_SIZE, LOD_IMAGE_SIZE, LOD_SAMPLE_COUNT, O->Version(), hq ? 4/*7*/ : 1);
 			O->OnDeviceDestroy();
 			O->m_objectFlags.set(CEditableObject::eoUsingLOD, bLod);
-			ELog.Msg(mtInformation, "LOD for object '%s' successfully created.", O->GetName());
+			ELog.Msg(mtInformation, "LOD for object '%s' successfully created.", O->m_LibName.c_str());
 		}
 		else
 		{
-			ELog.Msg(mtError, "Can't create LOD texture from non 'Multiple Usage' object.", O->GetName());
+			ELog.Msg(mtError, "Can't create LOD texture from non 'Multiple Usage' object.", O->m_LibName.c_str());
 		}
 		MainForm->GetLeftBarForm()->SetRenderMode(engine_render);
 	}
@@ -1184,7 +1184,7 @@ bool CActorTools::BatchConvert(const char* fn)
 				Log("!Invalid source file name:", it->first.c_str());
 				bRes = false;
 			}
-			if (UI->NeedAbort()) break;
+			if (EContext.UI->NeedAbort()) break;
 		}
 	}
 	if (ini->section_exist("omf"))
@@ -1212,7 +1212,7 @@ bool CActorTools::BatchConvert(const char* fn)
 				Log("!Invalid source file name:", it->first.c_str());
 				bRes = false;
 			}
-			if (UI->NeedAbort()) break;
+			if (EContext.UI->NeedAbort()) break;
 		}
 	}
 	return bRes;

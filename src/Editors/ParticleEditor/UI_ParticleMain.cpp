@@ -7,7 +7,7 @@
 #include "../xrEngine/xr_input.h"
 
 //---------------------------------------------------------------------------
-CParticleMain*	PUI=(CParticleMain*)UI;
+CParticleMain* PUI = (CParticleMain*)EContext.UI;
 //---------------------------------------------------------------------------
 
 CParticleMain::CParticleMain()  
@@ -86,7 +86,7 @@ CCommandVar CParticleTool::CommandValidate(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar CParticleTool::CommandClear(CCommandVar p1, CCommandVar p2)
 {
-    UI->CurrentView().m_Camera.Reset();
+	EContext.UI->CurrentView().m_Camera.Reset();
     ResetPreviewObject();
     return true;
 }

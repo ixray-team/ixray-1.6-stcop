@@ -240,7 +240,7 @@ void ErrorCollector::AddErrorToCollector(const char* FullErrorMessage)
 
 	if (!RegisteredWnd)
 	{
-		UI->Push(&Collector, false);
+		EContext.UI->Push(&Collector, false);
 		RegisteredWnd = true;
 	}
 

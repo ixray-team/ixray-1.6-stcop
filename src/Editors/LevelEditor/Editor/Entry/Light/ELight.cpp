@@ -70,11 +70,11 @@ void CLight::CopyFrom(CLight* src)
 	THROW2("CLight:: Go to AlexMX");
 }
 
-void CLight::AffectD3D(bool flag){
+void CLight::AffectD3D(bool flag)
+{
 	m_UseInD3D = flag;
-    UI->UpdateScene();
+	EContext.UI->UpdateScene();
 }
-
 
 bool CLight::GetBox( Fbox& box ) 
 {

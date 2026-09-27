@@ -70,6 +70,8 @@ public:
     void		WriteAssociation	(CInifile* ltx_ini, const char* base_name, const STextureParams& fmt);
 
     bool		CreateSmallerCubeMap(const char* src_name, const char* dst_name);
+
+    void		CommitTextureLib(bool import_mode, FS_FileSet& texture_map, FS_FileSet& modif_map);
 };
 
 extern ECORE_API CImageManager ImageLib;

@@ -12,7 +12,7 @@
 void CEditableMesh::Transform(const Fmatrix& parent)
 {
 	// transform position
-	for(u32 k=0; k<m_VertCount; ++k)
+	for(u32 k=0; k<m_Vertices.size(); ++k)
 		parent.transform_tiny(m_Vertices[k]);
 
     // RecomputeBBox
@@ -54,30 +54,21 @@ int CEditableMesh::FindSimilarWeight(st_VMap* vmap, float _w)
 void CEditableMesh::RebuildVMaps()
 {
 	IntVec m_VertVMap;
-	m_VertVMap.resize(m_VertCount, -1);
+	m_VertVMap.resize(m_Vertices.size(), -1);
 	VMapVec nVMaps;
-	VMRefsVec nVMRefs;
-	// refs copy to new
-	{
-		nVMRefs.resize(m_VMRefs.size());
-		for (VMRefsIt o_it = m_VMRefs.begin(), n_it = nVMRefs.begin(); o_it != m_VMRefs.end(); o_it++, n_it++)
-		{
-			n_it->count = o_it->count;
-			n_it->pts = xr_alloc<st_VMapPt>(n_it->count);
-		}
-	}
+	VMRefsVec NewVMRefs = m_VMRefs;
 
-	for (u32 f_id = 0; f_id < m_FaceCount; f_id++)
+	for (u32 f_id = 0; f_id < m_Faces.size(); f_id++)
 	{
 		st_Face& F = m_Faces[f_id];
 		for (int k = 0; k < 3; k++)
 		{
-			u32 pts_cnt = m_VMRefs[F.pv[k].vmref].count;
+			u32 pts_cnt = m_VMRefs[F.pv[k].vmref].size();
 			for (u32 pt_id = 0; pt_id < pts_cnt; pt_id++)
 			{
-				st_VMapPt* n_pt_it = &nVMRefs[F.pv[k].vmref].pts[pt_id];
-				st_VMapPt* o_pt_it = &m_VMRefs[F.pv[k].vmref].pts[pt_id];
-				st_VMap* vmap = m_VMaps[o_pt_it->vmap_index];
+				st_VMapPt* n_pt_it = &NewVMRefs[F.pv[k].vmref][pt_id];
+				st_VMapPt* o_pt_it = &m_VMRefs[F.pv[k].vmref][pt_id];
+				st_VMap* vmap = m_VMaps[o_pt_it->vmap_index].get();
 				switch (vmap->type)
 				{
 					case vmtUV:
@@ -89,10 +80,10 @@ void CEditableMesh::RebuildVMaps()
 							int vm_idx = FindVMapByName(nVMaps, vmap->name.c_str(), vmap->type, false);
 							if (-1 == vm_idx)
 							{
-								nVMaps.push_back(new st_VMap(vmap->name.c_str(), vmap->type, false));
+								nVMaps.push_back(xr_make_unique<st_VMap>(vmap->name.c_str(), static_cast<u8>(vmap->type), false));
 								vm_idx = nVMaps.size() - 1;
 							}
-							st_VMap* nVMap = nVMaps[vm_idx];
+							st_VMap* nVMap = nVMaps[vm_idx].get();
 
 							nVMap->appendUV(vmap->getUV(o_pt_it->index));
 							nVMap->appendVI(F.pv[k].pindex);
@@ -104,10 +95,10 @@ void CEditableMesh::RebuildVMaps()
 							int vm_idx = FindVMapByName(nVMaps, vmap->name.c_str(), vmap->type, true);
 							if (-1 == vm_idx)
 							{
-								nVMaps.push_back(new st_VMap(vmap->name.c_str(), vmap->type, true));
+								nVMaps.push_back(xr_make_unique<st_VMap>(vmap->name.c_str(), static_cast<u8>(vmap->type), true));
 								vm_idx = nVMaps.size() - 1;
 							}
-							st_VMap* nVMapPM = nVMaps[vm_idx];
+							st_VMap* nVMapPM = nVMaps[vm_idx].get();
 
 							nVMapPM->appendUV(vmap->getUV(o_pt_it->index));
 							nVMapPM->appendVI(F.pv[k].pindex);
@@ -122,10 +113,10 @@ void CEditableMesh::RebuildVMaps()
 						int vm_idx = FindVMapByName(nVMaps, vmap->name.c_str(), vmap->type, false);
 						if (-1 == vm_idx)
 						{
-							nVMaps.push_back(new st_VMap(vmap->name.c_str(), vmap->type, false));
+							nVMaps.push_back(xr_make_unique<st_VMap>(vmap->name.c_str(), static_cast<u8>(vmap->type), false));
 							vm_idx = nVMaps.size() - 1;
 						}
-						st_VMap* nWMap = nVMaps[vm_idx];
+						st_VMap* nWMap = nVMaps[vm_idx].get();
 						nWMap->appendW(vmap->getW(o_pt_it->index));
 						nWMap->appendVI(F.pv[k].pindex);
 						n_pt_it->index = nWMap->size() - 1;
@@ -137,21 +128,11 @@ void CEditableMesh::RebuildVMaps()
 		}
 	}
 
-	for (VMapIt vm_it = m_VMaps.begin(); vm_it != m_VMaps.end(); vm_it++)
-	{
-		xr_delete(*vm_it);
-	}
-
 	m_VMaps.clear();
-	m_VMaps = nVMaps;
-
-	// clear refs
-	for (VMRefsIt ref_it = m_VMRefs.begin(); ref_it != m_VMRefs.end(); ref_it++)
-	{
-		xr_free(ref_it->pts);
-	}
 	m_VMRefs.clear();
-	m_VMRefs = nVMRefs;
+
+	m_VMaps = std::move(nVMaps);
+	m_VMRefs = std::move(NewVMRefs);
 }
 
 #define MX 25
@@ -278,37 +259,31 @@ void CEditableMesh::OptimizeMesh(bool NoOpt)
 		VMeps.z = (VMeps.z<EPS_L)?VMeps.z:EPS_L;
 
 		m_NewPoints.clear();
-		m_NewPoints.reserve(m_VertCount);
+		m_NewPoints.reserve(m_Vertices.size());
                                                 
 		boolVec 	faces_mark;
-		faces_mark.resize(m_FaceCount,false);
+		faces_mark.resize(m_Faces.size(),false);
         int			i_del_face 		= 0;
-		for (u32 k=0; k<m_FaceCount; k++){
+		for (u32 k=0; k<m_Faces.size(); k++){
     		if (!OptimizeFace(m_Faces[k])){
 				faces_mark[k]		= true;
-
-//. -----in plugin
-//.              i_del_face			= 0;
-
-//. -----in editor
                 i_del_face			++;
             }
 		}
 
-        m_VertCount		= m_NewPoints.size();
-        xr_free			(m_Vertices);
-        m_Vertices		= xr_alloc<Fvector>(m_VertCount);
-		Memory.mem_copy	(m_Vertices,&*m_NewPoints.begin(),m_NewPoints.size()*sizeof(Fvector));
+        m_Vertices = m_NewPoints;
 
 		if (i_del_face){
-	        st_Face* 	old_faces 	= m_Faces;
-	        u32* 		old_sg 		= m_SmoothGroups;
+	        xr_vector<st_Face> old_faces;
+	        xr_vector<u32> old_sg;
+			old_faces.swap(m_Faces);
+			old_sg.swap(m_SmoothGroups);
 
-            m_Faces			= xr_alloc<st_Face>	(m_FaceCount-i_del_face);
-            m_SmoothGroups	= xr_alloc<u32>		(m_FaceCount-i_del_face);
+            m_Faces.resize(old_faces.size()-i_del_face);
+            m_SmoothGroups.resize(m_Faces.size());
             
             u32 new_dk	= 0;
-            for (u32 dk=0; dk<m_FaceCount; ++dk)
+            for (u32 dk=0; dk<old_faces.size(); ++dk)
 			{
             	if (faces_mark[dk])
 				{
@@ -330,18 +305,11 @@ void CEditableMesh::OptimizeMesh(bool NoOpt)
                     }
                 	continue;
                 } 
-//. -----in plugin
-//.				new_dk++;
 
             	m_Faces[new_dk]				= old_faces[dk];
             	m_SmoothGroups[new_dk]		= old_sg[dk];
-
-//. -----in editors
 				++new_dk;
             }
-            m_FaceCount	= m_FaceCount-i_del_face;
-            xr_free		(old_faces);
-            xr_free		(old_sg);
 		}
 	}
 }

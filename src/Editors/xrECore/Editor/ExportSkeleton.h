@@ -1,6 +1,7 @@
 #pragma once
 #include "../../Public/VIMP_Processor.h"
 #include "EditMesh.h"
+#include "Export/MeshVertPack.h"
 
 //---------------------------------------------------------------------------
 const int clpSMX = 28, clpSMY=16, clpSMZ=28;
@@ -67,37 +68,34 @@ struct ECORE_API SSkelFace{
 };
 
 using SkelVertVec = xr_vector<SSkelVert>;
-using SkelVertIt = SkelVertVec::iterator;
-
 using SkelFaceVec = xr_vector<SSkelFace>;
-using SkelFaceIt = SkelFaceVec::iterator;
 
 
 class ECORE_API CSkeletonCollectorPacked
 {
-protected:
+public:
     SkelVertVec		m_Verts;
     SkelFaceVec		m_Faces;
     
-    Fvector			m_VMmin, m_VMscale;
-    U32Vec			m_VM[clpSMX+1][clpSMY+1][clpSMZ+1];
-    Fvector			m_VMeps;
+    MeshVertPackGrid<clpSMX, clpSMY, clpSMZ> m_VertGrid;
 
-    u16				VPack(SSkelVert& V);
-public:
+	u16 VPack(SSkelVert& V)
+	{
+		return m_VertGrid.Pack(m_Verts, V, [](SSkelVert& Vertex) -> Fvector& { return Vertex.offs; }, false);
+	}
     u32 			invalid_faces;
 public:
     CSkeletonCollectorPacked	(const Fbox &bb, int apx_vertices=5000, int apx_faces=5000);
     bool 			check      	(SSkelFace& F){
 		if ((F.v[0]==F.v[1]) || (F.v[0]==F.v[2]) || (F.v[1]==F.v[2])) return false;
-        for (SkelFaceIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
-            // Test for 6 variations
-            if ((f_it->v[0]==F.v[0]) && (f_it->v[1]==F.v[1]) && (f_it->v[2]==F.v[2])) return false;
-            if ((f_it->v[0]==F.v[0]) && (f_it->v[2]==F.v[1]) && (f_it->v[1]==F.v[2])) return false;
-            if ((f_it->v[2]==F.v[0]) && (f_it->v[0]==F.v[1]) && (f_it->v[1]==F.v[2])) return false;
-            if ((f_it->v[2]==F.v[0]) && (f_it->v[1]==F.v[1]) && (f_it->v[0]==F.v[2])) return false;
-            if ((f_it->v[1]==F.v[0]) && (f_it->v[0]==F.v[1]) && (f_it->v[2]==F.v[2])) return false;
-            if ((f_it->v[1]==F.v[0]) && (f_it->v[2]==F.v[1]) && (f_it->v[0]==F.v[2])) return false;
+        for (SSkelFace const& Face : m_Faces)
+        {
+            if ((Face.v[0]==F.v[0]) && (Face.v[1]==F.v[1]) && (Face.v[2]==F.v[2])) return false;
+            if ((Face.v[0]==F.v[0]) && (Face.v[2]==F.v[1]) && (Face.v[1]==F.v[2])) return false;
+            if ((Face.v[2]==F.v[0]) && (Face.v[0]==F.v[1]) && (Face.v[1]==F.v[2])) return false;
+            if ((Face.v[2]==F.v[0]) && (Face.v[1]==F.v[1]) && (Face.v[0]==F.v[2])) return false;
+            if ((Face.v[1]==F.v[0]) && (Face.v[0]==F.v[1]) && (Face.v[2]==F.v[2])) return false;
+            if ((Face.v[1]==F.v[0]) && (Face.v[2]==F.v[1]) && (Face.v[0]==F.v[2])) return false;
         }
         return true;
     }
@@ -121,12 +119,6 @@ public:
             return false;
         }
     }
-    SkelVertVec& 	getV_Verts()	{return m_Verts;}
-    SkelFaceVec& 	getV_Faces()	{return m_Faces;}
-    SSkelVert*		getVert()		{ return &m_Verts[0];/*.begin();*/	}
-    int				getVS()			{ return m_Verts.size();	}
-//    SSkelFace&		getFace(int id)	{ return VERIFY(id<m_Faces.size()); m_Faces[id];	}
-    int				getTS() 		{ return m_Faces.size();	}
 };
 //----------------------------------------------------
 
@@ -164,16 +156,12 @@ protected:
 
         void			ComputeBounding	()
         {
-            // calculate BBox
-            m_Box.invalidate	();
-            for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++){
-                SSkelVert& pV 	= *v_it;
-                m_Box.modify(pV.offs);
-            }
+            m_Box.invalidate();
+            for (SSkelVert& Vert : m_Verts)
+                m_Box.modify(Vert.offs);
         }
     };
     using SplitVec = xr_vector<SSplit>;
-    using SplitIt = SplitVec::iterator;
 	SplitVec			m_Splits;
     Fbox 				m_Box;
 //----------------------------------------------------    
@@ -181,10 +169,10 @@ protected:
     void ComputeBounding()
     {
         m_Box.invalidate();
-        for (SplitIt it = m_Splits.begin(); it != m_Splits.end(); it++) 
+        for (SSplit& Split : m_Splits)
         {
-            it->ComputeBounding();
-            m_Box.merge(it->m_Box);
+            Split.ComputeBounding();
+            m_Box.merge(Split.m_Box);
         }
     }
 public:

@@ -18,49 +18,62 @@ void  TUI_ControlSectorAdd::OnExit()
     fraSector->HideEdit();
 }
 
-void TUI_ControlSectorAdd::AddMesh(){
-    m_Action = saAddMesh;
-    CSector* sector=PortalUtils.GetSelectedSector();
-    if (!sector) return;
-    SRayPickInfo pinf;
-    if (Scene->RayPickObject( pinf.inf.range, UI->m_CurrentRStart,UI->m_CurrentRDir, OBJCLASS_SCENEOBJECT, &pinf, 0))
-		sector->AddMesh(smart_cast<CSceneObject*>(pinf.s_obj),pinf.e_mesh);
-    else
-    if (Scene->RayPickObject( pinf.inf.range, UI->m_CurrentRStart,UI->m_CurrentRDir, OBJCLASS_GROUP, &pinf, 0))
-    {
-    	CSceneObject* so = smart_cast<CSceneObject*>(pinf.s_obj);
-        if(so)
-        {
-			sector->AddMesh(so,pinf.e_mesh);
-        }
-    }
+void TUI_ControlSectorAdd::AddMesh()
+{
+	m_Action = saAddMesh;
+	CSector* sector = PortalUtils.GetSelectedSector();
+	if (!sector)
+	{
+		return;
+	}
+	SRayPickInfo pinf;
+	if (Scene->RayPickObject(pinf.inf.range, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, OBJCLASS_SCENEOBJECT, &pinf, 0))
+	{
+		sector->AddMesh(smart_cast<CSceneObject*>(pinf.s_obj), pinf.e_mesh);
+	}
+	else if (Scene->RayPickObject(pinf.inf.range, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, OBJCLASS_GROUP, &pinf, 0))
+	{
+		CSceneObject* so = smart_cast<CSceneObject*>(pinf.s_obj);
+		if (so)
+		{
+			sector->AddMesh(so, pinf.e_mesh);
+		}
+	}
 }
 
-void TUI_ControlSectorAdd::DelMesh(){
-    m_Action = saDelMesh;
-    CSector* sector=PortalUtils.GetSelectedSector();
-    if (!sector) return;
-    SRayPickInfo pinf;
-    if (Scene->RayPickObject( pinf.inf.range, UI->m_CurrentRStart,UI->m_CurrentRDir, OBJCLASS_SCENEOBJECT, &pinf, 0))
-		sector->DelMesh(smart_cast<CSceneObject*>(pinf.s_obj),pinf.e_mesh);
+void TUI_ControlSectorAdd::DelMesh()
+{
+	m_Action = saDelMesh;
+	CSector* sector = PortalUtils.GetSelectedSector();
+	if (!sector)
+	{
+		return;
+	}
+	SRayPickInfo pinf;
+	if (Scene->RayPickObject(pinf.inf.range, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, OBJCLASS_SCENEOBJECT, &pinf, 0))
+	{
+		sector->DelMesh(smart_cast<CSceneObject*>(pinf.s_obj), pinf.e_mesh);
+	}
 }
 
 bool TUI_ControlSectorAdd::AddSector()
 {
 	string256 namebuffer;
-	Scene->GenObjectName( OBJCLASS_SECTOR, namebuffer );
-	CSector* _O = new CSector((LPVOID)0,namebuffer);
-    SRayPickInfo pinf;
-    if (Scene->RayPickObject( pinf.inf.range, UI->m_CurrentRStart,UI->m_CurrentRDir, OBJCLASS_SCENEOBJECT, &pinf, 0)&&
-    	(_O->AddMesh(smart_cast<CSceneObject*>(pinf.s_obj),pinf.e_mesh)))
-    {
-        Scene->SelectObjects(false,OBJCLASS_SECTOR);
-        Scene->AppendObject( _O );
-        return true;
-    }else{
-    	xr_delete(_O);
+	Scene->GenObjectName(OBJCLASS_SECTOR, namebuffer);
+	CSector* _O = new CSector((LPVOID)0, namebuffer);
+	SRayPickInfo pinf;
+	if (Scene->RayPickObject(pinf.inf.range, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, OBJCLASS_SCENEOBJECT, &pinf, 0) &&
+		(_O->AddMesh(smart_cast<CSceneObject*>(pinf.s_obj), pinf.e_mesh)))
+	{
+		Scene->SelectObjects(false, OBJCLASS_SECTOR);
+		Scene->AppendObject(_O);
+		return true;
+	}
+	else
+	{
+		xr_delete(_O);
 		return false;
-    }
+	}
 }
 
 bool valid_color(u32 clr)
@@ -80,7 +93,8 @@ bool TUI_ControlSectorAdd::AddSectors()
 {
 	int cnt=0;
     SRayPickInfo pinf;
-    if (Scene->RayPickObject( pinf.inf.range, UI->m_CurrentRStart,UI->m_CurrentRDir, OBJCLASS_SCENEOBJECT, &pinf, 0)){
+	if (Scene->RayPickObject(pinf.inf.range, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, OBJCLASS_SCENEOBJECT, &pinf, 0))
+	{
     	CSceneObject* S 	= smart_cast<CSceneObject*>(pinf.s_obj); VERIFY(S);
         EditMeshVec* meshes	= S->Meshes();
         for (EditMeshIt it=meshes->begin(); it!=meshes->end(); it++){
@@ -116,8 +130,8 @@ bool  TUI_ControlSectorAdd::Start(TShiftState Shift)
     }
     bool bBoxSelection = fraSector->IsBoxPick();
     if (bBoxSelection) {
-        UI->EnableSelectionRect(true);
-        UI->UpdateSelectionRect(UI->m_StartCp, UI->m_CurrentCp);
+        EContext.UI->EnableSelectionRect(true);
+		EContext.UI->UpdateSelectionRect(EContext.UI->m_StartCp, EContext.UI->m_CurrentCp);
         m_Action = saMeshBoxSelection;
         return true;
     }
@@ -133,48 +147,65 @@ void  TUI_ControlSectorAdd::Move(TShiftState _Shift)
     switch (m_Action){
     case saAddMesh:	AddMesh();	break;
     case saDelMesh:	DelMesh();	break;
-    case saMeshBoxSelection:UI->UpdateSelectionRect(UI->m_StartCp,UI->m_CurrentCp); break;
+	case saMeshBoxSelection:
+		EContext.UI->UpdateSelectionRect(EContext.UI->m_StartCp, EContext.UI->m_CurrentCp);
+		break;
     }
 }
 
-bool  TUI_ControlSectorAdd::End(TShiftState _Shift)
+bool TUI_ControlSectorAdd::End(TShiftState _Shift)
 {
-    UISectorTool* fraSector = (UISectorTool*)parent_tool->pForm; VERIFY(fraSector);
-    CSector* sector=PortalUtils.GetSelectedSector();
-	if (sector){
-        if (m_Action==saMeshBoxSelection){
-            UI->EnableSelectionRect( false );
-            Fmatrix matrix;
-            CSceneObject* O_ref=NULL;
-            CEditableObject* O_lib=NULL;
+	UISectorTool* FraSector = (UISectorTool*)parent_tool->pForm;
+	VERIFY(FraSector);
+	CSector* Sector = PortalUtils.GetSelectedSector();
+	if (Sector)
+	{
+		if (m_Action == saMeshBoxSelection)
+		{
+			EContext.UI->EnableSelectionRect(false);
+			Fmatrix matrix;
+			CSceneObject* O_ref = NULL;
+			CEditableObject* O_lib = NULL;
 
-            CFrustum frustum;
-            ObjectList lst;
-            if (LUI->SelectionFrustum(frustum)){;
-                Scene->FrustumPick(frustum, OBJCLASS_SCENEOBJECT, lst);
-                for(ObjectIt _F = lst.begin();_F!=lst.end();_F++){
-                    O_ref = (CSceneObject*)(*_F);
-                    O_lib = O_ref->GetReference();
-                    for(EditMeshIt m_def = O_lib->m_Meshes.begin();m_def!=O_lib->m_Meshes.end();m_def++){
-                        O_ref->GetFullTransformToWorld(matrix);
-                    	if ((*m_def)->FrustumPick(frustum,matrix)){
-	                        if (fraSector->IsMeshAdd())	sector->AddMesh(O_ref,*m_def);
-    	                    else if (sector->DelMesh(O_ref,*m_def)) break;
-                        }
-                    }
-                }
-            }
-        }
-        switch (m_Action){
-        case saAddMesh:
-        case saDelMesh:
-        case saMeshBoxSelection:
-			Scene->UndoSave();
-        break;
-        }
-    }
+			CFrustum frustum;
+			ObjectList lst;
+			if (LUI->SelectionFrustum(frustum))
+			{
+				;
+				Scene->FrustumPick(frustum, OBJCLASS_SCENEOBJECT, lst);
+				for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
+				{
+					O_ref = (CSceneObject*)(*_F);
+					O_lib = O_ref->GetReference();
+					for (EditMeshIt m_def = O_lib->m_Meshes.begin(); m_def != O_lib->m_Meshes.end(); m_def++)
+					{
+						O_ref->GetFullTransformToWorld(matrix);
+						if ((*m_def)->FrustumPick(frustum, matrix))
+						{
+							if (FraSector->IsMeshAdd())
+							{
+								Sector->AddMesh(O_ref, *m_def);
+							}
+							else if (Sector->DelMesh(O_ref, *m_def))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		switch (m_Action)
+		{
+			case saAddMesh:
+			case saDelMesh:
+			case saMeshBoxSelection:
+				Scene->UndoSave();
+				break;
+		}
+	}
 	m_Action = saNone;
-    return true;
+	return true;
 }
 
 //

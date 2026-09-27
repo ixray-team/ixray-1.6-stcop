@@ -39,7 +39,7 @@ void CViewportParticle::Draw()
 
 	if (ImGui::IsWindowFocused())
 	{
-		UI->ViewID = View.ViewportID;
+		EContext.UI->ViewID = View.ViewportID;
 	}
 
 	View.DrawVP();
@@ -49,7 +49,7 @@ void CViewportParticle::Draw()
 
 void CViewportParticle::Render()
 {
-	if (UI->ViewID != View.ViewportID)
+	if (EContext.UI->ViewID != View.ViewportID)
 	{
 		return;
 	}

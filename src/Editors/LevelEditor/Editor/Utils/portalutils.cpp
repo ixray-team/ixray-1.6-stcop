@@ -59,7 +59,7 @@ int CPortalUtils::CalculateSelectedPortals()
 		ELog.DlgMsg(mtError,"*ERROR: Scene has non associated face (face without sector)!");
 	}
 
-	UI->SetStatus("...");
+	EContext.UI->SetStatus("...");
 	return iPCount;
 }
 
@@ -97,7 +97,7 @@ bool CPortalUtils::RemoveDefaultSector()
 		Scene->RemoveObject	(O,false,true);
 		xr_delete			(O);
 		Scene->UndoSave		();
-		UI->UpdateScene		();
+		EContext.UI->UpdateScene		();
 		return true;
 	}
 	return false;
@@ -124,7 +124,7 @@ int CPortalUtils::CalculateAllPortals2()
 				bResult+=CalculatePortals(sectors[f],sectors[b]);
 				xr_string t;
 				t.sprintf("Calculate %d of %d",f,sectors.size());
-				UI->SetStatus(t.c_str());
+				EContext.UI->SetStatus(t.c_str());
 			}
 
 		Scene->UndoSave();
@@ -132,7 +132,7 @@ int CPortalUtils::CalculateAllPortals2()
 		ELog.DlgMsg(mtError,"*ERROR: Scene has non associated face (face without sector)!");
 	}
 
-	UI->SetStatus("...");
+	EContext.UI->SetStatus("...");
 	return bResult;
 }
 */
@@ -160,7 +160,7 @@ bool CPortalUtils::Validate(bool bMsg)
 			if (bMsg){ 
 				ELog.DlgMsg(mtError,"*ERROR: Scene has '%d' non associated face!",f_cnt);
 				for (SItemIt it=sector_def->sector_items.begin();it!=sector_def->sector_items.end();it++)
-					Msg		("! - scene object: '%s' [O:'%s', M:'%s']",it->object->GetName(), it->object->RefName(), it->mesh->Name().c_str());
+					Msg		("! - scene object: '%s' [O:'%s', M:'%s']",it->object->GetName(), it->object->RefName(), it->mesh->m_Name.c_str());
 			}
 			bResult = false;
 		}
@@ -460,7 +460,7 @@ public:
 		int PortalsCount = portals.size();
 		int curr = 0;
 
-		SPBItem* pb = UI->ProgressStart(PortalsCount, "Evict objects...");
+		SPBItem* pb = EContext.UI->ProgressStart(PortalsCount, "Evict objects...");
 
 		for (sCollector::sPortal& Portal : portals)
 		{
@@ -516,55 +516,61 @@ public:
 			pb->Inc();
 		}
 
-		UI->ProgressEnd(pb);
+		EContext.UI->ProgressEnd(pb);
 	}
 };
 
-int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
+int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors)
+{
 	// calculate portals
 	Fbox bb;
-	Scene->GetBox(bb,OBJCLASS_SCENEOBJECT);
+	Scene->GetBox(bb, OBJCLASS_SCENEOBJECT);
 	sCollector* CL = new sCollector(bb);
 	Fmatrix T;
 
-	//1. xform + weld
-	UI->SetStatus("xform + weld...");
-	for (ObjectIt s_it=sectors.begin(); s_it!=sectors.end(); s_it++){
-		CSector* S=(CSector*)(*s_it);
-		for (SItemIt s_it=S->sector_items.begin();s_it!=S->sector_items.end();s_it++){
-			if (s_it->object->IsMUStatic()) continue;
+	// 1. xform + weld
+	EContext.UI->SetStatus("xform + weld...");
+	for (ObjectIt s_it = sectors.begin(); s_it != sectors.end(); s_it++)
+	{
+		CSector* S = (CSector*)(*s_it);
+		for (SItemIt s_it = S->sector_items.begin(); s_it != S->sector_items.end(); s_it++)
+		{
+			if (s_it->object->IsMUStatic())
+			{
+				continue;
+			}
 			s_it->GetTransform(T);
-			Fvector* m_verts=s_it->mesh->m_Vertices;
-			for (u32 f_id=0; f_id<s_it->mesh->GetFCount(); f_id++){
+			auto& Verts = s_it->mesh->m_Vertices;
+			for (u32 f_id = 0; f_id < s_it->mesh->m_Faces.size(); f_id++)
+			{
 				Fvector v0, v1, v2;
-				const st_Face& P			= s_it->mesh->GetFaces()[f_id];
-				T.transform_tiny	(v0,m_verts[P.pv[0].pindex]);
-				T.transform_tiny	(v1,m_verts[P.pv[1].pindex]);
-				T.transform_tiny	(v2,m_verts[P.pv[2].pindex]);
-				CL->add_face		(v0,v1,v2,S);
+				const st_Face& P = s_it->mesh->m_Faces.data()[f_id];
+				T.transform_tiny(v0, Verts[P.pv[0].pindex]);
+				T.transform_tiny(v1, Verts[P.pv[1].pindex]);
+				T.transform_tiny(v2, Verts[P.pv[2].pindex]);
+				CL->add_face(v0, v1, v2, S);
 			}
 		}
 	}
-	//2. update pervertex adjacency
-	UI->SetStatus("updating per-vertex adjacency...");
+	// 2. update pervertex adjacency
+	EContext.UI->SetStatus("updating per-vertex adjacency...");
 	CL->update_adjacency();
-	//3. find edges
-	UI->SetStatus("searching edges...");
+	// 3. find edges
+	EContext.UI->SetStatus("searching edges...");
 	CL->find_edges();
-	//4. sort edges
-	UI->SetStatus("sorting edges...");
+	// 4. sort edges
+	EContext.UI->SetStatus("sorting edges...");
 	CL->sort_edges();
-	//5. make portals
-	UI->SetStatus("calculating portals...");
+	// 5. make portals
+	EContext.UI->SetStatus("calculating portals...");
 	CL->make_portals();
-	//6. export portals
-	UI->SetStatus("building portals...");
+	// 6. export portals
+	EContext.UI->SetStatus("building portals...");
 	CL->export_portals();
 
 	Scene->UndoSave();
 
 	int iRes = CL->portals.size();
-
 	xr_delete(CL);
 
 	return iRes;
@@ -575,7 +581,7 @@ int CPortalUtils::CalculateAllPortals()
 	int iPCount = 0;
 	if (Validate(false))
 	{
-		UI->SetStatus("Prepare...");
+		EContext.UI->SetStatus("Prepare...");
 		RemoveAllPortals();
 		ObjectList& s_lst = Scene->ListObj(OBJCLASS_SECTOR);
 		iPCount = CalculateSelectedPortals(s_lst);
@@ -585,7 +591,7 @@ int CPortalUtils::CalculateAllPortals()
 		ELog.DlgMsg(mtError, "*ERROR: Sector validation failed.");
 	}
 
-	UI->ResetStatus();
+	EContext.UI->ResetStatus();
 	return iPCount;
 }
 
@@ -593,7 +599,7 @@ int CPortalUtils::CalculatePortals(CSector* SF, CSector* SB)
 {
 	int iPCount=0;
 	if (Validate(false)){
-		UI->SetStatus("Prepare...");
+		EContext.UI->SetStatus("Prepare...");
 		RemoveAllPortals();
 		// transfer from list to vector
 		ObjectList sectors;
@@ -605,6 +611,6 @@ int CPortalUtils::CalculatePortals(CSector* SF, CSector* SB)
 		ELog.DlgMsg(mtError,"*ERROR: Scene has non associated face (face without sector)!");
 	}
 
-	UI->ResetStatus();
+	EContext.UI->ResetStatus();
 	return iPCount;
 }

@@ -142,42 +142,44 @@ int EScene::GetQueryObjects(ObjectList& lst, ObjClassID classfilter, int iSel, i
 
 int EScene::RaySelect(int flag, ObjClassID classfilter)
 {
-	if( !valid() ) return 0;
-
-	float dist					= UI->ZFar();
-	ESceneToolBase* mt 		= 0;
-	if (classfilter==OBJCLASS_DUMMY)
+	if (!valid())
 	{
-		SceneToolsMapPairIt _I 	= m_SceneTools.begin();
-		SceneToolsMapPairIt _E 	= m_SceneTools.end();
-		for (; _I!=_E; _I++)
-		{
-			float range			= UI->ZFar();
-			_I->second->RaySelect(flag,range,UI->m_CurrentRStart,UI->m_CurrentRDir,true);
-			if (range<dist){
-				dist			= range;
-				mt				= _I->second;
-			}		
-		}
-	}else{
-		mt 						= GetTool(classfilter);
+		return 0;
 	}
-	int count					= 0;
-	dist						= UI->ZFar();
-	if (mt) 
-		count=mt->RaySelect	(flag,dist,UI->m_CurrentRStart,UI->m_CurrentRDir,false);
-	return count;
-/*
-	CCustomObject *nearest_object = RayPickObject(flt_max,UI->m_CurrentRStart,UI->m_CurrentRNorm,classfilter,0,0);
-	if (nearest_object) nearest_object->Select(flag);
-	UI->RedrawScene();
-	return nearest_object?1:0;
-*/
+
+	float Dist = EContext.UI->ZFar();
+	ESceneToolBase* Mt = 0;
+	if (classfilter == OBJCLASS_DUMMY)
+	{
+		SceneToolsMapPairIt _I = m_SceneTools.begin();
+		SceneToolsMapPairIt _E = m_SceneTools.end();
+		for (; _I != _E; _I++)
+		{
+			float Range = EContext.UI->ZFar();
+			_I->second->RaySelect(flag, Range, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, true);
+			if (Range < Dist)
+			{
+				Dist = Range;
+				Mt = _I->second;
+			}
+		}
+	}
+	else
+	{
+		Mt = GetTool(classfilter);
+	}
+	int Count = 0;
+	Dist = EContext.UI->ZFar();
+	if (Mt)
+	{
+		Count = Mt->RaySelect(flag, Dist, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, false);
+	}
+	return Count;
 }
 
 int EScene::BoxPickObjects(const Fbox& box, SBoxPickInfoVec& pinf, ObjectList* lst)
 {
-	xrCriticalSectionGuard lock(PickUpLock);
+	xrCriticalSectionGuard Lock(PickUpLock);
 
 	if (lst)
 	{
