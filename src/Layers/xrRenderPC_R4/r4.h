@@ -91,6 +91,7 @@ public:
 	xr_vector<VertexDeclarator>									nDC,xDC;
 	xr_vector<IRHIBuffer*>							nVB,xVB;
 	xr_vector<IRHIBuffer*>							nIB,xIB;
+	xr_vector<u32>									nVBBase,xVBBase,nIBBase,xIBBase;
 	xr_vector<dxRender_Visual*>									Visuals;
 	CPSLibrary													PSLibrary;
 
@@ -151,6 +152,8 @@ public:
 	RHIInputElementDesc*			getVB_Format				(int id, size_t* Count, bool	_alt=false);
 	IRHIBuffer*			getVB						(int id, bool	_alt=false);
 	IRHIBuffer*			getIB						(int id, bool	_alt=false);
+	u32					getVB_Base					(int id, bool	_alt=false)	{ return (_alt?xVBBase:nVBBase)[id]; }
+	u32					getIB_Base					(int id, bool	_alt=false)	{ return (_alt?xIBBase:nIBBase)[id]; }
 	FSlideWindowItem*				getSWI						(int id);
 	IRender_Portal*					getPortal					(int id);
 	IRender_Sector*					getSectorActive				();
@@ -385,6 +388,8 @@ public:
 	void							clearAllShaderOptions		();
 
 	bool							NeedMotionVectors			() const;
+	bool							MotionVectorsDisabled		() const;
+	void							SyncMotionVectors			();
 
 	auto							ShaderOptionsCount			() { return m_ShaderOptions.size(); }
 
@@ -399,7 +404,7 @@ protected:
 
 private:
 	FS_FileSet						m_file_set;
-	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs);
+	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase = nullptr);
 };
 
 extern CRender						RImplementation;

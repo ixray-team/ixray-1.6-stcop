@@ -326,7 +326,7 @@ protected:
 
 private:
 	FS_FileSet						m_file_set;
-	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs);
+	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase = nullptr);
 };
 
 extern CRender						RImplementation;
