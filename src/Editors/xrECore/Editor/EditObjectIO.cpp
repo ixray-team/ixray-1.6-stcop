@@ -40,7 +40,7 @@ bool CEditableObject::Load(const char* fname)
 
 bool CEditableObject::Save(const char* fname)
 {
-	if (IsModified())
+	if (bOnModified)
 	{
         // update transform matrix
         Fmatrix	mTransform, mScale, mTranslate, mRotate;
@@ -113,14 +113,14 @@ void CEditableObject::Save(IWriter& F)
 
     for (SurfaceIt sf_it=m_Surfaces.begin(); sf_it!=m_Surfaces.end(); ++sf_it)
 	{
-        F.w_stringZ	((*sf_it)->_Name			());
-        F.w_stringZ	((*sf_it)->_ShaderName		());
-        F.w_stringZ	((*sf_it)->_ShaderXRLCName	());
-        F.w_stringZ	((*sf_it)->_GameMtlName		());
-		F.w_stringZ	((*sf_it)->_Texture			());
-		F.w_stringZ	((*sf_it)->_VMap			());
+        F.w_stringZ	((*sf_it)->m_Name.c_str());
+        F.w_stringZ	((*sf_it)->m_ShaderName.c_str());
+        F.w_stringZ	((*sf_it)->m_ShaderXRLCName.c_str());
+        F.w_stringZ	((*sf_it)->m_GameMtlName.c_str());
+		F.w_stringZ	((*sf_it)->m_Texture.c_str());
+		F.w_stringZ	((*sf_it)->m_VMap.c_str());
         F.w_u32	((*sf_it)->m_Flags.get		());
-        F.w_u32	((*sf_it)->_FVF				());
+        F.w_u32	((*sf_it)->m_dwFVF);
         F.w_u32	(1);
     }
     F.close_chunk	();
@@ -231,14 +231,14 @@ bool CEditableObject::Load(IReader& F)
 			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
 			{
 				*s_it 		= new CSurface();
-				F.r_stringZ	(buf);	(*s_it)->SetName		(buf.c_str());
+				F.r_stringZ	(buf);	(*s_it)->m_Name = buf.c_str();
 				F.r_stringZ	(buf);	(*s_it)->SetShader		(buf.c_str());
-				F.r_stringZ	(buf);	(*s_it)->SetShaderXRLC	(buf.c_str());
-				F.r_stringZ	(buf);	(*s_it)->SetGameMtl		(buf.c_str());
+				F.r_stringZ	(buf);	(*s_it)->m_ShaderXRLCName = buf.c_str();
+				F.r_stringZ	(buf);	(*s_it)->m_GameMtlName = buf.c_str();
 				F.r_stringZ	(buf); 	(*s_it)->SetTexture		(buf.c_str());
-				F.r_stringZ	(buf); 	(*s_it)->SetVMap		(buf.c_str());
+				F.r_stringZ	(buf); 	(*s_it)->m_VMap = buf.c_str();
 				(*s_it)->m_Flags.assign(F.r_u32());
-				(*s_it)->SetFVF		(F.r_u32());
+				(*s_it)->m_dwFVF = F.r_u32();
 				cnt 				= F.r_u32();
 				if (cnt>1) ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
 				R_ASSERT(1<=cnt);
@@ -248,13 +248,13 @@ bool CEditableObject::Load(IReader& F)
 			m_Surfaces.resize(cnt);
 			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
 				*s_it 		= new CSurface();
-				F.r_stringZ	(buf);	(*s_it)->SetName		(buf.c_str());
+				F.r_stringZ	(buf);	(*s_it)->m_Name = buf.c_str();
 				F.r_stringZ	(buf);	(*s_it)->SetShader		(buf.c_str());
-				F.r_stringZ	(buf);	(*s_it)->SetShaderXRLC	(buf.c_str());
+				F.r_stringZ	(buf);	(*s_it)->m_ShaderXRLCName = buf.c_str();
 				F.r_stringZ	(buf); 	(*s_it)->SetTexture		(buf.c_str());
-				F.r_stringZ	(buf); 	(*s_it)->SetVMap		(buf.c_str());
+				F.r_stringZ	(buf); 	(*s_it)->m_VMap = buf.c_str();
 				(*s_it)->m_Flags.assign(F.r_u32()); 
-				(*s_it)->SetFVF		(F.r_u32());
+				(*s_it)->m_dwFVF = F.r_u32();
 				cnt 				= F.r_u32();
 				if (cnt>1) ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
 				R_ASSERT(1<=cnt);
@@ -266,23 +266,23 @@ bool CEditableObject::Load(IReader& F)
 			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
 				*s_it = new CSurface();
 				F.r_stringZ(buf);
-				(*s_it)->SetName(buf.c_str());
+				(*s_it)->m_Name = (buf.c_str());
 				F.r_stringZ(sh_name);
 				(*s_it)->m_Flags.set(CSurface::sf2Sided,!!F.r_u8());
-				(*s_it)->SetFVF		(F.r_u32());
+				(*s_it)->m_dwFVF = F.r_u32();
 				cnt 				= F.r_u32();
 				if (cnt>1) ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
 				R_ASSERT(1<=cnt);
 				F.r_stringZ			(buf); (*s_it)->SetTexture(buf.c_str());
-				F.r_stringZ			(buf); (*s_it)->SetVMap(buf.c_str());
+				F.r_stringZ			(buf); (*s_it)->m_VMap = (buf.c_str());
 				(*s_it)->SetShader		(sh_name.c_str());
-				(*s_it)->SetShaderXRLC	("default");
+				(*s_it)->m_ShaderXRLCName = "default";
 			}
 
 			// surfaces xrlc part
 			if(F.find_chunk(EOBJ_CHUNK_SURFACES_XRLC))
 				for (auto s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
-					F.r_stringZ(buf); (*s_it)->SetShaderXRLC(buf.c_str());
+					F.r_stringZ(buf); (*s_it)->m_ShaderXRLCName = (buf.c_str());
 				}
 		}
 
@@ -389,7 +389,7 @@ bool CEditableObject::Load(IReader& F)
                         if ((idx>=0)&&(idx<(int)m_Bones.size())){
                             *s_it	= m_Bones[idx]->Name();
                         }else{
-		                    Log		("!Invalid bone parts.",GetName());
+		                    Log		("!Invalid bone parts.",m_LibName.c_str());
                             bBPok = false;
                             break;
                         }
@@ -398,7 +398,7 @@ bool CEditableObject::Load(IReader& F)
                 }
 				if (!bBPok)	m_BoneParts.clear();
                 if (!m_BoneParts.empty()&&!VerifyBoneParts())
-                    Log		("!Invalid bone parts. Found duplicate bones in object '%s'.",GetName());
+                    Log		("!Invalid bone parts. Found duplicate bones in object '%s'.",m_LibName.c_str());
             }else if (F.find_chunk(EOBJ_CHUNK_BONEPARTS2)){
                 m_BoneParts.resize(F.r_u32());
                 for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); bp_it++){
@@ -408,7 +408,7 @@ bool CEditableObject::Load(IReader& F)
                         F.r_stringZ(*s_it);
                 }
                 if (!m_BoneParts.empty()&&!VerifyBoneParts())
-                    Log			("!Invalid bone parts. Found duplicate bones in object '%s'.",GetName());
+                    Log			("!Invalid bone parts. Found duplicate bones in object '%s'.",m_LibName.c_str());
             }
         }
 

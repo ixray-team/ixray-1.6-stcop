@@ -203,7 +203,7 @@ void CLevelTool::RealSetAction(ETAction act)
 void CLevelTool::SetAction(ETAction act)
 {
 	// если мышь захвачена - изменим action после того как она освободится
-	if (UI->IsMouseCaptured() || UI->IsMouseInUse())
+	if (EContext.UI->IsMouseCaptured() || EContext.UI->IsMouseInUse())
 	{
 		m_Flags.set(flChangeAction, true);
 		iNeedAction = act;
@@ -242,7 +242,7 @@ void  CLevelTool::RealSetTarget(ObjClassID tgt, int sub_tgt, bool bForced)
 		}
 	}
 
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	m_Flags.set(flChangeTarget, false);
 }
 
@@ -279,12 +279,12 @@ void CLevelTool::OnShowHint(AStringVec& ss)
 
 bool CLevelTool::Pick(TShiftState Shift)
 {
-	if( Scene->locked() && (esEditLibrary==UI->GetEState())){
-		UI->m_CurrentCp = MainForm->GetRenderForm()->GetMousePos();
-		UI->m_StartCp = UI->m_CurrentCp;
-		UI->CurrentView().m_Camera.MouseRayFromPoint(UI->m_CurrentRStart, UI->m_CurrentRDir, UI->m_CurrentCp );
+	if( Scene->locked() && (esEditLibrary==EContext.UI->GetEState())){
+		EContext.UI->m_CurrentCp = MainForm->GetRenderForm()->GetMousePos();
+		EContext.UI->m_StartCp = EContext.UI->m_CurrentCp;
+		EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, EContext.UI->m_CurrentCp );
 		SRayPickInfo pinf;
-		//TfrmEditLibrary::RayPick(UI->m_CurrentRStart,UI->m_CurrentRDir,&pinf);
+		//TfrmEditLibrary::RayPick(EContext.UI->m_CurrentRStart,EContext.UI->m_CurrentRDir,&pinf);
 		return true;
 	}
 	return false;
@@ -314,7 +314,7 @@ void CLevelTool::ShowProperties(const char* focus_to_item)
 		MainForm->GetPropertiesForm()->Open();
 	}
 
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 void CLevelTool::mtUpdateProperties(void* This)
@@ -377,7 +377,7 @@ void CLevelTool::UpdateProperties()
 void  CLevelTool::OnPropsModified()
 {
 	Scene->Modified();
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 bool CLevelTool::IfModified()
@@ -395,7 +395,7 @@ void CLevelTool::ZoomObject(bool bSelectedOnly)
 
 void CLevelTool::GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog)
 {
-	if (psDeviceFlags.is(rsEnvironment) && psDeviceFlags.is(rsFog) || UI->IsPlayInEditor())
+	if (psDeviceFlags.is(rsEnvironment) && psDeviceFlags.is(rsFog) || EContext.UI->IsPlayInEditor())
 	{
 		s_fog = g_pGamePersistent->Environment().CurrentEnv->fog_near;
 		e_fog = g_pGamePersistent->Environment().CurrentEnv->fog_far;
@@ -404,8 +404,8 @@ void CLevelTool::GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog)
 	}
 	else
 	{
-		s_fog = psDeviceFlags.is(rsFog) ? (1.0f - fFogness) * 0.85f * UI->ZFar() : 0.99f * UI->ZFar();
-		e_fog = psDeviceFlags.is(rsFog) ? 0.91f * UI->ZFar() : UI->ZFar();
+		s_fog = psDeviceFlags.is(rsFog) ? (1.0f - fFogness) * 0.85f * EContext.UI->ZFar() : 0.99f * EContext.UI->ZFar();
+		e_fog = psDeviceFlags.is(rsFog) ? 0.91f * EContext.UI->ZFar() : EContext.UI->ZFar();
 	}
 }
 
@@ -421,7 +421,7 @@ const char* CLevelTool::GetInfo()
 void CLevelTool::OnFrame()
 {
 	Scene->OnFrame(EDevice->fTimeDelta);
-	EEditorState est = UI->GetEState();
+	EEditorState est = EContext.UI->GetEState();
 	if ((est == esEditScene) || (est == esEditLibrary) || (est == esEditLightAnim))
 	{
 		// если нужно изменить target выполняем после того как мышь освободится
@@ -476,11 +476,11 @@ void CLevelTool::OnFrame()
 void  CLevelTool::RenderEnvironment()
 {
 	// draw sky
-	EEditorState est 		= UI->GetEState();
+	EEditorState est 		= EContext.UI->GetEState();
 	switch(est){
 	case esEditLightAnim:
 	case esEditScene:		
-		if (psDeviceFlags.is(rsEnvironment)|| UI->IsPlayInEditor())
+		if (psDeviceFlags.is(rsEnvironment)|| EContext.UI->IsPlayInEditor())
 		{ 
 			g_pGamePersistent->Environment().RenderSky	();
 			g_pGamePersistent->Environment().RenderClouds	();
@@ -497,7 +497,7 @@ void CLevelTool::Render()
 		::Render->Render();
 	}
 
-	EEditorState est = UI->GetEState();
+	EEditorState est = EContext.UI->GetEState();
 	// draw scene
 	switch(est)
 	{
@@ -507,8 +507,8 @@ void CLevelTool::Render()
 
 		case esEditLightAnim:
 		case esEditScene:
-			Scene->Render(UI->CurrentView().m_Camera.GetTransform());
-		    if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
+			Scene->Render(EContext.UI->CurrentView().m_Camera.GetTransform());
+		    if (psDeviceFlags.is(rsEnvironment) || EContext.UI->IsPlayInEditor())
 		    {
 		        g_pGamePersistent->Environment().RenderFlares();
 		        g_pGamePersistent->Environment().RenderLast();
@@ -539,10 +539,9 @@ bool CLevelTool::IsModified()
 	return Scene->IsUnsaved();
 }
 
-#include "../XrECore/Editor/EditMesh.h"
 bool CLevelTool::RayPick(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n)
 {
-	if (Scene->ObjCount()&&(UI->GetEState()==esEditScene)){
+	if (Scene->ObjCount()&&(EContext.UI->GetEState()==esEditScene)){
 		SRayPickInfo pinf;
 		pinf.inf.range	= dist;
 		if (Scene->RayPickObject(dist, start,dir,OBJCLASS_SCENEOBJECT,&pinf,0)){ 
@@ -625,7 +624,7 @@ void CLevelTool::Simulate()
 		g_scene_physics.DestroyAll();
 	}
 
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
 }
 
 void CLevelTool::UseSimulatePositions()

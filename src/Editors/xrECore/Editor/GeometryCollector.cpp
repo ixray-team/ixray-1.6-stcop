@@ -9,53 +9,47 @@
 //------------------------------------------------------------------------------
 // VCPacked
 //------------------------------------------------------------------------------
-VCPacked::VCPacked(const Fbox& bb, float _eps, u32 _sx, u32 _sy, u32 _sz, int apx_vertices)
+VCPacked::VCPacked(const Fbox& Bb, float PackEps, u32 ClpSX, u32 ClpSY, u32 ClpSZ, int ApxVertices)
 {
-    eps = _eps;
-    sx  = std::max(_sx, 1u);
-    sy  = std::max(_sy, 1u);
-    sz  = std::max(_sz, 1u);
-    // prepare hash table
-    VM.resize(sx * sy * sz);
+    Eps = PackEps;
+    Sx  = std::max(ClpSX, 1u);
+    Sy  = std::max(ClpSY, 1u);
+    Sz  = std::max(ClpSZ, 1u);
+    VM.resize(Sx * Sy * Sz);
 
-    // Params
-    VMscale.set(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);
-    VMmin.set(bb.min);
-    VMeps.set(VMscale.x / (sx - 1) / 2, VMscale.y / (sy - 1) / 2, VMscale.z / (sz - 1) / 2);
+    VMscale.set(Bb.max.x - Bb.min.x, Bb.max.y - Bb.min.y, Bb.max.z - Bb.min.z);
+    VMmin.set(Bb.min);
+    VMeps.set(VMscale.x / (Sx - 1) / 2, VMscale.y / (Sy - 1) / 2, VMscale.z / (Sz - 1) / 2);
     VMeps.x = (VMeps.x < EPS_L) ? VMeps.x : EPS_L;
     VMeps.y = (VMeps.y < EPS_L) ? VMeps.y : EPS_L;
     VMeps.z = (VMeps.z < EPS_L) ? VMeps.z : EPS_L;
 
-    // Preallocate memory
-    verts.reserve(apx_vertices);
+    verts.reserve(ApxVertices);
 
-    int _size    = VM.size();
-    int _average = (apx_vertices / _size) / 2;
-    for (GCHashIt it = VM.begin(); it != VM.end(); it++)
-        it->reserve(_average);
+    const int Average = (ApxVertices / (int)VM.size()) / 2;
+    for (U32Vec& Cell : VM)
+        Cell.reserve(Average);
 }
 
-u32 VCPacked::add_vert(const Fvector& V)
+u32 VCPacked::AddVert(const Fvector& V)
 {
     u32 P    = 0xffffffff;
 
-    u32 clpX = sx - 1, clpY = sy - 1, clpZ = sz - 1;
-    u32 ix, iy, iz;
+    u32 ClpX = Sx - 1, ClpY = Sy - 1, ClpZ = Sz - 1;
+    u32 Ix = iFloor(float(V.x - VMmin.x) / VMscale.x * ClpX);
+    u32 Iy = iFloor(float(V.y - VMmin.y) / VMscale.y * ClpY);
+    u32 Iz = iFloor(float(V.z - VMmin.z) / VMscale.z * ClpZ);
 
-    ix = iFloor(float(V.x - VMmin.x) / VMscale.x * clpX);
-    iy = iFloor(float(V.y - VMmin.y) / VMscale.y * clpY);
-    iz = iFloor(float(V.z - VMmin.z) / VMscale.z * clpZ);
+    clamp(Ix, (u32)0, ClpX);
+    clamp(Iy, (u32)0, ClpY);
+    clamp(Iz, (u32)0, ClpZ);
 
-    clamp(ix, (u32)0, clpX);
-    clamp(iy, (u32)0, clpY);
-    clamp(iz, (u32)0, clpZ);
-
-    U32Vec& vl = get_element(ix, iy, iz);
-    for (U32It it = vl.begin(); it != vl.end(); it++)
-        if (verts[*it].similar(V, eps))
+    U32Vec& Cell = GetElement(Ix, Iy, Iz);
+    for (u32 Idx : Cell)
+        if (verts[Idx].similar(V, Eps))
         {
-            P = *it;
-            verts[*it].refs++;
+            P = Idx;
+            verts[Idx].refs++;
             break;
         }
 
@@ -64,39 +58,37 @@ u32 VCPacked::add_vert(const Fvector& V)
         P = verts.size();
         verts.push_back(GCVertex(V));
 
-        get_element(ix, iy, iz).push_back(P);
+        GetElement(Ix, Iy, Iz).push_back(P);
 
-        u32 ixE, iyE, izE;
-        ixE = iFloor(float(V.x + VMeps.x - VMmin.x) / VMscale.x * clpX);
-        iyE = iFloor(float(V.y + VMeps.y - VMmin.y) / VMscale.y * clpY);
-        izE = iFloor(float(V.z + VMeps.z - VMmin.z) / VMscale.z * clpZ);
+        u32 IxE = iFloor(float(V.x + VMeps.x - VMmin.x) / VMscale.x * ClpX);
+        u32 IyE = iFloor(float(V.y + VMeps.y - VMmin.y) / VMscale.y * ClpY);
+        u32 IzE = iFloor(float(V.z + VMeps.z - VMmin.z) / VMscale.z * ClpZ);
 
-        // R_ASSERT(ixE<=clpMX && iyE<=clpMY && izE<=clpMZ);
-        clamp(ixE, (u32)0, clpX);
-        clamp(iyE, (u32)0, clpY);
-        clamp(izE, (u32)0, clpZ);
+        clamp(IxE, (u32)0, ClpX);
+        clamp(IyE, (u32)0, ClpY);
+        clamp(IzE, (u32)0, ClpZ);
 
-        if (ixE != ix)
-            get_element(ixE, iy, iz).push_back(P);
-        if (iyE != iy)
-            get_element(ix, iyE, iz).push_back(P);
-        if (izE != iz)
-            get_element(ix, iy, izE).push_back(P);
-        if ((ixE != ix) && (iyE != iy))
-            get_element(ixE, iyE, iz).push_back(P);
-        if ((ixE != ix) && (izE != iz))
-            get_element(ixE, iy, izE).push_back(P);
-        if ((iyE != iy) && (izE != iz))
-            get_element(ix, iyE, izE).push_back(P);
-        if ((ixE != ix) && (iyE != iy) && (izE != iz))
-            get_element(ixE, iyE, izE).push_back(P);
+        if (IxE != Ix)
+            GetElement(IxE, Iy, Iz).push_back(P);
+        if (IyE != Iy)
+            GetElement(Ix, IyE, Iz).push_back(P);
+        if (IzE != Iz)
+            GetElement(Ix, Iy, IzE).push_back(P);
+        if ((IxE != Ix) && (IyE != Iy))
+            GetElement(IxE, IyE, Iz).push_back(P);
+        if ((IxE != Ix) && (IzE != Iz))
+            GetElement(IxE, Iy, IzE).push_back(P);
+        if ((IyE != Iy) && (IzE != Iz))
+            GetElement(Ix, IyE, IzE).push_back(P);
+        if ((IxE != Ix) && (IyE != Iy) && (IzE != Iz))
+            GetElement(IxE, IyE, IzE).push_back(P);
     }
     return P;
 }
 
-void VCPacked::clear()
+void VCPacked::Clear()
 {
     verts.clear();
-    for (GCHashIt it = VM.begin(); it != VM.end(); it++)
-        it->clear();
+    for (U32Vec& Cell : VM)
+        Cell.clear();
 }

@@ -9,6 +9,7 @@
 
 #include "PhysicsShellHolderEditorBase.h"
 #include "Engine/GameMtlLib.h"
+#include "ImageManager.h"
 
 //----------------------------------------------------
 struct 	SRayPickInfo;
@@ -51,7 +52,7 @@ public:
 
 	Flags32			m_RTFlags;
 	u32				tag;
-	SSimpleImage*	ImageData;
+	xr_unique_ptr<SSimpleImage> ImageData;
 	u16				m_id = 0;
 	bool m_bEditorVisible = true;
 
@@ -59,7 +60,7 @@ public:
 	CSurface		()
 	{
 		m_GameMtlName="default";
-		ImageData	= nullptr;
+		ImageData.reset();
 		m_Shader	= nullptr;
 		m_RTFlags.zero	();
 		m_Flags.zero	();
@@ -71,20 +72,12 @@ public:
 		return (0!=xr_strlen(m_Texture))&&(0!=xr_strlen(m_ShaderName));
 	}
 #if 1
-					~CSurface		(){R_ASSERT(!m_Shader);xr_delete(ImageData);}
-	IC void			CopyFrom		(CSurface* surf){*this = *surf; m_Shader=nullptr; m_RTFlags.set(rtValidShader, false);}
+					~CSurface		();
+	void			CopyFrom		(CSurface* surf);
 	IC int			_Priority		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.iPriority:1;}
 	IC bool			_StrictB2F		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.bStrictB2F:false;}
 	IC ref_shader	_Shader			()	{if (!m_RTFlags.is(rtValidShader)) OnDeviceCreate(); return m_Shader;}
 #endif
-	IC const char*		_Name			()const {return *m_Name;}
-	IC const char*		_ShaderName		()const {return *m_ShaderName;}
-	IC const char*		_GameMtlName	()const {return *m_GameMtlName;}
-	IC const char*		_ShaderXRLCName	()const {return *m_ShaderXRLCName;}
-	IC const char*		_Texture		()const {return *m_Texture;}
-	IC const char*		_VMap			()const {return *m_VMap;}
-	IC u32			_FVF			()const {return m_dwFVF;}
-	IC void			SetName			(const char* name){m_Name=name;}
 	IC void			SetShader		(const char* name)
 	{
 		R_ASSERT2(name&&name[0],"Empty shader name."); 
@@ -93,11 +86,7 @@ public:
 		OnDeviceDestroy(); 
 #endif
 	}
-	IC void 		SetShaderXRLC	(const char* name){m_ShaderXRLCName=name;}
-	IC void			SetGameMtl		(const char* name){m_GameMtlName=name;}
-	IC void			SetFVF			(u32 fvf){m_dwFVF=fvf;}
 	IC void			SetTexture		(const char* name){string512 buf; xr_strcpy(buf, sizeof(buf), name); if(strext(buf)) *strext(buf)=0; m_Texture=buf;}
-	IC void			SetVMap			(const char* name){m_VMap=name;}
 #if 1
 	IC u32			_GameMtl		()const	{return PGMLib->GetMaterialID	(*m_GameMtlName);}
 	IC void			OnDeviceCreate	()
@@ -165,17 +154,17 @@ class ECORE_API CEditableObject :
 	__time32_t			m_ModifTime;
 	
 // general
+public:
 	xr_string		m_ClassScript;
-
 	EditMeshVec		m_Meshes;
-
-	ref_shader		m_LODShader;
-
-	// skeleton
 	BoneVec			m_Bones;
 	SMotionVec		m_SMotions;
 	BPVec			m_BoneParts;
-	CSMotion*		m_ActiveSMotion;
+	Fbox 			m_BBox;
+	CSMotion*		m_ActiveSMotion = nullptr;
+private:
+
+	ref_shader		m_LODShader;
 	CPhysicsShell*	m_physics_shell;
 	Fmatrix*		m_object_xform;
 public:
@@ -201,9 +190,6 @@ public:
 	IC bool			IsDynamic				(){return m_objectFlags.is(eoDynamic);}
 	IC bool			IsStatic				(){return !m_objectFlags.is(eoSoundOccluder)&&!m_objectFlags.is(eoDynamic)&&!m_objectFlags.is(eoHOM)&&!m_objectFlags.is(eoMultipleUsage);}
 	IC bool			IsMUStatic				(){return !m_objectFlags.is(eoSoundOccluder)&&!m_objectFlags.is(eoDynamic)&&!m_objectFlags.is(eoHOM)&&m_objectFlags.is(eoMultipleUsage);}
-private:
-	// bounding volume
-	Fbox 			m_BBox;
 public:
 	// temp variable for actor
 	Fvector 		a_vPosition;
@@ -215,8 +201,6 @@ public:
 	Fvector			t_vRotate;
    
 	bool			bOnModified;
-	IC bool			IsModified				(){return bOnModified;}
-	IC void 		Modified				(){bOnModified=true;}
 
 	xr_string		m_LoadName;
 	int				m_RefCount;
@@ -245,21 +229,10 @@ public:
 					CEditableObject			(const char* name);
 	virtual 		~CEditableObject		();
 
-	const char*			GetName					(){ return m_LibName.c_str();}
-
 	void			SetVersionToCurrent		(bool bCreate, bool bModif);
 
 	void			Optimize				();
 
-	IC EditMeshIt	FirstMesh				()	{return m_Meshes.begin();}
-	IC EditMeshIt	LastMesh				()	{return m_Meshes.end();}
-	IC EditMeshVec& Meshes					()	{return m_Meshes; }
-	IC int			MeshCount				()	{return m_Meshes.size();}
-	IC void			AppendMesh				(CEditableMesh* M){m_Meshes.push_back(M);}
-	IC SurfaceVec&	Surfaces				()	{return m_Surfaces;}
-	IC SurfaceIt	FirstSurface			()	{return m_Surfaces.begin();}
-	IC SurfaceIt	LastSurface				()	{return m_Surfaces.end();}
-	IC int			SurfaceCount			()	{return m_Surfaces.size();}
 	IC time_t		Version 				() 	{return m_ObjectVersion;}
 
 	// LOD
@@ -268,43 +241,26 @@ public:
 	void			GetLODFrame				(int frame, Fvector p[4], Fvector2 t[4], const Fmatrix* parent=nullptr);
 
 	// skeleton
-	IC BPIt			FirstBonePart			()	{return m_BoneParts.begin();}
-	IC BPIt			LastBonePart			()	{return m_BoneParts.end();}
-	IC BPVec&		BoneParts				()	{return m_BoneParts;}
-	IC int			BonePartCount			()	{return m_BoneParts.size();}
 	IC BPIt			BonePart				(CBone* B);
 
-	IC BoneIt		FirstBone				()	{return m_Bones.begin();}
-	IC BoneIt		LastBone				()	{return m_Bones.end();}
-	IC BoneVec&		Bones					()	{return m_Bones;}
-	IC int			BoneCount				()const	{return m_Bones.size();}
 	shared_str		BoneNameByID			(int id);
 	int				GetRootBoneID			();
 	int				PartIDByName			(const char* name);
 	IC CBone*		GetBone					(u32 idx){VERIFY(idx<m_Bones.size()); return m_Bones[idx];}
 	IC const CBone*	GetBone					(u32 idx)const{VERIFY(idx<m_Bones.size()); return m_Bones[idx];}
 	void			GetBoneWorldTransform	(u32 bone_idx, float t, CSMotion* motion, Fmatrix& matrix);
-	IC SMotionIt	FirstSMotion			()	{return m_SMotions.begin();}
-	IC SMotionIt	LastSMotion				()	{return m_SMotions.end();}
-	SMotionVec&		SMotions				()	{return m_SMotions;}
-	IC int			SMotionCount 			()	{return m_SMotions.size();}
-	IC bool			IsAnimated	 			()	{return SMotionCount() || m_SMotionRefs.size();}
+	IC bool			IsAnimated	 			()	{return !m_SMotions.empty() || m_SMotionRefs.size();}
 	IC void			SkeletonPlay 			()	{m_SMParam.Play();}
 	IC void			SkeletonStop 			()	{m_SMParam.Stop();}
 	IC void			SkeletonPause 			(bool val)	{m_SMParam.Pause(val);}
 
 	// get object properties methods
 
-	IC xr_string&	GetClassScript			()	{return m_ClassScript;}
-
 	IC const Fbox&	_BCL GetBox				() const 	{return m_BBox;}
-
-	IC const char*		GetLODs					()	{return m_LODs.c_str();}
 
 	// animation
 	IC bool			IsSkeleton				()	{return !!m_Bones.size();}
 	IC bool			IsSMotionActive			()	{return IsSkeleton()&&m_ActiveSMotion; }
-	CSMotion*		GetActiveSMotion		()	{return m_ActiveSMotion; }
 	void			SetActiveSMotion		(CSMotion* mot);
 	bool 			CheckBoneCompliance		(CSMotion* M);
 	bool			VerifyBoneParts			();
@@ -461,7 +417,7 @@ private:
 
 virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const 															{ return *GetBone( bone_id ); }
 
-	virtual u16			_BCL	LL_BoneCount()const 																	{ return (u16)BoneCount(); }
+	virtual u16			_BCL	LL_BoneCount()const 																	{ return (u16)m_Bones.size(); }
 	virtual u16					LL_VisibleBoneCount() 																	{ VERIFY(false); return 0; }
 	virtual ICF Fmatrix& _BCL	LL_GetTransform(u16 bone_id) 															{ return GetBone( bone_id )->_LTransform(); }
 	virtual ICF const Fmatrix& _BCL	LL_GetTransform(u16 bone_id) const 													{ return GetBone( bone_id )->_LTransform(); }
@@ -536,16 +492,3 @@ private:
 #define EOBJ_CHUNK_SMOTIONS2		0x0924
 #define EOBJ_CHUNK_LODS				0x0925
 #define EOBJ_CHUNK_SMOTIONS3		0x0926
-//----------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-

@@ -51,12 +51,12 @@ public:
 
     // get object properties methods
 	IC bool 		RefCompare				(CEditableObject *to){return m_pReference?!!(m_pReference==to):false; }
-	IC bool 		RefCompare				(const char* ref){return ref&&m_pReference?(strcmp(ref,m_pReference->GetName())==0):false; }
+	IC bool 		RefCompare				(const char* ref){return ref&&m_pReference?(strcmp(ref,m_pReference->m_LibName.c_str())==0):false; }
 	IC CEditableObject*	GetReference		()	{return m_pReference; }
 	CEditableObject*SetReference			(const char* ref_name);
 	CEditableObject*UpdateReference			();
-	IC EditMeshVec* Meshes					() {return m_pReference?&m_pReference->Meshes():0;}
-    virtual const char*	RefName					() {return m_pReference?m_pReference->GetName():0;}
+	IC EditMeshVec* Meshes					() {return m_pReference?&m_pReference->m_Meshes:0;}
+    virtual const char*	RefName					() {return m_pReference?m_pReference->m_LibName.c_str():0;}
     virtual bool	CanAttach				() {return true;}
 
     // statistics methods

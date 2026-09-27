@@ -41,11 +41,11 @@ void SSceneSummary::SObjectInfo::Prepare()
             info.push_back	(tmp);
             tmp.first		= pref+"\\Geometry\\Faces"; 	tmp.second = _itoa(O->GetFaceCount());			info.push_back	(tmp);
             tmp.first		= pref+"\\Geometry\\Vertices"; 	tmp.second = _itoa(O->GetVertexCount());		info.push_back	(tmp);
-            SurfaceVec& surfaces = O->Surfaces();
+            SurfaceVec& surfaces = O->m_Surfaces;
             for (SurfaceIt it=surfaces.begin(); it!=surfaces.end(); it++){
-            	xr_string pr= pref+xr_string("\\Materials\\")+(*it)->_Name();
-	            tmp.first	= pr+"\\Texture"; 		tmp.second = (*it)->_Texture();							info.push_back	(tmp);
-	            tmp.first	= pr+"\\Faces"; 		tmp.second = _itoa(O->GetSurfFaceCount((*it)->_Name()));info.push_back	(tmp);
+            	xr_string pr= pref+xr_string("\\Materials\\")+(*it)->m_Name.c_str();
+	            tmp.first	= pr+"\\Texture"; 		tmp.second = (*it)->m_Texture.c_str();							info.push_back	(tmp);
+	            tmp.first	= pr+"\\Faces"; 		tmp.second = _itoa(O->GetSurfFaceCount((*it)->m_Name.c_str()));info.push_back	(tmp);
             }
 	    	Lib.RemoveEditObject(O);
         }

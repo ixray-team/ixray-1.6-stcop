@@ -233,7 +233,7 @@ void TClipMaker::UpdateProperties(bool)
 
                     CMotionDef* MD		= m_RenderObject->FindMotionDef		(mname.c_str(),slot);
                     CMotion* MI			= m_RenderObject->FindMotionKeys	(mname.c_str(),slot);
-                    SBonePart* BP		= (k<(u16)m_CurrentObject->BoneParts().size())?&m_CurrentObject->BoneParts()[k]:0;
+                    SBonePart* BP		= (k<(u16)m_CurrentObject->m_BoneParts.size())?&m_CurrentObject->m_BoneParts[k]:0;
 
                     shared_str tmp;
                     if (MI)

@@ -13,18 +13,18 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 	bool bResult 			= true;
 	mesh->GenerateVNormals	(&parent);
 	// fill faces
-	for (SurfFaces::const_iterator sp_it=mesh->GetSurfFaces().begin(); sp_it!=mesh->GetSurfFaces().end(); sp_it++){
+	for (SurfFaces::const_iterator sp_it=mesh->m_SurfFaces.begin(); sp_it!=mesh->m_SurfFaces.end(); sp_it++){
 		const IntVec& face_lst 	= sp_it->second;
 		CSurface* surf 		= sp_it->first;
 		int gm_id			= surf->_GameMtl(); 
 		if (gm_id==GAMEMTL_NONE_ID){
-			ELog.DlgMsg(mtError, "%s Object '%s', surface '%s' contain invalid game material.", mesh->Name().c_str(), mesh->Parent()->m_LibName.c_str(), surf->_Name());
+			ELog.DlgMsg(mtError, "%s Object '%s', surface '%s' contain invalid game material.", mesh->m_Name.c_str(), mesh->m_Parent->m_LibName.c_str(), surf->m_Name.c_str());
 			bResult 		= false; 
 			break; 
 		}
 		SGameMtl* M 		=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
 		if (!M){
-			ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", mesh->Name().c_str(), mesh->Parent()->m_LibName.c_str(),surf->_Name());
+			ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", mesh->m_Name.c_str(), mesh->m_Parent->m_LibName.c_str(),surf->m_Name.c_str());
 			bResult 		= false; 
 			break; 
 		}
@@ -32,22 +32,22 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 
 		// check engine shader compatibility
 		if (!ignore_shader){
-			IBlender* 		B = EDevice->Resources->_FindBlender(surf->_ShaderName()); 
+			IBlender* 		B = EDevice->Resources->_FindBlender(surf->m_ShaderName.c_str()); 
 			if (!B){
-				ELog.Msg	(mtError,"Can't find engine shader '%s'. Object '%s', surface '%s'. Export interrupted.",surf->_ShaderName(),mesh->Parent()->m_LibName.c_str(),surf->_Name());
+				ELog.Msg	(mtError,"Can't find engine shader '%s'. Object '%s', surface '%s'. Export interrupted.",surf->m_ShaderName.c_str(),mesh->m_Parent->m_LibName.c_str(),surf->m_Name.c_str());
 				bResult 	= false; 
 				break; 
 			}
 			if (B->canBeLMAPped()){ 
-				ELog.Msg	(mtError,"Object '%s', surface '%s' contain static engine shader - '%s'. Export interrupted.",mesh->Parent()->m_LibName.c_str(),surf->_Name(),surf->_ShaderName());
+				ELog.Msg	(mtError,"Object '%s', surface '%s' contain static engine shader - '%s'. Export interrupted.",mesh->m_Parent->m_LibName.c_str(),surf->m_Name.c_str(),surf->m_ShaderName.c_str());
 				bResult 	= false; 
 				break; 
 			}
 		}
 												  
-		const st_Face* faces	= mesh->GetFaces();        	VERIFY(faces);
+		const st_Face* faces	= mesh->m_Faces.data();        	VERIFY(faces);
 		const Fvector*	vn	 	= mesh->GetVNormals();		VERIFY(vn);
-		const Fvector*	pts 	= mesh->GetVertices();		VERIFY(pts);
+		const Fvector*	pts 	= mesh->m_Vertices.data();		VERIFY(pts);
 		for (IntVec::const_iterator f_it=face_lst.begin(); f_it!=face_lst.end(); f_it++){
 			const st_Face& face = faces[*f_it];
 			Fvector 		v[3],n[3];
@@ -78,41 +78,55 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 	Result |= GetBox(BBCurent);
 
 	if (!Result)
+	{
 		return false;
+	}
 
 	if (m_Objects.empty())
+	{
 		return true;
+	}
 
 	BBCurent.merge(BBHM);
 	CGeomPartExtractor* extractor = new CGeomPartExtractor();
 	extractor->Initialize(BBCurent, EPS_L, 2);
 
-	UI->SetStatus("Export breakable objects...");
+	EContext.UI->SetStatus("Export breakable objects...");
 	// collect verts&&faces
 	{
-		SPBItem* pb = UI->ProgressStart(m_Objects.size(), "Prepare geometry...");
+		SPBItem* pb = EContext.UI->ProgressStart(m_Objects.size(), "Prepare geometry...");
 		for (ObjectIt it = m_Objects.begin(); it != m_Objects.end(); it++)
 		{
 			pb->Inc();
-			CSceneObject* obj = smart_cast<CSceneObject*>(*it); VERIFY(obj);
-			if (obj->IsStatic()) {
+			CSceneObject* obj = smart_cast<CSceneObject*>(*it);
+			VERIFY(obj);
+			if (obj->IsStatic())
+			{
 				CEditableObject* O = obj->GetReference();
 				const Fmatrix& T = obj->_Transform();
-				for (EditMeshIt M = O->FirstMesh(); M != O->LastMesh(); M++)
-					if (!build_mesh(T, *M, extractor, SGameMtl::flBreakable, false)) { bResult = false; break; }
+				for (EditMeshIt M = O->m_Meshes.begin(); M != O->m_Meshes.end(); M++)
+				{
+					if (!build_mesh(T, *M, extractor, SGameMtl::flBreakable, false))
+					{
+						bResult = false;
+						break;
+					}
+				}
 			}
 		}
-		UI->ProgressEnd(pb);
+		EContext.UI->ProgressEnd(pb);
 	}
 
 	if (!extractor->Process())
+	{
 		bResult = false;
+	}
 
 	// export parts
 	if (bResult)
 	{
 		SBPartVec& parts = extractor->GetParts();
-		SPBItem* pb = UI->ProgressStart(parts.size(), "Export Parts...");
+		SPBItem* pb = EContext.UI->ProgressStart(parts.size(), "Export Parts...");
 		for (SBPartVecIt p_it = parts.begin(); p_it != parts.end(); p_it++)
 		{
 			pb->Inc();
@@ -124,8 +138,10 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 				sprintf(sn, "meshes\\brkbl#%d.ogf", (p_it - parts.begin()));
 
 				xr_string fn = Scene->LevelPath() + sn;
-				IWriter* W = FS.w_open(fn.c_str()); R_ASSERT(W);
-				if (!P->Export(*W, 1)) {
+				IWriter* W = FS.w_open(fn.c_str());
+				R_ASSERT(W);
+				if (!P->Export(*W, 1))
+				{
 					ELog.DlgMsg(mtError, "Invalid breakable object.");
 					bResult = false;
 					break;
@@ -135,8 +151,10 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 				// export spawn object
 				{
 					xr_string entity_ref = "breakable_object";
-					CSE_Abstract* m_Data = g_SEFactoryManager->create_entity(entity_ref.c_str()); 	VERIFY(m_Data);
-					CSE_Visual* m_Visual = m_Data->visual();	VERIFY(m_Visual);
+					CSE_Abstract* m_Data = g_SEFactoryManager->create_entity(entity_ref.c_str());
+					VERIFY(m_Data);
+					CSE_Visual* m_Visual = m_Data->visual();
+					VERIFY(m_Visual);
 					// set params
 					m_Data->set_name(entity_ref.c_str());
 					m_Data->set_name_replace(sn);
@@ -144,12 +162,12 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 					m_Data->angle().set(P->m_RefRotate);
 					m_Visual->set_visual(sn, false);
 
-					if (s_draw_dbg) 
+					if (s_draw_dbg)
 					{
 						Fmatrix MX;
 						MX.setXYZi(P->m_RefRotate);
 						MX.translate_over(P->m_RefOffset);
-						Fvector DR = { 0,0,1 };
+						Fvector DR = {0, 0, 1};
 						MX.transform_dir(DR);
 						Tools->m_DebugDraw.AppendLine(P->m_RefOffset, Fvector().mad(P->m_RefOffset, MX.k, 1.f), 0xFF0000FF, false, false);
 					}
@@ -158,19 +176,21 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 					{
 						F->spawn.stream.open_chunk(F->spawn.chunk++);
 
-						SSaveTask dummy;
+						SSaveTask Dummy;
 						auto Obj = CSaveManager::GetInstance().EditorBeginSave();
-						shared_str temp = m_Data->name();
-						(*Obj) << temp;
+						shared_str Temp = m_Data->name();
+						(*Obj) << Temp;
 						m_Data->Spawn_Serialize(*Obj, true);
-						CMemoryBuffer buff;
-						buff.Write(ESaveVariableType::t_chunk);
-						Obj->Write(&buff, &dummy);
-						buff.Write((IWriter*)(&F->spawn.stream));
+						CMemoryBuffer Buff;
+						Buff.Write(ESaveVariableType::t_chunk);
+						Obj->Write(&Buff, &Dummy);
+						Buff.Write((IWriter*)(&F->spawn.stream));
 						xr_delete(Obj);
-						
+
 						F->spawn.stream.close_chunk();
-					} else {
+					}
+					else
+					{
 						NET_Packet Packet;
 						m_Data->Spawn_Write(Packet, true);
 
@@ -181,18 +201,18 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 					g_SEFactoryManager->destroy_entity(m_Data);
 				}
 			}
-			else {
+			else
+			{
 				ELog.Msg(mtError, "Can't export invalid part #%d", p_it - parts.begin());
 			}
 		}
-		UI->ProgressEnd(pb);
+		EContext.UI->ProgressEnd(pb);
 	}
 	// clean up
 	xr_delete(extractor);
 
 	return bResult;
 }
-
 
 IC bool OrientToNorm(Fvector& local_norm, Fmatrix33& form, Fvector& hs)
 {
@@ -233,10 +253,10 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 	CGeomPartExtractor* extractor = new CGeomPartExtractor();
 	extractor->Initialize(BBCurent, EPS_L, int_max);
 
-	UI->SetStatus	("Export climable objects...");
+	EContext.UI->SetStatus("Export climable objects...");
 	// collect verts&&faces
 	{
-		SPBItem* pb                 = UI->ProgressStart(m_Objects.size(), "Prepare geometry...");
+		SPBItem* pb = EContext.UI->ProgressStart(m_Objects.size(), "Prepare geometry...");
 		for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++)
 		{
 			pb->Inc();
@@ -247,7 +267,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 				CEditableObject *O 	= obj->GetReference();
 				const Fmatrix& T 	= obj->_Transform();
 				
-				for(EditMeshIt M =O->FirstMesh(); M!=O->LastMesh(); M++)
+				for(EditMeshIt M =O->m_Meshes.begin(); M!=O->m_Meshes.end(); M++)
 					if (!build_mesh	(T, *M, extractor, SGameMtl::flClimable, true))
 					{
 					  bResult       = false;
@@ -255,7 +275,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 					}
 			}
 		}
-		UI->ProgressEnd(pb);
+		EContext.UI->ProgressEnd(pb);
 	}
 	if (!extractor->Process())
 		bResult                     = false;
@@ -264,7 +284,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 	if (bResult)
 	{
 		SBPartVec& parts			= extractor->GetParts();
-		SPBItem* pb                 = UI->ProgressStart(parts.size(),"Export Parts...");
+		SPBItem* pb = EContext.UI->ProgressStart(parts.size(), "Export Parts...");
 		for (SBPartVecIt p_it=parts.begin(); p_it!=parts.end(); p_it++)
 		{
 			pb->Inc                 ();
@@ -283,7 +303,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 					for (u32 k=0; k<3; k++)
 						local_normal.add	        ((*it)->n[k]);
 
-					mat_name     = (*it)->surf->_GameMtlName();
+					mat_name     = (*it)->surf->m_GameMtlName.c_str();
 				}
 
 				local_normal.normalize_safe		();
@@ -360,7 +380,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 				ELog.Msg(mtError,"Can't export invalid part #%d",p_it-parts.begin());
 			}
 		}
-		UI->ProgressEnd     (pb);
+		EContext.UI->ProgressEnd(pb);
 	}
 	// clean up
 	xr_delete               (extractor);

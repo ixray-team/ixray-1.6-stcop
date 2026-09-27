@@ -11,6 +11,8 @@
 #include "../../../Layers/xrRender/Shader.h"
 #include "../../../Layers/xrRender/R_Backend.h"
 
+#include "../Engine/XrGameMaterialLibraryEditors.h"
+
 //---------------------------------------------------------------------------
 // refs
 class CGameFont;
@@ -18,7 +20,8 @@ class CInifile;
 class CResourceManager;
 #undef CreateWindow
 //------------------------------------------------------------------------------
-class ECORE_API CEditorRenderDevice;
+class CEditorRenderDevice;
+class XrGameMaterialLibraryEditors;
 extern ECORE_API CEditorRenderDevice* EDevice;
 
 #define REContext ((ID3D11DeviceContext*)GRHI->GetContext())
@@ -178,6 +181,7 @@ public:
 
 	// Dependent classes
 	CResourceManager* Resources;
+	xr_unique_ptr<XrGameMaterialLibraryEditors> m_MtlLib;
 
 private:
 	virtual void _BCL AddSeqFrame(pureFrame* f, bool mt);

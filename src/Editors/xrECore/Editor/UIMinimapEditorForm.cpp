@@ -1322,7 +1322,7 @@ void UIMinimapEditorForm::Update()
 	{
 		if (!Form->IsClosed())
 		{
-			if (UI->ActiveTabIndex != Form->TabIndex)
+			if (EContext.UI->ActiveTabIndex != Form->TabIndex)
 			{
 				return;
 			}

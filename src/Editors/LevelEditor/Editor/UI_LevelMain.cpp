@@ -9,7 +9,7 @@
 #include "UI/UIGitWindow.h"
 
 ECORE_API extern bool bIsLevelEditor;
-CLevelMain* LUI = (CLevelMain*)UI;
+CLevelMain* LUI = (CLevelMain*)EContext.UI;
 
 CLevelMain::CLevelMain()
 {
@@ -183,7 +183,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 			if (!Scene->IfModified())
 				return false;
 
-			UI->SetStatus("Level loading...");
+			EContext.UI->SetStatus("Level loading...");
 			ExecCommand(COMMAND_CLEAR);
 			FS.TryLoad(temp_fn.c_str());
 			IReader* R = FS.r_open(temp_fn.c_str());
@@ -202,7 +202,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 
 					if (Result)
 					{
-						UI->ResetStatus();
+						EContext.UI->ResetStatus();
 						Scene->UndoClear();
 
 						bool bk1 = Scene->m_RTFlags.test(EScene::flRT_Unsaved);
@@ -224,7 +224,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 					}
 					// update props
 					ExecCommand(COMMAND_UPDATE_PROPERTIES);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 			);
 		}
@@ -281,7 +281,7 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 			{
 				xr_strlwr(temp_fn);
 
-				UI->SetStatus("Level saving...");
+				EContext.UI->SetStatus("Level saving...");
 				Scene->SaveLTX(temp_fn.c_str(), false, (p2 == 66));
 
 				// Track saved file with Git LFS if applicable
@@ -295,7 +295,7 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 					Git->ProcessFileForLFS(partName);
 				}
 
-				UI->ResetStatus();
+				EContext.UI->ResetStatus();
 				// set new name
 				if (0 != xr_strcmp(Tools->m_LastFileName.c_str(), temp_fn.c_str()))
 				{
@@ -317,39 +317,47 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 {
 	LUI->LoaderEvent.wait();
 
-	if( !Scene->locked() )
+	if (!Scene->locked())
 	{
 		Scene->Stop();
-		
-		if (!Scene->IfModified()) 
+
+		if (!Scene->IfModified())
+		{
 			return true;
-		UI->CurrentView().m_Camera.Reset	();
-		Scene->Reset			();
-		Scene->m_LevelOp.Reset	();
-		Tools->m_LastFileName 		= "";
+		}
+
+		EContext.UI->CurrentView().m_Camera.Reset();
+		Scene->Reset();
+		Scene->m_LevelOp.Reset();
+		Tools->m_LastFileName = "";
 		LTools->m_LastSelectionName = "";
-		Scene->UndoClear		();
-		ExecCommand				(COMMAND_CHANGE_TARGET,OBJCLASS_SCENEOBJECT);
-		ExecCommand				(COMMAND_CHANGE_ACTION,etaSelect,estDefault);
-		ExecCommand				(COMMAND_UPDATE_PROPERTIES,1);
-		Scene->UndoSave			();
-		return 					true;
-	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
-		return					false;
+		Scene->UndoClear();
+		ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_SCENEOBJECT);
+		ExecCommand(COMMAND_CHANGE_ACTION, etaSelect, estDefault);
+		ExecCommand(COMMAND_UPDATE_PROPERTIES, 1);
+		Scene->UndoSave();
+		return true;
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "Scene sharing violation");
+		return false;
 	}
 }
+
 CCommandVar CommandLoadFirstRecent(CCommandVar p1, CCommandVar p2)
 {
 	if (EPrefs->FirstRecentFile())
-		return 					ExecCommand(COMMAND_LOAD,xr_string(EPrefs->FirstRecentFile()));
-	return 						false;
+	{
+		return ExecCommand(COMMAND_LOAD, xr_string(EPrefs->FirstRecentFile()));
+	}
+	return false;
 }
 
 CCommandVar CommandClearDebugDraw(CCommandVar p1, CCommandVar p2)
 {
 	Tools->ClearDebugDraw		();
-	UI->RedrawScene				();
+	EContext.UI->RedrawScene();
 	return 						true;
 }
 
@@ -385,7 +393,7 @@ CCommandVar CommandShowClipEditor(CCommandVar p1, CCommandVar p2)
 		if (CKinematicsAnimated* KA = PKinematicsAnimated(sp->m_SpawnData.m_Visual->visual))
 		{
 			g_clip_maker->ShowEditor(KA);
-			UI->Push(g_clip_maker);
+			EContext.UI->Push(g_clip_maker);
 		}
 	}
 	return 							true;
@@ -398,7 +406,7 @@ CCommandVar CommandImportXrAICompilerError(CCommandVar p1, CCommandVar p2)
 	{
 		Scene->LoadXrAICompilerError(fn.c_str());
 	}
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	return true;
 }
 
@@ -408,7 +416,7 @@ CCommandVar CommandImportCompilerError(CCommandVar p1, CCommandVar p2)
 	if(EFS.GetOpenName("$logs$", fn, false, NULL, 0)){
 		Scene->LoadCompilerError(fn.c_str());
 	}
-	UI->RedrawScene		();
+	EContext.UI->RedrawScene();
 	return true;
 }
 CCommandVar CommandExportCompilerError(CCommandVar p1, CCommandVar p2)
@@ -421,22 +429,29 @@ CCommandVar CommandExportCompilerError(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar CommandValidateScene(CCommandVar p1, CCommandVar p2)
 {
-	if( !Scene->locked() ){
-		Scene->Validate	(true,true,true,true,true,true);
-		return 			true;
-	} else {
-		ELog.DlgMsg		( mtError, "Scene sharing violation" );
-		return 			false;
+	if (!Scene->locked())
+	{
+		Scene->Validate(true, true, true, true, true, true);
+		return true;
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "Scene sharing violation");
+		return false;
 	}
 }
+
 CCommandVar CommandCleanLibrary(CCommandVar p1, CCommandVar p2)
 {
-	if ( !Scene->locked() ){
+	if (!Scene->locked())
+	{
 		Lib.CleanLibrary();
-		return 			true;
-	}else{
-		ELog.DlgMsg		(mtError, "Scene must be empty before refreshing library!");
-		return 			false;
+		return true;
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "Scene must be empty before refreshing library!");
+		return false;
 	}
 }
 
@@ -518,47 +533,58 @@ CCommandVar CommandDuplicate(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandLoadSelection(CCommandVar p1, CCommandVar p2)
 {
-	if( !Scene->locked() )
+	if (!Scene->locked())
 	{
-		xr_string fn			= LTools->m_LastSelectionName;
-		if( EFS.GetOpenName(_maps_, fn ) )
+		xr_string fn = LTools->m_LastSelectionName;
+		if (EFS.GetOpenName(_maps_, fn))
 		{
-			const char* maps_path	= FS.get_path(_maps_)->m_Path;
-			if (fn.c_str()==strstr(fn.c_str(),maps_path))
-				LTools->m_LastSelectionName = fn.c_str()+xr_strlen(maps_path);
-			UI->SetStatus		("Fragment loading...");
+			const char* maps_path = FS.get_path(_maps_)->m_Path;
+			if (fn.c_str() == strstr(fn.c_str(), maps_path))
+			{
+				LTools->m_LastSelectionName = fn.c_str() + xr_strlen(maps_path);
+			}
+			EContext.UI->SetStatus("Fragment loading...");
 
 			Scene->LoadSelection(fn.c_str());
 
-			UI->ResetStatus		();
-			Scene->UndoSave		();
-			ExecCommand			(COMMAND_CHANGE_ACTION,etaSelect);
-			ExecCommand			(COMMAND_UPDATE_PROPERTIES);
-			UI->RedrawScene		();
-			return 				true;
-		}               	
-	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+			EContext.UI->ResetStatus();
+			Scene->UndoSave();
+			ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
+			ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			EContext.UI->RedrawScene();
+			return true;
+		}
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "Scene sharing violation");
 	}
 	return false;
-}        
+}
+
 CCommandVar CommandSaveSelection(CCommandVar p1, CCommandVar p2)
 {
-	if( !Scene->locked() ){
-		xr_string fn			= LTools->m_LastSelectionName;
-		if( EFS.GetSaveName		( _maps_, fn ) ){
-			const char* maps_path	= FS.get_path(_maps_)->m_Path;
-			if (fn.c_str()==strstr(fn.c_str(),maps_path))
-				LTools->m_LastSelectionName = fn.c_str()+xr_strlen(maps_path);
-			UI->SetStatus		("Fragment saving...");
-			Scene->SaveSelection(LTools->CurrentClassID(),fn.c_str());
-			UI->ResetStatus		();
-			return 				true;
+	if (!Scene->locked())
+	{
+		xr_string fn = LTools->m_LastSelectionName;
+		if (EFS.GetSaveName(_maps_, fn))
+		{
+			const char* maps_path = FS.get_path(_maps_)->m_Path;
+			if (fn.c_str() == strstr(fn.c_str(), maps_path))
+			{
+				LTools->m_LastSelectionName = fn.c_str() + xr_strlen(maps_path);
+			}
+			EContext.UI->SetStatus("Fragment saving...");
+			Scene->SaveSelection(LTools->CurrentClassID(), fn.c_str());
+			EContext.UI->ResetStatus();
+			return true;
 		}
-	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
 	}
-	return 						false;
+	else
+	{
+		ELog.DlgMsg(mtError, "Scene sharing violation");
+	}
+	return false;
 }
 
 CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
@@ -944,7 +970,7 @@ CCommandVar CommandHideSel(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandCreateShapeSphere(CCommandVar p1, CCommandVar p2)
 {
 	Fvector p, n;
-	if (LUI->PickGround(p, UI->m_ContextRStart, UI->m_ContextRDir, 1, &n))
+	if (LUI->PickGround(p, EContext.UI->m_ContextRStart, EContext.UI->m_ContextRDir, 1, &n))
 	{
 		// before callback
 		string256 namebuffer;
@@ -972,7 +998,7 @@ CCommandVar CommandCreateShapeSphere(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandCreateShapeBox(CCommandVar p1, CCommandVar p2)
 {
 	Fvector p, n;
-	if (LUI->PickGround(p, UI->m_ContextRStart, UI->m_ContextRDir, 1, &n))
+	if (LUI->PickGround(p, EContext.UI->m_ContextRStart, EContext.UI->m_ContextRDir, 1, &n))
 	{
 		// before callback
 		string256 namebuffer;
@@ -1421,43 +1447,64 @@ bool CLevelMain::PickGround(Fvector& hitpoint, const Fvector& start, const Fvect
 bool CLevelMain::SelectionFrustum(CFrustum& frustum)
 {
 	VERIFY(m_bReady);
-	Fvector st,d,p[4];
+	Fvector st, d, p[4];
 	Ivector2 pt[4];
 
 	float depth = 0;
 
-	float x1=m_StartCp.x, x2=m_CurrentCp.x;
-	float y1=m_StartCp.y, y2=m_CurrentCp.y;
+	float x1 = m_StartCp.x, x2 = m_CurrentCp.x;
+	float y1 = m_StartCp.y, y2 = m_CurrentCp.y;
 
-	if(!(x1!=x2&&y1!=y2)) return false;
+	if (!(x1 != x2 && y1 != y2))
+	{
+		return false;
+	}
 
-	pt[0].set(std::min(x1,x2),std::min(y1,y2));
-	pt[1].set(std::max(x1,x2),std::min(y1,y2));
-	pt[2].set(std::max(x1,x2),std::max(y1,y2));
-	pt[3].set(std::min(x1,x2),std::max(y1,y2));
+	pt[0].set(std::min(x1, x2), std::min(y1, y2));
+	pt[1].set(std::max(x1, x2), std::min(y1, y2));
+	pt[2].set(std::max(x1, x2), std::max(y1, y2));
+	pt[3].set(std::min(x1, x2), std::max(y1, y2));
 
 	SRayPickInfo pinf;
-	for (int i=0; i<4; i++){
-		UI->CurrentView().m_Camera.MouseRayFromPoint(st, d, pt[i]);
-		if (EPrefs->bp_lim_depth){
-			pinf.inf.range = UI->CurrentView().m_Camera._Zfar(); // max pick range
+	for (int i = 0; i < 4; i++)
+	{
+		EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(st, d, pt[i]);
+		if (EPrefs->bp_lim_depth)
+		{
+			pinf.inf.range = EContext.UI->CurrentView().m_Camera._Zfar(); // max pick range
 			if (Scene->RayPickObject(pinf.inf.range, st, d, OBJCLASS_SCENEOBJECT, &pinf, 0))
-				if (pinf.inf.range > depth) depth = pinf.inf.range;
+			{
+				if (pinf.inf.range > depth)
+				{
+					depth = pinf.inf.range;
+				}
+			}
 		}
 	}
-	if (depth<UI->CurrentView().m_Camera._Znear()) depth = UI->CurrentView().m_Camera._Zfar();
-	else depth += EPrefs->bp_depth_tolerance;
-
-	for (int i=0; i<4; i++){
-		UI->CurrentView().m_Camera.MouseRayFromPoint(st, d, pt[i]);
-		p[i].mad(st,d,depth);
+	if (depth < EContext.UI->CurrentView().m_Camera._Znear())
+	{
+		depth = EContext.UI->CurrentView().m_Camera._Zfar();
+	}
+	else
+	{
+		depth += EPrefs->bp_depth_tolerance;
 	}
 
-	Fvector pos = UI->CurrentView().m_Camera.GetPosition();
-	frustum.CreateFromPoints(p,4,pos);
+	for (int i = 0; i < 4; i++)
+	{
+		EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(st, d, pt[i]);
+		p[i].mad(st, d, depth);
+	}
 
-	Fplane P; P.build(p[0],p[1],p[2]);
-	if (P.classify(st)>0) P.build(p[2],p[1],p[0]);
+	Fvector Pos = EContext.UI->CurrentView().m_Camera.GetPosition();
+	frustum.CreateFromPoints(p, 4, Pos);
+
+	Fplane P;
+	P.build(p[0], p[1], p[2]);
+	if (P.classify(st) > 0)
+	{
+		P.build(p[2], p[1], p[0]);
+	}
 	frustum._add(P);
 
 	return true;
@@ -1481,7 +1528,7 @@ void CLevelMain::ShowContextMenu(int cls)
 
 void CLevelMain::ResetStatus()
 {
-	UI->ProgressStatusName.clear();
+	EContext.UI->ProgressStatusName.clear();
 }
 
 void CLevelMain::SetStatus(const char* s, bool bOutLog)
@@ -1493,7 +1540,7 @@ void CLevelMain::SetStatus(const char* s, bool bOutLog)
 		ELog.Msg(mtInformation, s);
 	}
 
-	UI->ProgressStatusName = s;
+	EContext.UI->ProgressStatusName = s;
 }
 
 void CLevelMain::RealQuit()
@@ -1520,7 +1567,7 @@ void CLevelMain::LoadSettings(nlohmann::json& js)
 
 Ivector2 CLevelMain::GetRenderMousePosition() const
 {
-	TUI::Viewport& Viewport = UI->CurrentView();
+	TUI::Viewport& Viewport = EContext.UI->CurrentView();
 	return Viewport.ViewportForm->GetMousePos();
 }
 

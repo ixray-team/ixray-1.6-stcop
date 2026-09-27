@@ -104,7 +104,7 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
 	{
 	case OBJCLASS_SCENEOBJECT:
 		m_RTFlags.set(flIsBuildedCForm, false);
-		UI->RedrawScene();
+		EContext.UI->RedrawScene();
 		break;
 
 	case OBJCLASS_SPAWNPOINT:
@@ -112,7 +112,7 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
 		if (Spawn && Spawn->IsGraphPoint())
 		{
 			m_RTFlags.set(flIsBuildedGameGraph, false);
-			UI->RedrawScene();
+			EContext.UI->RedrawScene();
 			break;
 		}
 		break;
@@ -121,7 +121,7 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
 	ESceneCustomOTool* mt = GetOTool(object->FClassID);
 	VERIFY3(mt,"Can't find Object Tools:",GetTool(object->FClassID)->ClassDesc());
 	mt->_AppendObject	(object);
-	UI->UpdateScene		();
+	EContext.UI->UpdateScene		();
 	if (bUndo){	
 		object->Select	(true);
 		UndoSave();
@@ -139,14 +139,14 @@ bool EScene::RemoveObject(CCustomObject* object, bool bUndo, bool bDeleting)
 	{
 	case OBJCLASS_SCENEOBJECT:
 		m_RTFlags.set(flIsBuildedCForm, false);
-		UI->RedrawScene();
+		EContext.UI->RedrawScene();
 		break;
 	case OBJCLASS_SPAWNPOINT:
 		CSpawnPoint* Spawn = smart_cast<CSpawnPoint*>(object);
 		if (Spawn && Spawn->IsGraphPoint())
 		{
 			m_RTFlags.set(flIsBuildedGameGraph, false);
-			UI->RedrawScene();
+			EContext.UI->RedrawScene();
 			break;
 		}
 		break;
@@ -171,7 +171,7 @@ bool EScene::RemoveObject(CCustomObject* object, bool bUndo, bool bDeleting)
 			}
 			UpdateSnapList();
 		}
-		UI->UpdateScene();
+		EContext.UI->UpdateScene();
 	}
 
 	if (bUndo)
@@ -194,7 +194,7 @@ void EScene::BeforeObjectChange( CCustomObject* object )
 			if (mt)
 				mt->OnBeforeObjectChange(object);
 		}
-		UI->UpdateScene	();
+		EContext.UI->UpdateScene	();
 	}
 }
 
@@ -243,7 +243,7 @@ void EScene::OnFrame( float dT )
 			{
 				pInput->unacquire();
 				pInput->KeyboardButtonUpdate(SDL_SCANCODE_LALT, false);
-				UI->IsEnableInput = true;
+				EContext.UI->IsEnableInput = true;
 				ShowCursor(true);
 			}
 		}
@@ -265,7 +265,7 @@ void EScene::OnFrame( float dT )
 			DEL_INSTANCE(g_pGameLevel);
 			DEL_INSTANCE(g_hud);
 			GetTool(OBJCLASS_SPAWNPOINT)->m_EditFlags.set(ESceneToolBase::flVisible, true);
-			UI->RedrawScene();
+			EContext.UI->RedrawScene();
 		}
 	}
 }
@@ -338,7 +338,7 @@ void EScene::Clear(bool bEditableToolsOnly)
 
 const Fvector& EScene::GetCameraPosition() const
 {
-	return UI->CurrentView().m_Camera.GetPosition();
+	return EContext.UI->CurrentView().m_Camera.GetPosition();
 }
 
 bool EScene::GetBox(Fbox& box, ObjClassID classfilter)
@@ -469,7 +469,7 @@ void EScene::OnDeviceDestroy()
 
 void EScene::OnShowHint(AStringVec& dest)
 {
-	CCustomObject* obj = RayPickObject(flt_max,UI->m_CurrentRStart,UI->m_CurrentRDir,LTools->CurrentClassID(),0,0);
+	CCustomObject* obj = RayPickObject(flt_max,EContext.UI->m_CurrentRStart,EContext.UI->m_CurrentRDir,LTools->CurrentClassID(),0,0);
 	if (obj) obj->OnShowHint(dest);
 }
 
@@ -638,7 +638,7 @@ void EScene::HighlightTexture(const char* t_name, bool allow_ratio, u32 t_width,
 	for (; t_it!=t_end; ++t_it)
 		if (t_it->second)		t_it->second->HighlightTexture(t_name,allow_ratio,t_width,t_height,!leave_previous);
 
-	UI->RedrawScene				();
+	EContext.UI->RedrawScene				();
 }
 
 xr_token		js_token	[ ]={
@@ -667,7 +667,7 @@ void EScene::OnRTFlagsChange	(PropValue* sender)
 void EScene::OnNameChange(PropValue* sender)
 {
 	m_RTFlags.set(flIsBuildedGameGraph, false); m_game_graph.clear();
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 // TODO: Fix this shit (it doesn't show up in LE props)
@@ -756,20 +756,20 @@ void EScene::Play()
 
 	if (MainForm->GetTopBarForm()->UseCameraPosForActor)
 	{
-		ActorNewPos = UI->CurrentView().m_Camera.GetPosition();
-		ActorNewDir = UI->CurrentView().m_Camera.GetHPB();
+		ActorNewPos = EContext.UI->CurrentView().m_Camera.GetPosition();
+		ActorNewDir = EContext.UI->CurrentView().m_Camera.GetHPB();
 	}
 
 	if (!BuildSpawn())
 		return;
 
-	UI->Invalidate();
+	EContext.UI->Invalidate();
 
 	pInput->acquire();
-	UI->IsEnableInput = false;
+	EContext.UI->IsEnableInput = false;
 
 	// FX: Set first viewport for PIE
-	UI->ViewID = 0;
+	EContext.UI->ViewID = 0;
 
 	g_pGamePersistent->m_game_params.reset();
 	g_pGamePersistent->m_game_params.m_e_game_type = eGameIDNoGame;
@@ -795,7 +795,7 @@ void EScene::Stop()
 	if (!IsPlayInEditor())
 		return;
 
-	UI->IsEnableInput = true;
+	EContext.UI->IsEnableInput = true;
 	pInput->unacquire();
 
 	::Sound->set_geometry_env(nullptr);
@@ -843,7 +843,7 @@ bool EScene::BuildAIMap()
 		m_game_graph.clear();
 		m_RTFlags.set(flIsBuildedAIMap, true);
 		m_RTFlags.set(flIsBuildedGameGraph, false);
-		UI->RedrawScene();
+		EContext.UI->RedrawScene();
 	}
 	return true;
 }
@@ -864,7 +864,7 @@ bool EScene::BuildGameGraph()
 		}
 
 		m_RTFlags.set(flIsBuildedGameGraph, true);
-		UI->RedrawScene();
+		EContext.UI->RedrawScene();
 	}
 	return true;
 }
@@ -879,7 +879,7 @@ bool EScene::BuildCForm()
 			return false;
 		}
 		m_RTFlags.set(flIsBuildedCForm, true);
-		UI->RedrawScene();
+		EContext.UI->RedrawScene();
 	}
 
 	if (!m_RTFlags.is(flIsBuildedSndEnv))

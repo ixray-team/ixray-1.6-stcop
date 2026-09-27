@@ -47,14 +47,14 @@ void CCustom2DProjector::CreateRMFromObjects(const Fbox& box, ObjectList& lst)
 
 
 		mesh.reserve(mesh.size() + O->GetFaceCount() * 3);
-		for (EditMeshIt m_it = O->FirstMesh(); m_it != O->LastMesh(); m_it++)
+		for (EditMeshIt m_it = O->m_Meshes.begin(); m_it != O->m_Meshes.end(); m_it++)
 		{
-			for (u32 f_id = 0; f_id != (*m_it)->GetFCount(); f_id++)
+			for (u32 f_id = 0; f_id != (*m_it)->m_Faces.size(); f_id++)
 			{
 				FVF::V v;
 				for (int k = 0; k < 3; k++)
 				{
-					T.transform_tiny(v.p, (*m_it)->GetVertices()[(*m_it)->GetFaces()[f_id].pv[k].pindex]);
+					T.transform_tiny(v.p, (*m_it)->m_Vertices.data()[(*m_it)->m_Faces.data()[f_id].pv[k].pindex]);
 					v.t.x = GetUFromX(v.p.x, box);
 					v.t.y = GetVFromZ(v.p.z, box);
 					mesh.push_back(v);

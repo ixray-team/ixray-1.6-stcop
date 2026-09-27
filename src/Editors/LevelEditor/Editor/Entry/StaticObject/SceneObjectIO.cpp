@@ -90,13 +90,13 @@ bool CSceneObject::LoadLTX(CInifile& ini, const char* sect_name)
                         ini_stream.r_string(Name);
                         if (Surf)Surf->SetShader(Name.c_str());
                         ini_stream.r_string(Name);
-                        if (Surf)Surf->SetShaderXRLC(Name.c_str());
+                        if (Surf)Surf->m_ShaderXRLCName = (Name.c_str());
                         ini_stream.r_string(Name);
-                        if (Surf)Surf->SetGameMtl(Name.c_str());
+                        if (Surf)Surf->m_GameMtlName = (Name.c_str());
                         ini_stream.r_string(Name);
                         if (Surf)Surf->SetTexture(Name.c_str());
                         ini_stream.r_string(Name);
-                        if (Surf)Surf->SetVMap(Name.c_str());
+                        if (Surf)Surf->m_VMap = (Name.c_str());
                     }
 
                     if (Surf) Surf->OnDeviceCreate();
@@ -133,12 +133,12 @@ void CSceneObject::SaveLTX(CInifile& ini, const char* sect_name)
         ini_stream.w_u32(m_Surfaces.size());
         for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
         {
-            ini_stream.w_stringZ((*sf_it)->_Name());
-            ini_stream.w_stringZ((*sf_it)->_ShaderName());
-            ini_stream.w_stringZ((*sf_it)->_ShaderXRLCName());
-            ini_stream.w_stringZ((*sf_it)->_GameMtlName());
-            ini_stream.w_stringZ((*sf_it)->_Texture());
-            ini_stream.w_stringZ((*sf_it)->_VMap());
+            ini_stream.w_stringZ((*sf_it)->m_Name.c_str());
+            ini_stream.w_stringZ((*sf_it)->m_ShaderName.c_str());
+            ini_stream.w_stringZ((*sf_it)->m_ShaderXRLCName.c_str());
+            ini_stream.w_stringZ((*sf_it)->m_GameMtlName.c_str());
+            ini_stream.w_stringZ((*sf_it)->m_Texture.c_str());
+            ini_stream.w_stringZ((*sf_it)->m_VMap.c_str());
         }
     }
 
@@ -241,13 +241,13 @@ bool CSceneObject::LoadStream(IReader& F)
                         F.r_stringZ(Name);
                         if (Surf)Surf->SetShader(Name.c_str());
                         F.r_stringZ(Name);
-                        if (Surf)Surf->SetShaderXRLC(Name.c_str());
+                        if (Surf)Surf->m_ShaderXRLCName = (Name.c_str());
                         F.r_stringZ(Name);
-                        if (Surf)Surf->SetGameMtl(Name.c_str());
+                        if (Surf)Surf->m_GameMtlName = (Name.c_str());
                         F.r_stringZ(Name);
                         if (Surf)Surf->SetTexture(Name.c_str());
                         F.r_stringZ(Name);
-                        if (Surf)Surf->SetVMap(Name.c_str());
+                        if (Surf)Surf->m_VMap = (Name.c_str());
                     }
                     if (Surf) Surf->OnDeviceCreate();
                 }
@@ -283,12 +283,12 @@ void CSceneObject::SaveStream(IWriter& F)
         F.w_u32(m_Surfaces.size());
         for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
         {
-            F.w_stringZ((*sf_it)->_Name());
-            F.w_stringZ((*sf_it)->_ShaderName());
-            F.w_stringZ((*sf_it)->_ShaderXRLCName());
-            F.w_stringZ((*sf_it)->_GameMtlName());
-            F.w_stringZ((*sf_it)->_Texture());
-            F.w_stringZ((*sf_it)->_VMap());
+            F.w_stringZ((*sf_it)->m_Name.c_str());
+            F.w_stringZ((*sf_it)->m_ShaderName.c_str());
+            F.w_stringZ((*sf_it)->m_ShaderXRLCName.c_str());
+            F.w_stringZ((*sf_it)->m_GameMtlName.c_str());
+            F.w_stringZ((*sf_it)->m_Texture.c_str());
+            F.w_stringZ((*sf_it)->m_VMap.c_str());
         }
         F.close_chunk();
     }

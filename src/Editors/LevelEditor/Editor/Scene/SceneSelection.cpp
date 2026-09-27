@@ -16,7 +16,7 @@ void EScene::SelectObjects( bool flag, ObjClassID classfilter )
         	mt->SelectObjects(flag);
     }
 
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
     ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
 
@@ -38,7 +38,7 @@ int EScene::FrustumSelect( int flag, ObjClassID classfilter )
         	count+=mt->FrustumSelect(flag,frustum);
     }
     
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
 	return count;
 }
 
@@ -56,7 +56,7 @@ void EScene::InvertSelection( ObjClassID classfilter )
         if (mt)
         	mt->InvertSelection();
     }
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
 }
 
 void EScene::RemoveSelection( ObjClassID classfilter )
@@ -70,7 +70,7 @@ void EScene::RemoveSelection( ObjClassID classfilter )
         ESceneToolBase* 		mt = GetTool(classfilter);
         if (mt&&mt->IsEditable()) 	mt->RemoveSelection();
     }
-    UI->UpdateScene	(true);
+    EContext.UI->UpdateScene	(true);
 }
 
 int EScene::SelectionCount(bool testflag, ObjClassID classfilter)
@@ -125,7 +125,7 @@ void EScene::ShowObjects( bool flag, ObjClassID classfilter, bool bAllowSelectio
         if (mt)
         	mt->ShowObjects(flag, bAllowSelectionFlag, bSelFlag);
     }
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
 }
 
 int EScene::LockObjects( bool flag, ObjClassID classfilter, bool bAllowSelectionFlag, bool bSelFlag )
@@ -143,7 +143,7 @@ int EScene::LockObjects( bool flag, ObjClassID classfilter, bool bAllowSelection
         ESceneCustomOTool* mt 		= GetOTool(classfilter);
         if (mt) 					count+=mt->LockObjects(flag, bAllowSelectionFlag, bSelFlag);
     }
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
 	return count;
 }
 
@@ -171,7 +171,7 @@ void EScene::ZoomExtents( ObjClassID cls, bool bSel )
         ESceneToolBase* mt = GetTool(cls);
         if (mt) 			mt->GetBBox(BB,bSel);
     }
-    if (BB.is_valid()) UI->CurrentView().m_Camera.ZoomExtents(BB);
+    if (BB.is_valid()) EContext.UI->CurrentView().m_Camera.ZoomExtents(BB);
     else ELog.Msg(mtError,"Can't calculate bounding box. Nothing selected or some object unsupported this function.");
 }
 
