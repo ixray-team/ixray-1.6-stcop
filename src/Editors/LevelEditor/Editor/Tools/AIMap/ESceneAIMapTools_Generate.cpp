@@ -63,7 +63,7 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 //.			if (mtl->Flags.is(SGameMtl::flPassable))continue;
 
 
-			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
 			if (!c_sh->flags.bCollision) 			continue;
 		}
   /*
@@ -397,7 +397,7 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
 	float estimated_nodes	= (2*sz-1)*(2*sz-1);
 
 	SPBItem* pb 	= 0;
-	if (estimated_nodes>1024) pb = UI->ProgressStart(1, "Building nodes...");
+	if (estimated_nodes>1024) pb = EContext.UI->ProgressStart(1, "Building nodes...");
 	float radius			= sz*m_Params.fPatchSize-EPS_L;
 	// General cycle
 	for (int k=0; k<(int)m_Nodes.size(); k++){
@@ -439,11 +439,11 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
 				clamp	(p,0.f,1.f);
 				pb->Update(p);
 				// check need abort && redraw
-				if (UI->NeedAbort()) break;
+				if (EContext.UI->NeedAbort()) break;
 			}
 		}
 	}
-	if (estimated_nodes>1024) UI->ProgressEnd(pb);
+	if (estimated_nodes>1024) EContext.UI->ProgressEnd(pb);
 	return oldcount-m_Nodes.size();
 }
 
@@ -461,7 +461,7 @@ void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
 	m_AIBBox.getsize	(LevelSize);
 	float estimated_nodes	= (LevelSize.x/m_Params.fPatchSize)*(LevelSize.z/m_Params.fPatchSize);
 
-	SPBItem* pb = UI->ProgressStart(1, "Building nodes...");
+	SPBItem* pb = EContext.UI->ProgressStart(1, "Building nodes...");
 	// General cycle
 	for (int k=0; k<(int)m_Nodes.size(); k++){
 		SAINode* N 			= m_Nodes[k];
@@ -506,11 +506,11 @@ void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
 			clamp	(p,0.f,1.f);
 			pb->Update(p);
 			// check need abort && redraw
-			if (k%32768==0) UI->RedrawScene(false);
-			if (UI->NeedAbort()) break;
+			if (k%32768==0) EContext.UI->RedrawScene(false);
+			if (EContext.UI->NeedAbort()) break;
 		}
 	}
-	UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
 }
 
 SAINode* ESceneAIMapTool::GetNode(Fvector vAt, bool bIC)	// return node's index
@@ -602,7 +602,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 					{
 						avg_face_cnt += S->GetReference()->GetFaceCount();
 						avg_vert_cnt += S->GetReference()->GetVertexCount();
-						mesh_cnt += S->GetReference()->Meshes().size();
+						mesh_cnt += S->GetReference()->m_Meshes.size();
 					}
 
 					Fbox bb;
@@ -611,7 +611,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 				}
 			}
 
-			SPBItem* pb = UI->ProgressStart(mesh_cnt, "Prepare collision model...");
+			SPBItem* pb = EContext.UI->ProgressStart(mesh_cnt, "Prepare collision model...");
 
 			static CDB::Collector CL; CL.clear();
 			Fvector verts[3];
@@ -628,14 +628,14 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 				}
 				VERIFY(E);
 
-				EditMeshVec& _meshes = E->Meshes();
+				EditMeshVec& _meshes = E->m_Meshes;
 				for (EditMeshIt m_it = _meshes.begin(); m_it != _meshes.end(); m_it++)
 				{
 					string512 Data = {};
-					sprintf(Data, "%s [%s]", (*o_it)->GetName(), (*m_it)->Name().c_str());
+					sprintf(Data, "%s [%s]", (*o_it)->GetName(), (*m_it)->m_Name.c_str());
 					pb->Inc(Data);
 
-					const SurfFaces& _sfaces = (*m_it)->GetSurfFaces();
+					const SurfFaces& _sfaces = (*m_it)->m_SurfFaces;
 					for (SurfFaces::const_iterator sp_it = _sfaces.begin(); sp_it != _sfaces.end(); sp_it++)
 					{
 						CSurface* surf = sp_it->first;
@@ -648,7 +648,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 							continue;
 						}
 
-						Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+						Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
 						if (c_sh == nullptr || !c_sh->flags.bCollision)
 						{
 							continue;
@@ -669,9 +669,9 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 				}
 			}
 
-			UI->ProgressEnd(pb);
+			EContext.UI->ProgressEnd(pb);
 
-			UI->SetStatus("Building collision model...");
+			EContext.UI->SetStatus("Building collision model...");
 
 			m_CFModel = new CDB::MODEL();
 			m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
@@ -694,7 +694,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 		Scene->UndoSave();
 		bRes = true;
 
-		UI->SetStatus("");
+		EContext.UI->SetStatus("");
 	}
 	else 
 	{
@@ -857,7 +857,7 @@ void ESceneAIMapTool::MakeLinks(u8 side_flag, EMode mode, bool bIgnoreConstraint
 
 void ESceneAIMapTool::ResetNodes()
 {
-	SPBItem* pb = UI->ProgressStart(m_Nodes.size(), "Smoothing nodes...");
+	SPBItem* pb = EContext.UI->ProgressStart(m_Nodes.size(), "Smoothing nodes...");
 
 	int	n_cnt	= 0;
 	
@@ -868,14 +868,14 @@ void ESceneAIMapTool::ResetNodes()
 			N.Plane.build(N.Pos,Fvector().set(0,1,0));
 		}
 	}
-	UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
 	if (n_cnt) 		Scene->UndoSave();
 }
 
 #define		merge(pt)	if (fsimilar(P.y,REF.y,m_SmoothHeight)) { c++; pt.add(P); }
 void ESceneAIMapTool::SmoothNodes()
 {
-	SPBItem* pb = UI->ProgressStart(m_Nodes.size(), "Smoothing nodes...");
+	SPBItem* pb = EContext.UI->ProgressStart(m_Nodes.size(), "Smoothing nodes...");
 
 	AINodeVec	smoothed;	smoothed.reserve(m_Nodes.size());
 	U8Vec		mark;		mark.assign		(m_Nodes.size(),0);
@@ -1049,10 +1049,10 @@ void ESceneAIMapTool::SmoothNodes()
 		int k = it-m_Nodes.begin();
 		if (k%128==0) {
 			pb->Update(k);
-			if (UI->NeedAbort()) break;
+			if (EContext.UI->NeedAbort()) break;
 		}
 	}
-	UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
 	Clear				(true);
 	m_Nodes 			= smoothed;
 	DenumerateNodes		();

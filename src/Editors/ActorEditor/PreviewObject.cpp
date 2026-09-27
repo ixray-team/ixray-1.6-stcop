@@ -40,20 +40,20 @@ void PreviewModel::Draw()
 		}
 
 		bOpen = false;
-		UI->Remove(this);
+		EContext.UI->Remove(this);
 	}
 }
 
 void PreviewModel::Clear()
 {
 	Lib.RemoveEditObject(SelectedObject);
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 void PreviewModel::SelectObject()
 {
 	UIChooseForm::SelectItem(smObject, 1, 0, 0, 0, 0, 0, 0);
-	UI->Push(this, false);
+	EContext.UI->Push(this, false);
 	bOpen = true;
 }
 

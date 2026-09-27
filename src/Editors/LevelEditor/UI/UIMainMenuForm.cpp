@@ -293,7 +293,7 @@ void UIMainMenuForm::Draw()
 				UIReferenceReplacer* RefUI = new UIReferenceReplacer;
 				RefUI->UpdateReferences();
 
-				UI->Push(RefUI);
+				EContext.UI->Push(RefUI);
 			}
 			DrawMenuItemI("Reload", ICON_FA_ARROWS_ROTATE, COMMAND_RELOAD_OBJECTS);
 			ImGui::EndMenu();
@@ -354,26 +354,26 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("25%", "", &selected[0]))
 					{
 						selected[1] = selected[2] = selected[3] = false;
-						UI->SetRenderQuality(1 / 4.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(1 / 4.f);
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("50%", "", &selected[1]))
 					{
 						selected[0] = selected[2] = selected[3] = false;
-						UI->SetRenderQuality(1 / 2.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(1 / 2.f);
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("100%", "", &selected[2]))
 					{
 						selected[1] = selected[0] = selected[3] = false;
-						UI->SetRenderQuality(1.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(1.f);
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("200%", "", &selected[3]))
 					{
 						selected[1] = selected[2] = selected[0] = false;
-						UI->SetRenderQuality(2.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(2.f);
+						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();
 				}
@@ -383,12 +383,12 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Wireframe", "", &selected[1]))
 					{
 						EDevice->dwFillMode = D3DFILL_WIREFRAME;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("Solid", "", &selected[2]))
 					{
 						EDevice->dwFillMode = D3DFILL_SOLID;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();
 				}
@@ -398,12 +398,12 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Flat", "", &selected[0]))
 					{
 						EDevice->dwShadeMode = D3DSHADE_FLAT;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("Gouraud", "", &selected[1]))
 					{
 						EDevice->dwShadeMode = D3DSHADE_GOURAUD;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();
 				}
@@ -412,7 +412,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Edged Faces", "", &selected))
 					{
 						psDeviceFlags.set(rsEdgedFaces, selected);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 				}
 				ImGui::Separator();
@@ -421,7 +421,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("RenderHW", "", &selected))
 					{
 						Caps.bForceGPU_SW = !selected;
-						UI->Resize();
+						EContext.UI->Resize();
 					}
 				}
 				ImGui::Separator();
@@ -430,7 +430,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Filter Linear", "", &selected))
 					{
 						psDeviceFlags.set(rsFilterLinear, selected);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 				}
 				{
@@ -438,7 +438,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Textures", "", &selected))
 					{
 						psDeviceFlags.set(rsRenderTextures, selected);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 				}
 				ImGui::EndMenu();
@@ -448,7 +448,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItemI("Draw Grid", ICON_FA_TABLE_CELLS, "", &selected))
 				{
 					psDeviceFlags.set(rsDrawGrid, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 			}
 			{
@@ -487,7 +487,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItemI("Fog", ICON_FA_CLOUD, "", &selected))
 				{
 					psDeviceFlags.set(rsFog, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 			}
             // Погода
@@ -506,7 +506,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("None", "", &selected))
 					{
 						psDeviceFlags.set(rsEnvironment, false);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
                     if (ImGui::IsItemHovered())
                         ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -518,7 +518,7 @@ void UIMainMenuForm::Draw()
 						{
 							psDeviceFlags.set(rsEnvironment, true);
 							g_pGamePersistent->Environment().SetWeather(i.first.c_str(), true);
-							UI->RedrawScene();
+							EContext.UI->RedrawScene();
 						}
                         if (ImGui::IsItemHovered())
                             ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -548,7 +548,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItem("Stats", "", &selected))
 				{
 					psDeviceFlags.set(rsStatistic, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 			}
 			ImGui::EndMenu();
@@ -564,7 +564,7 @@ void UIMainMenuForm::Draw()
 				if (View == nullptr)
 				{
 					View = new CUIMacroView;
-					UI->Push(View);
+					EContext.UI->Push(View);
 				}
 
 				View->Show(true);
@@ -603,9 +603,9 @@ void UIMainMenuForm::Draw()
 				{
 					if (selected2)
 					{
-						if (!UI->HasWindow<CUIThemeManager>())
+						if (!EContext.UI->HasWindow<CUIThemeManager>())
 						{
-							UI->Push(&ThemeInstance);
+							EContext.UI->Push(&ThemeInstance);
 						}
 						ThemeInstance.Show(true);
 					}
@@ -621,8 +621,8 @@ void UIMainMenuForm::Draw()
 				{
 					auto& W = CUIWidgetsTest::Instance();
 
-					if (!UI->HasWindow<CUIWidgetsTest>())
-						UI->Push(&W, false);      // false = не удалять UI менеджером
+					if (!EContext.UI->HasWindow<CUIWidgetsTest>())
+						EContext.UI->Push(&W, false);      // false = не удалять UI менеджером
 
 					W.Show(true);
 				}
@@ -641,7 +641,7 @@ void UIMainMenuForm::Draw()
 			if (ImGui::MenuItem("About...", ""))
 			{
 				CUIHelp::Instance().Show();
-				UI->Push(&CUIHelp::Instance(), false);
+				EContext.UI->Push(&CUIHelp::Instance(), false);
 			}
 
 			ImGui::EndMenu();
@@ -679,7 +679,7 @@ void UIMainMenuForm::Draw()
 					}
 					else
 					{
-						UI->Push(new CPluginUIRun(Plug));
+						EContext.UI->Push(new CPluginUIRun(Plug));
 					}
 				}
 
@@ -693,7 +693,7 @@ void UIMainMenuForm::Draw()
 
 		{
 			bool selected = UIObjectList::IsOpen();
-			ImGui::SetCursorPosY((UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);
+			ImGui::SetCursorPosY((EContext.UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);
 
 			if (ImGui::Checkbox("Object List", &selected))
 			{
@@ -712,7 +712,7 @@ void UIMainMenuForm::Draw()
 			// Git icon button
 			if (Git && Git->IsRepository)
 			{
-				ImGui::SetCursorPosY((UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);
+				ImGui::SetCursorPosY((EContext.UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);
 				if (ImGui::Button(ICON_FA_CODE_BRANCH "##GitButton"))
 				{
 					UIGitWindow::Show();
@@ -728,17 +728,17 @@ void UIMainMenuForm::Draw()
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 405);
 		ImGui::SetCursorPosY(4);
 
-		if (UI->IsLoading)
+		if (EContext.UI->IsLoading)
 		{
 			ImGui::SetNextWindowBgAlpha(0);
 			if (ImGui::BeginChild("##renderloader", {255, 22}, true))
 			{
-				ImGui::ProgressBar(UI->ProgressStatus / 100.f, {250, 22});
+				ImGui::ProgressBar(EContext.UI->ProgressStatus / 100.f, {250, 22});
 				ImGui::SameLine();
 
-				const float TextSize = ImGui::CalcTextSize(UI->ProgressStatusName.c_str()).x;
+				const float TextSize = ImGui::CalcTextSize(EContext.UI->ProgressStatusName.c_str()).x;
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 255 + (125 - (TextSize / 2)));
-				ImGui::Text(UI->ProgressStatusName.c_str());
+				ImGui::Text(EContext.UI->ProgressStatusName.c_str());
 			}
 			ImGui::EndChild();
 		}
@@ -909,7 +909,7 @@ void UIMainMenuForm::ExportLevelAsArchive()
 	for (; _F != _E; _F++)
 	{
 		CSceneObject* Obj = (CSceneObject *)*_F;
-		ParseObject(Obj, Obj->GetReference()->GetName(), RawObjectPath);
+		ParseObject(Obj, Obj->GetReference()->m_LibName.c_str(), RawObjectPath);
 		
 		const xr_string& LodTexture = Obj->GetReference()->GetLODTextureName();
 
@@ -956,7 +956,7 @@ void UIMainMenuForm::ExportLevelAsArchive()
 	for (CDetail* DetObjPtr : pDetTool->objects)
 	{
 		EDetail* NormalPtr = (EDetail*)DetObjPtr;
-		ParseObject(NormalPtr->m_pRefs, NormalPtr->m_pRefs->GetName(), RawObjectPath);
+		ParseObject(NormalPtr->m_pRefs, NormalPtr->m_pRefs->m_LibName.c_str(), RawObjectPath);
 	}
 }
 

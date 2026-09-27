@@ -26,7 +26,7 @@ void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
 
 		if (prop)
 		{
-			m_EditMode = EEditMode(prop->Type());
+			m_EditMode = EActorEditMode(prop->Type());
 			switch (m_EditMode)
 			{
 			case emObject:
@@ -58,14 +58,14 @@ void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
 	}
 
 	m_Props->AssignItems(props);
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 //------------------------------------------------------------------------------
 
 void CActorTools::OnChangeTransform(PropValue* sender)
 {
 	OnMotionKeysModified();
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 //------------------------------------------------------------------------------
 void CActorTools::OnExportImportRefsClick(ButtonValue* V, bool& bModif, bool& bSafe)
@@ -174,7 +174,7 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 							OnMotionKeysModified();
 						};
 
-						UI->CommandList[TUI::ECommandListID::CurrentFrame].push_back(DeleteCallback);
+						EContext.UI->CommandList[TUI::ECommandListID::CurrentFrame].push_back(DeleteCallback);
 						bModif = true;
 					}
 					else
@@ -238,7 +238,7 @@ void CActorTools::RealUpdateProperties()
 
 			m_pEditObject->FillBoneList(BONES_PREFIX, items, emBone);
 
-			BoneView->FillBones(m_pEditObject->Bones());
+			BoneView->FillBones(m_pEditObject->m_Bones);
 		}
 	}
 
@@ -370,12 +370,12 @@ void CActorTools::FillMotionProperties(PropItemVec& items, const char* pref, Lis
 		}
 		else
 		{
-			m_cnt = xr_string::ToString(m_pEditObject->SMotionCount()) + " (Inaccessible)";
+			m_cnt = xr_string::ToString((int)m_pEditObject->m_SMotions.size()) + " (Inaccessible)";
 		}
 	}
 	else 
 	{
-		m_cnt = xr_string::ToString(m_pEditObject->SMotionCount());
+		m_cnt = xr_string::ToString((int)m_pEditObject->m_SMotions.size());
 	}
 											
 	PHelper().CreateCaption			(items, PrepareKey(pref,"Global\\Motion count"),	m_cnt.c_str());
@@ -421,15 +421,15 @@ void CActorTools::FillMotionProperties(PropItemVec& items, const char* pref, Lis
 		m_BoneParts.clear		();
 		if (SM->m_Flags.is(esmFX))
 		{
-			for (BoneIt it=m_pEditObject->FirstBone(); it!=m_pEditObject->LastBone(); it++)
+			for (BoneIt it=m_pEditObject->m_Bones.begin(); it!=m_pEditObject->m_Bones.end(); it++)
 				m_BoneParts.push_back	(xr_rtoken((*it)->Name().c_str(),(*it)->SelfID));
 			PHelper().CreateRToken16 	(items,PrepareKey(pref,"Motion\\FX\\Start bone"),	(u16*)&SM->m_BoneOrPart,	&*m_BoneParts.begin(), m_BoneParts.size());
 
 			PHelper().CreateFloat		(items,PrepareKey(pref,"Motion\\FX\\Power"),	 	&SM->fPower,   	0.f,10.f,0.01f,2);
 		}else{
 			m_BoneParts.push_back(xr_rtoken("--all bones--",BI_NONE));
-			for (BPIt it=m_pEditObject->FirstBonePart(); it!=m_pEditObject->LastBonePart(); it++)
-				m_BoneParts.push_back	(xr_rtoken(it->alias.c_str(),it-m_pEditObject->FirstBonePart()));
+			for (BPIt it=m_pEditObject->m_BoneParts.begin(); it!=m_pEditObject->m_BoneParts.end(); it++)
+				m_BoneParts.push_back	(xr_rtoken(it->alias.c_str(),it-m_pEditObject->m_BoneParts.begin()));
 			PHelper().CreateRToken16  	(items,PrepareKey(pref,"Motion\\Cycle\\Bone part"),		&SM->m_BoneOrPart,	&*m_BoneParts.begin(), m_BoneParts.size());
 			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Stop at end"),	&SM->m_Flags,		esmStopAtEnd);
 			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\No mix"),	  	&SM->m_Flags,		esmNoMix);
@@ -522,14 +522,14 @@ void  CActorTools::OnJointTypeChange(PropValue* V)
 }
 void  CActorTools::OnShapeTypeChange(PropValue* V)
 {
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
 void  CActorTools::OnBindTransformChange(PropValue* V)
 {
 	R_ASSERT(m_pEditObject);
 	m_pEditObject->OnBindTransformChange();
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 void CActorTools::OnTypeChange(PropValue* V)
@@ -692,7 +692,7 @@ bool CActorTools::OnBoneNameAfterEdit(PropValue* sender, shared_str& edit_val)
 	m_pEditObject->GetSelectedBones(sel_bones);
 	CBone* B = sel_bones.size() ? sel_bones[0] : NULL;
 	R_ASSERT(B);
-	for (auto& bone : m_pEditObject->Bones())
+	for (auto& bone : m_pEditObject->m_Bones)
 	{
 		if (bone->Name() == edit_val)
 			return false;
@@ -775,7 +775,7 @@ void CActorTools::FillBoneProperties(PropItemVec& items, const char* pref, ListI
 	R_ASSERT(m_pEditObject);
 	CBone* BONE = (CBone*)sender->m_Object;
 
-	PHelper().CreateCaption	(items, PrepareKey(pref,"Global\\Bone count"),	shared_str().printf("%d",m_pEditObject->BoneCount()));
+	PHelper().CreateCaption	(items, PrepareKey(pref,"Global\\Bone count"),	shared_str().printf("%d",m_pEditObject->m_Bones.size()));
 	ButtonValue* B;
 	B=PHelper().CreateButton	(items, PrepareKey(pref,"Global\\File"),"Load,Save",ButtonValue::flFirstOnly);
 	B->OnBtnClickEvent.bind		(this,&CActorTools::OnBoneFileClick);
@@ -918,9 +918,9 @@ void CActorTools::FillSurfaceProperties(PropItemVec& items, const char* pref, Li
 {
 	R_ASSERT(m_pEditObject);
 	CSurface* SURF = (CSurface*)sender->m_Object;
-	PHelper().CreateCaption			(items, PrepareKey(pref,"Statistic\\Count"),	shared_str().printf("%d",m_pEditObject->SurfaceCount()));
+	PHelper().CreateCaption			(items, PrepareKey(pref,"Statistic\\Count"),	shared_str().printf("%d",(int)m_pEditObject->m_Surfaces.size()));
 	if (SURF){
-		PHelper().CreateCaption		(items,PrepareKey(pref,"Surface\\Name"),		SURF->_Name());
+		PHelper().CreateCaption		(items,PrepareKey(pref,"Surface\\Name"),		SURF->m_Name.c_str());
 		xr_string _pref			= PrepareKey(pref,"Surface").c_str();
 		m_pEditObject->FillSurfaceProps(SURF,_pref.c_str(),items);
 	}

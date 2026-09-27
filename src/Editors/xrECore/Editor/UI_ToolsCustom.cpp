@@ -62,22 +62,20 @@ void CToolCustom::SetAction(ETAction action)
 	}
 	m_Action = action;
 
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
 
 void CToolCustom::SetAxis(ETAxis axis)
 {
 	m_Axis = axis;
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
-
 
 void CToolCustom::SetSettings(u32 mask, bool val)
 {
 	m_Settings.set(mask,val);
-	UI->RedrawScene();
+	EContext.UI->RedrawScene();
 }
-
 
 bool  CToolCustom::MouseStart(TShiftState Shift)
 {
@@ -93,9 +91,9 @@ bool  CToolCustom::MouseStart(TShiftState Shift)
 			}
 			else
 			{
-				m_MoveXVector.set(UI->CurrentView().m_Camera.GetRight());
+				m_MoveXVector.set(EContext.UI->CurrentView().m_Camera.GetRight());
 				m_MoveXVector.y = 0;
-				m_MoveYVector.set(UI->CurrentView().m_Camera.GetDirection());
+				m_MoveYVector.set(EContext.UI->CurrentView().m_Camera.GetDirection());
 				m_MoveYVector.y = 0;
 				m_MoveXVector.normalize_safe();
 				m_MoveYVector.normalize_safe();
@@ -148,8 +146,8 @@ void  CToolCustom::MouseMove(TShiftState Shift)
 	case etaAdd: 	break;
 	case etaMove:
 	{
-		m_MovedAmount.mul(m_MoveXVector, UI->m_MouseSM * UI->m_DeltaCpH.x);
-		m_MovedAmount.mad(m_MoveYVector, -UI->m_MouseSM * UI->m_DeltaCpH.y);
+		m_MovedAmount.mul(m_MoveXVector, EContext.UI->m_MouseSM * EContext.UI->m_DeltaCpH.x);
+		m_MovedAmount.mad(m_MoveYVector, -EContext.UI->m_MouseSM * EContext.UI->m_DeltaCpH.y);
 
 		if (m_Settings.is(etfMSnap))
 		{
@@ -168,7 +166,7 @@ void  CToolCustom::MouseMove(TShiftState Shift)
 	break;
 	case etaRotate:
 	{
-		m_RotateAmount = -UI->m_DeltaCpH.x * UI->m_MouseSM;
+		m_RotateAmount = -EContext.UI->m_DeltaCpH.x * EContext.UI->m_MouseSM;
 		if (m_Settings.is(etfASnap))
 			CHECK_SNAP(m_fRotateSnapValue, m_RotateAmount, m_RotateSnapAngle);
 	}
@@ -181,7 +179,7 @@ void  CToolCustom::MouseMove(TShiftState Shift)
 			CHECK_SNAP(m_fScaleFixedValue.y, m_ScaleAmount.y, m_ScaleFixed);
 			CHECK_SNAP(m_fScaleFixedValue.z, m_ScaleAmount.z, m_ScaleFixed);
 		}
-		float dy = UI->m_DeltaCpH.x * UI->m_MouseSS;
+		float dy = EContext.UI->m_DeltaCpH.x * EContext.UI->m_MouseSS;
 		if (dy > 1.f)
 			dy = 1.f;
 		else if (dy < -1.f)
@@ -205,9 +203,9 @@ void  CToolCustom::MouseMove(TShiftState Shift)
 
 void CToolCustom::GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog)
 {
-	s_fog				= psDeviceFlags.is(rsFog)?(1.0f - fFogness)* 0.85f * UI->ZFar():0.99f*UI->ZFar();
-	e_fog				= psDeviceFlags.is(rsFog)?0.91f * UI->ZFar():UI->ZFar();
-	fog_color 			= dwFogColor;
+	s_fog = psDeviceFlags.is(rsFog) ? (1.0f - fFogness) * 0.85f * EContext.UI->ZFar() : 0.99f * EContext.UI->ZFar();
+	e_fog = psDeviceFlags.is(rsFog) ? 0.91f * EContext.UI->ZFar() : EContext.UI->ZFar();
+	fog_color = dwFogColor;
 }
 
 void CToolCustom::RenderEnvironment()

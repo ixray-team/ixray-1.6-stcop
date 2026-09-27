@@ -24,7 +24,7 @@ void UIBoneForm::Draw()
     }
     else
     {
-        ImGui::Text("Total bone:%d", m_EditObject->BoneCount());
+        ImGui::Text("Total bone:%d", m_EditObject->m_Bones.size());
         {
             ImGui::BeginChild("Part1", ImVec2(300, 300));
             ImGui::AlignTextToFramePadding();
@@ -187,7 +187,7 @@ void UIBoneForm::Show()
     Form->m_EditObject = ATools->CurrentObject();
     if (Form->m_EditObject)
     {
-        Form->m_BoneParts = &Form->m_EditObject->BoneParts();
+        Form->m_BoneParts = &Form->m_EditObject->m_BoneParts;
         Form->FillBoneParts();
     }
 }
@@ -262,7 +262,7 @@ void UIBoneForm::Save()
     }
 
     // verify
-    U8Vec b_use(m_EditObject->BoneCount(), 0);
+    U8Vec b_use(m_EditObject->m_Bones.size(), 0);
     for (int k = 0; k < 4; k++)
     {
         if (m_List[k].size())
@@ -358,7 +358,7 @@ void UIBoneForm::ToDefault()
         m_Name[k][0] = 0;
     }
     xr_strcpy(m_Name[0], "default");
-    for (BoneIt it = m_EditObject->FirstBone(); it != m_EditObject->LastBone(); it++)
+    for (BoneIt it = m_EditObject->m_Bones.begin(); it != m_EditObject->m_Bones.end(); it++)
     {
         m_List[0].push_back((*it)->Name());
     }

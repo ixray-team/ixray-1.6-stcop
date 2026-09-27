@@ -9,7 +9,7 @@ bool  TUI_ControlWallmarkAdd::Start(TShiftState Shift)
     
     S->SelectObjects(false);
     wm_cnt = 0;
-    if (S->AddWallmark(UI->m_CurrentRStart,UI->m_CurrentRDir))
+	if (S->AddWallmark(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir))
     {
         wm_cnt++;
         if (!(Shift&ssAlt))
@@ -35,13 +35,15 @@ TUI_ControlWallmarkMove::TUI_ControlWallmarkMove(int st, int act, ESceneToolBase
 
 bool TUI_ControlWallmarkMove::Start(TShiftState Shift)
 {
-    if ((Shift & ssCtrl))
-    {
-        ESceneWallmarkTool* S 	= (ESceneWallmarkTool*)parent_tool;
-        if (S->MoveSelectedWallmarkTo(UI->m_CurrentRStart,UI->m_CurrentRDir))
-            Scene->UndoSave();
-    }
-    return false;
+	if ((Shift & ssCtrl))
+	{
+		ESceneWallmarkTool* S = (ESceneWallmarkTool*)parent_tool;
+		if (S->MoveSelectedWallmarkTo(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir))
+		{
+			Scene->UndoSave();
+		}
+	}
+	return false;
 }
 
 void  TUI_ControlWallmarkMove::Move(TShiftState _Shift) {}

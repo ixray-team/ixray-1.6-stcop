@@ -192,7 +192,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("None", "", &selected))
 					{
 						psDeviceFlags.set(rsEnvironment, false);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 
 					ImGui::Separator();
@@ -205,7 +205,7 @@ void UIMainMenuForm::Draw()
 						{
 							psDeviceFlags.set(rsEnvironment, true);
 							g_pGamePersistent->Environment().SetWeather(Cycle.first.c_str(), true);
-							UI->RedrawScene();
+							EContext.UI->RedrawScene();
 						}
 
 						if (ImGui::IsItemHovered())
@@ -221,26 +221,26 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("25%", "", &Selected[0]))
 					{
 						Selected[1] = Selected[2] = Selected[3] = false;
-						UI->SetRenderQuality(1 / 4.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(1 / 4.f);
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("50%", "", &Selected[1]))
 					{
 						Selected[0] = Selected[2] = Selected[3] = false;
-						UI->SetRenderQuality(1 / 2.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(1 / 2.f);
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("100%", "", &Selected[2]))
 					{
 						Selected[1] = Selected[0] = Selected[3] = false;
-						UI->SetRenderQuality(1.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(1.f);
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("200%", "", &Selected[3]))
 					{
 						Selected[1] = Selected[2] = Selected[0] = false;
-						UI->SetRenderQuality(2.f);
-						UI->RedrawScene();
+						EContext.UI->SetRenderQuality(2.f);
+						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();
 				}
@@ -250,12 +250,12 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Wireframe", "", &Selected[1]))
 					{
 						EDevice->dwFillMode = D3DFILL_WIREFRAME;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("Solid", "", &Selected[2]))
 					{
 						EDevice->dwFillMode = D3DFILL_SOLID;
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();
 				}
@@ -264,7 +264,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("Edged Faces", "", &Selected))
 					{
 						psDeviceFlags.set(rsEdgedFaces, Selected);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 				}
 				ImGui::Separator();
@@ -273,7 +273,7 @@ void UIMainMenuForm::Draw()
 					if (ImGui::MenuItem("RenderHW", "", &selected))
 					{
 						Caps.bForceGPU_SW = !selected;
-						UI->Resize();
+						EContext.UI->Resize();
 					}
 				}
 				ImGui::EndMenu();
@@ -284,7 +284,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItem("Draw Safe Rect", "", &selected))
 				{
 					psDeviceFlags.set(rsDrawSafeRect, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 			}
 			{
@@ -292,7 +292,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItemI("Draw Grid", ICON_FA_TABLE_CELLS, "", &selected))
 				{
 					psDeviceFlags.set(rsDrawGrid, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 			}
 			{
@@ -331,7 +331,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItemI("Fog", ICON_FA_CLOUD, "", &selected))
 				{
 					psDeviceFlags.set(rsFog, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 			}
 			{
@@ -354,7 +354,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItem("Stats", "", &selected))
 				{
 					psDeviceFlags.set(rsStatistic, selected);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 
 			}
@@ -376,9 +376,9 @@ void UIMainMenuForm::Draw()
 			{
 				if (selected2)
 				{
-					if (!UI->HasWindow<CUIThemeManager>())
+					if (!EContext.UI->HasWindow<CUIThemeManager>())
 					{
-						UI->Push(&ThemeInstance);
+						EContext.UI->Push(&ThemeInstance);
 					}
 					ThemeInstance.Show(true);
 				}

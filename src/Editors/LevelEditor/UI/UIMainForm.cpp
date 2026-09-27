@@ -265,7 +265,7 @@ void UIMainForm::Draw()
 	m_MainMenu->Draw();
 	m_TopBar->Draw();
 
-	if (UI->ActiveTabIndex == 0)
+	if (EContext.UI->ActiveTabIndex == 0)
 	{
 		m_LeftBar->Draw();
 		m_Properties->Draw();
@@ -276,7 +276,7 @@ void UIMainForm::Draw()
 
 bool UIMainForm::Frame()
 {
-	return UI && UI->Idle();
+	return EContext.UI && EContext.UI->Idle();
 }
 
 void UIMainForm::DrawContextMenu()
@@ -357,7 +357,7 @@ void UIMainForm::DrawContextMenu()
 
 			for (auto Mesh : *MeshObjects)
 			{
-				XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(Obj->GetReference(), *Mesh->Name());
+				XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(Obj->GetReference(), *Mesh->m_Name);
 			}
 		}
 	}
@@ -590,7 +590,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	ImGui::PopStyleVar(2);
 	ImGui::EndChild();
 
-	if (UI->ViewID == 0)
+	if (EContext.UI->ViewID == 0)
 	{
 		imManipulator.Render(Pos.x, Pos.y, Size.x, Size.y);
 	}
@@ -604,7 +604,7 @@ void UIMainForm::DrawMenuSettings()
 		if (icon ? ImGui::MenuItemI(label, icon, "", &selected) : ImGui::MenuItem(label, "", &selected))
 		{
 			psDeviceFlags.set(flag, selected);
-			UI->RedrawScene();
+			EContext.UI->RedrawScene();
 		}
 
 		if (ImGui::IsItemHovered())
@@ -658,7 +658,7 @@ void UIMainForm::DrawMenuSettings()
 				if (ImGui::MenuItem("None", "", &selected))
 				{
 					psDeviceFlags.set(rsEnvironment, false);
-					UI->RedrawScene();
+					EContext.UI->RedrawScene();
 				}
 
 				ImGui::Separator();
@@ -671,7 +671,7 @@ void UIMainForm::DrawMenuSettings()
 					{
 						psDeviceFlags.set(rsEnvironment, true);
 						g_pGamePersistent->Environment().SetWeather(cycle.first.c_str(), true);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 
 					if (ImGui::IsItemHovered())
@@ -702,8 +702,8 @@ void UIMainForm::DrawMenuSettings()
 
 						if (ImGui::MenuItem(qualities[i], "", &selected))
 						{
-							UI->SetRenderQuality(values[i]);
-							UI->RedrawScene();
+							EContext.UI->SetRenderQuality(values[i]);
+							EContext.UI->RedrawScene();
 						}
 					}
 					ImGui::EndMenu();
@@ -721,7 +721,7 @@ void UIMainForm::DrawMenuSettings()
 						if (ImGui::MenuItem(modes[i], "", &selected))
 						{
 							EDevice->dwFillMode = d3dModes[i];
-							UI->RedrawScene();
+							EContext.UI->RedrawScene();
 						}
 					}
 					ImGui::EndMenu();
@@ -769,8 +769,8 @@ void UIMainForm::RenderOldCameraButtons()
 	ImGui::BeginGroup();
 	if (XRay::ImGui::ToolbarIconButton("##ViewFront", m_tVFront->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersLeft))
 	{
-		UI->CurrentView().m_Camera.ViewFront();
-		UI->RedrawScene();
+		EContext.UI->CurrentView().m_Camera.ViewFront();
+		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
 	{
@@ -781,8 +781,8 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##ViewBack", m_tVBack->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
 	{
-		UI->CurrentView().m_Camera.ViewBack();
-		UI->RedrawScene();
+		EContext.UI->CurrentView().m_Camera.ViewBack();
+		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
 	{
@@ -793,8 +793,8 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##ViewLeft", m_tVLeft->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
 	{
-		UI->CurrentView().m_Camera.ViewLeft();
-		UI->RedrawScene();
+		EContext.UI->CurrentView().m_Camera.ViewLeft();
+		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
 	{
@@ -805,8 +805,8 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##ViewRight", m_tVRight->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
 	{
-		UI->CurrentView().m_Camera.ViewRight();
-		UI->RedrawScene();
+		EContext.UI->CurrentView().m_Camera.ViewRight();
+		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
 	{
@@ -817,8 +817,8 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##ViewBottom", m_tVBottom->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
 	{
-		UI->CurrentView().m_Camera.ViewBottom();
-		UI->RedrawScene();
+		EContext.UI->CurrentView().m_Camera.ViewBottom();
+		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
 	{
@@ -829,8 +829,8 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##ViewTop", m_tVTop->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight))
 	{
-		UI->CurrentView().m_Camera.ViewTop();
-		UI->RedrawScene();
+		EContext.UI->CurrentView().m_Camera.ViewTop();
+		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
 	{
@@ -845,8 +845,8 @@ void UIMainForm::RenderOldCameraButtons()
 	//	{
 	//		if (ImGui::ImageButton("##DrawRenderToolBar1343", m_tVReset->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
 	//		{
-	//			UI->CurrentView().m_Camera.ViewReset();
-	//			UI->RedrawScene();
+	//			EContext.UI->CurrentView().m_Camera.ViewReset();
+	//			EContext.UI->RedrawScene();
 	//		}
 	//	}
 	//	if (ImGui::IsItemHovered())
@@ -860,7 +860,7 @@ void UIMainForm::RenderOldCameraButtons()
 	ImGui::SameLine(0, 4);
 
 	ImGui::BeginGroup();
-	ECameraStyle Camera = UI->CurrentView().m_Camera.GetStyle();
+	ECameraStyle Camera = EContext.UI->CurrentView().m_Camera.GetStyle();
 
 	bool CamPlane = Camera == csPlaneMove;
 	bool CamArcBall = Camera == cs3DArcBall;
@@ -868,8 +868,8 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##CamPlane", m_tPlaneMove->get_SRView()->GetRawSRV(), &CamPlane, ImDrawFlags_RoundCornersLeft))
 	{
-		UI->CurrentView().m_Camera.SetStyle(csPlaneMove);
-		UI->RedrawScene();
+		EContext.UI->CurrentView().m_Camera.SetStyle(csPlaneMove);
+		EContext.UI->RedrawScene();
 	}
 
 	if (ImGui::IsItemHovered())
@@ -882,8 +882,8 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##CamArcBall", m_tArcBall->get_SRView()->GetRawSRV(), &CamArcBall, ImDrawFlags_RoundCornersNone))
 	{
-		UI->CurrentView().m_Camera.SetStyle(cs3DArcBall);
-		UI->RedrawScene();
+		EContext.UI->CurrentView().m_Camera.SetStyle(cs3DArcBall);
+		EContext.UI->RedrawScene();
 	}
 
 	if (ImGui::IsItemHovered())
@@ -896,8 +896,8 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##CamFreeFly", m_tFreeFly->get_SRView()->GetRawSRV(), &CamFly, ImDrawFlags_RoundCornersRight))
 	{
-		UI->CurrentView().m_Camera.SetStyle(csFreeFly);
-		UI->RedrawScene();
+		EContext.UI->CurrentView().m_Camera.SetStyle(csFreeFly);
+		EContext.UI->RedrawScene();
 	}
 
 	if (ImGui::IsItemHovered())

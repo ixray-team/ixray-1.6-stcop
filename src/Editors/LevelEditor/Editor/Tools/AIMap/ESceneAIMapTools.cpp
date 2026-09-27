@@ -634,38 +634,42 @@ int ESceneAIMapTool::AddNode(const Fvector& pos, bool bIgnoreConstraints, bool b
     }
 }
 
-struct invalid_node_pred 
-{
-	int link;
-	invalid_node_pred(int _link):link(_link){;}
-	bool operator()(const SAINode*& x){ return x->Links()==link; }
-};
 void ESceneAIMapTool::SelectNodesByLink(int link)
 {
-    SelectObjects		(false);
-    // remove link to sel nodes
-    for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
-        if ((*it)->Links()==link)
-//			if (!(*it)->flags.is(SAINode::flHide))
-	            (*it)->flags.set(SAINode::flSelected,true);
-    UI->RedrawScene		();
+	SelectObjects(false);
+	// remove link to sel nodes
+	for (AINodeIt it = m_Nodes.begin(); it != m_Nodes.end(); it++)
+	{
+		if ((*it)->Links() == link)
+		{
+			(*it)->flags.set(SAINode::flSelected, true);
+		}
+	}
+	EContext.UI->RedrawScene();
 }
 
 void ESceneAIMapTool::SelectObjects(bool flag)
 {
-    if (!IsLoaded)
-        return;
+	if (!IsLoaded)
+	{
+		return;
+	}
 
-    switch (LTools->GetSubTarget()){
-    case estAIMapNode:{
-        for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
-//			if (!(*it)->flags.is(SAINode::flHide))
-	            (*it)->flags.set(SAINode::flSelected,flag);
-    }break;
-    }
-    UpdateHLSelected	();
-    UI->RedrawScene		();
+	switch (LTools->GetSubTarget())
+	{
+		case estAIMapNode:
+		{
+			for (AINodeIt it = m_Nodes.begin(); it != m_Nodes.end(); it++)
+			{
+				(*it)->flags.set(SAINode::flSelected, flag);
+			}
+		}
+		break;
+	}
+	UpdateHLSelected();
+	EContext.UI->RedrawScene();
 }
+
 struct delete_sel_node_pred 
 {
     bool operator()(SAINode*& x)
@@ -688,7 +692,7 @@ void ESceneAIMapTool::RemoveSelection()
     	if (m_Nodes.size()==(u32)SelectionCount(true)){
         	Clear	(true);
         }else{
-        	SPBItem* pb = UI->ProgressStart(3,"Removing nodes...");
+			SPBItem* pb = EContext.UI->ProgressStart(3, "Removing nodes...");
         	// remove link to sel nodes
 	        pb->Inc("erasing nodes");
             // remove sel nodes
@@ -698,12 +702,12 @@ void ESceneAIMapTool::RemoveSelection()
             hash_Clear		   	();
 		    hash_FillFromNodes 	();
 	        pb->Inc("end");
-            UI->ProgressEnd(pb);
+			EContext.UI->ProgressEnd(pb);
         }
     }break;
     }
     UpdateHLSelected	();
-    UI->RedrawScene		();
+	EContext.UI->RedrawScene();
 }
 
 void ESceneAIMapTool::InvertSelection()
@@ -716,7 +720,7 @@ void ESceneAIMapTool::InvertSelection()
     }break;
     }
     UpdateHLSelected	();
-    UI->RedrawScene		();
+	EContext.UI->RedrawScene();
 }
 
 int ESceneAIMapTool::SelectionCount(bool testflag)

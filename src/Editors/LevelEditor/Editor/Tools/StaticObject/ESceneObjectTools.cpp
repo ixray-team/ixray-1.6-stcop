@@ -191,12 +191,12 @@ void ESceneObjectTool::HighlightTexture(const char* tex_name, bool allow_ratio, 
             CSceneObject* s_obj		= smart_cast<CSceneObject*>(*a_it);
             if (s_obj->Visible()){
                 CEditableObject* e_obj	= s_obj->GetReference(); VERIFY(e_obj);
-                SurfaceVec& s_vec		= e_obj->Surfaces();
+                SurfaceVec& s_vec		= e_obj->m_Surfaces;
                 for (SurfaceIt it=s_vec.begin(); it!=s_vec.end(); it++){
-                    if (0==stricmp((*it)->_Texture(),tex_name)){
+                    if (0==stricmp((*it)->m_Texture.c_str(),tex_name)){
                         Fvector 		verts[3];
-                        for (EditMeshIt mesh_it=e_obj->FirstMesh(); mesh_it!=e_obj->LastMesh(); mesh_it++){
-                            const SurfFaces& surf_faces			= (*mesh_it)->GetSurfFaces();
+                        for (EditMeshIt mesh_it=e_obj->m_Meshes.begin(); mesh_it!=e_obj->m_Meshes.end(); mesh_it++){
+                            const SurfFaces& surf_faces			= (*mesh_it)->m_SurfFaces;
                             SurfFaces::const_iterator  sf_it 	= surf_faces.find(*it);
                             if (sf_it!=surf_faces.end()){
                                 const IntVec& lst				= sf_it->second;

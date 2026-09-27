@@ -441,8 +441,8 @@ namespace ChoseEvents
     {
         CEditableObject* eo = (CEditableObject*)param;
 
-        BoneIt	_I = eo->FirstBone();
-        BoneIt	_E = eo->LastBone();
+        BoneIt	_I = eo->m_Bones.begin();
+        BoneIt	_E = eo->m_Bones.end();
         for (; _I != _E; ++_I)
         {
             items.push_back(SChooseItem((*_I)->Name().c_str(), ""));

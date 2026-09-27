@@ -140,48 +140,67 @@ void EDetailManager::InitRender()
 
 void EDetailManager::OnRender(int priority, bool strictB2F)
 {
-    if (!IsLoaded)
-        return;
+	if (!IsLoaded)
+	{
+		return;
+	}
 
-	if (dtSlots){
-    	if (1==priority){
-        	if (false==strictB2F){
-            	if (m_Flags.is(flSlotBoxesDraw)){
-                    RCache.set_xform_world(Fidentity);
-                    EDevice->SetShader	(EDevice->m_WireShader);
+	if (dtSlots)
+	{
+		if (1 == priority)
+		{
+			if (!strictB2F)
+			{
+				if (m_Flags.is(flSlotBoxesDraw))
+				{
+					RCache.set_xform_world(Fidentity);
+					EDevice->SetShader(EDevice->m_WireShader);
 
-                    Fvector			c;
-                    Fbox			bbox;
-                    u32			inactive = 0xff808080;
-                    u32			selected = 0xffffffff;
-                    float dist_lim	= 75.f*75.f;
-                    for (u32 z=0; z<dtH.size_z; z++){
-                        c.z			= fromSlotZ(z);
-                        for (u32 x=0; x<dtH.size_x; x++){
-                            bool bSel 	= m_Selected[z*dtH.size_x+x];
-                            DetailSlot* slot = dtSlots+z*dtH.size_x+x;
-                            c.x			= fromSlotX(x);
-                            c.y			= slot->r_ybase()+slot->r_yheight()*0.5f; //(slot->y_max+slot->y_min)*0.5f;
-                            float dist = UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(c);
-                          	if ((dist<dist_lim)&&::Render->ViewBase.testSphere_dirty(c,DETAIL_SLOT_SIZE_2)){
-								bbox.min.set(c.x-DETAIL_SLOT_SIZE_2, slot->r_ybase(), 					c.z-DETAIL_SLOT_SIZE_2);
-                            	bbox.max.set(c.x+DETAIL_SLOT_SIZE_2, slot->r_ybase()+slot->r_yheight(),	c.z+DETAIL_SLOT_SIZE_2);
-                            	bbox.shrink	(0.05f);
-								DU_impl.DrawSelectionBoxB(bbox,bSel?&selected:&inactive);
+					Fvector c;
+					Fbox bbox;
+					u32 inactive = 0xff808080;
+					u32 selected = 0xffffffff;
+					float dist_lim = 75.f * 75.f;
+					for (u32 z = 0; z < dtH.size_z; z++)
+					{
+						c.z = fromSlotZ(z);
+						for (u32 x = 0; x < dtH.size_x; x++)
+						{
+							bool bSel = m_Selected[z * dtH.size_x + x];
+							DetailSlot* slot = dtSlots + z * dtH.size_x + x;
+							c.x = fromSlotX(x);
+							c.y = slot->r_ybase() + slot->r_yheight() * 0.5f;
+							float dist = EContext.UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(c);
+							if ((dist < dist_lim) && ::Render->ViewBase.testSphere_dirty(c, DETAIL_SLOT_SIZE_2))
+							{
+								bbox.min.set(c.x - DETAIL_SLOT_SIZE_2, slot->r_ybase(), c.z - DETAIL_SLOT_SIZE_2);
+								bbox.max.set(c.x + DETAIL_SLOT_SIZE_2, slot->r_ybase() + slot->r_yheight(), c.z + DETAIL_SLOT_SIZE_2);
+								bbox.shrink(0.05f);
+								DU_impl.DrawSelectionBoxB(bbox, bSel ? &selected : &inactive);
 							}
-                        }
-                    }
-                }
+						}
+					}
+				}
 
-				if (GetSubTarget(0)==estDOPaint && BrushActive)
+				if (GetSubTarget(0) == estDOPaint && BrushActive)
+				{
 					RenderBrush();
-            }else{
-				RCache.set_xform_world				(Fidentity);
-                if (m_Flags.is(flBaseTextureDraw))	m_Base.Render			(m_Flags.is(flBaseTextureBlended));
-				if (m_Flags.is(flObjectsDraw))		CDetailManager::Render	();
-            }
-        }
-    }
+				}
+			}
+			else
+			{
+				RCache.set_xform_world(Fidentity);
+				if (m_Flags.is(flBaseTextureDraw))
+				{
+					m_Base.Render(m_Flags.is(flBaseTextureBlended));
+				}
+				if (m_Flags.is(flObjectsDraw))
+				{
+					CDetailManager::Render();
+				}
+			}
+		}
+	}
 }
 
 void EDetailManager::OnDeviceCreate()
@@ -795,7 +814,7 @@ bool EDetailManager::Export(const char* path)
     xr_string fn		= xr_string(path)+"build.details";
     bool bRes=true;
 
-    SPBItem* pb = UI->ProgressStart(5,"Making details...");
+    SPBItem* pb = EContext.UI->ProgressStart(5, "Making details...");
 	CMemoryWriter F;
 
     pb->Inc				("merge textures");
@@ -891,7 +910,7 @@ bool EDetailManager::Export(const char* path)
     }
 
     pb->Inc();
-    UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
     return bRes;
 }
 
@@ -899,7 +918,6 @@ void EDetailManager::OnDensityChange(PropValue* prop)
 {
 	InvalidateCache		();
 }	
-
 
 void EDetailManager::OnBaseTextureChange(PropValue* prop)
 {
@@ -956,21 +974,24 @@ void EDetailManager::EnsureBaseTexture()
 
 bool EDetailManager::PickPaintPoint(Fvector& Point)
 {
-	float BestDist = UI->ZFar();
+	float BestDist = EContext.UI->ZFar();
 	bool Found = false;
 	SRayPickInfo PickInfo;
 	for (ObjectIt It = m_SnapObjects.begin(); It != m_SnapObjects.end(); ++It)
 	{
 		CCustomObject* Object = *It;
 		float Dist = BestDist;
-		if (Object->RayPick(Dist, UI->m_CurrentRStart, UI->m_CurrentRDir, &PickInfo) && Dist < BestDist)
+		if (Object->RayPick(Dist, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, &PickInfo) && Dist < BestDist)
 		{
 			BestDist = Dist;
 			Found = true;
 		}
 	}
+
 	if (Found)
-		Point.mad(UI->m_CurrentRStart, UI->m_CurrentRDir, BestDist);
+	{
+		Point.mad(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, BestDist);
+	}
 	return Found;
 }
 
@@ -1110,8 +1131,8 @@ bool EDetailManager::GetSummaryInfo(SSceneSummary* inf)
     	((EDetail*)(*it))->OnDeviceCreate();
         CEditableObject* E 	= ((EDetail*)(*it))->m_pRefs;
 		if (!E)				continue;
-	    CSurface* surf		= *E->FirstSurface(); VERIFY(surf);
-		inf->AppendTexture	(surf->_Texture(),SSceneSummary::sttDO,0,0,"$DETAILS$");
+	    CSurface* surf		= E->m_Surfaces.front(); VERIFY(surf);
+		inf->AppendTexture	(surf->m_Texture.c_str(),SSceneSummary::sttDO,0,0,"$DETAILS$");
     }
     return true;
 }

@@ -120,7 +120,7 @@ bool SBPart::prepare				(SBAdjVec& adjs, u32 bone_face_min)
                 string1024 Name;
 				xr_sprintf(Name,"%d",bone_idx);
 
-                m_Bones.push_back		(SBBone( Name,parent_bone,F->surf->_GameMtlName(),face_accum,area));
+                m_Bones.push_back		(SBBone( Name,parent_bone,F->surf->m_GameMtlName.c_str(),face_accum,area));
                 parent_bone				= "0";
                 bone_idx				++;
                 face_accum_total		+= face_accum;
@@ -209,7 +209,7 @@ bool SBPart::Export	(IWriter& F, u8 infl)
     for (SBFaceVecIt pf_it=m_Faces.begin(); pf_it!=m_Faces.end(); pf_it++)
     {
     	SBFace* face = *pf_it;
-        int mtl_idx = FindSplit(face->surf->_ShaderName(), face->surf->_Texture(), 0, face->surf->m_id);
+        int mtl_idx = FindSplit(face->surf->m_ShaderName.c_str(), face->surf->m_Texture.c_str(), 0, face->surf->m_id);
 
         if (mtl_idx<0)
         {
@@ -233,23 +233,20 @@ bool SBPart::Export	(IWriter& F, u8 infl)
     }
 
     // fill per bone vertices
-    for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++)
+    for (SSplit& Split : m_Splits)
     {
-        if (!split_it->valid()){
-            ELog.Msg(mtError,"Degenerate part found (Texture '%s').",*split_it->m_Texture);
+        if (!Split.valid()){
+            ELog.Msg(mtError,"Degenerate part found (Texture '%s').",*Split.m_Texture);
             bRes = false;
             break;
         }
-        if (0!=split_it->invalid_faces){
-	        ELog.Msg(mtError,"Part [texture '%s'] have %d duplicate(degenerate) face(s).",*split_it->m_Texture,split_it->invalid_faces);
+        if (0!=Split.invalid_faces){
+	        ELog.Msg(mtError,"Part [texture '%s'] have %d duplicate(degenerate) face(s).",*Split.m_Texture,Split.invalid_faces);
         }
-    	// calculate T&B components
-		split_it->CalculateTB();
-        // subtract offset
-		SkelVertVec& lst = split_it->getV_Verts();
-	    for (SkelVertIt sv_it=lst.begin(); sv_it!=lst.end(); sv_it++){
-		    bone_points[sv_it->bones[0].id].push_back(sv_it->offs);
-            bone_points[sv_it->bones[0].id].back().sub(m_Bones[sv_it->bones[0].id].offset);
+		Split.CalculateTB();
+	    for (SSkelVert& Vert : Split.m_Verts){
+		    bone_points[Vert.bones[0].id].push_back(Vert.offs);
+            bone_points[Vert.bones[0].id].back().sub(m_Bones[Vert.bones[0].id].offset);
         }
     }
 
@@ -351,7 +348,7 @@ void CGeomPartExtractor::AppendFace(CSurface* surf, const Fvector* v, const Fvec
 	SBFace* F			= new SBFace(surf,uvs);
     // insert verts
     for (int k=0; k<3; k++){
-        F->vert_id[k] 	= m_Verts->add_vert(v[k]);
+        F->vert_id[k] 	= m_Verts->AddVert(v[k]);
 	    F->o[k].set		(v[k]);
 	    F->n[k].set		(n[k]);
     }
@@ -382,13 +379,13 @@ bool CGeomPartExtractor::Process()
 {
     // make adjacement
     {
-        m_Adjs.resize	(m_Verts->getVS());
+        m_Adjs.resize	(m_Verts->Vertices().size());
         for (SBFaceVecIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++)
             for (int k=0; k<3; k++) m_Adjs[(*f_it)->vert_id[k]].push_back(*f_it);
     }
     // extract parts
     {
-        SPBItem* pb = UI->ProgressStart(m_Faces.size(),"Extract Parts...");
+		SPBItem* pb = EContext.UI->ProgressStart(m_Faces.size(), "Extract Parts...");
         for (SBFaceVecIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
 	        pb->Inc();
             SBFace* F	= *f_it;
@@ -398,16 +395,16 @@ bool CGeomPartExtractor::Process()
                 m_Parts.push_back	(P);
             }
         }
-        UI->ProgressEnd(pb);
+		EContext.UI->ProgressEnd(pb);
     }
     // simplify parts
     {
-	    SPBItem* pb = UI->ProgressStart(m_Parts.size(),"Simplify Parts...");
+		SPBItem* pb = EContext.UI->ProgressStart(m_Parts.size(), "Simplify Parts...");
         for (SBPartVecIt p_it=m_Parts.begin(); p_it!=m_Parts.end(); p_it++){	
 	        pb->Inc();
         	(*p_it)->prepare	(m_Adjs,m_PerBoneFaceCountMin);
         }
-	    UI->ProgressEnd(pb);
+		EContext.UI->ProgressEnd(pb);
     }
     return true;
 }

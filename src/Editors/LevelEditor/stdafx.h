@@ -1,5 +1,6 @@
 #pragma once
 #include "../xrECore/stdafx.h"
+#include "../xrECore/Public/xrECore.h"
 #include "../../xrScripts/stdafx.h"
 
 #include "../xrEngine/xrLevel.h"

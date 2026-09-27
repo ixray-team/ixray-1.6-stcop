@@ -11,7 +11,7 @@
 void CEditableObject::OnChangeShader(PropValue*)
 {
     OnDeviceDestroy	();
-    UI->RedrawScene	();
+	EContext.UI->RedrawScene();
 }
 
 void CEditableObject::FillSurfaceProps(CSurface* SURF, const char* pref, PropItemVec& items)
@@ -31,7 +31,7 @@ void CEditableObject::FillSurfaceProps(CSurface* SURF, const char* pref, PropIte
     V = PHelper().CreateFlag32(items, PrepareKey(pref, "2 Sided"), &SURF->m_Flags, CSurface::sf2Sided);
     V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
     
-    PHelper().CreateCaption(items, PrepareKey(pref, "Face Count"), shared_str().printf("%d", GetSurfFaceCount(SURF->_Name())));
+    PHelper().CreateCaption(items, PrepareKey(pref, "Face Count"), shared_str().printf("%d", GetSurfFaceCount(SURF->m_Name.c_str())));
 }
 
 xr_token ECORE_API eo_type_token[]={
@@ -77,12 +77,11 @@ void CEditableObject::FillSummaryProps(const char* pref, PropItemVec& items)
 
     PHelper().CreateCaption(items,PrepareKey(pref,"Geometry\\Object"),t);
 
-    for (EditMeshIt m_it = FirstMesh(); m_it != LastMesh(); m_it++)
+    for (CEditableMesh* MESH : m_Meshes)
     {
         string128 t1;
-        CEditableMesh* MESH = *m_it;
-        sprintf(t1, "V: %d, F: %d", MESH->GetVertexCount(), MESH->GetFaceCount());
-        PHelper().CreateCaption(items, PrepareKey(pref, xr_string(xr_string("Geometry\\Meshes\\") + MESH->Name().c_str()).c_str()), t1);
+        sprintf(t1, "V: %d, F: %d", (int)MESH->m_Vertices.size(), MESH->GetFaceCount());
+        PHelper().CreateCaption(items, PrepareKey(pref, xr_string(xr_string("Geometry\\Meshes\\") + MESH->m_Name.c_str()).c_str()), t1);
     }
 
     PHelper().CreateSText(items,PrepareKey(pref, "Game options\\User Data"),&m_ClassScript);
@@ -109,16 +108,16 @@ xr_string MakeFullBonePath(CBone* bone)
 
 void CEditableObject::FillSurfaceList(const char* pref, ListItemsVec& items, int modeID)
 {
-    SurfaceVec& s_lst 	= Surfaces();
+    SurfaceVec& s_lst 	= m_Surfaces;
 	if (pref) LHelper().CreateItem(items, pref, modeID, ListItem::flSorted);
     for (SurfaceIt s_it=s_lst.begin(); s_it!=s_lst.end(); s_it++)
-        LHelper().CreateItem(items, PrepareKey(pref, (*s_it)->_Name()).c_str(), modeID, 0, *s_it);
+        LHelper().CreateItem(items, PrepareKey(pref, (*s_it)->m_Name.c_str()).c_str(), modeID, 0, *s_it);
 }
 //---------------------------------------------------------------------------
 
 void CEditableObject::FillBoneList(const char* pref, ListItemsVec& items, int modeID)
 {
-    BoneVec& b_lst 		= Bones();
+    BoneVec& b_lst 		= m_Bones;
     if (pref) LHelper().CreateItem(items, pref, modeID, ListItem::flSorted);
     for(BoneIt b_it=b_lst.begin(); b_it!=b_lst.end(); b_it++){
     	xr_string pt	= MakeFullBonePath(*b_it);
@@ -129,7 +128,7 @@ void CEditableObject::FillBoneList(const char* pref, ListItemsVec& items, int mo
 
 void CEditableObject::FillMotionList(const char* pref, ListItemsVec& items, int modeID)
 {
-    SMotionVec&	m_lst	= SMotions();
+    SMotionVec&	m_lst	= m_SMotions;
 	if (pref) LHelper().CreateItem(items, pref,  modeID, ListItem::flSorted);
     for (SMotionIt m_it=m_lst.begin(); m_it!=m_lst.end(); m_it++)
         LHelper().CreateItem(items, PrepareKey(pref, (*m_it)->Name()).c_str(), modeID, 0, *m_it);

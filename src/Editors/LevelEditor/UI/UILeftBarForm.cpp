@@ -34,7 +34,7 @@ void RenderToolButton(ESceneToolBase * tool, ObjClassID tool_id)
 	{
 		visible = !visible;
 		tool->m_EditFlags.set(ESceneToolBase::flVisible, visible);
-		UI->RedrawScene();
+		EContext.UI->RedrawScene();
 	}
 	ImGui::PopStyleColor();
 
@@ -159,7 +159,7 @@ void UILeftBarForm::Draw()
 					if (ImGui::Button(IconText.c_str(), { ShowH, ShowH }))
 					{
 						tool->m_EditFlags.set(ESceneToolBase::flVisible, !IsVisible);
-						UI->RedrawScene();
+						EContext.UI->RedrawScene();
 					}
 					ImGui::SetWindowFontScale(1.0f);
 					ImGui::PopStyleColor(4);

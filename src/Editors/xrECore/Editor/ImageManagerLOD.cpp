@@ -14,7 +14,7 @@ using Fvector4It = Fvector4Vec::iterator;
 bool GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
 {
     CSurface* surf			= R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);
-    Shader_xrLC* c_sh		= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+    Shader_xrLC* c_sh		= EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
     if (!c_sh->flags.bRendering) return false;
     const Fvector2*			cuv[3];
     R->e_mesh->GetFaceTC	(R->tag,cuv);
@@ -241,7 +241,7 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
     Fmatrix 					M, Mi;
     bb.getradius(o_size);
     bb.getcenter(o_center);
-    SPBItem* PB = UI->ProgressStart(LOD_SAMPLE_COUNT * LOD_IMAGE_SIZE, OBJECT->GetName());
+	SPBItem* PB = EContext.UI->ProgressStart(LOD_SAMPLE_COUNT * LOD_IMAGE_SIZE, OBJECT->m_LibName.c_str());
     float dW = std::max(o_size.x, o_size.z) / (LOD_IMAGE_SIZE / 2);
     float dH = o_size.y / (LOD_IMAGE_SIZE / 2);
     float dR = bb.getradius();
@@ -255,9 +255,9 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
     s32		LOD_CALC_SAMPLES_LIM = LOD_CALC_SAMPLES / 2;
 
     // preload textures
-    for (SurfaceIt surf_it = OBJECT->Surfaces().begin(); surf_it != OBJECT->Surfaces().end(); surf_it++) {
+    for (SurfaceIt surf_it = OBJECT->m_Surfaces.begin(); surf_it != OBJECT->m_Surfaces.end(); surf_it++) {
         CSurface* surf = *surf_it;
-        Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+        Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
         if (!c_sh->flags.bRendering) continue;
         if (nullptr == surf->ImageData)surf->CreateImageData();
     }
@@ -400,7 +400,7 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
     for (int px_idx = 0; px_idx<int(nm_pixels.size()); px_idx++)
         nm_pixels[px_idx] = subst_alpha(nm_pixels[px_idx], color_get_R(hemi_tmp[px_idx]));
 
-    UI->ProgressEnd(PB);
+    EContext.UI->ProgressEnd(PB);
 }
 
 //------------------------------------------------------------------------------

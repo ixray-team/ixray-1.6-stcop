@@ -12,11 +12,15 @@ void EScene::UndoClear()
 
 void EScene::UndoSave()
 {
-    if (UI->GetEState()!=esEditScene) return;
-    Modified();
-    UI->RedrawScene();
+	if (EContext.UI->GetEState() != esEditScene)
+	{
+		return;
+	}
 
-    if (0==EPrefs->scene_undo_level) return;
+	Modified();
+	EContext.UI->RedrawScene();
+
+	if (0==EPrefs->scene_undo_level) return;
 
 	UndoItem item;
 	GetTempFileNameA( FS.get_path(_temp_)->m_Path, "undo", 0, item.m_FileName );
@@ -44,15 +48,15 @@ bool EScene::Undo()
 		{
 			Platform::Unlink(m_RedoStack.front().m_FileName);
 			m_RedoStack.pop_front();
-        }
+		}
 
 		if( !m_UndoStack.empty() ){
 			Unload(true);
-         	Load( m_UndoStack.back().m_FileName, true );
-        }
+			Load( m_UndoStack.back().m_FileName, true );
+		}
 
-        UI->UpdateScene();
-        Modified();
+		EContext.UI->UpdateScene();
+		Modified();
 
 		return true;
 	}
@@ -75,7 +79,7 @@ bool EScene::Redo()
 			m_UndoStack.pop_front();
 		}
 
-		UI->UpdateScene();
+		EContext.UI->UpdateScene();
 		Modified();
 
 		return true;

@@ -9,8 +9,8 @@
 ISHTools::ISHTools(const ISHInit& init)
 {
 	m_bModified			= false;
-    m_bLockUpdate		= false;
-    Ext					= init;
+	m_bLockUpdate		= false;
+	Ext					= init;
 }
 //---------------------------------------------------------------------------
 
@@ -18,101 +18,92 @@ void ISHTools::ViewSetCurrentItem(const char* full_name)
 {
 	if (m_bLockUpdate) 	return;
 
-    m_bLockUpdate		= true;
-    Ext.m_Items->SelectItem(full_name);
-    m_bLockUpdate		= false;
+	m_bLockUpdate		= true;
+	Ext.m_Items->SelectItem(full_name);
+	m_bLockUpdate		= false;
 }
 //---------------------------------------------------------------------------
 
 void ISHTools::Modified()
 {
-    m_bModified = true;
+	m_bModified = true;
 
-    ApplyChanges();
+	ApplyChanges();
 
 }
 //---------------------------------------------------------------------------
 
 bool ISHTools::IfModified()
 {
-    if (m_bModified){
-        int mr = ELog.DlgMsg(mtConfirmation, mbYes | mbNo | mbCancel, "The '%s' has been modified.\nDo you want to save your changes?",ToolsName());
-        switch(mr){
-        case mrYes: Save(); m_bModified = false; break;
-        case mrNo: m_bModified = false; break;
-        case mrCancel: return false;
-        }
-    }
-    return true;
+	if (m_bModified){
+		int mr = ELog.DlgMsg(mtConfirmation, mbYes | mbNo | mbCancel, "The '%s' has been modified.\nDo you want to save your changes?",ToolsName());
+		switch(mr){
+		case mrYes: Save(); m_bModified = false; break;
+		case mrNo: m_bModified = false; break;
+		case mrCancel: return false;
+		}
+	}
+	return true;
 }
 //---------------------------------------------------------------------------
 
 void ISHTools::ZoomObject(bool bOnlySel)
 {
-    Fbox BB;
-    BB.set(-5,-5,-5,5,5,5);
-    UI->CurrentView().m_Camera.ZoomExtents(BB);
+	Fbox BB;
+	BB.set(-5,-5,-5,5,5,5);
+	EContext.UI->CurrentView().m_Camera.ZoomExtents(BB);
 }
 //---------------------------------------------------------------------------
 
 xr_string ISHTools::ViewGetCurrentItem(bool bFolderOnly)
 {
-    xr_string name;
-    RStringVec lst;
-    Ext.m_Items->GetSelected(lst);
-    if (lst.size() == 1)
-    {
-        name = lst[0].c_str();
-    }
-    return name;
+	xr_string name;
+	RStringVec lst;
+	Ext.m_Items->GetSelected(lst);
+	if (lst.size() == 1)
+	{
+		name = lst[0].c_str();
+	}
+	return name;
 }
-//---------------------------------------------------------------------------
-/*
-TElTreeItem* ISHTools::ViewGetCurrentItem()
-{
-	return Ext.m_Items->GetSelected();
-}*/
-//---------------------------------------------------------------------------
 
 void ISHTools::RemoveCurrent()
 {
 	Ext.m_Items->RemoveSelectItem();
 }
-//---------------------------------------------------------------------------
 
 void ISHTools::RenameCurrent()
 {
-    R_ASSERT(0);
+	R_ASSERT(0);
 //	Ext.m_Items->RenameSelItem();
 }
-//---------------------------------------------------------------------------
 
 void ISHTools::OnFrame()
 {
-    if (m_LastSelection.size()){
-	    SetCurrentItem				(m_LastSelection.c_str(),true);
-        m_LastSelection				= "";
-    }
+	if (m_LastSelection.size()){
+		SetCurrentItem				(m_LastSelection.c_str(),true);
+		m_LastSelection				= "";
+	}
 }                
 void ISHTools::OnActivate()
 {
-    SetCurrentItem					(m_LastSelection.c_str(),true);
-    UI->RedrawScene();
+	SetCurrentItem					(m_LastSelection.c_str(),true);
+	EContext.UI->RedrawScene();
 }
 void ISHTools::OnDeactivate()
 {
 	Ext.m_PreviewProps->ClearProperties();
-    m_LastSelection					= ViewGetCurrentItem(false);
-    ResetCurrentItem				();
-    Ext.m_Items->ClearList			();
+	m_LastSelection					= ViewGetCurrentItem(false);
+	ResetCurrentItem				();
+	Ext.m_Items->ClearList			();
 }
 //---------------------------------------------------------------------------
 void ISHTools::OnCloneItem(const char* parent_path, const char* new_full_name)
 {
-    AppendItem(new_full_name, parent_path);
+	AppendItem(new_full_name, parent_path);
 }
 
 void ISHTools::OnCreateItem(const char* path)
 {
-    AppendItem(path);
+	AppendItem(path);
 }

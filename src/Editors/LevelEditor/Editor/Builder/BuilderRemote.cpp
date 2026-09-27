@@ -267,11 +267,11 @@ void SceneBuilder::SaveBuildAsObject()
 	// write mtl
 	for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++)
 	{
-		_splitpath			((*split_it)->m_Surf->_Texture(), 0, 0, tex_name, 0 );
+		_splitpath			((*split_it)->m_Surf->m_Texture.c_str(), 0, 0, tex_name, 0 );
 		sprintf				(tmp,"newmtl %s",tex_name);
 		F.w_string			(tmp);
 
-		_splitpath			((*split_it)->m_Surf->_Texture(), 0, tex_path, tex_name, 0 );
+		_splitpath			((*split_it)->m_Surf->m_Texture.c_str(), 0, tex_path, tex_name, 0 );
 		strconcat			(sizeof(tex_path),tex_path,tex_path,"\\",tex_name,".tga");
 		sprintf				(tmp,"map_Kd %s",tex_path);
 		F.w_string	(tmp);
@@ -282,7 +282,7 @@ void SceneBuilder::SaveBuildAsObject()
 	// write mtl
 	u32 v_offs				= 0;
 	for (split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++){
-		_splitpath			((*split_it)->m_Surf->_Texture(), 0, 0, tex_name, 0 );
+		_splitpath			((*split_it)->m_Surf->m_Texture.c_str(), 0, 0, tex_name, 0 );
 		sprintf				(tmp,"g %d",split_it-m_Splits.begin());				F.w_string	(tmp);
 		sprintf				(tmp,"usemtl %s",tex_name);							F.w_string	(tmp);
 		Fvector 			mV;
@@ -506,19 +506,19 @@ bool GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObj
 	int point_offs = vert_it;
 
 	// fill vertices
-	for (u32 pt_id = 0; pt_id < mesh->GetVCount(); pt_id++)
+	for (u32 pt_id = 0; pt_id < mesh->m_Vertices.size(); pt_id++)
 	{
 		R_ASSERT(vert_it < vert_cnt);
-		parent.transform_tiny(verts[vert_it++], mesh->Vertices()[pt_id]);
+		parent.transform_tiny(verts[vert_it++], mesh->m_Vertices[pt_id]);
 	}
 
-	for (SurfFacesPairIt sp_it = mesh->Surfaces().begin(); sp_it != mesh->Surfaces().end(); sp_it++)
+	for (SurfFacesPairIt sp_it = mesh->m_SurfFaces.begin(); sp_it != mesh->m_SurfFaces.end(); sp_it++)
 	{
 		IntVec& face_lst = sp_it->second;
 		CSurface* surf = sp_it->first;
-		for (size_t i = 0; i < mesh->Parent()->SurfaceCount(); i++)
+		for (size_t i = 0; i < mesh->m_Parent->m_Surfaces.size(); i++)
 		{
-			if (obj != nullptr && mesh->Parent()->Surfaces()[i] == sp_it->first)
+			if (obj != nullptr && mesh->m_Parent->m_Surfaces[i] == sp_it->first)
 			{
 				surf = obj->m_Surfaces[i];
 				break;
@@ -527,15 +527,15 @@ bool GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObj
 		if (surf->m_GameMtlName == "materials\\occ")
 			continue;
 
-		if (!EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName())->flags.bCollision)
+		if (!EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str())->flags.bCollision)
 			continue;
 
 		u16 game_material_idx = GameMaterialLibraryEditors->GetMaterialIdx(surf->m_GameMtlName.c_str());
 
 		for (IntIt f_it = face_lst.begin(); f_it != face_lst.end(); ++f_it)
 		{
-			st_Face& face = mesh->Faces()[*f_it];
-			float _a = CalcArea(mesh->Vertices()[face.pv[0].pindex], mesh->Vertices()[face.pv[1].pindex], mesh->Vertices()[face.pv[2].pindex]);
+			st_Face& face = mesh->m_Faces[*f_it];
+			float _a = CalcArea(mesh->m_Vertices[face.pv[0].pindex], mesh->m_Vertices[face.pv[1].pindex], mesh->m_Vertices[face.pv[2].pindex]);
 			if (!_valid(_a) || (_a < EPS))
 			{
 				continue;
@@ -596,7 +596,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 	point_offs = vert_it;  // save offset
 
 	// fill vertices
-	for (u32 pt_id=0; pt_id<mesh->GetVCount(); pt_id++){
+	for (u32 pt_id=0; pt_id<mesh->m_Vertices.size(); pt_id++){
 		R_ASSERT(vert_it<vert_cnt);
 		parent.transform_tiny(verts[vert_it++],mesh->m_Vertices[pt_id]);
 	}
@@ -607,13 +607,17 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		mesh->GenerateFNormals();
 		mesh->GenerateAdjacency();
 		Fvector N;
-		for (u32 pt=0; pt<mesh->GetVCount(); pt++)
+		for (u32 pt=0; pt<mesh->m_Vertices.size(); pt++)
 		{
 			N.set(0,0,0);
+
 			IntVec& a_lst = (*mesh->m_Adjs)[pt];
 			VERIFY(a_lst.size());
-			for (IntIt i_it=a_lst.begin(); i_it!=a_lst.end(); i_it++)
-				N.add((*mesh->m_FaceNormals)[*i_it]);
+			for (IntIt i_it = a_lst.begin(); i_it != a_lst.end(); i_it++)
+			{
+				N.add(mesh->m_FaceNormals[*i_it]);
+			}
+
 			N.normalize_safe();
 			parent.transform_dir(N);
 			l_vnormals.push_back(N);
@@ -653,44 +657,44 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		}
 		if (gm_id<0)
 		{
-			ELog.DlgMsg		(mtError,"Surface: '%s' contains bad game material.",surf->_Name());
+			ELog.DlgMsg		(mtError,"Surface: '%s' contains bad game material.",surf->m_Name.c_str());
 			bResult 		= false;
 			break;
 		}
 		SGameMtl* M = GameMaterialLibraryEditors->GetMaterialByID(gm_id);
 		if (0==M)
 		{
-			ELog.DlgMsg		(mtError,"Surface: '%s' contains undefined game material.",surf->_Name());
+			ELog.DlgMsg		(mtError,"Surface: '%s' contains undefined game material.",surf->m_Name.c_str());
 			bResult 		= false;
 			break;
 		}
 		if (M->Flags.is(SGameMtl::flBreakable))
 		{
-			ELog.Msg		(mtInformation,"Surface: '%s' contains breakable game material.",surf->_Name());
+			ELog.Msg		(mtInformation,"Surface: '%s' contains breakable game material.",surf->m_Name.c_str());
 			continue;
 		}
 		if (M->Flags.is(SGameMtl::flClimable))
 		{
-			ELog.Msg		(mtInformation,"Surface: '%s' contains climable game material.",surf->_Name());
+			ELog.Msg		(mtInformation,"Surface: '%s' contains climable game material.",surf->m_Name.c_str());
 			continue;
 		}
 		if (M->Flags.is(SGameMtl::flDynamic))
 		{
-			ELog.DlgMsg		(mtError,"Surface: '%s' contains non-static game material.",surf->_Name());
+			ELog.DlgMsg		(mtError,"Surface: '%s' contains non-static game material.",surf->m_Name.c_str());
 			bResult 		= false;
 			break;
 		}
-		u32 dwTexCnt 		= ((surf->_FVF()&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);
+		u32 dwTexCnt 		= ((surf->m_dwFVF&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);
 		if (dwTexCnt!=1)
 		{
-			ELog.DlgMsg		(mtError,"Surface: '%s' contains more than 1 texture refs.",surf->_Name());
+			ELog.DlgMsg		(mtError,"Surface: '%s' contains more than 1 texture refs.",surf->m_Name.c_str());
 			bResult 		= false; 
 			break; 
 		}
 		u32 dwInvalidFaces 	= 0;
 		for (int& f_it : face_lst)
 		{			
-			if (!IVERIFY(f_it < mesh->m_FaceCount))
+			if (!IVERIFY(f_it < (int)mesh->m_Faces.size()))
 			{
 				continue;
 			}
@@ -726,7 +730,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 					int offs = 0;
 					for (u32 t=0; t<dwTexCnt; ++t)
 					{
-						st_VMapPt& vm_pt 	= mesh->m_VMRefs[fv.vmref].pts[t];
+						st_VMapPt& vm_pt 	= mesh->m_VMRefs[fv.vmref][t];
 						st_VMap& vmap		= *mesh->m_VMaps[vm_pt.vmap_index];
 						if (vmap.type!=vmtUV)
 						{
@@ -758,7 +762,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 					int offs = 0;
 					for (u32 t=0; t<dwTexCnt; t++)
 					{
-						st_VMapPt& vm_pt 	= mesh->m_VMRefs[fv.vmref].pts[t];
+						st_VMapPt& vm_pt 	= mesh->m_VMRefs[fv.vmref][t];
 						st_VMap& vmap		= *mesh->m_VMaps[vm_pt.vmap_index];
 						if (vmap.type!=vmtUV)
 						{
@@ -774,7 +778,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		}
 		if (dwInvalidFaces)
 		{
-			Msg("!Object '%s' - '%s' has %d invalid face(s). Removed.",object->GetName(),mesh->Name().c_str(),dwInvalidFaces);
+			Msg("!Object '%s' - '%s' has %d invalid face(s). Removed.",object->m_LibName.c_str(),mesh->m_Name.c_str(),dwInvalidFaces);
 			face_cnt -= dwInvalidFaces;
 		}
 			
@@ -793,9 +797,9 @@ bool SceneBuilder::BuildObject(CSceneObject* obj)
 bool SceneBuilder::BuildEditableObject(CEditableObject* obj, Fmatrix Transform, CSceneObject* Owner)
 {
 	xr_string temp = "Building object: ";
-	temp += Owner ? Owner->GetName() : obj->GetName();
+	temp += Owner ? Owner->GetName() : obj->m_LibName.c_str();
 
-	UI->SetStatus(temp.c_str());
+	EContext.UI->SetStatus(temp.c_str());
 
 	Fmatrix T = Transform;
 
@@ -813,7 +817,7 @@ bool SceneBuilder::BuildEditableObject(CEditableObject* obj, Fmatrix Transform, 
 	}
 
 	// parse mesh data
-	for (EditMeshIt M = obj->FirstMesh(); M != obj->LastMesh(); M++)
+	for (EditMeshIt M = obj->m_Meshes.begin(); M != obj->m_Meshes.end(); M++)
 	{
 		CSector* S = PortalUtils.FindSector(Owner, *M);
 		int sect_num = S ? S->m_sector_num : m_iDefaultSectorNum;
@@ -821,7 +825,7 @@ bool SceneBuilder::BuildEditableObject(CEditableObject* obj, Fmatrix Transform, 
 			return false;
 
 		// fill DI vertices
-		for (u32 pt_id = 0; pt_id < (*M)->GetVCount(); pt_id++)
+		for (u32 pt_id = 0; pt_id < (*M)->m_Vertices.size(); pt_id++)
 		{
 			Fvector v_res1, v_res2;
 			const Fvector& v_src = (*M)->m_Vertices[pt_id];
@@ -856,7 +860,7 @@ int	GetModelIdx( const char* model_name )
 //   CEditableObject *O = obj->GetReference();
 //   int model_idx		= GetModelIdx(O->GetName());
 	 // detect sector
-//    CSector* S 			= PortalUtils.FindSector(obj,*O->FirstMesh());
+//    CSector* S 			= PortalUtils.FindSector(obj,*O->m_Meshes.begin());
 //    int sect_num 		= S?S->m_sector_num:Builder.m_iDefaultSectorNum;
 //}
 
@@ -867,13 +871,13 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	xr_string temp = "Building object: ";
 	temp += obj->GetName();
 
-	UI->SetStatus(temp.c_str());
+	EContext.UI->SetStatus(temp.c_str());
 	
 	CEditableObject* O = obj->GetReference();
-	int model_idx = GetModelIdx( O->GetName() ) ;
+	int model_idx = GetModelIdx( O->m_LibName.c_str() ) ;
 
 	// detect sector
-	CSector* S 			= PortalUtils.FindSector(obj,*O->FirstMesh());
+	CSector* S 			= PortalUtils.FindSector(obj,*O->m_Meshes.begin());
 	int sect_num 		= S?S->m_sector_num:m_iDefaultSectorNum;
 	
 	xr_string ref_name1 = obj->m_ReferenceName.c_str();
@@ -947,7 +951,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 			{
 				LPCSTR ref_new_MU1_1 = ref_new_MU1.c_str();
 				O = obj->SetReference(ref_new_MU1_1);
-				UI->SetStatus(ref_new_MU1_check.c_str());
+				EContext.UI->SetStatus(ref_new_MU1_check.c_str());
 				
 				if (!BuildMUObjectLOD(obj, slot, 1, sect_num))
 				{
@@ -958,7 +962,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 			{
 				LPCSTR ref_new_MU2_2 = ref_new_MU2.c_str();
 				O = obj->SetReference(ref_new_MU2_2);
-				UI->SetStatus(ref_new_MU2_check.c_str());
+				EContext.UI->SetStatus(ref_new_MU2_check.c_str());
 				if (!BuildMUObjectLOD(obj, slot, 2, sect_num))
 				{
 					return false;
@@ -968,7 +972,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 			{
 				LPCSTR ref_new_MU3_3 = ref_new_MU3.c_str();
 				O = obj->SetReference(ref_new_MU3_3);
-				UI->SetStatus(ref_new_MU3_check.c_str());
+				EContext.UI->SetStatus(ref_new_MU3_check.c_str());
 				if (!BuildMUObjectLOD(obj, slot, 3, sect_num))
 				{
 					return false;
@@ -978,7 +982,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 			{
 				LPCSTR ref_new_MU4_4 = ref_new_MU4.c_str();
 				O = obj->SetReference(ref_new_MU4_4);
-				UI->SetStatus(ref_new_MU4_check.c_str());
+				EContext.UI->SetStatus(ref_new_MU4_check.c_str());
 				if (!BuildMUObjectLOD(obj, slot, 4, sect_num))
 				{
 					return false;
@@ -1035,7 +1039,7 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 
 	M.m_iFaceCount = obj->GetFaceCount();
 	M.m_iVertexCount = obj->GetVertexCount();
-	strcpy(M.name,O->GetName());
+	strcpy(M.name,O->m_LibName.c_str());
 
 	M.m_pFaces = xr_alloc<b_face>(M.m_iFaceCount);
 	M.m_pVertices = xr_alloc<b_vertex>(M.m_iVertexCount);
@@ -1059,7 +1063,7 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 		T = TM;
 	}
 
-	for(EditMeshIt MESH=O->FirstMesh();MESH!=O->LastMesh();++MESH)
+	for(EditMeshIt MESH=O->m_Meshes.begin();MESH!=O->m_Meshes.end();++MESH)
 	{
 		if (!M.m_iVertexCount || !M.m_iFaceCount)
 		{
@@ -1076,7 +1080,7 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 bool SceneBuilder::BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 LODID, int sect_num)
 {
 	CEditableObject *O = obj->GetReference();
-	int model_idx = GetModelIdx( O->GetName() ) ;
+	int model_idx = GetModelIdx( O->m_LibName.c_str() ) ;
 
 	// build model
 	if (-1==model_idx || m_save_as_object)
@@ -1444,7 +1448,7 @@ int SceneBuilder::FindInMaterials(b_material* m)
 
 int SceneBuilder::BuildMaterial(CSurface* surf, int sector_num, bool allow_draft)
 {
-	return BuildMaterial(surf->_ShaderName(),surf->_ShaderXRLCName(),surf->_Texture(),((surf->_FVF()&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT),sector_num,allow_draft);
+	return BuildMaterial(surf->m_ShaderName.c_str(),surf->m_ShaderXRLCName.c_str(),surf->m_Texture.c_str(),((surf->m_dwFVF&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT),sector_num,allow_draft);
 }
 int SceneBuilder::BuildMaterial(const char* esh_name, const char* csh_name, const char* tx_name, u32 tx_cnt, int sector_num, bool allow_draft)
 {
@@ -1482,11 +1486,11 @@ int SceneBuilder::BuildMaterial(const char* esh_name, const char* csh_name, cons
 bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool b_selected_only)
 {
 	bool bResult = true;
-	SPBItem* pb	= UI->ProgressStart(lst.size(),"Parse static objects...");
+	SPBItem* pb	= EContext.UI->ProgressStart(lst.size(),"Parse static objects...");
 	for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
 	{
 		pb->Inc((*_F)->GetName());
-		if (UI->NeedAbort()) break;
+		if (EContext.UI->NeedAbort()) break;
 		if(b_selected_only && !(*_F)->Selected())
 			continue;
 
@@ -1535,7 +1539,7 @@ bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool 
 			break;
 		}
 	}
-	UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
 	return bResult;
 }
 
@@ -1592,7 +1596,7 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 // make sun
 	BuildSun			(Scene->m_LevelOp.m_LightSunQuality,lt->m_SunShadowDir);
 // parse scene
-	SPBItem* pb = UI->ProgressStart(Scene->ObjCount(),"Parse scene objects...");
+	SPBItem* pb = EContext.UI->ProgressStart(Scene->ObjCount(),"Parse scene objects...");
 
 	if(b_selected_only)
 	{
@@ -1611,11 +1615,11 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 					{bResult = false; break;}
 		}
 	}
-	UI->ProgressEnd(pb);
+	EContext.UI->ProgressEnd(pb);
 // process lods
 	if (bResult&&!l_lods.empty() && !EPrefs->DisableBillboardLOD)
 	{
-		SPBItem* pb = UI->ProgressStart(l_lods.size()*2,"Merge LOD textures...");
+		SPBItem* pb = EContext.UI->ProgressStart(l_lods.size()*2,"Merge LOD textures...");
 		Fvector2Vec			offsets;
 		Fvector2Vec			scales;
 		boolVec				rotated;
@@ -1669,11 +1673,11 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 		}else{
 			ELog.Msg(mtError, "! Failed to build merged LOD texture. Merged texture more than [4096x4096]");
 		}
-		UI->ProgressEnd(pb);
+		EContext.UI->ProgressEnd(pb);
 	}
 
 // save build    
-	if (bResult && !UI->NeedAbort())
+	if (bResult && !EContext.UI->NeedAbort())
 	{
 		if(m_save_as_object)
 			SaveBuildAsObject	();

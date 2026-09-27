@@ -114,9 +114,6 @@ protected:
 	bool  m_bHintShowing;
 	POINT m_HintPoint;
 
-	// mailslot
-	HANDLE			hMailSlot;
-
 public:
 	void ShowHint();
 	bool ShowHint(const AStringVec& SS);
@@ -296,7 +293,6 @@ public:
 protected:
 	virtual void OnDrawUI();
 	void RealResetUI();
-	HANDLE m_HConsole;
 
 	mutable xr_hash_map<shared_str, ref_texture> TextureStack;
 
@@ -304,8 +300,6 @@ public:
    IC  void ResetUI(bool bForced=false)  { if (!bForced)m_Flags.set(flResetUI, true); if (bForced) RealResetUI(); }
    virtual Ivector2 GetRenderMousePosition()const { return Ivector2().set(0, 0); }
 };
-
-extern ECORE_API TUI* UI;  
 
 void ECORE_API ResetActionToSelect();
 #define COMMAND0(cmd)		{ExecCommand(cmd);bExec=true;}

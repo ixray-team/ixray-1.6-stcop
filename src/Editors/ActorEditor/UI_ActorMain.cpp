@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UI_ActorMain.h"
 
-CActorMain*	AUI=(CActorMain*)UI;
+CActorMain* AUI = (CActorMain*)EContext.UI;
 
 CCommandVar CActorTools::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
@@ -355,7 +355,7 @@ CCommandVar CActorTools::CommandClear(CCommandVar p1, CCommandVar p2)
 		return false;
 
 	m_LastFileName = "";
-	UI->CurrentView().m_Camera.Reset();
+	EContext.UI->CurrentView().m_Camera.Reset();
 	Clear();
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 	UndoClear();

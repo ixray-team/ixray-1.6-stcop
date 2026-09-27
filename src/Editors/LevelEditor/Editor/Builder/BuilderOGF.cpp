@@ -19,7 +19,7 @@ bool SceneBuilder::BuildHOMModel()
 		{
 			Fvector 		v;
 			const Fmatrix&	parent = S->_Transform();
-			for (EditMeshIt m_it=E->FirstMesh(); m_it!=E->LastMesh(); ++m_it)
+			for (EditMeshIt m_it=E->m_Meshes.begin(); m_it!=E->m_Meshes.end(); ++m_it)
 			{
 				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); ++sf_it)
 				{
@@ -41,7 +41,7 @@ bool SceneBuilder::BuildHOMModel()
 		{
 			Fvector 		v;
 			const Fmatrix&	parent = S->_Transform();
-			for (EditMeshIt m_it=E->FirstMesh(); m_it!=E->LastMesh(); ++m_it)
+			for (EditMeshIt m_it=E->m_Meshes.begin(); m_it!=E->m_Meshes.end(); ++m_it)
 			{
 				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); ++sf_it)
 				{
@@ -92,7 +92,7 @@ bool SceneBuilder::BuildSOMModel()
 		if (E->m_objectFlags.is(CEditableObject::eoSoundOccluder)){ 
 			Fvector 		v;
 			const Fmatrix&	parent = S->_Transform();
-			for (EditMeshIt m_it=E->FirstMesh(); m_it!=E->LastMesh(); m_it++)
+			for (EditMeshIt m_it=E->m_Meshes.begin(); m_it!=E->m_Meshes.end(); m_it++)
 			{
 				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); sf_it++)
 				{
@@ -100,7 +100,7 @@ bool SceneBuilder::BuildSOMModel()
 					int gm_id			= surf->_GameMtl(); 
 					if (gm_id==GAMEMTL_NONE_ID)
 					{ 
-						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain invalid game material.", *(*m_it)->Name(), (*m_it)->Parent()->m_LibName.c_str(),surf->_Name());
+						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain invalid game material.", *(*m_it)->m_Name, (*m_it)->m_Parent->m_LibName.c_str(),surf->m_Name.c_str());
 						bResult 		= false; 
 						break; 
 					}
@@ -108,7 +108,7 @@ bool SceneBuilder::BuildSOMModel()
 
 					if (0==mtl)
 					{
-						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", *(*m_it)->Name(), (*m_it)->Parent()->m_LibName.c_str(),surf->_Name());
+						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", *(*m_it)->m_Name, (*m_it)->m_Parent->m_LibName.c_str(),surf->m_Name.c_str());
 						bResult 		= false; 
 						break; 
 					}

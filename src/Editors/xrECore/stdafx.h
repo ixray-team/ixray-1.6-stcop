@@ -103,8 +103,8 @@ using RStrVecIt = RStrVec::iterator;
 	#include "../../xrCore/net_utils.h"
 #endif
 
-#define INI_NAME(buf) 		{FS.update_path(buf,"$app_data_root$",EFS.ChangeFileExt(UI->EditorName(),".ini").c_str());}
-#define JSON_NAME(buf) 		{FS.update_path(buf,"$app_data_root$",EFS.ChangeFileExt(UI->EditorName(),".json").c_str());}
+#define INI_NAME(buf) 		{FS.update_path(buf,"$app_data_root$",EFS.ChangeFileExt(EContext.UI->EditorName(),".ini").c_str());}
+#define JSON_NAME(buf) 		{FS.update_path(buf,"$app_data_root$",EFS.ChangeFileExt(EContext.UI->EditorName(),".json").c_str());}
 //#define INI_NAME(buf) 		{buf = buf+xr_string(Core.WorkingPath)+xr_string("\\")+EFS.ChangeFileExt(UI->EditorName(),".ini");}
 #define DEFINE_INI(storage)	{string_path buf; INI_NAME(buf); storage->IniFileName=buf;}
 #define NONE_CAPTION "<none>"
@@ -131,12 +131,7 @@ using RStrVecIt = RStrVec::iterator;
 
 #include "../../xrEngine/ETextureParams.h"
 #include "../../Layers/xrRender/ResourceManager.h"
-
-#include "../../Layers/xrRender/blenders/Blender_Recorder.h"
-#include "../../Layers/xrRender/blenders/Blender.h"
-#include "../../Layers/xrRender/blenders/Blender_CLSID.h"
-
-#include "Editor/ImageManager.h"
+#include "Editor/EditorContext.h"
 inline xr_string ChangeFileExt(const char* name, const char* e)
 {
 	string_path path;

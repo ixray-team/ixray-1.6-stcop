@@ -46,7 +46,7 @@ void UITopBarForm::Draw()
 	const float IconSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IconSize);
 	const float ButtonRadius = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonRadius);
 	const float ToolbarPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
-	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + UI->GetMenuBarHeight()));
+	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + EContext.UI->GetMenuBarHeight()));
 	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, ButtonSize + ToolbarPadding * 2));
 	ImGui::SetNextWindowViewport(viewport->ID);
 

@@ -155,7 +155,7 @@ void ESceneCustomOTool::SelectObjects(bool flag)
         }
     );
 
-    UI->RedrawScene		();
+    EContext.UI->RedrawScene		();
 }
 
 void ESceneCustomOTool::RemoveSelection()
@@ -181,7 +181,7 @@ void ESceneCustomOTool::RemoveSelection()
             _F++;
         }
     }
-	UI->RedrawScene		();
+	EContext.UI->RedrawScene		();
 }
 
 void ESceneCustomOTool::InvertSelection()
@@ -191,7 +191,7 @@ void ESceneCustomOTool::InvertSelection()
             (*_F)->Select(-1);
         }
         
-    UI->RedrawScene		();
+    EContext.UI->RedrawScene		();
 }
 
 int ESceneCustomOTool::SelectionCount(bool testflag)
@@ -220,7 +220,7 @@ void ESceneCustomOTool::ShowObjects(bool flag, bool bAllowSelectionFlag, bool bS
             (*_F)->Show(flag);
         }
     }
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
 }
 
 bool ESceneCustomOTool::RayPick(CCustomObject*& object, float& distance, const Fvector& start, const Fvector& direction, SRayPickInfo* pinf)
@@ -263,7 +263,7 @@ int ESceneCustomOTool::RaySelect(int flag, float& distance, const Fvector& start
     if (RayPick(nearest_object,distance,start,direction,0)&&!bDistanceOnly) 
     	nearest_object->RaySelect(flag,start,direction,false);
 //    	nearest_object->Select(flag);
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
     return !!nearest_object;
 }
 
