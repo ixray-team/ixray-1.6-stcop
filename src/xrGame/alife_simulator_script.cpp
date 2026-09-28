@@ -594,12 +594,6 @@ void CALifeSimulator::script_register			(lua_State *L)
 		def("dummy_alife", &alife)
 	];
 	object alife_consts = get_globals(L)["alife_const"];
-	alife_consts["invalid_object_id"] = ALife::_OBJECT_ID(-1);
-
-	module(L, "alife_const")[
-		def("dummy_alife", &alife)
-	];
-	object alife_consts = get_globals(L)["alife_const"];
 	alife_consts["invalid_object_id"] = ALife::INVALID_OBJECT_ID;
 
 	{
