@@ -1160,7 +1160,7 @@ void CWeaponMagazinedWGrenade::Serialize(ISaveObject& Object)
 			Object << Value;
 
 			CCartridge					l_cartridge;
-			l_cartridge.Load(m_ammoTypes2[m_ammoType2].c_str(), m_ammoType2);
+			l_cartridge.Load(m_ammoTypes2[AmmoType.GrenadeType].c_str(), AmmoType.GrenadeType);
 
 			while (Value > m_magazine2.size()) {
 				m_magazine2.push_back(l_cartridge);

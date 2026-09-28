@@ -817,17 +817,17 @@ void CSE_ALifeItemWeapon::STATE_Serialize(ISaveObject& Object)
 	BEGIN_CHUNK(Object,"CSE_ALifeItemWeapon::STATE")
 	{
 		inherited::STATE_Serialize(Object);
-		Object << a_current << a_elapsed << wpn_state << m_addon_flags << ammo_type << misfire << rt_zoom_factor << cur_scope;
+		Object << a_current << a_elapsed.data << wpn_state << m_addon_flags << a_ammo_type.data << misfire << rt_zoom_factor << cur_scope;
 		{
-			u8 Value;
-			if (Object.IsSave()) {
-				Value = a_elapsed_grenades.pack_to_byte();
-				Object << Value;
-			}
-			else {
-				Object << Value;
-				a_elapsed_grenades.unpack_from_byte(Value);
-			}
+			//u8 Value;
+			//if (Object.IsSave()) {
+			//	Value = a_elapsed_grenades.pack_to_byte();
+			//	Object << Value;
+			//}
+			//else {
+			//	Object << Value;
+			//	a_elapsed_grenades.unpack_from_byte(Value);
+			//}
 		}
 	}
 }
@@ -837,7 +837,7 @@ void CSE_ALifeItemWeapon::UPDATE_Serialize(ISaveObject& Object)
 	BEGIN_CHUNK(Object,"CSE_ALifeItemWeapon::UPDATE")
 	{
 		inherited::UPDATE_Serialize(Object);
-		Object << m_fCondition << wpn_flags << a_elapsed << m_addon_flags << ammo_type << wpn_state << m_bZoom << misfire << rt_zoom_factor << cur_scope;
+		Object << m_fCondition << wpn_flags << a_elapsed.data << m_addon_flags << a_ammo_type.data << wpn_state << m_bZoom << misfire << rt_zoom_factor << cur_scope;
 	}
 }
 
