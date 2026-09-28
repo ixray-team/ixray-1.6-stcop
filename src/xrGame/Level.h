@@ -247,6 +247,15 @@ public:
 	bool						game_configured;
 	NET_Queue_Event				*game_events;
 	xr_deque<CSE_Abstract*>		game_spawn_queue;
+	struct PacketData
+	{
+		NET_Packet Packet;
+		u16 ID = 0;
+		ALife::_OBJECT_ID dest = 0;
+		u16 type = 0;
+	};
+	xr_deque<PacketData>		m_postponedPackets;
+	CTimer						m_eventsTimer;
 	xrServer*					Server;
 	GlobalFeelTouch				m_feel_deny;
 	
@@ -328,6 +337,8 @@ public:
 	void						cl_Process_Event		(ALife::_OBJECT_ID dest, u16 type, NET_Packet& P);
 	void						cl_Process_Spawn		(NET_Packet& P);
 	void						local_Process_Spawn		(NET_Packet& P);
+	void						ProcessPacket			(u16 ID, NET_Packet& P, ALife::_OBJECT_ID dest, u16 type);
+	void						ProcessPostponed		(bool timeLimit);
 	void						ProcessGameEvents		( );
 	void						ProcessGameSpawns		( );
 

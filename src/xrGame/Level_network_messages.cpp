@@ -266,6 +266,7 @@ void CLevel::ClientReceive()
 		case M_LOAD_GAME:
 		case M_CHANGE_LEVEL:
 			{
+				ProcessPostponed(false);
 				if(m_type==M_LOAD_GAME)
 				{
 					string256						saved_name;

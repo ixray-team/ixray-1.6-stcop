@@ -499,18 +499,110 @@ void CLevel::cl_Process_Event				(ALife::_OBJECT_ID dest, u16 type, NET_Packet& 
 	}
 };
 
+int ps_events_time_budget_ms = 12;
+
+void CLevel::ProcessPacket(u16 ID, NET_Packet& P, ALife::_OBJECT_ID dest, u16 type)
+{
+	switch (ID)
+	{
+	case M_SPAWN:
+		{
+			PROF_EVENT("M_SPAWN");
+			u16 dummy16;
+			P.r_begin(dummy16);
+			cl_Process_Spawn(P);
+		}break;
+	case M_SPAWN_LOCAL:
+		{
+			PROF_EVENT("M_SPAWN_LOCAL");
+			u16 dummy16;
+			P.r_begin(dummy16);
+			local_Process_Spawn(P);
+		}break;
+	case M_EVENT:
+		{
+			PROF_EVENT("M_EVENT");
+			cl_Process_Event(dest, type, P);
+		}break;
+	case M_MOVE_PLAYERS:
+		{
+			PROF_EVENT("M_MOVE_PLAYERS");
+			u8 Count = P.r_u8();
+			for (u8 i = 0; i < Count; i++)
+			{
+				ALife::_OBJECT_ID ID_;
+				P >> ID_;					
+				Fvector NewPos, NewDir;
+				P.r_vec3(NewPos);
+				P.r_vec3(NewDir);
+
+				CObject* finded_player = Objects.net_Find(ID_);
+				CActor*	OActor = finded_player != nullptr ? finded_player->cast_actor() : nullptr;
+				if (OActor == nullptr)
+				{
+					break;
+				}
+
+				OActor->MoveActor(NewPos, NewDir);
+			};
+
+			NET_Packet PRespond;
+			PRespond.w_begin(M_MOVE_PLAYERS_RESPOND);
+			Send(PRespond, net_flags(true, true));
+		}break;
+	case M_STATISTIC_UPDATE:
+		{
+			PROF_EVENT("M_STATISTIC_UPDATE");
+			if (!IsGameTypeSingle())
+				Game().m_WeaponUsageStatistic->OnUpdateRequest(&P);
+		}break;
+	case M_FILE_TRANSFER:
+		{
+			PROF_EVENT("M_FILE_TRANSFER");
+			if (m_file_transfer)			//in case of net_Stop
+				m_file_transfer->on_message(&P);
+		}break;
+	case M_GAMEMESSAGE:
+		{
+			PROF_EVENT("M_GAMEMESSAGE");
+			Game().OnGameMessage(P);
+		}break;
+	default:
+		{
+			VERIFY(0);
+		}break;
+	}
+}
+
+void CLevel::ProcessPostponed(bool timeLimit)
+{
+	PROF_EVENT("CLevel::ProcessPostponed");
+	while (!m_postponedPackets.empty())
+	{
+		if (timeLimit && (ps_events_time_budget_ms > 0))
+		{
+			if (m_eventsTimer.GetElapsed_ms() >= (u32)ps_events_time_budget_ms)
+			{
+				break;
+			}
+		}
+
+		PacketData pd = std::move(m_postponedPackets.front());
+		m_postponedPackets.pop_front();
+		ProcessPacket(pd.ID, pd.Packet, pd.dest, pd.type);
+	}
+}
+
 void CLevel::ProcessGameEvents		()
 {
 	PROF_EVENT("CLevel::ProcessGameEvents");
 	// Game events
 	{
 		NET_Packet			P;
-		u32 svT				= timeServer()-NET_Latency;
+		u32 svT				= timeServer() - NET_Latency;
 
-		/*
-		if (!game_events->queue.empty())	
-			Msg("- d[%d],ts[%d] -- E[svT=%d],[evT=%d]",Device.dwTimeGlobal,timeServer(),svT,game_events->queue.begin()->timestamp);
-		*/
+		m_eventsTimer.Start();
+		ProcessPostponed(true);
 
 		while	(game_events->available(svT))
 		{
@@ -522,76 +614,20 @@ void CLevel::ProcessGameEvents		()
 			ALife::_OBJECT_ID dest;
 			game_events->get	(ID,dest,type,P);
 
-			switch (ID)
+			const bool isGameplay = bReady;
+			if ((ps_events_time_budget_ms <= 0) || (!isGameplay) || (m_eventsTimer.GetElapsed_ms() < (u32)ps_events_time_budget_ms))
 			{
-			case M_SPAWN:
-				{
-					PROF_EVENT("M_SPAWN");
-					u16 dummy16;
-					P.r_begin(dummy16);
-					cl_Process_Spawn(P);
-				}break;
-			case M_SPAWN_LOCAL:
-				{
-					PROF_EVENT("M_SPAWN_LOCAL");
-					u16 dummy16;
-					P.r_begin(dummy16);
-					local_Process_Spawn(P);
-					break;
-				}
-			case M_EVENT:
-				{
-					PROF_EVENT("M_EVENT");
-					cl_Process_Event(dest, type, P);
-				}break;
-			case M_MOVE_PLAYERS:
-				{
-					PROF_EVENT("M_MOVE_PLAYERS");
-					u8 Count = P.r_u8();
-					for (u8 i = 0; i < Count; i++)
-					{
-						ALife::_OBJECT_ID ID_;
-						P >> ID_;					
-						Fvector NewPos, NewDir;
-						P.r_vec3(NewPos);
-						P.r_vec3(NewDir);
-
-						CObject* finded_player = Objects.net_Find(ID_);
-						CActor*	OActor = finded_player != nullptr ? finded_player->cast_actor() : nullptr;
-						if (OActor == nullptr)
-						{
-							break;
-						}
-
-						OActor->MoveActor(NewPos, NewDir);
-					};
-
-					NET_Packet PRespond;
-					PRespond.w_begin(M_MOVE_PLAYERS_RESPOND);
-					Send(PRespond, net_flags(true, true));
-				}break;
-			case M_STATISTIC_UPDATE:
-				{
-					PROF_EVENT("M_STATISTIC_UPDATE");
-					if (!IsGameTypeSingle())
-						Game().m_WeaponUsageStatistic->OnUpdateRequest(&P);
-				}break;
-			case M_FILE_TRANSFER:
-				{
-					PROF_EVENT("M_FILE_TRANSFER");
-					if (m_file_transfer)			//in case of net_Stop
-						m_file_transfer->on_message(&P);
-				}break;
-			case M_GAMEMESSAGE:
-				{
-					PROF_EVENT("M_GAMEMESSAGE");
-					Game().OnGameMessage(P);
-				}break;
-			default:
-				{
-					VERIFY(0);
-				}break;
-			}			
+				ProcessPacket(ID, P, dest, type);
+			}
+			else
+			{
+				PacketData pd;
+				pd.Packet = P;
+				pd.ID = ID;
+				pd.dest = dest;
+				pd.type = type;
+				m_postponedPackets.push_back(std::move(pd));
+			}
 		}
 	}
 	if (OnServer() && GameID()!= eGameIDSingle)
