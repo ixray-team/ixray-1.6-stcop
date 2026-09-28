@@ -81,6 +81,9 @@ protected:
 	u32 uFlags;
 	u32 dwCurrentColor;
 	u32 dwGradientColor;
+	bool fOutlineEnabled = false;
+	u32 dwOutlineColor = color_rgba(0, 0, 0, 255);
+	float fOutlineOffset = 1.f;
 
 	EAligment eCurrentAlignment;
 	xrCriticalSection s_cs;
@@ -102,6 +105,12 @@ public:
 	void  ReInit();
 	void  SetColor(u32 C) { dwCurrentColor = C; }
 	void  SetGradientColor(u32 C) { dwGradientColor = C; }
+	void  SetOutline(bool enable) { fOutlineEnabled = enable; }
+	bool  IsOutlineEnabled() const { return fOutlineEnabled; }
+	void  SetOutlineColor(u32 C) { dwOutlineColor = C; }
+	u32   GetOutlineColor() const { return dwOutlineColor; }
+	void  SetOutlineOffset(float offset) { fOutlineOffset = offset > 0.f || offset < 0.f ? offset : 0.f; }
+	float GetOutlineOffset() const { return fOutlineOffset; }
 	void  SetHeight(float S);
 	float GetHeight() { return fCurrentHeight; }
 	void  SetAligment(EAligment aligment) { eCurrentAlignment = aligment; }

@@ -754,14 +754,27 @@ void CCC_Register()
 	// Render device states
 	CMD3(CCC_Mask32, "rs_device_active", &psDeviceFlags, rsDeviceActive);
 
-	extern xr_token fps_text_pos_tokens[4];
+	extern xr_token fps_text_pos_tokens[];
+	extern xr_token fps_font_tokens[];
 	extern u32 fps_text_current_pos;
+	extern u32 fps_text_current_font;
+	extern int fps_text_color_r;
+	extern int fps_text_color_g;
+	extern int fps_text_color_b;
+	extern int fps_text_color_a;
+	extern bool fps_text_outline;
 
 	CMD2(CCC_Boolean, "rs_fps_show", &IsFpsShow)
 	CMD4(CCC_Integer, "rs_fps_limit", &fps_limit, 0, 1000)
 	CMD4(CCC_Float, "rs_fps_smoothing_factor", &fps_smoothing_alpha, EPS_S, 1.f - EPS_S)
 	CMD4(CCC_Integer, "rs_main_menu_fps_limit", &main_menu_fps_limit, 0, 1000)
 	CMD3(CCC_Token, "rs_fps_pos", &fps_text_current_pos, fps_text_pos_tokens)
+	CMD3(CCC_Token, "rs_fps_font", &fps_text_current_font, fps_font_tokens)
+	CMD4(CCC_Integer, "rs_fps_color_r", &fps_text_color_r, 0, 255)
+	CMD4(CCC_Integer, "rs_fps_color_g", &fps_text_color_g, 0, 255)
+	CMD4(CCC_Integer, "rs_fps_color_b", &fps_text_color_b, 0, 255)
+	CMD4(CCC_Integer, "rs_fps_color_a", &fps_text_color_a, 0, 255)
+	CMD2(CCC_Boolean, "rs_fps_outline", &fps_text_outline)
 
 
 	CMD3(CCC_Mask32,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);

@@ -467,6 +467,27 @@ void CGameFont::MasterOut(
 	if (vs_sz)
 	{
 		xrCriticalSectionGuard g(&s_cs);
+
+		if (fOutlineEnabled && fOutlineOffset > 0.f)
+		{
+			static constexpr float outline_offsets[8][2] =
+			{
+				{ -1.f, 0.f }, { 1.f, 0.f }, { 0.f, -1.f }, { 0.f, 1.f },
+				{ -1.f, -1.f }, { -1.f, 1.f }, { 1.f, -1.f }, { 1.f, 1.f }
+			};
+
+			String outline = rs;
+			outline.c = dwOutlineColor;
+			outline.gradient = false;
+
+			for (const auto& [dx, dy] : outline_offsets)
+			{
+				outline.x = rs.x + dx * fOutlineOffset;
+				outline.y = rs.y + dy * fOutlineOffset;
+				strings.push_back(outline);
+			}
+		}
+
 		strings.push_back(rs);
 	}
 
