@@ -347,7 +347,9 @@ void CCreature::net_update::lerp(CCreature::net_update& A, CCreature::net_update
 void CCreature::update_sound_player()
 {
 	PROF_EVENT("update_sound_player");
-	sound().update(client_update_fdelta());
+	if (!m_sound_player)
+		return;
+	m_sound_player->update(client_update_fdelta());
 }
 
 void CCreature::UpdateCL	()
@@ -368,7 +370,7 @@ void CCreature::UpdateCL	()
 				animation_movement()->DBG_verify_position_not_chaged();
 #endif
 
-	Device.seqParallel.push_back	(xr_make_delegate(this,&CCreature::update_sound_player));
+	update_sound_player			();
 
 	if (NET.empty())
 	{
@@ -707,8 +709,6 @@ void CCreature::net_Destroy()
 	CScriptEntity::net_Destroy	();
 	sound().unload				();
 	movement().net_Destroy		();
-	
-	Device.remove_from_seq_parallel(xr_make_delegate(this, &CCreature::update_sound_player));
 	
 #ifdef DEBUG
 	if (Level().m_level_debug != nullptr)
