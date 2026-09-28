@@ -26,6 +26,7 @@ CALifeObjectRegistry::~CALifeObjectRegistry	()
 		xr_delete					((*I).second);
 
 	m_objects_as_vec.clear();
+	m_objectsNameCache.clear();
 }
 
 void CALifeObjectRegistry::save				(IWriter &memory_stream, CSE_ALifeDynamicObject *object, u32 &object_count)
@@ -201,6 +202,7 @@ void CALifeObjectRegistry::load(IReader& file_stream)
 	R_ASSERT2(file_stream.find_chunk(OBJECT_CHUNK_DATA), "Can't find chunk OBJECT_CHUNK_DATA!");
 
 	m_objects.clear();
+	m_objectsNameCache.clear();
 
 	u32 count = file_stream.r_u32();
 	for (u32 i = 0; i < count; ++i)
