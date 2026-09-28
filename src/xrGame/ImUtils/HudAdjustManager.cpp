@@ -1152,9 +1152,9 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 
 			ImGui::TableNextColumn();
 
-			HudAdjustDragAngleRad("X##HUDR", &rotation.x, _delta_rot, PI_MUL_2, "%.6f");
-			HudAdjustDragAngleRad("Y##HUDR", &rotation.y, _delta_rot, PI_MUL_2, "%.6f");
-			HudAdjustDragAngleRad("Z##HUDR", &rotation.z, _delta_rot, PI_MUL_2, "%.6f");
+			HudAdjustDragAngleDeg("X##HUDR", &rotation.x, _delta_rot, 360.f, "%.6f");
+			HudAdjustDragAngleDeg("Y##HUDR", &rotation.y, _delta_rot, 360.f, "%.6f");
+			HudAdjustDragAngleDeg("Z##HUDR", &rotation.z, _delta_rot, 360.f, "%.6f");
 
 			ImGui::TableNextColumn();
 
