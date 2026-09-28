@@ -60,17 +60,17 @@ static void HudAdjustDrawSaveButton()
 		if (!p_item->m_model_combined)
 		{
 			xr_strconcat(val_name, "hands_position", _prefix);
-			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_attach_real[0]);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisPos]);
 			xr_strconcat(val_name, "hands_orientation", _prefix);
-			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_attach_real[1]);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisRot]);
 
-			file.w_fvector3(sect, "item_position", p_item->m_measures.m_item_attach[0]);
-			file.w_fvector3(sect, "item_orientation", p_item->m_measures.m_item_attach[1]);
+			file.w_fvector3(sect, "item_position", p_item->m_measures.m_item_attach[EHudOffsetAxis::eAxisPos]);
+			file.w_fvector3(sect, "item_orientation", p_item->m_measures.m_item_attach[EHudOffsetAxis::eAxisRot]);
 		}
 		else
 		{
-			file.w_fvector3(sect, "position", p_item->m_measures.m_item_attach[0]);
-			file.w_fvector3(sect, "orientation", p_item->m_measures.m_item_attach[1]);
+			file.w_fvector3(sect, "position", p_item->m_measures.m_item_attach[EHudOffsetAxis::eAxisPos]);
+			file.w_fvector3(sect, "orientation", p_item->m_measures.m_item_attach[EHudOffsetAxis::eAxisRot]);
 		}
 
 		if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_shell_point))
@@ -91,48 +91,51 @@ static void HudAdjustDrawSaveButton()
 		if (!p_item->m_model_combined)
 		{
 			xr_strconcat(val_name, "aim_hud_offset_pos", _prefix);
-			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAim]);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAim]);
 			xr_strconcat(val_name, "aim_hud_offset_rot", _prefix);
-			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAim]);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim]);
 
 			xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
-			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAimGL]);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimGL]);
 			xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
-			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAimGL]);
+			file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL]);
 		}
 		else
 		{
-			file.w_fvector3(sect, "zoom_offset", p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAim]);
-			file.w_float(sect, "zoom_rotate_x", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAim].x);
-			file.w_float(sect, "zoom_rotate_y", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAim].y);
-			file.w_float(sect, "zoom_rotate_z", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAim].z);
+			file.w_fvector3(sect, "zoom_offset", p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAim]);
+			file.w_float(sect, "zoom_rotate_x", p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].x);
+			file.w_float(sect, "zoom_rotate_y", p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].y);
+			file.w_float(sect, "zoom_rotate_z", p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].z);
 
-			file.w_fvector3(sect, "grenade_zoom_offset", p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAimGL]);
-			file.w_float(sect, "grenade_zoom_rotate_x", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAimGL].x);
-			file.w_float(sect, "grenade_zoom_rotate_y", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAimGL].y);
-			file.w_float(sect, "grenade_zoom_rotate_z", p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAimGL].z);
+			file.w_fvector3(sect, "grenade_zoom_offset", p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimGL]);
+			file.w_float(sect, "grenade_zoom_rotate_x", p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].x);
+			file.w_float(sect, "grenade_zoom_rotate_y", p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].y);
+			file.w_float(sect, "grenade_zoom_rotate_z", p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].z);
 		}
 
 		xr_strconcat(val_name, "alter_aim_hud_offset_pos", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eAimAlt]);
+		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimAlt]);
 		xr_strconcat(val_name, "alter_aim_hud_offset_rot", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eAimAlt]);
+		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimAlt]);
 	
 		xr_strconcat(val_name, "safemode_hud_offset_pos", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eSafemode]);
+		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eSafemode]);
 		xr_strconcat(val_name, "safemode_hud_offset_rot", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eSafemode]);
+		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eSafemode]);
 	
 		xr_strconcat(val_name, "collision_hud_offset_pos", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eCollision]);
+		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eCollision]);
 		xr_strconcat(val_name, "collision_hud_offset_rot", _prefix);
-		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eCollision]);
+		file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eCollision]);
 
 		file.w_fvector3(sect, "collision_box_pos", p_item->m_measures.m_collision_params.obb_pos);
 		file.w_fvector3(sect, "collision_box_scale", p_item->m_measures.m_collision_params.obb_scale);
 		
 		file.w_float(sect, "collision_stifness", p_item->m_measures.m_collision_params.stifness);
 		file.w_float(sect, "collision_damping", p_item->m_measures.m_collision_params.damping);
+
+		if (p_item->m_aim_bone_id < p_item->m_model->LL_BoneCount())
+			file.w_string(sect, "aim_bone_name", p_item->m_model->LL_BoneName_dbg(p_item->m_aim_bone_id));
 	};
 	
 	FS.update_path(fn, "$app_data_root$", "hud_adjust\\saved_attachments.ltx");
@@ -157,6 +160,8 @@ static void HudAdjustDrawSaveButton()
 			if (pair.second.hud_place.m_model)
 			{
 				file.w_string(addon_modifers_sect.c_str(), "attachment_hud_visual", xr_string(xr_string(pair.second.hud_place.m_model->getDebugName().c_str()) + xr_string(".ogf")).c_str());
+				if (pair.second.hud_place.aim_bone_id < pair.second.hud_place.m_model->LL_BoneCount())
+					file.w_string(addon_modifers_sect.c_str(), "aim_bone_name", p_item->m_model->LL_BoneName_dbg(pair.second.hud_place.aim_bone_id));
 			}
 
 			file.w_fvector3(addon_modifers_sect.c_str(), "attachment_position", pair.second.place.position);
@@ -173,13 +178,13 @@ static void HudAdjustDrawSaveButton()
 	if (p_hud_item_first)
 	{
 		writeParams(p_hud_item_first, file);
-		writeAttParams(p_hud_item_first, file);
+		writeAttParams(p_hud_item_first, file_att);
 	}
 
 	if (p_hud_item_second)
 	{
 		writeParams(p_hud_item_second, file);
-		writeAttParams(p_hud_item_second, file);
+		writeAttParams(p_hud_item_second, file_att);
 	}
 
 	{
@@ -512,7 +517,25 @@ static void HudAdjustDrawHandsSettings()
 		}
 	}
 }
+ICF void HudAdjustDragAngleDeg(const char* label, float* v, float v_speed = 1.0f, float v_limit = 360.f, const char* format = "%.0f")
+{
+	float max_limit = v_limit * 10.f;
+	ImGui::DragFloat(label, v, v_speed, -max_limit, max_limit, format);
 
+	*v -= v_limit * floorf(*v / v_limit);
+	if (*v >= v_limit)
+	{
+		*v = 0.0f; // на случай погрешности, чтобы не получить ровно 360
+	}
+}
+ICF void HudAdjustDragAngleRad(const char* label, float* v, float v_speed = 1.0f, float v_limit = PI_MUL_2, const char* format = "%.0f")
+{
+	float max_limit = v_limit * 10.f;
+	ImGui::DragFloat(label, v, v_speed, -max_limit, max_limit, format);
+
+	// нормализация в [-v_limit/2, +v_limit/2)
+	*v -= v_limit * floorf(*v / v_limit + 0.5f);
+}
 void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bool hud_mode)
 {
 	if (ImGui::CollapsingHeader("Attachments"))
@@ -661,15 +684,9 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 							item->m_attachments.emplace(
 								sect.Name.c_str(), new_attach
 							);
-							if (CWeapon* wpn = item->cast_weapon())
-							{
-								if (new_attach.attachment_type == eTypeScope)
-								{
-									wpn->m_scopes.push_back(sect_name);
-								}
-							}
-							show_add_attach_window[mode] = false;
-							select_type_step[mode] = true;
+							item->on_load_attachment(sect.Name.c_str(), new_attach);
+							//show_add_attach_window[mode] = false;
+							//select_type_step[mode] = true;
 						}
 					}
 					ImGui::EndChild();
@@ -707,7 +724,7 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 						ImGui::EndTable();
 					}
 
-					ImGui::SeparatorText(xr_string("Direction##" + attach_sect_name).c_str());
+					ImGui::SeparatorText(xr_string("Rotation##" + attach_sect_name).c_str());
 
 					Fvector& direction = hud_mode ? pair.second.hud_place.direction : pair.second.place.direction;
 					if (ImGui::BeginTable(xr_string("Data##D" + attach_sect_name).c_str(), 1))
@@ -715,9 +732,9 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 						ImGui::TableNextRow();
 						ImGui::TableNextColumn();
 
-						ImGui::DragFloat(xr_string("X##D" + attach_sect_name).c_str(), &direction.x, 5, 0, 360, "%.0f");
-						ImGui::DragFloat(xr_string("Y##D" + attach_sect_name).c_str(), &direction.y, 5, 0, 360, "%.0f");
-						ImGui::DragFloat(xr_string("Z##D" + attach_sect_name).c_str(), &direction.z, 5, 0, 360, "%.0f");
+						HudAdjustDragAngleDeg(xr_string("X##D" + attach_sect_name).c_str(), &direction.x, _delta_rot, 360.f);
+						HudAdjustDragAngleDeg(xr_string("Y##D" + attach_sect_name).c_str(), &direction.y, _delta_rot, 360.f);
+						HudAdjustDragAngleDeg(xr_string("Z##D" + attach_sect_name).c_str(), &direction.z, _delta_rot, 360.f);
 
 						ImGui::EndTable();
 					}
@@ -779,10 +796,23 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 						}
 					}
 
-					ImGui::SeparatorText(xr_string("Select Bone##" + attach_sect_name).c_str());
+					ImGui::SeparatorText(xr_string("Select Parent Bone##" + attach_sect_name).c_str());
 					int& selectable_bone_id = hud_mode ? pair.second.hud_place.parent_bone_id : pair.second.place.parent_bone_id;
-					ImGui::Combo(xr_string("##SelectBone" + attach_sect_name).c_str(), &selectable_bone_id, &bones_names[mode][0], bones_names[mode].size());
+					ImGui::Combo(xr_string("##SelectParentBone" + attach_sect_name).c_str(), &selectable_bone_id, &bones_names[mode][0], bones_names[mode].size());
 
+					if (hud_mode)
+					{
+						static xr_vector<const char*> aim_bones_names;
+						aim_bones_names.resize(pair.second.hud_place.m_model->LL_BoneCount()+1);
+						for (auto& pair : *pair.second.hud_place.m_model->LL_Bones())
+							aim_bones_names[pair.second] = *pair.first;
+
+						aim_bones_names[pair.second.hud_place.m_model->LL_BoneCount()] = "None";
+						ImGui::SeparatorText(xr_string("Select Aim Bone##" + attach_sect_name).c_str());
+						ImGui::Combo(xr_string("##SelectAimBone" + attach_sect_name).c_str(), &pair.second.hud_place.aim_bone_id, &aim_bones_names[0], aim_bones_names.size());
+					}
+					
+					ImGui::SeparatorText(xr_string(xr_string(pair.second.hud_place.m_model->getDebugName().c_str()) + "##" + attach_sect_name).c_str());
 					if (ImGui::Button(xr_string("Change model##" + attach_sect_name).c_str()))
 					{
 						pending_model_sect[mode] = pair.first;
@@ -1006,7 +1036,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 	{
 		ImGui::SeparatorText("Position##HUD");
 
-		Fvector& position = offset_type ? item->m_measures.m_hands_positions.hands_offsets[0][offset_type] : item->m_measures.m_hands_attach_real[0];
+		Fvector& position = offset_type ? item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][offset_type] : item->m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisPos];
 		string32 btnName;
 		xr_sprintf(btnName, "Reset##HPosition_%d", (u8)offset_type);
 
@@ -1071,7 +1101,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 
 		ImGui::SeparatorText("Rotation##HUD");
 
-		Fvector& rotation = offset_type ? item->m_measures.m_hands_positions.hands_offsets[1][offset_type] : item->m_measures.m_hands_attach_real[1];
+		Fvector& rotation = offset_type ? item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][offset_type] : item->m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisRot];
 		xr_sprintf(btnName, "Reset##HRotation_%d", (u8)offset_type);
 		if (ImGui::Button(btnName))
 		{
@@ -1140,9 +1170,9 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 
 			ImGui::TableNextColumn();
 
-			ImGui::DragFloat("X##HUDR", &rotation.x, _delta_rot, -360.0f, 360.0f, "%.6f");
-			ImGui::DragFloat("Y##HUDR", &rotation.y, _delta_rot, -360.0f, 360.0f, "%.6f");
-			ImGui::DragFloat("Z##HUDR", &rotation.z, _delta_rot, -360.0f, 360.0f, "%.6f");
+			HudAdjustDragAngleDeg("X##HUDR", &rotation.x, _delta_rot, 360.f, "%.6f");
+			HudAdjustDragAngleDeg("Y##HUDR", &rotation.y, _delta_rot, 360.f, "%.6f");
+			HudAdjustDragAngleDeg("Z##HUDR", &rotation.z, _delta_rot, 360.f, "%.6f");
 
 			ImGui::TableNextColumn();
 
@@ -1239,7 +1269,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 	if (ImGui::CollapsingHeader("Item Offset"))
 	{
 		ImGui::SeparatorText("Position##Item");
-		Fvector& position = item->m_measures.m_item_attach[0];
+		Fvector& position = item->m_measures.m_item_attach[EHudOffsetAxis::eAxisPos];
 
 		string64 _prefix = {};
 		xr_sprintf(_prefix, "%s", UI().is_widescreen() ? "_16x9" : "");
@@ -1264,7 +1294,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		}
 
 		ImGui::SeparatorText("Rotation##Item");
-		Fvector& rotation = item->m_measures.m_item_attach[1];
+		Fvector& rotation = item->m_measures.m_item_attach[EHudOffsetAxis::eAxisRot];
 		if (ImGui::Button("Reset##IRotation"))
 		{
 			rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "item_orientation", pSettings->r_fvector3(item->m_sect_name, "orientation"));
@@ -1276,9 +1306,9 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 
 			ImGui::TableNextColumn();
 
-			ImGui::DragFloat("X##HUDR", &rotation.x, _delta_rot, -360.0f, 360.0f, "%.6f");
-			ImGui::DragFloat("Y##HUDR", &rotation.y, _delta_rot, -360.0f, 360.0f, "%.6f");
-			ImGui::DragFloat("Z##HUDR", &rotation.z, _delta_rot, -360.0f, 360.0f, "%.6f");
+			HudAdjustDragAngleDeg("X##HUDR", &rotation.x, _delta_rot, 360.f, "%.6f");
+			HudAdjustDragAngleDeg("Y##HUDR", &rotation.y, _delta_rot, 360.f, "%.6f");
+			HudAdjustDragAngleDeg("Z##HUDR", &rotation.z, _delta_rot, 360.f, "%.6f");
 
 			ImGui::TableNextColumn();
 
@@ -1361,13 +1391,27 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 	
 				ImGui::TableNextColumn();
 	
-				ImGui::DragFloat("X##TLAngle", &angle.x, _delta_rot, -360.0f, 360.0f, "%.6f");
-				ImGui::DragFloat("Y##TLAngle", &angle.y, _delta_rot, -360.0f, 360.0f, "%.6f");
+				HudAdjustDragAngleRad("X##TLAngle", &angle.x, _delta_rot, PI_MUL_2, "%.6f");
+				HudAdjustDragAngleRad("Y##TLAngle", &angle.y, _delta_rot, PI_MUL_2, "%.6f");
 				ImGui::TableNextColumn();
 	
 				ImGui::EndTable();
 			}
 		}
+	}
+
+	if (item->m_parent_hud_item->cast_weapon())
+	{
+		static xr_vector<const char*> aim_bones_names;
+		aim_bones_names.resize(item->m_model->LL_BoneCount()+1);
+		for (auto& pair : *item->m_model->LL_Bones())
+		{
+			aim_bones_names[pair.second] = *pair.first;
+		}
+		aim_bones_names[item->m_model->LL_BoneCount()] = "None";
+
+		ImGui::SeparatorText("Select Aim Bone##");
+		ImGui::Combo("##SelectAimBone", &item->m_aim_bone_id, &aim_bones_names[0], aim_bones_names.size());
 	}
 }
 
