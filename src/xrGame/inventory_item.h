@@ -158,7 +158,11 @@ public:
 
 	virtual bool Attach(PIItem pIItem);
 	virtual bool Detach(PIItem pIItem);
-	virtual bool CanAttach(PIItem pIItem) { return get_attachment(pIItem->m_section_id); }
+	virtual bool CanAttach(PIItem pIItem)
+	{
+		auto attachment = get_attachment(pIItem->m_section_id);
+		return attachment && !attachment->state.test(eAStatePermanent);
+	}
 	virtual bool CanDetach(PIItem pIItem) { return GetChildByID(pIItem->object().ID()); }
 
 	virtual EHandDependence HandDependence()	const { return hd1Hand; };
@@ -225,7 +229,7 @@ public:
 
 	CGameObject* GetChildByID(u32 child_id) const;
 
-	CGameObject* GetWeaponattachment(shared_str child_sect_name, EattachmentType type = eTypeNone) const;
+	const item_attachment* GetRealattachment(shared_str child_sect_name, EattachmentType type = eTypeNone) const;
 
 public:
 	bool m_draw_cost = true;
