@@ -33,6 +33,20 @@
 #include "OverlayAPI/DLSSWrapper.h"
 #include "OverlayAPI/XESSWrapper.h"
 
+#ifdef _WIN32
+    #include <windows.h>
+    #include <VersionHelpers.h>
+#endif
+
+static bool CanRunFeature() {
+#ifdef _WIN32
+    return IsWindows8OrGreater();  // false on Win7, true on Win8+
+#else
+    return true;  // Linux — always run
+#endif
+}
+
+
 static RHIInputElementDesc ShaderDeclXYZ[] =
 {
 	{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT,		0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
@@ -570,7 +584,12 @@ CRenderTarget::CRenderTarget()
 	rt_planar_depth.create(r2_RT_planar_depth, s_dwWidth, s_dwHeight, ERHI_FORMAT::D16_UNORM);
 	rt_planar_color.create(r2_RT_planar_color, s_dwWidth, s_dwHeight, ERHI_FORMAT::R11G11B10_FLOAT);
 
-	init_fsr();
+    
+    if (CanRunFeature()) 
+    {
+        init_fsr();
+    } 
+
 	init_dlss();
 	init_xess();
 
@@ -1146,8 +1165,12 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_bloom_upsample);
 	xr_delete(b_new_adaptation);
 	xr_delete(b_sslr);
-
-	g_Fsr3Wrapper.Destroy();
+    
+    if (CanRunFeature()) 
+    {
+        g_Fsr3Wrapper.Destroy();
+    } 
+	
 #if 0
 	g_XESSWrapper.Destroy();
 #endif

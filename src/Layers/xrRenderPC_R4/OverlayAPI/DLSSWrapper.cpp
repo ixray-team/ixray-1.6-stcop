@@ -2,10 +2,24 @@
 
 #include "DLSSWrapper.h"
 
+#ifdef _WIN32
+    #include <windows.h>
+    #include <VersionHelpers.h>
+#endif
+
 DLSSWrapper g_DLSSWrapper;
 
 extern ENGINE_API u32 ps_render_scale_preset;
 extern ENGINE_API float ps_render_scale;
+
+
+static bool CanRunFeature() {
+#ifdef _WIN32
+    return IsWindows8OrGreater();  // false on Win7, true on Win8+
+#else
+    return true;  // Linux — always run
+#endif
+}
 
 u32 DLSSWrapper::GetOptimalPresetForScale(float scale)
 {
@@ -38,7 +52,11 @@ u32 DLSSWrapper::GetOptimalPresetForScale(float scale)
 
 void DLSSWrapper::Create()
 {
-	Destroy();
+    
+    if (CanRunFeature()) 
+    {
+        
+        Destroy();
 
 	if (RFeatureLevel < D3D_FEATURE_LEVEL_11_1)
 	{
@@ -86,63 +104,74 @@ void DLSSWrapper::Create()
 	}
 
 	Created = true;
-#endif
+    #endif
+        
+    }    
 }
 
 bool DLSSWrapper::GetRenderScale(float& RenderScale)
 {
-	if (!Created || !NgxParameters)
-	{
-		Msg("! GetRenderScale DLSSWrapper not valid. Fallback!");
-		return false;
-	}
+    if (CanRunFeature()) 
+    {
+        if (!Created || !NgxParameters)
+        {
+            Msg("! GetRenderScale DLSSWrapper not valid. Fallback!");
+            return false;
+        }
 
-	u32 PresetID = GetOptimalPresetForScale(ps_render_scale);
+        u32 PresetID = GetOptimalPresetForScale(ps_render_scale);
 
-	NVSDK_NGX_PerfQuality_Value PerfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
+        NVSDK_NGX_PerfQuality_Value PerfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
 
-	switch (PresetID)
-	{
-		case 4:
-		{
-			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_UltraPerformance;
-			break;
-		}
-		case 3:
-		{
-			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxPerf;
-			break;
-		}
-		case 2:
-		{
-			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_Balanced;
-			break;
-		}
-		case 1:
-		{
-			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxQuality;
-			break;
-		}
-		default:
-		{
-			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
-			break;
-		}
-	}
+        switch (PresetID)
+        {
+            case 4:
+            {
+                PerfQualityValue = NVSDK_NGX_PerfQuality_Value_UltraPerformance;
+                break;
+            }
+            case 3:
+            {
+                PerfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxPerf;
+                break;
+            }
+            case 2:
+            {
+                PerfQualityValue = NVSDK_NGX_PerfQuality_Value_Balanced;
+                break;
+            }
+            case 1:
+            {
+                PerfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxQuality;
+                break;
+            }
+            default:
+            {
+                PerfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
+                break;
+            }
+        }
 
-	u32 RenderW = 0, RenderH = 0, MaxW = 0, MinW = 0, MaxH = 0, MinH = 0; float Sharp = 0;
-	NVSDK_NGX_Result Result = NGX_DLSS_GET_OPTIMAL_SETTINGS(NgxParameters, Device.TargetWidth, Device.TargetHeight, PerfQualityValue, &RenderW, &RenderH, &MaxW, &MaxH, &MinW, &MinH, &Sharp);
+        u32 RenderW = 0, RenderH = 0, MaxW = 0, MinW = 0, MaxH = 0, MinH = 0; float Sharp = 0;
+        NVSDK_NGX_Result Result = NGX_DLSS_GET_OPTIMAL_SETTINGS(NgxParameters, Device.TargetWidth, Device.TargetHeight, PerfQualityValue, &RenderW, &RenderH, &MaxW, &MaxH, &MinW, &MinH, &Sharp);
 
-	if (Result != NVSDK_NGX_Result_Success)
-	{
-		Msg("! NGX_DLSS_GET_OPTIMAL_SETTINGS not valid. Fallback!");
-		return false;
-	}
+        if (Result != NVSDK_NGX_Result_Success)
+        {
+            Msg("! NGX_DLSS_GET_OPTIMAL_SETTINGS not valid. Fallback!");
+            return false;
+        }
 
-	Msg("* DLSS Target - %dx%d, Min - %dx%d, Max - %dx%d, Sharp - %f", RenderW, RenderH, MaxW, MaxH, MinW, MinH, Sharp);
-	RenderScale = float(RenderH) / float(Device.TargetHeight);
+        Msg("* DLSS Target - %dx%d, Min - %dx%d, Max - %dx%d, Sharp - %f", RenderW, RenderH, MaxW, MaxH, MinW, MinH, Sharp);
+        RenderScale = float(RenderH) / float(Device.TargetHeight);
 
-	return true;
+        return true;
+        
+        
+     } 
+    else 
+    {
+        return false;
+    }
 }
 
 void DLSSWrapper::Resize(const ContextParameters& Parameters)
@@ -252,46 +281,55 @@ void DLSSWrapper::Destroy()
 
 bool DLSSWrapper::Draw(const DrawParameters& params)
 {
-	if(!Created)
-	{
-		Msg("! DLSSWrapper not created. Need use FSR");
-		return false;
-	}
+    
+    
+    if (CanRunFeature()) 
+    {
+        if(!Created)
+        {
+            Msg("! DLSSWrapper not created. Need use FSR");
+            return false;
+        }
 
-#ifdef IXR_X64
-	NVSDK_NGX_D3D11_DLSS_Eval_Params DLSSEvalParams = {};
+    #ifdef IXR_X64
+        NVSDK_NGX_D3D11_DLSS_Eval_Params DLSSEvalParams = {};
 
-	DLSSEvalParams.Feature.pInColor = params.unresolvedColorResource;
-	DLSSEvalParams.Feature.pInOutput = params.resolvedColorResource;
-	DLSSEvalParams.Feature.InSharpness = params.sharpness;
+        DLSSEvalParams.Feature.pInColor = params.unresolvedColorResource;
+        DLSSEvalParams.Feature.pInOutput = params.resolvedColorResource;
+        DLSSEvalParams.Feature.InSharpness = params.sharpness;
 
-	DLSSEvalParams.pInDepth = params.depthbufferResource;
-	DLSSEvalParams.pInMotionVectors = params.motionvectorResource;
+        DLSSEvalParams.pInDepth = params.depthbufferResource;
+        DLSSEvalParams.pInMotionVectors = params.motionvectorResource;
 
-	DLSSEvalParams.InRenderSubrectDimensions.Width = params.renderWidth;
-	DLSSEvalParams.InRenderSubrectDimensions.Height = params.renderHeight;
+        DLSSEvalParams.InRenderSubrectDimensions.Width = params.renderWidth;
+        DLSSEvalParams.InRenderSubrectDimensions.Height = params.renderHeight;
 
-	DLSSEvalParams.InJitterOffsetX = params.cameraJitterX;
-	DLSSEvalParams.InJitterOffsetY = params.cameraJitterY;
+        DLSSEvalParams.InJitterOffsetX = params.cameraJitterX;
+        DLSSEvalParams.InJitterOffsetY = params.cameraJitterY;
 
-	DLSSEvalParams.InReset = params.cameraReset;
+        DLSSEvalParams.InReset = params.cameraReset;
 
-	DLSSEvalParams.InMVScaleX = -(float)params.renderWidth * 0.5f;
-	DLSSEvalParams.InMVScaleY = (float)params.renderHeight * 0.5f;
+        DLSSEvalParams.InMVScaleX = -(float)params.renderWidth * 0.5f;
+        DLSSEvalParams.InMVScaleY = (float)params.renderHeight * 0.5f;
 
-	DLSSEvalParams.pInTransparencyMask = params.transparencyAndCompositionResource;
-	DLSSEvalParams.InFrameTimeDeltaInMsec = params.frameTimeDelta;
-	
-	NVSDK_NGX_Result Result = NGX_D3D11_EVALUATE_DLSS_EXT(RContext, Handle, NgxParameters, &DLSSEvalParams);
+        DLSSEvalParams.pInTransparencyMask = params.transparencyAndCompositionResource;
+        DLSSEvalParams.InFrameTimeDeltaInMsec = params.frameTimeDelta;
+        
+        NVSDK_NGX_Result Result = NGX_D3D11_EVALUATE_DLSS_EXT(RContext, Handle, NgxParameters, &DLSSEvalParams);
 
-	if(Result != NVSDK_NGX_Result_Success)
-	{
-		Msg("! NGX_D3D11_EVALUATE_DLSS_EXT not valid. Need use FSR");
-		return false;
-	}
-#endif
+        if(Result != NVSDK_NGX_Result_Success)
+        {
+            Msg("! NGX_D3D11_EVALUATE_DLSS_EXT not valid. Need use FSR");
+            return false;
+        }
+    #endif
 
-	return true;
+        return true;
+     } 
+    else 
+    {
+       return false;
+    }
 }
 
 DLSSWrapper::~DLSSWrapper()
