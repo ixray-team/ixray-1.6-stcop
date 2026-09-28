@@ -50,6 +50,7 @@
 #include "DemoInfo.h"
 #include "CustomDetector.h"
 #include "../xrSound/New/SoundMixerInternal.h"
+#include "../xrEngine/xr_ioc_cmd.h"
 
 #include "../xrPhysics/IPHWorld.h"
 #include "../xrPhysics/console_vars.h"
@@ -660,6 +661,49 @@ void CLevel::OnFrame()
 	}
 	// Inherited update
 	inherited::OnFrame();
+
+	// Grass trample: stamp marks for dynamic objects near the actor
+	if (!g_dedicated_server && ::Render->detail_trample_enabled() && g_pGameLevel && g_pGameLevel->CurrentViewEntity())
+	{
+		CObject* actor = g_pGameLevel->CurrentViewEntity();
+		const Fvector& apos = actor->Position();
+
+		float actorR = 0.5f;
+		if (actor->Visual())
+		{
+			const Fbox& bb = actor->BoundingBox();
+			float hx = (bb.max.x - bb.min.x) * 0.5f;
+			float hz = (bb.max.z - bb.min.z) * 0.5f;
+			actorR = std::max(hx, hz);
+		}
+		::Render->detail_trample_mark(apos.x, apos.y, apos.z, actorR, 1.0f, true);
+
+		static xr_vector<ISpatialShared> trample_q;
+		trample_q.clear();
+		g_SpatialSpace->q_sphere(trample_q, 0,
+			ESPATIAL_TYPE::COLLIDEABLE | ESPATIAL_TYPE::ACTOR | ESPATIAL_TYPE::AI | ESPATIAL_TYPE::ITEM | ESPATIAL_TYPE::PHYSIC_SHELL_HOLDER,
+			apos, ::Render->detail_trample_draw_radius());
+
+		for (ISpatialShared& SS : trample_q)
+		{
+			ISpatial* S = SS.get();
+			if (!S) continue;
+			CObject* O = S->dcast_CObject();
+			if (!O || O == actor || O->getDestroy()) continue;
+
+			const Fvector& p = O->Position();
+			float r = 0.5f;
+			if (O->Visual())
+			{
+				const Fbox& bb = O->BoundingBox();
+				float hx = (bb.max.x - bb.min.x) * 0.5f;
+				float hz = (bb.max.z - bb.min.z) * 0.5f;
+				r = std::max(hx, hz);
+			}
+
+			::Render->detail_trample_mark(p.x, p.y, p.z, r, 1.0f);
+		}
+	}
 
 	// Draw client/server stats
 	if (!g_dedicated_server && psDeviceFlags.test(rsStatistic))
