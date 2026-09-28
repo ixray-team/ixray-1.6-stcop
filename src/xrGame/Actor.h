@@ -455,6 +455,7 @@ public:
 	MotionID				m_current_legs;
 	MotionID				m_current_torso;
 	MotionID				m_current_head;
+	bool					m_bAnimOverride = false;
 
 	// callback на анимации модели актера
 	void					SetCallbacks		();

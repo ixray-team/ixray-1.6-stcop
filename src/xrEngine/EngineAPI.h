@@ -47,6 +47,7 @@ enum class EditorUI : u8
 	Game_HudAdjustManager,
 	Game_3rdAdjust,
 	Game_DemoRecord,
+	Game_ActorAnimations,
 	Tools_RenderDebug_SVGStorageViewer,
 	Tools_OMFEditor,
 	Tools_InputManager,

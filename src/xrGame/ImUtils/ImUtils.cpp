@@ -6,6 +6,7 @@
 clsid_manager* g_pClsidManager;
 CImGuiGameSearchManager imgui_search_manager;
 CHudAdjustManager imgui_hud_adjust_manager;
+CActorAnimationManager imgui_actor_animation_manager;
 
 int ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::string_view message)
 {
@@ -85,6 +86,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("SVGStorageViewer", CImGuiManager::ERenderPriority::eMedium, RenderToolsRenderDebugSVGStorageViewerWindow);
 		CImGuiManager::Instance().Subscribe("Hud Adjust", CImGuiManager::ERenderPriority::eMedium, RenderHUDAdjustManager);
 		CImGuiManager::Instance().Subscribe("3rd Person Adjust", CImGuiManager::ERenderPriority::eMedium, Render3rdAdjust);
+		CImGuiManager::Instance().Subscribe("Actor Animations", CImGuiManager::ERenderPriority::eMedium, RenderActorAnimationManager);
 		CImGuiManager::Instance().Subscribe("Demo Record", CImGuiManager::ERenderPriority::eMedium, RenderDemoRecordEditorWindow);
 
 		InitImGuiCLSIDInGame();
