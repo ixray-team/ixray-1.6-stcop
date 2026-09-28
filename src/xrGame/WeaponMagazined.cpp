@@ -1857,10 +1857,10 @@ void CWeaponMagazined::OnShot()
 		{
 			StartShellParticle(ParentLinearVelocity());
 		}
-		
-		StartFlameParticle();
-		StartSmokeParticle(ParentLinearVelocity());
 	}
+
+	StartFlameParticle();
+	StartSmokeParticle(ParentLinearVelocity());
 
 	if (H_Parent())
 	{
