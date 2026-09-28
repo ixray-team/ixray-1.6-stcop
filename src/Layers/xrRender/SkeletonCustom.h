@@ -291,7 +291,7 @@ public:
 	virtual bool					LL_GetSimpleBoneVisible	(u16 bone_id);
 
 	virtual void					BonesHistory_Invalidate() override;
-
+	
 	// Main functionality
 	virtual void					CalculateBones				(bool bForceExact	=	false);		// Recalculate skeleton
 	void							CalculateBones_Invalidate	();
@@ -300,6 +300,18 @@ public:
 	//	Callback: data manipulation
 	virtual void					SetUpdateCallback(UpdateCallback pCallback) {Update_Callback = pCallback;}
 	virtual void					SetUpdateCallbackParam(void* pCallbackParam) {Update_Callback_Param = pCallbackParam;}
+
+	virtual void					LL_SetShader(LPCSTR sh_name);
+	virtual void					LL_RestoreShader();
+	virtual void					LL_SetShader(u16 bone_id, LPCSTR sh_name);
+	virtual void					LL_RestoreShader(u16 bone_id);
+
+	virtual void					LL_SetTexture(LPCSTR tex_name);
+	virtual void					LL_RestoreTexture();
+	virtual void					LL_SetTexture(u16 bone_id, LPCSTR tex_name);
+	virtual void					LL_RestoreTexture(u16 bone_id);
+
+	virtual xr_vector<IRenderVisual*>& LL_GetChilds();
 
 	virtual UpdateCallback			GetUpdateCallback() { return Update_Callback;}
 	virtual void*					GetUpdateCallbackParam() { return Update_Callback_Param;}
