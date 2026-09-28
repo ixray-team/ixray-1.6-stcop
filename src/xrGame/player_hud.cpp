@@ -1608,6 +1608,18 @@ void player_hud::load(const shared_str& player_hud_sect)
 		m_legs_model = PKinematics(::Render->model_Create(model_name));
 	}
 
+	if (pSettings->line_exist(player_hud_sect, "visual_watches"))
+	{
+		auto model_name = pSettings->r_string(player_hud_sect, "visual_watches");
+		m_watches_model = PKinematics(::Render->model_Create(model_name));
+
+		pSettings->read_if_exists<Fvector>(m_watches_pos, player_hud_sect, "watches_pos");
+		pSettings->read_if_exists<Fvector>(m_watches_rot, player_hud_sect, "watches_rot");
+		pSettings->read_if_exists<float>(m_watches_scale, player_hud_sect, "watches_scale");
+
+		m_watches_bone = m_model->dcast_PKinematics()->LL_BoneID(pSettings->r_string(player_hud_sect, "watches_bone"));
+	}
+
 	if (m_model)
 	{
 		u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
@@ -1659,6 +1671,12 @@ void player_hud::load(const shared_str& player_hud_sect)
 		float m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
 		Actor()->m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, player_hud_sect, "legs_shift_delta", m_fLegs_shift);
 	}
+
+	if (m_watches_model)
+	{
+		m_watches_model->CalculateBones_Invalidate();
+		m_watches_model->CalculateBones(true);
+	}
 }
 
 bool player_hud::render_item_ui_query()
@@ -1694,6 +1712,12 @@ void player_hud::render_hud()
 		{
 			::Render->set_Transform(&m_transform);
 			::Render->add_Visual(m_model->dcast_RenderVisual(), true);
+		}
+
+		if (m_watches_model)
+		{
+			::Render->set_Transform(&m_watches_transform);
+			::Render->add_Visual(m_watches_model->dcast_RenderVisual(), true);
 		}
 	}
 
@@ -1994,6 +2018,23 @@ void player_hud::update(const Fmatrix& cam_trans)
 		m_model->UpdateTracks();
 		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 		m_model->dcast_PKinematics()->CalculateBones(true);
+	}
+
+	{
+		if (m_watches_bone != BI_NONE)
+		{
+			Fmatrix AttachBone = m_model->dcast_PKinematics()->LL_GetTransform(m_watches_bone);
+			m_watches_transform.mul(m_transform, AttachBone);
+			m_watches_attach_offset.setHPB(VPUSH(Fvector(m_watches_rot).mul(PI / 180.0f)));
+			m_watches_attach_offset.c.set(m_watches_pos);
+			m_watches_transform.mulB_43(m_watches_attach_offset);
+
+			{
+				Fmatrix m = Fidentity;
+				m.scale(m_watches_scale, m_watches_scale, m_watches_scale);
+				m_watches_transform.mulB_43(m);
+			}
+		}
 	}
 
 	if(m_attached_items[0])
