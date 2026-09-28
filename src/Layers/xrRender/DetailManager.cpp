@@ -2,6 +2,10 @@
 #include "DetailManager.h"
 #include "xrRender_console.h"
 
+#ifndef _EDITOR
+extern int ps_trample_enabled;
+#endif
+
 u32 dm_size = 24;
 u32 dm_slide_window_line = 12;
 u32 dm_cache_line = 49;
@@ -243,6 +247,20 @@ void CDetailManager::Render()
 				if (!psDeviceFlags.is(rsDetails)) return;
 #endif
 				cache_Update(cam_pos);
+
+#ifdef USE_DX11
+#ifndef _EDITOR
+				if (ps_trample_enabled)
+				{
+					TrampleProcessMarks();
+					TrampleAnimateItems();
+				}
+				else if (!TrampleActiveSlots.empty())
+				{
+					TrampleAnimateItems();
+				}
+#endif
+#endif
 
 				{
 					PROF_EVENT("UpdateVisible");

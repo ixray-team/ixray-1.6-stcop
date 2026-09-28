@@ -112,6 +112,7 @@ void CDetailManager::UnpackSlot(int gx, int gz, Slot* D)
 	u32 old_type = D->type;
 	D->type = stPending;
 	D->DS = &DS;
+	D->has_trample = false;
 
 	D->vis.box.min.set(sx*dm_slot_size, DS.r_ybase(), sz*dm_slot_size);
 	D->vis.box.max.set(D->vis.box.min.x+dm_slot_size, DS.r_ybase()+DS.r_yheight(), D->vis.box.min.z+dm_slot_size);
