@@ -68,14 +68,10 @@ ALife::_OBJECT_ID last_valid_id(const CALifeSimulator *self_)
 CSE_ALifeDynamicObject *alife_object		(const CALifeSimulator *self_, const char* name)
 {
 	VERIFY			(self_);
-	
-	for (CALifeObjectRegistry::OBJECT_REGISTRY::const_iterator it = self_->objects().objects().begin(); it != self_->objects().objects().end(); it++) {
-		CSE_ALifeDynamicObject	*obj = it->second;
-		if (xr_strcmp(obj->name_replace(),name) == 0)
-			return	(it->second);
-	}
-	
-	return			(0);
+	if (!name || !name[0])
+		return nullptr;
+
+	return self_->objects().object(name);
 }
 
 CSE_ALifeDynamicObject *alife_object		(const CALifeSimulator *self_, ALife::_OBJECT_ID id, bool no_assert)
