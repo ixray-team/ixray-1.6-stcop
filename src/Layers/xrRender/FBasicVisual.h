@@ -46,14 +46,24 @@ public:
 #endif
 
 	shared_str					dbg_name	;
-	virtual shared_str	_BCL	getDebugName() { return dbg_name; }
+	virtual shared_str getDebugName() { return dbg_name; }
+	virtual shared_str getShaderName() { return shader_name; }
+	virtual shared_str getTextureName() { return texture_name; }
+	virtual shared_str getOrigShaderName() { return orig_shader_name; }
+	virtual shared_str getOrigTextureName() { return orig_texture_name; }
+	virtual void set_shader(shared_str sh_name) { shader_name = sh_name; }
+	virtual void set_texture(shared_str tex_name) { texture_name = tex_name; }
+	virtual void reload_shader();
+	virtual void restore_shader();
+	virtual void restore_texture();
 
 public:
 	// Common data for rendering
 	u32							Type		;				// visual's type
 	vis_data					vis			;				// visibility-data
 	ref_shader					shader		;				// pipe state, shared
-
+	shared_str					texture_name, orig_texture_name;
+	shared_str					shader_name, orig_shader_name;
 	virtual void				Render						(float LOD)		{};		// LOD - Level Of Detail  [0..1], Ignored
 	virtual void				Load						(const char* N, IReader *data, u32 dwFlags);
 	virtual void				Release						();						// Shared memory release
