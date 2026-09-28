@@ -341,6 +341,17 @@ public:
 		return 1.f;
 	}
 
+	// Grass trample: stamp a mark into the detail trample grid.
+	// radius is the object's physical radius, weight is 0..1+ intensity multiplier.
+	virtual void detail_trample_mark(float x, float y, float z, float radius, float weight, bool isActor = false)
+	{
+		(void)x; (void)y; (void)z; (void)radius; (void)weight; (void)isActor;
+	}
+
+	virtual bool detail_trample_enabled() const { return false; }
+
+	virtual float detail_trample_draw_radius() const { return 60.f; }
+
 	// Constructor/destructor
 	virtual ~IRender_interface() = default;
 protected:
