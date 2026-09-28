@@ -1842,7 +1842,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 					m_ind_bleeding->SetTextureColor(casted.get());
 				}
 
-				m_ind_bleeding->SetColorAnimation("	", flags);
+				m_ind_bleeding->SetColorAnimation("ui_medium_blinking_alpha", flags);
 			}
 			else
 			{
