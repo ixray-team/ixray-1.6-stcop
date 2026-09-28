@@ -961,3 +961,87 @@ void CKinematics::BonesHistory_Invalidate()
 {
 	dwFirstRenderFrame = 0;
 }
+
+void CKinematics::LL_SetShader(LPCSTR shader_name)
+{
+	for (dxRender_Visual* V : children)
+	{
+		V->shader_name = shader_name;
+		V->reload_shader();
+	}
+}
+
+void CKinematics::LL_RestoreShader()
+{
+	for (dxRender_Visual* V : children)
+	{
+		V->restore_shader();
+	}
+}
+
+void CKinematics::LL_SetShader(u16 bone_id, LPCSTR shader_name)
+{
+	for (u32 c_it = 0; c_it < children.size(); c_it++)
+	{
+		CSkeletonX* _c = static_cast<CSkeletonX*>(children[c_it]);
+		if (_c->uses_bone(bone_id))
+		{
+			_c->shader_name = shader_name;
+			_c->reload_shader();
+		}
+	}
+}
+void CKinematics::LL_RestoreShader(u16 bone_id)
+{
+	for (u32 c_it = 0; c_it < children.size(); c_it++)
+	{
+		CSkeletonX* _c = static_cast<CSkeletonX*>(children[c_it]);
+		if (_c->uses_bone(bone_id))
+			_c->restore_shader();
+	}
+}
+
+void CKinematics::LL_SetTexture(LPCSTR texture_name)
+{
+	for (dxRender_Visual* V : children)
+	{
+		V->texture_name = texture_name;
+		V->reload_shader();
+	}
+}
+
+void CKinematics::LL_RestoreTexture()
+{
+	for (dxRender_Visual* V : children)
+	{
+		CSkeletonX* S = static_cast<CSkeletonX*>(V);
+		V->restore_texture();
+	}
+}
+
+void CKinematics::LL_SetTexture(u16 bone_id, LPCSTR texture_name)
+{
+	for (u32 c_it = 0; c_it < children.size(); c_it++)
+	{
+		CSkeletonX* _c = static_cast<CSkeletonX*>(children[c_it]);
+		if (_c->uses_bone(bone_id))
+		{
+			_c->texture_name = texture_name;
+			_c->reload_shader();
+		}
+	}
+}
+void CKinematics::LL_RestoreTexture(u16 bone_id)
+{
+	for (u32 c_it = 0; c_it < children.size(); c_it++)
+	{
+		CSkeletonX* _c = static_cast<CSkeletonX*>(children[c_it]);
+		if (_c->uses_bone(bone_id))
+			_c->restore_texture();
+	}
+}
+
+xr_vector<IRenderVisual*>& CKinematics::LL_GetChilds()
+{
+	return reinterpret_cast<xr_vector<IRenderVisual*>&>(children);
+}
