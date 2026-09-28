@@ -115,13 +115,6 @@ void CWeaponMagazined::LoadSounds(const char* section)
 		m_layered_sounds.LoadSound(section, "snd_shoot_actor", "sndShotActor", false, m_eSoundShot, st_Shooting);
 	}
 
-	m_layered_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot, st_Shooting);
-	if (SoundExist(section, "snd_silncer_shot_actor"))
-	{
-		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_actor_sil, true);
-		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor", "sndSilencerShotActor", false, m_eSoundShot, st_Shooting);
-	}
-
 	if (SoundExist(section, "snd_shot_last"))
 	{
 		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_last, true);
@@ -148,7 +141,7 @@ void CWeaponMagazined::LoadSounds(const char* section)
 
 
 
-
+	LoadSoundsSilencer(section);
 
 
 
@@ -162,17 +155,6 @@ void CWeaponMagazined::LoadSounds(const char* section)
 	{
 		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_actor, true);
 		m_layered_sounds.LoadSound(section, "snd_shoot_actor_indoor", "sndShotActorIndoor", false, m_eSoundShot, st_Shooting);
-	}
-
-	if (SoundExist(section, "snd_silncer_shot_indoor"))
-	{
-		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_sil, true);
-		m_layered_sounds.LoadSound(section, "snd_silncer_shot_indoor", "sndSilencerShotIndoor", false, m_eSoundShot, st_Shooting);
-	}
-	if (SoundExist(section, "snd_silncer_shot_actor_indoor"))
-	{
-		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_actor_sil, true);
-		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor_indoor", "sndSilencerShotActorIndoor", false, m_eSoundShot, st_Shooting);
 	}
 
 	if (SoundExist(section, "snd_shot_last_indoor"))
@@ -543,6 +525,27 @@ void CWeaponMagazined::LoadSounds(const char* section)
 		m_eSoundsFlags2.set(ESoundsFlags2::sf_safemode_in_out, true);
 		m_sounds.LoadSound(section, "snd_safemode_in", "sndSafemodeIn", false, m_eSoundHide);
 		m_sounds.LoadSound(section, "snd_safemode_out", "sndSafemodeOut", false, m_eSoundShow);
+	}
+}
+
+void CWeaponMagazined::LoadSoundsSilencer(const char* section)
+{
+	m_layered_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot, st_Shooting);
+	if (SoundExist(section, "snd_silncer_shot_actor"))
+	{
+		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_actor_sil, true);
+		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor", "sndSilencerShotActor", false, m_eSoundShot, st_Shooting);
+	}
+
+	if (SoundExist(section, "snd_silncer_shot_indoor"))
+	{
+		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_sil, true);
+		m_layered_sounds.LoadSound(section, "snd_silncer_shot_indoor", "sndSilencerShotIndoor", false, m_eSoundShot, st_Shooting);
+	}
+	if (SoundExist(section, "snd_silncer_shot_actor_indoor"))
+	{
+		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_actor_sil, true);
+		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor_indoor", "sndSilencerShotActorIndoor", false, m_eSoundShot, st_Shooting);
 	}
 }
 
@@ -1640,7 +1643,7 @@ void CWeaponMagazined::SelectShotSound()
 
 	if ((parent_actor && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_actor) || m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor)) && Sound->object_in_audiozone(get_LastFP()))
 	{
-		if (IsSilencerAttached())
+		if (GetSilencerAttached())
 		{
 			if (get_elapsed == 1 && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_last_sil))
 			{
@@ -1693,7 +1696,7 @@ void CWeaponMagazined::SelectShotSound()
 	}
 	else
 	{
-		if (IsSilencerAttached())
+		if (GetSilencerAttached())
 		{
 			if (get_elapsed == 1 && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_last_sil))
 			{
@@ -2750,25 +2753,21 @@ bool CWeaponMagazined::CanAttach(PIItem pIItem)
 
 bool CWeaponMagazined::Attach(PIItem pIItem)
 {
+	CScope* pScope = pIItem->cast_addon_scope();
 	CSilencer* pSilencer = pIItem->cast_addon_silencer();
 	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
 
-	if (pSilencer && IsSilencerAttachable() && IsSilencerAttached())
-	{
+	if (pScope)
+		Detach(GetScopeAttached());
+
+	if (pSilencer)
 		Detach(GetSilencerAttached());
-	}
 
-	if (pGrenadeLauncher && IsGrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
-	{
+	if (pGrenadeLauncher)
 		Detach(GetGrenadeLauncherAttached());
-	}
 
-	if (pIItem->cast_addon_scope() && IsScopeAttachable())
+	if (pScope && IsScopeAttachable())
 	{
-		if (IsScopeAttached())
-		{
-			Detach(GetScopeAttached());
-		}
 		auto scope_attachment = get_attachment(pIItem->object().cNameSect(), eTypeScope);
 		for (SCOPES_VECTOR_IT it = m_scopes.begin(); it != m_scopes.end(); it++)
 		{
@@ -2815,6 +2814,7 @@ bool CWeaponMagazined::Attach(PIItem pIItem)
 
 bool CWeaponMagazined::Detach(PIItem pIItem)
 {
+	if (!pIItem) return false;
 	if (pIItem->cast_addon_scope())
 	{
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
@@ -2951,12 +2951,20 @@ void CWeaponMagazined::InitAddons()
 			m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload_empty", "sndReloadEmpty", true, m_eSoundReload);
 		}
 	}
-
-	if (GetSilencerAttached() || IsSilencerPermanent())
+	CSilencer* pSilencer = GetSilencerAttached();
+	if (pSilencer || IsSilencerPermanent())
 	{
 		CShootingObject::fire_mode = eSilencerFire;
-		//подсветка от выстрела
-		LoadLights(*cNameSect(), "silencer_");
+		if (pSilencer)
+		{
+			CShootingObject::Load(*pSilencer->cNameSect());
+			LoadSoundsSilencer(*pSilencer->cNameSect());
+		}
+		else
+		{
+			CShootingObject::Load(*cNameSect());
+			LoadSoundsSilencer(*cNameSect());
+		}
 		ApplySilencerKoeffs();
 		LoadSilencerXY();
 	}
@@ -2964,8 +2972,7 @@ void CWeaponMagazined::InitAddons()
 	{
 		CShootingObject::fire_mode = eDefaultFire;
 
-		//подсветка от выстрела
-		LoadLights(*cNameSect(), "");
+		CShootingObject::Load(*cNameSect());
 		ResetSilencerKoeffs();
 	}
 

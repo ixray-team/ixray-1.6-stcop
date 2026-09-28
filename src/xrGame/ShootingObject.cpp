@@ -21,8 +21,8 @@
 
 CShootingObject::CShootingObject()
 {
-	fShotTimeCounter							= 0;
- 	fOneShotTime						= 0;
+	fShotTimeCounter				= 0;
+ 	fOneShotTime					= 0;
 	//fHitPower						= 0.0f;
 	fvHitPower.set					(0.0f,0.0f,0.0f,0.0f);
 	fvHitPowerCritical.set			(0.0f,0.0f,0.0f,0.0f);
@@ -59,15 +59,6 @@ void CShootingObject::destroy_particles()
 	flame_particles.clear();
 }
 
-ICF void LoadParticleStr(const char* section, const char* line, shared_str& str)
-{
-	if (pSettings->line_exist(section, line))
-	{
-		if (const char* pname = pSettings->r_string(section, line))
-			str = pname;
-	}
-}
-
 void CShootingObject::Load(const char* section)
 {
 	if(pSettings->line_exist(section,"light_disabled"))
@@ -76,24 +67,24 @@ void CShootingObject::Load(const char* section)
 		m_bLightShotEnabled = true;
 
 	//время затрачиваемое на выстрел
-	fOneShotTimeSaved = pSettings->r_float(section,"rpm");
+	fOneShotTimeSaved = READ_IF_EXISTS(pSettings, r_float, section, "rpm", fOneShotTimeSaved);
 	VERIFY2(fOneShotTimeSaved >0.f, make_string<const char*>("Section [%s], line rpm = %f", section, fOneShotTimeSaved));
-	fOneShotTime = 60.f / fOneShotTimeSaved;
+	fOneShotTime = 60.f / (fOneShotTimeSaved * READ_IF_EXISTS(pSettings, r_float, section, "rpm_mult", 1.0f));
 
 	LoadFireParams(section);
-	LoadLights(section, "");
+	LoadLights(section, fire_mode == eSilencerFire ? "silencer_" : fire_mode == eGlauncherFire ? "grenade_" : "");
 
-	LoadParticleStr(section, "shell_particles", m_sShellParticles);
-	LoadParticleStr(section, "smoke_particles", m_sSmokeParticles);
-	LoadParticleStr(section, "flame_particles", m_sFlameParticles);
-	LoadParticleStr(section, "silencer_smoke_particles", m_sSmokeSilencerParticles);
-	LoadParticleStr(section, "silencer_flame_particles", m_sFlameSilencerParticles);
-	LoadParticleStr(section, "grenade_flame_particles", m_sFlameGlauncherParticles);
-	LoadParticleStr(section, "grenade_smoke_particles", m_sSmokeGlauncherParticles);
+	m_sShellParticles = READ_IF_EXISTS(pSettings, r_string, section, "shell_particles", m_sShellParticles);
+	m_sSmokeParticles = READ_IF_EXISTS(pSettings, r_string, section, "smoke_particles", m_sSmokeParticles);
+	m_sFlameParticles = READ_IF_EXISTS(pSettings, r_string, section, "flame_particles", m_sFlameParticles);
+	m_sSmokeSilencerParticles = READ_IF_EXISTS(pSettings, r_string, section, "silencer_smoke_particles", m_sSmokeSilencerParticles);
+	m_sFlameSilencerParticles = READ_IF_EXISTS(pSettings, r_string, section, "silencer_flame_particles", m_sFlameSilencerParticles);
+	m_sFlameGlauncherParticles = READ_IF_EXISTS(pSettings, r_string, section, "grenade_flame_particles", m_sFlameGlauncherParticles);
+	m_sSmokeGlauncherParticles = READ_IF_EXISTS(pSettings, r_string, section, "grenade_smoke_particles", m_sSmokeGlauncherParticles);
 
-	vLoadedShellPoint = pSettings->line_exist(section, "shell_point") ? pSettings->r_fvector3(section, "shell_point") : zero_vel;
+	vLoadedShellPoint = READ_IF_EXISTS(pSettings, r_fvector3, section, "shell_point", vLoadedShellPoint);
 
-	m_air_resistance_factor	= READ_IF_EXISTS(pSettings,r_float,section,"air_resistance_factor",1.f);
+	m_air_resistance_factor = READ_IF_EXISTS(pSettings, r_float, section, "air_resistance_factor", m_air_resistance_factor);
 
 	light_render = ::Render->light_create();
 	if (::Render->get_generation() == IRender_interface::GENERATION_R2)
@@ -109,74 +100,76 @@ void CShootingObject::DestroyEffects()
 
 void CShootingObject::LoadFireParams( const char* section )
 {
-	string32	buffer;
-	shared_str	s_sHitPower;
-	shared_str	s_sHitPowerCritical;
+	string32 buffer;
 
-	//базовая дисперсия оружия
-	fireDispersionBase	= deg2rad( pSettings->r_float(section,"fire_dispersion_base"	) );
-
-	//сила выстрела и его мощьность
-	s_sHitPower			= pSettings->r_string_wb(section, "hit_power" );//читаем строку силы хита пули оружия
-	s_sHitPowerCritical	= READ_IF_EXISTS(pSettings, r_string_wb, section, "hit_power_critical", "0.0, 0.0, 0.0, 0.0");
-	fvHitPower[egdMaster]			= (float)atof(_GetItem(*s_sHitPower,0,buffer));//первый параметр - это хит для уровня игры мастер
-	fvHitPowerCritical[egdMaster]	= (float)atof(_GetItem(*s_sHitPowerCritical,0,buffer));//первый параметр - это хит для уровня игры мастер
-
-	fvHitPower[egdNovice] = fvHitPower[egdStalker] = fvHitPower[egdVeteran] = fvHitPower[egdMaster];//изначально параметры для других уровней сложности такие же
-	fvHitPowerCritical[egdNovice] = fvHitPowerCritical[egdStalker] = fvHitPowerCritical[egdVeteran] = fvHitPowerCritical[egdMaster];//изначально параметры для других уровней сложности такие же
-
-	int num_game_diff_param=_GetItemCount(*s_sHitPower);//узнаём колличество параметров для хитов
-	if (num_game_diff_param>1)//если задан второй параметр хита
+	if (pSettings->line_exist(section, "hit_power"))
 	{
-		fvHitPower[egdVeteran]	= (float)atof(_GetItem(*s_sHitPower,1,buffer));//то вычитываем его для уровня ветерана
-	}
-	if (num_game_diff_param>2)//если задан третий параметр хита
-	{
-		fvHitPower[egdStalker]	= (float)atof(_GetItem(*s_sHitPower,2,buffer));//то вычитываем его для уровня сталкера
-	}
-	if (num_game_diff_param>3)//если задан четвёртый параметр хита
-	{
-		fvHitPower[egdNovice]	= (float)atof(_GetItem(*s_sHitPower,3,buffer));//то вычитываем его для уровня новичка
+		shared_str s_sHitPower = pSettings->r_string_wb(section, "hit_power"); // читаем строку силы хита пули оружия
+		fvHitPower[egdMaster] = (float)atof(_GetItem(*s_sHitPower, 0, buffer));										 // первый параметр - это хит для уровня игры мастер
+		fvHitPower[egdNovice] = fvHitPower[egdStalker] = fvHitPower[egdVeteran] = fvHitPower[egdMaster];			 // изначально параметры для других уровней сложности такие же
+		int num_game_diff_param = _GetItemCount(*s_sHitPower);														 // узнаём колличество параметров для хитов
+		if (num_game_diff_param > 1)																				 // если задан второй параметр хита
+		{
+			fvHitPower[egdVeteran] = (float)atof(_GetItem(*s_sHitPower, 1, buffer)); // то вычитываем его для уровня ветерана
+		}
+		if (num_game_diff_param > 2) // если задан третий параметр хита
+		{
+			fvHitPower[egdStalker] = (float)atof(_GetItem(*s_sHitPower, 2, buffer)); // то вычитываем его для уровня сталкера
+		}
+		if (num_game_diff_param > 3) // если задан четвёртый параметр хита
+		{
+			fvHitPower[egdNovice] = (float)atof(_GetItem(*s_sHitPower, 3, buffer)); // то вычитываем его для уровня новичка
+		}
 	}
 
-	num_game_diff_param=_GetItemCount(*s_sHitPowerCritical);//узнаём колличество параметров
-	if (num_game_diff_param>1)//если задан второй параметр хита
+	if (pSettings->line_exist(section, "hit_power_critical"))
 	{
-		fvHitPowerCritical[egdVeteran]	= (float)atof(_GetItem(*s_sHitPowerCritical,1,buffer));//то вычитываем его для уровня ветерана
-	}
-	if (num_game_diff_param>2)//если задан третий параметр хита
-	{
-		fvHitPowerCritical[egdStalker]	= (float)atof(_GetItem(*s_sHitPowerCritical,2,buffer));//то вычитываем его для уровня сталкера
-	}
-	if (num_game_diff_param>3)//если задан четвёртый параметр хита
-	{
-		fvHitPowerCritical[egdNovice]	= (float)atof(_GetItem(*s_sHitPowerCritical,3,buffer));//то вычитываем его для уровня новичка
+		shared_str s_sHitPowerCritical = pSettings->r_string_wb(section, "hit_power_critical");
+		fvHitPowerCritical[egdMaster] = (float)atof(_GetItem(*s_sHitPowerCritical, 0, buffer));											 // первый параметр - это хит для уровня игры мастер
+		fvHitPowerCritical[egdNovice] = fvHitPowerCritical[egdStalker] = fvHitPowerCritical[egdVeteran] = fvHitPowerCritical[egdMaster]; // изначально параметры для других уровней сложности такие же
+		int num_game_diff_param = _GetItemCount(*s_sHitPowerCritical);																	 // узнаём колличество параметров
+		if (num_game_diff_param > 1)																									 // если задан второй параметр хита
+		{
+			fvHitPowerCritical[egdVeteran] = (float)atof(_GetItem(*s_sHitPowerCritical, 1, buffer)); // то вычитываем его для уровня ветерана
+		}
+		if (num_game_diff_param > 2) // если задан третий параметр хита
+		{
+			fvHitPowerCritical[egdStalker] = (float)atof(_GetItem(*s_sHitPowerCritical, 2, buffer)); // то вычитываем его для уровня сталкера
+		}
+		if (num_game_diff_param > 3) // если задан четвёртый параметр хита
+		{
+			fvHitPowerCritical[egdNovice] = (float)atof(_GetItem(*s_sHitPowerCritical, 3, buffer)); // то вычитываем его для уровня новичка
+		}
 	}
 
-	fHitImpulse			= pSettings->r_float	(section, "hit_impulse" );
+	// базовая дисперсия оружия
+	fireDispersionBase = deg2rad(READ_IF_EXISTS(pSettings, r_float, section, "fire_dispersion_base", rad2deg(fireDispersionBase))) * READ_IF_EXISTS(pSettings, r_float, section, "fire_dispersion_base_mult", 1.f);
+	// сила выстрела и его мощьность
+	fHitImpulse = READ_IF_EXISTS(pSettings, r_float, section, "hit_impulse", fHitImpulse) * READ_IF_EXISTS(pSettings, r_float, section, "hit_impulse_mult", 1.f);
 	//максимальное расстояние полета пули
-	fireDistance		= pSettings->r_float	(section, "fire_distance" );
+	fireDistance = READ_IF_EXISTS(pSettings, r_float, section, "fire_distance", fireDistance) * READ_IF_EXISTS(pSettings, r_float, section, "fire_distance_mult", 1.f);
 	//начальная скорость пули
-	m_fStartBulletSpeed = pSettings->r_float	(section, "bullet_speed" );
-	m_bUseAimBullet		= pSettings->r_bool		(section, "use_aim_bullet" );
+	m_fStartBulletSpeed = READ_IF_EXISTS(pSettings, r_float, section, "bullet_speed", m_fStartBulletSpeed) * READ_IF_EXISTS(pSettings, r_float, section, "bullet_speed_mult", 1.f);
+
+	m_bUseAimBullet = READ_IF_EXISTS(pSettings, r_bool, section, "use_aim_bullet", m_bUseAimBullet);
 	if (m_bUseAimBullet)
-	{
-		m_fTimeToAim		= pSettings->r_float	(section, "time_to_aim" );
-	}
+		m_fTimeToAim = READ_IF_EXISTS(pSettings, r_float, section, "time_to_aim", m_fTimeToAim);
 }
 
 void CShootingObject::LoadLights		(const char* section, const char* prefix)
 {
-	string256				full_name;
+	string256 full_name;
 	// light
 	if(m_bLightShotEnabled) 
 	{
-		Fvector clr			= pSettings->r_fvector3		(section, xr_strconcat(full_name, prefix, "light_color"));
+		Fvector clr = READ_IF_EXISTS(pSettings, r_fvector3, section, xr_strconcat(full_name, prefix, "light_color"), Fvector3(light_base_color.r, light_base_color.g, light_base_color.b));
+		
 		light_base_color.set(clr.x,clr.y,clr.z,1);
-		light_base_range	= pSettings->r_float		(section, xr_strconcat(full_name, prefix, "light_range")		);
-		light_var_color		= pSettings->r_float		(section, xr_strconcat(full_name, prefix, "light_var_color")	);
-		light_var_range		= pSettings->r_float		(section, xr_strconcat(full_name, prefix, "light_var_range")	);
-		light_lifetime		= pSettings->r_float		(section, xr_strconcat(full_name, prefix, "light_time")		);
+		light_base_range = READ_IF_EXISTS(pSettings, r_float, section, xr_strconcat(full_name, prefix, "light_range"), light_base_range);
+		light_var_color = READ_IF_EXISTS(pSettings, r_float, section, xr_strconcat(full_name, prefix, "light_var_color"), light_var_color);
+		light_var_range = READ_IF_EXISTS(pSettings, r_float, section, xr_strconcat(full_name, prefix, "light_var_range"), light_var_range);
+		light_lifetime = READ_IF_EXISTS(pSettings, r_float, section, xr_strconcat(full_name, prefix, "light_time"), light_lifetime);
+		
 		light_time			= -1.f;
 
 		m_bLightShotEnabled = light_var_range + light_base_range <= 0.f ? false : true;
