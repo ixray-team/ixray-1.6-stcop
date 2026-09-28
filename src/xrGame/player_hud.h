@@ -724,6 +724,14 @@ private:
 public:
 	xr_map<EBoneCallbackParam, BoneCallbackParams*> m_bone_callback_params; // bonename,params
 
+	IKinematics* m_watches_model = nullptr;
+	Fmatrix m_watches_transform = Fidentity;
+	Fmatrix m_watches_attach_offset = Fidentity;
+	Fvector m_watches_pos = zero_vel;
+	Fvector m_watches_rot = zero_vel;
+	float m_watches_scale = 1.0f;
+	u16 m_watches_bone = BI_NONE;
+
 	void reset_thumb(bool bForce)
 	{
 		if (bForce)

@@ -145,13 +145,13 @@ static void HudAdjustDrawSaveButton()
 		writeParams(p_hud_item_second, file);
 	}
 
-	/*{
+	{
 		const char* section = g_player_hud->section_name().c_str();
 
 		file.w_float(section, "watches_scale", g_player_hud->m_watches_scale);
 		file.w_fvector3(section, "watches_pos", g_player_hud->m_watches_pos);
 		file.w_fvector3(section, "watches_rot", g_player_hud->m_watches_rot);
-	}*/
+	}
 
 	GAME_NEWS_DATA news_data;
 	news_data.m_type = GAME_NEWS_DATA::ENewsKind::eNews;
@@ -414,7 +414,7 @@ static void HudAdjustDrawAdjustSettings()
 	ImGui::SetNextItemWidth(80.0f);
 	ImGui::InputFloat("Rotation step", &_delta_rot, 0.0f, 0.0f, "%.6f");
 }
-/*
+
 static void HudAdjustDrawHandsSettings()
 {
 	if (g_player_hud->attached_item(0) == nullptr && g_player_hud->attached_item(1) == nullptr)
@@ -427,7 +427,7 @@ static void HudAdjustDrawHandsSettings()
 		return;
 	}
 
-	if (g_player_hud->m_model_watches != nullptr)
+	if (g_player_hud->m_watches_model != nullptr)
 	{
 		if (ImGui::CollapsingHeader("Watches Settings"))
 		{
@@ -475,7 +475,7 @@ static void HudAdjustDrawHandsSettings()
 		}
 	}
 }
-*/
+
 static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 {
 	if (item == nullptr)
@@ -964,7 +964,7 @@ void RenderHUDAdjustManager()
 	{
 		HudAdjustDrawSaveButton();
 		HudAdjustDrawAdjustSettings();
-		//HudAdjustDrawHandsSettings();
+		HudAdjustDrawHandsSettings();
 		HudAdjustDrawItemSettings(g_player_hud->attached_item(0));
 		HudAdjustDrawItemSettings(g_player_hud->attached_item(1));
 	}
