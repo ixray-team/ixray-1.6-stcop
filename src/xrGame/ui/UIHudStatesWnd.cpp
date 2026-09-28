@@ -227,74 +227,37 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
         xml.SetLocalRoot(new_root);
     }
 
-    if (xml.NavigateToNode("back"))
-    {
-        m_back            = UIHelper::CreateStatic( xml, "back", this );
-    }
+    m_back            = UIHelper::CreateStatic( xml, "back", this, false );
 
-    if (xml.NavigateToNode("static_weapon"))
-    {
-        m_static_weapon = UIHelper::CreateStatic(xml, "static_weapon", this);
-    }
+    m_static_weapon = UIHelper::CreateStatic(xml, "static_weapon", this, false);
 
     CUIWindow* healthBarParent = this;
-    if (xml.NavigateToNode("static_health"))
-    {
-        m_static_health = UIHelper::CreateStatic(xml, "static_health", this);
-        healthBarParent = m_static_health;
-    }
-
-    m_ui_health_bar   = UIHelper::CreateProgressBar( xml, "progress_bar_health", healthBarParent);
-    m_ui_health_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_health", 0, "expression", nullptr) != nullptr;
-
-    if (xml.NavigateToNode("back_v", 0))
-    {
-        m_back_v = UIHelper::CreateStatic(xml, "back_v", this);
-    }
-    if (xml.NavigateToNode("static_armor", 0))
-    {
-        m_static_armor = UIHelper::CreateStatic(xml, "static_armor", this);
-    }
-
-
-    if (xml.NavigateToNode("resist_back_rad", 0))
-    {
-        m_resist_back[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "resist_back_rad", this );
-    }
-    if (xml.NavigateToNode("resist_back_fire", 0))
-    {
-        m_resist_back[ALife::infl_fire] = UIHelper::CreateStatic( xml, "resist_back_fire", this );
-    }
-    if (xml.NavigateToNode("resist_back_acid", 0))
-    {
-        m_resist_back[ALife::infl_acid] = UIHelper::CreateStatic( xml, "resist_back_acid", this );
-    }
-    if (xml.NavigateToNode("resist_back_psi", 0))
-    {
-        m_resist_back[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "resist_back_psi", this );
-    }
-    if (xml.NavigateToNode("resist_back_starvation", 0))
-    {
-        m_resist_back_starvation = UIHelper::CreateStatic(xml, "resist_back_starvation", this);
-    }
-	if (xml.NavigateToNode("resist_back_thirst"))
+    m_static_health = UIHelper::CreateStatic(xml, "static_health", this, false);
+	if (m_static_health)
 	{
-		m_resist_back_thirst = UIHelper::CreateStatic(xml, "resist_back_thirst", this);
+		healthBarParent = m_static_health;
 	}
-	if (xml.NavigateToNode("resist_back_sleepiness"))
+
+    m_ui_health_bar   = UIHelper::CreateProgressBar( xml, "progress_bar_health", healthBarParent, false);
+	if (m_ui_health_bar)
 	{
-		m_resist_back_sleepiness = UIHelper::CreateStatic(xml, "resist_back_sleepiness", this);
+		m_ui_health_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_health", 0, "expression", nullptr) != nullptr;
 	}
-	if (xml.NavigateToNode("resist_back_intoxication"))
-	{
-		m_resist_back_intoxication = UIHelper::CreateStatic(xml, "resist_back_intoxication", this);
-	}
+
+    m_back_v = UIHelper::CreateStatic(xml, "back_v", this, false);
+    m_static_armor = UIHelper::CreateStatic(xml, "static_armor", this, false);
+
+    m_resist_back[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "resist_back_rad", this, false );
+    m_resist_back[ALife::infl_fire] = UIHelper::CreateStatic( xml, "resist_back_fire", this, false );
+    m_resist_back[ALife::infl_acid] = UIHelper::CreateStatic( xml, "resist_back_acid", this, false );
+    m_resist_back[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "resist_back_psi", this, false );
+    m_resist_back_starvation = UIHelper::CreateStatic(xml, "resist_back_starvation", this, false);
+    m_resist_back_thirst = UIHelper::CreateStatic(xml, "resist_back_thirst", this, false);
+    m_resist_back_sleepiness = UIHelper::CreateStatic(xml, "resist_back_sleepiness", this, false);
+    m_resist_back_intoxication = UIHelper::CreateStatic(xml, "resist_back_intoxication", this, false);
 	// electra = no has CStatic!!
 
-    if (xml.NavigateToNode("indik_stack_panel", 0))
-    {
-        UIStackPanelDangers = UIHelper::CreateStackPanel(xml, "indik_stack_panel", this);
-    }
+    UIStackPanelDangers = UIHelper::CreateStackPanel(xml, "indik_stack_panel", this, false);
 
     CUIWindow* indicatorParent = this;
     if (UIStackPanelDangers)
@@ -302,70 +265,32 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
         indicatorParent = UIStackPanelDangers;
     }
 
-    if (xml.NavigateToNode("indik_rad", 0))
-    {
-        m_indik[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "indik_rad", indicatorParent);
-    }
-    if (xml.NavigateToNode("indik_fire", 0))
-    {
-        m_indik[ALife::infl_fire] = UIHelper::CreateStatic( xml, "indik_fire", indicatorParent);
-    }
-    if (xml.NavigateToNode("indik_acid", 0))
-    {
-        m_indik[ALife::infl_acid] = UIHelper::CreateStatic( xml, "indik_acid", indicatorParent);
-    }
-    if (xml.NavigateToNode("indik_psi", 0))
-    {
-        m_indik[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "indik_psi", indicatorParent);
-    }
-    if (xml.NavigateToNode("indicator_starvation", 0))
-    {
-        m_ind_starvation = UIHelper::CreateStatic(xml, "indicator_starvation", this);
-    }
-	if (xml.NavigateToNode("indicator_thirst"))
-	{
-		m_ind_thirst = UIHelper::CreateStatic(xml, "indicator_thirst", this);
-	}
-	if (xml.NavigateToNode("indicator_sleepiness"))
-	{
-		m_ind_sleepiness = UIHelper::CreateStatic(xml, "indicator_sleepiness", this);
-	}
-	if (xml.NavigateToNode("indicator_intoxication"))
-	{
-		m_ind_intoxication = UIHelper::CreateStatic(xml, "indicator_intoxication", this);
-	}
+    m_indik[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "indik_rad", indicatorParent, false);
+    m_indik[ALife::infl_fire] = UIHelper::CreateStatic( xml, "indik_fire", indicatorParent, false);
+    m_indik[ALife::infl_acid] = UIHelper::CreateStatic( xml, "indik_acid", indicatorParent, false);
+    m_indik[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "indik_psi", indicatorParent, false);
+    m_ind_starvation = UIHelper::CreateStatic(xml, "indicator_starvation", indicatorParent, false);
+    m_ind_thirst = UIHelper::CreateStatic(xml, "indicator_thirst", indicatorParent, false);
+    m_ind_sleepiness = UIHelper::CreateStatic(xml, "indicator_sleepiness", indicatorParent, false);
+    m_ind_intoxication = UIHelper::CreateStatic(xml, "indicator_intoxication", indicatorParent, false);
 
     m_lanim_name                = xml.ReadAttrib( "indik_rad", 0, "light_anim", "" );
-    if (xml.NavigateToNode("static_ammo", 0))
-    {
-        CUIWindow* ammoSignParent = this;
-        if (m_static_weapon)
-        {
-            ammoSignParent = m_static_weapon;
-        }
 
-        m_ui_weapon_sign_ammo = UIHelper::CreateStatic(xml, "static_ammo", ammoSignParent);
+    CUIWindow* ammoSignParent = this;
+    if (m_static_weapon)
+    {
+        ammoSignParent = m_static_weapon;
     }
 
-    if (xml.NavigateToNode("static_cur_ammo", 0))
-    {
-        m_ui_weapon_cur_ammo = UIHelper::CreateStatic(xml, "static_cur_ammo", this);
-    }
+    m_ui_weapon_sign_ammo = UIHelper::CreateStatic(xml, "static_ammo", ammoSignParent, false);
 
-    if (xml.NavigateToNode("static_fmj_ammo", 0))
-    {
-        m_ui_weapon_fmj_ammo = UIHelper::CreateStatic(xml, "static_fmj_ammo", this);
-    }
-    if (xml.NavigateToNode("static_ap_ammo", 0))
-    {
-        m_ui_weapon_ap_ammo = UIHelper::CreateStatic(xml, "static_ap_ammo", this);
-    }
+    m_ui_weapon_cur_ammo = UIHelper::CreateStatic(xml, "static_cur_ammo", this, false);
+
+    m_ui_weapon_fmj_ammo = UIHelper::CreateStatic(xml, "static_fmj_ammo", this, false);
+    m_ui_weapon_ap_ammo = UIHelper::CreateStatic(xml, "static_ap_ammo", this, false);
 
     //Alundaio: Option to display a third ammo type
-    if (xml.NavigateToNode("static_third_ammo", 0))
-    {
-        m_ui_weapon_third_ammo = UIHelper::CreateStatic(xml, "static_third_ammo", this);
-    }
+    m_ui_weapon_third_ammo = UIHelper::CreateStatic(xml, "static_third_ammo", this, false);
     //-Alundaio
 
     if (xml.NavigateToNode("static_ammo_adaptive", 0))
@@ -509,10 +434,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
         }
     }
 
-    if (xml.NavigateToNode("static_grenade", 0))
-    {
-        m_ui_grenade = UIHelper::CreateStatic(xml, "static_grenade", this);
-    }
+    m_ui_grenade = UIHelper::CreateStatic(xml, "static_grenade", this, false);
 
     CUIWindow* wpnIconParent = this;
     if (m_static_weapon)
@@ -521,15 +443,18 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
     }
 
     const int wpnIconXmlIdx = PickStaticWpnIconXmlIndex(xml);
-    m_ui_weapon_icon = UIHelper::Create3dStatic(xml, "static_wpn_icon", wpnIconParent, true, wpnIconXmlIdx);
-    m_ui_weapon_icon->SetShader(InventoryUtilities::GetEquipmentIconsShader());
-    // Apply text style from ammo_text:text if present (AmmoText / addon layouts)
-    if (xml.NavigateToNode("static_wpn_icon:ammo_text:text", wpnIconXmlIdx))
-    {
-        CUIXmlInit::InitText(xml, "static_wpn_icon:ammo_text:text", wpnIconXmlIdx, m_ui_weapon_icon);
-    }
-//  m_ui_weapon_icon->Enable    ( false );
-    m_ui_weapon_icon_rect       = m_ui_weapon_icon->GetWndRect();
+    m_ui_weapon_icon = UIHelper::Create3dStatic(xml, "static_wpn_icon", wpnIconParent, false, wpnIconXmlIdx);
+	if (m_ui_weapon_icon)
+	{
+		m_ui_weapon_icon->SetShader(InventoryUtilities::GetEquipmentIconsShader());
+		// Apply text style from ammo_text:text if present (AmmoText / addon layouts)
+		if (xml.NavigateToNode("static_wpn_icon:ammo_text:text", wpnIconXmlIdx))
+		{
+			CUIXmlInit::InitText(xml, "static_wpn_icon:ammo_text:text", wpnIconXmlIdx, m_ui_weapon_icon);
+		}
+		//  m_ui_weapon_icon->Enable    ( false );
+		m_ui_weapon_icon_rect = m_ui_weapon_icon->GetWndRect();
+	}
 
     m_weapon_icon_show_weapon_name = (xml.ReadAttribInt("static_wpn_icon", wpnIconXmlIdx, "show_weapon_name", 0) != 0);
     m_wpnIconHudMode = EWpnIconHudMode::Legacy;
@@ -589,15 +514,15 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
         }
     }
 
-    if (xml.NavigateToNode("progress_bar_armor", 0))
+    CUIWindow* armorBarParent = this;
+    if (xml.GetLocalRoot() == stored_root)
     {
-        CUIWindow* armorBarParent = this;
-        if (xml.GetLocalRoot() == stored_root)
-        {
-            armorBarParent = m_static_armor;
-        }
+        armorBarParent = m_static_armor;
+    }
 
-        m_ui_armor_bar = UIHelper::CreateProgressBar(xml, "progress_bar_armor", armorBarParent);
+    m_ui_armor_bar = UIHelper::CreateProgressBar(xml, "progress_bar_armor", armorBarParent, false);
+	if (m_ui_armor_bar)
+    {
         m_ui_armor_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_armor", 0, "expression", nullptr) != nullptr;
     }
 
@@ -621,15 +546,13 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
         m_arrow_shadow->init_from_xml(xml, "arrow_shadow", this);
     }
 
-    if (xml.NavigateToNode("back_over_arrow", 0))
-    {
-        m_back_over_arrow = UIHelper::CreateStatic(xml, "back_over_arrow", this);
-    }
-    if (xml.NavigateToNode("progress_bar_stamina", 0))
-    {
-        m_ui_stamina_bar = UIHelper::CreateProgressBar(xml, "progress_bar_stamina", this);
-        m_ui_stamina_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_stamina", 0, "expression", nullptr) != nullptr;
-    }
+    m_back_over_arrow = UIHelper::CreateStatic(xml, "back_over_arrow", this, false);
+
+    m_ui_stamina_bar = UIHelper::CreateProgressBar(xml, "progress_bar_stamina", this, false);
+	if (m_ui_stamina_bar)
+	{
+		m_ui_stamina_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_stamina", 0, "expression", nullptr) != nullptr;
+	}
 
     if (xml.NavigateToNode("bleeding", 0))
     {
@@ -732,7 +655,7 @@ void CUIHudStatesWnd::Update()
 
 void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 {
-    if (!m_ui_health_bar->IsExpressionSystem)
+	if (m_ui_health_bar && !m_ui_health_bar->IsExpressionSystem)
     {
         float cur_health = actor->GetfHealth();
         m_ui_health_bar->SetProgressPos(iCeil(cur_health * 100.0f * 35.f) / 35.f);
@@ -1161,18 +1084,21 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
                 }
             }
 
-            if (displayText.size())
-            {
-                m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 0));
-                m_ui_weapon_icon->SetText(displayText.c_str());
-                m_ui_weapon_icon->Show(true);
-            }
-            else
-            {
-                m_ui_weapon_icon->Show(false);
-            }
+            if (m_ui_weapon_icon)
+			{
+				if (displayText.size())
+				{
+					m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 0));
+					m_ui_weapon_icon->SetText(displayText.c_str());
+					m_ui_weapon_icon->Show(true);
+				}
+				else
+				{
+					m_ui_weapon_icon->Show(false);
+				}
+			}
         }
-        else if (m_wpnIconHudMode == EWpnIconHudMode::Caliber)
+		else if (m_ui_weapon_icon && m_wpnIconHudMode == EWpnIconHudMode::Caliber)
         {
             // Labels are on caliber_text / caliber_icon; parent must not draw SetAmmoIcon (would cover children visually)
             m_ui_weapon_icon->SetText("");
@@ -1181,7 +1107,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
             m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 0));
             m_ui_weapon_icon->Show(true);
         }
-        else
+		else if (m_ui_weapon_icon)
         {
             m_ui_weapon_icon->TextureOn();
             m_ui_weapon_icon->SetText("");
@@ -1515,7 +1441,10 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
     }
     else
     {
-        m_ui_weapon_icon->Show(false);
+		if (m_ui_weapon_icon)
+		{
+			m_ui_weapon_icon->Show(false);
+		}
         HideCaliberHudWidgets();
 
         if (m_ui_weapon_cur_ammo)
@@ -1578,6 +1507,11 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
 void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
 {
+    if (!m_ui_weapon_icon)
+    {
+		return;
+    }
+
     if (!sect_name.size())
     {
         m_ui_weapon_icon->Show(false);

@@ -31,7 +31,7 @@ CUI3dStatic* UIHelper::Create3dStatic( CUIXml& xml, const char* ui_path, CUIWind
     auto ui = new CUI3dStatic();
     if (!CUIXmlInit::InitStatic(xml, ui_path, node_index, ui, critical))
     {
-        R_ASSERT4(!critical, "Failed to create static", ui_path, xml.m_xml_file_name);
+        R_ASSERT4(!critical, "Failed to create 3D static", ui_path, xml.m_xml_file_name);
         xr_delete(ui);
     }
     else if (parent)
@@ -91,7 +91,7 @@ CUIGamepadLegend* UIHelper::CreateGamepadLegend(CUIXml& xml, const char* ui_path
 	auto ui = new CUIGamepadLegend();
 	if (!CUIXmlInit::InitGamepadLegend(xml, ui_path, 0, ui, critical))
 	{
-		R_ASSERT4(!critical, "Failed to create stack panel", ui_path, xml.m_xml_file_name);
+		R_ASSERT4(!critical, "Failed to create gamepad legend", ui_path, xml.m_xml_file_name);
 		xr_delete(ui);
 	}
 	else if (parent)
@@ -114,12 +114,25 @@ CUIEditBox* UIHelper::CreateEditBox( CUIXml& xml, const char* ui_path, CUIWindow
 	return ui;
 }
 
-CUIProgressBar* UIHelper::CreateProgressBar( CUIXml& xml, const char* ui_path, CUIWindow* parent )
+CUIProgressBar* UIHelper::CreateProgressBar( CUIXml& xml, const char* ui_path, CUIWindow* parent, bool critical )
 {
-	CUIProgressBar* ui			= new CUIProgressBar();
-	parent->AttachChild			( ui );
-	ui->SetAutoDelete			( true );
-	CUIXmlInit::InitProgressBar ( xml, ui_path, 0, ui );
+	// If it's not critical element, then don't crash if it doesn't exist
+	if (!critical && !xml.NavigateToNode(ui_path, 0))
+	{
+		return nullptr;
+	}
+
+	CUIProgressBar* ui = new CUIProgressBar();
+	if (!CUIXmlInit::InitProgressBar(xml, ui_path, 0, ui, critical))
+	{
+		R_ASSERT4(!critical, "Failed to create progress bar", ui_path, xml.m_xml_file_name);
+		xr_delete(ui);
+	}
+	else if (parent)
+	{
+		parent->AttachChild(ui);
+		ui->SetAutoDelete(true);
+	}
 	return ui;
 }
 

@@ -59,7 +59,7 @@ public:
 	static bool 	InitText				(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
 	static bool 	InitText				(CUIXml& xml_doc, const char* path, int index, CUILines* pLines);
 	static bool 	Init3tButton			(CUIXml& xml_doc, const char* path, int index, CUI3tButton* pWnd, bool fatal = true);
-	static bool 	InitProgressBar			(CUIXml& xml_doc, const char* path, int index, CUIProgressBar* pWnd);
+	static bool 	InitProgressBar			(CUIXml& xml_doc, const char* path, int index, CUIProgressBar* pWnd, bool fatal = true);
 	static bool 	InitItemStateDisplay		(CUIXml& xml_doc, const char* path, int index, CUIItemStateDisplay* pWnd);
 	static bool 	InitProgressShape		(CUIXml& xml_doc, const char* path, int index, CUIProgressShape* pWnd);
 	static bool 	InitLoadscreenProgress	(CUIXml& xml_doc, const char* path, int index, CUILoadingScreenProgress* pWnd);
