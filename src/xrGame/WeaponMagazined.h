@@ -108,6 +108,7 @@ public:
 
 	virtual void	Load(const char* section);
 	virtual void	LoadSounds(const char* section);
+	virtual void	LoadSoundsSilencer(const char* section);
 			void	LoadSilencerKoeffs();
 
 	virtual CWeaponBinoculars* cast_weapon_binoculars() { return nullptr; }

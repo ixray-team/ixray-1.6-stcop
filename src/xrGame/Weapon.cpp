@@ -438,14 +438,6 @@ void CWeapon::Load		(const char* section)
 	if (!bUseAltScope)
 		LoadOriginalScopesParams(section);
 
-	for (auto& pair : m_attachments)
-	{
-		if (pair.second.attachment_type == eTypeScope)
-		{
-			m_scopes.push_back(pair.first);
-		}
-	}
-
 	if ((IsScopeAttachable() || IsScopePermanent()) && pSettings->line_exist(section, "scope_name"))
 	{
 		m_sScopeName = pSettings->r_string(section, "scope_name");
@@ -866,9 +858,33 @@ void CWeapon::Load		(const char* section)
 	}
 }
 
+void CWeapon::on_load_attachment(shared_str sect_name, item_attachment& attachment)
+{
+	if (attachment.attachment_type == eTypeScope)
+	{
+		m_scopes.push_back(sect_name);
+		if (!IsScopePermanent())
+			m_eScopeStatus = ALife::EWeaponAddonStatus::eAddonAttachable;
+	}
+	else if (attachment.attachment_type == eTypeGLauncher)
+	{
+		if (!IsGrenadeLauncherPermanent())
+			m_eGrenadeLauncherStatus = ALife::EWeaponAddonStatus::eAddonAttachable;
+		m_sGrenadeLauncherName = sect_name;
+	}
+	else if (attachment.attachment_type == eTypeMuzzle)
+	{
+		if (!IsSilencerPermanent())
+			m_eSilencerStatus = ALife::EWeaponAddonStatus::eAddonAttachable;
+		m_sSilencerName = sect_name;
+	}
+}
+
 void CWeapon::LoadFireParams		(const char* section)
 {
-	cam_recoil.Dispersion = deg2rad( pSettings->r_float( section,"cam_dispersion" ) ); 
+	if (pSettings->line_exist(section, "cam_dispersion"))
+		cam_recoil.Dispersion = deg2rad( pSettings->r_float( section,"cam_dispersion" ) );
+
 	cam_recoil.DispersionInc = 0.0f;
 
 	if ( pSettings->line_exist( section, "cam_dispersion_inc" ) )	{
@@ -1575,6 +1591,7 @@ void CWeapon::UpdateCL()
 	else if (!isHudItemData)
 	{
 		bUpdateHUDBonesVisibility = false;
+		ResetBoneAiming();
 	}
 
 	if (need_update_hud)
@@ -1776,15 +1793,11 @@ void CWeapon::LoadUpgradeBonesToHide(const char* section, const char* line)
 
 void CWeapon::ProcessScope()
 {
-	s32 cur_index = -1;
+	CScope* pScope = GetScopeAttached();
 
-	if (IsScopeAttached() && IsScopeAttachable())
-		cur_index = m_cur_scope;
-
-	for (u32 i = 0; i < m_scopes.size(); ++i)
+	for (const shared_str& tmp : m_scopes)
 	{
-		shared_str tmp = GetScopeSection(i);
-		bool status = (i == cur_index);
+		bool status = pScope && (tmp == pScope->cNameSect() || (pSettings->line_exist(tmp, "scope_name") && shared_str(pSettings->r_string(tmp, "scope_name")) == pScope->cNameSect()));
 
 		if (pSettings->line_exist(tmp, "bones"))
 			SetMultipleBonesStatus(tmp.c_str(), "bones", status);
@@ -1793,9 +1806,9 @@ void CWeapon::ProcessScope()
 			SetMultipleBonesStatus(tmp.c_str(), "hide_bones", !status);
 	}
 
-	if (cur_index >= 0)
+	if (pScope)
 	{
-		shared_str tmp = GetScopeSection(cur_index);
+		const shared_str& tmp = pScope->cNameSect();
 		if (pSettings->line_exist(tmp, "overriding_hide_bones"))
 			SetMultipleBonesStatus(tmp.c_str(), "overriding_hide_bones", false);
 
@@ -2746,12 +2759,13 @@ void CWeapon::UpdateScopePosition()
 	}
 
 	auto HID = HudItemData();
+	if (!HID) return;
 
-	if (HID != nullptr && IsScopeAttachable())
+	if (CScope* pScope = GetScopeAttached())
 	{
-		shared_str hands_section = HID->m_measures.m_hands_positions.sSection;
-		shared_str scope_section = GetCurrentScopeSection();
-		shared_str hud_section = HudSection();
+		shared_str& hands_section = HID->m_measures.m_hands_positions.sSection;
+		const shared_str& scope_section = pScope->cNameSect();
+		const shared_str& hud_section = HudSection();
 
 		bool is_16x9 = UI().is_widescreen();
 
@@ -3054,16 +3068,19 @@ void CWeapon::InitAddons()
 
 		if (IsScopeAttached())
 		{
-			const char* scope_sect = GetCurrentScopeSection().c_str();
+			CScope* pScope = GetScopeAttached();
+			const char* scope_sect = pScope ? pScope->cNameSect_str() : nullptr;
 			if (IsScopePermanent())
 			{
 				scope_sect = cNameSect().c_str();
 			}
-
-			m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_zoom_factor", m_fHudFovZoomFactor);
-			m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_gl_zoom_factor", m_fHudFovGLZoomFactor);
-			m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "alter_zoom_allowed", m_AlterZoomAllowed);
-			m_Allow3DScope = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "allow_3d_scope", m_Allow3DScope);
+			if (scope_sect)
+			{
+				m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_zoom_factor", m_fHudFovZoomFactor);
+				m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_gl_zoom_factor", m_fHudFovGLZoomFactor);
+				m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "alter_zoom_allowed", m_AlterZoomAllowed);
+				m_Allow3DScope = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "allow_3d_scope", m_Allow3DScope);
+			}
 		}
 		else
 		{
@@ -3119,7 +3136,8 @@ bool CWeapon::CanAimNow()
 
 			if (IsScopeAttached())
 			{
-				sect = IsScopeAttachable() ? GetCurrentScopeSection() : cNameSect();
+				CScope* pScope = GetScopeAttached();
+				sect = pScope ? pScope->cNameSect() : cNameSect();
 			}
 
 			if (READ_IF_EXISTS(pSettings, r_bool, sect, "prohibit_aim_for_grenade_mode", false))
@@ -3766,6 +3784,82 @@ EHudOffsetType CWeapon::GetCurrentHudOffsetIdx() const
 	}
 }
 
+void CWeapon::UpdateBoneAiming()
+{
+	attachable_hud_item* hi = HudItemData();
+	const EHudOffsetType idx = GetCurrentHudOffsetIdx();
+
+	static constexpr float AIM_ALIGN_TIME = 0.15f;
+	float align_k = Device.fTimeDelta / AIM_ALIGN_TIME;
+	clamp(align_k, 0.0f, 1.0f);
+
+	if (idx == EHudOffsetType::eAim)
+	{
+		const Fmatrix* bone_parent = nullptr;
+		IKinematics* bone_model = nullptr;
+		u16 bone_id = BI_NONE;
+
+		if (const item_attachment* attachment_scope = GetRealattachment(GetScopeName(), eTypeScope))
+		{
+			const item_attachment::placement& place = attachment_scope->hud_place;
+			if (place.m_model && place.aim_bone_id != BI_NONE && place.aim_bone_id < place.m_model->LL_BoneCount() && place.m_model->LL_GetBoneVisible(place.aim_bone_id))
+			{
+				bone_parent = &place.mTransform;
+				bone_model = place.m_model;
+				bone_id = (u16)place.aim_bone_id;
+			}
+		}
+
+		if (!bone_parent && hi->m_model && hi->m_aim_bone_id != BI_NONE && hi->m_aim_bone_id < hi->m_model->LL_BoneCount() && hi->m_model->LL_GetBoneVisible(hi->m_aim_bone_id))
+		{
+			bone_parent = &hi->m_item_transform;
+			bone_model = hi->m_model;
+			bone_id = (u16)hi->m_aim_bone_id;
+		}
+
+		if (bone_parent && bone_model && bone_id != BI_NONE)
+		{
+			Fmatrix bone_world;
+			bone_world.mul_43(*bone_parent, bone_model->LL_GetTransform(bone_id)).invert();
+			Fmatrix target;
+			target.mul_43(bone_world, m_hud_trans_last);
+
+			Fquaternion q_target;
+			q_target.set(target);
+			m_hud_aim_align.slerp(m_hud_aim_align, q_target, align_k);
+			m_hud_aim_align_pos.lerp(m_hud_aim_align_pos, target.c, align_k);
+			m_fHudAimAlign = clampr(m_fHudAimAlign + align_k, 0.0f, 1.0f);
+		}
+		else
+		{
+			m_fHudAimAlign = clampr(m_fHudAimAlign - align_k, 0.0f, 1.0f);
+		}
+	}
+	else
+	{
+		m_fHudAimAlign = clampr(m_fHudAimAlign - align_k, 0.0f, 1.0f);
+	}
+}
+
+bool CWeapon::LerpBoneAiming(Fmatrix& trans, Fmatrix& hud_rotation)
+{
+	if (m_fHudAimAlign > 0.0f)
+	{
+		Fquaternion q_config, q_blend;
+		q_config.set(hud_rotation);
+		q_blend.slerp(q_config, m_hud_aim_align, m_fHudAimAlign);
+
+		Fmatrix blended;
+		blended.rotation(q_blend);
+		blended.c.lerp(hud_rotation.c, m_hud_aim_align_pos, m_fHudAimAlign);
+		trans.mulB_43(blended);
+
+		return true;
+	}
+	ResetBoneAiming();
+	return false;
+}
+
 void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 {
 	CHudItem::UpdateHudAdditonal(trans);
@@ -3784,16 +3878,18 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 
 	const EHudOffsetType idx = GetCurrentHudOffsetIdx();
 
-	Fvector curr_offs = hi->m_measures.m_hands_positions.hands_offsets[0][idx];//pos,aim
-	Fvector curr_rot = hi->m_measures.m_hands_positions.hands_offsets[1][idx];//rot,aim
-	Fvector& saved_offs = hi->m_measures.m_hands_positions.hands_offsets_saved[0];
-	Fvector& saved_rot = hi->m_measures.m_hands_positions.hands_offsets_saved[1];
+	Fvector curr_offs = hi->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][idx]; // pos,aim
+	Fvector curr_rot = hi->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][idx];  // rot,aim
+	Fvector& saved_offs = hi->m_measures.m_hands_positions.hands_offsets_saved[EHudOffsetAxis::eAxisPos];
+	Fvector& saved_rot = hi->m_measures.m_hands_positions.hands_offsets_saved[EHudOffsetAxis::eAxisRot];
 
 	if (idx == EHudOffsetType::eDefault)
 	{
 		curr_offs.set(zero_vel);
 		curr_rot.set(zero_vel);
 	}
+
+	UpdateBoneAiming();
 
 	float factor = Device.fTimeDelta / m_zoom_params.m_fZoomRotateTime;
 
@@ -3819,7 +3915,15 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	}
 	else
 	{
-		saved_rot.add(Fvector().sub(curr_rot, saved_rot).mul(factor * SPEED_FACTOR));
+		Fvector angle_difference = 
+		{
+			angle_normalize_signed(angle_difference_signed(curr_rot.x, saved_rot.x)*(factor * SPEED_FACTOR)),
+			angle_normalize_signed(angle_difference_signed(curr_rot.y, saved_rot.y)*(factor * SPEED_FACTOR)),
+			angle_normalize_signed(angle_difference_signed(curr_rot.z, saved_rot.z)*(factor * SPEED_FACTOR))
+		};
+		saved_rot.x = angle_normalize_signed(saved_rot.x+angle_difference.x);
+		saved_rot.y = angle_normalize_signed(saved_rot.y+angle_difference.y);
+		saved_rot.z = angle_normalize_signed(saved_rot.z+angle_difference.z);
 	}
 
 	Fmatrix	hud_rotation;
@@ -3834,9 +3938,12 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	hud_rotation_y.identity();
 	hud_rotation_y.rotateZ(saved_rot.z);
 	hud_rotation.mulA_43(hud_rotation_y);
-
 	hud_rotation.translate_over(saved_offs);
-	trans.mulB_43(hud_rotation);
+
+	if (!LerpBoneAiming(trans, hud_rotation))
+		trans.mulB_43(hud_rotation);
+
+	m_hud_trans_last = trans;
 
 	if (IsZoomed())
 	{
@@ -4511,7 +4618,7 @@ CGrenadeLauncher* CWeapon::GetGrenadeLauncherAttached() const
 	return nullptr;
 }
 
-const shared_str& CWeapon::GetScopeName() const
+const shared_str CWeapon::GetScopeName() const
 {
 	if (CScope* pScope = GetScopeAttached())
 		return pScope->cNameSect();
@@ -4519,7 +4626,7 @@ const shared_str& CWeapon::GetScopeName() const
 	return m_sScopeName;
 }
 
-const shared_str& CWeapon::GetGrenadeLauncherName() const
+const shared_str CWeapon::GetGrenadeLauncherName() const
 {
 	if (CGrenadeLauncher* pGrenadeLauncher = GetGrenadeLauncherAttached())
 		return pGrenadeLauncher->cNameSect();
@@ -4527,7 +4634,7 @@ const shared_str& CWeapon::GetGrenadeLauncherName() const
 	return m_sGrenadeLauncherName;
 }
 
-const shared_str& CWeapon::GetSilencerName() const
+const shared_str CWeapon::GetSilencerName() const
 {
 	if (CSilencer* pSilencer = GetSilencerAttached())
 		return pSilencer->cNameSect();
