@@ -31,10 +31,12 @@ struct item_attachment final
 {
 	struct placement
 	{
+		Fmatrix mTransform = Fidentity;
 		Fvector position = Fvector{0, 0, 0};
 		Fvector direction = Fvector{0, 0, 0};
 		Fvector scale = Fvector{1, 1, 1};
 		int parent_bone_id = 0;
+		int aim_bone_id = BI_NONE;
 		IKinematics* m_model = nullptr;
 	};
 	shared_str mod_sect_name;
@@ -53,6 +55,7 @@ struct item_attachments_manager
 
 	void load_attachments(IKinematics* parent_model);
 	void load_attachment(shared_str sect_name, IKinematics* parent_model);
+	virtual void on_load_attachment(shared_str sect_name, item_attachment& attachment) {};
 	void switch_attachment(shared_str sect_name);
 	void enable_attachment(shared_str sect_name);
 	void disable_attachment(shared_str sect_name);

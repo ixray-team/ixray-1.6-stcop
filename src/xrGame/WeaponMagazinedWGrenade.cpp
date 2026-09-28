@@ -484,6 +484,23 @@ void CWeaponMagazinedWGrenade::PerformSwitchGL()
 
 	CShootingObject::fire_mode = m_bGrenadeMode ? eGlauncherFire : IsSilencerAttached() ? eSilencerFire : eDefaultFire;
 
+	CGrenadeLauncher* pGrenadeLauncher = GetGrenadeLauncherAttached();
+	if (m_bGrenadeMode && pGrenadeLauncher)
+	{
+		CShootingObject::Load(*pGrenadeLauncher->cNameSect());
+	}
+	else
+	{
+		if (CSilencer* pSilencer = GetSilencerAttached())
+		{
+			CShootingObject::Load(*pSilencer->cNameSect());
+		}
+		else
+		{
+			CShootingObject::Load(*cNameSect());
+		}
+	}
+
 	m_ammoTypes.swap(m_ammoTypes2);
 
 	u8 old = AmmoType.MagazineType;
@@ -920,6 +937,8 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem)
 
 bool CWeaponMagazinedWGrenade::Detach(PIItem pIItem)
 {
+	if (!pIItem) return false;
+
 	if (IsGrenadeLauncherAttachable() && pIItem->cast_addon_grenade_launcher())
 	{
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
@@ -989,7 +1008,9 @@ float	CWeaponMagazinedWGrenade::CurrentZoomFactor()
 //виртуальные функции для проигрывания анимации HUD
 void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_switch"), m_bGrenadeMode ? "anm_switch_grenade_on" : "anm_switch_grenade_off", EHudMixType::eMixAll, eSwitch);
+	u32 anim_time = PlayHUDMotion(SetCurrentStateAnimation("anm_switch"), m_bGrenadeMode ? "anm_switch_grenade_on" : "anm_switch_grenade_off", EHudMixType::eMixAll, eSwitch);
+	if (anim_time==0)
+		SwitchState(eIdle);
 }
 
 shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& first_name)

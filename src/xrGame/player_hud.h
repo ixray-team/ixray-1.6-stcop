@@ -19,7 +19,12 @@ enum EHudMixType : u8
 	eMixHands,
 	eMixAll
 };
-
+enum EHudOffsetAxis : u8
+{
+	eAxisPos,
+	eAxisRot,
+	eAxisMax
+};
 enum EHudOffsetType : u8
 {
 	eDefault,
@@ -180,15 +185,15 @@ struct hud_item_measures final
 	enum{e_fire_point=(1<<0), e_fire_point2=(1<<1), e_shell_point=(1<<2), e_16x9_mode_now=(1<<3)};
 	Flags8							m_prop_flags;
 
-	Fvector							m_item_attach[2];//pos,rot
+	Fvector m_item_attach[EHudOffsetAxis::eAxisMax]; // pos,rot
 
 	struct hud_hands_positions
 	{
 		void Load(const shared_str& section, bool is_16x9);
 		void LoadAimParams(const shared_str& section, bool is_16x9, bool default_is_self);
-		Fvector hands_offsets[2][EHudOffsetType::eHudOffsetsMax]; // pos,rot //normal, aim, gl, alt-aim, safemode
-		Fvector hands_offsets_saved[2]; //pos,rot
-		Fvector hands_offsets_tune[2][EHudOffsetType::eHudOffsetsMax];
+		Fvector hands_offsets[EHudOffsetAxis::eAxisMax][EHudOffsetType::eHudOffsetsMax]; // pos,rot //normal, aim, gl, alt-aim, safemode
+		Fvector hands_offsets_saved[EHudOffsetAxis::eAxisMax];							 // pos,rot
+		Fvector hands_offsets_tune[EHudOffsetAxis::eAxisMax][EHudOffsetType::eHudOffsetsMax];
 		bool bIs16x9 = false;
 		shared_str sSection;
 	} m_hands_positions;
@@ -238,6 +243,7 @@ struct attachable_hud_item final
 	shared_str						m_sect_name;
 	IKinematics*					m_model;
 	u16								m_attach_place_idx;
+	int								m_aim_bone_id = BI_NONE;
 	hud_item_measures				m_measures;
 	shared_str						m_visual_name;
 	bool							m_model_combined = false;

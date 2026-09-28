@@ -554,6 +554,7 @@ bool CInventoryItem::Attach(PIItem pIItem)
 
 bool CInventoryItem::Detach(PIItem pIItem)
 {
+	if (!pIItem) return false;
 	if (OnClient())
 	{
 		return true;
@@ -624,21 +625,14 @@ CGameObject* CInventoryItem::GetChildByID(u32 child_id) const
 	return nullptr;
 }
 
-CGameObject* CInventoryItem::GetWeaponattachment(shared_str child_sect_name, EattachmentType type) const
+const item_attachment* CInventoryItem::GetRealattachment(shared_str child_sect_name, EattachmentType type) const
 {
 	for (auto& pair : m_children_storage)
 	{
-		if (!pair.second)
+		if (child_sect_name == pair.second->cNameSect())
 		{
-			continue;
-		}
-		if (pair.second->getDestroy())
-		{
-			continue;
-		}
-		if (child_sect_name == pair.second->cNameSect() && get_attachment(child_sect_name, type))
-		{
-			return pair.second;
+			if (const item_attachment* attachment = get_attachment(child_sect_name, type))
+				return attachment;
 		}
 	}
 	return nullptr;
