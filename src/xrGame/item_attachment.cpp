@@ -71,6 +71,8 @@ void item_attachments_manager::load_attachment(shared_str sect_name, IKinematics
 			attachment.state.set(eAStateFullyLoaded, true);
 		}
 
+		attachment.hud_place.aim_bone_id = pSettings->line_exist(attachment_modifiers_sect.c_str(), "attachment_hud_aim_bone_name") ? attachment.hud_place.m_model->LL_BoneID(pSettings->r_string(attachment_modifiers_sect.c_str(), "attachment_hud_aim_bone_name")) : BI_NONE;
+
 		attachment.place.position = pSettings->line_exist(attachment_modifiers_sect.c_str(), "attachment_position") ? pSettings->r_fvector3(attachment_modifiers_sect.c_str(), "attachment_position") : Fvector{0.f, 0.f, 0.f};
 		attachment.place.direction = pSettings->line_exist(attachment_modifiers_sect.c_str(), "attachment_direction") ? pSettings->r_fvector3(attachment_modifiers_sect.c_str(), "attachment_direction") : Fvector{0.f, 0.f, 0.f};
 		attachment.place.scale = pSettings->line_exist(attachment_modifiers_sect.c_str(), "attachment_scale") ? pSettings->r_fvector3(attachment_modifiers_sect.c_str(), "attachment_scale") : Fvector{1.f, 1.f, 1.f};
@@ -79,6 +81,8 @@ void item_attachments_manager::load_attachment(shared_str sect_name, IKinematics
 		attachment.attachment_type = pSettings->line_exist(attachment_modifiers_sect.c_str(), "attachment_type") ? EattachmentType(pSettings->r_u8(attachment_modifiers_sect.c_str(), "attachment_type")) : EattachmentType::eTypeNone;
 		attachment.state.set(eAStatePermanent, pSettings->line_exist(attachment_modifiers_sect.c_str(), "attachment_permanent") ? pSettings->r_bool(attachment_modifiers_sect.c_str(), "attachment_permanent") : false);
 	}
+	if (!parent_model)
+		on_load_attachment(sect_name, attachment);
 }
 
 void item_attachments_manager::unload_attachments()
@@ -170,7 +174,7 @@ void item_attachments_manager::disable_attachment(shared_str sect_name)
 
 void item_attachments_manager::render_attachments(Fmatrix& xform, IKinematics* parent_model, bool hud_mode)
 {
-	Fmatrix attachment_offset, attachment_final_transform;
+	Fmatrix attachment_offset;
 	for (auto& pair : m_attachments)
 	{
 		item_attachment& attachment = pair.second;
@@ -215,10 +219,10 @@ void item_attachments_manager::render_attachments(Fmatrix& xform, IKinematics* p
 		attachment_offset.j.mul(place.scale.y);
 		attachment_offset.k.mul(place.scale.z);
 		attachment_offset.translate_over(place.position);
-		attachment_final_transform.mul(parent_model->LL_GetTransform(place.parent_bone_id), attachment_offset);
-		attachment_final_transform.mulA_43(xform);
+		place.mTransform.mul_43(parent_model->LL_GetTransform(place.parent_bone_id), attachment_offset);
+		place.mTransform.mulA_43(xform);
 
-		::Render->set_Transform(&attachment_final_transform);
+		::Render->set_Transform(&place.mTransform);
 		::Render->add_Visual(place.m_model->dcast_RenderVisual());
 	}
 }

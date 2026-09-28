@@ -240,6 +240,8 @@ public:
 	{
 		return (ALife::eAddonPermanent == m_eSilencerStatus);
 	}
+
+	virtual void on_load_attachment(shared_str sect_name, item_attachment& attachment);
 			
 	ICF ALife::EWeaponAddonStatus	get_GrenadeLauncherStatus	() const { return m_eGrenadeLauncherStatus; }
 	ICF ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
@@ -349,15 +351,16 @@ public:
 	CSilencer* GetSilencerAttached() const;
 	CGrenadeLauncher* GetGrenadeLauncherAttached() const;
 
-	const shared_str& GetGrenadeLauncherName() const;
-	const shared_str& GetScopeName() const;
+	const shared_str GetGrenadeLauncherName() const;
+	const shared_str GetScopeName() const;
+	const shared_str GetSilencerName() const;
 	void UpdateAltScope();
 	shared_str GetNameWithAttachmentScope();
 	bool bReloadSectionScope(const char* section);
 	bool bLoadAltScopesParams(const char* section);
 	void LoadOriginalScopesParams(const char* section);
 	void LoadCurrentScopeParams(const char* section);
-	const shared_str& GetSilencerName() const;
+
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
 
@@ -442,12 +445,25 @@ public:
 	void MakeWeaponKick(Fvector& pos, Fvector& dir);
 	float GetNightPPEFactor();
 
+	bool LerpBoneAiming(Fmatrix& trans, Fmatrix& hud_rotation);
+	void UpdateBoneAiming();
+	ICF void ResetBoneAiming()
+	{
+		m_fHudAimAlign = 0.f;
+		m_hud_aim_align.identity();
+		m_hud_aim_align_pos = zero_vel;
+	}
 
 	float m_fMisfireAfterProblemsLevel = 10.0f;
 	float m_fRechargeTime = 0.0f;
 	float m_fLastRechargeTime = 0.0f;
 	float m_fSafeModeRotationFactor = 0.0f;
 	float m_fSafeModeRotateTime = 0.25f;
+
+	Fmatrix m_hud_trans_last = Fidentity;
+	Fquaternion m_hud_aim_align;
+	Fvector m_hud_aim_align_pos = zero_vel;
+	float m_fHudAimAlign = 0.0f;
 
 
 	bool bUpdateHUDBonesVisibility = false;
@@ -570,8 +586,8 @@ protected:
 	InertionData	m_base_inertion;
 	InertionData	m_zoom_inertion;
 	bool m_bIAmWeaponRPG7 = false;
-	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
-	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
+
+protected:
 
 	u8 m_LastShotAmmoType = 0;
 
