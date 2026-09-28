@@ -177,20 +177,10 @@ void CDetailManager::hw_Render(light*L)
 		RCache.set_c(&*hwc_consts, scale, scale, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);				// consts
 		RCache.set_c(&*hwc_wave, wave.div(PI_MUL_2));	// wave
 		RCache.set_c(&*hwc_wind, wave_dir1);																					// wind-dir
-		if (CPU::ID().hasFeature(CPUFeature::AVX))
-		{
-			if(L)
-				hw_Render_dump<__m256, true>(&*hwc_array, 1, 0, L);
-			else
-				hw_Render_dump<__m256, false>(&*hwc_array, 1, 0);
-		}
+		if(L)
+			hw_Render_dump<CDetail::SlotItem, true>(&*hwc_array, 1, 0, L);
 		else
-		{
-			if (L)
-				hw_Render_dump<CDetail::SlotItem, true>(&*hwc_array, 1, 0, L);
-			else
-				hw_Render_dump<CDetail::SlotItem, false>(&*hwc_array, 1, 0);
-		}
+			hw_Render_dump<CDetail::SlotItem, false>(&*hwc_array, 1, 0);
 	}
 
 	// Wave1
@@ -199,20 +189,10 @@ void CDetailManager::hw_Render(light*L)
 		wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 		RCache.set_c(&*hwc_wave, wave.div(PI_MUL_2));	// wave
 		RCache.set_c(&*hwc_wind, wave_dir2);																					// wind-dir
-		if (CPU::ID().hasFeature(CPUFeature::AVX))
-		{
-			if (L)
-				hw_Render_dump<__m256, true>(&*hwc_array, 2, 0, L);
-			else
-				hw_Render_dump<__m256, false>(&*hwc_array, 2, 0);
-		}
+		if (L)
+			hw_Render_dump<CDetail::SlotItem, true>(&*hwc_array, 2, 0, L);
 		else
-		{
-			if (L)
-				hw_Render_dump<CDetail::SlotItem, true>(&*hwc_array, 2, 0, L);
-			else
-				hw_Render_dump<CDetail::SlotItem, false>(&*hwc_array, 2, 0);
-		}
+			hw_Render_dump<CDetail::SlotItem, false>(&*hwc_array, 2, 0);
 	}
 
 	// Still
@@ -220,20 +200,10 @@ void CDetailManager::hw_Render(light*L)
 		PROF_EVENT("Still")
 		RCache.set_c(&*hwc_s_consts, scale, scale, scale, 1.f);
 		RCache.set_c(&*hwc_s_xform, RDEVICE.mFullTransform);
-		if (CPU::ID().hasFeature(CPUFeature::AVX))
-		{
-			if (L)
-				hw_Render_dump<__m256, true>(&*hwc_s_array, 0, 1, L);
-			else
-				hw_Render_dump<__m256, false>(&*hwc_s_array, 0, 1);
-		}
+		if (L)
+			hw_Render_dump<CDetail::SlotItem, true>(&*hwc_s_array, 0, 1, L);
 		else
-		{
-			if (L)
-				hw_Render_dump<CDetail::SlotItem, true>(&*hwc_s_array, 0, 1, L);
-			else
-				hw_Render_dump<CDetail::SlotItem, false>(&*hwc_s_array, 0, 1);
-		}
+			hw_Render_dump<CDetail::SlotItem, false>(&*hwc_s_array, 0, 1);
 	}
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);

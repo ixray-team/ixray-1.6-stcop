@@ -3,12 +3,20 @@
 #define dir2D wind
 #define dir2D_old wind_old
 
+cbuffer TrampleConstants
+{
+    float4 trample_params;
+};
+
 struct InstanceData
 {
     float3 quat;
     float  scale;
     float3 pos;
     float  hemi;
+    float  trample_strength;
+    float  trample_visual;
+    float2 trample_dir;
 };
 
 StructuredBuffer<InstanceData> detail_buffer : register(t0);
@@ -60,17 +68,52 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
 #ifdef USE_TREEWAVE
     float dp = calc_cyclic(dot(pos_world, wave.xyz) + wave.w);
     float H = I.pos.y * det.scale;
-    float inten = H * dp;
+    float windScale = 1.0f - 0.95f * smoothstep(0.02f, 0.15f, det.trample_visual);
+    float inten = H * dp * windScale;
     
     pos.xz += calc_xz_wave(dir2D.xz * inten, I.pos.w);
     
 	#ifndef DISABLE_MOTION_VECTORS
 		float dp_old = calc_cyclic(dot(pos_world, wave_old.xyz) + wave_old.w);
-		float inten_old = H * dp_old;
+		float inten_old = H * dp_old * windScale;
 		
 		pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, I.pos.w);
 	#endif
 #endif
+
+    if (det.trample_visual > 0.001f)
+    {
+        float strength = det.trample_visual;
+        float2 moveDir = det.trample_dir;
+
+        float baseY = det.pos.y;
+        float hAbove = max(pos.y - baseY, 0.0f);
+
+        float hw = saturate(I.pos.y);
+        float bendT = saturate((hw - 0.15f) / 0.85f);
+
+        float noise = frac(sin(dot(det.pos.xz, float2(12.9898, 78.233))) * 43758.5453);
+        float arcY = saturate(1.0f - bendT * strength * trample_params.y);
+        arcY = max(arcY, 0.15f + noise * 0.1f * strength);
+
+        pos.y = baseY + hAbove * arcY;
+
+        float spreadScale = 1.0f + hAbove * bendT * strength * trample_params.x * 0.15f;
+        float2 bladeOffset = pos.xz - det.pos.xz;
+        pos.xz = det.pos.xz + bladeOffset * spreadScale;
+
+        float lean = hAbove * bendT * strength * trample_params.x;
+        lean = min(lean, hAbove * 0.5f);
+        pos.xz += moveDir * lean;
+
+        #ifndef DISABLE_MOTION_VECTORS
+            float hOld = max(pos_old.y - baseY, 0.0f);
+            pos_old.y = baseY + hOld * arcY;
+            float2 bladeOffsetOld = pos_old.xz - det.pos.xz;
+            pos_old.xz = det.pos.xz + bladeOffsetOld * spreadScale;
+            pos_old.xz += moveDir * lean;
+        #endif
+    }
     
     O.hpos = mul(m_VP, pos);
 	
@@ -95,4 +138,3 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
     O.tc0 = I.tc.xy;
 #endif
 }
-
