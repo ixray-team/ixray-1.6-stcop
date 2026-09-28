@@ -89,6 +89,17 @@ virtual	const IBoneData&		_BCL	GetBoneData(u16 bone_id) const = 0;
 
 	virtual void						BonesHistory_Invalidate() = 0;
 
+	virtual void						LL_SetShader(LPCSTR sh_name) {};
+	virtual void						LL_RestoreShader() {};
+	virtual void						LL_SetShader(u16 bone_id, LPCSTR sh_name) {};
+	virtual void						LL_RestoreShader(u16 bone_id) {};
+
+	virtual void						LL_SetTexture(LPCSTR tex_name) {};
+	virtual void						LL_RestoreTexture() {};
+	virtual void						LL_SetTexture(u16 bone_id, LPCSTR tex_name) {};
+	virtual void						LL_RestoreTexture(u16 bone_id) {};
+
+	virtual xr_vector<IRenderVisual*>& LL_GetChilds() { static xr_vector<IRenderVisual*>  childs; return childs; };
 	// Main functionality
 	virtual void						CalculateBones(bool bForceExact	= false) = 0; // Recalculate skeleton
 	virtual void						CalculateBones_Invalidate() = 0;

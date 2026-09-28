@@ -19,8 +19,18 @@ public:
 	bool IsIgnoreOptimize = false;
 
 
-	virtual shared_str	getDebugName() = 0;
+	virtual shared_str getDebugName() = 0;
+	virtual shared_str getShaderName() { return shared_str(""); }
+	virtual shared_str getTextureName() { return shared_str(""); }
+	virtual shared_str getOrigShaderName() { return shared_str(""); }
+	virtual shared_str getOrigTextureName() { return shared_str(""); }
 
+	virtual void set_shader(shared_str sh_name) { ; }
+	virtual void set_texture(shared_str tex_name) { ; }
+
+	virtual void reload_shader() { ; }
+	virtual void restore_shader() { ; }
+	virtual void restore_texture() { ; }
 
 	virtual	IKinematics*	_BCL	dcast_PKinematics			()				{ return 0;	}
 	virtual	IKinematicsAnimated*	dcast_PKinematicsAnimated	()				{ return 0;	}
