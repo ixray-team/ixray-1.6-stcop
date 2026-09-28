@@ -105,6 +105,7 @@ void CLevel::remove_objects	()
 	BulletManager().Clear		();
 	ph_commander().clear		();
 	ph_commander_scripts().clear();
+	m_postponedPackets.clear	();
 
 	space_restriction_manager().clear	();
 
@@ -149,6 +150,7 @@ extern CUISequencer * g_tutorial2;
 void CLevel::net_Stop()
 {
 	Msg("- Disconnect");
+	m_postponedPackets.clear();
 	script_client_events.clear();
 
 	if(CurrentGameUI())
@@ -294,6 +296,8 @@ void CLevel::ClientSend()
 
 void CLevel::ClientSave()
 {
+	ProcessPostponed(false);
+
 	u32 Iter = 0;
 	u32 ChunkID = 0;
 

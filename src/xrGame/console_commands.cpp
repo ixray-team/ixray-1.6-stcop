@@ -3253,6 +3253,9 @@ void CCC_RegisterCommands()
 
 	CMD4(CCC_Integer, "keypress_on_start", &g_keypress_on_start, 0, 1);
 
+	extern int ps_events_time_budget_ms;
+	CMD4(CCC_Integer, "g_events_time_budget_ms", &ps_events_time_budget_ms, 0, 100);
+
 #ifdef XR_MP_BUILD
 	register_mp_console_commands();
 #endif // XR_MP_BUILD
