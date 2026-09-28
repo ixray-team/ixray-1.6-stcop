@@ -191,7 +191,7 @@ ICF void enum_verts(T_Enum& output, u16* indices, CBoneData::FacesVec& faces, re
 
 class CSkeletonX : public FProgressive
 {
-protected:
+public:
 	enum { vertRenderFVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1 };
 	enum { RM_SKINNING_SOFT, RM_SINGLE, RM_SKINNING_1B, RM_SKINNING_2B, RM_SKINNING_3B, RM_SKINNING_4B};
 
@@ -224,7 +224,7 @@ protected:
 	void _Load_hw(void* data);
 	void _CollectBoneFaces();
 	void _DuplicateIndices(IReader* data);
-public:
+
 	ICF u16 get_child_id() { return ChildIDX; };
 	ICF void set_simple_visible(bool val) { visible = val; };
 	ICF bool get_simple_visible() { return visible; };

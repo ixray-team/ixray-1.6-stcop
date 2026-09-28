@@ -11,7 +11,7 @@
 
 #include "FBasicVisual.h"
 #include "../../xrEngine/Fmesh.h"
-
+#include "SkeletonX.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -63,7 +63,14 @@ void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
 		string256		fnT,fnS;
 		data->r_stringZ	(fnT,sizeof(fnT));
 		data->r_stringZ	(fnS,sizeof(fnS));
-		shader.create	(fnS,fnT);
+
+		texture_name = fnT;
+		orig_texture_name = fnT;
+
+		shader_name = fnS;
+		orig_shader_name = fnS;
+
+		shader.create(fnS, fnT);
 	}
 
     // desc
@@ -73,10 +80,49 @@ void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
 #endif
 }
 
+ICF int RenderMode_to_SkinningMode(u32 rm)
+{
+	return (rm == CSkeletonX::RM_SKINNING_SOFT) ? -1 : int(rm) - 1;
+}
+void dxRender_Visual::reload_shader()
+{
+	int old_mode = Engine.External.GetSkinningMode();
+	if (CSkeletonX* S = smart_cast<CSkeletonX*>(this))
+	{
+		Engine.External.SetSkinningMode(RenderMode_to_SkinningMode(S->RenderMode));
+	}
+	shader.create(*shader_name, *texture_name);
+	Engine.External.SetSkinningMode(old_mode);
+}
+void dxRender_Visual::restore_shader()
+{
+	int old_mode = Engine.External.GetSkinningMode();
+	if (CSkeletonX* S = smart_cast<CSkeletonX*>(this))
+	{
+		Engine.External.SetSkinningMode(RenderMode_to_SkinningMode(S->RenderMode));
+	}
+	shader.create(*orig_shader_name, *texture_name);
+	Engine.External.SetSkinningMode(old_mode);
+}
+void dxRender_Visual::restore_texture()
+{
+	int old_mode = Engine.External.GetSkinningMode();
+	if (CSkeletonX* S = smart_cast<CSkeletonX*>(this))
+	{
+		Engine.External.SetSkinningMode(RenderMode_to_SkinningMode(S->RenderMode));
+	}
+	shader.create(*shader_name, *orig_texture_name);
+	Engine.External.SetSkinningMode(old_mode);
+}
+
 #define PCOPY(a)	a = pFrom->a
 void	dxRender_Visual::Copy(dxRender_Visual *pFrom)
 {
 	PCOPY(Type);
+	PCOPY(orig_texture_name);
+	PCOPY(texture_name);
+	PCOPY(orig_shader_name);
+	PCOPY(shader_name);
 	PCOPY(shader);
 	PCOPY(vis);
 #ifdef _EDITOR
