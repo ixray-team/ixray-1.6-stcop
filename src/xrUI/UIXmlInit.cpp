@@ -573,10 +573,14 @@ bool CUIXmlInit::InitSound(CUIXml& xml_doc, const char* path, int index, CUI3tBu
 }
 
 bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, const char* path, 
-						int index, CUIProgressBar* pWnd)
+						int index, CUIProgressBar* pWnd, bool fatal)
 {
 	bool ValidNode = xml_doc.NavigateToNode(path, index);
-	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
+	if (!ValidNode)
+	{
+		R_ASSERT4(!fatal, "XML node not found", path, xml_doc.m_xml_file_name);
+		return false;
+	}
 
 	InitAutoStaticGroup			(xml_doc, path, index, pWnd);
 

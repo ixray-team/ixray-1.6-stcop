@@ -38,7 +38,7 @@ public:
     static	CUI3dStatic*        Create3dStatic      ( CUIXml& xml, const char* ui_path, CUIWindow* parent, bool critical = true, int node_index = 0 );
 	static	CUIStackPanel*		CreateStackPanel	( CUIXml& xml, const char* ui_path, CUIWindow* parent, bool critical = true );
 	static	CUIGamepadLegend*	CreateGamepadLegend	( CUIXml& xml, const char* ui_path, CUIWindow* parent, bool critical = true );
-	static	CUIProgressBar*		CreateProgressBar	( CUIXml& xml, const char* ui_path, CUIWindow* parent );
+	static	CUIProgressBar*		CreateProgressBar	( CUIXml& xml, const char* ui_path, CUIWindow* parent, bool critical = true );
 	static	CUIProgressShape*	CreateProgressShape	( CUIXml& xml, const char* ui_path, CUIWindow* parent );
 	static	CUIFrameLineWnd*	CreateFrameLine		( CUIXml& xml, const char* ui_path, CUIWindow* parent, bool critical = true );
 	static	CUIFrameWindow*		CreateFrameWindow	( CUIXml& xml, const char* ui_path, CUIWindow* parent, bool critical = true );
