@@ -20,6 +20,7 @@ public:
 	float turn_speed_min = 1.0f; // Angle per second
 	float turn_speed_max = PI;
 	bool lookat_active;
+	bool is_initialized = false;
 
 	enum{
 		flRelativeLink		= (1<<0),
@@ -59,8 +60,8 @@ public:
 	virtual void	Update(Fvector& point, Fvector& noise_angle, bool force_update_pos = true)
 	{
 		UpdateLookat();
-		
-		if (static bool is_initialized; !is_initialized)
+
+		if (!is_initialized)
 		{
 			prev_yaw = yaw;
 			prev_pitch = pitch;
