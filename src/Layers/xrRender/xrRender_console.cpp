@@ -294,6 +294,18 @@ xr_token sharpening_mode_token[] =
 float		ps_r__detail_rnd_scale_min = 0.3f;
 float		ps_r__detail_rnd_scale_max = 0.9f;
 
+float		ps_trample_bend = 12.94f;
+float		ps_trample_squash = 3.64f;
+float		ps_trample_trail_min = 0.23f;
+float		ps_trample_trail_max = 3.25f;
+float		ps_trample_obj_radius_scale = 0.67f;
+float		ps_trample_actor_radius_scale = 0.8f;
+int			ps_trample_enabled = 0;
+float		ps_trample_cooltime = 30.0f;
+float		ps_trample_draw_radius = 63.0f;
+float		ps_trample_brush_fill = 0.82f;
+float		ps_trample_press_speed = 0.8f;
+
 // Test float exported to shaders for development
 float		ps_r__test_exp_to_shaders_1	= 1.0f;
 float		ps_r__test_exp_to_shaders_2	= 1.0f;
@@ -917,6 +929,18 @@ void		xrRender_initconsole	()
 
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_min", &ps_r__detail_rnd_scale_min, 0.0f, 100.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_max", &ps_r__detail_rnd_scale_max, 0.0f, 100.0f);
+
+	CMD4(CCC_Float, "r__detail_trample_bend", &ps_trample_bend, 0.0f, 20.0f);
+	CMD4(CCC_Float, "r__detail_trample_squash", &ps_trample_squash, 0.0f, 20.0f);
+	CMD4(CCC_Float, "r__detail_trample_trail_min", &ps_trample_trail_min, 0.05f, 10.0f);
+	CMD4(CCC_Float, "r__detail_trample_trail_max", &ps_trample_trail_max, 0.1f, 50.0f);
+	CMD4(CCC_Float, "r__detail_trample_obj_radius_scale", &ps_trample_obj_radius_scale, 0.0f, 2.0f);
+	CMD4(CCC_Float, "r__detail_trample_actor_radius_scale", &ps_trample_actor_radius_scale, 0.0f, 2.0f);
+	CMD2(CCC_Boolean, "r__detail_trample_enabled", (bool*)&ps_trample_enabled);
+	CMD4(CCC_Float, "r__detail_trample_cooltime", &ps_trample_cooltime, 0.5f, 600.0f);
+	CMD4(CCC_Float, "r__detail_trample_draw_radius", &ps_trample_draw_radius, 25.0f, 200.0f);
+	CMD4(CCC_Float, "r__detail_trample_brush_fill", &ps_trample_brush_fill, 0.1f, 1.0f);
+	CMD4(CCC_Float, "r__detail_trample_press_speed", &ps_trample_press_speed, 0.1f, 50.0f);
 
 	CMD1(CCC_DetailLayersForceBake, "r__detail_bake_force");
 	CMD1(CCC_DetailLayersForceLoad, "r__detail_bake_force_load");
