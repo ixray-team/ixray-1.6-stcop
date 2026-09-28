@@ -369,7 +369,8 @@ const char* mov_state[] ={
 };
 void CActor::g_SetAnimation( u32 mstate_rl )
 {
-
+	if (m_bAnimOverride)
+		return;
 
 	if (!g_Alive()) {
 		if (m_current_legs||m_current_torso){

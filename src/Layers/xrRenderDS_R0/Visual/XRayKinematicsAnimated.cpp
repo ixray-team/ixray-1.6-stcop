@@ -730,6 +730,12 @@ void CDS0_KinematicsAnimated::IBlend_Startup()
 		blend_cycles[i].clear();
 	blend_fx.clear();
 	ChannelFactorsStartup();
+
+	if (blend_instances)
+	{
+		for (u32 i = 0; i < bones->size(); i++)
+			blend_instances[i].construct();
+	}
 }
 
 CBlend* CDS0_KinematicsAnimated::IBlend_Create()
@@ -894,6 +900,8 @@ void CDS0_KinematicsAnimated::LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8
 	for (CBlend* BI : Blend)
 	{
 		CBlend* B = BI;
+		if (B->blend_state() == CBlend::eFREE_SLOT)
+			continue;
 		int& b_count = keys.chanel_blend_conts[B->channel];
 		CKey* D = &keys.keys[B->channel][b_count];
 

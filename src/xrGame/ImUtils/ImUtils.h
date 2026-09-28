@@ -4,6 +4,8 @@
 
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/string_table.h"
+#include "../xrEngine/IGame_Level.h"
+#include "../../Include/xrRender/KinematicsAnimated.h"
 #include <clsid_game.h>
 
 struct STextureParams;
@@ -365,6 +367,58 @@ struct CHudAdjustManager
 	bool is_initialized;
 };
 
+struct CActorAnimationManager
+{
+	struct SAnimation
+	{
+		shared_str name;
+		bool fx = false;
+	};
+
+	struct SSource
+	{
+		shared_str id;
+		xr_vector<SAnimation> animations;
+	};
+
+	struct SFavorite
+	{
+		shared_str source;
+		shared_str name;
+		bool fx = false;
+	};
+
+	xr_vector<SSource> sources;
+	xr_vector<SFavorite> favorites;
+	MotionID played_motion;
+	shared_str played_name;
+	IGame_Level* level = nullptr;
+	char filter[128] = {};
+	bool override_mode = false;
+	bool played_fx = false;
+	bool mix = true;
+	bool loop = false;
+	float speed = 1.0f;
+	s32 selected_source = -1;
+
+	void reload();
+	void draw();
+	void play(const SSource& source, const SAnimation& animation);
+	void play_pause();
+	void frame_step(s32 direction);
+	void stop();
+	void set_override(bool value);
+	bool ensure_source(IKinematicsAnimated* kinematics, const shared_str& source);
+
+	const SSource* find_source(const shared_str& source) const;
+	const SAnimation* find_animation(const SSource& source, const shared_str& name, bool fx) const;
+	bool is_favorite(const shared_str& source, const shared_str& name) const;
+	void add_favorite(const shared_str& source, const SAnimation& animation);
+	void remove_favorite(const shared_str& source, const shared_str& name);
+	void load_favorites();
+	void save_favorites();
+};
+
 template <typename T>
 class ThreadSafeQueue {
 private:
@@ -664,6 +718,7 @@ void RenderQuestEditor();
 void RenderPPEEditor();
 void Render3rdAdjust();
 void RenderDemoRecordEditorWindow();
+void RenderActorAnimationManager();
 
 /* MISCELLANEOUS */
 
@@ -708,6 +763,7 @@ void execute_console_command_deferred(CConsole* c, const char* string_to_execute
 extern clsid_manager* g_pClsidManager;
 extern CImGuiGameSearchManager imgui_search_manager;
 extern CHudAdjustManager imgui_hud_adjust_manager;
+extern CActorAnimationManager imgui_actor_animation_manager;
 extern CImGuiTextureEditor g_imgui_texture_editor;
 extern CImGuiRequestManager g_imgui_editor_request_manager;
 
