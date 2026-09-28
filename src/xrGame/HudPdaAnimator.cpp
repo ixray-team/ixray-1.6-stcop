@@ -442,8 +442,8 @@ void CHudPdaAnimator::UpdateHudAdditonal(Fmatrix& trans)
 
 	animator_item* animator = g_player_hud->GetAnimator();
 
-	Fvector curr_offs = animator->m_hands_positions.hands_offsets[0][idx];//pos,aim
-	Fvector curr_rot = animator->m_hands_positions.hands_offsets[1][idx];//rot,aim
+	Fvector curr_offs = animator->m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][idx]; // pos,aim
+	Fvector curr_rot = animator->m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisRot][idx];  // rot,aim
 	curr_offs.mul(m_fZoomRotationFactor);
 	curr_rot.mul(m_fZoomRotationFactor);
 
