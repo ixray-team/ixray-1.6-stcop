@@ -237,6 +237,24 @@ public:
 	virtual bool					is_sun_static			()	{ return o.sunstatic;}
 	virtual DWORD					get_dx_level			()	{ return 0x000A0001; }
 
+	virtual void					detail_trample_mark(float x, float y, float z, float radius, float weight, bool isActor = false) override
+	{
+		if (Details)
+			Details->TrampleMark(x, y, z, radius, weight, isActor);
+	}
+
+	virtual bool					detail_trample_enabled() const override
+	{
+		extern int ps_trample_enabled;
+		return ps_trample_enabled != 0;
+	}
+
+	virtual float					detail_trample_draw_radius() const override
+	{
+		extern float ps_trample_draw_radius;
+		return ps_trample_draw_radius;
+	}
+
 	// Detail Layers Editor tool (brush overlay + ImGui window)
 	void renderImGuiDebugWindow_DetailLayersEditor() override;
 	void DetailLayers_RenderBrush3D();
