@@ -6,12 +6,16 @@ class ECORE_API CDetail:
 	public IRender_DetailModel
 {
 public:
-	struct alignas(32) SlotItem// один кустик
+	struct alignas(16) SlotItem
 	{
 		Fvector quat;
 		float scale;
 		Fvector pos;
 		float c_hemi;
+		float trample_strength;
+		float trample_visual;
+		float trample_dirX;
+		float trample_dirZ;
 	};
 	
 #ifdef USE_DX11

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <atomic>
+#include <mutex>
 #include "../../xrCore/xrPool.h"
 #include "DetailFormat.h"
 #include "DetailModel.h"
@@ -70,8 +71,10 @@ public:
 		DetailSlot* DS;
 		vis_data vis;
 		SlotPart G[dm_obj_in_slot];
+		bool has_trample;
+		u32 trample_tick;
 
-		ICF Slot() : empty(1), type(stReady), DS(nullptr){ vis.clear(); }
+		ICF Slot() : empty(1), type(stReady), DS(nullptr), has_trample(false), trample_tick(0){ vis.clear(); }
 	};
     struct SlideSlot
 	{
@@ -224,6 +227,21 @@ public:
 
 #ifdef USE_DX11
 	xr_map<u32, std::pair<IRHIBuffer*, IRHIShaderResourceView*>> DetailInstanceBuffers;
+
+	Fvector							TrampleLastCamPos;
+	float							TramplePlayerRadius		= 1.5f;
+
+	struct STramplePendingMark
+	{
+		float x, y, z, radius, weight;
+	};
+	xr_vector<STramplePendingMark>	TramplePendingMarks;
+	std::mutex						TramplePendingLock;
+
+	void							TrampleMark(float x, float y, float z, float radius, float weight, bool isActor = false);
+	void							TrampleProcessMarks		();
+	void							TrampleAnimateItems		();
+	xr_vector<u32>					TrampleActiveSlots;
 
 	template<typename T>
 	void							hw_Render_dump	(const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L=NULL);

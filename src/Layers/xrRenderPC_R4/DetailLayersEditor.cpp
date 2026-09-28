@@ -1008,6 +1008,8 @@ void CRender::DetailLayers_RenderBrush3D()
 		return;
 
 	BrushState& st = s_state();
+	if (st.tab > 1)
+		return;
 
 	Fvector hit;
 	Fvector groundN;
@@ -1529,6 +1531,43 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 		ddRadius |= ImGui::SliderInt("Grass radius, m (r__detail_radius)", &ps_r__detail_radius, 50, 2000);
 		dgt |= ddRadius;
 
+		ImGui::Spacing();
+		ImGui::SeparatorText("Grass trample");
+		{
+			extern int   ps_trample_enabled;
+			extern float ps_trample_bend;
+			extern float ps_trample_squash;
+			extern float ps_trample_trail_min;
+			extern float ps_trample_trail_max;
+			extern float ps_trample_obj_radius_scale;
+			extern float ps_trample_actor_radius_scale;
+			extern float ps_trample_cooltime;
+			extern float ps_trample_draw_radius;
+			extern float ps_trample_brush_fill;
+			extern float ps_trample_press_speed;
+			ImGui::Checkbox("Enabled##trample", (bool*)&ps_trample_enabled);
+			ImGui::TextDisabled("(how far the tip leans in stroke direction)");
+			ImGui::SliderFloat("Bend##trample", &ps_trample_bend, 0.0f, 20.0f, "%.2f");
+			ImGui::TextDisabled("(how much the blade presses toward the ground)");
+			ImGui::SliderFloat("Squash##trample", &ps_trample_squash, 0.0f, 20.0f, "%.2f");
+			ImGui::TextDisabled("(minimum brush radius for small objects)");
+			ImGui::SliderFloat("Trail min##trample", &ps_trample_trail_min, 0.05f, 10.0f, "%.2f");
+			ImGui::TextDisabled("(maximum brush radius for large objects and player)");
+			ImGui::SliderFloat("Trail max##trample", &ps_trample_trail_max, 0.1f, 50.0f, "%.2f");
+			ImGui::TextDisabled("(object size multiplier: 1.0 = natural shape size)");
+			ImGui::SliderFloat("Obj radius scale##trample", &ps_trample_obj_radius_scale, 0.0f, 2.0f, "%.2f");
+			ImGui::TextDisabled("(player shape size multiplier)");
+			ImGui::SliderFloat("Actor radius scale##trample", &ps_trample_actor_radius_scale, 0.0f, 2.0f, "%.2f");
+			ImGui::TextDisabled("(seconds for trampled grass to recover)");
+			ImGui::SliderFloat("Cool time, s##trample", &ps_trample_cooltime, 0.5f, 600.0f, "%.1f");
+			ImGui::TextDisabled("(how far trample marks affect grass around the player)");
+			ImGui::SliderFloat("Draw radius, m##trample", &ps_trample_draw_radius, 25.0f, 200.0f, "%.0f");
+			ImGui::TextDisabled("(inner brush fill ratio: 1.0 = hard edge, 0.1 = very soft)");
+			ImGui::SliderFloat("Brush fill##trample", &ps_trample_brush_fill, 0.1f, 1.0f, "%.2f");
+			ImGui::TextDisabled("(how fast grass presses down when stepped on)");
+			ImGui::SliderFloat("Press speed##trample", &ps_trample_press_speed, 0.1f, 50.0f, "%.1f");
+		}
+
 		if (dgt && D)
 		{
 			if (ddRadius)
@@ -1688,10 +1727,11 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 	}
 
 	const bool overWindow = ImGui::GetIO().WantCaptureMouse;
-	const bool btnL = D && !overWindow && ImGui::IsMouseDown(ImGuiMouseButton_Left);
-	const bool btnR = D && !overWindow && ImGui::IsMouseDown(ImGuiMouseButton_Right);
-	st.painting = btnL && D;
-	st.erasing = btnR && D;
+	const bool brushActive = D && st.tab <= 1;
+	const bool btnL = brushActive && !overWindow && ImGui::IsMouseDown(ImGuiMouseButton_Left);
+	const bool btnR = brushActive && !overWindow && ImGui::IsMouseDown(ImGuiMouseButton_Right);
+	st.painting = btnL;
+	st.erasing = btnR;
 
 	// The mouse wheel is left alone: it drives no-clip flight speed, so press intensity
 	// is edited exclusively with the on-screen slider.

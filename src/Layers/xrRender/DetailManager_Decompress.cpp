@@ -700,6 +700,10 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 			ItemP->scale = scale;
 			ItemP->pos = Item_P;
 			ItemP->c_hemi = hemi;
+			ItemP->trample_strength = 0.0f;
+			ItemP->trample_visual = 0.0f;
+			ItemP->trample_dirX = 0.0f;
+			ItemP->trample_dirZ = 0.0f;
 
 			SlotPart& SP = D.G[index];
 			SP.id = obj_id;
