@@ -2025,11 +2025,12 @@ static void dv_tab_wind()
 	ImGui::Checkbox("Enabled##wind", (bool*)&ps_wind_enabled);
 
 	ImGui::SeparatorText("Intensity mode");
-	static int mode_sel = 0;
+	int mode_sel = ps_wind_mode;
 	ImGui::RadioButton("Static##wm", &mode_sel, 0);
 	ImGui::SameLine();
 	ImGui::RadioButton("Dynamic (noise)##wm", &mode_sel, 1);
-	ps_wind_mode = mode_sel;
+	if (mode_sel != ps_wind_mode)
+		ps_wind_mode = mode_sel;
 
 	if (mode_sel == 0)
 	{
@@ -2038,8 +2039,8 @@ static void dv_tab_wind()
 	}
 	else
 	{
-		ImGui::SliderFloat("Noise scale##wind", &ps_wind_noise_scale, 0.0f, 2.0f, "%.2f");
-		ImGui::SliderFloat("Noise speed##wind", &ps_wind_noise_speed, 0.01f, 5.0f, "%.3f");
+		ImGui::SliderFloat("Noise scale##wind", &ps_wind_noise_scale, 0.0f, 20.0f, "%.2f");
+		ImGui::SliderFloat("Noise speed##wind", &ps_wind_noise_speed, 0.001f, 5.0f, "%.4f", ImGuiSliderFlags_Logarithmic);
 		ImGui::SliderFloat("Noise angle##wind", &ps_wind_noise_angle, 0.0f, 360.0f, "%.0f deg");
 
 		static bool wind_noise_preview = true;
