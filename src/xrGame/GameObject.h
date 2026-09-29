@@ -421,4 +421,15 @@ public:
 	}
 
 	virtual void			on_matrix_change	(const Fmatrix &previous);
+
+public:
+	using SoundActionDelegate = fastdelegate::FastDelegate<void()>;
+	xr_deque<SoundActionDelegate> m_postponed_sound_actions;
+
+	void PushPostponedSoundAction(const SoundActionDelegate& action)
+	{
+		m_postponed_sound_actions.push_back(action);
+	}
+
+	void UpdateSounds(bool noLimit);
 };
