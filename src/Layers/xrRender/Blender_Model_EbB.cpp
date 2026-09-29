@@ -272,6 +272,7 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		// deferred
 		switch(C.iElement) 
 		{
+		case SE_R2_HUD:
 		case SE_R2_NORMAL_HQ: 	// deffer
 			uber_deffer(C, true, "deffer_model", "deffer_base", false, 0, true);
 			C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);

@@ -7,6 +7,7 @@
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/Environment.h"
 #include "../../xrEngine/date_time.h"
+#include "../../xrEngine/Rain.h"
 
 static constexpr u32 chash(const char* s, u32 h = 2166136261u)
 {
@@ -142,6 +143,10 @@ void FixedConstants::UpdateFrame()
 		// no level at the main menu
 		const float snowmask = g_pGameLevel ? (float)g_pGameLevel->UseSnowmask : 0.f;
 		cpu_frame.rain_params.set(m.rain_density, g_pGamePersistent->Environment().wetness_factor, 0, snowmask);
+		if (CEffect_Rain* rain = g_pGamePersistent->Environment().eff_Rain)
+			cpu_frame.hud_rain.set(rain->HudDropsTime(), UseWeaponRainDrops ? rain->HudDropsAmount() : 0.f, 0.f, 0.f);
+		else
+			cpu_frame.hud_rain.set(0.f, 0.f, 0.f, 0.f);
 	}
 	cpu_frame.nvg_color.set(::nvg_color.r, ::nvg_color.g, ::nvg_color.b, ::nvg_color.a);
 	cpu_frame.m_hud_params.set(float(RDEVICE.hudViewportData.isRenderProcess), float(RDEVICE.hudViewportData.isRenderActive), 0, RDEVICE.hudViewportData.renderZoomRotateFactor);
