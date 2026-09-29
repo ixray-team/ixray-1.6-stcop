@@ -2,6 +2,8 @@
 #include "xrRender_console.h"
 #include "dxRenderDeviceRender.h"
 
+bool UseWeaponRainDrops = true;
+
 bool ps_r__detail_use_alternative_tree_assets = false;
 bool ps_r__detail_use_cluster_mix_tree_assets = false;
 float ps_r__detail_cluster_seed = 2790.817f;
@@ -1086,6 +1088,7 @@ void		xrRender_initconsole	()
 
 	CMD2(CCC_Boolean, "r4_use_gasmask", &UseGasmak);
 	CMD2(CCC_Boolean, "r2_use_rain_drops", &UseRainDrops);
+	CMD2(CCC_Boolean, "r2_use_weapon_raindrops", &UseWeaponRainDrops);
 
 	// added by Papa Doenitz 2026-03-05
 	CMD2(CCC_Boolean, "r2_new_autoexposure", &ps_r2_new_autoexposure);

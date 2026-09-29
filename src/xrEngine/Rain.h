@@ -92,4 +92,12 @@ public:
 	IRender_ObjectSpecific* Rain_ROS = nullptr;
 	bool IsEnabled = true;
 	void Enable(bool Value);
+
+	float HudDropsTime() const { return m_hudDropsTime; }
+	float HudDropsAmount() const { return m_hudDropsAmount; }
+
+private:
+	float m_hudDropsTime = 0.f;
+	float m_hudDropsAmount = 0.f;
+	void UpdateHudDrops(float rain, float sky);
 };
