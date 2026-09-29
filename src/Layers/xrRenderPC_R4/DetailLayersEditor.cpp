@@ -2044,7 +2044,7 @@ static void dv_tab_wind()
 
 		static bool wind_noise_preview = true;
 		ImGui::Checkbox("Show noise strip##wind", &wind_noise_preview);
-		if (wind_noise_preview)
+		if (wind_noise_preview && ps_wind_enabled)
 		{
 			static float noise_contrast = 1.5f;
 			ImGui::SliderFloat("Noise contrast##wind", &noise_contrast, 0.1f, 5.0f, "%.2f");
@@ -2129,30 +2129,35 @@ static void dv_tab_wind()
 	ImGui::Spacing();
 	ImGui::SeparatorText("Preview");
 
+	extern int ps_wind_enabled;
 	static bool wind_preview_enabled = false;
 	ImGui::Checkbox("Show preview##wind", &wind_preview_enabled);
 
 	static CTexture* s_wind_tex = nullptr;
 	static float wind_zoom = 1.0f;
-	if (!s_wind_tex)
-		s_wind_tex = dv_create_texture(DV_PREVIEW_SIZE);
 
-	if (wind_preview_enabled && s_wind_tex && s_wind_tex->get_SRView())
+	if (ps_wind_enabled && wind_preview_enabled)
 	{
-		static u64 wind_preview_next = 0;
-		const u64 now = RDEVICE.dwTimeGlobal;
-		if (now >= wind_preview_next)
+		if (!s_wind_tex)
+			s_wind_tex = dv_create_texture(DV_PREVIEW_SIZE);
+
+		if (s_wind_tex && s_wind_tex->get_SRView())
 		{
-			const u32 N = DV_PREVIEW_SIZE;
-			xr_vector<u8> px(N * N * 4);
-			CDetailWind::FillPreview(px.data(), N, wind_zoom, now);
-			dv_write_texture_px(s_wind_tex, px.data(), N);
-			wind_preview_next = now + 250;
+			static u64 wind_preview_next = 0;
+			const u64 now = RDEVICE.dwTimeGlobal;
+			if (now >= wind_preview_next)
+			{
+				const u32 N = DV_PREVIEW_SIZE;
+				xr_vector<u8> px(N * N * 4);
+				CDetailWind::FillPreview(px.data(), N, wind_zoom, now);
+				dv_write_texture_px(s_wind_tex, px.data(), N);
+				wind_preview_next = now + 250;
+			}
+			const float w = ImGui::GetContentRegionAvail().x;
+			ImGui::Image(s_wind_tex->get_SRView()->GetRawSRV(), ImVec2(w, 256.0f));
+			ImGui::SetNextItemWidth(w);
+			ImGui::SliderFloat("##wind zoom", &wind_zoom, 1.f, 8.f, "Zoom x%.1f");
 		}
-		const float w = ImGui::GetContentRegionAvail().x;
-		ImGui::Image(s_wind_tex->get_SRView()->GetRawSRV(), ImVec2(w, 256.0f));
-		ImGui::SetNextItemWidth(w);
-		ImGui::SliderFloat("##wind zoom", &wind_zoom, 1.f, 8.f, "Zoom x%.1f");
 	}
 }
 
@@ -2184,14 +2189,21 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 	if (!hasData)
 		ImGui::Text("Details manager not available on this level.");
 
-	if (!s_preview_tex)
-		s_preview_tex = dv_create_texture(DV_PREVIEW_SIZE);
-	if (!s_minimap_tex)
-		s_minimap_tex = dv_create_texture(DV_MINIMAP_SIZE);
-	if (!s_minimap_base_fmb)
-		s_minimap_base_fmb = dv_create_texture(DV_MINIMAP_SIZE);
-	if (!s_minimap_base_clu)
-		s_minimap_base_clu = dv_create_texture(DV_MINIMAP_SIZE);
+	if (st.tab <= 1)
+	{
+		if (!s_preview_tex)
+			s_preview_tex = dv_create_texture(DV_PREVIEW_SIZE);
+		if (!s_minimap_tex)
+			s_minimap_tex = dv_create_texture(DV_MINIMAP_SIZE);
+	}
+
+	if (st.tab == 2)
+	{
+		if (!s_minimap_base_fmb)
+			s_minimap_base_fmb = dv_create_texture(DV_MINIMAP_SIZE);
+		if (!s_minimap_base_clu)
+			s_minimap_base_clu = dv_create_texture(DV_MINIMAP_SIZE);
+	}
 
 	// -------------------------------------------------------------- tab select (wrapping)
 	{
