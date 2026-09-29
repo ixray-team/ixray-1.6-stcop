@@ -77,14 +77,28 @@ function(download_and_extract_sdk url zip_file out_dir)
 			"${url}"
 			"${zip_file}"
 			SHOW_PROGRESS
+			TLS_VERIFY ON
+			TIMEOUT 120
+			INACTIVITY_TIMEOUT 30
+			STATUS sdk_download_status
 		)
+		list(GET sdk_download_status 0 sdk_download_code)
+		if(NOT sdk_download_code EQUAL 0)
+			file(REMOVE "${zip_file}")
+			list(GET sdk_download_status 1 sdk_download_error)
+			message(FATAL_ERROR "Failed to download SDK ${url}: ${sdk_download_error}")
+		endif()
 
 		file(MAKE_DIRECTORY "${out_dir}")
 
 		execute_process(
 			COMMAND ${CMAKE_COMMAND} -E tar -xzf "${zip_file}"
 			WORKING_DIRECTORY "${out_dir}"
+			RESULT_VARIABLE sdk_extract_result
 		)
+		if(NOT sdk_extract_result EQUAL 0)
+			message(FATAL_ERROR "Failed to extract ${zip_file}")
+		endif()
 	endif()
 endfunction()
 

@@ -1,46 +1,125 @@
 # Nuget entry
+set(NUGET_LOCAL_EXE "${CMAKE_BINARY_DIR}/dep/nuget/nuget.exe")
+set(NUGET_PACKAGES_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages/nuget/Packages.config")
+set(NUGET_CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/NuGet.config")
+
 find_program(NUGET_COMMAND nuget)
 if(NOT NUGET_COMMAND)
-    if(NOT EXISTS "${CMAKE_BINARY_DIR}/dep/nuget")
-        message("Downloading NuGet...")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/dep/nuget")
-        file(DOWNLOAD https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-             "${CMAKE_BINARY_DIR}/dep/nuget/nuget.exe")
-        message("NuGet downloaded: ${NUGET_COMMAND}")
+    if(NOT EXISTS "${NUGET_LOCAL_EXE}")
+        if(IXRAY_OFFLINE)
+            message(FATAL_ERROR "NuGet is missing and IXRAY_OFFLINE=ON. Place nuget.exe at ${NUGET_LOCAL_EXE} or install nuget in PATH.")
+        endif()
+        message(STATUS "Downloading NuGet...")
+        file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/dep/nuget")
+        file(DOWNLOAD
+            https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+            "${NUGET_LOCAL_EXE}"
+            TLS_VERIFY ON
+            TIMEOUT 30
+            INACTIVITY_TIMEOUT 15
+            STATUS nuget_download_status
+        )
+        list(GET nuget_download_status 0 nuget_download_code)
+        if(NOT nuget_download_code EQUAL 0)
+            file(REMOVE "${NUGET_LOCAL_EXE}")
+            list(GET nuget_download_status 1 nuget_download_error)
+            message(FATAL_ERROR "Failed to download nuget.exe: ${nuget_download_error}")
+        endif()
+        message(STATUS "NuGet downloaded: ${NUGET_LOCAL_EXE}")
     endif()
-    set(NUGET_COMMAND "${CMAKE_BINARY_DIR}/dep/nuget/nuget.exe")
+    set(NUGET_COMMAND "${NUGET_LOCAL_EXE}")
 else()
-    message("NuGet found: ${NUGET_COMMAND}")
+    message(STATUS "NuGet found: ${NUGET_COMMAND}")
+endif()
+
+file(SHA256 "${NUGET_PACKAGES_CONFIG}" NUGET_PACKAGES_HASH)
+set(NUGET_RESTORE_STAMP "${CMAKE_BINARY_DIR}/packages/.nuget-restore.stamp")
+set(NUGET_NEED_RESTORE TRUE)
+if(NOT IXRAY_NUGET_FORCE_RESTORE AND EXISTS "${NUGET_RESTORE_STAMP}")
+    file(READ "${NUGET_RESTORE_STAMP}" NUGET_RESTORE_STAMP_HASH)
+    string(STRIP "${NUGET_RESTORE_STAMP_HASH}" NUGET_RESTORE_STAMP_HASH)
+    if(NUGET_RESTORE_STAMP_HASH STREQUAL NUGET_PACKAGES_HASH)
+        set(NUGET_NEED_RESTORE FALSE)
+        message(STATUS "NuGet packages already restored, skipping restore")
+    endif()
+endif()
+
+if(IXRAY_OFFLINE)
+    if(NUGET_NEED_RESTORE)
+        message(FATAL_ERROR "NuGet restore is required but IXRAY_OFFLINE=ON. Restore packages once with network, or pass -DIXRAY_NUGET_FORCE_RESTORE=ON with connectivity.")
+    endif()
+    set(NUGET_NEED_RESTORE FALSE)
 endif()
 
 # Download packages
-if (WIN32 AND IXRAY_CROSS_COMPILATION)
-    execute_process(
-            COMMAND winepath -w
-            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages/nuget/Packages.config"
-            OUTPUT_VARIABLE NUGET_CONFIG_WIN
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    execute_process(
-            COMMAND winepath -w
-            "${CMAKE_BINARY_DIR}"
-            OUTPUT_VARIABLE CMAKE_BINARY_DIR_WIN
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
+if(NUGET_NEED_RESTORE)
+    message(STATUS "Restoring NuGet packages...")
+    if (WIN32 AND IXRAY_CROSS_COMPILATION)
+        execute_process(
+                COMMAND winepath -w
+                "${NUGET_PACKAGES_CONFIG}"
+                OUTPUT_VARIABLE NUGET_CONFIG_WIN
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                TIMEOUT 30
+                RESULT_VARIABLE NUGET_WINEPATH_CFG_RESULT
+        )
+        if(NOT NUGET_WINEPATH_CFG_RESULT EQUAL 0)
+            message(FATAL_ERROR "winepath failed for Packages.config")
+        endif()
+        execute_process(
+                COMMAND winepath -w
+                "${CMAKE_BINARY_DIR}"
+                OUTPUT_VARIABLE CMAKE_BINARY_DIR_WIN
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                TIMEOUT 30
+                RESULT_VARIABLE NUGET_WINEPATH_BIN_RESULT
+        )
+        if(NOT NUGET_WINEPATH_BIN_RESULT EQUAL 0)
+            message(FATAL_ERROR "winepath failed for CMAKE_BINARY_DIR")
+        endif()
+        execute_process(
+                COMMAND winepath -w
+                "${NUGET_CONFIG_FILE}"
+                OUTPUT_VARIABLE NUGET_CONFIG_FILE_WIN
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                TIMEOUT 30
+                RESULT_VARIABLE NUGET_WINEPATH_NCFG_RESULT
+        )
+        if(NOT NUGET_WINEPATH_NCFG_RESULT EQUAL 0)
+            message(FATAL_ERROR "winepath failed for NuGet.config")
+        endif()
 
-    execute_process(
-            COMMAND wine
-            "${NUGET_COMMAND}"
-            restore
-            "${NUGET_CONFIG_WIN}"
-            -SolutionDirectory
-            "${CMAKE_BINARY_DIR_WIN}"
-    )
-else ()
-    execute_process(
-            COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages/nuget/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-    )
-endif ()
+        execute_process(
+                COMMAND wine
+                "${NUGET_COMMAND}"
+                restore
+                "${NUGET_CONFIG_WIN}"
+                -SolutionDirectory
+                "${CMAKE_BINARY_DIR_WIN}"
+                -ConfigFile
+                "${NUGET_CONFIG_FILE_WIN}"
+                -NonInteractive
+                RESULT_VARIABLE NUGET_RESTORE_RESULT
+                TIMEOUT 600
+        )
+    else ()
+        execute_process(
+                COMMAND ${NUGET_COMMAND} restore "${NUGET_PACKAGES_CONFIG}"
+                    -SolutionDirectory ${CMAKE_BINARY_DIR}
+                    -ConfigFile "${NUGET_CONFIG_FILE}"
+                    -NonInteractive
+                RESULT_VARIABLE NUGET_RESTORE_RESULT
+                TIMEOUT 600
+        )
+    endif ()
+
+    if(NOT NUGET_RESTORE_RESULT EQUAL 0)
+        message(FATAL_ERROR "NuGet restore failed (exit ${NUGET_RESTORE_RESULT}). Check the network, or reconfigure with -DIXRAY_OFFLINE=ON after a successful restore.")
+    endif()
+
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packages")
+    file(WRITE "${NUGET_RESTORE_STAMP}" "${NUGET_PACKAGES_HASH}\n")
+endif()
 
 # Helper
 if (WIN32 AND NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")

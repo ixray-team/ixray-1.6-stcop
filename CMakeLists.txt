@@ -69,6 +69,7 @@ endif()
 
 # Help functions
 include("cmake/functions.cmake")
+include("cmake/network.cmake")
 
 # Configure Package Manager
 if (WIN32)
