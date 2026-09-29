@@ -456,7 +456,15 @@ void CUINewsItemWnd::SetupLegacy(GAME_NEWS_DATA& newsData)
 		_uiCaption->SetWidth(std::min(_uiText->GetWidth() - _uiDate->GetWidth() - 5.0f, _uiCaption->GetWidth()));
 	}
 
-	_uiText->SetText(g_pStringTable->ParseStringFromScript(newsData.news_text).c_str());
+	xr_string outText = newsData.news_text.c_str(); 
+	if (!_uiCaption && newsData.m_type == GAME_NEWS_DATA::eTalk)
+	{
+		outText = "#";
+		outText += newsData.news_caption.c_str();
+		outText += "# >> ";
+		outText += xr_string(newsData.news_text.c_str()).substr(19);
+	}
+	_uiText->SetText(g_pStringTable->ParseStringFromScript(outText.c_str()).c_str());
 	_uiText->AdjustHeightToText();
 	float h1 = _uiText->GetWndPos().y + _uiText->GetHeight() + kItemHeightPadding;
 
