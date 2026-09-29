@@ -1,9 +1,13 @@
 #include "common.hlsli"
 #include "skin.hlsli"
 
-void skinned_main(in v_model I, out p_bumped_new O)
+void skinned_main(in v_model I, in float3 basis, out p_bumped_new O)
 {
     float3 Nw = mul((float3x3)m_W, (float3)I.N);
+
+#ifdef USE_HUD_RAINDROPS
+    O.drops_basis = float4(basis, Nw.y);
+#endif
     float3 hc_pos = (float3)hemi_cube_pos_faces;
     float3 hc_neg = (float3)hemi_cube_neg_faces;
     float3 hc_mixed = (Nw < 0.0f) ? -hc_neg : hc_pos;
@@ -62,32 +66,32 @@ void skinned_main(in v_model I, out p_bumped_new O)
 #if defined(SKIN_0)
 void main(in v_model_skinned_0 I, out p_bumped_new O)
 {
-    skinned_main(skinning_0(I), O);
+    skinned_main(skinning_0(I), I.P.xyz, O);
 }
 #elif defined(SKIN_1)
 void main(in v_model_skinned_1 I, out p_bumped_new O)
 {
-    skinned_main(skinning_1(I), O);
+    skinned_main(skinning_1(I), I.P.xyz, O);
 }
 #elif defined(SKIN_2)
 void main(in v_model_skinned_2 I, out p_bumped_new O)
 {
-    skinned_main(skinning_2(I), O);
+    skinned_main(skinning_2(I), I.P.xyz, O);
 }
 #elif defined(SKIN_3)
 void main(in v_model_skinned_3 I, out p_bumped_new O)
 {
-    skinned_main(skinning_3(I), O);
+    skinned_main(skinning_3(I), I.P.xyz, O);
 }
 #elif defined(SKIN_4)
 void main(in v_model_skinned_4 I, out p_bumped_new O)
 {
-    skinned_main(skinning_4(I), O);
+    skinned_main(skinning_4(I), I.P.xyz, O);
 }
 #else
 void main(in v_model I, out p_bumped_new O)
 {
-    skinned_main(I, O);
+    skinned_main(I, I.P.xyz, O);
 }
 #endif
 
