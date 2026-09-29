@@ -309,15 +309,26 @@ void CSheduler::ProcessStep			()
 		u32		dwUpdate			= dwMin+iFloor(float(dwMax-dwMin)*scale);
 		clamp	(dwUpdate,u32(std::max(dwMin,u32(20))),dwMax);
 
-		
-
 		m_current_step_obj = T.Object;
-//			try {
-			T.Object->shedule_Update	(clampr(Elapsed,u32(1),u32(std::max(u32(T.Object->shedule.t_max),u32(1000)))) );
-			if (!m_current_step_obj)
+
+		{
+#ifdef IXRAY_PROFILER_TRACY
+			if (const auto* ptr = smart_cast<CObject*>(m_current_step_obj))
 			{
-				continue;
+				PROF_MESSAGE(ptr->cNameSect_str());
+				T.Object->shedule_Update(clampr(Elapsed, u32(1), u32(std::max(u32(T.Object->shedule.t_max), u32(1000)))));
 			}
+			else
+#endif
+			{
+				T.Object->shedule_Update(clampr(Elapsed, u32(1), u32(std::max(u32(T.Object->shedule.t_max), u32(1000)))));
+			}
+		}
+
+		if (!m_current_step_obj)
+		{
+			continue;
+		}
 		m_current_step_obj = nullptr;
 
 
@@ -380,7 +391,21 @@ void CSheduler::Update()
 		VERIFY(T.Object->dbg_startframe != Device.dwFrame);
 		T.Object->dbg_startframe = Device.dwFrame;
 #endif
-		T.Object->shedule_Update(Elapsed);
+
+		{
+#ifdef IXRAY_PROFILER_TRACY
+			if (const auto* ptr = smart_cast<CObject*>(m_current_step_obj))
+			{
+				PROF_MESSAGE(ptr->cNameSect_str());
+				T.Object->shedule_Update(clampr(Elapsed, u32(1), u32(std::max(u32(T.Object->shedule.t_max), u32(1000)))));
+			}
+			else
+#endif
+			{
+				T.Object->shedule_Update(clampr(Elapsed, u32(1), u32(std::max(u32(T.Object->shedule.t_max), u32(1000)))));
+			}
+		}
+
 		T.dwTimeOfLastExecute = dwTime;
 	}
 
