@@ -3,6 +3,7 @@
 #include <cmath>
 
 extern int   ps_wind_enabled;
+extern int   ps_wind_vanilla;
 extern int   ps_wind_mode;
 extern float ps_wind_blend;
 extern float ps_wind_blend_current;
@@ -107,7 +108,17 @@ static void packLayer(Fvector4& out, Fvector4& dir, float scale, float intensity
 
 void CDetailWind::ComputeConstants(Constants& out)
 {
-	const float on = ps_wind_enabled ? 1.0f : 0.0f;
+	if (!ps_wind_enabled)
+	{
+		out.global.set(0, 0, 0, ps_wind_vanilla ? 1.0f : 0.0f);
+		out.xz1.set(0, 0, 0, 0); out.xz1_dir.set(0, 0, 0, 0);
+		out.xz2.set(0, 0, 0, 0); out.xz2_dir.set(0, 0, 0, 0);
+		out.xz3.set(0, 0, 0, 0); out.xz3_dir.set(0, 0, 0, 0);
+		out.swirl.set(0, 0, 0, 0); out.swirl_dir.set(0, 0, 0, 0);
+		return;
+	}
+
+	const float on = 1.0f;
 	const float xzOn = ps_wind_xz_enabled ? 1.0f : 0.0f;
 	const float swOn = ps_wind_swirl_enabled ? 1.0f : 0.0f;
 
@@ -124,9 +135,7 @@ void CDetailWind::ComputeConstants(Constants& out)
 
 	auto L = [blend](float mn, float mx) { return mn + (mx - mn) * blend; };
 
-	const float masterInt = blend;
-
-	out.global.set(on * masterInt, xzOn, swOn, 0.0f);
+	out.global.set(on, xzOn, swOn, ps_wind_vanilla ? 1.0f : 0.0f);
 
 	packLayer(out.xz1, out.xz1_dir,
 		L(ps_wind_xz1_scale_min, ps_wind_xz1_scale_max),
@@ -160,6 +169,12 @@ void CDetailWind::ComputeConstants(Constants& out)
 
 void CDetailWind::FillPreview(u8* rgba, u32 size, float zoom, u32 timeMs)
 {
+	if (!ps_wind_enabled)
+	{
+		memset(rgba, 0, (size_t)size * size * 4);
+		return;
+	}
+
 	const float t = (float)timeMs * 0.001f;
 	const float z = std::max(zoom, 0.1f);
 	const float xzOn = ps_wind_xz_enabled ? 1.0f : 0.0f;
