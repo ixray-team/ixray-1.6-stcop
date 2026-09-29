@@ -3,6 +3,7 @@
 #include "r4.h"
 
 #include "../xrRender/DetailManager.h"
+#include "../xrRender/DetailsWind.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "../../xrRHI/RHIUtils.h"
 #include "../../xrCore/Collision/xrCDB.h"
@@ -389,6 +390,24 @@ void dv_write_texture_px(CTexture* tex, const u8* rgba, u32 size)
 	{
 		for (u32 y = 0; y < size; y++)
 			memcpy(dst + y * pitch, rgba + y * size * 4, size * 4);
+		surf->Unlock();
+	}
+}
+
+void dv_write_texture_rect(CTexture* tex, const u8* rgba, u32 w, u32 h)
+{
+	if (!tex)
+		return;
+	IRHISurface* surf = tex->surface_get();
+	if (!surf)
+		return;
+
+	u32 pitch = 0;
+	u8* dst = (u8*)surf->Lock(0, &pitch);
+	if (dst)
+	{
+		for (u32 y = 0; y < h; y++)
+			memcpy(dst + y * pitch, rgba + y * w * 4, w * 4);
 		surf->Unlock();
 	}
 }
@@ -1325,6 +1344,819 @@ RCache.set_Element(s_trail_shader->E[4]);
 }
 
 // ---------------------------------------------------------------------------
+// Tab: Paint slots re scale (0) / Paint slots re mix (1) — shared brush UI
+// ---------------------------------------------------------------------------
+static void dv_tab_brush_shared(BrushState& st, bool& dirty)
+{
+	ImGui::SeparatorText("Brush");
+	dirty |= ImGui::DragFloat("Radius, m", &st.radius, 0.2f, 0.5f, 30.f);
+	dirty |= ImGui::SliderFloat("Soft edge", &st.soft, 0.0f, 0.9f);
+	dirty |= ImGui::SliderFloat("Press intensity", &st.intensity, -1.0f, 1.0f);
+	dirty |= ImGui::SliderFloat("Edge hardness", &st.edge_hardness, 0.0f, 0.9f);
+	ImGui::TextDisabled("Press inside the hard core (radius*(1-Soft edge)) is full.\nOutside it falls smoothly to Edge hardness at the rim.\nMiddle = 0 (inert). Negative cuts the grass down to the\nground, positive grows it. RMB wipes the mask entirely.\nMix mode ignores intensity (see below).");
+}
+
+// ---------------------------------------------------------------------------
+// Tab 0: Paint slots re scale
+// ---------------------------------------------------------------------------
+static void dv_tab_scale(BrushState& st, bool& dirty)
+{
+	ImGui::SeparatorText("Painted scale");
+	dirty |= ImGui::SliderFloat("Scale value", &st.scale_value, 0.0f, 1.0f);
+	ImGui::TextDisabled("Positive press grows grass toward this height,\nnegative press cuts it down to bare ground.\nRMB wipes the brush mask back to the generator.\nGenerator height random range lives in the\n'Detail options' tab.");
+}
+
+// ---------------------------------------------------------------------------
+// Tab 1: Paint slots re mix
+// ---------------------------------------------------------------------------
+static void dv_tab_mix(BrushState& st, CDetailManager* D, bool& dirty)
+{
+	ImGui::SeparatorText("Painted asset mix");
+	const bool mixOn = dv_mix_active();
+	bool mixSel = mixOn;
+	if (ImGui::Checkbox("Replace grass with cluster assets", &mixSel))
+	{
+		dv_ensure_mix_enabled(D, mixSel);
+		dirty = true;
+		st.status = mixSel ? "Cluster mix enabled - rebuilding cache." : "Cluster mix disabled - native grass restored.";
+	}
+	if (!mixOn)
+		ImGui::TextColored(ImVec4(1.f, 0.65f, 0.25f, 1.f),
+			"Disabled: the slots are written, but the renderer still shows\nnative grass. Enable the checkbox above to see the mix.");
+	ImGui::TextDisabled("LMB stamps the selected asset wherever the noise pattern\npasses (opaque stencil); press slider is ignored. RMB\nwipes replaced slots back to the generator.\nGenerator cluster/FMB settings live in the\n'Detail options' tab.");
+	const auto& assets = dv_cluster_assets(D);
+	int sel = (st.cluster_index == 255) ? 0 : st.cluster_index + 1;
+	{
+		xr_vector<xr_string> items;
+		items.emplace_back("Native (no mix)");
+		for (const auto& a : assets)
+			items.emplace_back(a.name);
+		const int selClamped = sel < 0 ? 0 : (sel >= (int)items.size() ? (int)items.size() - 1 : sel);
+		if (ImGui::BeginCombo("Replace with", items[selClamped].c_str()))
+		{
+			for (int k = 0; k < (int)items.size(); k++)
+			{
+				const bool isSel = (k == sel);
+				CTexture* tex = nullptr;
+				if (k >= 1 && (k - 1) < (int)assets.size())
+				{
+					const ClusterAssetDesc& a = assets[k - 1];
+					if (!a.tex_name.empty())
+					{
+						CTexture* t = dxRenderDeviceRender::Instance().Resources->_CreateTexture(a.tex_name.c_str());
+						if (t && t->get_SRView())
+							tex = t;
+					}
+				}
+				if (tex)
+				{
+					ImGui::Image(tex->get_SRView()->GetRawSRV(), ImVec2(64.f, 64.f));
+					ImGui::SameLine();
+				}
+				if (ImGui::Selectable(items[k].c_str(), isSel))
+					sel = k;
+				if (isSel)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+	}
+	if (sel != (st.cluster_index == 255 ? 0 : st.cluster_index + 1))
+	{
+		st.cluster_index = (sel == 0) ? 255 : (sel - 1);
+		dirty = true;
+	}
+	if (st.cluster_index != 255 && st.cluster_index < (int)assets.size())
+		ImGui::TextDisabled("Painting with: %s", assets[st.cluster_index].name.c_str());
+}
+
+// ---------------------------------------------------------------------------
+// Tab 2: Generic (scale and mix assets)
+// ---------------------------------------------------------------------------
+static void dv_tab_generic(CDetailManager* D, bool& dirty)
+{
+	ImGui::SeparatorText("Generic (scale and mix assets)");
+	ImGui::TextDisabled("Mirrors of the r__detail_* console commands; any\nchange regenerates the mixed fields from scratch.");
+
+	bool dgt = false;
+	bool ddRadius = false;
+
+	ImGui::SeparatorText("Detail use alternative DM assets in level folder");
+	dgt |= ImGui::Checkbox("Use cluster mix tree assets", &ps_r__detail_use_cluster_mix_tree_assets);
+
+	ImGui::SeparatorText("Detail noise mix assets");
+	dgt |= ImGui::Checkbox("Use alternative tree assets", &ps_r__detail_use_alternative_tree_assets);
+	dgt |= ImGui::SliderFloat("Cluster patch size max", &ps_r__detail_cluster_patch_size_max, 1.f, 100.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Cluster patch size min", &ps_r__detail_cluster_patch_size_min, 1.f, 100.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Cluster seed", &ps_r__detail_cluster_seed, 0.f, 9999.f, "%.0f");
+	dgt |= ImGui::SliderFloat("Cluster sharpness", &ps_r__detail_cluster_sharpness, 1.f, 20.f, "%.1f");
+	dgt |= ImGui::SliderFloat("Cluster warp max", &ps_r__detail_cluster_warp_max, 0.f, 3.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Cluster warp min", &ps_r__detail_cluster_warp_min, 0.f, 3.f, "%.2f");
+
+	if (D)
+	{
+		ImGui::SeparatorText("Mix field minimap (clean base)");
+		static MinimapUI s_mm_clu_base;
+		dv_minimap_ui(D, 1, s_minimap_base_clu, true, s_mm_clu_base, 512.f);
+		ImGui::TextDisabled("What the generator put before any brush stroke.");
+	}
+
+	ImGui::SeparatorText("Detail macro scale variations (FMB)");
+	dgt |= ImGui::Checkbox("Layer 1 used", &ps_r__detail_fmb_use_layer_1);
+	dgt |= ImGui::SliderFloat("Layer 1 amplitude", &ps_r__detail_fmb_layer_1_amplitude, 0.f, 10.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Layer 1 frequency", &ps_r__detail_fmb_layer_1_frequency, 0.f, 1.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Layer 1 power", &ps_r__detail_fmb_layer_1_power, 0.f, 1.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Layer 1 seed", &ps_r__detail_fmb_layer_1_seed, 0.f, 9999.f, "%.0f");
+	dgt |= ImGui::Checkbox("Layer 2 used", &ps_r__detail_fmb_use_layer_2);
+	dgt |= ImGui::SliderFloat("Layer 2 amplitude", &ps_r__detail_fmb_layer_2_amplitude, 0.f, 10.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Layer 2 frequency", &ps_r__detail_fmb_layer_2_frequency, 0.f, 1.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Layer 2 power", &ps_r__detail_fmb_layer_2_power, 0.f, 1.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Layer 2 seed", &ps_r__detail_fmb_layer_2_seed, 0.f, 9999.f, "%.0f");
+	dgt |= ImGui::Checkbox("Layer 3 used", &ps_r__detail_fmb_use_layer_3);
+	dgt |= ImGui::SliderFloat("Layer 3 amplitude", &ps_r__detail_fmb_layer_3_amplitude, 0.f, 10.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Layer 3 frequency", &ps_r__detail_fmb_layer_3_frequency, 0.f, 1.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Layer 3 power", &ps_r__detail_fmb_layer_3_power, 0.f, 1.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Layer 3 seed", &ps_r__detail_fmb_layer_3_seed, 0.f, 9999.f, "%.0f");
+
+	if (D)
+	{
+		ImGui::SeparatorText("Scale field minimap (clean base)");
+		static MinimapUI s_mm_fmb_base;
+		dv_minimap_ui(D, 0, s_minimap_base_fmb, true, s_mm_fmb_base, 512.f);
+		ImGui::TextDisabled("FMB height the generator produced before any brush stroke.");
+	}
+
+	ImGui::SeparatorText("Detail size");
+	dgt |= ImGui::SliderFloat("Random scale max", &ps_r__detail_rnd_scale_max, 0.f, 3.f, "%.2f");
+	dgt |= ImGui::SliderFloat("Random scale min", &ps_r__detail_rnd_scale_min, 0.f, 3.f, "%.2f");
+
+	ImGui::SeparatorText("Detail performance");
+	dgt |= ImGui::SliderFloat("Density (r__detail_density)", &ps_current_detail_density, 0.15f, 1.0f, "%.2f");
+	ddRadius |= ImGui::SliderInt("Grass radius, m (r__detail_radius)", &ps_r__detail_radius, 50, 2000);
+	dgt |= ddRadius;
+
+	if (dgt && D)
+	{
+		if (ddRadius)
+		{
+			dm_current_size = iFloor((float)ps_r__detail_radius / 4.f) * 2;
+			dm_current_slide_window_line = dm_current_size * 2 / 4;
+			dm_current_cache_line = dm_current_size + 1 + dm_current_size;
+			dm_current_cache_size = dm_current_cache_line * dm_current_cache_line;
+			dm_current_fade = float(2 * dm_current_size) - 0.5f;
+			if (RImplementation.b_loaded && (dm_current_size != dm_size))
+			{
+				Device.DetailsTask.wait();
+				D->cache_ReInitialize();
+			}
+			else
+			{
+				D->RequestCacheRebuild();
+			}
+		}
+		else
+		{
+			D->RequestCacheRebuild();
+		}
+	}
+	dirty |= dgt;
+}
+
+// ---------------------------------------------------------------------------
+// Tab 3: Trample
+// ---------------------------------------------------------------------------
+static void dv_tab_trample()
+{
+	extern int   ps_trample_enabled;
+	extern float ps_trample_bend;
+	extern float ps_trample_squash;
+	extern float ps_trample_trail_min;
+	extern float ps_trample_trail_max;
+	extern float ps_trample_obj_radius_scale;
+	extern float ps_trample_actor_radius_scale;
+	extern float ps_trample_cooltime;
+	extern float ps_trample_draw_radius;
+	extern float ps_trample_brush_fill;
+	extern float ps_trample_press_speed;
+
+	ImGui::SeparatorText("Trample");
+	ImGui::Checkbox("Enabled##trample", (bool*)&ps_trample_enabled);
+	ImGui::TextDisabled("(how far the tip leans in stroke direction)");
+	ImGui::SliderFloat("Bend##trample", &ps_trample_bend, 0.0f, 20.0f, "%.2f");
+	ImGui::TextDisabled("(how much the blade presses toward the ground)");
+	ImGui::SliderFloat("Squash##trample", &ps_trample_squash, 0.0f, 20.0f, "%.2f");
+	ImGui::TextDisabled("(minimum brush radius for small objects)");
+	ImGui::SliderFloat("Trail min##trample", &ps_trample_trail_min, 0.05f, 10.0f, "%.2f");
+	ImGui::TextDisabled("(maximum brush radius for large objects and player)");
+	ImGui::SliderFloat("Trail max##trample", &ps_trample_trail_max, 0.1f, 50.0f, "%.2f");
+	ImGui::TextDisabled("(object size multiplier: 1.0 = natural shape size)");
+	ImGui::SliderFloat("Obj radius scale##trample", &ps_trample_obj_radius_scale, 0.0f, 2.0f, "%.2f");
+	ImGui::TextDisabled("(player shape size multiplier)");
+	ImGui::SliderFloat("Actor radius scale##trample", &ps_trample_actor_radius_scale, 0.0f, 2.0f, "%.2f");
+	ImGui::TextDisabled("(seconds for trampled grass to recover)");
+	ImGui::SliderFloat("Cool time, s##trample", &ps_trample_cooltime, 0.5f, 600.0f, "%.1f");
+	ImGui::TextDisabled("(how far trample marks affect grass around the player)");
+	ImGui::SliderFloat("Draw radius, m##trample", &ps_trample_draw_radius, 25.0f, 200.0f, "%.0f");
+	ImGui::TextDisabled("(inner brush fill ratio: 1.0 = hard edge, 0.1 = very soft)");
+	ImGui::SliderFloat("Brush fill##trample", &ps_trample_brush_fill, 0.1f, 1.0f, "%.2f");
+	ImGui::TextDisabled("(how fast grass presses down when stepped on)");
+	ImGui::SliderFloat("Press speed##trample", &ps_trample_press_speed, 0.1f, 50.0f, "%.1f");
+}
+
+// ---------------------------------------------------------------------------
+// Tab 4: Wind
+// ---------------------------------------------------------------------------
+
+// Compact range slider: label + min/max on one line, auto-clamped
+// Dual-handle range slider: one track, two thumbs, shaded range between them
+static bool dv_range_slider(const char* label, float* vMin, float* vMax, float absMin, float absMax, float curVal = -1.0f, const char* fmt = "%.2f")
+{
+	ImGui::PushID(label);
+	ImGui::TextUnformatted(label);
+
+	const float w = ImGui::GetContentRegionAvail().x;
+	const float h = 20.0f;
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+
+	ImGui::InvisibleButton("##track", ImVec2(w, h));
+	bool changed = false;
+
+	ImDrawList* dl = ImGui::GetWindowDrawList();
+	const float tMin = (*vMin - absMin) / (absMax - absMin);
+	const float tMax = (*vMax - absMin) / (absMax - absMin);
+	const float xMin = pos.x + tMin * w;
+	const float xMax = pos.x + tMax * w;
+
+	// Track background
+	dl->AddRectFilled(pos, ImVec2(pos.x + w, pos.y + h), IM_COL32(40, 40, 40, 255), 3.0f);
+	// Active range
+	dl->AddRectFilled(ImVec2(xMin, pos.y), ImVec2(xMax, pos.y + h), IM_COL32(70, 130, 200, 180), 3.0f);
+
+	// Thumbs
+	dl->AddRectFilled(ImVec2(xMin - 3, pos.y), ImVec2(xMin + 3, pos.y + h), IM_COL32(200, 200, 200, 255), 2.0f);
+	dl->AddRectFilled(ImVec2(xMax - 3, pos.y), ImVec2(xMax + 3, pos.y + h), IM_COL32(200, 200, 200, 255), 2.0f);
+
+	// Red marker: projected current value within range
+	if (curVal >= 0.0f)
+	{
+		float tCur = (curVal - absMin) / (absMax - absMin);
+		tCur = std::clamp(tCur, 0.0f, 1.0f);
+		float xCur = pos.x + tCur * w;
+		dl->AddRectFilled(ImVec2(xCur - 1.0f, pos.y - 3.0f), ImVec2(xCur + 1.0f, pos.y + h + 3.0f), IM_COL32(255, 30, 30, 255));
+	}
+
+	// Mouse interaction
+	if (ImGui::IsItemActive() && ImGui::GetIO().MouseDown[0])
+	{
+		float mx = ImGui::GetIO().MousePos.x;
+		float t = (mx - pos.x) / w;
+		t = std::clamp(t, 0.0f, 1.0f);
+		float val = absMin + t * (absMax - absMin);
+
+		// Drag whichever thumb is closer
+		float distMin = std::abs(mx - xMin);
+		float distMax = std::abs(mx - xMax);
+		if (distMin < distMax)
+		{
+			*vMin = std::clamp(val, absMin, *vMax);
+			changed = true;
+		}
+		else
+		{
+			*vMax = std::clamp(val, *vMin, absMax);
+			changed = true;
+		}
+	}
+
+	// Values
+	char buf[64];
+	snprintf(buf, sizeof(buf), fmt, *vMin);
+	dl->AddText(ImVec2(xMin - 10, pos.y - 14), IM_COL32(180, 180, 180, 255), buf);
+	snprintf(buf, sizeof(buf), fmt, *vMax);
+	dl->AddText(ImVec2(xMax - 10, pos.y - 14), IM_COL32(180, 180, 180, 255), buf);
+
+	ImGui::Dummy(ImVec2(0, 4));
+	ImGui::PopID();
+	return changed;
+}
+
+// Wind presets: min/max pairs for all layers, interpolated by wind_blend
+static void dv_wind_presets()
+{
+	extern int   ps_wind_enabled;
+	extern int   ps_wind_mode;
+	extern float ps_wind_blend;
+	extern float ps_wind_noise_scale;
+	extern float ps_wind_noise_speed;
+	extern float ps_wind_noise_angle;
+	extern int   ps_wind_xz_enabled;
+	extern int   ps_wind_swirl_enabled;
+	extern int   ps_wind_xz1_on, ps_wind_xz2_on, ps_wind_xz3_on;
+	extern float ps_wind_xz1_scale_min, ps_wind_xz1_scale_max;
+	extern float ps_wind_xz1_int_min,  ps_wind_xz1_int_max;
+	extern float ps_wind_xz1_con_min,  ps_wind_xz1_con_max;
+	extern float ps_wind_xz1_spd_min,  ps_wind_xz1_spd_max;
+	extern float ps_wind_xz1_ang_min,  ps_wind_xz1_ang_max;
+	extern float ps_wind_xz2_scale_min, ps_wind_xz2_scale_max;
+	extern float ps_wind_xz2_int_min,  ps_wind_xz2_int_max;
+	extern float ps_wind_xz2_con_min,  ps_wind_xz2_con_max;
+	extern float ps_wind_xz2_spd_min,  ps_wind_xz2_spd_max;
+	extern float ps_wind_xz2_ang_min,  ps_wind_xz2_ang_max;
+	extern float ps_wind_xz3_scale_min, ps_wind_xz3_scale_max;
+	extern float ps_wind_xz3_int_min,  ps_wind_xz3_int_max;
+	extern float ps_wind_xz3_con_min,  ps_wind_xz3_con_max;
+	extern float ps_wind_xz3_spd_min,  ps_wind_xz3_spd_max;
+	extern float ps_wind_xz3_ang_min,  ps_wind_xz3_ang_max;
+	extern float ps_wind_sw_scale_min,  ps_wind_sw_scale_max;
+	extern float ps_wind_sw_int_min,   ps_wind_sw_int_max;
+	extern float ps_wind_sw_con_min,   ps_wind_sw_con_max;
+	extern float ps_wind_sw_spd_min,   ps_wind_sw_spd_max;
+	extern float ps_wind_sw_ang_min,   ps_wind_sw_ang_max;
+
+	ImGui::Spacing();
+	ImGui::SeparatorText("Presets");
+
+	static int wind_preset = 0;
+	const char* preset_names[] = {
+		"1  Calm",
+		"2  Soft breath",
+		"3  Gentle sway",
+		"4  Micro flutter",
+		"5  Nervous twitch",
+		"6  Fast shiver",
+		"7  Steady push",
+		"8  Heavy roll",
+		"9  Rolling waves",
+		"10 Cascade down",
+		"11 Shear layers",
+		"12 Swirl clockwise",
+		"13 Vortex spiral",
+		"14 Cyclonic spiral",
+		"15 Tornado spin",
+		"16 Lateral drift",
+		"17 Reverse undertow",
+		"18 Pendulum swing",
+		"19 Breathing pulse",
+		"20 Gust bursts",
+		"21 Violent storm",
+		"22 Microburst slam",
+		"23 Chaotic swirl",
+		"24 Needle rain",
+		"25 Wild all-out"
+	};
+	ImGui::SetNextItemWidth(220.0f);
+	ImGui::Combo("##wpreset", &wind_preset, preset_names, IM_ARRAYSIZE(preset_names));
+	ImGui::SameLine();
+	if (ImGui::Button("Apply##wpreset"))
+	{
+		struct WP {
+			float intensity, speed_coeff, variety, variety_speed;
+			float nsc;
+			float x1smin, x1smax, x1min, x1max, x1c, x1sp, x1a;
+			float x2smin, x2smax, x2min, x2max, x2c, x2sp, x2a;
+			float x3smin, x3smax, x3min, x3max, x3c, x3sp, x3a;
+			float swsmin, swsmax, swmin, swmax, swc, swsp, swa;
+		};
+		static const WP P[] = {
+			//  1 Calm — almost still, only tips move
+			{ 0.08f,0.18f,0.60f,0.10f,
+			  0.25f,
+			  0.15f,0.35f,0.05f,0.18f,0.12f,0.12f,45,
+			  0.35f,0.65f,0.04f,0.15f,0.12f,0.12f,62,
+			  0.75f,1.25f,0.03f,0.12f,0.12f,0.12f,30,
+			  0.32f,0.58f,0.03f,0.10f,0.12f,0.12f,90 },
+			//  2 Soft breath — slow gentle undulation
+			{ 0.22f,0.35f,0.58f,0.18f,
+			  0.55f,
+			  0.35f,0.72f,0.12f,0.35f,0.25f,0.25f,45,
+			  0.58f,1.05f,0.10f,0.32f,0.25f,0.25f,62,
+			  1.15f,2.05f,0.08f,0.28f,0.25f,0.25f,30,
+			  0.48f,0.88f,0.08f,0.25f,0.25f,0.25f,90 },
+			//  3 Gentle sway — mild rhythmic motion
+			{ 0.38f,0.55f,0.55f,0.28f,
+			  0.62f,
+			  0.32f,0.58f,0.22f,0.52f,0.38f,0.38f,45,
+			  0.52f,0.88f,0.20f,0.50f,0.38f,0.38f,62,
+			  1.05f,1.75f,0.18f,0.48f,0.38f,0.38f,30,
+			  0.42f,0.72f,0.16f,0.45f,0.38f,0.38f,90 },
+			//  4 Micro flutter — tiny scale, very fast jitter everywhere
+			{ 0.75f,3.20f,0.55f,2.40f,
+			  0.12f,
+			  0.05f,0.12f,0.35f,0.85f,0.55f,3.20f,35,
+			  0.08f,0.18f,0.32f,0.82f,0.55f,4.80f,55,
+			  0.12f,0.25f,0.28f,0.80f,0.55f,7.50f,15,
+			  0.06f,0.15f,0.25f,0.78f,0.55f,4.80f,85 },
+			//  5 Nervous twitch — fast, sharp, high contrast, wide amplitude
+			{ 0.85f,2.80f,0.35f,2.00f,
+			  0.32f,
+			  0.10f,0.28f,0.25f,0.95f,0.85f,2.50f,45,
+			  0.18f,0.45f,0.22f,0.92f,0.85f,3.85f,70,
+			  0.28f,0.62f,0.18f,0.90f,0.85f,6.20f,25,
+			  0.12f,0.32f,0.15f,0.88f,0.85f,3.85f,110 },
+			//  6 Fast shiver — medium scale, very high speed, tight range
+			{ 0.80f,2.55f,0.42f,1.85f,
+			  0.52f,
+			  0.22f,0.48f,0.38f,0.88f,0.78f,2.25f,40,
+			  0.35f,0.72f,0.35f,0.86f,0.78f,3.50f,65,
+			  0.55f,1.10f,0.32f,0.85f,0.78f,5.50f,20,
+			  0.25f,0.55f,0.28f,0.83f,0.78f,3.50f,100 },
+			//  7 Steady push — uniform medium, moderate speed, all alive
+			{ 0.72f,1.25f,0.55f,0.65f,
+			  0.68f,
+			  0.35f,0.55f,0.48f,0.78f,0.58f,1.05f,25,
+			  0.55f,0.85f,0.45f,0.76f,0.58f,1.65f,35,
+			  0.85f,1.35f,0.42f,0.74f,0.58f,2.65f,20,
+			  0.45f,0.70f,0.40f,0.72f,0.58f,1.65f,45 },
+			//  8 Heavy roll — big scale, slow but full range oscillation
+			{ 0.92f,0.55f,0.45f,0.28f,
+			  1.75f,
+			  1.20f,2.20f,0.35f,1.00f,0.45f,0.45f,45,
+			  1.80f,3.20f,0.32f,0.98f,0.45f,0.45f,60,
+			  2.80f,4.80f,0.28f,0.95f,0.45f,0.45f,30,
+			  1.30f,2.40f,0.25f,0.92f,0.45f,0.45f,90 },
+			//  9 Rolling waves — wide scale spread, layered depth, visible motion
+			{ 0.85f,0.85f,0.52f,0.38f,
+			  1.05f,
+			  0.60f,1.20f,0.42f,0.92f,0.48f,0.48f,35,
+			  1.10f,2.20f,0.38f,0.90f,0.48f,0.48f,55,
+			  2.20f,4.20f,0.35f,0.88f,0.48f,0.48f,25,
+			  0.80f,1.60f,0.32f,0.85f,0.48f,0.48f,80 },
+			// 10 Cascade down — scale gradient, speed gradient, active
+			{ 0.82f,1.15f,0.55f,0.52f,
+			  0.88f,
+			  0.35f,0.65f,0.45f,0.88f,0.62f,0.62f,75,
+			  0.65f,1.15f,0.42f,0.86f,0.62f,0.95f,75,
+			  1.15f,2.10f,0.38f,0.84f,0.62f,1.65f,75,
+			  0.50f,0.95f,0.35f,0.82f,0.62f,1.10f,75 },
+			// 11 Shear layers — each layer different scale+speed+angle, all moving
+			{ 0.88f,1.55f,0.42f,0.85f,
+			  0.82f,
+			  0.18f,0.38f,0.48f,0.92f,0.72f,0.65f,15,
+			  0.52f,0.95f,0.45f,0.90f,0.72f,1.45f,85,
+			  1.05f,1.85f,0.42f,0.88f,0.72f,2.80f,175,
+			  0.32f,0.62f,0.38f,0.85f,0.72f,1.80f,265 },
+			// 12 Swirl clockwise — 90° angle spread, medium scale, active
+			{ 0.80f,1.35f,0.48f,0.75f,
+			  0.62f,
+			  0.32f,0.58f,0.42f,0.88f,0.62f,0.75f,0,
+			  0.55f,0.88f,0.40f,0.86f,0.62f,1.25f,90,
+			  0.95f,1.55f,0.38f,0.84f,0.62f,2.10f,180,
+			  0.42f,0.72f,0.35f,0.82f,0.62f,1.45f,270 },
+			// 13 Vortex spiral — scale gradient + rotation, fast
+			{ 0.86f,1.65f,0.38f,1.15f,
+			  0.52f,
+			  0.22f,0.45f,0.52f,0.95f,0.72f,1.15f,0,
+			  0.48f,0.82f,0.48f,0.93f,0.72f,1.85f,120,
+			  0.85f,1.45f,0.45f,0.92f,0.72f,3.10f,240,
+			  0.38f,0.68f,0.42f,0.90f,0.72f,2.15f,360 },
+			// 14 Cyclonic spiral — heavy rotation, mixed scale, fast
+			{ 0.90f,1.85f,0.32f,1.45f,
+			  0.42f,
+			  0.28f,0.58f,0.58f,0.95f,0.78f,1.35f,0,
+			  0.55f,0.95f,0.55f,0.93f,0.78f,2.20f,135,
+			  0.95f,1.65f,0.52f,0.92f,0.78f,3.80f,270,
+			  0.42f,0.78f,0.48f,0.90f,0.78f,2.65f,45 },
+			// 15 Tornado spin — extreme scale contrast, max speed
+			{ 0.98f,2.35f,0.22f,1.85f,
+			  0.32f,
+			  0.22f,0.52f,0.72f,1.00f,0.88f,1.85f,0,
+			  0.48f,0.92f,0.68f,0.98f,0.88f,3.20f,90,
+			  0.85f,1.55f,0.65f,0.97f,0.88f,5.20f,180,
+			  0.38f,0.72f,0.62f,0.95f,0.88f,3.65f,270 },
+			// 16 Lateral drift — wide scale range, same angle, visible flow
+			{ 0.75f,0.95f,0.60f,0.45f,
+			  1.15f,
+			  0.80f,1.80f,0.42f,0.82f,0.52f,0.42f,0,
+			  1.30f,2.60f,0.40f,0.80f,0.52f,0.82f,0,
+			  2.20f,4.20f,0.38f,0.78f,0.52f,1.55f,0,
+			  0.95f,1.95f,0.35f,0.75f,0.52f,1.05f,0 },
+			// 17 Reverse undertow — slow, medium scale, angle 180°, full range
+			{ 0.72f,0.68f,0.65f,0.35f,
+			  0.92f,
+			  0.55f,1.05f,0.32f,0.82f,0.42f,0.32f,185,
+			  0.88f,1.65f,0.28f,0.80f,0.42f,0.58f,185,
+			  1.55f,2.85f,0.25f,0.78f,0.42f,1.05f,185,
+			  0.72f,1.35f,0.22f,0.75f,0.42f,0.72f,185 },
+			// 18 Pendulum swing — angle oscillation, medium scale, active
+			{ 0.78f,1.15f,0.50f,0.72f,
+			  0.58f,
+			  0.38f,0.65f,0.45f,0.88f,0.58f,0.65f,0,
+			  0.62f,1.05f,0.42f,0.86f,0.58f,1.05f,180,
+			  1.05f,1.85f,0.38f,0.84f,0.58f,1.75f,0,
+			  0.48f,0.82f,0.35f,0.82f,0.58f,1.15f,180 },
+			// 19 Breathing pulse — slow expand/contract, wide scale, full range
+			{ 0.82f,0.62f,0.55f,0.32f,
+			  1.32f,
+			  0.85f,1.75f,0.28f,0.98f,0.42f,0.32f,45,
+			  1.35f,2.65f,0.25f,0.95f,0.42f,0.55f,45,
+			  2.25f,4.25f,0.22f,0.92f,0.42f,0.95f,45,
+			  1.05f,2.05f,0.18f,0.90f,0.42f,0.62f,45 },
+			// 20 Gust bursts — wide min/max gap, fast variety, constant spikes
+			{ 0.95f,1.65f,0.28f,1.65f,
+			  0.72f,
+			  0.32f,0.68f,0.08f,1.00f,0.88f,0.85f,55,
+			  0.58f,1.15f,0.05f,0.98f,0.88f,1.35f,80,
+			  1.10f,2.15f,0.02f,0.96f,0.88f,2.25f,40,
+			  0.52f,1.05f,0.02f,0.95f,0.88f,1.55f,115 },
+			// 21 Violent storm — all max, high speed, high contrast
+			{ 0.98f,2.05f,0.18f,1.75f,
+			  0.40f,
+			  0.28f,0.62f,0.78f,1.00f,0.92f,1.55f,62,
+			  0.52f,0.98f,0.75f,1.00f,0.92f,2.45f,85,
+			  0.92f,1.72f,0.72f,1.00f,0.92f,4.20f,55,
+			  0.42f,0.85f,0.68f,1.00f,0.92f,2.85f,120 },
+			// 22 Microburst slam — extreme scale contrast, all angle 90°, max speed
+			{ 1.00f,2.85f,0.12f,2.05f,
+			  0.22f,
+			  0.12f,0.32f,0.95f,1.00f,1.00f,2.20f,90,
+			  0.32f,0.68f,0.93f,1.00f,1.00f,3.85f,90,
+			  0.68f,1.35f,0.92f,1.00f,1.00f,6.50f,90,
+			  0.28f,0.62f,0.90f,1.00f,1.00f,4.20f,90 },
+			// 23 Chaotic swirl — random scales, wide range, fast variety
+			{ 0.92f,1.85f,0.18f,1.85f,
+			  0.65f,
+			  0.15f,0.42f,0.22f,1.00f,0.92f,1.05f,45,
+			  0.42f,0.95f,0.18f,0.98f,0.92f,1.75f,165,
+			  0.95f,1.85f,0.15f,0.96f,0.92f,3.15f,285,
+			  0.32f,0.78f,0.12f,0.95f,0.92f,2.15f,45 },
+			// 24 Needle rain — tiny scale, vertical, extreme speed
+			{ 0.95f,3.50f,0.25f,1.55f,
+			  0.10f,
+			  0.05f,0.15f,0.58f,0.95f,0.95f,2.50f,80,
+			  0.08f,0.22f,0.55f,0.93f,0.95f,3.85f,80,
+			  0.15f,0.38f,0.52f,0.92f,0.95f,5.50f,80,
+			  0.06f,0.18f,0.48f,0.90f,0.95f,3.85f,80 },
+			// 25 Wild all-out — extreme scale spread, max everything
+			{ 1.00f,3.20f,0.10f,2.50f,
+			  0.55f,
+			  0.08f,0.32f,0.25f,1.00f,1.00f,2.80f,45,
+			  0.32f,0.85f,0.22f,1.00f,1.00f,4.50f,135,
+			  0.85f,1.85f,0.18f,1.00f,1.00f,7.50f,225,
+			  0.28f,0.72f,0.15f,1.00f,1.00f,5.00f,315 },
+		};
+		const WP& p = P[wind_preset];
+		ps_wind_blend = p.intensity;
+		ps_wind_noise_scale = p.nsc;
+
+		auto spread = [](float v, float lo, float hi, float pct) {
+			float half = v * pct;
+			float mn = std::clamp(v - half, lo, hi);
+			float mx = std::clamp(v + half, lo, hi);
+			if (mn > mx) std::swap(mn, mx);
+			return std::pair<float,float>(mn, mx);
+		};
+
+		auto r1 = spread(p.x1c, 0.0f, 1.0f, 0.25f);
+		auto r2 = spread(p.x2c, 0.0f, 1.0f, 0.25f);
+		auto r3 = spread(p.x3c, 0.0f, 1.0f, 0.25f);
+		auto rsw = spread(p.swc, 0.0f, 1.0f, 0.25f);
+
+		auto s1 = spread(p.x1sp, 0.01f, 5.0f, 0.30f);
+		auto s2 = spread(p.x2sp, 0.01f, 5.0f, 0.30f);
+		auto s3 = spread(p.x3sp, 0.01f, 5.0f, 0.30f);
+		auto ssw = spread(p.swsp, 0.01f, 5.0f, 0.30f);
+
+		auto a1 = spread(p.x1a, 0.0f, 360.0f, 0.15f);
+		auto a2 = spread(p.x2a, 0.0f, 360.0f, 0.15f);
+		auto a3 = spread(p.x3a, 0.0f, 360.0f, 0.15f);
+		auto asw = spread(p.swa, 0.0f, 360.0f, 0.15f);
+
+		ps_wind_xz1_scale_min = std::min(p.x1smin, p.x1smax);
+		ps_wind_xz1_scale_max = std::max(p.x1smin, p.x1smax);
+		ps_wind_xz1_int_min = std::min(p.x1min, p.x1max);
+		ps_wind_xz1_int_max = std::max(p.x1min, p.x1max);
+		ps_wind_xz1_con_min = r1.first;  ps_wind_xz1_con_max = r1.second;
+		ps_wind_xz1_spd_min = s1.first;  ps_wind_xz1_spd_max = s1.second;
+		ps_wind_xz1_ang_min = a1.first;  ps_wind_xz1_ang_max = a1.second;
+
+		ps_wind_xz2_scale_min = std::min(p.x2smin, p.x2smax);
+		ps_wind_xz2_scale_max = std::max(p.x2smin, p.x2smax);
+		ps_wind_xz2_int_min = std::min(p.x2min, p.x2max);
+		ps_wind_xz2_int_max = std::max(p.x2min, p.x2max);
+		ps_wind_xz2_con_min = r2.first;  ps_wind_xz2_con_max = r2.second;
+		ps_wind_xz2_spd_min = s2.first;  ps_wind_xz2_spd_max = s2.second;
+		ps_wind_xz2_ang_min = a2.first;  ps_wind_xz2_ang_max = a2.second;
+
+		ps_wind_xz3_scale_min = std::min(p.x3smin, p.x3smax);
+		ps_wind_xz3_scale_max = std::max(p.x3smin, p.x3smax);
+		ps_wind_xz3_int_min = std::min(p.x3min, p.x3max);
+		ps_wind_xz3_int_max = std::max(p.x3min, p.x3max);
+		ps_wind_xz3_con_min = r3.first;  ps_wind_xz3_con_max = r3.second;
+		ps_wind_xz3_spd_min = s3.first;  ps_wind_xz3_spd_max = s3.second;
+		ps_wind_xz3_ang_min = a3.first;  ps_wind_xz3_ang_max = a3.second;
+
+		ps_wind_sw_scale_min = std::min(p.swsmin, p.swsmax);
+		ps_wind_sw_scale_max = std::max(p.swsmin, p.swsmax);
+		ps_wind_sw_int_min = std::min(p.swmin, p.swmax);
+		ps_wind_sw_int_max = std::max(p.swmin, p.swmax);
+		ps_wind_sw_con_min = rsw.first;  ps_wind_sw_con_max = rsw.second;
+		ps_wind_sw_spd_min = ssw.first;  ps_wind_sw_spd_max = ssw.second;
+		ps_wind_sw_ang_min = asw.first;  ps_wind_sw_ang_max = asw.second;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Reset##wpreset"))
+	{
+		ps_wind_enabled = 0;
+		ps_wind_mode = 0;
+		ps_wind_blend = 0.5f;
+		ps_wind_noise_scale = 0.5f;
+		ps_wind_noise_speed = 0.3f;
+		ps_wind_noise_angle = 45.0f;
+		ps_wind_xz_enabled = 1;
+		ps_wind_swirl_enabled = 1;
+		ps_wind_xz1_on = 1; ps_wind_xz1_scale_min = 0.2f; ps_wind_xz1_scale_max = 0.5f;
+		ps_wind_xz1_int_min = 0.1f; ps_wind_xz1_int_max = 0.6f;
+		ps_wind_xz1_con_min = 0.2f; ps_wind_xz1_con_max = 0.6f;
+		ps_wind_xz1_spd_min = 0.1f; ps_wind_xz1_spd_max = 0.5f;
+		ps_wind_xz1_ang_min = 30.0f; ps_wind_xz1_ang_max = 60.0f;
+		ps_wind_xz2_on = 1; ps_wind_xz2_scale_min = 0.5f; ps_wind_xz2_scale_max = 1.0f;
+		ps_wind_xz2_int_min = 0.08f; ps_wind_xz2_int_max = 0.5f;
+		ps_wind_xz2_con_min = 0.2f; ps_wind_xz2_con_max = 0.6f;
+		ps_wind_xz2_spd_min = 0.3f; ps_wind_xz2_spd_max = 1.2f;
+		ps_wind_xz2_ang_min = 45.0f; ps_wind_xz2_ang_max = 75.0f;
+		ps_wind_xz3_on = 1; ps_wind_xz3_scale_min = 1.0f; ps_wind_xz3_scale_max = 2.0f;
+		ps_wind_xz3_int_min = 0.05f; ps_wind_xz3_int_max = 0.35f;
+		ps_wind_xz3_con_min = 0.2f; ps_wind_xz3_con_max = 0.6f;
+		ps_wind_xz3_spd_min = 0.8f; ps_wind_xz3_spd_max = 3.0f;
+		ps_wind_xz3_ang_min = 15.0f; ps_wind_xz3_ang_max = 45.0f;
+		ps_wind_sw_scale_min = 0.3f; ps_wind_sw_scale_max = 0.8f;
+		ps_wind_sw_int_min = 0.05f; ps_wind_sw_int_max = 0.4f;
+		ps_wind_sw_con_min = 0.2f; ps_wind_sw_con_max = 0.6f;
+		ps_wind_sw_spd_min = 0.3f; ps_wind_sw_spd_max = 1.5f;
+		ps_wind_sw_ang_min = 75.0f; ps_wind_sw_ang_max = 105.0f;
+	}
+}
+
+static void dv_tab_wind()
+{
+	extern int   ps_wind_enabled;
+	extern int   ps_wind_mode;
+	extern float ps_wind_blend;
+	extern float ps_wind_noise_scale;
+	extern float ps_wind_noise_speed;
+	extern float ps_wind_noise_angle;
+	extern int   ps_wind_xz_enabled;
+	extern int   ps_wind_swirl_enabled;
+	extern int   ps_wind_xz1_on;
+	extern float ps_wind_xz1_scale_min, ps_wind_xz1_scale_max;
+	extern float ps_wind_xz1_int_min,  ps_wind_xz1_int_max;
+	extern float ps_wind_xz1_con_min,  ps_wind_xz1_con_max;
+	extern float ps_wind_xz1_spd_min,  ps_wind_xz1_spd_max;
+	extern float ps_wind_xz1_ang_min,  ps_wind_xz1_ang_max;
+	extern int   ps_wind_xz2_on;
+	extern float ps_wind_xz2_scale_min, ps_wind_xz2_scale_max;
+	extern float ps_wind_xz2_int_min,  ps_wind_xz2_int_max;
+	extern float ps_wind_xz2_con_min,  ps_wind_xz2_con_max;
+	extern float ps_wind_xz2_spd_min,  ps_wind_xz2_spd_max;
+	extern float ps_wind_xz2_ang_min,  ps_wind_xz2_ang_max;
+	extern int   ps_wind_xz3_on;
+	extern float ps_wind_xz3_scale_min, ps_wind_xz3_scale_max;
+	extern float ps_wind_xz3_int_min,  ps_wind_xz3_int_max;
+	extern float ps_wind_xz3_con_min,  ps_wind_xz3_con_max;
+	extern float ps_wind_xz3_spd_min,  ps_wind_xz3_spd_max;
+	extern float ps_wind_xz3_ang_min,  ps_wind_xz3_ang_max;
+	extern float ps_wind_sw_scale_min,  ps_wind_sw_scale_max;
+	extern float ps_wind_sw_int_min,   ps_wind_sw_int_max;
+	extern float ps_wind_sw_con_min,   ps_wind_sw_con_max;
+	extern float ps_wind_sw_spd_min,   ps_wind_sw_spd_max;
+	extern float ps_wind_sw_ang_min,   ps_wind_sw_ang_max;
+
+	ImGui::SeparatorText("Wind");
+	ImGui::Checkbox("Enabled##wind", (bool*)&ps_wind_enabled);
+
+	ImGui::SeparatorText("Intensity mode");
+	static int mode_sel = 0;
+	ImGui::RadioButton("Static##wm", &mode_sel, 0);
+	ImGui::SameLine();
+	ImGui::RadioButton("Dynamic (noise)##wm", &mode_sel, 1);
+	ps_wind_mode = mode_sel;
+
+	if (mode_sel == 0)
+	{
+		ImGui::TextDisabled("(0-1 interpolates ALL min/max pairs below)");
+		ImGui::SliderFloat("Wind intensity##wind", &ps_wind_blend, 0.0f, 1.0f, "%.2f");
+	}
+	else
+	{
+		ImGui::SliderFloat("Noise scale##wind", &ps_wind_noise_scale, 0.0f, 2.0f, "%.2f");
+		ImGui::SliderFloat("Noise speed##wind", &ps_wind_noise_speed, 0.01f, 5.0f, "%.3f");
+		ImGui::SliderFloat("Noise angle##wind", &ps_wind_noise_angle, 0.0f, 360.0f, "%.0f deg");
+
+		static bool wind_noise_preview = true;
+		ImGui::Checkbox("Show noise strip##wind", &wind_noise_preview);
+		if (wind_noise_preview)
+		{
+			static float noise_contrast = 1.5f;
+			ImGui::SliderFloat("Noise contrast##wind", &noise_contrast, 0.1f, 5.0f, "%.2f");
+
+			static CTexture* s_noise_tex = nullptr;
+			const u32 NS = DV_PREVIEW_SIZE;
+			if (!s_noise_tex)
+				s_noise_tex = dv_create_texture(NS);
+			if (s_noise_tex && s_noise_tex->get_SRView())
+			{
+				xr_vector<u8> np(NS * NS * 4);
+				const float nt = (float)RDEVICE.dwTimeGlobal * 0.001f * ps_wind_noise_speed;
+				const float nAng = ps_wind_noise_angle * (3.14159265f / 180.0f);
+				float blendNow = 0.5f;
+				const u32 cx = NS / 2;
+				for (u32 x = 0; x < NS; ++x)
+				{
+					float nx = (float)x / NS * ps_wind_noise_scale * 8.0f;
+					float nv = CDetailWind::Noise(nx + std::cos(nAng) * nt * 3.7f, std::sin(nAng) * nt * 3.7f + 7.0f);
+					nv = std::clamp((nv - 0.5f) * noise_contrast + 0.5f, 0.0f, 1.0f);
+					if (x == cx) blendNow = nv;
+					u8 g = (u8)(nv * 200.0f + 30.0f);
+					bool isMarker = (x == cx);
+					for (u32 y = 0; y < NS; ++y)
+					{
+						u32 idx = (y * NS + x) * 4;
+						np[idx] = isMarker ? 255 : g;
+						np[idx + 1] = isMarker ? 40 : g;
+						np[idx + 2] = isMarker ? 40 : g;
+						np[idx + 3] = 255;
+					}
+				}
+				dv_write_texture_px(s_noise_tex, np.data(), NS);
+				const float w = ImGui::GetContentRegionAvail().x;
+				ImGui::Image(s_noise_tex->get_SRView()->GetRawSRV(), ImVec2(w, 20.0f));
+				ImGui::TextDisabled("Blend = %.2f (center sample)", blendNow);
+			}
+		}
+	}
+
+	ImGui::SeparatorText("XZ wind");
+	ImGui::Checkbox("XZ enabled##wind", (bool*)&ps_wind_xz_enabled);
+
+	ImGui::SeparatorText("XZ1 Macro");
+	ImGui::Checkbox("XZ1 On##wind", (bool*)&ps_wind_xz1_on);
+	extern float ps_wind_blend;
+	extern float ps_wind_blend_current;
+	auto blendProj = [](float lo, float hi) -> float { return lo + ps_wind_blend * (hi - lo); };
+
+	dv_range_slider("Scale##x1", &ps_wind_xz1_scale_min, &ps_wind_xz1_scale_max, 0.0f, 2.0f, blendProj(ps_wind_xz1_scale_min, ps_wind_xz1_scale_max));
+	dv_range_slider("Intensity##x1", &ps_wind_xz1_int_min, &ps_wind_xz1_int_max, 0.0f, 1.0f, blendProj(ps_wind_xz1_int_min, ps_wind_xz1_int_max));
+	dv_range_slider("Contrast##x1", &ps_wind_xz1_con_min, &ps_wind_xz1_con_max, 0.0f, 1.0f, blendProj(ps_wind_xz1_con_min, ps_wind_xz1_con_max));
+	dv_range_slider("Speed##x1", &ps_wind_xz1_spd_min, &ps_wind_xz1_spd_max, 0.0f, 5.0f, blendProj(ps_wind_xz1_spd_min, ps_wind_xz1_spd_max));
+	dv_range_slider("Angle##x1", &ps_wind_xz1_ang_min, &ps_wind_xz1_ang_max, 0.0f, 360.0f, blendProj(ps_wind_xz1_ang_min, ps_wind_xz1_ang_max), "%.0f");
+
+	ImGui::SeparatorText("XZ2 Meso");
+	ImGui::Checkbox("XZ2 On##wind", (bool*)&ps_wind_xz2_on);
+	dv_range_slider("Scale##x2", &ps_wind_xz2_scale_min, &ps_wind_xz2_scale_max, 0.0f, 2.0f, blendProj(ps_wind_xz2_scale_min, ps_wind_xz2_scale_max));
+	dv_range_slider("Intensity##x2", &ps_wind_xz2_int_min, &ps_wind_xz2_int_max, 0.0f, 1.0f, blendProj(ps_wind_xz2_int_min, ps_wind_xz2_int_max));
+	dv_range_slider("Contrast##x2", &ps_wind_xz2_con_min, &ps_wind_xz2_con_max, 0.0f, 1.0f, blendProj(ps_wind_xz2_con_min, ps_wind_xz2_con_max));
+	dv_range_slider("Speed##x2", &ps_wind_xz2_spd_min, &ps_wind_xz2_spd_max, 0.0f, 5.0f, blendProj(ps_wind_xz2_spd_min, ps_wind_xz2_spd_max));
+	dv_range_slider("Angle##x2", &ps_wind_xz2_ang_min, &ps_wind_xz2_ang_max, 0.0f, 360.0f, blendProj(ps_wind_xz2_ang_min, ps_wind_xz2_ang_max), "%.0f");
+
+	ImGui::SeparatorText("XZ3 Micro");
+	ImGui::Checkbox("XZ3 On##wind", (bool*)&ps_wind_xz3_on);
+	dv_range_slider("Scale##x3", &ps_wind_xz3_scale_min, &ps_wind_xz3_scale_max, 0.0f, 2.0f, blendProj(ps_wind_xz3_scale_min, ps_wind_xz3_scale_max));
+	dv_range_slider("Intensity##x3", &ps_wind_xz3_int_min, &ps_wind_xz3_int_max, 0.0f, 1.0f, blendProj(ps_wind_xz3_int_min, ps_wind_xz3_int_max));
+	dv_range_slider("Contrast##x3", &ps_wind_xz3_con_min, &ps_wind_xz3_con_max, 0.0f, 1.0f, blendProj(ps_wind_xz3_con_min, ps_wind_xz3_con_max));
+	dv_range_slider("Speed##x3", &ps_wind_xz3_spd_min, &ps_wind_xz3_spd_max, 0.0f, 5.0f, blendProj(ps_wind_xz3_spd_min, ps_wind_xz3_spd_max));
+	dv_range_slider("Angle##x3", &ps_wind_xz3_ang_min, &ps_wind_xz3_ang_max, 0.0f, 360.0f, blendProj(ps_wind_xz3_ang_min, ps_wind_xz3_ang_max), "%.0f");
+
+	ImGui::SeparatorText("Swirls Y");
+	ImGui::Checkbox("Swirls enabled##wind", (bool*)&ps_wind_swirl_enabled);
+	dv_range_slider("Scale##sw", &ps_wind_sw_scale_min, &ps_wind_sw_scale_max, 0.0f, 2.0f, blendProj(ps_wind_sw_scale_min, ps_wind_sw_scale_max));
+	dv_range_slider("Intensity##sw", &ps_wind_sw_int_min, &ps_wind_sw_int_max, 0.0f, 1.0f, blendProj(ps_wind_sw_int_min, ps_wind_sw_int_max));
+	dv_range_slider("Contrast##sw", &ps_wind_sw_con_min, &ps_wind_sw_con_max, 0.0f, 1.0f, blendProj(ps_wind_sw_con_min, ps_wind_sw_con_max));
+	dv_range_slider("Speed##sw", &ps_wind_sw_spd_min, &ps_wind_sw_spd_max, 0.0f, 5.0f, blendProj(ps_wind_sw_spd_min, ps_wind_sw_spd_max));
+	dv_range_slider("Angle##sw", &ps_wind_sw_ang_min, &ps_wind_sw_ang_max, 0.0f, 360.0f, blendProj(ps_wind_sw_ang_min, ps_wind_sw_ang_max), "%.0f");
+
+	dv_wind_presets();
+
+	ImGui::Spacing();
+	ImGui::SeparatorText("Preview");
+
+	static bool wind_preview_enabled = false;
+	ImGui::Checkbox("Show preview##wind", &wind_preview_enabled);
+
+	static CTexture* s_wind_tex = nullptr;
+	static float wind_zoom = 1.0f;
+	if (!s_wind_tex)
+		s_wind_tex = dv_create_texture(DV_PREVIEW_SIZE);
+
+	if (wind_preview_enabled && s_wind_tex && s_wind_tex->get_SRView())
+	{
+		static u64 wind_preview_next = 0;
+		const u64 now = RDEVICE.dwTimeGlobal;
+		if (now >= wind_preview_next)
+		{
+			const u32 N = DV_PREVIEW_SIZE;
+			xr_vector<u8> px(N * N * 4);
+			CDetailWind::FillPreview(px.data(), N, wind_zoom, now);
+			dv_write_texture_px(s_wind_tex, px.data(), N);
+			wind_preview_next = now + 250;
+		}
+		const float w = ImGui::GetContentRegionAvail().x;
+		ImGui::Image(s_wind_tex->get_SRView()->GetRawSRV(), ImVec2(w, 256.0f));
+		ImGui::SetNextItemWidth(w);
+		ImGui::SliderFloat("##wind zoom", &wind_zoom, 1.f, 8.f, "Zoom x%.1f");
+	}
+}
+
+// ---------------------------------------------------------------------------
 // ImGui window
 // ---------------------------------------------------------------------------
 void CRender::renderImGuiDebugWindow_DetailLayersEditor()
@@ -1337,6 +2169,9 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 	CDetailManager* D = RImplementation.Details;
 	const bool hasData = D && D->dtH.size_x != 0;
 
+	static float ui_alpha = 1.0f;
+	ImGui::SetNextWindowBgAlpha(ui_alpha);
+
 	if (!ImGui::Begin("Detail Layers Editor", &open, ImGuiWindowFlags_NoCollapse))
 	{
 		ImGui::End();
@@ -1344,11 +2179,11 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 		return;
 	}
 
+	ImGui::SliderFloat("UI Alpha", &ui_alpha, 0.2f, 1.0f, "%.2f");
+
 	if (!hasData)
 		ImGui::Text("Details manager not available on this level.");
 
-	// Textures live independently of the 3D hover pass, so the preview/minimap show
-	// even when the brush overlay itself cannot raycast yet.
 	if (!s_preview_tex)
 		s_preview_tex = dv_create_texture(DV_PREVIEW_SIZE);
 	if (!s_minimap_tex)
@@ -1358,12 +2193,21 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 	if (!s_minimap_base_clu)
 		s_minimap_base_clu = dv_create_texture(DV_MINIMAP_SIZE);
 
-	// -------------------------------------------------------------- tab select
-	ImGui::RadioButton("Scale (FMB)", &st.tab, 0);
-	ImGui::SameLine();
-	ImGui::RadioButton("Mix (Cluster)", &st.tab, 1);
-	ImGui::SameLine();
-	ImGui::RadioButton("Detail options", &st.tab, 2);
+	// -------------------------------------------------------------- tab select (wrapping)
+	{
+		const char* tab_labels[] = { "Scale", "Mix", "Generic", "Trample", "Wind" };
+		const float availW = ImGui::GetContentRegionAvail().x;
+		float rowStart = ImGui::GetCursorPosX();
+		for (int i = 0; i < 5; ++i)
+		{
+			float tabW = ImGui::CalcTextSize(tab_labels[i]).x + ImGui::GetStyle().FramePadding.x * 4.f + 16.f;
+			if (i > 0 && (ImGui::GetCursorPosX() - rowStart) + tabW > availW)
+				ImGui::NewLine();
+			ImGui::RadioButton(tab_labels[i], &st.tab, i);
+			if (i < 4)
+				ImGui::SameLine();
+		}
+	}
 
 	bool dirty = false;
 
@@ -1382,220 +2226,18 @@ void CRender::renderImGuiDebugWindow_DetailLayersEditor()
 		s_mix_entered = false;
 
 	if (st.tab <= 1)
-	{
-		ImGui::SeparatorText("Brush");
-		dirty |= ImGui::DragFloat("Radius, m", &st.radius, 0.2f, 0.5f, 30.f);
-		dirty |= ImGui::SliderFloat("Soft edge", &st.soft, 0.0f, 0.9f);
-		dirty |= ImGui::SliderFloat("Press intensity", &st.intensity, -1.0f, 1.0f);
-		dirty |= ImGui::SliderFloat("Edge hardness", &st.edge_hardness, 0.0f, 0.9f);
-		ImGui::TextDisabled("Press inside the hard core (radius*(1-Soft edge)) is full.\nOutside it falls smoothly to Edge hardness at the rim.\nMiddle = 0 (inert). Negative cuts the grass down to the\nground, positive grows it. RMB wipes the mask entirely.\nMix mode ignores intensity (see below).");
-	}
+		dv_tab_brush_shared(st, dirty);
 
 	if (st.tab == 0)
-	{
-		ImGui::SeparatorText("Painted scale");
-		dirty |= ImGui::SliderFloat("Scale value", &st.scale_value, 0.0f, 1.0f);
-		ImGui::TextDisabled("Positive press grows grass toward this height,\nnegative press cuts it down to bare ground.\nRMB wipes the brush mask back to the generator.\nGenerator height random range lives in the\n'Detail options' tab.");
-	}
+		dv_tab_scale(st, dirty);
 	else if (st.tab == 1)
-	{
-		ImGui::SeparatorText("Painted asset mix");
-		// Live switch: on = cluster_field replaces grass, off = native. Each flip asks for
-		// the full cache rebuild (user strokes survive it) - this is why painting used to
-		// show nothing but the brush overlay on the grass.
-		const bool mixOn = dv_mix_active();
-		bool mixSel = mixOn;
-		if (ImGui::Checkbox("Replace grass with cluster assets", &mixSel))
-		{
-			dv_ensure_mix_enabled(D, mixSel);
-			dirty = true;
-			st.status = mixSel ? "Cluster mix enabled - rebuilding cache." : "Cluster mix disabled - native grass restored.";
-		}
-		if (!mixOn)
-			ImGui::TextColored(ImVec4(1.f, 0.65f, 0.25f, 1.f),
-				"Disabled: the slots are written, but the renderer still shows\nnative grass. Enable the checkbox above to see the mix.");
-		ImGui::TextDisabled("LMB stamps the selected asset wherever the noise pattern\npasses (opaque stencil); press slider is ignored. RMB\nwipes replaced slots back to the generator.\nGenerator cluster/FMB settings live in the\n'Detail options' tab.");
-		const auto& assets = dv_cluster_assets(D);
-		int sel = (st.cluster_index == 255) ? 0 : st.cluster_index + 1;
-		{
-			xr_vector<xr_string> items;
-			items.emplace_back("Native (no mix)");
-			for (const auto& a : assets)
-				items.emplace_back(a.name);
-			const int selClamped = sel < 0 ? 0 : (sel >= (int)items.size() ? (int)items.size() - 1 : sel);
-			if (ImGui::BeginCombo("Replace with", items[selClamped].c_str()))
-			{
-				for (int k = 0; k < (int)items.size(); k++)
-				{
-					const bool isSel = (k == sel);
-					CTexture* tex = nullptr;
-					if (k >= 1 && (k - 1) < (int)assets.size())
-					{
-						const ClusterAssetDesc& a = assets[k - 1];
-						if (!a.tex_name.empty())
-						{
-							CTexture* t = dxRenderDeviceRender::Instance().Resources->_CreateTexture(a.tex_name.c_str());
-							if (t && t->get_SRView())
-								tex = t;
-						}
-					}
-					if (tex)
-					{
-						ImGui::Image(tex->get_SRView()->GetRawSRV(), ImVec2(64.f, 64.f));
-						ImGui::SameLine();
-					}
-					if (ImGui::Selectable(items[k].c_str(), isSel))
-						sel = k;
-					if (isSel)
-						ImGui::SetItemDefaultFocus();
-				}
-				ImGui::EndCombo();
-			}
-		}
-		if (sel != (st.cluster_index == 255 ? 0 : st.cluster_index + 1))
-		{
-			st.cluster_index = (sel == 0) ? 255 : (sel - 1);
-			dirty = true;
-		}
-		if (st.cluster_index != 255 && st.cluster_index < (int)assets.size())
-			ImGui::TextDisabled("Painting with: %s", assets[st.cluster_index].name.c_str());
-	}
-	else // tab 2: Detail options - mirrors of the r__detail_* console commands
-	{
-		ImGui::SeparatorText("Detail options");
-		ImGui::TextDisabled("Mirrors of the r__detail_* console commands; any\nchange regenerates the mixed fields from scratch.");
-
-		bool dgt = false;
-		bool ddRadius = false;
-
-		// ------------------------------------------------------------- 1
-		ImGui::SeparatorText("Detail use alternative DM assets in level folder");
-		dgt |= ImGui::Checkbox("Use cluster mix tree assets", &ps_r__detail_use_cluster_mix_tree_assets);
-
-		// ------------------------------------------------------------- 2
-		ImGui::SeparatorText("Detail noise mix assets");
-		dgt |= ImGui::Checkbox("Use alternative tree assets", &ps_r__detail_use_alternative_tree_assets);
-		dgt |= ImGui::SliderFloat("Cluster patch size max", &ps_r__detail_cluster_patch_size_max, 1.f, 100.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Cluster patch size min", &ps_r__detail_cluster_patch_size_min, 1.f, 100.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Cluster seed", &ps_r__detail_cluster_seed, 0.f, 9999.f, "%.0f");
-		dgt |= ImGui::SliderFloat("Cluster sharpness", &ps_r__detail_cluster_sharpness, 1.f, 20.f, "%.1f");
-		dgt |= ImGui::SliderFloat("Cluster warp max", &ps_r__detail_cluster_warp_max, 0.f, 3.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Cluster warp min", &ps_r__detail_cluster_warp_min, 0.f, 3.f, "%.2f");
-
-		// ------------------------------------------------------------- 2b
-		if (D)
-		{
-			// Clean first layer: the generator's cluster field, no brush strokes.
-			ImGui::SeparatorText("Mix field minimap (clean base)");
-			static MinimapUI s_mm_clu_base;
-			dv_minimap_ui(D, 1, s_minimap_base_clu, true, s_mm_clu_base, 512.f);
-			ImGui::TextDisabled("What the generator put before any brush stroke.");
-		}
-
-		// ------------------------------------------------------------- 3
-		ImGui::SeparatorText("Detail macro scale variations (FMB)");
-		dgt |= ImGui::Checkbox("Layer 1 used", &ps_r__detail_fmb_use_layer_1);
-		dgt |= ImGui::SliderFloat("Layer 1 amplitude", &ps_r__detail_fmb_layer_1_amplitude, 0.f, 10.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Layer 1 frequency", &ps_r__detail_fmb_layer_1_frequency, 0.f, 1.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Layer 1 power", &ps_r__detail_fmb_layer_1_power, 0.f, 1.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Layer 1 seed", &ps_r__detail_fmb_layer_1_seed, 0.f, 9999.f, "%.0f");
-		dgt |= ImGui::Checkbox("Layer 2 used", &ps_r__detail_fmb_use_layer_2);
-		dgt |= ImGui::SliderFloat("Layer 2 amplitude", &ps_r__detail_fmb_layer_2_amplitude, 0.f, 10.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Layer 2 frequency", &ps_r__detail_fmb_layer_2_frequency, 0.f, 1.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Layer 2 power", &ps_r__detail_fmb_layer_2_power, 0.f, 1.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Layer 2 seed", &ps_r__detail_fmb_layer_2_seed, 0.f, 9999.f, "%.0f");
-		dgt |= ImGui::Checkbox("Layer 3 used", &ps_r__detail_fmb_use_layer_3);
-		dgt |= ImGui::SliderFloat("Layer 3 amplitude", &ps_r__detail_fmb_layer_3_amplitude, 0.f, 10.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Layer 3 frequency", &ps_r__detail_fmb_layer_3_frequency, 0.f, 1.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Layer 3 power", &ps_r__detail_fmb_layer_3_power, 0.f, 1.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Layer 3 seed", &ps_r__detail_fmb_layer_3_seed, 0.f, 9999.f, "%.0f");
-
-		// ------------------------------------------------------------- 3b
-		if (D)
-		{
-			// Clean first layer: the generator's FMB scale field, no brush strokes.
-			ImGui::SeparatorText("Scale field minimap (clean base)");
-			static MinimapUI s_mm_fmb_base;
-			dv_minimap_ui(D, 0, s_minimap_base_fmb, true, s_mm_fmb_base, 512.f);
-			ImGui::TextDisabled("FMB height the generator produced before any brush stroke.");
-		}
-
-		// ------------------------------------------------------------- 4
-		ImGui::SeparatorText("Detail size");
-		dgt |= ImGui::SliderFloat("Random scale max", &ps_r__detail_rnd_scale_max, 0.f, 3.f, "%.2f");
-		dgt |= ImGui::SliderFloat("Random scale min", &ps_r__detail_rnd_scale_min, 0.f, 3.f, "%.2f");
-
-		// ------------------------------------------------------------- 5
-		ImGui::SeparatorText("Detail performance");
-		dgt |= ImGui::SliderFloat("Density (r__detail_density)", &ps_current_detail_density, 0.15f, 1.0f, "%.2f");
-		ddRadius |= ImGui::SliderInt("Grass radius, m (r__detail_radius)", &ps_r__detail_radius, 50, 2000);
-		dgt |= ddRadius;
-
-		ImGui::Spacing();
-		ImGui::SeparatorText("Grass trample");
-		{
-			extern int   ps_trample_enabled;
-			extern float ps_trample_bend;
-			extern float ps_trample_squash;
-			extern float ps_trample_trail_min;
-			extern float ps_trample_trail_max;
-			extern float ps_trample_obj_radius_scale;
-			extern float ps_trample_actor_radius_scale;
-			extern float ps_trample_cooltime;
-			extern float ps_trample_draw_radius;
-			extern float ps_trample_brush_fill;
-			extern float ps_trample_press_speed;
-			ImGui::Checkbox("Enabled##trample", (bool*)&ps_trample_enabled);
-			ImGui::TextDisabled("(how far the tip leans in stroke direction)");
-			ImGui::SliderFloat("Bend##trample", &ps_trample_bend, 0.0f, 20.0f, "%.2f");
-			ImGui::TextDisabled("(how much the blade presses toward the ground)");
-			ImGui::SliderFloat("Squash##trample", &ps_trample_squash, 0.0f, 20.0f, "%.2f");
-			ImGui::TextDisabled("(minimum brush radius for small objects)");
-			ImGui::SliderFloat("Trail min##trample", &ps_trample_trail_min, 0.05f, 10.0f, "%.2f");
-			ImGui::TextDisabled("(maximum brush radius for large objects and player)");
-			ImGui::SliderFloat("Trail max##trample", &ps_trample_trail_max, 0.1f, 50.0f, "%.2f");
-			ImGui::TextDisabled("(object size multiplier: 1.0 = natural shape size)");
-			ImGui::SliderFloat("Obj radius scale##trample", &ps_trample_obj_radius_scale, 0.0f, 2.0f, "%.2f");
-			ImGui::TextDisabled("(player shape size multiplier)");
-			ImGui::SliderFloat("Actor radius scale##trample", &ps_trample_actor_radius_scale, 0.0f, 2.0f, "%.2f");
-			ImGui::TextDisabled("(seconds for trampled grass to recover)");
-			ImGui::SliderFloat("Cool time, s##trample", &ps_trample_cooltime, 0.5f, 600.0f, "%.1f");
-			ImGui::TextDisabled("(how far trample marks affect grass around the player)");
-			ImGui::SliderFloat("Draw radius, m##trample", &ps_trample_draw_radius, 25.0f, 200.0f, "%.0f");
-			ImGui::TextDisabled("(inner brush fill ratio: 1.0 = hard edge, 0.1 = very soft)");
-			ImGui::SliderFloat("Brush fill##trample", &ps_trample_brush_fill, 0.1f, 1.0f, "%.2f");
-			ImGui::TextDisabled("(how fast grass presses down when stepped on)");
-			ImGui::SliderFloat("Press speed##trample", &ps_trample_press_speed, 0.1f, 50.0f, "%.1f");
-		}
-
-		if (dgt && D)
-		{
-			if (ddRadius)
-			{
-				// Mirror CCC_DetailRadius::Execute: recompute the slot-matrix metrics so the
-				// new radius is actually applied, then reload the cache.
-				dm_current_size = iFloor((float)ps_r__detail_radius / 4.f) * 2;
-				dm_current_slide_window_line = dm_current_size * 2 / 4;
-				dm_current_cache_line = dm_current_size + 1 + dm_current_size;
-				dm_current_cache_size = dm_current_cache_line * dm_current_cache_line;
-				dm_current_fade = float(2 * dm_current_size) - 0.5f;
-				if (RImplementation.b_loaded && (dm_current_size != dm_size))
-				{
-					Device.DetailsTask.wait();
-					D->cache_ReInitialize();
-				}
-				else
-				{
-					D->RequestCacheRebuild();
-				}
-			}
-			else
-			{
-				D->RequestCacheRebuild();
-			}
-		}
-		dirty |= dgt;
-	}
+		dv_tab_mix(st, D, dirty);
+	else if (st.tab == 2)
+		dv_tab_generic(D, dirty);
+	else if (st.tab == 3)
+		dv_tab_trample();
+	else if (st.tab == 4)
+		dv_tab_wind();
 
 	if (st.tab <= 1)
 	{
