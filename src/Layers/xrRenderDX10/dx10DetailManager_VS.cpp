@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../xrRender/DetailManager.h"
+#include "../xrRender/DetailsWind.h"
 #include "../xrRender/SH_Atomic.h"
 #include "../../xrEngine/xr_ioc_cmd.h"
 
@@ -334,6 +335,22 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		RCache.set_c("wave_old", wave_old);
 		RCache.set_c("dir2D_old", wind_old);
 	}
+
+#ifndef _EDITOR
+	{
+		CDetailWind::Constants wc;
+		CDetailWind::ComputeConstants(wc);
+		RCache.set_c("wind_global", wc.global);
+		RCache.set_c("wind_xz1", wc.xz1);
+		RCache.set_c("wind_xz1_dir", wc.xz1_dir);
+		RCache.set_c("wind_xz2", wc.xz2);
+		RCache.set_c("wind_xz2_dir", wc.xz2_dir);
+		RCache.set_c("wind_xz3", wc.xz3);
+		RCache.set_c("wind_xz3_dir", wc.xz3_dir);
+		RCache.set_c("wind_swirl", wc.swirl);
+		RCache.set_c("wind_swirl_dir", wc.swirl_dir);
+	}
+#endif
 
 	RCache.FlushConstants();
 
