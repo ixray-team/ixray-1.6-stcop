@@ -309,7 +309,6 @@ float		ps_trample_brush_fill = 0.82f;
 float		ps_trample_press_speed = 0.8f;
 
 int			ps_wind_enabled = 0;
-int			ps_wind_vanilla = 1;
 int			ps_wind_mode = 0;
 float		ps_wind_blend = 0.5f;
 float		ps_wind_blend_current = 0.5f;
@@ -998,12 +997,11 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__detail_trample_brush_fill", &ps_trample_brush_fill, 0.1f, 1.0f);
 	CMD4(CCC_Float, "r__detail_trample_press_speed", &ps_trample_press_speed, 0.1f, 50.0f);
 
-	CMD2(CCC_Boolean, "r__detail_wind_enabled", (bool*)&ps_wind_enabled);
-	CMD2(CCC_Boolean, "r__detail_wind_vanilla", (bool*)&ps_wind_vanilla);
+	CMD2(CCC_Boolean, "r__detail_use_procedural_wind", (bool*)&ps_wind_enabled);
 	CMD4(CCC_Integer, "r__detail_wind_mode", &ps_wind_mode, 0, 1);
 	CMD4(CCC_Float, "r__detail_wind_blend", &ps_wind_blend, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_noise_scale", &ps_wind_noise_scale, 0.0f, 2.0f);
-	CMD4(CCC_Float, "r__detail_wind_noise_speed", &ps_wind_noise_speed, 0.01f, 5.0f);
+	CMD4(CCC_Float, "r__detail_wind_noise_scale", &ps_wind_noise_scale, 0.0f, 20.0f);
+	CMD4(CCC_Float, "r__detail_wind_noise_speed", &ps_wind_noise_speed, 0.001f, 5.0f);
 	CMD4(CCC_Float, "r__detail_wind_noise_angle", &ps_wind_noise_angle, 0.0f, 360.0f);
 	CMD2(CCC_Boolean, "r__detail_wind_xz_enabled", (bool*)&ps_wind_xz_enabled);
 	CMD2(CCC_Boolean, "r__detail_wind_swirl_enabled", (bool*)&ps_wind_swirl_enabled);
