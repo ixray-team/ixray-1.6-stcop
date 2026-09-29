@@ -562,6 +562,7 @@ void PAColorAnimator::Load(IReader& F) {
 	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
 	VERIFY(Library);
 	AnimPtr = Library->FindIPAC(Animator.c_str());
+	I_ASSERT_M(AnimPtr, "Unable to find PAC [%s]", Animator.c_str());
 }
 
 void PAColorAnimator::Save(IWriter& F) {
@@ -587,6 +588,7 @@ void PASizeAnimator::Load(IReader& F) {
 	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
 	VERIFY(Library);
 	AnimPtr = Library->FindIPAC(Animator.c_str());
+	I_ASSERT_M(AnimPtr, "Unable to find PAC [%s]", Animator.c_str());
 }
 void PASizeAnimator::Save(IWriter& F) {
 	ParticleAction::Save(F);
@@ -608,6 +610,7 @@ void PAVelocityAnimator::Load(IReader& F) {
 	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
 	VERIFY(Library);
 	AnimPtr = Library->FindIPAC(Animator.c_str());
+	I_ASSERT_M(AnimPtr, "Unable to find PAC [%s]", Animator.c_str());
 }
 void PAVelocityAnimator::Save(IWriter& F) {
 	ParticleAction::Save(F);
@@ -628,6 +631,7 @@ void PAVelocityRotationAnimator::Load(IReader& F) {
 	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
 	VERIFY(Library);
 	AnimPtr = Library->FindIPAC(Animator.c_str());
+	I_ASSERT_M(AnimPtr, "Unable to find PAC [%s]", Animator.c_str());
 }
 void PAVelocityRotationAnimator::Save(IWriter& F) {
 	ParticleAction::Save(F);
