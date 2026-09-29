@@ -135,6 +135,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		RImplementation.addShaderOption("FORWARD_LIGHT", "1");
 	}
 
+	if (C.bHudElement && strstr(vs, "deffer_model") != nullptr)
+	{
+		RImplementation.addShaderOption("USE_HUD_RAINDROPS", "1");
+	}
+
 	if(bump)
 	{
 		string512 errorMsg;
@@ -292,6 +297,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 	}
 
 	C.r_dx10Texture("s_base", C.L_textures[0]);
+
+	if (C.bHudElement && strstr(vs, "deffer_model") != nullptr)
+	{
+		C.r_dx10Texture("s_hud_rain", "fx\\hud_rain");
+	}
 
 	if(bump) {
 		C.r_dx10Texture("s_bumpX", fnameB);

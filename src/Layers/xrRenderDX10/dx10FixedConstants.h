@@ -30,6 +30,7 @@ struct alignas(16) CBFrame
 	Fvector4 color_grading;
 	Fvector4 c_brightness;
 	Fvector4 c_colormap;
+	Fvector4 hud_rain;
 };
 
 struct alignas(16) CBView
