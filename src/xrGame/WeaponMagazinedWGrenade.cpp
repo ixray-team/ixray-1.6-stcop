@@ -591,8 +591,8 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 			entity->g_fireParams(this, p1, d);
 		}
 
-		if (IsGameTypeSingle())
-			p1.set(get_LastFP2());
+		//if (IsGameTypeSingle())
+			//p1.set(get_LastFP2());
 
 		Fmatrix launch_matrix;
 		launch_matrix.identity();
