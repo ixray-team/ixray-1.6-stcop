@@ -248,6 +248,8 @@ bool CLevel::net_start_client6()
 
 	net_start_result_total = connected_to_server;
 
+	ProcessPostponed(false);
+
 	pApp->LoadEnd();
 	return true;
 }

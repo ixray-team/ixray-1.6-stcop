@@ -614,7 +614,9 @@ void CLevel::ProcessGameEvents		()
 			ALife::_OBJECT_ID dest;
 			game_events->get	(ID,dest,type,P);
 
-			const bool isGameplay = bReady;
+			extern ENGINE_API bool g_appLoaded;
+			const bool isGameplay = g_appLoaded && (Device.dwPrecacheFrame == 0);
+
 			if ((ps_events_time_budget_ms <= 0) || (!isGameplay) || (m_eventsTimer.GetElapsed_ms() < (u32)ps_events_time_budget_ms))
 			{
 				ProcessPacket(ID, P, dest, type);
