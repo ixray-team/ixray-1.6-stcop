@@ -23,9 +23,7 @@ class CStepManager {
 	} m_step_sound;
 
 	u32					m_time_anim_started = {};
-	xr_vector<ref_sound> m_rain_steps = {};
-	xr_vector<ref_sound> m_exo_steps = {};
-	bool is_exo = false;
+	bool				is_exo = false;
 public: 
 						CStepManager			();
 	virtual				~CStepManager			();
