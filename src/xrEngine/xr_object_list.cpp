@@ -120,7 +120,7 @@ void	CObjectList::SingleUpdate	(CObject* O)
 //	Msg							("[%d][0x%08x]IAmNotACrowAnyMore (CObjectList::SingleUpdate)", Device.dwFrame, dynamic_cast<void*>(O));
 
 	{
-		PROF_MESSAGE(*shared_str().printf("CObjectList::SingleUpdate | Object: %s", *O->cNameSect()));
+		PROF_MESSAGE(O->cNameSect_str());
 		O->UpdateCL();
 	}
 
