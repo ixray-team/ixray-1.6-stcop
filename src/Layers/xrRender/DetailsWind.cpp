@@ -3,7 +3,6 @@
 #include <cmath>
 
 extern int   ps_wind_enabled;
-extern int   ps_wind_vanilla;
 extern int   ps_wind_mode;
 extern float ps_wind_blend;
 extern float ps_wind_blend_current;
@@ -110,7 +109,7 @@ void CDetailWind::ComputeConstants(Constants& out)
 {
 	if (!ps_wind_enabled)
 	{
-		out.global.set(0, 0, 0, ps_wind_vanilla ? 1.0f : 0.0f);
+		out.global.set(0, 0, 0, 0.0f);
 		out.xz1.set(0, 0, 0, 0); out.xz1_dir.set(0, 0, 0, 0);
 		out.xz2.set(0, 0, 0, 0); out.xz2_dir.set(0, 0, 0, 0);
 		out.xz3.set(0, 0, 0, 0); out.xz3_dir.set(0, 0, 0, 0);
@@ -126,16 +125,15 @@ void CDetailWind::ComputeConstants(Constants& out)
 	if (ps_wind_mode == 1)
 	{
 		const float vt = (float)RDEVICE.dwTimeGlobal * 0.001f * ps_wind_noise_speed;
-		const float nv = Noise(vt * std::cos(ps_wind_noise_angle * DEG2RAD) * 3.7f,
-		                       vt * std::sin(ps_wind_noise_angle * DEG2RAD) * 3.7f + 7.0f);
-		blend = ps_wind_blend * nv;
+		blend = Noise(vt * std::cos(ps_wind_noise_angle * DEG2RAD) * 3.7f,
+		              vt * std::sin(ps_wind_noise_angle * DEG2RAD) * 3.7f + 7.0f);
 	}
 	blend = std::clamp(blend, 0.0f, 1.0f);
 	ps_wind_blend_current = blend;
 
 	auto L = [blend](float mn, float mx) { return mn + (mx - mn) * blend; };
 
-	out.global.set(on, xzOn, swOn, ps_wind_vanilla ? 1.0f : 0.0f);
+	out.global.set(on, xzOn, swOn, 0.0f);
 
 	packLayer(out.xz1, out.xz1_dir,
 		L(ps_wind_xz1_scale_min, ps_wind_xz1_scale_max),
