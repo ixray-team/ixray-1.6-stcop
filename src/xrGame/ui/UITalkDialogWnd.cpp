@@ -18,6 +18,9 @@
 #include "../../xrUI/Widgets/UIGamepadLegend.h"
 #include "PdaConstants.h"
 #include "UIPdaContactsWnd.h"
+#include "UIGameCustom.h"
+#include "UIPdaWnd.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 
 #define				TALK_XML				"talk.xml"
 
@@ -580,17 +583,6 @@ void CUITalkDialogWnd::AddIconedAnswer(const char* text, const char* texture_nam
 	itm->Init(text, texture_name, texture_rect);
 	UIAnswersList->AddWindow(itm, true);
 	UIAnswersList->ScrollToEnd();
-
-	GAME_NEWS_DATA news_data;
-	news_data.news_caption = "";
-	news_data.news_text = text;
-	news_data.tex_rect = texture_rect;
-
-	news_data.m_type = GAME_NEWS_DATA::eTalk;
-	news_data.texture_name = texture_name;
-	news_data.receive_time = Level().GetGameTime();
-
-	Actor()->game_news_registry->registry().objects().push_back(news_data);
 }
 
 void CUITalkDialogWnd::SetOsoznanieMode(bool b)
