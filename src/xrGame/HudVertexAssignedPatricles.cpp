@@ -167,6 +167,11 @@ void THudVertexAssignedPatricles::UpdateHudPArticles()
 		Fvector::generate_orthonormal_basis(XF.j, XF.k, XF.i);
 		XF.c.set(trix.face_c_pos);
 		pg_vertex_info.particle->SetXFORM(XF);
+		pg_vertex_info.particle->SetHudMode(true);
+		u32 dwTime = Device.dwTimeGlobal;
+
+		pg_vertex_info.particle->Update(dwTime - pg_vertex_info.particle->dwLastTime);
+		pg_vertex_info.particle->dwLastTime = dwTime;
 
 		if (pg_vertex_info.left_before_play_ms > 0)
 		{
