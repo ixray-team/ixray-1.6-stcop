@@ -373,6 +373,7 @@ bool CPSLibrary::Load(const char* nm)
 		elem->CreateShader();
 	}
 
+	PS::CPACLibraryWrapper::GetInstance().SetPACLibrary(this);
     return bRes;
 }
 
