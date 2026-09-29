@@ -482,6 +482,8 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 
 void CGameObject::net_Save		(NET_Packet &net_packet)
 {
+	UpdateSounds(true);
+
 	u32							position;
 	net_packet.w_chunk_open16	(position);
 	save						(net_packet);
@@ -995,6 +997,7 @@ u32	CGameObject::ef_detector_type		() const
 
 void CGameObject::net_Relcase(CObject* O)
 {
+	m_postponed_sound_actions.clear();
 	inherited::net_Relcase(O);
 	if (ScriptCallbacksEnabled())
 	{
@@ -1148,6 +1151,7 @@ IC	bool similar						(const Fmatrix &matrix0, const Fmatrix &matrix1, const floa
 void CGameObject::UpdateCL			()
 {
 	inherited::UpdateCL				();
+	UpdateSounds(false);
 	
 //	if (!is_ai_obstacle())
 //		return;
@@ -1288,5 +1292,27 @@ void CGameObject::FootStepCallback(float power, bool b_play, bool b_on_ground, b
 	if (ScriptCallbacksEnabled())
 	{
 		callback(GameObject::eOnFootStep)(this->lua_game_object(), power, b_play, b_on_ground, b_hud_view);
+	}
+}
+
+extern int ps_events_time_budget_ms;
+
+void CGameObject::UpdateSounds(bool noLimit)
+{
+	if (m_postponed_sound_actions.empty())
+		return;
+
+	CTimer timer;
+	timer.Start();
+
+	while (!m_postponed_sound_actions.empty())
+	{
+		if (!noLimit && g_pGameLevel && Level().bReady && (ps_events_time_budget_ms > 0) && timer.GetElapsed_ms() >= (u32)ps_events_time_budget_ms)
+			break;
+
+		SoundActionDelegate action = m_postponed_sound_actions.front();
+		m_postponed_sound_actions.pop_front();
+		if (action)
+			action();
 	}
 }
