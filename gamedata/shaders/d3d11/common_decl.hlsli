@@ -30,6 +30,7 @@ cbuffer cb_frame : register(b0)
     float4 color_grading;
     float4 c_brightness;
     float4 c_colormap;
+    float4 hud_rain;
 };
 
 

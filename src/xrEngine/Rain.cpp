@@ -227,6 +227,27 @@ void CEffect_Rain::Enable(bool status)
 	IsEnabled = status;
 }
 
+void CEffect_Rain::UpdateHudDrops(float rain, float sky)
+{
+	const float dt = Device.fTimeDelta;
+	const float openSky = 0.15f;
+	rain = clampr(rain, 0.f, 1.f);
+
+	if (rain > EPS_L && sky > openSky)
+	{
+		const float speed = (1.5f - rain) * 10.f;
+		m_hudDropsTime += 20.f * dt / std::max(speed, 0.01f);
+		if (m_hudDropsTime > 99000.f)
+			m_hudDropsTime = 0.f;
+
+		m_hudDropsAmount = std::min(m_hudDropsAmount + 0.09f * dt, 1.f);
+	}
+	else
+	{
+		m_hudDropsAmount = std::max(m_hudDropsAmount - 0.01f * dt, 0.f);
+	}
+}
+
 void CEffect_Rain::OnFrame()
 {
 	PROF_EVENT("CEffect_Rain::OnFrame");
@@ -238,6 +259,7 @@ void CEffect_Rain::OnFrame()
 
 	if (g_dedicated_server || !IsEnabled)
 	{
+		UpdateHudDrops(0.f, 0.f);
 		return;
 	}
 	CEnvironment& env = g_pGamePersistent->Environment();
@@ -268,6 +290,8 @@ void CEffect_Rain::OnFrame()
 		Fvector Position = Device.vCameraPosition;
 		hemi_factor = !RayPick(Position, Direction, Distance, collide::rqtBoth);
 	}
+
+	UpdateHudDrops(factor, hemi_factor);
 
 	ref_sound& CurDropSnd = factor < 0.7f ? snd_RoofDroplets : snd_RoofDropletsHard;
 	switch (state)
