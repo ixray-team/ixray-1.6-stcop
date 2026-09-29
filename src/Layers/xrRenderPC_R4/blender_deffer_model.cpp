@@ -120,6 +120,7 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 		C.TessMethod = oTessellation.IDselected;
 		switch (C.iElement)
 		{
+		case SE_R2_HUD:
 		case SE_R2_NORMAL_HQ: // deffer
 			uber_deffer(C, true, "deffer_model", "deffer_base", bAref, 0, true);
 
