@@ -63,6 +63,7 @@ ISoundSpatializer* GSpatializer = nullptr;
 #define CACHE_LINES_COUNT (1024)
 #define CACHE_LINE_WIDTH (12)
 #define CACHE_LINE_ENTRY_COUNT (32)
+#define CACHE_LINE_CAPACITY ((SND_BLOCKSIZE + 1) * CACHE_LINE_WIDTH)
 #define CACHE_LINE_MAX_TIME_NS (1000000000)
 
 using namespace XRay::Sound;
@@ -102,21 +103,21 @@ struct sound_decode_request
 
 struct sound_source
 {
-	sound_source_public pub;
+	sound_source_public pub{};
 
-	OggVorbis_File file;
-	IReader* reader;
-	u8* data;
-	u32 cache_lines[CACHE_LINE_ENTRY_COUNT];
+	OggVorbis_File file{};
+	IReader* reader = nullptr;
+	u8* data = nullptr;
+	u32 cache_lines[CACHE_LINE_ENTRY_COUNT] = {};
 };
 
 struct sound_cache_line
 {
-	u32 start;
-	u32 end;
-	u64 timestamp;
+	u32 start = 0;
+	u32 end = 0;
+	u64 timestamp = 0;
 	shared_str name;
-	float data[SND_CHANNEL_COUNT][(SND_BLOCKSIZE + 1) * CACHE_LINE_WIDTH];
+	float data[SND_CHANNEL_COUNT][CACHE_LINE_CAPACITY]{};
 };
 
 struct sound_bus_state
@@ -130,6 +131,7 @@ struct sound_mixer_state
 	xrSRWLock update_lock;
 	xrSRWLock manage_lock;
 	xrSRWLock source_lock;
+	xrSRWLock cache_lock;
 	xrCriticalSection play_lock;
 
 	xrCriticalSection DecodeLock;
@@ -190,17 +192,8 @@ struct sound_mixer_state
 
 static sound_mixer_state GMixer = {};
 
-static void Snd_GrowCacheLines(bool IsLockRender)
+static void Snd_GrowCacheLinesUnlocked()
 {
-	if (IsLockRender)
-	{
-		GMixer.render_lock.AcquireExclusive();
-		GMixer.manage_lock.AcquireExclusive();
-	}
-
-	xrSRWLockGuard Guard0(GMixer.update_lock, false);
-	bool IsLocked = !GMixer.source_lock.TryAcquireExclusive();
-
 	size_t OldCacheLines = GMixer.cache_lines.size();
 	size_t NewCacheLines = std::max((size_t)CACHE_LINES_COUNT, GMixer.cache_lines.size() * 2);
 
@@ -209,21 +202,16 @@ static void Snd_GrowCacheLines(bool IsLockRender)
 
 	for (size_t Iter = OldCacheLines; Iter < NewCacheLines; Iter++)
 	{
-		GMixer.free_cachelines.push_back(Iter + 1);
-	}
-
-	if (IsLockRender)
-	{
-		GMixer.render_lock.ReleaseExclusive();
-		GMixer.manage_lock.ReleaseExclusive();
-	}
-
-	if (!IsLocked)
-	{
-		GMixer.source_lock.ReleaseExclusive();
+		GMixer.free_cachelines.push_back((u32)Iter + 1);
 	}
 
 	GMixer.stats.cache_lines_total = NewCacheLines;
+}
+
+static void Snd_GrowCacheLines()
+{
+	xrSRWLockGuard Guard(GMixer.cache_lock, false);
+	Snd_GrowCacheLinesUnlocked();
 }
 
 static void Snd_GrowSlots(bool IsLockUpdate)
@@ -331,6 +319,11 @@ void MixerNewState(u32 Slot, Mixer::State State)
 
 #define in_range(x, start, end) ((x) >= start && (x) <= end)
 
+ICF bool Snd_CacheIndexValid(u32 cache_idx)
+{
+	return cache_idx != 0 && cache_idx <= (u32)GMixer.cache_lines.size();
+}
+
 ICF u64 Snd_GetTimestamp()
 {
 	return std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -343,6 +336,11 @@ ICF u32 Snd_Milliseconds()
 
 ICF void Snd_PurgeCacheLine(u32 cache_idx, bool purge_from_entry)
 {
+	if (!Snd_CacheIndexValid(cache_idx))
+	{
+		return;
+	}
+
 	auto& line = GMixer.cache_lines[cache_idx - 1];
 
 	if (purge_from_entry && line.name.size())
@@ -370,11 +368,16 @@ ICF void Snd_DestroySourceCache(sound_source& source)
 {
 	if (source.pub.ref_count == 0)
 	{
+		xrSRWLockGuard CacheGuard(GMixer.cache_lock, false);
 		for (u32& cache_idx : source.cache_lines)
 		{
-			if (cache_idx != 0 && GMixer.cache_lines[cache_idx - 1].name.size())
+			if (Snd_CacheIndexValid(cache_idx) && GMixer.cache_lines[cache_idx - 1].name.size())
 			{
 				Snd_PurgeCacheLine(cache_idx, false);
+				cache_idx = 0;
+			}
+			else
+			{
 				cache_idx = 0;
 			}
 		}
@@ -407,7 +410,7 @@ ICF u32 Snd_NewCacheLine()
 
 		if (cache_idx == 0 || (Snd_GetTimestamp() - least_timestamp) < CACHE_LINE_MAX_TIME_NS)
 		{
-			Snd_GrowCacheLines(false);
+			Snd_GrowCacheLinesUnlocked();
 		}
 		else
 		{
@@ -415,11 +418,14 @@ ICF u32 Snd_NewCacheLine()
 		}
 	}
 
+	if (GMixer.free_cachelines.empty())
 	{
-		cache_idx = GMixer.free_cachelines[GMixer.free_cachelines.size() - 1];
-		GMixer.free_cachelines.pop_back();
-		GMixer.cache_lines[cache_idx - 1].timestamp = Snd_GetTimestamp();
+		return 0;
 	}
+
+	cache_idx = GMixer.free_cachelines[GMixer.free_cachelines.size() - 1];
+	GMixer.free_cachelines.pop_back();
+	GMixer.cache_lines[cache_idx - 1].timestamp = Snd_GetTimestamp();
 	return cache_idx;
 }
 
@@ -503,45 +509,70 @@ ICF void Snd_LoadSource(sound_source& source, const char* name)
 	source.pub.max_ai_distance = 300.0f;
 
 	vorbis_comment* ovm = ov_comment(&source.file, -1);
-	if (ovm->comments)
+	bool ParsedComment = false;
+	if (ovm != nullptr)
 	{
-		IReader F(ovm->user_comments[0], ovm->comment_lengths[0]);
-		u32 vers = F.r_u32();
-		if (vers == 0x0001)
+		for (int CommentIdx = 0; CommentIdx < ovm->comments; CommentIdx++)
 		{
-			source.pub.min_distance = F.r_float();
-			source.pub.max_distance = F.r_float();
-			source.pub.volume = 1.0f;
-			source.pub.game_type = F.r_u32();
-			source.pub.max_ai_distance = 300.0f;
-		}
-		else if (vers == 0x0002)
-		{
-			source.pub.min_distance = F.r_float();
-			source.pub.max_distance = F.r_float();
-			source.pub.volume = F.r_float();
-			source.pub.game_type = F.r_u32();
-			source.pub.max_ai_distance = 300.0f;
-		}
-		else if (vers == OGG_COMMENT_VERSION)
-		{
-			source.pub.min_distance = F.r_float();
-			source.pub.max_distance = F.r_float();
-			source.pub.volume = F.r_float();
-			source.pub.game_type = F.r_u32();
-			source.pub.max_ai_distance = F.r_float();
-		}
-		else
-		{
-			Msg("! Invalid ogg-comment version, file: %s", source.pub.name.c_str());
+			const int CommentLen = ovm->comment_lengths[CommentIdx];
+			if (ovm->user_comments[CommentIdx] == nullptr || CommentLen < 16)
+			{
+				continue;
+			}
+
+			IReader F(ovm->user_comments[CommentIdx], CommentLen);
+			u32 vers = F.r_u32();
+			if (vers == 0x0001 && F.elapsed() >= 12)
+			{
+				source.pub.min_distance = F.r_float();
+				source.pub.max_distance = F.r_float();
+				source.pub.volume = 1.0f;
+				source.pub.game_type = F.r_u32();
+				source.pub.max_ai_distance = 300.0f;
+				ParsedComment = true;
+				break;
+			}
+			if (vers == 0x0002 && F.elapsed() >= 16)
+			{
+				source.pub.min_distance = F.r_float();
+				source.pub.max_distance = F.r_float();
+				source.pub.volume = F.r_float();
+				source.pub.game_type = F.r_u32();
+				source.pub.max_ai_distance = 300.0f;
+				ParsedComment = true;
+				break;
+			}
+			if (vers == OGG_COMMENT_VERSION && F.elapsed() >= 20)
+			{
+				source.pub.min_distance = F.r_float();
+				source.pub.max_distance = F.r_float();
+				source.pub.volume = F.r_float();
+				source.pub.game_type = F.r_u32();
+				source.pub.max_ai_distance = F.r_float();
+				ParsedComment = true;
+				break;
+			}
 		}
 	}
-	else
+
+	if (!ParsedComment)
 	{
-		Msg("~ Missing ogg-comment, file: %s", source.pub.name.c_str());
+		Msg("~ Missing or invalid ogg-comment, file: %s", source.pub.name.c_str());
 	}
 
 	source.pub.volume = std::min(source.pub.volume, 1.0f);
+	if (source.pub.min_distance < EPS_S)
+	{
+		source.pub.min_distance = 1.0f;
+	}
+	if (source.pub.max_distance < source.pub.min_distance)
+	{
+		source.pub.max_distance = source.pub.min_distance + 1.0f;
+	}
+	if (source.pub.max_ai_distance < EPS_S)
+	{
+		source.pub.max_ai_distance = source.pub.max_distance;
+	}
 }
 
 ICF sound_source* Snd_FindSound(const xr_string& name)
@@ -774,19 +805,31 @@ ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, const sound_source& sou
 ICF u32 Snd_FindAvailableCacheLine(sound_source& source, u32 position)
 {
 	PROF_EVENT("Sound: FindAvailableCacheLine");
+	if (position >= source.pub.frames_total)
+	{
+		return 0;
+	}
+
 	u32 needed_frames = std::min((u32)SND_BLOCKSIZE, source.pub.frames_total - position);
 	u32 found_cache_idx = 0;
-	for (const u32& cache_idx : source.cache_lines)
+	for (const u32 cache_idx : source.cache_lines)
 	{
-		if (cache_idx != 0)
+		if (!Snd_CacheIndexValid(cache_idx))
 		{
-			auto& line = GMixer.cache_lines[cache_idx - 1];
-			if (in_range(position, line.start, line.end) && in_range(position + needed_frames, line.start, line.end))
-			{
-				found_cache_idx = cache_idx;
-				GMixer.stats.cache_hit_count++;
-				break;
-			}
+			continue;
+		}
+
+		const sound_cache_line& line = GMixer.cache_lines[cache_idx - 1];
+		if (line.end < line.start)
+		{
+			continue;
+		}
+
+		if (in_range(position, line.start, line.end) && in_range(position + needed_frames, line.start, line.end))
+		{
+			found_cache_idx = cache_idx;
+			GMixer.stats.cache_hit_count++;
+			break;
 		}
 	}
 
@@ -798,87 +841,81 @@ ICF void Snd_UpdateCache(sound_source& source, u32 position)
 {
 	PROF_EVENT("Sound: Update Slot Cache");
 
+	xrSRWLockGuard CacheGuard(GMixer.cache_lock, false);
+	if (Snd_FindAvailableCacheLine(source, position) != 0 || source.file.datasource == nullptr)
 	{
-		xrSRWLockGuard guard2(GMixer.source_lock, true);
-		u32 found_cache_idx = Snd_FindAvailableCacheLine(source, position);
-		if (found_cache_idx == 0 && source.file.datasource != nullptr)
+		return;
+	}
+
+	GMixer.stats.cache_miss_count++;
+	u32 found_cache_idx = Snd_NewCacheLine();
+	if (!Snd_CacheIndexValid(found_cache_idx))
+	{
+		return;
+	}
+
+	auto& line = GMixer.cache_lines[found_cache_idx - 1];
+	u32 cache_size = CACHE_LINE_CAPACITY;
+
+	u32 begin_pos = Snd_SeekSource(source, position, false);
+	u32 end_pos = begin_pos + cache_size;
+	if (end_pos < (position + SND_BLOCKSIZE))
+	{
+		begin_pos = Snd_SeekSource(source, position, true);
+	}
+
+	memset(line.data, 0, sizeof(line.data));
+
+	float* ch_data[SND_CHANNEL_COUNT];
+	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+	{
+		ch_data[i] = line.data[i];
+	}
+	end_pos = begin_pos + Snd_ReadFromSource(source, ch_data, cache_size);
+
+	line.name = source.pub.name;
+	line.start = begin_pos;
+	line.end = end_pos;
+
+	bool inserted = false;
+	for (u32& cache_idx : source.cache_lines)
+	{
+		if (cache_idx == found_cache_idx)
 		{
-			GMixer.stats.cache_miss_count++;
-			found_cache_idx = Snd_NewCacheLine();
-			auto& line = GMixer.cache_lines[found_cache_idx - 1];
+			inserted = true;
+			break;
+		}
 
-			u32 cache_size = ((SND_BLOCKSIZE + 1) * CACHE_LINE_WIDTH);
+		if (cache_idx == 0)
+		{
+			cache_idx = found_cache_idx;
+			inserted = true;
+			break;
+		}
+	}
 
+	if (!inserted)
+	{
+		u64 least_timestamp = (u64)-1;
+		u32 cache_entry_idx = 0;
+		for (size_t i = 0; i < CACHE_LINE_ENTRY_COUNT; i++)
+		{
+			if (!Snd_CacheIndexValid(source.cache_lines[i]) || source.cache_lines[i] == found_cache_idx)
 			{
-				// TODO: parallel decoding for each slot
-				u32 begin_pos = Snd_SeekSource(source, position, false);
-				u32 end_pos = begin_pos + cache_size;
-				if (end_pos < (position + SND_BLOCKSIZE))
-				{
-					begin_pos = Snd_SeekSource(source, position, true);
-				}
-
-				memset(line.data, 0, sizeof(line.data));
-
-				float* ch_data[SND_CHANNEL_COUNT];
-				for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
-				{
-					ch_data[i] = line.data[i];
-				}
-				end_pos = begin_pos + Snd_ReadFromSource(source, ch_data, cache_size);
-
-				// VERIFY(in_range(slot.position, begin_pos, end_pos));
-				line.name = source.pub.name;
-				line.start = begin_pos;
-				line.end = end_pos;
+				continue;
 			}
 
-			bool inserted = false;
-			for (u32& cache_idx : source.cache_lines)
+			if (GMixer.cache_lines[source.cache_lines[i] - 1].timestamp < least_timestamp)
 			{
-				if (cache_idx == found_cache_idx)
-				{
-					inserted = true;
-					break;
-				}
-
-				if (cache_idx == 0)
-				{
-					cache_idx = found_cache_idx;
-					inserted = true;
-					break;
-				}
+				least_timestamp = GMixer.cache_lines[source.cache_lines[i] - 1].timestamp;
+				cache_entry_idx = (u32)i + 1;
 			}
+		}
 
-			if (!inserted)
-			{
-				u64 least_timestamp = (u64)-1;
-				u32 cache_entry_idx = 0;
-				for (size_t i = 0; i < CACHE_LINE_ENTRY_COUNT; i++)
-				{
-					if (source.cache_lines[i] == 0 || source.cache_lines[i] == found_cache_idx)
-					{
-						continue;
-					}
-
-					if (GMixer.cache_lines[source.cache_lines[i] - 1].timestamp < least_timestamp)
-					{
-						least_timestamp = GMixer.cache_lines[source.cache_lines[i] - 1].timestamp;
-						cache_entry_idx = i + 1;
-						continue;
-					}
-				}
-
-				if (cache_entry_idx != 0)
-				{
-					Snd_PurgeCacheLine(source.cache_lines[cache_entry_idx - 1], false);
-					source.cache_lines[cache_entry_idx - 1] = found_cache_idx;
-				}
-				else
-				{
-					Snd_GrowCacheLines(false);
-				}
-			}
+		if (cache_entry_idx != 0)
+		{
+			Snd_PurgeCacheLine(source.cache_lines[cache_entry_idx - 1], false);
+			source.cache_lines[cache_entry_idx - 1] = found_cache_idx;
 		}
 	}
 }
@@ -889,39 +926,52 @@ ICF u32 Snd_ReadSlotData(u32 SlotIdx, sound_source& Source, float** Data, u32 Fr
 
 	u32 ReadPostion = Slot.position;
 	u32 Frames2Read = FramesCount;
+	u32 WaitSpins = 0;
 
 	while (Frames2Read && ReadPostion < Source.pub.frames_total)
 	{
-		u32 FoundCacheIndex = Snd_FindAvailableCacheLine(Source, ReadPostion);
-
-		if (FoundCacheIndex == 0)
+		u32 FoundCacheIndex = 0;
 		{
-			PROF_EVENT("Decode OGG Wait");
-			GMixer.stats.render_cache_miss++;
-
-			Snd_QueueDecode(Slot.sound_name, ReadPostion);
-			while (FoundCacheIndex == 0)
+			xrSRWLockGuard CacheGuard(GMixer.cache_lock, true);
+			FoundCacheIndex = Snd_FindAvailableCacheLine(Source, ReadPostion);
+			if (Snd_CacheIndexValid(FoundCacheIndex))
 			{
-				FoundCacheIndex = Snd_FindAvailableCacheLine(Source, ReadPostion);
-				std::this_thread::yield();
+				auto& CacheLine = GMixer.cache_lines[FoundCacheIndex - 1];
+				if (ReadPostion >= CacheLine.start && CacheLine.end > CacheLine.start && ReadPostion < CacheLine.end)
+				{
+					u32 BeginOffset = ReadPostion - CacheLine.start;
+					if (BeginOffset < CACHE_LINE_CAPACITY)
+					{
+						u32 CacheFrames = std::min(Frames2Read, CacheLine.end - ReadPostion);
+						CacheFrames = std::min(CacheFrames, CACHE_LINE_CAPACITY - BeginOffset);
+						if (CacheFrames == 0)
+						{
+							break;
+						}
+
+						for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+						{
+							memcpy(&Data[Channel][FramesCount - Frames2Read], &CacheLine.data[Channel][BeginOffset], CacheFrames * sizeof(float));
+						}
+
+						Frames2Read -= CacheFrames;
+						ReadPostion += CacheFrames;
+						WaitSpins = 0;
+						continue;
+					}
+				}
 			}
 		}
 
-		auto& CacheLine = GMixer.cache_lines[FoundCacheIndex - 1];
-		u32 BeginOffset = ReadPostion - CacheLine.start;
-		u32 CacheFrames = std::min(Frames2Read, CacheLine.end - ReadPostion);
-		if (CacheFrames == 0)
+		PROF_EVENT("Decode OGG Wait");
+		GMixer.stats.render_cache_miss++;
+		Snd_QueueDecode(Slot.sound_name, ReadPostion);
+		if (++WaitSpins > 4096)
 		{
 			break;
 		}
 
-		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-		{
-			memcpy(&Data[Channel][FramesCount - Frames2Read], &CacheLine.data[Channel][BeginOffset], CacheFrames * sizeof(float));
-		}
-
-		Frames2Read -= CacheFrames;
-		ReadPostion += CacheFrames;
+		std::this_thread::yield();
 	}
 
 	return FramesCount - Frames2Read;
@@ -1040,7 +1090,12 @@ ICF void Snd_PrecacheRenderCallback()
 				Snd_AcquireHRTFSlot(i + 1);
 				// Hand the decode off to the decode thread; only enqueue if the cache
 				// line for the current position isn't already filled.
-				if (Snd_FindAvailableCacheLine(*source, slot.position) == 0)
+				bool NeedDecode = false;
+				{
+					xrSRWLockGuard CacheGuard(GMixer.cache_lock, true);
+					NeedDecode = Snd_FindAvailableCacheLine(*source, slot.position) == 0;
+				}
+				if (NeedDecode)
 				{
 					PROF_EVENT("Sound: QueueDecode");
 					Snd_QueueDecode(slot.sound_name, slot.position);
@@ -1624,7 +1679,7 @@ void Mixer::Initialize()
 	GMixer.cmd.clear();
 	GMixer.cmd.reserve(256);
 	Snd_GrowSlots(true);
-	Snd_GrowCacheLines(true);
+	Snd_GrowCacheLines();
 
 	if (GSpatializer)
 	{
@@ -1958,11 +2013,18 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 					{
 						if (CObject* Object = RefSound->_g_object())
 						{
+							int GameType = RefSound->_p->g_type;
+							if (GameType == (int)sg_SourceType)
+							{
+								GameType = (int)Source.pub.game_type;
+								RefSound->_p->g_type = GameType;
+							}
+
 							if (Flags & (u16)Flags::NoFeedback)
 							{
 								ref_sound_data_ptr DataPtr = new ref_sound_data();
 								DataPtr->slot = Command.slot;
-								DataPtr->g_type = 0;
+								DataPtr->g_type = GameType;
 								DataPtr->g_object = Object;
 								DataPtr->dont_destroy_slot = true;
 								DataPtr->fn_attached[0] = Source.pub.path;
