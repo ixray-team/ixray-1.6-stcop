@@ -579,7 +579,7 @@ void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
 	u32 mixer_flags = (u32)Mixer::Flags::NoPosUpdate | GetMixedFlags(flags, S);
 	Mixer::Play(S.slot(), mixer_flags, &S, delay);
 	S._p->fTimeTotal = Mixer::GetDuration(S.slot());
-	S._p->g_type = (S._p->g_type == sg_SourceType) ? S._p->g_type : XRay::Sound::Mixer::GetGameType(S.slot());
+	S._p->g_type = (S._p->g_type == sg_SourceType) ? XRay::Sound::Mixer::GetGameType(S.slot()) : S._p->g_type;
 	Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::Position, pos);
 
 }
