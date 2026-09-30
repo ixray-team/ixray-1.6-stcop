@@ -4,7 +4,7 @@
 #include "inventory_item.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "../xrEngine/CameraBase.h"
-#define PICKUP_INFO_COLOR 0xFFDDDDDD
+#include "DestroyablePhysicsObject.h"
 
 CPickUpManager::CPickUpManager(CActor* NewOwner) :
 	Owner(NewOwner)
@@ -48,21 +48,23 @@ void CPickUpManager::PickupInfoDraw(CObject* object)
 
 	CGameFont* font = g_FontManager->pFontSystem;
 	font->SetAligment(CGameFont::alCenter);
-	font->SetColor(PICKUP_INFO_COLOR);
+	font->SetColor(color_rgba(221u, 221u, 221u, 255u));
 
 	font->Out(x, y, item->NameItem());
 }
 
-#include "DestroyablePhysicsObject.h"
 bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* item)
 {
 	if (!item->getVisible())
+	{
 		return false;
+	}
 
 	bool bOverlaped = false;
 	Fvector dir, to;
 	item->Center(to);
 	float range = dir.sub(to, from).magnitude();
+
 	if (range > 0.25f)
 	{
 		if (frustum.testSphere_dirty(to, item->Radius()))
@@ -73,29 +75,24 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 			VERIFY(!fis_zero(RD.dir.square_magnitude()));
 
 			RQR.r_clear();
-			Level().ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result& result, LPVOID params) -> bool
+			Level().ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result& result, void* params) -> bool
 			{
 				bool& bOverlaped = *(bool*)params;
+
 				if (result.O)
 				{
-					if (Level().CurrentEntity() == result.O)
-					{ //ignore self-actor
-						return true;
+					if ((result.O->SpatialComponent->type & ESPATIAL_TYPE::OBSTACLE) != ESPATIAL_TYPE::NONE)
+					{
+						bOverlaped = true;
 					}
-					else
-					{ //check obstacle flag
-						if ((result.O->SpatialComponent->type & ESPATIAL_TYPE::OBSTACLE) != ESPATIAL_TYPE::NONE)
-							bOverlaped = true;
 
-						return true;
-					}
+					return true;
 				}
-				else
+				
+				CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
+				if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
 				{
-					//получить треугольник и узнать его материал
-					CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
-					if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
-						return true;
+					return true;
 				}
 
 				bOverlaped = true;
@@ -141,10 +138,14 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 			}
 		}
 		else
+		{
 			return false;
+		}
 	}
 	else
+	{
 		return false;
+	}
 
 	return !bOverlaped;
 }
