@@ -35,6 +35,7 @@
 #include "ui/UIGameTutorial.h"
 #include "../xrEngine/string_table.h"
 #include "ui/UIInventoryUtilities.h"
+#include "space_restrictor.h"
 #include "alife_object_registry.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "ActorCondition.h"
@@ -150,6 +151,38 @@ float get_compass_direction()
 	Device.vCameraDirection.getHP(compass_angle, p);
 
 	return compass_angle;
+}
+
+bool actor_in_restrictor(LPCSTR name)
+{
+	if (!name || !*name)
+	{
+		return false;
+	}
+
+	CActor* actor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
+	if (!actor)
+	{
+		return false;
+	}
+
+	CObject* object = Level().Objects.FindObjectByName(name);
+	if (!object || object->getDestroy())
+	{
+		return false;
+	}
+
+	CGameObject* gameObject = object->cast_game_object();
+	CSpaceRestrictor* restrictor = gameObject ? gameObject->cast_restrictor() : nullptr;
+	if (!restrictor)
+	{
+		return false;
+	}
+
+	Fsphere probe;
+	probe.P = actor->Position();
+	probe.R = EPS_L;
+	return restrictor->inside(probe);
 }
 
 #ifdef DEBUG
@@ -1985,6 +2018,7 @@ void CLevel::script_register(lua_State *L)
 		def("set_pp_effector_factor",			&set_pp_effector_factor2),
 		def("remove_pp_effector",				&remove_pp_effector),
 		def("get_compass_direction",			&get_compass_direction),
+		def("actor_in_restrictor",				&actor_in_restrictor),
 
 		def("add_complex_effector",				&add_complex_effector),
 		def("remove_complex_effector",			&remove_complex_effector),

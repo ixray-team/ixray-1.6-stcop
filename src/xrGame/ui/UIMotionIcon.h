@@ -1,4 +1,5 @@
 #pragma once
+#include "../../xrCore/vector.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIProgressShape.h"
 
@@ -76,10 +77,41 @@ private:
 		bool						_compassLayoutRelative = true;
 		bool						_compassLayoutAlignCenter = false;
 
+		bool						_statusEnabled = false;
+		CUIStatic*					_statusIcon = nullptr;
+		Fvector4					_statusEnemyColor = Fvector4().set(1.0f, 0.05f, 0.03f, 1.0f);
+		Fvector4					_statusAnomalyColor = Fvector4().set(1.0f, 0.55f, 0.05f, 1.0f);
+		Fvector4					_statusSafeColor = Fvector4().set(0.15f, 1.0f, 0.25f, 1.0f);
+		Fvector4					_statusNoneColor = Fvector4().set(1.0f, 1.0f, 1.0f, 0.0f);
+		float						_statusEnemyIntensity = 1.0f;
+		float						_statusAnomalyIntensity = 0.9f;
+		float						_statusSafeIntensity = 0.7f;
+		float						_statusColorSpeed = 6.0f;
+		float						_statusPulseAmplitude = 0.08f;
+		float						_statusPulseSpeed = 2.5f;
+		float						_statusEnemyThreshold = 0.05f;
+		float						_statusAnomalyThreshold = 0.05f;
+		float						_statusMaxSafeDistance = 25.0f;
+		bool						_statusPulseEnemy = true;
+		bool						_statusPulseAnomaly = false;
+		bool						_statusPulseSafe = false;
+		bool						_statusUseCampSafeZones = false;
+		xr_vector<shared_str>		_statusSafeZoneNames;
+		Fvector4					_statusCurrentColor = Fvector4().set(1.0f, 1.0f, 1.0f, 0.0f);
+		Fvector4					_statusTargetColor = Fvector4().set(1.0f, 1.0f, 1.0f, 0.0f);
+		float						_statusPulsePhase = 0.0f;
+		u8							_statusState = 0;
+
 		float UpdateContextualFadeAlpha(float alpha, bool isVisible) const;
 		bool IsContextuallyNeeded() const;
+		bool IsStatusSafeZone(const Fvector& pos) const;
 		void ApplyCompassContextualAlpha(float alpha);
 		void ApplyMinimapLuminosityOverlayAlpha(float contextualAlpha);
+		void LoadStatusSettings(CUIXml& uiXml);
+		void EnsureStatusIcon(CUIXml& uiXml);
+		CUIStatic* StatusTintTarget() const;
+		void UpdateStatusGlow();
+		void ApplyStatusTintColor(float contextualAlpha);
 
 public:
 	virtual					~CUIMotionIcon		();
@@ -98,7 +130,10 @@ public:
 			void			SetLuminosity		(float newPos);
 			void			SetActorVisibility	(u16 who_id, float value);
 			void			ResetVisibility		();
+			float			GetThreatNormalized	() const;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIStatic* ui_cast_static() { return this; }
 };
+
+extern CUIMotionIcon* g_pMotionIcon;

@@ -5,6 +5,7 @@
 #include "UIZoneMap.h"
 #include "UICompassBar.h"
 #include "UINavigationOwnership.h"
+#include "UINavigationHudController.h"
 #include "../../xrCore/EngineExternal.h"
 
 
@@ -117,6 +118,7 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	UIStaticDiskIO				= nullptr;
 	UIZoneMap = new CUIZoneMap();
 	UICompassBar = nullptr;
+	m_navigationHud = new CUINavigationHudController(*this);
 	UIWeaponJammedIcon			= nullptr;
 	UIInvincibleIcon			= nullptr;
 	UIArtefactIcon				= nullptr;
@@ -149,9 +151,6 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 #include "../../xrUI/Widgets/UIProgressShape.h"
 extern CUIProgressShape* g_MissileForceShape;
 
-bool CUIMainIngameWnd::s_hasPersistedNavigationMode = false;
-ENavigationHudMode CUIMainIngameWnd::s_persistedNavigationMode = ENavigationHudMode::Minimap;
-
 CUIMainIngameWnd::~CUIMainIngameWnd()
 {
 	DestroyFlashingIcons		();
@@ -167,6 +166,7 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 		DetachChild(UICompassBar);
 	}
 	xr_delete(UICompassBar);
+	xr_delete(m_navigationHud);
 	HUD_SOUND_ITEM::DestroySound(m_contactSnd);
 	xr_delete					(g_MissileForceShape);
 	xr_delete					(UIWeaponJammedIcon);
@@ -410,7 +410,6 @@ void CUIMainIngameWnd::Init()
 		CUIWindow* layoutFrame = UIMotionIcon->CompassLayoutFrame();
 		if (layoutFrame)
 		{
-			// host owns layoutFrame; layoutFrame owns motion icon
 			UINavigationOwnership::ReparentOwned(UICompassBar, layoutFrame);
 			UINavigationOwnership::ReparentOwned(layoutFrame, UIMotionIcon);
 			UIMotionIcon->ApplyCompassLayout(UICompassBar);
@@ -630,8 +629,8 @@ void CUIMainIngameWnd::Init()
 	}
 
 	const ENavigationHudMode desiredMode =
-		s_hasPersistedNavigationMode
-			? s_persistedNavigationMode
+		m_navigationHud->HasPersistedNavigationMode()
+			? m_navigationHud->PersistedNavigationMode()
 			: (EngineExternal()[EEngineExternalUI::UseCompassBar]
 				? ENavigationHudMode::CompassBar
 				: ENavigationHudMode::Minimap);
@@ -653,408 +652,77 @@ float UIStaticDiskIO_start_time = 0.0f;
 
 bool CUIMainIngameWnd::IsCompassBarMode() const
 {
-	return m_navigationState == ENavigationHudState::Compass;
+	return m_navigationHud->IsCompassBarMode();
+}
+
+ENavigationHudState CUIMainIngameWnd::NavigationState() const
+{
+	return m_navigationHud->State();
 }
 
 void CUIMainIngameWnd::SetNavigationModeBool(bool compassBar)
 {
-	SetNavigationMode(compassBar ? ENavigationHudMode::CompassBar : ENavigationHudMode::Minimap);
-}
-
-bool CUIMainIngameWnd::EnsureCompassBar()
-{
-	if (UICompassBar && UICompassBar->IsInitialized())
-	{
-		return true;
-	}
-
-	if (!UICompassBar)
-	{
-		UICompassBar = new CUICompassBar();
-	}
-
-	UICompassBar->Init();
-	return UICompassBar->IsInitialized();
-}
-
-bool CUIMainIngameWnd::IsCompassBarInitialized() const
-{
-	return UICompassBar && UICompassBar->IsInitialized();
-}
-
-bool CUIMainIngameWnd::IsCompassBarActive() const
-{
-	return IsCompassBarMode() && IsCompassBarInitialized();
-}
-
-Frect CUIMainIngameWnd::GetNavigationHostRect() const
-{
-	if (IsCompassBarActive())
-	{
-		return UICompassBar->GetFrame()->GetWndRect();
-	}
-	if (UIZoneMap)
-	{
-		return UIZoneMap->MapFrame().GetWndRect();
-	}
-	return Frect();
-}
-
-void CUIMainIngameWnd::RebindNavigationChildren()
-{
-	if (!UIMotionIcon)
-		return;
-
-	const bool compass = (m_navigationTarget == ENavigationHudMode::CompassBar) &&
-		(m_navigationState == ENavigationHudState::Compass ||
-			m_navigationState == ENavigationHudState::Transitioning) &&
-		IsCompassBarInitialized();
-
-	if (compass)
-	{
-		if (!UIMotionIcon->CompassLayoutFrame())
-		{
-			UIMotionIcon->SetNavigationPresentation(true);
-		}
-
-		CUIWindow* layoutFrame = UIMotionIcon->CompassLayoutFrame();
-		if (layoutFrame)
-		{
-			// host owns layoutFrame; layoutFrame owns motion icon
-			UINavigationOwnership::ReparentOwned(UICompassBar, layoutFrame);
-			UINavigationOwnership::ReparentOwned(layoutFrame, UIMotionIcon);
-			UIMotionIcon->ApplyCompassLayout(UICompassBar);
-		}
-		else if (!UIMotionIcon->IsIndependent())
-		{
-			UIMotionIcon->ApplyNavigationHost(UICompassBar, GetNavigationHostRect(), true);
-		}
-	}
-	else if (!UIMotionIcon->IsIndependent() && UIZoneMap)
-	{
-		UIMotionIcon->ApplyNavigationHost(&UIZoneMap->MapFrame(), GetNavigationHostRect(), false);
-	}
-
-	if (UIPdaOnline)
-	{
-		if (CUIWindow* parent = UIPdaOnline->GetParent())
-			parent->DetachChild(UIPdaOnline);
-
-		if (compass)
-			UICompassBar->Background().AttachChild(UIPdaOnline);
-		else if (UIZoneMap)
-			UIZoneMap->Background().AttachChild(UIPdaOnline);
-	}
-}
-
-void CUIMainIngameWnd::PersistNavigationMode(ENavigationHudMode mode)
-{
-	s_hasPersistedNavigationMode = true;
-	s_persistedNavigationMode = mode;
-}
-
-void CUIMainIngameWnd::SettleNavigationState(ENavigationHudState state, ENavigationHudMode mode)
-{
-	m_navigationState = state;
-	m_navigationTarget = mode;
-}
-
-ENavigationHudMode CUIMainIngameWnd::NavigationModeFromState() const
-{
-	if (m_navigationState == ENavigationHudState::Compass)
-		return ENavigationHudMode::CompassBar;
-	return ENavigationHudMode::Minimap;
+	m_navigationHud->SetNavigationModeBool(compassBar);
 }
 
 void CUIMainIngameWnd::SetNavigationMode(ENavigationHudMode mode)
 {
-	if (m_navigationState == ENavigationHudState::Transitioning)
-	{
-		return;
-	}
-
-	if (m_navigationState != ENavigationHudState::FailedInit &&
-		NavigationModeFromState() == mode &&
-		m_navigationTarget == mode)
-	{
-		PersistNavigationMode(mode);
-		return;
-	}
-
-	if (!UIMotionIcon || !UIZoneMap)
-	{
-		return;
-	}
-
-	SettleNavigationState(ENavigationHudState::Transitioning, mode);
-
-	if (mode == ENavigationHudMode::CompassBar && !EnsureCompassBar())
-	{
-		Msg("! CUIMainIngameWnd::SetNavigationMode: compass bar init failed, staying on minimap");
-		SettleNavigationState(ENavigationHudState::FailedInit, ENavigationHudMode::Minimap);
-		PersistNavigationMode(ENavigationHudMode::Minimap);
-		SyncNavigationVisibility();
-		RebindNavigationChildren();
-		return;
-	}
-
-	SettleNavigationState(
-		mode == ENavigationHudMode::CompassBar
-			? ENavigationHudState::Compass
-			: ENavigationHudState::Minimap,
-		mode);
-	PersistNavigationMode(mode);
-	SyncNavigationVisibility();
-
-	if (IsCompassBarActive())
-	{
-		if (!IsChild(UICompassBar))
-		{
-			AttachChild(UICompassBar);
-		}
-		UICompassBar->Reset();
-	}
-	else
-	{
-		if (UICompassBar && IsChild(UICompassBar))
-		{
-			DetachChild(UICompassBar);
-		}
-		if (UICompassBar)
-		{
-			UICompassBar->SetHudVisible(false);
-		}
-		if (UIZoneMap)
-		{
-			UIZoneMap->SetupCurrentMap();
-		}
-	}
-
-	RebindNavigationChildren();
-
-	if (UIMotionIcon)
-	{
-		UIMotionIcon->ResetVisibility();
-	}
+	m_navigationHud->SetNavigationMode(mode);
 }
 
 bool CUIMainIngameWnd::ValidateNavigationOwnership(shared_str& outError) const
 {
-	outError = nullptr;
-
-	if (m_navigationState == ENavigationHudState::Transitioning)
-	{
-		outError = "navigation state stuck in Transitioning";
-		return false;
-	}
-
-	if (!UIMotionIcon)
-	{
-		outError = "UIMotionIcon is null";
-		return false;
-	}
-
-	if (UIMotionIcon->IsIndependent())
-	{
-		if (UIMotionIcon->GetParent() != const_cast<CUIMainIngameWnd*>(this))
-		{
-			outError = "independent motion icon parent is not main ingame wnd";
-			return false;
-		}
-		if (!UIMotionIcon->IsAutoDelete())
-		{
-			outError = "independent motion icon is not owned (AutoDelete=false)";
-			return false;
-		}
-		return true;
-	}
-
-	if (m_navigationState == ENavigationHudState::Compass)
-	{
-		if (!IsCompassBarInitialized())
-		{
-			outError = "Compass state without initialized compass bar";
-			return false;
-		}
-
-		CUIWindow* layoutFrame = UIMotionIcon->CompassLayoutFrame();
-		if (layoutFrame)
-		{
-			if (!UINavigationOwnership::IsOwnedChild(UICompassBar, layoutFrame))
-			{
-				outError = "layoutFrame is not owned by compass host";
-				return false;
-			}
-			if (!UINavigationOwnership::IsOwnedChild(layoutFrame, UIMotionIcon))
-			{
-				outError = "motion icon is not owned by layoutFrame";
-				return false;
-			}
-		}
-		else if (!UINavigationOwnership::IsOwnedChild(UICompassBar, UIMotionIcon))
-		{
-			outError = "motion icon is not owned by compass host";
-			return false;
-		}
-		return true;
-	}
-
-	// Minimap / FailedInit → zone map host
-	if (!UIZoneMap)
-	{
-		outError = "UIZoneMap is null in minimap path";
-		return false;
-	}
-
-	if (!UINavigationOwnership::IsOwnedChild(&UIZoneMap->MapFrame(), UIMotionIcon))
-	{
-		outError = "motion icon is not owned by zone map frame";
-		return false;
-	}
-
-	return true;
+	return m_navigationHud->ValidateNavigationOwnership(outError);
 }
 
 bool CUIMainIngameWnd::RunNavigationOwnershipSmoke(u32 toggleCount)
 {
-	shared_str error;
-	if (!ValidateNavigationOwnership(error))
-	{
-		Msg("! nav ownership smoke [init]: %s", error.c_str());
-		return false;
-	}
+	return m_navigationHud->RunNavigationOwnershipSmoke(toggleCount);
+}
 
-	const ENavigationHudMode startMode = NavigationModeFromState();
-	const u32 cycles = toggleCount ? toggleCount : 20;
+bool CUIMainIngameWnd::EnsureCompassBar()
+{
+	return m_navigationHud->EnsureCompassBar();
+}
 
-	for (u32 i = 0; i < cycles; ++i)
-	{
-		const ENavigationHudMode next =
-			IsCompassBarMode() ? ENavigationHudMode::Minimap : ENavigationHudMode::CompassBar;
-		SetNavigationMode(next);
+bool CUIMainIngameWnd::IsCompassBarInitialized() const
+{
+	return m_navigationHud->IsCompassBarInitialized();
+}
 
-		if (m_navigationState == ENavigationHudState::Transitioning)
-		{
-			Msg("! nav ownership smoke [toggle %u]: stuck Transitioning", i);
-			return false;
-		}
+bool CUIMainIngameWnd::IsCompassBarActive() const
+{
+	return m_navigationHud->IsCompassBarActive();
+}
 
-		if (m_navigationState == ENavigationHudState::FailedInit)
-		{
-			Msg("! nav ownership smoke [toggle %u]: FailedInit", i);
-			return false;
-		}
+void CUIMainIngameWnd::RebindNavigationChildren()
+{
+	m_navigationHud->RebindNavigationChildren();
+}
 
-		if (!ValidateNavigationOwnership(error))
-		{
-			Msg("! nav ownership smoke [toggle %u]: %s", i, error.c_str());
-			return false;
-		}
-	}
+void CUIMainIngameWnd::PersistNavigationMode(ENavigationHudMode mode)
+{
+	m_navigationHud->PersistNavigationMode(mode);
+}
 
-	// Save/load stand-in: flip runtime, then restore mode as Init would from static persist.
-	const ENavigationHudMode savedMode = NavigationModeFromState();
-	const ENavigationHudMode flipped =
-		savedMode == ENavigationHudMode::CompassBar
-			? ENavigationHudMode::Minimap
-			: ENavigationHudMode::CompassBar;
-
-	SetNavigationMode(flipped);
-	if (!ValidateNavigationOwnership(error))
-	{
-		Msg("! nav ownership smoke [pre-restore]: %s", error.c_str());
-		return false;
-	}
-
-	PersistNavigationMode(savedMode);
-	SetNavigationMode(s_persistedNavigationMode);
-	if (!ValidateNavigationOwnership(error))
-	{
-		Msg("! nav ownership smoke [save-load restore]: %s", error.c_str());
-		return false;
-	}
-
-	if (NavigationModeFromState() != savedMode)
-	{
-		Msg("! nav ownership smoke [save-load restore]: mode mismatch");
-		return false;
-	}
-
-	SetNavigationMode(flipped);
-	if (!ValidateNavigationOwnership(error))
-	{
-		Msg("! nav ownership smoke [post-restore toggle]: %s", error.c_str());
-		return false;
-	}
-
-	SetNavigationMode(startMode);
-	if (!ValidateNavigationOwnership(error))
-	{
-		Msg("! nav ownership smoke [restore start]: %s", error.c_str());
-		return false;
-	}
-
-	Msg("* nav ownership smoke: OK (toggles=%u, state=%u)", cycles, (u32)m_navigationState);
-	return true;
+void CUIMainIngameWnd::SettleNavigationState(ENavigationHudState state, ENavigationHudMode mode)
+{
+	m_navigationHud->SettleNavigationState(state, mode);
 }
 
 void CUIMainIngameWnd::SyncNavigationVisibility()
 {
-	const bool showNav = psHUD_Flags.test(HUD_MINIMAP);
-	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
-	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
-	const bool renderHUD = noHUDonMaster ? (g_SingleGameDifficulty < egdVeteran || (pActor && pActor->GetHelmet() && !fis_zero(pActor->GetHelmet()->m_fShowNearestEnemiesDistance))) : true;
-	const bool navVisible = showNav && renderHUD;
-
-	if (IsCompassBarActive())
-	{
-		UICompassBar->SetHudVisible(navVisible);
-		if (UIZoneMap)
-		{
-			UIZoneMap->visible = false;
-		}
-	}
-	else if (UIZoneMap)
-	{
-		if (noHUDonMaster)
-		{
-			UIZoneMap->disabled = !renderHUD;
-		}
-		UIZoneMap->visible = navVisible;
-	}
+	m_navigationHud->SyncNavigationVisibility();
 }
 
 void CUIMainIngameWnd::UpdateNavigationHud()
 {
-	if (!psHUD_Flags.test(HUD_MINIMAP))
-	{
-		return;
-	}
-
-	if (IsCompassBarActive())
-	{
-		UICompassBar->SetActiveTarget(Level().MapManager().GetActiveTaskCompassLocation());
-		UICompassBar->Update();
-	}
-	else if (UIZoneMap)
-	{
-		UIZoneMap->Update();
-	}
+	m_navigationHud->UpdateNavigationHud();
 }
 
 void CUIMainIngameWnd::DrawNavigationHud()
 {
-	if (!psHUD_Flags.test(HUD_MINIMAP))
-	{
-		return;
-	}
-
-	SyncNavigationVisibility();
-
-	if (!IsCompassBarActive() && UIZoneMap && UIZoneMap->visible)
-	{
-		UIZoneMap->Render();
-	}
+	m_navigationHud->DrawNavigationHud();
 }
 
 void CUIMainIngameWnd::Draw()

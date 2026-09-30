@@ -7,6 +7,8 @@
 #include "UICarPanel.h"
 #include "../../xrUI/Widgets/UI3dStatic.h"
 
+#include "UINavigationHudTypes.h"
+
 class	CUIPdaMsgListItem;
 class	CLAItem;
 class CUIZoneMap;
@@ -20,20 +22,7 @@ class	CUIMotionIcon;
 class	CUIArtefactPanel;
 class	CUIStackPanel;
 class	CUI3dStatic;
-
-enum class ENavigationHudMode : u8
-{
-	Minimap,
-	CompassBar,
-};
-
-enum class ENavigationHudState : u8
-{
-	Minimap,
-	Compass,
-	Transitioning,
-	FailedInit,
-};
+class	CUINavigationHudController;
 
 class CUIMainIngameWnd final :
 	public CUIWindow
@@ -99,7 +88,7 @@ public:
 	void			SetNavigationMode(ENavigationHudMode mode);
 	void			SetNavigationModeBool(bool compassBar);
 	bool			IsCompassBarMode() const;
-	ENavigationHudState NavigationState() const { return m_navigationState; }
+	ENavigationHudState NavigationState() const;
 
 	bool			ValidateNavigationOwnership(shared_str& outError) const;
 	bool			RunNavigationOwnershipSmoke(u32 toggleCount = 20);
@@ -161,25 +150,18 @@ protected:
 	CUIWindow* m_pMPChatWnd;
 	CUIWindow* m_pMPLogWnd;
 	bool				useLegacyIndicators;
-	ENavigationHudState	m_navigationState = ENavigationHudState::Minimap;
-	ENavigationHudMode	m_navigationTarget = ENavigationHudMode::Minimap;
-
-	static bool					s_hasPersistedNavigationMode;
-	static ENavigationHudMode	s_persistedNavigationMode;
+	CUINavigationHudController* m_navigationHud = nullptr;
 
 protected:
-	Frect				GetNavigationHostRect() const;
-	void				RebindNavigationChildren();
-	void				PersistNavigationMode(ENavigationHudMode mode);
-	void				SettleNavigationState(ENavigationHudState state, ENavigationHudMode mode);
-	ENavigationHudMode	NavigationModeFromState() const;
-
 	bool				EnsureCompassBar();
 	bool				IsCompassBarInitialized() const;
 	bool				IsCompassBarActive() const;
 	void				SyncNavigationVisibility();
 	void				UpdateNavigationHud();
 	void				DrawNavigationHud();
+	void				RebindNavigationChildren();
+	void				PersistNavigationMode(ENavigationHudMode mode);
+	void				SettleNavigationState(ENavigationHudState state, ENavigationHudMode mode);
 
 	// Car
 	CUICarPanel UICarPanel;
