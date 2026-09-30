@@ -43,11 +43,6 @@ public:
 	void 						Reload					();
 	void 						UpdateInfo				();
 
-	CUIFrameWindow*				GetRightFrame				() const { return UIRightFrame; }
-	CUIScrollView*				GetDetailsScroll			() const { return UIDetailsWnd; }
-	CUIXml*						GetLayoutXml				() const { return _layoutXml; }
-	bool						HasValidPdaDialogLayout		() const { return _hasValidDialogLayout; }
-
 	CUIScrollView*				UIListWnd;
 	CUIScrollView*				UIDetailsWnd;
 	UIHint*						m_hint_wnd;
@@ -57,7 +52,6 @@ public:
 
 protected:
 	CUIXml*						_layoutXml = nullptr;
-	bool						_hasValidDialogLayout = false;
 	CUIFrameWindow*				m_background;
 	CUIFrameWindow*				UIFrameContacts;
 	CUIFrameLineWnd*			UIContactsHeader;

@@ -20,7 +20,6 @@
 #include "../../xrUI/UITextureMaster.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "alife_registry_wrappers.h"
-#include "pda_communication.h"
 
 ALife::_STORY_ID	story_id(const char* story_id);
 u16					storyId2GameId(ALife::_STORY_ID);
@@ -80,7 +79,6 @@ SGameTaskObjective::SGameTaskObjective()
 	m_FinishTime = 0;
 	m_TimeToComplete = 0;
 	m_timer_finish = 0;
-	m_rewardPending = false;
 	m_article_id = nullptr;
 }
 
@@ -97,7 +95,6 @@ SGameTaskObjective::SGameTaskObjective(CGameTask* parent, u16 idx)
 	m_FinishTime = 0;
 	m_TimeToComplete = 0;
 	m_timer_finish = 0;
-	m_rewardPending = false;
 	m_article_id = nullptr;
 }
 
@@ -106,8 +103,6 @@ CGameTask::CGameTask()
 {
 	m_priority = 0;
 	m_read = false;
-	m_remoteAllowed = false;
-	m_hasPendingRewardDispatch = false;
 }
 
 CGameTask::CGameTask(const TASK_ID& id)
@@ -115,8 +110,6 @@ CGameTask::CGameTask(const TASK_ID& id)
 {
 	m_priority = 0;
 	m_read = false;
-	m_remoteAllowed = false;
-	m_hasPendingRewardDispatch = false;
 	Load(id);
 }
 
@@ -141,8 +134,6 @@ void CGameTask::Load(const shared_str& id)
 	g_gameTaskXml->SetLocalRoot(task_node);
 	m_Title = g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "title", 0, nullptr);
 	m_priority = g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "prio", -1);
-	m_remoteAllowed = g_gameTaskXml->ReadInt(g_gameTaskXml->GetLocalRoot(), "pda_quest_safe", 0, 0) == 1;
-	m_hasPendingRewardDispatch = false;
 
 #ifdef DEBUG
 	if (m_priority == u32(-1))
@@ -318,13 +309,6 @@ void CGameTask::Load(const shared_str& id)
 void SGameTaskObjective::SetTaskState(ETaskState state)
 {
 	m_task_state = state;
-	CGameTask* parentTask = GetParent();
-	const bool isPdaRewardDeferred = parentTask &&
-		m_task_state == eTaskStateCompleted &&
-		!parentTask->m_remoteAllowed &&
-		PdaCommunication().IsEnabled() &&
-		PdaCommunication_IsSessionActive();
-
 	if( (m_task_state == eTaskStateFail) || (m_task_state == eTaskStateCompleted) )
 	{
 		RemoveMapLocations	(false);
@@ -337,21 +321,8 @@ void SGameTaskObjective::SetTaskState(ETaskState state)
 		}
 		else
 		{
-			if (isPdaRewardDeferred)
-			{
-				parentTask->m_hasPendingRewardDispatch = true;
-				m_rewardPending = true;
-			}
-			else
-			{
-				SendInfo		(m_infos_on_complete);
-				CallAllFuncs	(m_lua_functions_on_complete);
-				m_rewardPending = false;
-				if (parentTask)
-				{
-					parentTask->m_hasPendingRewardDispatch = false;
-				}
-			}
+			SendInfo		(m_infos_on_complete);
+			CallAllFuncs	(m_lua_functions_on_complete);
 		}
 	}
 	ChangeStateCallback();
@@ -660,7 +631,6 @@ void SGameTaskObjective::save(IWriter& stream)
 	save_data				(m_FinishTime,		stream);
 	save_data				(m_TimeToComplete,	stream);
 	save_data				(m_timer_finish,	stream);
-    save_data               (m_rewardPending,   stream);
 
     save_data				(m_idx, stream);
 	save_data				(m_Title,			stream);
@@ -689,7 +659,6 @@ void SGameTaskObjective::load(IReader& stream)
 	load_data				(m_FinishTime,		stream);
 	load_data				(m_TimeToComplete,	stream);
 	load_data				(m_timer_finish,	stream);
-    load_data               (m_rewardPending,   stream);
 
 	load_data				(m_idx,				stream);
 	load_data				(m_Title,			stream);
@@ -722,8 +691,6 @@ void CGameTask::save(IWriter& stream)
 {
 	save_data(m_ID, stream);
 	save_data(m_priority, stream);
-	save_data(m_remoteAllowed, stream);
-	save_data(m_hasPendingRewardDispatch, stream);
 	SGameTaskObjective::save(stream);
 
 	const u32 count = static_cast<u32>(m_Objectives.size());
@@ -744,8 +711,6 @@ void CGameTask::load(IReader& stream)
 	}
 
 	load_data				(m_priority,		stream);
-	load_data				(m_remoteAllowed,	stream);
-	load_data				(m_hasPendingRewardDispatch,	stream);
 	SGameTaskObjective::load(stream);
 
 	u32 count;

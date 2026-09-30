@@ -744,11 +744,6 @@ bool CActor::CanMove()
 
 	if (IsTalking())
 	{
-		if (CurrentGameUI() && CurrentGameUI()->TalkMenu && CurrentGameUI()->TalkMenu->IsPdaMode())
-		{
-			return true;
-		}
-
 		return false;
 	}
 

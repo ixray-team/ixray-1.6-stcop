@@ -2,7 +2,6 @@
 #include "pch_script.h"
 #include "InventoryOwner.h"
 #include "PDA.h"
-#include "pda_communication.h"
 #include "Actor.h"
 #include "trade.h"
 #include "Inventory.h"
@@ -169,25 +168,6 @@ bool CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 
 void CInventoryOwner::net_Destroy()
 {
-    if (PdaCommunication().GetSessionNpc() == this)
-    {
-        if (CUIGameCustom* ui = CurrentGameUI())
-        {
-            if (ui->TalkMenu)
-            {
-                ui->TalkMenu->StopPdaDialog();
-            }
-            else
-            {
-                PdaCommunication_Stop();
-            }
-        }
-        else
-        {
-            PdaCommunication_Stop();
-        }
-    }
-
 	CAttachmentOwner::net_Destroy();
 
 	inventory().Clear();

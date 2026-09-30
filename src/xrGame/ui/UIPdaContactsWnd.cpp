@@ -3,7 +3,6 @@
 #include "../PDA.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../Actor.h"
-#include "../Level.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/Widgets/UIAnimatedStatic.h"
@@ -14,95 +13,10 @@
 #include "../../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
 #include "../../xrUI/UICursor.h"
 #include "../../xrEngine/xr_input.h"
-#include "../pda_communication.h"
 #include "UICharacterInfo.h"
-#include "UIGameCustom.h"
-#include "UITalkWnd.h"
 #include "PdaConstants.h"
 
 extern CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id);
-
-namespace
-{
-// Resolves a contact owner safely from the stable owner id, avoiding dereference of stale m_data pointers
-// after the underlying NPC object was destroyed (death, alife unload) while the PDA window stays open.
-CInventoryOwner* ResolveContactOwnerById(u16 ownerId)
-{
-	if (ownerId == u16(-1))
-	{
-		return nullptr;
-	}
-
-	CObject* object = Level().Objects.net_Find(ownerId);
-	if (object == nullptr || object->getDestroy())
-	{
-		return nullptr;
-	}
-
-	return object->cast_inventory_owner();
-}
-
-// Ends embedded phrase UI and PDA talk session when the highlighted contact no longer matches the active NPC.
-void StopEmbeddedPhraseUiIfSessionNpcDiffers(CInventoryOwner* highlightedOwner)
-{
-	if (!highlightedOwner)
-	{
-		return;
-	}
-
-	CPdaCommunication& comm = PdaCommunication();
-	if (!comm.IsSessionActive())
-	{
-		return;
-	}
-
-	CInventoryOwner* sessionNpc = comm.GetSessionNpc();
-	if (!sessionNpc || sessionNpc == highlightedOwner)
-	{
-		return;
-	}
-
-	CUIGameCustom* gameUi = CurrentGameUI();
-	if (gameUi && gameUi->TalkMenu)
-	{
-		gameUi->TalkMenu->StopPdaDialog();
-	}
-	else
-	{
-		comm.Stop();
-	}
-}
-
-bool TryLaunchEmbeddedPdaPhraseUi(CUIPdaContactsWnd* contactsWnd)
-{
-    CUIGameCustom* gameUi = CurrentGameUI();
-    if (!gameUi || !gameUi->TalkMenu)
-    {
-        return false;
-    }
-
-    CUITalkWnd* talkWnd = gameUi->TalkMenu;
-    talkWnd->SetPdaMode(true);
-    if (!talkWnd->IsEmbeddedInPda() && contactsWnd)
-    {
-        talkWnd->BeginPdaEmbed(contactsWnd);
-    }
-
-    if (!talkWnd->IsEmbeddedInPda())
-    {
-        talkWnd->StopPdaDialog();
-        return false;
-    }
-
-    const bool isInitialized = talkWnd->InitializeDialogForPda();
-    if (!isInitialized)
-    {
-        talkWnd->StopPdaDialog();
-    }
-
-    return isInitialized;
-}
-} // namespace
 
 #define PDA_CONTACT_HEIGHT 70
 
@@ -137,19 +51,13 @@ void CUIPdaContactsWnd::Init()
 {
 	xr_delete(_layoutXml);
 	_layoutXml = new CUIXml();
-	_hasValidDialogLayout = false;
 
-	// CUIXml::Load(CONFIG_PATH, UI_PATH, ...) maps names via UI().get_xml_name() (e.g. widescreen -> *_16.xml).
 	if (!_layoutXml->Load(CONFIG_PATH, UI_PATH, PdaXml::ContactsNew))
 	{
 		Msg("! CUIPdaContactsWnd: failed to load [%s] from configs/ui (check addon merge order)", PdaXml::ContactsNew);
 		xr_delete(_layoutXml);
 		return;
 	}
-
-	const SPdaContactsLayoutInfo layoutInfo = InspectPdaContactsLayout(*_layoutXml);
-	LogPdaContactsLayoutIssues(layoutInfo, _layoutXml->m_xml_file_name);
-	_hasValidDialogLayout = IsPdaContactsLayoutValid(layoutInfo);
 
 	CUIXmlInit	xml_init;
 
@@ -273,7 +181,6 @@ void CUIPdaContactsWnd::AddContact(CInventoryOwner* owner)
 	pItem->set_hint_delay			(0);
 }
 
-//удалить все контакты из списка
 void CUIPdaContactsWnd::RemoveAll()
 {
 	UIListWnd->Clear		();
@@ -405,9 +312,6 @@ void CUIPdaContactItem::SetSelected	(bool b)
 		return;
 	}
 
-	CInventoryOwner* owner = ResolveContactOwnerById(UIInfo->OwnerID());
-	StopEmbeddedPhraseUiIfSessionNpcDiffers(owner);
-
 	m_cw->UIDetailsWnd->Clear		();
 	CCharacterInfo				chInfo;
 	CSE_ALifeTraderAbstract*	T = ch_info_get_from_id(UIInfo->OwnerID());
@@ -423,31 +327,7 @@ bool CUIPdaContactItem::OnMouseDown(int mouse_btn)
 		return false;
 	}
 
-	// Selection/focus alone must not start a phrase session; LMB activates dialog branches like face-to-face talk.
 	m_cw->UIListWnd->SetSelected(this);
-
-	CInventoryOwner* owner = ResolveContactOwnerById(UIInfo->OwnerID());
-	if (!owner)
-	{
-		return true;
-	}
-
-	if (!PdaCommunication().IsEnabled())
-	{
-		return true;
-	}
-
-	if (!m_cw->HasValidPdaDialogLayout())
-	{
-		Msg("! [PDA] contacts: invalid <%s> layout; see earlier [PDA] messages", PdaXml::ContactsDialog);
-		return true;
-	}
-
-	if (PdaCommunication().OpenDialog(owner))
-	{
-		TryLaunchEmbeddedPdaPhraseUi(m_cw);
-	}
-
 	return true;
 }
 
@@ -468,19 +348,6 @@ void CUIPdaContactItem::SetHintText()
 	{
 		set_hint_text("");
 		return;
-	}
-
-	CInventoryOwner* owner = ResolveContactOwnerById(UIInfo->OwnerID());
-	CActor* actor = Actor();
-
-	EPdaCommunicationStatus status = EPdaCommunicationStatus::DisabledByConfig;
-	if (PdaCommunication().IsEnabled() && owner && actor)
-	{
-		status = PdaCommunication().CanStart(owner, actor->cast_inventory_owner());
-	}
-	else if (PdaCommunication().IsEnabled() && !owner)
-	{
-		status = EPdaCommunicationStatus::NpcOffline;
 	}
 
 	const char* stalkersKilled = "0";
@@ -519,15 +386,9 @@ void CUIPdaContactItem::SetHintText()
 
 	xr_string str = "%c[255, 255, 160, 255] %c[default]";
 	str += T->m_character_name.c_str();
-	str += "\\n \\n %c[255, 215, 215, 215]";
-	if (!cocFunctorsExist)
+	if (cocFunctorsExist)
 	{
-		str += g_pStringTable->translate("st_pda_talk_status_label").c_str();
-		str += ": %c[default] ";
-		str += g_pStringTable->translate(CPdaCommunication::StatusStringId(status)).c_str();
-	}
-	else
-	{
+		str += "\\n \\n %c[255, 215, 215, 215]";
 		str += g_pStringTable->translate("st_mm_pda_statistics").c_str();
 		str += ": %c[default] \\n%c[255, 160, 160, 160]";
 		str += g_pStringTable->translate("st_mm_pda_stalkers_killed").c_str();

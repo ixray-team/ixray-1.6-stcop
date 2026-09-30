@@ -28,10 +28,6 @@ struct SPhraseDialogData : CSharedResource
 	//произвольное число - приоритет диалога (0 по умолчанию), может быть отрицательным
 	//в окне выбора у актера диалоги будут сортироваться по этому значению от меньшего (снизу) к большему (сверху)
 	int	m_iPriority;
-	bool m_isPdaAvailable;
-	bool m_isEnabled;
-	xr_set<shared_str> m_pdaDisabledPhraseIds;
-	xr_set<shared_str> m_pdaDisabledPhraseTexts;
 };
 
 using PHRASE_VECTOR = xr_vector<CPhrase*>;
@@ -39,12 +35,6 @@ using PHRASE_VECTOR_IT = PHRASE_VECTOR::iterator;
 
 class CPhraseDialog;
 class CPhraseDialogManager;
-
-enum class ETalkMode : u8
-{
-	Normal = 0,
-	Pda
-};
 
 class CPhraseDialog	:
 	public CSharedClass<SPhraseDialogData, shared_str, false>,
@@ -67,10 +57,6 @@ public:
 
 	//связь диалога между двумя DialogManager
 	virtual void			Init				(CPhraseDialogManager* speaker_first, CPhraseDialogManager* speaker_second);
-			void			SetTalkMode			(ETalkMode talkMode) { _talkMode = talkMode; }
-			ETalkMode		GetTalkMode			() const { return _talkMode; }
-			bool			IsPdaMode			() const { return _talkMode == ETalkMode::Pda; }
-			bool			IsPdaAvailable		() const { return data()->m_isPdaAvailable; }
 
 	IC		bool			IsInited			() const {return ((FirstSpeaker()!=NULL)&& (SecondSpeaker()!=NULL));}
 
@@ -135,7 +121,6 @@ protected:
 	CPhraseDialogManager*	m_pSpeakerFirst;
 	CPhraseDialogManager*	m_pSpeakerSecond;
 	bool					m_bFirstIsSpeaking;
-	ETalkMode				_talkMode;
 
 	const SPhraseDialogData* data		() const	{ VERIFY(inherited_shared::get_sd()); return inherited_shared::get_sd();}
 	SPhraseDialogData*		data		()			{ VERIFY(inherited_shared::get_sd()); return inherited_shared::get_sd();}
@@ -154,6 +139,4 @@ public:
 protected:
 
 	static void				InitXmlIdToIndex();
-	bool					IsPhraseAvailable	(const CPhrase* phrase) const;
-	bool					IsPhraseDisabledForPda	(const shared_str& phraseId, const char* text) const;
 };

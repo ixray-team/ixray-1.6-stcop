@@ -36,7 +36,6 @@ public:
 	void test_groid();
 	void					SetTaskState					(const shared_str& id, ETaskState state, u16 objective_id = ROOT_TASK_OBJECTIVE);
 	void					SetTaskState					(CGameTask* t, ETaskState state, u16 objective_id = ROOT_TASK_OBJECTIVE);
-	void					IssuePendingRewards				();
 
 	void					UpdateTasks						();
 

@@ -449,10 +449,6 @@ void CUIGameCustom::HideShownDialogs()
 	HidePdaMenu();
 	if (SleepWnd && SleepWnd->IsShown())
 		SleepWnd->HideDialog();
-	if (TalkMenu && TalkMenu->IsEmbeddedInPda())
-	{
-		TalkMenu->StopPdaDialog();
-	}
 	CUIDialogWnd* mir = TopInputReceiver();
 	if (mir && mir == TalkMenu)
 	{
@@ -529,11 +525,6 @@ void CUIGameCustom::SetClGame(game_cl_GameState* g)
 
 void CUIGameCustom::UnLoad()
 {
-	if (TalkMenu)
-	{
-		TalkMenu->StopPdaDialog();
-	}
-
 	xr_delete					(m_msgs_xml);
 	xr_delete					(m_pgameCaptions);
 	xr_delete					(m_ActorMenu);
