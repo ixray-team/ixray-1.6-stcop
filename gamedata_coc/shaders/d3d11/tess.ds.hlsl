@@ -70,6 +70,10 @@ void main(in HS_CONSTANT_DATA_OUTPUT input,
     output.hpos_old = bp[0].hpos_old * w + bp[1].hpos_old * v + bp[2].hpos_old * u;
 #endif
 
+#ifdef USE_HUD_RAINDROPS
+    output.drops_basis = bp[0].drops_basis * w + bp[1].drops_basis * v + bp[2].drops_basis * u;
+#endif
+
     output.hpos.xy += m_taa_jitter.xy * output.hpos.w;
 }
 

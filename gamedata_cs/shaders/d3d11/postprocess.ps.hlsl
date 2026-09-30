@@ -4,7 +4,6 @@ Texture2D s_base0;
 Texture2D s_base1;
 Texture2D s_noise;
 
-uniform float4 c_brightness;
 
 // Pixel
 float4 main(p_postpr I) : SV_Target
