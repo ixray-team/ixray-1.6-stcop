@@ -391,3 +391,15 @@ float get_noise(float2 co)
 
 #endif //	common_functions_h_included
 
+
+// moved from shared/common.hlsli, which the d3d11 set no longer includes
+float calc_cyclic(float x)
+{
+    float f = 1.4142f * sin(x * 3.14159f);
+    return f * f - 1.0f;
+}
+
+float2 calc_xz_wave(float2 dir2D, float frac)
+{
+    return dir2D * frac;
+}

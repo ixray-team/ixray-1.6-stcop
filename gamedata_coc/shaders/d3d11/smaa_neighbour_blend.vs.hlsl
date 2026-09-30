@@ -7,7 +7,6 @@
 #endif
 
 #define SMAA_INCLUDE_VS 1
-uniform float4 scaled_screen_res;
 #define SMAA_RT_METRICS scaled_screen_res.zwxy
 
 #include "smaa.hlsli"

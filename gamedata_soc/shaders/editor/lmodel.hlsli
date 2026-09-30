@@ -9,7 +9,7 @@ float4 plight_infinity(float m, float3 _point, float3 normal, float3 light_direc
     float3 V = -normalize(_point); // vector2eye
     float3 L = -light_direction; // vector2light
     float3 H = normalize(L + V); // float-angle-vector
-    return tex3D(s_material, float3(dot(L, N), dot(H, N), m)); // sample material
+    return s_material.Sample( smp_material, float3( dot(L,N), dot(H,N), m ) ).xxxy; // sample material
 }
 
 float4 plight_local(float m, float3 _point, float3 normal, float3 light_position, float light_range_rsq)
@@ -21,7 +21,7 @@ float4 plight_local(float m, float3 _point, float3 normal, float3 light_position
     float3 H = normalize(L + V); // float-angle-vector
     float rsqr = dot(L2P, L2P); // distance 2 light (squared)
     float att = saturate(1 - rsqr * light_range_rsq); // q-linear attenuate
-    float4 light = tex3D(s_material, float3(dot(L, N), dot(H, N), m)); // sample material
+    float4 light = s_material.Sample( smp_material, float3( dot(L,N), dot(H,N), m ) ).xxxy; // sample material
     return att * light;
 }
 

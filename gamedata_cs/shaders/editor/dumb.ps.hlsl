@@ -1,7 +1,8 @@
 #include "common.hlsli"
 
 // Pixel
-float4 main() : COLOR
+float4 main() : SV_Target
 {
     return 0;
 }
+
