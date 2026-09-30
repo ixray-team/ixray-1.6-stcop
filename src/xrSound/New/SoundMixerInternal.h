@@ -1,5 +1,5 @@
 /**************************************************************************************
-* Copyright (C) 2025 Anton Kovalev (vertver)
+* Copyright (C) 2026 Anton Kovalev (vertver)
 * New Sound Engine
 ***************************************************************************************
 * Source code is licensed under the following terms:
@@ -30,20 +30,9 @@
 #pragma once
 #include "SoundMeta.h"
 
-#define SND_RESAMPLING_QUALITY 3
+typedef struct _sound_source_state sound_source_state;
 
-IC void	volume_lerp(float& c, float t, float s, float dt)
-{
-    float diff = t - c;
-    float diff_a = std::abs(diff);
-    if (diff_a < EPS_S) return;
-    float mot = s * dt;
-    if (mot > diff_a) mot = diff_a;
-    c += (diff / diff_a) * mot;
-}
-
-struct sound_slot_state
-{
+struct sound_slot_state {
     XRay::Sound::Mixer::State prev_state;
     XRay::Sound::Mixer::State state;
     XRay::Sound::Mixer::State fake_state;
@@ -52,29 +41,39 @@ struct sound_slot_state
     u32 position;
     u32 stopping_position;
     u32 hrtf_slot;
-    f32 history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY + 1];
-    f32 panning[SND_CHANNEL_COUNT];
-    f32 delay = 0.f;
+    float resample_state[SND_CHANNEL_COUNT];
+    float panning[SND_CHANNEL_COUNT];
+    float delay = 0.0f;
     xr_string sound_name;
     Fvector parameters[(u32)XRay::Sound::Mixer::ParameterId::Count];
     Fvector prev_position = {};
     Fvector velocity = {};
-    f32 doppler = 1.0f;
-    f32 fade_volume = 1.0f;
-
-    // Hemi-derived indoor factor of the SOUND's own position (not the
-    // listener's): 0 = open sky, 1 = fully enclosed. Computed on the update
-    // thread (raycast against the sound environment geometry) and smoothed.
-    f32 IndoorFactor = 0.0f;
+    float doppler = 1.0f;
+    float indoor_factor = 0.0f;
+    sound_source_state* source = NULL;
+    bool is_free = false;
 };
 
-namespace XRay::Sound::Mixer
+IC void
+Snd_VolumeLerp(float* current, float target, float speed, float dt)
 {
-    XRSOUND_API void AddEditorZone(sound_zone_params& params);
-    XRSOUND_API void AddZone(sound_zone_params& params);
+    float diff = target - *current;
+    float diff_abs = fabsf(diff);
+    if (diff_abs < EPS_S) {
+        return;
+    }
+
+    *current += (diff / diff_abs) * std::min(speed * dt, diff_abs);
+}
+
+namespace XRay::Sound::Mixer 
+{
+    XRSOUND_API void AddEditorZone(sound_zone_desc* zone);
+    XRSOUND_API void AddZone(sound_zone_desc* zone);
     XRSOUND_API void ResetZones();
-    const XRSOUND_API xr_vector<sound_zone_params>& GetZones();
+    XRSOUND_API xr_vector<sound_zone_desc>& GetZones();
     XRSOUND_API xr_vector<sound_slot_state>& GetSlots();
+    XRSOUND_API xrSRWLock& GetRenderMutex();
     XRSOUND_API xrSRWLock& GetUpdateMutex();
     XRSOUND_API xrSRWLock& GetManageMutex();
 }
