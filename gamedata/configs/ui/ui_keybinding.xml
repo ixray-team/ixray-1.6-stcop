@@ -26,14 +26,19 @@
 		<command id="kb_weapon6"					exe="wpn_6"/>
 		<command id="kb_weapon7"					exe="wpn_7"/>
 		<command id="kb_wpn_next"					exe="wpn_next"/>
-		<command id="kb_next_slot"				exe="next_slot"/>
-		<command id="kb_prev_slot"				exe="prev_slot"/>
-		<command id="kb_fire"						  exe="wpn_fire"/>
-		<command id="kb_zoom"						  exe="wpn_zoom"/>
+		<command id="kb_next_slot"					exe="next_slot"/>
+		<command id="kb_prev_slot"					exe="prev_slot"/>
+		<command id="kb_fire"						exe="wpn_fire"/>
+		<command id="kb_zoom"						exe="wpn_zoom"/>
+		<command id="kb_alter_zoom"					exe="wpn_zoom_alter"/>
 		<command id="kb_reload"						exe="wpn_reload"/>
-		<command id="kb_func"						  exe="wpn_func"/>
-		<command id="kb_firemode_next"		exe="wpn_firemode_next"/>
-		<command id="kb_firemode_prev"		exe="wpn_firemode_prev"/>		
+		<command id="kb_func"						exe="wpn_func"/>
+		<command id="kb_laser"						exe="wpn_laser"/>		
+		<command id="kb_wpn_torch"						exe="wpn_torch"/>
+		<command id="kb_firemode_next"				exe="wpn_firemode_next"/>
+		<command id="kb_firemode_prev"				exe="wpn_firemode_prev"/>
+		<command id="kb_scope_brightness_plus"		exe="scope_brightness_plus"/>
+		<command id="kb_scope_brightness_minus"		exe="scope_brightness_minus"/>			
 		<command id="kb_safemode"		exe="safemode"/>		
 	</group>
 	<group name="kb_grp_inventory">
@@ -51,6 +56,9 @@
 		<command id="kb_quick_use_2"			exe="quick_use_2"/>
 		<command id="kb_quick_use_3"			exe="quick_use_3"/>
 		<command id="kb_quick_use_4"			exe="quick_use_4"/>
+		<command id="kb_quick_grenade"			exe="quick_grenade"/>
+		<command id="kb_quick_kick"				exe="quick_kick"/>
+		<command id="kb_quick_bolt"				exe="quick_bolt"/>
 		<command id="kb_drop"					exe="drop"/>		
 	</group>
 	<group name="kb_grp_common">

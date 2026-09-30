@@ -984,4 +984,28 @@
 	<string id="st_repair">
 		<text>repair</text>
 	</string>
+	<string id="kb_alter_zoom">
+		<text>Backup sights</text>
+	</string>
+	<string id="kb_laser">
+		<text>Laser sight</text>
+	</string>
+	<string id="kb_wpn_torch">
+		<text>Tactical flashlight</text>
+	</string>
+	<string id="kb_quick_grenade">
+		<text>Throw grenade</text>
+	</string>
+	<string id="kb_quick_bolt">
+		<text>Throw bolt</text>
+	</string>
+	<string id="kb_quick_kick">
+		<text>Melee</text>
+	</string>
+	<string id="kb_scope_brightness_plus">
+		<text>Increase scope brightness</text>
+	</string>
+	<string id="kb_scope_brightness_minus">
+		<text>Decrease scope brightness</text>
+	</string>
 </string_table>

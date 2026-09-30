@@ -12,7 +12,6 @@
 		<command id="kb_right_strafe"			exe="rstrafe"/>
 		<command id="kb_jump"						  exe="jump"/>
 		<command id="kb_crouch"						exe="crouch"/>
-		<!--command id="kb_crouch_toggle"		exe="crouch_toggle"/-->
 		<command id="kb_always_run"				exe="accel"/>
 		<command id="kb_sprint"						exe="sprint_toggle"/>		
 		<command id="kb_left_lookout"			exe="llookout"/>
@@ -27,26 +26,37 @@
 		<command id="kb_weapon6"					exe="wpn_6"/>
 		<command id="kb_weapon7"					exe="wpn_7"/>
 		<command id="kb_wpn_next"					exe="wpn_next"/>
-		<command id="kb_next_slot"				exe="next_slot"/>
-		<command id="kb_prev_slot"				exe="prev_slot"/>
-		<command id="kb_fire"						  exe="wpn_fire"/>
-		<command id="kb_zoom"						  exe="wpn_zoom"/>
+		<command id="kb_next_slot"					exe="next_slot"/>
+		<command id="kb_prev_slot"					exe="prev_slot"/>
+		<command id="kb_fire"						exe="wpn_fire"/>
+		<command id="kb_zoom"						exe="wpn_zoom"/>
+		<command id="kb_alter_zoom"					exe="wpn_zoom_alter"/>
 		<command id="kb_reload"						exe="wpn_reload"/>
-		<command id="kb_func"						  exe="wpn_func"/>
-		<command id="kb_firemode_next"		exe="wpn_firemode_next"/>
-		<command id="kb_firemode_prev"		exe="wpn_firemode_prev"/>	
-		<command id="kb_safemode"		exe="safemode"/>	
+		<command id="kb_func"						exe="wpn_func"/>
+		<command id="kb_laser"						exe="wpn_laser"/>		
+		<command id="kb_wpn_torch"						exe="wpn_torch"/>
+		<command id="kb_firemode_next"				exe="wpn_firemode_next"/>
+		<command id="kb_firemode_prev"				exe="wpn_firemode_prev"/>
+		<command id="kb_scope_brightness_plus"		exe="scope_brightness_plus"/>
+		<command id="kb_scope_brightness_minus"		exe="scope_brightness_minus"/>			
+		<command id="kb_safemode"		exe="safemode"/>		
 	</group>
 	<group name="kb_grp_inventory">
 		<command id="kb_inventory"				exe="inventory"/>
+		<!--command id="kb_inventory_sort_prev"	exe="inv_sort_prev"/-->
+		<!--command id="kb_inventory_sort_next"	exe="inv_sort_next"/-->
+		<command id="kb_inv_unload_ruck"		exe="inv_unload_ruck"/>
 		<command id="kb_active_jobs"			exe="active_jobs"/>
-		<command id="kb_torch"						exe="torch"/>
+		<command id="kb_torch"					exe="torch"/>
 		<command id="kb_clear_gasmask"			exe="clear_gasmask"/>
-    	<command id="kb_detector"					exe="show_detector"/>
-    	<command id="kb_night_vision"			exe="night_vision"/>
+		<command id="kb_detector"				exe="show_detector"/>
+		<command id="kb_night_vision"			exe="night_vision"/>
 		<command id="kb_use_bandage"			exe="use_bandage"/>
 		<command id="kb_use_medkit"				exe="use_medkit"/>
-		<command id="kb_drop"						  exe="drop"/>		
+		<command id="kb_quick_grenade"			exe="quick_grenade"/>
+		<command id="kb_quick_kick"				exe="quick_kick"/>
+		<command id="kb_quick_bolt"				exe="quick_bolt"/>
+		<command id="kb_drop"					exe="drop"/>		
 	</group>
 	<group name="kb_grp_common">
 		<command id="kb_cam_2"						exe="cam_2"/>
