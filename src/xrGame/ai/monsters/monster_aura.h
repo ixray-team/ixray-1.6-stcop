@@ -1,6 +1,8 @@
 #ifndef MONSTER_AURA_H_INCLUDED
 #define MONSTER_AURA_H_INCLUDED
 
+#include "../../CActorAuraPostEffectsBalancer.h"
+
 class CBaseMonster;
 
 class monster_aura
@@ -17,7 +19,6 @@ private:
 	
 	float				m_pp_highest_at;
 	const char*				m_pp_effector_name;
-	u32					m_pp_index;
 
 	ref_sound			m_sound;
 	ref_sound			m_detect_sound;
@@ -39,6 +40,7 @@ private:
 	void				remove_pp_effector			();
 	float				override_if_debug			(const char* var_name, float value) const;
 	float   	get_post_process_factor		() const;
+	EAuraPostEffectType	post_effect_type			() const;
 };
 
 
