@@ -984,4 +984,28 @@
 	<string id="st_repair">
 		<text>починить</text>
 	</string>
+	<string id="kb_alter_zoom">
+		<text>Резервный прицел</text>
+	</string>
+	<string id="kb_laser">
+		<text>ЛЦУ</text>
+	</string>
+	<string id="kb_wpn_torch">
+		<text>Тактический фонарь</text>
+	</string>
+	<string id="kb_quick_grenade">
+		<text>Бросок гранаты</text>
+	</string>
+	<string id="kb_quick_bolt">
+		<text>Бросок болта</text>
+	</string>
+	<string id="kb_quick_kick">
+		<text>Удар</text>
+	</string>
+	<string id="kb_scope_brightness_plus">
+		<text>Увеличить яркость прицела</text>
+	</string>
+	<string id="kb_scope_brightness_minus">
+		<text>Уменьшить яркость прицела</text>
+	</string>
 </string_table>
