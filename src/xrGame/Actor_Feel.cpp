@@ -7,6 +7,7 @@
 #include "UIGameCustom.h"
 #include "Grenade.h"
 #include "HUDManager.h"
+#include "HUDTarget.h"
 #include "../xrEngine/CameraBase.h"
 #include "PickupManager.h"
 #include "ai/monsters/ai_monster_utils.h"
@@ -95,25 +96,31 @@ void CActor::PickupModeUpdate()
 		return;
 	}
 
-	//подбирание объекта
-	if (g_b_COD_PickUpMode) {
+	if (g_b_COD_PickUpMode)
+	{
 		if (m_pObjectWeLookingAt &&
 			m_pObjectWeLookingAt->cast_inventory_item() &&
 			m_pObjectWeLookingAt->cast_inventory_item()->Useful() &&
 			m_pUsableObject &&
-			!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt))
+			!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt) &&
+			pPickup->CanPickItem(Render->ViewBase, cam_FirstEye()->vPosition, m_pObjectWeLookingAt))
 		{
 			m_pUsableObject->use(this);
 			Game().SendPickUpEvent(ID(), m_pObjectWeLookingAt->ID());
 		}
 	}
-	else {
+	else
+	{
 		if (m_pObjectWeLookingAt && m_pObjectWeLookingAt->cast_inventory_item() &&
 			m_pObjectWeLookingAt->cast_inventory_item()->Useful() &&
 			m_pObjectWeLookingAt->cast_inventory_item()->CanTake() &&
-			!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt)) {
+			!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt) &&
+			pPickup->CanPickItem(Render->ViewBase, cam_FirstEye()->vPosition, m_pObjectWeLookingAt))
+		{
 			if (m_pUsableObject && !m_pUsableObject->nonscript_usable())
+			{
 				m_pUsableObject->use(this);
+			}
 			Game().SendPickUpEvent(ID(), m_pObjectWeLookingAt->ID());
 		}
 	}
@@ -179,6 +186,11 @@ void CActor::PickupModeUpdate_COD()
 
 		Fvector A, B, tmp;
 		pIItem->object().Center(A);
+
+		if (A.distance_to(Position()) > CHUDTarget::PICKUP_DISTANCE)
+		{
+			continue;
+		}
 
 		tmp.sub(A, cam_Active()->vPosition);
 		B.mad(cam_Active()->vPosition, cam_Active()->vDirection, tmp.dotproduct(cam_Active()->vDirection));

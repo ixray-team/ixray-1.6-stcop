@@ -30,13 +30,6 @@ u32 C_ON_NEUTRAL = color_rgba(0xff,0xff,0x80,0x80);
 u32 C_ON_FRIEND = color_rgba(0,0xff,0,0x80);
 u32 C_DEFAULT = color_rgba(0xff, 0xff, 0xff, 0x80);
 
-#define C_SIZE		0.025f
-#define NEAR_LIM	0.5f
-
-#define SHOW_INFO_SPEED		1.5f
-#define HIDE_INFO_SPEED		10.f
-
-
 IC	float	recon_mindist	()		{
 	return 2.f;
 }
@@ -252,13 +245,11 @@ void CHUDTarget::Render()
 				}
 				accumulatedTime += SHOW_INFO_SPEED * Device.fTimeDelta;
 			}
-			else if (l_pI && our_inv_owner && PP.RQ.range < 2.0f * 2.0f)
+			else if (l_pI && our_inv_owner && PP.RQ.range < PICKUP_DISTANCE && l_pI->NameItem() && l_pI->CanTake())
 			{
-				if (l_pI->NameItem() && l_pI->CanTake())
-				{
-					targetFont->SetColor(subst_alpha(C, static_cast<u32>(lerp(0.f, 255.f, accumulatedTime))));
-					targetFont->OutNext("%s", l_pI->NameItem());
-				}
+				targetFont->SetColor(subst_alpha(C, static_cast<u32>(lerp(0.f, 255.f, accumulatedTime))));
+				targetFont->OutNext("%s", l_pI->NameItem());
+
 				accumulatedTime += SHOW_INFO_SPEED * Device.fTimeDelta;
 			}
 		}

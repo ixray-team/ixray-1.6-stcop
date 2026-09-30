@@ -1954,6 +1954,128 @@ void CActor::UpdateCL()
 	PickupModeUpdate();
 	PickupModeUpdate_COD();
 	
+	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+	const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
+
+	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && RQ.range < 2.0f && 
+		!(HudAnimator() && HudAnimator()->PdaAnimator() && HudAnimator()->PdaAnimator()->IsActive()))
+	{
+		m_pObjectWeLookingAt = RQ.O->cast_game_object();
+
+		CGameObject* game_object = RQ.O->cast_game_object();
+		m_pUsableObject = game_object ? game_object->cast_usable_script_object() : nullptr;
+		m_pInvBoxWeLookingAt = game_object ? game_object->cast_inventory_box() : nullptr;
+		m_pPersonWeLookingAt = game_object ? game_object->cast_inventory_owner() : nullptr;
+		m_pVehicleWeLookingAt = game_object ? game_object->cast_holder_custom() : nullptr;
+		CEntityAlive* pEntityAlive = game_object ? game_object->cast_entity_alive() : nullptr;
+
+		CActor* IsPlayerPtr = pEntityAlive ? pEntityAlive->cast_actor() : nullptr;
+		
+		if (m_pVehicleWeLookingAt != nullptr)
+		{
+			m_pPersonWeLookingAt = nullptr;
+		}
+
+		if (IsGameTypeSingleCompatible())
+		{
+			if (IsPlayerPtr != nullptr)
+			{
+				if (!IsPlayerPtr->IsWaunded)
+				{
+					m_pPersonWeLookingAt = nullptr;
+				}
+			}
+			else if (m_pUsableObject && m_pUsableObject->tip_text())
+			{
+				m_sDefaultObjAction = g_pStringTable->translate( m_pUsableObject->tip_text() );
+			}
+			else
+			{
+				if (m_pPersonWeLookingAt && pEntityAlive != nullptr && pEntityAlive->g_Alive() && m_pPersonWeLookingAt->IsTalkEnabled() && !pEntityAlive->cast_actor())
+				{
+					m_sDefaultObjAction = m_sCharacterUseAction;
+				}
+				else if ( pEntityAlive && !pEntityAlive->g_Alive() )
+				{
+					if ( m_pPersonWeLookingAt && m_pPersonWeLookingAt->deadbody_closed_status() )
+					{
+						m_sDefaultObjAction = m_sDeadCharacterDontUseAction;
+					}
+					else
+					{
+						if (CBaseMonster* pMonster = m_pPersonWeLookingAt != nullptr ? m_pPersonWeLookingAt->cast_base_monster() : nullptr)
+						{
+							if (isMonstersInventory)
+							{
+								if (bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual()))
+								{
+									m_sDefaultObjAction = pInput->GetControllerMode() ? m_sDeadCharacterUseOrDragActionGamepad : m_sDeadCharacterUseOrDragAction;
+								}
+								else
+								{
+									m_sDefaultObjAction = m_sDeadCharacterUseAction;
+								}
+							}
+							else
+							{
+								m_pPersonWeLookingAt = nullptr;
+							}
+						}
+						else
+						{
+							if (bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual()))
+							{
+								m_sDefaultObjAction = pInput->GetControllerMode() ? m_sDeadCharacterUseOrDragActionGamepad : m_sDeadCharacterUseOrDragAction;
+							}
+							else if (pEntityAlive->cast_inventory_owner())
+							{
+								m_sDefaultObjAction = m_sDeadCharacterUseAction;
+							}
+						}
+					}
+				}
+				else if (m_pVehicleWeLookingAt)
+				{
+					m_sDefaultObjAction = m_pVehicleWeLookingAt->m_sUseAction == nullptr ? m_sCarCharacterUseAction : m_pVehicleWeLookingAt->m_sUseAction;
+
+					if (CCar* pCar = m_pVehicleWeLookingAt->cast_car())
+					{
+						if (pCar->TryTrunk())
+						{
+							m_sDefaultObjAction = m_sCarTrunk;
+						}
+						else if (pCar->TryUsableBones())
+						{
+							m_sDefaultObjAction = m_sCarUse;
+						}
+					}
+				}
+				else if (m_pObjectWeLookingAt &&
+						 m_pObjectWeLookingAt->cast_inventory_item() &&
+						 m_pObjectWeLookingAt->cast_inventory_item()->CanTake() &&
+						 pPickup->CanPickItem(Render->ViewBase, cam_FirstEye()->vPosition, m_pObjectWeLookingAt))
+				{
+					m_sDefaultObjAction = m_sInventoryItemUseAction;
+				}
+				else 
+				{
+					m_sDefaultObjAction = nullptr;
+				}
+			}
+		}
+	}
+	else 
+	{
+		m_pPersonWeLookingAt	= nullptr;
+		m_sDefaultObjAction		= nullptr;
+		m_pUsableObject			= nullptr;
+		m_pObjectWeLookingAt	= nullptr;
+		m_pVehicleWeLookingAt	= nullptr;
+		m_pInvBoxWeLookingAt	= nullptr;
+	}
+	
+	Check_for_AutoPickUp();
+
 	cam_Update(Device.fTimeDelta, current_fov);
 
 	if (Level().CurrentEntity() == this)
@@ -2678,144 +2800,11 @@ void CActor::shedule_Update	(u32 DT)
 		GGamepadService->UpdateLEDByHP(GetfHealth());
 	}
 
-	//что актер видит перед собой
-	collide::rq_result& RQ				= HUD().GetCurrentRayQuery();
-	
-	Fvector ActorPos, PickPos = { 0.0f, 0.0f, 0.0f };
-	//Center(ActorPos);
-	ActorPos = Position();
-	ActorPos.y += ACTOR_HEIGHT * 0.5f;
-
-	PickPos.mad(Device.vCameraPosition, Device.vCameraDirection, RQ.range);
-	if (RQ.O)
-	{
-		//PickPos = RQ.O->Position();
-		RQ.O->Center(PickPos);
-	}
-	const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
-
-	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && ActorPos.distance_to_sqr(PickPos) < 6.0f && 
-		!(HudAnimator() && HudAnimator()->PdaAnimator() && HudAnimator()->PdaAnimator()->IsActive()))
-	{
-		m_pObjectWeLookingAt = RQ.O->cast_game_object();
-
-		CGameObject* game_object = RQ.O->cast_game_object();
-		m_pUsableObject = game_object ? game_object->cast_usable_script_object() : nullptr;
-		m_pInvBoxWeLookingAt = game_object ? game_object->cast_inventory_box() : nullptr;
-		m_pPersonWeLookingAt = game_object ? game_object->cast_inventory_owner() : nullptr;
-		m_pVehicleWeLookingAt = game_object ? game_object->cast_holder_custom() : nullptr;
-		CEntityAlive* pEntityAlive = game_object ? game_object->cast_entity_alive() : nullptr;
-
-		CActor* IsPlayerPtr = pEntityAlive ? pEntityAlive->cast_actor() : nullptr;
-		
-		if (m_pVehicleWeLookingAt != nullptr)
-		{
-			m_pPersonWeLookingAt = nullptr;
-		}
-
-		if (IsGameTypeSingleCompatible())
-		{
-			if (IsPlayerPtr != nullptr)
-			{
-				if (!IsPlayerPtr->IsWaunded)
-				{
-					m_pPersonWeLookingAt = nullptr;
-				}
-			}
-			else if (m_pUsableObject && m_pUsableObject->tip_text())
-			{
-				m_sDefaultObjAction = g_pStringTable->translate( m_pUsableObject->tip_text() );
-			}
-			else
-			{
-				if (m_pPersonWeLookingAt && pEntityAlive != nullptr && pEntityAlive->g_Alive() && m_pPersonWeLookingAt->IsTalkEnabled() && !pEntityAlive->cast_actor())
-				{
-					m_sDefaultObjAction = m_sCharacterUseAction;
-				}
-				else if ( pEntityAlive && !pEntityAlive->g_Alive() )
-				{
-					if ( m_pPersonWeLookingAt && m_pPersonWeLookingAt->deadbody_closed_status() )
-					{
-						m_sDefaultObjAction = m_sDeadCharacterDontUseAction;
-					}
-					else
-					{
-						if (CBaseMonster* pMonster = m_pPersonWeLookingAt != nullptr ? m_pPersonWeLookingAt->cast_base_monster() : nullptr)
-						{
-							if (isMonstersInventory)
-							{
-								bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
-								if (b_allow_drag)
-								{
-									m_sDefaultObjAction = pInput->GetControllerMode() ? m_sDeadCharacterUseOrDragActionGamepad : m_sDeadCharacterUseOrDragAction;
-								}
-								else
-								{
-									m_sDefaultObjAction = m_sDeadCharacterUseAction;
-								}
-							}
-							else
-							{
-								m_pPersonWeLookingAt = nullptr;
-							}
-						}
-						else
-						{
-							bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
-							if (b_allow_drag)
-							{
-								m_sDefaultObjAction = pInput->GetControllerMode() ? m_sDeadCharacterUseOrDragActionGamepad : m_sDeadCharacterUseOrDragAction;
-							}
-							else if (pEntityAlive->cast_inventory_owner())
-							{
-								m_sDefaultObjAction = m_sDeadCharacterUseAction;
-							}
-						}
-					}
-				}
-				else if (m_pVehicleWeLookingAt)
-				{
-					m_sDefaultObjAction = m_pVehicleWeLookingAt->m_sUseAction == nullptr ? m_sCarCharacterUseAction : m_pVehicleWeLookingAt->m_sUseAction;
-
-					if (CCar* pCar = m_pVehicleWeLookingAt->cast_car())
-					{
-						if (pCar->TryTrunk())
-						{
-							m_sDefaultObjAction = m_sCarTrunk;
-						}
-						else if (pCar->TryUsableBones())
-						{
-							m_sDefaultObjAction = m_sCarUse;
-						}
-					}
-				}
-				else if (m_pObjectWeLookingAt && m_pObjectWeLookingAt->cast_inventory_item() && m_pObjectWeLookingAt->cast_inventory_item()->CanTake())
-				{
-					m_sDefaultObjAction = m_sInventoryItemUseAction;
-				}
-				else 
-				{
-					m_sDefaultObjAction = nullptr;
-				}
-			}
-		}
-	}
-	else 
-	{
-		m_pPersonWeLookingAt	= nullptr;
-		m_sDefaultObjAction		= nullptr;
-		m_pUsableObject			= nullptr;
-		m_pObjectWeLookingAt	= nullptr;
-		m_pVehicleWeLookingAt	= nullptr;
-		m_pInvBoxWeLookingAt	= nullptr;
-	}
-
 //	UpdateSleep									();
 
 	//для свойст артефактов, находящихся на поясе
 	UpdateArtefactsOnBeltAndOutfit				();
 	m_pPhysics_support->in_shedule_Update		(DT);
-	Check_for_AutoPickUp						();
 }
 
 #include "debug_renderer.h"

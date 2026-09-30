@@ -16,7 +16,6 @@ struct SPickParam
 
 class CHUDTarget 
 {
-private:
 	ui_shader				hShader;
 	float					accumulatedTime;
 	SPickParam				PP;
@@ -31,10 +30,15 @@ private:
 	CGameFont*				targetFont;
 	bool					bInitialized;
 
-private:
-	collide::rq_results		RQR;
+	collide::rq_results	RQR;
 
 public:
+	static constexpr float NEAR_LIM = .5f;
+	static constexpr float C_SIZE = .025f;
+	static constexpr float PICKUP_DISTANCE = 2.f;
+	static constexpr float SHOW_INFO_SPEED = 1.5f;
+	static constexpr float HIDE_INFO_SPEED = 10.f;
+
 							CHUDTarget	();
 							~CHUDTarget	();
 	void					CursorOnFrame ();
