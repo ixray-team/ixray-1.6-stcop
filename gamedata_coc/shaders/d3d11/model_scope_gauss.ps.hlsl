@@ -1,8 +1,5 @@
 #include "common.hlsli"
 
-uniform float4 m_hud_params;
-uniform float4 m_affects;
-
 struct v2p
 {
     float2 tc0: TEXCOORD0;

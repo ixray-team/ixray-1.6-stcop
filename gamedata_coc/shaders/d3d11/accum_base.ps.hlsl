@@ -4,8 +4,6 @@
 #include "metalic_roughness_light.hlsli"
 #include "ScreenSpaceContactShadows.hlsl"
 
-uniform float4 m_lmap[2];
-uniform int Ldynamic_hud;
 
 [earlydepthstencil] //LVutner: Force early-z
 float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target

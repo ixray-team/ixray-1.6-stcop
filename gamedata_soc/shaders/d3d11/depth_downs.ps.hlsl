@@ -7,7 +7,6 @@ struct _input
     float4 pos2d : SV_POSITION;
 };
 
-uniform float4 scaled_screen_res;
 
 float4 main(_input I) : SV_Target0
 {
