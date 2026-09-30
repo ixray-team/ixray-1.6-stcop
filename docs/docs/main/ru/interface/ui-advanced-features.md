@@ -23,6 +23,6 @@
 
 ## Быстрые переключатели
 
-1. `UseCompassBar` в `configs/engine_external.ltx` переключает миникарту и горизонтальный компас.
+1. `UseCompassBar` в `configs/engine_external.ltx` (**deprecated** boot-hint). Рекомендуется `SetNavigationMode` через Lua или IXR Options. Подробности: [компас / миникарта / motion icon](hud-compass-minimap-motion-icon.md).
 2. `hud_minimap` включает или выключает блок карты или компаса.
 3. `hud_hide_quick_slots` переключает автоскрытие панели быстрых слотов.

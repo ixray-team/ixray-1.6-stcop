@@ -23,6 +23,6 @@ This page serves as an overview of new UI features. Each page below is provided 
 
 ## Quick toggles
 
-1. `UseCompassBar` in `configs/engine_external.ltx` switches between minimap and horizontal compass.
+1. `UseCompassBar` in `configs/engine_external.ltx` (**deprecated** boot hint). Prefer `SetNavigationMode` via Lua or IXR Options. Details: [compass / minimap / motion icon](hud-compass-minimap-motion-icon.md).
 2. `hud_minimap` toggles the map or compass block.
 3. `hud_hide_quick_slots` toggles auto-hide for the quick slots panel.
