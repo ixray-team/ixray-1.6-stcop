@@ -202,12 +202,27 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 	}
 }
 
-ICF void RenderNode(mapSorted_Node& N)
+ICF void RenderNode(mapSorted_Node& N, bool emissive = false)
 {
 	dxRender_Visual* V = N.val.pVisual;
 
 	VERIFY(V && V->shader._get());
 	RCache.set_Element(N.val.se);
+
+#ifdef USE_DX11
+	if (emissive)
+	{
+		GRHI->StateManager->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		GRHI->StateManager->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+		GRHI->StateManager->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+		RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
+	}
+	else if (RImplementation.val_bUI && N.val.se->flags.bEmissive)
+	{
+		RCache.set_ColorWriteEnable();
+		GRHI->StateManager->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	}
+#endif
 
 	if (V->dcast_ParticleCustom())
 	{
@@ -228,14 +243,14 @@ ICF void sorted_L1(mapSorted_Node* N)
 	RenderNode(*N);
 }
 
-ICF void RenderMap(mapSorted_T& Map, const bool clear = true)
+ICF void RenderMap(mapSorted_T& Map, bool emissive = false)
 {
 	for (auto& Node : Map)
 	{
-		RenderNode(Node);
+		RenderNode(Node, emissive);
 	}
 
-	if (clear) Map.clear();
+	Map.clear();
 }
 
 void R_dsgraph_structure::r_dsgraph_render_ui()
@@ -301,7 +316,10 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 
 	CHudInitializer initalizer(true, true);
 #ifdef USE_DX11
-	RenderMap(mapHUDEmissive);
+	auto velocity_target = RCache.get_RT(1);
+	RCache.set_RT(nullptr, 1);
+	RenderMap(mapHUDEmissive, true);
+	RCache.set_RT(velocity_target, 1);
 
 	if (g_hud && g_hud->RenderActiveItemUIQuery())
 	{
