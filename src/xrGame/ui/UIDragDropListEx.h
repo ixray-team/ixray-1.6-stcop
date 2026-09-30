@@ -4,6 +4,9 @@
 #include "../../xrUI/Widgets/UIWndCallback.h"
 #include "../../xrUI/ui_defs.h"
 
+bool IsInventoryGridDisabled();
+void SetInventoryGridDisabledScript(bool disabled);
+
 class CUICellContainer;
 class CUIScrollBar;
 class CUIStatic;

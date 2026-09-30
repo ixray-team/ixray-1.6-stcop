@@ -50,6 +50,7 @@
 #include "ActorHelmet.h"
 #include "DynamicWallmarkZone.h"
 #include "InventoryVolumeSystem.h"
+#include "ui/UIDragDropListEx.h"
 #include "PickupManager.h"
 #include "UIActorMenu.h"
 #include "../xrServerEntities/restriction_space.h"
@@ -785,6 +786,16 @@ bool is_inventory_volume_enabled()
 void set_inventory_volume_enabled(bool enabled)
 {
 	CInventoryVolumeSystem::Get().SetScriptEnabled(enabled);
+}
+
+bool is_inventory_grid_disabled()
+{
+	return IsInventoryGridDisabled();
+}
+
+void set_inventory_grid_disabled(bool disabled)
+{
+	SetInventoryGridDisabledScript(disabled);
 }
 #include "actor_statistic_mgr.h"
 void add_actor_points(const char* sect, const char* detail_key, int cnt, int pts)
@@ -2009,6 +2020,8 @@ void CLevel::script_register(lua_State *L)
 		def("get_rain_volume",					&get_rain_volume),
 		def("is_inventory_volume_enabled",		&is_inventory_volume_enabled),
 		def("set_inventory_volume_enabled",		&set_inventory_volume_enabled),
+		def("is_inventory_grid_disabled",		&is_inventory_grid_disabled),
+		def("set_inventory_grid_disabled",		&set_inventory_grid_disabled),
 		def("add_cam_effector",					&add_cam_effector),
 		def("add_cam_effector2",				&add_cam_effector2),
 		def("add_cam_effector2",				&add_cam_effector_without_fov),
