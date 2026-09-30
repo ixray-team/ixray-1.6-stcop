@@ -293,28 +293,6 @@ void RenderUI()
 				static float min_volume = -80.0f;
 				static float max_volume = 0.0f;
 
-#ifdef DEBUG_DRAW
-				for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
-				{
-					ImGui::Text("Volume %i: %.2fdB", i, stats->channel_volumes[i]);
-				}
-
-				ImGui::SliderFloat("Min Volume", &min_volume, -180.0f, -18.0f, "%.2fdB");
-				ImGui::SliderFloat("Max Volume", &max_volume, -18.0f, 18.0f, "%.2fdB");
-
-				ImGui::PushStyleColor(ImGuiCol_FrameBg, 0xBCBF8A6E);
-				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, 0xFF0F0F0F);
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-
-				float AvailWidth = ImGui::GetContentRegionAvail().x;
-				ImGui::PlotHistogram("##Spectral", stats->spectral_data, SND_BLOCKSIZE / 2, 0, nullptr, min_volume, max_volume, ImVec2(AvailWidth, 200));
-				ImGui::PopStyleColor(2);
-				ImGui::PopStyleVar();
-				ImGui::SameLine();
-
-				ImGui::Separator();
-#endif
-
 				ImGui::Text("Slots: %d", slots.size() - free_slots);
 				ImGui::Text("    free:          %d", free_slots);
 				ImGui::Text("    possibly free: %d", stats->possible_free_count);

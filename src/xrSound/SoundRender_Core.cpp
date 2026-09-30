@@ -22,7 +22,6 @@ u32		psSoundModel = 0;
 float	psSoundVEffects = 1.0f;
 float	psSoundVFactor = 1.0f;
 float	psSoundVShooting = 1.0f;
-float	psSoundShootingReverb = 0.6f;
 float	psSoundCompression = 0.5f;
 
 float	psSoundVMusic = 1.0f;
@@ -55,7 +54,7 @@ void CSoundRender_Core::update(const Fmatrix& m_V, const Fvector& P, const Fvect
 
 	// Events
 	listenerPos = P;
-	XRay::Sound::Mixer::Update((void*)Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundVEffects * psSoundVShooting, psSoundCompression, m_V, P, D, N);
+	XRay::Sound::Mixer::Update((void*)Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundVEffects * psSoundVShooting, psSoundCompression, P, D, N);
 #ifdef XR_MP_BUILD
 	pSoundVoiceChat->Update(P, D, N);
 #endif
@@ -296,10 +295,18 @@ void CSoundRender_Core::set_geometry_occ(CDB::MODEL* M)
 
 void CSoundRender_Core::set_geometry_som(IReader* I)
 {
+	CDB::MODEL* old_model = nullptr;
+	{
+		xrSRWLockGuard render_guard(XRay::Sound::Mixer::GetRenderMutex());
+		xrSRWLockGuard manage_guard(XRay::Sound::Mixer::GetManageMutex());
+		old_model = geom_SOM;
+		geom_SOM = nullptr;
+	}
+
 #ifdef _EDITOR
-	ETOOLS::destroy_model(geom_SOM);
+	ETOOLS::destroy_model(old_model);
 #else
-	xr_delete(geom_SOM);
+	xr_delete(old_model);
 #endif
 	if (0 == I)		return;
 
@@ -328,9 +335,14 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 			CL.add_face_packed_D(P.v3, P.v2, P.v1, *(u32*)&P.occ, 0.01f);
 	}
 
-	geom_SOM = new CDB::MODEL();
-	geom_SOM->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
-	geom_SOM->wait_loading();
+	CDB::MODEL* model = new CDB::MODEL();
+	model->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
+	model->wait_loading();
+	{
+		xrSRWLockGuard render_guard(XRay::Sound::Mixer::GetRenderMutex());
+		xrSRWLockGuard manage_guard(XRay::Sound::Mixer::GetManageMutex());
+		geom_SOM = model;
+	}
 
 	geom->close();
 }
@@ -375,7 +387,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 
 	for (u32 idx_offset = 0; idx_offset < H.facecount; idx_offset += 12)
 	{
-		sound_zone_params params = {};
+		sound_zone_desc params = {};
 		params.min = Fvector(1000000, 1000000, 1000000);
 		params.max = Fvector(-1000000, -1000000, -1000000);
 
@@ -428,7 +440,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 		params.size.sub(params.min);
 		params.size.div(2);
 
-		Mixer::AddZone(params);
+		Mixer::AddZone(&params);
 	}
 
 	geom_ENV = new CDB::MODEL();
@@ -562,7 +574,7 @@ void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, fl
 	}
 
 	u32 mixer_flags = (u32)Mixer::Flags::NoFeedback | GetMixedFlags(flags, S);
-	Mixer::PlayNoFeedback(mixer_flags, &S, O, delay, freq, vol, range_ptr, pos);
+	Mixer::PlayNoFeedback(mixer_flags, &S, delay, freq, vol, range_ptr, pos);
 }
 
 void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags, float delay)
@@ -683,7 +695,7 @@ void CSoundRender_Core::set_user_env(CSound_environment* E)
 	if (E)
 	{
 		s_user_environment = *((CSoundRender_Environment*)E);
-		sound_zone_params params = {};
+		sound_zone_desc params = {};
 		params.min = Fvector(1000000, 1000000, 1000000);
 		params.max = Fvector(-1000000, -1000000, -1000000);
 
@@ -709,7 +721,7 @@ void CSoundRender_Core::set_user_env(CSound_environment* E)
 		params.size.sub(params.min);
 		params.size.div(2);
 
-		Mixer::AddEditorZone(params);
+		Mixer::AddEditorZone(&params);
 		bUserEnvironment = true;
 	} else {
 		bUserEnvironment = false;

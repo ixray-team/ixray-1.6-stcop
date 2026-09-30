@@ -1,5 +1,5 @@
 /**************************************************************************************
-* Copyright (C) 2025 Anton Kovalev (vertver)
+* Copyright (C) 2026 Anton Kovalev (vertver)
 * New Sound Engine
 ***************************************************************************************
 * Source code is licensed under the following terms:
@@ -29,13 +29,11 @@
 **************************************************************************************/
 #include "SoundBackend.h"
 
-#define MEM_ALIGN(size, align) ((size + align -1) & (~(uintptr_t)(align - 1)))
+#include <atomic>
 
-struct sound_backend_state
-{
-    u32 is_running;
-    u32 device_frame_count;
-    u32 buffer_frame_count;
+struct sound_backend_state {
+    std::atomic<bool> is_running;
+    std::atomic<bool> is_stopping;
     u64 read_position;
     u64 write_position;
     SDL_AudioStream* stream;
@@ -47,133 +45,134 @@ struct sound_backend_state
     audio_precache_callback precache_callback;
 };
 
-static sound_backend_state backend;
+static sound_backend_state backend_state;
 
 static void
 Snd_Initialize()
 {
-    SDL_AudioSpec spec = { };
+    SDL_AudioSpec spec = {};
     spec.channels = SND_CHANNEL_COUNT;
     spec.format = SDL_AUDIO_F32;
     spec.freq = SND_SAMPLERATE;
 
-    backend.device = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
-    backend.stream = SDL_CreateAudioStream(&spec, &spec);
+    backend_state.device = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
+    backend_state.stream = SDL_CreateAudioStream(&spec, &spec);
 
-    R_ASSERT2(backend.stream, make_string<const char*>("Couldn't create audio stream: %s", SDL_GetError()));
-    SDL_BindAudioStream(backend.device, backend.stream);
+    R_ASSERT2(backend_state.stream, make_string<const char*>("Couldn't create audio stream: %s", SDL_GetError()));
+    SDL_BindAudioStream(backend_state.device, backend_state.stream);
 
-    backend.is_running = true;
-    backend.buffer_frame_count = std::max((u32)SND_BLOCKSIZE, (u32)MEM_ALIGN(backend.device_frame_count, SND_BLOCKSIZE));
-    backend.buffer = xr_alloc<float>(backend.buffer_frame_count * SND_CHANNEL_COUNT);
-    backend.output_buffer = xr_alloc<float>(backend.buffer_frame_count * SND_CHANNEL_COUNT);
-    memset(backend.buffer, 0, backend.buffer_frame_count * SND_CHANNEL_COUNT * sizeof(float));
-    memset(backend.output_buffer, 0, backend.buffer_frame_count * SND_CHANNEL_COUNT * sizeof(float));
-    R_ASSERT2(SDL_ResumeAudioDevice(backend.device),
-        make_string<const char*>("Couldn't resume audio stream: %s", SDL_GetError()));
+    backend_state.is_running = true;
+    backend_state.buffer = xr_alloc<float>(SND_BLOCKSIZE * SND_CHANNEL_COUNT);
+    backend_state.output_buffer = xr_alloc<float>(SND_BLOCKSIZE * SND_CHANNEL_COUNT);
+    memset(backend_state.buffer, 0, SND_BLOCKSIZE * SND_CHANNEL_COUNT * sizeof(float));
+    memset(backend_state.output_buffer, 0, SND_BLOCKSIZE * SND_CHANNEL_COUNT * sizeof(float));
+    R_ASSERT2(SDL_ResumeAudioDevice(backend_state.device), make_string<const char*>("Couldn't resume audio stream: %s", SDL_GetError()));
 }
 
 static void
 Snd_Shutdown()
 {
-    xr_free(backend.buffer);
-    xr_free(backend.output_buffer);
-    SDL_DestroyAudioStream(backend.stream);
-    SDL_CloseAudioDevice(backend.device);
+    xr_free(backend_state.buffer);
+    xr_free(backend_state.output_buffer);
+    SDL_DestroyAudioStream(backend_state.stream);
+    SDL_CloseAudioDevice(backend_state.device);
 }
 
 static void
-Snd_ThreadProc(void* data)
+Snd_ThreadProc(void*)
 {
     PROF_THREAD("Sound Thread");
 
     Snd_Initialize();
-    while (backend.is_running) {
+    while (!backend_state.is_stopping) {
         PROF_EVENT("Sound: WASAPI update");
-        u32 required_frames = 0;
-        u8* buffer = (u8*)backend.output_buffer;
+        u8* output = (u8*)backend_state.output_buffer;
 
-        backend.precache_callback();
+        backend_state.precache_callback();
 
-        required_frames = SDL_GetAudioStreamQueued(backend.stream) / (sizeof(float)*SND_CHANNEL_COUNT);
-        while (required_frames >= SND_BLOCKSIZE) {
+        u32 queued_frames = SDL_GetAudioStreamQueued(backend_state.stream) / (sizeof(float) * SND_CHANNEL_COUNT);
+        while (queued_frames >= SND_BLOCKSIZE) {
             Sleep(1);
-            required_frames = SDL_GetAudioStreamQueued(backend.stream) / (sizeof(float) * SND_CHANNEL_COUNT);
+            queued_frames = SDL_GetAudioStreamQueued(backend_state.stream) / (sizeof(float) * SND_CHANNEL_COUNT);
         }
 
-        required_frames = SND_BLOCKSIZE;
+        u32 required_frames = SND_BLOCKSIZE;
+        u64 last_frames = backend_state.write_position - backend_state.read_position;
+        while (last_frames < required_frames) {
+            float* buffer_data = &backend_state.buffer[(backend_state.read_position % SND_BLOCKSIZE) * SND_CHANNEL_COUNT];
+            memcpy(output, buffer_data, last_frames * SND_CHANNEL_COUNT * sizeof(float));
 
-        u64 last_frames = backend.write_position - backend.read_position;
-        while (last_frames < required_frames && required_frames > 0) {
-            float* buffer_data = &backend.buffer[(backend.read_position % SND_BLOCKSIZE) * SND_CHANNEL_COUNT];
-            memcpy(buffer, buffer_data, last_frames * SND_CHANNEL_COUNT * sizeof(float));
+            backend_state.read_position += last_frames;
+            required_frames -= (u32)last_frames;
+            output += last_frames * SND_CHANNEL_COUNT * sizeof(float);
 
-            backend.read_position += last_frames;
-            required_frames -= last_frames;
-            buffer += last_frames * SND_CHANNEL_COUNT * sizeof(float);
+            buffer_data = &backend_state.buffer[(backend_state.read_position % SND_BLOCKSIZE) * SND_CHANNEL_COUNT];
+            backend_state.render_callback(buffer_data);
+            backend_state.write_position += SND_BLOCKSIZE;
 
-            buffer_data = &backend.buffer[(backend.read_position % SND_BLOCKSIZE) * SND_CHANNEL_COUNT];
-            backend.render_callback(buffer_data);
-            backend.write_position += SND_BLOCKSIZE;
-
-            last_frames = backend.write_position - backend.read_position;
+            last_frames = backend_state.write_position - backend_state.read_position;
         }
 
         if (required_frames > 0) {
-            float* buffer_data = &backend.buffer[(backend.read_position % SND_BLOCKSIZE) * SND_CHANNEL_COUNT];
-            memcpy(buffer, buffer_data, required_frames * SND_CHANNEL_COUNT * sizeof(float));
-            R_ASSERT(SDL_PutAudioStreamData(backend.stream, buffer, SND_BLOCKSIZE * (sizeof(float) * SND_CHANNEL_COUNT)));
-            backend.read_position += required_frames;
+            float* buffer_data = &backend_state.buffer[(backend_state.read_position % SND_BLOCKSIZE) * SND_CHANNEL_COUNT];
+            memcpy(output, buffer_data, required_frames * SND_CHANNEL_COUNT * sizeof(float));
+            R_ASSERT(SDL_PutAudioStreamData(backend_state.stream, output, SND_BLOCKSIZE * (sizeof(float) * SND_CHANNEL_COUNT)));
+            backend_state.read_position += required_frames;
         }
     }
 
     Snd_Shutdown();
 }
 
-void XRay::Sound::Backend::Initialize(audio_render_callback render_callback, audio_precache_callback precache_callback)
+void
+XRay::Sound::Backend::Initialize(audio_render_callback render_callback, audio_precache_callback precache_callback)
 {
-    if (backend.is_running) {
+    if (backend_state.is_running) {
         return;
     }
 
-    backend.render_callback = render_callback;
-    backend.precache_callback = precache_callback;
-    backend.sound_thread = thread_spawn(Snd_ThreadProc, "Sound Backend Thread", 0, NULL);
+    backend_state.is_stopping = false;
+    backend_state.render_callback = render_callback;
+    backend_state.precache_callback = precache_callback;
+    backend_state.sound_thread = thread_spawn(Snd_ThreadProc, "Sound Backend Thread", 0, NULL);
 }
 
-void XRay::Sound::Backend::ChangeDevice(u32 DeviceID)
+void
+XRay::Sound::Backend::ChangeDevice(u32 device_id)
 {
-    if (!backend.is_running) {
-        return;
-    }
-    
-    u32 OldDeviceID = SDL_GetAudioStreamDevice(backend.stream);
-    if (OldDeviceID == DeviceID)
-    {
+    if (!backend_state.is_running) {
         return;
     }
 
-    SDL_PauseAudioDevice(OldDeviceID);
+    SDL_AudioDeviceID old_device = SDL_GetAudioStreamDevice(backend_state.stream);
+    if (old_device == device_id) {
+        return;
+    }
 
-    SDL_AudioSpec spec = { };
+    SDL_PauseAudioDevice(old_device);
+
+    SDL_AudioSpec spec = {};
     spec.channels = SND_CHANNEL_COUNT;
     spec.format = SDL_AUDIO_F32;
     spec.freq = SND_SAMPLERATE;
-    SDL_AudioDeviceID NewDeviceLogicalID = SDL_OpenAudioDevice(DeviceID, &spec);
+    SDL_AudioDeviceID new_device = SDL_OpenAudioDevice(device_id, &spec);
 
-    SDL_UnbindAudioStream(backend.stream);
-    if (!SDL_BindAudioStream(NewDeviceLogicalID, backend.stream))
-    {
+    SDL_UnbindAudioStream(backend_state.stream);
+    if (!SDL_BindAudioStream(new_device, backend_state.stream)) {
         Msg("!Error change device: %s", SDL_GetError());
-        SDL_BindAudioStream(OldDeviceID, backend.stream);
+        SDL_BindAudioStream(old_device, backend_state.stream);
+        SDL_ResumeAudioDevice(old_device);
+        SDL_CloseAudioDevice(new_device);
         return;
     }
 
-    SDL_CloseAudioDevice(OldDeviceID);
+    SDL_CloseAudioDevice(old_device);
 }
 
-void XRay::Sound::Backend::Shutdown()
+void
+XRay::Sound::Backend::Shutdown()
 {
-    backend.is_running = false;
-    Platform::WaitForSingleObject(backend.sound_thread);
+    backend_state.is_stopping = true;
+    Platform::WaitForSingleObject(backend_state.sound_thread);
+    backend_state.is_running = false;
 }

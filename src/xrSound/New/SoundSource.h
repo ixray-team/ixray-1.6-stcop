@@ -30,8 +30,43 @@
 #pragma once
 #include "SoundMeta.h"
 
-namespace XRay::Sound::Backend {
-    XRSOUND_API void Initialize(audio_render_callback render_callback, audio_precache_callback precache_callback);
-    XRSOUND_API void ChangeDevice(u32 device_id);
-    XRSOUND_API void Shutdown();
+#include <atomic>
+
+#define SND_CACHE_ENTRY_COUNT (32)
+#define SND_STAT_ADD(field, delta) std::atomic_ref<decltype(field)>(field).fetch_add(delta, std::memory_order_relaxed)
+#define SND_STAT_SET(field, value) std::atomic_ref<decltype(field)>(field).store(value, std::memory_order_relaxed)
+
+typedef struct _sound_source_state {
+    sound_source_desc desc = {};
+    OggVorbis_File file = {};
+    IReader* reader = NULL;
+    u8* data = NULL;
+    u32 cache_lines[SND_CACHE_ENTRY_COUNT] = {};
+    bool is_ready = false;
+    bool is_loading = false;
+} sound_source_state;
+
+extern xrSRWLock snd_source_lock;
+extern sound_stats snd_stats;
+
+IC u64
+Snd_GetTimestamp()
+{
+    return std::chrono::high_resolution_clock::now().time_since_epoch().count();
 }
+
+IC u32
+Snd_Milliseconds()
+{
+    return (u32)(Snd_GetTimestamp() / 1000000);
+}
+
+void Snd_InitSources();
+void Snd_ShutdownSources();
+sound_source_state* Snd_LookupSource(const xr_string* name);
+sound_source_state* Snd_FindSource(const xr_string* name);
+sound_source_state* Snd_AcquireSource(const xr_string* name);
+void Snd_ReleaseSource(const xr_string* name);
+void Snd_QueueDecode(const xr_string* name, u32 position);
+bool Snd_HasCacheLine(sound_source_state* source, u32 position);
+u32 Snd_CopyCached(sound_source_state* source, u32 position, float** out_data, u32 frames);

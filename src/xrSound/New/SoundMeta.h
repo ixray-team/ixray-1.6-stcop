@@ -1,5 +1,5 @@
 /**************************************************************************************
-* Copyright (C) 2025 Anton Kovalev (vertver)
+* Copyright (C) 2026 Anton Kovalev (vertver)
 * New Sound Engine
 ***************************************************************************************
 * Source code is licensed under the following terms:
@@ -33,129 +33,106 @@
 #define SND_SAMPLERATE 44100
 #define SND_BLOCKSIZE (1 << 10)
 #define SND_HRTF_SLOT_COUNT (512)
-#define SND_REBERB_BUFFER_SIZE (SND_SAMPLERATE*8)
-#define SND_REBERB_LINE_COUNT (8*2+2)
 
 #define SND_BUS_MASTER 0
 #define SND_BUS_REVERB 1
 #define SND_BUS_EFFECTS 2
 #define SND_BUS_MUSIC 3
 #define SND_BUS_LAST SND_BUS_MUSIC
-#define SND_BUS_COUNT (SND_BUS_LAST+1)
+#define SND_BUS_COUNT (SND_BUS_LAST + 1)
 
-typedef void(*audio_render_callback)(float*);
-typedef void(*audio_precache_callback)();
+typedef void (*audio_render_callback)(float*);
+typedef void (*audio_precache_callback)();
 
 struct ref_sound;
 class CObject;
 
-namespace XRay::Sound::Mixer
-{
-	enum class Flags : u8
-	{
-		None = 0,
-		Looped = (1 << 0),
-		Spatial = (1 << 1),
-		Intro = (1 << 2),
-		NoPosUpdate = (1 << 3),
-		NoFeedback = (1 << 4),
-		NoOCC = (1 << 5),
-		Music = (1 << 6),
-		Shooting = (1 << 7)
-	};
+namespace XRay::Sound::Mixer {
+    enum class Flags : u8 {
+        None = 0,
+        Looped = (1 << 0),
+        Spatial = (1 << 1),
+        Intro = (1 << 2),
+        NoPosUpdate = (1 << 3),
+        NoFeedback = (1 << 4),
+        NoOCC = (1 << 5),
+        Music = (1 << 6),
+        Shooting = (1 << 7)
+    };
 
-	enum class State : u8
-	{
-		Stopped,
-		Playing,
-		Delay,
-		Paused
-	};
+    enum class State : u8 {
+        Stopped,
+        Playing,
+        Delay,
+        Paused
+    };
 
-	enum class ParameterId : u16
-	{
-		VolumePerChannel,
-		DistanceRange,
-		Pitch,
-		Position,
-		Panning,
-		Count
-	};
+    enum class ParameterId : u16 {
+        VolumePerChannel,
+        DistanceRange,
+        Pitch,
+        Position,
+        Panning,
+        Count
+    };
 }
 
-struct sound_stats
-{
-	int possible_free_count;
-	u32 update_time_micros;
-	u32 frame_time_micros;
-	u32 precache_time_micros;
-	u32 render_time_micros;
-	u32 cache_lines_total;
-	u32 cache_lines_free;
-	u32 cache_miss_count;
-	u32 cache_hit_count;
-	u32 render_cache_miss; 
+typedef struct _sound_stats {
+    int possible_free_count;
+    u32 update_time_micros;
+    u32 frame_time_micros;
+    u32 precache_time_micros;
+    u32 render_time_micros;
+    u32 cache_lines_total;
+    u32 cache_lines_free;
+    u32 cache_miss_count;
+    u32 cache_hit_count;
+    u32 render_cache_miss;
+} sound_stats;
 
-#ifdef DEBUG_DRAW
-	float channel_volumes[SND_CHANNEL_COUNT];
-	float spectral_data[SND_BLOCKSIZE];
-#endif
-};
+typedef struct _sound_source_desc {
+    u8 channels_count;
+    u8 reserved0;
+    u16 game_type;
+    u32 data_size;
+    xr_atomic_u32 ref_count;
+    u32 frames_total;
 
-struct sound_source_public
-{
-	u8 channels_count;
-	u8 reserved0;
-	u16 game_type;
-	u32 data_size;
-	xr_atomic_u32 ref_count;
-	u32 frames_total;
+    float volume;
+    float min_distance;
+    float max_distance;
+    float max_ai_distance;
 
-	float volume;
-	float min_distance;
-	float max_distance;
-	float max_ai_distance;
+    shared_str name;
+    shared_str path;
+} sound_source_desc;
 
-	shared_str name;
-	shared_str path;
-};
+typedef struct _sound_reverb_desc {
+    float room;
+    float room_hf;
+    float room_rolloff_factor;
+    float decay_time;
+    float decay_hf_ratio;
+    float reflections;
+    float reflections_delay;
+    float reverb;
+    float reverb_delay;
+    float environment_size;
+    float environment_diffusion;
+    float air_absorption_hf;
+} sound_reverb_desc;
 
-struct sound_reverb_settings
-{
-	float room;
-	float room_hf;
-	float room_rolloff_factor;
-	float decay_time;
-	float decay_hf_ratio;
-	float reflections;
-	float reflections_delay;
-	float reverb;
-	float reverb_delay;
-	float environment_size;
-	float environment_diffusion;
-	float air_absorption_hf;
-};
-
-struct sound_reverb_line_state
-{
-	u32 offset;
-	u32 frames;
-	float* buffer;
-	float iir_state;
-};
-
-struct sound_zone_params
-{
-	float data[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
-	u32 version;
-	u32	environment;
-	u32 use_count;
-	u64 last_use_ms;
-	Fvector min;
-	Fvector max;
-	Fvector center;
-	Fvector size;
-	shared_str name;
-	u32 reverb_id = 0;
-	sound_reverb_settings settings;
-};
+typedef struct _sound_zone_desc {
+    float data[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
+    u32 version;
+    u32 environment;
+    u32 use_count;
+    u64 last_use_ms;
+    Fvector min;
+    Fvector max;
+    Fvector center;
+    Fvector size;
+    shared_str name;
+    u32 reverb_id = 0;
+    sound_reverb_desc settings;
+} sound_zone_desc;
