@@ -16,7 +16,6 @@ Back to the Roots
     #define SMAA_HLSL_4
 #endif
 
-uniform float4 scaled_screen_res;
 #define SMAA_RT_METRICS scaled_screen_res.zwxy
 #define SMAA_PRESET_ULTRA
 

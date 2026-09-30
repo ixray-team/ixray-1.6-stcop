@@ -2,11 +2,9 @@
 
 struct v2p
 {
-    float4 hpos : POSITION; // Clip-space position 	(for rasterization)
+    float4 hpos : SV_POSITION; // Clip-space position 	(for rasterization)
     float4 tc : TEXCOORD0;
 };
-
-uniform float4x4 m_texgen;
 
 // Vertex
 v2p main(float4 P : POSITION)

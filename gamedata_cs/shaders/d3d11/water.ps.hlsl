@@ -17,7 +17,6 @@ struct vf
 	float4 hpos : SV_POSITION;
 };
 
-uniform float3 water_intensity;
 
 Texture2D s_nmap;
 TextureCube s_env0;
