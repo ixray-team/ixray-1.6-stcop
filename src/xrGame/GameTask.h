@@ -68,7 +68,6 @@ public:
     ALife::_TIME_ID m_FinishTime;
     ALife::_TIME_ID m_TimeToComplete;
     ALife::_TIME_ID m_timer_finish;
-    bool m_rewardPending;
 
 private:
     // infos
@@ -163,10 +162,6 @@ public:
     shared_str  m_ID;
     u32 m_priority;
     bool m_read;
-    bool m_remoteAllowed;
-    // Aggregate: true if any objective completed while rewards were deferred (e.g. PDA session).
-    // Distinct from SGameTaskObjective::m_rewardPending (per-objective deferral).
-    bool m_hasPendingRewardDispatch;
 
 private:
     OBJECTIVES_VECTOR m_Objectives;
@@ -210,10 +205,6 @@ public:
 
     auto GetPriority_script() const { return m_priority; }
     void SetPriority_script(int prio) { m_priority = prio; }
-    bool IsRemoteAllowed_script() const { return m_remoteAllowed; }
-    void SetRemoteAllowed_script(bool isAllowed) { m_remoteAllowed = isAllowed; }
-    bool IsRewardPending_script() const { return m_hasPendingRewardDispatch; }
-    void SetRewardPending_script(bool isPending) { m_hasPendingRewardDispatch = isPending; }
 
     void AddObjective_script(SGameTaskObjective* O);
     SGameTaskObjective* GetObjective_script(u16 objective_id);

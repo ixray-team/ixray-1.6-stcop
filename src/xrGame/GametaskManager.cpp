@@ -275,52 +275,6 @@ void CGameTaskManager::SetTaskState(const shared_str& id, ETaskState state, u16 
 	SetTaskState(t, state, objective_id);
 }
 
-void CGameTaskManager::IssuePendingRewards()
-{
-	bool wasRewardIssued = false;
-	for (SGameTaskKey& taskKey : GetGameTasks())
-	{
-		CGameTask* task = taskKey.getGameTask();
-		if (!task || !task->m_hasPendingRewardDispatch)
-		{
-			continue;
-		}
-
-		bool hasPendingObjectives = false;
-		const u16 objectiveCount = task->GetObjectivesCount();
-		for (u16 i = 0; i < objectiveCount; ++i)
-		{
-			SGameTaskObjective& objective = task->Objective(i);
-			if (!objective.m_rewardPending)
-			{
-				continue;
-			}
-
-			objective.SendInfo(objective.m_infos_on_complete);
-			objective.CallAllFuncs(objective.m_lua_functions_on_complete);
-			objective.m_rewardPending = false;
-			wasRewardIssued = true;
-		}
-
-		for (u16 i = 0; i < objectiveCount; ++i)
-		{
-			if (task->Objective(i).m_rewardPending)
-			{
-				hasPendingObjectives = true;
-				break;
-			}
-		}
-
-		task->m_hasPendingRewardDispatch = hasPendingObjectives;
-	}
-
-	if (wasRewardIssued && CurrentGameUI())
-	{
-		CurrentGameUI()->UpdatePda();
-		CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::quests);
-	}
-}
-
 void CGameTaskManager::UpdateTasks						()
 {
 	if(Device.Paused())

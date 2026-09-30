@@ -7,8 +7,6 @@
 #include "UIInventoryUtilities.h"
 #include "../../xrEngine/xr_input.h"
 #include "../Level.h"
-#include "../pda_communication.h"
-#include "UITalkWnd.h"
 #include "UIGameCustom.h"
 #include "UIStalkersRankingWnd.h"
 #include "../../xrUI/Widgets/UIStatic.h"
@@ -238,11 +236,6 @@ CUIPdaWnd::CUIPdaWnd()
 CUIPdaWnd::~CUIPdaWnd()
 {
 	ActionRepeaters()->UnregisterOwner(this);
-	CUIGameCustom* gameUi = CurrentGameUI();
-	if (gameUi && gameUi->TalkMenu && gameUi->TalkMenu->IsEmbeddedInPda())
-	{
-		gameUi->TalkMenu->StopPdaDialog();
-	}
 	delete_data( pUITaskWnd );
 	delete_data( pUIFactionWarWnd );
 	delete_data( UIPdaContactsWnd );
@@ -366,14 +359,6 @@ void CUIPdaWnd::Init()
 	{
 		UIPdaContactsWnd = new CUIPdaContactsWnd();
 		UIPdaContactsWnd->Init();
-		if (PdaCommunication().IsEnabled())
-		{
-			CUIGameCustom* gameUi = CurrentGameUI();
-			if (gameUi && gameUi->TalkMenu)
-			{
-				gameUi->TalkMenu->BeginPdaEmbed(UIPdaContactsWnd);
-			}
-		}
 	}
 	if (tabPresentLambda(PdaSectionId::Ranking) && !pUIRankingWnd)
 	{
@@ -601,16 +586,6 @@ void CUIPdaWnd::Update()
 	inherited::Update();
 	if (m_pActiveDialog)
 		m_pActiveDialog->Update();
-
-	PdaCommunication_Update();
-
-	// Embedded phrase UI lives under contacts; CUITalkWnd is usually not in CDialogHolder's render list while PDA is top UI,
-	// so TalkMenu::Update must run here or m_bNeedToUpdateQuestions never clears and AskQuestion rejects further clicks.
-	CUIGameCustom* gameUi = CurrentGameUI();
-	if (gameUi && gameUi->TalkMenu && gameUi->TalkMenu->IsPdaMode() && gameUi->TalkMenu->IsEmbeddedInPda())
-	{
-		gameUi->TalkMenu->Update();
-	}
 
 	if (m_clock)
 		m_clock->SetText(InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes).c_str());
@@ -1136,16 +1111,6 @@ void RearrangeTabButtons(CUITabControl* pTab)
 
 bool CUIPdaWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if (PdaCommunication_IsSessionActive() && is_binded(kQUIT, dik))
-	{
-		if (WINDOW_KEY_PRESSED == keyboard_action)
-		{
-			HideDialog();
-		}
-
-		return true;
-	}
-
 	if (is_binded(kACTIVE_JOBS, dik))
 	{
 		if (WINDOW_KEY_PRESSED == keyboard_action)
@@ -1299,17 +1264,6 @@ void CUIPdaWnd::HideDialog()
 	}
 
 	m_uiSounds.Play(EPdaUiSound::Close);
-
-	CUIGameCustom* gameUi = CurrentGameUI();
-	if (gameUi && gameUi->TalkMenu &&
-		(PdaCommunication_IsSessionActive() || gameUi->TalkMenu->IsPdaMode() || gameUi->TalkMenu->IsEmbeddedInPda()))
-	{
-		gameUi->TalkMenu->StopPdaDialog();
-	}
-	else if (PdaCommunication_IsSessionActive())
-	{
-		PdaCommunication_Stop();
-	}
 
 	CObject* current_entity = Level().CurrentControlEntity();
 

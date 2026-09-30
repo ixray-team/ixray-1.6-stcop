@@ -1,8 +1,6 @@
 #include "StdAfx.h"
 #include "UITalkWnd.h"
-#include "UIPdaTalkHost.h"
 #include "UITalkDialogWnd.h"
-#include "UIPdaWnd.h"
 
 #include "../Actor.h"
 #include "../trade.h"
@@ -13,9 +11,6 @@
 
 #include "../PhraseDialog.h"
 #include "../PhraseDialogManager.h"
-#include "../pda_communication.h"
-#include "../PdaTalkDialogPolicy.h"
-#include "../GametaskManager.h"
 
 #include "../game_cl_base.h"
 #include "../../xrEngine/string_table.h"
@@ -28,14 +23,6 @@
 #include "GamePersistent.h"
 
 bool EnableTalkDof = true;
-
-namespace
-{
-bool IsTalkDialogAllowedForContext(const DIALOG_SHARED_PTR& dialog, bool isPdaSession)
-{
-	return dialog && PdaTalkDialogPolicy().IsDialogAllowed(dialog->GetDialogID(), isPdaSession);
-}
-} // namespace
 
 CUITalkWnd::CUITalkWnd()
 {
@@ -58,8 +45,6 @@ CUITalkWnd::CUITalkWnd()
 	InitTalkWnd				();
 	m_bNeedToUpdateQuestions = false;
 	b_disable_break			= false;
-	m_isPdaDialog			= false;
-	m_pdaTalkHost			= new CUIPdaTalkHost();
 	
 	ActionRepeaters()->Register(this, kUI_UP);
 	ActionRepeaters()->Register(this, kUI_DOWN);
@@ -69,8 +54,6 @@ CUITalkWnd::CUITalkWnd()
 
 CUITalkWnd::~CUITalkWnd()
 {
-	EndPdaEmbed();
-	xr_delete(m_pdaTalkHost);
 }
 
 void CUITalkWnd::InitTalkWnd()
@@ -84,63 +67,19 @@ void CUITalkWnd::InitTalkWnd()
 	UITalkDialogWnd->InitTalkDialogWnd();
 }
 
-void CUITalkWnd::InitTalkDialog(bool skipLogClear)
+void CUITalkWnd::InitTalkDialog()
 {
 	m_pActor = Actor();
-	const bool isPdaSession = IsPdaMode() || IsEmbeddedInPda();
-
-	if (!IsPdaMode() && m_pActor != nullptr && !m_pActor->IsTalking())
+	if (m_pActor != nullptr && !m_pActor->IsTalking())
 	{
-		return;
-	}
-
-	if (!m_pActor)
-	{
-		if (isPdaSession)
-		{
-			StopPdaDialog();
-		}
 		return;
 	}
 
 	m_pOurInvOwner = m_pActor->cast_inventory_owner();
 	m_pOthersInvOwner = m_pActor->GetTalkPartner();
 
-	if (isPdaSession && !m_pOthersInvOwner)
-	{
-		m_pOthersInvOwner = PdaCommunication().GetSessionNpc();
-		if (m_pOthersInvOwner)
-		{
-			m_pActor->SetTalkPartner(m_pOthersInvOwner);
-			m_pOthersInvOwner->SetTalkPartner(m_pOurInvOwner);
-		}
-	}
-
-	if (!m_pOurInvOwner || !m_pOthersInvOwner)
-	{
-		if (isPdaSession)
-		{
-			StopPdaDialog();
-		}
-		return;
-	}
-
-	if (!isPdaSession)
-	{
-		Level().GameTaskManager()->IssuePendingRewards();
-	}
-
 	m_pOurDialogManager = m_pOurInvOwner->cast_phrase_dialog_manager();
 	m_pOthersDialogManager = m_pOthersInvOwner->cast_phrase_dialog_manager();
-
-	if (!m_pOurDialogManager || !m_pOthersDialogManager)
-	{
-		if (isPdaSession)
-		{
-			StopPdaDialog();
-		}
-		return;
-	}
 
 	//имена собеседников
 	if (UITalkDialogWnd->UIDialogFrameTop)
@@ -165,36 +104,17 @@ void CUITalkWnd::InitTalkDialog(bool skipLogClear)
 		UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
 	}
 
-	// Clear answer/question logs only for classic talk window path.
-	// PDA path performs non-blocking clear before entering here.
-	if (!skipLogClear)
-	{
-		UITalkDialogWnd->ClearAll();
-	}
+	//очистить лог сообщений
+	UITalkDialogWnd->ClearAll();
 	UITalkDialogWnd->ResetQuestionSelection();
 
-	// PDA uses the same phrase-dialog pipeline as face-to-face talk: clear any stale dialog, refresh actor-side
-	// topics, then run InitOthersStartDialog (hello/start). The old ToTopicMode()-only path skipped
-	// InitOthersStartDialog and never drove UITalkDialogWnd from PhraseDialogManager.
-	if (isPdaSession)
-	{
-		ToTopicMode();
-		m_pOurDialogManager->UpdateAvailableDialogs(m_pOthersDialogManager);
-	}
 	InitOthersStartDialog();
 	NeedUpdateQuestions();
 	Update();
 
 	UITalkDialogWnd->mechanic_mode = m_pOthersInvOwner->SpecificCharacter().upgrade_mechanic();
 	UITalkDialogWnd->SetOsoznanieMode(m_pOthersInvOwner->NeedOsoznanieMode());
-	if (isPdaSession)
-	{
-		UITalkDialogWnd->Show(false, false);
-	}
-	else
-	{
-		UITalkDialogWnd->Show();
-	}
+	UITalkDialogWnd->Show();
 	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
 }
 
@@ -203,56 +123,8 @@ void CUITalkWnd::InitOthersStartDialog()
 	m_pOthersDialogManager->UpdateAvailableDialogs(m_pOurDialogManager);
 	if(!m_pOthersDialogManager->AvailableDialogs().empty())
 	{
-		const bool isPdaSession = IsPdaMode();
-		if (isPdaSession)
-		{
-			// Prefer dialogs explicitly marked for PDA, but keep legacy dialogs available.
-			for (const DIALOG_SHARED_PTR& dialog : m_pOthersDialogManager->AvailableDialogs())
-			{
-				if (!IsTalkDialogAllowedForContext(dialog, true))
-				{
-					continue;
-				}
-
-				if (dialog->IsPdaAvailable())
-				{
-					m_pCurrentDialog = dialog;
-					break;
-				}
-			}
-
-			if (!m_pCurrentDialog)
-			{
-				for (const DIALOG_SHARED_PTR& dialog : m_pOthersDialogManager->AvailableDialogs())
-				{
-					if (IsTalkDialogAllowedForContext(dialog, true))
-					{
-						m_pCurrentDialog = dialog;
-						break;
-					}
-				}
-			}
-		}
-		else
-		{
-			for (const DIALOG_SHARED_PTR& dialog : m_pOthersDialogManager->AvailableDialogs())
-			{
-				if (IsTalkDialogAllowedForContext(dialog, false))
-				{
-					m_pCurrentDialog = dialog;
-					break;
-				}
-			}
-		}
-
-		if (!m_pCurrentDialog)
-		{
-			ToTopicMode();
-			return;
-		}
-
+		m_pCurrentDialog = m_pOthersDialogManager->AvailableDialogs().front();
 		m_pOthersDialogManager->InitDialog(m_pOurDialogManager, m_pCurrentDialog);
-		m_pCurrentDialog->SetTalkMode(isPdaSession ? ETalkMode::Pda : ETalkMode::Normal);
 		
 		//сказать фразу
 		AddAnswer(m_pCurrentDialog->GetPhraseText("0"), m_pOthersInvOwner->NameReal());
@@ -277,14 +149,9 @@ void CUITalkWnd::UpdateQuestions()
 	if(!m_pCurrentDialog)
 	{
 		m_pOurDialogManager->UpdateAvailableDialogs(m_pOthersDialogManager);
-		const bool isPdaSession = IsPdaMode();
 		for(u32 i=0; i< m_pOurDialogManager->AvailableDialogs().size(); ++i)
 		{
 			const DIALOG_SHARED_PTR& phrase_dialog	= m_pOurDialogManager->AvailableDialogs()[i];
-			if (!IsTalkDialogAllowedForContext(phrase_dialog, isPdaSession))
-			{
-				continue;
-			}
 			//if (phrase_dialog->GetPhraseCount() > 0)
 			{
 				SPhraseInfo phInfo;
@@ -353,31 +220,13 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 //////////////////////////////////////////////////////////////////////////
 void UpdateCameraDirection(CGameObject* pTo, bool isFocus)
 {
-	if (!pTo)
-		return;
-
-	CInventoryOwner* io = pTo->cast_inventory_owner();
-	if (!io)
-		return;
-
-	CActor* A = Actor();
-	if (!A)
-		return;
-
-	CCameraBase* cam = A->cam_Active();
-	if (!cam)
-		return;
+	CCameraBase* cam = Actor()->cam_Active();
 
 	Fvector target_pos;
-	if (io->GetFocusingOnNpc())
+	if (pTo->cast_inventory_owner()->GetFocusingOnNpc())
 	{
 		if (IKinematics* pk = PKinematics(pTo->Visual()))
 			pk->LL_GetBoneWorldPosition(pk->LL_BoneID("bip01_head"), pTo->XFORM(), target_pos);
-		else
-		{
-			pTo->Center(target_pos);
-			target_pos.y += pTo->Radius() * 0.5f;
-		}
 	}
 	else
 	{
@@ -398,28 +247,21 @@ void UpdateCameraDirection(CGameObject* pTo, bool isFocus)
 
 void CUITalkWnd::Update()
 {
-	if ((IsPdaMode() || IsEmbeddedInPda()) && !PdaCommunication_IsSessionActive())
+	//остановить разговор, если нужно
+	if (g_actor && m_pActor && !m_pActor->IsTalking())
 	{
-		StopPdaDialog();
-		return;
+		StopTalk();
 	}
+	else
+	{
+		CGameObject* pOurGO = m_pOurInvOwner != nullptr ? m_pOurInvOwner->cast_game_object() : nullptr;
+		CGameObject* pOtherGO = m_pOthersInvOwner != nullptr ? m_pOthersInvOwner->cast_game_object() : nullptr;
 
-    //остановить разговор, если нужно
-    if (!IsPdaMode() && g_actor && m_pActor && !m_pActor->IsTalking())
-    {
-        StopTalk();
-    }
-    else
-    {
-        CGameObject* pOurGO = m_pOurInvOwner != nullptr ? m_pOurInvOwner->cast_game_object() : nullptr;
-        CGameObject* pOtherGO = m_pOthersInvOwner != nullptr ? m_pOthersInvOwner->cast_game_object() : nullptr;
-
-        if (nullptr == pOurGO || nullptr == pOtherGO)
-        {
-            HideDialog();
-            return;
-        }
-    }
+		if (nullptr == pOurGO || nullptr == pOtherGO)
+		{
+			HideDialog();
+		}
+	}
 
 	if (m_bNeedToUpdateQuestions)
 	{
@@ -433,25 +275,15 @@ void CUITalkWnd::Update()
 	UITalkDialogWnd->UpdateQuestionSelection();
 
 	inherited::Update();
-	// Remote PDA dialog: do not aim camera at NPC bones/visual (partner may be off-screen or not loaded into scene graph).
-	if (!IsPdaMode() && m_pOthersInvOwner)
-	{
-		CGameObject* pOtherGO = m_pOthersInvOwner->cast_game_object();
-		if (pOtherGO)
-			UpdateCameraDirection(pOtherGO, m_pOthersInvOwner->GetFocusingOnNpc());
-	}
-	if (UITalkDialogWnd && m_pOthersInvOwner)
-		UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
+	UpdateCameraDirection(m_pOthersInvOwner->cast_game_object(), m_pOthersInvOwner->GetFocusingOnNpc());
+	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
 
 	if (playing_sound())
 	{
 		CGameObject* pOtherGO = m_pOthersInvOwner != nullptr ? m_pOthersInvOwner->cast_game_object() : nullptr;
-		if (pOtherGO)
-		{
-			Fvector P = pOtherGO->Position();
-			P.y += 1.8f;
-			m_sound.set_position(P);
-		}
+		Fvector P = pOtherGO->Position();
+		P.y += 1.8f;
+		m_sound.set_position(P);
 	}
 }
 
@@ -462,11 +294,6 @@ void CUITalkWnd::Draw()
 
 void CUITalkWnd::Show(bool status)
 {
-	if (status && !PdaCommunication_IsSessionActive() && (IsPdaMode() || IsEmbeddedInPda()))
-	{
-		StopPdaDialog();
-	}
-
 	inherited::Show					(status);
 	if(status)
 	{
@@ -500,86 +327,12 @@ void CUITalkWnd::Show(bool status)
 
 			ToTopicMode					();
 
-			if (m_pActor->IsTalking())
-			{
-				if (IsPdaMode())
-				{
-					PdaCommunication_Stop();
-				}
-
+			if (m_pActor->IsTalking()) 
 				m_pActor->StopTalk();
-			}
 
 			m_pActor = nullptr;
-			m_isPdaDialog = false;
 		}
 	}
-}
-
-bool CUITalkWnd::InitializeDialogForPda()
-{
-	if (!UITalkDialogWnd || !UITalkDialogWnd->TryClearAll())
-	{
-		return false;
-	}
-
-	InitTalkDialog(true);
-	return m_pOthersInvOwner != nullptr && m_pOurDialogManager != nullptr && m_pOthersDialogManager != nullptr;
-}
-
-void CUITalkWnd::StopPdaDialog()
-{
-	if (PdaCommunication_IsSessionActive())
-	{
-		PdaCommunication_Stop();
-	}
-
-	if (UITalkDialogWnd && UITalkDialogWnd->IsShown())
-	{
-		UITalkDialogWnd->Hide();
-	}
-
-	EndPdaEmbed();
-
-	m_isPdaDialog = false;
-	m_bNeedToUpdateQuestions = false;
-	ToTopicMode();
-
-	m_pActor = nullptr;
-	m_pOurInvOwner = nullptr;
-	m_pOthersInvOwner = nullptr;
-	m_pOurDialogManager = nullptr;
-	m_pOthersDialogManager = nullptr;
-}
-
-bool CUITalkWnd::IsActiveTalkUi()
-{
-	return IsShown() || (IsPdaMode() && IsEmbeddedInPda());
-}
-
-void CUITalkWnd::BeginPdaEmbed(CUIPdaContactsWnd* contacts)
-{
-	if (!m_pdaTalkHost)
-	{
-		return;
-	}
-
-	m_pdaTalkHost->Begin(this, contacts);
-}
-
-void CUITalkWnd::EndPdaEmbed()
-{
-	if (!m_pdaTalkHost)
-	{
-		return;
-	}
-
-	m_pdaTalkHost->End(this);
-}
-
-bool CUITalkWnd::IsEmbeddedInPda() const
-{
-	return m_pdaTalkHost != nullptr && m_pdaTalkHost->IsActive();
 }
 
 bool  CUITalkWnd::TopicMode			() 
@@ -600,27 +353,18 @@ void CUITalkWnd::AskQuestion()
 	//игрок выбрал тему разговора
 	if(TopicMode())
 	{
-		if (UITalkDialogWnd->m_ClickedQuestionID == "")
+		if ( (UITalkDialogWnd->m_ClickedQuestionID =="") ||
+			(!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID)) ) 
 		{
-			return;
+
+			string128	s;
+			xr_sprintf		(s,"ID = [%s] of selected question is out of range of available dialogs ",UITalkDialogWnd->m_ClickedQuestionID.c_str());
+			VERIFY2(false, s);
 		}
 
-		if (!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID))
-		{
-			return;
-		}
-
-		const DIALOG_SHARED_PTR& selectedDialog = m_pOurDialogManager->GetDialogByID(UITalkDialogWnd->m_ClickedQuestionID);
-		if (!IsTalkDialogAllowedForContext(selectedDialog, IsPdaMode()))
-		{
-			return;
-		}
-
-		m_pCurrentDialog = selectedDialog;
+		m_pCurrentDialog = m_pOurDialogManager->GetDialogByID( UITalkDialogWnd->m_ClickedQuestionID);
 		
 		m_pOurDialogManager->InitDialog(m_pOthersDialogManager, m_pCurrentDialog);
-		const bool isPdaSession = IsPdaMode();
-		m_pCurrentDialog->SetTalkMode(isPdaSession ? ETalkMode::Pda : ETalkMode::Normal);
 		phrase_id = "0";
 	}
 	else
@@ -687,19 +431,6 @@ bool CUITalkWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	{
 		if(is_binded(kUSE, dik) || is_binded(kQUIT, dik))
 		{
-			if (IsPdaMode() && is_binded(kQUIT, dik))
-			{
-				if (CurrentGameUI() && CurrentGameUI()->PdaMenu())
-				{
-					CurrentGameUI()->PdaMenu()->HideDialog();
-				}
-				else if (m_pOthersInvOwner && !m_pOthersInvOwner->NeedOsoznanieMode())
-				{
-					StopTalk();
-				}
-				return true;
-			}
-
 			if(!b_disable_break)
 			{
 				HideDialog();
@@ -730,19 +461,6 @@ bool CUITalkWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 		{
 			case kUI_BACK:
 			{
-				if (IsPdaMode())
-				{
-					if (CurrentGameUI() && CurrentGameUI()->PdaMenu())
-					{
-						CurrentGameUI()->PdaMenu()->HideDialog();
-					}
-					else if (m_pOthersInvOwner && !m_pOthersInvOwner->NeedOsoznanieMode())
-					{
-						StopTalk();
-					}
-					return true;
-				}
-
 				if (!b_disable_break)
 				{
 					HideDialog();
@@ -901,11 +619,14 @@ void CUITalkWnd::AddIconedMessage(const char* text, const char* texture_name, Fr
 
 void CUITalkWnd::StopTalk()
 {
-	if (PdaCommunication_IsSessionActive() || IsPdaMode() || IsEmbeddedInPda())
-	{
-		StopPdaDialog();
-		return;
-	}
-
 	HideDialog();
+}
+
+bool CUITalkWnd::IsActiveTalkUi()
+{
+	return IsShown();
+}
+
+void CUITalkWnd::Stop()
+{
 }

@@ -40,8 +40,7 @@ void CPhraseDialogExporter::script_register(lua_State *L)
 		.def("GetPhraseScript",		&CPhrase::GetScriptHelper),
 
 		class_<CPhraseDialog>("CPhraseDialog")
-		.def("AddPhrase",			&CPhraseDialog::AddPhrase_script )
-		.def("is_pda",              &CPhraseDialog::IsPdaMode),
+		.def("AddPhrase",			&CPhraseDialog::AddPhrase_script ),
 
 		class_<CDialogScriptHelper>("CPhraseScript")
 		.def("AddPrecondition",		&CDialogScriptHelper::AddPrecondition)

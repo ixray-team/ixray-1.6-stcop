@@ -4,7 +4,6 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UIButton.h"
 #include "../../xrUI/Widgets/UIEditBox.h"
-//#include "UIListWnd.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 
 
@@ -13,12 +12,7 @@
 class CActor;
 class CInventoryOwner;
 class CPhraseDialogManager;
-class CUIPdaTalkHost;
 class CUITalkDialogWnd;
-class CUIPdaContactsWnd;
-///////////////////////////////////////
-//
-///////////////////////////////////////
 
 class CUITalkWnd final : public CUIDialogWnd
 {
@@ -45,22 +39,12 @@ public:
 		
 	virtual void		Show					(bool status);
 	
-	void				Stop					() {}					//deffered
+	void				Stop					();
 	void				StopTalk				();
 
 	void				UpdateQuestions			();
 	void				NeedUpdateQuestions		();
-	void				SetPdaMode				(bool value) { m_isPdaDialog = value; }
-	bool				IsPdaMode				() const { return m_isPdaDialog; }
-	void				SetOwner				(CInventoryOwner* owner) { m_pOurInvOwner = owner; }
-	void				SetTalkPartner			(CInventoryOwner* partner) { m_pOthersInvOwner = partner; }
-	bool				InitializeDialogForPda	();
-	void				StopPdaDialog			();
-	void				BeginPdaEmbed				(CUIPdaContactsWnd* contacts);
-	void				EndPdaEmbed					();
-	bool				IsEmbeddedInPda				() const;
-	bool				IsActiveTalkUi				();
-	//инициализации начального диалога собеседника
+	bool				IsActiveTalkUi			();
 	void				InitOthersStartDialog	();
 	virtual bool		OnKeyboardAction				(int dik, EUIMessages keyboard_action);
 	virtual bool		OnGamepadKeyAction		(int id, EUIMessages gamepad_action) override;
@@ -73,13 +57,11 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-	//диалог
-	void				InitTalkDialog			(bool skipLogClear = false);
+	void				InitTalkDialog			();
 	void				AskQuestion				();
 
 	void				SayPhrase				(const shared_str& phrase_id);
 
-	// Функции добавления строк в листы вопросов и ответов
 public:
 	void				AddQuestion				(const shared_str& text, const shared_str& id, int number, SPhraseInfo phInfo);
 	void				AddAnswer				(const shared_str& text, const char* SpeakerName);
@@ -96,7 +78,6 @@ protected:
 
 	bool				m_bNeedToUpdateQuestions;
 
-	//текущий диалог, если NULL, то переходим в режим выбора темы
 	DIALOG_SHARED_PTR	m_pCurrentDialog;
 	bool				TopicMode				();
 	void				ToTopicMode				();
@@ -104,6 +85,4 @@ protected:
 private:
 	Fvector4 m_TalkDof = {};
 	float m_talkFovScale;
-	bool m_isPdaDialog = false;
-	CUIPdaTalkHost* m_pdaTalkHost = nullptr;
 };

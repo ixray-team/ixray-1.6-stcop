@@ -13,7 +13,6 @@
 #include "../xrScripts/script_callback_ex.h"
 #include "game_cl_single.h"
 #include "ui/UIPdaAux.h"
-#include "pda_communication.h"
 
 void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion) const
 {
@@ -127,7 +126,7 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
  	if(!CurrentGameUI()->TalkMenu) 
 		return false;
 
-	if(CurrentGameUI()->TalkMenu->IsActiveTalkUi())
+	if(CurrentGameUI()->TalkMenu->IsShown())
 	{
 		CurrentGameUI()->TalkMenu->NeedUpdateQuestions();
 	}
@@ -144,7 +143,7 @@ void CActor::OnDisableInfo(shared_str info_id) const
 		return;
 
 	//только если находимся в режиме single
-	if(CurrentGameUI()->TalkMenu->IsActiveTalkUi())
+	if(CurrentGameUI()->TalkMenu->IsShown())
 		CurrentGameUI()->TalkMenu->NeedUpdateQuestions();
 }
 
@@ -154,7 +153,7 @@ void  CActor::ReceivePhrase		(DIALOG_SHARED_PTR& phrase_dialog)
 	if (!CurrentGameUI()->TalkMenu)
 		return;
 
-	if(CurrentGameUI()->TalkMenu->IsActiveTalkUi())
+	if(CurrentGameUI()->TalkMenu->IsShown())
 		CurrentGameUI()->TalkMenu->NeedUpdateQuestions();
 
 	CPhraseDialogManager::ReceivePhrase(phrase_dialog);
@@ -194,12 +193,7 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
 
 void CActor::TryToTalk()
 {
-	if (PdaCommunication_IsSessionActive())
-	{
-		return;
-	}
-
-	if (!IsTalking())
+	if(!IsTalking())
 	{
 		RunTalkDialog(m_pPersonWeLookingAt, false);
 	}
