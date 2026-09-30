@@ -272,7 +272,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		{
 			mapUI.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
 #if RENDER!=R_R1
-			if (sh->flags.bEmissive)
+			if (sh->flags.bEmissive && sh != sh_d)
 			{
 				mapUIEmissive.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
 			}

@@ -38,6 +38,10 @@ void RHIStateManagerDX11::Reset()
 	bDSSChanged = false;
 	bBSChanged = false;
 
+	bRSForced = false;
+	bDSSForced = false;
+	bBSForced = false;
+
 	ResetRDesc();
 	ResetDDesc();
 	ResetBDesc();
@@ -187,12 +191,12 @@ void RHIStateManagerDX11::SetDepthStencilState(void* NewState)
 void RHIStateManagerDX11::SetBlendState(void* NewState)
 {
 	bBSChanged = false;
+	bBSForced = true;
 
 	if (NewState != BlendState)
 	{
 		BlendState = (ID3D11BlendState*)NewState;
 		bBSNeedApply = true;
-		bBSForced = true;
 	}
 }
 
@@ -758,7 +762,9 @@ void RHIStateManagerDX11::ValidateBDesc()
 		return;
 	}
 
-	if (DepthStencilState == nullptr)
+	bBSForced = false;
+
+	if (BlendState == nullptr)
 	{
 		ResetBDesc();
 		bBSNeedApply = true;

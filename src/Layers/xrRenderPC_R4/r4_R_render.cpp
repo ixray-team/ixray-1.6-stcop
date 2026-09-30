@@ -410,8 +410,11 @@ void CRender::RenderUI(Fcolor* color)
 		GRHI->ClearTarget(Target->rt_ui_color->pRT, ERTColor::Transparent);
 	}
 
+	bool ui_saved = val_bUI;
+	set_UI(true);
 	r_dsgraph_render_ui();
 	r_dsgraph_render_sorted_ui();
+	set_UI(ui_saved);
 
 	Scissor.div(2, 2);
 
