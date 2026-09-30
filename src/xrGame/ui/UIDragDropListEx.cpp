@@ -8,13 +8,15 @@
 #include "../Inventory.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrEngine/xr_input.h"
+#include "../../xrCore/EngineExternal.h"
 
 CUIDragItem* CUIDragDropListEx::m_drag_item = nullptr;
 
 namespace
 {
-// Horizontal UV span for one cell when inventory grid is disabled (must match GetTexUVLT sliding room).
 constexpr float kInventoryCellUSpanGridDisabled = 0.23f;
+
+s8 s_inventoryGridDisabledOverride = -1;
 
 xr_vector<CUIDragItem*> s_pendingDragItemDestroy;
 
@@ -28,6 +30,21 @@ void QueuePendingDragItemDestroy(CUIDragItem* dragItem)
 	dragItem->UnregisterDeviceSequences();
 	s_pendingDragItemDestroy.push_back(dragItem);
 }
+}
+
+bool IsInventoryGridDisabled()
+{
+	if (s_inventoryGridDisabledOverride >= 0)
+	{
+		return s_inventoryGridDisabledOverride != 0;
+	}
+
+	return EngineExternal()[EEngineExternalUI::DisableInventoryGrid];
+}
+
+void SetInventoryGridDisabledScript(bool disabled)
+{
+	s_inventoryGridDisabledOverride = disabled ? s8(1) : s8(0);
 }
 
 void CUIDragDropListEx::FlushPendingDragItemDestroy()
@@ -820,7 +837,7 @@ CUICellItem* CUIDragDropListEx::GetItemAtPos(Fvector2 abs_pos)
 
 CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
 	: m_pParentDragDropList(parent)
-	, m_isInventoryGridDisabled(EngineExternal()[EEngineExternalUI::DisableInventoryGrid])
+	, m_isInventoryGridDisabled(IsInventoryGridDisabled())
 {
 	if (m_isInventoryGridDisabled)
 	{
@@ -830,7 +847,6 @@ CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
 	{
 		hShader->create("hud\\fog_of_war", "ui\\ui_grid");
 	}
-//	hShader_selected->create	( "hud\\fog_of_war", "ui_grid_selected" );
 	m_cellSpacing.set			( 0, 0 );
 
 	m_selectorArea.left = 0;
@@ -1285,6 +1301,20 @@ Ivector2 CUICellContainer::PickCell(const Fvector2& abs_pos)
 
 void CUICellContainer::Draw()
 {
+	const bool gridDisabled = IsInventoryGridDisabled();
+	if (gridDisabled != m_isInventoryGridDisabled)
+	{
+		m_isInventoryGridDisabled = gridDisabled;
+		if (m_isInventoryGridDisabled)
+		{
+			hShader->create("hud\\fog_of_war", "ui\\ui_grid_alt");
+		}
+		else
+		{
+			hShader->create("hud\\fog_of_war", "ui\\ui_grid");
+		}
+	}
+
 	Frect clientArea;
 	m_pParentDragDropList->GetClientArea(clientArea);
 
