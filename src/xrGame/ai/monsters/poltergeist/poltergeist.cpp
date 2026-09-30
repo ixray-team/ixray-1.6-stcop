@@ -135,7 +135,6 @@ void CPoltergeist::Load(const char* section)
 
 	m_current_detection_level = 0;
 	m_last_detection_time = 0;
-	m_detection_pp_type_index = 0;
 
 	m_enable_corpse_on_death = READ_IF_EXISTS(pSettings, r_bool, section, "enable_corpse_on_death", false);
 
@@ -156,11 +155,8 @@ bool CPoltergeist::check_work_condition() const
 
 void CPoltergeist::remove_pp_effector()
 {
-	if (m_detection_pp_type_index != 0 && Actor())
-	{
-		RemoveEffector(Actor(), m_detection_pp_type_index);
-		m_detection_pp_type_index = 0;
-	}
+	if (m_detection_pp_effector_name && m_detection_pp_effector_name[0])
+		CActorAuraPostEffectsBalancer::UnregisterEffect(EAuraPostEffectType::Psi, ID(), m_detection_pp_effector_name);
 }
 
 void CPoltergeist::update_detection()
@@ -212,21 +208,12 @@ void CPoltergeist::update_detection()
 
 	if (m_current_detection_level > 0.01f && m_detection_pp_effector_name && m_detection_pp_effector_name[0])
 	{
-		if (!m_detection_pp_type_index)
-		{
-			for (m_detection_pp_type_index = (u32)effPoltergeistTeleDetectStartEffect;
-				 Actor()->Cameras().GetPPEffector((EEffectorPPType)m_detection_pp_type_index);
-				 ++m_detection_pp_type_index)
-			{
-			}
-
-			AddEffector(Actor(), m_detection_pp_type_index, m_detection_pp_effector_name, xr_make_delegate(this, &CPoltergeist::get_post_process_factor));
-		}
+		CActorAuraPostEffectsBalancer::RegisterEffect(EAuraPostEffectType::Psi, get_post_process_factor(),
+													  ID(), get_detection_far_range(), m_detection_pp_effector_name);
 	}
-	else if (m_detection_pp_type_index != 0)
+	else
 	{
-		RemoveEffector(Actor(), m_detection_pp_type_index);
-		m_detection_pp_type_index = 0;
+		remove_pp_effector();
 	}
 }
 
