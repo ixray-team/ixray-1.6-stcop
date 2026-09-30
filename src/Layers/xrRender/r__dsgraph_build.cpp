@@ -236,6 +236,9 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 
 	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
 
+	if (RI.val_bUI && sh_d && sh_d->flags.bDistort)
+		return;
+
 	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2] && !psDeviceFlags.test(rsClearBB))
 	{
 		mapSorted_T& test = bHUD ? mapHUDDistort : mapDistort;
