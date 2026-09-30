@@ -1855,10 +1855,10 @@ void CWeaponMagazined::OnShot()
 				}
 			}
 		}
-		else
-		{
-			StartShellParticle(ParentLinearVelocity());
-		}
+	}
+	else
+	{
+		StartShellParticle(ParentLinearVelocity());
 	}
 
 	StartFlameParticle();
