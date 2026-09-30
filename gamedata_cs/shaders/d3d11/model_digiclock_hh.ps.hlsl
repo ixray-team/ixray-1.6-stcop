@@ -1,9 +1,6 @@
 #include "common.hlsli"
 #include "sload.hlsli"
 
-uniform float4 m_digiclock;
-uniform float4 m_affects;
-
 float4 main(p_bumped_new I) : SV_Target
 {
     // === Выбор цифры из атласа по m_digiclock.a ===

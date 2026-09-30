@@ -55,6 +55,10 @@ p_bumped_new main(in InputPatch<p_bumped_new, 3> ip, in uint i : SV_OutputContro
     ouput.hpos_old = ip[i].hpos_old;
 #endif
 
+#ifdef USE_HUD_RAINDROPS
+    ouput.drops_basis = ip[i].drops_basis;
+#endif
+
     ouput.hpos = ip[i].hpos;
 
     return ouput;

@@ -1,7 +1,6 @@
 #include "common.hlsli"
 #include "pnv.hlsli"
 
-uniform float4 m_hud_params;
 
 struct v2p
 {
