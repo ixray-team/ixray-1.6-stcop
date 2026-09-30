@@ -35,11 +35,16 @@ constexpr LPCSTR kParams = "sleep_params";
 constexpr LPCSTR kPreset = "sleep_preset_btn";
 constexpr LPCSTR kStrip = "sleep_hours_strip";
 
-u32 LevelHours()
+float LevelGameHours()
 {
 	u32 y = 0, mo = 0, d = 0, h = 0, mi = 0, s = 0, ms = 0;
 	split_time(Level().GetGameTime(), y, mo, d, h, mi, s, ms);
-	return h;
+	return float(h) + float(mi) * (1.f / 60.f) + float(s) * (1.f / 3600.f) + float(ms) * (1.f / 3600000.f);
+}
+
+u32 LevelHours()
+{
+	return u32(LevelGameHours());
 }
 
 void ChangeGameTimeHours(u32 hours)
@@ -285,7 +290,7 @@ void CUISleepWnd::LoadSleepParams(CUIXml& xml)
 	p.panoramaHours = std::max(1, i32("panorama_hours", p.panoramaHours));
 	if (LPCSTR bind = xml.ReadAttrib(kParams, 0, "panorama_bind", nullptr); bind && bind[0])
 		p.panoramaBindWake = (0 == xr_strcmp(bind, "wake"));
-	p.panoramaSmoothSpeed = flt("panorama_smooth_speed", p.panoramaSmoothSpeed);
+	p.panoramaSmoothSpeed = std::max(0.f, flt("panorama_smooth_speed", p.panoramaSmoothSpeed));
 	if (LPCSTR fit = xml.ReadAttrib(kParams, 0, "panorama_scale", nullptr); fit && fit[0])
 		p.panoramaNativeScale = (0 == xr_strcmp(fit, "native"));
 	p.panoramaTexScale = std::max(1.f, flt("panorama_tex_scale", p.panoramaTexScale));
@@ -692,19 +697,32 @@ bool CUISleepWnd::CanSleepNow(int hours, shared_str& outWarning) const
 
 void CUISleepWnd::InitializeLayout()
 {
-	const u32 cur = LevelHours();
+	m_lastHourLabelBase = -1;
+	RefreshHourLabels();
+	UpdatePanorama(true);
+	UpdateMarker();
+	m_lastTimeInfoHours = -1;
+	UpdateTimeInfo();
+}
+
+void CUISleepWnd::RefreshHourLabels()
+{
+	if (m_hourLabels.empty()) return;
+
+	constexpr int clockN = 24;
+	const int base = int(LevelHours() % u32(clockN));
+	if (base == m_lastHourLabelBase) return;
+	m_lastHourLabelBase = base;
+
 	LPCSTR suffix = *g_pStringTable->translate(m_params.hourLabelSuffix);
 	for (u32 i = 0; i < m_hourLabels.size(); ++i)
 	{
 		CUIStatic* st = m_hourLabels[i];
 		if (!st || !st->TextItemControl()) continue;
-		string64 label; xr_sprintf(label, "%d%s", (cur + i + 1) % 24, suffix);
+		string64 label;
+		xr_sprintf(label, "%d%s", (base + int(i) + 1) % clockN, suffix);
 		st->TextItemControl()->SetText(label);
 	}
-	UpdatePanorama(true);
-	UpdateMarker();
-	m_lastTimeInfoHours = -1;
-	UpdateTimeInfo();
 }
 
 void CUISleepWnd::UpdateTimeInfo()
@@ -745,12 +763,45 @@ float CUISleepWnd::WrapHoursDelta(float from, float to, float hoursN)
 	return delta;
 }
 
+float CUISleepWnd::PanoramaMarkerHourOffset() const
+{
+	const float hoursN = static_cast<float>(std::max(1, m_params.panoramaHours));
+	const float panoW = std::max(0.001f, m_panoDisplay.x);
+	float markerCenter = m_panoBasePos.x;
+
+	if (m_timeTrack)
+	{
+		CUI3tButton* slider = m_timeTrack->GetSlider();
+		if (slider)
+		{
+			float t = (m_trackVisual - float(m_params.minHours)) /
+				std::max(0.001f, float(m_params.maxHours - m_params.minHours));
+			clamp(t, 0.f, 1.f);
+			if (m_timeTrack->GetInvert()) t = 1.f - t;
+			const float trackW = m_timeTrack->GetWidth();
+			const float sliderW = slider->GetWidth();
+			const float sliderCenter = m_timeTrack->GetWndPos().x + t * (trackW - sliderW) + sliderW * 0.5f;
+			const float markerW = m_marker ? m_marker->GetWidth() : 0.f;
+			const float markerX = std::max(m_params.markerMinX, sliderCenter - markerW * 0.5f);
+			markerCenter = markerX + markerW * 0.5f;
+		}
+	}
+
+	float frac = (markerCenter - m_panoBasePos.x) / panoW;
+	clamp(frac, 0.f, 1.f);
+	return frac * hoursN;
+}
+
 float CUISleepWnd::PanoramaTargetHours() const
 {
-	const float hoursN = static_cast<float>(m_params.panoramaHours);
-	float hours = static_cast<float>(LevelHours());
+	const float hoursN = static_cast<float>(std::max(1, m_params.panoramaHours));
+	float hours = LevelGameHours();
 	if (m_params.panoramaBindWake)
-		hours += static_cast<float>(SelectedHours());
+	{
+		const float duration = m_timeTrack ? m_trackVisual : float(SelectedHours());
+		const float wake = hours + std::max(0.f, duration);
+		hours = wake - PanoramaMarkerHourOffset();
+	}
 	return PositiveMod(hours, hoursN);
 }
 
@@ -772,8 +823,9 @@ void CUISleepWnd::ApplyPanoramaHours(float hoursMod)
 	if (!m_sleepStatic) return;
 
 	const float hoursN = static_cast<float>(std::max(1, m_params.panoramaHours));
+	hoursMod = PositiveMod(hoursMod, hoursN);
 	const bool native = m_params.panoramaNativeScale;
-	const float texScale = native ? std::max(1.f, m_params.panoramaTexScale) : 1.f;
+	const float texScale = std::max(1.f, m_params.panoramaTexScale);
 	const float logicalW = m_panoTex.width() / texScale;
 	const float logicalH = m_panoTex.height() / texScale;
 	const float dispW = m_panoDisplay.x;
@@ -782,8 +834,8 @@ void CUISleepWnd::ApplyPanoramaHours(float hoursMod)
 	const float cropUi = native ? (logicalH - drawH) : 0.f;
 	const float srcY1 = native ? (m_panoTex.y1 + cropUi * 0.5f * texScale) : m_panoTex.y1;
 	const float srcY2 = native ? (srcY1 + drawH * texScale) : m_panoTex.y2;
+	const float texW = m_panoTex.width();
 
-	// Native clamp: single blit inside [0 .. logicalW-dispW]
 	if (native && !m_params.panoramaWrap)
 	{
 		const float span = std::max(0.f, logicalW - dispW);
@@ -797,51 +849,44 @@ void CUISleepWnd::ApplyPanoramaHours(float hoursMod)
 
 	if (!m_sleepStatic2)
 	{
-		const float span = std::max(0.f, logicalW - dispW);
-		const float offset = std::min(logicalW / hoursN * hoursMod, span);
-		SetPanoPanel(m_sleepStatic, 0.f, dispW, drawH,
-			m_panoTex.x1 + offset * texScale, srcY1,
-			m_panoTex.x1 + (offset + dispW) * texScale, srcY2, true);
+		if (native)
+		{
+			const float span = std::max(0.f, logicalW - dispW);
+			const float offset = std::min(logicalW / hoursN * hoursMod, span);
+			SetPanoPanel(m_sleepStatic, 0.f, dispW, drawH,
+				m_panoTex.x1 + offset * texScale, srcY1,
+				m_panoTex.x1 + (offset + dispW) * texScale, srcY2, true);
+		}
+		else
+		{
+			const float u0 = m_panoTex.x1 + texW / hoursN * hoursMod;
+			SetPanoPanel(m_sleepStatic, 0.f, dispW, drawH, u0, srcY1, u0 + texW, srcY2, true);
+		}
 		return;
 	}
-
-	float leftW = 0.f, rightW = 0.f;
-	float leftU0 = 0.f, leftU1 = 0.f, rightU0 = 0.f, rightU1 = 0.f;
 
 	if (native)
 	{
 		float offset = logicalW / hoursN * hoursMod;
 		clamp(offset, 0.f, logicalW);
-		leftW = std::min(logicalW - offset, dispW);
-		rightW = dispW - leftW;
-		leftU0 = m_panoTex.x1 + offset * texScale;
-		leftU1 = m_panoTex.x1 + (offset + leftW) * texScale;
-		rightU0 = m_panoTex.x1;
-		rightU1 = m_panoTex.x1 + rightW * texScale;
-	}
-	else
-	{
-		// Legacy CoP: remaining atlas stretched into left pane, head into right pane.
-		float texDelta = m_panoTex.width() / hoursN * hoursMod;
-		float dispDelta = m_hourStepPx * hoursMod;
-		clamp(texDelta, 0.f, m_panoTex.width());
-		clamp(dispDelta, 0.f, dispW);
-		leftW = dispW - dispDelta;
-		rightW = dispDelta;
-		leftU0 = m_panoTex.x1 + texDelta;
-		leftU1 = m_panoTex.x2;
-		rightU0 = m_panoTex.x1;
-		rightU1 = m_panoTex.x1 + texDelta;
+		const float leftW = std::min(logicalW - offset, dispW);
+		const float rightW = dispW - leftW;
+		SetPanoPanel(m_sleepStatic, 0.f, leftW, drawH,
+			m_panoTex.x1 + offset * texScale, srcY1,
+			m_panoTex.x1 + (offset + leftW) * texScale, srcY2, leftW > 0.5f);
+		SetPanoPanel(m_sleepStatic2, leftW, rightW, drawH,
+			m_panoTex.x1, srcY1,
+			m_panoTex.x1 + rightW * texScale, srcY2, rightW > 0.5f);
+		return;
 	}
 
-	constexpr float kJoinOverlap = 1.f;
-	const bool both = leftW > 0.5f && rightW > 0.5f;
-	const float leftDrawW = both ? std::min(dispW, leftW + kJoinOverlap) : leftW;
-	if (native && both)
-		leftU1 = leftU0 + leftDrawW * texScale;
-
-	SetPanoPanel(m_sleepStatic, 0.f, leftDrawW, drawH, leftU0, srcY1, leftU1, srcY2, leftW > 0.5f);
-	SetPanoPanel(m_sleepStatic2, leftW, rightW, drawH, rightU0, srcY1, rightU1, srcY2, rightW > 0.5f);
+	const float uOffset = texW * (hoursMod / hoursN);
+	const float leftW = dispW * (1.f - hoursMod / hoursN);
+	const float rightW = dispW - leftW;
+	SetPanoPanel(m_sleepStatic, 0.f, leftW, drawH,
+		m_panoTex.x1 + uOffset, srcY1, m_panoTex.x2, srcY2, leftW > 0.5f);
+	SetPanoPanel(m_sleepStatic2, leftW, rightW, drawH,
+		m_panoTex.x1, srcY1, m_panoTex.x1 + uOffset, srcY2, rightW > 0.5f);
 }
 
 void CUISleepWnd::UpdatePanorama(bool instant)
@@ -850,15 +895,15 @@ void CUISleepWnd::UpdatePanorama(bool instant)
 
 	const float hoursN = static_cast<float>(std::max(1, m_params.panoramaHours));
 	const float target = PanoramaTargetHours();
+	const float curMod = PositiveMod(m_panoScrollHours, hoursN);
+	const float delta = WrapHoursDelta(curMod, target, hoursN);
 
-	if (instant || m_params.panoramaSmoothSpeed <= 0.f)
+	if (instant || m_params.panoramaSmoothSpeed <= 0.f || fabsf(delta) < 0.05f)
 	{
 		m_panoScrollHours = target;
 	}
 	else
 	{
-		const float curMod = PositiveMod(m_panoScrollHours, hoursN);
-		const float delta = WrapHoursDelta(curMod, target, hoursN);
 		m_panoScrollHours += delta * (1.f - expf(-m_params.panoramaSmoothSpeed * Device.fTimeDelta));
 		const float nextMod = PositiveMod(m_panoScrollHours, hoursN);
 		if (fabsf(WrapHoursDelta(nextMod, target, hoursN)) < 0.002f)
@@ -1054,7 +1099,10 @@ void CUISleepWnd::Update()
 	CUIDialogWnd::Update();
 	UpdateTrackSmooth();
 	if (IsShown())
+	{
+		RefreshHourLabels();
 		UpdatePanorama(false);
+	}
 	UpdateMarker();
 	UpdateTimeInfo();
 }

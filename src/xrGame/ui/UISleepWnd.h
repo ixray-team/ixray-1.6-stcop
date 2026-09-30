@@ -133,11 +133,13 @@ private:
 	void ClearSessionFlag(bool& flag);
 
 	void InitializeLayout();
+	void RefreshHourLabels();
 	void UpdateMarker();
 	void UpdatePanorama(bool instant = false);
 	void ApplyPanoramaHours(float hoursMod);
 	void SetPanoPanel(CUIStatic* st, float x, float w, float h, float u0, float v0, float u1, float v1, bool show);
 	float PanoramaTargetHours() const;
+	float PanoramaMarkerHourOffset() const;
 	static float WrapHoursDelta(float from, float to, float hoursN);
 	void UpdateTimeInfo();
 	void TestAndShow();
@@ -197,6 +199,7 @@ private:
 	float m_savedMusic = 0.f;
 	float m_savedEffects = 0.f;
 	int m_lastTimeInfoHours = -1;
+	int m_lastHourLabelBase = -1;
 	u8 m_camPhase = 0;
 
 	Frect m_panoTex{};
