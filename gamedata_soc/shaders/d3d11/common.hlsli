@@ -10,9 +10,8 @@
 
 #define PI 3.141592653589793f
 
-#include "shared\common.hlsli"
+#include "common_decl.hlsli"
 
-#include "common_defines.hlsli"
 #include "common_defines.hlsli"
 #include "common_policies.hlsli"
 #include "common_iostructs.hlsli"
@@ -23,4 +22,3 @@
 #include "cgim.h"
 
 #endif
-

@@ -1,8 +1,6 @@
 #ifndef DOF_H_INCLUDED
 #define DOF_H_INCLUDED
 
-uniform float4 screen_res;
-
 #ifndef USE_DOF
 
 float3 dof(float2 center)
@@ -77,4 +75,3 @@ float3 dof(float2 center)
 
 #endif //	USE_DOF
 #endif //	DOF_H_INCLUDED
-

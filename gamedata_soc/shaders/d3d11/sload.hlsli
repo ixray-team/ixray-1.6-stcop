@@ -139,8 +139,6 @@ inline float2 UpdateTC(inout p_bumped_new I, in float2 texCoord, Texture2D heigh
 	return texCoord;
 }
 
-uniform float test_exp_to_shaders_1;
-uniform float test_exp_to_shaders_2;
 
 inline void SloadNew(inout p_bumped_new I, inout IXRayMaterial M)
 {

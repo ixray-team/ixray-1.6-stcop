@@ -1,9 +1,5 @@
 #include "common.hlsli"
 
-uniform float3x4 m_xform;
-uniform float3x4 m_xform_v;
-uniform float4 consts; // {1/quant,1/quant,???,???}
-uniform float4 c_scale, c_bias, wind, wave;
 
 // Vertex
 void main(in v_shadow_direct_aref I, out p_shadow O)
