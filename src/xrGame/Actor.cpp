@@ -9,6 +9,7 @@
 #include "ActorEffector.h"
 #include "EffectorZoomInertion.h"
 #include "ActorCondition.h"
+#include "CActorAuraPostEffectsBalancer.h"
 #include "UIGameCustom.h"
 #include "clsid_game.h"
 #include "game_cl_base_weapon_usage_statistic.h"
@@ -2680,6 +2681,8 @@ void CActor::shedule_Update	(u32 DT)
 {
 	PROF_EVENT("CActor shedule_Update");
 	setSVU							(OnServer());
+
+	CActorAuraPostEffectsBalancer::update	();
 
 	if (cam_active == eacFirstEye && !psGameFlags.test(rsActorShadow))
 	{
