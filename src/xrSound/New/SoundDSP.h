@@ -1,5 +1,5 @@
 /**************************************************************************************
-* Copyright (C) 2025 Anton Kovalev (vertver)
+* Copyright (C) 2026 Anton Kovalev (vertver)
 * New Sound Engine
 ***************************************************************************************
 * Source code is licensed under the following terms:
@@ -30,35 +30,33 @@
 #pragma once
 #include "SoundMixerInternal.h"
 
-// linear -> dB conversion
-inline double lin2dB(double lin)
+inline double
+lin2dB(double lin)
 {
-	return log(lin) * 8.6858896380650365530225783783321;		// 20 / ln( 10 )
+    return log(lin) * 8.6858896380650365530225783783321;
 }
 
-// dB -> linear conversion
-inline double dB2lin(double dB)
+inline double
+dB2lin(double db)
 {
-	return exp(dB * 0.11512925464970228420089957273422);		// ln( 10 ) / 20
+    return exp(db * 0.11512925464970228420089957273422);
 }
 
-struct dsp_stuff
-{
-	f32 Dt;
-	f32* Panning;
-	const Fvector* CameraPosition;
-	const Fvector* CameraDirection;
-	const Fvector* CameraNormal;
-	const Fvector* CameraVelocity;
-	const Fvector* ObjPosition;
-	const Fvector* ObjVelocity;
-	f32* Doppler;
-};
+typedef struct _dsp_spatial_desc {
+    float* panning;
+    const Fvector* camera_position;
+    const Fvector* camera_direction;
+    const Fvector* camera_normal;
+    const Fvector* camera_velocity;
+    const Fvector* obj_position;
+    const Fvector* obj_velocity;
+    float* doppler;
+} dsp_spatial_desc;
 
-void DSP_CalculateRelativePosition(const dsp_stuff& stuff, Fvector& out_pos, float& out_distance);
-void DSP_Doppler(const dsp_stuff& stuff, float distance);
-void DSP_SpatialProcess(float** buffer, const Fvector& distances, const dsp_stuff& stuff, bool disable_attenuation);
-void DSP_ResampleBuffer(float** input, float** output, float history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY+1], u32 input_frames, u32 output_frames); // requires +1 sample of tail
-void DSP_Compressor(float attack_ms, float release_ms, float threshold_db, float ratio, float** data, float drywet, u32 frames, float envelope[SND_CHANNEL_COUNT]);
-void DSP_MixBuffer(float** mix_buffer, float** data, float begin_factor, float end_factor, u32 frames);
-void DSP_MixBufferPanning(float** mix_buffer, float** data, float begin_factor, float end_factor, float left, float right, u32 frames);
+void DSP_CalculateRelativePosition(const dsp_spatial_desc* desc, Fvector* out_pos, float* out_distance);
+void DSP_Doppler(const dsp_spatial_desc* desc, float distance);
+float DSP_Attenuation(const Fvector* distances, float distance, float power);
+void DSP_SpatialProcess(float** buffer, const Fvector* distances, const dsp_spatial_desc* desc);
+void DSP_ResampleBuffer(float** input, float** output, float* phase, u32 input_frames, u32 output_frames);
+void DSP_Compressor(float attack_ms, float release_ms, float threshold_db, float ratio, float** data, float drywet, u32 frames, float* envelope);
+void DSP_MixBuffer(float** mix_buffer, float** data, float begin_factor, float end_factor, float left, float right, u32 frames);

@@ -173,9 +173,6 @@ void
 XRay::Sound::Backend::Shutdown()
 {
     backend_state.is_stopping = true;
-    if (backend_state.sound_thread) {
-        Platform::JoinThread(backend_state.sound_thread);
-        backend_state.sound_thread = 0;
-    }
+    Platform::WaitForSingleObject(backend_state.sound_thread);
     backend_state.is_running = false;
 }

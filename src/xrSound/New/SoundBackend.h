@@ -1,5 +1,5 @@
 /**************************************************************************************
-* Copyright (C) 2025 Anton Kovalev (vertver)
+* Copyright (C) 2026 Anton Kovalev (vertver)
 * New Sound Engine
 ***************************************************************************************
 * Source code is licensed under the following terms:
@@ -30,9 +30,8 @@
 #pragma once
 #include "SoundMeta.h"
 
-namespace XRay::Sound::Backend
-{
+namespace XRay::Sound::Backend {
     XRSOUND_API void Initialize(audio_render_callback render_callback, audio_precache_callback precache_callback);
-    XRSOUND_API void ChangeDevice(u32 DeviceID);
+    XRSOUND_API void ChangeDevice(u32 device_id);
     XRSOUND_API void Shutdown();
 }

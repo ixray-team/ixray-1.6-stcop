@@ -9,9 +9,6 @@
 
 Для реверберации используется [Resonance Audio](https://github.com/resonance-audio/resonance-audio)
 
-### Dev: SteamAudio (Phonon)
-В коде есть первичная реализация SteamAudio (Phonon). Если кто-то захочет попробовать его, как альтернативу Resonance Audio, то может отключить `#define DISABLE_STEAM_AUDIO`. 
-
 ![image](https://github.com/user-attachments/assets/8350c915-e1ec-4ea8-9485-a4dfc71c0543)
 
 Реализовано:
