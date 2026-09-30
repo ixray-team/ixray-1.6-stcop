@@ -73,6 +73,33 @@ bool CPPEffectorControllerAura::update()
 #define FAKE_MAX_ADD_DIST	90.f
 #define FAKE_MIN_ADD_DIST	20.f
 
+void CControllerAura::activate()
+{
+	if (m_active)
+		return;
+
+	m_active = true;
+	CActorAuraPostEffectsBalancer::RegisterEffect	(
+		EAuraPostEffectType::Psi, 1.f, m_object->ID(), aura_radius, m_pp_section);
+
+	aura_sound.left.play	(Actor(), sm_2D);
+	aura_sound.left.set_panning	(1.0, 0.0);
+	aura_sound.right.play	(Actor(), sm_2D);
+	aura_sound.right.set_panning	(0.0, 1.0);
+}
+
+void CControllerAura::deactivate()
+{
+	if (!m_active)
+		return;
+
+	m_active = false;
+	CActorAuraPostEffectsBalancer::UnregisterEffect	(
+		EAuraPostEffectType::Psi, m_object->ID(), m_pp_section);
+
+	if (aura_sound.left.is_playing())	aura_sound.left.stop();
+	if (aura_sound.right.is_playing())	aura_sound.right.stop();
+}
 
 void CControllerAura::update_schedule()
 {
@@ -86,25 +113,18 @@ void CControllerAura::update_schedule()
 		// first time? 
 		if (m_time_fake_aura == 0) {
 			m_time_fake_aura = time() + 5000 + Random.randI(FAKE_AURA_DELAY);
-			
-			if (active()) {
-				m_effector->switch_off	();
-				m_effector				= 0;
-			}
+			deactivate();
 		} else {
-			if (active()) {
+			if (m_active) {
 				// check to stop
 				if (m_time_fake_aura < time())  {
-					m_effector->switch_off	();
-					m_effector				= 0;
+					deactivate();
 					m_time_fake_aura		= time() + 5000 + Random.randI(FAKE_AURA_DELAY);
 				}
 			} else {
 				// check to start
 				if (m_time_fake_aura < time())  {
-					m_effector = new CPPEffectorControllerAura	(m_state, 5000, aura_sound.left, aura_sound.right);
-					Actor()->Cameras().AddPPEffector				(m_effector);
-
+					activate();
 					m_time_fake_aura		= time() + 5000 + Random.randI(FAKE_AURA_DURATION);
 				}
 			}
@@ -114,30 +134,22 @@ void CControllerAura::update_schedule()
 
 		bool need_be_active		= (dist_to_actor < aura_radius);
 
-		if (active()) {
+		if (m_active) {
 			if (!need_be_active) {
-				m_effector->switch_off	();
-				m_effector				= 0;
-				
+				deactivate();
 				m_hit_state				= eNone;
-
-			} else {
 			}
 		} else {
 			if (need_be_active) {
-				// create effector
-				m_effector = new CPPEffectorControllerAura	(m_state, 5000, aura_sound.left, aura_sound.right);
-				Actor()->Cameras().AddPPEffector				(m_effector);
-				
+				activate();
 				m_hit_state			= eEffectoring;
 				m_time_started		= time();
-			} else {
 			}
 		}
 		
 	}
 
-	if (active()) {
+	if (m_active) {
 		CEffectorCam* ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effControllerAura2);
 		if(!ce) AddEffector(Actor(), effControllerAura2, "effector_controller_aura2", 0.15f);
 	}else{
@@ -171,16 +183,14 @@ void CControllerAura::update_frame()
 
 void CControllerAura::on_death()
 {
-	if (active()) {
-		m_effector->switch_off	();
-		m_effector				= 0;
-		m_hit_state				= eNone;
-	}
+	deactivate();
+	m_hit_state = eNone;
 }
 
 void CControllerAura::load(const char* section)
 {
-	inherited::load				(pSettings->r_string(section,"aura_effector"));
+	m_pp_section			= pSettings->r_string(section,"aura_effector");
+	inherited::load				(*m_pp_section);
 	
 	aura_sound.left.create		(pSettings->r_string(section,"PsyAura_SoundLeftPath"),st_Effect,sg_SourceType);
 	aura_sound.right.create		(pSettings->r_string(section,"PsyAura_SoundRightPath"),st_Effect,sg_SourceType);

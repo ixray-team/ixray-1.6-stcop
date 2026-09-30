@@ -57,6 +57,12 @@ void CPsyDogAura::reinit()
 	VERIFY(m_actor);
 }
 
+void CPsyDogAura::load(const char* section)
+{
+	m_section = section;
+	CPPEffectorCustomController<CPPEffectorPsyDogAura>::load(section);
+}
+
 void CPsyDogAura::update_schedule()
 {
 	if (!m_object->g_Alive() || !m_actor)
@@ -97,26 +103,18 @@ void CPsyDogAura::update_schedule()
 	bool const close_to_actor	=	m_actor ? m_object->Position().distance_to(m_actor->Position()) < 30 : false;
 	bool const need_be_active	=	((m_time_actor_saw_phantom + 2000 > time()) || 
 									(m_time_phantom_saw_actor + 10000 > time())) && close_to_actor;
-	if (active()) {
-		if (!need_be_active) {
-			m_effector->switch_off	();
-			m_effector				= 0;
-		}
-	} else {
-		if (need_be_active) {
-			// create effector
-			m_effector = new CPPEffectorPsyDogAura(m_state, 5000);
-			Actor()->Cameras().AddPPEffector		(m_effector);
-		}
-	}
 
+	if (need_be_active)
+		CActorAuraPostEffectsBalancer::RegisterEffect	(
+			EAuraPostEffectType::Psi, 1.f, m_object->ID(), 30.f, m_section);
+	else
+		CActorAuraPostEffectsBalancer::UnregisterEffect	(
+			EAuraPostEffectType::Psi, m_object->ID(), m_section);
 }
 
 void CPsyDogAura::on_death()
 {
-	if (active()) {
-		m_effector->switch_off	();
-		m_effector				= 0;
-	}
+	CActorAuraPostEffectsBalancer::UnregisterEffect	(
+		EAuraPostEffectType::Psi, m_object->ID(), m_section);
 }
 

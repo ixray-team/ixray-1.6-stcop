@@ -2,17 +2,31 @@
 #include "zone_effector.h"
 #include "Level.h"
 #include "../xrEngine/xr_object.h"
-#include "../xrEngine/CameraManager.h"
 #include "Actor.h"
-#include "ActorEffector.h"
-#include "PostprocessAnimator.h"
 #include "CustomOutfit.h"
 
-CZoneEffector::CZoneEffector() 
+namespace
 {
-	m_pp_effector	= nullptr;
-	m_pActor		= nullptr;
-	m_factor		= 0.1f;
+	EAuraPostEffectType hit_type_to_aura_type(ALife::EHitType hit_type)
+	{
+		switch (hit_type)
+		{
+		case ALife::eHitTypeLightBurn:
+		case ALife::eHitTypeBurn:
+		case ALife::eHitTypeFireWound:	return EAuraPostEffectType::Fire;
+		case ALife::eHitTypeRadiation:	return EAuraPostEffectType::Radiation;
+		case ALife::eHitTypeTelepatic:	return EAuraPostEffectType::Psi;
+		default:						return EAuraPostEffectType::Chemical;
+		}
+	}
+}
+
+CZoneEffector::CZoneEffector()
+{
+	m_pActor	= nullptr;
+	m_factor	= 0.1f;
+	m_object_id	= cInvalidAuraObjectID;
+	m_type		= EAuraPostEffectType::Chemical;
 }
 
 CZoneEffector::~CZoneEffector()
@@ -22,12 +36,8 @@ CZoneEffector::~CZoneEffector()
 
 void CZoneEffector::Load(const char* section)
 {
-    if (pSettings->line_exist(section, "pp_eff_name"))
-        m_pp_fname = pSettings->r_string(section, "pp_eff_name");
-    else if (pSettings->line_exist(section, "ppe_file"))
-        m_pp_fname = pSettings->r_string(section, "ppe_file");
-    else
-        VERIFY2(pSettings->line_exist(section, "pp_eff_name"), section);
+	VERIFY2(pSettings->line_exist(section, "pp_eff_name") || pSettings->line_exist(section, "ppe_file"), section);
+	m_pp_section			= section;
 	r_min_perc				= pSettings->r_float(section,"radius_min");
 	r_max_perc				= pSettings->r_float(section,"radius_max");
 	VERIFY					(r_min_perc <= r_max_perc);
@@ -35,76 +45,53 @@ void CZoneEffector::Load(const char* section)
 
 void CZoneEffector::Activate()
 {
-	CObject* obj = Level().CurrentEntity();
-	m_pActor = obj != nullptr ? obj->cast_actor() : nullptr;
-
-	if (m_pActor == nullptr)
-	{
-		return;
-	}
-
-	m_pp_effector = new CPostprocessAnimatorLerp();
-	m_pp_effector->SetType(EEffectorPPType(u32(u64(this) & u32(-1))));
-	m_pp_effector->SetCyclic(true);
-	m_pp_effector->SetFactorFunc(xr_make_delegate(this, &CZoneEffector::GetFactor));
-	m_pp_effector->Load(*m_pp_fname);
-	m_pActor->Cameras().AddPPEffector(m_pp_effector);
-
+	CActorAuraPostEffectsBalancer::RegisterEffect	(
+		m_type, m_factor, m_object_id, flt_max, m_pp_section);
 }
 
 void CZoneEffector::Stop()
 {
-	if (m_pp_effector == nullptr)
-	{
+	if (m_object_id == cInvalidAuraObjectID)
 		return;
-	}
 
-	m_pActor->Cameras().RemovePPEffector(EEffectorPPType(u32(u64(this) & u32(-1))));
-	m_pp_effector = nullptr;
-	m_pActor = nullptr;
-};
+	CActorAuraPostEffectsBalancer::UnregisterEffect	(m_type, m_object_id, m_pp_section);
+	m_object_id	= cInvalidAuraObjectID;
+	m_pActor	= nullptr;
+}
 
-void CZoneEffector::Update(float dist, float r, ALife::EHitType hit_type)
+void CZoneEffector::Update(u32 object_id, float dist, float r, ALife::EHitType hit_type)
 {
 	float min_r = r * r_min_perc;
 	float max_r = r * r_max_perc;
 
 	CObject* obj = Level().CurrentEntity();
-	bool camera_on_actor = obj != nullptr && obj->cast_actor() != nullptr;
+	m_pActor = obj != nullptr ? obj->cast_actor() : nullptr;
 
-	if (m_pp_effector)
+	if (m_pActor == nullptr || !m_pActor->g_Alive())
 	{
-		if ((dist > max_r) || !camera_on_actor || (m_pActor && !m_pActor->g_Alive()))
-		{
-			Stop();
-		}
-	}
-	else
-	{
-		if ((dist < max_r) && camera_on_actor)
-		{
-			Activate();
-		}
+		Stop();
+		return;
 	}
 
 	float protection = 0.f;
-	if (m_pActor)
+	CCustomOutfit* outfit = m_pActor->GetOutfit();
+	if (outfit)
 	{
-		CCustomOutfit* outfit = m_pActor->GetOutfit();
-		if (outfit)
-		{
-			protection = outfit->GetDefHitTypeProtection(hit_type);
-		}
+		protection = outfit->GetDefHitTypeProtection(hit_type);
 	}
 
-	if (m_pp_effector)
-	{
-		m_factor = ((max_r - dist) / (max_r - min_r)) - protection;
-		clamp(m_factor, 0.01f, 1.0f);
-	}
-}
+	m_factor = ((max_r - dist) / (max_r - min_r)) - protection;
+	clamp(m_factor, 0.01f, 1.0f);
 
-float CZoneEffector::GetFactor	()
-{
-	return m_factor;
+	m_object_id	= object_id;
+	m_type		= hit_type_to_aura_type(hit_type);
+
+	if (dist < max_r)
+	{
+		Activate();
+	}
+	else
+	{
+		Stop();
+	}
 }
