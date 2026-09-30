@@ -3,6 +3,7 @@
 // Effector controlling class
 ////////////////////////////////////////////////////////////////////////
 #include "../../../pp_effector_custom.h"
+#include "../../../CActorAuraPostEffectsBalancer.h"
 
 class CController;
 
@@ -48,6 +49,8 @@ class CControllerAura : public CPPEffectorCustomController<CPPEffectorController
 	float				m_fake_max_add_dist;
 	float				m_fake_min_add_dist;
 
+	bool				m_active;
+	shared_str			m_pp_section;
 
 	// hits
 	enum {
@@ -62,12 +65,16 @@ class CControllerAura : public CPPEffectorCustomController<CPPEffectorController
 
 
 public:
-					CControllerAura			(CController *monster) : m_object(monster){}
+					CControllerAura			(CController *monster) : m_object(monster), m_active(false){}
 	virtual void	load					(const char* section);
 
 			void	on_death				();
 			void	update_schedule			();
 			void	update_frame			();
+
+private:
+			void	activate				();
+			void	deactivate				();
 };
 
 

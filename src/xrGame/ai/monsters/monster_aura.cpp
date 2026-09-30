@@ -20,7 +20,7 @@ namespace detail
 } // namespace detail
 
 monster_aura::monster_aura (CBaseMonster* const object, const char* const name) 
-						: m_object(object), m_pp_effector_name(nullptr), m_pp_index(0)
+						: m_object(object), m_pp_effector_name(nullptr)
 {
 	xr_strcpy							(m_name, sizeof(m_name), name); 
 	m_detect_snd_time	=	0.0f;
@@ -137,14 +137,21 @@ bool   monster_aura::check_work_condition () const
 
 void   monster_aura::remove_pp_effector ()
 {
-	if ( m_pp_index != 0 && Actor() )
+	if ( m_pp_effector_name && m_pp_effector_name[0] )
 	{
-		RemoveEffector					(Actor(), m_pp_index);
-		m_pp_index					=	0;
+		CActorAuraPostEffectsBalancer::UnregisterEffect	(post_effect_type(), m_object->ID(), m_pp_effector_name);
 
 		m_sound.stop					();
 		m_detect_sound.stop				();
 	}
+}
+
+EAuraPostEffectType   monster_aura::post_effect_type () const
+{
+	if ( !xr_strcmp(m_name, "psy") )		return EAuraPostEffectType::Psi;
+	if ( !xr_strcmp(m_name, "fire") )		return EAuraPostEffectType::Fire;
+	if ( !xr_strcmp(m_name, "radiation") )	return EAuraPostEffectType::Radiation;
+	return EAuraPostEffectType::Chemical;
 }
 
 float   monster_aura::get_post_process_factor () const
@@ -215,16 +222,18 @@ void   monster_aura::update_schedule ()
 
 	if ( pp_factor > 0.01f )
 	{
-		if ( !m_pp_index )
-		{
-			m_pp_index				=	Actor()->Cameras().RequestPPEffectorId();
-			AddEffector					(Actor(), m_pp_index, m_pp_effector_name, 
-										GET_KOEFF_FUNC(this, &monster_aura::get_post_process_factor));
-		}
+		CActorAuraPostEffectsBalancer::RegisterEffect	(
+			monster_aura::post_effect_type	(),
+			pp_factor,
+			m_object->ID						(),
+			m_max_distance,
+			m_pp_effector_name					);
 	}
-	else if ( m_pp_index != 0 )
+	else
 	{
-		RemoveEffector					(Actor(), m_pp_index);
-		m_pp_index					=	0;
+		CActorAuraPostEffectsBalancer::UnregisterEffect	(
+			monster_aura::post_effect_type	(),
+			m_object->ID						(),
+			m_pp_effector_name					);
 	}
 }

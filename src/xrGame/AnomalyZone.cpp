@@ -607,7 +607,7 @@ void CAnomalyZone::UpdateWorkload	(u32 dt)
 
 		if (m_actor_effector)
 		{
-			m_actor_effector->Update(m_fDistanceToCurEntity, radius, m_eHitTypeBlowout);
+			m_actor_effector->Update(ID(), m_fDistanceToCurEntity, radius, m_eHitTypeBlowout);
 		}
 	}
 
