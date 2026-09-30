@@ -1,6 +1,5 @@
 #include "common.hlsli"
 
-uniform float4 mblur_params;
 #define MBLUR_SAMPLES 6
 
 inline void SampleImage(inout float4 Final, in float2 SampleUV, in float CenterDepth)

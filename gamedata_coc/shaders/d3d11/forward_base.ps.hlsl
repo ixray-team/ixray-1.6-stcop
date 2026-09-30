@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "sload.hlsli"
+#include "hud_raindrops.hlsli"
 #include "shadow.hlsli"
 
 #ifdef USE_OFFSCREEN_REFLECTIONS
@@ -9,10 +10,6 @@
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 
-#ifdef FORWARD_LIGHT
-	uniform float4 L_model_light_color;
-	uniform float4 L_model_light_dir;
-#endif
 	
 #ifndef USE_LENGTH_BUFFER
 	#define OutStructure IXRayForward
@@ -31,6 +28,11 @@ void main(p_bumped_new I, out OutStructure O)
     M.Depth = I.position.z;
     M.Point = I.position.xyz;
 
+#ifdef USE_HUD_RAINDROPS
+    HudRainDrops hudRain = HudRain_Evaluate(I.drops_basis.xyz, I.drops_basis.w);
+    HudRain_OffsetColorUv(I.tcdh.xy, hudRain);
+#endif
+
     SloadNew(I, M);
 	
 #if defined(USE_LENGTH_BUFFER) && defined(USE_AREF)
@@ -48,6 +50,15 @@ void main(p_bumped_new I, out OutStructure O)
 #endif
 
     M.Normal = normalize(M.Normal);
+
+#ifdef USE_HUD_RAINDROPS
+#if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
+    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(true));
+#else
+    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(false));
+#endif
+    HudRain_Wet(M, hudRain);
+#endif
 
 #ifdef USE_LM_HEMI
     float4 hs = s_hemi.Sample(smp_rtlinear, I.tcdh.zw);

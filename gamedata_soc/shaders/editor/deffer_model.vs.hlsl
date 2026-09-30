@@ -10,9 +10,9 @@ void skinned_main(in v_model I, out p_bumped_new O)
     O.tcdh = float4(I.tc.xy, hemi_val, 0.5f);
     O.position = float4(Pe, 1.0f);
 
-    O.M1 = mul(m_WV, I.N.xyz * 2.0f);
-    O.M2 = mul(m_WV, I.T.xyz * 2.0f);
-    O.M3 = mul(m_WV, I.B.xyz * 2.0f);
+    O.M1 = mul((float3x3)m_WV, I.N.xyz * 2.0f);
+    O.M2 = mul((float3x3)m_WV, I.T.xyz * 2.0f);
+    O.M3 = mul((float3x3)m_WV, I.B.xyz * 2.0f);
 
     O.hpos = mul(m_WVP, I.P);
 }

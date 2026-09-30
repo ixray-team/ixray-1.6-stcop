@@ -28,12 +28,11 @@ struct HS_CONSTANT_DATA_OUTPUT
 #endif
 };
 
-float triLOD;
 
 void ComputeTessFactor(out float Edges[3] : SV_TessFactor, out float Inside : SV_InsideTessFactor)
 {
-    Edges[0] = Edges[1] = Edges[2] = triLOD;
-    Inside = triLOD;
+    Edges[0] = Edges[1] = Edges[2] = triLOD.x;
+    Inside = triLOD.x;
 }
 
 void ComputePNPatch(float3 P[3], float3 N[3], out PNPatch patch)
