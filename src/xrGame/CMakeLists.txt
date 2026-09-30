@@ -205,6 +205,7 @@ if (IXRAY_UNITYBUILD)
     	target_compile_options(xrGame PRIVATE /bigobj)
 	endif()
 	set_source_files_properties(../xrServerEntities/script_engine_export.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+	set_source_files_properties(CActorAuraPostEffectsBalancer.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 endif()
 
 if (WIN32 AND IXRAY_UNITYBUILD AND IXRAY_CROSS_COMPILATION)

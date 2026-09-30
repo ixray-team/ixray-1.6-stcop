@@ -4,6 +4,7 @@
 #include "../energy_holder.h"
 #include "../../../../xrScripts/script_export_space.h"
 #include "Grenade.h"
+#include "../../../CActorAuraPostEffectsBalancer.h"
 
 class CPhysicsShellHolder;
 class CStateManagerPoltergeist;
@@ -38,7 +39,6 @@ class CPoltergeist final : public CBaseMonster, public CTelekinesis, public CEne
 	TTime m_last_detection_time;
 	Fvector m_last_actor_pos;
 	const char* m_detection_pp_effector_name;
-	u32 m_detection_pp_type_index;
 	float m_detection_near_range_factor;
 	float m_detection_far_range_factor;
 	float m_detection_far_range;
