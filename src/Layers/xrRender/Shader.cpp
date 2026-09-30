@@ -113,7 +113,10 @@ bool Shader::equal	(Shader& S)
 		E[1] && E[1]->equal(&*S.E[1]) &&
 		E[2] && E[2]->equal(&*S.E[2]) &&
 		E[3] && E[3]->equal(&*S.E[3]) &&
-		E[4] && E[4]->equal(&*S.E[4]);
+		E[4] && E[4]->equal(&*S.E[4]) &&
+		E[5] && E[5]->equal(&*S.E[5]) &&
+		E[6] && E[6]->equal(&*S.E[6]) &&
+		E[7] && E[7]->equal(&*S.E[7]);
 }
 bool Shader::equal	(Shader* S)
 {	return	equal(*S);	}

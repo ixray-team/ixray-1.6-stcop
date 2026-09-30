@@ -262,9 +262,16 @@ void CRenderTarget::phase_combine()
 
 	RCache.set_Stencil(FALSE);
 
-	phase_bloom_downsample();
-	phase_bloom_upsample();
+	if (ps_r4_bloom_mode != 1)
+	{
+		phase_bloom_downsample();
+		phase_bloom_upsample();
+	}
+	if (ps_r4_bloom_mode != 0)
+		phase_compute_bloom();
 	phase_new_luminance();
+	phase_compute_luminance();
+	phase_bake_tonemap_lut();
 
 	u_setrt(rt_Back_Buffer, 0, 0, 0);
 	RImplementation.rmNormal();
@@ -288,7 +295,8 @@ void CRenderTarget::phase_combine()
 		RCache.set_c("dof_params", dof.x, dof.y, dof.z, ps_r2_dof_sky);
 		RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
 		RCache.set_c("autoexposure_params", ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
-		RCache.set_c("bloom_params", ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.f);
+		RCache.set_c("bloom_params", ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount,
+			(ps_r4_bloom_mode == 1 || (ps_r4_bloom_mode == 2 && ps_r4_bloom_compute)) ? 1.f : 0.f);
 		RCache.set_c("tonemap_params", ps_r2_tonemap_compression, ps_r2_tonemap_desaturation, ps_r2_tonemap_crossfeed, ps_r2_tonemap_vibrance);
 		RCache.set_c("bloom_tint", ps_r2_bloom_tint_color.x, ps_r2_bloom_tint_color.y, ps_r2_bloom_tint_color.z, 1.f);
 		RCache.set_Geometry(FSTriangleGeom);

@@ -86,7 +86,7 @@ void CRenderTarget::phase_bloom_downsample()
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(false);
 
-	RCache.set_Element(s_bloom_downsample->E[5]);
+	RCache.set_Element(s_bloom_downsample->E[6]);
 	RCache.set_c("downsample_params", float(dwWidth), float(dwHeight), 1.0f / float(dwWidth), 1.0f / float(dwHeight));
 
 	RCache.set_Geometry(FSTriangleGeom);

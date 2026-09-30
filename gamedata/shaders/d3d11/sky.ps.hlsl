@@ -72,27 +72,27 @@ void main(in v2p I, out sky O)
 
     #endif
 
-    const float3 s0 = s_sky0.SampleLevel(smp_rtlinear,TexCoord,0.0f).xyz;
-    const float3 s1 = s_sky1.SampleLevel(smp_rtlinear,TexCoord,0.0f).xyz;
-    float3 sky_color = lerp(s0, s1, I.factor.w);
+    //const float3 s0 = s_sky0.SampleLevel(smp_rtlinear,TexCoord,0.0f).xyz;
+    //const float3 s1 = s_sky1.SampleLevel(smp_rtlinear,TexCoord,0.0f).xyz;
+    //float3 sky_color = lerp(s0, s1, I.factor.w);
 
     #ifdef USE_BGRA_SKYCOLOR
 
-        sky_color *= L_sky_color.zyx;
+        //sky_color *= L_sky_color.zyx;
 
     #else
 
-        sky_color *= L_sky_color.xyz;
+        //sky_color *= L_sky_color.xyz;
 
     #endif
 
     #ifdef USE_LEGACY_SKY_TONEMAP
 
-        O.Color =float4(detonemap(sky_color * 0.66f), 0.0f);
+        //O.Color =float4(detonemap(sky_color * 0.66f), 0.0f);
 
     #else
 
-        O.Color =float4(GammaToLinear(sky_color), 0.0f);
+        //O.Color =float4(GammaToLinear(sky_color), 0.0f);
 
     #endif
 #endif // USE_PROCEDURAL_SKY_VIEW

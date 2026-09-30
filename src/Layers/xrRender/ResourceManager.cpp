@@ -249,6 +249,24 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const 
 		C._cpp_Compile		(&E);
 		S.E[5]				= _CreateElement	(E);
 	}
+
+		// Compile element
+	{
+		C.iElement = 6;
+		C.bDetail = false;
+		ShaderElement E;
+		C._cpp_Compile(&E);
+		S.E[6] = _CreateElement(E);
+	}
+
+		// Compile element
+	{
+		C.iElement = 7;
+		C.bDetail = false;
+		ShaderElement E;
+		C._cpp_Compile(&E);
+		S.E[7] = _CreateElement(E);
+	}
 	
 	Shader* ResultShader = _CreateShader(&S);
 	return ResultShader;

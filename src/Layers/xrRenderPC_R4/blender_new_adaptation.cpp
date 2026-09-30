@@ -8,7 +8,7 @@ void CBlender_new_adaptation::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    if (!ps_r2_new_autoexposure)
+    if (!ps_r2_new_autoexposure && C.iElement < 4)
     {
         RImplementation.addShaderOption("USE_CLASSIQUE_TONEMAP", "1");
     }
@@ -17,7 +17,7 @@ void CBlender_new_adaptation::Compile(CBlender_Compile& C)
     {
     case 0:
         C.r_Pass("stub_fullscreen_triangle", "bloom_lum_copy", false, false, false);
-        C.r_dx10Texture("s_image", r2_RT_bloomA);
+        C.r_dx10Texture("s_image", C.L_textures[0]);
 
         C.r_dx10Sampler("smp_rtlinear");
         C.r_dx10Sampler("smp_nofilter");
@@ -64,6 +64,16 @@ void CBlender_new_adaptation::Compile(CBlender_Compile& C)
 
         C.r_End();
 
+        break;
+    case 4:
+        C.r_ComputePass("bloom_lum_histogram");
+        C.r_dx10Texture("s_image", r2_RT_generic);
+        C.r_End();
+        break;
+    case 5:
+        C.r_ComputePass("bloom_lum_reduce");
+        C.r_dx10Texture("s_histogram", r4_RT_lum_histogram);
+        C.r_End();
         break;
     }
 

@@ -145,6 +145,9 @@ extern ECORE_API bool		ps_r2_autoexposure_soft_log;			// autoexposure soft log (
 extern ECORE_API float		ps_r2_autoexposure_soft_log_k;			// autoexposure soft log acceptance in EV (for soft log)
 extern ECORE_API float		ps_r2_autoexposure_soft_limiter;		// autoexposure soft limiter in EV (for soft log)
 extern ECORE_API float		ps_r2_autoexposure_sensitivity;			// autoexposure sensitivity (for soft log)
+extern ECORE_API int ps_r4_bloom_mode;
+extern ECORE_API int ps_r4_bloom_compute_levels;
+extern ECORE_API bool ps_r4_bloom_compute;
 extern ECORE_API float		ps_r2_bloom_amount;						// bloom amount, exposure independant (0.04f)
 extern ECORE_API float		ps_r2_bloom_desaturation;				// bloom desaturation (0.1f)
 extern ECORE_API float		ps_r2_bloom_tint_amount;				// bloom tint amount (0.1f)

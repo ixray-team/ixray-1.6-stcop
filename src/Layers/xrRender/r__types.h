@@ -79,6 +79,10 @@
 	#define r2_RT_lumA "$user$lum_A"
 	#define r2_RT_lumB "$user$lum_B"
 	#define r2_RT_lumC "$user$lum_C"
+	#define r4_RT_lum_histogram "$user$lum_histogram"
+	#define r4_RT_lum_compute "$user$lum_compute"
+	#define r4_RT_tonemap_state "$user$tonemap_state"
+	#define r4_RT_tonemap_lut "$user$tonemap_lut"
 #else
 	#define r2_RT_bloom1 "$user$bloom1"
 	#define r2_RT_bloom2 "$user$bloom2"

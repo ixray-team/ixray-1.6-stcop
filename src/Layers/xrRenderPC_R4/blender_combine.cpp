@@ -105,7 +105,12 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture("s_normal", r2_RT_N);
 		C.r_dx10Texture("s_image", r2_RT_generic);
 		C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
+		C.r_dx10Texture("s_tonemap_compute", r4_RT_lum_compute);
+		C.r_dx10Texture("s_tonemap_state", r4_RT_tonemap_state);
+		C.r_dx10Texture("s_tonemap_lut", r4_RT_tonemap_lut);
+		C.r_dx10Texture("s_histogram", r4_RT_lum_histogram);
 		C.r_dx10Texture("s_bloom", r2_RT_bloomA2);
+		C.r_dx10Texture("s_bloom_compute", "$user$compute_bloom_up_0");
 
 		if (is_loot_present)
 		{

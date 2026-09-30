@@ -1223,10 +1223,17 @@ void CSVGStorage::ResolveSvgRasterDraw(const std::string_view& filesystemSubpath
 	if (itEntry == m_storage_textures.end())
 	{
 		AtlasConnection lookup = try_allocate(atlasTableKey, filesystemSubpath, static_cast<float>(useW), static_cast<float>(useH), nullptr, tint);
-		R_ASSERT(lookup.isValid() && "failed to allocate!");
+		const size_t atlasIndex = static_cast<unsigned char>(lookup.atlas_ids[0]);
+		const bool valid = lookup.isValid() && atlasIndex < m_storage_atlases.size();
+		R_ASSERT(valid && "failed to allocate valid atlas entry!");
+		if (!valid)
+		{
+			*outShader = m_p_default_shader;
+			FillDefaultAtlasUvForSize(useW, useH, *outUv);
+			return; // Never cache a failed lookup or use its -1 atlas index.
+		}
 		m_storage_textures.insert_or_assign(atlasTableKey, lookup);
-		const char idx = lookup.atlas_ids[0];
-		CTextureAtlas& atlas = m_storage_atlases[static_cast<size_t>(static_cast<unsigned char>(idx))];
+		CTextureAtlas& atlas = m_storage_atlases[atlasIndex];
 		FactoryPtr<IUIShader>* pSh = atlas.getShader();
 		R_ASSERT(pSh && "must be valid!");
 		pFoundShader = pSh;
@@ -1269,9 +1276,16 @@ void CSVGStorage::ResolveSvgRasterDraw(const std::string_view& filesystemSubpath
 		if (!foundExact)
 		{
 			AtlasConnection lookup = try_allocate(atlasTableKey, filesystemSubpath, static_cast<float>(useW), static_cast<float>(useH), &lookupList, tint);
-			R_ASSERT(lookup.isValid() && "failed to allocate!");
-			const char idx = lookup.atlas_ids[0];
-			CTextureAtlas& atlas = m_storage_atlases[static_cast<size_t>(static_cast<unsigned char>(idx))];
+			const size_t atlasIndex = static_cast<unsigned char>(lookup.atlas_ids[0]);
+			const bool valid = lookup.isValid() && atlasIndex < m_storage_atlases.size();
+			R_ASSERT(valid && "failed to allocate valid atlas entry!");
+			if (!valid)
+			{
+				*outShader = m_p_default_shader;
+				FillDefaultAtlasUvForSize(useW, useH, *outUv);
+				return;
+			}
+			CTextureAtlas& atlas = m_storage_atlases[atlasIndex];
 			pFoundShader = atlas.getShader();
 			R_ASSERT(pFoundShader && "must be valid!");
 			hasUv = TryLookupUvForSize(lookup, useW, useH, uvRect, true);
@@ -1363,6 +1377,11 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const xr_string& atlasTab
 	bool was_added = false;
 	for (CTextureAtlas& atlas : m_storage_atlases)
 	{
+		if (requested_width > atlas.getWidth() || requested_height > atlas.getHeight())
+		{
+			++iter;
+			continue;
+		}
 		const bool status = try_add_data(atlasTableKey, filesystemSubpath, requested_width, requested_height, iter, atlas, p_existed ? *p_existed : result, tint);
 
 #ifdef DEBUG
@@ -1395,14 +1414,19 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const xr_string& atlasTableKe
 {
 	AtlasConnection result;
 
-	if (RequestedWidth <= SVGStorage_DefaultAtlasSize && requested_height <= SVGStorage_DefaultAtlasSize)
+	if (RequestedWidth > 0.f && requested_height > 0.f &&
+		RequestedWidth <= m_maxRasterPixels && requested_height <= m_maxRasterPixels)
 	{
 		char TextureName[32];
 
 		xr_sprintf(TextureName, sizeof(TextureName), "svg_atlas_%zu", m_storage_atlases.size());
 
 		CTextureAtlas Atlas;
-		const u32 atlas_id = init_atlas(SVGStorage_DefaultAtlasSize, SVGStorage_DefaultAtlasSize, TextureName, Atlas, true);
+		// Raster requests can exceed 512px at high display resolutions (e.g. F11
+		// capture at 4096x4096). Keep normal atlases small, but fit larger icons.
+		const u32 atlasWidth = std::max(u32(SVGStorage_DefaultAtlasSize), u32(RequestedWidth));
+		const u32 atlasHeight = std::max(u32(SVGStorage_DefaultAtlasSize), u32(requested_height));
+		const u32 atlas_id = init_atlas(atlasWidth, atlasHeight, TextureName, Atlas, true);
 		Atlas.setID(atlas_id);
 
 		R_ASSERT2(requested_height <= Atlas.getHeight(), "invalid height! Too big height");
@@ -1431,6 +1455,10 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const xr_string& atlasTableKe
 			const u32 storageIndex = static_cast<u32>(m_storage_atlases.size() - 1);
 			result.atlas_ids[0] = static_cast<char>(storageIndex);
 			m_atlasIdToStorageIndex[m_storage_atlases[storageIndex].getID()] = storageIndex;
+		}
+		else
+		{
+			Atlas.uninit();
 		}
 	}
 

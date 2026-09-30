@@ -807,7 +807,7 @@ CRenderTarget::CRenderTarget()
 
 		b_bloom_downsample = new CBlender_bloom_downsample();
 		b_bloom_upsample = new CBlender_bloom_upsample();
-		s_bloom_downsample.create(b_bloom_downsample);
+		s_bloom_downsample.create(b_bloom_downsample, nullptr, r2_RT_bloomE);
 		s_bloom_upsample.create(b_bloom_upsample);
 
 		rt_Bloom_A.create(r2_RT_bloomA, BW_A, BH_A, fmt);
@@ -823,6 +823,7 @@ CRenderTarget::CRenderTarget()
 		rt_Bloom_D2.create(r2_RT_bloomD2, BW_D, BH_D, fmt);
 		rt_Bloom_E2.create(r2_RT_bloomE2, BW_E, BH_E, fmt);
 		rt_Bloom_F2.create(r2_RT_bloomF2, BW_F, BH_F, fmt);
+		create_compute_bloom(get_target_width(), get_target_height());
 
 		fmt = ERHI_FORMAT::R32_FLOAT;
 		u32 LW_A = 1024, LH_A = 1024;
@@ -831,7 +832,8 @@ CRenderTarget::CRenderTarget()
 		u32 LW_D = 1, LH_D = 1;
 
 		b_new_adaptation = new CBlender_new_adaptation();
-		s_lum_copy.create(b_new_adaptation);
+		s_lum_copy.create(b_new_adaptation, nullptr, r2_RT_bloomA);
+		s_lum_copy_compute.create(b_new_adaptation, nullptr, "$user$compute_bloom_down_0");
 
 		rt_LUM_A.create(r2_RT_lumA, LW_A, LH_A, fmt);
 		rt_LUM_B.create(r2_RT_lumB, LW_B, LH_B, fmt);
@@ -840,6 +842,13 @@ CRenderTarget::CRenderTarget()
 		rt_LUM_D.create(r2_RT_luminance_cur, LW_D, LH_D, fmt);
 
 		GRHI->ClearTarget(rt_LUM_D->pRT, ERTColor::Gray);
+
+		rt_LUM_histogram.create(r4_RT_lum_histogram, 256, 1, ERHI_FORMAT::R32_UINT, 1, CRT::USE_UAV_FLAG);
+		rt_LUM_compute.create(r4_RT_lum_compute, 1, 1, fmt, 1, CRT::USE_UAV_FLAG);
+		GRHI->ClearTarget(rt_LUM_compute->pRT, ERTColor::Black);
+		rt_Tonemap_state.create(r4_RT_tonemap_state, 4, 1, fmt, 1, CRT::USE_UAV_FLAG);
+		GRHI->ClearTarget(rt_Tonemap_state->pRT, ERTColor::Black);
+		create_tonemap_lut();
 
 		f_bloom_factor = 0.5f;
 	}
@@ -1099,6 +1108,12 @@ CRenderTarget::~CRenderTarget	()
 		_RELEASE(rt_smap_depth_sun_dsv[i]);
 	}
 	
+	_RELEASE(u_tonemap_lut);
+	if (t_tonemap_lut)
+		t_tonemap_lut->surface_set(nullptr);
+	t_tonemap_lut.destroy();
+	_RELEASE(s_tonemap_lut_surface);
+
 	// Textures
 	t_material->surface_set		(nullptr);
 

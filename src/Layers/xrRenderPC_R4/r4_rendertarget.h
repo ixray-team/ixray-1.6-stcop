@@ -133,6 +133,17 @@ public:
 	ref_rt						rt_LUM_B;			// 32bit, 128x128,	log-average in all components
 	ref_rt						rt_LUM_C;			// 32bit, 16x16,	log-average in all components
 	ref_rt						rt_LUM_D;			// 64bit, 1x1,		log-average in all components
+	ref_rt						rt_LUM_histogram;	// 256x1, uint pixel counts
+	ref_rt						rt_compute_bloom_down[9];
+	ref_rt						rt_compute_bloom_up[9];
+	ref_shader					s_compute_bloom[9];
+	ref_rt						rt_LUM_compute;		// 1x1, adapted log-average
+	bool						compute_luminance_valid = false;
+	ref_rt						rt_Tonemap_state;	// 4x1: exposure, LUT max, exposed P05/P95
+	ref_shader					s_tonemap_lut_bake;
+	ref_texture					t_tonemap_lut;
+	IRHISurface*				s_tonemap_lut_surface = nullptr;
+	IRHIUnorderedAccessView*	u_tonemap_lut = nullptr;
 	//==================================================
 
 	//============== new Depth of Field ==============
@@ -274,6 +285,7 @@ private:
 	ref_shader					s_bloom_downsample;
 	ref_shader					s_bloom_upsample;
 	ref_shader					s_lum_copy;
+	ref_shader					s_lum_copy_compute;
 	ref_shader					s_lum_downsample;
 	ref_shader					s_lum_calc;
 	//=====================================================
@@ -441,6 +453,11 @@ public:
 	void						phase_bloom_downsample();
 	void						phase_bloom_upsample();
 	void						phase_new_luminance();
+	void						phase_compute_luminance();
+	void						create_tonemap_lut();
+	void						phase_bake_tonemap_lut();
+	void						create_compute_bloom(u32 width, u32 height);
+	void						phase_compute_bloom();
 	void						phase_new_dof();
 	void						phase_procedural_sky();
 	void						phase_procedural_clouds();

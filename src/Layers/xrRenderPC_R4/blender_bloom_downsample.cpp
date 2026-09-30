@@ -64,7 +64,8 @@ void CBlender_bloom_downsample::Compile(CBlender_Compile& C)
         break;
     case 5:
         C.r_Pass("stub_fullscreen_triangle", "bloom_downsample", false, false, false);
-        C.r_dx10Texture("s_image", r2_RT_bloomE);
+        //C.r_dx10Texture("s_image", r2_RT_bloomE);
+        C.r_dx10Texture("s_image", C.L_textures[0]);
 
         C.r_dx10Sampler("smp_rtlinear");
         C.r_dx10Sampler("smp_nofilter");
