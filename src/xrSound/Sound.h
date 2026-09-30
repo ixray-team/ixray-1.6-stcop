@@ -312,13 +312,13 @@ extern XRSOUND_API CSound_manager_interface*		Sound;
 /// ********* Sound ********* (utils, accessors, helpers)
 IC ref_sound_data::ref_sound_data				()																{	slot=0;g_type=0;g_object=0;s_type=st_Effect;			}
 IC ref_sound_data::ref_sound_data				( const char* fName, esound_type sound_type, int	game_type )			{	::Sound->_create_data			(*this,fName, sound_type, game_type);							}
-IC ref_sound_data::~ref_sound_data				()																{	::Sound->_destroy_data			(*this);																}
+IC ref_sound_data::~ref_sound_data				()																{	if (::Sound) ::Sound->_destroy_data(*this);																}
 
 IC void	ref_sound::create						( const char* name, esound_type sound_type, int	game_type)	{	 		::Sound->create		(*this,name,sound_type,game_type);							}
 IC void	ref_sound::attach_tail					( const char* name)											{	 		::Sound->attach_tail(*this,name);							}
 
 IC void	ref_sound::clone						( const ref_sound& from,esound_type sound_type, int	game_type)	{	::Sound->clone		(*this,from,sound_type,game_type);					}
-IC void	ref_sound::destroy						( )														{	 		::Sound->destroy	(*this);													}
+IC void	ref_sound::destroy						( )														{	if (::Sound) { ::Sound->destroy(*this); } else { _p._set(nullptr); }	}
 IC void	ref_sound::play							( CObject* O,						u32 flags, float d)	{	 		::Sound->play		(*this,O,flags,d);											}
 IC void	ref_sound::play_at_pos					( CObject* O, const Fvector &pos,	u32 flags, float d)	{	 		::Sound->play_at_pos(*this,O,pos,flags,d);										}
 IC void	ref_sound::play_no_feedback				( CObject* O, u32 flags, float d, Fvector* pos, float* vol, float* freq, Fvector2* range){	 ::Sound->play_no_feedback(*this,O,flags,d,pos,vol,freq,range);	}
