@@ -8,7 +8,6 @@
 #define VIS_GLASS_RADIUS 0.32f
 #define VIS_GLASS_INTENSITY 0.45f
 
-float4 screen_res;
 Texture2D s_gasmask;
 Texture2D s_breath;
 

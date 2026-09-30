@@ -1,27 +1,7 @@
 #ifndef SHARED_COMMON_H
 #define SHARED_COMMON_H
 
-uniform float3x4 m_W;
-uniform float3x4 m_V;
-uniform float3x4 m_invV;
-uniform float4x4 m_P;
-uniform float3x4 m_WV;
-uniform float4x4 m_VP;
-uniform float4x4 m_WVP;
-uniform float4 timers;
-uniform float4 fog_plane;
-uniform float4 fog_params; // x=near*(1/(far-near)), ?,?, w = -1/(far-near)
-uniform float4 fog_color;
-uniform float4 L_sky_color;
-uniform float3 L_sun_color;
-uniform float3 L_sun_dir_w;
-uniform float3 L_sun_dir_e;
-uniform float4 L_hemi_color;
-uniform float4 L_ambient; // L_ambient.w = skynbox-lerp-factor
-uniform float3 eye_position;
-uniform float3 eye_direction;
-uniform float3 eye_normal;
-uniform float4 dt_params;
+#include "common_decl.hlsli"
 
 float3 unpack_normal(float3 v)
 {

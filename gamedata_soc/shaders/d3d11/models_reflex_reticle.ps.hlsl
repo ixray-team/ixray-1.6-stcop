@@ -10,8 +10,6 @@
 
 #include "common.hlsli"
 
-uniform float4 m_affects;
-
 // Important:
 // In perfect world OFFSET constants should be 0, but most of reflex sight lenses
 // are not actually parallel to screen, so we compensate it. For PROJECT_DISTANCE=100

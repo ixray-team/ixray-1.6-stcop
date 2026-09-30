@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "sload.hlsli"
+#include "hud_raindrops.hlsli"
 
 void cotangent_frame(inout p_bumped_new O)
 {
@@ -59,6 +60,11 @@ void main(p_bumped_new I,
     M.Hemi = I.tcdh.z;
     M.Point = I.position.xyz;
 
+#ifdef USE_HUD_RAINDROPS
+    HudRainDrops hudRain = HudRain_Evaluate(I.drops_basis.xyz, I.drops_basis.w);
+    HudRain_OffsetColorUv(I.tcdh.xy, hudRain);
+#endif
+
     SloadNew(I, M);
 
 #ifdef USE_AREF
@@ -79,6 +85,15 @@ void main(p_bumped_new I,
 #endif
 
     M.Normal = normalize(M.Normal);
+
+#ifdef USE_HUD_RAINDROPS
+#if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
+    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(true));
+#else
+    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(false));
+#endif
+    HudRain_Wet(M, hudRain);
+#endif
 
 #ifdef USE_LM_HEMI
     float4 lm = s_hemi.Sample(smp_rtlinear, I.tcdh.zw);

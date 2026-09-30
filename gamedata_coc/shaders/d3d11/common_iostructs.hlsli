@@ -331,6 +331,10 @@ struct p_bumped_new
 		float4 hpos_old : TEXCOORD6;
 	#endif
 #endif
+
+#ifdef USE_HUD_RAINDROPS
+    float4 drops_basis : TEXCOORD7;
+#endif
 };
 
 struct p_bilbord
