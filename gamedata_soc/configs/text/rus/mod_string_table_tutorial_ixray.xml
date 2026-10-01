@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="binoc_tutorial">
+		<text_gamepad override="add">To use the binoculars, open weapon menu $$ACTION_WPN_RADIAL_MENU$$, select them and press $$ACTION_WPN_FIRE$$ to zoom in.</text_gamepad>
+	</string>
+	<string id="crouch_tutorial">
+		<text_gamepad override="add">To crouch, press $$ACTION_crouch$$. To crouch even lower, hold $$ACTION_crouch$$.</text_gamepad>
+	</string>
+	<string id="hide_weapon_tutorial">
+		<text_gamepad override="add">Some stalkers won't want to talk if you stick your weapon in their face. To hide your weapon you only need to open weapon menu $$ACTION_WPN_FIRE$$ and select a bolt.</text_gamepad>
+	</string>
+</string_table>
