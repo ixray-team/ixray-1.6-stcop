@@ -627,7 +627,7 @@ void CAnomalyZone::UpdateWorkload	(u32 dt)
 
 float CAnomalyZone::shedule_Scale()
 {
-	return f_optimize_dist / FASTMODE_DISTANCE;
+	return shedule_Scale_Base() / FASTMODE_DISTANCE;
 }
 
 // ГГ берет артефакт с земли где то в пределах 160 метров от артефакта до аномалии

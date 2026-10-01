@@ -269,7 +269,6 @@ void CObjectList::Update		(bool bForce)
 			{
 				CObject* obj = destroy_queue[it];
 				(*oit)->net_Relcase(obj);
-				g_pGameLevel->SoundEvent_net_Relcase(obj);
 			}
 		}
 		for (Objects::iterator oit=objects_sleeping.begin(); oit!=objects_sleeping.end(); oit++)
@@ -278,8 +277,13 @@ void CObjectList::Update		(bool bForce)
 			{
 				CObject* obj = destroy_queue[it];
 				(*oit)->net_Relcase(obj);
-				g_pGameLevel->SoundEvent_net_Relcase(obj);
 			}
+		}
+
+		for (CObject* obj : destroy_queue)
+		{
+			g_hud->net_Relcase(obj);
+			g_pGameLevel->SoundEvent_net_Relcase(obj);
 		}
 
 		Sound->objects_relcase(destroy_queue.data(), destroy_queue.size());
@@ -295,8 +299,6 @@ void CObjectList::Update		(bool bForce)
 			{
 				CObject* obj = *dIt;
 				(*It).m_Callback(obj);
-				g_hud->net_Relcase(obj);
-				g_pGameLevel->SoundEvent_net_Relcase(obj);
 			}
 		}
 

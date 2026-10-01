@@ -43,4 +43,5 @@ public:
 	static  bool		net_SaveRelevant_static		(CScriptBinderObject *script_binder_object);
 	virtual void		net_Relcase					(CScriptGameObject *object) override;
 	static	void		net_Relcase_static			(CScriptBinderObject *script_binder_object, CScriptGameObject *object);
+	virtual bool		has_net_relcase				() const override;
 };
