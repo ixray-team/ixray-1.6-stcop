@@ -13,8 +13,10 @@ struct STRING_TABLE_DATA
 	STRING_VALUE			m_sLanguage;
 	STRING_VALUE			m_sFallbackLanguage;
 	STRING_TABLE_MAP		m_StringTable;
+	STRING_TABLE_MAP		m_StringTableGamepad;
 	STRING_TABLE_MAP		m_FallbackStringTable;
 	STRING_TABLE_MAP		m_string_key_binding;
+	STRING_TABLE_MAP		m_string_key_binding_gamepad;
 };
 
 class ENGINE_API CStringTable 
@@ -39,7 +41,7 @@ private:
 			void				Init					();
 			void				Load					(const char* xml_file);
 			void				LoadFallback			(const char* xml_file);
-	static STRING_VALUE			ParseLine				(const char* str, const char* key, bool bFirst);
+	static STRING_VALUE			ParseLine				(const char* str, const char* key, bool bFirst, bool isGamepad = false);
 	static STRING_TABLE_DATA*	pData;
 };
 
