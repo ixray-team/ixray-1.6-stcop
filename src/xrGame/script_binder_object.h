@@ -35,6 +35,7 @@ public:
 	virtual void Serialize(ISaveObject* Object);
 	virtual bool		net_SaveRelevant	();
 	virtual void		net_Relcase			(CScriptGameObject *object);
+	virtual bool		has_net_relcase		() const { return false; }
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
