@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="ui_st_btn_cancel">
+		<text_gamepad override="add">$$ACTION_UI_BACK$$ Отменить</text_gamepad>
+	</string>
+	<string id="ui_st_btn_no">
+		<text_gamepad override="add">$$ACTION_UI_BACK$$ Нет</text_gamepad>
+	</string>
+	<string id="ui_st_btn_ok">
+		<text_gamepad override="add">$$ACTION_UI_ACCEPT$$ OK</text_gamepad>
+	</string>
+	<string id="ui_st_btn_yes">
+		<text_gamepad override="add">$$ACTION_UI_ACCEPT$$ Да</text_gamepad>
+	</string>
+</string_table>

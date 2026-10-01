@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Btn_Cancel">
+		<text_gamepad override="add">$$ACTION_UI_BACK$$ Cancel</text_gamepad>
+	</string>
+	<string id="Btn_No">
+		<text_gamepad override="add">$$ACTION_UI_BACK$$ No</text_gamepad>
+	</string>
+	<string id="Btn_OK">
+		<text_gamepad override="add">$$ACTION_UI_ACCEPT$$ OK</text_gamepad>
+	</string>
+	<string id="Btn_Yes">
+		<text_gamepad override="add">$$ACTION_UI_ACCEPT$$ Yes</text_gamepad>
+	</string>
+</string_table>
