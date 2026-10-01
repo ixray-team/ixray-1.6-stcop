@@ -4,8 +4,8 @@
 #define DEBUG_TONEMAP_LUT
 
 Texture2D<float> s_tonemap_compute;
-#include "bloom_lum_debug.hlsli"
 #include "tonemap_lut.hlsli"
+#include "bloom_lum_debug.hlsli"
 
 float3 main(PSInputFullscreen I) : SV_Target
 {

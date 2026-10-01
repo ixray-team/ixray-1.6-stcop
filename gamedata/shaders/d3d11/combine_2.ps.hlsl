@@ -1,21 +1,18 @@
 #include "common.hlsli"
 #include "mblur.hlsli"
 #include "dof.hlsli"
+#include "autoexposure.hlsli"
 
 Texture3D s_lut;
 Texture2D s_bloom_compute;
 Texture2D<float> s_tonemap_compute;
 
-float4 autoexposure_params; // x - ps_r2_autoexposure_key, y - ps_r2_autoexposure_min, z - ps_r2_autoexposure_max, w - ps_r2_autoexposure_bias
 float4 bloom_params; // x - ps_r2_bloom_amount, y - ps_r2_bloom_desaturation, z - ps_r2_bloom_tint_amount, w - use compute bloom
 float4 tonemap_params; // x - ps_r2_tonemap_compression, y - ps_r2_tonemap_desaturation, z - ps_r2_tonemap_crossfeed
 float4 bloom_tint; // x - ps_r2_bloom_tint_color.r, y - ps_r2_bloom_tint_color.g, z - ps_r2_bloom_tint_color.b
 /*
 constants buffer descr:
-    autoexposure_key - commonly used value for middle gray, used as anchor point for exposure calculation, UE uses 0.148f, can be tweaked
-    autoexposure_min - minimum exposure in f-stops, can be tweaked
-    autoexposure_max - maximum exposure in f-stops, can be tweaked
-    autoexposure_bias - preexposure bias in f-stops, can be used to tweak overall brightness
+    autoexposure_params - shared EV100 contract from autoexposure.hlsli
     bloom_amount - strength of bloom effect, can be tweaked
     bloom_desaturation - how much bloom should be desaturated, 0 - no desaturation, 1 - full desaturation, can be tweaked
     bloom_tint_amount - how much bloom should be tinted, 0 - no tint, 1 - full tint, can be tweaked
@@ -34,7 +31,7 @@ constants buffer descr:
 #define USE_VIBRANCE
 //#define USE_LUT_TEXTURE
 
-#if defined(USE_GT7_LUT) && defined(USE_COMPUTE_ADAPTATION)
+#ifdef USE_COMPUTE_ADAPTATION
 #include "tonemap_lut.hlsli"
 #endif
 
@@ -49,9 +46,10 @@ float3 main(PSInputFullscreen I) : SV_Target
             Bloom = s_bloom.Sample(smp_rtlinear, I.texcoord);
 
     #ifdef USE_COMPUTE_ADAPTATION
-        float Exposure = s_tonemap_compute.Load(int3(0, 0, 0));
+        float Exposure = s_tonemap_state.Load(int3(0, 0, 0));
     #else
-        float Exposure = s_tonemap.Load(uint3(0, 0, 0)).x;
+        float adaptedEV100 = s_tonemap.Load(uint3(0, 0, 0)).x;
+        float Exposure = ExposureMultiplierFromEV100(CameraEV100(adaptedEV100));
     #endif
       
     #ifndef USE_NEW_BLOOM // new bloom and tonemap will require using new adapt  
@@ -78,14 +76,6 @@ float3 main(PSInputFullscreen I) : SV_Target
     #if defined(USE_GT7_LUT) && defined(USE_COMPUTE_ADAPTATION)
         Color.rgb = LinearToGamma(TonemapLUT(Color.rgb));
     #elif defined(USE_NEW_ADAPT) || defined(USE_COMPUTE_ADAPTATION)
-	    // new adapt should work fine with vanilla tonemapping operator
-        float adaptation_mult = 1.0f; // just in case we want to tweak the avg ratio
-        // LogLumAvg = in log space, can be lower than 0, dont saturate or clamp it
-        Exposure = log2(autoexposure_params.x) - Exposure * adaptation_mult;
-        //Exposure += autoexposure_params.w;
-        Exposure = clamp(Exposure, autoexposure_params.y, autoexposure_params.z) + autoexposure_params.w; // clip exposre to some reasonable range, can be tweaked or removed
-        Exposure = exp2(Exposure);
-
         Color *= Exposure;
 	
         //Color.rgb = 1.0 - exp(-1.0 * Color.rgb); //CommerceToneMapping(Color.rgb, tonemap_params.x, tonemap_params.y);

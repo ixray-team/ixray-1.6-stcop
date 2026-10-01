@@ -194,6 +194,27 @@ int ps_r4_bloom_mode = 2; // 0: PS, 1: CS, 2: both for comparison
 int ps_r4_bloom_compute_levels = 9;
 bool ps_r4_bloom_compute = true; // displayed path when both are running
 bool ps_r4_debug_histogram = true;
+// Explicit scene-unit convention until calibrated against a known luminance.
+float ps_r2_scene_nits_per_unit = 1.0f;
+float ps_r2_tonemap_input_scale = 1.728f; // 9.6 * legacy key 0.18.
+float ps_r2_histogram_min_ev100 = -13.0f; // Original log2 HDR [-16, 16], at 1 nit/unit.
+float ps_r2_histogram_max_ev100 = 19.0f;
+static float ps_r2_autoexposure_min_ev100 = -0.4739312f;
+static float ps_r2_autoexposure_max_ev100 = 1.0260688f;
+static bool exposure_min_from_legacy = true;
+static bool exposure_max_from_legacy = true;
+
+void get_autoexposure_ev100_limits(float& minimum, float& maximum)
+{
+    // Resolve after loading all commands: legacy key and bounds may arrive in any order.
+    const float offset = log2f(ps_r2_scene_nits_per_unit * ps_r2_tonemap_input_scale / 1.2f);
+    if (exposure_min_from_legacy)
+        ps_r2_autoexposure_min_ev100 = offset - ps_r2_autoexposure_max;
+    if (exposure_max_from_legacy)
+        ps_r2_autoexposure_max_ev100 = offset - ps_r2_autoexposure_min;
+    minimum = std::min(ps_r2_autoexposure_min_ev100, ps_r2_autoexposure_max_ev100);
+    maximum = std::max(ps_r2_autoexposure_min_ev100, ps_r2_autoexposure_max_ev100);
+}
 float		ps_r2_bloom_amount			= 0.04f;			// bloom amount, exposure independant (0.04f)
 float		ps_r2_bloom_desaturation	= 0.1f;				// bloom desaturation (0.1f)
 float		ps_r2_bloom_tint_amount		= 0.1f;				// bloom tint amount (0.1f)
@@ -274,6 +295,50 @@ int			r_debug_render_depth		= 0;
 #ifndef _EDITOR
 #include "../../xrEngine/XR_IOConsole.h"
 #include	"../../xrEngine/xr_ioc_cmd.h"
+
+class CCC_ExposureFloat : public CCC_Float
+{
+public:
+    CCC_ExposureFloat(const char* name, float* target, float lo, float hi)
+        : CCC_Float(name, target, lo, hi) {}
+
+    void Execute(const char* args) override
+    {
+        char* end = nullptr;
+        const float v = strtof(args, &end);
+        if (end == args || !_valid(v) || v < min || v > max)
+        {
+            InvalidSyntax();
+            return;
+        }
+        *value = v;
+        if (value == &ps_r2_autoexposure_key)
+            ps_r2_tonemap_input_scale = 9.6f * v;
+        if (value == &ps_r2_autoexposure_min)
+            exposure_max_from_legacy = true;
+        if (value == &ps_r2_autoexposure_max)
+            exposure_min_from_legacy = true;
+        if (value == &ps_r2_autoexposure_min_ev100)
+            exposure_min_from_legacy = false;
+        if (value == &ps_r2_autoexposure_max_ev100)
+            exposure_max_from_legacy = false;
+    }
+
+    void Status(TStatus& text) override
+    {
+        float lo, hi;
+        get_autoexposure_ev100_limits(lo, hi);
+        // Preserve small physical scale factors and EV100 bounds across cfg_save/load.
+        xr_sprintf(text, sizeof(text), "%.9g", *value);
+    }
+};
+
+class CCC_LegacyExposureFloat : public CCC_ExposureFloat
+{
+public:
+    using CCC_ExposureFloat::CCC_ExposureFloat;
+    void Save(IWriter*) override {} // Save only the explicit EV100 settings.
+};
 
 #ifdef USE_DX11
 #include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
@@ -842,11 +907,19 @@ void		xrRender_initconsole	()
 
 	// added by Papa Doenitz 2026-03-05
 	CMD2(CCC_Boolean, "r2_new_autoexposure", &ps_r2_new_autoexposure);
-	CMD4(CCC_Float, "r2_autoexposure_key", &ps_r2_autoexposure_key, 0.01f, 1.0f);
-	CMD4(CCC_Float, "r2_autoexposure_min", &ps_r2_autoexposure_min, -10.0f, 10.0f);
-	CMD4(CCC_Float, "r2_autoexposure_max", &ps_r2_autoexposure_max, -10.0f, 10.0f);
-	CMD4(CCC_Float, "r2_autoexposure_bias", &ps_r2_autoexposure_bias, -10.0f, 10.0f);
-	CMD4(CCC_Float, "r2_autoexposure_speed", &ps_r2_autoexposure_speed, 0.0f, 100.0f);
+    CMD4(CCC_LegacyExposureFloat, "r2_autoexposure_key", &ps_r2_autoexposure_key, 0.01f, 1.0f);
+    CMD4(CCC_LegacyExposureFloat, "r2_autoexposure_min", &ps_r2_autoexposure_min, -10.0f, 10.0f);
+    CMD4(CCC_LegacyExposureFloat, "r2_autoexposure_max", &ps_r2_autoexposure_max, -10.0f, 10.0f);
+    CMD4(CCC_LegacyExposureFloat, "r2_autoexposure_bias", &ps_r2_autoexposure_bias, -10.0f, 10.0f);
+    CMD4(CCC_LegacyExposureFloat, "r2_autoexposure_speed", &ps_r2_autoexposure_speed, 0.0f, 100.0f);
+    CMD4(CCC_ExposureFloat, "r2_autoexposure_min_ev100", &ps_r2_autoexposure_min_ev100, -64.0f, 64.0f);
+    CMD4(CCC_ExposureFloat, "r2_autoexposure_max_ev100", &ps_r2_autoexposure_max_ev100, -64.0f, 64.0f);
+    CMD4(CCC_ExposureFloat, "r2_autoexposure_compensation", &ps_r2_autoexposure_bias, -10.0f, 10.0f);
+    CMD4(CCC_ExposureFloat, "r2_autoexposure_time", &ps_r2_autoexposure_speed, 0.0f, 100.0f);
+    CMD4(CCC_ExposureFloat, "r2_scene_nits_per_unit", &ps_r2_scene_nits_per_unit, 1e-6f, 1e6f);
+    CMD4(CCC_ExposureFloat, "r2_tonemap_input_scale", &ps_r2_tonemap_input_scale, 0.001f, 16.0f);
+    CMD4(CCC_ExposureFloat, "r2_histogram_min_ev100", &ps_r2_histogram_min_ev100, -32.0f, 31.0f);
+    CMD4(CCC_ExposureFloat, "r2_histogram_max_ev100", &ps_r2_histogram_max_ev100, -31.0f, 32.0f);
 
 	CMD2(CCC_Boolean, "r2_autoexposure_use_center_weight", &ps_r2_autoexposure_center_weight);
 	CMD4(CCC_Float, "r2_autoexposure_min_weight", &ps_r2_autoexposure_min_weight, 0.0f, 0.9f);

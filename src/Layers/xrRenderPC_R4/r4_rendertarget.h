@@ -137,9 +137,10 @@ public:
 	ref_rt						rt_compute_bloom_down[9];
 	ref_rt						rt_compute_bloom_up[9];
 	ref_shader					s_compute_bloom[9];
-	ref_rt						rt_LUM_compute;		// 1x1, adapted log-average
+	ref_rt						rt_LUM_compute;		// 1x1, adapted scene EV100
 	bool						compute_luminance_valid = false;
-	ref_rt						rt_Tonemap_state;	// 4x1: exposure, LUT max, exposed P05/P95
+    float ps_luminance_nits_per_unit = 0.0f; // Also marks an uninitialized PS history.
+	ref_rt						rt_Tonemap_state;	// 8x1: multiplier, LUT max, P05/P95 EV100, metered/camera EV100, valid, nits/unit
 	ref_shader					s_tonemap_lut_bake;
 	ref_texture					t_tonemap_lut;
 	IRHISurface*				s_tonemap_lut_surface = nullptr;
@@ -456,6 +457,7 @@ public:
 	void						phase_bloom_upsample();
 	void						phase_new_luminance();
 	void						phase_compute_luminance();
+    void set_autoexposure_constants();
     void phase_histogram_debug();
 	void						create_tonemap_lut();
 	void						phase_bake_tonemap_lut();

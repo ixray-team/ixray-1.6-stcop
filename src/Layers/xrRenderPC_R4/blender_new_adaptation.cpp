@@ -31,16 +31,12 @@ void CBlender_new_adaptation::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    if (!ps_r2_new_autoexposure && C.iElement < 4)
-    {
-        RImplementation.addShaderOption("USE_CLASSIQUE_TONEMAP", "1");
-    }
-
     switch (C.iElement)
     {
     case 0:
         C.r_Pass("stub_fullscreen_triangle", "bloom_lum_copy", false, false, false);
-        C.r_dx10Texture("s_image", C.L_textures[0]);
+        // Both metering paths use the same unexposed scene, in the same units.
+        C.r_dx10Texture("s_image", r2_RT_generic);
 
         C.r_dx10Sampler("smp_rtlinear");
         C.r_dx10Sampler("smp_nofilter");

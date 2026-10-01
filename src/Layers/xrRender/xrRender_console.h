@@ -149,6 +149,11 @@ extern ECORE_API int ps_r4_bloom_mode;
 extern ECORE_API int ps_r4_bloom_compute_levels;
 extern ECORE_API bool ps_r4_bloom_compute;
 extern ECORE_API bool ps_r4_debug_histogram;
+extern ECORE_API float ps_r2_scene_nits_per_unit;
+extern ECORE_API float ps_r2_tonemap_input_scale;
+extern ECORE_API float ps_r2_histogram_min_ev100;
+extern ECORE_API float ps_r2_histogram_max_ev100;
+void get_autoexposure_ev100_limits(float& minimum, float& maximum);
 extern ECORE_API float		ps_r2_bloom_amount;						// bloom amount, exposure independant (0.04f)
 extern ECORE_API float		ps_r2_bloom_desaturation;				// bloom desaturation (0.1f)
 extern ECORE_API float		ps_r2_bloom_tint_amount;				// bloom tint amount (0.1f)

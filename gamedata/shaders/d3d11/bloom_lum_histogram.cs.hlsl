@@ -21,8 +21,8 @@ void main(uint3 id : SV_DispatchThreadID, uint index : SV_GroupIndex)
             float Bin = saturate(dot(max(Color, 0.0f), LUMINANCE_VECTOR));
             #else
             float Luma = dot(max(Color, 0.0f), LUMINANCE_VECTOR);
-            float LogLuma = log2(max(Luma, exp2(HistogramMin)));
-            float Bin = saturate((LogLuma - HistogramMin) / (HistogramMax - HistogramMin));
+            float EV100 = SceneLuminanceToEV100(Luma);
+            float Bin = saturate((EV100 - HistogramMinEV100) / (HistogramMaxEV100 - HistogramMinEV100));
             #endif
             uint bin = min((uint)(Bin * HISTOGRAM_BINS), HISTOGRAM_BINS - 1);
             InterlockedAdd(Histogram[bin], 1);

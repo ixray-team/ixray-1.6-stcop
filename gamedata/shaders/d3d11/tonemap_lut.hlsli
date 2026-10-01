@@ -2,7 +2,8 @@
 #define TONEMAP_LUT_H
 
 Texture3D<float4> s_tonemap_lut;
-// R32_FLOAT, 4x1: exposure multiplier, LUT maximum, exposed P05, exposed P95.
+// R32_FLOAT, 8x1: multiplier, LUT max, P05/P95 EV100, metered/camera EV100,
+// valid metering history, previous scene nits per unit.
 Texture2D<float> s_tonemap_state;
 
 float3 TonemapLUT(float3 color)

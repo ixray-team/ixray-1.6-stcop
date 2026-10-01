@@ -5,7 +5,6 @@ RWTexture2D<float> u_luminance : register(u0);
 // R32_FLOAT avoids optional float4 typed UAV loads on D3D11.
 RWTexture2D<float> u_tonemap_state : register(u1);
 float4 adapt_params; // x - luminance blend, y - LUT range blend; both 1 on first frame
-float4 autoexposure_params; // key, minimum EV, maximum EV, bias EV
 static const float TonemapMinRange = 4.0f;
 
 groupshared uint Histogram[HISTOGRAM_BINS];
@@ -25,55 +24,64 @@ void main(uint index : SV_GroupIndex)
     float low = count * HistogramLowPercent;
     float high = count * HistogramHighPercent;
     float prefix = 0.0f, sum = 0.0f, weight = 0.0f;
-    float logLow = HistogramMin, logHigh = HistogramMin;
-    float binWidth = (HistogramMax - HistogramMin) / HISTOGRAM_BINS;
+    float lowEV100 = HistogramMinEV100, highEV100 = HistogramMinEV100;
+    float binWidth = (HistogramMaxEV100 - HistogramMinEV100) / HISTOGRAM_BINS;
     for (uint bin = 0; bin < HISTOGRAM_BINS; ++bin)
     {
         float next = prefix + Histogram[bin];
         float selected = max(0.0f, min(next, high) - max(prefix, low));
-        float logLuma = HistogramMin + (bin + 0.5f) * binWidth;
-        sum += logLuma * selected;
+        float ev100 = HistogramMinEV100 + (bin + 0.5f) * binWidth;
+        sum += ev100 * selected;
         weight += selected;
         // Tonemap bounds use P05/P95 independently of the exposure trim settings.
         if (Histogram[bin] > 0)
         {
             float p05 = count * 0.05f, p95 = count * 0.95f;
             if (prefix < p05 && next >= p05)
-                logLow = HistogramMin + (bin + (p05 - prefix) / Histogram[bin]) * binWidth;
+                lowEV100 = HistogramMinEV100 + (bin + (p05 - prefix) / Histogram[bin]) * binWidth;
             if (prefix < p95 && next >= p95)
-                logHigh = HistogramMin + (bin + (p95 - prefix) / Histogram[bin]) * binWidth;
+                highEV100 = HistogramMinEV100 + (bin + (p95 - prefix) / Histogram[bin]) * binWidth;
         }
         prefix = next;
     }
 
-    float adapted = u_luminance[uint2(0, 0)];
+    bool historyValid = u_tonemap_state[uint2(6, 0)] > 0.0f;
+    float adapted = historyValid ? u_luminance[uint2(0, 0)]
+        : 0.5f * (autoexposure_params.y + autoexposure_params.z);
+    // A calibration change shifts EV100 without changing the previous scene luminance.
+    if (historyValid)
+        adapted += log2(autoexposure_metering.x / u_tonemap_state[uint2(7, 0)]);
     if (weight > 0.0f)
     {
-        adapted = lerp(adapted, sum / weight, adapt_params.x);
-        u_luminance[uint2(0, 0)] = adapted;
+        adapted = lerp(adapted, sum / weight, historyValid ? adapt_params.x : 1.0f);
+        u_tonemap_state[uint2(4, 0)] = sum / weight;
+        u_tonemap_state[uint2(6, 0)] = 1.0f;
     }
+    u_luminance[uint2(0, 0)] = adapted;
     // The same multiplier is consumed by combine2; no second exposure calculation.
-    float ev = clamp(log2(max(autoexposure_params.x, 1e-6f)) - adapted + autoexposure_params.w,
-        autoexposure_params.y, autoexposure_params.z);
-    float exposure = exp2(ev);
+    float cameraEV100 = CameraEV100(adapted);
+    float exposure = ExposureMultiplierFromEV100(cameraEV100);
     float previousRange = u_tonemap_state[uint2(1, 0)];
     float range = max(previousRange, TonemapMinRange);
     if (count > 0)
     {
-        float exposedLow = exp2(logLow + ev);
-        float exposedHigh = exp2(logHigh + ev);
+        float exposedHigh = ExposedLuminanceFromEV100(highEV100, exposure);
         float targetRange = max(exposedHigh, TonemapMinRange);
-        range = previousRange > 0.0f ? exp2(lerp(log2(range), log2(targetRange), adapt_params.y)) : targetRange;
-        u_tonemap_state[uint2(2, 0)] = exposedLow;
-        u_tonemap_state[uint2(3, 0)] = exposedHigh;
+        range = historyValid && previousRange > 0.0f
+            ? exp2(lerp(log2(range), log2(targetRange), adapt_params.y)) : targetRange;
+        u_tonemap_state[uint2(2, 0)] = lowEV100;
+        u_tonemap_state[uint2(3, 0)] = highEV100;
     }
     else if (previousRange <= 0.0f)
     {
         // Defined first-frame state even when the source contains only NaN/Inf.
         range = TonemapMinRange;
-        u_tonemap_state[uint2(2, 0)] = 0.0f;
-        u_tonemap_state[uint2(3, 0)] = 1.0f;
+        u_tonemap_state[uint2(2, 0)] = HistogramMinEV100;
+        u_tonemap_state[uint2(3, 0)] = HistogramMinEV100;
+        u_tonemap_state[uint2(4, 0)] = adapted;
     }
     u_tonemap_state[uint2(0, 0)] = exposure;
     u_tonemap_state[uint2(1, 0)] = range;
+    u_tonemap_state[uint2(5, 0)] = cameraEV100;
+    u_tonemap_state[uint2(7, 0)] = autoexposure_metering.x;
 }

@@ -11,20 +11,18 @@ Unreal Engine Documentation, "Auto Exposure / Eye Adaptation"
 */
 
 #include "common.hlsli"
+#include "autoexposure.hlsli"
 
-uniform Texture2D p_image;
+float4 adapt_params; // minimum spatial weight, Gaussian coefficient, temporal blend alpha
+float4 adapt_params2; // soft-log coefficient (1/EV), limiter (stops), blend amount
 
-float4 adapt_params; // x - ps_r2_autoexposure_min_weight, y - ps_r2_autoexposure_gaussian, z - ps_r2_autoexposure_speed
-float4 adapt_params2; // x - ps_r2_autoexposure_soft_log_k, y - ps_r2_autoexposure_soft_limiter, z- ps_r2_autoexposure_sensitivity
-
-float4 MiddleGray;
 /*
 constants buffer descr:
     autoexposure_min_weight - minimum weight for farthest pixels, can be tweaked, higher value means more even weight distribution, lower value means more center weighted distribution
     autoexposure_gaussian - gaussian weight distribution, higher - more center weighted, lower - more flat distribution, can be tweaked
-    autoexposure_speed - how fast exposure adapts to changes, can be tweaked
-    autoexposure_soft_log_k - strength of soft log, higher value means less aggressive log
-    autoexposure_soft_limiter - limit soft log in f-stops, higher value means stronger limiter, can be tweaked
+    autoexposure_time - exponential time constant in seconds, converted to blend alpha by CPU
+    autoexposure_soft_log_k - soft-log exponent coefficient in inverse stops; zero selects the mean
+    autoexposure_soft_limiter - maximum soft-log uplift relative to the mean, in stops
     autoexposure_sensitivity - how much to blend between log and soft-log exposure, can be tweaked
 */
 
@@ -32,17 +30,15 @@ constants buffer descr:
 //#define USE_CENTER_WEIGHTED_LUMA
 //#define USE_SOFT_LOG
 
-#if defined(USE_CLASSIQUE_TONEMAP) && defined(USE_SOFT_LOG)
-	#undef USE_SOFT_LOG
-#endif
 
 float4 main(PSInputFullscreen I) : SV_Target
 {
     float2 uv = I.texcoord.xy;
     float4 temp;
-    float LumaCurr = 0.f, tempCurr = 0.f, weight = 1.f, weightsumm = 0.f, sumExp = 0.f;  
+    float LumaCurr = 0.f, tempCurr = 0.f, weight = 1.f, weightsumm = 0.f, sumExp = 0.f;
+    float softMaxEV100 = autoexposure_metering.y;
     // here we perform weighed average summ
-    [unroll]
+    [loop]
     for (int y = 0; y < 16; y++)
     {
         for (int x = 0; x < 16; x++)
@@ -62,8 +58,11 @@ float4 main(PSInputFullscreen I) : SV_Target
                 LumaCurr += tempCurr * weight;  
             #endif  // USE_CENTER_WEIGHTED_LUMA
             #ifdef USE_SOFT_LOG
-                temp.z = exp2(adapt_params2.x * clamp(tempCurr, -16.f, +16.f)); // exp decay for soft log
-                sumExp += temp.z * weight;
+                // Stable weighted log-sum-exp in EV100, independent of the absolute EV offset.
+                float nextMax = max(softMaxEV100, tempCurr);
+                sumExp = sumExp * exp2(adapt_params2.x * (softMaxEV100 - nextMax))
+                    + weight * exp2(adapt_params2.x * (tempCurr - nextMax));
+                softMaxEV100 = nextMax;
             #endif  
             weightsumm += weight;
         }
@@ -76,19 +75,13 @@ float4 main(PSInputFullscreen I) : SV_Target
     #endif
     
     #ifdef USE_SOFT_LOG
-        float logSoft = (1.0f / adapt_params2) * log2(max(sumExp * rcp(max(weightsumm, 1e-6)), 1e-12f));
+        float logSoft = adapt_params2.x > 1e-4f
+            ? softMaxEV100 + log2(max(sumExp / max(weightsumm, 1e-6f), 1e-30f)) / adapt_params2.x
+            : LumaCurr;
         logSoft = min(logSoft, LumaCurr + adapt_params2.y);
-        LumaCurr = lerp(LumaCurr, logSoft, adapt_params2.z);
+        LumaCurr = lerp(LumaCurr, logSoft, saturate(adapt_params2.z));
     #endif
    
-#ifndef USE_CLASSIQUE_TONEMAP
 	return float2(LumaCurr, adapt_params.z).xxxy;
-#else
-    LumaCurr = MiddleGray.x * rcp(LumaCurr * MiddleGray.y + MiddleGray.z);
-    LumaCurr = clamp(LumaCurr, 1.f / 128.f, 20.0f);
-	LumaCurr = GammaToLinear(LumaCurr);
-	
-    return float2(LumaCurr, MiddleGray.w).xxxy;
-#endif
 }
 

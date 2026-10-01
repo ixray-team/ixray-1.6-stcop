@@ -846,7 +846,7 @@ CRenderTarget::CRenderTarget()
 		rt_LUM_histogram.create(r4_RT_lum_histogram, 256, 1, ERHI_FORMAT::R32_UINT, 1, CRT::USE_UAV_FLAG);
 		rt_LUM_compute.create(r4_RT_lum_compute, 1, 1, fmt, 1, CRT::USE_UAV_FLAG);
 		GRHI->ClearTarget(rt_LUM_compute->pRT, ERTColor::Black);
-		rt_Tonemap_state.create(r4_RT_tonemap_state, 4, 1, fmt, 1, CRT::USE_UAV_FLAG);
+		rt_Tonemap_state.create(r4_RT_tonemap_state, 8, 1, fmt, 1, CRT::USE_UAV_FLAG);
 		GRHI->ClearTarget(rt_Tonemap_state->pRT, ERTColor::Black);
 		create_tonemap_lut();
         CBlender_histogram_debug histogram_debug;

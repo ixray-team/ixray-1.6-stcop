@@ -27,6 +27,7 @@ void CRenderTarget::phase_compute_luminance()
 		RCache.set_Constants(P.constants);
 		RCache.set_Textures(P.T);
 		RCache.set_CS(P.cs);
+		set_autoexposure_constants();
 		// Remove previous SRV bindings through the cache before UAV writes.
 		GRHI->ShaderResourceCache->Apply();
 
@@ -51,7 +52,7 @@ void CRenderTarget::phase_compute_luminance()
 			alpha = 1.0f - exp(-Device.fTimeDeltaSmoothing / ps_r2_autoexposure_speed);
 		float range_alpha = compute_luminance_valid ? 1.0f - exp(-Device.fTimeDeltaSmoothing / 0.5f) : 1.0f;
 		RCache.set_c("adapt_params", alpha, range_alpha, 0.f, 0.f);
-		RCache.set_c("autoexposure_params", ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
+		set_autoexposure_constants();
 
 		ID3D11UnorderedAccessView* uavs[2] = {
 			reinterpret_cast<ID3D11UnorderedAccessView*>(rt_LUM_compute->pUAView->GetRaw()),
@@ -93,6 +94,7 @@ void CRenderTarget::phase_histogram_debug()
         GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
         RCache.set_Stencil(false);
         RCache.set_Element(s_histogram_debug->E[1]);
+        set_autoexposure_constants();
         RCache.set_Geometry(FSTriangleGeom);
         RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
         GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
@@ -111,6 +113,7 @@ void CRenderTarget::phase_new_luminance()
 	RCache.set_Stencil(false);
 
 	RCache.set_Element(ps_r4_bloom_mode == 1 ? s_lum_copy_compute->E[0] : s_lum_copy->E[0]);
+	set_autoexposure_constants();
 	RCache.set_c("adapt_params", float(dwWidth), float(dwHeight), 1.0f / float(dwWidth), 1.0f / float(dwHeight));
 
 	RCache.set_Geometry(FSTriangleGeom);
@@ -147,21 +150,25 @@ void CRenderTarget::phase_new_luminance()
 	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_lum_copy->E[3]);
+	set_autoexposure_constants();
 
-	RCache.set_c("adapt_params", ps_r2_autoexposure_min_weight, ps_r2_autoexposure_gaussian, 1.0f - exp(-Device.fTimeDeltaSmoothing / ps_r2_autoexposure_speed), 0.f);
+    float alpha = 1.0f;
+    if (ps_luminance_nits_per_unit == ps_r2_scene_nits_per_unit && ps_r2_autoexposure_speed > 0.f)
+        alpha = 1.0f - exp(-Device.fTimeDeltaSmoothing / ps_r2_autoexposure_speed);
+	RCache.set_c("adapt_params", ps_r2_autoexposure_min_weight, ps_r2_autoexposure_gaussian, alpha, 0.f);
 	RCache.set_c("adapt_params2", ps_r2_autoexposure_soft_log_k, ps_r2_autoexposure_soft_limiter, ps_r2_autoexposure_sensitivity, 0.f);
-
-	f_luminance_adapt = 0.9f * f_luminance_adapt + 0.1f * Device.fTimeDelta * ps_r2_tonemap_adaptation;
-
-	Fvector3 Current, Result;
-
-	Result.set(1, 0, 1);
-	Current.set(ps_r2_tonemap_middlegray, 1.f, ps_r2_tonemap_low_lum);
-
-	Result.lerp(Result, Current, ps_r2_tonemap_amount);
-
-	RCache.set_c("MiddleGray", Result.x, Result.y, Result.z, f_luminance_adapt);
 
 	RCache.set_Geometry(FSTriangleGeom);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+    ps_luminance_nits_per_unit = ps_r2_scene_nits_per_unit;
+}
+
+void CRenderTarget::set_autoexposure_constants()
+{
+    float minimum, maximum;
+    get_autoexposure_ev100_limits(minimum, maximum);
+    RCache.set_c("autoexposure_params", ps_r2_tonemap_input_scale, minimum, maximum, ps_r2_autoexposure_bias);
+    const float histogramMin = std::min(ps_r2_histogram_min_ev100, ps_r2_histogram_max_ev100);
+    const float histogramMax = std::max(std::max(ps_r2_histogram_min_ev100, ps_r2_histogram_max_ev100), histogramMin + 0.001f);
+    RCache.set_c("autoexposure_metering", ps_r2_scene_nits_per_unit, histogramMin, histogramMax, 0.f);
 }
