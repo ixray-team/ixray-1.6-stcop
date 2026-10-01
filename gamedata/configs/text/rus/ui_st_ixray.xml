@@ -1008,4 +1008,10 @@
 	<string id="kb_scope_brightness_minus">
 		<text>Уменьшить яркость прицела</text>
 	</string>
+	<string id="ui_rmw_wpn_torch">
+		<text>$$ACTION_WPN_TORCH$$ Тактический фонарь</text>
+	</string>
+	<string id="ui_rmw_wpn_laser">
+		<text>$$ACTION_WPN_LASER$$ ЛЦУ</text>
+	</string>
 </string_table>

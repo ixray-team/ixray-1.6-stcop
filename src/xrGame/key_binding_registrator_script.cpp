@@ -82,7 +82,7 @@ void key_binding_registrator::script_register(lua_State *L)
 		def("dik_to_bind",		&dik_to_bind),
         def("dik_to_bind",      +[](int dik)
             {
-                return dik_to_bind(dik, agDefault);
+                return dik_to_bind(dik, agAny);
             }),
         def("any_binded_key_for_action_pressed_c", &any_binded_key_for_action_pressed_c),
         def("gamepad_feedback", &gamepad_feedback),
@@ -229,7 +229,11 @@ void key_binding_registrator::script_register(lua_State *L)
 				value("agDefault",					int(agDefault)),
 				value("agTransport",				int(agTransport)),
 				value("agUIGeneral",				int(agUIGeneral)),
-				value("agUIRadialWeapon",			int(agUIRadialWeapon))
+				value("agUIRadialWeapon",			int(agUIRadialWeapon)),
+				value("agUILogMenu",			    int(agUILogMenu)),
+				value("agUITaskMenu",			    int(agUITaskMenu)),
+				value("agAiming",			        int(agAiming)),
+				value("agAny",			            int(agAny))
 			],
 		class_<key_binding_registrator >("DIK_keys")
 			.enum_("dik_keys")
