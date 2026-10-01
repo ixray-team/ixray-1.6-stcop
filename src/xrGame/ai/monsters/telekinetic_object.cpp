@@ -252,7 +252,8 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 			}
 		}
 
-		SHit HDS{
+		SHit HDS = 
+		{
 			health_loss,
 			linear_vel.GetNormalizedCopy(),
 			ph_self_object,

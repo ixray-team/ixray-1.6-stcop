@@ -2,7 +2,7 @@
 
 struct SHit final
 {
-	SHit(float powerA, Fvector& dirA, CObject* whoA, u16 elementA, Fvector p_in_bone_spaceA, float impulseA, ALife::EHitType hit_typeA, float armor_piercingA, bool AimBullet);
+	SHit(float powerA, const Fvector& dirA, CObject* whoA, u16 elementA, Fvector p_in_bone_spaceA, float impulseA, ALife::EHitType hit_typeA, float armor_piercingA, bool AimBullet);
 
 	SHit();
 	bool is_valide() const;
