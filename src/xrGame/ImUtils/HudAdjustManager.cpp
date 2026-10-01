@@ -663,13 +663,31 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 			case EHudOffsetType::eAim:
 			{
 				xr_strconcat(val_name, "aim_hud_offset_rot", _prefix);
-				rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				if (pSettings->line_exist(item->m_sect_name, val_name))
+				{
+					rotation = pSettings->r_fvector3(item->m_sect_name, val_name);
+				}
+				else
+				{
+					rotation.x = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "zoom_rotate_x", 0.f);
+					rotation.y = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "zoom_rotate_y", 0.f);
+					rotation.z = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "zoom_rotate_z", 0.f);
+				}
 				break;
 			}
 			case EHudOffsetType::eAimGL:
 			{
 				xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
-				rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				if (pSettings->line_exist(item->m_sect_name, val_name))
+				{
+					rotation = pSettings->r_fvector3(item->m_sect_name, val_name);
+				}
+				else
+				{
+					rotation.x = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "grenade_zoom_rotate_x", 0.f);
+					rotation.y = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "grenade_zoom_rotate_y", 0.f);
+					rotation.z = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "grenade_zoom_rotate_z", 0.f);
+				}
 				break;
 			}
 			case EHudOffsetType::eAimAlt:
