@@ -28,19 +28,13 @@ constants buffer descr:
 
 #define USE_COMPUTE_ADAPTATION // Comment out to use the old adaptation path.
 #define USE_GT7_LUT // Comment out to compare with the previous tonemapper.
-#define DEBUG_HISTOGRAM // Comment out to hide the compute histogram.
-#define DEBUG_TONEMAP_LUT // Comment out to hide the baked LUT slices.
 #define USE_NEW_ADAPT
 #define USE_NEW_BLOOM_TONEMAP
 #define USE_CROSSFEED
 #define USE_VIBRANCE
 //#define USE_LUT_TEXTURE
 
-#ifdef DEBUG_HISTOGRAM
-#include "bloom_lum_debug.hlsli"
-#endif
-
-#if (defined(USE_GT7_LUT) && defined(USE_COMPUTE_ADAPTATION)) || defined(DEBUG_TONEMAP_LUT)
+#if defined(USE_GT7_LUT) && defined(USE_COMPUTE_ADAPTATION)
 #include "tonemap_lut.hlsli"
 #endif
 
@@ -95,7 +89,7 @@ float3 main(PSInputFullscreen I) : SV_Target
         Color *= Exposure;
 	
         //Color.rgb = 1.0 - exp(-1.0 * Color.rgb); //CommerceToneMapping(Color.rgb, tonemap_params.x, tonemap_params.y);
-        Color.rgb = LinearToGamma(Color.rgb);
+        //Color.rgb = LinearToGamma(Color.rgb);
     #else //USE_NEW_ADAPT
         Color = tonemap(Color, Exposure);
     #endif
@@ -116,14 +110,6 @@ float3 main(PSInputFullscreen I) : SV_Target
  	    //Color = s_lut.Sample(smp_rtlinear, saturate(Color)).xyz;
     #endif
     
-    #ifdef DEBUG_HISTOGRAM
-        Color = DrawHistogram(Color, I.hpos.xy);
-    #endif
-
-    #ifdef DEBUG_TONEMAP_LUT
-        Color = DrawTonemapLUT(Color, I.hpos.xy);
-    #endif
-
 	return Color;
 }
 

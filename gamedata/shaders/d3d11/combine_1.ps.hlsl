@@ -57,7 +57,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 		);
 	#endif
 
-    float hack_ambient = 0.01 + smoothstep(0.0, 0.7, O.Hemi);
+    float hack_ambient = 1.0f;
     float3 DiffuseIrradance = CompureDiffuseIrradance(O.Normal, O.Hemi) + L_ambient.xyz * hack_ambient;
     float NdotV = saturate(dot(O.Normal, -O.View.xyz));
     float3 Ambient = AmbientLightingImpl(DiffuseIrradance, SpecularIrradance, NdotV, O.Color, O.Specular, O.Roughness);

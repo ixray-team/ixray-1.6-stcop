@@ -65,6 +65,41 @@ void CRenderTarget::phase_compute_luminance()
 	}
 }
 
+void CRenderTarget::phase_histogram_debug()
+{
+    GPU_EVENT(phase_histogram_debug);
+    u_setrt(get_target_width(), get_target_height(), nullptr, nullptr, nullptr, nullptr);
+    {
+        GPU_EVENT(combine_2_histogram);
+        SPass& P = *s_histogram_debug->E[0]->passes[0];
+        RCache.set_States(P.state);
+        RCache.set_Constants(P.constants);
+        RCache.set_Textures(P.T);
+        RCache.set_CS(P.cs);
+        GRHI->ShaderResourceCache->Apply();
+
+        const UINT clear_value[4] = {};
+        ID3D11UnorderedAccessView* uav = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_Histogram_debug->pUAView->GetRaw());
+        RContext->ClearUnorderedAccessViewUint(uav, clear_value);
+        RContext->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+        RCache.Compute((get_target_width() + 15) / 16, (get_target_height() + 15) / 16, 1);
+        ID3D11UnorderedAccessView* null_uav = nullptr;
+        RContext->CSSetUnorderedAccessViews(0, 1, &null_uav, nullptr);
+    }
+    {
+        GPU_EVENT(combine_2_histogram_overlay);
+        u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
+        RImplementation.rmNormal();
+        GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+        RCache.set_Stencil(false);
+        RCache.set_Element(s_histogram_debug->E[1]);
+        RCache.set_Geometry(FSTriangleGeom);
+        RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+        GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+    }
+    u_setrt(rt_Back_Buffer, nullptr, nullptr, nullptr);
+}
+
 void CRenderTarget::phase_new_luminance()
 {
 	GPU_EVENT(phase_new_luminance);

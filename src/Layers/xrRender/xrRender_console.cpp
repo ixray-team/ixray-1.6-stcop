@@ -193,6 +193,7 @@ float		ps_r2_autoexposure_sensitivity = 0.15f;			// autoexposure sensitivity (fo
 int ps_r4_bloom_mode = 2; // 0: PS, 1: CS, 2: both for comparison
 int ps_r4_bloom_compute_levels = 9;
 bool ps_r4_bloom_compute = true; // displayed path when both are running
+bool ps_r4_debug_histogram = true;
 float		ps_r2_bloom_amount			= 0.04f;			// bloom amount, exposure independant (0.04f)
 float		ps_r2_bloom_desaturation	= 0.1f;				// bloom desaturation (0.1f)
 float		ps_r2_bloom_tint_amount		= 0.1f;				// bloom tint amount (0.1f)
@@ -860,6 +861,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Integer, "r4_bloom_mode", &ps_r4_bloom_mode, 0, 2);
 	CMD4(CCC_Integer, "r4_bloom_compute_levels", &ps_r4_bloom_compute_levels, 7, 9);
 	CMD2(CCC_Boolean, "r4_bloom_compute", &ps_r4_bloom_compute);
+    CMD2(CCC_Boolean, "r4_debug_histogram", &ps_r4_debug_histogram);
 	CMD4(CCC_Float, "r2_bloom_desaturation", &ps_r2_bloom_desaturation, 0.0f, 1.0f);
 	CMD4(CCC_Float, "r2_bloom_tint_amount", &ps_r2_bloom_tint_amount, 0.0f, 1.0f);
 	CMD4(CCC_Vector3, "r2_bloom_tint_color", &ps_r2_bloom_tint_color, Fvector().set(0.0f, 0.0f, 0.0f), Fvector().set(1.0f, 1.0f, 1.0f));

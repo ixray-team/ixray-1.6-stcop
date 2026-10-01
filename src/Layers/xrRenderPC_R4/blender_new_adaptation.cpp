@@ -1,6 +1,29 @@
 #include "stdafx.h"
 #include "blender_new_adaptation.h"
 
+void CBlender_histogram_debug::Compile(CBlender_Compile& C)
+{
+    IBlender::Compile(C);
+    if (C.iElement == 0)
+    {
+        C.r_ComputePass("combine_histogram");
+        C.r_dx10Texture("s_image", r2_RT_backbuffer_final);
+        C.r_End();
+    }
+    else if (C.iElement == 1)
+    {
+        C.r_Pass("stub_fullscreen_triangle", "combine_histogram_debug", false, false, false);
+        C.r_dx10Texture("s_image", r2_RT_backbuffer_final);
+        C.r_dx10Texture("s_histogram", r4_RT_lum_histogram);
+        C.r_dx10Texture("s_output_histogram", "$user$combine_histogram");
+        C.r_dx10Texture("s_tonemap_compute", r4_RT_lum_compute);
+        C.r_dx10Texture("s_tonemap_state", r4_RT_tonemap_state);
+        C.r_dx10Texture("s_tonemap_lut", r4_RT_tonemap_lut);
+        C.r_dx10Sampler("smp_rtlinear");
+        C.r_End();
+    }
+}
+
 CBlender_new_adaptation::CBlender_new_adaptation() { description.CLS = 0; }
 CBlender_new_adaptation::~CBlender_new_adaptation() {}
 

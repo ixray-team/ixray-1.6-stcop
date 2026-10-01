@@ -305,6 +305,8 @@ void CRenderTarget::phase_combine()
 
 	RCache.set_Stencil		(FALSE);
 
+    if (ps_r4_debug_histogram)
+        phase_histogram_debug();
 	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
 	// Legacy eff_LensFlare is temporarily disabled while testing procedural celestials.
 	// g_pGamePersistent->Environment().RenderFlares();

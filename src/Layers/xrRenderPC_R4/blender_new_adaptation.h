@@ -12,3 +12,12 @@ public:
 	CBlender_new_adaptation();
 	virtual ~CBlender_new_adaptation();
 };
+
+class CBlender_histogram_debug : public IBlender
+{
+public:
+    CBlender_histogram_debug() { description.CLS = 0; }
+    virtual const char* getComment() { return "INTERNAL: combine histogram debug"; }
+    virtual bool canBeLMAPped() { return false; }
+    virtual void Compile(CBlender_Compile& C);
+};

@@ -286,6 +286,8 @@ private:
 	ref_shader					s_bloom_upsample;
 	ref_shader					s_lum_copy;
 	ref_shader					s_lum_copy_compute;
+    ref_shader s_histogram_debug;
+    ref_rt rt_Histogram_debug;
 	ref_shader					s_lum_downsample;
 	ref_shader					s_lum_calc;
 	//=====================================================
@@ -454,6 +456,7 @@ public:
 	void						phase_bloom_upsample();
 	void						phase_new_luminance();
 	void						phase_compute_luminance();
+    void phase_histogram_debug();
 	void						create_tonemap_lut();
 	void						phase_bake_tonemap_lut();
 	void						create_compute_bloom(u32 width, u32 height);

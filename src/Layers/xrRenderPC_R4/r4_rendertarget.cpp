@@ -849,6 +849,9 @@ CRenderTarget::CRenderTarget()
 		rt_Tonemap_state.create(r4_RT_tonemap_state, 4, 1, fmt, 1, CRT::USE_UAV_FLAG);
 		GRHI->ClearTarget(rt_Tonemap_state->pRT, ERTColor::Black);
 		create_tonemap_lut();
+        CBlender_histogram_debug histogram_debug;
+        s_histogram_debug.create(&histogram_debug);
+        rt_Histogram_debug.create("$user$combine_histogram", 256, 1, ERHI_FORMAT::R32_UINT, 1, CRT::USE_UAV_FLAG);
 
 		f_bloom_factor = 0.5f;
 	}
