@@ -10,6 +10,7 @@
 
 #include "alife_space.h"
 #include "../../xrUI/Widgets/UIHint.h"
+#include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
 
 class CUIProgressBar;
 class CUIProgressShape;
@@ -17,16 +18,19 @@ class CUIStatic;
 class CUIFrameWindow;
 class CUIXml;
 class CUIArrow;
+class CUIStackPanel;
 class CInventoryOwner;
 class CActor;
 
 class ui_actor_state_item;
+class ui_actor_state_row;
 
 class ui_actor_state_wnd final : public CUIWindow
 {
 private:
 	typedef CUIWindow		inherited;
 
+public:
 	enum EStateType
 	{
 		stt_stamina = 0,
@@ -47,10 +51,16 @@ private:
 		stt_thirst,
 		stt_sleep,
 		stt_intoxication,
-		stt_count
+		stt_count,
+		stt_invalid = stt_count
 	};
-	ui_actor_state_item*	m_state[stt_count];
-	UIHint*					m_hint_wnd;
+
+private:
+	ui_actor_state_item*	m_state[stt_count]{};
+	UIHint*					m_hint_wnd = nullptr;
+	bool					m_listMode = false;
+	CUIStackPanel*			m_stateList = nullptr;
+	xr_vector<ui_actor_state_row*> m_listRows;
 
 public:
 							ui_actor_state_wnd	() = default;
@@ -65,8 +75,67 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 private:
+			void			init_legacy_from_xml	( CUIXml& xml );
+			void			init_list_from_xml		( CUIXml& xml );
+			void			UpdateActorInfoLegacy	( CActor* actor );
+			void			UpdateActorInfoList		( CActor* actor );
+			void			SetListValue			( EStateType type, float normalized );
 			void			update_round_states		(EStateType stt_type, float initial, float max_power);
 
+public:
+			static EStateType ParseStateType		( LPCSTR name );
+
+private:
+	friend class ui_actor_state_row;
+};
+
+class ui_actor_state_row final : public UIHintWindow
+{
+	typedef UIHintWindow inherited;
+
+	ui_actor_state_wnd::EStateType m_type = ui_actor_state_wnd::stt_invalid;
+	CUIStatic* m_icon = nullptr;
+	CUIStatic* m_caption = nullptr;
+	CUIStatic* m_value = nullptr;
+	float m_magnitude = 100.f;
+	shared_str m_format = "%d%%";
+
+public:
+	struct LayoutDefaults
+	{
+		float rowHeight = 20.f;
+		Fvector2 iconSize;
+		u32 iconColor = 0;
+		u32 captionColor = 0;
+		u32 valueColor = 0;
+		float magnitude = 100.f;
+		LPCSTR format = "%d%%";
+		LPCSTR font = nullptr;
+		LPCSTR layout = "icon,caption,value";
+		LPCSTR columns = nullptr;
+		float pad = 4.f;
+		float valueWidth = 42.f;
+		LPCSTR captionAlign = "left";
+		LPCSTR valueAlign = "right";
+		bool hasCaptionX = false;
+		float captionX = 0.f;
+		bool hasCaptionY = false;
+		float captionY = 0.f;
+		bool hasValueX = false;
+		float valueX = 0.f;
+		bool hasValueY = false;
+		float valueY = 0.f;
+		bool hasIconX = false;
+		float iconX = 0.f;
+		bool hasIconY = false;
+		float iconY = 0.f;
+	};
+
+			void	init_from_xml(CUIXml& xml, XML_NODE* node, float rowWidth, const LayoutDefaults& defaults, UIHint* hintWnd);
+			void	set_value(float normalized);
+			ui_actor_state_wnd::EStateType type() const { return m_type; }
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };
 
 class ui_actor_state_item final : public UIHintWindow
@@ -95,6 +164,6 @@ public:
 			bool	show_static				( bool status, u8 number=1 );
 
 	virtual CUIWindow* ui_cast_window() { return this; }
-}; // class ui_actor_state_item
+};
 
 #endif // UI_ACTOR_STATE_INFO_H_INCLUDED
