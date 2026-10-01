@@ -241,3 +241,8 @@ void CScriptBinderObjectWrapper::net_Relcase_static		(CScriptBinderObject *scrip
 {
 	script_binder_object->CScriptBinderObject::net_Relcase	(object);
 }
+
+bool CScriptBinderObjectWrapper::has_net_relcase() const
+{
+	return ReflectionData && ReflectionData[int(ScriptBinderMethods::net_Relcase)];
+}
