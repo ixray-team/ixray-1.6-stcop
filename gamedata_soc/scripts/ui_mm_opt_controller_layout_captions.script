@@ -32,8 +32,8 @@ captions = {
 	cap_L1 = "ui_pad_layout_lean_left",
 	cap_L2 = " -",
 	cap_dpadu = "ui_pad_layout_weapon_zoom_in",
-	cap_dpadl = "ui_pad_layout_bandage",
-	cap_dpadr = "ui_pad_layout_medkit",
+	cap_dpadl = "kb_scope_brightness_minus",
+	cap_dpadr = "kb_scope_brightness_plus",
 	cap_dpadd = "ui_pad_layout_weapon_zoom_out",
 	cap_lsh = "ui_pad_layout_strafe",
 	cap_lsv = "ui_pad_layout_move",
@@ -57,8 +57,8 @@ captions = {
 	cap_L1 = "ui_pad_layout_wheel",
 	cap_L2 = " -",
 	cap_dpadu = " -",
-	cap_dpadl = " -",
-	cap_dpadr = " -",
+	cap_dpadl = "kb_wpn_torch",
+	cap_dpadr = "kb_laser",
 	cap_dpadd = " -",
 	cap_lsh = "ui_pad_layout_strafe",
 	cap_lsv = "ui_pad_layout_move",
@@ -124,7 +124,7 @@ captions = {
 	cap_a = "ui_pad_layout_action", 
 	cap_rsh = "ui_pad_layout_switch_area", 
 	cap_rsv = "ui_pad_layout_switch_area", 
-	cap_rsclick = "ui_pad_layout_inventory_info"
+	cap_rsclick = " -"
 	}},
 	--Inventory
 	{{
@@ -149,7 +149,7 @@ captions = {
 	cap_a = "ui_pad_layout_action", 
 	cap_rsh = "ui_pad_layout_switch_area", 
 	cap_rsv = "ui_pad_layout_switch_area", 
-	cap_rsclick = "ui_pad_layout_inventory_info"
+	cap_rsclick = " -"
 	}},
 }
 }

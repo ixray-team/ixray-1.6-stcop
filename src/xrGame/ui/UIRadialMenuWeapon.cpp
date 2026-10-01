@@ -15,6 +15,7 @@
 #include "../ActorHelmet.h"
 #include "../WeaponMagazined.h"
 #include "../Grenade.h"
+#include "../WeaponMagazinedWGrenade.h"
 
 #define RADIAL_MENU_XML "radial_menu.xml"
 
@@ -65,6 +66,16 @@ bool CUIRadialMenuWeapon::OnGamepadKeyAction(int key, EUIMessages gamepad_action
 			{
 				owner->inventory().Action(kWPN_FUNC, CMD_START);
 				PlaySnd(eSndGrenadeMode);
+				return true;
+			}
+			case kLASER:
+			{
+				owner->inventory().Action(kLASER, CMD_START);
+				return true;
+			}
+			case kTACTICALTORCH:
+			{
+				owner->inventory().Action(kTACTICALTORCH, CMD_START);
 				return true;
 			}
 			case kDROP:
@@ -315,7 +326,8 @@ void CUIRadialMenuWeapon::UpdateGamepadLegend()
 	CUIWindow* wpnFunc = m_pGamepadLegend->FindChild("rmw_wpn_func");
 	if (wpnFunc)
 	{
-		wpnFunc->Show(owner->inventory().ActiveItem() && owner->inventory().ActiveItem()->cast_weapon_magazined_w_grenade());
+		CWeaponMagazinedWGrenade* wpn = owner->inventory().ActiveItem() ? owner->inventory().ActiveItem()->cast_weapon_magazined_w_grenade() : nullptr;
+		wpnFunc->Show(wpn && wpn->IsGrenadeLauncherAttached());
 	}
 
 	CUIWindow* fireMode = m_pGamepadLegend->FindChild("rmw_fire_mode");
@@ -362,5 +374,19 @@ void CUIRadialMenuWeapon::UpdateGamepadLegend()
 		{
 			ammoNext->Show(false);
 		}
+	}
+
+	CUIWindow* wpnLaser = m_pGamepadLegend->FindChild("rmw_wpn_laser");
+	if (wpnLaser)
+	{
+		CWeaponMagazined* wpn = owner->inventory().ActiveItem() ? owner->inventory().ActiveItem()->cast_weapon_magazined() : nullptr;
+		wpnLaser->Show(wpn && wpn->GetLightLaser());
+	}
+
+	CUIWindow* wpnTorch = m_pGamepadLegend->FindChild("rmw_wpn_torch");
+	if (wpnTorch)
+	{
+		CWeaponMagazined* wpn = owner->inventory().ActiveItem() ? owner->inventory().ActiveItem()->cast_weapon_magazined() : nullptr;
+		wpnTorch->Show(wpn && wpn->GetHudLight());
 	}
 }

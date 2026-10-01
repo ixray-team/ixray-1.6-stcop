@@ -22,6 +22,14 @@
 			<window_name>rmw_ammo_next</window_name>
 			<text font="graffiti19" vert_align="c">ui_rmw_ammo_next</text>
 		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>rmw_wpn_laser</window_name>
+			<text font="graffiti19" vert_align="c">ui_rmw_wpn_laser</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>rmw_wpn_torch</window_name>
+			<text font="graffiti19" vert_align="c">ui_rmw_wpn_torch</text>
+		</auto_static>
 	</gamepad_legend>
 	
 	<radial_menu>

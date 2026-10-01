@@ -1008,4 +1008,10 @@
 	<string id="kb_scope_brightness_minus">
 		<text>Decrease scope brightness</text>
 	</string>
+	<string id="ui_rmw_wpn_torch">
+		<text>$$ACTION_WPN_TORCH$$ Tactical flashlight</text>
+	</string>
+	<string id="ui_rmw_wpn_laser">
+		<text>$$ACTION_WPN_LASER$$ Laser sight</text>
+	</string>
 </string_table>
