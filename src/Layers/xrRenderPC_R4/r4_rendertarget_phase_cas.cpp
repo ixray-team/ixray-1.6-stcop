@@ -2,41 +2,30 @@
 
 void CRenderTarget::phase_cas()
 {
-    u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
-    GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(false);
+	const u32 element = ps_r4_sharpening_mode == 0 ? 1 : 0;
 
-	// Draw COLOR
-	RCache.set_Element(ps_r4_sharpening_mode == 0 ? s_cas->E[1] : s_cas->E[0]);
-	RCache.set_c("sharpening_intensity", ps_r4_cas_sharpening);
-	RCache.set_Geometry(FSTriangleGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	DrawSQ(s_cas, rt_Back_Buffer_AA, element, []
+	{
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		RCache.set_Stencil(false);
+		RCache.set_c("sharpening_intensity", ps_r4_cas_sharpening);
+	});
 
-	//Resolve back to rt_Back_Buffer
-	GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+	ResolveSurface(rt_Back_Buffer, rt_Back_Buffer_AA);
 }
 
 void CRenderTarget::phase_ui_postprocess(Fcolor* color)
 {
-	RCache.set_Element(s_cas->E[3]);
-	RCache.set_Geometry(FSTriangleGeom);
-
-	if(color)
+	DrawPassSQ(s_cas, 3, [&]
 	{
-		RCache.set_c("static_color", color->r, color->g, color->b, color->a);
-	}
-	else
-	{
-		RCache.set_c("static_color", 1, 1, 1, 1);
-	}
-
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+		if (color)
+			RCache.set_c("static_color", color->r, color->g, color->b, color->a);
+		else
+			RCache.set_c("static_color", 1, 1, 1, 1);
+	});
 }
-
 
 void CRenderTarget::phase_ui_postprocess_copy()
 {
-	RCache.set_Element(s_cas->E[2]);
-	RCache.set_Geometry(FSTriangleGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	DrawPassSQ(s_cas, 2);
 }

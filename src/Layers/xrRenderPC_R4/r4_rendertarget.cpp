@@ -65,6 +65,11 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 	GRHI->SetDepthStencilView(zb);
 }
 
+void CRenderTarget::ResolveSurface(const ref_rt& dst, const ref_rt& src)
+{
+	GRHI->CopySurface(dst->pSurface, src->pSurface);
+}
+
 void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb)
 {
 	VERIFY(_1 || zb);
@@ -175,44 +180,38 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 }
 
 // 2D texgen (texture adjustment matrix)
-void	CRenderTarget::u_compute_texgen_screen	(Fmatrix& m_Texgen)
+void CRenderTarget::u_compute_texgen_screen(Fmatrix& m_Texgen)
 {
-	//float	_w						= float(Device.TargetWidth);
-	//float	_h						= float(Device.TargetHeight);
-	//float	o_w						= (.5f / _w);
-	//float	o_h						= (.5f / _h);
 	Fmatrix			m_TexelAdjust		= 
 	{
 		0.5f,				0.0f,				0.0f,			0.0f,
 		0.0f,				-0.5f,				0.0f,			0.0f,
 		0.0f,				0.0f,				1.0f,			0.0f,
-		//	Removing half pixel offset
-		//0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
 		0.5f,				0.5f ,				0.0f,			1.0f
 	};
 	m_Texgen.mul	(m_TexelAdjust,RCache.xforms.m_wvp);
 }
 
 // 2D texgen for jitter (texture adjustment matrix)
-void	CRenderTarget::u_compute_texgen_jitter	(Fmatrix&		m_Texgen_J)
+void CRenderTarget::u_compute_texgen_jitter(Fmatrix& m_Texgen_J)
 {
 	// place into	0..1 space
-	Fmatrix			m_TexelAdjust		= 
+	Fmatrix TexelAdjust = 
 	{
 		0.5f,				0.0f,				0.0f,			0.0f,
 		0.0f,				-0.5f,				0.0f,			0.0f,
 		0.0f,				0.0f,				1.0f,			0.0f,
 		0.5f,				0.5f,				0.0f,			1.0f
 	};
-	m_Texgen_J.mul	(m_TexelAdjust,RCache.xforms.m_wvp);
+	m_Texgen_J.mul	(TexelAdjust,RCache.xforms.m_wvp);
 
 	// rescale - tile it
 	float	scale_X			= RCache.get_width() / float(TEX_jitter);
 	float	scale_Y			= RCache.get_height() / float(TEX_jitter);
 	//float	offset			= (.5f / float(TEX_jitter));
-	m_TexelAdjust.scale			(scale_X,	scale_Y,1.f	);
-	//m_TexelAdjust.translate_over(offset,	offset,	0	);
-	m_Texgen_J.mulA_44			(m_TexelAdjust);
+	TexelAdjust.scale			(scale_X,	scale_Y,1.f	);
+	//TexelAdjust.translate_over(offset,	offset,	0	);
+	m_Texgen_J.mulA_44			(TexelAdjust);
 }
 
 u8		fpack			(float v)				{
@@ -517,10 +516,8 @@ CRenderTarget::CRenderTarget()
         rt_ui_pda.create(r_ui_pda, width, height, format);
         rt_ui_depth.create(r2_RT_ui_depth, width * 2, height * 2, ERHI_FORMAT::D16_UNORM);
         rt_ui_color.create(r2_RT_ui_color, width * 2, height * 2, format);
-        b_gamma = new CBlender_gamma();
-        s_gamma.create(b_gamma);
-        b_cas = new CBlender_Sharpening();
-        s_cas.create(b_cas);
+        CreateEffectSQ<CBlender_gamma>(s_gamma);
+        CreateEffectSQ<CBlender_Sharpening>(s_cas);
         s_postprocess.create("postprocess");
         s_r1_distort.create("r1_distort");
         s_menu.create("distort");
@@ -606,29 +603,23 @@ CRenderTarget::CRenderTarget()
 
 	// Scale
 	{
-		b_scale = new CBlender_scale();
-		s_scale.create(b_scale);
+		CreateEffectSQ<CBlender_scale>(s_scale);
 	}
 
 	// FXAA
 	{
-		b_fxaa = new CBlender_FXAA();
-		s_fxaa.create(b_fxaa);
+		CreateEffectSQ<CBlender_FXAA>(s_fxaa);
 	}
 
 	// Screen Post Process
 	{
-		b_spp = new CBlender_SPP;
-		s_spp.create(b_spp);
-
-		b_gasmask = new CBlenderGasMask;
-		s_gasmask.create(b_gasmask);
+		CreateEffectSQ<CBlender_SPP>(s_spp);
+		CreateEffectSQ<CBlenderGasMask>(s_gasmask);
 	}
 
 	// SMAA
 	{
-		b_smaa = new CBlender_SMAA();
-		s_smaa.create(b_smaa);
+		CreateEffectSQ<CBlender_SMAA>(s_smaa);
 
 		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8_UNORM);
 		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
@@ -636,14 +627,12 @@ CRenderTarget::CRenderTarget()
 
 	//Sharpening
 	{
-		b_cas = new CBlender_Sharpening();
-		s_cas.create(b_cas);
+		CreateEffectSQ<CBlender_Sharpening>(s_cas);
 	}
 
 	//Ground-truth based ambient occlusion
 	{
-		b_gtao = new CBlender_gtao();
-		s_gtao.create(b_gtao);
+		CreateEffectSQ<CBlender_gtao>(s_gtao);
 
 		rt_gtao_0.create("$user$gtao_0", s_dwWidth, s_dwHeight, ERHI_FORMAT::R32_UINT); //AO.view-z
 	}
@@ -655,20 +644,17 @@ CRenderTarget::CRenderTarget()
 
 	//TAA
 	{
-		b_taa = new CBlender_taa();
-		s_taa.create(b_taa);
+		CreateEffectSQ<CBlender_taa>(s_taa);
 
 		rt_Generic_0_prev.create(r2_RT_generic0_prev, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);	
 	}
 
 	// Gamma
-	b_gamma = new CBlender_gamma();
-	s_gamma.create(b_gamma);
+	CreateEffectSQ<CBlender_gamma>(s_gamma);
 
 	//NVG
 	{
-		b_nvg = new CBlender_nvg();
-		s_nvg.create(b_nvg);
+		CreateEffectSQ<CBlender_nvg>(s_nvg);
 	}
 
 	//SSLR
@@ -709,8 +695,7 @@ CRenderTarget::CRenderTarget()
 			GRHI->ClearTarget(rt_Reflection_forward->pRT, &Reflections.x);
 		}
 
-		b_sslr = new CBlender_sslr();
-		s_sslr.create(b_sslr);
+		CreateEffectSQ<CBlender_sslr>(s_sslr);
 	}
 
 	// OCCLUSION
@@ -817,10 +802,8 @@ CRenderTarget::CRenderTarget()
 		u32 BW_B = BW_C * 2, BH_B = BH_C * 2;
 		u32 BW_A = BW_B * 2, BH_A = BH_B * 2;
 
-		b_bloom_downsample = new CBlender_bloom_downsample();
-		b_bloom_upsample = new CBlender_bloom_upsample();
-		s_bloom_downsample.create(b_bloom_downsample);
-		s_bloom_upsample.create(b_bloom_upsample);
+		CreateEffectSQ<CBlender_bloom_downsample>(s_bloom_downsample);
+		CreateEffectSQ<CBlender_bloom_upsample>(s_bloom_upsample);
 
 		rt_Bloom_A.create(r2_RT_bloomA, BW_A, BH_A, fmt);
 		rt_Bloom_B.create(r2_RT_bloomB, BW_B, BH_B, fmt);
@@ -842,8 +825,7 @@ CRenderTarget::CRenderTarget()
 		u32 LW_C = LW_B / 8, LH_C = LH_B / 8;
 		u32 LW_D = 1, LH_D = 1;
 
-		b_new_adaptation = new CBlender_new_adaptation();
-		s_lum_copy.create(b_new_adaptation);
+		CreateEffectSQ<CBlender_new_adaptation>(s_lum_copy);
 
 		rt_LUM_A.create(r2_RT_lumA, LW_A, LH_A, fmt);
 		rt_LUM_B.create(r2_RT_lumB, LW_B, LH_B, fmt);
@@ -873,9 +855,7 @@ CRenderTarget::CRenderTarget()
 		fmt = ERHI_FORMAT::R16G16B16A16_FLOAT;
 		rt_dof_blur1.create(r2_RT_dof_blur1, CoCW, CoCH, fmt);
 
-		b_new_dof = new CBlender_new_dof();
-
-		s_dof_coc.create(b_new_dof);
+		CreateEffectSQ<CBlender_new_dof>(s_dof_coc);
 	}
 
 	// HBAO
@@ -1105,8 +1085,6 @@ CRenderTarget::~CRenderTarget	()
     {
         t_envmap_0->surface_set(nullptr);
         t_envmap_1->surface_set(nullptr);
-        xr_delete(b_gamma);
-        xr_delete(b_cas);
         CImGuiManager::Instance().Unsubscribe("GraphicDebug");
         _RELEASE(g_debug_blend_state);
         _RELEASE(FSTriangleVB);
@@ -1173,21 +1151,8 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_accum_point);
 	xr_delete(b_accum_direct);
 	xr_delete(b_ssao);
-	xr_delete(b_fxaa);
-	xr_delete(b_smaa);
-	xr_delete(b_gamma);
-	xr_delete(b_spp);
-	xr_delete(b_gasmask);
 	xr_delete(b_accum_mask);
 	xr_delete(b_occq);
-	xr_delete(b_cas);
-	xr_delete(b_gtao);
-	xr_delete(b_taa);
-	xr_delete(b_nvg);
-	xr_delete(b_bloom_downsample);
-	xr_delete(b_bloom_upsample);
-	xr_delete(b_new_adaptation);
-	xr_delete(b_sslr);
 
 	g_Fsr3Wrapper.Destroy();
 #if 0

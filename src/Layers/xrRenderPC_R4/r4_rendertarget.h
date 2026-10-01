@@ -35,27 +35,6 @@ public:
 	IBlender* b_combine = nullptr;
 	IBlender* b_ssao = nullptr;
 
-	IBlender* b_fxaa = nullptr;
-	IBlender* b_spp = nullptr;
-	IBlender* b_gasmask = nullptr;
-	IBlender* b_smaa = nullptr;
-	IBlender* b_scale = nullptr;
-	IBlender* b_cas = nullptr;
-	IBlender* b_gtao = nullptr;
-	IBlender* b_taa = nullptr;
-	IBlender* b_gamma = nullptr;
-	IBlender* b_nvg = nullptr;
-	IBlender* b_sslr = nullptr;
-
-	//============== new bloom and lum ============
-	IBlender* b_bloom_downsample = nullptr;
-	IBlender* b_bloom_upsample = nullptr;
-	IBlender* b_new_adaptation = nullptr;
-	//=============================================
-
-	//============== new Depth of Field ==============
-	IBlender* b_new_dof = nullptr;
-
 #ifdef DEBUG
 	struct		dbg_line_t		{
 		Fvector	P0,P1;
@@ -312,6 +291,14 @@ public:
 	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, IRHIDepthStencilView* zb);
 	void						u_setrt					(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIDepthStencilView* zb);
 	void						u_setrt					(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIRenderTargetView* _4, IRHIDepthStencilView* zb);
+
+	template <class Bind>
+	void						DrawPassSQ	(const ref_shader& shader, u32 element, Bind&& bind);
+	void						DrawPassSQ	(const ref_shader& shader, u32 element);
+	template <class Bind>
+	void						DrawSQ			(const ref_shader& shader, const ref_rt& target, u32 element, Bind&& bind);
+	void						DrawSQ			(const ref_shader& shader, const ref_rt& target, u32 element = 0);
+	void						ResolveSurface			(const ref_rt& dst, const ref_rt& src);
 	void						u_calc_tc_noise			(Fvector2& p0, Fvector2& p1);
 	void						u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1);
 	bool						u_need_PP				();
@@ -450,3 +437,5 @@ public:
 	IC void						dbg_addplane			(Fplane& P0,  u32 c)								{}
 #endif
 };
+
+#include "r4_fullscreen_pass.h"
