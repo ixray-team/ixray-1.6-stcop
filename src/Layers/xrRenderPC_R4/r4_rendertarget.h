@@ -1,18 +1,15 @@
 #pragma once
 
-#include "../xrRender/ColorMapManager.h"
-#include "../xrRender/ScreenPostProcessTypes.h"
+#include "ColorMapManager.h"
+#include "ScreenPostProcessTypes.h"
 
 class light;
 
-//#define DU_SPHERE_NUMVERTEX 92
-//#define DU_SPHERE_NUMFACES	180
-//#define DU_CONE_NUMVERTEX	18
-//#define DU_CONE_NUMFACES	32
 //	no less than 2
 #define	VOLUMETRIC_SLICES	100
 
-class CRenderTarget		: public IRender_Target
+class CRenderTarget :
+	public IRender_Target
 {
 private:
 	u32							dwWidth;

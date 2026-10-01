@@ -1,5 +1,5 @@
 #pragma once
-#include "../xrRender/light.h"
+#include "light.h"
 
 class CLightR_Manager
 {

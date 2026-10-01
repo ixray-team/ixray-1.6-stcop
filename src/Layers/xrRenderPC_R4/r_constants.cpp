@@ -1,0 +1,152 @@
+#include "stdafx.h"
+
+
+#include "ResourceManager.h"
+
+#include "../../xrCore/xrPool.h"
+#include "r_constants.h"
+
+#include "dxRenderDeviceRender.h"
+
+
+
+// pool
+//.static	poolSS<RHIShaderConstant,512>			g_constant_allocator;
+
+//R_constant_table::~R_constant_table	()	{	dxRenderDeviceRender::Instance().Resources->_DeleteConstantTable(this);	}
+
+
+R_constant_table::~R_constant_table()
+{
+	//dxRenderDeviceRender::Instance().Resources->_DeleteConstantTable(this);	
+	DEV->_DeleteConstantTable(this);
+}
+
+
+void	R_constant_table::fatal(const char* S)
+{
+	//FATAL(S);
+}
+
+void R_constant_table::_copy(const R_constant_table& Other)
+{
+	table = Other.table;
+	handlers_valid = false;
+	m_CBTable = Other.m_CBTable;
+}
+
+// predicates
+IC bool	p_search(ref_constant C, const char* S)
+{
+	return xr_strcmp(*C->name, S) < 0;
+}
+IC bool	p_sort_constants(ref_constant C1, ref_constant C2)
+{
+	return xr_strcmp(C1->name, C2->name) < 0;
+}
+
+ref_constant R_constant_table::get(const char* S)
+{
+	//PROF_EVENT("R_constant_table::get const char*")
+	// assumption - sorted by name
+	c_table::iterator I = std::lower_bound(table.begin(), table.end(), S, p_search);
+	if (I == table.end() || (0 != xr_strcmp(*(*I)->name, S)))	return nullptr;
+	else												return *I;
+}
+ref_constant R_constant_table::get(shared_str& S)
+{
+	//PROF_EVENT("R_constant_table::get shared_str")
+	// linear search, but only ptr-compare
+	c_table::iterator I = table.begin();
+	c_table::iterator E = table.end();
+	for (; I != E; ++I) {
+		ref_constant	C = *I;
+		if (C->name.equal(S))	return C;
+	}
+	return	nullptr;
+}
+
+
+/// !!!!!!!!FIX THIS FOR DX11!!!!!!!!!
+void R_constant_table::merge(R_constant_table* T)
+{
+	if (nullptr == T)		return;
+
+	handlers_valid = false;
+
+	// Real merge
+	static xr_vector<ref_constant> table_tmp;
+	table_tmp.clear();
+	table_tmp.reserve(table.size());
+
+	for (u32 it = 0; it < T->table.size(); it++)
+	{
+		ref_constant src = T->table[it];
+		ref_constant C = get(*src->name);
+		if (!C)
+		{
+			C = new RHIShaderConstant();//.g_constant_allocator.create();
+			C->name = src->name;
+			C->name_hash = src->name_hash;
+			C->destination = src->destination;
+			C->type = src->type;
+			C->fixed_id = src->fixed_id;
+			C->ps = src->ps;
+			C->vs = src->vs;
+			C->gs = src->gs;
+			C->hs = src->hs;
+			C->ds = src->ds;
+			C->cs = src->cs;
+			C->samp = src->samp;
+			C->handler = src->handler;
+			table_tmp.push_back(C);
+		}
+		else
+		{
+			VERIFY2(!(C->destination & src->destination & RC_dest_sampler), "Can't have samplers or textures with the same name for PS, VS and GS.");
+			C->destination |= src->destination;
+			if (src->fixed_id > 0) C->fixed_id = src->fixed_id;
+			VERIFY(C->type == src->type);
+			RHIShaderConstant::Loader& sL = src->get_load(src->destination);
+			RHIShaderConstant::Loader& dL = C->get_load(src->destination);
+			dL.index = sL.index;
+			dL.cls = sL.cls;
+		}
+	}
+
+	if (!table_tmp.empty())
+	{
+		// Append
+		std::move(table_tmp.begin(), table_tmp.end(), std::back_inserter(table));
+
+		// Sort
+		std::sort(table.begin(), table.end(), p_sort_constants);
+	}
+
+	//	TODO:	DX10:	Implement merge with validity check
+	m_CBTable.reserve(m_CBTable.size() + T->m_CBTable.size());
+	for (u32 i = 0; i < T->m_CBTable.size(); ++i)
+		m_CBTable.push_back(T->m_CBTable[i]);
+}
+
+void R_constant_table::clear()
+{
+	//.
+	for (u32 it = 0; it < table.size(); it++)
+		table[it] = nullptr;//.g_constant_allocator.destroy(table[it]);
+	table.clear();
+	handlers_valid = false;
+	m_CBTable.clear();
+}
+
+bool R_constant_table::equal(R_constant_table& C)
+{
+	if (table.size() != C.table.size())	return false;
+	u32 size = (u32)table.size();
+	for (u32 it = 0; it < size; it++)
+	{
+		if (!table[it]->equal(&*C.table[it]))	return false;
+	}
+
+	return true;
+}

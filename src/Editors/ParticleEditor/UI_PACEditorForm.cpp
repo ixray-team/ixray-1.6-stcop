@@ -3,7 +3,7 @@
 #include <imgui_internal.h>
 #include "implot.h"
 
-#include "../../Layers/xrRender/ParticleAnimCurve.h"
+#include "../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
 
 UIPACEditorForm* UIPACEditorForm::Form = nullptr;
 
@@ -19,12 +19,7 @@ UIPACEditorForm::~UIPACEditorForm()
 
 void UIPACEditorForm::Draw()
 {
-    //if (ImGui::Begin("PAC Editor", 0))
-    //{
-	    DrawCurves();
-    //}
-	
-	//ImGui::End();
+	DrawCurves();
 }
 
 void UIPACEditorForm::Open(PS::CPACDef* EditedPAC)
@@ -301,7 +296,7 @@ void UIPACEditorForm::DrawCurves()
 			}
 			ImPlot::EndPlot();
 		}
-        ImPlot::EndSubplots();
+		ImPlot::EndSubplots();
 	}
 
 	if (SelectedKeyframeIndex < dkeys_x.size())

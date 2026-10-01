@@ -1,10 +1,8 @@
-#ifndef	KinematicsAnimated_included
-#define	KinematicsAnimated_included
 #pragma once
 
 #include "../../xrEngine/SkeletonMotions.h"
 #include "animation_blend.h"
-#include "../../Layers/xrRender/KinematicAnimatedDefs.h"
+#include "../../Layers/xrRenderPC_R4/KinematicAnimatedDefs.h"
 
 class	 IKinematics;
 class    CBlend;
@@ -52,9 +50,6 @@ public:
 	virtual u16						LL_MotionsSlotCount() = 0;
 	virtual const shared_motions&	LL_MotionsSlot(u16 idx) = 0;
 
-	//IC CMotionDef*				LL_GetMotionDef	(MotionID id){return m_Motions[id.slot].motions.motion_def(id.idx);}
-	//IC CMotion*					LL_GetRootMotion(MotionID id){return &m_Motions[id.slot].bone_motions[iRoot]->at(id.idx);}
-	//IC CMotion*					LL_GetMotion	(MotionID id, u16 bone_id){return &m_Motions[id.slot].bone_motions[bone_id]->at(id.idx);}
 	virtual CMotionDef*				LL_GetMotionDef	(MotionID id) = 0;
 	virtual CMotion*				LL_GetRootMotion(MotionID id) = 0;
 	virtual CMotion*				LL_GetMotion	(MotionID id, u16 bone_id) = 0;
@@ -77,12 +72,10 @@ public:
 	virtual void						LL_FadeCycle	(u16 partition, float	falloff, u8 mask_channel = (1<<0)) = 0;
 	virtual void						LL_CloseCycle		(u16 partition, u8 mask_channel = (1<<0)) = 0;
 	virtual void						LL_SetChannelFactor (u16 channel,float factor) = 0;
-//	virtual CBlendInstance&				LL_GetBlendInstance	(u16 bone_id) = 0;
 
 	// Main functionality
 	virtual void						UpdateTracks	()												= 0;								// Update motions
 	virtual void						LL_UpdateTracks	( float dt, bool b_force, bool leave_blends )	= 0;								// Update motions
-	//void						DestroyCycle	(CBlend &B);
 
 	// cycles
 	virtual MotionID					ID_Cycle		(const char*  N) = 0;
@@ -106,9 +99,4 @@ public:
 
 	virtual float						get_animation_length (MotionID motion_ID) = 0;
 	virtual void						append_motion_from_path(const char* nameOgf, const char* pathOmf) = 0;
-//#ifdef DEBUG
-//	virtual	const BlendSVec			&blend_cycle	(const u32 &bone_part_id) const = 0;
-//#endif //	DEBUG
 };
-
-#endif	//	KinematicsAnimated_included

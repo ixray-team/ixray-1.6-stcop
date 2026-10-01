@@ -9,33 +9,34 @@
 
 #include "../../xrEngine/stdafx.h"
 
-#include "imgui.h"
+#include <imgui.h>
 
-#include <d3d11_1.h>
 #include <D3DCompiler.h>
 
-#include "../xrRenderDX10/DXCommonTypes.h"
+#include "DXCommonTypes.h"
 
 #define MU_LODS_TRUE
-#include "../xrRender/particle_core/psystem.h"
+#include "particle_core/psystem.h"
+#include "HW.h"
+#include "Shader.h"
+#include "R_Backend.h"
+#include "R_Backend_Runtime.h"
 
-#include "../xrRender/HW.h"
-#include "../xrRender/Shader.h"
-#include "../xrRender/R_Backend.h"
-#include "../xrRender/R_Backend_Runtime.h"
-
-#include "../xrRender/ResourceManager.h"
+#include "ResourceManager.h"
 
 #include "../../xrEngine/vis_common.h"
 #include "../../xrEngine/Render.h"
 #include "../../xrEngine/_d3d_extensions.h"
 #include "../../xrEngine/IGame_Level.h"
-#include "../xrRender/blenders/Blender.h"
-#include "../xrRender/blenders/Blender_CLSID.h"
-#include "../xrRender/xrRender_console.h"
-#include "r4.h"
+#include "blenders/Blender.h"
+#include "blenders/Blender_CLSID.h"
+#include "xrRender_console.h"
 
-IC	void jitter(CBlender_Compile& C)
+#ifndef _EDITOR
+#	include "r4.h"
+#endif
+
+IC void jitter(CBlender_Compile& C)
 {
 	C.r_dx10Texture("jitter0", JITTER(0));
 	C.r_dx10Texture("jitter1", JITTER(1));

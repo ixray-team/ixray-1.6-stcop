@@ -11,7 +11,7 @@
 #include "ui_main.h"
 #include "render.h"
 #include "../Public/PropertiesListHelper.h"
-#include "../../Layers/xrRender/ResourceManager.h"
+#include "../../Layers/xrRenderPC_R4/ResourceManager.h"
 #include "ImageManager.h"
 
 const float tex_w	= LOD_SAMPLE_COUNT*LOD_IMAGE_SIZE;

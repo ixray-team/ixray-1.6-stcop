@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "../xrRenderDX10/dx10FixedConstants.h"
+#include "dx10FixedConstants.h"
 #include "ComputeShader.h"
 
 void ComputeShader::Construct(

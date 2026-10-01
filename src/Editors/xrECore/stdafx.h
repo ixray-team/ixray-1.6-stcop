@@ -9,8 +9,8 @@
 #include <d3d11shader.h>
 
 #include "../xrEUI/stdafx.h"
-#include "../../Layers/xrRenderDX10/DXCommonTypes.h"
-#include "../../Layers/xrRender/r__types.h"
+#include "../../Layers/xrRenderPC_R4/DXCommonTypes.h"
+#include "../../Layers/xrRenderPC_R4/r__types.h"
 
 #include "../../utils/xrDXT/xrDXT.h"
 
@@ -25,7 +25,7 @@
 #include "../xrEProps/stdafx.h"
 #include "../../xrCore/Collision/xrCDB.h"
 #include "../../xrSound/Sound.h"
-#include "../../Layers/xrRender/particle_core/psystem.h"
+#include "../../Layers/xrRenderPC_R4/particle_core/psystem.h"
 
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrEngine/_d3d_extensions.h"
@@ -63,7 +63,7 @@ using LPAStringIt = LPAStringVec::iterator;
 #include "../../xrEngine/defines.h"
 
 #include "../../xrPhysics/xrPhysics.h"
-#include "../../Layers/xrRender/FVF.h"
+#include "../../Layers/xrRenderPC_R4/FVF.h"
 
 struct str_pred 
 {
@@ -124,7 +124,7 @@ using RStrVecIt = RStrVec::iterator;
 #define		TEX_SPOT_ATT	"internal\\internal_light_attclip"
 
 #include "../../xrEngine/ETextureParams.h"
-#include "../../Layers/xrRender/ResourceManager.h"
+#include "../../Layers/xrRenderPC_R4/ResourceManager.h"
 #include "Editor/EditorContext.h"
 inline xr_string ChangeFileExt(const char* name, const char* e)
 {

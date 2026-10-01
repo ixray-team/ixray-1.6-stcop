@@ -6,8 +6,8 @@
 #include "ui_main.h"
 #include "D3DUtils.h"
 #include "SoundManager.h"
-#include "../Layers/xrRender/PSLibrary.h"
-#include "../Layers/xrRender/dxRenderDeviceRender.h"
+#include "../Layers/xrRenderPC_R4/PSLibrary.h"
+#include "../Layers/xrRenderPC_R4/dxRenderDeviceRender.h"
 
 #include "UIIConPicker.h"
 #include "UIEditLightAnim.h"

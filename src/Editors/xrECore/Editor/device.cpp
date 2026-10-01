@@ -7,8 +7,8 @@
 #include "ui_main.h"
 #include "render.h"
 #include "../Engine/XrGameMaterialLibraryEditors.h"
-#include "../Layers/xrRender/ResourceManager.h"
-#include "../Layers/xrRender/dxRenderDeviceRender.h"
+#include "../Layers/xrRenderPC_R4/ResourceManager.h"
+#include "../Layers/xrRenderPC_R4/dxRenderDeviceRender.h"
 #include "UI_ToolsCustom.h"
 #include "SoundProcessor.h"
 #include "device_win_custom.h"
@@ -107,9 +107,9 @@ CEditorRenderDevice::~CEditorRenderDevice()
 	m_MtlLib.reset();
 }
 
-#include "../../../Layers/xrRender/dxRenderFactory.h"
-#include "../../../Layers/xrRender/dxUIRender.h"
-#include "../../../Layers/xrRender/dxDebugRender.h"
+#include "../../../Layers/xrRenderPC_R4/dxRenderFactory.h"
+#include "../../../Layers/xrRenderPC_R4/dxUIRender.h"
+#include "../../../Layers/xrRenderPC_R4/dxDebugRender.h"
 
 typedef void __cdecl ttapi_Done_func(void);
 

@@ -6,7 +6,7 @@
 #include "UI_ParticleTools.h"
 #include "IconsFontAwesome6.h"
 
-#include "../../Layers/xrRender/ParticleAnimCurve.h"
+#include "../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
 #include "../../xrEngine/ObjectAnimator.h"
 #include "../xrECore/Editor/ParticleEffectActions.h"
 //------------------------------------------------------------------------------

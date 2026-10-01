@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "../xrRender/dxRenderDeviceRender.h"
+#include "dxRenderDeviceRender.h"
 
 void CRenderTarget::PhaseGammaApply()
 {

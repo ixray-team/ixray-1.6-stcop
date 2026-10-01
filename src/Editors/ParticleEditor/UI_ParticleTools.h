@@ -2,9 +2,8 @@
 #ifndef UI_ParticleToolsH
 #define UI_ParticleToolsH
 
-//. ?#include "ParticleSystem.h"
-#include "../../Layers/xrRender/ParticleEffect.h"
-#include "../../Layers/xrRender/ParticleGroup.h"
+#include "../../Layers/xrRenderPC_R4/ParticleEffect.h"
+#include "../../Layers/xrRenderPC_R4/ParticleGroup.h"
 #include "../../xrEngine/pure.h"
 #include "../xrECore/Editor/ParticleEffectActions.h"
 

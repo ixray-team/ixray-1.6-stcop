@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "r1_LightShadows.h"
-#include "../xrRender/Blender_Shadow_World.h"
-#include "../xrRender/Blender_Blur.h"
-#include "../xrRender/LightTrack.h"
+#include "Blender_Shadow_World.h"
+#include "Blender_Blur.h"
+#include "LightTrack.h"
 #include "../../xrEngine/xr_object.h"
-#include "../xrRender/FBasicVisual.h"
+#include "FBasicVisual.h"
 #include "../../xrEngine/CustomHUD.h"
 
 const	float		S_distance		= 48;

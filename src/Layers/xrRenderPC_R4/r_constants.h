@@ -1,0 +1,100 @@
+#pragma once
+
+#include "../../xrCore/xr_resource.h"
+#include "dx10ConstantBuffer.h"
+
+enum
+{
+	RC_float		= 0,
+	RC_int			= 1,
+	RC_bool			= 2,
+	RC_sampler		= 99,	//	DX9 shares index for sampler and texture
+	RC_dx10texture	= 100,	//	For DX10 sampler and texture are different resources
+	RC_dx11UAV		= 101
+};
+enum
+{
+	RC_1x1		= 0,					// vector1, or scalar
+	RC_1x4,								// vector4
+	RC_1x3,								// vector3
+	RC_1x2,								// vector2
+	RC_2x4,								// 4x2 matrix, transpose
+	RC_3x4,								// 4x3 matrix, transpose
+	RC_4x4,								// 4x4 matrix, transpose
+	RC_1x4a,							// array: vector4
+	RC_3x4a,							// array: 4x3 matrix, transpose
+	RC_4x4a								// array: 4x4 matrix, transpose
+};
+
+enum	//	Constant buffer index masks
+{
+	CB_BufferIndexMask		= 0xF,	//	Buffer index == 0..14
+
+	CB_BufferTypeMask		= 0x70,
+	CB_BufferPixelShader	= 0x10,
+	CB_BufferVertexShader	= 0x20,
+	CB_BufferGeometryShader	= 0x30,
+	CB_BufferHullShader		= 0x40,
+	CB_BufferDomainShader	= 0x50,
+	CB_BufferComputeShader	= 0x60,
+};
+
+typedef	resptr_core<RHIShaderConstant,resptr_base<RHIShaderConstant> > ref_constant;
+
+class	 ECORE_API			R_constant_table	: public xr_resource_flagged	{
+public:
+	typedef xr_vector<ref_constant>		c_table;
+	c_table					table;
+
+	// Only a minority of constants carry a Setup handler; walking the whole table to find
+	// them was the largest single cost in set_Constants. Built on demand, dropped on any
+	// mutation of `table`.
+	xr_vector<RHIShaderConstant*>	handlers;
+	bool							handlers_valid = false;
+
+	const xr_vector<RHIShaderConstant*>& get_handlers()
+	{
+		if (!handlers_valid)
+		{
+			handlers.clear();
+			for (ref_constant& C : table)
+				if (C->handler && C->fixed_id != 1)
+					handlers.push_back(&*C);
+
+			handlers_valid = true;
+		}
+
+		return handlers;
+	}
+
+	typedef std::pair<u32,ref_cbuffer>	cb_table_record;
+	typedef xr_vector<cb_table_record>	cb_table;
+	cb_table							m_CBTable;
+private:
+	void					fatal		(const char* s);
+
+	bool					parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination, int fixed);
+	bool					parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
+
+public:
+	R_constant_table					() = default;
+	~R_constant_table					();
+
+	R_constant_table& operator=(const RHIShaderConstant& Other) = delete;
+
+	void					_copy		(const R_constant_table& Other);
+	void					clear		();
+	bool					parse		(void* desc, u32 destination);
+	void					merge		(R_constant_table* C);
+	ref_constant			get			(const char*		name);		// slow search
+	ref_constant			get			(shared_str&	name);		// fast search
+
+	bool					equal		(R_constant_table& C);
+	bool					equal		(R_constant_table* C)	{	return equal(*C);		}
+	bool					empty		()						{	return 0==table.size();	}
+private:
+
+};
+typedef	resptr_core<R_constant_table,resptr_base<R_constant_table> >				ref_ctable;
+
+#include "dx10ConstantBuffer_impl.h"

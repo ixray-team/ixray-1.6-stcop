@@ -20,9 +20,9 @@ file(GLOB_RECURSE ELE_SOURCE_SERVER_ENTITIES_WRAPPER_FILES CONFIGURE_DEPENDS
     )
 
 file(GLOB_RECURSE ELE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
-    "../../Layers/xrRenderDX10/dx10DetailManager_VS*"
-    "../../Layers/xrRender/DetailManager*"
-    "../../Layers/xrRender/stats_manager*"
+    "../../Layers/xrRenderPC_R4/dx10DetailManager_VS*"
+    "../../Layers/xrRenderPC_R4/DetailManager*"
+    "../../Layers/xrRenderPC_R4/stats_manager*"
 )
 set(ELE_SRC_FILES)
 

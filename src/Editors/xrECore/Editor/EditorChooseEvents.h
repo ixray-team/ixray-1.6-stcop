@@ -1,14 +1,14 @@
-#ifndef EditorChooseEventsH
-#define EditorChooseEventsH
+#pragma once
+
 #include "SoundManager.h"
 #include "Library.h"
 #include "../../xrEngine/GameMtlLib.h"
 #include "../../xrEngine/LightAnimLibrary.h"
-#include "../../Layers/xrRender/SkeletonAnimated.h"
-#include "../../Layers/xrRender/ResourceManager.h"
-#include "../../Layers/xrRender/ParticleEffect.h"
-#include "../../Layers/xrRender/ParticleGroup.h"
-#include "../../Layers/xrRender/ParticleAnimCurve.h"
+#include "../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
+#include "../../Layers/xrRenderPC_R4/ResourceManager.h"
+#include "../../Layers/xrRenderPC_R4/ParticleEffect.h"
+#include "../../Layers/xrRenderPC_R4/ParticleGroup.h"
+#include "../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
 #include "../../xrEngine/defines.h"
 #include "EditObject.h"
 ref_sound* choose_snd;
@@ -479,9 +479,6 @@ void FillChooseEvents()
 
 void ClearChooseEvents()
 {
-	UIChooseForm::ClearEvents	();
-    xr_delete					(choose_snd);
+	UIChooseForm::ClearEvents();
+	xr_delete(choose_snd);
 }
-
-//---------------------------------------------------------------------------
-#endif

@@ -17,12 +17,12 @@
 #include "UIMoveToCamera.h"
 
 #include "Library.h"
-#include "../Layers/xrRender/PSLibrary.h"
+#include "../Layers/xrRenderPC_R4/PSLibrary.h"
 #include "../xrEngine/LightAnimLibrary.h"
 
 #include "ImageManager.h"
 #include "SoundManager.h"
-#include "../Layers/xrRender/ResourceManager.h"
+#include "../Layers/xrRenderPC_R4/ResourceManager.h"
 #include "engine/XrGamePersistentEditors.h"
 #include "../../../xrEngine/string_table.h"
 
@@ -30,7 +30,6 @@
 ECommandVec 		ECommands;
 bool 				bAllowReceiveCommand	= false;
 bool 				bAllowLogCommands		= false;
-//TfrmText*			frmEditCommandList		= 0;
 xr_string			sCommandListText;
 
 bool AllowLogCommands()

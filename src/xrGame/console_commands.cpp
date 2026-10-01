@@ -2383,8 +2383,8 @@ public:
 };
 
 #include "../Include/xrRender/particles_systems_library_interface.hpp"
-#include "../Layers/xrRender/PSLibrary.h"
-#include "GamePersistent.h"
+#include "../Layers/xrRenderPC_R4/PSLibrary.h"
+
 class CCC_Particle_TEST : public IConsole_Command
 {
 public:

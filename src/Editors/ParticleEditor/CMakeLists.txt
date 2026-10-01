@@ -3,12 +3,12 @@ project(ParticlesEditor)
 # Files import
 file(GLOB_RECURSE EPE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.*"
-	"../../Layers/xrRender/particle_core/particle_core.*"
-	"../../Layers/xrRender/particle_core/noise.*"
-	"../../Layers/xrRender/particle_core/particle_actions_collection.*"
-	"../../Layers/xrRender/particle_core/particle_actions_collection_io.cpp"
-	"../../Layers/xrRender/particle_core/particle_holder.h"
-	"../../Layers/xrRender/particle_core/psystem.h"
+	"../../Layers/xrRenderPC_R4/particle_core/particle_core.*"
+	"../../Layers/xrRenderPC_R4/particle_core/noise.*"
+	"../../Layers/xrRenderPC_R4/particle_core/particle_actions_collection.*"
+	"../../Layers/xrRenderPC_R4/particle_core/particle_actions_collection_io.cpp"
+	"../../Layers/xrRenderPC_R4/particle_core/particle_holder.h"
+	"../../Layers/xrRenderPC_R4/particle_core/psystem.h"
 )
 
 set(EPE_SRC_FILES)

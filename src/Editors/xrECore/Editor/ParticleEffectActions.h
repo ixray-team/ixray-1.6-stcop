@@ -1,6 +1,6 @@
 #pragma once
 #include "../../Include/xrRender/ParticleCustom.h"
-#include "../../Layers/xrRender/particle_core/particle_actions_collection.h"
+#include "../../Layers/xrRenderPC_R4/particle_core/particle_actions_collection.h"
 
 struct PBool
 {

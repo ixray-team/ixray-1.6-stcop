@@ -1,25 +1,25 @@
 #pragma once
 
-#include "../xrRender/r__dsgraph_structure.h"
-#include "../xrRender/r__occlusion.h"
+#include "r__dsgraph_structure.h"
+#include "r__occlusion.h"
 
-#include "../xrRender/PSLibrary.h"
+#include "PSLibrary.h"
 
-#include "../xrRender/r__types.h"
+#include "r__types.h"
 #include "r4_rendertarget.h"
 
-#include "../xrRender/HOM.h"
-#include "../xrRender/DetailManager.h"
-#include "../xrRender/ModelPool.h"
-#include "../xrRender/WallmarksEngine.h"
+#include "HOM.h"
+#include "DetailManager.h"
+#include "ModelPool.h"
+#include "WallmarksEngine.h"
 
 #include "SMAP_Allocator.h"
-#include "../xrRender/Light_DB.h"
-#include "../xrRender/LightTrack.h"
+#include "Light_DB.h"
+#include "LightTrack.h"
 #include "r1_LightProjector.h"
 #include "r1_LightShadows.h"
 #include "r1_GlowManager.h"
-#include "../xrRender/r_sun_cascades.h"
+#include "r_sun_cascades.h"
 
 #include "../../xrEngine/IRenderable.h"
 #include "../../xrEngine/Fmesh.h"
@@ -28,7 +28,8 @@ class dxRender_Visual;
 class CLightR_Manager;
 
 // definition
-class CRender	:	public R_dsgraph_structure
+class CRender :
+	public R_dsgraph_structure
 {
 public:
 	enum { PHASE_POINT = 3, PHASE_SPOT = 4, PHASE_LMODELS = 5 };

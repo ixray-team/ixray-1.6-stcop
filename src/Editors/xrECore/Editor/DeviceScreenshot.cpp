@@ -4,12 +4,10 @@
 #include "UI_ToolsCustom.h"
 #include "device.h"
 #include "ui_main.h"
-#include "../../../Layers/xrRender/ResourceManager.h"
-#include "../../../Layers/xrRender/Shader.h"
-#include "../../../Layers/xrRender/SH_RT.h"
-#include "../../../Layers/xrRender/dxRenderDeviceRender.h"
-
-#include <d3d11.h>
+#include "../../../Layers/xrRenderPC_R4/ResourceManager.h"
+#include "../../../Layers/xrRenderPC_R4/Shader.h"
+#include "../../../Layers/xrRenderPC_R4/SH_RT.h"
+#include "../../../Layers/xrRenderPC_R4/dxRenderDeviceRender.h"
 
 struct SRTState
 {

@@ -2,14 +2,13 @@
 
 #include "../../../xrEngine/device.h"
 #include "UI_Camera.h"
-#include "../../../Layers/xrRender/HWCaps.h"
-#include "../../../Layers/xrRender/HW.h"
+#include "../../../Layers/xrRenderPC_R4/HW.h"
 #include "../../../xrEngine/pure.h"
 #include "../../../xrCore/FTimer.h"
 #include "EStats.h"
 #include "../../../xrEngine/Shader_xrLC.h"
-#include "../../../Layers/xrRender/Shader.h"
-#include "../../../Layers/xrRender/R_Backend.h"
+#include "../../../Layers/xrRenderPC_R4/Shader.h"
+#include "../../../Layers/xrRenderPC_R4/R_Backend.h"
 
 #include "../Engine/XrGameMaterialLibraryEditors.h"
 
@@ -216,4 +215,4 @@ enum
 #define REQ_CREATE()	if (!EDevice->bReady)	return;
 #define REQ_DESTROY()	if (EDevice->bReady)	return;
 
-#include "../../../Layers/xrRender/R_Backend_Runtime.h"
+#include "../../../Layers/xrRenderPC_R4/R_Backend_Runtime.h"

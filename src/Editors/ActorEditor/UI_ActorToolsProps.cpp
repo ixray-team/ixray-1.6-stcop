@@ -1,8 +1,8 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-#include "../../Layers/xrRender/KinematicAnimatedDefs.h"
-#include "../../Layers/xrRender/SkeletonAnimated.h"
+#include "../../Layers/xrRenderPC_R4/KinematicAnimatedDefs.h"
+#include "../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
 //------------------------------------------------------------------------------
 
 void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
-
-#include "../xrRender/uber_deffer.h"
+#include "uber_deffer.h"
 #include "blender_deffer_flat.h"
 
 CBlender_deffer_flat::CBlender_deffer_flat	()

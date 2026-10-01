@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "../xrRender/blender_screen_postprocess.h"
-#include "../xrRender/uber_deffer.h"
+#include "blender_screen_postprocess.h"
+#include "uber_deffer.h"
 
 CBlender_SPP::CBlender_SPP() { description.CLS = 0; }
 CBlender_SPP::~CBlender_SPP() {}

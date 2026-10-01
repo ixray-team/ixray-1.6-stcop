@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "../xrRender/ResourceManager.h"
+#include "ResourceManager.h"
 #include "blender_light_occq.h"
 #include "blender_light_mask.h"
 #include "blender_light_direct.h"
@@ -8,7 +8,7 @@
 #include "blender_light_spot.h"
 #include "blender_light_reflected.h"
 #include "blender_combine.h"
-#include "../xrRender/blender_screen_postprocess.h"
+#include "blender_screen_postprocess.h"
 #include "blender_ssao.h"
 #include "blender_scale.h"
 #include "blender_cas.h"
@@ -23,11 +23,11 @@
 #include "blender_new_adaptation.h"
 #include "blender_new_dof.h"
 
-#include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
-#include "../xrRender/blender_fxaa.h"
-#include "../xrRender/blender_smaa.h"
+#include "DX10 Rain/dx10RainBlender.h"
+#include "blender_fxaa.h"
+#include "blender_smaa.h"
 #include "BlenderGamma.h"
-#include "../xrRender/dxRenderDeviceRender.h"
+#include "dxRenderDeviceRender.h"
 
 #include "OverlayAPI/FSR3Wrapper.h"
 #include "OverlayAPI/DLSSWrapper.h"

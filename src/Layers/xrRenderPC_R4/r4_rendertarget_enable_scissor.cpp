@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "../../xrCore/Collision/cl_intersect.h"
-#include "../xrRender/du_cone.h"
+#include "du_cone.h"
 
 void CRenderTarget::enable_dbt_bounds		(light* L)
 {

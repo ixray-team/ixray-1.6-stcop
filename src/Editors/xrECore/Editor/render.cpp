@@ -2,17 +2,17 @@
 
 #include "render.h"
 
-#include "../Layers/xrRender/ResourceManager.h"
+#include "../Layers/xrRenderPC_R4/ResourceManager.h"
 #include "../../xrEngine/irenderable.h"
 #include "../../xrEngine/xr_object.h"
 #include "../../xrEngine/CustomHUD.h"
 
-#include "..\Layers\xrRender\uber_deffer.h"
-#include "..\Layers\xrRender\uber_deffer.cpp"
+#include "..\Layers\xrRenderPC_R4\uber_deffer.h"
+#include "..\Layers\xrRenderPC_R4\uber_deffer.cpp"
 
-#include "../../../Layers/xrRender/du_sphere_part.h"
-#include "../../../Layers/xrRender/du_cone.h"
-#include "../../../Layers/xrRender/du_sphere.h"
+#include "../../../Layers/xrRenderPC_R4/du_sphere_part.h"
+#include "../../../Layers/xrRenderPC_R4/du_cone.h"
+#include "../../../Layers/xrRenderPC_R4/du_sphere.h"
 
 //---------------------------------------------------------------------------
 float ssaDISCARD = 4.f;
@@ -236,7 +236,7 @@ void CRenderTarget::accum_spot(light* L)
 	increment_light_marker();
 }
 
-#include "../../../Layers/xrRender/light.cpp"
+#include "../../../Layers/xrRenderPC_R4/light.cpp"
 
 //---------------------
 //---------------------------------------------------------------------------
@@ -381,9 +381,9 @@ void CRender::Calculate()
 }
 
 #include "../xrEngine/IGame_Persistent.h"
-#include "../../../Layers/xrRender/CHudInitializer.h"
-#include "../../../Layers/xrRender/CHudInitializer.cpp"
-#include "../../../Layers/xrRender/dxEnvironmentRender.h"
+#include "../../../Layers/xrRenderPC_R4/CHudInitializer.h"
+#include "../../../Layers/xrRenderPC_R4/CHudInitializer.cpp"
+#include "../../../Layers/xrRenderPC_R4/dxEnvironmentRender.h"
 #include "../../../xrEngine/IGame_Level.h"
 #include "../../../xrCore/git_version.h"
 
@@ -700,7 +700,7 @@ u32 CRender::memory_usage() { return 0; }
 
 
 //--------------------------------------------------------------------------------------------------------------
-#include "../../Layers/xrRender/ShaderResourceTraits.h"
+#include "../../Layers/xrRenderPC_R4/ShaderResourceTraits.h"
 template <typename T>
 static HRESULT create_shader(
 	LPCSTR const pTarget,

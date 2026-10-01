@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 
-
 #include "EditObject.h"
 #include "EditMesh.h"
 #include "../xrEngine/bone.h"
@@ -12,9 +11,6 @@
 
 #include "ExportSkeleton.h"
 #include "ExportObjectOGF.h"
-
-#if 1
- #include "../Layers/xrRender/Shader.h"
 
 bool CEditableObject::Load(const char* fname)
 {
@@ -36,7 +32,6 @@ bool CEditableObject::Load(const char* fname)
     }
     return false;
 }
-#endif
 
 bool CEditableObject::Save(const char* fname)
 {

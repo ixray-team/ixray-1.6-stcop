@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "../../Layers/xrRender/dxRenderDeviceRender.h"
 #include "../xrEUI/xrUITheme.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
 

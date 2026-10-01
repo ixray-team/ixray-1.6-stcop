@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
-
-#include "../xrRender/uber_deffer.h"
+#include "uber_deffer.h"
 #include "blender_deffer_aref.h"
 
 CBlender_deffer_aref::CBlender_deffer_aref	(bool _lmapped) : lmapped(_lmapped)	{	
