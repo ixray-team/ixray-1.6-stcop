@@ -6,6 +6,7 @@
 #include "IGame_UICustom.h"
 #include "IGame_Menu.h"
 #include "IGame_Persistent.h"
+#include "xr_input.h"
 
 ENGINE_API CStringTable* g_pStringTable = nullptr;
 
@@ -211,6 +212,12 @@ void CStringTable::Load	(const char* xml_file_full)
 		STRING_VALUE str_val		= ParseLine(string_text, string_name, true);
 		
 		pData->m_StringTable[string_name] = str_val;
+		const char* gamepad_text = uiXml.Read(uiXml.GetRoot(), "string:text_gamepad", i, nullptr);
+		if (gamepad_text)
+		{
+			STRING_VALUE str_val = ParseLine(gamepad_text, string_name, true, true);
+			pData->m_StringTableGamepad[string_name] = str_val;
+		}
 	}
 }
 
@@ -258,6 +265,10 @@ void CStringTable::ReparseKeyBindings()
 	for (auto& key : pData->m_string_key_binding)
 	{
 		pData->m_StringTable[key.first] = ParseLine(*key.second, *key.first, false);
+	}
+	for (auto& key : pData->m_string_key_binding_gamepad)
+	{
+		pData->m_StringTableGamepad[key.first] = ParseLine(*key.second, *key.first, false);
 	}
 	if (g_pGameCustom)
 	{
@@ -342,7 +353,7 @@ xr_string CStringTable::LangName()
 	return pData->m_sLanguage.c_str();
 }
 
-STRING_VALUE CStringTable::ParseLine(const char* str, const char* skey, bool bFirst)
+STRING_VALUE CStringTable::ParseLine(const char* str, const char* skey, bool bFirst, bool isGamepad)
 {
 //	const char* str = "1 $$action_left$$ 2 $$action_right$$ 3 $$action_left$$ 4";
 	xr_string			res;
@@ -382,7 +393,17 @@ STRING_VALUE CStringTable::ParseLine(const char* str, const char* skey, bool bFi
 		res.append(str+k);
 	}
 
-	if(b_hit&&bFirst) pData->m_string_key_binding[skey] = str;
+	if (b_hit && bFirst)
+	{
+		if (isGamepad)
+		{
+			pData->m_string_key_binding_gamepad[skey] = str;
+		}
+		else
+		{
+			pData->m_string_key_binding[skey] = str;
+		}
+	}
 
 	return STRING_VALUE(res.c_str());
 }
@@ -392,9 +413,17 @@ STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 	if(pData != nullptr)
 	{
 		// First try to find in main language
-		if(pData->m_StringTable.find(str_id)!=pData->m_StringTable.end())
-			return  pData->m_StringTable[str_id];
-			
+		if (pData->m_StringTable.find(str_id) != pData->m_StringTable.end())
+		{
+			if (pInput->GetControllerMode() && pData->m_StringTableGamepad.contains(str_id))
+			{
+				return pData->m_StringTableGamepad[str_id];
+			}
+			else
+			{
+				return pData->m_StringTable[str_id];
+			}
+		}
 		// If not found and fallback table exists, try fallback language
 		if(pData->m_FallbackStringTable.find(str_id)!=pData->m_FallbackStringTable.end())
 			return  pData->m_FallbackStringTable[str_id];
