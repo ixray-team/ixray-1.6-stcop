@@ -29,4 +29,21 @@ namespace Platform
     {
     	::WaitForSingleObject(ID, INFINITE);
     }
+
+	inline void JoinThread(ThreadID ID)
+	{
+		if (ID != nullptr && ID != INVALID_HANDLE_VALUE)
+		{
+			::WaitForSingleObject(ID, INFINITE);
+			::CloseHandle(ID);
+		}
+	}
+
+	inline void CloseThreadHandle(ThreadID ID)
+	{
+		if (ID != nullptr && ID != INVALID_HANDLE_VALUE)
+		{
+			::CloseHandle(ID);
+		}
+	}
 }

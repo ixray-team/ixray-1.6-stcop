@@ -38,7 +38,7 @@ SteamNetServer::SteamNetServer(CTimer* timer, bool dedicated)
 
 SteamNetServer::~SteamNetServer()
 {
-
+	DestroyConnection();
 }
 // -----------------------------------------------------------------------------
 
@@ -113,7 +113,7 @@ bool SteamNetServer::CreateConnection(GameDescriptionData & game_descr, ServerCo
 	m_max_players = (m_bDedicated) ? (connectOpt.dwMaxPlayers + 1) : (connectOpt.dwMaxPlayers);
 
 	Msg("- [SteamNetServer] created on port %d", bindServerAddress.m_port);
-	thread_spawn(steam_net_update_server, "snetwork-update-server", 0, this);
+	m_hServerThread = thread_spawn(steam_net_update_server, "snetwork-update-server", 0, this);
 
 	return true;
 }
@@ -121,30 +121,38 @@ bool SteamNetServer::CreateConnection(GameDescriptionData & game_descr, ServerCo
 void SteamNetServer::DestroyConnection()
 {
 	// Pavel: дисконнект не должен исполняться, во время обработки колбека
-	xrCriticalSectionGuard lock(&csConnection);
-
-	m_server_password.clear();
-
-	if (m_pInterface == nullptr)
 	{
-		return;
+		xrCriticalSectionGuard lock(&csConnection);
+
+		m_server_password.clear();
+
+		if (m_pInterface == nullptr)
+		{
+			return;
+		}
+
+		DisconnectAll();
+
+		if (m_hListenSock != k_HSteamListenSocket_Invalid)
+		{
+			m_pInterface->CloseListenSocket(m_hListenSock);
+			m_hListenSock = k_HSteamListenSocket_Invalid;
+		}
+
+		if (m_hPollGroup != k_HSteamListenSocket_Invalid)
+		{
+			m_pInterface->DestroyPollGroup(m_hPollGroup);
+			m_hPollGroup = k_HSteamListenSocket_Invalid;
+		}
+
+		m_pInterface = nullptr;
 	}
 
-	DisconnectAll();
-
-	if (m_hListenSock != k_HSteamListenSocket_Invalid)
+	if (m_hServerThread)
 	{
-		m_pInterface->CloseListenSocket(m_hListenSock);
-		m_hListenSock = k_HSteamListenSocket_Invalid;
+		Platform::JoinThread(m_hServerThread);
+		m_hServerThread = 0;
 	}
-
-	if (m_hPollGroup != k_HSteamListenSocket_Invalid)
-	{
-		m_pInterface->DestroyPollGroup(m_hPollGroup);
-		m_hPollGroup = k_HSteamListenSocket_Invalid;
-	}
-
-	m_pInterface = nullptr;
 
 	GameNetworkingSockets_Kill();
 }

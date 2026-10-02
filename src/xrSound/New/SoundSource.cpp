@@ -608,7 +608,7 @@ Snd_ShutdownSources()
 
     source_pool_state.decode_cv.notify_all();
     if (source_pool_state.decode_thread) {
-        Platform::WaitForSingleObject(source_pool_state.decode_thread);
+        Platform::JoinThread(source_pool_state.decode_thread);
         source_pool_state.decode_thread = 0;
     }
 
