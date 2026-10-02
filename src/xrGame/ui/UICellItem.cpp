@@ -18,6 +18,7 @@
 #include "CustomOutfit.h"
 #include "PowerBank.h"
 #include "IPowerManager.h"
+#include "../ImUtils/ImUtils.h"
 
 namespace
 {
@@ -66,7 +67,8 @@ Fvector2 CalcInvCellAnchorPos(
 CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
 
 CUICellItem::CUICellItem()
-{
+{	Icon3dAdjust_RegisterCell(this);
+
 	m_pParentList		= nullptr;
 	m_ownerContentGeneration = 0;
 	m_pData				= nullptr;
@@ -101,6 +103,8 @@ CUICellItem::CUICellItem()
 
 CUICellItem::~CUICellItem()
 {
+	Icon3dAdjust_UnregisterCell(this);
+
 	if (m_b_destroy_childs) 
 	{
 		delete_data(m_childs);
@@ -275,6 +279,11 @@ void CUICellItem::Update()
 		ResetHeadingPivot	();
 
 	inherited::Update();
+
+	if (CursorOverWindow())
+	{
+		Icon3dAdjust_NotifyHoveredCell(this);
+	}
 	
 	if ( CursorOverWindow() )
 	{
