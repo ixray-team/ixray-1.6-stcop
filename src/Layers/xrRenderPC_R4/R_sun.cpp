@@ -135,7 +135,7 @@ void CRender::collect_sun_cascades()
 			Graph.r_dsgraph_clear_passes();
 			Graph.r_pmask(true, false);
 			Graph.PortalTraverser.prepare_local_clips(sector_count, portal_count);
-			Graph.r_dsgraph_render_subspace(pOutdoorSector, sun_cascade_xforms[i], sun_cull_cop, true);
+			Graph.r_dsgraph_render_subspace(pOutdoorSector, sun_cascade_xforms[i], sun_cull_cop, false);
 		}
 
 		g_r_cull_tls.active = false;
@@ -335,6 +335,29 @@ bool CRender::prepare_sun_cascade_xforms()
 	return false;
 }
 
+void CRender::append_sun_dynamics()
+{
+	if (!pOutdoorSector || sun_cascade_count == 0)
+		return;
+
+	const u32 count = std::min(sun_cascade_count, (u32)GraphSun.size());
+	for (u32 i = 0; i < count; ++i)
+	{
+		R_dsgraph_structure& Graph = GraphSun[i];
+		if (!Graph.PortalTraverser.own_clips)
+			continue;
+
+		Graph.r_pmask(true, false);
+		Graph.val_pTransform = &Fidentity;
+		Graph.val_bHUD = false;
+		Graph.val_bUI = false;
+		Graph.val_bInvisible = false;
+		Graph.val_pObject = nullptr;
+		Graph.private_marker = true;
+		Graph.r_dsgraph_render_subspace(pOutdoorSector, sun_cascade_xforms[i], sun_cull_cop, true, false, nullptr, false);
+	}
+}
+
 void CRender::render_sun_cascades()
 {
 	wait_sun_collect();
@@ -351,6 +374,7 @@ void CRender::render_sun_cascades()
 		GRHI->SetViewport(viewport);
 
 	phase = PHASE_SMAP;
+	append_sun_dynamics();
 
 	for (u32 i = 0; i < cascade_count; ++i)
 	{

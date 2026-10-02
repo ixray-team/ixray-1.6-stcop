@@ -632,6 +632,7 @@ void	CKinematicsAnimated::LL_UpdateFxTracks( float dt )
 }
 void CKinematicsAnimated::UpdateTracks	()
 {
+	xrCriticalSectionGuard guard(&UCalc_Mutex);
 	if (Update_LastTime==RDEVICE.dwTimeGlobal)
 		return;
 

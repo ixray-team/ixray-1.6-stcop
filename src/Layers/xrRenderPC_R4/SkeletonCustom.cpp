@@ -395,9 +395,10 @@ void CKinematics::Copy(dxRender_Visual *P)
 }
 
 void CKinematics::CalculateBones_Invalidate	()
-{	
-	UCalc_Time		= 0x0; 
-	UCalc_Visibox	= psSkeletonUpdate;		
+{
+	xrCriticalSectionGuard guard(&UCalc_Mutex);
+	UCalc_Time		= 0x0;
+	UCalc_Visibox	= psSkeletonUpdate;
 }
 
 void CKinematics::Spawn			()

@@ -268,22 +268,14 @@ public:
 	virtual void level_Load(IReader*);
 	virtual void level_Unload();
 
-	// virtual IDirect3DBaseTexture9*	texture_load			(const char*	fname, u32& msize)					= 0;
-
 	// Information
 	virtual void Statistics(CGameFont* F) {};
 
-	//	virtual ref_shader				getShader				(int id)									= 0;
 	virtual IRender_Sector* getSector(int id);
 	virtual IRenderVisual* getVisual(int id);
 	virtual IRender_Sector* detectSector(const Fvector& P);
 
 	// Main
-	IC void set_Frustum(CFrustum* O)
-	{
-		VERIFY(O);
-		View = O;
-	}
 	virtual void set_UI(bool V, void* graph = nullptr);
 	virtual void set_HUD(bool V, void* graph = nullptr);
 	virtual bool get_HUD(void* graph = nullptr);

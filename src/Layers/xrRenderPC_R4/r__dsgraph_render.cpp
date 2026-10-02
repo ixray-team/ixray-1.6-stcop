@@ -389,16 +389,16 @@ void R_dsgraph_structure::r_dsgraph_render_distort()
 
 //////////////////////////////////////////////////////////////////////////
 // sub-space rendering - shortcut to render with frustum extracted from matrix
-void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O)
+void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O, bool _static)
 {
 	if(!_sector) return;
 	CFrustum	temp;
 	temp.CreateFromMatrix			(mCombined,	FRUSTUM_P_ALL &(~FRUSTUM_P_NEAR));
-	r_dsgraph_render_subspace		(_sector,&temp,mCombined,_cop,_dynamic,_precise_portals, O);
+	r_dsgraph_render_subspace		(_sector,&temp,mCombined,_cop,_dynamic,_precise_portals, O, _static);
 }
 
 // sub-space rendering - main procedure
-void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O)
+void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O, bool _static)
 {
 	PROF_EVENT("r_dsgraph_render_subspace")
 	VERIFY							(_sector);
@@ -439,7 +439,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 	{
 		PROF_EVENT("add_static");
 	// Determine visibility for static geometry hierrarhy
-		if(psDeviceFlags.test(rsDrawStatic))
+		if(_static && psDeviceFlags.test(rsDrawStatic))
 		{
 			for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
 			{
