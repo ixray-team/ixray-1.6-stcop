@@ -862,7 +862,9 @@ void CEntityAlive::OnChangeVisual					( )
 
 void CEntityAlive::fill_hit_bone_surface_areas		( ) const
 {
-	VERIFY								( !m_hit_bone_surface_areas_actual );
+	xrSRWLockGuard guard(&m_hit_bone_lock, false);
+	if (m_hit_bone_surface_areas_actual)
+		return;
 	m_hit_bone_surface_areas_actual		= true;
 
 	IKinematics* const kinematics		= PKinematics( Visual() );
@@ -926,6 +928,7 @@ Fvector	CEntityAlive::get_new_local_point_on_mesh	( u16& bone_id ) const
 	if ( !m_hit_bone_surface_areas_actual )
 		fill_hit_bone_surface_areas		( );
 
+	xrSRWLockGuard guard(&m_hit_bone_lock, true);
 	if ( m_hit_bone_surface_areas.empty() )
 		return							inherited::get_new_local_point_on_mesh( bone_id );
 
