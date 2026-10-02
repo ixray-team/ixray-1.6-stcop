@@ -117,10 +117,6 @@ void CDS0_RenderInterface::add_Visual(IRenderVisual* V, bool IgnoreOptimize, boo
 	}
 }
 
-void CDS0_RenderInterface::add_Geometry(IRenderVisual* V)
-{
-}
-
 void CDS0_RenderInterface::add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
 {
 }

@@ -71,7 +71,7 @@ bool CStaticTraversalStats::BeginFrame()
 
 	Active = true;
 	Sectors.clear();
-	Sectors.reserve(PortalTraverser.r_sectors.size());
+	Sectors.reserve(RImplementation.GraphMain.PortalTraverser.r_sectors.size());
 	FrameTimer.Start();
 	return true;
 }

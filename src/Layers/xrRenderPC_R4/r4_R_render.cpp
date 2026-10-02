@@ -46,9 +46,8 @@ void CRender::render_main	(bool deffered, bool zfill)
 		EditorRenderMain(deffered);
 		return;
 	}
-
 //	Msg						("---begin");
-	marker					++;
+	GraphMain.marker++;
 	bool dont_test_sectors = Sectors.size() <= 1;
 
 	// Calculate sector(s) and their objects
@@ -62,7 +61,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 			// Traverse object database
 			g_SpatialSpace->q_frustum
 			(
-			lstRenderablesMain,
+				GraphMain.lstRenderablesMain,
 			ISpatial_DB::O_ORDERED,
 			ESPATIAL_TYPE::RENDERABLE | ESPATIAL_TYPE::RENDERABLESHADOW | ESPATIAL_TYPE::PARTICLE | ESPATIAL_TYPE::LIGHTSOURCE,
 			ViewBase);//nearest sorting
@@ -82,14 +81,14 @@ void CRender::render_main	(bool deffered, bool zfill)
 					}
 				}
 
-				if (lstRenderablesMain.size())
+				if (GraphMain.lstRenderablesMain.size())
 				{
 					uLastLTRACK	++;
-					uID_LTRACK = uLastLTRACK%lstRenderablesMain.size();
+					uID_LTRACK = uLastLTRACK % GraphMain.lstRenderablesMain.size();
 
 					// update light-vis for selected entity
 					// track lighting environment
-					if (IRenderable* renderable = (IRenderable*)lstRenderablesMain[uID_LTRACK]->dcast_Renderable())
+					if (IRenderable* renderable = (IRenderable*)GraphMain.lstRenderablesMain[uID_LTRACK]->dcast_Renderable())
 					{
 						if (CROS_impl* T = (CROS_impl*)renderable->renderable_ROS())
 							T->update(renderable);
@@ -112,7 +111,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 		// Traverse sector/portal structure
 		if (!dont_test_sectors)
 		{
-			PortalTraverser.traverse	
+			GraphMain.PortalTraverser.traverse	
 				(
 				pLastSector,
 				ViewBase,
@@ -126,7 +125,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 		// Dynamic objects are collected before static geometry: worker threads calculate their
 		// skeletons while the static hierarchy is traversed
 		CollectMainDynamic(deffered, dont_test_sectors);
-		SkeletonUpdates.Launch();
+		GraphMain.SkeletonUpdates.Launch();
 
 		// Determine visibility for static geometry hierrarhy
 		if(psDeviceFlags.test(rsDrawStatic))
@@ -137,8 +136,8 @@ void CRender::render_main	(bool deffered, bool zfill)
 			{
 				PROF_EVENT("add_static: non sector")
 				CSector* sector = (CSector*)Sectors[0];
-				set_Frustum(&ViewBase);
-				add_Geometry(sector->root());
+				GraphMain.View = &ViewBase;
+				GraphMain.add_Static((dxRender_Visual*)sector->root(), GraphMain.View->getMask());
 			}
 			else
 			{
@@ -146,22 +145,22 @@ void CRender::render_main	(bool deffered, bool zfill)
 				{
 					for (auto visual : Visuals)
 					{
-						r_dsgraph_insert_static(visual);
+						GraphMain.r_dsgraph_insert_static(visual);
 					}
 				}
 				else
 				{
 					const bool CaptureStats = phase == CRender::PHASE_NORMAL && g_StaticTraversalStats.BeginFrame();
-					for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
+					for (u32 s_it = 0; s_it < GraphMain.PortalTraverser.r_sectors.size(); s_it++)
 					{
-						CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
+						CSector* sector = (CSector*)GraphMain.PortalTraverser.r_sectors[s_it];
 						dxRender_Visual* root = sector->root();
 						g_StaticTraversalStats.BeginSector(sector);
 
 						for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++) 
 						{
-							set_Frustum(&(sector->r_frustums[v_it]));
-							add_Geometry(root);
+							GraphMain.View = &(sector->r_frustums[v_it]);
+							GraphMain.add_Static((dxRender_Visual*)root, GraphMain.View->getMask());
 						}
 						g_StaticTraversalStats.EndSector();
 					}
@@ -173,7 +172,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 			}
 		}
 		PROF_EVENT("add_dynamic")
-		SkeletonUpdates.Wait();
+		GraphMain.SkeletonUpdates.Wait();
 		RenderMainDynamic();
 
 		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))
@@ -202,9 +201,9 @@ void CRender::CollectMainDynamic(bool deffered, bool dont_test_sectors)
 	const float full_detail_distance = use_full_detail_distance ?
 		std::max(100.f, g_pGamePersistent->Environment().CurrentEnv->far_plane * ps_r1_full_detail_distance_scale) : 0.f;
 	// Traverse frustums
-	for (u32 o_it=0; o_it<lstRenderablesMain.size(); o_it++)
+	for (u32 o_it=0; o_it<GraphMain.lstRenderablesMain.size(); o_it++)
 	{
-		ISpatial*	spatial	= lstRenderablesMain[o_it].get();
+		ISpatial*	spatial	= GraphMain.lstRenderablesMain[o_it].get();
 		if	(0==spatial) continue;
 
 		if (use_full_detail_distance &&
@@ -259,7 +258,7 @@ void CRender::CollectMainDynamic(bool deffered, bool dont_test_sectors)
 		}
 		else
 		{
-			if	(PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector
+			if	(GraphMain.PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector
 			for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
 			{
 				CFrustum&	view	= sector->r_frustums[v_it];
@@ -289,7 +288,7 @@ void CRender::CollectMainRenderable(ISpatial* spatial, bool deffered)
 						pKin = PCKinematics((dxRender_Visual*)renderable->renderable.visual);
 						if (pKin)
 						{
-							SkeletonUpdates.Add(pKin);
+							GraphMain.SkeletonUpdates.Add(pKin);
 						}
 					}
 					Render = true;
@@ -423,10 +422,10 @@ void CRender::RenderUI(Fcolor* color)
 		GRHI->ClearTarget(Target->rt_ui_color->pRT, ERTColor::Transparent);
 	}
 
-	bool ui_saved = val_bUI;
+	bool ui_saved = GraphMain.val_bUI;
 	set_UI(true);
-	r_dsgraph_render_ui();
-	r_dsgraph_render_sorted_ui();
+	GraphMain.r_dsgraph_render_ui();
+	GraphMain.r_dsgraph_render_sorted_ui();
 	set_UI(ui_saved);
 
 	Scissor.div(2, 2);
@@ -437,7 +436,7 @@ void CRender::RenderUI(Fcolor* color)
 	RImplementation.rmNormal();
 
 	Target->phase_ui_postprocess(color, HasBackground);
-	++marker;
+	++GraphMain.marker;
 }
 
 void CRender::Render()
@@ -562,7 +561,7 @@ void CRender::Render()
 	RCache.set_xform_world(Fidentity);
 
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	View = 0;
+	GraphMain.View = 0;
 
 	if (Device.IsEditorMode() && g_EditorRenderHost)
 	{
@@ -581,10 +580,10 @@ void CRender::Render()
 		if (ps_r2_ls_flags.test(R2FLAG_ZFILL))
 		{
 			Device.Statistic->RenderCALC.Begin();
-			r_pmask(true, false);	// enable priority "0"
+			GraphMain.r_pmask(true, false); // enable priority "0"
 			phase = PHASE_SMAP;
 			render_main(false, true);
-			r_pmask(true, false);	// disable priority "1"
+			GraphMain.r_pmask(true, false); // disable priority "1"
 			Device.Statistic->RenderCALC.End();
 
 			// flush
@@ -592,7 +591,7 @@ void CRender::Render()
 			RCache.set_ColorWriteEnable(false);
 			{
 				CEditorFillModeScope FillModeScope(EditorMode);
-				r_dsgraph_render_graph(0);
+				GraphMain.r_dsgraph_render_graph(0);
 			}
 			RCache.set_ColorWriteEnable();
 		}
@@ -605,17 +604,17 @@ void CRender::Render()
 	//******* Main calc - DEFERRER RENDERER
 	// Main calc
 	Device.Statistic->RenderCALC.Begin			();
-	r_pmask										(true,false,true);	// enable priority "0",+ capture wmarks
+	GraphMain.r_pmask(true, false, true); // enable priority "0",+ capture wmarks
 	phase										= PHASE_NORMAL;
 
 	render_main									(true);
-	r_pmask										(true,false);	// disable priority "1"
+	GraphMain.r_pmask(true, false); // disable priority "1"
 	Device.Statistic->RenderCALC.End			();
 
 	bool	split_the_scene_to_minimize_wait		= false;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=true;
 
-	if (mapHUDScopeMask.size() > 0) 
+	if (GraphMain.mapHUDScopeMask.size() > 0) 
 	{
 		split_the_scene_to_minimize_wait = FALSE;
 	}
@@ -631,11 +630,11 @@ void CRender::Render()
 		CEditorFillModeScope FillModeScope(EditorMode);
 		// level, DO NOT SPLIT
 		Target->phase_scene_begin				();
-		r_dsgraph_render_hud					();
-		r_dsgraph_render_scope					();
+		GraphMain.r_dsgraph_render_hud();
+		GraphMain.r_dsgraph_render_scope();
 		Target->phase_scene_begin				();
-		r_dsgraph_render_graph					(0);
-		r_dsgraph_render_lods					(true,true);
+		GraphMain.r_dsgraph_render_graph(0);
+		GraphMain.r_dsgraph_render_lods(true, true);
 		if (CDetailManager* ActiveDetails = GetDetails())	ActiveDetails->Render();
 		DetailLayers_RenderBrush3D			();
 		Target->phase_scene_end					();
@@ -646,14 +645,16 @@ void CRender::Render()
 		CEditorFillModeScope FillModeScope(EditorMode);
 		// level, SPLIT
 		Target->phase_scene_begin				();
-		r_dsgraph_render_graph					(0);
+		GraphMain.r_dsgraph_render_graph(0);
 		Target->disable_aniso					();
 	}
 
 	{
 		GPU_EVENT(DEFER_TEST_LIGHT_VIS);
-		if(Lights.package.v_point.empty()&&Lights.package.v_spot.empty()&&Lights.package.v_shadowed.empty())
+		if (Lights.package.v_point.empty() && Lights.package.v_spot.empty() && Lights.package.v_shadowed.empty())
+		{
 			HWOCC.occq_refresh();
+		}
 		else
 		{
 
@@ -724,8 +725,8 @@ void CRender::Render()
 		
 		// level
 		Target->phase_scene_begin				();
-		r_dsgraph_render_hud					();
-		r_dsgraph_render_lods					(true,true);
+		GraphMain.r_dsgraph_render_hud					();
+		GraphMain.r_dsgraph_render_lods					(true,true);
 		if (CDetailManager* ActiveDetails = GetDetails())	ActiveDetails->Render();
 		DetailLayers_RenderBrush3D			();
 		Target->phase_scene_end					();
@@ -830,7 +831,7 @@ void CRender::Render()
 		RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 		RCache.set_ColorWriteEnable();
-		RImplementation.r_dsgraph_render_emissive();
+		GraphMain.r_dsgraph_render_emissive();
 	}
 
 	// Lighting, non dependant on OCCQ
@@ -863,14 +864,14 @@ void CRender::render_forward()
 	RImplementation.o.distortion = RImplementation.o.distortion_enabled;
 
 	// level enable priority "1"
-	r_pmask(false, true);
+	GraphMain.r_pmask(false, true);
 	phase = PHASE_NORMAL;
 
 	render_main(false);
-	mapLOD.clear();
+	GraphMain.mapLOD.clear();
 
-	bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size();
-	bSpecial |= mapNormalPasses[1][1].size() || mapMatrixPasses[1][1].size();
+	bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size();
+	bSpecial |= GraphMain.mapNormalPasses[1][1].size() || GraphMain.mapMatrixPasses[1][1].size();
 
 	if (ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
 	{
@@ -881,10 +882,10 @@ void CRender::render_forward()
 	// May be WBOIT
 	{
 		CEditorFillModeScope FillModeScope(Device.IsEditorMode());
-		r_dsgraph_render_graph(1);
+		GraphMain.r_dsgraph_render_graph(1);
 	}
 
-	bool bDistort = RImplementation.mapDistort.size() || RImplementation.mapHUDDistort.size();
+	bool bDistort = GraphMain.mapDistort.size() || GraphMain.mapHUDDistort.size();
 	GRHI->ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
 
 	if (bDistort)
@@ -896,7 +897,7 @@ void CRender::render_forward()
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 		RCache.set_Stencil(FALSE);
 		RCache.set_ColorWriteEnable();
-		RImplementation.r_dsgraph_render_distort();
+		RImplementation.GraphMain.r_dsgraph_render_distort();
 	}
 
 	if(bDistort || bSpecial)
@@ -921,7 +922,7 @@ void CRender::render_forward()
 		Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, RDepth);
 	}
 
-	PortalTraverser.fade_render();
+	GraphMain.PortalTraverser.fade_render();
 
 	// Editor helpers under the blended geometry
 	if (Device.IsEditorMode() && g_EditorRenderHost)
@@ -931,18 +932,18 @@ void CRender::render_forward()
 
 	{
 		CEditorFillModeScope FillModeScope(Device.IsEditorMode());
-		r_dsgraph_render_sorted(false);
+		GraphMain.r_dsgraph_render_sorted(false);
 	}
 
 	g_pGamePersistent->Environment().RenderLast();
 	Target->phase_combine_volumetric();
 
 	const bool bHUD_UI = g_hud && g_hud->RenderActiveItemUIQuery();
-	if(bSpecial = mapHUDSorted.size() > 0; bSpecial || mapHUDEmissive.size() > 0 || bHUD_UI)
+	if (bSpecial = GraphMain.mapHUDSorted.size() > 0; bSpecial || GraphMain.mapHUDEmissive.size() > 0 || bHUD_UI)
 	{
 		if(bSpecial)
 		{
-			for (const auto& Node : mapHUDSorted)
+			for (const auto& Node : GraphMain.mapHUDSorted)
 			{
 				if (!Node.val.se->flags.ScopePostprocess)
 				{
@@ -968,6 +969,6 @@ void CRender::render_forward()
 			}
 		}
 
-		r_dsgraph_render_sorted_hud();
+		GraphMain.r_dsgraph_render_sorted_hud();
 	}
 }

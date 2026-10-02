@@ -112,7 +112,7 @@ void	CRender::render_lights	(light_Package& LP)
 
 				// render
 				phase = PHASE_SMAP;
-				r_pmask(true, /*!!RImplementation.o.Tshadows*/ ps_r2_ls_flags_ext.test(R4FLAG_TSHDOWS));
+				GraphMain.r_pmask(true, ps_r2_ls_flags_ext.test(R4FLAG_TSHDOWS));
 
 				if (Target->CanCacheSpotShadow(*L))
 				{
@@ -142,7 +142,7 @@ void	CRender::render_lights	(light_Package& LP)
 					}
 					else if ((L->decor_object[0] && !L->decor_object[0]->getDestroy()) || (L->decor_object[1] && !L->decor_object[1]->getDestroy()) || (L->decor_object[2] && !L->decor_object[2]->getDestroy()) || (L->decor_object[3] && !L->decor_object[3]->getDestroy()) || (L->decor_object[4] && !L->decor_object[4]->getDestroy()) || (L->decor_object[5] && !L->decor_object[5]->getDestroy()))
 					{
-						RImplementation.marker++; // !!! critical here
+						RImplementation.GraphMain.marker++; // !!! critical here
 						RImplementation.set_Object(0);
 						for (int f = 0; f < 6; f++)
 						{
@@ -156,7 +156,7 @@ void	CRender::render_lights	(light_Package& LP)
 					else
 					{
 						PROF_EVENT("r_dsgraph_render_subspace");
-						r_dsgraph_render_subspace(L->SpatialComponent->sector, L->X.S.combine, L->position, true, false, L->ignore_object);
+						GraphMain.r_dsgraph_render_subspace(L->SpatialComponent->sector, L->X.S.combine, L->position, true, false, L->ignore_object);
 					}
 
 					if (L->flags.bOccq && !L->flags.bHudMode)
@@ -164,8 +164,8 @@ void	CRender::render_lights	(light_Package& LP)
 						L->svis.begin();
 					}
 
-					bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-					bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+					bool bNormal = GraphMain.mapNormalPasses[0][0].size() || GraphMain.mapMatrixPasses[0][0].size();
+					bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
 					if (bNormal || bSpecial)
 					{
 						stats.s_merged++;
@@ -174,7 +174,7 @@ void	CRender::render_lights	(light_Package& LP)
 						RCache.set_xform_world(Fidentity);
 						RCache.set_xform_view(L->X.S.view);
 						RCache.set_xform_project(L->X.S.project);
-						r_dsgraph_render_graph(0);
+						GraphMain.r_dsgraph_render_graph(0);
 
 						if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) &&
 							psDeviceFlags.is(rsDetails) &&
@@ -192,12 +192,12 @@ void	CRender::render_lights	(light_Package& LP)
 
 							{
 								PROF_EVENT("SHADOWED_LIGHTS_RENDER_GRAPH");
-								r_dsgraph_render_graph(1); // normal level, secondary priority
+								GraphMain.r_dsgraph_render_graph(1); // normal level, secondary priority
 							}
 
 							{
 								PROF_EVENT("SHADOWED_LIGHTS_RENDER_SORTED");
-								r_dsgraph_render_sorted(); // strict-sorted geoms
+								GraphMain.r_dsgraph_render_sorted(); // strict-sorted geoms
 							}
 						}
 					}
@@ -211,7 +211,7 @@ void	CRender::render_lights	(light_Package& LP)
 						L->svis.end();
 					}
 				}
-				r_pmask(true, false);
+				GraphMain.r_pmask(true, false);
 			}
 			{
 				PROF_EVENT("UNSHADOWED_LIGHTS");

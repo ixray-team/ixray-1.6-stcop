@@ -83,17 +83,33 @@ CSector::~CSector()
 extern float r_ssaDISCARD			;
 extern float r_ssaLOD_A, r_ssaLOD_B ;
 
-void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
+void CSector::traverse(CFrustum& F, _scissor& R_scissor, CPortalTraverser& PortalTraverser)
 {
 	// Register traversal process
-	if (r_marker	!=	PortalTraverser.i_marker)	{
-		r_marker							=	PortalTraverser.i_marker;
-		PortalTraverser.r_sectors.push_back	(this);
-		r_frustums.clear					();
-		r_scissors.clear					();
+	if (PortalTraverser.own_clips)
+	{
+		u32& marker = PortalTraverser.local_sector_marker[index];
+		xr_vector<CFrustum>& frustums = PortalTraverser.local_frustums[index];
+		if (marker != PortalTraverser.i_marker)
+		{
+			marker = PortalTraverser.i_marker;
+			PortalTraverser.r_sectors.push_back(this);
+			frustums.clear();
+		}
+		frustums.push_back(F);
 	}
-	r_frustums.push_back		(F);
-	r_scissors.push_back		(R_scissor);
+	else
+	{
+		if (r_marker != PortalTraverser.i_marker)
+		{
+			r_marker = PortalTraverser.i_marker;
+			PortalTraverser.r_sectors.push_back(this);
+			r_frustums.clear();
+			r_scissors.clear();
+		}
+		r_frustums.push_back(F);
+		r_scissors.push_back(R_scissor);
+	}
 
 	// Search visible portals and go through them
 	sPoly	S,D;
@@ -104,13 +120,17 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 		// A portal may be crossed through several openings of one traversal: a sector reached by
 		// two paths needs both frustums. It is never crossed twice on one path, and the visit
 		// limit keeps traversal of dense portal graphs bounded.
-		if (PORTAL->marker != PortalTraverser.i_marker)
+		CPortalTraverser::PortalState* LocalState = PortalTraverser.own_clips ? &PortalTraverser.local_portals[PORTAL->index] : nullptr;
+		u32& portal_marker = LocalState ? LocalState->Marker : PORTAL->marker;
+		u32& Visits = LocalState ? LocalState->Visits : PORTAL->Visits;
+		bool& OnPath = LocalState ? LocalState->OnPath : PORTAL->OnPath;
+		if (portal_marker != PortalTraverser.i_marker)
 		{
-			PORTAL->marker	= PortalTraverser.i_marker;
-			PORTAL->Visits	= 0;
-			PORTAL->OnPath	= false;
+			portal_marker	= PortalTraverser.i_marker;
+			Visits			= 0;
+			OnPath			= false;
 		}
-		if (PORTAL->OnPath || PORTAL->Visits >= CPortalTraverser::MaxPortalVisits) continue;
+		if (OnPath || Visits >= CPortalTraverser::MaxPortalVisits) continue;
 
 		// A frustum built from a portal the view point lies on is degenerate, so such portals
 		// lead in both directions and keep the current frustum
@@ -132,10 +152,10 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 
 		if (NearPortal)
 		{
-			PORTAL->Visits++;
-			PORTAL->OnPath		= true;
-			pSector->traverse	(F,R_scissor);
-			PORTAL->OnPath		= false;
+			Visits++;
+			OnPath				= true;
+			pSector->traverse	(F,R_scissor,PortalTraverser);
+			OnPath				= false;
 			continue;
 		}
 
@@ -232,10 +252,10 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 		// Create _new_ frustum and recurse
 		CFrustum				Clip;
 		Clip.CreateFromPortal	(P, PORTAL->P.n, PortalTraverser.i_vBase,PortalTraverser.i_mXFORM);
-		PORTAL->Visits++;
-		PORTAL->OnPath			= true;
-		pSector->traverse		(Clip,scissor);
-		PORTAL->OnPath			= false;
+		Visits++;
+		OnPath					= true;
+		pSector->traverse		(Clip,scissor,PortalTraverser);
+		OnPath					= false;
 	}
 }
 

@@ -835,7 +835,7 @@ public:
 		dm_current_cache_size		= dm_current_cache_line*dm_current_cache_line;
 		dm_current_fade				= float(2*dm_current_size)-.5f;
 
-		if (RImplementation.b_loaded && (dm_current_size != dm_size))
+		if (RImplementation.GraphMain.b_loaded && (dm_current_size != dm_size))
 		{
 			Device.DetailsTask.wait();
 			RImplementation.Details->cache_ReInitialize();
@@ -859,7 +859,7 @@ public:
 	{
 		CCC_Float::Execute(args);
 
-		if (RImplementation.b_loaded)
+		if (RImplementation.GraphMain.b_loaded)
 		{
 			Device.DetailsTask.wait();
 			RImplementation.Details->cache_ReInitialize();
@@ -914,7 +914,7 @@ public:
 
 	virtual void Execute(const char* args) override
 	{
-		if (!RImplementation.Details|| !RImplementation.b_loaded)
+		if (!RImplementation.Details || !RImplementation.GraphMain.b_loaded)
 		{
 			Msg("! detail_layers: no loaded level, nothing to bake");
 			return;
@@ -936,7 +936,7 @@ public:
 
 	virtual void Execute(const char* args) override
 	{
-		if (!RImplementation.Details|| !RImplementation.b_loaded)
+		if (!RImplementation.Details || !RImplementation.GraphMain.b_loaded)
 		{
 			Msg("! detail_layers: no loaded level, nothing to load");
 			return;

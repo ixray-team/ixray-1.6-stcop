@@ -67,7 +67,7 @@ static bool ValidMatrix(const Fmatrix& Matrix)
 	return true;
 }
 
-static bool HasGeometry(CRender& Renderer, u32 Priority)
+static bool HasGeometry(R_dsgraph_structure& Renderer, u32 Priority)
 {
 	for (u32 Pass = 0; Pass < SHADER_PASSES_MAX; ++Pass)
 	{
@@ -93,7 +93,7 @@ static bool HasDecorativeCasters(const light& Source)
 
 static bool CanStoreDepth(const light& Source)
 {
-	return g_SpotShadowCacheMode > 0 && !Device.IsEditorMode() && LightingModeIsDynamicRender() && RImplementation.b_loaded &&
+	return g_SpotShadowCacheMode > 0 && !Device.IsEditorMode() && LightingModeIsDynamicRender() && RImplementation.GraphMain.b_loaded &&
 		   psDeviceFlags.test(rsDrawStatic) && !psDeviceFlags.test(rsClearBB) &&
 		   (Source.flags.type == IRender_Light::SPOT || Source.flags.type == IRender_Light::OMNIPART) &&
 		   !Source.flags.bHudMode && Source.SpatialComponent && Source.SpatialComponent->sector;
@@ -268,7 +268,7 @@ CRenderTarget::SpotShadowCacheEntry* CRenderTarget::FindSpotShadowCache(const li
 void CRenderTarget::ClassifySpotShadowCasters(light& Source, SpotShadowCacheEntry& Entry)
 {
 	PROF_EVENT("SpotShadowCache::Classify");
-	CRender& Renderer = RImplementation;
+	R_dsgraph_structure& Renderer = RImplementation.GraphMain;
 	R_dsgraph_structure::SpotShadowBuildContext Context;
 	auto* PreviousContext = Renderer.SpotShadowBuild;
 	auto* PreviousFrustum = Renderer.View;
@@ -286,7 +286,7 @@ void CRenderTarget::ClassifySpotShadowCasters(light& Source, SpotShadowCacheEntr
 	{
 		// Texture changes only require reclassifying the saved leaves and LOD parents.
 		++Renderer.marker;
-		Renderer.set_Frustum(&Frustum);
+		Renderer.View = &Frustum;
 		for (dxRender_Visual* Visual : Entry.CachedCasters)
 		{
 			Renderer.CollectSpotShadowStatic(Visual, Frustum.getMask());
@@ -340,7 +340,7 @@ void CRenderTarget::ClassifySpotShadowCasters(light& Source, SpotShadowCacheEntr
 bool CRenderTarget::BuildSpotShadowCache(light& Source, SpotShadowCacheEntry& Entry)
 {
 	PROF_EVENT("SpotShadowCache::Build");
-	CRender& Renderer = RImplementation;
+	R_dsgraph_structure& Renderer = RImplementation.GraphMain;
 	R_dsgraph_structure::SpotShadowBuildContext Context;
 	auto* PreviousContext = Renderer.SpotShadowBuild;
 	auto RestoreContextLambda = [&]
@@ -481,7 +481,7 @@ bool CRenderTarget::HasSpotShadowPendingTextureChanges(SpotShadowCacheEntry& Ent
 
 bool CRenderTarget::CheckSpotShadowGraph()
 {
-	if (!SpotShadowCacheUtils::HasGeometry(RImplementation, 0) && !SpotShadowCacheUtils::HasGeometry(RImplementation, 1) && !RImplementation.mapSorted.size())
+	if (!SpotShadowCacheUtils::HasGeometry(RImplementation.GraphMain, 0) && !SpotShadowCacheUtils::HasGeometry(RImplementation.GraphMain, 1) && !RImplementation.GraphMain.mapSorted.size())
 	{
 		return true;
 	}
@@ -507,7 +507,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		return false;
 	}
 
-	CRender& Renderer = RImplementation;
+	R_dsgraph_structure& Renderer = RImplementation.GraphMain;
 	const Fmatrix World = RCache.get_xform_world();
 	const Fmatrix View = RCache.get_xform_view();
 	const Fmatrix Project = RCache.get_xform_project();
@@ -651,7 +651,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		++Renderer.marker;
 	}
 	// Share the dynamic collection marker; keep LOD groups intact for normal per-frame selection.
-	Renderer.set_Frustum(&ShadowFrustum);
+	Renderer.View = &ShadowFrustum;
 	for (dxRender_Visual* Visual : Entry->PerFrameCasters)
 	{
 		Renderer.add_Static(Visual, ShadowFrustum.getMask());
@@ -688,10 +688,10 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		++SpotShadowStatistics.DynamicPasses;
 	}
 	if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) && psDeviceFlags.is(rsDetails) &&
-		Renderer.GetDetails() && Renderer.GetDetails()->dtSlots && Source.SpatialComponent &&
+		RImplementation.GetDetails() && RImplementation.GetDetails()->dtSlots && Source.SpatialComponent &&
 		Source.SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
 	{
-		Renderer.GetDetails()->hw_Render(&Source);
+		RImplementation.GetDetails()->hw_Render(&Source);
 	}
 	if (HasSpecial)
 	{
