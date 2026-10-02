@@ -1,5 +1,6 @@
 <shader version="2">
 	<normal option="ALLOW_WBOIT_TRANSPARENCY">
+		<shader_option name="USE_WBOIT_TRANSPARENCY" value="1"/>
 		<pass vs="water_puddles" ps="water"/>
 		<sorting priority="2" strict="0"/>
 		<zb test="1" write="0"/>

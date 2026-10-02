@@ -5,9 +5,11 @@
 
 struct v2p
 {
-    float2 tc0: TEXCOORD0;
-    float3 tc1: TEXCOORD1;
-    float4 c0: COLOR0;
+    float2 tc0 : TEXCOORD0;
+    float3 tc1 : TEXCOORD1;
+    float4 c0 : COLOR0;
+    float4 hpos : SV_POSITION;
+    float fog : FOG;
 };
 
 float parralax_fade(in float2 tc, in float3 Point)
@@ -38,7 +40,7 @@ float parralax_fade(in float2 tc, in float3 Point)
 	return min(fade, smoothstep(19.8, 18.0, length(tc.xy - 0.5)));
 }
 
-void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
+void main(v2p I, out IXRayForward O)
 {
 	O = (IXRayForward)0;
     if (m_hud_params.y * m_hud_params.a < 0.0001f)
@@ -59,9 +61,9 @@ void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
     t_base = lerp(base2, t_base, m_zoom_deviation.z);
 	t_base.xyz = detonemap(t_base.xyz);
 	
-    float4 t_vp2 = SampleScopeScene(I.tc0, pos2d.xy);
+    float4 t_vp2 = SampleScopeScene(I.tc0, I.hpos.xy);
 	
-	t_vp2.xyz = ApplyScopeUI(t_vp2.xyz, pos2d.xy);
+	t_vp2.xyz = ApplyScopeUI(t_vp2.xyz, I.hpos.xy);
 
 	float alpha = m_hud_params.y * m_hud_params.a;
 	t_vp2.w = saturate(alpha * 2.0f - 1.0f);

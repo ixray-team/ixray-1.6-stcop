@@ -1,6 +1,6 @@
 <shader version="2" r1_static="1">
 	<normal>
-		<pass vs="deffer_model" ps="model_scope_lense"/>
+		<pass vs="model_scope_lense" ps="model_scope_lense"/>
 		<fog value="1"/>
 		<zb test="1" write="0"/>
 		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>

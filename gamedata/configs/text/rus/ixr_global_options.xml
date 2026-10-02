@@ -19,4 +19,20 @@
 	<string id="st_ixray_global_options__draw_debug"> 
 		<text>Отображение симуляции жизни</text>
 	</string>
+	
+    <string id="ui_mm_graphics_api">
+        <text>Графическая система</text>
+    </string>
+	
+    <string id="renderer_r4_static">
+        <text>Статическое освещение</text>
+    </string>
+	
+    <string id="d3d12">
+        <text>DirectX 12</text>
+    </string>
+	
+    <string id="d3d11">
+        <text>DirectX 11</text>
+    </string>
 </string_table>
