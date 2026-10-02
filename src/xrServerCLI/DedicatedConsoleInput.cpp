@@ -3,6 +3,8 @@
 
 #include "../xrEngine/XR_IOConsole.h"
 
+#include <limits>
+
 namespace DedicatedConsoleInput
 {
 	namespace
@@ -44,15 +46,19 @@ namespace DedicatedConsoleInput
 
 		xr_vector<wchar_t> Utf8ToWide(const xr_string& text)
 		{
-			if (text.empty())
+			if (text.empty() || text.size() > static_cast<size_t>((std::numeric_limits<int>::max)()))
 				return {};
 
-			const wchar_t* wide = Platform::ANSI_TO_TCHAR(text.c_str());
-			if (wide == nullptr)
+			const int textLength = static_cast<int>(text.size());
+			const int wideLength = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), textLength, nullptr, 0);
+			if (wideLength == 0)
 				return {};
 
-			const size_t length = std::wcslen(wide);
-			return xr_vector<wchar_t>(wide, wide + length);
+			xr_vector<wchar_t> wide(static_cast<size_t>(wideLength));
+			if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), textLength, wide.data(), wideLength) != wideLength)
+				return {};
+
+			return wide;
 		}
 
 		xr_string WideCharToUtf8(wchar_t symbol, WORD repeatCount)
@@ -92,35 +98,43 @@ namespace DedicatedConsoleInput
 			if (!GetConsoleScreenBufferInfo(g_consoleStdOut, &info))
 				return;
 
-			const xr_string prompt = ">>> ";
-			const xr_string line = prompt + currentBuffer;
-			const xr_vector<wchar_t> wideLine = Utf8ToWide(line);
-			const DWORD consoleWidth = info.dwSize.X;
-			const int displayLength = static_cast<int>(wideLine.size());
+			const int consoleWidth = info.srWindow.Right - info.srWindow.Left + 1;
+			if (consoleWidth <= 0)
+				return;
+
+			// Reserve one cell for the cursor; never wrap the editable line.
+			const size_t maxDisplayLength = static_cast<size_t>(consoleWidth - 1);
+			xr_vector<wchar_t> wideLine = { L'>', L'>', L'>', L' ' };
+			wideLine.resize(std::min(wideLine.size(), maxDisplayLength));
+			const xr_vector<wchar_t> wideBuffer = Utf8ToWide(currentBuffer);
+			const size_t inputWidth = maxDisplayLength - wideLine.size();
+			if (inputWidth > 0)
+			{
+				size_t inputOffset = 0;
+				if (wideBuffer.size() > inputWidth)
+				{
+					wideLine.push_back(L'<');
+					inputOffset = wideBuffer.size() - (inputWidth - 1);
+					// Do not start the visible suffix in the middle of a UTF-16 pair.
+					if (inputOffset < wideBuffer.size() &&
+						wideBuffer[inputOffset] >= 0xDC00 && wideBuffer[inputOffset] <= 0xDFFF)
+						++inputOffset;
+				}
+				wideLine.insert(wideLine.end(), wideBuffer.begin() + inputOffset, wideBuffer.end());
+			}
 
 			COORD basePosition = info.dwCursorPosition;
-			basePosition.X = 0;
+			basePosition.X = info.srWindow.Left;
 
 			DWORD written = 0;
+			COORD clearPosition = basePosition;
+			clearPosition.X = 0;
+			FillConsoleOutputCharacterW(g_consoleStdOut, L' ', info.dwSize.X, clearPosition, &written);
 			if (!wideLine.empty())
 				WriteConsoleOutputCharacterW(g_consoleStdOut, wideLine.data(), static_cast<DWORD>(wideLine.size()), basePosition, &written);
 
-			if (consoleWidth > static_cast<DWORD>(displayLength))
-			{
-				const DWORD spacesCount = consoleWidth - static_cast<DWORD>(displayLength);
-				if (spacesCount > 0)
-				{
-					COORD clearPos = basePosition;
-					clearPos.X = static_cast<SHORT>(displayLength);
-					FillConsoleOutputCharacterW(g_consoleStdOut, L' ', spacesCount, clearPos, &written);
-				}
-			}
-
 			COORD cursorPosition = basePosition;
-			if (consoleWidth > 0)
-				cursorPosition.X = static_cast<SHORT>(std::min(displayLength, static_cast<int>(consoleWidth - 1)));
-			else
-				cursorPosition.X = 0;
+			cursorPosition.X += static_cast<SHORT>(wideLine.size());
 
 			SetConsoleCursorPosition(g_consoleStdOut, cursorPosition);
 		}
@@ -227,6 +241,7 @@ namespace DedicatedConsoleInput
 				consoleMode &= ~ENABLE_QUICK_EDIT_MODE;
 				consoleMode &= ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT);
 				consoleMode |= ENABLE_PROCESSED_INPUT;
+				consoleMode |= ENABLE_WINDOW_INPUT;
 				SetConsoleMode(g_consoleStdIn, consoleMode);
 				FlushConsoleInputBuffer(g_consoleStdIn);
 
@@ -244,6 +259,12 @@ namespace DedicatedConsoleInput
 
 					if (!g_consoleInputThreadRunning.load())
 						break;
+
+					if (record.EventType == WINDOW_BUFFER_SIZE_EVENT)
+					{
+						RenderConsoleInputLine();
+						continue;
+					}
 
 					if (record.EventType != KEY_EVENT)
 						continue;
@@ -281,7 +302,18 @@ namespace DedicatedConsoleInput
 							}
 
 							DWORD written = 0;
-							WriteConsoleW(g_consoleStdOut, L"\n", 1, &written, nullptr);
+							CONSOLE_SCREEN_BUFFER_INFO info = {};
+							if (GetConsoleScreenBufferInfo(g_consoleStdOut, &info))
+							{
+								COORD lineStart = info.dwCursorPosition;
+								lineStart.X = 0;
+								FillConsoleOutputCharacterW(g_consoleStdOut, L' ', info.dwSize.X, lineStart, &written);
+								SetConsoleCursorPosition(g_consoleStdOut, lineStart);
+							}
+							const xr_vector<wchar_t> wideCommand = Utf8ToWide(">>> " + utf8Command);
+							if (!wideCommand.empty())
+								WriteConsoleW(g_consoleStdOut, wideCommand.data(), static_cast<DWORD>(wideCommand.size()), &written, nullptr);
+							WriteConsoleW(g_consoleStdOut, L"\r\n", 2, &written, nullptr);
 							RenderConsoleInputLineLocked();
 						}
 
