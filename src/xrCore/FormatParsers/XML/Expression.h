@@ -57,6 +57,7 @@ struct ExpressionVarVariadic
 
     EVariadicType VarType;
 
+    // shared_str is a non-trivial union member, so defaulting these would delete them.
     ExpressionVarVariadic() {};
     ~ExpressionVarVariadic() {};
 

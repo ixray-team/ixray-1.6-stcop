@@ -20,7 +20,7 @@ public:
 	typedef last_update_t last_updates_cache_t[cache_entities_size];
 
 			last_updates_cache	();
-			~last_updates_cache	()	{};
+			~last_updates_cache	() = default;
 
 	u16		add_update			(ALife::_OBJECT_ID entity_id, NET_Packet const & update);
 	u16		get_last_equpdates	(ALife::_OBJECT_ID entity_id, NET_Packet const & update);

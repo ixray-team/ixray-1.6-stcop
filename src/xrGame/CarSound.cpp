@@ -17,10 +17,7 @@ CCar::SCarSound::SCarSound(CCar* car)
 	relative_pos.set(0.f,0.5f,-1.f);
 }
 
-CCar::SCarSound::~SCarSound()
-{
-	
-}
+CCar::SCarSound::~SCarSound() = default;
 void CCar::SCarSound::Init()
 {
 	CInifile* ini=PKinematics(pcar->Visual())->LL_UserData();

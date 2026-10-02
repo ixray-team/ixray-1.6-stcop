@@ -3,8 +3,7 @@
 #include "MMSound.h"
 #include "../../xrUI/xrUIXmlParser.h"
 
-CMMSound::CMMSound()
-{}
+CMMSound::CMMSound() = default;
 
 CMMSound::~CMMSound()
 {

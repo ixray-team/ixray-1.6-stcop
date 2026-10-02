@@ -46,8 +46,8 @@ private:
     bool empty() const { return !!m_functor.lua_state(); }
 
 public:
-    CScriptCallbackEx() {}
-    virtual ~CScriptCallbackEx() {}
+    CScriptCallbackEx() = default;
+    virtual ~CScriptCallbackEx() = default;
 
     CScriptCallbackEx(const CScriptCallbackEx& callback)
     {

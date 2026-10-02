@@ -13,9 +13,7 @@ public:
 		size.set			(0.f,0.f);
 	}
 
-	~hash2D()
-	{
-	}
+	~hash2D() = default;
 
 	void		initialize	(Fbox2& R, u32 faces)
 	{

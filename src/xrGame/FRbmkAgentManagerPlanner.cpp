@@ -18,9 +18,7 @@ FRbmkAgentManagerPlanner::FRbmkAgentManagerPlanner(CAgentManager* InOwner):Owner
 {
 }
 
-FRbmkAgentManagerPlanner::~FRbmkAgentManagerPlanner()
-{
-}
+FRbmkAgentManagerPlanner::~FRbmkAgentManagerPlanner() = default;
 
 void FRbmkAgentManagerPlanner::Update()
 {

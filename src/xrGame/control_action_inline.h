@@ -8,9 +8,7 @@
 
 #pragma once
 
-IC	CControlAction::CControlAction		()
-{
-}
+IC	CControlAction::CControlAction		() = default;
 
 IC	void CControlAction::set_object		(CAI_Stalker *object)
 {

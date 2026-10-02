@@ -18,10 +18,7 @@ dcTriListCollider::dcTriListCollider(dxGeom* Geometry)
 
 }
 
-dcTriListCollider::~dcTriListCollider()
-{
-
-}
+dcTriListCollider::~dcTriListCollider() = default;
 
 int dCollideBP (const dxGeom* o1, const dxGeom* o2, int flags, dContactGeom *contact, int skip);	// ODE internal function
 

@@ -15,9 +15,7 @@ CALifeTimeManager::CALifeTimeManager	(const char* section)
 	init						(section);
 }
 
-CALifeTimeManager::~CALifeTimeManager	()
-{
-}
+CALifeTimeManager::~CALifeTimeManager	() = default;
 
 void CALifeTimeManager::init			(const char* section)
 {

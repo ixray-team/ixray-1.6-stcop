@@ -10,7 +10,7 @@ class CStateMonsterMoveToPoint : public CState<_Object> {
 
 public:
 						CStateMonsterMoveToPoint	(_Object *obj) : inherited(obj, &data) {}
-	virtual				~CStateMonsterMoveToPoint	() {}
+	virtual				~CStateMonsterMoveToPoint	() = default;
 
 	virtual void		initialize					();
 	virtual	void		execute						();
@@ -31,7 +31,7 @@ protected:
 
 public:
 						CStateMonsterMoveToPointEx	(_Object *obj) : inherited(obj, &data) {}
-	virtual				~CStateMonsterMoveToPointEx	() {}
+	virtual				~CStateMonsterMoveToPointEx	() = default;
 	virtual void		initialize					();
 	virtual	void		execute						();
 	virtual bool		check_completion			();

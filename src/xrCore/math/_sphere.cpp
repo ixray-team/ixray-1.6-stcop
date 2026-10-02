@@ -66,7 +66,7 @@ private:
 	float		sqr						(float r) const {return r*r;}
 public:
 	// construction
-	Miniball() {}
+	Miniball() = default;
 	void        check_in				(const Fvector& p);
 	void        build					();
 

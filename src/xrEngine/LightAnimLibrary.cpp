@@ -172,13 +172,9 @@ int CLAItem::NextKeyFrame(int frame)
 //------------------------------------------------------------------------------
 // Library
 //------------------------------------------------------------------------------
-ELightAnimLibrary::ELightAnimLibrary()
-{
-}
+ELightAnimLibrary::ELightAnimLibrary() = default;
 
-ELightAnimLibrary::~ELightAnimLibrary()
-{
-}
+ELightAnimLibrary::~ELightAnimLibrary() = default;
 
 void ELightAnimLibrary::OnCreate()
 {

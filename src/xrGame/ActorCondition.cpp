@@ -1303,8 +1303,7 @@ CActorDeathEffector::CActorDeathEffector	(CActorCondition* parent, const char* s
 	m_start_health			= m_pParent->health();
 }
 
-CActorDeathEffector::~CActorDeathEffector()
-{}
+CActorDeathEffector::~CActorDeathEffector() = default;
 
 void CActorDeathEffector::UpdateCL()
 {

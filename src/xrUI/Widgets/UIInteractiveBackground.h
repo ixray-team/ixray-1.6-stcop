@@ -31,7 +31,7 @@ class CUIInteractiveBackground :
 {
 public:
 	CUIInteractiveBackground();
-	virtual ~CUIInteractiveBackground() {};
+	virtual ~CUIInteractiveBackground() = default;
 
 			void InitIB				(Fvector2 pos, Fvector2 size);
 			void InitIB				(const char* texture_e, Fvector2 pos, Fvector2 size);

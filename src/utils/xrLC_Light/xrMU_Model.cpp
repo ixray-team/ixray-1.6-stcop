@@ -5,9 +5,7 @@
 #include "vector_clear.h"
 #include "../../xrCore/xrPool.h"
 
-xrMU_Model::xrMU_Model() 
-{
-}
+xrMU_Model::xrMU_Model() = default;
 
 xrMU_Model::~xrMU_Model()
 {

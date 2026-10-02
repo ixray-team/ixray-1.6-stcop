@@ -19,7 +19,7 @@ class CStateControlHide : public CState<_Object> {
 public:
 
 					CStateControlHide		(_Object *obj) : inherited(obj) {}
-	virtual			~CStateControlHide		() {}
+	virtual			~CStateControlHide		() = default;
 
 	virtual void	initialize				();
 	virtual void	execute					();

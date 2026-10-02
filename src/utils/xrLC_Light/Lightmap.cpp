@@ -13,9 +13,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CLightmap::CLightmap()
-{
-}
+CLightmap::CLightmap() = default;
 
 CLightmap::~CLightmap()
 {

@@ -53,13 +53,9 @@ bool XrGameMaterialLibraryEditors::UpdateMtlPairs()
 }
 
 
-XrGameMaterialLibraryEditors::XrGameMaterialLibraryEditors()
-{
-}
+XrGameMaterialLibraryEditors::XrGameMaterialLibraryEditors() = default;
 
-XrGameMaterialLibraryEditors::~XrGameMaterialLibraryEditors()
-{
-}
+XrGameMaterialLibraryEditors::~XrGameMaterialLibraryEditors() = default;
 
 SGameMtl* XrGameMaterialLibraryEditors::AppendMaterial(SGameMtl* parent)
 {

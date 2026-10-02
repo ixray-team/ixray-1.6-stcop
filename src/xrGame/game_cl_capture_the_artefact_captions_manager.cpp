@@ -18,9 +18,7 @@ CTAGameClCaptionsManager::CTAGameClCaptionsManager()
 	xr_strcpy(timelimit_message, "00:00:00");
 }
 
-CTAGameClCaptionsManager::~CTAGameClCaptionsManager()
-{
-}
+CTAGameClCaptionsManager::~CTAGameClCaptionsManager() = default;
 
 void CTAGameClCaptionsManager::Init(game_cl_CaptureTheArtefact* parent,
 									CUIGameCTA* game_ui)

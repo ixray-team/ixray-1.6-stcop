@@ -33,10 +33,7 @@ void	destroy_global_data()
 }
 
 
-xrLC_GlobalData::xrLC_GlobalData()
-{
-	
-}
+xrLC_GlobalData::xrLC_GlobalData() = default;
  
 void xrLC_GlobalData::initialize()
 {
@@ -70,10 +67,7 @@ bool	xrLC_GlobalData	::			b_r_vertices	()
 	return false;
 }
  
-xrLC_GlobalData::~xrLC_GlobalData()
-{
- 
-}
+xrLC_GlobalData::~xrLC_GlobalData() = default;
  
 template<typename T>
 void vec_clear( xr_vector<T*> &v )

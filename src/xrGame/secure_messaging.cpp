@@ -8,9 +8,7 @@ seed_generator::seed_generator() :
 	m_random(static_cast<s32>(CPU::QPC() & u32(-1)))
 {
 };
-seed_generator::~seed_generator()
-{
-}
+seed_generator::~seed_generator() = default;
 
 s32	const seed_generator::genrate()
 {
