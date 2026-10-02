@@ -106,6 +106,8 @@ void XRay::Engine::GameThread()
 		::Sound->update(Device.mView_saved, Device.vCameraPosition_saved, Device.vCameraDirection_saved, Device.vCameraTop_saved);
 		Device.Statistic->Sound.End();
 	}
+
+	Device.SecondaryTasks.wait();
 }
 
 extern volatile bool quiting;

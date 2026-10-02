@@ -53,6 +53,8 @@ void	Vision::o_delete(CObject* O)
 
 void	Vision::feel_vision_clear()
 {
+	xrSRWLockGuard guard_query(&lock_query, false);
+	xrSRWLockGuard guard_visible(&lock_visible, false);
 	seen.clear();
 	query.clear();
 	diff.clear();
@@ -61,6 +63,8 @@ void	Vision::feel_vision_clear()
 
 void	Vision::feel_vision_relcase(CObject* object)
 {
+	xrSRWLockGuard guard_query(&lock_query, false);
+	xrSRWLockGuard guard_visible(&lock_visible, false);
 	xr_vector<CObject*>::iterator Io;
 	Io = std::find(seen.begin(), seen.end(), object);
 	if (Io != seen.end())	seen.erase(Io);
@@ -74,6 +78,7 @@ void	Vision::feel_vision_relcase(CObject* object)
 
 void Vision::feel_vision_query(Fmatrix& mFull)
 {
+	xrSRWLockGuard guard(&lock_query, false);
 	Frustum.CreateFromMatrix(mFull, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
 	// Traverse object database
@@ -105,43 +110,49 @@ void Vision::feel_vision_query(Fmatrix& mFull)
 
 void	Vision::feel_vision_update(Fvector& P, float dt, float vis_threshold)
 {
-	// B-A = objects, that become visible
-	if (!seen.empty())
+	PROF_EVENT("feel_vision_update");
 	{
-		xr_vector<CObject*>::iterator E = std::remove(seen.begin(), seen.end(), m_owner);
-		seen.resize(E - seen.begin());
+		xrSRWLockGuard guard_q(&lock_query, false);
+		xrSRWLockGuard guard_v(&lock_visible, false);
+		// B-A = objects, that become visible
+		if (!seen.empty())
+		{
+			xr_vector<CObject*>::iterator E = std::remove(seen.begin(), seen.end(), m_owner);
+			seen.resize(E - seen.begin());
 
+			{
+				diff.resize(std::max(seen.size(), query.size()));
+				xr_vector<CObject*>::iterator	E_ = std::set_difference(
+					seen.begin(), seen.end(),
+					query.begin(), query.end(),
+					diff.begin());
+				diff.resize(E_ - diff.begin());
+				for (u32 i = 0; i < diff.size(); i++)
+					o_new(diff[i]);
+			}
+		}
+
+		// A-B = objects, that are invisible
+		if (!query.empty())
 		{
 			diff.resize(std::max(seen.size(), query.size()));
-			xr_vector<CObject*>::iterator	E_ = std::set_difference(
-				seen.begin(), seen.end(),
+			xr_vector<CObject*>::iterator	E = std::set_difference(
 				query.begin(), query.end(),
+				seen.begin(), seen.end(),
 				diff.begin());
-			diff.resize(E_ - diff.begin());
+			diff.resize(E - diff.begin());
 			for (u32 i = 0; i < diff.size(); i++)
-				o_new(diff[i]);
+				o_delete(diff[i]);
 		}
-	}
 
-	// A-B = objects, that are invisible
-	if (!query.empty())
-	{
-		diff.resize(std::max(seen.size(), query.size()));
-		xr_vector<CObject*>::iterator	E = std::set_difference(
-			query.begin(), query.end(),
-			seen.begin(), seen.end(),
-			diff.begin());
-		diff.resize(E - diff.begin());
-		for (u32 i = 0; i < diff.size(); i++)
-			o_delete(diff[i]);
+		// Copy results and perform traces
+		query = seen;
 	}
-
-	// Copy results and perform traces
-	query = seen;
 	o_trace(P, dt, vis_threshold);
 }
 void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 	RQR.r_clear();
+	xrSRWLockGuard guard(&lock_visible, false);
 	xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
 	for (; I != E; I++) {
 		if (0 == I->O->CFORM()) { I->fuzzy = -1; continue; }
@@ -259,4 +270,37 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 			clamp(I->fuzzy, -.5f, 1.f);
 		}
 	}
+}
+
+void Vision::feel_vision_get(xr_vector<CObject*>& R)
+{
+	PROF_EVENT("feel_vision_get");
+	R.clear();
+	xrSRWLockGuard guard(&lock_visible, true);
+	R.reserve(feel_visible.size());
+	for (const feel_visible_Item& item : feel_visible)
+	{
+		if (item.O && !item.O->getDestroy() && positive(item.fuzzy))
+			R.push_back(item.O);
+	}
+}
+
+Fvector Vision::feel_vision_get_vispoint(CObject* _O)
+{
+	static Fvector feel_zero_point = { 0.f, 0.f, 0.f };
+	if (!_O || _O->getDestroy() || feel_visible.empty())
+		return feel_zero_point;
+
+	xrSRWLockGuard guard(&lock_visible, true);
+	auto it = std::find_if(feel_visible.begin(), feel_visible.end(),
+		[_O](const feel_visible_Item& item) {
+			return _O == item.O && positive(item.fuzzy);
+		});
+
+	if (it != feel_visible.end())
+	{
+		return it->cp_LAST;
+	}
+
+	return feel_zero_point;
 }
