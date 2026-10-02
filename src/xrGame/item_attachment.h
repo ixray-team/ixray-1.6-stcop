@@ -89,5 +89,5 @@ struct item_attachments_manager
 	};
 
 	void unload_attachments();
-	void render_attachments(Fmatrix& xform, IKinematics* parent_model, bool hud_mode);
+	void render_attachments(Fmatrix& xform, IKinematics* parent_model, bool hud_mode, void* graph = nullptr);
 };

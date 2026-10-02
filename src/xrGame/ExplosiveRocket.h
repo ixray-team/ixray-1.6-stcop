@@ -66,7 +66,7 @@ public:
 
 	virtual void OnH_A_Chield() override { inherited::OnH_A_Chield(); }
 	virtual void OnH_B_Chield() override { inherited::OnH_B_Chield(); }
-	virtual void renderable_Render() override { inherited::renderable_Render(); }
+	virtual void renderable_Render(void* graph = nullptr) override { inherited::renderable_Render(graph); }
 	virtual void make_Interpolation() override;
 	virtual void PH_B_CrPr() override; // actions & operations before physic correction-prediction steps
 	virtual void PH_I_CrPr() override; // actions & operations after correction before prediction steps

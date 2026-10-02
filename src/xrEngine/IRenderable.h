@@ -22,7 +22,7 @@ public:
 	virtual								~IRenderable				();
 	IRender_ObjectSpecific*				renderable_ROS				()	;
 
-	virtual	void						renderable_Render			()	= 0;
+	virtual	void						renderable_Render			(void* graph = nullptr)	= 0;
 	virtual	bool						renderable_ShadowGenerate	()	{ return false; };
 	virtual	bool						renderable_ShadowReceive	()	{ return false; };
 

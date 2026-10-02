@@ -79,28 +79,28 @@ IRender_Target* CDS0_RenderInterface::getTarget()
 	return &Target;
 }
 
-void CDS0_RenderInterface::set_Transform(Fmatrix* M)
+void CDS0_RenderInterface::set_Transform(Fmatrix* M, void* graph)
 {
 }
 
-void CDS0_RenderInterface::set_HUD(bool V)
+void CDS0_RenderInterface::set_HUD(bool V, void* graph)
 {
 }
 
-void CDS0_RenderInterface::set_UI(bool V)
+void CDS0_RenderInterface::set_UI(bool V, void* graph)
 {
 }
 
-bool CDS0_RenderInterface::get_HUD()
+bool CDS0_RenderInterface::get_HUD(void* graph)
 {
 	return 0;
 }
 
-void CDS0_RenderInterface::set_Invisible(bool V)
+void CDS0_RenderInterface::set_Invisible(bool V, void* graph)
 {
 }
 
-void CDS0_RenderInterface::set_Object(IRenderable* O)
+void CDS0_RenderInterface::set_Object(IRenderable* O, void* graph)
 {
 }
 

@@ -508,6 +508,8 @@ void CRender::Render()
 		return;
 	}
 
+	begin_sun_collect();
+
 	RImplementation.o.distortion = false;
 
 	if (o.offscreen_reflecitons && !o.dx11_use_legacy_light)

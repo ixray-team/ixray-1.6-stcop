@@ -161,10 +161,10 @@ void CInventoryItemObject::Serialize(ISaveObject& Object)
 	}
 }
 
-void CInventoryItemObject::renderable_Render()
+void CInventoryItemObject::renderable_Render(void* graph)
 {
-	CPhysicItem::renderable_Render();
-	CInventoryItem::renderable_Render();
+	CPhysicItem::renderable_Render(graph);
+	CInventoryItem::renderable_Render(graph);
 }
 
 void CInventoryItemObject::reload(const char* section)

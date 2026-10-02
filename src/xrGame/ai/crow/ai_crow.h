@@ -115,7 +115,7 @@ public:
 	virtual void	net_Destroy					();
 	virtual bool	renderable_ShadowGenerate	()			{ return false;	}
 	virtual bool	renderable_ShadowReceive	()			{ return false;	}
-	virtual void	renderable_Render			();
+	virtual void	renderable_Render(void* graph = nullptr);
 	virtual void	shedule_Update				(u32 DT);
 	virtual void	UpdateCL					();
 

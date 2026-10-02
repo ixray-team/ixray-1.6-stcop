@@ -108,10 +108,10 @@ void CEatableItemObject::Serialize(ISaveObject& Object)
 	}
 }
 
-void CEatableItemObject::renderable_Render()
+void CEatableItemObject::renderable_Render(void* graph)
 {
-	CPhysicItem::renderable_Render();
-	CEatableItem::renderable_Render();
+	CPhysicItem::renderable_Render(graph);
+	CEatableItem::renderable_Render(graph);
 }
 
 void CEatableItemObject::reload(const char* section)

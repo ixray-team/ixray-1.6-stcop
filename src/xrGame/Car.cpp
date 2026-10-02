@@ -479,9 +479,9 @@ void CCar::VisualUpdate(float fov)
 	m_lights.Update();
 }
 
-void CCar::renderable_Render()
+void CCar::renderable_Render(void* graph)
 {
-	inherited::renderable_Render();
+	inherited::renderable_Render(graph);
 	if (m_car_weapon)
 		m_car_weapon->Render_internal();
 }

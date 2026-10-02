@@ -75,10 +75,10 @@ void CAttachableItem::OnH_A_Chield()
 	}
 }
 
-void CAttachableItem::renderable_Render	()
+void CAttachableItem::renderable_Render(void* graph)
 {
-	::Render->set_Transform			(&object().XFORM());
-	::Render->add_Visual			(object().Visual());
+	::Render->set_Transform			(&object().XFORM(), graph);
+	::Render->add_Visual			(object().Visual(), false, graph);
 }
 
 void CAttachableItem::OnH_A_Independent()

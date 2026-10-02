@@ -79,7 +79,7 @@ public:
 	virtual void setup_physic_shell() override;
 
 	virtual void afterDetach() override;
-	virtual void renderable_Render() override;
+	virtual void renderable_Render(void* graph = nullptr) override;
 
 	virtual CTorch* cast_torch() { return this; }
 

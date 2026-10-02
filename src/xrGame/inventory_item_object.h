@@ -86,7 +86,7 @@ public:
 	virtual void load(IReader& input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 	virtual bool net_SaveRelevant() override { return true; }
-	virtual void renderable_Render() override;
+	virtual void renderable_Render(void* graph = nullptr) override;
 	virtual void reload(const char* section) override;
 	virtual void reinit() override;
 	virtual void activate_physic_shell() override;
