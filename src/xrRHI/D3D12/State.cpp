@@ -48,11 +48,20 @@ public:
     void Apply() override
     {
         InternalDevice12::ContextLock guard(_device);
-        _device._graphicsState.Rasterizer = RasterizerDesc(_rasterDesc);
-        _device._graphicsState.Depth = DepthDesc(_depthDesc);
-        _device._graphicsState.Blend = BlendDesc(_blendDesc);
-        _device._graphicsState.SampleMask = _sampleMask;
-        _device._pipelineDirty = true;
+        const D3D12_RASTERIZER_DESC raster = RasterizerDesc(_rasterDesc);
+        const D3D12_DEPTH_STENCIL_DESC depth = DepthDesc(_depthDesc);
+        const D3D12_BLEND_DESC blend = BlendDesc(_blendDesc);
+        auto& state = _device._graphicsState;
+
+        if (state.SampleMask != _sampleMask || memcmp(&state.Rasterizer, &raster, sizeof(raster)) || memcmp(&state.Depth, &depth, sizeof(depth)) || memcmp(&state.Blend, &blend, sizeof(blend)))
+        {
+            state.Rasterizer = raster;
+            state.Depth = depth;
+            state.Blend = blend;
+            state.SampleMask = _sampleMask;
+            _device._pipelineDirty = true;
+        }
+
         _device._stencilRef = _stencilRef;
         _device._scissorEnabled = _isScissorOverride ? _overrideScissorValue : _rasterDesc.ScissorEnable;
     }
