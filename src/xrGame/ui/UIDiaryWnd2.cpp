@@ -497,12 +497,12 @@ void CUIDiaryWnd::UpdateGamepadLegend()
 	CUIWindow* logToStart = m_gamepad_legend->FindChild("log_to_start");
 	if (logToStart)
 	{
-		logToStart->Show(m_UINewsWnd->IsShown());
+		logToStart->Show(m_currFilter == eNews);
 	}
 
 	CUIWindow* logToEnd = m_gamepad_legend->FindChild("log_to_end");
 	if (logToEnd)
 	{
-		logToEnd->Show(m_UINewsWnd->IsShown());
+		logToEnd->Show(m_currFilter == eNews);
 	}
 }
