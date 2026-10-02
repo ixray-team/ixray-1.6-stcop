@@ -74,7 +74,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 
 	if (LightingModeIsStatic() && !C.bEditor)
 	{
-
+		C.SH->flags.bLandscape = true;
 		if (C.L_textures.size()<2)	Debug.fatal	(DEBUG_INFO,"Not enought textures for shader, base tex: %s",*C.L_textures[0]);
 		switch (C.iElement)
 		{
