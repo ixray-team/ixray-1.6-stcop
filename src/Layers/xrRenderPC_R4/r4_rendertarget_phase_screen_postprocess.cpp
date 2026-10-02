@@ -4,32 +4,22 @@
 bool UseGasmak = false;
 bool UseRainDrops = false;
 
-void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool postProcessMode)
+static void BindScreenPass()
 {
-	// Set render target
-	if (postProcessMode)
-	{
-		u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
-	}
-
-	// Configure rendering settings
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(false);
+}
 
-	// Lock and set vertices
-
-	// Set shader and geometry
-	RCache.set_Element(s_spp->E[postProcessType]);
-	RCache.set_Geometry(FSTriangleGeom);
-
-	// Render
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
-
-	// Copy resource
+void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool postProcessMode)
+{
 	if (postProcessMode)
 	{
-		GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+		DrawSQ(s_spp, rt_Back_Buffer_AA, postProcessType, BindScreenPass);
+		ResolveSurface(rt_Back_Buffer, rt_Back_Buffer_AA);
+		return;
 	}
+
+	DrawPassSQ(s_spp, postProcessType, BindScreenPass);
 }
 
 void CRenderTarget::PhaseAberration()
@@ -45,8 +35,8 @@ void CRenderTarget::PhaseRaindrops()
 		return;
 	}
 
-	const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
-	if (condition < 0)
+	const float Condition = g_pGamePersistent->ShaderParams.HelmetCondition;
+	if (Condition < 0)
 	{
 		return;
 	}
@@ -67,31 +57,17 @@ void CRenderTarget::PhaseGasmask()
 		return;
 	}
 
-	const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
-	if (condition < 0)
+	const float Condition = g_pGamePersistent->ShaderParams.HelmetCondition;
+	if (Condition < 0)
 	{
 		return;
 	}
 
-	size_t currentState = 4 - ((1.f * condition) * 4);
-	clamp(currentState, 0ull, 3ull);
+	size_t CurrentState = 4 - ((1.f * Condition) * 4);
+	clamp(CurrentState, 0ull, 3ull);
 
-	// Set render target
-	u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
-
-	// Configure rendering settings
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(false);
-
-	// Set shader and geometry
-	RCache.set_Element(s_gasmask->E[currentState]);
-	RCache.set_Geometry(FSTriangleGeom);
-
-	// Render
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
-
-	// Copy resource
-	GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+	DrawSQ(s_gasmask, rt_Back_Buffer_AA, (u32)CurrentState, BindScreenPass);
+	ResolveSurface(rt_Back_Buffer, rt_Back_Buffer_AA);
 }
 
 void CRenderTarget::PhaseWinter()

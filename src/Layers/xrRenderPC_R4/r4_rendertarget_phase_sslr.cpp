@@ -100,7 +100,7 @@ void CRenderTarget::phase_sslr()
 		RContext->CSSetShaderResources(0, 16, srv_dummy);
 
 		//LVutner: Meh.
-		GRHI->CopySurface(rt_sslr_old->pSurface, rt_sslr->pSurface);
+		ResolveSurface(rt_sslr_old, rt_sslr);
 	}
 }
 
@@ -243,15 +243,11 @@ void CRender::render_reflections()
 		r_ssaGLOD_end = saved_r_ssaGLOD_end;
 		r_ssaHZBvsTEX = saved_r_ssaHZBvsTEX;
 
-		Target->u_setrt(Target->rt_Reflection_forward, nullptr, nullptr);
-		RImplementation.rmNormal();
-
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-
-		RCache.set_Element(Target->s_sslr->E[3]);
-		RCache.set_Geometry(Target->FSTriangleGeom);
-
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+		Target->DrawSQ(Target->s_sslr, Target->rt_Reflection_forward, 3, []
+		{
+			RImplementation.rmNormal();
+			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		});
 
 		Target->u_setrt(dwSize, dwSize, nullptr, nullptr, nullptr, nullptr);
 		GRHI->GenerateMips(Target->rt_Reflection_forward->pTexture->get_SRView());

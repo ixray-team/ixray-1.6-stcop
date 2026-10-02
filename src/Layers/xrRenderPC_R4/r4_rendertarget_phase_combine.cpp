@@ -44,9 +44,6 @@ void CRenderTarget::phase_combine()
 	//	TODO: DX10: Remove half poxel offset
 	bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
 
-	u32 Offset = 0;
-	Fvector2 p0, p1;
-
 	{
 		PROF_EVENT("PHASE_AMBIENT_OCCLUSION");
 
@@ -136,16 +133,12 @@ void CRenderTarget::phase_combine()
 		t_envmap_0->surface_set		(e0);	_RELEASE(e0);
 		t_envmap_1->surface_set		(e1);	_RELEASE(e1);
 	
-		// Draw
-		RCache.set_Element (s_combine->E[0]);
-		RCache.set_Geometry (FSTriangleGeom);
-
-		RCache.set_c ("Ldynamic_color", sunclr);
-		RCache.set_c ("Ldynamic_dir", sundir);
-
-		RCache.set_c ("m_sunmask", m_clouds_shadow);
-
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+		DrawPassSQ(s_combine, 0, [&]
+		{
+			RCache.set_c("Ldynamic_color", sunclr);
+			RCache.set_c("Ldynamic_dir", sundir);
+			RCache.set_c("m_sunmask", m_clouds_shadow);
+		});
 	}
 
 	if (RImplementation.o.dx11_allow_wboit_transparency)
@@ -278,23 +271,22 @@ void CRenderTarget::phase_combine()
 		vDofKernel.set(0.5f / Device.TargetWidth, 0.5f / Device.TargetHeight);
 		vDofKernel.mul(ps_r2_dof_kernel_size);
 
-		// Draw COLOR
-		RCache.set_Element(s_combine->E[2]);	// look at blender_combine.cpp
-
 		Fvector3 dof;
 		g_pGamePersistent->GetCurrentDof(dof);
-		RCache.set_c("dof_params", dof.x, dof.y, dof.z, ps_r2_dof_sky);
-		RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
-		RCache.set_c("autoexposure_params", ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
-		RCache.set_c("bloom_params", ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.f);
-		RCache.set_c("tonemap_params", ps_r2_tonemap_compression, ps_r2_tonemap_desaturation, ps_r2_tonemap_crossfeed, ps_r2_tonemap_vibrance);
-		RCache.set_c("bloom_tint", ps_r2_bloom_tint_color.x, ps_r2_bloom_tint_color.y, ps_r2_bloom_tint_color.z, 1.f);
-		RCache.set_c("spp_params",
-			ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION) ? 1.0f : 0.0f,
-			ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE) ? 1.0f : 0.0f,
-			0.0f, 0.0f);
-		RCache.set_Geometry(FSTriangleGeom);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
+
+		DrawPassSQ(s_combine, 2, [&]
+		{
+			RCache.set_c("dof_params", dof.x, dof.y, dof.z, ps_r2_dof_sky);
+			RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
+			RCache.set_c("autoexposure_params", ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
+			RCache.set_c("bloom_params", ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.f);
+			RCache.set_c("tonemap_params", ps_r2_tonemap_compression, ps_r2_tonemap_desaturation, ps_r2_tonemap_crossfeed, ps_r2_tonemap_vibrance);
+			RCache.set_c("bloom_tint", ps_r2_bloom_tint_color.x, ps_r2_bloom_tint_color.y, ps_r2_bloom_tint_color.z, 1.f);
+			RCache.set_c("spp_params",
+				ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION) ? 1.0f : 0.0f,
+				ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE) ? 1.0f : 0.0f,
+				0.0f, 0.0f);
+		});
 	}
 
 	RCache.set_Stencil		(FALSE);
@@ -404,8 +396,5 @@ void CRenderTarget::phase_combine_volumetric()
 
 	GPU_EVENT(phase_combine_volumetric);
 
-	RCache.set_Element(s_combine_volumetric->E[0]);
-	RCache.set_Geometry(FSTriangleGeom);
-
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	DrawPassSQ(s_combine_volumetric, 0);
 }
