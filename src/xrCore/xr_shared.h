@@ -17,7 +17,7 @@ protected:
 	typedef typename SharedMap::iterator	SharedMapIt;
 	SharedMap				container;
 public:
-							shared_container	(){}
+							shared_container	() = default;
 	virtual					~shared_container	(){VERIFY(container.empty());}
 	template <typename _on_new>
 	T*						dock				(shared_str key, const _on_new& p)

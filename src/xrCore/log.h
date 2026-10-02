@@ -45,7 +45,7 @@ private:
 
 	struct LogRecord
 	{
-		LogRecord() {}
+		LogRecord() = default;
 		LogRecord(const char* Msg, u32 sizeMsg);
 		xr_string Message;
 		Time time;

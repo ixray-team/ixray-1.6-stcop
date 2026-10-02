@@ -97,9 +97,7 @@ const char* CSINI_IdToIndex::line_name = NULL;
 
 
 TEMPLATE_SPECIALIZATION
-CSINI_IdToIndex::CIni_IdToIndex()
-{
-}
+CSINI_IdToIndex::CIni_IdToIndex() = default;
 
 
 TEMPLATE_SPECIALIZATION

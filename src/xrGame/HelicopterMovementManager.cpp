@@ -7,10 +7,7 @@
 #include "script_game_object.h"
 #include "game_object_space.h"
 
-SHeliMovementState::~SHeliMovementState()
-{
-
-}
+SHeliMovementState::~SHeliMovementState() = default;
 
 void SHeliMovementState::net_Destroy()
 {

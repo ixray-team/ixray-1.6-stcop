@@ -34,7 +34,7 @@ typedef vecOGF_V::const_iterator	citOGF_V;
 struct x_vertex						// "fast" geometry, 16b/vertex
 {
 	Fvector				P;
-	x_vertex() { }
+	x_vertex() = default;
 
 	x_vertex			(const OGF_Vertex& c)	{ P	= c.P; }
 	bool				similar		(OGF* p, x_vertex&	other);

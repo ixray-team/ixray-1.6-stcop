@@ -11,7 +11,7 @@ public:
 	//otherwise user should call DestroySingleton() manually
 	static bool _on_self_delete;
 public:
-					CSingleton			()	{}
+					CSingleton			() = default;
 	virtual			~CSingleton			()	{_self=NULL;}
 	
 	static			void DestroySingleton	()	{
@@ -48,7 +48,7 @@ template<class SHARED_TYPE, class KEY_TYPE> class CSharedObj : public CSingleton
 	typedef typename xr_map<KEY_TYPE, SHARED_TYPE*>::iterator SHARED_DATA_MAP_IT;
 
 public:
-				CSharedObj	() {};
+				CSharedObj	() = default;
 	virtual		~CSharedObj	() {
 		for (SHARED_DATA_MAP_IT it = _shared_tab.begin(); it != _shared_tab.end(); ++it){
 			xr_delete(it->second);

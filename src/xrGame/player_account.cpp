@@ -10,9 +10,7 @@ player_account::player_account() :
 {
 }
 
-player_account::~player_account()
-{
-}
+player_account::~player_account() = default;
 
 void player_account::load_account()
 {

@@ -32,7 +32,7 @@ public:
     void* data;
 public:
     TGAdesc() { data = 0; }
-    ~TGAdesc() {}
+    ~TGAdesc() = default;
     void maketga(IWriter& fs);
     void maketga(int hf);
 };

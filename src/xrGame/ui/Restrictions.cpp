@@ -45,8 +45,7 @@ CRestrictions::CRestrictions()
 	m_bInited				= false;
 }
 
-CRestrictions::~CRestrictions()
-{}
+CRestrictions::~CRestrictions() = default;
 
 void CRestrictions::InitGroups()
 {

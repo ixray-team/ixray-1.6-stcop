@@ -2,9 +2,7 @@
 #include "ip_filter.h"
 #include "../xrCore/xr_ini.h"
 
-ip_filter::ip_filter()
-{
-}
+ip_filter::ip_filter() = default;
 ip_filter::~ip_filter()
 {
 	for (subnets_coll_t::iterator i = m_all_subnets.begin(),

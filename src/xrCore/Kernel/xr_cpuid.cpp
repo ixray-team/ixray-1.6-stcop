@@ -194,6 +194,4 @@ processor_info::processor_info()
 	features = query_processor_info(&*this);
 }
 
-processor_info::~processor_info()
-{
-}
+processor_info::~processor_info() = default;

@@ -10,7 +10,7 @@ protected:
 
 public:
 					CStatePoltergeistAttackHidden	(_Object *obj);
-	virtual			~CStatePoltergeistAttackHidden	() {}
+	virtual			~CStatePoltergeistAttackHidden	() = default;
 
 
 	virtual void	initialize				();

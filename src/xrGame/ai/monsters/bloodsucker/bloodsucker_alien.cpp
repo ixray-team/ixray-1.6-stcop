@@ -195,9 +195,7 @@ CBloodsuckerAlien::CBloodsuckerAlien()
 	m_object	= 0;
 }
 
-CBloodsuckerAlien::~CBloodsuckerAlien()
-{
-}
+CBloodsuckerAlien::~CBloodsuckerAlien() = default;
 
 void CBloodsuckerAlien::init_external(CAI_Bloodsucker *obj)
 {

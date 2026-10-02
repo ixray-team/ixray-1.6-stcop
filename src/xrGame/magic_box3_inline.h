@@ -1,10 +1,7 @@
 #pragma once
 
 //----------------------------------------------------------------------------
-IC MagicBox3::MagicBox3 ()
-{
-    // no initialization for efficiency
-}
+IC MagicBox3::MagicBox3 () = default;
 
 IC MagicBox3::MagicBox3 (const Fmatrix &m, const Fvector &half_size)
 {

@@ -15,7 +15,7 @@ class CStateMonsterHittedMoveOut : public CState<_Object> {
 public:
 
 					CStateMonsterHittedMoveOut	(_Object *obj) : inherited(obj) {}
-	virtual			~CStateMonsterHittedMoveOut	() {}
+	virtual			~CStateMonsterHittedMoveOut	() = default;
 
 	virtual	void	initialize					();
 	virtual void	execute						();

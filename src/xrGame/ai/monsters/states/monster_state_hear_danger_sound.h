@@ -10,7 +10,7 @@ protected:
 
 public:
 					CStateMonsterHearDangerousSound		(_Object *obj);
-	virtual			~CStateMonsterHearDangerousSound	() {}
+	virtual			~CStateMonsterHearDangerousSound	() = default;
 
 	virtual void	reselect_state						();
 	virtual void	setup_substates						();

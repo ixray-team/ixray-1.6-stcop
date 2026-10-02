@@ -12,9 +12,7 @@ CMonsterSquad::CMonsterSquad() : leader(0), m_home_danger_end_tick(0), m_home_da
 	m_locked_corpses.reserve(10);
 }
 
-CMonsterSquad::~CMonsterSquad() 
-{
-}
+CMonsterSquad::~CMonsterSquad() = default;
 
 void CMonsterSquad::RegisterMember(CEntity *pE)
 {

@@ -22,7 +22,7 @@ public:
 	struct Node
 	{
 		Node() :Object(nullptr), Type(FNT_Root), Selected(false), AutoExpand(false) {}
-		~Node() {  }
+		~Node() = default;
 		bool Selected;
 		bool AutoExpand;
 		EFolderNodeType Type;
@@ -35,8 +35,8 @@ public:
 		IC bool IsObject() { return Type == FNT_Object; }
 		IC bool IsFolder() { return Type == FNT_Folder || Type == FNT_Root; }
 	};
-	FolderHelper() {}
-	inline ~FolderHelper() {}
+	FolderHelper() = default;
+	inline ~FolderHelper() = default;
 	inline Node* SelectObject(Node* N, const char* path)
 	{
 		VERIFY(N);

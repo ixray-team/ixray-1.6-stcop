@@ -12,9 +12,7 @@ CMonsterCorpseMemory::CMonsterCorpseMemory()
 	time_memory		= 10000; 
 }
 
-CMonsterCorpseMemory::~CMonsterCorpseMemory()
-{
-}
+CMonsterCorpseMemory::~CMonsterCorpseMemory() = default;
 
 void CMonsterCorpseMemory::init_external(CBaseMonster *M, TTime mem_time) 
 {

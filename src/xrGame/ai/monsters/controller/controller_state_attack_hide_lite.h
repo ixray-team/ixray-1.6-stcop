@@ -16,7 +16,7 @@ class CStateControlHideLite : public CState<_Object> {
 public:
 
 					CStateControlHideLite	(_Object *obj) : inherited(obj) {}
-	virtual			~CStateControlHideLite	() {}
+	virtual			~CStateControlHideLite	() = default;
 
 	virtual void	reinit					();
 

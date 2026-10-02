@@ -32,8 +32,8 @@ public:
 
 	IC SItem_ServerInfo&	operator[] ( u32 id ) { VERIFY( id < max_item ); return data[id]; }
 
-	CServerInfo() {};
-	~CServerInfo() {};
+	CServerInfo() = default;
+	~CServerInfo() = default;
 };
 
 //-----------------------------------------------------------------------------------------------------------
