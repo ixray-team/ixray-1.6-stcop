@@ -251,32 +251,6 @@ void CDetail::Load(IReader* S)
 			vNormals[idx_2].add(normal);
 		}
 		
-#if 0
-		xr_vector<Fvector> vNormals2 = vNormals;
-
-		for (u32 idx = 0; idx < number_vertices; ++idx)
-		{
-			const auto& v_0 = vertices[idx].P;
-
-			for (u32 idx_1 = 0; idx_1 < number_vertices; ++idx_1)
-			{
-				const auto& v_1 = vertices[idx_1].P;
-
-				if (idx_1 == idx)
-				{
-					continue;
-				}
-
-				if (v_0.distance_to_sqr(v_1) <= EPS)
-				{
-					vNormals2[idx].add(vNormals[idx_1]);
-				}
-			}
-		}
-
-		vNormals = vNormals2;
-#endif
-
 		xr_vector<vertHW> pV;
 		vertHW V;
 

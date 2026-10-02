@@ -214,20 +214,6 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
 #endif
 
-		// ����������� �������� � �������
-#if 0 //ndef _EDITOR
-		for (const auto& [_, vs] : m_vs)
-		{
-			if(vs->dwFlags & xr_resource_flagged::RF_REGISTERED)
-			{
-				if (vs != _vs && vs->m_crc1 == _vs->m_crc1)
-				{
-					xr_delete(_vs);
-					return vs;
-				}
-			}
-		}
-#endif
 		return _vs;
 	}
 }
@@ -334,22 +320,6 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 #endif
 
 		// ����������� �������� � �������
-
-#if 0 //ndef _EDITOR
-		for (const auto& [_, ps] : m_ps)
-		{
-			if (ps->dwFlags & xr_resource_flagged::RF_REGISTERED)
-			{
-				if (ps != _ps && ps->m_crc1 == _ps->m_crc1)
-				{
-					xr_delete(_ps);
-					return ps;
-				}
-			}
-		
-		}
-#endif
-
 		return _ps;
 	}
 }

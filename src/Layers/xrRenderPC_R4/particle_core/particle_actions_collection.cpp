@@ -1823,20 +1823,6 @@ void* PARandomVelocity::GetVariableImpl(u8 VarID)
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
-
-#if 0
-// Produce coefficients of a velocity function v(t)=at^2 + bt + c
-// satisfying initial x(0)=x0,v(0)=v0 and desired x(t)=xf,v(t)=vf,
-// where x = x(0) + integrate(v(T),0,t)
-static inline void _pconstrain(float x0, float v0, float xf, float vf,
-							   float t, float *a, float *b, float *c)
-{
-	*c = v0;
-	*b = 2 * (-t*vf - 2*t*v0 + 3*xf - 3*x0) / (t * t);
-	*a = 3 * (t*vf + t*v0 - 2*xf + 2*x0) / (t * t * t);
-}
-#endif
-
 // Over time, restore particles to initial positions
 // Put all particles on the surface of a statue, explode the statue,
 // and then suck the particles back to the original position. Cool!
