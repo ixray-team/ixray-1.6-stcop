@@ -20,7 +20,7 @@ public:
 			~CZoneEffector		();
 
 	void	Load				(const char* section);
-	void	Update				(u32 object_id, float dist, float radius, ALife::EHitType hit_type);
+	void	Update				(u32 object_id, float dist, float radius, ALife::EHitType hit_type, EAuraPostEffectType aura_type);
 	void	Stop				();
 
 private:

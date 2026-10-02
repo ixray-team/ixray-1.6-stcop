@@ -5,22 +5,6 @@
 #include "Actor.h"
 #include "CustomOutfit.h"
 
-namespace
-{
-	EAuraPostEffectType hit_type_to_aura_type(ALife::EHitType hit_type)
-	{
-		switch (hit_type)
-		{
-		case ALife::eHitTypeLightBurn:
-		case ALife::eHitTypeBurn:
-		case ALife::eHitTypeFireWound:	return EAuraPostEffectType::Fire;
-		case ALife::eHitTypeRadiation:	return EAuraPostEffectType::Radiation;
-		case ALife::eHitTypeTelepatic:	return EAuraPostEffectType::Psi;
-		default:						return EAuraPostEffectType::Chemical;
-		}
-	}
-}
-
 CZoneEffector::CZoneEffector()
 {
 	m_pActor	= nullptr;
@@ -59,8 +43,11 @@ void CZoneEffector::Stop()
 	m_pActor	= nullptr;
 }
 
-void CZoneEffector::Update(u32 object_id, float dist, float r, ALife::EHitType hit_type)
+void CZoneEffector::Update(u32 object_id, float dist, float r, ALife::EHitType hit_type, EAuraPostEffectType aura_type)
 {
+	if (m_object_id != cInvalidAuraObjectID && (m_object_id != object_id || m_type != aura_type))
+		Stop();
+
 	float min_r = r * r_min_perc;
 	float max_r = r * r_max_perc;
 
@@ -84,7 +71,7 @@ void CZoneEffector::Update(u32 object_id, float dist, float r, ALife::EHitType h
 	clamp(m_factor, 0.01f, 1.0f);
 
 	m_object_id	= object_id;
-	m_type		= hit_type_to_aura_type(hit_type);
+	m_type		= aura_type;
 
 	if (dist < max_r)
 	{
