@@ -390,6 +390,8 @@ void CRenderDevice::Run()
 	//GCThread.Stop();
 
 	DetailsTask.wait();
+	SecondaryTasks.wait();
+	async_tasks.wait();
 }
 
 u32 app_inactive_time		= 0;
