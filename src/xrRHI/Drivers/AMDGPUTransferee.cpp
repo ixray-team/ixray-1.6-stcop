@@ -31,13 +31,18 @@ CAMDReader::~CAMDReader()
 			FreeLibrary(hAMDMain);
 			hAMDMain = nullptr;
 		}
+	}
+	else if (hAMDMain != nullptr)
+	{
+		FreeLibrary(hAMDMain);
+		hAMDMain = nullptr;
+	}
 
-		if (hAMDAGS != nullptr)
-		{
-			AGSDeinit(Context);
-			FreeModule(hAMDAGS);
-			hAMDAGS = nullptr;
-		}
+	if (hAMDAGS != nullptr)
+	{
+		AGSDeinit(Context);
+		FreeModule(hAMDAGS);
+		hAMDAGS = nullptr;
 	}
 }
 

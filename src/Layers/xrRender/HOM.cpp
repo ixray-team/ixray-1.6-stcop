@@ -41,7 +41,8 @@ CHOM::CHOM()
 CHOM::~CHOM()
 {
 #ifdef DEBUG_DRAW
-	Device.seqRender.Remove(this);
+	if (DevicePtr)
+		Device.seqRender.Remove(this);
 #endif
 }
 

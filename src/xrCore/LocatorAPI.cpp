@@ -390,7 +390,8 @@ void CLocatorAPI::LoadArchive(archive& A, const char* entrypoint)
 		name[name_length] = 0;
 		buffer += name_length;
 		memcpy(&ptr, buffer, sizeof(ptr));
-		if (ptr > A.size || size_compr > A.size - ptr || size_compr > u32(-1) - ptr)
+		if ((size_real != 0 && size_compr == 0) ||
+			ptr > A.size || size_compr > A.size - ptr || size_compr > u32(-1) - ptr)
 		{
 			Msg("! Invalid archive header in %s: file data is outside the archive", A.path.c_str());
 			hdr->close();
@@ -960,6 +961,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 
 void CLocatorAPI::_destroy()
 {
+	CFilewatcher::instance().Destroy();
 	xrLogger::CloseLog();
 
 	xrSRWLockGuard g(m_files_lock);
@@ -2068,12 +2070,18 @@ void CLocatorAPI::unlock_rescan()
 		rescan_pathes();
 }
 
-CFilewatcher::~CFilewatcher()
+void CFilewatcher::Destroy()
 {
 	if (WatcherPtr)
 	{
 		xr_delete(WatcherPtr);
 	}
+	FilewatcherActive = false;
+}
+
+CFilewatcher::~CFilewatcher()
+{
+	Destroy();
 }
 
 CFilewatcher& CFilewatcher::instance()

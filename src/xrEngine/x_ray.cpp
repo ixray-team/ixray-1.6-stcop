@@ -21,6 +21,7 @@
 #include "../xrCore/discord/discord.h"
 #include "std_classes.h"
 #include "IGame_Persistent.h"
+#include "IGame_Level.h"
 #include "FPSCounter.h"
 #include "GamepadService.h"
 
@@ -255,6 +256,13 @@ ENGINE_API void EngineLoopAndDestroy()
 
 	Device.Run();
 
+	// Destroy level if still loaded (e.g. quit from in-game via window close or console)
+	if (g_pGameLevel)
+	{
+		g_pGameLevel->net_Stop();
+		DEL_INSTANCE(g_pGameLevel);
+	}
+
 	// Destroy APP
 	xr_delete(g_SpatialSpacePhysic);
 	xr_delete(g_SpatialSpace);
@@ -266,7 +274,6 @@ ENGINE_API void EngineLoopAndDestroy()
 	xr_delete(pFPSCounter);
 
 	// Destroying
-//.	destroySound();
 	destroyInput();
 
 	destroySettings();

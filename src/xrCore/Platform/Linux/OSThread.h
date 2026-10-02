@@ -53,4 +53,16 @@ namespace Platform
     {
         pthread_join(ID, nullptr);
     }
+
+    inline void JoinThread(ThreadID ID)
+    {
+        if (ID != 0)
+        {
+            pthread_join(ID, nullptr);
+        }
+    }
+
+    inline void CloseThreadHandle(ThreadID ID)
+    {
+    }
 }

@@ -24,6 +24,13 @@ void CRenderDevice::_Destroy	(bool bKeepTextures)
 
 void CRenderDevice::Destroy()
 {
+	PreRenderThread.Stop();
+	GameThread.Stop();
+
+	DetailsTask.wait();
+	SecondaryTasks.wait();
+	async_tasks.wait();
+
 	if (!b_is_Ready)			
 		return;
 

@@ -23,7 +23,8 @@ CPortal::CPortal		()
 CPortal::~CPortal		()
 {
 #ifdef DEBUG
-	Device.seqRender.Remove(this);
+	if (DevicePtr)
+		Device.seqRender.Remove(this);
 #endif
 }
 

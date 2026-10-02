@@ -34,6 +34,7 @@ private:
 	// Using in update thread!
 	xr_vector<HSteamNetConnection>	m_players;
 	xr_vector<SClientConnectData>	m_pending_clients;
+	ThreadID						m_hServerThread = 0;
 
 public:
 	SteamNetServer(CTimer* timer, bool	dedicated);
