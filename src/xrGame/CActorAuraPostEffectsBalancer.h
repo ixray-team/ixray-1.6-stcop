@@ -9,6 +9,7 @@ enum class EAuraPostEffectType : u8
 	Radiation,
 	Psi,
 	Chemical,
+	Gravity,
 };
 
 inline constexpr u32 cInvalidAuraObjectID = 0xFFFFFFFFu;
