@@ -12,7 +12,8 @@ int fps_text_color_b = 0;
 int fps_text_color_a = 255;
 bool fps_text_outline = true;
 
-xr_token fps_text_pos_tokens[5] = {
+xr_token fps_text_pos_tokens[5] = 
+{
 	{"top-left", 0},
 	{"top-right", 1},
 	{"bottom-left", 2},
@@ -20,7 +21,8 @@ xr_token fps_text_pos_tokens[5] = {
 	{0, 0}
 };
 
-xr_token fps_font_tokens[] = {
+xr_token fps_font_tokens[] = 
+{
 	{"stat_font", 0},
 	{"ui_font_console", 1},
 	{"hud_font_medium", 2},
@@ -29,10 +31,17 @@ xr_token fps_font_tokens[] = {
 	{0, 0}
 };
 
+constexpr float fps_update_interval = 0.23f;
+
+float accum_time = 0.f;
+u32 accum_frames = 0;
+
 XRay::Hardware::FPSCounter::FPSCounter()
 {
 	for (int i = 0; fps_font_tokens[i].name != nullptr; ++i)
+	{
 		fonts_.push_back(nullptr);
+	}
 
 	UpdateFont();
 }
@@ -59,8 +68,17 @@ void XRay::Hardware::FPSCounter::OnRender()
 		return;
 	}
 
-	fps = _inertion(fps, 1.f / dt, 1.f - fps_smoothing_alpha);
-	ft = _inertion(ft, dt * 1000.f, 1.f - fps_smoothing_alpha);
+	accum_time += dt;
+	accum_frames += 1;
+
+	if (accum_time >= fps_update_interval)
+	{
+		fps = accum_frames / accum_time;
+		ft = (accum_time / accum_frames) * 1000.f;
+
+		accum_time = 0.f;
+		accum_frames = 0;
+	}
 
 	UpdateFont();
 
