@@ -45,7 +45,7 @@ protected:
 	virtual void						_create_data			( ref_sound_data& S, const char* fName,	esound_type sound_type, int game_type); 
 	virtual void						_destroy_data			( ref_sound_data& S);
 			void						GenerateDevicesToken	();
-	virtual void						SwitchAuidoDevice		(const xr_string& Name) override;
+	virtual void						SwitchAudioDevice		(const xr_string& Name) override;
 public:
 										CSoundRender_Core		();
 	virtual								~CSoundRender_Core		();

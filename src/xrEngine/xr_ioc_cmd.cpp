@@ -612,7 +612,7 @@ public:
 		if(!tokens)				return;
 		inherited::Execute		(args);
 
-		::Sound->SwitchAuidoDevice(args);
+		::Sound->SwitchAudioDevice(args);
 	}
 
 	virtual void	Status	(TStatus& S)
