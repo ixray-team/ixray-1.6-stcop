@@ -2,7 +2,7 @@
 // DirectX::CreateTextureEx ported verbatim from Microsoft DirectXTex (MIT): the Windows include
 // stack and this port's headers are incompatible in one translation unit, so only this function
 // is taken.
-#include "stdafx.h"
+#include "Device.h"
 
 #include <cassert>
 #include <cstdint>

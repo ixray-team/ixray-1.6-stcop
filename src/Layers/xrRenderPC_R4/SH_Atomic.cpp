@@ -48,7 +48,7 @@ SCS::~SCS								()			{	_RELEASE(sh);		DEV->_DeleteCS			(this);	}
 
 ///////////////////////////////////////////////////////////////////////
 //	SInputSignature
-SInputSignature::SInputSignature(ID3DBlob* pBlob)	{ VERIFY(pBlob); signature=pBlob; signature->AddRef();};
+SInputSignature::SInputSignature(RHIBlob* pBlob)	{ VERIFY(pBlob); signature=pBlob; signature->AddRef();};
 SInputSignature::~SInputSignature()
 {
 	DEV->_DeleteInputSignature(this);
@@ -63,7 +63,7 @@ SState::~SState							()			{	_RELEASE(state);	DEV->_DeleteState		(this);	}
 SDeclaration::~SDeclaration()
 {	
 	DEV->_DeleteDecl(this);	
-	xr_map<ID3DBlob*, ID3DInputLayout*>::iterator iLayout;
+	xr_map<RHIBlob*, RHIObject*>::iterator iLayout;
 	iLayout = vs_to_layout.begin();
 	for( ; iLayout != vs_to_layout.end(); ++iLayout)
 	{

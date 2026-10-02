@@ -4,33 +4,33 @@
 
 namespace dx10StateUtils
 {
-	D3D_COMPARISON_FUNC			ConvertCmpFunction(D3DCMPFUNC Func);
-	D3D_STENCIL_OP				ConvertStencilOp(D3DSTENCILOP Op);
-	D3D_BLEND					ConvertBlendArg(D3DBLEND Arg);
-	D3D_BLEND_OP				ConvertBlendOp(D3DBLENDOP Op);
+	ERHI_COMPARISON			ConvertCmpFunction(D3DCMPFUNC Func);
+	ERHI_STENCIL_OP				ConvertStencilOp(D3DSTENCILOP Op);
+	ERHI_BLEND					ConvertBlendArg(D3DBLEND Arg);
+	ERHI_BLEND_OP				ConvertBlendOp(D3DBLENDOP Op);
 	ERHI_TEXTURE_ADDRESS_MODE	ConvertTextureAddressMode(D3DTEXTUREADDRESS Mode);
 
 	//	Set description to default values
-	void	ResetDescription( D3D_RASTERIZER_DESC &desc );
-	void	ResetDescription( D3D_DEPTH_STENCIL_DESC &desc );
-	void	ResetDescription( D3D_BLEND_DESC &desc );
+	void	ResetDescription( RHIRasterizerDesc &desc );
+	void	ResetDescription( RHIDepthStencilDesc &desc );
+	void	ResetDescription( RHIBlendDesc &desc );
 	void	ResetDescription(RHISampleDesc&desc );
 
 	//	State comparison (memcmp doesn't work due to padding bytes in structure)
-	bool	operator==(const D3D_RASTERIZER_DESC &desc1, const D3D_RASTERIZER_DESC &desc2);
-	bool	operator==(const D3D_DEPTH_STENCIL_DESC &desc1, const D3D_DEPTH_STENCIL_DESC &desc2);
-	bool	operator==(const D3D_BLEND_DESC &desc1, const D3D_BLEND_DESC &desc2);
+	bool	operator==(const RHIRasterizerDesc &desc1, const RHIRasterizerDesc &desc2);
+	bool	operator==(const RHIDepthStencilDesc &desc1, const RHIDepthStencilDesc &desc2);
+	bool	operator==(const RHIBlendDesc &desc1, const RHIBlendDesc &desc2);
 
 	//	Calculate hash values
-	u32		GetHash( const D3D_RASTERIZER_DESC &desc );
-	u32		GetHash( const D3D_DEPTH_STENCIL_DESC &desc );
-	u32		GetHash( const D3D_BLEND_DESC &desc );
+	u32		GetHash( const RHIRasterizerDesc &desc );
+	u32		GetHash( const RHIDepthStencilDesc &desc );
+	u32		GetHash( const RHIBlendDesc &desc );
 	u32		GetHash( const RHISampleDesc&desc );
 
 	//	Modify state to meet DX10 automatic modifications
-	void	ValidateState(D3D_RASTERIZER_DESC &desc);
-	void	ValidateState(D3D_DEPTH_STENCIL_DESC &desc);
-	void	ValidateState(D3D_BLEND_DESC &desc);
+	void	ValidateState(RHIRasterizerDesc &desc);
+	void	ValidateState(RHIDepthStencilDesc &desc);
+	void	ValidateState(RHIBlendDesc &desc);
 	void	ValidateState(RHISampleDesc&desc);
 };
 

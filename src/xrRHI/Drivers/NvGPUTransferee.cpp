@@ -151,6 +151,10 @@ u32 CNvReader::GetGPUCount()
 
 bool CNvReader::SetDepthBounds(bool b, float zMin, float zMax)
 {
+    if (GRHI->APILevel == ERHI_API_LAYER::D3D12)
+    {
+        return GRHI->DevicePtr->SetDepthBounds(b, zMin, zMax);
+    }
 	if (NvAPI_D3D11_SetDepthBoundsTest)
 	{
 		NvAPI_D3D11_SetDepthBoundsTest((ID3D11DeviceContext*)GRHI->GetContext(), b, zMin, zMax);

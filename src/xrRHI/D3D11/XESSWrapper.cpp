@@ -1,4 +1,5 @@
-#include "stdafx.h"
+#include "../RHI.h"
+#include <d3d11.h>
 #include "XESSWrapper.h"
 
 #if 0

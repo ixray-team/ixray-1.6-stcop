@@ -79,7 +79,7 @@ ref_state CResourceManager::_CreateState(SimulatorStates& state_code)
 	// Create New
 	v_states.push_back				(new SState());
 	v_states.back()->dwFlags		|= xr_resource_flagged::RF_REGISTERED;
-	v_states.back()->state			= ID3DState::Create(state_code);
+	v_states.back()->state			= dx10State::Create(state_code);
 	v_states.back()->state_code		= state_code;
 	return v_states.back();
 }
@@ -218,14 +218,7 @@ ref_vs	CResourceManager::_CreateVS		(const char* _name)
 		if (strstr(data, "main_vs_2_0")) { c_target = "vs_2_0"; c_entry = "main_vs_2_0"; }
 		if (strstr(data, "main_vs_4_0")) { c_target = "vs_4_0"; c_entry = "main_vs_4_0"; }
 
-		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
-
-		if (Core.ParamsData.test(ECoreParams::renderdoc) || Core.ParamsData.test(ECoreParams::dxdebug)) 
-		{
-			flags |= D3DCOMPILE_DEBUG;
-			flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-			flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
-		}
+		DWORD flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);
 
@@ -272,7 +265,7 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 		xr_vector<SDeclaration*>::iterator iDecl;
 		for (iDecl = v_declarations.begin(); iDecl!=v_declarations.end(); ++iDecl)
 		{
-			xr_map<ID3DBlob*, ID3DInputLayout*>::iterator iLayout;
+			xr_map<RHIBlob*, RHIObject*>::iterator iLayout;
 			iLayout = (*iDecl)->vs_to_layout.find(vs->signature->signature);
 			if (iLayout!=(*iDecl)->vs_to_layout.end())
 			{
@@ -370,14 +363,7 @@ ref_ps	CResourceManager::_CreatePS			(const char* _name)
 		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
 		if (strstr(data,"main_ps_4_0"))			{ c_target = "ps_4_0"; c_entry = "main_ps_4_0"; }
 
-		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
-
-		if (Core.ParamsData.test(ECoreParams::renderdoc) || Core.ParamsData.test(ECoreParams::dxdebug))
-		{
-			flags |= D3DCOMPILE_DEBUG;
-			flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-			flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
-		}
+		DWORD flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps);
 
@@ -493,14 +479,7 @@ ref_gs	CResourceManager::_CreateGS			(const char* _name)
 		const char*						c_target	= "gs_4_0";
 		const char*						c_entry		= "main";
 
-		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
-
-		if (Core.ParamsData.test(ECoreParams::renderdoc) || Core.ParamsData.test(ECoreParams::dxdebug))
-		{
-			flags |= D3DCOMPILE_DEBUG;
-			flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-			flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
-		}
+		DWORD flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs);
 
@@ -1018,7 +997,7 @@ void			CResourceManager::_DeleteConstantList(const SConstantList* L )
 	Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
-ref_cbuffer CResourceManager::_CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable)
+ref_cbuffer CResourceManager::_CreateConstantBuffer(const RHIShaderBufferDesc* pTable)
 {
 	ref_cbuffer Result;
 	VERIFY(pTable);
@@ -1051,7 +1030,7 @@ void CResourceManager::_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-ref_input_sign CResourceManager::_CreateInputSignature(ID3DBlob* pBlob)
+ref_input_sign CResourceManager::_CreateInputSignature(RHIBlob* pBlob)
 {
 	ref_input_sign Result;
 	VERIFY(pBlob);

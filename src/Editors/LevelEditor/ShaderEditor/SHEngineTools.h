@@ -115,7 +115,7 @@ friend class TfrmShaderProperties;
 
     void 					RealResetShaders	();
 
-    ID3DBlob*				GetCurrentVSSignature();
+    RHIBlob*				GetCurrentVSSignature();
     void					UpdatePreviewShader	();
 
 

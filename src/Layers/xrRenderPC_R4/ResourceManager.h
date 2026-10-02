@@ -146,10 +146,10 @@ public:
 	ref_ctable _CreateConstantTable(R_constant_table& C);
 	void							_DeleteConstantTable(const R_constant_table* C);
 
-	ref_cbuffer _CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
+	ref_cbuffer _CreateConstantBuffer(const RHIShaderBufferDesc* pTable);
 	void							_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer);
 
-	ref_input_sign _CreateInputSignature(ID3DBlob* pBlob);
+	ref_input_sign _CreateInputSignature(RHIBlob* pBlob);
 	void							_DeleteInputSignature(const SInputSignature* pSignature);
 
 	CRT*							_CreateRT			(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);

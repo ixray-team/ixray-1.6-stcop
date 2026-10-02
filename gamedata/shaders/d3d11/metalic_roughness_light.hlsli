@@ -42,7 +42,7 @@ float GeometrySmithD(float NdotL, float NdotV, float Roughness)
 float3 FresnelSchlick(float3 F, float NdotV)
 {
 	float F90 = min(1.0, dot(F, 16.66667));
-    return lerp(F, F90, pow(1.0f - NdotV, 5.0f));
+    return lerp(F, F90, pow(saturate(1.0f - NdotV), 5.0f));
 }
 
 float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, float3 Diffuse, float3 Specular, float Roughness)

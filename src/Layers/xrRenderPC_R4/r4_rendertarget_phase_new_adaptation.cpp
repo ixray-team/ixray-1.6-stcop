@@ -2,7 +2,7 @@
 
 #include "r4_rendertarget.h"
 
-D3D_VIEWPORT VP_NL = {
+RHIViewport VP_NL = {
 	0.0f,
 	0.0f,
 	1024.f,

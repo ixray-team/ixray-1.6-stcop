@@ -3,6 +3,7 @@
 enum ERHI_API_LAYER
 {
     D3D11,
+    D3D12,
 
     NOT_CREATED = -1
 };

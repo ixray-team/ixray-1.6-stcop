@@ -169,10 +169,10 @@ static SVS* incompatible_vertex_shader(const ref_shader& sh, u32 element, const 
 		return nullptr;
 
 	SVS* vs = &*E->passes[0]->vs;
-	ID3DBlob* signature = vs->signature->signature;
+	RHIBlob* signature = vs->signature->signature;
 	const xr_vector<RHIInputElementDesc>& dcl = geom->dcl->dx10_dcl_code;
-	ID3DInputLayout* layout = nullptr;
-	if (FAILED(RDevice->CreateInputLayout((D3D11_INPUT_ELEMENT_DESC*)dcl.data(), (UINT)dcl.size(), signature->GetBufferPointer(), signature->GetBufferSize(), &layout)))
+	RHIObject* layout = nullptr;
+	if (FAILED(GRHI->CreateInputLayout(dcl.data(), dcl.size(), signature->GetBufferPointer(), signature->GetBufferSize(), &layout)))
 		return vs;
 
 	_RELEASE(layout);

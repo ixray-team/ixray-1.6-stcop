@@ -96,16 +96,16 @@ namespace R_dsgraph
 	};
 
 	using vs_type = SVS*;
-	using gs_type = ID3DGeometryShader*;
-	using hs_type = ID3D11HullShader*;
-	using ds_type = ID3D11DomainShader*;
-	using ps_type = ID3DPixelShader*;
+	using gs_type = RHIObject*;
+	using hs_type = RHIObject*;
+	using ds_type = RHIObject*;
+	using ps_type = RHIObject*;
 
 	// NORMAL
 	using mapNormalDirect = xr_vector<_NormalItem,render_allocator::helper<_NormalItem>::result>;
 	using mapNormalItems = mapNormalDirect;
 	using mapNormalTextures = FixedMAP<STextureList*,mapNormalItems,render_allocator>;
-	using mapNormalStates = FixedMAP<ID3DState*,mapNormalTextures,render_allocator>;
+	using mapNormalStates = FixedMAP<dx10State*,mapNormalTextures,render_allocator>;
 	using mapNormalCS = FixedMAP<R_constant_table*,mapNormalStates,render_allocator>;
 	struct	mapNormalAdvStages
 	{
@@ -129,7 +129,7 @@ namespace R_dsgraph
 		xr_vector<dxRender_Visual*, render_allocator::helper<dxRender_Visual*>::result> particles;
 	};
 	using mapMatrixTextures = FixedMAP<STextureList*,mapMatrixItems,render_allocator>;
-	using mapMatrixStates = FixedMAP<ID3DState*,mapMatrixTextures,render_allocator>;
+	using mapMatrixStates = FixedMAP<dx10State*,mapMatrixTextures,render_allocator>;
 	using mapMatrixCS = FixedMAP<R_constant_table*,mapMatrixStates,render_allocator>;
 	struct	mapMatrixAdvStages
 	{

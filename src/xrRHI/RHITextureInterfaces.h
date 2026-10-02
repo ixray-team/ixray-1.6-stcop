@@ -108,6 +108,8 @@ struct RHITextureMetadata
 	u32 width = 0;
 	u32 height = 0;
 	int format = (int)ERHI_FORMAT::UNKNOWN;
+	bool cubemap = false;
+	bool volumemap = false;
 };
 
 class IRHISurface :
@@ -179,6 +181,8 @@ struct RHITextureDesc
 	u32 MiscFlags = 0;
 	u32 ArraySize = 1;
 	u32 SampleDescCount = 1;
+	float ClearColor[4] = {};
+	bool OptimizedColorClear = true;
 
 	RHITextureDesc() = default;
 	RHITextureDesc(u32 width, u32 height, ERHI_FORMAT format)

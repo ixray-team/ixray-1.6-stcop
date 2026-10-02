@@ -933,4 +933,7 @@
 	<string id="ui_mm_confirm_changes">
 		<text>Änderungen übernehmen? Alle Änderungen werden rückgängig gemacht in</text>
 	</string>
+    <string id="ui_mm_graphics_api">
+        <text>Graphics API</text>
+    </string>
 </string_table>

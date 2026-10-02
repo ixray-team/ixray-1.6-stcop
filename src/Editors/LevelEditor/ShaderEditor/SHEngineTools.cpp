@@ -1001,7 +1001,7 @@ void CSHEngineTools::UpdateObjectShader()
 	}
 }
 
-ID3DBlob* CSHEngineTools::GetCurrentVSSignature()
+RHIBlob* CSHEngineTools::GetCurrentVSSignature()
 {
 	if (!m_PreviewObject)
 	{
@@ -1025,7 +1025,7 @@ ID3DBlob* CSHEngineTools::GetCurrentVSSignature()
 			auto& S = e->passes[p];
 			if (S && S->vs)
 			{
-				return (ID3DBlob*)S->vs->vs_code;
+				return (RHIBlob*)S->vs->vs_code;
 			}
 		}
 	}

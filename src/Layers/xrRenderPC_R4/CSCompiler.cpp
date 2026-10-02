@@ -22,7 +22,7 @@ CSCompiler& CSCompiler::begin(const char* name)
 
 CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 {
-	D3D11_SAMPLER_DESC	desc;
+	RHISampleDesc	desc;
 	ZeroMemory(&desc, sizeof(desc));
 
 	//	Use D3DTADDRESS_CLAMP,	D3DTEXF_POINT,			D3DTEXF_NONE,	D3DTEXF_POINT 
@@ -30,8 +30,8 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 	{
 		//i_dx10Address( stage, D3DTADDRESS_CLAMP);
 		//i_dx10Filter(stage, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
-		desc.AddressU = desc.AddressV = desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		desc.AddressU = desc.AddressV = desc.AddressW = ERHI_TEXTURE_ADDRESS_MODE::CLAMP;
+		desc.Filter = ERHI_FILTER::MIN_MAG_MIP_POINT;
 		return defSampler(ResourceName, desc);
 	}
 
@@ -40,8 +40,8 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 	{
 		//i_dx10Address( stage, D3DTADDRESS_CLAMP);
 		//i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
-		desc.AddressU = desc.AddressV = desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		desc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		desc.AddressU = desc.AddressV = desc.AddressW = ERHI_TEXTURE_ADDRESS_MODE::CLAMP;
+		desc.Filter = ERHI_FILTER::MIN_MAG_LINEAR_MIP_POINT;
 		return defSampler(ResourceName, desc);
 	}
 
@@ -50,8 +50,8 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 	{
 		//i_dx10Address( stage, D3DTADDRESS_WRAP);
 		//i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
-		desc.AddressU = desc.AddressV = desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		desc.AddressU = desc.AddressV = desc.AddressW = ERHI_TEXTURE_ADDRESS_MODE::WRAP;
+		desc.Filter = ERHI_FILTER::MIN_MAG_MIP_LINEAR;
 		return defSampler(ResourceName, desc);
 	}
 
@@ -60,8 +60,8 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 	{
 		//i_dx10Address( stage, D3DTADDRESS_WRAP);
 		//i_dx10FilterAnizo( stage, true);
-		desc.AddressU = desc.AddressV = desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.Filter = D3D11_FILTER_ANISOTROPIC;
+		desc.AddressU = desc.AddressV = desc.AddressW = ERHI_TEXTURE_ADDRESS_MODE::WRAP;
+		desc.Filter = ERHI_FILTER::ANISOTROPIC;
 		desc.MaxAnisotropy = ps_r__tf_Anisotropic;
 		return defSampler(ResourceName, desc);
 	}
@@ -72,9 +72,9 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 		//i_dx10Address( stage, D3DTADDRESS_CLAMP);
 		//i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
 		//RS.SetSAMP(stage,D3DSAMP_ADDRESSW,	D3DTADDRESS_WRAP);
-		desc.AddressU = desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		desc.AddressU = desc.AddressV = ERHI_TEXTURE_ADDRESS_MODE::CLAMP;
+		desc.AddressW = ERHI_TEXTURE_ADDRESS_MODE::WRAP;
+		desc.Filter = ERHI_FILTER::MIN_MAG_LINEAR_MIP_POINT;
 		return defSampler(ResourceName, desc);
 	}
 
@@ -83,10 +83,10 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 		//i_dx10Address( stage, D3DTADDRESS_CLAMP);
 		//i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
 		//RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFILTER, true);
-		//RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFUNC, D3D_COMPARISON_LESS_EQUAL);
-		desc.AddressU = desc.AddressV = desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-		desc.ComparisonFunc = D3D_COMPARISON_LESS_EQUAL;
+		//RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFUNC, RHI_COMPARISON_LESS_EQUAL);
+		desc.AddressU = desc.AddressV = desc.AddressW = ERHI_TEXTURE_ADDRESS_MODE::CLAMP;
+		desc.Filter = ERHI_FILTER::COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+		desc.ComparisonFunc = ERHI_COMPARISON_FUNC::LESS_EQUAL;
 		return defSampler(ResourceName, desc);
 	}
 
@@ -94,8 +94,8 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 	{
 		//i_dx10Address( stage, D3DTADDRESS_WRAP);
 		//i_dx10Filter(stage, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
-		desc.AddressU = desc.AddressV = desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		desc.AddressU = desc.AddressV = desc.AddressW = ERHI_TEXTURE_ADDRESS_MODE::WRAP;
+		desc.Filter = ERHI_FILTER::MIN_MAG_MIP_POINT;
 		return defSampler(ResourceName, desc);
 	}
 
@@ -104,7 +104,7 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 	return *this;
 }
 
-CSCompiler& CSCompiler::defSampler(const char* ResourceName, const D3D_SAMPLER_DESC& def)
+CSCompiler& CSCompiler::defSampler(const char* ResourceName, const RHISampleDesc& def)
 {
 	VERIFY(ResourceName);
 
@@ -112,12 +112,12 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName, const D3D_SAMPLER_D
 	if (!C)					return	*this;
 
 	R_ASSERT				(C->type == RC_sampler);
-	u32 stage				= C->samp.index;
+	u32 stage				= C->samp.index - CTexture::rstCompute;
 
 	if (stage >= m_Samplers.size())
 		m_Samplers.resize(stage+1);
 
-	R_CHK(RDevice->CreateSamplerState(&def, &m_Samplers[stage]));
+	R_CHK(GRHI->CreateSamplerState(def, &m_Samplers[stage]));
 
 	return *this;
 }
@@ -133,12 +133,12 @@ CSCompiler& CSCompiler::defOutput(const char* ResourceName,	ref_rt rt)
 	if (!C)					return *this;
 
 	R_ASSERT				(C->type == RC_dx11UAV);
-	u32 stage				= C->samp.index;
+	u32 stage				= C->samp.index - CTexture::rstCompute;
 
-	if (stage >= m_Textures.size())
-		m_Textures.resize(stage+1);
+	if (stage >= m_Outputs.size())
+		m_Outputs.resize(stage+1);
 
-	m_Outputs[stage] = (ID3D11UnorderedAccessView*)rt->pUAView->GetRaw(); //!!!dangerous view can be deleted
+	m_Outputs[stage] = rt->pUAView; //!!!dangerous view can be deleted
 
 	return *this;
 }
@@ -153,12 +153,12 @@ CSCompiler& CSCompiler::defTexture(const char* ResourceName,	ref_texture texture
 	if (!C)					return *this;
 
 	R_ASSERT				(C->type == RC_dx10texture);
-	u32 stage				= C->samp.index;
+	u32 stage				= C->samp.index - CTexture::rstCompute;
 
 	if (stage >= m_Textures.size())
 		m_Textures.resize(stage+1);
 
-	m_Textures[stage] = (ID3D11ShaderResourceView*)texture->get_SRView()->GetRawSRV(); //!!!dangerous view can be deleted
+	m_Textures[stage] = texture->get_SRView(); //!!!dangerous view can be deleted
 
 	return *this;
 }
@@ -166,10 +166,10 @@ CSCompiler& CSCompiler::defTexture(const char* ResourceName,	ref_texture texture
 void CSCompiler::end()
 {
 	for (size_t i=0; i<m_Textures.size(); ++i)
-		m_Textures[i]->AddRef();
+		if (m_Textures[i]) m_Textures[i]->AddRef();
 
 	for (size_t i=0; i<m_Outputs.size(); ++i)
-		m_Outputs[i]->AddRef();
+		if (m_Outputs[i]) m_Outputs[i]->AddRef();
 
 	//Samplers create by us, thou they should not be AddRef'ed
 
@@ -178,26 +178,6 @@ void CSCompiler::end()
 
 void CSCompiler::compile(const char* name)
 {
-	if (0==_stricmp(name, "null"))
-	{
-		m_cs = 0;
-		return;
-	}
-
-	string_path					cname;
-	xr_strconcat(cname,::Render->getShaderPath(),name,".cs.hlsl");
-	FS.update_path				(cname,	_game_shaders_, cname);
-
-	IReader* file				= FS.r_open(cname);
-	R_ASSERT2					( file, cname );
-
-	// Select target
-	const char*						c_target	= "cs_5_0";
-	const char*						c_entry		= "main";
-
-	HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)m_cs);
-
-	R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
-
-	FS.r_close ( file );
+	m_cs = DEV->_CreateCS(name);
+	m_constants._copy(m_cs->constants);
 }

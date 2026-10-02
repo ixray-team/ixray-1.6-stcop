@@ -212,6 +212,7 @@ void execUserScript()
 ENGINE_API void EngineLoadStage4()
 {
 	PROF_EVENT("EngineLoadStage4");
+	GRHI = new CRHI;
 	InitSound1();
 	execUserScript();
 	if (Autotest::Active())

@@ -481,7 +481,7 @@ void CEditorRenderDevice::Reset(bool)
 	DEV->reset_end();
 	DEV->DeferredUpload();
 
-	EContext.UI->ResetEnd(RDevice);
+	EContext.UI->ResetEnd(GRHI->DevicePtr->RawDevice);
 	_SetupStates();
 
 	R_ASSERT(texture_null->get_SRView(), "Null texture not found!");
@@ -545,6 +545,7 @@ bool CEditorRenderDevice::Begin()
 
 	VERIFY(FALSE == g_bRendering);
 
+	GRHI->BeginFrame();
 	Clear();
 
 	RCache.OnFrameBegin();

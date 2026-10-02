@@ -1152,7 +1152,7 @@ void CEditorDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const I
 	Stream->Unlock(6, vs_TL->vb_stride);
 
 	const u32 OldFillMode = GEditorDraw.FillMode;
-	GEditorDraw.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+	GEditorDraw.FillMode = D3DFILL_SOLID;
 	DU_DRAW_SH(GEditorDraw.ShaderTL);
 	DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vs_TL, vBase, 2);
 	GEditorDraw.FillMode = OldFillMode;

@@ -3,8 +3,7 @@
 #define SHPreviewObjectH
 
 #include "SHToolsInterface.h"
-#include <d3d11.h>
-#include <d3d11shader.h>
+#include "../../xrRHI/RHI.h"
 
 // refs
 class CEditableMesh;
@@ -31,7 +30,7 @@ struct SVSInput
 class CPreviewObject
 {
 	CEditableObject*				Object;
-	ID3DBlob*						VSSignature;	// not owned, caller lifetime
+	RHIBlob*						VSSignature;	// not owned, caller lifetime
 	xr_vector<RHIInputElementDesc>	SourceDecl;
 	xr_vector<RHIInputElementDesc>	OriginalDecl;	// pristine geometry decl, captured once
 	xr_vector<SVSInput>				Required;
@@ -53,9 +52,9 @@ public:
 	CEditableObject*				GetObject		()						{ return Object; }
 
 	// Enumerate every input a compiled VS consumes from its input signature.
-	static bool						EnumerateVSInputs	(ID3DBlob* signature, xr_vector<SVSInput>& out);
+	static bool						EnumerateVSInputs	(RHIBlob* signature, xr_vector<SVSInput>& out);
 
-	void							SetVSSignature	(ID3DBlob* sig);
+	void							SetVSSignature	(RHIBlob* sig);
 	void							SetSourceDeclaration(const xr_vector<RHIInputElementDesc>& src);
 
 	// Compose a dx10_dcl_code that satisfies every VS input, reusing source

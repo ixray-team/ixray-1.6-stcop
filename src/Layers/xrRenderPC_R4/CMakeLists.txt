@@ -45,10 +45,8 @@ list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_INCL_FILES})
 
 # xrRender_R4 project
 if(APPLE)
-    list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "OverlayAPI/(DLSS|FSR3)Wrapper\\.cpp$")
     list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "r4_rendertarget_phase_(dlss|fsr)\\.cpp$")
     list(APPEND XRR4_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/r4_rendertarget_phase_upscalers_macos.cpp")
-    list(APPEND XRR4_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/DirectXTexD3D11_macos.cpp")
 endif()
 
 add_library(xrRender_R4 SHARED ${XRR4_SRC_FILES})
@@ -69,30 +67,17 @@ target_compile_definitions(xrRender_R4 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrRender_R4 PUBLIC xrEngineCore)
+target_link_libraries(xrRender_R4 PRIVATE xrRHI)
 target_link_libraries(xrRender_R4 PUBLIC NvTriStrip)
 target_link_libraries(xrRender_R4 PUBLIC lunasvg)
 
-if (WIN32)
-	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR3_DX11)
-	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR3)
-
-	target_link_libraries(xrRender_R4 PUBLIC NVIDIA::DLSS)
-	target_link_libraries(xrRender_R4 PUBLIC DirectX::Tex)
-	target_link_libraries(xrRender_R4 PUBLIC DirectX::Mesh)
-	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::D3D11)
-	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::DXGI)
-	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::DXGUID)
-	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::D3DCompiler)
-else()
+if (NOT WIN32)
     target_compile_definitions(xrRender_R4 PRIVATE XR_USE_NATIVE_D3D11=1)
     if(LINUX)
         target_compile_definitions(xrRender_R4 PRIVATE DXVK_WSI_DRIVER_SDL3=1)
     endif()
     target_link_libraries(xrRender_R4 PUBLIC DirectX::Mesh)
     target_link_libraries(xrRender_R4 PUBLIC DirectX::Tex)
-    if(APPLE)
-        target_link_libraries(xrRender_R4 PRIVATE ${VKD3D_LIBRARIES})
-    endif()
 endif()
 
 ## RenderDoc

@@ -38,40 +38,33 @@ void stats_manager::increment_stats( u32 size, enum_stats_buffer_type type, _D3D
 #endif
 }
 
-void stats_manager::increment_stats_rtarget( ID3DTexture2D*		buff )
+void stats_manager::increment_stats_rtarget( IRHISurface*		buff )
 {
 	if( g_dedicated_server )
 		return;
 
 	_D3DPOOL pool = D3DPOOL_MANAGED;
-	D3D_TEXTURE2D_DESC desc;
-	buff->GetDesc( &desc );
-
-	u32 size = desc.Height*desc.Width*get_format_pixel_size(desc.Format);
+	u32 size = buff->GetHeight() * buff->GetWidth() * get_format_pixel_size(buff->GetFormat());
 	increment_stats( size, enum_stats_buffer_type_rtarget, pool, buff );
 }
 
-void stats_manager::increment_stats_vb( ID3DVertexBuffer* buff )
+void stats_manager::increment_stats_vb( IRHIBuffer* buff )
 {
 	if( g_dedicated_server )
 		return;
 
-	D3D_BUFFER_DESC desc;
-	buff->GetDesc( &desc );
-	increment_stats( desc.ByteWidth, enum_stats_buffer_type_vertex, D3DPOOL_MANAGED, buff );
+	increment_stats( buff->GetSize(), enum_stats_buffer_type_vertex, D3DPOOL_MANAGED, buff );
 }
 
-void stats_manager::increment_stats_ib( ID3DIndexBuffer*	buff )
+void stats_manager::increment_stats_ib( IRHIBuffer*	buff )
 {
 	if( g_dedicated_server )
 		return;
 
-	D3D_BUFFER_DESC desc;
-	buff->GetDesc( &desc );
-	increment_stats( desc.ByteWidth, enum_stats_buffer_type_index, D3DPOOL_MANAGED, buff );
+	increment_stats( buff->GetSize(), enum_stats_buffer_type_index, D3DPOOL_MANAGED, buff );
 }
 
-void stats_manager::decrement_stats_rtarget( ID3DTexture2D*		buff )
+void stats_manager::decrement_stats_rtarget( IRHISurface*		buff )
 {
 	if( buff == nullptr || g_dedicated_server )
 		return;
@@ -82,15 +75,12 @@ void stats_manager::decrement_stats_rtarget( ID3DTexture2D*		buff )
 		return;
 
 	_D3DPOOL pool = D3DPOOL_MANAGED;
-	D3D_TEXTURE2D_DESC desc;
-	buff->GetDesc( &desc );
-
-	u32 size = desc.Height*desc.Width*get_format_pixel_size(desc.Format);
+	u32 size = buff->GetHeight() * buff->GetWidth() * get_format_pixel_size(buff->GetFormat());
 	decrement_stats( size, enum_stats_buffer_type_rtarget, pool, buff );
 
 }
 
-void stats_manager::decrement_stats_vb( ID3DVertexBuffer* buff )
+void stats_manager::decrement_stats_vb( IRHIBuffer* buff )
 {
 	if( buff == nullptr || g_dedicated_server )
 		return;
@@ -100,12 +90,10 @@ void stats_manager::decrement_stats_vb( ID3DVertexBuffer* buff )
 	if( (refcnt = buff->Release()) > 1 )
 		return;
 
-	D3D_BUFFER_DESC desc;
-	buff->GetDesc( &desc );
-	decrement_stats( desc.ByteWidth, enum_stats_buffer_type_vertex, D3DPOOL_MANAGED, buff );
+	decrement_stats( buff->GetSize(), enum_stats_buffer_type_vertex, D3DPOOL_MANAGED, buff );
 }
 
-void stats_manager::decrement_stats_ib( ID3DIndexBuffer*	buff )
+void stats_manager::decrement_stats_ib( IRHIBuffer*	buff )
 {	
 	if( buff == nullptr || g_dedicated_server)
 		return;
@@ -115,9 +103,7 @@ void stats_manager::decrement_stats_ib( ID3DIndexBuffer*	buff )
 	if( (refcnt = buff->Release()) > 1 )
 		return;
 
-	D3D_BUFFER_DESC desc;
-	buff->GetDesc( &desc );
-	decrement_stats( desc.ByteWidth, enum_stats_buffer_type_index, D3DPOOL_MANAGED, buff );
+	decrement_stats( buff->GetSize(), enum_stats_buffer_type_index, D3DPOOL_MANAGED, buff );
 }
 
 void stats_manager::decrement_stats( u32 size, enum_stats_buffer_type type, _D3DPOOL location )
@@ -164,19 +150,19 @@ stats_manager::~stats_manager ()
 //	R_ASSERT( m_buffers_list.size() == 0);	//  Some buffers stats are not removed from the list.
 #endif 
 }
-u32 get_format_pixel_size ( DXGI_FORMAT format )
+u32 get_format_pixel_size ( ERHI_FORMAT format )
 {
-	if( format >= DXGI_FORMAT_R32G32B32A32_TYPELESS && format <= DXGI_FORMAT_R32G32B32A32_SINT)
+	if( format >= ERHI_FORMAT::R32G32B32A32_TYPELESS && format <= ERHI_FORMAT::R32G32B32A32_SINT)
 		return 16;
-	else if( format >= DXGI_FORMAT_R32G32B32_TYPELESS && format <= DXGI_FORMAT_R32G32B32_SINT)
+	else if( format >= ERHI_FORMAT::R32G32B32_TYPELESS && format <= ERHI_FORMAT::R32G32B32_SINT)
 		return 12;
-	else if( format >= DXGI_FORMAT_R16G16B16A16_TYPELESS && format <= DXGI_FORMAT_X32_TYPELESS_G8X24_UINT)
+	else if( format >= ERHI_FORMAT::R16G16B16A16_TYPELESS && format <= ERHI_FORMAT::X32_TYPELESS_G8X24_UINT)
 		return 8;
-	else if( format >= DXGI_FORMAT_R10G10B10A2_TYPELESS && format <= DXGI_FORMAT_X24_TYPELESS_G8_UINT)
+	else if( format >= ERHI_FORMAT::R10G10B10A2_TYPELESS && format <= ERHI_FORMAT::X24_TYPELESS_G8_UINT)
 		return 4;
-	else if( format >= DXGI_FORMAT_R8G8_TYPELESS && format <= DXGI_FORMAT_R16_SINT)
+	else if( format >= ERHI_FORMAT::R8G8_TYPELESS && format <= ERHI_FORMAT::R16_SINT)
 		return 2;
-	else if( format >= DXGI_FORMAT_R8_TYPELESS && format <= DXGI_FORMAT_A8_UNORM)
+	else if( format >= ERHI_FORMAT::R8_TYPELESS && format <= ERHI_FORMAT::A8_UNORM)
 		return 1;
 	else
 		// Do not consider extraordinary formats.

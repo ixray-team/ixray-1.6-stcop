@@ -57,20 +57,20 @@ static bool IsDepthOnlyShadowPass(const SPass& Pass)
 	{
 		return false;
 	}
-	D3D_BLEND_DESC Blend;
-	D3D_DEPTH_STENCIL_DESC Depth;
+	RHIBlendDesc Blend;
+	RHIDepthStencilDesc Depth;
 	dx10StateUtils::ResetDescription(Blend);
 	dx10StateUtils::ResetDescription(Depth);
 	Pass.state->state_code.UpdateDesc(Blend);
 	Pass.state->state_code.UpdateDesc(Depth);
 	const auto HarmlessStencil = [](const auto& Face)
 	{
-		return Face.StencilFunc == D3D11_COMPARISON_ALWAYS && Face.StencilFailOp == D3D11_STENCIL_OP_KEEP &&
-			   Face.StencilDepthFailOp == D3D11_STENCIL_OP_KEEP && Face.StencilPassOp == D3D11_STENCIL_OP_KEEP;
+		return Face.StencilFunc == RHI_COMPARISON_ALWAYS && Face.StencilFailOp == RHI_STENCIL_OP_KEEP &&
+			   Face.StencilDepthFailOp == RHI_STENCIL_OP_KEEP && Face.StencilPassOp == RHI_STENCIL_OP_KEEP;
 	};
-	return !Blend.RenderTarget[0].BlendEnable && !Blend.AlphaToCoverageEnable && Depth.DepthEnable && Depth.DepthWriteMask == D3D11_DEPTH_WRITE_MASK_ALL &&
+	return !Blend.RenderTarget[0].BlendEnable && !Blend.AlphaToCoverageEnable && Depth.DepthEnable && Depth.DepthWriteMask == RHI_DEPTH_WRITE_MASK_ALL &&
 		   (!Depth.StencilEnable || (HarmlessStencil(Depth.FrontFace) && HarmlessStencil(Depth.BackFace))) &&
-		   (Depth.DepthFunc == D3D11_COMPARISON_LESS || Depth.DepthFunc == D3D11_COMPARISON_LESS_EQUAL);
+		   (Depth.DepthFunc == RHI_COMPARISON_LESS || Depth.DepthFunc == RHI_COMPARISON_LESS_EQUAL);
 }
 
 static bool IsSpotShadowCacheCaster(const ShaderElement& Element, R_dsgraph_structure::SpotShadowBuildContext& Context)

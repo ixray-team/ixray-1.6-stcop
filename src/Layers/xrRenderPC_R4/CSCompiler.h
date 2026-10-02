@@ -16,7 +16,7 @@ public:
 	
 	CSCompiler& begin(const char* name);
 	CSCompiler& defSampler(const char* ResourceName);
-	CSCompiler& defSampler(const char* ResourceName, const D3D_SAMPLER_DESC& def);
+	CSCompiler& defSampler(const char* ResourceName, const RHISampleDesc& def);
 	CSCompiler& defOutput(const char* ResourceName,	ref_rt rt);
 	CSCompiler&	defTexture(const char* ResourceName,	ref_texture texture);
 	void		end();
@@ -29,11 +29,11 @@ private:
 
 private:
 	ComputeShader&			m_Target;
-	ID3D11ComputeShader*	m_cs;
+	ref_cs				m_cs;
 	R_constant_table		m_constants;
-	xr_vector<ID3D11SamplerState*>			m_Samplers;
-	xr_vector<ID3D11ShaderResourceView*>	m_Textures;
-	xr_vector<ID3D11UnorderedAccessView*>	m_Outputs;
+	xr_vector<RHIObject*>			m_Samplers;
+	xr_vector<IRHIShaderResourceView*>	m_Textures;
+	xr_vector<IRHIUnorderedAccessView*>	m_Outputs;
 }; // class CSCompiler
 
 #endif // #ifndef CSCOMPILER_H_INCLUDED

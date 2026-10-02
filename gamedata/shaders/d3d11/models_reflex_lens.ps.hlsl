@@ -45,7 +45,7 @@ float current_lum()
 float3 sample_lens_normalmap(float2 tc, float radius)
 {
 	float2 xy = (tc - 0.5) * 2;
-	return float3(xy, sign(radius) * sqrt(pow(radius, 2) - dot(xy, xy)));
+	return float3(xy, sign(radius) * sqrt(radius * radius - dot(xy, xy)));
 }
 
 float4 sample_reflections(float2 tc, float3x3 TBNw_inv, float3 w_pos, float3 w_nrm)

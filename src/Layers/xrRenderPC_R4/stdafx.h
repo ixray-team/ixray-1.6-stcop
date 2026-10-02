@@ -4,15 +4,13 @@
 
 #pragma once
 
-#include <d3d11_1.h>
+#include "../../xrCore/Platform/Platform.h"
 #include "../../xrCore/D3DLegacy.h"
 
 #include "../../xrEngine/stdafx.h"
 
 #include "imgui.h"
 
-#include <d3d11_1.h>
-#include <D3DCompiler.h>
 
 #include "DXCommonTypes.h"
 

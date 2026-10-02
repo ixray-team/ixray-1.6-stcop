@@ -23,8 +23,8 @@ struct RENDER_API SShaderCompileState
 //////////////////////////////////////////////////////////////////////////
 struct RENDER_API SInputSignature : public xr_resource_flagged
 {
-	ID3DBlob*							signature;
-	SInputSignature(ID3DBlob* pBlob);
+	RHIBlob*							signature;
+	SInputSignature(RHIBlob* pBlob);
 	virtual ~SInputSignature() override;
 };
 typedef	resptr_core<SInputSignature,resptr_base<SInputSignature> >	ref_input_sign;
@@ -32,11 +32,11 @@ typedef	resptr_core<SInputSignature,resptr_base<SInputSignature> >	ref_input_sig
 struct RENDER_API SVS : public xr_resource_uniq
 {
 	SShaderCompileState					CompileState;
-	ID3DVertexShader*					vs;
+	RHIObject*					vs;
 	R_constant_table					constants;
 	ref_input_sign						signature;
 	// full compiled VS bytecode (kept so editors/tools can reflect inputs)
-	ID3DBlob*							vs_code;
+	RHIBlob*							vs_code;
 	u32									instance_buffer_slot = u32(-1);
 	u32									editor_instance_slot = u32(-1);
 	u32 RainInstanceSlot = u32(-1);
@@ -49,7 +49,7 @@ typedef	resptr_core<SVS,resptr_base<SVS> >	ref_vs;
 struct RENDER_API SPS : public xr_resource_uniq
 {
 	SShaderCompileState					CompileState;
-	ID3DPixelShader*					ps;
+	RHIObject*					ps;
 	R_constant_table					constants;
 	virtual ~SPS			() override;
 };
@@ -59,7 +59,7 @@ typedef	resptr_core<SPS,resptr_base<SPS> > ref_ps;
 struct RENDER_API SGS : public xr_resource_uniq
 {
 	SShaderCompileState					CompileState;
-	ID3DGeometryShader*					gs;
+	RHIObject*					gs;
 	R_constant_table					constants;
 	virtual ~SGS			() override;
 };
@@ -68,7 +68,7 @@ typedef	resptr_core<SGS,resptr_base<SGS> > ref_gs;
 struct RENDER_API SHS : public xr_resource_uniq
 {
 	SShaderCompileState					CompileState;
-	ID3D11HullShader*					sh;
+	RHIObject*					sh;
 	R_constant_table					constants;
 	virtual ~SHS			() override;
 };
@@ -77,7 +77,7 @@ typedef	resptr_core< SHS, resptr_base<SHS> >	ref_hs;
 struct RENDER_API SDS : public xr_resource_uniq
 {
 	SShaderCompileState					CompileState;
-	ID3D11DomainShader*					sh;
+	RHIObject*					sh;
 	R_constant_table					constants;
 	virtual ~SDS			() override;
 };
@@ -86,7 +86,7 @@ typedef	resptr_core< SDS, resptr_base<SDS> >	ref_ds;
 struct RENDER_API SCS : public xr_resource_uniq
 {
 	SShaderCompileState					CompileState;
-	ID3D11ComputeShader*					sh;
+	RHIObject*					sh;
 	R_constant_table					constants;
 	virtual ~SCS			() override;
 };
@@ -96,7 +96,7 @@ typedef	resptr_core< SCS, resptr_base<SCS> >	ref_cs;
 //////////////////////////////////////////////////////////////////////////
 struct RENDER_API SState : public xr_resource_flagged
 {
-	ID3DState*							state;
+	dx10State*							state;
 	SimulatorStates						state_code;
 	virtual ~SState			() override;
 };
@@ -106,7 +106,7 @@ typedef	resptr_core<SState,resptr_base<SState> >	ref_state;
 struct RENDER_API SDeclaration : public xr_resource_flagged
 {
 	//	Maps input signature to input layout
-	xr_map<ID3DBlob*, ID3DInputLayout*> vs_to_layout;
+	xr_map<RHIBlob*, RHIObject*> vs_to_layout;
 	xr_vector<RHIInputElementDesc> dx10_dcl_code;
 	//	Pristine declaration as created (never patched by the shader preview).
 	//	Used as the source for VS-input mapping so repeated patches to

@@ -17,7 +17,7 @@ class R_occlusion
 private:
 	struct	_Q	{
 		u32					order;
-		ID3DQuery*	Q;
+		RHIObject*	Q;
 	};
 
 	static const u32		iInvalidHandle = 0xFFFFFFFF;

@@ -3,38 +3,27 @@
 #pragma once
 
 
-IC HRESULT CreateQuery ( ID3DQuery **ppQuery, D3DQUERYTYPE Type)
+IC HRESULT CreateQuery ( RHIObject **ppQuery, D3DQUERYTYPE Type)
 {
-	D3D_QUERY_DESC	desc;
-	desc.MiscFlags = 0;
-	
-	switch (Type)
-	{
-	case D3DQUERYTYPE_OCCLUSION:
-		desc.Query = D3D_QUERY_OCCLUSION;
-		break;
-	default:
-		VERIFY(!"No default.");
-	}
-
-	return RDevice->CreateQuery( &desc, ppQuery);
+	VERIFY(Type == D3DQUERYTYPE_OCCLUSION);
+	return GRHI->CreateOcclusionQuery(ppQuery);
 }
 
-IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize, u32 Flags = 0)
+IC HRESULT GetData( RHIObject *pQuery, void *pData, UINT DataSize, u32 Flags = 0)
 {
 	//	Use D3Dxx_ASYNC_GETDATA_DONOTFLUSH for prevent flushing
-	return RContext->GetData(pQuery, pData, DataSize, Flags);
+	return GRHI->GetQueryData(pQuery, pData, DataSize, Flags);
 }
 
-IC HRESULT BeginQuery( ID3DQuery *pQuery)
+IC HRESULT BeginQuery( RHIObject *pQuery)
 {
-	RContext->Begin(pQuery);
+	GRHI->BeginQuery(pQuery);
 	return S_OK;
 }
 
-IC HRESULT EndQuery( ID3DQuery *pQuery)
+IC HRESULT EndQuery( RHIObject *pQuery)
 {
-	RContext->End(pQuery);
+	GRHI->EndQuery(pQuery);
 	return S_OK;
 }
 

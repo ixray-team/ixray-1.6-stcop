@@ -89,6 +89,10 @@ void main(p_bumped_new I, out OutStructure O)
 	
 	Point.xyz = mul(m_invV, Point).xyz;
 
+#ifdef USE_LENGTH_BUFFER
+	float3 FlatNormal = normalize(cross(ddx(M.Point.xyz), ddy(M.Point.xyz)));
+#endif
+
 	int cascade_index;
 	float3 smap_texcoord;
 	
@@ -110,7 +114,6 @@ void main(p_bumped_new I, out OutStructure O)
 		Shadow = lerp(FarShadow, Shadow, Fade);
 	
 #ifdef USE_LENGTH_BUFFER
-		float3 FlatNormal = normalize(cross(ddx(M.Point.xyz), ddy(M.Point.xyz)));
 		Shadow *= step(0.0f, dot(FlatNormal, -LightDir));
 #endif
 	}
