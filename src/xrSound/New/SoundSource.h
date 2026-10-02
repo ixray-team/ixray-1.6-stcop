@@ -33,8 +33,14 @@
 #include <atomic>
 
 #define SND_CACHE_ENTRY_COUNT (32)
-#define SND_STAT_ADD(field, delta) std::atomic_ref<decltype(field)>(field).fetch_add(delta, std::memory_order_relaxed)
-#define SND_STAT_SET(field, value) std::atomic_ref<decltype(field)>(field).store(value, std::memory_order_relaxed)
+
+#ifdef IXR_WINDOWS
+#   define SND_STAT_ADD(field, delta) std::atomic_ref<decltype(field)>(field).fetch_add((delta), std::memory_order_relaxed)
+#   define SND_STAT_SET(field, value) std::atomic_ref<decltype(field)>(field).store((value), std::memory_order_relaxed)
+#else
+#   define SND_STAT_ADD(field, delta) reinterpret_cast<std::atomic<decltype(field)>*>(&(field))->fetch_add((delta), std::memory_order_relaxed)
+#   define SND_STAT_SET(field, value) reinterpret_cast<std::atomic<decltype(field)>*>(&(field))->store((value), std::memory_order_relaxed)
+#endif
 
 typedef struct _sound_source_state {
     sound_source_desc desc = {};
