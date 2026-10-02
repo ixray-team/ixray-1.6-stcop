@@ -538,6 +538,8 @@ ICF void HudAdjustDragAngleRad(const char* label, float* v, float v_speed = 1.0f
 }
 void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bool hud_mode)
 {
+	ImGui::PushID(item);
+	ImGui::PushID(hud_mode);
 	if (ImGui::CollapsingHeader("Attachments"))
 	{
 		u8 mode = hud_mode ? 0 : 1;
@@ -548,6 +550,7 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 
 		static shared_str pending_model_sect[2];
 		static bool show_model_popup[2] = {false, false};
+		static u16 model_window_owner[2] = {u16(-1), u16(-1)};
 		static char model_search_buf[2][64] = {"", ""};
 
 		static xr_vector<shared_str> to_delete[2];
@@ -559,6 +562,7 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 		}
 
 		static bool show_add_attach_window[2] = {false, false};
+		static u16 add_attach_window_owner[2] = {u16(-1), u16(-1)};
 		static char attach_search_buf[2][64] = {"", ""};
 		static EattachmentType pending_attachment_type[2] = {eTypeCustom, eTypeCustom};
 		static bool select_type_step[2] = {true, true};
@@ -590,16 +594,17 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 
 		if (ImGui::Button("Add new attach"))
 		{
+			add_attach_window_owner[mode] = item->object_id();
 			show_add_attach_window[mode] = true;
 			select_type_step[mode] = true;
 			pending_attachment_type[mode] = EattachmentType(-1);
 			attach_search_buf[mode][0] = '\0';
 		}
 
-		if (show_add_attach_window[mode])
+		if (show_add_attach_window[mode] && add_attach_window_owner[mode] == item->object_id())
 		{
 			ImGui::SetNextWindowSize(ImVec2(340, 420), ImGuiCond_FirstUseEver);
-			if (ImGui::Begin("Add new attach", &show_add_attach_window[mode]))
+			if (ImGui::Begin(*shared_str().printf("Add new attach##%u_%u", item->object_id(), mode), &show_add_attach_window[mode]))
 			{
 				if (select_type_step[mode])
 				{
@@ -707,6 +712,7 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 			for (auto& pair : item->m_attachments)
 			{
 				xr_string attach_sect_name = *pair.first;
+				ImGui::PushID(attach_sect_name.c_str());
 				if (ImGui::CollapsingHeader(attach_sect_name.c_str()))
 				{
 					ImGui::SeparatorText(xr_string("Offset##" + attach_sect_name).c_str());
@@ -815,6 +821,7 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 					ImGui::SeparatorText(xr_string(xr_string(pair.second.hud_place.m_model->getDebugName().c_str()) + "##" + attach_sect_name).c_str());
 					if (ImGui::Button(xr_string("Change model##" + attach_sect_name).c_str()))
 					{
+						model_window_owner[mode] = item->object_id();
 						pending_model_sect[mode] = pair.first;
 						show_model_popup[mode] = true;
 						model_search_buf[mode][0] = '\0';
@@ -850,14 +857,15 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 					ImGui::CheckboxFlags("Show attachment", &pair.second.state.flags, eAStateVisible);
 					ImGui::CheckboxFlags("Permanent attachment", &pair.second.state.flags, eAStatePermanent);
 				}
+				ImGui::PopID();
 			}
 
-			if (show_model_popup[mode])
+			if (show_model_popup[mode] && model_window_owner[mode] == item->object_id())
 			{
 				ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
 				ImGui::SetNextWindowSizeConstraints(ImVec2(250, 200), ImVec2(FLT_MAX, FLT_MAX));
 
-				if (ImGui::Begin("Select model", &show_model_popup[mode]))
+				if (ImGui::Begin(*shared_str().printf("Select model##%u_%u", item->object_id(), mode), &show_model_popup[mode]))
 				{
 					ImGui::TextUnformatted("Select model:");
 					ImGui::Separator();
@@ -919,6 +927,8 @@ void AdjustDrawItemAttachmentsSettings(CInventoryItem* item, IKinematics* pK, bo
 			ImGui::Separator();
 		}
 	}
+	ImGui::PopID();
+	ImGui::PopID();
 }
 
 static void HudAdjustDrawItemSettings(attachable_hud_item* item)
@@ -928,8 +938,10 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		return;
 	}
 
+	ImGui::PushID(item);
 	if (!ImGui::CollapsingHeader(*shared_str().printf("Item: %s", item->m_sect_name.c_str())))
 	{
+		ImGui::PopID();
 		return;
 	}
 
@@ -1034,6 +1046,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 
 	auto drawPositions = [&](EHudOffsetType offset_type) -> void
 	{
+		ImGui::PushID(static_cast<int>(offset_type));
 		ImGui::SeparatorText("Position##HUD");
 
 		Fvector& position = offset_type ? item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][offset_type] : item->m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisPos];
@@ -1231,6 +1244,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 				ImGui::EndTable();
 			}
 		}
+		ImGui::PopID();
 	};
 
 	if (!item->m_model_combined)
@@ -1324,7 +1338,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 	
 			Fvector& position = lt->LightOffset;
 	
-			if (ImGui::Button("Reset##TLOffset"))
+			if (ImGui::Button("Reset##TorchOffset"))
 			{
 				position.x = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_x", 0.0f);
 				position.y = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_y", 0.0f);
@@ -1354,7 +1368,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 	
 			Fvector& position = ll->LightOffset;
 	
-			if (ImGui::Button("Reset##TLOffset"))
+			if (ImGui::Button("Reset##LaserOffset"))
 			{
 				position.x = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_x", 0.0f);
 				position.y = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_y", 0.0f);
@@ -1413,6 +1427,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		ImGui::SeparatorText("Select Aim Bone##");
 		ImGui::Combo("##SelectAimBone", &item->m_aim_bone_id, &aim_bones_names[0], aim_bones_names.size());
 	}
+	ImGui::PopID();
 }
 
 void RenderHUDAdjustManager()
