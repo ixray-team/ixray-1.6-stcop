@@ -89,9 +89,9 @@ CGamePersistent::CGamePersistent(void)
 	bool bDemoMode	= Core.ParamsData.test(ECoreParams::demomode);
 	if (bDemoMode)
 	{
-		string256	fname;
+		string256	fname = {};
 		const char*		name	=	strstr(Core.Params,"-demomode ") + 10;
-		sscanf				(name,"%s",fname);
+		sscanf				(name,"%255s",fname);
 		R_ASSERT2			(fname[0],"Missing filename for 'demomode'");
 		Msg					("- playing in demo mode '%s'",fname);
 		pDemoFile			=	FS.r_open	(fname);
@@ -848,12 +848,14 @@ if (!g_pGameLevel)
 			string512			params;
 			pDemoFile->r_string(params, sizeof(params));
 			string256			o_server, o_client, o_demo;	u32 o_time;
-			sscanf(params, "%[^,],%[^,],%[^,],%d", o_server, o_client, o_demo, &o_time);
-
-			// Start _new level + demo
-			g_pEventManager->Event.Defer("KERNEL:disconnect");
-			g_pEventManager->Event.Defer("KERNEL:start", size_t(xr_strdup(_Trim(o_server))), size_t(xr_strdup(_Trim(o_client))));
-			g_pEventManager->Event.Defer("GAME:demo", size_t(xr_strdup(_Trim(o_demo))), u64(o_time));
+			if (sscanf(params, "%255[^,],%255[^,],%255[^,],%u", o_server, o_client, o_demo, &o_time) == 4)
+			{
+				g_pEventManager->Event.Defer("KERNEL:disconnect");
+				g_pEventManager->Event.Defer("KERNEL:start", size_t(xr_strdup(_Trim(o_server))), size_t(xr_strdup(_Trim(o_client))));
+				g_pEventManager->Event.Defer("GAME:demo", size_t(xr_strdup(_Trim(o_demo))), u64(o_time));
+			}
+			else
+				Msg("! Invalid demo playlist parameters");
 			uTime2Change = 0xffffffff;	// Block changer until Event received
 		}
 	}

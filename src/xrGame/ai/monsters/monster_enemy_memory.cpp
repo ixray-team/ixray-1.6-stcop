@@ -67,7 +67,7 @@ void CMonsterEnemyMemory::update()
 		SoundElem sound;
 		bool dangerous;
 		monster->SoundMemory.GetSound(sound, dangerous);
-		if ( dangerous && Device.dwTimeGlobal < sound.time + 2000 )
+		if ( g_actor && dangerous && Device.dwTimeGlobal < sound.time + 2000 )
 		{
 			CObject* cast_who = const_cast<CObject*>(sound.who);
 			if (CEntityAlive const* enemy = cast_who != nullptr ? cast_who->cast_entity_alive() : nullptr)

@@ -31,7 +31,7 @@ public:
 		ofn.lStructSize = sizeof(ofn);
 		ofn.hwndOwner = nullptr;
 		ofn.lpstrFile = path_to_file.data();
-		ofn.nMaxFile = sizeof(path_to_file);
+		ofn.nMaxFile = Size;
 		ofn.lpstrFilter = mask;
 		ofn.nFilterIndex = 1;
 		ofn.lpstrFileTitle = nullptr;
@@ -39,7 +39,7 @@ public:
 		ofn.lpstrInitialDir = nullptr;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-		bool result = GetOpenFileName(&ofn) == TRUE;
+		bool result = GetOpenFileName(&ofn) != FALSE;
 
 		return result;
 #else
@@ -58,7 +58,7 @@ public:
 		ofn.lStructSize = sizeof(ofn);
 		ofn.hwndOwner = nullptr;
 		ofn.lpstrFile = path_to_file.data();
-		ofn.nMaxFile = sizeof(path_to_file);
+		ofn.nMaxFile = Size;
 		ofn.lpstrFilter = mask;
 		ofn.nFilterIndex = 1;
 		ofn.lpstrFileTitle = nullptr;
@@ -66,7 +66,7 @@ public:
 		ofn.lpstrInitialDir = nullptr;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
 
-		bool result = GetSaveFileName(&ofn) == TRUE;
+		bool result = GetSaveFileName(&ofn) != FALSE;
 
 
 		return result;

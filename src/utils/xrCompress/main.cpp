@@ -183,19 +183,20 @@ int main(int argc, char* argv[])
 		C.SetFastMode	(0!=strstr(params,"-fast"));
 		C.SetTargetName	(argv[1]);
 
-		const char* p = strstr(params,"-ltx");
+		const char* p = strstr(params,"-ltx ");
 
 		if(0!=p)
 		{
-			string64				ltx_name;
-			sscanf					(strstr(params,"-ltx ")+5,"%[^ ] ", ltx_name);
+			string64				ltx_name = {};
+			sscanf					(p+5,"%63[^ ] ", ltx_name);
 
 			CInifile ini			(ltx_name);
 			printf					("Processing LTX...\n");
 			C.ProcessLTX			(ini);
 		}else{
-			string64				header_name;
-			sscanf					(strstr(params,"-header ")+8,"%[^ ] ", header_name);
+			string64				header_name = {};
+			if (const char* header = strstr(params,"-header "))
+				sscanf(header+8,"%63[^ ] ", header_name);
 			C.SetPackHeaderName		(header_name);
 			C.ProcessTargetFolder	();
 		}

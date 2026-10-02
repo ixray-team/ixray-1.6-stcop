@@ -158,7 +158,7 @@ void CUIInventoryCellItem::Update()
 void CUIInventoryCellItem::UpdateItemText()
 {
 	const u32	helper_count	=  	(u32)std::count_if(m_childs.begin(), m_childs.end(), ::detail::is_helper_pred()) 
-									+ IsHelper() ? 1 : 0;
+									+ (IsHelper() ? 1 : 0);
 
 	const u32	count			=	ChildsCount() + 1 - helper_count;
 

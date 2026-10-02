@@ -15,6 +15,6 @@ public:
 	CGameLevelCrossTableEditor();
 	virtual ~CGameLevelCrossTableEditor();
 	void realloc(CHeader& new_header);
-	IC		const CCell& vertex(u32 level_vertex_id) const { IGameLevelCrossTable::vertex(level_vertex_id); }
+	IC		const CCell& vertex(u32 level_vertex_id) const { return IGameLevelCrossTable::vertex(level_vertex_id); }
 	IC		CCell& vertex(u32 level_vertex_id) { return m_tpaCrossTable[level_vertex_id]; }
 };

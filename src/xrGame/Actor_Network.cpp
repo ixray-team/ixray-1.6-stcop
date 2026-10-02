@@ -814,7 +814,7 @@ void CActor::net_Relcase(CObject* O)
 	if(GO&&m_pObjectWeLookingAt==GO){
 		m_pObjectWeLookingAt=nullptr;
 	}
-	CHolderCustom* HC= GO->cast_holder_custom();
+	CHolderCustom* HC = GO ? GO->cast_holder_custom() : nullptr;
 	if(HC&&HC==m_pVehicleWeLookingAt){
 		m_pVehicleWeLookingAt=nullptr;
 	}

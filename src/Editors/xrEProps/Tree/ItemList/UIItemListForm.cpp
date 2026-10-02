@@ -312,7 +312,7 @@ void UIItemListForm::AssignItems(ListItemsVec& items, const char* name_selection
 	{
 		Node* N = SelectObject(&m_GeneralNode, name_selection);
 		ClearSelectedItems();
-		if (m_Flags.test(fMultiSelect))
+		if (N && N->Object && m_Flags.test(fMultiSelect))
 		{
 			N->Object->selected = true;
 		}

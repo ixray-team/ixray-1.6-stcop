@@ -1058,7 +1058,7 @@ bool CParticleTool::MouseStart(TShiftState Shift)
 		break;
 		case etaMove:
 		{
-			if (Shift | ssCtrl)
+			if (Shift & ssCtrl)
 			{
 				if (m_EditObject)
 				{

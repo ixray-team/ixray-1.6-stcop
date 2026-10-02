@@ -484,7 +484,7 @@ void		CObjectList::Destroy			( CObject*	O		)
 
 	if ( !Device.Paused() ) {
 		if ( !m_crows[1].empty() ) {
-			Msg								( "assertion !m_crows[1].empty() failed: %d", m_crows[1].size() );
+			Msg								( "assertion !m_crows[1].empty() failed: %zu", m_crows[1].size() );
 
 			Objects::const_iterator i		= m_crows[1].begin( );
 			Objects::const_iterator	const e	= m_crows[1].end( );

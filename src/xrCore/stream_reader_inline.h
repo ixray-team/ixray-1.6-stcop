@@ -11,7 +11,7 @@ IC CStreamReader::CStreamReader()
 	m_file_size = 0;
 	m_start_offset = 0;
 	m_start_pointer = nullptr;
-	m_window_size = 0;
+	m_archive_size = 0;
 }
 
 IC CStreamReader::CStreamReader(const CStreamReader& object) :

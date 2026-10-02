@@ -187,7 +187,7 @@ void CActor::IR_OnKeyboardPress(int dik)
 	case kQUICK_KICK:
 	{
 		PIItem knife_item = inventory().ItemFromSlot(KNIFE_SLOT);
-		if (m_sQuickKickAnimator.size() > 0 && knife_item != nullptr)
+		if (m_sQuickKickAnimator.size() > 0 && knife_item != nullptr && HudAnimator())
 		{
 			if (!HudAnimator()->IsAnyAnimatorActive())
 			{
@@ -2554,7 +2554,7 @@ void CActor::ActorQuickSlotUse(int cmd)
 		return;
 	}
 
-	if (!CurrentGameUI()->ActorMenu() || !CurrentGameUI()->ActorMenu()->m_pQuickSlot)
+	if (!CurrentGameUI() || !CurrentGameUI()->ActorMenu() || !CurrentGameUI()->ActorMenu()->m_pQuickSlot)
 	{
 		return;
 	}

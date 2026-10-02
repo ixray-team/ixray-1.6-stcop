@@ -69,7 +69,7 @@ void compute_build_id()
 	string256 buffer;
 	xr_strcpy(buffer, __DATE__);
 
-	sscanf(buffer, "%s %d %d", month, &days, &years);
+	sscanf(buffer, "%15s %d %d", month, &days, &years);
 
 	for (int i = 0; i < 12; i++)
 	{
@@ -398,7 +398,7 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 
 	if (strstr(lpCmdLine, fsgame_ltx_name)) {
 		int						sz = xr_strlen(fsgame_ltx_name);
-		sscanf					(strstr(lpCmdLine,fsgame_ltx_name)+sz,"%[^ ] ",fsgame);
+		sscanf					(strstr(lpCmdLine,fsgame_ltx_name)+sz,"%519[^ ] ",fsgame);
 	}
 
 	compute_build_id			();
@@ -452,8 +452,8 @@ ENGINE_API void EngineLoadStage3()
 	xr_strcpy(Console->ConfigFile, *UserName);
 
 	if (strstr(Core.Params, "-ltx ")) {
-		string64 c_name;
-		sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
+		string64 c_name = {};
+		sscanf(strstr(Core.Params, "-ltx ") + 5, "%63[^ ] ", c_name);
 		xr_strcpy(Console->ConfigFile, c_name);
 	}
 }

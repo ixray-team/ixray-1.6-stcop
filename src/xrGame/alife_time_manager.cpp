@@ -22,8 +22,8 @@ CALifeTimeManager::~CALifeTimeManager	()
 void CALifeTimeManager::init			(const char* section)
 {
 	u32							years,months,days,hours,minutes,seconds;
-	sscanf						(pSettings->r_string(section,"start_time"),"%d:%d:%d",&hours,&minutes,&seconds);
-	sscanf						(pSettings->r_string(section,"start_date"),"%d.%d.%d",&days,&months,&years);
+	sscanf						(pSettings->r_string(section,"start_time"),"%u:%u:%u",&hours,&minutes,&seconds);
+	sscanf						(pSettings->r_string(section,"start_date"),"%u.%u.%u",&days,&months,&years);
 	m_start_game_time			= generate_time(years,months,days,hours,minutes,seconds);
 	m_time_factor				= pSettings->r_float(section,"time_factor");
 	m_normal_time_factor		= pSettings->r_float(section,"normal_time_factor");

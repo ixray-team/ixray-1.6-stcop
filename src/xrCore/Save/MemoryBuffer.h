@@ -19,19 +19,18 @@ public:
 	{
 		memcpy(Ptr, &Value, sizeof(T));
 	}
-	size_t GetDeltaFromBuffer(CMemoryBuffer* Buffer) {
-
-	}
+	size_t GetDeltaFromBuffer(CMemoryBuffer* Buffer);
 };
 
 class CMemoryChunk
 {
+	friend class CMemoryBuffer;
 public:
 	static constexpr size_t ChunkSize = 4 * 1024;
 
 private:
 	BYTE	data[ChunkSize];
-	size_t		count;
+	size_t		count = 0;
 
 public:
 
@@ -40,7 +39,9 @@ public:
 		if (!CanWrite(sizeof(T))) {
 			return nullptr;
 		}
-		return new CReservedMemory<T>(((BYTE*)&data) + count);
+		auto* result = new CReservedMemory<T>(data + count);
+		count += sizeof(T);
+		return result;
 	}
 
 	bool CanWrite(size_t size);
@@ -61,9 +62,12 @@ public:
 
 class XRCORE_API CMemoryBuffer 
 {
+	template<typename T>
+	friend class CReservedMemory;
 	xr_vector<CMemoryChunk*> Chunks;
 
 	bool Write(const void* data, size_t size);
+	size_t GetOffset(const void* position) const;
 
 public:
 	CMemoryBuffer();
@@ -87,11 +91,7 @@ public:
 
 	template<>
 	bool Write(shared_str data) {
-		string4096 buffer;
-		memcpy(buffer, data.c_str(), data.size());
-		buffer[data.size()] = 0;
-		Write(buffer, data.size()+1);
-		return true;
+		return data.c_str() ? Write(data.c_str(), data.size() + 1) : Write("", 1);
 	}
 
 	template<>
@@ -108,3 +108,8 @@ public:
 		return true;
 	}
 };
+template<typename T>
+size_t CReservedMemory<T>::GetDeltaFromBuffer(CMemoryBuffer* Buffer)
+{
+	return Buffer->GetOffset(Ptr);
+}

@@ -22,10 +22,10 @@ bool CWeapon::install_upgrade_impl(const char* section, bool test)
 	result |= install_upgrade_scope_zoom(section, test);
 	result |= install_upgrade_fast_knife(section, test);
 
-	bool result2 = process_if_exists_set(section, "use_gauss_scheme", m_bGaussScheme, test);
+	result |= process_if_exists_set(section, "use_gauss_scheme", m_bGaussScheme, test);
 
 	s32 val = m_iAutoAimTime;
-	result2 = process_if_exists_set(section, "autoaim_time", val, test);
+	bool result2 = process_if_exists_set(section, "autoaim_time", val, test);
 	if (result2 && !test)
 	{
 		m_iAutoAimTime = val;

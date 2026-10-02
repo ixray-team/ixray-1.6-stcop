@@ -123,6 +123,8 @@ CLocatorAPI::CLocatorAPI()
 	dwAllocGranularity	= (u32)Platform::GetPageSize();
 	m_iLockRescan = 0;
 	dwOpenCounter = 0;
+	bNoRecurse = false;
+	m_auth_code = 0;
 }
 
 CLocatorAPI::~CLocatorAPI()
@@ -312,7 +314,7 @@ void CLocatorAPI::LoadArchive(archive& A, const char* entrypoint)
 			alias_name[0]		= 0;
 			R_ASSERT2			(*read_path.c_str()=='$', read_path.c_str());
 
-			int count			= sscanf(read_path.c_str(),"%[^\\]s", alias_name);
+			int count			= sscanf(read_path.c_str(),"%255[^\\]", alias_name);
 			R_ASSERT2			(count==1,read_path.c_str());
 
 			PathPairIt P		= pathes.find(alias_name); 
@@ -869,8 +871,8 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 	//-----------------------------------------------------------
 	if (Core.ParamsData.test(ECoreParams::overlaypath))
 	{
-		string1024				c_newAppPathRoot;
-		sscanf(strstr(Core.Params, "-overlaypath ") + 13, "%[^ ] ", c_newAppPathRoot);
+		string1024				c_newAppPathRoot = {};
+		sscanf(strstr(Core.Params, "-overlaypath ") + 13, "%1023[^ ] ", c_newAppPathRoot);
 		FS_Path* pLogsPath = FS.get_path("$logs$");
 		FS_Path* pAppdataPath = FS.get_path("$app_data_root$");
 
@@ -1133,7 +1135,7 @@ int CLocatorAPI::file_list(FS_FileSet& dest, const char* path, u32 flags, const 
 	files_it	I = m_files.find(desc);
 	if (I == m_files.end())	return 0;
 
-	string128 mask;
+	string128 mask = {};
 	if (InputMask != nullptr)
 	{
 		xr_strcpy(mask, Platform::ValidPath(InputMask));

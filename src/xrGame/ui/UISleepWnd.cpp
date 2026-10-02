@@ -530,7 +530,8 @@ void CUISleepWnd::RebuildPresetButtons()
 	for (auto& e : m_presets)
 	{
 		if (!e.btn) continue;
-		m_background->DetachChild(e.btn);
+		if (m_background)
+			m_background->DetachChild(e.btn);
 		xr_delete(e.btn);
 	}
 	m_presets.clear();

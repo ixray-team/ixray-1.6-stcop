@@ -4,7 +4,7 @@
 void ip_address::set(const char* src_string)
 {
 	u32		buff[4];
-	int cnt = sscanf(src_string, "%d.%d.%d.%d", &buff[0], &buff[1], &buff[2], &buff[3]);
+	int cnt = sscanf(src_string, "%u.%u.%u.%u", &buff[0], &buff[1], &buff[2], &buff[3]);
 	if (cnt == 4)
 	{
 		m_data.a1 = u8(buff[0] & 0xff);

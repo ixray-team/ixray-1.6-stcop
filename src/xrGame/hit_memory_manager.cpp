@@ -123,7 +123,7 @@ void CHitMemoryManager::add					(float amount, const Fvector &vLocalDir, const C
 	Fvector						direction;
 	m_object->XFORM().transform_dir	(direction,vLocalDir);
 
-	const CEntityAlive			*entity_alive = const_cast<CObject*>(who)->cast_entity_alive();
+	const CEntityAlive* entity_alive = who ? const_cast<CObject*>(who)->cast_entity_alive() : nullptr;
 	if (!entity_alive || (m_object->tfGetRelationType(entity_alive) == ALife::eRelationTypeFriend))
 		return;
 

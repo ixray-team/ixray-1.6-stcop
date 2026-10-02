@@ -25,5 +25,6 @@ void CPHDestroyableNotificate::spawn_notificate(CSE_Abstract* so)
 	{
 		D->NotificateDestroy(this);
 	}
-	po->source_id=ALife::INVALID_OBJECT_ID;
+	if (po)
+		po->source_id = ALife::INVALID_OBJECT_ID;
 }

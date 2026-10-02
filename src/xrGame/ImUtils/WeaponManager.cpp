@@ -969,8 +969,8 @@ void RenderWeaponManagerWindow()
 						imgui_weapon_manager.bullet_speed = imgui_weapon_manager.cfg_bullet_speed;
 						imgui_weapon_manager.rpm = imgui_weapon_manager.cfg_rpm;
 						imgui_weapon_manager.hit_impulse = imgui_weapon_manager.cfg_hit_impulse;
-						imgui_weapon_manager.hit_power = imgui_weapon_manager.hit_power;
-						imgui_weapon_manager.hit_power_critical = imgui_weapon_manager.hit_power_critical;
+						imgui_weapon_manager.hit_power = imgui_weapon_manager.cfg_hit_power;
+						imgui_weapon_manager.hit_power_critical = imgui_weapon_manager.cfg_hit_power_critical;
 						imgui_weapon_manager.upgrade_disp_accel_factor = imgui_weapon_manager.cfg_upgrade_disp_accel_factor;
 						imgui_weapon_manager.upgrade_disp_base = imgui_weapon_manager.cfg_upgrade_disp_base;
 						imgui_weapon_manager.upgrade_disp_crouch = imgui_weapon_manager.cfg_upgrade_disp_crouch;
@@ -996,7 +996,7 @@ void RenderWeaponManagerWindow()
 						imgui_weapon_manager.splash2_radius = imgui_weapon_manager.cfg_splash2_radius;
 						imgui_weapon_manager.splash1_hits_count = imgui_weapon_manager.cfg_splash1_hits_count;
 						imgui_weapon_manager.splash1_pervictim_hcount = imgui_weapon_manager.cfg_splash1_pervictim_hcount;
-						imgui_weapon_manager.splash2_hits_count = imgui_weapon_manager.cfg_splash1_hits_count;
+						imgui_weapon_manager.splash2_hits_count = imgui_weapon_manager.cfg_splash2_hits_count;
 						imgui_weapon_manager.splash_hit_divide_factor = imgui_weapon_manager.cfg_splash_hit_divide_factor;
 
 						if (pItem)

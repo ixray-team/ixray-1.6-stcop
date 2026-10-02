@@ -45,9 +45,9 @@ IC	void CALifeSpawnRegistry::process_spawns		(SPAWN_IDS &spawns)
 	);
 }
 
-IC	const ALife::_SPAWN_ID &CALifeSpawnRegistry::spawn_id	(const ALife::_SPAWN_STORY_ID &spawn_story_id) const
+IC	ALife::_SPAWN_ID CALifeSpawnRegistry::spawn_id	(const ALife::_SPAWN_STORY_ID &spawn_story_id) const
 {
 	SPAWN_STORY_IDS::const_iterator	I = m_spawn_story_ids.find(spawn_story_id);
 	VERIFY2							(I != m_spawn_story_ids.end(),"Spawn story id cannot be found");
-	return							((*I).second);
+	return							static_cast<ALife::_SPAWN_ID>((*I).second);
 }

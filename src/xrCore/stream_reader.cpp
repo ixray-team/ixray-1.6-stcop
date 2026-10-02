@@ -123,38 +123,40 @@ intptr_t CStreamReader::find_chunk(u32 ID, bool* bCompressed)
 
 void CStreamReader::r_stringZ(shared_str& dest)
 {
-	char*	dest_str		= nullptr;
-	u32	current_str_size	= 0;
-	u8*	end_str				= nullptr;
-	do
-	{
-		u8*	end_ptr	= m_start_pointer + m_current_window_size;
-		end_str = m_current_pointer;
-		while (end_str < end_ptr)
-		{
-			if ((*end_str == 0) && (!dest_str))
-			{
-				dest = reinterpret_cast<char*>(m_current_pointer);
-				m_current_pointer = ++end_str;
-				return;
-			} else if (*end_str == 0)
-			{
-				++end_str;	//copying with ending zero
-				break;
-			}
-			++end_str;
-		}
-		if (!dest_str)	//first iteration 
-			dest_str = static_cast<char*>(_alloca(4096));
+    xr_string result;
+    for (;;)
+    {
+        const intptr_t remaining = elapsed();
+        R_ASSERT2(remaining > 0, "Unterminated string in stream");
+        if (remaining <= 0)
+            return;
 
-		intptr_t current_chunk_size = static_cast<intptr_t>(end_ptr - m_current_pointer);
-		R_ASSERT(current_str_size + current_chunk_size <= 4096);
-		
-		CopyMemory(dest_str, m_current_pointer, current_chunk_size);
-		current_str_size += current_chunk_size;
-		remap(m_current_offset_from_start + current_chunk_size);
-		VERIFY(m_current_pointer == m_start_pointer);
-	} while (*(end_str - 1) == 0);
-	dest				= dest_str;
-	m_current_pointer	= end_str;
+        const intptr_t available = std::min(remaining,
+            m_current_window_size - (m_current_pointer - m_start_pointer));
+        const auto* terminator = static_cast<const u8*>(
+            memchr(m_current_pointer, 0, static_cast<size_t>(available)));
+        if (terminator)
+        {
+            if (result.empty())
+                dest = reinterpret_cast<const char*>(m_current_pointer);
+            else
+            {
+                result.append(reinterpret_cast<const char*>(m_current_pointer),
+                    static_cast<size_t>(terminator - m_current_pointer));
+                dest = result.c_str();
+            }
+            m_current_pointer += terminator - m_current_pointer + 1;
+            return;
+        }
+
+        result.append(reinterpret_cast<const char*>(m_current_pointer),
+            static_cast<size_t>(available));
+        if (available == remaining)
+        {
+            m_current_pointer += available;
+            R_ASSERT2(false, "Unterminated string in stream");
+            return;
+        }
+        advance(available);
+    }
 }

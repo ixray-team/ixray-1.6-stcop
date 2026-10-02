@@ -167,7 +167,7 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 	Mesh->GenerateAdjacency();
 	OutMesh->UpdateBox();
 
-	Msg("Terrain mesh created successfully: %d vertices, %d faces", Vertices.size(), Faces.size());
+	Msg("Terrain mesh created successfully: %zu vertices, %zu faces", Vertices.size(), Faces.size());
 }
 
 void XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(CEditableObject* Mesh, const xr_string& OutputFile)
@@ -175,7 +175,7 @@ void XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(CEditableObject* Mesh
 	size_t TextureSizeX = 512;
 	size_t TextureSizeY = 512;
 
-	size_t MaxTextureSize = TextureSizeY > TextureSizeY ? TextureSizeY : TextureSizeX;
+	size_t MaxTextureSize = TextureSizeY > TextureSizeX ? TextureSizeY : TextureSizeX;
 	RedImageTool::RedImage TestImage(TextureSizeX, TextureSizeY);
 	{
 		Fbox TerrainBound = Mesh->GetBox();

@@ -96,7 +96,7 @@ const char* XrGameMaterialLibraryEditors::MtlPairToName(int mtl0, int mtl1)
     string256 buf0, buf1;
     strcpy(buf0, *M0->m_Name);	_ChangeSymbol(buf0, '\\', '/');
     strcpy(buf1, *M1->m_Name);	_ChangeSymbol(buf1, '\\', '/');
-    sprintf(buf, "%s \\ %s", buf0, buf1);
+    xr_sprintf(buf, "%s \\ %s", buf0, buf1);
     return buf;
 }
 void XrGameMaterialLibraryEditors::NameToMtlPair(const char* name, int& mtl0, int& mtl1)

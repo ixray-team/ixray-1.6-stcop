@@ -169,7 +169,7 @@ void CTerrain::OnFrame()
 
 bool CTerrain::RayPick(float& dist, const Fvector& S, const Fvector& D, SRayPickInfo* pinf)
 {
-	if (!IsLoaded && !pinf->IsForcePickup)
+	if (!IsLoaded && (!pinf || !pinf->IsForcePickup))
 	{
 		return false;
 	}

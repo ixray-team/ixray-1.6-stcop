@@ -192,6 +192,7 @@ float					game_sv_GameState::get_option_f				(const char* lst, const char* name,
 const char*			game_sv_GameState::get_option_s				(const char* lst, const char* name, const char* def)
 {
 	static string64	ret;
+	ret[0] = 0;
 
 	string64		op;
 	xr_strconcat(op,"/",name,"=");
@@ -199,7 +200,7 @@ const char*			game_sv_GameState::get_option_s				(const char* lst, const char* n
 	if (start)		
 	{
 		const char*			begin	= start + xr_strlen(op); 
-		sscanf			(begin, "%[^/]",ret);
+		sscanf			(begin, "%63[^/]",ret);
 	}
 	else			
 	{
@@ -444,7 +445,7 @@ void game_sv_GameState::Create					(shared_str &options)
 	{
 		string_path svcfg_name = "";
 		int		sz = xr_strlen(svcfg_ltx_name);
-		sscanf		(strstr(Core.Params,svcfg_ltx_name)+sz,"%[^ ] ",svcfg_name);
+		sscanf		(strstr(Core.Params,svcfg_ltx_name)+sz,"%519[^ ] ",svcfg_name);
 //		if (FS.exist(svcfg_name))
 		{
 			Console->ExecuteScript(svcfg_name);

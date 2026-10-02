@@ -850,7 +850,7 @@ void CUIMpTradeWnd::DumpAllItems(const char* s)
 	std::sort		(m_all_items.begin(), m_all_items.end(), items_sorter());
 
 #ifndef MASTER_GOLD
-	Msg("CUIMpTradeWnd::DumpAllItems.total[%d] reason [%s]", m_all_items.size(), s);
+	Msg("CUIMpTradeWnd::DumpAllItems.total[%zu] reason [%s]", m_all_items.size(), s);
 	ITEMS_vec_cit it = m_all_items.begin();
 	ITEMS_vec_cit it_e = m_all_items.end();
 	for(;it!=it_e;++it)
