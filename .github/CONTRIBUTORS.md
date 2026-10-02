@@ -66,6 +66,8 @@ Detail list of all contributors to IX-Ray project
   - ROOZBAN
   - moof1x
   - Georgiy-Timoshin
+  - veniamin42
+  - Dimon the Suslik
 
 ## Community helpers
 

@@ -58,6 +58,8 @@
   - ROOZBAN
   - moof1x
   - Georgiy-Timoshin
+  - veniamin42
+  - Dimon the Suslik
 
 ## Помощники сообщества
 
