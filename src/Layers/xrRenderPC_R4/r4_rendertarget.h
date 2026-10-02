@@ -337,13 +337,11 @@ public:
 
 	void						copy_position			();
 
-	void						phase_fxaa				();
 	void						phase_smaa				();
 	void						phase_taa				();
 	void						phase_mblur				();
 	void						phase_depth_upscale		();
 
-	void						phase_cas				();
 	void						phase_ui_postprocess	(Fcolor*, bool HasBackground);
 	void						phase_ui_postprocess_copy();
 
@@ -351,17 +349,12 @@ public:
 	void						phase_sslr				();
 	void						pharse_velocity			();
 
-	void						phase_nvg				();
 
 	bool						phase_puddles			();
 	void PhaseRainPuddles();
 	void						phase_planar			();
 
-	void						RenderEffect			(ScreenPostProcessType postProcessType, bool = true);
-	void						PhaseAberration			();
-	void						PhaseRaindrops();
-	void						PhaseGasmask			();
-	void						PhaseWinter				();
+	void						PhaseEffectSQ			(EffectSQ Effect);
 
 	void						phase_scene_forward		();
 	void						phase_scene_prepare		();

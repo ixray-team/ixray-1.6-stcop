@@ -11,3 +11,14 @@ enum ScreenPostProcessType
 	// Reuse the unoccupied SPP glass slot; shaders have six elements.
 	ProceduralRaindrops = GasMask
 };
+
+enum class EffectSQ
+{
+	FXAA,
+	CAS,
+	NVG,
+	Aberration,
+	Raindrops,
+	Gasmask,
+	Winter,
+};
