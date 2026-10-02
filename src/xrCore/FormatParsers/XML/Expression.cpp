@@ -1,5 +1,26 @@
 #include "stdafx.h"
 #include "Expression.h"
+#include <limits>
+#include <charconv>
+#include <cmath>
+
+namespace
+{
+    template<typename T>
+    bool ParseExpressionNumber(const xr_string& Text, T& Value)
+    {
+        const char* First = Text.data();
+        const char* Last = First + Text.size();
+        while (First != Last && isspace(static_cast<unsigned char>(*First)))
+            ++First;
+        while (First != Last && isspace(static_cast<unsigned char>(Last[-1])))
+            --Last;
+        if (First != Last && *First == '+')
+            ++First;
+        const auto Result = std::from_chars(First, Last, Value);
+        return Result.ec == std::errc{} && Result.ptr == Last && std::isfinite(static_cast<double>(Value));
+    }
+}
 
 XRCORE_API CExpressionManager* g_uiExpressionMgr = nullptr;
 
@@ -60,7 +81,7 @@ ExpressionVarVariadic CExpressionManager::GetVariableById(int Id)
 {
     auto FoundedDelegate = m_delegates.find(Id);
 
-    if (FoundedDelegate != m_delegates.end())
+    if (FoundedDelegate != m_delegates.end() && FoundedDelegate->second.Func)
     {
         eVariableType Type = FoundedDelegate->second.Type;
         switch (Type)
@@ -98,8 +119,8 @@ ExpressionVarVariadic CExpressionManager::GetVariableById(int Id)
         }
     }
 
-    FATAL("XML EXPRESSION: Can't Get variable id '%d'"/*, Id*/);
-    return ExpressionVarVariadic(42);
+    Msg("* XML EXPRESSION: Cannot get variable id %d", Id);
+    return ExpressionVarVariadic(0);
 }
 
 SXmlExpressionDelegate* CExpressionManager::GetVariableDescById(int Id)
@@ -125,6 +146,7 @@ CExpression::CExpression()
 CExpression::CExpression(CExpression&& Other)
 {
     m_originalExpression = std::move(Other.m_originalExpression);
+    m_expressionStrings = std::move(Other.m_expressionStrings);
     m_expression = Other.m_expression;
     Other.m_expression = nullptr;
     m_dbgCompileError = Other.m_dbgCompileError;
@@ -136,6 +158,7 @@ CExpression::CExpression(CExpression&& Other)
 CExpression::CExpression(const CExpression& Other)
 {
     m_originalExpression = Other.m_originalExpression;
+    m_expressionStrings = Other.m_expressionStrings;
     m_expressionDataSize = Other.m_expressionDataSize;
     m_expression = m_expressionDataSize ? new ExpressionData[m_expressionDataSize] : nullptr;
     if (m_expressionDataSize)
@@ -163,6 +186,7 @@ CExpression& CExpression::operator=(CExpression&& Other)
         delete[] m_expression;
         xr_free(m_dbgCompileError);
         m_originalExpression = std::move(Other.m_originalExpression);
+        m_expressionStrings = std::move(Other.m_expressionStrings);
         m_expression = Other.m_expression;
         Other.m_expression = nullptr;
         m_dbgCompileError = Other.m_dbgCompileError;
@@ -185,10 +209,11 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
     delete[] m_expression;
     m_expression = nullptr;
     m_expressionDataSize = 0;
+    m_expressionStrings.clear();
     m_originalExpression = ExpressionStr;
     xr_string ClearedExpression = ExpressionStr;
    
-    std::erase_if(ClearedExpression, isspace);
+    std::erase_if(ClearedExpression, [](unsigned char Ch) { return isspace(Ch) != 0; });
 
     enum WordPurpose
     {
@@ -221,8 +246,8 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
     };
 
     //first pass - validate instructions, variables, remember order, construct function stack levels
-    xr_vector<Lexema> ExpressionBody;
-    ExpressionBody.reserve(150);
+    // Function pointers must remain valid when more lexemes are appended.
+    xr_deque<Lexema> ExpressionBody;
 
     xr_string WordAccumulator;
     u32       FunctionStackDepth = 0;
@@ -235,14 +260,16 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
         if (WordAccumulator.empty()) return;
 
         Lexema* pLexem = nullptr;
-        u32 ParamIndex = g_uiExpressionMgr->GetVariableIdByName(WordAccumulator.c_str());
+        const u32 ParamIndex = g_uiExpressionMgr
+            ? g_uiExpressionMgr->GetVariableIdByName(WordAccumulator.c_str())
+            : CExpressionManager::INVALID_VARIABLE_INDEX;
         if (ParamIndex == CExpressionManager::INVALID_VARIABLE_INDEX)
         {
             string128 str = { 0 };
             //Check for string constant first
             if (WordAccumulator[0] == '\"')
             {
-                if (WordAccumulator[WordAccumulator.size() - 1] != '\"')
+                if (WordAccumulator.size() < 2 || WordAccumulator[WordAccumulator.size() - 1] != '\"')
                 {
 					xr_sprintf(str, "'%s' is not a valid string constant declaration", WordAccumulator.c_str());
                     FailCompileWithReason(str);
@@ -258,7 +285,12 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
             //Check for float
             if (IsValidFloatConstantDeclaration(WordAccumulator))
             {
-                float value = float(atof(WordAccumulator.c_str()));
+                float value = 0;
+                if (!ParseExpressionNumber(WordAccumulator, value))
+                {
+                    SetCompileError("Invalid or out-of-range floating constant");
+                    return;
+                }
                 pLexem = new Lexema(WordAccumulator, CONSTANT, UI_CONSTANT_FLOAT, FunctionStackDepth, FunctionStack.top());
                 pLexem->fltConstant = value;
                 goto FlushLexem;
@@ -266,7 +298,12 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
 
             if (IsValidIntConstantDeclaration(WordAccumulator))
             {
-                int value = atoi(WordAccumulator.c_str());
+                int value = 0;
+                if (!ParseExpressionNumber(WordAccumulator, value))
+                {
+                    SetCompileError("Invalid or out-of-range integer constant");
+                    return;
+                }
                 pLexem = new Lexema(WordAccumulator, CONSTANT, UI_CONSTANT_INT, FunctionStackDepth, FunctionStack.top());
                 pLexem->intConstant = value;
                 goto FlushLexem;
@@ -391,7 +428,7 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
             ExpressionBody.emplace_back(Lexema("-", OPERATOR, UI_SUBTRACT, FunctionStackDepth, FunctionStack.top()));
             break;
         case '=':
-            if (*(strIter + 1) == '=')
+            if (strIter + 1 != ClearedExpression.end() && *(strIter + 1) == '=')
             {
 				DeclareVariableOrConstantIfNeccesseryFunc();
 				if (m_dbgCompileError != nullptr)
@@ -400,6 +437,12 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
 					return;
 				}
                 ExpressionBody.emplace_back(Lexema("==", OPERATOR, UI_COMPAREEQUAL, FunctionStackDepth, FunctionStack.top()));
+                ++strIter;
+            }
+            else
+            {
+                FailCompileWithReason("Expected == comparison operator");
+                return;
             }
             break;
         case '/':
@@ -441,6 +484,11 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
     if (m_dbgCompileError != nullptr)
     {
         FailCompileWithReason();
+        return;
+    }
+    if (FunctionStackDepth != 0)
+    {
+        FailCompileWithReason("Missing closing parenthesis");
         return;
     }
     /// **** SECOND PASS ****
@@ -499,7 +547,7 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
         return Result;
     };
 
-    auto EmitCodeVariable = [&ResultBytecode, bAllowUnknowVariables](Lexema& Lex, eVariableType& OutVariableDelegateType)
+    auto EmitCodeVariable = [this, &ResultBytecode, bAllowUnknowVariables](Lexema& Lex, eVariableType& OutVariableDelegateType)
     {
         R_ASSERT(Lex.Purpose == VARIABLE);
 
@@ -520,7 +568,8 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
         ExpressionVarVariadic Parameter;
         if (Lex.ByteCode == UI_VARIABLE_NAMED)
         {
-            Parameter.Str = Lex.Name.c_str();
+            Parameter.LongInt = m_expressionStrings.size();
+            m_expressionStrings.emplace_back(Lex.Name.c_str());
         }
         else
         {
@@ -529,7 +578,7 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
         ResultBytecode.push_back(Parameter.GetData());
     };
 
-    auto EmitCodeConstant = [&ResultBytecode](Lexema& Lex, eVariableType& OutVariableDelegateType)
+    auto EmitCodeConstant = [this, &ResultBytecode](Lexema& Lex, eVariableType& OutVariableDelegateType)
     {
         ExpressionOpcode Opcode;
         Opcode.OpcodeNum = Lex.ByteCode;
@@ -552,7 +601,8 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
         else if (Lex.ByteCode == UI_CONSTANT_STRING)
         {
             ExpressionVarVariadic Parameter;
-            Parameter.Str = Lex.Name.c_str();
+            Parameter.LongInt = m_expressionStrings.size();
+            m_expressionStrings.emplace_back(Lex.Name.c_str());
             OutVariableDelegateType = eVariableType::eDT_STRING;
             ResultBytecode.push_back(Parameter.GetData());
         }
@@ -655,6 +705,9 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
     xr_vector<Lexema> TopLexems = FindAllLexemsInFunctionStackFunc(0, nullptr);
     EmitAllLexemToBytecode(TopLexems);
 
+    if (m_dbgCompileError != nullptr)
+        return;
+
     //Emit zero bytecode to mark end
     ExpressionOpcode TrailOpcode;
     ResultBytecode.push_back(TrailOpcode.GetData());
@@ -673,112 +726,152 @@ ExpressionVarVariadic CExpression::ExecuteExpression()
 
 ExpressionVarVariadic CExpression::ExecuteExpression(const xr_string_map<xr_string, xr_string>& Variables)
 {
-    bool bWithoutVariables = Variables.empty();
-	ExpressionVarVariadic stack[32];
-
-    xr_string_map<xr_string, ExpressionVarVariadic> ParsedVariables;
-    if (!bWithoutVariables)
+    auto Fail = [this](const char* Reason)
     {
-        ParseVariablesForExecution(Variables, ParsedVariables);
+        Msg("* XML EXPRESSION \"%s\" FAILED TO EXECUTE: %s", m_originalExpression.c_str(), Reason);
+        return ExpressionVarVariadic(0);
+    };
+    if (!m_expression || !m_expressionDataSize)
+        return Fail("Expression is not compiled");
+
+    xr_vector<ExpressionVarVariadic> Stack;
+    Stack.reserve(32);
+    xr_string_map<xr_string, ExpressionVarVariadic> ParsedVariables;
+    ParseVariablesForExecution(Variables, ParsedVariables);
+
+    using Type = ExpressionVarVariadic::EVariadicType;
+    auto Number = [](const ExpressionVarVariadic& Value, double& Out)
+    {
+        switch (Value.VarType)
+        {
+        case Type::eInt: Out = Value.Int; return true;
+        case Type::eUint: Out = Value.UInt; return true;
+        case Type::eFloat: Out = Value.Flt; return true;
+        case Type::eBool: Out = Value.Boolean ? 1 : 0; return true;
+        default: return false;
+        }
+    };
+
+    size_t Cursor = 0;
+    while (Cursor < m_expressionDataSize)
+    {
+        const ExpressionData Instruction = m_expression[Cursor++];
+        const u32 Opcode = static_cast<u32>(Instruction);
+        if (Opcode == UI_NONE)
+        {
+            if (Stack.size() != 1)
+                return Fail("Expected one result on the stack");
+            return Stack.back();
+        }
+
+        if (Opcode >= UI_CONSTANT_INT && Opcode <= UI_VARIABLE_NAMED)
+        {
+            if (Cursor >= m_expressionDataSize)
+                return Fail("Missing instruction parameter");
+            const ExpressionData Parameter = m_expression[Cursor++];
+            switch (Opcode)
+            {
+            case UI_CONSTANT_INT:
+            {
+                int Value;
+                memcpy(&Value, &Parameter, sizeof(Value));
+                Stack.emplace_back(Value);
+                break;
+            }
+            case UI_CONSTANT_FLOAT:
+            {
+                float Value;
+                memcpy(&Value, &Parameter, sizeof(Value));
+                Stack.emplace_back(Value);
+                break;
+            }
+            case UI_CONSTANT_STRING:
+            case UI_VARIABLE_NAMED:
+            {
+                if (Parameter >= m_expressionStrings.size())
+                    return Fail("Invalid string index");
+                const char* Text = m_expressionStrings[static_cast<size_t>(Parameter)].c_str();
+                if (Opcode == UI_CONSTANT_STRING)
+                    Stack.emplace_back(Text);
+                else
+                {
+                    auto Found = ParsedVariables.find(xr_string(Text));
+                    if (Found == ParsedVariables.end())
+                        return Fail("Named variable is not defined");
+                    Stack.push_back(Found->second);
+                }
+                break;
+            }
+            case UI_VARIABLE:
+                if (Parameter > static_cast<u64>(std::numeric_limits<int>::max()) ||
+                    !g_uiExpressionMgr || !g_uiExpressionMgr->GetVariableDescById(static_cast<int>(Parameter)))
+                    return Fail("Variable delegate is not defined");
+                Stack.push_back(g_uiExpressionMgr->GetVariableById(static_cast<int>(Parameter)));
+                break;
+            }
+            continue;
+        }
+
+        if (Opcode == UI_FLOOR || Opcode == UI_CEIL)
+        {
+            double Value;
+            if (Stack.empty() || !Number(Stack.back(), Value))
+                return Fail("Function requires a numeric operand");
+            Stack.back() = ExpressionVarVariadic(static_cast<float>(Opcode == UI_FLOOR ? floor(Value) : ceil(Value)));
+            continue;
+        }
+
+        if (Opcode != UI_ADD && Opcode != UI_SUBTRACT && Opcode != UI_MULTIPLE &&
+            Opcode != UI_DIVIDE && Opcode != UI_COMPAREEQUAL)
+            return Fail("Unknown instruction");
+        if (Stack.size() < 2)
+            return Fail("Operator requires two operands");
+
+        const auto& Left = Stack[Stack.size() - 2];
+        const auto& Right = Stack.back();
+        ExpressionVarVariadic Result;
+        if (Opcode == UI_COMPAREEQUAL && Left.VarType == Type::eStr && Right.VarType == Type::eStr)
+        {
+            Result = ExpressionVarVariadic(xr_strcmp(Left.Str.c_str() ? Left.Str.c_str() : "",
+                Right.Str.c_str() ? Right.Str.c_str() : "") == 0);
+        }
+        else
+        {
+            double A, B;
+            if (!Number(Left, A) || !Number(Right, B))
+                return Fail("Operator requires compatible numeric operands");
+            if (Opcode == UI_COMPAREEQUAL)
+                Result = ExpressionVarVariadic(A == B);
+            else
+            {
+                const bool Floating = Left.VarType == Type::eFloat || Right.VarType == Type::eFloat;
+                double Value = 0;
+                switch (Opcode)
+                {
+                case UI_ADD: Value = A + B; break;
+                case UI_SUBTRACT: Value = A - B; break;
+                case UI_MULTIPLE: Value = A * B; break;
+                case UI_DIVIDE:
+                    if (B == 0)
+                        return Fail("Division by zero");
+                    Value = Floating ? A / B : static_cast<int64_t>(A) / static_cast<int64_t>(B);
+                    break;
+                }
+                if (Floating)
+                    Result = ExpressionVarVariadic(static_cast<float>(Value));
+                else if (Value >= std::numeric_limits<int>::min() && Value <= std::numeric_limits<int>::max())
+                    Result = ExpressionVarVariadic(static_cast<int>(Value));
+                else if ((Left.VarType == Type::eUint || Right.VarType == Type::eUint) &&
+                    Value >= 0 && Value <= std::numeric_limits<u32>::max())
+                    Result = ExpressionVarVariadic(static_cast<u32>(Value));
+                else
+                    return Fail("Integer arithmetic overflow");
+            }
+        }
+        Stack.pop_back();
+        Stack.back() = Result;
     }
-
-	int StackCursor = 0;
-	u64* CodeCursor = m_expression;
-	ExpressionVarVariadic* CodeParam = nullptr;
-
-	//while (ExpressionOpcode bytecode = (ExpressionOpcode)*CodeCursor)
-	while (true)
-	{
-		ExpressionOpcode bytecode = *(ExpressionOpcode*)CodeCursor;
-		if (bytecode.OpcodeNum == 0) break;
-		++CodeCursor; //set position to a variable or next command
-		switch (bytecode.OpcodeNum)
-		{
-		case UI_CONSTANT_STRING:
-		case UI_CONSTANT_INT:
-		case UI_CONSTANT_FLOAT:
-			CodeParam = (ExpressionVarVariadic*)CodeCursor;
-			stack[StackCursor++] = *CodeParam;
-			++CodeCursor; //we use a parameter, set cursor to next command
-			break;
-		case UI_VARIABLE:
-			CodeParam = (ExpressionVarVariadic*)CodeCursor;
-			stack[StackCursor++] = g_uiExpressionMgr->GetVariableById(CodeParam->Int);
-			++CodeCursor; //we use a parameter, set cursor to next command
-			break;
-        case UI_VARIABLE_NAMED:
-            CodeParam = (ExpressionVarVariadic*)CodeCursor;
-            stack[StackCursor++] = ParsedVariables[CodeParam->Str.c_str()];
-            ++CodeCursor; //we use a parameter, set cursor to next command
-            break;
-		case UI_ADD:
-			if (bytecode.Options == EO_VARS_AS_INT)
-			{
-				stack[StackCursor - 2].Int = stack[StackCursor - 2].Int + stack[StackCursor - 1].Int;
-				--StackCursor;
-			}
-			else if (bytecode.Options == EO_VARS_AS_FLOAT)
-			{
-				stack[StackCursor - 2].Flt = stack[StackCursor - 2].Flt + stack[StackCursor - 1].Flt;
-				--StackCursor;
-			}
-			break;
-		case UI_SUBTRACT:
-			if (bytecode.Options == EO_VARS_AS_INT)
-			{
-				stack[StackCursor - 2].Int = stack[StackCursor - 2].Int - stack[StackCursor - 1].Int;
-				--StackCursor;
-			}
-			else if (bytecode.Options == EO_VARS_AS_FLOAT)
-			{
-				stack[StackCursor - 2].Flt = stack[StackCursor - 2].Flt - stack[StackCursor - 1].Flt;
-				--StackCursor;
-			}
-			break;
-		case UI_MULTIPLE:
-			if (bytecode.Options == EO_VARS_AS_INT)
-			{
-				stack[StackCursor - 2].Int = stack[StackCursor - 2].Int * stack[StackCursor - 1].Int;
-				--StackCursor;
-			}
-			else if (bytecode.Options == EO_VARS_AS_FLOAT)
-			{
-				stack[StackCursor - 2].Flt = stack[StackCursor - 2].Flt * stack[StackCursor - 1].Flt;
-				--StackCursor;
-			}
-			break;
-		case UI_DIVIDE:
-			if (bytecode.Options == EO_VARS_AS_INT)
-			{
-				stack[StackCursor - 2].Int = stack[StackCursor - 2].Int / stack[StackCursor - 1].Int;
-				--StackCursor;
-			}
-			else if (bytecode.Options == EO_VARS_AS_FLOAT)
-			{
-				stack[StackCursor - 2].Flt = stack[StackCursor - 2].Flt / stack[StackCursor - 1].Flt;
-				--StackCursor;
-			}
-			break;
-        case UI_COMPAREEQUAL:
-            stack[StackCursor - 2].Boolean = stack[StackCursor - 2].Int / stack[StackCursor - 1].Int;
-            --StackCursor;
-            break;
-		case UI_FLOOR:
-			stack[StackCursor - 1].Flt = floor(stack[StackCursor - 1].Flt);
-			break;
-		case UI_CEIL:
-			stack[StackCursor - 1].Flt = ceil(stack[StackCursor - 1].Flt);
-			break;
-		case UI_NONE:
-			break;
-		default:
-			FATAL("Unknown expression opcode, stack can be corrupted!");
-			break;
-		}
-	}
-
-	R_ASSERT(StackCursor == 1);
-	return stack[0];
+    return Fail("Missing end instruction");
 }
 
 bool CExpression::IsCompiled() const
@@ -791,30 +884,39 @@ void CExpression::ParseVariablesForExecution(const xr_string_map<xr_string, xr_s
     for (const auto& [Name, Value] : Variables)
     {
         auto VariableDecl = Name.Split(' ');
+        if (VariableDecl.size() != 2)
+            continue;
         auto Type = VariableDecl[0];
         ExpressionVarVariadic Variable;
-        if (Type.starts_with("int"))
+        if (Type == "int")
         {
-            Variable.Int = atoi(Value.c_str());
+            int Number = 0;
+            if (!ParseExpressionNumber(Value, Number))
+                continue;
+            Variable = ExpressionVarVariadic(Number);
         }
-        else if (Type.starts_with("u32"))
+        else if (Type == "u32" || Type == "u16")
         {
-            sscanf(Value.c_str(), "%u", &Variable.UInt);
+            u32 Number = 0;
+            if (!ParseExpressionNumber(Value, Number) || (Type == "u16" && Number > 65535))
+                continue;
+            Variable = ExpressionVarVariadic(Number);
         }
-		else if (Type.starts_with("float"))
-		{
-			sscanf(Value.c_str(), "%f", &Variable.Flt);
-		}
-		else if (Type.starts_with("u16"))
-		{
-			sscanf(Value.c_str(), "%u", &Variable.UInt);
-		}
-		else if (Type.starts_with("xr_string"))
-		{
-            Variable.Str = Value.c_str();
-		}
+        else if (Type == "float")
+        {
+            float Number = 0;
+            if (!ParseExpressionNumber(Value, Number))
+                continue;
+            Variable = ExpressionVarVariadic(Number);
+        }
+        else if (Type == "xr_string")
+        {
+            Variable = ExpressionVarVariadic(Value.c_str());
+        }
+        else
+            continue;
 
-        OutVariables.emplace(std::make_pair(Name, Variable));
+        OutVariables.emplace(std::make_pair(VariableDecl[1], Variable));
     }
 }
 

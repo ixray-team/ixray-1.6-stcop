@@ -255,8 +255,9 @@ void CUIStatic::Update()
 		switch (Result.VarType)
 		{
 		case ExpressionVarVariadic::EVariadicType::eFloat:	NewText = xr_string::ToString(Result.Flt); break;
-		case ExpressionVarVariadic::EVariadicType::eStr:	NewText = Result.Str.c_str(); break;
+		case ExpressionVarVariadic::EVariadicType::eStr:	NewText = Result.Str.c_str() ? Result.Str.c_str() : ""; break;
 		case ExpressionVarVariadic::EVariadicType::eInt:	NewText = xr_string::ToString(Result.Int); break;
+		case ExpressionVarVariadic::EVariadicType::eUint:	NewText = xr_string::ToString(Result.UInt); break;
 		case ExpressionVarVariadic::EVariadicType::eBool:	NewText = Result.Boolean ? "true" : "false"; break;
 		}
 
