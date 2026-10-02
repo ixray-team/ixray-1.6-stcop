@@ -11,11 +11,16 @@ DiscordShared::DiscordShared()
 #endif
 }
 
-DiscordShared::~DiscordShared()
+void DiscordShared::Shutdown() noexcept
 {
 #ifdef IXR_ENABLE_DISCORD
 	xr_delete(Core);
 #endif
+}
+
+DiscordShared::~DiscordShared()
+{
+	Shutdown();
 }
 
 // Called when the game starts or when spawned

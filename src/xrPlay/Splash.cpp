@@ -23,6 +23,8 @@
     #include "splash_eff_crt.h"
 #endif
 
+#include <atomic>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
@@ -91,7 +93,7 @@ namespace splash
         SPLASH_STATUS = status;
     }
 
-    SDL_Surface* LoadPNGSurfaceFromResource(unsigned char* imageData, LPCTSTR lpName, LPCTSTR lpType) {
+    SDL_Surface* LoadPNGSurfaceFromResource(unsigned char*& imageData, LPCTSTR lpName, LPCTSTR lpType) {
         HMODULE hMODULE = hInstanceG;
 
         HRSRC hRes = FindResource(hMODULE, lpName, lpType);
@@ -124,6 +126,7 @@ namespace splash
         SDL_Surface* surface = SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, imageData, width * 4);
         if (!surface) {
             stbi_image_free(imageData);
+            imageData = nullptr;
             //ErrorMsg("Failed to create pixel format (ID %d). %s", lpName, SDL_GetError());
             return nullptr;
         }
@@ -228,9 +231,10 @@ namespace splash
     }
 #endif
 
-    bool running = true;
+    std::atomic<bool> running = true;
 	SPLASH_API void Show()
 	{
+		running.store(true, std::memory_order_relaxed);
 		srand((unsigned)time(nullptr));
 
 		SDL_SetAppMetadata("Chezze splash", "1.3.3.7-01a", "com.chezze.ix_splash");
@@ -379,12 +383,17 @@ namespace splash
 
 		//////////////////////////////
 		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_DestroySurface(surface);
+		if (imageData)
+		{
+			stbi_image_free(imageData);
+			imageData = nullptr;
+		}
 		if (!texture)
 		{
 			SDL_Log("Couldn't create static texture: %s", SDL_GetError());
 			return;
 		}
-		SDL_DestroySurface(surface);
 
 		// overlay surface (noise + scanlines)
 		SDL_Surface* overlaySurf = SDL_CreateSurface(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_PIXELFORMAT_RGBA8888);
@@ -400,24 +409,37 @@ namespace splash
 		SDL_SetTextureBlendMode(overlayTex, SDL_BLENDMODE_BLEND);
 		//////////////////////////////
 		surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_LOAD_ICON), TEXT("PNG"));
-		stbi_image_free(imageData);
 
 		LD_atlas = SDL_CreateTextureFromSurface(renderer, surface);
+		if (surface)
+		{
+			SDL_DestroySurface(surface);
+		}
+		if (imageData)
+		{
+			stbi_image_free(imageData);
+			imageData = nullptr;
+		}
 		if (!LD_atlas)
 		{
 			return;
 		}
-		SDL_DestroySurface(surface);
-		stbi_image_free(imageData);
 
 		// font
 		surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_FONT), TEXT("PNG"));
-		stbi_image_free(imageData);
 
 		fontTexture = SDL_CreateTextureFromSurface(renderer, surface);
-
-		CHAR_WIDTH = surface->w / CHARS_PER_ROW;
-		CHAR_HEIGHT = surface->h / CHARS_PER_COL;
+		if (surface)
+		{
+			CHAR_WIDTH = surface->w / CHARS_PER_ROW;
+			CHAR_HEIGHT = surface->h / CHARS_PER_COL;
+			SDL_DestroySurface(surface);
+		}
+		if (imageData)
+		{
+			stbi_image_free(imageData);
+			imageData = nullptr;
+		}
 		//
 
 
@@ -507,9 +529,21 @@ namespace splash
 
 		SDL_DestroyTexture(texture);
 		SDL_DestroyTexture(overlayTex);
+		if (LD_atlas)
+		{
+			SDL_DestroyTexture(LD_atlas);
+			LD_atlas = nullptr;
+		}
+		if (fontTexture)
+		{
+			SDL_DestroyTexture(fontTexture);
+			fontTexture = nullptr;
+		}
 		SDL_DestroySurface(overlaySurf);
 		SDL_DestroyRenderer(renderer);
+		renderer = nullptr;
 		SDL_DestroyWindow(window);
+		window = nullptr;
 	}
 
     SPLASH_API void Close()

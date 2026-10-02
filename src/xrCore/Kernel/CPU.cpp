@@ -168,7 +168,8 @@ struct THREAD_STARTUP
 	void* args;
 };
 
-void __cdecl thread_entry(void* _params)
+#ifdef IXR_WINDOWS
+unsigned __stdcall thread_entry(void* _params)
 {
 	// initialize
 	THREAD_STARTUP* startup = (THREAD_STARTUP*)_params;
@@ -183,11 +184,23 @@ void __cdecl thread_entry(void* _params)
 
 	// call
 	entry(arglist);
+	return 0;
 }
-#ifndef IXR_WINDOWS
+#else
 void* pthread_entry(void* params)
 {
-	thread_entry(params);
+	THREAD_STARTUP* startup = (THREAD_STARTUP*)params;
+	thread_name(startup->name);
+	thread_t* entry = startup->entry;
+	void* arglist = startup->args;
+
+	free(startup->name);
+	xr_delete(startup);
+
+	_initialize_cpu_thread();
+
+	// call
+	entry(arglist);
 	return nullptr;
 }
 #endif
@@ -200,7 +213,8 @@ ThreadID thread_spawn(thread_t* entry, const char* name, unsigned stack, void* a
 	startup->args = arglist;
 
 #ifdef IXR_WINDOWS
-	return (ThreadID)_beginthread(thread_entry, stack, startup);
+	uintptr_t handle = _beginthreadex(nullptr, stack, thread_entry, startup, 0, nullptr);
+	return (ThreadID)handle;
 #else
 	pthread_t handle;
 	pthread_attr_t attr;
