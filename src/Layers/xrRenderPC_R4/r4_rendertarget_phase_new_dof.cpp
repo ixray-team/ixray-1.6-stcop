@@ -18,24 +18,16 @@ void CRenderTarget::phase_new_dof()
     // -------------------------------
     {
         float W = 1.0f, H = 1.0f;
-        float rW = 1.0f / W, rH = 1.0f / H;
 
         VP_DOF.Width  = W;
         VP_DOF.Height = H;
         RContext->RSSetViewports(1, &VP_DOF);
 
-        u_setrt(rt_dof_focus, nullptr, nullptr, nullptr);
-        GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-        RCache.set_Stencil(false);
-
-        // element 0 = dof_focus
-        RCache.set_Element(s_dof_coc->E[0]);
-
-        // TODO: set your focus params here (target focus, lerp alpha, etc.)
-        //RCache.set_c("dof_focus_params", ...);
-
-        RCache.set_Geometry(FSTriangleGeom);
-        RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+        DrawSQ(s_dof_coc, rt_dof_focus, 0, []
+        {
+            GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+            RCache.set_Stencil(false);
+        });
     }
 
     // -------------------------------
@@ -54,40 +46,24 @@ void CRenderTarget::phase_new_dof()
     // 1) CoC
     // -------------------------------
     {
-        u_setrt(rt_dof_coc, nullptr, nullptr, nullptr);
-        GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-        RCache.set_Stencil(false);
-
-        // element 1 = dof_coc
-        RCache.set_Element(s_dof_coc->E[1]);
-
-        // TODO: set your CoC params (focus, aperture scale, max coc, temporal alpha, etc.)
-        // RCache.set_c("dof_coc_params", ...);
-
-        // If your shader expects tex sizes:
-        RCache.set_c("dof_params", 10.f, 16.5f, 0.024f, rH);
-
-        RCache.set_Geometry(FSTriangleGeom);
-        RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+        DrawSQ(s_dof_coc, rt_dof_coc, 1, [&]
+        {
+            GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+            RCache.set_Stencil(false);
+            RCache.set_c("dof_params", 10.f, 16.5f, 0.024f, rH);
+        });
     }
     
     // -------------------------------
     // 2) Blur pass 1 (Vertical)
     // -------------------------------
     {
-        u_setrt(rt_dof_blur1, nullptr, nullptr, nullptr);
-        GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-        RCache.set_Stencil(false);
-
-        // element 2 = dof_blur1
-        RCache.set_Element(s_dof_coc->E[2]);
-
-        // TODO: set blur params (dir/step/taps); for hex basic: vertical dir
-        // RCache.set_c("dof_blur_params", ...);
-        RCache.set_c("dof_rt_size", W, H, rW, rH);
-
-        RCache.set_Geometry(FSTriangleGeom);
-        RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+        DrawSQ(s_dof_coc, rt_dof_blur1, 2, [&]
+        {
+            GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+            RCache.set_Stencil(false);
+            RCache.set_c("dof_rt_size", W, H, rW, rH);
+        });
     }
     /*
     // -------------------------------
@@ -129,7 +105,6 @@ void CRenderTarget::phase_new_dof()
     }
     */
     // Copy current focus to previous for next frame
-    GRHI->CopySurface(rt_dof_focus_prev->pSurface, rt_dof_focus->pSurface);
-    // Copy current coc to previous for next frame
-    GRHI->CopySurface(rt_dof_coc_prev->pSurface, rt_dof_coc->pSurface);
+    ResolveSurface(rt_dof_focus_prev, rt_dof_focus);
+    ResolveSurface(rt_dof_coc_prev, rt_dof_coc);
 }

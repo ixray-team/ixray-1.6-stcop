@@ -26,7 +26,7 @@ template <class TBind>
 inline void CRenderTarget::DrawSQ(const ref_shader& Shader, const ref_rt& Target, u32 Element, TBind&& Bind)
 {
 	u_setrt(Target, nullptr, nullptr, nullptr);
-	DrawPassSQ(Shader, Element, static_cast<Bind&&>(Bind));
+	DrawPassSQ(Shader, Element, Bind);
 }
 
 inline void CRenderTarget::DrawSQ(const ref_shader& Shader, const ref_rt& Target, u32 Element)

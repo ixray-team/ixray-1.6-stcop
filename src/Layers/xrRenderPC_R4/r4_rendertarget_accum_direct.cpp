@@ -72,14 +72,12 @@ void CRenderTarget::accum_direct_cascade()
 	//Render the AO and view-z into new rendertarget
 	phase_accumulator();
 
-	RCache.set_Element(s_accum_direct->E[0]);
-
-	RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.0);
-	RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
-	RCache.set_c("m_sunmask", m_clouds_shadow);
-
-	RCache.set_Geometry(FSTriangleGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	DrawPassSQ(s_accum_direct, 0, [&]
+	{
+		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.0);
+		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
+		RCache.set_c("m_sunmask", m_clouds_shadow);
+	});
 
 	if (ps_r_sun_shafts > 0)
 	{
@@ -108,11 +106,9 @@ void CRenderTarget::accum_direct_volumetric()
 	phase_vol_accumulator();
 	RCache.set_ColorWriteEnable();
 
-	RCache.set_Element(s_accum_direct_volumetric->E[0]);
-
-	RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
-	RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, 0);
-
-	RCache.set_Geometry(FSTriangleGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	DrawPassSQ(s_accum_direct_volumetric, 0, [&]
+	{
+		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
+		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, 0);
+	});
 }
