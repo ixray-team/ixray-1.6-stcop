@@ -181,6 +181,7 @@ void CEngineAPI::Destroy(void)
 		hGame	= 0;
 	}
 	if (hRender)			{ Platform::FreeLibrary(hRender); hRender = 0; }
+	if (hGameSpy)			{ Platform::FreeLibrary(hGameSpy); hGameSpy = 0; }
 
 	pCreate					= 0;
 	pDestroy				= 0;
