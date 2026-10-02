@@ -483,7 +483,7 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 	const bool DrawDynamic = Geometry != SubspaceGeometry::StaticOnly && psDeviceFlags.test(rsDrawDynamic);
 	if (DrawDynamic)
 	{
-		CollectSubspaceDynamic(isolated ? RImplementation.ViewBase : ViewSave);
+		CollectSubspaceDynamic(ViewSave);
 		SkeletonUpdates.Launch();
 	}
 
@@ -511,7 +511,7 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 	if (DrawDynamic)
 	{
 		PROF_EVENT("add_dynamic")
-		RImplementation.set_Object(0);
+		RImplementation.set_Object(0, this);
 		SkeletonUpdates.Wait();
 
 		for (const SubspaceItem& Item : SubspaceDynamic)
@@ -528,7 +528,7 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 			Item.Renderable->renderable_Render(this);
 		}
 
-		RImplementation.set_Object(0);
+		RImplementation.set_Object(0, this);
 	}
 
 	if (!isolated)
@@ -576,7 +576,7 @@ void R_dsgraph_structure::CollectSubspaceDynamic(const CFrustum& MainView)
 			// renderable
 			IRenderable* renderable = spatial->dcast_Renderable();
 			if (0 == renderable)				continue;					// unknown, but renderable object (r1_glow???)
-			if(Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
+			if (!isolated && Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
 			{
 				// Shadow casters, and objects the main view did not calculate
 				const bool ShadowCaster = (spatial->type & ESPATIAL_TYPE::RENDERABLESHADOW) != ESPATIAL_TYPE::NONE;
