@@ -19,7 +19,7 @@
 #include "../../xrUI/UIFontDefines.h"
 #include "../../xrUI/UIHelper.h"
 
-extern CUIGameCustom* CurrentGameUI() {return HUD().GetGameUI();}
+extern CUIGameCustom* CurrentGameUI() { return g_hud ? ((CHUDManager*)g_hud)->GetGameUI() : nullptr; }
 
 //--------------------------------------------------------------------
 CHUDManager::CHUDManager() : pUIGame(nullptr), m_pHUDTarget(new CHUDTarget())
