@@ -73,7 +73,8 @@ namespace DedicatedConsoleInput
 			return result;
 		}
 
-		void RenderConsoleInputLine()
+		// The caller must hold g_consoleOutputMutex for the entire redraw.
+		void RenderConsoleInputLineLocked()
 		{
 			if (!g_consoleInputThreadRunning.load())
 				return;
@@ -97,8 +98,6 @@ namespace DedicatedConsoleInput
 			const DWORD consoleWidth = info.dwSize.X;
 			const int displayLength = static_cast<int>(wideLine.size());
 
-			xrCriticalSectionGuard outputLock(&g_consoleOutputMutex);
-
 			COORD basePosition = info.dwCursorPosition;
 			basePosition.X = 0;
 
@@ -111,10 +110,9 @@ namespace DedicatedConsoleInput
 				const DWORD spacesCount = consoleWidth - static_cast<DWORD>(displayLength);
 				if (spacesCount > 0)
 				{
-					std::wstring spaces(static_cast<size_t>(spacesCount), L' ');
 					COORD clearPos = basePosition;
 					clearPos.X = static_cast<SHORT>(displayLength);
-					WriteConsoleOutputCharacterW(g_consoleStdOut, spaces.c_str(), spacesCount, clearPos, &written);
+					FillConsoleOutputCharacterW(g_consoleStdOut, L' ', spacesCount, clearPos, &written);
 				}
 			}
 
@@ -125,6 +123,12 @@ namespace DedicatedConsoleInput
 				cursorPosition.X = 0;
 
 			SetConsoleCursorPosition(g_consoleStdOut, cursorPosition);
+		}
+
+		void RenderConsoleInputLine()
+		{
+			xrCriticalSectionGuard outputLock(&g_consoleOutputMutex);
+			RenderConsoleInputLineLocked();
 		}
 
 		void AppendToInputBuffer(const xr_string& text)
@@ -269,18 +273,17 @@ namespace DedicatedConsoleInput
 					{
 						xr_string utf8Command;
 						{
-							xrCriticalSectionGuard lock(&g_consoleInputStateMutex);
-							utf8Command = g_consoleInputBuffer;
-							g_consoleInputBuffer.clear();
-						}
-
-						{
 							xrCriticalSectionGuard outputLock(&g_consoleOutputMutex);
+							{
+								xrCriticalSectionGuard lock(&g_consoleInputStateMutex);
+								utf8Command = g_consoleInputBuffer;
+								g_consoleInputBuffer.clear();
+							}
+
 							DWORD written = 0;
 							WriteConsoleW(g_consoleStdOut, L"\n", 1, &written, nullptr);
+							RenderConsoleInputLineLocked();
 						}
-
-						RenderConsoleInputLine();
 
 						const xr_string trimmed = TrimConsoleCommand(utf8Command);
 						if (trimmed.empty())
@@ -423,15 +426,9 @@ namespace DedicatedConsoleInput
 					DWORD consoleWidth = info.dwSize.X;
 					if (consoleWidth > 0)
 					{
-						xr_vector<wchar_t> blank(static_cast<size_t>(consoleWidth), L' ');
-						if (!blank.empty())
-						{
-							DWORD cleared = 0;
-							WriteConsoleW(g_consoleStdOut, blank.data(), consoleWidth, &cleared, nullptr);
-						}
+						DWORD cleared = 0;
+						FillConsoleOutputCharacterW(g_consoleStdOut, L' ', consoleWidth, lineStart, &cleared);
 					}
-
-					SetConsoleCursorPosition(g_consoleStdOut, lineStart);
 				}
 
 				DWORD written = 0;
@@ -444,9 +441,10 @@ namespace DedicatedConsoleInput
 
 				if (originalLength == 0 || utf8Text.empty() || utf8Text.back() != '\n')
 					WriteConsoleW(g_consoleStdOut, L"\n", 1, &written, nullptr);
+
+				RenderConsoleInputLineLocked();
 			}
 
-			RenderConsoleInputLine();
 			return;
 		}
 #endif
