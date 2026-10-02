@@ -15,6 +15,14 @@ void light::vis_prepare()
 	//		. perform testing				= ???,		pending
 
 	u32 frame = Device.dwFrame;
+	if (vis.pending)
+	{
+		vis_update();
+		if (vis.pending)
+		{
+			return;
+		}
+	}
 	if (frame < vis.frame2test)
 	{
 		return;
@@ -84,7 +92,11 @@ void	light::vis_update			()
 
 	u32	frame			= Device.dwFrame;
 
-	R_occlusion::occq_result fragments = RImplementation.occq_get(vis.query_id);
+	R_occlusion::occq_result fragments = 0;
+	if (!RImplementation.occq_get(vis.query_id, fragments))
+	{
+		return;
+	}
 
 	//Log					("",fragments);
 	vis.visible			= (fragments > cullfragments);

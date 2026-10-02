@@ -115,36 +115,59 @@ void	R_occlusion::occq_end		(u32&	ID		)
 	//CHK_DX			(used[ID].Q->Issue	(D3DISSUE_END));
 	CHK_DX			(EndQuery(used[ID].Q));
 }
-R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
+bool R_occlusion::occq_get(u32& ID, occq_result& fragments)
 {
-	if (!enabled)		return 0xffffffff;
+	fragments = 0;
+	if (!enabled)
+	{
+		fragments = 0xffffffff;
+		return true;
+	}
 
 	PROF_EVENT("R_occlusion::occq_get");
-	//	Igor: prevent release crash if we issue too many queries
-	if (ID == iInvalidHandle) return 0xFFFFFFFF;
+	if (ID == iInvalidHandle)
+	{
+		fragments = 0xffffffff;
+		return true;
+	}
 
-	occq_result	fragments	= 0;
-	HRESULT hr;
-	// CHK_DX		(used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH));
-	// Msg			("get  : [%2d] - %d => %d", used[ID].order, ID, fragments);
+	HRESULT Result;
 	CTimer	T;
 	T.Start	();
 	Device.Statistic->RenderDUMP_Wait.Begin	();
 	{
 		PROF_EVENT("GPU::GetData");
-		//while	((hr=used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH))==S_FALSE) {
-		VERIFY2( ID<used.size(),make_string<const char*>("_Pos = %d, size() = %d ", ID, used.size()));
-		while	((hr=GetData(used[ID].Q, &fragments,sizeof(fragments)))==S_FALSE) 
+		if (ID >= used.size() || !used[ID].Q)
 		{
-			if (T.GetElapsed_ms_f() >= 0.1f)
+			fragments = 5;
+			ID = iInvalidHandle;
+			Device.Statistic->RenderDUMP_Wait.End();
+			return true;
+		}
+
+		if (GRHI->APILevel == ERHI_API_LAYER::D3D12)
+		{
+			Result = GetData(used[ID].Q, &fragments, sizeof(fragments));
+			if (Result == S_FALSE)
 			{
-				fragments = 5;
-				break;
+				Device.Statistic->RenderDUMP_Wait.End();
+				return false;
+			}
+		}
+		else
+		{
+			while ((Result = GetData(used[ID].Q, &fragments, sizeof(fragments))) == S_FALSE)
+			{
+				if (T.GetElapsed_ms_f() >= 0.1f)
+				{
+					fragments = 5;
+					break;
+				}
 			}
 		}
 	}
 	Device.Statistic->RenderDUMP_Wait.End	();
-	if		(hr == D3DERR_DEVICELOST)	fragments = 0xffffffff;
+	if		(Result == D3DERR_DEVICELOST)	fragments = 0xffffffff;
 
 	if (0==fragments)	RImplementation.stats.o_culled	++;
 
@@ -160,6 +183,6 @@ R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
 	// remove from used and shrink as nesessary
 	used[ID].Q			= 0;
 	fids.push_back		(ID);
-	ID					= 0;
-	return	fragments;
+	ID					= iInvalidHandle;
+	return	true;
 }

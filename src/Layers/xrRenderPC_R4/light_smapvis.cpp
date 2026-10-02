@@ -87,7 +87,12 @@ void smapvis::flushoccq()
 	{
 		return;
 	}
-	u64 fragments = RImplementation.occq_get(testQ_id);
+	u64 fragments = 0;
+	if (!RImplementation.occq_get(testQ_id, fragments))
+	{
+		testQ_frame = Device.dwFrame + 1;
+		return;
+	}
 	if (0 == fragments)
 	{
 		// this is invisible shadow-caster, register it
