@@ -29,7 +29,7 @@ void RenderSearchManagerWindow()
 		return;
 
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, kGeneralAlphaLevelForImGuiWindows));
-	if (ImGui::Begin("Search Manager"), &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SearchManager)])
+	if (ImGui::Begin("Search Manager", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SearchManager)]))
 	{
 		constexpr size_t kItemSize = sizeof(imgui_search_manager.combo_items) / sizeof(imgui_search_manager.combo_items[0]);
 		ImGui::Combo("Category", &imgui_search_manager.selected_type, imgui_search_manager.combo_items, kItemSize);
@@ -82,6 +82,21 @@ void RenderSearchManagerWindow()
 
 		ImGui::SeparatorText("Simulation");
 
+		auto teleport_to = [](const Fvector& position)
+		{
+			CActor* actor = Level().CurrentEntity() ? Level().CurrentEntity()->cast_actor() : nullptr;
+			if (!actor)
+				return;
+
+			xr_string cmd = "set_actor_position ";
+			cmd += cmd.ToString(position.x);
+			cmd += ",";
+			cmd += cmd.ToString(position.y);
+			cmd += ",";
+			cmd += cmd.ToString(position.z);
+			execute_console_command_deferred(Console, cmd.c_str());
+		};
+
 		if (ImGui::BeginTabBar("##TB_InGameSearchManager"))
 		{
 			if (ImGui::BeginTabItem("Online##TB_Online_InGameSearchManager"))
@@ -95,201 +110,72 @@ void RenderSearchManagerWindow()
 				xr_strcpy(category_name_separator, pTranslatedCategoryName.c_str());
 				ImGui::SeparatorText(category_name_separator);
 
-				auto size = Level().Objects.o_count();
-				auto filter_string_size = strlen(imgui_search_manager.search_string);
+				xr_vector<CObject*> filtered_objects;
+				const auto size = Level().Objects.o_count();
+				filtered_objects.reserve(size);
+				const bool has_filter = imgui_search_manager.search_string[0] != '\0';
 
-				if (filter_string_size)
+				for (u32 i = 0; i < size; ++i)
 				{
-					for (auto i = 0; i < size; ++i)
+					CObject* object = Level().Objects.o_get_by_iterator(i);
+					if (!object || object->H_Parent() || !imgui_search_manager.valid(object->CLS_ID))
+						continue;
+
+					CGameObject* game_object = object->cast_game_object();
+					if (game_object)
 					{
-						auto* pObject = Level().Objects.o_get_by_iterator(i);
-
-						if (pObject && pObject->H_Parent() == nullptr)
+						if (has_filter)
 						{
-							// statistics for search manager must be refactored and counting when object adds or deletes from online/offline, later
-						//	imgui_search_manager.count(pObject->CLS_ID);
+							const xr_string_view name = object->cName().c_str();
+							const xr_string translated_name = Platform::ANSI_TO_UTF8(g_pStringTable->translate(game_object->Name()).c_str());
+							if (name.find(imgui_search_manager.search_string) == xr_string_view::npos &&
+								translated_name.find(imgui_search_manager.search_string) == xr_string::npos)
+								continue;
+						}
 
-							if (imgui_search_manager.valid(pObject->CLS_ID))
-							{
-								CGameObject* pCasted = pObject->cast_game_object();
-								bool passed_filter{ true };
-								if (filter_string_size)
-								{
-									if (pCasted && pObject)
-									{
-										xr_string_view cname = pObject->cName().c_str();
-										xr_string_view translate_name = Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str();
-
-										if (cname.find(imgui_search_manager.search_string) == xr_string::npos && translate_name.find(imgui_search_manager.search_string) == xr_string::npos)
-										{
-											passed_filter = false;
-										}
-									}
-								}
-
-								if (pCasted)
-								{
-									if (imgui_search_manager.show_alive_creatures)
-									{
-										CEntity* pEntity = pCasted->cast_entity();
-
-										if (pEntity)
-										{
-											if (!pEntity->g_Alive())
-											{
-												passed_filter = false;
-											}
-										}
-										else
-										{
-											passed_filter = false;
-										}
-									}
-								}
-
-								if (passed_filter)
-								{
-									xr_string name = pObject->cName().c_str();
-
-									if (pCasted)
-									{
-										name += " ";
-										name += "[";
-										name += Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str());
-										name += "]";
-									}
-									name += "##InGame_SM_";
-									name += std::to_string(i);
-
-									if (ImGui::Button(name.c_str()))
-									{
-										CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
-
-										if (pActor)
-										{
-											xr_string cmd;
-											cmd = "set_actor_position ";
-											cmd += cmd.ToString(pObject->Position().x);
-											cmd += ",";
-											cmd += cmd.ToString(pObject->Position().y);
-											cmd += ",";
-											cmd += cmd.ToString(pObject->Position().z);
-
-											execute_console_command_deferred(Console, cmd.c_str());
-										}
-									}
-
-									if (ImGui::BeginItemTooltip())
-									{
-										ImGui::Text("system name: [%s]", pObject->cName().c_str());
-										ImGui::Text("section name: [%s]", pObject->cNameSect().c_str());
-										ImGui::Text("translated name: [%s]", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str());
-										ImGui::Text("position: %f %f %f", pObject->Position().x, pObject->Position().y, pObject->Position().z);
-
-										ImGui::EndTooltip();
-									}
-								}
-							}
+						if (imgui_search_manager.show_alive_creatures)
+						{
+							CEntity* entity = game_object->cast_entity();
+							if (!entity || !entity->g_Alive())
+								continue;
 						}
 					}
+					filtered_objects.push_back(object);
 				}
-				else
+
+				ImGuiListClipper clipper;
+				clipper.Begin(static_cast<int>(filtered_objects.size()));
+				while (clipper.Step())
 				{
-					ImGuiListClipper clipper;
-					clipper.Begin(size);
-
-					while (clipper.Step())
+					for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
 					{
-						int real_count = 0;
-						int supposed_to_be_displayed = clipper.DisplayEnd - clipper.DisplayStart;
-
-						for (size_t i = clipper.DisplayStart; i < size; ++i)
+						CObject* object = filtered_objects[i];
+						CGameObject* game_object = object->cast_game_object();
+						xr_string name = object->cName().c_str();
+						if (game_object)
 						{
-							if (real_count >= supposed_to_be_displayed)
-								break;
-
-							CObject* pObject = Level().Objects.o_get_by_iterator(i);
-
-							if (pObject && pObject->H_Parent() == nullptr)
-							{
-								// statistics for search manager must be refactored and counting when object adds or deletes from online/offline, later
-							//	imgui_search_manager.count(pObject->CLS_ID);
-
-								if (imgui_search_manager.valid(pObject->CLS_ID))
-								{
-									CGameObject* pCasted = pObject->cast_game_object();
-									bool passed_filter = true;
-
-									if (pCasted)
-									{
-										if (imgui_search_manager.show_alive_creatures)
-										{
-											CEntity* pEntity = pCasted->cast_entity();
-
-											if (pEntity)
-											{
-												if (!pEntity->g_Alive())
-												{
-													passed_filter = false;
-												}
-											}
-											else
-											{
-												passed_filter = false;
-											}
-										}
-									}
-
-									if (passed_filter)
-									{
-										++real_count;
-										xr_string name = pObject->cName().c_str();
-
-										if (pCasted)
-										{
-											name += " ";
-											name += "[";
-											name += Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str());
-											name += "]";
-										}
-										name += "##InGame_SM_";
-										name += std::to_string(i);
-
-										if (ImGui::Button(name.c_str()))
-										{
-											CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
-
-											if (pActor)
-											{
-												xr_string cmd;
-												cmd = "set_actor_position ";
-												cmd += cmd.ToString(pObject->Position().x);
-												cmd += ",";
-												cmd += cmd.ToString(pObject->Position().y);
-												cmd += ",";
-												cmd += cmd.ToString(pObject->Position().z);
-
-												execute_console_command_deferred(Console, cmd.c_str());
-											}
-										}
-
-										if (ImGui::BeginItemTooltip())
-										{
-											ImGui::Text("system name: [%s]", pObject->cName().c_str());
-											ImGui::Text("section name: [%s]", pObject->cNameSect().c_str());
-											ImGui::Text("translated name: [%s]", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str());
-											ImGui::Text("position: %f %f %f", pObject->Position().x, pObject->Position().y, pObject->Position().z);
-
-											ImGui::EndTooltip();
-										}
-									}
-								}
-							}
-
+							name += " [";
+							name += Platform::ANSI_TO_UTF8(g_pStringTable->translate(game_object->Name()).c_str());
+							name += "]";
 						}
+						name += "###object";
+
+						ImGui::PushID(static_cast<int>(object->ID()));
+						if (ImGui::Button(name.c_str()))
+							teleport_to(object->Position());
+
+						if (ImGui::BeginItemTooltip())
+						{
+							ImGui::Text("system name: [%s]", object->cName().c_str());
+							ImGui::Text("section name: [%s]", object->cNameSect().c_str());
+							if (game_object)
+								ImGui::Text("translated name: [%s]", Platform::ANSI_TO_UTF8(g_pStringTable->translate(game_object->Name()).c_str()).c_str());
+							ImGui::Text("position: %f %f %f", object->Position().x, object->Position().y, object->Position().z);
+							ImGui::EndTooltip();
+						}
+						ImGui::PopID();
 					}
 				}
-
 
 				ImGui::EndTabItem();
 			}
@@ -306,147 +192,48 @@ void RenderSearchManagerWindow()
 				ImGui::SeparatorText(category_name_separator);
 
 				const auto& objects = ai().alife().objects().objects_vec();
-				size_t total_amount = objects.size();
+				xr_vector<CSE_ALifeDynamicObject*> filtered_objects;
+				filtered_objects.reserve(objects.size());
+				const bool has_filter = imgui_search_manager.search_string[0] != '\0';
 
-				auto filter_string_size = strlen(imgui_search_manager.search_string);
-
-				// todo: think about filtering for offline objects, because they can be REAL huge up to 32k...
-				// filtering is slow because it is linear, possible variants for optimization: unordered_map for names and name_replace
-				// possible suggestions: filter when button is pressed (but you need to remember the result and render only cache version (the result of filtering), not whole vector), create additional cache structures like filter by location and etc
-				if (filter_string_size)
+				for (CSE_ALifeDynamicObject* object : objects)
 				{
-					for (size_t i = 0; i < total_amount; ++i)
+					if (!object || object->ID_Parent != ALife::INVALID_OBJECT_ID ||
+						!imgui_search_manager.valid(object->m_tClassID))
+						continue;
+
+					if (has_filter)
 					{
-						CSE_ALifeDynamicObject* pServerObject = objects[i];
-
-						if (pServerObject)
+						auto matches_filter = [](const char* name)
 						{
-							if (pServerObject->ID_Parent == ALife::INVALID_OBJECT_ID)
-							{
-								if (imgui_search_manager.valid(pServerObject->m_tClassID))
-								{
-									bool passed_filter = true;
-
-									CSE_Abstract* pAbstract = dynamic_cast<CSE_Abstract*>(pServerObject);
-
-									if (pAbstract && pServerObject)
-									{
-										bool filter_by_cname = true;
-										bool filter_by_s_name = true;
-										if (pServerObject->name_replace())
-										{
-											xr_string_view cname = pServerObject->name_replace();
-											const xr_string& translated_by_cname = Platform::ANSI_TO_UTF8(g_pStringTable->translate(cname.data()).c_str());
-											if (cname.find(imgui_search_manager.search_string) == xr_string_view::npos && translated_by_cname.find(imgui_search_manager.search_string) == xr_string::npos)
-											{
-												filter_by_cname = false;
-											}
-										}
-										else
-										{
-											filter_by_cname = false;
-										}
-
-										if (pAbstract->s_name.c_str())
-										{
-											xr_string_view s_name = pAbstract->s_name.c_str();
-
-											const xr_string& translated_by_s_name = Platform::ANSI_TO_UTF8(g_pStringTable->translate(s_name.data()).c_str());
-
-											if (s_name.find(imgui_search_manager.search_string) == xr_string_view::npos && translated_by_s_name.find(imgui_search_manager.search_string) == xr_string::npos)
-											{
-												filter_by_s_name = false;
-											}
-										}
-										else
-										{
-											filter_by_s_name = false;
-										}
-
-										passed_filter = filter_by_cname || filter_by_s_name;
-									}
-
-									string128 button_name;
-									xr_sprintf(button_name, "%s [%s]", pServerObject->name_replace() ? pServerObject->name_replace() : "", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pAbstract->s_name).c_str()).c_str());
-
-									if (passed_filter)
-									{
-										if (ImGui::Button(button_name))
-										{
-											CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
-
-											if (pActor)
-											{
-												xr_string cmd = "set_actor_position ";
-												cmd += cmd.ToString(pServerObject->Position().x);
-												cmd += ",";
-												cmd += cmd.ToString(pServerObject->Position().y);
-												cmd += ",";
-												cmd += cmd.ToString(pServerObject->Position().z);
-
-												execute_console_command_deferred(Console, cmd.c_str());
-											}
-										}
-									}
-								}
-							}
-						}
+							if (!name)
+								return false;
+							const xr_string translated_name = Platform::ANSI_TO_UTF8(g_pStringTable->translate(name).c_str());
+							return xr_string_view(name).find(imgui_search_manager.search_string) != xr_string_view::npos ||
+								translated_name.find(imgui_search_manager.search_string) != xr_string::npos;
+						};
+						if (!matches_filter(object->name_replace()) && !matches_filter(object->s_name.c_str()))
+							continue;
 					}
+					filtered_objects.push_back(object);
 				}
-				else
+
+				ImGuiListClipper clipper;
+				clipper.Begin(static_cast<int>(filtered_objects.size()));
+				while (clipper.Step())
 				{
-					ImGuiListClipper clipper;
-					clipper.Begin(total_amount);
-
-					while (clipper.Step())
+					for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
 					{
-						int real_count = 0;
-						int supposed_to_be_displayed = clipper.DisplayEnd - clipper.DisplayStart;
+						CSE_ALifeDynamicObject* object = filtered_objects[i];
+						xr_string name = object->name_replace() ? object->name_replace() : "";
+						name += " [";
+						name += Platform::ANSI_TO_UTF8(g_pStringTable->translate(object->s_name).c_str());
+						name += "]###object";
 
-						for (size_t i = clipper.DisplayStart; i < total_amount; ++i)
-						{
-							if (real_count >= supposed_to_be_displayed)
-								break;
-
-							auto* pServerObject = objects[i];
-
-							if (pServerObject)
-							{
-								if (pServerObject->ID_Parent == ALife::INVALID_OBJECT_ID)
-								{
-									// statistics for search manager must be refactored and counting when object adds or deletes from online/offline, later
-					//				imgui_search_manager.count(pServerObject->m_tClassID);
-
-									if (imgui_search_manager.valid(pServerObject->m_tClassID))
-									{
-										xr_string name = pServerObject->name_replace() ? pServerObject->name_replace() : pServerObject->name();
-										CSE_Abstract* pAbstract = smart_cast<CSE_Abstract*>(pServerObject);
-
-										string128 button_name;
-										xr_sprintf(button_name, "%s [%s]", pServerObject->name_replace() ? pServerObject->name_replace() : "", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pAbstract->s_name).c_str()).c_str());
-
-										if (ImGui::Button(button_name))
-										{
-											CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
-
-											if (pActor)
-											{
-												xr_string cmd = "set_actor_position ";
-												cmd += cmd.ToString(pServerObject->Position().x);
-												cmd += ",";
-												cmd += cmd.ToString(pServerObject->Position().y);
-												cmd += ",";
-												cmd += cmd.ToString(pServerObject->Position().z);
-
-												execute_console_command_deferred(Console, cmd.c_str());
-											}
-										}
-										++real_count;
-									}
-
-								}
-							}
-						}
+						ImGui::PushID(static_cast<int>(object->ID));
+						if (ImGui::Button(name.c_str()))
+							teleport_to(object->Position());
+						ImGui::PopID();
 					}
 				}
 
@@ -456,8 +243,8 @@ void RenderSearchManagerWindow()
 			ImGui::EndTabBar();
 		}
 
-		ImGui::End();
 	}
+	ImGui::End();
 	ImGui::PopStyleColor(1);
 }
 
