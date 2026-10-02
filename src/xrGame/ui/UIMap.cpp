@@ -547,10 +547,10 @@ void CUILevelMap::Update()
 
 	inherited::Update				();
 
-	if(m_bCursorOverWindow)
+	if (m_bCursorOverWindow && MapWnd()->m_zoom_state == CUIMapWnd::zoom_idle)
 	{
 		VERIFY(m_dwFocusReceiveTime>=0);
-		if( Device.dwTimeContinual>(m_dwFocusReceiveTime+500) )
+		if( Device.dwTimeContinual > (m_dwFocusReceiveTime + 500) )
 		{
 			if(fsimilar(MapWnd()->GlobalMap()->GetCurrentZoom().x, MapWnd()->GlobalMap()->GetMinZoom(),EPS_L ))
 				MapWnd()->ShowHintStr(this, MapName().c_str());
