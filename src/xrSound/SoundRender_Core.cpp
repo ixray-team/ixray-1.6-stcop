@@ -659,7 +659,7 @@ void CSoundRender_Core::GenerateDevicesToken()
 	SDL_free(Devices);
 }
 
-void CSoundRender_Core::SwitchAuidoDevice(const xr_string& Name)
+void CSoundRender_Core::SwitchAudioDevice(const xr_string& Name)
 {
 	if (!SoundDevices.contains(Name))
 		return;
