@@ -460,8 +460,8 @@ namespace DedicatedConsoleInput
 				GetConsoleMode(g_consoleStdIn, &g_consoleOriginalInputMode))
 			{
 				DWORD consoleMode = g_consoleOriginalInputMode;
-				consoleMode |= ENABLE_EXTENDED_FLAGS;
-				consoleMode &= ~ENABLE_QUICK_EDIT_MODE;
+				// Let the terminal handle mouse selection and clipboard copy/paste.
+				consoleMode |= ENABLE_EXTENDED_FLAGS | ENABLE_QUICK_EDIT_MODE;
 				consoleMode &= ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT);
 				consoleMode |= ENABLE_PROCESSED_INPUT;
 				consoleMode |= ENABLE_WINDOW_INPUT;
