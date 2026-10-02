@@ -21,7 +21,7 @@ public:
     virtual void net_Destroy		() override;
     virtual void shedule_Update		(u32 dt) override;
     virtual void UpdateCL			() override;
-    virtual void renderable_Render	() override;
+    virtual void renderable_Render(void* graph = nullptr) override;
 
     virtual void OnH_A_Chield		() override;
     virtual void OnH_B_Independent	(bool just_before_destroy) override;

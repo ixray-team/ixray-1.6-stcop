@@ -28,6 +28,12 @@ void XRay::Engine::PreRenderThread()
 		Device.CollectReflections();
 	}
 
+	if (Device.CollectSunCascades)
+	{
+		PROF_EVENT("Collect Sun Cascades");
+		Device.CollectSunCascades();
+	}
+
 	if (g_pGamePersistent && !g_pGamePersistent->m_pMainMenu->IsActive())
 	{
 		if (g_pGamePersistent->pEnvironment && g_pGamePersistent->pEnvironment->eff_Rain)

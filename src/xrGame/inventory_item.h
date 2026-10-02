@@ -388,7 +388,7 @@ public:
 	virtual void OnRender() override;
 #endif
 
-	virtual void renderable_Render() override;
+	virtual void renderable_Render(void* graph = nullptr) override;
 
 public:
 	virtual DLL_Pure* _construct() override;

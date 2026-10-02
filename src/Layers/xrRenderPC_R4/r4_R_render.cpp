@@ -501,6 +501,8 @@ void CRender::Render()
 	RImplementation.o.distortion = false;
 	BeginSunShadowFrame();
 
+	begin_sun_collect();
+
 	if (o.offscreen_reflecitons && !o.dx11_use_legacy_light)
 	{
 		ps_r_taa_jitter.set(0, 0, -1);

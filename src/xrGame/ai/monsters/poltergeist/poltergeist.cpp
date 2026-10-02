@@ -307,10 +307,10 @@ void CPoltergeist::Show()
 	ability()->on_show();
 }
 
-void CPoltergeist::renderable_Render()
+void CPoltergeist::renderable_Render(void* graph)
 {
 	Visual()->getVisData().hom_frame = Device.dwFrame;
-	inherited::renderable_Render();
+	inherited::renderable_Render(graph);
 }
 
 void CPoltergeist::UpdateCL()

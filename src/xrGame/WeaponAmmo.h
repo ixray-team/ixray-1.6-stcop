@@ -74,7 +74,7 @@ public:
 	virtual void					OnH_B_Chield		() override;
 	virtual void					OnH_B_Independent	(bool just_before_destroy) override;
 	virtual void					UpdateCL			() override;
-	virtual void					renderable_Render	() override;
+	virtual void					renderable_Render(void* graph = nullptr) override;
 
 	virtual bool					Useful				() const override;
 	virtual float					Weight				() const override;

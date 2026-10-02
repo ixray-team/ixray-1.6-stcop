@@ -39,7 +39,7 @@ public:
 	virtual	void				reload					(const char* section);
 	virtual void				OnH_A_Chield			();
 	virtual void				OnH_A_Independent		();
-	virtual void				renderable_Render		();
+	virtual void				renderable_Render(void* graph = nullptr);
 	virtual bool				can_be_attached			() const;
 			bool				load_attach_position	(const char* section);
 	virtual	void				afterAttach				();

@@ -81,7 +81,7 @@ public:
 	virtual void			UpdateCL			() override;
 	virtual void			shedule_Update		(u32 dt) override;
 	virtual bool			register_schedule() const override {return false;};
-	virtual void			renderable_Render	() override;
+	virtual void			renderable_Render(void* graph = nullptr) override;
 	virtual void			render_hud_mode		() override;
 	virtual bool			need_renderable		() override;
 

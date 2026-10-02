@@ -484,7 +484,7 @@ public:
 	virtual void			UpdateEx					(float fov) override; //called by owner
 
 	virtual void			shedule_Update				(u32 dt) override;
-	virtual void			renderable_Render			( ) override;
+	virtual void			renderable_Render(void* graph = nullptr) override;
 	virtual bool			bfAssignMovement			(CScriptEntityAction *tpEntityAction) override;
 	virtual bool			bfAssignObject				(CScriptEntityAction *tpEntityAction) override;
 	virtual bool			is_ai_obstacle() const override {return true;};

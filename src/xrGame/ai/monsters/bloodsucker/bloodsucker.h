@@ -200,7 +200,7 @@ public:
 
 	virtual char* get_monster_class_name () override { return (char*) "bloodsucker"; }
 
-	virtual void  renderable_Render		 () override;
+	virtual void  renderable_Render(void* graph = nullptr) override;
 
 #ifdef DEBUG
 	virtual CBaseMonster::SDebugInfo show_debug_info() override;

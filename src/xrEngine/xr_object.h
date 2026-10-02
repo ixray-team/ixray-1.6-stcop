@@ -312,7 +312,7 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	
 	// Update
 	virtual void						shedule_Update		(u32 dt) override;							// Called by sheduler
-	virtual void						renderable_Render	() override;
+	virtual void						renderable_Render(void* graph = nullptr) override;
 
 	virtual void						UpdateCL			();									// Called each frame, so no need for dt
 	virtual bool						net_Spawn			(CSE_Abstract* data);

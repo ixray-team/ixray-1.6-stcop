@@ -97,12 +97,12 @@ void CHudItemObject::UpdateCL			()
 	CHudItem::UpdateCL				();
 }
 
-void CHudItemObject::renderable_Render	()
+void CHudItemObject::renderable_Render(void* graph)
 {
-	CHudItem::renderable_Render	();
+	CHudItem::renderable_Render(graph);
 }
 
-void CHudItemObject::on_renderable_Render()
+void CHudItemObject::on_renderable_Render(void* graph)
 {
-	CInventoryItemObject::renderable_Render();
+	CInventoryItemObject::renderable_Render(graph);
 }

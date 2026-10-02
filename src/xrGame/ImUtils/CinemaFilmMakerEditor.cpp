@@ -3230,21 +3230,21 @@ public:
 		spatial_unregister();
 	}
 
-	void renderable_Render() override
+	void renderable_Render(void* graph = nullptr) override
 	{
 		if (renderable.visual == nullptr)
 		{
 			return;
 		}
 
-		::Render->set_Transform(&renderable.xform);
-		::Render->add_Visual(renderable.visual);
+		::Render->set_Transform(&renderable.xform, graph);
+		::Render->add_Visual(renderable.visual, false, graph);
 		renderable.visual->getVisData().hom_frame = Device.dwFrame;
 
 		if (ItemVisual != nullptr)
 		{
-			::Render->set_Transform(&ItemTransform);
-			::Render->add_Visual(ItemVisual);
+			::Render->set_Transform(&ItemTransform, graph);
+			::Render->add_Visual(ItemVisual, false, graph);
 			ItemVisual->getVisData().hom_frame = Device.dwFrame;
 		}
 	}

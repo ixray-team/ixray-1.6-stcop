@@ -108,7 +108,7 @@ public:
 	virtual CInventory*		GetInventory		() override {return NULL;};
 	virtual void			cam_Update			(float dt, float fov=90.0f) override;
 
-	virtual void			renderable_Render	() override;
+	virtual void			renderable_Render(void* graph = nullptr) override;
 
 	virtual bool			attach_Actor		(CGameObject* actor) override;
 	virtual void			detach_Actor		() override;

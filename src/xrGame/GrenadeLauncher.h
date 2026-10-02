@@ -21,7 +21,7 @@ public:
 	virtual void OnH_B_Independent	(bool just_before_destroy) override;
 
 	virtual void UpdateCL			() override;
-	virtual void renderable_Render	() override;
+	virtual void renderable_Render(void* graph = nullptr) override;
 
 	float	GetGrenadeVel() {return m_fGrenadeVel;}
 

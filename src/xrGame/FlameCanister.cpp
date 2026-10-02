@@ -63,10 +63,10 @@ bool CFlameCanister::Useful() const
 	return !!GetCondition();
 }
 
-void CFlameCanister::renderable_Render()
+void CFlameCanister::renderable_Render(void* graph)
 {
 	if (!m_ready_to_destroy)
-		inherited::renderable_Render();
+		inherited::renderable_Render(graph);
 }
 
 void CFlameCanister::UpdateCL()

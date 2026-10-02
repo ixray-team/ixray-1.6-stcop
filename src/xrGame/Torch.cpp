@@ -450,18 +450,18 @@ void CTorch::afterDetach()
 	Switch(false);
 }
 
-void CTorch::renderable_Render()
+void CTorch::renderable_Render(void* graph)
 {
 	if (IsGameTypeSingle())
 	{
-		inherited::renderable_Render();
+		inherited::renderable_Render(graph);
 	}
 	else
 	{
 		CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
 		if (m_switched_on && pActor != nullptr)
 		{
-			inherited::renderable_Render();
+			inherited::renderable_Render(graph);
 		}
 	}
 }

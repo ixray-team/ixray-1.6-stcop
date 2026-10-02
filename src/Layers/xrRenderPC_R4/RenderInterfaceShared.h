@@ -218,9 +218,9 @@ IRender_Target* CRender::getTarget()
 	return Target;
 }
 
-void CRender::add_Visual(IRenderVisual* V, bool Ignore, bool Force)
+void CRender::add_Visual(IRenderVisual* V, bool Ignore, void* graph, bool Force)
 {
-	GraphMain.add_leafs_Dynamic((dxRender_Visual*)V, Ignore, Force);
+	TargetGraph(graph).add_leafs_Dynamic((dxRender_Visual*)V, Ignore, Force);
 }
 
 void CRender::rmNear()
