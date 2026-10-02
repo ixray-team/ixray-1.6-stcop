@@ -192,7 +192,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		{
 			C.r_Pass(vs, "forwrad_interior", FALSE, TRUE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 
-			C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
+			C.RS.SetRS(D3DRS_ZFUNC, RHI_COMPARISON_EQUAL);
 			C.SetPassPriority(3);
 
 #ifndef _EDITOR
@@ -229,7 +229,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 			C.r_dx10Sampler("smp_linear");
 		
 			C.r_End(false);
-			C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_LESS_EQUAL);
+			C.RS.SetRS(D3DRS_ZFUNC, RHI_COMPARISON_LESS_EQUAL);
 		}
 	}
 

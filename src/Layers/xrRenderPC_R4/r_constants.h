@@ -73,8 +73,8 @@ public:
 private:
 	void					fatal		(const char* s);
 
-	bool					parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination, int fixed);
-	bool					parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
+	bool					parseConstants(const RHIShaderBufferDesc* pTable, u32 destination, int fixed);
+	bool					parseResources(const RHIShaderReflection* pReflection, int ResNum, u32 destination);
 
 public:
 	R_constant_table					() = default;
@@ -84,7 +84,7 @@ public:
 
 	void					_copy		(const R_constant_table& Other);
 	void					clear		();
-	bool					parse		(void* desc, u32 destination);
+	bool					parse		(const RHIShaderReflection* desc, u32 destination);
 	void					merge		(R_constant_table* C);
 	ref_constant			get			(const char*		name);		// slow search
 	ref_constant			get			(shared_str&	name);		// fast search

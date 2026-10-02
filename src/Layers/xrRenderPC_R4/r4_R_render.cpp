@@ -443,7 +443,7 @@ void CRender::RenderUI(Fcolor* color)
 void CRender::Render()
 {
 	GPU_EVENT(CRender_Render);
-	VERIFY(0 == mapDistort.size() + mapHUDDistort.size());
+	VERIFY(0 == GraphMain.mapDistort.size() + GraphMain.mapHUDDistort.size());
 
 	bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
 
@@ -490,8 +490,8 @@ void CRender::Render()
 
 	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
 	{
-		int32_t jitterPhaseCount = ffxFsr3UpscalerGetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
-		ffxFsr3UpscalerGetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
+		s32 jitterPhaseCount = g_Fsr3Wrapper.GetJitterPhaseCount(static_cast<u32>(RCache.get_width()), static_cast<u32>(RCache.get_target_width()));
+		g_Fsr3Wrapper.GetJitterOffset(ps_r_taa_jitter_full.x, ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
 		ps_r_taa_jitter_full = ps_r_taa_jitter_full.mul(ps_r_taa_jitter_scale);
 
@@ -814,12 +814,12 @@ void CRender::Render()
 		Target->phase_combine();
 	}
 
-	VERIFY(0 == mapDistort.size() + mapHUDDistort.size());
+	VERIFY(0 == GraphMain.mapDistort.size() + GraphMain.mapHUDDistort.size());
 }
 
 void CRender::render_forward()
 {
-	VERIFY(0 == mapDistort.size() + mapHUDDistort.size());
+	VERIFY(0 == GraphMain.mapDistort.size() + GraphMain.mapHUDDistort.size());
 	RImplementation.o.distortion = RImplementation.o.distortion_enabled;
 
 	// level enable priority "1"

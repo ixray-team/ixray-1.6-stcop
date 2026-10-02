@@ -2,6 +2,14 @@
 #include "RHITypes.h"
 #include "RHIEnums.h"
 
+class RHIObject;
+class IRHIShaderDeclaration;
+class IRHIStateManager;
+
+struct RHIRasterizerDesc;
+struct RHIDepthStencilDesc;
+struct RHIBlendDesc;
+
 class IRHIDevice
 {
 public:
@@ -62,6 +70,41 @@ public:
 	// Render Taget setup
 	virtual void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIUnorderedAccessView* const* ppRenderUAViews) = 0;
 	virtual void SetDSV(IRHIDepthStencilView* pDepthStencilView) = 0;
+
+
+    virtual void* GetContext() = 0;
+    virtual void* GetSwapchain() = 0;
+    virtual void BeginFrame() = 0;
+    virtual IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize) = 0;
+    virtual IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc) = 0;
+    virtual void SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type) = 0;
+    virtual void ClearVertexBuffer(u32 vb_stride) = 0;
+    virtual void ClearIndexBuffer() = 0;
+    virtual void SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type) = 0;
+    virtual HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface) = 0;
+
+    virtual HRESULT CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader) = 0;
+    virtual HRESULT CreateInputLayout(const RHIInputElementDesc* desc, size_t count, const void* code, size_t size, RHIObject** out_layout) = 0;
+    virtual void SetInputLayout(RHIObject* layout) = 0;
+    virtual void Dispatch(u32 x, u32 y, u32 z) = 0;
+    virtual HRESULT CreateSamplerState(const RHISampleDesc& desc, RHIObject** out_state) = 0;
+    virtual void SetSamplers(u32 start, u32 count, RHIObject* const* states, ERHI_SHADER_TYPE type) = 0;
+    virtual void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views) = 0;
+    virtual void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts) = 0;
+    virtual HRESULT CreateOcclusionQuery(RHIObject** out_query) = 0;
+    virtual HRESULT GetQueryData(RHIObject* query, void* data, u32 size, u32 flags) = 0;
+    virtual void BeginQuery(RHIObject* query) = 0;
+    virtual void EndQuery(RHIObject* query) = 0;
+    virtual IRHISurface* CreateTexture1D(const RHITextureDesc& desc, const RHISubResource& data) = 0;
+    virtual void CopySwapchain(IRHISurface* dest) = 0;
+    virtual bool SupportsTextureSampling(ERHI_FORMAT format, u32& out_flags) = 0;
+    virtual void* GetState(const RHIRasterizerDesc& desc) = 0;
+    virtual void* GetState(const RHIDepthStencilDesc& desc) = 0;
+    virtual void* GetState(const RHIBlendDesc& desc) = 0;
+    virtual HRESULT CreateBlendState(const RHIBlendDesc& desc, RHIObject** out_state) = 0;
+    virtual void SetBlendState(RHIObject* state, const float* factor, u32 mask) = 0;
+    virtual void SetRawBlendState(void* state, const float* factor, u32 mask) = 0;
+    virtual bool SetDepthBounds(bool enable, float minimum, float maximum) { return false; }
 
 	virtual void EvictManagedResources() {};
 };

@@ -216,48 +216,16 @@ void dx103DFluidRenderer::CreateJitterTexture()
 		data[i] = (unsigned char) (rand()/float(RAND_MAX)*256);
 	}
 
-	D3D_TEXTURE2D_DESC desc;
-	desc.Width = 256;
-	desc.Height = 256;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_R8_UNORM;
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	D3D_SUBRESOURCE_DATA dataDesc;
-	dataDesc.pSysMem = data;
-	dataDesc.SysMemPitch = 256;
-
-	ID3DTexture2D* NoiseTexture = nullptr;
-	CHK_DX( RDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture));
-
+	RHITextureDesc desc(256, 256, ERHI_FORMAT::R8_UNORM);
+	desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+	RHISubResource data_desc;
+	data_desc.Data = data;
+	data_desc.RowPitch = 256;
+	IRHISurface* surface = GRHI->CreateTexture2D(desc, data_desc);
+	R_ASSERT(surface);
 	m_JitterTexture = dxRenderDeviceRender::Instance().Resources->_CreateTexture("$user$NVjitterTex");
-	
-	// Create RHITextureDesc for the texture
-	D3D_TEXTURE2D_DESC desc2D;
-	NoiseTexture->GetDesc(&desc2D);
-	RHITextureDesc rhiDesc;
-	rhiDesc.Width = desc2D.Width;
-	rhiDesc.Height = desc2D.Height;
-	rhiDesc.Depth = 1;
-	rhiDesc.MipLevels = desc2D.MipLevels;
-	rhiDesc.Format = (ERHI_FORMAT)desc2D.Format;
-	rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
-	rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
-	rhiDesc.CPUAccessFlags = desc2D.CPUAccessFlags;
-	rhiDesc.MiscFlags = desc2D.MiscFlags;
-	
-	// Use GRHI to create the surface
-	IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(NoiseTexture, 0, rhiDesc);
-	m_JitterTexture->surface_set(rhiSurface);
-
-	_RELEASE(NoiseTexture);
+	m_JitterTexture->surface_set(surface);
+	_RELEASE(surface);
 }
 
 namespace
@@ -324,46 +292,16 @@ void dx103DFluidRenderer::CreateHHGGTexture()
 
 	XMConvertFloatToHalfStream(converted, sizeof(converted[0]), data, sizeof(data[0]), 4 * iNumSamples);
 
-	D3D_TEXTURE1D_DESC desc;
-	desc.Width = iNumSamples;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	D3D_SUBRESOURCE_DATA dataDesc;
-	dataDesc.pSysMem = converted;
-	dataDesc.SysMemPitch = sizeof(converted);
-
-	ID3DTexture1D* HHGGTexture = nullptr;
-
-	CHK_DX( RDevice->CreateTexture1D(&desc, &dataDesc, &HHGGTexture));
-
+	RHITextureDesc desc(iNumSamples, 1, ERHI_FORMAT::R16G16B16A16_FLOAT);
+	desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+	RHISubResource data_desc;
+	data_desc.Data = converted;
+	data_desc.RowPitch = sizeof(converted);
+	IRHISurface* surface = GRHI->CreateTexture1D(desc, data_desc);
+	R_ASSERT(surface);
 	m_HHGGTexture = dxRenderDeviceRender::Instance().Resources->_CreateTexture("$user$NVHHGGTex");
-	
-	D3D_TEXTURE1D_DESC desc1D;
-	HHGGTexture->GetDesc(&desc1D);
-
-	RHITextureDesc rhiDesc;
-	rhiDesc.Width = desc1D.Width;
-	rhiDesc.Height = 1;
-	rhiDesc.Depth = 1;
-	rhiDesc.MipLevels = desc1D.MipLevels;
-	rhiDesc.Format = (ERHI_FORMAT)desc1D.Format;
-	rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
-	rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
-	rhiDesc.CPUAccessFlags = desc1D.CPUAccessFlags;
-	rhiDesc.MiscFlags = desc1D.MiscFlags;
-	
-	IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(HHGGTexture, 0, rhiDesc);
-	m_HHGGTexture->surface_set(rhiSurface);
-
-	_RELEASE(HHGGTexture);
+	m_HHGGTexture->surface_set(surface);
+	_RELEASE(surface);
 }
 
 void dx103DFluidRenderer::SetScreenSize( int width, int height )

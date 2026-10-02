@@ -65,7 +65,7 @@ xr_token qscale_mode_token[] =
 	{ "st_filter_linear", 1},
 	{ "st_filter_dlss", 2},
 	{ "st_filter_fsr", 3},
-//	{ "st_filter_xess", 4},
+	{ "st_filter_xess", 4},
 	{ nullptr, 0 }
 };
 
@@ -709,7 +709,7 @@ public:
 			//        [](void *p) { operator delete(p); },
 			//        []() { /* Do some TLS initialization here if needed */ }
 			//);
-			OPTICK_START_CAPTURE(Optick::Mode::Type(Optick::Mode::INSTRUMENTATION | Optick::Mode::TAGS | Optick::Mode::AUTOSAMPLING | Optick::Mode::SWITCH_CONTEXT | Optick::Mode::IO | Optick::Mode::SYS_CALLS | Optick::Mode::OTHER_PROCESSES));
+			OPTICK_START_CAPTURE(Optick::Mode::Type(Optick::Mode::INSTRUMENTATION | Optick::Mode::TAGS | Optick::Mode::AUTOSAMPLING | Optick::Mode::SWITCH_CONTEXT | Optick::Mode::IO | Optick::Mode::GPU | Optick::Mode::SYS_CALLS | Optick::Mode::OTHER_PROCESSES));
 			start_profile = true;
 		}
 		else
@@ -893,7 +893,16 @@ void CCC_Register()
 	CMD4(CCC_Float, "cam_hud_viewport_near", &Device.fHUDViewportNear, 0.001f, 0.1f);
 
 	if(!Device.IsEditorMode()) {
-		CMD1(CCC_r2, "renderer");
+        static xr_token graphicsAPITokens[] =
+        {
+            { "d3d11", ERHI_API_LAYER::D3D11 },
+#ifdef IXR_WINDOWS
+            { "d3d12", ERHI_API_LAYER::D3D12 },
+#endif
+            { nullptr, -1 }
+        };
+        CMD3(CCC_Token, "renderer_api", &g_graphicsAPI, graphicsAPITokens);
+        CMD1(CCC_r2, "renderer");
 	}
 	else {
 		psDeviceFlags.set(rsR2, true);

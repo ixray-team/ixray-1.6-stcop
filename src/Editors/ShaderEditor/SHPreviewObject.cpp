@@ -4,7 +4,7 @@
 #include "../xrECore/Editor/EditMesh.h"
 #include <algorithm>
 
-static DXGI_FORMAT CompTypeToFormat(D3D_REGISTER_COMPONENT_TYPE e, UINT mask, u32& outSize)
+static ERHI_FORMAT CompTypeToFormat(ERHI_SHADER_COMPONENT_TYPE e, UINT mask, u32& outSize)
 {
 	UINT comps = 0;
 	for (UINT b = 0; b < 4; b++)
@@ -12,20 +12,20 @@ static DXGI_FORMAT CompTypeToFormat(D3D_REGISTER_COMPONENT_TYPE e, UINT mask, u3
 	if (comps == 0) comps = 1;
 	outSize = comps * 4; // xr shaders use 32-bit vertex components
 
-	DXGI_FORMAT fmt = DXGI_FORMAT_UNKNOWN;
+	ERHI_FORMAT fmt = ERHI_FORMAT::UNKNOWN;
 	switch (e)
 	{
-	case D3D_REGISTER_COMPONENT_FLOAT32:
-		switch (comps) { case 1: fmt = DXGI_FORMAT_R32_FLOAT; break; case 2: fmt = DXGI_FORMAT_R32G32_FLOAT; break; case 3: fmt = DXGI_FORMAT_R32G32B32_FLOAT; break; default: fmt = DXGI_FORMAT_R32G32B32A32_FLOAT; break; }
+	case ERHI_SHADER_COMPONENT_TYPE::FLOAT32:
+		switch (comps) { case 1: fmt = ERHI_FORMAT::R32_FLOAT; break; case 2: fmt = ERHI_FORMAT::R32G32_FLOAT; break; case 3: fmt = ERHI_FORMAT::R32G32B32_FLOAT; break; default: fmt = ERHI_FORMAT::R32G32B32A32_FLOAT; break; }
 		break;
-	case D3D_REGISTER_COMPONENT_UINT32:
-		switch (comps) { case 1: fmt = DXGI_FORMAT_R32_UINT; break; case 2: fmt = DXGI_FORMAT_R32G32_UINT; break; case 3: fmt = DXGI_FORMAT_R32G32B32_UINT; break; default: fmt = DXGI_FORMAT_R32G32B32A32_UINT; break; }
+	case ERHI_SHADER_COMPONENT_TYPE::UINT32:
+		switch (comps) { case 1: fmt = ERHI_FORMAT::R32_UINT; break; case 2: fmt = ERHI_FORMAT::R32G32_UINT; break; case 3: fmt = ERHI_FORMAT::R32G32B32_UINT; break; default: fmt = ERHI_FORMAT::R32G32B32A32_UINT; break; }
 		break;
-	case D3D_REGISTER_COMPONENT_SINT32:
-		switch (comps) { case 1: fmt = DXGI_FORMAT_R32_SINT; break; case 2: fmt = DXGI_FORMAT_R32G32_SINT; break; case 3: fmt = DXGI_FORMAT_R32G32B32_SINT; break; default: fmt = DXGI_FORMAT_R32G32B32A32_SINT; break; }
+	case ERHI_SHADER_COMPONENT_TYPE::SINT32:
+		switch (comps) { case 1: fmt = ERHI_FORMAT::R32_SINT; break; case 2: fmt = ERHI_FORMAT::R32G32_SINT; break; case 3: fmt = ERHI_FORMAT::R32G32B32_SINT; break; default: fmt = ERHI_FORMAT::R32G32B32A32_SINT; break; }
 		break;
 	default:
-		switch (comps) { case 1: fmt = DXGI_FORMAT_R32_FLOAT; break; case 2: fmt = DXGI_FORMAT_R32G32_FLOAT; break; case 3: fmt = DXGI_FORMAT_R32G32B32_FLOAT; break; default: fmt = DXGI_FORMAT_R32G32B32A32_FLOAT; break; }
+		switch (comps) { case 1: fmt = ERHI_FORMAT::R32_FLOAT; break; case 2: fmt = ERHI_FORMAT::R32G32_FLOAT; break; case 3: fmt = ERHI_FORMAT::R32G32B32_FLOAT; break; default: fmt = ERHI_FORMAT::R32G32B32A32_FLOAT; break; }
 		break;
 	}
 	return fmt;
@@ -52,33 +52,20 @@ static void LogDeclaration(const char* title, const xr_vector<RHIInputElementDes
 	}
 }
 
-bool CPreviewObject::EnumerateVSInputs(ID3DBlob* signature, xr_vector<SVSInput>& out)
+bool CPreviewObject::EnumerateVSInputs(RHIBlob* signature, xr_vector<SVSInput>& out)
 {
 	if (!signature) return false;
-	ID3D11ShaderReflection* reflect = nullptr;
-	HRESULT hr = D3DReflect(signature->GetBufferPointer(), signature->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&reflect);
-	if (FAILED(hr) || !reflect) return false;
-
-	D3D11_SHADER_DESC sd;
-	if (FAILED(reflect->GetDesc(&sd)))
-	{
-		reflect->Release();
+	RHIShaderReflection reflection;
+	if (FAILED(GRHI->ReflectShader(signature->GetBufferPointer(), signature->GetBufferSize(), reflection))) {
 		return false;
 	}
-
-	for (UINT i = 0; i < sd.InputParameters; i++)
-	{
-		D3D11_SIGNATURE_PARAMETER_DESC spd;
-		if (FAILED(reflect->GetInputParameterDesc(i, &spd)))
-			continue;
-
-		SVSInput in;
-		in.semantic = spd.SemanticName;
-		in.index = spd.SemanticIndex;
-		in.format = (ERHI_FORMAT)CompTypeToFormat(spd.ComponentType, spd.Mask, in.byteSize);
-		out.push_back(in);
+	for (const auto& input : reflection.Inputs) {
+		SVSInput value;
+		value.semantic = input.SemanticName.c_str();
+		value.index = input.SemanticIndex;
+		value.format = CompTypeToFormat(input.ComponentType, input.Mask, value.byteSize);
+		out.push_back(value);
 	}
-	reflect->Release();
 	return true;
 }
 
@@ -93,7 +80,7 @@ CPreviewObject::~CPreviewObject()
 	VSSignature = nullptr;
 }
 
-void CPreviewObject::SetVSSignature(ID3DBlob* sig)
+void CPreviewObject::SetVSSignature(RHIBlob* sig)
 {
 	VSSignature = sig;
 	Required.clear();

@@ -25,12 +25,14 @@
 #include "RHIDevice.h"
 #include "RHIGPUMark.h"
 #include "RHITypes.h"
+#include "RHIStateTypes.h"
+#include "RHIResource.h"
 #include "RHIShaderCompiler.h"
 #include "RHIShaderDeclaration.h"
 #include "RHIDriversExt.h"
 #include "RHIShaderResourceCache.h"
 #include "RHIStateManager.h"
-#include "Drivers/AMDAntiLag.h"
+class CAMDAntiLag;
 
 enum
 {
@@ -63,6 +65,7 @@ enum
 };
 
 extern RHI_API u32 psCurrentVidMode[2];
+extern RHI_API u32 g_graphicsAPI;
 extern RHI_API Flags32 psDeviceFlags;
 extern RHI_API Ivector2 HalfTarget;
 
@@ -117,7 +120,36 @@ public:
 	[[nodiscard]] IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize);
 
 	void SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type);
-	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
+	void SetShader(RHIObject* shader, ERHI_SHADER_TYPE type);
+	void Dispatch(u32 x, u32 y, u32 z);
+	HRESULT CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader);
+	HRESULT CreateInputLayout(const RHIInputElementDesc* desc, size_t count, const void* code, size_t size, RHIObject** out_layout);
+	void SetInputLayout(RHIObject* layout);
+	HRESULT CreateSamplerState(const RHISampleDesc& desc, RHIObject** out_state);
+	void SetSamplers(u32 start, u32 count, RHIObject* const* states, ERHI_SHADER_TYPE type);
+	void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views);
+	void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts = nullptr);
+	HRESULT CreateOcclusionQuery(RHIObject** out_query);
+	HRESULT GetQueryData(RHIObject* query, void* data, u32 size, u32 flags);
+	void BeginQuery(RHIObject* query);
+	void EndQuery(RHIObject* query);
+	HRESULT ReflectShader(const void* code, size_t size, RHIShaderReflection& out_reflection);
+	HRESULT GetInputSignature(const void* code, size_t size, RHIBlob** out_blob);
+	HRESULT CreateBlob(size_t size, RHIBlob** out_blob);
+	HRESULT DisassembleShader(const void* code, size_t size, RHIBlob** out_blob);
+	HRESULT CompileShader(const void* source, size_t size, const char* name, const RHIShaderMacro* macros, IRHIShaderInclude* include, const char* entry, const char* target, u32 flags, RHIBlob** out_code, RHIBlob** out_errors);
+	void* GetState(const RHIRasterizerDesc& desc);
+	void* GetState(const RHIDepthStencilDesc& desc);
+	void* GetState(const RHIBlendDesc& desc);
+	HRESULT CreateBlendState(const RHIBlendDesc& desc, RHIObject** out_state);
+	void SetBlendState(RHIObject* state, const float* factor, u32 mask);
+	void SetRawBlendState(void* state, const float* factor, u32 mask);
+	IRHISurface* CreateTexture1D(const RHITextureDesc& desc, const RHISubResource& data);
+	void CopySwapchain(IRHISurface* dest);
+	bool SupportsTextureSampling(ERHI_FORMAT format, u32& out_flags);
+	HRESULT GetDDSMetadata(const void* data, size_t size, RHITextureMetadata& out_metadata);
+	HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface);
+	HRESULT EncodeRenderTarget(IRHIRenderTargetView* target, u32 width, u32 height, u32 format, bool linear, bool srgb, xr_vector<u8>& out_data);
 	void SetViewport(RHIViewport& VP);
 	void SetScissorRect(Irect* R);
 
@@ -130,6 +162,7 @@ public:
 	IRHIRenderTargetView* GetRenderTargetView(size_t ID) const;
 
 	void GPUStatsBegin() const;
+	void CollectGPUProfiler();
 	const RHI_GPU_EVENT& GPUStats() const;
 	void GPUStatsEnd() const;
 
@@ -160,13 +193,18 @@ public:
 	IRHIStateManager* StateManager = nullptr;
 
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;
+	bool UsesDXIL(char stage = 0) const
+	{
+		const char* dxbcStages = getenv("IXR_DXBC_STAGES");
+		return APILevel == ERHI_API_LAYER::D3D12 && !Core.ParamsData.test(ECoreParams::dxbc) && !(stage && dxbcStages && strchr(dxbcStages, stage));
+	}
 	
 	bool GPUStatsEnable = false;
 	IRHIGPU* DriverExt = nullptr;
 	CAMDAntiLag* DriverAntiLag = nullptr;
 
 private:
-	void* Shaders[RHI_SHADERS_TYPE_SIZE];
+	void* Shaders[RHI_SHADERS_TYPE_SIZE] = {};
 };
 
 extern RHI_API CRHI* GRHI;

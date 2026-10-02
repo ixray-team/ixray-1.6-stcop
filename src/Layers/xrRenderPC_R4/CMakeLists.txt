@@ -56,21 +56,11 @@ target_compile_definitions(xrRender_R4 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrRender_R4 PUBLIC xrEngineCore)
+target_link_libraries(xrRender_R4 PRIVATE xrRHI)
 target_link_libraries(xrRender_R4 PUBLIC NvTriStrip)
 target_link_libraries(xrRender_R4 PUBLIC lunasvg)
 
-if (WIN32)
-	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR3_DX11)
-	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR3)
-
-	target_link_libraries(xrRender_R4 PUBLIC NVIDIA::DLSS)
-	target_link_libraries(xrRender_R4 PUBLIC DirectX::Tex)
-	target_link_libraries(xrRender_R4 PUBLIC DirectX::Mesh)
-	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::D3D11)
-	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::DXGI)
-	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::DXGUID)
-	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::D3DCompiler)
-else()
+if (NOT WIN32)
     target_compile_definitions(xrRender_R4 PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
 endif()
 

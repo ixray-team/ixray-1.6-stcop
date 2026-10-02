@@ -4,7 +4,7 @@ class dx10ConstantBuffer :
 	public xr_resource_named
 {
 public:
-	dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
+	dx10ConstantBuffer(const RHIShaderBufferDesc* pTable);
 	~dx10ConstantBuffer();
 
 	bool			Similar(dx10ConstantBuffer &_in);
@@ -36,11 +36,11 @@ private:
 
 private:
 	shared_str							m_strBufferName;
-	D3D_CBUFFER_TYPE					m_eBufferType;
+	u32					m_eBufferType;
 
 	//	Buffer data description
 	u32									m_uiMembersCRC;
-	xr_vector<D3D_SHADER_TYPE_DESC>	m_MembersList;
+	xr_vector<RHIShaderTypeDesc>	m_MembersList;
 	xr_vector<shared_str>				m_MembersNames;
 
 	IRHIBuffer*							m_pBuffer;

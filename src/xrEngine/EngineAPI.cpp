@@ -265,7 +265,7 @@ void CEngineAPI::CreateRendererList()
 
 ERHI_API_LAYER CEngineAPI::GetAPI()
 {
-	return ERHI_API_LAYER::D3D11;
+	return GRHI && GRHI->DevicePtr ? GRHI->APILevel : (ERHI_API_LAYER)g_graphicsAPI;
 }
 
 thread_local int SkinningMode = -1;

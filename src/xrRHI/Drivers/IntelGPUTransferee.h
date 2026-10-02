@@ -12,5 +12,5 @@ public:
 	virtual u32	 GetGPUCount() { return 1; }
 
 	virtual CNvReader* GetNV() override { return nullptr; }
-	virtual bool SetDepthBounds(bool, float zMin, float zMax) override { return false; };
+	virtual bool SetDepthBounds(bool enable, float zMin, float zMax) override;
 };

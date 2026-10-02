@@ -4,7 +4,6 @@
 #include "../../xrEngine/Render.h"
 #include "../../xrRHI/RHI.h"
 
-#include <DirectXTex.h>
 
 class ScreenshotManager
 {

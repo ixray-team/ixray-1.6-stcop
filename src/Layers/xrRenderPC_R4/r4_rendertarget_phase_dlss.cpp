@@ -1,11 +1,12 @@
 #include "stdafx.h"
 
 #include "OverlayAPI/DLSSWrapper.h"
+extern ENGINE_API u32 ps_render_scale_preset;
+extern ENGINE_API float ps_render_scale;
 
 void CRenderTarget::init_dlss()
 {
 	DLSSWrapper::ContextParameters initParams;
-	initParams.device = RDevice;
 
 	initParams.displaySize = { 
 		(int)RCache.get_target_width(),
@@ -17,6 +18,8 @@ void CRenderTarget::init_dlss()
 		(int)RCache.get_height() 
 	};
 
+	initParams.preset = ps_render_scale_preset;
+	initParams.scale = ps_render_scale;
 	g_DLSSWrapper.Resize(initParams);
 }
 
@@ -25,17 +28,16 @@ bool CRenderTarget::phase_dlss()
 	GPU_EVENT(DLSS);
 
 	DLSSWrapper::DrawParameters dlssParams = {};
-	dlssParams.deviceContext = RContext;
 
-	dlssParams.unresolvedColorResource = (ID3D11Texture2D*)rt_Generic_0->pSurface->GetRawTexture();
-	dlssParams.motionvectorResource = (ID3D11Texture2D*)rt_Velocity->pSurface->GetRawTexture();
-	dlssParams.depthbufferResource = (ID3D11Texture2D*)rt_Position->pSurface->GetRawTexture();
+	dlssParams.unresolvedColorResource = rt_Generic_0->pSurface;
+	dlssParams.motionvectorResource = rt_Velocity->pSurface;
+	dlssParams.depthbufferResource = rt_Position->pSurface;
 
 	dlssParams.exposureResource = nullptr;
 	dlssParams.reactiveMapResource = nullptr;
 	dlssParams.transparencyAndCompositionResource = nullptr;
 
-	dlssParams.resolvedColorResource = (ID3D11Texture2D*)rt_Generic->pSurface->GetRawTexture();
+	dlssParams.resolvedColorResource = rt_Generic->pSurface;
 
 	dlssParams.renderWidth = (int)RCache.get_width();
 	dlssParams.renderHeight = (int)RCache.get_height();

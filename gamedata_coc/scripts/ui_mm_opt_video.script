@@ -19,6 +19,7 @@ function opt_video:InitControls(x, y, xml, handler)
 	self.focusList = {}
 	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
 
+	handler:addComboBox(self, true, "ui_mm_graphics_api", "renderer_api", 2, false, system_depends.sdSystemRestart)
 	handler.combo_renderer = handler:addComboBox(self, true, "ui_mm_renderer", "renderer", 3, false, system_depends.sdSystemRestart, "combo_renderer")
 	handler.combo_preset = handler:addComboBox(self, true, "ui_mm_quality_presets", "_preset", 6, false, system_depends.sdSystemRestart, "combo_preset")
 	handler:addComboBox(self, true, "ui_mm_resolution", "vid_mode", 7, false, system_depends.sdVidRestart)

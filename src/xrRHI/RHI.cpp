@@ -1,10 +1,15 @@
 #include "RHI.h"
 
 #include "D3D11/Device.h"
+#ifdef IXR_WINDOWS
+#include "D3D12/Device.h"
+#endif
 #include "D3D11/DX11GPUEvents.h"
 #include "D3D11/DX11ShaderDeclaration.h"
 #include "D3D11/DX11ShaderResourceStateCache.h"
 #include "D3D11/RHIStateManagerDX11.h"
+#include "Drivers/AMDAntiLag.h"
+#include "D3D11/RHIProfiler.h"
 
 #include <DirectXMesh.h>
 
@@ -16,15 +21,15 @@
 
 #include "Private/RHIRenderViewManager.h"
 
+RHI_API u32 g_graphicsAPI = ERHI_API_LAYER::D3D11;
 RHI_API u32 psCurrentVidMode[2] = { 1024,768 };
 RHI_API Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | rsDrawStatic | rsDrawDynamic | rsDeviceActive | mtParticles };
 RHI_API Ivector2 HalfTarget = { 0, 0 };
 RHI_API void* g_pAnnotation = nullptr;
 RHI_API CRHI* GRHI = nullptr;
 
-#ifdef IXRAY_PROFILER_TRACY
-	#include <tracy/TracyD3D11.hpp>
-	RHI_API TracyD3D11Ctx g_tracyD3D11GPUContext = nullptr;
+#if defined(IXRAY_PROFILER_TRACY) && defined(IXR_WINDOWS)
+	TracyD3D11Ctx g_tracyD3D11GPUContext = nullptr;
 #endif
 
 CRHI::CRHI()
@@ -35,9 +40,9 @@ CRHI::~CRHI()
 {
 	GRHIRenderViewManager.Clear();
 
-	xr_delete(DevicePtr);
 	xr_delete(ShaderResourceCache);
 	xr_delete(StateManager);
+	xr_delete(DevicePtr);
 	xr_delete(DriverExt);
 	xr_delete(ShaderCompiler);
 	xr_delete(DriverAntiLag);
@@ -79,20 +84,35 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 			ShaderResourceCache = new DX11ShaderResourceStateCache((ID3D11DeviceContext*)GetContext());
 			StateManager = new RHIStateManagerDX11(static_cast<ID3D11DeviceContext*>(GetContext()));
 			DriverAntiLag = new CAMDAntiLag();
-#ifdef IXRAY_PROFILER_TRACY
-			g_tracyD3D11GPUContext = PROF_GPU_CTX_CREATE((ID3D11Device*)DevicePtr->RawDevice, (ID3D11DeviceContext*)GetContext());
+#if defined(IXRAY_PROFILER_TRACY) && defined(IXR_WINDOWS)
+			g_tracyD3D11GPUContext = TracyD3D11Context((ID3D11Device*)DevicePtr->RawDevice, (ID3D11DeviceContext*)GetContext());
 #endif
 			break;
 		}
-	}
+        #ifdef IXR_WINDOWS
+            case ERHI_API_LAYER::D3D12:
+            {
+                auto device = new InternalDevice12;
+                DevicePtr = device;
+                ShaderResourceCache = device->CreateResourceCache();
+                StateManager = device->CreateStateManager();
+                break;
+            }
+        #endif
+        }
 
-	ShaderCompiler = new CRHIShaderCompilerShell(APILevel);
+    R_ASSERT2(DevicePtr, "Unsupported graphics API");
+    ShaderCompiler = new CRHIShaderCompilerShell(APILevel);
 
 	return DevicePtr;
 }
 
 void CRHI::BeginFrame()
 {
+    if (DevicePtr)
+    {
+        DevicePtr->BeginFrame();
+    }
 	if (DriverAntiLag != nullptr)
 	{
 		DriverAntiLag->Update();
@@ -106,17 +126,7 @@ void CRHI::ResizeBuffers(u32 Width, u32 Height)
 
 void* CRHI::GetContext()
 {
-	if (APILevel == ERHI_API_LAYER::NOT_CREATED)
-	{
-		return nullptr;
-	}
-	else if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		return ((InternalDevice11*)DevicePtr)->HWRenderContext;
-	}
-
-	VERIFY(!"Unsupported");
-	return nullptr;
+    return DevicePtr ? DevicePtr->GetContext() : nullptr;
 }
 
 void* CRHI::GetImmediateContext()
@@ -148,6 +158,13 @@ void CRHI::ReleaseDeferredContext(void* context)
 
 IRHIStateManager* CRHI::CreateStateManager(void* context)
 {
+#ifdef IXR_WINDOWS
+    if (APILevel == ERHI_API_LAYER::D3D12)
+    {
+        R_ASSERT(!context || context == GetContext());
+        return static_cast<InternalDevice12*>(DevicePtr)->CreateStateManager();
+    }
+#endif
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
 		auto* dxContext = context
@@ -168,17 +185,7 @@ void CRHI::DestroyStateManager(IRHIStateManager* manager)
 
 void* CRHI::GetSwapchain()
 {
-	if (APILevel == ERHI_API_LAYER::NOT_CREATED)
-	{
-		return nullptr;
-	}
-	else  if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		return ((InternalDevice11*)DevicePtr)->HWSwapchain;
-	}
-
-	VERIFY(!"Unsupported");
-	return nullptr;
+    return DevicePtr ? DevicePtr->GetSwapchain() : nullptr;
 }
 
 void CRHI::ClearRawTarget(void* Target, ERTColor Transparent)
@@ -361,25 +368,7 @@ IRHISurface* CRHI::CreateDepthStencil(const RHITextureDesc& desc)
 
 IRHIShaderResourceView* CRHI::CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc)
 {
-	if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		ID3D11Device* DxDevice = (ID3D11Device*)((InternalDevice11*)DevicePtr)->RawDevice;
-		D3D11_SHADER_RESOURCE_VIEW_DESC Desc = {};
-
-		Desc.Format = (DXGI_FORMAT)desc->Format;
-		Desc.Buffer.ElementWidth = desc->ElementWidth;
-		Desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-
-		ID3D11ShaderResourceView* srv = nullptr;
-		R_CHK(DxDevice->CreateShaderResourceView(((CD3D11Buffer*)Buffer)->GetD3DObject(), &Desc, &srv));
-
-		return new DX11ShaderResourceView(srv, nullptr);
-	}
-	else
-	{
-		VERIFY(!"Unsupported");
-		return nullptr;
-	}
+    return DevicePtr->CreateShaderResourceView(Buffer, desc);
 }
 
 IRHIShaderResourceView* CRHI::CreateShaderResourceView(IRHISurface* Surface, const RHIShaderResourceViewDesc* desc)
@@ -409,37 +398,12 @@ IRHIBuffer* CRHI::CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubreso
 
 IRHIShaderDeclaration* CRHI::CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize)
 {
-	IRHIShaderDeclaration* Decl = nullptr;
-
-	if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		Decl = new DX11ShaderDeclaration(Desc, DeclSize);
-	}
-	
-	return Decl;
+    return DevicePtr->CreateDecl(Desc, DeclSize);
 }
 
 void CRHI::SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type)
 {
-	if (APILevel != ERHI_API_LAYER::D3D11)
-		return;
-
-	VERIFY(Count <= RHI_MAX_CONSTANT_BUFFERS);
-
-	ID3D11Buffer* DXBuffer[RHI_MAX_CONSTANT_BUFFERS];
-	for (u32 i = 0; i < Count; ++i)
-		DXBuffer[i] = Buffers[i] ? ((CD3D11Buffer*)Buffers[i])->GetD3DObject() : nullptr;
-
-	ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
-	switch (Type)
-	{
-		case ERHI_SHADER_TYPE::PS: Context->PSSetConstantBuffers(Start, Count, DXBuffer); break;
-		case ERHI_SHADER_TYPE::VS: Context->VSSetConstantBuffers(Start, Count, DXBuffer); break;
-		case ERHI_SHADER_TYPE::GS: Context->GSSetConstantBuffers(Start, Count, DXBuffer); break;
-		case ERHI_SHADER_TYPE::HS: Context->HSSetConstantBuffers(Start, Count, DXBuffer); break;
-		case ERHI_SHADER_TYPE::DS: Context->DSSetConstantBuffers(Start, Count, DXBuffer); break;
-		case ERHI_SHADER_TYPE::CS: Context->CSSetConstantBuffers(Start, Count, DXBuffer); break;
-	}
+    DevicePtr->SetConstantBuffers(Start, Count, Buffers, Type);
 }
 
 void CRHI::GPUStatsBegin() const
@@ -448,6 +412,13 @@ void CRHI::GPUStatsBegin() const
 	{
 		return;
 	}
+
+#ifdef IXR_WINDOWS
+    if (APILevel == ERHI_API_LAYER::D3D12)
+    {
+        static_cast<InternalDevice12*>(DevicePtr)->BeginGPUStats();
+    }
+#endif
 
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
@@ -465,6 +436,13 @@ const RHI_GPU_EVENT& CRHI::GPUStats() const
 		return DummyEvents;
 	}
 
+#ifdef IXR_WINDOWS
+    if (APILevel == ERHI_API_LAYER::D3D12)
+    {
+        return static_cast<InternalDevice12*>(DevicePtr)->GPUStats();
+    }
+#endif
+
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
 #if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
@@ -477,6 +455,14 @@ const RHI_GPU_EVENT& CRHI::GPUStats() const
 
 void CRHI::GPUStatsEnd() const
 {
+#ifdef IXR_WINDOWS
+    if (APILevel == ERHI_API_LAYER::D3D12)
+    {
+        static_cast<InternalDevice12*>(DevicePtr)->EndGPUStats();
+        return;
+    }
+#endif
+
 	if (!GPUStatsEnable)
 	{
 		return;
@@ -492,13 +478,7 @@ void CRHI::GPUStatsEnd() const
 
 void CRHI::ClearVertexBuffer(u32 vb_stride)
 {
-	if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
-
-		u32	iOffset = 0;
-		Context->IASetVertexBuffers(0, 1, nullptr, &vb_stride, &iOffset);
-	}
+    DevicePtr->ClearVertexBuffer(vb_stride);
 }
 
 void CRHI::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
@@ -528,11 +508,7 @@ void CRHI::DrawNoInputAssembly(u32 vertexCount)
 
 void CRHI::ClearIndexBuffer()
 {
-	if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
-		Context->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
-	}
+    DevicePtr->ClearIndexBuffer();
 }
 
 bool CRHI::IsTessPass() const
@@ -547,7 +523,7 @@ bool CRHI::IsTessPass() const
 u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize)
 {
 #ifdef IXR_WINDOWS
-	if (APILevel == ERHI_API_LAYER::D3D11)
+	if (DevicePtr)
 	{
 		u32 Offsets[D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT] = {};
 		u32 Strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
@@ -574,30 +550,15 @@ void CRHI::EvictManagedResources()
 	DevicePtr->EvictManagedResources();
 }
 
-void CRHI::SetShader(void* NativeShader, ERHI_SHADER_TYPE Type)
+void CRHI::SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type)
 {
-	if (Shaders[(size_t)Type] == NativeShader)
-	{
-		return;
-	}
-
-	if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
-
-		switch (Type)
-		{
-			case ERHI_SHADER_TYPE::PS: Context->PSSetShader((ID3D11PixelShader*)NativeShader, nullptr, 0); break;
-			case ERHI_SHADER_TYPE::VS: Context->VSSetShader((ID3D11VertexShader*)NativeShader, nullptr, 0); break;
-			case ERHI_SHADER_TYPE::GS: Context->GSSetShader((ID3D11GeometryShader*)NativeShader, nullptr, 0); break;
-			case ERHI_SHADER_TYPE::HS: Context->HSSetShader((ID3D11HullShader*)NativeShader, nullptr, 0); break;
-			case ERHI_SHADER_TYPE::DS: Context->DSSetShader((ID3D11DomainShader*)NativeShader, nullptr, 0); break;
-			case ERHI_SHADER_TYPE::CS: Context->CSSetShader((ID3D11ComputeShader*)NativeShader, nullptr, 0); break;
-			default: break;
-		}
-	}
-
-	Shaders[(size_t)Type] = NativeShader;
+    void* nativeShader = shader ? shader->resource : nullptr;
+    if (APILevel != ERHI_API_LAYER::D3D12 && Shaders[(size_t)Type] == nativeShader)
+    {
+        return;
+    }
+    DevicePtr->SetShader(shader, Type);
+    Shaders[(size_t)Type] = nativeShader;
 }
 
 void CRHI::SetViewport(RHIViewport& VP)

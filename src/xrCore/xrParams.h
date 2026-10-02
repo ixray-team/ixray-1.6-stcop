@@ -8,7 +8,7 @@ enum ECoreParams
 	nolog          = 1 << 2, // Отключить логирование в файл
 	build          = 1 << 3,
 	ebuild         = 1 << 4,
-	//mem_debug      = 1<<5,
+	dxbc           = 1 << 5, // D3D12: compile shaders to DXBC with fxc instead of DXIL
 
 	// Engine
 	xclsx               = 1 << 6, // Отключение отрисовки красного текста в дебаге
@@ -29,7 +29,7 @@ enum ECoreParams
 	nonvs      = 1 << 19, // No nvidia depthstencil (dx9 only)
 	tsh        = 1 << 20,
 	noshadows  = 1 << 21, // Отключить тени
-	//ss_tga     = 1<<22,
+	debug_shaders = 1 << 22, // Compile optimized shaders with embedded debug info
 	no_occq    = 1 << 23, // Отключить очередь окклюзии
 	nodistort  = 1 << 24, // Отключить искажения
 

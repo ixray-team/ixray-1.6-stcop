@@ -2,6 +2,41 @@
 
 #include "ResourceManager.h"
 #include "dxRenderDeviceRender.h"
+#include "r__types.h"
+
+static void SetOptimizedClear(RHITextureDesc& desc, const char* name)
+{
+    const float gray[4] = { 0.5f, 0.5f, 0.5f, 0.5f };
+    const float white[4] = { 1.f, 1.f, 1.f, 1.f };
+    const float reflection[4] = { 0.f, 0.f, 0.f, 0.75f };
+    const char* grayNames[] = { r2_RT_generic1, r2_RT_N, r2_RT_luminance_cur, r2_RT_dof_focus, r2_RT_dof_focus_prev };
+    const char* whiteNames[] = { r2_RT_ssao_temp, r2_RT_wboit_revealage, r2_RT_planar_color, r2_RT_smap_surf, "$user$temp" };
+    for (auto entry : grayNames)
+    {
+        if (!strcmp(name, entry))
+        {
+            memcpy(desc.ClearColor, gray, sizeof(desc.ClearColor));
+            return;
+        }
+    }
+    for (auto entry : whiteNames)
+    {
+        if (!strcmp(name, entry))
+        {
+            memcpy(desc.ClearColor, white, sizeof(desc.ClearColor));
+            return;
+        }
+    }
+    if (!strcmp(name, r2_RT_env_fwd))
+    {
+        memcpy(desc.ClearColor, reflection, sizeof(desc.ClearColor));
+        return;
+    }
+    if (!strcmp(name, r2_RT_env_temp))
+    {
+        desc.OptimizedColorClear = false;
+    }
+}
 
 CRT::CRT()
 {
@@ -29,7 +64,7 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 {
 	if(pSurface) return;
 	PROF_EVENT("CRT::create");
-	R_ASSERT(RDevice && Name && Name[0] && w && h);
+	R_ASSERT(GRHI->DevicePtr && Name && Name[0] && w && h);
 	_order = CPU::GetCLK();
 
 	dwWidth = w;
@@ -110,7 +145,7 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 
 		if (CreationFlags & CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS)
 		{
-			desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
+			desc.MiscFlags |= u32(ERHI_RESOURCE_MISC_FLAG::GENERATE_MIPS);
 			desc.MipLevels = 0;
 		}
 		if (SampleCount == 1 && CreationFlags & CRTCreationFlags::USE_UAV_FLAG)
@@ -119,7 +154,10 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 		}
 	}
 
-	// Use GRHI to create the surface
+	if (!UsageDepth)
+	{
+		SetOptimizedClear(desc, Name);
+	}
 	pSurface = GRHI->CreateRenderTarget(desc);
 
 	if(UsageDepth)
@@ -275,14 +313,14 @@ CRTC::~CRTC()
 
 void CRTC::create(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags)
 {
-	R_ASSERT(RDevice && Name && Name[0] && size && btwIsPow2(size));
+	R_ASSERT(GRHI->DevicePtr && Name && Name[0] && size && btwIsPow2(size));
 	_order = CPU::GetCLK();
 
 	dwSize = size;
 	fmt = f;
 
 	// Check width-and-height of render target surface
-	if(size > D3D_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
+	if(size > RHI_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
 
 	// Create the render target texture
 	RHITextureDesc desc;
@@ -295,7 +333,7 @@ void CRTC::create(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFla
 	desc.SampleDescCount = 1;
 
 	desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE | ERHI_BIND_FLAG::RENDER_TARGET;
-	desc.MiscFlags = D3D_RESOURCE_MISC_TEXTURECUBE;
+	desc.MiscFlags = u32(ERHI_RESOURCE_MISC_FLAG::TEXTURECUBE);
 
 	if(CreationFlags & CRT::CRTCreationFlags::MIPPED_RT_FLAG)
 	{
@@ -304,7 +342,7 @@ void CRTC::create(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFla
 
 	if(CreationFlags & CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS)
 	{
-		desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
+		desc.MiscFlags |= u32(ERHI_RESOURCE_MISC_FLAG::GENERATE_MIPS);
 	}
 
 	pSurface = GRHI->CreateRenderTarget(desc);

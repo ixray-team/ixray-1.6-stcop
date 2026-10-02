@@ -427,7 +427,7 @@ void CResourceManager::DeferredUpload()
 	}
 
 #if !defined(_EDITOR) && defined(IXR_WINDOWS)
-	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
+	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD) && GRHI->APILevel != ERHI_API_LAYER::D3D12) {
 		// Parallel: load filtered list
 		xr_parallel_foreach(to_load.begin(), to_load.end(), [](CTexture* texPtr) { texPtr->Load(); });
 	}

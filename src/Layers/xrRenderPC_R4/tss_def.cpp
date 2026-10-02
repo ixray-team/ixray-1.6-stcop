@@ -90,7 +90,7 @@ void SimulatorStates::UpdateState( dx10State &state) const
 	}
 }
 
-void SimulatorStates::UpdateDesc( D3D_RASTERIZER_DESC &desc ) const
+void SimulatorStates::UpdateDesc( RHIRasterizerDesc &desc ) const
 {
 	for (u32 it=0; it<States.size(); it++)
 	{
@@ -101,16 +101,16 @@ void SimulatorStates::UpdateDesc( D3D_RASTERIZER_DESC &desc ) const
 			{
 			case D3DRS_FILLMODE:
 				if (S.v2==D3DFILL_SOLID)
-					desc.FillMode = D3D_FILL_SOLID;
+					desc.FillMode = RHI_FILL_SOLID;
 				else
 				{
 					VERIFY(S.v2==D3DFILL_WIREFRAME);
-					desc.FillMode = D3D_FILL_WIREFRAME;
+					desc.FillMode = RHI_FILL_WIREFRAME;
 				}
 				break;
 
 			case D3DRS_CULLMODE:
-				desc.CullMode = (D3D11_CULL_MODE)S.v2;
+				desc.CullMode = (ERHI_CULL_MODE)S.v2;
 				break;
 
 			case D3DRS_DEPTHBIAS:
@@ -131,7 +131,7 @@ void SimulatorStates::UpdateDesc( D3D_RASTERIZER_DESC &desc ) const
 	}
 }
 
-void SimulatorStates::UpdateDesc( D3D_DEPTH_STENCIL_DESC &desc ) const
+void SimulatorStates::UpdateDesc( RHIDepthStencilDesc &desc ) const
 {
 	for (u32 it=0; it<States.size(); it++)
 	{
@@ -145,7 +145,7 @@ void SimulatorStates::UpdateDesc( D3D_DEPTH_STENCIL_DESC &desc ) const
 				break;
 
 			case D3DRS_ZWRITEENABLE:
-				desc.DepthWriteMask = S.v2 ? D3D_DEPTH_WRITE_MASK_ALL : D3D_DEPTH_WRITE_MASK_ZERO;
+				desc.DepthWriteMask = S.v2 ? RHI_DEPTH_WRITE_MASK_ALL : RHI_DEPTH_WRITE_MASK_ZERO;
 				break;
 
 			case D3DRS_ZFUNC:
@@ -200,7 +200,7 @@ void SimulatorStates::UpdateDesc( D3D_DEPTH_STENCIL_DESC &desc ) const
 	}
 }
 
-void SimulatorStates::UpdateDesc( D3D_BLEND_DESC &desc ) const
+void SimulatorStates::UpdateDesc( RHIBlendDesc &desc ) const
 {
 	for (u32 it=0; it<States.size(); it++)
 	{
@@ -450,4 +450,3 @@ void SimulatorStates::UpdateDesc(RHISampleDesc descArray[RHI_COMMONSHADER_SAMPLE
 			desc.MaxLOD = desc.MinLOD;
 	}
 }
-

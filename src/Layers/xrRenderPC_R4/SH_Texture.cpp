@@ -570,7 +570,7 @@ bool CTexture::video_IsPlaying()
 
 void CTexture::CreateEmpty(u32 w, u32 h)
 {
-	R_ASSERT(RDevice && "must be valid");
+	R_ASSERT(GRHI->DevicePtr && "must be valid");
 
 	flags.bLoaded = true;
 	if (pSurface)

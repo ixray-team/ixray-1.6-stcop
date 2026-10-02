@@ -146,7 +146,7 @@ u32 CBlender_Compile::r_dx10Sampler(const char* ResourceName)
         i_Address(stage, D3DTADDRESS_CLAMP);
         i_Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
         RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFILTER, true);
-        RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFUNC, D3D_COMPARISON_LESS_EQUAL);
+        RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFUNC, RHI_COMPARISON_LESS_EQUAL);
     }
 
     if (0 == xr_strcmp(ResourceName, "smp_jitter"))

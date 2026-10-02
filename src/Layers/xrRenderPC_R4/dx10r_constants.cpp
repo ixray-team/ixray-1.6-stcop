@@ -13,38 +13,28 @@ IC bool p_sort(ref_constant C1, ref_constant C2)
 	return xr_strcmp(C1->name, C2->name) < 0;
 }
 
-bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination, int fixed)
+bool R_constant_table::parseConstants(const RHIShaderBufferDesc* pTable, u32 destination, int fixed)
 {
 	VERIFY(pTable);
-	D3D_SHADER_BUFFER_DESC TableDesc;
-	CHK_DX(pTable->GetDesc(&TableDesc));
+	const auto& TableDesc = *pTable;
 
-	for (u32 i = 0; i < TableDesc.Variables; ++i)
+	for (u32 i = 0; i < TableDesc.Variables.size(); ++i)
 	{
-		ID3DShaderReflectionVariable* pVar;
-		D3D_SHADER_VARIABLE_DESC VarDesc;
-		ID3DShaderReflectionType* pType;
-		D3D_SHADER_TYPE_DESC TypeDesc;
+		const auto& VarDesc = TableDesc.Variables[i];
+		const auto& TypeDesc = VarDesc.Type;
 
-		pVar = pTable->GetVariableByIndex(i);
-		VERIFY(pVar);
-		pVar->GetDesc(&VarDesc);
-		pType = pVar->GetType();
-		VERIFY(pType);
-		pType->GetDesc(&TypeDesc);
-
-		const char* name = VarDesc.Name;
+		const char* name = VarDesc.Name.c_str();
 
 		u16 type = u16(-1);
 		switch (TypeDesc.Type)
 		{
-			case D3D_SVT_FLOAT:
+			case ERHI_SHADER_VARIABLE_TYPE::FLOAT:
 				type = RC_float;
 				break;
-			case D3D_SVT_BOOL:
+			case ERHI_SHADER_VARIABLE_TYPE::BOOL:
 				type = RC_bool;
 				break;
-			case D3D_SVT_INT:
+			case ERHI_SHADER_VARIABLE_TYPE::INT:
 				type = RC_int;
 				break;
 			default:
@@ -59,10 +49,10 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 
 		switch (TypeDesc.Class)
 		{
-			case D3D_SVC_SCALAR:
+			case ERHI_SHADER_VARIABLE_CLASS::SCALAR:
 				r_type = RC_1x1;
 				break;
-			case D3D_SVC_VECTOR:
+			case ERHI_SHADER_VARIABLE_CLASS::VECTOR:
 			{
 				switch (TypeDesc.Columns)
 				{
@@ -81,7 +71,7 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 				}
 			}
 			break;
-			case D3D_SVC_MATRIX_ROWS:
+			case ERHI_SHADER_VARIABLE_CLASS::MATRIX_ROWS:
 			{
 				switch (TypeDesc.Columns)
 				{
@@ -108,13 +98,13 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 				}
 			}
 			break;
-			case D3D_SVC_MATRIX_COLUMNS:
+			case ERHI_SHADER_VARIABLE_CLASS::MATRIX_COLUMNS:
 				fatal("Pclass MATRIX_COLUMNS unsupported");
 				break;
-			case D3D_SVC_STRUCT:
+			case ERHI_SHADER_VARIABLE_CLASS::STRUCT:
 				fatal("Pclass D3DXPC_STRUCT unsupported");
 				break;
-			case D3D_SVC_OBJECT:
+			case ERHI_SHADER_VARIABLE_CLASS::OBJECT:
 			{
 				//	TODO: DX10:
 				VERIFY(!"Implement shader object parsing.");
@@ -167,24 +157,23 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 	return true;
 }
 
-bool R_constant_table::parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination)
+bool R_constant_table::parseResources(const RHIShaderReflection* pReflection, int ResNum, u32 destination)
 {
 	for (int i = 0; i < ResNum; ++i)
 	{
-		D3D_SHADER_INPUT_BIND_DESC ResDesc;
-		pReflection->GetResourceBindingDesc(i, &ResDesc);
+		const auto& ResDesc = pReflection->Resources[i];
 
 		u16 type = 0;
 
 		switch (ResDesc.Type)
 		{
-			case D3D_SIT_TEXTURE:
+			case ERHI_SHADER_RESOURCE_TYPE::TEXTURE:
 				type = RC_dx10texture;
 				break;
-			case D3D_SIT_SAMPLER:
+			case ERHI_SHADER_RESOURCE_TYPE::SAMPLER:
 				type = RC_sampler;
 				break;
-			case D3D_SIT_UAV_RWTYPED:
+			case ERHI_SHADER_RESOURCE_TYPE::UAV_RWTYPED:
 				type = RC_dx11UAV;
 				break;
 			default:
@@ -224,7 +213,7 @@ bool R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
 			VERIFY(0);
 		}
 
-		ref_constant C = get(ResDesc.Name);
+		ref_constant C = get(ResDesc.Name.c_str());
 		if (!C)
 		{
 			C = new RHIShaderConstant(); //.g_constant_allocator.create();
@@ -293,39 +282,34 @@ IC u32 dest_to_cbuf_type(u32 destination)
 	return 0;
 }
 
-bool R_constant_table::parse(void* _desc, u32 destination)
+bool R_constant_table::parse(const RHIShaderReflection* pReflection, u32 destination)
 {
-	ID3DShaderReflection* pReflection = (ID3DShaderReflection*)_desc;
 
-	D3D_SHADER_DESC ShaderDesc;
-	pReflection->GetDesc(&ShaderDesc);
 
-	if (ShaderDesc.ConstantBuffers)
+
+	if (pReflection->Buffers.size())
 	{
-		m_CBTable.reserve(ShaderDesc.ConstantBuffers);
+		m_CBTable.reserve(pReflection->Buffers.size());
 		//	Parse single constant table
-		ID3DShaderReflectionConstantBuffer* pTable = 0;
+		const RHIShaderBufferDesc* pTable = 0;
 
-		for (u16 iBuf = 0; iBuf < ShaderDesc.ConstantBuffers; ++iBuf)
+		for (u16 iBuf = 0; iBuf < pReflection->Buffers.size(); ++iBuf)
 		{
-			pTable = pReflection->GetConstantBufferByIndex(iBuf);
+			pTable = &pReflection->Buffers[iBuf];
 			if (pTable)
 			{
-				D3D_SHADER_BUFFER_DESC TableDesc;
-				pTable->GetDesc(&TableDesc);
-				if (TableDesc.Type == D3D_CT_RESOURCE_BIND_INFO)
+				const auto& TableDesc = *pTable;
+				if (TableDesc.Type == 3)
 				{
 					continue;
 				}
 
-				D3D_SHADER_INPUT_BIND_DESC ResDesc{};
-				HRESULT hr = pReflection->GetResourceBindingDescByName(TableDesc.Name, &ResDesc);
-				u32 bindSlot = SUCCEEDED(hr) ? ResDesc.BindPoint : iBuf;
+				u32 bindSlot = TableDesc.BindPoint;
 
 				u32 updatedDest = destination;
 				updatedDest |= bindSlot << dest_to_shift_value(destination);
 
-				const int fixed = FixedConstants::FixedClass(TableDesc.Name);
+				const int fixed = FixedConstants::FixedClass(TableDesc.Name.c_str());
 				parseConstants(pTable, updatedDest, fixed);
 				if (fixed)
 				{
@@ -341,9 +325,9 @@ bool R_constant_table::parse(void* _desc, u32 destination)
 		}
 	}
 
-	if (ShaderDesc.BoundResources)
+	if (pReflection->Resources.size())
 	{
-		parseResources(pReflection, ShaderDesc.BoundResources, destination);
+		parseResources(pReflection, pReflection->Resources.size(), destination);
 	}
 
 	std::sort(table.begin(), table.end(), p_sort);

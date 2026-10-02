@@ -5,119 +5,119 @@
 
 namespace dx10StateUtils
 {
-D3D_COMPARISON_FUNC ConvertCmpFunction(D3DCMPFUNC Func)
+ERHI_COMPARISON ConvertCmpFunction(D3DCMPFUNC Func)
 {
 	switch (Func)
 	{
 	case D3DCMP_NEVER:
-		return D3D_COMPARISON_NEVER;
+		return RHI_COMPARISON_NEVER;
 	case D3DCMP_LESS:
-		return D3D_COMPARISON_LESS;
+		return RHI_COMPARISON_LESS;
 	case D3DCMP_EQUAL:
-		return D3D_COMPARISON_EQUAL;
+		return RHI_COMPARISON_EQUAL;
 	case D3DCMP_LESSEQUAL:
-		return D3D_COMPARISON_LESS_EQUAL;
+		return RHI_COMPARISON_LESS_EQUAL;
 	case D3DCMP_GREATER:
-		return D3D_COMPARISON_GREATER;
+		return RHI_COMPARISON_GREATER;
 	case D3DCMP_NOTEQUAL:
-		return D3D_COMPARISON_NOT_EQUAL;
+		return RHI_COMPARISON_NOT_EQUAL;
 	case D3DCMP_GREATEREQUAL:
-		return D3D_COMPARISON_GREATER_EQUAL;
+		return RHI_COMPARISON_GREATER_EQUAL;
 	case D3DCMP_ALWAYS:
-		return D3D_COMPARISON_ALWAYS;
+		return RHI_COMPARISON_ALWAYS;
 	default:
 		VERIFY(!"ConvertCmpFunction can't convert argument!");
-		return D3D_COMPARISON_ALWAYS;
+		return RHI_COMPARISON_ALWAYS;
 	}
 }
 
-D3D_STENCIL_OP ConvertStencilOp(D3DSTENCILOP Op)
+ERHI_STENCIL_OP ConvertStencilOp(D3DSTENCILOP Op)
 {
 	switch (Op)
 	{
 	case D3DSTENCILOP_KEEP:
-		return D3D_STENCIL_OP_KEEP;
+		return RHI_STENCIL_OP_KEEP;
 	case D3DSTENCILOP_ZERO:
-		return D3D_STENCIL_OP_ZERO;
+		return RHI_STENCIL_OP_ZERO;
 	case D3DSTENCILOP_REPLACE:
-		return D3D_STENCIL_OP_REPLACE;
+		return RHI_STENCIL_OP_REPLACE;
 	case D3DSTENCILOP_INCRSAT:
-		return D3D_STENCIL_OP_INCR_SAT;
+		return RHI_STENCIL_OP_INCR_SAT;
 	case D3DSTENCILOP_DECRSAT:
-		return D3D_STENCIL_OP_DECR_SAT;
+		return RHI_STENCIL_OP_DECR_SAT;
 	case D3DSTENCILOP_INVERT:
-		return D3D_STENCIL_OP_INVERT;
+		return RHI_STENCIL_OP_INVERT;
 	case D3DSTENCILOP_INCR:
-		return D3D_STENCIL_OP_INCR;
+		return RHI_STENCIL_OP_INCR;
 	case D3DSTENCILOP_DECR:
-		return D3D_STENCIL_OP_DECR;
+		return RHI_STENCIL_OP_DECR;
 	default:
 		VERIFY(!"ConvertStencilOp can't convert argument!");
-		return D3D_STENCIL_OP_KEEP;
+		return RHI_STENCIL_OP_KEEP;
 	}
 }
 
-D3D_BLEND ConvertBlendArg(D3DBLEND Arg)
+ERHI_BLEND ConvertBlendArg(D3DBLEND Arg)
 {
 	switch (Arg)
 	{
 	case D3DBLEND_ZERO:
-		return D3D_BLEND_ZERO;
+		return RHI_BLEND_ZERO;
 	case D3DBLEND_ONE:
-		return D3D_BLEND_ONE;
+		return RHI_BLEND_ONE;
 	case D3DBLEND_SRCCOLOR:
-		return D3D_BLEND_SRC_COLOR;
+		return RHI_BLEND_SRC_COLOR;
 	case D3DBLEND_INVSRCCOLOR:
-		return D3D_BLEND_INV_SRC_COLOR;
+		return RHI_BLEND_INV_SRC_COLOR;
 	case D3DBLEND_SRCALPHA:
-		return D3D_BLEND_SRC_ALPHA;
+		return RHI_BLEND_SRC_ALPHA;
 	case D3DBLEND_INVSRCALPHA:
-		return D3D_BLEND_INV_SRC_ALPHA;
+		return RHI_BLEND_INV_SRC_ALPHA;
 	case D3DBLEND_DESTALPHA:
-		return D3D_BLEND_DEST_ALPHA;
+		return RHI_BLEND_DEST_ALPHA;
 	case D3DBLEND_INVDESTALPHA:
-		return D3D_BLEND_INV_DEST_ALPHA;
+		return RHI_BLEND_INV_DEST_ALPHA;
 	case D3DBLEND_DESTCOLOR:
-		return D3D_BLEND_DEST_COLOR;
+		return RHI_BLEND_DEST_COLOR;
 	case D3DBLEND_INVDESTCOLOR:
-		return D3D_BLEND_INV_DEST_COLOR;
+		return RHI_BLEND_INV_DEST_COLOR;
 	case D3DBLEND_SRCALPHASAT:
-		return D3D_BLEND_SRC_ALPHA_SAT;
+		return RHI_BLEND_SRC_ALPHA_SAT;
 	//case D3DBLEND_BOTHSRCALPHA:
 	//	return ;
 	//case D3DBLEND_BOTHINVSRCALPHA:
 	//	return ;
 	case D3DBLEND_BLENDFACTOR:
-		return D3D_BLEND_BLEND_FACTOR;
+		return RHI_BLEND_BLEND_FACTOR;
 	case D3DBLEND_INVBLENDFACTOR:
-		return D3D_BLEND_INV_BLEND_FACTOR;
+		return RHI_BLEND_INV_BLEND_FACTOR;
 	case D3DBLEND_SRCCOLOR2:
-		return D3D_BLEND_SRC1_COLOR;
+		return RHI_BLEND_SRC1_COLOR;
 	case D3DBLEND_INVSRCCOLOR2:
-		return D3D_BLEND_INV_SRC1_COLOR;
+		return RHI_BLEND_INV_SRC1_COLOR;
 		default:
 			VERIFY(!"ConvertBlendArg can't convert argument!");
-			return D3D_BLEND_ONE;
+			return RHI_BLEND_ONE;
 	}
 }
 
-D3D_BLEND_OP ConvertBlendOp(D3DBLENDOP Op)
+ERHI_BLEND_OP ConvertBlendOp(D3DBLENDOP Op)
 {
 	switch (Op)
 	{
 	case D3DBLENDOP_ADD:
-		return D3D_BLEND_OP_ADD;
+		return RHI_BLEND_OP_ADD;
 	case D3DBLENDOP_SUBTRACT:
-		return D3D_BLEND_OP_SUBTRACT;
+		return RHI_BLEND_OP_SUBTRACT;
 	case D3DBLENDOP_REVSUBTRACT:
-		return D3D_BLEND_OP_REV_SUBTRACT;
+		return RHI_BLEND_OP_REV_SUBTRACT;
 	case D3DBLENDOP_MIN:
-		return D3D_BLEND_OP_MIN;
+		return RHI_BLEND_OP_MIN;
 	case D3DBLENDOP_MAX:
-		return D3D_BLEND_OP_MAX;
+		return RHI_BLEND_OP_MAX;
 	default:
 		VERIFY(!"ConvertBlendOp can't convert argument!");
-		return D3D_BLEND_OP_ADD;
+		return RHI_BLEND_OP_ADD;
 	}
 }
 
@@ -141,11 +141,11 @@ ERHI_TEXTURE_ADDRESS_MODE ConvertTextureAddressMode(D3DTEXTUREADDRESS Mode)
 	}
 }
 
-void ResetDescription( D3D_RASTERIZER_DESC &desc )
+void ResetDescription( RHIRasterizerDesc &desc )
 {
 	ZeroMemory(&desc, sizeof(desc));
-	desc.FillMode = D3D_FILL_SOLID;
-	desc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+	desc.FillMode = RHI_FILL_SOLID;
+	desc.CullMode = RHI_CULL_BACK;
 	desc.FrontCounterClockwise = false;
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0.0f;
@@ -156,28 +156,28 @@ void ResetDescription( D3D_RASTERIZER_DESC &desc )
 	desc.AntialiasedLineEnable = false;
 }
 
-void ResetDescription( D3D_DEPTH_STENCIL_DESC &desc )
+void ResetDescription( RHIDepthStencilDesc &desc )
 {
 	ZeroMemory(&desc, sizeof(desc));
 	desc.DepthEnable = true;
-	desc.DepthWriteMask = D3D_DEPTH_WRITE_MASK_ALL;
-	desc.DepthFunc = D3D_COMPARISON_LESS;
+	desc.DepthWriteMask = RHI_DEPTH_WRITE_MASK_ALL;
+	desc.DepthFunc = RHI_COMPARISON_LESS;
 	desc.StencilEnable = true;
 	desc.StencilReadMask = 0xFF;
 	desc.StencilWriteMask = 0xFF;
 
-	desc.FrontFace.StencilFailOp = D3D_STENCIL_OP_KEEP;
-	desc.FrontFace.StencilDepthFailOp = D3D_STENCIL_OP_KEEP;
-	desc.FrontFace.StencilPassOp = D3D_STENCIL_OP_KEEP;
-	desc.FrontFace.StencilFunc = D3D_COMPARISON_ALWAYS;
+	desc.FrontFace.StencilFailOp = RHI_STENCIL_OP_KEEP;
+	desc.FrontFace.StencilDepthFailOp = RHI_STENCIL_OP_KEEP;
+	desc.FrontFace.StencilPassOp = RHI_STENCIL_OP_KEEP;
+	desc.FrontFace.StencilFunc = RHI_COMPARISON_ALWAYS;
 
-	desc.BackFace.StencilFailOp = D3D_STENCIL_OP_KEEP;
-	desc.BackFace.StencilDepthFailOp = D3D_STENCIL_OP_KEEP;
-	desc.BackFace.StencilPassOp = D3D_STENCIL_OP_KEEP;
-	desc.BackFace.StencilFunc = D3D_COMPARISON_ALWAYS;
+	desc.BackFace.StencilFailOp = RHI_STENCIL_OP_KEEP;
+	desc.BackFace.StencilDepthFailOp = RHI_STENCIL_OP_KEEP;
+	desc.BackFace.StencilPassOp = RHI_STENCIL_OP_KEEP;
+	desc.BackFace.StencilFunc = RHI_COMPARISON_ALWAYS;
 }
 
-void ResetDescription( D3D_BLEND_DESC &desc )
+void ResetDescription( RHIBlendDesc &desc )
 {
 	ZeroMemory(&desc, sizeof(desc));
 
@@ -186,14 +186,14 @@ void ResetDescription( D3D_BLEND_DESC &desc )
 
 	for ( int i=0; i<8; ++i)
 	{
-		desc.RenderTarget[i].SrcBlend = D3D_BLEND_ONE;
-		desc.RenderTarget[i].DestBlend = D3D_BLEND_ZERO;
-		desc.RenderTarget[i].BlendOp = D3D_BLEND_OP_ADD;
-		desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_ONE;
-		desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_ZERO;
-		desc.RenderTarget[i].BlendOpAlpha = D3D_BLEND_OP_ADD;
+		desc.RenderTarget[i].SrcBlend = RHI_BLEND_ONE;
+		desc.RenderTarget[i].DestBlend = RHI_BLEND_ZERO;
+		desc.RenderTarget[i].BlendOp = RHI_BLEND_OP_ADD;
+		desc.RenderTarget[i].SrcBlendAlpha = RHI_BLEND_ONE;
+		desc.RenderTarget[i].DestBlendAlpha = RHI_BLEND_ZERO;
+		desc.RenderTarget[i].BlendOpAlpha = RHI_BLEND_OP_ADD;
 		desc.RenderTarget[i].BlendEnable = false;
-		desc.RenderTarget[i].RenderTargetWriteMask = D3D_COLOR_WRITE_ENABLE_ALL;
+		desc.RenderTarget[i].RenderTargetWriteMask = RHI_COLOR_WRITE_ENABLE_ALL;
 	}
 }
 
@@ -216,7 +216,7 @@ void ResetDescription(RHISampleDesc& desc)
 	desc.MaxLOD = FLT_MAX;
 }
 
-bool operator==(const D3D_RASTERIZER_DESC &desc1, const D3D_RASTERIZER_DESC &desc2)
+bool operator==(const RHIRasterizerDesc &desc1, const RHIRasterizerDesc &desc2)
 {
 	if (desc1.FillMode != desc2.FillMode) return false;
 	if (desc1.CullMode != desc2.CullMode) return false;
@@ -232,7 +232,7 @@ bool operator==(const D3D_RASTERIZER_DESC &desc1, const D3D_RASTERIZER_DESC &des
 	return true;
 }
 
-bool operator==(const D3D_DEPTH_STENCIL_DESC &desc1, const D3D_DEPTH_STENCIL_DESC &desc2)
+bool operator==(const RHIDepthStencilDesc &desc1, const RHIDepthStencilDesc &desc2)
 {
 	if ( desc1.DepthEnable != desc2.DepthEnable) return false;
 	
@@ -261,7 +261,7 @@ bool operator==(const D3D_DEPTH_STENCIL_DESC &desc1, const D3D_DEPTH_STENCIL_DES
 	return true;
 }
 
-bool operator==(const D3D_BLEND_DESC &desc1, const D3D_BLEND_DESC &desc2)
+bool operator==(const RHIBlendDesc &desc1, const RHIBlendDesc &desc2)
 {
 	if ( desc1.AlphaToCoverageEnable != desc2.AlphaToCoverageEnable) return false;
 	if ( desc1.IndependentBlendEnable != desc2.IndependentBlendEnable) return false;
@@ -281,7 +281,7 @@ bool operator==(const D3D_BLEND_DESC &desc1, const D3D_BLEND_DESC &desc2)
 	return true;
 }
 
-u32 GetHash( const D3D_RASTERIZER_DESC &desc )
+u32 GetHash( const RHIRasterizerDesc &desc )
 {
 	dxHashHelper	Hash;
 
@@ -299,7 +299,7 @@ u32 GetHash( const D3D_RASTERIZER_DESC &desc )
 	return Hash.GetHash();
 }
 
-u32 GetHash( const D3D_DEPTH_STENCIL_DESC &desc )
+u32 GetHash( const RHIDepthStencilDesc &desc )
 {
 	dxHashHelper	Hash;
 
@@ -323,7 +323,7 @@ u32 GetHash( const D3D_DEPTH_STENCIL_DESC &desc )
 	return Hash.GetHash();
 }
 
-u32 GetHash( const D3D_BLEND_DESC &desc )
+u32 GetHash( const RHIBlendDesc &desc )
 {
 	dxHashHelper	Hash;
 
@@ -367,19 +367,19 @@ u32 GetHash(const RHISampleDesc& desc)
 	return Hash.GetHash();
 }
 
-void ValidateState(D3D_RASTERIZER_DESC &desc)
+void ValidateState(RHIRasterizerDesc &desc)
 {
 }
 
-void ValidateState(D3D_DEPTH_STENCIL_DESC &desc)
+void ValidateState(RHIDepthStencilDesc &desc)
 {
 	VERIFY( (desc.DepthEnable==0) || (desc.DepthEnable==1));
 	VERIFY( (desc.StencilEnable==0) || (desc.StencilEnable==1));
 
 	if (!desc.DepthEnable)
 	{
-		desc.DepthWriteMask = D3D_DEPTH_WRITE_MASK_ALL;
-		desc.DepthFunc = D3D_COMPARISON_LESS;
+		desc.DepthWriteMask = RHI_DEPTH_WRITE_MASK_ALL;
+		desc.DepthFunc = RHI_COMPARISON_LESS;
 	}
 
 	if (!desc.StencilEnable)
@@ -387,21 +387,21 @@ void ValidateState(D3D_DEPTH_STENCIL_DESC &desc)
 		desc.StencilReadMask = 0xFF;
 		desc.StencilWriteMask = 0xFF;
 
-		desc.FrontFace.StencilFailOp = D3D_STENCIL_OP_KEEP;
-		desc.FrontFace.StencilDepthFailOp = D3D_STENCIL_OP_KEEP;
-		desc.FrontFace.StencilPassOp = D3D_STENCIL_OP_KEEP;
-		desc.FrontFace.StencilFunc = D3D_COMPARISON_ALWAYS;
+		desc.FrontFace.StencilFailOp = RHI_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilDepthFailOp = RHI_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilPassOp = RHI_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilFunc = RHI_COMPARISON_ALWAYS;
 
-		desc.BackFace.StencilFailOp = D3D_STENCIL_OP_KEEP;
-		desc.BackFace.StencilDepthFailOp = D3D_STENCIL_OP_KEEP;
-		desc.BackFace.StencilPassOp = D3D_STENCIL_OP_KEEP;
-		desc.BackFace.StencilFunc = D3D_COMPARISON_ALWAYS;
+		desc.BackFace.StencilFailOp = RHI_STENCIL_OP_KEEP;
+		desc.BackFace.StencilDepthFailOp = RHI_STENCIL_OP_KEEP;
+		desc.BackFace.StencilPassOp = RHI_STENCIL_OP_KEEP;
+		desc.BackFace.StencilFunc = RHI_COMPARISON_ALWAYS;
 	}
 }
 
-void ValidateState(D3D_BLEND_DESC &desc)
+void ValidateState(RHIBlendDesc &desc)
 {
-	int bBlendEnable = false;
+	bool bBlendEnable = false;
 
 	for ( int i=0; i<8; ++i)
 	{
@@ -413,56 +413,56 @@ void ValidateState(D3D_BLEND_DESC &desc)
 	{
 		if (!bBlendEnable)
 		{
-			desc.RenderTarget[i].SrcBlend = D3D_BLEND_ONE;
-			desc.RenderTarget[i].DestBlend = D3D_BLEND_ZERO;
-			desc.RenderTarget[i].BlendOp = D3D_BLEND_OP_ADD;
-			desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_ONE;
-			desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_ZERO;
-			desc.RenderTarget[i].BlendOpAlpha = D3D_BLEND_OP_ADD;
+			desc.RenderTarget[i].SrcBlend = RHI_BLEND_ONE;
+			desc.RenderTarget[i].DestBlend = RHI_BLEND_ZERO;
+			desc.RenderTarget[i].BlendOp = RHI_BLEND_OP_ADD;
+			desc.RenderTarget[i].SrcBlendAlpha = RHI_BLEND_ONE;
+			desc.RenderTarget[i].DestBlendAlpha = RHI_BLEND_ZERO;
+			desc.RenderTarget[i].BlendOpAlpha = RHI_BLEND_OP_ADD;
 		}
 		else
 		{
 			switch(desc.RenderTarget[i].SrcBlendAlpha)
 			{
-			case D3D_BLEND_SRC_COLOR:
-				desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_SRC_ALPHA;
+			case RHI_BLEND_SRC_COLOR:
+				desc.RenderTarget[i].SrcBlendAlpha = RHI_BLEND_SRC_ALPHA;
 				break;
-			case D3D_BLEND_INV_SRC_COLOR:
-				desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_INV_SRC_ALPHA;
+			case RHI_BLEND_INV_SRC_COLOR:
+				desc.RenderTarget[i].SrcBlendAlpha = RHI_BLEND_INV_SRC_ALPHA;
 				break;
-			case D3D_BLEND_DEST_COLOR:
-				desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_DEST_ALPHA;
+			case RHI_BLEND_DEST_COLOR:
+				desc.RenderTarget[i].SrcBlendAlpha = RHI_BLEND_DEST_ALPHA;
 				break;
-			case D3D_BLEND_INV_DEST_COLOR:
-				desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_INV_DEST_ALPHA;
+			case RHI_BLEND_INV_DEST_COLOR:
+				desc.RenderTarget[i].SrcBlendAlpha = RHI_BLEND_INV_DEST_ALPHA;
 				break;
-			case D3D_BLEND_SRC1_COLOR:
-				desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_SRC1_ALPHA;
+			case RHI_BLEND_SRC1_COLOR:
+				desc.RenderTarget[i].SrcBlendAlpha = RHI_BLEND_SRC1_ALPHA;
 				break;
-			case D3D_BLEND_INV_SRC1_COLOR:
-				desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_INV_SRC1_ALPHA;
+			case RHI_BLEND_INV_SRC1_COLOR:
+				desc.RenderTarget[i].SrcBlendAlpha = RHI_BLEND_INV_SRC1_ALPHA;
 					break;
 			}
 
 			switch(desc.RenderTarget[i].DestBlendAlpha)
 			{
-			case D3D_BLEND_SRC_COLOR:
-				desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_SRC_ALPHA;
+			case RHI_BLEND_SRC_COLOR:
+				desc.RenderTarget[i].DestBlendAlpha = RHI_BLEND_SRC_ALPHA;
 				break;
-			case D3D_BLEND_INV_SRC_COLOR:
-				desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_INV_SRC_ALPHA;
+			case RHI_BLEND_INV_SRC_COLOR:
+				desc.RenderTarget[i].DestBlendAlpha = RHI_BLEND_INV_SRC_ALPHA;
 				break;
-			case D3D_BLEND_DEST_COLOR:
-				desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_DEST_ALPHA;
+			case RHI_BLEND_DEST_COLOR:
+				desc.RenderTarget[i].DestBlendAlpha = RHI_BLEND_DEST_ALPHA;
 				break;
-			case D3D_BLEND_INV_DEST_COLOR:
-				desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_INV_DEST_ALPHA;
+			case RHI_BLEND_INV_DEST_COLOR:
+				desc.RenderTarget[i].DestBlendAlpha = RHI_BLEND_INV_DEST_ALPHA;
 				break;
-			case D3D_BLEND_SRC1_COLOR:
-				desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_SRC1_ALPHA;
+			case RHI_BLEND_SRC1_COLOR:
+				desc.RenderTarget[i].DestBlendAlpha = RHI_BLEND_SRC1_ALPHA;
 				break;
-			case D3D_BLEND_INV_SRC1_COLOR:
-				desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_INV_SRC1_ALPHA;
+			case RHI_BLEND_INV_SRC1_COLOR:
+				desc.RenderTarget[i].DestBlendAlpha = RHI_BLEND_INV_SRC1_ALPHA;
 				break;
 			}
 		}

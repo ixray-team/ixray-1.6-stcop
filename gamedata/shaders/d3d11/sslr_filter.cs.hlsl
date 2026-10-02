@@ -10,6 +10,7 @@
 #define DISK32_RADIUS32 1.0f
 
 #define NUM_SAMPLES 16
+#define FILTER_BATCH 8
 #define DISK32_RADIUS DISK32_RADIUS16
 
 static const float2 Disk32_Normalized[32] = {
@@ -82,40 +83,76 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	float FinalWeight = 0.0;
 	
 	float SampleRadius = 32.0f - 24.0f * GetBorderAtten(I.texcoord, 0.025f);
+	uint TapBegin = 0;
 
-	[loop]
-	for(uint i = 0; i < NUM_SAMPLES; ++i)
-	{
-		float2 offset = Disk32_Normalized[i] * scaled_screen_res.zw * DISK32_RADIUS;
-		offset = mirror(I.texcoord.xy + offset * SampleRadius);
-		
-		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
-		
-		float4 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f);
-		float3 Light = ReflectPoint - SSLR.xyz;
-		
-		float Length = length(Light);
-		Light *= Length > 0.0f ? rcp(Length) : 0.0f;
-		
-		float3 Half = normalize(Light + View);
-
-		float NdotH = max(0.0f, dot(O.Normal, -Half));
-		
 #ifndef USE_LEGACY_LIGHT
-		//LVutner: it just works.
-		float D = DistributionGGX(NdotH, O.Roughness);
-		float SampleWeight = max(D * NdotH * SSLR.w, 1e-5);
-#else
-		float SampleWeight = rcp(NdotH + EPS);
+	// A narrow GGX lobe gives almost every wide tap a near-zero weight, so shrink the kernel with roughness
+	SampleRadius *= lerp(0.15f, 1.0f, saturate(O.Roughness * 2.0f));
+	// The second half of the disk contains the centre tap, keep that one
+	TapBegin = O.Roughness < 0.1f ? FILTER_BATCH : 0;
 #endif
-		
-		//HUD weight
-		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
 
-		Color.w = Length;
-		FinalColor += Color * SampleWeight;
-		
-		FinalWeight += SampleWeight;
+	// Each batch issues all of its fetches before any of them is consumed
+	[loop]
+	for(uint b = TapBegin; b < NUM_SAMPLES; b += FILTER_BATCH)
+	{
+		float4 SSLRs[FILTER_BATCH];
+		float4 Colors[FILTER_BATCH];
+
+		[unroll]
+		for(uint f = 0; f < FILTER_BATCH; ++f)
+		{
+			float2 offset = Disk32_Normalized[b + f] * scaled_screen_res.zw * DISK32_RADIUS;
+			offset = mirror(I.texcoord.xy + offset * SampleRadius);
+
+			SSLRs[f] = s_refl.SampleLevel(smp_nofilter, offset, 0);
+			Colors[f] = s_image.SampleLevel(smp_nofilter, offset, 0.0f);
+		}
+
+		[unroll]
+		for(uint e = 0; e < FILTER_BATCH; ++e)
+		{
+			float4 SSLR = SSLRs[e];
+			float4 Color = Colors[e];
+			
+			Color.w = SSLR.w < 0.0f ? 1.0f : 0.0f;
+			SSLR.w = abs(SSLR.w);
+
+			float3 Light = ReflectPoint - SSLR.xyz;
+
+			float Length = length(Light);
+
+#ifndef USE_LEGACY_LIGHT
+			//LVutner: it just works.
+			float SampleWeight = 1e-5;
+
+			if(SSLR.w > 0.0f)
+			{
+				Light *= Length > 0.0f ? rcp(Length) : 0.0f;
+
+				float3 Half = normalize(Light + View);
+				float NdotH = max(0.0f, dot(O.Normal, -Half));
+
+				float D = DistributionGGX(NdotH, O.Roughness);
+				SampleWeight = max(D * NdotH * SSLR.w, 1e-5);
+			}
+#else
+			Light *= Length > 0.0f ? rcp(Length) : 0.0f;
+
+			float3 Half = normalize(Light + View);
+			float NdotH = max(0.0f, dot(O.Normal, -Half));
+
+			float SampleWeight = rcp(NdotH + EPS);
+#endif
+
+			//HUD weight
+			SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
+
+			Color.w = Length;
+			FinalColor += Color * SampleWeight;
+
+			FinalWeight += SampleWeight;
+		}
 	}
 
 	FinalColor *= rcp(FinalWeight);

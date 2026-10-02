@@ -1,4 +1,5 @@
 #include "Device.h"
+#include "RHIProfiler.h"
 #include "../RHITopologyUtils.h"
 
 #ifdef IXR_WINDOWS
@@ -460,8 +461,12 @@ void InternalDevice11::GenerateMips(IRHIShaderResourceView* SRV)
 
 void InternalDevice11::DestroyD3D11()
 {
-#ifdef IXRAY_PROFILER_TRACY
-	PROF_GPU_CTX_DESTROY();
+#if defined(IXRAY_PROFILER_TRACY) && defined(IXR_WINDOWS)
+	if (g_tracyD3D11GPUContext)
+	{
+		TracyD3D11Destroy(g_tracyD3D11GPUContext);
+		g_tracyD3D11GPUContext = nullptr;
+	}
 #endif
 
 	// Clean up texture factory

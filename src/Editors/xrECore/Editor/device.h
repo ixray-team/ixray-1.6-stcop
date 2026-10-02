@@ -23,8 +23,8 @@ class CEditorRenderDevice;
 class XrGameMaterialLibraryEditors;
 extern ECORE_API CEditorRenderDevice* EDevice;
 
-#define REContext ((ID3D11DeviceContext*)GRHI->GetContext())
-#define REDevice ((ID3D11Device*)Device.GetRenderDevice())
+#define REContext (GRHI->GetContext())
+#define REDevice (Device.GetRenderDevice())
 
 class ECORE_API CEditorRenderDevice :
 	public CRenderDevice

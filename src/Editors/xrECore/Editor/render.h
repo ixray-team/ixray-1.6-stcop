@@ -348,7 +348,7 @@ public:
 	}
 
 protected:
-	xr_vector<D3D_SHADER_MACRO> m_ShaderOptions;
+	xr_vector<RHIShaderMacro> m_ShaderOptions;
 
 	virtual void ScreenshotImpl(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) {};
 	HRESULT shader_compile(

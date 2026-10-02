@@ -19,8 +19,9 @@ struct vf
 Texture2D s_distort;
 
 // Pixel
-float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
+float4 main(vf I) : SV_Target
 {
+    float4 pos2d = I.hpos;
     float alpha = 1.0f - s_base.Sample(smp_base, I.tbase).w;
 	
     float2 t_d0 = s_distort.Sample(smp_base, I.tnorm0).xy;

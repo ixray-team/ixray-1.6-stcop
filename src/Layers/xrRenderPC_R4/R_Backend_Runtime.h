@@ -63,7 +63,7 @@ IC	IRHIRenderTargetView* CBackend::get_RT(u32 ID)
 	return GRHI->GetRenderTargetView(ID);
 }
 
-ICF void	CBackend::set_States		(ID3DState* _state)
+ICF void	CBackend::set_States		(dx10State* _state)
 {
 	{
 		state			= _state;

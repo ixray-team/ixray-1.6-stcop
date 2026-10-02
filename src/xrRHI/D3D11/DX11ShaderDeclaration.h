@@ -11,7 +11,7 @@ public:
 public:
 	DX11ShaderDeclaration(const RHIInputElementDesc* DescList, size_t DescCount) : IRHIShaderDeclaration(DescList, DescCount) {};
 	virtual ~DX11ShaderDeclaration() {};
-	virtual void GenerateLayerDescriptors(void* Signature) override;
+	virtual void GenerateLayerDescriptors(RHIBlob* Signature) override;
 	virtual void ApplyLayout() override;
 
 private:

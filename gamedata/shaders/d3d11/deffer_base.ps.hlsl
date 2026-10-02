@@ -49,7 +49,10 @@ void main(p_bumped_new I,
 #endif
 
 #ifdef FIX_CULL_NORMAL
-	float3(I.M1.z, I.M2.z, I.M3.z) *= is_front_face * 2.0f - 1.0f;
+	const float cull_sign = is_front_face * 2.0f - 1.0f;
+	I.M1.z *= cull_sign;
+	I.M2.z *= cull_sign;
+	I.M3.z *= cull_sign;
 	
 	#if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
 		cotangent_frame(I);

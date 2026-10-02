@@ -80,7 +80,7 @@ void CResourceManager::reset_end()
 	// create state-blocks
 	{
 		for (u32 _it=0; _it<v_states.size(); _it++)
-			v_states[_it]->state = ID3DState::Create(v_states[_it]->state_code);
+			v_states[_it]->state = dx10State::Create(v_states[_it]->state_code);
 	}
 
 	// create everything, renderer may use

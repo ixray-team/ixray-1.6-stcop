@@ -31,8 +31,9 @@ float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 }
 
 // Pixel
-void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
+void main(vf I, out IXRayForward O)
 {
+	float4 pos2d = I.hpos;
 	O = (IXRayForward)0;
 	float4 base = s_base.Sample(smp_base, I.tbase);
 	

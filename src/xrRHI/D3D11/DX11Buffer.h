@@ -2,6 +2,8 @@
 #include <d3d11.h>
 #include "RHI.h"
 
+u32 GetD3D11CPUAccess(ERHI_CPU_ACCESS_FLAG flag);
+
 class CD3D11Buffer : 
 	public IRHIBuffer
 {
@@ -21,6 +23,7 @@ public:
 
 	void AddRef() override;
 	u32 Release() override;
+	u32 GetSize() const override { return m_bufferDesc.Size; }
 
 	ID3D11Buffer* GetD3DObject();
 

@@ -607,8 +607,9 @@ void TUI::Redraw()
 
 		Draw();
 
-		ID3D11RenderTargetView* RTV = (ID3D11RenderTargetView*)RSwapchainTarget->GetRawRTV();
-		RContext->OMSetRenderTargets(1, &RTV, 0);
+		IRHIRenderTargetView* RTV = RSwapchainTarget;
+		GRHI->DevicePtr->SetDSV(nullptr);
+		GRHI->DevicePtr->SetRenderTargets(1, &RTV, nullptr);
 		EndFrame();
 		EDevice->End();
 		MDIUpdate();

@@ -163,6 +163,13 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 
 void CCustomPreferences::FillProp(PropItemVec& props)
 {
+    static xr_token graphicsAPITokens[] =
+    {
+        { "Direct3D 11", ERHI_API_LAYER::D3D11 },
+        { "Direct3D 12", ERHI_API_LAYER::D3D12 },
+        { nullptr, -1 }
+    };
+    PHelper().CreateToken32(props, "Viewport\\Graphics API (restart required)", &g_graphicsAPI, graphicsAPITokens);
 	PHelper().CreateU32		(props,"Common\\Recent Count", 						&scene_recent_count, 	0, 		25);
 	PHelper().CreateU32		(props,"Common\\Undo Level", 						&scene_undo_level, 		0, 		125);
 	PHelper().CreateBool	(props,"Common\\More Stats Info", 					&bMoreStats);
@@ -418,7 +425,12 @@ void CCustomPreferences::Load()
 		GetSafe(*render, "render_radius", EDevice->RenderRadius);
 		GetSafe(*render, "w", start_w);
 		GetSafe(*render, "h", start_h);
-		GetSafe(*render, "quality", EDevice->m_ScreenQuality);
+        GetSafe(*render, "quality", EDevice->m_ScreenQuality);
+        GetSafe(*render, "graphics_api", g_graphicsAPI);
+        if (g_graphicsAPI != ERHI_API_LAYER::D3D11 && g_graphicsAPI != ERHI_API_LAYER::D3D12)
+        {
+            g_graphicsAPI = ERHI_API_LAYER::D3D11;
+        }
 
 		int x = 0, y = 0;
 		if (GetSafe(*render, "x", x) && GetSafe(*render, "y", y))
@@ -550,6 +562,7 @@ void CCustomPreferences::Save()
 	JSONData["render"]["w"] = EDevice->Width;
 	JSONData["render"]["h"] = EDevice->Height;
 	JSONData["render"]["quality"] = EDevice->m_ScreenQuality;
+    JSONData["render"]["graphics_api"] = g_graphicsAPI;
 
 	int X, Y;
 	SDL_GetWindowPosition(g_AppInfo.Window, &X, &Y);

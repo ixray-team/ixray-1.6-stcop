@@ -78,55 +78,38 @@ bool CEditorRenderDevice::RenderScreenshotRT(ref_rt& rtColor, ref_rt& rtDepth)
 
 bool CEditorRenderDevice::ReadbackRT(ref_rt& RenderTarget, U32Vec& Pixels)
 {
-	Pixels.resize(RenderTarget->dwWidth * RenderTarget->dwHeight, 0);
-
-	if (RenderTarget->pSurface == nullptr)
-	{
-		return false;
-	}
-
-	ID3D11Resource* Source = (ID3D11Resource*)RenderTarget->pSurface->GetRawTexture();
-	if (!Source)
-	{
-		return false;
-	}
-
-	D3D11_TEXTURE2D_DESC TexDesc = {};
-	TexDesc.Width = RenderTarget->dwWidth;
-	TexDesc.Height = RenderTarget->dwHeight;
-	TexDesc.MipLevels = 1;
-	TexDesc.ArraySize = 1;
-
-	TexDesc.Format = (DXGI_FORMAT)RenderTarget->fmt;
-	TexDesc.SampleDesc.Count = 1;
-	TexDesc.SampleDesc.Quality = 0;
-	TexDesc.Usage = D3D11_USAGE_STAGING;
-	TexDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-	TexDesc.BindFlags = 0;
-	TexDesc.MiscFlags = 0;
-
-	ID3D11Texture2D* Staging = nullptr;
-	if (FAILED(REDevice->CreateTexture2D(&TexDesc, nullptr, &Staging)))
-	{
-		return false;
-	}
-
-	REContext->CopyResource(Staging, Source);
-
-	D3D11_MAPPED_SUBRESOURCE Mapped;
-	bool IsValid = SUCCEEDED(REContext->Map(Staging, 0, D3D11_MAP_READ, 0, &Mapped));
-	if (IsValid)
-	{
-		const u8* SrcBits = (const u8*)Mapped.pData;
-		u32* Dest = Pixels.data();
-		for (u32 y = 0; y < RenderTarget->dwHeight; ++y)
-		{
-			CopyMemory(Dest + y * RenderTarget->dwWidth, SrcBits + y * Mapped.RowPitch, RenderTarget->dwWidth * sizeof(u32));
-		}
-		REContext->Unmap(Staging, 0);
-	}
-	Staging->Release();
-	return IsValid;
+    if (!RenderTarget || !RenderTarget->pRT)
+    {
+        return false;
+    }
+    u32 width = RenderTarget->dwWidth;
+    u32 height = RenderTarget->dwHeight;
+    if (!width || !height || u64(width) * height * sizeof(u32) > UINT32_MAX)
+    {
+        return false;
+    }
+    Pixels.resize(size_t(width) * height);
+    u32 rowPitch = 0;
+    if (GRHI->DevicePtr->ReadRenderTargetPixels(RenderTarget->pRT, Pixels.data(),
+        u32(Pixels.size() * sizeof(u32)), width, height, rowPitch))
+    {
+        return rowPitch == width * sizeof(u32);
+    }
+    const u64 size = u64(rowPitch) * height;
+    if (rowPitch < width * sizeof(u32) || size > UINT32_MAX || size <= Pixels.size() * sizeof(u32))
+    {
+        return false;
+    }
+    xr_vector<u8> readback(size_t(size), 0);
+    if (!GRHI->DevicePtr->ReadRenderTargetPixels(RenderTarget->pRT, readback.data(), u32(size), width, height, rowPitch))
+    {
+        return false;
+    }
+    for (u32 row_idx = 0; row_idx < height; ++row_idx)
+    {
+        memcpy(Pixels.data() + size_t(row_idx) * width, readback.data() + size_t(row_idx) * rowPitch, width * sizeof(u32));
+    }
+    return true;
 }
 
 bool CEditorRenderDevice::MakeScreenshot(U32Vec& pixels, u32 width, u32 height)
@@ -191,7 +174,7 @@ bool CEditorRenderDevice::DownsampleLODAtlas(xr_vector<ref_rt>& SrcRTs, ref_rt& 
 		GRHI->ShaderResourceCache->SetCSResource(Idx, Srvs[Idx]);
 	}
 
-	ID3D11UnorderedAccessView* Uav = (ID3D11UnorderedAccessView*)AtlasRT->pUAView->GetRaw();
+	IRHIUnorderedAccessView* Uav = AtlasRT->pUAView;
 	if (!Uav)
 	{
 		for (auto Srv : Srvs)
@@ -202,7 +185,7 @@ bool CEditorRenderDevice::DownsampleLODAtlas(xr_vector<ref_rt>& SrcRTs, ref_rt& 
 	}
 
 	UINT UavInit = 0;
-	RContext->CSSetUnorderedAccessViews(0, 1, &Uav, &UavInit);
+	GRHI->SetComputeUAVs(0, 1, &Uav, &UavInit);
 
 	RCache.set_CS(Compute);
 	RCache.Compute(((TargetW * Samples) + 7) / 8, (TargetH + 7) / 8, 1);
@@ -212,8 +195,8 @@ bool CEditorRenderDevice::DownsampleLODAtlas(xr_vector<ref_rt>& SrcRTs, ref_rt& 
 		GRHI->ShaderResourceCache->SetCSResource(Idx, nullptr);
 		Srvs[Idx]->Release();
 	}
-	ID3D11UnorderedAccessView* NullUAV = nullptr;
-	RContext->CSSetUnorderedAccessViews(0, 1, &NullUAV, &UavInit);
+	IRHIUnorderedAccessView* NullUAV = nullptr;
+	GRHI->SetComputeUAVs(0, 1, &NullUAV, &UavInit);
 	GRHI->SetShader(nullptr, ERHI_SHADER_TYPE::CS);
 
 	return true;

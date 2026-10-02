@@ -68,7 +68,7 @@ void CBackend::Invalidate	()
 	constants.clear_dirty();
 
 	m_pInputLayout				= nullptr;
-	m_PrimitiveTopology			= D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+	m_PrimitiveTopology			= ERHI_PRIMITIVE_TOPOLOGY::UNDEFINED;
 	m_bChangedRTorZB			= false;
 	m_pInputSignature			= nullptr;
 	for (int i=0; i<MaxCBuffers; ++i)

@@ -4,6 +4,7 @@
 #include "dx10BufferUtils.h"
 #include "dx10FixedConstants.h"
 #include "dxRenderDeviceRender.h"
+#include "Utils/dxHashHelper.h"
 
 dx10ConstantBuffer::~dx10ConstantBuffer()
 {
@@ -12,39 +13,27 @@ dx10ConstantBuffer::~dx10ConstantBuffer()
 	xr_free(m_pBufferData);
 }
 
-dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable)
+dx10ConstantBuffer::dx10ConstantBuffer(const RHIShaderBufferDesc* pTable)
 	: m_bChanged(true)
 {
-	D3D_SHADER_BUFFER_DESC Desc;
-
-	CHK_DX(pTable->GetDesc(&Desc));
-
-	m_strBufferName._set(Desc.Name);
+	const auto& Desc = *pTable;
+	m_strBufferName = Desc.Name;
 	m_eBufferType = Desc.Type;
 	m_uiBufferSize = Desc.Size;
-	m_bFixed = FixedConstants::IsFixedName(Desc.Name);
-
-	//	Fill member list with variable descriptions
-	m_MembersList.resize(Desc.Variables);
-	m_MembersNames.resize(Desc.Variables);
-	for (u32 i = 0; i < Desc.Variables; ++i)
-	{
-		ID3DShaderReflectionVariable* pVar;
-		ID3DShaderReflectionType* pType;
-
-		D3D_SHADER_VARIABLE_DESC var_desc;
-
-		pVar = pTable->GetVariableByIndex(i);
-		VERIFY(pVar);
-		pType = pVar->GetType();
-		VERIFY(pType);
-		pType->GetDesc(&m_MembersList[i]);
-		//	Buffers with the same layout can contain totally different members
-		CHK_DX(pVar->GetDesc(&var_desc));
-		m_MembersNames[i] = var_desc.Name;
+	m_bFixed = FixedConstants::IsFixedName(Desc.Name.c_str());
+	m_MembersList.resize(Desc.Variables.size());
+	m_MembersNames.resize(Desc.Variables.size());
+	dxHashHelper hash;
+	for (u32 member_idx = 0; member_idx < Desc.Variables.size(); ++member_idx) {
+		const auto& type = Desc.Variables[member_idx].Type;
+		m_MembersList[member_idx] = type;
+		m_MembersNames[member_idx] = Desc.Variables[member_idx].Name;
+		u32 type_desc[] = { u32(type.Class), u32(type.Type), type.Rows, type.Columns, type.Elements, type.Members, type.Offset };
+		hash.AddData(type_desc, sizeof(type_desc));
+		const char* type_name = type.Name.c_str();
+		hash.AddData(&type_name, sizeof(type_name));
 	}
-
-	m_uiMembersCRC = crc32(&m_MembersList[0], Desc.Variables * sizeof(m_MembersList[0]));
+	m_uiMembersCRC = hash.GetHash();
 
 	R_CHK(RHIUtils::CreateConstantBuffer(&m_pBuffer, Desc.Size));
 	VERIFY(m_pBuffer);
@@ -66,7 +55,7 @@ bool dx10ConstantBuffer::Similar(dx10ConstantBuffer &_in)
 	if ( m_MembersList.size() != _in.m_MembersList.size() )
 		return false;
 
-	if ( memcmp(&m_MembersList[0], &_in.m_MembersList[0], m_MembersList.size()*sizeof(m_MembersList[0])) )
+	if (!std::equal(m_MembersList.begin(), m_MembersList.end(), _in.m_MembersList.begin()))
 		return false;
 
 	VERIFY(m_MembersNames.size() == _in.m_MembersNames.size());

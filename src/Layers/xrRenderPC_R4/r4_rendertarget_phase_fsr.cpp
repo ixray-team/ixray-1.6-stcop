@@ -14,8 +14,6 @@ void CRenderTarget::init_fsr()
 	initParams.maxRenderSize.width = (u32)RCache.get_width();
 	initParams.maxRenderSize.height = (u32)RCache.get_height();
 
-	initParams.device = RDevice;
-
 	g_Fsr3Wrapper.Create(initParams);
 }
 
@@ -24,16 +22,15 @@ bool CRenderTarget::phase_fsr()
 	GPU_EVENT(FSR);
 
 	Fsr3Wrapper::DrawParameters fsr3Params = {};
-	fsr3Params.deviceContext = RContext;
 
-	fsr3Params.unresolvedColorResource = (ID3D11Resource*)rt_Generic_0->pSurface->GetRawTexture();
-	fsr3Params.motionvectorResource = (ID3D11Resource*)rt_Velocity->pSurface->GetRawTexture();
-	fsr3Params.depthbufferResource = (ID3D11Resource*)rt_Position->pSurface->GetRawTexture();
+	fsr3Params.unresolvedColorResource = rt_Generic_0->pSurface;
+	fsr3Params.motionvectorResource = rt_Velocity->pSurface;
+	fsr3Params.depthbufferResource = rt_Position->pSurface;
 
 	fsr3Params.reactiveMapResource = nullptr;
 	fsr3Params.transparencyAndCompositionResource = nullptr;
 
-	fsr3Params.resolvedColorResource = (ID3D11Resource*)rt_Generic->pSurface->GetRawTexture();
+	fsr3Params.resolvedColorResource = rt_Generic->pSurface;
 
 	fsr3Params.renderWidth = (u32)RCache.get_width();
 	fsr3Params.renderHeight = (u32)RCache.get_height();

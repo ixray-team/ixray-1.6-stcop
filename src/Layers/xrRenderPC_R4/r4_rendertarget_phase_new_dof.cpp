@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "r4_rendertarget.h"
 
-static D3D_VIEWPORT VP_DOF = {
+static RHIViewport VP_DOF = {
     0.0f,
     0.0f,
     1.0f,
@@ -21,7 +21,7 @@ void CRenderTarget::phase_new_dof()
 
         VP_DOF.Width  = W;
         VP_DOF.Height = H;
-        RContext->RSSetViewports(1, &VP_DOF);
+        GRHI->SetViewport(VP_DOF);
 
         DrawSQ(s_dof_coc, rt_dof_focus, 0, []
         {
@@ -40,7 +40,7 @@ void CRenderTarget::phase_new_dof()
 
     VP_DOF.Width  = W;
     VP_DOF.Height = H;
-    RContext->RSSetViewports(1, &VP_DOF);
+    GRHI->SetViewport(VP_DOF);
 
     // -------------------------------
     // 1) CoC

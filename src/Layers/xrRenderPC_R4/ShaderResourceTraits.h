@@ -10,14 +10,14 @@
 	struct ShaderTypeTraits<SHS>
 	{
 		typedef CResourceManager::map_HS	MapType;
-		typedef ID3D11HullShader DXIface;
+		typedef RHIObject DXIface;
 
 		static inline const char* GetShaderExt() {return ".hs.hlsl";}
 		static inline const char* GetCompilationTarget() {return "hs_5_0";}
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* hs = 0;
-			R_CHK(RDevice->CreateHullShader(buffer, size, NULL, &hs));
+			R_CHK(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::HS, &hs));
 			return hs;
 		}
 
@@ -28,14 +28,14 @@
 	struct ShaderTypeTraits<SDS>
 	{
 		typedef CResourceManager::map_DS	MapType;
-		typedef ID3D11DomainShader			DXIface;
+		typedef RHIObject			DXIface;
 
 		static inline const char* GetShaderExt() {return ".ds.hlsl";}
 		static inline const char* GetCompilationTarget() {return "ds_5_0";}
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* hs = 0;
-			R_CHK(RDevice->CreateDomainShader(buffer, size, NULL, &hs));
+			R_CHK(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::DS, &hs));
 			return hs;
 		}
 
@@ -46,14 +46,14 @@
 	struct ShaderTypeTraits<SCS>
 	{
 		typedef CResourceManager::map_CS	MapType;
-		typedef ID3D11ComputeShader			DXIface;
+		typedef RHIObject			DXIface;
 
 		static inline const char* GetShaderExt() {return ".cs.hlsl";}
 		static inline const char* GetCompilationTarget() {return "cs_5_0";}
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* cs = 0;
-			R_CHK(RDevice->CreateComputeShader(buffer, size, NULL, &cs));
+			R_CHK(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::CS, &cs));
 			return cs;
 		}
 
@@ -108,7 +108,7 @@
 			const char*						c_entry		= "main";
 
 			// Compile
-			HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
+			HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, RHI_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
 
 #ifdef _EDITOR
 			R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);

@@ -684,4 +684,7 @@
 	<string id="st_opt_ultra">
 		<text>Kiváló</text>
 	</string>
+    <string id="ui_mm_graphics_api">
+        <text>Graphics API</text>
+    </string>
 </string_table>

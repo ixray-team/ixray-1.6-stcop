@@ -370,7 +370,7 @@ class CCC_tf_Aniso : public CCC_Integer
 {
 public:
 	void	apply	()	{
-		if (0==RDevice)	return	;
+		if (0==GRHI->DevicePtr)	return	;
 		int	val = *value;	clamp(val,1,16);
 		SSManager.SetMaxAnisotropy(val);
 	}
@@ -391,7 +391,7 @@ class CCC_tf_MipBias: public CCC_Float {
 public:
 	CCC_tf_MipBias(const char* N, float* v) : CCC_Float(N, v, -3.0f, 3.0f) {};
 	void apply() {
-		if (0 == RDevice) {
+		if (0 == GRHI->DevicePtr) {
 			return;
 		}
 		float val = *value;

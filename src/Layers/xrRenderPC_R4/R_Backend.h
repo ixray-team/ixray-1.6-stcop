@@ -79,8 +79,8 @@ public:
 	ref_cbuffer						m_aHullConstants[MaxCBuffers];
 	ref_cbuffer						m_aDomainConstants[MaxCBuffers];
 	ref_cbuffer						m_aComputeConstants[MaxCBuffers];
-	D3D_PRIMITIVE_TOPOLOGY			m_PrimitiveTopology;
-	ID3DInputLayout*				m_pInputLayout;
+	ERHI_PRIMITIVE_TOPOLOGY			m_PrimitiveTopology;
+	RHIObject*				m_pInputLayout;
 	DWORD							dummy0;	//	Padding to avoid warning	
 	DWORD							dummy1;	//	Padding to avoid warning	
 	DWORD							dummy2;	//	Padding to avoid warning	
@@ -96,7 +96,7 @@ private:
 	R_constant_table*				ctable;
 
 	// Shaders/State
-	ID3DState*						state;
+	dx10State*						state;
 
 	// Lists
 	STextureList*					T;
@@ -187,7 +187,7 @@ public:
 	IC	void						set_Shader			(Shader* S, u32 pass=0);
 	IC	void						set_Shader			(ref_shader& S, u32 pass=0)			{ set_Shader(S ? &*S : nullptr,pass);			}
 
-	ICF	void						set_States			(ID3DState* _state);
+	ICF	void						set_States			(dx10State* _state);
 	ICF	void						set_States			(ref_state& _state)					{ set_States(_state->state);	}
 
 	ICF  void						set_Format			(SDeclaration* _decl);
@@ -305,7 +305,7 @@ private:
 	void	ApplyVertexLayout();
 
 private:
-	ID3DBlob*				m_pInputSignature;
+	RHIBlob*				m_pInputSignature;
 
 	bool					m_bChangedRTorZB;
 };

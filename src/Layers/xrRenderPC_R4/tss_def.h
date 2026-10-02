@@ -44,9 +44,9 @@ public:
 	bool					equal	(SimulatorStates& S);
 	void					clear	();
 	void	UpdateState( dx10State &state) const;
-	void	UpdateDesc( D3D_RASTERIZER_DESC &desc ) const;
-	void	UpdateDesc( D3D_DEPTH_STENCIL_DESC &desc ) const;
-	void	UpdateDesc( D3D_BLEND_DESC &desc ) const;
+	void	UpdateDesc( RHIRasterizerDesc &desc ) const;
+	void	UpdateDesc( RHIDepthStencilDesc &desc ) const;
+	void	UpdateDesc( RHIBlendDesc &desc ) const;
 	void	UpdateDesc(RHISampleDesc descArray[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT], int iBaseSamplerIndex ) const;
 };
 #endif

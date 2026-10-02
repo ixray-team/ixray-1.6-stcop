@@ -31,7 +31,6 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		
 		Final.xyz *= rcp(1.0f + Final.xyz);
 		Final.xyz = saturate(Final.xyz);
-		Final.w = 0.0f;
 	
 		u_sslr[DTid.xy] = Final;
 		u_sslr_data[DTid.xy] = Point;
@@ -126,9 +125,8 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	Final.xyz = lerp(Final.xyz, Hemi.xyz, Hemi.w);
 	Point.xyz = length(Point.xyz - StartPoint.xyz) * Reflection.xyz + ReflectPoint;
 	
-	Point.w = rcp(max(EPS_S, H.w));
-	
-	Final.w = isHUDRender;
+	//The sign carries the HUD flag, so the colour target needs no alpha
+	Point.w = rcp(max(EPS_S, H.w)) * (isHUDRender ? -1.0f : 1.0f);
 
 	//LVutner: Write to UAVs
 	u_sslr[DTid.xy] = Final;

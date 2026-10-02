@@ -8,9 +8,6 @@
 
 struct SDL_Window;
 
-#define RContext ((ID3D11DeviceContext*)GRHI->GetContext())
-#define RDevice ((ID3D11Device*)Device.GetRenderDevice())
-#define RSwapchain ((IDXGISwapChain*)Device.GetSwapchain())
 
 #define RFeatureLevel (GRHI->DevicePtr->FeatureLevel)
 #define RDepth (GRHI->DevicePtr->RenderDSV)

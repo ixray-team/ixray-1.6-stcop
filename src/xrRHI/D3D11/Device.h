@@ -50,6 +50,39 @@ public:
     ID3D11DeviceContext* CreateDeferredContext();
     void ReleaseDeferredContext(ID3D11DeviceContext* context);
 
+    void* GetContext() override;
+    void* GetSwapchain() override;
+    void BeginFrame() override;
+    IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize) override;
+    IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc) override;
+    void SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type) override;
+    void ClearVertexBuffer(u32 vb_stride) override;
+    void ClearIndexBuffer() override;
+    void SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type) override;
+    HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface) override;
+
+    HRESULT CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader) override;
+    HRESULT CreateInputLayout(const RHIInputElementDesc* desc, size_t count, const void* code, size_t size, RHIObject** out_layout) override;
+    void SetInputLayout(RHIObject* layout) override;
+    void Dispatch(u32 x, u32 y, u32 z) override;
+    HRESULT CreateSamplerState(const RHISampleDesc& desc, RHIObject** out_state) override;
+    void SetSamplers(u32 start, u32 count, RHIObject* const* states, ERHI_SHADER_TYPE type) override;
+    void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views) override;
+    void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts) override;
+    HRESULT CreateOcclusionQuery(RHIObject** out_query) override;
+    HRESULT GetQueryData(RHIObject* query, void* data, u32 size, u32 flags) override;
+    void BeginQuery(RHIObject* query) override;
+    void EndQuery(RHIObject* query) override;
+    IRHISurface* CreateTexture1D(const RHITextureDesc& desc, const RHISubResource& data) override;
+    void CopySwapchain(IRHISurface* dest) override;
+    bool SupportsTextureSampling(ERHI_FORMAT format, u32& out_flags) override;
+    void* GetState(const RHIRasterizerDesc& desc) override;
+    void* GetState(const RHIDepthStencilDesc& desc) override;
+    void* GetState(const RHIBlendDesc& desc) override;
+    HRESULT CreateBlendState(const RHIBlendDesc& desc, RHIObject** out_state) override;
+    void SetBlendState(RHIObject* state, const float* factor, u32 mask) override;
+    void SetRawBlendState(void* state, const float* factor, u32 mask) override;
+
 private:
     D3D_PRIMITIVE_TOPOLOGY d3dTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
     ERHI_PRIMITIVE_TOPOLOGY currentTopology = (ERHI_PRIMITIVE_TOPOLOGY)-1;

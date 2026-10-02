@@ -330,4 +330,7 @@
 	<string id="ui_st_sell_all">
 		<text>Sell all</text>
 	</string>
+    <string id="ui_mm_graphics_api">
+        <text>Graphics API</text>
+    </string>
 </string_table>
