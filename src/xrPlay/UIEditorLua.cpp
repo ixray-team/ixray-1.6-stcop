@@ -167,6 +167,7 @@ void EditorLuaCodespace()
 	ImGui::Spacing();
 
 	ImGui::BeginChild("ListBox", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+	int snippet_to_delete = -1;
 	for (int i = 0; i < jsonArray.size(); i++)
 	{
 		ImGui::PushID(i);
@@ -176,10 +177,24 @@ void EditorLuaCodespace()
 			CodeText = jsonArray[i]["code"];
 			LuaEditor.SetText(CodeText.c_str());
 		}
+		if (ImGui::BeginPopupContextItem("##snippet_context"))
+		{
+			if (ImGui::MenuItem("Delete"))
+				snippet_to_delete = i;
+			ImGui::EndPopup();
+		}
 		ImGui::PopID();
 	}
 
 	ImGui::EndChild();
+
+	if (snippet_to_delete != -1)
+	{
+		jsonArray.erase(jsonArray.begin() + snippet_to_delete);
+		auto file = FS.w_open(jsonSnippetsPath);
+		file->w_string(jsonArray.dump().c_str());
+		FS.w_close(file);
+	}
 
 	ImGui::Spacing();
 	ImGui::EndChild();
