@@ -71,6 +71,7 @@ Cflags: -I\${includedir}
                 ${dxvk_SOURCE_DIR} ${DXVK_BUILD_DIR}
                 --buildtype=debug
                 --prefix=${DXVK_INSTALL_DIR}
+                -Denable_d3d8=false
                 -Denable_d3d9=false
                 -Denable_d3d11=true
                 -Dnative_sdl3=enabled   
