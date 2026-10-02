@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "R_Backend.h"
-#ifdef USE_DX11
 #include "../xrRenderDX10/dx10FixedConstants.h"
-#endif
 
 CBackend RCache;
 
@@ -41,18 +39,14 @@ void CBackend::OnDeviceCreate	()
 	// streams
 	Vertex.Create		();
 	Index.Create		();
-#ifdef USE_DX11
 	FixedConstants::Create();
-#endif
 	// invalidate caching
 	Invalidate			();
 }
 
 void CBackend::OnDeviceDestroy()
 {
-#ifdef USE_DX11
 	FixedConstants::Destroy();
-#endif
 	// streams
 	Index.Destroy		();
 	Vertex.Destroy		();

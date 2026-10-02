@@ -1,6 +1,8 @@
 #ifndef _D3D_EXT_internal
 #define _D3D_EXT_internal
 
+#include "../xrCore/D3DLegacy.h"
+
 #ifndef NO_XR_LIGHT
 struct Flight 
 {
@@ -93,7 +95,7 @@ public:
 #endif
 
 #ifndef NO_XR_VDECLARATOR
-#include <FlexibleVertexFormat.h>
+#include "../xrCore/FVFLegacy.h"
 
 struct	VDeclarator	: public FixedVector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH + 1> {
 	void set(u32 FVF) {

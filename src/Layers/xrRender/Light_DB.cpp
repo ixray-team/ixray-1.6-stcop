@@ -5,6 +5,7 @@
 #include "../../xrEngine/Environment.h"
 #include "../../utils/xrLC_Light/R_light.h"
 #include "Light_DB.h"
+#include "../xrRenderPC_R4/r1_LightPPA.h"
 
 CLight_DB::CLight_DB()
 {
@@ -40,11 +41,7 @@ void CLight_DB::Load			(IReader *fs)
 			L->flags.bStatic			= true;
 			L->set_type					(IRender_Light::POINT);
 
-#if RENDER==R_R1
-			L->set_shadow				(false);
-#else
-			L->set_shadow				(true);
-#endif
+			L->set_shadow(LightingModeIsDynamic());
 			u32 controller				= 0;
 			F->r						(&controller,4);
 			F->r						(&Ldata,sizeof(Flight));
@@ -104,9 +101,10 @@ void CLight_DB::Load			(IReader *fs)
 	*/
 }
 
-#if RENDER != R_R1
 void	CLight_DB::LoadHemi	()
 {
+	if (LightingModeIsStatic()) return;
+
 	string_path fn_game;
 	if ( FS.exist( fn_game, "$level$", "build.lights" ) )
 	{
@@ -159,7 +157,6 @@ void	CLight_DB::LoadHemi	()
 		FS.r_close(F);
 	}
 }
-#endif
 
 void			CLight_DB::Unload	()
 {
@@ -181,26 +178,7 @@ light*			CLight_DB::Create	()
 	return				L;
 }
 
-#if RENDER==R_R1
-void CLight_DB::add_light(light* L)
-{
-	if (Device.dwFrame == L->frame_render)
-	{
-		return;
-	}
-	L->frame_render = Device.dwFrame;
-	if (L->flags.bStatic)
-	{
-		return; // skip static lighting, 'cause they are in lmaps
-	}
-	if (ps_r1_flags.test(R1FLAG_DLIGHTS))
-	{
-		RImplementation.L_Dynamic->add(L);
-	}
-}
-#endif
 
-#if (RENDER==R_R2) || (RENDER==R_R4)
 void CLight_DB::add_light(light* L)
 {
 	if (Device.dwFrame == L->frame_render)
@@ -208,6 +186,22 @@ void CLight_DB::add_light(light* L)
 		return;
 	}
 	L->frame_render = Device.dwFrame;
+	if (LightingModeIsStatic())
+	{
+		CSector* S = (CSector*)L->SpatialComponent->sector;
+		if (L->flags.bStatic || !ps_r1_flags.test(R1FLAG_DLIGHTS) || !S)
+			return;
+		if (RImplementation.SectorsCount() > 1)
+		{
+			if (PortalTraverser.i_marker != S->r_marker)
+				return;
+			const Fsphere& sphere = L->SpatialComponent->sphere;
+			if (std::none_of(S->r_frustums.begin(), S->r_frustums.end(), [&](CFrustum& F) { return F.testSphere_dirty(sphere.P, sphere.R); }))
+				return;
+		}
+		RImplementation.L_Dynamic->add(L);
+		return;
+	}
 	if (RImplementation.o.noshadows)
 	{
 		L->flags.bShadow = false;
@@ -230,7 +224,6 @@ void CLight_DB::add_light(light* L)
 
 	L->export_(package);
 }
-#endif // (RENDER==R_R2) || (RENDER==R_R4)
 
 void			CLight_DB::Update			()
 {

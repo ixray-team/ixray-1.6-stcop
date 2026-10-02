@@ -37,9 +37,7 @@ if(WINDOWSSDK_FOUND)
     _create_windows_sdk_library_target(D3D11 "d3d11.lib")
     _create_windows_sdk_library_target(D3D12 "d3d12.lib")
     _create_windows_sdk_library_target(D3DCompiler "d3dcompiler.lib")
-    _create_windows_sdk_library_target(D3D9 "d3d9.lib")
     _create_windows_sdk_library_target(D3DX11 "d3dx11.lib")
-    _create_windows_sdk_library_target(D3DX9 "d3dx9.lib")
     
     # DXGI
     _create_windows_sdk_library_target(DXGI "dxgi.lib")
@@ -74,9 +72,7 @@ if (IXRAY_CROSS_COMPILATION)
     mock_winsdk_target(D3D11 "d3d11.lib")
     mock_winsdk_target(D3D12 "d3d12.lib")
     mock_winsdk_target(D3DCompiler "d3dcompiler.lib")
-    mock_winsdk_target(D3D9 "d3d9.lib")
     mock_winsdk_target(D3DX11 "d3dx11.lib")
-    mock_winsdk_target(D3DX9 "d3dx9.lib")
 
     # DXGI
     mock_winsdk_target(DXGI "dxgi.lib")

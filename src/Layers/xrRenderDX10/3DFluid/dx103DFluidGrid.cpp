@@ -3,7 +3,7 @@
 
 #include "../dx10BufferUtils.h"
 
-#include <FlexibleVertexFormat.h>
+#include "../../../xrCore/FVFLegacy.h"
 #include <DirectXMath.h>
 
 using namespace FVF;

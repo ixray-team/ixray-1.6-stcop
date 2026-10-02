@@ -248,7 +248,6 @@ void CDetailManager::Render()
 #endif
 				cache_Update(cam_pos);
 
-#ifdef USE_DX11
 #ifndef _EDITOR
 				if (ps_trample_enabled)
 				{
@@ -259,7 +258,6 @@ void CDetailManager::Render()
 				{
 					TrampleAnimateItems();
 				}
-#endif
 #endif
 
 				{
@@ -370,7 +368,6 @@ void CDetailManager::Render()
 						}
 					}
 				}
-#ifdef USE_DX11
 				if (ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))//experimental
 				{
 					PROF_EVENT("UpdateBuffers");
@@ -419,7 +416,6 @@ void CDetailManager::Render()
 						}
 					}
 				}
-#endif
 				task_finished.store(true);
 			}
 		);

@@ -6,9 +6,8 @@
 #include "blenders/Blender.h"
 #include "dxRenderDeviceRender.h"
 
-#ifdef USE_DX11
 #include "tss.h"
-#endif
+#include "../../xrEngine/EngineAPI.h"
 
 void fix_texture_name(LPSTR fn);
 
@@ -54,10 +53,8 @@ void CBlender_Compile::i_Filter_Mag(u32 s, u32 f)
 
 void CBlender_Compile::i_FilterAnizo(u32 s, bool value)
 {
-#ifdef USE_DX11
     VERIFY(s != u32(-1));
     RS.SetSAMP(s, XRDX10SAMP_ANISOTROPICFILTER, value);
-#endif
 }
 
 void CBlender_Compile::i_Filter(u32 s, u32 _min, u32 _mip, u32 _mag)
@@ -69,91 +66,6 @@ void CBlender_Compile::i_Filter(u32 s, u32 _min, u32 _mip, u32 _mag)
 }
 
 // Provide DX9-style wrappers that call the same implementations
-#ifndef USE_DX11
-void CBlender_Compile::i_Projective(u32 s, bool b)
-{
-    // Same as dx10-style projective sampler (use texture transform flags)
-    if (b)
-        RS.SetTSS(s, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE | D3DTTFF_PROJECTED);
-    else
-        RS.SetTSS(s, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
-}
-
-u32 CBlender_Compile::i_Sampler(const char* _name)
-{
-    string256 name;
-    xr_strcpy(name, _name);
-    fix_texture_name(name);
-
-    ref_constant C = ctable.get(name);
-    if (!C) return u32(-1);
-
-    R_ASSERT(C->type == RC_sampler);
-    u32 stage = C->samp.index;
-    return stage;
-}
-
-u32 CBlender_Compile::r_Sampler(const char* _name, const char* texture, bool b_ps1x_ProjectiveDivide, u32 address, u32 fmin, u32 fmip, u32 fmag)
-{
-    dwStage = i_Sampler(_name);
-    if (u32(-1) != dwStage)
-    {
-        i_Texture(dwStage, texture);
-
-        // emulate previous tweaks (s_base, s_detail, s_base_hud, etc.)
-        if ((0 == xr_strcmp(_name, "s_base")) && (fmin == D3DTEXF_LINEAR))
-        {
-            fmin = D3DTEXF_ANISOTROPIC;
-            fmag = D3DTEXF_ANISOTROPIC;
-        }
-
-        if (0 == xr_strcmp(_name, "s_base_hud"))
-        {
-            fmin = D3DTEXF_GAUSSIANQUAD;
-            fmag = D3DTEXF_GAUSSIANQUAD;
-        }
-
-        if ((0 == xr_strcmp(_name, "s_detail")) && (fmin == D3DTEXF_LINEAR))
-        {
-            fmin = D3DTEXF_ANISOTROPIC;
-            fmag = D3DTEXF_ANISOTROPIC;
-        }
-
-        // Sampler states
-        i_Address(dwStage, address);
-        i_Filter(dwStage, fmin, fmip, fmag);
-
-        if (dwStage < 4) i_Projective(dwStage, b_ps1x_ProjectiveDivide);
-    }
-    return dwStage;
-}
-
-void CBlender_Compile::i_Texture(u32 s, const char* name)
-{
-    if (name) passTextures.push_back(std::make_pair(s, ref_texture(DEV->_CreateTexture(name))));
-}
-
-void CBlender_Compile::r_Sampler_rtf(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide)
-{
-    r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
-}
-
-void CBlender_Compile::r_Sampler_clf(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide)
-{
-    r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
-}
-
-void CBlender_Compile::r_Sampler_waf(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide)
-{
-    r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
-}
-
-void CBlender_Compile::r_Sampler_clw(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide)
-{
-    u32 s = r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
-    if (u32(-1) != s) RS.SetSAMP(s, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
-}
-#else
 
 void CBlender_Compile::r_Stencil(bool Enable, u32 Func, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail)
 {
@@ -261,7 +173,6 @@ void CBlender_Compile::r_dx10Texture(const char* ResourceName, const char* textu
     u32 stage = C->samp.index;
     passTextures.push_back(std::make_pair(stage, ref_texture(DEV->_CreateTexture(TexName))));
 }
-#endif
 
 void CBlender_Compile::r_Constant(const char* name, RHIShaderConstant::Setup* s)
 {
@@ -302,6 +213,9 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps,
     PassSET_Blend(bABlend, abSRC, abDST, aTest, aRef);
     PassSET_LightFog(false, bFog);
 
+    if (LightingModeIsStatic() && aTest)
+        RImplementation.addShaderOption("USE_R1_ALPHA_TEST", "1");
+
     SPS* ps = DEV->_CreatePS(_ps);
     SVS* vs = DEV->_CreateVS(_vs);
     dest.ps = ps;
@@ -309,7 +223,6 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps,
     ctable.merge(&ps->constants);
     ctable.merge(&vs->constants);
 
-#ifdef USE_DX11
     SGS* gs = DEV->_CreateGS(_gs);
     dest.gs = gs;
 
@@ -317,7 +230,6 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps,
     dest.ds = DEV->_CreateDS("null");
     dest.cs = DEV->_CreateCS("null");
     if (gs) ctable.merge(&gs->constants);
-#endif
 
     if (0 == _stricmp(_ps, "null"))
     {
@@ -328,7 +240,6 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps,
     SetPassPriority(-1);
 }
 
-#ifdef USE_DX11
 void CBlender_Compile::r_TessPass(const char* vs, const char* hs, const char* ds, const char* gs, const char* ps, bool bFog, bool bZtest, bool bZwrite, bool bABlend, D3DBLEND abSRC, D3DBLEND abDST, bool aTest, u32 aRef)
 {
     // Reuse r_Pass to create base shaders then overwrite HS/DS and merge their consts.
@@ -347,7 +258,6 @@ void CBlender_Compile::r_ComputePass(const char* cs)
     dest.cs = DEV->_CreateCS(cs);
     ctable.merge(&dest.cs->constants);
 }
-#endif
 
 void CBlender_Compile::r_End(bool clear)
 {

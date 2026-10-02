@@ -41,37 +41,62 @@ CEngineAPI::~CEngineAPI()
 
 extern u32 renderer_value; //con cmd
 ENGINE_API int g_current_renderer = 0;
+ENGINE_API ELightingMode g_lighting_mode = ELightingMode::Static;
+ENGINE_API ELightingMode g_lighting_mode_cfg = ELightingMode::Static;
+ENGINE_API bool g_lighting_mode_locked = false;
+
+ENGINE_API bool LightingModeParseToken(const char* name, ELightingMode& mode)
+{
+	if (!name)
+		return false;
+	if (!_stricmp(name, "renderer_r1") || !_stricmp(name, "renderer_r4_static"))
+	{
+		mode = ELightingMode::Static;
+		return true;
+	}
+	if (!_stricmp(name, "renderer_r2") || !_stricmp(name, "renderer_r4"))
+	{
+		mode = ELightingMode::Dynamic;
+		return true;
+	}
+	return false;
+}
+
+ENGINE_API const char* LightingModeCanonicalToken(ELightingMode mode)
+{
+	return mode == ELightingMode::Static ? "renderer_r4_static" : "renderer_r4";
+}
+
+ENGINE_API void LightingModeApply(ELightingMode mode, bool commit_active)
+{
+	g_lighting_mode_cfg = mode;
+	if (!commit_active)
+		return;
+
+	g_lighting_mode = mode;
+	psDeviceFlags.set(rsR4, true);
+	psDeviceFlags.set(rsR2, mode == ELightingMode::Dynamic);
+	g_current_renderer = (mode == ELightingMode::Static) ? 1 : 2;
+}
+
+ENGINE_API void LightingModeLockActive()
+{
+	LightingModeApply(g_lighting_mode_cfg, true);
+	g_lighting_mode_locked = true;
+}
 
 void CEngineAPI::InitializeNotDedicated()
 {
-	const char* r2_name	= "xrRender_R2";
-	const char* r4_name	= "xrRender_R4";
+	const char* r4_name = "xrRender_R4";
 
-	if (psDeviceFlags.test(rsR4))
-	{
-		// try to initialize R4
-		Msg("Loading DLL: %s",	r4_name);
-		hRender			= Platform::LoadLibrary(r4_name);
-		if (0==hRender) {
-			// try to load R1
-			Msg			("! ...Failed - incompatible hardware/pre-Vista OS.");
-			psDeviceFlags.set	(rsR2,true);
-		}
-	}
+	LightingModeLockActive();
 
-	if (psDeviceFlags.test(rsR2))
+	Msg("Loading DLL: %s [%s]", r4_name, LightingModeCanonicalToken(g_lighting_mode));
+	hRender = Platform::LoadLibrary(r4_name);
+	if (0 == hRender)
 	{
-		// try to initialize R2
-		psDeviceFlags.set	(rsR4,false);
-		Msg("Loading DLL: %s",	r2_name);
-		hRender = Platform::LoadLibrary(r2_name);
-		if (0==hRender)
-		{
-			// try to load R1
-			Msg			("! ...Failed - incompatible hardware.");
-		} else {
-			g_current_renderer = 2;
-		}
+		Msg("! Failed to load %s", r4_name);
+		R_CHK(GetLastError());
 	}
 }
 
@@ -103,25 +128,15 @@ void CEngineAPI::Initialize(void)
 	PROF_EVENT("CEngineAPI::Initialize");
 	//////////////////////////////////////////////////////////////////////////
 	// render
-	const char* r1_name	= "xrRender_R1";
-
 	if (!g_dedicated_server)
 		InitializeNotDedicated();
 	else
 		InitializeDedicated();
 
-	if (0==hRender)		
+	if (0==hRender && !g_dedicated_server)
 	{
-		// try to load R1
-		psDeviceFlags.set	(rsR4,false);
-		psDeviceFlags.set	(rsR2,false);
-		renderer_value		= 0; //con cmd
-
-		Msg("Loading DLL: %s",	r1_name);
-		hRender			= Platform::LoadLibrary(r1_name);
-		if (0==hRender)	R_CHK(GetLastError());
-		//R_ASSERT		(hRender);
-		g_current_renderer	= 1;
+		Msg("! xrRender_R4 is required for client rendering");
+		R_CHK(GetLastError());
 	}
 
 	Device.ConnectToRender();
@@ -203,51 +218,28 @@ void CEngineAPI::CreateRendererList()
 	} 
 	else
 	{
-		//	TODO: ask renderers if they are supported!
 		if(vid_quality_token != nullptr) 
 			return;
-		
-		bool bSupports_r1 = false;
-		bool bSupports_r2 = false;
-		bool bSupports_r4 = false;
 
 #ifdef IXR_WINDOWS
-		const char* r1_name	= "xrRender_R1.dll";
-		const char* r2_name	= "xrRender_R2.dll";
 		const char* r4_name	= "xrRender_R4.dll";
 #else
-		const char* r1_name	= "libxrRender_R1.so";
-		const char* r2_name	= "libxrRender_R2.so";
 		const char* r4_name	= "libxrRender_R4.so";
 #endif
 
-		if (Core.ParamsData.test(ECoreParams::perfhud_hack))
-		{
-			bSupports_r1 = true;
-			bSupports_r2 = true;
-			bSupports_r4 = true;
-		}
-		else
+		bool bSupports_r4 = Core.ParamsData.test(ECoreParams::perfhud_hack);
+		if (!bSupports_r4)
 		{
 			auto dir = std::filesystem::weakly_canonical(Platform::GetBinaryFolderPath());
-			bSupports_r1 = std::filesystem::exists(dir / r1_name);
-			bSupports_r2 = std::filesystem::exists(dir / r2_name);
 			bSupports_r4 = std::filesystem::exists(dir / r4_name);
 		}
 
 		hRender = 0;
 
 		xr_vector<const char*> _tmp;
-		if (bSupports_r1)
-		{
-			_tmp.push_back(xr_strdup("renderer_r1"));
-		}
-		if (bSupports_r2)
-		{
-			_tmp.push_back(xr_strdup("renderer_r2"));
-		}
 		if (bSupports_r4)
 		{
+			_tmp.push_back(xr_strdup("renderer_r4_static"));
 			_tmp.push_back(xr_strdup("renderer_r4"));
 		}
 
@@ -273,12 +265,7 @@ void CEngineAPI::CreateRendererList()
 
 ERHI_API_LAYER CEngineAPI::GetAPI()
 {
-	if (psDeviceFlags.test(rsR4))
-	{
-		return ERHI_API_LAYER::D3D11;
-	}
-
-	return ERHI_API_LAYER::D3D9;
+	return ERHI_API_LAYER::D3D11;
 }
 
 thread_local int SkinningMode = -1;

@@ -32,7 +32,7 @@ int CApplication::Run()
 	}
 
 	// plat
-	const bool headless = Autotest::Active();
+	const bool headless = Autotest::Active() || CommandLine.find("-autotest") != xr_string::npos;
 
 	std::jthread s;
 	if (!headless)
@@ -201,14 +201,19 @@ void CApplication::EnumerateDisplayModes()
 void CApplication::MigrateToGameWindow()
 {
 	PROF_EVENT("MigrateToGameWindow");
-	SDL_ShowWindow(g_AppInfo.Window);
+	const bool headless = Autotest::Active();
+	if (headless)
+		psDeviceFlags.set(rsFullscreen, FALSE);
+	else
+		SDL_ShowWindow(g_AppInfo.Window);
+
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
 
 	Console->Execute("vid_restart");
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Device.Width, &Device.Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
 
-	if (Autotest::Active())
+	if (headless)
 		SDL_HideWindow(g_AppInfo.Window);
 }
 
@@ -228,7 +233,11 @@ void CApplication::LoadCustomSettings()
 
 void CApplication::ConfigureRenderer()
 {
-	if (Core.ParamsData.test(ECoreParams::r4))
+	if (strstr(Core.Params, "-r1"))
+	{
+		Console->Execute("renderer renderer_r4_static");
+	}
+	else if (Core.ParamsData.test(ECoreParams::r4))
 	{
 		Console->Execute("renderer renderer_r4");
 	}
@@ -241,7 +250,6 @@ void CApplication::ConfigureRenderer()
 		CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");
 		pTmp->Execute(Console->ConfigFile);
 		xr_delete(pTmp);
-		// � ����� ������ ���� �������� ������� CCC_R2
 		Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
 	}
 }

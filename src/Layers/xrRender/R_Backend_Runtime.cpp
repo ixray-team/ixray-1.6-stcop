@@ -3,26 +3,13 @@
 using namespace DirectX;
 
 #include "../../xrCore/Collision/Frustum.h"
-#ifdef USE_DX11
 #include "../xrRenderDX10/dx10FixedConstants.h"
-#endif
 
 void CBackend::OnFrameEnd	()
 {
 	if (!g_dedicated_server)
 	{
-#ifdef USE_DX11
 		Invalidate			();
-#else //USE_DX11
-
-		for (u32 stage=0; stage<Caps.raster.dwStages; stage++)
-			CHK_DX(RDevice->SetTexture(0,nullptr));
-		CHK_DX				(RDevice->SetStreamSource	(0,nullptr,0,0));
-		CHK_DX				(RDevice->SetIndices			(nullptr));
-		CHK_DX				(RDevice->SetVertexShader	(nullptr));
-		CHK_DX				(RDevice->SetPixelShader		(nullptr));
-		Invalidate			();
-#endif
 	}
 //#endif
 }
@@ -31,7 +18,6 @@ void CBackend::OnFrameBegin	()
 {
 	if (!g_dedicated_server)
 	{
-#ifdef USE_DX11
 #ifndef _EDITOR
 		RImplementation.SyncMotionVectors();
 #endif
@@ -42,7 +28,6 @@ void CBackend::OnFrameBegin	()
 #endif
 		FixedConstants::UpdateFrame();
 		FixedConstants::UpdateView();
-#endif
 		Memory.mem_fill(&stat,0,sizeof(stat));
 		Vertex.Flush();
 		Index.Flush();
@@ -80,7 +65,6 @@ void CBackend::Invalidate	()
 	xforms.unmap	();
 	hemi.unmap	();
 
-#ifdef USE_DX11
 	constants.clear_dirty();
 
 	m_pInputLayout				= nullptr;
@@ -116,7 +100,6 @@ void CBackend::Invalidate	()
 	for (u32 hs_it =0; hs_it < mtMaxHullShaderTextures;)	textures_hs	[hs_it++]	= 0;
 	for (u32 ds_it =0; ds_it < mtMaxDomainShaderTextures;)	textures_ds	[ds_it++]	= 0;
 	for (u32 cs_it =0; cs_it < mtMaxComputeShaderTextures;)	textures_cs	[cs_it++]	= 0;
-#endif //USE_DX11
 
 	for (u32 ps_it =0; ps_it < mtMaxPixelShaderTextures;)	textures_ps	[ps_it++]	= nullptr;
 	for (u32 vs_it =0; vs_it < mtMaxVertexShaderTextures;)	textures_vs	[vs_it++]	= nullptr;
@@ -133,12 +116,10 @@ void CBackend::set_Textures(STextureList* _T)
 	//	If resources weren't set at all we should clear from resource #0.
 	int _last_ps = -1;
 	int _last_vs = -1;
-#ifdef USE_DX11
 	int _last_gs = -1;
 	int _last_hs = -1;
 	int _last_ds = -1;
 	int _last_cs = -1;
-#endif //USE_DX11
 	STextureList::iterator	_it = _T->begin();
 	STextureList::iterator	_end = _T->end();
 
@@ -164,9 +145,7 @@ void CBackend::set_Textures(STextureList* _T)
 			}
 		}
 		else
-#ifdef USE_DX11
 			if (load_id < CTexture::rstGeometry)
-#endif
 			{
 				//	Set up pixel shader resources
 				//VERIFY(load_id < CTexture::rstVertex + mtMaxVertexShaderTextures);
@@ -183,7 +162,6 @@ void CBackend::set_Textures(STextureList* _T)
 					}
 				}
 			}
-#ifdef USE_DX11
 			else if (load_id < CTexture::rstHull)
 			{
 				//	Set up pixel shader resources
@@ -254,7 +232,6 @@ void CBackend::set_Textures(STextureList* _T)
 				}
 			}
 			else VERIFY("Invalid enum");
-#endif
 	}
 
 	// clear remaining stages (PS)
@@ -276,7 +253,6 @@ void CBackend::set_Textures(STextureList* _T)
 		GRHI->ShaderResourceCache->SetVSResource(_last_vs, nullptr);
 	}
 
-#ifdef USE_DX11
 	// clear remaining stages (VS)
 	for (++_last_gs; _last_gs < mtMaxGeometryShaderTextures; _last_gs++)
 	{
@@ -312,5 +288,4 @@ void CBackend::set_Textures(STextureList* _T)
 		GRHI->ShaderResourceCache->SetCSResource(_last_cs, nullptr);
 	}
 
-#endif //USE_DX11
 }

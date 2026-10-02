@@ -195,6 +195,9 @@
 	<string id="renderer_r4_dx10">
 		<text>Enhanced full dyn. lighting (DX10)</text>
 	</string>
+	<string id="renderer_r4_static">
+		<text>Static lighting</text>
+	</string>
 	<string id="Ultra">
 		<text>ultra</text>
 	</string>

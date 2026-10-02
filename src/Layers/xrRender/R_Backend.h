@@ -8,14 +8,10 @@
 #include "../../xrRHI/RHIEnums.h"
 #include "../../xrRHI/RHITopologyUtils.h"
 
-#ifdef USE_DX11
 #	include "..\xrRenderPC_R4\r_backend_lod.h"
-#endif
 
 #include "FVF.h"
-#ifdef USE_DX11
 #include "../xrRenderDX10/dx10FixedConstants.h"
-#endif
 
 /// detailed statistic
 struct R_statistics_element
@@ -75,11 +71,8 @@ public:
 	R_xforms						xforms;
 	R_hemi							hemi;
 	R_tree							tree;
-#ifdef USE_DX11
 	R_LOD							LOD;
-#endif
 
-#ifdef USE_DX11
 	ref_cbuffer						m_aVertexConstants[MaxCBuffers];
 	ref_cbuffer						m_aPixelConstants[MaxCBuffers];
 	ref_cbuffer						m_aGeometryConstants[MaxCBuffers];
@@ -91,14 +84,9 @@ public:
 	DWORD							dummy0;	//	Padding to avoid warning	
 	DWORD							dummy1;	//	Padding to avoid warning	
 	DWORD							dummy2;	//	Padding to avoid warning	
-#endif
 private:
 	// Vertices/Indices/etc
-#ifdef USE_DX11
 	SDeclaration*					decl;
-#else //USE_DX11
-	IDirect3DVertexDeclaration9*	decl;
-#endif
 	IRHIBuffer* vb;
 	IRHIBuffer* ib;
 	u32								vb_stride;
@@ -118,12 +106,10 @@ private:
 	// Lists-expanded
 	CTexture*						textures_ps	[mtMaxPixelShaderTextures];	// stages
 	CTexture*						textures_vs	[mtMaxVertexShaderTextures];	// 4 vs
-#ifdef USE_DX11
 	CTexture*						textures_gs	[mtMaxGeometryShaderTextures];	// 4 vs
 	CTexture*						textures_hs	[mtMaxHullShaderTextures];	// 4 vs
 	CTexture*						textures_ds	[mtMaxDomainShaderTextures];	// 4 vs
 	CTexture*						textures_cs	[mtMaxComputeShaderTextures];	// 4 vs
-#endif //USE_DX11
 #ifdef _EDITOR
 	CMatrix*						matrices	[8	];	// matrices are supported only for FFP
 #endif
@@ -145,7 +131,6 @@ public:
 	{
 		if (stage<CTexture::rstVertex)			return textures_ps[stage];
 		else if (stage<CTexture::rstGeometry)	return textures_vs[stage-CTexture::rstVertex];
-#ifdef USE_DX11
 		else if (stage<CTexture::rstHull)	return textures_gs[stage-CTexture::rstGeometry];
 		else if (stage<CTexture::rstDomain) return textures_hs[stage-CTexture::rstHull];
 		else if (stage<CTexture::rstCompute) return textures_ds[stage-CTexture::rstDomain];
@@ -155,18 +140,9 @@ public:
 			VERIFY(!"Invalid texture stage");
 			return 0;
 		}
-#else //USE_DX11
-		VERIFY(!"Invalid texture stage");
-		return nullptr;
-#endif
 	}
 
-#ifdef USE_DX11
 	IC	void						get_ConstantDirect	(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData);
-#else //USE_DX11
-	IC	R_constant_array&			get_ConstantCache_Vertex	()			{ return constants.a_vertex;	}
-	IC	R_constant_array&			get_ConstantCache_Pixel		()			{ return constants.a_pixel;		}
-#endif
 
 	IC  float							get_width();
 	IC  float							get_height();	
@@ -214,29 +190,19 @@ public:
 	ICF	void						set_States			(ID3DState* _state);
 	ICF	void						set_States			(ref_state& _state)					{ set_States(_state->state);	}
 
-#ifdef USE_DX11
 	ICF  void						set_Format			(SDeclaration* _decl);
-#else //USE_DX11
-	ICF  void						set_Format			(IDirect3DVertexDeclaration9* _decl);
-#endif
 
 	ICF void						set_PS				(const ref_ps& _ps)					{ GRHI->SetShader(_ps->ps, ERHI_SHADER_TYPE::PS); }
-#ifdef USE_DX11
 	ICF void						set_GS				(const ref_gs& _gs)					{ GRHI->SetShader(_gs->gs, ERHI_SHADER_TYPE::GS); }
 	ICF void						set_HS				(const ref_hs& _hs)					{ GRHI->SetShader(_hs->sh, ERHI_SHADER_TYPE::HS); }
 	ICF void						set_DS				(const ref_ds& _ds)					{ GRHI->SetShader(_ds->sh, ERHI_SHADER_TYPE::DS); }
 	ICF void						set_CS				(const ref_cs& _cs)					{ GRHI->SetShader(_cs->sh, ERHI_SHADER_TYPE::CS); }
-#endif
 
 	ICF void						set_VS				(ref_vs& _vs);
-#ifdef USE_DX11
 	ICF void						set_VS				(SVS* _vs);
 protected:	//	In DX10 we need input shader signature which is stored in ref_vs
-#endif //USE_DX11
 
-#ifdef USE_DX11
 public:
-#endif //USE_DX11
 
 		void						set_Vertices		(IRHIBuffer* _vb, u32 _vb_stride);
 		void						set_Indices			(IRHIBuffer* _ib);
@@ -255,47 +221,32 @@ public:
 
 	// constants - direct (fast)
 	ICF	void						set_c				(RHIShaderConstant* C_, const Fmatrix& A)									{ if (C_) { constants.set(C_,A); 
-#ifdef USE_DX11
 		FixedConstants::OnSet(C_,A);
-#endif
 	} }
 	ICF	void						set_c				(RHIShaderConstant* C_, const Fvector4& A)									{ if (C_) { constants.set(C_,A);
-#ifdef USE_DX11
 		FixedConstants::OnSet(C_,A);
-#endif
 	} }
 	ICF	void						set_c				(RHIShaderConstant* C_, float x, float y, float z, float w)					{ if (C_) { Fvector4 v; v.set(x,y,z,w); constants.set(C_,x,y,z,w);
-#ifdef USE_DX11
 		FixedConstants::OnSet(C_,v);
-#endif
 	} }
 	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fmatrix& A)							{ if (C_) { constants.seta(C_,e,A);
-#ifdef USE_DX11
 		FixedConstants::OnSetA(C_,e,A);
-#endif
 	} }
 	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fvector4& A)							{ if (C_) { constants.seta(C_,e,A);
-#ifdef USE_DX11
 		FixedConstants::OnSetA(C_,e,A);
-#endif
 	} }
 	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, float x, float y, float z, float w)			{ if (C_) { Fvector4 v; v.set(x,y,z,w); constants.seta(C_,e,x,y,z,w);
-#ifdef USE_DX11
 		FixedConstants::OnSetA(C_,e,v);
-#endif
 	} }
-#ifdef USE_DX11
 	ICF	void						set_c				(RHIShaderConstant* C_, float A)											{ if (C_) { constants.set(C_,A);
 		FixedConstants::OnSet(C_,A);
 	} }
 	ICF	void						set_c				(RHIShaderConstant* C_, int A)												{ if (C_) { constants.set(C_,A);
 		FixedConstants::OnSet(C_,A);
 	} }
-#endif //USE_DX11
 
 
 	// constants - const char* (slow)
-#ifdef USE_DX11
 	ICF	void						set_c				(const char* n, const Fmatrix& A)										{ FixedConstants::OnSet(FixedConstants::NameHash(n),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
 	ICF	void						set_c				(const char* n, const Fvector4& A)										{ FixedConstants::OnSet(FixedConstants::NameHash(n),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
 	ICF	void						set_c				(const char* n, float x, float y, float z, float w)						{ Fvector4 v; v.set(x,y,z,w); FixedConstants::OnSet(FixedConstants::NameHash(n),v); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,x,y,z,w);	}
@@ -313,31 +264,14 @@ public:
 	ICF	void						set_ca				(shared_str& n, u32 e, float x, float y, float z, float w)			{ Fvector4 v; v.set(x,y,z,w); FixedConstants::OnSetA(FixedConstants::NameHash(n.c_str()),e,v); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,x,y,z,w);}
 	ICF	void						set_c				(shared_str& n, float A)											{ FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
 	ICF	void						set_c				(shared_str& n, int A)												{ FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
-#else
-	ICF	void						set_c				(const char* n, const Fmatrix& A)										{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
-	ICF	void						set_c				(const char* n, const Fvector4& A)										{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
-	ICF	void						set_c				(const char* n, float x, float y, float z, float w)						{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,x,y,z,w);	}
-	ICF	void						set_ca				(const char* n, u32 e, const Fmatrix& A)									{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,A);		}
-	ICF	void						set_ca				(const char* n, u32 e, const Fvector4& A)								{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,A);		}
-	ICF	void						set_ca				(const char* n, u32 e, float x, float y, float z, float w)				{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,x,y,z,w);}
-
-	ICF	void						set_c				(shared_str& n, const Fmatrix& A)									{ if(!ctable) return; ref_constant c = ctable->get(n); set_c(c ? &*c : nullptr,A);			}
-	ICF	void						set_c				(shared_str& n, const Fvector4& A)									{ if(!ctable) return; ref_constant c = ctable->get(n); set_c(c ? &*c : nullptr,A);			}
-	ICF	void						set_c				(shared_str& n, float x, float y, float z, float w)					{ if(!ctable) return; ref_constant c = ctable->get(n); set_c(c ? &*c : nullptr,x,y,z,w);	}
-	ICF	void						set_ca				(shared_str& n, u32 e, const Fmatrix& A)							{ if(!ctable) return; ref_constant c = ctable->get(n); set_ca(c ? &*c : nullptr,e,A);		}
-	ICF	void						set_ca				(shared_str& n, u32 e, const Fvector4& A)							{ if(!ctable) return; ref_constant c = ctable->get(n); set_ca(c ? &*c : nullptr,e,A);		}
-	ICF	void						set_ca				(shared_str& n, u32 e, float x, float y, float z, float w)			{ if(!ctable) return; ref_constant c = ctable->get(n); set_ca(c ? &*c : nullptr,e,x,y,z,w);}
-#endif
 
 	ICF	void						Render				(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
 	ICF	void						Render				(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC);
 
-#ifdef USE_DX11
 	ICF	void						Compute				(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
 	ICF void						Render_noIA			(u32 iVertexCount);
 	ICF	void						RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation, bool flush_constants = true);
 	ICF void						FlushConstants() { constants.flush(); }
-#endif //USE_DX11
 
 	// Device create / destroy / frame signaling
 	void							CreateQuadIB		();
@@ -349,18 +283,11 @@ public:
 	// Debug render
 	void dbg_DP						(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 vBase, u32 pc);
 	void dbg_DIP					(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
-#ifdef USE_DX11
 	//	TODO: DX10: Implement this.
 	IC void	dbg_SetRS				(D3DRENDERSTATETYPE p1, u32 p2)
 	{ VERIFY(!"Not implemented"); }
 	IC void	dbg_SetSS				(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value)
 	{ VERIFY(!"Not implemented"); }
-#else //USE_DX11
-	IC void	dbg_SetRS				(D3DRENDERSTATETYPE p1, u32 p2)
-	{ CHK_DX(RDevice->SetRenderState(p1,p2)); }
-	IC void	dbg_SetSS				(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value)
-	{ CHK_DX(RDevice->SetSamplerState(sampler,type,value)); }
-#endif
 #ifdef DEBUG_DRAW
 	IC void dbg_DrawAABB			(Fvector& T_, float sx, float sy, float sz, u32 C_)						{	Fvector half_dim;	half_dim.set(sx,sy,sz); Fmatrix	TM;	TM.translate(T_); dbg_DrawOBB(TM,half_dim,C_);	}
 	void dbg_DrawOBB				(Fmatrix& T, Fvector& half_dim, u32 C);
@@ -373,7 +300,6 @@ public:
 
 	CBackend()						{	Invalidate(); };
 
-#ifdef USE_DX11
 private:
 	//	DirectX 10 internal functionality
 	void	ApplyVertexLayout();
@@ -382,7 +308,6 @@ private:
 	ID3DBlob*				m_pInputSignature;
 
 	bool					m_bChangedRTorZB;
-#endif //USE_DX11
 };
 #pragma warning(pop)
 

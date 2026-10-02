@@ -1,7 +1,6 @@
 #pragma once
 
 // r3xx code-path (MRT)
-#if USE_DX11
 #define		r2_RT_P				"$user$position"		      // MRT
 #define		r2_RT_N				"$user$normal"			      // MRT
 #define		r2_RT_S				"$user$surface"			      // MRT
@@ -10,12 +9,6 @@
 
 #define		r2_RT_N_temp		"$user$normal_temp"		      // MRT
 #define		r2_RT_S_temp		"$user$surface_temp"	      // MRT
-#else
-#define		r2_RT_depth			"$user$depth"			// MRT
-#define		r2_RT_P				"$user$position"		// MRT
-#define		r2_RT_N				"$user$normal"			// MRT
-#define		r2_RT_albedo		"$user$albedo"			// MRT
-#endif //USE_DX11
 // other
 #define		r2_RT_accum			"$user$accum"			// ---	16 bit fp or 16 bit fx
 #define		r2_RT_accum_temp	"$user$accum_temp"		// ---	16 bit fp - only for HW which doesn't feature fp16 blend
@@ -56,7 +49,6 @@
 #define		r2_RT_ssao_temp		"$user$ssao_temp"		//temporary rt for ssao calculation
 #define		r2_RT_half_depth	"$user$half_depth"		//temporary rt for hbao calculation
 
-#if USE_DX11
 	#define r2_RT_generic "$user$generic"
 	#define r2_RT_backbuffer_final "$user$backbuffer"
 	#define r2_RT_backbuffer_lut "$user$backbufferlut"
@@ -82,15 +74,6 @@
 	#define r2_RT_lumA "$user$lum_A"
 	#define r2_RT_lumB "$user$lum_B"
 	#define r2_RT_lumC "$user$lum_C"
-#else
-	#define r2_RT_bloom1 "$user$bloom1"
-	#define r2_RT_bloom2 "$user$bloom2"
-
-	#define r2_RT_luminance_t64	"$user$lum_t64"
-	#define r2_RT_luminance_t8 "$user$lum_t8"
-	#define r2_RT_luminance_src	"$user$tonemap_src"
-	#define r2_RT_luminance_pool "$user$luminance"
-#endif //USE_DX11
 
 #define r2_RT_luminance_cur	"$user$tonemap"
 
@@ -129,9 +112,7 @@ const		u32					TEX_material_LdotN	= 128	;	// diffuse,		X, almost linear = small 
 const		u32					TEX_material_LdotH	= 256	;	// specular,	Y
 #define		SE_R2_HUD			5	// hud generation
 
-#if USE_DX11
 const		u32					TEX_material_Count	= 4		;	// Number of materials,	Z
-#endif //USE_DX11
 
 const		u32					TEX_jitter = 64;
 const		u32					TEX_jitter_count = 3;	// for HBAO
@@ -147,10 +128,8 @@ const		u32					LUMINANCE_size = 16;
 #define		SE_R2_REFLECTIONS	3	// reflections generation
 #define		SE_R2_UI			4	// ui static generation
 
-#if USE_DX11
 #define		SE_R2_DETAIL_SHADOW_HQ 2	 // shadow generation (Wind)
 #define		SE_R2_DETAIL_SHADOW_LQ 3	 // shadow generation (Stil)
-#endif //USE_DX11
 
 // spot
 #define		SE_L_FILL			0
@@ -172,10 +151,8 @@ const		u32					LUMINANCE_size = 16;
 #define		SE_SUN_MIDDLE		1
 #define		SE_SUN_FAR			2
 
-#if USE_DX11
 //	For rain R3 rendering
 #define		SE_SUN_RAIN_SMAP	3
-#endif //USE_DX11
 
 extern float ps_r2_gloss_factor;
 

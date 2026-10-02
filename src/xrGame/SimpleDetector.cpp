@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "SimpleDetector.h"
 #include "ui/ArtefactDetectorUI.h"
+#include "../xrEngine/EngineAPI.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "player_hud.h"
@@ -149,7 +150,7 @@ void CUIArtefactDetectorSimple::setup_internals()
 {
 	R_ASSERT(!m_flash_light);
 	m_flash_light = ::Render->light_create();
-	m_flash_light->set_shadow(!!psDeviceFlags.test(rsR4));
+		m_flash_light->set_shadow(LightingModeIsDynamic());
 	m_flash_light->set_type(IRender_Light::POINT);
 	m_flash_light->set_range(m_fFlash_light_range);
 	m_flash_light->set_hud_mode(true);
@@ -157,7 +158,7 @@ void CUIArtefactDetectorSimple::setup_internals()
 
 	R_ASSERT(!m_on_off_light);
 	m_on_off_light = ::Render->light_create();
-	m_on_off_light->set_shadow(!!psDeviceFlags.test(rsR4));
+		m_on_off_light->set_shadow(LightingModeIsDynamic());
 	m_on_off_light->set_type(IRender_Light::POINT);
 	m_on_off_light->set_range(m_fOnOff_light_range);
 	m_on_off_light->set_hud_mode(true);

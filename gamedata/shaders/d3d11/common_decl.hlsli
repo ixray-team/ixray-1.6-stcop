@@ -59,6 +59,9 @@ cbuffer cb_object : register(b2)
     float3x4 m_WV;
     float4x4 m_WVP;
     float4x4 m_WVP_old;
+    float4 L_dynamic_props;
+    float4x4 m_plmap_xform;
+    float4 m_plmap_clamp[2];
 };
 
 cbuffer cb_pass : register(b5)
@@ -107,6 +110,7 @@ cbuffer cb_light : register(b4)
     float4x4 m_shadow_sun[3];
     float4x4 m_shadow;
     float3x4 m_sunmask;
+    float4x4 L_dynamic_xform;
 };
 
 #endif

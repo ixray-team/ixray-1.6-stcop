@@ -7,6 +7,25 @@
 #include <array>
 #include "../xrRHI/RHIEnums.h"
 
+enum class ELightingMode : u8
+{
+	Static = 0,
+	Dynamic = 1,
+};
+
+ENGINE_API extern ELightingMode g_lighting_mode;
+ENGINE_API extern ELightingMode g_lighting_mode_cfg;
+ENGINE_API extern bool g_lighting_mode_locked;
+ENGINE_API extern int g_current_renderer;
+
+IC bool LightingModeIsStatic() { return g_lighting_mode == ELightingMode::Static; }
+IC bool LightingModeIsDynamic() { return g_lighting_mode == ELightingMode::Dynamic; }
+
+ENGINE_API bool LightingModeParseToken(const char* name, ELightingMode& mode);
+ENGINE_API const char* LightingModeCanonicalToken(ELightingMode mode);
+ENGINE_API void LightingModeApply(ELightingMode mode, bool commit_active);
+ENGINE_API void LightingModeLockActive();
+
 // Abstract 'Pure' class for DLL interface
 class ENGINE_API DLL_Pure
 {

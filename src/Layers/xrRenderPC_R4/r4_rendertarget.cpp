@@ -504,6 +504,36 @@ CRenderTarget::CRenderTarget()
 	dwAccumulatorClearMark = 0;
 	dxRenderDeviceRender::Instance().Resources->Evict();
 
+	if (LightingModeIsStatic())
+    {
+        const u32 width = (u32)RCache.get_target_width();
+        const u32 height = (u32)RCache.get_target_height();
+        const auto format = ERHI_FORMAT::R8G8B8A8_UNORM;
+        rt_Generic_0.create(r2_RT_generic0, width, height, format);
+        rt_Generic_1.create(r2_RT_generic1, width, height, format);
+        rt_Generic.create(r2_RT_generic, width, height, format);
+        rt_Back_Buffer.create(r2_RT_backbuffer_final, width, height, format);
+        rt_BackbufferLUT.create(r2_RT_backbuffer_lut, width, height, format);
+        rt_ui_pda.create(r_ui_pda, width, height, format);
+        rt_ui_depth.create(r2_RT_ui_depth, width * 2, height * 2, ERHI_FORMAT::D16_UNORM);
+        rt_ui_color.create(r2_RT_ui_color, width * 2, height * 2, format);
+        b_gamma = new CBlender_gamma();
+        s_gamma.create(b_gamma);
+        b_cas = new CBlender_Sharpening();
+        s_cas.create(b_cas);
+        s_postprocess.create("postprocess");
+        s_r1_distort.create("r1_distort");
+        s_menu.create("distort");
+        g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RCache.Vertex.Buffer(), RCache.QuadIB);
+        g_menu.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
+        t_envmap_0.create(r2_T_envs0);
+        t_envmap_1.create(r2_T_envs1);
+        CreateFSTriangle();
+        u_setrt(rt_BackbufferLUT, nullptr, nullptr);
+        Msg("* R1 static frame: normalized forward lighting; temporal AA, upscalers and deferred effects disabled");
+        return;
+    }
+
 	// Blenders
 	b_occq = new CBlender_light_occq();
 	b_accum_mask = new CBlender_accum_direct_mask();
@@ -1071,6 +1101,18 @@ void CRenderTarget::CreateFSTriangle()
 
 CRenderTarget::~CRenderTarget	()
 {
+    if (LightingModeIsStatic())
+    {
+        t_envmap_0->surface_set(nullptr);
+        t_envmap_1->surface_set(nullptr);
+        xr_delete(b_gamma);
+        xr_delete(b_cas);
+        CImGuiManager::Instance().Unsubscribe("GraphicDebug");
+        _RELEASE(g_debug_blend_state);
+        _RELEASE(FSTriangleVB);
+        _RELEASE(FSTriangleIB);
+        return;
+    }
 	_RELEASE					(t_ss_async);
 
 	rt_smap_depth_sun->surface_set(nullptr);

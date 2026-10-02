@@ -10,7 +10,7 @@
 #include "D3DUtils.h"
 #include "render.h"
 
-#include <FlexibleVertexFormat.h>
+#include "../../../xrCore/FVFLegacy.h"
 //
 //struct VEditorVertex
 //{

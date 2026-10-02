@@ -5,6 +5,7 @@
 #include "../../Include/xrRender/EnvironmentRender.h"
 
 #include "blenders/Blender.h"
+#include "../../xrEngine/EngineAPI.h"
 class CBlender_skybox		: public IBlender  
 {
 public:
@@ -16,7 +17,6 @@ public:
 	{
 		C.r_Pass("sky", "sky", false, true, false);
 
-#ifdef USE_DX11
 		C.r_dx10Texture("s_sky0", "$null");
 		C.r_dx10Texture("s_sky1", "$null");
 
@@ -24,11 +24,7 @@ public:
 		C.r_dx10Sampler("smp_linear");
 		C.r_dx10Sampler("smp_base");
 
-		C.PassSET_ZB(false, false);
-#else //USE_DX11
-		C.r_Sampler_clf("s_sky0", "$null");
-		C.r_Sampler_clf("s_sky1", "$null");
-#endif
+		C.PassSET_ZB(LightingModeIsStatic(), false);
 		C.r_End ();
 	}
 };

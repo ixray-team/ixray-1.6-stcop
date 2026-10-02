@@ -381,6 +381,12 @@ void CRenderTarget::phase_combine()
 
 void CRenderTarget::phase_wallmarks()
 {
+	if (LightingModeIsStatic())
+	{
+		u_setrt(rt_Generic_0, nullptr, RDepth);
+		RCache.set_Stencil(false);
+		return;
+	}
 	// Targets
 	u_setrt(rt_Color, nullptr, nullptr, RDepth);
 	// Stencil	- draw only where stencil >= 0x1

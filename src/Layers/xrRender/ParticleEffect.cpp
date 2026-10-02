@@ -14,13 +14,8 @@ static void ApplyTexgen(const Fmatrix& mVP)
 
 	const float _w = float(RCache.get_width());
 	const float _h = float(RCache.get_height());
-#ifdef USE_DX11
 	const float o_w = 0.f;
 	const float o_h = 0.f;
-#else 
-	const float o_w = (.5f / _w);
-	const float o_h = (.5f / _h);
-#endif
 
 	Fmatrix mTexelAdjust =
 	{

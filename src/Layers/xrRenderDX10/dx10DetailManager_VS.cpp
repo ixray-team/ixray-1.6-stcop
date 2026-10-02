@@ -3,6 +3,7 @@
 #include "../xrRender/DetailsWind.h"
 #include "../xrRender/SH_Atomic.h"
 #include "../../xrEngine/xr_ioc_cmd.h"
+#include "../../xrEngine/EngineAPI.h"
 
 #ifndef _EDITOR
 extern float ps_r__detail_rnd_scale_max;
@@ -326,6 +327,9 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 	bool phase_shmap = RImplementation.phase == CRender::PHASE_SMAP;
 	if(!phase_shmap)
 		RImplementation.apply_lmaterial(); //Material ID
+
+	if (LightingModeIsStatic())
+		RCache.set_c("consts", 1.f, 1.f, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
 
 	if(var_id != 0)
 	{

@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "LightTrack.h"
+#include "../../xrEngine/EngineAPI.h"
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../xrEngine/xr_object.h"
 
@@ -40,12 +41,10 @@ CROS_impl::CROS_impl	()
 		hemi_cube_smooth[Iter]	= 1.0f;
 	}
 
-#if RENDER!=R_R1
 	last_position.set( 0.0f, 0.0f, 0.0f );
 	ticks_to_update		= 0;
 	sky_rays_uptodate	= 0;
 	smooth_avg_dir = avg_dir = smooth_avg_color = avg_color = last_position;
-#endif	// RENDER!=R_R1
 
 	MODE = IRender_ObjectSpecific::TRACE_ALL;
 }
@@ -257,22 +256,18 @@ void	CROS_impl::update	(IRenderable* O)
 	accum.add(hemi);
 	accum.add(sun_);
 
-#if RENDER!=R_R1
 	float avg_weingh = EPS_L;
 
 	avg_dir = Fidentity.c;
 	avg_color = Fidentity.c;
 
 	avg_dir.mad(smooth_avg_dir, avg_weingh);
-#endif
 
 	if (MODE & IRender_ObjectSpecific::TRACE_LIGHTS)
 	{
 		Fvector lacc = { 0,0,0 };
 
-#if RENDER!=R_R1
 		float hemi_cube_light[NUM_FACES] = {0,0,0,0,0,0};
-#endif
 
 		for (const auto& lit : lights)
 		{
@@ -280,8 +275,7 @@ void	CROS_impl::update	(IRenderable* O)
 
 			float d = L->position.distance_to(position);
 
-#if RENDER!=R_R1
-			if (!L->flags.bStatic)
+			if (LightingModeIsDynamic() && !L->flags.bStatic)
 			{
 				if (L->flags.bActive)
 				{
@@ -302,10 +296,10 @@ void	CROS_impl::update	(IRenderable* O)
 
 				continue;
 			}
-#endif
 
-#if RENDER!=R_R1
-			float a = (1 / (L->attenuation0 + L->attenuation1 * d + L->attenuation2 * d * d) - d * L->falloff) * (L->flags.bStatic ? 1.f : 2.f);
+			float a = LightingModeIsStatic() ?
+				clampr(1.f - d / (L->range + EPS), 0.f, 1.f) * (L->flags.bStatic ? 1.f : 2.f) :
+				(1 / (L->attenuation0 + L->attenuation1 * d + L->attenuation2 * d * d) - d * L->falloff) * (L->flags.bStatic ? 1.f : 2.f);
 			a = (a > 0) ? a : 0.0f;
 
 			Fvector3 dir { };
@@ -317,16 +311,13 @@ void	CROS_impl::update	(IRenderable* O)
 				* ps_r2_dhemi_light_scale;
 
 			accum_hemi(hemi_cube_light, dir, koef);
-#else
-			float	r = L->range;
-			float	a = clampr(1.f - d / (r + EPS), 0.f, 1.f) * (L->flags.bStatic ? 1.f : 2.f);
-#endif
 			lacc.x += lit.color.r * a;
 			lacc.y += lit.color.g * a;
 			lacc.z += lit.color.b * a;
 		}
 
-#if RENDER!=R_R1
+		if (LightingModeIsDynamic())
+		{
 		const float	minHemiValue = 1 / 255.f;
 		float hemi_light = (lacc.x + lacc.y + lacc.z) / 3.0f * ps_r2_dhemi_light_scale;
 
@@ -338,7 +329,8 @@ void	CROS_impl::update	(IRenderable* O)
 			hemi_cube[i] += hemi_cube_light[i]*(1-ps_r2_dhemi_light_flow) + ps_r2_dhemi_light_flow*hemi_cube_light[(i+NUM_FACES/2)%NUM_FACES];
 			hemi_cube[i] = std::max(hemi_cube[i], minHemiValue);
 		}
-#endif
+		}
+
 
 		accum.add(lacc);
 	}
@@ -347,26 +339,21 @@ void	CROS_impl::update	(IRenderable* O)
 		accum.set(.1f, .1f, .1f);
 	}
 
-#if RENDER!=R_R1
 	//avg_color.div(std::max(EPS_L, avg_weingh));
 	avg_dir.div(std::max(EPS_L, avg_weingh));
-#endif
 
 	if (bFirstTime)
 	{
 		hemi_smooth = hemi_value;
 		CopyMemory(hemi_cube_smooth, hemi_cube, NUM_FACES * sizeof(float));
-#if RENDER!=R_R1
 		smooth_avg_color = avg_color;
 		smooth_avg_dir = avg_dir;
-#endif
 	}
 
 	update_smooth();
 	approximate = accum;
 }
 
-#if RENDER!=R_R1
 
 //	Update ticks settings
 static const s32 s_iUTFirstTimeMin = 1;
@@ -431,7 +418,6 @@ void CROS_impl::smart_update(IRenderable* O)
 	}
 }
 
-#endif	//	#if RENDER!=R_R1		
 
 extern float ps_r2_lt_smooth;
 
@@ -445,14 +431,12 @@ void CROS_impl::update_smooth(IRenderable* O)
 
 	dwFrameSmooth = Device.dwFrame;
 
-#if RENDER==R_R1
-	if (O && (0 == result_count))
+	if (LightingModeIsStatic())
 	{
-		update(O);
+		if (O && !result_count) update(O);
 	}
-#else
-	smart_update(O);
-#endif
+	else
+		smart_update(O);
 
 	float l_f = clampr(Device.fTimeDelta * ps_r2_lt_smooth, 0.f, 1.f);
 
@@ -464,7 +448,6 @@ void CROS_impl::update_smooth(IRenderable* O)
 		hemi_cube_smooth[i] += (hemi_cube[i] - hemi_cube_smooth[i]) * l_f;
 	}
 
-#if RENDER!=R_R1
 	l_f = std::min(1.0f, Device.fTimeDelta * 10.0f);
 	
 	if (smooth_avg_color.square_magnitude() < EPS)
@@ -474,17 +457,12 @@ void CROS_impl::update_smooth(IRenderable* O)
 
 	smooth_avg_color = smooth_avg_color.lerp(smooth_avg_color, avg_color, l_f);
 	smooth_avg_dir = smooth_avg_dir.lerp(smooth_avg_dir, avg_dir, l_f);
-#endif
 }
 
 void CROS_impl::calc_sun_value(Fvector& position, CObject* _object)
 {
 
-#if RENDER==R_R1
-	light* sun = (light*)RImplementation.L_DB->sun_adapted._get();
-#else
 	light* sun = (light*)RImplementation.Lights.sun_adapted._get();
-#endif
 	if (MODE & IRender_ObjectSpecific::TRACE_SUN) 
 	{
 		if (--result_sun < 0)
@@ -502,10 +480,8 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
 	if	(MODE & IRender_ObjectSpecific::TRACE_HEMI)	
 	{
 	
-#if RENDER!=R_R1
 		sky_rays_uptodate	+= ps_r2_dhemi_count;
 		sky_rays_uptodate	= std::min(sky_rays_uptodate, lt_hemisamples);
-#endif	//	RENDER!=R_R1
 
 		for (u32 it=0; it<(u32)ps_r2_dhemi_count;	it++)		{	// five samples per one frame
 			u32	sample		=	0				;
@@ -554,7 +530,7 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 		bTraceLights = FALSE;
 	}
 
-	ESPATIAL_TYPE FindMask = bTraceLights ? ESPATIAL_TYPE::LIGHTSOURCEHEMI : ESPATIAL_TYPE::NONE;
+	ESPATIAL_TYPE FindMask = bTraceLights ? (LightingModeIsStatic() ? ESPATIAL_TYPE::LIGHTSOURCE : ESPATIAL_TYPE::LIGHTSOURCEHEMI) : ESPATIAL_TYPE::NONE;
 
 	if (position.distance_to_sqr(Device.vCameraPosition_saved) < 400)
 	{
@@ -565,11 +541,7 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 	{
 		Fvector bb_size = { radius,radius,radius };
 
-#if RENDER!=R_R1
 		g_SpatialSpace->q_box(RImplementation.lstSpatial, 0, FindMask, position, bb_size);
-#else
-		g_SpatialSpace->q_box(RImplementation.lstSpatial, 0, ESPATIAL_TYPE::LIGHTSOURCE, position, bb_size);
-#endif
 
 		for (const auto& o_it : RImplementation.lstSpatial)
 		{
@@ -580,7 +552,7 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 
 			if (position.distance_to(source->position) < R)
 			{
-				if((spatial->type & ESPATIAL_TYPE::LIGHTSOURCEHEMI) == ESPATIAL_TYPE::LIGHTSOURCEHEMI || !source->flags.bStatic)
+				if (LightingModeIsStatic() || (spatial->type & ESPATIAL_TYPE::LIGHTSOURCEHEMI) == ESPATIAL_TYPE::LIGHTSOURCEHEMI || !source->flags.bStatic)
 				{
 					add(source);
 				}
@@ -590,9 +562,7 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 		// Trace visibility
 		lights.clear();
 
-#if RENDER==R_R1 
 		float traceR = radius * .5f;
-#endif
 
 		for (s32 id = 0; id < s32(track.size()); id++)
 		{
@@ -613,7 +583,8 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 			light* xrL = I->source;
 			Fvector LP = xrL->position;
 
-#if RENDER==R_R1
+			if (LightingModeIsStatic())
+			{
 			P.sub(LP, position).normalize();
 			
 			Fvector R; R.setHP(Random.randF(PI_MUL_2), Random.randF(PI_MUL_2));
@@ -624,16 +595,9 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 			}
 			
 			P.mad(position, R, traceR);		// Random point inside range
-#else
-			//D.x = Random.randF(0.25f, 0.75f);
-			//D.y = Random.randF(0.25f, 0.75f);
-			//D.z = Random.randF(0.25f, 0.75f);
-			//
-			//P.mad(vis.box.min, vis.box.max - vis.box.min, D);
-			// 
-			//P = position;
-			_object->Center(P);
-#endif
+			}
+			else
+				_object->Center(P);
 
 			// point/spot
 			float f = D.sub(P, LP).magnitude(); 
@@ -681,8 +645,9 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 			}
 		}
 
-#if RENDER==R_R1
-		light* sun = (light*)RImplementation.L_DB->sun_adapted._get();
+		if (LightingModeIsStatic())
+		{
+		light* sun = (light*)RImplementation.Lights.sun_adapted._get();
 
 		// Sun
 		float E = sun_smooth * sun->color.intensity();
@@ -695,7 +660,7 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 			L.color.mul_rgb(sun->color, sun_smooth / 2);
 			L.energy = sun_smooth;
 		}
-#endif
+		}
 		// Sort lights by importance - important for R1-shadows
 		std::sort(lights.begin(), lights.end(), pred_energy);
 	}

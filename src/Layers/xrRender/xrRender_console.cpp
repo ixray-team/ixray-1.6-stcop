@@ -55,9 +55,7 @@ u32			ps_r_ssao_mode			=	1;
 xr_token							qssao_mode_token						[ ]={
 	{ "st_opt_off",					0											},
 	{ "ui_mm_ssao",					1											},
-#ifdef USE_DX11
 	{ "ui_mm_gtao",					2											},
-#endif
 	{ nullptr,							0											}
 };
 
@@ -76,10 +74,8 @@ xr_token							qsun_quality_token							[ ]={
 	{ "st_opt_medium",				1												},
 	{ "st_opt_high",				2												},
 /*
-#ifdef USE_DX11
 	{ "st_opt_ultra",				3												},
 	{ "st_opt_extreme",				4												},
-#endif //USE_DX11
 */
 	{ nullptr,							0												}
 };
@@ -88,12 +84,8 @@ u32			ps_r2_aa_type			= 0;			//	=	0;
 xr_token							aa_type_token[] = {
 	{ "st_opt_off",						0											},
 	{ "fxaa",						1												},
-#if RENDER != R_R1
 	{ "smaa",						2												},
-#ifdef USE_DX11
 	{ "taa",						3												},
-#endif
-#endif // DEBUG	
 	{ nullptr,							0												}
 };
 
@@ -194,10 +186,6 @@ Flags32 ps_r2_ls_flags_ext =
 Flags32 ps_r__common_flags = 
 { 
 	R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD
-#ifndef USE_DX11
-	// FX: Для ебучего dx9 надо ВСЕГДА ОСВОБОЖДАТЬ РЕСУРСЫ
-	| RFLAG_DD_TEX_LOAD
-#endif
 };
 
 int opt_static = 0;
@@ -375,9 +363,7 @@ int			r_debug_render_depth		= 0;
 #include "../../xrEngine/XR_IOConsole.h"
 #include	"../../xrEngine/xr_ioc_cmd.h"
 
-#ifdef USE_DX11
 #	include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
-#endif
 
 //-----------------------------------------------------------------------
 class CCC_tf_Aniso : public CCC_Integer
@@ -386,12 +372,7 @@ public:
 	void	apply	()	{
 		if (0==RDevice)	return	;
 		int	val = *value;	clamp(val,1,16);
-#ifdef USE_DX11
 		SSManager.SetMaxAnisotropy(val);
-#else //USE_DX11
-		for (u32 i=0; i<Caps.raster.dwStages; i++)
-			CHK_DX(RDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, val	));
-#endif //USE_DX11
 	}
 	CCC_tf_Aniso(const char* N, int*	v) : CCC_Integer(N, v, 1, 16)		{ };
 	virtual void Execute	(const char* args)
@@ -415,13 +396,7 @@ public:
 		}
 		float val = *value;
 		clamp(val, -3.0f, 3.0f);
-#ifdef USE_DX11
 		SSManager.SetMipLodBias(val);
-#else //USE_DX11
-		for (u32 i = 0; i < Caps.raster.dwStages; i++) {
-			CHK_DX(RDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, val));
-		}
-#endif
 	}
 	virtual void Execute(const char* args) {
 		CCC_Float::Execute(args);
@@ -674,7 +649,7 @@ public:
 };
 
 //	Allow real-time fog config reload
-#if defined(USE_DX11) && defined(DEBUG_DRAW)
+#if defined(DEBUG_DRAW)
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 
 class CCC_Fog_Reload : public IConsole_Command
@@ -811,9 +786,7 @@ public:
 	}
 };
 
-#if RENDER == R_R4
 extern Fvector3 ps_ssfx_volumetric;
-#endif
 //-----------------------------------------------------------------------
 void		xrRender_initconsole	()
 {
@@ -829,10 +802,8 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
 	CMD4(CCC_Float,		"r__mu_lod",			&ps_r__LOD_MU_X,			0.1f,	3.0f);
 
-#if RENDER == R_R4
 	CMD2(CCC_Vector3, "r4_ssfx_volumetric", &ps_ssfx_volumetric);
 	CMD3(CCC_Token, "r4.sharpening.mode", &ps_r4_sharpening_mode, sharpening_mode_token);
-#endif
 
 #ifdef DEBUG
 	CMD4(CCC_Float,		"r__mu4_discard_lod",	&ps_r__LOD_MU4_discard,		0.001f, 10.0f);
@@ -844,10 +815,6 @@ void		xrRender_initconsole	()
 	CMD2(CCC_tf_MipBias, "r__tf_mipbias", &ps_r__tf_Mipbias);//	{-3 +3}
 
 	// R1
-#if RENDER == R_R1
-	CMD4(CCC_Float,		"r1_ssa_lod_a",			&ps_r1_ssaLOD_A,			16,		96		);
-	CMD4(CCC_Float,		"r1_ssa_lod_b",			&ps_r1_ssaLOD_B,			16,		64		);
-#endif // DEBUG
 	CMD4(CCC_Float,		"r1_lmodel_lerp",		&ps_r1_lmodel_lerp,			0,		0.333f	);
 	CMD3(CCC_Mask32,		"r1_dlights",			&ps_r1_flags,				R1FLAG_DLIGHTS	);
 	CMD4(CCC_Float,		"r1_dlights_clip",		&ps_r1_dlights_clip,		10.f,	150.f	);
@@ -1134,10 +1101,8 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__wallmark_shift_v", &ps_r__WallmarkSHIFT_V, 0.0f, 1.f);
 	CMD2(CCC_Boolean, "r__wallmark_dyn", &ps_r__WallmarkDyn);
 
-#ifdef USE_DX11
 	//	Allow real-time fog config reload
 	CMD1(CCC_Fog_Reload, "r3_fog_reload");
-#endif
 
 	CMD3(CCC_Mask32, "r4_wireframe", &ps_r2_ls_flags_ext, R2FLAGEXT_WIREFRAME);//Need restart
 	CMD2(CCC_R2GM, "r2em", &ps_r2_gmaterial);

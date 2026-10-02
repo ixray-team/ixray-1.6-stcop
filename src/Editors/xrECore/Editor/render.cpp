@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "../Layers/xrRenderDX9/dx9ShaderUtils.h"
 #include "render.h"
 
 #include "../Layers/xrRender/ResourceManager.h"

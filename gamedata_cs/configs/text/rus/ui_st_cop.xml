@@ -3,6 +3,9 @@
     <string id="renderer_r4">
 		<text>Ул. полное освещение (DX11)</text>
     </string>
+    <string id="renderer_r4_static">
+		<text>Статическое освещение</text>
+    </string>
 	<string id="ui_mm_r4_enable_tessellation">
 		<text>Тесселяция</text>
 	</string>

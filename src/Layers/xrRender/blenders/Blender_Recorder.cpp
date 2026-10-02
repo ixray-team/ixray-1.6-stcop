@@ -89,24 +89,18 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 	bDetail_Bump	= false;
 
 #ifndef _EDITOR
-#if RENDER==R_R1
-	if (RImplementation.o.no_detail_textures)
-		bDetail = false;
-#endif
 #endif
 
 	if(bDetail)
 	{
 		DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
 
-#if RENDER!=R_R1 || defined(_EDITOR)
 		//	Detect the alowance of detail bump usage here.
 		if (!(ps_r2_ls_flags.test(R2FLAG_DETAIL_BUMP)))
 		{
 			bDetail_Diffuse |= bDetail_Bump;
 			bDetail_Bump = false;
 		}
-#endif
 	}
 
 	bUseSteepParallax = DEV->m_textures_description.UseSteepParallax(base) 
@@ -119,9 +113,7 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 		bUseSteepParallax = true;
 	}
 */	
-#ifdef USE_DX11
 	TessMethod = 0;
-#endif
 
 	// Compile
 	BT->Compile		(*this);
@@ -168,7 +160,6 @@ void	CBlender_Compile::PassEnd			()
 	proto.vs		= DEV->_CreateVS			(pass_vs);
 	ctable.merge	(&proto.ps->constants);
 	ctable.merge	(&proto.vs->constants);
-#ifdef USE_DX11
 	proto.gs		= DEV->_CreateGS			(pass_gs);
 	ctable.merge	(&proto.gs->constants);
 	proto.hs		= DEV->_CreateHS			(pass_hs);
@@ -177,7 +168,6 @@ void	CBlender_Compile::PassEnd			()
 	ctable.merge	(&proto.ds->constants);
 	proto.cs		= DEV->_CreateCS			(pass_cs);
 	ctable.merge	(&proto.cs->constants);
-#endif
 	SetMapping				();
 	proto.constants	= DEV->_CreateConstantTable(ctable);
 	proto.T 		= DEV->_CreateTextureList	(passTextures);
@@ -204,9 +194,6 @@ void	CBlender_Compile::PassSET_VS		(const char* name)
 
 void	CBlender_Compile::PassSET_ZB		(bool bZTest, bool bZWrite, bool bInvertZTest)
 {
-#ifndef USE_DX11
-	if (Pass())	bZWrite = false;
-#endif
 	RS.SetRS	(D3DRS_ZFUNC,			bZTest?(bInvertZTest?D3DCMP_GREATER:D3DCMP_LESSEQUAL):D3DCMP_ALWAYS);
 	RS.SetRS	(D3DRS_ZWRITEENABLE,	BC(bZWrite));
 	/*
@@ -226,10 +213,8 @@ void	CBlender_Compile::PassSET_ablend_mode(u32 idx, bool bABlend, u32 abSRC, u32
 	RS.SetRS(idx, D3DRS_SRCBLEND, bABlend ? abSRC : D3DBLEND_ONE);
 	RS.SetRS(idx, D3DRS_DESTBLEND, bABlend ? abDST : D3DBLEND_ZERO);
 
-#ifdef USE_DX11
 	RS.SetRS(idx, D3DRS_SRCBLENDALPHA, bABlend ? abSRC : D3DBLEND_ONE);
 	RS.SetRS(idx, D3DRS_DESTBLENDALPHA, bABlend ? abDST : D3DBLEND_ZERO);
-#endif	//	USE_DX11
 }
 
 void CBlender_Compile::PassSET_ablend_mode(bool bABlend, u32 abSRC, u32 abDST)
@@ -348,16 +333,6 @@ void	CBlender_Compile::StageSET_XForm	(u32 tf, u32 tc)
 	RS.SetTSS	(Stage(),D3DTSS_TEXCOORDINDEX,			tc);
 }
 
-#ifndef USE_DX11
-void	CBlender_Compile::StageTemplate_LMAP0	()
-{
-	StageSET_Address	(D3DTADDRESS_CLAMP);
-	StageSET_Color		(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-	StageSET_Alpha		(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-	StageSET_TMC		("$base1","$null","$null",1);
-}
-
-#endif
 
 void CBlender_Compile::Stage_Constant(const char* name)
 {

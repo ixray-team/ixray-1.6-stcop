@@ -371,7 +371,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 			{
 				g_imgui_texture_editor.pTexturePreview = pSurface;
 
-				if (GRHI->APILevel != D3D9)
+				if (GRHI->APILevel == D3D11)
 				{
 					RHIShaderResourceViewDesc desc_srv;
 					desc_srv.MipLevels = 1;
@@ -506,7 +506,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 				{
 					g_imgui_texture_editor.pTextureSelected = pSurface;
 
-					if (GRHI->APILevel != D3D9)
+					if (GRHI->APILevel == D3D11)
 					{
 						RHIShaderResourceViewDesc desc_srv;
 						desc_srv.MipLevels = 1;
@@ -861,14 +861,7 @@ void DrawPreview(IRHISurface* pTexture, IRHIShaderResourceView* pView)
 			preview_size = kTextureEditor_PreviewSizeLow;
 		}
 
-		if (GRHI->APILevel == D3D9)
-		{
-			if (pTexture->GetRawTexture())
-			{
-				ImGui::Image(pTexture->GetRawTexture(), preview_size);
-			}
-		}
-		else if (GRHI->APILevel == D3D11)
+		if (GRHI->APILevel == D3D11)
 		{
 			if (pView && pView->GetRawSRV())
 			{
@@ -1550,7 +1543,7 @@ void RenderTextureEditor()
 							ImGui::Text("Height: %d", g_imgui_texture_editor.selected_metadata.height);
 							ImGui::Text("MipMap Count: %d", g_imgui_texture_editor.selected_metadata.mipmap_count);
 
-							if (GRHI->APILevel == D3D9 || GRHI->APILevel == D3D11)
+							if (GRHI->APILevel == D3D11)
 							{
 #ifdef IXR_WINDOWS
 								xr_string_view casted_enum = magic_enum::enum_name((DXGI_FORMAT)g_imgui_texture_editor.selected_metadata.format);

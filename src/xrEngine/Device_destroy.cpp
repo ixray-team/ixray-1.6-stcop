@@ -104,6 +104,8 @@ void CRenderDevice::Reset(bool precache)
 		GRHI->DevicePtr->RenderScale = ps_render_scale;
 	}
 
+	if (LightingModeIsStatic())
+		GRHI->DevicePtr->RenderScale = 1.f;
 	m_pRender->Reset(g_AppInfo.Window, TargetWidth, TargetHeight);
 
 	if (g_pGamePersistent)

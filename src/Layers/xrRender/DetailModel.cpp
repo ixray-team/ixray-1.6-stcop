@@ -25,13 +25,11 @@ CDetail::CDetail()
 	number_indices = 0;
 	m_fMinScale = 0.5f;
 	m_fMaxScale = 2.f;
-#ifdef USE_DX11
 	hw_VB = nullptr;
 	hw_IB = nullptr;
 	for (u32 i = 0; i < 2; i++)
 		for (u32 j = 0; j < 3; j++)
 			DetailGPUBoundBuffers[i][j] = {nullptr, nullptr};
-#endif
 }
 
 CDetail::~CDetail()
@@ -55,7 +53,6 @@ void CDetail::Unload	()
 	shader.destroy();
 
 	//LVutner: Release (per-object) IB/VB
-#ifdef USE_DX11
 	_RELEASE(hw_VB);
 	_RELEASE(hw_IB);
 	hw_Geom.destroy();
@@ -68,7 +65,6 @@ void CDetail::Unload	()
 			_RELEASE(DetailGPUBoundBuffers[i][j].second);
 		}
 	}
-#endif
 }
 
 // Transfer vertices
@@ -139,7 +135,6 @@ void CDetail::transfer	(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest,
 }
 
 //LVutner: Create vertex and index buffers
-#ifdef USE_DX11
 void CDetail::LoadGeom()
 {
 	xr_vector<Fvector> vNormals(number_vertices, Fidentity.c);
@@ -186,7 +181,6 @@ void CDetail::LoadGeom()
 	R_ASSERT(RHIUtils::CreateIndexBuffer(&hw_IB, indices, size_indices));
 	hw_Geom.create(dwDecl, std::size(dwDecl), hw_VB, hw_IB);
 }
-#endif
 
 void CDetail::Load(IReader* S)
 {
@@ -236,7 +230,6 @@ void CDetail::Load(IReader* S)
 	bv_bb.getsphere(bv_sphere.P, bv_sphere.R);
 
 	//LVutner: Create vertex and index buffers
-#ifdef USE_DX11
 	{
 		xr_vector<Fvector> vNormals(number_vertices, Fidentity.c);
 		Fvector normal;
@@ -307,15 +300,12 @@ void CDetail::Load(IReader* S)
 		R_ASSERT(RHIUtils::CreateIndexBuffer(&hw_IB, indices, size_indices));
 		hw_Geom.create(dwDecl, std::size(dwDecl), hw_VB, hw_IB);
 	}
-#endif
 
 #ifndef _EDITOR
 	Optimize	();
 #endif
 
-#ifdef USE_DX11
 	LoadGeom();
-#endif
 }
 
 bool CDetail::LoadFromDM(const char* dm_path)

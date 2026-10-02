@@ -3,10 +3,10 @@
 
 #include "../../xrCore/Collision/ISpatial.h"
 //#include "../../xrEngine/xr_object.h"
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if !defined(_EDITOR)
 #	include "Light_Package.h"
 #	include "light_smapvis.h"
-#endif //(RENDER==R_R2) || (RENDER==R_R4)
+#endif
 
 class light :	
 	public IRender_Light
@@ -34,15 +34,12 @@ public:
 	vis_data		hom			;
 	u32				frame_render;
 	
-#if RENDER!=R_R1
 	xr_vector<IRender_Sector*> m_sectors;
-#endif	//	RENDER!=R_R1
 
 	float			m_volumetric_quality;
 	float			m_volumetric_intensity;
 	float			m_volumetric_distance;
 
-#if (RENDER==R_R2) || (RENDER==R_R4) || defined(_EDITOR)
 	float			falloff;			// precalc to make light equal to zero at light range
 	float	        attenuation0;		// Constant attenuation		
 	float	        attenuation1;		// Linear attenuation		
@@ -105,14 +102,11 @@ public:
 	};
 
 	_xform X = {};
-#endif	//	(RENDER==R_R2) || (RENDER==R_R4)
 
 public:
-#if RENDER!=R_R1
 	void get_sectors();
 	bool has_light_visible_from_sectors();
 	xrCriticalSection sectors_lc;
-#endif	//	RENDER!=R_R1
 	virtual void	set_type				(LT type)						{ flags.type = type;		}
 	virtual void	set_active				(bool b);
 	virtual bool	get_active				()								{ return flags.bActive;		}
@@ -153,7 +147,6 @@ public:
 	virtual IRender_Light*	dcast_Light		()	{ return this; }
 
 	virtual vis_data&		get_homdata		();
-#if (RENDER==R_R2) || (RENDER==R_R4) || defined(_EDITOR)
 	void			xform_calc				();
 #ifndef _EDITOR
 	void			optimize_smap_size		();
@@ -162,7 +155,6 @@ public:
 	void			export_ 					(light_Package& dest);
 	void			set_attenuation_params	(float a0, float a1, float a2, float fo);
 #endif // _EDITOR
-#endif // (RENDER==R_R2) || (RENDER==R_R4)
 
 	float			get_LOD					();
 

@@ -19,7 +19,7 @@
 #pragma warning(disable:4995)
 #include <malloc.h>
 
-#include <FlexibleVertexFormat.h>
+#include "../../xrCore/FVFLegacy.h"
 
 #include "../../xrCore/FormatParsers/LevelGeom/GeomIO.h"
 using namespace FVF;
@@ -63,6 +63,12 @@ void CRender::level_Load(IReader* fs)
 	}
 
 	// Components
+	if (LightingModeIsStatic())
+	{
+		L_Projector = new CLightProjector();
+		L_Shadows = new CLightShadows();
+		L_Glows = new CGlowManager();
+	}
 	Wallmarks					= new CWallmarksEngine	();
 	Details						= new CDetailManager	();
 
@@ -94,6 +100,7 @@ void CRender::level_Load(IReader* fs)
 		}
 		
 		//...and alternate/fast geometry
+		if (LightingModeIsDynamic())
 		{
 			auto Geom = XRay::Geom::Read("$level$","level", ".geomx");
 			if (!I_ASSERT(Geom))
@@ -136,11 +143,24 @@ void CRender::level_Load(IReader* fs)
 	// HOM
 	HOM.Load					();
 
+	if (L_Glows)
+	{
+		IReader* glow_data = fs->open_chunk(fsL_GLOWS);
+		if (glow_data)
+		{
+			if (glow_data->length()) L_Glows->Load(glow_data);
+			glow_data->close();
+		}
+	}
+
 	// Lights
 	// pApp->LoadTitle			("Loading lights...");
 	LoadLights					(fs);
-	LoadPuddles					();
-	LoadPlanars					();
+	if (LightingModeIsDynamic())
+	{
+		LoadPuddles();
+		LoadPlanars();
+	}
 
 	// End
 	pApp->LoadEnd				();
@@ -325,6 +345,10 @@ void CRender::level_Unload()
 	nVBBase.clear(); xVBBase.clear(); nIBBase.clear(); xIBBase.clear();
 
 	//*** Components
+	xr_delete(L_Projector);
+	xr_delete(L_Shadows);
+	if (L_Glows) L_Glows->Unload();
+	xr_delete(L_Glows);
 	xr_delete					(Details);
 	xr_delete					(Wallmarks);
 

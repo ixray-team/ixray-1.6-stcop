@@ -33,34 +33,9 @@ void	CBlender_Editor_Wire::Load	( IReader& fs, u16 version	)
 void CBlender_Editor_Wire::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile		(C);
-#ifndef USE_DX11
-	if (C.bEditor)	
-	{
-		C.PassBegin		();
-		{
-			C.PassSET_ZB		(true,true);
-			C.PassSET_Blend		(false,D3DBLEND_ONE,D3DBLEND_ZERO,	false,0);
-			C.PassSET_LightFog	(false,false);
-
-			// Stage0 - Base texture
-			C.StageBegin		();
-			C.StageSET_Color	(D3DTA_DIFFUSE,	  D3DTOP_MODULATE,		D3DTA_TFACTOR);
-			C.StageSET_Alpha	(D3DTA_DIFFUSE,	  D3DTOP_MODULATE,		D3DTA_TFACTOR);
-			C.Stage_Texture		("$null");
-			C.Stage_Matrix		("$null",	0);
-			C.Stage_Constant	("$null");
-			//		C.Stage_Constant	("$base0",	"$user$wire");
-			C.StageEnd			();
-		}
-		C.PassEnd			();
-	} 
-	else 
-#endif //USE_DX11
 	{
 		C.r_Pass("editor", "simple_color", false, true, true);
-#ifdef USE_DX11
 		C.r_CullMode(D3DCULL_NONE);
-#endif
 		C.r_End();
 	}
 }

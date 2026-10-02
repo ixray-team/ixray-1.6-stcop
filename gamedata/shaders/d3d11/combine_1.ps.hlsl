@@ -54,7 +54,7 @@ float4 main(PSInputFullscreen I) : SV_Target
     float3 Ambient = AmbientLightingLegcay(O.View, O.Normal, O.Color, O.Material, O.Gloss, O.Hemi);
 #endif
 
-    float3 Color = Occ * Ambient + Light;
+	float3 Color = Occ * Ambient + Light;
 	
     float Fog = saturate(O.ViewDist * fog_params.w + fog_params.x);
 	Fog = GammaToLinear(Fog);

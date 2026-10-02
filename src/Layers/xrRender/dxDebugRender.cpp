@@ -5,9 +5,7 @@
 #include "dxDebugRender.h"
 #include "dxUIShader.h"
 
-#ifdef USE_DX11
 #include "../xrRenderDX10/dx10BufferUtils.h"
-#endif // USE_DX11
 
 dxDebugRender DebugRenderImpl;
 
@@ -19,7 +17,6 @@ dxDebugRender::dxDebugRender()
 
 void dxDebugRender::Init()
 {
-#ifdef USE_DX11
 	R_ASSERT(RHIUtils::CreateVertexBuffer(
 		&m_dbgVB,
 		nullptr,
@@ -28,18 +25,15 @@ void dxDebugRender::Init()
 
 	m_dbgGeom.create(FVF::F_L, m_dbgVB, nullptr);
 	m_dbgShaders[dbgShaderWorld].create("debug_draw");
-#endif
 }
 
 void dxDebugRender::Shutdown()
 {
-#ifdef USE_DX11
 	m_dbgShaders[dbgShaderWorld].destroy();
 	m_dbgGeom.destroy();
 
 	m_dbgVB->Release();
 	m_dbgVB = nullptr;
-#endif // USE_DX11
 }
 
 void dxDebugRender::Render()
@@ -48,7 +42,6 @@ void dxDebugRender::Render()
 		return;
 
 	GPU_EVENT(DebugRender);
-#ifdef USE_DX11
 	size_t offset = 0;
 	while (offset < m_lines.size())
 	{
@@ -72,13 +65,6 @@ void dxDebugRender::Render()
 
 		offset += drawCount;
 	}
-#else
-	RCache.set_xform_world(Fidentity);
-	RCache.OnFrameEnd();
-	RCache.set_Z(r_debug_render_depth);
-	CHK_DX(RDevice->SetFVF(FVF::F_L));
-	CHK_DX(RDevice->DrawPrimitiveUP(D3DPT_LINELIST, m_lines.size() / 2, m_lines.data(), sizeof(FVF::L)));
-#endif // USE_DX11
 
 	m_lines.clear();//resize(0);
 }
@@ -102,12 +88,8 @@ void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, 
 
 void dxDebugRender::NextSceneMode()
 {
-#ifdef USE_DX11
 //	TODO: DX10: Check if need this for DX10
 	VERIFY(!"Not implemented for DX10");
-#else //USE_DX11
-	Caps.SceneMode = (Caps.SceneMode + 1) % 3;
-#endif
 }
 
 void dxDebugRender::ZEnable(bool bEnable)
@@ -137,12 +119,8 @@ void dxDebugRender::CacheSetCullMode(ERHI_CULLMODE m)
 
 void dxDebugRender::SetAmbient(u32 colour)
 {
-#ifdef USE_DX11
 	//	TODO: DX10: Check if need this for DX10
 	VERIFY(!"Not implemented for DX10");
-#else //USE_DX11
-	CHK_DX(RDevice->SetRenderState (D3DRS_AMBIENT, colour));
-#endif
 }
 
 void dxDebugRender::SetDebugShader(dbgShaderHandle shdHandle)

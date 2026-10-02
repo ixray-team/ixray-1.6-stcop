@@ -6,7 +6,7 @@
 #define XREUI_API __declspec(dllimport)
 #endif
 
-#define IM_TEXTURE_RELEASE(tex) ((IDirect3DBaseTexture9*)(tex))->Release()
+#define IM_TEXTURE_RELEASE(tex) ((IUnknown*)(tex))->Release()
 
 #include "../../xrCore/xrCore.h"
 

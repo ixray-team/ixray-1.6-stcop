@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "../../xrEngine/Fmesh.h"
 #include "FVisual.h"
+#include "../../xrEngine/EngineAPI.h"
 
 Fvisual::Fvisual() :
 	dxRender_Visual()
@@ -40,9 +41,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 		p_rm_Vertices		= RImplementation.getVB			(ID);
 		p_rm_Vertices->AddRef	();
-#if RENDER==R_R4
 		vBase				+= RImplementation.getVB_Base	(ID);
-#endif
 
 		vFormat				= RImplementation.getVB_Format	(ID, &FormatSize);
 		loaded_v			= true;
@@ -56,13 +55,11 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		VERIFY				(nullptr==p_rm_Indices);
 		p_rm_Indices		= RImplementation.getIB		(ID);
 		p_rm_Indices->AddRef();
-#if RENDER==R_R4
 		iBase				+= RImplementation.getIB_Base	(ID);
 #endif
-#endif
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if !defined(_EDITOR)
 		// check for fast-vertices
-		if (data->find_chunk(OGF_FASTPATH))
+		if (LightingModeIsDynamic() && data->find_chunk(OGF_FASTPATH))
 		{
 			destructor<IReader>	geomdef(data->open_chunk(OGF_FASTPATH));
 			destructor<IReader>	def(geomdef().open_chunk(OGF_GCONTAINER));
@@ -80,9 +77,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			VERIFY(nullptr == m_fast->p_rm_Vertices);
 			m_fast->p_rm_Vertices = RImplementation.getVB(ID, true);
 			m_fast->p_rm_Vertices->AddRef();
-#if RENDER==R_R4
 			m_fast->vBase += RImplementation.getVB_Base(ID, true);
-#endif
 			fmt = RImplementation.getVB_Format(ID, &fmtSize, true);
 
 			// indices
@@ -94,14 +89,12 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			VERIFY(nullptr == m_fast->p_rm_Indices);
 			m_fast->p_rm_Indices = RImplementation.getIB(ID, true);
 			m_fast->p_rm_Indices->AddRef();
-#if RENDER==R_R4
 			m_fast->iBase += RImplementation.getIB_Base(ID, true);
-#endif
 
 			// geom
 			m_fast->rm_geom.create(fmt, fmtSize, m_fast->p_rm_Vertices, m_fast->p_rm_Indices);
 		}
-#endif // (RENDER==R_R2) || (RENDER==R_R4)
+#endif
 	}
 
 	// read vertices
@@ -178,7 +171,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 void Fvisual::Render(float)
 {
-#if (RENDER==R_R2) || (RENDER==R_R4)
 	if (m_fast && RImplementation.phase == CRender::PHASE_SMAP)
 	{
 		RCache.set_Geometry(m_fast->rm_geom);
@@ -186,7 +178,6 @@ void Fvisual::Render(float)
 		RCache.stat.r.s_static.add(m_fast->vCount);
 		return;
 	}
-#endif
 	RCache.set_Geometry(rm_geom);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, 0, vCount, iBase, dwPrimitives);
 	RCache.stat.r.s_static.add(vCount);

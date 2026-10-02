@@ -17,9 +17,7 @@ void CRenderTarget::PhaseGammaApply()
 	contrast = contrast * 0.5f + 0.5f;
 	gamma = 1.0f / std::max(EPS_S, gamma);
 
-#if defined(USE_DX11)
 	u_setrt(w, h, RTarget, nullptr, nullptr, nullptr);
-#endif
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
  	RImplementation.rmNormal();

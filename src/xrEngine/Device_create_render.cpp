@@ -2,6 +2,7 @@
 
 #include "imgui_impl_sdl3.h"
 #include "IGame_Persistent.h"
+#include "Autotest.h"
 
 static ERHI_API_LAYER CurrentAPILevel = ERHI_API_LAYER::D3D11;
 
@@ -311,6 +312,9 @@ void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 
 void CRenderDevice::ResizeWindow(u32 width, u32 height)
 {
+	if (Autotest::Active())
+		psDeviceFlags.set(rsFullscreen, FALSE);
+
 	if (psDeviceFlags.is(rsFullscreen)) 
 	{
 		SDL_DisplayMode displayMode;

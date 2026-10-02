@@ -59,7 +59,6 @@ target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines
 target_compile_definitions(xrRender_R4 PRIVATE XRRENDER_R4_EXPORTS)
-target_compile_definitions(xrRender_R4 PRIVATE USE_DX11)
 target_compile_definitions(xrRender_R4 PRIVATE _USRDLL)
 target_compile_definitions(xrRender_R4 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 

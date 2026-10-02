@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "../../xrEngine/EngineAPI.h"
+#include "r1_blender_tex.h"
 
 
 #include "Blender_Screen_SET.h"
@@ -93,13 +95,19 @@ void	CBlender_Screen_SET::Load	( IReader& fs, u16 version)
 	}
 }
 
-#ifdef USE_DX11
 
 void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
 
-	if (oBlend.IDselected == 6)
+	if (LightingModeIsStatic() && !C.bEditor && 0 == xr_strcmp(getName(), "effects\\glow"))
+	{
+		const char* scale = oBlend.IDselected == 9 ? "4" : (oBlend.IDselected == 7 || oBlend.IDselected == 8 ? "2" : "1");
+		RImplementation.addShaderOption("R1_COLOR_SCALE", scale);
+		C.r_Pass("r1_glow", "r1_glow", false, oZTest.value, oZWrite.value, false, D3DBLEND_ONE, D3DBLEND_ZERO, oBlend.IDselected == 1 || oBlend.IDselected == 5 || oBlend.IDselected >= 7, oBlend.IDselected == 7 ? 0 : oAREF.value);
+		r1_tex(C, "s_base", C.L_textures[0], oClamp.value);
+	}
+	else if (oBlend.IDselected == 6)
 	{
 		// Usually for wallmarks
 		C.r_Pass("stub_notransform_t", "stub_default_ma", false);
@@ -179,106 +187,3 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 	C.r_End();
 }
 
-#else //USE_DX11
-
-void	CBlender_Screen_SET::Compile	(CBlender_Compile& C)
-{
-	IBlender::Compile		(C);
-	C.PassBegin		();
-	{
-		C.PassSET_ZB		(oZTest.value,oZWrite.value);
-		switch (oBlend.IDselected)
-		{
-		case 0:	// SET
-			C.PassSET_Blend	(false,	D3DBLEND_ONE,D3DBLEND_ZERO,				false,0);
-			break;
-		case 1: // BLEND
-			C.PassSET_Blend	(true,	D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	true,oAREF.value);
-			break;
-		case 2:	// ADD
-			C.PassSET_Blend	(true,	D3DBLEND_ONE,D3DBLEND_ONE,				false,oAREF.value);
-			break;
-		case 3:	// MUL
-			C.PassSET_Blend	(true,	D3DBLEND_DESTCOLOR,D3DBLEND_ZERO,		false,oAREF.value);
-			break;
-		case 4:	// MUL_2X
-			C.PassSET_Blend	(true,	D3DBLEND_DESTCOLOR,D3DBLEND_SRCCOLOR,	false,oAREF.value);
-			break;
-		case 5:	// ALPHA-ADD
-			C.PassSET_Blend	(true,	D3DBLEND_SRCALPHA,D3DBLEND_ONE,			true,oAREF.value);
-			break;
-		case 6:	// MUL_2X + A-test
-			C.PassSET_Blend	(true,	D3DBLEND_DESTCOLOR,D3DBLEND_SRCCOLOR,	false,oAREF.value);
-			break;
-		case 7:	// SET (2r)
-			C.PassSET_Blend	(true,	D3DBLEND_ONE,D3DBLEND_ZERO,				true,0);
-			break;
-		case 8: // BLEND (2r)
-			C.PassSET_Blend	(true,	D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	true,oAREF.value);
-			break;
-		case 9: // BLEND (4r)
-			C.PassSET_Blend	(true,	D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	true,oAREF.value);
-			break;
-		}
-		C.PassSET_LightFog	(oLighting.value,oFog.value);
-		// C.PassSET_LightFog	(false,false);
-
-		if (oBlend.IDselected==6)	
-		{
-			// Usually for wallmarks
-			C.StageBegin		();
-			C.StageSET_Address	(oClamp.value?D3DTADDRESS_CLAMP:D3DTADDRESS_WRAP);
-			C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-			C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-			C.Stage_Texture		(oT_Name);
-			C.Stage_Matrix		("$null",0);
-			C.Stage_Constant	("$null");
-			C.StageEnd			();
-
-			C.StageBegin		();
-			C.StageSET_Address	(oClamp.value?D3DTADDRESS_CLAMP:D3DTADDRESS_WRAP);
-			
-			// This code fixes the rendering of wallmarks in editors, 
-			// but breaks dynamic wallmarks in the game, so here ifdef
-		#ifdef _EDITOR
-			C.StageSET_Color(D3DTA_TEXTURE, D3DTOP_BLENDDIFFUSEALPHA, D3DTA_DIFFUSE);
-			C.StageSET_Alpha(D3DTA_TEXTURE, D3DTOP_MODULATE, D3DTA_DIFFUSE);
-			C.Stage_Texture(oT_Name);
-		#else
-			C.StageSET_Color(D3DTA_DIFFUSE, D3DTOP_BLENDDIFFUSEALPHA, D3DTA_CURRENT);
-			C.StageSET_Alpha(D3DTA_DIFFUSE, D3DTOP_MODULATE, D3DTA_CURRENT);
-			C.Stage_Texture("$null");
-		#endif
-
-			C.Stage_Matrix		("$null",	0);
-			C.Stage_Constant	("$null");
-			C.StageEnd			();
-		} else {
-			C.StageBegin		();
-			C.StageSET_Address	(oClamp.value?D3DTADDRESS_CLAMP:D3DTADDRESS_WRAP);
-			if (9==oBlend.IDselected)
-			{
-				// 4x R
-				C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE4X,	D3DTA_DIFFUSE);
-				C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-			} else {
-				if ((7==oBlend.IDselected) || (8==oBlend.IDselected))
-				{
-					// 2x R
-					C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE2X,	D3DTA_DIFFUSE);
-					C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-				} else {
-					// 1x R
-					C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-					C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-				}
-			}
-			C.Stage_Texture		(oT_Name);
-			C.Stage_Matrix		(oT_xform,	0);
-			C.Stage_Constant	("$null");
-			C.StageEnd			();
-		}
-	}
-	C.PassEnd			();
-}
-#endif

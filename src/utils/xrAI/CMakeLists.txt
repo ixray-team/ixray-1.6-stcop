@@ -98,7 +98,6 @@ target_link_libraries(xrAI PUBLIC imgui)
 target_link_libraries(xrAI PUBLIC "rpcrt4.lib")
 
 ## DirectX SDK
-target_include_directories(xrAI PRIVATE "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_include_directories(xrAI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
 
 # Intel Embree

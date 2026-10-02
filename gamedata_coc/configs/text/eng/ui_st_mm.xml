@@ -63,6 +63,9 @@
 	<string id="renderer_r4">
 		<text>DirectX 11 (Enhanced)</text>
 	</string>
+	<string id="renderer_r4_static">
+		<text>Static lighting</text>
+	</string>
 	<string id="st_opt_high">
 		<text>High</text>
 	</string>

@@ -48,12 +48,10 @@ public:
 
 	R_dsgraph::mapHUD_T											mapUI;
 	R_dsgraph::mapHUD_T											mapUISorted;
-#if RENDER!=R_R1
 	R_dsgraph::mapSorted_T										mapUIEmissive;
 	R_dsgraph::mapSorted_T										mapWmark;			// sorted
 	R_dsgraph::mapSorted_T										mapEmissive;
 	R_dsgraph::mapSorted_T										mapHUDEmissive;
-#endif
 	R_dsgraph::mapHUD_T											mapHUDScopeMask;
 	R_dsgraph::mapSorted_T										mapHUDDistort;
 
@@ -128,12 +126,10 @@ public:
 		mapHUDDistort.destroy();
 		mapUISorted.destroy		();
 
-#if RENDER!=R_R1
 		mapWmark.destroy		();
 		mapEmissive.destroy		();
 		mapHUDEmissive.destroy	();
 		mapUIEmissive.destroy	();
-#endif
 	}
 
 	void		add_Static(dxRender_Visual* pVisual, u32 planes);

@@ -45,6 +45,9 @@
 	<string id="renderer_r1">
 		<text>Static lighting</text>
 	</string>
+	<string id="renderer_r4_static">
+		<text>Static lighting</text>
+	</string>
 	<string id="renderer_r2">
 		<text>Full dynamic lighting</text>
 	</string>

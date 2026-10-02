@@ -225,7 +225,6 @@ public:
 	void							hw_Unload		();
 	void							hw_Render		(light*L=NULL);
 
-#ifdef USE_DX11
 	xr_map<u32, std::pair<IRHIBuffer*, IRHIShaderResourceView*>> DetailInstanceBuffers;
 
 	Fvector							TrampleLastCamPos;
@@ -245,21 +244,6 @@ public:
 
 	template<typename T>
 	void							hw_Render_dump	(const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L=NULL);
-#else //USE_DX11
-	ref_geom						hw_Geom;
-	IRHIBuffer*						hw_VB;
-	IRHIBuffer*						hw_IB;
-	ref_constant					hwc_consts;
-	ref_constant					hwc_wave;
-	ref_constant					hwc_wind;
-	ref_constant					hwc_array;
-	ref_constant					hwc_s_consts;
-	ref_constant					hwc_s_xform;
-	ref_constant					hwc_s_array;
-	u32								hw_BatchSize;
-	template<typename T, bool light_phase = false>
-	void							hw_Render_dump	(ref_constant array, u32 var_id, u32 lod_id, light*L=NULL);
-#endif
 
 	// get unpacked slot
 	DetailSlot&						QueryDB			(int sx, int sz);

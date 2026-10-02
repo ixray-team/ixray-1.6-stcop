@@ -1,6 +1,5 @@
 #include "NvGPUTransferee.h"
 #include <d3d11.h>
-#include <d3d9.h>
 
 extern "C"
 {
@@ -152,18 +151,6 @@ u32 CNvReader::GetGPUCount()
 
 bool CNvReader::SetDepthBounds(bool b, float zMin, float zMax)
 {
-	if (GRHI->APILevel == ERHI_API_LAYER::D3D9)
-	{
-		((IDirect3DDevice9*)GRHI->DevicePtr->RawDevice)->SetRenderState(D3DRS_ADAPTIVETESS_X, b ? MAKEFOURCC('N', 'V', 'D', 'B') : 0);
-		if (b)
-		{
-			((IDirect3DDevice9*)GRHI->DevicePtr->RawDevice)->SetRenderState(D3DRS_ADAPTIVETESS_Z, *(DWORD*)&zMin);
-			((IDirect3DDevice9*)GRHI->DevicePtr->RawDevice)->SetRenderState(D3DRS_ADAPTIVETESS_W, *(DWORD*)&zMax);
-		}
-
-		return true;
-	}
-
 	if (NvAPI_D3D11_SetDepthBoundsTest)
 	{
 		NvAPI_D3D11_SetDepthBoundsTest((ID3D11DeviceContext*)GRHI->GetContext(), b, zMin, zMax);

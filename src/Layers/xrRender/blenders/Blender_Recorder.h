@@ -24,7 +24,6 @@ public:
 	CSimulator			RS;
 	IBlender*			BT;
 	ShaderElement*		SH;
-#ifdef USE_DX11
 	enum {
 		NO_TESS = 0,
 		TESS_PN = 1 << 0,
@@ -32,7 +31,6 @@ public:
 		TESS_PN_HM = TESS_PN | TESS_HM
 	};
 	u32	TessMethod;
-#endif
 
 private:
 	SPass				dest;
@@ -45,12 +43,10 @@ private:
 
 	string128			pass_vs;
 	string128			pass_ps;
-#ifdef USE_DX11
 	string128			pass_gs;
 	string128			pass_hs;
 	string128			pass_ds;
 	string128			pass_cs;
-#endif	//	USE_DX11
 
 	u32					BC					(bool v)	{ return v?0x01:0; }
 public:
@@ -92,9 +88,6 @@ public:
 	void				StageSET_XForm(u32 tf, u32 tc);
 	void				StageSET_Color3(u32 a1, u32 op, u32 a2, u32 a3);
 	void				StageSET_TMC(const char* T, const char* M, const char* C, int UVW_channel);
-#ifndef USE_DX11
-	void				StageTemplate_LMAP0	();
-#endif	//	USE_DX11
 	void				Stage_Constant		(const char* name);
 	void				StageEnd			();
 
@@ -114,7 +107,6 @@ public:
 	void				r_Pass				(const char* vs,		const char* ps,		bool bFog,	bool	bZtest=true,				bool	bZwrite=true,			bool	bABlend=false,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	bool aTest=false,	u32 aRef=0);
 	void				r_Pass				(const char* vs,		const char* gs, const char* ps,		bool bFog,	bool	bZtest=true,				bool	bZwrite=true,			bool	bABlend=false,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	bool aTest=false,	u32 aRef=0);
 	void				r_Constant			(const char* name, RHIShaderConstant::Setup* s);
-#ifdef USE_DX11
 	void				r_TessPass			(const char* vs,	const char* hs, const char* ds, const char* gs, const char* ps, bool bFog, bool bZtest=true, bool bZwrite=true, bool bABlend=false,	D3DBLEND abSRC=D3DBLEND_ONE, D3DBLEND abDST=D3DBLEND_ZERO, bool aTest=false, u32 aRef=0);
 	void				r_ComputePass		(const char* cs );
 	void				r_Stencil(bool Enable, u32 Func=D3DCMP_ALWAYS, u32 Mask=0x00, u32 WriteMask=0x00, u32 Fail=D3DSTENCILOP_KEEP, u32 Pass=D3DSTENCILOP_KEEP, u32 ZFail=D3DSTENCILOP_KEEP);
@@ -124,16 +116,6 @@ public:
 	void				r_dx10Texture(const char* ResourceName,	const char* texture);
 	void				r_dx10Texture(const char* ResourceName,	shared_str texture) { return r_dx10Texture(ResourceName, texture.c_str());};
 	u32					r_dx10Sampler(const char* ResourceName);
-#else //USE_DX11
-	u32					r_Sampler			(const char* name,	const char* texture,		bool b_ps1x_ProjectiveDivide=false, u32	address=D3DTADDRESS_WRAP,	u32		fmin=D3DTEXF_LINEAR,	u32		fmip=D3DTEXF_LINEAR,	u32 fmag=D3DTEXF_LINEAR);
-	u32					r_Sampler			(const char* name,	shared_str texture, bool b_ps1x_ProjectiveDivide=false, u32	address=D3DTADDRESS_WRAP,	u32		fmin=D3DTEXF_LINEAR,	u32		fmip=D3DTEXF_LINEAR,	u32 fmag=D3DTEXF_LINEAR)	{
-		return r_Sampler	(name,texture.c_str(),b_ps1x_ProjectiveDivide,address,fmin,fmip,fmag);
-	}
-	void				r_Sampler_rtf(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide = false);
-	void				r_Sampler_clf(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide = false);
-	void				r_Sampler_waf(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide = false);
-	void				r_Sampler_clw(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide = false);
-#endif
 	void				r_End(bool clear = true);
 	void				r_ColorWriteEnable( bool cR=true, bool cG=true, bool cB=true, bool cA=true);
 

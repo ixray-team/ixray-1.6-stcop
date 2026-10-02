@@ -2,6 +2,7 @@
 #include "dx103DFluidVolume.h"
 
 #include "dx103DFluidManager.h"
+#include "../../../xrEngine/EngineAPI.h"
 
 dx103DFluidVolume::dx103DFluidVolume()
 {
@@ -94,6 +95,8 @@ void dx103DFluidVolume::Load( const char* N, IReader *data, u32 dwFlags )
 
 void dx103DFluidVolume::Render( float LOD )		// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
 {
+	if (LightingModeIsStatic())
+		return;
 	//	Render debug box
 	//	Do it BEFORE update since update resets shaders and other pipeline settings
 

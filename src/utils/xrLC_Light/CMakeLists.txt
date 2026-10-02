@@ -192,7 +192,6 @@ add_custom_command(TARGET xrLC_Light POST_BUILD
 
 # DirectX SDK
 target_include_directories(xrLC_Light PUBLIC
-	"${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/"
 	"${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/"
 )
 

@@ -7,13 +7,8 @@
 #include "SH_Constant.h"
 #include "SH_RT.h"
 
-#ifdef USE_DX11
 #include "../xrRenderDX10/dx10R_Backend_Runtime.h"
 #include "../xrRenderDX10/StateManager/dx10State.h"
-#else //USE_DX11
-#include "../xrRenderDX9/dx9R_Backend_Runtime.h"
-#include "R_Backend.h"
-#endif
 
 IC void		R_xforms::set_c_w			(RHIShaderConstant* C)		{	c_w		= C;	RCache.set_c(C,m_w);	};
 IC void		R_xforms::set_c_invw		(RHIShaderConstant* C)		{	c_invw	= C;	apply_invw();			};
@@ -72,9 +67,6 @@ IC	IRHIRenderTargetView* CBackend::get_RT(u32 ID)
 
 ICF void	CBackend::set_States		(ID3DState* _state)
 {
-#ifndef USE_DX11
-	if (state!=_state)
-#endif //USE_DX11
 	{
 		state			= _state;
 		state->Apply	();
@@ -111,12 +103,10 @@ IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
 	set_States		(P.state);
 	set_PS			(P.ps);
 	set_VS			(P.vs);
-#ifdef USE_DX11
 	set_GS			(P.gs);
 	set_HS			(P.hs);
 	set_DS			(P.ds);
 	set_CS			(P.cs);
-#endif //USE_DX11
 	set_Constants	(P.constants);
 	set_Textures	(P.T);
 #ifdef _EDITOR

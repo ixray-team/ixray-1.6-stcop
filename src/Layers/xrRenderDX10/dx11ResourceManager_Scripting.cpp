@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../xrEngine/EngineAPI.h"
 
 
 #include	"../../xrEngine/Render.h"
@@ -130,6 +131,11 @@ void LuaAddShaderOption(const char* _name, const char* _def)
 
 bool LuaGetShaderOption(const char* _name)
 {
+#if !defined(_EDITOR)
+	if (!xr_strcmp(_name, "USE_R1_STATIC_LIGHTING"))
+		return LightingModeIsStatic();
+#endif
+
 	return EngineExternal().ShadersOptions.contains(xr_string(_name));
 }
 
@@ -280,6 +286,15 @@ bool	CResourceManager::_lua_HasShader	(const char* s_shader)
 	;
 }
 
+bool CResourceManager::_lua_HasStatic(const char* s_shader)
+{
+	string256 undercorated;
+	for (int i = 0, l = xr_strlen(s_shader) + 1; i < l; i++)
+		undercorated[i] = ('\\' == s_shader[i]) ? '_' : s_shader[i];
+
+	return Script::bfIsObjectPresent(LSVM, undercorated, "r1_static", LUA_TBOOLEAN);
+}
+
 Shader* CResourceManager::_lua_Create(const char* d_shader, const char* s_textures)
 {
 	CBlender_Compile C;
@@ -322,7 +337,7 @@ Shader* CResourceManager::_lua_Create(const char* d_shader, const char* s_textur
 	}
 
 	// Compile element (HUD)
-	if (Script::bfIsObjectPresent(LSVM, s_shader, "normal_hud", LUA_TFUNCTION))
+	if (!LightingModeIsStatic() && Script::bfIsObjectPresent(LSVM, s_shader, "normal_hud", LUA_TFUNCTION))
 	{
 		C.iElement = 5;
 		C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);

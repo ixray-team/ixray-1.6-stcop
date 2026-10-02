@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Weapon.h"
+#include "../xrEngine/EngineAPI.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
 #include "WeaponBinocularsVision.h"
 
@@ -707,8 +708,7 @@ bool CWeapon::install_upgrade_scope_zoom(const char* section, bool test)
 	result |= process_if_exists_set(section, "scope_nightvision_min_factor", m_lens_night_brightness.min_factor, test);
 	result |= process_if_exists_set(section, "default_brightness_step", m_lens_night_brightness.cur_step, test);
 
-	bool b_r2 = !!psDeviceFlags.test(rsR2);
-	b_r2 |= !!psDeviceFlags.test(rsR4);
+	bool b_r2 = LightingModeIsDynamic();
 
 	if (!b_r2 && m_lens_night_brightness.max_value > 1.0f)
 	{

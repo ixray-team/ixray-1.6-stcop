@@ -47,7 +47,6 @@ public:
 	using map_VS = xr_map<const char*, SVS*, str_pred>;
 	using map_VSIt = map_VS::iterator;
 
-#ifdef USE_DX11
 	using map_GS = xr_map<const char*, SGS*, str_pred>;
 	using map_GSIt = map_GS::iterator;
 
@@ -62,7 +61,6 @@ public:
 
 	using map_RTC = xr_map<const char*, CRTC*, str_pred>;
 	using map_RTCIt = map_RTC::iterator;
-#endif
 
 	using map_PS = xr_map<const char*, SPS*, str_pred>;
 	using map_PSIt = map_PS::iterator;
@@ -83,10 +81,8 @@ private:
 	map_VS												m_vs;
 	map_PS												m_ps;
 
-#ifdef USE_DX11
 	map_RTC												m_rtargets_c;
 	map_GS												m_gs;
-#endif //USE_DX11
 	map_TD												m_td;
 
 	xr_vector<SState*>									v_states;
@@ -94,10 +90,8 @@ private:
 	xr_vector<SGeometry*>								v_geoms;
 	xr_vector<R_constant_table*>						v_constant_tables;
 
-#ifdef USE_DX11
 	xr_vector<dx10ConstantBuffer*>						v_constant_buffer;
 	xr_vector<SInputSignature*>							v_input_signature;
-#endif //USE_DX11
 
 	// lists
 	xr_vector<STextureList*>							lst_textures;
@@ -149,27 +143,20 @@ public:
 	R_constant_table*				_CreateConstantTable(R_constant_table& C);
 	void							_DeleteConstantTable(const R_constant_table* C);
 
-#ifdef USE_DX11
 	dx10ConstantBuffer*				_CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
 	void							_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer);
 
 	SInputSignature*				_CreateInputSignature(ID3DBlob* pBlob);
 	void							_DeleteInputSignature(const SInputSignature* pSignature);
-#endif //USE_DX11
 
 	CRT*							_CreateRT			(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
-#ifdef USE_DX11
 	CRTC*							_CreateRTC			(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
-#endif
 	void							_DeleteRT			(const CRT*	RT	);
 
-#ifdef USE_DX11
 	SGS*							_CreateGS			(const char* Name);
 	void							_DeleteGS			(const SGS*	GS);
 	void							_DeleteRTC			(const CRTC* RT);
-#endif //USE_DX11
 
-#ifdef USE_DX11
 	SHS*							_CreateHS			(const char* Name);
 	void							_DeleteHS			(const SHS*	HS	);
 
@@ -178,7 +165,6 @@ public:
 
     SCS*							_CreateCS			(const char* Name);
 	void							_DeleteCS			(const SCS*	CS	);
-#endif //USE_DX11
 
 	SPS*							_CreatePS			(const char* Name);
 	void							_DeletePS			(const SPS*	PS	);
@@ -214,6 +200,7 @@ public:
 	Shader*							_lua_Create			(const char*		s_shader,	const char* s_textures);
 	Shader*							_Compile			(const char*		s_shader,	const char* s_textures,	const char* s_constants,	const char* s_matrices);
 	bool							_lua_HasShader		(const char*		s_shader);
+	bool							_lua_HasStatic		(const char*		s_shader);
 
 	xr_vector<SGeometry*>&			_GetGeoms			()		{	return v_geoms;	}
 
@@ -261,7 +248,6 @@ public:
 private:
 	CSVGStorage* m_pStorageSVG = nullptr;
 	
-#ifdef USE_DX11
 	map_DS	m_ds;
 	map_HS	m_hs;
 	map_CS	m_cs;
@@ -275,9 +261,7 @@ private:
 	template<typename T>
 	void DestroyShader(const T* sh);
 
-#endif //USE_DX11
 private:
-#ifdef USE_DX11
 
 	struct XMLBlendCacheEntry
 	{
@@ -289,7 +273,6 @@ private:
 
 	xr_hash_map<xr_string, XMLBlendCacheEntry> m_xmlBlendCache;
 	void ClearXMLBlendCache();
-#endif
 };
 
 #endif //ResourceManagerH

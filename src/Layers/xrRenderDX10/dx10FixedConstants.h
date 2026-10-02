@@ -58,6 +58,9 @@ struct alignas(16) CBObject
 	Fvector4 m_WV[3];
 	Fvector4 m_WVP[4];
 	Fvector4 m_WVP_old[4];
+	Fvector4 L_dynamic_props;
+	Fvector4 m_plmap_xform[4];
+	Fvector4 m_plmap_clamp[2];
 };
 
 struct alignas(16) CBPass
@@ -106,6 +109,7 @@ struct alignas(16) CBLight
 	Fvector4 m_shadow_sun[12];
 	Fvector4 m_shadow[4];
 	Fvector4 m_sunmask[3];
+	Fvector4 L_dynamic_xform[4];
 };
 
 namespace FixedConstants

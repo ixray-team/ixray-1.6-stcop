@@ -128,15 +128,15 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/tga.*"
 	"../../Layers/xrRender/tss_def.*"
 	"../../Layers/xrRender/xrRender_console.*"
-	"../../Layers/xrRenderPC_R1/Blender_Blur.*"
-	"../../Layers/xrRenderPC_R1/BlenderDefault.*"
-	"../../Layers/xrRenderPC_R1/Blender_default_aref.*"
-	"../../Layers/xrRenderPC_R1/Blender_LaEmB.*"
-	"../../Layers/xrRenderPC_R1/Blender_Model.*"
-	"../../Layers/xrRenderPC_R1/Blender_Screen_GRAY.*"
-	"../../Layers/xrRenderPC_R1/Blender_Shadow_World.*"
-	"../../Layers/xrRenderPC_R1/Blender_Vertex_aref.*"
-	"../../Layers/xrRenderPC_R1/Blender_Vertex.*"
+	"../../Layers/xrRender/Blender_Blur.*"
+	"../../Layers/xrRender/BlenderDefault.*"
+	"../../Layers/xrRender/Blender_default_aref.*"
+	"../../Layers/xrRender/Blender_LaEmB.*"
+	"../../Layers/xrRender/Blender_Model.*"
+	"../../Layers/xrRender/Blender_Screen_GRAY.*"
+	"../../Layers/xrRender/Blender_Shadow_World.*"
+	"../../Layers/xrRender/Blender_Vertex_aref.*"
+	"../../Layers/xrRender/Blender_Vertex.*"
 	"../../Layers/xrRender/smol-atlas.*"
 	"../../Layers/xrRender/particle_core/particle_core.*"
 	"../../Layers/xrRender/particle_core/noise.*"
@@ -222,13 +222,6 @@ if (WIN32)
 endif()
 
 target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
-
-## DirectX SDK
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-	target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
-else()
-	target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x64/d3dx9.lib)
-endif()
 
 ## lunaSVG
 target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)

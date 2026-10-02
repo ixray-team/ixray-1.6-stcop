@@ -6,6 +6,7 @@
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/Environment.h"
+#include "../../xrEngine/EngineAPI.h"
 #include "../../xrEngine/date_time.h"
 #include "../../xrEngine/Rain.h"
 
@@ -88,6 +89,10 @@ void FixedConstants::Create()
 	RHIUtils::CreateConstantBuffer(&cb_light, sizeof(CBLight));
 	RHIUtils::CreateConstantBuffer(&cb_pass, sizeof(CBPass));
 
+	cpu_object.L_dynamic_props.set(0, 0, 0, 0);
+	store_Float4x4(cpu_object.m_plmap_xform, Fidentity);
+	cpu_object.m_plmap_clamp[0].set(0, 0, 0, 1);
+	cpu_object.m_plmap_clamp[1].set(0, 0, 0, 0);
 	UpdateMaterial();
 	UpdateObject(Fidentity);
 	UpdateView();
@@ -138,6 +143,14 @@ void FixedConstants::UpdateFrame()
 			cpu_frame.L_hemi_color.set(m.hemi_color.x * ps_r2_sun_lumscale_hemi * 4, m.hemi_color.y * ps_r2_sun_lumscale_hemi * 4, m.hemi_color.z * ps_r2_sun_lumscale_hemi * 4, m.weight);
 		}
 		cpu_frame.L_sky_color.set(m.sky_color.x * ps_r2_sun_lumscale_sky, m.sky_color.y * ps_r2_sun_lumscale_sky, m.sky_color.z * ps_r2_sun_lumscale_sky, m.sky_rotation);
+		if (LightingModeIsStatic() && !Device.IsEditorMode())
+		{
+			cpu_frame.fog_color.set(env->fog_color.x * ps_r1_fog_luminance, env->fog_color.y * ps_r1_fog_luminance, env->fog_color.z * ps_r1_fog_luminance, 0);
+			cpu_frame.L_sun_color.set(env->sun_color.x, env->sun_color.y, env->sun_color.z, 0);
+			cpu_frame.L_ambient.set(m.ambient.x, m.ambient.y, m.ambient.z, m.weight);
+			cpu_frame.L_hemi_color.set(m.hemi_color);
+			cpu_frame.L_sky_color.set(m.sky_color.x, m.sky_color.y, m.sky_color.z, m.sky_rotation);
+		}
 		cpu_frame.water_intensity.set(m.m_fWaterIntensity, m.m_fWaterIntensity, m.m_fWaterIntensity, 0);
 		cpu_frame.sun_shafts_intensity.set(m.m_fSunShaftsIntensity, m.m_fSunShaftsIntensity, m.m_fSunShaftsIntensity, 0);
 		// no level at the main menu
@@ -531,6 +544,18 @@ bool FixedConstants::OnSet(u32 h, const Fmatrix& A)
 {
 	switch (h)
 	{
+		case chash("m_plmap_xform"):
+		{
+			store_Float4x4(cpu_object.m_plmap_xform, A);
+			dirty_object = true;
+		}
+		break;
+		case chash("L_dynamic_xform"):
+		{
+			store_Float4x4(cpu_light.L_dynamic_xform, A);
+			dirty_light = true;
+		}
+		break;
 		case chash("m_W"):
 		{
 			store_Float3x4(cpu_object.m_W, A);
@@ -656,6 +681,12 @@ bool FixedConstants::OnSet(u32 h, const Fvector4& A)
 {
 	switch (h)
 	{
+		case chash("L_dynamic_props"):
+		{
+			cpu_object.L_dynamic_props.set(A.x, A.y, A.z, A.w);
+			dirty_object = true;
+		}
+		break;
 		case chash("L_material"):
 			SetHemiMaterial(A.x, A.y, A.z, A.w);
 			break;
@@ -708,12 +739,14 @@ bool FixedConstants::OnSet(u32 h, const Fvector4& A)
 		case chash("c_sun"):
 			SetTreeCSun(A.x, A.y, A.z, A.w);
 			break;
+		case chash("L_dynamic_color"):
 		case chash("Ldynamic_color"):
 		{
 			cpu_light.Ldynamic_color.set(A.x, A.y, A.z, A.w);
 			dirty_light = true;
 		}
 		break;
+		case chash("L_dynamic_pos"):
 		case chash("Ldynamic_pos"):
 		{
 			cpu_light.Ldynamic_pos.set(A.x, A.y, A.z, A.w);
@@ -921,6 +954,13 @@ bool FixedConstants::OnSetA(u32 h, u32 e, const Fvector4& A)
 {
 	switch (h)
 	{
+		case chash("m_plmap_clamp"):
+		{
+			R_ASSERT(e < 2);
+			cpu_object.m_plmap_clamp[e].set(A.x, A.y, A.z, A.w);
+			dirty_object = true;
+		}
+		break;
 		case chash("m_lmap"):
 		{
 			if (e < 2)
@@ -930,6 +970,7 @@ bool FixedConstants::OnSetA(u32 h, u32 e, const Fvector4& A)
 			}
 		}
 		break;
+		case chash("L_dynamic_color"):
 		case chash("Ldynamic_color"):
 		{
 			if (e == 0)
@@ -939,6 +980,7 @@ bool FixedConstants::OnSetA(u32 h, u32 e, const Fvector4& A)
 			}
 		}
 		break;
+		case chash("L_dynamic_pos"):
 		case chash("Ldynamic_pos"):
 		{
 			if (e == 0)

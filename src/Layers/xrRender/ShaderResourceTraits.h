@@ -1,6 +1,5 @@
 #pragma once
 
-#ifdef USE_DX11
 
 #	include "ResourceManager.h"
 
@@ -142,4 +141,3 @@
 		Msg	("! ERROR: Failed to find compiled geometry shader '%s'", *sh->cName);
 	}
 
-#endif

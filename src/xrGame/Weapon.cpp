@@ -9,6 +9,7 @@
 #include "ActorEffector.h"
 #include "Level.h"
 #include "../xrEngine/xr_level_controller.h"
+#include "../xrEngine/EngineAPI.h"
 #include "game_cl_base.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
@@ -5170,8 +5171,7 @@ void CWeapon::LoadNightBrightnessParamsFromSection(shared_str sect)
 	m_lens_night_brightness.jitter = READ_IF_EXISTS(pSettings, r_float, sect, "jitter_brightness", 1.0f);
 	m_lens_night_brightness.min_factor = READ_IF_EXISTS(pSettings, r_float, sect, "scope_nightvision_min_factor", 0.0f);
 
-	bool b_r2 = !!psDeviceFlags.test(rsR2);
-	b_r2 |= !!psDeviceFlags.test(rsR4);
+	bool b_r2 = LightingModeIsDynamic();
 
 	if (!b_r2 && m_lens_night_brightness.max_value > 1.0f)
 	{

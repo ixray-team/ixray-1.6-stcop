@@ -4,14 +4,13 @@
 #include "stdafx.h"
 #include "SVGStorage.h"
 #include "ResourceManager.h"
+#include "../../xrEngine/EngineAPI.h"
 #include "tss.h"
 #include "blenders/Blender.h"
 #include "blenders/Blender_Recorder.h"
 #include <execution>
 
-#ifdef USE_DX11
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
-#endif
 //	Already defined in Texture.cpp
 void fix_texture_name(LPSTR fn);
 static xrCriticalSection ResSafe;
@@ -32,7 +31,6 @@ static u32 CalculateXMLCRC(const char* path)
 
 #endif
 
-#ifdef USE_DX11
 static xr_string MakeXMLBlendKey(const char* s_shader, const char* s_textures)
 {
 	xr_string key = s_shader ? s_shader : "";
@@ -46,7 +44,6 @@ void CResourceManager::ClearXMLBlendCache()
 	xrCriticalSectionGuard guard(ResSafe);
 	m_xmlBlendCache.clear();
 }
-#endif
 
 //--------------------------------------------------------------------------------------------------------------
 template <class T>
@@ -70,14 +67,7 @@ IBlender* CResourceManager::_GetBlender		(const char* Name)
 //	TODO: DX10: When all shaders are ready switch to common path
 	if (I==m_blenders.end())
 	{
-#ifdef USE_DX11
 		Msg("DX10: Shader '%s' not found in library.", Name);
-#else
-		if (!Device.IsEditorMode())
-		{
-			Debug.fatal(DEBUG_INFO, "Shader '%s' not found in library.", Name);
-		}
-#endif
 		return nullptr;
 	}
 	
@@ -259,16 +249,12 @@ Shader*	CResourceManager::_cpp_Create(const char* s_shader, const char* s_textur
 	if (!g_dedicated_server)
 	{
 		//	TODO: DX10: When all shaders are ready switch to common path
-#ifdef USE_DX11
 		IBlender* pBlender = _GetBlender(s_shader ? s_shader : "null");
 		if (!pBlender)
 		{
 			return nullptr;
 		}
 		return	_cpp_Create(pBlender, s_shader, s_textures, s_constants, s_matrices);
-#else //USE_DX11
-		return	_cpp_Create(_GetBlender(s_shader ? s_shader : "null"), s_shader, s_textures, s_constants, s_matrices);
-#endif
 	}
 
 	return nullptr;
@@ -286,7 +272,17 @@ Shader*CResourceManager::Create(IBlender* B, const char* s_shader, const char* s
 
 Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
-#ifdef USE_DX11
+#if !defined(_EDITOR)
+	if (LightingModeIsStatic() && !_lua_HasStatic(s_shader))
+	{
+		if (IBlender* blender = _FindBlender(s_shader))
+		{
+			if (blender->getDescription().CLS != B_SCREEN_SET && blender->getDescription().CLS != B_SCREEN_GRAY)
+				return _cpp_Create(blender, s_shader, s_textures, s_constants, s_matrices);
+		}
+	}
+#endif
+
 	if (CXMLBlend::Check(s_shader))
 		return xr_make_unique<CXMLBlend>(s_shader)->Compile(s_textures);
 
@@ -300,12 +296,6 @@ Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures,
 		FATAL("Can't find stub_default.s");
 
 	return _lua_Create("stub_default", s_textures);
-#else
-	if (_lua_HasShader(s_shader))
-		return _lua_Create(s_shader, s_textures);
-
-	return _cpp_Create(s_shader, s_textures, s_constants, s_matrices);
-#endif
 }
 
 Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	const char* s_constants,	const char* s_matrices)
@@ -316,7 +306,6 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 		return nullptr;
 
 	Shader* pShader = nullptr;
-#ifdef USE_DX11
 	if (CXMLBlend::Check(s_shader))
 	{
 		xr_string key = MakeXMLBlendKey(s_shader, s_textures);
@@ -351,7 +340,6 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 		}
 	}
 	else
-#endif
 		pShader = _Compile(s_shader, s_textures, s_constants, s_matrices);
 
 	if (pShader && !pShader->src_shader)
@@ -398,7 +386,6 @@ void CResourceManager::Delete(const Shader* S)
 
 	xrCriticalSectionGuard guard(creationGuard);
 
-#ifdef USE_DX11
 	for (auto it = m_xmlBlendCache.begin(); it != m_xmlBlendCache.end(); )
 	{
 		if (it->second.shader == S)
@@ -406,7 +393,6 @@ void CResourceManager::Delete(const Shader* S)
 		else
 			++it;
 	}
-#endif
 
 	if (reclaim(v_shaders, S))
 		return;
@@ -453,7 +439,7 @@ void CResourceManager::DeferredUpload()
 			T->Load();
 	}
 
-#if defined(USE_DX11) && !defined(_EDITOR)
+#if !defined(_EDITOR)
 	FluidManager.Initialize(70, 70, 70);
 	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
 #endif
@@ -469,7 +455,7 @@ void CResourceManager::DeferredUnload()
 		return;
 #endif
 
-#if defined(USE_DX11) && !defined(_EDITOR)
+#if !defined(_EDITOR)
 	FluidManager.Destroy();
 #endif
 

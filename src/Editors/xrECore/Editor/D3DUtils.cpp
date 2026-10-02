@@ -3,8 +3,7 @@
 #include "stdafx.h"
 
 
-#include <FlexibleVertexFormat.h>
-#include <d3dx9.h>
+#include "../../../xrCore/FVFLegacy.h"
 
 #include "../xrEngine/GameFont.h"
 #include "D3DUtils.h"

@@ -398,7 +398,7 @@ void CEffect_Rain::UpdateItems()
 	u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
 	shared_str& rain_type = env.CurrentEnv->rain_type;
 
-	if (psDeviceFlags.test(rsR4) || psDeviceFlags.test(rsR2))
+	if (LightingModeIsDynamic())
 	{
 		f_rain_color.mul(0.9f);
 		factor_visual *= 0.8f;

@@ -5,9 +5,7 @@
 #include "../../xrCore/xr_resource.h"
 
 
-#ifdef USE_DX11
 #include "../xrRenderDX10/dx10ConstantBuffer.h"
-#endif //USE_DX11
 
 enum
 {
@@ -73,18 +71,14 @@ public:
 		return handlers;
 	}
 
-#ifdef USE_DX11
 	typedef std::pair<u32,ref_cbuffer>	cb_table_record;
 	typedef xr_vector<cb_table_record>	cb_table;
 	cb_table							m_CBTable;
-#endif //USE_DX11
 private:
 	void					fatal		(const char* s);
 
-#ifdef USE_DX11
 	bool					parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination, int fixed);
 	bool					parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
-#endif //USE_DX11
 
 public:
 	R_constant_table					() = default;
@@ -107,8 +101,6 @@ private:
 };
 typedef	resptr_core<R_constant_table,resptr_base<R_constant_table> >				ref_ctable;
 
-#ifdef USE_DX11
 #include "../xrRenderDX10/dx10ConstantBuffer_impl.h"
-#endif //USE_DX11
 
 #endif

@@ -8,9 +8,6 @@
 
 #include "dxRenderDeviceRender.h"
 
-#ifndef USE_DX11
-#include "../xrRenderDX9/dx9ShaderUtils.h"
-#endif // USE_DX11
 
 
 // pool
@@ -35,9 +32,7 @@ void R_constant_table::_copy(const R_constant_table& Other)
 {
 	table = Other.table;
 	handlers_valid = false;
-#ifdef USE_DX11
 	m_CBTable = Other.m_CBTable;
-#endif
 }
 
 // predicates
@@ -71,140 +66,6 @@ ref_constant R_constant_table::get(shared_str& S)
 	return	nullptr;
 }
 
-#ifndef USE_DX11
-bool	R_constant_table::parse(void* _desc, u32 destination)
-{
-	D3DXSHADER_CONSTANTTABLE* desc = (D3DXSHADER_CONSTANTTABLE*)_desc;
-	D3DXSHADER_CONSTANTINFO* it = (D3DXSHADER_CONSTANTINFO*)((u8*)(desc) + desc->ConstantInfo);
-	u8*					 ptr = (u8*)desc;
-	for (u32 dwCount = desc->Constants; dwCount; dwCount--, it++)
-	{
-		// Name
-		const char*	name = (const char*)(ptr + it->Name);
-
-		// Type
-		u16		type = RC_float;
-		if (D3DXRS_BOOL == it->RegisterSet)	type = RC_bool;
-		if (D3DXRS_INT4 == it->RegisterSet)	type = RC_int;
-
-		// Rindex,Rcount
-		u16		r_index = it->RegisterIndex;
-		u16		r_type = u16(-1);
-
-		// TypeInfo + class
-		D3DXSHADER_TYPEINFO* T = (D3DXSHADER_TYPEINFO*)(ptr + it->TypeInfo);
-		bool bSkip = false;
-		switch (T->Class)
-		{
-		case D3DXPC_SCALAR:			r_type = RC_1x1;		break;
-		case D3DXPC_VECTOR:			r_type = RC_1x4;		break;
-		case D3DXPC_MATRIX_ROWS:
-		{
-			switch (T->Columns)
-			{
-			case 4:
-				switch (T->Rows)
-				{
-				case 3:
-					switch (it->RegisterCount)
-					{
-					case 2:	r_type = RC_2x4;	break;
-					case 3: r_type = RC_3x4;	break;
-					default:
-						Msg("Invalid matrix dimension:%dx%d in constant %s", it->RegisterCount, T->Columns, name);
-						fatal("MATRIX_ROWS: unsupported number of RegisterCount");
-						break;
-					}
-					break;
-				case 4:			r_type = RC_4x4;		VERIFY(4 == it->RegisterCount); break;
-				default:
-					fatal("MATRIX_ROWS: unsupported number of Rows");
-					break;
-				}
-				break;
-			default:
-				fatal("MATRIX_ROWS: unsupported number of Columns");
-				break;
-			}
-		}
-		break;
-		case D3DXPC_MATRIX_COLUMNS:
-			fatal("Pclass MATRIX_COLUMNS unsupported");
-			break;
-		case D3DXPC_STRUCT:
-			fatal("Pclass D3DXPC_STRUCT unsupported");
-			break;
-		case D3DXPC_OBJECT:
-		{
-			switch (T->Type)
-			{
-			case D3DXPT_SAMPLER:
-			case D3DXPT_SAMPLER1D:
-			case D3DXPT_SAMPLER2D:
-			case D3DXPT_SAMPLER3D:
-			case D3DXPT_SAMPLERCUBE:
-			{
-				// ***Register sampler***
-				// We have determined all valuable info, search if constant already created
-				ref_constant	C = get(name);
-				if (!C) {
-					C = new RHIShaderConstant();//.g_constant_allocator.create();
-					C->name = name;
-					C->destination = RC_dest_sampler;
-					C->type = RC_sampler;
-					RHIShaderConstant::Loader& L = C->samp;
-					L.index = u16(r_index + ((destination & 1) ? 0 : D3DVERTEXTEXTURESAMPLER0));
-					L.cls = RC_sampler;
-					table.push_back(C);
-					handlers_valid = false;
-				}
-				else {
-					R_ASSERT(C->destination == RC_dest_sampler);
-					R_ASSERT(C->type == RC_sampler);
-					RHIShaderConstant::Loader& L = C->samp;
-					R_ASSERT(L.index == r_index);
-					R_ASSERT(L.cls == RC_sampler);
-				}
-			}
-			break;
-			default:
-				fatal("Pclass D3DXPC_OBJECT - object isn't of 'sampler' type");
-				break;
-			}
-		}
-		bSkip = true;
-		break;
-		default:
-			bSkip = true;
-			break;
-		}
-		if (bSkip)			continue;
-
-		// We have determined all valuable info, search if constant already created
-		ref_constant	C = get(name);
-		if (!C) {
-			C = new RHIShaderConstant();//.g_constant_allocator.create();
-			C->name = name;
-			C->destination = destination;
-			C->type = type;
-			RHIShaderConstant::Loader& L = (destination & 1) ? C->ps : C->vs;
-			L.index = r_index;
-			L.cls = r_type;
-			table.push_back(C);
-			handlers_valid = false;
-		}
-		else {
-			C->destination |= destination;
-			VERIFY(C->type == type);
-			RHIShaderConstant::Loader& L = (destination & 1) ? C->ps : C->vs;
-			L.index = r_index;
-			L.cls = r_type;
-		}
-	}
-	std::sort(table.begin(), table.end(), p_sort_constants);
-	return		true;
-}
-#endif
 
 /// !!!!!!!!FIX THIS FOR DX11!!!!!!!!!
 void R_constant_table::merge(R_constant_table* T)
@@ -232,12 +93,10 @@ void R_constant_table::merge(R_constant_table* T)
 			C->fixed_id = src->fixed_id;
 			C->ps = src->ps;
 			C->vs = src->vs;
-#ifdef USE_DX11
 			C->gs = src->gs;
 			C->hs = src->hs;
 			C->ds = src->ds;
 			C->cs = src->cs;
-#endif
 			C->samp = src->samp;
 			C->handler = src->handler;
 			table_tmp.push_back(C);
@@ -264,12 +123,10 @@ void R_constant_table::merge(R_constant_table* T)
 		std::sort(table.begin(), table.end(), p_sort_constants);
 	}
 
-#ifdef USE_DX11
 	//	TODO:	DX10:	Implement merge with validity check
 	m_CBTable.reserve(m_CBTable.size() + T->m_CBTable.size());
 	for (u32 i = 0; i < T->m_CBTable.size(); ++i)
 		m_CBTable.push_back(T->m_CBTable[i]);
-#endif //USE_DX11
 }
 
 void R_constant_table::clear()
@@ -279,9 +136,7 @@ void R_constant_table::clear()
 		table[it] = nullptr;//.g_constant_allocator.destroy(table[it]);
 	table.clear();
 	handlers_valid = false;
-#ifdef USE_DX11
 	m_CBTable.clear();
-#endif //USE_DX11
 }
 
 bool R_constant_table::equal(R_constant_table& C)

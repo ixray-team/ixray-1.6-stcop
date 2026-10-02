@@ -70,9 +70,7 @@ void CRender::render_sun_cascades()
 		b_need_to_render_sunshafts = true;
 	}
 
-#ifdef USE_DX11
 //	b_need_to_render_sunshafts |= !!RImplementation.o.offscreen_reflecitons;
-#endif
 
 	if (b_need_to_render_sunshafts)
 	{
@@ -132,12 +130,10 @@ void CRender::render_sun_cascades()
 		for (u32 cascade_ind = 0; cascade_ind < cascade_count; ++cascade_ind)
 		{
 			Fvector cam_dir = Device.vCameraDirection;
-#ifdef USE_DX11
 			if (cascade_ind == (cascade_count - 1) && !!RImplementation.o.offscreen_reflecitons && !psDeviceFlags.test(rsClearBB))
 			{
 				cam_dir.mad(Fidentity.c, fuckingsun->direction, -1.0f);
 			}
-#endif
 
 #ifdef _DEBUG
 			typedef FixedConvexVolume<true> t_cuboid;
@@ -169,11 +165,7 @@ void CRender::render_sun_cascades()
 
 			float map_size = m_sun_cascades[cascade_ind].size;
 			Fmatrix mdir_Project;
-#ifndef USE_DX11
-			mdir_Project.OrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1f, dist + map_size);
-#else
 			mdir_Project.OrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1f, dist + 1.41421f * map_size);
-#endif
 
 			Fmatrix cull_xform;
 			cull_xform.mul(mdir_Project, mdir_View);
@@ -246,12 +238,6 @@ void CRender::render_sun_cascades()
 			cascade_xforms[cascade_ind] = cull_xform;
 		}
 
-#ifndef USE_DX11
-		for (u32 i = 0; i < cascade_count; ++i)
-		{
-			render_sun_cascade(i);
-		}
-#else
 		RHIViewport viewport = {
 			0.f, 0.f, (float)RImplementation.o.smapsize, (float)RImplementation.o.smapsize, 0.f, 1.f
 		};
@@ -315,7 +301,6 @@ void CRender::render_sun_cascades()
 
 		GRHI->SetViewport(viewport);
 		Target->accum_direct_cascade();
-#endif
 	}
 
 	if (b_need_to_render_sunshafts)
@@ -337,12 +322,10 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 	Fvector cam_dir = Device.vCameraDirection;
 
-#ifdef USE_DX11
 	if (cascade_ind == (m_sun_cascades.size() - 1) && !!RImplementation.o.offscreen_reflecitons && !psDeviceFlags.test(rsClearBB))
 	{
 		cam_dir.mad(Fidentity.c, fuckingsun->direction, -1.0f);
 	}
-#endif
 
 	CFrustum cull_frustum;
 	xr_vector<Fplane> cull_planes;
@@ -428,11 +411,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 			float map_size = m_sun_cascades[cascade_ind].size;
 
-#ifndef USE_DX11
-			mdir_Project.OrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + map_size);
-#else
 			mdir_Project.OrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + 1.41421f * map_size);
-#endif // USE_DX11
 
 			// build viewport xform
 			float	view_dim = float(RImplementation.o.smapsize);
@@ -568,12 +547,8 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 			if (bNormal || bSpecial)
 			{
-#ifndef USE_DX11
-				Target->phase_smap_direct(fuckingsun, SE_SUN_FAR);
-#else
 				GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
 				Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
-#endif
 				RCache.set_xform_world(Fidentity);
 				RCache.set_xform_view(Fidentity);
 
@@ -602,32 +577,4 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		r_pmask(true, false);
 	}
 
-#ifndef USE_DX11
-	{
-		// Accumulate
-		PROF_EVENT("Render Cascade: Accumulate");
-		Target->phase_accumulator();
-
-		GPU_EVENT(SE_SUN_NEAR);
-
-
-		if (cascade_ind == 0)
-		{
-			Target->accum_direct_cascade(SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);
-		}
-		else if (cascade_ind < m_sun_cascades.size() - 1)
-		{
-			Target->accum_direct_cascade(SE_SUN_MIDDLE, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
-		}
-		else
-		{
-			Target->accum_direct_cascade(SE_SUN_FAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
-		}
-
-		// Restore XForms
-		RCache.set_xform_world(Fidentity);
-		RCache.set_xform_view(Device.mView);
-		RCache.set_xform_project(Device.mProject);
-	}
-#endif
 }

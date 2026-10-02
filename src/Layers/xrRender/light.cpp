@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../xrEngine/EngineAPI.h"
 #include "light.h"
 
 static const float	SQRT2		=	1.4142135623730950488016887242097f;
@@ -33,7 +34,7 @@ light::light()
 	ignore_object	= nullptr;
 	for (int f=0; f<6; f++)decor_object[f] = nullptr;
 
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if !defined(_EDITOR)
 	ZeroMemory		(omnipart,sizeof(omnipart));
 	s_spot			= nullptr;
 	s_point			= nullptr;
@@ -46,22 +47,22 @@ light::light()
 	X.S.posX	= 0;
 	X.S.posY	= 0;
 	X.S.size	= SMAP_adapt_max;
-#endif // (RENDER==R_R2) || (RENDER==R_R4)
+#endif
 }
 
 light::~light	()
 {
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if !defined(_EDITOR)
 	for (int f=0; f<6; f++)	xr_delete(omnipart[f]);
-#endif // (RENDER==R_R2) || (RENDER==R_R4)
+#endif
 	set_active		(false);
 
 	// remove from Lights_LastFrame
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if !defined(_EDITOR)
 	for (u32 it=0; it<RImplementation.Lights_LastFrame.size(); it++)
 		if (this==RImplementation.Lights_LastFrame[it])	RImplementation.Lights_LastFrame[it]=0;
 	m_sectors.clear();
-#endif // (RENDER==R_R2) || (RENDER==R_R4)
+#endif
 	ignore_object	= nullptr;
 	for (int f=0; f<6; f++)decor_object[f] = nullptr;
 }
@@ -84,7 +85,8 @@ void light::destroy(bool deffered)
 
 void light::set_texture(const char* name)
 {
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if !defined(_EDITOR)
+	if (LightingModeIsStatic()) return;
 	if ((0 == name) || (0 == name[0]))
 	{
 		// default shaders
@@ -107,7 +109,8 @@ void light::set_texture(const char* name)
 void light::set_shadow(bool b)						
 { 
 	flags.bShadow=b;
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if !defined(_EDITOR)
+	if (LightingModeIsStatic()) return;
 	if (flags.type==IRender_Light::POINT)
 	{
 		if(flags.bShadow)
@@ -192,9 +195,10 @@ void light::set_rotation(const Fvector& D, const Fvector& R)
 	if (!fsimilar(1.f, old_D.dotproduct(D), EPS_S))	spatial_move();
 }
 
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if !defined(_EDITOR)
 void light::get_sectors()
 {
+	if (LightingModeIsStatic()) return;
 	if(RImplementation.SectorsCount()<=1 || SpatialComponent.get() == nullptr) return;
 	xrCriticalSectionGuard guard(&sectors_lc);
 	if(0== SpatialComponent->sector)
@@ -276,11 +280,11 @@ void light::spatial_move()
 	// update spatial DB
 	ISpatialOwner::spatial_move();
 
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if !defined(_EDITOR)
 	svis.invalidate();
 	if((SpatialComponent->type&ESPATIAL_TYPE::LIGHTSOURCE)!=ESPATIAL_TYPE::NONE)
 		get_sectors();
-#endif // (RENDER==R_R2) || (RENDER==R_R4)
+#endif
 }
 
 void light::spatial_updatesector_internal()
@@ -303,7 +307,7 @@ Fvector	light::spatial_sector_point()
 }
 
 //////////////////////////////////////////////////////////////////////////
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if !defined(_EDITOR)
 // Xforms
 void	light::xform_calc			()
 {

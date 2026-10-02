@@ -4,10 +4,8 @@
 
 #pragma once
 
-#include <d3d9.h>
-
-// DXGI joke
-#define DXGI_RGBA D3DCOLORVALUE
+#include <d3d11_1.h>
+#include "../../xrCore/D3DLegacy.h"
 
 #include "../../xrEngine/stdafx.h"
 
@@ -17,11 +15,6 @@
 #include <D3DCompiler.h>
 
 #include "../xrRenderDX10/DXCommonTypes.h"
-
-#define		R_R1	1
-#define		R_R2	2
-#define		R_R4	4
-#define		RENDER	R_R4
 
 #define MU_LODS_TRUE
 #include "../xrRender/particle_core/psystem.h"

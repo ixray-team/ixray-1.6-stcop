@@ -39,15 +39,10 @@ public:
 	}
 
 	void Update()
-#ifdef USE_DX11
 	{
 	}
-#endif
 		;
 
 private:
 
-#ifndef USE_DX11
-	void	GenLUT		(D3DGAMMARAMP &G);
-#endif
 };

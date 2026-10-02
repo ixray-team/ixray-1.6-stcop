@@ -2,9 +2,7 @@
 
 
 #include "R_Backend_xform.h"
-#ifdef USE_DX11
 #include "../xrRenderDX10/dx10FixedConstants.h"
-#endif
 
 void	R_xforms::set_W			(const Fmatrix& m)
 {
@@ -16,12 +14,10 @@ void	R_xforms::set_W			(const Fmatrix& m)
 	if (c_wv)		RCache.set_c(c_wv,	m_wv);
 	if (c_wvp)		RCache.set_c(c_wvp,	m_wvp);
 	if (c_invw)		apply_invw();
-#ifdef USE_DX11
 	m_w_old.set(Fidentity);
 	m_wv_old.set(m_v_old);
 	m_wvp_old.set(m_vp_old);
 	FixedConstants::UpdateObject(m);
-#endif
 	RCache.set_xform(D3DTS_WORLD,m);
 }
 void	R_xforms::set_V			(const Fmatrix& m)
@@ -36,9 +32,7 @@ void	R_xforms::set_V			(const Fmatrix& m)
 	if (c_wvp)		RCache.set_c(c_wvp,	m_wvp);
 	if (c_invv)		apply_invv();
 	RCache.set_xform(D3DTS_VIEW,m);
-#ifdef USE_DX11
 	FixedConstants::UpdateView();
-#endif
 }
 void	R_xforms::set_P			(const Fmatrix& m)
 {
@@ -50,9 +44,7 @@ void	R_xforms::set_P			(const Fmatrix& m)
 	if (c_wvp)		RCache.set_c(c_wvp,	m_wvp);
 	// always setup projection - D3D relies on it to work correctly :(
 	RCache.set_xform(D3DTS_PROJECTION,m);
-#ifdef USE_DX11
 	FixedConstants::UpdateView();
-#endif
 }
 
 void	R_xforms::set_W_old			(const Fmatrix& m)
@@ -76,9 +68,7 @@ void	R_xforms::set_V_old			(const Fmatrix& m)
 	if (c_vp_old)		RCache.set_c(c_vp_old,	m_vp_old);
 	if (c_wv_old)		RCache.set_c(c_wv_old,	m_wv_old);
 	if (c_wvp_old)		RCache.set_c(c_wvp_old,	m_wvp_old);
-#ifdef USE_DX11
 	FixedConstants::UpdateView();
-#endif
 }
 void	R_xforms::set_P_old			(const Fmatrix& m)
 {
@@ -88,9 +78,7 @@ void	R_xforms::set_P_old			(const Fmatrix& m)
 	if (c_p_old)		RCache.set_c(c_p_old,	m_p_old);
 	if (c_vp_old)		RCache.set_c(c_vp_old,	m_vp_old);
 	if (c_wvp_old)		RCache.set_c(c_wvp_old,	m_wvp_old);
-#ifdef USE_DX11
 	FixedConstants::UpdateView();
-#endif
 }
 
 void	R_xforms::apply_invw()

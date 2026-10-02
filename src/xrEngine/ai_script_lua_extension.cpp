@@ -15,14 +15,6 @@
 #define ENGINE_BUILD
 #endif	//	XRRENDER_R4_EXPORTS
 
-#ifdef XRRENDER_R2_EXPORTS
-#define ENGINE_BUILD
-#endif	//	XRRENDER_R2_EXPORTS
-
-#ifdef XRRENDER_R1_EXPORTS
-#define ENGINE_BUILD
-#endif	//	XRRENDER_R1_EXPORTS
-
 #if !defined(ENGINE_BUILD) && !defined(_EDITOR)
 	#include "ai_space.h"
 #endif

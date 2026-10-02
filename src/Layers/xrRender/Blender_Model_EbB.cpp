@@ -3,6 +3,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "r1_blender_tex.h"
+#include "../../xrEngine/EngineAPI.h"
 
 
 #include "Blender_Model_EbB.h"
@@ -47,56 +49,13 @@ void	CBlender_Model_EbB::Load(	IReader& fs, u16 version )
 	}
 }
 
-#if RENDER==R_R1
-void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
+#include "uber_deffer.h"
+void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 {
-	IBlender::Compile		(C);
-	if (C.bEditor)	{
-		//C.PassBegin		();
-		//{
-		//	if (oBlend.value)	{ C.PassSET_ZB		(true,false);	C.PassSET_Blend_BLEND	(); }
-		//	else				{ C.PassSET_ZB		(true,true);	C.PassSET_Blend_SET		(); }
-		//	C.PassSET_LightFog	(true,true);
-		//	
-		//	// Stage1 - Env texture
-		//	C.StageBegin		();
-		//	C.StageSET_Address	(D3DTADDRESS_CLAMP);
-		//	C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,		D3DTA_DIFFUSE);
-		//	C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,		D3DTA_DIFFUSE);
-		//	C.StageSET_TMC		(oT2_Name, oT2_xform, "$null", 0);
-		//	C.StageEnd			();
-		//	
-		//	// Stage2 - Base texture
-		//	C.StageBegin		();
-		//	C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_BLENDTEXTUREALPHA,	D3DTA_CURRENT);
-		//	C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,		D3DTA_CURRENT);
-		//	C.StageSET_TMC		(oT_Name, oT_xform, "$null", 0);
-		//	C.StageEnd			();
+	IBlender::Compile(C);
 
-		//	// Stage3 - Lighting - should work on all 2tex hardware
-		//	C.StageBegin		();
-		//	C.StageSET_Color	(D3DTA_DIFFUSE,	  D3DTOP_MODULATE,			D3DTA_CURRENT);
-		//	C.StageSET_Alpha	(D3DTA_DIFFUSE,	  D3DTOP_SELECTARG2,		D3DTA_CURRENT);
-		//	C.Stage_Texture		("$null"	);
-		//	C.Stage_Matrix		("$null",	0);
-		//	C.Stage_Constant	("$null"	);
-		//	C.StageEnd			();
-		//}
-		//C.PassEnd			();
-
-		if(oBlend.value) {
-			RImplementation.addShaderOption("FORWARD_ONLY", "1");
-		}
-
-		uber_deffer(C, true, "deffer_model", "deffer_base", false, nullptr, true);
-
-		if(oBlend.value) {
-			C.PassSET_ZB(true, false);
-			C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
-		}
-
-		C.r_End();
-	} else {
+	if (LightingModeIsStatic() && !C.bEditor)
+	{
 		const char*	vsname			= nullptr;
 		const char*	psname			= nullptr;
 		switch (C.iElement)
@@ -105,43 +64,43 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 			vsname = psname =	"model_env_hq"; 
 			if (oBlend.value)	C.r_Pass	(vsname,"model_env_sl",true,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
 			else				C.r_Pass	(vsname,"model_env_sl",true);
-			C.r_Sampler			("s_base",	C.L_textures[0]);
-			C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
+			r1_tex(C, "s_base", C.L_textures[0]);
+			r1_tex(C, "s_env", oT2_Name, true);
 			C.r_End				();
 			break;
 		case SE_R1_NORMAL_HQ:	
 			vsname = psname =	"model_env_hq"; 
 			if (oBlend.value)	C.r_Pass	(vsname,psname,true,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
 			else				C.r_Pass	(vsname,psname,true);
-			C.r_Sampler			("s_base",	C.L_textures[0]);
-			C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
-			C.r_Sampler_clf		("s_lmap",	"$user$projector",true);
+			r1_tex(C, "s_base", C.L_textures[0]);
+			r1_tex(C, "s_env", oT2_Name, true);
+			r1_tex(C, "s_lmap", "$user$projector", true, true);
 			C.r_End				();
 			break;
 		case SE_R1_NORMAL_LQ:
 			vsname = psname =	"model_env_lq"; 
 			if (oBlend.value)	C.r_Pass	(vsname,psname,true,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
 			else				C.r_Pass	(vsname,psname,true);
-			C.r_Sampler			("s_base",	C.L_textures[0]);
-			C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
+			r1_tex(C, "s_base", C.L_textures[0]);
+			r1_tex(C, "s_env", oT2_Name, true);
 			C.r_End				();
 			break;
 		case SE_R1_LPOINT:
 			vsname				= "model_def_point";
 			psname				= "add_point";
 			C.r_Pass			(vsname,psname,false,true,false,true,D3DBLEND_ONE, D3DBLEND_ONE,true);
-			C.r_Sampler			("s_base",	C.L_textures[0]);
-			C.r_Sampler_clf		("s_lmap",	TEX_POINT_ATT);
-			C.r_Sampler_clf		("s_att",	TEX_POINT_ATT);
+			r1_tex(C, "s_base", C.L_textures[0]);
+			r1_tex(C, "s_lmap", TEX_POINT_ATT, true);
+			r1_tex(C, "s_att", TEX_POINT_ATT, true);
 			C.r_End				();
 			break;
 		case SE_R1_LSPOT:
 			vsname				= "model_def_spot";
 			psname				= "add_spot";
 			C.r_Pass			(vsname,psname,false,true,false,true,D3DBLEND_ONE, D3DBLEND_ONE,true);
-			C.r_Sampler			("s_base",	C.L_textures[0]);
-			C.r_Sampler_clf		("s_lmap",	"internal\\internal_light_att",		true);
-			C.r_Sampler_clf		("s_att",	TEX_SPOT_ATT);
+			r1_tex(C, "s_base", C.L_textures[0]);
+			r1_tex(C, "s_lmap", "internal\\internal_light_att", true);
+			r1_tex(C, "s_att", TEX_SPOT_ATT, true);
 			C.r_End				();
 			break;
 		case SE_R1_LMODELS:
@@ -151,51 +110,14 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 			C.r_End				();
 			break;
 		}
+	
+		return;
 	}
-}
-#elif RENDER==R_R2
-void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
-{
-	IBlender::Compile		(C);
-
-	if(oBlend.value) {
-		switch(C.iElement) {
-			case SE_R2_NORMAL_HQ:
-			case SE_R2_NORMAL_LQ:
-			{
-				uber_forward(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", false, true, 0);
-			}
-			break;
-		}
-	}
-	else {
-		// deferred
-		switch(C.iElement) {
-			case SE_R2_NORMAL_HQ: 	// deffer
-			uber_deffer(C, true, "deffer_model", "deffer_base", false, 0, true);
-			C.r_End();
-			break;
-			case SE_R2_NORMAL_LQ: 	// deffer
-			uber_deffer(C, false, "deffer_model", "deffer_base", false, 0, true);
-			C.r_End();
-			break;
-			case SE_R2_SHADOW:		// smap
-			C.r_Pass("shadow_model", "shadow_base", false);
-			C.r_Sampler("s_base", C.L_textures[0]);
-			C.r_ColorWriteEnable(false, false, false, false);
-			C.r_End();
-			break;
-		}
-	}
-}
-#else
-#include "uber_deffer.h"
-void CBlender_Model_EbB::Compile(CBlender_Compile& C)
-{
-	IBlender::Compile(C);
 
 	if (C.bEditor)
 	{
+
+
 		if (oBlend.value)
 		{
 			RImplementation.addShaderOption("FORWARD_ONLY", "1");
@@ -297,4 +219,3 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		}
 	}
 }
-#endif

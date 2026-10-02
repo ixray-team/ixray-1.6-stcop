@@ -24,10 +24,8 @@ void CRenderTarget::phase_accumulator()
 		RCache.set_ColorWriteEnable();
 	}
 
-#ifdef USE_DX11
 	// Restore viewport after shadow map rendering
 	RImplementation.rmNormal();
-#endif
 }
 
 void CRenderTarget::phase_vol_accumulator()

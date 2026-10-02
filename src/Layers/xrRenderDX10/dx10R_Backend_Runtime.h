@@ -1,7 +1,5 @@
 #pragma once
-#ifdef USE_DX11
 #include "dx10FixedConstants.h"
-#endif
 
 IC void CBackend::set_xform( u32 ID, const Fmatrix& M_ )
 {
@@ -207,9 +205,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 	GRHI->StateManager->UnmapConstants();
 	if (!C_)
 		return;
-#ifdef USE_DX11
 	FixedConstants::BindAll();
-#endif
 	{
 		ref_cbuffer* const dst[] = { m_aPixelConstants, m_aVertexConstants, m_aGeometryConstants, m_aHullConstants, m_aDomainConstants, m_aComputeConstants };
 		static const ERHI_SHADER_TYPE stage[] = { ERHI_SHADER_TYPE::PS, ERHI_SHADER_TYPE::VS, ERHI_SHADER_TYPE::GS, ERHI_SHADER_TYPE::HS, ERHI_SHADER_TYPE::DS, ERHI_SHADER_TYPE::CS };
@@ -230,9 +226,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 			default: VERIFY("Invalid enumeration");
 			}
 		}
-#ifdef USE_DX11
 		bool written = false;
-#endif
 		for (u32 s=0; s<std::size(dst); ++s)
 		{
 			for (u32 i=0; i<MaxCBuffers; ++i)
@@ -244,22 +238,18 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 					if (next[s][i])
 						constants.MarkDirty(*next[s][i]);
 
-#ifdef USE_DX11
 					if (i < FixedConstants::kSlots)
 					{
 						if (!next[s][i])
 							continue;
 						written = true;
 					}
-#endif
 					GRHI->SetConstantBuffers(i, 1, &bind, stage[s]);
 				}
 			}
 		}
-#ifdef USE_DX11
 		if (written)
 			FixedConstants::InvalidateBindings();
-#endif
 	}
 	for (RHIShaderConstant* Cs : C_->get_handlers()) Cs->handler->setup(Cs);
 }

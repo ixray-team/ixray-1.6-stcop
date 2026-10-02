@@ -24,11 +24,7 @@ void CRHIRenderViewManager::SetUnorderedAccessViews(IRHIUnorderedAccessView* pRe
 		ChangedRTorZB = true;
 	}
 
-	if (GRHI->APILevel == ERHI_API_LAYER::D3D9)
-	{
-		VERIFY(!"Unsupported");
-	}
-	else if (bForce)
+	if (bForce)
 	{
 		ApplyRenderTargetChange();
 	}
@@ -47,11 +43,7 @@ void CRHIRenderViewManager::SetRenderTargetView(IRHIRenderTargetView* pRenderTar
 		ChangedRTorZB = true;
 	}
 
-	if (GRHI->APILevel == ERHI_API_LAYER::D3D9)
-	{
-		GRHI->DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, RenderTargetViews, RenderUnorderedAccessView);
-	}
-	else if (bForce)
+	if (bForce)
 	{
 		ApplyRenderTargetChange();
 	}
@@ -70,11 +62,7 @@ void CRHIRenderViewManager::SetDepthStencilView(IRHIDepthStencilView* pDepthSten
 		ChangedRTorZB = true;
 	}
 
-	if (GRHI->APILevel == ERHI_API_LAYER::D3D9)
-	{
-		GRHI->DevicePtr->SetDSV(DepthStencilView);
-	}
-	else if (bForce)
+	if (bForce)
 	{
 		ApplyRenderTargetChange();
 	}
@@ -85,11 +73,8 @@ void CRHIRenderViewManager::ApplyRenderTargetChange()
 	if (!ChangedRTorZB)
 		return;
 
-	if (GRHI->APILevel != ERHI_API_LAYER::D3D9)
-	{
-		GRHI->DevicePtr->SetDSV(DepthStencilView);
-		GRHI->DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, RenderTargetViews, RenderUnorderedAccessView);
-	}
+	GRHI->DevicePtr->SetDSV(DepthStencilView);
+	GRHI->DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, RenderTargetViews, RenderUnorderedAccessView);
 
 	ChangedRTorZB = false;
 }

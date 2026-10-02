@@ -49,9 +49,7 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 		case ERHI_FORMAT::D24_UNORM_S8_UINT:
 		case ERHI_FORMAT::R24_UNORM_X8_TYPELESS:
 		{
-#ifdef USE_DX11
 			fmt = ERHI_FORMAT::R24G8_TYPELESS;
-#endif
 			UsageDepth = true;
 			break;
 		}
@@ -110,13 +108,11 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 			}
 		}
 
-#ifdef USE_DX11
 		if (CreationFlags & CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS)
 		{
 			desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
 			desc.MipLevels = 0;
 		}
-#endif // USE_DX11
 		if (SampleCount == 1 && CreationFlags & CRTCreationFlags::USE_UAV_FLAG)
 		{
 			desc.BindFlags |= ERHI_BIND_FLAG::UNORDERED_ACCESS;
@@ -260,7 +256,6 @@ void resptrcode_crt::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 S
 	_set(DEV->_CreateRT(Name, w, h, f, SampleCount, CreationFlags));
 }
 
-#ifdef USE_DX11
 CRTC::CRTC()
 {
 	if(pSurface) return;
@@ -373,4 +368,3 @@ void resptrcode_crtc::create(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRT
 {
 	_set(DEV->_CreateRTC(Name, size, f, CreationFlags));
 }
-#endif

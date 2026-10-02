@@ -18,14 +18,12 @@ public:
 		float trample_dirZ;
 	};
 	
-#ifdef USE_DX11
 	ref_geom			hw_Geom;
 	IRHIBuffer*			hw_VB;
 	IRHIBuffer*			hw_IB;
 
 	std::pair<IRHIBuffer*, IRHIShaderResourceView*> DetailGPUBoundBuffers[2][3];
 	virtual void	LoadGeom();
-#endif
 	
 	xr_vector<SlotItem> m_items[2][3];
 	CDetail();
