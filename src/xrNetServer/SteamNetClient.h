@@ -22,6 +22,7 @@ private:
 	bool m_bWasConnected = false;
 	bool m_bServerClient = false;
 	bool m_bGameDescriptionRecieved = false;
+	ThreadID m_hClientThread = 0;
 
 public:
 	SteamNetClient(CTimer* tm);

@@ -36,7 +36,7 @@ SteamNetClient::SteamNetClient(CTimer* tm)
 
 SteamNetClient::~SteamNetClient()
 {
-
+	DestroyConnection();
 }
 
 // -----------------------------------------------------------------------------
@@ -128,7 +128,7 @@ bool SteamNetClient::CreateConnection(ClientConnectionOptions & connectOpt)
 	m_user_pass = connectOpt.user_pass;
 
 	Msg("- [SteamNetClient] connect created");
-	thread_spawn(steam_net_update_client, "snetwork-update-client", 0, this);
+	m_hClientThread = thread_spawn(steam_net_update_client, "snetwork-update-client", 0, this);
 
 	return true;
 }
@@ -137,24 +137,32 @@ void SteamNetClient::DestroyConnection()
 {
 	Msg("- [SteamNetClient] destroy connection");
 
-	xrCriticalSectionGuard lock(&csConnection);
-
-	net_Disconnected = true;
-
-	if (m_pInterface == nullptr)
 	{
-		return;
+		xrCriticalSectionGuard lock(&csConnection);
+
+		net_Disconnected = true;
+
+		if (m_pInterface == nullptr)
+		{
+			return;
+		}
+
+		if (m_hConnection != k_HSteamNetConnection_Invalid)
+		{
+			m_pInterface->CloseConnection(m_hConnection, 0, nullptr, false);
+			m_hConnection = k_HSteamNetConnection_Invalid;
+		}
+		m_pInterface = nullptr;
+
+		m_user_name.clear();
+		m_user_pass.clear();
 	}
 
-	if (m_hConnection != k_HSteamNetConnection_Invalid)
+	if (m_hClientThread)
 	{
-		m_pInterface->CloseConnection(m_hConnection, 0, nullptr, false);
-		m_hConnection = k_HSteamNetConnection_Invalid;
+		Platform::JoinThread(m_hClientThread);
+		m_hClientThread = 0;
 	}
-	m_pInterface = nullptr;
-
-	m_user_name.clear();
-	m_user_pass.clear();
 
 	// if no server client
 	if (!m_bServerClient)
