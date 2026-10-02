@@ -3,6 +3,7 @@
 #include "SVGStorage.h"
 
 #include "dxDebugRender.h"
+#include "StateManager/dx10SamplerStateCache.h"
 
 #include "ResourceManager.h"
 extern ENGINE_API u32 ps_render_scale_preset;
@@ -94,6 +95,7 @@ void dxRenderDeviceRender::ValidateHW()
 void dxRenderDeviceRender::DestroyHW()
 {
 	xr_delete(Resources);
+	SSManager.ClearStateArray();
 	CImGuiManager::Instance().Destroy(true);
 }
 

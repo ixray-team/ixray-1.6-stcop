@@ -4,7 +4,6 @@
 struct 	v2p
 {
  	float2 	tc0: 		TEXCOORD0;	// base
- 	float3 	tc1: 		TEXCOORD1;	// environment
   	float4	c0:			COLOR0;		// sun.(fog*fog)
 };
 

@@ -29,7 +29,7 @@ void xrCriticalSection::Enter()
 #elifdef IXR_LINUX
 	pthread_mutex_lock(&pmutex);
 #else
-    pmutex.lock();
+	pmutex.lock();
 #endif
 }
 
@@ -40,7 +40,7 @@ void xrCriticalSection::Leave()
 #elifdef IXR_LINUX
 	pthread_mutex_unlock(&pmutex);
 #else
-    pmutex.unlock();
+	pmutex.unlock();
 #endif
 }
 
@@ -77,7 +77,7 @@ xrCriticalSectionGuard::~xrCriticalSectionGuard()
 xrSRWLock::xrSRWLock()
 {
 #ifdef IXR_WINDOWS
-    InitializeSRWLock(&smutex);
+	InitializeSRWLock(&smutex);
 #elifdef IXR_LINUX
 	pthread_rwlock_init(&smutex, nullptr);
 #endif
@@ -95,44 +95,44 @@ xrSRWLock::~xrSRWLock() = default;
 void xrSRWLock::AcquireExclusive()
 {
 #ifdef IXR_WINDOWS
-    AcquireSRWLockExclusive(&smutex);
+	AcquireSRWLockExclusive(&smutex);
 #elifdef IXR_LINUX
 	pthread_rwlock_wrlock(&smutex);
 #else
-    smutex.lock();
+	smutex.lock();
 #endif
 }
 
 void xrSRWLock::ReleaseExclusive()
 {
 #ifdef IXR_WINDOWS
-    ReleaseSRWLockExclusive(&smutex);
+	ReleaseSRWLockExclusive(&smutex);
 #elifdef IXR_LINUX
 	pthread_rwlock_unlock(&smutex);
 #else
-    smutex.unlock();
+	smutex.unlock();
 #endif
 }
 
 void xrSRWLock::AcquireShared()
 {
 #ifdef IXR_WINDOWS
-    AcquireSRWLockShared(&smutex);
+	AcquireSRWLockShared(&smutex);
 #elifdef IXR_LINUX
 	pthread_rwlock_rdlock(&smutex);
 #else
-    smutex.lock_shared();
+	smutex.lock_shared();
 #endif
 }
 
 void xrSRWLock::ReleaseShared()
 {
 #ifdef IXR_WINDOWS
-    ReleaseSRWLockShared(&smutex);
+	ReleaseSRWLockShared(&smutex);
 #elifdef IXR_LINUX
 	pthread_rwlock_unlock(&smutex);
 #else
-    smutex.unlock_shared();
+	smutex.unlock_shared();
 #endif
 }
 
@@ -160,27 +160,27 @@ bool xrSRWLock::TryAcquireShared()
 
 
 xrSRWLockGuard::xrSRWLockGuard(xrSRWLock* lock, bool shared)
-    : lock(lock), shared(shared)
+	: lock(lock), shared(shared)
 {
-    if (shared)
-        lock->AcquireShared();
-    else
-        lock->AcquireExclusive();
+	if (shared)
+		lock->AcquireShared();
+	else
+		lock->AcquireExclusive();
 }
 
 xrSRWLockGuard::xrSRWLockGuard(xrSRWLock& lock, bool shared)
-    : lock(&lock), shared(shared)
+	: lock(&lock), shared(shared)
 {
-    if (shared)
-        lock.AcquireShared();
-    else
-        lock.AcquireExclusive();
+	if (shared)
+		lock.AcquireShared();
+	else
+		lock.AcquireExclusive();
 }
 
 xrSRWLockGuard::~xrSRWLockGuard()
 {
-    if (shared)
-        lock->ReleaseShared();
-    else
-        lock->ReleaseExclusive();
+	if (shared)
+		lock->ReleaseShared();
+	else
+		lock->ReleaseExclusive();
 }

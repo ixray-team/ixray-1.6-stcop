@@ -933,7 +933,4 @@
 	<string id="ui_mm_confirm_changes">
 		<text>Vuoi applicare le modifiche? Le impostazioni precedenti saranno ripristinate in</text>
 	</string>
-    <string id="ui_mm_graphics_api">
-        <text>Graphics API</text>
-    </string>
 </string_table>

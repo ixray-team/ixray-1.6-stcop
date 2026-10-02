@@ -186,7 +186,7 @@ void main(p_bumped_new I, out IXRayForward O)
 		O.Velocity.zw = saturate(O.Color.w * 2.0f - 1.0f);
 	#endif
 	
-	#ifdef ALLOW_WBOIT_TRANSPARENCY
+	#ifdef USE_WBOIT_TRANSPARENCY
 		WboitBufferPack(O, PojectedPos);
 	#endif
 #endif

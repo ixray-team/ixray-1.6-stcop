@@ -4,9 +4,10 @@
 
 struct v2p
 {
-    float2 tc0: TEXCOORD0;
-    float3 tc1: TEXCOORD1;
-    float4 c0: COLOR0;
+    float2 tc0 : TEXCOORD0;
+    float4 c0 : COLOR0;
+    float4 hpos : SV_POSITION;
+    float fog : FOG;
 };
 
 float parralax_fade(in float2 tc, in float3 Point)
@@ -37,7 +38,7 @@ float parralax_fade(in float2 tc, in float3 Point)
 	return min(fade, smoothstep(19.8, 18.0, length(tc.xy - 0.5)));
 }
 
-void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
+void main(v2p I, out IXRayForward O)
 {
 	O = (IXRayForward)0;
     if (m_hud_params.y * m_hud_params.a < 0.0001f)
@@ -45,7 +46,7 @@ void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
 		discard;
 	}
 
-	float3 Point = GbufferGetPointRealJitter(pos2d.xy * pos_decompression_params2.zw, pos2d.z);
+	float3 Point = GbufferGetPointRealJitter(I.hpos.xy * pos_decompression_params2.zw, I.hpos.z);
 	float Fade = parralax_fade(I.tc0, Point);
 
     float2 coords = I.tc0;
@@ -59,7 +60,7 @@ void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
     t_base = lerp(base2, t_base, m_zoom_deviation.z);
 	t_base.xyz = detonemap(t_base.xyz);
 	
-    float4 t_vp2 = s_image[pos2d.xy];
+    float4 t_vp2 = s_image[I.hpos.xy];
 	
 	t_vp2.xyz = ApplyScopeUI(t_vp2.xyz, pos2d.xy);
 

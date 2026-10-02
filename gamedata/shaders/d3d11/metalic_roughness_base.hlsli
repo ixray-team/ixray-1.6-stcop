@@ -119,10 +119,14 @@ struct IXRayForward
 	
 #ifndef DISABLE_MOTION_VECTORS
     float4 Velocity : SV_Target1;
-	
+#endif
+
+#ifdef USE_WBOIT_TRANSPARENCY
+#ifndef DISABLE_MOTION_VECTORS
     float Reactive : SV_Target2;
 #else
     float Reactive : SV_Target1;
+#endif
 #endif
 };
 
@@ -175,6 +179,7 @@ inline float3 NormalDecode(float2 InNormal)
     return normalize(Normal);
 }
 
+#ifdef USE_WBOIT_TRANSPARENCY
 inline void WboitBufferPack(inout IXRayForward O, in float3 Point)
 {
 	O.Reactive = 1.0f - O.Color.w;
@@ -182,6 +187,7 @@ inline void WboitBufferPack(inout IXRayForward O, in float3 Point)
 	O.Color.w = O.Color.w * O.Color.w * clamp(40.0f * rcp(1e-5 + dot(Point, Point)), 0.001, 3000);
 	O.Color.xyz = O.Color.xzy * O.Color.w;
 }
+#endif
 
 inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 {

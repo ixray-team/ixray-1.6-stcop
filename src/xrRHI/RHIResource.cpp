@@ -20,7 +20,12 @@ u32 RHIObject::Release()
     {
         return remaining;
     }
-    _release(resource);
+    // Renderer statics run from DllMain after CRHI is destroyed. Their
+    // deleters retire GPU objects and would enter a destroyed context lock.
+    if (GRHI)
+    {
+        _release(resource);
+    }
     auto self = this;
     xr_delete(self);
     return 0;

@@ -933,7 +933,4 @@
 	<string id="ui_mm_confirm_changes">
 		<text>Zastosowaæ wprowadzone zmiany? Wszystkie zmiany bêd¹ anulowane za</text>
 	</string>
-    <string id="ui_mm_graphics_api">
-        <text>Graphics API</text>
-    </string>
 </string_table>
