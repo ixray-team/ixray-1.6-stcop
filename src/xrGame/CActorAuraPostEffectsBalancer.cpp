@@ -72,6 +72,7 @@ xr_map<EAuraPostEffectType, u32> CActorAuraPostEffectsBalancer::smax_playing =
 	{EAuraPostEffectType::Radiation,	2},
 	{EAuraPostEffectType::Psi,		2},
 	{EAuraPostEffectType::Chemical,	2},
+	{EAuraPostEffectType::Gravity,		2},
 };
 
 bool CActorAuraPostEffectsBalancer::SAuraEffectKey::operator<(const SAuraEffectKey& other) const
@@ -328,14 +329,15 @@ void CActorAuraPostEffectsBalancer::spawn_instance(const SAuraRunningKey& key, c
 
 	inst.pp_slot_id = (u32)actor->Cameras().RequestPPEffectorId();
 
-	if (pSettings->line_exist(section, "pp_eff_name"))
+	if (pSettings->line_exist(section, "pp_eff_name") || pSettings->line_exist(section, "ppe_file"))
 	{
+		const char* filename_key = pSettings->line_exist(section, "pp_eff_name") ? "pp_eff_name" : "ppe_file";
 		CPostprocessAnimatorLerp* pp	= new CPostprocessAnimatorLerp();
 		pp->SetType						((EEffectorPPType)inst.pp_slot_id);
-		pp->SetCyclic					(!!pSettings->r_bool(section, "pp_eff_cyclic"));
+		pp->SetCyclic					(READ_IF_EXISTS(pSettings, r_bool, section, "pp_eff_cyclic", true));
 		pp->bOverlap					= READ_IF_EXISTS(pSettings, r_bool, section, "pp_eff_overlap", true);
 		pp->SetFactorFunc				(GET_KOEFF_FUNC(&inst, &SRunningInstance::get_factor));
-		pp->Load						(pSettings->r_string(section, "pp_eff_name"));
+		pp->Load						(pSettings->r_string(section, filename_key));
 		inst.effector = actor->Cameras().AddPPEffector(pp);
 	}
 	else if (pSettings->line_exist(section, "duality_h"))
