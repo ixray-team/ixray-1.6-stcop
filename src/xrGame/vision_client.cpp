@@ -64,7 +64,10 @@ void vision_client::eye_pp_s2					()
 	u32							dwTime = Device.dwTimeGlobal;
 	u32							dwDT = dwTime - m_time_stamp;
 	m_time_stamp				= dwTime;
-	feel_vision_update			(m_position,float(dwDT)/1000.f,visual().transparency_threshold());
+	Device.SecondaryTasks.run([=]()
+	{
+		feel_vision_update(m_position, float(dwDT)/1000.f, visual().transparency_threshold());
+	});
 
 	Device.Statistic->AI_Vis_RayTests.End	();
 }
