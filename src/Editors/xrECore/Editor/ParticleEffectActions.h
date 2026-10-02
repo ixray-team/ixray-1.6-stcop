@@ -71,7 +71,7 @@ struct ECORE_API PDomain
 public:
 	PAPI::PDomainEnum	type;
     union{
-		float	f[9];
+		float	f[9] = {};
         Fvector	v[3];  
     };
     enum EType{
@@ -89,7 +89,7 @@ public:
 protected:
 	void  OnTypeChange(PropValue* sender);
 public:
-	PDomain 	(){}
+	PDomain 	() = default;
 	PDomain		(EType et, bool renderable, u32 color=0x00000000, PAPI::PDomainEnum type = PAPI::PDPoint,	
     												float inA0 = 0.0f,	float inA1 = 0.0f,	float inA2 = 0.0f,
 													float inA3 = 0.0f,	float inA4 = 0.0f,	float inA5 = 0.0f,

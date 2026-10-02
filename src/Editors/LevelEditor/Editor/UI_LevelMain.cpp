@@ -1540,7 +1540,7 @@ void CLevelMain::SetStatus(const char* s, bool bOutLog)
 		ELog.Msg(mtInformation, s);
 	}
 
-	EContext.UI->ProgressStatusName = s;
+	EContext.UI->ProgressStatusName = s ? s : "";
 }
 
 void CLevelMain::RealQuit()

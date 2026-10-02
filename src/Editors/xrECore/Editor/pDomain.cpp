@@ -45,9 +45,7 @@ PDomain::PDomain(const PDomain& inDomain)
 	f[8]	= inDomain.f[8];
 }
 
-PDomain::~PDomain()
-{
-}
+PDomain::~PDomain() = default;
 
 void PDomain::Load(IReader& F)
 {

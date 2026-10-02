@@ -1701,7 +1701,7 @@ public:
 			char  name[1024];
 			float f;
 			if (sscanf(arguments, "%1023s %f", name, &f) == 2)
-			ai_dbg::set_var(name, f);
+				ai_dbg::set_var(name, f);
 		}
 
 	}

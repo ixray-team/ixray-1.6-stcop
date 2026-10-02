@@ -1269,7 +1269,7 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	else 
 	{
 		ImGui::ImageButton(FilePath.xfilename().c_str(), Icons["multi"].Icon->get_SRView()->GetRawSRV(), BtnSize);
-		ImGui::Text("%d objects", SelectedObjects.size());
+		ImGui::Text("%zu objects", SelectedObjects.size());
 	}
 	
 	ImGui::EndDragDropSource();

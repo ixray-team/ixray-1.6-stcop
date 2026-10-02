@@ -202,7 +202,7 @@ void TClipMaker::RepaintClips(bool)
 
     // set BP name                   
     CPartition* P = RenderObject->m_Partition;
-    for (u16 k = 0; k < MAX_PARTS; ++k)
+    for (size_t k = 0; k < std::size(bp_names); ++k)
         bp_names[k] = (P->part(k).Name.size()) ? P->part(k).Name.c_str() : "-";
 
     UpdateProperties();

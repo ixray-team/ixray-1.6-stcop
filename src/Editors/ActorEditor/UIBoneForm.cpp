@@ -24,11 +24,11 @@ void UIBoneForm::Draw()
     }
     else
     {
-        ImGui::Text("Total bone:%d", m_EditObject->m_Bones.size());
+        ImGui::Text("Total bone:%zu", m_EditObject->m_Bones.size());
         {
             ImGui::BeginChild("Part1", ImVec2(300, 300));
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Part #1:(%d B)", m_List[0].size());
+            ImGui::Text("Part #1:(%zu B)", m_List[0].size());
             ImGui::SameLine();
             ImGui::SetNextItemWidth(-50);
             ImGui::InputText("##name", m_Name[0], sizeof(m_Name[0]));
@@ -51,7 +51,7 @@ void UIBoneForm::Draw()
         {
             ImGui::BeginChild("Part2", ImVec2(300, 300));
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Part #2:(%d B)", m_List[1].size());
+            ImGui::Text("Part #2:(%zu B)", m_List[1].size());
             ImGui::SameLine();
             ImGui::SetNextItemWidth(-50);
             ImGui::InputText("##name", m_Name[1], sizeof(m_Name[1]));
@@ -74,7 +74,7 @@ void UIBoneForm::Draw()
         {
             ImGui::BeginChild("Part3", ImVec2(300, 300));
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Part #3:(%d B)", m_List[2].size());
+            ImGui::Text("Part #3:(%zu B)", m_List[2].size());
             ImGui::SameLine();
             ImGui::SetNextItemWidth(-50);
             ImGui::InputText("##name", m_Name[2], sizeof(m_Name[2]));
@@ -97,7 +97,7 @@ void UIBoneForm::Draw()
         {
             ImGui::BeginChild("Part4", ImVec2(300, 300));
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Part #4:(%d B)", m_List[3].size());
+            ImGui::Text("Part #4:(%zu B)", m_List[3].size());
             ImGui::SameLine();
             ImGui::SetNextItemWidth(-50);
             ImGui::InputText("##name", m_Name[3], sizeof(m_Name[3]));

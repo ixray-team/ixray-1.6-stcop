@@ -22,7 +22,7 @@ public:
 public:
 	pointer					address(reference _Val) const { return (&_Val); }
 	const_pointer			address(const_reference _Val) const { return (&_Val); }
-	doug_lea_alloc() {	}
+	doug_lea_alloc() = default;
 	doug_lea_alloc(const doug_lea_alloc<T>&) {	}
 	template<class _Other>							doug_lea_alloc(const doug_lea_alloc<_Other>&) {	}
 	template<class _Other>	doug_lea_alloc<T>& operator=		(const doug_lea_alloc<_Other>&) { return (*this); }

@@ -165,7 +165,7 @@ void ESceneLightTool::FillProp(const char* pref, PropItemVec& items)
     V->OnChangeEvent.bind(this, &ESceneLightTool::OnLightSunChanged);
 	// light controls
 	PHelper().CreateFlag32	(items, PrepareKey(pref,"Controls\\Draw Name"),			&m_Flags,			flShowControlName);
-	PHelper().CreateCaption	(items,PrepareKey(pref,"Controls\\Count"),				shared_str().printf("%d",lcontrols.size()));
+	PHelper().CreateCaption	(items,PrepareKey(pref,"Controls\\Count"),				shared_str().printf("%zu",lcontrols.size()));
 //	B=PHelper().CreateButton(items,PHelper().PrepareKey(pref,"Controls\\Edit"),	"Append",	ButtonValue::flFirstOnly);
 //	B->OnBtnClickEvent	= OnControlAppendClick;
 	RTokenVecIt		_I 	= lcontrols.begin();
