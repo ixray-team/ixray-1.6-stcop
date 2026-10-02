@@ -123,13 +123,13 @@ void SceneBuilder::SaveBuildAsObject()
 		b_texture_real&	t 		= l_textures[m.surfidx];
 		_splitpath			(t.name, 0, tex_path, tex_name, 0 );
 
-		sprintf				(tmp,"newmtl %s", tex_name);
+		xr_sprintf				(tmp,"newmtl %s", tex_name);
 		Fm->w_string		(tmp);
 		Fm->w_string		("Ka  0 0 0");
 		Fm->w_string		("Kd  1 1 1");
 		Fm->w_string		("Ks  0 0 0");
 
-		sprintf				(tmp,"map_Kd %s\\\\%s\\%s%s\n",
+		xr_sprintf				(tmp,"map_Kd %s\\\\%s\\%s%s\n",
 											"T:",
 											tex_path,
 											tex_name,
@@ -144,7 +144,7 @@ void SceneBuilder::SaveBuildAsObject()
 	// writ comment
 	F->w_string				("# This file uses meters as units for non-parametric coordinates.");
 	_splitpath				(fn.c_str(), 0, 0, tex_name, 0 );
-	sprintf					(tmp,"mtllib %s.mtl", tex_name);
+	xr_sprintf					(tmp,"mtllib %s.mtl", tex_name);
 	F->w_string				(tmp);
 
 	F->w_string				("g default");
@@ -156,7 +156,7 @@ void SceneBuilder::SaveBuildAsObject()
 	for(idx=0; idx<l_vert_it; ++idx)
 	{
 		const b_vertex& it	= l_verts[idx];
-		sprintf				(tmp,"v %f %f %f",it.x*100.0f, it.y*100.0f, it.z*100.0f);
+		xr_sprintf				(tmp,"v %f %f %f",it.x*100.0f, it.y*100.0f, it.z*100.0f);
 		F->w_string			(tmp);
 
 	}
@@ -165,11 +165,11 @@ void SceneBuilder::SaveBuildAsObject()
 	for(idx=0; idx<l_face_it; ++idx)
 	{
 		const b_face& it	= l_faces[idx];
-		sprintf				(tmp,"vt %f %f", it.t[0].x, /*_abs*/(1.f-it.t[0].y));
+		xr_sprintf				(tmp,"vt %f %f", it.t[0].x, /*_abs*/(1.f-it.t[0].y));
 		tmpFaces.w_string	(tmp);
-		sprintf				(tmp,"vt %f %f", it.t[1].x, /*_abs*/(1.f-it.t[1].y));
+		xr_sprintf				(tmp,"vt %f %f", it.t[1].x, /*_abs*/(1.f-it.t[1].y));
 		tmpFaces.w_string	(tmp);
-		sprintf				(tmp,"vt %f %f", it.t[2].x, /*_abs*/(1.f-it.t[2].y));
+		xr_sprintf				(tmp,"vt %f %f", it.t[2].x, /*_abs*/(1.f-it.t[2].y));
 		tmpFaces.w_string	(tmp);
 	}
 	total_tcs				+= idx*3;
@@ -185,12 +185,12 @@ void SceneBuilder::SaveBuildAsObject()
 		if(last_texture != &t)
 		{
 			_splitpath			(t.name, 0, 0, tex_name, 0 );
-			sprintf				(tmp,"usemtl %s", tex_name);
+			xr_sprintf				(tmp,"usemtl %s", tex_name);
 			tmpFaces.w_string	(tmp);
 			last_texture 		= &t;
 		}
 
-		sprintf				(tmp,"f %d/%d %d/%d %d/%d", it.v[0]+1, idx*3+1,
+		xr_sprintf				(tmp,"f %d/%d %d/%d %d/%d", it.v[0]+1, idx*3+1,
 														it.v[1]+1, idx*3+2,
 														it.v[2]+1, idx*3+3);
 		tmpFaces.w_string	(tmp);
@@ -204,18 +204,18 @@ void SceneBuilder::SaveBuildAsObject()
 		for(u32 vi=0; vi<m.m_iVertexCount; ++vi)
 		{
 			const b_vertex& it	= m.m_pVertices[vi];
-			sprintf				(tmp,"v %f %f %f",it.x*100.0f, it.y*100.0f, it.z*100.0f);
+			xr_sprintf				(tmp,"v %f %f %f",it.x*100.0f, it.y*100.0f, it.z*100.0f);
 			F->w_string			(tmp);
 		}
 		//TC-s
 		for(u32 fi=0; fi<m.m_iFaceCount; ++fi)
 		{
 			const b_face& it	= m.m_pFaces[fi];
-			sprintf				(tmp,"vt %f %f", it.t[0].x, /*_abs*/(1.f-it.t[0].y));
+			xr_sprintf				(tmp,"vt %f %f", it.t[0].x, /*_abs*/(1.f-it.t[0].y));
 			tmpFaces.w_string	(tmp);
-			sprintf				(tmp,"vt %f %f", it.t[1].x, /*_abs*/(1.f-it.t[1].y));
+			xr_sprintf				(tmp,"vt %f %f", it.t[1].x, /*_abs*/(1.f-it.t[1].y));
 			tmpFaces.w_string	(tmp);
-			sprintf				(tmp,"vt %f %f", it.t[2].x, /*_abs*/(1.f-it.t[2].y));
+			xr_sprintf				(tmp,"vt %f %f", it.t[2].x, /*_abs*/(1.f-it.t[2].y));
 			tmpFaces.w_string	(tmp);
 		}
 		//faces
@@ -228,15 +228,15 @@ void SceneBuilder::SaveBuildAsObject()
 			if(last_texture != &t)
 			{
 				_splitpath			(t.name, 0, 0, tex_name, 0 );
-				sprintf				(tmp,"usemtl %s", tex_name);
+				xr_sprintf				(tmp,"usemtl %s", tex_name);
 				tmpFaces.w_string	(tmp);
 				last_texture 		= &t;
 			}
-			sprintf			(tmp,"f %d/%d %d/%d %d/%d", it.v[0]+1+total_vertices, fi*3+1+total_tcs,
+			xr_sprintf			(tmp,"f %d/%d %d/%d %d/%d", it.v[0]+1+total_vertices, fi*3+1+total_tcs,
 														it.v[1]+1+total_vertices, fi*3+2+total_tcs,
 														it.v[2]+1+total_vertices, fi*3+3+total_tcs);
 /*
-			sprintf				(tmp,"f %d %d %d",	it.v[0]+1+total_vertices,
+			xr_sprintf				(tmp,"f %d %d %d",	it.v[0]+1+total_vertices,
 													it.v[1]+1+total_vertices,
 													it.v[2]+1+total_vertices );
 */
@@ -248,16 +248,16 @@ void SceneBuilder::SaveBuildAsObject()
 	F->w(tmpFaces.pointer(),tmpFaces.size());
 
 	//uv
-//                sprintf			(tmp,"vt %f %f",v_it->UV.x,_abs(1.f-v_it->UV.y));		F.w_string	(tmp);
+//                xr_sprintf			(tmp,"vt %f %f",v_it->UV.x,_abs(1.f-v_it->UV.y));		F.w_string	(tmp);
 
 	//normals
-//                sprintf			(tmp,"vn %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
+//                xr_sprintf			(tmp,"vn %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
 
 	//g
-//                sprintf			(tmp,"vg %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
+//                xr_sprintf			(tmp,"vg %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
 
 	//b
-//                sprintf			(tmp,"vb %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
+//                xr_sprintf			(tmp,"vb %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
 
 
 
@@ -268,23 +268,23 @@ void SceneBuilder::SaveBuildAsObject()
 	for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++)
 	{
 		_splitpath			((*split_it)->m_Surf->m_Texture.c_str(), 0, 0, tex_name, 0 );
-		sprintf				(tmp,"newmtl %s",tex_name);
+		xr_sprintf				(tmp,"newmtl %s",tex_name);
 		F.w_string			(tmp);
 
 		_splitpath			((*split_it)->m_Surf->m_Texture.c_str(), 0, tex_path, tex_name, 0 );
 		strconcat			(sizeof(tex_path),tex_path,tex_path,"\\",tex_name,".tga");
-		sprintf				(tmp,"map_Kd %s",tex_path);
+		xr_sprintf				(tmp,"map_Kd %s",tex_path);
 		F.w_string	(tmp);
 	}
-	sprintf					(tmp,"mtllib %s",name);
+	xr_sprintf					(tmp,"mtllib %s",name);
 	F.w_string				(tmp);
 
 	// write mtl
 	u32 v_offs				= 0;
 	for (split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++){
 		_splitpath			((*split_it)->m_Surf->m_Texture.c_str(), 0, 0, tex_name, 0 );
-		sprintf				(tmp,"g %d",split_it-m_Splits.begin());				F.w_string	(tmp);
-		sprintf				(tmp,"usemtl %s",tex_name);							F.w_string	(tmp);
+		xr_sprintf				(tmp,"g %d",split_it-m_Splits.begin());				F.w_string	(tmp);
+		xr_sprintf				(tmp,"usemtl %s",tex_name);							F.w_string	(tmp);
 		Fvector 			mV;
 		Fmatrix 			mZ;
 		mZ.mirrorZ			();
@@ -295,28 +295,28 @@ void SceneBuilder::SaveBuildAsObject()
 			OGFVertIt 			v_it;
 			for (v_it=VERTS.begin(); v_it!=VERTS.end(); v_it++){
 				mZ.transform_tiny(mV,v_it->P);
-				sprintf			(tmp,"v %f %f %f",mV.x,mV.y,mV.z); 		F.w_string	(tmp);
+				xr_sprintf			(tmp,"v %f %f %f",mV.x,mV.y,mV.z); 		F.w_string	(tmp);
 			}
 			for (v_it=VERTS.begin(); v_it!=VERTS.end(); v_it++){
-				sprintf			(tmp,"vt %f %f",v_it->UV.x,_abs(1.f-v_it->UV.y));		F.w_string	(tmp);
+				xr_sprintf			(tmp,"vt %f %f",v_it->UV.x,_abs(1.f-v_it->UV.y));		F.w_string	(tmp);
 			}
 			for (v_it=VERTS.begin(); v_it!=VERTS.end(); v_it++){
 				mZ.transform_dir(mV,v_it->N);
-				sprintf			(tmp,"vn %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
+				xr_sprintf			(tmp,"vn %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
 			}
 			for (v_it=VERTS.begin(); v_it!=VERTS.end(); v_it++){
 				mZ.transform_dir(mV,v_it->T);
-				sprintf			(tmp,"vg %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
+				xr_sprintf			(tmp,"vg %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
 			}
 			for (v_it=VERTS.begin(); v_it!=VERTS.end(); v_it++){
 				mZ.transform_dir(mV,v_it->B);
-				sprintf			(tmp,"vb %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
+				xr_sprintf			(tmp,"vb %f %f %f",mV.x,mV.y,mV.z);		F.w_string	(tmp);
 			}
 			// faces
 			OGFFaceVec& FACES	= part->getV_Faces();
 			OGFFaceIt 			f_it;
 			for (f_it=FACES.begin(); f_it!=FACES.end(); f_it++){
-				sprintf			(tmp,"f %d/%d/%d %d/%d/%d %d/%d/%d",v_offs+f_it->v[2]+1,v_offs+f_it->v[2]+1,v_offs+f_it->v[2]+1,
+				xr_sprintf			(tmp,"f %d/%d/%d %d/%d/%d %d/%d/%d",v_offs+f_it->v[2]+1,v_offs+f_it->v[2]+1,v_offs+f_it->v[2]+1,
 																	v_offs+f_it->v[1]+1,v_offs+f_it->v[1]+1,v_offs+f_it->v[1]+1,
 																	v_offs+f_it->v[0]+1,v_offs+f_it->v[0]+1,v_offs+f_it->v[0]+1); 	F.w_string	(tmp);
 			}

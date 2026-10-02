@@ -19,7 +19,6 @@ void UIMoveToCamera::Draw()
 		| ImGuiWindowFlags_NoSavedSettings
 		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoCollapse
-		| ImGuiWindowFlags_NoSavedSettings
 	))
 	{
 		ImGui::InputFloat3("XYZ", &NewCameraPosition.x, "%0.1f");

@@ -231,7 +231,7 @@ bool CSceneObject::SpherePick(const Fvector& center, float radius)
 
 bool CSceneObject::RayPick(float& dist, const Fvector& S, const Fvector& D, SRayPickInfo* pinf)
 {
-	if (!IsLoaded && !pinf->IsForcePickup)
+	if (!IsLoaded && (!pinf || !pinf->IsForcePickup))
 		return false;
 
 	if (!m_pReference) return false;
@@ -469,11 +469,10 @@ void CSceneObject::OnShowHint(AStringVec& dest)
 			if (gm_id != GAMEMTL_NONE_ID)
 			{
 				SGameMtl* mtl = GameMaterialLibraryEditors->GetMaterialByID(gm_id);
-				string256 Data = {};
-				sprintf(Data, "Occlusion Factor: %3.2f", mtl->fSndOcclusionFactor);
-
 				if (mtl)
 				{
+					string256 Data = {};
+					xr_sprintf(Data, "Occlusion Factor: %3.2f", mtl->fSndOcclusionFactor);
 					dest.push_back(Data);
 				}
 			}

@@ -84,7 +84,7 @@ void ParseParam(xr_string sp, CCommandVar& res)
 	if (!sp.empty()){
 		u32 rs=0,ip=0;
 		if (nullptr==strstr(sp.c_str(),"\""))
-			rs			= sscanf(sp.c_str(),"%d",&ip); 
+			rs			= sscanf(sp.c_str(),"%u",&ip);
 		if (1!=rs){
 			_GetItem(sp.c_str(),1,sp,'\"');
 			if (!sp.empty()) res = sp;
@@ -165,7 +165,7 @@ bool LoadShortcuts(nlohmann::json& Data)
 						continue;
 				}
 				std::string val = Data["shortcuts"][nm];
-				int res = sscanf(val.data(), "%d,%s", &SUB->shortcut.hotkey, tmp);
+				int res = sscanf(val.data(), "%hu,%255s", &SUB->shortcut.hotkey, tmp);
 
 				if (2 == res) 
 				{

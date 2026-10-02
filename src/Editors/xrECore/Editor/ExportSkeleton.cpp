@@ -736,7 +736,7 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 				std::sort(split.m_UsedBones.begin(), split.m_UsedBones.end());
 				U16It ne = std::unique(split.m_UsedBones.begin(), split.m_UsedBones.end());
 				split.m_UsedBones.erase(ne, split.m_UsedBones.end());
-				Msg(" - Split %d: [Bones: %d, Links: %d, Faces: %d, Verts: %d, BrPart: %d, Shader/Texture: '%s'/'%s']", k, split.m_UsedBones.size(), split.m_SkeletonLinkType, split.m_Faces.size(), split.m_Verts.size(), split.m_PartID, *m_Splits[k].m_Shader, *m_Splits[k].m_Texture);
+				Msg(" - Split %d: [Bones: %zu, Links: %d, Faces: %zu, Verts: %zu, BrPart: %d, Shader/Texture: '%s'/'%s']", k, split.m_UsedBones.size(), split.m_SkeletonLinkType, split.m_Faces.size(), split.m_Verts.size(), split.m_PartID, *m_Splits[k].m_Shader, *m_Splits[k].m_Texture);
 			}
 		}
 	}

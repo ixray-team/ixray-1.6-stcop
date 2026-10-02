@@ -7,7 +7,7 @@ bool EScene::BuildSpawn()
 	{
 		if (!BuildCForm())
 		{
-			ELog.DlgMsg(mtError, mbOK, "CForm is empty!\Check log.");
+			ELog.DlgMsg(mtError, mbOK, "CForm is empty!\nCheck log.");
 			return false;
 		}
 	}
@@ -15,7 +15,7 @@ bool EScene::BuildSpawn()
 	{
 		if (!BuildAIMap())
 		{
-			ELog.DlgMsg(mtError, mbOK, "AI-Map is empty!\Check log.");
+			ELog.DlgMsg(mtError, mbOK, "AI-Map is empty!\nCheck log.");
 			return false;
 		}
 	}
@@ -23,7 +23,7 @@ bool EScene::BuildSpawn()
 	{
 		if (!BuildGameGraph())
 		{
-			ELog.DlgMsg(mtError, mbOK, "Game Graph is empty!\Check log.");
+			ELog.DlgMsg(mtError, mbOK, "Game Graph is empty!\nCheck log.");
 			return false;
 		}
 	}

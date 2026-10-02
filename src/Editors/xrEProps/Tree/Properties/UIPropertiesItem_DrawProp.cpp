@@ -667,11 +667,11 @@ void UIPropertiesItem::DrawProp()
 				ImGui::PopStyleColor();
 				ImGui::PopStyleVar();
 			}
-			if (ImGui::OpenPopupOnItemClick2("EditText", 0))
+			if (V && ImGui::OpenPopupOnItemClick2("EditText", 0))
 			{
 				if (PropertiesFrom->m_EditTextValueData)
 				{
-					xr_delete(PropertiesFrom->m_EditTextValueData);
+					xr_free(PropertiesFrom->m_EditTextValueData);
 				}
 				PropertiesFrom->m_EditTextValueData = xr_strdup(V->GetValue());
 				PropertiesFrom->m_EditTextValueDataSize = xr_strlen(PropertiesFrom->m_EditTextValueData)+1;
@@ -747,11 +747,11 @@ void UIPropertiesItem::DrawProp()
 					}
 				}
 			}
-			if (ImGui::OpenPopupOnItemClick2("EditText", 0))
+			if (V && ImGui::OpenPopupOnItemClick2("EditText", 0))
 			{
 				if (PropertiesFrom->m_EditTextValueData)
 				{
-					xr_delete(PropertiesFrom->m_EditTextValueData);
+					xr_free(PropertiesFrom->m_EditTextValueData);
 				}
 				PropertiesFrom->m_EditTextValueData = xr_strdup(V->GetValue().c_str()? V->GetValue().c_str():"");
 				PropertiesFrom->m_EditTextValueDataSize = xr_strlen(PropertiesFrom->m_EditTextValueData) + 1;
@@ -781,9 +781,9 @@ void UIPropertiesItem::DrawProp()
 				ImGui::PopStyleColor();
 				ImGui::PopStyleVar();
 			}
-			if (ImGui::OpenPopupOnItemClick2("EditText", 0))
+			if (V && ImGui::OpenPopupOnItemClick2("EditText", 0))
 			{
-				if (PropertiesFrom->m_EditTextValueData)xr_delete(PropertiesFrom->m_EditTextValueData);
+				if (PropertiesFrom->m_EditTextValueData)xr_free(PropertiesFrom->m_EditTextValueData);
 				PropertiesFrom->m_EditTextValueData = xr_strdup(V->GetValue().c_str());
 				PropertiesFrom->m_EditTextValueDataSize = xr_strlen(PropertiesFrom->m_EditTextValueData) + 1;
 				PropertiesFrom->m_EditTextValue = PItem;

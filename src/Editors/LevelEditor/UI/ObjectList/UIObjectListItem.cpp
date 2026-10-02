@@ -24,11 +24,11 @@ float UIObjectListItem::Draw()
 	case UIObjectList::M_All:
 		break;
 	case UIObjectList::M_Visible:
-		if (!Object->Visible())
+		if (Object && !Object->Visible())
 			return Result;
 		break;
 	case UIObjectList::M_Inbvisible:
-		if (Object->Visible())
+		if (Object && Object->Visible())
 			return Result;
 		break;
 	default:
