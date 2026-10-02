@@ -359,29 +359,50 @@ void CLocatorAPI::LoadArchive(archive& A, const char* entrypoint)
 	{
 		string_path		name,full;
 		string1024		buffer_start;
-		u16				buffer_size	= hdr->r_u16();
-		VERIFY			(buffer_size < sizeof(name) + 4*sizeof(u32));
-		VERIFY			(buffer_size < sizeof(buffer_start));
-		u8				*buffer = (u8*)&*buffer_start;
-		hdr->r			(buffer,buffer_size);
+		if (hdr->elapsed() < sizeof(u16))
+		{
+			Msg("! Invalid archive header in %s: truncated record size", A.path.c_str());
+			hdr->close();
+			return;
+		}
+		const u16 buffer_size = hdr->r_u16();
+		constexpr size_t metadata_size = 4 * sizeof(u32);
+		if (buffer_size < metadata_size || buffer_size > sizeof(buffer_start) ||
+			buffer_size - metadata_size >= sizeof(name) || buffer_size > hdr->elapsed())
+		{
+			Msg("! Invalid archive header in %s: invalid record size %u", A.path.c_str(), buffer_size);
+			hdr->close();
+			return;
+		}
+		u8* buffer = reinterpret_cast<u8*>(buffer_start);
+		hdr->r(buffer, buffer_size);
 
-		u32 size_real	= *(u32*)buffer;
-		buffer			+= sizeof(size_real);
+		u32 size_real, size_compr, crc, ptr;
+		memcpy(&size_real, buffer, sizeof(size_real));
+		buffer += sizeof(size_real);
+		memcpy(&size_compr, buffer, sizeof(size_compr));
+		buffer += sizeof(size_compr);
+		memcpy(&crc, buffer, sizeof(crc));
+		buffer += sizeof(crc);
 
-		u32 size_compr	= *(u32*)buffer;
-		buffer			+= sizeof(size_compr);
-
-		u32 crc			= *(u32*)buffer;
-		buffer			+= sizeof(crc);
-
-		u32				name_length = buffer_size - 4*sizeof(u32);
-		Memory.mem_copy	(name,buffer,name_length);
+		const size_t name_length = buffer_size - metadata_size;
+		memcpy(name, buffer, name_length);
 		name[name_length] = 0;
-		buffer			+= buffer_size - 4*sizeof(u32);
+		buffer += name_length;
+		memcpy(&ptr, buffer, sizeof(ptr));
+		if (ptr > A.size || size_compr > A.size - ptr || size_compr > u32(-1) - ptr)
+		{
+			Msg("! Invalid archive header in %s: file data is outside the archive", A.path.c_str());
+			hdr->close();
+			return;
+		}
 
-		u32 ptr			= *(u32*)buffer;
-		buffer			+= sizeof(ptr);
-
+		if (strlen(fs_entry_point) + name_length >= sizeof(full))
+		{
+			Msg("! Invalid archive header in %s: file path is too long", A.path.c_str());
+			hdr->close();
+			return;
+		}
 		xr_strconcat(full, fs_entry_point, name);
 
 		Register		(full,A.vfs_idx,crc,ptr,size_real,size_compr,0);
