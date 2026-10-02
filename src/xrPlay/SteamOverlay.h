@@ -20,6 +20,7 @@ public:
 	~CSteamOverlay();
 
 	void BeginPlay();
+	void EndPlay();
 
 public:
 	ESteamAppID CurrentAppID = ESteamAppID::Unknown;

@@ -31,4 +31,5 @@ private:
 
 	xr_string ThreadName;
 	xr_atomic_u32 Counter = 0;
+	ThreadID ThreadHandle = 0;
 };

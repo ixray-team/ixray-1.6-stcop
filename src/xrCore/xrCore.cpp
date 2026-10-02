@@ -117,12 +117,15 @@ void xrCore::_destroy()
 	--init_counter;
 	if (0 == init_counter)
 	{
+		g_Discord.Shutdown();
+
 		FS._destroy();
 		EFS._destroy();
 		xr_delete(xr_FS);
 		xr_delete(xr_EFS);
 
 		xr_delete(GECSManager);
+		xr_delete(g_uiExpressionMgr);
 
 		if (trained_model) {
 			void* buffer = trained_model->buffer();
