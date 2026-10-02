@@ -244,7 +244,11 @@ public:
 	virtual CPHObject*		dcast_CPHObject		() { return nullptr; };
 	virtual CGlow*			dcast_CGlow			() { return nullptr; };
 
-	virtual ~ISpatialOwner() { SpatialComponent->OwnerReset(nullptr); }
+	virtual ~ISpatialOwner()
+	{
+		if (SpatialComponent)
+			SpatialComponent->OwnerReset(nullptr);
+	}
 };
 
 

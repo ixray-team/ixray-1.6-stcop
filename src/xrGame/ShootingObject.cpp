@@ -86,7 +86,8 @@ void CShootingObject::Load(const char* section)
 
 	m_air_resistance_factor = READ_IF_EXISTS(pSettings, r_float, section, "air_resistance_factor", m_air_resistance_factor);
 
-	light_render = ::Render->light_create();
+	if (!light_render)
+		light_render = ::Render->light_create();
 	if (::Render->get_generation() == IRender_interface::GENERATION_R2)
 		light_render->set_shadow(true);
 	else 
