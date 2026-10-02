@@ -327,12 +327,30 @@ namespace DedicatedConsoleInput
 			COORD basePosition = info.dwCursorPosition;
 			basePosition.X = info.srWindow.Left;
 
-			DWORD written = 0;
-			COORD clearPosition = basePosition;
-			clearPosition.X = 0;
-			FillConsoleOutputCharacterW(g_consoleStdOut, L' ', info.dwSize.X, clearPosition, &written);
-			if (!wideLine.empty())
-				WriteConsoleOutputCharacterW(g_consoleStdOut, wideLine.data(), static_cast<DWORD>(wideLine.size()), basePosition, &written);
+			// Replace the changed cells in one operation. Clearing before writing
+			// exposes an empty prompt between calls and makes every keystroke flicker.
+			xr_vector<wchar_t> row(info.dwSize.X, L' ');
+			std::copy(wideLine.begin(), wideLine.end(), row.begin() + basePosition.X);
+			xr_vector<wchar_t> previousRow(row.size());
+			COORD rowStart = { 0, basePosition.Y };
+			DWORD read = 0;
+			size_t firstChanged = 0;
+			size_t changedEnd = row.size();
+			if (ReadConsoleOutputCharacterW(g_consoleStdOut, previousRow.data(), static_cast<DWORD>(previousRow.size()), rowStart, &read) &&
+				read == previousRow.size())
+			{
+				while (firstChanged < changedEnd && row[firstChanged] == previousRow[firstChanged])
+					++firstChanged;
+				while (changedEnd > firstChanged && row[changedEnd - 1] == previousRow[changedEnd - 1])
+					--changedEnd;
+			}
+			if (firstChanged < changedEnd)
+			{
+				rowStart.X = static_cast<SHORT>(firstChanged);
+				DWORD written = 0;
+				WriteConsoleOutputCharacterW(g_consoleStdOut, row.data() + firstChanged,
+					static_cast<DWORD>(changedEnd - firstChanged), rowStart, &written);
+			}
 
 			COORD cursorPosition = basePosition;
 			cursorPosition.X += static_cast<SHORT>(wideLine.size());
