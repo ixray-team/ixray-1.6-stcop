@@ -228,6 +228,7 @@ public:
 		{
 			RCache.set_c("L_dynamic_props", 0, 0, 0, 0);
 			RCache.set_ca("m_plmap_clamp", 0, 0, 0, 0, 1);
+			RCache.set_c("m_plmap_xform", Fidentity);
 			if (!O || !O->renderable_ROS())
 				return;
 			CROS_impl& light_state = *static_cast<CROS_impl*>(O->renderable_ROS());

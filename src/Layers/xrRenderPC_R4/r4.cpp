@@ -609,7 +609,14 @@ IRender_Glow* CRender::glow_create()
 
 void CRender::set_Object(IRenderable* O, void* graph)
 {
-	TargetGraph(graph).val_pObject = O;
+	R_dsgraph_structure& Graph = TargetGraph(graph);
+	Graph.val_pObject = O;
+
+	// Isolated graphs (sun / reflections) run on PreRenderThread while GraphMain
+	// is built on the render thread. Projector and R1 shadows belong to GraphMain.
+	if (graph && graph != &GraphMain)
+		return;
+
 	if (L_Projector) L_Projector->set_object(phase == PHASE_NORMAL ? O : nullptr);
 	if (L_Shadows) L_Shadows->set_object(phase == PHASE_NORMAL ? O : nullptr);
 }

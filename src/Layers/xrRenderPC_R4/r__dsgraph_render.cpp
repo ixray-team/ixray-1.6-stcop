@@ -460,7 +460,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 	if (_dynamic && psDeviceFlags.test(rsDrawDynamic))
 	{
 		PROF_EVENT("add_dynamic")
-		RImplementation.set_Object(0);
+		RImplementation.set_Object(0, this);
 
 		// Traverse object database
 		g_SpatialSpace->q_frustum
@@ -500,7 +500,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 				// renderable
 				IRenderable* renderable = spatial->dcast_Renderable();
 				if (0 == renderable)				continue;					// unknown, but renderable object (r1_glow???)
-				if(Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
+				if (!isolated && Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
 				{
 					CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
 					if(pKin)
@@ -511,7 +511,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 						}
 						if ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE)
 						{
-							const CFrustum& camera = isolated ? RImplementation.ViewBase : ViewSave;
+							const CFrustum& camera = ViewSave;
 							if(0==camera.testSphere_dirty(spatial->sphere.P, spatial->sphere.R))
 							{
 								pKin->CalculateBones(true);
@@ -531,7 +531,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 			}
 		}
 
-		RImplementation.set_Object(0);
+		RImplementation.set_Object(0, this);
 	}
 
 	if (!isolated)

@@ -132,7 +132,7 @@ void CRender::collect_sun_cascades()
 			Graph.val_bInvisible = false;
 			Graph.val_pObject = nullptr;
 			Graph.private_visuals.clear();
-			Graph.r_dsgraph_clear_aux();
+			Graph.r_dsgraph_clear_passes();
 			Graph.r_pmask(true, false);
 			Graph.PortalTraverser.prepare_local_clips(sector_count, portal_count);
 			Graph.r_dsgraph_render_subspace(pOutdoorSector, sun_cascade_xforms[i], sun_cull_cop, true);
