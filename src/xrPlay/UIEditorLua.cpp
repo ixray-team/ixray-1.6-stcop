@@ -169,11 +169,14 @@ void EditorLuaCodespace()
 	ImGui::BeginChild("ListBox", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	for (int i = 0; i < jsonArray.size(); i++)
 	{
-		if (ImGui::Button(jsonArray[i]["name"].get<std::string>().c_str(), ImVec2(-1, 0)))
+		ImGui::PushID(i);
+		const std::string button_name = jsonArray[i]["name"].get<std::string>() + "###snippet";
+		if (ImGui::Button(button_name.c_str(), ImVec2(-1, 0)))
 		{
 			CodeText = jsonArray[i]["code"];
 			LuaEditor.SetText(CodeText.c_str());
 		}
+		ImGui::PopID();
 	}
 
 	ImGui::EndChild();

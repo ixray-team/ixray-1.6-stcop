@@ -606,7 +606,7 @@ void RenderUIWeather() {
 		cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("update"))
+	if (ImGui::Button("update##sun_altitude"))
 	{
 		editor_altitude = cur->sun_dir.getP();
 	}
@@ -617,7 +617,7 @@ void RenderUIWeather() {
 		cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("update"))
+	if (ImGui::Button("update##sun_longitude"))
 	{
 		editor_longitude = cur->sun_dir.getH();
 	}

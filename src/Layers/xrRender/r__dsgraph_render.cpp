@@ -589,6 +589,7 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 					CTextureAtlas* pDefault = pStorage->get_atlas(_kSVGStorage_DefaultAtlasID);
 
 					auto p_atlas_draw = [](const CTextureAtlas* pAtlas)->void {
+						ImGui::PushID(static_cast<int>(pAtlas->getID()));
 
 						static bool _ViewerState_EnableDeleting = false;
 						static xr_stack_string<256> _ViewerState_QueryResult;
@@ -821,6 +822,7 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 								ImGui::EndTooltip();
 							}
 						}
+						ImGui::PopID();
 						};
 
 					p_atlas_draw(pDefault);
