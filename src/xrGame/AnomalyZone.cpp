@@ -607,7 +607,7 @@ void CAnomalyZone::UpdateWorkload	(u32 dt)
 
 		if (m_actor_effector)
 		{
-			m_actor_effector->Update(ID(), m_fDistanceToCurEntity, radius, m_eHitTypeBlowout);
+			m_actor_effector->Update(ID(), m_fDistanceToCurEntity, radius, m_eHitTypeBlowout, GetAuraPostEffectType());
 		}
 	}
 
@@ -877,6 +877,22 @@ void CAnomalyZone::UpdateCL()
 	UpdateComponents(true);
 	inherited::UpdateCL();
 	UpdateWorkload(Device.dwTimeDelta);
+}
+
+EAuraPostEffectType CAnomalyZone::GetAuraPostEffectType()
+{
+	if (cast_base_gravi_zone() || cast_no_gravity_zone())
+		return EAuraPostEffectType::Gravity;
+
+	switch (m_eHitTypeBlowout)
+	{
+	case ALife::eHitTypeLightBurn:
+	case ALife::eHitTypeBurn:
+	case ALife::eHitTypeFireWound:	return EAuraPostEffectType::Fire;
+	case ALife::eHitTypeRadiation:	return EAuraPostEffectType::Radiation;
+	case ALife::eHitTypeTelepatic:	return EAuraPostEffectType::Psi;
+	default:						return EAuraPostEffectType::Chemical;
+	}
 }
 
 // called as usual

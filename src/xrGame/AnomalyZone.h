@@ -5,6 +5,7 @@
 #include "../xrScripts/script_export_space.h"
 #include "ElectricCurve.h"
 #include "RandomSoundEmmiter.h"
+#include "CActorAuraPostEffectsBalancer.h"
 
 
 class CActor;
@@ -28,6 +29,8 @@ public:
 	virtual void OnRainCollide(Fvector rainCollisionPosition) override;
 
 protected:
+	EAuraPostEffectType GetAuraPostEffectType();
+
 	bool m_bVolumetricBlowout    = true;
 	float m_fVolumetricQuality   = 0.f;
 	float m_fVolumetricDistance  = 0.f;
