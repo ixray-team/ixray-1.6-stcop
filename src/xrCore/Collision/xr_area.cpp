@@ -25,12 +25,14 @@ CObjectSpace::CObjectSpace()
 }
 
 //----------------------------------------------------------------------
+#ifdef DEBUG
 CObjectSpace::~CObjectSpace()
 {
-#ifdef DEBUG
 	xr_delete(m_pRender);
-#endif
 }
+#else
+CObjectSpace::~CObjectSpace() = default;
+#endif
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------

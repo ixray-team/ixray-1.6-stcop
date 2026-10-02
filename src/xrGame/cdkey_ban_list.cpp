@@ -2,9 +2,7 @@
 #include "cdkey_ban_list.h"
 #include "object_broker.h"
 
-cdkey_ban_list::cdkey_ban_list()
-{
-}
+cdkey_ban_list::cdkey_ban_list() = default;
 cdkey_ban_list::~cdkey_ban_list()
 {
 	save();

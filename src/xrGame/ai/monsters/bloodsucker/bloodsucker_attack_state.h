@@ -45,7 +45,7 @@ protected:
 
 public:
 	CStateMonsterBackstubEnemy	(_Object *obj) : inherited(obj, &data) {}
-	virtual				~CStateMonsterBackstubEnemy	() {}
+	virtual				~CStateMonsterBackstubEnemy	() = default;
 	virtual void		initialize					();
 	virtual	void		execute						();
 	virtual bool 		check_start_conditions	    ();

@@ -12,9 +12,7 @@
 #define CSALifeAbstractRegistry CALifeAbstractRegistry<_index_type,_data_type>
 
 TEMPLATE_SPECIALIZATION
-IC	CSALifeAbstractRegistry::CALifeAbstractRegistry	()
-{
-}
+IC	CSALifeAbstractRegistry::CALifeAbstractRegistry	() = default;
 
 TEMPLATE_SPECIALIZATION
 CSALifeAbstractRegistry::~CALifeAbstractRegistry		()

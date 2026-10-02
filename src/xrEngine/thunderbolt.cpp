@@ -74,9 +74,7 @@ void SThunderboltDesc::load						(CInifile& pIni, shared_str const& sect)
 //----------------------------------------------------------------------------------------------
 // collection
 //----------------------------------------------------------------------------------------------
-SThunderboltCollection::SThunderboltCollection	()
-{
-}
+SThunderboltCollection::SThunderboltCollection	() = default;
 
 void SThunderboltCollection::load				(CInifile* pIni, CInifile* thunderbolts, const char* sect)
 {

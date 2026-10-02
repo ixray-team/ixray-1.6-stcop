@@ -33,7 +33,7 @@ class cphysics_game_scripted :
 	T& impl;
 public:
 	cphysics_game_scripted(T* im) :impl(*im) {}
-	virtual						~cphysics_game_scripted() { };
+	virtual						~cphysics_game_scripted() = default;
 	virtual	iphysics_scripted& iphysics_impl() { return impl.get_scripted(); }
 
 protected:

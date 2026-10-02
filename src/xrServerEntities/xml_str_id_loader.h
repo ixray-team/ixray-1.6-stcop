@@ -82,9 +82,7 @@ const char* CSXML_IdToIndex::tag_name = nullptr;
 
 
 TEMPLATE_SPECIALIZATION
-CSXML_IdToIndex::CXML_IdToIndex()
-{
-}
+CSXML_IdToIndex::CXML_IdToIndex() = default;
 
 
 TEMPLATE_SPECIALIZATION

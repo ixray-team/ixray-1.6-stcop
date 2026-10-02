@@ -42,9 +42,7 @@ FactionState::FactionState( shared_str const& id ) :
 	set_faction_id2( id );
 }
 
-FactionState::~FactionState()
-{
-}
+FactionState::~FactionState() = default;
 
 void FactionState::ResetStates()
 {

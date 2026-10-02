@@ -44,10 +44,7 @@ CTrade::CTrade(CInventoryOwner *p_io)
 	}
 }
 
-CTrade::~CTrade()
-{
-	
-}
+CTrade::~CTrade() = default;
 
 void CTrade::RemovePartner()
 {

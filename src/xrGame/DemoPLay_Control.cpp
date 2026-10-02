@@ -16,9 +16,7 @@ demoplay_control::demoplay_control()
 	m_current_mode			= not_active;
 }
 
-demoplay_control::~demoplay_control()
-{
-}
+demoplay_control::~demoplay_control() = default;
 
 void demoplay_control::pause_on(EAction const action, shared_str const & param)
 {

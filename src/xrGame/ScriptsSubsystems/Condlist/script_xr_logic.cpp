@@ -15,9 +15,7 @@ CScriptXRParser::CScriptXRParser() :
 {
 }
 
-CScriptXRParser::~CScriptXRParser() 
-{
-}
+CScriptXRParser::~CScriptXRParser() = default;
 
 void CScriptXRParser::initialize(CLevel* pLevelManager, CScriptXRConditionsStorage* pStorageXRConditions, CScriptXREffectsStorage* pStorageXREffects)
 {

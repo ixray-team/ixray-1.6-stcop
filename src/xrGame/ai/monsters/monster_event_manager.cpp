@@ -1,9 +1,7 @@
 #include "StdAfx.h"
 #include "monster_event_manager.h"
 
-CMonsterEventManager::CMonsterEventManager()
-{
-}
+CMonsterEventManager::CMonsterEventManager() = default;
 
 CMonsterEventManager::~CMonsterEventManager()
 {

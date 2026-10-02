@@ -21,12 +21,8 @@ public:
 	typedef		luabind::object									lua_object_type;
 	typedef		luabind::functor<R>								lua_function_type;
 		
-	mixed_delegate()
-	{
-	};
-	~mixed_delegate()
-	{
-	}
+	mixed_delegate() = default;
+	~mixed_delegate() = default;
 	
 	template<class ThisRef, class ClassType>
 	mixed_delegate(ThisRef* ptr_this, R ( ClassType::*func_ptr)(Param1, Param2)) :

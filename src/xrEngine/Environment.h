@@ -60,7 +60,7 @@ public:
 		float			wind_blast_strength;
 		Fvector			wind_blast_direction;
 
-			~SEffect				()	{}
+			~SEffect				() = default;
 	};
 
 	using EffectVec = xr_vector<SEffect*>;
@@ -79,7 +79,7 @@ public:
 		u32						get_rnd_sound_time		()	{return (m_sound_period.z < m_sound_period.w) ? Random.randI(m_sound_period.z,m_sound_period.w) : 0;}
 		u32						get_rnd_sound_first_time()	{return (m_sound_period.x < m_sound_period.y) ? Random.randI(m_sound_period.x,m_sound_period.y) : 0;}
 		float					get_rnd_sound_dist		()	{return (m_sound_dist.x < m_sound_dist.y) ? Random.randF(m_sound_dist.x, m_sound_dist.y) : 0;}
-			~SSndChannel			()	{}
+			~SSndChannel			() = default;
 		inline  sounds_type& sounds()  {return m_sounds;}
 
 	protected:

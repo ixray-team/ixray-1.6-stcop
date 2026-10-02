@@ -8,9 +8,7 @@ CMonsterHitMemory::CMonsterHitMemory()
 	time_memory		= 10000; 
 }
 
-CMonsterHitMemory::~CMonsterHitMemory()
-{
-}
+CMonsterHitMemory::~CMonsterHitMemory() = default;
 
 void CMonsterHitMemory::init_external(CBaseMonster *M, TTime mem_time) 
 {

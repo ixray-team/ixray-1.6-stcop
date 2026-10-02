@@ -11,7 +11,7 @@ protected:
 
 public:
 						CStateControllerAttack	(_Object *obj);
-	virtual				~CStateControllerAttack	() {}
+	virtual				~CStateControllerAttack	() = default;
 
 	virtual void		initialize				();
 	virtual void		finalize				();

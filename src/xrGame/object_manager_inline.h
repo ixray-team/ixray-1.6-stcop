@@ -15,15 +15,10 @@
 #define CAbstractObjectManager CObjectManager<T>
 
 TEMPLATE_SPECIALIZATION
-CAbstractObjectManager::CObjectManager				()
-{
-//	m_objects.reserve		(100);
-}
+CAbstractObjectManager::CObjectManager				() = default;
 
 TEMPLATE_SPECIALIZATION
-CAbstractObjectManager::~CObjectManager				()
-{
-}
+CAbstractObjectManager::~CObjectManager				() = default;
 
 TEMPLATE_SPECIALIZATION
 void CAbstractObjectManager::Load					(const char* section)

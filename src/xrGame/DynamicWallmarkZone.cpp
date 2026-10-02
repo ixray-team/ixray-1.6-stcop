@@ -5,9 +5,7 @@
 #include "xrServer_Objects_ALife.h"
 #include "Level.h"
 
-CDynamicWallmarkRegistry::CDynamicWallmarkRegistry()
-{
-}
+CDynamicWallmarkRegistry::CDynamicWallmarkRegistry() = default;
 
 CDynamicWallmarkRegistry& CDynamicWallmarkRegistry::Instance()
 {

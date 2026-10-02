@@ -231,7 +231,7 @@ void CCondlistData::Clear()
 
 CCondlist::CCondlist() : m_sectionname{} {}
 
-CCondlist::~CCondlist() {}
+CCondlist::~CCondlist() = default;
 
 const xr_hash_map<u32, CCondlistData>& CCondlist::getInfoPortionCheck(
 	void) const
@@ -297,7 +297,7 @@ CCondlistInfo::CCondlistInfo() :
 {
 }
 
-CCondlistInfo::~CCondlistInfo() {}
+CCondlistInfo::~CCondlistInfo() = default;
 
 void CCondlistInfo::setInfoCheck(const char* pBuffer, size_t nStringLength)
 {
@@ -364,7 +364,7 @@ CCondlistEmbedded::CCondlistEmbedded() :
 {
 }
 
-CCondlistEmbedded::~CCondlistEmbedded() {}
+CCondlistEmbedded::~CCondlistEmbedded() = default;
 
 const CCondlistEmbedded::xr_condlistdata& CCondlistEmbedded::getInfoPortionSet(
 	void) const

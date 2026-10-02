@@ -4,9 +4,7 @@
 #include "Level.h"
 #include "object_broker.h"
 
-demo_info_loader::demo_info_loader()
-{
-}
+demo_info_loader::demo_info_loader() = default;
 
 demo_info_loader::~demo_info_loader()
 {

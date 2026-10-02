@@ -56,9 +56,7 @@ CHUDTarget::CHUDTarget	()
 	m_bShowCrosshair	= false;
 }
 
-CHUDTarget::~CHUDTarget	()
-{
-}
+CHUDTarget::~CHUDTarget	() = default;
 
 
 void CHUDTarget::Load		()

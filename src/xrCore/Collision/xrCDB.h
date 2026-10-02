@@ -227,7 +227,7 @@ namespace CDB
  
 		u32					VPack		( const Fvector& V);
 	public:
-		ICF CollectorPacked() {};
+		ICF CollectorPacked() = default;
 		ICF CollectorPacked(const Fbox& bb, int apx_vertices = 5000, int apx_faces = 5000) { Create(bb, apx_vertices, apx_faces); };
 		ICF void Create(const Fbox& bb, int apx_vertices = 5000, int apx_faces = 5000)
 		{

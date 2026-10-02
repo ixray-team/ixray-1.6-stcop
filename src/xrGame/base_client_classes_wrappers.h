@@ -28,8 +28,8 @@ class DLL_PureWrapper : public Base, public LuabindBase
 {
 public:
 
-	IC DLL_PureWrapper() {}
-	virtual ~DLL_PureWrapper() {}
+	IC DLL_PureWrapper() = default;
+	virtual ~DLL_PureWrapper() = default;
 
 	virtual DLL_Pure* _construct()
 	{

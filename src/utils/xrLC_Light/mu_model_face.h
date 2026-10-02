@@ -24,5 +24,11 @@ public:
 	virtual ~data_vertex()	{ };
 };
 
+template<>
+inline Tface<data_vertex>::Tface() = default;
+
+template<>
+inline Tvertex<data_vertex>::Tvertex() = default;
+
 using _vertex = Tvertex<data_vertex>;
 using _face = Tface<data_vertex>;

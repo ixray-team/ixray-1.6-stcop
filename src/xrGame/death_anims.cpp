@@ -10,10 +10,7 @@
 	bool death_anim_debug	 = false;
 #endif
 
-rnd_motion::rnd_motion	( )
-{
-
-}
+rnd_motion::rnd_motion	( ) = default;
 
 rnd_motion*	rnd_motion::	setup		( IKinematicsAnimated* k, const char* s )
 {
@@ -131,10 +128,7 @@ type_motion::~type_motion	( )
 	VERIFY( anims.empty( ) );
 }
 
-death_anims::death_anims	( )
-{
-	
-}
+death_anims::death_anims	( ) = default;
 
 death_anims::~death_anims	( )
 {

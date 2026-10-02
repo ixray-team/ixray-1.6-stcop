@@ -38,9 +38,7 @@ static FILE*    CompressionDump         = nullptr;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-NET_Compressor::NET_Compressor()
-{
-}
+NET_Compressor::NET_Compressor() = default;
 
 NET_Compressor::~NET_Compressor()
 {

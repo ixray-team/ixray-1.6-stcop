@@ -16,9 +16,7 @@ CUsableScriptObject::CUsableScriptObject()
 	set_tip_text_default();
 }
 
-CUsableScriptObject::~CUsableScriptObject()
-{
-}
+CUsableScriptObject::~CUsableScriptObject() = default;
 
 bool CUsableScriptObject::use(CGameObject* who_use)
 {

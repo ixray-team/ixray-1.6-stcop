@@ -15,7 +15,7 @@ struct dcVector3{
 
 
 
-	dcVector3(){}
+	dcVector3() = default;
 
 	dcVector3(dReal x, dReal y, dReal z){
 
@@ -41,7 +41,7 @@ struct dcVector3{
 
 
 
-	~dcVector3(){}
+	~dcVector3() = default;
 
 
 
@@ -414,7 +414,7 @@ struct dcPlane{
 
 
 
-	dcPlane(){}
+	dcPlane() = default;
 
 	dcPlane(const dcVector3& v0, const dcVector3& v1, const dcVector3& v2){
 

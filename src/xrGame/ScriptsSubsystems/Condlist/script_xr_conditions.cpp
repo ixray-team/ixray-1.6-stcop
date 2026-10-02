@@ -20,7 +20,7 @@ CScriptXRConditionsStorage::CScriptXRConditionsStorage() : m_pLevel{}
 	*/
 }
 
-CScriptXRConditionsStorage::~CScriptXRConditionsStorage() {}
+CScriptXRConditionsStorage::~CScriptXRConditionsStorage() = default;
 
 void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 {

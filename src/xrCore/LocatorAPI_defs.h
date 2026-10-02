@@ -83,7 +83,7 @@ struct XRCORE_API FS_File{
 	xr_string	name;			// low-case name
 	void		set			(xr_string nm, long sz, time_t modif,unsigned attr);
 public:
-				FS_File		(){}
+				FS_File		() = default;
 				FS_File		(xr_string nm);
 				FS_File		(const system_file& f);
 				FS_File		(xr_string nm, const system_file& f);

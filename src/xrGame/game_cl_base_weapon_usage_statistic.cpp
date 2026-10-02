@@ -79,8 +79,7 @@ Weapon_Statistic::Weapon_Statistic(const char* Name)
 	ZeroMemory(m_Basket, sizeof(m_Basket));
 };
 
-Weapon_Statistic::~Weapon_Statistic()
-{};
+Weapon_Statistic::~Weapon_Statistic() = default;
 
 u32 const Weapon_Statistic::net_packet_size = 5*sizeof(u32);
 void Weapon_Statistic::net_save(NET_Packet* P, victims_table const & vt, bone_table const & bt)

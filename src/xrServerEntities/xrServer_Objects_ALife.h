@@ -212,9 +212,7 @@ public:
 	{
 	};
 	
-	virtual							~CSE_ALifeGroupTemplate()
-	{
-	};
+	virtual							~CSE_ALifeGroupTemplate() = default;
 	
 	virtual void STATE_Read			(NET_Packet	&tNetPacket, u16 size)
 	{

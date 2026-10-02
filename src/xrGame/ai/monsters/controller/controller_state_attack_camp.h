@@ -13,7 +13,7 @@ class CStateControlCamp : public CState<_Object> {
 public:
 
 					CStateControlCamp	(_Object *obj) : inherited(obj) {}
-	virtual			~CStateControlCamp	() {}
+	virtual			~CStateControlCamp	() = default;
 
 	virtual void	initialize				();
 	virtual void	execute					();

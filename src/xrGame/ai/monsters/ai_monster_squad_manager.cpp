@@ -8,9 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 CMonsterSquadManager *g_monster_squad = 0;
 
-CMonsterSquadManager::CMonsterSquadManager()
-{
-}
+CMonsterSquadManager::CMonsterSquadManager() = default;
 CMonsterSquadManager::~CMonsterSquadManager()
 {
 	for (u32 team_id=0; team_id<team.size();team_id++) {

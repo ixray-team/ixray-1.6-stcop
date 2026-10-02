@@ -13,7 +13,7 @@ protected:
 
 public:
 	CStateGroupHearDangerousSound		(_Object *obj);
-	virtual			~CStateGroupHearDangerousSound	() {}
+	virtual			~CStateGroupHearDangerousSound	() = default;
 
 	virtual void	initialize						();
 	virtual void	reselect_state					();

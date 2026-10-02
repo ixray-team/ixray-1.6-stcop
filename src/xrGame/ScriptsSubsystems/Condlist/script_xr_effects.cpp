@@ -2,9 +2,9 @@
 #include "script_xr_effects.h"
 #include "script_xr_effects_functions.h"
 
-CScriptXREffectsStorage::CScriptXREffectsStorage() {}
+CScriptXREffectsStorage::CScriptXREffectsStorage() = default;
 
-CScriptXREffectsStorage::~CScriptXREffectsStorage() {}
+CScriptXREffectsStorage::~CScriptXREffectsStorage() = default;
 
 void CScriptXREffectsStorage::initialize(CLevel* pLevelManager)
 {

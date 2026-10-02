@@ -99,7 +99,7 @@ public:
 		append(Str);
 	}
 
-	~stack_string() {}
+	~stack_string() = default;
 
 
 	// const

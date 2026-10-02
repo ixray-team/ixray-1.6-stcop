@@ -55,9 +55,7 @@ mp_config_sections::mp_config_sections() :
 	m_current_dump_sect = m_mp_sections.end();
 }
 
-mp_config_sections::~mp_config_sections()
-{
-}
+mp_config_sections::~mp_config_sections() = default;
 
 void mp_config_sections::start_dump	()
 {

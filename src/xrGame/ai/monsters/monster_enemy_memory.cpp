@@ -19,9 +19,7 @@ CMonsterEnemyMemory::CMonsterEnemyMemory()
 	time_memory		= 15000; 
 }
 
-CMonsterEnemyMemory::~CMonsterEnemyMemory()
-{
-}
+CMonsterEnemyMemory::~CMonsterEnemyMemory() = default;
 
 void CMonsterEnemyMemory::init_external(CBaseMonster *M, TTime mem_time) 
 {

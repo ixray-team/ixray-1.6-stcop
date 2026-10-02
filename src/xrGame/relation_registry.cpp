@@ -23,9 +23,7 @@ SRelation::SRelation()
 	m_iGoodwill = 0;
 }
 
-SRelation::~SRelation()
-{
-}
+SRelation::~SRelation() = default;
 
 //////////////////////////////////////////////////////////////////////////
 

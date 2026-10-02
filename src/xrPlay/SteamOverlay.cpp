@@ -3,9 +3,7 @@
 #include <steam/steam_api.h>
 #include "../xrEngine/stdafx.h"
 
-CSteamOverlay::CSteamOverlay()
-{
-}
+CSteamOverlay::CSteamOverlay() = default;
 
 void CSteamOverlay::BeginPlay()
 {

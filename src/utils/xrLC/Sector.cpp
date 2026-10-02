@@ -13,10 +13,7 @@ CSector::CSector(u32 ID)
 	TreeRoot = 0;
 }
 
-CSector::~CSector()
-{
-
-}
+CSector::~CSector() = default;
 
 IC BOOL	ValidateMerge(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 {

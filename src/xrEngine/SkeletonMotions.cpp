@@ -326,9 +326,7 @@ MotionVec* motions_value::bone_motions(shared_str bone_name)
 }
 
 //-----------------------------------
-motions_container::motions_container()
-{
-}
+motions_container::motions_container() = default;
 
 //extern shared_str s_bones_array_const;
 motions_container::~motions_container()

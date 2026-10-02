@@ -7,7 +7,7 @@ class CStateMonsterMoveToRestrictor : public CState<_Object> {
 
 public:
 						CStateMonsterMoveToRestrictor	(_Object *obj) : inherited(obj) {}
-	virtual				~CStateMonsterMoveToRestrictor	() {}
+	virtual				~CStateMonsterMoveToRestrictor	() = default;
 
 	virtual void		initialize					();
 	virtual	void		execute						();

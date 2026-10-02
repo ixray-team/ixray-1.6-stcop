@@ -8,9 +8,7 @@
 
 #pragma once
 
-IC	CTradeFactorParameters::CTradeFactorParameters			()
-{
-}
+IC	CTradeFactorParameters::CTradeFactorParameters			() = default;
 
 IC	void CTradeFactorParameters::clear						()
 {

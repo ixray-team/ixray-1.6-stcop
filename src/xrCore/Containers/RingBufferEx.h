@@ -10,13 +10,9 @@ class CRingBuffer
 	size_t _writeCursor = 0;
 	size_t _readCursor = 0;
 public:
-	CRingBuffer()
-	{
-	}
+	CRingBuffer() = default;
 
-	~CRingBuffer()
-	{
-	}
+	~CRingBuffer() = default;
 
 	void Write(const T* buffer, size_t count)
 	{

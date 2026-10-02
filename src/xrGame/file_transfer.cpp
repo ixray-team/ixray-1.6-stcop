@@ -26,9 +26,7 @@ void make_abort_packet(NET_Packet& packet, ClientID const & client)
 }
 
 
-server_site::server_site()
-{
-}
+server_site::server_site() = default;
 
 server_site::~server_site()
 {

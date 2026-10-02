@@ -19,10 +19,7 @@
 #include "PHDebug.h"
 #endif
 
-ik_foot_collider::ik_foot_collider()
-{
-
-}
+ik_foot_collider::ik_foot_collider() = default;
 static const Fplane invalide_plane = { -FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
 

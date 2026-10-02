@@ -15,9 +15,7 @@ CHUDCrosshair::CHUDCrosshair	()
 }
 
 
-CHUDCrosshair::~CHUDCrosshair	()
-{
-}
+CHUDCrosshair::~CHUDCrosshair	() = default;
 
 void CHUDCrosshair::Load		()
 {

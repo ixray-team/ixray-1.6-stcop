@@ -83,12 +83,14 @@ xrSRWLock::xrSRWLock()
 #endif
 }
 
+#ifdef IXR_LINUX
 xrSRWLock::~xrSRWLock()
 {
-#ifdef IXR_LINUX
 	pthread_rwlock_destroy(&smutex);
-#endif
 }
+#else
+xrSRWLock::~xrSRWLock() = default;
+#endif
 
 void xrSRWLock::AcquireExclusive()
 {

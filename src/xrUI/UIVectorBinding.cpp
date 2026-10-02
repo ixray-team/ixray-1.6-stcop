@@ -18,9 +18,7 @@ CUIVectorBinding::CUIVectorBinding() : _hasVector(false)
 {
 }
 
-CUIVectorBinding::~CUIVectorBinding()
-{
-}
+CUIVectorBinding::~CUIVectorBinding() = default;
 
 void CUIVectorBinding::Reset()
 {

@@ -8,7 +8,7 @@ class CStateMonsterHittedHide : public CState<_Object> {
 public:
 
 					CStateMonsterHittedHide	(_Object *obj) : inherited(obj) {}
-	virtual			~CStateMonsterHittedHide() {}
+	virtual			~CStateMonsterHittedHide() = default;
 
 	virtual void	initialize				();
 	virtual void	execute					();

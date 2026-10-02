@@ -37,13 +37,9 @@ void stream_write_demostring(IWriter* writer, shared_str const & string_to_write
 	writer->w_stringZ	(string_to_write);
 }*/
 
-demo_player_info::demo_player_info()
-{
-}
+demo_player_info::demo_player_info() = default;
 
-demo_player_info::~demo_player_info()
-{
-}
+demo_player_info::~demo_player_info() = default;
 
 void demo_player_info::read_from_file(CStreamReader* file_to_read)
 {
@@ -94,9 +90,7 @@ u32 const demo_info::max_demo_info_size =
 	(demo_player_info::demo_info_max_size * MAX_PLAYERS_COUNT) +
 	(DEMOSTRING_MAX_SIZE * 5) + sizeof(u32);
 
-demo_info::demo_info()
-{
-}
+demo_info::demo_info() = default;
 
 demo_info::~demo_info()
 {

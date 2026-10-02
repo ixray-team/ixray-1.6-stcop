@@ -184,8 +184,8 @@ namespace ixray
 template <typename ReturnType>
 struct CAnyCallable
 {
-	CAnyCallable(void) : m_pFunction{} {}
-	~CAnyCallable(void) {}
+	CAnyCallable(void) = default;
+	~CAnyCallable(void) = default;
 
 	CAnyCallable(const CAnyCallable<ReturnType>& inst) :
 		m_pFunction{ inst.m_pFunction }
@@ -216,7 +216,7 @@ struct CAnyCallable
 	}
 
 private:
-	void* m_pFunction;
+	void* m_pFunction = nullptr;
 };
 
 class CCondlistData

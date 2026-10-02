@@ -28,7 +28,7 @@ private:
 	file_transfer::server_site*		m_ft_server;
 	//memory file
 	void notify_admin(clientdata_event_t event_for_admin, char const * reason);
-	clientdata_proxy() {};
+	clientdata_proxy() = default;
 public:
 	clientdata_proxy(const clientdata_proxy&) = delete;
 	clientdata_proxy& operator= (const clientdata_proxy&) = delete;

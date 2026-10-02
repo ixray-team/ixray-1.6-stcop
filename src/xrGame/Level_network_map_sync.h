@@ -29,9 +29,7 @@ struct LevelMapSyncData
 		m_level_geom_crc32 = 0;
 		m_wait_map_time = 0;
 	}
-	~LevelMapSyncData()
-	{
-	}
+	~LevelMapSyncData() = default;
 	void	CheckToSendMapSync();
 	void	ReceiveServerMapSync(NET_Packet& P);
 	inline bool IsInvalidMapOrVersion()		{ return invalid_map_or_version; }
