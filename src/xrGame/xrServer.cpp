@@ -1524,7 +1524,7 @@ void xrServer::KickCheaters()
 		IClient* TempClient = GetClientByID(ID.cheater_id);
 		if (!TempClient)
 		{
-			Msg("! ERROR: KickCheaters: client [%u] not found", ID.cheater_id);
+			Msg("! ERROR: KickCheaters: client [%u] not found", ID.cheater_id.value());
 			continue;
 		}
 		ClientID TempClientID = TempClient->ID;
@@ -1550,7 +1550,7 @@ void xrServer::MakeScreenshot(ClientID const& admin_id, ClientID const& cheater_
 		if (!m_screenshot_proxies[i]->is_active())
 		{
 			m_screenshot_proxies[i]->make_screenshot(admin_id, cheater_id);
-			Msg("* admin [%d] is making screeshot of client [%d]", admin_id, cheater_id);
+			Msg("* admin [%u] is making screeshot of client [%u]", admin_id.value(), cheater_id.value());
 			return;
 		}
 	}
@@ -1567,7 +1567,7 @@ void xrServer::MakeConfigDump(ClientID const& admin_id, ClientID const& cheater_
 		if (!m_screenshot_proxies[i]->is_active())
 		{
 			m_screenshot_proxies[i]->make_config_dump(admin_id, cheater_id);
-			Msg("* admin [%d] is making config dump of client [%d]", admin_id, cheater_id);
+			Msg("* admin [%u] is making config dump of client [%u]", admin_id.value(), cheater_id.value());
 			return;
 		}
 	}

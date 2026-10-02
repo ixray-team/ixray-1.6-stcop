@@ -111,9 +111,15 @@ int ProcessDifference()
 	xr_vector<char*>*	file_list_new		= nullptr;
 	xr_vector<char*>*	folder_list_new		= nullptr;
 
-	sscanf					(strstr(params,"-diff ")+6,"%[^ ] ",new_folder);
-	sscanf					(strstr(params,"-diff ")+6+xr_strlen(new_folder)+1,"%[^ ] ",old_folder);
-	sscanf					(strstr(params,"-out ")+5,"%[^ ] ",target_folder);
+	const char* diff = strstr(params, "-diff ");
+	const char* output = strstr(params, "-out ");
+	if (!diff || !output ||
+		sscanf(diff + 6, "%519s %519s", new_folder, old_folder) != 2 ||
+		sscanf(output + 5, "%519s", target_folder) != 1)
+	{
+		printf("Invalid difference parameters. Specify -diff <new> <old> -out <output>.\n");
+		return 1;
+	}
 
 	if(strstr(params,"-nofileage")){
 		_flags.set(file_comparer::eDontCheckFileAge, true);

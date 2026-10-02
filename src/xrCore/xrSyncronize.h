@@ -6,7 +6,8 @@
 class XRCORE_API xrCriticalSection
 {
 private:
-	xrCriticalSection(xrCriticalSection const & copy) {};
+	xrCriticalSection(const xrCriticalSection&) = delete;
+	xrCriticalSection& operator=(const xrCriticalSection&) = delete;
 #ifdef IXR_WINDOWS
 	CRITICAL_SECTION pmutex;
 #elif defined(IXR_LINUX)

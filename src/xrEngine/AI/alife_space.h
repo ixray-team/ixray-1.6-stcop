@@ -48,6 +48,7 @@ namespace ALife
 	using _STORY_ID = u32;		 // Story ID
 	using _SPAWN_STORY_ID = u32; // Spawn Story ID
 
+	constexpr _OBJECT_ID INVALID_OBJECT_ID = ALife::_OBJECT_ID(-1);
 	constexpr _OBJECT_ID _ACTOR_ID = 0; // Actor net id is always 0.
 
 	struct SSumStackCell {

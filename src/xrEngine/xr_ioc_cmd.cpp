@@ -149,7 +149,7 @@ public:
 	virtual void Execute(const char* args) {
 		char	Event[128],Param[128];
 		Event[0]=0; Param[0]=0;
-		sscanf	(args,"%[^,],%s",Event,Param);
+		sscanf	(args,"%127[^,],%127s",Event,Param);
 		g_pEventManager->Event.Signal	(Event,(u64)Param);
 	}
 };
@@ -349,11 +349,11 @@ bool CCC_LoadCFG_custom::allow(const char* cmd)
 
 class CCC_Start : public IConsole_Command
 {
-	void	parse		(LPSTR dest, const char* args, const char* name)
+	void	parse		(string4096& dest, const char* args, const char* name)
 	{
 		dest[0]	= 0;
 		if (strstr(args,name))
-			sscanf(strstr(args,name)+xr_strlen(name),"(%[^)])",dest);
+			sscanf(strstr(args,name)+xr_strlen(name),"(%4095[^)])",dest);
 	}
 
 	void	protect_Name_strlwr( LPSTR str )
@@ -448,7 +448,7 @@ public :
 					CCC_VidMode(const char* N) : CCC_Token(N, &_dummy, nullptr) { bEmptyArgsHandled = false; }
 	virtual void	Execute(const char* args){
 		u32 _w, _h;
-		int cnt = sscanf		(args,"%dx%d",&_w,&_h);
+		int cnt = sscanf		(args,"%ux%u",&_w,&_h);
 		if(cnt==2){
 			psCurrentVidMode[0] = _w;
 			psCurrentVidMode[1] = _h;

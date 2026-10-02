@@ -124,7 +124,7 @@ void verify_level_graph	(const char* name, bool verbose)
 			for ( ; I != E; ++I)
 				Msg					("Vertex %d[%f][%f][%f] is single linked!",*I,VPUSH(level_graph->vertex_position(*I)));
 		}
-		Msg							("There are %d single linked nodes!",single_links.size());
+		Msg							("There are %zu single linked nodes!",single_links.size());
 	}
 
 	Progress						(0.15f);

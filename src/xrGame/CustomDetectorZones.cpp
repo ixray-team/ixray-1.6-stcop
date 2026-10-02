@@ -6,6 +6,8 @@
 
 bool CAfList::feel_touch_contact(CObject* O)
 {
+	if (!O)
+		return false;
 	TypesMapIt it = m_TypesMap.find(O->cNameSect());
 
 	bool res = (it != m_TypesMap.end());
@@ -27,6 +29,8 @@ bool CAfList::feel_touch_contact(CObject* O)
 
 bool CZoneList::feel_touch_contact(CObject* O)
 {
+	if (!O)
+		return false;
 	TypesMapIt it = m_TypesMap.find(O->cNameSect());
 	bool res = (it != m_TypesMap.end());
 

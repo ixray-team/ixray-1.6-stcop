@@ -963,7 +963,7 @@ public:
 
 		char hex_digest[64];
 		s32 ban_time = 0;
-		if (sscanf_s(args_, "%s %i", &hex_digest, (u32) sizeof(hex_digest), &ban_time) != 2)
+		if (sscanf_s(args_, "%63s %i", hex_digest, (u32) sizeof(hex_digest), &ban_time) != 2)
 		{
 			Msg("! ERROR: bad command parameters.");
 			Msg("Ban player. Format: \"sv_banplayer_by_digest <hex digest> <ban_time_in_sec>\". To get player hex digest you can enter: sv_listplayers_banned");
@@ -1678,7 +1678,7 @@ public:
 	{
 		u32 hours = 0, mins = 0;
 		
-		sscanf				(args,"%d:%d", &hours, &mins);
+		sscanf				(args,"%u:%u", &hours, &mins);
 		u64 NewTime			= generate_time	(1,1,1,hours,mins,0,0);
 
 		if (!g_pGameLevel)
@@ -1761,7 +1761,7 @@ public:
 
 		string512			Team = "";
 		s32 TeamMoney		= 0;
-		sscanf				(args,"%s %i", Team, &TeamMoney);
+		sscanf				(args,"%511s %i", Team, &TeamMoney);
 
 		if (!Team[0])
 		{
@@ -1780,7 +1780,7 @@ public:
 		{
 			u32 TeamID			= 0;
 			s32 TeamStartMoney	= 0;
-			sscanf				(args,"%i %i", &TeamID, &TeamStartMoney);
+			sscanf				(args,"%u %i", &TeamID, &TeamStartMoney);
 			TeamStruct* pTS		= pGameMP->GetTeamData(TeamID);
 			if (pTS) 
 				pTS->m_iM_Start = TeamStartMoney;
@@ -1843,7 +1843,7 @@ public:
 		{
 			string512			user;
 			string512			pass;
-			if(2==sscanf		(arguments+xr_strlen("login")+1, "%s %s", user, pass))
+			if(2==sscanf		(arguments+xr_strlen("login")+1, "%511s %511s", user, pass))
 			{
 				NET_Packet		P;			
 				P.w_begin		(M_REMOTE_CONTROL_AUTH);
@@ -1983,7 +1983,7 @@ public:
 		exclude_raid_from_args(arguments, buff, sizeof(buff));
 
 		u32 count;
-		if (sscanf_s(buff, "%s %f %f %f %d", &section, (u32)sizeof(section), &vec.x, &vec.y, &vec.z, &count) != 5)
+		if (sscanf_s(buff, "%255s %f %f %f %u", section, (u32)sizeof(section), &vec.x, &vec.y, &vec.z, &count) != 5)
 		{
 			Msg("! ERROR: bad command parameters.");
 			Msg("Spawn object. Format: \"spawn_on_position <item section> <position>\"");
@@ -2084,7 +2084,7 @@ public:
 		string128 name;
 		s32 money;
 
-		if (sscanf_s(args, "%d %s", &money, &name, (u32)sizeof(name)) != 2)
+		if (sscanf_s(args, "%d %127s", &money, name, (u32)sizeof(name)) != 2)
 		{
 			Msg("! Transfer money to player. Format: \"transfer_money <money> <player name>\"");
 			return;

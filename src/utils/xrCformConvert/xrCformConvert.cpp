@@ -194,7 +194,7 @@ int APIENTRY WinMain
 	if (strstr(lpCmdLine, fsgame_ltx_name))
 	{
 		int sz = xr_strlen(fsgame_ltx_name);
-		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%519[^ ] ", fsgame);
 	}
 	Core._initialize("IX-Ray Compilers", nullptr, true, fsgame[0] ? fsgame : nullptr);
 

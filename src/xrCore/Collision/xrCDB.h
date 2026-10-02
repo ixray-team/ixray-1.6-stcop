@@ -146,8 +146,8 @@ namespace CDB
 		ICF void		custom_options(u32 f) { obb_mode = f; }
 		void			custom_query(const MODEL* m_def, bool(AABBCheckF)(const Fvector&, const Fvector&, bool, void*), void* paabbc, void(GetTrisF)(size_t, void*), void* ptric);
 
-		ICF RESULT*		r_begin			(){return &*rd.begin();};
-		ICF RESULT*		r_end			(){return &*rd.end();};
+		ICF RESULT*		r_begin			(){return rd.data();};
+		ICF RESULT*		r_end			(){return rd.empty() ? rd.data() : rd.data() + rd.size();};
 		ICF RESULT&		r_add			(){return rd.emplace_back();}
 		ICF int			r_count			(){return (u32)rd.size();};
 		ICF void		r_clear			(){rd.clear();};

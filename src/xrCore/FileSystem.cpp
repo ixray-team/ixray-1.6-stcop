@@ -181,14 +181,14 @@ bool EFS_Utils::GetOpenNameInternal(const char* initial, LPSTR buffer, int sz_bu
 			xr_strcpy(dir, buffer);
 			xr_strcpy(fns, dir);
 			xr_strcat(fns, "\\");
-			xr_strcat(fns, _GetItem(ofn.lpstrFile, 1, buf, sizeof(buf), 0x0));
+			xr_strcat(fns, _GetItem(ofn.lpstrFile, 1, buf, '\0'));
 
 			for (int i = 2; i < cnt; i++)
 			{
 				xr_strcat(fns, ",");
 				xr_strcat(fns, dir);
 				xr_strcat(fns, "\\");
-				xr_strcat(fns, _GetItem(ofn.lpstrFile, i, buf, sizeof(buf), 0x0));
+				xr_strcat(fns, _GetItem(ofn.lpstrFile, i, buf, '\0'));
 			}
 			xr_strcpy(buffer, sz_buf, fns);
 		}

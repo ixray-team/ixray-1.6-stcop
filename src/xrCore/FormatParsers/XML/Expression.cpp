@@ -130,14 +130,16 @@ CExpression::CExpression(CExpression&& Other)
     m_dbgCompileError = Other.m_dbgCompileError;
     Other.m_dbgCompileError = nullptr;
     m_expressionDataSize = Other.m_expressionDataSize;
+    Other.m_expressionDataSize = 0;
 }
 
 CExpression::CExpression(const CExpression& Other)
 {
     m_originalExpression = Other.m_originalExpression;
-    m_expression = new ExpressionData[Other.m_expressionDataSize];
     m_expressionDataSize = Other.m_expressionDataSize;
-    memcpy(m_expression, Other.m_expression, m_expressionDataSize * sizeof(ExpressionData));
+    m_expression = m_expressionDataSize ? new ExpressionData[m_expressionDataSize] : nullptr;
+    if (m_expressionDataSize)
+        memcpy(m_expression, Other.m_expression, m_expressionDataSize * sizeof(ExpressionData));
     if (Other.m_dbgCompileError != nullptr)
     {
         m_dbgCompileError = xr_strdup(Other.m_dbgCompileError);
@@ -146,35 +148,43 @@ CExpression::CExpression(const CExpression& Other)
 
 CExpression& CExpression::operator=(const CExpression& Other)
 {
-	m_originalExpression = Other.m_originalExpression;
-	m_expression = new ExpressionData(Other.m_expressionDataSize);
-	m_expressionDataSize = Other.m_expressionDataSize;
-	memcpy(m_expression, Other.m_expression, m_expressionDataSize * sizeof(ExpressionData));
-	m_dbgCompileError = xr_strdup(Other.m_dbgCompileError);
-
+    if (this != &Other)
+    {
+        CExpression copy(Other);
+        *this = std::move(copy);
+    }
     return *this;
 }
 
 CExpression& CExpression::operator=(CExpression&& Other)
 {
-	m_originalExpression = std::move(Other.m_originalExpression);
-	m_expression = Other.m_expression;
-	Other.m_expression = nullptr;
-	m_dbgCompileError = Other.m_dbgCompileError;
-	Other.m_dbgCompileError = nullptr;
-    m_expressionDataSize = Other.m_expressionDataSize;
-
+    if (this != &Other)
+    {
+        delete[] m_expression;
+        xr_free(m_dbgCompileError);
+        m_originalExpression = std::move(Other.m_originalExpression);
+        m_expression = Other.m_expression;
+        Other.m_expression = nullptr;
+        m_dbgCompileError = Other.m_dbgCompileError;
+        Other.m_dbgCompileError = nullptr;
+        m_expressionDataSize = Other.m_expressionDataSize;
+        Other.m_expressionDataSize = 0;
+    }
     return *this;
 }
 
 CExpression::~CExpression()
 {
-    delete[] m_dbgCompileError;
+    xr_free(m_dbgCompileError);
     delete[] m_expression;
 }
 
 void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowVariables /*= false*/)
 {
+    FlushCompileError();
+    delete[] m_expression;
+    m_expression = nullptr;
+    m_expressionDataSize = 0;
     m_originalExpression = ExpressionStr;
     xr_string ClearedExpression = ExpressionStr;
    
@@ -890,11 +900,12 @@ bool CExpression::IsValidIntConstantDeclaration(xr_string& LexemStr) const
 
 void CExpression::SetCompileError(const char* reason) const
 {
+    xr_free(m_dbgCompileError);
     m_dbgCompileError = xr_strdup(reason);
 }
 
 void CExpression::FlushCompileError()
 {
-    delete m_dbgCompileError;
+    xr_free(m_dbgCompileError);
     m_dbgCompileError = nullptr;
 }

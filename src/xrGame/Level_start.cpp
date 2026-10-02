@@ -63,7 +63,7 @@ bool CLevel::net_Start	( const char* op_server, const char* op_client )
 	} else {
 		string1024	ret="";
 		const char*		begin	= NameStart + xr_strlen("/name="); 
-		sscanf			(begin, "%[^/]",ret);
+		sscanf			(begin, "%1023[^/]",ret);
 		if (!xr_strlen(ret))
 		{
 			string1024 tmpstr;
@@ -216,9 +216,9 @@ bool CLevel::net_start3				()
 	//setting players GameSpy CDKey if it comes from command line
 	if (strstr(m_caClientOptions.c_str(), "/cdkey="))
 	{
-		string64 CDKey;
+		string64 CDKey = {};
 		const char* start = strstr(m_caClientOptions.c_str(),"/cdkey=") +xr_strlen("/cdkey=");
-		sscanf			(start, "%[^/]",CDKey);
+		sscanf			(start, "%63[^/]",CDKey);
 		string128 cmd;
 		xr_sprintf(cmd, "cdkey %s", _strupr(CDKey));
 		Console->Execute			(cmd);
@@ -271,8 +271,9 @@ bool CLevel::net_start6				()
 
 	if(net_start_result_total){
 		if (strstr(Core.Params,"-$")) {
-			string256				buf,cmd,param;
-			sscanf					(strstr(Core.Params,"-$")+2,"%[^ ] %[^ ] ",cmd,param);
+			string512 buf;
+			string256 cmd = {}, param = {};
+			sscanf					(strstr(Core.Params,"-$")+2,"%255[^ ] %255[^ ] ",cmd,param);
 			xr_strconcat(buf,cmd," ",param);
 			Console->Execute		(buf);
 		}

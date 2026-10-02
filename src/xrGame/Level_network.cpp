@@ -140,7 +140,7 @@ void CLevel::net_Stop()
 	if(g_tutorial && !g_tutorial->Persistent())
 		g_tutorial->Stop();
 
-	if(g_tutorial2 && !g_tutorial->Persistent())
+	if(g_tutorial2 && !g_tutorial2->Persistent())
 		g_tutorial2->Stop();
 
 	bReady						= false;

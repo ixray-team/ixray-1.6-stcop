@@ -99,8 +99,8 @@ namespace collide
 			results.push_back			(res);
 		}
 		ICF int r_count() { return (int)results.size();	}
-		ICF rq_result* r_begin() { return &*results.begin();	}
-		ICF rq_result* r_end() { return &*results.end();	}
+		ICF rq_result* r_begin() { return results.data();	}
+		ICF rq_result* r_end() { return results.empty() ? results.data() : results.data() + results.size();	}
 		ICF void r_clear() { results.resize(0);	}
 		ICF void r_sort() { std::sort(results.begin(),results.end(),[](const rq_result& a, const rq_result& b) { return a.range < b.range; }); }
 		ICF rqVec &r_results() { return results; }

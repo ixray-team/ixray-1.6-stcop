@@ -98,7 +98,7 @@ public:
 				void 			UnFreeze						()								;
 	IC			bool			IsFreezed			()											{return !!(m_flags.test(st_freezed));}
 				void			NetInterpolationON				()								{m_flags.set(st_net_interpolation,true);}
-				void			NetInterpolationOFF				()								{m_flags.set(st_net_interpolation,true);}
+				void			NetInterpolationOFF				()								{m_flags.set(st_net_interpolation,false);}
 				bool			NetInterpolation				()								{return !!(m_flags.test(st_net_interpolation));}
 	virtual		u16				get_elements_number				()								= 0;
 	virtual		CPHSynchronize	*get_element_sync				(u16 element)					= 0;		

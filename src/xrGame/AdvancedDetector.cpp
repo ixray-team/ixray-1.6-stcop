@@ -146,6 +146,8 @@ void CUIArtefactDetectorAdv::SetValue(const float val1, const Fvector& val2)
 
 void CUIArtefactDetectorAdv::update()
 {
+	if (!m_parent)
+		return;
 	attachable_hud_item* hid = m_parent->HudItemData();
 	if (hid == nullptr || m_bid == u16(-1))
 	{
@@ -156,7 +158,7 @@ void CUIArtefactDetectorAdv::update()
 
 	IKinematics* kin = hid->m_model;
 
-	bool b_visible = !fis_zero(m_target_dir.magnitude()) && m_parent != nullptr && m_parent->IsWorking();
+	bool b_visible = !fis_zero(m_target_dir.magnitude()) && m_parent->IsWorking();
 
 	if (b_visible != kin->LL_GetBoneVisible(m_bid))
 	{

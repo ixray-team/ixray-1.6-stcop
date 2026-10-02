@@ -849,7 +849,7 @@ void game_cl_Deathmatch::OnVoteStart(NET_Packet& P)
 		string4096 CmdName = "";
 		string1024 NewCmd; xr_strcpy(NewCmd, Command);
 		string1024 CmdParams[MAX_VOTE_PARAMS] = {"", "", "", "", ""};
-		sscanf	(Command,"%s %s %s %s %s %s", CmdName, CmdParams[0], CmdParams[1], CmdParams[2], CmdParams[3], CmdParams[4]);
+		sscanf	(Command,"%4095s %1023s %1023s %1023s %1023s %1023s", CmdName, CmdParams[0], CmdParams[1], CmdParams[2], CmdParams[3], CmdParams[4]);
 
 		if (!xr_strcmp(CmdName, "restart"))
 		{

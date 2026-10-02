@@ -1190,7 +1190,7 @@ public:
 			shared_str Name = InName;
 			C& Action = GoapPlanner.AddAction<C>(Name);
 			Action.ItemObject = Missile;
-			Action.bAimed2 = bAimed2;
+			Action.bAimed1 = bAimed1;
 			Action.bAimed2 = bAimed2;
 			return Action;
 		};

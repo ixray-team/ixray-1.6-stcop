@@ -2,6 +2,7 @@
 //[EUREKA] 3.6
 
 #pragma once
+#include <algorithm>
 #include <type_traits>
 
 template<typename StoredType, std::size_t BufferSize = 10>
@@ -33,9 +34,6 @@ public:
 	{
 		if (GetHead() == 0)
 			return BufferSize - 1;
-
-		if (GetHead() == (BufferSize - 1))
-			return 0;
 
 		return GetHead() - 1;
 	}
@@ -96,17 +94,17 @@ public:
 	{
 		if (ElemsCount >= BufferSize) return false;
 
-		unsigned int RemainElems = ElemsCount;
-		if (int FirstChunkSize = BufferSize - GetHead())
+		size_t RemainElems = ElemsCount;
+		if (const size_t FirstChunkSize = BufferSize - GetHead())
 		{
-			unsigned int CopySize = FirstChunkSize >= ElemsCount ? ElemsCount : FirstChunkSize;
-			memcpy(&Buffer[PosHead], pElems, CopySize * sizeof(StoredType));
+			const size_t CopySize = FirstChunkSize >= ElemsCount ? ElemsCount : FirstChunkSize;
+			std::copy_n(pElems, CopySize, &Buffer[PosHead]);
 			RemainElems = FirstChunkSize >= ElemsCount ? 0 : ElemsCount - FirstChunkSize;
 		}
 
 		if (RemainElems > 0)
 		{
-			memcpy(&Buffer[0], pElems + (ElemsCount - RemainElems), RemainElems * sizeof(StoredType));
+			std::copy_n(pElems + (ElemsCount - RemainElems), RemainElems, &Buffer[0]);
 		}
 
 		return true;

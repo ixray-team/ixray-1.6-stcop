@@ -474,6 +474,8 @@ inline bool operator==(const stack_string<char_t, _kSize>& left, const char_t* r
 		return std::wcsncmp(left.c_str(), right, _kSize) == 0;
 	}
 #endif
+	assert(false && "unsupported char type, report to developers");
+	return false;
 }
 
 namespace std {

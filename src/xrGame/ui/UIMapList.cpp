@@ -194,9 +194,7 @@ EGameIDs CUIMapList::GetCurGameType()
 		NODEFAULT;
 
 
-#ifdef DEBUG
 	return EGameIDs(u32(-1));
-#endif
 }
 
 //Функция для создания обычного сервера через игру

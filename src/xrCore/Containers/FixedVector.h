@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 
 template <class T, const int dim>
 class FixedVector
@@ -104,8 +105,8 @@ public:
 
 	IC void assign(iterator p, int c)
 	{
-		VERIFY(c > 0 && c < dim);
-		CopyMemory(array, p, c * sizeof(value_type));
+		VERIFY(c >= 0 && c <= dim);
+		std::copy_n(p, c, array);
 		count = c;
 	}
 

@@ -1133,8 +1133,9 @@ bool CWeaponMagazinedWGrenade::install_upgrade_ammo_class(const char* section, b
 
 	int& current_size = grenade_mode ? iMagazineSize2 : iMagazineSize;
 
-	result2 = process_if_exists(section, "ammo_mag_size", current_size, test);
+	result = process_if_exists(section, "ammo_mag_size", current_size, test);
 
+	if (!test && !grenade_mode)
 	iMagazineSize2 = iMagazineSize;
 
 	result2 = process_if_exists_set(section, "ammo_class", str, test);
@@ -1154,7 +1155,7 @@ bool CWeaponMagazinedWGrenade::install_upgrade_ammo_class(const char* section, b
 	}
 	result |= result2;
 
-	return result2;
+	return result;
 }
 
 bool CWeaponMagazinedWGrenade::install_upgrade_impl(const char* section, bool test)

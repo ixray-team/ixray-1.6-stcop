@@ -1116,7 +1116,7 @@ public:
 		*action								= 0;
 		*key								= 0;
 
-		sscanf								(args,"%s %s", action, key);
+		sscanf								(args,"%255s %255s", action, key);
 		if (!*action)
 			return;
 
@@ -1210,7 +1210,7 @@ public:
 		*action								= 0;
 		*key								= 0;
 
-		sscanf								(args,"%s %s", action, key);
+		sscanf								(args,"%255s %255s", action, key);
 		if (!*action)
 			return;
 

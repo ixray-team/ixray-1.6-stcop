@@ -19,5 +19,8 @@ void CPHDestroyableNotificate::spawn_notificate(CSE_Abstract* so)
 		D= smart_cast<CPHDestroyableNotificator*>(Level().Objects.net_Find(id));
 	if(D)
 		D->NotificateDestroy(this);
-	po->source_id=BI_NONE;
+	if (po)
+	{
+		po->source_id = ALife::INVALID_OBJECT_ID;
+	}
 }

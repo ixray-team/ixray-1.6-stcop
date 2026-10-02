@@ -73,11 +73,7 @@ void Startup(LPSTR lpCmdLine)
 	extern xr_string make_time(u32 sec);
 	for (auto& I : GetIterationData())
 	{
-		// Много лога вырубил !
-		// for (auto& PH : I.phases)
-		// 	clMsg("* %40s  : Time elapsed %s", PH.PhaseName.c_str(), make_time(PH.elapsed_time));
-
-		clMsg("* Compiler (%s) : Time elapsed: %s ", I.iterationName.c_str(), make_time(I.elapsed_time));
+		clMsg("* Compiler (%s) : Time elapsed: %s ", I.iterationName.c_str(), make_time(I.elapsed_time).c_str());
 	} 
 
 	// Close log
@@ -259,7 +255,7 @@ int APIENTRY WinMain
 	if (strstr(lpCmdLine, fsgame_ltx_name))
 	{
 		int sz = xr_strlen(fsgame_ltx_name);
-		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%519[^ ] ", fsgame);
 	}
 	Core._initialize("IX-Ray Compilers", nullptr, true, fsgame[0] ? fsgame : nullptr);
 

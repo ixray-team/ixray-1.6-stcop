@@ -142,7 +142,7 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		{
 #pragma warning(push)
 #pragma warning(disable:4245)
-			if(material_1->Flags.test(SGameMtl::flSlowDown)&&!(usr_data_2->pushing_neg||usr_data_2->pushing_b_neg))
+			if(usr_data_2 && material_1->Flags.test(SGameMtl::flSlowDown)&&!(usr_data_2->pushing_neg||usr_data_2->pushing_b_neg))
 #pragma warning(pop)
 			{
 				dBodyID body=dGeomGetBody(g2);
@@ -167,7 +167,7 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		{
 #pragma warning(push)
 #pragma warning(disable:4245)
-			if(material_2->Flags.test(SGameMtl::flSlowDown)&&!(usr_data_1->pushing_neg||usr_data_1->pushing_b_neg))
+			if(usr_data_1 && material_2->Flags.test(SGameMtl::flSlowDown)&&!(usr_data_1->pushing_neg||usr_data_1->pushing_b_neg))
 #pragma warning(pop)
 			{
 

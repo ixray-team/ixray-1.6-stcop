@@ -88,7 +88,7 @@ void TriangleContainer::RemoveDublicatesVertexs( )
     raw_faces.shrink_to_fit();
 
     if (useMsg)
-        Msg("$ GeometryBuffer Remove Dublicate Vertex : from %u to %u", VertexStart, verts_v.size());
+        Msg("$ GeometryBuffer Remove Dublicate Vertex : from %u to %zu", VertexStart, verts_v.size());
 }
  
 void TriangleContainer::RemoveDublicatesFaces( )
@@ -137,7 +137,7 @@ void TriangleContainer::RemoveDublicatesFaces( )
     dummy.swap(new_dummy);
  
     if (useMsg)
-        Msg("$ GeometryBuffer Remove Dublicate Triangles : from %u to %u", pFaces, faces_v.size());
+        Msg("$ GeometryBuffer Remove Dublicate Triangles : from %u to %zu", pFaces, faces_v.size());
 }
 
 void TriangleContainer::ClearAll()

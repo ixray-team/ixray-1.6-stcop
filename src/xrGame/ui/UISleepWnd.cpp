@@ -535,6 +535,7 @@ void CUISleepWnd::RebuildPresetButtons()
 	for (auto& e : m_presets)
 	{
 		if (!e.btn) continue;
+		if (m_background)
 		m_background->DetachChild(e.btn);
 		xr_delete(e.btn);
 	}

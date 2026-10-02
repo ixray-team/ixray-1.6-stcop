@@ -560,7 +560,7 @@ void CAI_Stalker::UpdateScriptAnim(NET_Packet& packet)
 			}
 			catch (...)
 			{
-				Msg("Cant APPLY Script: %s, Anim: IDX: %d, SLOT: %d, BONE: %d", cNameVisual().c_str(), data.id, data.id.slot, data.boneID);
+				Msg("Cant APPLY Script: %s, Anim: IDX: %d, SLOT: %d, BONE: %d", cNameVisual().c_str(), data.id.idx, data.id.slot, data.boneID);
 			}
 		}
 	}

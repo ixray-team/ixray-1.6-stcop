@@ -416,7 +416,9 @@ void	CIKFoot::SetFootGeom		( ik_foot_geom &fg, const Fmatrix &ref_bone, const Fm
 	gl_bone.transform_tiny( pos_toe );
 
 	Fvector heel;  Fvector	 pos_hill;
-	Fmatrix foot =( Fmatrix( ).mul_43( object_matrix, ref_bone_to_foot( foot, ref_bone ) ) );
+	Fmatrix foot;
+	ref_bone_to_foot( foot, ref_bone );
+	foot.mul_43( object_matrix, Fmatrix().set( foot ) );
 	foot.transform_tiny( pos_hill, HeelPosition( heel ) );
 	const Fvector v_m = Fvector().add(pos_toe, pos_hill ).mul(0.5f) ;
 	

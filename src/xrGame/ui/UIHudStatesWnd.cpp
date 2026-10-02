@@ -1618,7 +1618,7 @@ void CUIHudStatesWnd::UpdateZones()
     {
         m_arrow->SetNewValue(detectRadZonePower);
     }
-    if (m_arrow_shadow)
+    if (m_arrow_shadow && m_arrow)
     {
         m_arrow_shadow->SetPos( m_arrow->GetPos() );
     }
@@ -1680,7 +1680,7 @@ void CUIHudStatesWnd::UpdateZones()
         pZone->CalcDistanceTo( P, dist_to_zone, rad_zone );
         clamp( dist_to_zone, 0.0f, flt_max * 0.5f );
 
-        float fRelPow = ( dist_to_zone / (rad_zone + (z_type==ALife::infl_max_count)? 5.0f : m_zone_feel_radius[z_type] + 0.1f) ) - 0.1f;
+        float fRelPow = ( dist_to_zone / (rad_zone + ((z_type==ALife::infl_max_count) ? 5.0f : m_zone_feel_radius[z_type]) + 0.1f) ) - 0.1f;
 
         zone_max_power = actor->conditions().GetZoneMaxPower(z_type);
         power = pZone->Power( dist_to_zone, rad_zone );

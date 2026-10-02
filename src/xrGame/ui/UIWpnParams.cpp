@@ -96,7 +96,7 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 	float slot_hand = cur_hand;
 	float slot_damage = cur_damage;
 
-	if (slot_wpn && (slot_wpn != &cur_wpn))
+	if (slot_weapon && (slot_wpn != &cur_wpn))
 	{
 		slot_rpm = iFloor(slot_weapon->GetRPM() * 53.0f) / 53.0f;
 		slot_accur = iFloor(slot_weapon->GetAccuracy() * 53.0f) / 53.0f;
