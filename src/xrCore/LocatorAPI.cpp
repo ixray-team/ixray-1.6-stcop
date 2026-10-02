@@ -375,15 +375,15 @@ void CLocatorAPI::LoadArchive(archive& A, const char* entrypoint)
 			return;
 		}
 		u8* buffer = reinterpret_cast<u8*>(buffer_start);
-		hdr->r			(buffer,buffer_size);
+		hdr->r(buffer, buffer_size);
 
 		u32 size_real, size_compr, crc, ptr;
 		memcpy(&size_real, buffer, sizeof(size_real));
-		buffer			+= sizeof(size_real);
+		buffer += sizeof(size_real);
 		memcpy(&size_compr, buffer, sizeof(size_compr));
-		buffer			+= sizeof(size_compr);
+		buffer += sizeof(size_compr);
 		memcpy(&crc, buffer, sizeof(crc));
-		buffer			+= sizeof(crc);
+		buffer += sizeof(crc);
 
 		const size_t name_length = buffer_size - metadata_size;
 		memcpy(name, buffer, name_length);

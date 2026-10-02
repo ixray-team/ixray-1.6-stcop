@@ -854,9 +854,9 @@ if (!g_pGameLevel)
 			string256			o_server, o_client, o_demo;	u32 o_time;
 			if (sscanf(params, "%255[^,],%255[^,],%255[^,],%u", o_server, o_client, o_demo, &o_time) == 4)
 			{
-			g_pEventManager->Event.Defer("KERNEL:disconnect");
-			g_pEventManager->Event.Defer("KERNEL:start", size_t(xr_strdup(_Trim(o_server))), size_t(xr_strdup(_Trim(o_client))));
-			g_pEventManager->Event.Defer("GAME:demo", size_t(xr_strdup(_Trim(o_demo))), u64(o_time));
+				g_pEventManager->Event.Defer("KERNEL:disconnect");
+				g_pEventManager->Event.Defer("KERNEL:start", size_t(xr_strdup(_Trim(o_server))), size_t(xr_strdup(_Trim(o_client))));
+				g_pEventManager->Event.Defer("GAME:demo", size_t(xr_strdup(_Trim(o_demo))), u64(o_time));
 			}
 			else
 				Msg("! Invalid demo playlist parameters");

@@ -27,9 +27,10 @@ void CPluginUIRun::Draw()
 			{
 				string_path FullPath = {};
 				FS.update_path(FullPath, TestPath.c_str(), "");
-				if (FullPath[strlen(FullPath) - 1] == '\\')
+				const size_t pathLength = strlen(FullPath);
+				if (pathLength && FullPath[pathLength - 1] == '\\')
 				{
-					FullPath[strlen(FullPath) - 1] = '\0';
+					FullPath[pathLength - 1] = '\0';
 				}
 
 				xr_string FixedPath = std::filesystem::absolute(FullPath).string().c_str();

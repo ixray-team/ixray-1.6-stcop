@@ -429,13 +429,13 @@ bool CExportObjectOGF::ExportAsWavefrontOBJ(IWriter& F, const char* fn)
 	{
 		_splitpath			(Split->m_Surf->m_Texture.c_str(), nullptr, tex_path, tex_name, nullptr );
 
-		sprintf				(tmp,"newmtl %s", tex_name);
+		xr_sprintf				(tmp,"newmtl %s", tex_name);
 		Fm->w_string		(tmp);
 		Fm->w_string		("Ka  0 0 0");
 		Fm->w_string		("Kd  1 1 1");
 		Fm->w_string		("Ks  0 0 0");
 
-		sprintf				(tmp,"map_Kd %s\\\\%s\\%s%s\n",
+		xr_sprintf				(tmp,"map_Kd %s\\\\%s\\%s%s\n",
 											"T:",
 											tex_path,
 											tex_name,
@@ -449,7 +449,7 @@ bool CExportObjectOGF::ExportAsWavefrontOBJ(IWriter& F, const char* fn)
 	F.w_string				("# This file uses meters as units for non-parametric coordinates.");
 
 	_splitpath				(fn, nullptr, nullptr, tex_name, nullptr );
-	sprintf					(tmp,"mtllib %s.mtl", tex_name);
+	xr_sprintf					(tmp,"mtllib %s.mtl", tex_name);
 	F.w_string				(tmp);
 
 	u32 v_offs				= 0;
@@ -457,9 +457,9 @@ bool CExportObjectOGF::ExportAsWavefrontOBJ(IWriter& F, const char* fn)
 	for (SSplit* Split : m_Splits)
 	{
 		_splitpath			(Split->m_Surf->m_Texture.c_str(), nullptr, nullptr, tex_name, nullptr );
-		sprintf				(tmp,"g %d", SplitIndex);
+		xr_sprintf				(tmp,"g %d", SplitIndex);
 		F.w_string			(tmp);
-		sprintf				(tmp,"usemtl %s",tex_name);
+		xr_sprintf				(tmp,"usemtl %s",tex_name);
 		F.w_string			(tmp);
 		Fvector 			mV;
 		Fmatrix 			mZ;
@@ -469,35 +469,35 @@ bool CExportObjectOGF::ExportAsWavefrontOBJ(IWriter& F, const char* fn)
 			for (SOGFVert& Vert : Part->m_Verts)
 			{
 				mZ.transform_tiny	(mV,Vert.P);
-				sprintf				(tmp,"v %f %f %f",mV.x,mV.y,mV.z);
+				xr_sprintf				(tmp,"v %f %f %f",mV.x,mV.y,mV.z);
 				F.w_string			(tmp);
 			}
 			for (SOGFVert& Vert : Part->m_Verts)
 			{
-				sprintf				(tmp,"vt %f %f",Vert.UV.x, std::abs(1.f-Vert.UV.y));
+				xr_sprintf				(tmp,"vt %f %f",Vert.UV.x, std::abs(1.f-Vert.UV.y));
 				F.w_string			(tmp);
 			}
 			for (SOGFVert& Vert : Part->m_Verts)
 			{
 				mZ.transform_dir	(mV,Vert.N);
-				sprintf				(tmp,"vn %f %f %f",mV.x,mV.y,mV.z);
+				xr_sprintf				(tmp,"vn %f %f %f",mV.x,mV.y,mV.z);
 				F.w_string			(tmp);
 			}
 			for (SOGFVert& Vert : Part->m_Verts)
 			{
 				mZ.transform_dir	(mV,Vert.T);
-				sprintf				(tmp,"vg %f %f %f",mV.x,mV.y,mV.z);
+				xr_sprintf				(tmp,"vg %f %f %f",mV.x,mV.y,mV.z);
 				F.w_string			(tmp);
 			}
 			for (SOGFVert& Vert : Part->m_Verts)
 			{
 				mZ.transform_dir	(mV,Vert.B);
-				sprintf				(tmp,"vb %f %f %f",mV.x,mV.y,mV.z);
+				xr_sprintf				(tmp,"vb %f %f %f",mV.x,mV.y,mV.z);
 				F.w_string			(tmp);
 			}
 			for (SOGFFace& Face : Part->m_Faces)
 			{
-				sprintf			(tmp,"f %d/%d/%d %d/%d/%d %d/%d/%d",v_offs+Face.v[2]+1,v_offs+Face.v[2]+1,v_offs+Face.v[2]+1,
+				xr_sprintf			(tmp,"f %d/%d/%d %d/%d/%d %d/%d/%d",v_offs+Face.v[2]+1,v_offs+Face.v[2]+1,v_offs+Face.v[2]+1,
 																	v_offs+Face.v[1]+1,v_offs+Face.v[1]+1,v_offs+Face.v[1]+1,
 																	v_offs+Face.v[0]+1,v_offs+Face.v[0]+1,v_offs+Face.v[0]+1);
 				F.w_string		(tmp);

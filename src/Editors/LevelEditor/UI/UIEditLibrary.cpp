@@ -231,7 +231,7 @@ void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 
 		if (O && O->IsMUStatic())
 		{
-			ProgbarState->Inc(O->m_LibName.c_str());
+			ProgbarState->Inc(O ? O->m_LibName.c_str() : "");
 			bool HasLod = O->m_objectFlags.is(CEditableObject::eoUsingLOD);
 			O->m_objectFlags.set(CEditableObject::eoUsingLOD, false);
 			xr_string TexName;
@@ -678,7 +678,7 @@ void UIEditLibrary::ExportObj()
 		for (CSceneObject* SO : m_pEditObjects)
 		{
 			CEditableObject* O = SO->GetReference();
-			ProgbarState->Inc(O->m_LibName.c_str());
+			ProgbarState->Inc(O ? O->m_LibName.c_str() : "");
 
 			if (O)
 			{

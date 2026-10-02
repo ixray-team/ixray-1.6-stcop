@@ -798,7 +798,7 @@ bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
     }else{
 		W->bbox.invalidate();
 		FVF::LIT* I=&*W->verts.begin	();
-		FVF::LIT* E=&*W->verts.end		();
+		FVF::LIT* E=W->verts.data() + W->verts.size();
 		for (; I!=E; I++) W->bbox.modify(I->p);
 		W->bbox.getsphere				(W->bounds.P,W->bounds.R);
         W->flags.assign					(wallmark::flSelected);
