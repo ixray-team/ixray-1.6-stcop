@@ -18,6 +18,8 @@
 #include "ai/stalker/ai_stalker.h"
 #include "stalker_movement_manager_smart_cover.h"
 #include "restricted_object.h"
+#include "memory_manager.h"
+#include "enemy_manager.h"
 
 CItemManager::CItemManager			(CCreature *object)
 {
@@ -40,7 +42,7 @@ bool CItemManager::useful			(const CGameObject *object) const
 	if (!object->getEnabled())
 		return false;
 
-	// FX: ÷çíõ
+	// FX: Ñ‡Ð·Ð½Ñ…
 	//if (!&object->ai_location())
 	//	return false;
 
@@ -55,21 +57,35 @@ bool CItemManager::useful			(const CGameObject *object) const
 		return false;
 
 	auto gameObject = const_cast<CGameObject*>(object);
-	if (gameObject == nullptr && gameObject->UsedAI_Locations())
+	if (!gameObject || !gameObject->UsedAI_Locations())
 		return false;
 
-	if (!m_object->movement().restrictions().accessible(object->Position()))
-		return				(false);
+	const CInventoryItem* inventory_item = gameObject->cast_inventory_item();
+	if (!inventory_item || !inventory_item->useful_for_NPC())
+		return (false);
 
-	if (!m_object->movement().restrictions().accessible(object->ai_location().level_vertex_id()))
-		return				(false);
-	CGameObject* GO = const_cast<CGameObject*>(object);
-	const CInventoryItem	*inventory_item = GO ? GO->cast_inventory_item() : NULL;
-	if (inventory_item && !inventory_item->useful_for_NPC())
-		return				(false);
+	if (m_stalker && !m_stalker->can_take(inventory_item))
+		return (false);
 
-	if ( m_stalker && (!m_stalker->can_take(inventory_item) || !m_stalker->movement().restrictions().accessible(inventory_item->object().Position())) )
-		return				(false);
+	if (m_stalker && !m_stalker->memory().enemy().selected())
+	{
+		if (!m_object->movement().restrictions().accessible(object->Position()))
+			return (false);
+
+		if (!m_object->movement().restrictions().accessible(object->ai_location().level_vertex_id()))
+			return (false);
+
+		if (!m_stalker->movement().restrictions().accessible(inventory_item->object().Position()))
+			return (false);
+	}
+	else if (!m_stalker)
+	{
+		if (!m_object->movement().restrictions().accessible(object->Position()))
+			return (false);
+
+		if (!m_object->movement().restrictions().accessible(object->ai_location().level_vertex_id()))
+			return (false);
+	}
 
 	if ( !ai().get_level_graph() )
 		return				(false);
