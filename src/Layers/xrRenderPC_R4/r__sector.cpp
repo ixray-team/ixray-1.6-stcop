@@ -79,29 +79,48 @@ CSector::~CSector()
 extern float r_ssaDISCARD			;
 extern float r_ssaLOD_A, r_ssaLOD_B ;
 
-void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
+void CSector::traverse(CFrustum& F, _scissor& R_scissor, CPortalTraverser& PortalTraverser)
 {
 	// Register traversal process
-	if (r_marker	!=	PortalTraverser.i_marker)	{
-		r_marker							=	PortalTraverser.i_marker;
-		PortalTraverser.r_sectors.push_back	(this);
-		r_frustums.clear					();
-		r_scissors.clear					();
+	if (PortalTraverser.own_clips)
+	{
+		u32& marker = PortalTraverser.local_sector_marker[index];
+		xr_vector<CFrustum>& frustums = PortalTraverser.local_frustums[index];
+		if (marker != PortalTraverser.i_marker)
+		{
+			marker = PortalTraverser.i_marker;
+			PortalTraverser.r_sectors.push_back(this);
+			frustums.clear();
+		}
+		frustums.push_back(F);
 	}
-	r_frustums.push_back		(F);
-	r_scissors.push_back		(R_scissor);
+	else
+	{
+		if (r_marker != PortalTraverser.i_marker)
+		{
+			r_marker = PortalTraverser.i_marker;
+			PortalTraverser.r_sectors.push_back(this);
+			r_frustums.clear();
+			r_scissors.clear();
+		}
+		r_frustums.push_back(F);
+		r_scissors.push_back(R_scissor);
+	}
 
 	// Search visible portals and go through them
 	sPoly	S,D;
 	for	(u32 I=0; I<m_portals.size(); I++)
 	{
-		if (m_portals[I]->marker == PortalTraverser.i_marker) continue;
-
 		CPortal* PORTAL = m_portals[I];
+		u32& portal_marker = PortalTraverser.own_clips
+			? PortalTraverser.local_portal_marker[PORTAL->index]
+			: PORTAL->marker;
+		if (portal_marker == PortalTraverser.i_marker) continue;
+
 		CSector* pSector;
 
 		// Select sector (allow intersecting portals to be finely classified)
-		if (PORTAL->bDualRender) {
+		if (!PortalTraverser.own_clips && PORTAL->bDualRender) {
 			pSector = PORTAL->getSector						(this);
 		} else {
 			pSector = PORTAL->getSectorBack					(PortalTraverser.i_vBase);
@@ -207,10 +226,13 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 		// Create _new_ frustum and recurse
 		CFrustum				Clip;
 		Clip.CreateFromPortal	(P, PORTAL->P.n, PortalTraverser.i_vBase,PortalTraverser.i_mXFORM);
-		PORTAL->marker			= PortalTraverser.i_marker;
-		PORTAL->bDualRender		= false;
+		portal_marker = PortalTraverser.i_marker;
+		if (!PortalTraverser.own_clips)
+			PORTAL->bDualRender = false;
 		if(pSector)
-			pSector->traverse		(Clip,scissor);
+		{
+			pSector->traverse(Clip, scissor, PortalTraverser);
+		}
 	}
 }
 

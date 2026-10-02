@@ -1504,7 +1504,7 @@ static void dv_tab_generic(CDetailManager* D, bool& dirty)
 			dm_current_cache_line = dm_current_size + 1 + dm_current_size;
 			dm_current_cache_size = dm_current_cache_line * dm_current_cache_line;
 			dm_current_fade = float(2 * dm_current_size) - 0.5f;
-			if (RImplementation.b_loaded && (dm_current_size != dm_size))
+			if (RImplementation.GraphMain.b_loaded && (dm_current_size != dm_size))
 			{
 				Device.DetailsTask.wait();
 				D->cache_ReInitialize();

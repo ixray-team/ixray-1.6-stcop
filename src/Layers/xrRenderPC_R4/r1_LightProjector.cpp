@@ -44,7 +44,7 @@ void CLightProjector::set_object	(IRenderable* O)
 	if ((0==O) || (receivers.size()>=P_o_count))	current		= 0;
 	else
 	{
-		if (!O->renderable_ShadowReceive() || RImplementation.val_bInvisible || ((CROS_impl*)O->renderable_ROS())->shadow_recv_frame==Device.dwFrame)	
+		if (!O->renderable_ShadowReceive() || RImplementation.GraphMain.val_bInvisible || ((CROS_impl*)O->renderable_ROS())->shadow_recv_frame == Device.dwFrame)	
 		{
 			current		= 0;
 			return;
@@ -271,12 +271,15 @@ void CLightProjector::calculate	()
 		BB.set					(min,max);
 		R.UVclamp_min.set		(min).add	(.05f);	
 		R.UVclamp_max.set		(max).sub	(.05f);	
-		ISpatial*	spatial		= O->SpatialComponent.get();
-		if (spatial)			{
-			spatial->spatial_updatesector			();
-			if (spatial->sector)			RImplementation.r_dsgraph_render_R1_box	(spatial->sector,BB,SE_R1_LMODELS);
-		}
 		
+		if (ISpatial* spatial = O->SpatialComponent.get())
+		{
+			spatial->spatial_updatesector();
+			if (spatial->sector)
+			{
+				RImplementation.GraphMain.r_dsgraph_render_R1_box(spatial->sector, BB, SE_R1_LMODELS);
+			}
+		}
 	}
 
 	Device.Statistic->RenderDUMP_Pcalc.End	();

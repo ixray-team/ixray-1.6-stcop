@@ -28,8 +28,10 @@ std::atomic<bool> g_details_need_rebuild = false;
 
 void CDetailManager::RequestCacheRebuild()
 {
-	if (RImplementation.b_loaded)
+	if (RImplementation.GraphMain.b_loaded)
+	{
 		g_details_need_rebuild.store(true);
+	}
 }
 
 bool CDetailManager::ConsumeCacheRebuildRequest()
@@ -223,7 +225,7 @@ void CDetailManager::Render()
 		cache_ReInitialize();
 	}
 
-	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && RImplementation.GraphMain.PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
 	if(in_outdoor && task_finished.load())
 #else
 	if (task_finished.load())

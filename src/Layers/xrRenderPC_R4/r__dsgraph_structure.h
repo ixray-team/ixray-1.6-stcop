@@ -2,24 +2,37 @@
 
 #include "../../xrEngine/Render.h"
 #include "../../xrCore/Collision/ISpatial.h"
+#include "../../xrCore/Containers/_stl_extensions.h"
 #include "r__dsgraph_types.h"
 #include "r__sector.h"
+
+struct R_CullTLS
+{
+	bool active = false;
+	u32 phase = 0;
+	float ssa_discard = 0.f;
+	float ssa_lod_a = 0.f;
+	float ssa_lod_b = 0.f;
+};
+
+extern thread_local R_CullTLS g_r_cull_tls;
 
 //////////////////////////////////////////////////////////////////////////
 // feedback	for receiving visuals										//
 //////////////////////////////////////////////////////////////////////////
-class	R_feedback
+class R_feedback
 {
 public:
-	virtual		void	rfeedback_static	(dxRender_Visual*	V)		= 0;
+	virtual void rfeedback_static(dxRender_Visual* V) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
 // common part of interface implementation for all D3D renderers		//
 //////////////////////////////////////////////////////////////////////////
-class	R_dsgraph_structure										: public IRender_interface, public pureFrame
+class R_dsgraph_structure
 {
 public:
+	CFrustum* View = nullptr;
 	IRenderable*												val_pObject;
 	Fmatrix*													val_pTransform;
 	Fmatrix*													val_pLocalTransform;
@@ -31,14 +44,13 @@ public:
 	R_feedback*													val_feedback;		// feedback for geometry being rendered
 	u32															val_feedback_breakp;// breakpoint
 
-
-	u32															marker;
+	// One counter for every graph. Visuals store a single vis.marker,
+	// so per-graph counters alias and drop casters between passes.
+	inline static u32											marker = 0;
 	bool														pmask[3];
-public:
+
 	// Dynamic scene graph
-	//R_dsgraph::mapNormal_T										mapNormal	[2]		;	// 2==(priority/2)
 	R_dsgraph::mapNormalPasses_T								mapNormalPasses	[2]	;	// 2==(priority/2)
-	//R_dsgraph::mapMatrix_T										mapMatrix	[2]		;
 	R_dsgraph::mapMatrixPasses_T								mapMatrixPasses	[2]	;
 	R_dsgraph::mapSorted_T										mapSorted;
 	R_dsgraph::mapHUD_T											mapHUD;
@@ -66,20 +78,16 @@ public:
 
 	u32															counter_S	;
 	u32															counter_D	;
-	bool														b_loaded	;
+	bool b_loaded;
+	CPortalTraverser PortalTraverser;
+	bool private_marker = false;
+	xr_hash_set<void*> private_visuals;
+
 public:
-	virtual		void					set_Transform			(Fmatrix*	M	)				{ VERIFY(M);	val_pTransform = M;	}
-	virtual		void					set_LocalTransform		(Fmatrix*	M	)				{ VERIFY(M);	val_pLocalTransform = M;	}
-	virtual		void					set_UI					(bool 		V	)				{ val_bUI		= V;				}
-	virtual		void					set_HUD					(bool 		V	)				{ val_bHUD		= V;				}
-	virtual		bool					get_HUD					()								{ return		val_bHUD;			}
-	virtual		void					set_Invisible			(bool 		V	)				{ val_bInvisible= V;				}
 				void					set_Feedback			(R_feedback*V, u32	id)			{ val_feedback_breakp = id; val_feedback = V;		}
 				void					get_Counters			(u32&	s,	u32& d)				{ s=counter_S; d=counter_D;			}
 				void					clear_Counters			()								{ counter_S=counter_D=0; 			}
 
-				virtual CDB::MODEL* GetHOMModel();
-				virtual xr_vector<u32>* GetHOMInvaltids();
 public:
 	R_dsgraph_structure	()
 	{
@@ -91,47 +99,43 @@ public:
 		val_bRecordMP		= false	;
 		val_feedback		= 0;
 		val_feedback_breakp	= 0;
-		marker				= 0;
 		r_pmask				(true,true);
 		b_loaded			= false	;
 	};
 
-	void		r_dsgraph_destroy()
+	void r_dsgraph_destroy()
 	{
-		lstLODs.clear			();
-		lstLODgroups.clear		();
-		lstRenderables.clear	();
-		lstSpatial.clear		();
-		lstVisuals.clear		();
+		lstLODs.clear();
+		lstLODgroups.clear();
+		lstRenderables.clear();
+		lstSpatial.clear();
+		lstVisuals.clear();
 
-		lstRecorded.clear		();
+		lstRecorded.clear();
 
-		//mapNormal[0].destroy	();
-		//mapNormal[1].destroy	();
-		//mapMatrix[0].destroy	();
-		//mapMatrix[1].destroy	();
-		for (int i=0; i<SHADER_PASSES_MAX; ++i)
+		for (int i = 0; i < SHADER_PASSES_MAX; ++i)
 		{
-			mapNormalPasses[0][i].destroy	();
-			mapNormalPasses[1][i].destroy	();
-			mapMatrixPasses[0][i].destroy	();
-			mapMatrixPasses[1][i].destroy	();
+			mapNormalPasses[0][i].destroy();
+			mapNormalPasses[1][i].destroy();
+			mapMatrixPasses[0][i].destroy();
+			mapMatrixPasses[1][i].destroy();
 		}
-		mapSorted.destroy		();
-		mapHUD.destroy			();
-		mapUI.destroy			();
-		mapLOD.destroy			();
-		mapDistort.destroy		();
+		mapSorted.destroy();
+		mapHUD.destroy();
+		mapUI.destroy();
+		mapLOD.destroy();
+		mapDistort.destroy();
 		mapHUDSorted.destroy();
 		mapHUDDistort.destroy();
-		mapUISorted.destroy		();
+		mapUISorted.destroy();
 
-		mapWmark.destroy		();
-		mapEmissive.destroy		();
-		mapHUDEmissive.destroy	();
-		mapUIEmissive.destroy	();
+		mapWmark.destroy();
+		mapEmissive.destroy();
+		mapHUDEmissive.destroy();
+		mapUIEmissive.destroy();
 	}
 
+	void		r_dsgraph_clear_aux();
 	void		add_Static(dxRender_Visual* pVisual, u32 planes);
 	void		add_leafs_Dynamic(dxRender_Visual* pVisual, bool IgnoreObject = false); // if detected node's full visibility
 
@@ -155,7 +159,6 @@ public:
 	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals=false, CObject*O=nullptr );
 	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals=false, CObject*O=nullptr );
 	void		r_dsgraph_render_R1_box							(IRender_Sector* _sector, Fbox& _bb, int _element);
-	void renderImGuiDebugWindow_SVGStorage() override;
 
 	void detectSectors_sphere(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, const Fsphere& sphere);
 	void detectSectors_frustum(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, CFrustum* _frustum);

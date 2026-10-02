@@ -59,7 +59,7 @@ bool CRender::occ_visible(Fbox& P)
 
 void CRender::flush()
 {
-	r_dsgraph_render_graph(0);
+	GraphMain.r_dsgraph_render_graph(0);
 }
 
 void CRender::add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
@@ -159,12 +159,7 @@ IRender_Target* CRender::getTarget()
 
 void CRender::add_Visual(IRenderVisual* V, bool Ignore)
 {
-	add_leafs_Dynamic((dxRender_Visual*)V, Ignore);
-}
-
-void CRender::add_Geometry(IRenderVisual* V)
-{
-	add_Static((dxRender_Visual*)V, View->getMask());
+	GraphMain.add_leafs_Dynamic((dxRender_Visual*)V, Ignore);
 }
 
 void CRender::rmNear()

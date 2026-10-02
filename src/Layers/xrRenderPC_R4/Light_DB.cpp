@@ -195,7 +195,7 @@ void CLight_DB::add_light(light* L)
 			return;
 		if (RImplementation.SectorsCount() > 1)
 		{
-			if (PortalTraverser.i_marker != S->r_marker)
+			if (RImplementation.GraphMain.PortalTraverser.i_marker != S->r_marker)
 				return;
 			const Fsphere& sphere = L->SpatialComponent->sphere;
 			if (std::none_of(S->r_frustums.begin(), S->r_frustums.end(), [&](CFrustum& F) { return F.testSphere_dirty(sphere.P, sphere.R); }))

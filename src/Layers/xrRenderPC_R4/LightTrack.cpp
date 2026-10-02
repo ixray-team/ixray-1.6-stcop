@@ -541,9 +541,9 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 	{
 		Fvector bb_size = { radius,radius,radius };
 
-		g_SpatialSpace->q_box(RImplementation.lstSpatial, 0, FindMask, position, bb_size);
+		g_SpatialSpace->q_box(RImplementation.GraphMain.lstSpatial, 0, FindMask, position, bb_size);
 
-		for (const auto& o_it : RImplementation.lstSpatial)
+		for (const auto& o_it : RImplementation.GraphMain.lstSpatial)
 		{
 			ISpatial* spatial = o_it.get();
 			light* source = (light*)(spatial->dcast_Light());

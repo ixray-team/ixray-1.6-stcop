@@ -204,7 +204,6 @@ public:
 
 	// data
 	CFrustum						ViewBase;
-	CFrustum*						View;
 	u32								phase;
 public:
 	// feature level
@@ -254,7 +253,6 @@ public:
 	virtual SurfaceParams			getSurface(const char* nameTexture) { R_ASSERT(!"Method is not overridden"); return SurfaceParams(); };
 
 	// Main 
-	IC		void					set_Frustum				(CFrustum*	O	)							{ VERIFY(O);	View = O;			}
 	virtual void					set_Transform			(Fmatrix*	M	)							{};
 	virtual void					set_LocalTransform		(Fmatrix*	M	)							{};
 	virtual void					set_UI					(bool 		V	)							= 0;
@@ -265,7 +263,6 @@ public:
 	virtual void					set_Object				(IRenderable*		O	)					{};
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					{};	// mask screen region as oclluded (-1..1, -1..1)
 	virtual void					add_Visual				(IRenderVisual*	V, bool IgnoreOptimize = false)	{};	// add visual leaf	(no culling performed at all)
-	virtual void					add_Geometry			(IRenderVisual*	V	)					{};	// add visual(s)	(all culling performed)
 	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
 
 	//	Prefer this function when possible

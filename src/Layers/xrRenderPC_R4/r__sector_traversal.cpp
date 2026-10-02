@@ -3,8 +3,6 @@
 #include "../../xrEngine/Environment.h"
 #include "FVF.h"
 
-CPortalTraverser	PortalTraverser;
-
 CPortalTraverser::CPortalTraverser	()
 {
 	i_marker			=	0xffffffff;
@@ -13,6 +11,18 @@ CPortalTraverser::CPortalTraverser	()
 #ifdef DEBUG
 xr_vector<IRender_Sector*>				dbg_sectors;
 #endif
+
+void CPortalTraverser::prepare_local_clips(u32 sector_count, u32 portal_count)
+{
+	own_clips = true;
+	if (local_frustums.size() != sector_count)
+	{
+		local_frustums.assign(sector_count, {});
+		local_sector_marker.assign(sector_count, 0xffffffff);
+	}
+	if (local_portal_marker.size() != portal_count)
+		local_portal_marker.assign(portal_count, 0xffffffff);
+}
 
 void CPortalTraverser::traverse			(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options)
 {
@@ -39,8 +49,8 @@ void CPortalTraverser::traverse			(IRender_Sector* start, CFrustum& F, Fvector& 
 	r_sectors.clear		();
 	_scissor			scissor;
 	scissor.set			(0,0,1,1);
-	scissor.depth		= 0;
-	i_start->traverse	(F,scissor);
+	scissor.depth = 0;
+	i_start->traverse(F, scissor, *this);
 
 	if (options & VQ_SCISSOR)		{
 		// dbg_sectors					= r_sectors;
@@ -75,12 +85,7 @@ void CPortalTraverser::destroy		()
 	f_geom.destroy					();
 	f_shader.destroy				();
 }
-ICF		bool	psort_pred			(const std::pair<CPortal*, float>& _1, const std::pair<CPortal*, float>& _2)
-{
-	float		d1		= PortalTraverser.i_vBase.distance_to_sqr(_1.first->S.P);
-	float		d2		= PortalTraverser.i_vBase.distance_to_sqr(_2.first->S.P);
-	return		d2>d1;	// descending, back to front
-}
+
 extern float r_ssaDISCARD			;
 extern float r_ssaLOD_A, r_ssaLOD_B ;
 void CPortalTraverser::fade_render	()
@@ -91,7 +96,16 @@ void CPortalTraverser::fade_render	()
 	u32 _offset = 0;
 	// re-sort, back to front
 	if (!psGameFlags.test(rsDrawPortals))
-		std::sort(f_portals.begin(), f_portals.end(), psort_pred);
+	{
+		std::sort(f_portals.begin(), f_portals.end(),
+			[this](const std::pair<CPortal*, float>& _1, const std::pair<CPortal*, float>& _2)
+			{
+				float d1 = i_vBase.distance_to_sqr(_1.first->S.P);
+				float d2 = i_vBase.distance_to_sqr(_2.first->S.P);
+				return d2 > d1; // descending, back to front
+			}
+		);
+	}
 
 	// calc poly-count
 	u32 poly_per_portal = 0;

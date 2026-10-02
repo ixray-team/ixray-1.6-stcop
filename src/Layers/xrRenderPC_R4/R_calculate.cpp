@@ -78,6 +78,6 @@ void CRender::Calculate		()
 	//
 	Lights.Update();
 
-	lstRenderables.resize(0);
-	lstRenderables.reserve(4096);
+	GraphMain.lstRenderables.clear();
+	GraphMain.lstRenderables.reserve(4096);
 }

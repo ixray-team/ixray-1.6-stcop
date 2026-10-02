@@ -23,13 +23,15 @@
 
 #include "../../xrEngine/IRenderable.h"
 #include "../../xrEngine/Fmesh.h"
+#include <atomic>
 
 class dxRender_Visual;
 class CLightR_Manager;
 
 // definition
 class CRender :
-	public R_dsgraph_structure
+	public IRender_interface,
+	public pureFrame
 {
 public:
 	enum { PHASE_POINT = 3, PHASE_SPOT = 4, PHASE_LMODELS = 5 };
@@ -95,6 +97,9 @@ public:
 	CHOM														HOM;
 	R_occlusion													HWOCC;
 
+	R_dsgraph_structure GraphMain;
+	xr_array<R_dsgraph_structure, 6> GraphReflection;
+
 	// Global vertex-buffer container
 	xr_vector<FSlideWindowItem>									SWIs;
 	xr_vector<ref_shader>										Shaders;
@@ -154,7 +159,21 @@ public:
 	void							render_sun_cascade			(u32 cascade_ind);
 	void							init_cacades				();
 	void							render_sun_cascades			();
-	void							render_reflections			();
+	void begin_reflection_collect();
+	void collect_reflections();
+	void render_reflections();
+	void wait_reflection_collect();
+
+	Fvector reflection_cam_pos;
+	Fvector reflection_cam_dir;
+	Fvector reflection_cam_top;
+	Fvector reflection_cam_right;
+	float reflection_fov = 75.f;
+	float reflection_near = 0.2f;
+	float reflection_far = 1000.f;
+	IRender_Sector* reflection_sector = nullptr;
+	std::atomic<u32> reflection_ticket{ 0 };
+	std::atomic<u32> reflection_done{ 0 };
 
 	bool is_render_cubemap = false;
 
@@ -310,6 +329,7 @@ public:
 
 	virtual	void level_Load(IReader*);
 	virtual void level_Unload();
+	virtual void renderImGuiDebugWindow_SVGStorage() override;
 
 	IRHISurface* load_texture(const char*	fname, u32& msize, bool bStaging = false) override;
 	bool get_texture_metadata(const char* absolute_path, RHITextureMetadata* p_data) override;
@@ -365,7 +385,6 @@ public:
 	virtual void					set_Object					(IRenderable*		O	);
 	virtual	void					add_Occluder				(Fbox2&	bb_screenspace	);			// mask screen region as oclluded
 	virtual void					add_Visual					(IRenderVisual*	V, bool Ignore);			// add visual leaf	(no culling performed at all)
-	virtual void					add_Geometry				(IRenderVisual*	V	);			// add visual(s)	(all culling performed)
 
 	// wallmarks
 	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false);
@@ -415,6 +434,23 @@ public:
 	virtual void					ScreenshotAsyncBegin		();
 	virtual void					ScreenshotAsyncEnd			(CMemoryWriter& memory_writer);
 	virtual void		_BCL		OnFrame						();
+
+	virtual void set_Transform(Fmatrix* M)
+	{
+		VERIFY(M);
+		GraphMain.val_pTransform = M;
+	}
+	virtual void set_LocalTransform(Fmatrix* M)
+	{
+		VERIFY(M);
+		GraphMain.val_pLocalTransform = M;
+	}
+	virtual void set_UI(bool V) { GraphMain.val_bUI = V; }
+	virtual void set_HUD(bool V) { GraphMain.val_bHUD = V; }
+	virtual bool get_HUD() { return GraphMain.val_bHUD; }
+	virtual void set_Invisible(bool V) { GraphMain.val_bInvisible = V; }
+	virtual CDB::MODEL* GetHOMModel();
+	virtual xr_vector<u32>* GetHOMInvaltids();
 
 	// Render mode
 	virtual void					rmNear						();

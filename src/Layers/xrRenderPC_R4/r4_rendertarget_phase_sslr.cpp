@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "r4_rendertarget.h"
 
 void CRenderTarget::phase_sslr()
@@ -104,154 +103,204 @@ void CRenderTarget::phase_sslr()
 	}
 }
 
+void CRender::begin_reflection_collect()
+{
+	reflection_cam_pos = Device.vCameraPosition;
+	reflection_cam_dir = Device.vCameraDirection;
+	reflection_cam_top = Device.vCameraTop;
+	reflection_cam_right = Device.vCameraRight;
+	reflection_fov = Device.fFOV;
+	reflection_near = Device.fViewportNear;
+	reflection_sector = pLastSector;
+	reflection_far = 1000.f;
+	if (g_pGamePersistent && g_pGamePersistent->pEnvironment && g_pGamePersistent->pEnvironment->CurrentEnv)
+		reflection_far = g_pGamePersistent->pEnvironment->CurrentEnv->far_plane;
+
+	const u32 ticket = reflection_ticket.fetch_add(1, std::memory_order_acq_rel) + 1;
+	reflection_done.store(ticket - 1, std::memory_order_release);
+	reflection_done.notify_all();
+}
+
+void CRender::wait_reflection_collect()
+{
+	const u32 ticket = reflection_ticket.load(std::memory_order_acquire);
+	u32 done = reflection_done.load(std::memory_order_acquire);
+	while (done != ticket)
+	{
+		reflection_done.wait(done, std::memory_order_acquire);
+		done = reflection_done.load(std::memory_order_acquire);
+	}
+}
+
+void CRender::collect_reflections()
+{
+	const u32 ticket = reflection_ticket.load(std::memory_order_acquire);
+	if (o.dx11_use_legacy_light || !o.offscreen_reflecitons || !Target || !Target->rt_Reflection)
+	{
+		reflection_done.store(ticket, std::memory_order_release);
+		reflection_done.notify_all();
+		return;
+	}
+
+	if (!reflection_sector)
+	{
+		reflection_done.store(ticket, std::memory_order_release);
+		reflection_done.notify_all();
+		return;
+	}
+
+	GPU_EVENT(COLLECT_REFLECTIONS);
+	Device.Statistic->TEST2.Begin();
+
+	const u32 dwSize = Target->rt_Reflection->dwSize;
+	const float fov_factor = _sqr(90.f / reflection_fov);
+	const float screen = _sqr((float)dwSize) * fov_factor * (EPS_S + ps_r__LOD);
+
+	R_CullTLS cull;
+	cull.active = true;
+	cull.phase = PHASE_REFLECT;
+	cull.ssa_discard = _sqr(ps_r__ssaDISCARD) / screen;
+	cull.ssa_lod_a = _sqr(ps_r2_ssaLOD_A / 3) / screen;
+	cull.ssa_lod_b = _sqr(ps_r2_ssaLOD_B / 3) / screen;
+
+	Fmatrix env_project;
+	env_project.build_projection(PI_DIV_2, 1.0f, reflection_near, reflection_far * 0.4f);
+
+	Fvector cm_norm[6];
+	Fvector cm_dir[6];
+	cm_dir[2].mul(reflection_cam_top, +1.0f);
+	cm_dir[3].mul(reflection_cam_top, -1.0f);
+	cm_norm[2].mul(reflection_cam_dir, -1.0f);
+	cm_norm[3].mul(reflection_cam_dir, +1.0f);
+	cm_dir[0].mul(reflection_cam_right, +1.0f);
+	cm_dir[1].mul(reflection_cam_right, -1.0f);
+	cm_norm[0].mul(reflection_cam_top, +1.0f);
+	cm_norm[1].mul(reflection_cam_top, +1.0f);
+	cm_dir[4].mul(reflection_cam_dir, +1.0f);
+	cm_dir[5].mul(reflection_cam_dir, -1.0f);
+	cm_norm[4].mul(reflection_cam_top, +1.0f);
+	cm_norm[5].mul(reflection_cam_top, +1.0f);
+
+	const u32 sector_count = (u32)Sectors.size();
+	const u32 portal_count = (u32)Portals.size();
+	g_r_cull_tls = cull;
+
+	for (u32 i = 0; i < (u32)GraphReflection.size(); ++i)
+	{
+		Fmatrix env_view;
+		Fmatrix env_full;
+		env_view.build_camera_dir(reflection_cam_pos, cm_dir[i], cm_norm[i]);
+		env_full.mul(env_project, env_view);
+
+		R_dsgraph_structure& Graph = GraphReflection[i];
+		Graph.private_marker = true;
+		Graph.val_pTransform = &Fidentity;
+		Graph.private_visuals.clear();
+		Graph.r_dsgraph_clear_aux();
+		Graph.r_pmask(true, false);
+		Graph.PortalTraverser.prepare_local_clips(sector_count, portal_count);
+		Graph.r_dsgraph_render_subspace(reflection_sector, env_full, reflection_cam_pos, false, false);
+	}
+
+	g_r_cull_tls.active = false;
+
+	Device.Statistic->TEST2.End();
+	reflection_done.store(ticket, std::memory_order_release);
+	reflection_done.notify_all();
+}
+
 void CRender::render_reflections()
 {
 	if (o.dx11_use_legacy_light || !o.offscreen_reflecitons)
+	{
 		return;
+	}
+
+	wait_reflection_collect();
 
 	GPU_EVENT(RENDER_REFLECTIONS);
 
-	if (RImplementation.pLastSector)
+	if (!RImplementation.pLastSector)
 	{
-		Device.Statistic->TEST2.Begin();
+		return;
+	}
 
-		GPU_EVENT(FORWARD_REFLECTIONS);
+	Device.Statistic->TEST2.Begin();
+	GPU_EVENT(FORWARD_REFLECTIONS);
 
-		extern float g_fSCREEN;
+	u32 DwSize = Target->rt_Reflection->dwSize;
 
-		extern float r_ssaDISCARD;
-		extern float r_ssaDONTSORT;
-		extern float r_ssaLOD_A;
-		extern float r_ssaLOD_B;
-		extern float r_ssaHZBvsTEX;
-		extern float r_ssaGLOD_start, r_ssaGLOD_end;
+	static Fmatrix EnvProject;
+	static Fmatrix EnvView;
+	static Fvector CmNorm[6];
+	static Fvector CmDir[6];
 
-		auto saved_g_fSCREEN = g_fSCREEN;
-		auto saved_r_ssaDISCARD = r_ssaDISCARD;
-		auto saved_r_ssaDONTSORT = r_ssaDONTSORT;
-		auto saved_r_ssaLOD_A = r_ssaLOD_A;
-		auto saved_r_ssaLOD_B = r_ssaLOD_B;
-		auto saved_r_ssaGLOD_start = r_ssaGLOD_start;
-		auto saved_r_ssaGLOD_end = r_ssaGLOD_end;
-		auto saved_r_ssaHZBvsTEX = r_ssaHZBvsTEX;
+	CmDir[2].mul(reflection_cam_top, +1.0f);
+	CmDir[3].mul(reflection_cam_top, -1.0f);
+	CmNorm[2].mul(reflection_cam_dir, -1.0f);
+	CmNorm[3].mul(reflection_cam_dir, +1.0f);
 
-		u32 dwSize = Target->rt_Reflection->dwSize;
+	CmDir[0].mul(reflection_cam_right, +1.0f);
+	CmDir[1].mul(reflection_cam_right, -1.0f);
+	CmNorm[0].mul(reflection_cam_top, +1.0f);
+	CmNorm[1].mul(reflection_cam_top, +1.0f);
 
-		float fov_factor = _sqr(90.f / Device.fFOV);
-		g_fSCREEN = _sqr((float)dwSize) * fov_factor * (EPS_S + ps_r__LOD);
+	CmDir[4].mul(reflection_cam_dir, +1.0f);
+	CmDir[5].mul(reflection_cam_dir, -1.0f);
+	CmNorm[4].mul(reflection_cam_top, +1.0f);
+	CmNorm[5].mul(reflection_cam_top, +1.0f);
 
-		r_ssaDISCARD = _sqr(ps_r__ssaDISCARD) / g_fSCREEN;
-		r_ssaDONTSORT = _sqr(ps_r__ssaDONTSORT / 3) / g_fSCREEN;
+	CEnvDescriptorMixer* CurrentEnv = g_pGamePersistent->Environment().CurrentEnv;
 
-		r_ssaLOD_A = _sqr(ps_r2_ssaLOD_A / 3) / g_fSCREEN;
-		r_ssaLOD_B = _sqr(ps_r2_ssaLOD_B / 3) / g_fSCREEN;
+	EnvProject.build_projection(PI_DIV_2, 1.0f, reflection_near, reflection_far * 0.4f);
 
-		r_ssaGLOD_start = _sqr(ps_r__GLOD_ssa_start / 3) / g_fSCREEN;
-		r_ssaGLOD_end = _sqr(ps_r__GLOD_ssa_end / 3) / g_fSCREEN;
-		r_ssaHZBvsTEX = _sqr(ps_r__ssaHZBvsTEX / 3) / g_fSCREEN;
+	Fvector4 fog_color4 = 
+	{
+		CurrentEnv->fog_far, 0.0f, 0.0f, 0.0f
+	};
 
-		static Fmatrix EnvProject;
+	is_render_cubemap = true;
+	phase = PHASE_REFLECT;
 
-		static Fmatrix EnvView;
-		static Fmatrix EnvFullTransform;
+	for (u32 i = 0; i < GraphReflection.size(); ++i)
+	{
+		EnvView.build_camera_dir(reflection_cam_pos, CmDir[i], CmNorm[i]);
 
-		static Fvector cmNorm[6];
-		static Fvector cmDir[6];
+		GRHI->ClearTarget(Target->rt_Reflection_temp->pRT[i], (const float*)&fog_color4);
 
-		cmDir[2].mul(Device.vCameraTop, +1.0f);
-		cmDir[3].mul(Device.vCameraTop, -1.0f);
+		bool NeedRender = GraphReflection[i].mapNormalPasses[0][0].size() || GraphReflection[i].mapMatrixPasses[0][0].size() ||
+						GraphReflection[i].mapNormalPasses[1][0].size() || GraphReflection[i].mapMatrixPasses[1][0].size() || GraphReflection[i].mapSorted.size();
 
-		cmNorm[2].mul(Device.vCameraDirection, -1.0f);
-		cmNorm[3].mul(Device.vCameraDirection, +1.0f);
-
-		cmDir[0].mul(Device.vCameraRight, +1.0f);
-		cmDir[1].mul(Device.vCameraRight, -1.0f);
-
-		cmNorm[0].mul(Device.vCameraTop, +1.0f);
-		cmNorm[1].mul(Device.vCameraTop, +1.0f);
-
-		cmDir[4].mul(Device.vCameraDirection, +1.0f);
-		cmDir[5].mul(Device.vCameraDirection, -1.0f);
-
-		cmNorm[4].mul(Device.vCameraTop, +1.0f);
-		cmNorm[5].mul(Device.vCameraTop, +1.0f);
-
-		CEnvDescriptorMixer* CurrentEnv = g_pGamePersistent->Environment().CurrentEnv;
-
-		EnvProject.build_projection
-		(
-			PI_DIV_2, 1.0f,
-			Device.fViewportNear,
-			CurrentEnv->far_plane * 0.4f
-		);
-
-		RCache.set_xform_project(EnvProject);
-
-		Fvector4 fog_color4 = 
+		if (!NeedRender)
 		{
-			CurrentEnv->fog_far,
-			0.0f, 0.0f, 0.0f,
-		};
-
-		is_render_cubemap = true;
-
-		phase = PHASE_REFLECT;
-		r_pmask(true, false);
-
-		for (u32 i = 0; i < 6; ++i)
-		{
-			EnvView.build_camera_dir(Device.vCameraPosition, cmDir[i], cmNorm[i]);
-			EnvFullTransform.mul(EnvProject, EnvView);
-
-			r_dsgraph_render_subspace(pLastSector, EnvFullTransform, Device.vCameraPosition, false, false);
-
-			GRHI->ClearTarget(Target->rt_Reflection_temp->pRT[i], (const float*)&fog_color4);
-
-			bool bRender = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-			bRender |= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-
-			if (!bRender)
-			{
-				continue;
-			}
-
-			GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
-
-			Target->u_setrt(dwSize, dwSize, Target->rt_Reflection->pRT[i], Target->rt_Reflection_temp->pRT[i], NULL, Target->rt_Depth->pZRT);
-			RImplementation.rmNormal();
-
-			RCache.set_Stencil(FALSE);
-			RCache.set_ColorWriteEnable();
-
-			RCache.set_xform_view(EnvView);
-
-			r_dsgraph_render_graph(0);
+			continue;
 		}
 
-		RCache.set_xform_project(Device.mProject);
-		RCache.set_xform_view(Device.mView);
+		GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
+		Target->u_setrt(DwSize, DwSize, Target->rt_Reflection->pRT[i], Target->rt_Reflection_temp->pRT[i], NULL, Target->rt_Depth->pZRT);
 
-		is_render_cubemap = false;
-		phase = PHASE_NORMAL;
+		RImplementation.rmNormal();
+		RCache.set_Stencil(FALSE);
+		RCache.set_ColorWriteEnable();
+		RCache.set_xform_view(EnvView);
+		RCache.set_xform_project(EnvProject);
 
-		g_fSCREEN = saved_g_fSCREEN;
-		r_ssaDISCARD = saved_r_ssaDISCARD;
-		r_ssaDONTSORT = saved_r_ssaDONTSORT;
-		r_ssaLOD_A = saved_r_ssaLOD_A;
-		r_ssaLOD_B = saved_r_ssaLOD_B;
-		r_ssaGLOD_start = saved_r_ssaGLOD_start;
-		r_ssaGLOD_end = saved_r_ssaGLOD_end;
-		r_ssaHZBvsTEX = saved_r_ssaHZBvsTEX;
-
-		Target->DrawSQ(Target->s_sslr, Target->rt_Reflection_forward, 3, []
-		{
-			RImplementation.rmNormal();
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-		});
-
-		Target->u_setrt(dwSize, dwSize, nullptr, nullptr, nullptr, nullptr);
-		GRHI->GenerateMips(Target->rt_Reflection_forward->pTexture->get_SRView());
-
-		Device.Statistic->TEST2.End();
+		GraphReflection[i].r_dsgraph_render_graph(0);
 	}
+
+	RCache.set_xform_project(Device.mProject);
+	RCache.set_xform_view(Device.mView);
+	is_render_cubemap = false;
+	phase = PHASE_NORMAL;
+
+	Target->DrawSQ(Target->s_sslr, Target->rt_Reflection_forward, 3, []
+	{
+		RImplementation.rmNormal();
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE); 
+	});
+
+	Target->u_setrt(DwSize, DwSize, nullptr, nullptr, nullptr, nullptr);
+	GRHI->GenerateMips(Target->rt_Reflection_forward->pTexture->get_SRView());
+
+	Device.Statistic->TEST2.End();
 }

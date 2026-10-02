@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "r4.h"
 #include "FBasicVisual.h"
 #include "../../xrEngine/xr_object.h"
@@ -19,6 +19,7 @@
 #include "OverlayAPI/DLSSWrapper.h"
 #include "../../xrEngine/EngineAPI.h"
 #include "r1_LightPPA.h"
+#include "SVGStorage.h"
 
 CRender RImplementation;
 
@@ -43,15 +44,16 @@ float r_dtex_range = 50.f;
 
 ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float cdist_sq, bool is_hud)
 {
+	const u32 phase = g_r_cull_tls.active ? g_r_cull_tls.phase : RImplementation.phase;
 	if (LightingModeIsStatic())
 	{
-		if (val_bUI && pVisual->shader->E[SE_R1_UI])
+		if (GraphMain.val_bUI && pVisual->shader->E[SE_R1_UI])
 			return pVisual->shader->E[SE_R1_UI]._get();
 		if (phase == PHASE_NORMAL)
 			return pVisual->shader->E[L_Projector && L_Projector->shadowing() ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ]._get();
 		return rimp_select_sh_static(pVisual, cdist_sq);
 	}
-	if (!!RImplementation.val_bUI)
+	if (!!GraphMain.val_bUI)
 	{
 		if (auto pSh = pVisual->shader->E[SE_R2_UI]._get())
 		{
@@ -63,7 +65,7 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 
 	int id = SE_R2_SHADOW;
 
-	if (CRender::PHASE_NORMAL == RImplementation.phase)
+	if (CRender::PHASE_NORMAL == phase)
 	{
 		if (is_hud)
 		{
@@ -75,7 +77,7 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 
 		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
 	}
-	else if (CRender::PHASE_REFLECT == RImplementation.phase) 
+	else if (CRender::PHASE_REFLECT == phase)
 	{
 		id = SE_R2_REFLECTIONS;
 	}
@@ -85,6 +87,7 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 
 ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq)
 {
+	const u32 phase = g_r_cull_tls.active ? g_r_cull_tls.phase : RImplementation.phase;
 	if (LightingModeIsStatic())
 	{
 		int id = SE_R1_NORMAL_LQ;
@@ -96,11 +99,11 @@ ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cd
 	}
 	int id = SE_R2_SHADOW;
 
-	if (CRender::PHASE_NORMAL == RImplementation.phase)
+	if (CRender::PHASE_NORMAL == phase)
 	{
 		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
 	}
-	else if (CRender::PHASE_REFLECT == RImplementation.phase)
+	else if (CRender::PHASE_REFLECT == phase)
 	{
 		id = SE_R2_REFLECTIONS;
 	}
@@ -243,6 +246,8 @@ public:
 void CRender::create()
 {
 	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
+	Device.BeginReflectionCollect = xr_make_delegate(this, &CRender::begin_reflection_collect);
+	Device.CollectReflections = xr_make_delegate(this, &CRender::collect_reflections);
 
 	Engine.External.SetSkinningMode();
 
@@ -330,10 +335,17 @@ void CRender::create()
 	HWOCC.occq_create(occq_size);
 
 	rmNormal();
-	marker = 0;
+
+	GraphMain.marker = 0;
+
+	for (R_dsgraph_structure& Graph : GraphReflection)
+	{
+		Graph.marker = 0;
+		Graph.PortalTraverser.initialize();
+	}
 
 	xrRender_apply_tf();
-	::PortalTraverser.initialize();
+	GraphMain.PortalTraverser.initialize();
 
 	if (LightingModeIsDynamic())
 	{
@@ -354,15 +366,25 @@ void CRender::destroy()
 	if (LightingModeIsDynamic())
 		FluidManager.Destroy();
 	xr_delete(L_Dynamic);
-	::PortalTraverser.destroy();
+	GraphMain.PortalTraverser.destroy();
 
 	HWOCC.occq_destroy();
 	xr_delete(Models);
 	xr_delete(Target);
 	PSLibrary.OnDestroy();
 	Device.seqFrame.Remove(this);
-	r_dsgraph_destroy();
+
+	GraphMain.r_dsgraph_destroy();
+
+	for (R_dsgraph_structure& Graph : GraphReflection)
+	{
+		Graph.r_dsgraph_destroy();
+		Graph.PortalTraverser.destroy();
+	}
+
 	Device.ModelDefferClear = nullptr;
+	Device.BeginReflectionCollect = nullptr;
+	Device.CollectReflections = nullptr;
 
 	if (LightingModeIsDynamic())
 		g_DLSSWrapper.Destroy();
@@ -387,7 +409,7 @@ void CRender::reset_begin() {
 		Lights_LastFrame.clear();
 	}
 
-	if (b_loaded)
+	if (GraphMain.b_loaded)
 	{
 		Details->Unload();
 		xr_delete(Details);
@@ -406,29 +428,34 @@ void CRender::reset_begin() {
 	}
 }
 
-void CRender::reset_end() {
+void CRender::reset_end()
+{
 	//	Prevent error on first get data
-
 	HWOCC.occq_create(occq_size);
 
-	if (b_loaded)
+	if (GraphMain.b_loaded)
 	{
 		Details = new CDetailManager();
 		Details->Load();
 	}
 	Target = new CRenderTarget();
-	if (b_loaded && LightingModeIsStatic())
+
+	if (GraphMain.b_loaded && LightingModeIsStatic())
 	{
 		L_Projector = new CLightProjector();
 		L_Shadows = new CLightShadows();
 	}
 
-
-	if (L_Glows) L_Glows->reset_geometry();
+	if (L_Glows)
+	{
+		L_Glows->reset_geometry();
+	}
 
 	xrRender_apply_tf();
 	if (LightingModeIsDynamic())
+	{
 		FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+	}
 
 	// Set this flag true to skip the first render frame,
 	// that some data is not ready in the first frame (for example device camera position)
@@ -564,7 +591,7 @@ IRender_Glow* CRender::glow_create()
 
 void CRender::set_Object(IRenderable* O)
 {
-	val_pObject = O;
+	GraphMain.val_pObject = O;
 	if (L_Projector) L_Projector->set_object(phase == PHASE_NORMAL ? O : nullptr);
 	if (L_Shadows) L_Shadows->set_object(phase == PHASE_NORMAL ? O : nullptr);
 }
@@ -1367,4 +1394,319 @@ HRESULT	CRender::shader_compile(
 	}
 
 	return _result;
+}
+
+
+
+void CRender::renderImGuiDebugWindow_SVGStorage()
+{
+	if (ImGui::Begin("Render Debug - SVG Storage"), &Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_RenderDebug_SVGStorageViewer)])
+	{
+		if (DEV)
+		{
+			CSVGStorage* pStorage = DEV->GetSVGStorage();
+
+			if (pStorage)
+			{
+				if (ImGui::CollapsingHeader("Runtime"))
+				{
+					CTextureAtlas* pDefault = pStorage->get_atlas(_kSVGStorage_DefaultAtlasID);
+
+					auto p_atlas_draw = [](const CTextureAtlas* pAtlas) -> void
+					{
+						static bool _ViewerState_EnableDeleting = false;
+						static xr_stack_string<256> _ViewerState_QueryResult;
+						static float _ViewerState_QueryWidth = 0.0f;
+						static float _ViewerState_QueryHeight = 0.0f;
+
+						char name[32];
+						xr_sprintf(name, sizeof(name), "[%d] %s", pAtlas->getID(), _kSVGStorage_DefaultAtlasName);
+
+						if (ImGui::CollapsingHeader(name))
+						{
+							const auto& elements = pAtlas->getElements();
+
+							ImGui::SeparatorText("Atlas Info");
+
+							ImGui::Text("width: %.2f", float(pAtlas->getWidth()));
+							ImGui::Text("height: %.2f", float(pAtlas->getHeight()));
+
+							ImGui::Checkbox("Deleting", &_ViewerState_EnableDeleting);
+
+							ImGui::DragFloat("w", &_ViewerState_QueryWidth);
+							ImGui::DragFloat("h", &_ViewerState_QueryHeight);
+
+							if (ImGui::Button("find nearest"))
+							{
+								const auto* pElement = pAtlas->findNearest(_ViewerState_QueryWidth, _ViewerState_QueryHeight);
+
+								if (pElement)
+								{
+									xr_sprintf(_ViewerState_QueryResult.data(), _ViewerState_QueryResult.max_size(), "w: %.2f h: %.2f\nx: %.2f y: %.2f\nu0: %.2f v0: %.2f u1: %.2f v1: %.2f", pElement->w(), pElement->h(), pElement->x(), pElement->y(), pElement->u0(pAtlas->getWidth()), pElement->v0(pAtlas->getHeight()), pElement->u1(pAtlas->getWidth()), pElement->v1(pAtlas->getHeight()));
+								}
+								else
+								{
+									_ViewerState_QueryResult.clear();
+									xr_sprintf(_ViewerState_QueryResult.data(), _ViewerState_QueryResult.max_size(), "failed to obtain element!");
+								}
+							}
+
+							if (_ViewerState_QueryResult.empty() == false)
+							{
+								ImGui::SameLine();
+								if (ImGui::Button("Reset"))
+								{
+									_ViewerState_QueryResult.clear();
+								}
+
+								ImGui::Text("Nearest Query:");
+								ImGui::Text("%s", _ViewerState_QueryResult.c_str());
+							}
+
+
+							ImGui::SeparatorText("Elements");
+							ImGui::Text("amount: %zu", elements.size());
+
+							ImGui::SeparatorText("Atlas");
+
+							float atlasPixelW = pAtlas->getWidth();
+							float atlasPixelH = pAtlas->getHeight();
+
+							ImVec2 atlasDisplaySize = ImVec2((float)atlasPixelW, (float)atlasPixelH);
+
+							ImGui::Image(pAtlas->getResource(), atlasDisplaySize, ImVec2(0, 0), ImVec2(1, 1), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+
+							ImVec2 atlasMin = ImGui::GetItemRectMin();
+							ImVec2 atlasMax = ImGui::GetItemRectMax();
+							ImVec2 atlasOnScreenSize = ImVec2(atlasMax.x - atlasMin.x, atlasMax.y - atlasMin.y);
+
+							float scaleX = atlasOnScreenSize.x / (float)atlasPixelW;
+							float scaleY = atlasOnScreenSize.y / (float)atlasPixelH;
+
+							ImVec2 parentCursorBackup = ImGui::GetCursorPos();
+
+							int hoveredIndex = -1;
+							ImVec2 hoveredSubMin, hoveredSubSize;
+
+							ImVec2 mousePos = ImGui::GetMousePos();
+
+							bool break_called = false;
+							u32 hovered_icon_w;
+							u32 hovered_icon_h;
+							float hovered_icon_x;
+							float hovered_icon_y;
+
+							float hovered_icon_u0;
+							float hovered_icon_v0;
+							float hovered_icon_u1;
+							float hovered_icon_v1;
+
+							int i = 0;
+							for (const auto& element : elements)
+							{
+								ImVec2 subMin = ImVec2(
+									atlasMin.x + 1 + element.x() * scaleX,
+									atlasMin.y + 1 + element.y() * scaleY
+								);
+
+								ImVec2 subSize = ImVec2(
+									element.w() * scaleX,
+									element.h() * scaleY
+								);
+								ImVec2 subMax = ImVec2(subMin.x + subSize.x, subMin.y + subSize.y);
+
+
+								if (mousePos.x >= subMin.x && mousePos.x <= subMax.x &&
+									mousePos.y >= subMin.y && mousePos.y <= subMax.y)
+								{
+									hoveredIndex = i;
+
+									hovered_icon_w = element.w();
+									hovered_icon_h = element.h();
+									hovered_icon_x = element.x();
+									hovered_icon_y = element.y();
+
+									hovered_icon_u0 = element.u0(pAtlas->getWidth());
+									hovered_icon_v0 = element.v0(pAtlas->getHeight());
+
+									hovered_icon_u1 = element.u1(pAtlas->getWidth());
+									hovered_icon_v1 = element.v1(pAtlas->getHeight());
+
+									hoveredSubMin = subMin;
+									hoveredSubSize = subSize;
+									break_called = true;
+									break; // stop after first hit (assuming subregions donâ€™t overlap)
+								}
+
+								++i;
+							}
+
+							i = 0;
+
+							bool hovered_icon_clicked = false;
+							for (const auto& element : elements)
+							{
+								ImVec2 subMin = ImVec2(
+									atlasMin.x + 1 + element.x() * scaleX,
+									atlasMin.y + 1 + element.y() * scaleY
+								);
+								ImVec2 subSize = ImVec2(
+									element.w() * scaleX,
+									element.h() * scaleY
+								);
+
+
+								ImU32 borderColor = (i == hoveredIndex)
+														? IM_COL32(255, 255, 0, 255) // yellow
+														: IM_COL32(255, 0, 0, 255);	 // red
+
+
+								ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+								ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
+
+								ImGuiWindowFlags childFlags =
+									ImGuiWindowFlags_NoTitleBar |
+									ImGuiWindowFlags_NoResize |
+									ImGuiWindowFlags_NoMove |
+									ImGuiWindowFlags_NoScrollbar |
+									ImGuiWindowFlags_NoScrollWithMouse |
+									ImGuiWindowFlags_NoSavedSettings;
+
+								ImGui::SetCursorScreenPos(subMin);
+								char subRegionChildId[48];
+								xr_sprintf(subRegionChildId, sizeof(subRegionChildId), "SubRegion##%d", i);
+								ImGui::BeginChild(
+									subRegionChildId,
+									subSize,
+									/*border=*/false,
+									childFlags
+								);
+
+
+								ImDrawList* dl = ImGui::GetWindowDrawList();
+								ImVec2 rectMin = ImVec2(subMin.x - 0.5f, subMin.y);
+								ImVec2 rectMax = ImVec2(subMin.x + subSize.x + 0.5f, subMin.y + subSize.y);
+
+								dl->AddRect(rectMin, rectMax, borderColor, 0.0f, 0, 2.0f);
+
+
+								ImGui::Dummy(subSize);
+
+								if (i == hoveredIndex)
+								{
+									hovered_icon_clicked = ImGui::IsItemClicked();
+								}
+
+								ImGui::EndChild();
+								ImGui::PopStyleColor();
+								ImGui::PopStyleVar();
+
+
+								ImGui::SetCursorPos(parentCursorBackup);
+
+								++i;
+							}
+
+
+							if (hoveredIndex >= 0 && hovered_icon_w && hovered_icon_h)
+							{
+								bool clicked = ImGui::IsItemClicked();
+
+								if (_ViewerState_EnableDeleting)
+								{
+									if (hovered_icon_clicked)
+									{
+										// yeah slow (prob dumb), but it is for debug purposes, so there's no need to point out on that thing, seriously :/
+										// upd: we don't need to make removeElement as const since it is obvious write operation and must be accessible only when we have non const pointer (like we don't read, but this viewer is for reading mainly)
+										const_cast<CTextureAtlas*>(pAtlas)->removeElement(hovered_icon_w, hovered_icon_h);
+									}
+								}
+
+								ImGui::BeginTooltip();
+								ImGui::Text("Lookup id: %d", hoveredIndex);
+								ImGui::SeparatorText("Dimensions");
+								ImGui::Text("w=%.2f h=%.2f", float(hovered_icon_w), float(hovered_icon_h), hovered_icon_x, hovered_icon_y);
+								ImGui::SeparatorText("Offset");
+								ImGui::Text("x=%.2f y=%.2f", hovered_icon_x, hovered_icon_y);
+								ImGui::SeparatorText("UV");
+								ImGui::Text("u0=%.2f v0=%.2f\nu1=%.2f v1=%.2f", hovered_icon_u0, hovered_icon_v0, hovered_icon_u1, hovered_icon_v1);
+
+
+								ImGui::EndTooltip();
+							}
+						}
+					};
+
+					p_atlas_draw(pDefault);
+					const auto& atlases = pStorage->get_atlases();
+
+					for (const auto& atlas : atlases)
+					{
+						p_atlas_draw(&atlas);
+					}
+				}
+
+				if (ImGui::CollapsingHeader("Cache"))
+				{
+#ifdef DEBUG
+					xr_vector<CSVGStorage::SvgDebugCacheTableRow> rows;
+					pStorage->DebugCollectSvgCacheRows(rows);
+					if (ImGui::Button("Invalidate document LRU"))
+					{
+						pStorage->InvalidateAllSvgDocuments();
+					}
+					ImGui::Text(
+						"doc LRU hits: %llu misses: %llu",
+						static_cast<unsigned long long>(pStorage->DebugGetSvgDocCacheHits()),
+						static_cast<unsigned long long>(pStorage->DebugGetSvgDocCacheMisses())
+					);
+					ImGui::Text("new atlas allocations: %llu", static_cast<unsigned long long>(pStorage->DebugGetSvgNewAtlasAllocCount()));
+					if (pStorage->DebugGetSvgRenderToBitmapSamples() > 0)
+					{
+						const double avgNs = static_cast<double>(pStorage->DebugGetSvgRenderToBitmapNsAccum()) /
+											 static_cast<double>(pStorage->DebugGetSvgRenderToBitmapSamples());
+						ImGui::Text("renderToBitmap avg ns: %.0f", avgNs);
+					}
+					if (ImGui::Button("Reset SVG metrics"))
+					{
+						pStorage->DebugResetSvgMetrics();
+					}
+					if (ImGui::BeginTable("svg_cache", 4, ImGuiTableFlags_Borders))
+					{
+						ImGui::TableSetupColumn("key");
+						ImGui::TableSetupColumn("variants");
+						ImGui::TableSetupColumn("pixels");
+						ImGui::TableSetupColumn("last access");
+						ImGui::TableHeadersRow();
+						for (const auto& r : rows)
+						{
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::TextUnformatted(r.tableKey.c_str());
+							ImGui::TableNextColumn();
+							ImGui::Text("%u", r.variantCount);
+							ImGui::TableNextColumn();
+							ImGui::Text("%u", r.totalRasterPixels);
+							ImGui::TableNextColumn();
+							ImGui::Text("%llu", static_cast<unsigned long long>(r.lastAccessSeq));
+						}
+						ImGui::EndTable();
+					}
+#endif
+				}
+			}
+		}
+	}
+
+	ImGui::End();
+}
+
+CDB::MODEL* CRender::GetHOMModel()
+{
+	return RImplementation.HOM.GetHOMModel();
+}
+
+xr_vector<u32>* CRender::GetHOMInvaltids()
+{
+	return RImplementation.HOM.get_invaltids();
 }

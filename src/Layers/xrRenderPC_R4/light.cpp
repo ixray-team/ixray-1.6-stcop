@@ -212,11 +212,11 @@ void light::get_sectors()
 		CFrustum temp;
 		temp.CreateFromMatrix(X.S.combine, FRUSTUM_P_ALL);
 
-		RImplementation.detectSectors_frustum(sector, m_sectors, &temp);
+		RImplementation.GraphMain.detectSectors_frustum(sector, m_sectors, &temp);
 	}
 	else if(flags.type == IRender_Light::POINT)
 	{
-		RImplementation.detectSectors_sphere(sector, m_sectors, { position, range });
+		RImplementation.GraphMain.detectSectors_sphere(sector, m_sectors, {position, range});
 	}
 }
 
@@ -230,7 +230,7 @@ bool light::has_light_visible_from_sectors()
 			continue;
 
 		CSector* sector_ = (CSector*)IRsector;
-		if (sector_ != nullptr && PortalTraverser.i_marker == sector_->r_marker)
+		if (sector_ != nullptr && RImplementation.GraphMain.PortalTraverser.i_marker == sector_->r_marker)
 		{
 			return true;
 		}
