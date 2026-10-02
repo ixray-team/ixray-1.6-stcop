@@ -9,6 +9,7 @@
 #include <clsid_game.h>
 
 struct STextureParams;
+class CUICellItem;
 
 constexpr ImVec4 kAuthorTextColor = ImVec4(0.063f, 0.788f, 0.196f, 1.0f);
 constexpr ImVec4 kContributorsTextColor = ImVec4(0.306f, 0.745f, 0.878f, 1.0f);
@@ -719,10 +720,16 @@ void RenderTextureEditor();
 void RenderQuestEditor();
 void RenderPPEEditor();
 void Render3rdAdjust();
+void Render3DIconAdjust();
 void RenderDemoRecordEditorWindow();
 void RenderActorAnimationManager();
 
 /* MISCELLANEOUS */
+
+/* 3D icons adjust notifications (implementation in Icon3dAdjust.cpp) */
+void Icon3dAdjust_NotifyHoveredCell(CUICellItem* cell);
+void Icon3dAdjust_RegisterCell(CUICellItem* cell);
+void Icon3dAdjust_UnregisterCell(CUICellItem* cell);
 
 void DestroySpawnManagerWindow();
 
