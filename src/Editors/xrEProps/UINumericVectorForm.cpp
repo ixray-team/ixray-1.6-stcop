@@ -17,7 +17,7 @@ UINumericVectorForm::~UINumericVectorForm()
 
 void UINumericVectorForm::Draw()
 {
-	ImGui::Begin(m_Title.c_str() , 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::Begin(m_Title.c_str() , 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
 		ImGui::BeginGroup();
 			ImGui::InputFloat("X",&m_Edit.x,0.01,0.1, m_Decimal); ImGui::SameLine(0);
 			if (ImGui::Button("Ok"))CLBOk(); 

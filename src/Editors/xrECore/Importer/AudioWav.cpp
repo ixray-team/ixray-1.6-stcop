@@ -95,9 +95,10 @@ bool XRay::Importer::Audio::ImportWav(shared_str Path, shared_str Out, float Qua
 		return false;
 	}
 
-	if (fmt.format_type != 1 || fmt.bits_per_sample != 16)
+	if (fmt.format_type != 1 || fmt.bits_per_sample != 16 ||
+		fmt.channels == 0 || fmt.channels > 2 || fmt.block_align != fmt.channels * sizeof(s16))
 	{
-		Msg("! Only 16-bit PCM WAV supported");
+		Msg("! Only mono or stereo 16-bit PCM WAV supported");
 		fclose(fin);
 		return false;
 	}
@@ -119,6 +120,9 @@ bool XRay::Importer::Audio::ImportWav(shared_str Path, shared_str Out, float Qua
 	if (vorbis_encode_init_vbr(&vi, fmt.channels, fmt.sample_rate, Quality))
 	{
 		Msg("! vorbis_encode_init_vbr() failed");
+		vorbis_info_clear(&vi);
+		fclose(fin);
+		fclose(fout);
 		return false;
 	}
 
@@ -238,6 +242,7 @@ bool XRay::Importer::Audio::ImportWav(shared_str Path, shared_str Out, float Qua
 
 	vorbis_info_clear(&vi);
 
+	const bool success = !ferror(fin) && !ferror(fout);
 	fclose(fin);
-	fclose(fout);
+	return fclose(fout) == 0 && success;
 }

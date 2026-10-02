@@ -399,8 +399,8 @@ void set_game_date_time(LPCSTR date, LPCSTR time)
 	if (tpGame && ai().get_alife())
 	{
 		u32	years, months, days, hours, minutes, seconds;
-		sscanf(time, "%d:%d:%d", &hours, &minutes, &seconds);
-		sscanf(date, "%d.%d.%d", &days, &months, &years);
+		sscanf(time, "%u:%u:%u", &hours, &minutes, &seconds);
+		sscanf(date, "%u.%u.%u", &days, &months, &years);
 		auto newTime = generate_time(years, months, days, hours, minutes, seconds);
 		float fValue = static_cast<float>(days * 86400 + hours * 3600 + minutes * 60);
 		g_pGamePersistent->Environment().ChangeGameTime(fValue);

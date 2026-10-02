@@ -278,9 +278,9 @@ void SSceneSummary::FillProp(PropItemVec& items)
     PHelper().CreateCaption(items,"Geometry\\Bounding\\Max", 	shared_str().printf("{%3.2f, %3.2f, %3.2f}",VPUSH(bbox.max)));
     PHelper().CreateCaption(items,"Geometry\\Mesh\\Total Faces",   	shared_str().printf("%d",face_cnt));
     PHelper().CreateCaption(items,"Geometry\\Mesh\\Total Vertices",	shared_str().printf("%d",vert_cnt));
-    PHelper().CreateCaption(items,"Geometry\\MU\\Objects",	   	shared_str().printf("%d",mu_objects.size()));
+    PHelper().CreateCaption(items,"Geometry\\MU\\Objects",	   	shared_str().printf("%zu",mu_objects.size()));
     PHelper().CreateCaption(items,"Geometry\\MU\\References",   shared_str().printf("%d",object_mu_ref_cnt));
-    PHelper().CreateCaption(items,"Geometry\\LOD\\Objects",		shared_str().printf("%d",lod_objects.size()));
+    PHelper().CreateCaption(items,"Geometry\\LOD\\Objects",		shared_str().printf("%zu",lod_objects.size()));
     PHelper().CreateCaption(items,"Geometry\\LOD\\References",	shared_str().printf("%d",object_lod_ref_cnt));
     PHelper().CreateCaption(items,"Visibility\\HOM\\Faces",		shared_str().printf("%d",hom_face_cnt));
     PHelper().CreateCaption(items,"Visibility\\HOM\\Vertices",	shared_str().printf("%d",hom_vert_cnt));
@@ -333,18 +333,18 @@ void SSceneSummary::FillProp(PropItemVec& items)
             total_mem_usage		+= cur_mem_usage;
         }
     }
-    total_count->ApplyValue	(shared_str().printf("%d",		textures.size()));
+    total_count->ApplyValue	(shared_str().printf("%zu",		textures.size()));
     total_mem->ApplyValue	(shared_str().printf("%d Kb",	iFloor(total_mem_usage/1024)));
 	// sound
     PHelper().CreateCaption	(items,"Sounds\\Occluder\\Faces",		shared_str().printf("%d",snd_occ_face_cnt));
     PHelper().CreateCaption	(items,"Sounds\\Occluder\\Vertices",	shared_str().printf("%d",snd_occ_vert_cnt));
     PHelper().CreateCaption	(items,"Sounds\\Sources",				shared_str().printf("%d",sound_source_cnt));
-    PHelper().CreateCaption	(items,"Sounds\\Waves\\Count",			shared_str().printf("%d",waves.size()));
+    PHelper().CreateCaption	(items,"Sounds\\Waves\\Count",			shared_str().printf("%zu",waves.size()));
     for (RStringSetIt w_it=waves.begin(); w_it!=waves.end(); w_it++)
         PHelper().CreateCaption(items,PrepareKey("Sounds\\Waves",w_it->c_str()),"-");
     // particles
     PHelper().CreateCaption	(items,"Particle System\\Sources",		shared_str().printf("%d",pe_static_cnt));
-    PHelper().CreateCaption	(items,"Particle System\\Refs\\Count",	shared_str().printf("%d",pe_static.size()));
+    PHelper().CreateCaption	(items,"Particle System\\Refs\\Count",	shared_str().printf("%zu",pe_static.size()));
     for (RStringSetIt pe_it=pe_static.begin(); pe_it!=pe_static.end(); pe_it++)
         PHelper().CreateCaption(items,PrepareKey("Particle System\\Refs",pe_it->c_str()),"-");
 }

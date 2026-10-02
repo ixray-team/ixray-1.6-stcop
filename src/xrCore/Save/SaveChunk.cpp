@@ -52,11 +52,12 @@ bool CSaveChunk::ContainsSubchunk(shared_str subchunkName)
 		if (elem->GetVariableType() != ESaveVariableType::t_chunk)
 		{
 			xr_string Message = "Chunk: ";
-			Message+=_chunkName.c_str();
+			Message += _chunkName.c_str() ? _chunkName.c_str() : "";
 			Message+=", Subchunk: ";
-			Message+=subchunkName.c_str();
-			R_ASSERT4(elem->GetVariableType() != ESaveVariableType::t_chunk,
+			Message += subchunkName.c_str() ? subchunkName.c_str() : "";
+			R_ASSERT4(elem->GetVariableType() == ESaveVariableType::t_chunk,
 				"Attempt to find chunk in array, but it contains something else!", Message.c_str(), std::string(magic_enum::enum_name(elem->GetVariableType())).c_str());
+			return false;
 		}
 		if (((CSaveChunk*)elem)->GetChunkName() == subchunkName)
 		{

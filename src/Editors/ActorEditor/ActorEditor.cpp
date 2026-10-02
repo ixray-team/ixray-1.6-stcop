@@ -103,7 +103,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	if (strstr(pCmdLine, fsgame_ltx_name)) {
 		int						sz = xr_strlen(fsgame_ltx_name);
-		sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+		sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%519[^ ] ", fsgame);
 	}
 
 	CFilewatcher::instance().SetFilewatcherActive(true);
