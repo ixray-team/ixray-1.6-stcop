@@ -22,6 +22,7 @@ public:
 
     virtual void Init() noexcept;
     virtual void Update() noexcept;
+    void Shutdown() noexcept;
 
     void SetStatus(const xr_string&) noexcept;
     void SetPhase(const xr_string&) noexcept;

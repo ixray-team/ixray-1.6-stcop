@@ -36,7 +36,7 @@ public:
 
 private:
 	void InternalCloseLog();
-	volatile bool bIsAlive = true;
+	std::atomic_bool bIsAlive = true;
 
 	void InternalOpenLogFile();
 

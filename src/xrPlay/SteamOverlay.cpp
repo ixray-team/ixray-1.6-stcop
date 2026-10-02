@@ -25,10 +25,16 @@ void CSteamOverlay::BeginPlay()
 	}
 }
 
-CSteamOverlay::~CSteamOverlay()
+void CSteamOverlay::EndPlay()
 {
 	if (Created)
 	{
 		SteamAPI_Shutdown();
+		Created = false;
 	}
+}
+
+CSteamOverlay::~CSteamOverlay()
+{
+	EndPlay();
 }

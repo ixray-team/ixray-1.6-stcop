@@ -42,15 +42,16 @@ int CApplication::Run()
 	InitEngine();
 
 	if (!headless)
+	{
 		splash::Close();
+		if (s.joinable())
+			s.join();
+	}
 
 	MigrateToGameWindow();
 	EngineLoopAndDestroy();
 
 	EndPlay();
-
-	if (s.joinable())
-		s.join();
 
 	return Autotest::Verdict();
 }
@@ -129,7 +130,14 @@ int CApplication::BeginPlay()
 void CApplication::EndPlay()
 {
 	PROF_EVENT("END_PLAY");
+	SteamWorks.EndPlay();
 	xr_delete(g_pStringTable);
+	if (g_AppInfo.Window)
+	{
+		SDL_DestroyWindow(g_AppInfo.Window);
+		g_AppInfo.Window = nullptr;
+	}
+	SDL_Quit();
 	Core._destroy();
 }
 

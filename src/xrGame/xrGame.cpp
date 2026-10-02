@@ -123,6 +123,8 @@ extern "C"
 	{
 		AllEditors_Shutdown();
 		g_imgui_editor_request_manager.requests.wait();
+		luabind::allocator = nullptr;
+		xr_delete(pGameGlobals);
 	}
 	
 	DLL_API void __cdecl xrGameRenderPreDestroy()

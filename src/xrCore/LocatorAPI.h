@@ -262,7 +262,7 @@ public:
 	IC void SetFilewatcherActive(bool Active){FilewatcherActive = Active;}
 	IC bool GetFilewatcherActive() const {return FilewatcherActive;}
 	IC void SetFilewatcher(FilewatcherImplPtr Watcher);
-	
+	void Destroy();
 };
 
 extern XRCORE_API	CLocatorAPI*					xr_FS;
