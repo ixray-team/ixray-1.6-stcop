@@ -303,7 +303,7 @@ public:
 	virtual void					refresh_env_library		()																						= 0;
 	virtual void					set_user_env			(CSound_environment* E)																	= 0;
 	virtual void					refresh_sources			()																						= 0;
-	virtual void					SwitchAuidoDevice		(const xr_string& Name) = 0;
+	virtual void					SwitchAudioDevice		(const xr_string& Name) = 0;
 
 public:
 	xr_delegate<float(u16)> OcclusionMaterialCallback;
