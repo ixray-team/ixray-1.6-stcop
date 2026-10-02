@@ -175,9 +175,12 @@ void IGame_Level::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
 	}
 }
 
+static xrCriticalSection lloadcs;
 bool IGame_Level::Load			(u32 dwNum) 
 {
 	PROF_EVENT("IGame_Level::Load");
+	xrCriticalSectionGuard guard(lloadcs);
+	if (bReady) return true;
 	// Initialize level data
 	pApp->Level_Set				( dwNum );
 	string_path					temp;
