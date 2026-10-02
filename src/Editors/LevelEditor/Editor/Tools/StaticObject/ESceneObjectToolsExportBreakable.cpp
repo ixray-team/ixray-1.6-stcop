@@ -135,7 +135,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 			{
 				// export visual
 				string256 sn = {};
-				sprintf(sn, "meshes\\brkbl#%d.ogf", (p_it - parts.begin()));
+				sprintf(sn, "meshes\\brkbl#%td.ogf", (p_it - parts.begin()));
 
 				xr_string fn = Scene->LevelPath() + sn;
 				IWriter* W = FS.w_open(fn.c_str());
@@ -203,7 +203,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 			}
 			else
 			{
-				ELog.Msg(mtError, "Can't export invalid part #%d", p_it - parts.begin());
+				ELog.Msg(mtError, "Can't export invalid part #%td", p_it - parts.begin());
 			}
 		}
 		EContext.UI->ProgressEnd(pb);
@@ -293,7 +293,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 			{
 				// export visual
 				string256 sn = {};
-				sprintf(sn, "clmbl#%d", (p_it - parts.begin()));
+				sprintf(sn, "clmbl#%td", (p_it - parts.begin()));
 
 				Fvector local_normal	        = {0,0,0};
 
@@ -377,7 +377,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 				}
 			}else
 			{
-				ELog.Msg(mtError,"Can't export invalid part #%d",p_it-parts.begin());
+				ELog.Msg(mtError,"Can't export invalid part #%td",p_it-parts.begin());
 			}
 		}
 		EContext.UI->ProgressEnd(pb);

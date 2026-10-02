@@ -15,7 +15,7 @@ UIPropertiesForm::UIPropertiesForm() :
 
 UIPropertiesForm::~UIPropertiesForm()
 {
-	xr_delete(m_EditTextValueData);
+	xr_free(m_EditTextValueData);
 	ClearProperties();
 }
 
@@ -325,7 +325,7 @@ void UIPropertiesForm::DrawEditText()
 				{
 					if (m_EditTextValue->ApplyValue<CTextValue, const char*>(out.c_str()))
 					{
-						xr_delete(m_EditTextValueData);
+						xr_free(m_EditTextValueData);
 						Modified();
 						ImGui::CloseCurrentPopup();
 					}
@@ -341,7 +341,7 @@ void UIPropertiesForm::DrawEditText()
 					{
 						if (m_EditTextValue->ApplyValue<RTextValue, shared_str>(out))
 						{
-							xr_delete(m_EditTextValueData);
+							xr_free(m_EditTextValueData);
 							Modified();
 							ImGui::CloseCurrentPopup();
 						}
@@ -361,7 +361,7 @@ void UIPropertiesForm::DrawEditText()
 						{
 							if (m_EditTextValue->ApplyValue<STextValue, xr_string>(out))
 							{
-								xr_delete(m_EditTextValueData);
+								xr_free(m_EditTextValueData);
 								Modified();
 								ImGui::CloseCurrentPopup();
 							}
@@ -378,7 +378,7 @@ void UIPropertiesForm::DrawEditText()
 
 		if (ImGui::Button("Cancel"))
 		{
-			xr_delete(m_EditTextValueData);
+			xr_free(m_EditTextValueData);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine(0);
@@ -443,7 +443,7 @@ void UIPropertiesForm::DrawEditText()
 				IReader* F = FS.r_open(fn.c_str());
 
 				F->r_stringZ(buf);
-				xr_delete(m_EditTextValueData);
+				xr_free(m_EditTextValueData);
 				m_EditTextValueData = xr_strdup(buf.c_str());
 				m_EditTextValueDataSize = xr_strlen(m_EditTextValueData)+1;
 				FS.r_close(F);

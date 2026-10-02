@@ -58,7 +58,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	if (strstr(pCmdLine, fsgame_ltx_name)) {
 		int						sz = xr_strlen(fsgame_ltx_name);
-		sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+		sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%519[^ ] ", fsgame);
 	}
 
 	CFilewatcher::instance().SetFilewatcherActive(true);
@@ -121,8 +121,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	xr_strcpy(Console->ConfigFile, "user_editor.ltx");
 
 	if (strstr(Core.Params, "-ltx ")) {
-		string64 c_name;
-		sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
+		string64 c_name = {};
+		sscanf(strstr(Core.Params, "-ltx ") + 5, "%63[^ ] ", c_name);
 		xr_strcpy(Console->ConfigFile, c_name);
 	}
 

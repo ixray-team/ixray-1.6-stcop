@@ -479,9 +479,9 @@ bool  CActorTools::MouseStart(TShiftState Shift)
 			case 2:
 			{
 				CBone* B = m_pEditObject->PickBone(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, m_AVTransform);
-				bool bVal = B ? (Shift | ssAlt) ? false : ((Shift | ssCtrl) ? !B->Selected() : true) : false;
+				bool bVal = B ? (Shift & ssAlt) ? false : ((Shift & ssCtrl) ? !B->Selected() : true) : false;
 				if(B)
-				SelectListItem(BONES_PREFIX, B ? MakeFullBoneName(B).c_str() : 0, bVal, (Shift | ssCtrl) || (Shift | ssAlt), true);
+				SelectListItem(BONES_PREFIX, B ? MakeFullBoneName(B).c_str() : 0, bVal, (Shift & ssCtrl) || (Shift & ssAlt), true);
 			}
 			break;
 			case 1:
@@ -529,15 +529,15 @@ bool  CActorTools::MouseEnd(TShiftState Shift)
 		switch (m_EditMode)
 		{
 		case emObject:
-			if (Shift|ssCtrl)
+			if (Shift&ssCtrl)
 				OnMotionKeysModified();
 			break;
 
 		case emBone:
-			if (Shift|ssCtrl)
+			if (Shift&ssCtrl)
 				OnBoneModified();
 
-			if (Shift|ssAlt)
+			if (Shift&ssAlt)
 				OnBoneModified();
 			break;
 		}
@@ -547,15 +547,15 @@ bool  CActorTools::MouseEnd(TShiftState Shift)
 		switch (m_EditMode)
 		{
 		case emObject:
-			if (Shift|ssCtrl)
+			if (Shift&ssCtrl)
 				OnMotionKeysModified();
 			break;
 
 		case emBone:
-			if (Shift|ssCtrl)
+			if (Shift&ssCtrl)
 				OnBoneModified();
 
-			if (Shift|ssAlt)
+			if (Shift&ssAlt)
 				OnBoneModified();
 			break;
 		}
@@ -565,7 +565,7 @@ bool  CActorTools::MouseEnd(TShiftState Shift)
 		switch (m_EditMode)
 		{
 		case emBone:
-			if (Shift|ssCtrl)
+			if (Shift&ssCtrl)
 				OnBoneModified();
 			break;
 		}
@@ -590,21 +590,20 @@ void  CActorTools::MouseMove(TShiftState Shift)
 		switch (m_EditMode)
 		{
 		case emObject:
-			if (true || Shift | ssCtrl)
-				m_pEditObject->a_vPosition.add(m_MovedAmount);
+			m_pEditObject->a_vPosition.add(m_MovedAmount);
 			break;
 
 		case emBone:
 			BoneVec lst;
 			if (m_pEditObject->GetSelectedBones(lst))
 			{
-				if (Shift | ssCtrl) {
+				if (Shift & ssCtrl) {
 					for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
 					   ShapeMove(*(*b_it),m_MovedAmount);
 
 				}
 				else
-					if (Shift | ssAlt)
+					if (Shift & ssAlt)
 					{
 						for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
 							(*b_it)->BindMove(m_MovedAmount);
@@ -627,7 +626,7 @@ void  CActorTools::MouseMove(TShiftState Shift)
 		switch (m_EditMode)
 		{
 		case emObject:
-			if (Shift | ssCtrl)
+			if (Shift & ssCtrl)
 				m_pEditObject->a_vRotate.mad(m_RotateVector, m_RotateAmount);
 			break;
 
@@ -638,14 +637,14 @@ void  CActorTools::MouseMove(TShiftState Shift)
 			rot.mul(m_RotateVector, m_RotateAmount);
 			if (m_pEditObject->GetSelectedBones(lst))
 			{
-				if (Shift | ssCtrl)
+				if (Shift & ssCtrl)
 				{
 					for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
 					  ShapeRotate(*(*b_it),rot);
 
 				}
 				else
-					if (Shift | ssAlt)
+					if (Shift & ssAlt)
 					{
 						for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
 							(*b_it)->BindRotate(rot);
@@ -669,7 +668,7 @@ void  CActorTools::MouseMove(TShiftState Shift)
 		switch (m_EditMode)
 		{
 		case emBone:
-			if (Shift | ssCtrl)
+			if (Shift & ssCtrl)
 			{
 				BoneVec lst;
 				if (m_pEditObject->GetSelectedBones(lst))
@@ -860,7 +859,7 @@ bool CActorTools::ImportOMF(const char* obj_name)
 		{
 			OnMotionDefsModified();
 			UpdateProperties();
-			Msg("Imported %d motion(s) from '%s'.", appended_motions.size(), obj_name);
+			Msg("Imported %zu motion(s) from '%s'.", appended_motions.size(), obj_name);
 			EFS.MarkFile(temp_fn, true);
 			return true;
 		}
@@ -1163,7 +1162,7 @@ bool CActorTools::BatchConvert(const char* fn)
 	if (ini->section_exist("ogf"))
 	{
 		CInifile::Sect& sect = ini->r_section("ogf");
-		Msg("Start converting %d items...", sect.Data.size());
+		Msg("Start converting %zu items...", sect.Data.size());
 		for (auto it = sect.Data.begin(); it != sect.Data.end(); it++) {
 			string_path 		src_name;
 			string_path 		tgt_name;
@@ -1190,7 +1189,7 @@ bool CActorTools::BatchConvert(const char* fn)
 	if (ini->section_exist("omf"))
 	{
 		CInifile::Sect& sect = ini->r_section("omf");
-		Msg("Start converting %d items...", sect.Data.size());
+		Msg("Start converting %zu items...", sect.Data.size());
 		for (auto it = sect.Data.begin(); it != sect.Data.end(); ++it)
 		{
 			string_path 		src_name;

@@ -624,7 +624,7 @@ bool CWayObject::LoadLTX(CInifile& ini, const char* sect_name)
 			u32 wp_idx 		= u32(-1);
 			u32 wp_link_idx = u32(-1);
 
-			int res = sscanf(cit->first.c_str(),"link_wp_%4d_%4d",&wp_idx, &wp_link_idx);
+			int res = sscanf(cit->first.c_str(),"link_wp_%4u_%4u",&wp_idx, &wp_link_idx);
 			R_ASSERT4(res==2, "bad waypoint link record format", sect_name, cit->first.c_str());
 
 			Fvector2 val 		= ini.r_fvector2(sect_name,cit->first.c_str());

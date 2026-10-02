@@ -160,7 +160,7 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 				ListItemsVec items;
 				if (m_ObjectItems->GetSelected(MOTIONS_PREFIX, items, true))
 				{
-					if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Delete selected %d item(s)?", items.size()) == mrYes) 
+					if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Delete selected %zu item(s)?", items.size()) == mrYes)
 					{
 						auto DeleteCallback = [this, items]()
 						{
@@ -775,7 +775,7 @@ void CActorTools::FillBoneProperties(PropItemVec& items, const char* pref, ListI
 	R_ASSERT(m_pEditObject);
 	CBone* BONE = (CBone*)sender->m_Object;
 
-	PHelper().CreateCaption	(items, PrepareKey(pref,"Global\\Bone count"),	shared_str().printf("%d",m_pEditObject->m_Bones.size()));
+	PHelper().CreateCaption	(items, PrepareKey(pref,"Global\\Bone count"),	shared_str().printf("%zu",m_pEditObject->m_Bones.size()));
 	ButtonValue* B;
 	B=PHelper().CreateButton	(items, PrepareKey(pref,"Global\\File"),"Load,Save",ButtonValue::flFirstOnly);
 	B->OnBtnClickEvent.bind		(this,&CActorTools::OnBoneFileClick);

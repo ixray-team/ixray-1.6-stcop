@@ -259,7 +259,7 @@ bool CUI_Camera::MoveStart(TShiftState Shift)
 bool CUI_Camera::MoveEnd(TShiftState Shift)
 {
     m_Shift = Shift;
-    if ((!Shift & ssLeft) || (!Shift & ssShift))
+    if (!(Shift & ssLeft) || !(Shift & ssShift))
     {
         SDL_WarpMouseInWindow(EContext.UI->CurrentView().WndHandle, m_StartPos.x, m_StartPos.y);
         ShowCursor(true);
