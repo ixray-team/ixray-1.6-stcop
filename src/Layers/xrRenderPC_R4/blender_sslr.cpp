@@ -33,7 +33,6 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 		C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
         C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Texture("s_depth_min", r2_RT_sslr_depth_min);
         C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
@@ -54,7 +53,7 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         C.r_dx10Texture("s_refl", r2_RT_sslr_data);
 
-        C.r_dx10Texture("s_image", r2_RT_sslr_trace);
+        C.r_dx10Texture("s_image", r2_RT_sslr);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
 
         C.r_dx10Sampler("smp_linear");
@@ -65,7 +64,6 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         break;
     case 2:
-    case 5:
 		C.r_ComputePass("sslr_temporal");
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
@@ -77,22 +75,13 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("env_s0", r2_T_envs0);
         C.r_dx10Texture("env_s1", r2_T_envs1);
 
-        C.r_dx10Texture("s_refl", C.iElement == 5 ? r2_RT_sslr_hist : r2_RT_sslr_old);
+        C.r_dx10Texture("s_refl", r2_RT_sslr_old);
 
         C.r_dx10Texture("s_image", r2_RT_sslr_temp);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
 
         C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
-
-        C.r_End();
-
-        break;
-    case 4:
-        C.r_ComputePass("sslr_depth_min");
-
-        C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();

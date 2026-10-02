@@ -21,6 +21,7 @@ function normal_impl(shader, vs, t_base)
 	:fog(true)
 	
 	if wboit then
+		AddShaderOption("USE_WBOIT_TRANSPARENCY", "1")
 		shader:blend(true, blend.one, blend.one)
 		: iblend(2, true, blend.destcolor, blend.zero)
 		: iblend(1, true, blend.srcalpha, blend.invsrcalpha)

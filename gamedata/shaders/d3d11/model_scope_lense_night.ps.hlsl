@@ -4,12 +4,13 @@
 
 struct v2p
 {
-    float2 tc0: TEXCOORD0;
-    float3 tc1: TEXCOORD1;
-    float4 c0: COLOR0;
+    float2 tc0 : TEXCOORD0;
+    float4 c0 : COLOR0;
+    float4 hpos : SV_POSITION;
+    float fog : FOG;
 };
 
-float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
+float4 main(v2p I) : SV_Target
 {
     if (m_hud_params.y * m_hud_params.a < 0.0001f)
 	{
@@ -19,7 +20,7 @@ float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
     float4 t_base = s_base.Sample(smp_base, I.tc0);
 	t_base.xyz = detonemap(t_base.xyz);
 	
-    float4 t_vp2 = s_image[pos2d.xy];
+    float4 t_vp2 = s_image[I.hpos.xy];
 	
 	t_vp2.xyz = LinearToGamma(t_vp2.xyz) * 3.5f; t_vp2.xyz /= t_vp2.xyz + 1.0f;
 	t_vp2.xyz = calc_night_vision_effect(I.tc0, t_vp2, float3(1.0, 2.0, 1.0)).xyz;

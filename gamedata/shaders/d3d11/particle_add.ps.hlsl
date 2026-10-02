@@ -5,8 +5,10 @@ struct v2p
     float2 tc : TEXCOORD0;
     float4 c : COLOR0;
 
+#if defined(USE_SOFT_PARTICLES) && !defined(DISABLE_SOFT_PARTICLES)
     float3 tctexgen : TEXCOORD1;
     float4 hpos : SV_POSITION;
+#endif
     float fog : FOG;
 };
 

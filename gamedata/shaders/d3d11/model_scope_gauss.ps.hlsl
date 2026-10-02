@@ -2,12 +2,13 @@
 
 struct v2p
 {
-    float2 tc0: TEXCOORD0;
-    float3 tc1: TEXCOORD1;
-    float4 c0: COLOR0;
+    float2 tc0 : TEXCOORD0;
+    float4 c0 : COLOR0;
+    float4 hpos : SV_POSITION;
+    float fog : FOG;
 };
 
-float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
+float4 main(v2p I) : SV_Target
 {
     if (m_hud_params.y * m_hud_params.a < 0.0001f) {
 		return 0.0f;
@@ -15,7 +16,7 @@ float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
 	
     float4 t_base = s_base.Sample(smp_base, I.tc0);
 	float blow_noise	= get_noise(I.tc0*timers.z) * m_affects.x * m_affects.x * 30;	
-    float4 t_vp2 = s_image[pos2d.xy];
+    float4 t_vp2 = s_image[I.hpos.xy];
 	t_vp2.r += blow_noise;
 	t_vp2.g += blow_noise;
 	t_vp2.b += blow_noise;	

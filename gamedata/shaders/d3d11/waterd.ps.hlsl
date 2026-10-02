@@ -21,7 +21,6 @@ Texture2D s_distort;
 // Pixel
 float4 main(vf I) : SV_Target
 {
-    float4 pos2d = I.hpos;
     float alpha = 1.0f - s_base.Sample(smp_base, I.tbase).w;
 	
     float2 t_d0 = s_distort.Sample(smp_base, I.tnorm0).xy;
@@ -30,7 +29,7 @@ float4 main(vf I) : SV_Target
 
 
 #ifdef USE_SOFT_WATER
-    float4 Point = GbufferGetPoint(pos2d.xy);
+    float4 Point = GbufferGetPoint(I.hpos.xy);
 
     float3 waterPos = Point.xyz * rcp(Point.z) * I.tctexgen.z;
     float waterDepth = length(waterPos - Point.xyz) * 0.75f;

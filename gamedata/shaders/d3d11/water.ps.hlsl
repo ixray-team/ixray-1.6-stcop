@@ -33,7 +33,6 @@ float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 // Pixel
 void main(vf I, out IXRayForward O)
 {
-	float4 pos2d = I.hpos;
 	O = (IXRayForward)0;
 	float4 base = s_base.Sample(smp_base, I.tbase);
 	
@@ -80,7 +79,7 @@ void main(vf I, out IXRayForward O)
 		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
 		vslr.w *= 1.f - Fog * Fog;
 		
-		vslr.xyz = s_env.SampleLevel(smp_linear, vslr.xyz, 0.0f);
+		vslr.xyz = s_env.SampleLevel(smp_linear, vslr.xyz, 0.0f).xyz;
 	#endif
 #endif
 
@@ -121,7 +120,7 @@ void main(vf I, out IXRayForward O)
 	
 	// Igor: additional depth test
 #ifdef USE_SOFT_WATER
-    float4 Point = GbufferGetPoint(pos2d.xy);
+    float4 Point = GbufferGetPoint(I.hpos.xy);
 	float waterDepth = length(I.tctexgen.xyz - Point.xyz) * 0.75f;
 
 	//	water fog
@@ -163,7 +162,7 @@ void main(vf I, out IXRayForward O)
 	}
 #endif
 
-	float3 Light = s_accumulator.Load(int3(pos2d.xy, 0), 0).xyz;
+	float3 Light = s_accumulator.Load(int3(I.hpos.xy, 0), 0).xyz;
 	Light = LinearToGamma(Light);
 	Light *= 1.0f - base.w;
 	
@@ -193,7 +192,7 @@ void main(vf I, out IXRayForward O)
 	O.Velocity = 0.0f;
 #endif
 	
-#ifdef ALLOW_WBOIT_TRANSPARENCY
+#ifdef USE_WBOIT_TRANSPARENCY
 	WboitBufferPack(O, I.tctexgen);
 #endif
 }

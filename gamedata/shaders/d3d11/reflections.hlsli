@@ -32,7 +32,6 @@ float2 gbuf_unpack_uv(float3 position)
     return saturate(Point.xy);
 }
 
-Texture2D s_depth_min;
 #define SSLR_STEPS 20
 #define MAX_FIND_STEP 4
 
@@ -99,11 +98,10 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 	
 	float MaxLen = 0; //s_env_dist.SampleLevel(smp_nofilter, Reflect.xyz, 0).x; MaxLen *= MaxLen;
 
-	float Jitter0 = Hash(dot(sin(Point.xyz * timers.x), float3(12.989, 42.364, 78.233)));
 	[loop]
 	for(uint i = 0; i < SSLR_STEPS; ++i)
 	{
-		float JStep = Step * lerp(0.8f, 1.2f, frac(Jitter0 + 0.61803398875f * i));
+		float JStep = Step * lerp(0.8f, 1.2f, Hash(dot(sin(SamplePoint.xyz * timers.x), float3(12.989, 42.364, 78.233))));
 		L += JStep;
 		
 		Step *= 1.342264f;
@@ -181,34 +179,23 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 	float Delta = 0.0f;
 	float OldDelta = 0.0f;
 	
-	float Jitter0 = Hash(dot(sin(Point.xyz * timers.x), float3(12.989, 42.364, 78.233)));
 	[loop]
 	for(uint i = 0; i < SSLR_STEPS; ++i)
 	{
-		float JStep = Step * lerp(0.8f, 1.2f, frac(Jitter0 + 0.61803398875f * i));
+		float JStep = Step * lerp(0.8f, 1.2f, Hash(dot(sin(EndProj.xyz * timers.x), float3(12.989, 42.364, 78.233))));
 		L += JStep;
 		
 		Step *= StepScale;
 		
 		EndProj.xyz = StartProj.xyz + Reflect * L;
 		
+		float HitDepth = s_position.SampleLevel(smp_nofilter, EndProj.xy, 0).x;		
+		Delta = EndProj.z - HitDepth;
+		
 		if(!GetBorderAtten(EndProj.xy))
 		{
 			return 0.0f;
 		}
-		
-		// The coarse minimum depth tells that the ray is still in front of every pixel of the block
-		float Coarse = s_depth_min.SampleLevel(smp_nofilter, EndProj.xy, 0).x;
-		
-		[branch]
-		if(EndProj.z < Coarse - 0.001f * (1.0f - Coarse) - 1e-6f && (is_hud || Coarse > 0.02f))
-		{
-			OldDelta = -1.0f;
-			continue;
-		}
-		
-		float HitDepth = s_position.SampleLevel(smp_nofilter, EndProj.xy, 0).x;
-		Delta = EndProj.z - HitDepth;
 		
 		if (Delta > 0 && OldDelta <= 0 && (is_hud || HitDepth > 0.02f))
 		{

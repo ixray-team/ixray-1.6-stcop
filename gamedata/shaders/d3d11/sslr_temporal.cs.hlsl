@@ -28,7 +28,6 @@ float HistoryClamp(float3 History, float3 Filtered, float3 aabb_min, float3 aabb
 }
 
 RWTexture2D<float4> u_sslr : register(u0);
-RWTexture2D<float4> u_hist : register(u1);
 
 [numthreads(8, 8, 1)]
 void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
@@ -47,7 +46,6 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	if(O.Depth >= 1.0f)
 	{
 		u_sslr[DTid.xy] = float4(SSLR4.xyz, O.Depth);
-		u_hist[DTid.xy] = float4(SSLR4.xyz, O.Depth);
 		return;
 	}
 	
@@ -101,6 +99,5 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR_OldDiffyse.xyz, DepthClamp * 0.98f);
 	
 	u_sslr[DTid.xy] = SSLRMain;
-	u_hist[DTid.xy] = SSLRMain;
 }
 

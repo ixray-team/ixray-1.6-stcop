@@ -2,9 +2,8 @@
 
 struct 	v2p
 {
- 	float2 	tc0: 		TEXCOORD0;	// base
- 	float3 	tc1: 		TEXCOORD1;
-  	float4	c0:			COLOR0;		// sun.(fog*fog)
+	float2 	tc0: 		TEXCOORD0;	// base
+	float4	c0:			COLOR0;		// sun.(fog*fog)
 };
 
 float4 main( v2p I ) : SV_Target
