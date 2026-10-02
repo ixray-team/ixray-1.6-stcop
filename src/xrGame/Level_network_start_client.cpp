@@ -121,6 +121,8 @@ bool	CLevel::net_start_client3				()
 		
 		deny_m_spawn			= false;
 		// Load level
+		extern xr_task_group level_load;
+		level_load.wait();
 		R_ASSERT2				(Load(level_id),"Loading failed.");
 		map_data.m_level_geom_crc32 = 0;
 		if (!IsGameTypeSingle())
