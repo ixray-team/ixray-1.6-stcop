@@ -168,6 +168,12 @@ private:
     mutable xrCriticalSection _contextMutex;
     static constexpr u32 FrameCount = 3;
     static constexpr u32 RootConstantSlots = 4;
+    static constexpr u32 TableConstantCount = 14 - RootConstantSlots;
+    static constexpr u32 TablesPerStage = 3;
+    static constexpr u32 GraphicsTableCount = 5 * TablesPerStage + 1;
+    static constexpr u32 ComputeTableCount = TablesPerStage + 1;
+    static_assert(GraphicsTableCount + 5 * RootConstantSlots * 2 <= 64, "graphics root signature exceeds 64 DWORDs");
+    static_assert(ComputeTableCount + RootConstantSlots * 2 <= 64, "compute root signature exceeds 64 DWORDs");
     static constexpr u32 ResourceDescriptorCount = 1000000;
     static constexpr u32 StaticResourceDescriptors = 65536;
     static constexpr u32 SamplerDescriptorCount = 2048;
@@ -245,9 +251,15 @@ private:
         bool IsSampler = false;
         D3D12_GPU_DESCRIPTOR_HANDLE Handle = {};
     };
-    struct StageTable
+    struct ConstantCache
     {
-        u64 Keys[26] = {};
+        u64 Keys[TableConstantCount] = {};
+        D3D12_GPU_DESCRIPTOR_HANDLE Handle = {};
+        u64 Generation = 0;
+    };
+    struct ViewCache
+    {
+        u64 Keys[16] = {};
         D3D12_GPU_DESCRIPTOR_HANDLE Handle = {};
         u64 ShaderId = 0;
         u64 Generation = 0;
@@ -417,8 +429,8 @@ private:
     bool _drawBindingsValid = false;
     bool _draining = false;
     bool _gpuContextLive = false;
-    D3D12_GPU_DESCRIPTOR_HANDLE _boundGraphicsTables[11] = {};
-    D3D12_GPU_DESCRIPTOR_HANDLE _boundComputeTables[3] = {};
+    D3D12_GPU_DESCRIPTOR_HANDLE _boundGraphicsTables[GraphicsTableCount] = {};
+    D3D12_GPU_DESCRIPTOR_HANDLE _boundComputeTables[ComputeTableCount] = {};
     bool _boundGraphicsPipeline = false;
     bool _pipelineDirty = true;
     bool _viewsDirty[6] = { true, true, true, true, true, true };
@@ -430,7 +442,9 @@ private:
     u64 _nullConstantsEpoch = 0;
     u64 _barrierEpoch = 1;
     u64 _attachmentEpoch = 0;
-    StageTable _stageTables[6];
+    ConstantCache _constantCaches[6];
+    ViewCache _viewCaches[6];
+    DX12Descriptor _nullCbv = {};
     SamplerCache _samplerCaches[6];
     UAVCache _uavCaches[2];
     std::atomic<u32> _pendingCount{ 0 };
@@ -474,7 +488,9 @@ private:
     void BindNullConstants(bool compute);
     void BindRootConstants(bool compute);
     void FinishDraw();
-    D3D12_GPU_DESCRIPTOR_HANDLE ResourceTable(u32 stage);
+    u32 RootConstantParameter(bool compute, u32 stage, u32 slot) const;
+    D3D12_GPU_DESCRIPTOR_HANDLE ConstantTable(u32 stage);
+    D3D12_GPU_DESCRIPTOR_HANDLE ViewTable(u32 stage);
     D3D12_GPU_DESCRIPTOR_HANDLE SamplerTable(u32 stage);
     D3D12_GPU_DESCRIPTOR_HANDLE UAVTable(bool compute);
     D3D12_GPU_DESCRIPTOR_HANDLE FindTable(const DescriptorTable& table);

@@ -36,7 +36,7 @@ public:
 	void			occq_destroy	(				);
 	u32				occq_begin		(u32&	ID		);	// returns 'order'
 	void			occq_end		(u32&	ID		);
-	occq_result		occq_get		(u32&	ID		);
+	bool			occq_get		(u32& ID, occq_result& fragments);
 	void			occq_refresh		();
 	void			occq_stats		();
 };
