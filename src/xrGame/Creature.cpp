@@ -549,7 +549,10 @@ void CCreature::eye_pp_s2				( )
 	u32 dwTime			= Level().timeServer();
 	u32 dwDT			= dwTime-eye_pp_timestamp;
 	eye_pp_timestamp	= dwTime;
-	feel_vision_update						(eye_matrix.c,float(dwDT)/1000.f,memory().visual().transparency_threshold());
+	Device.SecondaryTasks.run([=]()
+	{
+		feel_vision_update(eye_matrix.c, float(dwDT)/1000.f, memory().visual().transparency_threshold());
+	});
 	Device.Statistic->AI_Vis_RayTests.End	();
 }
 
