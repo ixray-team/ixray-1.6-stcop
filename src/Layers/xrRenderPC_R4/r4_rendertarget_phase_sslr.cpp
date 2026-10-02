@@ -199,7 +199,6 @@ void CRender::collect_reflections()
 		return;
 	}
 
-	GPU_EVENT(COLLECT_REFLECTIONS);
 	Device.Statistic->TEST2.Begin();
 
 	const u32 dwSize = Target->rt_Reflection->dwSize;
