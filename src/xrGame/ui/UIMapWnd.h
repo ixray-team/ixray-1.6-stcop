@@ -10,7 +10,6 @@ class CUIGlobalMap;
 class CUIFrameWindow;
 class CUIScrollBar;
 class CUIFrameLineWnd;
-class FRbmkMapActionPlanner;
 class CUITabControl;
 class CUIStatic;
 class CUI3tButton;
@@ -55,7 +54,6 @@ private:
 	CUIScrollBar*				m_UIMainScrollV;
 	CUIScrollBar*				m_UIMainScrollH;
 	CUIWindow*					m_UILevelFrame;
-	FRbmkMapActionPlanner*		m_ActionPlanner;
 	CUIFrameLineWnd*			UIMainMapHeader;
 
 	CUIMapLocationHint*			m_map_location_hint;
@@ -83,8 +81,6 @@ private:
 	UIMapZoomScale*				_zoomScale = nullptr;
 	CPdaUiSounds*				m_pUiSounds = nullptr;
 	u32							m_nav_timing;
-	Fvector2					m_controller_cursor_pos = { 0, 0 };
-	Fvector2					m_controller_cursor_pos_initial = { 0, 0 };
 
 	bool						m_personalSpotPlacement = false;
 	bool						m_personalSpotRmbMode = false;
@@ -115,7 +111,7 @@ private:
 	void						OnToolPrevMapClicked	(CUIWindow*, void*);
 
 	void						ResetActionPlanner		();
-	void						UpdateControllerCursor	();
+	void						UpdateControllerCursorStatic();
 
 	CMapLocation* m_cur_location;
 	CUIPropertiesBox* m_UIPropertiesBox;
@@ -147,10 +143,24 @@ public:
 	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 	CUIPdaSpot*					m_UserSpotWnd;
 
+	enum EMapZoomState : u8
+	{
+		zoom_initialize = 0,
+		zoom_search_level_map = 1,
+		zoom_restart = 2,
+		zoom_update_fly = 3,
+		zoom_idle = 4
+	};
+	EMapZoomState m_zoom_state = zoom_initialize;
+	float m_zoom_end_moving_time = 0.0f;
+
 protected:
 	void						init_xml_nav			(CUIXml& xml, const char* start_from);
 	void						ShowHint				(bool extra = false);
 	void						Activated				();
+	Fvector2					GetMapCursorAbsPos		();
+	void						ConvertGlobalMapSpaceToAbsWndSpace(Fvector2& pos);
+	void						UpdateMapToMapCursor	();
 
 public:
 								CUIMapWnd				();
@@ -211,4 +221,13 @@ public:
 	u16							GetIdxByName			(const shared_str& map_name);
 	void						UpdateScroll			();
 	shared_str					cName					() const	{return "ui_map_wnd";};
+
+protected:
+	float m_target_zoom = 0.0f;
+	Frect m_desired_map_rect;
+
+	void ZoomUpdateLogic();
+	void ZoomStart();
+	bool ZoomTargetMapShown();
+	void ZoomMoveMap();
 };
