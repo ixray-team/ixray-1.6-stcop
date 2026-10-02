@@ -312,7 +312,7 @@ void CUI3tButton::Update()
 
 void CUI3tButton::SetBtnStaticClrE(u32 clr)
 {
-	m_BtnStaticParams.m_ClrStateD = clr;
+	m_BtnStaticParams.m_ClrStateE = clr;
 }
 
 void CUI3tButton::SetBtnStaticClrD(u32 clr)

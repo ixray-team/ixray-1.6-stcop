@@ -275,7 +275,7 @@ void SPHBonesData::net_Save(NET_Packet &P)
 	P.w_u16((u16)bones.size());//bones number;
 
 	if(bones.size() > 64) {
-		Msg("!![SPHBonesData::net_Save] bones_size is [%u]!", bones.size());
+		Msg("!![SPHBonesData::net_Save] bones_size is [%zu]!", bones.size());
 		P.w_u64(bones_mask._visimask_ex.flags);
 	}
 

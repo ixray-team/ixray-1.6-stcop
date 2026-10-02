@@ -346,7 +346,7 @@ void clientdata_proxy::upload_file_callback(file_transfer::sending_status_t stat
 	{
 	case file_transfer::sending_data:
 		{
-			Msg("* uploaded %d from %d bytes to client [%d]", uploaded, total, m_admin_id);
+			Msg("* uploaded %d from %d bytes to client [%u]", uploaded, total, m_admin_id.value());
 		}break;
 	case file_transfer::sending_aborted_by_user:
 		{
@@ -354,11 +354,11 @@ void clientdata_proxy::upload_file_callback(file_transfer::sending_status_t stat
 		}break;
 	case file_transfer::sending_rejected_by_peer:
 		{
-			Msg("* upload file terminated by peer [%d]", m_admin_id);
+			Msg("* upload file terminated by peer [%u]", m_admin_id.value());
 		}break;
 	case file_transfer::sending_complete:
 		{
-			Msg("* upload file to admin [%d] complete !", m_admin_id);
+			Msg("* upload file to admin [%u] complete !", m_admin_id.value());
 		}break;
 	};
 }

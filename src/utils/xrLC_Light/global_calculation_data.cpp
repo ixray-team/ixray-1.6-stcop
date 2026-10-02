@@ -368,7 +368,7 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 			triangles.push_back(F.Get());
 		}
 
-		Msg("RayQuery Box Model: Faces : %u | Vertex: %u", triangles.size(), verts.size());
+		Msg("RayQuery Box Model: Faces : %zu | Vertex: %zu", triangles.size(), verts.size());
 		RCAST_Model->build(verts.data(), verts.size(), triangles.data(), triangles.size(), 
 			nullptr, nullptr, nullptr, false , false);
 	}

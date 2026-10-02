@@ -119,8 +119,7 @@ void UIIconPicker::InitItemList()
 {
 	string_path Path = {};
 
-	FS.update_path(Path, _game_textures_, "");
-	sprintf(Path, "%s%s", Path, "ed\\content_browser\\");
+	FS.update_path(Path, _game_textures_, "ed\\content_browser\\");
 	FS.file_list(texture_map, Path, FS_ListFiles | FS_ClampExt, "*.dds");
 
 	FS_FileSetIt it = texture_map.begin();

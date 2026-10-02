@@ -1466,6 +1466,8 @@ bool CUIActorMenuBase::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 
 bool CUIActorMenuBase::ToQuickSlot(CUICellItem* itm)
 {
+	if (!m_pQuickSlot)
+		return false;
 	PIItem iitem = (PIItem)itm->m_pData;
 	CEatableItemObject* eat_item = smart_cast<CEatableItemObject*>(iitem);
 	if(!eat_item)
@@ -1478,7 +1480,7 @@ bool CUIActorMenuBase::ToQuickSlot(CUICellItem* itm)
 	//Alundaio: END
 
 	u8 slot_idx = u8(m_pQuickSlot->PickCell(GetUICursor().GetCursorPosition()).x);
-	if(slot_idx==255)
+	if (slot_idx >= std::size(ACTOR_DEFS::g_quick_use_slots))
 		return false;
 
 	if (m_pQuickSlot && m_pQuickSlot->SetItem(create_cell_item(iitem), GetUICursor().GetCursorPosition())) {

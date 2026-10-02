@@ -67,9 +67,9 @@ bool is_item_in_list(CUIDragDropListEx* pList, PIItem item)
 
 CUIActorMenuBase::CUIActorMenuBase()
 {
-	for (u8 i = 0; i <= 4; ++i)
+	for (auto& highlight : m_QuickSlotsHighlight)
 	{
-		m_QuickSlotsHighlight[i] = nullptr;
+		highlight = nullptr;
 	}
 	m_ArtefactSlotsHighlight.clear();
 	LoadCallbackGlobals(m_isCanMoveToPartner, m_onCanMoveToPartner, "OnCanMoveToPartner");

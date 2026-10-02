@@ -1159,7 +1159,7 @@ void RenderTextureEditor()
 									case 0:
 									{
 										char sel_name[sizeof(CImGuiTextureEditor::STextureEntry::path)];
-										std::sprintf(sel_name, "[%d] %s", row + 1, texture.filename);
+										xr_sprintf(sel_name, "[%u] %s", row + 1, texture.filename);
 
 										bool selected_status = g_imgui_texture_editor.selected_index == g_imgui_texture_editor.filter_query[row];
 

@@ -1516,7 +1516,7 @@ void game_sv_CaptureTheArtefact::OnPlayerHitPlayer_Case(
 				pHitS->impulse *= (GetFriendlyFire()>1.0f) ? GetFriendlyFire() : 1.0f;
 			}
 		}
-		if (ps_hitted->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
+		if (ps_hitted && ps_hitted->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
 		{
 			pHitS->power = 0;
 			pHitS->impulse = 0;

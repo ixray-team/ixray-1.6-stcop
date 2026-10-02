@@ -268,6 +268,8 @@ Fvector   CMonsterSquad::calc_monster_target_dir (CBaseMonster* monster, const C
 
 	const u8 squad_size  = squad_alife_count();
 	VERIFY(squad_size);
+	if (!squad_size)
+		return home2enemy.normalize();
 
 	u8 squad_index = get_index(monster);
 	if ( squad_index == u8(-1))

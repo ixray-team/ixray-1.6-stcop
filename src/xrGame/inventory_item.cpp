@@ -326,11 +326,11 @@ void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 	m_custom_text_anchor = ParseInvCellAnchor(
 		READ_IF_EXISTS(pSettings, r_string, section, "item_custom_text_anchor", "bottom_right"));
 
+	m_custom_text_font = nullptr;
 	if (pSettings->line_exist(section, "item_custom_text_font"))
 	{
 		shared_str font_str = pSettings->r_string(section, "item_custom_text_font");
 		m_custom_text_font = UI().Font().GetFont(font_str);
-		m_custom_text_font = nullptr;
 	}
 
 	if (pSettings->line_exist(section, "item_custom_text_clr_inv"))

@@ -223,7 +223,7 @@ void CUIDiaryWnd::LoadJournalTab			(ARTICLE_DATA::EArticleType _type)
 			}
 		}
 	}
-	g_pda_info_state	&=	!pda_section::journal;
+	g_pda_info_state	&=	~pda_section::journal;
 	UpdateGamepadLegend();
 }
 

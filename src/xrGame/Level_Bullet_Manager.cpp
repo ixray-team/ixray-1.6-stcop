@@ -166,7 +166,7 @@ void CBulletManager::Step()
 
 	if (m_Events.size() > 1000)
 	{
-		Msg("! Too many bullets during single frame: %d. m_Events.size() > 1000", m_Events.size());
+		Msg("! Too many bullets during single frame: %zu. m_Events.size() > 1000", m_Events.size());
 	}
 
 	for (_event& e : m_Events)

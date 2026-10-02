@@ -198,8 +198,9 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 	{
 		if (strstr(Core.Params, "-$"))
 		{
-			string256 buf, cmd, param;
-			sscanf(strstr(Core.Params, "-$") + 2, "%[^ ] %[^ ] ", cmd, param);
+			string512 buf;
+			string256 cmd = {}, param = {};
+			sscanf(strstr(Core.Params, "-$") + 2, "%255[^ ] %255[^ ] ", cmd, param);
 			xr_strconcat(buf, cmd, " ", param);
 			Console->Execute(buf);
 		}

@@ -31,7 +31,7 @@ void CHelmet::OnMoveToRuck(const SInvItemPlace& previous_place)
 
 		static const bool TorchOnlyOutfit = EngineExternal()[EEngineExternalGame::EnableTorchOnlyInOutfit];
 
-		if (TorchOnlyOutfit)
+		if (TorchOnlyOutfit && pActor)
 		{
 			CTorch* pTorch = static_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
 			if (pTorch != nullptr)

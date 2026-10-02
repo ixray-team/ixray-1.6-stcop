@@ -1360,7 +1360,7 @@ struct CCC_StartTimeSingle : public IConsole_Command {
 	virtual void	Execute(const char* args)
 	{
 		u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
-		sscanf(args, "%d.%d.%d %d:%d:%d.%d", &year, &month, &day, &hours, &mins, &secs, &milisecs);
+		sscanf(args, "%u.%u.%u %u:%u:%u.%u", &year, &month, &day, &hours, &mins, &secs, &milisecs);
 		year = std::max(year, 1u);
 		month = std::max(month, 1u);
 		day = std::max(day, 1u);
@@ -1700,8 +1700,8 @@ public:
 		{
 			char  name[1024];
 			float f;
-			sscanf(arguments, "%s %f", name, &f);
-			ai_dbg::set_var(name, f);
+			if (sscanf(arguments, "%1023s %f", name, &f) == 2)
+				ai_dbg::set_var(name, f);
 		}
 
 	}
@@ -2219,7 +2219,7 @@ public:
 		int target = 0;
 		string256 string;
 		string[0] = 0;
-		sscanf(args, "%s %d", &string, &target);
+		sscanf(args, "%255s %d", string, &target);
 		if (target)
 		{
 			if (HUD().GetCurrentRayQuery().element >= 0 && HUD().GetCurrentRayQuery().O)
@@ -2274,7 +2274,7 @@ public:
 		int target = 0;
 		string256 string;
 		string[0] = 0;
-		sscanf(args, "%s %d", &string, &target);
+		sscanf(args, "%255s %d", string, &target);
 		if (target)
 		{
 			if (HUD().GetCurrentRayQuery().element >= 0 && HUD().GetCurrentRayQuery().O)
@@ -2405,7 +2405,7 @@ public:
 			int count = 1;
 			string256 string;
 			string[0] = 0;
-			sscanf(args, "%s %d", &string, &count);
+			sscanf(args, "%255s %d", string, &count);
 			for (int i = 0; i < count; ++i)
 			{
 				xr_shared_ptr<CParticlesObject> pParticle = Particles::Details::Create(string, false);
@@ -2443,7 +2443,7 @@ public:
 		}
 
 		u32 new_hours = 0, new_mins = 0;
-		int sc = sscanf_s(args, "%d %d", &new_hours, &new_mins);
+		int sc = sscanf_s(args, "%u %u", &new_hours, &new_mins);
 
 		if (new_hours > 24 || new_mins > 60)
 		{

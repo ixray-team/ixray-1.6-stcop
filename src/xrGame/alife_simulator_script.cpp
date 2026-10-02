@@ -171,6 +171,7 @@ CSE_ALifeDynamicObject *CALifeSimulator__create	(CALifeSimulator *self_, ALife::
 	{
 		Msg("! Spawn id[%i] not found in spawns list!", spawn_id);
 		g_pScriptEngine->print_stack();
+		return nullptr;
 	}
 
 	CSE_ALifeDynamicObject* spawn = vertex->data()->object().cast_alife_dynamic_object();

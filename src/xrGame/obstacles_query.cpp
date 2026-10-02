@@ -20,14 +20,12 @@
 
 void obstacles_query::set_intersection	(const obstacles_query &query)
 {
-	u32							n = m_obstacles.size();
-	u32							buffer_size = n*sizeof(OBSTACLES::value_type);
-	OBSTACLES::value_type		*temp = (OBSTACLES::value_type*)_alloca(buffer_size);
-	Memory.mem_copy				(temp,&*obstacles().begin(),buffer_size);
+	const size_t n = m_obstacles.size();
+	xr_vector<OBSTACLES::value_type> temp(m_obstacles.begin(), m_obstacles.end());
 	m_obstacles.erase			(
 		std::set_intersection(
-			temp,
-			temp + n,
+			temp.begin(),
+			temp.end(),
 			query.obstacles().begin(),
 			query.obstacles().end(),
 			m_obstacles.begin()

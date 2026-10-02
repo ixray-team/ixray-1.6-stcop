@@ -319,7 +319,6 @@ shared_str CWeaponBM16::SetCurrentAimAnimation()
 {
 	switch (m_magazine.size())
 	{
-	break;
 	case 1: 
 	{
 		return HudAnimationExist("anm_zoomed_idle_1") ? "anm_zoomed_idle_1" : inherited::SetCurrentAimAnimation();

@@ -4,12 +4,12 @@
 
 bool CMemoryChunk::CanWrite(size_t size)
 {
-	return count + size < ChunkSize;
+	return size <= ChunkSize - count;
 }
 
 bool CMemoryChunk::Write(const void* data, size_t size)
 {
-	VERIFY(size < CMemoryChunk::ChunkSize);
+	VERIFY(size <= CMemoryChunk::ChunkSize);
 	if (!CanWrite(size)) {
 		return false;
 	}
@@ -44,4 +44,19 @@ bool CMemoryBuffer::Write(const void* data, size_t size)
 		Ptr += ToWrite;
 	}
 	return true;
+}
+
+size_t CMemoryBuffer::GetOffset(const void* position) const
+{
+	const auto address = reinterpret_cast<uintptr_t>(position);
+	size_t offset = 0;
+	for (const auto* chunk : Chunks)
+	{
+		const auto start = reinterpret_cast<uintptr_t>(chunk->data);
+		if (address >= start && address - start < chunk->count)
+			return offset + (address - start);
+		offset += chunk->count;
+	}
+	R_ASSERT2(false, "Reserved memory does not belong to this buffer");
+	return size_t(-1);
 }

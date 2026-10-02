@@ -477,7 +477,7 @@ void CLevel::cl_Process_Event				(ALife::_OBJECT_ID dest, u16 type, NET_Packet& 
 			ok			= false;
 		}
 
-		CGameObject		*GD = D->cast_game_object();
+		CGameObject* GD = D ? D->cast_game_object() : nullptr;
 		if (!GD)		{
 #ifndef MASTER_GOLD
 			Msg			("! ERROR: c_EVENT[%d] : non-game-object",id);
@@ -1054,7 +1054,7 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
 	if (E == eEntitySpawn)
 	{
 		char	Name[128];	Name[0] = 0;
-		sscanf((const char*)P1, "%s", Name);
+		sscanf((const char*)P1, "%127s", Name);
 		Level().g_cl_Spawn(Name, 0xff, M_SPAWN_OBJECT_LOCAL, Fvector().set(0, 0, 0));
 	}
 	else if (E == eChangeRP && P1) 

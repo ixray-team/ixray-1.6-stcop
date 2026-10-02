@@ -2629,13 +2629,13 @@ void script_layer::CallEndCallback()
 
 bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 {
-	if (!m_attached_items[place_idx])
+	if (place_idx != u16(-1) && (place_idx >= std::size(m_attached_items) || !m_attached_items[place_idx]))
 	{
 		return false;
 	}
 
 	MotionID Motion;
-	if (m_attached_items[place_idx] && place_idx >= 0 && place_idx != u16(-1)) /// ищем анимацию в библиотеке айтема на пример anm_show
+	if (place_idx < std::size(m_attached_items) && m_attached_items[place_idx]) /// ищем анимацию в библиотеке айтема на пример anm_show
 	{
 		if (m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name))
 		{
@@ -2670,7 +2670,7 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 part_id, bool bMixIn, float speed, u8 anm_idx, bool impact_on_item, bool similar_check, PlayCallback Callback, LPVOID CallbackParam, bool UpdateCallbackType)
 {
 	MotionID motion;
-	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///ищем анимацию в библиотеке айтема на пример anm_show
+	if(place_idx < std::size(m_attached_items) && m_attached_items[place_idx])///ищем анимацию в библиотеке айтема на пример anm_show
 	{
 		player_hud_motion* anm = m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name);
 
@@ -2847,7 +2847,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u16 part_id, u8 anm_idx, float blendAccrue, float blendFalloff, float Speed, float Power)
 {
 	MotionID motion;
-	if(m_attached_items[place_idx] && place_idx>=0 && place_idx != u16(-1))///ищем анимацию относительно айтема на пример anm_show
+	if(place_idx < std::size(m_attached_items) && m_attached_items[place_idx])///ищем анимацию относительно айтема на пример anm_show
 	{
 		player_hud_motion* anm = m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name);
 
@@ -2884,7 +2884,7 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 				for (u32 &it : bones_vec)
 					m_model->LL_PlayFX(it, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
 			}break;
-			case -1://запустим для того который указан в настройках анимации
+			case u16(-1)://запустим для того который указан в настройках анимации
 			{
 				auto bones_vec = m_model->partitions().part(m_def->bone_or_part).bones;
 				for (u32 &it : bones_vec)

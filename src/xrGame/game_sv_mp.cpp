@@ -507,7 +507,7 @@ bool game_sv_mp::CheckPlayerMapName(ClientID const & clientID, NET_Packet & P)
 
 	if (xr_strcmp(Level().name().c_str(), temp_map_name))
 	{
-		Msg("! Player 0x%08x has incorrect map name", clientID, temp_map_name);
+		Msg("! Player 0x%08x has incorrect map name", clientID.value());
 		//ReconnectPlayer(clientID);
 		return false;
 	}
@@ -1862,7 +1862,7 @@ void game_sv_mp::ReadOptions(shared_str &options)
 	xr_strcpy(TimeFactor,get_option_s		(*options,"etimef","1"));
 
 	u32 hours = 0, mins = 0;
-	sscanf									(StartTime,"%d:%d",&hours,&mins);
+	sscanf									(StartTime,"%u:%u",&hours,&mins);
 	u64 StartEnvGameTime					= generate_time	(1,1,1,hours,mins,0,0);
 	float EnvTimeFactor						= float(atof(TimeFactor))*GetEnvironmentGameTimeFactor();
 

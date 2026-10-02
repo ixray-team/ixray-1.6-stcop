@@ -857,7 +857,7 @@ bool CUICellContainer::AddSimilar(CUICellItem* itm)
 			return false;
 	}
 
-	if (!iitem->CanStack())
+	if (!iitem || !iitem->CanStack())
 		return false;
 
 	CUICellItem* i = FindSimilar(itm);
@@ -865,7 +865,9 @@ bool CUICellContainer::AddSimilar(CUICellItem* itm)
 		return false;
 
 	const PIItem iitem_parent = static_cast<PIItem>(i->m_pData);
-	if (iitem && iitem->BaseSlot() != GRENADE_SLOT && iitem->CurrSlot() != iitem_parent->CurrSlot())
+	if (!iitem_parent)
+		return false;
+	if (iitem->BaseSlot() != GRENADE_SLOT && iitem->CurrSlot() != iitem_parent->CurrSlot())
 	{
 		return false;
 	}

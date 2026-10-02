@@ -971,7 +971,7 @@ void RenderSpawnManagerWindow() {
 				if (ImGui::BeginTabItem("NPC"))
 				{
 					size_t number_imgui{};
-					ImGui::Text("total sections count: %d", imgui_spawn_manager.NpcList.size());
+					ImGui::Text("total sections count: %zu", imgui_spawn_manager.NpcList.size());
 					static string128 searchBuffer = "";
 					ImGui::InputText("Search##NpcList", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
@@ -987,7 +987,7 @@ void RenderSpawnManagerWindow() {
 				if (ImGui::BeginTabItem("Monsters"))
 				{
 					size_t number_imgui{};
-					ImGui::Text("total sections count: %d", imgui_spawn_manager.Monsters.size());
+					ImGui::Text("total sections count: %zu", imgui_spawn_manager.Monsters.size());
 					static string128 searchBuffer = "";
 					ImGui::InputText("Search##Monsters", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
@@ -1022,7 +1022,7 @@ void RenderSpawnManagerWindow() {
 				if (ImGui::BeginTabItem("Anomalies"))
 				{
 					size_t number_imgui{};
-					ImGui::Text("total sections count: %d", imgui_spawn_manager.Anomalies.size());
+					ImGui::Text("total sections count: %zu", imgui_spawn_manager.Anomalies.size());
 					static string128 searchBuffer = "";
 					ImGui::InputText("Search##Anomalies", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
@@ -1038,7 +1038,7 @@ void RenderSpawnManagerWindow() {
 				if (ImGui::BeginTabItem("Vehicles"))
 				{
 					size_t number_imgui{};
-					ImGui::Text("total sections count: %d", imgui_spawn_manager.Vehicles.size());
+					ImGui::Text("total sections count: %zu", imgui_spawn_manager.Vehicles.size());
 					static string128 searchBuffer = "";
 					ImGui::InputText("Search##Vehicles", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
@@ -1054,7 +1054,7 @@ void RenderSpawnManagerWindow() {
 				if (ImGui::BeginTabItem("Explosives"))
 				{
 					size_t number_imgui{};
-					ImGui::Text("total sections count: %d", imgui_spawn_manager.Explosives.size());
+					ImGui::Text("total sections count: %zu", imgui_spawn_manager.Explosives.size());
 					static string128 searchBuffer = "";
 					ImGui::InputText("Search##Explosives", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
@@ -1070,7 +1070,7 @@ void RenderSpawnManagerWindow() {
 				if (ImGui::BeginTabItem("Dynamic Objects"))
 				{
 					size_t number_imgui{};
-					ImGui::Text("total sections count: %d", imgui_spawn_manager.DynamicObjects.size());
+					ImGui::Text("total sections count: %zu", imgui_spawn_manager.DynamicObjects.size());
 					static string128 searchBuffer = "";
 					ImGui::InputText("Search##DynamicObjects", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
@@ -1086,7 +1086,7 @@ void RenderSpawnManagerWindow() {
 				if (ImGui::BeginTabItem("Others"))
 				{
 					size_t number_imgui{};
-					ImGui::Text("total sections count: %d", imgui_spawn_manager.Others.size());
+					ImGui::Text("total sections count: %zu", imgui_spawn_manager.Others.size());
 					static string128 searchBuffer = "";
 					ImGui::InputText("Search##Others", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 

@@ -85,6 +85,7 @@ CEnvironment::CEnvironment	() :
 	m_thunderbolts_config = nullptr;
 
     string_path filePath;
+    FS.update_path(filePath, _game_config_, "environment\\environment.ltx");
     const bool environmentFolderExist = FS.exist(_game_config_, "environment\\");
 
     CInifile* config = pSettings;

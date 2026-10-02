@@ -153,17 +153,17 @@ void LogLuaVariable(lua_State* L, const char* Name, int Level, bool bOpenTable, 
 
 	char TabBuffer[32];
 	ZeroMemory(TabBuffer, sizeof(TabBuffer));
-	std::memset(TabBuffer, '\t', Level);
+	std::memset(TabBuffer, '\t', std::min(size_t(std::max(Level, 0)), sizeof(TabBuffer) - 1));
 
 	auto LuaLogTable = [](lua_State* l, const char* S, int level, int index /*= -1*/) {
 		if (lua_istable(l, index)) {
 			lua_pushnil(l);  /* first key */
 			while (lua_next(l, index - 1) != 0) {
-				char sname[256];
-				char sFullName[256];
-				sprintf(sname, "%s", lua_tostring(l, index - 1));
-				sprintf(sFullName, "%s.%s", S, sname);
-				LogLuaVariable(l, sFullName, level + 1, false, index);
+				lua_pushvalue(l, index - 1);
+				const char* key = lua_tostring(l, -1);
+				xr_string fullName = xr_string(S) + "." + (key ? key : lua_typename(l, lua_type(l, -1)));
+				lua_pop(l, 1);
+				LogLuaVariable(l, fullName.c_str(), level + 1, false, index);
 
 				lua_pop(l, 1);  /* removes `value'; keeps `key' for next iteration */
 			}
@@ -176,7 +176,7 @@ void LogLuaVariable(lua_State* L, const char* Name, int Level, bool bOpenTable, 
 			break;
 		}
 		case LUA_TBOOLEAN: {
-			Msg("%s %s %s : %.02f", TabBuffer, TypeName, Name, lua_toboolean(L, Index) == 1 ? TEXT("true") : TEXT("false"));
+			Msg("%s %s %s : %s", TabBuffer, TypeName, Name, lua_toboolean(L, Index) ? "true" : "false");
 			break;
 		}
 		case LUA_TSTRING: {
