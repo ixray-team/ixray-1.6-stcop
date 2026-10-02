@@ -708,7 +708,7 @@ void CRender::Render()
 		GRHI->SetUnorderedAccessViews(Target->rt_Normal->pUAView, 1);
 		GRHI->SetUnorderedAccessViews(Target->rt_Surface->pUAView, 2);
 
-		Target->PhaseWinter();
+		Target->PhaseEffectSQ(EffectSQ::Winter);
 
 		GRHI->SetUnorderedAccessViews(NULL, 0);
 		GRHI->SetUnorderedAccessViews(NULL, 1);

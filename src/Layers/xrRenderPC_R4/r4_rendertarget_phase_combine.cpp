@@ -187,7 +187,7 @@ void CRenderTarget::phase_combine()
 		if(ps_r2_aa_type == 1) 
 		{
 			GPU_EVENT(phase_fxaa);
-			phase_fxaa();
+			PhaseEffectSQ(EffectSQ::FXAA);
 
 			RCache.set_Stencil(FALSE);
 		}
@@ -296,23 +296,23 @@ void CRenderTarget::phase_combine()
 
 	if(ps_r4_cas_sharpening > EPS) {
 		GPU_EVENT(phase_cas);
-		phase_cas();
+		PhaseEffectSQ(EffectSQ::CAS);
 	}
 
 	extern bool UseGasmak;
 	if (UseGasmak)
 	{
-		PhaseGasmask();
+		PhaseEffectSQ(EffectSQ::Gasmask);
 	}
 
 	extern bool UseRainDrops;
 	if (UseRainDrops) {
-		PhaseRaindrops();
+		PhaseEffectSQ(EffectSQ::Raindrops);
 	}
 
 	if(ps_r2_ls_flags_ext.test(R2FLAG_SPP_ABERRATION)) {
 		GPU_EVENT(PhaseAberration);
-		PhaseAberration();
+		PhaseEffectSQ(EffectSQ::Aberration);
 	}
 
 	
@@ -320,7 +320,7 @@ void CRenderTarget::phase_combine()
 	if (turn_nvg)
 	{
 		GPU_EVENT(phase_nvg);
-		phase_nvg();
+		PhaseEffectSQ(EffectSQ::NVG);
 	}
 	
 	{
