@@ -22,10 +22,19 @@ void XRay::Engine::PreRenderThread()
 			it();
 	}
 
+	if (Device.CollectReflections)
+	{
+		PROF_EVENT("Collect Reflections");
+		Device.CollectReflections();
+	}
+
 	if (g_pGamePersistent && !g_pGamePersistent->m_pMainMenu->IsActive())
 	{
 		if (g_pGamePersistent->pEnvironment && g_pGamePersistent->pEnvironment->eff_Rain)
+		{
+			PROF_EVENT("eff_Rain");
 			g_pGamePersistent->pEnvironment->eff_Rain->UpdateItems();
+		}
 
 		g_pGamePersistent->UpdateParticles();
 	}

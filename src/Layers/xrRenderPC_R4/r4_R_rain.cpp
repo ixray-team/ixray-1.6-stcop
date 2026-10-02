@@ -195,15 +195,15 @@ void CRender::render_rain()
 	}
 
 	// Begin SMAP-render
-	bool bSpecialFull = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+	bool bSpecialFull = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
 	VERIFY(!bSpecialFull);
 
 	HOM.Disable();
 	phase = PHASE_SMAP;
-	r_pmask(true, false);
+	GraphMain.r_pmask(true, false);
 
 	// Fill the database
-	r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, false);
+	GraphMain.r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, false);
 
 	// Finalize & Cleanup
 	RainLight.X.D.combine = cull_xform;
@@ -211,8 +211,8 @@ void CRender::render_rain()
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
 
-	bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-	bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+	bool bNormal = GraphMain.mapNormalPasses[0][0].size() || GraphMain.mapMatrixPasses[0][0].size();
+	bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
 
 	if (bNormal || bSpecial) 
 	{
@@ -220,11 +220,11 @@ void CRender::render_rain()
 		RCache.set_xform_world(Fidentity);
 		RCache.set_xform_view(Fidentity);
 		RCache.set_xform_project(RainLight.X.D.combine);
-		r_dsgraph_render_graph(0);
+		GraphMain.r_dsgraph_render_graph(0);
 	}
 
 	// End SMAP-render
-	r_pmask(true, false);
+	GraphMain.r_pmask(true, false);
 
 	// Restore XForms
 	RCache.set_xform_world(Fidentity);

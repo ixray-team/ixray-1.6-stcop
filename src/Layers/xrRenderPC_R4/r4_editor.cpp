@@ -220,7 +220,7 @@ void CRender::EditorRenderUnlit()
 	ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	View = nullptr;
+	GraphMain.View = nullptr;
 
 	// G-buffer of the opaque scene; the albedo starts with the editor background colour, so the
 	// whole albedo is the final unlit image
@@ -229,18 +229,18 @@ void CRender::EditorRenderUnlit()
 	Target->phase_scene_prepare();
 	GRHI->ClearTarget(Target->rt_Color->pRT, ClearColor);
 
-	r_pmask(true, false, true);
+	GraphMain.r_pmask(true, false, true);
 	phase = PHASE_NORMAL;
 	render_main(true);
-	r_pmask(true, false);
+	GraphMain.r_pmask(true, false);
 
 	rmNormal();
 	{
 		CEditorFillModeScope FillModeScope(true);
 		Target->phase_scene_begin();
-		r_dsgraph_render_hud();
+		GraphMain.r_dsgraph_render_hud();
 		Target->phase_scene_begin();
-		r_dsgraph_render_graph(0);
+		GraphMain.r_dsgraph_render_graph(0);
 		if (CDetailManager* SceneDetails = GetDetails())
 		{
 			SceneDetails->Render();
@@ -269,7 +269,7 @@ void CRender::EditorRenderUnlit()
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 
 	// Forward geometry (blended surfaces, particles)
-	r_pmask(false, true);
+	GraphMain.r_pmask(false, true);
 	phase = PHASE_NORMAL;
 	render_main(false);
 
@@ -288,11 +288,11 @@ void CRender::EditorRenderUnlit()
 
 	{
 		CEditorFillModeScope FillModeScope(true);
-		r_dsgraph_render_graph(1);
-		r_dsgraph_render_sorted(false);
+		GraphMain.r_dsgraph_render_graph(1);
+		GraphMain.r_dsgraph_render_sorted(false);
 	}
 
-	r_pmask(true, false);
+	GraphMain.r_pmask(true, false);
 
 	Target->PhaseEditorScale();
 }
@@ -371,22 +371,22 @@ void CRender::model_RenderSingle(IRenderVisual* V, const Fmatrix& Transform, flo
 
 void CRender::EditorRenderMain(bool Deferred)
 {
-	marker++;
+	GraphMain.marker++;
 	EditorCollect(Deferred, false);
 }
 
 void CRender::EditorRenderSubspace(CFrustum& Frustum)
 {
-	marker++;
+	GraphMain.marker++;
 
 	CFrustum SavedView = ViewBase;
 	ViewBase = Frustum;
-	View = &ViewBase;
+	GraphMain.View = &ViewBase;
 
 	EditorCollect(true, true);
 
 	ViewBase = SavedView;
-	View = nullptr;
+	GraphMain.View = nullptr;
 }
 
 void CRender::EditorSyncLights()
@@ -523,9 +523,9 @@ void CRender::EditorCollect(bool Deferred, bool Shadows)
 		? (ESPATIAL_TYPE::RENDERABLE | ESPATIAL_TYPE::RENDERABLESHADOW)
 		: (ESPATIAL_TYPE::RENDERABLE | ESPATIAL_TYPE::PARTICLE | ESPATIAL_TYPE::LIGHTSOURCE);
 
-	g_SpatialSpace->q_frustum(lstRenderablesMain, ISpatial_DB::O_ORDERED, Types, ViewBase);
+	g_SpatialSpace->q_frustum(GraphMain.lstRenderablesMain, ISpatial_DB::O_ORDERED, Types, ViewBase);
 
-	for (ISpatialShared& SpatialShared : lstRenderablesMain)
+	for (ISpatialShared& SpatialShared : GraphMain.lstRenderablesMain)
 	{
 		ISpatial* Spatial = SpatialShared.get();
 		if (Spatial == nullptr)
@@ -568,7 +568,7 @@ void CRender::EditorCollect(bool Deferred, bool Shadows)
 		set_Object(nullptr);
 	}
 
-	lstRenderablesMain.clear();
+	GraphMain.lstRenderablesMain.clear();
 }
 
 //---------------------------------------------------------------------------

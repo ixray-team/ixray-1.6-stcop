@@ -100,15 +100,15 @@ void CRenderTarget::phase_planar()
 		);
 
 		RImplementation.phase = CRender::PHASE_REFLECT;
-		RImplementation.r_pmask(true, false);
+		RImplementation.GraphMain.r_pmask(true, false);
 
 		ApplyObliqueClipPlane(ReflectProject, PlanarPlane);
 		ReflectFullTransform.mul(ReflectProject, ReflectView);
 
-		RImplementation.r_dsgraph_render_subspace(RImplementation.pLastSector, ReflectFullTransform, P, true, false);
+		RImplementation.GraphMain.r_dsgraph_render_subspace(RImplementation.pLastSector, ReflectFullTransform, P, true, false);
 
-		bool IsRender = RImplementation.mapNormalPasses[0][0].size() || RImplementation.mapMatrixPasses[0][0].size();
-		IsRender |= RImplementation.mapNormalPasses[1][0].size() || RImplementation.mapMatrixPasses[1][0].size() || RImplementation.mapSorted.size();
+		bool IsRender = RImplementation.GraphMain.mapNormalPasses[0][0].size() || RImplementation.GraphMain.mapMatrixPasses[0][0].size();
+		IsRender |= RImplementation.GraphMain.mapNormalPasses[1][0].size() || RImplementation.GraphMain.mapMatrixPasses[1][0].size() || RImplementation.GraphMain.mapSorted.size();
 
 		if (IsRender)
 		{
@@ -127,7 +127,7 @@ void CRenderTarget::phase_planar()
 			RCache.set_xform_project(ReflectProject);
 			RCache.set_xform_view(ReflectView);
 
-			RImplementation.r_dsgraph_render_graph(0);
+			RImplementation.GraphMain.r_dsgraph_render_graph(0);
 
 			RCache.set_xform_project(Device.mProject);
 			RCache.set_xform_view(Device.mView);

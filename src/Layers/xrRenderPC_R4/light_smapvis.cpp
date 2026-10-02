@@ -21,7 +21,7 @@ void	smapvis::invalidate	()
 }
 void	smapvis::begin		()
 {
-	RImplementation.clear_Counters		();
+	RImplementation.GraphMain.clear_Counters();
 	switch	(state)
 	{
 	case state_counting:	
@@ -32,7 +32,7 @@ void	smapvis::begin		()
 		testQ_V							= 0;
 		testQ_id						= 0;
 		mark							();
-		RImplementation.set_Feedback	(this,test_current);
+		RImplementation.GraphMain.set_Feedback(this, test_current);
 		break;
 	case state_usingTC:
 		// just mark
@@ -44,9 +44,9 @@ void	smapvis::end		()
 {
 	// Gather stats
 	u32	ts,td;
-	RImplementation.get_Counters	(ts,td);
+	RImplementation.GraphMain.get_Counters(ts, td);
 	RImplementation.stats.ic_total	+=	ts;
-	RImplementation.set_Feedback	(0,0);
+	RImplementation.GraphMain.set_Feedback(0, 0);
 
 	switch	(state)			{
 	case state_counting:
@@ -63,9 +63,9 @@ void	smapvis::end		()
 		if (testQ_V)
 		{
 			RImplementation.occq_begin				(testQ_id);
-			RImplementation.marker					+= 1;
-			RImplementation.r_dsgraph_insert_static	(testQ_V);
-			RImplementation.r_dsgraph_render_graph	(0);
+			RImplementation.GraphMain.marker					+= 1;
+			RImplementation.GraphMain.r_dsgraph_insert_static	(testQ_V);
+			RImplementation.GraphMain.r_dsgraph_render_graph	(0);
 			RImplementation.occq_end				(testQ_id);
 			testQ_frame								= Device.dwFrame + 1;	// get result on next frame
 		}
@@ -76,45 +76,64 @@ void	smapvis::end		()
 	}
 }
 
-void	smapvis::flushoccq	()
+void smapvis::flushoccq()
 {
 	// the tough part
-	if (testQ_frame != Device.dwFrame)			return;
-	if ( (state != state_working) || (!testQ_V) ) return;
-	u64	fragments	=	RImplementation.occq_get(testQ_id);
-	if	(0==fragments)			{
+	if (testQ_frame != Device.dwFrame)
+	{
+		return;
+	}
+	if ((state != state_working) || (!testQ_V))
+	{
+		return;
+	}
+	u64 fragments = RImplementation.occq_get(testQ_id);
+	if (0 == fragments)
+	{
 		// this is invisible shadow-caster, register it
 		// next time we will not get this caster, so 'test_current' remains the same
-		invisible.push_back	(testQ_V);
-		test_count			--;
-	} else {
+		invisible.push_back(testQ_V);
+		test_count--;
+	}
+	else
+	{
 		// this is visible shadow-caster, advance testing
-		test_current		++;
+		test_current++;
 	}
 
-	testQ_V				= 0;
+	testQ_V = 0;
 
-	if (test_current==test_count)	{
+	if (test_current == test_count)
+	{
 		// we are at the end of list
-		if (state==state_working)	state	= state_usingTC;
+		if (state == state_working)
+		{
+			state = state_usingTC;
+		}
 	}
 }
-void	smapvis::resetoccq	()
+
+void smapvis::resetoccq()
 {
-	if (testQ_frame==(Device.dwFrame+1))		testQ_frame--;
-	flushoccq		();
+	if (testQ_frame == (Device.dwFrame + 1))
+	{
+		testQ_frame--;
+	}
+	flushoccq();
 }
 
-void	smapvis::mark				()
+void smapvis::mark()
 {
-	RImplementation.stats.ic_culled	+= (u32)invisible.size();
-	u32		marker			= RImplementation.marker + 1;	// we are called befor marker increment
-	for		(u32 it=0; it<invisible.size(); it++)
-		invisible[it]->vis.marker	= marker;				// this effectively disables processing
+	RImplementation.stats.ic_culled += (u32)invisible.size();
+	u32 marker = RImplementation.GraphMain.marker + 1; // we are called befor marker increment
+	for (u32 it = 0; it < invisible.size(); it++)
+	{
+		invisible[it]->vis.marker = marker; // this effectively disables processing
+	}
 }
 
-void	smapvis::rfeedback_static	(dxRender_Visual* V)
+void smapvis::rfeedback_static(dxRender_Visual* V)
 {
-	testQ_V							= V;
-	RImplementation.set_Feedback	(0,0);
+	testQ_V = V;
+	RImplementation.GraphMain.set_Feedback(0, 0);
 }

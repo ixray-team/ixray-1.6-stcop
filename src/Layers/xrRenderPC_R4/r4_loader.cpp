@@ -30,7 +30,7 @@ using namespace FVF;
 void CRender::level_Load(IReader* fs)
 {
 	R_ASSERT						(0!=g_pGameLevel);
-	R_ASSERT						(!b_loaded);
+	R_ASSERT(!GraphMain.b_loaded);
 
 	// Begin
 	pApp->LoadBegin					();
@@ -167,12 +167,12 @@ void CRender::level_Load(IReader* fs)
 	pApp->LoadEnd				();
 
 	// sanity-clear
-	lstLODs.clear				();
-	lstLODgroups.clear			();
-	mapLOD.clear				();
+	GraphMain.lstLODs.clear				();
+	GraphMain.lstLODgroups.clear			();
+	GraphMain.mapLOD.clear				();
 
 	// signal loaded
-	b_loaded = true;
+	GraphMain.b_loaded = true;
 }
 
 void CRender::LoadPuddles()
@@ -296,7 +296,10 @@ void CRender::LoadPlanars()
 void CRender::level_Unload()
 {
 	if (0==g_pGameLevel)		return;
-	if (!b_loaded)				return;
+	if (!GraphMain.b_loaded)
+	{
+		return;
+	}
 
 	u32 I;
 
@@ -358,7 +361,7 @@ void CRender::level_Unload()
 
 	//*** Shaders
 	Shaders.clear();
-	b_loaded					= false;
+	GraphMain.b_loaded = false;
 }
 
 void CRender::LoadVertexBuffers(IReaderBase& fs, bool _alternative)
@@ -459,7 +462,11 @@ void CRender::LoadSectors(IReader* fs)
 	Portals.resize(count);
 
 	for (u32 c = 0; c < count; c++)
-		Portals[c] = new CPortal();
+	{
+		CPortal* portal = new CPortal();
+		portal->index = c;
+		Portals[c] = portal;
+	}
 
 	// load sectors
 	IReader* S = fs->open_chunk(fsL_SECTORS);
@@ -471,6 +478,7 @@ void CRender::LoadSectors(IReader* fs)
 		if (0 == P) break;
 
 		CSector* __S = new CSector();
+		__S->index = (u32)Sectors.size();
 		__S->load(*P);
 		Sectors.push_back(__S);
 

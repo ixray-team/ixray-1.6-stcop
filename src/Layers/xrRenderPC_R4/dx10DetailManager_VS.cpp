@@ -352,7 +352,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 
 	if (!EditorMode)
 	{
-		bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+		bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && RImplementation.GraphMain.PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
 		if (!in_outdoor)
 			return;
 	}

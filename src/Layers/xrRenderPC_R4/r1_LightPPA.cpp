@@ -17,72 +17,89 @@ void CLightR_Manager::render_point	(u32 _priority)
 	
 	Fvector		lc_COP		= Device.vCameraPosition	;
 	float		lc_limit	= ps_r1_dlights_clip		;
-	for (xr_vector<light*>::iterator it=selected_point.begin(); it!=selected_point.end(); it++)
+	for (xr_vector<light*>::iterator it = selected_point.begin(); it != selected_point.end(); it++)
 	{
-		light*	L					= *it;
+		light* L = *it;
 		if (L->SpatialComponent->sector == nullptr && _valid(L->range))
 		{
 			continue;
 		}
 
-		float	lc_dist				= lc_COP.distance_to	(L->SpatialComponent->sphere.P) - L->SpatialComponent->sphere.R;
-		float	lc_scale			= 1 - lc_dist/lc_limit;
-		if		(lc_scale<EPS)		continue;
-		if		(L->range<0.01f)	continue;
-
-		Fvector						L_dir,L_up,L_right,L_pos;
-		Fmatrix						L_view,L_project,L_combine;
-		L_dir.set					(0,-1, 0);				
-		L_up.set					(0,	0, 1);				
-		L_right.crossproduct		(L_up,L_dir);			L_right.normalize	();
-		L_up.crossproduct			(L_dir,L_right);		L_up.normalize		();
-		float	_camrange			= 300.f;
-		L_pos.set					(L->position);			
-		
-		L_view.build_camera_dir		(L_pos,L_dir,L_up);
-		L_project.build_projection	(deg2rad(2.f),1.f,_camrange-L->range,_camrange+L->range);
-		L_combine.mul				(L_project,L_view);
-
-		float			fTexelOffs			= (.5f / SSM_tex_size);
-		float			fRange				= 1.f  / L->range;
-		float			fBias				= 0.f;
-		Fmatrix			m_TexelAdjust		= 
+		float lc_dist = lc_COP.distance_to(L->SpatialComponent->sphere.P) - L->SpatialComponent->sphere.R;
+		float lc_scale = 1 - lc_dist / lc_limit;
+		if (lc_scale < EPS)
 		{
-			0.5f,				0.0f,				0.0f,			0.0f,
-			0.0f,				-0.5f,				0.0f,			0.0f,
-			0.0f,				0.0f,				fRange,			0.0f,
-			0.5f + fTexelOffs,	0.5f + fTexelOffs,	fBias,			1.0f
-		};
-		Fmatrix		L_texgen;		L_texgen.mul	(m_TexelAdjust,L_combine);
+			continue;
+		}
+		if (L->range < 0.01f)
+		{
+			continue;
+		}
+
+		Fvector L_dir, L_up, L_right, L_pos;
+		Fmatrix L_view, L_project, L_combine;
+		L_dir.set(0, -1, 0);
+		L_up.set(0, 0, 1);
+		L_right.crossproduct(L_up, L_dir);
+		L_right.normalize();
+		L_up.crossproduct(L_dir, L_right);
+		L_up.normalize();
+		float _camrange = 300.f;
+		L_pos.set(L->position);
+
+		L_view.build_camera_dir(L_pos, L_dir, L_up);
+		L_project.build_projection(deg2rad(2.f), 1.f, _camrange - L->range, _camrange + L->range);
+		L_combine.mul(L_project, L_view);
+
+		float fTexelOffs = (.5f / SSM_tex_size);
+		float fRange = 1.f / L->range;
+		float fBias = 0.f;
+		Fmatrix m_TexelAdjust =
+			{
+				0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, fRange, 0.0f, 0.5f + fTexelOffs, 0.5f + fTexelOffs, fBias, 1.0f
+			};
+		Fmatrix L_texgen;
+		L_texgen.mul(m_TexelAdjust, L_combine);
 
 		RCache.set_c("L_dynamic_pos", L->position.x, L->position.y, L->position.z, 0.5f / L->range);
 		RCache.set_c("L_dynamic_color", L->color.r * clampr(lc_scale, 0.f, 1.f), L->color.g * clampr(lc_scale, 0.f, 1.f), L->color.b * clampr(lc_scale, 0.f, 1.f), 1.f);
 		RCache.set_c("L_dynamic_xform", L_texgen);
 
-		VERIFY										(L->SpatialComponent->sector);
-		if( _priority == 1)
-			RImplementation.r_pmask						(false,true);
+		VERIFY(L->SpatialComponent->sector);
+		if (_priority == 1)
+		{
+			RImplementation.GraphMain.r_pmask(false, true);
+		}
 
 		static const Fvector axes[6] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
 		Fplane box[6];
 		for (u32 i = 0; i < 6; ++i)
+		{
 			box[i].build(Fvector().mad(L->position, axes[i], L->range), axes[i]);
+		}
 		CFrustum F;
 		F.CreateFromPlanes(box, 6);
 
-		RImplementation.r_dsgraph_render_subspace(L->SpatialComponent->sector, &F, L_combine, L_pos, true, true);
+		RImplementation.GraphMain.r_dsgraph_render_subspace(L->SpatialComponent->sector, &F, L_combine, L_pos, true, true);
 
-		if( _priority == 1)
-			RImplementation.r_pmask						(true,true);
+		if (_priority == 1)
+		{
+			RImplementation.GraphMain.r_pmask(true, true);
+		}
 
-		bool bHUD = F.testSphere_dirty(Device.vCameraPosition,2.f);
+		bool bHUD = F.testSphere_dirty(Device.vCameraPosition, 2.f);
 
 		RCache.set_Constants((R_constant_table*)0);
-		if (bHUD&&_priority == 0)			g_hud->Render_Last		();	
-		RImplementation.r_dsgraph_render_graph					(_priority);
-		if (bHUD&&_priority == 0)			RImplementation.r_dsgraph_render_hud();	
+		if (bHUD && _priority == 0)
+		{
+			g_hud->Render_Last();
+		}
+		RImplementation.GraphMain.r_dsgraph_render_graph(_priority);
+		if (bHUD && _priority == 0)
+		{
+			RImplementation.GraphMain.r_dsgraph_render_hud();
+		}
 	}
-	
 }
 
 void CLightR_Manager::render_spot	(u32 _priority)
@@ -133,9 +150,11 @@ void CLightR_Manager::render_spot	(u32 _priority)
 		VERIFY(L->SpatialComponent->sector);
 		
 		if (_priority == 1)
-			RImplementation.r_pmask(false, true);
+		{
+			RImplementation.GraphMain.r_pmask(false, true);
+		}
 
-		RImplementation.r_dsgraph_render_subspace(
+		RImplementation.GraphMain.r_dsgraph_render_subspace(
 			L->SpatialComponent->sector,
 			L_combine,
 			L_pos,
@@ -144,7 +163,9 @@ void CLightR_Manager::render_spot	(u32 _priority)
 		);
 
 		if (_priority == 1)
-			RImplementation.r_pmask(true, true);
+		{
+			RImplementation.GraphMain.r_pmask(true, true);
+		}
 
 		bool bHUD = false;
 		CFrustum F;
@@ -155,10 +176,12 @@ void CLightR_Manager::render_spot	(u32 _priority)
 		if (bHUD && _priority == 0)
 			g_hud->Render_Last();
 
-		RImplementation.r_dsgraph_render_graph(_priority);
+		RImplementation.GraphMain.r_dsgraph_render_graph(_priority);
 
 		if (bHUD && _priority == 0)
-			RImplementation.r_dsgraph_render_hud();
+		{
+			RImplementation.GraphMain.r_dsgraph_render_hud();
+		}
 	}
 }
 

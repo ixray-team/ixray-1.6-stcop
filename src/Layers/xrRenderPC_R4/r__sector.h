@@ -3,6 +3,8 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "r__portal_traverser.h"
+
 class CPortal;
 class CSector;
 
@@ -26,6 +28,7 @@ public:
 	Fplane							P;
 	Fsphere							S;
 	u32								marker;
+	u32								index = 0;
 	bool							bDualRender;
 
 	void							Setup								(Fvector* V, int vcnt, CSector* face, CSector* back);
@@ -48,56 +51,28 @@ public:
 
 class dxRender_Visual;
 
+
 // Main 'Sector' class
 class CSector :
 	public IRender_Sector
 {
 protected:
-	dxRender_Visual*					m_root;			// whole geometry of that sector
-	xr_vector<CPortal*>				m_portals;
+	dxRender_Visual* m_root; // whole geometry of that sector
+	xr_vector<CPortal*> m_portals;
+
 public:
-	xr_vector<CFrustum>				r_frustums;
-	xr_vector<_scissor>				r_scissors;
-	_scissor						r_scissor_merged;
-	u32								r_marker;
+	xr_vector<CFrustum> r_frustums;
+	xr_vector<_scissor> r_scissors;
+	_scissor r_scissor_merged;
+	u32 r_marker;
+	u32 index = 0;
+
 public:
 	// Main interface
-	dxRender_Visual*					root			()				{ return m_root; }
-	void							traverse		(CFrustum& F,	_scissor& R);
-	void							load			(IReader& fs);
+	dxRender_Visual* root() { return m_root; }
+	void traverse(CFrustum& F, _scissor& R, CPortalTraverser&);
+	void load(IReader& fs);
 
-	CSector							()				{ m_root = NULL;	}
-	virtual							~CSector		( );
+	CSector() { m_root = NULL; }
+	virtual ~CSector();
 };
-
-class	CPortalTraverser
-{
-public:
-	enum
-	{
-		VQ_HOM		= (1<<0),
-		VQ_SSA		= (1<<1),
-		VQ_SCISSOR	= (1<<2),
-		VQ_FADE		= (1<<3),				// requires SSA to work
-	};
-public:
-	u32										i_marker;		// input
-	u32										i_options;		// input:	culling options
-	Fvector									i_vBase;		// input:	"view" point
-	Fmatrix									i_mXFORM;		// input:	4x4 xform
-	Fmatrix									i_mXFORM_01;	// 
-	CSector*								i_start;		// input:	starting point
-	xr_vector<IRender_Sector*>				r_sectors;		// result
-	xr_vector<std::pair<CPortal*, float> >	f_portals;		// 
-	ref_shader								f_shader;
-	ref_geom								f_geom;
-public:
-									CPortalTraverser	();
-	void							initialize			();
-	void							destroy				();
-	void							traverse			(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
-	void							fade_portal			(CPortal* _p, float ssa);
-	void							fade_render			();
-};
-
-extern	CPortalTraverser PortalTraverser	;

@@ -55,8 +55,8 @@ void CRender::init_cacades()
 	m_sun_cascades[1].size = 40;
 	m_sun_cascades[1].bias = m_sun_cascades[1].size*fBias;
 
- 	m_sun_cascades[2].size = 160;
- 	m_sun_cascades[2].bias = m_sun_cascades[2].size*fBias;
+	m_sun_cascades[2].size = 160;
+	m_sun_cascades[2].bias = m_sun_cascades[2].size*fBias;
 }
 
 void CRender::render_sun_cascades()
@@ -323,14 +323,14 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	{
 		PROF_EVENT("Render Cascade: SMAP");
 		{
-			bool bSpecialFull = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+			bool bSpecialFull = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
 			VERIFY(!bSpecialFull);
 			phase = PHASE_SMAP;
-			r_pmask(true, /*!!RImplementation.o.Tshadows &&*/ false);
+			GraphMain.r_pmask(true, /*!!RImplementation.o.Tshadows &&*/ false);
 		}
 
 		// Fill the database
-		r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, true);
+		GraphMain.r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, true);
 
 		// Finalize & Cleanup
 		fuckingsun->X.D.combine = cull_xform;
@@ -338,8 +338,8 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		// Render shadow-map
 		//. !!! We should clip based on shrinked frustum (again)
 		{
-			bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-			bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+			bool bNormal = GraphMain.mapNormalPasses[0][0].size() || GraphMain.mapMatrixPasses[0][0].size();
+			bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
 
 			if (bNormal || bSpecial)
 			{
@@ -350,7 +350,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 				RCache.set_xform_project(fuckingsun->X.D.combine);
 
-				r_dsgraph_render_graph(0);
+				GraphMain.r_dsgraph_render_graph(0);
 
 				CDetailManager* ActiveDetails = GetDetails();
 				if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
@@ -364,14 +364,14 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 				{
 					fuckingsun->X.D.transluent = true;
 					Target->phase_smap_direct_tsh(fuckingsun, SE_SUN_FAR);
-					r_dsgraph_render_graph(1); // normal level, secondary priority
-					r_dsgraph_render_sorted(); // strict-sorted geoms
+					GraphMain.r_dsgraph_render_graph(1); // normal level, secondary priority
+					GraphMain.r_dsgraph_render_sorted(); // strict-sorted geoms
 				}
 			}
 		}
 
 		// End SMAP-render
-		r_pmask(true, false);
+		GraphMain.r_pmask(true, false);
 	}
 
 }
