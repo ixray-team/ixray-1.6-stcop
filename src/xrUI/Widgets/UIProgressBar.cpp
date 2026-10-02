@@ -102,7 +102,15 @@ void CUIProgressBar::Update()
 		}
 		else
 		{
-			SetProgressPos(Result.Flt);
+			using Type = ExpressionVarVariadic::EVariadicType;
+			switch (Result.VarType)
+			{
+			case Type::eFloat: SetProgressPos(Result.Flt); break;
+			case Type::eInt: SetProgressPos(static_cast<float>(Result.Int)); break;
+			case Type::eUint: SetProgressPos(static_cast<float>(Result.UInt)); break;
+			case Type::eBool: SetProgressPos(Result.Boolean ? 1.f : 0.f); break;
+			default: break;
+			}
 		}
 	}
 

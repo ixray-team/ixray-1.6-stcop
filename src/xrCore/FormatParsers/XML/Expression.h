@@ -49,62 +49,50 @@ struct ExpressionVarVariadic
         float       Flt;
         int         Int;
         u32         UInt;
-        u64         LongInt;
-        shared_str  Str;
+        u64         LongInt = 0;
         bool        Boolean;
-        void*       Ptr;
     };
 
-    EVariadicType VarType;
+    shared_str Str;
+    EVariadicType VarType = EVariadicType::eInt;
 
-    // shared_str is a non-trivial union member, so defaulting these would delete them.
-    ExpressionVarVariadic() {};
-    ~ExpressionVarVariadic() {};
+    ExpressionVarVariadic() = default;
+    ~ExpressionVarVariadic() = default;
 
-    ExpressionVarVariadic(float InFlt)
-        : Flt(InFlt)
+    ExpressionVarVariadic(float Value) : ExpressionVarVariadic()
     {
+        Flt = Value;
         VarType = EVariadicType::eFloat;
     }
 
-    ExpressionVarVariadic(int InInt)
-        : Int(InInt)
+    ExpressionVarVariadic(int Value) : ExpressionVarVariadic()
     {
-        VarType = EVariadicType::eInt;
+        Int = Value;
     }
 
-    ExpressionVarVariadic(bool InBoolean)
-        : Boolean(InBoolean)
+    ExpressionVarVariadic(u32 Value) : ExpressionVarVariadic()
     {
+        UInt = Value;
+        VarType = EVariadicType::eUint;
+    }
+
+    ExpressionVarVariadic(bool Value) : ExpressionVarVariadic()
+    {
+        Boolean = Value;
         VarType = EVariadicType::eBool;
     }
 
-    ExpressionVarVariadic(const char* InStr)
-        : Str(InStr)
+    ExpressionVarVariadic(const char* Value) : Str(Value), VarType(EVariadicType::eStr)
     {
-        VarType = EVariadicType::eStr;
-    }
-
-    ExpressionVarVariadic& operator=(const ExpressionVarVariadic& Other)
-    {
-        Ptr = Other.Ptr;
-        VarType = Other.VarType;
-        return *this;
-    }
-
-    ExpressionVarVariadic(const ExpressionVarVariadic& Other)
-    {
-        Ptr = Other.Ptr;
-        VarType = Other.VarType;
     }
 
     u64 GetData() const
     {
-        return LongInt;
+        u64 Data = 0;
+        memcpy(&Data, &LongInt, sizeof(Data));
+        return Data;
     }
 };
-
-//static_assert(sizeof(ExpressionVarVariadic) == 16); //ExpressionVarVariadic must be placed in 8-aligned expression stack
 
 class XRCORE_API CExpressionManager
 {
@@ -187,6 +175,7 @@ private:
     void FlushCompileError();
     
     xr_string m_originalExpression;
+    xr_vector<shared_str> m_expressionStrings;
     ExpressionData* m_expression;
     size_t m_expressionDataSize = 0;
     mutable char* m_dbgCompileError = nullptr;

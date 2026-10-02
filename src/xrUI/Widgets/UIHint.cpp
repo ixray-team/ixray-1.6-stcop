@@ -139,8 +139,9 @@ void UIHintWindow::Update()
 		switch (Var.VarType)
 		{
 			case ExpressionVarVariadic::EVariadicType::eFloat:	NewText = xr_string::ToString(Var.Flt); break;
-			case ExpressionVarVariadic::EVariadicType::eStr:	NewText = Var.Str.c_str(); break;
+			case ExpressionVarVariadic::EVariadicType::eStr:	NewText = Var.Str.c_str() ? Var.Str.c_str() : ""; break;
 			case ExpressionVarVariadic::EVariadicType::eInt:	NewText = xr_string::ToString(Var.Int); break;
+		case ExpressionVarVariadic::EVariadicType::eUint:	NewText = xr_string::ToString(Var.UInt); break;
 			case ExpressionVarVariadic::EVariadicType::eBool:	NewText = Var.Boolean ? "true" : "false"; break;
 		}
 		m_hint_text = NewText.data();
