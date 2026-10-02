@@ -562,8 +562,6 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 		// Trace visibility
 		lights.clear();
 
-		float traceR = radius * .5f;
-
 		for (s32 id = 0; id < s32(track.size()); id++)
 		{
 			auto I = track.begin() + id;
@@ -583,21 +581,10 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 			light* xrL = I->source;
 			Fvector LP = xrL->position;
 
-			if (LightingModeIsStatic())
-			{
-			P.sub(LP, position).normalize();
-			
-			Fvector R; R.setHP(Random.randF(PI_MUL_2), Random.randF(PI_MUL_2));
-			
-			if (P.dotproduct(R) < 0.0f)
-			{
-				R.mul(-1.0f);
-			}
-			
-			P.mad(position, R, traceR);		// Random point inside range
-			}
-			else
-				_object->Center(P);
+			// Trace to the object center. A point biased toward the lamp falls
+			// into the room behind a dynamic door, so that lamp lights the
+			// whole door.
+			_object->Center(P);
 
 			// point/spot
 			float f = D.sub(P, LP).magnitude(); 

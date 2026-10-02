@@ -64,9 +64,12 @@ float3 calc_model_lq_lighting(float3 normal)
         + L_ambient.xyz + L_dynamic_props.xyz * calc_sun(normal);
 }
 
-float4 calc_model_lmap(float3 position)
+float4 calc_model_lmap(float3 position, float3 normal)
 {
-    float3 clamped = clamp(position, m_plmap_clamp[0].xyz, m_plmap_clamp[1].xyz);
+    // Shift the sample to the side the surface faces, so a door does not
+    // pick up the lightmap of the room behind it.
+    float3 biased = position + normal * 0.25f;
+    float3 clamped = clamp(biased, m_plmap_clamp[0].xyz, m_plmap_clamp[1].xyz);
     float4 projected = mul(m_plmap_xform, float4(clamped, 1.0f));
     return projected.xyww;
 }
@@ -102,11 +105,19 @@ struct vf_spot
 
 float4 calc_point(out float2 tc0, out float2 tc1, float4 position, float3 normal)
 {
-    float3 direction = normalize(position.xyz - Ldynamic_pos.xyz);
-    float3 tc = (position.xyz - Ldynamic_pos.xyz) * Ldynamic_pos.w + 0.5f;
+    float3 delta = position.xyz - Ldynamic_pos.xyz;
+    float3 direction = normalize(delta);
+    // w is 0.5/range: the cube test below still clips to the light box.
+    float3 tc = delta * Ldynamic_pos.w + 0.5f;
     tc0 = tc.xz;
     tc1 = tc.xy;
-    return Ldynamic_color * dot(normal, -direction) * calc_fogging(position);
+    // Planar attenuation textures go black along the vertical long before the
+    // sphere ends, so a ceiling lamp never reaches the floor. Fall off on the
+    // real distance instead, and ignore the back side of the surface.
+    float ndotl = saturate(dot(normal, -direction));
+    float att = saturate(1.0f - length(delta) * Ldynamic_pos.w * 2.0f);
+    att *= att;
+    return Ldynamic_color * ndotl * att * calc_fogging(position);
 }
 
 float4 calc_spot(out float4 tc0, out float2 tc1, float4 position, float3 normal)
@@ -115,6 +126,7 @@ float4 calc_spot(out float4 tc0, out float2 tc1, float4 position, float3 normal)
     tc0 = projected.xyww;
     tc1 = projected.z;
     float3 direction = normalize(position.xyz - Ldynamic_pos.xyz);
-    return Ldynamic_color * dot(normal, -direction) * calc_fogging(position);
+    float ndotl = saturate(dot(normal, -direction));
+    return Ldynamic_color * ndotl * calc_fogging(position);
 }
 #endif

@@ -189,7 +189,9 @@ void CLight_DB::add_light(light* L)
 	if (LightingModeIsStatic())
 	{
 		CSector* S = (CSector*)L->SpatialComponent->sector;
-		if (L->flags.bStatic || !ps_r1_flags.test(R1FLAG_DLIGHTS) || !S)
+		if (!ps_r1_flags.test(R1FLAG_DLIGHTS) || !S)
+			return;
+		if (L->flags.type != IRender_Light::POINT && L->flags.type != IRender_Light::SPOT)
 			return;
 		if (RImplementation.SectorsCount() > 1)
 		{

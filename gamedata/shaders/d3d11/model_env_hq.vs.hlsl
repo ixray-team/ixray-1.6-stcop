@@ -25,7 +25,7 @@ vf _main(v_model v)
     o.hpos = mul(m_WVP, pos); 
     o.tc0 = v.tc.xy; 
     o.tc1 = calc_reflection(pos_w, norm_w);
-    o.tc2 = calc_model_lmap(pos_w); 
+    o.tc2 = calc_model_lmap(pos_w, norm_w); 
     o.c0 = calc_sun(norm_w); 
     o.c1 = float4(calc_model_lq_lighting(norm_w), m_plmap_clamp[0].w);
     o.fog = calc_fogging(pos_w4); 

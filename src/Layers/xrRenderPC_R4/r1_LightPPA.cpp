@@ -188,14 +188,9 @@ void CLightR_Manager::add(light* L)
 	if (L->SpatialComponent->sector == nullptr)
 		return;
 	if (IRender_Light::POINT == L->flags.type)
-	{
-		
 		selected_point.push_back(L);
-	}
-	else {
-		
+	else if (IRender_Light::SPOT == L->flags.type)
 		selected_spot.push_back(L);
-	}
 }
 
 CLightR_Manager::CLightR_Manager	()
