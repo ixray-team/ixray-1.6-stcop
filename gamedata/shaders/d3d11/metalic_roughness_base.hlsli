@@ -32,7 +32,10 @@ struct IXRayMaterial
 	
 	IXRayMaterial Lerp(in IXRayMaterial B, float Factor)
 	{
-		IXRayMaterial O = this;
+		IXRayMaterial O;
+		O.Point = Point;
+		O.Depth = Depth;
+		O.MaterialID = MaterialID;
 
 	#ifndef USE_LEGACY_LIGHT
 		O.Metalness = lerp(Metalness, B.Metalness, Factor);

@@ -32,6 +32,7 @@ public:
 
 	virtual void AddRef() = 0;
 	virtual u32 Release() = 0;
+	virtual u32 GetSize() const = 0;
 
 	virtual bool Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresource* pData) = 0;
 	virtual void Unmap() = 0;

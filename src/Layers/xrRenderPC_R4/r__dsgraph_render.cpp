@@ -24,6 +24,58 @@ ICF float calcLOD	(float ssa/*fDistSq*/, float R)
 	return _sqrt(clampr((ssa - r_ssaGLOD_end)/(r_ssaGLOD_start-r_ssaGLOD_end),0.f,1.f));
 }
 
+template <class K, class T, class A>
+static void WipeMap(FixedMAP<K, T, A>& m);
+
+static void WipeMap(R_dsgraph::mapNormalAdvStages& s);
+static void WipeMap(R_dsgraph::mapMatrixAdvStages& s);
+static void WipeMap(R_dsgraph::mapMatrixItems& i);
+
+template <class T>
+static void WipeMap(T& v)
+{
+	v.clear();
+}
+
+template <class K, class T, class A>
+static void WipeMap(FixedMAP<K, T, A>& m)
+{
+	for (auto& n : m)
+	{
+		WipeMap(n.val);
+	}
+	m.clear();
+}
+
+static void WipeMap(R_dsgraph::mapNormalAdvStages& s)
+{
+	WipeMap(s.mapCS);
+}
+
+static void WipeMap(R_dsgraph::mapMatrixAdvStages& s)
+{
+	WipeMap(s.mapCS);
+}
+
+static void WipeMap(R_dsgraph::mapMatrixItems& i)
+{
+	i.visuals.clear();
+	i.particles.clear();
+}
+
+void R_dsgraph_structure::r_dsgraph_clear_passes()
+{
+	for (u32 i = 0; i < 2; ++i)
+	{
+		for (u32 j = 0; j < SHADER_PASSES_MAX; ++j)
+		{
+			WipeMap(mapNormalPasses[i][j]);
+			WipeMap(mapMatrixPasses[i][j]);
+		}
+	}
+	r_dsgraph_clear_aux();
+}
+
 void R_dsgraph_structure::r_dsgraph_clear_aux()
 {
 	mapSorted.clear();

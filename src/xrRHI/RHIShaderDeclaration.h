@@ -1,5 +1,6 @@
 #pragma once
 #include "RHITypes.h"
+class RHIBlob;
 
 enum
 {
@@ -103,7 +104,7 @@ public:
 	IRHIShaderDeclaration(const RHIInputElementDesc* DescList, size_t DescCount);
 
 	virtual ~IRHIShaderDeclaration() {};
-	virtual void GenerateLayerDescriptors(void* Signature) = 0;
+	virtual void GenerateLayerDescriptors(RHIBlob* Signature) = 0;
 	virtual void ApplyLayout() = 0;
 };
 

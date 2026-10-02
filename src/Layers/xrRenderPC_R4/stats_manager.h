@@ -17,13 +17,13 @@ public:
  	void increment_stats		( u32 size, enum_stats_buffer_type type, _D3DPOOL location );
 	void decrement_stats		( u32 size, enum_stats_buffer_type type, _D3DPOOL location );
 
-	void increment_stats_rtarget( ID3DTexture2D*	buff );
-	void increment_stats_vb		( ID3DVertexBuffer*		buff );
-	void increment_stats_ib		( ID3DIndexBuffer*		buff );
+	void increment_stats_rtarget( IRHISurface*	buff );
+	void increment_stats_vb		( IRHIBuffer*		buff );
+	void increment_stats_ib		( IRHIBuffer*		buff );
 
-	void decrement_stats_rtarget( ID3DTexture2D*	buff );
-	void decrement_stats_vb		( ID3DVertexBuffer*		buff );
-	void decrement_stats_ib		( ID3DIndexBuffer*		buff );
+	void decrement_stats_rtarget( IRHISurface*	buff );
+	void decrement_stats_vb		( IRHIBuffer*		buff );
+	void decrement_stats_ib		( IRHIBuffer*		buff );
 
 	u32 memory_usage_summary[enum_stats_buffer_type_COUNT][4];
 
@@ -45,6 +45,6 @@ private:
 #endif
 }; // class stats_manager
 
-u32 get_format_pixel_size ( DXGI_FORMAT format );
+u32 get_format_pixel_size ( ERHI_FORMAT format );
 
 #endif // #ifndef STATS_MANAGER_H_INCLUDED

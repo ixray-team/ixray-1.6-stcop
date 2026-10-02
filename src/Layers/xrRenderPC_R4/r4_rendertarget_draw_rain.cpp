@@ -67,14 +67,14 @@ void CRenderTarget::draw_rain(light& RainSetup)
 			m_clouds_shadow.mulA_44(m_xform);
 		}
 
-		ID3D11UnorderedAccessView* uav_dummy[3] = 
+		IRHIUnorderedAccessView* uav_dummy[3] =
 		{
 			nullptr, 
 			nullptr, 
 			nullptr 
 		};
 
-		ID3D11ShaderResourceView* srv_dummy[16] = {};
+		IRHIShaderResourceView* srv_dummy[16] = {};
 
 		ShaderElement* S;
 		S = (&*(s_rain->E[0]));
@@ -110,22 +110,21 @@ void CRenderTarget::draw_rain(light& RainSetup)
 			RImplementation.m_puddles_level_bound.rb.y
 		);
 
-		UINT UAVInitialCounts = 1;
 
-		ID3D11UnorderedAccessView* our_uav[3] = 
+		IRHIUnorderedAccessView* our_uav[3] =
 		{
-			reinterpret_cast<ID3D11UnorderedAccessView*>(rt_Color->pUAView->GetRaw()),
-			reinterpret_cast<ID3D11UnorderedAccessView*>(rt_Normal->pUAView->GetRaw()),
-			reinterpret_cast<ID3D11UnorderedAccessView*>(rt_Surface->pUAView->GetRaw())
+			rt_Color->pUAView,
+			rt_Normal->pUAView,
+			rt_Surface->pUAView
 		};
 
-		RContext->CSSetUnorderedAccessViews(0, std::size(our_uav), our_uav, &UAVInitialCounts);
+		GRHI->SetComputeUAVs(0, std::size(our_uav), our_uav, nullptr);
 
 		//Dispatch
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
 		//Unbind
-		RContext->CSSetUnorderedAccessViews(0, std::size(uav_dummy), uav_dummy, &UAVInitialCounts);
-		RContext->CSSetShaderResources(0, std::size(srv_dummy), srv_dummy);
+		GRHI->SetComputeUAVs(0, std::size(uav_dummy), uav_dummy, nullptr);
+		GRHI->SetComputeResources(0, std::size(srv_dummy), srv_dummy);
 	}
 }

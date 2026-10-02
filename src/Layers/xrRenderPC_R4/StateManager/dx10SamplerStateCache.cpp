@@ -49,7 +49,7 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState(RHISampleDesc& de
 
 void dx10SamplerStateCache::CreateState(RHISampleDesc desc, IDeviceState** ppIState )
 {
-	CHK_DX(RDevice->CreateSamplerState((D3D11_SAMPLER_DESC*)&desc, ppIState));
+	CHK_DX(GRHI->CreateSamplerState(desc, ppIState));
 }
 
 dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState( const RHISampleDesc& desc, u32 StateCRC )
@@ -62,7 +62,7 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState( const RHISample
 		if (m_StateArray[i].m_crc==StateCRC)
 		{
 			RHISampleDesc descCandidate;
-			m_StateArray[i].m_pState->GetDesc((D3D11_SAMPLER_DESC*)&descCandidate);
+			m_StateArray[i].m_pState->GetDesc(&descCandidate);
 			if (descCandidate==desc)
 			{
                 res = i;
@@ -86,7 +86,7 @@ void dx10SamplerStateCache::ClearStateArray()
 
 void dx10SamplerStateCache::PrepareSamplerStates(
 	HArray &samplers, 
-	ID3DSamplerState	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT],
+	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT],
 	SHandle				pCurrentState[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT],
 	u32	&uiMin,
 	u32	&uiMax
@@ -110,56 +110,56 @@ void dx10SamplerStateCache::PrepareSamplerStates(
 
 void dx10SamplerStateCache::VSApplySamplers(HArray &samplers)
 {
-	ID3DSamplerState	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aVSSamplers, uiMin, uiMax);
-	RContext->VSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::VS);
 }
 
 void dx10SamplerStateCache::PSApplySamplers(HArray &samplers)
 {
-	ID3DSamplerState	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aPSSamplers, uiMin, uiMax);
-	RContext->PSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::PS);
 }
 
 void dx10SamplerStateCache::GSApplySamplers(HArray &samplers)
 {
-	ID3DSamplerState	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aGSSamplers, uiMin, uiMax);
-	RContext->GSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::GS);
 }
 
 void dx10SamplerStateCache::HSApplySamplers(HArray &samplers)
 {
-	ID3DSamplerState	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aHSSamplers, uiMin, uiMax);
-	RContext->HSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::HS);
 }
 
 void dx10SamplerStateCache::DSApplySamplers(HArray &samplers)
 {
-	ID3DSamplerState	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aDSSamplers, uiMin, uiMax);
-	RContext->DSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::DS);
 }
 
 void dx10SamplerStateCache::CSApplySamplers(HArray &samplers)
 {
-	ID3DSamplerState	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aCSSamplers, uiMin, uiMax);
-	RContext->CSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::CS);
 }
 
 void dx10SamplerStateCache::SetMaxAnisotropy(UINT uiMaxAniso)
@@ -179,7 +179,7 @@ void dx10SamplerStateCache::SetMaxAnisotropy(UINT uiMaxAniso)
 
 		if (rec.m_pState != nullptr)
 		{
-			rec.m_pState->GetDesc((D3D11_SAMPLER_DESC*)&desc);
+			rec.m_pState->GetDesc(&desc);
 			desc.MaxAnisotropy = m_uiMaxAnisotropy;
 			dx10StateUtils::ValidateState(desc);
 			rec.m_pState->Release();
@@ -209,7 +209,7 @@ void dx10SamplerStateCache::SetMipLodBias(float mipMapLodBias)
 
 		if (rec.m_pState != nullptr)
 		{
-			rec.m_pState->GetDesc((D3D11_SAMPLER_DESC*)&desc);
+			rec.m_pState->GetDesc(&desc);
 
 			if(desc.Filter == ERHI_FILTER::ANISOTROPIC)
 			{

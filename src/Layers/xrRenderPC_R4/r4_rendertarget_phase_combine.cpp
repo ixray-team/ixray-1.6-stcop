@@ -12,10 +12,7 @@ void CRenderTarget::DoAsyncScreenshot()
 	//	TODO: fox that later
 	if (RImplementation.m_bMakeAsyncSS)
 	{
-		HRESULT hr;
-		ID3DTexture2D* pBuffer = nullptr;
-		hr = RSwapchain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
-		RContext->CopyResource( t_ss_async, pBuffer );
+		GRHI->CopySwapchain(t_ss_async);
 		
 
 		RImplementation.m_bMakeAsyncSS = false;
@@ -226,6 +223,7 @@ void CRenderTarget::phase_combine()
 			if(!phase_xess())
 			{
 				ps_proxy_r_scale_mode = ps_r_scale_mode = 1;
+                phase_scale();
 			}
 			break;
 		}
@@ -234,6 +232,7 @@ void CRenderTarget::phase_combine()
 			if(!phase_fsr()) 
 			{
 				ps_proxy_r_scale_mode = ps_r_scale_mode = 1;
+                phase_scale();
 			}
 			break;
 		}
@@ -241,7 +240,8 @@ void CRenderTarget::phase_combine()
 		{
 			if(!phase_dlss())
 			{
-				ps_proxy_r_scale_mode = ps_r_scale_mode = 3;
+				ps_proxy_r_scale_mode = ps_r_scale_mode = GRHI->APILevel == ERHI_API_LAYER::D3D12 ? 1 : 3;
+                phase_scale();
 			}
 			break;
 		}

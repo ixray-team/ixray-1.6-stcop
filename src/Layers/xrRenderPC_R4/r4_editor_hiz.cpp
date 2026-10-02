@@ -2,8 +2,27 @@
 
 #include "r4_editor_hiz.h"
 
+// HACK: the read-back must not stall, and the RHI has no non-blocking read-back yet, so the grid
+// is built with Direct3D 11 directly. Other APIs leave the editor without occlusion culling.
+#include <d3d11.h>
+
 namespace
 {
+	bool IsSupported()
+	{
+		return GRHI->APILevel == ERHI_API_LAYER::D3D11;
+	}
+
+	ID3D11Device* HWDevice()
+	{
+		return static_cast<ID3D11Device*>(Device.GetRenderDevice());
+	}
+
+	ID3D11DeviceContext* HWContext()
+	{
+		return static_cast<ID3D11DeviceContext*>(GRHI->GetContext());
+	}
+
 	class CBlender_EditorHiZ final : public IBlender
 	{
 	public:
@@ -101,12 +120,12 @@ bool CEditorHiZ::CreateResources(u32 Width, u32 Height)
 	Desc.Usage = D3D11_USAGE_DEFAULT;
 	Desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
 
-	if (FAILED(RDevice->CreateTexture2D(&Desc, nullptr, &GridTexture)))
+	if (FAILED(HWDevice()->CreateTexture2D(&Desc, nullptr, &GridTexture)))
 	{
 		return false;
 	}
 
-	if (FAILED(RDevice->CreateUnorderedAccessView(GridTexture, nullptr, &GridUAV)))
+	if (FAILED(HWDevice()->CreateUnorderedAccessView(GridTexture, nullptr, &GridUAV)))
 	{
 		_RELEASE(GridTexture);
 		return false;
@@ -118,7 +137,7 @@ bool CEditorHiZ::CreateResources(u32 Width, u32 Height)
 
 	for (SReadback& Readback : Readbacks)
 	{
-		if (FAILED(RDevice->CreateTexture2D(&Desc, nullptr, &Readback.Texture)))
+		if (FAILED(HWDevice()->CreateTexture2D(&Desc, nullptr, &Readback.Texture)))
 		{
 			return false;
 		}
@@ -149,6 +168,11 @@ bool CEditorHiZ::CreateResources(u32 Width, u32 Height)
 
 void CEditorHiZ::Build()
 {
+	if (!IsSupported())
+	{
+		return;
+	}
+
 	const u32 Width = (u32)RCache.get_width();
 	const u32 Height = (u32)RCache.get_height();
 	if (Width == 0 || Height == 0 || !CreateResources(Width, Height))
@@ -178,13 +202,13 @@ void CEditorHiZ::Build()
 	RCache.set_c("editor_hiz_params", float(Width), float(Height), 0.f, 0.f);
 
 	UINT InitialCount = 0;
-	RContext->CSSetUnorderedAccessViews(0, 1, &GridUAV, &InitialCount);
+	HWContext()->CSSetUnorderedAccessViews(0, 1, &GridUAV, &InitialCount);
 	RCache.Compute((GridWidth + 7) / 8, (GridHeight + 7) / 8, 1);
 
 	ID3D11UnorderedAccessView* NullUAV = nullptr;
-	RContext->CSSetUnorderedAccessViews(0, 1, &NullUAV, &InitialCount);
+	HWContext()->CSSetUnorderedAccessViews(0, 1, &NullUAV, &InitialCount);
 
-	RContext->CopyResource(Readback.Texture, GridTexture);
+	HWContext()->CopyResource(Readback.Texture, GridTexture);
 	Readback.ViewProject = Device.mFullTransform;
 	Readback.CameraPosition = Device.vCameraPosition;
 	Readback.CameraDirection = Device.vCameraDirection;
@@ -195,6 +219,12 @@ void CEditorHiZ::Build()
 
 void CEditorHiZ::Fetch()
 {
+	if (!IsSupported())
+	{
+		Usable = false;
+		return;
+	}
+
 	// Oldest first: the newest finished read-back wins
 	for (u32 Offset = 0; Offset < ReadbackCount; ++Offset)
 	{
@@ -205,7 +235,7 @@ void CEditorHiZ::Fetch()
 		}
 
 		D3D11_MAPPED_SUBRESOURCE Mapped = {};
-		if (RContext->Map(Readback.Texture, 0, D3D11_MAP_READ, D3D11_MAP_FLAG_DO_NOT_WAIT, &Mapped) != S_OK)
+		if (HWContext()->Map(Readback.Texture, 0, D3D11_MAP_READ, D3D11_MAP_FLAG_DO_NOT_WAIT, &Mapped) != S_OK)
 		{
 			continue;
 		}
@@ -215,7 +245,7 @@ void CEditorHiZ::Fetch()
 		{
 			CopyMemory(Level.Depth.data() + Y * Level.Width, (const u8*)Mapped.pData + Y * Mapped.RowPitch, Level.Width * sizeof(float));
 		}
-		RContext->Unmap(Readback.Texture, 0);
+		HWContext()->Unmap(Readback.Texture, 0);
 
 		Readback.Pending = false;
 		ViewProject = Readback.ViewProject;

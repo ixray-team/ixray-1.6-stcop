@@ -32,9 +32,9 @@ private:
 
 private:
 	//	All states are supposed to live along all application lifetime
-	ID3DRasterizerState*		m_pRasterizerState;		//	Weak link
-	ID3DDepthStencilState*	m_pDepthStencilState;	//	Weak link
-	ID3DBlendState*			m_pBlendState;			//	Weak link
+	void*		m_pRasterizerState;		//	Weak link
+	void*	m_pDepthStencilState;	//	Weak link
+	void*			m_pBlendState;			//	Weak link
 
 	tSamplerHArray				m_VSSamplers;
 	tSamplerHArray				m_PSSamplers;

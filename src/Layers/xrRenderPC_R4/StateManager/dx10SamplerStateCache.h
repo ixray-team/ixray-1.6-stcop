@@ -36,7 +36,7 @@ public:
 
 	//	Private declarations
 private:
-	typedef	ID3DSamplerState	IDeviceState;
+	typedef	RHIObject	IDeviceState;
 
 	struct StateRecord 
 	{
@@ -50,8 +50,8 @@ private:
 
 	void	PrepareSamplerStates(
 		HArray &samplers, 
-		ID3DSamplerState	*pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT],
-		SHandle pCurrentState[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT],
+		RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT],
+		SHandle pCurrentState[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT],
 		u32	&uiMin,
 		u32	&uiMax
 	) const;
@@ -61,12 +61,12 @@ private:
 	//	This must be cleared on device destroy
 	xr_vector<StateRecord>	m_StateArray;
 
-	SHandle					m_aPSSamplers[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	SHandle					m_aVSSamplers[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	SHandle					m_aGSSamplers[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	SHandle					m_aHSSamplers[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	SHandle					m_aDSSamplers[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	SHandle					m_aCSSamplers[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	SHandle					m_aPSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	SHandle					m_aVSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	SHandle					m_aGSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	SHandle					m_aHSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	SHandle					m_aDSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	SHandle					m_aCSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
 
 	u32						m_uiMaxAnisotropy;
 	float m_mipLodBias;

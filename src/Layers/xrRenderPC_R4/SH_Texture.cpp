@@ -639,7 +639,7 @@ void CTexture::CreateEmpty(u32 w, u32 h)
 {
 	xrCriticalSectionGuard Guard(LoadGuard);
 	FinishLoading();
-	R_ASSERT(RDevice && "must be valid");
+	R_ASSERT(GRHI->DevicePtr && "must be valid");
 
 	flags.bLoaded = true;
 	if (pSurface)

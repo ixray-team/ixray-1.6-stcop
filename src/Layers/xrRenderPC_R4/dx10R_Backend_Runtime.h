@@ -28,7 +28,7 @@ IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT T
 	GRHI->StateManager->Apply();
 	//	State manager may alter constants
 	constants.flush();
-	RContext->Dispatch(ThreadGroupCountX,ThreadGroupCountY,ThreadGroupCountZ);
+	GRHI->Dispatch(ThreadGroupCountX,ThreadGroupCountY,ThreadGroupCountZ);
 }
 
 IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation, bool flush_constants)
@@ -59,7 +59,7 @@ IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 b
 	else
 		FixedConstants::Flush();
 
-	RContext->DrawIndexedInstanced(iIndexCount, instanceCount, startI, baseV, startInstanceLocation);
+	GRHI->DrawIndexedInstanced(baseV, startV, countV, startI, PC, instanceCount, startInstanceLocation);
 }
 
 IC void CBackend::RenderInstanced(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC, u32 instanceCount)
@@ -69,7 +69,7 @@ IC void CBackend::RenderInstanced(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, 
 		return;
 	}
 
-	const u32 VertexCount = RHITopologyUtils::GetIndexCount(PC, topology);
+	const u32 VertexCount = RHITopologyUtils::GetVertexCount(PC, topology);
 
 	stat.calls++;
 	stat.verts += VertexCount * instanceCount;
@@ -82,7 +82,7 @@ IC void CBackend::RenderInstanced(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, 
 	GRHI->StateManager->Apply();
 
 	constants.flush();
-	RContext->DrawInstanced(VertexCount, instanceCount, startV, 0);
+	GRHI->DrawInstanced(startV, PC, instanceCount, 0);
 }
 
 IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
@@ -175,17 +175,17 @@ IC void CBackend::ApplyVertexLayout()
 	if (!decl || !m_pInputSignature)
 		return;
 
-	xr_map<ID3DBlob*, ID3DInputLayout*>::iterator	it;
+	xr_map<RHIBlob*, RHIObject*>::iterator	it;
 
 	it = decl->vs_to_layout.find(m_pInputSignature);
 
 	if (it==decl->vs_to_layout.end())
 	{
-		ID3DInputLayout* pLayout;
+		RHIObject* pLayout;
 
-		CHK_DX(RDevice->CreateInputLayout
+		CHK_DX(GRHI->CreateInputLayout
 		(
-			(D3D11_INPUT_ELEMENT_DESC*)decl->dx10_dcl_code.data(),
+			decl->dx10_dcl_code.data(),
 			decl->dx10_dcl_code.size(),
 			m_pInputSignature->GetBufferPointer(),
 			m_pInputSignature->GetBufferSize(),
@@ -194,13 +194,13 @@ IC void CBackend::ApplyVertexLayout()
 		);
 
 		it = decl->vs_to_layout.insert(
-			std::pair<ID3DBlob*, ID3DInputLayout*>(m_pInputSignature, pLayout)).first;
+			std::pair<RHIBlob*, RHIObject*>(m_pInputSignature, pLayout)).first;
 	}
 
 	if ( m_pInputLayout != it->second)
 	{
 		m_pInputLayout = it->second;
-		RContext->IASetInputLayout(m_pInputLayout);
+		GRHI->SetInputLayout(m_pInputLayout);
 	}	
 }
 

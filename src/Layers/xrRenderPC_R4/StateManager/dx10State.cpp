@@ -23,9 +23,9 @@ dx10State* dx10State::Create(SimulatorStates& state_code)
 	dx10State *pState = new dx10State();
 	state_code.UpdateState(*pState);
 
-	D3D_RASTERIZER_DESC DescRS = {};
-	D3D_DEPTH_STENCIL_DESC DescDS = {};
-	D3D_BLEND_DESC DescBS = {};
+	RHIRasterizerDesc DescRS = {};
+	RHIDepthStencilDesc DescDS = {};
+	RHIBlendDesc DescBS = {};
 
 	dx10StateUtils::ResetDescription(DescRS);
 	dx10StateUtils::ResetDescription(DescDS);
@@ -37,9 +37,9 @@ dx10State* dx10State::Create(SimulatorStates& state_code)
 	dx10StateUtils::ValidateState(DescDS);
 	dx10StateUtils::ValidateState(DescBS);
 
-	pState->m_pRasterizerState = (ID3DRasterizerState*)GRHI->StateManager->GetCache(ERHI_STATE_CACHE_TYPE::RS, &DescRS);
-	pState->m_pDepthStencilState = (ID3DDepthStencilState*)GRHI->StateManager->GetCache(ERHI_STATE_CACHE_TYPE::DS, &DescDS);
-	pState->m_pBlendState = (ID3DBlendState*)GRHI->StateManager->GetCache(ERHI_STATE_CACHE_TYPE::BS, &DescBS);;
+	pState->m_pRasterizerState = GRHI->GetState(DescRS);
+	pState->m_pDepthStencilState = GRHI->GetState(DescDS);
+	pState->m_pBlendState = GRHI->GetState(DescBS);
 	//ID3DxxDevice::CreateSamplerState
 
 	//	Create samplers here

@@ -73,14 +73,14 @@ bool CRenderDevice::InitRenderDeviceEditor()
 	GRHI = new CRHI;
 	fill_vid_mode_list();
 
-	if (!GRHI->CreateDevice(ERHI_API_LAYER::D3D11))
+	if (!GRHI->CreateDevice((ERHI_API_LAYER)g_graphicsAPI))
 	{
 		return false;
 	}
 
 	Device.TargetWidth = psCurrentVidMode[0];
 	Device.TargetHeight = psCurrentVidMode[1];
-	CurrentAPILevel = ERHI_API_LAYER::D3D11;
+	CurrentAPILevel = GRHI->APILevel;
 
 	return true;
 }
@@ -88,7 +88,6 @@ bool CRenderDevice::InitRenderDeviceEditor()
 bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 {
 	PROF_EVENT("InitRenderDevice");
-	GRHI = new CRHI;
 
 	fill_vid_mode_list();
 #ifdef IXR_WINDOWS

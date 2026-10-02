@@ -327,18 +327,18 @@ xr_map<xr_string, float> PowerMap;
 CRenderTarget::CRenderTarget()
 {
 	if (g_debug_blend_state == nullptr) {
-		D3D11_BLEND_DESC desc;
+		RHIBlendDesc desc;
 		ZeroMemory(&desc, sizeof(desc));
 		desc.AlphaToCoverageEnable = false;
 		desc.RenderTarget[0].BlendEnable = false;
-		desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		desc.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_COLOR;
-		desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-		desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-		desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		R_CHK(RDevice->CreateBlendState(&desc, &g_debug_blend_state));
+		desc.RenderTarget[0].SrcBlend = RHI_BLEND_SRC_ALPHA;
+		desc.RenderTarget[0].DestBlend = RHI_BLEND_DEST_COLOR;
+		desc.RenderTarget[0].BlendOp = RHI_BLEND_OP_ADD;
+		desc.RenderTarget[0].SrcBlendAlpha = RHI_BLEND_ONE;
+		desc.RenderTarget[0].DestBlendAlpha = RHI_BLEND_ZERO;
+		desc.RenderTarget[0].BlendOpAlpha = RHI_BLEND_OP_ADD;
+		desc.RenderTarget[0].RenderTargetWriteMask = RHI_COLOR_WRITE_ENABLE_ALL;
+		R_CHK(GRHI->CreateBlendState(desc, &g_debug_blend_state));
 	}
 
 	CImGuiManager::Instance().Subscribe("GraphicDebug", CImGuiManager::ERenderPriority::eMedium, [this]()
@@ -391,7 +391,7 @@ CRenderTarget::CRenderTarget()
 					[](const ImDrawList* parent_list, const ImDrawCmd* cmd)
 					{
 						const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
-						RContext->OMSetBlendState((ID3D11BlendState*)cmd->UserCallbackData, blend_factor, 0xffffffff);
+						GRHI->SetBlendState((RHIObject*)cmd->UserCallbackData, blend_factor, 0xffffffff);
 					},
 					State
 				);
@@ -411,7 +411,7 @@ CRenderTarget::CRenderTarget()
 						if (bd != nullptr)
 						{
 							const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
-							RContext->OMSetBlendState((ID3D11BlendState*)bd, blend_factor, 0xffffffff);
+							GRHI->SetRawBlendState(bd, blend_factor, 0xffffffff);
 						}
 					},
 					State
@@ -543,7 +543,7 @@ CRenderTarget::CRenderTarget()
 	b_combine = new CBlender_combine();
 	b_ssao = new CBlender_SSAO();
 
-	CRT::CRTCreationFlags isUAV = RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 ? CRT::USE_UAV_FLAG : (CRT::CRTCreationFlags)NULL;
+	CRT::CRTCreationFlags isUAV = RFeatureLevel >= RHI_FEATURE_LEVEL_11_0 ? CRT::USE_UAV_FLAG : (CRT::CRTCreationFlags)NULL;
 
 	u32 s_dwWidth = (u32)RCache.get_width(), s_dwHeight = (u32)RCache.get_height();
 
@@ -916,41 +916,40 @@ CRenderTarget::CRenderTarget()
 	{
 		// Testure for async sreenshots
 		{
-			D3D_TEXTURE2D_DESC	desc;
+			RHITextureDesc desc;
 			desc.Width = s_dwWidth;
 			desc.Height = s_dwHeight;
 			desc.MipLevels = 1;
 			desc.ArraySize = 1;
-			desc.SampleDesc.Count = 1;
-			desc.SampleDesc.Quality = 0;
-			desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM;
-			desc.Usage = D3D_USAGE_STAGING;
-			desc.BindFlags = 0;
-			desc.CPUAccessFlags = D3D_CPU_ACCESS_READ;
+			desc.Format = ERHI_FORMAT::R8G8B8A8_SNORM;
+			desc.Usage = ERHI_USAGE::USAGE_STAGING;
+			desc.BindFlags = ERHI_BIND_FLAG::NOT_SET;
+			desc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG_READ;
 			desc.MiscFlags = 0;
 
-			R_CHK( RDevice->CreateTexture2D(&desc, 0, &t_ss_async) );
+			t_ss_async = GRHI->DevicePtr->GetTextureFactory()->CreateTexture2D(desc, nullptr);
+			R_ASSERT(t_ss_async);
 		}
 		// Build material(s)
 		{
 			u16	tempData[TEX_material_LdotN * TEX_material_LdotH * TEX_material_Count];
 
-			D3D_TEXTURE3D_DESC	desc;
+			RHITextureDesc desc;
 			desc.Width = TEX_material_LdotN;
 			desc.Height = TEX_material_LdotH;
 			desc.Depth	= TEX_material_Count;
 			desc.MipLevels = 1;
-			desc.Format = DXGI_FORMAT_R8G8_UNORM;
-			desc.Usage = D3D_USAGE_IMMUTABLE;
-			desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			desc.Format = ERHI_FORMAT::R8G8_UNORM;
+			desc.Usage = ERHI_USAGE::USAGE_IMMUTABLE;
+			desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 			desc.CPUAccessFlags = 0;
 			desc.MiscFlags = 0;
 
-			D3D_SUBRESOURCE_DATA	subData;
+			RHISubResource subData;
 
-			subData.pSysMem = tempData;
-			subData.SysMemPitch = desc.Width*2;
-			subData.SysMemSlicePitch = desc.Height*subData.SysMemPitch;
+			subData.Data = tempData;
+			subData.RowPitch = desc.Width*2;
+			subData.DepthPitch = desc.Height*subData.RowPitch;
 
 			for (u32 slice=0; slice<TEX_material_Count; slice++)
 			{
@@ -959,9 +958,9 @@ CRenderTarget::CRenderTarget()
 					for (u32 x=0; x<TEX_material_LdotN; x++)
 					{
 						u16*	p	=	(u16*)		
-							(LPBYTE (subData.pSysMem) 
-							+ slice*subData.SysMemSlicePitch 
-							+ y*subData.SysMemPitch + x*2);
+							(LPBYTE (subData.Data)
+							+ slice*subData.DepthPitch
+							+ y*subData.RowPitch + x*2);
 						float	ld	=	float(x)	/ float	(TEX_material_LdotN-1);
 						float	ls	=	float(y)	/ float	(TEX_material_LdotH-1) + EPS_S;
 						ls			*=	powf(ld,1/32.f);
@@ -1000,24 +999,10 @@ CRenderTarget::CRenderTarget()
 				}
 			}
 
-			R_CHK(RDevice->CreateTexture3D(&desc, &subData, &t_material_surf));
+			t_material_surf = GRHI->CreateTexture3D(desc, &subData);
+			R_ASSERT(t_material_surf);
 			t_material = dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_material);
-			
-			// Create RHITextureDesc for the texture
-			RHITextureDesc rhiDesc;
-			rhiDesc.Width = desc.Width;
-			rhiDesc.Height = desc.Height;
-			rhiDesc.Depth = desc.Depth;
-			rhiDesc.MipLevels = desc.MipLevels;
-			rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-			rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
-			rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
-			rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
-			rhiDesc.MiscFlags = desc.MiscFlags;
-			
-			// Use GRHI to create the surface
-			IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(t_material_surf, 0, rhiDesc);
-			t_material->surface_set(rhiSurface);
+			t_material->surface_set(t_material_surf);
 		}
 
 		// Build noise table
@@ -1189,6 +1174,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_occq);
 
 	g_Fsr3Wrapper.Destroy();
+	g_XESSWrapper.Destroy();
 
 	CImGuiManager::Instance().Unsubscribe("GraphicDebug");
 
@@ -1263,4 +1249,4 @@ void CRenderTarget::copy_position()
 
 	GRHI->SetDepthStencilView(nullptr);
 	GRHI->CopySurface(rt_Position->pSurface, RDepth->GetSurface());
-}
+}

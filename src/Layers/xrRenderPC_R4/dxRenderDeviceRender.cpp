@@ -5,6 +5,8 @@
 #include "dxDebugRender.h"
 
 #include "ResourceManager.h"
+extern ENGINE_API u32 ps_render_scale_preset;
+extern ENGINE_API float ps_render_scale;
 #include "imgui.h"
 #include "../../xrEngine/Autotest.h"
 
@@ -15,6 +17,7 @@ dxRenderDeviceRender::dxRenderDeviceRender()
 
 #include "..\xrRenderPC_R4\OverlayAPI\DLSSWrapper.h"
 #include "..\xrRenderPC_R4\OverlayAPI\FSR3Wrapper.h"
+#include "OverlayAPI/XESSWrapper.h"
 
 void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 {
@@ -27,11 +30,17 @@ void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 	{
 		case 2:
 		{
-			g_DLSSWrapper.GetRenderScale(RenderScale);
+			g_DLSSWrapper.GetRenderScale(RenderScale, ps_render_scale_preset, ps_render_scale, Device.TargetWidth, Device.TargetHeight);
 		}
+        break;
 		case 3:
 		{
-			g_Fsr3Wrapper.GetRenderScale(RenderScale);
+			g_Fsr3Wrapper.GetRenderScale(RenderScale, ps_render_scale_preset, ps_render_scale, Device.TargetWidth, Device.TargetHeight);
+		}
+		break;
+		case 4:
+		{
+			g_XESSWrapper.GetRenderScale(RenderScale, ps_render_scale_preset, ps_render_scale, Device.TargetWidth, Device.TargetHeight);
 		}
 		break;
 	}
@@ -300,7 +309,7 @@ void dxRenderDeviceRender::End()
 	PROF_EVENT("Present");
 
 #if defined(IXRAY_PROFILER_TRACY)
-	PROF_GPU_CTX_COLLECT();
+	GRHI->CollectGPUProfiler();
 #endif
 
 	GRHI->Present();

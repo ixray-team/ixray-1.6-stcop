@@ -265,7 +265,7 @@ void CRender::create()
 	o.nullrt = false;
 
 	// SMAP / DST
-	o.HW_smap_FORMAT = DXGI_FORMAT_R24G8_TYPELESS; 
+	o.HW_smap_FORMAT = static_cast<u32>(ERHI_FORMAT::R24G8_TYPELESS);
 
 	// nvstencil on NV40 and up
 	o.nvstencil = false;
@@ -305,7 +305,7 @@ void CRender::create()
 
 	o.dx11_allow_wboit_transparency = LightingModeIsDynamicRender() && !!EngineExternal().ShadersOptions.contains(xr_string("ALLOW_WBOIT_TRANSPARENCY"));
 
-	o.dx11_enable_tessellation = LightingModeIsDynamicRender() && RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
+	o.dx11_enable_tessellation = LightingModeIsDynamicRender() && RFeatureLevel >= RHI_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
 	// constants
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params2", &binder_pos_decompress_params2);
@@ -839,14 +839,13 @@ static HRESULT create_shader(
 ) {
 	result->sh = ShaderTypeTraits<T>::CreateHWShader(buffer, buffer_size);
 
-	ID3DShaderReflection* pReflection = 0;
+	RHIShaderReflection reflection;
 
-	HRESULT const _hr = D3DReflect(buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
-	if(SUCCEEDED(_hr) && pReflection) {
+	HRESULT const _hr = GRHI->ReflectShader(buffer, buffer_size, reflection);
+	if(SUCCEEDED(_hr)) {
 		// Parse constant table data
-		result->constants.parse(pReflection, ShaderTypeTraits<T>::GetShaderDest());
+		result->constants.parse(&reflection, ShaderTypeTraits<T>::GetShaderDest());
 
-		_RELEASE(pReflection);
 	}
 	else {
 		Msg("! D3DReflectShader %s hr == 0x%08x", file_name, _hr);
@@ -866,24 +865,22 @@ static HRESULT create_shader(
 	HRESULT		_result = E_FAIL;
 	if(pTarget[0] == 'p') {
 		SPS* sps_result = (SPS*)result;
-		_result = RDevice->CreatePixelShader(buffer, buffer_size, 0, &sps_result->ps);
+		_result = GRHI->CreateShader(buffer, buffer_size, ERHI_SHADER_TYPE::PS, &sps_result->ps);
 		if(!SUCCEEDED(_result)) {
 			Msg("! PS: %s", file_name);
 			Msg("! CreatePixelShader hr == 0x%08x", _result);
 			return		E_FAIL;
 		}
 
-		ID3DShaderReflection* pReflection = 0;
+		RHIShaderReflection reflection;
 
-		_result = D3DReflect(buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
+		_result = GRHI->ReflectShader(buffer, buffer_size, reflection);
 
 		//	Parse constant, texture, sampler binding
 		//	Store input signature blob
-		if(SUCCEEDED(_result) && pReflection) {
+		if(SUCCEEDED(_result)) {
 			//	Let constant table parse it's data
-			sps_result->constants.parse(pReflection, RC_dest_pixel);
-
-			_RELEASE(pReflection);
+			sps_result->constants.parse(&reflection, RC_dest_pixel);
 		}
 		else {
 			Msg("! PS: %s", file_name);
@@ -892,7 +889,7 @@ static HRESULT create_shader(
 	}
 	else if(pTarget[0] == 'v') {
 		SVS* svs_result = (SVS*)result;
-		_result = RDevice->CreateVertexShader(buffer, buffer_size, 0, &svs_result->vs);
+		_result = GRHI->CreateShader(buffer, buffer_size, ERHI_SHADER_TYPE::VS, &svs_result->vs);
 
 		if(!SUCCEEDED(_result)) {
 			Msg("! VS: %s", file_name);
@@ -900,18 +897,18 @@ static HRESULT create_shader(
 			return		E_FAIL;
 		}
 
-		ID3DShaderReflection* pReflection = 0;
-		_result = D3DReflect(buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
+		RHIShaderReflection reflection;
+		_result = GRHI->ReflectShader(buffer, buffer_size, reflection);
 
 		//	Parse constant, texture, sampler binding
 		//	Store input signature blob
-		if(SUCCEEDED(_result) && pReflection) {
+		if(SUCCEEDED(_result)) {
 			//	TODO: DX10: share the same input signatures
 
 			//	Store input signature (need only for VS)
 			//CHK_DX( D3DxxGetInputSignatureBlob(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), &_vs->signature) );
-			ID3DBlob* pSignatureBlob;
-			CHK_DX(D3DGetInputSignatureBlob(buffer, buffer_size, &pSignatureBlob));
+			RHIBlob* pSignatureBlob;
+			CHK_DX(GRHI->GetInputSignature(buffer, buffer_size, &pSignatureBlob));
 			VERIFY(pSignatureBlob);
 
 			svs_result->signature = dxRenderDeviceRender::Instance().Resources->_CreateInputSignature(pSignatureBlob);
@@ -919,32 +916,36 @@ static HRESULT create_shader(
 			_RELEASE(pSignatureBlob);
 
 			//	Let constant table parse it's data
-			svs_result->constants.parse(pReflection, RC_dest_vertex);
+			svs_result->constants.parse(&reflection, RC_dest_vertex);
 
 			// Structured instance buffers (detail instancing and editor instancing)
-			D3D11_SHADER_INPUT_BIND_DESC BindDesc{};
-			if (SUCCEEDED(pReflection->GetResourceBindingDescByName("detail_buffer", &BindDesc)) && BindDesc.Type == D3D_SIT_STRUCTURED)
+			for (const RHIShaderResourceDesc& Resource : reflection.Resources)
 			{
-				svs_result->instance_buffer_slot = BindDesc.BindPoint;
-			}
+				if (Resource.Type != ERHI_SHADER_RESOURCE_TYPE::STRUCTURED)
+				{
+					continue;
+				}
 
-			if (SUCCEEDED(pReflection->GetResourceBindingDescByName("editor_instances", &BindDesc)) && BindDesc.Type == D3D_SIT_STRUCTURED)
-			{
-				svs_result->editor_instance_slot = BindDesc.BindPoint;
+				if (!xr_strcmp(Resource.Name, "detail_buffer"))
+				{
+					svs_result->instance_buffer_slot = Resource.BindPoint;
+				}
+				else if (!xr_strcmp(Resource.Name, "editor_instances"))
+				{
+					svs_result->editor_instance_slot = Resource.BindPoint;
+				}
 			}
 
 			// The Shader Editor reflects VS inputs from the full bytecode
 			if (Device.IsEditorMode())
 			{
-				ID3DBlob* pCodeBlob = nullptr;
-				if (SUCCEEDED(D3DCreateBlob(buffer_size, &pCodeBlob)))
+				RHIBlob* pCodeBlob = nullptr;
+				if (SUCCEEDED(GRHI->CreateBlob(buffer_size, &pCodeBlob)))
 				{
 					CopyMemory(pCodeBlob->GetBufferPointer(), buffer, buffer_size);
 					svs_result->vs_code = pCodeBlob;
 				}
 			}
-
-			_RELEASE(pReflection);
 		}
 		else {
 			Msg("! VS: %s", file_name);
@@ -953,24 +954,22 @@ static HRESULT create_shader(
 	}
 	else if(pTarget[0] == 'g') {
 		SGS* sgs_result = (SGS*)result;
-		_result = RDevice->CreateGeometryShader(buffer, buffer_size, 0, &sgs_result->gs);
+		_result = GRHI->CreateShader(buffer, buffer_size, ERHI_SHADER_TYPE::GS, &sgs_result->gs);
 		if(!SUCCEEDED(_result)) {
 			Msg("! GS: %s", file_name);
 			Msg("! CreateGeometryShaderhr == 0x%08x", _result);
 			return		E_FAIL;
 		}
 
-		ID3DShaderReflection* pReflection = 0;
+		RHIShaderReflection reflection;
 
-		_result = D3DReflect(buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
+		_result = GRHI->ReflectShader(buffer, buffer_size, reflection);
 
 		//	Parse constant, texture, sampler binding
 		//	Store input signature blob
-		if(SUCCEEDED(_result) && pReflection) {
+		if(SUCCEEDED(_result)) {
 			//	Let constant table parse it's data
-			sgs_result->constants.parse(pReflection, RC_dest_geometry);
-
-			_RELEASE(pReflection);
+			sgs_result->constants.parse(&reflection, RC_dest_geometry);
 		}
 		else {
 			Msg("! PS: %s", file_name);
@@ -992,8 +991,8 @@ static HRESULT create_shader(
 
 	if (disasm) 
 	{
-		ID3DBlob* disasm_ = 0;
-		D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm_);
+		RHIBlob* disasm_ = 0;
+		GRHI->DisassembleShader(buffer, buffer_size, &disasm_);
 		string_path		dname;
 		xr_strconcat(dname, "disasm\\", file_name, ".", pTarget);
 		IWriter* W = FS.w_open("$logs$", dname);
@@ -1046,9 +1045,9 @@ void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
 	}
 }
 
-class includer : public ID3DInclude {
+class includer : public IRHIShaderInclude {
 public:
-	HRESULT  __stdcall Open(D3D_INCLUDE_TYPE IncludeType, const char* pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
+	HRESULT Open(u32 IncludeType, const char* pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
 		string_path pname;
 		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
 		IReader* R = FS.r_open(_game_shaders_, pname);
@@ -1069,12 +1068,12 @@ public:
 
 		*ppData = data;
 		*pBytes = size;
-		return	D3D_OK;
+		return	S_OK;
 	}
 
-	HRESULT __stdcall Close(LPCVOID pData) {
+	HRESULT Close(LPCVOID pData) {
 		xr_free(pData);
-		return D3D_OK;
+		return S_OK;
 	}
 };
 
@@ -1087,7 +1086,7 @@ HRESULT	CRender::shader_compile(
 	DWORD Flags,
 	void*& result) 
 {
-	D3D_SHADER_MACRO defines[128];
+	RHIShaderMacro defines[128];
 	int def_it = 0;
 
 	char c_smapsize[32];
@@ -1323,19 +1322,19 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(RFeatureLevel == D3D_FEATURE_LEVEL_10_1) {
+	if(RFeatureLevel == RHI_FEATURE_LEVEL_10_1) {
 		defines[def_it].Name = "SM_4_1";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	sh_name[len] = '0' + char(RFeatureLevel == D3D_FEATURE_LEVEL_10_1); ++len;
+	sh_name[len] = '0' + char(RFeatureLevel == RHI_FEATURE_LEVEL_10_1); ++len;
 
-	if(RFeatureLevel >= D3D_FEATURE_LEVEL_11_0) {
+	if(RFeatureLevel >= RHI_FEATURE_LEVEL_11_0) {
 		defines[def_it].Name = "SM_5";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	sh_name[len] = '0' + char(RFeatureLevel >= D3D_FEATURE_LEVEL_11_0); ++len;
+	sh_name[len] = '0' + char(RFeatureLevel >= RHI_FEATURE_LEVEL_11_0); ++len;
 
 	// Editor-only defines are suffixed only when set, so the game shader cache names stay unchanged
 	if (Device.IsEditorMode()) {
@@ -1361,52 +1360,52 @@ HRESULT	CRender::shader_compile(
 
 	if(0 == xr_strcmp(pFunctionName, "main")) {
 		if('v' == pTarget[0]) {
-			if(RFeatureLevel == D3D_FEATURE_LEVEL_10_0) {
+			if(RFeatureLevel == RHI_FEATURE_LEVEL_10_0) {
 				pTarget = "vs_4_0";
 			}
-			else if(RFeatureLevel == D3D_FEATURE_LEVEL_10_1) {
+			else if(RFeatureLevel == RHI_FEATURE_LEVEL_10_1) {
 				pTarget = "vs_4_1";
 			}
-			else if(RFeatureLevel == D3D_FEATURE_LEVEL_11_0) {
+			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_0) {
 				pTarget = "vs_5_0";
 			}
-			else if(RFeatureLevel == D3D_FEATURE_LEVEL_11_1) {
+			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_1) {
 				pTarget = "vs_5_0";
 			}
 		}
 		else if('p' == pTarget[0]) {
-			if(RFeatureLevel == D3D_FEATURE_LEVEL_10_0) {
+			if(RFeatureLevel == RHI_FEATURE_LEVEL_10_0) {
 				pTarget = "ps_4_0";
 			}
-			else if(RFeatureLevel == D3D_FEATURE_LEVEL_10_1) {
+			else if(RFeatureLevel == RHI_FEATURE_LEVEL_10_1) {
 				pTarget = "ps_4_1";
 			}
-			else if(RFeatureLevel == D3D_FEATURE_LEVEL_11_0) {
+			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_0) {
 				pTarget = "ps_5_0";
 			}
-			else if(RFeatureLevel == D3D_FEATURE_LEVEL_11_1) {
+			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_1) {
 				pTarget = "ps_5_0";
 			}
 		}
 		else if('g' == pTarget[0]) {
-			if(RFeatureLevel == D3D_FEATURE_LEVEL_10_0) {
+			if(RFeatureLevel == RHI_FEATURE_LEVEL_10_0) {
 				pTarget = "gs_4_0";
 			}
-			else if(RFeatureLevel == D3D_FEATURE_LEVEL_10_1) {
+			else if(RFeatureLevel == RHI_FEATURE_LEVEL_10_1) {
 				pTarget = "gs_4_1";
 			}
-			else if(RFeatureLevel == D3D_FEATURE_LEVEL_11_0) {
+			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_0) {
 				pTarget = "gs_5_0";
 			}
-			else if(RFeatureLevel == D3D_FEATURE_LEVEL_11_1) {
+			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_1) {
 				pTarget = "gs_5_0";
 			}
 		}
 		else if('c' == pTarget[0]) {
-			if(RFeatureLevel == D3D_FEATURE_LEVEL_11_0) {
+			if(RFeatureLevel == RHI_FEATURE_LEVEL_11_0) {
 				pTarget = "cs_5_0";
 			}
-			else if(RFeatureLevel == D3D_FEATURE_LEVEL_11_1) {
+			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_1) {
 				pTarget = "cs_5_0";
 			}
 		}
@@ -1422,8 +1421,8 @@ HRESULT	CRender::shader_compile(
 		string_path file;
 		xr_strcpy(file, "shaders_cache\\");
 		xr_strcat(file, _VER);
-		xr_strcat(file, "\\");
-		xr_strcat(file, getShaderPath());
+		xr_strcat(file, GRHI->UsesDXIL(pTarget[0]) ? "\\dxil" : "\\d3d11");
+		xr_strcat(file, Core.ParamsData.test(ECoreParams::debug_shaders) ? "_debug\\" : "\\");
 		xr_strcat(file, name);
 		xr_strcat(file, ".");
 		xr_strcat(file, extension);
@@ -1438,7 +1437,9 @@ HRESULT	CRender::shader_compile(
 	IReader R = IReader((char*)pSrcData, SrcDataLen);
 	GetShaderCRC(&R, RealCodeCRC, crc_file_list);
 
-	Flags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
+	Flags |= RHI_SHADER_OPTIMIZATION_LEVEL3;
+	if (Core.ParamsData.test(ECoreParams::debug_shaders))
+		Flags |= RHI_SHADER_DEBUG | RHI_SHADER_DEBUG_NAME_FOR_SOURCE;
 
 	xr_resource_uniq* inShader = (xr_resource_uniq*)result;
 
@@ -1473,18 +1474,18 @@ HRESULT	CRender::shader_compile(
 
 	if(FAILED(_result)) 
 	{
-		LPD3DBLOB pShaderBuf = nullptr;
-		LPD3DBLOB pErrorBuf = nullptr;
+		RHIBlob* pShaderBuf = nullptr;
+		RHIBlob* pErrorBuf = nullptr;
 
 		includer Includer;
 
-		_result = D3DCompile(
+		_result = GRHI->CompileShader(
 			pSrcData,
 			SrcDataLen,
 			name,
 			defines, &Includer, pFunctionName,
 			pTarget,
-			Flags, 0,
+			Flags,
 			&pShaderBuf,
 			&pErrorBuf
 		);
@@ -1515,6 +1516,8 @@ HRESULT	CRender::shader_compile(
 		{
 			Msg("Can't compile shader [%s] hr=0x%08x", file_name, _result);
 		}
+		_RELEASE(pShaderBuf);
+		_RELEASE(pErrorBuf);
 	}
 
 	return _result;

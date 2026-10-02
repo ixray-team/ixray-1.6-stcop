@@ -105,7 +105,7 @@ inline UINT DX11GetFormatSize(DXGI_FORMAT fmt)
 
 
 
-void DX11ShaderDeclaration::GenerateLayerDescriptors(void* Signature)
+void DX11ShaderDeclaration::GenerateLayerDescriptors(RHIBlob* Signature)
 {
 	if (!DX11Descriptors.empty())
 	{
@@ -136,7 +136,7 @@ void DX11ShaderDeclaration::GenerateLayerDescriptors(void* Signature)
 	}
 
 	ID3D11Device* DxDevice = (ID3D11Device*)GRHI->DevicePtr->RawDevice;
-	ID3DBlob* InputSignature = (ID3DBlob*)Signature;
+	RHIBlob* InputSignature = Signature;
 	VERIFY(InputSignature);
 
 	HRESULT hr = DxDevice->CreateInputLayout

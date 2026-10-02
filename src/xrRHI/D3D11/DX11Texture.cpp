@@ -507,7 +507,8 @@ IRHISurface* DX11TextureFactory::CreateTexture2D(const RHITextureDesc& Desc, con
 	if (SubResource != nullptr && SubResource->Data != nullptr)
 	{
 		DxSubResource.pSysMem = SubResource->Data;
-		DxSubResource.SysMemPitch = SubResource->DataSize;
+		DxSubResource.SysMemPitch = SubResource->RowPitch ? SubResource->RowPitch : SubResource->DataSize;
+		DxSubResource.SysMemSlicePitch = SubResource->DepthPitch;
 		UseSubres = true;
 	}
 

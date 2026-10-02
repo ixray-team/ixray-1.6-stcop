@@ -1,5 +1,8 @@
 #pragma once
 
+struct ID3D11Texture2D;
+struct ID3D11UnorderedAccessView;
+
 // Occlusion culling of the editors (no HOM, sectors or portals): the scene depth of a frame is
 // reduced on the GPU to a grid of farthest depths, read back without stalling one or two frames
 // later, and boxes are tested against it on the CPU with the camera of that frame.

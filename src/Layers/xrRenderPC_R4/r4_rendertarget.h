@@ -149,10 +149,10 @@ public:
 //	TODO: DX10: CHeck if we need old-style SMAP
 
 	//	Igor: for async screenshots
-	ID3DTexture2D*			t_ss_async;				//32bit		(r,g,b,a) is situated in the system memory
+	IRHISurface*			t_ss_async;				//32bit		(r,g,b,a) is situated in the system memory
 
 	// Textures
-	ID3DTexture3D*			t_material_surf;
+	IRHISurface*			t_material_surf;
 	ref_texture					t_material;
 
 	IRHISurface*			t_noise_surf	[TEX_jitter_count];
@@ -218,7 +218,7 @@ private:
 	IRHIBuffer*		g_accum_volumetric_vb;
 	IRHIBuffer*		g_accum_volumetric_ib;
 
-	ID3DBlendState*			g_debug_blend_state = nullptr;
+	RHIObject*			g_debug_blend_state = nullptr;
 
 	float							f_bloom_factor;
 

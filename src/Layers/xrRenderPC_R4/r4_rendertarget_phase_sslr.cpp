@@ -16,8 +16,7 @@ void CRenderTarget::phase_sslr()
 	{
 		GPU_EVENT(sslr_hiz);
 
-		ID3D11UnorderedAccessView* uav_dummy[2] = { nullptr, nullptr };
-		UINT UAVInitialCounts[2] = { 1, 1 };
+		IRHIUnorderedAccessView* uav_dummy[2] = { nullptr, nullptr };
 
 		const xr_vector<IRHIUnorderedAccessView*>& MipUAVs = rt_sslr_hiz->pMippedUAV;
 
@@ -29,12 +28,11 @@ void CRenderTarget::phase_sslr()
 			RCache.set_Textures(P.T);
 			RCache.set_CS(P.cs);
 
-			ID3D11UnorderedAccessView* MipUAV = reinterpret_cast<ID3D11UnorderedAccessView*>(MipUAVs[0]->GetRaw());
-			RContext->CSSetUnorderedAccessViews(0, 1, &MipUAV, UAVInitialCounts);
+			GRHI->SetComputeUAVs(0, 1, &MipUAVs[0]);
 
 			RCache.Compute(tgroupsX, tgroupsY, 1);
 
-			RContext->CSSetUnorderedAccessViews(0, 1, uav_dummy, UAVInitialCounts);
+			GRHI->SetComputeUAVs(0, 1, uav_dummy);
 		}
 
 		ShaderElement* S = &*(s_sslr->E[5]);
@@ -49,25 +47,25 @@ void CRenderTarget::phase_sslr()
 			const u32 MipWidth = std::max(rt_sslr_hiz->dwWidth >> MipLevel, 1u);
 			const u32 MipHeight = std::max(rt_sslr_hiz->dwHeight >> MipLevel, 1u);
 
-			ID3D11UnorderedAccessView* MipUAV[2] =
+			IRHIUnorderedAccessView* MipUAV[2] =
 			{
-				reinterpret_cast<ID3D11UnorderedAccessView*>(MipUAVs[MipLevel - 1]->GetRaw()),
-				reinterpret_cast<ID3D11UnorderedAccessView*>(MipUAVs[MipLevel]->GetRaw())
+				MipUAVs[MipLevel - 1],
+				MipUAVs[MipLevel]
 			};
 
-			RContext->CSSetUnorderedAccessViews(0, 2, MipUAV, UAVInitialCounts);
+			GRHI->SetComputeUAVs(0, 2, MipUAV);
 			RCache.Compute((MipWidth + 7u) / 8u, (MipHeight + 7u) / 8u, 1);
 		}
 
-		RContext->CSSetUnorderedAccessViews(0, 2, uav_dummy, UAVInitialCounts);
+		GRHI->SetComputeUAVs(0, 2, uav_dummy);
 	}
 
 	{
 		GPU_EVENT(sslr_render);
 
 		//Dummy
-		ID3D11UnorderedAccessView* uav_dummy[2] = { nullptr, nullptr };
-		ID3D11ShaderResourceView* srv_dummy[16] = {};
+		IRHIUnorderedAccessView* uav_dummy[2] = { nullptr, nullptr };
+		IRHIShaderResourceView* srv_dummy[16] = {};
 
 		//Shader setup... can't use set_element because of set_PS bullshit
 	    ShaderElement* S;
@@ -79,29 +77,27 @@ void CRenderTarget::phase_sslr()
         RCache.set_CS(P.cs);
 
 		//Bind UAVs
-		UINT UAVInitialCounts = 1;
-
-		ID3D11UnorderedAccessView* our_uav[2] = {
-            reinterpret_cast<ID3D11UnorderedAccessView*>(rt_sslr->pUAView->GetRaw()),
-            reinterpret_cast<ID3D11UnorderedAccessView*>(rt_sslr_data->pUAView->GetRaw())
+		IRHIUnorderedAccessView* our_uav[2] = {
+            rt_sslr->pUAView,
+            rt_sslr_data->pUAView
 		};
 
-		RContext->CSSetUnorderedAccessViews(0, 2, our_uav, &UAVInitialCounts);
+		GRHI->SetComputeUAVs(0, 2, our_uav);
 
 		//Dispatch
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
 		//Unbind
-		RContext->CSSetUnorderedAccessViews(0, 2, uav_dummy, &UAVInitialCounts);
-		RContext->CSSetShaderResources(0, 16, srv_dummy);
+		GRHI->SetComputeUAVs(0, 2, uav_dummy);
+		GRHI->SetComputeResources(0, 16, srv_dummy);
 	}
 
 
 	{
 		GPU_EVENT(sslr_filter);
 
-		ID3D11UnorderedAccessView* uav_dummy = nullptr;
-		ID3D11ShaderResourceView* srv_dummy[16] = {};
+		IRHIUnorderedAccessView* uav_dummy = nullptr;
+		IRHIShaderResourceView* srv_dummy[16] = {};
 
 	    ShaderElement* S;
         S = (&*(s_sslr->E[1]));
@@ -111,23 +107,21 @@ void CRenderTarget::phase_sslr()
         RCache.set_Textures(P.T);
         RCache.set_CS(P.cs);
 
-		UINT UAVInitialCounts = 1;
+		IRHIUnorderedAccessView* our_uav = rt_sslr_temp->pUAView;
 
-		ID3D11UnorderedAccessView* our_uav = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_sslr_temp->pUAView->GetRaw());
-
-		RContext->CSSetUnorderedAccessViews(0, 1, &our_uav, &UAVInitialCounts);
+		GRHI->SetComputeUAVs(0, 1, &our_uav);
 
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
-		RContext->CSSetUnorderedAccessViews(0, 1, &uav_dummy, &UAVInitialCounts);
-		RContext->CSSetShaderResources(0, 16, srv_dummy);
+		GRHI->SetComputeUAVs(0, 1, &uav_dummy);
+		GRHI->SetComputeResources(0, 16, srv_dummy);
 	}
 
 	{
 		GPU_EVENT(sslr_temporal);
 
-		ID3D11UnorderedAccessView* uav_dummy = nullptr;
-		ID3D11ShaderResourceView* srv_dummy[16] = {};
+		IRHIUnorderedAccessView* uav_dummy = nullptr;
+		IRHIShaderResourceView* srv_dummy[16] = {};
 
 	    ShaderElement* S;
         S = (&*(s_sslr->E[2]));
@@ -137,16 +131,14 @@ void CRenderTarget::phase_sslr()
         RCache.set_Textures(P.T);
         RCache.set_CS(P.cs);
 
-		UINT UAVInitialCounts = 1;
+		IRHIUnorderedAccessView* our_uav = rt_sslr->pUAView;
 
-		ID3D11UnorderedAccessView* our_uav = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_sslr->pUAView->GetRaw());
-
-		RContext->CSSetUnorderedAccessViews(0, 1, &our_uav, &UAVInitialCounts);
+		GRHI->SetComputeUAVs(0, 1, &our_uav);
 
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
-		RContext->CSSetUnorderedAccessViews(0, 1, &uav_dummy, &UAVInitialCounts);
-		RContext->CSSetShaderResources(0, 16, srv_dummy);
+		GRHI->SetComputeUAVs(0, 1, &uav_dummy);
+		GRHI->SetComputeResources(0, 16, srv_dummy);
 
 		//LVutner: Meh.
 		ResolveSurface(rt_sslr_old, rt_sslr);
@@ -185,6 +177,11 @@ void CRender::wait_reflection_collect()
 void CRender::collect_reflections()
 {
 	const u32 ticket = reflection_ticket.load(std::memory_order_acquire);
+	for (R_dsgraph_structure& Graph : GraphReflection)
+	{
+		Graph.r_dsgraph_clear_passes();
+	}
+
 	if (o.dx11_use_legacy_light || !o.offscreen_reflecitons || !Target || !Target->rt_Reflection)
 	{
 		reflection_done.store(ticket, std::memory_order_release);
@@ -245,7 +242,6 @@ void CRender::collect_reflections()
 		Graph.private_marker = true;
 		Graph.val_pTransform = &Fidentity;
 		Graph.private_visuals.clear();
-		Graph.r_dsgraph_clear_aux();
 		Graph.r_pmask(true, false);
 		Graph.PortalTraverser.prepare_local_clips(sector_count, portal_count);
 		Graph.r_dsgraph_render_subspace(reflection_sector, env_full, reflection_cam_pos, false, false);

@@ -1,0 +1,129 @@
+#pragma once
+
+enum ERHI_BLEND
+{
+	RHI_BLEND_ZERO = 1,
+	RHI_BLEND_ONE,
+	RHI_BLEND_SRC_COLOR,
+	RHI_BLEND_INV_SRC_COLOR,
+	RHI_BLEND_SRC_ALPHA,
+	RHI_BLEND_INV_SRC_ALPHA,
+	RHI_BLEND_DEST_ALPHA,
+	RHI_BLEND_INV_DEST_ALPHA,
+	RHI_BLEND_DEST_COLOR,
+	RHI_BLEND_INV_DEST_COLOR,
+	RHI_BLEND_SRC_ALPHA_SAT,
+	RHI_BLEND_BLEND_FACTOR = 14,
+	RHI_BLEND_INV_BLEND_FACTOR,
+	RHI_BLEND_SRC1_COLOR,
+	RHI_BLEND_INV_SRC1_COLOR,
+	RHI_BLEND_SRC1_ALPHA,
+	RHI_BLEND_INV_SRC1_ALPHA
+};
+
+enum ERHI_BLEND_OP
+{
+	RHI_BLEND_OP_ADD = 1,
+	RHI_BLEND_OP_SUBTRACT,
+	RHI_BLEND_OP_REV_SUBTRACT,
+	RHI_BLEND_OP_MIN,
+	RHI_BLEND_OP_MAX
+};
+
+enum ERHI_STENCIL_OP
+{
+	RHI_STENCIL_OP_KEEP = 1,
+	RHI_STENCIL_OP_ZERO,
+	RHI_STENCIL_OP_REPLACE,
+	RHI_STENCIL_OP_INCR_SAT,
+	RHI_STENCIL_OP_DECR_SAT,
+	RHI_STENCIL_OP_INVERT,
+	RHI_STENCIL_OP_INCR,
+	RHI_STENCIL_OP_DECR
+};
+
+enum ERHI_COMPARISON
+{
+	RHI_COMPARISON_NEVER = 1,
+	RHI_COMPARISON_LESS,
+	RHI_COMPARISON_EQUAL,
+	RHI_COMPARISON_LESS_EQUAL,
+	RHI_COMPARISON_GREATER,
+	RHI_COMPARISON_NOT_EQUAL,
+	RHI_COMPARISON_GREATER_EQUAL,
+	RHI_COMPARISON_ALWAYS
+};
+
+enum ERHI_FILL_MODE
+{
+	RHI_FILL_WIREFRAME = 2,
+	RHI_FILL_SOLID
+};
+
+enum ERHI_CULL_MODE
+{
+	RHI_CULL_NONE = 1,
+	RHI_CULL_FRONT,
+	RHI_CULL_BACK
+};
+
+enum ERHI_DEPTH_WRITE_MASK
+{
+	RHI_DEPTH_WRITE_MASK_ZERO,
+	RHI_DEPTH_WRITE_MASK_ALL
+};
+
+struct RHIRasterizerDesc
+{
+	ERHI_FILL_MODE FillMode;
+	ERHI_CULL_MODE CullMode;
+	bool FrontCounterClockwise;
+	s32 DepthBias;
+	float DepthBiasClamp;
+	float SlopeScaledDepthBias;
+	bool DepthClipEnable;
+	bool ScissorEnable;
+	bool MultisampleEnable;
+	bool AntialiasedLineEnable;
+};
+
+struct RHIStencilOpDesc
+{
+	ERHI_STENCIL_OP StencilFailOp;
+	ERHI_STENCIL_OP StencilDepthFailOp;
+	ERHI_STENCIL_OP StencilPassOp;
+	ERHI_COMPARISON StencilFunc;
+};
+
+struct RHIDepthStencilDesc
+{
+	bool DepthEnable;
+	ERHI_DEPTH_WRITE_MASK DepthWriteMask;
+	ERHI_COMPARISON DepthFunc;
+	bool StencilEnable;
+	u8 StencilReadMask;
+	u8 StencilWriteMask;
+	RHIStencilOpDesc FrontFace;
+	RHIStencilOpDesc BackFace;
+};
+
+struct RHIRenderTargetBlendDesc
+{
+	bool BlendEnable;
+	ERHI_BLEND SrcBlend;
+	ERHI_BLEND DestBlend;
+	ERHI_BLEND_OP BlendOp;
+	ERHI_BLEND SrcBlendAlpha;
+	ERHI_BLEND DestBlendAlpha;
+	ERHI_BLEND_OP BlendOpAlpha;
+	u8 RenderTargetWriteMask;
+};
+
+struct RHIBlendDesc
+{
+	bool AlphaToCoverageEnable;
+	bool IndependentBlendEnable;
+	RHIRenderTargetBlendDesc RenderTarget[8];
+};
+
+constexpr u32 RHI_COLOR_WRITE_ENABLE_ALL = 15;

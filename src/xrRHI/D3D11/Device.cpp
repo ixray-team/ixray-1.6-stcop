@@ -1,4 +1,5 @@
 #include "Device.h"
+#include "RHIProfiler.h"
 #include "../RHITopologyUtils.h"
 
 #ifdef IXR_WINDOWS
@@ -463,8 +464,12 @@ void InternalDevice11::GenerateMips(IRHIShaderResourceView* SRV)
 
 void InternalDevice11::DestroyD3D11()
 {
-#ifdef IXRAY_PROFILER_TRACY
-	PROF_GPU_CTX_DESTROY();
+#if defined(IXRAY_PROFILER_TRACY) && defined(IXR_WINDOWS)
+	if (g_tracyD3D11GPUContext)
+	{
+		TracyD3D11Destroy(g_tracyD3D11GPUContext);
+		g_tracyD3D11GPUContext = nullptr;
+	}
 #endif
 
 	// Clean up texture factory
@@ -666,6 +671,17 @@ void InternalDevice11::Draw(u32 startVertex, u32 primitiveCount)
 
 	u32 vertexCount = RHITopologyUtils::GetVertexCount(primitiveCount, currentTopology);
 	HWRenderContext->Draw(vertexCount, startVertex);
+}
+
+void InternalDevice11::DrawInstanced(u32 startVertex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)
+{
+	if (primitiveCount == 0 || instanceCount == 0)
+	{
+		return;
+	}
+
+	u32 vertexCount = RHITopologyUtils::GetVertexCount(primitiveCount, currentTopology);
+	HWRenderContext->DrawInstanced(vertexCount, instanceCount, startVertex, startInstanceLocation);
 }
 
 void InternalDevice11::DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)

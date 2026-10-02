@@ -417,7 +417,7 @@ void CResourceManager::LoadTexture(CTexture* Texture)
 		return;
 	}
 
-	if (!Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD) && Texture->StartLoading())
+	if (!Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD) && GRHI->APILevel != ERHI_API_LAYER::D3D12 && Texture->StartLoading())
 	{
 		return;
 	}
@@ -470,7 +470,7 @@ void CResourceManager::DeferredUpload()
 	Log("Loading textures via DeferredUpload");
 
 	xrCriticalSectionGuard Guard(creationGuard);
-	const bool IsParallel = !Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD);
+	const bool IsParallel = !Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD) && GRHI->APILevel != ERHI_API_LAYER::D3D12;
 	for (auto& [Name, Texture] : m_textures)
 	{
 		if (!IsParallel || !Texture->StartLoading())
