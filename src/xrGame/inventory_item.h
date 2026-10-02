@@ -397,7 +397,7 @@ public:
 	virtual void OnRender();
 #endif
 
-	virtual void renderable_Render();
+	virtual void renderable_Render(void* graph = nullptr);
 
 public:
 	virtual DLL_Pure* _construct();

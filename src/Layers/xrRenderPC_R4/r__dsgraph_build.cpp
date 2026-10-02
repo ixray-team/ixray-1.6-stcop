@@ -227,12 +227,19 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 {
 	CRender& RI = RImplementation;
 
-	if (pVisual->vis.marker == marker)	
+	if (private_marker)
+	{
+		if (!private_visuals.insert((void*)pVisual).second)
+			return;
+	}
+	else if (pVisual->vis.marker == marker)
 	{
 		return;
 	}
-
-	pVisual->vis.marker = marker;
+	else
+	{
+		pVisual->vis.marker = marker;
+	}
 
 	if (LightingModeIsStatic())
 	{
@@ -329,7 +336,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		}
 
 		// Shadows registering
-		if (RI.L_Shadows && RI.phase == CRender::PHASE_NORMAL)
+		if (RI.L_Shadows && R_Phase() == CRender::PHASE_NORMAL)
 		{
 			_MatrixItem item = { SSA, val_pObject, pVisual, *val_pTransform };
 			RI.L_Shadows->add_element(item);
@@ -688,7 +695,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children, R_dsgraph_structure
 		if (!RI.HOM.visible(vis))
 			continue;
 
-		if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(pVisual, true, RI.phase == CRender::PHASE_SMAP, *Graph.val_pTransform))
+		if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(pVisual, true, R_Phase() == CRender::PHASE_SMAP, *Graph.val_pTransform))
 		{
 			continue;
 		}

@@ -272,9 +272,9 @@ void CWeaponStatMgun::cam_Update			(float dt, float fov)
 
 }
 
-void CWeaponStatMgun::renderable_Render	()
+void CWeaponStatMgun::renderable_Render(void* graph)
 {
-	inheritedPH::renderable_Render	();
+	inheritedPH::renderable_Render(graph);
 
 	RenderLight();
 }

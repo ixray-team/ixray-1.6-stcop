@@ -247,13 +247,13 @@ Fvector& CParticlesObject::Position()
 	return vis.sphere.P;
 }
 
-void CParticlesObject::renderable_Render()
+void CParticlesObject::renderable_Render(void* graph)
 {
 	if (g_dedicated_server || renderable.visual == nullptr || m_NeedDestroy || !m_bPlaying)
 		return;
 
-	::Render->set_Transform	(&renderable.xform);
-	::Render->add_Visual	(renderable.visual);
+	::Render->set_Transform	(&renderable.xform, graph);
+	::Render->add_Visual	(renderable.visual, false, graph);
 }
 
 //играются ли партиклы, отличается от IsAlive, тем что после

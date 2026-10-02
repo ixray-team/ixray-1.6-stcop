@@ -170,9 +170,9 @@ void CProjector::UpdateCL	()
 }
 
 
-void CProjector::renderable_Render()
+void CProjector::renderable_Render(void* graph)
 {
-	inherited::renderable_Render	();
+	inherited::renderable_Render(graph);
 }
 
 bool CProjector::UsedAI_Locations()

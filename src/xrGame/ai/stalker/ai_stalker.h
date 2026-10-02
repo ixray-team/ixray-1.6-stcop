@@ -259,7 +259,7 @@ public:
 	virtual void						feel_touch_new						(CObject* O);
 	virtual void						feel_touch_delete					(CObject* O);
 			void						on_ownership_reject					( CObject*O, bool just_before_destroy );
-	virtual void						renderable_Render					();
+	virtual void						renderable_Render(void* graph = nullptr);
 	virtual void						Exec_Look							(float dt);
 	virtual	void						Hit									(SHit* pHDS);
 	virtual	void						PHHit								(SHit &H);

@@ -64,8 +64,8 @@ public:
 	virtual bool		ActivateItem		();
 	virtual void		DeactivateItem	();
 	virtual void		UpdateCL			();
-	virtual void		renderable_Render	();
-	virtual void		on_renderable_Render();
+	virtual void		renderable_Render(void* graph = nullptr);
+	virtual void		on_renderable_Render(void* graph = nullptr);
 	virtual void		OnMoveToRuck		(const SInvItemPlace& prev);
 	
 	virtual void Serialize(ISaveObject& Object) override { CInventoryItemObject::Serialize(Object); }

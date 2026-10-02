@@ -1895,7 +1895,7 @@ bool CWeapon::need_renderable()
 	return !(IsZoomed() && ZoomTexture() && !IsRotatingToZoom() && m_zoom_params.m_fZoomRotationFactor2 == 0.0f && !IsHudModelForceUnhide());
 }
 
-void CWeapon::renderable_Render		()
+void CWeapon::renderable_Render(void* graph)
 {
 	UpdateXForm				();
 
@@ -1903,7 +1903,7 @@ void CWeapon::renderable_Render		()
 
 	RenderLight				();	
 
-	inherited::renderable_Render();
+	inherited::renderable_Render(graph);
 }
 
 void CWeapon::signal_HideComplete()

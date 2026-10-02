@@ -157,9 +157,9 @@ IRender_Target* CRender::getTarget()
 	return Target;
 }
 
-void CRender::add_Visual(IRenderVisual* V, bool Ignore)
+void CRender::add_Visual(IRenderVisual* V, bool Ignore, void* graph)
 {
-	GraphMain.add_leafs_Dynamic((dxRender_Visual*)V, Ignore);
+	TargetGraph(graph).add_leafs_Dynamic((dxRender_Visual*)V, Ignore);
 }
 
 void CRender::rmNear()

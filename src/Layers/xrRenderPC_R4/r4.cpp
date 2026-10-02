@@ -248,6 +248,9 @@ void CRender::create()
 	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
 	Device.BeginReflectionCollect = xr_make_delegate(this, &CRender::begin_reflection_collect);
 	Device.CollectReflections = xr_make_delegate(this, &CRender::collect_reflections);
+	Device.ResetSunCollect = xr_make_delegate(this, &CRender::reset_sun_collect);
+	Device.CollectSunCascades = xr_make_delegate(this, &CRender::collect_sun_cascades);
+	Device.EnsureSunCollect = xr_make_delegate(this, &CRender::ensure_sun_collect);
 
 	Engine.External.SetSkinningMode();
 
@@ -344,6 +347,12 @@ void CRender::create()
 		Graph.PortalTraverser.initialize();
 	}
 
+	for (R_dsgraph_structure& Graph : GraphSun)
+	{
+		Graph.marker = 0;
+		Graph.PortalTraverser.initialize();
+	}
+
 	xrRender_apply_tf();
 	GraphMain.PortalTraverser.initialize();
 
@@ -382,9 +391,18 @@ void CRender::destroy()
 		Graph.PortalTraverser.destroy();
 	}
 
+	for (R_dsgraph_structure& Graph : GraphSun)
+	{
+		Graph.r_dsgraph_destroy();
+		Graph.PortalTraverser.destroy();
+	}
+
 	Device.ModelDefferClear = nullptr;
 	Device.BeginReflectionCollect = nullptr;
 	Device.CollectReflections = nullptr;
+	Device.ResetSunCollect = nullptr;
+	Device.CollectSunCascades = nullptr;
+	Device.EnsureSunCollect = nullptr;
 
 	if (LightingModeIsDynamic())
 		g_DLSSWrapper.Destroy();
@@ -589,9 +607,9 @@ IRender_Glow* CRender::glow_create()
 	return LightingModeIsStatic() ? static_cast<IRender_Glow*>(new CGlow()) : new CDynamicGlow();
 }
 
-void CRender::set_Object(IRenderable* O)
+void CRender::set_Object(IRenderable* O, void* graph)
 {
-	GraphMain.val_pObject = O;
+	TargetGraph(graph).val_pObject = O;
 	if (L_Projector) L_Projector->set_object(phase == PHASE_NORMAL ? O : nullptr);
 	if (L_Shadows) L_Shadows->set_object(phase == PHASE_NORMAL ? O : nullptr);
 }

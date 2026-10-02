@@ -64,7 +64,7 @@ public:
 	virtual CInventory*		GetInventory		(){return nullptr;};
 	virtual void			cam_Update			(float dt, float fov=90.0f);
 
-	virtual void			renderable_Render	();
+	virtual void			renderable_Render(void* graph = nullptr);
 
 	virtual void			attach_actor_script(bool bForce = false);
 	virtual void			detach_actor_script(bool bForce = false);

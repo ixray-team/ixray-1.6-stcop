@@ -99,6 +99,7 @@ public:
 
 	R_dsgraph_structure GraphMain;
 	xr_array<R_dsgraph_structure, 6> GraphReflection;
+	xr_array<R_dsgraph_structure, 3> GraphSun;
 
 	// Global vertex-buffer container
 	xr_vector<FSlideWindowItem>									SWIs;
@@ -164,6 +165,14 @@ public:
 	void render_reflections();
 	void wait_reflection_collect();
 
+	void reset_sun_collect();
+	void ensure_sun_collect();
+	void begin_sun_collect();
+	void collect_sun_cascades();
+	void wait_sun_collect();
+	bool prepare_sun_cascade_xforms();
+	void publish_sun_collect(bool active);
+
 	Fvector reflection_cam_pos;
 	Fvector reflection_cam_dir;
 	Fvector reflection_cam_top;
@@ -174,6 +183,17 @@ public:
 	IRender_Sector* reflection_sector = nullptr;
 	std::atomic<u32> reflection_ticket{ 0 };
 	std::atomic<u32> reflection_done{ 0 };
+
+	xr_array<Fmatrix, 3> sun_cascade_xforms{};
+	Fvector sun_cull_cop{};
+	u32 sun_cascade_count = 0;
+	bool sun_kicked = false;
+	bool sun_restore_shafts = false;
+	bool sun_saved_reset_chain = false;
+	std::atomic<bool> sun_collect_active{ false };
+	std::atomic<u32> sun_ticket{ 0 };
+	std::atomic<u32> sun_done{ 0 };
+	u32 sun_seen = 0;
 
 	bool is_render_cubemap = false;
 
@@ -382,9 +402,9 @@ public:
 
 	// Main 
 	virtual void					flush						();
-	virtual void					set_Object					(IRenderable*		O	);
+	virtual void					set_Object					(IRenderable* O, void* graph = nullptr);
 	virtual	void					add_Occluder				(Fbox2&	bb_screenspace	);			// mask screen region as oclluded
-	virtual void					add_Visual					(IRenderVisual*	V, bool Ignore);			// add visual leaf	(no culling performed at all)
+	virtual void					add_Visual					(IRenderVisual* V, bool Ignore, void* graph = nullptr);			// add visual leaf	(no culling performed at all)
 
 	// wallmarks
 	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false);
@@ -435,20 +455,22 @@ public:
 	virtual void					ScreenshotAsyncEnd			(CMemoryWriter& memory_writer);
 	virtual void		_BCL		OnFrame						();
 
-	virtual void set_Transform(Fmatrix* M)
+	R_dsgraph_structure& TargetGraph(void* graph) { return graph ? *static_cast<R_dsgraph_structure*>(graph) : GraphMain; }
+
+	virtual void set_Transform(Fmatrix* M, void* graph = nullptr)
 	{
 		VERIFY(M);
-		GraphMain.val_pTransform = M;
+		TargetGraph(graph).val_pTransform = M;
 	}
-	virtual void set_LocalTransform(Fmatrix* M)
+	virtual void set_LocalTransform(Fmatrix* M, void* graph = nullptr)
 	{
 		VERIFY(M);
-		GraphMain.val_pLocalTransform = M;
+		TargetGraph(graph).val_pLocalTransform = M;
 	}
-	virtual void set_UI(bool V) { GraphMain.val_bUI = V; }
-	virtual void set_HUD(bool V) { GraphMain.val_bHUD = V; }
-	virtual bool get_HUD() { return GraphMain.val_bHUD; }
-	virtual void set_Invisible(bool V) { GraphMain.val_bInvisible = V; }
+	virtual void set_UI(bool V, void* graph = nullptr) { TargetGraph(graph).val_bUI = V; }
+	virtual void set_HUD(bool V, void* graph = nullptr) { TargetGraph(graph).val_bHUD = V; }
+	virtual bool get_HUD(void* graph = nullptr) { return TargetGraph(graph).val_bHUD; }
+	virtual void set_Invisible(bool V, void* graph = nullptr) { TargetGraph(graph).val_bInvisible = V; }
 	virtual CDB::MODEL* GetHOMModel();
 	virtual xr_vector<u32>* GetHOMInvaltids();
 

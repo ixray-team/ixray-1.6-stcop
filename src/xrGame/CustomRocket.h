@@ -50,7 +50,7 @@ public:
 	virtual bool UsedAI_Locations() override { return false; }
 	virtual bool Useful() const { return (m_eState == eInactive); }
 
-	virtual void renderable_Render() override { inherited::renderable_Render(); }
+	virtual void renderable_Render(void* graph = nullptr) override { inherited::renderable_Render(graph); }
 
 	//создание физической оболочки
 	virtual void activate_physic_shell() override;

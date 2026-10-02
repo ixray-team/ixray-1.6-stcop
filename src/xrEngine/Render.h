@@ -253,16 +253,16 @@ public:
 	virtual SurfaceParams			getSurface(const char* nameTexture) { R_ASSERT(!"Method is not overridden"); return SurfaceParams(); };
 
 	// Main 
-	virtual void					set_Transform			(Fmatrix*	M	)							{};
-	virtual void					set_LocalTransform		(Fmatrix*	M	)							{};
-	virtual void					set_UI					(bool 		V	)							= 0;
-	virtual void					set_HUD					(bool 		V	)							{};
-	virtual bool					get_HUD					()											{ return 0; };
-	virtual void					set_Invisible			(bool 		V	)							{};
+	virtual void					set_Transform			(Fmatrix*	M, void* graph = nullptr)		{};
+	virtual void					set_LocalTransform		(Fmatrix*	M, void* graph = nullptr)		{};
+	virtual void					set_UI					(bool 		V, void* graph = nullptr)		= 0;
+	virtual void					set_HUD					(bool 		V, void* graph = nullptr)		{};
+	virtual bool					get_HUD					(void* graph = nullptr)						{ return 0; };
+	virtual void					set_Invisible			(bool 		V, void* graph = nullptr)		{};
 	virtual void					flush					()											{};	
-	virtual void					set_Object				(IRenderable*		O	)					{};
+	virtual void					set_Object				(IRenderable* O, void* graph = nullptr)		{};
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					{};	// mask screen region as oclluded (-1..1, -1..1)
-	virtual void					add_Visual				(IRenderVisual*	V, bool IgnoreOptimize = false)	{};	// add visual leaf	(no culling performed at all)
+	virtual void					add_Visual				(IRenderVisual*	V, bool IgnoreOptimize = false, void* graph = nullptr)	{};	// add visual leaf	(no culling performed at all)
 	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
 
 	//	Prefer this function when possible

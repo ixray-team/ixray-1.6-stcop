@@ -484,7 +484,7 @@ public:
 	virtual	void			UpdateEx					(float fov); //called by owner
 
 	virtual void			shedule_Update				(u32 dt);
-	virtual void			renderable_Render			( ); 
+	virtual void			renderable_Render(void* graph = nullptr); 
 	virtual	bool			bfAssignMovement			(CScriptEntityAction *tpEntityAction);
 	virtual	bool			bfAssignObject				(CScriptEntityAction *tpEntityAction);
     virtual bool			is_ai_obstacle() const		{return true;};

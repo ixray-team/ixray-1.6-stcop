@@ -81,9 +81,9 @@ bool CExplosiveItem::shedule_Needed()
 	return (inherited::shedule_Needed() || CDelayedActionFuse::isActive());
 }
 
-void CExplosiveItem::renderable_Render()
+void CExplosiveItem::renderable_Render(void* graph)
 {
-	inherited::renderable_Render();
+	inherited::renderable_Render(graph);
 }
 
 void CExplosiveItem::net_Relcase(CObject* O)

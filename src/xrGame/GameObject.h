@@ -235,7 +235,7 @@ public:
 	virtual void			shedule_Update		(u32 dt);	
 	virtual bool			shedule_Needed		();
 	virtual float			shedule_Scale_Base	();
-	virtual void			renderable_Render	();
+	virtual void			renderable_Render(void* graph = nullptr);
 	virtual void			OnEvent				(NET_Packet& P, u16 type);
 	virtual	void			Hit					(SHit* pHDS) {};
 	virtual void			SetHitInfo				(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)	{};

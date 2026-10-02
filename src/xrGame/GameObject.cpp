@@ -762,11 +762,11 @@ void			CGameObject::dbg_DrawSkeleton	()
 }
 #endif
 
-void CGameObject::renderable_Render	()
+void CGameObject::renderable_Render(void* graph)
 {
-	inherited::renderable_Render();
-	::Render->set_Transform		(&XFORM());
-	::Render->add_Visual		(Visual());
+	inherited::renderable_Render(graph);
+	::Render->set_Transform		(&XFORM(), graph);
+	::Render->add_Visual		(Visual(), false, graph);
 	Visual()->getVisData().hom_frame = Device.dwFrame;
 }
 

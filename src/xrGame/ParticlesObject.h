@@ -17,7 +17,7 @@ public:
 						CParticlesObject	(const char* p_name, bool bAutoRemove, bool destroy_on_game_load);
 	virtual				~CParticlesObject	();
 
-	virtual void		renderable_Render	();
+	virtual void		renderable_Render(void* graph = nullptr);
 	virtual void		Update				(u32 dt, CFrustum* viewbase = nullptr);
 	virtual	IRenderable* dcast_Renderable	() { return this; }
 

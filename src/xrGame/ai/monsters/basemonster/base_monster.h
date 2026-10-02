@@ -173,7 +173,7 @@ public:
 	void					postprocess_packet(monster_interpolation::net_update_A& packet);
 
 	virtual const SRotation	Orientation						() const					{return inherited::Orientation();}
-	virtual void			renderable_Render				()							{return inherited::renderable_Render();} 
+	virtual void			renderable_Render(void* graph = nullptr)							{return inherited::renderable_Render(graph);} 
 
 	virtual	void			on_restrictions_change			();
 

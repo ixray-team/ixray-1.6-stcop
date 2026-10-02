@@ -221,7 +221,7 @@ protected:
 	xr_string m_game_name_str;
 
 public:
-	virtual void renderable_Render();
+	virtual void renderable_Render(void* graph = nullptr);
 	virtual void OnItemTake(CInventoryItem* inventory_item);
 
 	virtual void OnItemBelt(CInventoryItem* inventory_item, const SInvItemPlace& previous_place);

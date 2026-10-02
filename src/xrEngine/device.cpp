@@ -219,6 +219,8 @@ void CRenderDevice::on_idle		()
 
 		if (BeginReflectionCollect)
 			BeginReflectionCollect();
+		if (ResetSunCollect)
+			ResetSunCollect();
 		PreRenderThread.Run();
 		FrameMove();
 	}
@@ -265,6 +267,8 @@ void CRenderDevice::on_idle		()
 		}
 	}
 
+	if (EnsureSunCollect)
+		EnsureSunCollect();
 	PreRenderThread.Wait();
 	GameThread.Wait();
 

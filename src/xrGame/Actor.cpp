@@ -2808,11 +2808,11 @@ void CActor::shedule_Update	(u32 DT)
 }
 
 #include "debug_renderer.h"
-void CActor::renderable_Render()
+void CActor::renderable_Render(void* graph)
 {
 	VERIFY(_valid(XFORM()));
-	inherited::renderable_Render();
-	CInventoryOwner::renderable_Render();
+	inherited::renderable_Render(graph);
+	CInventoryOwner::renderable_Render(graph);
 	VERIFY(_valid(XFORM()));
 }
 

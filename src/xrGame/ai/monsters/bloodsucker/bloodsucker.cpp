@@ -976,11 +976,11 @@ bool CAI_Bloodsucker::AlwaysTheCrow()
 	return inherited::AlwaysTheCrow();
 }
 
-void   CAI_Bloodsucker::renderable_Render ()
+void   CAI_Bloodsucker::renderable_Render(void* graph)
 {
 	if ( m_visibility_state != no_visibility )
 	{
-		inherited::renderable_Render();
+		inherited::renderable_Render(graph);
 	}
 }
 

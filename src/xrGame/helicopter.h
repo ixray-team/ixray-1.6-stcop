@@ -290,7 +290,7 @@ public:
 	virtual void					net_Save			(NET_Packet& P);
 	virtual	bool					net_SaveRelevant	()						{return (inherited::net_SaveRelevant() && bool(PPhysicsShell()!=NULL))||m_exploded;};					
 
-	virtual void					renderable_Render				()			{ inherited::renderable_Render();};
+	virtual void					renderable_Render(void* graph = nullptr)			{ inherited::renderable_Render(graph);};
 	virtual bool					renderable_ShadowGenerate		()			{ return false;	}
 	virtual bool					renderable_ShadowReceive		()			{ return true;	}
 

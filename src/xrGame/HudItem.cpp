@@ -181,16 +181,16 @@ void CHudItem::PlaySound(const char* alias, const Fvector& position, bool allowO
 	m_sounds.PlaySound(alias, position, object().H_Root(), GetHUDSoundMode(), false, allowOverlap, m_started_rnd_anim_idx);
 }
 
-void CHudItem::renderable_Render()
+void CHudItem::renderable_Render(void* graph)
 {
 	UpdateXForm					();
-	bool _hud_render			= ::Render->get_HUD() && GetHUDSoundMode();
+	bool _hud_render			= ::Render->get_HUD(graph) && GetHUDSoundMode();
 	
 	if (!_hud_render || IsHidden())
 	{
 		if (!object().H_Parent() || (!_hud_render && !IsHidden()))
 		{
-			on_renderable_Render		();
+			on_renderable_Render(graph);
 			debug_draw_firedeps			();
 		}
 		else if (m_object&&object().H_Parent())
@@ -199,7 +199,7 @@ void CHudItem::renderable_Render()
 				m_object->H_Parent()->cast_inventory_owner()->attached(m_object->cast_inventory_item())) 
 				||
 				(item().BaseSlot() == INV_SLOT_3 /*|| item().BaseSlot() == INV_SLOT_2*/))
-				on_renderable_Render();
+				on_renderable_Render(graph);
 		}
 	}
 }

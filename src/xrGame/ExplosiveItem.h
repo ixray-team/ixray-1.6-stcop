@@ -36,7 +36,7 @@ public:
 	virtual bool shedule_Needed() override;
 	
 	virtual void UpdateCL() override;
-	virtual void renderable_Render() override;
+	virtual void renderable_Render(void* graph = nullptr) override;
 	virtual void ChangeCondition(float fDeltaCondition) override { CInventoryItem::ChangeCondition(fDeltaCondition); };
 	virtual void StartTimerEffects() override;
 

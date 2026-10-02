@@ -185,8 +185,8 @@ public:
 	virtual void Render();
 	virtual void RenderUI(Fcolor* = nullptr);
 
-	virtual void set_Transform(Fmatrix* M);
-	virtual void add_Visual(IRenderVisual* visual, bool) override;
+	virtual void set_Transform(Fmatrix* M, void* graph = nullptr);
+	virtual void add_Visual(IRenderVisual* visual, bool, void* graph = nullptr) override;
 
 	virtual ref_shader getShader(int id);
 	virtual CRenderTarget* getTarget() { return Target.get(); }
@@ -284,12 +284,12 @@ public:
 		VERIFY(O);
 		View = O;
 	}
-	virtual void set_UI(bool V);
-	virtual void set_HUD(bool V);
-	virtual bool get_HUD();
-	virtual void set_Invisible(bool V);
+	virtual void set_UI(bool V, void* graph = nullptr);
+	virtual void set_HUD(bool V, void* graph = nullptr);
+	virtual bool get_HUD(void* graph = nullptr);
+	virtual void set_Invisible(bool V, void* graph = nullptr);
 	virtual void flush();
-	virtual void set_Object(IRenderable* O);
+	virtual void set_Object(IRenderable* O, void* graph = nullptr);
 	virtual void add_Occluder(Fbox2& bb_screenspace); // mask screen region as oclluded (-1..1, -1..1)
 	virtual void add_Geometry(IRenderVisual* V);	  // add visual(s)	(all culling performed)
 	virtual void add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}

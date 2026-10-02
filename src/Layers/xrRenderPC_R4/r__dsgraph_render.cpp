@@ -469,12 +469,13 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 				}
 				if(O && O->dcast_Renderable()==renderable) continue;
 
-				if (RImplementation.phase != CRender::PHASE_SMAP)
+				const u32 phase_now = g_r_cull_tls.active ? g_r_cull_tls.phase : RImplementation.phase;
+				if (phase_now != CRender::PHASE_SMAP)
 				{
-					RImplementation.set_Object(renderable);
+					RImplementation.set_Object(renderable, this);
 				}
 
-				renderable->renderable_Render();
+				renderable->renderable_Render(this);
 			}
 		}
 

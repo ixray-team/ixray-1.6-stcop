@@ -10,6 +10,10 @@
 using namespace DirectX;
 
 constexpr float tweak_COP_initial_offs = 1200.0f;
+
+extern float r_ssaDISCARD;
+extern float r_ssaLOD_A;
+extern float r_ssaLOD_B;
  
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
@@ -59,8 +63,94 @@ void CRender::init_cacades()
 	m_sun_cascades[2].bias = m_sun_cascades[2].size*fBias;
 }
 
-void CRender::render_sun_cascades()
+void CRender::reset_sun_collect()
 {
+	sun_kicked = false;
+}
+
+void CRender::publish_sun_collect(bool active)
+{
+	sun_collect_active.store(active, std::memory_order_release);
+	sun_kicked = true;
+	sun_ticket.fetch_add(1, std::memory_order_release);
+	sun_ticket.notify_all();
+}
+
+void CRender::ensure_sun_collect()
+{
+	if (!sun_kicked)
+		publish_sun_collect(false);
+}
+
+void CRender::begin_sun_collect()
+{
+	publish_sun_collect(prepare_sun_cascade_xforms());
+}
+
+void CRender::wait_sun_collect()
+{
+	const u32 ticket = sun_ticket.load(std::memory_order_acquire);
+	u32 done = sun_done.load(std::memory_order_acquire);
+	while (done != ticket)
+	{
+		sun_done.wait(done, std::memory_order_acquire);
+		done = sun_done.load(std::memory_order_acquire);
+	}
+}
+
+void CRender::collect_sun_cascades()
+{
+	u32 ticket = sun_ticket.load(std::memory_order_acquire);
+	while (ticket == sun_seen)
+	{
+		sun_ticket.wait(sun_seen, std::memory_order_acquire);
+		ticket = sun_ticket.load(std::memory_order_acquire);
+	}
+	sun_seen = ticket;
+
+	if (sun_collect_active.load(std::memory_order_acquire) && pOutdoorSector && sun_cascade_count > 0)
+	{
+		R_CullTLS cull;
+		cull.active = true;
+		cull.phase = PHASE_SMAP;
+		cull.ssa_discard = r_ssaDISCARD;
+		cull.ssa_lod_a = r_ssaLOD_A;
+		cull.ssa_lod_b = r_ssaLOD_B;
+		g_r_cull_tls = cull;
+
+		const u32 sector_count = (u32)Sectors.size();
+		const u32 portal_count = (u32)Portals.size();
+		const u32 count = std::min(sun_cascade_count, (u32)GraphSun.size());
+
+		for (u32 i = 0; i < count; ++i)
+		{
+			R_dsgraph_structure& Graph = GraphSun[i];
+			Graph.private_marker = true;
+			Graph.val_pTransform = &Fidentity;
+			Graph.val_bHUD = false;
+			Graph.val_bUI = false;
+			Graph.val_bInvisible = false;
+			Graph.val_pObject = nullptr;
+			Graph.private_visuals.clear();
+			Graph.r_dsgraph_clear_aux();
+			Graph.r_pmask(true, false);
+			Graph.PortalTraverser.prepare_local_clips(sector_count, portal_count);
+			Graph.r_dsgraph_render_subspace(pOutdoorSector, sun_cascade_xforms[i], sun_cull_cop, true);
+		}
+
+		g_r_cull_tls.active = false;
+	}
+
+	sun_done.store(ticket, std::memory_order_release);
+	sun_done.notify_all();
+}
+
+bool CRender::prepare_sun_cascade_xforms()
+{
+	light* fuckingsun = (light*)Lights.sun_adapted._get();
+	if (!fuckingsun || o.sunstatic || u_diffuse2s(fuckingsun->color) <= EPS)
+		return false;
+
 	bool b_need_to_render_sunshafts = RImplementation.Target->need_to_render_sunshafts();
 	bool last_cascade_chain_mode = m_sun_cascades.back().reset_chain;
 
@@ -77,9 +167,6 @@ void CRender::render_sun_cascades()
 		m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = true;
 	}
 
-	light* fuckingsun = (light*)Lights.sun_adapted._get();
-
-	if (fuckingsun)
 	{
 		PROF_EVENT("Render Cascades: Batch Prepass");
 
@@ -124,8 +211,12 @@ void CRender::render_sun_cascades()
 		Fmatrix m_viewport_inv{};
 		m_viewport_inv.invert44(m_viewport);
 
-		const u32 cascade_count = (u32)m_sun_cascades.size();
-		xr_vector<Fmatrix> cascade_xforms(cascade_count);
+		const u32 cascade_count = std::min((u32)m_sun_cascades.size(), (u32)sun_cascade_xforms.size());
+		
+		sun_cascade_count = cascade_count;
+		sun_cull_cop = cull_COP;
+		sun_restore_shafts = b_need_to_render_sunshafts;
+		sun_saved_reset_chain = last_cascade_chain_mode;
 
 		for (u32 cascade_ind = 0; cascade_ind < cascade_count; ++cascade_ind)
 		{
@@ -235,83 +326,92 @@ void CRender::render_sun_cascades()
 			cull_xform.mulB_44(adjust);
 
 			m_sun_cascades[cascade_ind].xform = cull_xform;
-			cascade_xforms[cascade_ind] = cull_xform;
+			sun_cascade_xforms[cascade_ind] = cull_xform;
 		}
 
-		RHIViewport viewport = {
+		return true;
+	}
+
+	return false;
+}
+
+void CRender::render_sun_cascades()
+{
+	wait_sun_collect();
+	if (!sun_collect_active.load(std::memory_order_acquire))
+		return;
+
+	light* fuckingsun = (light*)Lights.sun_adapted._get();
+	const u32 cascade_count = sun_cascade_count;
+
+	RHIViewport viewport = {
 			0.f, 0.f, (float)RImplementation.o.smapsize, (float)RImplementation.o.smapsize, 0.f, 1.f
 		};
 
 		GRHI->SetViewport(viewport);
 
-		for (u32 i = 0; i < cascade_count; ++i)
+	phase = PHASE_SMAP;
+
+	for (u32 i = 0; i < cascade_count; ++i)
+	{
+		PROF_EVENT("Render Cascade: SMAP");
+
+		R_dsgraph_structure& Graph = GraphSun[i];
+		fuckingsun->X.D.combine = sun_cascade_xforms[i];
+
+		bool bNormal = Graph.mapNormalPasses[0][0].size() || Graph.mapMatrixPasses[0][0].size();
+		bool bSpecial = Graph.mapNormalPasses[1][0].size() || Graph.mapMatrixPasses[1][0].size() || Graph.mapSorted.size();
+
+		if (bNormal || bSpecial)
 		{
-			PROF_EVENT("Render Cascade: SMAP");
+			GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[i], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
+			Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[i]);
+
+			RCache.set_xform_world(Fidentity);
+			RCache.set_xform_view(Fidentity);
+			RCache.set_xform_project(fuckingsun->X.D.combine);
+
+			Graph.r_dsgraph_render_graph(0);
+
+			if (Details && Details->dtFS && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
 			{
-				bool bSpecialFull = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
-				VERIFY(!bSpecialFull);
-				phase = PHASE_SMAP;
-				GraphMain.r_pmask(true, false);
+				Details->hw_Render();
 			}
 
-			// Fill database
-			GraphMain.r_dsgraph_render_subspace(pOutdoorSector, cascade_xforms[i], cull_COP, true);
+			fuckingsun->X.D.transluent = false;
 
-			fuckingsun->X.D.combine = cascade_xforms[i];
-
-			bool bNormal = GraphMain.mapNormalPasses[0][0].size() || GraphMain.mapMatrixPasses[0][0].size();
-			bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
-
-			if (bNormal || bSpecial)
+			if (bSpecial)
 			{
-				GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[i], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
-				Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[i]);
-
-				RCache.set_xform_world(Fidentity);
-				RCache.set_xform_view(Fidentity);
-				RCache.set_xform_project(fuckingsun->X.D.combine);
-
-				GraphMain.r_dsgraph_render_graph(0);
-
-				if (Details && Details->dtFS && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
-				{
-					Details->hw_Render();
-				}
-
-				fuckingsun->X.D.transluent = false;
-
-				if (bSpecial)
-				{
-					fuckingsun->X.D.transluent = true;
-					Target->phase_smap_direct_tsh(fuckingsun, SE_SUN_FAR);
-					GraphMain.r_dsgraph_render_graph(1);
-					GraphMain.r_dsgraph_render_sorted();
-				}
+				fuckingsun->X.D.transluent = true;
+				Target->phase_smap_direct_tsh(fuckingsun, SE_SUN_FAR);
+				Graph.r_dsgraph_render_graph(1);
+				Graph.r_dsgraph_render_sorted();
 			}
-
-			GraphMain.r_pmask(true, false);
 		}
 
-		RCache.set_xform_world(Fidentity);
-		RCache.set_xform_view(Device.mView);
-		RCache.set_xform_project(Device.mProject);
-
-		viewport.Width = (float)RCache.get_width();
-		viewport.Height = (float)RCache.get_height();
-
-		GRHI->SetViewport(viewport);
-		Target->accum_direct_cascade();
+		Graph.r_pmask(true, false);
 	}
 
-	if (b_need_to_render_sunshafts)
+	GraphMain.r_pmask(true, false);
+
+	RCache.set_xform_world(Fidentity);
+	RCache.set_xform_view(Device.mView);
+	RCache.set_xform_project(Device.mProject);
+
+	viewport.Width = (float)RCache.get_width();
+	viewport.Height = (float)RCache.get_height();
+
+	GRHI->SetViewport(viewport);
+	Target->accum_direct_cascade();
+
+	if (sun_restore_shafts)
 	{
-		m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = last_cascade_chain_mode;
+		m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = sun_saved_reset_chain;
 	}
 
 	if (psDeviceFlags.test(rsClearBB))
 	{
 		m_sun_cascades[2].size = 160.0f;
-		b_need_to_render_sunshafts = true;
 	}
 }
 

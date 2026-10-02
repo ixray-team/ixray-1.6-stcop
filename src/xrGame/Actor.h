@@ -137,7 +137,7 @@ public:
 	void								Center(Fvector& C)	const override;
 
 	// Render
-	void						renderable_Render			() override;
+	void						renderable_Render(void* graph = nullptr) override;
 	bool						renderable_ShadowGenerate	() override;
 	void						feel_sound_new				(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& position, float power) override;
 	Feel::Sound*				dcast_FeelSound				() override { return this;	}

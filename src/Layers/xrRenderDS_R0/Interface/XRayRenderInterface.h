@@ -29,12 +29,12 @@ public:
 	virtual IRender_Sector* detectSector(const Fvector& P);
 	virtual IRender_Target* getTarget();
 
-	virtual void set_Transform(Fmatrix* M);
-	virtual void set_HUD(bool V);
-	virtual void set_UI(bool V);
-	virtual bool get_HUD();
-	virtual void set_Invisible(bool V);
-	virtual void set_Object(IRenderable* O);
+	virtual void set_Transform(Fmatrix* M, void* graph = nullptr);
+	virtual void set_HUD(bool V, void* graph = nullptr);
+	virtual void set_UI(bool V, void* graph = nullptr);
+	virtual bool get_HUD(void* graph = nullptr);
+	virtual void set_Invisible(bool V, void* graph = nullptr);
+	virtual void set_Object(IRenderable* O, void* graph = nullptr);
 	virtual	GenerationLevel			get_generation() { return GenerationLevel::GENERATION_R1; }
 
 	virtual void add_Occluder(Fbox2& bb_screenspace); 

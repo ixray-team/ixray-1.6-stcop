@@ -365,12 +365,12 @@ void CInventoryOwner::StopTrading()
 	}
 }
 
-void CInventoryOwner::renderable_Render()
+void CInventoryOwner::renderable_Render(void* graph)
 {
 	PIItem active_item = inventory().ActiveItem();
 	if (active_item != nullptr)
 	{
-		active_item->renderable_Render();
+		active_item->renderable_Render(graph);
 	}
 
 	if (CEntityAlive* CurrEntity = cast_entity_alive(); CurrEntity == Actor())
@@ -379,25 +379,25 @@ void CInventoryOwner::renderable_Render()
 		bool rValid = rWeapon != nullptr ? rWeapon->BaseSlot() == INV_SLOT_3 : false;
 		if (rWeapon != nullptr && rValid && rWeapon != active_item)
 		{
-			rWeapon->renderable_Render();
+			rWeapon->renderable_Render(graph);
 		}
 
 		PIItem lWeapon = inventory().ItemFromSlot(INV_SLOT_2);
 		bool lValid = lWeapon != nullptr ? lWeapon->BaseSlot() == INV_SLOT_3 : false;
 		if (lWeapon != nullptr && lValid && lWeapon != active_item)
 		{
-			lWeapon->renderable_Render();
+			lWeapon->renderable_Render(graph);
 		}
 
 		PIItem lWeapon2 = inventory().ItemFromSlot(PISTOL_SLOT_NEW);
 		bool lValid2 = lWeapon2 != nullptr ? IsSidearmPhysicalSlot(lWeapon2->BaseSlot()) : false;
 		if (lWeapon2 != nullptr && lValid2 && lWeapon2 != active_item)
 		{
-			lWeapon2->renderable_Render();
+			lWeapon2->renderable_Render(graph);
 		}
 	}
 
-	CAttachmentOwner::renderable_Render();
+	CAttachmentOwner::renderable_Render(graph);
 }
 
 void CInventoryOwner::OnItemTake(CInventoryItem* inventory_item)

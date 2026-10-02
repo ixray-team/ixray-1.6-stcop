@@ -468,12 +468,12 @@ void CRender::RenderUI(Fcolor* color)
 {
 }
 
-void 	CRender::set_Transform(Fmatrix* M)
+void 	CRender::set_Transform(Fmatrix* M, void* graph)
 {
 	current_matrix.set(*M);
 }
 
-void CRender::add_Visual(IRenderVisual* visual, bool)
+void CRender::add_Visual(IRenderVisual* visual, bool, void* graph)
 {
 	if(val_bInvisible) {
 		return;
@@ -505,7 +505,7 @@ void CRender::reset_end() {
 	Target = xr_make_unique<CRenderTarget>();
 }
 
-void CRender::set_HUD(bool V)
+void CRender::set_HUD(bool V, void* graph)
 {
 	CHudInitializer initalizer(false);
 
@@ -528,17 +528,17 @@ void CRender::set_HUD(bool V)
 	}
 }
 
-bool CRender::get_HUD()
+bool CRender::get_HUD(void* graph)
 {
 	return false;
 }
 
-void CRender::set_UI(bool V)
+void CRender::set_UI(bool V, void* graph)
 {
 	val_bUI = V;
 }
 
-void CRender::set_Invisible(bool V)
+void CRender::set_Invisible(bool V, void* graph)
 {
 	val_bInvisible = V;
 }
@@ -600,7 +600,7 @@ IRender_Sector* CRender::detectSector(const Fvector& P)
 }
 
 void CRender::flush() {}
-void CRender::set_Object(IRenderable* O) {}
+void CRender::set_Object(IRenderable* O, void* graph) {}
 void CRender::add_Occluder(Fbox2& bb_screenspace) {}
 void CRender::add_Geometry(IRenderVisual* V) {}
 class RenderObjectSpecific :public IRender_ObjectSpecific
