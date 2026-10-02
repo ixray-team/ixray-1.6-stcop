@@ -13,13 +13,10 @@ void check_kinematics(CKinematics* _k, const char* s);
 void CKinematics::CalculateBones(bool bForceExact)
 {
 	PROF_EVENT("CKinematics::CalculateBones");
-	// early out.
-	// check if the info is still relevant
-	// skip all the computations - assume nothing changes in a small period of time :)
-	if (RDEVICE.dwTimeGlobal == UCalc_Time)
-		return;	// early out for "fast" update
-
 	xrCriticalSectionGuard guard(&UCalc_Mutex);
+	if (RDEVICE.dwTimeGlobal == UCalc_Time)
+		return;
+
 	OnCalculateBones();
 
 	if (!bForceExact && (RDEVICE.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))	

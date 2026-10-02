@@ -172,6 +172,7 @@ public:
 	void ensure_sun_collect();
 	void begin_sun_collect();
 	void collect_sun_cascades();
+	void append_sun_dynamics();
 	void wait_sun_collect();
 	bool prepare_sun_cascade_xforms();
 	void publish_sun_collect(bool active);
