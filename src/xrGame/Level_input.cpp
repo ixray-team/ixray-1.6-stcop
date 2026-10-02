@@ -52,13 +52,13 @@ extern	float	g_fTimeFactor;
 
 void CLevel::IR_OnMouseWheel( int direction )
 {
-	if(	g_bDisableAllInput	) return;
+	if(	g_bDisableAllInput || !bReady	) return;
 
 	/* avo: script callback */
 	if (g_actor) g_actor->callback(GameObject::eMouseWheel)(direction);
 	/* avo: end */
 
-	if (CurrentGameUI()->IR_UIOnMouseWheel(direction)) return;
+	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnMouseWheel(direction)) return;
 	if( Device.Paused()
 #ifdef DEBUG
 		&& !psActorFlags.test(AF_NO_CLIP) 
@@ -83,13 +83,13 @@ void CLevel::IR_OnMouseHold(int btn)
 
 void CLevel::IR_OnMouseMove( int dx, int dy )
 {
-	if(g_bDisableAllInput && g_bDisableMouseMove)							return;
+	if((g_bDisableAllInput && g_bDisableMouseMove) || !bReady)							return;
 
 	/* avo: script callback */
 	if (g_actor) g_actor->callback(GameObject::eMouseMove)(dx, dy);
 	/* avo: end */
 
-	if (CurrentGameUI()->IR_UIOnMouseMove(dx,dy))		return;
+	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnMouseMove(dx,dy))		return;
 	if (Device.Paused() && !IsDemoPlay() 
 #ifdef DEBUG
 		&& !psActorFlags.test(AF_NO_CLIP) 
@@ -104,7 +104,7 @@ void CLevel::IR_OnMouseMove( int dx, int dy )
 
 void CLevel::IR_OnGyroscopeMove( Fvector3 value )
 {
-	if (g_bDisableAllInput && g_bDisableMouseMove)
+	if ((g_bDisableAllInput && g_bDisableMouseMove) || !bReady)
 	{
 		return;
 	}
@@ -116,7 +116,7 @@ void CLevel::IR_OnGyroscopeMove( Fvector3 value )
 	}
 	/* avo: end */
 
-	if (CurrentGameUI()->IR_UIOnGyroscopeMove(value))
+	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGyroscopeMove(value))
 	{
 		return;
 	}
@@ -134,7 +134,7 @@ void CLevel::IR_OnGyroscopeMove( Fvector3 value )
 
 void CLevel::IR_OnTouchpadMove( Fvector2 value )
 {
-	if (g_bDisableAllInput && g_bDisableMouseMove)
+	if ((g_bDisableAllInput && g_bDisableMouseMove) || !bReady)
 	{
 		return;
 	}
@@ -146,7 +146,7 @@ void CLevel::IR_OnTouchpadMove( Fvector2 value )
 	}
 	/* avo: end */
 
-	if (CurrentGameUI()->IR_UIOnTouchpadMove(value))
+	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnTouchpadMove(value))
 	{
 		return;
 	}
@@ -184,7 +184,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 	}
 
-	if(Device.dwPrecacheFrame)
+	if (!bReady || Device.dwPrecacheFrame)
 		return;
 
 	bool b_ui_exist = (!!CurrentGameUI());
@@ -605,10 +605,10 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 	#endif
 	
-	if (key == HUD().world_prims.zbuffer_key && HUD().world_prims.key_toggle_mode)
+	if (g_hud && key == HUD().world_prims.zbuffer_key && HUD().world_prims.key_toggle_mode)
 		HUD().world_prims.zbuffer_enable = !HUD().world_prims.zbuffer_enable;
 	
-	if (key == HUD().world_prims.visible_currents_key && HUD().world_prims.key_toggle_mode)
+	if (g_hud && key == HUD().world_prims.visible_currents_key && HUD().world_prims.key_toggle_mode)
 		HUD().world_prims.visible_currents = !HUD().world_prims.visible_currents;
 }
 
@@ -653,7 +653,7 @@ void CLevel::IR_OnKeyboardHold(int key)
 		}
 	}
 
-	if (g_bDisableAllInput)
+	if (!bReady || g_bDisableAllInput)
 	{
 		return;
 	}
