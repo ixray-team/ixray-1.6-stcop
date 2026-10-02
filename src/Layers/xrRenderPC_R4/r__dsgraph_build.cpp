@@ -53,6 +53,8 @@ ICF bool FullDetailRejectStatic(dxRender_Visual* pVisual)
 	if (ps_r1_full_detail_distance_scale >= 1.f ||
 		R_Phase() != CRender::PHASE_NORMAL ||
 		pVisual->IsIgnoreOptimize || !g_pGamePersistent ||
+		(LightingModeIsStatic() && pVisual->Type == MT_HIERRARHY) ||
+		(pVisual->shader && pVisual->shader->E[0] && pVisual->shader->E[0]->flags.bLandscape) ||
 		!g_pGamePersistent->Environment().CurrentEnv)
 		return false;
 
@@ -92,7 +94,9 @@ ICF float GetDistFromCamera(const Fvector& from_position)
 
 ICF bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fmatrix& transform_matrix, bool ignore_optimize = false)
 {
-	if (ignore_optimize)
+	if (ignore_optimize || (isStatic &&
+		((LightingModeIsStatic() && pVisual->Type == MT_HIERRARHY) ||
+		(pVisual->shader && pVisual->shader->E[0] && pVisual->shader->E[0]->flags.bLandscape))))
 		return true;
 
 	int opt_level = isStatic ? opt_static : opt_dynamic;
