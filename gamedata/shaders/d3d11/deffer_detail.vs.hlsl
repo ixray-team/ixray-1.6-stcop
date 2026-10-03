@@ -107,8 +107,8 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
     float3 pos_world = mul(m_rotate, I.pos.xyz * det.scale) + det.pos;
     float3 N = mul(m_rotate, unpack_normal(I.N.xyz));
     
-    float hemi = abs(det.hemi);
-    float sun = sign(det.hemi) * 0.25f + 0.25f;
+    float hemi = saturate(abs(det.hemi) * 2.0f);
+    float sun = det.hemi > 0.0f ? 1.0f : 0.0f;
     
     float4 pos = float4(pos_world, 1.0f);
 	

@@ -10,6 +10,7 @@ float3 AmbientLightingUI(float3 View, float3 Normal, float3 Diffuse, float3 Spec
 	float3 Reflect = reflect(View, Normal);
 
 #ifndef USE_LEGACY_LIGHT
+	Roughness = Roughness * 0.5f + 0.5f;
 	Roughness = SpecularAA(Normal, View, Roughness);
 
 	float Width, Height, MipCount;
