@@ -48,5 +48,11 @@ function normal(shader, t_base, t_second, t_detail)
         :aref(true, 8)
         :zb(true, false)
         :fog(false)
-    details_lod.pass_setup_r1(shader, t_base)
+    if GetShaderOption("USE_R1_STATIC_LIGHTING") then
+        details_lod.pass_setup_r1(shader, t_base)
+    else
+        shader:dx10texture("s_base", t_base)
+        shader:dx10texture("s_hemi", t_base .. "_nm")
+        shader:dx10sampler("smp_base")
+    end
 end
