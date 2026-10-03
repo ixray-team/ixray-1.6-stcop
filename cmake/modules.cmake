@@ -20,6 +20,8 @@ include("${CMAKE_MODULE_PATHEX}/SteamWorks.cmake")
 
 if (IXRAY_PROFILER_TRACY)
     include("${CMAKE_MODULE_PATHEX}/Tracy.cmake")
+elseif (IXRAY_PROFILER)
+    include("${CMAKE_MODULE_PATHEX}/Optick.cmake")
 endif()
 
 if (IXRAY_EDITORS)
