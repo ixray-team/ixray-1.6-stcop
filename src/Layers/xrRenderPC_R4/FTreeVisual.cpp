@@ -137,6 +137,7 @@ void FTreeVisual::Render	(float LOD)
 	RCache.tree.set_m_xform_v (xform_v);
 
 	float s = ps_r__Tree_SBC;
+	float h = s;
 	RCache.tree.set_m_xform	(xform);
 
 	RCache.tree.set_consts	(tvs.scale, tvs.scale, 0, 0);
@@ -156,11 +157,11 @@ void FTreeVisual::Render	(float LOD)
 	else
 	{
 		s *= 1.3333f;
-		RCache.tree.set_c_scale(s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi);
-		RCache.tree.set_c_bias(s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, s * c_bias.hemi);
+		RCache.tree.set_c_scale(s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, h * c_scale.hemi);
+		RCache.tree.set_c_bias(s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, h * c_bias.hemi);
 	}
 
-	RCache.tree.set_c_sun(s * c_scale.sun, s * c_bias.sun, 0, 0);
+	RCache.tree.set_c_sun(h * c_scale.sun, h * c_bias.sun, 0, 0);
 }
 
 #define PCOPY(a)	a = pFrom->a

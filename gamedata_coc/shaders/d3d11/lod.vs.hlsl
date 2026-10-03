@@ -2,7 +2,7 @@
 #include "r1_lod.vs.hlsl"
 #else
 #include "common.hlsli"
-#define L_SCALE 3.1f
+#define L_SCALE 1.55f
 
 struct v_bolbord
 {
@@ -29,7 +29,8 @@ void main(in v_bolbord I, out p_bilbord O)
 
     float4 pos = float4(lerp(I.pos0, I.pos1, I.sun_af.w), 1.0f);
     float h = lerp(I.rgbh0.w, I.rgbh1.w, I.sun_af.w) * L_SCALE;
-    O.af = float4(h, h, I.sun_af.z, I.sun_af.w);
+    float s = lerp(I.sun_af.x, I.sun_af.y, I.sun_af.w) * L_SCALE;
+    O.af = float4(h, s, I.sun_af.z, I.sun_af.w);
 
     O.hpos = mul(m_VP, pos);
     O.position = mul(m_V, pos);
