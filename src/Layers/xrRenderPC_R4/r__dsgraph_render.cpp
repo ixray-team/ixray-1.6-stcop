@@ -475,6 +475,8 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 		for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
 		{
 			ISpatial*	spatial		= lstRenderables[o_it].get();
+			if (!g_r_cull_tls.active)
+				spatial->spatial_updatesector();
 			CSector*	sector		= (CSector*)spatial->sector;
 			if	(0==sector)										continue;	// disassociated from S/P structure
 			if (isolated)
