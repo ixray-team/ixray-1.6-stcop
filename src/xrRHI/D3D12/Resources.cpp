@@ -13,6 +13,7 @@ DX12Buffer::DX12Buffer(InternalDevice12& device, const RHIBufferDesc& desc, cons
         {
             _resource.Native = device.CreateNativeBuffer(desc.Size, D3D12_HEAP_TYPE_DEFAULT);
             _resource.States.assign(1, D3D12_RESOURCE_STATE_COMMON);
+            _nativeAddress = _resource.Native->GetGPUVirtualAddress();
         }
     }
     if (data && data->pSysMem)
@@ -194,6 +195,10 @@ void DX12Buffer::UpdateSubresource(void* data, u32 size)
 
 D3D12_GPU_VIRTUAL_ADDRESS DX12Buffer::GetAddress()
 {
+    if (_nativeAddress)
+    {
+        return _nativeAddress;
+    }
     InternalDevice12::ContextLock guard(_device);
     if (_desc.Type == ERHI_BUFFER_TYPE::CONSTANT)
     {
