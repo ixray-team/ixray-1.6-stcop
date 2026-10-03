@@ -1,6 +1,7 @@
 #include "Device.h"
 #include <d3dcompiler.h>
 #include <d3d11shader.h>
+#include <wrl/client.h>
 #include "../RHIDXC.h"
 
 template <typename T>
@@ -29,11 +30,17 @@ static void DeleteQuery(void* payload)
     xr_delete(query);
 }
 
+namespace
+{
 template <class TReflection, class TShader, class TBinding>
 static HRESULT ReflectBindings(TReflection* reflection, DX12Shader* shader)
 {
     TShader desc = {};
-    reflection->GetDesc(&desc);
+    const HRESULT descResult = reflection->GetDesc(&desc);
+    if (FAILED(descResult))
+    {
+        return descResult;
+    }
     for (u32 resource_idx = 0; resource_idx < desc.BoundResources; ++resource_idx)
     {
         TBinding binding = {};
@@ -91,6 +98,31 @@ static HRESULT ReflectBindings(TReflection* reflection, DX12Shader* shader)
     return S_OK;
 }
 
+HRESULT ReadShaderBindings(const void* code, size_t size, DX12Shader& shader)
+{
+    // Null descriptors must match the shader's resource dimensions and buffer kinds.
+    if (RHI_IsDXIL(code, size))
+    {
+        Microsoft::WRL::ComPtr<ID3D12ShaderReflection> reflection;
+        const HRESULT result = RHI_DxcReflect(code, size, reflection.GetAddressOf());
+        if (FAILED(result))
+        {
+            return result;
+        }
+        return ReflectBindings<ID3D12ShaderReflection, D3D12_SHADER_DESC, D3D12_SHADER_INPUT_BIND_DESC>(
+            reflection.Get(), &shader);
+    }
+    Microsoft::WRL::ComPtr<ID3D11ShaderReflection> reflection;
+    const HRESULT result = D3DReflect(code, size, IID_PPV_ARGS(reflection.GetAddressOf()));
+    if (FAILED(result))
+    {
+        return result;
+    }
+    return ReflectBindings<ID3D11ShaderReflection, D3D11_SHADER_DESC, D3D11_SHADER_INPUT_BIND_DESC>(
+        reflection.Get(), &shader);
+}
+}
+
 HRESULT InternalDevice12::CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader)
 {
     ContextLock guard(*this);
@@ -99,20 +131,20 @@ HRESULT InternalDevice12::CreateShader(const void* code, size_t size, ERHI_SHADE
     {
         return E_INVALIDARG;
     }
-    auto shader = new DX12Shader;
+    // Reject unsigned cache entries so the renderer recompiles them before PSO creation.
+    if (RHI_IsUnsignedDXIL(code, size))
+    {
+        return E_INVALIDARG;
+    }
+    xr_unique_ptr<DX12Shader> shader(new DX12Shader);
+    const HRESULT result = ReadShaderBindings(code, size, *shader);
+    if (FAILED(result))
+    {
+        return result;
+    }
     shader->Id = _nextObject++;
     shader->Code.assign((const u8*)code, (const u8*)code + size);
-    shader->ConstantMask = 0x3FFFu;
-    shader->SamplerMask = 0xFFFFu;
-    shader->UAVMask = 0xFFu;
-    for (u32 slot = 0; slot < 16; ++slot)
-    {
-        shader->Dimensions[slot] = D3D12_SRV_DIMENSION_TEXTURE2D;
-        shader->ReturnTypes[slot] = D3D_RETURN_TYPE_FLOAT;
-    }
-    for (u32 slot = 0; slot < 8; ++slot)
-        shader->UAVDimensions[slot] = D3D12_UAV_DIMENSION_TEXTURE2D;
-    *out_shader = new RHIObject(shader, DeletePayload<DX12Shader>);
+    *out_shader = new RHIObject(shader.release(), DeletePayload<DX12Shader>);
     return S_OK;
 }
 
@@ -177,22 +209,21 @@ HRESULT InternalDevice12::ReplaceShader(RHIObject* shader, const void* code, siz
     {
         return E_INVALIDARG;
     }
+    if (RHI_IsUnsignedDXIL(code, size))
+    {
+        return E_INVALIDARG;
+    }
     auto native = static_cast<DX12Shader*>(shader->resource);
+    DX12Shader replacement;
+    const HRESULT result = ReadShaderBindings(code, size, replacement);
+    if (FAILED(result))
+    {
+        return result;
+    }
+    replacement.Code.assign((const u8*)code, (const u8*)code + size);
+    replacement.Id = _nextObject++;
     const u64 previous = native->Id;
-    native->Code.assign((const u8*)code, (const u8*)code + size);
-    native->Id = _nextObject++;
-    native->ConstantMask = 0x3FFFu;
-    native->SamplerMask = 0xFFFFu;
-    native->UAVMask = 0xFFu;
-    for (u32 slot = 0; slot < 16; ++slot)
-    {
-        native->Dimensions[slot] = D3D12_SRV_DIMENSION_TEXTURE2D;
-        native->ReturnTypes[slot] = D3D_RETURN_TYPE_FLOAT;
-    }
-    for (u32 slot = 0; slot < 8; ++slot)
-    {
-        native->UAVDimensions[slot] = D3D12_UAV_DIMENSION_TEXTURE2D;
-    }
+    *native = std::move(replacement);
     for (u32 stage = 0; stage < 5; ++stage)
     {
         if (_graphicsState.Shaders[stage] == native)
