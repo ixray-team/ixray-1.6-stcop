@@ -5,10 +5,8 @@
 		<aref enable="1" value="8"/>
 		<zb test="1" write="0"/>
 		<fog value="0"/>
-		<texture name="s_base0" value="{base}"/>
-		<texture name="s_base1" value="{base}"/>
-		<texture name="s_hemi0" value="{base}_nm"/>
-		<texture name="s_hemi1" value="{base}_nm"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_hemi" value="{base}_nm"/>
 		<sampler name="smp_base"/>
 	</normal>
 	<l_special>
