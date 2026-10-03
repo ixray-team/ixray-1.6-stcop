@@ -16,12 +16,13 @@ float3 AmbientLightingUI(float3 View, float3 Normal, float3 Diffuse, float3 Spec
 	sky_s0.GetDimensions(0, Width, Height, MipCount);
 	float MaxLod = max(MipCount - 1.0f, 0.0f);
 
-	float3 DiffuseIrradance = env_s0.SampleLevel(smp_linear, Normal, 0.0f).xyz * 0.5f;
+	float3 DiffuseIrradance = env_s0.SampleLevel(smp_linear, Normal, 0.0f).xyz;
 	float3 SpecularIrradance = sky_s0.SampleLevel(smp_linear, Reflect, MaxLod * Roughness).xyz;
 
 	float NdotV = max(0.0, dot(Normal, -View));
 
-	return AmbientLightingImpl(LinearToGamma(DiffuseIrradance), LinearToGamma(SpecularIrradance), NdotV, Diffuse, Specular, Roughness);
+	float3 light = AmbientLightingImpl(LinearToGamma(DiffuseIrradance), LinearToGamma(SpecularIrradance), NdotV, Diffuse, Specular, Roughness);
+	return pow(light, 1.3f);
 #else
 	float HdotV = 0.5f - 0.5f * dot(View, Reflect);
 	float2 Material = s_material.SampleLevel(smp_material, float3(1.0f, HdotV, Roughness), 0).xy;
