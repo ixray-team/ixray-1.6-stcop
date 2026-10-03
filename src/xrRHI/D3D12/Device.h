@@ -179,6 +179,8 @@ private:
     static constexpr u32 StaticResourceDescriptors = 65536;
     static constexpr u32 SamplerDescriptorCount = 2048;
     static constexpr u32 StaticSamplerDescriptors = 512;
+    static constexpr u32 PipelineBuckets = 1024;
+    static_assert((PipelineBuckets & (PipelineBuckets - 1)) == 0, "pipeline bucket count must be a power of two");
     struct UploadChunk
     {
         ID3D12Resource* Resource = nullptr;
@@ -327,6 +329,7 @@ private:
         D3D12_VERTEX_BUFFER_VIEW Vertices[32] = {};
         D3D12_INDEX_BUFFER_VIEW Index = {};
         float BlendFactor[4] = {};
+        float DepthBounds[2] = {};
         u32 VertexCount = 0;
         u32 TargetCount = 0;
         u32 StencilRef = 0;
@@ -352,6 +355,7 @@ private:
     struct GraphicsPipeline
     {
         GraphicsPipelineKey Key;
+        u64 Hash = 0;
         u32 Next = 0;
         ID3D12PipelineState* Pipeline = nullptr;
     };
@@ -429,6 +433,7 @@ private:
     bool _boundComputeRoot = false;
     bool _drawBindingsValid = false;
     bool _draining = false;
+    bool _preparing = false;
     bool _gpuContextLive = false;
     D3D12_GPU_DESCRIPTOR_HANDLE _boundGraphicsTables[GraphicsTableCount] = {};
     D3D12_GPU_DESCRIPTOR_HANDLE _boundComputeTables[ComputeTableCount] = {};
@@ -450,6 +455,10 @@ private:
     UAVCache _uavCaches[2];
     std::atomic<u32> _pendingCount{ 0 };
     ID3D12PipelineState* _boundPipeline = nullptr;
+    // Last graphics PSO resolved from _boundKey; survives compute dispatches and list resets.
+    ID3D12PipelineState* _graphicsPipeline = nullptr;
+    // Bumped whenever rasterizer/depth/blend/sample-mask state in _graphicsState changes.
+    u64 _stateSerial = 1;
     u64 _boundPipelineHash = 0;
     GraphicsPipelineKey _boundKey;
     DrawBindings _drawBindings;
@@ -485,7 +494,13 @@ private:
     void ReleaseBuffers();
     void CreateRootSignatures();
     bool PrepareDraw(bool compute);
+    bool PrepareDrawLocked(bool compute);
     bool PreparePipeline();
+    void TransitionAttachments();
+    ID3D12GraphicsCommandList* ActiveCommands();
+    void ResolveQueries();
+    void ResolveQuery(u32 slot);
+    static u64 PipelineHash(const GraphicsPipelineKey& key);
     void DropShaderPipelines(u64 shaderId);
     void BindNullConstants(bool compute);
     void BindRootConstants(bool compute);
@@ -526,10 +541,12 @@ private:
     xr_vector<NullDescriptor> _nullSrvs;
     xr_vector<NullDescriptor> _nullUavs;
     DX12Descriptor _nullSampler;
-    u32 _pipelineBuckets[256] = {};
+    u32 _pipelineBuckets[PipelineBuckets] = {};
     ID3D12QueryHeap* _occlusionHeap = nullptr;
     ID3D12Resource* _occlusionReadback = nullptr;
     u64 _occlusionFence[QuerySlots] = {};
     u32 _occlusionFree[QuerySlots] = {};
     u32 _occlusionFreeCount = 0;
+    // Occlusion slots ended in the recording list; resolved in one pass by Submit.
+    u64 _resolveQueries[QuerySlots / 64] = {};
 };

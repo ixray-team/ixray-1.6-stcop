@@ -48,18 +48,28 @@ public:
     void Apply() override
     {
         InternalDevice12::ContextLock guard(_device);
-        const D3D12_RASTERIZER_DESC raster = RasterizerDesc(_rasterDesc);
-        const D3D12_DEPTH_STENCIL_DESC depth = DepthDesc(_depthDesc);
-        const D3D12_BLEND_DESC blend = BlendDesc(_blendDesc);
-        auto& state = _device._graphicsState;
-
-        if (state.SampleMask != _sampleMask || memcmp(&state.Rasterizer, &raster, sizeof(raster)) || memcmp(&state.Depth, &depth, sizeof(depth)) || memcmp(&state.Blend, &blend, sizeof(blend)))
+        if (_dirty)
         {
-            state.Rasterizer = raster;
-            state.Depth = depth;
-            state.Blend = blend;
-            state.SampleMask = _sampleMask;
-            _device._pipelineDirty = true;
+            _nativeRaster = RasterizerDesc(_rasterDesc);
+            _nativeDepth = DepthDesc(_depthDesc);
+            _nativeBlend = BlendDesc(_blendDesc);
+            _dirty = false;
+            _appliedSerial = 0;
+        }
+        if (_appliedSerial != _device._stateSerial)
+        {
+            auto& state = _device._graphicsState;
+            if (state.SampleMask != _sampleMask || memcmp(&state.Rasterizer, &_nativeRaster, sizeof(_nativeRaster)) ||
+                memcmp(&state.Depth, &_nativeDepth, sizeof(_nativeDepth)) || memcmp(&state.Blend, &_nativeBlend, sizeof(_nativeBlend)))
+            {
+                state.Rasterizer = _nativeRaster;
+                state.Depth = _nativeDepth;
+                state.Blend = _nativeBlend;
+                state.SampleMask = _sampleMask;
+                _device._pipelineDirty = true;
+                ++_device._stateSerial;
+            }
+            _appliedSerial = _device._stateSerial;
         }
 
         _device._stencilRef = _stencilRef;
@@ -87,6 +97,7 @@ public:
     }
     void SetRasterizerState(void* state) override
     {
+        _dirty = true;
         if (state)
         {
             _rasterDesc = *(RHIRasterizerDesc*)state;
@@ -99,6 +110,7 @@ public:
     }
     void SetDepthStencilState(void* state) override
     {
+        _dirty = true;
         if (state)
         {
             _depthDesc = *(RHIDepthStencilDesc*)state;
@@ -110,6 +122,7 @@ public:
     }
     void SetBlendState(void* state) override
     {
+        _dirty = true;
         if (state)
         {
             _blendDesc = *(RHIBlendDesc*)state;
@@ -121,7 +134,11 @@ public:
     }
     void SetStencilRef(u32 value) override { _stencilRef = value; }
     void UnmapConstants() override { BindAlphaCallback = nullptr; }
-    void SetSampleMask(u32 value) { _sampleMask = value; }
+    void SetSampleMask(u32 value)
+    {
+        _sampleMask = value;
+        _dirty = true;
+    }
     void* GetCache(ERHI_STATE_CACHE_TYPE type, void* desc) override
     {
         switch (type)
@@ -152,6 +169,11 @@ private:
     u32 _alphaRef = 0;
     bool _isScissorOverride = false;
     bool _overrideScissorValue = false;
+    D3D12_RASTERIZER_DESC _nativeRaster = {};
+    D3D12_DEPTH_STENCIL_DESC _nativeDepth = {};
+    D3D12_BLEND_DESC _nativeBlend = {};
+    u64 _appliedSerial = 0;
+    bool _dirty = true;
     void ResetRDesc();
     void ResetDDesc();
     void ResetBDesc();
@@ -159,6 +181,7 @@ private:
 
 void DX12StateManager::ResetBDesc()
 {
+	_dirty = true;
 	ZeroMemory(&_blendDesc, sizeof(_blendDesc));
 
 	_blendDesc.AlphaToCoverageEnable = false;
@@ -179,6 +202,7 @@ void DX12StateManager::ResetBDesc()
 
 void DX12StateManager::ResetDDesc()
 {
+	_dirty = true;
 	ZeroMemory(&_depthDesc, sizeof(_depthDesc));
 
 	_depthDesc.DepthEnable = true;
@@ -201,6 +225,7 @@ void DX12StateManager::ResetDDesc()
 
 void DX12StateManager::ResetRDesc()
 {
+	_dirty = true;
 	ZeroMemory(&_rasterDesc, sizeof(_rasterDesc));
 	_rasterDesc.FillMode = RHI_FILL_SOLID;
 	_rasterDesc.CullMode = RHI_CULL_BACK;
@@ -226,7 +251,7 @@ void DX12StateManager::SetAlphaRef(u32 NewAlphaRef)
 
 void DX12StateManager::SetStencil(u32 Enable, u32 Func, u32 Ref, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail)
 {
-
+	_dirty = true;
 	_depthDesc.StencilEnable = Enable;
 	_depthDesc.StencilReadMask = Mask;
 	_depthDesc.StencilWriteMask = WriteMask;
@@ -246,6 +271,7 @@ void DX12StateManager::SetStencil(u32 Enable, u32 Func, u32 Ref, u32 Mask, u32 W
 
 void DX12StateManager::SetRenderState(u32 p1, u32 p2)
 {
+	_dirty = true;
 	switch (p1)
 	{
 	case D3DRS_ZENABLE:
@@ -448,17 +474,19 @@ void DX12StateManager::SetRenderState(u32 p1, u32 p2)
 
 void DX12StateManager::SetDepthFunc(u32 Func)
 {
+	_dirty = true;
 	_depthDesc.DepthFunc = (ERHI_COMPARISON)Func;
 }
 
 void DX12StateManager::SetDepthEnable(u32 Enable)
 {
+	_dirty = true;
 	_depthDesc.DepthEnable = Enable;
 }
 
 void DX12StateManager::SetColorWriteEnable(u32 WriteMask)
 {
-
+	_dirty = true;
 	for (u32 target_idx = 0; target_idx < 8; ++target_idx)
 	{
 		_blendDesc.RenderTarget[target_idx].RenderTargetWriteMask = WriteMask;
@@ -467,6 +495,7 @@ void DX12StateManager::SetColorWriteEnable(u32 WriteMask)
 
 void DX12StateManager::SetCullMode(ERHI_CULLMODE Mode)
 {
+	_dirty = true;
 	_rasterDesc.CullMode = (ERHI_CULL_MODE)Mode;
 	CacheCullMode = Mode;
 }
@@ -483,6 +512,7 @@ void DX12StateManager::BindAlphaRefCallback(const BindAlphaCallbackDecl& Callbac
 
 void DX12StateManager::SetMultisample(u32 Enable)
 {
+	_dirty = true;
 	_rasterDesc.MultisampleEnable = Enable;
 }
 
@@ -551,6 +581,7 @@ void InternalDevice12::SetRawBlendState(void* state, const float* factor, u32 ma
     }
     _graphicsState.SampleMask = mask;
     _pipelineDirty = true;
+    ++_stateSerial;
     for (u32 factor_idx = 0; factor_idx < 4; ++factor_idx)
     {
         _blendFactor[factor_idx] = factor ? factor[factor_idx] : 1;

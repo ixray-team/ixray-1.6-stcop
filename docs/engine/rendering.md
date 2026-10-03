@@ -76,6 +76,18 @@ Batch capacity is `min(RCache.Vertex.GetSize() / pGeom.stride() / 4, 16384)`. Ea
 
 `InternalDevice12::PrepareDraw` in `D3D12/Binding.cpp` still prepares descriptor/root bindings, pipeline state and vertex/index views for each draw. Batching reduces how often this path is called; it does not change its synchronization or resource lifetime.
 
+## D3D12 per-draw path
+
+`PrepareDraw` drains queued uploads once, then resolves bindings with `_preparing` set so no upload copy lands between binding validation and the draw. Draw calls record on `_commands` directly after it.
+
+The graphics PSO key is rebuilt only when `_pipelineDirty` is set (shaders, layout, topology, attachments, depth-bounds enable, or `DX12StateManager` state). A barrier elsewhere only reruns `TransitionAttachments`; a compute dispatch or command-list reset rebinds the cached `_graphicsPipeline`. Pipeline buckets store the key hash. `DX12StateManager::Apply` converts RHI descriptors only after a setter ran and compares with the device only when `_stateSerial` moved; `SetRawBlendState` bumps that serial.
+
+UAV writes are hazard-tracked per resource with `UAVPendingEpoch` (command-list epoch). `Dispatch` and `FinishDraw` mark written UAVs instead of issuing a UAV barrier each time. `UAVTable` emits one batched UAV barrier when a pending resource is bound as a UAV again in the same list; a full transition out of `UNORDERED_ACCESS` clears the mark because the transition already orders the writes. `PrepareUpscale` emits the barrier before external upscalers write a pending output. Command-list boundaries are fully synchronized, so marks from older epochs are ignored.
+
+Occlusion queries record `EndQuery` only; `Submit` resolves all slots ended in the list with one `ResolveQueryData` per contiguous run. A slot restarted in the same list is resolved before its new `BeginQuery`. Default-heap buffer addresses are cached for the vertex/index path, and depth bounds are reapplied only when they change.
+
+Validation: compare D3D12 frame time and the `D3D12 ... barrier ... pso` counter line before and after in the same loaded scene; check SSR/GTAO/compute chains, upscalers, occlusion-culled lights and depth-bounds lights in RenderDoc or with `-dxdebug`. Not compiled or measured yet.
+
 The 2026-10-03 font batching change passed a Debug translation-unit compile with no warnings or errors. Runtime FPS and rendered output remain unverified. Check console-open versus console-closed frame times in the same loaded scene, and inspect text order, colors, selection, scrolling and long lines. A RenderDoc capture should show font draws split at batch capacity rather than at every string. Compilation alone does not establish the performance fix.
 
 ## Constant buffers

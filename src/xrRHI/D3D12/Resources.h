@@ -19,6 +19,7 @@ struct DX12Resource
     ID3D12Resource* Native = nullptr;
     xr_vector<D3D12_RESOURCE_STATES> States;
     D3D12_RESOURCE_STATES UniformState = D3D12_RESOURCE_STATE_COMMON;
+    u64 UAVPendingEpoch = 0;
     bool Uniform = true;
 };
 
@@ -61,6 +62,7 @@ private:
     RHIBufferDesc _desc;
     DX12Resource _resource;
     DX12Upload _upload;
+    D3D12_GPU_VIRTUAL_ADDRESS _nativeAddress = 0;
     u64 _generation = 0;
     u64 _uploaded = 0;
     u64 _published = 0;

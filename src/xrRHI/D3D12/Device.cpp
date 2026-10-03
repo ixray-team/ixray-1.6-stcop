@@ -478,10 +478,15 @@ DX12Upload InternalDevice12::AcquireStream(u64 size)
     DX12Upload upload;
     upload.Size = size;
     upload.Owned = true;
+    const u64 completed = _fence->GetCompletedValue();
+    if (completed == UINT64_MAX)
+    {
+        IsComplete(0);
+    }
     for (size_t stream_idx = 0; stream_idx < _streamPool.size(); ++stream_idx)
     {
         auto& stream = _streamPool[stream_idx];
-        if (stream.Size == size && IsComplete(stream.Fence))
+        if (stream.Size == size && completed >= stream.Fence)
         {
             upload.Resource = stream.Resource;
             upload.Data = stream.Data;
@@ -531,11 +536,20 @@ ID3D12GraphicsCommandList* InternalDevice12::Commands()
         }
 #endif
     }
-    if (!_draining)
+    if (!_draining && !_preparing)
     {
         DrainUploads();
     }
     return _commands;
+}
+
+ID3D12GraphicsCommandList* InternalDevice12::ActiveCommands()
+{
+    if (_isRecording && (_draining || _preparing || !_pendingCount.load(std::memory_order_relaxed)))
+    {
+        return _commands;
+    }
+    return Commands();
 }
 
 u64 InternalDevice12::GetEpoch()
@@ -553,6 +567,7 @@ u64 InternalDevice12::Submit()
     {
         return _nextFence - 1;
     }
+    ResolveQueries();
     for (size_t marker_idx = _markers.size(); marker_idx; --marker_idx)
     {
         _commands->EndEvent();
@@ -714,6 +729,11 @@ void InternalDevice12::Transition(DX12Resource& resource, D3D12_RESOURCE_STATES 
             Commands()->ResourceBarrier(1, &barrier);
             _counters.Barriers.fetch_add(1, std::memory_order_relaxed);
             ++_barrierEpoch;
+            if ((barrier.Transition.StateBefore & D3D12_RESOURCE_STATE_UNORDERED_ACCESS) &&
+                !(state & D3D12_RESOURCE_STATE_UNORDERED_ACCESS))
+            {
+                resource.UAVPendingEpoch = 0;
+            }
             std::fill(resource.States.begin(), resource.States.end(), state);
             resource.UniformState = state;
         }
@@ -1376,8 +1396,8 @@ void InternalDevice12::Draw(u32 startVertex, u32 primitiveCount)
     {
         return;
     }
-    DX12_GPU_EVENT(Commands(), "D3D12: Draw");
-    Commands()->DrawInstanced(RHITopologyUtils::GetVertexCount(primitiveCount, _topology), 1, startVertex, 0);
+    DX12_GPU_EVENT(_commands, "D3D12: Draw");
+    _commands->DrawInstanced(RHITopologyUtils::GetVertexCount(primitiveCount, _topology), 1, startVertex, 0);
     FinishDraw();
 }
 
@@ -1398,8 +1418,8 @@ void InternalDevice12::DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32
     {
         return;
     }
-    DX12_GPU_EVENT(Commands(), "D3D12: DrawIndexed");
-    Commands()->DrawIndexedInstanced(RHITopologyUtils::GetIndexCount(primitiveCount, _topology), instanceCount, startIndex, (INT)baseVertex, startInstanceLocation);
+    DX12_GPU_EVENT(_commands, "D3D12: DrawIndexed");
+    _commands->DrawIndexedInstanced(RHITopologyUtils::GetIndexCount(primitiveCount, _topology), instanceCount, startIndex, (INT)baseVertex, startInstanceLocation);
     FinishDraw();
 }
 
@@ -1414,8 +1434,8 @@ void InternalDevice12::DrawNoInputAssembly(u32 vertexCount)
     {
         return;
     }
-    DX12_GPU_EVENT(Commands(), "D3D12: DrawNoInputAssembly");
-    Commands()->DrawInstanced(vertexCount, 1, 0, 0);
+    DX12_GPU_EVENT(_commands, "D3D12: DrawNoInputAssembly");
+    _commands->DrawInstanced(vertexCount, 1, 0, 0);
     FinishDraw();
 }
 
@@ -1427,14 +1447,17 @@ void InternalDevice12::Dispatch(u32 x, u32 y, u32 z)
     {
         return;
     }
-    DX12_GPU_EVENT(Commands(), "D3D12: Dispatch");
-    Commands()->Dispatch(x, y, z);
+    DX12_GPU_EVENT(_commands, "D3D12: Dispatch");
+    _commands->Dispatch(x, y, z);
+    // UAV barriers are deferred: the next UAV binding of the resource in this list emits one (UAVTable),
+    // and a state transition away from UNORDERED_ACCESS orders the writes by itself.
     for (u32 view_idx = 0; view_idx < 8; ++view_idx)
     {
         auto view = _computeUAVs[view_idx];
         if (view && _computeShader && (_computeShader->UAVMask & (1u << view_idx)))
         {
-            UAVBarrier(view->View.Surface ? view->View.Surface->GetResource().Native : view->View.Buffer->GetResource().Native);
+            auto& resource = view->View.Surface ? view->View.Surface->GetResource() : view->View.Buffer->GetResource();
+            resource.UAVPendingEpoch = _epoch;
         }
     }
 }
@@ -1442,12 +1465,17 @@ void InternalDevice12::Dispatch(u32 x, u32 y, u32 z)
 void InternalDevice12::FinishDraw()
 {
     auto shader = _graphicsState.Shaders[0];
+    if (!shader || !shader->UAVMask)
+    {
+        return;
+    }
     for (u32 view_idx = 0; view_idx < 8; ++view_idx)
     {
         auto view = _renderUAVs[view_idx];
-        if (view && shader && (shader->UAVMask & (1u << view_idx)))
+        if (view && (shader->UAVMask & (1u << view_idx)))
         {
-            UAVBarrier(view->View.Surface ? view->View.Surface->GetResource().Native : view->View.Buffer->GetResource().Native);
+            auto& resource = view->View.Surface ? view->View.Surface->GetResource() : view->View.Buffer->GetResource();
+            resource.UAVPendingEpoch = _epoch;
         }
     }
 }
