@@ -123,6 +123,7 @@ protected:
 	void						UnloadWeapon				(CWeaponMagazined* pWnp);
 	void						UnloadWeaponItem			(CWeaponMagazined* pWpn);
 	void						UnloadAllWeaponsFromRuck	();
+	void						AppendMissingActorBagItems	();
 
 	void						UpdateItemsPlace			();
 	void						UpdateConditionProgressBars	();
@@ -268,6 +269,7 @@ protected:
 
 	bool						m_highlight_clear = true;
 	bool						m_item_info_view = false;
+	bool						m_bIgnoreInventoryAction = false;
 
 	CUICellItem*				_tradeHoverCell = nullptr;
 	CUIStatic*					m_pInvSlotHighlight[LAST_SLOT + 1]{};

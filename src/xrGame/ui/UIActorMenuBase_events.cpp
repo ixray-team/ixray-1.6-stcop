@@ -7,6 +7,7 @@
 #include "UICellItemFactory.h"
 #include "UIInventoryInvalidation.h"
 #include "../WeaponMagazined.h"
+#include "../MPPlayersBag.h"
 #include "../trade.h"
 #include "../Inventory.h"
 #include "../InventoryVolumeSystem.h"
@@ -183,6 +184,11 @@ void CUIActorMenuBase::SendEvent_Item_Drop(PIItem pItem, u16 recipient)
 
 void CUIActorMenuBase::OnInventoryAction(PIItem pItem, u16 action_type)
 {
+	if (m_bIgnoreInventoryAction)
+	{
+		return;
+	}
+
 	CUIDragDropListEx* all_lists[] =
 	{
 		GetBeltList(),
@@ -344,6 +350,69 @@ void CUIActorMenuBase::UnloadWeaponItem(CWeaponMagazined* pWpn)
 	pWpn->m_bNeedPumpState = false;
 }
 
+void CUIActorMenuBase::AppendMissingActorBagItems()
+{
+	CUIDragDropListEx* bagList = GetActorList();
+	if (!bagList || !GetInventoryOwner())
+	{
+		return;
+	}
+
+	xr_set<PIItem> present;
+	const u32 count = bagList->ItemsCount();
+	for (u32 i = 0; i < count; ++i)
+	{
+		CUICellItem* cell = bagList->GetItemIdx(i);
+		if (!cell)
+		{
+			continue;
+		}
+
+		present.insert(static_cast<PIItem>(cell->m_pData));
+		const u32 childCount = cell->ChildsCount();
+		for (u32 c = 0; c < childCount; ++c)
+		{
+			CUICellItem* child = cell->Child(c);
+			if (child)
+			{
+				present.insert(static_cast<PIItem>(child->m_pData));
+			}
+		}
+	}
+
+	TIItemContainer ruck_list = GetInventoryOwner()->inventory().m_ruck;
+	if (m_pInventorySorter)
+	{
+		PrepareBagItemList(ruck_list, GetActiveBagListSlot());
+	}
+
+	for (PIItem item : ruck_list)
+	{
+		if (!item)
+		{
+			continue;
+		}
+
+		CMPPlayersBag* bag = smart_cast<CMPPlayersBag*>(&item->object());
+		if (bag)
+		{
+			continue;
+		}
+
+		if (present.find(item) != present.end())
+		{
+			continue;
+		}
+
+		CUICellItem* itm = create_cell_item(item);
+		bagList->SetItem(itm);
+		if (m_currMenuMode == mmTrade && GetPartner())
+		{
+			ColorizeItem(itm, !CanMoveToPartner(item));
+		}
+	}
+}
+
 void CUIActorMenuBase::UnloadAllWeaponsFromRuck()
 {
 	if (!GetInventoryOwner())
@@ -356,6 +425,8 @@ void CUIActorMenuBase::UnloadAllWeaponsFromRuck()
 		return;
 
 	bool unloaded_any = false;
+	m_bIgnoreInventoryAction = true;
+
 	TIItemContainer ruck_list = GetInventoryOwner()->inventory().m_ruck;
 	for (PIItem item : ruck_list)
 	{
@@ -373,13 +444,25 @@ void CUIActorMenuBase::UnloadAllWeaponsFromRuck()
 		unloaded_any = true;
 	}
 
-	if (unloaded_any)
+	if (!unloaded_any)
 	{
-		PlaySnd(eUnloadMagazine);
+		m_bIgnoreInventoryAction = false;
+		return;
 	}
 
-	UpdateActorBagList();
+	PlaySnd(eUnloadMagazine);
+	Level().ClientReceive();
+	Level().ProcessGameEvents();
+	AppendMissingActorBagItems();
+	UpdateItemsPlace();
 	UpdateConditionProgressBars();
+
+	if (m_pQuickSlot)
+	{
+		m_pQuickSlot->ReloadReferences(GetInventoryOwner());
+	}
+
+	m_bIgnoreInventoryAction = false;
 }
 
 void CUIActorMenuBase::TransferItemsMp(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying)
