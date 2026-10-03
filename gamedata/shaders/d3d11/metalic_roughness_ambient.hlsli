@@ -77,31 +77,37 @@ Texture2D s_env_fwd;
 float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 {
 	float3 LightDirection = mul((float3x3)m_invV, R);
-	
+	float LodRoughness = Roughness * (1.7f - 0.7f * Roughness);
+
 #ifdef USE_VIEW_REFLECTIONS
 	float2 View = NormalEncode(LightDirection.xzy) * 0.875f;
 	View = View * 0.5f + 0.5f;
-	
-	Roughness = 1.0f - Roughness;
-	Roughness *= Roughness * Roughness;
-	Roughness = 1.0f - Roughness;
+
+	float ViewRoughness = 1.0f - Roughness;
+	ViewRoughness *= ViewRoughness * ViewRoughness;
+	ViewRoughness = 1.0f - ViewRoughness;
 #endif
-	
+
 #ifndef IBL_MAX_LOD
 	float4 MipLevels = 0.0f;
 	sky_s0.GetDimensions(MipLevels.x, MipLevels.y, MipLevels.z, MipLevels.w);
-	float2 Lod = MipLevels.w * Roughness;
+	float2 Lod = max(MipLevels.w - 1.0f, 0.0f) * LodRoughness;
 	#ifdef USE_HQ_SKY2_LOD
 		sky_s1.GetDimensions(MipLevels.x, MipLevels.y, MipLevels.z, MipLevels.w);
-		Lod.y = MipLevels.w * Roughness;
+		Lod.y = max(MipLevels.w - 1.0f, 0.0f) * LodRoughness;
 	#endif
 #else
-	float2 Lod = IBL_MAX_LOD * Roughness;
+	float2 Lod = IBL_MAX_LOD * LodRoughness;
 #endif
-	
-#ifdef IBL_FAKE_IRRADANCE
+
+#if defined(IBL_FAKE_IRRADANCE) || !defined(IBL_MAX_LOD)
 	float3 SampleLastD = env_s0.SampleLevel(smp_linear, LightDirection, 0.0f).xyz;
 	float3 SampleNextD = env_s1.SampleLevel(smp_linear, LightDirection, 0.0f).xyz;
+	#ifdef IBL_FAKE_IRRADANCE
+		float FakeIrradance = LodRoughness;
+	#else
+		float FakeIrradance = MipLevels.w > 1.0f ? 0.0f : LodRoughness;
+	#endif
 #endif
 
 #ifdef IBL_REMAP_POSITIVE_Y
@@ -115,9 +121,9 @@ float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 	float3 SampleLast = sky_s0.SampleLevel(smp_linear, LightDirection, Lod.x).xyz;
 	float3 SampleNext = sky_s1.SampleLevel(smp_linear, LightDirection, Lod.y).xyz;
 	
-#ifdef IBL_FAKE_IRRADANCE
-	SampleLast = lerp(SampleLast, SampleLastD, Roughness);
-	SampleNext = lerp(SampleNext, SampleNextD, Roughness);
+#if defined(IBL_FAKE_IRRADANCE) || !defined(IBL_MAX_LOD)
+	SampleLast = lerp(SampleLast, SampleLastD, FakeIrradance);
+	SampleNext = lerp(SampleNext, SampleNextD, FakeIrradance);
 #endif
 
 	float3 Irradance = lerp(SampleLast, SampleNext, L_hemi_color.w);
@@ -137,8 +143,8 @@ float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 #endif
 
 #ifdef USE_VIEW_REFLECTIONS	
-	float4 SampleRef = saturate(s_env_fwd.SampleLevel(smp_linear, View, 6.0f * Roughness));
-	SampleRef.xyz *= SampleRef.xyz < 1.0f ? rcp(1.0f - SampleRef.xyz) : 1.0f;
+	float4 SampleRef = saturate(s_env_fwd.SampleLevel(smp_linear, View, 6.0f * ViewRoughness));
+	SampleRef.xyz *= rcp(max(1.0f - SampleRef.xyz, 0.02f));
 	
 	Irradance = lerp(SampleRef.xyz, Irradance * saturate(Hemi * 3.0f), SampleRef.w);
 #else
@@ -163,13 +169,18 @@ float3 AmbientLightingImpl(float3 DiffuseIrradance, float3 SpecularIrradance, fl
 	return lerp(DiffuseIrradance, SpecularIrradance, F);
 }
 
+float SpecularOcclusion(float NdotV, float Occlusion, float Roughness)
+{
+	return saturate(pow(NdotV + Occlusion, exp2(-16.0f * Roughness - 1.0f)) - 1.0f + Occlusion);
+}
+
 float3 AmbientLighting(float3 View, float3 Normal, float3 Diffuse, float3 Specular, float Roughness, float Hemi)
 {
 	float3 Reflect = reflect(View, Normal);
 	float NdotV = max(0.0, dot(Normal, -View));
 
 	float3 DiffuseIrradance = CompureDiffuseIrradance(Normal, Hemi) + L_ambient.xyz;
-	float3 SpecularIrradance = CompureSpecularIrradance(Reflect, Hemi, Roughness);
+	float3 SpecularIrradance = CompureSpecularIrradance(Reflect, SpecularOcclusion(NdotV, Hemi, Roughness), Roughness);
 	
 	return AmbientLightingImpl(DiffuseIrradance, SpecularIrradance, NdotV, Diffuse, Specular, Roughness);
 }

@@ -36,16 +36,13 @@ float4 main(PSInputFullscreen I) : SV_Target
 		float3 SpecularIrradance = LinearToGamma(max(s_refl.Load(int3(I.hpos.xy, 0)).xyz, 0.0f));
 		//SpecularIrradance *= SpecularIrradance < 1.0f ? rcp(1.0f - SpecularIrradance) : 1.0f;
 	#else
-		float3 SpecularIrradance = CompureSpecularIrradance
-		(
-			reflect(O.View, O.Normal), 
+		float NdotV = max(0.0, dot(O.Normal, -O.View.xyz));
 		#ifdef USE_VIEW_REFLECTIONS
-			O.Depth > 0.02 ? O.Hemi : 1.0f,
+			float SkyHemi = O.Depth > 0.02 ? O.Hemi : 1.0f;
 		#else
-			O.Hemi,
+			float SkyHemi = O.Hemi;
 		#endif
-			O.Roughness
-		);
+		float3 SpecularIrradance = CompureSpecularIrradance(reflect(O.View, O.Normal), SpecularOcclusion(NdotV, SkyHemi, O.Roughness), O.Roughness);
 	#endif
 
 	float3 DiffuseIrradance = CompureDiffuseIrradance(O.Normal, O.Hemi) + L_ambient.xyz;
