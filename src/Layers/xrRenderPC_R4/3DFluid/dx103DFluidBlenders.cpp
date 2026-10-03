@@ -143,26 +143,29 @@ void SetupSamplers(CBlender_Compile& C)
 	}
 	
 }
-void SetupTextures(CBlender_Compile& C)
+void SetupTextures(CBlender_Compile& C, bool render = false)
 {
-	const char**	TNames = FluidManager.GetEngineTextureNames();
-	const char**	RNames = FluidManager.GetShaderTextureNames();
+	if (!render)
+	{
+		const char**	TNames = FluidManager.GetEngineTextureNames();
+		const char**	RNames = FluidManager.GetShaderTextureNames();
 
-	for ( int i=0; i<dx103DFluidManager::NUM_RENDER_TARGETS; ++i)
-		C.r_dx10Texture(RNames[i], TNames[i]);
+		for ( int i=0; i<dx103DFluidManager::NUM_RENDER_TARGETS; ++i)
+			C.r_dx10Texture(RNames[i], TNames[i]);
+		return;
+	}
 
-	
 	//	Renderer
 	C.r_dx10Texture("sceneDepthTex", r2_RT_P);
-	C.r_dx10Texture("colorTex", TNames[dx103DFluidManager::RENDER_TARGET_COLOR_IN]);
+	C.r_dx10Texture("colorTex", FluidManager.GetEngineTextureNames()[dx103DFluidManager::RENDER_TARGET_COLOR_IN]);
 	C.r_dx10Texture("jitterTex", "$user$NVjitterTex");
 
 	C.r_dx10Texture("HHGGTex", "$user$NVHHGGTex");
 
 	C.r_dx10Texture("fireTransferFunction", "internal\\internal_fireTransferFunction");
 
-	TNames = dx103DFluidRenderer::GetRTNames();
-	RNames = dx103DFluidRenderer::GetResourceRTNames();
+	const char**	TNames = dx103DFluidRenderer::GetRTNames();
+	const char**	RNames = dx103DFluidRenderer::GetResourceRTNames();
 
 	for ( int i=0; i<dx103DFluidRenderer::RRT_NumRT; ++i)
 		C.r_dx10Texture(RNames[i], TNames[i]);
@@ -370,7 +373,7 @@ void CBlender_fluid_raydata::Compile(CBlender_Compile& C)
 
 	BindConstants(C);
 	SetupSamplers(C);
-	SetupTextures(C);
+	SetupTextures(C, true);
 
 	//	Constants must be bound before r_End()
 	C.r_End		();
@@ -408,7 +411,7 @@ void CBlender_fluid_raycast::Compile(CBlender_Compile& C)
 
 	BindConstants(C);
 	SetupSamplers(C);
-	SetupTextures(C);
+	SetupTextures(C, true);
 
 	//	Constants must be bound before r_End()
 	C.r_End		();

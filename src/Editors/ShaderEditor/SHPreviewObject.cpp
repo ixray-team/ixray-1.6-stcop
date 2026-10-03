@@ -54,19 +54,9 @@ static void LogDeclaration(const char* title, const xr_vector<RHIInputElementDes
 
 bool CPreviewObject::EnumerateVSInputs(RHIBlob* signature, xr_vector<SVSInput>& out)
 {
-	if (!signature) return false;
-	RHIShaderReflection reflection;
-	if (FAILED(GRHI->ReflectShader(signature->GetBufferPointer(), signature->GetBufferSize(), reflection))) {
-		return false;
-	}
-	for (const auto& input : reflection.Inputs) {
-		SVSInput value;
-		value.semantic = input.SemanticName.c_str();
-		value.index = input.SemanticIndex;
-		value.format = CompTypeToFormat(input.ComponentType, input.Mask, value.byteSize);
-		out.push_back(value);
-	}
-	return true;
+	(void)signature;
+	(void)out;
+	return false;
 }
 
 CPreviewObject::CPreviewObject()

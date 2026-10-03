@@ -12,6 +12,7 @@ namespace FixedConstants
 	ECORE_API void UpdateFrame();
 	ECORE_API void UpdateView();
 	ECORE_API void UpdateObject(const Fmatrix& mW);
+	ECORE_API void UpdateObjectOld();
 	ECORE_API void UpdateMaterial();
 	ECORE_API void SetReflectionCapture(const Fmatrix& view, float radius, bool isValid);
 	ECORE_API void SetReflectionHistory(const Fvector& jitter, bool isValid);
@@ -25,6 +26,8 @@ namespace FixedConstants
 	ECORE_API bool IsFixedName(const char* n);
 	ECORE_API int  FixedClass(const char* n);
 	ECORE_API void Flush();
+	ECORE_API void OnShaderBind();
+	ECORE_API bool MapBone(const char* name, u32 bytes, void** out);
 
 	ECORE_API void SetHemiMaterial(float x,float y,float z,float w);
 	ECORE_API void SetHemiPosFaces(float x,float y,float z);

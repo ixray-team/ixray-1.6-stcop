@@ -102,32 +102,16 @@ HRESULT InternalDevice12::CreateShader(const void* code, size_t size, ERHI_SHADE
     auto shader = new DX12Shader;
     shader->Id = _nextObject++;
     shader->Code.assign((const u8*)code, (const u8*)code + size);
-    HRESULT result = S_OK;
-    if (RHI_IsDXIL(code, size))
+    shader->ConstantMask = 0x3FFFu;
+    shader->SamplerMask = 0xFFFFu;
+    shader->UAVMask = 0xFFu;
+    for (u32 slot = 0; slot < 16; ++slot)
     {
-        ID3D12ShaderReflection* reflection = nullptr;
-        result = RHI_DxcReflect(code, size, &reflection);
-        if (SUCCEEDED(result))
-        {
-            result = ReflectBindings<ID3D12ShaderReflection, D3D12_SHADER_DESC, D3D12_SHADER_INPUT_BIND_DESC>(reflection, shader);
-            reflection->Release();
-        }
+        shader->Dimensions[slot] = D3D12_SRV_DIMENSION_TEXTURE2D;
+        shader->ReturnTypes[slot] = D3D_RETURN_TYPE_FLOAT;
     }
-    else
-    {
-        ID3D11ShaderReflection* reflection = nullptr;
-        result = D3DReflect(code, size, IID_PPV_ARGS(&reflection));
-        if (SUCCEEDED(result))
-        {
-            result = ReflectBindings<ID3D11ShaderReflection, D3D11_SHADER_DESC, D3D11_SHADER_INPUT_BIND_DESC>(reflection, shader);
-            reflection->Release();
-        }
-    }
-    if (FAILED(result))
-    {
-        xr_delete(shader);
-        return result;
-    }
+    for (u32 slot = 0; slot < 8; ++slot)
+        shader->UAVDimensions[slot] = D3D12_UAV_DIMENSION_TEXTURE2D;
     *out_shader = new RHIObject(shader, DeletePayload<DX12Shader>);
     return S_OK;
 }

@@ -54,6 +54,7 @@ public:
 	adopt_compiler&			_iblend			(int idx, bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(idx, _blend,abSRC,abDST);	return 	*this;		}
 	adopt_compiler&			_aref			(bool	_aref,  u32 aref)				{	C->PassSET_ablend_aref(_aref,aref);			return 	*this;		}
 	adopt_compiler&			_dx10texture	(const char* _resname, const char* _texname)		{	C->r_dx10Texture(_resname, _texname);		return	*this;		}
+	adopt_compiler&			_dx10texture_slot(const char* _resname, const char* _texname, u32 slot) { C->r_dx10Texture(_resname, _texname, slot); return *this; }
 	adopt_dx10sampler		_dx10sampler	(const char* _name)							{	u32 s = C->r_dx10Sampler(_name);			return	adopt_dx10sampler(C,s);	}
 
 	//	DX10 specific
@@ -158,6 +159,7 @@ void	CResourceManager::LS_Load			()
 			.def("dx10color_write_enable",		&adopt_compiler::_dx10color_write_enable,return_reference_to<1>())
 			.def("color_write_enable",			&adopt_compiler::_dx10color_write_enable,return_reference_to<1>())
 			.def("dx10texture",					&adopt_compiler::_dx10texture	,return_reference_to<1>())
+			.def("dx10texture",					&adopt_compiler::_dx10texture_slot,return_reference_to<1>())
 			.def("dx10stencil",					&adopt_compiler::_dx10Stencil	,return_reference_to<1>())
 			.def("dx10stencil_ref",				&adopt_compiler::_dx10StencilRef,return_reference_to<1>())
 			.def("dx10zfunc",					&adopt_compiler::_dx10ZFunc		,return_reference_to<1>())			

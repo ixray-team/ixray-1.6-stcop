@@ -758,11 +758,11 @@ void	CBlender_Compile::SetMapping()
 
 	if (detail_scaler)
 	{
-		r_Constant("dt_params", detail_scaler);
+		r_Setup("dt_params", detail_scaler);
 	}
 
 	for (const auto& [Name, Setup] : DEV->v_constant_setup)
 	{
-		r_Constant(*Name, Setup);
+		r_Setup(*Name, Setup);
 	}
 }

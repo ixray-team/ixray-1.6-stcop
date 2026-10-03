@@ -27,7 +27,10 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-float puddle_constants;
+cbuffer cb_puddles : register(b6)
+{
+    float puddle_constants;
+};
 
 void main(in uint vertex_id : SV_VertexID, out vf O)
 {

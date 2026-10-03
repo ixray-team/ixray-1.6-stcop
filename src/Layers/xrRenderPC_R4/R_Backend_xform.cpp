@@ -55,6 +55,7 @@ void	R_xforms::set_W_old			(const Fmatrix& m)
 	if (c_w_old)		RCache.set_c(c_w_old,	m_w_old);
 	if (c_wv_old)		RCache.set_c(c_wv_old,	m_wv_old);
 	if (c_wvp_old)		RCache.set_c(c_wvp_old,	m_wvp_old);
+	FixedConstants::UpdateObjectOld();
 }
 void	R_xforms::set_V_old			(const Fmatrix& m)
 {

@@ -48,6 +48,25 @@ private:
 	string128			pass_ds;
 	string128			pass_cs;
 
+	struct PassBind
+	{
+		char name[64];
+		u32 slot;
+		char space;
+	};
+	PassBind			pass_binds[32] = {};
+	u32					pass_bind_count = 0;
+	u32					next_tex = 0;
+	u32					next_samp = 0;
+	bool				shaders_pending = false;
+	bool				pass_compute = false;
+
+	const PassBind*		FindBind(const char* name, char space) const;
+	void				AddBind(const char* name, u32 slot, char space);
+	RHIShaderConstant*	AddConstant(const char* name);
+	void				r_Setup(const char* name, RHIShaderConstant::Setup* s);
+	void				CreatePassShaders();
+
 	u32					BC					(bool v)	{ return v?0x01:0; }
 public:
 	CSimulator&			R()					{ return RS; }
@@ -113,9 +132,10 @@ public:
 	void				r_StencilRef(u32 Ref);
 	void				r_CullMode(D3DCULL Mode);
 	
-	void				r_dx10Texture(const char* ResourceName,	const char* texture);
-	void				r_dx10Texture(const char* ResourceName,	shared_str texture) { return r_dx10Texture(ResourceName, texture.c_str());};
+	void				r_dx10Texture(const char* ResourceName, const char* texture, u32 slot = u32(-1));
+	void				r_dx10Texture(const char* ResourceName, shared_str texture) { r_dx10Texture(ResourceName, texture.c_str()); }
 	u32					r_dx10Sampler(const char* ResourceName);
+	void				r_dx10Unbind(const char* ResourceName);
 	void				r_End(bool clear = true);
 	void				r_ColorWriteEnable( bool cR=true, bool cG=true, bool cB=true, bool cA=true);
 

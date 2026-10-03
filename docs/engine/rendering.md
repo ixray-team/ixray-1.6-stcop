@@ -84,7 +84,7 @@ Engine-owned `b0`–`b5` layouts and the matrix encode/decode live in `gamedata/
 
 `FixedConstants` owns the CPU shadow and the six dynamic buffers. Writes compare the shadow and skip the upload when the bytes match. A failed map leaves the buffer dirty. D3D12 upload alignment stays in the RHI and does not change these offsets.
 
-`RCache.set_c` by name still updates that shadow through `FixedConstants::OnSet`. Registered setups (`RegisterConstantSetup`) and the standard binders still attach to reflected variable records. Those binders stay because some of them are the per-bind producer: `m_affects` consumes `Random` on each setup, and `screen_res` is taken from `RCache.get_target_width` there. Texture, sampler, UAV and input-signature reflection is unchanged.
+Texture and sampler slots come from the pass. `dx10texture` / `r_dx10Texture` assign `t0` upward in call order, or the slot passed as the third Lua argument. `dx10sampler` / `r_dx10Sampler` assign `s0` upward. The shader compiler rewrites those declarations to `register(tN)` / `register(sN)` before compilation. Only pixel and compute passes bind textures, at most 16 per pass. A pass that requests more must drop unused ones (`r_dx10Unbind`), as the terrain blender does. Shader load does not call D3D shader reflection. `m_affects` is written once per frame. Bones, bloom, tonemap, wind and trample constants are written by name into their explicit buffers. Other loose `$Globals` have no reflected offset anymore.
 
 Slots `b6`–`b10` are explicit pass buffers, reused only by shaders that do not declare the same slot together:
 
@@ -96,7 +96,7 @@ Slots `b6`–`b10` are explicit pass buffers, reused only by shaders that do not
 | b9 | fluid OOBB clip planes |
 | b10 | dynamic OOBB, static box bounds |
 
-Bone, grass and fluid values are still written by name into the reflected buffer for that shader. `DISABLE_MOTION_VECTORS` still drops `sbones_array_old`. Other loose `$Globals` are unchanged. No frame-time measurement is recorded here.
+Bone and grass values are written by name into their explicit buffers. `DISABLE_MOTION_VECTORS` still drops `sbones_array_old`. Fluid and editor-brush globals have no upload path yet. No frame-time measurement is recorded here.
 
 ## Visibility and cvars
 

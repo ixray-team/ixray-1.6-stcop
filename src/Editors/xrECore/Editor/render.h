@@ -9,6 +9,7 @@
 #include "../../../Layers/xrRenderPC_R4/blenders/Blender_CLSID.h"
 #include "../../../Layers/xrRenderPC_R4/xrRender_console.h"
 #include "../../../Layers/xrRenderPC_R4/PSLibrary.h"
+#include "../../../Layers/xrRenderPC_R4/ShaderBind.h"
 #include "../../../Layers/xrRenderPC_R4/IRenderDetailModel.h"
 #include "../../../Layers/xrRenderPC_R4/DetailModel.h"
 #include "../../../Layers/xrRenderPC_R4/ModelPool.h"
@@ -325,6 +326,12 @@ public:
 			}
 
 			params.append(")");
+		}
+		if (const u32 bind_key = ShaderBind_CacheKey())
+		{
+			char hex[16];
+			xr_sprintf(hex, "_b%08x", bind_key);
+			params.append(hex);
 		}
 		return params;
 	};

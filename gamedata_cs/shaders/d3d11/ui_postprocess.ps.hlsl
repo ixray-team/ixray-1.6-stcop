@@ -1,6 +1,9 @@
 #include "common.hlsli"
 
-uniform float4 static_color;
+cbuffer cb_static_color : register(b6)
+{
+    float4 static_color;
+};
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

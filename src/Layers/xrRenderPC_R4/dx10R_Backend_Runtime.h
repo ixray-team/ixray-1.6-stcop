@@ -196,7 +196,14 @@ ICF void CBackend::set_VS(SVS* _vs)
 IC void CBackend::set_Constants			(R_constant_table* C_)
 {
 	if (ctable==C_)
+	{
+		if (C_)
+		{
+			FixedConstants::OnShaderBind();
+			for (RHIShaderConstant* Cs : C_->get_handlers()) Cs->handler->setup(Cs);
+		}
 		return;
+	}
 	ctable = C_;
 	xforms.unmap();
 	hemi.unmap();
@@ -205,6 +212,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 	GRHI->StateManager->UnmapConstants();
 	if (!C_)
 		return;
+	FixedConstants::OnShaderBind();
 	FixedConstants::BindAll();
 	{
 		ref_cbuffer* const dst[] = { m_aPixelConstants, m_aVertexConstants, m_aGeometryConstants, m_aHullConstants, m_aDomainConstants, m_aComputeConstants };
@@ -256,6 +264,14 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 
 IC	void CBackend::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData)
 {
+	void* bone = nullptr;
+	if (FixedConstants::MapBone(n.c_str(), DataSize, &bone))
+	{
+		if (pVData) *pVData = bone;
+		if (pGData) *pGData = bone;
+		if (pPData) *pPData = bone;
+		return;
+	}
 	ref_constant C_ = get_c(n);
 
 	if (C_)

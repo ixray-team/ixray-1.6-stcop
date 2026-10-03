@@ -218,6 +218,12 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
 	//	C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
 
+		if(C.iElement == SE_R2_NORMAL_HQ)
+		{
+			for(const char* unused : { "s_bump", "s_bumpX", "s_detail", "s_detailBump", "s_detailBumpX" })
+				C.r_dx10Unbind(unused);
+		}
+
 		C.r_dx10Texture("s_lmap", C.L_textures[1]);
 
 		if(C.iElement == SE_R2_NORMAL_HQ) 
