@@ -15,6 +15,14 @@ static RHIDxc& Dxc()
 	static RHIDxc dxc = []
 	{
 		RHIDxc result;
+		// DXC loads the external validator when its DLL is initialized.
+		// Keep it loaded so compiled containers receive a runtime-valid signature.
+		static const HMODULE validator = LoadLibraryA("dxil.dll");
+		if (!validator)
+		{
+			Msg("! dxil.dll is missing; using DXBC shaders instead of unsigned DXIL");
+			return result;
+		}
 		HMODULE module = LoadLibraryA("dxcompiler.dll");
 		auto create = module ? (DxcCreateInstanceProc)GetProcAddress(module, "DxcCreateInstance") : nullptr;
 		if (!create || FAILED(create(CLSID_DxcUtils, IID_PPV_ARGS(&result.Utils))) ||
@@ -113,6 +121,24 @@ bool RHI_IsDXIL(const void* code, size_t size)
 	return false;
 }
 
+bool RHI_IsUnsignedDXIL(const void* code, size_t size)
+{
+	if (!RHI_IsDXIL(code, size))
+	{
+		return false;
+	}
+	// The container digest follows its four-byte magic; zero means unsigned.
+	const auto bytes = static_cast<const u8*>(code);
+	for (u32 index = 4; index < 20; ++index)
+	{
+		if (bytes[index])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 HRESULT RHI_DxcCompile(const void* source, size_t size, const char* name, const RHIShaderMacro* macros, IRHIShaderInclude* include,
 	const char* entry, const char* target, u32 flags, RHIBlob** out_code, RHIBlob** out_errors)
 {
@@ -168,7 +194,15 @@ HRESULT RHI_DxcCompile(const void* source, size_t size, const char* name, const 
 	IDxcBlob* object = nullptr;
 	if (SUCCEEDED(status) && SUCCEEDED(result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&object), nullptr)) && object)
 	{
-		*out_code = MakeBlob(object->GetBufferPointer(), object->GetBufferSize());
+		if (RHI_IsUnsignedDXIL(object->GetBufferPointer(), object->GetBufferSize()))
+		{
+			Msg("! DXC produced unsigned DXIL for '%s'; using DXBC instead. Check dxil.dll compatibility", name);
+			status = E_FAIL;
+		}
+		else
+		{
+			*out_code = MakeBlob(object->GetBufferPointer(), object->GetBufferSize());
+		}
 	}
 	else if (SUCCEEDED(status))
 	{

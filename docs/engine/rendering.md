@@ -98,6 +98,8 @@ Engine-owned `b0`–`b5` layouts and the matrix encode/decode live in `gamedata/
 
 Texture and sampler slots come from the pass. `dx10texture` / `r_dx10Texture` assign `t0` upward in call order, or the slot passed as the third Lua argument. `dx10sampler` / `r_dx10Sampler` assign `s0` upward. The shader compiler rewrites those declarations to `register(tN)` / `register(sN)` before compilation. Only pixel and compute passes bind textures, at most 16 per pass. A pass that requests more must drop unused ones (`r_dx10Unbind`), as the terrain blender does. Shader load does not call D3D shader reflection. `m_affects` is written once per frame. Bones, bloom, tonemap, wind and trample constants are written by name into their explicit buffers. Other loose `$Globals` have no reflected offset anymore.
 
+D3D12 reads resource binding metadata from DXBC/DXIL when creating or replacing an RHI shader. This metadata supplies CBV/sampler/UAV masks and SRV/UAV dimensions, return types and buffer kinds; it does not restore renderer constant-offset reflection. Missing or feedback-bound SRVs use null descriptors matching the shader declaration, including `TextureCube`. Replacement refreshes this metadata and its null-descriptor cache together, and preserves the old shader if reflection fails. The 2026-10-03 change addresses GPU validation error 940 at level startup and awaits Debug/RelWithDebInfo runtime verification.
+
 Slots `b6`–`b10` are explicit pass buffers, reused only by shaders that do not declare the same slot together:
 
 | Slot | Buffers |

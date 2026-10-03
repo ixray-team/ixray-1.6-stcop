@@ -17,7 +17,10 @@
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* hs = 0;
-			R_CHK(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::HS, &hs));
+			if (FAILED(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::HS, &hs)))
+			{
+				return nullptr;
+			}
 			return hs;
 		}
 
@@ -35,7 +38,10 @@
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* hs = 0;
-			R_CHK(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::DS, &hs));
+			if (FAILED(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::DS, &hs)))
+			{
+				return nullptr;
+			}
 			return hs;
 		}
 
@@ -53,7 +59,10 @@
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* cs = 0;
-			R_CHK(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::CS, &cs));
+			if (FAILED(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::CS, &cs)))
+			{
+				return nullptr;
+			}
 			return cs;
 		}
 
