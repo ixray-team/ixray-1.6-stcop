@@ -159,6 +159,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 		SVS* _vs = new SVS();
 		_vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 		m_vs.insert(std::make_pair(_vs->set_name(name), _vs));
+		RememberStage(_vs, _name, m_skinning);
 
 		if (0==_stricmp(_name,"null"))
 		{
@@ -219,6 +220,7 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 	map_VS::iterator I	= m_vs.find	(N);
 	if (I!=m_vs.end())	
 	{
+		ForgetStage(vs);
 		m_vs.erase(I);
 		xr_vector<SDeclaration*>::iterator iDecl;
 		for (iDecl = v_declarations.begin(); iDecl!=v_declarations.end(); ++iDecl)
@@ -252,6 +254,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 		SPS*	_ps					=	new SPS	();
 		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_ps.insert					(std::make_pair(_ps->set_name(name),_ps));
+		RememberStage(_ps, _name, Engine.External.GetSkinningMode());
 		if (0==_stricmp(_name,"null"))	{
 			_ps->ps				= nullptr;
 			return _ps;
@@ -317,6 +320,7 @@ void	CResourceManager::_DeletePS			(const SPS* ps)
 	LPSTR N				= LPSTR		(*ps->cName);
 	map_PS::iterator I	= m_ps.find	(N);
 	if (I!=m_ps.end())	{
+		ForgetStage(ps);
 		m_ps.erase(I);
 		return;
 	}
@@ -338,6 +342,7 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 		SGS*	_gs					=	new SGS	();
 		_gs->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_gs.insert					(std::make_pair(_gs->set_name(name),_gs));
+		RememberStage(_gs, _name, Engine.External.GetSkinningMode());
 		if (0==_stricmp(_name,"null"))	{
 			_gs->gs				= nullptr;
 			return _gs;
@@ -391,10 +396,235 @@ void	CResourceManager::_DeleteGS			(const SGS* gs)
 	LPSTR N				= LPSTR		(*gs->cName);
 	map_GS::iterator I	= m_gs.find	(N);
 	if (I!=m_gs.end())	{
+		ForgetStage(gs);
 		m_gs.erase(I);
 		return;
 	}
 	Msg	("! ERROR: Failed to find compiled geometry shader '%s'",*gs->cName);
+}
+
+void CResourceManager::RememberStage(xr_resource_uniq* stage, const char* source, int skinning)
+{
+	StageCompileInfo info;
+	info.source = source;
+	info.skinning = skinning;
+	info.options = RImplementation.ShaderOptions();
+	info.binds = ShaderBind_Snapshot();
+	m_stage_info[stage] = std::move(info);
+}
+
+void CResourceManager::ForgetStage(const xr_resource_uniq* stage)
+{
+	m_stage_info.erase(const_cast<xr_resource_uniq*>(stage));
+}
+
+static bool ReadShaderFile(const char* stem, const char* ext, xr_vector<char>& data)
+{
+	string_path cname;
+	xr_strconcat(cname, ::Render->getShaderPath(), stem, ext);
+	FS.update_path(cname, _game_shaders_, cname);
+	IReader* file = FS.r_open(cname);
+	if (!file)
+	{
+		return false;
+	}
+	const u32 size = file->length();
+	data.resize(size + 1);
+	CopyMemory(data.data(), file->pointer(), size);
+	data[size] = 0;
+	FS.r_close(file);
+	return true;
+}
+
+struct ShaderCacheBypassScope
+{
+	ShaderCacheBypassScope() { RImplementation.SetShaderCacheBypass(true); }
+	~ShaderCacheBypassScope() { RImplementation.SetShaderCacheBypass(false); }
+};
+
+struct SkinningScope
+{
+	int saved;
+	explicit SkinningScope(int mode) : saved(Engine.External.GetSkinningMode())
+	{
+		Engine.External.SetSkinningMode(mode);
+	}
+	~SkinningScope()
+	{
+		Engine.External.SetSkinningMode(saved);
+	}
+};
+
+struct ShaderOptionScope
+{
+	ShaderExternalMap saved;
+	explicit ShaderOptionScope(const ShaderExternalMap& options)
+		: saved(RImplementation.ShaderOptions())
+	{
+		RImplementation.SetShaderOptions(options);
+	}
+	~ShaderOptionScope()
+	{
+		RImplementation.SetShaderOptions(saved);
+	}
+};
+
+// Register slots come from the blender's ShaderBind scope, and the resource name already carries its key.
+// Recompiling outside that scope lets the compiler auto-assign registers and breaks every binding.
+struct ShaderBindScope
+{
+	xr_vector<ShaderBindSlot> saved;
+	explicit ShaderBindScope(const xr_vector<ShaderBindSlot>& binds) : saved(ShaderBind_Snapshot())
+	{
+		ShaderBind_Set(binds.data(), u32(binds.size()));
+	}
+	~ShaderBindScope()
+	{
+		ShaderBind_Set(saved.data(), u32(saved.size()));
+	}
+};
+
+void CResourceManager::RecompileDX12Shaders()
+{
+	if (!GRHI || GRHI->APILevel != ERHI_API_LAYER::D3D12)
+	{
+		Msg("! r_recompile_shaders requires the DX12 renderer");
+		return;
+	}
+	if (GRHI->DevicePtr)
+	{
+		GRHI->DevicePtr->Flush();
+	}
+
+	xrCriticalSectionGuard guard(creationGuard);
+	ShaderCacheBypassScope bypass;
+	u32 compiled = 0;
+	u32 failed = 0;
+
+	auto compile_stage = [&](xr_resource_uniq* stage, RHIObject* hw, const char* ext, const char* default_target, char stage_kind) -> int
+	{
+		if (!hw)
+		{
+			return 0;
+		}
+		auto info = m_stage_info.find(stage);
+		if (info == m_stage_info.end() || !info->second.source.size() || !xr_strcmp(info->second.source.c_str(), "null"))
+		{
+			return 0;
+		}
+
+		xr_vector<char> data;
+		if (!ReadShaderFile(info->second.source.c_str(), ext, data))
+		{
+			Msg("! r_recompile_shaders: missing %s%s", info->second.source.c_str(), ext);
+			return -1;
+		}
+
+		const char* entry = "main";
+		const char* target = default_target;
+		if (stage_kind == 'v')
+		{
+			if (strstr(data.data(), "main_vs_1_1")) { target = "vs_1_1"; entry = "main_vs_1_1"; }
+			if (strstr(data.data(), "main_vs_2_0")) { target = "vs_2_0"; entry = "main_vs_2_0"; }
+			if (strstr(data.data(), "main_vs_4_0")) { target = "vs_4_0"; entry = "main_vs_4_0"; }
+		}
+		else if (stage_kind == 'p')
+		{
+			if (strstr(data.data(), "main_ps_1_1")) { target = "ps_1_1"; entry = "main_ps_1_1"; }
+			if (strstr(data.data(), "main_ps_1_2")) { target = "ps_1_2"; entry = "main_ps_1_2"; }
+			if (strstr(data.data(), "main_ps_1_3")) { target = "ps_1_3"; entry = "main_ps_1_3"; }
+			if (strstr(data.data(), "main_ps_1_4")) { target = "ps_1_4"; entry = "main_ps_1_4"; }
+			if (strstr(data.data(), "main_ps_2_0")) { target = "ps_2_0"; entry = "main_ps_2_0"; }
+			if (strstr(data.data(), "main_ps_4_0")) { target = "ps_4_0"; entry = "main_ps_4_0"; }
+		}
+
+		ShaderOptionScope options(info->second.options);
+		SkinningScope skinning(info->second.skinning);
+		ShaderBindScope binds(info->second.binds);
+		void* result = stage;
+		const HRESULT hr = ::Render->shader_compile(
+			*stage->cName,
+			(DWORD const*)data.data(),
+			u32(data.size() - 1),
+			entry,
+			target,
+			RHI_SHADER_PACK_MATRIX_ROW_MAJOR,
+			result);
+		return SUCCEEDED(hr) ? 1 : -1;
+	};
+
+	auto note = [&](int status)
+	{
+		if (status > 0)
+		{
+			++compiled;
+		}
+		else if (status < 0)
+		{
+			++failed;
+		}
+	};
+
+	for (auto& [name, vs] : m_vs)
+	{
+		(void)name;
+		RHIBlob* kept = (vs->signature && vs->signature->signature) ? vs->signature->signature : nullptr;
+		if (kept)
+		{
+			kept->AddRef();
+		}
+		const int status = compile_stage(vs, vs->vs, ".vs.hlsl", "vs_2_0", 'v');
+		RHIBlob* current = (vs->signature && vs->signature->signature) ? vs->signature->signature : nullptr;
+		if (status > 0 && kept && kept != current)
+		{
+			RCache.m_pInputLayout = nullptr;
+			if (GRHI)
+			{
+				GRHI->SetInputLayout(nullptr);
+			}
+			for (SDeclaration* decl : v_declarations)
+			{
+				auto layout = decl->vs_to_layout.find(kept);
+				if (layout != decl->vs_to_layout.end())
+				{
+					_RELEASE(layout->second);
+					decl->vs_to_layout.erase(layout);
+				}
+			}
+		}
+		if (kept)
+		{
+			kept->Release();
+		}
+		note(status);
+	}
+	for (auto& [name, ps] : m_ps)
+	{
+		(void)name;
+		note(compile_stage(ps, ps->ps, ".ps.hlsl", "ps_5_0", 'p'));
+	}
+	for (auto& [name, gs] : m_gs)
+	{
+		(void)name;
+		note(compile_stage(gs, gs->gs, ".gs.hlsl", "gs_4_0", 'g'));
+	}
+	for (auto& [name, hs] : m_hs)
+	{
+		(void)name;
+		note(compile_stage(hs, hs->sh, ".hs.hlsl", "hs_5_0", 'h'));
+	}
+	for (auto& [name, ds] : m_ds)
+	{
+		(void)name;
+		note(compile_stage(ds, ds->sh, ".ds.hlsl", "ds_5_0", 'd'));
+	}
+	for (auto& [name, cs] : m_cs)
+	{
+		(void)name;
+		note(compile_stage(cs, cs->sh, ".cs.hlsl", "cs_5_0", 'c'));
+	}
+
+	Msg("* r_recompile_shaders: %u compiled, %u failed", compiled, failed);
 }
 
 //--------------------------------------------------------------------------------------------------------------

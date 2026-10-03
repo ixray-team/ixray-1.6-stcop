@@ -7,6 +7,7 @@
 #include "tss_def.h"
 #include "TextureDescrManager.h"
 #include "dx11XMLBlendCompiler.h"
+#include "ShaderBind.h"
 
 // refs
 struct		lua_State;
@@ -216,6 +217,7 @@ public:
 	Shader*			Create					(IBlender*	B,		const char* s_shader=nullptr,		const char* s_textures=nullptr,	const char* s_constants=nullptr, const char* s_matrices=nullptr);
 	void			Delete					(const Shader*		S	);
 	void			RecompileShaders		();
+	void			RecompileDX12Shaders	();
 	void			RegisterConstantSetup	(const char* name,		RHIShaderConstant::Setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}
 
 	SGeometry*		CreateGeom				(RHIInputElementDesc* decl, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
@@ -269,5 +271,16 @@ private:
 	};
 
 	xr_hash_map<xr_string, XMLBlendCacheEntry> m_xmlBlendCache;
+
+	struct StageCompileInfo
+	{
+		shared_str source;
+		int skinning = -1;
+		ShaderExternalMap options;
+		xr_vector<ShaderBindSlot> binds;
+	};
+	xr_hash_map<xr_resource_uniq*, StageCompileInfo> m_stage_info;
+	void RememberStage(xr_resource_uniq* stage, const char* source, int skinning);
+	void ForgetStage(const xr_resource_uniq* stage);
 	void ClearXMLBlendCache();
 };

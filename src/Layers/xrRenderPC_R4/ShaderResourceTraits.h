@@ -88,6 +88,7 @@
 
 			sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 			sh_map.insert(std::make_pair(sh->set_name(name),sh));
+			RememberStage(sh, _name, Engine.External.GetSkinningMode());
 			if (0==_stricmp(_name,"null"))
 			{
 				sh->sh				= NULL;
@@ -135,6 +136,7 @@
 		
 		if (I!=sh_map.end())
 		{
+			ForgetStage(sh);
 			sh_map.erase(I);
 			return;
 		}

@@ -123,6 +123,7 @@ public:
 	void SetShader(RHIObject* shader, ERHI_SHADER_TYPE type);
 	void Dispatch(u32 x, u32 y, u32 z);
 	HRESULT CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader);
+	HRESULT ReplaceShader(RHIObject* shader, const void* code, size_t size);
 	HRESULT CreateInputLayout(const RHIInputElementDesc* desc, size_t count, const void* code, size_t size, RHIObject** out_layout);
 	void SetInputLayout(RHIObject* layout);
 	HRESULT CreateSamplerState(const RHISampleDesc& desc, RHIObject** out_state);

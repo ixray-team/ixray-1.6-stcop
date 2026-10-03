@@ -648,6 +648,17 @@ public:
 	}
 };
 
+class CCC_RecompileShaders : public IConsole_Command
+{
+public:
+	CCC_RecompileShaders(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+	virtual void Execute(const char* args)
+	{
+		(void)args;
+		dxRenderDeviceRender::Instance().Resources->RecompileDX12Shaders();
+	}
+};
+
 //	Allow real-time fog config reload
 #if defined(DEBUG_DRAW)
 #include "3DFluid/dx103DFluidManager.h"
@@ -1029,6 +1040,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);
 	CMD3(CCC_Mask32, "r__optimize_shadow_geom", &ps_r__common_flags, RFLAG_OPT_SHAD_GEOM);
 	CMD3(CCC_Mask32, "r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
+	CMD1(CCC_RecompileShaders, "r_recompile_shaders");
 	
 	CMD3(CCC_Token, "r__screenshot_format", &ps_screenshot_format, screenshot_format_token);
 	CMD3(CCC_Token, "r4_mblur_quality", &ps_r4_mblur_quality, mblur_quality_token);

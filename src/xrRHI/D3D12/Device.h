@@ -83,6 +83,8 @@ public:
     void SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type) override;
     HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface) override;
     HRESULT CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader) override;
+    HRESULT ReplaceShader(RHIObject* shader, const void* code, size_t size) override;
+    void Flush() override;
     HRESULT CreateInputLayout(const RHIInputElementDesc* desc, size_t count, const void* code, size_t size, RHIObject** out_layout) override;
     void SetInputLayout(RHIObject* layout) override;
     void Dispatch(u32 x, u32 y, u32 z) override;
@@ -119,7 +121,6 @@ public:
     u64 GetEpoch();
     u64 PendingFence() const { return _nextFence; }
     bool IsComplete(u64 fence) const;
-    void Flush();
     void InvalidateBindings();
     void RecycleQuery(DX12Query& query);
     void DrainUploads();
@@ -485,6 +486,7 @@ private:
     void CreateRootSignatures();
     bool PrepareDraw(bool compute);
     bool PreparePipeline();
+    void DropShaderPipelines(u64 shaderId);
     void BindNullConstants(bool compute);
     void BindRootConstants(bool compute);
     void FinishDraw();

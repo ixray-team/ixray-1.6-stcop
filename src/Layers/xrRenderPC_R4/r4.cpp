@@ -761,6 +761,11 @@ void CRender::SyncMotionVectors()
 	dxRenderDeviceRender::Instance().Resources->RecompileShaders();
 }
 
+void CRender::SetShaderCacheBypass(bool bypass)
+{
+	m_shaderCacheBypass = bypass;
+}
+
 void CRender::clearAllShaderOptions()
 {
 	//GPU_EVENT(__FUNCTION__)
@@ -792,6 +797,10 @@ static HRESULT create_shader(
 		T*& result,
 		bool const disasm
 ) {
+	if (RImplementation.ShaderCacheBypassed() && result->sh)
+	{
+		return SUCCEEDED(GRHI->ReplaceShader(result->sh, buffer, buffer_size)) ? S_OK : E_FAIL;
+	}
 	result->sh = ShaderTypeTraits<T>::CreateHWShader(buffer, buffer_size);
 	(void)pTarget;
 	(void)file_name;
@@ -810,7 +819,9 @@ static HRESULT create_shader(
 	HRESULT		_result = E_FAIL;
 	if(pTarget[0] == 'p') {
 		SPS* sps_result = (SPS*)result;
-		_result = GRHI->CreateShader(buffer, buffer_size, ERHI_SHADER_TYPE::PS, &sps_result->ps);
+		_result = RImplementation.ShaderCacheBypassed() && sps_result->ps ?
+			GRHI->ReplaceShader(sps_result->ps, buffer, buffer_size) :
+			GRHI->CreateShader(buffer, buffer_size, ERHI_SHADER_TYPE::PS, &sps_result->ps);
 		if(!SUCCEEDED(_result)) {
 			Msg("! PS: %s", file_name);
 			Msg("! CreatePixelShader hr == 0x%08x", _result);
@@ -821,7 +832,9 @@ static HRESULT create_shader(
 	}
 	else if(pTarget[0] == 'v') {
 		SVS* svs_result = (SVS*)result;
-		_result = GRHI->CreateShader(buffer, buffer_size, ERHI_SHADER_TYPE::VS, &svs_result->vs);
+		_result = RImplementation.ShaderCacheBypassed() && svs_result->vs ?
+			GRHI->ReplaceShader(svs_result->vs, buffer, buffer_size) :
+			GRHI->CreateShader(buffer, buffer_size, ERHI_SHADER_TYPE::VS, &svs_result->vs);
 
 		if(!SUCCEEDED(_result)) {
 			Msg("! VS: %s", file_name);
@@ -839,7 +852,9 @@ static HRESULT create_shader(
 	}
 	else if(pTarget[0] == 'g') {
 		SGS* sgs_result = (SGS*)result;
-		_result = GRHI->CreateShader(buffer, buffer_size, ERHI_SHADER_TYPE::GS, &sgs_result->gs);
+		_result = RImplementation.ShaderCacheBypassed() && sgs_result->gs ?
+			GRHI->ReplaceShader(sgs_result->gs, buffer, buffer_size) :
+			GRHI->CreateShader(buffer, buffer_size, ERHI_SHADER_TYPE::GS, &sgs_result->gs);
 		if(!SUCCEEDED(_result)) {
 			Msg("! GS: %s", file_name);
 			Msg("! CreateGeometryShaderhr == 0x%08x", _result);
@@ -1297,25 +1312,43 @@ HRESULT	CRender::shader_compile(
 	IReader R = IReader((char*)pSrcData, SrcDataLen);
 	GetShaderCRC(&R, RealCodeCRC, crc_file_list);
 
+	u32 options_crc = 0xffffffff;
+	{
+		static thread_local xr_vector<xr_string> option_parts;
+		option_parts.clear();
+		option_parts.reserve(m_ShaderOptions.size());
+		for (const auto& [option_name, option_value] : m_ShaderOptions)
+		{
+			option_parts.push_back(option_name);
+			option_parts.back().append(option_value);
+		}
+		std::sort(option_parts.begin(), option_parts.end());
+		for (const auto& part : option_parts)
+		{
+			options_crc = crc32(part.data(), part.size(), options_crc);
+		}
+	}
+
 	Flags |= RHI_SHADER_OPTIMIZATION_LEVEL3;
 	if (Core.ParamsData.test(ECoreParams::debug_shaders))
 		Flags |= RHI_SHADER_DEBUG | RHI_SHADER_DEBUG_NAME_FOR_SOURCE;
 
 	xr_resource_uniq* inShader = (xr_resource_uniq*)result;
 
-	if(FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) 
+	if(!m_shaderCacheBypass && FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) 
 	{
 #ifdef DEBUG
 		Msg("compilied shader library found %s", file_name);
 #endif // DEBUG
 		IReader* file = FS.r_open(file_name);
 
-		if(file->length() > 4) 
+		if(file->length() > 12) 
 		{
 			u32 ShaderCRC = file->r_u32();
 			u32 CodeSRC = file->r_u32();
+			u32 cached_options = file->r_u32();
 
-			if(RealCodeCRC == CodeSRC)
+			if(RealCodeCRC == CodeSRC && cached_options == options_crc)
 			{
 				u32 const real_crc = crc32(file->pointer(), file->elapsed());
 
@@ -1367,6 +1400,7 @@ HRESULT	CRender::shader_compile(
 
 			file->w_u32(crc);
 			file->w_u32(RealCodeCRC);
+			file->w_u32(options_crc);
 			file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
 
 			FS.w_close(file);

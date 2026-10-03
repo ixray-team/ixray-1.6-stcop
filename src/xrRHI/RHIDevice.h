@@ -84,6 +84,8 @@ public:
     virtual HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface) = 0;
 
     virtual HRESULT CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader) = 0;
+    virtual HRESULT ReplaceShader(RHIObject* shader, const void* code, size_t size) { (void)shader; (void)code; (void)size; return E_NOTIMPL; }
+    virtual void Flush() {}
     virtual HRESULT CreateInputLayout(const RHIInputElementDesc* desc, size_t count, const void* code, size_t size, RHIObject** out_layout) = 0;
     virtual void SetInputLayout(RHIObject* layout) = 0;
     virtual void Dispatch(u32 x, u32 y, u32 z) = 0;
