@@ -1,6 +1,7 @@
 #include "common.hlsli"
 #include "sload.hlsli"
 #include "hud_raindrops.hlsli"
+#include "metalic_roughness_light.hlsli"
 
 #ifdef EDITOR_MODE
 #include "shared\extra_cb.hlsli"
@@ -135,6 +136,10 @@ void main(p_bumped_new I,
 #ifdef EDITOR_MODE
     // Selection and highlight tint of the editors
     M.Color.xyz += editor_selection.xyz;
+#endif
+
+#ifndef USE_LEGACY_LIGHT
+	M.Roughness = SpecularAA(M.Normal, normalize(M.Point), M.Roughness);
 #endif
 
     GbufferPack(O, M);
