@@ -3,12 +3,12 @@
 #define dir2D wind
 #define dir2D_old wind_old
 
-cbuffer TrampleConstants
+cbuffer TrampleConstants : register(b6)
 {
     float4 trample_params;
 };
 
-cbuffer WindConstants
+cbuffer WindConstants : register(b7)
 {
     float4 wind_global;
     float4 wind_xz1;

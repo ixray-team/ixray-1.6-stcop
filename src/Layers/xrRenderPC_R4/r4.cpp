@@ -945,6 +945,8 @@ void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
 					xr_strconcat(pFilePath, ::Render->getShaderPath(), pFileName);
 
 					IReader* R = FS.r_open(_game_shaders_, pFilePath);
+					if (!R)
+						R = FS.r_open(_game_shaders_, pFileName);
 					VERIFY3(R, "include file not found", pFilePath);
 
 					files.push_back(pFileName);

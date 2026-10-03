@@ -34,31 +34,115 @@ static CBPass cpu_pass{};
 
 static bool dirty_frame = true, dirty_view = true, dirty_object = true, dirty_material = true, dirty_light = true, dirty_pass = true;
 
-static void store_Float3x4(Fvector4 dst[3], const Fmatrix& m)
+static constexpr bool fixed_cb_roundtrip()
 {
-	dst[0].set(m._11, m._21, m._31, m._41);
-	dst[1].set(m._12, m._22, m._32, m._42);
-	dst[2].set(m._13, m._23, m._33, m._43);
+	const shader_float4 r0(1.f, 2.f, 3.f, 4.f);
+	const shader_float4 r1(5.f, 6.f, 7.f, 8.f);
+	const shader_float4 r2(9.f, 10.f, 11.f, 12.f);
+	const shader_float4 r3(13.f, 14.f, 15.f, 16.f);
+	shader_float4 s0, s1, s2, s3;
+	encode_float4x4(s0, s1, s2, s3, r0, r1, r2, r3);
+	if (!(s0 == shader_float4(1.f, 5.f, 9.f, 13.f))) return false;
+	if (!(s1 == shader_float4(2.f, 6.f, 10.f, 14.f))) return false;
+	if (!(s2 == shader_float4(3.f, 7.f, 11.f, 15.f))) return false;
+	if (!(s3 == shader_float4(4.f, 8.f, 12.f, 16.f))) return false;
+	shader_float4 d0, d1, d2, d3;
+	decode_float4x4(d0, d1, d2, d3, s0, s1, s2, s3);
+	if (!(d0 == r0 && d1 == r1 && d2 == r2 && d3 == r3)) return false;
+
+	shader_float4 t0, t1, t2;
+	encode_float3x4(t0, t1, t2, r0, r1, r2, r3);
+	if (!(t0 == shader_float4(1.f, 5.f, 9.f, 13.f))) return false;
+	if (!(t1 == shader_float4(2.f, 6.f, 10.f, 14.f))) return false;
+	if (!(t2 == shader_float4(3.f, 7.f, 11.f, 15.f))) return false;
+	shader_float4 a0, a1, a2, a3;
+	decode_float3x4(a0, a1, a2, a3, t0, t1, t2);
+	return a0 == shader_float4(1.f, 2.f, 3.f, 0.f)
+		&& a1 == shader_float4(5.f, 6.f, 7.f, 0.f)
+		&& a2 == shader_float4(9.f, 10.f, 11.f, 0.f)
+		&& a3 == shader_float4(13.f, 14.f, 15.f, 1.f);
 }
-static void store_Float4x4(Fvector4 dst[4], const Fmatrix& m)
+static_assert(fixed_cb_roundtrip());
+static_assert(sizeof(CBFrame) == 28 * 16);
+static_assert(sizeof(CBView) == 33 * 16);
+static_assert(sizeof(CBObject) == 24 * 16);
+static_assert(sizeof(CBMaterial) == 12 * 16);
+static_assert(sizeof(CBLight) == 27 * 16);
+static_assert(sizeof(CBPass) == 38 * 16);
+static_assert(offsetof(CBFrame, hud_rain) == 27 * 16);
+static_assert(offsetof(CBView, eye_position) == 26 * 16);
+static_assert(offsetof(CBView, m_VP_old) == 18 * 16);
+static_assert(offsetof(CBObject, L_dynamic_props) == 17 * 16);
+static_assert(offsetof(CBObject, m_WVP_old) == 13 * 16);
+static_assert(offsetof(CBMaterial, def_aref) == 5 * 16);
+static_assert(offsetof(CBMaterial, L_model_light_color) == 6 * 16);
+static_assert(offsetof(CBMaterial, m_lmap) == 9 * 16);
+static_assert(offsetof(CBLight, Ldynamic_hud) == 3 * 16);
+static_assert(offsetof(CBLight, m_shadow_sun) == 4 * 16);
+static_assert(offsetof(CBLight, L_dynamic_xform) == 23 * 16);
+static_assert(offsetof(CBPass, mblur_params) == 29 * 16);
+static_assert(offsetof(CBPass, m_reflectionV) == 30 * 16);
+static_assert(offsetof(CBPass, reflection_history_jitter) == 37 * 16);
+
+static bool store_Float3x4(shader_float4 dst[3], const Fmatrix& m)
 {
-	dst[0].set(m._11, m._21, m._31, m._41);
-	dst[1].set(m._12, m._22, m._32, m._42);
-	dst[2].set(m._13, m._23, m._33, m._43);
-	dst[3].set(m._14, m._24, m._34, m._44);
+	shader_float4 s0, s1, s2;
+	encode_float3x4(s0, s1, s2,
+		shader_float4(m._11, m._12, m._13, m._14),
+		shader_float4(m._21, m._22, m._23, m._24),
+		shader_float4(m._31, m._32, m._33, m._34),
+		shader_float4(m._41, m._42, m._43, m._44));
+	if (s0 == dst[0] && s1 == dst[1] && s2 == dst[2])
+		return false;
+	dst[0] = s0;
+	dst[1] = s1;
+	dst[2] = s2;
+	return true;
 }
-static void updateBuffer(IRHIBuffer* buf, const void* data, u32 size)
+static bool store_Float4x4(shader_float4 dst[4], const Fmatrix& m)
+{
+	shader_float4 s0, s1, s2, s3;
+	encode_float4x4(s0, s1, s2, s3,
+		shader_float4(m._11, m._12, m._13, m._14),
+		shader_float4(m._21, m._22, m._23, m._24),
+		shader_float4(m._31, m._32, m._33, m._34),
+		shader_float4(m._41, m._42, m._43, m._44));
+	if (s0 == dst[0] && s1 == dst[1] && s2 == dst[2] && s3 == dst[3])
+		return false;
+	dst[0] = s0;
+	dst[1] = s1;
+	dst[2] = s2;
+	dst[3] = s3;
+	return true;
+}
+static bool set4(shader_float4& d, float x, float y, float z, float w)
+{
+	if (d.x == x && d.y == y && d.z == z && d.w == w)
+		return false;
+	d.set(x, y, z, w);
+	return true;
+}
+static bool set4(shader_float4& d, const Fvector4& A)
+{
+	return set4(d, A.x, A.y, A.z, A.w);
+}
+static bool set1(float& d, float v)
+{
+	if (d == v)
+		return false;
+	d = v;
+	return true;
+}
+static bool updateBuffer(IRHIBuffer* buf, const void* data, u32 size)
 {
 	if (!buf)
-	{
-		return;
-	}
+		return false;
 	RHIMappedSubresource m{};
-	if (buf->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &m))
-	{
-		CopyMemory(m.pData, data, size);
-		buf->Unmap();
-	}
+	if (!buf->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &m))
+		return false;
+	CopyMemory(m.pData, data, size);
+	buf->Unmap();
+	return true;
 }
 
 static IRHIBuffer* s_bound[6][FixedConstants::kSlots];
@@ -111,6 +195,7 @@ void FixedConstants::Destroy()
 void FixedConstants::UpdateFrame()
 {
 	InvalidateBindings();
+	const CBFrame frame_prev = cpu_frame;
 	float t = Device.fTimeGlobal;
 	cpu_frame.timers.set(t, t - Device.fTimeDelta, t * 0.1f, std::sin(t));
 	if (g_pGamePersistent && g_pGamePersistent->Environment().CurrentEnv)
@@ -189,7 +274,8 @@ void FixedConstants::UpdateFrame()
 		const CEnvironment& E = g_pGamePersistent->Environment();
 		cpu_frame.env_wind.set(E.wind_blast_direction.x, E.wind_blast_direction.y, E.wind_blast_direction.z, E.wind_strength_factor);
 	}
-	dirty_frame = true;
+	if (std::memcmp(&frame_prev, &cpu_frame, sizeof(frame_prev)) != 0)
+		dirty_frame = true;
 	BindFrame();
 }
 
@@ -224,6 +310,10 @@ static void inv44(Fmatrix& d, const Fmatrix& s)
 
 void FixedConstants::UpdateView()
 {
+	const CBView view_prev = cpu_view;
+	const CBPass pass_prev = cpu_pass;
+	const CBLight light_prev = cpu_light;
+	const CBObject object_prev = cpu_object;
 	const Fmatrix& mV = RCache.xforms.m_v;
 	const Fmatrix& mP = RCache.xforms.m_p;
 	const Fmatrix& mV_old = RCache.xforms.m_v_old;
@@ -243,6 +333,7 @@ void FixedConstants::UpdateView()
 	Fmatrix invP_hud;
 	inv44(invP_hud, Device.mProject_hud);
 	store_Float4x4(cpu_pass.m_invP_hud, invP_hud);
+	store_Float4x4(cpu_pass.m_P_hud, Device.mProject_hud);
 	Fmatrix vp_old;
 	vp_old.mul(mP_old, mV_old);
 	store_Float4x4(cpu_view.m_VP_old, vp_old);
@@ -270,31 +361,34 @@ void FixedConstants::UpdateView()
 	const R_xforms& x = RCache.xforms;
 	store_Float3x4(cpu_object.m_WV, x.m_wv);
 	store_Float4x4(cpu_object.m_WVP, x.m_wvp);
-	dirty_object = true;
-
-	dirty_view = true;
-	dirty_pass = true;
-	dirty_light = true;
+	if (std::memcmp(&view_prev, &cpu_view, sizeof(view_prev)) != 0)
+		dirty_view = true;
+	if (std::memcmp(&pass_prev, &cpu_pass, sizeof(pass_prev)) != 0)
+		dirty_pass = true;
+	if (std::memcmp(&light_prev, &cpu_light, sizeof(light_prev)) != 0)
+		dirty_light = true;
+	if (std::memcmp(&object_prev, &cpu_object, sizeof(object_prev)) != 0)
+		dirty_object = true;
 	BindView();
 }
 void FixedConstants::SetReflectionHistory(const Fvector& jitter, bool isValid)
 {
-	cpu_pass.reflection_history_jitter.set(jitter.x, jitter.y, isValid ? 1.f : 0.f, 0.f);
-	dirty_pass = true;
+	dirty_pass |= set4(cpu_pass.reflection_history_jitter, jitter.x, jitter.y, isValid ? 1.f : 0.f, 0.f);
 }
 
 void FixedConstants::SetReflectionCapture(const Fmatrix& view, float radius, bool isValid)
 {
 	Fmatrix inverseView;
 	inverseView.invert(view);
-	store_Float3x4(cpu_pass.m_reflectionV, view);
-	store_Float3x4(cpu_pass.m_invReflectionV, inverseView);
-	cpu_pass.reflection_params.set(radius, isValid ? 1.f : 0.f, 0.f, 0.f);
-	dirty_pass = true;
+	bool changed = store_Float3x4(cpu_pass.m_reflectionV, view);
+	changed = store_Float3x4(cpu_pass.m_invReflectionV, inverseView) || changed;
+	changed = set4(cpu_pass.reflection_params, radius, isValid ? 1.f : 0.f, 0.f, 0.f) || changed;
+	dirty_pass |= changed;
 }
 
 void FixedConstants::UpdateObject(const Fmatrix& mW)
 {
+	const CBObject object_prev = cpu_object;
 	const R_xforms& x = RCache.xforms;
 	store_Float3x4(cpu_object.m_W, mW);
 	store_Float3x4(cpu_object.m_WV, x.m_wv);
@@ -303,10 +397,12 @@ void FixedConstants::UpdateObject(const Fmatrix& mW)
 	Fmatrix invW;
 	invW.invert_b(mW);
 	store_Float3x4(cpu_object.m_invW, invW);
-	dirty_object = true;
+	if (std::memcmp(&object_prev, &cpu_object, sizeof(object_prev)) != 0)
+		dirty_object = true;
 }
 void FixedConstants::UpdateMaterial()
 {
+	const CBMaterial material_prev = cpu_material;
 	cpu_material.L_material.set(0, 0, 0, 0);
 	cpu_material.hemi_cube_pos_faces.set(0, 0, 0, 0);
 	cpu_material.hemi_cube_neg_faces.set(0, 0, 0, 0);
@@ -320,7 +416,8 @@ void FixedConstants::UpdateMaterial()
 	cpu_material.m_lmap[0].set(0, 0, 0, 0);
 	cpu_material.m_lmap[1].set(0, 0, 0, 0);
 	cpu_material.tfactor.set(1.0f, 1.0f, 1.0f, 1.0f);
-	dirty_material = true;
+	if (std::memcmp(&material_prev, &cpu_material, sizeof(material_prev)) != 0)
+		dirty_material = true;
 	BindMaterial();
 }
 void FixedConstants::BindFrame()
@@ -379,317 +476,210 @@ int FixedConstants::FixedClass(const char* n)
 }
 void FixedConstants::Flush()
 {
-	if (dirty_frame)
-	{
-		updateBuffer(cb_frame, &cpu_frame, sizeof(cpu_frame));
+	if (dirty_frame && updateBuffer(cb_frame, &cpu_frame, sizeof(cpu_frame)))
 		dirty_frame = false;
-	}
-	if (dirty_view)
-	{
-		updateBuffer(cb_view, &cpu_view, sizeof(cpu_view));
+	if (dirty_view && updateBuffer(cb_view, &cpu_view, sizeof(cpu_view)))
 		dirty_view = false;
-	}
-	if (dirty_object)
-	{
-		updateBuffer(cb_object, &cpu_object, sizeof(cpu_object));
+	if (dirty_object && updateBuffer(cb_object, &cpu_object, sizeof(cpu_object)))
 		dirty_object = false;
-	}
-	if (dirty_material)
-	{
-		updateBuffer(cb_material, &cpu_material, sizeof(cpu_material));
+	if (dirty_material && updateBuffer(cb_material, &cpu_material, sizeof(cpu_material)))
 		dirty_material = false;
-	}
-	if (dirty_light)
-	{
-		updateBuffer(cb_light, &cpu_light, sizeof(cpu_light));
+	if (dirty_light && updateBuffer(cb_light, &cpu_light, sizeof(cpu_light)))
 		dirty_light = false;
-	}
-	if (dirty_pass)
-	{
-		updateBuffer(cb_pass, &cpu_pass, sizeof(cpu_pass));
+	if (dirty_pass && updateBuffer(cb_pass, &cpu_pass, sizeof(cpu_pass)))
 		dirty_pass = false;
-	}
 }
 void FixedConstants::SetHemiMaterial(float x, float y, float z, float w)
 {
-	cpu_material.L_material.set(x, y, z, w);
-	dirty_material = true;
+	dirty_material |= set4(cpu_material.L_material, x, y, z, w);
 }
 void FixedConstants::SetHemiPosFaces(float x, float y, float z)
 {
-	cpu_material.hemi_cube_pos_faces.set(x, y, z, 0);
-	dirty_material = true;
+	dirty_material |= set4(cpu_material.hemi_cube_pos_faces, x, y, z, 0);
 }
 void FixedConstants::SetHemiNegFaces(float x, float y, float z)
 {
-	cpu_material.hemi_cube_neg_faces.set(x, y, z, 0);
-	dirty_material = true;
+	dirty_material |= set4(cpu_material.hemi_cube_neg_faces, x, y, z, 0);
 }
 void FixedConstants::SetHemiTfactor(const Fvector4& v)
 {
-	cpu_material.tfactor.set(v.x, v.y, v.z, v.w);
-	dirty_material = true;
+	dirty_material |= set4(cpu_material.tfactor, v);
 }
 void FixedConstants::SetHemiTfactor(float x, float y, float z, float w)
 {
-	cpu_material.tfactor.set(x, y, z, w);
-	dirty_material = true;
+	dirty_material |= set4(cpu_material.tfactor, x, y, z, w);
 }
 void FixedConstants::SetLitColor(const Fvector& c, const Fvector& d)
 {
-	cpu_material.L_model_light_color.set(c.x, c.y, c.z, 0);
-	cpu_material.L_model_light_dir.set(d.x, d.y, d.z, 0);
-	dirty_material = true;
+	bool changed = set4(cpu_material.L_model_light_color, c.x, c.y, c.z, 0);
+	changed = set4(cpu_material.L_model_light_dir, d.x, d.y, d.z, 0) || changed;
+	dirty_material |= changed;
 }
 void FixedConstants::SetDtParams(float x, float y, float z, float w)
 {
-	cpu_material.dt_params.set(x, y, z, w);
-	dirty_material = true;
+	dirty_material |= set4(cpu_material.dt_params, x, y, z, w);
 }
 void FixedConstants::SetDtParamsScale(float s)
 {
-	cpu_material.dt_params.set(s, s, s, 1 / r_dtex_range);
-	dirty_material = true;
+	dirty_material |= set4(cpu_material.dt_params, s, s, s, 1 / r_dtex_range);
 }
 void FixedConstants::SetParallax(float h)
 {
-	cpu_material.parallax.set(h, -h / 2, 1 / r_dtex_range, 1 / r_dtex_range);
-	dirty_material = true;
+	dirty_material |= set4(cpu_material.parallax, h, -h / 2, 1 / r_dtex_range, 1 / r_dtex_range);
 }
 void FixedConstants::SetAlphaRef(float a)
 {
-	cpu_material.m_AlphaRef = a;
-	dirty_material = true;
+	dirty_material |= set1(cpu_material.m_AlphaRef, a);
 }
 void FixedConstants::SetLModelLight(const Fvector& c, const Fvector& d)
 {
-	cpu_material.L_model_light_color.set(c.x, c.y, c.z, 0);
-	cpu_material.L_model_light_dir.set(d.x, d.y, d.z, 0);
-	dirty_material = true;
+	bool changed = set4(cpu_material.L_model_light_color, c.x, c.y, c.z, 0);
+	changed = set4(cpu_material.L_model_light_dir, d.x, d.y, d.z, 0) || changed;
+	dirty_material |= changed;
 }
 void FixedConstants::SetTriLOD(float lod)
 {
-	cpu_material.triLOD.set(lod, lod, lod, lod);
-	dirty_material = true;
+	dirty_material |= set4(cpu_material.triLOD, lod, lod, lod, lod);
 }
 void FixedConstants::SetTfactor(const Fvector4& v)
 {
-	cpu_material.tfactor.set(v.x, v.y, v.z, v.w);
-	dirty_material = true;
+	dirty_material |= set4(cpu_material.tfactor, v);
 }
 void FixedConstants::SetTreeXform(const Fmatrix& m)
 {
-	store_Float4x4(cpu_pass.m_xform, m);
-	dirty_pass = true;
+	dirty_pass |= store_Float4x4(cpu_pass.m_xform, m);
 }
 void FixedConstants::SetTreeXformV(const Fmatrix& m)
 {
-	store_Float4x4(cpu_pass.m_xform_v, m);
-	dirty_pass = true;
+	dirty_pass |= store_Float4x4(cpu_pass.m_xform_v, m);
 }
 void FixedConstants::SetTreeConsts(float x, float y, float z, float w)
 {
-	cpu_pass.consts.set(x, y, z, w);
-	dirty_pass = true;
+	dirty_pass |= set4(cpu_pass.consts, x, y, z, w);
 }
 void FixedConstants::SetTreeWave(const Fvector4& v)
 {
-	cpu_pass.wave.set(v.x, v.y, v.z, v.w);
-	dirty_pass = true;
+	dirty_pass |= set4(cpu_pass.wave, v);
 }
 void FixedConstants::SetTreeWind(const Fvector4& v)
 {
-	cpu_pass.wind.set(v.x, v.y, v.z, v.w);
-	dirty_pass = true;
+	dirty_pass |= set4(cpu_pass.wind, v);
 }
 void FixedConstants::SetTreeConstsOld(float x, float y, float z, float w)
 {
-	cpu_pass.consts_old.set(x, y, z, w);
-	dirty_pass = true;
+	dirty_pass |= set4(cpu_pass.consts_old, x, y, z, w);
 }
 void FixedConstants::SetTreeWaveOld(const Fvector4& v)
 {
-	cpu_pass.wave_old.set(v.x, v.y, v.z, v.w);
-	dirty_pass = true;
+	dirty_pass |= set4(cpu_pass.wave_old, v);
 }
 void FixedConstants::SetTreeWindOld(const Fvector4& v)
 {
-	cpu_pass.wind_old.set(v.x, v.y, v.z, v.w);
-	dirty_pass = true;
+	dirty_pass |= set4(cpu_pass.wind_old, v);
 }
 void FixedConstants::SetTreeCScale(float x, float y, float z, float w)
 {
-	cpu_pass.c_scale.set(x, y, z, w);
-	dirty_pass = true;
+	dirty_pass |= set4(cpu_pass.c_scale, x, y, z, w);
 }
 void FixedConstants::SetTreeCBias(float x, float y, float z, float w)
 {
-	cpu_pass.c_bias.set(x, y, z, w);
-	dirty_pass = true;
+	dirty_pass |= set4(cpu_pass.c_bias, x, y, z, w);
 }
 void FixedConstants::SetTreeCSun(float x, float y, float z, float w)
 {
-	cpu_pass.c_sun.set(x, y, z, w);
-	dirty_pass = true;
+	dirty_pass |= set4(cpu_pass.c_sun, x, y, z, w);
 }
 void FixedConstants::SetLMap(const Fmatrix& m)
 {
-	cpu_material.m_lmap[0].set(m._11, m._21, m._31, m._41);
-	cpu_material.m_lmap[1].set(m._12, m._22, m._32, m._42);
-	dirty_material = true;
+	bool changed = set4(cpu_material.m_lmap[0], m._11, m._21, m._31, m._41);
+	changed = set4(cpu_material.m_lmap[1], m._12, m._22, m._32, m._42) || changed;
+	dirty_material |= changed;
 }
 void FixedConstants::SetShadow(const Fmatrix& m)
 {
-	store_Float4x4(cpu_light.m_shadow, m);
-	dirty_light = true;
+	dirty_light |= store_Float4x4(cpu_light.m_shadow, m);
 }
 void FixedConstants::SetShadowSun(int idx, const Fmatrix& m)
 {
 	if (idx >= 0 && idx < 3)
-	{
-		store_Float4x4(&cpu_light.m_shadow_sun[idx * 4], m);
-	}
-	dirty_light = true;
+		dirty_light |= store_Float4x4(&cpu_light.m_shadow_sun[idx * 4], m);
 }
 void FixedConstants::SetLdynamic(const Fvector4& c, const Fvector4& p, const Fvector4& d)
 {
-	cpu_light.Ldynamic_color.set(c.x, c.y, c.z, c.w);
-	cpu_light.Ldynamic_pos.set(p.x, p.y, p.z, p.w);
-	cpu_light.Ldynamic_dir.set(d.x, d.y, d.z, d.w);
-	dirty_light = true;
+	bool changed = set4(cpu_light.Ldynamic_color, c);
+	changed = set4(cpu_light.Ldynamic_pos, p) || changed;
+	changed = set4(cpu_light.Ldynamic_dir, d) || changed;
+	dirty_light |= changed;
 }
 bool FixedConstants::OnSet(u32 h, const Fmatrix& A)
 {
 	switch (h)
 	{
 		case chash("m_plmap_xform"):
-		{
-			store_Float4x4(cpu_object.m_plmap_xform, A);
-			dirty_object = true;
-		}
-		break;
+			dirty_object |= store_Float4x4(cpu_object.m_plmap_xform, A);
+			break;
 		case chash("L_dynamic_xform"):
-		{
-			store_Float4x4(cpu_light.L_dynamic_xform, A);
-			dirty_light = true;
-		}
-		break;
+			dirty_light |= store_Float4x4(cpu_light.L_dynamic_xform, A);
+			break;
 		case chash("m_W"):
-		{
-			store_Float3x4(cpu_object.m_W, A);
-			dirty_object = true;
-		}
-		break;
+			dirty_object |= store_Float3x4(cpu_object.m_W, A);
+			break;
 		case chash("m_invW"):
-		{
-			store_Float3x4(cpu_object.m_invW, A);
-			dirty_object = true;
-		}
-		break;
+			dirty_object |= store_Float3x4(cpu_object.m_invW, A);
+			break;
 		case chash("m_WV"):
-		{
-			store_Float3x4(cpu_object.m_WV, A);
-			dirty_object = true;
-		}
-		break;
+			dirty_object |= store_Float3x4(cpu_object.m_WV, A);
+			break;
 		case chash("m_WVP"):
-		{
-			store_Float4x4(cpu_object.m_WVP, A);
-			dirty_object = true;
-		}
-		break;
+			dirty_object |= store_Float4x4(cpu_object.m_WVP, A);
+			break;
 		case chash("m_V"):
-		{
-			store_Float3x4(cpu_view.m_V, A);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= store_Float3x4(cpu_view.m_V, A);
+			break;
 		case chash("m_invV"):
-		{
-			store_Float3x4(cpu_view.m_invV, A);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= store_Float3x4(cpu_view.m_invV, A);
+			break;
 		case chash("m_P"):
-		{
-			store_Float4x4(cpu_view.m_P, A);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= store_Float4x4(cpu_view.m_P, A);
+			break;
 		case chash("m_VP"):
-		{
-			store_Float4x4(cpu_view.m_VP, A);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= store_Float4x4(cpu_view.m_VP, A);
+			break;
 		case chash("m_invP"):
-		{
-			store_Float4x4(cpu_view.m_invP, A);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= store_Float4x4(cpu_view.m_invP, A);
+			break;
 		case chash("m_invP_hud"):
-		{
-			store_Float4x4(cpu_pass.m_invP_hud, A);
-			dirty_pass = true;
-		}
-		break;
+			dirty_pass |= store_Float4x4(cpu_pass.m_invP_hud, A);
+			break;
 		case chash("m_P_hud"):
-		{
-			store_Float4x4(cpu_pass.m_P_hud, A);
-			dirty_pass = true;
-		}
-		break;
+			dirty_pass |= store_Float4x4(cpu_pass.m_P_hud, A);
+			break;
 		case chash("m_xform"):
-		{
-			store_Float4x4(cpu_pass.m_xform, A);
-			dirty_pass = true;
-		}
-		break;
+			dirty_pass |= store_Float4x4(cpu_pass.m_xform, A);
+			break;
 		case chash("m_xform_v"):
-		{
-			store_Float4x4(cpu_pass.m_xform_v, A);
-			dirty_pass = true;
-		}
-		break;
+			dirty_pass |= store_Float4x4(cpu_pass.m_xform_v, A);
+			break;
 		case chash("m_shadow"):
-		{
-			store_Float4x4(cpu_light.m_shadow, A);
-			dirty_light = true;
-		}
-		break;
+			dirty_light |= store_Float4x4(cpu_light.m_shadow, A);
+			break;
 		case chash("m_sunmask"):
-		{
-			store_Float3x4(cpu_light.m_sunmask, A);
-			dirty_light = true;
-		}
-		break;
+			dirty_light |= store_Float3x4(cpu_light.m_sunmask, A);
+			break;
 		// previous-frame matrices drive motion vectors; without these TAA reprojects against
 		// zero and moving/skinned meshes smear
 		case chash("m_WVP_old"):
-		{
-			store_Float4x4(cpu_object.m_WVP_old, A);
-			dirty_object = true;
-		}
-		break;
+			dirty_object |= store_Float4x4(cpu_object.m_WVP_old, A);
+			break;
 		case chash("m_VP_old"):
-		{
-			store_Float4x4(cpu_view.m_VP_old, A);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= store_Float4x4(cpu_view.m_VP_old, A);
+			break;
 		case chash("m_invVP_old"):
-		{
-			store_Float4x4(cpu_view.m_invVP_old, A);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= store_Float4x4(cpu_view.m_invVP_old, A);
+			break;
 		case chash("m_texgen"):
-		{
-			store_Float4x4(cpu_pass.m_texgen, A);
-			dirty_pass = true;
-		}
-		break;
+			dirty_pass |= store_Float4x4(cpu_pass.m_texgen, A);
+			break;
 		default:
 			return false;
 	}
@@ -700,11 +690,8 @@ bool FixedConstants::OnSet(u32 h, const Fvector4& A)
 	switch (h)
 	{
 		case chash("L_dynamic_props"):
-		{
-			cpu_object.L_dynamic_props.set(A.x, A.y, A.z, A.w);
-			dirty_object = true;
-		}
-		break;
+			dirty_object |= set4(cpu_object.L_dynamic_props, A);
+			break;
 		case chash("L_material"):
 			SetHemiMaterial(A.x, A.y, A.z, A.w);
 			break;
@@ -759,168 +746,87 @@ bool FixedConstants::OnSet(u32 h, const Fvector4& A)
 			break;
 		case chash("L_dynamic_color"):
 		case chash("Ldynamic_color"):
-		{
-			cpu_light.Ldynamic_color.set(A.x, A.y, A.z, A.w);
-			dirty_light = true;
-		}
-		break;
+			dirty_light |= set4(cpu_light.Ldynamic_color, A);
+			break;
 		case chash("L_dynamic_pos"):
 		case chash("Ldynamic_pos"):
-		{
-			cpu_light.Ldynamic_pos.set(A.x, A.y, A.z, A.w);
-			dirty_light = true;
-		}
-		break;
+			dirty_light |= set4(cpu_light.Ldynamic_pos, A);
+			break;
 		case chash("Ldynamic_dir"):
-		{
-			cpu_light.Ldynamic_dir.set(A.x, A.y, A.z, A.w);
-			dirty_light = true;
-		}
-		break;
+			dirty_light |= set4(cpu_light.Ldynamic_dir, A);
+			break;
 		case chash("c_brightness"):
-		{
-			cpu_frame.c_brightness.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.c_brightness, A);
+			break;
 		case chash("c_colormap"):
-		{
-			cpu_frame.c_colormap.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.c_colormap, A);
+			break;
 		case chash("color_params"):
-		{
-			cpu_frame.color_params.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.color_params, A);
+			break;
 		case chash("color_grading"):
-		{
-			cpu_frame.color_grading.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.color_grading, A);
+			break;
 		case chash("fog_plane"):
-		{
-			cpu_frame.fog_plane.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.fog_plane, A);
+			break;
 		case chash("fog_params"):
-		{
-			cpu_frame.fog_params.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.fog_params, A);
+			break;
 		case chash("fog_color"):
-		{
-			cpu_frame.fog_color.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.fog_color, A);
+			break;
 		case chash("timers"):
-		{
-			cpu_frame.timers.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.timers, A);
+			break;
 		case chash("eye_position"):
-		{
-			cpu_view.eye_position.set(A.x, A.y, A.z, A.w);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= set4(cpu_view.eye_position, A);
+			break;
 		case chash("eye_direction"):
-		{
-			cpu_view.eye_direction.set(A.x, A.y, A.z, A.w);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= set4(cpu_view.eye_direction, A);
+			break;
 		case chash("eye_normal"):
-		{
-			cpu_view.eye_normal.set(A.x, A.y, A.z, A.w);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= set4(cpu_view.eye_normal, A);
+			break;
 		case chash("m_taa_jitter"):
-		{
-			cpu_view.m_taa_jitter.set(A.x, A.y, A.z, A.w);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= set4(cpu_view.m_taa_jitter, A);
+			break;
 		case chash("L_sun_color"):
-		{
-			cpu_frame.L_sun_color.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.L_sun_color, A);
+			break;
 		case chash("L_sun_dir_w"):
-		{
-			cpu_frame.L_sun_dir_w.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.L_sun_dir_w, A);
+			break;
 		case chash("L_sun_dir_e"):
-		{
-			cpu_frame.L_sun_dir_e.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.L_sun_dir_e, A);
+			break;
 		case chash("L_hemi_color"):
-		{
-			cpu_frame.L_hemi_color.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.L_hemi_color, A);
+			break;
 		case chash("L_ambient"):
-		{
-			cpu_frame.L_ambient.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.L_ambient, A);
+			break;
 		case chash("L_sky_color"):
-		{
-			cpu_frame.L_sky_color.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.L_sky_color, A);
+			break;
 		case chash("water_intensity"):
-		{
-			cpu_frame.water_intensity.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.water_intensity, A);
+			break;
 		case chash("sun_shafts_intensity"):
-		{
-			cpu_frame.sun_shafts_intensity.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.sun_shafts_intensity, A);
+			break;
 		case chash("rain_params"):
-		{
-			cpu_frame.rain_params.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.rain_params, A);
+			break;
 		case chash("env_wind"):
-		{
-			cpu_frame.env_wind.set(A.x, A.y, A.z, A.w);
-			dirty_frame = true;
-		}
-		break;
+			dirty_frame |= set4(cpu_frame.env_wind, A);
+			break;
 		case chash("mblur_params"):
-		{
-			cpu_pass.mblur_params.set(A.x, A.y, A.z, A.w);
-			dirty_pass = true;
-		}
-		break;
+			dirty_pass |= set4(cpu_pass.mblur_params, A);
+			break;
 		case chash("pos_decompression_params2"):
-		{
-			cpu_view.pos_decompression_params2.set(A.x, A.y, A.z, A.w);
-			dirty_view = true;
-		}
-		break;
+			dirty_view |= set4(cpu_view.pos_decompression_params2, A);
+			break;
 		default:
 			return false;
 	}
@@ -931,23 +837,14 @@ bool FixedConstants::OnSet(u32 h, float A)
 	switch (h)
 	{
 		case chash("def_aref"):
-		{
-			cpu_material.def_aref = A;
-			dirty_material = true;
-		}
-		break;
+			dirty_material |= set1(cpu_material.def_aref, A);
+			break;
 		case chash("m_AlphaRef"):
-		{
-			cpu_material.m_AlphaRef = A;
-			dirty_material = true;
-		}
-		break;
+			dirty_material |= set1(cpu_material.m_AlphaRef, A);
+			break;
 		case chash("triLOD"):
-		{
-			cpu_material.triLOD.set(A, A, A, A);
-			dirty_material = true;
-		}
-		break;
+			dirty_material |= set4(cpu_material.triLOD, A, A, A, A);
+			break;
 		default:
 			return false;
 	}
@@ -958,11 +855,12 @@ bool FixedConstants::OnSet(u32 h, int A)
 	switch (h)
 	{
 		case chash("Ldynamic_hud"):
-		{
-			cpu_light.Ldynamic_hud = A;
-			dirty_light = true;
-		}
-		break;
+			if (cpu_light.Ldynamic_hud != A)
+			{
+				cpu_light.Ldynamic_hud = A;
+				dirty_light = true;
+			}
+			break;
 		default:
 			return false;
 	}
@@ -973,50 +871,27 @@ bool FixedConstants::OnSetA(u32 h, u32 e, const Fvector4& A)
 	switch (h)
 	{
 		case chash("m_plmap_clamp"):
-		{
 			R_ASSERT(e < 2);
-			cpu_object.m_plmap_clamp[e].set(A.x, A.y, A.z, A.w);
-			dirty_object = true;
-		}
-		break;
+			dirty_object |= set4(cpu_object.m_plmap_clamp[e], A);
+			break;
 		case chash("m_lmap"):
-		{
 			if (e < 2)
-			{
-				cpu_material.m_lmap[e].set(A.x, A.y, A.z, A.w);
-				dirty_material = true;
-			}
-		}
-		break;
+				dirty_material |= set4(cpu_material.m_lmap[e], A);
+			break;
 		case chash("L_dynamic_color"):
 		case chash("Ldynamic_color"):
-		{
 			if (e == 0)
-			{
-				cpu_light.Ldynamic_color.set(A.x, A.y, A.z, A.w);
-				dirty_light = true;
-			}
-		}
-		break;
+				dirty_light |= set4(cpu_light.Ldynamic_color, A);
+			break;
 		case chash("L_dynamic_pos"):
 		case chash("Ldynamic_pos"):
-		{
 			if (e == 0)
-			{
-				cpu_light.Ldynamic_pos.set(A.x, A.y, A.z, A.w);
-				dirty_light = true;
-			}
-		}
-		break;
+				dirty_light |= set4(cpu_light.Ldynamic_pos, A);
+			break;
 		case chash("Ldynamic_dir"):
-		{
 			if (e == 0)
-			{
-				cpu_light.Ldynamic_dir.set(A.x, A.y, A.z, A.w);
-				dirty_light = true;
-			}
-		}
-		break;
+				dirty_light |= set4(cpu_light.Ldynamic_dir, A);
+			break;
 		default:
 			return false;
 	}
@@ -1029,10 +904,7 @@ bool FixedConstants::OnSetA(u32 h, u32 e, const Fmatrix& A)
 		case chash("m_shadow_sun"):
 		{
 			if (e < 3)
-			{
-				store_Float4x4(&cpu_light.m_shadow_sun[e * 4], A);
-				dirty_light = true;
-			}
+				dirty_light |= store_Float4x4(&cpu_light.m_shadow_sun[e * 4], A);
 		}
 		break;
 		default:

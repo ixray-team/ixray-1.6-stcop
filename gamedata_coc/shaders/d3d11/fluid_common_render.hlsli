@@ -40,7 +40,7 @@ sampler samRepeat;
 //--------------------------------------------------------------------------------------
 //	Set once per volume
 //	Use for all rendering passes
-cbuffer FluidRenderConfig
+cbuffer FluidRenderConfig : register(b6)
 {
     float RTWidth;
     float RTHeight;

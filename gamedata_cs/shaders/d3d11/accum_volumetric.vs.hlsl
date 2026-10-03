@@ -1,6 +1,6 @@
 #include "common.hlsli"
 
-cbuffer VolumetricLights
+cbuffer VolumetricLights : register(b6)
 {
     float3 vMinBounds;
     float3 vMaxBounds;

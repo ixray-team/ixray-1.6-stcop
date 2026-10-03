@@ -78,6 +78,26 @@ Batch capacity is `min(RCache.Vertex.GetSize() / pGeom.stride() / 4, 16384)`. Ea
 
 The 2026-10-03 font batching change passed a Debug translation-unit compile with no warnings or errors. Runtime FPS and rendered output remain unverified. Check console-open versus console-closed frame times in the same loaded scene, and inspect text order, colors, selection, scrolling and long lines. A RenderDoc capture should show font draws split at batch capacity rather than at every string. Compilation alone does not establish the performance fix.
 
+## Constant buffers
+
+Engine-owned `b0`–`b5` layouts and the matrix encode/decode live in `gamedata/shaders/d3d11/shared/fixed_cb.hlsli`. C++ includes that file; dynamic, static and editor declarations expand the same field lists. Static and editor shaders keep the shorter prefixes (no `hud_rain`, and editor objects/lights/passes omit the trailing dynamic fields). CPU `static_assert`s lock sizes and offsets. `encode_float4x4` / `encode_float3x4` are the shared transpose; a 3x4 decode restores an affine matrix (`0,0,0,1` on the dropped row).
+
+`FixedConstants` owns the CPU shadow and the six dynamic buffers. Writes compare the shadow and skip the upload when the bytes match. A failed map leaves the buffer dirty. D3D12 upload alignment stays in the RHI and does not change these offsets.
+
+`RCache.set_c` by name still updates that shadow through `FixedConstants::OnSet`. Registered setups (`RegisterConstantSetup`) and the standard binders still attach to reflected variable records. Those binders stay because some of them are the per-bind producer: `m_affects` consumes `Random` on each setup, and `screen_res` is taken from `RCache.get_target_width` there. Texture, sampler, UAV and input-signature reflection is unchanged.
+
+Slots `b6`–`b10` are explicit pass buffers, reused only by shaders that do not declare the same slot together:
+
+| Slot | Buffers |
+| --- | --- |
+| b6 | skin, trample, volumetric lights, fluid sim, fluid render, bloom, tonemap |
+| b7 | detail wind, fluid AABB |
+| b8 | fluid emitter |
+| b9 | fluid OOBB clip planes |
+| b10 | dynamic OOBB, static box bounds |
+
+Bone, grass and fluid values are still written by name into the reflected buffer for that shader. `DISABLE_MOTION_VECTORS` still drops `sbones_array_old`. Other loose `$Globals` are unchanged. No frame-time measurement is recorded here.
+
 ## Visibility and cvars
 
 Sectors and portals: `render_main` from the camera sector. HOM rejects before the graph. Surviving light volumes get an occlusion query.
