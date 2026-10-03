@@ -39,6 +39,12 @@ namespace
 		return Platform::ANSI_TO_UTF8(value);
 	}
 
+	shared_str item_name_key(const CInventoryItem* item)
+	{
+		const shared_str extended = item->GetExtendedUnionName();
+		return extended.size() ? extended : item->m_name;
+	}
+
 	char lower_ascii(char value)
 	{
 		return (value >= 'A' && value <= 'Z') ? static_cast<char>(value - 'A' + 'a') : value;
@@ -135,22 +141,7 @@ namespace
 				return;
 			}
 
-			CInventoryItem* item = static_cast<CInventoryItem*>(cell->m_pData);
-
-			if (!item)
-			{
-				return;
-			}
-
-			if (m_target_item == item)
-			{
-				m_target_cell = cell;
-				return;
-			}
-
-			m_target_cell = cell;
-			m_target_item = item;
-			reload();
+			set_target(static_cast<CInventoryItem*>(cell->m_pData), cell);
 		}
 
 		void select_item(CInventoryItem* item)
@@ -160,22 +151,64 @@ namespace
 				return;
 			}
 
+			set_target(item, nullptr);
+			m_target_cell = find_cell_matching_target();
+		}
+
+		void set_target(CInventoryItem* item, CUICellItem* cell)
+		{
+			if (!item)
+			{
+				return;
+			}
+
+			const bool same = m_target_item && item_matches_target(item);
+
 			m_target_item = item;
-			m_target_cell = find_cell_for_item(item);
-			reload();
+			m_target_cell = cell;
+			m_target_section = item->m_section_id;
+
+			if (!same)
+			{
+				reload();
+			}
 		}
 
 		void release()
 		{
 			m_target_cell = nullptr;
 			m_target_item = nullptr;
+			m_target_section = nullptr;
 		}
 
-		CUICellItem* find_cell_for_item(CInventoryItem* item) const
+		bool item_matches_target(const CInventoryItem* item) const
+		{
+			return item && item->m_section_id == m_target_section;
+		}
+
+		CInventoryItem* find_item_matching_target() const
+		{
+			if (!g_actor || !m_target_section.size())
+			{
+				return nullptr;
+			}
+
+			for (CInventoryItem* item : g_actor->inventory().m_all)
+			{
+				if (item_matches_target(item))
+				{
+					return item;
+				}
+			}
+
+			return nullptr;
+		}
+
+		CUICellItem* find_cell_matching_target() const
 		{
 			for (CUICellItem* cell : m_cells)
 			{
-				if (cell && cell->m_pData == item)
+				if (cell && item_matches_target(static_cast<CInventoryItem*>(cell->m_pData)))
 				{
 					return cell;
 				}
@@ -184,13 +217,39 @@ namespace
 			return nullptr;
 		}
 
+		void collect_target_items()
+		{
+			m_target_items.clear();
+
+			if (!m_target_item)
+			{
+				return;
+			}
+
+			if (g_actor)
+			{
+				for (CInventoryItem* item : g_actor->inventory().m_all)
+				{
+					if (item_matches_target(item))
+					{
+						m_target_items.push_back(item);
+					}
+				}
+			}
+
+			if (m_target_items.empty())
+			{
+				m_target_items.push_back(m_target_item);
+			}
+		}
+
 		void update_cells_rotation_scale()
 		{
 			Fvector rotate = m_target_item->m_3d_static_rotate;
 
 			for (CUICellItem* cell : m_cells)
 			{
-				if (cell && cell->m_pData == m_target_item)
+				if (cell && item_matches_target(static_cast<CInventoryItem*>(cell->m_pData)))
 				{
 					cell->SetXYZ(rotate);
 					cell->SetScaleFactor(m_scale);
@@ -202,7 +261,7 @@ namespace
 		{
 			for (CUICellItem* cell : m_cells)
 			{
-				if (cell && cell->m_pData == m_target_item)
+				if (cell && item_matches_target(static_cast<CInventoryItem*>(cell->m_pData)))
 				{
 					cell->SetVisual(m_visual_applied);
 				}
@@ -216,20 +275,15 @@ namespace
 				return;
 			}
 
-			for (const PIItem item : g_actor->inventory().m_all)
+			if (CInventoryItem* item = find_item_matching_target())
 			{
-				if (item == m_target_item)
-				{
-					return;
-				}
+				m_target_item = item;
+				return;
 			}
 
-			for (CUICellItem* cell : m_cells)
+			if (find_cell_matching_target())
 			{
-				if (cell && cell->m_pData == m_target_item)
-				{
-					return;
-				}
+				return;
 			}
 
 			release();
@@ -253,8 +307,13 @@ namespace
 				return;
 			}
 
-			m_target_item->m_3d_static_rotate.set(deg2rad(m_rotate_deg.x), deg2rad(m_rotate_deg.y), deg2rad(m_rotate_deg.z));
-			m_target_item->m_3d_static_scale = m_scale;
+			collect_target_items();
+
+			for (CInventoryItem* item : m_target_items)
+			{
+				item->m_3d_static_rotate.set(deg2rad(m_rotate_deg.x), deg2rad(m_rotate_deg.y), deg2rad(m_rotate_deg.z));
+				item->m_3d_static_scale = m_scale;
+			}
 
 			update_cells_rotation_scale();
 			update_record();
@@ -273,7 +332,12 @@ namespace
 			}
 
 			m_visual_applied = m_visual;
-			m_target_item->m_3d_static_visual_name = safe_c_str(m_visual_applied);
+			collect_target_items();
+
+			for (CInventoryItem* item : m_target_items)
+			{
+				item->m_3d_static_visual_name = safe_c_str(m_visual_applied);
+			}
 
 			update_cells_visual();
 			update_record();
@@ -286,13 +350,19 @@ namespace
 				return;
 			}
 
-			m_target_item->Read3dStaticsData(safe_c_str(m_target_item->m_section_id));
+			collect_target_items();
+
+			for (CInventoryItem* item : m_target_items)
+			{
+				item->Read3dStaticsData(safe_c_str(item->m_section_id));
+			}
+
 			reload();
 
 			update_cells_visual();
 			apply_rotation_scale();
 
-			m_adjusted.erase(safe_c_str(m_target_item->m_section_id));
+			m_adjusted.erase(safe_c_str(m_target_section));
 		}
 
 		void update_record()
@@ -302,7 +372,7 @@ namespace
 				return;
 			}
 
-			S3dIconAdjustRecord& record = m_adjusted[safe_c_str(m_target_item->m_section_id)];
+			S3dIconAdjustRecord& record = m_adjusted[safe_c_str(m_target_section)];
 			record.rotate_deg = m_rotate_deg;
 			record.scale = m_scale;
 			record.visual = m_visual_applied;
@@ -343,6 +413,8 @@ namespace
 		CUICellItem* m_hovered_cell = nullptr;
 		CUICellItem* m_target_cell = nullptr;
 		CInventoryItem* m_target_item = nullptr;
+		shared_str m_target_section;
+		xr_vector<CInventoryItem*> m_target_items;
 		bool m_follow_cursor = true;
 
 		Fvector m_rotate_deg{};
@@ -366,8 +438,10 @@ namespace
 
 		struct SInventoryListEntry
 		{
+			shared_str section;
 			CInventoryItem* item = nullptr;
 			xr_string name;
+			u32 count = 0;
 		};
 
 		CInventory& inventory = g_actor->inventory();
@@ -376,6 +450,7 @@ namespace
 		ImGui::InputTextWithHint("##3d_icons_filter", "Filter by section or name", m_filter, sizeof(m_filter));
 
 		xr_vector<SInventoryListEntry> items;
+		xr_map<xr_string, u32> entry_by_key;
 
 		for (CInventoryItem* item : inventory.m_all)
 		{
@@ -384,21 +459,43 @@ namespace
 				continue;
 			}
 
-			SInventoryListEntry entry;
-			entry.item = item;
-			entry.name = translate_to_utf8(safe_c_str(item->m_name));
+			const xr_string translated_name = translate_to_utf8(safe_c_str(item_name_key(item)));
 
-			if (!contains_ci(safe_c_str(item->m_section_id), m_filter) && !contains_ci(entry.name.c_str(), m_filter))
+			if (!contains_ci(safe_c_str(item->m_section_id), m_filter) && !contains_ci(translated_name.c_str(), m_filter))
 			{
 				continue;
 			}
+
+			const xr_string key = safe_c_str(item->m_section_id);
+			const auto existing = entry_by_key.find(key);
+
+			if (existing != entry_by_key.end())
+			{
+				++items[existing->second].count;
+				continue;
+			}
+
+			entry_by_key[key] = static_cast<u32>(items.size());
+
+			SInventoryListEntry entry;
+			entry.section = item->m_section_id;
+			entry.item = item;
+			entry.name = translated_name;
+			entry.count = 1;
 
 			items.push_back(std::move(entry));
 		}
 
 		std::sort(items.begin(), items.end(), [](const SInventoryListEntry& left, const SInventoryListEntry& right)
 		{
-			return xr_strcmp(safe_c_str(left.item->m_section_id), safe_c_str(right.item->m_section_id)) < 0;
+			const int section_cmp = xr_strcmp(safe_c_str(left.section), safe_c_str(right.section));
+
+			if (section_cmp != 0)
+			{
+				return section_cmp < 0;
+			}
+
+			return xr_strcmp(left.name.c_str(), right.name.c_str()) < 0;
 		});
 
 		if (!m_adjusted.empty())
@@ -406,10 +503,11 @@ namespace
 			ImGui::TextDisabled("Highlighted rows are modified");
 		}
 
-		if (ImGui::BeginTable("##3d_icons_inventory", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollY, ImVec2(0.0f, 180.0f)))
+		if (ImGui::BeginTable("##3d_icons_inventory", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollY, ImVec2(0.0f, 180.0f)))
 		{
 			ImGui::TableSetupColumn("Section");
 			ImGui::TableSetupColumn("Name");
+			ImGui::TableSetupColumn("Count", ImGuiTableColumnFlags_WidthFixed, 48.0f);
 			ImGui::TableSetupColumn("Place", ImGuiTableColumnFlags_WidthFixed, 64.0f);
 			ImGui::TableSetupScrollFreeze(0, 1);
 			ImGui::TableHeadersRow();
@@ -417,7 +515,7 @@ namespace
 			for (const SInventoryListEntry& entry : items)
 			{
 				CInventoryItem* item = entry.item;
-				const bool is_modified = m_adjusted.find(safe_c_str(item->m_section_id)) != m_adjusted.end();
+				const bool is_modified = m_adjusted.find(safe_c_str(entry.section)) != m_adjusted.end();
 
 				ImGui::PushID(static_cast<int>(item->object_id()));
 				ImGui::TableNextRow();
@@ -430,7 +528,7 @@ namespace
 
 				ImGui::TableSetColumnIndex(0);
 
-				if (ImGui::Selectable(safe_c_str(item->m_section_id), item == m_target_item, ImGuiSelectableFlags_SpanAllColumns))
+				if (ImGui::Selectable(safe_c_str(entry.section), item_matches_target(item), ImGuiSelectableFlags_SpanAllColumns))
 				{
 					m_follow_cursor = false;
 					select_item(item);
@@ -451,6 +549,17 @@ namespace
 				}
 
 				ImGui::TableSetColumnIndex(2);
+
+				if (entry.count > 1)
+				{
+					ImGui::Text("x%u", entry.count);
+				}
+				else
+				{
+					ImGui::TextDisabled("-");
+				}
+
+				ImGui::TableSetColumnIndex(3);
 				ImGui::TextUnformatted(get_place_text(inventory, item));
 
 				ImGui::PopID();
@@ -583,7 +692,7 @@ namespace
 
 			ImGui::Text("Section: %s", safe_c_str(m_target_item->m_section_id));
 
-			const xr_string translated_name = translate_to_utf8(safe_c_str(m_target_item->m_name));
+			const xr_string translated_name = translate_to_utf8(safe_c_str(item_name_key(m_target_item)));
 			ImGui::Text("Name: %s", translated_name.c_str());
 		}
 
