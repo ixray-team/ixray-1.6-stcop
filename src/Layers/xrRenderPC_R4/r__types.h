@@ -46,7 +46,7 @@
 #define		r2_RT_sslr_old		"$user$sslr_old"
 #define		r2_RT_sslr_data		"$user$sslr_data"
 #define		r2_RT_sslr_temp		"$user$sslr_temp"
-#define		r2_RT_sslr_depth_min	"$user$sslr_depth_min"
+#define		r2_RT_sslr_hiz		"$user$sslr_hiz"
 #define		r2_RT_sslr_trace	"$user$sslr_trace"
 #define		r2_RT_sslr_hist		"$user$sslr_hist"
 #define		r2_RT_sslr_old_surface	"$user$sslr_old_surface"

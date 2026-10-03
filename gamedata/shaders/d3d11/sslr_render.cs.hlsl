@@ -1,7 +1,7 @@
 #include "common.hlsli"
 #define IXR_COMPUTE
-#define USE_SSLR_DEPTH_MIN
-Texture2D<float> s_sslr_depth_min;
+#define USE_SSLR_HIZ
+Texture2D<float> s_sslr_hiz;
 #include "reflections.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 #include "metalic_roughness_light.hlsli"
@@ -39,12 +39,25 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
         return;
     }
 
-    float2 Jitter = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].xy;
 #ifndef USE_LEGACY_LIGHT
     float Roughness = O.Roughness;
-    float3 Half = sample_vndf_isotropic(O.Normal, -View, Jitter * float2(1.0f, 0.7f), Roughness * Roughness);
 #else
     float Roughness = 1.0f - O.Gloss;
+#endif
+    bool IsHUD = O.Depth < 0.02f;
+    float RoughFade = IsHUD ? 0.0f : saturate(Roughness * 5.0f - 2.5f);
+    float3 Rough = RoughFade > 0.0f ? ReflectionSky(reflect(View, O.Normal), SpecularOcclusion(saturate(dot(O.Normal, -View)), saturate(O.Hemi), Roughness), Roughness) : 0.0f;
+    if (RoughFade >= 1.0f)
+    {
+        u_sslr[DTid] = min(Rough, 64000.0f);
+        u_sslr_data[DTid] = 0.0f;
+        return;
+    }
+
+    float2 Jitter = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].xy;
+#ifndef USE_LEGACY_LIGHT
+    float3 Half = sample_vndf_isotropic(O.Normal, -View, Jitter * float2(1.0f, 0.7f), Roughness * Roughness);
+#else
     float3 Half = O.Normal;
 #endif
     if (!all(isfinite(Half)))
@@ -57,13 +70,12 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 
     float PDF = pdf_vndf_isotropic(O.Normal, -View, Reflection, Roughness * Roughness);
     PDF = isfinite(PDF) && PDF > EPS_S ? PDF : EPS_S;
-    bool IsHUD = O.Depth < 0.02f;
     float3 StartPoint = ReflectPoint + (IsHUD ? 0.0f : O.Normal * 0.025f);
     float3 HitPoint = StartPoint + Reflection * fog_params.z;
 #ifdef USE_OFFSCREEN_REFLECTIONS
-    float SkyHemi = 1.0f;
+    float SkyHemi = IsHUD ? saturate(O.Hemi) : 1.0f;
 #else
-    float SkyHemi = IsHUD ? 1.0f : O.Hemi;
+    float SkyHemi = saturate(O.Hemi);
 #endif
     float3 Hemi = ReflectionSky(Reflection, SkyHemi, 0.0f);
     float3 Color = Hemi;
@@ -101,6 +113,8 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
     float Fog = saturate(max(length(HitPoint), length(StartPoint) + length(HitPoint - StartPoint)) * fog_params.w + fog_params.x);
     Color = lerp(Color, Hemi, Fog);
     Color = all(isfinite(Color)) ? max(Color, 0.0f) : Hemi;
+    if (RoughFade > 0.0f)
+        Color = lerp(Color, Rough, RoughFade);
     float Weight = (24.0f - clamp(log2(PDF), -23.5f, 23.5f)) * (IsHUD ? -1.0f : 1.0f);
     u_sslr[DTid] = min(Color, 64000.0f);
     u_sslr_data[DTid] = float4(HitPoint, Weight);

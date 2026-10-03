@@ -16,7 +16,7 @@ Status, 2026-10-03: after the current-frame source and sky fixes, the user repor
 | Capture/history constants and CPU layout | [dx10FixedConstants.h](../../src/Layers/xrRenderPC_R4/dx10FixedConstants.h), [dx10FixedConstants.cpp](../../src/Layers/xrRenderPC_R4/dx10FixedConstants.cpp) |
 | HLSL pass layout | [common_decl.hlsli](../../gamedata/shaders/d3d11/common_decl.hlsli) |
 | Shared SSR/VSLR intersection and reprojection | [reflections.hlsli](../../gamedata/shaders/d3d11/reflections.hlsli) |
-| Tile reduction, trace, filter, history | [sslr_depth_min.cs.hlsl](../../gamedata/shaders/d3d11/sslr_depth_min.cs.hlsl), [sslr_render.cs.hlsl](../../gamedata/shaders/d3d11/sslr_render.cs.hlsl), [sslr_filter.cs.hlsl](../../gamedata/shaders/d3d11/sslr_filter.cs.hlsl), [sslr_temporal.cs.hlsl](../../gamedata/shaders/d3d11/sslr_temporal.cs.hlsl) |
+| HiZ build, trace, filter, history | [sslr_hiz.cs.hlsl](../../gamedata/shaders/d3d11/sslr_hiz.cs.hlsl), [sslr_render.cs.hlsl](../../gamedata/shaders/d3d11/sslr_render.cs.hlsl), [sslr_filter.cs.hlsl](../../gamedata/shaders/d3d11/sslr_filter.cs.hlsl), [sslr_temporal.cs.hlsl](../../gamedata/shaders/d3d11/sslr_temporal.cs.hlsl) |
 | Water reflection and velocity | [water.ps.hlsl](../../gamedata/shaders/d3d11/water.ps.hlsl) |
 | Deferred color consumer, camera velocity, forward VSLR map | [combine_1.ps.hlsl](../../gamedata/shaders/d3d11/combine_1.ps.hlsl), [combine_velocity.ps.hlsl](../../gamedata/shaders/d3d11/combine_velocity.ps.hlsl), [combine_vslr.ps.hlsl](../../gamedata/shaders/d3d11/combine_vslr.ps.hlsl) |
 
@@ -73,18 +73,18 @@ Water binds the source directly in every game overlay. `LuaGetShaderOption` quer
 
 ## Deferred passes and dispatch
 
-`phase_sslr` returns for `dx11_use_legacy_light` or disabled `deffered_reflecitons`. All compute shaders use `numthreads(8, 8, 1)`. Trace, filter and temporal reject out-of-bounds threads. Tile reduction contributes depth 1 for out-of-bounds pixels so every thread still reaches the group barriers.
+`phase_sslr` returns for `dx11_use_legacy_light` or disabled `deffered_reflecitons`. All compute shaders use `numthreads(8, 8, 1)`. Trace, filter and temporal reject out-of-bounds threads. The HiZ build has no bounds return so every thread reaches the group barriers; out-of-range loads are never part of an in-range texel's footprint, and out-of-range writes are dropped.
 
 | Order | Blender element | Shader | UAV outputs | Dispatch groups |
 | --- | --- | --- | --- | --- |
-| 1 | 4 | `sslr_depth_min` | u0: tile minimum | Tile texture width x height |
+| 1 | 4, pass 0 then pass 1 | `sslr_hiz` | pass 0: u1-u4 = HiZ mips 0-3 from `s_position`; pass 1 (`SSLR_HIZ_MIPS`), repeated: u0 = source mip, u1-u4 = next four mips | ceil((render width >> first) / 16) x ceil((render height >> first) / 16) |
 | 2 | 0 | `sslr_render` | u0: RGB trace; u1: trace point/PDF | ceil(render width / 8) x ceil(render height / 8) |
 | 3 | 1 | `sslr_filter` | u0: filtered color/path length | Same render groups |
 | 4 | 2 or 5 | `sslr_temporal` | u0: final; u1: next history; u2: next surface metadata | Same render groups |
 
-Each depth-min group reduces one 8x8 render tile. Do not divide the already reduced texture dimensions by eight again. This is a tile minimum optimization, not a full hierarchical-Z structure or a spatial jumping traversal.
+Each HiZ group reduces a 16x16 source block to four levels through groupshared memory. Pass `first` (0, 4, 8, ...) writes levels `first + 1 .. first + 4`; pass 1 reads level `first` through a UAV on its mip (`CRT::pMippedUAV`), so no SRV aliases a UAV. Level 0 is not stored: the trace reads `s_position` directly there. HUD depth (< 0.02) becomes 1 in the pyramid.
 
-Trace reads the G-buffer, current-frame opaque scene (`r2_RT_sslr_scene`), tile minima, environment color/distance, sky and noise. Filter reads trace RGB and point/PDF data. Temporal reads filtered RGB, current trace point/PDF data (`s_refl_data`), and the matching previous color/depth and surface history.
+Trace reads the G-buffer, current-frame opaque scene (`r2_RT_sslr_scene`), the HiZ pyramid, environment color/distance, sky and noise. Filter reads trace RGB and point/PDF data. Temporal reads filtered RGB, current trace point/PDF data (`s_refl_data`), and the matching previous color/depth and surface history.
 
 With `sslr_history_flip == false`, element 2 reads `old`/`old_surface` and writes `hist`/`hist_surface`. With it true, element 5 reads `hist`/`hist_surface` and writes `old`/`old_surface`. Both write stable `rt_sslr` directly; no history `CopySurface` is needed. Flip only after dispatch. Unbind compute UAVs and the 16 compute SRV slots after each stage; never alias a history input with its output.
 
@@ -95,7 +95,7 @@ Dimensions below are the render dimensions, not necessarily the presentation res
 | Target | Format | Contents |
 | --- | --- | --- |
 | `rt_sslr_scene` | RGBA16_FLOAT, render resolution | Current-frame sky/cloud background plus opaque lighting without deferred SSR |
-| `rt_sslr_depth_min` | R32_FLOAT, ceil(width/8) x ceil(height/8) | Minimum raw G-buffer depth per tile |
+| `rt_sslr_hiz` | R32_FLOAT, floor(width/2) x floor(height/2), `MIPPED_RT_FLAG` chain, one UAV per mip | Mip k: minimum raw world depth over 2^(k+1) pixel cells; HUD stored as 1 |
 | `rt_sslr_trace` | R11G11B10_FLOAT | Linear HDR reflection RGB; no alpha/category flag |
 | `rt_sslr_data` | RGBA16_FLOAT | xyz: selected point in current view; w: signed biased logarithmic PDF |
 | `rt_sslr_temp` | RGBA16_FLOAT | Linear filtered RGB; w: receiver distance plus weighted ray-length estimate |
@@ -142,7 +142,11 @@ Capture draws supported reflection shader graph 0, graph 1 and sorted geometry, 
 
 `TraceScreenReflection` receives an unjittered current-view point. It uses the appropriate world or HUD projection, clips toward-camera rays against the near plane, clips the projected segment to the screen, and adds current raster jitter for depth lookup. Interpolate point/w and 1/w, then divide; linear interpolation of view depth along screen UV is incorrect under perspective.
 
-The march uses at most 64 main samples, with up to five binary refinement steps for a candidate. Long projected rays use strided samples; this is not guaranteed contiguous per-pixel traversal and can miss thin geometry. Only the deferred trace compiles tile-min rejection. Depth samples are point-filtered. World rays skip HUD samples and continue. Intersection compares view-z intervals using thickness `max(world 0.05 / HUD 0.005, sceneZ * 0.01)`, refines in the correct increasing/decreasing-z direction, and rejects residual error, nonfinite points and self-intersections. Screen misses retain zero confidence.
+The march uses at most 64 main samples, with up to five binary refinement steps for a candidate. Long projected rays use strided samples; this is not guaranteed contiguous per-pixel traversal and can miss thin geometry. The deferred trace compiles `USE_SSLR_HIZ`: world rays use `TraceScreenReflectionHiZ` instead of the march; HUD rays and water keep the march.
+
+`TraceScreenReflectionHiZ` walks pixel cells with NDC z interpolated linearly along the projected segment (exact under perspective). If the ray leaves a cell in front of its minimum it climbs one mip; otherwise it moves to the minimum plane and descends. At level 0 it tests the cell's own depth with the same thickness, self-hit and finiteness rules, then continues one pixel on, so rays may pass behind occluders. It uses at most 64 iterations and needs no binary refinement.
+
+Deferred world receivers with roughness >= 0.7 skip tracing; HUD always traces. HUD sky misses use G-buffer hemi (saturated) as sky occlusion, also under VSLR; unoccluded sky made indoor weapon reflections bright and noisy. Skipped receivers write prefiltered sky (`ReflectionSky` along the mirror direction, `SpecularOcclusion` with G-buffer hemi) and zero trace data, which the filter ignores. Between 0.5 and 0.7 the traced result fades linearly to the same value. Temporal is unchanged. Depth samples are point-filtered. World rays skip HUD samples and continue. Intersection compares view-z intervals using thickness `max(world 0.05 / HUD 0.005, sceneZ * 0.01)`, refines in the correct increasing/decreasing-z direction, and rejects residual error, nonfinite points and self-intersections. Screen misses retain zero confidence.
 
 `ReflectionHit` carries point, UV, raw depth and confidence. Receiver category and hit category must remain distinct. On a HUD local miss, including screen exit, a forward-going ray may use the retained world-direction fallback. Keep its original world UV/depth; do not overwrite them with a HUD reprojection. This fallback is directional and does not prove a finite ray intersection from the weapon surface.
 
@@ -203,7 +207,7 @@ Similar-looking depth/alpha values have different contracts:
 
 | Value | Meaning | Invalid/category rule |
 | --- | --- | --- |
-| G-buffer `O.Depth`, tile minimum, `ReflectionHit.Depth` | Raw hardware depth | Sky >= 1; HUD < 0.02 |
+| G-buffer `O.Depth`, HiZ mips, `ReflectionHit.Depth` | Raw hardware depth | Sky >= 1; HUD < 0.02 |
 | Capture distance | Linear radial distance from captured origin | -1 clear; require positive finite coverage |
 | Final/history w | Signed linear view-z of receiver | 0 invalid; negative HUD; positive world |
 | Trace-data w | Signed biased log-PDF | 0 skipped; sign is receiver category |

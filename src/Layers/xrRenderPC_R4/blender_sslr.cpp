@@ -20,7 +20,7 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         C.r_dx10Texture("s_image", r2_RT_sslr_scene);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
-        C.r_dx10Texture("s_sslr_depth_min", r2_RT_sslr_depth_min);
+        C.r_dx10Texture("s_sslr_hiz", r2_RT_sslr_hiz);
 
         C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
         C.r_dx10Texture("s_env", r2_RT_env);
@@ -106,8 +106,11 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     case 4:
-        C.r_ComputePass("sslr_depth_min");
+        C.r_ComputePass("sslr_hiz");
         C.r_dx10Texture("s_position", r2_RT_P);
+        C.r_End();
+        RImplementation.addShaderOption("SSLR_HIZ_MIPS", "1");
+        C.r_ComputePass("sslr_hiz");
         C.r_End();
         break;
     }

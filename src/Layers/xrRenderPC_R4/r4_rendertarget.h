@@ -50,7 +50,7 @@ public:
 	ref_rt						rt_sslr_temp;
 	ref_rt						rt_sslr_old;
 	ref_rt						rt_sslr_data;
-	ref_rt						rt_sslr_depth_min;
+	ref_rt						rt_sslr_hiz;
 	ref_rt						rt_sslr_trace;
 	ref_rt						rt_sslr_hist;
 	ref_rt						rt_sslr_old_surface;

@@ -15,24 +15,27 @@ void CRenderTarget::phase_sslr()
 	const UINT tgroupsY = (RCache.get_height() + 7u) / 8u;
 
 	{
-		GPU_EVENT(sslr_depth_min);
+		GPU_EVENT(sslr_hiz);
 
-		IRHIUnorderedAccessView* uav_dummy = nullptr;
+		const xr_vector<IRHIUnorderedAccessView*>& mips = rt_sslr_hiz->pMippedUAV;
+		IRHIUnorderedAccessView* uav_dummy[5] = {};
+		for (u32 first = 0; first < mips.size(); first += 4)
+		{
+			SPass& P = *(s_sslr->E[4]->passes[first ? 1 : 0]);
+			RCache.set_States(P.state);
+			RCache.set_Constants(P.constants);
+			RCache.set_Textures(P.T);
+			RCache.set_CS(P.cs);
 
-		ShaderElement* S = (&*(s_sslr->E[4]));
-		SPass& P = *(S->passes[0]);
-		RCache.set_States(P.state);
-		RCache.set_Constants(P.constants);
-		RCache.set_Textures(P.T);
-		RCache.set_CS(P.cs);
+			IRHIUnorderedAccessView* our_uav[5] = { first ? mips[first - 1] : nullptr };
+			for (u32 mip = first; mip < first + 4 && mip < mips.size(); ++mip)
+				our_uav[mip - first + 1] = mips[mip];
 
-		IRHIUnorderedAccessView* our_uav = rt_sslr_depth_min->pUAView;
+			GRHI->SetComputeUAVs(0, 5, our_uav, nullptr);
+			RCache.Compute((((u32)RCache.get_width() >> first) + 15u) / 16u, (((u32)RCache.get_height() >> first) + 15u) / 16u, 1);
+		}
 
-		GRHI->SetComputeUAVs(0, 1, &our_uav, nullptr);
-
-		RCache.Compute(rt_sslr_depth_min->dwWidth, rt_sslr_depth_min->dwHeight, 1);
-
-		GRHI->SetComputeUAVs(0, 1, &uav_dummy, nullptr);
+		GRHI->SetComputeUAVs(0, 5, uav_dummy, nullptr);
 		RCache.unbind_cs_textures();
 	}
 

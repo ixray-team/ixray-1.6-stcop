@@ -32,6 +32,7 @@ public:
 	xr_vector<IRHIRenderTargetView*> pMippedRT;
 	IRHIDepthStencilView* pZRT;
 	IRHIUnorderedAccessView* pUAView;
+	xr_vector<IRHIUnorderedAccessView*> pMippedUAV;
 
 	ref_texture pTexture;
 

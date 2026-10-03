@@ -166,6 +166,67 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
     return 0.0f;
 }
 
+#ifdef USE_SSLR_HIZ
+ReflectionHit TraceScreenReflectionHiZ(float3 Point, float2 StartUV, float2 DeltaUV, float EndT, float StartZ, float EndZ)
+{
+    ReflectionHit Hit = (ReflectionHit)0;
+    uint Width, Height, Mips;
+    s_sslr_hiz.GetDimensions(0, Width, Height, Mips);
+    float2 Size = pos_decompression_params2.xy;
+    float2 Origin = StartUV * Size;
+    float2 Direction = DeltaUV * Size;
+    float DeltaZ = EndZ - StartZ;
+    float2 InvDirection = abs(Direction) > EPS_S ? rcp(Direction) : 1e30f;
+    float2 Side = Direction > 0.0f ? 1.0f : 0.0f;
+    float Nudge = 0.01f / max(abs(Direction.x), abs(Direction.y));
+    float2 Exit = (floor(Origin) + Side - Origin) * InvDirection;
+    float T = min(Exit.x, Exit.y) + Nudge;
+    int Mip = 0;
+    [loop]
+    for (uint step_idx = 0; step_idx < SSLR_STEPS && T < EndT; ++step_idx)
+    {
+        float CellSize = exp2(Mip);
+        float2 Cell = floor((Origin + Direction * T) / CellSize);
+        float Depth = Mip > 0 ? s_sslr_hiz.Load(int3(Cell, Mip - 1)) : s_position.Load(int3(Cell, 0)).x;
+        float MinZ = Mip == 0 && Depth < 0.02f ? 1.0f : Depth;
+        float RayZ = StartZ + DeltaZ * T;
+        float2 CellExit = ((Cell + Side) * CellSize - Origin) * InvDirection;
+        float TExit = min(CellExit.x, CellExit.y);
+        if (RayZ < MinZ)
+        {
+            float TPlane = DeltaZ > 0.0f ? (MinZ - StartZ) / DeltaZ : 1e30f;
+            if (TExit < TPlane)
+            {
+                T = TExit + Nudge;
+                Mip = min(Mip + 1, int(Mips));
+                continue;
+            }
+            T = TPlane;
+        }
+        if (Mip > 0)
+        {
+            --Mip;
+            continue;
+        }
+        float2 UV = (Origin + Direction * T) / Size;
+        T = TExit + Nudge;
+        if (Depth >= 1.0f || Depth < 0.02f)
+            continue;
+        float3 ScenePoint = GbufferGetPointRealJitter(UV, Depth);
+        float Error = abs(ScenePoint.z - m_P._m23 / (RayZ - m_P._m22));
+        float Thickness = max(0.05f, ScenePoint.z * 0.01f);
+        if (Error > Thickness || length(ScenePoint - Point) < 0.025f || !all(isfinite(ScenePoint)))
+            continue;
+        Hit.Point = ScenePoint;
+        Hit.UV = UV;
+        Hit.Depth = Depth;
+        Hit.Confidence = GetBorderAtten(UV, 0.025f) * saturate((Thickness - Error) / (Thickness * 0.25f));
+        return Hit;
+    }
+    return Hit;
+}
+#endif
+
 ReflectionHit TraceScreenReflection(float3 Point, float3 Reflect, bool IsHUD)
 {
     ReflectionHit Hit = (ReflectionHit)0;
@@ -207,6 +268,10 @@ ReflectionHit TraceScreenReflection(float3 Point, float3 Reflect, bool IsHUD)
     }
     if (EndT <= EPS)
         return Hit;
+#ifdef USE_SSLR_HIZ
+    if (!IsHUD)
+        return TraceScreenReflectionHiZ(Point, StartUV, DeltaUV, EndT, StartClip.z * K0, EndClip.z * K1);
+#endif
     float PixelLength = max(abs(DeltaUV.x * pos_decompression_params2.x), abs(DeltaUV.y * pos_decompression_params2.y)) * EndT;
     uint Steps = min((uint)SSLR_STEPS, max(1u, (uint)ceil(PixelLength)));
     float PreviousT = 0.0f;
@@ -226,14 +291,6 @@ ReflectionHit TraceScreenReflection(float3 Point, float3 Reflect, bool IsHUD)
         if (!ReflectionScreenUV(UV))
             break;
 
-#ifdef USE_SSLR_DEPTH_MIN
-        uint2 Pixel = min(uint2(UV * pos_decompression_params2.xy), uint2(pos_decompression_params2.xy) - 1u);
-        float MinDepth = s_sslr_depth_min.Load(int3(Pixel / 8u, 0));
-        float4 HighClip = mul(IsHUD ? m_P_hud : m_P, float4(0.0f, 0.0f, HighZ, 1.0f));
-        float HighDepth = HighClip.z / HighClip.w * (IsHUD ? 0.02f : 1.0f);
-        if (HighDepth < MinDepth)
-            continue;
-#endif
         float Depth = s_position.SampleLevel(smp_nofilter, UV, 0).x;
         if (Depth >= 1.0f || (Depth < 0.02f) != IsHUD)
             continue;
