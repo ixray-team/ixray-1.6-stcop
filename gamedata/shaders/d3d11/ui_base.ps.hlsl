@@ -16,8 +16,8 @@ float3 AmbientLightingUI(float3 View, float3 Normal, float3 Diffuse, float3 Spec
 	sky_s0.GetDimensions(0, Width, Height, MipCount);
 	float MaxLod = max(MipCount - 1.0f, 0.0f);
 
-	float3 DiffuseIrradance = env_s0.SampleLevel(smp_linear, Normal, 0.0f).xyz;
-	float3 SpecularIrradance = sky_s0.SampleLevel(smp_linear, Reflect, MaxLod * Roughness).xyz;
+	float3 DiffuseIrradance = env_s0.SampleLevel(smp_linear, Normal, 0.0f).xyz * 0.5f;
+	float3 SpecularIrradance = sky_s0.SampleLevel(smp_linear, Reflect, MaxLod * Roughness).xyz * 0.5f;
 
 	float NdotV = max(0.0, dot(Normal, -View));
 
@@ -82,7 +82,7 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
 		float3 Ambient = AmbientLightingUI(View, M.Normal, M.Color.xyz, M.Gloss.xxx, M.Material);
 	#endif
 	
-		Color.xyz = Ambient;// + Light.xyz;
+	Color.xyz = Ambient;// + Light.xyz;
     Color.w = saturate(M.Color.w + EPS_L);
 }
 
