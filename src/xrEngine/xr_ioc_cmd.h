@@ -409,6 +409,8 @@ public		:
 	{	
 		I[0]=0;
 		const xr_token *tok = GetToken();
+		if (!tok)
+			return;
 		for (int Iter = 0;;Iter++) {
 			if (tok[Iter].name == nullptr) {
 				break;

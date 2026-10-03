@@ -608,6 +608,7 @@ public:
 
 	virtual void	Status	(TStatus& S)
 	{
+		S[0] = 0;
 		GetToken				();
 		if(!tokens)				return;
 		inherited::Status		(S);
