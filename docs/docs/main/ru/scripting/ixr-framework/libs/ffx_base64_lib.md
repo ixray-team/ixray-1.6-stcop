@@ -1,15 +1,18 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
+## base64: \gamedata\scripts\ixr_framework\utils\libs\ffx_base64_lib.script
 
-### base64: \gamedata\scripts\ixr_framework\utils\libs\ffx_base64_lib.script
 Библиотека для работы с Base64:
+
 * `encode(input): string`
 * `decode(input): string`
 
-#### Описание методов:
+### Описание методов
+
 ```lua
 --// Закодировать данные в Base64.
 encode(input)
@@ -24,7 +27,8 @@ args:
 retval: (string) --// Расскодированная из base64 строка
 ```
 
-#### Примеры использований:
+### Примеры использований
+
 ```lua
 local original = "Hello World"
 local encoded = ffx_base64_lib.encode(original)

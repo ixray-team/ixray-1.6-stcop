@@ -1,11 +1,13 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
+## ffx_crypto_utils: `\gamedata\scripts\ixr_framework\utils\ffx_crypto_utils.script`
 
-### ffx_crypto_utils: `\gamedata\scripts\ixr_framework\utils\ffx_crypto_utils.script`
 Утилиты для криптографических операций (хэширование, кодирование, шифрование):
+
 * `calculate_crc64`
 * `calculate_sha1`
 * `calculate_sha256`
@@ -13,9 +15,7 @@
 * `base64_decode`
 * `xor_encode`
 
----
-
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Вычислить CRC64-хэш от входной строки.
@@ -56,7 +56,8 @@ args:
 retval: (string) - закодированная строка
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Вычисление хэшей
 local crc = ffx_crypto_utils.calculate_crc64("hello world")

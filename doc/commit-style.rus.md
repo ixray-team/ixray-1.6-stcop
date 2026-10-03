@@ -24,7 +24,7 @@
 
 Первоначальное сообщение о фиксации должно быть написано в следующем стиле:
 
-```text
+```txt
 Initial commit
 ```
 
@@ -32,7 +32,7 @@ Initial commit
 
 Обычное сообщение о фиксации должно состоять из одной части и быть построено в соответствии со следующим шаблоном:
 
-```text
+```txt
 <Основное сообщение коммита>
 
 <Дополнительное описание, если необходимо>
@@ -77,13 +77,13 @@ Initial commit
 
 #### Сообщения с дополнительным описанием
 
-```text
+```txt
 Fix rendering issue in graphics pipeline
 
 The rendering pipeline had a bug causing frame drops on low-end GPUs. This fix optimizes shader execution and resolves the issue.
 ```
 
-```text
+```txt
 Add unit tests for input validation
 
 Unit tests cover edge cases for user input to ensure stability and prevent crashes during unexpected inputs.

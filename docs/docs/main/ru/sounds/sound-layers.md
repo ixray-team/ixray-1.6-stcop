@@ -14,7 +14,7 @@
 
 Система использует нумерованные слои с обязательным соблюдением соглашения об именах:
 
-```ini
+```ltx
 snd_N_layer = путь_к_звуку, громкость, задержка
 ```
 
@@ -29,7 +29,7 @@ snd_N_layer = путь_к_звуку, громкость, задержка
 
 Для каждого слоя можно создать несколько вариаций, которые будут выбираться случайным образом:
 
-```ini
+```ltx
 snd_N_layer  = путь_к_звуку1, громкость, задержка
 snd_N_layer1 = путь_к_звуку2, громкость, задержка  
 snd_N_layer2 = путь_к_звуку3, громкость, задержка
@@ -60,55 +60,55 @@ snd_N_layer2 = путь_к_звуку3, громкость, задержка
 
 ### Пример 1: Базовый многослойный звук выстрела
 
-```ini
+```ltx
 ; Основная секция оружия
 [wpn_abakan]
-snd_shoot = layered_shot_abakan
+    snd_shoot = layered_shot_abakan
 
 ; Секция многослойного звука
 [layered_shot_abakan]
-snd_1_layer = weapons\abakan_shot_core, 1.0, 0.0
-snd_1_layer1 = weapons\abakan_shot_variant1, 1.0, 0.0
-snd_1_layer2 = weapons\abakan_shot_variant2, 1.0, 0.0
+    snd_1_layer = weapons\abakan_shot_core, 1.0, 0.0
+    snd_1_layer1 = weapons\abakan_shot_variant1, 1.0, 0.0
+    snd_1_layer2 = weapons\abakan_shot_variant2, 1.0, 0.0
 
-snd_2_layer = weapons\mech_action, 0.8, 0.05
+    snd_2_layer = weapons\mech_action, 0.8, 0.05
 
-snd_3_layer = weapons\shell_echo, 0.6, 0.1
+    snd_3_layer = weapons\shell_echo, 0.6, 0.1
 ```
 
 ### Пример 2: Реалистичный звук выстрела с глушителем
 
-```ini
+```ltx
 [wpn_val]
-snd_shoot = layered_shot_val
-snd_silncer_shot = layered_silenced_shot_val
+    snd_shoot = layered_shot_val
+    snd_silncer_shot = layered_silenced_shot_val
 
 [layered_shot_val]
-snd_1_layer = weapons\val_shot_main
-snd_2_layer = weapons\bolt_mechanism, 0.7, 0.08
+    snd_1_layer = weapons\val_shot_main
+    snd_2_layer = weapons\bolt_mechanism, 0.7, 0.08
 
 [layered_silenced_shot_val]
-snd_1_layer = weapons\val_silenced_main, 0.9, 0.0
-snd_2_layer = weapons\silenced_mech, 0.6, 0.1
-snd_3_layer = weapons\bullet_crack, 0.4, 0.15
+    snd_1_layer = weapons\val_silenced_main, 0.9, 0.0
+    snd_2_layer = weapons\silenced_mech, 0.6, 0.1
+    snd_3_layer = weapons\bullet_crack, 0.4, 0.15
 ```
 
 ### Пример 3: Сложная композиция с вариациями
 
-```ini
+```ltx
 [layered_shot_shotgun]
-; Основной выстрел (3 вариации)
-snd_1_layer  = weapons\shotgun_blast1, 1.0, 0.0
-snd_1_layer1 = weapons\shotgun_blast2, 1.0, 0.0
-snd_1_layer2 = weapons\shotgun_blast3, 1.0, 0.0
+  ; Основной выстрел (3 вариации)
+  snd_1_layer  = weapons\shotgun_blast1, 1.0, 0.0
+  snd_1_layer1 = weapons\shotgun_blast2, 1.0, 0.0
+  snd_1_layer2 = weapons\shotgun_blast3, 1.0, 0.0
 
-; Механические звуки (2 вариации)
-snd_2_layer  = weapons\pump_action1, 0.8, 0.3
-snd_2_layer1 = weapons\pump_action2, 0.8, 0.3
+  ; Механические звуки (2 вариации)
+  snd_2_layer  = weapons\pump_action1, 0.8, 0.3
+  snd_2_layer1 = weapons\pump_action2, 0.8, 0.3
 
-; Эхо и реверберация
-snd_3_layer = weapons\shotgun_echo, 0.5, 0.5
-snd_4_layer = weapons\environment_reverb, 0.3, 0.7
+  ; Эхо и реверберация
+  snd_3_layer = weapons\shotgun_echo, 0.5, 0.5
+  snd_4_layer = weapons\environment_reverb, 0.3, 0.7
 ```
 
 ## **Рекомендации**

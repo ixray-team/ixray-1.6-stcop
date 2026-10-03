@@ -1,0 +1,158 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "ltx",
+    "scopeName": "source.ltx",
+    "fileTypes": ["ltx"],
+    "patterns": [
+        { "include": "#comments" },
+        { "include": "#preprocessor" },
+        { "include": "#section" },
+        { "include": "#key" },
+        { "include": "#value" }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                { "name": "comment.line.semicolon.ltx", "match": "\\s*;.*$" }
+            ]
+        },
+        "preprocessor": {
+            "patterns": [
+                {
+                    "name": "keyword.control.import.ltx",
+                    "match": "^[ \\t]*#include\\s+\"([^\"]+)\"",
+                    "captures": { "1": { "name": "string.quoted.double.ltx" } }
+                },
+                {
+                    "name": "keyword.control.directive.ltx",
+                    "match": "^[ \\t]*#(define|undef|ifdef|ifndef|else|endif)\\b"
+                }
+            ]
+        },
+        "section": {
+            "patterns": [
+                {
+                    "name": "meta.section.ltx",
+                    "match": "^[ \\t]*(?:(!!|!|@)[ \\t]*)?\\[([^\\]\\r\\n]+)\\](?:[ \\t]*:[ \\t]*([A-Za-z_][A-Za-z0-9_]*))?",
+                    "captures": {
+                        "1": { "name": "keyword.operator.dltx" },
+                        "2": { "name": "entity.name.section.ltx" },
+                        "3": { "name": "entity.other.inherited-class.ltx" }
+                    }
+                }
+            ]
+        },
+        "key": {
+            "patterns": [
+                {
+                    "name": "meta.key.ltx",
+                    "match": "^[ \\t]*(?:(!!|!|@|>|<)[ \\t]*)?(\\$)?([A-Za-z_][A-Za-z0-9_]*)[ \\t]*(=)",
+                    "captures": {
+                        "1": { "name": "keyword.operator.dltx" },
+                        "2": { "name": "punctuation.definition.variable.ltx" },
+                        "3": { "name": "variable.other.key.ltx" },
+                        "4": { "name": "keyword.operator.assignment.ltx" }
+                    }
+                },
+                {
+                    "name": "meta.key.deletion.ltx",
+                    "match": "^[ \\t]*(!!|!|@|>|<)[ \\t]*(\\$)?([A-Za-z_][A-Za-z0-9_]*)[ \\t]*(?=;|$)",
+                    "captures": {
+                        "1": { "name": "keyword.operator.dltx" },
+                        "2": { "name": "punctuation.definition.variable.ltx" },
+                        "3": { "name": "variable.other.key.ltx" }
+                    }
+                }
+            ]
+        },
+        "value": {
+            "patterns": [
+                { "include": "#value-string" },
+                { "include": "#value-operator" },
+                { "include": "#value-rgb" },
+                { "include": "#value-number" },
+                { "include": "#value-boolean" },
+                { "include": "#value-condlist" },
+                { "include": "#value-list-separator" },
+                { "include": "#value-identifier" },
+                { "include": "#value-comment-tail" }
+            ]
+        },
+        "value-string": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.ltx",
+                    "match": "\"[^\"\\r\\n]*\""
+                },
+                { "name": "string.quoted.single.ltx", "match": "'[^'\\r\\n]*'" }
+            ]
+        },
+        "value-operator": {
+            "patterns": [
+                {
+                    "name": "meta.operator.inline.ltx",
+                    "match": "%=(.*?)%",
+                    "captures": {
+                        "0": { "name": "punctuation.definition.operator.ltx" },
+                        "1": { "name": "support.function.operator.ltx" }
+                    }
+                }
+            ]
+        },
+        "value-rgb": {
+            "patterns": [
+                {
+                    "name": "constant.other.color.rgb.ltx",
+                    "match": "(?<![A-Za-z0-9_])-?\\d+(?:\\.\\d+)?(?:[ \\t]*,[ \\t]*-?\\d+(?:\\.\\d+)?){2,3}(?![A-Za-z0-9_])"
+                }
+            ]
+        },
+        "value-number": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.ltx",
+                    "match": "(?<![A-Za-z0-9_])-?\\d+(?:\\.\\d+)?(?![A-Za-z0-9_])"
+                }
+            ]
+        },
+        "value-boolean": {
+            "patterns": [
+                {
+                    "name": "constant.language.boolean.ltx",
+                    "match": "(?<![A-Za-z0-9_])(true|false)(?![A-Za-z0-9_])"
+                }
+            ]
+        },
+        "value-condlist": {
+            "patterns": [
+                {
+                    "name": "meta.condlist.ltx",
+                    "match": "\\{([+-]?)([^{}\\r\\n]*)\\}",
+                    "captures": {
+                        "0": { "name": "punctuation.definition.condlist.ltx" },
+                        "1": { "name": "keyword.operator.condlist-sign.ltx" },
+                        "2": { "name": "variable.other.condlist.ltx" }
+                    }
+                }
+            ]
+        },
+        "value-list-separator": {
+            "patterns": [
+                { "name": "punctuation.separator.list.ltx", "match": "," }
+            ]
+        },
+        "value-identifier": {
+            "patterns": [
+                {
+                    "name": "string.unquoted.ltx",
+                    "match": "[^\\s,;=\\[\\]{}]+"
+                }
+            ]
+        },
+        "value-comment-tail": {
+            "patterns": [
+                { "name": "comment.line.semicolon.ltx", "match": "\\s*;.*$" }
+            ]
+        }
+    }
+}

@@ -20,6 +20,7 @@
   empty_red_intensity="1.0"
 />
 ```
+
 ## Применение
 
 1. Добавьте блоки в `configs/ui/maingame.xml`.

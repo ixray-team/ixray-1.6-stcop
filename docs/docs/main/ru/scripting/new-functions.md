@@ -1,4 +1,5 @@
 # Новые функции
+
 ## Глобальное пространство
 
 ```lua
@@ -39,6 +40,7 @@ args: value (boolean)
 ### Новое
 
 * Статус ГГ
+
 ```lua
 --// Находится ли ГГ в "режиме бога"
 db.actor:is_god_mode()
@@ -129,7 +131,9 @@ db.actor:set_actor_morale(value)
 retval: none
 args: value (number)
 ```
+
 * Камера
+
 ```lua
 --// Активна ли камера "От первого лица"
 db.actor:is_first_person()
@@ -143,7 +147,9 @@ retval: none
 db.actor:set_third_person()
 retval: none
 ```
+
 * [Бустеры](/scripting/exported-enums#eboostparams)
+
 ```lua
 --// Влияет ли бустер на актора (параметр буста из EBoostParams)
 db.actor:is_booster_influence(boost_param)
@@ -169,7 +175,9 @@ args: time (number), boost_param (EBoostParams)
 db.actor:get_actor_power_boost_time()
 retval: number
 ```
+
 * Тень от ГГ
+
 ```lua
 --// Проверить включена ли тень от ГГ
 db.actor:is_actor_shadow()
@@ -180,7 +188,9 @@ db.actor:set_actor_shadow(value)
 retval: none
 args: value (boolean)
 ```
+
 * Движение
+
 ```lua
 --// Получить состояние движения актора (первое - тип движения, например, желаемый (eWishful); второе - команда движения, например спринт (mcSprint))
 db.actor:get_movement_state(movement_type, move_command)
@@ -192,7 +202,9 @@ db.actor:set_movement_state(movement_type, move_command, status)
 retval: none
 args: movement_type (EMovementStates), move_command (EMoveCommand), status (boolean)
 ```
+
 * Инвентарь
+
 ```lua
 --// Выключить/включить PDA
 db.actor:set_pda_disabled(value)
@@ -212,7 +224,9 @@ args: value (boolean)
 db.actor:is_inventory_disabled()
 retval: boolean
 ```
+
 * Взаимодействия
+
 ```lua
 --// Посадить актера в машину
 db.actor:attach_vehicle(car, force)
@@ -241,8 +255,11 @@ db.actor:set_best_enemy(enemy)
 retval: none
 args: enemy (CScriptGameObject)
 ```
+
 ## CoC Extended
+
 * Сервервный alife объект `local se_obj = alife():object(obj_id)`
+
 ```lua
 --// Узнать иконку персонажа
 se_obj:character_icon()
@@ -269,6 +286,7 @@ args: name (string)
 ```
 
 * Клиентский alife объект `local npc = level.object_by_id(npc_id) or db.actor`
+
 ```lua
 --// Установить ранг персонажа
 npc:change_character_rank(char_rank)
@@ -282,12 +300,14 @@ args: callback (function) -- function(obj_id: number): boolean
 ```
 
 * CActor
+
 ```lua
 --// Убрать детектор
 db.actor:hide_detector()
 ```
 
 * Weapon `local weapon = db.actor:active_item()`
+
 ```lua
 --// Получить подсостояние оружия
 weapon:get_weapon_substate()
@@ -376,7 +396,9 @@ retval: number
 weapon:is_weapon_use_chamber()
 retval: boolean
 ```
+
 * Items
+
 ```lua
 --// Получить предмет по ID
 item:item_on_belt(item_id)
@@ -385,7 +407,9 @@ args: item_id (number)
 ```
 
 ## Управление видимостью костей
+
 `local obj = level.object_by_id(obj_id) or db.actor`
+
 ```lua
 --// Видна ли кость на мировом визуале объекта
 obj:is_world_object_bone_visible(boneName)
@@ -409,7 +433,9 @@ args: boneName (string), bVisibility (boolean)
 ```
 
 ## CCar
+
 `local car = level.object_by_id(car_id)`
+
 ```lua
 --// Добавить топливо (с учётом предела m_fuel_tank)
 car:AddFuel(amount)
@@ -428,6 +454,7 @@ car.fuel_tank = value
 ```
 
 ## From Lost Alpha
+
 ```lua
 --// получить предыдущую погоду
 level.get_past_wdesc()
@@ -461,6 +488,7 @@ args: WeatherSection (string)
 ```
 
 ## CUIGameCustom
+
 ```lua
 --// Вывести сообщение на экран
 get_hud():AddHudMessage(text)
@@ -469,6 +497,7 @@ args: text (string)
 ```
 
 ## alife_simulator
+
 ```lua
 --// Переместить актера на локацию
 alife():jump_to_level(name)
@@ -515,6 +544,7 @@ retval: iterator
 ```
 
 ## CTime
+
 ```lua
 --// Сохраняет время в сжатом виде (4 байта)
 game.get_game_time():save(packet)
@@ -528,6 +558,7 @@ args: packet (net_packet)
 ```
 
 ## `save`
+
 ```lua
 --// Передать название текущего чанка в движок (отладочная информация)
 save.set_stage(name)
@@ -541,6 +572,7 @@ args: none
 ```
 
 ## [animslot](/animation-system/hud-animator)
+
 ```lua
 --// Проиграть анимацию на худе
 animslot.play(section, anim)
@@ -549,6 +581,7 @@ args: section (string), anim (string)
 ```
 
 ## [CEatableItem](/gameplay/general/items-used) `local bread = level.object_by_id(item_id)`
+
 ```lua
 --// Предмет больше не может быть использован
 bread:Empty()
@@ -596,6 +629,7 @@ bread.m_fWeightEmpty = value
 ```
 
 ## CMapManager
+
 ```lua
 --// Удаляет указанную локацию на карте
 level.map_manager():RemoveMapLocation(ml)
@@ -633,6 +667,7 @@ args:
 ```
 
 ## CScriptGameObject `local object = level.object_by_id(item_id) or db.actor`
+
 ```lua
 --// сделать НПС механиком
 object.mechanic = true/false
@@ -763,7 +798,9 @@ retval: integer
 ```
 
 ## CHangingLamp
+
 `local lamp = level.object_by_id(lamp_id)`
+
 ```lua
 --// Проверить, включена ли лампа
 lamp:is_on()
@@ -771,6 +808,7 @@ retval: boolean
 ```
 
 ## sim (CompatibilityBringeScripts.cpp)
+
 ```lua
 --// Получить ссылку на игровой обьект по идентификатору
 sim.net_find(object_id)
@@ -779,6 +817,7 @@ args: (u16) object_id
 ```
 
 ## CConsole
+
 ```lua
 --// Регистрация LUA команды в консоли (нужно вызывать каждый раз на старте уровня)
   get_console():register_lua_command(name_command, callable_fn, tips_string)
@@ -789,7 +828,9 @@ args:
   callable_fn, -- lua функция принимает таблицу аргументов
   tips_string -- подсказки в консоли напротив команды разделитель запятая
 ```
+
 #### Пример кода Регистрация LUA команды в консоли
+
 ```lua
 --// Регистрация LUA команды в консоли
 -- Пример создания команды которая будет спавнить секцию указанную в первом аргументе в инвентарь к гг
@@ -809,6 +850,7 @@ args:
 ```
 
 ## ActorMenu
+
 ```lua
 --// Получить UI класс ПДА
 ActorMenu.get_pda_menu()
@@ -828,6 +870,7 @@ retval: CUIMainIngameWnd
 ```
 
 ## CUIListBox
+
 ```cpp
 --// Выделить элемент списка по индексу
 listbox:SetSelectedIndex(id)
@@ -836,6 +879,7 @@ args: int
 ```
 
 ## CScriptGameObject
+
 Теперь можно добавлять кастомный вычисляемый дополнительный текст к описанию и названию предмета как до так и после.
 Полезно для авто генерации дополнительных динамических характеристик предмета.
 
@@ -947,6 +991,7 @@ args: bool (state)
   ```
 
   Регистрируем фрагменты строк через языковой файл для корректных переводов
+
   ```xml
     <string id="st_additional_characteristics">
 		<text> \n%c[255,255,255,255]Характеристики: </text>
@@ -962,6 +1007,7 @@ args: bool (state)
   ```
   
   На выходе получим дополнение к описанию предмета в таком виде с возможностью менять значение(я) в нем при необходимости из скрипта
+
   ```xml
 	Предшествующее описание из конфига ...
 	Характеристики: 
@@ -971,6 +1017,7 @@ args: bool (state)
 :::
 
 ## level
+
 ```lua
 --// enable/disable rain effector
 level.enable_rain(value)
@@ -1088,6 +1135,7 @@ level.e_spatial_type.ANOMAL_ZONE_LOGIC
 ```
 
 ## Пример поиск онлайн обьектов по eSpatial в сфере
+
 ```lua
 --// Центр сферы относительно которого будет произведен поиск
 local center = db.actor:position()
@@ -1108,6 +1156,7 @@ end
 ```
 
 ## Пример поиск онлайн обьектов по eSpatial в боксе obb
+
 ```lua
 --// Центр бокса относительно которого будет произведен поиск
 local center_position = db.actor:position()
@@ -1132,6 +1181,7 @@ end
 ```
 
 ## level (runtime storage)
+
 ```lua
 
 --// Специальная обертка для проброса строковых луа таблиц между перезагрузками луа машины
@@ -1165,6 +1215,7 @@ retval: void
 ```
 
 ## Примеры (runtime storage)
+
 ```lua
 --// Проверить наличие таблицы строк в хранилище по имени
 if level.is_exists_named_stash_string_vector("my-data") then
@@ -1203,7 +1254,7 @@ end
 
 ```
 
-## CFFxRandom 
+## CFFxRandom
 
 * Воспроизводимость
 * Позволяет восстанавливать своё состояние что позволяет упростить разработку логики требующую повторяемость на сейв лоаде либо как то еще
@@ -1264,6 +1315,7 @@ retval: float
 ```
 
 ## CScriptParticles
+
 ```lua
 local pg_obj = particles_object("ffx0001\\test\\
 
@@ -1293,6 +1345,7 @@ args:
 ```
 
 ## CEntityAlive
+
 ```lua
 local game_object = db.actor -- актор или любой нпц
 

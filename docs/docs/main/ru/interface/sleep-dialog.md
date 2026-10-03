@@ -23,27 +23,27 @@
 
 Обязательные узлы (как в vanilla CoP):
 
-| Узел | Назначение |
-|------|------------|
-| `background` | Фон диалога |
-| `sleep_static` | Панорама неба (создается дважды из одного узла) |
-| `static_cover` | Рамка поверх панорамы |
-| `st_marker` | Маркер выбранных часов (дочерний к `static_cover`) |
-| `sleep_st_1` ... `sleep_st_24` | Подписи часов (legacy) |
-| `time_track` | Трекбар длительности сна |
-| `btn_sleep` | Подтверждение |
-| `btn_cancel` | Отмена |
+| Узел                           | Назначение                                         |
+|--------------------------------|----------------------------------------------------|
+| `background`                   | Фон диалога                                        |
+| `sleep_static`                 | Панорама неба (создается дважды из одного узла)    |
+| `static_cover`                 | Рамка поверх панорамы                              |
+| `st_marker`                    | Маркер выбранных часов (дочерний к `static_cover`) |
+| `sleep_st_1` ... `sleep_st_24` | Подписи часов (legacy)                             |
+| `time_track`                   | Трекбар длительности сна                           |
+| `btn_sleep`                    | Подтверждение                                      |
+| `btn_cancel`                   | Отмена                                             |
 
 Опциональные:
 
-| Узел | Назначение |
-|------|------------|
-| `sleep_params` | Все расширенные параметры |
+| Узел                | Назначение                           |
+|---------------------|--------------------------------------|
+| `sleep_params`      | Все расширенные параметры            |
 | `sleep_hours_strip` | Авто-лента часов вместо `sleep_st_*` |
-| `sleep_preset_btn` | Шаблон кнопок пресетов |
-| `st_time_now` | Текущее игровое время |
-| `st_sleep_duration` | Длительность сна |
-| `st_wake_time` | Время пробуждения |
+| `sleep_preset_btn`  | Шаблон кнопок пресетов               |
+| `st_time_now`       | Текущее игровое время                |
+| `st_sleep_duration` | Длительность сна                     |
+| `st_wake_time`      | Время пробуждения                    |
 
 ## sleep_params: полный список атрибутов
 
@@ -89,40 +89,40 @@
 />
 ```
 
-| Атрибут | Тип | По умолчанию | Описание |
-|---------|-----|--------------|----------|
-| `panorama_texture` | texture id | `ui_inGame2_sky_panorama` | Текстура панорамы. Если id нет в TextureMaster - fallback на vanilla |
-| `panorama_mode` | `0` / `1` | `0` | Игнорируется (legacy attr) |
-| `panorama_hours` | int >= 1 | `24` | Сколько часов умещается в ширину виджета |
-| `panorama_bind` | `current` / `wake` | `current` | `current` = игровой час; `wake` = час подъема (`now + duration`) |
-| `panorama_smooth_speed` | float | `0` | Плавный скролл wrap (`0` = мгновенно, как vanilla) |
-| `panorama_scale` | `stretch` / `native` | `stretch` | `stretch` = весь день в окно; `native` = 1:1 design px, окно клипает полоску |
-| `panorama_tex_scale` | float >= 1 | `1` | Как `scale` у файла в textures_descr (HD: `2`) |
-| `panorama_wrap` | `0` / `1` | `1` | `1` = dual-static wrap; `0` = clamp без склейки (native) |
-| `hour_label_suffix` | string table id | `st_sleep_hours` | Суффикс подписей (`%d` + перевод) |
-| `warning_box_template` | message box id | `message_box_ok` | Шаблон warning MB |
-| `warning_bleeding` | string table id | `sleep_warning_bleeding` | Текст при кровотечении |
-| `warning_radiation` | string table id | `sleep_warning_radiation` | Текст при радиации |
-| `warning_both` | string table id | `sleep_warning_all_pleasures` | Текст при обоих |
-| `allow_sleep_with_bleeding` | `0` / `1` | `0` | `1` = кровотечение не блокирует сон |
-| `min_hours` | int >= 1 | `1` | Нижняя граница трекбара |
-| `max_hours` | int | `24` | Верхняя граница трекбара |
-| `cam_anm` | path | `camera_effects\sleep.anm` | Cam effector |
-| `pp_effector` | ppe name | `sleep_fade.ppe` | Postprocess effector |
-| `cam_id` | int | `10` | ID cam effector |
-| `pp_id` | int | `11` | ID PP effector |
-| `marker_min_x` | float | `5` | X маркера при 1 часе (когда delta = 0) |
-| `restore_power` | float | `1` | Сила актора после сна |
-| `mute_music` | `0` / `1` | `1` | Глушить музыку на время сна |
-| `mute_effects` | `0` / `1` | `1` | Глушить эффекты на время сна |
-| `preset_spacing` | float | `4` | Отступ между кнопками пресетов |
-| `presets_confirm` | `0` / `1` | `0` | `1` = клик по пресету сразу запускает сон |
-| `fmt_time_now` | printf / st id | `%s` | Формат текущего времени |
-| `fmt_sleep_duration` | printf / st id | `%d%s` | Формат длительности (`%d` + суффикс) |
-| `fmt_wake_time` | printf / st id | `%s` | Формат времени пробуждения |
-| `time_separator` | char | `:` | Разделитель часов/минут |
-| `time_precision` | string | `minutes` | `hours` / `minutes` / `seconds` |
-| `snd_*` | sound name | пусто | UI-звуки (см. ниже) |
+| Атрибут                     | Тип                  | По умолчанию                  | Описание                                                                     |
+|-----------------------------|----------------------|-------------------------------|------------------------------------------------------------------------------|
+| `panorama_texture`          | texture id           | `ui_inGame2_sky_panorama`     | Текстура панорамы. Если id нет в TextureMaster - fallback на vanilla         |
+| `panorama_mode`             | `0` / `1`            | `0`                           | Игнорируется (legacy attr)                                                   |
+| `panorama_hours`            | int >= 1             | `24`                          | Сколько часов умещается в ширину виджета                                     |
+| `panorama_bind`             | `current` / `wake`   | `current`                     | `current` = игровой час; `wake` = час подъема (`now + duration`)             |
+| `panorama_smooth_speed`     | float                | `0`                           | Плавный скролл wrap (`0` = мгновенно, как vanilla)                           |
+| `panorama_scale`            | `stretch` / `native` | `stretch`                     | `stretch` = весь день в окно; `native` = 1:1 design px, окно клипает полоску |
+| `panorama_tex_scale`        | float >= 1           | `1`                           | Как `scale` у файла в textures_descr (HD: `2`)                               |
+| `panorama_wrap`             | `0` / `1`            | `1`                           | `1` = dual-static wrap; `0` = clamp без склейки (native)                     |
+| `hour_label_suffix`         | string table id      | `st_sleep_hours`              | Суффикс подписей (`%d` + перевод)                                            |
+| `warning_box_template`      | message box id       | `message_box_ok`              | Шаблон warning MB                                                            |
+| `warning_bleeding`          | string table id      | `sleep_warning_bleeding`      | Текст при кровотечении                                                       |
+| `warning_radiation`         | string table id      | `sleep_warning_radiation`     | Текст при радиации                                                           |
+| `warning_both`              | string table id      | `sleep_warning_all_pleasures` | Текст при обоих                                                              |
+| `allow_sleep_with_bleeding` | `0` / `1`            | `0`                           | `1` = кровотечение не блокирует сон                                          |
+| `min_hours`                 | int >= 1             | `1`                           | Нижняя граница трекбара                                                      |
+| `max_hours`                 | int                  | `24`                          | Верхняя граница трекбара                                                     |
+| `cam_anm`                   | path                 | `camera_effects\sleep.anm`    | Cam effector                                                                 |
+| `pp_effector`               | ppe name             | `sleep_fade.ppe`              | Postprocess effector                                                         |
+| `cam_id`                    | int                  | `10`                          | ID cam effector                                                              |
+| `pp_id`                     | int                  | `11`                          | ID PP effector                                                               |
+| `marker_min_x`              | float                | `5`                           | X маркера при 1 часе (когда delta = 0)                                       |
+| `restore_power`             | float                | `1`                           | Сила актора после сна                                                        |
+| `mute_music`                | `0` / `1`            | `1`                           | Глушить музыку на время сна                                                  |
+| `mute_effects`              | `0` / `1`            | `1`                           | Глушить эффекты на время сна                                                 |
+| `preset_spacing`            | float                | `4`                           | Отступ между кнопками пресетов                                               |
+| `presets_confirm`           | `0` / `1`            | `0`                           | `1` = клик по пресету сразу запускает сон                                    |
+| `fmt_time_now`              | printf / st id       | `%s`                          | Формат текущего времени                                                      |
+| `fmt_sleep_duration`        | printf / st id       | `%d%s`                        | Формат длительности (`%d` + суффикс)                                         |
+| `fmt_wake_time`             | printf / st id       | `%s`                          | Формат времени пробуждения                                                   |
+| `time_separator`            | char                 | `:`                           | Разделитель часов/минут                                                      |
+| `time_precision`            | string               | `minutes`                     | `hours` / `minutes` / `seconds`                                              |
+| `snd_*`                     | sound name           | пусто                         | UI-звуки (см. ниже)                                                          |
 
 ---
 
@@ -190,12 +190,12 @@ Dual-static wrap (`panorama_wrap="1"`) - ванильный разрез пол�
 
 Атрибуты ленты:
 
-| Атрибут | Описание |
-|---------|----------|
-| `count` | Число лейблов (1..24), по умолчанию 24 |
-| `padding` / `pad_left` / `pad_right` | Внутренние отступы |
-| `spacing` | Зазор между лейблами |
-| `label_width` | Фиксированная ширина; если `0`, считается автоматически |
+| Атрибут                              | Описание                                                |
+|--------------------------------------|---------------------------------------------------------|
+| `count`                              | Число лейблов (1..24), по умолчанию 24                  |
+| `padding` / `pad_left` / `pad_right` | Внутренние отступы                                      |
+| `spacing`                            | Зазор между лейблами                                    |
+| `label_width`                        | Фиксированная ширина; если `0`, считается автоматически |
 
 → Подписи заполняются как `(текущий_час + i + 1) % 24` + `hour_label_suffix` (как в vanilla Lua).
 
@@ -277,15 +277,15 @@ Dual-static wrap (`panorama_wrap="1"`) - ванильный разрез пол�
 />
 ```
 
-| Звук | Когда |
-|------|-------|
-| `snd_open` | Успешное открытие диалога |
-| `snd_warning` | Показ warning MB |
-| `snd_sleep` | Кнопка «Спать» |
-| `snd_cancel` | Отмена (если пусто - `snd_close`) |
-| `snd_close` | Fallback для отмены |
-| `snd_track` | Шаг трекбара (клавиатура / геймпад) |
-| `snd_preset` | Клик по пресету |
+| Звук          | Когда                               |
+|---------------|-------------------------------------|
+| `snd_open`    | Успешное открытие диалога           |
+| `snd_warning` | Показ warning MB                    |
+| `snd_sleep`   | Кнопка «Спать»                      |
+| `snd_cancel`  | Отмена (если пусто - `snd_close`)   |
+| `snd_close`   | Fallback для отмены                 |
+| `snd_track`   | Шаг трекбара (клавиатура / геймпад) |
+| `snd_preset`  | Клик по пресету                     |
 
 ### 10. Кнопки-пресеты часов
 
@@ -431,49 +431,49 @@ end
 
 #### Диалог
 
-| Метод / глобал | Описание |
-|----------------|----------|
-| `IsSleepDialogReady` / `is_sleep_dialog_ready` | Layout загружен (`time_track` есть) |
-| `IsSleepDialogShown` / `is_sleep_dialog_shown` | Диалог на экране |
-| `ShowSleepDialog` / `show_sleep_dialog` | Открыть с текущим значением трекбара |
-| `ShowSleepDialogAtHour(n)` / `show_sleep_dialog_at_hour(n)` | Открыть с выбранными `n` часами |
-| `HideSleepDialog` / `hide_sleep_dialog` | Закрыть как Cancel |
-| `CancelSleepDialog` / `cancel_sleep_dialog` | То же, что Hide |
-| `GetSleepSelectedHours` / `get_sleep_selected_hours` | Текущие часы на треке |
-| `SetSleepSelectedHours(n)` / `set_sleep_selected_hours(n)` | Выставить часы (без открытия или при открытом диалоге) |
-| `ConfirmSleep` / `confirm_sleep` | Программный аналог кнопки Sleep (если диалог показан) |
-| `SetSleepHourPresets({...})` | Задать пресеты (таблица чисел) |
-| `ClearSleepHourPresets` | Убрать пресеты |
+| Метод / глобал                                              | Описание                                               |
+|-------------------------------------------------------------|--------------------------------------------------------|
+| `IsSleepDialogReady` / `is_sleep_dialog_ready`              | Layout загружен (`time_track` есть)                    |
+| `IsSleepDialogShown` / `is_sleep_dialog_shown`              | Диалог на экране                                       |
+| `ShowSleepDialog` / `show_sleep_dialog`                     | Открыть с текущим значением трекбара                   |
+| `ShowSleepDialogAtHour(n)` / `show_sleep_dialog_at_hour(n)` | Открыть с выбранными `n` часами                        |
+| `HideSleepDialog` / `hide_sleep_dialog`                     | Закрыть как Cancel                                     |
+| `CancelSleepDialog` / `cancel_sleep_dialog`                 | То же, что Hide                                        |
+| `GetSleepSelectedHours` / `get_sleep_selected_hours`        | Текущие часы на треке                                  |
+| `SetSleepSelectedHours(n)` / `set_sleep_selected_hours(n)`  | Выставить часы (без открытия или при открытом диалоге) |
+| `ConfirmSleep` / `confirm_sleep`                            | Программный аналог кнопки Sleep (если диалог показан)  |
+| `SetSleepHourPresets({...})`                                | Задать пресеты (таблица чисел)                         |
+| `ClearSleepHourPresets`                                     | Убрать пресеты                                         |
 
 Прямого доступа к виджету `CUITrackBar` из Lua нет: только значение часов, диапазон и пресеты.
 
 #### Жизненный цикл сна
 
-| Метод / глобал | Описание |
-|----------------|----------|
-| `IsActorSleeping` / `is_actor_sleeping` | `m_camPhase != 0` и/или info `actor_is_sleeping` |
-| `GetSleepPhase` / `get_sleep_phase` | `0` idle, `1` fade-in до прыжка, `2` fade-out после прыжка |
-| `ForceSleep(n)` / `force_sleep(n)` | Сон без UI: выставить часы и сразу Confirm |
-| `AbortSleep` / `abort_sleep` | Отмена: dialog = Cancel; phase 1 = снять cam/PP без прыжка времени; phase 2 = досрочный WakeUp (время уже сдвинуто) |
+| Метод / глобал                          | Описание                                                                                                            |
+|-----------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| `IsActorSleeping` / `is_actor_sleeping` | `m_camPhase != 0` и/или info `actor_is_sleeping`                                                                    |
+| `GetSleepPhase` / `get_sleep_phase`     | `0` idle, `1` fade-in до прыжка, `2` fade-out после прыжка                                                          |
+| `ForceSleep(n)` / `force_sleep(n)`      | Сон без UI: выставить часы и сразу Confirm                                                                          |
+| `AbortSleep` / `abort_sleep`            | Отмена: dialog = Cancel; phase 1 = снять cam/PP без прыжка времени; phase 2 = досрочный WakeUp (время уже сдвинуто) |
 
 #### Session-оверрайды
 
 Применяются поверх XML `sleep_params` на один показ / один `ForceSleep`. Сбрасываются в WakeUp, Cancel/Hide, Abort, OK warning-box без сна.
 
-| Метод | Описание |
-|-------|----------|
-| `SetSleepHoursRange(min, max)` / `ClearSleepHoursRange` | Временный min/max трекбара |
-| `SetSleepAllowBleeding(bool)` / `ClearSleepAllowBleeding` | Разрешить сон при кровотечении |
-| `SetSleepRestorePower(float)` / `ClearSleepRestorePower` | Сила после сна |
-| `SetSleepMute(mute_music, mute_effects)` / `ClearSleepMute` | Mute на время сна |
-| `ClearSleepSessionOverrides` | Сбросить все session-поля разом |
+| Метод                                                       | Описание                        |
+|-------------------------------------------------------------|---------------------------------|
+| `SetSleepHoursRange(min, max)` / `ClearSleepHoursRange`     | Временный min/max трекбара      |
+| `SetSleepAllowBleeding(bool)` / `ClearSleepAllowBleeding`   | Разрешить сон при кровотечении  |
+| `SetSleepRestorePower(float)` / `ClearSleepRestorePower`    | Сила после сна                  |
+| `SetSleepMute(mute_music, mute_effects)` / `ClearSleepMute` | Mute на время сна               |
+| `ClearSleepSessionOverrides`                                | Сбросить все session-поля разом |
 
 Не вынесены в runtime API (остаются в XML): панорама, `fmt_*`, cam/ppe имена, UI-звуки, layout кнопок.
 
 #### Запрет сна
 
-| Метод / глобал | Описание |
-|----------------|----------|
+| Метод / глобал                                                      | Описание                                              |
+|---------------------------------------------------------------------|-------------------------------------------------------|
 | `SetSleepBlocked(bool [, warning_text])` / `set_sleep_blocked(...)` | C++-флаг; при `true` диалог не открывается (как veto) |
 
 ### Примеры
@@ -538,12 +538,12 @@ end
 
 ## Script callbacks
 
-| Callback | Когда | Можно остановить | Аргументы |
-|----------|-------|------------------|-----------|
-| `actor_on_can_sleep` | Перед показом диалога (после bleed/rad, только на пути успешного открытия) | да (`flags.allow`) | `hours`, `flags` |
-| `actor_on_before_sleep` | После 1-й фазы cam, до перемотки времени | нет | `hours` |
-| `actor_on_sleep` | После перемотки времени, погоды и `SetPower` | нет | `hours` |
-| `actor_on_sleep_aborted` | После `AbortSleep` | нет | `phase` (`0` dialog, `1` fade-in, `2` fade-out) |
+| Callback                 | Когда                                                                      | Можно остановить   | Аргументы                                       |
+|--------------------------|----------------------------------------------------------------------------|--------------------|-------------------------------------------------|
+| `actor_on_can_sleep`     | Перед показом диалога (после bleed/rad, только на пути успешного открытия) | да (`flags.allow`) | `hours`, `flags`                                |
+| `actor_on_before_sleep`  | После 1-й фазы cam, до перемотки времени                                   | нет                | `hours`                                         |
+| `actor_on_sleep`         | После перемотки времени, погоды и `SetPower`                               | нет                | `hours`                                         |
+| `actor_on_sleep_aborted` | После `AbortSleep`                                                         | нет                | `phase` (`0` dialog, `1` fade-in, `2` fade-out) |
 
 ```lua
 RegisterScriptCallback("actor_on_before_sleep", function(hours)
@@ -599,11 +599,11 @@ Surge/weather:
 
 ## Геймпад
 
-| Действие | Поведение |
-|----------|-----------|
+| Действие                 | Поведение                                                  |
+|--------------------------|------------------------------------------------------------|
 | `kUI_LEFT` / `kUI_RIGHT` | Шаг трекбара + `snd_track`, с repeat через ActionRepeaters |
-| `kUI_ACCEPT` | Как `btn_sleep` |
-| `kUI_BACK` | Как `btn_cancel` |
+| `kUI_ACCEPT`             | Как `btn_sleep`                                            |
+| `kUI_BACK`               | Как `btn_cancel`                                           |
 
 ---
 

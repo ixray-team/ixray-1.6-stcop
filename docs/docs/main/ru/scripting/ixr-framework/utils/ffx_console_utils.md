@@ -1,17 +1,19 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
+## ffx_console_utils: `\gamedata\scripts\ixr_framework\utils\ffx_console_utils.script`
 
-### ffx_console_utils: `\gamedata\scripts\ixr_framework\utils\ffx_console_utils.script`
 Утилиты для работы с игровой консолью:
+
 * `register_command`
 * `execute_command`
 
 ---
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Зарегистрировать новую команду в консоли.
@@ -30,7 +32,8 @@ args:
 retval: (none)
 ```
 
-#### Примеры использований:
+### Примеры использований
+
 ```lua
 -- Регистрация команды без подсказок
 ffx_console_utils.register_command("mycmd", function(...)

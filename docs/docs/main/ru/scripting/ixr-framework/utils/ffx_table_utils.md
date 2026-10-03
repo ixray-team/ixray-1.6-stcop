@@ -1,10 +1,13 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
-### ffx_table_utils: `\gamedata\scripts\ixr_framework\utils\ffx_table_utils.script`
+## ffx_table_utils: `\gamedata\scripts\ixr_framework\utils\ffx_table_utils.script`
+
 Утилиты для работы с таблицами (поиск, клонирование, сортировка, обход, получение ключей и значений):
+
 * `is_value_exists_by_key`
 * `push_back_by_key`
 * `clone`
@@ -19,7 +22,7 @@
 * `get_min_key_index`
 * `get_array_keys`
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Проверить, есть ли в массиве таблиц элемент, у которого значение по указанному ключу равно искомому.
@@ -114,7 +117,8 @@ args:
 retval: (table) - массив ключей.
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Проверка существования значения по ключу в массиве таблиц
 local items = {{id=1, name="apple"}, {id=2, name="banana"}}

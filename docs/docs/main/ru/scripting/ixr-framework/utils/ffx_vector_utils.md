@@ -1,10 +1,13 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
-### ffx_vector_utils: `\gamedata\scripts\ixr_framework\utils\ffx_vector_utils.script`
+## ffx_vector_utils: `\gamedata\scripts\ixr_framework\utils\ffx_vector_utils.script`
+
 Утилиты для работы с трёхмерными векторами (позиции, направления, клонирование, нормализация, вращение):
+
 * `mul_in_direction`
 * `clone`
 * `get_device_position`
@@ -12,7 +15,7 @@
 * `normalize`
 * `rotate_quaternion`
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Переместить позицию в заданном направлении на указанное расстояние. Возвращает новый вектор.
@@ -54,7 +57,8 @@ args:
 retval: (table) - повёрнутый вектор как таблица {x, y, z}.
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Перемещение вперёд на 10 метров
 local pos = db.actor:position()

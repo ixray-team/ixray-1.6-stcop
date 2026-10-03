@@ -1,3 +1,4 @@
 node_modules
 config/.vitepress/cache
 config/.vitepress/dist
+public

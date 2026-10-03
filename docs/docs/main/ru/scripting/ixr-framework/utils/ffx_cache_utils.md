@@ -1,14 +1,17 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
-### ffx_cache_utils: `\gamedata\scripts\ixr_framework\utils\ffx_cache_utils.script`
+## ffx_cache_utils: `\gamedata\scripts\ixr_framework\utils\ffx_cache_utils.script`
+
 Утилиты для кеширования данных:
+
 * `get_cached`
 * `invalidate_cache`
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Получить значение из кеша. Если ключ отсутствует или записи устарела, вызывается fn_closure для получения свежего значения, которое затем сохраняется и возвращается.
@@ -29,6 +32,7 @@ retval: (none)
 ```
 
 Примеры использований:
+
 ```lua
 --// Получаем данные, кешируем на 30 секунд (30000 мс)
 local data = ffx_cache_utils.get_cached("user_profile", function()

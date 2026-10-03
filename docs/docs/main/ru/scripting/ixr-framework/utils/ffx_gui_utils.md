@@ -1,16 +1,18 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
+## ffx_gui_utils: `\gamedata\scripts\ixr_framework\utils\ffx_gui_utils.script`
 
-### ffx_gui_utils: `\gamedata\scripts\ixr_framework\utils\ffx_gui_utils.script`
 Утилиты для работы с графическим интерфейсом (GUI) и диалогами:
+
 * `run_gui`
 
 ---
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Запустить GUI-диалог с возможностью скрыть инвентарь и оружие.
@@ -21,7 +23,8 @@ args:
 retval: (none)
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 -- Пример вызова GUI без скрытия инвентаря
 local my_gui = some_gui_object  -- предположим, это объект ScriptWnd

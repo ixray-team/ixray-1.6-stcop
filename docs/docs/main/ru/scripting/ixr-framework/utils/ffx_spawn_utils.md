@@ -1,10 +1,13 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
-### ffx_spawn_utils: `\gamedata\scripts\ixr_framework\utils\ffx_spawn_utils.script`
+## ffx_spawn_utils: `\gamedata\scripts\ixr_framework\utils\ffx_spawn_utils.script`
+
 Утилиты для спавна объектов (создания новых игровых сущностей):
+
 * `spawn_on_ground_by_actor_pos`
 * `actor_multiple_spawn_to_backpack`
 * `create_item_on_story_object`
@@ -14,7 +17,7 @@
 * `actor_spawn_to_backpack`
 * `npc_spawn_to_backpack`
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Создать указанное количество объектов секции на позиции актёра на земле.
@@ -77,7 +80,8 @@ args:
 retval: (server_object|false) - серверный объект или false при ошибке.
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Создать 3 аптечки на земле около актёра
 local spawned = ffx_spawn_utils.spawn_on_ground_by_actor_pos("medkit", 3)

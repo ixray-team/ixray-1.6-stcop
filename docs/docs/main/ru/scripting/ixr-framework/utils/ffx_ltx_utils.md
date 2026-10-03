@@ -1,15 +1,16 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
+## ffx_ltx_utils: `\gamedata\scripts\ixr_framework\utils\ffx_ltx_utils.script`
 
-### ffx_ltx_utils: `\gamedata\scripts\ixr_framework\utils\ffx_ltx_utils.script`
 Утилиты для работы с конфигурационными файлами `.ltx` (через системный INI-объект `system_ini()`), а также с произвольными INI-объектами.
 
 ---
 
-#### Описание методов (все в одном блоке):
+### Описание методов (все в одном блоке)
 
 ```lua
 --// Проверить существование секции в глобальном INI (с кэшированием).
@@ -98,7 +99,8 @@ args: _ini (table) - INI-объект, section (string) - имя секции, p
 retval: (table|any) - таблица строк (обрезанных) или def_value в случае ошибки
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Проверка существования секции
 if ffx_ltx_utils.has_section("game_info") then

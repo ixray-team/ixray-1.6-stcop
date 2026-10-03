@@ -1,5 +1,7 @@
 # Компрессор
+
 ## Распаковка ресурсов
+
 > [!IMPORTANT]  
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.1
@@ -9,6 +11,7 @@
 `xrCompress.exe -unpack fsgame.ltx <unpack_dir>`
 
 ## Паковка ресурсов
+
 > [!IMPORTANT]  
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.0
@@ -26,7 +29,7 @@
 ## Получение diff-изменений (создание патча)
 
 Команда:
-` xrCompress.exe -diff <new_data> <old_data> -out <diff_resulf> [options]`
+`xrCompress.exe -diff <new_data> <old_data> -out <diff_resulf> [options]`
 
 Параметры **<new_data>**, **<old_data>** и **<diff_resulf>** должны быть именами каталогов.
 

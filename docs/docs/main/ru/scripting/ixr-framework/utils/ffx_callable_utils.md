@@ -1,10 +1,13 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
-### ffx_callable_utils: `\gamedata\scripts\ixr_framework\utils\ffx_callable_utils.script`
+## ffx_callable_utils: `\gamedata\scripts\ixr_framework\utils\ffx_callable_utils.script`
+
 Утилиты для проверки наличия скриптов и функций, получения информации о стеке вызовов и безопасного выполнения кода в песочнице:
+
 * `is_script_present_in_g_file`
 * `has_script_function_exists`
 * `is_script_callable_by_name`
@@ -16,7 +19,7 @@
 * `get_call_stack_trace`
 * `sandbox`
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Проверить, существует ли глобальный скрипт с указанным именем.
@@ -89,6 +92,7 @@ retval: (any) - возвращаемые значения вызванной ф�
 ```
 
 Примеры использований:
+
 ```lua
 --// Проверяем наличие скрипта
 if ffx_callable_utils.is_script_present_in_g_file("my_script") then

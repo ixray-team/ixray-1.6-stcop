@@ -1,4 +1,5 @@
 # Базовое пространство имён
+
 ## Обзор
 
 > [!IMPORTANT]
@@ -15,11 +16,11 @@
 
 ## Сторонние библиотеки
 
-|     Плагин    | Пространство имён | Вспомогательный скрипт |
-|:-------------:|:-----------------:|:----------------------:|
-|    [marshal](https://github.com/richardhundt/lua-marshal)    |      marshal      |                        |
-| [LuaFileSystem](https://github.com/lunarmodules/luafilesystem) |        lfs        |                        |
-|   [luasocket](https://github.com/lunarmodules/luasocket)   |    socket.core    |      socket.script     |
-|    [LuaPanda](https://github.com/Tencent/LuaPanda)   |                   |     LuaPanda.script    |
-|     [LuaXML](https://github.com/LuaDist/luaxml)    |        xml       |      luaxml.script     |
-|     [luautf8](https://github.com/starwing/luautf8/blob/master/README.md)    |     luautf8     |           |
+| Плагин                                                               | Пространство имён | Вспомогательный скрипт |
+|:--------------------------------------------------------------------:|:-----------------:|:----------------------:|
+| [marshal](https://github.com/richardhundt/lua-marshal)               | marshal           |                        |
+| [LuaFileSystem](https://github.com/lunarmodules/luafilesystem)       | lfs               |                        |
+| [luasocket](https://github.com/lunarmodules/luasocket)               | socket.core       | socket.script          |
+| [LuaPanda](https://github.com/Tencent/LuaPanda)                      |                   | LuaPanda.script        |
+| [LuaXML](https://github.com/LuaDist/luaxml)                          | xml               | luaxml.script          |
+| [luautf8](https://github.com/starwing/luautf8/blob/master/README.md) | luautf8           |                        |

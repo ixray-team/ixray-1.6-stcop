@@ -1,9 +1,10 @@
 # Диалоги
+
+## Фокусировка на лице НПС
+
 > [!IMPORTANT]  
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.3
-
-## Фокусировка на лице НПС
 
 ### **Обзор**
 
@@ -11,49 +12,53 @@
 
 ![image](https://github.com/user-attachments/assets/3f9cf089-7d6d-4716-8aca-d86b30177992)
 
-## **Использование**
+### Использование
 
 Настройки функции находятся в файле `engine_external.ltx` в секции `[gameplay]`
-<br>
+
 **Доступные параметры:**
 
-```ini
+```ltx [engine_external.ltx]
 ; Dialogs
 DialogFovScale = 0.75 ; Коэффициент масштабирования FOV (Поля зрения). Меньше значение -> сильнее "зум" на лицо.
 TalkDof = 0.0, 0.5, 5.0, 0.0 ; Параметры размытия фона (Depth of Field)
 ```
 
 Здесь можно настроить силу увеличения, а также силу размытия. Если выставить `DialogFovScale = 1`, то увеличение пропадет
-<br><br>
+
 Помимо этого, чтобы отключить фокусировку только конкретному НПС, достаточно прописать `focus_on_npc = false` в спавн секцию НПС
-<br>
-**Пример:** 
-```ini
+
+**Пример:**
+
+```ltx
 [your_npc_spawn_section]
-character_profile = ...
-; ... другие параметры ...
-focus_on_npc = false ; Этот NPC не будет активировать фокусировку камеры
+  character_profile = ...
+  ; ... другие параметры ...
+  focus_on_npc = false ; Этот NPC не будет активировать фокусировку камеры
 ```
----
+
+## Иконки для реплик
 
 > [!IMPORTANT]  
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.3
 
-## Иконки для реплик
 ![image](https://github.com/user-attachments/assets/6bee91b3-9308-4ea1-8e81-98aa1fc034c3)
 
 ```xml
-   <phrase id="0">
-        <icon_name ltx="0">ui_inv_icon_health_restore_speed</icon_name> <!-- Иконка для диалога -->
-        <text>zat_b22_stalker_medic_need_health_care_0</text>
-        <next>1</next>
-        <next>2</next>
-   </phrase>
-```
-* Если вы хотите использовать иконку от предмета, то: 
-```xml
-   <icon_name ltx="1">bread</icon_name> <!-- Иконка для диалога -->
-...
+<phrase id="0">
+     <icon_name ltx="0">ui_inv_icon_health_restore_speed</icon_name> <!-- Иконка для диалога -->
+     <text>zat_b22_stalker_medic_need_health_care_0</text>
+     <next>1</next>
+     <next>2</next>
+</phrase>
 ```
 
+::: tip
+Если вы хотите использовать иконку от предмета, то:
+
+```xml
+<icon_name ltx="1">bread</icon_name> <!-- Иконка для диалога -->
+```
+
+:::

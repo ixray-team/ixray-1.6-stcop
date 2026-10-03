@@ -4,11 +4,11 @@
 
 Для сборки под Windows требуется:
 
-- git
-- cmake
-- Visual Studio (2019, 2022, or 2026)
+- [Git](https://git-scm.com)
+- [CMake](https://cmake.org)
+- [Visual Studio](https://visualstudio.microsoft.com) (2019, 2022, or 2026)
 
-**Сборка**
+### Сборка
 
 ``` sh
 git clone https://github.com/ixray-team/ixray-1.6-stcop.git
@@ -23,9 +23,9 @@ cmake -B build
 
 Для сборки под Linux требуется:
 
-- git
-- cmake
-- clang
+- [Git](https://git-scm.com)
+- [CMake](https://cmake.org)
+- [Clang](https://clang.llvm.org)
 
 Отдельные зависимости:
 
@@ -70,7 +70,7 @@ sudo dnf install libogg-devel
 sudo dnf install libuuid-devel tbb-devel lzo-devel
 ```
 
-## Сборка
+### Сборка
 
 ``` sh
 git clone https://github.com/ixray-team/ixray-1.6-stcop.git

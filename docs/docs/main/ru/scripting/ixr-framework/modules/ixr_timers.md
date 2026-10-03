@@ -1,10 +1,12 @@
 
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
 ## Модуль таймеров IXR TIMERS
+
 Позволяет создавать хранимые в сохранениях игры таймеры с полезной нагрузкой в виде скрипт функции которая будет выполнена по истичении таймера.
 
 Обьект таймера записывается в сохранении игры.
@@ -53,11 +55,12 @@ retval: (bool) возвращаемые true если таймер удален 
 ```
 
 Примеры:
+
 ```lua
 
 --// выставляем ожидание события новой игры
 function on_game_start(callbackRegistrator)
-	RegisterScriptCallback("new_game_created", this.on_new_game_started)
+  RegisterScriptCallback("new_game_created", this.on_new_game_started)
 end
 
 function on_new_game_started()

@@ -1,11 +1,13 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
+## ffx_dump_utils: `\gamedata\scripts\ixr_framework\utils\ffx_dump_utils.script`
 
-### ffx_dump_utils: `\gamedata\scripts\ixr_framework\utils\ffx_dump_utils.script`
 Утилиты для дампа данных, логирования и отладки:
+
 * `var_export`
 * `var_dump_to_console_log`
 * `write_to_console_log`
@@ -16,7 +18,7 @@
 
 ---
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Генерирует строковое представление таблицы с поддержкой рекурсии, функций и метаданных.
@@ -73,7 +75,8 @@ args:
 retval: (none) – функция не возвращает управление
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Дамп таблицы в консоль
 local data = {a = 1, b = {x = 10, y = 20}, func = function() end}
