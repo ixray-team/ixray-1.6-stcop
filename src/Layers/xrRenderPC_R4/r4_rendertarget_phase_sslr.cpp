@@ -71,7 +71,6 @@ void CRenderTarget::phase_sslr()
 
 		//Dummy
 		IRHIUnorderedAccessView* uav_dummy[2] = { nullptr, nullptr };
-		IRHIShaderResourceView* srv_dummy[16] = {};
 
 		//Shader setup... can't use set_element because of set_PS bullshit
 	    ShaderElement* S;
@@ -95,7 +94,7 @@ void CRenderTarget::phase_sslr()
 
 		//Unbind
 		GRHI->SetComputeUAVs(0, 2, uav_dummy);
-		GRHI->SetComputeResources(0, 16, srv_dummy);
+		RCache.unbind_cs_textures();
 	}
 
 
@@ -103,7 +102,6 @@ void CRenderTarget::phase_sslr()
 		GPU_EVENT(sslr_filter);
 
 		IRHIUnorderedAccessView* uav_dummy = nullptr;
-		IRHIShaderResourceView* srv_dummy[16] = {};
 
 	    ShaderElement* S;
         S = (&*(s_sslr->E[1]));
@@ -120,14 +118,13 @@ void CRenderTarget::phase_sslr()
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
 		GRHI->SetComputeUAVs(0, 1, &uav_dummy);
-		GRHI->SetComputeResources(0, 16, srv_dummy);
+		RCache.unbind_cs_textures();
 	}
 
 	{
 		GPU_EVENT(sslr_temporal);
 
 		IRHIUnorderedAccessView* uav_dummy = nullptr;
-		IRHIShaderResourceView* srv_dummy[16] = {};
 
 	    ShaderElement* S;
         S = (&*(s_sslr->E[2]));
@@ -144,7 +141,7 @@ void CRenderTarget::phase_sslr()
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
 		GRHI->SetComputeUAVs(0, 1, &uav_dummy);
-		GRHI->SetComputeResources(0, 16, srv_dummy);
+		RCache.unbind_cs_textures();
 
 		//LVutner: Meh.
 		ResolveSurface(rt_sslr_old, rt_sslr);
