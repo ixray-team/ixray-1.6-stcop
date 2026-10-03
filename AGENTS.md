@@ -9,7 +9,7 @@ C++23 X-Ray 1.6 fork. Engine internals: [docs/engine](docs/engine/README.md). St
 | `src/xrPlay` | `xrEngine.exe` | `CApplication::Run`, SDL window, splash |
 | `src/xrCore` | `xrCore.dll` | `Memory`, `FS`, `CInifile`, log, `xrDebug`, addons |
 | `src/xrEngine` | `xrEngineCore.dll` | `Device`, loop, input, console, scheduler, `CEngineAPI` |
-| `src/xrRHI` | `xrRHI.dll` | D3D9 and D3D11 backends (`D3D9/`, `D3D11/`); Linux uses DXVK Native |
+| `src/xrRHI` | `xrRHI.dll` | D3D9, D3D11 and D3D12 backends (`D3D9/`, `D3D11/`, `D3D12/`); Linux uses DXVK Native |
 | `src/Layers/xrRenderPC_R1` | `xrRender_R1.dll` | D3D9 static lighting (`renderer_r1`) |
 | `src/Layers/xrRenderPC_R2` | `xrRender_R2.dll` | D3D9 dynamic lighting (`renderer_r2`) |
 | `src/Layers/xrRenderPC_R4` | `xrRender_R4.dll` | D3D11 dynamic lighting (`renderer_r4`) |
@@ -24,6 +24,12 @@ C++23 X-Ray 1.6 fork. Engine internals: [docs/engine](docs/engine/README.md). St
 | `src/xrServer`, `src/xrGameSpy` | exe / dll | `IXRAY_MP` only |
 
 Keep dependencies downward. Do not add game or renderer implementation dependencies to `xrCore`; existing collision code uses shared render interfaces from `src/Include/xrRender`.
+
+## Renderer
+
+Console fonts share the R4 batching path; preserve draw order and the 16-bit quad-index limit. Console performance and D3D12 stream uploads: [docs/engine/rendering.md](docs/engine/rendering.md).
+
+Terrain is an editor heightmap converted to ordinary static level meshes. Implicit lighting follows the base texture's `flImplicitLighted` metadata: base alpha stores hemi; `_lm.dds` stores RGB light + sun alpha; `_mask` blends four detail materials. Editor chunks are not runtime terrain tiles. Authoring, xrLC bake, R4 shading and current export/persistence defects: [docs/engine/terrain.md](docs/engine/terrain.md).
 
 ## Frame
 
@@ -42,6 +48,7 @@ Keep dependencies downward. Do not add game or renderer implementation dependenc
 | Renderer selection / API | `src/xrEngine/EngineAPI.cpp`, `xr_ioc_cmd.cpp`, `Device_create_render.cpp` |
 | Shared render resources / blenders | `src/Layers/xrRender`, `src/Layers/xrRenderDX9` |
 | GPU | `src/xrRHI` |
+| Terrain authoring / bake / material | `src/Editors/LevelEditor/Editor/Terrain`, `Entry/Terrain`, `Tools/Terrain`; `src/utils/xrLC_Light/xrLight_Implicit*`; `src/Layers/xrRenderPC_R4/Blender_BmmD.cpp` |
 | Actor, inventory, weapons | `Actor.*`, `inventory*.*`, `Weapon*` |
 | Stalker AI | `src/xrGame/ai/stalker`, `Legacy/StalkerPlanner`, `stalker_*`, `cover_manager.*`, `ai_space.*` |
 | ALife | `alife_*` |
@@ -59,6 +66,10 @@ Keep dependencies downward. Do not add game or renderer implementation dependenc
 CMake ≥ 3.26, x64, output `build/bin/<Config>/`. Details: [docs/engine/build.md](docs/engine/build.md).
 
 `IXRAY_USE_R1` and `IXRAY_USE_R2` default on; R4 is added when `IXR_TEST_CI` is true (see `src/CMakeLists.txt`). `IXRAY_UNITYBUILD` defaults on for `xrGame` (batch 32). `IXRAY_MP` adds the dedicated renderer; `xrServer` / `xrServerCLI` / `xrGameSpy` also require `IXR_TEST_CI`. `IXRAY_EDITORS`, `IXRAY_UTILS`, `IXRAY_PLUGINS`, `IXRAY_TESTS` default off. `IXRAY_ASAN` requires a full rebuild. `IXRAY_PROFILER` (Optick) defaults on.
+
+## Runtime diagnosis
+
+For runtime bug work, the user builds and tests. Do not run local builds/tests or add temporary debug switches, probe dumps, shader toggles, or instrumentation. Supply concrete fixes and exact runtime/RenderDoc checks. Use Debug for checks and Debug plus RelWithDebInfo for final validation; never Release. Rendering verification requires a loaded level and actual output; use the existing headless autotest for repeatable captures/timings. Compilation alone does not establish visual correctness or performance.
 
 ## Code rules
 

@@ -10,6 +10,7 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [lifecycle.md](lifecycle.md) | Load stages, `on_idle`, threads |
 | [core.md](core.md) | Memory, `FS`, ltx, console, input, sound |
 | [rendering.md](rendering.md) | R1/R2/R4 selection, APIs, dynamic and static frames |
+| [terrain.md](terrain.md) | Heightmap authoring, mesh export, implicit lighting bake, landscape shading |
 | [gameplay.md](gameplay.md) | Level, ALife, Lua, class files |
 | [camera-focus.md](camera-focus.md) | Actor camera focus, Lua API, input ownership, transitions |
 | [item-parameters.md](item-parameters.md) | Inventory parameter rows, signs, icon colors |

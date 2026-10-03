@@ -77,6 +77,24 @@ Frame order: actor item UI → `Target->Begin` → HUD, graph 0, details, LODs �
 
 Static lighting uses `L_Dynamic`, `L_Shadows`, `L_Projector`, and `L_Glows`. Deferred combine changes in R2/R4 do not apply to this path.
 
+## Console and font submission
+
+The regular console uses `CConsole::OnRender` in [XR_IOConsole.cpp](../../src/xrEngine/XR_IOConsole.cpp): draw backgrounds, queue prompt/tips/history through `CGameFont::OutI`, then flush the two console fonts. The ImGui debug console is a separate path in `XR_IOConsole_UI.cpp`.
+
+[dxFontRender.cpp](../../src/Layers/xrRenderPC_R4/dxFontRender.cpp) is shared by both RHI backends. Previously, `RenderBase` mapped the vertex stream and issued an indexed draw for every queued string. It now batches consecutive strings from one font, with one map/unmap and draw per nonempty batch. Colors, gradients and positions remain per vertex; string order is preserved. Gamepad icons still render after the base text through separate draws.
+
+Batch capacity is `min(RCache.Vertex.GetSize() / pGeom.stride() / 4, 16384)`. Each glyph uses four vertices, so 16-bit indices allow at most 16,384 glyph quads per draw. The larger allocation in `CBackend::CreateQuadIB` does not remove that index limit. Reserved glyph counts use string byte lengths, which conservatively bound emitted glyphs. Keep both the vertex-stream bound and the index bound when changing batching.
+
+`CGameFont::MasterOut` adds eight extra strings when outlining is enabled. The supplied console font configuration does not enable outlining by default. `CConsole::OutFont` also recursively wraps long log entries and measures growing prefixes; that CPU work remains separate from draw batching. Neither was measured as the cause of the reported FPS drop.
+
+## D3D12 dynamic streams
+
+[_VertexStream::Lock](../../src/Layers/xrRenderPC_R4/R_DStreams.cpp) appends with `WRITE_NO_OVERWRITE` and wraps with `WRITE_DISCARD`. In [D3D12/Resources.cpp](../../src/xrRHI/D3D12/Resources.cpp), dynamic vertex/index buffers map their upload resource directly. `WRITE_NO_OVERWRITE` reuses owned upload storage; discard acquires another stream through the fence-aware pool in `D3D12/Device.cpp`. Their write unmap returns without uploading the whole shadow buffer. Do not infer a full-buffer copy or GPU flush for every console line from the generic map API.
+
+`InternalDevice12::PrepareDraw` in `D3D12/Binding.cpp` still prepares descriptor/root bindings, pipeline state and vertex/index views for each draw. Batching reduces how often this path is called; it does not change its synchronization or resource lifetime.
+
+The 2026-10-03 font batching change passed a Debug translation-unit compile with no warnings or errors. Runtime FPS and rendered output remain unverified. Check console-open versus console-closed frame times in the same loaded scene, and inspect text order, colors, selection, scrolling and long lines. A RenderDoc capture should show font draws split at batch capacity rather than at every string. Compilation alone does not establish the performance fix.
+
 ## Visibility and shader options
 
 Sectors and portals are traversed from the camera sector. HOM rejects hidden objects before drawing. Deferred renderers use occlusion queries for lights.
