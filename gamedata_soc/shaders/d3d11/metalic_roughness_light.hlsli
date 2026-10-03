@@ -53,7 +53,8 @@ float SpecularAA(float3 N, float3 V, float Roughness)
 	float variance = 0.25f * (dot(ddx(N), ddx(N)) + dot(ddy(N), ddy(N)));
 	float NdotV = saturate(abs(dot(N, -V)));
 	variance *= rcp(NdotV * NdotV + 0.02f);
-	Roughness = saturate(sqrt(Roughness * Roughness + min(2.0f * variance, 0.18f)));
+	float Alpha = Roughness * Roughness;
+	Roughness = saturate(sqrt(sqrt(Alpha * Alpha + min(2.0f * variance, 0.18f))));
 #endif
 	return Roughness;
 }
