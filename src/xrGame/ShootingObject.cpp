@@ -15,6 +15,7 @@
 #include "Level_Bullet_Manager.h"
 #include "game_cl_single.h"
 #include "ParticlesObject.h"
+#include "SaveObjectHelpers.h"
 
 #define HIT_POWER_EPSILON 0.05f
 #define WALLMARK_SIZE 0.04f
@@ -265,7 +266,13 @@ void CShootingObject::StartShellEjection(const Fvector& parent_vel, const shared
 	}
 
 	NET_Packet p;
-	o->Spawn_Write(p, true);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(p, *o);
+	} else
+	{
+		o->Spawn_Write(p, true);
+	}
 	Level().Send(p, net_flags(true));
 	F_entity_Destroy(o);
 }
