@@ -198,7 +198,7 @@ D3D12_GPU_VIRTUAL_ADDRESS DX12Buffer::GetAddress()
     if (_desc.Type == ERHI_BUFFER_TYPE::CONSTANT)
     {
         const u64 aligned = (u64(_desc.Size) + 255) & ~u64(255);
-        const bool live = _upload.Resource && !_upload.Owned && _upload.Frame < InternalDevice12::FrameCount &&
+        const bool live = _upload.Resource && !_upload.Owned && _upload.Frame == _device._frame &&
             _device._frames[_upload.Frame].UploadSerial == _upload.Serial;
         if (_uploaded != _generation || !live)
         {
@@ -231,7 +231,7 @@ D3D12_GPU_VIRTUAL_ADDRESS DX12Buffer::GetAddress()
 u64 DX12Buffer::PublishedAddress() const
 {
     if (_desc.Type != ERHI_BUFFER_TYPE::CONSTANT || _uploaded != _generation || !_upload.Resource || _upload.Owned ||
-        _upload.Frame >= InternalDevice12::FrameCount || _device._frames[_upload.Frame].UploadSerial != _upload.Serial)
+        _upload.Frame != _device._frame || _device._frames[_upload.Frame].UploadSerial != _upload.Serial)
     {
         return 0;
     }
