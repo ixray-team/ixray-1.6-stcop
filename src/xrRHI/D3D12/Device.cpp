@@ -121,8 +121,11 @@ InternalDevice12::InternalDevice12()
     QueryPerformanceFrequency(&frequency);
     _tickFrequency = u64(frequency.QuadPart);
 #if defined(IXRAY_PROFILER)
-    ID3D12CommandQueue* queues[] = { _queue };
-    Optick::InitGpuD3D12(GetDevice(), queues, 1);
+    if (Core.ParamsData.test(ECoreParams::prof_gpu))
+    {
+        ID3D12CommandQueue* queues[] = { _queue };
+        Optick::InitGpuD3D12(GetDevice(), queues, 1);
+    }
 #endif
     D3D12_QUERY_HEAP_DESC occlusion = {};
     occlusion.Type = D3D12_QUERY_HEAP_TYPE_OCCLUSION;
@@ -595,15 +598,18 @@ void InternalDevice12::BeginFrame()
     ContextLock guard(*this);
     Commands();
 #if defined(IXRAY_PROFILER)
-    if (_gpuContextLive)
+    if (Core.ParamsData.test(ECoreParams::prof_gpu))
     {
-        Optick::SetGpuContext(Optick::GPUContext(_prevGpuCommand, (Optick::GPUQueueType)_prevGpuQueue, _prevGpuNode));
+        if (_gpuContextLive)
+        {
+            Optick::SetGpuContext(Optick::GPUContext(_prevGpuCommand, (Optick::GPUQueueType)_prevGpuQueue, _prevGpuNode));
+        }
+        const auto previous = Optick::SetGpuContext(Optick::GPUContext(_commands));
+        _prevGpuCommand = previous.cmdBuffer;
+        _prevGpuQueue = u32(previous.queue);
+        _prevGpuNode = previous.node;
+        _gpuContextLive = true;
     }
-    const auto previous = Optick::SetGpuContext(Optick::GPUContext(_commands));
-    _prevGpuCommand = previous.cmdBuffer;
-    _prevGpuQueue = u32(previous.queue);
-    _prevGpuNode = previous.node;
-    _gpuContextLive = true;
 #endif
 #if defined(IXRAY_PROFILER_TRACY)
     TracyD3D12NewFrame(g_tracyD3D12GPUContext);
@@ -1217,12 +1223,15 @@ void InternalDevice12::Present()
     Transition(_backbuffers[_frame]->GetResource(), D3D12_RESOURCE_STATE_PRESENT);
     Submit();
 #if defined(IXRAY_PROFILER)
-    if (_gpuContextLive)
+    if (Core.ParamsData.test(ECoreParams::prof_gpu))
     {
-        Optick::SetGpuContext(Optick::GPUContext(_prevGpuCommand, (Optick::GPUQueueType)_prevGpuQueue, _prevGpuNode));
-        _gpuContextLive = false;
+        if (_gpuContextLive)
+        {
+            Optick::SetGpuContext(Optick::GPUContext(_prevGpuCommand, (Optick::GPUQueueType)_prevGpuQueue, _prevGpuNode));
+            _gpuContextLive = false;
+        }
+        Optick::GpuFlip(_swapchain);
     }
-    Optick::GpuFlip(_swapchain);
 #endif
     R_CHK(_swapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0));
     const u32 next = _swapchain->GetCurrentBackBufferIndex();

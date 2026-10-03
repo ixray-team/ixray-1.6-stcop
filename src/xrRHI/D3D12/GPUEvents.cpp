@@ -13,7 +13,10 @@ InternalDX12GPUEventWrapper::InternalDX12GPUEventWrapper(const char* name, const
     device.BeginMarker(name);
     _index = device.PushGPUEvent(name);
 #if defined(IXRAY_PROFILER)
-    _optick = Optick::GPUEvent::Start(*Optick::EventDescription::CreateShared(name));
+    if (Core.ParamsData.test(ECoreParams::prof_gpu))
+    {
+        _optick = Optick::GPUEvent::Start(*Optick::EventDescription::CreateShared(name));
+    }
 #endif
 #if defined(IXRAY_PROFILER_TRACY)
     if (location && g_tracyD3D12GPUContext)
