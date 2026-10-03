@@ -711,7 +711,7 @@ void	CBlender_Compile::SetMapping()
 	if (Device.IsEditorMode())
 	{
 		r_Constant("tfactor", &binder_tfactor);
-		r_Constant("editor_selection", &binder_selection);
+		r_Setup("editor_selection", &binder_selection);
 	}
 	r_Constant("L_material", &binder_material);
 
@@ -746,9 +746,9 @@ void	CBlender_Compile::SetMapping()
 
 	r_Constant("L_hemi_color", &binder_hemi_color);
 	r_Constant("L_ambient", &binder_amb_color);
-	r_Constant("ui_icon_light", &g_UIIconLightBinding);
-	r_Constant("ui_icon_direction", &g_UIIconDirectionBinding);
-	r_Constant("ui_emissive_tint", &g_UIIconEmissiveTintBinding);
+	r_Setup("ui_icon_light", &g_UIIconLightBinding);
+	r_Setup("ui_icon_direction", &g_UIIconDirectionBinding);
+	r_Setup("ui_emissive_tint", &g_UIIconEmissiveTintBinding);
 
 	r_Constant("screen_res", &binder_screen_res);
 	r_Constant("def_aref", &binder_def_aref);
@@ -759,7 +759,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("screen_scale", &binder_screen_scale);
 
 	r_Constant("rain_params", &binder_rain_params);
-	r_Constant("visor_rain", &g_VisorRainBinding);
+	r_Setup("visor_rain", &g_VisorRainBinding);
 
 	//LVutner: Gunslinger...
 	r_Constant("m_hud_params", &binder_m_hud_params);
@@ -773,11 +773,11 @@ void	CBlender_Compile::SetMapping()
 
 	if (detail_scaler)
 	{
-		r_Constant("dt_params", detail_scaler);
+		r_Setup("dt_params", detail_scaler);
 	}
 
 	for (const auto& [Name, Setup] : DEV->v_constant_setup)
 	{
-		r_Constant(*Name, Setup);
+		r_Setup(*Name, Setup);
 	}
 }

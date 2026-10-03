@@ -28,7 +28,7 @@ struct editor_instance
 };
 
 StructuredBuffer<editor_instance> editor_instances;
-uniform float4 editor_instance_params; // x: first instance of the draw
+#include "shared\extra_cb.hlsli"
 
 float4x4 editor_affine(float3x4 M)
 {

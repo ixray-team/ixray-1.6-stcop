@@ -2,8 +2,7 @@
 #include "common.hlsli"
 #include "shared\VisorDrops.hlsli"
 
-uniform float4 mask_control;
-uniform float4 visor_rain;
+#include "shared\extra_cb.hlsli"
 Texture2D s_droplets;
 Texture2D s_mask_nm_1;
 Texture2D s_mask_nm_2;

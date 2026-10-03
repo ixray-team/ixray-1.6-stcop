@@ -13,6 +13,7 @@ namespace FixedConstants
 	RENDER_API void UpdateFrame();
 	RENDER_API void UpdateView();
 	RENDER_API void UpdateObject(const Fmatrix& mW);
+	RENDER_API void UpdateObjectOld();
 	RENDER_API void UpdateMaterial();
 	RENDER_API void BindFrame();
 	RENDER_API void BindView();
@@ -24,6 +25,8 @@ namespace FixedConstants
 	RENDER_API bool IsFixedName(const char* n);
 	RENDER_API int  FixedClass(const char* n);
 	RENDER_API void Flush();
+	RENDER_API void OnShaderBind();
+	RENDER_API bool MapBone(const char* name, u32 bytes, void** out);
 
 	RENDER_API void SetHemiMaterial(float x,float y,float z,float w);
 	RENDER_API void SetHemiPosFaces(float x,float y,float z);

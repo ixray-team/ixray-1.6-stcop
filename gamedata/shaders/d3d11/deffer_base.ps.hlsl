@@ -3,7 +3,7 @@
 #include "hud_raindrops.hlsli"
 
 #ifdef EDITOR_MODE
-uniform float4 editor_selection;
+#include "shared\extra_cb.hlsli"
 #endif
 
 void cotangent_frame(inout p_bumped_new O)

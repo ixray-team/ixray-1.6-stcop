@@ -24,6 +24,22 @@ static IRHIBuffer* cb_object = nullptr;
 static IRHIBuffer* cb_material = nullptr;
 static IRHIBuffer* cb_light = nullptr;
 static IRHIBuffer* cb_pass = nullptr;
+static IRHIBuffer* cb_skin = nullptr;
+static constexpr u32 kBoneVectors = 128 * 3;
+static Fvector4 skin_cur[kBoneVectors];
+static Fvector4 skin_old[kBoneVectors];
+static bool dirty_skin = false;
+
+// Groups 12..14 keep their own slots and stay bound, so shaders that read them while nothing
+// has written them yet (editor constants in the game) see zeros instead of another group
+enum { kExtraCount = 15, kExtraUIIcon = 12, kExtraVisor = 13, kExtraEditor = 14, kExtraPersistentFirst = kExtraUIIcon };
+static IRHIBuffer* extra_buf[kExtraCount] = {};
+alignas(16) static u8 extra_data[kExtraCount][160] = {};
+static bool extra_dirty[kExtraCount] = {};
+static int bind_b6 = -1;
+static int bind_b7 = -1;
+static const u32 extra_slot[kExtraCount] = { 6, 6, 6, 6, 7, 6, 7, 6, 6, 6, 6, 6, 11, 12, 13 };
+static const u32 extra_size[kExtraCount] = { 16, 16, 48, 80, 144, 16, 32, 16, 16, 16, 32, 80, 48, 96, 64 };
 
 static CBFrame cpu_frame{};
 static CBView cpu_view{};
@@ -145,6 +161,7 @@ static bool updateBuffer(IRHIBuffer* buf, const void* data, u32 size)
 }
 
 static IRHIBuffer* s_bound[6][FixedConstants::kSlots];
+static IRHIBuffer* s_bound_extra[6][kExtraCount - kExtraPersistentFirst];
 
 static void bindAllStages()
 {
@@ -161,6 +178,20 @@ static void bindAllStages()
 		std::memcpy(s_bound[i], bufs, sizeof(bufs));
 		GRHI->SetConstantBuffers(0, FixedConstants::kSlots, bufs, stages[i]);
 	}
+
+	for (u32 i = 0; i < 6; ++i)
+	{
+		for (u32 group = kExtraPersistentFirst; group < kExtraCount; ++group)
+		{
+			IRHIBuffer*& bound = s_bound_extra[i][group - kExtraPersistentFirst];
+			if (bound == extra_buf[group] || !extra_buf[group])
+			{
+				continue;
+			}
+			bound = extra_buf[group];
+			GRHI->SetConstantBuffers(extra_slot[group], 1, &bound, stages[i]);
+		}
+	}
 }
 
 void FixedConstants::Create()
@@ -171,6 +202,9 @@ void FixedConstants::Create()
 	RHIUtils::CreateConstantBuffer(&cb_material, sizeof(CBMaterial));
 	RHIUtils::CreateConstantBuffer(&cb_light, sizeof(CBLight));
 	RHIUtils::CreateConstantBuffer(&cb_pass, sizeof(CBPass));
+	RHIUtils::CreateConstantBuffer(&cb_skin, kBoneVectors * 2 * sizeof(Fvector4));
+	for (u32 i = 0; i < kExtraCount; ++i)
+		RHIUtils::CreateConstantBuffer(&extra_buf[i], extra_size[i]);
 
 	cpu_object.L_dynamic_props.set(0, 0, 0, 0);
 	store_Float4x4(cpu_object.m_plmap_xform, Fidentity);
@@ -188,6 +222,9 @@ void FixedConstants::Destroy()
 	_RELEASE(cb_material);
 	_RELEASE(cb_light);
 	_RELEASE(cb_pass);
+	_RELEASE(cb_skin);
+	for (u32 i = 0; i < kExtraCount; ++i)
+		_RELEASE(extra_buf[i]);
 }
 void FixedConstants::UpdateFrame()
 {
@@ -343,7 +380,9 @@ void FixedConstants::UpdateView()
 	cpu_view.eye_direction.set(Device.vCameraDirection.x, Device.vCameraDirection.y, Device.vCameraDirection.z, 0);
 	cpu_view.eye_normal.set(Device.vCameraTop.x, Device.vCameraTop.y, Device.vCameraTop.z, 0);
 	cpu_view.m_taa_jitter.set(ps_r_taa_jitter.x, ps_r_taa_jitter.y, ps_r_taa_jitter.z, float(Device.dwFrame));
-	cpu_view.screen_res.set(float(RDEVICE.TargetWidth), float(RDEVICE.TargetHeight), 1.0f / float(RDEVICE.TargetWidth), 1.0f / float(RDEVICE.TargetHeight));
+	const float target_w = RCache.get_target_width();
+	const float target_h = RCache.get_target_height();
+	cpu_view.screen_res.set(target_w, target_h, 1.0f / target_w, 1.0f / target_h);
 	cpu_view.scaled_screen_res.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 	cpu_view.pos_decompression_params2.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 
@@ -358,6 +397,7 @@ void FixedConstants::UpdateView()
 	const R_xforms& x = RCache.xforms;
 	store_Float3x4(cpu_object.m_WV, x.m_wv);
 	store_Float4x4(cpu_object.m_WVP, x.m_wvp);
+	store_Float4x4(cpu_object.m_WVP_old, x.m_wvp_old);
 	if (std::memcmp(&view_prev, &cpu_view, sizeof(view_prev)) != 0)
 		dirty_view = true;
 	if (std::memcmp(&pass_prev, &cpu_pass, sizeof(pass_prev)) != 0)
@@ -381,6 +421,10 @@ void FixedConstants::UpdateObject(const Fmatrix& mW)
 	store_Float3x4(cpu_object.m_invW, invW);
 	if (std::memcmp(&object_prev, &cpu_object, sizeof(object_prev)) != 0)
 		dirty_object = true;
+}
+void FixedConstants::UpdateObjectOld()
+{
+	dirty_object |= store_Float4x4(cpu_object.m_WVP_old, RCache.xforms.m_wvp_old);
 }
 void FixedConstants::UpdateMaterial()
 {
@@ -429,6 +473,7 @@ void FixedConstants::BindAll()
 void FixedConstants::InvalidateBindings()
 {
 	ZeroMemory(s_bound, sizeof(s_bound));
+	ZeroMemory(s_bound_extra, sizeof(s_bound_extra));
 }
 
 u32 FixedConstants::NameHash(const char* n)
@@ -456,6 +501,127 @@ int FixedConstants::FixedClass(const char* n)
 
 	return 0;
 }
+static void store_texgen(const Fmatrix& src)
+{
+	Fmatrix adjust;
+	adjust.identity();
+	adjust._11 = 0.5f;
+	adjust._22 = -0.5f;
+	adjust._41 = 0.5f;
+	adjust._42 = 0.5f;
+	Fmatrix texgen;
+	texgen.mul(adjust, src);
+	store_Float4x4(cpu_pass.m_texgen, texgen);
+}
+
+void FixedConstants::OnShaderBind()
+{
+	const float target_w = RCache.get_target_width();
+	const float target_h = RCache.get_target_height();
+	dirty_view |= set4(cpu_view.screen_res, target_w, target_h, 1.0f / target_w, 1.0f / target_h);
+	const float w = RCache.get_width();
+	const float h = RCache.get_height();
+	dirty_view |= set4(cpu_view.scaled_screen_res, w, h, 1.0f / w, 1.0f / h);
+	dirty_view |= set4(cpu_view.m_taa_jitter, ps_r_taa_jitter.x, ps_r_taa_jitter.y, ps_r_taa_jitter.z, float(Device.dwFrame));
+#ifdef _EDITOR
+	dirty_material |= set1(cpu_material.def_aref, 100.f / 255.f);
+#else
+	dirty_material |= set1(cpu_material.def_aref, ps_r2_def_aref_quality / 255.f);
+#endif
+	const CBPass pass_prev = cpu_pass;
+	store_texgen(RCache.xforms.m_wvp);
+	if (std::memcmp(&pass_prev, &cpu_pass, sizeof(pass_prev)) != 0)
+		dirty_pass = true;
+}
+
+static void bind_slot(u32 slot, IRHIBuffer* buf)
+{
+	if (!buf)
+		return;
+	static const ERHI_SHADER_TYPE stages[6] =
+		{ERHI_SHADER_TYPE::VS, ERHI_SHADER_TYPE::PS, ERHI_SHADER_TYPE::GS, ERHI_SHADER_TYPE::HS, ERHI_SHADER_TYPE::DS, ERHI_SHADER_TYPE::CS};
+	for (u32 i = 0; i < 6; ++i)
+		GRHI->SetConstantBuffers(slot, 1, &buf, stages[i]);
+}
+
+static bool write_extra(u32 h, const Fvector4& A)
+{
+	struct Field { u32 hash; u32 group; u32 offset; };
+	static const Field fields[] = {
+		{chash("downsample_params"), 0, 0},
+		{chash("upsample_params"), 1, 0},
+		{chash("adapt_params"), 2, 0},
+		{chash("adapt_params2"), 2, 16},
+		{chash("MiddleGray"), 2, 32},
+		{chash("autoexposure_params"), 3, 0},
+		{chash("bloom_params"), 3, 16},
+		{chash("tonemap_params"), 3, 32},
+		{chash("bloom_tint"), 3, 48},
+		{chash("spp_params"), 3, 64},
+		{chash("wind_global"), 4, 0},
+		{chash("wind_xz1"), 4, 16},
+		{chash("wind_xz1_dir"), 4, 32},
+		{chash("wind_xz2"), 4, 48},
+		{chash("wind_xz2_dir"), 4, 64},
+		{chash("wind_xz3"), 4, 80},
+		{chash("wind_xz3_dir"), 4, 96},
+		{chash("wind_swirl"), 4, 112},
+		{chash("wind_swirl_dir"), 4, 128},
+		{chash("trample_params"), 5, 0},
+		{chash("dof_params"), 6, 0},
+		{chash("dof_kernel"), 6, 16},
+		{chash("gtao_parameters"), 7, 0},
+		{chash("puddle_constants"), 8, 0},
+		{chash("sharpening_intensity"), 9, 0},
+		{chash("static_color"), 10, 0},
+		{chash("ui_has_background"), 10, 16},
+		{chash("RainDensity"), 11, 0},
+		{chash("RainFallof"), 11, 16},
+		{chash("WorldX"), 11, 32},
+		{chash("WorldZ"), 11, 48},
+		{chash("m_level_scale"), 11, 64},
+		{chash("ui_icon_light"), kExtraUIIcon, 0},
+		{chash("ui_icon_direction"), kExtraUIIcon, 16},
+		{chash("ui_emissive_tint"), kExtraUIIcon, 32},
+		{chash("visor_rain"), kExtraVisor, 0},
+		{chash("mask_control"), kExtraVisor, 16},
+		{chash("editor_params"), kExtraEditor, 0},
+		{chash("editor_selection"), kExtraEditor, 16},
+		{chash("editor_instance_params"), kExtraEditor, 32},
+		{chash("editor_hiz_params"), kExtraEditor, 48},
+	};
+	for (const Field& field : fields)
+	{
+		if (field.hash != h)
+			continue;
+		if (extra_slot[field.group] == 6)
+			bind_b6 = int(field.group);
+		else if (extra_slot[field.group] == 7)
+			bind_b7 = int(field.group);
+		Fvector4* dst = reinterpret_cast<Fvector4*>(extra_data[field.group] + field.offset);
+		if (dst->x == A.x && dst->y == A.y && dst->z == A.z && dst->w == A.w)
+			return true;
+		*dst = A;
+		extra_dirty[field.group] = true;
+		return true;
+	}
+	return false;
+}
+
+bool FixedConstants::MapBone(const char* name, u32 bytes, void** out)
+{
+	if (!name || !out || bytes > kBoneVectors * sizeof(Fvector4))
+		return false;
+	const bool current = !xr_strcmp(name, "sbones_array");
+	const bool old = !xr_strcmp(name, "sbones_array_old");
+	if (!current && !old)
+		return false;
+	*out = current ? static_cast<void*>(skin_cur) : static_cast<void*>(skin_old);
+	dirty_skin = true;
+	bind_b6 = -2;
+	return true;
+}
+
 void FixedConstants::Flush()
 {
 	if (dirty_frame && updateBuffer(cb_frame, &cpu_frame, sizeof(cpu_frame)))
@@ -470,6 +636,25 @@ void FixedConstants::Flush()
 		dirty_light = false;
 	if (dirty_pass && updateBuffer(cb_pass, &cpu_pass, sizeof(cpu_pass)))
 		dirty_pass = false;
+	for (u32 i = 0; i < kExtraCount; ++i)
+	{
+		if (extra_dirty[i] && updateBuffer(extra_buf[i], extra_data[i], extra_size[i]))
+			extra_dirty[i] = false;
+	}
+	if (dirty_skin)
+	{
+		u8 packed[kBoneVectors * 2 * sizeof(Fvector4)];
+		CopyMemory(packed, skin_cur, sizeof(skin_cur));
+		CopyMemory(packed + sizeof(skin_cur), skin_old, sizeof(skin_old));
+		if (updateBuffer(cb_skin, packed, sizeof(packed)))
+			dirty_skin = false;
+	}
+	if (bind_b6 == -2)
+		bind_slot(6, cb_skin);
+	else if (bind_b6 >= 0)
+		bind_slot(6, extra_buf[bind_b6]);
+	if (bind_b7 >= 0)
+		bind_slot(7, extra_buf[bind_b7]);
 }
 void FixedConstants::SetHemiMaterial(float x, float y, float z, float w)
 {
@@ -597,6 +782,9 @@ bool FixedConstants::OnSet(u32 h, const Fmatrix& A)
 {
 	switch (h)
 	{
+		case chash("m_tc_xform"):
+			extra_dirty[kExtraVisor] |= store_Float4x4(reinterpret_cast<shader_float4*>(extra_data[kExtraVisor] + 32), A);
+			break;
 		case chash("m_plmap_xform"):
 			dirty_object |= store_Float4x4(cpu_object.m_plmap_xform, A);
 			break;
@@ -669,6 +857,8 @@ bool FixedConstants::OnSet(u32 h, const Fmatrix& A)
 }
 bool FixedConstants::OnSet(u32 h, const Fvector4& A)
 {
+	if (write_extra(h, A))
+		return true;
 	switch (h)
 	{
 		case chash("L_dynamic_props"):
@@ -828,7 +1018,11 @@ bool FixedConstants::OnSet(u32 h, float A)
 			dirty_material |= set4(cpu_material.triLOD, A, A, A, A);
 			break;
 		default:
-			return false;
+		{
+			Fvector4 v;
+			v.set(A, 0, 0, 0);
+			return write_extra(h, v);
+		}
 	}
 	return true;
 }

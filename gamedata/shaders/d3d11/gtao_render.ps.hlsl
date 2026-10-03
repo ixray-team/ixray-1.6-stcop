@@ -19,7 +19,10 @@
 
 #include "common.hlsli"
 
-float gtao_parameters; //Factor used to transform world space radius into screen space
+cbuffer cb_gtao : register(b6)
+{
+    float gtao_parameters; //Factor used to transform world space radius into screen space
+};
 
 float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal, float2 texcoord, float2 jitter)
 {

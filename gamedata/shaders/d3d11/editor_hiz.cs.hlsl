@@ -4,7 +4,7 @@
 // The CPU reads the grid back and rejects boxes whose nearest point is behind it.
 RWTexture2D<float> u_hiz : register(u0);
 
-uniform float4 editor_hiz_params; // xy: viewport size in pixels
+#include "shared\extra_cb.hlsli"
 
 [numthreads(8, 8, 1)]
 void main(uint2 DTid : SV_DispatchThreadID)

@@ -23,7 +23,7 @@ TextureCube s_env0;
 TextureCube s_env1;
 
 #ifdef EDITOR_MODE
-uniform float4 editor_params;
+#include "shared\extra_cb.hlsli"
 #endif
 
 Texture2D s_leaves;
