@@ -3,22 +3,12 @@
 
 static ShaderBindSlot g_binds[32];
 static u32 g_bind_count = 0;
-static u32 g_dummy_t = 0;
-static u32 g_dummy_s = 0;
 
 void ShaderBind_Set(const ShaderBindSlot* items, u32 count)
 {
 	g_bind_count = std::min(count, u32(std::size(g_binds)));
 	if (g_bind_count)
 		CopyMemory(g_binds, items, g_bind_count * sizeof(ShaderBindSlot));
-	g_dummy_t = g_dummy_s = 0;
-	for (u32 i = 0; i < g_bind_count; ++i)
-	{
-		u32& dummy = g_binds[i].space == 's' ? g_dummy_s : g_dummy_t;
-		dummy = std::max(dummy, g_binds[i].slot + 1);
-	}
-	g_dummy_t = std::min(g_dummy_t, 15u);
-	g_dummy_s = std::min(g_dummy_s, 15u);
 }
 
 void ShaderBind_Clear()
@@ -55,12 +45,11 @@ static bool starts_with_token(const xr_string& line, u32 i, const char* word)
 	return i + len == line.size() || (!std::isalnum(u8(line[i + len])) && line[i + len] != '_');
 }
 
-static char decl_space(const xr_string& line, bool& indented)
+static char decl_space(const xr_string& line)
 {
 	u32 i = 0;
 	while (i < line.size() && (line[i] == ' ' || line[i] == '\t' || line[i] == '\r'))
 		++i;
-	indented = i > 0;
 	if (starts_with_token(line, i, "static"))
 		return 0;
 	if (starts_with_token(line, i, "uniform"))
@@ -103,11 +92,9 @@ bool ShaderBind_Rewrite(const u8* in_data, u32 in_size, u8*& out_data, u32& out_
 		while (line_end < text.size() && text[line_end] != '\n')
 			++line_end;
 		xr_string line = text.substr(line_start, line_end - line_start);
-		bool indented = false;
-		const char space = decl_space(line, indented);
+		const char space = decl_space(line);
 		if (space)
 		{
-			bool matched = false;
 			for (u32 i = 0; i < g_bind_count; ++i)
 			{
 				const u32 len = u32(xr_strlen(g_binds[i].name));
@@ -129,16 +116,8 @@ bool ShaderBind_Rewrite(const u8* in_data, u32 in_size, u8*& out_data, u32& out_
 				}
 				else
 					line.insert(semi, xr_string(" : ") + reg);
-				changed = matched = true;
-				break;
-			}
-			const u32 semi = u32(line.find(';'));
-			if (!matched && !indented && space != 'u' && semi != u32(xr_string::npos) && line.find("register(") == xr_string::npos)
-			{
-				char reg[32];
-				xr_sprintf(reg, " : register(%c%u)", space, space == 's' ? g_dummy_s : g_dummy_t);
-				line.insert(semi, reg);
 				changed = true;
+				break;
 			}
 		}
 		rebuilt += line;

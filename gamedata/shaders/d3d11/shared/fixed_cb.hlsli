@@ -35,7 +35,7 @@ struct alignas(16) shader_float4
 #define FX_FN inline constexpr
 #define FX_OUT(T, n) T& n
 #define FX_CBUFFER(cpp_name, hlsl_name, slot) struct alignas(16) cpp_name {
-#define FX_CBUFFER_END() };
+#define FX_CBUFFER_END };
 #define FX_F4(name) shader_float4 name;
 #define FX_F4A(name, count) shader_float4 name[count];
 #define FX_F3(name) shader_float4 name;
@@ -51,7 +51,7 @@ struct alignas(16) shader_float4
 #define FX_FN
 #define FX_OUT(T, n) out T n
 #define FX_CBUFFER(cpp_name, hlsl_name, slot) cbuffer hlsl_name : register(slot) {
-#define FX_CBUFFER_END() };
+#define FX_CBUFFER_END };
 #define FX_F4(name) float4 name;
 #define FX_F4A(name, count) float4 name[count];
 #define FX_F3(name) float3 name;
@@ -212,30 +212,30 @@ FX_FN void decode_float3x4(FX_OUT(FX_V4, r0), FX_OUT(FX_V4, r1), FX_OUT(FX_V4, r
 FX_CBUFFER(CBFrame, cb_frame, b0)
 CB_FRAME_FIELDS
 CB_FRAME_HUD_RAIN
-FX_CBUFFER_END()
+FX_CBUFFER_END
 
 FX_CBUFFER(CBView, cb_view, b1)
 CB_VIEW_FIELDS
-FX_CBUFFER_END()
+FX_CBUFFER_END
 
 FX_CBUFFER(CBObject, cb_object, b2)
 CB_OBJECT_XFORM
 CB_OBJECT_PROPS
-FX_CBUFFER_END()
+FX_CBUFFER_END
 
 FX_CBUFFER(CBMaterial, cb_material, b3)
 CB_MATERIAL_FIELDS
-FX_CBUFFER_END()
+FX_CBUFFER_END
 
 FX_CBUFFER(CBLight, cb_light, b4)
 CB_LIGHT_FIELDS
 CB_LIGHT_XFORM
-FX_CBUFFER_END()
+FX_CBUFFER_END
 
 FX_CBUFFER(CBPass, cb_pass, b5)
 CB_PASS_FIELDS
 CB_PASS_REFLECTION
-FX_CBUFFER_END()
+FX_CBUFFER_END
 
 #undef FX_CBUFFER
 #undef FX_CBUFFER_END
