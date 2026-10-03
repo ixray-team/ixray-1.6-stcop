@@ -46,13 +46,18 @@ public:
 #endif
 	
 	ref_rt						rt_sslr;
+	ref_rt						rt_sslr_scene;
 	ref_rt						rt_sslr_temp;
 	ref_rt						rt_sslr_old;
 	ref_rt						rt_sslr_data;
 	ref_rt						rt_sslr_depth_min;
 	ref_rt						rt_sslr_trace;
 	ref_rt						rt_sslr_hist;
+	ref_rt						rt_sslr_old_surface;
+	ref_rt						rt_sslr_hist_surface;
 	bool						sslr_history_flip = false;
+	Fvector _sslrJitter{};
+	u32 _sslrFrame = 0;
 
 	// MRT-path
 	ref_rt						rt_Generic;

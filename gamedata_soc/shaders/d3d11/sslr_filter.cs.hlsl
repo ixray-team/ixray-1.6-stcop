@@ -55,6 +55,13 @@ RWTexture2D<float4> u_sslr_temp : register(u0);
 [numthreads(8, 8, 1)]
 void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
+	uint width, height;
+	u_sslr_temp.GetDimensions(width, height);
+	if (any(DTid >= uint2(width, height)))
+	{
+		return;
+	}
+
 	//LVutner: Making my life easier.
 	PSInputFullscreen I;
 	I.hpos.xy = float2(DTid.xy) + 0.5; //half-pix
@@ -75,7 +82,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		return;
 	}
 
-	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
+	float3 ReflectPoint = GbufferGetPointRealJitter(I.texcoord.xy, O.Depth);
 	float3 View = normalize(ReflectPoint);
 	
 	float4 FinalColor = 0.0f;
@@ -91,26 +98,31 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		
 		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
 		
-		float4 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f);
+		if ((SSLR.w < 0.0f ? 1.0f : 0.0f) != isHUDRender || SSLR.w == 0.0f || !all(isfinite(SSLR)))
+			continue;
+		float4 Color = float4(s_image.SampleLevel(smp_nofilter, offset, 0.0f).xyz, 0.0f);
 		float3 Light = ReflectPoint - SSLR.xyz;
 		
 		float Length = length(Light);
 		Light *= Length > 0.0f ? rcp(Length) : 0.0f;
 		
-		float3 Half = normalize(Light + View);
+		float3 Half = Light + View;
+		if (dot(Half, Half) < EPS_S || !all(isfinite(Color)))
+			continue;
+		Half = normalize(Half);
 
 		float NdotH = max(0.0f, dot(O.Normal, -Half));
 		
 #ifndef USE_LEGACY_LIGHT
 		//LVutner: it just works.
 		float D = DistributionGGX(NdotH, O.Roughness);
-		float SampleWeight = max(D * NdotH * SSLR.w, 1e-5);
+		float SampleWeight = max(D * NdotH * exp2(abs(SSLR.w) - 24.0f), 1e-5);
 #else
 		float SampleWeight = rcp(NdotH + EPS);
 #endif
 		
-		//HUD weight
-		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
+		if (!isfinite(SampleWeight))
+			continue;
 
 		Color.w = Length;
 		FinalColor += Color * SampleWeight;
@@ -118,10 +130,9 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		FinalWeight += SampleWeight;
 	}
 
-	FinalColor *= rcp(FinalWeight);
-	FinalColor.xyz = saturate(FinalColor.xyz);
+	FinalColor = FinalWeight > EPS_S ? FinalColor / FinalWeight : float4(s_image.Load(int3(DTid, 0)).xyz, 0.0f);
 
-	FinalColor.w += O.ViewDist;
+	FinalColor.w += length(ReflectPoint);
 
 	u_sslr_temp[DTid.xy] = FinalColor;
 }

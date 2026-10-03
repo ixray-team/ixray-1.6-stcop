@@ -60,26 +60,23 @@ void main(vf I, out IXRayForward O)
 	
 	float3 ReflectPoint = I.tctexgen.xyz;
 	
-#ifdef USE_OFFSCREEN_REFLECTIONS
-	float ReflectDist = s_env_dist.SampleLevel(smp_linear, ReflectPoint.xyz, 0.0f).x;
-	ReflectDist = min(ReflectDist, s_env_dist.SampleLevel(smp_nofilter, ReflectPoint.xyz, 0.0f).x);
-	
-	ReflectDist /= max(EPS, length(ReflectPoint));
-	
-	ReflectPoint *= min(1.0f, ReflectDist);
-#endif
 
-	ReflectPoint = ReflectPoint * 0.99f + Nw * 0.07f;
+	ReflectPoint += mul((float3x3)m_V, Nw) * 0.07f;
 	
     float4 sslr = ScreenSpaceLocalReflections(ReflectPoint, Reflect);
 	
 	#ifdef USE_OFFSCREEN_REFLECTIONS
-		float4 vslr = FastViewReflections(ReflectPoint, Reflect);
-		
-		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
-		vslr.w *= 1.f - Fog * Fog;
-		
-		vslr.xyz = s_env.SampleLevel(smp_linear, vslr.xyz, 0.0f).xyz;
+		float4 vslr = 0.0f;
+		if (sslr.w < 1.0f)
+		{
+			vslr = FastViewReflections(ReflectPoint, Reflect);
+			if (vslr.w > 0.0f)
+			{
+				float Fog = saturate((length(ReflectPoint) + length(vslr.xyz - ReflectPoint)) * fog_params.w + fog_params.x);
+				vslr.w *= 1.0f - Fog * Fog;
+				vslr.xyz = s_env.SampleLevel(smp_linear, ReflectionCapturePoint(vslr.xyz), 0.0f).xyz;
+			}
+		}
 	#endif
 #endif
 
@@ -189,7 +186,11 @@ void main(vf I, out IXRayForward O)
 	O.Color.w = alpha * (1.0f - fog_fade * fog_fade);
 	
 #ifndef DISABLE_MOTION_VECTORS
-	O.Velocity = 0.0f;
+	float4 CurrentClip = mul(m_P, float4(I.tctexgen, 1.0f));
+	float4 PreviousClip = mul(m_VP_old, float4(mul(m_invV, float4(I.tctexgen, 1.0f)), 1.0f));
+	if (PreviousClip.w > EPS && all(isfinite(PreviousClip)))
+		O.Velocity.xy = CurrentClip.xy / CurrentClip.w - PreviousClip.xy / PreviousClip.w;
+	O.Velocity.zw = saturate(O.Color.w * 2.0f - 1.0f);
 #endif
 	
 #ifdef USE_WBOIT_TRANSPARENCY

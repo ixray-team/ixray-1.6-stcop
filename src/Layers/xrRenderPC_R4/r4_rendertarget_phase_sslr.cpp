@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "r4_rendertarget.h"
+#include "dx10FixedConstants.h"
 
 void CRenderTarget::phase_sslr()
 {
@@ -7,6 +8,7 @@ void CRenderTarget::phase_sslr()
 		return;
 
 	GPU_EVENT(phase_sslr);
+	FixedConstants::SetReflectionHistory(_sslrJitter, _sslrFrame + 1u == Device.dwFrame);
 
 	//groups
 	const UINT tgroupsX = (RCache.get_width() + 7u) / 8u;
@@ -29,7 +31,7 @@ void CRenderTarget::phase_sslr()
 
 		GRHI->SetComputeUAVs(0, 1, &our_uav, nullptr);
 
-		RCache.Compute((rt_sslr_depth_min->dwWidth + 7u) / 8u, (rt_sslr_depth_min->dwHeight + 7u) / 8u, 1);
+		RCache.Compute(rt_sslr_depth_min->dwWidth, rt_sslr_depth_min->dwHeight, 1);
 
 		GRHI->SetComputeUAVs(0, 1, &uav_dummy, nullptr);
 		GRHI->SetComputeResources(0, 16, srv_dummy);
@@ -109,20 +111,23 @@ void CRenderTarget::phase_sslr()
         RCache.set_CS(P.cs);
 
 
-		IRHIUnorderedAccessView* our_uav[2] = {
+		IRHIUnorderedAccessView* our_uav[3] = {
 			rt_sslr->pUAView,
-			(sslr_history_flip ? rt_sslr_old : rt_sslr_hist)->pUAView
+			(sslr_history_flip ? rt_sslr_old : rt_sslr_hist)->pUAView,
+			(sslr_history_flip ? rt_sslr_old_surface : rt_sslr_hist_surface)->pUAView
 		};
-		IRHIUnorderedAccessView* uav_dummy[2] = { nullptr, nullptr };
+		IRHIUnorderedAccessView* uav_dummy[3] = { nullptr, nullptr, nullptr };
 
-		GRHI->SetComputeUAVs(0, 2, our_uav, nullptr);
+		GRHI->SetComputeUAVs(0, 3, our_uav, nullptr);
 
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
-		GRHI->SetComputeUAVs(0, 2, uav_dummy, nullptr);
+		GRHI->SetComputeUAVs(0, 3, uav_dummy, nullptr);
 		GRHI->SetComputeResources(0, 16, srv_dummy);
 
 		sslr_history_flip = !sslr_history_flip;
+		_sslrJitter = ps_r_taa_jitter;
+		_sslrFrame = Device.dwFrame;
 	}
 }
 
@@ -134,6 +139,7 @@ void CRender::begin_reflection_collect()
 	reflection_cam_right = Device.vCameraRight;
 	reflection_fov = Device.fFOV;
 	reflection_near = Device.fViewportNear;
+	_reflectionDistance = ps_r4_vslr_distance;
 	reflection_sector = pLastSector;
 	reflection_far = 1000.f;
 	if (g_pGamePersistent && g_pGamePersistent->pEnvironment && g_pGamePersistent->pEnvironment->CurrentEnv)
@@ -191,7 +197,7 @@ void CRender::collect_reflections()
 	cull.ssa_lod_b = _sqr(ps_r2_ssaLOD_B / 3) / screen;
 
 	Fmatrix env_project;
-	env_project.build_projection(PI_DIV_2, 1.0f, reflection_near, reflection_far * 0.4f);
+	env_project.build_projection(PI_DIV_2, 1.0f, reflection_near, reflection_far * _reflectionDistance);
 
 	Fvector cm_norm[6];
 	Fvector cm_dir[6];
@@ -223,7 +229,7 @@ void CRender::collect_reflections()
 		Graph.private_marker = true;
 		Graph.val_pTransform = &Fidentity;
 		Graph.private_visuals.clear();
-		Graph.r_pmask(true, false);
+		Graph.r_pmask(true, true);
 		Graph.PortalTraverser.prepare_local_clips(sector_count, portal_count);
 		Graph.r_dsgraph_render_subspace(reflection_sector, env_full, reflection_cam_pos, false, false);
 	}
@@ -246,10 +252,18 @@ void CRender::render_reflections()
 
 	GPU_EVENT(RENDER_REFLECTIONS);
 
-	if (!RImplementation.pLastSector)
+	if (!reflection_sector)
 	{
+		FixedConstants::SetReflectionCapture(Fidentity, 0.f, false);
+		const Fvector4 fallbackColor = { 0.f, 0.f, 0.f, 1.f };
+		GRHI->ClearTarget(Target->rt_Reflection_forward->pRT, &fallbackColor.x);
+		GRHI->GenerateMips(Target->rt_Reflection_forward->pTexture->get_SRView());
 		return;
 	}
+
+	Fmatrix captureView;
+	captureView.build_camera_dir(reflection_cam_pos, reflection_cam_dir, reflection_cam_top);
+	FixedConstants::SetReflectionCapture(captureView, reflection_far * _reflectionDistance * std::sqrt(3.f), true);
 
 	Device.Statistic->TEST2.Begin();
 	GPU_EVENT(FORWARD_REFLECTIONS);
@@ -276,13 +290,11 @@ void CRender::render_reflections()
 	CmNorm[4].mul(reflection_cam_top, +1.0f);
 	CmNorm[5].mul(reflection_cam_top, +1.0f);
 
-	CEnvDescriptorMixer* CurrentEnv = g_pGamePersistent->Environment().CurrentEnv;
+	EnvProject.build_projection(PI_DIV_2, 1.0f, reflection_near, reflection_far * _reflectionDistance);
 
-	EnvProject.build_projection(PI_DIV_2, 1.0f, reflection_near, reflection_far * 0.4f);
-
-	Fvector4 fog_color4 = 
+	const Fvector4 distanceClear =
 	{
-		CurrentEnv->fog_far, 0.0f, 0.0f, 0.0f
+		-1.0f, 0.0f, 0.0f, 0.0f
 	};
 
 	is_render_cubemap = true;
@@ -292,7 +304,8 @@ void CRender::render_reflections()
 	{
 		EnvView.build_camera_dir(reflection_cam_pos, CmDir[i], CmNorm[i]);
 
-		GRHI->ClearTarget(Target->rt_Reflection_temp->pRT[i], (const float*)&fog_color4);
+		GRHI->ClearTarget(Target->rt_Reflection->pRT[i]);
+		GRHI->ClearTarget(Target->rt_Reflection_temp->pRT[i], &distanceClear.x);
 
 		bool NeedRender = GraphReflection[i].mapNormalPasses[0][0].size() || GraphReflection[i].mapMatrixPasses[0][0].size() ||
 						GraphReflection[i].mapNormalPasses[1][0].size() || GraphReflection[i].mapMatrixPasses[1][0].size() || GraphReflection[i].mapSorted.size();
@@ -312,6 +325,8 @@ void CRender::render_reflections()
 		RCache.set_xform_project(EnvProject);
 
 		GraphReflection[i].r_dsgraph_render_graph(0);
+		GraphReflection[i].r_dsgraph_render_graph(1);
+		GraphReflection[i].r_dsgraph_render_sorted(false);
 	}
 
 	RCache.set_xform_project(Device.mProject);

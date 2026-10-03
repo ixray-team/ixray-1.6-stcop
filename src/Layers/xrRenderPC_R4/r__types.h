@@ -41,6 +41,7 @@
 #define		r2_RT_planar_depth		"$user$planar_depth"
 #define		r2_RT_planar_color		"$user$planar_color"
 
+#define		r2_RT_sslr_scene	"$user$sslr_scene"
 #define		r2_RT_sslr			"$user$sslr"
 #define		r2_RT_sslr_old		"$user$sslr_old"
 #define		r2_RT_sslr_data		"$user$sslr_data"
@@ -48,6 +49,8 @@
 #define		r2_RT_sslr_depth_min	"$user$sslr_depth_min"
 #define		r2_RT_sslr_trace	"$user$sslr_trace"
 #define		r2_RT_sslr_hist		"$user$sslr_hist"
+#define		r2_RT_sslr_old_surface	"$user$sslr_old_surface"
+#define		r2_RT_sslr_hist_surface	"$user$sslr_hist_surface"
 
 #define		r2_RT_ssao_temp		"$user$ssao_temp"		//temporary rt for ssao calculation
 #define		r2_RT_half_depth	"$user$half_depth"		//temporary rt for hbao calculation
@@ -174,4 +177,3 @@ IC float u_diffuse2s(Fcolor& c)
 {
 	return u_diffuse2s(c.r, c.g, c.b);
 }
-

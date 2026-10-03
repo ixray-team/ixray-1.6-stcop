@@ -45,7 +45,7 @@ function normal_impl(shader, vs, t_base)
     shader:dx10texture("s_accumulator", "$user$accum")
     shader:dx10texture("s_position", "$user$position")
     shader:dx10texture("s_velocity", "$user$velocity")
-    shader:dx10texture("s_image", "$user$generic")
+    shader:dx10texture("s_image", "$user$sslr_scene")
 
     shader:dx10texture("s_material", "$user$material")
 

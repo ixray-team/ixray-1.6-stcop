@@ -574,6 +574,11 @@ CRenderTarget::CRenderTarget()
 		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, HDR_Format);
 		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, HDR_Format);
 
+		if (RImplementation.o.deffered_reflecitons || ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER))
+		{
+			rt_sslr_scene.create(r2_RT_sslr_scene, s_dwWidth, s_dwHeight, HDR_Format);
+		}
+
 		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16_SNORM);
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
 
@@ -669,6 +674,13 @@ CRenderTarget::CRenderTarget()
 			rt_sslr_trace.create(r2_RT_sslr_trace, s_dwWidth, s_dwHeight, ERHI_FORMAT::R11G11B10_FLOAT, 1, CRT::USE_UAV_FLAG);
 			rt_sslr_hist.create(r2_RT_sslr_hist, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 			rt_sslr_depth_min.create(r2_RT_sslr_depth_min, (s_dwWidth + 7u) / 8u, (s_dwHeight + 7u) / 8u, ERHI_FORMAT::R32_FLOAT, 1, CRT::USE_UAV_FLAG);
+
+			rt_sslr_old_surface.create(r2_RT_sslr_old_surface, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM, 1, CRT::USE_UAV_FLAG);
+			rt_sslr_hist_surface.create(r2_RT_sslr_hist_surface, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM, 1, CRT::USE_UAV_FLAG);
+
+			const Fvector4 history_clear = { 0.f, 0.f, 0.f, 0.f };
+			GRHI->ClearTarget(rt_sslr_old->pRT, &history_clear.x);
+			GRHI->ClearTarget(rt_sslr_hist->pRT, &history_clear.x);
 		}
 
 		if(RImplementation.o.offscreen_reflecitons)

@@ -93,6 +93,8 @@ void FixedConstants::Create()
 	store_Float4x4(cpu_object.m_plmap_xform, Fidentity);
 	cpu_object.m_plmap_clamp[0].set(0, 0, 0, 1);
 	cpu_object.m_plmap_clamp[1].set(0, 0, 0, 0);
+	SetReflectionCapture(Fidentity, 0.f, false);
+	cpu_pass.reflection_history_jitter.set(0, 0, 0, 0);
 	UpdateMaterial();
 	UpdateObject(Fidentity);
 	UpdateView();
@@ -275,6 +277,22 @@ void FixedConstants::UpdateView()
 	dirty_light = true;
 	BindView();
 }
+void FixedConstants::SetReflectionHistory(const Fvector& jitter, bool isValid)
+{
+	cpu_pass.reflection_history_jitter.set(jitter.x, jitter.y, isValid ? 1.f : 0.f, 0.f);
+	dirty_pass = true;
+}
+
+void FixedConstants::SetReflectionCapture(const Fmatrix& view, float radius, bool isValid)
+{
+	Fmatrix inverseView;
+	inverseView.invert(view);
+	store_Float3x4(cpu_pass.m_reflectionV, view);
+	store_Float3x4(cpu_pass.m_invReflectionV, inverseView);
+	cpu_pass.reflection_params.set(radius, isValid ? 1.f : 0.f, 0.f, 0.f);
+	dirty_pass = true;
+}
+
 void FixedConstants::UpdateObject(const Fmatrix& mW)
 {
 	const R_xforms& x = RCache.xforms;

@@ -80,6 +80,10 @@ struct alignas(16) CBPass
 	Fvector4 c_sun;
 	Fvector4 m_invP_hud[4];
 	Fvector4 mblur_params;
+	Fvector4 m_reflectionV[3];
+	Fvector4 m_invReflectionV[3];
+	Fvector4 reflection_params;
+	Fvector4 reflection_history_jitter;
 };
 
 struct alignas(16) CBMaterial
@@ -123,6 +127,8 @@ namespace FixedConstants
 	ECORE_API void UpdateView();
 	ECORE_API void UpdateObject(const Fmatrix& mW);
 	ECORE_API void UpdateMaterial();
+	ECORE_API void SetReflectionCapture(const Fmatrix& view, float radius, bool isValid);
+	ECORE_API void SetReflectionHistory(const Fvector& jitter, bool isValid);
 	ECORE_API void BindFrame();
 	ECORE_API void BindView();
 	ECORE_API void BindObject();

@@ -10,6 +10,8 @@ DeepWiki (`ixray-team/ixray-1.6-stcop`) still describes `xrRender_R1`/`xrRender_
 | [lifecycle.md](lifecycle.md) | Load stages, `on_idle`, threads |
 | [core.md](core.md) | Memory, `FS`, ltx, console, input, sound |
 | [rendering.md](rendering.md) | Lighting mode, dynamic and static frames |
+| [reflections.md](reflections.md) | SSR/VSLR findings, current-frame source, async capture, history/sky contracts, maintenance traps and validation |
+| [terrain.md](terrain.md) | Heightmap authoring, mesh export, implicit lighting bake, landscape shading |
 | [gameplay.md](gameplay.md) | Level, ALife, Lua, class files |
 | [build.md](build.md) | Targets and CMake options |
 | [style.md](style.md) | RAII, types, platform split |

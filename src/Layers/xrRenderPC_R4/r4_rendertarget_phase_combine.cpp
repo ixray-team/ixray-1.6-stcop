@@ -54,11 +54,6 @@ void CRenderTarget::phase_combine()
 
 	RImplementation.rmNormal();
 
-	if(RImplementation.o.deffered_reflecitons && !RImplementation.o.dx11_use_legacy_light)
-	{
-		phase_sslr();
-	}
-
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
@@ -130,12 +125,29 @@ void CRenderTarget::phase_combine()
 		t_envmap_0->surface_set		(e0);	_RELEASE(e0);
 		t_envmap_1->surface_set		(e1);	_RELEASE(e1);
 	
-		DrawPassSQ(s_combine, 0, [&]
+		auto bindCombine = [&]
 		{
 			RCache.set_c("Ldynamic_color", sunclr);
 			RCache.set_c("Ldynamic_dir", sundir);
 			RCache.set_c("m_sunmask", m_clouds_shadow);
-		});
+		};
+
+		if (rt_sslr_scene && (RImplementation.o.deffered_reflecitons || ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER)))
+		{
+			{
+				GPU_EVENT(sslr_scene);
+				u_setrt(get_width(), get_height(), nullptr, nullptr, nullptr, nullptr);
+				ResolveSurface(rt_sslr_scene, rt_Generic_0);
+				u_setrt(rt_sslr_scene, 0, 0, RDepth);
+				DrawPassSQ(s_combine, 4, bindCombine);
+			}
+			u_setrt(rt_Generic_0, 0, 0, RDepth);
+			GRHI->ApplyRenderTargetChange();
+			if (RImplementation.o.deffered_reflecitons && !RImplementation.o.dx11_use_legacy_light)
+				phase_sslr();
+		}
+
+		DrawPassSQ(s_combine, 0, bindCombine);
 	}
 
 	if (RImplementation.o.dx11_allow_wboit_transparency)

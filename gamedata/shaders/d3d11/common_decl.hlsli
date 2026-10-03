@@ -81,6 +81,10 @@ cbuffer cb_pass : register(b5)
     float4 c_sun;
     float4x4 m_invP_hud;
     float4 mblur_params;
+    float3x4 m_reflectionV;
+    float3x4 m_invReflectionV;
+    float4 reflection_params;
+    float4 reflection_history_jitter;
 };
 
 cbuffer cb_material : register(b3)

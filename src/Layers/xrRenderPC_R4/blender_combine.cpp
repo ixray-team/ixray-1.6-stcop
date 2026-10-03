@@ -12,7 +12,10 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 
 	switch (C.iElement)
 	{
+	case 4:
 	case 0:	// combine
+		if (C.iElement == 4)
+			RImplementation.addShaderOption("SSLR_SOURCE_PASS", "1");
 		C.r_Pass("stub_fullscreen_triangle", "combine_1", false, false,	false, true, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);
 		C.r_Stencil(TRUE, D3DCMP_LESSEQUAL, 0xff, 0x00);
 		C.r_StencilRef(0x01);

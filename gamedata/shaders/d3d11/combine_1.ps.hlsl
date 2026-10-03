@@ -32,8 +32,8 @@ float4 main(PSInputFullscreen I) : SV_Target
 #endif
 
 #ifndef USE_LEGACY_LIGHT
-	#ifdef USE_SSLR_REFLECTIONS
-		float3 SpecularIrradance = saturate(s_refl.Load(int3(I.hpos.xy, 0)).xyz);
+	#if defined(USE_SSLR_REFLECTIONS) && !defined(SSLR_SOURCE_PASS)
+		float3 SpecularIrradance = LinearToGamma(max(s_refl.Load(int3(I.hpos.xy, 0)).xyz, 0.0f));
 		//SpecularIrradance *= SpecularIrradance < 1.0f ? rcp(1.0f - SpecularIrradance) : 1.0f;
 	#else
 		float3 SpecularIrradance = CompureSpecularIrradance
@@ -63,4 +63,3 @@ float4 main(PSInputFullscreen I) : SV_Target
 	
     return float4(Color, Fog * Fog);
 }
-

@@ -181,6 +181,7 @@ public:
 	float reflection_fov = 75.f;
 	float reflection_near = 0.2f;
 	float reflection_far = 1000.f;
+	float _reflectionDistance = 0.7f;
 	IRender_Sector* reflection_sector = nullptr;
 	std::atomic<u32> reflection_ticket{ 0 };
 	std::atomic<u32> reflection_done{ 0 };

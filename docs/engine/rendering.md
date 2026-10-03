@@ -1,6 +1,6 @@
 # Rendering
 
-Client DLL: `xrRender_R4`. API: `CEngineAPI::GetAPI()` → `ERHI_API_LAYER::D3D11`. Dedicated: `xrRender_DS0`, and `on_idle` skips `seqRender`.
+Client DLL: `xrRender_R4`. RHI backends: D3D11 and D3D12 (Windows). `CEngineAPI::GetAPI()` returns the active `GRHI->APILevel` after device creation, or configured `g_graphicsAPI` before it. `CRHI::CreateDevice` selects `InternalDevice11` or `InternalDevice12`. Graphics API and `ELightingMode` are independent choices. Dedicated: `xrRender_DS0`, and `on_idle` skips `seqRender`.
 
 `GRHI` is created at stage 4 before `Device.InitRenderDevice`. `message_loop` calls `GRHI->BeginFrame()` before SDL poll. `Device.ConnectToRender` sets `Device.m_pRender` to `dxRenderDeviceRender`.
 
@@ -46,6 +46,12 @@ Dynamic order:
 
 Sun: primary calls `ResetSunCollect`, `PreRenderThread` runs `CollectSunCascades`, primary calls `EnsureSunCollect` after `seqRender`.
 
+## Reflections
+
+Deferred SSR and offscreen VSLR share tracing helpers in `shaders/d3d11/reflections.hlsli` on both D3D11 and D3D12. [reflections.md](reflections.md) records the pass/resource contracts, water path, temporal rejection, known limits, and user validation procedure.
+
+Reflection collection remains asynchronous: snapshot the camera before `FrameMove`, collect six private face graphs on `PreRenderThread`, wait before primary-thread GPU capture, and transform current-view points through world space into the captured view. A current-frame opaque lighting source (combine element 4, excluding SSR) is prepared before SSR and shared with water. Screen hits read its current UVs; previous-frame reprojection is confined to history. SSR dispatches depth minimum, trace, filter, then temporal; temporal binds three UAVs and alternates matched color/depth and surface histories. The extra source pass is one full-screen combine plus a sky/cloud background copy; geometry, shadows and per-light accumulation still run once. The source excludes later forward transparency and postprocessing. On 2026-10-03 the user confirmed the current-frame source/sky fixes work. The later foreground-occlusion fallback searches up to 24 neighboring cube depths on covered misses with no forward candidate and awaits user validation. Cross-API/overlay/configuration coverage and GPU cost remain unmeasured.
+
 ## Static frame
 
 `r4_R_static.cpp`. Same device and meshes. Jitter forced off.
@@ -53,6 +59,24 @@ Sun: primary calls `ResetSunCollect`, `PreRenderThread` runs `CollectSunCascades
 `HOM` + `render_main` → HUD, graph 0, details, LODs into `rt_Generic_0` → sky, clouds → `L_Dynamic` pass 0 → wallmarks, `L_Shadows`, LOD pass 2, graph 1 → `L_Dynamic` pass 1 → portals, sorted, sorted HUD, `L_Glows`, flares → distortion to `rt_Back_Buffer` → `phase_pp` → `L_Projector->finalize`.
 
 Static lights are `L_Dynamic`, `L_Shadows`, `L_Projector`, `L_Glows`. Deferred combine changes do not apply to this path.
+
+## Console and font submission
+
+The regular console uses `CConsole::OnRender` in [XR_IOConsole.cpp](../../src/xrEngine/XR_IOConsole.cpp): draw backgrounds, queue prompt/tips/history through `CGameFont::OutI`, then flush the two console fonts. The ImGui debug console is a separate path in `XR_IOConsole_UI.cpp`.
+
+[dxFontRender.cpp](../../src/Layers/xrRenderPC_R4/dxFontRender.cpp) is shared by both RHI backends. Previously, `RenderBase` mapped the vertex stream and issued an indexed draw for every queued string. It now batches consecutive strings from one font, with one map/unmap and draw per nonempty batch. Colors, gradients and positions remain per vertex; string order is preserved. Gamepad icons still render after the base text through separate draws.
+
+Batch capacity is `min(RCache.Vertex.GetSize() / pGeom.stride() / 4, 16384)`. Each glyph uses four vertices, so 16-bit indices allow at most 16,384 glyph quads per draw. The larger allocation in `CBackend::CreateQuadIB` does not remove that index limit. Reserved glyph counts use string byte lengths, which conservatively bound emitted glyphs. Keep both the vertex-stream bound and the index bound when changing batching.
+
+`CGameFont::MasterOut` adds eight extra strings when outlining is enabled. The supplied console font configuration does not enable outlining by default. `CConsole::OutFont` also recursively wraps long log entries and measures growing prefixes; that CPU work remains separate from draw batching. Neither was measured as the cause of the reported FPS drop.
+
+## D3D12 dynamic streams
+
+[_VertexStream::Lock](../../src/Layers/xrRenderPC_R4/R_DStreams.cpp) appends with `WRITE_NO_OVERWRITE` and wraps with `WRITE_DISCARD`. In [D3D12/Resources.cpp](../../src/xrRHI/D3D12/Resources.cpp), dynamic vertex/index buffers map their upload resource directly. `WRITE_NO_OVERWRITE` reuses owned upload storage; discard acquires another stream through the fence-aware pool in `D3D12/Device.cpp`. Their write unmap returns without uploading the whole shadow buffer. Do not infer a full-buffer copy or GPU flush for every console line from the generic map API.
+
+`InternalDevice12::PrepareDraw` in `D3D12/Binding.cpp` still prepares descriptor/root bindings, pipeline state and vertex/index views for each draw. Batching reduces how often this path is called; it does not change its synchronization or resource lifetime.
+
+The 2026-10-03 font batching change passed a Debug translation-unit compile with no warnings or errors. Runtime FPS and rendered output remain unverified. Check console-open versus console-closed frame times in the same loaded scene, and inspect text order, colors, selection, scrolling and long lines. A RenderDoc capture should show font draws split at batch capacity rather than at every string. Compilation alone does not establish the performance fix.
 
 ## Visibility and cvars
 

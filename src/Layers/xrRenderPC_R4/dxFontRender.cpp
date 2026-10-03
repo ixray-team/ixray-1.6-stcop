@@ -88,23 +88,46 @@ void dxFontRender::RenderBase(CGameFont& owner)
 	auto fWidth = (float)std::max(pTexture->get_Width(), 4u);
 	auto fHeight = (float)std::max(pTexture->get_Height(), 4u);
 
-	//#TODO mb need use optimization for minimize vertexes allocations?
-	for(CGameFont::String& str : owner.strings)
+	struct TLF
 	{
-		int length = xr_strlen(str.string);
-		if(length)
+		struct
 		{
-			// lock AGP memory
-			u32	vOffset;
-			struct TLF
+			Fvector4 p; u32 color; Fvector2 uv;
+		} buff[4];
+	};
+	const u32 maxGlyphs = std::min(RCache.Vertex.GetSize() / pGeom.stride() / 4, 16384u);
+	auto stringIt = owner.strings.begin();
+	while (stringIt != owner.strings.end())
+	{
+		auto batchEnd = stringIt;
+		u32 glyphCount = 0;
+		for (; batchEnd != owner.strings.end(); ++batchEnd)
+		{
+			const u32 length = xr_strlen(batchEnd->string);
+			R_ASSERT(length <= maxGlyphs);
+			if (length > maxGlyphs - glyphCount)
 			{
-				struct
-				{
-					Fvector4 p; u32 color; Fvector2	uv;
-				} buff[4];
-			};
-			TLF* vertexes = (TLF*)RCache.Vertex.Lock(length * 4, pGeom.stride(), vOffset);
-			TLF* start = vertexes;
+				break;
+			}
+			glyphCount += length;
+		}
+		if (!glyphCount)
+		{
+			stringIt = batchEnd;
+			continue;
+		}
+		u32 vOffset;
+		TLF* vertexes = (TLF*)RCache.Vertex.Lock(glyphCount * 4, pGeom.stride(), vOffset);
+		TLF* start = vertexes;
+
+		for (; stringIt != batchEnd; ++stringIt)
+		{
+			CGameFont::String& str = *stringIt;
+			int length = xr_strlen(str.string);
+			if (!length)
+			{
+				continue;
+			}
 
 			float X = float(iFloor(str.x));
 			float Y = float(iFloor(str.y));
@@ -276,10 +299,13 @@ void dxFontRender::RenderBase(CGameFont& owner)
 				X = X2 + glyphInfo->Abc.abcC + owner.GetLetterSpacing();
 			}
 
-			// Unlock and draw
-			u32 vertexesCount = (u32)(vertexes - start) * 4;
-			RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
+		}
 
+		// Unlock and draw
+		u32 vertexesCount = (u32)(vertexes - start) * 4;
+		RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
+		if (vertexesCount)
+		{
 			RCache.set_Geometry(pGeom);
 			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
 		}

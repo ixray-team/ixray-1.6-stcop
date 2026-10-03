@@ -18,9 +18,9 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_normal", r2_RT_N);
         C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 
-        C.r_dx10Texture("s_image", r2_RT_generic);
+        C.r_dx10Texture("s_image", r2_RT_sslr_scene);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
-        C.r_dx10Texture("s_half_depth", r2_RT_half_depth);
+        C.r_dx10Texture("s_sslr_depth_min", r2_RT_sslr_depth_min);
 
         C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
         C.r_dx10Texture("s_env", r2_RT_env);
@@ -53,7 +53,7 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         C.r_dx10Texture("s_refl", r2_RT_sslr_data);
 
-        C.r_dx10Texture("s_image", r2_RT_sslr);
+        C.r_dx10Texture("s_image", r2_RT_sslr_trace);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
 
         C.r_dx10Sampler("smp_linear");
@@ -64,6 +64,7 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         break;
     case 2:
+    case 5:
 		C.r_ComputePass("sslr_temporal");
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
@@ -75,7 +76,9 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("env_s0", r2_T_envs0);
         C.r_dx10Texture("env_s1", r2_T_envs1);
 
-        C.r_dx10Texture("s_refl", r2_RT_sslr_old);
+        C.r_dx10Texture("s_refl", C.iElement == 2 ? r2_RT_sslr_old : r2_RT_sslr_hist);
+        C.r_dx10Texture("s_refl_surface", C.iElement == 2 ? r2_RT_sslr_old_surface : r2_RT_sslr_hist_surface);
+        C.r_dx10Texture("s_refl_data", r2_RT_sslr_data);
 
         C.r_dx10Texture("s_image", r2_RT_sslr_temp);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
@@ -100,6 +103,11 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_rtlinear");
         C.r_dx10Sampler("smp_nofilter");
 
+        C.r_End();
+        break;
+    case 4:
+        C.r_ComputePass("sslr_depth_min");
+        C.r_dx10Texture("s_position", r2_RT_P);
         C.r_End();
         break;
     }

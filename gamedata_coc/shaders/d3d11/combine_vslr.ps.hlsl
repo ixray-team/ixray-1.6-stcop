@@ -33,12 +33,12 @@ float4 main(PSInputFullscreen I) : SV_Target
 	WrapOctP(TexCoord);
 	
 	float3 View = NormalDecode(TexCoord);	
-	View = mul((float3x3)m_V, View.xzy);
+	View = mul((float3x3)m_reflectionV, View.xzy);
 	
 	float4 Env = s_env.SampleLevel(smp_linear, View.xyz, 0.0f);	
-	Env.w = s_env_dist.SampleLevel(smp_linear, View.xyz, 0.0f).x;
+	Env.w = s_env_dist.SampleLevel(smp_nofilter, View.xyz, 0.0f).x;
 	
-	Env.w = saturate(2.5f * Env.w * fog_params.w + fog_params.x);
+	Env.w = Env.w > 0.0f && reflection_params.y > 0.0f ? saturate(2.5f * Env.w * fog_params.w + fog_params.x) : 1.0f;
 	
 	Env.xyz = LinearToGamma(Env.xyz);
 	Env.xyz *= rcp(1.0f + Env.xyz);

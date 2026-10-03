@@ -68,10 +68,13 @@ while !quiting:
 | `!b_is_Ready` | sleep 100 ms |
 | `g_loading_events` non-empty | run front; pop if it returns true; `pApp->LoadDraw()`; return |
 | else | particles, `ModelDefferClear`, due `m_time_callbacks`, `UpdatePlayerHud` |
-| | `PreRenderThread.Run()` + `FrameMove()` |
+| | `BeginReflectionCollect`, `ResetSunCollect`, then `PreRenderThread.Run()` |
+| | `FrameMove()` on the primary thread while collection runs |
 | | `GameThread.Run()` |
 | | active client: `Begin`, `seqRender`, `End` |
 | | `PreRenderThread.Wait()`, `GameThread.Wait()`, `EndRender` |
+
+Reflection collection uses an immutable camera snapshot taken before `FrameMove`. Its six face graphs are consumed only after collector completion, with GPU draws on the primary thread. The render camera can already have moved; VSLR sampling must use the captured transform, including translation. Contracts and validation: [reflections.md](reflections.md).
 
 `FrameMove`: `dwFrame++`, smooth `fTimeDelta` (clamp `EPS_S`…`0.1`), `seqFrame`. Paused: `fTimeDelta = 0` then still clamped. Dedicated server ignores `Pause`.
 
