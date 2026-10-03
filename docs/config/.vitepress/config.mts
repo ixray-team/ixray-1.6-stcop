@@ -10,7 +10,6 @@ export default defineConfig({
 
   base: '/ixray-1.6-stcop/',
   srcDir: "../docs",
-  outDir: '../public',
   lastUpdated: true,
   ignoreDeadLinks: true,
   rewrites: {
@@ -30,6 +29,10 @@ export default defineConfig({
   },
 
   markdown: {
+    languageAlias: {
+      lang: 'text',
+      ltx: 'ini',
+    },
     config: (md) => {
       md.use(lightbox, {})
     },

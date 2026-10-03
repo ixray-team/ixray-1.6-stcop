@@ -33,7 +33,7 @@ export const ruLocale = {
       linkText: 'Вернуться домой',
     },
     editLink: {
-      pattern: 'https://github.com/ixray-team/ixray-1.6-stcop/edit/default/docs/:path',
+      pattern: 'https://github.com/ixray-team/ixray-1.6-stcop/edit/default/docs/docs/:path',
       text: 'Редактировать страницу',
     },
     lastUpdated: {
