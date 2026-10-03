@@ -2,8 +2,11 @@
 #include "rain_common.hlsli"
 
 
-float4 rain_layers_params;
-float4 rain_layers_direction;
+cbuffer cb_rain_layers : register(b6)
+{
+    float4 rain_layers_params;
+    float4 rain_layers_direction;
+};
 
 struct RainOutput
 {

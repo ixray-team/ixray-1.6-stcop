@@ -3,7 +3,10 @@
 Texture2D<float> t_coc_prev;
 Texture2D<float> t_focus;
 
-float4 dof_params; // x - focallength, y - f-number, z - sensor size
+cbuffer cb_dof : register(b7)
+{
+    float4 dof_params; // x - focallength, y - f-number, z - sensor size
+};
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

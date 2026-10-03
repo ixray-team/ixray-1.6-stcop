@@ -20,7 +20,10 @@
 
 #include "common.hlsli"
 
-float sharpening_intensity;
+cbuffer cb_sharpening : register(b6)
+{
+    float sharpening_intensity;
+};
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

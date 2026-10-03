@@ -10,9 +10,7 @@ Texture2D s_puddles_perlin;
 Texture2D s_puddles_normal;
 Texture2D s_puddles_ripples;
 Texture2D<float2> s_puddles_water_height;
-float4 RainPuddleWaterBounds;
-float4 RainPuddleWaterHeightRange;
-float4 RainPuddleControl;
+#include "shared\extra_cb.hlsli"
 
 #ifdef RAIN_PUDDLE_COMPUTE
 #define RAIN_PUDDLE_SAMPLE(Texture, Sampler, TexCoord) Texture.SampleLevel(Sampler, TexCoord, 0.0f)

@@ -2,10 +2,13 @@
 
 // Material preview of the Thumbnail View. Decodes the surface like SloadNew (sload.hlsli)
 // and lights it with one directional light over a sky/ground ambient.
-float4 preview_flags; // x = bump, y = steep parallax, z = diffuse detail, w = detail bump
-float4 preview_material; // x = detail scale, y = material (type + weight), z = PBR, w = alpha test
-float4 preview_light; // xyz = direction to the light, w = ambient
-float4 preview_eye; // xyz = camera position, w = UV tiling
+cbuffer cb_preview : register(b6)
+{
+    float4 preview_flags; // x = bump, y = steep parallax, z = diffuse detail, w = detail bump
+    float4 preview_material; // x = detail scale, y = material (type + weight), z = PBR, w = alpha test
+    float4 preview_light; // xyz = direction to the light, w = ambient
+    float4 preview_eye; // xyz = camera position, w = UV tiling
+};
 
 struct v2p_material_preview
 {

@@ -4,7 +4,11 @@
 
 struct SShellManager
 {
+#ifdef DEBUG
+	static constexpr int MAX_SHELLS = 16;
+#else
 	static constexpr int MAX_SHELLS = 128;
+#endif
 
 	int head, tail, count;
 	xr_vector<CShell*> managed_shells;

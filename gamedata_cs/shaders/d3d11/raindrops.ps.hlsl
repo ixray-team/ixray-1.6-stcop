@@ -2,7 +2,7 @@
 
 Texture2D s_droplets;
 
-uniform float4 visor_rain;
+#include "shared\extra_cb.hlsli"
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

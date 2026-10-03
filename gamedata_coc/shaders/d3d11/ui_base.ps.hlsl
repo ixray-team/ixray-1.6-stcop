@@ -5,8 +5,7 @@
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 
-uniform float4 ui_icon_light;
-uniform float4 ui_icon_direction;
+#include "shared\extra_cb.hlsli"
 
 float3 AmbientLightingUI(float3 View, float3 Normal, float3 Diffuse, float3 Specular, float Roughness)
 {

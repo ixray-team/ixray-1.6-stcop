@@ -9,12 +9,15 @@
 Texture3D s_water;
 Texture2D s_waterFall;
 
-float4 RainDensity;
-float4 RainFeatures; // General wet surfaces, rain puddles.
-float4 RainFallof;
-float4 WorldX;
-float4 WorldZ;
-float4 m_level_scale;
+cbuffer cb_rain : register(b6)
+{
+    float4 RainDensity;
+    float4 RainFeatures; // General wet surfaces, rain puddles.
+    float4 RainFallof;
+    float4 WorldX;
+    float4 WorldZ;
+    float4 m_level_scale;
+};
 
 float3 GetNVNMap(Texture3D s_texture, float2 tc, float time)
 {

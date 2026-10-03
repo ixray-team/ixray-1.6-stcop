@@ -1,6 +1,6 @@
 #include "common.hlsli"
 
-uniform float4 ui_emissive_tint;
+#include "shared\extra_cb.hlsli"
 
 float4 main(p_bumped_new I) : SV_Target
 {

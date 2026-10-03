@@ -304,17 +304,16 @@ bool R_constant_table::parse(const RHIShaderReflection* pReflection, u32 destina
 					continue;
 				}
 
+				const int fixed = FixedConstants::FixedClass(TableDesc.Name.c_str());
+				if (fixed)
+					continue;
+
 				u32 bindSlot = TableDesc.BindPoint;
 
 				u32 updatedDest = destination;
 				updatedDest |= bindSlot << dest_to_shift_value(destination);
 
-				const int fixed = FixedConstants::FixedClass(TableDesc.Name.c_str());
-				parseConstants(pTable, updatedDest, fixed);
-				if (fixed)
-				{
-					continue;
-				}
+				parseConstants(pTable, updatedDest, 0);
 
 				u32 uiBufferIndex = bindSlot;
 				uiBufferIndex |= dest_to_cbuf_type(destination);

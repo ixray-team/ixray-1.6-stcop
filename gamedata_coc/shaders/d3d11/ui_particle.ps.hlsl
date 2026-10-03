@@ -1,6 +1,6 @@
 #include "common.hlsli"
 
-uniform float4 ui_emissive_tint;
+#include "shared\extra_cb.hlsli"
 
 struct v2p
 {

@@ -3,7 +3,7 @@
 
 #ifdef EDITOR_MODE
 // Texture transform of the editor helper draws (fixed-function D3DTS_TEXTURE0 emulation)
-uniform float4x4 m_tc_xform;
+#include "shared\extra_cb.hlsli"
 #endif
 
 // Vertex

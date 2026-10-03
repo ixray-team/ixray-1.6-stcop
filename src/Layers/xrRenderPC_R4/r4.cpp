@@ -15,6 +15,7 @@
 
 #include "3DFluid/dx103DFluidManager.h"
 #include "ShaderResourceTraits.h"
+#include "ShaderBind.h"
 
 #include "RenderInterfaceShared.h"
 #include "OverlayAPI/DLSSWrapper.h"
@@ -814,6 +815,7 @@ xr_string CRender::getShaderParams()
 	crc_vector.resize(0);
 	crc_vector.reserve(16);
 
+	xr_string params;
 	const ShaderExternalMap& ShaderOptions = CurrentShaderOptions();
 	if(!ShaderOptions.empty())
 	{
@@ -831,29 +833,29 @@ xr_string CRender::getShaderParams()
 			start_crc = crc32(Value.data(), Value.size(), start_crc);
 		}
 
-		xr_string params = "_";
+		params = "_";
 		params += xr_string::ToString(start_crc);
-
-		// Match the procedural permutation in the in-memory shader resource cache.
-		if (o.ProceduralRainPuddles)
-		{
-			params += "_puddles";
-		}
-
-		if (IsEditorInstancing())
-		{
-			params += "_inst";
-		}
-
-		return params;
 	}
 
+	// Match the procedural permutation in the in-memory shader resource cache.
 	if (o.ProceduralRainPuddles)
 	{
-		return IsEditorInstancing() ? "_puddles_inst" : "_puddles";
+		params += "_puddles";
 	}
 
-	return IsEditorInstancing() ? "_inst" : "";
+	if (IsEditorInstancing())
+	{
+		params += "_inst";
+	}
+
+	if (const u32 bind_key = ShaderBind_CacheKey())
+	{
+		char hex[16];
+		xr_sprintf(hex, "_b%08x", bind_key);
+		params += hex;
+	}
+
+	return params;
 }
 
 xr_string CRender::getShaderParamsDebug() 
@@ -1012,20 +1014,10 @@ static HRESULT create_shader(
 		bool const disasm
 ) {
 	result->sh = ShaderTypeTraits<T>::CreateHWShader(buffer, buffer_size);
-
-	RHIShaderReflection reflection;
-
-	HRESULT const _hr = GRHI->ReflectShader(buffer, buffer_size, reflection);
-	if(SUCCEEDED(_hr)) {
-		// Parse constant table data
-		result->constants.parse(&reflection, ShaderTypeTraits<T>::GetShaderDest());
-
-	}
-	else {
-		Msg("! D3DReflectShader %s hr == 0x%08x", file_name, _hr);
-	}
-
-	return _hr;
+	(void)pTarget;
+	(void)file_name;
+	(void)disasm;
+	return result->sh ? S_OK : E_FAIL;
 }
 
 static HRESULT create_shader(
@@ -1046,20 +1038,7 @@ static HRESULT create_shader(
 			return		E_FAIL;
 		}
 
-		RHIShaderReflection reflection;
-
-		_result = GRHI->ReflectShader(buffer, buffer_size, reflection);
-
-		//	Parse constant, texture, sampler binding
-		//	Store input signature blob
-		if(SUCCEEDED(_result)) {
-			//	Let constant table parse it's data
-			sps_result->constants.parse(&reflection, RC_dest_pixel);
-		}
-		else {
-			Msg("! PS: %s", file_name);
-			Msg("! D3DReflectShader hr == 0x%08x", _result);
-		}
+		_result = S_OK;
 	}
 	else if(pTarget[0] == 'v') {
 		SVS* svs_result = (SVS*)result;
@@ -1071,28 +1050,17 @@ static HRESULT create_shader(
 			return		E_FAIL;
 		}
 
-		RHIShaderReflection reflection;
-		_result = GRHI->ReflectShader(buffer, buffer_size, reflection);
-
-		//	Parse constant, texture, sampler binding
-		//	Store input signature blob
-		if(SUCCEEDED(_result)) {
-			//	TODO: DX10: share the same input signatures
-
-			//	Store input signature (need only for VS)
-			//CHK_DX( D3DxxGetInputSignatureBlob(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), &_vs->signature) );
-			RHIBlob* pSignatureBlob;
-			CHK_DX(GRHI->GetInputSignature(buffer, buffer_size, &pSignatureBlob));
-			VERIFY(pSignatureBlob);
-
+		RHIBlob* pSignatureBlob = nullptr;
+		if (SUCCEEDED(GRHI->GetInputSignature(buffer, buffer_size, &pSignatureBlob)) && pSignatureBlob)
+		{
 			svs_result->signature = dxRenderDeviceRender::Instance().Resources->_CreateInputSignature(pSignatureBlob);
-
 			_RELEASE(pSignatureBlob);
+		}
 
-			//	Let constant table parse it's data
-			svs_result->constants.parse(&reflection, RC_dest_vertex);
-
-			// Structured instance buffers (detail instancing and editor instancing)
+		// Rain binds its instance buffer in the game. Only the editors bind the other structured instance buffers and reflect VS inputs
+		RHIShaderReflection reflection;
+		if (SUCCEEDED(GRHI->ReflectShader(buffer, buffer_size, reflection)))
+		{
 			for (const RHIShaderResourceDesc& Resource : reflection.Resources)
 			{
 				if (Resource.Type != ERHI_SHADER_RESOURCE_TYPE::STRUCTURED)
@@ -1100,35 +1068,31 @@ static HRESULT create_shader(
 					continue;
 				}
 
-				if (!xr_strcmp(Resource.Name, "detail_buffer"))
-				{
-					svs_result->instance_buffer_slot = Resource.BindPoint;
-				}
-				else if (!xr_strcmp(Resource.Name, "editor_instances"))
-				{
-					svs_result->editor_instance_slot = Resource.BindPoint;
-				}
-				else if (!xr_strcmp(Resource.Name, "RainInstances"))
+				if (!xr_strcmp(Resource.Name, "RainInstances"))
 				{
 					svs_result->RainInstanceSlot = Resource.BindPoint;
 				}
-			}
-
-			// The Shader Editor reflects VS inputs from the full bytecode
-			if (Device.IsEditorMode())
-			{
-				RHIBlob* pCodeBlob = nullptr;
-				if (SUCCEEDED(GRHI->CreateBlob(buffer_size, &pCodeBlob)))
+				else if (Device.IsEditorMode() && !xr_strcmp(Resource.Name, "detail_buffer"))
 				{
-					CopyMemory(pCodeBlob->GetBufferPointer(), buffer, buffer_size);
-					svs_result->vs_code = pCodeBlob;
+					svs_result->instance_buffer_slot = Resource.BindPoint;
+				}
+				else if (Device.IsEditorMode() && !xr_strcmp(Resource.Name, "editor_instances"))
+				{
+					svs_result->editor_instance_slot = Resource.BindPoint;
 				}
 			}
 		}
-		else {
-			Msg("! VS: %s", file_name);
-			Msg("! D3DXFindShaderComment hr == 0x%08x", _result);
+
+		if (Device.IsEditorMode())
+		{
+			RHIBlob* pCodeBlob = nullptr;
+			if (SUCCEEDED(GRHI->CreateBlob(buffer_size, &pCodeBlob)))
+			{
+				CopyMemory(pCodeBlob->GetBufferPointer(), buffer, buffer_size);
+				svs_result->vs_code = pCodeBlob;
+			}
 		}
+		_result = S_OK;
 	}
 	else if(pTarget[0] == 'g') {
 		SGS* sgs_result = (SGS*)result;
@@ -1139,20 +1103,7 @@ static HRESULT create_shader(
 			return		E_FAIL;
 		}
 
-		RHIShaderReflection reflection;
-
-		_result = GRHI->ReflectShader(buffer, buffer_size, reflection);
-
-		//	Parse constant, texture, sampler binding
-		//	Store input signature blob
-		if(SUCCEEDED(_result)) {
-			//	Let constant table parse it's data
-			sgs_result->constants.parse(&reflection, RC_dest_geometry);
-		}
-		else {
-			Msg("! PS: %s", file_name);
-			Msg("! D3DReflectShader hr == 0x%08x", _result);
-		}
+		_result = S_OK;
 	}
 	else if(pTarget[0] == 'c') {
 		_result = create_shader(pTarget, buffer, buffer_size, file_name, (SCS*&)result, disasm);
@@ -1271,6 +1222,15 @@ public:
 
 		// duplicate and zero-terminate
 		u32 size = R->length();
+		u8* rewritten = nullptr;
+		u32 rewritten_size = 0;
+		if (ShaderBind_Rewrite(static_cast<const u8*>(R->pointer()), size, rewritten, rewritten_size))
+		{
+			FS.r_close(R);
+			*ppData = rewritten;
+			*pBytes = rewritten_size;
+			return S_OK;
+		}
 		u8* data = xr_alloc<u8>(size + 1);
 		CopyMemory(data, R->pointer(), size);
 		data[size] = 0;
@@ -1700,12 +1660,21 @@ HRESULT	CRender::shader_compile(
 
 		includer Includer;
 
+		u8* rewritten = nullptr;
+		u32 rewritten_size = 0;
+		const void* src = pSrcData;
+		UINT src_len = SrcDataLen;
+		if (ShaderBind_Rewrite(reinterpret_cast<const u8*>(pSrcData), SrcDataLen, rewritten, rewritten_size))
+		{
+			src = rewritten;
+			src_len = rewritten_size;
+		}
 		{
 			PROF_EVENT("CRender::D3DCompile");
 			PROF_EVENT_DYNAMIC(name);
 			_result = GRHI->CompileShader(
-				pSrcData,
-				SrcDataLen,
+				src,
+				src_len,
 				name,
 				defines,
 				&Includer,
@@ -1716,6 +1685,7 @@ HRESULT	CRender::shader_compile(
 				&pErrorBuf
 			);
 		}
+		xr_free(rewritten);
 
 		if (SUCCEEDED(_result))
 		{

@@ -1,7 +1,10 @@
 #include "common.hlsli"
 
-uniform float4 static_color;
-uniform float4 ui_has_background;
+cbuffer cb_static_color : register(b6)
+{
+    float4 static_color;
+    float4 ui_has_background;
+};
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

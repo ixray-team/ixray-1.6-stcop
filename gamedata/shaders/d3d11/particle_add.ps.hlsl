@@ -14,7 +14,7 @@ struct v2p
 
 #ifdef EDITOR_MODE
 // x: 1 in the unlit editor view: no scene depth (soft particles) and no weather (fog)
-uniform float4 editor_params;
+#include "shared\extra_cb.hlsli"
 #define EDITOR_LIT (editor_params.x < 0.5f)
 #else
 #define EDITOR_LIT true

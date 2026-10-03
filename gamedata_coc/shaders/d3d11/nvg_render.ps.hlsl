@@ -2,8 +2,11 @@
 // UI lens masking is maintained independently by the night vision effector.
 #include "common.hlsli"
 
-float4 NightVisionPostprocess;
-float NightVisionInterference;
+cbuffer cb_nvg : register(b6)
+{
+	float4 NightVisionPostprocess;
+	float NightVisionInterference;
+};
 
 struct PSInput
 {

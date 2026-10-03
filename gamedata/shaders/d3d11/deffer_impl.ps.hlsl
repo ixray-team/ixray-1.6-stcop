@@ -19,7 +19,7 @@
 #endif
 
 #ifdef EDITOR_MODE
-uniform float4 editor_selection;
+#include "shared\extra_cb.hlsli"
 #endif
 #include "shadow.hlsli"
 

@@ -2,7 +2,7 @@
 #include "scope_ui.hlsli"
 #include "scope_lens.hlsli"
 
-float ScopePostprocessActive;
+#include "shared\extra_cb.hlsli"
 
 struct v2p
 {

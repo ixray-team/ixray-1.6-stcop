@@ -3,7 +3,7 @@
 #include "scope_lens.hlsli"
 #include "pnv.hlsli"
 
-float ScopePostprocessActive;
+#include "shared\extra_cb.hlsli"
 
 
 struct v2p

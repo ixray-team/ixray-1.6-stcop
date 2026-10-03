@@ -1,4 +1,5 @@
 #include "RHI.h"
+#include <cstring>
 #include <d3dcompiler.h>
 #include <d3d11shader.h>
 #include "RHIDXC.h"
@@ -255,6 +256,11 @@ static HRESULT ReflectImpl(TReflection* reflection, RHIShaderReflection& out_ref
 		output.Size = desc.Size;
 		TBinding binding = {};
 		output.BindPoint = SUCCEEDED(reflection->GetResourceBindingDescByName(desc.Name, &binding)) ? binding.BindPoint : buffer_idx;
+		const bool skipVariables = desc.Name && (!strcmp(desc.Name, "cb_frame") || !strcmp(desc.Name, "cb_view") ||
+			!strcmp(desc.Name, "cb_object") || !strcmp(desc.Name, "cb_material") || !strcmp(desc.Name, "cb_light") ||
+			!strcmp(desc.Name, "cb_pass"));
+		if (skipVariables)
+			continue;
 		output.Variables.resize(desc.Variables);
 		for (u32 variable_idx = 0; variable_idx < desc.Variables && SUCCEEDED(result); ++variable_idx) {
 			auto variable = buffer->GetVariableByIndex(variable_idx);
