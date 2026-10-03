@@ -17,7 +17,6 @@ void sample_Textures(inout float4 D, inout float4 H, float2 tc1, float2 tc0, flo
     D = lerp(D0, D1, af.w);
     D.w *= af.z;
     H = lerp(H0, H1, af.w);
-    H.w *= af.x;
 }
 
 void main(in p_bilbord I, out IXRayGbufferPack O)
@@ -28,7 +27,7 @@ void main(in p_bilbord I, out IXRayGbufferPack O)
 
     clip(D.w - def_aref);
 
-    float Sun = saturate(H.w * 2.0f);
+    float Lighting = 0.5f + 0.5f * H.w;
 
     IXRayMaterial M = (IXRayMaterial)NULL;
     M.Depth = I.position.z;
@@ -36,8 +35,8 @@ void main(in p_bilbord I, out IXRayGbufferPack O)
     M.Point = I.position.xyz;
     M.Color = D;
 
-    M.Sun = Sun;
-    M.Hemi = H.w;
+    M.Sun = saturate(I.af.y * Lighting);
+    M.Hemi = saturate(I.af.x * Lighting);
 
     M.Normal = N.xyz;
 
