@@ -460,7 +460,7 @@ void InternalDevice11::GenerateMips(IRHIShaderResourceView* SRV)
 
 void InternalDevice11::DestroyD3D11()
 {
-#ifdef IXRAY_PROFILER_TRACY
+#if defined(IXRAY_PROFILER_TRACY) || defined(IXRAY_PROFILER)
 	PROF_GPU_CTX_DESTROY();
 #endif
 

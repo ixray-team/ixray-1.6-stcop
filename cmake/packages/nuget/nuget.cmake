@@ -128,9 +128,6 @@ else()
     set(NUGET_PACKAGE_PLATFORM x64)
 endif()
 
-# Optick
-set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.1.4.0.1/)
-
 # DxMath
 set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2024.2.15.1/)
 

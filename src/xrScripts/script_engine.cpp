@@ -21,6 +21,8 @@
 	#define TRACY_CALLSTACK 8
 		#include <tracy/TracyLua.hpp>
 	#undef TRACY_CALLSTACK
+#elif defined(IXRAY_PROFILER)
+	#include <optick_lua.h>  
 #endif
 
 SCRIPTS_API CScriptEngine* g_pScriptEngine = nullptr;
@@ -194,6 +196,8 @@ void CScriptEngine::init()
 	luabind::open(lua());
 #ifdef IXRAY_PROFILER_TRACY
 	tracy::LuaRegister(lua());
+#elif defined(IXRAY_PROFILER)
+	Optick::LuaRegister(lua());
 #endif
 
 

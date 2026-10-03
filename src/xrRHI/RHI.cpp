@@ -91,8 +91,10 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 			ShaderResourceCache = new DX11ShaderResourceStateCache((ID3D11DeviceContext*)GetContext());
 			StateManager = new RHIStateManagerDX11(static_cast<ID3D11DeviceContext*>(GetContext()));
 			DriverAntiLag = new CAMDAntiLag();
-#ifdef IXRAY_PROFILER_TRACY
+#if defined(IXRAY_PROFILER_TRACY)
 			g_tracyD3D11GPUContext = PROF_GPU_CTX_CREATE((ID3D11Device*)DevicePtr->RawDevice, (ID3D11DeviceContext*)GetContext());
+#elif defined(IXRAY_PROFILER)
+			PROF_GPU_CTX_CREATE((ID3D11Device*)DevicePtr->RawDevice, (ID3D11DeviceContext*)GetContext());
 #endif
 			break;
 		}

@@ -33,10 +33,10 @@ struct RHI_GPU_EVENT
 #ifdef IXR_WINDOWS
 #	ifdef DEBUG_DRAW
 #		ifdef IXRAY_PROFILER
-#			define PROF_GPU_CTX_CREATE(Device, DeviceContext)
-#			define PROF_GPU_CTX_COLLECT()
-#			define PROF_GPU_CTX_DESTROY()
-#			define GPU_EVENT(Name)	CRHIGPUMark	pixEvent##Name(#Name, L#Name); PROF_EVENT(#Name)
+#			define PROF_GPU_CTX_CREATE(Device, DeviceContext) ::Optick::InitGpuD3D11((ID3D11Device*)(Device), (ID3D11DeviceContext*)(DeviceContext));
+#			define PROF_GPU_CTX_COLLECT() ::Optick::GpuFlip(nullptr);
+#			define PROF_GPU_CTX_DESTROY() ::Optick::ShutdownGpu();
+#			define GPU_EVENT(Name)	OPTICK_GPU_EVENT(#Name); CRHIGPUMark	pixEvent##Name(#Name, L#Name)
 #		elifdef IXRAY_PROFILER_TRACY
 #			include <tracy/TracyD3D11.hpp>
 			extern RHI_API TracyD3D11Ctx g_tracyD3D11GPUContext;
