@@ -51,7 +51,7 @@ struct v_model_skinned_4
 
 #define MAX_BONES_COUNT 128
 
-cbuffer SkinConstants
+cbuffer SkinConstants : register(b6)
 {
 	float4 sbones_array[MAX_BONES_COUNT * 3];
 	
