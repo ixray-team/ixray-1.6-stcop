@@ -1,4 +1,5 @@
 #include "common.hlsli"
+#define IXR_COMPUTE
 #define USE_SSLR_DEPTH_MIN
 Texture2D<float> s_sslr_depth_min;
 #include "reflections.hlsli"

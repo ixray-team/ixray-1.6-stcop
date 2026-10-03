@@ -1,6 +1,7 @@
 #include "common.hlsli"
 #include "sload.hlsli"
 #include "hud_raindrops.hlsli"
+#include "metalic_roughness_light.hlsli"
 
 void cotangent_frame(inout p_bumped_new O)
 {
@@ -125,6 +126,10 @@ void main(p_bumped_new I,
 
 #ifndef DISABLE_MOTION_VECTORS
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+#endif
+
+#ifndef USE_LEGACY_LIGHT
+	M.Roughness = SpecularAA(M.Normal, normalize(M.Point), M.Roughness);
 #endif
 
     GbufferPack(O, M);

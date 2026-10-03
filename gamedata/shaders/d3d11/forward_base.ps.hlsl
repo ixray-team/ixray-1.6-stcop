@@ -127,6 +127,7 @@ void main(p_bumped_new I, out OutStructure O)
 	float3 View = M.Point.xyz * rcp(ViewLength);
 	
 	#ifndef USE_LEGACY_LIGHT
+		M.Roughness = SpecularAA(M.Normal, View, M.Roughness);
 		float3 Diffuse = M.Color.xyz * float(1.0f - M.Metalness);
 		float3 Specular = lerp(M.Specular, M.Color.xyz, M.Metalness);
 		

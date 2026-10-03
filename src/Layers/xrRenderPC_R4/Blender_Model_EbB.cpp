@@ -145,8 +145,8 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 			C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
 		}
 
-		C.r_dx10Texture("env_s0", "shaders\\newsky_viewport#small");
-		C.r_dx10Texture("sky_s0", "shaders\\newsky_viewport");
+		C.r_dx10Texture("env_s0", "shaders\\studio_light#small");
+		C.r_dx10Texture("sky_s0", "shaders\\studio_light");
 
 		C.r_dx10Texture("s_material", r2_material);
 		C.r_dx10Sampler("smp_material");

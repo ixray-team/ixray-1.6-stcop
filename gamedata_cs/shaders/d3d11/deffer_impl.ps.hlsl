@@ -1,13 +1,12 @@
 #include "common.hlsli"
 #include "sload.hlsli"
 #include "shadow.hlsli"
+#include "metalic_roughness_light.hlsli"
 
 #ifndef USE_LENGTH_BUFFER
 	#define OutStructure IXRayGbufferPack
 #else
 	#define OutStructure IXRayVSLRGBuffer
-	
-#include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 
 #endif
@@ -203,6 +202,10 @@ void main(p_bumped_new I, out OutStructure O)
 	#ifndef DISABLE_MOTION_VECTORS
 		O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
 	#endif
+
+	#ifndef USE_LEGACY_LIGHT
+		M.Roughness = SpecularAA(M.Normal, normalize(M.Point), M.Roughness);
+	#endif
 	
     GbufferPack(O, M);
 #else
@@ -249,6 +252,7 @@ void main(p_bumped_new I, out OutStructure O)
 	float3 View = M.Point.xyz * rcp(ViewLength);
 
 	#ifndef USE_LEGACY_LIGHT
+		M.Roughness = SpecularAA(M.Normal, View, M.Roughness);
 		M.Color.xyz = GammaToLinear(M.Color.xyz);
 		M.Specular = M.Specular * M.Specular * 0.16f;
 	

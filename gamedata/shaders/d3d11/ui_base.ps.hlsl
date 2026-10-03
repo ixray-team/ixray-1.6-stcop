@@ -10,12 +10,18 @@ float3 AmbientLightingUI(float3 View, float3 Normal, float3 Diffuse, float3 Spec
 	float3 Reflect = reflect(View, Normal);
 
 #ifndef USE_LEGACY_LIGHT
+	Roughness = SpecularAA(Normal, View, Roughness);
+
+	float Width, Height, MipCount;
+	sky_s0.GetDimensions(0, Width, Height, MipCount);
+	float MaxLod = max(MipCount - 1.0f, 0.0f);
+
 	float3 DiffuseIrradance = env_s0.SampleLevel(smp_linear, Normal, 0.0f).xyz;
-	float3 SpecularIrradance = sky_s0.SampleLevel(smp_linear, Reflect, 10.0f * Roughness).xyz;
-	
+	float3 SpecularIrradance = sky_s0.SampleLevel(smp_linear, Reflect, MaxLod * Roughness).xyz;
+
 	float NdotV = max(0.0, dot(Normal, -View));
-	
-	return AmbientLightingImpl(DiffuseIrradance, SpecularIrradance, NdotV, Diffuse, Specular, Roughness);
+
+	return AmbientLightingImpl(LinearToGamma(DiffuseIrradance), LinearToGamma(SpecularIrradance), NdotV, Diffuse, Specular, Roughness);
 #else
 	float HdotV = 0.5f - 0.5f * dot(View, Reflect);
 	float2 Material = s_material.SampleLevel(smp_material, float3(1.0f, HdotV, Roughness), 0).xy;
@@ -76,7 +82,7 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
 		float3 Ambient = AmbientLightingUI(View, M.Normal, M.Color.xyz, M.Gloss.xxx, M.Material);
 	#endif
 	
-    Color.xyz = Ambient + Light.xyz;
+		Color.xyz = Ambient;// + Light.xyz;
     Color.w = saturate(M.Color.w + EPS_L);
 }
 

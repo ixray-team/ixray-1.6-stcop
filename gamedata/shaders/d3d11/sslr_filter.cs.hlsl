@@ -1,4 +1,5 @@
 #include "common.hlsli"
+#define IXR_COMPUTE
 #include "reflections.hlsli"
 #include "metalic_roughness_light.hlsli"
 
