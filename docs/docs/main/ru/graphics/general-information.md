@@ -1,5 +1,6 @@
 # Общие сведения
-# DLSS & FSR & XeSS
+
+## DLSS & FSR & XeSS
 
 ![image](https://github.com/user-attachments/assets/9c4b5508-8f0a-4d95-9329-a15f004746a6)
 
@@ -69,8 +70,8 @@
 
 ## Snow Mask
 
-**Snow Mask** - система динамического наложения снега на объекты в outdoor, включая статику и динамику, основываясь на normal map. 
+**Snow Mask** - система динамического наложения снега на объекты в outdoor, включая статику и динамику, основываясь на normal map.
 ![image](https://github.com/user-attachments/assets/1c19bdac-94d1-4e69-8a7d-6fc0dbbc8399)
 
 * `engine_external.ltx`
-* * `UseDynamicSnowMask = true`
+  * `UseDynamicSnowMask = true`

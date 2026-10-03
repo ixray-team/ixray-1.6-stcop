@@ -1,9 +1,9 @@
+# Сортировка инвентаря
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.4 <br>
 > **Последнее обновление**: 2026-07-24
-
-# Сортировка инвентаря
 
 ## Обзор
 
@@ -20,10 +20,10 @@
 system = categories   ; categories | ordering
 ```
 
-| Значение | UI-узел XML | Поведение |
-|----------|-------------|-----------|
-| `categories` | `inventory_sort_tabs` | Фильтрация по категориям + сортировка по размеру в сетке |
-| `ordering` | `inventory_sort_order_tabs` | Только сортировка, все предметы видны |
+| Значение     | UI-узел XML                 | Поведение                                                |
+|--------------|-----------------------------|----------------------------------------------------------|
+| `categories` | `inventory_sort_tabs`       | Фильтрация по категориям + сортировка по размеру в сетке |
+| `ordering`   | `inventory_sort_order_tabs` | Только сортировка, все предметы видны                    |
 
 Если XML-узел для выбранного режима отсутствует, вкладки сортировки не показываются.
 
@@ -47,15 +47,15 @@ system = categories   ; categories | ordering
 
 Все предметы всегда видны. Вкладки меняют только порядок в UI-списке.
 
-| Вкладка | id | Порядок | Cycle / Alt |
-|---------|----|---------|-------------|
-| Общее | `general` | `GreaterRoomInRuck` (как "Все" в categories) | нет |
-| По типу | `by_type` | Группы по `GetItemCategory`, внутри группы - grid sort | да - цикл фокуса типа |
-| По весу | `by_weight` | `Weight()`, по умолчанию по убыванию | да - тяжелый / легкий |
-| По состоянию | `by_condition` | `GetCondition()` для предметов с condition, остальные в конце | да - лучше / хуже |
-| По цене | `by_cost` | `Cost()`, по умолчанию по убыванию | да - дорогой / дешевый |
-| По важности | `by_importance` | `IsQuestItem()` сверху, внутри группы - grid sort | нет |
-| По новизне | `by_novelty` | `GetTakenTime()`, по умолчанию новые сверху | да - новый / старый |
+| Вкладка      | id              | Порядок                                                       | Cycle / Alt            |
+|--------------|-----------------|---------------------------------------------------------------|------------------------|
+| Общее        | `general`       | `GreaterRoomInRuck` (как "Все" в categories)                  | нет                    |
+| По типу      | `by_type`       | Группы по `GetItemCategory`, внутри группы - grid sort        | да - цикл фокуса типа  |
+| По весу      | `by_weight`     | `Weight()`, по умолчанию по убыванию                          | да - тяжелый / легкий  |
+| По состоянию | `by_condition`  | `GetCondition()` для предметов с condition, остальные в конце | да - лучше / хуже      |
+| По цене      | `by_cost`       | `Cost()`, по умолчанию по убыванию                            | да - дорогой / дешевый |
+| По важности  | `by_importance` | `IsQuestItem()` сверху, внутри группы - grid sort             | нет                    |
+| По новизне   | `by_novelty`    | `GetTakenTime()`, по умолчанию новые сверху                   | да - новый / старый    |
 
 ### Cycle направления
 
@@ -78,26 +78,26 @@ system = categories   ; categories | ordering
 
 ```ltx
 [inventory_sort]
-system = ordering
+   system = ordering
 
 [inventory_sort:ordering]
-weight_desc = true
-condition_desc = true
-cost_desc = true
-novelty_desc = true
+   weight_desc = true
+   condition_desc = true
+   cost_desc = true
+   novelty_desc = true
 
 [inventory_sort_order]
-general = 1
-by_type = 1
-by_weight = 1
-by_condition = 1
-by_cost = 1
-by_importance = 1
-by_novelty = 1
+   general = 1
+   by_type = 1
+   by_weight = 1
+   by_condition = 1
+   by_cost = 1
+   by_importance = 1
+   by_novelty = 1
 
 [inventory_sort_order:general]
-name = st_inv_sort_order_general
-hint = st_inv_sort_order_general_hint
+   name = st_inv_sort_order_general
+   hint = st_inv_sort_order_general_hint
 ```
 
 ### XML для ordering
@@ -113,23 +113,30 @@ Mod override файлы (пример в ixray):
 
 ## Рекомендации
 
-✔️ Правильное использование:
+::: success ✔️ Правильное использование:
 
 1. Выберите один режим (`categories` или `ordering`) на мод.
 2. Добавляйте только XML-узел, соответствующий выбранному режиму.
 3. Для categories используйте `inventory_sort_custom` для нестандартных групп предметов.
 
-⚠️ Ограничения:
+:::
+
+::: warning ⚠️ Ограничения:
 
 1. Гранаты в слоте GRENADE_SLOT показываются в рюкзаке только в categories-режиме при фильтрах `all` или `ammo`.
 2. Runtime-переключение режима не поддерживается.
 3. Смена направления ordering идет только через `CycleActiveOrderOption` (повторный клик / `kINV_SORT_CYCLE`), отдельный Alt-обработчик не нужен.
 
-✖️ Анти-паттерны:
+:::
+
+::: danger ✖️ Анти-паттерны:
 
 1. Одновременное добавление `inventory_sort_tabs` и `inventory_sort_order_tabs` в один UI.
 2. Ожидание изменения физического порядка предметов в инвентаре актора.
 
+:::
+
 ## Связанные разделы
 
-[слоты инвентаря](inventory-slots.md), [обзор UI](ui-advanced-features.md)
+- [слоты инвентаря](inventory-slots.md)
+- [обзор UI](ui-advanced-features.md)

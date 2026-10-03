@@ -1,11 +1,13 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
+## ffx_compare_utils: `\gamedata\scripts\ixr_framework\utils\ffx_compare_utils.script`
 
-### ffx_compare_utils: `\gamedata\scripts\ixr_framework\utils\ffx_compare_utils.script`
 Утилиты для проверки типов и сравнения:
+
 * `is_table`
 * `is_empty_flat_or_assoc_table`
 * `is_function`
@@ -15,7 +17,8 @@
 * `is_number`
 * `has_pattern`
 
-#### Описание методов:
+### Описание методов
+
 ```lua
 --// Проверить, является ли объект таблицей.
 is_table(object)

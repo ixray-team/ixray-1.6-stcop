@@ -1,28 +1,30 @@
 # Gameplay: Инвентарные предметы
+
 ## Любой инвентарный предмет (CInventoryItem)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.3
 
-```ini
+```ltx
 ;Позволяет задать одну или несколько инвентарных секций предметов, 
 ;которые будут подсвечены при наведении на текущий предмет с этим перечнем (подобно тому как подсвечиваются боеприпасы для оружия в инвентаре)
 highlight_related_sections = related_section_a, related_section_b
 ```
 
 ## Любой инвентарный предмет (CInventoryItem)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.4
 
-```ini
+```ltx
 is_draw_cost = true ;Отображать ли цену предмета в UI (true|false)
 ```
 
-
 ::: details Пример реализации
 
-```ini
+```ltx
 [root_item_section]:identity_immunities ; Родительский предмет с настроенной подсветкой дочерних предметов
   highlight_related_sections = related_section_a, related_section_b; секции предметов которые будут подсвечены как зависимые от этого предмета
 
@@ -33,6 +35,7 @@ is_draw_cost = true ;Отображать ли цену предмета в UI (
 [related_section_b]:identity_immunities; Подсвечиваемый предмет при наведении на root_item_section
     ...
 ```
+
 :::
 
 ## Шлем (CHelmet)
@@ -41,7 +44,7 @@ is_draw_cost = true ;Отображать ли цену предмета в UI (
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.0
 
-```ini
+```ltx
 use_condition = false; Имеет ли предмет прогрессбар износа
 ```
 
@@ -50,7 +53,7 @@ use_condition = false; Имеет ли предмет прогрессбар и�
 
 * Консольные команды r_use_gasmask и r_use_rain_drops
 
-```ini
+```ltx
 hud_gas_mask_avaliable = true; Доступна ли отрисовка капель дождя
 hud_rain_drops_avaliable = true; Доступна ли отрисовка газ маски
 ```
@@ -58,7 +61,7 @@ hud_rain_drops_avaliable = true; Доступна ли отрисовка газ
 > [!IMPORTANT]
 > **Минимальная версия**: 1.4
 
-```ini
+```ltx
 physic_strike_protection = 0.7; physic strike hit protection 
 ```
 
@@ -68,24 +71,28 @@ physic_strike_protection = 0.7; physic strike hit protection
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.0
 
-```ini
+```ltx
 use_condition = false      ; Имеет ли предмет прогрессбар износа
 forbid_change_skin = false ; Меняет ли визуал (руки/ноги)
 ```
 
 > [!IMPORTANT]
 > **Минимальная версия**: 1.2.2 <br>
+
 * Консольные команды r_use_gasmask и r_use_rain_drops
-```ini
+
+```ltx
 hud_gas_mask_avaliable = true; Доступна ли отрисовка капель дождя
 hud_rain_drops_avaliable = true; Доступна ли отрисовка газ маски
 ```
 
 > [!IMPORTANT]
 > **Минимальная версия**: 1.4
-```ini
+
+```ltx
 physic_strike_protection = 0.7; physic strike hit protection 
 ```
+
 > Также поддерживается и для апгрейдов
 
 ## Фонарь (CTorch)
@@ -94,7 +101,7 @@ physic_strike_protection = 0.7; physic strike hit protection
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.0
 
-```ini
+```ltx
 snd_click = device\torch_click; Опциональный звук включения/выключения фонаря
 ```
 
@@ -106,7 +113,7 @@ snd_click = device\torch_click; Опциональный звук включен
 
 * Опциональные инвентарные рюкзаки со своим слотом
 
-```ini
+```ltx
 [backpack_test]:identity_immunities
   GroupControlSection = spawn_group
   $spawn = "devices\dev_backpack"
@@ -148,7 +155,7 @@ snd_click = device\torch_click; Опциональный звук включен
 * Совместимо с (CNVG, CEliteDetector, CCustomDetector, CAdvancedDetector, CSimpleDetector, CPda, CTorch, PowerBank)
 * Взаимодействие с приборами (драг дроп в инвентаре на совместимое устройство)
 
-```ini
+```ltx
 [pwr_cell_01]:identity_immunities
     ...
     class = PWR_CELL; Класс батарейки
@@ -169,7 +176,7 @@ snd_click = device\torch_click; Опциональный звук включен
 * Взаимодействие (драг дроп батареек на повербанк для установки)
 * Взаимодействие (контекстное меню на повербанке для извлечения батареек если они вставлены)
 
-```ini
+```ltx
 [pwr_bank]:identity_immunities
   ...                    
   class  = PWR_BANK
@@ -189,7 +196,7 @@ snd_click = device\torch_click; Опциональный звук включен
 * Класс для конфигов D_NVG
 * Совместимо с (PowerCell, PowerBank)
 
-```ini
+```ltx
 [device_nvg]:identity_immunities
   ...                      
   class = D_NVG; класс ПНВ
@@ -209,7 +216,7 @@ snd_click = device\torch_click; Опциональный звук включен
 * Опциональная потребность в энергии
 * Совместимо с (PowerCell, PowerBank)
 
-```ini
+```ltx
 [device_pda]
   ...
   use_power_cells = true; Имеет ли слоты под внутреннюю батарейку (автоматически начинает требовать питание)
@@ -227,7 +234,7 @@ snd_click = device\torch_click; Опциональный звук включен
 * Опциональная потребность в энергии
 * Совместимо с (PowerCell, PowerBank)
 
-```ini
+```ltx
 [device_torch]
   ...
   use_power_cells = true; Имеет ли слоты под внутреннюю батарейку (автоматически начинает требовать питание)
@@ -245,7 +252,7 @@ snd_click = device\torch_click; Опциональный звук включен
 * Опциональная потребность в энергии
 * Совместимо с (PowerCell, PowerBank)
 
-```ini
+```ltx
 [detector_advanced]
   ...
   use_power_cells = true; Имеет ли слоты под внутреннюю батарейку (автоматически начинает требовать питание)
@@ -253,7 +260,6 @@ snd_click = device\torch_click; Опциональный звук включен
   use_power_bank = true; Имеет ли совместимость в повербанком (автоматически начинает требовать питание) если есть не пустой повербанк в слоте то энергия будет брать приоритетно из него и только потом из внутренней бабарейки если активны обе опции и батарейка и повербанк
   power_drain_value = 5; Потребление энергии когда активен (подбирать имперически)
 ```
-
 
 ## Интерактивные обьекты (CInteractiveObject) полу лутабельная динамика без коллизии
 
@@ -264,7 +270,7 @@ snd_click = device\torch_click; Опциональный звук включен
 * Неосязаемая динамика над которой можно вызывать активное действия получая предметы при этом скрывая кости на нем (облутывание яблок с дерева как пример)
 * Класс для конфига INTERACT
 
-```ini
+```ltx
 [interact_obj_01]
   ...
   class = INTERACT; Класс
@@ -277,7 +283,6 @@ snd_click = device\torch_click; Опциональный звук включен
   use_spawn_at_bone_index_sections = false; спавнить в инвентарь последовательно перечисленные секции предметов при взаимодействии в зависимости от того какая по индексу кость скрыта такая секция и будет заспавнена
 ```
 
-
 ## Противогазы (CHelmet & CCustomOutfit): IAntigas
 
 > [!IMPORTANT]
@@ -289,13 +294,14 @@ snd_click = device\torch_click; Опциональный звук включен
 * Класс предмета E_STLK
 
 * Имеет контекстное меню для извлечения фильтра
-```ini
+
+```ltx
 [antigas_helmet_01]:helm_tactic ; наследуем от любого шлема или бронежилета
 class = E_HLMET ; или E_STLK
 is_antigas = true ; Задействовать логику противогаза (true|false)
 antigas_allow_filter_sections = filter_01, filter_02; Перечень секций фильтров которые совместимы с этим противогазом
-antigas_breath_sounds_with_filter	= gasmask\gas_breath_7_1.ogg, gasmask\gas_breath_7_2.ogg, gasmask\gas_breath_7_3.ogg; Звуки дыхания с надетым фильтром
-antigas_breath_sounds_no_filter	= gasmask\gas_breath_1_1.ogg, gasmask\gas_breath_1_2.ogg, gasmask\gas_breath_1_3.ogg; Звуки дыхания без фильтра
+antigas_breath_sounds_with_filter = gasmask\gas_breath_7_1.ogg, gasmask\gas_breath_7_2.ogg, gasmask\gas_breath_7_3.ogg; Звуки дыхания с надетым фильтром
+antigas_breath_sounds_no_filter = gasmask\gas_breath_1_1.ogg, gasmask\gas_breath_1_2.ogg, gasmask\gas_breath_1_3.ogg; Звуки дыхания без фильтра
 ```
 
 ## Фильтры для противогазов (AntigasFilter)
@@ -308,17 +314,18 @@ antigas_breath_sounds_no_filter	= gasmask\gas_breath_1_1.ogg, gasmask\gas_breath
 * Класс предмета ATG_FLTR
 
 * Вставляется в противогаз драг дропом фильтра на противогаз
-```ini
+
+```ltx
 [filter_01]:identity_immunities
 class = ATG_FLTR
 
 is_antigas_filter = true ; Задействовать логику фильтра для противогаза
 
 antigas_filter_protection_burn = 0.01; Добавочный параметр защиты от горячего воздуха для противогаза (условность от горячего воздуха не ставить слишком высокие цифры)
-antigas_filter_protection_radiation	= 0.1; Добавочный параметр защиты от радиоактивной пыли для противогаза
+antigas_filter_protection_radiation = 0.1; Добавочный параметр защиты от радиоактивной пыли для противогаза
 antigas_filter_protection_chemical_burn = 0.01; Добавочный параметр защиты от химических испарений для противогаза
 
 antigas_filter_coeff_damage_burn = 0.01; Кофицент урона который получает фильтр противогаза при воздействии горячего воздуха
 antigas_filter_coeff_damage_radiation = 0.01; Кофицент урона который получает фильтр противогаза при воздействии радиоактивной пыли
-antigas_filter_coeff_damage_chemical_burn	= 0.01; Кофицент урона который получает фильтр противогаза при воздействии химических испарений
+antigas_filter_coeff_damage_chemical_burn = 0.01; Кофицент урона который получает фильтр противогаза при воздействии химических испарений
 ```

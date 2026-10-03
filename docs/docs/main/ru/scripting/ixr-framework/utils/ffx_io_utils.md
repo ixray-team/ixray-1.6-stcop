@@ -1,17 +1,20 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
+## ffx_io_utils: `\gamedata\scripts\ixr_framework\utils\ffx_io_utils.script`
 
-### ffx_io_utils: `\gamedata\scripts\ixr_framework\utils\ffx_io_utils.script`
 Утилиты для операций ввода/вывода с файлами (текстовые и бинарные):
+
 * `write_string_file`
 * `read_string_file_`
 * `write_binary_file`
 * `read_binary_file`
 
-#### Описание методов:
+### Описание методов
+
 ```lua
 --// Записать текстовую строку в файл.
 write_string_file(text, file_path, mode)
@@ -43,7 +46,8 @@ args:
 retval: (string|any) - бинарные данные в виде строки, либо def_value в случае ошибки
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Запись текста в файл (перезапись)
 ffx_io_utils.write_string_file("Hello, world!", "my_log.txt")

@@ -1,10 +1,13 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
-### ffx_object_utils: `\gamedata\scripts\ixr_framework\utils\ffx_object_utils.script`
+## ffx_object_utils: `\gamedata\scripts\ixr_framework\utils\ffx_object_utils.script`
+
 Утилиты для работы с игровыми (клиентскими) и серверными объектами, включая проверки, преобразования, управление условиями и положение костей:
+
 * `has_actor`
 * `se_object_by_id_or_false`
 * `se_object_or_false`
@@ -21,7 +24,7 @@
 * `to_game_object`
 * `test_to_game_object`
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Проверить, существует ли актёр (с кешированием результата).
@@ -120,7 +123,8 @@ args:
 retval: (none)
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Проверка существования актёра
 if ffx_object_utils.has_actor() then

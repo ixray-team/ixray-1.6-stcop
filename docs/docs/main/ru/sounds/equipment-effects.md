@@ -1,4 +1,5 @@
 # Звуковые эффекты снаряжения
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.3
@@ -7,7 +8,7 @@
 
 Добавлена поддержка новых звуков для девайсов
 
-```ini
+```ltx
 sound_activate = device\torch_click   ; звук при включении
 sound_deactivate = device\torch_click ; звук при выключении
 snd_click = device\torch_click ; звук при включении/выключении 

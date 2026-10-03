@@ -24,7 +24,7 @@ The project accepts commit standard for transparency and comprehension of the ch
 
 Initial commit messages should follow this structure:
 
-```text
+```txt
 Initial commit
 ```
 
@@ -32,7 +32,7 @@ Initial commit
 
 Regular commit messages consist of one part, optionally followed by a long description:
 
-```text
+```txt
 <Commit message body>
 
 <Long description if necessary>
@@ -77,13 +77,13 @@ It is recommended to place the main noun after any qualifiers when possible for 
 
 #### Messages with long descriptions
 
-```text
+```txt
 Fix rendering issue in graphics pipeline
 
 The rendering pipeline had a bug causing frame drops on low-end GPUs. This fix optimizes shader execution and resolves the issue.
 ```
 
-```text
+```txt
 Add unit tests for input validation
 
 Unit tests cover edge cases for user input to ensure stability and prevent crashes during unexpected inputs.

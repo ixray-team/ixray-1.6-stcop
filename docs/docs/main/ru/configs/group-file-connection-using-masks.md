@@ -12,7 +12,7 @@
 
 Раньше требовалось явно указывать каждый файл:
 
-```cpp
+```ltx
 #include "weapons\w_ak74.ltx"
 #include "weapons\w_ak74u.ltx"
 #include "weapons\w_ak101.ltx"
@@ -20,7 +20,7 @@
 
 Теперь можно заменить список на **шаблон**:
 
-```cpp
+```ltx
 #include "weapons\w_*.ltx"
 ```
 
@@ -30,7 +30,7 @@
 
 - Поддерживается рекурсия:
 
-```cpp
+```ltx
 #include "weapons\*\*.ltx"
 ```
 
@@ -40,7 +40,7 @@
 
 Раньше модели требовали полного прописывания путей:
 
-```ini
+```ltx
 "dynamics\weapons\wpn_hand\wpn_abakan_hud_animation.omf"
 "dynamics\weapons\wpn_hand\wpn_ak74_hud_animation.omf"
 "dynamics\weapons\wpn_hand\wpn_ak74u_hud_animation.omf"
@@ -48,7 +48,7 @@
 
 Теперь можно использовать маску:
 
-```ini
+```ltx
 "dynamics\weapons\wpn_hand\*.omf"
 ```
 
@@ -58,7 +58,7 @@
 
 - Поддерживается рекурсия:
 
-```ini
+```ltx
 "dynamics\weapons\*\*.omf"
 ```
 

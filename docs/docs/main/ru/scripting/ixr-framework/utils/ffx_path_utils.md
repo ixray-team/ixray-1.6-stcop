@@ -1,13 +1,16 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
-### ffx_path_utils: `\gamedata\scripts\ixr_framework\utils\ffx_path_utils.script`
+## ffx_path_utils: `\gamedata\scripts\ixr_framework\utils\ffx_path_utils.script`
+
 Утилиты для работы с путями к файлам:
+
 * `get_file_name`
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Извлечь имя файла из полного пути. Опционально удалить расширение.
@@ -18,7 +21,8 @@ args:
 retval: (string) - извлечённое имя файла (с расширением или без).
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Получить имя файла с расширением
 local full_name = ffx_path_utils.get_file_name("C:\\games\\scripts\\my_script.script")

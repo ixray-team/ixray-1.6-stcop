@@ -1,22 +1,27 @@
 # Взрывчатка
+
 ## CExplosive
+
 ### Следы от взрыва
+
 > [!IMPORTANT]  
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.1
 
-```ini
+```ltx
 wallmark_section = explosion_marks; Установка wallmark'и от взрыва (указывается секция из конфига)
 ```
 
 * Следующие настройки звуков работаю в системе `Sound Layers`:
-* * `snd_explode`
+  * `snd_explode`
 
 ### Газовые гранаты
+
 > [!IMPORTANT]  
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.4
-```ini
+
+```ltx
 ; Основной флаг газового взрыва
 is_gas_explosive           = true/false    ; Включить газовый взрыв (по умолчанию false)
 
@@ -29,7 +34,8 @@ actor_blast_begin_callback = callback_func ; Функция вызываемая
 actor_blast_end_callback   = callback_func ; Функция вызываемая в конце обработки актора
 ```
 
-::: details Примеры callback'ов 
+::: details Примеры callback'ов
+
 ```lua
 -- Функция проверки в начале воздействия
 -- Должна возвращать true/false - разрешить/запретить дальнейшую обработку
@@ -69,13 +75,16 @@ function actor_gas_poison()
     printf("[GAS] Актор отравлен газом!")
 end
 ```
+
 :::
 
 ## CGrenade
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.1
-```ini
+
+```ltx
 explosion_on_hit = true; Взрыв при получении урона
 explosion_hit_types = 6, 8 ; Типы урона 
 ```

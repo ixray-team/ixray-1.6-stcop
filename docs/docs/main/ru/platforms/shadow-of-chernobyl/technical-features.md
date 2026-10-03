@@ -1,6 +1,9 @@
+# Shadow of Chernobyl
+
 > [!IMPORTANT]  
 > **Статус**: WIP <br>
 > **Минимальная версия**: 2.0
+
 ## Общие особенности
 
 * Используется единый с ЗП модуль `xrGame.dll`, благодаря чему большинство возможностей движка из ЗП доступны в ТЧ и наоборот.
@@ -21,25 +24,25 @@
 
 Папка gamedata от Тени Чернобыля, в отличие от её ЗП аналога, имеет отличия в стандартных параметрах файла конфигурации движка `engine_external.ltx`. Вот список отличий:
 
-```ini
+```ltx [engine_external.ltx]
 [general]
-Platform = soc ; Используемая платформа, в данном случае soc (Тень Чернобыля)
-title = st_ixray_title_soc ; Отображаемое имя в Discord Rich Presence, в данном случае уникальное для ТЧ
+  Platform = soc ; Используемая платформа, в данном случае soc (Тень Чернобыля)
+  title = st_ixray_title_soc ; Отображаемое имя в Discord Rich Presence, в данном случае уникальное для ТЧ
 
 [ui]
-WeaponIconScale = 0.9 ; Размер иконки патронов в maingame.xml. В ЗП по умолчанию стоит значение 0.8, в ЧН - 0.65, а в ТЧ - 0.9.
-ShowLoadingStages = true ; Стадии загрузки, например "Клиент: Синхронизация"
-PdaRearrangeTabButtons = true ; Использование старой формулы расчёта размера вкладок в КПК по типу "Контакты"
+  WeaponIconScale = 0.9 ; Размер иконки патронов в maingame.xml. В ЗП по умолчанию стоит значение 0.8, в ЧН - 0.65, а в ТЧ - 0.9.
+  ShowLoadingStages = true ; Стадии загрузки, например "Клиент: Синхронизация"
+  PdaRearrangeTabButtons = true ; Использование старой формулы расчёта размера вкладок в КПК по типу "Контакты"
 
 [gameplay]
-EnableInventoryPistolSlot = true ; Использовать второй слот только для пистолетов
-EnableAiDieInAnomaly = true ; Включить возможность смерти НПС в аномалиях
-EnableLegacyUpgradeSystem = true ; Использовать старую систему улучшения, где нельзя одновременно поставить 2 улучшения в одной категории
-EnableEngineArtefactSpawn = true ; Чтение параметров спавна артефактов напрямую из конфига аномалий
+  EnableInventoryPistolSlot = true ; Использовать второй слот только для пистолетов
+  EnableAiDieInAnomaly = true ; Включить возможность смерти НПС в аномалиях
+  EnableLegacyUpgradeSystem = true ; Использовать старую систему улучшения, где нельзя одновременно поставить 2 улучшения в одной категории
+  EnableEngineArtefactSpawn = true ; Чтение параметров спавна артефактов напрямую из конфига аномалий
 
 [render]
-DisableLoadScreenTips = true ; Отключение использования советов на загрузочном экране
-UseLegacyParticleLoader = true ; Использование ТЧ формата для файла particles.xr
+  DisableLoadScreenTips = true ; Отключение использования советов на загрузочном экране
+  UseLegacyParticleLoader = true ; Использование ТЧ формата для файла particles.xr
 ```
 
 ## Система инфопоршней
@@ -49,11 +52,11 @@ UseLegacyParticleLoader = true ; Использование ТЧ формата 
 Пример использования:
 
 ```xml
-	<info_portion id="test_info_2"> <!-- Название инфопоршня -->
-		<task>storyline_eliminate_gunslinger</task> <!-- Выдача задания: Только для ТЧ -->
-		<dialog>actor_break_dialog</dialog> <!-- Выдача диалога -->
-		<article>about_enciclopedia</article> <!-- Выдача статьи в энциклопедии -->
-		<article_disable>test_article</articledisable> <!-- Убрать статью из энциклопедии -->
-		<disable>test_info_1</disable> <!-- Отключить уже полученный инфопоршень -->
-	</info_portion>
+<info_portion id="test_info_2"> <!-- Название инфопоршня -->
+	<task>storyline_eliminate_gunslinger</task> <!-- Выдача задания: Только для ТЧ -->
+	<dialog>actor_break_dialog</dialog> <!-- Выдача диалога -->
+	<article>about_enciclopedia</article> <!-- Выдача статьи в энциклопедии -->
+	<article_disable>test_article</articledisable> <!-- Убрать статью из энциклопедии -->
+	<disable>test_info_1</disable> <!-- Отключить уже полученный инфопоршень -->
+</info_portion>
 ```

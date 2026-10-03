@@ -1,16 +1,20 @@
 # DLTX
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: 1.0
 
+## Обзор
+
 **Система DLTX** - позволяет переопределять значения в отдельном файле, что должно значительно уменьшить количество конфликтов модов и необходимость объединять моды вручную.
 
-```
-items.ltx           <-- Orig
+```txt
+items.ltx             <-- Orig
 mod_items_MODNAME.ltx <-- Mod file override
 ```
 
 Переопределение осуществляется с помощью атрибутов:
+
 * `!` - Переопределение секции или поля
 * `!!` - Удаление секции
 * `>` - Добавление списка полей CSV
@@ -20,7 +24,8 @@ mod_items_MODNAME.ltx <-- Mod file override
 
 Для того, чтобы переопределить секцию, используйте символ `!` перед объявлением секции.
 Допустим у вас секция:
-```ini
+
+```ltx title="bubble_sort.py"
 [some_section]:parent_section
 price       = 5000
 weight      = 1.0
@@ -28,7 +33,8 @@ friends     = me, myself, i
 ```
 
 Вы используете:
-```ini
+
+```ltx
 ![some_section]
 ```
 
@@ -37,7 +43,7 @@ friends     = me, myself, i
 Для того, чтобы переопределить поле в секции, переопределите его секцию с нужным полем.
 Допустим, вы хотите переопределить поле с названием `price` в `some_section`:
 
-```ini
+```ltx
 [some_section]:parent_section
 price       = 5000
 weight      = 1.0
@@ -45,7 +51,8 @@ friends     = me, myself, i
 ```
 
 Вы используете:
-```ini
+
+```ltx
 ![some_section]
 price       = 10000
 ```
@@ -55,7 +62,8 @@ price       = 10000
 Чтобы удалить секцию, удалите все его поля, а перед объявлением секции используйте символ `!!`
 
 Допустим у вас секция:
-```ini
+
+```ltx
 [some_section]:parent_section
 price       = 5000
 weight      = 1.0
@@ -63,7 +71,8 @@ friends     = me, myself, i
 ```
 
 Вы используете:
-```ini
+
+```ltx
 !![some_section]
 !price
 !weight
@@ -75,7 +84,7 @@ friends     = me, myself, i
 Для удаления поля в секции, используйте символ `!` перед объявлением поля
 Например, чтобы удалить поле с названием `price` в `some_section`:
 
-```ini
+```ltx
 [some_section]:parent_section
 price       = 5000
 weight      = 1.0
@@ -83,7 +92,8 @@ friends     = me, myself, i
 ```
 
 Вы используете:
-```ini
+
+```ltx
 ![some_section]
 !price
 ```
@@ -94,7 +104,7 @@ friends     = me, myself, i
 
 Допустим у вас секция:
 
-```ini
+```ltx
 [some_section]:parent_section
 price       = 5000
 weight      = 1.0
@@ -103,7 +113,7 @@ friends     = me, myself, i
 
 Вы используете:
 
-```ini
+```ltx
 ![some_section]:some_other_section
 ```
 
@@ -112,7 +122,7 @@ friends     = me, myself, i
 Для удаления родительской секции, перед её названием в списке родителей нужно поставить символ *!*
 Например, чтобы удалить раздел `parent_section` из родительского раздела `some_section`:
 
-```ini
+```ltx
 [some_section]:parent_section
 price       = 5000
 weight      = 1.0
@@ -121,7 +131,7 @@ friends     = me, myself, i
 
 Вы используете:
 
-```ini
+```ltx
 ![some_section]:!parent_section
 ```
 
@@ -130,7 +140,7 @@ friends     = me, myself, i
 Для добавления элемента в список CSV, используйте символ `>` перед объявлением поля и перечислите элементы, которые вы хотите добавить
 Например, чтобы добавить элемент `you`, введите его в поле `friends` in `some_section`:
 
-```ini
+```ltx
 [some_section]:parent_section
 price       = 5000
 weight      = 1.0
@@ -139,7 +149,7 @@ friends     = me, myself, i
 
 Вы используете:
 
-```ini
+```ltx
 ![some_section]
 >friends    = you
 ```
@@ -149,7 +159,7 @@ friends     = me, myself, i
 Чтобы удалить элемент из списка CSV, используйте символ `<` перед объявлением поля и перечислите элементы, которые вы хотите удалить
 Например, чтобы удалить элемент `myself` в поле `friends` в секции `some_section`:
 
-```ini
+```ltx
 [some_section]:parent_section
 price       = 5000
 weight      = 1.0
@@ -158,7 +168,7 @@ friends     = me, myself, i
 
 Вы используете:
 
-```ini
+```ltx
 ![some_section]
 <friends = myself
 ```

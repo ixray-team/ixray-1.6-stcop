@@ -40,7 +40,7 @@ export const enLocale = {
     },
     footer: {
       message: 'Published under the MIT license.',
-      copyright: '© 2025 ixray-team / IX-Ray Platform'
+      copyright: '© 2026 ixray-team / IX-Ray Platform'
     },
     darkModeSwitchLabel: 'Appearance',
     lightModeSwitchTitle: 'Switch to light theme',

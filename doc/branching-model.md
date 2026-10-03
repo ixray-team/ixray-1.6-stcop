@@ -22,7 +22,7 @@ Special branch named `develop` is common development branch intended for staging
 
 Regular working branches should branch from the `default` or `develop` branch and should be named matching the following pattern:
 
-```text
+```txt
 feature/name-of-branch
 ```
 

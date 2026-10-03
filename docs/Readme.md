@@ -1,8 +1,10 @@
 ## Зависимости
-- NodeJS (https://nodejs.org/en/download)
+
+- [NodeJS](https://nodejs.org/en/download)
 
 ## Запуск
-```
+
+```txt
 #установка зависимостей
 npm install
 
@@ -11,6 +13,7 @@ npm run docs:dev
 ```
 
 ## Компоненты
+
  ``` html
  # Видео
  <Video url="" />

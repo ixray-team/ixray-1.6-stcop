@@ -1,24 +1,24 @@
-﻿import type { DefaultTheme } from 'vitepress'
+﻿import type { DefaultTheme } from "vitepress";
 
 export const modsSidebar: DefaultTheme.Sidebar = [
   {
-    text: 'Модификации',
+    text: "Модификации",
     collapsed: false,
     items: [
-      { text: 'Вышедшие', link: '/mods/released/mods' },
-      { text: 'В разработке', link: '/mods/released/mods_dev' },
-      { text: 'Незаконченные', link: '/mods/released/mods_unfinished' },
-    ]
+      { text: "Вышедшие", link: "/mods/released/mods" },
+      { text: "В разработке", link: "/mods/released/mods_dev" },
+      { text: "Незаконченные", link: "/mods/released/mods_unfinished" },
+    ],
   },
   {
-    text: 'Аддоны',
+    text: "Аддоны",
     collapsed: false,
     items: [
-      { text: 'Погода', link: '/mods/addons/weather' },
-      { text: 'UI/UX', link: '/mods/addons/ui-ux' },
-      { text: 'Оружейные паки', link: '/mods/addons/weapons-pack' },
-      { text: 'Иммерсивность', link: '/mods/addons/immersive' },
-      { text: 'Исправления', link: '/mods/addons/fixes' }
-    ]
-  }
-]
+      { text: "Погода", link: "/mods/addons/weather" },
+      { text: "UI/UX", link: "/mods/addons/ui-ux" },
+      { text: "Оружейные паки", link: "/mods/addons/weapons-pack" },
+      { text: "Иммерсивность", link: "/mods/addons/immersive" },
+      { text: "Исправления", link: "/mods/addons/fixes" },
+    ],
+  },
+];

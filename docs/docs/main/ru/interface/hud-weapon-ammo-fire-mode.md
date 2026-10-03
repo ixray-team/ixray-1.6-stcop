@@ -28,11 +28,11 @@
 
 ```xml
 <static_fire_mode x="899" y="684" width="16" height="20" stretch="1" use_icon="1">
-  <mode_mapping text="1" icon="ui_inGame2_icon_fmode_single"/>
-  <mode_mapping text="A" icon="ui_inGame2_icon_fmode_auto"/>
-  <mode_mapping text="2" icon="ui_inGame2_icon_fmode_2burst"/>
-  <mode_mapping text="3" icon="ui_inGame2_icon_fmode_3burst"/>
-  <text font="letterica18" align="c" vert_align="c"/>
+	<mode_mapping text="1" icon="ui_inGame2_icon_fmode_single"/>
+	<mode_mapping text="A" icon="ui_inGame2_icon_fmode_auto"/>
+	<mode_mapping text="2" icon="ui_inGame2_icon_fmode_2burst"/>
+	<mode_mapping text="3" icon="ui_inGame2_icon_fmode_3burst"/>
+	<text font="letterica18" align="c" vert_align="c"/>
 </static_fire_mode>
 ```
 

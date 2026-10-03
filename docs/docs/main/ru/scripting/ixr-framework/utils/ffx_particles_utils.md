@@ -1,17 +1,20 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
-### ffx_particles_utils: `\gamedata\scripts\ixr_framework\utils\ffx_particles_utils.script`
+## ffx_particles_utils: `\gamedata\scripts\ixr_framework\utils\ffx_particles_utils.script`
+
 Утилиты для управления системами частиц (pg-эффекты):
+
 * `play_async`
 * `destroy`
 * `set_pos_and_dir_x_bazis`
 * `set_pos_and_dir_y_bazis`
 * `set_pos_and_dir_z_bazis`
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Создать или переиспользовать систему частиц. В текущей реализации параметр id игнорируется – новый объект создаётся с автоматическим индексом, после чего проигрывается в указанной позиции.
@@ -53,7 +56,8 @@ args:
 retval: (none)
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Воспроизвести эффект дыма в позиции актёра
 local actor_pos = db.actor:position()

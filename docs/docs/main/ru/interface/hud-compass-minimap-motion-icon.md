@@ -57,16 +57,16 @@ end
 
 ### Корневой узел compass_bar
 
-| Атрибут | Назначение | Default |
-|---------|------------|---------|
-| `fov_angle` | Угол обзора полосы в градусах | `45` |
-| `fade_in_speed` | Скорость появления меток | `6` |
-| `fade_out_speed` | Скорость исчезновения меток | `5` |
-| `min_visible_alpha` | Порог видимости alpha | `0.01` |
-| `fov_fade_inner` | Внутренняя граница fade по краям FOV | `0.30` |
-| `fov_fade_outer` | Внешняя граница fade по краям FOV | `0.70` |
-| `fov_fade_edge_lo` | Нижний край нормализованной зоны fade | `0.05` |
-| `fov_fade_edge_hi` | Верхний край нормализованной зоны fade | `0.95` |
+| Атрибут             | Назначение                             | Default |
+|---------------------|----------------------------------------|---------|
+| `fov_angle`         | Угол обзора полосы в градусах          | `45`    |
+| `fade_in_speed`     | Скорость появления меток               | `6`     |
+| `fade_out_speed`    | Скорость исчезновения меток            | `5`     |
+| `min_visible_alpha` | Порог видимости alpha                  | `0.01`  |
+| `fov_fade_inner`    | Внутренняя граница fade по краям FOV   | `0.30`  |
+| `fov_fade_outer`    | Внешняя граница fade по краям FOV      | `0.70`  |
+| `fov_fade_edge_lo`  | Нижний край нормализованной зоны fade  | `0.05`  |
+| `fov_fade_edge_hi`  | Верхний край нормализованной зоны fade | `0.95`  |
 
 ### background
 
@@ -81,11 +81,11 @@ end
 
 Цель: scale и offset отрисовки dial (не crop атласа).
 
-| Атрибут | Назначение | Default |
-|---------|------------|---------|
-| `draw_scale` / `draw_scale_x` / `draw_scale_y` | явный scale | legacy `width`/`height` |
-| `draw_offset_x` / `draw_offset_y` | явный offset px | legacy `x`/`y` |
-| `width` / `height` / `x` / `y` | legacy aliases | `1` / `1` / `0` / `0` |
+| Атрибут                                        | Назначение      | Default                 |
+|------------------------------------------------|-----------------|-------------------------|
+| `draw_scale` / `draw_scale_x` / `draw_scale_y` | явный scale     | legacy `width`/`height` |
+| `draw_offset_x` / `draw_offset_y`              | явный offset px | legacy `x`/`y`          |
+| `width` / `height` / `x` / `y`                 | legacy aliases  | `1` / `1` / `0` / `0`   |
 
 ### tex_width
 
@@ -101,33 +101,33 @@ end
 
 Цель: текстовые подписи направлений.
 
-| Атрибут | Назначение | Default |
-|---------|------------|---------|
-| `fake_target_distance` | Дистанция для проекции N/E/S/W | `1000` |
+| Атрибут                | Назначение                     | Default |
+|------------------------|--------------------------------|---------|
+| `fake_target_distance` | Дистанция для проекции N/E/S/W | `1000`  |
 
 ### spots
 
-| Атрибут | Назначение | Default |
-|---------|------------|---------|
-| `collect_interval` | Интервал сбора map spots в секундах | `0.1` |
-| `show` | Показывать spots на полосе | `1` |
+| Атрибут            | Назначение                          | Default |
+|--------------------|-------------------------------------|---------|
+| `collect_interval` | Интервал сбора map spots в секундах | `0.1`   |
+| `show`             | Показывать spots на полосе          | `1`     |
 
 ### active_target
 
 Цель: маркер выбранной цели, дистанция, вертикальное отклонение.
 
-| Атрибут | Назначение | Default |
-|---------|------------|---------|
-| `active_offset_y` / `offset_y` / `y` | вертикальный offset контейнера, px | `0` |
-| `altitude_deadzone` | порог высоты для стрелки | `1.8` |
-| `padding` | отступ от краев strip | `8` |
+| Атрибут                              | Назначение                         | Default |
+|--------------------------------------|------------------------------------|---------|
+| `active_offset_y` / `offset_y` / `y` | вертикальный offset контейнера, px | `0`     |
+| `altitude_deadzone`                  | порог высоты для стрелки           | `1.8`   |
+| `padding`                            | отступ от краев strip              | `8`     |
 
 #### distance_text
 
-| Атрибут | Назначение | Default |
-|---------|------------|---------|
-| `format` / `text_format` | Формат sprintf дистанции | `"%.0f m"` |
-| `st_format` | ID строки из string table вместо format | - |
+| Атрибут                  | Назначение                              | Default    |
+|--------------------------|-----------------------------------------|------------|
+| `format` / `text_format` | Формат sprintf дистанции                | `"%.0f m"` |
+| `st_format`              | ID строки из string table вместо format | -          |
 
 ## Motion icon
 
@@ -146,7 +146,7 @@ ActorMenu.get_maingame():SetNavigationMode(true)
 
 Сценарий 2: Legacy boot-hint через DLTX (deprecated)
 
-```ini
+```ltx
 [ui]
 UseCompassBar = true
 ```

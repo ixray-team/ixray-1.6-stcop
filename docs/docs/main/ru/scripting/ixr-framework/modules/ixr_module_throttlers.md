@@ -1,10 +1,12 @@
 
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
 ## Модуль таймеров IXR THROTTLERS
+
 Позволяет ограничивать переодичность вызовов для оптимизации кода (заменяет простейшие таймеры отсечки кода)
 
 ```lua
@@ -25,10 +27,11 @@ retval: (bool) (возвращает true если вызов производи
 ```
 
 Примеры:
+
 ```lua
 --// Подписываемся на обдейт актора в качестве примера
 function on_game_start(callbackRegistrator)
-	RegisterScriptCallback("actor_on_update", actor_on_update)
+  RegisterScriptCallback("actor_on_update", actor_on_update)
 end
 
 --// Обработчик обновления актора (в качестве примера сделаем метод который тикает раз в 250 мс)

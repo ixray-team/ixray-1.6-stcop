@@ -1,4 +1,5 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
@@ -6,6 +7,7 @@
 Система фреймворка поддерживает модульную архитектуру, каждый модуль хранит в себе самодостаточную к выполнению логику и не ссылается внутри на другие модули для атомарности и независимости.
 
 Для того чтобы созданный скрипт считался модулем он должен соответствовать интерфейсу:
+
 ```lua
 function get_module_info()
 	return {
@@ -47,6 +49,7 @@ end
 ```
 
 Далее чтобы фреймворк увидел наш модуль его нужно явным образом прописать в переопределяемый файл настроек совместимый с системой аддонов __ixr_override_framework_load_sub_modules.script
+
 ```lua
 function configure(_ref_ixr_framework)
 	-- use concrete script names for include to framework, after module allow by alias name included in module info in module code or script name is included
@@ -75,6 +78,7 @@ end
 ```
 
 Методы фреймворка для обрщения к модулям выведенные глобально
+
 ```lua
 --// Проверить загружен ли модуль
 IsModuleLoaded(script_or_alias_name)
@@ -98,6 +102,7 @@ retval: (mixed|false) - результат callback_fn или def_value.
 ```
 
 Примеры работы с модулями по именам:
+
 ```lua
 if IsModuleLoaded("my-module") then
     GetModule("my-module").my_method_in_module() --// какой то известный нам метод внутри модуля

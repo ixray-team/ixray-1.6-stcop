@@ -114,7 +114,7 @@
 
 @media (min-width: 960px) {
   :root {
-  --vp-home-hero-image-filter: blur(68px);
+    --vp-home-hero-image-filter: blur(68px);
   }
 }
 
@@ -181,4 +181,66 @@
 }
 .dark .VPImage {
   filter: grayscale(1) invert(1);
+}
+
+/**
+ * Component: Keyboard keys and sample output
+ * -------------------------------------------------------------------------- */
+
+:root {
+  --ix-kbd-text: var(--vp-c-text-1);
+  --ix-kbd-bg: var(--vp-c-default-soft);
+  --ix-kbd-border: var(--vp-c-divider);
+  --ix-kbd-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+
+  --ix-samp-text: var(--vp-c-text-2);
+  --ix-samp-bg: var(--vp-c-bg-soft);
+  --ix-samp-border: var(--vp-c-divider);
+}
+
+.dark {
+  --ix-kbd-text: var(--vp-c-text-1);
+  --ix-kbd-bg: rgba(255, 255, 255, 0.08);
+  --ix-kbd-border: rgba(255, 255, 255, 0.16);
+  --ix-kbd-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+
+  --ix-samp-text: var(--vp-c-text-2);
+  --ix-samp-bg: rgba(255, 255, 255, 0.04);
+  --ix-samp-border: rgba(255, 255, 255, 0.12);
+}
+
+kbd,
+samp {
+  display: inline-block;
+  padding: 0.1em 0.35em;
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.875em;
+  line-height: 1.4;
+  white-space: nowrap;
+  vertical-align: middle;
+  border-radius: 4px;
+}
+
+kbd {
+  color: var(--ix-kbd-text);
+  background-color: var(--ix-kbd-bg);
+  border: 1px solid var(--ix-kbd-border);
+  border-bottom-width: 2px;
+  box-shadow: var(--ix-kbd-shadow);
+  font-weight: 500;
+  text-align: center;
+}
+
+samp {
+  color: var(--ix-samp-text);
+  background-color: var(--ix-samp-bg);
+  border: 1px dashed var(--ix-samp-border);
+}
+
+
+/* .vitepress/theme/custom.css */
+.custom-block.success {
+  border-color: transparent;
+  color: var(--vp-c-text-1);
+  background-color: var(--vp-c-success-soft);
 }

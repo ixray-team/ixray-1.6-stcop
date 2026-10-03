@@ -1,10 +1,13 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
-### ffx_string_utils: `\gamedata\scripts\ixr_framework\utils\ffx_string_utils.script`
+## ffx_string_utils: `\gamedata\scripts\ixr_framework\utils\ffx_string_utils.script`
+
 Утилиты для работы со строками (поиск, замена, разбиение, обрезка, регистр и т.д.):
+
 * `get_length`
 * `trim`
 * `contains`
@@ -21,7 +24,7 @@
 * `replace`
 * `remove_substring`
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Возвращает длину строки, или 0, если входные данные nil.
@@ -125,7 +128,8 @@ args:
 retval: (string) - строка без указанных вхождений.
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Длина строки
 local len = ffx_string_utils.get_length("Hello") --// 5

@@ -1,16 +1,19 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
-### ffx_math_utils: `\gamedata\scripts\ixr_framework\utils\ffx_math_utils.script`
+## ffx_math_utils: `\gamedata\scripts\ixr_framework\utils\ffx_math_utils.script`
+
 Утилиты для математических операций:
+
 * `classic_round`
 * `clamp_in_range`
 * `scaled_random`
 * `safe_divide`
 
-#### Описание методов:
+### Описание методов
 
 ```lua
 --// Округлить число по классическому правилу: 0.5 и выше — вверх, иначе — вниз.
@@ -43,7 +46,8 @@ args:
 retval: (number) - результат деления, или 0 при небезопасном делении.
 ```
 
-### Примеры использований:
+### Примеры использований
+
 ```lua
 --// Округление
 local rounded = ffx_math_utils.classic_round(3.5)  --// 4

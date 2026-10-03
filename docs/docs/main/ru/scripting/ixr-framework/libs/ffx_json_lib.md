@@ -1,15 +1,18 @@
 # IXR Framework (LUA Фреймворк)
+
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
 > **Минимальная версия**: 1.4.0
 
+## json: \gamedata\scripts\ixr_framework\utils\libs\ffx_json_lib.script
 
-### json: \gamedata\scripts\ixr_framework\utils\libs\ffx_json_lib.script
 Библиотека для работы с JSON:
+
 * `json_decode(input): string`
 * `json_encode(input): string`
 
-#### Описание методов:
+### Описание методов
+
 ```lua
 --// Закодировать данные в JSON.
 json_encode(input)
@@ -24,7 +27,8 @@ args:
 retval: (string) --// Расскодированная из JSON таблица
 ```
 
-#### Примеры использований:
+### Примеры использований
+
 ```lua
 local original = {true, false, 0, 1, 2, 3, 4, 5.2, "test"}
 local encoded = ffx_json_lib.json_encode(original)
