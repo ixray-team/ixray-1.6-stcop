@@ -16,6 +16,11 @@ void ShaderBind_Clear()
 	g_bind_count = 0;
 }
 
+xr_vector<ShaderBindSlot> ShaderBind_Snapshot()
+{
+	return xr_vector<ShaderBindSlot>(g_binds, g_binds + g_bind_count);
+}
+
 u32 ShaderBind_CacheKey()
 {
 	u32 hash = (2166136261u ^ 2u) * 16777619u;
