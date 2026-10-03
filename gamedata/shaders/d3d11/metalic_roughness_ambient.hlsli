@@ -153,8 +153,7 @@ float3 AmbientLightingImpl(float3 DiffuseIrradance, float3 SpecularIrradance, fl
 	DiffuseIrradance = GammaToLinear(DiffuseIrradance);
 	SpecularIrradance = GammaToLinear(SpecularIrradance);
 
-	// NOTE(vertver): PBR vasyan addon lambertian fix 
-	DiffuseIrradance *= Diffuse * 3.1415f;
+	DiffuseIrradance *= Diffuse;
 
 	float2 BRDF = EpicGamesEnvBRDFApprox(NdotV, Roughness);
 	
