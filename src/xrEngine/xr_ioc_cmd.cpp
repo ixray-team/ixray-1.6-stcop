@@ -709,7 +709,12 @@ public:
 			//        [](void *p) { operator delete(p); },
 			//        []() { /* Do some TLS initialization here if needed */ }
 			//);
-			OPTICK_START_CAPTURE(Optick::Mode::Type(Optick::Mode::INSTRUMENTATION | Optick::Mode::TAGS | Optick::Mode::AUTOSAMPLING | Optick::Mode::SWITCH_CONTEXT | Optick::Mode::IO | Optick::Mode::GPU | Optick::Mode::SYS_CALLS | Optick::Mode::OTHER_PROCESSES));
+			auto mode = Optick::Mode::DEFAULT;
+			if (!Core.ParamsData.test(ECoreParams::prof_gpu))
+			{
+				mode = Optick::Mode::Type(mode & ~Optick::Mode::GPU);
+			}
+			OPTICK_START_CAPTURE(mode);
 			start_profile = true;
 		}
 		else

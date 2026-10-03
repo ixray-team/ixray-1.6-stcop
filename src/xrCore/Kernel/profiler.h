@@ -6,7 +6,7 @@
 #		define PROF_THREAD(Name) OPTICK_THREAD(Name);
 #		define PROF_START_THREAD(Name) OPTICK_START_THREAD(Name) OPTICK_EVENT(Name);
 #		define PROF_STOP_THREAD() OPTICK_STOP_THREAD();
-#		define PROF_START_CAPTURE() OPTICK_START_CAPTURE();
+#		define PROF_START_CAPTURE() OPTICK_START_CAPTURE(Core.ParamsData.test(ECoreParams::prof_gpu) ? Optick::Mode::DEFAULT : Optick::Mode::Type(Optick::Mode::DEFAULT & ~Optick::Mode::GPU));
 #		define PROF_STOP_CAPTURE() OPTICK_STOP_CAPTURE();
 #		define PROF_SAVE_CAPTURE(Name) OPTICK_SAVE_CAPTURE(Name);
 #		define PROF_FRAME(Name) OPTICK_FRAME(Name);

@@ -46,6 +46,9 @@ enum ECoreParams
 
 	// Test
 	autotest = 1 << 30, // Прогнать N кадров без окна и записать отчёт
+
+	// Profiler
+	prof_gpu = 1u << 31, // D3D12: Optick GPU timestamps and events
 };
 
 void LoadParams();
