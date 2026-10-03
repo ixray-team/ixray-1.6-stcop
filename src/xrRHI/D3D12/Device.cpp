@@ -886,6 +886,11 @@ void InternalDevice12::DrainUploads()
     }
     for (auto& copy : batch)
     {
+        if (!copy.Source.Owned && copy.Source.Frame < FrameCount && copy.Source.Frame != _frame)
+        {
+            auto& owner = _frames[copy.Source.Frame];
+            owner.Fence = std::max(owner.Fence, _nextFence);
+        }
         if (copy.Surface)
         {
             Transition(copy.Surface->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, copy.Subresource);
