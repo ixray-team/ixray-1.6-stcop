@@ -1,6 +1,6 @@
 #include "fluid_common.hlsli"
 
-cbuffer DynOOBBData
+cbuffer DynOOBBData : register(b10)
 {
     float3x4 WorldToLocal; //	World to local of fog volume
     float3x4 LocalToWorld; //	Local of fog volume to world

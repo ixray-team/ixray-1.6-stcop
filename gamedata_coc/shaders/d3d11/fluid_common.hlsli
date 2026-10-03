@@ -36,7 +36,7 @@ sampler samLinear;
 // Variables
 //--------------------------------------------------------------------------------------
 
-cbuffer FluidSimConfig
+cbuffer FluidSimConfig : register(b6)
 {
     float textureHeight;
     float textureWidth;
@@ -49,20 +49,20 @@ cbuffer FluidSimConfig
     float4 floatVolumeDim; //	Actually float3. We don't support float3 and float2
 }
 
-cbuffer AABBBounds
+cbuffer AABBBounds : register(b7)
 {
     float4 boxLBDcorner; //	float3
     float4 boxRTUcorner; //	float3
 }
 
-cbuffer EmitterParams
+cbuffer EmitterParams : register(b8)
 {
     float size;
     float4 center; //	Actually float3. We don't support float3 and float2
     float4 splatColor;
 }
 
-cbuffer OOBBClipPlanes
+cbuffer OOBBClipPlanes : register(b9)
 {
     float4 OOBBClipPlane[6];
     //	0 - Top

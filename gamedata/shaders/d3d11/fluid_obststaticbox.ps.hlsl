@@ -1,6 +1,6 @@
 #include "fluid_common.hlsli"
 
-cbuffer BoxBounds
+cbuffer BoxBounds : register(b10)
 {
     //	float3	boxLBDcorner;
     //	float3	boxRTUcorner;
