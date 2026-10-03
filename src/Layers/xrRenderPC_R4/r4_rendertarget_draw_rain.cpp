@@ -74,7 +74,6 @@ void CRenderTarget::draw_rain(light& RainSetup)
 			nullptr 
 		};
 
-		IRHIShaderResourceView* srv_dummy[16] = {};
 
 		ShaderElement* S;
 		S = (&*(s_rain->E[0]));
@@ -125,6 +124,6 @@ void CRenderTarget::draw_rain(light& RainSetup)
 
 		//Unbind
 		GRHI->SetComputeUAVs(0, std::size(uav_dummy), uav_dummy, nullptr);
-		GRHI->SetComputeResources(0, std::size(srv_dummy), srv_dummy);
+		RCache.unbind_cs_textures();
 	}
 }

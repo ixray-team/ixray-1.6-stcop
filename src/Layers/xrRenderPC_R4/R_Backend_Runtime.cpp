@@ -35,6 +35,14 @@ void CBackend::OnFrameBegin	()
 	}
 }
 
+void CBackend::unbind_cs_textures()
+{
+	IRHIShaderResourceView* none[mtMaxComputeShaderTextures] = {};
+	GRHI->SetComputeResources(0, mtMaxComputeShaderTextures, none);
+	for (auto& texture : textures_cs)
+		texture = nullptr;
+}
+
 void CBackend::Invalidate	()
 {
 	if (GRHI != nullptr)

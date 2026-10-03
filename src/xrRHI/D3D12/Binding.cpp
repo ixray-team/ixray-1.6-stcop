@@ -804,7 +804,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE InternalDevice12::UAVTable(bool compute)
     auto shader = compute ? _computeShader : _graphicsState.Shaders[0];
     auto& cache = _uavCaches[compute];
     const u64 shaderId = shader ? shader->Id : 0;
-    const bool unused = !shader || !shader->UAVMask;
+    const bool unused = !shader || std::none_of(std::begin(views), std::end(views), [](auto view) { return view != nullptr; });
     if (unused && cache.Handle.ptr && cache.Generation == _tableGeneration && cache.ShaderId == shaderId)
     {
         return cache.Handle;

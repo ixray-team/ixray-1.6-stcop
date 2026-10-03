@@ -127,6 +127,7 @@ public:
 		R_statistics					r	;
 	}									stat;
 public:
+	void						unbind_cs_textures			();
 	IC	CTexture*					get_ActiveTexture			(u32 stage)
 	{
 		if (stage<CTexture::rstVertex)			return textures_ps[stage];

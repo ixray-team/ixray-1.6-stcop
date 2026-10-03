@@ -18,7 +18,6 @@ void CRenderTarget::phase_sslr()
 		GPU_EVENT(sslr_depth_min);
 
 		IRHIUnorderedAccessView* uav_dummy = nullptr;
-		IRHIShaderResourceView* srv_dummy[16] = {};
 
 		ShaderElement* S = (&*(s_sslr->E[4]));
 		SPass& P = *(S->passes[0]);
@@ -34,7 +33,7 @@ void CRenderTarget::phase_sslr()
 		RCache.Compute(rt_sslr_depth_min->dwWidth, rt_sslr_depth_min->dwHeight, 1);
 
 		GRHI->SetComputeUAVs(0, 1, &uav_dummy, nullptr);
-		GRHI->SetComputeResources(0, 16, srv_dummy);
+		RCache.unbind_cs_textures();
 	}
 
 	{
@@ -42,7 +41,6 @@ void CRenderTarget::phase_sslr()
 
 		//Dummy
 		IRHIUnorderedAccessView* uav_dummy[2] = { nullptr, nullptr };
-		IRHIShaderResourceView* srv_dummy[16] = {};
 
 		//Shader setup... can't use set_element because of set_PS bullshit
 	    ShaderElement* S;
@@ -67,7 +65,7 @@ void CRenderTarget::phase_sslr()
 
 		//Unbind
 		GRHI->SetComputeUAVs(0, 2, uav_dummy, nullptr);
-		GRHI->SetComputeResources(0, 16, srv_dummy);
+		RCache.unbind_cs_textures();
 	}
 
 
@@ -75,7 +73,6 @@ void CRenderTarget::phase_sslr()
 		GPU_EVENT(sslr_filter);
 
 		IRHIUnorderedAccessView* uav_dummy = nullptr;
-		IRHIShaderResourceView* srv_dummy[16] = {};
 
 	    ShaderElement* S;
         S = (&*(s_sslr->E[1]));
@@ -93,13 +90,12 @@ void CRenderTarget::phase_sslr()
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
 		GRHI->SetComputeUAVs(0, 1, &uav_dummy, nullptr);
-		GRHI->SetComputeResources(0, 16, srv_dummy);
+		RCache.unbind_cs_textures();
 	}
 
 	{
 		GPU_EVENT(sslr_temporal);
 
-		IRHIShaderResourceView* srv_dummy[16] = {};
 
 		//The history alternates between two targets, so the final image is written once more instead of being copied
 	    ShaderElement* S;
@@ -123,7 +119,7 @@ void CRenderTarget::phase_sslr()
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
 		GRHI->SetComputeUAVs(0, 3, uav_dummy, nullptr);
-		GRHI->SetComputeResources(0, 16, srv_dummy);
+		RCache.unbind_cs_textures();
 
 		sslr_history_flip = !sslr_history_flip;
 		_sslrJitter = ps_r_taa_jitter;

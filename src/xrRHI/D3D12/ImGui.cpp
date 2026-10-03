@@ -44,6 +44,17 @@ void InternalDevice12::UnregisterImage(DX12ShaderResourceView* view)
     const u32 index = view->View.Descriptor.Index;
     R_ASSERT(index < _images.size() && _images[index] == view);
     _images[index] = nullptr;
+    for (u32 stage_idx = 0; stage_idx < 6; ++stage_idx)
+    {
+        for (auto& resource : _resources[stage_idx])
+        {
+            if (resource == view)
+            {
+                resource = nullptr;
+                _viewsDirty[stage_idx] = true;
+            }
+        }
+    }
 }
 
 void InternalDevice12::PrepareImage(u64 texture)

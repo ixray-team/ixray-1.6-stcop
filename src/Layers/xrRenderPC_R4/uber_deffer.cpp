@@ -214,7 +214,13 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 			C.r_dx10Texture("env_s0", r2_T_envs0);
 			C.r_dx10Texture("env_s1", r2_T_envs1);
 
-			if (lmap) 
+			if (bump)
+			{
+				C.r_dx10Texture("s_bumpX", fnameB);
+				C.r_dx10Texture("s_bump", fnameA);
+			}
+
+			if (lmap)
 			{
 				C.r_dx10Texture("s_hemi", C.L_textures[2]);
 			}
@@ -224,10 +230,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 #endif
 
 			C.r_dx10Sampler("smp_smap");
-		
+
 			C.r_dx10Sampler("smp_base");
 			C.r_dx10Sampler("smp_linear");
-		
+			C.r_dx10Sampler("smp_rtlinear");
+
 			C.r_End(false);
 			C.RS.SetRS(D3DRS_ZFUNC, RHI_COMPARISON_LESS_EQUAL);
 		}
