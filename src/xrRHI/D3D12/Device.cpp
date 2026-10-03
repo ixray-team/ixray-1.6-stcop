@@ -1037,7 +1037,7 @@ DX12Descriptor InternalDevice12::NullSrv(u32 dimension, u32 returnType, u8 kind)
 
 DX12Descriptor InternalDevice12::NullUav(u32 dimension, u8 kind)
 {
-    if (dimension > D3D12_UAV_DIMENSION_TEXTURE3D)
+    if (dimension == D3D12_UAV_DIMENSION_UNKNOWN || dimension > D3D12_UAV_DIMENSION_TEXTURE3D)
     {
         dimension = D3D12_UAV_DIMENSION_TEXTURE2D;
     }
