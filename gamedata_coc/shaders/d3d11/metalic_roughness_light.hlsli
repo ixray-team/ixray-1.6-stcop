@@ -45,6 +45,19 @@ float3 FresnelSchlick(float3 F, float NdotV)
     return lerp(F, F90, pow(1.0f - NdotV, 5.0f));
 }
 
+// Improved Geometric Specular Antialiasing, with modifications
+// https://www.jp.square-enix.com/tech/library/pdf/ImprovedGeometricSpecularAA.pdf
+float SpecularAA(float3 N, float3 V, float Roughness)
+{
+#ifndef IXR_COMPUTE
+	float variance = 0.25f * (dot(ddx(N), ddx(N)) + dot(ddy(N), ddy(N)));
+	float NdotV = saturate(abs(dot(N, -V)));
+	variance *= rcp(NdotV * NdotV + 0.02f);
+	Roughness = saturate(sqrt(Roughness * Roughness + min(2.0f * variance, 0.18f)));
+#endif
+	return Roughness;
+}
+
 float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, float3 Diffuse, float3 Specular, float Roughness)
 {
     float3 Half = normalize(Light + View);

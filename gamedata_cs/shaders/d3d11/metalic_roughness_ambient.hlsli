@@ -2,6 +2,7 @@
 #define metalic_roughness_ambient_h_ixray_included
 
 #include "common.hlsli"
+#include "metalic_roughness_light.hlsli"
 
 // #define USE_IRRADANCE_SATURATION
 
