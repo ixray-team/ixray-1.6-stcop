@@ -99,6 +99,7 @@
 				sh = new T();
 				sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 				sh_map.insert(std::make_pair(sh->set_name(name), sh));
+				RememberStage(sh, _name, Engine.External.GetSkinningMode());
 				RefType(sh).swap(Result);
 				IsNew = true;
 			}
@@ -151,6 +152,7 @@
 		if (0==(sh->dwFlags&xr_resource_flagged::RF_REGISTERED))
 			return;
 
+		ForgetStage(sh);
 		LPSTR N = LPSTR(*sh->cName);
 		typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find(N);
 		

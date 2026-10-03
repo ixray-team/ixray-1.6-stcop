@@ -411,6 +411,10 @@ public:
 		const char*                          pTarget,
 		DWORD                           Flags,
 		void*&							result) override;
+	void							SetShaderCacheBypass	(bool bypass);
+	bool							ShaderCacheBypassed		() const { return m_shaderCacheBypass; }
+	const ShaderExternalMap&		ShaderOptions			() { return CurrentShaderOptions(); }
+	void							SetShaderOptions		(const ShaderExternalMap& options) { CurrentShaderOptions() = options; }
 
 	struct PuddleBase 
 	{
@@ -602,6 +606,7 @@ public:
 
 private:
 	ShaderExternalMap&				CurrentShaderOptions		();
+	bool							m_shaderCacheBypass = false;
 
 protected:
 	virtual void					ScreenshotImpl				(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) override;

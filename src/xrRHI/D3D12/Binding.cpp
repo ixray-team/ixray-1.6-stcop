@@ -116,6 +116,93 @@ HRESULT InternalDevice12::CreateShader(const void* code, size_t size, ERHI_SHADE
     return S_OK;
 }
 
+void InternalDevice12::DropShaderPipelines(u64 shaderId)
+{
+    if (!shaderId)
+    {
+        return;
+    }
+    xr_vector<GraphicsPipeline> graphics;
+    graphics.reserve(_graphicsPipelines.size());
+    for (auto& pipeline : _graphicsPipelines)
+    {
+        bool usesShader = false;
+        for (u64 id : pipeline.Key.ShaderIds)
+        {
+            usesShader |= id == shaderId;
+        }
+        if (usesShader)
+        {
+            pipeline.Pipeline->Release();
+        }
+        else
+        {
+            graphics.push_back(pipeline);
+        }
+    }
+    _graphicsPipelines.swap(graphics);
+    ZeroMemory(_pipelineBuckets, sizeof(_pipelineBuckets));
+    for (u32 pipeline_idx = 0; pipeline_idx < _graphicsPipelines.size(); ++pipeline_idx)
+    {
+        const u64 pipelineHash = crc32(&_graphicsPipelines[pipeline_idx].Key, sizeof(GraphicsPipelineKey));
+        _graphicsPipelines[pipeline_idx].Next = _pipelineBuckets[pipelineHash & 255];
+        _pipelineBuckets[pipelineHash & 255] = pipeline_idx + 1;
+    }
+
+    xr_vector<ComputePipeline> compute;
+    compute.reserve(_computePipelines.size());
+    for (auto& pipeline : _computePipelines)
+    {
+        if (pipeline.ShaderId == shaderId)
+        {
+            pipeline.Pipeline->Release();
+        }
+        else
+        {
+            compute.push_back(pipeline);
+        }
+    }
+    _computePipelines.swap(compute);
+    _boundPipeline = nullptr;
+    _boundPipelineHash = 0;
+    _boundGraphicsPipeline = false;
+    _pipelineDirty = true;
+}
+
+HRESULT InternalDevice12::ReplaceShader(RHIObject* shader, const void* code, size_t size)
+{
+    ContextLock guard(*this);
+    if (!shader || !shader->resource || !code || !size)
+    {
+        return E_INVALIDARG;
+    }
+    auto native = static_cast<DX12Shader*>(shader->resource);
+    const u64 previous = native->Id;
+    native->Code.assign((const u8*)code, (const u8*)code + size);
+    native->Id = _nextObject++;
+    native->ConstantMask = 0x3FFFu;
+    native->SamplerMask = 0xFFFFu;
+    native->UAVMask = 0xFFu;
+    for (u32 slot = 0; slot < 16; ++slot)
+    {
+        native->Dimensions[slot] = D3D12_SRV_DIMENSION_TEXTURE2D;
+        native->ReturnTypes[slot] = D3D_RETURN_TYPE_FLOAT;
+    }
+    for (u32 slot = 0; slot < 8; ++slot)
+    {
+        native->UAVDimensions[slot] = D3D12_UAV_DIMENSION_TEXTURE2D;
+    }
+    for (u32 stage = 0; stage < 5; ++stage)
+    {
+        if (_graphicsState.Shaders[stage] == native)
+        {
+            _graphicsState.ShaderIds[stage] = native->Id;
+        }
+    }
+    DropShaderPipelines(previous);
+    return S_OK;
+}
+
 HRESULT InternalDevice12::CreateInputLayout(const RHIInputElementDesc* elements, size_t count, const void* code,
     size_t size, RHIObject** out_layout)
 {
