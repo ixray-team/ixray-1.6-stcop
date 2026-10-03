@@ -49,6 +49,9 @@ enum class ECoreParams : u64
 	
 	// SDK
 	no_silent_errors = u64(1) << 31, // Включить назад работу брейкпоинтов в SDK
+
+	// Profiler
+	prof_gpu = u64(1) << 32, // D3D12: Optick GPU timestamps and events
 };
 
 void LoadParams();
