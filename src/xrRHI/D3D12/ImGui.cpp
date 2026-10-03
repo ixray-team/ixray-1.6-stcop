@@ -115,9 +115,14 @@ void InternalDevice12::PrepareUpscale(IRHISurface* source, bool output)
         return;
     }
     auto& surface = *static_cast<DX12Surface*>(source);
-    const auto& desc = surface.GetDesc();
-    Transition(surface.GetResource(), output ? D3D12_RESOURCE_STATE_UNORDERED_ACCESS :
+    auto& resource = surface.GetResource();
+    Transition(resource, output ? D3D12_RESOURCE_STATE_UNORDERED_ACCESS :
         D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+    if (output && resource.UAVPendingEpoch == GetEpoch())
+    {
+        UAVBarrier(resource.Native);
+        resource.UAVPendingEpoch = 0;
+    }
 }
 
 void* InternalDevice12::GetImageHandle(u32 index)

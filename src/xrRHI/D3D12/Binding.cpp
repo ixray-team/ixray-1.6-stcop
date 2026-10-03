@@ -144,9 +144,9 @@ void InternalDevice12::DropShaderPipelines(u64 shaderId)
     ZeroMemory(_pipelineBuckets, sizeof(_pipelineBuckets));
     for (u32 pipeline_idx = 0; pipeline_idx < _graphicsPipelines.size(); ++pipeline_idx)
     {
-        const u64 pipelineHash = crc32(&_graphicsPipelines[pipeline_idx].Key, sizeof(GraphicsPipelineKey));
-        _graphicsPipelines[pipeline_idx].Next = _pipelineBuckets[pipelineHash & 255];
-        _pipelineBuckets[pipelineHash & 255] = pipeline_idx + 1;
+        const u64 bucket = _graphicsPipelines[pipeline_idx].Hash & (PipelineBuckets - 1);
+        _graphicsPipelines[pipeline_idx].Next = _pipelineBuckets[bucket];
+        _pipelineBuckets[bucket] = pipeline_idx + 1;
     }
 
     xr_vector<ComputePipeline> compute;
@@ -164,6 +164,7 @@ void InternalDevice12::DropShaderPipelines(u64 shaderId)
     }
     _computePipelines.swap(compute);
     _boundPipeline = nullptr;
+    _graphicsPipeline = nullptr;
     _boundPipelineHash = 0;
     _boundGraphicsPipeline = false;
     _pipelineDirty = true;
@@ -402,11 +403,44 @@ HRESULT InternalDevice12::CreateOcclusionQuery(RHIObject** out_query)
     return S_OK;
 }
 
+void InternalDevice12::ResolveQuery(u32 slot)
+{
+    _commands->ResolveQueryData(_occlusionHeap, D3D12_QUERY_TYPE_OCCLUSION, slot, 1, _occlusionReadback,
+        u64(slot) * sizeof(u64));
+    _resolveQueries[slot >> 6] &= ~(1ull << (slot & 63));
+}
+
+void InternalDevice12::ResolveQueries()
+{
+    u32 slot = 0;
+    while (slot < QuerySlots)
+    {
+        if (!(_resolveQueries[slot >> 6] & (1ull << (slot & 63))))
+        {
+            ++slot;
+            continue;
+        }
+        const u32 first = slot;
+        while (slot < QuerySlots && (_resolveQueries[slot >> 6] & (1ull << (slot & 63))))
+        {
+            ++slot;
+        }
+        _commands->ResolveQueryData(_occlusionHeap, D3D12_QUERY_TYPE_OCCLUSION, first, slot - first, _occlusionReadback,
+            u64(first) * sizeof(u64));
+    }
+    ZeroMemory(_resolveQueries, sizeof(_resolveQueries));
+}
+
 void InternalDevice12::BeginQuery(RHIObject* object)
 {
     ContextLock guard(*this);
     auto query = static_cast<DX12Query*>(object->resource);
-    Commands()->BeginQuery(_occlusionHeap, D3D12_QUERY_TYPE_OCCLUSION, query->Slot);
+    auto commands = Commands();
+    if (_resolveQueries[query->Slot >> 6] & (1ull << (query->Slot & 63)))
+    {
+        ResolveQuery(query->Slot);
+    }
+    commands->BeginQuery(_occlusionHeap, D3D12_QUERY_TYPE_OCCLUSION, query->Slot);
     query->IsPending = false;
 }
 
@@ -415,8 +449,8 @@ void InternalDevice12::EndQuery(RHIObject* object)
     ContextLock guard(*this);
     auto query = static_cast<DX12Query*>(object->resource);
     Commands()->EndQuery(_occlusionHeap, D3D12_QUERY_TYPE_OCCLUSION, query->Slot);
-    Commands()->ResolveQueryData(_occlusionHeap, D3D12_QUERY_TYPE_OCCLUSION, query->Slot, 1, _occlusionReadback,
-        u64(query->Slot) * sizeof(u64));
+    // Resolved by Submit, in the same command list, before the list fence is signaled.
+    _resolveQueries[query->Slot >> 6] |= 1ull << (query->Slot & 63);
     query->Fence = _nextFence;
     query->IsPending = true;
 }
@@ -811,18 +845,29 @@ D3D12_GPU_DESCRIPTOR_HANDLE InternalDevice12::UAVTable(bool compute)
     }
     DescriptorTable table;
     table.Count = 8;
+    D3D12_RESOURCE_BARRIER hazards[8];
+    u32 hazardCount = 0;
     for (u32 view_idx = 0; view_idx < 8; ++view_idx)
     {
         auto view = views[view_idx];
         if (view && shader && (shader->UAVMask & (1u << view_idx)))
         {
+            auto& resource = view->View.Surface ? view->View.Surface->GetResource() : view->View.Buffer->GetResource();
             if (view->View.Surface)
             {
                 TransitionView(*view->View.Surface, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, view->View);
             }
             else
             {
-                Transition(view->View.Buffer->GetResource(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+                Transition(resource, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+            }
+            if (resource.UAVPendingEpoch == _epoch)
+            {
+                auto& barrier = hazards[hazardCount++];
+                barrier = {};
+                barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+                barrier.UAV.pResource = resource.Native;
+                resource.UAVPendingEpoch = 0;
             }
             table.Keys[view_idx] = view->View.Descriptor.Generation;
         }
@@ -832,6 +877,11 @@ D3D12_GPU_DESCRIPTOR_HANDLE InternalDevice12::UAVTable(bool compute)
             const u32 kind = shader ? shader->UAVKinds[view_idx] : 0;
             table.Keys[view_idx] = (u64(1) << 63) | dimension | (u64(kind) << 8);
         }
+    }
+    if (hazardCount)
+    {
+        ActiveCommands()->ResourceBarrier(hazardCount, hazards);
+        _counters.Barriers.fetch_add(hazardCount, std::memory_order_relaxed);
     }
     auto handle = FindTable(table);
     if (!handle.ptr)
@@ -901,37 +951,27 @@ void InternalDevice12::InvalidateBindings()
     ++_tableGeneration;
 }
 
-bool InternalDevice12::PreparePipeline()
+u64 InternalDevice12::PipelineHash(const GraphicsPipelineKey& key)
 {
-    GraphicsState state = _graphicsState;
-    state.Layout = _layout;
-    state.LayoutId = _layout ? _layout->Id : 0;
-    state.TargetCount = 0;
-    state.Samples = 1;
-    ZeroMemory(state.Formats, sizeof(state.Formats));
-    D3D12_CPU_DESCRIPTOR_HANDLE targets[8];
-    std::fill(std::begin(targets), std::end(targets), _nullTarget.Cpu);
-    for (u32 target_idx = 0; target_idx < 8; ++target_idx)
+    return crc32(&key, sizeof(key));
+}
+
+void InternalDevice12::TransitionAttachments()
+{
+    for (auto target : _targets)
     {
-        auto target = _targets[target_idx];
         if (!target)
         {
             continue;
         }
-        state.TargetCount = target_idx + 1;
-        state.Formats[target_idx] = target->View.Format;
-        state.Samples = target->View.Surface->GetSampleDescCount();
-        targets[target_idx] = target->View.Descriptor.Cpu;
         auto& targetResource = target->View.Surface->GetResource();
         if (!(targetResource.Uniform && StateCovers(targetResource.UniformState, D3D12_RESOURCE_STATE_RENDER_TARGET)))
         {
             TransitionView(*target->View.Surface, D3D12_RESOURCE_STATE_RENDER_TARGET, target->View);
         }
     }
-    state.DepthFormat = _depth ? _depth->View.Format : DXGI_FORMAT_UNKNOWN;
     if (_depth)
     {
-        state.Samples = _depth->View.Surface->GetSampleDescCount();
         for (u32 plane = 0; plane < _depth->View.Planes; ++plane)
         {
             const u32 viewPlane = _depth->View.Plane + plane;
@@ -960,156 +1000,188 @@ bool InternalDevice12::PreparePipeline()
             }
         }
     }
-    else
+    _attachmentEpoch = _barrierEpoch;
+}
+
+bool InternalDevice12::PreparePipeline()
+{
+    TransitionAttachments();
+    D3D12_CPU_DESCRIPTOR_HANDLE targets[8];
+    std::fill(std::begin(targets), std::end(targets), _nullTarget.Cpu);
+    u32 targetCount = 0;
+    u32 samples = 1;
+    for (u32 target_idx = 0; target_idx < 8; ++target_idx)
     {
-        state.Depth.DepthEnable = FALSE;
-        state.Depth.StencilEnable = FALSE;
-    }
-    switch (_topology)
-    {
-    case ERHI_PRIMITIVE_TOPOLOGY::POINT_LIST: state.Topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT; break;
-    case ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST:
-    case ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP: state.Topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE; break;
-    case ERHI_PRIMITIVE_TOPOLOGY::CONTROL_POINT_3_PATCH: state.Topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH; break;
-    default: state.Topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE; break;
-    }
-    GraphicsPipelineKey key = {};
-    ZeroMemory(&key, sizeof(key));
-    memcpy(key.ShaderIds, state.ShaderIds, sizeof(key.ShaderIds));
-    key.LayoutId = state.LayoutId;
-    key.Rasterizer = state.Rasterizer;
-    key.Depth = state.Depth;
-    key.Blend = state.Blend;
-    memcpy(key.Formats, state.Formats, sizeof(key.Formats));
-    key.DepthFormat = state.DepthFormat;
-    key.TargetCount = state.TargetCount;
-    key.Samples = state.Samples;
-    key.SampleMask = state.SampleMask;
-    key.Topology = u32(state.Topology);
-    key.DepthBounds = state.DepthBounds ? 1u : 0u;
-    const u64 pipelineHash = crc32(&key, sizeof(key));
-    ID3D12PipelineState* pipeline = nullptr;
-    if (_boundGraphicsPipeline && _boundPipeline && _boundPipelineHash == pipelineHash && !memcmp(&_boundKey, &key, sizeof(key)))
-    {
-        pipeline = _boundPipeline;
-        _counters.PipelineHits.fetch_add(1, std::memory_order_relaxed);
-    }
-    else
-    {
-        for (u32 pipeline_idx = _pipelineBuckets[pipelineHash & 255]; pipeline_idx; pipeline_idx = _graphicsPipelines[pipeline_idx - 1].Next)
+        if (auto target = _targets[target_idx])
         {
-            if (!memcmp(&_graphicsPipelines[pipeline_idx - 1].Key, &key, sizeof(key)))
-            {
-                pipeline = _graphicsPipelines[pipeline_idx - 1].Pipeline;
-                _counters.PipelineHits.fetch_add(1, std::memory_order_relaxed);
-                break;
-            }
+            targetCount = target_idx + 1;
+            samples = target->View.Surface->GetSampleDescCount();
+            targets[target_idx] = target->View.Descriptor.Cpu;
         }
     }
-    if (!pipeline)
+    if (_depth)
     {
-        PROF_EVENT("D3D12: CreateGraphicsPipeline");
-        D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-        desc.pRootSignature = _graphicsRoot;
-        D3D12_SHADER_BYTECODE* shaders[] = { &desc.PS, &desc.VS, &desc.GS, &desc.HS, &desc.DS };
-        R_ASSERT(state.Shaders[1]);
-        for (u32 shader_idx = 0; shader_idx < 5; ++shader_idx)
+        samples = _depth->View.Surface->GetSampleDescCount();
+    }
+    // Barriers, compute dispatches and list resets do not change the PSO; only state changes rebuild the key.
+    if (_pipelineDirty || !_graphicsPipeline)
+    {
+        GraphicsPipelineKey key;
+        ZeroMemory(&key, sizeof(key));
+        memcpy(key.ShaderIds, _graphicsState.ShaderIds, sizeof(key.ShaderIds));
+        key.LayoutId = _layout ? _layout->Id : 0;
+        key.Rasterizer = _graphicsState.Rasterizer;
+        key.Depth = _graphicsState.Depth;
+        if (!_depth)
         {
-            if (state.Shaders[shader_idx])
-            {
-                *shaders[shader_idx] = { state.Shaders[shader_idx]->Code.data(), state.Shaders[shader_idx]->Code.size() };
-            }
+            key.Depth.DepthEnable = FALSE;
+            key.Depth.StencilEnable = FALSE;
         }
-        desc.BlendState = state.Blend;
-        desc.RasterizerState = state.Rasterizer;
-        desc.DepthStencilState = state.Depth;
-        desc.SampleMask = state.SampleMask;
-        desc.InputLayout = state.Layout ? D3D12_INPUT_LAYOUT_DESC{ state.Layout->Elements.data(), (UINT)state.Layout->Elements.size() } :
-            D3D12_INPUT_LAYOUT_DESC{};
-        desc.PrimitiveTopologyType = state.Topology;
-        desc.NumRenderTargets = state.TargetCount;
-        memcpy(desc.RTVFormats, state.Formats, sizeof(desc.RTVFormats));
-        desc.DSVFormat = state.DepthFormat;
-        desc.SampleDesc.Count = state.Samples;
-        HRESULT result = S_OK;
-        if (state.DepthBounds)
+        key.Blend = _graphicsState.Blend;
+        for (u32 target_idx = 0; target_idx < targetCount; ++target_idx)
         {
-            DX12GraphicsStream stream;
-            stream.Root.Value = desc.pRootSignature;
-            stream.VS.Value = desc.VS;
-            stream.PS.Value = desc.PS;
-            stream.GS.Value = desc.GS;
-            stream.HS.Value = desc.HS;
-            stream.DS.Value = desc.DS;
-            stream.Blend.Value = desc.BlendState;
-            stream.Mask.Value = desc.SampleMask;
-            stream.Rasterizer.Value = desc.RasterizerState;
-            const auto& depth = desc.DepthStencilState;
-            stream.Depth.Value = { depth.DepthEnable, depth.DepthWriteMask, depth.DepthFunc, depth.StencilEnable,
-                depth.StencilReadMask, depth.StencilWriteMask, depth.FrontFace, depth.BackFace, TRUE };
-            stream.Layout.Value = desc.InputLayout;
-            stream.Topology.Value = desc.PrimitiveTopologyType;
-            stream.Targets.Value.NumRenderTargets = desc.NumRenderTargets;
-            memcpy(stream.Targets.Value.RTFormats, desc.RTVFormats, sizeof(desc.RTVFormats));
-            stream.DepthFormat.Value = desc.DSVFormat;
-            stream.Samples.Value = desc.SampleDesc;
-            ID3D12Device2* device = nullptr;
-            result = GetDevice()->QueryInterface(IID_PPV_ARGS(&device));
-            if (SUCCEEDED(result))
-            {
-                D3D12_PIPELINE_STATE_STREAM_DESC streamDesc = { sizeof(stream), &stream };
-                result = device->CreatePipelineState(&streamDesc, IID_PPV_ARGS(&pipeline));
-                device->Release();
-            }
+            key.Formats[target_idx] = _targets[target_idx] ? _targets[target_idx]->View.Format : DXGI_FORMAT_UNKNOWN;
+        }
+        key.DepthFormat = _depth ? _depth->View.Format : DXGI_FORMAT_UNKNOWN;
+        key.TargetCount = targetCount;
+        key.Samples = samples;
+        key.SampleMask = _graphicsState.SampleMask;
+        switch (_topology)
+        {
+        case ERHI_PRIMITIVE_TOPOLOGY::POINT_LIST: key.Topology = u32(D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT); break;
+        case ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST:
+        case ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP: key.Topology = u32(D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE); break;
+        case ERHI_PRIMITIVE_TOPOLOGY::CONTROL_POINT_3_PATCH: key.Topology = u32(D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH); break;
+        default: key.Topology = u32(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE); break;
+        }
+        key.DepthBounds = _graphicsState.DepthBounds ? 1u : 0u;
+        const u64 pipelineHash = PipelineHash(key);
+        ID3D12PipelineState* pipeline = nullptr;
+        if (_graphicsPipeline && _boundPipelineHash == pipelineHash && !memcmp(&_boundKey, &key, sizeof(key)))
+        {
+            pipeline = _graphicsPipeline;
+            _counters.PipelineHits.fetch_add(1, std::memory_order_relaxed);
         }
         else
         {
-            result = GetDevice()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&pipeline));
-        }
-        if (FAILED(result))
-        {
-            Msg("! D3D12 graphics PSO creation failed: 0x%08x, VS %llu, PS %llu, GS %llu, HS %llu, DS %llu, layout %llu",
-                u32(result), state.ShaderIds[1], state.ShaderIds[0], state.ShaderIds[2],
-                state.ShaderIds[3], state.ShaderIds[4], state.LayoutId);
-            Msg("! D3D12 PSO attachments: count %u, formats %u/%u/%u/%u/%u/%u/%u/%u, depth %u, samples %u, topology %u",
-                state.TargetCount, u32(state.Formats[0]), u32(state.Formats[1]), u32(state.Formats[2]),
-                u32(state.Formats[3]), u32(state.Formats[4]), u32(state.Formats[5]), u32(state.Formats[6]),
-                u32(state.Formats[7]), u32(state.DepthFormat), state.Samples, u32(state.Topology));
-            if (FAILED(GetDevice()->GetDeviceRemovedReason()))
+            for (u32 pipeline_idx = _pipelineBuckets[pipelineHash & (PipelineBuckets - 1)]; pipeline_idx;
+                pipeline_idx = _graphicsPipelines[pipeline_idx - 1].Next)
             {
-                ReportDeviceRemoval();
+                const auto& cached = _graphicsPipelines[pipeline_idx - 1];
+                if (cached.Hash == pipelineHash && !memcmp(&cached.Key, &key, sizeof(key)))
+                {
+                    pipeline = cached.Pipeline;
+                    _counters.PipelineHits.fetch_add(1, std::memory_order_relaxed);
+                    break;
+                }
             }
-            R_CHK(result);
-            return false;
         }
-        GraphicsPipeline created;
-        created.Key = key;
-        created.Next = _pipelineBuckets[pipelineHash & 255];
-        created.Pipeline = pipeline;
-        _graphicsPipelines.push_back(created);
-        _pipelineBuckets[pipelineHash & 255] = u32(_graphicsPipelines.size());
-        _counters.PipelineMisses.fetch_add(1, std::memory_order_relaxed);
+        if (!pipeline)
+        {
+            PROF_EVENT("D3D12: CreateGraphicsPipeline");
+            D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
+            desc.pRootSignature = _graphicsRoot;
+            D3D12_SHADER_BYTECODE* shaders[] = { &desc.PS, &desc.VS, &desc.GS, &desc.HS, &desc.DS };
+            R_ASSERT(_graphicsState.Shaders[1]);
+            for (u32 shader_idx = 0; shader_idx < 5; ++shader_idx)
+            {
+                if (auto shader = _graphicsState.Shaders[shader_idx])
+                {
+                    *shaders[shader_idx] = { shader->Code.data(), shader->Code.size() };
+                }
+            }
+            desc.BlendState = key.Blend;
+            desc.RasterizerState = key.Rasterizer;
+            desc.DepthStencilState = key.Depth;
+            desc.SampleMask = key.SampleMask;
+            desc.InputLayout = _layout ? D3D12_INPUT_LAYOUT_DESC{ _layout->Elements.data(), (UINT)_layout->Elements.size() } :
+                D3D12_INPUT_LAYOUT_DESC{};
+            desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE(key.Topology);
+            desc.NumRenderTargets = key.TargetCount;
+            memcpy(desc.RTVFormats, key.Formats, sizeof(desc.RTVFormats));
+            desc.DSVFormat = key.DepthFormat;
+            desc.SampleDesc.Count = key.Samples;
+            HRESULT result = S_OK;
+            if (key.DepthBounds)
+            {
+                DX12GraphicsStream stream;
+                stream.Root.Value = desc.pRootSignature;
+                stream.VS.Value = desc.VS;
+                stream.PS.Value = desc.PS;
+                stream.GS.Value = desc.GS;
+                stream.HS.Value = desc.HS;
+                stream.DS.Value = desc.DS;
+                stream.Blend.Value = desc.BlendState;
+                stream.Mask.Value = desc.SampleMask;
+                stream.Rasterizer.Value = desc.RasterizerState;
+                const auto& depth = desc.DepthStencilState;
+                stream.Depth.Value = { depth.DepthEnable, depth.DepthWriteMask, depth.DepthFunc, depth.StencilEnable,
+                    depth.StencilReadMask, depth.StencilWriteMask, depth.FrontFace, depth.BackFace, TRUE };
+                stream.Layout.Value = desc.InputLayout;
+                stream.Topology.Value = desc.PrimitiveTopologyType;
+                stream.Targets.Value.NumRenderTargets = desc.NumRenderTargets;
+                memcpy(stream.Targets.Value.RTFormats, desc.RTVFormats, sizeof(desc.RTVFormats));
+                stream.DepthFormat.Value = desc.DSVFormat;
+                stream.Samples.Value = desc.SampleDesc;
+                ID3D12Device2* device = nullptr;
+                result = GetDevice()->QueryInterface(IID_PPV_ARGS(&device));
+                if (SUCCEEDED(result))
+                {
+                    D3D12_PIPELINE_STATE_STREAM_DESC streamDesc = { sizeof(stream), &stream };
+                    result = device->CreatePipelineState(&streamDesc, IID_PPV_ARGS(&pipeline));
+                    device->Release();
+                }
+            }
+            else
+            {
+                result = GetDevice()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&pipeline));
+            }
+            if (FAILED(result))
+            {
+                Msg("! D3D12 graphics PSO creation failed: 0x%08x, VS %llu, PS %llu, GS %llu, HS %llu, DS %llu, layout %llu",
+                    u32(result), key.ShaderIds[1], key.ShaderIds[0], key.ShaderIds[2],
+                    key.ShaderIds[3], key.ShaderIds[4], key.LayoutId);
+                Msg("! D3D12 PSO attachments: count %u, formats %u/%u/%u/%u/%u/%u/%u/%u, depth %u, samples %u, topology %u",
+                    key.TargetCount, u32(key.Formats[0]), u32(key.Formats[1]), u32(key.Formats[2]),
+                    u32(key.Formats[3]), u32(key.Formats[4]), u32(key.Formats[5]), u32(key.Formats[6]),
+                    u32(key.Formats[7]), u32(key.DepthFormat), key.Samples, key.Topology);
+                if (FAILED(GetDevice()->GetDeviceRemovedReason()))
+                {
+                    ReportDeviceRemoval();
+                }
+                R_CHK(result);
+                return false;
+            }
+            GraphicsPipeline created;
+            created.Key = key;
+            created.Hash = pipelineHash;
+            created.Next = _pipelineBuckets[pipelineHash & (PipelineBuckets - 1)];
+            created.Pipeline = pipeline;
+            _graphicsPipelines.push_back(created);
+            _pipelineBuckets[pipelineHash & (PipelineBuckets - 1)] = u32(_graphicsPipelines.size());
+            _counters.PipelineMisses.fetch_add(1, std::memory_order_relaxed);
+        }
+        _graphicsPipeline = pipeline;
+        _boundPipelineHash = pipelineHash;
+        _boundKey = key;
     }
-    if (_boundPipeline != pipeline)
+    if (_boundPipeline != _graphicsPipeline)
     {
-        _commands->SetPipelineState(pipeline);
-        _boundPipeline = pipeline;
+        _commands->SetPipelineState(_graphicsPipeline);
+        _boundPipeline = _graphicsPipeline;
     }
     _boundGraphicsPipeline = true;
-    _boundPipelineHash = pipelineHash;
-    _boundKey = key;
     D3D12_CPU_DESCRIPTOR_HANDLE depth = _depth ? _depth->View.Descriptor.Cpu : D3D12_CPU_DESCRIPTOR_HANDLE{};
     auto& bound = _drawBindings;
-    if (!_drawBindingsValid || bound.TargetCount != state.TargetCount || bound.Depth.ptr != depth.ptr ||
+    if (!_drawBindingsValid || bound.TargetCount != targetCount || bound.Depth.ptr != depth.ptr ||
         memcmp(bound.Targets, targets, sizeof(targets)))
     {
-        _commands->OMSetRenderTargets(state.TargetCount, targets, FALSE, _depth ? &depth : nullptr);
-        bound.TargetCount = state.TargetCount;
+        _commands->OMSetRenderTargets(targetCount, targets, FALSE, _depth ? &depth : nullptr);
+        bound.TargetCount = targetCount;
         bound.Depth = depth;
         memcpy(bound.Targets, targets, sizeof(targets));
     }
     _pipelineDirty = false;
-    _attachmentEpoch = _barrierEpoch;
     return true;
 }
 
@@ -1184,6 +1256,15 @@ void InternalDevice12::BindRootConstants(bool compute)
 }
 
 bool InternalDevice12::PrepareDraw(bool compute)
+{
+    ActiveCommands();
+    _preparing = true;
+    const bool prepared = PrepareDrawLocked(compute);
+    _preparing = false;
+    return prepared;
+}
+
+bool InternalDevice12::PrepareDrawLocked(bool compute)
 {
     for (;;)
     {
@@ -1294,12 +1375,16 @@ bool InternalDevice12::PrepareDraw(bool compute)
         _boundGraphicsPipeline = false;
         return true;
     }
-    if (_pipelineDirty || !_boundGraphicsPipeline || !_boundPipeline || !_drawBindingsValid || _attachmentEpoch != _barrierEpoch)
+    if (_pipelineDirty || !_boundGraphicsPipeline || !_boundPipeline || !_drawBindingsValid)
     {
         if (!PreparePipeline())
         {
             return false;
         }
+    }
+    else if (_attachmentEpoch != _barrierEpoch)
+    {
+        TransitionAttachments();
     }
     auto& bound = _drawBindings;
     const bool fresh = !_drawBindingsValid;
@@ -1377,11 +1462,14 @@ bool InternalDevice12::PrepareDraw(bool compute)
         _commands->IASetIndexBuffer(_index ? &index : nullptr);
         bound.Index = index;
     }
-    _drawBindingsValid = true;
-    if (_commands1 && _graphicsState.DepthBounds)
+    if (_commands1 && _graphicsState.DepthBounds &&
+        (fresh || bound.DepthBounds[0] != _depthMinimum || bound.DepthBounds[1] != _depthMaximum))
     {
         _commands1->OMSetDepthBounds(_depthMinimum, _depthMaximum);
+        bound.DepthBounds[0] = _depthMinimum;
+        bound.DepthBounds[1] = _depthMaximum;
     }
+    _drawBindingsValid = true;
     return true;
 }
 
@@ -1393,10 +1481,15 @@ bool InternalDevice12::SetDepthBounds(bool enable, float minimum, float maximum)
         return false;
     }
     Commands();
-    _graphicsState.DepthBounds = enable;
-    _pipelineDirty = true;
+    if (_graphicsState.DepthBounds != enable)
+    {
+        _graphicsState.DepthBounds = enable;
+        _pipelineDirty = true;
+    }
     _depthMinimum = minimum;
     _depthMaximum = maximum;
     _commands1->OMSetDepthBounds(minimum, maximum);
+    _drawBindings.DepthBounds[0] = minimum;
+    _drawBindings.DepthBounds[1] = maximum;
     return true;
 }
