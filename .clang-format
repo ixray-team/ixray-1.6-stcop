@@ -21,6 +21,7 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: true
 
 ColumnLimit: 0
 BreakBeforeTernaryOperators: true
