@@ -63,45 +63,41 @@ void CPatrolPathStorage::load_raw			(const ILevelGraph *level_graph, const IGame
 	chunk->close();
 }
 
-void CPatrolPathStorage::load				(IReader &stream)
+void CPatrolPathStorage::load(IReader& stream)
 {
-	IReader						*chunk;
+    xr_unique_ptr<IReader> header(stream.open_chunk(0));
+    const u32 size = header->r_u32();
+    unload();
 
-	chunk						= stream.open_chunk(0);
-	u32							size = chunk->r_u32();
-	chunk->close				();
-
-	unload();
-
-	PATROL_REGISTRY::value_type	pair;
-
-	chunk						= stream.open_chunk(1);
-	for (u32 i=0; i<size; ++i) {
-		IReader					*chunk1;
-		chunk1					= chunk->open_chunk(i);
-
-		IReader					*chunk2;
-		chunk2					= chunk1->open_chunk(0);
-        load_data				(pair.first,*chunk2);
-		chunk2->close			();
-
-		chunk2					= chunk1->open_chunk(1);
-        load_data				(pair.second,*chunk2);
-		chunk2->close			();
-
-		chunk1->close			();
-
-		const_iterator			I = m_registry.find(pair.first);
-		VERIFY3					(I == m_registry.end(),"Duplicated patrol path found ",*pair.first);
-		
+    xr_vector<PATROL_REGISTRY::value_type> entries;
+    xr_vector<xr_unique_ptr<CPatrolPath>> paths;
+    xr_hash_set<shared_str> keys;
+    entries.reserve(size);
+    paths.reserve(size);
+    keys.reserve(size);
+    xr_unique_ptr<IReader> records(stream.open_chunk(1));
+    for (u32 index = 0; index < size; ++index)
+    {
+        xr_unique_ptr<IReader> record(records->open_chunk(index));
+        xr_unique_ptr<IReader> name(record->open_chunk(0));
+        shared_str key;
+        load_data(key, *name);
+        xr_unique_ptr<IReader> graph(record->open_chunk(1));
+        auto path = xr_make_unique<CPatrolPath>();
+        load_data(*path, *graph);
+        const bool inserted = keys.insert(key).second;
+        VERIFY3(inserted, "Duplicated patrol path found ", key.c_str());
+        if (!inserted) continue;
 #ifdef DEBUG
-		pair.second->name		(pair.first);
+        path->name(key);
 #endif
+        entries.emplace_back(key, path.get());
+        paths.push_back(std::move(path));
+    }
 
-		m_registry.insert		(pair);
-	}
-
-	chunk->close				();
+    PATROL_REGISTRY registry(entries.begin(), entries.end());
+    m_registry.swap(registry);
+    for (auto& path : paths) path.release();
 }
 
 void CPatrolPathStorage::save				(IWriter &stream)
