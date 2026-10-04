@@ -140,6 +140,58 @@ void IGame_Level::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
 	// Msg("* Material remapping ID: [Max:%d, StaticMax:%d]",max_ID,max_static_ID);
 	VERIFY(max_static_ID < 0xFFFF);
 
+	if (!Device.IsEditorMode())
+	{
+		if (static_mtl_count >= 128)
+			std::sort(translator.begin(), translator.end());
+
+		constexpr size_t materialIdCount = size_t(1) << 14;
+		constexpr u32 missingMaterial = u32(1) << 16;
+		xr_vector<u32> remap(materialIdCount, missingMaterial);
+		for (const auto& pair : translator)
+		{
+			if (pair.m_id >= materialIdCount || remap[pair.m_id] != missingMaterial)
+				continue;
+			CDB::TRI mapped{};
+			mapped.material = pair.m_index;
+			const SGameMtl* material = GMLib.GetMaterialByIdx(mapped.material);
+			mapped.suppress_shadows = material->Flags.is(SGameMtl::flSuppressShadows);
+			mapped.suppress_wm = material->Flags.is(SGameMtl::flSuppressWallmarks);
+			remap[pair.m_id] = mapped.dummy;
+		}
+
+		constexpr size_t trianglesPerWorker = 65536;
+		const size_t workerCount = count >= 2 * trianglesPerWorker
+			? std::max(size_t(1), std::min({size_t(4), xr_max_concurrency(), count / trianglesPerWorker}))
+			: size_t(1);
+		xr_vector<size_t> invalidTriangles(workerCount, count);
+		auto remapLambda = [&](size_t worker)
+		{
+			const size_t begin = count / workerCount * worker + std::min(worker, count % workerCount);
+			const size_t end = begin + count / workerCount + (worker < count % workerCount ? 1 : 0);
+			for (size_t index = begin; index < end; ++index)
+			{
+				auto& triangle = tris[index];
+				const u32 mapped = remap[triangle.material];
+				if (mapped == missingMaterial)
+				{
+					invalidTriangles[worker] = index;
+					break;
+				}
+				triangle.dummy = (triangle.dummy & 0xFFFF0000u) | mapped;
+			}
+		};
+		if (workerCount > 1)
+			xr_parallel_for(size_t(0), workerCount, remapLambda);
+		else
+			remapLambda(0);
+
+		const size_t invalid = *std::min_element(invalidTriangles.begin(), invalidTriangles.end());
+		if (invalid != count)
+			Debug.fatal(DEBUG_INFO, "Game material '%d' not found", tris[invalid].material);
+		return;
+	}
+
 	if (static_mtl_count < 128) {
 		CDB::TRI* I = tris;
 		CDB::TRI* E = tris + count;
