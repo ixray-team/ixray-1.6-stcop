@@ -415,7 +415,7 @@ STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 		// First try to find in main language
 		if (pData->m_StringTable.find(str_id) != pData->m_StringTable.end())
 		{
-			if (pInput->GetControllerMode() && pData->m_StringTableGamepad.contains(str_id))
+			if (pInput != nullptr && pInput->GetControllerMode() && pData->m_StringTableGamepad.contains(str_id))
 			{
 				return pData->m_StringTableGamepad[str_id];
 			}
