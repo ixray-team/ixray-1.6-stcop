@@ -162,6 +162,8 @@ bool CXml::Load(const char* path, const char* xml_filename)
 	xr_strcpy(m_xml_file_name, xml_filename);
 
 	xr_shared_ptr<xr_string> cachedContent;
+	tinyxml2::XMLDocument PreparedDoc;
+	bool HasPreparedDocument = false;
 
 	{
 		auto& Cache = GetXMLCache();
@@ -183,7 +185,7 @@ bool CXml::Load(const char* path, const char* xml_filename)
 		W.w_stringZ("");
 		FS.r_close(F);
 
-		tinyxml2::XMLDocument baseDoc;
+		tinyxml2::XMLDocument& baseDoc = PreparedDoc;
 		baseDoc.Parse((const char*)W.pointer());
 
 		if (baseDoc.Error())
@@ -237,6 +239,7 @@ bool CXml::Load(const char* path, const char* xml_filename)
 			if (it == Cache.end())
 			{
 				Cache.emplace(cacheKey, cachedContent);
+				HasPreparedDocument = true;
 			}
 			else
 			{
@@ -246,7 +249,14 @@ bool CXml::Load(const char* path, const char* xml_filename)
 	}
 
 	m_Doc.Clear();
-	m_Doc.Parse(cachedContent->c_str());
+	if (HasPreparedDocument)
+	{
+		PreparedDoc.DeepCopy(&m_Doc);
+	}
+	else
+	{
+		m_Doc.Parse(cachedContent->c_str());
+	}
 
 	if (m_Doc.Error())
 	{
