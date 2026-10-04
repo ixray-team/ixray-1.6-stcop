@@ -17,7 +17,7 @@
 #	elifdef IXRAY_PROFILER_TRACY
 #		include <tracy/Tracy.hpp>
 #		define TRACY_CALLSTACK 8
-#   	define PROF_THREAD(Name);
+#   	define PROF_THREAD(Name) tracy::SetThreadName(Name);
 #   	define PROF_START_THREAD(Name) TracyFiberEnter(Name);
 #   	define PROF_START_THREAD_HINT(Name, Hint) TracyFiberEnterHint(Name, Hint);
 #   	define PROF_STOP_THREAD() TracyFiberLeave;
