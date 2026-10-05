@@ -63,7 +63,10 @@ void compute_non_covers()
 			g_covers->insert(new CCoverPoint((*I).Pos, u32(I - B)));
 		}
 
-		VERIFY(g_covers->size());
+		if (!g_covers->size())
+		{
+			Msg("! There are no covers on the level");
+		}
 	}
 
 	typedef std::pair<float, CCoverPoint*>	COVER_PAIR;
