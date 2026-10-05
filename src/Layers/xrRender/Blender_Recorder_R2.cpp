@@ -360,7 +360,7 @@ void CBlender_Compile::r_End(bool clear)
     ref_matrix_list temp(nullptr);
 	
 #ifdef _EDITOR
-    dest.M = nullptr;
+    dest.M = DEV->_CreateMatrixList(passMatrices);
 #endif
 
     SH->passes.push_back(DEV->_CreatePass(dest));

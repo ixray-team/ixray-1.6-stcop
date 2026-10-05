@@ -4,6 +4,7 @@
 #include "render.h"
 
 #include "../Layers/xrRender/ResourceManager.h"
+#include "../Layers/xrRenderDX10/dx10FixedConstants.h"
 #include "../../xrEngine/irenderable.h"
 #include "../../xrEngine/xr_object.h"
 #include "../../xrEngine/CustomHUD.h"
@@ -566,6 +567,7 @@ static class cl_lighting_enable :
 void CRender::create()
 {
 	DEV->RegisterConstantSetup("is_lighting_enable", &binder_lighting_enable);
+	GRHI->StateManager->BindAlphaRefCallback([](u32 AlphaRef) { FixedConstants::SetAlphaRef(AlphaRef / 255.0f); });
 }
 
 void CRender::destroy()
@@ -797,6 +799,10 @@ static HRESULT create_shader(
 
 			//	Let constant table parse it's data
 			svs_result->constants.parse(pReflection, RC_dest_vertex);
+
+			D3D11_SHADER_INPUT_BIND_DESC BindDesc{};
+			if (SUCCEEDED(pReflection->GetResourceBindingDescByName("detail_buffer", &BindDesc)) && BindDesc.Type == D3D_SIT_STRUCTURED)
+				svs_result->instance_buffer_slot = BindDesc.BindPoint;
 
 			_RELEASE(pReflection);
 		}

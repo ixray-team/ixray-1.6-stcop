@@ -361,6 +361,9 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 	ShaderTL.destroy	();
 	texture_null.destroy		();
 
+	_RELEASE(m_DetailInstanceSRV);
+	_RELEASE(m_DetailInstanceBuffer);
+
 	::RImplementation.Models->OnDeviceDestroy	();
 
 	Resources->OnDeviceDestroy	(bKeepTextures);
@@ -595,6 +598,53 @@ void CEditorRenderDevice::SetShader(ref_shader sh)
 	EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 }
 
+// HACK: detail VS reads per-instance data from a StructuredBuffer (filled by CDetailManager in game/LE);
+// single objects are drawn as instance 0 with one identity instance.
+void CEditorRenderDevice::BindDetailInstance(ref_shader& S, u32 Pass)
+{
+	SPass& P = *S->E[0]->passes[Pass];
+	if (!P.vs || P.vs->instance_buffer_slot == u32(-1))
+		return;
+
+	if (!m_DetailInstanceSRV)
+	{
+		struct alignas(16) SInstance
+		{
+			Fvector quat;
+			float scale;
+			Fvector pos;
+			float hemi;
+			float trample_strength;
+			float trample_visual;
+			float trample_dir[2];
+		};
+
+		SInstance Inst{};
+		Inst.scale = 1.f;
+		Inst.hemi = 1.f;
+
+		RHIBufferDesc Desc{};
+		Desc.Usage = ERHI_USAGE::USAGE_IMMUTABLE;
+		Desc.Type = ERHI_BUFFER_TYPE::STRUCTURED;
+		Desc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_NONE;
+		Desc.StructureByteStride = sizeof(SInstance);
+		Desc.Size = sizeof(SInstance);
+
+		RHIBufferSubresource Init{};
+		Init.pSysMem = &Inst;
+		m_DetailInstanceBuffer = GRHI->CreateBuffer(Desc, &Init);
+		if (!m_DetailInstanceBuffer)
+			return;
+
+		RHIShaderResourceViewDesc SrvDesc{};
+		SrvDesc.Format = ERHI_FORMAT::UNKNOWN;
+		SrvDesc.ElementWidth = 1;
+		m_DetailInstanceSRV = GRHI->CreateShaderResourceView(m_DetailInstanceBuffer, &SrvDesc);
+	}
+
+	GRHI->ShaderResourceCache->SetVSResource(P.vs->instance_buffer_slot, m_DetailInstanceSRV);
+}
+
 void CEditorRenderDevice::DP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 vBase, u32 pc)
 {
 	ref_shader S 			= m_CurrentShader?m_CurrentShader:m_WireShader;
@@ -603,6 +653,7 @@ void CEditorRenderDevice::DP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 vBas
     for (u32 dwPass = 0; dwPass<dwRequired; dwPass++)
 	{
     	RCache.set_Shader	(S,dwPass);
+		BindDetailInstance	(S,dwPass);
 		EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 		RCache.set_Geometry(geom);
 		RCache.Render		(pt,vBase,pc);
@@ -618,6 +669,7 @@ void CEditorRenderDevice::DIP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 bas
     for (u32 dwPass = 0; dwPass<dwRequired; dwPass++)
 	{
     	RCache.set_Shader	(S,dwPass);
+		BindDetailInstance	(S,dwPass);
 		EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 		RCache.Render		(pt,baseV,startV,countV,startI,PC);
     }
