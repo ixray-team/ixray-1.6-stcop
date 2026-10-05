@@ -3,6 +3,7 @@
 #include "../../xrCore/xrCore.h"
 #include "CompilersUI.h"
 #include "cl_log.h"
+#include "GameLevelsRegistry.h"
 #include <timeapi.h>
 #include <algorithm>
 
@@ -166,6 +167,50 @@ void DrawDownUI()
 	ImGui::SameLine();
 	ImGui::SameLine();
 	ImGui::TextColored(ImVec4{0, 0.9, 0, 1}, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
+}
+
+static bool PrepareSpawnLevels()
+{
+	if (!gCompilerMode.AI || !gCompilerMode.AI_BuildSpawn)
+	{
+		return true;
+	}
+
+	xr_vector<xr_string> Selected;
+	for (const LevelFileData& Level : gCompilerMode.Files)
+	{
+		if (Level.Select)
+		{
+			Selected.push_back(Level.Name);
+		}
+	}
+
+	const xr_vector<xr_string> Unregistered = GameLevelsRegistry::FindUnregistered(Selected);
+	if (Unregistered.empty())
+	{
+		return true;
+	}
+
+	if (gCompilerMode.AI_AutoRegisterLevels)
+	{
+		if (GameLevelsRegistry::Register(Unregistered))
+		{
+			return true;
+		}
+
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error!", "Not all levels were registered in game_levels.ltx. See log for details.", nullptr);
+		return false;
+	}
+
+	xr_string Text = "These levels are not registered in game_levels.ltx:\n\n";
+	for (const xr_string& Name : Unregistered)
+	{
+		Text += Name + "\n";
+	}
+	Text += "\nThe spawn builder skips them. Register them manually or enable \"Auto Register Levels\".";
+
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning!", Platform::ANSI_TO_UTF8(Text).c_str(), nullptr);
+	return false;
 }
 
 void RenderMainUI()
@@ -422,15 +467,15 @@ void RenderMainUI()
 			}
 
 			extern void StartCompile();
-			if (!levelsEmpty)
+			if (levelsEmpty)
+			{
+				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning!", "No levels selected.", nullptr);
+			}
+			else if (PrepareSpawnLevels())
 			{
 				ShowMainUI = false;
 				ClearLogVector();
 				StartCompile();
-			}
-			else
-			{
-				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning!", "No levels selected.", nullptr);
 			}
 		}
 	}
@@ -626,6 +671,9 @@ void DrawAIConfig()
 	ImGui::Checkbox("AI Compiler all.spawn", &gCompilerMode.AI_BuildSpawn);
 	ImGui::SetItemTooltip("Build the game spawn from the selected levels.");
 	ImGui::BeginDisabled(!gCompilerMode.AI_BuildSpawn);
+
+	ImGui::Checkbox("Auto Register Levels", &gCompilerMode.AI_AutoRegisterLevels);
+	ImGui::SetItemTooltip("Register selected levels missing from game_levels.ltx \r\nin configs\\mod_game_levels_autoreg.ltx before building the spawn.");
 
 	ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
 	ImGui::SetItemTooltip("Skip the space restrictor connectivity check.");
