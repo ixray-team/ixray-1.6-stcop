@@ -156,10 +156,13 @@ void DrawDownUI()
 	ImGui::Separator();
 
 	ImGui::Checkbox("SwitchUI", &ShowMainUI);
+	ImGui::SetItemTooltip("Switch between the settings and the build progress screens.");
 	ImGui::SameLine();
 	ImGui::Checkbox("Preview", &ShowLightPreview);
+	ImGui::SetItemTooltip("Show the lighting preview of the level being built.");
 	ImGui::SameLine();
 	ImGui::Checkbox("auto-scroll", &autoScroll);
+	ImGui::SetItemTooltip("Keep the progress table and the log scrolled to the latest entry.");
 	ImGui::SameLine();
 	ImGui::SameLine();
 	ImGui::TextColored(ImVec4{0, 0.9, 0, 1}, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
@@ -473,13 +476,13 @@ void DrawLCConfig()
 
 		ImGui::BeginDisabled(!gCompilerMode.LC);
 		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
-		ImGui::SetItemTooltip("Ignore smoothing groups.");
+		ImGui::SetItemTooltip("Ignore smoothing groups set in the Level Editor.");
 
 		ImGui::Checkbox("Tessellation", &gCompilerMode.LC_Tess);
-		ImGui::SetItemTooltip("Geometric tessellation.");
+		ImGui::SetItemTooltip("Tessellate vertex-lit faces for smoother lighting (Adaptive HT).");
 
 		ImGui::Checkbox("Skip Invalid Faces", &gCompilerMode.LC_SkipInvalidFaces);
-		ImGui::SetItemTooltip("Skip invalid faces.");
+		ImGui::SetItemTooltip("Report invalid faces in the log instead of aborting the build.");
 
 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
 		ImGui::SetItemTooltip("Skip welding adjacent vertices.");
@@ -488,8 +491,11 @@ void DrawLCConfig()
 
 		ImGui::Text("OGF Optimize: ");
 		ImGui::Checkbox("Make TangentBasis", &gCompilerMode.LC_OGF_TANGENT);
+		ImGui::SetItemTooltip("Calculate tangents and binormals for normal mapping.");
 		ImGui::Checkbox("Make Progressive", &gCompilerMode.LC_OGF_PROGRESSIVE);
+		ImGui::SetItemTooltip("Build progressive meshes (sliding window LOD) for level visuals.");
 		ImGui::Checkbox("Make Striptify", &gCompilerMode.LC_OGF_STRIPTIFY);
+		ImGui::SetItemTooltip("Reorder vertices and indices for the GPU vertex cache.");
 		ImGui::Separator();
 
 		ImGui::PushID("geom");
@@ -501,10 +507,12 @@ void DrawLCConfig()
 			VERIFY(type.has_value());
 			gCompilerMode.LC_GeomType = type.value();
 		}
+		ImGui::SetItemTooltip("level.geom format. Vanilla: one block. Chunked: split into parts of the given size.");
 
 		ImGui::BeginDisabled(gCompilerMode.LC_GeomType != GeomVanillaType::Chunked);
 		ImGui::SetNextItemWidth(100);
 		ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_GeomChunkSize);
+		ImGui::SetItemTooltip("Size of one level.geom part. Smaller geometry is saved as Vanilla.");
 		gCompilerMode.LC_GeomChunkSize = std::max(gCompilerMode.LC_GeomChunkSize, 1);
 		ImGui::EndDisabled();
 		ImGui::PopID();
@@ -520,10 +528,12 @@ void DrawLCConfig()
 			VERIFY(type.has_value());
 			gCompilerMode.LC_CformType = type.value();
 		}
+		ImGui::SetItemTooltip("level.cform format. Vanilla: one block. VanillaChunked: split into parts of the given size.");
 
 		ImGui::BeginDisabled(gCompilerMode.LC_CformType != CFormVersions::VanillaChunked);
 		ImGui::SetNextItemWidth(100);
 		ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_CFormChunkSize);
+		ImGui::SetItemTooltip("Size of one level.cform part. Smaller collision is saved as Vanilla.");
 		gCompilerMode.LC_CFormChunkSize = std::max(gCompilerMode.LC_CFormChunkSize, 1);
 		ImGui::EndDisabled();
 		ImGui::PopID();
@@ -537,6 +547,7 @@ void DrawLCConfig()
 		ImGui::Text("Border:");
 		ImGui::SameLine(0, 20);
 		ImGui::InputInt("##LM-Border", &gCompilerMode.LC_BORDER, 1, 1);
+		ImGui::SetItemTooltip("Padding in texels around each lightmap island. Prevents seams from texture filtering.");
 
 		ImGui::Text("Size:");
 		ImGui::SameLine(0, 35);
@@ -544,8 +555,8 @@ void DrawLCConfig()
 		if (ImGui::Combo("##lmaps", &item_current_lightmap, lightmap_resolution, max_resolution))
 		{
 			gCompilerMode.LC_sizeLmaps = atoi(lightmap_resolution[item_current_lightmap]);
-			ImGui::SetItemTooltip("Lightmap size.");
 		}
+		ImGui::SetItemTooltip("Maximum size of one lightmap texture. Larger size gives fewer lightmaps.");
 
 		ImGui::Text("Format:");
 		ImGui::SameLine(0, 20);
@@ -554,10 +565,14 @@ void DrawLCConfig()
 		{
 			gCompilerMode.LmapsFormat = static_cast<LCLightmapFormat>(current_format);
 		}
+		ImGui::SetItemTooltip("Lightmap texture compression.");
 
 		ImGui::Checkbox("Fast LMaps", &gCompilerMode.LC_fast_way);
+		ImGui::SetItemTooltip("Pack lightmaps with a fast row placer. Faster, but uses more lightmap space.");
 		ImGui::Checkbox("SoC LMaps", &gCompilerMode.LC_legacyLM);
+		ImGui::SetItemTooltip("Shadow of Chernobyl hemi lightmap layout: hemi in RGB, sun in alpha.");
 		ImGui::Checkbox("Skip Static map", &gCompilerMode.LC_SkipStaticMap);
+		ImGui::SetItemTooltip("Skip baking static lights (lightmap color). Sun and hemi are still baked.");
 		ImGui::Checkbox("Skip Sun", &gCompilerMode.LC_NoSun);
 		ImGui::SetItemTooltip("Disable sunlight calculation.");
 
@@ -593,28 +608,38 @@ void DrawAIConfig()
 	ImGui::Separator();
 
 	ImGui::Checkbox("AI Compiler ai.level", &gCompilerMode.AI_BuildLevel);
+	ImGui::SetItemTooltip("Build level.ai for the selected levels.");
 	ImGui::BeginDisabled(!gCompilerMode.AI_BuildLevel);
 
 	ImGui::Checkbox("Draft AI-Map", &gCompilerMode.AI_Draft);
+	ImGui::SetItemTooltip("Skip level geometry loading and cover calculation. For quick tests.");
 	ImGui::Checkbox("Pure Covers", &gCompilerMode.AI_PureCovers);
+	ImGui::SetItemTooltip("Calculate covers for every node and smooth them, instead of only cover nodes.");
 	ImGui::Checkbox("Verify", &gCompilerMode.AI_Verify);
+	ImGui::SetItemTooltip("Check the built AI-map for errors.");
 	ImGui::Checkbox("Verbose", &gCompilerMode.AI_Verbose);
+	ImGui::SetItemTooltip("Print detailed verification messages.");
 
 	ImGui::EndDisabled();
 	ImGui::Separator();
 
 	ImGui::Checkbox("AI Compiler all.spawn", &gCompilerMode.AI_BuildSpawn);
+	ImGui::SetItemTooltip("Build the game spawn from the selected levels.");
 	ImGui::BeginDisabled(!gCompilerMode.AI_BuildSpawn);
 
 	ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
+	ImGui::SetItemTooltip("Skip the space restrictor connectivity check.");
 
 	ImGui::Checkbox("FreeMP Build", &gCompilerMode.AI_FreeMPBuild);
+	ImGui::SetItemTooltip("Save alife.spawn into the actor level folder for FreeMP.");
 
 	ImGui::BeginDisabled(gCompilerMode.AI_FreeMPBuild);
 	ImGui::Text("Name all.spawn :");
 	ImGui::InputText("#1", gCompilerMode.AI_spawn_name, sizeof(gCompilerMode.AI_spawn_name));
+	ImGui::SetItemTooltip("Output spawn file name without extension. Empty: new.spawn.");
 	ImGui::Text("Name level start:");
 	ImGui::InputText("#2", gCompilerMode.AI_StartActor, sizeof(gCompilerMode.AI_StartActor));
+	ImGui::SetItemTooltip("Level to move the actor to. Empty: the level the actor is placed on.");
 	ImGui::EndDisabled();
 
 	ImGui::EndDisabled();
@@ -625,8 +650,6 @@ extern bool SaveCForm;
 
 void DrawCompilerConfig()
 {
-	ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
-
 	ImGui::PushID("LightPreset");
 	{
 		static int RadioID = -1;
@@ -638,9 +661,10 @@ void DrawCompilerConfig()
 		}
 
 		ImGui::RadioButton("Use Intel Embree", &RadioID, 1);
-		ImGui::SetItemTooltip("Use Intel Embree for ray tracing");
+		ImGui::SetItemTooltip("Trace light rays on the CPU with Intel Embree.");
 #ifdef LCCUDA_BUILD
 		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 2);
+		ImGui::SetItemTooltip("Trace light rays on the GPU with Nvidia CUDA.");
 #endif
 
 		switch (RadioID)
@@ -662,10 +686,13 @@ void DrawCompilerConfig()
 
 
 	ImGui::BeginDisabled(!gCompilerMode.Embree);
-	ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact); // Замедляет скорость Траверсера
-	ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);	  // Замедляет скорость Траверсера
-	ImGui::Checkbox("Embree Instaces MU", &gCompilerMode.EmbreeInstaces); // Замедляет скорость Траверсера
-	ImGui::Checkbox("Embree RayPack8", &gCompilerMode.EmbreeRays8);		  // x2 скорость Траверсера (AVX2)
+	ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
+	ImGui::SetItemTooltip("Build a compact BVH. Uses less memory, slows down BVH traversal.");
+	ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
+	ImGui::SetItemTooltip("Build a robust BVH. Fewer missed rays on thin geometry, slows down BVH traversal.");
+	ImGui::Checkbox("Embree Instaces MU", &gCompilerMode.EmbreeInstaces);
+	ImGui::SetItemTooltip("Add MU models as instances instead of copying their faces. Uses less memory, slows down BVH traversal.");
+	ImGui::Checkbox("Embree RayPack8", &gCompilerMode.EmbreeRays8);
 	ImGui::SetItemTooltip("AVX2 Batch Ray Tracing. Speeds up BVH traversal by approximately a factor of 2.");
 
 	ImGui::EndDisabled();
@@ -673,9 +700,11 @@ void DrawCompilerConfig()
 	ImGui::Separator();
 
 	ImGui::Checkbox("Clear Temporary Files", &gCompilerMode.ClearTemp);
-	ImGui::SetItemTooltip("Delete temporary files after compilation.");
+	ImGui::SetItemTooltip("Not used by the compilers yet.");
 	ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
+	ImGui::SetItemTooltip("Do not abort the build when texture THM or TGA files are missing.");
 	ImGui::Checkbox("Save CForm to obj", &SaveCForm);
+	ImGui::SetItemTooltip("Not used: the CForm optimizer that writes cform_source.obj is disabled.");
 
 	ImGui::Separator();
 	ImGui::Text("Threads Max");
@@ -685,6 +714,7 @@ void DrawCompilerConfig()
 	{
 		gCompilerMode.ThreadsPerWork = std::min((u32)gCompilerMode.ThreadsPerWork, CPU::ID().n_threads);
 	}
+	ImGui::SetItemTooltip("Maximum number of threads.");
 
 	ImGui::Separator();
 	ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
@@ -694,9 +724,11 @@ void DrawCompilerConfig()
 
 	ImGui::SetNextItemWidth(100);
 	ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 7);
+	ImGui::SetItemTooltip("Jitter samples for MU model vertex lighting. Higher is smoother and slower.");
 
 	ImGui::SetNextItemWidth(100);
 	ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
+	ImGui::SetItemTooltip("Samples per lightmap texel. Higher gives smoother shadows and slower builds.");
 
 	ImGui::SetNextItemWidth(100);
 	ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
