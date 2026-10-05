@@ -1887,6 +1887,11 @@ void CActor::SwitchNightVision()
 		return;
 	}
 
+	if (GetDevice(true) && GetDevice(true)->NeedActivation())
+	{
+		return;
+	}
+
 	PIItem active_item = inventory().ActiveItem();
 	CHudItem* itm = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
 	CWeapon* wpn = itm != nullptr ? itm->cast_weapon() : nullptr;
@@ -1901,12 +1906,12 @@ void CActor::SwitchNightVision()
 
 		if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_nvg) && dev->m_eAnimationsFlags.test(CCustomDevice::EAnimationsFlags::af_nvg))
 		{
-			if (!itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfNIGHTVISION))
+			if (dev->GetState() != itm->GetState() && !itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfNIGHTVISION))
 			{
 				return;
 			}
 
-			if (itm->IsPending() || dev->IsPending())
+			if (itm->IsPending())
 			{
 				return;
 			}
@@ -2006,6 +2011,11 @@ void CActor::SwitchTorch()
 			return;
 		}
 
+		if (GetDevice(true) && GetDevice(true)->NeedActivation())
+		{
+			return;
+		}
+
 		PIItem active_item = inventory().ActiveItem();
 		CHudItem* itm = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
 		CWeapon* wpn = itm != nullptr ? itm->cast_weapon() : nullptr;
@@ -2020,12 +2030,12 @@ void CActor::SwitchTorch()
 
 			if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_torch) && dev->m_eAnimationsFlags.test(CCustomDevice::EAnimationsFlags::af_torch))
 			{
-				if (!itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfHEADLAMP))
+				if (dev->GetState() != itm->GetState() && !itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfHEADLAMP))
 				{
 					return;
 				}
 
-				if (itm->IsPending() || dev->IsPending())
+				if (itm->IsPending())
 				{
 					return;
 				}
@@ -2117,6 +2127,11 @@ void CActor::ClearMask()
 		return;
 	}
 
+	if (GetDevice(true) && GetDevice(true)->NeedActivation())
+	{
+		return;
+	}
+
 	PIItem active_item = inventory().ActiveItem();
 	CHudItem* itm = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
 	CWeapon* wpn = itm != nullptr ? itm->cast_weapon() : nullptr;
@@ -2131,12 +2146,12 @@ void CActor::ClearMask()
 
 		if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_clear_mask) && dev->m_eAnimationsFlags.test(CCustomDevice::EAnimationsFlags::af_clear_mask))
 		{
-			if (!itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCLEARMASK))
+			if (dev->GetState() != itm->GetState() && !itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCLEARMASK))
 			{
 				return;
 			}
 
-			if (itm->IsPending() || dev->IsPending())
+			if (itm->IsPending())
 			{
 				return;
 			}
