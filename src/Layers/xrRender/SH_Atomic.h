@@ -34,6 +34,7 @@ struct ECORE_API SVS : public xr_resource_uniq
 	ref_input_sign						signature;
 	// full compiled VS bytecode (kept so editors/tools can reflect inputs)
 	ID3DBlob*							vs_code;
+	u32									instance_buffer_slot = u32(-1);
 #endif //USE_DX11
 	SVS				();
 	~SVS			();

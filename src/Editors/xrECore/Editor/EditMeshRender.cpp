@@ -142,6 +142,9 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 		vtx->weight2 = 0.0f;
 		vtx->weight3 = 0.0f;
 
+		// HACK: white vertex color for COLOR-reading shaders (Shader Editor preview)
+		vtx->ind = 0xFFFFFFFF;
+
 		if (dwFVF & D3DFVF_NORMAL)
 		{
 			if (EPrefs->SmoothGroup == ESmoothGroup::Normals && !m_Normals.empty())
@@ -191,6 +194,11 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 
 				vtx->uv = vmap->getUV(vm_pt.index);
 			}
+		}
+
+		if (m_TexGen)
+		{
+			m_TexGen(vtx->uv, fv.pindex, vtx->N);
 		}
 
 		// Tangent/Binormal are consumed by model shaders (normal mapping) but

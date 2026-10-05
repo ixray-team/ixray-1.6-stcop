@@ -99,6 +99,14 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
 
+#ifdef _EDITOR
+	const u32 mode = oBlend.IDselected;
+	const bool bATest = mode == 1 || mode == 5 || mode == 7 || mode == 8 || mode == 9;
+	const char* ps = bATest ? "stub_default_at" : "stub_default";
+#else
+	const char* ps = "stub_default";
+#endif
+
 	if (oBlend.IDselected == 6)
 	{
 		// Usually for wallmarks
@@ -116,25 +124,28 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 		if (9 == oBlend.IDselected)
 		{
 			// 4x R
-			C.r_Pass("stub_notransform_t_m4", "stub_default", false);
+			C.r_Pass("stub_notransform_t_m4", ps, false);
 		}
 		else
 		{
 			if ((7 == oBlend.IDselected) || (8 == oBlend.IDselected))
 			{
 				// 2x R
-				C.r_Pass("stub_notransform_t_m2", "stub_default", false);
+				C.r_Pass("stub_notransform_t_m2", ps, false);
 			}
 			else
 			{
 				// 1x R
-				C.r_Pass("stub_notransform_t", "stub_default", false);
+				C.r_Pass("stub_notransform_t", ps, false);
 			}
 		}
 
 		VERIFY(C.L_textures.size() > 0);
 		C.r_dx10Texture("s_base", C.L_textures[0]);
 		int iSmp = C.r_dx10Sampler("smp_base");
+#ifdef _EDITOR
+		C.r_Matrix(oT_xform);
+#endif
 		//if ((oClamp.value) && (iSmp != u32(-1)))
 		//	C.i_Address(iSmp, D3DTADDRESS_CLAMP);
 	}

@@ -124,6 +124,7 @@ public:
 	void				r_dx10Texture(const char* ResourceName,	const char* texture);
 	void				r_dx10Texture(const char* ResourceName,	shared_str texture) { return r_dx10Texture(ResourceName, texture.c_str());};
 	u32					r_dx10Sampler(const char* ResourceName);
+	void				r_Matrix(const char* name);
 #else //USE_DX11
 	u32					r_Sampler			(const char* name,	const char* texture,		bool b_ps1x_ProjectiveDivide=false, u32	address=D3DTADDRESS_WRAP,	u32		fmin=D3DTEXF_LINEAR,	u32		fmip=D3DTEXF_LINEAR,	u32 fmag=D3DTEXF_LINEAR);
 	u32					r_Sampler			(const char* name,	shared_str texture, bool b_ps1x_ProjectiveDivide=false, u32	address=D3DTADDRESS_WRAP,	u32		fmin=D3DTEXF_LINEAR,	u32		fmip=D3DTEXF_LINEAR,	u32 fmag=D3DTEXF_LINEAR)	{
