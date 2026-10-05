@@ -10,6 +10,9 @@
 extern int DXTCompressImageRI(const char* out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 extern int DXTCompressImageNVTT(const char* out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 extern int DXTCompressBump(const char* out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
+#ifdef IXR_WINDOWS
+extern bool DXTCompressBC7GPU(const char* FileName);
+#endif
 
 #ifdef IXR_WINDOWS
 void DXTUtils::Converter::MakeTGA(xr_path From, xr_path To)
@@ -83,11 +86,15 @@ int DXT_API DXTUtils::Compress(const char* out_name, u8* raw_data, u8* normal_ma
 					fmt->fmt = STextureParams::tfRGBA;
 
 					int RetCode = DXTCompressImageNVTT(out_name, raw_data, w, h, pitch, fmt, depth);
+					fmt->fmt = STextureParams::tfBC7;
 
-					RedImageTool::RedImage Img;
-					Img.LoadFromFile(out_name);
-					Img.Convert(RedImageTool::RedTexturePixelFormat::BC7);
-					Img.SaveToDds(out_name);
+					if (!DXTCompressBC7GPU(out_name))
+					{
+						RedImageTool::RedImage Img;
+						Img.LoadFromFile(out_name);
+						Img.Convert(RedImageTool::RedTexturePixelFormat::BC7);
+						Img.SaveToDds(out_name);
+					}
 
 					return RetCode;
 				}
