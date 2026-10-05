@@ -11,5 +11,5 @@ enum
 #include "../xrForms/CompilersUI.h"
 static u32 LGetCurrentFlags()
 {
-	return	(gCompilerMode.LC_SkipStaticMap ? LP_dont_rgb : 0) | (gCompilerMode.LC_NoSun ? LP_dont_sun : 0);
+	return	(gCompilerMode.LC_SkipStaticMap ? LP_dont_rgb : 0) | (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | (gCompilerMode.LC_NoHemi ? LP_dont_hemi : 0);
 }

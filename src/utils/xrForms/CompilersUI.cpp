@@ -213,6 +213,48 @@ static bool PrepareSpawnLevels()
 	return false;
 }
 
+static const ImVec4 FrameOutlineColor = ImVec4(0.42f, 0.42f, 0.42f, 1.f);
+
+static void DrawCompilerHeader(int Column, bool& Enabled, const char* Tooltip)
+{
+	ImGui::TableSetColumnIndex(Column);
+	ImGui::PushID(Column);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
+	ImGui::PushStyleColor(ImGuiCol_Border, FrameOutlineColor);
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.22f, 0.22f, 0.24f, 1.f));
+	ImGui::Checkbox("##Enabled", &Enabled);
+	ImGui::PopStyleColor(2);
+	ImGui::PopStyleVar(2);
+	ImGui::SetItemTooltip("%s", Tooltip);
+
+	ImGui::SameLine(0.f, ImGui::GetStyle().ItemInnerSpacing.x);
+	ImGui::TableHeader(ImGui::TableGetColumnName(Column));
+	if (ImGui::IsItemClicked())
+	{
+		Enabled = !Enabled;
+	}
+	ImGui::SetItemTooltip("%s", Tooltip);
+
+	ImGui::PopID();
+}
+
+static void DrawLevelsTableHeader()
+{
+	ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+	for (int Column = 0; Column < 2; ++Column)
+	{
+		ImGui::TableSetColumnIndex(Column);
+		ImGui::TableHeader(ImGui::TableGetColumnName(Column));
+	}
+
+	DrawCompilerHeader(2, gCompilerMode.LC, "Lighting Compiler: compile game level (collision, lighting).");
+	DrawCompilerHeader(3, gCompilerMode.AI, "AI Compiler: compile AI-map and spawn.");
+	DrawCompilerHeader(4, gCompilerMode.DO, "Details Compiler: compile detail objects.");
+}
+
 void RenderMainUI()
 {
 	// Считаем выбранные уровни для счётчика в тулбаре.
@@ -300,7 +342,7 @@ void RenderMainUI()
 			ImGui::TableSetupColumn("xrAI");
 			ImGui::TableSetupColumn("xrDO");
 
-			ImGui::TableHeadersRow();
+			DrawLevelsTableHeader();
 
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
@@ -510,15 +552,74 @@ constexpr int geom_types_num = sizeof(geom_types) / sizeof(geom_types[0]);
 const char* itemsJitter[] = {"1", "4", "9"};
 const char* itemsJitterMU[] = {"0", "1", "2", "3", "4", "5", "6"};
 
+static void SegmentButton(const char* Label, bool& Enabled, float Width, ImDrawFlags Corners, const char* Tooltip)
+{
+	const ImGuiStyle& Style = ImGui::GetStyle();
+	const ImVec2 TextSize = ImGui::CalcTextSize(Label);
+	const ImVec2 Size = {Width, ImGui::GetFrameHeight()};
+
+	ImGui::PushID(Label);
+	if (ImGui::InvisibleButton("##Segment", Size))
+	{
+		Enabled = !Enabled;
+	}
+	ImGui::PopID();
+	ImGui::SetItemTooltip("%s", Tooltip);
+
+	const bool Held = ImGui::IsItemActive();
+	const bool Hovered = ImGui::IsItemHovered();
+	const ImVec4 OnColor = Held ? ImVec4(0.16f, 0.40f, 0.21f, 1.f) : Hovered ? ImVec4(0.24f, 0.56f, 0.30f, 1.f) : ImVec4(0.20f, 0.48f, 0.25f, 1.f);
+	const ImVec4 OffColor = Held ? ImVec4(0.22f, 0.22f, 0.23f, 1.f) : Hovered ? ImVec4(0.33f, 0.33f, 0.34f, 1.f) : ImVec4(0.27f, 0.27f, 0.28f, 1.f);
+
+	const ImVec2 Min = ImGui::GetItemRectMin();
+	const ImVec2 Max = ImGui::GetItemRectMax();
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+	DrawList->AddRectFilled(Min, Max, ImGui::GetColorU32(Enabled ? OnColor : OffColor), Style.FrameRounding, Corners);
+	DrawList->AddRect(Min, Max, ImGui::GetColorU32(FrameOutlineColor), Style.FrameRounding, Corners);
+
+	const ImVec2 TextPos = {Min.x + (Size.x - TextSize.x) * 0.5f, Min.y + (Size.y - TextSize.y) * 0.5f};
+	DrawList->AddText(TextPos, ImGui::GetColorU32(Enabled ? ImGuiCol_Text : ImGuiCol_TextDisabled), Label);
+}
+
+static void DrawBakeLayers()
+{
+	bool BakeStatic = !gCompilerMode.LC_SkipStaticMap;
+	bool BakeSun = !gCompilerMode.LC_NoSun;
+	bool BakeHemi = !gCompilerMode.LC_NoHemi;
+
+	ImGui::Dummy({0, 0});
+	ImGui::TextUnformatted("Lighting Pipeline:");
+
+	const char* Labels[] = {"Static LMap", "Sun", "Hemi"};
+	const float Padding = ImGui::GetStyle().FramePadding.x * 2.f;
+
+	float TextWidth = 0.f;
+	for (const char* Label : Labels)
+	{
+		TextWidth += ImGui::CalcTextSize(Label).x + Padding;
+	}
+
+	const float Extra = std::max(ImGui::GetContentRegionAvail().x - TextWidth, 0.f) / std::size(Labels);
+	auto SegmentWidth = [&](const char* Label)
+	{
+		return std::floor(ImGui::CalcTextSize(Label).x + Padding + Extra);
+	};
+
+	SegmentButton(Labels[0], BakeStatic, SegmentWidth(Labels[0]), ImDrawFlags_RoundCornersLeft, "Bake static lights into the lightmap color.");
+	ImGui::SameLine(0.f, 0.f);
+	SegmentButton(Labels[1], BakeSun, SegmentWidth(Labels[1]), ImDrawFlags_RoundCornersNone, "Bake sunlight.");
+	ImGui::SameLine(0.f, 0.f);
+	SegmentButton(Labels[2], BakeHemi, std::max(ImGui::GetContentRegionAvail().x, SegmentWidth(Labels[2])), ImDrawFlags_RoundCornersRight, "Bake sky (hemi) lighting.");
+
+	gCompilerMode.LC_SkipStaticMap = !BakeStatic;
+	gCompilerMode.LC_NoSun = !BakeSun;
+	gCompilerMode.LC_NoHemi = !BakeHemi;
+}
+
 void DrawLCConfig()
 {
 	{
 		ImGui::PushID("xrLC");
-		ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
-		ImGui::SetItemTooltip("Compile Game Level (Collision, Lighting).");
-
-		ImGui::Separator();
-
 		ImGui::BeginDisabled(!gCompilerMode.LC);
 		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
 		ImGui::SetItemTooltip("Ignore smoothing groups set in the Level Editor.");
@@ -616,10 +717,7 @@ void DrawLCConfig()
 		ImGui::SetItemTooltip("Pack lightmaps with a fast row placer. Faster, but uses more lightmap space.");
 		ImGui::Checkbox("SoC LMaps", &gCompilerMode.LC_legacyLM);
 		ImGui::SetItemTooltip("Shadow of Chernobyl hemi lightmap layout: hemi in RGB, sun in alpha.");
-		ImGui::Checkbox("Skip Static map", &gCompilerMode.LC_SkipStaticMap);
-		ImGui::SetItemTooltip("Skip baking static lights (lightmap color). Sun and hemi are still baked.");
-		ImGui::Checkbox("Skip Sun", &gCompilerMode.LC_NoSun);
-		ImGui::SetItemTooltip("Disable sunlight calculation.");
+		DrawBakeLayers();
 
 		ImGui::EndDisabled();
 
@@ -631,11 +729,6 @@ void DrawLCConfig()
 void DrawDOConfig()
 {
 	ImGui::PushID("xrDO");
-	ImGui::Checkbox("Details Compiler", &gCompilerMode.DO);
-	ImGui::SetItemTooltip("Compile Detail Objects.");
-
-	ImGui::Separator();
-
 	ImGui::BeginDisabled(!gCompilerMode.DO);
 	ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
 	ImGui::SetItemTooltip("Disable sunlight calculation.");
@@ -646,11 +739,7 @@ void DrawDOConfig()
 
 void DrawAIConfig()
 {
-	ImGui::Checkbox("AI Compiler", &gCompilerMode.AI);
-	ImGui::SetItemTooltip("Compile AI-map.");
-
 	ImGui::BeginDisabled(!gCompilerMode.AI);
-	ImGui::Separator();
 
 	ImGui::Checkbox("AI Compiler ai.level", &gCompilerMode.AI_BuildLevel);
 	ImGui::SetItemTooltip("Build level.ai for the selected levels.");

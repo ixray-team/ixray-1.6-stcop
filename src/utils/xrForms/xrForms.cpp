@@ -958,6 +958,7 @@ void SaveCompilerCfg()
 
 	Serializer->Write("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
 	Serializer->Write("LC_NoSun", gCompilerMode.LC_NoSun);
+	Serializer->Write("LC_NoHemi", gCompilerMode.LC_NoHemi);
 	Serializer->Write("LC_NoSMG", gCompilerMode.LC_NoSMG);
 	Serializer->Write("LC_Tess", gCompilerMode.LC_Tess);
 	Serializer->Write("LC_SkipInvalidFaces", gCompilerMode.LC_SkipInvalidFaces);
@@ -1035,6 +1036,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Serializer->Read("SkipTHM", gCompilerMode.SkipTHM);
 	Serializer->Read("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
 	Serializer->Read("LC_NoSun", gCompilerMode.LC_NoSun);
+	Serializer->Read("LC_NoHemi", gCompilerMode.LC_NoHemi);
 	Serializer->Read("LC_NoSMG", gCompilerMode.LC_NoSMG);
 	Serializer->Read("LC_Tess", gCompilerMode.LC_Tess);
 	Serializer->Read("LC_SkipInvalidFaces", gCompilerMode.LC_SkipInvalidFaces);

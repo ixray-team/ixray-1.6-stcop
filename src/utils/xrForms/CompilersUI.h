@@ -69,6 +69,7 @@ struct CompilersMode
 	bool LC_SkipStaticMap = false;
 	bool LC_fast_way = false;
 	bool LC_NoSun = false;
+	bool LC_NoHemi = false;
 
 	// Settings Owerride
 	bool IsOverloadedSettings = false;
