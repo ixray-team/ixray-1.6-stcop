@@ -542,18 +542,22 @@ void CCreature::eye_pp_s1			()
 	Device.Statistic->AI_Vis_Query.End		();
 }
 
-void CCreature::eye_pp_s2				( )
+void CCreature::eye_pp_s2()
 {
 	// Tracing
-	Device.Statistic->AI_Vis_RayTests.Begin	();
-	u32 dwTime			= Level().timeServer();
-	u32 dwDT			= dwTime-eye_pp_timestamp;
-	eye_pp_timestamp	= dwTime;
-	Device.SecondaryTasks.run([=]()
+	Device.Statistic->AI_Vis_RayTests.Begin();
+
+	u32 dwTime = Level().timeServer();
+	u32 dwDT = dwTime - eye_pp_timestamp;
+	eye_pp_timestamp = dwTime;
+
+	Device.SecondaryTasks.run([=]
 	{
-		feel_vision_update(eye_matrix.c, float(dwDT)/1000.f, memory().visual().transparency_threshold());
+		PROF_THREAD("feel_vision_update parallel");
+		feel_vision_update(eye_matrix.c, float(dwDT) / 1000.f, memory().visual().transparency_threshold()); 
 	});
-	Device.Statistic->AI_Vis_RayTests.End	();
+
+	Device.Statistic->AI_Vis_RayTests.End();
 }
 
 void CCreature::Exec_Visibility	( )
