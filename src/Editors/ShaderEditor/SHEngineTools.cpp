@@ -161,6 +161,7 @@ void CSHEngineTools::OnActivate()
 
 void CSHEngineTools::OnDeactivate()
 {
+	EDevice->Resources->SetForceBlenderShader(nullptr);
 	inherited::OnDeactivate		();
 }
 
@@ -278,12 +279,17 @@ void CSHEngineTools::RealResetShaders()
 	UpdateStreamFromObject();
  
 	UpdateObjectShader	();
-	UpdatePreviewShader();
+	if (m_PreviewObject)
+	{
+		for (CSurface* S : m_PreviewObject->m_Surfaces)
+			S->OnDeviceDestroy();
+	}
 	// save to temp file
 	PrepareRender		();
 	// reset device shaders from temp file
 	IReader data		(m_RenderShaders.pointer(), m_RenderShaders.size());
 	EDevice->Reset		(&data,true);
+	UpdatePreviewShader();
 	// enable props vis update
 	m_bFreezeUpdate 	= false;
 	m_bNeedResetShaders	= false;
@@ -883,6 +889,8 @@ void CSHEngineTools::UpdateObjectShader()
 	{
 		CSurface* surf = E->m_Surfaces.front();
 		R_ASSERT(surf);
+
+		EDevice->Resources->SetForceBlenderShader(m_CurrentBlender ? m_CurrentBlender->getName() : nullptr);
 
 		if (m_CurrentBlender)
 		{
