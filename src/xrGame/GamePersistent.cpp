@@ -536,6 +536,12 @@ void CGamePersistent::UpdateParticles()
 		{
 			particle_tasks.run([i, dwTime]()
 			{
+				string64 worker_name;
+				u32 normalized = i;
+				xr_sprintf(worker_name, "Particle worker #%u", ++normalized);
+
+				PROF_THREAD(worker_name);
+
 				std::sort(workers[i].second.begin(), workers[i].second.end(), [](xr_shared_ptr<CParticlesObject>& a, xr_shared_ptr<CParticlesObject>& b)
 				{
 					return Device.vCameraPosition_saved.distance_to_sqr(a->SpatialComponent->sphere.P) < Device.vCameraPosition_saved.distance_to_sqr(b->SpatialComponent->sphere.P);
