@@ -676,7 +676,7 @@ extern float fps_smoothing_alpha;
 
 extern bool use_smoothed_delta;
 
-#ifdef IXRAY_PROFILER
+#ifdef IXRAY_PROFILER_OPTICK
 class CCC_Profiler : public IConsole_Command
 {
 	bool start_profile = false;
@@ -717,7 +717,7 @@ void CCC_Register()
 	CMD2(CCC_Boolean, "ui_dbg_cmd_console", &Engine.External.EditorStates[(int)EditorUI::CmdConsole]);
 	CMD2(CCC_Boolean, "ui_dbg_graph_editor", &Engine.External.EditorStates[(int)EditorUI::Game_GraphEditor]);
 
-#ifdef IXRAY_PROFILER
+#ifdef IXRAY_PROFILER_OPTICK
 	CMD1(CCC_Profiler, "profiler_switch");
 #endif
 	// General

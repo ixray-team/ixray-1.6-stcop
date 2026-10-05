@@ -32,7 +32,7 @@ struct RHI_GPU_EVENT
 
 #ifdef IXR_WINDOWS
 #	ifdef DEBUG_DRAW
-#		ifdef IXRAY_PROFILER
+#		ifdef IXRAY_PROFILER_OPTICK
 #			define PROF_GPU_CTX_CREATE(Device, DeviceContext) ::Optick::InitGpuD3D11((ID3D11Device*)(Device), (ID3D11DeviceContext*)(DeviceContext));
 #			define PROF_GPU_CTX_COLLECT() ::Optick::GpuFlip(nullptr);
 #			define PROF_GPU_CTX_DESTROY() ::Optick::ShutdownGpu();

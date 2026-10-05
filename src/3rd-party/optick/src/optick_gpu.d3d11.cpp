@@ -351,27 +351,7 @@ namespace Optick
 					uint32_t k = i % MAX_QUERIES_COUNT;
 					UINT64 timestamp = 0;
 					if (ctx->GetData(payload.queries[k], &timestamp, sizeof(timestamp), 0) == S_OK)
-					{
-						int64_t cpuTimestamp = payload.clock.GetCPUTimestamp((int64_t)timestamp);
-						*node.queryCpuTimestamps[k] = cpuTimestamp;
-
-						// Resolve the zone tags bound to this query (see Node::QueryTimestamp)
-						// so the viewer attaches them to the exact GPU zone.
-						if (node.queryTagTimestamps[k] != nullptr)
-						{
-							node.queryTagTimestamps[k]->timestamp = cpuTimestamp;
-							node.queryTagTimestamps[k] = nullptr;
-						}
-
-						for (int tagIndex = 0; tagIndex < 2; ++tagIndex)
-						{
-							if (node.queryTag64Timestamps[k][tagIndex] != nullptr)
-							{
-								node.queryTag64Timestamps[k][tagIndex]->timestamp = cpuTimestamp;
-								node.queryTag64Timestamps[k][tagIndex] = nullptr;
-							}
-						}
-					}
+						node.SetResolvedTimestamp(k, payload.clock.GetCPUTimestamp((int64_t)timestamp));
 				}
 			}
 		}

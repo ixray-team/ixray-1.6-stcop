@@ -11,7 +11,7 @@
 #include "script_engine.h"
 #include "lua_ext.h"
 
-#ifdef IXRAY_PROFILER
+#ifdef IXRAY_PROFILER_OPTICK
 	#include <optick.h>
 #endif
 
@@ -319,20 +319,11 @@ void DumpLuaExports()
 	});
 }
 
-bool IsTracyConnected()
+bool IsProfilerConnected()
 {
 #ifdef IXRAY_PROFILER_TRACY
 	return tracy::GetProfiler().IsConnected();
-#elif defined(IXRAY_PROFILER)
-	return Optick::IsActive();
-#else
-	return false;
-#endif
-}
-
-bool IsOptickConnected()
-{
-#ifdef IXRAY_PROFILER
+#elif defined(IXRAY_PROFILER_OPTICK)
 	return Optick::IsActive();
 #else
 	return false;
@@ -376,8 +367,7 @@ void CScriptEngine::script_register(lua_State *L)
 		def("trigger_assert",					&trigger_assert),
 		def("trigger_vs_log",					&trigger_vs_log),
 #endif // #ifdef XRGAME_EXPORTS
-		def("IsTracyConnected", &IsTracyConnected),
-		def("IsOptickConnected", &IsOptickConnected)
+		def("IsProfilerConnected", &IsProfilerConnected)
 	];
 
 	if (DevicePtr != nullptr && Device.IsEditorMode())

@@ -54,7 +54,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -114,7 +114,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -174,7 +174,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "False",
                     "type": "BOOL"
                 }
@@ -234,7 +234,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -294,7 +294,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -354,7 +354,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "False",
                     "type": "BOOL"
                 }
@@ -414,7 +414,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -474,7 +474,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -534,7 +534,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "False",
                     "type": "BOOL"
                 }
@@ -594,7 +594,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -654,7 +654,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -714,7 +714,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -774,7 +774,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -834,7 +834,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "False",
                     "type": "BOOL"
                 }
@@ -894,7 +894,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "False",
                     "type": "BOOL"
                 }
@@ -954,7 +954,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "False",
                     "type": "BOOL"
                 }
@@ -1014,7 +1014,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "False",
                     "type": "BOOL"
                 }
@@ -1074,7 +1074,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "False",
                     "type": "BOOL"
                 }
@@ -1134,7 +1134,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "False",
                     "type": "BOOL"
                 }
@@ -1194,7 +1194,7 @@
                     "type": "BOOL"
                 },
                 {
-                    "name": "IXRAY_PROFILER",
+                    "name": "IXRAY_PROFILER_OPTICK",
                     "value": "False",
                     "type": "BOOL"
                 }

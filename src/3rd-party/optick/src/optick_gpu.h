@@ -126,6 +126,29 @@ namespace Optick
 				return index;
 			}
 
+			void SetResolvedTimestamp(uint32_t index, int64_t cpuTimestamp)
+			{
+				// A backend resolved this query: publish the timestamp to the tagged event
+				// and to the zone tags that were bound to the query (see QueryTimestamp).
+				if (queryCpuTimestamps[index] != nullptr)
+					*queryCpuTimestamps[index] = cpuTimestamp;
+
+				if (queryTagTimestamps[index] != nullptr)
+				{
+					queryTagTimestamps[index]->timestamp = cpuTimestamp;
+					queryTagTimestamps[index] = nullptr;
+				}
+
+				for (int slot = 0; slot < 2; ++slot)
+				{
+					if (queryTag64Timestamps[index][slot] != nullptr)
+					{
+						queryTag64Timestamps[index][slot]->timestamp = cpuTimestamp;
+						queryTag64Timestamps[index][slot] = nullptr;
+					}
+				}
+			}
+
 			string name;
 
 			void Reset();

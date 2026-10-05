@@ -142,7 +142,7 @@ void CRenderDevice::time_factor(const float &time_factor)
 
 void CRenderDevice::on_idle		()
 {
-#ifdef IXRAY_PROFILER // optick
+#ifdef IXRAY_PROFILER_OPTICK // optick
 	PROF_FRAME("CPU FRAME BEGIN");
 #endif
 

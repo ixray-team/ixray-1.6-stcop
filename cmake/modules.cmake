@@ -20,7 +20,7 @@ include("${CMAKE_MODULE_PATHEX}/SteamWorks.cmake")
 
 if (IXRAY_PROFILER_TRACY)
     include("${CMAKE_MODULE_PATHEX}/Tracy.cmake")
-elseif (IXRAY_PROFILER)
+elseif (IXRAY_PROFILER_OPTICK)
     include("${CMAKE_MODULE_PATHEX}/Optick.cmake")
 endif()
 

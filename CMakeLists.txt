@@ -15,8 +15,16 @@ option(IXRAY_USE_R1 "Enable DirectX 9 static render" ON)
 option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
 option(IXRAY_USE_COMPRESSOR "Enable xrCompresor" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
-option(IXRAY_PROFILER "Enable Optick for perf debug" ON)
+option(IXRAY_PROFILER_OPTICK "Enable Optick for perf debug" ON)
 option(IXRAY_PROFILER_TRACY "Enable Tracy for perf debug" OFF)
+
+# Drop pre-rename profiler entries so they do not linger in CMake GUI caches.
+foreach(_stale_profiler_option IXRAY_PROFILER IXRAY_OPTICK_GPU IXRAY_OPTICK_GPU_D3D11 IXRAY_OPTICK_GPU_D3D12 IXRAY_OPTICK_GPU_VULKAN IXRAY_OPTICK_TRACING)
+	if(DEFINED CACHE{${_stale_profiler_option}})
+		unset(${_stale_profiler_option} CACHE)
+	endif()
+endforeach()
+
 option(IXRAY_ENABLE_RESONANCEAUDIO "Enable Reverb from ResonanceAudio library" ON)
 option(IXRAY_CROSS_COMPILATION "Enable cross-compilation" OFF)
 

@@ -93,7 +93,7 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 			DriverAntiLag = new CAMDAntiLag();
 #if defined(IXRAY_PROFILER_TRACY)
 			g_tracyD3D11GPUContext = PROF_GPU_CTX_CREATE((ID3D11Device*)DevicePtr->RawDevice, (ID3D11DeviceContext*)GetContext());
-#elif defined(IXRAY_PROFILER)
+#elif defined(IXRAY_PROFILER_OPTICK)
 			PROF_GPU_CTX_CREATE((ID3D11Device*)DevicePtr->RawDevice, (ID3D11DeviceContext*)GetContext());
 #endif
 			break;

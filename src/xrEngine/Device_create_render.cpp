@@ -175,7 +175,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("Render Debug", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
 				ImGui::MenuItem("ECS Viewer", nullptr, &States[static_cast<u8>(EditorUI::ECSViewer)]);
 				ImGui::MenuItem("SVG Storage Viewer Debug", nullptr, &States[static_cast<u8>(EditorUI::Tools_RenderDebug_SVGStorageViewer)]);
-			#if defined(IXRAY_PROFILER)
+			#if defined(IXRAY_PROFILER_OPTICK)
 				if (ImGui::MenuItem("Optick Start Capture"))
 				{
 					PROF_START_CAPTURE();

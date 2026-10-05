@@ -129,7 +129,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++ \
             -DIXRAY_ENABLE_RESONANCEAUDIO=OFF \
             -DIXRAY_CI=ON \
-            -DIXRAY_PROFILER=OFF
+            -DIXRAY_PROFILER_OPTICK=OFF
 
       - name: Build engine
         run: |

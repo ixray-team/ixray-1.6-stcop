@@ -71,8 +71,8 @@ target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
 
 # Profiler
-if (IXRAY_PROFILER AND NOT IXRAY_PROFILER_TRACY)
-	target_compile_definitions(xrCore PUBLIC "IXRAY_PROFILER")
+if (IXRAY_PROFILER_OPTICK AND NOT IXRAY_PROFILER_TRACY)
+	target_compile_definitions(xrCore PUBLIC "IXRAY_PROFILER_OPTICK")
 	target_link_libraries(xrCore PUBLIC OptickCore)
 elseif (IXRAY_PROFILER_TRACY)
 	target_compile_definitions(xrCore PUBLIC "IXRAY_PROFILER_TRACY")

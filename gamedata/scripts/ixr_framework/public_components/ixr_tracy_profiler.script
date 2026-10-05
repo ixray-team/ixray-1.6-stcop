@@ -8,7 +8,7 @@ local USE_DRAW_DETALIZED_INFO_IN_PROFILER = true
 local PROF_EVENT_DETALIZED_INFO_FORMAT = "[%s (%d,%d)] %s"
 local PROF_EVENT_MINIMAL_INFO_FORMAT = "[LUA] %s"
 
-local is_tracy_connected = IsTracyConnected()
+local is_tracy_connected = IsProfilerConnected()
 local last_state = nil
 
 function on_game_start()
@@ -20,11 +20,11 @@ function on_game_start()
 end
 
 function refresh_state_tracy_connection()
-	if not IsTracyConnected then
+	if not IsProfilerConnected then
 		return
 	end
     
-    is_tracy_connected = IsTracyConnected()
+    is_tracy_connected = IsProfilerConnected()
 	notify_connection_profiler_switch()
 end
 
@@ -48,9 +48,9 @@ function notify_connection_profiler_switch()
 	if is_tracy_connected ~= last_state and tracy then
 		last_state = is_tracy_connected
 		if is_tracy_connected then
-			ixr_logs.log("~ TRACY PROFILER:: [CONNECTED]")
+			ixr_logs.log("~ LUA PROFILER:: [CONNECTED]")
 		else
-			ixr_logs.log("~ TRACY PROFILER:: [DISCONNECTED]")
+			ixr_logs.log("~ LUA PROFILER:: [DISCONNECTED]")
 		end
 	end
 end

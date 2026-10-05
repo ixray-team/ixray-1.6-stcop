@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef DEBUG_DRAW
-#	ifdef IXRAY_PROFILER
+#	ifdef IXRAY_PROFILER_OPTICK
 #		include <optick.h>
 #		define PROF_THREAD(Name) OPTICK_THREAD(Name);
 #		define PROF_START_THREAD(Name) OPTICK_START_THREAD(Name) OPTICK_EVENT(Name);
@@ -46,16 +46,16 @@
 #else
 /*
 	 --> Define #undef for new profilers <-- in order to avoid using constructions like:
-	 #ifdef defined(IXRAY_PROFILER_%NEW_PROF_NAME%) && defined(DEBUG_DRAW)
+	 #ifdef defined(IXRAY_PROFILER_OPTICK_%NEW_PROF_NAME%) && defined(DEBUG_DRAW)
 		profiler specific logic
 	 #endif
 	 
 	 To keep lightweight checks like:
-	 #ifdef IXRAY_PROFILER_%PROF_NAME%
+	 #ifdef IXRAY_PROFILER_OPTICK_%PROF_NAME%
 		profiler specific logic
 	 #endif
 */
-#	undef IXRAY_PROFILER
+#	undef IXRAY_PROFILER_OPTICK
 #	undef IXRAY_PROFILER_TRACY
 #	define PROF_THREAD(Name);
 #	define PROF_START_THREAD(Name);
