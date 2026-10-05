@@ -164,40 +164,6 @@ void CBulletManager::Step()
 		return;
 	}
 
-	if (m_Events.size() > 1000)
-	{
-		Msg("! Too many bullets during single frame: %zu. m_Events.size() > 1000", m_Events.size());
-	}
-
-	for (_event& e : m_Events)
-	{
-		switch (e.Type)
-		{
-			case EVENT_HIT:
-			{
-				e.dynamic ? DynamicObjectHit(e) : StaticObjectHit(e);
-			}
-				break;
-
-			case EVENT_REMOVE:
-			{
-				if (e.bullet.flags.allow_sendhit && !IsGameTypeSingle())
-				{
-					Game().m_WeaponUsageStatistic->OnBullet_Remove(&e.bullet);
-				}
-
-				if (e.tgt_material < m_Bullets.size())
-				{
-					m_Bullets[e.tgt_material] = m_Bullets.back();
-					m_Bullets.pop_back();
-				}
-			}
-				break;
-		}
-	}
-
-	m_Events.clear();
-
 	if (m_Bullets.empty())
 	{
 		return;
@@ -248,6 +214,8 @@ void CBulletManager::Update(float dt)
 		accumulated_delta -= fixed_step;
 		Step();
 	}
+
+	CommitEvents();
 }
 
 CBulletManager::CBulletManager()
@@ -1673,6 +1641,40 @@ void CBulletManager::OnFrame()
 void CBulletManager::CommitEvents()
 {
 	PROF_EVENT("CBulletManager::CommitEvents");
+
+	if (m_Events.size() > 1000)
+	{
+		Msg("! Too many bullets during single frame: %zu. m_Events.size() > 1000", m_Events.size());
+	}
+
+	for (_event& e : m_Events)
+	{
+		switch (e.Type)
+		{
+			case EVENT_HIT:
+			{
+				e.dynamic ? DynamicObjectHit(e) : StaticObjectHit(e);
+			}
+				break;
+
+			case EVENT_REMOVE:
+			{
+				if (e.bullet.flags.allow_sendhit && !IsGameTypeSingle())
+				{
+					Game().m_WeaponUsageStatistic->OnBullet_Remove(&e.bullet);
+				}
+
+				if (e.tgt_material < m_Bullets.size())
+				{
+					m_Bullets[e.tgt_material] = m_Bullets.back();
+					m_Bullets.pop_back();
+				}
+			}
+				break;
+		}
+	}
+
+	m_Events.clear();
 }
 
 void CBulletManager::RegisterEvent(EventType Type, bool _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
