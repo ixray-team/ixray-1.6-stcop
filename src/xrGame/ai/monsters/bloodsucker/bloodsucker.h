@@ -151,8 +151,7 @@ public:
 	// Predator
 	//--------------------------------------------------------------------
 public:
-	shared_str				m_visual_default;
-	const char*					m_visual_predator;
+	shared_str				m_predator_shader;
 	bool					m_predator;
 	CEntityAlive			*m_cob;
 	const char*					m_str_cel;
