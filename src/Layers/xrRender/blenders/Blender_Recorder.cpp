@@ -318,6 +318,14 @@ void CBlender_Compile::Stage_Texture	(const char* name, u32 ,	u32	 fmin, u32 fmi
 	i_Filter(Stage(), fmin, fmip, fmag);
 }
 
+#ifdef USE_DX11
+void CBlender_Compile::r_Matrix(const char* name)
+{
+	int id = ParseName(name);
+	passMatrices.push_back(DEV->_CreateMatrix((id >= 0 && id < (int)L_matrices.size()) ? *L_matrices[id] : name));
+}
+#endif
+
 void CBlender_Compile::Stage_Matrix(const char* name, int iChannel)
 {
 	sh_list& lst = L_matrices;

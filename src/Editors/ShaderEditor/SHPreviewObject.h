@@ -80,6 +80,7 @@ public:
 	// notransform (POSITIONT) shaders expect clip-space positions.
 	bool							IsNotransform	() const { return bNotransform; }
 	void							UpdateClipSpace	(const Fmatrix& WVP);
+	CMatrix*						FindTexGenMatrix() const;
 
 private:
 	// Pristine (object-space) vertex positions of the preview meshes, cached so

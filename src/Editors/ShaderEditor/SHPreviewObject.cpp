@@ -72,6 +72,9 @@ bool CPreviewObject::EnumerateVSInputs(ID3DBlob* signature, xr_vector<SVSInput>&
 		if (FAILED(reflect->GetInputParameterDesc(i, &spd)))
 			continue;
 
+		if (spd.SystemValueType != D3D_NAME_UNDEFINED)
+			continue;
+
 		SVSInput in;
 		in.semantic = spd.SemanticName;
 		in.index = spd.SemanticIndex;
@@ -181,6 +184,25 @@ const xr_vector<RHIInputElementDesc>& CPreviewObject::BuildCompatibleDeclaration
 				assigned = true;
 			}
 		}
+		// HACK: no vertex color in editor mesh, take white (FFP default diffuse) from packed 'ind'
+		if (!assigned && _stricmp(req.semantic.c_str(), "COLOR") == 0)
+		{
+			for (size_t i = 0; i < src.size() && !assigned; i++)
+			{
+				if (!used[i] && src[i].Format == ERHI_FORMAT::B8G8R8A8_UNORM)
+				{
+					srcEl = &src[i];
+					SemanticStorage.push_back(req.semantic);
+					d.SemanticName = SemanticStorage.back().c_str();
+					d.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+					d.AlignedByteOffset = src[i].AlignedByteOffset;
+					d.InputSlot = src[i].InputSlot;
+					used[i] = true;
+					assigned = true;
+				}
+			}
+		}
+
 		// 3) reuse a free source channel, overriding its semantic to the
 		//    required one. Prefer a channel from the same semantic family so
 		//    lighting/uv data is not hijacked by an unrelated attribute
@@ -379,16 +401,15 @@ void CPreviewObject::UpdateClipSpace(const Fmatrix& WVP)
 	if (!Object)
 		return;
 
-	// Reverse-engineered HUD projection constants (from shader vertex debug
-	// output): NDC.x = KX*X - BX, NDC.y = -KY*Y + BY, NDC.z = Z, w = 1. A
-	// notransform (POSITIONT) VS re-applies this to its input, so we feed it the
-	// inverse: from the camera clip-space position of a vertex we recover the
-	// HUD-space X,Y,Z that reproduces it. The model then renders as a real 3D,
-	// world-anchored object instead of a screen-glued billboard.
-	const float KX = 0.0020038f, BX = 0.999f;
-	const float KY = 0.003086f, BY = 0.9984f;
+	// HACK: inverse of stub_notransform_t screen-space mapping, so POSITIONT shaders render in 3D
+	const float W = RCache.get_target_width();
+	const float H = RCache.get_target_height();
 
 	const bool clip = bNotransform;
+	CMatrix* TexGen = clip ? FindTexGenMatrix() : nullptr;
+	if (TexGen)
+		TexGen->Calculate();
+
 	for (auto it = Object->m_Meshes.begin(); it != Object->m_Meshes.end(); ++it)
 	{
 		CEditableMesh* M = *it;
@@ -410,6 +431,10 @@ void CPreviewObject::UpdateClipSpace(const Fmatrix& WVP)
 		if (clip)
 		{
 			for (u32 i = 0; i < vc; ++i)
+				M->m_Vertices[i] = Orig[i];
+			M->GenerateVNormals(nullptr, true);
+
+			for (u32 i = 0; i < vc; ++i)
 			{
 				Fvector4 c;
 				WVP.transform(c, Fvector4(Orig[i].x, Orig[i].y, Orig[i].z, 1.f));
@@ -417,10 +442,43 @@ void CPreviewObject::UpdateClipSpace(const Fmatrix& WVP)
 				const float ndcx = c.x * invw;
 				const float ndcy = c.y * invw;
 				const float ndcz = c.z * invw;
-				M->m_Vertices[i].set((ndcx + BX) / KX, (BY - ndcy) / KY, ndcz);
+				M->m_Vertices[i].set((ndcx + 1.f) * 0.5f * W - 0.5f, (1.f - ndcy) * 0.5f * H - 0.5f, ndcz);
 			}
+
+			if (TexGen)
+			{
+				const Fmatrix& View = Device.mView;
+				const Fmatrix& Xform = TexGen->xform;
+				const bool bCubeRefl = TexGen->dwMode == CMatrix::modeC_refl;
+
+				// FFP texgen emulation: D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR / D3DTSS_TCI_CAMERASPACENORMAL
+				M->m_TexGen = [&](Fvector2& uv, int pindex, const Fvector& N)
+				{
+					Fvector Pc, Nc, In, T;
+					View.transform_tiny(Pc, Orig[pindex]);
+					View.transform_dir(Nc, N);
+					Nc.normalize_safe();
+
+					if (bCubeRefl)
+					{
+						Fvector E;
+						E.invert(Pc).normalize_safe();
+						In.invert(E).mad(Nc, 2.f * E.dotproduct(Nc));
+					}
+					else
+					{
+						In = Nc;
+					}
+
+					Xform.transform_tiny(T, In);
+					uv.set(T.x, T.y);
+				};
+			}
+
 			M->UnloadRenderBuffers();
 			M->GenerateRenderBuffers();
+			M->m_TexGen = nullptr;
+			M->UnloadVNormals();
 			bWasClip = true;
 		}
 		else if (bWasClip)
@@ -438,6 +496,26 @@ void CPreviewObject::UpdateClipSpace(const Fmatrix& WVP)
 	// to keep the active VS signature satisfied (CreateInputLayout would fail
 	// otherwise, e.g. missing COLOR0).
 	ReapplyDeclarations();
+}
+
+CMatrix* CPreviewObject::FindTexGenMatrix() const
+{
+	if (!Object || Object->m_Surfaces.empty())
+		return nullptr;
+
+	ref_shader Sh = Object->m_Surfaces.front()->_Shader();
+	if (!Sh || !Sh->E[0] || Sh->E[0]->passes.empty())
+		return nullptr;
+
+	ref_matrix_list& List = Sh->E[0]->passes[0]->M;
+	if (!List || List->empty())
+		return nullptr;
+
+	CMatrix* Mtx = (*List)[0]._get();
+	if (Mtx && (Mtx->dwMode == CMatrix::modeC_refl || Mtx->dwMode == CMatrix::modeS_refl))
+		return Mtx;
+
+	return nullptr;
 }
 
 void CPreviewObject::ReapplyDeclarations(bool bLog)

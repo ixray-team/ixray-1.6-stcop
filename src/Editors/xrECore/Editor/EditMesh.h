@@ -279,6 +279,7 @@ protected:
 #endif
 public:
 	xr_unique_ptr<RBMap> m_RenderBuffers;
+	std::function<void(Fvector2& uv, int pindex, const Fvector& N)> m_TexGen;
 
 	EditColorMesh m_color_map;
 

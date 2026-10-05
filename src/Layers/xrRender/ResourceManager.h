@@ -176,7 +176,7 @@ public:
 	SDS*							_CreateDS			(const char* Name);
 	void							_DeleteDS			(const SDS*	DS	);
 
-    SCS*							_CreateCS			(const char* Name);
+	SCS*							_CreateCS			(const char* Name);
 	void							_DeleteCS			(const SCS*	CS	);
 #endif //USE_DX11
 
@@ -239,6 +239,12 @@ public:
 	SGeometry*		CreateGeom				(u32 FVF				, IRHIBuffer* vb, IRHIBuffer* ib);
 	void			DeleteGeom				(const SGeometry* VS		);
 	void			DeferredLoad			(bool E)					{ bDeferredLoad=E;	}
+
+	void			SetForceBlenderShader	(const char* name)			{ m_ForceBlenderShader = name; }
+	bool			IsForceBlenderShader	(const char* name) const	{ return name && m_ForceBlenderShader.size() && 0 == xr_strcmp(m_ForceBlenderShader.c_str(), name); }
+private:
+	shared_str		m_ForceBlenderShader;
+public:
 	void			DeferredUpload			();
 	void			DeferredUnload			();
 	void			Evict					();

@@ -16,7 +16,7 @@ v2p_TL main(v_TL_positiont I)
         O.HPos.zw = I.P.zw;
     }
 
-    O.Tex0 = I.Tex0;
+    O.Tex0 = mul(m_tc_xform, float4(I.Tex0, 1.0f, 0.0f)).xy;
     O.Color = float4(I.Color.bgr * 2, 1.0f); //	swizzle vertex colour
 
     return O;

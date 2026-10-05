@@ -287,6 +287,12 @@ Shader*CResourceManager::Create(IBlender* B, const char* s_shader, const char* s
 Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
 #ifdef USE_DX11
+	if (IsForceBlenderShader(s_shader))
+	{
+		if (Shader* pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices))
+			return pShader;
+	}
+
 	if (CXMLBlend::Check(s_shader))
 		return xr_make_unique<CXMLBlend>(s_shader)->Compile(s_textures);
 
@@ -317,7 +323,7 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 
 	Shader* pShader = nullptr;
 #ifdef USE_DX11
-	if (CXMLBlend::Check(s_shader))
+	if (!IsForceBlenderShader(s_shader) && CXMLBlend::Check(s_shader))
 	{
 		xr_string key = MakeXMLBlendKey(s_shader, s_textures);
 		auto it = m_xmlBlendCache.find(key);
