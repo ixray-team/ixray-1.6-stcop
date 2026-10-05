@@ -68,9 +68,9 @@ target_link_libraries(LevelEditor PUBLIC xrSound)
 target_link_libraries(LevelEditor PUBLIC xrEngineCore)
 target_link_libraries(LevelEditor PUBLIC xrScripts)
 target_link_libraries(LevelEditor PUBLIC imgui_node_editor)
+target_link_libraries(LevelEditor PUBLIC xrSE_Factory)
 target_link_libraries(LevelEditor PUBLIC "Shell32.lib")
 add_dependencies(LevelEditor xrGame)
-add_dependencies(LevelEditor xrSE_Factory)
 
 # Move precompiled header
 target_validate_pch(LevelEditor ${CMAKE_CURRENT_SOURCE_DIR})
