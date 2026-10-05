@@ -154,6 +154,11 @@ void CTelekineticPoltergeist::update_schedule()
 		return;
 	}
 
+	if (poltergeist->get_current_detection_level() < poltergeist->get_detection_success_level())
+	{
+		return;
+	}
+
 	switch (m_state)
 	{
 		case ETeleState::RAISE_OBJECTS:
