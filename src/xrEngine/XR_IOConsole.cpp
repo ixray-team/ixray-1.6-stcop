@@ -316,11 +316,7 @@ void CConsole::OnFrame()
 	PROF_EVENT(__FUNCTION__);
 
 	m_editor->on_frame();
-	
-	if (Device.dwFrame % 10 == 0) 
-	{
-		update_tips();
-	}
+	update_tips();
 }
 
 void CConsole::OutFont( const char* text, float& pos_y )
