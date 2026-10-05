@@ -903,12 +903,52 @@ void StartCompile()
 }
 
 
+static void SaveSelectedLevels()
+{
+	xr_string SelectedLevels;
+	for (const LevelFileData& Level : gCompilerMode.Files)
+	{
+		if (!Level.Select)
+		{
+			continue;
+		}
+
+		if (!SelectedLevels.empty())
+		{
+			SelectedLevels += ",";
+		}
+		SelectedLevels += Level.Name;
+	}
+
+	Serializer->Write("SelectedLevels", Platform::ANSI_TO_UTF8(SelectedLevels).c_str());
+}
+
+static void LoadSelectedLevels()
+{
+	xr_string SelectedLevels;
+	Serializer->Read("SelectedLevels", SelectedLevels);
+	if (SelectedLevels.empty())
+	{
+		return;
+	}
+
+	for (const xr_string& Name : Platform::UTF8_to_CP1251(SelectedLevels).Split(','))
+	{
+		for (LevelFileData& Level : gCompilerMode.Files)
+		{
+			if (Level.Name == Name)
+			{
+				Level.Select = true;
+			}
+		}
+	}
+}
+
 void SaveCompilerCfg()
 {
 	Serializer->Write("ai", gCompilerMode.AI);
 	Serializer->Write("lc", gCompilerMode.LC);
 	Serializer->Write("do", gCompilerMode.DO);
-	Serializer->Write("Silent", gCompilerMode.Silent);
 	Serializer->Write("Embree", gCompilerMode.Embree);
 	Serializer->Write("CUDA", gCompilerMode.CUDA);
 	Serializer->Write("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
@@ -958,16 +998,15 @@ void SaveCompilerCfg()
 	Serializer->Write("LC_Skip_Striptify", gCompilerMode.LC_OGF_STRIPTIFY);
 	Serializer->Write("LC_Skip_Tangents", gCompilerMode.LC_OGF_TANGENT);
 
+	SaveSelectedLevels();
+
 	Serializer->Save();
 }
 
+__declspec(dllimport) void SEFactoryEntry();
+__declspec(dllimport) void SEFactoryDestroy();
 
-int APIENTRY WinMain(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine,
-	int nCmdShow
-)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	Debug._initialize(false);
 
@@ -979,13 +1018,14 @@ int APIENTRY WinMain(
 		int sz = xr_strlen(fsgame_ltx_name);
 		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%519[^ ] ", fsgame);
 	}
+
 	Core._initialize("IX-Ray Compilers", nullptr, true, fsgame[0] ? fsgame : nullptr);
+	SEFactoryEntry();
 
 	Serializer = new CJsonSerializer("xrlevelbuilder.json");
 	Serializer->Read("ai", gCompilerMode.AI);
 	Serializer->Read("lc", gCompilerMode.LC);
 	Serializer->Read("do", gCompilerMode.DO);
-	Serializer->Read("Silent", gCompilerMode.Silent);
 	Serializer->Read("Embree", gCompilerMode.Embree);
 	Serializer->Read("CUDA", gCompilerMode.CUDA);
 	Serializer->Read("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
@@ -1036,9 +1076,11 @@ int APIENTRY WinMain(
 	gCompilerMode.LmapsFormat = (LCLightmapFormat)current_format;
 
 	InitializeUIData();
+	LoadSelectedLevels();
 	SDL_Application();
 
 	SaveCompilerCfg();
+	SEFactoryDestroy();
 
 	xr_delete(Serializer);
 
