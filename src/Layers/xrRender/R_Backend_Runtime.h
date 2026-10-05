@@ -81,7 +81,23 @@ ICF void	CBackend::set_States		(ID3DState* _state)
 	}
 }
 
-#ifdef _EDITOR
+#if defined(_EDITOR) && defined(USE_DX11)
+// FFP texture transform emulation (D3DTS_TEXTURE0)
+IC void CBackend::set_Matrices			(SMatrixList*	_M)
+{
+	M = _M;
+	CMatrix* mat = (M && !M->empty()) ? (*M)[0]._get() : nullptr;
+	if (mat && mat->dwMode == CMatrix::modeTCM)
+	{
+		mat->Calculate();
+		set_c("m_tc_xform", mat->xform);
+	}
+	else
+	{
+		set_c("m_tc_xform", Fidentity);
+	}
+}
+#elif defined(_EDITOR)
 IC void CBackend::set_Matrices			(SMatrixList*	_M)
 {
 	if (M != _M)

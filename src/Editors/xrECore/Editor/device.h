@@ -39,9 +39,13 @@ private:
 	ref_shader m_CurrentShader;
 	ref_texture SearchIcon;
 
+	IRHIBuffer* m_DetailInstanceBuffer = nullptr;
+	IRHIShaderResourceView* m_DetailInstanceSRV = nullptr;
+
 	void _SetupStates();
 	void _Create(IReader* F);
 	void _Destroy(bool bKeepTextures);
+	void BindDetailInstance(ref_shader& S, u32 Pass);
 
 public:
 	ref_shader m_WireShader;
