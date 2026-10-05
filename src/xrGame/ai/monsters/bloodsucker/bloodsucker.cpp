@@ -284,7 +284,10 @@ void CAI_Bloodsucker::reinit()
 	m_predator					= false;
 	m_vis_state					= 0;
 
-	start_invisible_predator();
+	if  (g_Alive())
+	{
+		start_invisible_predator();
+	}
 }
 
 void CAI_Bloodsucker::reload(const char* section)
