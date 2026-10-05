@@ -221,8 +221,6 @@ void CAI_Bloodsucker::Load(const char* section)
 	LoadVampirePPEffector			(pSettings->r_string(section,"vampire_effector"));
 	m_vampire_min_delay				= pSettings->r_u32(section,"Vampire_Delay");
 
-	m_visual_predator				= pSettings->r_string(section,"Predator_Visual");
-
 	m_vampire_want_speed			= pSettings->r_float(section,"Vampire_Want_Speed");
 	m_vampire_wound					= pSettings->r_float(section,"Vampire_Wound");
 	m_vampire_gain_health			= READ_IF_EXISTS(pSettings, r_float, section, "Vampire_GainHealth", 0.5f);
@@ -252,6 +250,8 @@ void CAI_Bloodsucker::Load(const char* section)
 	m_visibility_state						=	unset;
 	m_visibility_state_last_changed_time	=	0;
 
+	m_predator_shader = READ_IF_EXISTS(pSettings, r_string, section, "predator_shader_name", "models\\xanomaly");
+
 	PostLoad							(section);
 }
 
@@ -261,7 +261,6 @@ void CAI_Bloodsucker::reinit()
 
 	inherited::reinit			();
 	CControlledActor::reinit	();
-	m_visual_default			= cNameVisual();
 
 	Bones.Reset					();
 
@@ -277,17 +276,9 @@ void CAI_Bloodsucker::reinit()
 	
 	com_man().load_jump_data("boloto_jump_prepare",0, "boloto_jump_fly", "boloto_jump_end", u32(-1), MonsterMovement::eBloodsuckerVelocityParameterJumpGround,0);
 
-	// save visual	
-	m_visual_default			= cNameVisual();
-
 	m_vampire_want_value		= 0.f;
 	m_predator					= false;
 	m_vis_state					= 0;
-
-	if  (g_Alive())
-	{
-		start_invisible_predator();
-	}
 }
 
 void CAI_Bloodsucker::reload(const char* section)
@@ -788,53 +779,18 @@ void CAI_Bloodsucker::predator_start()
 	{
 		return;
 	}
-
-	cNameVisual_set(m_visual_predator);
-
-	TDamageManager* DmgManager = GetComponent<TDamageManager>();
-	DmgManager->reload(*cNameSect(),"damage",pSettings);
-
-	if (IsGameTypeSingle() || OnServer())
-		control().animation().restart();
-	else
+	auto KA = PKinematics(Visual());
+	for (auto child : KA->LL_GetChilds())
 	{
-		MotionID mid;
-		mid.idx = u_last_motion_idx;
-		mid.slot = u_last_motion_slot;
-		if (mid.valid() && u_last_motion_idx != u16(-1) && u_last_motion_slot != u16(-1)) {
-			u_last_motion_idx = NULL;
-			u_last_motion_slot = NULL;
-			u8 loop = u_last_motion_no_loop;
-
-			// 			ApplyAnimation(mid.idx, mid.slot, u_last_motion_no_loop); <---------- OMP
-			MotionID motion;
-			IKinematicsAnimated* ik_anim_obj = Visual()->dcast_PKinematicsAnimated();
-			if (u_last_motion_idx != mid.idx || u_last_motion_slot != mid.slot)
-			{
-				u_last_motion_idx = mid.idx;
-				u_last_motion_slot = mid.slot;
-				u_last_motion_no_loop = loop;
-				motion.idx = mid.idx;
-				motion.slot = mid.slot;
-				if (motion.valid())
-				{
-					u16 bone_or_part = ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part;
-					if (bone_or_part == u16(-1)) bone_or_part = ik_anim_obj->LL_PartID("default");
-
-					CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(bone_or_part, motion, true,
-						ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-						ik_anim_obj->LL_GetMotionDef(motion)->Speed(), loop, 0, 0, 0));
-				}
-			}
-
-
-
+		if (strstr(*child->getOrigShaderName(),"models\\model"))
+		{
+			child->set_shader(m_predator_shader);
+			child->reload_shader();
 		}
 	}
 
 	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
-	PPlayer->StartParticles(invisible_particle_name,Fvector().set(0.0f,0.1f,0.0f),ID());
-
+	PPlayer->StartParticles(invisible_particle_name, Fvector().set(0.0f, 0.1f, 0.0f), ID());
 	sound().play(CAI_Bloodsucker::eChangeVisibility);
 
 	m_predator = true;
@@ -857,50 +813,12 @@ void CAI_Bloodsucker::predator_stop()
 		return;
 	}
 	
-	cNameVisual_set(*m_visual_default);
-	character_physics_support()->in_ChangeVisual();
-
-	TDamageManager* DmgManager = GetComponent<TDamageManager>();
-	DmgManager->reload(*cNameSect(),"damage",pSettings);
-
-	if (IsGameTypeSingle() || OnServer())
-		control().animation().restart();
-	else
-	{
-		MotionID mid;
-		mid.idx = u_last_motion_idx;
-		mid.slot = u_last_motion_slot;
-		if (mid.valid() && u_last_motion_idx != u16(-1) && u_last_motion_slot != u16(-1)) {
-			u_last_motion_idx = NULL;
-			u_last_motion_slot = NULL;
-			u8 loop = u_last_motion_no_loop;
-
-			// 			ApplyAnimation(mid.idx, mid.slot, u_last_motion_no_loop); <---------- OMP
-			MotionID motion;
-			IKinematicsAnimated* ik_anim_obj = Visual()->dcast_PKinematicsAnimated();
-			if (u_last_motion_idx != mid.idx || u_last_motion_slot != mid.slot)
-			{
-				u_last_motion_idx = mid.idx;
-				u_last_motion_slot = mid.slot;
-				u_last_motion_no_loop = loop;
-				motion.idx = mid.idx;
-				motion.slot = mid.slot;
-				if (motion.valid())
-				{
-					u16 bone_or_part = ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part;
-					if (bone_or_part == u16(-1)) bone_or_part = ik_anim_obj->LL_PartID("default");
-
-					CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(bone_or_part, motion, true,
-						ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-						ik_anim_obj->LL_GetMotionDef(motion)->Speed(), loop, 0, 0, 0));
-				}
-			}
-		}
-	}
+	PKinematics(Visual())->LL_RestoreShader();
 
 	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
-	PPlayer->StartParticles(invisible_particle_name,Fvector().set(0.0f,0.1f,0.0f),ID());
+	PPlayer->StartParticles(invisible_particle_name, Fvector().set(0.0f, 0.1f, 0.0f), ID());
 	sound().play(CAI_Bloodsucker::eChangeVisibility);
+
 	m_predator = false;
 }
 
