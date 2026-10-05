@@ -1097,6 +1097,10 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 		{
 			IReader* I = FS.r_open(_fn);
 			R_ASSERT3(I, "Can't find include file:", name);
+			if (I == nullptr)
+			{
+				return;
+			}
 
 			strcpy(DLTXCurrentFileName, name);
 			LTXLoad(I, inc_path, OutputData, ParentDataMap, bOverridesOnly, false);
