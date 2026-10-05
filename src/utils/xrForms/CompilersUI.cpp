@@ -133,7 +133,7 @@ void InitializeUIData()
 
 	for (const xr_path& Dir : std::filesystem::directory_iterator{LevelsDir})
 	{
-		if (!std::filesystem::is_directory(Dir))
+		if (!std::filesystem::is_directory(Dir) || !xr_path::exists(Dir / xr_path("build.prj")))
 		{
 			continue;
 		}
@@ -167,6 +167,100 @@ void DrawDownUI()
 	ImGui::SameLine();
 	ImGui::SameLine();
 	ImGui::TextColored(ImVec4{0, 0.9, 0, 1}, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
+}
+
+static xr_vector<const char*> GetRequiredBuildFiles()
+{
+	xr_vector<const char*> Files;
+	auto Require = [&Files](const char* Name)
+	{
+		if (std::find(Files.begin(), Files.end(), Name) == Files.end())
+		{
+			Files.push_back(Name);
+		}
+	};
+
+	if (gCompilerMode.LC)
+	{
+		Require("build.prj");
+	}
+
+	if (gCompilerMode.AI)
+	{
+		if (gCompilerMode.AI_BuildLevel)
+		{
+			Require("build.prj");
+			Require("build.aimap");
+		}
+		else if (gCompilerMode.AI_Verify || gCompilerMode.AI_BuildSpawn)
+		{
+			Require("level.ai");
+		}
+
+		if (gCompilerMode.AI_BuildSpawn)
+		{
+			Require("level.spawn");
+		}
+	}
+
+	if (gCompilerMode.DO)
+	{
+		Require("build.prj");
+		Require("build.details");
+
+		if (!gCompilerMode.LC)
+		{
+			Require("build.lights");
+		}
+	}
+
+	return Files;
+}
+
+static bool ValidateBuildFiles()
+{
+	const xr_vector<const char*> Required = GetRequiredBuildFiles();
+
+	xr_string Report;
+	for (const LevelFileData& Level : gCompilerMode.Files)
+	{
+		if (!Level.Select)
+		{
+			continue;
+		}
+
+		xr_string Missing;
+		for (const char* File : Required)
+		{
+			string_path Path;
+			FS.update_path(Path, "$game_levels$", (Level.Name + "\\" + File).c_str());
+			if (std::filesystem::exists(Path))
+			{
+				continue;
+			}
+
+			if (!Missing.empty())
+			{
+				Missing += ", ";
+			}
+			Missing += File;
+		}
+
+		if (!Missing.empty())
+		{
+			Msg("! [%s] Missing build files: %s", Level.Name.c_str(), Missing.c_str());
+			Report += Level.Name + ": " + Missing + "\n";
+		}
+	}
+
+	if (Report.empty())
+	{
+		return true;
+	}
+
+	const xr_string Text = "Selected levels are missing files required by the enabled compilers:\n\n" + Report;
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Missing build files", Platform::ANSI_TO_UTF8(Text).c_str(), nullptr);
+	return false;
 }
 
 static bool PrepareSpawnLevels()
@@ -513,7 +607,7 @@ void RenderMainUI()
 			{
 				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning!", "No levels selected.", nullptr);
 			}
-			else if (PrepareSpawnLevels())
+			else if (ValidateBuildFiles() && PrepareSpawnLevels())
 			{
 				ShowMainUI = false;
 				ClearLogVector();
@@ -552,9 +646,8 @@ constexpr int geom_types_num = sizeof(geom_types) / sizeof(geom_types[0]);
 const char* itemsJitter[] = {"1", "4", "9"};
 const char* itemsJitterMU[] = {"0", "1", "2", "3", "4", "5", "6"};
 
-static void SegmentButton(const char* Label, bool& Enabled, float Width, ImDrawFlags Corners, const char* Tooltip)
+static void SegmentButton(const char* Label, bool& Enabled, float Width, const char* Tooltip)
 {
-	const ImGuiStyle& Style = ImGui::GetStyle();
 	const ImVec2 TextSize = ImGui::CalcTextSize(Label);
 	const ImVec2 Size = {Width, ImGui::GetFrameHeight()};
 
@@ -574,11 +667,53 @@ static void SegmentButton(const char* Label, bool& Enabled, float Width, ImDrawF
 	const ImVec2 Min = ImGui::GetItemRectMin();
 	const ImVec2 Max = ImGui::GetItemRectMax();
 	ImDrawList* DrawList = ImGui::GetWindowDrawList();
-	DrawList->AddRectFilled(Min, Max, ImGui::GetColorU32(Enabled ? OnColor : OffColor), Style.FrameRounding, Corners);
-	DrawList->AddRect(Min, Max, ImGui::GetColorU32(FrameOutlineColor), Style.FrameRounding, Corners);
+	DrawList->AddRectFilled(Min, Max, ImGui::GetColorU32(Enabled ? OnColor : OffColor));
+	DrawList->AddRect(Min, Max, ImGui::GetColorU32(ImVec4(0.6f, 0.6f, 0.6f, 1.f)));
 
 	const ImVec2 TextPos = {Min.x + (Size.x - TextSize.x) * 0.5f, Min.y + (Size.y - TextSize.y) * 0.5f};
 	DrawList->AddText(TextPos, ImGui::GetColorU32(Enabled ? ImGuiCol_Text : ImGuiCol_TextDisabled), Label);
+}
+
+struct SegmentItem
+{
+	const char* Label;
+	bool* Value;
+	const char* Tooltip;
+};
+
+static void DrawSegmentRow(const char* Title, std::initializer_list<SegmentItem> Items)
+{
+	ImGui::Dummy({0, 0});
+	ImGui::TextUnformatted(Title);
+
+	const float Padding = ImGui::GetStyle().FramePadding.x * 2.f;
+
+	float TextWidth = 0.f;
+	for (const SegmentItem& Item : Items)
+	{
+		TextWidth += ImGui::CalcTextSize(Item.Label).x + Padding;
+	}
+
+	const float RowWidth = ImGui::GetContentRegionAvail().x;
+	const float Extra = (RowWidth - TextWidth) / Items.size();
+
+	float UsedWidth = 0.f;
+	size_t Index = 0;
+	for (const SegmentItem& Item : Items)
+	{
+		const bool IsFirst = Index == 0;
+		const bool IsLast = Index + 1 == Items.size();
+		const float Width = IsLast ? RowWidth - UsedWidth : std::floor(ImGui::CalcTextSize(Item.Label).x + Padding + Extra);
+
+		if (!IsFirst)
+		{
+			ImGui::SameLine(0.f, 0.f);
+		}
+
+		SegmentButton(Item.Label, *Item.Value, Width, Item.Tooltip);
+		UsedWidth += Width;
+		++Index;
+	}
 }
 
 static void DrawBakeLayers()
@@ -587,29 +722,11 @@ static void DrawBakeLayers()
 	bool BakeSun = !gCompilerMode.LC_NoSun;
 	bool BakeHemi = !gCompilerMode.LC_NoHemi;
 
-	ImGui::Dummy({0, 0});
-	ImGui::TextUnformatted("Lighting Pipeline:");
-
-	const char* Labels[] = {"Static LMap", "Sun", "Hemi"};
-	const float Padding = ImGui::GetStyle().FramePadding.x * 2.f;
-
-	float TextWidth = 0.f;
-	for (const char* Label : Labels)
-	{
-		TextWidth += ImGui::CalcTextSize(Label).x + Padding;
-	}
-
-	const float Extra = std::max(ImGui::GetContentRegionAvail().x - TextWidth, 0.f) / std::size(Labels);
-	auto SegmentWidth = [&](const char* Label)
-	{
-		return std::floor(ImGui::CalcTextSize(Label).x + Padding + Extra);
-	};
-
-	SegmentButton(Labels[0], BakeStatic, SegmentWidth(Labels[0]), ImDrawFlags_RoundCornersLeft, "Bake static lights into the lightmap color.");
-	ImGui::SameLine(0.f, 0.f);
-	SegmentButton(Labels[1], BakeSun, SegmentWidth(Labels[1]), ImDrawFlags_RoundCornersNone, "Bake sunlight.");
-	ImGui::SameLine(0.f, 0.f);
-	SegmentButton(Labels[2], BakeHemi, std::max(ImGui::GetContentRegionAvail().x, SegmentWidth(Labels[2])), ImDrawFlags_RoundCornersRight, "Bake sky (hemi) lighting.");
+	DrawSegmentRow("Lighting Pipeline:", {
+		{"Static LMap", &BakeStatic, "Bake static lights into the lightmap color."},
+		{"Sun", &BakeSun, "Bake sunlight."},
+		{"Hemi", &BakeHemi, "Bake sky (hemi) lighting."},
+	});
 
 	gCompilerMode.LC_SkipStaticMap = !BakeStatic;
 	gCompilerMode.LC_NoSun = !BakeSun;
@@ -635,13 +752,11 @@ void DrawLCConfig()
 
 		ImGui::Separator();
 
-		ImGui::Text("OGF Optimize: ");
-		ImGui::Checkbox("Make TangentBasis", &gCompilerMode.LC_OGF_TANGENT);
-		ImGui::SetItemTooltip("Calculate tangents and binormals for normal mapping.");
-		ImGui::Checkbox("Make Progressive", &gCompilerMode.LC_OGF_PROGRESSIVE);
-		ImGui::SetItemTooltip("Build progressive meshes (sliding window LOD) for level visuals.");
-		ImGui::Checkbox("Make Striptify", &gCompilerMode.LC_OGF_STRIPTIFY);
-		ImGui::SetItemTooltip("Reorder vertices and indices for the GPU vertex cache.");
+		DrawSegmentRow("OGF Optimize:", {
+			{"Tangents", &gCompilerMode.LC_OGF_TANGENT, "Calculate tangents and binormals for normal mapping."},
+			{"Progressive", &gCompilerMode.LC_OGF_PROGRESSIVE, "Build progressive meshes (sliding window LOD) for level visuals."},
+			{"Stripify", &gCompilerMode.LC_OGF_STRIPTIFY, "Reorder vertices and indices for the GPU vertex cache."},
+		});
 		ImGui::Separator();
 
 		ImGui::PushID("geom");
