@@ -194,7 +194,7 @@ void xrMU_Model::calc_lighting	()
 		EmbreeRayTraceModel MDL;
  		MDL.InitializeGeometry_Model(faces);
 
-		calc_lighting(color, Fidentity, MDL, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
+		calc_lighting(color, Fidentity, MDL, inlc_global_data()->L_static(), LP_dont_rgb | LP_dont_sun | (gCompilerMode.LC_NoHemi ? LP_dont_hemi : 0));
 
 		MDL.RemoveGeometry();
 	}

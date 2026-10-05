@@ -188,21 +188,20 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				}
 
 				Model->UseBillboard = !MeshLods->r_u8();
-				if (!Model->UseBillboard)
+				for (int i = 0; i < 4; ++i)
 				{
-					for (int i = 0; i < 4; ++i)
+					const u32 LodID = MeshLods->r_u32();
+					if (Model->UseBillboard || LodID == u32(-1))
 					{
-						Model->LODsID[i] = MeshLods->r_u32();
-						if (Model->LODsID[i] != u32(-1))
-						{
-							auto& LOD = mu_models()[Model->LODsID[i]];
-							//mu_models().push_back(new xrMU_Model());
-							//auto LOD = mu_models().back();
-							//LOD->Load(*F, version);
-							LOD->UseBillboard = false;
-							LOD->IsLOD = true;
-						}
+						continue;
 					}
+
+					R_ASSERT3(LodID < mu_models().size(), "Invalid MU LOD index in model", Model->m_name.c_str());
+					Model->LODsID[i] = LodID;
+
+					xrMU_Model* LOD = mu_models()[LodID];
+					LOD->UseBillboard = false;
+					LOD->IsLOD = true;
 				}
 				++idx;
 			}
