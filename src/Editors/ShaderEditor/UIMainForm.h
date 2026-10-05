@@ -9,6 +9,8 @@ public:
 	IC UILeftBarForm* GetLeftBarForm() {return m_LeftBar;}
 	IC UITopBarForm* GetTopBarForm() { return m_TopBar; }
 private:
+	void DrawRenderToolBar(ImVec2 Pos, ImVec2 Size);
+
 	UITopBarForm *m_TopBar;
 	UIRenderForm* m_Render;
 	UIMainMenuForm* m_MainMenu;
