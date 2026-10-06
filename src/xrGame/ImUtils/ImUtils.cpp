@@ -92,6 +92,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("SVGStorageViewer", CImGuiManager::ERenderPriority::eMedium, RenderToolsRenderDebugSVGStorageViewerWindow);
 		CImGuiManager::Instance().Subscribe("DetailLayersEditor", CImGuiManager::ERenderPriority::eMedium, RenderDetailLayersEditorWindow);
 		CImGuiManager::Instance().Subscribe("Hud Adjust", CImGuiManager::ERenderPriority::eMedium, RenderHUDAdjustManager);
+		CImGuiManager::Instance().Subscribe("Watch Debug", CImGuiManager::ERenderPriority::eMedium, RenderWatchDebugWindow);
 		CImGuiManager::Instance().Subscribe("3rd Person Adjust", CImGuiManager::ERenderPriority::eMedium, Render3rdAdjust);
 		CImGuiManager::Instance().Subscribe("3D Icons Adjust", CImGuiManager::ERenderPriority::eMedium, Render3DIconAdjust);
 		CImGuiManager::Instance().Subscribe("Actor Animations", CImGuiManager::ERenderPriority::eMedium, RenderActorAnimationManager);
