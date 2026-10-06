@@ -17,6 +17,7 @@ void CEditableMesh::Transform(const Fmatrix& parent)
 
     // RecomputeBBox
 	RecomputeBBox	();
+	m_Flags.set		(flOptimized, FALSE);
     // update normals & cform
 #if 1
 	UnloadRenderBuffers	();
@@ -276,11 +277,15 @@ void CEditableMesh::OptimizeMesh(bool NoOpt)
 		if (i_del_face){
 	        xr_vector<st_Face> old_faces;
 	        xr_vector<u32> old_sg;
+	        xr_vector<Fvector> old_normals;
 			old_faces.swap(m_Faces);
 			old_sg.swap(m_SmoothGroups);
+			old_normals.swap(m_Normals);
 
             m_Faces.resize(old_faces.size()-i_del_face);
             m_SmoothGroups.resize(m_Faces.size());
+            if (!old_normals.empty())
+                m_Normals.resize(m_Faces.size() * 3);
             
             u32 new_dk	= 0;
             for (u32 dk=0; dk<old_faces.size(); ++dk)
@@ -308,6 +313,8 @@ void CEditableMesh::OptimizeMesh(bool NoOpt)
 
             	m_Faces[new_dk]				= old_faces[dk];
             	m_SmoothGroups[new_dk]		= old_sg[dk];
+				if (!old_normals.empty())
+					std::copy_n(old_normals.begin() + dk * 3, 3, m_Normals.begin() + new_dk * 3);
 				++new_dk;
             }
 		}
