@@ -572,6 +572,23 @@ float CVisualMemoryManager::feel_vision_mtl_transp(CObject* O, u32 element)
 	return vis;
 }
 
+void CVisualMemoryManager::feel_vision_apply_extra(Fvector const& eye, Fvector const& target, float& vis)
+{
+	if (!m_object || !m_object->cast_stalker())
+		return;
+
+	if (!::Render)
+		return;
+
+	CVisionParameters const& params = current_state();
+	vis *= ::Render->detail_trace_visibility(
+		eye,
+		target,
+		params.m_vegetation_min_height,
+		params.m_vegetation_opaque_distance,
+		params.m_vegetation_sample_step);
+}
+
 struct CVisibleObjectPredicateEx {
 	const CObject *m_object;
 
