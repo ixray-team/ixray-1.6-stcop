@@ -14,6 +14,9 @@ void CVisionParameters::Load	(const char* section, bool not_a_stalker)
 {
 	m_transparency_threshold	= READ_IF_EXISTS(pSettings, r_float, section, "transparency_threshold", 0.f);
 	m_still_visible_time		= READ_IF_EXISTS(pSettings,r_u32,section,"still_visible_time",0.f);
+	m_vegetation_min_height		= READ_IF_EXISTS(pSettings, r_float, section, "vegetation_min_height", 0.8f);
+	m_vegetation_opaque_distance= READ_IF_EXISTS(pSettings, r_float, section, "vegetation_opaque_distance", 2.5f);
+	m_vegetation_sample_step	= READ_IF_EXISTS(pSettings, r_float, section, "vegetation_sample_step", 1.0f);
 
 #ifndef USE_STALKER_VISION_FOR_MONSTERS
 	if (!not_a_stalker)
