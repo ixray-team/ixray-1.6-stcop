@@ -45,6 +45,9 @@
 #define		r2_RT_ui_depth		"$user$ui_depth"
 #define		r2_RT_ui_color		"$user$ui_color"
 
+#define		r2_RT_planar_depth		"$user$planar_depth"
+#define		r2_RT_planar_color		"$user$planar_color"
+
 #define		r2_RT_sslr			"$user$sslr"
 #define		r2_RT_sslr_old		"$user$sslr_old"
 #define		r2_RT_sslr_data		"$user$sslr_data"
