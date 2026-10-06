@@ -3,12 +3,16 @@
 #define dir2D wind
 #define dir2D_old wind_old
 
+// Must match CDetail::SlotItem (trample fields keep the structured-buffer stride).
 struct InstanceData
 {
     float3 quat;
     float  scale;
     float3 pos;
     float  hemi;
+    float  trample_strength;
+    float  trample_visual;
+    float2 trample_dir;
 };
 
 //LVutner: Always bound to slot0 (see CPP code)

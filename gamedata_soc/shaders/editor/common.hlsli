@@ -13,6 +13,7 @@ uniform float4 L_dynamic_color; // dynamic light color (rgb1)	- spot/point
 uniform float4 L_dynamic_pos; // dynamic light pos+1/range(w) - spot/point
 uniform float4x4 L_dynamic_xform;
 
+uniform float4x4 m_tc_xform;
 uniform float4x4 m_plmap_xform;
 uniform float4 m_plmap_clamp[2]; // 0.w = factor
 uniform Texture3D s_material;
