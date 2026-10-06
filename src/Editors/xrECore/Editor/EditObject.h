@@ -96,6 +96,12 @@ public:
 		else                                       	m_Shader.create("editor\\wire");
 		m_RTFlags.set(rtValidShader,true);
 	}
+	IC void			ShareShaderFrom	(CSurface* surf)
+	{
+		R_ASSERT(!m_RTFlags.is(rtValidShader));
+		m_Shader = surf->_Shader();
+		m_RTFlags.set(rtValidShader,true);
+	}
 	IC void			OnDeviceDestroy	()
 	{
 		m_Shader.destroy();
@@ -201,6 +207,7 @@ public:
 	Fvector			t_vRotate;
    
 	bool			bOnModified;
+	bool			bNeedResave = false;
 
 	xr_string		m_LoadName;
 	int				m_RefCount;

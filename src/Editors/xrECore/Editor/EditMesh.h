@@ -245,6 +245,7 @@ public:
 		flVisible	= (1<<0),
 		flLocked	= (1<<1),
 		flSGMask	= (1<<2),
+		flOptimized	= (1<<3),
 	};
 	Flags8			m_Flags;
 	shared_str		m_Name;
