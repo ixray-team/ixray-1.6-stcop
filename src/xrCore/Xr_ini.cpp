@@ -1032,11 +1032,11 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 		EvaluateSection(Name, PreviousEvaluations);
 
 	// Insert all finalized sections into final container
+	DATA.reserve(DATA.size() + FinalData.size());
 	for (auto &[Name, Section] : FinalData)
-	{
-		RootIt I = std::lower_bound(DATA.begin(), DATA.end(), Name.c_str(), sect_pred);
-		DATA.insert(I, Sect{ Section });
-	}
+		DATA.push_back(Sect{ Section });
+
+	std::sort(DATA.begin(), DATA.end(), [](const Sect& A, const Sect& B) { return xr_strcmp(*A.Name, *B.Name) < 0; });
 
 	// throw errors if there are overrides that never got used
 	if (OverrideData.size())
