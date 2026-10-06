@@ -120,6 +120,7 @@ ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_t
 ICF void RenewItem(CEffect_Rain::Item& dest, float height, bool bHit, u32 time_global, u32 dt)
 {
 	dest.uv_set = Random.randI(2);
+	dest.bHit = bHit;
 	if (bHit)
 	{
 		dest.dwTime_Life= time_global + iFloor(1000.f*height/dest.fSpeed) - dt;
@@ -423,7 +424,7 @@ void CEffect_Rain::UpdateItems()
 	for (CEffect_Rain::Item& one : items)
 	{
 		Fvector& pos_head = one.P;
-		if (one.dwTime_Hit < time_global)
+		if (one.bHit && one.dwTime_Hit < time_global)
 		{
 			if (0 == ::Random.randI(2))
 			{

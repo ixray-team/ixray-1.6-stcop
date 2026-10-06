@@ -26,6 +26,7 @@ public:
 		u32				dwTime_Life;
 		u32				dwTime_Hit;
 		u32				uv_set;
+		bool			bHit = false;
 	};
 	struct rain_sprite
 	{
