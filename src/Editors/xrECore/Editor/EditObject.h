@@ -34,8 +34,10 @@ class ECORE_API CSurface
 {
 	u32				m_GameMtlID;
 	ref_shader		m_Shader;
+	ref_shader		m_ShaderInstanced;
 	enum ERTFlags{
 		rtValidShader	= (1<<0),
+		rtInstancedShaderTried = (1<<1),
 	};
 public:
 	enum EFlags{
@@ -77,6 +79,7 @@ public:
 	IC int			_Priority		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.iPriority:1;}
 	IC bool			_StrictB2F		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.bStrictB2F:false;}
 	IC ref_shader	_Shader			()	{if (!m_RTFlags.is(rtValidShader)) OnDeviceCreate(); return m_Shader;}
+	ref_shader		_ShaderInstanced();
 #endif
 	IC void			SetShader		(const char* name)
 	{
@@ -105,7 +108,8 @@ public:
 	IC void			OnDeviceDestroy	()
 	{
 		m_Shader.destroy();
-		m_RTFlags.set(rtValidShader,false);
+		m_ShaderInstanced.destroy();
+		m_RTFlags.set(rtValidShader | rtInstancedShaderTried, false);
 	}
 	void			CreateImageData	();
 	void			RemoveImageData	();

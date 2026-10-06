@@ -336,6 +336,7 @@ public:
 	ICF	void						Compute				(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
 	ICF void						Render_noIA			(u32 iVertexCount);
 	ICF	void						RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation, bool flush_constants = true);
+	ICF	void						RenderInstanced		(ERHI_PRIMITIVE_TOPOLOGY T, u32 startV, u32 PC, u32 instanceCount);
 	ICF void						FlushConstants() { constants.flush(); }
 #endif //USE_DX11
 
