@@ -335,6 +335,24 @@ public:
 
 	virtual float detail_trample_draw_radius() const { return 60.f; }
 
+
+	// AI LOS multiplier [0..1] from detail vegetation along eye->target.
+	// Default is fully transparent (vanilla behaviour).
+	virtual float detail_trace_visibility(
+		Fvector const& eye,
+		Fvector const& target,
+		float min_height,
+		float opaque_distance,
+		float sample_step) const
+	{
+		(void)eye;
+		(void)target;
+		(void)min_height;
+		(void)opaque_distance;
+		(void)sample_step;
+		return 1.f;
+	}
+
 	// Constructor/destructor
 	virtual ~IRender_interface() = default;
 protected:
