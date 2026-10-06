@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "player_hud.h"
+#include "WatchDevice/WatchDevice.h"
 #include "HudItem.h"
 #include "Actor.h"
 #include "physic_item.h"
@@ -1506,6 +1507,7 @@ player_hud::player_hud(bool invert)
 	m_blocked_part_idx = u16(-1);
 	m_bhands_visible = false;
 	m_legs_model = nullptr;
+	m_watch_device = new CWatchDevice();
 
 	//Bone Callback Params
 	m_bone_callback_params.emplace(r_finger0,  new BoneCallbackParams());
@@ -1541,9 +1543,9 @@ player_hud::player_hud(bool invert)
 	}
 }
 
-player_hud::~player_hud()
+void player_hud::destroy_watches()
 {
-	m_watch_device.Unbind();
+	m_watch_device->Unbind();
 
 	if (m_watches_model)
 	{
@@ -1552,6 +1554,12 @@ player_hud::~player_hud()
 		m_watches_model = nullptr;
 		m_watches_bone = BI_NONE;
 	}
+}
+
+player_hud::~player_hud()
+{
+	destroy_watches();
+	xr_delete(m_watch_device);
 
 	if (m_model)
 	{
@@ -1644,28 +1652,26 @@ void player_hud::load(const shared_str& player_hud_sect)
 		m_legs_model = PKinematics(::Render->model_Create(model_name));
 	}
 
-	m_watch_device.Unbind();
-	if (m_watches_model)
-	{
-		IRenderVisual* watches_visual = m_watches_model->dcast_RenderVisual();
-		::Render->model_Delete(watches_visual);
-		m_watches_model = nullptr;
-		m_watches_bone = BI_NONE;
-	}
-
-	m_watch_device.Load("watch");
+	destroy_watches();
+	m_watch_device->Load("watch");
 
 	if (pSettings->line_exist(player_hud_sect, "visual_watches"))
 	{
 		auto model_name = pSettings->r_string(player_hud_sect, "visual_watches");
 		m_watches_model = PKinematics(::Render->model_Create(model_name));
 
+		m_watches_pos = zero_vel;
+		m_watches_rot = zero_vel;
+		m_watches_scale = 1.0f;
 		pSettings->read_if_exists<Fvector>(m_watches_pos, player_hud_sect, "watches_pos");
 		pSettings->read_if_exists<Fvector>(m_watches_rot, player_hud_sect, "watches_rot");
 		pSettings->read_if_exists<float>(m_watches_scale, player_hud_sect, "watches_scale");
 
-		m_watches_bone = m_model->dcast_PKinematics()->LL_BoneID(pSettings->r_string(player_hud_sect, "watches_bone"));
-		m_watch_device.BindModel(m_watches_model);
+		if (m_model)
+		{
+			m_watches_bone = m_model->dcast_PKinematics()->LL_BoneID(pSettings->r_string(player_hud_sect, "watches_bone"));
+		}
+		m_watch_device->BindModel(m_watches_model);
 	}
 
 	if (m_model)
@@ -1749,16 +1755,31 @@ bool player_hud::render_item_ui_query()
 	if(m_attached_items[1])
 		res |= m_attached_items[1]->render_item_ui_query();
 
+	if (m_watches_model && need_render_hands())
+		res |= m_watch_device->RenderUIQuery();
+
 	return res;
 }
 
 void player_hud::render_item_ui()
 {
-	if(m_attached_items[0])
+	if(m_attached_items[0] && m_attached_items[0]->render_item_ui_query())
 		m_attached_items[0]->render_item_ui();
 
-	if(m_attached_items[1])
+	if(m_attached_items[1] && m_attached_items[1]->render_item_ui_query())
 		m_attached_items[1]->render_item_ui();
+
+	if (m_watches_model && need_render_hands() && m_watch_device->RenderUIQuery())
+		m_watch_device->RenderUI(m_watches_transform);
+}
+
+bool player_hud::need_render_hands()
+{
+	const bool b_r0 = (m_attached_items[0] && m_attached_items[0]->need_renderable());
+	const bool b_r1 = (m_attached_items[1] && m_attached_items[1]->need_renderable());
+	const bool animatorPlaying = m_animator_item && m_animator_item->IsPlaying;
+
+	return (b_r0 && !m_attached_items[0]->m_model_combined) || b_r1 || animatorPlaying || m_bhands_visible;
 }
 
 void player_hud::render_hud()
@@ -1767,7 +1788,7 @@ void player_hud::render_hud()
 	bool b_r1 = (m_attached_items[1] && m_attached_items[1]->need_renderable());
 	bool animatorPlaying = m_animator_item && m_animator_item->IsPlaying;
 
-	if ((b_r0 && !m_attached_items[0]->m_model_combined) || b_r1 || animatorPlaying || m_bhands_visible)
+	if (need_render_hands())
 	{
 		if (m_model || animatorPlaying)
 		{
@@ -2112,7 +2133,25 @@ void player_hud::update(const Fmatrix& cam_trans)
 		}
 	}
 
-	m_watch_device.Update(Device.fTimeDelta);
+	m_watch_device->Update(Device.fTimeDelta);
+
+	if (m_watches_model)
+	{
+		m_watches_model->CalculateBones_Invalidate();
+		m_watches_model->CalculateBones(true);
+		if (need_render_hands())
+		{
+			m_watch_device->SyncHudLights(m_watches_transform);
+		}
+		else
+		{
+			m_watch_device->TurnOffHudLights();
+		}
+	}
+	else
+	{
+		m_watch_device->TurnOffHudLights();
+	}
 
 	if(m_attached_items[0])
 		m_attached_items[0]->update(true);
