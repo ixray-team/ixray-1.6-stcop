@@ -1,0 +1,12 @@
+<w>
+    <element_0 vs="effects_rain" ps="effects_rain" fog="0" zread="1" zwrite="0">
+        <blend status="1" src="srcalpha" dest="invsrcalpha"/>
+
+        <texture name="env_s0" rt="$user$env_s0" />
+        <texture name="env_s1" rt="$user$env_s1" />
+        <texture name="s_base" rt="t_base" />
+
+        <sampler name="smp_base" />
+        <sampler name="smp_rtlinear" />
+    </element_0>
+</w>
