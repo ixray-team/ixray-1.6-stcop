@@ -13,6 +13,7 @@
 #include "../Public/PropertiesListHelper.h"
 #include "../../Layers/xrRender/ResourceManager.h"
 #include "ImageManager.h"
+#include "EditorInstancing.h"
 
 const float tex_w	= LOD_SAMPLE_COUNT*LOD_IMAGE_SIZE;
 const float tex_h	= 1*LOD_IMAGE_SIZE;
@@ -105,6 +106,32 @@ bool CEditableObject::BoxPick(CCustomObject* obj, const Fbox& box, const Fmatrix
 }
 #endif
 
+ref_shader CSurface::_ShaderInstanced()
+{
+	if (m_RTFlags.is(rtInstancedShaderTried))
+	{
+		return m_ShaderInstanced;
+	}
+
+	m_RTFlags.set(rtInstancedShaderTried, true);
+
+	if (!_Shader() || !m_ShaderName.size() || !m_Texture.size())
+	{
+		return m_ShaderInstanced;
+	}
+
+	RImplementation.EditorInstancing = true;
+	m_ShaderInstanced.create(*m_ShaderName, *m_Texture);
+	RImplementation.EditorInstancing = false;
+
+	if (!CEditorInstanceBatcher::IsShaderSupported(&*m_ShaderInstanced))
+	{
+		m_ShaderInstanced.destroy();
+	}
+
+	return m_ShaderInstanced;
+}
+
 extern float ssaLIMIT;
 extern float g_fSCREEN;
 static const float ssaLim = 64.f * 64.f / (640 * 480);
@@ -186,13 +213,13 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 					// полей больше, чем в старом, то получам выход за 
 					// пределы. Поэтому просто регаем дефолтный материал.
 
-					if (surfaces != nullptr && surfaces->size() > s_id)
+					CSurface* DrawSurface = (surfaces != nullptr && surfaces->size() > s_id) ? (*surfaces)[s_id] : s_it;
+					EDevice->SetShader(DrawSurface->_Shader());
+
+					ref_shader InstancedShader;
+					if (!strictB2F && !IsSkeleton() && GEditorInstancing.IsActive())
 					{
-						EDevice->SetShader((*surfaces)[s_id]->_Shader());
-					}
-					else
-					{
-						EDevice->SetShader(s_it->_Shader());
+						InstancedShader = DrawSurface->_ShaderInstanced();
 					}
 
 					for (auto _M : m_Meshes)
@@ -201,7 +228,7 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 						{
 							_M->RenderSkeleton(pParent, parent, s_it);
 						}
-						else
+						else if (!InstancedShader || !_M->SubmitInstance(pParent, parent, s_it, InstancedShader))
 						{
 							_M->Render(pParent, parent, s_it);
 						}

@@ -804,6 +804,9 @@ static HRESULT create_shader(
 			if (SUCCEEDED(pReflection->GetResourceBindingDescByName("detail_buffer", &BindDesc)) && BindDesc.Type == D3D_SIT_STRUCTURED)
 				svs_result->instance_buffer_slot = BindDesc.BindPoint;
 
+			if (SUCCEEDED(pReflection->GetResourceBindingDescByName("editor_instances", &BindDesc)) && BindDesc.Type == D3D_SIT_STRUCTURED)
+				svs_result->editor_instance_slot = BindDesc.BindPoint;
+
 			_RELEASE(pReflection);
 		}
 		else {
@@ -908,6 +911,12 @@ HRESULT	CRender::shader_compile(
 
 	for (u32 i = 0; i < m_ShaderOptions.size(); ++i) {
 		defines[def_it++] = m_ShaderOptions[i];
+	}
+
+	if (EditorInstancing) {
+		defines[def_it].Name = "USE_EDITOR_INSTANCING";
+		defines[def_it].Definition = "1";
+		def_it++;
 	}
 
 	// options

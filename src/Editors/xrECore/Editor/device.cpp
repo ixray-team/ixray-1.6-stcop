@@ -6,6 +6,7 @@
 #include "ImageManager.h"
 #include "ui_main.h"
 #include "render.h"
+#include "EditorInstancing.h"
 #include "../Engine/XrGameMaterialLibraryEditors.h"
 #include "../Layers/xrRender/ResourceManager.h"
 #include "../Layers/xrRender/dxRenderDeviceRender.h"
@@ -363,6 +364,7 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 
 	_RELEASE(m_DetailInstanceSRV);
 	_RELEASE(m_DetailInstanceBuffer);
+	GEditorInstancing.OnDeviceDestroy();
 
 	::RImplementation.Models->OnDeviceDestroy	();
 

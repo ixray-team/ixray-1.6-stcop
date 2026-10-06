@@ -48,7 +48,8 @@ void CSurface::CopyFrom(CSurface* surf)
 	m_bEditorVisible = surf->m_bEditorVisible;
 	tag = surf->tag;
 	m_Shader = nullptr;
-	m_RTFlags.set(rtValidShader, false);
+	m_ShaderInstanced = nullptr;
+	m_RTFlags.set(rtValidShader | rtInstancedShaderTried, false);
 	ImageData.reset();
 }
 

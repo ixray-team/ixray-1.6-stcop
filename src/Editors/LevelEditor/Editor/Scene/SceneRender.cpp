@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../../xrECore/Editor/EditorInstancing.h"
 
 struct RenderBuckets
 {
@@ -105,11 +106,12 @@ void EScene::Render(const Fmatrix& camera)
 
 	for (u32 Priority = 1; Priority <= 3; ++Priority)
 	{
-		// normal pass: near-to-far
+		GEditorInstancing.Begin();
 		for (CCustomObject* Object : RBucket.Normal[Priority])
 		{
 			Object->Render((int)Priority, false);
 		}
+		GEditorInstancing.End();
 
 		// alpha (strict B2F) pass: far-to-near -> reverse the near-to-far bucket
 		for (int Iter = (int)RBucket.Alpha[Priority].size() - 1; Iter >= 0; --Iter)

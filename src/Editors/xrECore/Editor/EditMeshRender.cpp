@@ -9,6 +9,7 @@
 #include "ui_main.h"
 #include "D3DUtils.h"
 #include "render.h"
+#include "EditorInstancing.h"
 
 #include <FlexibleVertexFormat.h>
 //
@@ -257,7 +258,14 @@ struct SelectionColorRaii
 		Fvector4 sum_color; sum_color.set(0, 0, 0, 0);
 		Fvector4 color = sum_color;
 
-		for (auto& [ID, pColor] : m_color_map[Parent])
+		auto It = m_color_map.find(Parent);
+		if (It == m_color_map.end())
+		{
+			RCache.hemi.set_selection(sum_color);
+			return;
+		}
+
+		for (auto& [ID, pColor] : It->second)
 		{
 			if (pColor.first < EDevice->dwRenderFrame)
 			{
@@ -331,6 +339,61 @@ void CEditableMesh::Render(CCustomObject* pParent, const Fmatrix& parent, CSurfa
 			EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.pGeom, 0, rb_it.dwNumVertex / 3);
 		}
 	}
+}
+
+bool CEditableMesh::HasSelectionColor(CCustomObject* Parent) const
+{
+	auto It = m_color_map.find(Parent);
+	if (It == m_color_map.end())
+	{
+		return false;
+	}
+
+	for (auto& [ID, Color] : It->second)
+	{
+		if (Color.first >= EDevice->dwRenderFrame)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CEditableMesh::SubmitInstance(CCustomObject* pParent, const Fmatrix& parent, CSurface* S, ref_shader& InstancedShader)
+{
+	if (pParent && HasSelectionColor(pParent))
+	{
+		return false;
+	}
+
+	if (0 == m_RenderBuffers)
+	{
+		GenerateRenderBuffers();
+	}
+
+	if (!m_Flags.is(flVisible))
+	{
+		return true;
+	}
+
+	Fbox bb; bb.set(m_Box);
+	bb.xform(parent);
+
+	if (!::Render->occ_visible(bb))
+	{
+		return true;
+	}
+
+	if (auto rb_pair = m_RenderBuffers->find(S); rb_pair != m_RenderBuffers->end())
+	{
+		for (auto& rb_it : rb_pair->second)
+		{
+			GEditorInstancing.Add(InstancedShader, rb_it.pGeom, rb_it.dwNumVertex, parent);
+		}
+	}
+
+	return true;
 }
 
 void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurface* S)

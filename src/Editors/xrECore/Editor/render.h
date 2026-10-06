@@ -334,6 +334,12 @@ public:
 
 			params.append(")");
 		}
+
+		if (EditorInstancing)
+		{
+			params.append("[inst]");
+		}
+
 		return params;
 	};
 
@@ -346,6 +352,8 @@ public:
 	{
 		m_ShaderOptions.resize(0);
 	}
+
+	bool EditorInstancing = false;
 
 protected:
 	xr_vector<D3D_SHADER_MACRO> m_ShaderOptions;
