@@ -4,6 +4,7 @@
 #include "../Inventory.h"
 #include "../inventory_item.h"
 #include "../player_hud.h"
+#include "../WatchDevice/WatchDevice.h"
 #include "ai_space.h"
 #include "../../xrUI/ui_base.h"
 #include "ImUtils.h"
@@ -1464,4 +1465,25 @@ void RenderHUDAdjustManager()
 	ImGui::PopStyleColor(1);
 
 	HudAdjustRenderOverlays();
+}
+
+void RenderWatchDebugWindow()
+{
+	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_WatchDebug)])
+	{
+		return;
+	}
+
+	if (!g_pGameLevel || !g_player_hud)
+	{
+		return;
+	}
+
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, kGeneralAlphaLevelForImGuiWindows));
+	if (ImGui::Begin("Watch Debug", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_WatchDebug)]))
+	{
+		g_player_hud->WatchDevice().DrawImGui();
+	}
+	ImGui::End();
+	ImGui::PopStyleColor(1);
 }
