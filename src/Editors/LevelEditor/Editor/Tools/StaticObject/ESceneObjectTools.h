@@ -33,6 +33,9 @@ public:
 
     virtual bool		Validate				(bool full_build);
 
+	bool				IsLODTextureMissing		(CEditableObject* Object) const;
+	void				MakeMissingLODs			(bool HighQuality);
+
 	virtual void		OnFrame					();
 
 	// definition

@@ -516,10 +516,16 @@ void CSceneObject::ClearSurface()
 	{
 		for (size_t i = 0; i < m_pReference->m_Surfaces.size(); i++)
 		{
+			CSurface* src = m_pReference->m_Surfaces[i];
 			CSurface* surf = new CSurface();
-			surf->CopyFrom(m_pReference->m_Surfaces[i]);
+			surf->CopyFrom(src);
 			m_Surfaces.push_back(surf);
-			if (surf->IsVoid())
+
+			if (surf->IsVoid() && !m_pReference->IsSkeleton())
+			{
+				surf->ShareShaderFrom(src);
+			}
+			else if (surf->IsVoid())
 			{
 				if (m_pReference->IsSkeleton())
 					Engine.External.SetSkinningMode(4);

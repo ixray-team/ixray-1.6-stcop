@@ -92,6 +92,82 @@ bool ESceneObjectTool::Validate(bool full_test)
     return bRes;
 }
 
+bool ESceneObjectTool::IsLODTextureMissing(CEditableObject* Object) const
+{
+	xr_string LodName = Object->GetLODTextureName();
+
+	string_path FileName;
+	FS.update_path(FileName, _game_textures_, EFS.ChangeFileExt(LodName, ".dds").c_str());
+
+	if (FS.get_file_age(FileName) == -1)
+	{
+		return true;
+	}
+
+	FS.update_path(FileName, _game_textures_, EFS.ChangeFileExt(LodName + "_nm", ".dds").c_str());
+	return FS.get_file_age(FileName) == -1;
+}
+
+void ESceneObjectTool::MakeMissingLODs(bool HighQuality)
+{
+	xr_vector<CEditableObject*> Missing;
+
+	for (CCustomObject* ObjPtr : m_Objects)
+	{
+		CSceneObject* SceneObj = static_cast<CSceneObject*>(ObjPtr);
+		CEditableObject* Ref = SceneObj->GetReference();
+
+		if (Ref == nullptr || !Ref->IsMUStatic())
+		{
+			continue;
+		}
+
+		if (std::find(Missing.begin(), Missing.end(), Ref) != Missing.end())
+		{
+			continue;
+		}
+
+		if (IsLODTextureMissing(Ref))
+		{
+			Missing.push_back(Ref);
+		}
+	}
+
+	if (Missing.empty())
+	{
+		ELog.DlgMsg(mtInformation, "All LOD textures are present.");
+		return;
+	}
+
+	u32 LodsCnt = 0;
+	SPBItem* ProgbarState = EContext.UI->ProgressStart(Missing.size(), "Making missing LODs");
+	xr_time_t Age = xr_chrono_to_time_t(std::chrono::system_clock::now());
+
+	for (CEditableObject* Ref : Missing)
+	{
+		ProgbarState->Inc(Ref->m_LibName.c_str());
+
+		bool HasLod = Ref->m_objectFlags.is(CEditableObject::eoUsingLOD);
+		Ref->m_objectFlags.set(CEditableObject::eoUsingLOD, false);
+		ImageLib.CreateLODTexture(Ref, Ref->GetLODTextureName().c_str(), LOD_IMAGE_SIZE, LOD_IMAGE_SIZE, LOD_SAMPLE_COUNT, Age, HighQuality ? 4 : 1);
+		Ref->OnDeviceDestroy();
+		Ref->m_objectFlags.set(CEditableObject::eoUsingLOD, HasLod);
+
+		ELog.Msg(mtInformation, "+ LOD for object '%s' successfully created.", Ref->m_LibName.c_str());
+		LodsCnt++;
+
+		if (EContext.UI->NeedAbort())
+		{
+			break;
+		}
+	}
+
+	EContext.UI->ProgressEnd(ProgbarState);
+	EContext.UI->RedrawScene();
+
+	ELog.DlgMsg(mtInformation, "+ '%u' of '%u' missing LOD's created.", LodsCnt, (u32)Missing.size());
+}
+
 
 void ESceneObjectTool::OnChangeAppendRandomFlags(PropValue* prop)
 {
