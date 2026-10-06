@@ -1,0 +1,62 @@
+
+
+--[[
+Description:
+	Выполняет трассировку луча (ray pick) от заданной позиции в заданном направлении
+	на заданное расстояние. Если параметры не указаны, используются значения по умолчанию:
+	начальная позиция и направление берутся от устройства, максимальная дистанция — 100.0,
+	игнорируемый объект — db.actor, тип запроса — rq_target.rqtStatic.
+	При попадании возвращает конечную точку луча, индекс материала и пройденную дистанцию.
+	Если попадания нет, trace_end_position = nil, trace_material_idx = 0, trace_distance = 0.
+
+Parameters:
+	_rq_target (rq_target или nil) - тип/фильтр запроса трассировки. Если nil, используется rq_target.rqtStatic.
+	max_trace_distance (number или nil) - максимальная дистанция трассировки. Если nil, используется 100.0.
+	start_trace_position (vector или nil) - начальная позиция луча. Если nil, берётся позиция устройства через ffx_vector_utils.get_device_position().
+	start_trace_direction (vector или nil) - направление луча. Если nil, берётся направление устройства через ffx_vector_utils.get_device_direction().
+	ignore_object (game_object или nil) - объект, который нужно игнорировать при трассировке. Если nil, используется db.actor.
+
+Returns: table - таблица с результатами трассировки:
+	trace_end_position (vector или nil) - конечная точка луча; nil, если попадания нет.
+	trace_material_idx (number) - индекс материала поверхности; 0, если попадания нет.
+	trace_distance (number) - пройденная дистанция; 0, если попадания нет.
+]]
+function pick_trace(_rq_target, max_trace_distance, start_trace_position, start_trace_direction, ignore_object)
+	local trace_end_position = nil
+	local trace_material_idx = 0
+	local trace_distance = 0
+	
+	if max_trace_distance == nil then
+		max_trace_distance = 100.0
+	end
+	
+	if start_trace_position == nil then
+		start_trace_position = ffx_vector_utils.get_device_position()
+	end
+	
+	if start_trace_direction == nil then
+		start_trace_direction = ffx_vector_utils.get_device_direction()
+	end
+	
+	if ignore_object == nil then
+		ignore_object = db.actor
+	end
+	
+	if _rq_target == nil then
+		_rq_target = rq_target.rqtStatic
+	end
+
+	local cRrayPick = ray_pick(start_trace_position, start_trace_direction, max_trace_distance, _rq_target, ignore_object)
+	if cRrayPick:query() then
+		local trace_result = cRrayPick:get_result()
+		trace_distance = trace_result.range
+		trace_material_idx = cRrayPick:get_material()
+		trace_end_position = ffx_vector_utils.mul_in_direction(start_trace_position, start_trace_direction, trace_distance)
+	end
+	
+	return 	{
+		["trace_end_position"] =  trace_end_position,
+		["trace_material_idx"] = trace_material_idx,
+		["trace_distance"] = trace_distance
+	}
+end
