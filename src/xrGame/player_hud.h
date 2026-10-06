@@ -8,6 +8,7 @@
 #include "../../xrUI/ui_base.h"
 
 class player_hud;
+class CWatchDevice;
 class CHudItem;
 class CMotionDef;
 class CHudAnimatorBase;
@@ -698,6 +699,7 @@ public:
 	bool IsBlendAnmActive(const shared_str& name);
 
 private:
+	bool			need_render_hands	();
 	void			update_inertion		(Fmatrix& trans);
 	const Fvector&	attach_rot			() const;
 	const Fvector&	attach_pos			() const;
@@ -731,6 +733,10 @@ public:
 	Fvector m_watches_rot = zero_vel;
 	float m_watches_scale = 1.0f;
 	u16 m_watches_bone = BI_NONE;
+	CWatchDevice* m_watch_device = nullptr;
+
+	CWatchDevice& WatchDevice() { return *m_watch_device; }
+	void destroy_watches();
 
 	void reset_thumb(bool bForce)
 	{

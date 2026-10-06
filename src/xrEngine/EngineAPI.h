@@ -45,6 +45,7 @@ enum class EditorUI : u8
 	Game_WeaponManager,
 	Game_SearchManager,
 	Game_HudAdjustManager,
+	Game_WatchDebug,
 	Game_3rdAdjust,
 	Game_3DIconAdjust,
 	Game_DemoRecord,

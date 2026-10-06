@@ -731,6 +731,7 @@ void RenderSpawnManagerWindow();
 void RenderWeaponManagerWindow();
 void RenderSearchManagerWindow();
 void RenderHUDAdjustManager();
+void RenderWatchDebugWindow();
 void RenderToolsOMFEditorWindow();
 void RenderCarConfigEditor();
 void RenderToolsInputManagerWindow();
