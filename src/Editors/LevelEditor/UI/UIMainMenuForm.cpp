@@ -174,6 +174,33 @@ void UIMainMenuForm::Draw()
 			{
 				DrawMenuItemI("Validate", ICON_FA_CIRCLE_CHECK, COMMAND_VALIDATE_SCENE);
 				ImGui::Separator();
+				if (ImGui::BeginMenuI("Make Missing LODs", ICON_FA_IMAGES, !EPrefs->UseMULODs))
+				{
+					auto MakeMissingLODs = [](bool HighQuality)
+					{
+						EContext.UI->CommandList[TUI::ECommandListID::NextFrame].push_back
+						(
+							[HighQuality]()
+							{
+								ESceneObjectTool* ObjectTool = static_cast<ESceneObjectTool*>(Scene->GetTool(OBJCLASS_SCENEOBJECT));
+								ObjectTool->MakeMissingLODs(HighQuality);
+							}
+						);
+					};
+
+					if (ImGui::MenuItem("High Quality"))
+					{
+						MakeMissingLODs(true);
+					}
+
+					if (ImGui::MenuItem("Low Quality"))
+					{
+						MakeMissingLODs(false);
+					}
+
+					ImGui::EndMenu();
+				}
+				ImGui::Separator();
 				ImGui::Checkbox("Validate at make", &Scene->IsValidateAtMake);
 				ImGui::Checkbox("Validate LODs", &Scene->IsValidateLODs);
 				ImGui::Checkbox("Validate Dublicate Names", &Scene->IsValidateDublicateNames);

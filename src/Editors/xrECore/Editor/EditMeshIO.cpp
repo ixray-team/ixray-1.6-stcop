@@ -61,7 +61,12 @@ void CEditableMesh::SaveMesh(IWriter& F)
 	if (!m_Normals.empty())
 	{
 		F.open_chunk(EMESH_CHUNK_NORMALS);
-		F.w(m_Normals.data(), m_Faces.size() * 3 * sizeof(Fvector));
+		for (Fvector N : m_Normals)
+		{
+			N.x = -N.x;
+			N.z = -N.z;
+			F.w_fvector3(N);
+		}
 		F.close_chunk();
 	}
 
@@ -245,6 +250,14 @@ bool CEditableMesh::LoadMesh(IReader& F){
 		RebuildVMaps();
 	}
 
+	if (!m_Flags.is(flOptimized))
+	{
+		OptimizeMesh(false);
+		RebuildVMaps();
+		m_Flags.set(flOptimized, TRUE);
+		m_Parent->bNeedResave = true;
+	}
+
 #if 1
     if (!EPrefs->object_flags.is(epoDeffLoadRB))
     {
@@ -265,8 +278,6 @@ bool CEditableMesh::LoadMesh(IReader& F){
     GenerateCFModel();     
 
 #endif
-	OptimizeMesh	(false);
-    RebuildVMaps	();
 
 	return 			true;
 }

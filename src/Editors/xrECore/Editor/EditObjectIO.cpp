@@ -24,6 +24,7 @@ bool CEditableObject::Load(const char* fname)
         IReader* F 		= FS.r_open			(fname); 		R_ASSERT(F);
         IReader* OBJ 	= F->open_chunk		(EOBJ_CHUNK_OBJECT_BODY);
         R_ASSERT2		(OBJ,"Corrupted file.");
+        bNeedResave		= false;
         bool bRes 		= Load(*OBJ);
         OBJ->close();
         FS.r_close(F);
@@ -31,7 +32,16 @@ bool CEditableObject::Load(const char* fname)
 		{ 
             m_LoadName 		= fname;
             m_ObjectVersion = age; 
+
+            if (bNeedResave)
+            {
+                if (Save(fname))
+                    Msg		("* Object '%s' optimized and resaved", fname);
+                else
+                    Msg		("! Can't resave optimized object '%s'", fname);
+            }
         }
+        bNeedResave		= false;
         return bRes;
     }
     return false;
