@@ -3,7 +3,6 @@
 #include "alife_space.h"
 #include "PHSkeleton.h"
 #include "entity_alive.h"
-#include "PHSoundPlayer.h"
 #include "PHDestroyable.h"
 #include "character_hit_animations.h"
 #include "death_anims.h"
@@ -63,7 +62,7 @@ private:
 	CPhysicsShell						*&m_pPhysicsShell;
 	CPhysicsShell						*m_physics_skeleton;
 	CPHMovementControl					*m_PhysicMovementControl;
-	CPHSoundPlayer						m_ph_sound_player;
+
 	ICollisionHitCallback				*m_collision_hit_callback;
 	character_hit_animation_controller	m_hit_animations;
 	death_anims							m_death_anims;
@@ -108,7 +107,7 @@ virtual bool							CanRemoveObject					( );
 public:
 IC		CPHMovementControl				*movement						( )	{ return m_PhysicMovementControl; }
 IC	const	CPHMovementControl			*movement						( ) const{ return m_PhysicMovementControl; }
-IC		CPHSoundPlayer					*ph_sound_player				( )	{ return &m_ph_sound_player; }
+
 		bool							interactive_motion				( ) ;
 		bool							can_drop_active_weapon			( ) ;
 		void							SetRemoved						( );

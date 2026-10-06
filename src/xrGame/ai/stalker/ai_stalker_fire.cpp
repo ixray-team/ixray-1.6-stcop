@@ -45,8 +45,7 @@
 #include "../../stalker_animation_names.h"
 #include "../../agent_corpse_manager.h"
 #include "../../CharacterPhysicsSupport.h"
-#include "../../script_game_object.h"
-#include "../../Inventory.h"
+#include "../xrEngine/GameMtlLib.h"
 
 #include "Legacy/StalkerPlanner/stalker_planner.h"
 #include "../../trajectories.h"

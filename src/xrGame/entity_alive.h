@@ -102,7 +102,6 @@ public:
 	virtual void							PHFreeze					()						;
 
 	virtual void							PHGetLinearVell				(Fvector& velocity)		;
-	virtual CPHSoundPlayer*					ph_sound_player				()						;
 	virtual ICollisionHitCallback			*get_collision_hit_callback	()						;
 	virtual void							set_collision_hit_callback	(ICollisionHitCallback *cc);
 protected:

@@ -68,7 +68,7 @@ CCharacterPhysicsSupport::~CCharacterPhysicsSupport()
 
 CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype, CEntityAlive* aentity) :
 	m_pPhysicsShell(aentity->PPhysicsShell()), m_EntityAlife(*aentity),
-	mXFORM(aentity->XFORM()), m_ph_sound_player(aentity), m_interactive_motion(0),
+	mXFORM(aentity->XFORM()), m_interactive_motion(0),
 	m_PhysicMovementControl(new CPHMovementControl(aentity)), m_eType(atype), m_eState(esAlive),
 	m_physics_skeleton(nullptr), m_BonceDamageFactor(1.f),
 	m_collision_hit_callback(nullptr), m_physics_shell_animated(nullptr),

@@ -68,7 +68,6 @@ public:
 	virtual CGameObject* cast_game_object() { return this; }
 	virtual IDamageSource* cast_IDamageSource() { return nullptr; }
 
-	virtual CPHSoundPlayer* ph_sound_player() { return nullptr; }
 	virtual	CCharacterPhysicsSupport* character_physics_support() { return nullptr; }
 	virtual	const CCharacterPhysicsSupport* character_physics_support() const { return nullptr; }
 	virtual ICollisionHitCallback* get_collision_hit_callback() { return nullptr; }
@@ -137,7 +136,7 @@ private://IPhysicsShellHolder
 	virtual bool					_BCL					IsStalker							()						;
 	virtual	void					_BCL					HideAllWeapons						( bool v )				;
 	virtual	void					_BCL					MovementCollisionEnable				( bool enable )			;
-	virtual CPHSoundPlayer*			_BCL					ObjectPhSoundPlayer					()  					{return ph_sound_player();}
+	virtual CPHSoundPlayer*			_BCL					ObjectPhSoundPlayer					()  					{return inherited::ph_sound_player();}
 	virtual	ICollisionDamageReceiver* _BCL				ObjectPhCollisionDamageReceiver		()						;
 	virtual	void					_BCL					BonceDamagerCallback				(float &damage_factor)	;
 #ifdef	DEBUG

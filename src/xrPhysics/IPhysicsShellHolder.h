@@ -57,7 +57,7 @@ class IPhysicsShellHolder
 	virtual bool						_BCL	IsStalker							()						=0;
 	virtual	void						_BCL	HideAllWeapons						( bool v )				=0;//(SetWeaponHideState(INV_STATE_BLOCK_ALL,true))
 	virtual	void						_BCL	MovementCollisionEnable				( bool enable )			=0;
-	virtual CPHSoundPlayer*				_BCL	ObjectPhSoundPlayer				()  					=0;
+	virtual CPHSoundPlayer*				_BCL	ObjectPhSoundPlayer				() { return nullptr;};
 	virtual	ICollisionDamageReceiver*	_BCL	ObjectPhCollisionDamageReceiver	()						=0;
 	virtual	void						_BCL BonceDamagerCallback				( float &damage_factor )=0;
 #ifdef	DEBUG

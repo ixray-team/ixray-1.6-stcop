@@ -98,6 +98,7 @@ class CAI_Trader;
 
 template <typename _return_type>
 class CScriptCallbackEx;
+struct CPHSoundPlayer;
 
 class CGameObject : 
 	public CObject, 
@@ -110,6 +111,7 @@ protected:
 
 	CAI_ObjectLocation				*m_ai_location;
 	animation_movement_controller	*m_anim_mov_ctrl;
+	CPHSoundPlayer					*m_ph_sound_player;
 	ALife::_STORY_ID				m_story_id;
 	bool							m_spawned;
 	//время удаления объекта
@@ -199,6 +201,7 @@ public:
 	virtual CMincer* cast_mincer_zone() { return nullptr; }
 	virtual CRadioactiveZone* cast_radioactive_zone() { return nullptr; }
 	virtual CAnomalyZone* cast_anomaly_zone() { return nullptr; }
+	IC CPHSoundPlayer* ph_sound_player() { return m_ph_sound_player; }
 
 public:
 	virtual bool						feel_touch_on_contact	(CObject *)					{return true;}

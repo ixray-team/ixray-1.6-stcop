@@ -33,6 +33,7 @@
 #include "../xrScripts/script_callback_ex.h"
 
 #include "UIWorldSpace.h"
+#include "PHSoundPlayer.h"
 
 extern MagicBox3 MagicMinBox (int iQuantity, const Fvector* akPoint);
 
@@ -55,6 +56,7 @@ CGameObject::CGameObject		()
 
 	m_callbacks					= new CALLBACK_MAP();
 	m_anim_mov_ctrl				= 0;
+	m_ph_sound_player			= new CPHSoundPlayer(this);
 }
 
 CGameObject::~CGameObject		()

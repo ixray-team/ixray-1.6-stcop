@@ -37,6 +37,7 @@
 #include "player_hud.h"
 #include "ImUtils/ImUtils.h"
 #include "script_game_object.h"
+#include "../xrEngine/GameMtlLib.h"
 
 Fvector aabb_selection_vertices[32]
 {

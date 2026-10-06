@@ -770,18 +770,6 @@ bool CEntityAlive::is_locked_corpse()
 	return b_eating;
 }
 
-CPHSoundPlayer* CEntityAlive::ph_sound_player()
-{
-	if(character_physics_support())
-	{
-		return character_physics_support()->ph_sound_player();
-	}
-	else
-	{
-		return nullptr;
-	}
-}
-
 ICollisionHitCallback*	CEntityAlive::	get_collision_hit_callback		()
 {
   CCharacterPhysicsSupport *cs=character_physics_support();
