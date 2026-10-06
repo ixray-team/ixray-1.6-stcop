@@ -48,12 +48,20 @@ void restart_all				()
 	ai().moving_objects().clear	();
 #endif // DEBUG
 
+	xr_vector<CInifile*> ini_files;
+	ini_files.reserve(cached_ini_map->size());
+
 	for (auto& cacheIni : *cached_ini_map)
 	{
-		xr_delete(cacheIni.second);
+		ini_files.push_back(cacheIni.second);
 	}
 
 	cached_ini_map->clear();
+
+	for (CInifile* iniFile : ini_files)
+	{
+		xr_delete(iniFile);
+	}
 }
 
 CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) :
