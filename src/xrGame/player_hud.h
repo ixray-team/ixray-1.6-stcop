@@ -6,6 +6,7 @@
 #include "actor_defs.h"
 #include "../xrEngine/ObjectAnimator.h"
 #include "../../xrUI/ui_base.h"
+#include "WatchDevice/WatchDevice.h"
 
 class player_hud;
 class CHudItem;
@@ -737,6 +738,10 @@ public:
 	Fvector m_watches_rot = zero_vel;
 	float m_watches_scale = 1.0f;
 	u16 m_watches_bone = BI_NONE;
+	CWatchDevice m_watch_device;
+
+	CWatchDevice& WatchDevice() { return m_watch_device; }
+	const CWatchDevice& WatchDevice() const { return m_watch_device; }
 
 	void reset_thumb(bool bForce)
 	{
