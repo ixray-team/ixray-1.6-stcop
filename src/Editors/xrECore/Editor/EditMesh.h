@@ -325,6 +325,8 @@ public:
 
 	// render routine
 	void 			Render					(CCustomObject*, const Fmatrix& parent, CSurface* S);
+	bool 			SubmitInstance			(CCustomObject*, const Fmatrix& parent, CSurface* S, ref_shader& InstancedShader);
+	bool			HasSelectionColor		(CCustomObject*) const;
 	void 			RenderSkeleton			(CCustomObject*, const Fmatrix& parent, CSurface* S);
 
 	void 			RenderSelection			(CCustomObject* parent, u32 color);
