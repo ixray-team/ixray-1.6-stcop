@@ -118,6 +118,19 @@ public:
 	virtual	GenerationLevel			get_generation			()	{ return IRender_interface::GENERATION_R1; }
 	virtual DWORD					get_dx_level			()	{ return 0x00090000; }
 
+	virtual float					detail_trace_visibility(
+		Fvector const& eye,
+		Fvector const& target,
+		float min_height,
+		float opaque_distance,
+		float sample_step) const override
+	{
+		if (!Details)
+			return 1.f;
+		return const_cast<CDetailManager*>(Details)->TraceVisibility(
+			eye, target, min_height, opaque_distance, sample_step);
+	}
+
 	virtual bool					is_sun_static			() {return true;}
 
 	// Loading / Unloading
