@@ -263,6 +263,19 @@ public:
 	// device is gone by then and their destructors crash on the imported DevicePtr.
 	void DetailLayers_EditorDestroy();
 
+	virtual float					detail_trace_visibility(
+		Fvector const& eye,
+		Fvector const& target,
+		float min_height,
+		float opaque_distance,
+		float sample_step) const override
+	{
+		if (!Details)
+			return 1.f;
+		return const_cast<CDetailManager*>(Details)->TraceVisibility(
+			eye, target, min_height, opaque_distance, sample_step);
+	}
+
 	// Loading / Unloading
 	virtual void create();
 	virtual void destroy();

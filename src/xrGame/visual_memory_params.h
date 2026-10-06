@@ -18,6 +18,9 @@ struct CVisionParameters {
 	float						m_velocity_factor;
 	float						m_transparency_threshold;
 	float						m_luminocity_factor;
+	float						m_vegetation_min_height;
+	float						m_vegetation_opaque_distance;
+	float						m_vegetation_sample_step;
 	u32							m_still_visible_time;
 
 			void	Load		(const char* section, bool not_a_stalker);

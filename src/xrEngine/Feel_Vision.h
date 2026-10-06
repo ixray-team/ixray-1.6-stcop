@@ -55,6 +55,7 @@ namespace Feel
 		void						feel_vision_get			(xr_vector<CObject*>& R);
 		Fvector						feel_vision_get_vispoint(CObject* _O);
 		virtual		bool			feel_vision_isRelevant	(CObject* O)					= 0;
-		virtual		float			feel_vision_mtl_transp	(CObject* O, u32 element)		= 0;	
+		virtual		float			feel_vision_mtl_transp	(CObject* O, u32 element)		= 0;
+		virtual		void			feel_vision_apply_extra	(Fvector const& eye, Fvector const& target, float& vis) {}
 	};
 };

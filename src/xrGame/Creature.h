@@ -220,6 +220,7 @@ public:
 	IC		CMemoryManager		&memory					() const;
 	CMemoryManager*				GetMemoryManager		() const { return m_memory_manager; }
 	virtual float				feel_vision_mtl_transp	(CObject* O, u32 element);
+	virtual	void				feel_vision_apply_extra	(Fvector const& eye, Fvector const& target, float& vis);
 	virtual	void				feel_sound_new			(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector &Position, float power);
 
 	virtual bool				useful					(const CItemManager *manager, const CGameObject *object) const;
