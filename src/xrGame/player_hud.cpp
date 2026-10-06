@@ -1525,6 +1525,16 @@ player_hud::player_hud(bool invert)
 
 player_hud::~player_hud()
 {
+	m_watch_device.Unbind();
+
+	if (m_watches_model)
+	{
+		IRenderVisual* watches_visual = m_watches_model->dcast_RenderVisual();
+		::Render->model_Delete(watches_visual);
+		m_watches_model = nullptr;
+		m_watches_bone = BI_NONE;
+	}
+
 	if (m_model)
 	{
 		IRenderVisual* v = m_model->dcast_RenderVisual();
@@ -1616,6 +1626,17 @@ void player_hud::load(const shared_str& player_hud_sect)
 		m_legs_model = PKinematics(::Render->model_Create(model_name));
 	}
 
+	m_watch_device.Unbind();
+	if (m_watches_model)
+	{
+		IRenderVisual* watches_visual = m_watches_model->dcast_RenderVisual();
+		::Render->model_Delete(watches_visual);
+		m_watches_model = nullptr;
+		m_watches_bone = BI_NONE;
+	}
+
+	m_watch_device.Load("watch");
+
 	if (pSettings->line_exist(player_hud_sect, "visual_watches"))
 	{
 		auto model_name = pSettings->r_string(player_hud_sect, "visual_watches");
@@ -1626,6 +1647,7 @@ void player_hud::load(const shared_str& player_hud_sect)
 		pSettings->read_if_exists<float>(m_watches_scale, player_hud_sect, "watches_scale");
 
 		m_watches_bone = m_model->dcast_PKinematics()->LL_BoneID(pSettings->r_string(player_hud_sect, "watches_bone"));
+		m_watch_device.BindModel(m_watches_model);
 	}
 
 	if (m_model)
@@ -2044,6 +2066,8 @@ void player_hud::update(const Fmatrix& cam_trans)
 			}
 		}
 	}
+
+	m_watch_device.Update(Device.fTimeDelta);
 
 	if(m_attached_items[0])
 		m_attached_items[0]->update(true);
