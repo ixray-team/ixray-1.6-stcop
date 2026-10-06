@@ -276,8 +276,6 @@ struct ISpatial_NODE
 	{
 		if (_parent)
 			_parent->childs_size++;
-
-		items.reserve(64);
 	}
 	constexpr ~ISpatial_NODE()
 	{

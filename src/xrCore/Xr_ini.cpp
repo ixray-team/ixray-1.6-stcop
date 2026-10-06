@@ -1038,9 +1038,6 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 		DATA.insert(I, Sect{ Section });
 	}
 
-	// Clean modifiers of parameters' lists
-	OverrideModifyListData.clear();
-
 	// throw errors if there are overrides that never got used
 	if (OverrideData.size())
 	{
@@ -1059,6 +1056,15 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 			}
 		}
 	}
+
+	// Release all temporary parsing containers to free bucket arrays and nodes
+	FinalData = {};
+	BaseData = {};
+	OverrideData = {};
+	BaseParentDataMap = {};
+	OverrideParentDataMap = {};
+	OverrideToFilename = {};
+	OverrideModifyListData = {};
 }
 
 void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Sect>& OutputData, xr_string_map<xr_string, xr_vector<xr_string>>& ParentDataMap, bool bOverridesOnly, bool bIsRootFile)

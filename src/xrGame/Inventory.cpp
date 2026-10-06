@@ -884,18 +884,12 @@ PIItem CInventory::EnsureSlotItemFromRuck(u16 slotId, PIItem itemToSkip)
 
 PIItem CInventory::ItemFromSlot(u16 slot) const
 {
-	if (NO_ACTIVE_SLOT == slot)
+	if (NO_ACTIVE_SLOT == slot || slot > LastSlot())
 	{
 		return nullptr;
 	}
 
-	const auto& Slot = m_slots.find(slot);
-	if (Slot == m_slots.end())
-	{
-		return nullptr;
-	}
-
-	return (*Slot).second.m_pIItem;
+	return m_slots[slot].m_pIItem;
 }
 
 void CInventory::SendActionEvent(u16 cmd, u32 flags)
@@ -1821,8 +1815,7 @@ void CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_tr
 			PIItem item = ItemFromSlot(I);
 			if (item != nullptr && (!for_trade || item->CanTrade()))
 			{
-				const auto& Slot = m_slots.find(I);
-				if (!(*Slot).second.m_bPersistent || item->BaseSlot() == GRENADE_SLOT)
+				if (!m_slots[I].m_bPersistent || item->BaseSlot() == GRENADE_SLOT)
 				{
 					if (pOwner)
 					{

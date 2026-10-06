@@ -31,7 +31,7 @@ private:
 
 class CInventory final
 {
-	using TISlotArr = xr_map<u16, CInventorySlot>;
+	using TISlotArr = xr_array<CInventorySlot, LAST_SLOT + 1>;
 
 public:
 	CInventory();
