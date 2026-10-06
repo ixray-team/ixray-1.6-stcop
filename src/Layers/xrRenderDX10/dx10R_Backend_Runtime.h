@@ -64,6 +64,29 @@ IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 b
 	RContext->DrawIndexedInstanced(iIndexCount, instanceCount, startI, baseV, startInstanceLocation);
 }
 
+IC void CBackend::RenderInstanced(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC, u32 instanceCount)
+{
+	if (PC == 0 || instanceCount == 0)
+	{
+		return;
+	}
+
+	const u32 VertexCount = RHITopologyUtils::GetIndexCount(PC, topology);
+
+	stat.calls++;
+	stat.verts += VertexCount * instanceCount;
+	stat.polys += PC * instanceCount;
+
+	GRHI->SetPrimitiveTopology(topology);
+	GRHI->ShaderResourceCache->Apply();
+	GRHI->ApplyRenderTargetChange();
+	ApplyVertexLayout();
+	GRHI->StateManager->Apply();
+
+	constants.flush();
+	RContext->DrawInstanced(VertexCount, instanceCount, startV, 0);
+}
+
 IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
     // Don't render if primitive count is 0
