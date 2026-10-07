@@ -580,18 +580,7 @@ void CActorTools::OnUsingLodFlagChange(PropValue* V)
 void CActorTools::OnMakeLODClick(ButtonValue* sender, bool& bModif, bool& bSafe)
 {
 	R_ASSERT(m_pEditObject);
-	switch (sender->btn_num)
-	{
-	case 0:
-	{
-		GenerateLOD(true);
-	}
-	case 1:
-	{
-		GenerateLOD(false);
-	}
-	break;
-	}
+	GenerateLOD(sender->btn_num == 0);
 }
 
 void  CActorTools::OnBoneShapeClick(ButtonValue* V, bool& bModif, bool& bSafe)
@@ -606,18 +595,16 @@ void  CActorTools::OnBoneShapeClick(ButtonValue* V, bool& bModif, bool& bSafe)
 
 void GetBindAbsolutePosition(CBone* B, Fmatrix& dest)
 {
-
-	if(B->Parent())
-		GetBindAbsolutePosition(B->Parent(), dest);
-
+	if (B->Parent())
 	{
-		Fmatrix 	M;
-		M.setXYZi	( B->_RestRotate() );
-		M.c.set		( B->_RestOffset() );
-		M.mulA_43	(dest);
-		dest.set	(M);
+		GetBindAbsolutePosition(B->Parent(), dest);
 	}
 
+	Fmatrix M;
+	M.setXYZi(B->_RestRotate());
+	M.c.set(B->_RestOffset());
+	M.mulA_43(dest);
+	dest.set(M);
 }
 
 void  CActorTools::OnBoneCreateDeleteClick(ButtonValue* V, bool& bModif, bool& bSafe)

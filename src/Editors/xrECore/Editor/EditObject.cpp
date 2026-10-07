@@ -29,6 +29,38 @@ void CSurface::RemoveImageData()
 	ImageData.reset();
 }
 
+void CSurface::Reload()
+{
+	xr_vector<xr_string> Textures;
+
+	if (m_RTFlags.is(rtValidShader) && m_Shader)
+	{
+		for (const ref_selement& Element : m_Shader->E)
+		{
+			if (!Element)
+				continue;
+
+			for (const ref_pass& Pass : Element->passes)
+			{
+				if (!Pass || !Pass->T)
+					continue;
+
+				for (const auto& [Stage, Texture] : *Pass->T)
+				{
+					if (Texture && Texture->cName.size())
+						Textures.emplace_back(Texture->cName.c_str());
+				}
+			}
+		}
+	}
+
+	if (!Textures.empty())
+		EDevice->Resources->ED_UpdateTextures(&Textures);
+
+	OnDeviceDestroy();
+	RemoveImageData();
+}
+
 CSurface::~CSurface()
 {
 	R_ASSERT(!m_Shader);
