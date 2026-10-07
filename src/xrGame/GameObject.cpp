@@ -370,10 +370,16 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	}
 
 	reload(*cNameSect());
-	CScriptBinder::reload(*cNameSect());
+	if (ScriptCallbacksEnabled())
+	{
+		CScriptBinder::reload(*cNameSect());
+	}
 	
 	reinit();
-	CScriptBinder::reinit();
+	if (ScriptCallbacksEnabled())
+	{
+		CScriptBinder::reinit();
+	}
 
 #ifdef DEBUG
 	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&_stricmp(PH_DBG_ObjectTrackName(),*cName())==0)
@@ -460,9 +466,9 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	{
 		Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f",PH_DBG_ObjectTrackName(),Position().x,Position().y,Position().z);
 	}
-	bool ret =CScriptBinder::net_Spawn(DC);
+	bool ret = !ScriptCallbacksEnabled() || CScriptBinder::net_Spawn(DC);
 #else
-	return						(CScriptBinder::net_Spawn(DC));
+	return !ScriptCallbacksEnabled() || CScriptBinder::net_Spawn(DC);
 #endif
 
 #ifdef DEBUG
@@ -925,7 +931,10 @@ void CGameObject::shedule_Update	(u32 dt)
 	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update	(dt);
 	
-	CScriptBinder::shedule_Update(dt);
+	if (ScriptCallbacksEnabled())
+	{
+		CScriptBinder::shedule_Update(dt);
+	}
 }
 
 bool CGameObject::net_SaveRelevant	()
@@ -987,7 +996,13 @@ u32	CGameObject::ef_detector_type		() const
 void CGameObject::net_Relcase(CObject* O)
 {
 	inherited::net_Relcase(O);
-	CScriptBinder::net_Relcase(O);
+	if (ScriptCallbacksEnabled())
+	{
+		if (ScriptCallbacksEnabled())
+	{
+		CScriptBinder::net_Relcase(O);
+	}
+	}
 }
 
 CGameObject::CScriptCallbackExVoid &CGameObject::callback(GameObject::ECallbackType type) const
@@ -1270,5 +1285,8 @@ void CGameObject::OnRender			()
 
 void CGameObject::FootStepCallback(float power, bool b_play, bool b_on_ground, bool b_hud_view)
 {
-	callback(GameObject::eOnFootStep)(this->lua_game_object(), power, b_play, b_on_ground, b_hud_view);
+	if (ScriptCallbacksEnabled())
+	{
+		callback(GameObject::eOnFootStep)(this->lua_game_object(), power, b_play, b_on_ground, b_hud_view);
+	}
 }

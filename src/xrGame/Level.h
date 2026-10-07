@@ -440,7 +440,10 @@ protected:
 public:
 	virtual	u32				GetRealPing					() { return m_dwRealPing; };
 
+private:
+	bool WorldTeardown = false;
 public:
+	bool IsWorldTeardown() const { return WorldTeardown; }
 			void			remove_objects				();
 			virtual void	OnSessionTerminate		(const char* reason);
 			

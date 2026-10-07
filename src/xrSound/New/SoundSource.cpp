@@ -116,6 +116,8 @@ static void Snd_GrowCacheLines()
 
 static void Snd_PurgeCacheLine(u32 CacheIdx, bool IsPurgeFromEntry)
 {
+	// Callers hold CacheLock exclusively and the source lock when unlinking an owner.
+	// Always acquire g_SoundSourceLock before GSourcePool.CacheLock.
 	if (!Snd_IsCacheLineValid(CacheIdx))
 	{
 		return;
@@ -275,6 +277,9 @@ static void Snd_UpdateCache(SoundSourceState* Source, u32 Position)
 {
 	PROF_EVENT("Sound: Update Slot Cache");
 
+	// Cache eviction modifies other owners; pin their map entries for the entire update.
+	// Match the source -> cache lock order used by Snd_ReleaseSource.
+	xrSRWLockGuard SourceGuard(g_SoundSourceLock, true);
 	u32 NewIdx = 0;
 	{
 		xrSRWLockGuard Guard(GSourcePool.CacheLock, false);

@@ -16,6 +16,7 @@
 #include "xrServer_Objects_ALife_All.h"
 #include "xrServer_Objects_Alife_Smartcovers.h"
 #include "clsid_game.h"
+#include "xrServer_Objects_ALife_ScavengerCrow.h"
 
 // client entities includes
 #ifndef NO_XR_GAME
@@ -50,6 +51,7 @@
 #	include "ai/trader/ai_trader.h"
 
 #	include "ai/crow/ai_crow.h"
+#   include "ai/monsters/flying/ScavengerCrow.h"
 
 #	ifdef DEBUG
 #		include "../xrEngine/StatGraph.h"
@@ -275,6 +277,7 @@ void CObjectFactory::register_classes	()
 	ADD(CAI_Trader				,CSE_ALifeTrader				,CLSID_AI_TRADER				,"trader");
 
 	ADD(CAI_Crow				,CSE_ALifeCreatureCrow			,CLSID_AI_CROW					,"crow");
+    ADD(CScavengerCrow, CSE_ALifeScavengerCrow, CLSID_AI_SCAVENGER_CROW, "scavenger_crow");
 	ADD(CAI_Rat					,CSE_ALifeMonsterRat			,CLSID_AI_RAT					,"rat");
 	ADD(CCar					,CSE_ALifeCar					,CLSID_CAR						,"car");
 

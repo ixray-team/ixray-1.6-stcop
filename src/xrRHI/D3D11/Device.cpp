@@ -323,6 +323,7 @@ bool InternalDevice11::CreateD3D11()
 			ID3D11InfoQueue* infoQueue = nullptr;
 			if (SUCCEEDED(DX11Device->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&infoQueue)))
 			{
+				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
 				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
 
 				D3D11_MESSAGE_SEVERITY Severities[] =
@@ -343,8 +344,10 @@ bool InternalDevice11::CreateD3D11()
 
 
 				infoQueue->PushStorageFilter(&NewFilter);
-				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
+				// Keep warnings visible without interrupting every render pass.
+				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, false);
 				infoQueue->SetBreakOnID(D3D11_MESSAGE_ID_DEVICE_DRAW_RENDERTARGETVIEW_NOT_SET, false);
+				infoQueue->Release();
 			}
 		}
 	}
