@@ -511,10 +511,10 @@ bool CEditableObject::CheckShaderCompatible()
 	return bRes;
 }
 
-void CEditableObject::CreateBone(shared_str Name)
+bool CEditableObject::CreateBone(shared_str Name)
 {
-	if (!m_BoneParts.empty() || m_objectFlags.test(eoDynamic))
-		return;
+	if (!m_Bones.empty() || !m_BoneParts.empty() || m_objectFlags.test(eoDynamic))
+		return false;
 	
 	m_LoadState.set(LS_RBUFFERS, false);
 
@@ -540,10 +540,10 @@ void CEditableObject::CreateBone(shared_str Name)
 
 	for (CEditableMesh* _M : m_Meshes)
 	{
-		_M->UnloadSVertices();
+		_M->AssignMesh(Name);
 	}
 
-	AssignBoneName = Name;
+	return true;
 }
 
 void CEditableObject::AddBone(CBone* parent_bone)

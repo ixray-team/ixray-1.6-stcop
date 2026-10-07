@@ -298,6 +298,8 @@ public:
 	IKinematics*		GetKinematics		(){VERIFY(m_RenderObject.m_pVisual); return m_RenderObject.m_pVisual->dcast_PKinematics();}
 
 	CEditableObject*	CurrentObject		(){return m_pEditObject;}
+	const Fmatrix&		GetAVTransform		() const {return m_AVTransform;}
+	EActorEditMode		GetEditMode			() const {return m_EditMode;}
 	void				SetCurrentMotion	(const char* name, u16 slot);
 	CSMotion*			GetCurrentMotion	();       
 	CSMotion*			FindMotion			(const char* name);
