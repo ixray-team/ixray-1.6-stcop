@@ -81,8 +81,10 @@ void xrLoad(const char* name, bool draft_mode, bool skipThm)
 				{
 					F->r(&id, 3);
 					id = id & 0x00ffffff;
+					// v1 stores 24-bit links: map its "no link" to the
+					// 32-bit sentinel the rest of xrAI checks against
 					if (id == InvalidNode_v1)
-						id = InvalidNode_v1;
+						id = InvalidNode;
 					g_nodes[i].n[j] = id;
 				}
 			}

@@ -17,8 +17,12 @@ bool SceneBuilder::PrepareFolders()
 	return true;
 }
 
+extern ECORE_API xrCriticalSection temp_render_lock;
+
 bool SceneBuilder::EvictResource()
 {
+	xrCriticalSectionGuard guard_lock(temp_render_lock);
+
 	ExecCommand(COMMAND_EVICT_OBJECTS);
 	ExecCommand(COMMAND_EVICT_TEXTURES);
 
