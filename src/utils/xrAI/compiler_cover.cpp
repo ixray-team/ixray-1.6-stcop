@@ -189,9 +189,10 @@ void	xrCover	(bool pure_covers)
 			float cnt		= 2;
 			
 			for (int nid=0; nid<4; nid++) {
-				if (Base.n[nid]!=InvalidNode) {
-					val		+=  Old[Base.n[nid]].high_cover[dir];
-					val2	+=  Old[Base.n[nid]].low_cover[dir];
+				const u32 Link = Base.n[nid];
+				if (Link != InvalidNode && Link < Old.size()) {
+					val		+=  Old[Link].high_cover[dir];
+					val2	+=  Old[Link].low_cover[dir];
 					cnt		+=	1.f;
 				}
 			}
