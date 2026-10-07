@@ -362,12 +362,16 @@ void EmbreeRayTraceModel::IntelEmbereUnloadAll()
 		xr_delete(INST);
  	instances.clear();
 
-	rtcReleaseDevice(EmbreeDevice);
+	if (isDeviceInitialized && EmbreeDevice != nullptr)
+		rtcReleaseDevice(EmbreeDevice);
+
+	EmbreeDevice = nullptr;
 	isDeviceInitialized = false;
 }
  
 // Embree Device (Должен быть один)
-RTCDevice EmbreeDevice;
+RTCDevice EmbreeDevice = nullptr;
+bool      isDeviceInitialized = false;
 
 void InitializeEmbreeDevice()
 {

@@ -394,11 +394,34 @@ void DrawLightPreview(float Width, float Height)
 	static u32 ColorGeneration = 0;
 	static u32 MapGeneration = 0;
 	static bool FrameDirty = true;
+	static u32 ResetGeneration = 0;
+
+	// Colors/lightmaps belong to one scene: never mix them with another one
+	auto DropBakedData = [&]()
+	{
+		Baked.clear();
+		MapUv.clear();
+		MapLayer.clear();
+		Maps.clear();
+	};
+
+	u32 NewResetGeneration = ResetGeneration;
+	if (TakeLightPreviewReset(ResetGeneration, NewResetGeneration))
+	{
+		ResetGeneration = NewResetGeneration;
+		Vertices.clear();
+		Indices.clear();
+		Frame.clear();
+		DropBakedData();
+		CameraReady = false;
+		FrameDirty = true;
+	}
 
 	u32 NewSceneGeneration = SceneGeneration;
 	if (TakeLightPreviewScene(SceneGeneration, NewSceneGeneration, Vertices, Indices, Target, Radius))
 	{
 		SceneGeneration = NewSceneGeneration;
+		DropBakedData();
 		const float Len = sqrtf(0.85f * 0.85f + 0.55f * 0.55f + 0.85f * 0.85f);
 		Yaw = atan2f(0.85f, 0.85f);
 		Pitch = asinf(std::clamp(0.55f / Len, -1.f, 1.f));
@@ -553,6 +576,8 @@ static std::wstring WidenPhase(LPCSTR phase)
 void Startup(LPSTR lpCmdLine)
 {
 	xrLogger::EnableFastDebugLog();
+
+	ResetLightPreview();
 
 	SaveCompilerCfg();
 

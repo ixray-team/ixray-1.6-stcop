@@ -129,4 +129,7 @@ bool TakeLightPreviewColors(u32 KnownGeneration, u32& Generation, xr_vector<u8>&
 void PublishLightPreviewMaps(const xr_vector<float>& Uv, const xr_vector<u32>& Layers, const xr_vector<LightPreviewMap>& Maps);
 bool TakeLightPreviewMaps(u32 KnownGeneration, u32& Generation, xr_vector<float>& Uv, xr_vector<u32>& Layers, xr_vector<LightPreviewMap>& Maps);
 
+void ResetLightPreview();
+bool TakeLightPreviewReset(u32 KnownGeneration, u32& Generation);
+
 extern CompilersMode gCompilerMode;

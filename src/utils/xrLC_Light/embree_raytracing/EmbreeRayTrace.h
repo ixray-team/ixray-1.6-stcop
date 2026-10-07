@@ -10,7 +10,7 @@ void SetRay8(RTCRay8& rayhit, u32 IDX, const Fvector& pos, const Fvector& dir, f
  
 // Vertex, Tri Buffers
 extern RTCDevice	EmbreeDevice;
-static bool	isDeviceInitialized = false;
+extern bool	isDeviceInitialized;
 
 const char* GetDeviceConfig();
 void InitializeEmbreeDevice();
