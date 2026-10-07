@@ -113,6 +113,7 @@ public:
 	}
 	void			CreateImageData	();
 	void			RemoveImageData	();
+	void			Reload			();
 	IC bool IsVoid()const
 	{
 		return !m_RTFlags.is(rtValidShader);
