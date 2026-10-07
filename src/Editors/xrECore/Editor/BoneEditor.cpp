@@ -7,67 +7,74 @@
 
 void SJointIKData::clamp_by_limits(Fvector& dest_xyz)
 {
-    switch (type) {
-    case jtRigid:
-        dest_xyz.set(0.f, 0.f, 0.f);
-        break;
-    case jtJoint:
-        clamp(dest_xyz.x, limits[0].limit.x, limits[0].limit.y);
-        clamp(dest_xyz.y, limits[1].limit.x, limits[1].limit.y);
-        clamp(dest_xyz.z, limits[2].limit.x, limits[2].limit.y);
-        break;
-    case jtWheel:
-        clamp(dest_xyz.x, limits[0].limit.x, limits[0].limit.y);		dest_xyz.y = 0;
-        break;
-    case jtSlider:
-        dest_xyz.x = 0.f;
-        dest_xyz.y = 0.f;
-        clamp(dest_xyz.z, limits[1].limit.x, limits[1].limit.y);
-        break;
-        /*
-            case jtWheelXZ:
-                clamp(dest_xyz.x,limits[0].limit.x,limits[0].limit.y);		dest_xyz.y=0;
-            break;
-            case jtWheelXY:
-                clamp(dest_xyz.x,limits[0].limit.x,limits[0].limit.y);		dest_xyz.z=0;
-            break;
-            case jtWheelYX:
-                clamp(dest_xyz.y,limits[1].limit.x,limits[1].limit.y);		dest_xyz.z=0;
-            break;
-            case jtWheelYZ:
-                clamp(dest_xyz.y,limits[1].limit.x,limits[1].limit.y);		dest_xyz.x=0;
-            break;
-            case jtWheelZX:
-                clamp(dest_xyz.z,limits[2].limit.x,limits[2].limit.y);		dest_xyz.y=0;
-            break;
-            case jtWheelZY:
-                clamp(dest_xyz.z,limits[2].limit.x,limits[2].limit.y);		dest_xyz.x=0;
-            break;
-        */
-    } 
+	switch (type)
+	{
+		case jtRigid:
+			dest_xyz.set(0.f, 0.f, 0.f);
+			break;
+		case jtJoint:
+			clamp(dest_xyz.x, limits[0].limit.x, limits[0].limit.y);
+			clamp(dest_xyz.y, limits[1].limit.x, limits[1].limit.y);
+			clamp(dest_xyz.z, limits[2].limit.x, limits[2].limit.y);
+			break;
+		case jtWheel:
+			clamp(dest_xyz.x, limits[0].limit.x, limits[0].limit.y);
+			dest_xyz.y = 0;
+			break;
+		case jtSlider:
+			dest_xyz.x = 0.f;
+			dest_xyz.y = 0.f;
+			clamp(dest_xyz.z, limits[1].limit.x, limits[1].limit.y);
+			break;
+	}
 }
 
 void CBone::ShapeScale(const Fvector& _amount)
 {
-    switch (shape.type) {
-    case SBoneShape::stBox: {
-        Fvector amount = _amount;
-        //		Fmatrix _IT;_IT.invert(_LTransform());
-        //		_IT.transform_dir(amount,_amount);
-        //		if (Tools->GetSettings(etfCSParent)) _IT.transform_dir(amount);
-        shape.box.m_halfsize.add(amount);
-        if (shape.box.m_halfsize.x < EPS) shape.box.m_halfsize.x = EPS;
-        if (shape.box.m_halfsize.y < EPS) shape.box.m_halfsize.y = EPS;
-        if (shape.box.m_halfsize.z < EPS) shape.box.m_halfsize.z = EPS;
-    }break;
-    case SBoneShape::stSphere:
-        shape.sphere.R += _amount.x;			if (shape.sphere.R < EPS) shape.sphere.R = EPS;
-        break;
-    case SBoneShape::stCylinder:
-        shape.cylinder.m_height += _amount.z; 	if (shape.cylinder.m_height < EPS) shape.cylinder.m_height = EPS;
-        shape.cylinder.m_radius += _amount.x; 	if (shape.cylinder.m_radius < EPS) shape.cylinder.m_radius = EPS;
-        break;
-    }
+	switch (shape.type)
+	{
+		case SBoneShape::stBox:
+		{
+			Fvector amount = _amount;
+			shape.box.m_halfsize.add(amount);
+			if (shape.box.m_halfsize.x < EPS)
+			{
+				shape.box.m_halfsize.x = EPS;
+			}
+			if (shape.box.m_halfsize.y < EPS)
+			{
+				shape.box.m_halfsize.y = EPS;
+			}
+			if (shape.box.m_halfsize.z < EPS)
+			{
+				shape.box.m_halfsize.z = EPS;
+			}
+		}
+		break;
+		case SBoneShape::stSphere:
+		{
+			shape.sphere.R += _amount.x;
+			if (shape.sphere.R < EPS)
+			{
+				shape.sphere.R = EPS;
+			}
+			break;
+		}
+		case SBoneShape::stCylinder:
+		{
+			shape.cylinder.m_height += _amount.z;
+			if (shape.cylinder.m_height < EPS)
+			{
+				shape.cylinder.m_height = EPS;
+			}
+			shape.cylinder.m_radius += _amount.x;
+			if (shape.cylinder.m_radius < EPS)
+			{
+				shape.cylinder.m_radius = EPS;
+			}
+			break;
+		}
+	}
 }
 
 void CBone::ShapeRotate(const Fvector& _amount)
@@ -228,22 +235,6 @@ void CBone::ClampByLimits()
     mLocal.getXYZi(mot_rotate);
 }
 
-#if 0
-void motion_marks::Save(IWriter* W)
-{
-    W->w_string(name.c_str());
-    u32 cnt = intervals.size();
-    W->w_u32(cnt);
-    for (u32 i = 0; i < cnt; ++i)
-    {
-        interval& item = intervals[i];
-        W->w_float(item.first);
-        W->w_float(item.second);
-    }
-}
-#endif
-
-#if 1
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/UIShader.h"
 
@@ -270,4 +261,3 @@ FACTORY_PTR_INSTANCIATE(ThunderboltDescRender)
 FACTORY_PTR_INSTANCIATE(EnvDescriptorRender)
 FACTORY_PTR_INSTANCIATE(EnvDescriptorMixerRender)
 FACTORY_PTR_INSTANCIATE(WallMarkArray)
-#endif

@@ -520,11 +520,36 @@ void  CActorTools::OnJointTypeChange(PropValue* V)
 {
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
-void  CActorTools::OnShapeTypeChange(PropValue* V)
+
+void CActorTools::OnShapeTypeChange(PropValue* V)
 {
+	#if 0
+	switch (shape.type)
+	{
+		case SBoneShape::stBox:
+		{
+			shape.box.m_halfsize.x = 0.1f;
+			shape.box.m_halfsize.y = 0.1f;
+			shape.box.m_halfsize.z = 0.1f;
+			break;
+		}
+		case SBoneShape::stSphere:
+		{
+			shape.sphere.R = 0.1f;
+			break;
+		}
+		case SBoneShape::stCylinder:
+		{
+			shape.cylinder.m_height = 0.1f;
+			shape.cylinder.m_radius = 0.1f;
+			break;
+		}
+	}
+	#endif
 	EContext.UI->RedrawScene();
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
+
 void  CActorTools::OnBindTransformChange(PropValue* V)
 {
 	R_ASSERT(m_pEditObject);

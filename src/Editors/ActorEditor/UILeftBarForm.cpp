@@ -253,12 +253,9 @@ void UILeftBarForm::Draw()
 
                 if (ImGui::Button("Make dynamic", { -1, 0 }))
                 {
-                    ATools->CurrentObject()->CreateBone("idle");
-
-                    for (EditMeshIt mesh_it = ATools->CurrentObject()->m_Meshes.begin(); mesh_it != ATools->CurrentObject()->m_Meshes.end(); mesh_it++)
+                    if (ATools->CurrentObject()->CreateBone("idle"))
                     {
-                        CEditableMesh* pMesh = *mesh_it;
-                        pMesh->AssignMesh("idle");
+                        ATools->OnObjectModified();
                     }
 
                     ATools->RealUpdateProperties();
