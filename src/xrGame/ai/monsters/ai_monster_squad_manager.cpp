@@ -2,6 +2,7 @@
 #include "ai_monster_squad_manager.h"
 #include "ai_monster_squad.h"
 #include "../../Entity.h"
+#include "../../Level.h"
 
 //////////////////////////////////////////////////////////////////////////
 // SQUAD MANAGER Implementation
@@ -22,6 +23,7 @@ CMonsterSquadManager::~CMonsterSquadManager()
 
 void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id, CEntity *e)
 {
+	LinksCleanupFrame = u32(-1);
 	CMonsterSquad *pSquad;
 
 	// нет team - создать team, squad и group
@@ -100,6 +102,21 @@ void CMonsterSquadManager::update(CEntity *entity)
 
 void CMonsterSquadManager::remove_links(CObject *O)
 {
+	if (g_pGameLevel && Level().IsWorldTeardown())
+	{
+		return;
+	}
+	// No polling on ordinary frames. Deduplicate only deletion broadcasts;
+	// every recipient continues to remove its own private references.
+	if (LinksCleanupFrame != Device.dwFrame)
+	{
+		LinksCleanupFrame = Device.dwFrame;
+		CleanedLinks.clear();
+	}
+	if (!CleanedLinks.insert(O).second)
+	{
+		return;
+	}
 	for (u32 team_id=0; team_id<team.size();team_id++) {
 		for (u32 squad_id=0; squad_id<team[team_id].size(); squad_id++) {
 			for (u32 group_id=0; group_id<team[team_id][squad_id].size(); group_id++) {
@@ -109,4 +126,23 @@ void CMonsterSquadManager::remove_links(CObject *O)
 		}
 	}
 
+}
+
+void CMonsterSquadManager::ClearLinksForTeardown()
+{
+	for (auto& Team : team)
+	{
+		for (auto& Squad : Team)
+		{
+			for (auto* Group : Squad)
+			{
+				if (Group)
+				{
+					Group->ClearLinksForTeardown();
+				}
+			}
+		}
+	}
+	xr_hash_set<const CObject*>().swap(CleanedLinks);
+	LinksCleanupFrame = u32(-1);
 }

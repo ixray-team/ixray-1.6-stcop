@@ -22,6 +22,7 @@
 #include "../xrNetServer/NET_AuthCheck.h"
 #include "Actor.h"
 #include "holder_custom.h"
+#include "ai/monsters/ai_monster_squad_manager.h"
 
 #include "../xrPhysics/PhysicsCommon.h"
 
@@ -40,6 +41,25 @@ extern bool	g_b_ClearGameCaptions;
 void CLevel::remove_objects	()
 {
 	PROF_EVENT("remove_objects");
+	// Only the whole-world removal path suppresses cross-object script/squad
+	// notifications. Ordinary ALife switches continue through net_Relcase.
+	struct CTeardownScope
+	{
+		bool& Flag;
+		const bool Previous;
+		explicit CTeardownScope(bool& Value) : Flag(Value), Previous(Value)
+		{
+			Flag = true;
+		}
+		~CTeardownScope()
+		{
+			Flag = Previous;
+		}
+	} TeardownScope(WorldTeardown);
+	if (!TeardownScope.Previous && g_monster_squad)
+	{
+		monster_squad().ClearLinksForTeardown();
+	}
 	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - Start");
 	bool						b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
 	

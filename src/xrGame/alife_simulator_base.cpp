@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "clsid_game.h"
 #include "pch_script.h"
 #include "alife_simulator_base.h"
 #include "alife_simulator_header.h"

@@ -11,6 +11,7 @@
 #define CLSID_SCRIPT_OBJECT			MK_CLSID('S','C','R','P','T','O','B','J')
 #define CLSID_AI_GRAPH				MK_CLSID('A','I','_','G','R','A','P','H')
 #define CLSID_AI_CROW				MK_CLSID('A','I','_','C','R','O','W',' ')
+#define CLSID_AI_SCAVENGER_CROW      MK_CLSID('A','I','_','S','C','R','O','W')
 
 #define CLSID_AI_ZOMBIE				MK_CLSID('A','I','_','Z','O','M',' ',' ')
 #define CLSID_AI_POLTERGEIST		MK_CLSID('A','I','_','P','O','L','T','R')

@@ -16,6 +16,7 @@
 #include "script_game_object.h"
 #include "GameObject.h"
 #include "Level.h"
+#include "../xrServerEntities/clsid_game.h"
 
 CScriptBinder::CScriptBinder		()
 {
@@ -69,8 +70,15 @@ void CScriptBinder::reload(const char* section)
 		return;
 	}
 
+	const char* Binding = pSettings->r_string(section, "script_binding");
+	// An empty override explicitly disables a binder inherited from a parent section.
+	if (!Binding || !*Binding)
+	{
+		return;
+	}
+
 	luabind::functor<void>	lua_function;
-	if (!ai().script_engine().functor(pSettings->r_string(section, "script_binding"), lua_function))
+	if (!ai().script_engine().functor(Binding, lua_function))
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "function %s is not loaded!", pSettings->r_string(section, "script_binding"));
 		return;
@@ -224,8 +232,20 @@ bool CScriptBinder::net_SaveRelevant()
 
 void CScriptBinder::net_Relcase		(CObject *object)
 {
+	// Destruction callbacks still release each binder's own resources. The
+	// discarded world needs no N-by-N Lua notifications or argument wrappers.
+	if (!m_object || (g_pGameLevel && Level().IsWorldTeardown()))
+	{
+		return;
+	}
 	PROF_EVENT("CScriptBinder::net_Relcase")
 	CGameObject						*game_object = object->cast_game_object();
+	// Autonomous native crows do not own script links. Explicitly scripted
+	// flyers retain notification semantics during ordinary online/offline changes.
+	if (game_object && game_object->CLS_ID == CLSID_AI_SCAVENGER_CROW && !game_object->ScriptCallbacksEnabled())
+	{
+		return;
+	}
 	if (m_object && game_object) {
 		try {
 			m_object->net_Relcase	(game_object->lua_game_object());
