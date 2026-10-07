@@ -5,6 +5,13 @@
 #include <CompilersUI.h>
 extern CompilersMode gCompilerMode;
 
+#ifdef LCCUDA_BUILD
+namespace XRay::RayTrace::CUDA
+{
+	void ForgetPreviewFaces();
+}
+#endif
+
 // xrLC
 CBuild* pBuild = NULL;
 u32		version = 0;
@@ -20,6 +27,7 @@ void StartupLC()
 		if (!Selected)	continue;
 
 		gCompilerMode.compilation_level = Name;
+		ResetLightPreview();
  		create_global_data();
 	
 		// Se7kills
@@ -68,6 +76,9 @@ void StartupLC()
 		FS.update_path(lfn, _game_levels_, Name.data());
 		pBuild->Run(lfn);
 		xr_delete(pBuild);
+#ifdef LCCUDA_BUILD
+		XRay::RayTrace::CUDA::ForgetPreviewFaces();
+#endif
 
 		PhaseEnd();
 	}

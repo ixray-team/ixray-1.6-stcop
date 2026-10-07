@@ -37,6 +37,7 @@ static xr_vector<float> LightPreviewUv;
 static xr_vector<u32> LightPreviewLayerId;
 static xr_vector<LightPreviewMap> LightPreviewMaps;
 static u32 LightPreviewMapGeneration = 0;
+static u32 LightPreviewResetGeneration = 0;
 
 struct LightPreviewLock
 {
@@ -123,6 +124,32 @@ bool TakeLightPreviewMaps(u32 KnownGeneration, u32& Generation, xr_vector<float>
 	Layers = LightPreviewLayerId;
 	Maps = LightPreviewMaps;
 	Generation = LightPreviewMapGeneration;
+	return true;
+}
+
+void ResetLightPreview()
+{
+	LightPreviewLock Lock;
+	LightPreviewVertices.clear();
+	LightPreviewIndices.clear();
+	LightPreviewCenter.set(0.f, 0.f, 0.f);
+	LightPreviewRadius = 1.f;
+	LightPreviewColors.clear();
+	LightPreviewUv.clear();
+	LightPreviewLayerId.clear();
+	LightPreviewMaps.clear();
+	LightPreviewResetGeneration++;
+}
+
+bool TakeLightPreviewReset(u32 KnownGeneration, u32& Generation)
+{
+	LightPreviewLock Lock;
+	if (!HasNewGeneration(LightPreviewResetGeneration, KnownGeneration))
+	{
+		return false;
+	}
+
+	Generation = LightPreviewResetGeneration;
 	return true;
 }
 

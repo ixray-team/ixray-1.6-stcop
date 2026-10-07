@@ -416,6 +416,17 @@ void XRay::RayTrace::CUDA::RememberPreviewFaces(const xr_vector<void*>& Faces, c
 	PublishLightPreviewColors(PreviewCornerRgb);
 }
 
+void XRay::RayTrace::CUDA::ForgetPreviewFaces()
+{
+	// Face*/xrMU_Reference* are owned by the level and die with CBuild
+	PreviewLevelFaces.clear();
+	PreviewMuRefs.clear();
+	PreviewMuFaces.clear();
+	PreviewCornerRgb.clear();
+	PreviewUv.clear();
+	PreviewLayerId.clear();
+}
+
 void XRay::RayTrace::CUDA::CapturePreviewBakedColors(bool IncludeVertex)
 {
 	if (PreviewLevelFaces.empty())
