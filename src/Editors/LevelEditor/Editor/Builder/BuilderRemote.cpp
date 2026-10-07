@@ -1074,6 +1074,9 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 			return u32(-1);
 		}
 	}
+
+	M.m_iVertexCount = vert_it;
+	M.m_iFaceCount = face_it;
 	return model_idx;
 }
 
