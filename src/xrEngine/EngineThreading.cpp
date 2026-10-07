@@ -97,6 +97,7 @@ void XRay::Engine::GameThread()
 
 	if (Device.LuaGC)
 	{
+		PROF_EVENT("LuaGC");
 		Device.LuaGC();
 	}
 
