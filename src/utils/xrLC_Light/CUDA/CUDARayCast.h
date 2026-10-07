@@ -36,6 +36,7 @@ namespace XRay::RayTrace::CUDA
     void RememberPreviewFaces(const xr_vector<void*>& Faces, const xr_vector<u8>& Kinds, const xr_vector<void*>& Extras);
     void CapturePreviewBakedColors(bool IncludeVertex);
     void CapturePreviewMU();
+    void ForgetPreviewFaces();
 
     // Загрузить Альфу Текстур
     void InitializeTexturesAlpha();
