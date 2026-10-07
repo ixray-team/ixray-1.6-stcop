@@ -222,55 +222,60 @@ void CEditableMesh::GenerateVNormals(const Fmatrix* parent_xform, bool force)
 	UnloadAdjacency();
 }
 
-// Автор: VaIerok
-// Если не работает - бить его
 void CEditableMesh::AssignMesh(shared_str to_bone)
 {
-	m_VMaps.push_back(xr_make_unique<st_VMap>(to_bone.c_str(), vmtWeight, false));
-	st_VMap* vMap = m_VMaps.back().get();
-	vMap->resize(GetFaceCount() * 3);
-
-	for (int i = 0; i < GetFaceCount() * 3; i++)
-		vMap->getW(i) = 1.0f;
-
-	int vindex = 0;
-	xr_vector<int> DeletedVmapIndexes;
-	for (int i = 0; i < (int)m_VMaps.size() - 1; i++, vindex++)
+	xr_vector<int> Remap(m_VMaps.size(), -1);
+	VMapVec NewVMaps;
+	for (size_t i = 0; i < m_VMaps.size(); i++)
 	{
 		if (m_VMaps[i]->type == vmtWeight)
+			continue;
+
+		Remap[i] = (int)NewVMaps.size();
+		NewVMaps.push_back(std::move(m_VMaps[i]));
+	}
+
+	const int WeightMapID = (int)NewVMaps.size();
+	NewVMaps.push_back(xr_make_unique<st_VMap>(to_bone.c_str(), vmtWeight, false));
+	st_VMap* WMap = NewVMaps.back().get();
+	WMap->resize((int)m_Vertices.size());
+	for (int i = 0; i < (int)m_Vertices.size(); i++)
+	{
+		WMap->getW(i) = 1.0f;
+		WMap->vindices[i] = i;
+	}
+
+	for (st_VMapPtLst& RefList : m_VMRefs)
+	{
+		RefList.erase(std::remove_if(RefList.begin(), RefList.end(), [&Remap](const st_VMapPt& Pt) { return Remap[Pt.vmap_index] == -1; }), RefList.end());
+
+		for (st_VMapPt& Pt : RefList)
+			Pt.vmap_index = Remap[Pt.vmap_index];
+	}
+
+	for (const st_Face& Face : m_Faces)
+	{
+		for (int k = 0; k < 3; k++)
 		{
-			Msg("Script: Erase old VMap [%s]", m_VMaps[i]->name.c_str());
-			m_VMaps.erase(m_VMaps.begin() + i);
-			DeletedVmapIndexes.push_back(vindex);
-			i--;
+			st_VMapPtLst& RefList = m_VMRefs[Face.pv[k].vmref];
+			auto HasWeight = [WeightMapID](const st_VMapPt& Pt) { return Pt.vmap_index == WeightMapID; };
+			if (std::find_if(RefList.begin(), RefList.end(), HasWeight) != RefList.end())
+				continue;
+
+			st_VMapPt& Pt = RefList.emplace_back();
+			Pt.vmap_index = WeightMapID;
+			Pt.index = Face.pv[k].pindex;
 		}
 	}
 
-	for (int j = 0; j < (int)m_VMRefs.size(); j++)
-	{
-		for (int r = 0; r < (int)m_VMRefs[j].size(); r++)
-		{
-			for (int h = 0; h < (int)DeletedVmapIndexes.size(); h++)
-			{
-				if (m_VMRefs[j][r].vmap_index == DeletedVmapIndexes[h]);
-				{
-					m_VMRefs[j][r].vmap_index = m_VMaps.size() - 1;
-					m_VMRefs[j][r].index = vMap->size() - 1;
-				}
-			}
-		}
-	}
+	m_VMaps = std::move(NewVMaps);
 
 	u16 Bone = m_Parent->BoneIDByName(to_bone);
+	R_ASSERT(Bone != BI_NONE);
 	m_Parent->GetBone(Bone)->SetWMap(to_bone.c_str());
 
-	for (int i = 0; i < (int)m_VMRefs.size(); i++)
-	{
-		st_VMapPt MapPt;
-		MapPt.vmap_index = m_VMaps.size() - 1;
-		MapPt.index = vMap->size() - 1;
-		m_VMRefs[i].push_back(MapPt);
-	}
+	UnloadSVertices(true);
+	UnloadRenderBuffers();
 }
 
 void CEditableMesh::GenerateSVertices(u32 influence)
@@ -288,13 +293,6 @@ void CEditableMesh::GenerateSVertices(u32 influence)
     // generate normals
 	GenerateFNormals	();
 	GenerateVNormals	(nullptr);
-
-	u16 AssingBoneID = BI_NONE;
-
-	if (m_Parent->AssignBoneName.size() > 0)
-	{
-		AssingBoneID = m_Parent->BoneIDByName(m_Parent->AssignBoneName);
-	}
 
     for (u32 f_id=0; f_id<m_Faces.size(); f_id++)
 	{
@@ -315,14 +313,7 @@ void CEditableMesh::GenerateSVertices(u32 influence)
 				const st_VMap& VM = *m_VMaps[VmPtLst[VmPtID].vmap_index];
 				if (VM.type == vmtWeight)
 				{
-					if (AssingBoneID != BI_NONE)
-					{
-						wb.push_back(st_WB(AssingBoneID, 1.0f));
-					}
-					else
-					{
-						wb.push_back(st_WB(m_Parent->GetBoneIndexByWMap(VM.name.c_str()), VM.getW(VmPtLst[VmPtID].index)));
-					}
+					wb.push_back(st_WB(m_Parent->GetBoneIndexByWMap(VM.name.c_str()), VM.getW(VmPtLst[VmPtID].index)));
 
 					if (wb.back().bone == BI_NONE)
 					{

@@ -57,12 +57,13 @@ void UITopBarForm::Draw()
 
     ImGui::Begin("TOOLBAR", NULL, window_flags);
     {
-        if (ImGui::BeginTable("##ToolbarTable", 5, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
+        if (ImGui::BeginTable("##ToolbarTable", 6, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
         {
             ImGui::TableSetupColumn("Actions");
             ImGui::TableSetupColumn("File");
             ImGui::TableSetupColumn("Directory Actions");
             ImGui::TableSetupColumn("Physics");
+            ImGui::TableSetupColumn("Skeleton");
             ImGui::TableSetupColumn("Preferences");
 
             auto yMaxSize = ImGui::GetContentRegionAvail().y;
@@ -105,6 +106,14 @@ void UITopBarForm::Draw()
 
             if (ImGui::TableNextColumn())
             {
+                DrawSkeletonFlag("DrawJoints", ICON_FA_CIRCLE_DOT, "Draw Joints", epoDrawJoints, ImDrawFlags_RoundCornersLeft);
+                DrawSkeletonFlag("DrawBoneAxis", ICON_FA_CROSSHAIRS, "Draw Bone Axis", epoDrawBoneAxis, ImDrawFlags_RoundCornersNone);
+                DrawSkeletonFlag("DrawBoneNames", ICON_FA_FONT, "Draw Bone Names", epoDrawBoneNames, ImDrawFlags_RoundCornersNone);
+                DrawSkeletonFlag("DrawBoneShapes", ICON_FA_SHAPES, "Draw Bone Shapes", epoDrawBoneShapes, ImDrawFlags_RoundCornersRight);
+            }
+
+            if (ImGui::TableNextColumn())
+            {
                 IMGUI_HINT_BUTTON("I_Preferences", Icons["preferences"], "Preferences", ImDrawFlags_RoundCornersAll, ClickPreferences);
             }
         }
@@ -113,6 +122,26 @@ void UITopBarForm::Draw()
     ImGui::End();
     ImGui::PopStyleColor(2);
     ImGui::PopStyleVar(6);
+}
+
+void UITopBarForm::DrawSkeletonFlag(const char* Id, const char* Icon, const char* Hint, u32 Flag, ImDrawFlags Rounding)
+{
+    const float ButtonSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+
+    bool IsEnabled = EPrefs->object_flags.is(Flag);
+    if (XRay::ImGui::ToolbarButton(Id, Icon, &IsEnabled, { ButtonSize, ButtonSize }, Rounding))
+    {
+        EPrefs->object_flags.set(Flag, !IsEnabled);
+        EContext.UI->RedrawScene();
+    }
+
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+        ImGui::SetTooltip(Hint);
+    }
+
+    ImGui::SameLine();
 }
 
 void UITopBarForm::InitIcons()

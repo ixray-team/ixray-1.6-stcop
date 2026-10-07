@@ -2,6 +2,8 @@
 
 #include "../xrECore/Editor/EditorChooseEvents.h"
 #include "IconsFontAwesome6.h"
+#include "IM_Manipulator.h"
+#include "../xrEUI/ImGuizmo.h"
 
 UIMainForm* MainForm = nullptr;
 UIMainForm::UIMainForm()
@@ -183,6 +185,23 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PopStyleColor();
 			}
 		}
+		ImGui::SameLine();
+		// Local/World
+		{
+			const bool IsLocal = imManipulator.MatrixMode == ImGuizmo::LOCAL;
+			ImGui::BeginDisabled(Action == etaScale || Action == etaSelect);
+
+			if (ImGui::Button(IsLocal ? ICON_FA_CUBE : ICON_FA_GLOBE))
+			{
+				imManipulator.MatrixMode = IsLocal ? ImGuizmo::WORLD : ImGuizmo::LOCAL;
+			}
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+			{
+				ImGui::SetTooltip(IsLocal ? "Local transform" : "World transform");
+			}
+
+			ImGui::EndDisabled();
+		}
 
 		ImGui::EndGroup();
 	}
@@ -295,6 +314,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	}
 	ImGui::EndGroup();
 	ImGui::NewLine();
+
+	imManipulator.Render(Pos.x, Pos.y, Size.x, Size.y);
 }
 
 bool UIMainForm::Frame()
