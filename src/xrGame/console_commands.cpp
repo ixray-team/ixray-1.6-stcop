@@ -182,7 +182,6 @@ static void full_memory_stats()
 	int		_eco_smem = (int)g_pSharedMemoryContainer->stat_economy();
 	u32		m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
 
-
 	//if (Device.Resources)	Device.Resources->_GetMemoryUsage	(m_base,c_base,m_lmaps,c_lmaps);
 	//	Resource check moved to m_pRender
 	if (Device.m_pRender) Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
@@ -351,7 +350,6 @@ public:
 	}
 
 };
-
 
 class CCC_ALifeObjectsPerUpdate : public IConsole_Command {
 public:
@@ -688,7 +686,6 @@ public:
 			strncpy_s(saved_game, sizeof(saved_game), args, _MAX_PATH - 1);
 		}
 
-
 		if (saved_game && *saved_game)
 		{
 			xr_strcpy(g_last_saved_game, saved_game);
@@ -816,8 +813,6 @@ public:
 	}
 };
 
-
-
 class CCC_Net_CL_InputUpdateRate : public CCC_Integer {
 protected:
 	int* value_blin;
@@ -836,7 +831,6 @@ public:
 		};
 	}
 };
-
 
 #ifdef DEBUG
 
@@ -966,8 +960,6 @@ public:
 	}
 
 };
-
-
 
 class CCC_DebugFonts : public IConsole_Command {
 public:
@@ -1326,7 +1318,6 @@ public:
 
 #include "GamePersistent.h"
 
-
 class CCC_MainMenu : public IConsole_Command {
 public:
 	CCC_MainMenu(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
@@ -1452,7 +1443,6 @@ public:
 		m.Set(value);
 	}
 };
-
 
 void	CCC_RadioMask::Execute(const char* args)
 {
@@ -1930,7 +1920,6 @@ public:
 					anomaly->m_space_restrictor_type = RestrictionSpace::eRestrictorTypeNone;
 				}
 
-
 				if (auto weapon = item->cast_item_weapon())
 				{
 					if (weapon->m_scope_status == ALife::eAddonAttachable)
@@ -2010,7 +1999,7 @@ public:
 
 	virtual void Execute(const char* args) override
 	{
-		if (!IsGameTypeSingle())
+		if (!g_pGameLevel || !IsGameTypeSingle() || !ai().get_alife() || !Level().Server || !Level().Server->game)
 		{
 			return;
 		}
@@ -2022,16 +2011,64 @@ public:
 		}
 
 		int count = 1;
-		int distance = -1;
+		float distance = -1.f;
 		string128 nameSection = {};
-		auto sc = sscanf_s(args, "%s %d %d", nameSection, (unsigned)sizeof(nameSection), &count, &distance);
-		if (sc > 3)
+		xr_string Arguments;
+		// _GetItem uses a single separator; collapse whitespace before splitting.
+		for (const char* Cursor = args ? args : ""; *Cursor; ++Cursor)
 		{
-			Msg("! Failed to parse input");
+			if (u8(*Cursor) <= u8(' '))
+			{
+				if (!Arguments.empty() && Arguments.back() != ' ')
+				{
+					Arguments += ' ';
+				}
+			}
+			else
+			{
+				Arguments += *Cursor;
+			}
+		}
+		_TrimRight(Arguments);
+		const int ArgumentCount = _GetItemCount(Arguments.c_str(), ' ');
+		xr_string Section;
+		_GetItem(Arguments.c_str(), 0, Section, ' ');
+		bool IsParsed = ArgumentCount >= 1 && ArgumentCount <= 3 && Section.size() < sizeof(nameSection);
+		auto ParseNumberLambda = [](const xr_string& Token, auto& Value)
+		{
+			const char* First = Token.c_str();
+			const char* Last = First + Token.size();
+			if (First != Last && *First == '+')
+			{
+				++First;
+				if (First != Last && (*First == '+' || *First == '-'))
+				{
+					return false;
+				}
+			}
+			const auto Result = std::from_chars(First, Last, Value);
+			return Result.ec == std::errc{} && Result.ptr == Last;
+		};
+		if (IsParsed && ArgumentCount >= 2)
+		{
+			xr_string Token;
+			_GetItem(Arguments.c_str(), 1, Token, ' ');
+			IsParsed = ParseNumberLambda(Token, count);
+			if (IsParsed && ArgumentCount == 3)
+			{
+				_GetItem(Arguments.c_str(), 2, Token, ' ');
+				IsParsed = ParseNumberLambda(Token, distance);
+			}
+		}
+		if (!IsParsed || count < 1 || count > 256 || !_valid(distance) ||
+			(distance != -1.f && (distance <= 0.f || distance > 5000.f)))
+		{
+			Msg("! Format: g_spawn_on_distance <section> [count: 1..256] [distance in metres: 0..5000]");
 			return;
 		}
+		xr_strcpy(nameSection, Section.c_str());
 
-		if (!pSettings->section_exist(nameSection))
+		if (!pSettings->section_exist(nameSection) || !pSettings->line_exist(nameSection,"class"))
 		{
 			Msg("! Can't find section: %s", nameSection);
 			return;
@@ -2047,18 +2084,34 @@ public:
 			}
 		}
 
-		float dst = HUD().GetCurrentRayQuery().range;
-
-		if (distance == -1 || dst <= distance)
+		Fvector direction = Device.vCameraDirection;
+		if (!_valid(Device.vCameraPosition) || !_valid(direction) || direction.square_magnitude() < EPS_L)
 		{
-			distance = dst;
+			Msg("! Cannot spawn: invalid camera position/direction");
+			return;
+		}
+		direction.normalize();
+		float dst = distance == -1.f ? 500.f : distance;
+		collide::rq_result hit;
+		if (Level().ObjectSpace.RayPick(Device.vCameraPosition,direction,dst,collide::rqtBoth,hit,actor))
+			dst = hit.range;
+		Fvector point;
+		point.mad(Device.vCameraPosition,direction,dst);
+		const u32 vertex = actor->ai_location().level_vertex_id();
+		if (!_valid(point) || !ai().level_graph().valid_vertex_id(vertex))
+		{
+			Msg("! Cannot spawn: invalid position or actor AI vertex");
+			return;
 		}
 
-		Fvector3 point = point.mad(Device.vCameraPosition, Device.vCameraDirection, distance);
-
-		for (size_t i = 0; i < count; i++)
+		for (int i = 0; i < count; ++i)
 		{
-			auto item = Level().Server->game->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), u16(-1));
+			auto item = Level().Server->game->alife().spawn_item(nameSection, point, vertex, actor->ai_location().game_vertex_id(), ALife::INVALID_OBJECT_ID);
+			if (!item || !item->cast_alife_object())
+			{
+				Msg("! Cannot spawn ALife object: %s",nameSection);
+				return;
+			}
 			item->cast_alife_object()->use_ai_locations(false);
 
 			auto anomaly = item->cast_anomalous_zone();
@@ -2430,7 +2483,6 @@ public:
 	}
 };
 
-
 class CCC_SetGameTime : public IConsole_Command {
 public:
 	CCC_SetGameTime(const char* N) : IConsole_Command(N) {
@@ -2546,7 +2598,6 @@ public:
 	}
 };
 
-
 #endif
 
 extern void RefreshNames();
@@ -2650,6 +2701,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_GiveMoney, "g_money");
 	CMD1(CCC_GSpawn, "g_spawn");
 	CMD1(CCC_GSpawnOnDistance, "g_spawn_on_distance");
+	CMD1(CCC_GSpawnOnDistance, "g_spawn_on_dist");
 	CMD1(CCC_GSpawnToInventory, "g_spawn_inv");
 	CMD1(CCC_SpawnSquad, "g_spawn_squad");
 	CMD1(CCC_SetCharComm, "g_character_community");
@@ -2700,7 +2752,6 @@ void CCC_RegisterCommands()
 	CMD1(CCC_ALifeObjectsPerUpdate, "al_objects_per_update") // set process time
 	CMD1(CCC_ALifeSwitchFactor, "al_switch_factor") // set switch factor
 #endif
-
 
 	CMD3(CCC_Mask32, "hud_weapon", &psHUD_Flags, HUD_WEAPON);
 	CMD3(CCC_Mask32, "hud_info", &psHUD_Flags, HUD_INFO);
@@ -2775,7 +2826,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask64, "ai_draw_game_graph_objects", &psAI_Flags, aiDrawGameGraphObjects);
 	CMD3(CCC_Mask64, "ai_draw_game_graph_real_pos", &psAI_Flags, aiDrawGameGraphRealPos);
 
-
 	CMD3(CCC_Mask64, "ai_nil_object_access", &psAI_Flags, aiNilObjectAccess);
 
 	CMD3(CCC_Mask64, "ai_draw_visibility_rays", &psAI_Flags, aiDrawVisibilityRays);
@@ -2812,7 +2862,6 @@ void CCC_RegisterCommands()
 
 	CMD1(CCC_ShowMonsterInfo, "ai_monster_info");
 	CMD1(CCC_DebugFonts, "debug_fonts");
-
 
 	CMD1(CCC_ShowAnimationStats, "ai_show_animation_stats");
 #endif // DEBUG
@@ -2872,7 +2921,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "dbg_draw_rp", &dbg_net_Draw_Flags, dbg_draw_rp);
 	CMD3(CCC_Mask32, "dbg_draw_climbable", &dbg_net_Draw_Flags, dbg_draw_climbable);
 	CMD3(CCC_Mask32, "dbg_draw_skeleton", &dbg_net_Draw_Flags, dbg_draw_skeleton);
-
 
 	CMD3(CCC_Mask32, "dbg_draw_ph_contacts", &ph_dbg_draw_mask, phDbgDrawContacts);
 	CMD3(CCC_Mask32, "dbg_draw_ph_enabled_aabbs", &ph_dbg_draw_mask, phDbgDrawEnabledAABBS);
@@ -2996,7 +3044,6 @@ void CCC_RegisterCommands()
 	CMD1(CCC_StartTimeSingle, "start_time_single");
 	CMD4(CCC_TimeFactorSingle, "time_factor_single", &g_fTimeFactor, 0.f, 10000.0f);
 #endif
-
 
 	g_uCommonFlags.zero();
 	g_uCommonFlags.set(flAiUseTorchDynamicLights, true);

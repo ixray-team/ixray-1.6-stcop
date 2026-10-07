@@ -336,3 +336,20 @@ bool   squad_grouping_behaviour::update ()
 
 	return true;
 }
+
+void CMonsterSquad::ClearLinksForTeardown()
+{
+	// Keep member keys and leader until normal net_Destroy unregisters them.
+	for (auto& Entry : m_goals)
+	{
+		Entry.second.entity = nullptr;
+		Entry.second.type = MG_None;
+	}
+	for (auto& Entry : m_commands)
+	{
+		Entry.second.entity = nullptr;
+		Entry.second.type = SC_NONE;
+	}
+	m_locked_covers.clear();
+	m_locked_corpses.clear();
+}
