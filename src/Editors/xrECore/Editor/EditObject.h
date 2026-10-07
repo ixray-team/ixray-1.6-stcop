@@ -216,7 +216,6 @@ public:
 	xr_string		m_LoadName;
 	int				m_RefCount;
 protected:
-	shared_str		AssignBoneName;
 
 	time_t			m_ObjectVersion;
 
@@ -315,7 +314,7 @@ public:
 	// pick methods
 	bool 			RayPick					(float& dist, const Fvector& S, const Fvector& D, const Fmatrix& inv_parent, SRayPickInfo* pinf=nullptr);
 
-	void			CreateBone				(shared_str Name);
+	bool			CreateBone				(shared_str Name);
 	void			AddBone					(CBone* parent_bone);
 	void			DeleteBone				(CBone* bone);
 	void			RenameBone				(CBone* bone, const char* new_name);
