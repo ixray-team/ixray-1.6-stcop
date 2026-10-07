@@ -388,10 +388,19 @@ struct CActorAnimationManager
 		bool fx = false;
 	};
 
+	struct SPlaylistEntry
+	{
+		shared_str source;
+		shared_str name;
+		bool fx = false;
+	};
+
 	xr_vector<SSource> sources;
 	xr_vector<SFavorite> favorites;
+	xr_vector<SPlaylistEntry> playlist;
 	MotionID played_motion;
 	shared_str played_name;
+	shared_str played_source;
 	IGame_Level* level = nullptr;
 	char filter[128] = {};
 	bool override_mode = false;
@@ -399,11 +408,17 @@ struct CActorAnimationManager
 	bool mix = true;
 	bool loop = false;
 	float speed = 1.0f;
+	float browser_split = 0.35f;
 	s32 selected_source = -1;
+	s32 playlist_index = -1;
+	s32 playlist_selected = -1;
+	bool playlist_loop = false;
+	bool playlist_advance = false;
+	float playlist_fx_deadline = 0.0f;
 
 	void reload();
 	void draw();
-	void play(const SSource& source, const SAnimation& animation);
+	void play(const SSource& source, const SAnimation& animation, bool playlist = false);
 	void play_pause();
 	void frame_step(s32 direction);
 	void stop();
@@ -417,6 +432,12 @@ struct CActorAnimationManager
 	void remove_favorite(const shared_str& source, const shared_str& name);
 	void load_favorites();
 	void save_favorites();
+
+	static void PlaylistCallback(CBlend* blend);
+	void play_playlist(s32 index);
+	void stop_playlist();
+	void move_playlist(s32 from, s32 to);
+	void remove_playlist(s32 index);
 };
 
 template <typename T>

@@ -9,6 +9,13 @@ constexpr ImVec4 kAnimationListSelected = ImVec4(0.16f, 0.36f, 0.62f, 0.85f);
 constexpr ImVec4 kAnimationListHovered = ImVec4(0.12f, 0.26f, 0.45f, 0.70f);
 constexpr ImVec4 kAnimationListActive = ImVec4(0.20f, 0.44f, 0.74f, 0.90f);
 
+struct SAnimationDragPayload
+{
+	string_path source;
+	string_path name;
+	bool fx = false;
+};
+
 CBlend* PlayMotionByParts(IKinematicsAnimated* sa, MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam);
 
 static IKinematicsAnimated* ActorKinematics()
@@ -38,6 +45,26 @@ static bool IsOmfPath(const shared_str& source)
 	u32 length = source.size();
 
 	return length > 4 && !_stricmp(source.c_str() + length - 4, ".omf");
+}
+
+static bool ContainsFilter(const char* text, const char* filter)
+{
+	if (filter[0] == '\0')
+	{
+		return true;
+	}
+
+	size_t length = xr_strlen(filter);
+
+	for (const char* position = text; *position; ++position)
+	{
+		if (_strnicmp(position, filter, length) == 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 static void GetFavoritesPath(string_path& path)
@@ -345,6 +372,7 @@ void CActorAnimationManager::reload()
 	selected_source = -1;
 	played_motion.invalidate();
 	played_name = "";
+	played_source = "";
 	played_fx = false;
 
 	if (g_actor == nullptr)
@@ -560,7 +588,123 @@ void CActorAnimationManager::save_favorites()
 	}
 }
 
-void CActorAnimationManager::play(const SSource& source, const SAnimation& animation)
+void CActorAnimationManager::PlaylistCallback(CBlend* blend)
+{
+	if (blend == nullptr || blend->CallbackParam == nullptr)
+	{
+		return;
+	}
+
+	CActorAnimationManager* manager = static_cast<CActorAnimationManager*>(blend->CallbackParam);
+	manager->playlist_advance = true;
+}
+
+void CActorAnimationManager::play_playlist(s32 index)
+{
+	if (index < 0 || index >= (s32)playlist.size())
+	{
+		stop_playlist();
+		return;
+	}
+
+	const SPlaylistEntry& entry = playlist[index];
+	playlist_index = index;
+
+	const SSource* source = find_source(entry.source);
+
+	if (source != nullptr)
+	{
+		if (const SAnimation* animation = find_animation(*source, entry.name, entry.fx))
+		{
+			play(*source, *animation, true);
+		}
+	}
+
+	playlist_advance = false;
+
+	if (played_name != entry.name)
+	{
+		playlist_advance = true;
+	}
+
+	if (entry.fx)
+	{
+		IKinematicsAnimated* kinematics = ActorKinematics();
+
+		if (kinematics && played_motion.valid())
+		{
+			playlist_fx_deadline = Device.fTimeGlobal + kinematics->get_animation_length(played_motion);
+		}
+	}
+}
+
+void CActorAnimationManager::stop_playlist()
+{
+	playlist_index = -1;
+	playlist_advance = false;
+}
+
+void CActorAnimationManager::move_playlist(s32 from, s32 to)
+{
+	if (from == to || from < 0 || from >= (s32)playlist.size() || to < 0 || to > (s32)playlist.size())
+	{
+		return;
+	}
+
+	s32 insert_at = to;
+
+	if (insert_at > from)
+	{
+		--insert_at;
+	}
+
+	SPlaylistEntry entry = playlist[from];
+	playlist.erase(playlist.begin() + from);
+	playlist.insert(playlist.begin() + insert_at, entry);
+
+	if (playlist_index == from)
+	{
+		playlist_index = insert_at;
+	}
+	else
+	{
+		if (from < playlist_index)
+		{
+			--playlist_index;
+		}
+
+		if (insert_at <= playlist_index)
+		{
+			++playlist_index;
+		}
+	}
+}
+
+void CActorAnimationManager::remove_playlist(s32 index)
+{
+	if (index < 0 || index >= (s32)playlist.size())
+	{
+		return;
+	}
+
+	playlist.erase(playlist.begin() + index);
+
+	if (playlist_index == index)
+	{
+		playlist_index = -1;
+	}
+	else if (playlist_index > index)
+	{
+		--playlist_index;
+	}
+
+	if (playlist_selected >= (s32)playlist.size())
+	{
+		playlist_selected = (s32)playlist.size() - 1;
+	}
+}
+
+void CActorAnimationManager::play(const SSource& source, const SAnimation& animation, bool playlist)
 {
 	if (g_actor == nullptr)
 	{
@@ -572,6 +716,11 @@ void CActorAnimationManager::play(const SSource& source, const SAnimation& anima
 	if (!kinematics)
 	{
 		return;
+	}
+
+	if (!playlist)
+	{
+		stop_playlist();
 	}
 
 	set_override(true);
@@ -594,14 +743,15 @@ void CActorAnimationManager::play(const SSource& source, const SAnimation& anima
 	}
 	else
 	{
-		PlayMotionByParts(kinematics, motion, mix, nullptr, nullptr);
-		SetBlendLoop(kinematics, motion, loop);
+		PlayMotionByParts(kinematics, motion, mix, playlist ? PlaylistCallback : nullptr, playlist ? this : nullptr);
+		SetBlendLoop(kinematics, motion, playlist ? false : loop);
 	}
 
 	SetBlendSpeed(kinematics, motion, speed);
 
 	played_motion = motion;
 	played_name = animation.name;
+	played_source = source.id;
 	played_fx = animation.fx;
 }
 
@@ -690,6 +840,7 @@ void CActorAnimationManager::draw()
 {
 	if (g_actor == nullptr)
 	{
+		ImGui::TextDisabled("No actor in the level");
 		return;
 	}
 
@@ -704,6 +855,7 @@ void CActorAnimationManager::draw()
 
 	if (!kinematics)
 	{
+		ImGui::TextDisabled("Actor has no animated visual");
 		return;
 	}
 
@@ -712,42 +864,59 @@ void CActorAnimationManager::draw()
 		set_override(override_mode);
 	}
 
-	if (ImGui::Checkbox("Override", &override_mode))
+	if (ImGui::Checkbox("Override actor animation", &override_mode))
 	{
 		set_override(override_mode);
 	}
 
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Block the game's animation state machine while this panel controls the actor");
+	}
+
 	ImGui::SameLine();
 
-	if (ImGui::Button("Reload"))
+	if (ImGui::Button("Reload library"))
 	{
 		reload();
 	}
 
-	ImGui::SeparatorText("Current");
-
-	auto current_row = [&](const char* label, MotionID motion)
+	if (ImGui::IsItemHovered())
 	{
-		if (!motion.valid())
+		ImGui::SetTooltip("Rebuild the animation library from the level objects");
+	}
+
+	if (ImGui::CollapsingHeader("Current state"))
+	{
+		auto current_row = [&](const char* label, MotionID motion)
 		{
-			ImGui::Text("%s: none", label);
-			return;
-		}
+			if (!motion.valid())
+			{
+				ImGui::TextDisabled("%s: none", label);
+				return;
+			}
 
-		string256 text = {};
-		xr_sprintf(text, "%s: %s", label, MotionName(kinematics, motion));
+			string256 text = {};
+			xr_sprintf(text, "%s: %s", label, MotionName(kinematics, motion));
 
-		if (ImGui::Selectable(text, played_motion == motion))
-		{
-			played_motion = motion;
-			played_name = MotionName(kinematics, motion);
-			played_fx = false;
-		}
-	};
+			if (ImGui::Selectable(text, played_motion == motion))
+			{
+				played_motion = motion;
+				played_name = MotionName(kinematics, motion);
+				played_source = "";
+				played_fx = false;
+			}
 
-	current_row("Legs", actor->m_current_legs);
-	current_row("Torso", actor->m_current_torso);
-	current_row("Head", actor->m_current_head);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Inspect this animation in the player");
+			}
+		};
+
+		current_row("Legs", actor->m_current_legs);
+		current_row("Torso", actor->m_current_torso);
+		current_row("Head", actor->m_current_head);
+	}
 
 	ImGui::SeparatorText("Player");
 
@@ -758,10 +927,46 @@ void CActorAnimationManager::draw()
 	if (played_motion.valid())
 	{
 		ImGui::Text("Animation: %s%s", MotionName(kinematics, played_motion), played_fx ? " [fx]" : "");
+
+		if (played_source.size() > 0)
+		{
+			ImGui::SameLine();
+			ImGui::TextDisabled("(%s)", played_source.c_str());
+		}
 	}
 	else
 	{
-		ImGui::Text("Animation: none");
+		ImGui::TextDisabled("Animation: none — pick one from the library below");
+	}
+
+	if (!ImGui::GetIO().WantTextInput && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && blend != nullptr)
+	{
+		if (ImGui::IsKeyPressed(ImGuiKey_Space, false))
+		{
+			play_pause();
+		}
+
+		if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow))
+		{
+			frame_step(-1);
+		}
+
+		if (ImGui::IsKeyPressed(ImGuiKey_RightArrow))
+		{
+			frame_step(1);
+		}
+
+		if (ImGui::IsKeyPressed(ImGuiKey_Home))
+		{
+			SetBlendPlaying(kinematics, played_motion, false);
+			SetBlendTime(kinematics, played_motion, 0.0f);
+		}
+
+		if (ImGui::IsKeyPressed(ImGuiKey_End))
+		{
+			SetBlendPlaying(kinematics, played_motion, false);
+			SetBlendTime(kinematics, played_motion, total);
+		}
 	}
 
 	ImGui::BeginDisabled(blend == nullptr);
@@ -771,11 +976,22 @@ void CActorAnimationManager::draw()
 		play_pause();
 	}
 
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Play / pause (Space)");
+	}
+
 	ImGui::SameLine();
 
 	if (ImGui::Button("Stop"))
 	{
+		stop_playlist();
 		stop();
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Stop and rewind (also stops the playlist)");
 	}
 
 	ImGui::SameLine();
@@ -786,6 +1002,11 @@ void CActorAnimationManager::draw()
 		SetBlendTime(kinematics, played_motion, 0.0f);
 	}
 
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("First frame (Home)");
+	}
+
 	ImGui::SameLine();
 
 	if (ImGui::Button("<|"))
@@ -793,11 +1014,21 @@ void CActorAnimationManager::draw()
 		frame_step(-1);
 	}
 
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Previous frame (Left arrow)");
+	}
+
 	ImGui::SameLine();
 
 	if (ImGui::Button("|>"))
 	{
 		frame_step(1);
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Next frame (Right arrow)");
 	}
 
 	ImGui::SameLine();
@@ -808,11 +1039,21 @@ void CActorAnimationManager::draw()
 		SetBlendTime(kinematics, played_motion, total);
 	}
 
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Last frame (End)");
+	}
+
 	ImGui::SameLine();
 
 	if (ImGui::Checkbox("Loop", &loop))
 	{
 		SetBlendLoop(kinematics, played_motion, loop);
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Loop the selected animation");
 	}
 
 	ImGui::SameLine();
@@ -823,6 +1064,11 @@ void CActorAnimationManager::draw()
 		SetBlendSpeed(kinematics, played_motion, speed);
 	}
 
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Playback speed multiplier");
+	}
+
 	float time = blend ? blend->timeCurrent : 0.f;
 
 	if (Timeline("##actor_anim_timeline", time, total, played_motion.valid() ? kinematics->LL_GetMotionDef(played_motion) : nullptr))
@@ -831,11 +1077,20 @@ void CActorAnimationManager::draw()
 		SetBlendTime(kinematics, played_motion, time);
 	}
 
+	if (ImGui::IsItemHovered() || ImGui::IsItemActive())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+	}
+
 	if (blend)
 	{
 		u32 frame = (u32)iFloor(time / SAMPLE_SPF + .5f);
 		u32 frames = (u32)iFloor(total / SAMPLE_SPF + .5f);
 		ImGui::Text("Frame: %u / %u    Time: %.3f / %.3f s", frame, frames, time, total);
+	}
+	else
+	{
+		ImGui::TextDisabled("No animation loaded");
 	}
 
 	ImGui::EndDisabled();
@@ -844,14 +1099,114 @@ void CActorAnimationManager::draw()
 	ImGui::PushStyleColor(ImGuiCol_HeaderHovered, kAnimationListHovered);
 	ImGui::PushStyleColor(ImGuiCol_HeaderActive, kAnimationListActive);
 
-	ImGui::SeparatorText("Animations");
-	ImGui::InputTextWithHint("##actor_anim_filter", "filter", filter, IM_ARRAYSIZE(filter));
+	ImGui::SeparatorText("Library");
 
-	constexpr float list_height = 320.f;
+	float filter_button_width = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.x;
+	float filter_width = std::max(120.0f, ImGui::GetContentRegionAvail().x - filter_button_width);
+	ImGui::SetNextItemWidth(filter_width);
+	ImGui::InputTextWithHint("##actor_anim_filter", "Search animations and sources", filter, IM_ARRAYSIZE(filter));
 
-	ImGui::BeginChild("##actor_anim_sources", ImVec2(280.0f, list_height), true);
+	if (filter[0] != '\0')
+	{
+		ImGui::SameLine();
+
+		if (ImGui::Button("X##actor_anim_filter_clear"))
+		{
+			filter[0] = '\0';
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Clear search");
+		}
+	}
 
 	string_path label = {};
+
+	auto animation_row = [&](const SSource& source, const SAnimation& animation, bool show_source)
+	{
+		ImGui::PushID(&animation);
+
+		bool favorite = is_favorite(source.id, animation.name);
+		float selectable_width = std::max(1.0f, ImGui::GetContentRegionAvail().x - FavoriteButtonWidth() - ImGui::GetStyle().ItemSpacing.x * 1.5f);
+
+		if (show_source)
+		{
+			xr_sprintf(label, "%s  (%s)%s", animation.name.c_str(), source.id.c_str(), animation.fx ? " [fx]" : "");
+		}
+		else
+		{
+			xr_sprintf(label, "%s%s", animation.name.c_str(), animation.fx ? " [fx]" : "");
+		}
+
+		if (ImGui::Selectable(label, played_name == animation.name && played_source == source.id, 0, ImVec2(selectable_width, 0.0f)))
+		{
+			play(source, animation);
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("%s\n%s", animation.name.c_str(), source.id.c_str());
+		}
+
+		if (ImGui::BeginPopupContextItem("##actor_anim_context"))
+		{
+			if (ImGui::MenuItem("Add to playlist"))
+			{
+				playlist.push_back({ .source = source.id, .name = animation.name, .fx = animation.fx });
+				playlist_selected = (s32)playlist.size() - 1;
+			}
+
+			if (favorite)
+			{
+				if (ImGui::MenuItem("Remove from favorites"))
+				{
+					remove_favorite(source.id, animation.name);
+				}
+			}
+			else if (ImGui::MenuItem("Add to favorites"))
+			{
+				add_favorite(source.id, animation);
+			}
+
+			ImGui::EndPopup();
+		}
+
+		if (ImGui::BeginDragDropSource())
+		{
+			SAnimationDragPayload payload = {};
+			xr_strcpy(payload.source, source.id.c_str());
+			xr_strcpy(payload.name, animation.name.c_str());
+			payload.fx = animation.fx;
+
+			ImGui::SetDragDropPayload("ACTOR_ANIMATION", &payload, sizeof(payload));
+			ImGui::TextUnformatted(label);
+			ImGui::EndDragDropSource();
+		}
+
+		if (FavoriteStarButton(favorite))
+		{
+			if (favorite)
+			{
+				remove_favorite(source.id, animation.name);
+			}
+			else
+			{
+				add_favorite(source.id, animation);
+			}
+		}
+
+		ImGui::PopID();
+	};
+
+	float browser_height = std::max(150.0f, ImGui::GetContentRegionAvail().y * 0.5f);
+	float browser_width = ImGui::GetContentRegionAvail().x;
+	constexpr float splitter_width = 6.0f;
+	float max_left_width = std::max(80.0f, browser_width - 160.0f - splitter_width);
+	float left_width = std::clamp(browser_width * browser_split, 80.0f, max_left_width);
+
+	ImGui::BeginChild("##actor_anim_browser_sources", ImVec2(left_width, browser_height), true);
+
 	xr_sprintf(label, "Favorites (%u)", (u32)favorites.size());
 
 	if (SelectableWrapped(label, selected_source < 0))
@@ -869,11 +1224,60 @@ void CActorAnimationManager::draw()
 		}
 	}
 
-	ImGui::EndChild();
-	ImGui::SameLine();
-	ImGui::BeginChild("##actor_anim_motions", ImVec2(0.0f, list_height), true);
+	if (sources.empty() && favorites.empty())
+	{
+		ImGui::TextDisabled("No animation sets on the level");
+	}
 
-	if (selected_source < 0)
+	ImGui::EndChild();
+
+	ImGui::SameLine(0.0f, 0.0f);
+
+	ImGui::InvisibleButton("##actor_anim_browser_splitter", ImVec2(splitter_width, browser_height));
+
+	if (ImGui::IsItemActive())
+	{
+		browser_split += ImGui::GetIO().MouseDelta.x / std::max(1.0f, browser_width);
+		browser_split = std::clamp(browser_split, 0.1f, 0.9f);
+	}
+
+	if (ImGui::IsItemHovered() || ImGui::IsItemActive())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+	}
+
+	ImVec2 splitter_min = ImGui::GetItemRectMin();
+	ImVec2 splitter_max = ImGui::GetItemRectMax();
+	ImGui::GetWindowDrawList()->AddLine(ImVec2(splitter_min.x + splitter_width * 0.5f, splitter_min.y), ImVec2(splitter_min.x + splitter_width * 0.5f, splitter_max.y), ImGui::GetColorU32(ImGui::IsItemHovered() || ImGui::IsItemActive() ? ImGuiCol_SeparatorHovered : ImGuiCol_Separator), 1.0f);
+
+	ImGui::SameLine(0.0f, 0.0f);
+
+	ImGui::BeginChild("##actor_anim_browser_motions", ImVec2(0.0f, browser_height), true);
+
+	if (filter[0] != '\0')
+	{
+		bool any = false;
+
+		for (const SSource& source : sources)
+		{
+			for (const SAnimation& animation : source.animations)
+			{
+				if (!ContainsFilter(animation.name.c_str(), filter) && !ContainsFilter(source.id.c_str(), filter))
+				{
+					continue;
+				}
+
+				any = true;
+				animation_row(source, animation, true);
+			}
+		}
+
+		if (!any)
+		{
+			ImGui::TextDisabled("Nothing found");
+		}
+	}
+	else if (selected_source < 0)
 	{
 		xr_vector<shared_str> groups;
 
@@ -914,7 +1318,7 @@ void CActorAnimationManager::draw()
 
 				++count;
 
-				if (!filter[0] || strstr(favorite.name.c_str(), filter) || strstr(favorite.source.c_str(), filter))
+				if (ContainsFilter(favorite.name.c_str(), filter) || ContainsFilter(favorite.source.c_str(), filter))
 				{
 					visible = true;
 				}
@@ -940,7 +1344,7 @@ void CActorAnimationManager::draw()
 						continue;
 					}
 
-					if (filter[0] && !strstr(favorite.name.c_str(), filter) && !strstr(favorite.source.c_str(), filter))
+					if (!ContainsFilter(favorite.name.c_str(), filter) && !ContainsFilter(favorite.source.c_str(), filter))
 					{
 						continue;
 					}
@@ -951,7 +1355,7 @@ void CActorAnimationManager::draw()
 
 					ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
-					if (played_name == favorite.name)
+					if (played_name == favorite.name && played_source == favorite.source)
 					{
 						flags |= ImGuiTreeNodeFlags_Selected;
 					}
@@ -971,6 +1375,12 @@ void CActorAnimationManager::draw()
 
 					if (ImGui::BeginPopupContextItem("##actor_anim_favorite_context"))
 					{
+						if (ImGui::MenuItem("Add to playlist"))
+						{
+							playlist.push_back({ .source = favorite.source, .name = favorite.name, .fx = favorite.fx });
+							playlist_selected = (s32)playlist.size() - 1;
+						}
+
 						if (ImGui::MenuItem("Remove from favorites"))
 						{
 							pending_source = favorite.source;
@@ -979,6 +1389,18 @@ void CActorAnimationManager::draw()
 						}
 
 						ImGui::EndPopup();
+					}
+
+					if (ImGui::BeginDragDropSource())
+					{
+						SAnimationDragPayload payload = {};
+						xr_strcpy(payload.source, favorite.source.c_str());
+						xr_strcpy(payload.name, favorite.name.c_str());
+						payload.fx = favorite.fx;
+
+						ImGui::SetDragDropPayload("ACTOR_ANIMATION", &payload, sizeof(payload));
+						ImGui::TextUnformatted(label);
+						ImGui::EndDragDropSource();
 					}
 
 					if (FavoriteStarButton(true))
@@ -1006,58 +1428,207 @@ void CActorAnimationManager::draw()
 	{
 		const SSource& source = sources[selected_source];
 
-		for (s32 i = 0; i < (s32)source.animations.size(); ++i)
+		for (const SAnimation& animation : source.animations)
 		{
-			const SAnimation& animation = source.animations[i];
-
-			if (filter[0] && !strstr(animation.name.c_str(), filter))
-			{
-				continue;
-			}
-
-			ImGui::PushID(i);
-
-			bool favorite = is_favorite(source.id, animation.name);
-			float selectable_width = std::max(1.0f, ImGui::GetContentRegionAvail().x - FavoriteButtonWidth() - ImGui::GetStyle().ItemSpacing.x * 1.5f);
-
-			xr_sprintf(label, "%s%s", animation.name.c_str(), animation.fx ? " [fx]" : "");
-
-			if (ImGui::Selectable(label, played_name == animation.name, 0, ImVec2(selectable_width, 0.0f)))
-			{
-				play(source, animation);
-			}
-
-			if (ImGui::BeginPopupContextItem("##actor_anim_context"))
-			{
-				if (favorite)
-				{
-					if (ImGui::MenuItem("Remove from favorites"))
-					{
-						remove_favorite(source.id, animation.name);
-					}
-				}
-				else if (ImGui::MenuItem("Add to favorites"))
-				{
-					add_favorite(source.id, animation);
-				}
-
-				ImGui::EndPopup();
-			}
-
-			if (FavoriteStarButton(favorite))
-			{
-				if (favorite)
-				{
-					remove_favorite(source.id, animation.name);
-				}
-				else
-				{
-					add_favorite(source.id, animation);
-				}
-			}
-
-			ImGui::PopID();
+			animation_row(source, animation, false);
 		}
+	}
+
+	ImGui::EndChild();
+
+	ImGui::SeparatorText("Playlist");
+
+	if (playlist_index >= 0)
+	{
+		bool finished = playlist_advance;
+		playlist_advance = false;
+
+		if (!finished && playlist[playlist_index].fx && Device.fTimeGlobal >= playlist_fx_deadline)
+		{
+			finished = true;
+		}
+
+		if (!finished && !playlist[playlist_index].fx && FindBlend(kinematics, played_motion) == nullptr)
+		{
+			finished = true;
+		}
+
+		if (finished)
+		{
+			if (playlist_index + 1 < (s32)playlist.size())
+			{
+				play_playlist(playlist_index + 1);
+			}
+			else if (playlist_loop)
+			{
+				play_playlist(0);
+			}
+			else
+			{
+				stop_playlist();
+			}
+		}
+	}
+
+	ImGui::BeginDisabled(playlist.empty());
+
+	if (ImGui::Button("Play##playlist"))
+	{
+		play_playlist(playlist_selected >= 0 ? playlist_selected : 0);
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Play the playlist from the selected entry");
+	}
+
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+
+	ImGui::BeginDisabled(playlist_index < 0);
+
+	if (ImGui::Button("Stop##playlist"))
+	{
+		stop_playlist();
+		stop();
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Stop the playlist");
+	}
+
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+
+	ImGui::BeginDisabled(playlist.empty());
+
+	if (ImGui::Button("Clear"))
+	{
+		stop_playlist();
+		playlist.clear();
+		playlist_selected = -1;
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Remove all playlist entries");
+	}
+
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+	ImGui::Text("Entries: %u", (u32)playlist.size());
+
+	ImGui::SameLine();
+	ImGui::Checkbox("Loop##playlist", &playlist_loop);
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Restart the playlist after the last entry");
+	}
+
+	float playlist_height = std::max(90.0f, ImGui::GetContentRegionAvail().y - ImGui::GetStyle().ItemSpacing.y);
+
+	ImGui::BeginChild("##actor_anim_playlist", ImVec2(0.0f, playlist_height), true);
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ACTOR_ANIMATION"))
+		{
+			const SAnimationDragPayload* animation = (const SAnimationDragPayload*)payload->Data;
+			playlist.push_back({ .source = animation->source, .name = animation->name, .fx = animation->fx });
+			playlist_selected = (s32)playlist.size() - 1;
+		}
+		else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ACTOR_ANIMATION_INDEX"))
+		{
+			s32 from = *(const s32*)payload->Data;
+			move_playlist(from, (s32)playlist.size());
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+
+	if (playlist.empty())
+	{
+		ImGui::TextDisabled("Drag animations here from the library");
+	}
+
+	for (s32 i = 0; i < (s32)playlist.size(); ++i)
+	{
+		const SPlaylistEntry& entry = playlist[i];
+
+		ImGui::PushID(i);
+
+		xr_sprintf(label, "%d. %s%s", i + 1, entry.name.c_str(), entry.fx ? " [fx]" : "");
+
+		if (ImGui::Selectable(label, playlist_selected == i))
+		{
+			playlist_selected = i;
+		}
+
+		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+		{
+			play_playlist(i);
+		}
+
+		if (playlist_index == i)
+		{
+			ImVec2 rect_min = ImGui::GetItemRectMin();
+			ImVec2 rect_max = ImGui::GetItemRectMax();
+			ImGui::GetWindowDrawList()->AddText(ImVec2(rect_max.x + 8.0f, rect_min.y), IM_COL32(120, 255, 120, 255), "<< playing");
+		}
+
+		if (ImGui::BeginDragDropSource())
+		{
+			ImGui::SetDragDropPayload("ACTOR_ANIMATION_INDEX", &i, sizeof(i));
+			ImGui::TextUnformatted(label);
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ACTOR_ANIMATION_INDEX"))
+			{
+				s32 from = *(const s32*)payload->Data;
+				move_playlist(from, i);
+			}
+			else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ACTOR_ANIMATION"))
+			{
+				const SAnimationDragPayload* animation = (const SAnimationDragPayload*)payload->Data;
+				playlist.insert(playlist.begin() + i, { .source = animation->source, .name = animation->name, .fx = animation->fx });
+				playlist_selected = i;
+
+				if (playlist_index >= i)
+				{
+					++playlist_index;
+				}
+			}
+
+			ImGui::EndDragDropTarget();
+		}
+
+		if (ImGui::BeginPopupContextItem("##actor_anim_playlist_context"))
+		{
+			if (ImGui::MenuItem("Play from here"))
+			{
+				play_playlist(i);
+			}
+
+			if (ImGui::MenuItem("Remove"))
+			{
+				remove_playlist(i);
+				ImGui::EndPopup();
+				ImGui::PopID();
+				break;
+			}
+
+			ImGui::EndPopup();
+		}
+
+		ImGui::PopID();
 	}
 
 	ImGui::EndChild();
@@ -1074,15 +1645,18 @@ void RenderActorAnimationManager()
 			imgui_actor_animation_manager.set_override(false);
 		}
 
+		imgui_actor_animation_manager.stop_playlist();
 		return;
 	}
 
 	if (!g_pGameLevel)
 	{
 		imgui_actor_animation_manager.override_mode = false;
+		imgui_actor_animation_manager.stop_playlist();
 		return;
 	}
 
+	ImGui::SetNextWindowSize(ImVec2(820.0f, 700.0f), ImGuiCond_FirstUseEver);
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, kGeneralAlphaLevelForImGuiWindows));
 
 	if (!ImGui::Begin("Actor Animations", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_ActorAnimations)]))
