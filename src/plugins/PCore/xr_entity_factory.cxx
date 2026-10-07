@@ -101,6 +101,7 @@ void xr_entity_factory::init()
 	m_clsids.push_back(new factory_item<cse_alife_creature_phantom>("AI_PHANT"));
 	m_clsids.push_back(new factory_item<cse_alife_trader>("AI_TRADE"));
 	m_clsids.push_back(new factory_item<cse_alife_creature_crow>("AI_CROW"));
+    m_clsids.push_back(new factory_item<cse_alife_monster_base>("AI_SCROW"));
 	m_clsids.push_back(new factory_item<cse_alife_car>("C_NIVA"));
 	m_clsids.push_back(new factory_item<cse_alife_helicopter>("C_HLCPTR"));
 	m_clsids.push_back(new factory_item<cse_alife_item_artefact>("AF_MBALL"));
