@@ -116,6 +116,11 @@ void CALifeGraphRegistry::setup_current_level	()
 		VERIFY3(id >= 0, "Level is corrupted or doesn't exist", *(*I).second.name());
 	}
 
+	// Level().Load() calls Level_Set() again on its worker and replaces
+	// $level$'s path buffer. Do not read level.ai/cross-table while that
+	// buffer can be freed by the background loader.
+	if (!Device.IsEditorMode())
+		level_load.wait();
 	ai().load					(*(*I).second.name());
 
     g_start_game_vertex_id = 0;

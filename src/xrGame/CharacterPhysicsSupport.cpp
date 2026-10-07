@@ -145,12 +145,14 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 
 	if (!m_EntityAlife.g_Alive())
 	{
-		ka->PlayCycle(m_eType == etStalker ? "waunded_1_idle_0" : "death_init");
+		ka->PlayCycle(READ_IF_EXISTS(pSettings, r_string, e->s_name.c_str(),
+			"ph_death_animation", m_eType == etStalker ? "waunded_1_idle_0" : "death_init"));
 	}
 	else if (!m_EntityAlife.animation_movement_controlled())
 	{
 		///непонятно зачем это вообще надо запускать
-		ka->PlayCycle("death_init");
+		ka->PlayCycle(READ_IF_EXISTS(pSettings, r_string, e->s_name.c_str(),
+			"ph_spawn_animation", "death_init"));
 	}
 
 	///этот хак нужен, потому что некоторым монстрам 
@@ -478,7 +480,9 @@ IC void CCharacterPhysicsSupport::UpdateDeathAnims()
 	if (!m_flags.test(fl_death_anim_on) && !is_imotion(m_interactive_motion))
 	{
 		DestroyIKController();
-		m_EntityAlife.Visual()->dcast_PKinematicsAnimated()->PlayCycle("death_init");
+		m_EntityAlife.Visual()->dcast_PKinematicsAnimated()->PlayCycle(
+			READ_IF_EXISTS(pSettings, r_string, m_EntityAlife.cNameSect().c_str(),
+				"ph_death_animation", "death_init"));
 		m_flags.set(fl_death_anim_on, true);
 	}
 }

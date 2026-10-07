@@ -60,15 +60,15 @@ void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr us
 		SoundMemory.check_help_sound(eType, entity->ai_location().level_vertex_id());
 		return;
 	}
-	
+
 	if ((eType & SOUND_TYPE_WEAPON_SHOOTING) == SOUND_TYPE_WEAPON_SHOOTING) power = 1.f;
 
-	if (((eType & SOUND_TYPE_WEAPON_BULLET_HIT) == SOUND_TYPE_WEAPON_BULLET_HIT) && (dist < 2.f)) 
+	if (((eType & SOUND_TYPE_WEAPON_BULLET_HIT) == SOUND_TYPE_WEAPON_BULLET_HIT) && (dist < 2.f))
 		HitMemory.add_hit(who,eSideFront);
 
 	// execute callback
 	sound_callback	(who,eType,Position,power);
-	
+
 	// register in sound memory
 	if (power >= db().m_fSoundThreshold) {
 		SoundMemory.HearSound(who,eType,Position,power,Device.dwTimeGlobal);
@@ -108,7 +108,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		HS.hit_type			= hit_type;															//		l_P.w_u16	( u16(ALife::eHitTypeWound) );
 		HS.Write_Packet(l_P);
 		u_EventSend	(l_P);
-		
+
 		if (pEntityNC == Actor() && !GodMode() && m_bCanDropActorWeapon && smart_cast<CSnork*>(this) == nullptr && smart_cast<CPseudoGigant*>(this) == nullptr)
 		{
 			const float stamina = Actor()->conditions().GetPower();
@@ -184,7 +184,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 			PROF_EVENT("BaseMonster/Animation/HitEntity");
 
 			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("monster_claws", false, 3.0f);
-			
+
 			float h1,p1;
 			Device.vCameraDirection.getHP	(h1,p1);
 			Fvector hd				= hit_dir;
@@ -195,7 +195,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 			wnd_pos.y	+= 400.0f*std::cos(d);
 			wnd_pos.x	+= 500.0f*std::sin(d);
 			s->wnd()->SetWndPos(wnd_pos);
-			
+
 			float time_to_lock		= fDamage * MAX_LOCK_TIME;
 			clamp					(time_to_lock, 0.f, MAX_LOCK_TIME);
 			Actor()->lock_accel_for	(int(time_to_lock * 1000));
@@ -203,11 +203,11 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 			//////////////////////////////////////////////////////////////////////////
 			//
 			//////////////////////////////////////////////////////////////////////////
-			
+
 			CEffectorCam* ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effBigMonsterHit);
 			if(!ce)
 			{
-				const shared_str&	eff_sect = pSettings->r_string(cNameSect(), "actor_hit_effect");	
+				const shared_str&	eff_sect = pSettings->r_string(cNameSect(), "actor_hit_effect");
 				if(eff_sect.c_str())
 				{
 					int id						= -1;
@@ -248,7 +248,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 										VERIFY(0);
 									}
 					}
-					
+
 					string64				sect_name;
 
 					xr_sprintf					(sect_name,"%s_%d",eff_sect.c_str(), id);
@@ -256,12 +256,12 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 				}
 			}
 			//////////////////////////////////////////////////////////////////////////
-			
+
 
 		}
 
 		Morale.on_attack_success();
-		
+
 		m_time_last_attack_success	= Device.dwTimeGlobal;
 	}
 }
@@ -272,13 +272,13 @@ bool  CBaseMonster::feel_vision_isRelevant(CObject* O)
 	if(!O || O->getDestroy())		return false;
 	if (!g_Alive())					return false;
 	if (!O->cast_entity())			return false;
-	
+
 	if ((O->SpatialComponent->type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
 		return false;
-	
+
 	// если спит, то ничего не видит
 	if (m_bSleep) return false;
-	
+
 	// если не враг - не видит
 	CEntityAlive* entity = O->cast_entity_alive();
 	if (entity && entity->g_Alive())
@@ -298,7 +298,7 @@ bool  CBaseMonster::feel_vision_isRelevant(CObject* O)
 void CBaseMonster::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 element)
 {
 	if (!g_Alive()) return;
-	
+
 	feel_sound_new(who,SOUND_TYPE_WEAPON_SHOOTING,0,who->Position(),1.f);
 	if (g_Alive()) sound().play(MonsterSound::eMonsterSoundTakeDamage);
 
@@ -307,9 +307,9 @@ void CBaseMonster::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16
 	// Определить направление хита (перед || зад || лево || право)
 	float yaw,pitch;
 	vLocalDir.getHP(yaw,pitch);
-	
+
 	yaw = angle_normalize(yaw);
-	
+
 	EHitSide hit_side = eSideFront;
 	if ((yaw >= PI_DIV_4) && (yaw <= 3*PI_DIV_4)) hit_side = eSideLeft;
 	else if ((yaw >= 3 * PI_DIV_4) && (yaw <= 5*PI_DIV_4)) hit_side = eSideBack;
@@ -321,20 +321,23 @@ void CBaseMonster::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16
 
 	Morale.on_hit		();
 
-	callback(GameObject::eHit)(
-		lua_game_object(), 
-		amount,
-		vLocalDir,
-		who->cast_game_object()->lua_game_object(),
-		element
-	);
+	if (ScriptCallbacksEnabled())
+	{
+		callback(GameObject::eHit)(
+			lua_game_object(),
+			amount,
+			vLocalDir,
+			who->cast_game_object()->lua_game_object(),
+			element
+		);
+	}
 
 	// если нейтрал - добавить как врага
 	CEntityAlive	*obj = who->cast_entity_alive();
 	if (obj && (tfGetRelationType(obj) == ALife::eRelationTypeNeutral)) EnemyMan.add_enemy(obj);
 }
 
-void CBaseMonster::SetAttackEffector() 
+void CBaseMonster::SetAttackEffector()
 {
 	CActor *pA = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 	if (pA) {
@@ -343,24 +346,24 @@ void CBaseMonster::SetAttackEffector()
 	}
 }
 
-void CBaseMonster::Hit_Psy(CObject *object, float value) 
+void CBaseMonster::Hit_Psy(CObject *object, float value)
 {
 	NET_Packet		P;
 	SHit			HS;
-	HS.GenHeader		(GE_HIT, object->ID());				//					//	u_EventGen		(P,GE_HIT, object->ID());				// 
+	HS.GenHeader		(GE_HIT, object->ID());				//					//	u_EventGen		(P,GE_HIT, object->ID());				//
 	HS.whoID			= (ID());									// own		//	P.w_u16			(ID());									// own
 	HS.weaponID			= (ID());									// own		//	P.w_u16			(ID());									// own
 	HS.dir				= (Fvector().set(0.f,1.f,0.f));			// direction	//	P.w_dir			(Fvector().set(0.f,1.f,0.f));			// direction
 	HS.power			= (value);								// hit value	//	P.w_float		(value);								// hit value
 	HS.boneID			= (BI_NONE);								// bone		//	P.w_s16			(BI_NONE);								// bone
-	HS.p_in_bone_space	= (Fvector().set(0.f,0.f,0.f));							//	P.w_vec3		(Fvector().set(0.f,0.f,0.f));			
-	HS.impulse			= (0.f);												//	P.w_float		(0.f);									
+	HS.p_in_bone_space	= (Fvector().set(0.f,0.f,0.f));							//	P.w_vec3		(Fvector().set(0.f,0.f,0.f));
+	HS.impulse			= (0.f);												//	P.w_float		(0.f);
 	HS.hit_type			= (ALife::eHitTypeTelepatic);							//	P.w_u16			(u16(ALife::eHitTypeTelepatic));
 	HS.Write_Packet	(P);
 	u_EventSend		(P);
 }
 
-void CBaseMonster::Hit_Wound(CObject *object, float value, const Fvector &dir, float impulse) 
+void CBaseMonster::Hit_Wound(CObject *object, float value, const Fvector &dir, float impulse)
 {
 	NET_Packet	P;
 	SHit		HS;
@@ -379,7 +382,7 @@ void CBaseMonster::Hit_Wound(CObject *object, float value, const Fvector &dir, f
 
 bool CBaseMonster::critical_wound_external_conditions_suitable	()
 {
-	if (!control().check_start_conditions(ControlCom::eControlSequencer)) 
+	if (!control().check_start_conditions(ControlCom::eControlSequencer))
 		return false;
 
 	if (!anim().IsStandCurAnim()) return false;
@@ -387,7 +390,7 @@ bool CBaseMonster::critical_wound_external_conditions_suitable	()
 	return true;
 }
 
-void CBaseMonster::critical_wounded_state_start() 
+void CBaseMonster::critical_wounded_state_start()
 {
 	VERIFY	(m_critical_wound_type != u32(-1));
 
@@ -405,7 +408,5 @@ void CBaseMonster::critical_wounded_state_start()
 	}
 
 	VERIFY	(anim);
-	com_man().critical_wound(anim);	
+	com_man().critical_wound(anim);
 }
-
-

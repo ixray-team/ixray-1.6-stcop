@@ -98,6 +98,7 @@ public:
 
 	// -----------------------------------------------------------------
 
+	void ClearLinksForTeardown();
 	void			RegisterMember		(CEntity *pE);
 	void			RemoveMember		(CEntity *pE);
 

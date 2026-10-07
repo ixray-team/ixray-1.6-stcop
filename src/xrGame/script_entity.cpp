@@ -637,6 +637,10 @@ const CScriptEntityAction *CScriptEntity::GetActionByIndex	(u32 action_index) co
 
 void CScriptEntity::sound_callback	(const CObject *object, int sound_type, const Fvector &position, float sound_power)
 {
+	if (!this->object().ScriptCallbacksEnabled())
+	{
+		return;
+	}
 	PROF_EVENT("IGame_Level::SoundEvent_Dispatch");
 	if (!smart_cast<const CGameObject*>(object))
 		return;

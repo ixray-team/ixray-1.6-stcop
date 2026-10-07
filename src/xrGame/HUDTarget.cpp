@@ -16,6 +16,7 @@
 #include "ui/UIRadialMenuWeapon.h"
 #include "../xrEngine/string_table.h"
 #include "entity_alive.h"
+#include "clsid_game.h"
 
 #include "inventory_item.h"
 #include "Inventory.h"
@@ -218,7 +219,7 @@ void CHUDTarget::Render()
 			{
 				if (E_->cast_base_monster())
 				{
-					C = colorEnemy;
+					C = E_->CLS_ID == CLSID_AI_SCAVENGER_CROW ? colorNeutral : colorEnemy;
 				}
 				else if (!pActor || (pActor && IsGameTypeSingleCompatible()))
 				{
