@@ -82,7 +82,10 @@ void UIPropertiesItem::Draw()
 					ImTextureID Image = GUIManager->LoadTexture(*TexName);
 					//ImGui::SetCursorPosX(ImGui::GetCursorPosX());
 					ImGui::SetCursorPosX((CellWhdth - TexSize) / 2.f);
-					ImGui::Image(Image, { TexSize, TexSize });
+					if (Image != nullptr)
+						ImGui::Image(Image, { TexSize, TexSize });
+					else
+						ImGui::Dummy({ TexSize, TexSize });
 
 					if (Prop->DropCallback != nullptr && GUIManager->DnDType == EDragDropType::File)
 					{

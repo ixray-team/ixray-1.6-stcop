@@ -88,17 +88,20 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 		return nullptr;
 	}
 
-	if (TextureStack.contains(Texture))
+	ref_texture& Tex = TextureStack[Texture];
+	if (!Tex)
 	{
-		return TextureStack[Texture]->get_SRView()->GetRawSRV();
+		Tex = EDevice->Resources->_CreateTexture(Texture);
 	}
 
-	TextureStack[Texture] = EDevice->Resources->_CreateTexture(Texture);
-	ref_texture& Tex = TextureStack[Texture];
-
-	if (Tex->pSurface == nullptr)
+	if (Tex->pSurface == nullptr || Tex->get_SRView() == nullptr)
 	{
 		Tex->apply_load(0);
+	}
+
+	if (Tex->get_SRView() == nullptr)
+	{
+		return nullptr;
 	}
 
 	return (void*)Tex->get_SRView()->GetRawSRV();
