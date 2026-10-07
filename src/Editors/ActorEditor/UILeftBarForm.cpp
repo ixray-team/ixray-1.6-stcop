@@ -228,8 +228,19 @@ void UILeftBarForm::Draw()
                 const float AvailWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::SameLine();
 
-                ImGui::SetCursorPosX(AvailWidth - ButtonWidth);
+                ImGui::SetCursorPosX(AvailWidth - ButtonWidth * 2.f - ImGui::GetStyle().ItemSpacing.x);
                 ImGui::PushID(Surf);
+                if (ImGui::SmallButton(ICON_FA_ARROWS_ROTATE))
+                {
+                    Surf->Reload();
+                    EContext.UI->RedrawScene();
+                }
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::SetTooltip("Reload surface");
+                }
+
+                ImGui::SameLine();
                 const char* icon = Surf->m_bEditorVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
                 if (ImGui::SmallButton(icon))
                 {
