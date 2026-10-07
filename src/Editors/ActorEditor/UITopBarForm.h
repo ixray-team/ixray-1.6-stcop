@@ -26,4 +26,6 @@ private:
     void ClickOpenGameData();
 
     void ClickPreferences();
+
+    void DrawSkeletonFlag(const char* Id, const char* Icon, const char* Hint, u32 Flag, ImDrawFlags Rounding);
 };
