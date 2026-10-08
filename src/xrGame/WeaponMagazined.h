@@ -109,7 +109,9 @@ public:
 	virtual void	Load(const char* section);
 	virtual void	LoadSounds(const char* section);
 	virtual void	LoadSoundsSilencer(const char* section);
-			void	LoadSilencerKoeffs();
+	void LoadSilencerKoeffs();
+	void ReloadConfig() override;
+	void LoadMagazineShootingParams(const char* section);
 
 	virtual CWeaponBinoculars* cast_weapon_binoculars() { return nullptr; }
 	virtual CWeaponMagazined* cast_weapon_magazined() { return this; }
