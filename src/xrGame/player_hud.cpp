@@ -1387,7 +1387,7 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		speed_pos = current_params.move_suicide_speed_pos;
 	}
 
-	CHudItem::jitter_params& jitter = itm->GetCurJitterParams();
+	const SHudJitterParams& jitter = itm->GetCurJitterParams();
 
 	while (time_accumulator > 8)
 	{
@@ -1451,7 +1451,7 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		time_accumulator -= 8;
 	}
 
-	if (actor->SuicideNow && ActorVisForContr && !(itm->ProhibitSuicide || itm->cast_weapon() && itm->cast_weapon()->SuicideByAnimation))
+	if (actor->SuicideNow && ActorVisForContr && !(itm->HudDesc().ProhibitSuicide || itm->cast_weapon() && itm->cast_weapon()->SuicideByAnimation))
 	{
 		pos = hands_attach_pos();
 		rot = hands_attach_rot();
@@ -2386,7 +2386,7 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 				continue;
 			}
 
-			const auto& blend_params = m_attached_items[0]->m_parent_hud_item->m_sMovementBlendParams[i];
+			const auto& blend_params = m_attached_items[0]->m_parent_hud_item->HudDesc().m_sMovementBlendParams[i];
 			if (blend_params.has_motion)
 			{
 				m_movement_layers[i]->Reload(blend_params.camera_name, blend_params.speed_power, blend_params.blend_params);

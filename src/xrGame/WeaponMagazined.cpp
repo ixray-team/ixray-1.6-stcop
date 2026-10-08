@@ -2983,13 +2983,13 @@ void CWeaponMagazined::InitAddons()
 void CWeaponMagazined::HudSelector()
 {
 	if (m_bUseSilHud && IsSilencerAttachable() && IsSilencerAttached())
-		hud_sect = hud_silencer;
+		SetHudSection(hud_silencer);
 	else if (m_bUseScopeHud && IsScopeAttachable() && IsScopeAttached())
-		hud_sect = hud_scope;
+		SetHudSection(hud_scope);
 	else if (m_bUseGLHud && IsGrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
-		hud_sect = hud_gl;
+		SetHudSection(hud_gl);
 	else
-		hud_sect = hud_sect_cache;
+		SetHudSection(hud_sect_cache);
 
 	bUpdateHUDBonesVisibility = false;
 }

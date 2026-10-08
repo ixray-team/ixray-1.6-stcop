@@ -73,7 +73,6 @@ class CUIArtefactDetectorElite final : public CUIArtefactDetectorBase, public CU
 	};
 	xr_vector<SDrawOneItem>	m_items_to_draw = {};
 	CEliteDetector* m_parent = nullptr;
-	Fmatrix	m_map_attach_offset;
 
 	void GetUILocatorMatrix(Fmatrix& _m);
 public:

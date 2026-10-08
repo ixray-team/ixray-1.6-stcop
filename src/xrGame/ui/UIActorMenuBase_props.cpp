@@ -125,7 +125,7 @@ void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 		}
 		else if (pEatableItem)
 		{
-			act_str = *pEatableItem->UseText;
+			act_str = *pEatableItem->EatableDesc().UseText;
 		}
 		if (act_str)
 		{
@@ -332,7 +332,7 @@ void CUIActorMenuBase::PropertiesBoxForSlots(CUICellItem* cell_item, PIItem item
 	}
 
 	CCustomOutfit* outfit_in_slot = GetInventoryOwner()->GetOutfit();
-	if (pHelmet && !bAlreadyDressed && (!outfit_in_slot || outfit_in_slot->bIsHelmetAvaliable))
+	if (pHelmet && !bAlreadyDressed && (!outfit_in_slot || outfit_in_slot->IsHelmetAvailable()))
 	{
 		m_UIPropertiesBox->AddItem("st_dress_helmet", (void*)item->BaseSlot(), INVENTORY_TO_SLOT_ACTION);
 		b_show = true;
@@ -875,8 +875,8 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 
 		extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, const char* section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
 
-		int Count = item->m_parse_params.m_items.size();
-		int Count2 = item->m_parse_params.m_chances.size();
+		int Count = item->ItemDesc().m_parse_params.m_items.size();
+		int Count2 = item->ItemDesc().m_parse_params.m_chances.size();
 
 		for (int i = 0; i < Count; ++i)
 		{
@@ -884,16 +884,16 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 
 			if (i >= Count2)
 			{
-				chance = item->m_parse_params.m_chances.back();
+				chance = item->ItemDesc().m_parse_params.m_chances.back();
 			}
 			else
 			{
-				chance = item->m_parse_params.m_chances[i];
+				chance = item->ItemDesc().m_parse_params.m_chances[i];
 			}
 
 			if (chance >= ::Random.randF(0.0f, 1.0f))
 			{
-				CALifeSimulator__spawn_item2(&tpGame->alife(), *item->m_parse_params.m_items[i], actor->Position(), actor->ai_location().level_vertex_id(), actor->ai_location().game_vertex_id(), actor->ID());
+				CALifeSimulator__spawn_item2(&tpGame->alife(), *item->ItemDesc().m_parse_params.m_items[i], actor->Position(), actor->ai_location().level_vertex_id(), actor->ai_location().game_vertex_id(), actor->ID());
 			}
 		}
 		item->object().DestroyObject();

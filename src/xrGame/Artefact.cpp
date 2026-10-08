@@ -35,12 +35,11 @@ CArtefact::CArtefact()
 {
 	shedule.t_min				= 20;
 	shedule.t_max				= 50;
-	m_sParticlesName			= nullptr;
+	CurrentArtefactDesc			= &SArtefactDesc::Registry::Get(shared_str());
 	m_sParticlesBone			= nullptr;
 	m_pTrailLight				= nullptr;
 	m_activationObj				= nullptr;
 	m_detectorObj				= nullptr;
-	m_additional_weight			= 0.0f;
 	m_fSleepinessRestoreSpeed	= 0.0f;
 	m_fEquipmentDurabilityModifier = 1.0f;
 	m_fInventoryWeightModifier	= 1.0f;
@@ -54,9 +53,7 @@ CArtefact::CArtefact()
 void CArtefact::Load(const char* section) 
 {
 	inherited::Load(section);
-
-	if (pSettings->line_exist(section, "particles"))
-		m_sParticlesName	= pSettings->r_string(section, "particles");
+	CurrentArtefactDesc = &SArtefactDesc::Registry::Get(section);
 
 	IKinematics* K = PKinematics(Visual());
 	R_ASSERT2(K, cNameSect().c_str());
@@ -93,13 +90,9 @@ void CArtefact::Load(const char* section)
 		}
 	}
 
-	m_bLightsEnabled		= !!pSettings->r_bool(section, "lights_enabled");
-	if (m_bLightsEnabled)
+	if (ArtefactDesc().m_bLightsEnabled)
 	{
-		m_TrailLightColor = pSettings->r_fcolor(section, "trail_light_color");
-		m_fTrailLightRange	= pSettings->r_float(section,"trail_light_range");
-
-		m_LightBoneID = pSettings->line_exist(section, "trail_light_bone") ? K->LL_BoneID(pSettings->r_string(section, "trail_light_bone")) : BI_NONE;
+		m_LightBoneID = ArtefactDesc().TrailLightBone.size() ? K->LL_BoneID(ArtefactDesc().TrailLightBone.c_str()) : BI_NONE;
 	}
 
 	IRestoresOwner::Load(section);
@@ -109,21 +102,11 @@ void CArtefact::Load(const char* section)
 	m_fJumpHeightModifier = READ_IF_EXISTS(pSettings, r_float, section, "jump_height_modifier", 0.0f);
 	m_fMovementSpeedModifier = READ_IF_EXISTS(pSettings, r_float, section, "movement_speed_modifier", 0.0f);
 	m_fSleepinessRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "sleepiness_restore_speed", 0.0f);
-		
-	if (pSettings->section_exist(pSettings->r_string(section,"hit_absorbation_sect")))
-	{
-		m_ArtefactHitImmunities.LoadImmunities(pSettings->r_string(section, "hit_absorbation_sect"), pSettings);
-	}
-
-	m_bCanSpawnZone			= !!pSettings->line_exist("artefact_spawn_zones", section);
-	m_af_rank				= READ_IF_EXISTS(pSettings, r_u8, section, "af_rank", 0);
-	m_additional_weight		= READ_IF_EXISTS(pSettings, r_float, section,"additional_inventory_weight", 0.0f);
-	m_fDegradationRate		= READ_IF_EXISTS(pSettings, r_float, section, "degrade_rate", 0.0f);
 }
 
 bool CArtefact::net_Spawn(CSE_Abstract* DC) 
 {
-	if (READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "can_be_controlled", false))
+	if (ArtefactDesc().CanBeControlled)
 		m_detectorObj				= new SArtefactDetectorsSupport(this);
 
 	bool result						= inherited::net_Spawn(DC);
@@ -138,7 +121,7 @@ bool CArtefact::net_Spawn(CSE_Abstract* DC)
 	SetState						(eHidden);
 
 	m_pTrailLight = ::Render->light_create();
-	bool const b_light_shadow = READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "idle_light_shadow", false);
+	bool const b_light_shadow = ArtefactDesc().IdleLightShadow;
 
 	m_pTrailLight->set_shadow(b_light_shadow);
 
@@ -216,7 +199,7 @@ void CArtefact::OnH_B_Independent(bool just_before_destroy)
 
 void CArtefact::SwitchAfParticles(bool bOn)
 {
-	if (m_sParticlesName.size() == 0)
+	if (ArtefactDesc().m_sParticlesName.size() == 0)
 		return;
 
 	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
@@ -227,7 +210,7 @@ void CArtefact::SwitchAfParticles(bool bOn)
 
 		if (m_sParticlesBone.size() == 0)
 		{
-			PPlayer->StartParticles(m_sParticlesName, dir, ID(), -1, false);
+			PPlayer->StartParticles(ArtefactDesc().m_sParticlesName, dir, ID(), -1, false);
 			return;
 		}
 
@@ -242,11 +225,11 @@ void CArtefact::SwitchAfParticles(bool bOn)
 			R_ASSERT2(m_ParticlesBoneID != BI_NONE, message.c_str());
 		}
 
-		PPlayer->StartParticles(m_sParticlesName, m_ParticlesBoneID, dir, ID(), -1, false);
+		PPlayer->StartParticles(ArtefactDesc().m_sParticlesName, m_ParticlesBoneID, dir, ID(), -1, false);
 	}
 	else
 	{
-		PPlayer->StopParticles(m_sParticlesName, BI_NONE, true);
+		PPlayer->StopParticles(ArtefactDesc().m_sParticlesName, BI_NONE, true);
 	}
 }
 
@@ -341,12 +324,12 @@ void CArtefact::create_physic_shell()
 void CArtefact::StartLights()
 {
 	VERIFY(!physics_world()->Processing());
-	if (!m_bLightsEnabled)	return;
+	if (!ArtefactDesc().m_bLightsEnabled)	return;
 
 	m_pTrailLight->set_ignore_object(this);
 
-	m_pTrailLight->set_color	(m_TrailLightColor); 
-	m_pTrailLight->set_range	(m_fTrailLightRange);
+	m_pTrailLight->set_color	(ArtefactDesc().m_TrailLightColor); 
+	m_pTrailLight->set_range	(ArtefactDesc().m_fTrailLightRange);
 	m_pTrailLight->set_position	(Position()); 
 	m_pTrailLight->set_active	(true);
 }
@@ -354,7 +337,7 @@ void CArtefact::StartLights()
 void CArtefact::StopLights()
 {
 	VERIFY(!physics_world()->Processing());
-	if (!m_bLightsEnabled || !m_pTrailLight) 
+	if (!ArtefactDesc().m_bLightsEnabled || !m_pTrailLight) 
 		return;
 
 	m_pTrailLight->set_active	(false);
@@ -363,7 +346,7 @@ void CArtefact::StopLights()
 void CArtefact::UpdateLights()
 {
 	VERIFY(!physics_world()->Processing());
-	if (!m_bLightsEnabled || !m_pTrailLight ||!m_pTrailLight->get_active())
+	if (!ArtefactDesc().m_bLightsEnabled || !m_pTrailLight ||!m_pTrailLight->get_active())
 		return;
 
 	if (m_LightBoneID != BI_NONE)
@@ -380,7 +363,7 @@ void CArtefact::UpdateLights()
 
 void CArtefact::ActivateArtefact()
 {
-	VERIFY(m_bCanSpawnZone);
+	VERIFY(CanBeActivated());
 	VERIFY( H_Parent() );
 	CreateArtefactActivation();
 	if (!m_activationObj)
@@ -485,12 +468,12 @@ bool CArtefact::Action(u16 cmd, u32 flags)
 	{
 	case kWPN_FIRE:
 		{
-			if (flags&CMD_START && m_bCanSpawnZone)
+			if (flags&CMD_START && CanBeActivated())
 			{
 				SwitchState(eActivating);
 				return true;
 			}
-			if (flags&CMD_STOP && m_bCanSpawnZone && GetState() == eActivating)
+			if (flags&CMD_STOP && CanBeActivated() && GetState() == eActivating)
 			{
 				SwitchState(eIdle);
 				return true;
@@ -624,7 +607,8 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 	{
 		TParticlesPlayer* PPlayer = m_parent->GetOrCreateComponent<TParticlesPlayer>();
 
-		const char* curr = pSettings->r_string(m_parent->cNameSect().c_str(), (b)?"det_show_particles":"det_hide_particles");
+		const SArtefactDesc& Desc = m_parent->ArtefactDesc();
+		const char* curr = b ? Desc.DetShowParticles.c_str() : Desc.DetHideParticles.c_str();
 		if (nullptr==m_parent->PS_bone())
 		{
 				PPlayer->StartParticles(curr,Fvector().set(0,1,0),m_parent->ID());
@@ -646,7 +630,7 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 			PPlayer->StartParticles(curr, bone_id, Fvector().set(0, 1, 0), m_parent->ID());
 		}
 
-		curr					= pSettings->r_string(m_parent->cNameSect().c_str(), (b)?"det_show_snd":"det_hide_snd");
+		curr					= b ? Desc.DetShowSound.c_str() : Desc.DetHideSound.c_str();
 		m_sound.create			(curr, st_Effect, sg_SourceType);
 		m_sound.play_at_pos		(0, m_parent->Position(), 0);
 	}
@@ -660,7 +644,7 @@ void SArtefactDetectorsSupport::Blink()
 {
 	TParticlesPlayer* PPlayer = m_parent->GetOrCreateComponent<TParticlesPlayer>();
 
-	const char* curr = pSettings->r_string(m_parent->cNameSect().c_str(), "det_show_particles");
+	const char* curr = m_parent->ArtefactDesc().DetShowParticles.c_str();
 	if (nullptr == m_parent->PS_bone())
 	{
 		PPlayer->StartParticles(curr, Fvector().set(0.f, 1.f, 0.f), m_parent->ID(), 1000, true);

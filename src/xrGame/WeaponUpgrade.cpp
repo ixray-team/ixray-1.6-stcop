@@ -391,9 +391,9 @@ bool CWeapon::install_upgrade_hud_sect(const char* section, bool test)
 		shared_str old_hud = hud_sect_cache;
 
 		if (new_hud_sect == "skip_reassign")
-			hud_sect = old_hud;
+			SetHudSection(old_hud);
 		else
-			hud_sect = new_hud_sect;
+			SetHudSection(new_hud_sect);
 
 		hud_sect_cache = hud_sect;
 	}
