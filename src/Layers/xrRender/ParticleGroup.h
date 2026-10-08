@@ -83,6 +83,7 @@ namespace PS
 	public:
 		const CPGDef* m_Def = nullptr;
 		float m_CurrentTime;
+		float Scale = 1.0f;
 		Fvector m_InitialPosition;
 		xrCriticalSection onframe_lock;
 
@@ -152,6 +153,8 @@ namespace PS
 		virtual const shared_str Name(){VERIFY(m_Def); return m_Def->m_Name;}
 
         virtual u32 SpriteCount();
+		void SetScale(float Scale) override;
+		float GetScale() override;
 		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 
 		virtual IParticleCustom* dcast_ParticleCustom() { return this; }

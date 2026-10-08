@@ -25,6 +25,8 @@ public:
 	void				SetXFORM			(const Fmatrix& m);
 	IC	Fmatrix&		XFORM				() {return renderable.xform;}
 	void				UpdateParent		(const Fmatrix& m, const Fvector& vel);
+	void SetScale(float Scale);
+	float GetScale();
 	void				SetLiveUpdate		(bool b);
 	bool				GetLiveUpdate		();
 	void				SetHudMode			(bool b);
