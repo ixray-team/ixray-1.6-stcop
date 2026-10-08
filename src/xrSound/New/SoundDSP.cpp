@@ -75,6 +75,18 @@ void DSP_Doppler(const dsp_stuff& Stuff, float Distance)
 	volume_lerp(*Stuff.Doppler, Target, SND_DOPPLER_SMOOTH, (float)SND_BLOCKSIZE / (float)SND_SAMPLERATE);
 }
 
+float DSP_DistanceAttenuation(float Distance, const Fvector& Distances)
+{
+	const float MinDistance = std::max(Distances.x, EPS_S);
+	const float MaxDistance = std::max(Distances.y, MinDistance + EPS_S);
+
+	Distance = std::clamp(Distance, MinDistance, MaxDistance);
+
+	float Attent = powf(MinDistance / (psSoundRolloff * Distance), 1.3f);
+	Attent *= 1.0f - (Distance - MinDistance) / (MaxDistance - MinDistance);
+	return std::clamp(Attent, 0.0f, 1.0f);
+}
+
 void DSP_SpatialProcess(float** Buffer, const Fvector& Distances, const dsp_stuff& Stuff, bool DisableAttenuation)
 {
 	// LH coordinates
@@ -88,20 +100,9 @@ void DSP_SpatialProcess(float** Buffer, const Fvector& Distances, const dsp_stuf
 	float MinDistance = std::max(Distances.x, EPS_S);
 	float MaxDistance = std::max(Distances.y, MinDistance + EPS_S);
 
-	// Panning level
-	float Pl = std::min(Distance / MinDistance, 1.0f);
-
-	// Attenuation
 	Distance = std::clamp(Distance, MinDistance, MaxDistance);
-	float Attent = 1.0f;
 
-	if (!DisableAttenuation)
-	{
-		Attent = MinDistance / (psSoundRolloff * Distance);
-		Attent = powf(Attent, 1.3f);
-		Attent *= 1.0f - std::clamp(std::max(Distance - MinDistance, 0.0f) / (MaxDistance - MinDistance), 0.0f, 1.0f);
-		Attent = std::clamp(Attent, 0.f, 1.f);
-	}
+	const float Attent = DisableAttenuation ? 1.0f : DSP_DistanceAttenuation(Distance, Distances);
 
 	float PanAngle = (std::clamp(Pos.x, -1.0f, 1.0f) + 1.0f) * PI_DIV_4;
 	float LeftChannel = cosf(PanAngle);
@@ -118,10 +119,10 @@ void DSP_SpatialProcess(float** Buffer, const Fvector& Distances, const dsp_stuf
 
 	for (size_t i = 0; i < SND_BLOCKSIZE; i++)
 	{
-		Buffer[0][i] *= Attent * (Stuff.Panning[0] * Pl);
+		Buffer[0][i] *= Attent * Stuff.Panning[0];
 		volume_lerp(Stuff.Panning[0], LeftChannel, 10.0f, SampleDt);
 
-		Buffer[1][i] *= Attent * (Stuff.Panning[1] * Pl);
+		Buffer[1][i] *= Attent * Stuff.Panning[1];
 		volume_lerp(Stuff.Panning[1], RightChannel, 10.0f, SampleDt);
 	}
 }
