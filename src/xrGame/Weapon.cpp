@@ -3962,6 +3962,31 @@ bool CWeapon::ParentIsActor	()
 
 void CWeapon::debug_draw_firedeps()
 {
+	extern bool forceTFPDraw;
+	extern bool forceTFP2Draw;
+	extern bool forceTSPDraw;
+
+	if (forceTFPDraw && !GetHUDmode() && ParentIsActor() && m_pInventory->ActiveItem() == this)
+	{
+		Fmatrix m = XFORM();
+		m.c.set(get_LastFP());
+		Level().debug_renderer().draw_obb(m, Fvector().set(0.015f, 0.015f, 0.015f), color_xrgb(255, 0, 0));
+	}
+
+	if (forceTFP2Draw && !GetHUDmode() && ParentIsActor() && m_pInventory->ActiveItem() == this)
+	{
+		Fmatrix m = XFORM();
+		m.c.set(get_LastFP2());
+		Level().debug_renderer().draw_obb(m, Fvector().set(0.015f, 0.015f, 0.015f), color_xrgb(255, 0, 0));
+	}
+
+	if (forceTSPDraw && !GetHUDmode() && ParentIsActor() && m_pInventory->ActiveItem() == this)
+	{
+		Fmatrix m = XFORM();
+		m.c.set(get_LastSP());
+		Level().debug_renderer().draw_obb(m, Fvector().set(0.015f, 0.015f, 0.015f), color_xrgb(255, 0, 0));
+	}
+
 #ifdef DEBUG_DRAW
 	if(hud_adj_mode==5||hud_adj_mode==6||hud_adj_mode==7)
 	{
