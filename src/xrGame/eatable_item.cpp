@@ -152,6 +152,11 @@ void CEatableItem::OnH_B_Independent(bool just_before_destroy)
 
 bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 {
+	if (object().object_removed())
+	{
+		return false;
+	}
+
 	CInventoryOwner* IO = entity_alive != nullptr ? entity_alive->cast_inventory_owner() : nullptr;
 	R_ASSERT(IO);
 	R_ASSERT(m_pInventory == IO->m_inventory);
@@ -164,17 +169,17 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 	if (!use_animator || use_animator && !actor)
 	{
 		SMedicineInfluenceValues V;
-		V.Load(m_physic_item->cNameSect());
+		V.Load(m_section_id);
 
-		entity_alive->conditions().ApplyInfluence(V, m_physic_item->cNameSect(), !use_animator);
+		entity_alive->conditions().ApplyInfluence(V, m_section_id, !use_animator);
 
 		for (u8 i = 0; i < (u8)eBoostMaxCount; i++)
 		{
-			if (pSettings->line_exist(m_physic_item->cNameSect().c_str(), ef_boosters_section_names[i]))
+			if (pSettings->line_exist(m_section_id, ef_boosters_section_names[i]))
 			{
 				SBooster B;
-				B.Load(m_physic_item->cNameSect(), (EBoostParams)i);
-				entity_alive->conditions().ApplyBooster(B, m_physic_item->cNameSect(), !use_animator);
+				B.Load(m_section_id, (EBoostParams)i);
+				entity_alive->conditions().ApplyBooster(B, m_section_id, !use_animator);
 			}
 		}
 	}
@@ -245,17 +250,17 @@ void CEatableItem::EatableEffects()
 	}
 
 	SMedicineInfluenceValues V;
-	V.Load(m_physic_item->cNameSect());
+	V.Load(m_section_id);
 
-	actor->conditions().ApplyInfluence(V, m_physic_item->cNameSect(), false);
+	actor->conditions().ApplyInfluence(V, m_section_id, false);
 
 	for (u8 i = 0; i < (u8)eBoostMaxCount; i++)
 	{
-		if (pSettings->line_exist(m_physic_item->cNameSect().c_str(), ef_boosters_section_names[i]))
+		if (pSettings->line_exist(m_section_id, ef_boosters_section_names[i]))
 		{
 			SBooster B;
-			B.Load(m_physic_item->cNameSect(), (EBoostParams)i);
-			actor->conditions().ApplyBooster(B, m_physic_item->cNameSect(), false);
+			B.Load(m_section_id, (EBoostParams)i);
+			actor->conditions().ApplyBooster(B, m_section_id, false);
 		}
 	}
 

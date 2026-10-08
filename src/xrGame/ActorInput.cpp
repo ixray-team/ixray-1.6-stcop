@@ -2581,6 +2581,11 @@ void CActor::ActorQuickSlotUse(int cmd)
 
 		for (auto& it : inventory().m_ruck)
 		{
+			if (it->cast_game_object()->object_removed())
+			{
+				continue;
+			}
+
 			if (it->m_section_id == item_name && (best_itm == nullptr || it->GetCondition() < best_itm->GetCondition()))
 			{
 				best_itm = it;
