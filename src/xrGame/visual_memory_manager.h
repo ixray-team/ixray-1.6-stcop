@@ -90,8 +90,7 @@ public:
 	virtual	void	reinit					();
 	virtual	void	reload					(const char* section);
 	virtual	void	update					(float time_delta);
-	virtual	float	feel_vision_mtl_transp	(CObject* O, u32 element);
-			void	feel_vision_apply_extra	(Fvector const& eye, Fvector const& target, float& vis);
+	virtual	float	feel_vision_mtl_transp	(CObject* O, u32 element);	
 			void	remove_links			(CObject *object);
 			void	remove					(const MemorySpace::CVisibleObject *visible_object);
 
