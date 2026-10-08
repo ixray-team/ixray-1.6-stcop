@@ -2842,7 +2842,7 @@ void CWeaponMagazined::InitAddons()
 {
 	shared_str get_scope_section = GetScopeName();
 
-	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "ironsight_zoom_factor", 50.0f);
+	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
 
 	if (GetScopeAttached() || IsScopePermanent())
 	{

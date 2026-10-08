@@ -421,10 +421,6 @@ void CWeapon::Load		(const char* section)
 		m_bIsSingleHanded = !!pSettings->r_bool(section, "single_handed");
 	}
 
-	m_sScopeName = section;
-	m_sSilencerName = section;
-	m_sGrenadeLauncherName = section;
-
 	// информация о возможных апгрейдах и их визуализации в инвентаре
 	m_eScopeStatus			 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"scope_status");
 	m_eSilencerStatus		 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"silencer_status");
@@ -1355,11 +1351,14 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 		{
 			inherited::OnEvent(P,type);
 
-			UpdateAltScope();
-			UpdateAddonsVisibility();
-			UpdateHUDAddonsVisibility();
-			ProcessScope();
-			InitAddons();
+			if (type == GE_OWNERSHIP_TAKE || type == GE_OWNERSHIP_REJECT)
+			{
+				UpdateAltScope();
+				UpdateAddonsVisibility();
+				UpdateHUDAddonsVisibility();
+				ProcessScope();
+				InitAddons();
+			}
 		}break;
 	}
 };
@@ -1758,28 +1757,35 @@ void CWeapon::LoadUpgradeBonesToHide(const char* section, const char* line)
 void CWeapon::ProcessScope()
 {
 	CScope* pScope = GetScopeAttached();
-
 	for (const shared_str& tmp : m_scopes)
 	{
 		bool status = pScope && (tmp == pScope->cNameSect() || (pSettings->line_exist(tmp, "scope_name") && shared_str(pSettings->r_string(tmp, "scope_name")) == pScope->cNameSect()));
 
 		if (pSettings->line_exist(tmp, "bones"))
+		{
 			SetMultipleBonesStatus(tmp.c_str(), "bones", status);
+		}
 
 		if (pSettings->line_exist(tmp, "hide_bones"))
+		{
 			SetMultipleBonesStatus(tmp.c_str(), "hide_bones", !status);
+		}
+
+		if (status)
+		{
+			if (pSettings->line_exist(tmp, "overriding_hide_bones"))
+			{
+				SetMultipleBonesStatus(tmp.c_str(), "overriding_hide_bones", false);
+			}
+
+			if (pSettings->line_exist(tmp, "overriding_show_bones"))
+			{
+				SetMultipleBonesStatus(tmp.c_str(), "overriding_show_bones", true);
+			}
+		}
 	}
 
-	if (pScope)
-	{
-		const shared_str& tmp = pScope->cNameSect();
-		if (pSettings->line_exist(tmp, "overriding_hide_bones"))
-			SetMultipleBonesStatus(tmp.c_str(), "overriding_hide_bones", false);
-
-		if (pSettings->line_exist(tmp, "overriding_show_bones"))
-			SetMultipleBonesStatus(tmp.c_str(), "overriding_show_bones", true);
-	}
-	else
+	if (!pScope)
 	{
 		IKinematics* pWeaponVisual = Visual()->dcast_PKinematics();
 		R_ASSERT(pWeaponVisual);
@@ -1787,12 +1793,14 @@ void CWeapon::ProcessScope()
 		pWeaponVisual->CalculateBones_Invalidate();
 
 		auto ChangeBoneVisible = [&](const shared_str& bone, bool status)
-			{
-				u16 bone_id = pWeaponVisual->LL_BoneID(bone);
+		{
+			u16 bone_id = pWeaponVisual->LL_BoneID(bone);
 
-				if (bone_id != BI_NONE)
-					pWeaponVisual->LL_SetBoneVisible(bone_id, status, true);
-			};
+			if (bone_id != BI_NONE)
+			{
+				pWeaponVisual->LL_SetBoneVisible(bone_id, status, true);
+			}
+		};
 
 		for (auto& bone : m_bScopeHideBones)
 		{
@@ -1805,7 +1813,9 @@ void CWeapon::ProcessScope()
 		}
 
 		if (HudItemData() == nullptr)
+		{
 			return;
+		}
 
 		for (auto& bone : m_bScopeHideBones)
 		{
@@ -2717,7 +2727,7 @@ void CWeapon::Reload()
 
 void CWeapon::UpdateScopePosition()
 {
-	if (bUseAltScope || get_attachment(eTypeScope))
+	if (bUseAltScope || GetRealattachment(GetScopeName(), eTypeScope))
 	{
 		return;
 	}
@@ -2725,25 +2735,22 @@ void CWeapon::UpdateScopePosition()
 	auto HID = HudItemData();
 	if (!HID) return;
 
-	if (CScope* pScope = GetScopeAttached())
+	shared_str& hands_section = HID->m_measures.m_hands_positions.sSection;
+	const shared_str& scope_section = !m_scopes.empty() && m_cur_scope < m_scopes.size() ? m_scopes[m_cur_scope] : cNameSect();
+	const shared_str& hud_section = HudSection();
+
+	bool is_16x9 = UI().is_widescreen();
+
+	if (GetScopeAttached())
 	{
-		shared_str& hands_section = HID->m_measures.m_hands_positions.sSection;
-		const shared_str& scope_section = pScope->cNameSect();
-		const shared_str& hud_section = HudSection();
-
-		bool is_16x9 = UI().is_widescreen();
-
-		if (IsScopeAttached())
+		if (hands_section != scope_section)
 		{
-			if (hands_section != scope_section)
-			{
-				HID->m_measures.m_hands_positions.Load(scope_section, is_16x9);
-			}
+			HID->m_measures.m_hands_positions.Load(scope_section, is_16x9);
 		}
-		else if (hands_section != hud_section)
-		{
-			HID->m_measures.m_hands_positions.Load(hud_section, is_16x9);
-		}
+	}
+	else if (hands_section != hud_section)
+	{
+		HID->m_measures.m_hands_positions.Load(hud_section, is_16x9);
 	}
 }
 
@@ -2818,9 +2825,9 @@ void CWeapon::UpdateHUDAddonsVisibility()
 		HudItemData()->set_bone_visible(bone, false, true);
 	}
 
-	for (u32 i = 0; i < m_upgrades.size(); i++)
+	for (shared_str& upgrade_sect : m_upgrades)
 	{
-		const char* section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
+		const char* section = pSettings->r_string(upgrade_sect, "section");
 
 		if (pSettings->line_exist(section, "show_bones"))
 			SetMultipleBonesStatus(section, "show_bones", true);
@@ -2947,9 +2954,9 @@ void CWeapon::UpdateAddonsVisibility()
 		ChangeBoneVisible(bone, false, false);
 	}
 
-	for (u32 i = 0; i < m_upgrades.size(); i++)
+	for (shared_str& upgrade_sect : m_upgrades)
 	{
-		const char* section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
+		const char* section = pSettings->r_string(upgrade_sect, "section");
 
 		if (pSettings->line_exist(section, "show_bones"))
 			SetMultipleBonesStatus(section, "show_bones", true);
@@ -3099,10 +3106,7 @@ bool CWeapon::CanAimNow()
 			shared_str sect = HudSection();
 
 			if (IsScopeAttached())
-			{
-				CScope* pScope = GetScopeAttached();
-				sect = pScope ? pScope->cNameSect() : cNameSect();
-			}
+				sect = !m_scopes.empty() && m_cur_scope < m_scopes.size() ? m_scopes[m_cur_scope] : sect;
 
 			if (READ_IF_EXISTS(pSettings, r_bool, sect, "prohibit_aim_for_grenade_mode", false))
 			{
@@ -4580,7 +4584,10 @@ const shared_str CWeapon::GetScopeName() const
 	if (CScope* pScope = GetScopeAttached())
 		return pScope->cNameSect();
 
-	return m_sScopeName;
+	if (IsScopePermanent() && m_sScopeName)
+		return m_sScopeName;
+
+	return cNameSect();
 }
 
 const shared_str CWeapon::GetGrenadeLauncherName() const
@@ -4588,7 +4595,10 @@ const shared_str CWeapon::GetGrenadeLauncherName() const
 	if (CGrenadeLauncher* pGrenadeLauncher = GetGrenadeLauncherAttached())
 		return pGrenadeLauncher->cNameSect();
 
-	return m_sGrenadeLauncherName;
+	if (IsGrenadeLauncherPermanent() && m_sGrenadeLauncherName)
+		return m_sGrenadeLauncherName;
+
+	return cNameSect();
 }
 
 const shared_str CWeapon::GetSilencerName() const
@@ -4596,7 +4606,10 @@ const shared_str CWeapon::GetSilencerName() const
 	if (CSilencer* pSilencer = GetSilencerAttached())
 		return pSilencer->cNameSect();
 
-	return m_sSilencerName;
+	if (IsSilencerPermanent() && m_sSilencerName)
+		return m_sSilencerName;
+
+	return cNameSect();
 }
 
 void CWeapon::UpdateAltScope()
@@ -4605,24 +4618,29 @@ void CWeapon::UpdateAltScope()
 	if (!IsScopeAttachable())
 		return;
 
-	shared_str sectionNeedLoad;
-
-	sectionNeedLoad = IsScopeAttached() ? GetNameWithAttachmentScope() : m_section_id;
+	shared_str sectionNeedLoad = IsScopeAttached() ? GetNameWithAttachmentScope() : m_section_id;
 
 	if (!pSettings->section_exist(sectionNeedLoad))
 		return;
 
 	if (bUseAltScope)
 	{
-	shared_str vis = pSettings->r_string(sectionNeedLoad, "visual");
+		shared_str vis = pSettings->r_string(sectionNeedLoad, "visual");
 
-	if (vis != cNameVisual())
-	{
-		cNameVisual_set(vis);
-	}
+		if (vis != cNameVisual())
+		{
+			cNameVisual_set(vis);
+		}
 	}
 
 	shared_str new_hud = pSettings->r_string(sectionNeedLoad, "hud");
+
+	for (shared_str& upgrade_sect : m_upgrades)
+	{
+		const char* section = pSettings->r_string(upgrade_sect, "section");
+		new_hud = READ_IF_EXISTS(pSettings, r_string, section, "hud", *new_hud);
+	}
+
 	if (new_hud != hud_sect)
 	{
 		hud_sect = new_hud;
