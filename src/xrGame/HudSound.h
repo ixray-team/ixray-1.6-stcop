@@ -58,6 +58,7 @@ struct HUD_SOUND_ITEM
 		float		volume;		//громкость
 	};
 	xr_string		m_alias;
+	xr_string		m_source_key;
 	SSnd*			m_activeSnd;
 	bool			m_b_exclusive;
 	xr_vector<SSnd> sounds;
