@@ -14,7 +14,8 @@ public:
 	CWeaponMagazinedWGrenade() = default;
 	virtual	~CWeaponMagazinedWGrenade() = default;
 
-	virtual void	Load				(const char* section);
+	virtual void Load(const char* section);
+	void ReloadConfig() override;
 	virtual void	LoadSounds			(const char* section) override;
 	
 	virtual bool	net_Spawn			(CSE_Abstract* DC);

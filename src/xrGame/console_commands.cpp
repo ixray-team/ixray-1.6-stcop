@@ -41,6 +41,7 @@
 #include "inventory_upgrade_manager.h"
 #include "FreeMP/game_sv_freemp.h"
 #include "ParticlesObject.h"
+#include "Weapon.h"
 #include "gamespy/GameSpy_Full.h"
 #include "../xrCore/discord/discord.h"
 #include "../xrCore/FormatParsers/XML/xrXMLParser.h"
@@ -1073,7 +1074,21 @@ struct CCC_ReloadSystemLtx : public IConsole_Command
 		InitSections();
 #endif
 
-		Msg("system.ltx was reloaded.");
+		u32 ReloadedWeapons = 0;
+		if (g_pGameLevel)
+		{
+			for (u32 Index = 0; Index < Level().Objects.o_count(); ++Index)
+			{
+				CObject* Object = Level().Objects.o_get_by_iterator(Index);
+				CWeapon* Weapon = smart_cast<CWeapon*>(Object);
+				if (Weapon && !Weapon->getDestroy())
+				{
+					Weapon->ReloadConfig();
+					++ReloadedWeapons;
+				}
+			}
+		}
+		Msg("system.ltx was reloaded. Updated %u weapon(s).", ReloadedWeapons);
 	}
 };
 

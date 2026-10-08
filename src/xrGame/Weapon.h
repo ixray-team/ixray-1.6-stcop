@@ -69,8 +69,9 @@ public:
 	virtual CWeaponShotgun* cast_weapon_shotgun() override { return nullptr; }
 
 
-	//serialization
-	virtual void			save				(NET_Packet &output_packet) override;
+	// serialization
+	virtual void ReloadConfig();
+	virtual void save(NET_Packet& output_packet) override;
 	virtual void			load				(IReader &input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 	virtual bool			net_SaveRelevant	()	override							{return inherited::net_SaveRelevant();}
@@ -269,6 +270,7 @@ public:
 		SRecoilPattern* m_current_pattern = nullptr;
 
 		void LoadRecoilPatterns(const char* section);
+		void LoadShootingParams(const char* section);
 		void LoadVfxScales(const char* section);
 		void ApplyPattern();
 		void StopPattern();
