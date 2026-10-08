@@ -112,7 +112,7 @@ struct CScavengerCrow::SBehavior
     float preferred_height = 20.f, height_variation = 8.f, vertical_step = 12.f;
     float landing_radius = 25.f, roof_min = 3.f, roof_max = 35.f, roof_slope = 35.f;
     float fear_radius = 10.f, food_safe_radius = 30.f, food_search_radius = 70.f;
-    float noise_radius = 70.f, noise_power = .05f, noise_memory = 8.f;
+    float noise_radius = 400.f, noise_power = .01f, noise_memory = 8.f;
     float escape_distance = 18.f, escape_height = 10.f, ground_chance = .6f;
     float seed_step_radius = .7f, ground_speed = .5f;
     u32 corpse_slots = 3, nav_attempts = 12;
@@ -137,7 +137,7 @@ struct CScavengerCrow::SBehavior
     float night_start = 20.f, night_end = 6.f, night_forage_chance = .35f;
     SCrowRange night_rest, night_forage, night_step;
     float fear = 0.f, fear_rise = 1.5f, fear_decay = .2f, fear_trigger = .35f, fear_calm = .1f;
-    float fear_shot_gain = 1.f, fear_explosion_gain = 1.5f, shot_radius = 70.f, explosion_radius = 100.f;
+    float fear_shot_gain = 1.f, fear_explosion_gain = 1.5f, shot_radius = 250.f, explosion_radius = 400.f;
     SCrowRange HeightChange, CircleTime, CircleRadius, CircleHeight;
     float HeightTarget = 20.f, HeightTimer = 0.f, HeightSpeed = 2.5f;
     float GoalPrefetchProgress = .9f;
@@ -250,8 +250,8 @@ struct CScavengerCrow::SBehavior
         CROW_FLOAT(fear_calm,"crow_fear_calm_threshold",.1f);
         CROW_FLOAT(fear_shot_gain,"crow_fear_shot_gain",1.f);
         CROW_FLOAT(fear_explosion_gain,"crow_fear_explosion_gain",1.5f);
-        CROW_FLOAT(shot_radius,"crow_shot_fear_radius",70.f);
-        CROW_FLOAT(explosion_radius,"crow_explosion_fear_radius",100.f);
+        CROW_FLOAT(shot_radius,"crow_shot_fear_radius",250.f);
+        CROW_FLOAT(explosion_radius,"crow_explosion_fear_radius",400.f);
         CROW_FLOAT(peck_duration,"crow_peck_duration",.28f);
         CROW_FLOAT(hunger_time,"crow_hunger_time",900.f);
         CROW_FLOAT(hungry,"crow_hungry_threshold",.35f);
@@ -273,8 +273,8 @@ struct CScavengerCrow::SBehavior
         CROW_FLOAT(fear_radius,"crow_fear_radius",10.f);
         CROW_FLOAT(food_safe_radius,"crow_corpse_safe_radius",30.f);
         CROW_FLOAT(food_search_radius,"crow_corpse_search_radius",70.f);
-        CROW_FLOAT(noise_radius,"crow_noise_fear_radius",70.f);
-        CROW_FLOAT(noise_power,"crow_noise_min_power",.05f);
+        CROW_FLOAT(noise_radius,"crow_noise_fear_radius",400.f);
+        CROW_FLOAT(noise_power,"crow_noise_min_power",.01f);
         CROW_FLOAT(noise_memory,"crow_noise_memory_time",8.f);
         CROW_FLOAT(escape_distance,"crow_escape_distance",18.f);
         CROW_FLOAT(escape_height,"crow_escape_height",10.f);
@@ -1998,9 +1998,9 @@ void CScavengerCrow::feel_sound_new(CObject* who,int type,CSound_UserDataPtr,con
     if (!g_Alive() || !Local() || !m_behavior->enabled || who==this || type==int(0xffffffff)) return;
     const bool explosion=(type&SOUND_TYPE_OBJECT_EXPLODING)!=0;
     const float radius=explosion ? m_behavior->explosion_radius : m_behavior->shot_radius;
-    const float distance=Position().distance_to(position);
+    const float DistanceSq = Position().distance_to_sqr(position);
     if ((type & (SOUND_TYPE_SHOOTING | SOUND_TYPE_OBJECT_EXPLODING | SOUND_TYPE_BULLET_HIT))==0 ||
-        power<m_behavior->noise_power || distance>=radius) return;
+        power<m_behavior->noise_power || DistanceSq>=_sqr(radius)) return;
     const float gain=explosion ? m_behavior->fear_explosion_gain : m_behavior->fear_shot_gain;
     // A qualifying shot/explosion is an event, not a repeatedly sampled scan.
     // Keep the gain as a config switch, then latch full panic until it decays.
