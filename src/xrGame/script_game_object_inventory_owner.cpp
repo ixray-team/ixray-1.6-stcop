@@ -2690,7 +2690,7 @@ const char* CScriptGameObject::GetCutsceneVisual()
 	if (CActor* pActor = object().cast_actor())
 	{
 		CCustomOutfit* pOutfit = pActor->GetOutfit();
-		return pOutfit ? pOutfit->m_ActorVisual.c_str() : pActor->m_DefaultVisualOutfit.c_str();
+		return pOutfit ? pOutfit->OutfitDesc().m_ActorVisual.c_str() : pActor->m_DefaultVisualOutfit.c_str();
 	}
 	else
 	{

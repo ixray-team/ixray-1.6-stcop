@@ -580,7 +580,6 @@ protected:
 		float			m_fRTZoomFactor; //run-time zoom factor
 		CUIStatic*		m_UIScope = nullptr;
 
-	InertionData	m_base_inertion;
 	InertionData	m_zoom_inertion;
 	bool m_bIAmWeaponRPG7 = false;
 

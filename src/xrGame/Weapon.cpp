@@ -224,8 +224,6 @@ void CWeapon::Load		(const char* section)
 		LaserLight.NewTorchlight(section);
 	}
 
-	m_base_inertion = m_current_inertion;
-
 	m_zoom_inertion.PitchOffsetR = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_r", 0.0f);
 	m_zoom_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_d", 0.0f);
 	m_zoom_inertion.PitchOffsetN = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_n", 0.0f);
@@ -607,8 +605,8 @@ void CWeapon::Load		(const char* section)
 		hud_gl = pSettings->r_string(section, "hud_gl");
 	}
 
-	m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom_factor", m_fHudFovFactor);
-	m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_gl_zoom_factor", m_fHudFovFactor);
+	m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom_factor", HudDesc().m_fHudFovFactor);
+	m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_gl_zoom_factor", HudDesc().m_fHudFovFactor);
 	m_HudFovZoom = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom", 0.0f);
 
 	m_fast_kick_params.material = READ_IF_EXISTS(pSettings, r_string, section, "kick_material", "objects\\knife");
@@ -1647,7 +1645,7 @@ void CWeapon::UpdateCL()
 	}
 
 	if (!!GetHUDmode()) {
-		m_current_inertion.lerp(m_base_inertion, m_zoom_inertion, m_zoom_params.m_fZoomRotationFactor);
+		m_current_inertion.lerp(HudDesc().Inertion, m_zoom_inertion, m_zoom_params.m_fZoomRotationFactor);
 	}
 	else
 	{
@@ -3531,13 +3529,13 @@ void CWeapon::reload(const char* section)
 	if (IsScopeAttachable())
 	{
 		m_addon_holder_range_modifier = READ_IF_EXISTS(
-			pSettings, r_float, GetScopeName(), "holder_range_modifier", m_holder_range_modifier);
+			pSettings, r_float, GetScopeName(), "holder_range_modifier", ItemDesc().m_holder_range_modifier);
 		m_addon_holder_fov_modifier = READ_IF_EXISTS(pSettings, r_float, GetScopeName(),
-			"holder_fov_modifier", m_holder_fov_modifier);
+			"holder_fov_modifier", ItemDesc().m_holder_fov_modifier);
 	}
 	else {
-		m_addon_holder_range_modifier = m_holder_range_modifier;
-		m_addon_holder_fov_modifier = m_holder_fov_modifier;
+		m_addon_holder_range_modifier = ItemDesc().m_holder_range_modifier;
+		m_addon_holder_fov_modifier = ItemDesc().m_holder_fov_modifier;
 	}
 
 	{
@@ -4405,11 +4403,11 @@ u32 CWeapon::Cost() const
 
 float CWeapon::GetHudFov()
 {
-	float get = inherited::GetHudFov() / m_fHudFovFactor;
+	float get = inherited::GetHudFov() / HudDesc().m_fHudFovFactor;
 	float zoom = m_HudFovZoom ? m_HudFovZoom : Allow3DScopes() && IsLensedScopeInstalled() ? get : (get * Device.fFOV / g_fov);
 	get += (zoom - get) * m_zoom_params.m_fZoomRotationFactor;
 
-	float hud_fov = m_fHudFovFactor;
+	float hud_fov = HudDesc().m_fHudFovFactor;
 	float zoom_fov = IsGrenadeMode() ? m_fHudFovGLZoomFactor : m_fHudFovZoomFactor;
 
 	if (((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) || (!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f)))
@@ -4643,7 +4641,7 @@ void CWeapon::UpdateAltScope()
 
 	if (new_hud != hud_sect)
 	{
-		hud_sect = new_hud;
+		SetHudSection(new_hud);
 
 		m_sAimBlendParams[0].Load(hud_sect, "anim_aim_start");
 		m_sAimBlendParams[1].Load(hud_sect, "anim_aim_idle");

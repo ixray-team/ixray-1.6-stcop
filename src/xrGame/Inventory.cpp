@@ -1601,7 +1601,7 @@ bool CInventory::CanPutInSlot(PIItem pIItem, u16 slot_id, bool bAllowReplacement
 	if (slot_id == HELMET_SLOT)
 	{
 		CCustomOutfit* pOutfit = m_pOwner->GetOutfit();
-		if (pOutfit != nullptr && !pOutfit->bIsHelmetAvaliable)
+		if (pOutfit != nullptr && !pOutfit->IsHelmetAvailable())
 		{
 			return false;
 		}

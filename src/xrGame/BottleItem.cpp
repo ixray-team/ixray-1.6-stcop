@@ -20,16 +20,7 @@ CBottleItem::~CBottleItem()
 void CBottleItem::Load(const char* section)
 {
 	inherited::Load(section);
-
-	if (pSettings->line_exist(section, "break_particles"))
-	{
-		m_sBreakParticles = pSettings->r_string(section, "break_particles");
-	}
-
-	if (pSettings->line_exist(section, "break_sound"))
-	{
-		sndBreaking.create(pSettings->r_string(section, "break_sound"), st_Effect, sg_SourceType);
-	}
+	CurrentBottleDesc = &SBottleItemDesc::Registry::Get(section);
 }
 
 void CBottleItem::OnEvent(NET_Packet& P, u16 type) 
@@ -48,14 +39,24 @@ void CBottleItem::OnEvent(NET_Packet& P, u16 type)
 
 void CBottleItem::BreakToPieces()
 {
+	const SBottleItemDesc& Desc = BottleDesc();
+
 	//играем звук
-	sndBreaking.play_at_pos(0, Position(), false);
+	if (Desc.BreakSound.size())
+	{
+		if (!sndBreaking.handle())
+		{
+			sndBreaking.create(Desc.BreakSound.c_str(), st_Effect, sg_SourceType);
+		}
+
+		sndBreaking.play_at_pos(0, Position(), false);
+	}
 
 	//отыграть партиклы разбивания
-	if(*m_sBreakParticles)
+	if(*Desc.BreakParticles)
 	{
 		//показываем эффекты
-		CParticlesObject* pStaticPG = Particles::Details::Create(*m_sBreakParticles,true).get(); 
+		CParticlesObject* pStaticPG = Particles::Details::Create(*Desc.BreakParticles,true).get(); 
 		pStaticPG->play_at_pos(Position());
 	}
 

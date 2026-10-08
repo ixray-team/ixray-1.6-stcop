@@ -458,7 +458,7 @@ bool CControllerPsyHit::PsiEffects(CController* monster_controller, CActor* Acto
 
 	if (SuicideKnife)
 	{
-		Actor->ControlledTimeRemains = floor((SuicideKnife->ControllerTime > 0.0f ? SuicideKnife->ControllerTime : (Actor->ControlledTimeRemains / 1000.0f)) * 1000.0f);
+		Actor->ControlledTimeRemains = floor((SuicideKnife->HudDesc().ControllerTime > 0.0f ? SuicideKnife->HudDesc().ControllerTime : (Actor->ControlledTimeRemains / 1000.0f)) * 1000.0f);
 		Actor->PlanningSuicide = true;
 
 		if (!Actor->SuicideNow && SuicideKnife->GetNextState() != CWeapon::eSuicide && SuicideKnife->GetNextState() != CWeapon::eFire && SuicideKnife->GetNextState() != CWeapon::eFire2)
@@ -517,7 +517,7 @@ bool CControllerPsyHit::PsiEffects(CController* monster_controller, CActor* Acto
 
 			if (Actor->SuicideNow)
 			{
-				Actor->ControlledTimeRemains = floor((SuicideWeapon->ControllerTime > 0.0f ? SuicideWeapon->ControllerTime : (Actor->ControlledTimeRemains / 1000.0f)) * 1000.0f);
+				Actor->ControlledTimeRemains = floor((SuicideWeapon->HudDesc().ControllerTime > 0.0f ? SuicideWeapon->HudDesc().ControllerTime : (Actor->ControlledTimeRemains / 1000.0f)) * 1000.0f);
 			}
 
 			Actor->PlanningSuicide = true;
@@ -527,7 +527,7 @@ bool CControllerPsyHit::PsiEffects(CController* monster_controller, CActor* Acto
 			if (SuicideWeapon->CanStartAction(Actor))
 			{
 				Actor->SuicideNow = true;
-				Actor->ControlledTimeRemains = floor((SuicideWeapon->ControllerTime > 0.0f ? SuicideWeapon->ControllerTime : (Actor->ControlledTimeRemains / 1000.0f)) * 1000.0f);
+				Actor->ControlledTimeRemains = floor((SuicideWeapon->HudDesc().ControllerTime > 0.0f ? SuicideWeapon->HudDesc().ControllerTime : (Actor->ControlledTimeRemains / 1000.0f)) * 1000.0f);
 			}
 			Actor->PlanningSuicide = true;
 		}

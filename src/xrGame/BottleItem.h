@@ -6,6 +6,7 @@
 #pragma once
 
 #include "FoodItem.h"
+#include "Descs/BottleItemDesc.h"
 #include "../xrScripts/script_export_space.h"
 
 class CBottleItem final : public CFoodItem
@@ -20,9 +21,10 @@ public:
 	virtual	void Hit(SHit* pHDS) override;
 	void BreakToPieces();
 
+	const SBottleItemDesc& BottleDesc() const { VERIFY(CurrentBottleDesc); return *CurrentBottleDesc; }
+
 protected:
-	//партиклы разбивания бутылки
-	shared_str m_sBreakParticles;
+	const SBottleItemDesc* CurrentBottleDesc = nullptr;
 	ref_sound sndBreaking = {};
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

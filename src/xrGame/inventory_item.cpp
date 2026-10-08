@@ -41,6 +41,8 @@ net_updateInvData* CInventoryItem::NetSync()
 CInventoryItem::CInventoryItem() :
 	item_attachments_manager(this)
 {
+	CurrentItemDesc = &SInventoryItemDesc::Registry::Get(shared_str());
+
 	m_flags.set(Fbelt, false);
 	m_flags.set(Fruck, true);
 	m_flags.set(FRuckDefault, true);
@@ -48,8 +50,7 @@ CInventoryItem::CInventoryItem() :
 	SetDropManual(false);
 
 	m_flags.set(FCanTake, true);
-	m_can_trade = true;
-	m_flags.set(FCanTrade, m_can_trade);
+	m_flags.set(FCanTrade, true);
 	m_flags.set(FUsingCondition, false);
 	m_fCondition = 1.0f;
 
@@ -96,6 +97,8 @@ void CInventoryItem::Load(const char* section)
 	SetDrawCost(READ_IF_EXISTS(pSettings, r_bool, section, "is_draw_cost", true));
 
 	// Highlight separated by delimeter ',' related item sections on mouseover from the actor's inventory
+	CurrentItemDesc = &SInventoryItemDesc::Registry::Get(section);
+
 	m_HiglightRelatedItemSections.clear();
 	if (pSettings->line_exist(section, "highlight_related_sections"))
 	{
@@ -108,30 +111,6 @@ void CInventoryItem::Load(const char* section)
 		}
 	}
 	// FFx0001 ++ end
-
-	m_parse_params.m_chances.clear();
-	m_parse_params.m_items.clear();
-
-	if (pSettings->line_exist(section, "parse_spawn_items") && pSettings->line_exist(section, "parse_spawn_chances"))
-	{
-		shared_str SpawnList = pSettings->r_string(section, "parse_spawn_items");
-		shared_str ChanceList = pSettings->r_string(section, "parse_spawn_chances");
-
-		int Count = _GetItemCount(SpawnList.c_str());
-		int Count2 = _GetItemCount(ChanceList.c_str());
-
-		string256 sItem = {};
-
-		for (int i = 0; i < Count; ++i)
-		{
-			m_parse_params.m_items.push_back(_GetItem(SpawnList.c_str(), i, sItem));
-		}
-
-		for (int i = 0; i < Count2; ++i)
-		{
-			m_parse_params.m_chances.push_back(atof(_GetItem(ChanceList.c_str(), i, sItem)));
-		}
-	}
 
 	if (CGameObject* GO = cast_game_object())
 	{
@@ -152,16 +131,13 @@ void CInventoryItem::Load(const char* section)
 	m_Description = g_pStringTable->translate(READ_IF_EXISTS(pSettings, r_string, section, "description", ""));
 
 	m_flags.set(Fbelt, READ_IF_EXISTS(pSettings, r_bool, section, "belt", false));
-	m_can_trade = READ_IF_EXISTS(pSettings, r_bool, section, "can_trade", true);
 	m_flags.set(FCanTake, READ_IF_EXISTS(pSettings, r_bool, section, "can_take", true));
-	m_flags.set(FCanTrade, m_can_trade);
+	m_flags.set(FCanTrade, ItemDesc().m_can_trade);
 	m_flags.set(FCanStack, READ_IF_EXISTS(pSettings, r_bool, section, "can_stack", true));
 	m_flags.set(FIsQuestItem, READ_IF_EXISTS(pSettings, r_bool, section, "quest_item", false));
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", false));
-
-	m_highlight_equipped = !!READ_IF_EXISTS(pSettings, r_bool, section, "highlight_equipped", false);
 
 	if (BaseSlot() != NO_ACTIVE_SLOT || Belt())
 	{
@@ -170,7 +146,6 @@ void CInventoryItem::Load(const char* section)
 		m_flags.set(FAllowSprint, READ_IF_EXISTS(pSettings, r_bool, section, "sprint_allowed", true));
 		m_fControlInertionFactor = READ_IF_EXISTS(pSettings, r_float, section, "control_inertion_factor", 1.0f);
 	}
-	m_icon_name = READ_IF_EXISTS(pSettings, r_string, section, "icon_name", nullptr);
 
 	u32 inv_grid_x = pSettings->r_u32(m_object->cNameSect(), "inv_grid_x");
 	u32 inv_grid_y = pSettings->r_u32(m_object->cNameSect(), "inv_grid_y");
@@ -180,8 +155,6 @@ void CInventoryItem::Load(const char* section)
 	IconsTexture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
 
 	m_inv_rect.set(inv_grid_x, inv_grid_y, inv_grid_width, inv_grid_height);
-	const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
-	m_legacy_upgrade_mode = READ_IF_EXISTS(pSettings, r_bool, section, "legacy_upgrade_mode", isLegacyUpgrade);
 
 	ReadCustomTextAndMarks(section);
 	Read3dStaticsData(section);
@@ -322,9 +295,6 @@ void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 {
 	m_custom_text = READ_IF_EXISTS(pSettings, r_string, section, "item_custom_text", nullptr);
 	m_custom_text_offset = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_text_offset", Fvector2().set(0.f, 0.f));
-	m_custom_text_auto_uses = READ_IF_EXISTS(pSettings, r_bool, section, "item_custom_text_auto_uses", false);
-	m_custom_text_anchor = ParseInvCellAnchor(
-		READ_IF_EXISTS(pSettings, r_string, section, "item_custom_text_anchor", "bottom_right"));
 
 	m_custom_text_font = nullptr;
 	if (pSettings->line_exist(section, "item_custom_text_font"))
@@ -346,8 +316,6 @@ void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 	m_custom_mark_offset = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_mark_offset", Fvector2().set(0.f, 0.f));
 	m_custom_mark_size = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_mark_size", Fvector2().set(0.f, 0.f));
 	m_custom_mark_clr = READ_IF_EXISTS(pSettings, r_color, section, "item_custom_mark_clr", 0);
-	m_custom_mark_anchor = ParseInvCellAnchor(
-		READ_IF_EXISTS(pSettings, r_string, section, "item_custom_mark_anchor", "bottom_right"));
 }
 
 void CInventoryItem::Read3dStaticsData(const char* section)
@@ -1094,9 +1062,6 @@ float CInventoryItem::interpolate_states(net_update_IItem const& first, net_upda
 void CInventoryItem::reload(const char* section)
 {
 	inherited::reload(section);
-
-	m_holder_range_modifier = READ_IF_EXISTS(pSettings, r_float, section, "holder_range_modifier", 1.f);
-	m_holder_fov_modifier = READ_IF_EXISTS(pSettings, r_float, section, "holder_fov_modifier", 1.f);
 }
 
 void CInventoryItem::reinit()
@@ -1257,8 +1222,8 @@ DLL_Pure* CInventoryItem::_construct()
 
 void CInventoryItem::modify_holder_params(float& range, float& fov) const
 {
-	range *= m_holder_range_modifier;
-	fov *= m_holder_fov_modifier;
+	range *= ItemDesc().m_holder_range_modifier;
+	fov *= ItemDesc().m_holder_fov_modifier;
 }
 
 bool CInventoryItem::NeedToDestroyObject() const
