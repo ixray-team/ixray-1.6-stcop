@@ -944,7 +944,6 @@ void DrawCompilerConfig()
 #ifdef LCCUDA_BUILD
 		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 2);
 		ImGui::SetItemTooltip("Trace light rays on the GPU with Nvidia CUDA.");
-#endif
 
 		switch (RadioID)
 		{
@@ -959,6 +958,11 @@ void DrawCompilerConfig()
 			default:
 				break;
 		}
+#else
+		RadioID = 1;
+		gCompilerMode.Embree = true;
+		gCompilerMode.CUDA = false;
+#endif
 	}
 	ImGui::PopID();
 	ImGui::Separator();
