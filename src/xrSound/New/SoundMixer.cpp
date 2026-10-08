@@ -1248,8 +1248,74 @@ static float Snd_HemiIndoorFactor(const Fvector& Pos)
 static void Snd_UpdateSlotIndoorFactor(sound_slot_state& Slot, const Fvector& Pos)
 {
 	const float target = Snd_HemiIndoorFactor(Pos);
+	if (!Slot.IndoorFactorValid)
+	{
+		Slot.IndoorFactor = target;
+		Slot.IndoorFactorValid = true;
+		return;
+	}
+
 	const float k = std::clamp(GMixer.dt * 3.0f, 0.0f, 1.0f);
 	Slot.IndoorFactor += (target - Slot.IndoorFactor) * k;
+}
+
+// Direct-to-reverberant ratio model: the reverberant field is roughly distance-independent while
+// the direct sound decays, so the wet/dry amplitude ratio grows as d / Dc (Dc - critical distance).
+// Dry and wet form an equal-power pair and the IRs are energy-normalized, so the total loudness
+// still follows the regular distance attenuation.
+static void Snd_ShootingReverbSend(sound_slot_state& Slot, float** Buffer, float& BeginFactor, float& EndFactor)
+{
+	constexpr float OutdoorCriticalDistance = 25.0f;
+	constexpr float IndoorCriticalDistance = 4.0f;
+
+	// A gunshot is an impulse: its tail stays audible after the direct sound even when the
+	// steady-state direct-to-reverberant ratio says otherwise, so the ratio is never taken closer than this.
+	constexpr float MinReverbDistance = 5.0f;
+
+	// 2D (HUD) sounds carry a listener-relative position, they are always at the listener.
+	const bool IsSpatial = (Slot.flags & (u16)Mixer::Flags::Spatial) != 0;
+	const Fvector& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
+	const Fvector& Range = Slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
+	const float Distance = IsSpatial ? GMixer.P.distance_to(Pos) : 0.0f;
+	const float Attenuation = IsSpatial ? DSP_DistanceAttenuation(Distance, Range) : 1.0f;
+
+	const float Indoor = std::clamp(Slot.IndoorFactor, 0.0f, 1.0f);
+	const float CriticalDistance = OutdoorCriticalDistance + (IndoorCriticalDistance - OutdoorCriticalDistance) * Indoor;
+	const float Ratio = std::max(psSoundShootingReverb, 0.0f) * std::max(Distance, MinReverbDistance) / CriticalDistance;
+	const float Dry = 1.0f / std::sqrt(1.0f + Ratio * Ratio);
+	const float Wet = Ratio * Dry * Attenuation;
+
+	const float WetFar = Wet * std::sqrt(1.0f - Indoor);
+	const float WetIndoor = Wet * std::sqrt(Indoor);
+	const bool SendFar = WetFar > EPS_S;
+	const bool SendIndoor = WetIndoor > EPS_S;
+
+	if (SendFar || SendIndoor)
+	{
+		const float Step = (EndFactor - BeginFactor) / (float)SND_BLOCKSIZE;
+		for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+		{
+			float* Far = GMixer.ShootingSendFar[Channel];
+			float* Near = GMixer.ShootingSendIndoor[Channel];
+			const float* Src = Buffer[Channel];
+
+			float Gain = BeginFactor;
+			for (u32 Key = 0; Key < SND_BLOCKSIZE; Key++, Gain += Step)
+			{
+				const float Sample = Src[Key] * Gain;
+				Far[Key] += Sample * WetFar;
+				Near[Key] += Sample * WetIndoor;
+			}
+		}
+
+		GMixer.IsOutdoorSend |= SendFar;
+		GMixer.IsIndoorSend |= SendIndoor;
+	}
+
+	const float PrevDry = Slot.ReverbDryGain < 0.0f ? Dry : Slot.ReverbDryGain;
+	Slot.ReverbDryGain = Dry;
+	BeginFactor *= PrevDry;
+	EndFactor *= Dry;
 }
 
 ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffer, float dt)
@@ -1326,76 +1392,9 @@ ICF void Snd_RenderSlot(u32 SlotIdx, sound_source& Source, float** process_buffe
 	float left_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].x;
 	float right_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].y;
 
-	// Convolution reverb send. The indoor set uses its own near IR; the
-	// outdoor set uses ONLY the FAR IR (the outdoor near field is removed).
-	// The send follows the dry signal's own distance attenuation (matching
-	// DSP_SpatialProcess), so the tail can never be louder than the gunshot
-	// and fades to zero at extreme range.
-	constexpr float IndoorNearEndDistance = 5.0f; // indoor near IR owns [0, 5] m
-	constexpr float OutdoorGateDistance = 10.0f; // outdoor far IR gate opens at 10 m
-	constexpr float NearWetScale = 0.5f; // near tail is too loud: -6 dB on its wet send
-	bool ReverbSendActive = false;
-	float Attent = 0.0f;
-	float WetFar = 0.0f;
-	float WetIndoorNear = 0.0f;
-
-	if ((Slot.flags & (u16)Mixer::Flags::Shooting))
+	if (Slot.flags & (u16)Mixer::Flags::Shooting)
 	{
-		Fvector& ReverbPos = Slot.parameters[(u32)Mixer::ParameterId::Position];
-		Fvector& ReverbDist = Slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
-
-		Fvector ReverbDelta;
-		ReverbDelta.set(ReverbPos.x - GMixer.P.x, ReverbPos.y - GMixer.P.y, ReverbPos.z - GMixer.P.z);
-		float ReverbDistance = ReverbDelta.magnitude();
-		float MinD = std::max(ReverbDist.x, EPS_S);
-		float MaxD = std::max(ReverbDist.y, MinD + EPS_S);
-		float D = std::clamp(ReverbDistance, MinD, MaxD);
-
-		// Wet level: dry signal distance attenuation. MUST match
-		// DSP_SpatialProcess (power 1.3, NOT squared) so the wet send sits at the same level as the dry path; a squared falloff here makes the tail inaudible.
-		float Base = MinD / (psSoundRolloff * D);
-		Attent = std::pow(Base, 1.3f);
-		Attent *= 1.0f - std::clamp(std::max(D - MinD, 0.0f) / (MaxD - MinD), 0.0f, 1.0f);
-		Attent = std::clamp(Attent, 0.0f, 1.0f);
-
-		// Indoor near IR plays from 0 to 5 m (no indoor far IR).
-		float AlphaIndoor = std::clamp(ReverbDistance / IndoorNearEndDistance, 0.0f, 1.0f);
-		AlphaIndoor = AlphaIndoor * AlphaIndoor * (3.0f - 2.0f * AlphaIndoor);
-
-		// Outdoor has a soft gate at OutdoorGateDistance (no room tail for point-blank shots in the open field).
-		constexpr float WetGateWidth = 2.0f;
-		float WetGateOutdoor = std::clamp((ReverbDistance - OutdoorGateDistance) / WetGateWidth, 0.0f, 1.0f);
-		WetGateOutdoor = WetGateOutdoor * WetGateOutdoor * (3.0f - 2.0f * WetGateOutdoor);
-
-		// Indoor factor of the SOUND's own position (hemi) splits the send
-		// between the recorded (outdoor) far IR and the synthesized indoor IR.
-		const float WetIndoor = std::clamp(Slot.IndoorFactor, 0.0f, 1.0f);
-		WetFar = 1.0f - WetIndoor;
-		WetIndoorNear = AlphaIndoor * WetIndoor;
-
-		Attent *= WetGateOutdoor;
-		ReverbSendActive = true;
-	}
-
-	if (ReverbSendActive)
-	{
-		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-		{
-			for (u32 i = 0; i < SND_BLOCKSIZE; i++)
-			{
-				float s = process_buffer[Channel][i] * VolumeFinal;
-				if (WetFar > 0.0f)
-				{
-					GMixer.ShootingSendFar[Channel][i] += s * Attent * WetFar;
-					GMixer.IsOutdoorSend = true;
-				}
-				if (WetIndoorNear > 0.0f)
-				{
-					GMixer.ShootingSendIndoor[Channel][i] += s * Attent * WetIndoorNear * NearWetScale;
-					GMixer.IsIndoorSend = true;
-				}
-			}
-		}
+		Snd_ShootingReverbSend(Slot, process_buffer, BeginFactor, EndFactor);
 	}
 
 	// Spatial processing
@@ -1554,30 +1553,17 @@ void Snd_MixerRenderCallback(float* buffer)
 		}
 	}
 
-	// Convolution reverb tail for shooting sounds (impulse-response based).
-	// The outdoor far and indoor near IR sets are convolved separately; each is
-	// skipped when its send was silent this block. Indoor-ness is a property of
-	// the SOUND's position, so both sets can be active at once.
-	if (GMixer.IsOutdoorSend || GMixer.IsIndoorSend)
 	{
+		PROF_EVENT("Shooting convolution reverb");
+
 		float* bus_buffer[SND_CHANNEL_COUNT] = {};
 		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
 		{
 			bus_buffer[Channel] = GMixer.buses[SND_BUS_REVERB].data[Channel];
 		}
 
-		GMixer.ShootingReverbFar.SetWetGain(psSoundShootingReverb);
-		GMixer.ShootingReverbIndoor.SetWetGain(psSoundShootingReverb);
-
-		if (GMixer.IsOutdoorSend)
-		{
-			GMixer.ShootingReverbFar.Process(GMixer.ShootingSendFar, bus_buffer, SND_BLOCKSIZE);
-		}
-
-		if (GMixer.IsIndoorSend)
-		{
-			GMixer.ShootingReverbIndoor.Process(GMixer.ShootingSendIndoor, bus_buffer, SND_BLOCKSIZE);
-		}
+		GMixer.ShootingReverbFar.Process(GMixer.ShootingSendFar, bus_buffer, GMixer.IsOutdoorSend);
+		GMixer.ShootingReverbIndoor.Process(GMixer.ShootingSendIndoor, bus_buffer, GMixer.IsIndoorSend);
 
 		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
 		{
@@ -1699,8 +1685,8 @@ void Mixer::Initialize()
 		GMixer.ShootingSendIndoor[Channel] = new float[SND_BLOCKSIZE]();
 	}
 
-	GMixer.ShootingReverbFar.Initialize("ir\\ir_default_far.ogg", psSoundShootingReverb, ReverbField::Far);
-	GMixer.ShootingReverbIndoor.InitializeProcedural(psSoundShootingReverb, ReverbField::IndoorNear);
+	GMixer.ShootingReverbFar.Initialize("ir\\ir_default_far");
+	GMixer.ShootingReverbIndoor.InitializeIndoor();
 
 #ifdef DEBUG_DRAW
 #pragma todo(replace with aligned allocators)
@@ -1898,15 +1884,18 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 				Fvector Pos = (Slot.flags & (u16)Flags::Spatial) ? Slot.parameters[(u32)Mixer::ParameterId::Position] : GMixer.P;
 				float Dist = GMixer.P.distance_to(Pos);
 
-				// Indoor factor of the SOUND's position: a shot fired inside a
-				// room gets the indoor tail even if the listener stands outside.
-				if (Slot.flags & (u16)Flags::Shooting)
-				{
-					Snd_UpdateSlotIndoorFactor(Slot, Pos);
-				}
-
 				if (Dist <= Slot.parameters[(u32)Mixer::ParameterId::DistanceRange].y)
 				{
+					if (Slot.flags & (u16)Flags::Spatial)
+					{
+						Snd_UpdateSlotIndoorFactor(Slot, Pos);
+					}
+					else
+					{
+						Slot.IndoorFactor = GMixer.IndoorFactor;
+						Slot.IndoorFactorValid = true;
+					}
+
 					float OutOCC = ::Sound->get_occlusion(Pos, 0.2f, &GMixer.occ);
 					float& OldOCC = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
 					volume_lerp(OldOCC, OutOCC, 1.0f, GMixer.dt);
@@ -1991,6 +1980,10 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 				ActualSlot.sound_name = Command.string_storage.c_str();
 				ActualSlot.flags = Flags;
 				ActualSlot.fade_volume = 0.0f;
+				ActualSlot.ReverbDryGain = -1.0f;
+				ActualSlot.IndoorFactor = GMixer.IndoorFactor;
+				ActualSlot.IndoorFactorValid = false;
+				ActualSlot.zone_idx = 0;
 
 				// Start decoding the first cache line immediately (off the audio thread) so the sound is ready by the time it is rendered.
 				Snd_QueueDecode(ActualSlot.sound_name, 0);
@@ -2503,6 +2496,14 @@ void Mixer::LoadImpulseResponse(const char* name, xr_vector<xr_vector<float>>& c
 	Snd_LoadSource(source, name);
 	if (source.file.datasource == nullptr)
 	{
+		return;
+	}
+
+	if (strstr(source.pub.path.c_str(), "$no_sound") != nullptr)
+	{
+		ov_clear(&source.file);
+		xr_delete(source.reader);
+		xr_free(source.data);
 		return;
 	}
 

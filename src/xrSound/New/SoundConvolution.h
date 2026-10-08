@@ -32,71 +32,53 @@
 #include "SoundMeta.h"
 #include <pffft.h>
 
-// Which impulse response slot this processor represents; drives per-field
-// shaping (EQ / level) baked into the IR at load time. IndoorNear uses an
-// algorithmically synthesized impulse response (no asset required).
-enum class ReverbField { Far, IndoorNear };
-
-// Partitioned convolution reverb (overlap-add) driven by an externally
-// recorded impulse response (e.g. a noise burst captured in a real space).
-// Resonance Audio's public API only exposes parametric RT60 reverb, so this
-// lives in the core mixer and is fed by a dedicated "shooting" reverb send.
+// Uniformly partitioned convolution (UPOLS): overlap-save with a frequency-domain delay line.
+// The IR is energy-normalized, so the wet output has the same RMS as the input and the
+// wet/dry balance is set entirely by the caller's send/dry gains.
 class CConvolutionReverb
 {
 public:
-    CConvolutionReverb() = default;
-    ~CConvolutionReverb();
+	CConvolutionReverb() = default;
+	~CConvolutionReverb();
 
-    // Loads a PCM/FP WAV impulse response. Returns true on success.
-    bool Initialize(const char* ir_path, float wet_gain, ReverbField field = ReverbField::Far);
+	CConvolutionReverb(const CConvolutionReverb&) = delete;
+	CConvolutionReverb& operator=(const CConvolutionReverb&) = delete;
 
-    // Synthesizes an impulse response algorithmically (indoor rooms).
-    bool InitializeProcedural(float wet_gain, ReverbField field);
-    bool Valid() const { return IsValid; }
-    void SetWetGain(float gain) { Wet = gain; }
-
-    // Convolves `input` (SND_CHANNEL_COUNT planar buffers of SND_BLOCKSIZE
-    // samples) and accumulates the wet tail into `output`.
-    void Process(float** input, float** output, u32 frames);
-
-    bool IsLoaded() const { return IsValid; }
-    void GetIRInfo(u32& frames, u32& sample_rate) const { frames = IrFrames; sample_rate = IrRate; }
-
+	bool Initialize(const char* IrPath);
+	bool InitializeIndoor();
 	void Free();
 
+	bool IsValid() const { return Valid; }
+	void GetIRInfo(u32& Frames, u32& SampleRate) const { Frames = IrFrames; SampleRate = SND_SAMPLERATE; }
+
+	// Accumulates the wet signal of SND_BLOCKSIZE planar frames into Output. Must be called
+	// every block: with HasInput == false it only renders the remaining tail and then idles.
+	void Process(float** Input, float** Output, bool HasInput);
+
+	void Reset();
+
 private:
-    bool LoadWav(const char* path);
+	bool Build(xr_vector<xr_vector<float>>& IR);
 
-    // Shared tail: per-field shaping, FFT setup and partitioned IR spectra.
-    bool FinalizeIR(xr_vector<xr_vector<float>>& ir);
+	static constexpr u32 BLOCK = SND_BLOCKSIZE;
+	static constexpr u32 FFT_SIZE = SND_BLOCKSIZE * 2;
 
-    bool IsValid = false;
-    float Wet = 1.0f;
-    bool IsFar = false;
+	bool Valid = false;
+	u32 IrFrames = 0;
+	u32 NumPartitions = 0;
+	u32 FdlHead = 0;
+	u32 TailBlocksLeft = 0;
 
-    u32 IrFrames = 0;
-    u32 IrRate = 0;
+	PFFFT_Setup* Setup = nullptr;
 
-    PFFFT_Setup* Setup = nullptr;
+	// [Channel][Partition][FFT_SIZE], pffft internal (unordered) spectrum layout.
+	float* IrSpectra = nullptr;
+	float* Fdl = nullptr;
 
-    // FFT size is twice the block size so circular convolution of two
-    // BLOCK-length segments equals their linear convolution without aliasing.
-    static constexpr u32 FFT_SIZE = SND_BLOCKSIZE * 2;
-    static constexpr u32 BLOCK = SND_BLOCKSIZE;
+	// [Channel][FFT_SIZE]: previous + current input block (overlap-save window).
+	float* InputWindow = nullptr;
 
-    u32 NumPartitions = 0;
-    u32 AccLen = 0;
-
-    // Per-channel IR spectra: [channel][partition] -> FFT_SIZE floats (aligned).
-    xr_vector<xr_vector<float*>> IrFFT;
-
-    // Per-channel overlap accumulation buffers (time domain).
-    xr_vector<float*> AccVec;
-
-    // Scratch buffers (aligned).
-    float* InTime = nullptr;   // FFT_SIZE
-    float* InputFFT = nullptr; // FFT_SIZE
-    float* Prod = nullptr;      // FFT_SIZE
-    float* Temp = nullptr;       // FFT_SIZE
-    float* Work = nullptr;      // FFT_SIZE
+	float* Spectrum = nullptr;
+	float* TimeOut = nullptr;
+	float* Work = nullptr;
 };
