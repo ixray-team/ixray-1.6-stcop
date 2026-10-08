@@ -349,7 +349,7 @@ IC void	ref_sound::set_frequency(float freq)
 IC void	ref_sound::set_range(float min, float max)
 {
 	if (slot()) {
-		XRay::Sound::Mixer::UpdateParameter(slot(), XRay::Sound::Mixer::ParameterId::Pitch, Fvector{ min, max, 1.f });
+		XRay::Sound::Mixer::UpdateParameter(slot(), XRay::Sound::Mixer::ParameterId::DistanceRange, Fvector{ min, max, max });
 	}
 }
 
