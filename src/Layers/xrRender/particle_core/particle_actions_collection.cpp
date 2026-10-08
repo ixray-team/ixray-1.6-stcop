@@ -2028,7 +2028,11 @@ void PASource::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	if(m_Flags.is(u32(flVertexB_tracks))){
 		for(int i = 0; i < rate; i++){
 			position.Generate	(pos);
-			size.Generate		(siz); 	if (m_Flags.is(flSingleSize)) siz.set(siz.x,siz.x,siz.x);
+			size.Generate(siz, pHolder->SizeScale);
+			if (m_Flags.is(flSingleSize))
+			{
+				siz.set(siz.x, siz.x, siz.x);
+			}
 			rot.Generate		(rt);
 			velocity.Generate	(vel);	vel += parent_vel;
 			if (AlighRotVelocityToVelocity)
@@ -2077,7 +2081,11 @@ void PASource::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	}else{
 		for(int i = 0; i < rate; i++){
 			position.Generate	(pos);
-			size.Generate		(siz); 	if (m_Flags.is(flSingleSize)) siz.set(siz.x,siz.x,siz.x);
+			size.Generate(siz, pHolder->SizeScale);
+			if (m_Flags.is(flSingleSize))
+			{
+				siz.set(siz.x, siz.x, siz.x);
+			}
 			rot.Generate		(rt);
 			velocity.Generate	(vel);	vel += parent_vel;
 			if (AlighRotVelocityToVelocity)
@@ -2294,7 +2302,7 @@ void PATargetSize::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
 		Particle &m = pHolder->particles[i];
-		Fvector dif(size - m.size);
+		Fvector dif(size * pHolder->SizeScale - m.size);
 		dif.x *= scaleFac_x;
 		dif.y *= scaleFac_y;
 		dif.z *= scaleFac_z;
@@ -2645,7 +2653,7 @@ void PABindSizeValue::Execute(ParticleHolder* effect, const float dt, float& tm_
 	{
 		Particle& m = effect->particles[i];
 
-		m.size = BindValue;
+		m.size = BindValue * effect->SizeScale;
 	}
 }
 void* PABindSizeValue::GetVariableImpl(u8 VarID)
@@ -2840,9 +2848,9 @@ void PASizeAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_m
 		{
 		case PAAnimatorType::Replace:
 			{
-				m.size.x = CurrentValue.x;
-				m.size.y = CurrentValue.y;
-				m.size.z = CurrentValue.z;
+				m.size.x = CurrentValue.x * effect->SizeScale;
+				m.size.y = CurrentValue.y * effect->SizeScale;
+				m.size.z = CurrentValue.z * effect->SizeScale;
 				break;
 			}
 		case PAAnimatorType::Multiply:

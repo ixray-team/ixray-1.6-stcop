@@ -217,6 +217,7 @@ void CWeapon::Load		(const char* section)
 {
 	inherited::Load					(section);
 	CShootingObject::Load			(section);
+	LoadVfxScales(section);
 
 	if (pSettings->line_exist(section, "laser_installed") && pSettings->r_bool(section, "laser_installed"))
 	{
@@ -850,6 +851,14 @@ void CWeapon::Load		(const char* section)
 		IKinematics* k = Visual()->dcast_PKinematics();
 		m_mShellBone = k->LL_GetTransform(k->LL_BoneID(*m_sShellBone));
 	}
+}
+
+void CWeapon::LoadVfxScales(const char* section)
+{
+	VfxSmokeScale = READ_IF_EXISTS(pSettings, r_float, section, "vfx_smoke_scale", 1.0f);
+	VfxShootScale = READ_IF_EXISTS(pSettings, r_float, section, "vfx_shoot_scale", 1.0f);
+	R_ASSERT2(_valid(VfxSmokeScale) && VfxSmokeScale > 0.0f, "vfx_smoke_scale must be finite and positive");
+	R_ASSERT2(_valid(VfxShootScale) && VfxShootScale > 0.0f, "vfx_shoot_scale must be finite and positive");
 }
 
 void CWeapon::on_load_attachment(shared_str sect_name, item_attachment& attachment)

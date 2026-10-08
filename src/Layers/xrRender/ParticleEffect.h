@@ -79,6 +79,8 @@ namespace PS
         void				SetBirthDeadCB		(PAPI::OnBirthParticleCB bc, PAPI::OnDeadParticleCB dc, void* owner, u32 p);		
 
 	    virtual u32			SpriteCount		();
+		void SetScale(float Scale) override;
+		float GetScale() override;
 		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 
 		virtual IParticleCustom* dcast_ParticleCustom() { return this; }
