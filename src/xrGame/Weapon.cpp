@@ -34,6 +34,9 @@
 #include "ai/monsters/bloodsucker/bloodsucker.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
 #include "WeaponAmmo.h"
+#include "ParticlesObject.h"
+#include "Silencer.h"
+#include "GrenadeLauncher.h"
 #include "ui/UIGameCustom.h"
 #include "../xrEngine/xr_input.h"
 #include <algorithm>
@@ -255,161 +258,8 @@ void CWeapon::Load		(const char* section)
 
 	AmmoElapsed.MagazineElapsed = pSettings->r_s32(section, "ammo_elapsed");
 	iMagazineSize = pSettings->r_s32(section, "ammo_mag_size");
-	
-	cam_recoil.LegacyRecoil = zoom_cam_recoil.LegacyRecoil = pSettings->line_exist(section, "cam_dispertion_frac"); // do not confuse with cam_dispersion_frac param from CS/CoP
 
-	u8 rm = READ_IF_EXISTS(pSettings, r_u8, section, "cam_return", !EngineExternal().ShadowOfChernobylMode());
-	cam_recoil.ReturnMode = (rm == 1);
-	
-	rm = READ_IF_EXISTS( pSettings, r_u8, section, "cam_return_stop", 0 );
-	cam_recoil.StopReturn = (rm == 1);
-
-	float temp_f = 0.0f;
-	temp_f					= pSettings->r_float( section,"cam_relax_speed" );
-	cam_recoil.RelaxSpeed	= std::abs( deg2rad( temp_f ) );
-	VERIFY2(!fis_zero(cam_recoil.RelaxSpeed), make_string<const char*>("Section [%s], line cam_relax_speed = %f", section, temp_f));
-	if ( fis_zero(cam_recoil.RelaxSpeed) )
-	{
-		cam_recoil.RelaxSpeed = EPS_L;
-	}
-
-	cam_recoil.RelaxSpeed_AI = cam_recoil.RelaxSpeed;
-	if ( pSettings->line_exist( section, "cam_relax_speed_ai" ) )
-	{
-		temp_f						= pSettings->r_float( section, "cam_relax_speed_ai" );
-		cam_recoil.RelaxSpeed_AI	= std::abs( deg2rad( temp_f ) );
-		VERIFY2(!fis_zero(cam_recoil.RelaxSpeed_AI), make_string<const char*>("Section [%s], line cam_relax_speed_ai = %f", section, temp_f));
-		if ( fis_zero(cam_recoil.RelaxSpeed_AI) )
-		{
-			cam_recoil.RelaxSpeed_AI = EPS_L;
-		}
-	}
-	temp_f						= pSettings->r_float( section, "cam_max_angle" );
-	cam_recoil.MaxAngleVert		= std::abs( deg2rad( temp_f ) );
-	VERIFY2(!fis_zero(cam_recoil.MaxAngleVert), make_string<const char*>("Section [%s], line cam_max_angle = %f", section, temp_f));
-
-	if ( fis_zero(cam_recoil.MaxAngleVert) )
-	{
-		cam_recoil.MaxAngleVert = EPS;
-	}
-	
-	temp_f						= pSettings->r_float( section, "cam_max_angle_horz" );
-	cam_recoil.MaxAngleHorz		= std::abs( deg2rad( temp_f ) );
-	VERIFY2(!fis_zero(cam_recoil.MaxAngleHorz), make_string<const char*>("Section [%s], line cam_max_angle_horz = %f", section, temp_f));
-
-	if ( fis_zero(cam_recoil.MaxAngleHorz) )
-	{
-		cam_recoil.MaxAngleHorz = EPS;
-	}
-	
-	temp_f						= pSettings->r_float( section, "cam_step_angle_horz" );
-	cam_recoil.StepAngleHorz	= deg2rad( temp_f );
-	
-	cam_recoil.DispersionFrac	= std::abs( READ_IF_EXISTS( pSettings, r_float, section, "cam_dispersion_frac", READ_IF_EXISTS( pSettings, r_float, section, "cam_dispertion_frac", 0.7f ) ) );
-
-	
-	//zoom_cam_recoil.Clone( cam_recoil ); ==== ������ !!!!!!!!!!
-	zoom_cam_recoil.RelaxSpeed		= cam_recoil.RelaxSpeed;
-	zoom_cam_recoil.RelaxSpeed_AI	= cam_recoil.RelaxSpeed_AI;
-	zoom_cam_recoil.DispersionFrac	= cam_recoil.DispersionFrac;
-	zoom_cam_recoil.MaxAngleVert	= cam_recoil.MaxAngleVert;
-	zoom_cam_recoil.MaxAngleHorz	= cam_recoil.MaxAngleHorz;
-	zoom_cam_recoil.StepAngleHorz	= cam_recoil.StepAngleHorz;
-
-	zoom_cam_recoil.ReturnMode		= cam_recoil.ReturnMode;
-	zoom_cam_recoil.StopReturn		= cam_recoil.StopReturn;
-
-	zoom_cam_recoil.Pattern = cam_recoil.Pattern;
-
-	
-	if ( pSettings->line_exist( section, "zoom_cam_relax_speed" ) )
-	{
-		zoom_cam_recoil.RelaxSpeed		= std::abs( deg2rad( pSettings->r_float( section, "zoom_cam_relax_speed" ) ) );
-		VERIFY2(!fis_zero(zoom_cam_recoil.RelaxSpeed), make_string<const char*>("Section [%s], line zoom_cam_relax_speed = %f", section, zoom_cam_recoil.RelaxSpeed));
-		if ( fis_zero(zoom_cam_recoil.RelaxSpeed) )
-		{
-			zoom_cam_recoil.RelaxSpeed = EPS_L;
-		}
-	}
-	if ( pSettings->line_exist( section, "zoom_cam_relax_speed_ai" ) )
-	{
-		zoom_cam_recoil.RelaxSpeed_AI	= std::abs( deg2rad( pSettings->r_float( section,"zoom_cam_relax_speed_ai" ) ) );
-		VERIFY2(!fis_zero(zoom_cam_recoil.RelaxSpeed_AI), make_string<const char*>("Section [%s], line zoom_cam_relax_speed_ai = %f", section, zoom_cam_recoil.RelaxSpeed_AI));
-		if ( fis_zero(zoom_cam_recoil.RelaxSpeed_AI) )
-		{
-			zoom_cam_recoil.RelaxSpeed_AI = EPS_L;
-		}
-	}
-	if ( pSettings->line_exist( section, "zoom_cam_max_angle" ) )
-	{
-		zoom_cam_recoil.MaxAngleVert	= std::abs( deg2rad( pSettings->r_float( section, "zoom_cam_max_angle" ) ) );
-		VERIFY2(!fis_zero(zoom_cam_recoil.MaxAngleVert), make_string<const char*>("Section [%s], line zoom_cam_max_angle = %f", section, zoom_cam_recoil.MaxAngleVert));
-
-		if ( fis_zero(zoom_cam_recoil.MaxAngleVert) )
-		{
-			zoom_cam_recoil.MaxAngleVert = EPS;
-		}
-	}
-	if ( pSettings->line_exist( section, "zoom_cam_max_angle_horz" ) )
-	{
-		zoom_cam_recoil.MaxAngleHorz	= std::abs( deg2rad( pSettings->r_float( section, "zoom_cam_max_angle_horz" ) ) );
-		VERIFY2(!fis_zero(zoom_cam_recoil.MaxAngleHorz), make_string<const char*>("Section [%s], line zoom_cam_max_angle_horz = %f", section, zoom_cam_recoil.MaxAngleHorz));
-
-		if ( fis_zero(zoom_cam_recoil.MaxAngleHorz) )
-		{
-			zoom_cam_recoil.MaxAngleHorz = EPS;
-		}
-	}
-	if ( pSettings->line_exist( section, "zoom_cam_step_angle_horz" ) )	{
-		zoom_cam_recoil.StepAngleHorz	= deg2rad( pSettings->r_float( section, "zoom_cam_step_angle_horz" ) ); 
-	}
-	if ( pSettings->line_exist( section, "zoom_cam_dispersion_frac" ) )	{
-		zoom_cam_recoil.DispersionFrac	= std::abs( pSettings->r_float( section, "zoom_cam_dispersion_frac" ) );
-	}
-
-	m_pdm.m_fPDM_disp_base			= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_base", 1.0f);
-	m_pdm.m_fPDM_disp_vel_factor	= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_vel_factor", 1.0f);
-	m_pdm.m_fPDM_disp_accel_factor	= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_accel_factor", 1.0f);
-	m_pdm.m_fPDM_disp_crouch		= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_crouch", 1.0f);
-	m_pdm.m_fPDM_disp_crouch_no_acc	= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_crouch_no_acc", 1.0f);
-	m_crosshair_inertion			= READ_IF_EXISTS(pSettings, r_float, section, "crosshair_inertion",	5.91f);
-
-	m_first_bullet_controller.load	(section);
-	fireDispersionConditionFactor = pSettings->r_float(section,"fire_dispersion_condition_factor");
-
-    if (pSettings->line_exist(section, "misfire_start_condition") ||
-        pSettings->line_exist(section, "misfire_end_condition") ||
-        pSettings->line_exist(section, "misfire_start_prob") ||
-        pSettings->line_exist(section, "misfire_end_prob"))
-    {
-        misfireStartCondition   = pSettings->r_float(section, "misfire_start_condition");
-        misfireEndCondition     = pSettings->r_float(section, "misfire_end_condition");
-        misfireStartProbability = pSettings->r_float(section, "misfire_start_prob");
-        misfireEndProbability   = pSettings->r_float(section, "misfire_end_prob");
-    }
-    else
-    {
-		useLegacyMisfire = true;
-
-        misfireProbability      = pSettings->r_float(section, "misfire_probability");
-        misfireConditionK       = READ_IF_EXISTS(pSettings, r_float, section, "misfire_condition_k", 1.0f);
-
-        // For UI indicators to work correctly
-        misfireStartCondition   = 0.95f;
-        misfireEndCondition     = 0.0f;
-        misfireStartProbability = misfireProbability;
-        misfireEndProbability   = (misfireProbability + misfireConditionK) * 0.25f;
-    }
-	conditionDecreasePerShot = pSettings->r_float(section, "condition_shot_dec");
-	conditionDecreasePerQueueShot = READ_IF_EXISTS(pSettings, r_float, section, "condition_queue_shot_dec", conditionDecreasePerShot);
-
-
-	vLoadedFirePoint	= pSettings->r_fvector3		(section,"fire_point"		);
-	
-	if(pSettings->line_exist(section,"fire_point2")) 
-		vLoadedFirePoint2= pSettings->r_fvector3	(section,"fire_point2");
-	else 
-		vLoadedFirePoint2= vLoadedFirePoint;
+	LoadShootingParams(section);
 
 	// hands
 	eHandDependence		= EHandDependence(pSettings->r_s32(section,"hand_dependence"));
@@ -853,12 +703,251 @@ void CWeapon::Load		(const char* section)
 	}
 }
 
+void CWeapon::LoadShootingParams(const char* section)
+{
+	cam_recoil.LegacyRecoil = zoom_cam_recoil.LegacyRecoil = pSettings->line_exist(section, "cam_dispertion_frac"); // do not confuse with cam_dispersion_frac param from CS/CoP
+
+	u8 rm = READ_IF_EXISTS(pSettings, r_u8, section, "cam_return", !EngineExternal().ShadowOfChernobylMode());
+	cam_recoil.ReturnMode = (rm == 1);
+
+	rm = READ_IF_EXISTS(pSettings, r_u8, section, "cam_return_stop", 0);
+	cam_recoil.StopReturn = (rm == 1);
+
+	float temp_f = 0.0f;
+	temp_f = pSettings->r_float(section, "cam_relax_speed");
+	cam_recoil.RelaxSpeed = std::abs(deg2rad(temp_f));
+	VERIFY2(!fis_zero(cam_recoil.RelaxSpeed), make_string<const char*>("Section [%s], line cam_relax_speed = %f", section, temp_f));
+	if (fis_zero(cam_recoil.RelaxSpeed))
+	{
+		cam_recoil.RelaxSpeed = EPS_L;
+	}
+
+	cam_recoil.RelaxSpeed_AI = cam_recoil.RelaxSpeed;
+	if (pSettings->line_exist(section, "cam_relax_speed_ai"))
+	{
+		temp_f = pSettings->r_float(section, "cam_relax_speed_ai");
+		cam_recoil.RelaxSpeed_AI = std::abs(deg2rad(temp_f));
+		VERIFY2(!fis_zero(cam_recoil.RelaxSpeed_AI), make_string<const char*>("Section [%s], line cam_relax_speed_ai = %f", section, temp_f));
+		if (fis_zero(cam_recoil.RelaxSpeed_AI))
+		{
+			cam_recoil.RelaxSpeed_AI = EPS_L;
+		}
+	}
+	temp_f = pSettings->r_float(section, "cam_max_angle");
+	cam_recoil.MaxAngleVert = std::abs(deg2rad(temp_f));
+	VERIFY2(!fis_zero(cam_recoil.MaxAngleVert), make_string<const char*>("Section [%s], line cam_max_angle = %f", section, temp_f));
+
+	if (fis_zero(cam_recoil.MaxAngleVert))
+	{
+		cam_recoil.MaxAngleVert = EPS;
+	}
+
+	temp_f = pSettings->r_float(section, "cam_max_angle_horz");
+	cam_recoil.MaxAngleHorz = std::abs(deg2rad(temp_f));
+	VERIFY2(!fis_zero(cam_recoil.MaxAngleHorz), make_string<const char*>("Section [%s], line cam_max_angle_horz = %f", section, temp_f));
+
+	if (fis_zero(cam_recoil.MaxAngleHorz))
+	{
+		cam_recoil.MaxAngleHorz = EPS;
+	}
+
+	temp_f = pSettings->r_float(section, "cam_step_angle_horz");
+	cam_recoil.StepAngleHorz = deg2rad(temp_f);
+
+	cam_recoil.DispersionFrac = std::abs(READ_IF_EXISTS(pSettings, r_float, section, "cam_dispersion_frac", READ_IF_EXISTS(pSettings, r_float, section, "cam_dispertion_frac", 0.7f)));
+
+
+	// zoom_cam_recoil.Clone( cam_recoil ); ==== ������ !!!!!!!!!!
+	zoom_cam_recoil.RelaxSpeed = cam_recoil.RelaxSpeed;
+	zoom_cam_recoil.RelaxSpeed_AI = cam_recoil.RelaxSpeed_AI;
+	zoom_cam_recoil.DispersionFrac = cam_recoil.DispersionFrac;
+	zoom_cam_recoil.MaxAngleVert = cam_recoil.MaxAngleVert;
+	zoom_cam_recoil.MaxAngleHorz = cam_recoil.MaxAngleHorz;
+	zoom_cam_recoil.StepAngleHorz = cam_recoil.StepAngleHorz;
+
+	zoom_cam_recoil.ReturnMode = cam_recoil.ReturnMode;
+	zoom_cam_recoil.StopReturn = cam_recoil.StopReturn;
+
+	zoom_cam_recoil.Pattern = cam_recoil.Pattern;
+
+
+	if (pSettings->line_exist(section, "zoom_cam_relax_speed"))
+	{
+		zoom_cam_recoil.RelaxSpeed = std::abs(deg2rad(pSettings->r_float(section, "zoom_cam_relax_speed")));
+		VERIFY2(!fis_zero(zoom_cam_recoil.RelaxSpeed), make_string<const char*>("Section [%s], line zoom_cam_relax_speed = %f", section, zoom_cam_recoil.RelaxSpeed));
+		if (fis_zero(zoom_cam_recoil.RelaxSpeed))
+		{
+			zoom_cam_recoil.RelaxSpeed = EPS_L;
+		}
+	}
+	if (pSettings->line_exist(section, "zoom_cam_relax_speed_ai"))
+	{
+		zoom_cam_recoil.RelaxSpeed_AI = std::abs(deg2rad(pSettings->r_float(section, "zoom_cam_relax_speed_ai")));
+		VERIFY2(!fis_zero(zoom_cam_recoil.RelaxSpeed_AI), make_string<const char*>("Section [%s], line zoom_cam_relax_speed_ai = %f", section, zoom_cam_recoil.RelaxSpeed_AI));
+		if (fis_zero(zoom_cam_recoil.RelaxSpeed_AI))
+		{
+			zoom_cam_recoil.RelaxSpeed_AI = EPS_L;
+		}
+	}
+	if (pSettings->line_exist(section, "zoom_cam_max_angle"))
+	{
+		zoom_cam_recoil.MaxAngleVert = std::abs(deg2rad(pSettings->r_float(section, "zoom_cam_max_angle")));
+		VERIFY2(!fis_zero(zoom_cam_recoil.MaxAngleVert), make_string<const char*>("Section [%s], line zoom_cam_max_angle = %f", section, zoom_cam_recoil.MaxAngleVert));
+
+		if (fis_zero(zoom_cam_recoil.MaxAngleVert))
+		{
+			zoom_cam_recoil.MaxAngleVert = EPS;
+		}
+	}
+	if (pSettings->line_exist(section, "zoom_cam_max_angle_horz"))
+	{
+		zoom_cam_recoil.MaxAngleHorz = std::abs(deg2rad(pSettings->r_float(section, "zoom_cam_max_angle_horz")));
+		VERIFY2(!fis_zero(zoom_cam_recoil.MaxAngleHorz), make_string<const char*>("Section [%s], line zoom_cam_max_angle_horz = %f", section, zoom_cam_recoil.MaxAngleHorz));
+
+		if (fis_zero(zoom_cam_recoil.MaxAngleHorz))
+		{
+			zoom_cam_recoil.MaxAngleHorz = EPS;
+		}
+	}
+	if (pSettings->line_exist(section, "zoom_cam_step_angle_horz"))
+	{
+		zoom_cam_recoil.StepAngleHorz = deg2rad(pSettings->r_float(section, "zoom_cam_step_angle_horz"));
+	}
+	if (pSettings->line_exist(section, "zoom_cam_dispersion_frac"))
+	{
+		zoom_cam_recoil.DispersionFrac = std::abs(pSettings->r_float(section, "zoom_cam_dispersion_frac"));
+	}
+
+	m_pdm.m_fPDM_disp_base = READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_base", 1.0f);
+	m_pdm.m_fPDM_disp_vel_factor = READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_vel_factor", 1.0f);
+	m_pdm.m_fPDM_disp_accel_factor = READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_accel_factor", 1.0f);
+	m_pdm.m_fPDM_disp_crouch = READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_crouch", 1.0f);
+	m_pdm.m_fPDM_disp_crouch_no_acc = READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_crouch_no_acc", 1.0f);
+	m_crosshair_inertion = READ_IF_EXISTS(pSettings, r_float, section, "crosshair_inertion", 5.91f);
+
+	m_first_bullet_controller.load(section);
+	fireDispersionConditionFactor = pSettings->r_float(section, "fire_dispersion_condition_factor");
+
+	if (pSettings->line_exist(section, "misfire_start_condition") ||
+		pSettings->line_exist(section, "misfire_end_condition") ||
+		pSettings->line_exist(section, "misfire_start_prob") ||
+		pSettings->line_exist(section, "misfire_end_prob"))
+	{
+		useLegacyMisfire = false;
+		misfireProbability = 0.0f;
+		misfireConditionK = 1.0f;
+		misfireStartCondition = pSettings->r_float(section, "misfire_start_condition");
+		misfireEndCondition = pSettings->r_float(section, "misfire_end_condition");
+		misfireStartProbability = pSettings->r_float(section, "misfire_start_prob");
+		misfireEndProbability = pSettings->r_float(section, "misfire_end_prob");
+	}
+	else
+	{
+		useLegacyMisfire = true;
+
+		misfireProbability = pSettings->r_float(section, "misfire_probability");
+		misfireConditionK = READ_IF_EXISTS(pSettings, r_float, section, "misfire_condition_k", 1.0f);
+
+		// For UI indicators to work correctly
+		misfireStartCondition = 0.95f;
+		misfireEndCondition = 0.0f;
+		misfireStartProbability = misfireProbability;
+		misfireEndProbability = (misfireProbability + misfireConditionK) * 0.25f;
+	}
+	conditionDecreasePerShot = pSettings->r_float(section, "condition_shot_dec");
+	conditionDecreasePerQueueShot = READ_IF_EXISTS(pSettings, r_float, section, "condition_queue_shot_dec", conditionDecreasePerShot);
+
+
+	vLoadedFirePoint = pSettings->r_fvector3(section, "fire_point");
+
+	if (pSettings->line_exist(section, "fire_point2"))
+	{
+		vLoadedFirePoint2 = pSettings->r_fvector3(section, "fire_point2");
+	}
+	else
+	{
+		vLoadedFirePoint2 = vLoadedFirePoint;
+	}
+}
+
 void CWeapon::LoadVfxScales(const char* section)
 {
 	VfxSmokeScale = READ_IF_EXISTS(pSettings, r_float, section, "vfx_smoke_scale", 1.0f);
 	VfxShootScale = READ_IF_EXISTS(pSettings, r_float, section, "vfx_shoot_scale", 1.0f);
 	R_ASSERT2(_valid(VfxSmokeScale) && VfxSmokeScale > 0.0f, "vfx_smoke_scale must be finite and positive");
 	R_ASSERT2(_valid(VfxShootScale) && VfxShootScale > 0.0f, "vfx_shoot_scale must be finite and positive");
+}
+
+void CWeapon::ReloadConfig()
+{
+	const shared_str Section = cNameSect();
+	if (!pSettings->section_exist(Section))
+	{
+		Msg("! Cannot reload weapon [%s]: section does not exist", Section.c_str());
+		return;
+	}
+
+	// Refresh configuration without running Load() on an already spawned object.
+	LoadShootingParams(Section.c_str());
+	LoadRecoilPatterns(Section.c_str());
+	LoadVfxScales(Section.c_str());
+	m_zoom_params.m_bZoomEnabled = pSettings->r_bool(Section, "zoom_enabled");
+	m_bHasTracers = READ_IF_EXISTS(pSettings, r_bool, Section, "tracers", true);
+	m_u8TracerColorID = READ_IF_EXISTS(pSettings, r_u8, Section, "tracers_color_ID", u8(-1));
+
+	// Removed particle keys must fall back to an empty effect, rather than the old name.
+	m_sShellParticles = nullptr;
+	m_sSmokeParticles = nullptr;
+	m_sFlameParticles = nullptr;
+	m_sSmokeSilencerParticles = nullptr;
+	m_sFlameSilencerParticles = nullptr;
+	m_sSmokeGlauncherParticles = nullptr;
+	m_sFlameGlauncherParticles = nullptr;
+	CShootingObject::Load(Section.c_str());
+	if (fire_mode == eGlauncherFire)
+	{
+		if (CGrenadeLauncher* Launcher = GetGrenadeLauncherAttached())
+		{
+			CShootingObject::Load(Launcher->cNameSect().c_str());
+		}
+	}
+	else if (fire_mode == eSilencerFire)
+	{
+		if (CSilencer* Silencer = GetSilencerAttached())
+		{
+			CShootingObject::Load(Silencer->cNameSect().c_str());
+		}
+	}
+
+	// Only reapply the upgrades whose base parameters were refreshed above.
+	string2048 UpgradeSections;
+	if (Level().m_upgrade_manager && get_upgrades_str(UpgradeSections))
+	{
+		string128 UpgradeSection;
+		const int Count = _GetItemCount(UpgradeSections);
+		for (int Index = 0; Index < Count; ++Index)
+		{
+			_GetItem(UpgradeSections, Index, UpgradeSection);
+			if (!pSettings->section_exist(UpgradeSection))
+			{
+				continue;
+			}
+			install_upgrade_disp(UpgradeSection, false);
+			install_upgrade_hit(UpgradeSection, false);
+			m_sFlameSilencerParticles = READ_IF_EXISTS(pSettings, r_string, UpgradeSection, "silencer_flame_particles", m_sFlameSilencerParticles);
+			m_sSmokeSilencerParticles = READ_IF_EXISTS(pSettings, r_string, UpgradeSection, "silencer_smoke_particles", m_sSmokeSilencerParticles);
+		}
+	}
+
+	for (auto& Particle : flame_particles)
+	{
+		Particle->SetScale(VfxShootScale);
+	}
+	for (auto& Particle : smoke_particles)
+	{
+		Particle->SetScale(VfxSmokeScale);
+	}
+	m_BriefInfo_CalcFrame = 0;
 }
 
 void CWeapon::on_load_attachment(shared_str sect_name, item_attachment& attachment)

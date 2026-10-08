@@ -70,6 +70,20 @@ void CWeaponMagazinedWGrenade::Load(const char* section)
 	}
 }
 
+void CWeaponMagazinedWGrenade::ReloadConfig()
+{
+	inherited::ReloadConfig();
+	if (IsGrenadeLauncherAttached())
+	{
+		const shared_str Section = GetGrenadeLauncherName();
+		if (pSettings->section_exist(Section))
+		{
+			CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(Section, "grenade_vel");
+			m_fGrenadeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, Section, "grenade_attached_recoil", 1.0f);
+		}
+	}
+}
+
 void CWeaponMagazinedWGrenade::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);

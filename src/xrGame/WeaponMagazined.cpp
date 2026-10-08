@@ -69,10 +69,7 @@ void CWeaponMagazined::Load(const char* section)
 		}
 	}
 
-	m_iBaseDispersionedBulletsCount = READ_IF_EXISTS(pSettings, r_u8, section, "base_dispersioned_bullets_count", 0);
-	m_fBaseDispersionedBulletsSpeed = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_speed", m_fStartBulletSpeed);
-	m_fBaseDispersionedBulletsTimeDelta = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_time_delta", 0.0f);
-	m_fSingleShootsTimeDelta = READ_IF_EXISTS(pSettings, r_float, section, "singleshoots_time_delta", 0.0f);
+	LoadMagazineShootingParams(section);
 
 	if (pSettings->line_exist(section, "fire_modes"))
 	{
@@ -99,6 +96,49 @@ void CWeaponMagazined::Load(const char* section)
 	m_vibration_factor_right = READ_IF_EXISTS(pSettings, r_float, section, "vibration_factor_right", 1.0f);
 
 	m_trigger_effect_time = READ_IF_EXISTS(pSettings, r_float, section, "trigger_effect_time", 1.0f);
+}
+
+void CWeaponMagazined::LoadMagazineShootingParams(const char* section)
+{
+	m_iBaseDispersionedBulletsCount = READ_IF_EXISTS(pSettings, r_u8, section, "base_dispersioned_bullets_count", 0);
+	m_fBaseDispersionedBulletsSpeed = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_speed", m_fStartBulletSpeed);
+	m_fBaseDispersionedBulletsTimeDelta = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_time_delta", 0.0f);
+	m_fSingleShootsTimeDelta = READ_IF_EXISTS(pSettings, r_float, section, "singleshoots_time_delta", 0.0f);
+}
+
+void CWeaponMagazined::ReloadConfig()
+{
+	inherited::ReloadConfig();
+	if (!pSettings->section_exist(cNameSect()))
+	{
+		return;
+	}
+	LoadMagazineShootingParams(cNameSect().c_str());
+	LoadSilencerKoeffs();
+	if (IsSilencerAttached())
+	{
+		ApplySilencerKoeffs();
+	}
+	else
+	{
+		ResetSilencerKoeffs();
+	}
+
+	string2048 UpgradeSections;
+	if (Level().m_upgrade_manager && get_upgrades_str(UpgradeSections))
+	{
+		string128 UpgradeSection;
+		const int Count = _GetItemCount(UpgradeSections);
+		for (int Index = 0; Index < Count; ++Index)
+		{
+			_GetItem(UpgradeSections, Index, UpgradeSection);
+			if (pSettings->section_exist(UpgradeSection))
+			{
+				process_if_exists_set(UpgradeSection, "base_dispersioned_bullets_count", m_iBaseDispersionedBulletsCount, false);
+				process_if_exists_set(UpgradeSection, "base_dispersioned_bullets_speed", m_fBaseDispersionedBulletsSpeed, false);
+			}
+		}
+	}
 }
 
 void CWeaponMagazined::LoadSounds(const char* section)
