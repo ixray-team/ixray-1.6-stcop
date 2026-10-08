@@ -530,9 +530,11 @@ void CGamePersistent::UpdateParticles()
 			}
 		}
 
+		static xr_task_group particle_tasks;
+
 		for (u32 i = 0; i < last_count; ++i)
 		{
-			Device.secondary_tasks.run([i, dwTime]()
+			particle_tasks.run([i, dwTime]()
 			{
 				std::sort(workers[i].second.begin(), workers[i].second.end(), [](xr_shared_ptr<CParticlesObject>& a, xr_shared_ptr<CParticlesObject>& b)
 				{
@@ -547,6 +549,8 @@ void CGamePersistent::UpdateParticles()
 				}
 			});
 		}
+
+		particle_tasks.wait();
 	}
 }
 
