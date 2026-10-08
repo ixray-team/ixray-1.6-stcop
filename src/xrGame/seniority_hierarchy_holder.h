@@ -14,7 +14,8 @@ class CTeamHierarchyHolder;
 
 class CSeniorityHierarchyHolder {
 private:
-	enum {max_team_count = 64};
+	// Team IDs are stored as u8; cover the entire representable range.
+	enum {max_team_count = 256};
 
 private:
 	typedef FixedVector<CTeamHierarchyHolder*,max_team_count> TEAM_REGISTRY;
