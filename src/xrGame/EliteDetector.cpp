@@ -10,13 +10,6 @@
 CEliteDetector::CEliteDetector()
 {
 	m_artefacts.m_af_rank = 3;
-	m_ui_xml_tag = "elite";
-}
-
-void CEliteDetector::Load(const char* section)
-{
-	inherited::Load(section);
-	m_ui_xml_tag = READ_IF_EXISTS(pSettings, r_string, section, "ui_xml_tag", m_ui_xml_tag);
 }
 
 void CEliteDetector::CreateUI()
@@ -141,13 +134,6 @@ void CUIArtefactDetectorElite::construct(CEliteDetector* p)
 		S->SetCustomDraw(true);
 	}
 	uiXml.SetLocalRoot(pStoredRoot);
-
-	Fvector _map_attach_p = pSettings->r_fvector3(m_parent->cNameSect(), "ui_p");
-	Fvector _map_attach_r = pSettings->r_fvector3(m_parent->cNameSect(), "ui_r");
-
-	_map_attach_r.mul(PI / 180.f);
-	m_map_attach_offset.setHPB(_map_attach_r.x, _map_attach_r.y, _map_attach_r.z);
-	m_map_attach_offset.translate_over(_map_attach_p);
 }
 
 void CUIArtefactDetectorElite::update()
@@ -216,7 +202,7 @@ void CUIArtefactDetectorElite::GetUILocatorMatrix(Fmatrix& _m)
 	u16 bid = kin->LL_BoneID("cover");
 	Fmatrix cover_bone = kin->LL_GetTransform(bid);
 	_m.mul(trans, cover_bone);
-	_m.mulB_43(m_map_attach_offset);
+	_m.mulB_43(m_parent->EliteDesc().UiAttachOffset);
 }
 
 void CUIArtefactDetectorElite::Clear()
@@ -241,7 +227,6 @@ void CUIArtefactDetectorElite::RegisterItemToDraw(const Fvector& p, const shared
 CScientificDetector::CScientificDetector()
 {
 	m_artefacts.m_af_rank = 3;
-	m_ui_xml_tag = "scientific";
 }
 
 CScientificDetector::~CScientificDetector()
@@ -252,7 +237,7 @@ CScientificDetector::~CScientificDetector()
 void  CScientificDetector::Load(const char* section)
 {
 	inherited::Load(section);
-	m_zones.load(section, "zone");
+	m_zones.Init(ScientificDesc().Zones, section, false);
 }
 
 void CScientificDetector::UpdateWork()

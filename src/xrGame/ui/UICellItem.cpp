@@ -506,7 +506,7 @@ void CUICellItem::UpdateCustomMarksAndText()
 			textToShow = item->m_custom_text.c_str();
 			useStringTable = true;
 		}
-		else if (item->m_custom_text_auto_uses)
+		else if (item->ItemDesc().m_custom_text_auto_uses)
 		{
 			if (CEatableItem* eatable = item->cast_eatable_item())
 			{
@@ -525,7 +525,7 @@ void CUICellItem::UpdateCustomMarksAndText()
 		{
 			const Fvector2 textSize = m_custom_text->GetWndSize();
 			m_custom_text->SetWndPos(CalcInvCellAnchorPos(
-				cellSize, textSize, item->m_custom_text_anchor, item->m_custom_text_offset));
+				cellSize, textSize, item->ItemDesc().m_custom_text_anchor, item->m_custom_text_offset));
 
 			if (useStringTable)
 			{
@@ -563,7 +563,7 @@ void CUICellItem::UpdateCustomMarksAndText()
 
 			const Fvector2 markSize = m_custom_mark->GetWndSize();
 			m_custom_mark->SetWndPos(CalcInvCellAnchorPos(
-				cellSize, markSize, item->m_custom_mark_anchor, item->m_custom_mark_offset));
+				cellSize, markSize, item->ItemDesc().m_custom_mark_anchor, item->m_custom_mark_offset));
 
 			if (item->m_custom_mark_texture.size())
 			{

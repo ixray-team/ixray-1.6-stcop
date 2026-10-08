@@ -2101,7 +2101,7 @@ void CActor::UpdateCL()
 		{
 			CCustomOutfit* COF = Outfit->cast_outfit();
 
-			if (COF && !COF->bIsHelmetAvaliable) {
+			if (COF && !COF->IsHelmetAvailable()) {
 				g_pGamePersistent->ShaderParams.HelmetCondition = Outfit->GetCondition();
 				g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvailable = COF->IsHudGasMaskAvailable();
 				g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable = COF->IsHudRainDropsAvailable();
@@ -2240,7 +2240,7 @@ void CActor::UpdateCL()
 	}
 	CHelmet* pHelmet = GetHelmet();
 	CCustomOutfit* pOutfit = GetOutfit();
-	bool shouldPlayHelmetSound = pHelmet != nullptr || (pOutfit != nullptr && !pOutfit->bIsHelmetAvaliable);
+	bool shouldPlayHelmetSound = pHelmet != nullptr || (pOutfit != nullptr && !pOutfit->IsHelmetAvailable());
 
 	if (shouldPlayHelmetSound)
 	{
@@ -3201,12 +3201,12 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 	{
 		outfit->ApplySkinModel(this, false, false);
 
-		if (GetNightVisionEffector() && GetNightVisionEffector()->GetStatus() && !outfit->bIsHelmetAvaliable)
+		if (GetNightVisionEffector() && GetNightVisionEffector()->GetStatus() && !outfit->IsHelmetAvailable())
 		{
 			GetNightVisionEffector()->SwitchNightVision(false);
 		}
 
-		if (TorchOnlyOutfit && !outfit->bIsHelmetAvaliable)
+		if (TorchOnlyOutfit && !outfit->IsHelmetAvailable())
 		{
 			CTorch* pTorch = static_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
 			if (pTorch != nullptr)
@@ -3399,7 +3399,7 @@ float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
 	{
 		if (CArtefact* artefact = item->cast_artefact())
 		{
-			sum += (artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
+			sum += (artefact->ArtefactDesc().m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
 		}
 	}
 
@@ -3448,7 +3448,7 @@ float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
 	{
 		if (CArtefact* artefact = item->cast_artefact())
 		{
-			sum += (artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
+			sum += (artefact->ArtefactDesc().m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
 		}
 	}
 
@@ -4021,7 +4021,7 @@ bool CActor::CanUseItemForSuicide(CHudItem* item)
 		return false;
 	}
 
-	if (item->ProhibitSuicide)
+	if (item->HudDesc().ProhibitSuicide)
 	{
 		return false;
 	}
