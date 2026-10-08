@@ -164,6 +164,8 @@ public:
 	float					m_fTimeToAim;
 	bool					m_bUseAimBullet;
 protected:
+	float VfxSmokeScale = 1.0f;
+	float VfxShootScale = 1.0f;
 
 	shared_str m_sShellParticles;
 

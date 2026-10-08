@@ -56,5 +56,8 @@ public:
 	void						StopPath			();
 	void						PausePath			(bool val);
 
+	void SetScale(float Scale);
+	float GetScale() const;
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
