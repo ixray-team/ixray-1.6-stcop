@@ -14,10 +14,29 @@ void InitHudSoundSettings()
 
 void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, HUD_SOUND_ITEM& hud_snd, int type, esound_type sound_type)
 {
+	string256 sound_line;
+
+	string64 type_str;
+	xr_sprintf(type_str, "%d|%u\n", type, (u32)sound_type);
+	xr_string source_key = type_str;
+
+	xr_strcpy(sound_line, line);
+	for (int i = 0; pSettings->line_exist(section, sound_line);)
+	{
+		source_key += pSettings->r_string(section, sound_line);
+		source_key += '\n';
+		xr_sprintf(sound_line, "%s%d", line, ++i);
+	}
+
+	if (!hud_snd.sounds.empty() && hud_snd.m_source_key == source_key)
+	{
+		return;
+	}
+
+	hud_snd.m_source_key = source_key;
 	hud_snd.m_activeSnd = nullptr;
 	hud_snd.sounds.clear();
 
-	string256 sound_line;
 	xr_strcpy(sound_line, line);
 	int k = 0;
 
