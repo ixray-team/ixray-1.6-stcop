@@ -39,10 +39,7 @@ bool is_soc()
 
 CScriptIniFile* reload_system_ini()
 {
-	pSettings->Destroy(const_cast<CInifile*>(pSettings));
-	string_path fname;
-	FS.update_path(fname, _game_config_, "system.ltx");
-	pSettings = new CInifile(fname);
+	pSettings->Reload();
 	return	((CScriptIniFile*)pSettings);
 }
 
