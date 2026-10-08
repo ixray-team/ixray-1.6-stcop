@@ -1060,14 +1060,10 @@ struct CCC_ReloadSystemLtx : public IConsole_Command
 
 	virtual void Execute(const char* args) 
 	{
-		string_path fname;
-		FS.update_path(fname, _game_config_, "system.ltx");
-		CInifile::Destroy(pSettings);
-		pSettings = new CInifile(fname, true);
-		CHECK_OR_EXIT(
-			0 != pSettings->section_count(),
-			make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",
-				fname));
+		if (!pSettings->Reload())
+		{
+			return;
+		}
 
 #ifdef DEBUG_DRAW
 		DestroySpawnManagerWindow();

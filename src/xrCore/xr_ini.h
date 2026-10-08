@@ -89,6 +89,7 @@ public:
                                     );
 
 	virtual 	~CInifile		( );
+	bool Reload();
     bool		save_as         ( const char* new_fname=nullptr );
 	void		save_as			(IWriter& writer, bool bcheck=false)const;
 	void		set_override_names(bool b){m_flags.set(eOverrideNames,b);}
