@@ -3963,6 +3963,31 @@ bool CWeapon::ParentIsActor	()
 void CWeapon::debug_draw_firedeps()
 {
 #ifdef DEBUG_DRAW
+	extern bool forceTFPDraw;
+	extern bool forceTFP2Draw;
+	extern bool forceTSPDraw;
+
+	if (forceTFPDraw && !GetHUDmode() && ParentIsActor() && m_pInventory->ActiveItem() == this)
+	{
+		Fmatrix m = XFORM();
+		m.c.set(get_LastFP());
+		Level().debug_renderer().draw_obb(m, Fvector().set(0.015f, 0.015f, 0.015f), color_xrgb(255, 0, 0));
+	}
+
+	if (forceTFP2Draw && !GetHUDmode() && ParentIsActor() && m_pInventory->ActiveItem() == this)
+	{
+		Fmatrix m = XFORM();
+		m.c.set(get_LastFP2());
+		Level().debug_renderer().draw_obb(m, Fvector().set(0.015f, 0.015f, 0.015f), color_xrgb(255, 0, 0));
+	}
+
+	if (forceTSPDraw && !GetHUDmode() && ParentIsActor() && m_pInventory->ActiveItem() == this)
+	{
+		Fmatrix m = XFORM();
+		m.c.set(get_LastSP());
+		Level().debug_renderer().draw_obb(m, Fvector().set(0.015f, 0.015f, 0.015f), color_xrgb(255, 0, 0));
+	}
+
 	if(hud_adj_mode==5||hud_adj_mode==6||hud_adj_mode==7)
 	{
 		CDebugRenderer			&render = Level().debug_renderer();
@@ -3976,7 +4001,7 @@ void CWeapon::debug_draw_firedeps()
 		if (hud_adj_mode == 7)
 			render.draw_aabb(get_LastSP(), 0.005f, 0.005f, 0.005f, color_xrgb(0, 255, 0));
 	}
-#endif // DEBUG
+#endif // DEBUG_DRAW
 }
 
 const float &CWeapon::hit_probability	() const

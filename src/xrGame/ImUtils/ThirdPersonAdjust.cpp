@@ -10,6 +10,10 @@
 extern float ATT_ITEM_MOVE_STEP;
 extern float ATT_ITEM_ROT_STEP;
 
+bool forceTFPDraw = false;
+bool forceTFP2Draw = false;
+bool forceTSPDraw = false;
+
 bool enumBones(void* data, int idx, const char** item)
 {
 	xr_vector<shared_str>* bones = (xr_vector<shared_str>*)data;
@@ -80,6 +84,10 @@ static void ThirdAdjustDrawSaveButton()
 
 		file.w_fvector3(sect, "position", wpn->m_ActiveOffset.StrapPosition);
 		file.w_fvector3(sect, "orientation", wpn->m_ActiveOffset.StrapRotation);
+
+		file.w_fvector3(sect, "fire_point", wpn->vLoadedFirePoint);
+		file.w_fvector3(sect, "fire_point2", wpn->vLoadedFirePoint2);
+		file.w_fvector3(sect, "shell_point", wpn->vLoadedShellPoint);
 	}
 
 	GAME_NEWS_DATA news_data = {};
@@ -261,6 +269,10 @@ void Render3rdAdjust()
 
 		if (ImGui::CollapsingHeader(base_header_name.c_str()))
 		{
+			ImGui::Checkbox("Show fire point box", &forceTFPDraw);
+			ImGui::Checkbox("Show fire point 2 box", &forceTFP2Draw);
+			ImGui::Checkbox("Show shell point box", &forceTSPDraw);
+
 			ImGui::SeparatorText("Position");
 
 			if (ImGui::Button("Reset##CP"))
@@ -282,6 +294,39 @@ void Render3rdAdjust()
 			ImGui::DragFloat("X##CR", &wpn->m_ActiveOffset.StrapRotation.x, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
 			ImGui::DragFloat("Y##CR", &wpn->m_ActiveOffset.StrapRotation.y, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
 			ImGui::DragFloat("Z##CR", &wpn->m_ActiveOffset.StrapRotation.z, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
+
+			ImGui::SeparatorText("Fire Point");
+
+			if (ImGui::Button("Reset##FP"))
+			{
+				wpn->vLoadedFirePoint = READ_IF_EXISTS(pSettings, r_fvector3, wpn->cNameSect(), "fire_point", zero_vel);
+			}
+
+			ImGui::DragFloat("X##FP", &wpn->vLoadedFirePoint.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+			ImGui::DragFloat("Y##FP", &wpn->vLoadedFirePoint.y, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+			ImGui::DragFloat("Z##FP", &wpn->vLoadedFirePoint.z, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+
+			ImGui::SeparatorText("Fire Point 2");
+
+			if (ImGui::Button("Reset##FP2"))
+			{
+				wpn->vLoadedFirePoint2 = READ_IF_EXISTS(pSettings, r_fvector3, wpn->cNameSect(), "fire_point2", zero_vel);
+			}
+
+			ImGui::DragFloat("X##FP2", &wpn->vLoadedFirePoint2.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+			ImGui::DragFloat("Y##FP2", &wpn->vLoadedFirePoint2.y, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+			ImGui::DragFloat("Z##FP2", &wpn->vLoadedFirePoint2.z, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+
+			ImGui::SeparatorText("Shell Point ");
+
+			if (ImGui::Button("Reset##SP"))
+			{
+				wpn->vLoadedShellPoint = READ_IF_EXISTS(pSettings, r_fvector3, wpn->cNameSect(), "shell_point", zero_vel);
+			}
+
+			ImGui::DragFloat("X##SP", &wpn->vLoadedShellPoint.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+			ImGui::DragFloat("Y##SP", &wpn->vLoadedShellPoint.y, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+			ImGui::DragFloat("Z##SP", &wpn->vLoadedShellPoint.z, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
 		}
 
 		ImGui::PopID();
