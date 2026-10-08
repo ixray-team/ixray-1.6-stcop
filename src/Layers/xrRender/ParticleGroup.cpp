@@ -226,6 +226,7 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, const ch
 	CParticleEffect* C = static_cast<CParticleEffect*>(RImplementation.model_CreatePE(eff_name));
 	
 	C->SetHudMode(emitter->GetHudMode());
+	C->SetScale(emitter->GetScale());
 
 	Fmatrix M; M.identity();
 	Fvector vel; vel.sub(m.pos,m.posB); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate)?Device.fTimeDelta:fDT_STEP);
@@ -260,6 +261,7 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char*
 {
 	CParticleEffect* C = static_cast<CParticleEffect*>(RImplementation.model_CreatePE(nm));
 	C->SetHudMode(emitter->GetHudMode());
+	C->SetScale(emitter->GetScale());
 	if(!C->IsLooped())
 	{
 		Fmatrix M; M.identity();
@@ -585,6 +587,7 @@ void CParticleGroup::Compile(CPGDef* def)
 		for (CPGDef::EffectVec::const_iterator e_it=def_effects.begin(); e_it!=def_effects.end(); e_it++)
 		{
 			CParticleEffect* eff = (CParticleEffect*)RImplementation.model_CreatePE(*(*e_it)->m_EffectName);
+			eff->SetScale(Scale);
 			eff->SetBirthDeadCB	(OnGroupParticleBirth,OnGroupParticleDead,this,u32(e_it-def_effects.begin()));
 			items[e_it-def->m_Effects.begin()].root_effect = eff;
 		}
@@ -620,6 +623,35 @@ u32 CParticleGroup::SpriteCount()
 			p_count += item.SpriteCount();
 	}
 	return p_count;
+}
+
+void CParticleGroup::SetScale(float NewScale)
+{
+	R_ASSERT2(_valid(NewScale) && NewScale > 0.0f, "Particle scale must be finite and positive");
+	xrCriticalSectionGuard Guard(&onframe_lock);
+	Scale = NewScale;
+	for (SItem& Item : items)
+	{
+		if (Item.root_effect)
+		{
+			Item.root_effect->SetScale(Scale);
+		}
+		xrCriticalSectionGuard ChildrenGuard(Item.childs_cs);
+		for (CParticleEffect* Child : Item.children_related)
+		{
+			Child->SetScale(Scale);
+		}
+		for (CParticleEffect* Child : Item.children_free)
+		{
+			Child->SetScale(Scale);
+		}
+	}
+}
+
+float CParticleGroup::GetScale()
+{
+	xrCriticalSectionGuard Guard(&onframe_lock);
+	return Scale;
 }
 
 PAPI::ParticleAction* CParticleGroup::FindPA(shared_str PEName, PAPI::PActionEnum Action)

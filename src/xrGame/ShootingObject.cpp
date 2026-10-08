@@ -301,6 +301,7 @@ void CShootingObject::StartSmokeParticle(const Fvector& parent_vel)
 	pos.set(get_ParticlesXFORM());
 	pos.c.set(fire_mode == eGlauncherFire ? get_CurrentFirePoint2() : get_CurrentFirePoint());
 
+	particles_ptr->SetScale(VfxSmokeScale);
 	particles_ptr->UpdateParent(pos, parent_vel);
 
 	CSpectator* tmp_spectr = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_spectator() : nullptr;
@@ -353,6 +354,7 @@ void CShootingObject::StartFlameParticle()
 	pos.set(get_ParticlesXFORM());
 	pos.c.set(fire_mode == eGlauncherFire ? get_CurrentFirePoint2() : get_CurrentFirePoint());
 
+	particles_ptr->SetScale(VfxShootScale);
 	particles_ptr->SetXFORM(pos);
 	
 	CSpectator* tmp_spectr = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_spectator() : nullptr;

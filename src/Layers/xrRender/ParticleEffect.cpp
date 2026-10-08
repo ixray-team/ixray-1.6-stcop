@@ -278,6 +278,30 @@ u32 CParticleEffect::SpriteCount()
 	return Pholder.GetParticlesCount();
 }
 
+void CParticleEffect::SetScale(float Scale)
+{
+	R_ASSERT2(_valid(Scale) && Scale > 0.0f, "Particle scale must be finite and positive");
+	xrCriticalSectionGuard Guard(&onframe_lock);
+	if (Scale == Pholder.SizeScale)
+	{
+		return;
+	}
+	const float Ratio = Scale / Pholder.SizeScale;
+	for (u32 Index = 0; Index < Pholder.p_count; ++Index)
+	{
+		PAPI::Particle& Particle = Pholder.particles[Index];
+		Particle.size.mul(Ratio);
+		Particle.sizeI.mul(Ratio);
+	}
+	Pholder.SizeScale = Scale;
+}
+
+float CParticleEffect::GetScale()
+{
+	xrCriticalSectionGuard Guard(&onframe_lock);
+	return Pholder.SizeScale;
+}
+
 PAPI::ParticleAction* CParticleEffect::FindPA(shared_str PEName, PAPI::PActionEnum Action)
 {
 	xrCriticalSectionGuard guard(&onframe_lock);

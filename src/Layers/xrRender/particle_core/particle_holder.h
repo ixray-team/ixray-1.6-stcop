@@ -10,6 +10,8 @@ namespace PAPI
 		xr_vector<ParticleAction*> m_actions;
 		xr_vector<ParticleAction*> m_animators;
 
+		float SizeScale = 1.0f;
+
 		Particle* particles = nullptr;		// Actually, num_particles in size
 		OnBirthParticleCB b_cb = nullptr;
 		OnDeadParticleCB d_cb = nullptr;
