@@ -4,6 +4,7 @@
 #include "../xrSound/ai_sounds.h"
 #include "Artefact.h"
 #include "AnomalyZone.h"
+#include "Descs/DetectorDesc.h"
 
 struct ITEM_TYPE
 {
@@ -69,31 +70,25 @@ public:
 		Feel::Touch::feel_touch.clear();
 	}
 
+	void Init(const SDetectListDesc& Desc, const char* Sect, bool WithSounds)
+	{
+		for (const auto& [ItemSect, TypeDesc] : Desc.Types)
+		{
+			ITEM_TYPE& ItemType = m_TypesMap[ItemSect];
+			ItemType.freq = TypeDesc.Freq;
+
+			if (WithSounds)
+			{
+				HUD_SOUND_ITEM::LoadSound(Sect, TypeDesc.SoundLine.c_str(), ItemType.detect_snds, SOUND_TYPE_ITEM);
+			}
+		}
+	}
+
 	void load(const char* sect, const char* prefix)
 	{
-		u32 i = 1;
-		string256 temp = {};
-		do {
-			xr_sprintf(temp, "%s_class_%d", prefix, i);
-			if (pSettings->line_exist(sect, temp))
-			{
-				shared_str item_sect = pSettings->r_string(sect, temp);
-
-				m_TypesMap.insert(std::make_pair(item_sect, ITEM_TYPE()));
-				ITEM_TYPE& item_type = m_TypesMap[item_sect];
-
-				xr_sprintf(temp, "%s_freq_%d", prefix, i);
-				item_type.freq = pSettings->r_fvector2(sect, temp);
-
-				xr_sprintf(temp, "%s_sound_%d_", prefix, i);
-				HUD_SOUND_ITEM::LoadSound(sect, temp, item_type.detect_snds, SOUND_TYPE_ITEM);
-
-				++i;
-			}
-			else
-				break;
-
-		} while (true);
+		SDetectListDesc Desc;
+		Desc.Load(sect, prefix);
+		Init(Desc, sect, true);
 	}
 };
 

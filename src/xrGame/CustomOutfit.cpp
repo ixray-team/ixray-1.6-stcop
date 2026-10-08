@@ -17,31 +17,14 @@
 void CCustomOutfit::Load(const char* section)
 {
 	inherited::Load(section);
-	isDisableChangeSkin = READ_IF_EXISTS(pSettings, r_bool, section, "forbid_change_skin", false);
-	
-	m_HitTypeProtection[ALife::eHitTypeFireWound]	= READ_IF_EXISTS(pSettings, r_float, section,"fire_wound_protection", 0.f);
- 
-	if (pSettings->line_exist(section, "actor_visual"))
-	{
-		m_ActorVisual = pSettings->r_string(section, "actor_visual");
-	}
+	CurrentOutfitDesc = &SCustomOutfitDesc::Registry::Get(section);
 
-	m_ef_equipment_type = pSettings->r_u32(section, "ef_equipment_type");
+	m_HitTypeProtection[ALife::eHitTypeFireWound]	= READ_IF_EXISTS(pSettings, r_float, section,"fire_wound_protection", 0.f);
 
 	m_additional_weight = pSettings->r_float(section, "additional_inventory_weight");
 	m_additional_weight2 = pSettings->r_float(section, "additional_inventory_weight2");
 
-	m_full_icon_name = pSettings->r_string(section, "full_icon_name");
 	m_artefact_count = READ_IF_EXISTS(pSettings, r_u32, section, "artefact_count", 0);
-	bIsHelmetAvaliable = !!READ_IF_EXISTS(pSettings, r_bool, section, "helmet_avaliable", true);
-
-	IsExo = READ_IF_EXISTS(pSettings, r_bool, section, "is_exo", false);
-	IsExoProto = READ_IF_EXISTS(pSettings, r_bool, section, "is_exo_proto", false);
-
-	if (pSettings->line_exist(section, "character_portrait"))
-	{
-		m_character_portrait = pSettings->r_string(section, "character_portrait");
-	}
 }
 
 void CCustomOutfit::OnMoveToSlot(const SInvItemPlace& prev)
@@ -53,7 +36,7 @@ void CCustomOutfit::OnMoveToSlot(const SInvItemPlace& prev)
 		{
 			ApplySkinModel(pActor, true, false);
 			PIItem pHelmet = pActor->inventory().ItemFromSlot(HELMET_SLOT);
-			if (pHelmet != nullptr && !bIsHelmetAvaliable)
+			if (pHelmet != nullptr && !IsHelmetAvailable())
 			{
 				pActor->inventory().Ruck(pHelmet, false);
 			}
@@ -69,14 +52,14 @@ void CCustomOutfit::OnMoveToRuck(const SInvItemPlace& prev)
 		if (pActor)
 		{
 			ApplySkinModel(pActor, false, false);
-			if (pActor->GetNightVisionEffector() && !bIsHelmetAvaliable)
+			if (pActor->GetNightVisionEffector() && !IsHelmetAvailable())
 			{
 				pActor->GetNightVisionEffector()->SwitchNightVision(false);
 			}
 
 			static const bool TorchOnlyOutfit = EngineExternal()[EEngineExternalGame::EnableTorchOnlyInOutfit];
 
-			if (TorchOnlyOutfit && !bIsHelmetAvaliable)
+			if (TorchOnlyOutfit && !IsHelmetAvailable())
 			{
 				CTorch* pTorch = static_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
 				if (pTorch != nullptr)
@@ -113,14 +96,16 @@ bool CCustomOutfit::BonePassBullet(u16 boneID)
 
 void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 {
-	if (isDisableChangeSkin)
+	const SCustomOutfitDesc& Desc = OutfitDesc();
+
+	if (Desc.isDisableChangeSkin)
 	{
 		return;
 	}
 
 	if (bDress)
 	{
-		if (!bHUDOnly && m_ActorVisual.size())
+		if (!bHUDOnly && Desc.m_ActorVisual.size())
 		{
 			shared_str NewVisual = nullptr;
 			char* TeamSection = Game().getTeamSection(pActor->g_Team());
@@ -139,7 +124,7 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 			}
 			if (!NewVisual.size())
 			{
-				NewVisual = m_ActorVisual;
+				NewVisual = Desc.m_ActorVisual;
 			}
 
 			pActor->ChangeVisual(NewVisual);
@@ -148,9 +133,9 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 
 		if (pActor == Level().CurrentViewEntity())
 		{
-			if (m_character_portrait.size() > 0)
+			if (Desc.m_character_portrait.size() > 0)
 			{
-				pActor->SetIcon(m_character_portrait, true);
+				pActor->SetIcon(Desc.m_character_portrait, true);
 				if (auto current_ui = CurrentGameUI())
 				{
 					if (current_ui->ActorMenu() && current_ui->ActorMenu()->IsShown())
@@ -160,13 +145,13 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 				}
 			}
 
-			g_player_hud->NextHUDSect = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "player_hud_section", nullptr);
+			g_player_hud->NextHUDSect = Desc.PlayerHudSection;
 			g_player_hud->m_need_reload = false;
 		}
 	}
 	else
 	{
-		if (!bHUDOnly && m_ActorVisual.size())
+		if (!bHUDOnly && Desc.m_ActorVisual.size())
 		{
 			pActor->SetIcon("", true);
 			if (auto current_ui = CurrentGameUI())
@@ -194,7 +179,7 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 
 u32	CCustomOutfit::ef_equipment_type() const
 {
-	return m_ef_equipment_type;
+	return OutfitDesc().m_ef_equipment_type;
 }
 
 float CCustomOutfit::GetPowerLoss()

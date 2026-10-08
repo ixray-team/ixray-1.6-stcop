@@ -24,6 +24,7 @@
 
 #include "sound_collection_storage.h"
 #include "relation_registry.h"
+#include "Descs/DescRegistry.h"
 
 typedef xr_vector<std::pair<shared_str,int> >	STORY_PAIRS;
 extern STORY_PAIRS								story_ids;
@@ -124,4 +125,5 @@ void clean_game_globals()
 	DestroyUIGeom									();
 	xr_delete										(pWpnScopeXml);
 	CUITextureMaster::FreeTexInfo					();
+	ClearDescRegistries();
 }

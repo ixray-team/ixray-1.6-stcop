@@ -1,5 +1,6 @@
 #pragma once
 #include "inventory_item.h"
+#include "Descs/EatableItemDesc.h"
 #include "../xrScripts/script_export_space.h"
 
 class CPhysicItem;
@@ -13,17 +14,12 @@ private:
 protected:
 	CPhysicItem* m_physic_item = nullptr;
 
-	u8 m_iMaxUses = 1;
+	const SEatableItemDesc* CurrentEatableDesc = nullptr;
+
 	u8 m_iRemainingUses = 1;
 	bool m_bRemoveAfterUse = true;
-	bool m_bConsumeChargeOnUse = false;
 	float m_fWeightFull = 0.0f;
 	float m_fWeightEmpty = 0.0f;
-	shared_str m_sUseAnimator;
-	shared_str m_sLastUseAnimator;
-
-public:
-	shared_str UseText;
 
 public:
 	CEatableItem() = default;
@@ -51,21 +47,22 @@ public:
 
 	bool Empty() const { return m_iRemainingUses == 0; };
 	IC bool CanDelete() const { return m_bRemoveAfterUse == 1; };
-	IC bool CanConsumeCharge() const { return m_bConsumeChargeOnUse == 1; };
-	u8 GetMaxUses() const { return m_iMaxUses; };
+	IC bool CanConsumeCharge() const { return EatableDesc().m_bConsumeChargeOnUse; };
+	u8 GetMaxUses() const { return EatableDesc().m_iMaxUses; };
+	const SEatableItemDesc& EatableDesc() const { VERIFY(CurrentEatableDesc); return *CurrentEatableDesc; }
 	u8 GetRemainingUses() const { return m_iRemainingUses; };
 	void SetRemainingUses(u8 value)
 	{
-		if (value <= m_iMaxUses)
+		if (value <= GetMaxUses())
 		{
 			m_iRemainingUses = value;
 		}
 
 		if (IsUsingCondition())
 		{
-			if (m_iMaxUses > 0)
+			if (GetMaxUses() > 0)
 			{
-				SetCondition((float)(m_iRemainingUses / m_iMaxUses));
+				SetCondition((float)(m_iRemainingUses / GetMaxUses()));
 			}
 			else
 			{

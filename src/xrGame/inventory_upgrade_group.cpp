@@ -77,7 +77,7 @@ UpgradeStateResult Group::can_install(CInventoryItem& item, UpgradeBase& test_up
 		}
 
         bool cant_install = false;
-		if (item.m_legacy_upgrade_mode)
+		if (item.ItemDesc().m_legacy_upgrade_mode)
 		{
 			cant_install = !item.has_upgrade(upgrade_base->id());
 		}

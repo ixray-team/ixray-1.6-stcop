@@ -6,6 +6,7 @@
 #include "../xrScripts/script_export_space.h"
 #include "patrol_path.h"
 #include "IRestoresOwner.h"
+#include "Descs/ArtefactDesc.h"
 
 class SArtefactActivation;
 struct SArtefactDetectorsSupport;
@@ -79,20 +80,15 @@ protected:
 	u16								m_CarringBoneID;
 	u16								m_ParticlesBoneID;
 	u16								m_LightBoneID;
-	shared_str						m_sParticlesName;
 	shared_str						m_sParticlesBone;
 	ref_light						m_pTrailLight;
-	Fcolor							m_TrailLightColor;
-	float							m_fTrailLightRange;
-	u8								m_af_rank;
-	bool							m_bLightsEnabled;
-	float							m_additional_weight;
-	float							m_fDegradationRate;
+	const SArtefactDesc*			CurrentArtefactDesc = nullptr;
 
 	virtual void					UpdateLights					();
 public:
-	IC u8							GetAfRank						() const		{return m_af_rank;}
-	IC bool							CanBeActivated					()				{return m_bCanSpawnZone;};
+	const SArtefactDesc&			ArtefactDesc					() const		{ VERIFY(CurrentArtefactDesc); return *CurrentArtefactDesc; }
+	IC u8							GetAfRank						() const		{return ArtefactDesc().m_af_rank;}
+	IC bool							CanBeActivated					()				{return ArtefactDesc().m_bCanSpawnZone;};
 	void							ActivateArtefact				();
 	void							FollowByPath					(const char* path_name, int start_idx, Fvector magic_force);
 	bool							CanBeInvisible					();
@@ -105,16 +101,13 @@ public:
 	virtual void					PhDataUpdate					(float step);
 	virtual void					PhTune							(float step)	{};
 
-	float							AdditionalInventoryWeight		() const {return m_additional_weight;}
-	bool							m_bCanSpawnZone;
+	float							AdditionalInventoryWeight		() const {return ArtefactDesc().m_additional_weight;}
 	
 	float							m_fEquipmentDurabilityModifier;
 	float							m_fInventoryWeightModifier;
 	float							m_fJumpHeightModifier;
 	float							m_fMovementSpeedModifier;
 	float							m_fSleepinessRestoreSpeed;
-	
-	CHitImmunity 					m_ArtefactHitImmunities;
 public:
 	enum EAFHudStates :u8 {
 		eActivating = eLastBaseState+1,
@@ -135,7 +128,7 @@ public:
 	virtual void					OnAnimationEnd		(u8 state);
 	virtual bool					IsHidden			()	const	{return GetState()==eHidden;}
 	virtual u32						Cost				() const;
-	float							DegradationRate		() {return m_fDegradationRate;}
+	float							DegradationRate		() {return ArtefactDesc().m_fDegradationRate;}
 
 	// optimization FAST/SLOW mode
 	u32						o_render_frame				;
@@ -167,16 +160,9 @@ struct SArtefactDetectorsSupport
 	const CPatrolPath::CVertex*		m_currPatrolVertex;
 	Fvector							m_destPoint;
 
-	const char*							det_show_particles;
-	const char*							det_hide_particles;
-	const char*							det_show_snd;
-	const char*							det_hide_snd;
-	const char*							particles_bone;
-
 			SArtefactDetectorsSupport		(CArtefact* A);
 			~SArtefactDetectorsSupport		();
 	void	SetVisible						(bool);
-	void	Load							(const char* section);
 	void	FollowByPath					(const char* path_name, int start_idx, Fvector force);
 	void	UpdateOnFrame					();
 	void	Blink							();

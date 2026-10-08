@@ -891,7 +891,7 @@ bool CUIActorMenuBase::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 	if (slot_id==HELMET_SLOT)
 	{
 		CCustomOutfit* pOutfit = GetInventoryOwner()->GetOutfit();
-		if(pOutfit && !pOutfit->bIsHelmetAvaliable)
+		if(pOutfit && !pOutfit->IsHelmetAvailable())
 			return false;
 	}
 
@@ -905,7 +905,7 @@ bool CUIActorMenuBase::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 		if(slot_id==OUTFIT_SLOT)
 		{
 			CCustomOutfit* pOutfit = iitem->cast_outfit();
-			if (pOutfit && !pOutfit->bIsHelmetAvaliable)
+			if (pOutfit && !pOutfit->IsHelmetAvailable())
 			{
 				CUIDragDropListEx* helmet_list = GetSlotList(HELMET_SLOT);
 				if (helmet_list->ItemsCount() == 1)

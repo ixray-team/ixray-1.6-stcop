@@ -19,6 +19,7 @@
 #include "Inventory.h"
 #include "Actor.h"
 #include "ActorCondition.h"
+#include "Descs/EatableEffectsDesc.h"
 
 DLL_Pure* CEatableItem::_construct()
 {
@@ -29,42 +30,19 @@ DLL_Pure* CEatableItem::_construct()
 void CEatableItem::Load(const char* section)
 {
 	inherited::Load(section);
+	CurrentEatableDesc = &SEatableItemDesc::Registry::Get(section);
 
-	if (pSettings->line_exist(section, "animator_sect"))
-	{
-		m_sUseAnimator = pSettings->r_string(section, "animator_sect");
-
-		if (pSettings->line_exist(m_sUseAnimator, "last_use_section"))
-		{
-			m_sLastUseAnimator = pSettings->r_string(m_sUseAnimator, "last_use_section");
-		}
-	}
-
-	if (pSettings->line_exist(section, "eat_portions_num"))
-	{
-		m_iMaxUses = pSettings->r_s32(section, "eat_portions_num");
-	}
-	else
-	{
-		m_iMaxUses = READ_IF_EXISTS(pSettings, r_u8, section, "max_uses", 1);
-	}
-
-	float m_eat_condition = READ_IF_EXISTS(pSettings, r_float, section, "eat_condition", 1);
-	m_iMaxUses /= m_eat_condition;
-	m_iRemainingUses = m_iMaxUses;
-
-	UseText = READ_IF_EXISTS(pSettings, r_string, section, "use_text", "st_use");
+	m_iRemainingUses = GetMaxUses();
 
 	m_bRemoveAfterUse = READ_IF_EXISTS(pSettings, r_bool, section, "remove_after_use", true);
-	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, section, "consume_charge_on_use", true);
 	m_fWeightFull = m_weight;
 	m_fWeightEmpty = READ_IF_EXISTS(pSettings, r_float, section, "empty_weight", 0.0f);
 
 	if (IsUsingCondition())
 	{
-		if (m_iMaxUses > 0)
+		if (GetMaxUses() > 0)
 		{
-			SetCondition((float)(m_iRemainingUses / m_iMaxUses));
+			SetCondition((float)(m_iRemainingUses / GetMaxUses()));
 		}
 		else
 		{
@@ -103,9 +81,9 @@ bool CEatableItem::net_Spawn(CSE_Abstract* DC)
 
 	if (IsUsingCondition())
 	{
-		if (m_iMaxUses > 0)
+		if (GetMaxUses() > 0)
 		{
-			SetCondition((float)(m_iRemainingUses / m_iMaxUses));
+			SetCondition((float)(m_iRemainingUses / GetMaxUses()));
 		}
 		else
 		{
@@ -173,23 +151,18 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 
 	CActor* actor = IO->cast_actor();
 
-	bool use_animator = m_sUseAnimator.size() > 0;
+	const SEatableItemDesc& Desc = EatableDesc();
+	bool use_animator = Desc.m_sUseAnimator.size() > 0;
 
 	if (!use_animator || use_animator && !actor)
 	{
-		SMedicineInfluenceValues V;
-		V.Load(m_section_id);
+		const SEatableEffectsDesc& Effects = SEatableEffectsDesc::Registry::Get(m_section_id);
 
-		entity_alive->conditions().ApplyInfluence(V, m_section_id, !use_animator);
+		entity_alive->conditions().ApplyInfluence(Effects.Influence, m_section_id, !use_animator);
 
-		for (u8 i = 0; i < (u8)eBoostMaxCount; i++)
+		for (const SBooster& Booster : Effects.Boosters)
 		{
-			if (pSettings->line_exist(m_section_id, ef_boosters_section_names[i]))
-			{
-				SBooster B;
-				B.Load(m_section_id, (EBoostParams)i);
-				entity_alive->conditions().ApplyBooster(B, m_section_id, !use_animator);
-			}
+			entity_alive->conditions().ApplyBooster(Booster, m_section_id, !use_animator);
 		}
 	}
 
@@ -199,7 +172,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 		{
 			if (actor && actor->HudAnimator())
 			{
-				actor->StartAnimator(m_iMaxUses > 1 && m_iRemainingUses == 1 && m_sLastUseAnimator.size() > 0 ? m_sLastUseAnimator : m_sUseAnimator);
+				actor->StartAnimator(Desc.m_iMaxUses > 1 && m_iRemainingUses == 1 && Desc.m_sLastUseAnimator.size() > 0 ? Desc.m_sLastUseAnimator : Desc.m_sUseAnimator);
 				actor->HudAnimator()->ItemAnimator()->SetLeftCallback({ this, &CEatableItem::EatableEffects });
 			}
 		}
@@ -230,9 +203,9 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 
 		if (IsUsingCondition())
 		{
-			if (m_iMaxUses > 0)
+			if (GetMaxUses() > 0)
 			{
-				SetCondition((float)(m_iRemainingUses / m_iMaxUses));
+				SetCondition((float)(m_iRemainingUses / GetMaxUses()));
 			}
 			else
 			{
@@ -258,19 +231,13 @@ void CEatableItem::EatableEffects()
 		return;
 	}
 
-	SMedicineInfluenceValues V;
-	V.Load(m_section_id);
+	const SEatableEffectsDesc& Effects = SEatableEffectsDesc::Registry::Get(m_section_id);
 
-	actor->conditions().ApplyInfluence(V, m_section_id, false);
+	actor->conditions().ApplyInfluence(Effects.Influence, m_section_id, false);
 
-	for (u8 i = 0; i < (u8)eBoostMaxCount; i++)
+	for (const SBooster& Booster : Effects.Boosters)
 	{
-		if (pSettings->line_exist(m_section_id, ef_boosters_section_names[i]))
-		{
-			SBooster B;
-			B.Load(m_section_id, (EBoostParams)i);
-			actor->conditions().ApplyBooster(B, m_section_id, false);
-		}
+		actor->conditions().ApplyBooster(Booster, m_section_id, false);
 	}
 
 	if (m_iRemainingUses != (-1))
@@ -287,9 +254,9 @@ void CEatableItem::EatableEffects()
 
 	if (IsUsingCondition())
 	{
-		if (m_iMaxUses > 0)
+		if (GetMaxUses() > 0)
 		{
-			SetCondition((float)(m_iRemainingUses / m_iMaxUses));
+			SetCondition((float)(m_iRemainingUses / GetMaxUses()));
 		}
 		else
 		{
@@ -315,7 +282,7 @@ float CEatableItem::Weight() const
 	if (IsUsingCondition())
 	{
 		float net_weight = m_fWeightFull - m_fWeightEmpty;
-		float use_weight = m_iMaxUses > 0 ? (net_weight / m_iMaxUses) : 0.0f;
+		float use_weight = GetMaxUses() > 0 ? (net_weight / GetMaxUses()) : 0.0f;
 
 		res = m_fWeightEmpty + (m_iRemainingUses * use_weight);
 	}

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "inventory_space.h"
+#include "Descs/InventoryItemDesc.h"
 #include "hit_immunity.h"
 #include "attachable_item.h"
 #include "xrServer_Objects_ALife.h"
@@ -78,7 +79,10 @@ struct net_updateInvData
 };
 
 
-class CInventoryItem : public CAttachableItem, public CHitImmunity, public item_attachments_manager
+class CInventoryItem : 
+	public CAttachableItem,
+	public CHitImmunity, 
+	public item_attachments_manager
 #ifdef DEBUG_DRAW
 	, public pureRender
 #endif
@@ -105,7 +109,6 @@ protected:
 	};
 
 	Flags16	m_flags;
-	bool m_can_trade = true;
 public:
 	CInventoryItem();
 	virtual	~CInventoryItem();
@@ -238,7 +241,6 @@ public:
 	shared_str m_name;
 	shared_str m_nameShort;
 	shared_str m_nameComplex;
-	bool m_highlight_equipped = false;
 	shared_str m_custom_text;
 	Fvector2 m_custom_text_offset;
 	CGameFont* m_custom_text_font = nullptr;
@@ -247,15 +249,10 @@ public:
 	// Used on next Take() to restore sidearm to holster after kG drop (see CInventory::Take / DropItem).
 	u16 m_preferredSlotAfterPickup = 0xffff;
 
-	bool m_legacy_upgrade_mode = false;
+	using EInvCellAnchor = ::EInvCellAnchor;
+	using SParseItem = SInventoryParseItem;
 
-	enum class EInvCellAnchor : u8
-	{
-		BottomRight = 0,
-		BottomLeft,
-		TopRight,
-		TopLeft,
-	};
+	const SInventoryItemDesc& ItemDesc() const { VERIFY(CurrentItemDesc); return *CurrentItemDesc; }
 
 	static EInvCellAnchor ParseInvCellAnchor(const char* value);
 
@@ -264,10 +261,7 @@ public:
 	Fvector2 m_custom_mark_offset;
 	Fvector2 m_custom_mark_size;
 	u32 m_custom_mark_clr = 0;
-	EInvCellAnchor m_custom_mark_anchor = EInvCellAnchor::BottomRight;
 	const char* m_custom_mark_lanim = {};
-	EInvCellAnchor m_custom_text_anchor = EInvCellAnchor::BottomRight;
-	bool m_custom_text_auto_uses = false;
 	float ScaleIcon = 1.0f;
 	shared_str IconsTexture;
 
@@ -278,11 +272,6 @@ public:
 	SInvItemPlace m_ItemCurrPlace = {};
 	RStringVec m_HiglightRelatedItemSections = {}; // FFx0001 ++
 
-	struct SParseItem
-	{
-		RStringVec m_items = {};
-		FloatVec m_chances = {};
-	} m_parse_params;
 
 	virtual void OnMoveToSlot(const SInvItemPlace& prev) {};
 	virtual void OnMoveToBelt(const SInvItemPlace& prev) {};
@@ -292,7 +281,7 @@ public:
 	void SetInvGridRect(const Irect& rect);
 	void SetInvGridRect(u32 x, u32 y, u32 w, u32 h);
 	Irect GetUpgrIconRect() const;
-	const shared_str& GetIconName() const { return m_icon_name; };
+	const shared_str& GetIconName() const { return ItemDesc().m_icon_name; };
 	Frect GetKillMsgRect() const;
 	//---------------------------------------------------------------------
 	IC float GetCondition() const { return m_fCondition; }
@@ -318,7 +307,7 @@ public:
 	virtual bool CanTake() const { return !!m_flags.test(FCanTake); }
 	virtual void SetCanTake(bool state) { m_flags.set(FCanTake, state); }
 	bool CanTrade() const;
-	void AllowTrade() { m_flags.set(FCanTrade, m_can_trade); };
+	void AllowTrade() { m_flags.set(FCanTrade, ItemDesc().m_can_trade); };
 	void DenyTrade() { m_flags.set(FCanTrade, false); };
 
 	virtual bool IsNecessaryItem(CInventoryItem* item);
@@ -349,7 +338,6 @@ protected:
 	ALife::_TIME_ID m_dwItemIndependencyTime;
 
 	float m_fControlInertionFactor = 0.0f;
-	shared_str m_icon_name;
 
 public:
 	virtual void make_Interpolation() {};
@@ -407,8 +395,7 @@ public:
 	virtual void on_activate_physic_shell() { R_ASSERT2(0, "failed call of virtual function!"); }
 
 protected:
-	float m_holder_range_modifier = 0.0f;
-	float m_holder_fov_modifier = 0.0f;
+	const SInventoryItemDesc* CurrentItemDesc = nullptr;
 public:
 	virtual	void modify_holder_params(float& range, float& fov) const;
 

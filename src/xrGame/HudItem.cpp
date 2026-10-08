@@ -20,6 +20,14 @@
 CHudItem::CHudItem()
 {
 	m_eDevicesFlags.zero();
+	CurrentHudDesc = &SHudItemDesc::Registry::Get(shared_str());
+}
+
+void CHudItem::SetHudSection(const shared_str& Section)
+{
+	hud_sect = Section;
+	CurrentHudDesc = &SHudItemDesc::Registry::Get(hud_sect);
+	m_current_inertion = CurrentHudDesc->Inertion;
 }
 
 DLL_Pure *CHudItem::_construct()
@@ -35,7 +43,7 @@ DLL_Pure *CHudItem::_construct()
 
 void CHudItem::Load(const char* section)
 {
-	hud_sect				= READ_IF_EXISTS(pSettings, r_string, section,"hud", nullptr);
+	SetHudSection(READ_IF_EXISTS(pSettings, r_string, section, "hud", nullptr));
 	hud_sect_cache = hud_sect;
 
 	if (m_animation_slot != u32(-1)) // if it has default hardcoded slot, then don't crash
@@ -43,38 +51,7 @@ void CHudItem::Load(const char* section)
 	else // if it doesn't, then crash if line is missing from config
 		m_animation_slot		= pSettings->r_u32			(section,"animation_slot");
 
-	m_fHudFov = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov", 0.0f);
-	m_fHudFovFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_factor", 1.0f);
-
-	m_fLookOutSpeedKoef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "lookout_speed_koef", 1.0f);
-	m_fLookOutAmplK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "lookout_ampl_k", 1.0f);
-
-	BaseYPRParams.m_fHudYawInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_yaw_inertia_k", 0.0f);
-	BaseYPRParams.m_fHudPitchInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_pitch_inertia_k", 0.0f);
-	BaseYPRParams.m_fHudRollInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_roll_inertia_k", 0.0f);
-	BaseYPRParams.m_fHudInertiaSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_inertia_speed", 10.0f);
-
-	ZoomYPRParams.m_fHudYawInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_zoom_yaw_inertia_k", 0.0f);
-	ZoomYPRParams.m_fHudPitchInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_zoom_pitch_inertia_k", 0.0f);
-	ZoomYPRParams.m_fHudRollInertiaK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_zoom_roll_inertia_k", 0.0f);
-	ZoomYPRParams.m_fHudInertiaSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_zoom_inertia_speed", 10.0f);
-
 	m_fActorCamSpeedFactor = READ_IF_EXISTS(pSettings, r_float, section, "actor_camera_speed_factor", 1.0f);
-
-	m_current_inertion.PitchOffsetR = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_r", PITCH_OFFSET_R);
-	m_current_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_d", PITCH_OFFSET_D);
-	m_current_inertion.PitchOffsetN = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_n", PITCH_OFFSET_N);
-
-	m_current_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_origin_offset", ORIGIN_OFFSET);
-	m_current_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_tendto_speed", TENDTO_SPEED);
-
-	m_jitter_params.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_pos_amplitude", 0.001f);
-	m_jitter_params.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_rot_amplitude", 0.1f);
-
-	m_jitter_params.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_pos_amplitude", m_jitter_params.pos_amplitude);
-	m_jitter_params.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_rot_amplitude", m_jitter_params.rot_amplitude);
-
-	m_jitter_params.stop_time = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_stop_time", 3.0f) * 1000.f);
 
 	ScriptUIFunctor = READ_IF_EXISTS(pSettings, r_string, section, "script_ui_functor", "");
 
@@ -89,29 +66,10 @@ void CHudItem::Load(const char* section)
 		ScriptUIMatrix.setHPB(ScriptUIRot.x, ScriptUIRot.y, ScriptUIRot.z).translate_over(ScriptUIPos);
 	}
 
-	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", false);
-
 	if (READ_IF_EXISTS(pSettings, r_bool, section, "torch_installed", false))
 	{
 		THudLightTorch& LightTorch = m_object->CreateComponent<THudLightTorch>();
 		LightTorch.NewTorchlight(section);
-	}
-
-	pSettings->read_if_exists<bool>(m_bBlendMovement, hud_sect, "use_blending_movement");
-
-	pSettings->read_if_exists<float>(ControllerTime, hud_sect, "controller_time");
-	pSettings->read_if_exists<bool>(ProhibitSuicide, hud_sect, "prohibit_suicide");
-
-	if (m_bBlendMovement)
-	{
-		m_sMovementBlendParams[EMovementLayers::eWalk].Load(hud_sect, "anim_blend_walk");
-		m_sMovementBlendParams[EMovementLayers::eWalkSlow].Load(hud_sect, "anim_blend_walk_slow");
-		m_sMovementBlendParams[EMovementLayers::eCrouch].Load(hud_sect, "anim_blend_crouch");
-		m_sMovementBlendParams[EMovementLayers::eCrouchSlow].Load(hud_sect, "anim_blend_crouch_slow");
-		m_sMovementBlendParams[EMovementLayers::eSprint].Load(hud_sect, "anim_blend_sprint");
-		m_sMovementBlendParams[EMovementLayers::eIdle].Load(hud_sect, "anim_blend_idle");
-		m_sMovementBlendParams[EMovementLayers::eIdleAim].Load(hud_sect, "anim_blend_idle_aim");
-		m_sMovementBlendParams[EMovementLayers::eAimWalk].Load(hud_sect, "anim_blend_aim_walk");
 	}
 
 	LoadSounds(section);
@@ -122,7 +80,7 @@ void CHudItem::LoadSounds(const char* section)
 	m_eSoundsFlags.zero();
 	m_eSoundsFlags2.zero();
 
-	if (!m_bDisableBore && SoundExist(section, "snd_bore"))
+	if (!HudDesc().m_bDisableBore && SoundExist(section, "snd_bore"))
 	{
 		m_sounds.LoadSound(section, "snd_bore", "sndBore", true);
 	}
@@ -435,11 +393,11 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 
 	const float dt = Device.fTimeDelta;
 
-	const float fYawTarget = -pActor->fFPCamYawMagnitude * lerp(BaseYPRParams.m_fHudYawInertiaK, ZoomYPRParams.m_fHudYawInertiaK, GetAimFactor());
-	const float fPitchTarget = -pActor->fFPCamPitchMagnitude * lerp(BaseYPRParams.m_fHudPitchInertiaK, ZoomYPRParams.m_fHudPitchInertiaK, GetAimFactor());
-	const float fRollTarget = -pActor->fFPCamYawMagnitude * lerp(BaseYPRParams.m_fHudRollInertiaK, ZoomYPRParams.m_fHudRollInertiaK, GetAimFactor());
+	const float fYawTarget = -pActor->fFPCamYawMagnitude * lerp(HudDesc().BaseYPRParams.m_fHudYawInertiaK, HudDesc().ZoomYPRParams.m_fHudYawInertiaK, GetAimFactor());
+	const float fPitchTarget = -pActor->fFPCamPitchMagnitude * lerp(HudDesc().BaseYPRParams.m_fHudPitchInertiaK, HudDesc().ZoomYPRParams.m_fHudPitchInertiaK, GetAimFactor());
+	const float fRollTarget = -pActor->fFPCamYawMagnitude * lerp(HudDesc().BaseYPRParams.m_fHudRollInertiaK, HudDesc().ZoomYPRParams.m_fHudRollInertiaK, GetAimFactor());
 
-	const float fLerp = 1.0f - exp(-dt * lerp(BaseYPRParams.m_fHudInertiaSpeed, ZoomYPRParams.m_fHudInertiaSpeed, GetAimFactor()));
+	const float fLerp = 1.0f - exp(-dt * lerp(HudDesc().BaseYPRParams.m_fHudInertiaSpeed, HudDesc().ZoomYPRParams.m_fHudInertiaSpeed, GetAimFactor()));
 	m_fHudYawInertia += (fYawTarget - m_fHudYawInertia) * fLerp;
 	m_fHudPitchInertia += (fPitchTarget - m_fHudPitchInertia) * fLerp;
 	m_fHudRollInertia += (fRollTarget - m_fHudRollInertia) * fLerp;
@@ -1046,7 +1004,7 @@ attachable_hud_item* CHudItem::HudItemData()
 
 float CHudItem::GetHudFov()
 {
-	return (m_fHudFov ? m_fHudFov : psHUD_FOV_def) * m_fHudFovFactor;
+	return (HudDesc().m_fHudFov ? HudDesc().m_fHudFov : psHUD_FOV_def) * HudDesc().m_fHudFovFactor;
 }
 
 void CHudItem::PlaySoundIfExist(const char* alias, const Fvector& position, bool allowOverlap)

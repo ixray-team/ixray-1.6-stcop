@@ -815,7 +815,7 @@ void ui_actor_state_wnd::UpdateActorInfoList(CActor* actor)
 		SetListValue(stt_armor, clampr(boneArmor, 0.f, 1.f));
 
 		fwou_value += boneArmor * outfit->GetCondition();
-		if (!outfit->bIsHelmetAvaliable)
+		if (!outfit->IsHelmetAvailable())
 		{
 			u16 head_bone = ikv->LL_BoneID("bip01_head");
 			fwou_value += outfit->GetBoneArmor(head_bone) * outfit->GetCondition();
@@ -1012,7 +1012,7 @@ void ui_actor_state_wnd::UpdateActorInfoLegacy(CActor* actor)
 		m_state[stt_armor]->set_text(value);
 
 		fwou_value += value * outfit->GetCondition();
-		if(!outfit->bIsHelmetAvaliable)
+		if(!outfit->IsHelmetAvailable())
 		{
 			u16 spine_bone_ = ikv->LL_BoneID("bip01_head");
 			fwou_value += outfit->GetBoneArmor(spine_bone_)*outfit->GetCondition();
