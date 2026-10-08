@@ -24,6 +24,9 @@ void CScriptParticles::script_register(lua_State *L)
 			.def("stop",						&CScriptParticles::Stop)
 			.def("stop_deffered",				&CScriptParticles::StopDeffered)
 
+			.def("set_scale", &CScriptParticles::SetScale)
+			.def("get_scale", &CScriptParticles::GetScale)
+
 			.def("playing",						&CScriptParticles::IsPlaying)
 			.def("looped",						&CScriptParticles::IsLooped)
 

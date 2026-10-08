@@ -269,6 +269,7 @@ public:
 		SRecoilPattern* m_current_pattern = nullptr;
 
 		void LoadRecoilPatterns(const char* section);
+		void LoadVfxScales(const char* section);
 		void ApplyPattern();
 		void StopPattern();
 		// для доступа к паттерну отдачи

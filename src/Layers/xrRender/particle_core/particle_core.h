@@ -18,6 +18,12 @@ namespace PAPI
 
 		bool 		Within			(const Fvector &) const;
 		void 		Generate		(Fvector &) const;
+		// Scale generated values without changing the authored domain or its distribution.
+		void Generate(Fvector& Value, float Scale) const
+		{
+			Generate(Value);
+			Value.mul(Scale);
+		}
 		// transformation
 		void 		transform		(const pDomain& domain, const Fmatrix& m);
 		void 		transform_dir	(const pDomain& domain, const Fmatrix& m);
@@ -37,4 +43,3 @@ namespace PAPI
 };
 //---------------------------------------------------------------------------
 #endif
- 

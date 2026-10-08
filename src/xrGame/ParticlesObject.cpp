@@ -185,6 +185,28 @@ void CParticlesObject::SetXFORM(const Fmatrix& m)
 	renderable.xform.set(m);
 }
 
+void CParticlesObject::SetScale(float Scale)
+{
+	if (g_dedicated_server || renderable.visual == nullptr)
+	{
+		return;
+	}
+	IParticleCustom* Visual = renderable.visual->dcast_ParticleCustom();
+	VERIFY(Visual);
+	Visual->SetScale(Scale);
+}
+
+float CParticlesObject::GetScale()
+{
+	if (g_dedicated_server || renderable.visual == nullptr)
+	{
+		return 1.0f;
+	}
+	IParticleCustom* Visual = renderable.visual->dcast_ParticleCustom();
+	VERIFY(Visual);
+	return Visual->GetScale();
+}
+
 void CParticlesObject::SetLiveUpdate(bool b)
 {
 	if (g_dedicated_server || renderable.visual == nullptr)

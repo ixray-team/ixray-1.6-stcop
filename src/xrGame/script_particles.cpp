@@ -85,6 +85,16 @@ CScriptParticles::CScriptParticles(const char* caParticlesName)
 	GamePersistent().ps_active_deffer.push_back(m_particles);
 }
 
+void CScriptParticles::SetScale(float Scale)
+{
+	m_particles->SetScale(Scale);
+}
+
+float CScriptParticles::GetScale() const
+{
+	return m_particles->GetScale();
+}
+
 CScriptParticles::~CScriptParticles()
 {
 	if(m_particles)
