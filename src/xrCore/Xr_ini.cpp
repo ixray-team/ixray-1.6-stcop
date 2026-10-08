@@ -138,6 +138,27 @@ CInifile::CInifile(const char* szFileName, bool ReadOnly, bool bLoad, bool SaveA
 	}
 }
 
+bool CInifile::Reload()
+{
+	CInifile Reloaded(m_file_name, true, true, false, 0, AllowIncludeFunc);
+	if (Reloaded.section_count() == 0)
+	{
+		Msg("! Cannot reload inifile: %s. Keeping the previous settings.", m_file_name);
+		return false;
+	}
+
+	// Keep the object address stable for cached system_ini() references in Lua.
+	DATA.swap(Reloaded.DATA);
+	OverrideModifyListData.swap(Reloaded.OverrideModifyListData);
+	FinalData.swap(Reloaded.FinalData);
+	BaseData.swap(Reloaded.BaseData);
+	OverrideData.swap(Reloaded.OverrideData);
+	BaseParentDataMap.swap(Reloaded.BaseParentDataMap);
+	OverrideParentDataMap.swap(Reloaded.OverrideParentDataMap);
+	OverrideToFilename.swap(Reloaded.OverrideToFilename);
+	return true;
+}
+
 CInifile::~CInifile()
 {
 	if (!m_flags.test(eReadOnly) && m_flags.test(eSaveAtEnd))
