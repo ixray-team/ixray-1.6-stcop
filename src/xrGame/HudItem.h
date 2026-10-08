@@ -28,6 +28,7 @@ class CPhysicsShellHolder;
 #include "player_hud.h"
 
 #include "HudTorchLight.h"
+#include "Descs/HudItemDesc.h"
 
 struct attachable_hud_item;
 class motion_marks;
@@ -184,10 +185,10 @@ public:
 
 	virtual float GetHudFov();
 	void PlaySoundIfExist(const char* alias, const Fvector& position, bool allowOverlap);
-	virtual bool AllowBore() { return !m_bDisableBore && m_eAnimationsFlags.test(EAnimationsFlags::af_bore); }
+	virtual bool AllowBore() { return !HudDesc().m_bDisableBore && m_eAnimationsFlags.test(EAnimationsFlags::af_bore); }
 
-	float getLookOutSpeedKoef() const { return m_fLookOutSpeedKoef; }
-	float getLookOutAmplK() const { return m_fLookOutAmplK; }
+	float getLookOutSpeedKoef() const { return HudDesc().m_fLookOutSpeedKoef; }
+	float getLookOutAmplK() const { return HudDesc().m_fLookOutAmplK; }
 	float getActorCamSpeedFactor() const { return m_fActorCamSpeedFactor; }
 
 	bool CanStartAction(CActor* pActor);
@@ -203,9 +204,7 @@ public:
 	virtual void OnBlendEnd(u8 state) {}
 	virtual void OnBlendStart(u8 state) {}
 
-	bool UseBlendMovement() const { return m_bBlendMovement; }
-
-	SBlendParams m_sMovementBlendParams[EMovementLayers::eLayersCount];
+	bool UseBlendMovement() const { return HudDesc().m_bBlendMovement; }
 
 	enum EDevicesFlags
 	{
@@ -333,18 +332,8 @@ public:
 	virtual bool WpnCanShoot() const { return false; }
 	bool SoundExist(const char* section, const char* sound_name);
 
-	struct jitter_params
-	{
-		float pos_amplitude = 0.0f;
-		float rot_amplitude = 0.0f;
-		float stop_time = 0.0f;
-	} m_jitter_params;
-
-	jitter_params& GetCurJitterParams() { return m_jitter_params; }
+	const SHudJitterParams& GetCurJitterParams() const { return HudDesc().m_jitter_params; }
 	THudLightTorch* GetHudLight();
-
-	float ControllerTime = 0.0f;
-	bool ProhibitSuicide = true;
 
 	bool m_disable_random_animations = false;
 
@@ -370,26 +359,13 @@ protected:
 	HUD_SOUND_COLLECTION		m_sounds;
 	HUD_SOUND_COLLECTION_LAYERED m_layered_sounds;
 	InertionData				m_current_inertion;
-	float						m_fHudFov;
-	float						m_fHudFovFactor;
-	float						m_fLookOutSpeedKoef = 1.0f;
-	float						m_fLookOutAmplK = 1.0f;
 	float						m_fActorCamSpeedFactor = 1.0f;
 
-	struct SHudYPRParams
-	{
-		float m_fHudYawInertiaK = 0.0f;
-		float m_fHudPitchInertiaK = 0.0f;
-		float m_fHudRollInertiaK = 0.0f;
-		float m_fHudInertiaSpeed = 10.0f;
-	} BaseYPRParams, ZoomYPRParams;
+	const SHudItemDesc*			CurrentHudDesc = nullptr;
 
 	float						m_fHudYawInertia = 0.0f;
 	float						m_fHudPitchInertia = 0.0f;
 	float						m_fHudRollInertia = 0.0f;
-
-	bool						m_bDisableBore;
-	bool						m_bBlendMovement = false;
 
 	virtual void				SetModelBoneStatus(const char* bone, bool show);
 	virtual void				SetMultipleBonesStatus(const char* section, const char* line, bool show);
@@ -400,6 +376,8 @@ private:
 
 public:
 	const shared_str&			HudSection				() const		{ return hud_sect;}
+	const SHudItemDesc&			HudDesc					() const		{ VERIFY(CurrentHudDesc); return *CurrentHudDesc;}
+	void						SetHudSection			(const shared_str& Section);
 	IC CPhysicItem&				object					() const		{ VERIFY(m_object); return(*m_object);}
 	IC CInventoryItem&			item					() const		{ VERIFY(m_item); return(*m_item);}
 	IC		u32					animation_slot			()				{ return m_animation_slot;}

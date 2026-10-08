@@ -177,7 +177,7 @@ void CUIActorMenu::UpdateOutfit()
 
 	VERIFY( m_pInventoryBeltList );
 	CCustomOutfit* outfit    = m_pActorInvOwner->GetOutfit();
-	if(outfit && !outfit->bIsHelmetAvaliable && m_HelmetOver)
+	if(outfit && !outfit->IsHelmetAvailable() && m_HelmetOver)
 		m_HelmetOver->Show(true);
 	else if (m_HelmetOver)
 		m_HelmetOver->Show(false);
