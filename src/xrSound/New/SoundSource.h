@@ -45,6 +45,8 @@ struct SoundSourceState
 	IReader* Reader = nullptr;
 	u8* Data = nullptr;
 	u32 CacheLines[SND_CACHE_ENTRY_COUNT] = {};
+	// OggVorbis_File is not thread safe: serializes the decode thread and on-the-fly decode in the render thread
+	xrCriticalSection DecodeLock;
 	bool IsReady = false;
 	bool IsLoading = false;
 };
@@ -71,6 +73,11 @@ SoundSourceState* Snd_LookupSource(const xr_string* Name);
 SoundSourceState* Snd_FindSource(const xr_string* Name);
 SoundSourceState* Snd_AcquireSource(const xr_string* Name);
 void Snd_ReleaseSource(const xr_string* Name);
+// Async: hand a decode request to the decode thread
 void Snd_QueueDecode(const xr_string* Name, u32 Position);
+// Async: make sure the current position and the read-ahead window are cached (or queued)
+void Snd_PrefetchSource(const SoundSourceState* Source, const xr_string* Name, u32 Position, bool IsLooped);
+// Sync: decode the cache line for Position on the calling thread. Caller must hold a source reference
+bool Snd_DecodeNow(SoundSourceState* Source, u32 Position);
 bool Snd_HasCacheLine(const SoundSourceState* Source, u32 Position);
 u32 Snd_CopyCached(const SoundSourceState* Source, u32 Position, float** OutData, u32 Frames);
