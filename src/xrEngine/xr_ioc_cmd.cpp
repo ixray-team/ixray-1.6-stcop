@@ -820,9 +820,9 @@ void CCC_Register()
 	// Sound
 	CMD4(CCC_Float,     "snd_compression",      &psSoundCompression, 0.0f, 1.0f);
 	CMD4(CCC_Float,     "snd_doppler",          &psSoundDoppler, 0.0f, 10.0f);
-	CMD2(CCC_Float,		"snd_volume_eff",		&psSoundVEffects);
-	CMD2(CCC_Float,		"snd_volume_music",		&psSoundVMusic);
-	CMD2(CCC_Float,		"snd_volume_shooting",	&psSoundVShooting);
+	CMD2(CCC_Float,		"snd_volume_eff",		XRay::Sound::Mixer::GetMasterVolume());
+	CMD2(CCC_Float,		"snd_volume_music",		XRay::Sound::Mixer::GetSubmixVolume(SoundSubmixId::Music));
+	CMD2(CCC_Float,		"snd_volume_shooting",	XRay::Sound::Mixer::GetSubmixVolume(SoundSubmixId::Shooting));
 	CMD4(CCC_Float,		"snd_shooting_reverb",	&psSoundShootingReverb, 0.0f, 1.0f);
 	CMD1(CCC_SND_Restart,"snd_restart"			);
 	CMD3(CCC_Mask32,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
