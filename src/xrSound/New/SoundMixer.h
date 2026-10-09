@@ -41,7 +41,7 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void DereferenceObjects(CObject** object, int count);
     XRSOUND_API sound_stats* GetStats();
     XRSOUND_API u32 GetSourceCount();
-    XRSOUND_API const sound_source_public* GetSource(u32 index);
+    XRSOUND_API const sound_source_desc* GetSource(u32 index);
 
     // Non-scheduled stuff
     XRSOUND_API u32 Create();

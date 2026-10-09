@@ -102,7 +102,7 @@ struct sound_stats
 #endif
 };
 
-struct sound_source_public
+struct sound_source_desc
 {
 	u8 channels_count;
 	u8 reserved0;
