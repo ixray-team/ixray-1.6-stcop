@@ -18,7 +18,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_callable_utils.script]
 --// Проверить, существует ли глобальный скрипт с указанным именем.
 is_script_present_in_g_file(script_name)
 args:
@@ -87,8 +88,9 @@ args:
   ... (any)(optional) - аргументы, передаваемые в функцию.
 retval: (any) - возвращаемые значения вызванной функции или nil в случае ошибки.
 ```
+:::
 
-Примеры использований:
+### Примеры использований:
 ```lua
 --// Проверяем наличие скрипта
 if ffx_callable_utils.is_script_present_in_g_file("my_script") then

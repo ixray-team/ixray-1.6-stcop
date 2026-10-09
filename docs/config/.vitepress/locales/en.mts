@@ -19,6 +19,12 @@ export const enLocale = {
   link: '/en/',
   dir: 'ltr',
   themeConfig: {
+    parameterDetails: {
+      defaultValue: 'Default',
+      normalMode: 'Normal',
+      zoomMode: 'Aiming',
+      format: 'Format',
+    },
     outline: { level: [2, 3], label: 'Page contents' },
     docFooter: {
       prev: 'Previous page',
@@ -32,7 +38,7 @@ export const enLocale = {
       linkText: 'Take me home'
     },
     editLink: {
-      pattern: 'https://github.com/ixray-team/ixray-1.6-stcop/edit/default/docs/:path',
+      pattern: 'https://github.com/ixray-team/ixray-1.6-stcop/edit/default/docs/docs/:path',
       text: 'Edit page'
     },
     lastUpdated: {
@@ -56,6 +62,4 @@ export const enLocale = {
     },
   },
 }
-
-
 

@@ -45,7 +45,7 @@ args:
 retval: (bool) - success.
 ```
 
-Examples:
+### Examples:
 ```lua
 --// Set a value in the registry
 SetRegistryValue("my-key", "my-subkey", 123456)

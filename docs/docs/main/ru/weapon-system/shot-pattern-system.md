@@ -1,4 +1,3 @@
-
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
 > **Минимальная версия**: IX-Ray Platform 1.4 <br>
@@ -91,98 +90,186 @@ zoom_pattern_random_y = -0.05, 0.2
 ```
 ### **Описание параметров:**
 
+<ParameterDetails
+  title="Сила отдачи от паттерна"
+  parameter="pattern_factor"
+  zoom-parameter="zoom_pattern_factor"
+  normal="0.035"
+  zoom="0.025"
+  open
+>
 
-**`pattern_factor` / `zoom_pattern_factor`**
+базовый множитель силы отдачи от паттерна. Чем выше значение, тем сильнее смещение точки `bullet_`
 
--   **Значение по умолчанию:**  `0.035`, `0.025` (zoom)
-    
--   **Назначение:** базовый множитель силы отдачи от паттерна. Чем выше значение, тем сильнее смещение точки `bullet_`
+</ParameterDetails>
 
-**`pattern_factor_agility` / `zoom_pattern_factor_agility`**
+<ParameterDetails
+  title="Общий множитель движения"
+  parameter="pattern_factor_agility"
+  zoom-parameter="zoom_pattern_factor_agility"
+  normal="1.0"
+  zoom="1.0"
+>
 
--   **Значение по умолчанию:**  `1.0` , `1.0` (zoom)
-    
--   **Назначение:** общий множитель отдачи оружия `agility`.  
+общий множитель отдачи оружия `agility`.
 
-**`pattern_factor_agility_vel` / `zoom_pattern_factor_agility_vel`**
+</ParameterDetails>
 
--   **Значение по умолчанию:**  `3.0` , `3.5` (zoom)
-    
--   **Назначение:** основной множитель отдачи оружия в зависимости от скорости движения игрока
+<ParameterDetails
+  title="Скорость движения"
+  parameter="pattern_factor_agility_vel"
+  zoom-parameter="zoom_pattern_factor_agility_vel"
+  normal="3.0"
+  zoom="3.5"
+>
 
-**`pattern_factor_agility_accel` / `zoom_pattern_factor_agility_accel`**
+основной множитель отдачи оружия в зависимости от скорости движения игрока
 
--   **Значение по умолчанию:**  `1.0`, `1.0` (zoom)
-    
--   **Назначение** дополнительный множитель отдачи оружия при беге.
+</ParameterDetails>
 
-**`pattern_factor_agility_crouch` / `zoom_pattern_factor_agility_crouch`**
+<ParameterDetails
+  title="Бег"
+  parameter="pattern_factor_agility_accel"
+  zoom-parameter="zoom_pattern_factor_agility_accel"
+  normal="1.0"
+  zoom="1.0"
+>
 
--   **Значение по умолчанию:**  `0.95`, `0.9` (zoom)
-    
--   **Назначение:** множитель отдачи оружия — регулирует отдачу игрока в положении сидя (с учётом движения)
+дополнительный множитель отдачи оружия при беге.
 
-**`pattern_factor_agility_crouch_no_acc` / `zoom_pattern_factor_agility_crouch_no_acc`**
+</ParameterDetails>
 
--   **Значение по умолчанию:**  `0.95`, `0.85` (zoom)
-    
--   **Назначение:** множитель отдачи оружия — регулирует отдачу игрока в положении полного приседа (с учётом движения и без бега)
+<ParameterDetails
+  title="Положение сидя"
+  parameter="pattern_factor_agility_crouch"
+  zoom-parameter="zoom_pattern_factor_agility_crouch"
+  normal="0.95"
+  zoom="0.9"
+>
 
-**`pattern_stiffness` / `zoom_pattern_stiffness`**
+множитель отдачи оружия — регулирует отдачу игрока в положении сидя (с учётом движения)
 
--   **Значение по умолчанию:**  `800.0`, `800.0` (zoom)
-    
--   **Назначение:** жёсткость пружины. Чем выше, тем быстрее камера стремится к целевой точке отдачи. Низкие значения дают "вялую", плавную отдачу, высокие — резкую
+</ParameterDetails>
 
-**`pattern_damping` / `zoom_pattern_damping`**
+<ParameterDetails
+  title="Полный присед"
+  parameter="pattern_factor_agility_crouch_no_acc"
+  zoom-parameter="zoom_pattern_factor_agility_crouch_no_acc"
+  normal="0.95"
+  zoom="0.85"
+>
 
--   **Значение по умолчанию:**  `40.0`, `40.0` (zoom)
-    
--   **Назначение:** демпфирование (гашение колебаний). Чем выше, тем быстрее затухает раскачка камеры. Низкие значения создают эффект "тряски" после отдачи
+множитель отдачи оружия — регулирует отдачу игрока в положении полного приседа (с учётом движения и без бега)
 
-**`pattern_impulse` / `zoom_pattern_impulse`**
+</ParameterDetails>
 
--   **Значение по умолчанию:**  `35.0`, `35.0` (zoom)
-    
--   **Назначение:** сила мгновенного рывка в момент выстрела. Высокий импульс → резкий "удар" камеры, низкий → плавное нарастание отдачи
+<ParameterDetails
+  title="Жёсткость пружины"
+  parameter="pattern_stiffness"
+  zoom-parameter="zoom_pattern_stiffness"
+  normal="800.0"
+  zoom="800.0"
+>
 
-**`pattern_loop` / `zoom_pattern_loop`**
+жёсткость пружины. Чем выше, тем быстрее камера стремится к целевой точке отдачи. Низкие значения дают "вялую", плавную отдачу, высокие — резкую
 
--   **Значение по умолчанию:**  `1`, `1` (zoom)
-    
--   **Назначение:** зацикливать ли паттерн отдачи. Если `1`, после последнего выстрела в паттерне отдача продолжается с первого шага. Если `0` — и список точек паттерна заканчивается, последующие выстрелы будут без смещений
+</ParameterDetails>
 
-**`pattern_return_speed` / `zoom_pattern_return_speed`**
+<ParameterDetails
+  title="Гашение колебаний"
+  parameter="pattern_damping"
+  zoom-parameter="zoom_pattern_damping"
+  normal="40.0"
+  zoom="40.0"
+>
 
--   **Значение по умолчанию:**  `5.0`, `5.0` (zoom)
-    
--   **Назначение:** скорость возврата к предпоследней позиции. Чем выше, тем быстрее камера стремится к предпоследней позиции после окончания отдачи
+демпфирование (гашение колебаний). Чем выше, тем быстрее затухает раскачка камеры. Низкие значения создают эффект "тряски" после отдачи
 
-**`pattern_return_enable` / `zoom_pattern_return_enable`**
+</ParameterDetails>
 
--   **Значение по умолчанию:**  `1`, `1` (zoom)
-    
--   **Назначение:** определяет, возвращается ли камера к предпоследней позиции точки выстрела после окончания отдачи. При значении 0 камера остаётся в последней точке выстрела.
+<ParameterDetails
+  title="Импульс выстрела"
+  parameter="pattern_impulse"
+  zoom-parameter="zoom_pattern_impulse"
+  normal="35.0"
+  zoom="35.0"
+>
 
-**`pattern_random_enable` / `zoom_pattern_random_enable`**
+сила мгновенного рывка в момент выстрела. Высокий импульс → резкий "удар" камеры, низкий → плавное нарастание отдачи
 
--   **Значение по умолчанию:**  `0`, `0` (zoom)
-    
--   **Назначение:** включает случайное смещение точек паттерна для большей непредсказуемости
-    
+</ParameterDetails>
 
-**`pattern_random_x` / `zoom_pattern_random_x`**
+<ParameterDetails
+  title="Зацикливание паттерна"
+  parameter="pattern_loop"
+  zoom-parameter="zoom_pattern_loop"
+  normal="1"
+  zoom="1"
+>
 
--   **Формат:**  `X, X` (два числа)
-    
--   **Назначение:** диапазон случайного смещения по горизонтали. Первое число — минимальное, второе — максимальное значение
-    
+зацикливать ли паттерн отдачи. Если `1`, после последнего выстрела в паттерне отдача продолжается с первого шага. Если `0` — и список точек паттерна заканчивается, последующие выстрелы будут без смещений
 
-**`pattern_random_y` / `zoom_pattern_random_y`**
+</ParameterDetails>
 
--   **Формат:**  `Y, Y` (два числа)
-    
--   **Назначение:** диапазон случайного смещения по вертикали. Первое число — минимальное, второе — максимальное значение
+<ParameterDetails
+  title="Скорость возврата камеры"
+  parameter="pattern_return_speed"
+  zoom-parameter="zoom_pattern_return_speed"
+  normal="5.0"
+  zoom="5.0"
+>
+
+скорость возврата к предпоследней позиции. Чем выше, тем быстрее камера стремится к предпоследней позиции после окончания отдачи
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Возврат камеры"
+  parameter="pattern_return_enable"
+  zoom-parameter="zoom_pattern_return_enable"
+  normal="1"
+  zoom="1"
+>
+
+определяет, возвращается ли камера к предпоследней позиции точки выстрела после окончания отдачи. При значении 0 камера остаётся в последней точке выстрела.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Случайное смещение"
+  parameter="pattern_random_enable"
+  zoom-parameter="zoom_pattern_random_enable"
+  normal="0"
+  zoom="0"
+>
+
+включает случайное смещение точек паттерна для большей непредсказуемости
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Случайное смещение по горизонтали"
+  parameter="pattern_random_x"
+  zoom-parameter="zoom_pattern_random_x"
+  format="X, X"
+  format-note="(два числа)"
+>
+
+диапазон случайного смещения по горизонтали. Первое число — минимальное, второе — максимальное значение
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Случайное смещение по вертикали"
+  parameter="pattern_random_y"
+  zoom-parameter="zoom_pattern_random_y"
+  format="Y, Y"
+  format-note="(два числа)"
+>
+
+диапазон случайного смещения по вертикали. Первое число — минимальное, второе — максимальное значение
+
+</ParameterDetails>
 
 ## Настройка отдачи для аддонов оружия
 
@@ -195,17 +282,25 @@ scope_attached_recoil_reduction         = 0.81
 ```
 ### **Описание параметров:**
 
-**`scope_attached_recoil_factor`**
+<ParameterDetails
+  title="Отдача с прицелом"
+  parameter="scope_attached_recoil_factor"
+  normal="1.0"
+>
 
--   **Значение по умолчанию:**  `1.0`
-    
--   **Назначение:** множитель отдачи с установленным прицелом. Чем меньше, тем меньше общая отдача оружия.
+множитель отдачи с установленным прицелом. Чем меньше, тем меньше общая отдача оружия.
 
-**`scope_attached_recoil_reduction`**
+</ParameterDetails>
 
--   **Значение по умолчанию:**  `1.0`
-    
--   **Назначение:** дополнительный множитель, который делит `scope_attached_recoil_factor`, но только в режиме прицеливания
+<ParameterDetails
+  title="Снижение отдачи при прицеливании"
+  parameter="scope_attached_recoil_reduction"
+  normal="1.0"
+>
+
+дополнительный множитель, который делит `scope_attached_recoil_factor`, но только в режиме прицеливания
+
+</ParameterDetails>
 
 ## **Секция глушителя:**
 ```ini
@@ -214,11 +309,15 @@ attached_recoil_f                           = 0.85
 
 ### **Описание параметров:**
 
-**`attached_recoil_f`**
+<ParameterDetails
+  title="Отдача с глушителем"
+  parameter="attached_recoil_f"
+  normal="1.0"
+>
 
--   **Значение по умолчанию:**  `1.0`
-    
--   **Назначение:** множитель отдачи с установленным глушителем. Чем меньше, тем меньше общая отдача оружия.
+множитель отдачи с установленным глушителем. Чем меньше, тем меньше общая отдача оружия.
+
+</ParameterDetails>
 
 ## **Секция подствольного гранатомета:**
 ```ini
@@ -226,11 +325,15 @@ grenade_attached_recoil               = 0.95
 ```
 ### **Описание параметров:**
 
-**`grenade_attached_recoil`**
+<ParameterDetails
+  title="Отдача с подствольным гранатомётом"
+  parameter="grenade_attached_recoil"
+  normal="1.0"
+>
 
--   **Значение по умолчанию:**  `1.0`
-    
--   **Назначение:** множитель отдачи с установленным подствольным гранатометом. Чем меньше, тем меньше общая отдача оружия.
+множитель отдачи с установленным подствольным гранатометом. Чем меньше, тем меньше общая отдача оружия.
+
+</ParameterDetails>
 
 ## Глобальные параметры отдачи
 
@@ -246,30 +349,45 @@ agility_crouch_no_acc_factor = 0.96
 ```
 ### **Описание параметров:**
 
+<ParameterDetails
+  title="Общий множитель движения игрока"
+  parameter="agility_vel_factor"
+  normal="2.0"
+>
 
-**`agility_vel_factor`**
+главный множитель движения игрока. Чем выше, тем сильнее значения `pattern_factor_agility` / `zoom_pattern_factor_agility` из секции оружия.
 
--   **Значение по умолчанию:**  `2.0` 
-    
--   **Назначение:** главный множитель движения игрока. Чем выше, тем сильнее значения `pattern_factor_agility` / `zoom_pattern_factor_agility` из секции оружия. 
+</ParameterDetails>
 
-**`agility_accel_factor`**
+<ParameterDetails
+  title="Общий множитель бега"
+  parameter="agility_accel_factor"
+  normal="1.05"
+>
 
--   **Значение по умолчанию:**  `1.05` 
-    
--   **Назначение:** множитель насколько увеличится отдача, если игрок бежит. Чем выше, тем сильнее значения `pattern_factor_agility_accel` / `zoom_pattern_factor_agility_accel` из секции оружия. 
+множитель насколько увеличится отдача, если игрок бежит. Чем выше, тем сильнее значения `pattern_factor_agility_accel` / `zoom_pattern_factor_agility_accel` из секции оружия.
 
-**`agility_crouch_factor`**
+</ParameterDetails>
 
--   **Значение по умолчанию:**  `0.98` 
-    
--   **Назначение:** множитель движения игрока в положении сидя. Чем ниже, тем слабее значения `pattern_factor_agility_crouch` / `zoom_pattern_factor_agility_crouch` из секции оружия. 
+<ParameterDetails
+  title="Общий множитель положения сидя"
+  parameter="agility_crouch_factor"
+  normal="0.98"
+>
 
-**`agility_crouch_no_acc_factor`**
+множитель движения игрока в положении сидя. Чем ниже, тем слабее значения `pattern_factor_agility_crouch` / `zoom_pattern_factor_agility_crouch` из секции оружия.
 
--   **Значение по умолчанию:**  `0.96` 
-    
--   **Назначение:** множитель движения игрока в положении полного приседа. Чем ниже, тем слабее значения `pattern_factor_agility_crouch_no_acc` / `zoom_pattern_factor_agility_crouch_no_acc` из секции оружия. 
+</ParameterDetails>
+
+<ParameterDetails
+  title="Общий множитель полного приседа"
+  parameter="agility_crouch_no_acc_factor"
+  normal="0.96"
+>
+
+множитель движения игрока в положении полного приседа. Чем ниже, тем слабее значения `pattern_factor_agility_crouch_no_acc` / `zoom_pattern_factor_agility_crouch_no_acc` из секции оружия.
+
+</ParameterDetails>
 
 ## Примеры использования
 
@@ -405,3 +523,4 @@ zoom_pattern_factor_agility_vel = 1.0
 ## См. также
 
 * [DLTX](https://github.com/ixray-team/ixray-1.6-stcop/wiki/DLTX)
+

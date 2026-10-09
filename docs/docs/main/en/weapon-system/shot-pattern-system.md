@@ -86,65 +86,186 @@ zoom_pattern_random_y = -0.05, 0.2
 ```
 ### Parameter descriptions
 
-`pattern_factor` / `zoom_pattern_factor`
-- Default: `0.035`, `0.025` (zoom)
-- Purpose: base multiplier for pattern strength. Higher values increase the effect of `bullet_` offsets.
+<ParameterDetails
+  title="Pattern recoil strength"
+  parameter="pattern_factor"
+  zoom-parameter="zoom_pattern_factor"
+  normal="0.035"
+  zoom="0.025"
+  open
+>
 
-`pattern_factor_agility` / `zoom_pattern_factor_agility`
-- Default: `1.0`, `1.0` (zoom)
-- Purpose: overall agility multiplier applied to weapon recoil.
+Base multiplier for pattern strength. Higher values increase the effect of `bullet_` offsets.
 
-`pattern_factor_agility_vel` / `zoom_pattern_factor_agility_vel`
-- Default: `3.0`, `3.5` (zoom)
-- Purpose: multiplier that scales pattern effect with player movement speed.
+</ParameterDetails>
 
-`pattern_factor_agility_accel` / `zoom_pattern_factor_agility_accel`
-- Default: `1.0`, `1.0` (zoom)
-- Purpose: additional multiplier applied while sprinting.
+<ParameterDetails
+  title="Overall movement multiplier"
+  parameter="pattern_factor_agility"
+  zoom-parameter="zoom_pattern_factor_agility"
+  normal="1.0"
+  zoom="1.0"
+>
 
-`pattern_factor_agility_crouch` / `zoom_pattern_factor_agility_crouch`
-- Default: `0.95`, `0.9` (zoom)
-- Purpose: multiplier for crouching movement.
+Overall agility multiplier applied to weapon recoil.
 
-`pattern_factor_agility_crouch_no_acc` / `zoom_pattern_factor_agility_crouch_no_acc`
-- Default: `0.95`, `0.85` (zoom)
-- Purpose: multiplier for full crouch (no sprint) movement.
+</ParameterDetails>
 
-`pattern_stiffness` / `zoom_pattern_stiffness`
-- Default: `800.0`, `800.0` (zoom)
-- Purpose: spring stiffness — higher values make the camera snap faster to the target.
+<ParameterDetails
+  title="Movement speed"
+  parameter="pattern_factor_agility_vel"
+  zoom-parameter="zoom_pattern_factor_agility_vel"
+  normal="3.0"
+  zoom="3.5"
+>
 
-`pattern_damping` / `zoom_pattern_damping`
-- Default: `40.0`, `40.0` (zoom)
-- Purpose: damping of the spring — higher values reduce oscillation.
+Multiplier that scales pattern effect with player movement speed.
 
-`pattern_impulse` / `zoom_pattern_impulse`
-- Default: `35.0`, `35.0` (zoom)
-- Purpose: instantaneous impulse applied on shot — higher = stronger kick.
+</ParameterDetails>
 
-`pattern_loop` / `zoom_pattern_loop`
-- Default: `1`, `1` (zoom)
-- Purpose: whether to loop the pattern. `1` loops back to the first bullet after the last.
+<ParameterDetails
+  title="Running"
+  parameter="pattern_factor_agility_accel"
+  zoom-parameter="zoom_pattern_factor_agility_accel"
+  normal="1.0"
+  zoom="1.0"
+>
 
-`pattern_return_speed` / `zoom_pattern_return_speed`
-- Default: `5.0`, `5.0` (zoom)
-- Purpose: speed of return toward the previous camera position after recoil.
+Additional multiplier applied while sprinting.
 
-`pattern_return_enable` / `zoom_pattern_return_enable`
-- Default: `1`, `1` (zoom)
-- Purpose: whether the camera returns to the previous position after recoil ends.
+</ParameterDetails>
 
-`pattern_random_enable` / `zoom_pattern_random_enable`
-- Default: `0`, `0` (zoom)
-- Purpose: enables randomization on top of pattern points.
+<ParameterDetails
+  title="Crouching"
+  parameter="pattern_factor_agility_crouch"
+  zoom-parameter="zoom_pattern_factor_agility_crouch"
+  normal="0.95"
+  zoom="0.9"
+>
 
-`pattern_random_x` / `zoom_pattern_random_x`
-- Format: `min, max`
-- Purpose: horizontal random offset range.
+Multiplier for crouching movement.
 
-`pattern_random_y` / `zoom_pattern_random_y`
-- Format: `min, max`
-- Purpose: vertical random offset range.
+</ParameterDetails>
+
+<ParameterDetails
+  title="Full crouch"
+  parameter="pattern_factor_agility_crouch_no_acc"
+  zoom-parameter="zoom_pattern_factor_agility_crouch_no_acc"
+  normal="0.95"
+  zoom="0.85"
+>
+
+Multiplier for full crouch (no sprint) movement.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Spring stiffness"
+  parameter="pattern_stiffness"
+  zoom-parameter="zoom_pattern_stiffness"
+  normal="800.0"
+  zoom="800.0"
+>
+
+Spring stiffness. Higher values make the camera move toward the recoil target faster. Low values produce smooth, sluggish recoil; high values produce a sharp kick.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Oscillation damping"
+  parameter="pattern_damping"
+  zoom-parameter="zoom_pattern_damping"
+  normal="40.0"
+  zoom="40.0"
+>
+
+Damping of spring oscillations. Higher values make camera oscillation settle faster. Low values create a shaking effect after recoil.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Shot impulse"
+  parameter="pattern_impulse"
+  zoom-parameter="zoom_pattern_impulse"
+  normal="35.0"
+  zoom="35.0"
+>
+
+Strength of the instantaneous impulse applied when firing. High values produce a sharp camera kick; low values produce a gradual increase in recoil.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Pattern looping"
+  parameter="pattern_loop"
+  zoom-parameter="zoom_pattern_loop"
+  normal="1"
+  zoom="1"
+>
+
+Whether to loop the recoil pattern. With `1`, recoil continues from the first step after the last shot in the pattern. With `0`, subsequent shots produce no pattern offsets once all points have been used.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Camera return speed"
+  parameter="pattern_return_speed"
+  zoom-parameter="zoom_pattern_return_speed"
+  normal="5.0"
+  zoom="5.0"
+>
+
+Speed of return toward the previous camera position after recoil.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Camera return"
+  parameter="pattern_return_enable"
+  zoom-parameter="zoom_pattern_return_enable"
+  normal="1"
+  zoom="1"
+>
+
+Whether the camera returns to the previous shot position after recoil ends. With `0`, the camera stays at the last shot position.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Random offsets"
+  parameter="pattern_random_enable"
+  zoom-parameter="zoom_pattern_random_enable"
+  normal="0"
+  zoom="0"
+>
+
+Enables randomization on top of pattern points.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Random horizontal offset"
+  parameter="pattern_random_x"
+  zoom-parameter="zoom_pattern_random_x"
+  format="X, X"
+  format-note="(two numbers)"
+>
+
+Horizontal random offset range. The first number is the minimum and the second is the maximum.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Random vertical offset"
+  parameter="pattern_random_y"
+  zoom-parameter="zoom_pattern_random_y"
+  format="Y, Y"
+  format-note="(two numbers)"
+>
+
+Vertical random offset range. The first number is the minimum and the second is the maximum.
+
+</ParameterDetails>
 
 ## Recoil settings for attachments
 
@@ -156,27 +277,55 @@ scope_attached_recoil_factor = 0.93
 scope_attached_recoil_reduction = 0.81
 ```
 
-`scope_attached_recoil_factor`
-- Default: `1.0` — multiplies recoil when a scope is attached.
+<ParameterDetails
+  title="Recoil with a scope"
+  parameter="scope_attached_recoil_factor"
+  normal="1.0"
+>
 
-`scope_attached_recoil_reduction`
-- Default: `1.0` — additional divisor applied in aiming mode.
+Multiplies recoil when a scope is attached.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Recoil reduction while aiming"
+  parameter="scope_attached_recoil_reduction"
+  normal="1.0"
+>
+
+Additional divisor applied in aiming mode.
+
+</ParameterDetails>
 
 Silencer:
 ```ini
 attached_recoil_f = 0.85
 ```
 
-`attached_recoil_f`
-- Default: `1.0` — recoil multiplier when a silencer is attached.
+<ParameterDetails
+  title="Recoil with a silencer"
+  parameter="attached_recoil_f"
+  normal="1.0"
+>
+
+Recoil multiplier when a silencer is attached.
+
+</ParameterDetails>
 
 Underbarrel grenade launcher:
 ```ini
 grenade_attached_recoil = 0.95
 ```
 
-`grenade_attached_recoil`
-- Default: `1.0` — recoil multiplier when an underbarrel grenade launcher is attached.
+<ParameterDetails
+  title="Recoil with a grenade launcher"
+  parameter="grenade_attached_recoil"
+  normal="1.0"
+>
+
+Recoil multiplier when an underbarrel grenade launcher is attached.
+
+</ParameterDetails>
 
 ## Global recoil parameters
 
@@ -189,17 +338,45 @@ agility_crouch_factor = 0.98
 agility_crouch_no_acc_factor = 0.96
 ```
 
-`agility_vel_factor`
-- Default: `2.0` — main movement multiplier affecting `pattern_factor_agility` and zoom equivalents.
+<ParameterDetails
+  title="Global movement multiplier"
+  parameter="agility_vel_factor"
+  normal="2.0"
+>
 
-`agility_accel_factor`
-- Default: `1.05` — multiplier when the player is running.
+Main player movement multiplier. Higher values increase the effect of `pattern_factor_agility` / `zoom_pattern_factor_agility` in the weapon section.
 
-`agility_crouch_factor`
-- Default: `0.98` — multiplier for crouch movement.
+</ParameterDetails>
 
-`agility_crouch_no_acc_factor`
-- Default: `0.96` — multiplier for full crouch (no sprint).
+<ParameterDetails
+  title="Global running multiplier"
+  parameter="agility_accel_factor"
+  normal="1.05"
+>
+
+Multiplier that increases recoil while the player is running. Higher values increase the effect of `pattern_factor_agility_accel` / `zoom_pattern_factor_agility_accel` in the weapon section.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Global crouch multiplier"
+  parameter="agility_crouch_factor"
+  normal="0.98"
+>
+
+Player movement multiplier while crouching. Lower values reduce the effect of `pattern_factor_agility_crouch` / `zoom_pattern_factor_agility_crouch` in the weapon section.
+
+</ParameterDetails>
+
+<ParameterDetails
+  title="Global full crouch multiplier"
+  parameter="agility_crouch_no_acc_factor"
+  normal="0.96"
+>
+
+Player movement multiplier in full crouch. Lower values reduce the effect of `pattern_factor_agility_crouch_no_acc` / `zoom_pattern_factor_agility_crouch_no_acc` in the weapon section.
+
+</ParameterDetails>
 
 ## Examples
 

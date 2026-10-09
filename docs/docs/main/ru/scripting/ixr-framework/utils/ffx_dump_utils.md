@@ -18,7 +18,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_dump_utils.script]
 --// Генерирует строковое представление таблицы с поддержкой рекурсии, функций и метаданных.
 var_export(tbl, indent, visited, is_subtable)
 args:
@@ -72,6 +73,7 @@ args:
   error_message (string) - текст ошибки
 retval: (none) – функция не возвращает управление
 ```
+:::
 
 ### Примеры использований:
 ```lua

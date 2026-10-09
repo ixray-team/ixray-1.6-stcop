@@ -17,7 +17,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_crypto_utils.script]
 --// Вычислить CRC64-хэш от входной строки.
 calculate_crc64(input)
 args:
@@ -55,6 +56,7 @@ args:
   key (string) - ключ шифрования (XOR)
 retval: (string) - закодированная строка
 ```
+:::
 
 ### Примеры использований:
 ```lua

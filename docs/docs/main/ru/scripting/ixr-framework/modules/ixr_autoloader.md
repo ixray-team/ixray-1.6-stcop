@@ -12,8 +12,9 @@
   * Синергирует с системой сигналов
   * Для автоматического вызова достаточно добавить в скрипт функцию с именем on_game_start()
 
-Файл для переопределения настроек совместимый с системой аддонов __ixr_override_autoload_system.script
-```lua
+Файл для переопределения настроек совместимый с системой аддонов.
+::: code-group
+```lua [gamedata\__ixr_override_autoload_system.script]
 function configure(_ref_ixr_autoloader)
 
 	-- single ignore by file names
@@ -28,8 +29,9 @@ text*text -- текст начинается и кончается фразой
 *text -- текст кончается фразой
 text*text*text -- комплексное ступенчатое вхождение поэдлементов в строку
 ```
+:::
 
-Пример:
+### Примеры использований:
 ```lua
 --// Пример имплементации
 function on_game_start()

@@ -14,7 +14,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_vector_utils.script]
 --// Переместить позицию в заданном направлении на указанное расстояние. Возвращает новый вектор.
 mul_in_direction(position, direction, length)
 args:
@@ -53,6 +54,7 @@ args:
   angle (number)(required) - угол поворота в радианах.
 retval: (table) - повёрнутый вектор как таблица {x, y, z}.
 ```
+:::
 
 ### Примеры использований:
 ```lua

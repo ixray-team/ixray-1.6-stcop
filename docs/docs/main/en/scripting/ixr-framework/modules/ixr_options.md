@@ -80,7 +80,7 @@ args:
 retval: (table) - control data for _ref.register_option.
 ```
 
-Examples:
+### Examples:
 ```lua
 --// Automatically called by the ixr autoloader
 function on_game_start()

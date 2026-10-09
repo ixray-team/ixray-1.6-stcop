@@ -45,8 +45,9 @@ function is_initialized()
 end
 ```
 
-Next, to make the framework see your module, you must explicitly list it in the override settings file compatible with the addon system: __ixr_override_framework_load_sub_modules.script
-```lua
+Next, to make the framework see your module, explicitly list it in the override settings file compatible with the addon system:
+::: code-group
+```lua {20} [gamedata\__ixr_override_framework_load_sub_modules.script]
 function configure(_ref_ixr_framework)
   -- use concrete script names for include to framework, after module allow by alias name included in module info in module code or script name is included
   --------------------------------------------
@@ -56,4 +57,57 @@ function configure(_ref_ixr_framework)
   _ref_ixr_framework.load_module_by_script_name("ixr_module_global_registry") -- alias:[ixr_registry]
   _ref_ixr_framework.load_module_by_script_name("ixr_module_options") -- alias:[ixr_options]
   _ref_ixr_framework.load_module_by_script_name("ixr_module_storage") -- alias:[ixr_storage]
+
+  --------------------------------------------
+  -- Modules loaded in the middle ->
+  --------------------------------------------
+  _ref_ixr_framework.load_module_by_script_name("ixr_module_timers") -- alias:[ixr_timers]
+  _ref_ixr_framework.load_module_by_script_name("ixr_module_triggers") -- alias:[ixr_triggers]
+
+  --------------------------------------------
+  -- Modules loaded last ->
+  --------------------------------------------
+  _ref_ixr_framework.load_module_by_script_name("ixr_module_autoloader") -- alias:[ixr_autoloader] !!! required register this module latest (autoload scripts entry points after register other modules)
+end
+
+
+--// Pass the full script file name. The module can then be accessed through the alias declared in get_module_info().
+```
+:::
+
+Global framework methods for accessing modules:
+```lua
+--// Check whether a module is loaded.
+IsModuleLoaded(script_or_alias_name)
+args:
+  script_or_alias_name (string)(required) - script name or module alias.
+retval: (bool) - whether the module is loaded.
+
+--// Get a reference to a module.
+GetModule(script_or_alias_name)
+args:
+  script_or_alias_name (string)(required) - script name or module alias.
+retval: (reference|exception) - module reference or an exception.
+
+--// Invoke a callback if the module exists.
+ClosureModuleIsExists(script_or_alias_name, callback_fn, def_value)
+args:
+  script_or_alias_name (string)(required) - script name or module alias.
+  callback_fn (function)(required) - callback to invoke if the module exists.
+  def_value (mixed)(required) - default value if the module does not exist.
+retval: (mixed|false) - callback_fn result or def_value.
+```
+
+### Examples of accessing modules by name:
+```lua
+if IsModuleLoaded("my-module") then
+    GetModule("my-module").my_method_in_module() --// A known method in the module.
+end
+
+--// Invoke a callback if the module exists.
+ClosureModuleIsExists("my-module",
+  function(module)
+    module.my_method_in_module() --// A known method in the module.
+  end
+)
 ```

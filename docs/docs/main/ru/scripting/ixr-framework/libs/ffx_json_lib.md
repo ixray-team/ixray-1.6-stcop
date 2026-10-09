@@ -10,7 +10,9 @@
 * `json_encode(input): string`
 
 #### Описание методов:
-```lua
+
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\libs\ffx_json_lib.script]
 --// Закодировать данные в JSON.
 json_encode(input)
 args:
@@ -23,8 +25,9 @@ args:
   (input) (required string) --// Входная закодированная в JSON строка
 retval: (string) --// Расскодированная из JSON таблица
 ```
+:::
 
-#### Примеры использований:
+### Примеры использований:
 ```lua
 local original = {true, false, 0, 1, 2, 3, 4, 5.2, "test"}
 local encoded = ffx_json_lib.json_encode(original)

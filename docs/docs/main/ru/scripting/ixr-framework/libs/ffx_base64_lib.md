@@ -10,7 +10,9 @@
 * `decode(input): string`
 
 #### Описание методов:
-```lua
+
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\libs\ffx_base64_lib.script]
 --// Закодировать данные в Base64.
 encode(input)
 args:
@@ -23,8 +25,9 @@ args:
   (input) --// Входная закодированная в base64 строка
 retval: (string) --// Расскодированная из base64 строка
 ```
+:::
 
-#### Примеры использований:
+### Примеры использований:
 ```lua
 local original = "Hello World"
 local encoded = ffx_base64_lib.encode(original)

@@ -77,5 +77,5 @@ To add a new language to the game, follow these steps:
 
 ## **See Also**
 
-1. [Working with fonts in IX-Ray](https://github.com/ixray-team/ixray-1.6-stcop/wiki/Fonts)
-2. [File encodings](https://github.com/ixray-team/ixray-1.6-stcop/wiki/File-Encoding)
+1. [Working with fonts in IX-Ray](../interface/fonts.md)
+2. [File encodings](file-encoding.md)

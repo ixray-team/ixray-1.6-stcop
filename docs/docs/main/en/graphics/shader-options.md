@@ -7,7 +7,8 @@
 Optional shader settings live in [gamedata/configs/engine_external.ltx](https://github.com/ixray-team/ixray-1.6-stcop/blob/default/gamedata/configs/engine_external.ltx). 
 
 Default preset:
-```ini
+::: code-group
+```ini [gamedata/configs/engine_external.ltx]
 
 [shaders_options]
 USE_LEGACY_LIGHT = 1
@@ -29,6 +30,7 @@ USE_LEGACY_LIGHT = 1
 ; IBL_MAX_LOD = 10
 ; USE_FULL_SKY_SPHERE = 1
 ```
+:::
 
 # Parameters
 ### USE_LEGACY_LIGHT
@@ -66,4 +68,4 @@ Available defines and their impact on rendering.
 * _Optional_ number of **mip levels** in skyboxes.  
 
 ## USE_FULL_SKY_SPHERE
-* Use classic **sky cubes** without stretching.  
+* Use classic **sky cubes** without stretching.

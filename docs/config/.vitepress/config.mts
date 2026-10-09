@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress'
 import lightbox from 'vitepress-plugin-lightbox'
+import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
 import { enLocale } from './locales/en.mts'
 import { ruLocale } from './locales/ru.mts'
 
@@ -10,7 +11,6 @@ export default defineConfig({
 
   base: '/ixray-1.6-stcop/',
   srcDir: "../docs",
-  outDir: '../public',
   lastUpdated: true,
   ignoreDeadLinks: true,
   rewrites: {
@@ -30,9 +30,29 @@ export default defineConfig({
   },
 
   markdown: {
+    languageAlias: {
+      lang: 'text',
+      ltx: 'ini',
+    },
     config: (md) => {
       md.use(lightbox, {})
+      md.use(groupIconMdPlugin, {
+        titleBar: { includeSnippet: true },
+      })
     },
+  },
+
+  vite: {
+    plugins: [
+      groupIconVitePlugin({
+        customIcon: {
+          '.script': 'vscode-icons:file-type-lua',
+          '.ltx': 'vscode-icons:file-type-ini',
+          '.init': 'vscode-icons:file-type-ini',
+          '.xml': 'vscode-icons:file-type-xml',
+        },
+      }),
+    ],
   },
 
   themeConfig: {

@@ -7,7 +7,8 @@
 Опциональные настройки для шейдеров находятся в [gamedata/configs/engine_external.ltx](https://github.com/ixray-team/ixray-1.6-stcop/blob/default/gamedata/configs/engine_external.ltx). 
 
 Стандартный режим выглядит так:
-```ini
+::: code-group
+```ini [gamedata/configs/engine_external.ltx]
 
 [shaders_options]
 USE_LEGACY_LIGHT = 1
@@ -29,6 +30,7 @@ USE_LEGACY_LIGHT = 1
 ; IBL_MAX_LOD = 10
 ; USE_FULL_SKY_SPHERE = 1
 ```
+:::
 
 # Параметры
 ### USE_LEGACY_LIGHT

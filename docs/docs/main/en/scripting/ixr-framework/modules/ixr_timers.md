@@ -51,7 +51,7 @@ args:
 retval: (bool) true if deleted, else false
 ```
 
-Examples:
+### Examples:
 ```lua
 --// wait for new game event
 function on_game_start(callbackRegistrator)

@@ -6,7 +6,9 @@
 
 Command:
 
-`xrCompress.exe -unpack fsgame.ltx <unpack_dir>`
+```shell
+xrCompress.exe -unpack fsgame.ltx "unpack_dir"
+```
 
 ## Packing resources
 > [!IMPORTANT]  
@@ -14,7 +16,9 @@ Command:
 > **Minimal version**: 1.0
 
 Command:
-`xrCompress.exe <data_dir> -ltx <file_name.ltx> [options]`
+```shell
+xrCompress.exe "data_dir" -ltx "file_name.ltx" [options]
+```
 
 Available options:
 
@@ -26,9 +30,11 @@ Available options:
 ## Generating diffs (patch creation)
 
 Command:
-` xrCompress.exe -diff <new_data> <old_data> -out <diff_resulf> [options]`
+```shell
+xrCompress.exe -diff "new_data" "old_data" -out "diff_resulf" [options]
+```
 
-Parameters **<new_data>**, **<old_data>**, **<diff_resulf>** are directory names.
+Parameters **`"new_data"`**, **`"old_data"`**, **`"diff_resulf"`** are directory names.
 
 Available options:
 
