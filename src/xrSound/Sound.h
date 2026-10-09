@@ -101,7 +101,6 @@ public:
 //	shared_str						nm;
 	u32                             slot;
 	esound_type						s_type;
-	SoundSubmixId					submix_id = SoundSubmixId::Effects;
 	int								g_type;			//!< Sound type, usually for AI
 	CObject*						g_object;		//!< Game object that emitts ref_sound
 	CSound_UserDataPtr				g_userdata;
@@ -157,8 +156,6 @@ public:
 	IC CObject*				_g_object				()						{ if (_p == nullptr) return nullptr; return _p->g_object;}
 	IC int					_g_type					()						{ if (_p == nullptr) return 0; return _p->g_type;}
 	IC esound_type			_sound_type				()						{ if (_p == nullptr) return esound_type::st_Effect; return _p->s_type;}
-	IC SoundSubmixId		_submix					()						{ if (_p == nullptr) return SoundSubmixId::Effects; return _p->submix_id;}
-	IC void					set_submix				(SoundSubmixId id)		{ if (_p != nullptr) _p->submix_id = id; }
 	IC CSound_UserDataPtr _g_userdata()
 	{
 		if (_p == nullptr)
@@ -380,7 +377,7 @@ IC CSound_params ref_sound::get_params()
 	if (slot()) {
 		CSound_params out_params = {};
 		out_params.position = params[(u32)XRay::Sound::Mixer::ParameterId::Position];
-		out_params.volume = params[(u32)XRay::Sound::Mixer::ParameterId::VolumePerChannel].x;
+		out_params.volume = std::min(params[(u32)XRay::Sound::Mixer::ParameterId::VolumePerChannel].x, 1.0f);
 		out_params.freq = params[(u32)XRay::Sound::Mixer::ParameterId::Pitch].x;
 		out_params.min_distance = params[(u32)XRay::Sound::Mixer::ParameterId::DistanceRange].x;
 		out_params.max_distance = params[(u32)XRay::Sound::Mixer::ParameterId::DistanceRange].y;
