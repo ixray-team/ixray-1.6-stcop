@@ -494,6 +494,10 @@ struct SMonsterEnemy {
 	u32		vertex;
 	TTime	time;
 	float	danger;
+	u32 RetentionTime = 0;
+	u32 ForgetTime = 0;
+	u32 ReachedPointTime = 0;
+	u32 UnreachableSearchUntil = 0;
 };
 
 class CEntityAlive;

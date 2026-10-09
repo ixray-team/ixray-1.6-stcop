@@ -258,7 +258,7 @@ void CPsyDogPhantom::Think()
 	if (m_state != eWaitToAppear) 
 		return;
 
-	EnemyMan.transfer_enemy(m_parent);
+	EnemyMan.transfer_enemy(m_parent, true);
 	
 	//SVelocityParam &velocity_run = move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
 	//if (control().movement().real_velocity() < 2*velocity_run.velocity.linear/3) return;

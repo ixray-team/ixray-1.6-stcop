@@ -31,7 +31,7 @@ void CStateZombieAttackRunAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateZombieAttackRunAbstract::execute()
 {
-	float dist = this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position());
+	float dist = this->object->EnemyMan.GetTrackingPosition().distance_to(this->object->Position());
 	
 	this->object->path().set_try_min_time	(false);
 	

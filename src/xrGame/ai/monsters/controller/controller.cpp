@@ -356,7 +356,7 @@ void CController::InitThink()
 
 void CController::play_control_sound_start()
 {
-	Fvector pos = EnemyMan.get_enemy()->Position();
+	Fvector pos = EnemyMan.GetTrackingPosition();
 	pos.y += 1.5f;
 
 	if (control_start_sound.is_playing()) control_start_sound.stop();
@@ -365,7 +365,7 @@ void CController::play_control_sound_start()
 
 void CController::play_control_sound_hit()
 {
-	Fvector pos = EnemyMan.get_enemy()->Position();
+	Fvector pos = EnemyMan.GetTrackingPosition();
 	pos.y += 1.5f;
 	
 	if (control_hit_sound.is_playing()) control_hit_sound.stop();
@@ -597,7 +597,7 @@ bool CController::can_psy_fire()
 	}
 
 	float cur_yaw = custom_dir().get_head_orientation().current.yaw;
-	float dir_yaw = Fvector().sub(EnemyMan.get_enemy()->Position(), Position()).getH();
+	float dir_yaw = Fvector().sub(EnemyMan.GetTrackingPosition(), Position()).getH();
 	dir_yaw		  = angle_normalize(-dir_yaw);
 
 	if ( angle_difference(cur_yaw, dir_yaw) > _pmt_psy_attack_min_angle )
@@ -657,7 +657,7 @@ bool CController::can_tube_fire()
 		return false;
 	}
 
-	if (EnemyMan.get_enemy()->Position().distance_to(Position()) < m_tube_condition_min_distance)
+	if (EnemyMan.GetTrackingPosition().distance_to(Position()) < m_tube_condition_min_distance)
 	{
 		return false;
 	}

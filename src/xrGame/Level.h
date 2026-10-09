@@ -83,6 +83,8 @@ class CLevel:
 	public IGame_Level, 
 	public IPureClient
 {
+	u32 NextMonsterCountUpdate = 0;
+	u32 MonsterCountGeneration = u32(-1);
 	#include "Level_network_Demo.h"
 	void						ClearAllObjects			();
 private:

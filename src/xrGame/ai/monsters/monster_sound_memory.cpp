@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "monster_sound_memory.h"
 #include "basemonster/base_monster.h"
+#include "../../../xrCore/Kernel/EngineExternal.h"
 
 #define CHECK_SOUND_TYPE(a,b,c) { if ((a & b) == b) return c; }
 
@@ -80,6 +81,14 @@ void CMonsterSoundMemory::HearSound(const CObject* who, int eType, const Fvector
 	s.CalcValue(time,monster->Position());
 
 	HearSound(s);
+	if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] &&
+		s.type < DOOR_OPENING && s.type != MONSTER_DYING && s.who)
+	{
+		if (const CEntityAlive* Target = smart_cast<const CEntityAlive*>(s.who))
+		{
+			monster->EnemyMemory.RememberHeardEnemy(Target, s.position, s.time);
+		}
+	}
 } 
 
 // Lain: added
@@ -162,15 +171,23 @@ bool CMonsterSoundMemory::is_loud_sound(float val)
 	return false;
 }
 
-bool CMonsterSoundMemory::get_sound_from_object(const CObject* obj, SoundElem	&value)
+bool CMonsterSoundMemory::get_sound_from_object(const CObject* obj, SoundElem& value)
 {
-	for (u32 i=0; i<Sounds.size(); i++) 
-		if (Sounds[i].who == obj) {
-			value	= Sounds[i];
-			return	true;
+	const bool LatestSound = EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation];
+	bool Found = false;
+	for (const SoundElem& Sound : Sounds)
+	{
+		if (Sound.who == obj && (!Found || s32(Sound.time - value.time) > 0))
+		{
+			value = Sound;
+			Found = true;
+			if (!LatestSound)
+			{
+				return true;
+			}
 		}
-
-	return false;
+	}
+	return Found;
 }
 
 struct pred_remove_relcase {

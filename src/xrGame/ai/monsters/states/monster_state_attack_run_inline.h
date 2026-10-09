@@ -23,7 +23,7 @@ void CStateMonsterAttackRunAbstract::execute()
 	this->object->anim().accel_activate			(eAT_Aggressive);
 	this->object->anim().accel_set_braking		(false);
 	
-	u32 const level_vertex				=	this->object->EnemyMan.get_enemy()->ai_location().level_vertex_id();
+	u32 const level_vertex				=	this->object->EnemyMan.GetTrackingVertex();
 	Fvector const level_pos				=	ai().level_graph().vertex_position(level_vertex);
 	this->object->path().set_target_point			(level_pos, level_vertex);
 

@@ -135,7 +135,7 @@ void CStateBurerAttack<Object>::execute()
 		return;
 	}
 
-	Fvector const enemy_pos = enemy->Position();
+	Fvector const enemy_pos = this->object->EnemyMan.GetTrackingPosition();
 	Fvector const self_pos = this->object->Position();
 	Fvector const self2enemy = enemy_pos - self_pos;
 	float const self2enemy_dist = magnitude(self2enemy);
