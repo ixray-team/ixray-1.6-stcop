@@ -224,6 +224,23 @@ void CAddonManager::MountAddons()
     }
 }
 
+const CAddonManager::AddonInfo* CAddonManager::FindAddon(const CLocatorAPI::file& Desc) const
+{
+	const char* Archive = Desc.vfs < FS.m_archives.size() ? FS.m_archives[Desc.vfs].path.c_str() : nullptr;
+	for (const AddonInfo& Addon : Addons)
+	{
+		const char* Root = Addon.EntryDir.c_str();
+		const size_t RootLength = Addon.EntryDir.size();
+		const bool IsWrapped = Desc.wrap != nullptr && _strnicmp(Desc.wrap, Root, RootLength) == 0 && Desc.wrap[RootLength] == Platform::kPreferredSeparator[0];
+		if (IsWrapped || (Archive != nullptr && _stricmp(Archive, Root) == 0))
+		{
+			return &Addon;
+		}
+	}
+
+	return nullptr;
+}
+
 bool CAddonManager::CanApply(xr_string& TempPath, CLocatorAPI::file& Desc)
 {
     const xr_string DataPath = FS.get_path(_game_data_)->m_Path;

@@ -29,7 +29,6 @@ set(IXR_TEST_CI NOT IXRAY_UTILS OR NOT IXRAY_CI)
 
 # CMake Dev options
 option(DEVIXRAY_ENABLE_SHIPPING "Enable shipping build cfg" OFF)
-option(DEVIXRAY_ENABLE_STEAMAUDIO "Enable HRTF and Reverb from SteamAudio library" OFF)
 
 # CXX options
 set(CMAKE_CXX_STANDARD 23)

@@ -42,23 +42,6 @@ inline double dB2lin(double dB)
 	return exp(dB * 0.11512925464970228420089957273422);		// ln( 10 ) / 20
 }
 
-struct dsp_stuff
-{
-	f32 Dt;
-	f32* Panning;
-	const Fvector* CameraPosition;
-	const Fvector* CameraDirection;
-	const Fvector* CameraNormal;
-	const Fvector* CameraVelocity;
-	const Fvector* ObjPosition;
-	const Fvector* ObjVelocity;
-	f32* Doppler;
-};
-
-void DSP_CalculateRelativePosition(const dsp_stuff& stuff, Fvector& out_pos, float& out_distance);
-void DSP_Doppler(const dsp_stuff& stuff, float distance);
-void DSP_SpatialProcess(float** buffer, const Fvector& distances, const dsp_stuff& stuff, bool disable_attenuation);
-float DSP_DistanceAttenuation(float distance, const Fvector& distances);
 void DSP_ResampleBuffer(float** input, float** output, float history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY+1], u32 input_frames, u32 output_frames); // requires +1 sample of tail
 void DSP_Compressor(float attack_ms, float release_ms, float threshold_db, float ratio, float** data, float drywet, u32 frames, float envelope[SND_CHANNEL_COUNT]);
 void DSP_MixBuffer(float** mix_buffer, float** data, float begin_factor, float end_factor, u32 frames);

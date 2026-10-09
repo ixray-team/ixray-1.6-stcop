@@ -501,6 +501,15 @@ public:
 	}
 };
 
+class CCC_SND_ExportConfig : public IConsole_Command
+{
+public:
+	CCC_SND_ExportConfig(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+	virtual void Execute(const char* args) {
+		XRay::Sound::Mixer::ExportConfig();
+	}
+};
+
 float	ps_gamma=1.f,ps_brightness=1.f,ps_contrast=1.f;
 class CCC_Gamma : public CCC_Float
 {
@@ -821,10 +830,11 @@ void CCC_Register()
 	CMD4(CCC_Float,     "snd_compression",      &psSoundCompression, 0.0f, 1.0f);
 	CMD4(CCC_Float,     "snd_doppler",          &psSoundDoppler, 0.0f, 10.0f);
 	CMD2(CCC_Float,		"snd_volume_eff",		XRay::Sound::Mixer::GetMasterVolume());
-	CMD2(CCC_Float,		"snd_volume_music",		XRay::Sound::Mixer::GetSubmixVolume(SoundSubmixId::Music));
-	CMD2(CCC_Float,		"snd_volume_shooting",	XRay::Sound::Mixer::GetSubmixVolume(SoundSubmixId::Shooting));
+	CMD2(CCC_Float,		"snd_volume_music",		XRay::Sound::Mixer::GetBusVolume("music"));
+	CMD2(CCC_Float,		"snd_volume_shooting",	XRay::Sound::Mixer::GetBusVolume("shooting"));
 	CMD4(CCC_Float,		"snd_shooting_reverb",	&psSoundShootingReverb, 0.0f, 1.0f);
 	CMD1(CCC_SND_Restart,"snd_restart"			);
+	CMD1(CCC_SND_ExportConfig,"snd_export_config"	);
 	CMD3(CCC_Mask32,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
 	CMD3(CCC_Mask32,		"snd_efx",				&psSoundFlags,		ss_EFX		);
 	CMD3(CCC_Mask32,		"snd_hrtf",				&psSoundFlags,		ss_HRTF		);

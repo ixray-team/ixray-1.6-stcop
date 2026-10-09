@@ -1,8 +1,6 @@
-#include "stdafx.h"
 #include "SoundConvolutionReverb.h"
-#include "SoundMixer.h"
-#include "SoundMixerInternal.h"
-#include "SoundDSP.h"
+#include "SoundEffect.h"
+#include "SoundSource.h"
 
 // RBJ audio EQ cookbook peaking filter.
 static void ApplyBellEQ(xr_vector<xr_vector<float>>& IR, float CenterHz, float Q, float GainDb)
@@ -199,7 +197,7 @@ bool CConvolutionReverb::Initialize(const char* IrPath)
 	xr_vector<xr_vector<float>> Source;
 	u32 SampleRate = 0;
 	u16 NumChannels = 0;
-	XRay::Sound::Mixer::LoadImpulseResponse(IrPath, Source, SampleRate, NumChannels);
+	Snd_LoadImpulseResponse(IrPath, Source, SampleRate, NumChannels);
 
 	if (NumChannels == 0 || Source.empty() || Source[0].empty())
 	{
@@ -332,111 +330,67 @@ void CConvolutionReverb::Process(float** Input, float** Output, bool HasInput)
 	}
 }
 
-struct SoundShootingReverbState
+enum SoundConvolutionParam : u32
 {
-	CConvolutionReverb Far;
-	CConvolutionReverb Indoor;
-	float SendFar[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
-	float SendIndoor[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
-	bool IsFarSend = false;
-	bool IsIndoorSend = false;
+	ConvolutionMix,
+	ConvolutionDry
 };
 
-static SoundShootingReverbState GShootingReverb;
-
-void Snd_InitShootingReverb()
+struct SoundConvolutionState
 {
-	memset(GShootingReverb.SendFar, 0, sizeof(GShootingReverb.SendFar));
-	memset(GShootingReverb.SendIndoor, 0, sizeof(GShootingReverb.SendIndoor));
-	GShootingReverb.IsFarSend = false;
-	GShootingReverb.IsIndoorSend = false;
+	CConvolutionReverb Reverb;
+	float Wet[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
+};
 
-	GShootingReverb.Far.Initialize("ir\\ir_default_far");
-	GShootingReverb.Indoor.InitializeIndoor();
-}
-
-void Snd_ShutdownShootingReverb()
+static const SoundEffectParam ConvolutionParams[] =
 {
-	GShootingReverb.Far.Free();
-	GShootingReverb.Indoor.Free();
-}
+	{"mix", 1.0f, 0.0f, 4.0f},
+	{"dry", 0.0f, 0.0f, 1.0f}
+};
 
-// Direct-to-reverberant ratio model: the reverberant field is roughly distance-independent while
-// the direct sound decays, so the wet/dry amplitude ratio grows as d / Dc (Dc - critical distance).
-// Dry and wet form an equal-power pair and the IRs are energy-normalized, so the total loudness
-// still follows the regular distance attenuation.
-void Snd_ConvolutionReverbSend(sound_slot_state& Slot, const Fvector& ListenerPos, float** Buffer, float SendGain, float& BeginFactor, float& EndFactor)
+bool Snd_ConvolutionProc(void* StatePtr, SoundEffectOp Op, void* Arg)
 {
-	constexpr float OutdoorCriticalDistance = 25.0f;
-	constexpr float IndoorCriticalDistance = 4.0f;
-
-	// A gunshot is an impulse: its tail stays audible after the direct sound even when the
-	// steady-state direct-to-reverberant ratio says otherwise, so the ratio is never taken closer than this.
-	constexpr float MinReverbDistance = 5.0f;
-
-	// 2D (HUD) sounds carry a listener-relative position, they are always at the listener.
-	const bool IsSpatial = (Slot.flags & (u16)XRay::Sound::Mixer::Flags::Spatial) != 0;
-	const Fvector& Pos = Slot.parameters[(u32)XRay::Sound::Mixer::ParameterId::Position];
-	const Fvector& Range = Slot.parameters[(u32)XRay::Sound::Mixer::ParameterId::DistanceRange];
-	const float Distance = IsSpatial ? ListenerPos.distance_to(Pos) : 0.0f;
-	const float Attenuation = IsSpatial ? DSP_DistanceAttenuation(Distance, Range) : 1.0f;
-
-	const float Indoor = std::clamp(Slot.IndoorFactor, 0.0f, 1.0f);
-	const float CriticalDistance = OutdoorCriticalDistance + (IndoorCriticalDistance - OutdoorCriticalDistance) * Indoor;
-	const float Ratio = std::max(psSoundShootingReverb, 0.0f) * std::max(Distance, MinReverbDistance) / CriticalDistance;
-	const float Dry = 1.0f / std::sqrt(1.0f + Ratio * Ratio);
-	const float Wet = Ratio * Dry * Attenuation;
-
-	const float WetFar = Wet * std::sqrt(1.0f - Indoor);
-	const float WetIndoor = Wet * std::sqrt(Indoor);
-	const bool SendFar = WetFar > EPS_S;
-	const bool SendIndoor = WetIndoor > EPS_S;
-
-	if (SendFar || SendIndoor)
+	SoundConvolutionState* State = (SoundConvolutionState*)StatePtr;
+	switch (Op)
 	{
-		const float Step = (EndFactor - BeginFactor) * SendGain / (float)SND_BLOCKSIZE;
+	case SoundEffectOp::Describe:
+		*(SoundEffectDesc*)Arg = {SoundEffectScope::Bus, sizeof(SoundConvolutionState), (u32)std::size(ConvolutionParams), ConvolutionParams};
+		return true;
+	case SoundEffectOp::Create:
+	{
+		const char* Resource = ((SoundEffectCreate*)Arg)->Resource;
+		new (&State->Reverb) CConvolutionReverb();
+		(Resource != nullptr && Resource[0] != 0) ? State->Reverb.Initialize(Resource) : State->Reverb.InitializeIndoor();
+		return true;
+	}
+	case SoundEffectOp::Destroy:
+		State->Reverb.~CConvolutionReverb();
+		return true;
+	case SoundEffectOp::Reset:
+		State->Reverb.Reset();
+		return true;
+	case SoundEffectOp::Tail:
+		*(u32*)Arg = State->Reverb.GetTailFrames();
+		return true;
+	case SoundEffectOp::Process:
+	{
+		SoundEffectProcess* Process = (SoundEffectProcess*)Arg;
+		float* Wet[SND_CHANNEL_COUNT] = {State->Wet[0], State->Wet[1]};
+		memset(State->Wet, 0, sizeof(State->Wet));
+		State->Reverb.Process(Process->Data, Wet, Process->HasInput);
+
+		float Mix = Process->Params[ConvolutionMix];
+		float Dry = Process->Params[ConvolutionDry];
 		for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
 		{
-			float* Far = GShootingReverb.SendFar[Channel];
-			float* Near = GShootingReverb.SendIndoor[Channel];
-			const float* Src = Buffer[Channel];
-
-			float Gain = BeginFactor * SendGain;
-			for (u32 Key = 0; Key < SND_BLOCKSIZE; Key++, Gain += Step)
+			for (u32 Frame = 0; Frame < SND_BLOCKSIZE; Frame++)
 			{
-				const float Sample = Src[Key] * Gain;
-				Far[Key] += Sample * WetFar;
-				Near[Key] += Sample * WetIndoor;
+				Process->Data[Channel][Frame] = Process->Data[Channel][Frame] * Dry + State->Wet[Channel][Frame] * Mix;
 			}
 		}
-
-		GShootingReverb.IsFarSend |= SendFar;
-		GShootingReverb.IsIndoorSend |= SendIndoor;
+		return true;
 	}
-
-	const float PrevDry = Slot.ReverbDryGain < 0.0f ? Dry : Slot.ReverbDryGain;
-	Slot.ReverbDryGain = Dry;
-	BeginFactor *= PrevDry;
-	EndFactor *= Dry;
-}
-
-void Snd_RenderShootingReverb(float** BusBuffer)
-{
-	PROF_EVENT("Shooting convolution reverb");
-
-	float* SendFar[SND_CHANNEL_COUNT];
-	float* SendIndoor[SND_CHANNEL_COUNT];
-	for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-	{
-		SendFar[Channel] = GShootingReverb.SendFar[Channel];
-		SendIndoor[Channel] = GShootingReverb.SendIndoor[Channel];
+	default:
+		return false;
 	}
-
-	GShootingReverb.Far.Process(SendFar, BusBuffer, GShootingReverb.IsFarSend);
-	GShootingReverb.Indoor.Process(SendIndoor, BusBuffer, GShootingReverb.IsIndoorSend);
-
-	memset(GShootingReverb.SendFar, 0, sizeof(GShootingReverb.SendFar));
-	memset(GShootingReverb.SendIndoor, 0, sizeof(GShootingReverb.SendIndoor));
-	GShootingReverb.IsFarSend = false;
-	GShootingReverb.IsIndoorSend = false;
 }

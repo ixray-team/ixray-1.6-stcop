@@ -41,9 +41,16 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void DereferenceObjects(CObject** object, int count);
     XRSOUND_API sound_stats* GetStats();
 
-    // General volume (snd_volume_eff) and submix faders. Pointers stay valid for the whole process
+    // General volume (snd_volume_eff) and bus faders. Pointers stay valid for the whole process
     XRSOUND_API float* GetMasterVolume();
-    XRSOUND_API float* GetSubmixVolume(SoundSubmixId id);
+    XRSOUND_API float* GetBusVolume(const char* name);
+    XRSOUND_API u32 FindBus(const char* name);
+    XRSOUND_API u32 RegisterEffect(const char* name, SoundEffectProc proc);
+    XRSOUND_API void ExportConfig();
+    XRSOUND_API bool GetSoundConfig(const char* name, sound_config* config);
+    XRSOUND_API void SetSoundConfig(const char* name, sound_config* config);
+    XRSOUND_API bool SaveSoundConfig(const char* name);
+    XRSOUND_API void GetLoadedSources(xr_vector<shared_str>& names);
     XRSOUND_API u32 GetSourceCount();
     XRSOUND_API const sound_source_desc* GetSource(u32 index);
 
@@ -52,8 +59,8 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void Destroy(u32 slot);
 
     // Scheduled stuff
-    XRSOUND_API void Play(u32 slot, u16 flags, ref_sound* sound, double delay, SoundSubmixId submix = SoundSubmixId::Effects);
-    XRSOUND_API void PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, float* pitch, float* volume, Fvector* distance, Fvector* pos, SoundSubmixId submix = SoundSubmixId::Effects);
+    XRSOUND_API void Play(u32 slot, u16 flags, ref_sound* sound, double delay, u32 bus = 0);
+    XRSOUND_API void PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, float* pitch, float* volume, Fvector* distance, Fvector* pos, u32 bus = 0);
     XRSOUND_API void Pause(u32 slot);
     XRSOUND_API void Stop(u32 slot, bool deferred);
     XRSOUND_API void UpdateParameter(u32 slot, ParameterId parameter, Fvector value);
@@ -67,6 +74,4 @@ namespace XRay::Sound::Mixer
     XRSOUND_API float GetDuration(u32 slot);
     XRSOUND_API State GetState(u32 slot);
     XRSOUND_API Fvector* GetParameters(u32 slot);
-
-	XRSOUND_API void LoadImpulseResponse(const char* name, xr_vector<xr_vector<float>>& ch_audio, u32& sample_rate, u16& num_channels);
 }

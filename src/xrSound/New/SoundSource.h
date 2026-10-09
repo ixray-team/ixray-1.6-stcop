@@ -81,3 +81,8 @@ void Snd_PrefetchSource(const SoundSourceState* Source, const xr_string* Name, u
 bool Snd_DecodeNow(SoundSourceState* Source, u32 Position);
 bool Snd_HasCacheLine(const SoundSourceState* Source, u32 Position);
 u32 Snd_CopyCached(const SoundSourceState* Source, u32 Position, float** OutData, u32 Frames);
+void Snd_ExportConfig();
+bool Snd_GetSoundConfig(const char* Name, sound_config* Config);
+SoundSourceState* Snd_SetSoundConfig(const char* Name, sound_config* Config);
+void Snd_GetLoadedSources(xr_vector<shared_str>& Names);
+void Snd_LoadImpulseResponse(const char* Name, xr_vector<xr_vector<float>>& ChannelAudio, u32& SampleRate, u16& NumChannels);
