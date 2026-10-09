@@ -18,12 +18,9 @@ class	XRSOUND_API					CSound_environment;
 class	XRSOUND_API					ISoundVoiceChat;
 
 XRSOUND_API extern u32				psSoundModel			;
-XRSOUND_API extern float			psSoundVEffects			;
 XRSOUND_API extern float			psSoundVFactor			;
 XRSOUND_API extern float            psSoundCompression      ;
-XRSOUND_API extern float			psSoundVMusic			;
 XRSOUND_API extern float			psSoundVRecorder		;
-XRSOUND_API extern float			psSoundVShooting		;
 XRSOUND_API extern int				psSoundRecorderMode		;
 XRSOUND_API extern int				psSoundRecorderDenoise	;
 XRSOUND_API extern float			psSoundRolloff			;
@@ -104,6 +101,7 @@ public:
 //	shared_str						nm;
 	u32                             slot;
 	esound_type						s_type;
+	SoundSubmixId					submix_id = SoundSubmixId::Effects;
 	int								g_type;			//!< Sound type, usually for AI
 	CObject*						g_object;		//!< Game object that emitts ref_sound
 	CSound_UserDataPtr				g_userdata;
@@ -159,6 +157,8 @@ public:
 	IC CObject*				_g_object				()						{ if (_p == nullptr) return nullptr; return _p->g_object;}
 	IC int					_g_type					()						{ if (_p == nullptr) return 0; return _p->g_type;}
 	IC esound_type			_sound_type				()						{ if (_p == nullptr) return esound_type::st_Effect; return _p->s_type;}
+	IC SoundSubmixId		_submix					()						{ if (_p == nullptr) return SoundSubmixId::Effects; return _p->submix_id;}
+	IC void					set_submix				(SoundSubmixId id)		{ if (_p != nullptr) _p->submix_id = id; }
 	IC CSound_UserDataPtr _g_userdata()
 	{
 		if (_p == nullptr)

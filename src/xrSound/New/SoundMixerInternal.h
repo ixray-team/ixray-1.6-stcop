@@ -42,12 +42,34 @@ IC void	volume_lerp(float& c, float t, float s, float dt)
     c += (diff / diff_a) * mot;
 }
 
+enum class SoundReverbFlags : u8
+{
+	None = 0,
+	Algoritmic = (1 << 0),
+	Convolution = (1 << 1)
+};
+
+struct SoundSubmix
+{
+	// Submix fader. The effective gain is Volume * master volume
+	float Volume = 1.0f;
+	u8 ReverbFlags = (u8)SoundReverbFlags::None;
+	bool AllowHrtf = true;
+	float Bus[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
+
+	bool HasReverb(SoundReverbFlags Flag) const
+	{
+		return (ReverbFlags & (u8)Flag) != 0;
+	}
+};
+
 struct sound_slot_state
 {
     XRay::Sound::Mixer::State prev_state;
     XRay::Sound::Mixer::State state;
     XRay::Sound::Mixer::State fake_state;
     u8 flags;
+    SoundSubmixId SubmixId = SoundSubmixId::Effects;
     u32 zone_idx;
     u32 position;
     u32 stopping_position;

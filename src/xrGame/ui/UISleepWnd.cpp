@@ -968,10 +968,12 @@ void CUISleepWnd::OnConfirmSleep()
 	AddPP(*m_params.ppEffector, m_params.ppId);
 	actor->GiveInfoPortion("actor_is_sleeping");
 
-	m_savedMusic = psSoundVMusic;
-	m_savedEffects = psSoundVEffects;
-	if (m_params.muteMusic) psSoundVMusic = 0.f;
-	if (m_params.muteEffects) psSoundVEffects = 0.f;
+	float* MusicVolume = XRay::Sound::Mixer::GetSubmixVolume(SoundSubmixId::Music);
+	float* MasterVolume = XRay::Sound::Mixer::GetMasterVolume();
+	m_savedMusic = *MusicVolume;
+	m_savedEffects = *MasterVolume;
+	if (m_params.muteMusic) *MusicVolume = 0.f;
+	if (m_params.muteEffects) *MasterVolume = 0.f;
 
 	if (lua_State* L = ai().script_engine().lua())
 		if (const int mgr = PushMgr(L, "surge_manager", "get_surge_manager"))
@@ -1010,8 +1012,8 @@ void CUISleepWnd::WakeUp()
 
 void CUISleepWnd::RestoreSleepAudio()
 {
-	if (m_params.muteMusic) psSoundVMusic = m_savedMusic;
-	if (m_params.muteEffects) psSoundVEffects = m_savedEffects;
+	if (m_params.muteMusic) *XRay::Sound::Mixer::GetSubmixVolume(SoundSubmixId::Music) = m_savedMusic;
+	if (m_params.muteEffects) *XRay::Sound::Mixer::GetMasterVolume() = m_savedEffects;
 	m_savedMusic = m_savedEffects = 0.f;
 }
 
