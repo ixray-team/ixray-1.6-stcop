@@ -82,3 +82,14 @@ private:
 	float* TimeOut = nullptr;
 	float* Work = nullptr;
 };
+
+struct sound_slot_state;
+
+void Snd_InitShootingReverb();
+void Snd_ShutdownShootingReverb();
+
+// Render thread: splits a shooting slot into dry (BeginFactor/EndFactor are scaled) and the far/indoor IR sends
+void Snd_ShootingReverbSend(sound_slot_state& Slot, const Fvector& ListenerPos, float** Buffer, float& BeginFactor, float& EndFactor);
+
+// Render thread: convolves this block's sends into BusBuffer and clears them. Must be called every block
+void Snd_RenderShootingReverb(float** BusBuffer);
