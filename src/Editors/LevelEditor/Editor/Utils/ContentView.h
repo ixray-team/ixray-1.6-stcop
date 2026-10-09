@@ -2,6 +2,7 @@
 #include "../xrCore/filewatch_wrapper.h"
 
 #include "ThmProperties.h"
+#include "SoundPreview.h"
 
 class CContentView:
 	public IEditorWnd
@@ -94,6 +95,11 @@ private:
 	bool Contains(const ImVec2&);
 	IconData& GetTexture(const xr_string& IconPath);
 
+	bool DrawSoundPreview(const xr_path& FilePath, const ImVec2& TileMin, const ImVec2& TileMax, const ImVec2& ImageSize, float Alpha);
+	void ToggleSoundPreview(const xr_path& FilePath, const xr_string& SoundName);
+	void StopSoundPreview();
+	void UpdateSoundPreview();
+
 	xr_map<xr_string, FileOptData> ScanConfigs(const xr_string& StartPath);
 	void ScanConfigsRecursive(xr_map<xr_string, CContentView::FileOptData>& TempPath, const xr_string& ParseStr);
 	void CheckFileNameRecursive(xr_path&FilePath, const xr_string&) const;
@@ -162,6 +168,11 @@ private:
 	float TextHeight = 0.f;
 
 	CUIThmProperties ThmPropWnd;
+
+	CSoundPreviewCache SoundPreviews;
+	ref_sound PreviewSound;
+	xr_path PreviewSoundFile;
+	CTimer PreviewSoundTimer;
 	xr_vector<xr_string> GameDialogs;
 	xr_vector<xr_string> DirCollection;
 	FolderNode Root{ "root" };
