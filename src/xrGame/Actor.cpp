@@ -37,6 +37,7 @@
 #include "ui/UIMotionIcon.h"
 #include "ActorHelmet.h"
 #include "ActorBackpack.h"
+#include "HUDTarget.h"
 #include "../../xrUI/UIFontDefines.h"
 #include "PickupManager.h"
 #include "../xrEngine/Rain.h"
@@ -1957,7 +1958,7 @@ void CActor::UpdateCL()
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 	const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
 
-	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && RQ.range < 2.0f && 
+	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && RQ.range < CHUDTarget::PICKUP_DISTANCE && 
 		!(HudAnimator() && HudAnimator()->PdaAnimator() && HudAnimator()->PdaAnimator()->IsActive()))
 	{
 		m_pObjectWeLookingAt = RQ.O->cast_game_object();
