@@ -4268,6 +4268,7 @@ void CWeapon::debug_draw_firedeps()
 	extern bool forceTFP2Draw;
 	extern bool forceTSPDraw;
 
+#ifdef DEBUG_DRAW
 	if (forceTFPDraw && !GetHUDmode() && ParentIsActor() && m_pInventory->ActiveItem() == this)
 	{
 		Fmatrix m = XFORM();
@@ -4289,7 +4290,6 @@ void CWeapon::debug_draw_firedeps()
 		Level().debug_renderer().draw_obb(m, Fvector().set(0.015f, 0.015f, 0.015f), color_xrgb(255, 0, 0));
 	}
 
-#ifdef DEBUG_DRAW
 	if(hud_adj_mode==5||hud_adj_mode==6||hud_adj_mode==7)
 	{
 		CDebugRenderer			&render = Level().debug_renderer();
