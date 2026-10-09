@@ -80,7 +80,7 @@ public:
 	virtual CDB::MODEL*					get_geometry_occ        ( );
 
 	virtual void                        debug_draw              ();
-	virtual void						update					( const Fmatrix& m_V, const Fvector& P, const Fvector& D, const Fvector& N );
+	virtual void						update					(const Fvector& P, const Fvector& D, const Fvector& N );
 	virtual void						update_events			( );
 	virtual void						statistic				( CSound_stats*  dest, CSound_stats_ext*  ext );
 
