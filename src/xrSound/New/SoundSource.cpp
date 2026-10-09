@@ -34,6 +34,10 @@
 #define SND_CACHE_LINE_WIDTH (12)
 #define SND_CACHE_LINE_CAPACITY ((SND_BLOCKSIZE + 1) * SND_CACHE_LINE_WIDTH)
 #define SND_CACHE_LINE_MAX_TIME_NS (1000000000)
+// A decoded line is guaranteed to cover at least this many frames after the requested position
+#define SND_CACHE_LINE_MIN_AHEAD (SND_CACHE_LINE_CAPACITY / 2)
+// How far ahead of the play position the decode thread is asked to stay
+#define SND_CACHE_PREFETCH_FRAMES (SND_BLOCKSIZE * 8)
 #define SND_DEFAULT_MAX_DISTANCE (300.0f)
 
 struct SoundDecodeCommand
@@ -179,12 +183,14 @@ static u32 Snd_NewCacheLine()
 
 	u32 CacheIdx = GSourcePool.FreeCacheLines.back();
 	GSourcePool.FreeCacheLines.pop_back();
-	Snd_GetCacheLine(CacheIdx)->Timestamp = Snd_GetTimestamp();
+	// Timestamp stays 0 while the line is being filled outside the lock, so eviction never picks it
+	Snd_GetCacheLine(CacheIdx)->Timestamp = 0;
 	SND_STAT_SET(g_SoundStats.cache_lines_free, (u32)GSourcePool.FreeCacheLines.size());
 	return CacheIdx;
 }
 
-static u32 Snd_FindCacheLine(const SoundSourceState* Source, u32 Position)
+// MinFrames: how many frames starting at Position the line must hold (clamped to the end of the source)
+static u32 Snd_FindCacheLine(const SoundSourceState* Source, u32 Position, u32 MinFrames)
 {
 	PROF_EVENT("Sound: FindCacheLine");
 	if (Position >= Source->Desc.frames_total)
@@ -192,7 +198,7 @@ static u32 Snd_FindCacheLine(const SoundSourceState* Source, u32 Position)
 		return 0;
 	}
 
-	u32 NeededFrames = std::min((u32)SND_BLOCKSIZE, Source->Desc.frames_total - Position);
+	u32 NeededFrames = std::clamp(MinFrames, 1u, Source->Desc.frames_total - Position);
 	for (u32 EntryIdx = 0; EntryIdx < SND_CACHE_ENTRY_COUNT; EntryIdx++)
 	{
 		u32 CacheIdx = Source->CacheLines[EntryIdx];
@@ -202,7 +208,7 @@ static u32 Snd_FindCacheLine(const SoundSourceState* Source, u32 Position)
 		}
 
 		const SoundCacheLine* Line = Snd_GetCacheLine(CacheIdx);
-		if (Line->End >= Line->Start && Position >= Line->Start && Position + NeededFrames <= Line->End)
+		if (Line->End > Line->Start && Position >= Line->Start && Position + NeededFrames <= Line->End)
 		{
 			SND_STAT_ADD(g_SoundStats.cache_hit_count, 1u);
 			return CacheIdx;
@@ -246,12 +252,16 @@ static u32 Snd_ReadFromSource(SoundSourceState* Source, float** OutBuffer, u32 F
 	while (Remaining)
 	{
 		int Status = ov_read_float(&Source->File, &Pcm, Remaining, &Section);
-		if (Status == 0)
+		if (Status == OV_HOLE)
+		{
+			// Recoverable gap in the stream, libvorbis resyncs on the next call
+			continue;
+		}
+
+		if (Status <= 0)
 		{
 			break;
 		}
-
-		R_ASSERT2(Status >= 0, "Decoding error");
 		Remaining -= Status;
 
 		for (u32 Channel = 0; Channel < ChannelCount; Channel++)
@@ -273,32 +283,52 @@ static u32 Snd_ReadFromSource(SoundSourceState* Source, float** OutBuffer, u32 F
 	return Frames - Remaining;
 }
 
-static void Snd_UpdateCache(SoundSourceState* Source, u32 Position)
+// Returns true when a line covering Position is in the cache after the call.
+// Can be called from the decode thread and from the render thread (on-the-fly decode).
+static bool Snd_UpdateCache(SoundSourceState* Source, u32 Position)
 {
 	PROF_EVENT("Sound: Update Slot Cache");
 
 	// Cache eviction modifies other owners; pin their map entries for the entire update.
-	// Match the source -> cache lock order used by Snd_ReleaseSource.
+	// Lock order: g_SoundSourceLock -> Source->DecodeLock -> GSourcePool.CacheLock
 	xrSRWLockGuard SourceGuard(g_SoundSourceLock, true);
+	if (Position >= Source->Desc.frames_total)
+	{
+		return false;
+	}
+
+	// Only one thread decodes a given source at a time
+	xrCriticalSectionGuard DecodeGuard(Source->DecodeLock);
+
 	u32 NewIdx = 0;
 	{
 		xrSRWLockGuard Guard(GSourcePool.CacheLock, false);
-		if (Snd_FindCacheLine(Source, Position) != 0 || Source->File.datasource == nullptr)
+
+		// The other thread may have decoded this line while we were waiting on DecodeLock
+		if (Snd_FindCacheLine(Source, Position, SND_BLOCKSIZE) != 0)
 		{
-			return;
+			return true;
+		}
+
+		if (Source->File.datasource == nullptr)
+		{
+			return false;
 		}
 
 		SND_STAT_ADD(g_SoundStats.cache_miss_count, 1u);
 		NewIdx = Snd_NewCacheLine();
 		if (!Snd_IsCacheLineValid(NewIdx))
 		{
-			return;
+			return false;
 		}
 	}
 
 	SoundCacheLine* Line = Snd_GetCacheLine(NewIdx);
+
+	// Page seek is cheap but can land far before Position. Fall back to precise seek
+	// if the line wouldn't cover enough frames after Position.
 	u32 BeginPos = Snd_SeekSource(Source, Position, false);
-	if (BeginPos + SND_CACHE_LINE_CAPACITY < Position + SND_BLOCKSIZE)
+	if (BeginPos > Position || Position - BeginPos > SND_CACHE_LINE_CAPACITY - SND_CACHE_LINE_MIN_AHEAD)
 	{
 		BeginPos = Snd_SeekSource(Source, Position, true);
 	}
@@ -314,9 +344,17 @@ static void Snd_UpdateCache(SoundSourceState* Source, u32 Position)
 	u32 EndPos = BeginPos + Snd_ReadFromSource(Source, ChannelData, SND_CACHE_LINE_CAPACITY);
 
 	xrSRWLockGuard Guard(GSourcePool.CacheLock, false);
+	if (BeginPos > Position || EndPos <= Position)
+	{
+		// Nothing usable decoded (broken stream or frames_total overestimates), give the line back
+		Snd_PurgeCacheLine(NewIdx, false);
+		return false;
+	}
+
 	Line->Owner = Source;
 	Line->Start = BeginPos;
 	Line->End = EndPos;
+	Line->Timestamp = Snd_GetTimestamp();
 
 	u32* OldestEntry = nullptr;
 	u64 OldestTimestamp = (u64)-1;
@@ -326,7 +364,7 @@ static void Snd_UpdateCache(SoundSourceState* Source, u32 Position)
 		if (*Entry == 0 || *Entry == NewIdx)
 		{
 			*Entry = NewIdx;
-			return;
+			return true;
 		}
 
 		if (Snd_IsCacheLineValid(*Entry) && Snd_GetCacheLine(*Entry)->Timestamp < OldestTimestamp)
@@ -340,7 +378,12 @@ static void Snd_UpdateCache(SoundSourceState* Source, u32 Position)
 	{
 		Snd_PurgeCacheLine(*OldestEntry, false);
 		*OldestEntry = NewIdx;
+		return true;
 	}
+
+	// No entry to attach the line to
+	Snd_PurgeCacheLine(NewIdx, false);
+	return false;
 }
 
 static void Snd_ParseOggComment(SoundSourceState* Source)
@@ -577,8 +620,9 @@ void Snd_QueueDecode(const xr_string* Name, u32 Position)
 		xrCriticalSectionGuard Guard(GSourcePool.DecodeLock);
 		for (size_t RequestIdx = 0; RequestIdx < GSourcePool.DecodeQueue.size(); RequestIdx++)
 		{
+			// A queued request already covers this position (its line spans at least SND_CACHE_LINE_MIN_AHEAD frames)
 			const SoundDecodeCommand* Queued = &GSourcePool.DecodeQueue[RequestIdx];
-			if (Queued->Position == Position && Queued->Name == *Name)
+			if (Position >= Queued->Position && Position - Queued->Position + SND_BLOCKSIZE <= SND_CACHE_LINE_MIN_AHEAD && Queued->Name == *Name)
 			{
 				return;
 			}
@@ -591,22 +635,89 @@ void Snd_QueueDecode(const xr_string* Name, u32 Position)
 	GSourcePool.DecodeThread->Run();
 }
 
+void Snd_PrefetchSource(const SoundSourceState* Source, const xr_string* Name, u32 Position, bool IsLooped)
+{
+	const u32 Total = Source->Desc.frames_total;
+	if (Total == 0 || Name->empty())
+	{
+		return;
+	}
+
+	// Walk the chain of cached lines from the play position and queue the first frame that isn't
+	// covered within the read-ahead window. Lines then come back to back without gaps, and the render
+	// thread finds the next one ready by the time it crosses the boundary.
+	u32 Missing = (u32)-1;
+	{
+		xrSRWLockGuard Guard(GSourcePool.CacheLock, true);
+
+		u32 Cursor = Position;
+		u32 Budget = SND_CACHE_PREFETCH_FRAMES;
+		bool IsWrapped = false;
+		while (true)
+		{
+			if (Cursor >= Total)
+			{
+				if (!IsLooped || IsWrapped)
+				{
+					break;
+				}
+
+				Cursor = 0;
+				IsWrapped = true;
+			}
+
+			u32 CacheIdx = Snd_FindCacheLine(Source, Cursor, 1);
+			if (!Snd_IsCacheLineValid(CacheIdx))
+			{
+				Missing = Cursor;
+				break;
+			}
+
+			const SoundCacheLine* Line = Snd_GetCacheLine(CacheIdx);
+			u32 Covered = Line->End - Cursor;
+			if (Covered >= Budget)
+			{
+				break;
+			}
+
+			Budget -= Covered;
+			Cursor = Line->End;
+		}
+	}
+
+	if (Missing != (u32)-1)
+	{
+		Snd_QueueDecode(Name, Missing);
+	}
+}
+
+bool Snd_DecodeNow(SoundSourceState* Source, u32 Position)
+{
+	PROF_EVENT("Sound: Decode On The Fly");
+	return Snd_UpdateCache(Source, Position);
+}
+
 bool Snd_HasCacheLine(const SoundSourceState* Source, u32 Position)
 {
 	xrSRWLockGuard Guard(GSourcePool.CacheLock, true);
-	return Snd_FindCacheLine(Source, Position) != 0;
+	return Snd_FindCacheLine(Source, Position, SND_BLOCKSIZE) != 0;
 }
 
 u32 Snd_CopyCached(const SoundSourceState* Source, u32 Position, float** OutData, u32 Frames)
 {
 	xrSRWLockGuard Guard(GSourcePool.CacheLock, true);
-	u32 CacheIdx = Snd_FindCacheLine(Source, Position);
+
+	// Any line holding Position will do: a partial tail is copied and the caller continues from the next line
+	u32 CacheIdx = Snd_FindCacheLine(Source, Position, 1);
 	if (!Snd_IsCacheLineValid(CacheIdx))
 	{
 		return 0;
 	}
 
-	const SoundCacheLine* Line = Snd_GetCacheLine(CacheIdx);
+	SoundCacheLine* Line = Snd_GetCacheLine(CacheIdx);
+
+	// LRU: lines in active use must not be the eviction candidates. Several readers may hold the shared lock
+	std::atomic_ref<u64>(Line->Timestamp).store(Snd_GetTimestamp(), std::memory_order_relaxed);
 	if (Position < Line->Start || Line->End <= Line->Start || Position >= Line->End || Position - Line->Start >= SND_CACHE_LINE_CAPACITY)
 	{
 		return 0;
