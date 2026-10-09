@@ -32,21 +32,17 @@
 #define SND_CHANNEL_COUNT (2)
 #define SND_SAMPLERATE 44100
 #define SND_BLOCKSIZE (1 << 10)
-#define SND_HRTF_SLOT_COUNT (512)
-
+#define SND_BUS_COUNT (64)
+#define SND_BUS_EFFECT_COUNT (8)
+#define SND_VOICE_EFFECT_COUNT (4)
+#define SND_VOICE_EFFECT_STATE_SIZE (64)
+#define SND_EFFECT_COUNT (32)
+#define SND_EFFECT_PARAM_COUNT (16)
 
 typedef void(*audio_render_callback)(float*);
 typedef void(*audio_precache_callback)();
 
 struct ref_sound;
-
-enum class SoundSubmixId : u8
-{
-	Effects,
-	Shooting,
-	Music,
-	Count
-};
 class CObject;
 
 namespace XRay::Sound::Mixer
@@ -81,6 +77,112 @@ namespace XRay::Sound::Mixer
 	};
 }
 
+enum class SoundEffectOp : u8
+{
+	Describe,
+	Create,
+	Destroy,
+	Reset,
+	Update,
+	Process,
+	Tail
+};
+
+enum class SoundEffectScope : u8
+{
+	Voice,
+	Bus
+};
+
+struct SoundEffectParam
+{
+	const char* Name;
+	float Default;
+	float Min;
+	float Max;
+};
+
+struct SoundEffectDesc
+{
+	SoundEffectScope Scope;
+	u32 StateSize;
+	u32 ParamCount;
+	const SoundEffectParam* Params;
+};
+
+struct SoundEffectListener
+{
+	Fvector Position;
+	Fvector Direction;
+	Fvector Normal;
+	Fvector Velocity;
+};
+
+struct SoundEffectVoice
+{
+	Fvector Position;
+	Fvector Velocity;
+	Fvector Distances;
+	float* Doppler;
+	float Gain;
+};
+
+struct SoundEffectCreate
+{
+	const float* Params;
+	const char* Resource;
+};
+
+struct SoundEffectProcess
+{
+	float** Data;
+	const float* Params;
+	const SoundEffectListener* Listener;
+	SoundEffectVoice* Voice;
+	bool HasInput;
+};
+
+typedef bool (*SoundEffectProc)(void* State, SoundEffectOp Op, void* Arg);
+
+struct SoundEffectEntry
+{
+	shared_str Name;
+	SoundEffectProc Proc = nullptr;
+	SoundEffectDesc Desc = {};
+};
+
+struct SoundBusEffect
+{
+	u8 Effect = 0;
+	void* State = nullptr;
+	shared_str Resource;
+	float Params[SND_EFFECT_PARAM_COUNT] = {};
+};
+
+struct SoundBus
+{
+	shared_str Name;
+	u32 Output = 0;
+	u32 Depth = 0;
+	float Volume = 1.0f;
+	float UserVolume = 1.0f;
+	float Gain = -1.0f;
+	float ZoneSend = 0.0f;
+	float DirectRatio = 0.0f;
+	u32 FarSend = 0;
+	u32 IndoorSend = 0;
+	float Peak[SND_CHANNEL_COUNT] = {};
+	u32 TailFrames = 0;
+	u32 EffectCount = 0;
+	u32 VoiceEffectCount = 0;
+	SoundBusEffect Effects[SND_BUS_EFFECT_COUNT];
+	SoundBusEffect VoiceEffects[SND_VOICE_EFFECT_COUNT];
+	bool IsUsed = false;
+	bool IsGenerated = false;
+	bool HasInput = false;
+	float Data[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
+};
+
 struct sound_stats
 {
 	int possible_free_count;
@@ -92,7 +194,7 @@ struct sound_stats
 	u32 cache_lines_free;
 	u32 cache_miss_count;
 	u32 cache_hit_count;
-	u32 render_cache_miss; 
+	u32 render_cache_miss;
 
 #ifdef DEBUG_DRAW
 	float channel_volumes[SND_CHANNEL_COUNT];
@@ -112,9 +214,21 @@ struct sound_source_desc
 	float min_distance;
 	float max_distance;
 	float max_ai_distance;
+	u32 bus;
 
 	shared_str name;
 	shared_str path;
+};
+
+struct sound_config
+{
+	float volume;
+	float min_distance;
+	float max_distance;
+	float max_ai_distance;
+	u32 game_type;
+	u32 bus;
+	shared_str file;
 };
 
 struct sound_reverb_settings
@@ -133,26 +247,15 @@ struct sound_reverb_settings
 	float air_absorption_hf;
 };
 
-struct sound_reverb_line_state
-{
-	u32 offset;
-	u32 frames;
-	float* buffer;
-	float iir_state;
-};
-
 struct sound_zone_params
 {
-	float data[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
 	u32 version;
 	u32	environment;
-	u32 use_count;
-	u64 last_use_ms;
+	u32 bus;
 	Fvector min;
 	Fvector max;
 	Fvector center;
 	Fvector size;
 	shared_str name;
-	u32 reverb_id = 0;
 	sound_reverb_settings settings;
 };

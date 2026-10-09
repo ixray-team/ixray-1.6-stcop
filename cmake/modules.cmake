@@ -54,7 +54,6 @@ include("${CMAKE_MODULE_PATHEX}/nlohmann_json.cmake")
 include("${CMAKE_MODULE_PATHEX}/amd_adl.cmake")
 include("${CMAKE_MODULE_PATHEX}/nvapi.cmake")
 include("${CMAKE_MODULE_PATHEX}/stb.cmake")
-include("${CMAKE_MODULE_PATHEX}/SteamAudio.cmake")
 
 if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/dirent.cmake")

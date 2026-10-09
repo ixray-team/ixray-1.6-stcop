@@ -30,16 +30,37 @@
 #pragma once
 #include "SoundMeta.h"
 
-void Snd_ShutdownReverb();
+void Snd_InitEffects();
+u8 Snd_RegisterEffect(const char* Name, SoundEffectProc Proc);
+u8 Snd_FindEffect(const char* Name);
+const SoundEffectEntry* Snd_GetEffect(u8 Id);
+u32 Snd_GetEffectCount();
+bool Snd_CallEffect(u8 Id, void* State, SoundEffectOp Op, void* Arg);
 
-// Zone under the given point (1-based), 0 if there is none
-u32 Snd_FindReverbZone(const Fvector& Position);
+void Snd_ResetEffect(SoundBusEffect* Effect, u8 Id);
+bool Snd_SetEffectParam(SoundBusEffect* Effect, const char* Name, float Value);
+bool Snd_CreateEffect(SoundBusEffect* Effect);
+void Snd_DestroyEffect(SoundBusEffect* Effect);
 
-// Render thread: clear zone sends before the slots are rendered
-void Snd_BeginReverbBlock();
+struct SoundSpatialState
+{
+	float Panning[SND_CHANNEL_COUNT];
+	bool IsPanned;
+};
 
-// Render thread: accumulate a slot into its zone send
-void Snd_SendToReverbZone(u32 ZoneIdx, float** Data, float BeginFactor, float EndFactor, float Left, float Right);
+struct SoundSpatialPosition
+{
+	Fvector Local;
+	float Distance;
+	float MinDistance;
+	float MaxDistance;
+	float Gain;
+};
 
-// Render thread: process active zones and mix them into the bus. ScratchBuffer is overwritten
-void Snd_RenderReverbZones(float** ScratchBuffer, float** BusBuffer);
+void Snd_SpatialLocate(SoundEffectProcess* Process, float DopplerScale, SoundSpatialPosition* OutPosition);
+float Snd_DistanceAttenuation(const SoundSpatialPosition* Position, float Power);
+void Snd_SpatialPan(SoundSpatialState* State, SoundEffectProcess* Process, const SoundSpatialPosition* Position, float Rolloff, float BackAttenuation);
+
+bool Snd_SpatialProc(void* State, SoundEffectOp Op, void* Arg);
+bool Snd_CompressorProc(void* State, SoundEffectOp Op, void* Arg);
+bool Snd_ConvolutionProc(void* State, SoundEffectOp Op, void* Arg);

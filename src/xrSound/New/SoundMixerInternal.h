@@ -42,40 +42,17 @@ IC void	volume_lerp(float& c, float t, float s, float dt)
     c += (diff / diff_a) * mot;
 }
 
-enum class SoundReverbFlags : u8
-{
-	None = 0,
-	Algoritmic = (1 << 0),
-	Convolution = (1 << 1)
-};
-
-struct SoundSubmix
-{
-	// Submix fader. The effective gain is Volume * master volume
-	float Volume = 1.0f;
-	u8 ReverbFlags = (u8)SoundReverbFlags::None;
-	bool AllowHrtf = true;
-	float Bus[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
-
-	bool HasReverb(SoundReverbFlags Flag) const
-	{
-		return (ReverbFlags & (u8)Flag) != 0;
-	}
-};
-
 struct sound_slot_state
 {
     XRay::Sound::Mixer::State prev_state;
     XRay::Sound::Mixer::State state;
     XRay::Sound::Mixer::State fake_state;
     u8 flags;
-    SoundSubmixId SubmixId = SoundSubmixId::Effects;
+    u32 bus;
     u32 zone_idx;
     u32 position;
     u32 stopping_position;
-    u32 hrtf_slot;
     f32 history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY + 1];
-    f32 panning[SND_CHANNEL_COUNT];
     f32 delay = 0.f;
     xr_string sound_name;
     Fvector parameters[(u32)XRay::Sound::Mixer::ParameterId::Count];
@@ -86,11 +63,24 @@ struct sound_slot_state
 
 	f32 ReverbDryGain = -1.0f;
 	f32 IndoorFactor = 0.0f;
-    bool IndoorFactorValid = false;
+	bool IndoorFactorValid = false;
+	u32 SendBus = 0;
+	f32 SendGain = 0.0f;
+	u8 VoiceEffects[SND_VOICE_EFFECT_COUNT] = {};
+	alignas(16) u8 VoiceEffectState[SND_VOICE_EFFECT_COUNT][SND_VOICE_EFFECT_STATE_SIZE] = {};
 };
 
 namespace XRay::Sound::Mixer
 {
+    XRSOUND_API SoundBus* GetBuses();
+    XRSOUND_API const SoundEffectEntry* GetEffect(u8 id);
+    XRSOUND_API u32 GetEffectCount();
+    XRSOUND_API u32 CreateBus(const char* name);
+    XRSOUND_API void DeleteBus(u32 bus);
+    XRSOUND_API void SetBusValue(u32 bus, const char* key, const char* value);
+    XRSOUND_API void SetBusEffectParam(u32 bus, bool voice, u32 effect, u32 param, float value);
+    XRSOUND_API const char* GetBusValue(u32 bus, const char* key);
+    XRSOUND_API bool SaveBus(u32 bus);
     XRSOUND_API void AddEditorZone(sound_zone_params& params);
     XRSOUND_API void AddZone(sound_zone_params& params);
     XRSOUND_API void ResetZones();
