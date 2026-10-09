@@ -32,28 +32,19 @@
 #include "SoundSource.h"
 #include "SoundBackend.h"
 #include "SoundDSP.h"
-#include "SoundAlgoritmicReverb.h"
+#include "SoundBus.h"
+#include "SoundConfig.h"
+#include "SoundEffect.h"
 
 #include "../Sound.h"
 #include "../SoundRender.h"
 #include "../ai_sounds.h"
-#include "SoundConvolutionReverb.h"
+#include "../Plugins/ResonanceAudio.h"
 
 #define ENGINE_API
 #include "../xrEngine/xr_object.h"
 
-#include "SoundSpatializer.h"
-
-#ifndef DISABLE_STEAM_AUDIO
-#include "../Plugins/SteamAudio.h"
-#endif
-#ifndef DISABLE_RESONANCE_AUDIO
-#include "../Plugins/ResonanceAudio.h"
-#endif
-
-ISoundSpatializer* GSpatializer = nullptr;
-
-#define DEFAULT_SLOT_COUNT (512)
+#define DEFAULT_SLOT_COUNT (1024)
 #define SND_MAX_PITCH (4)
 #define SND_MAX_VELOCITY (100.0f)
 
@@ -82,7 +73,7 @@ struct SoundCommand
 	u64 param2;
 	u64 param3;
 	shared_str string_storage;
-	SoundSubmixId submix = SoundSubmixId::Effects;
+	u32 bus = 0;
 };
 
 struct sound_mixer_state
@@ -94,12 +85,11 @@ struct sound_mixer_state
 
 	float dt;
 	float time_factor = 1.0f;
-	float master_volume = 1.0f;
 	float mute_volume = 1.0f;
-	float compression = 0.0f;
-	float compressor_envelope[SND_CHANNEL_COUNT] = {FLT_EPSILON, FLT_EPSILON};
-	Fvector P, D, N;
-	Fvector listener_velocity;
+	float compression = -1.0f;
+	float shooting_reverb = -1.0f;
+	u32 default_bus = 0;
+	SoundEffectListener listener = {};
 	Fvector occ[3]; // occluder triangle cache for get_occlusion()
 
 	xr_vector<u32> free_slots;
@@ -107,16 +97,7 @@ struct sound_mixer_state
 	xr_vector<sound_slot_state> slots;
 	xr_hash_set<ref_sound*> sounds;
 
-	// HRTF slot management (index pool; backend state lives in the spatializer plugin)
-	xr_vector<u32> free_hrtf_slots;
-
-	SoundSubmix Submixes[(u32)SoundSubmixId::Count];
-	float ReverbBus[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
-	float MasterBus[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
-
 	float IndoorFactor = 0.0f;
-
-	bool hrtf_enabled;
 
 	float read_buffer[SND_CHANNEL_COUNT][(SND_BLOCKSIZE + 1) * 10];
 };
@@ -157,60 +138,39 @@ static void Snd_GrowSlots(bool IsLockUpdate)
 	}
 }
 
-ICF void Snd_AcquireHRTFSlot(u32 slot_idx)
+static void Snd_ReleaseVoiceEffects(sound_slot_state& Slot, SoundEffectOp Op)
 {
-	PROF_EVENT("Sound: AcquireHRTFSlot");
-	if (!GMixer.hrtf_enabled || !psSoundFlags.is(ss_HRTF))
+	for (u32 EffectIdx = 0; EffectIdx < SND_VOICE_EFFECT_COUNT; EffectIdx++)
 	{
-		return;
-	}
-
-	auto& Slot = GMixer.slots[slot_idx - 1];
-	if ((Slot.flags & (u16)Mixer::Flags::Spatial) == 0 || !GMixer.Submixes[(u32)Slot.SubmixId].AllowHrtf)
-	{
-		return;
-	}
-
-	if (Slot.hrtf_slot)
-	{
-		return;
-	}
-
-	if (GMixer.free_hrtf_slots.empty())
-	{
-		return;
-	}
-
-	Slot.hrtf_slot = GMixer.free_hrtf_slots[GMixer.free_hrtf_slots.size() - 1];
-	GMixer.free_hrtf_slots.pop_back();
-
-	if (GSpatializer)
-	{
-		GSpatializer->ResetSlot(Slot.hrtf_slot - 1);
+		Snd_CallEffect(Slot.VoiceEffects[EffectIdx], Slot.VoiceEffectState[EffectIdx], Op, nullptr);
+		if (Op == SoundEffectOp::Destroy)
+		{
+			Slot.VoiceEffects[EffectIdx] = 0;
+		}
 	}
 }
 
-ICF void Snd_ReleaseHRTFSlot(u32 SlotIdx)
+static void Snd_ProcessVoiceEffects(sound_slot_state& Slot, const SoundBus* Bus, SoundEffectProcess* Process)
 {
-	if (!GMixer.hrtf_enabled || !psSoundFlags.is(ss_HRTF))
+	for (u32 EffectIdx = 0; EffectIdx < SND_VOICE_EFFECT_COUNT; EffectIdx++)
 	{
-		return;
-	}
-
-	auto& Slot = GMixer.slots[SlotIdx - 1];
-	if ((Slot.flags & (u16)Mixer::Flags::Spatial) == 0)
-	{
-		return;
-	}
-
-	if (Slot.hrtf_slot)
-	{
-		if (GSpatializer)
+		const SoundBusEffect* Effect = EffectIdx < Bus->VoiceEffectCount ? &Bus->VoiceEffects[EffectIdx] : nullptr;
+		u8 Id = Effect != nullptr ? Effect->Effect : 0;
+		void* State = Slot.VoiceEffectState[EffectIdx];
+		if (Slot.VoiceEffects[EffectIdx] != Id)
 		{
-			GSpatializer->FreeSlot(Slot.hrtf_slot - 1);
+			Snd_CallEffect(Slot.VoiceEffects[EffectIdx], State, SoundEffectOp::Destroy, nullptr);
+			memset(State, 0, SND_VOICE_EFFECT_STATE_SIZE);
+
+			SoundEffectCreate Create = {Effect != nullptr ? Effect->Params : nullptr, nullptr};
+			Slot.VoiceEffects[EffectIdx] = Snd_CallEffect(Id, State, SoundEffectOp::Create, &Create) ? Id : 0;
 		}
-		GMixer.free_hrtf_slots.emplace_back(Slot.hrtf_slot);
-		Slot.hrtf_slot = 0;
+
+		if (Slot.VoiceEffects[EffectIdx] != 0)
+		{
+			Process->Params = Effect->Params;
+			Snd_CallEffect(Id, State, SoundEffectOp::Process, Process);
+		}
 	}
 }
 
@@ -249,7 +209,7 @@ ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, const SoundSourceState&
 		// Check range
 		Fvector& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
 		Fvector& distances = slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
-		float dist = GMixer.P.distance_to(pos);
+		float dist = GMixer.listener.Position.distance_to(pos);
 		if (dist > distances.y)
 		{
 			if (occ_volume)
@@ -261,7 +221,7 @@ ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, const SoundSourceState&
 
 		if (occ_volume != nullptr)
 		{
-			float occ = Sound->get_occlusion_to(GMixer.P, pos);
+			float occ = Sound->get_occlusion_to(GMixer.listener.Position, pos);
 			clamp(occ, 0.f, 1.f);
 			*occ_volume = occ;
 
@@ -427,16 +387,10 @@ ICF void Snd_PrecacheRenderCallback()
 			SoundSourceState* source = Snd_FindSource(&slot.sound_name);
 			if (source != nullptr && Snd_SlotOcclusion(i + 1, *source, dt, nullptr) != ESlotOcclusionResult::False)
 			{
-				Snd_AcquireHRTFSlot(i + 1);
-
 				// Async decode of the current position and the read-ahead window.
 				// Whatever doesn't make it in time is decoded on the fly by the render thread.
 				PROF_EVENT("Sound: Prefetch");
 				Snd_PrefetchSource(source, &slot.sound_name, slot.position, (slot.flags & (u8)Mixer::Flags::Looped) != 0);
-			}
-			else
-			{
-				Snd_ReleaseHRTFSlot(i + 1);
 			}
 
 			if (source != nullptr)
@@ -476,65 +430,6 @@ ICF Fvector Snd_Velocity(const Fvector& From, const Fvector& To)
 	}
 
 	return Out;
-}
-
-ICF void Snd_PhononSpatialProcess(float** Data, u32 slot_idx)
-{
-	auto& Slot = GMixer.slots[slot_idx - 1];
-	if ((Slot.flags & (u32)Mixer::Flags::Spatial) == 0)
-	{
-		return;
-	}
-
-	Fvector& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
-	Fvector& Distances = Slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
-
-	dsp_stuff Stuff =
-		{
-			.Dt = GMixer.dt,
-			.Panning = Slot.panning,
-			.CameraPosition = &GMixer.P,
-			.CameraDirection = &GMixer.D,
-			.CameraNormal = &GMixer.N,
-			.CameraVelocity = &GMixer.listener_velocity,
-			.ObjPosition = &Pos,
-			.ObjVelocity = &Slot.velocity,
-			.Doppler = &Slot.doppler
-		};
-
-	if (Slot.hrtf_slot == 0)
-	{
-		DSP_SpatialProcess(Data, Slot.parameters[(u32)Mixer::ParameterId::DistanceRange], Stuff, false /*slot.flags& (u32)Mixer::Flags::NoOCC */);
-		return;
-	}
-
-	float Distance;
-	Fvector RelativePos;
-	DSP_CalculateRelativePosition(Stuff, RelativePos, Distance);
-	DSP_Doppler(Stuff, Distance);
-	Distance = std::max(Distance, 0.1f);
-
-	if (GSpatializer)
-	{
-		GSpatializer->ProcessHrtf(Slot.hrtf_slot - 1, Data, Pos, GMixer.P, RelativePos);
-	}
-
-	// Attenuation
-	float MinDistance = std::max(Distances.x, EPS_S);
-	float MaxDistance = std::max(Distances.y, MinDistance + EPS_S);
-
-	Distance = std::clamp(Distance, MinDistance, MaxDistance);
-	float Attent = MinDistance / (psSoundRolloff * Distance);
-	Attent *= Attent;
-	Attent *= 1.0f - std::clamp(std::max(Distance - MinDistance, 0.0f) / (MaxDistance - MinDistance), 0.0f, 1.0f);
-	Attent = std::clamp(Attent, 0.f, 1.f);
-	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-	{
-		for (size_t Key = 0; Key < SND_BLOCKSIZE; Key++)
-		{
-			Data[Channel][Key] *= Attent;
-		}
-	}
 }
 
 static float Snd_HemiIndoorFactor(const Fvector& Pos)
@@ -591,25 +486,30 @@ static void Snd_UpdateSlotIndoorFactor(sound_slot_state& Slot, const Fvector& Po
 	Slot.IndoorFactor += (target - Slot.IndoorFactor) * k;
 }
 
-static void Snd_InitSubmixes()
+static void Snd_DirectSend(sound_slot_state& Slot, const SoundBus* Bus, float** Data, float BusGain, float& BeginFactor, float& EndFactor, float Left, float Right)
 {
-	GMixer.Submixes[(u32)SoundSubmixId::Effects].ReverbFlags = (u8)SoundReverbFlags::Algoritmic;
-	GMixer.Submixes[(u32)SoundSubmixId::Shooting].ReverbFlags = (u8)SoundReverbFlags::Algoritmic | (u8)SoundReverbFlags::Convolution;
-	GMixer.Submixes[(u32)SoundSubmixId::Shooting].AllowHrtf = false;
-	GMixer.Submixes[(u32)SoundSubmixId::Music].ReverbFlags = (u8)SoundReverbFlags::None;
-}
+	constexpr float OutdoorCriticalDistance = 25.0f;
+	constexpr float IndoorCriticalDistance = 4.0f;
+	constexpr float MinReverbDistance = 5.0f;
 
-static SoundSubmix& Snd_GetSlotSubmix(const sound_slot_state& Slot)
-{
-	return GMixer.Submixes[(u32)Slot.SubmixId];
-}
+	bool IsSpatial = (Slot.flags & (u16)Mixer::Flags::Spatial) != 0;
+	// Measured past min_distance: distance-band layers already carry the distance they were recorded at
+	float Distance = IsSpatial ? GMixer.listener.Position.distance_to(Slot.parameters[(u32)Mixer::ParameterId::Position]) - Slot.parameters[(u32)Mixer::ParameterId::DistanceRange].x : 0.0f;
+	float Indoor = std::clamp(Slot.IndoorFactor, 0.0f, 1.0f);
+	float CriticalDistance = lerp(OutdoorCriticalDistance, IndoorCriticalDistance, Indoor);
+	float Ratio = Bus->DirectRatio * std::max(Distance, MinReverbDistance) / CriticalDistance;
+	float Dry = 1.0f / std::sqrt(1.0f + Ratio * Ratio);
+	float Wet = Ratio * Dry * BusGain;
 
-static void Snd_UnwrapBus(float (*Bus)[SND_BLOCKSIZE], float** OutBuffer)
-{
-	for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-	{
-		OutBuffer[Channel] = Bus[Channel];
-	}
+	float FarGain = Wet * std::sqrt(1.0f - Indoor);
+	float IndoorGain = Wet * std::sqrt(Indoor);
+	Snd_SendToBus(Bus->FarSend, Data, BeginFactor * FarGain, EndFactor * FarGain, Left, Right);
+	Snd_SendToBus(Bus->IndoorSend, Data, BeginFactor * IndoorGain, EndFactor * IndoorGain, Left, Right);
+
+	float PrevDry = Slot.ReverbDryGain < 0.0f ? Dry : Slot.ReverbDryGain;
+	Slot.ReverbDryGain = Dry;
+	BeginFactor *= PrevDry;
+	EndFactor *= Dry;
 }
 
 ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_buffer, float dt)
@@ -627,6 +527,8 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 			MixerNewState(SlotIdx, Mixer::State::Stopped);
 		}
 
+		Snd_ReleaseVoiceEffects(Slot, SoundEffectOp::Reset);
+		Slot.SendGain = 0.0f;
 		return;
 	}
 
@@ -638,8 +540,8 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 
 	Snd_ProcessSlot(SlotIdx, Source, process_buffer);
 
-	Fvector& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
-	Fvector& Volume = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
+	const Fvector& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
+	const Fvector& Volume = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
 	float BeginFactor = 1.0f, EndFactor = 1.0f;
 
 	// Deferred stopping
@@ -666,66 +568,51 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 		}
 	}
 
-	// Apply final volumes
-	float slot_volume = Volume.x * Volume.y * Volume.z;
+	float LeftPanning = Slot.parameters[(u32)Mixer::ParameterId::Panning].x;
+	float RightPanning = Slot.parameters[(u32)Mixer::ParameterId::Panning].y;
 
-	// The submix fader is applied when its bus is mixed into master; reverb sends are scaled here
-	SoundSubmix& Submix = Snd_GetSlotSubmix(Slot);
+	SoundBus* Bus = Snd_GetBus(Slot.bus);
+	if (Bus == nullptr)
+	{
+		Slot.bus = Snd_GetMasterBus();
+		Bus = Snd_GetBus(Slot.bus);
+	}
 
-	float VolumeFinal = OCCVolume * slot_volume * Slot.fade_volume;
+	bool IsSpatial = (Slot.flags & (u32)Mixer::Flags::Spatial) != 0;
+	bool IsMono = !IsIntro && Source.Desc.channels_count == 1;
+	float Gain = Volume.x * Volume.y;
+	if (IsMono && IsSpatial)
+	{
+		PROF_EVENT("Slot Spatial");
+		SoundEffectVoice Voice = {Pos, Slot.velocity, Slot.parameters[(u32)Mixer::ParameterId::DistanceRange], &Slot.doppler, Gain};
+		SoundEffectProcess Process = {process_buffer, nullptr, &GMixer.listener, &Voice, true};
+		Snd_ProcessVoiceEffects(Slot, Bus, &Process);
+		Gain = Voice.Gain;
+	}
+
+	float VolumeFinal = OCCVolume * std::min(Gain, 1.0f) * Volume.z * Slot.fade_volume;
 	BeginFactor *= VolumeFinal;
 	EndFactor *= VolumeFinal;
 
-	float left_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].x;
-	float right_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].y;
-
-	if (Submix.HasReverb(SoundReverbFlags::Convolution))
+	float BusGain = Bus->Volume * Bus->UserVolume;
+	if (Bus->DirectRatio > 0.0f)
 	{
-		Snd_ConvolutionReverbSend(Slot, GMixer.P, process_buffer, Submix.Volume, BeginFactor, EndFactor);
+		Snd_DirectSend(Slot, Bus, process_buffer, BusGain, BeginFactor, EndFactor, LeftPanning, RightPanning);
 	}
 
-	// Spatial processing
-	if (!(Slot.flags & (u32)Mixer::Flags::Intro) && Source.Desc.channels_count == 1)
+	u32 ZoneBus = (IsMono && psSoundFlags.is(ss_EFX)) ? Snd_GetZoneBus(Slot.zone_idx) : 0;
+	float ZoneGain = ZoneBus != 0 ? Bus->ZoneSend * std::clamp(Slot.IndoorFactor, 0.0f, 1.0f) * BusGain : 0.0f;
+	if (ZoneBus != Slot.SendBus)
 	{
-		PROF_EVENT("Slot Spatial");
-
-		if (Slot.flags & (u32)Mixer::Flags::Spatial)
-		{
-			if (psSoundFlags.is(ss_HRTF) && GMixer.hrtf_enabled && Submix.AllowHrtf)
-			{
-				Snd_PhononSpatialProcess(process_buffer, SlotIdx);
-			}
-			else
-			{
-				dsp_stuff Stuff =
-					{
-						.Dt = GMixer.dt,
-						.Panning = Slot.panning,
-						.CameraPosition = &GMixer.P,
-						.CameraDirection = &GMixer.D,
-						.CameraNormal = &GMixer.N,
-						.CameraVelocity = &GMixer.listener_velocity,
-						.ObjPosition = &Pos,
-						.ObjVelocity = &Slot.velocity,
-						.Doppler = &Slot.doppler
-					};
-
-				DSP_SpatialProcess(process_buffer, Slot.parameters[(u32)Mixer::ParameterId::DistanceRange], Stuff, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
-			}
-		}
-
-		if (Submix.HasReverb(SoundReverbFlags::Algoritmic))
-		{
-			float ZoneGain = std::clamp(Slot.IndoorFactor, 0.0f, 1.0f) * Submix.Volume;
-			Snd_SendToReverbZone(Slot.zone_idx, process_buffer, BeginFactor * ZoneGain, EndFactor * ZoneGain, left_panning, right_panning);
-		}
+		Snd_SendToBus(Slot.SendBus, process_buffer, BeginFactor * Slot.SendGain, 0.0f, LeftPanning, RightPanning);
+		Slot.SendBus = ZoneBus;
+		Slot.SendGain = 0.0f;
 	}
 
-	float* bus_buffer[SND_CHANNEL_COUNT] = {};
-	Snd_UnwrapBus(Submix.Bus, bus_buffer);
+	Snd_SendToBus(ZoneBus, process_buffer, BeginFactor * Slot.SendGain, EndFactor * ZoneGain, LeftPanning, RightPanning);
+	Slot.SendGain = ZoneGain;
 
-	// Bus mixing
-	DSP_MixBufferPanning(bus_buffer, process_buffer, BeginFactor, EndFactor, left_panning, right_panning, SND_BLOCKSIZE);
+	Snd_SendToBus(Slot.bus, process_buffer, BeginFactor, EndFactor, LeftPanning, RightPanning);
 }
 
 void Snd_MixerRenderCallback(float* buffer)
@@ -740,7 +627,6 @@ void Snd_MixerRenderCallback(float* buffer)
 	float dt = (float)((double)(Snd_GetTimestamp() - TimeStamp) / 1000000000.0);
 	TimeStamp = Snd_GetTimestamp();
 
-	memset(buffer, 0, SND_BLOCKSIZE * SND_CHANNEL_COUNT * sizeof(float));
 	static float _process_buffer[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
 
 	float* process_buffer[SND_CHANNEL_COUNT] = {};
@@ -749,15 +635,7 @@ void Snd_MixerRenderCallback(float* buffer)
 		process_buffer[i] = _process_buffer[i];
 	}
 
-	for (SoundSubmix& Submix : GMixer.Submixes)
-	{
-		memset(Submix.Bus, 0, sizeof(Submix.Bus));
-	}
-
-	memset(GMixer.ReverbBus, 0, sizeof(GMixer.ReverbBus));
-	memset(GMixer.MasterBus, 0, sizeof(GMixer.MasterBus));
-
-	Snd_BeginReverbBlock();
+	Snd_BeginBuses();
 
 	for (size_t i = 0; i < GMixer.slots.size(); i++)
 	{
@@ -778,51 +656,9 @@ void Snd_MixerRenderCallback(float* buffer)
 		Snd_ReleaseSource(&GMixer.slots[i].sound_name);
 	}
 
-	for (size_t Iter = 0; Iter < SND_CHANNEL_COUNT; Iter++)
-	{
-		process_buffer[Iter] = _process_buffer[Iter];
-	}
-
-	{
-		float* ReverbBus[SND_CHANNEL_COUNT] = {};
-		Snd_UnwrapBus(GMixer.ReverbBus, ReverbBus);
-
-		Snd_RenderReverbZones(process_buffer, ReverbBus);
-		Snd_RenderShootingReverb(ReverbBus);
-	}
-
-
 	{
 		PROF_EVENT("Sound Mixing");
-		float* MasterBuffer[SND_CHANNEL_COUNT] = {};
-		Snd_UnwrapBus(GMixer.MasterBus, MasterBuffer);
-
-		// Each submix goes through its fader times master. The shared reverb return already carries
-		// the submix volumes of its sends, so it only gets master
-		float MasterGain = GMixer.master_volume * GMixer.mute_volume;
-		float* BusBuffer[SND_CHANNEL_COUNT] = {};
-		for (SoundSubmix& Submix : GMixer.Submixes)
-		{
-			float Gain = Submix.Volume * MasterGain;
-			Snd_UnwrapBus(Submix.Bus, BusBuffer);
-			DSP_MixBuffer(MasterBuffer, BusBuffer, Gain, Gain, SND_BLOCKSIZE);
-		}
-
-		Snd_UnwrapBus(GMixer.ReverbBus, BusBuffer);
-		DSP_MixBuffer(MasterBuffer, BusBuffer, MasterGain, MasterGain, SND_BLOCKSIZE);
-
-		DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, MasterBuffer, GMixer.compression, SND_BLOCKSIZE, GMixer.compressor_envelope);
-
-		// Clipping
-		for (size_t Iter = 0; Iter < SND_BLOCKSIZE; Iter++)
-		{
-			for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-			{
-				float Sample = MasterBuffer[Channel][Iter];
-				Sample = std::clamp(Sample, -1.0f, 1.0f);
-				buffer[Iter * SND_CHANNEL_COUNT + Channel] = Sample;
-			}
-		}
+		Snd_RenderBuses(buffer, GMixer.mute_volume);
 	}
 
 #ifdef DEBUG_DRAW
@@ -855,20 +691,13 @@ void Mixer::Initialize()
 	GMixer.cmd.reserve(256);
 	Snd_GrowSlots(true);
 
-	if (GSpatializer)
-	{
-		GSpatializer->Initialize();
-		GMixer.hrtf_enabled = true;
-	}
-
-	GMixer.free_hrtf_slots.resize(SND_HRTF_SLOT_COUNT);
-	for (size_t i = 0; i < SND_HRTF_SLOT_COUNT; i++)
-	{
-		GMixer.free_hrtf_slots[i] = i + 1;
-	}
-
-	Snd_InitSubmixes();
-	Snd_InitShootingReverb();
+	Snd_InitEffects();
+	Snd_LoadConfig();
+	Snd_InitBuses();
+	GMixer.compression = -1.0f;
+	GMixer.shooting_reverb = -1.0f;
+	GMixer.default_bus = Snd_FindBus("effects");
+	GMixer.default_bus = GMixer.default_bus != 0 ? GMixer.default_bus : Snd_GetMasterBus();
 
 	Snd_InitSources();
 
@@ -879,20 +708,15 @@ void Mixer::Shutdown()
 {
 	Backend::Shutdown();
 
-	Snd_ShutdownSources();
-
-	Snd_ShutdownShootingReverb();
-
-	if (GSpatializer)
+	for (sound_slot_state& Slot : GMixer.slots)
 	{
-		GSpatializer->Shutdown();
-		delete GSpatializer;
-		GSpatializer = nullptr;
+		Snd_ReleaseVoiceEffects(Slot, SoundEffectOp::Destroy);
 	}
 
-	GMixer.free_hrtf_slots.clear();
-
-	Snd_ShutdownReverb();
+	Snd_ShutdownBuses();
+	Resonance_Shutdown();
+	Snd_ShutdownSources();
+	Snd_UnloadConfig();
 
 	GMixer.slots.clear();
 	GMixer.free_slots.clear();
@@ -918,7 +742,10 @@ ICF void DestroyInternal(int slot)
 	GMixer.slots[slot - 1].position = 0;
 	GMixer.slots[slot - 1].stopping_position = (u32)-1;
 	GMixer.slots[slot - 1].flags = 0;
-	GMixer.slots[slot - 1].SubmixId = SoundSubmixId::Effects;
+	Snd_ReleaseVoiceEffects(GMixer.slots[slot - 1], SoundEffectOp::Destroy);
+	GMixer.slots[slot - 1].bus = 0;
+	GMixer.slots[slot - 1].SendBus = 0;
+	GMixer.slots[slot - 1].SendGain = 0.0f;
 	GMixer.slots[slot - 1].state = Mixer::State::Stopped;
 	GMixer.slots[slot - 1].prev_state = Mixer::State::Stopped;
 	GMixer.slots[slot - 1].fake_state = Mixer::State::Stopped;
@@ -936,20 +763,32 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 	TimeStamp = Snd_GetTimestamp();
 
 	GMixer.time_factor = std::clamp(time_factor, 0.1f, 10.0f);
-	GMixer.compression = compression;
 	GMixer.mute_volume = mute_volume;
-
-	GMixer.listener_velocity = Snd_Velocity(GMixer.P, P);
-	GMixer.P = P;
-	GMixer.D = D;
-	GMixer.N = N;
 
 	GMixer.render_lock.AcquireExclusive();
 	GMixer.manage_lock.AcquireExclusive();
 	GMixer.update_lock.AcquireExclusive();
 
+	GMixer.listener.Velocity = Snd_Velocity(GMixer.listener.Position, P);
+	GMixer.listener.Position = P;
+	GMixer.listener.Direction = D;
+	GMixer.listener.Normal = N;
+
+	if (GMixer.compression != compression)
+	{
+		GMixer.compression = compression;
+		Snd_SetBusParam(Snd_GetMasterBus(), "compressor", "mix", compression);
+	}
+
+	SoundBus* ShootingBus = Snd_GetBus(Snd_FindBus("shooting"));
+	if (ShootingBus != nullptr && GMixer.shooting_reverb != psSoundShootingReverb)
+	{
+		GMixer.shooting_reverb = psSoundShootingReverb;
+		ShootingBus->DirectRatio = psSoundShootingReverb;
+	}
+
 	// Listener hemi -> indoor factor (kept for reference / global use).
-	GMixer.IndoorFactor += (Snd_HemiIndoorFactor(GMixer.P) - GMixer.IndoorFactor) *
+	GMixer.IndoorFactor += (Snd_HemiIndoorFactor(GMixer.listener.Position) - GMixer.IndoorFactor) *
 		std::clamp(GMixer.dt * 3.0f, 0.0f, 1.0f);
 
 	for (auto& RefSound : GMixer.sounds)
@@ -1019,8 +858,8 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 			bool IsOCCEnabled = ((Slot.flags & ((u16)Flags::Intro | (u16)Flags::NoOCC)) == 0) && Slot.state == State::Playing;
 			if (IsOCCEnabled)
 			{
-				Fvector Pos = (Slot.flags & (u16)Flags::Spatial) ? Slot.parameters[(u32)Mixer::ParameterId::Position] : GMixer.P;
-				float Dist = GMixer.P.distance_to(Pos);
+				Fvector Pos = (Slot.flags & (u16)Flags::Spatial) ? Slot.parameters[(u32)Mixer::ParameterId::Position] : GMixer.listener.Position;
+				float Dist = GMixer.listener.Position.distance_to(Pos);
 
 				if (Dist <= Slot.parameters[(u32)Mixer::ParameterId::DistanceRange].y)
 				{
@@ -1038,7 +877,7 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 					float& OldOCC = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
 					volume_lerp(OldOCC, OutOCC, 1.0f, GMixer.dt);
 
-					Slot.zone_idx = Snd_FindReverbZone(Pos);
+					Slot.zone_idx = Snd_FindZone(Pos);
 				}
 			}
 		}
@@ -1056,6 +895,7 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				u16 Flags = Command.param0;
 
 				auto& ActualSlot = GMixer.slots[Command.slot - 1];
+				Snd_ReleaseVoiceEffects(ActualSlot, SoundEffectOp::Destroy);
 				const xr_string NewName = Command.string_storage.size() ? Command.string_storage.c_str() : "";
 				bool IsSameFile = ActualSlot.sound_name == NewName;
 				if (!IsSameFile && !ActualSlot.sound_name.empty())
@@ -1089,7 +929,9 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				ActualSlot.stopping_position = (u32)-1;
 				ActualSlot.sound_name = NewName;
 				ActualSlot.flags = Flags;
-				ActualSlot.SubmixId = Command.submix;
+				ActualSlot.bus = Snd_GetBus(Command.bus) != nullptr ? Command.bus : Snd_GetBus(Source.Desc.bus) != nullptr ? Source.Desc.bus : GMixer.default_bus;
+				ActualSlot.SendBus = 0;
+				ActualSlot.SendGain = 0.0f;
 				ActualSlot.fade_volume = 0.0f;
 				ActualSlot.ReverbDryGain = -1.0f;
 				ActualSlot.IndoorFactor = GMixer.IndoorFactor;
@@ -1326,7 +1168,7 @@ void Mixer::Destroy(u32 SlotID)
 	g_SoundStats.possible_free_count++;
 }
 
-void Mixer::Play(u32 SlotID, u16 flags, ref_sound* SoundRef, double Delay, SoundSubmixId Submix)
+void Mixer::Play(u32 SlotID, u16 flags, ref_sound* SoundRef, double Delay, u32 Bus)
 {
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
 
@@ -1338,11 +1180,11 @@ void Mixer::Play(u32 SlotID, u16 flags, ref_sound* SoundRef, double Delay, Sound
 	GMixer.slots[SlotID - 1].fake_state = State::Playing;
 
 	GMixer.cmd.emplace_back(SoundCommand{
-		.slot = SlotID, .id = ESoundMixerCommands::play, .param0 = flags, .param1 = (u64)SoundRef, .param2 = *(u64*)&Delay, .param3 = (u64)SoundRef->_g_object(), .string_storage = SoundRef->_p->fn_attached[0], .submix = Submix
+		.slot = SlotID, .id = ESoundMixerCommands::play, .param0 = flags, .param1 = (u64)SoundRef, .param2 = *(u64*)&Delay, .param3 = (u64)SoundRef->_g_object(), .string_storage = SoundRef->_p->fn_attached[0], .bus = Bus
 	});
 }
 
-void Mixer::PlayNoFeedback(u16 Flags, ref_sound* SoundRef, CObject* Obj, double Delay, float* Pitch, float* Volume, Fvector* Distance, Fvector* Pos, SoundSubmixId Submix)
+void Mixer::PlayNoFeedback(u16 Flags, ref_sound* SoundRef, CObject* Obj, double Delay, float* Pitch, float* Volume, Fvector* Distance, Fvector* Pos, u32 Bus)
 {
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
 
@@ -1358,7 +1200,7 @@ void Mixer::PlayNoFeedback(u16 Flags, ref_sound* SoundRef, CObject* Obj, double 
 	Slot.fake_state = State::Playing;
 
 	GMixer.cmd.emplace_back(SoundCommand{
-		.slot = SlotIdx, .id = ESoundMixerCommands::play, .param0 = Flags, .param1 = (u64)SoundRef, .param2 = *(u64*)&Delay, .param3 = (u64)Obj, .string_storage = SoundRef->_p->fn_attached[0], .submix = Submix
+		.slot = SlotIdx, .id = ESoundMixerCommands::play, .param0 = Flags, .param1 = (u64)SoundRef, .param2 = *(u64*)&Delay, .param3 = (u64)Obj, .string_storage = SoundRef->_p->fn_attached[0], .bus = Bus
 	});
 
 	auto Params = SoundRef->_p->get_params();
@@ -1479,13 +1321,141 @@ xrSRWLock& Mixer::GetManageMutex()
 
 float* Mixer::GetMasterVolume()
 {
-	return &GMixer.master_volume;
+	return GetBusVolume("master");
 }
 
-float* Mixer::GetSubmixVolume(SoundSubmixId Id)
+float* Mixer::GetBusVolume(const char* Name)
 {
-	R_ASSERT(Id < SoundSubmixId::Count);
-	return &GMixer.Submixes[(u32)Id].Volume;
+	u32 BusIdx = Snd_ReserveBus(Name);
+	R_ASSERT(BusIdx != 0);
+	return &Snd_GetBuses()[BusIdx - 1].UserVolume;
+}
+
+u32 Mixer::FindBus(const char* Name)
+{
+	return Snd_FindBus(Name);
+}
+
+u32 Mixer::RegisterEffect(const char* Name, SoundEffectProc Proc)
+{
+	return Snd_RegisterEffect(Name, Proc);
+}
+
+SoundBus* Mixer::GetBuses()
+{
+	return Snd_GetBuses();
+}
+
+const SoundEffectEntry* Mixer::GetEffect(u8 Id)
+{
+	return Snd_GetEffect(Id);
+}
+
+u32 Mixer::GetEffectCount()
+{
+	return Snd_GetEffectCount();
+}
+
+u32 Mixer::CreateBus(const char* Name)
+{
+	xrSRWLockGuard Guard(GMixer.render_lock);
+	return Snd_CreateBus(Name);
+}
+
+void Mixer::DeleteBus(u32 Bus)
+{
+	xrSRWLockGuard Guard(GMixer.render_lock);
+	Snd_DeleteBus(Bus);
+}
+
+void Mixer::SetBusValue(u32 Bus, const char* Key, const char* Value)
+{
+	xrSRWLockGuard Guard(GMixer.render_lock);
+	Snd_SetBusValue(Bus, Key, Value);
+	GMixer.shooting_reverb = -1.0f;
+	GMixer.compression = -1.0f;
+}
+
+void Mixer::SetBusEffectParam(u32 Bus, bool IsVoice, u32 Effect, u32 Param, float Value)
+{
+	xrSRWLockGuard Guard(GMixer.render_lock);
+	Snd_SetBusEffectParam(Bus, IsVoice, Effect, Param, Value);
+}
+
+const char* Mixer::GetBusValue(u32 Bus, const char* Key)
+{
+	return Snd_GetBusValue(Bus, Key);
+}
+
+bool Mixer::SaveBus(u32 Bus)
+{
+	return Snd_SaveBus(Bus);
+}
+
+void Mixer::AddZone(sound_zone_params& Params)
+{
+	xrSRWLockGuard Guard(GMixer.render_lock);
+	Snd_AddZone(&Params, false);
+}
+
+void Mixer::AddEditorZone(sound_zone_params& Params)
+{
+	xrSRWLockGuard Guard(GMixer.render_lock);
+	Snd_AddZone(&Params, true);
+}
+
+void Mixer::ResetZones()
+{
+	xrSRWLockGuard Guard(GMixer.render_lock);
+	Snd_ResetZones();
+}
+
+void Mixer::ExportConfig()
+{
+	Snd_ExportConfig();
+}
+
+bool Mixer::GetSoundConfig(const char* Name, sound_config* Config)
+{
+	return Snd_GetSoundConfig(Name, Config);
+}
+
+void Mixer::SetSoundConfig(const char* Name, sound_config* Config)
+{
+	xrSRWLockGuard RenderGuard(GMixer.render_lock);
+	xrSRWLockGuard UpdateGuard(GMixer.update_lock);
+	xrSRWLockGuard SourceGuard(g_SoundSourceLock, true);
+	SoundSourceState* Source = Snd_SetSoundConfig(Name, Config);
+	if (Source == nullptr)
+	{
+		return;
+	}
+
+	for (sound_slot_state& Slot : GMixer.slots)
+	{
+		if (Slot.state == State::Stopped || Snd_LookupSource(&Slot.sound_name) != Source)
+		{
+			continue;
+		}
+
+		Slot.parameters[(u32)ParameterId::VolumePerChannel].x = Source->Desc.volume;
+		Slot.parameters[(u32)ParameterId::DistanceRange] = Fvector(Source->Desc.min_distance, Source->Desc.max_distance, Source->Desc.max_ai_distance);
+	}
+}
+
+bool Mixer::SaveSoundConfig(const char* Name)
+{
+	return Snd_SaveConfig(Name);
+}
+
+void Mixer::GetLoadedSources(xr_vector<shared_str>& Names)
+{
+	Snd_GetLoadedSources(Names);
+}
+
+const xr_vector<sound_zone_params>& Mixer::GetZones()
+{
+	return Snd_GetZones();
 }
 
 sound_stats* Mixer::GetStats()

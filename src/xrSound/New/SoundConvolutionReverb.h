@@ -49,7 +49,7 @@ public:
 	void Free();
 
 	bool IsValid() const { return Valid; }
-	void GetIRInfo(u32& Frames, u32& SampleRate) const { Frames = IrFrames; SampleRate = SND_SAMPLERATE; }
+	u32 GetTailFrames() const { return TailBlocksLeft * BLOCK; }
 
 	// Accumulates the wet signal of SND_BLOCKSIZE planar frames into Output. Must be called
 	// every block: with HasInput == false it only renders the remaining tail and then idles.
@@ -82,14 +82,3 @@ private:
 	float* TimeOut = nullptr;
 	float* Work = nullptr;
 };
-
-struct sound_slot_state;
-
-void Snd_InitShootingReverb();
-void Snd_ShutdownShootingReverb();
-
-// Render thread: splits a shooting slot into dry (BeginFactor/EndFactor are scaled) and the far/indoor IR sends
-void Snd_ConvolutionReverbSend(sound_slot_state& Slot, const Fvector& ListenerPos, float** Buffer, float SendGain, float& BeginFactor, float& EndFactor);
-
-// Render thread: convolves this block's sends into BusBuffer and clears them. Must be called every block
-void Snd_RenderShootingReverb(float** BusBuffer);
