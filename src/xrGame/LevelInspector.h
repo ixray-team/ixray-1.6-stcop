@@ -170,6 +170,9 @@ struct LevelInspector final
 		dbg_font->SetColor(color);
 		dbg_font->OutSet(x, y);
 		dbg_font->OutNext(*str);
+		dbg_font->SetOutline(true);
+		dbg_font->SetOutlineOffset(1.f);
+		dbg_font->SetOutlineColor(color_rgba(0,0,0, 255 / 3));
 	}
 
 	ICF void append_text_next(shared_str str = "+")
