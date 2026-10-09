@@ -96,7 +96,6 @@ struct sound_stats
 
 #ifdef DEBUG_DRAW
 	float channel_volumes[SND_CHANNEL_COUNT];
-	float spectral_data[SND_BLOCKSIZE];
 #endif
 };
 
