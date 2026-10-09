@@ -11,7 +11,8 @@
 
 #### Описание методов (все в одном блоке):
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_ltx_utils.script]
 --// Проверить существование секции в глобальном INI (с кэшированием).
 has_section(section)
 args: section (string) - имя секции
@@ -97,6 +98,7 @@ ini_parse_separated(_ini, section, parameter, def_value)
 args: _ini (table) - INI-объект, section (string) - имя секции, parameter (string) - имя параметра, def_value (any) - значение по умолчанию
 retval: (table|any) - таблица строк (обрезанных) или def_value в случае ошибки
 ```
+:::
 
 ### Примеры использований:
 ```lua

@@ -71,7 +71,7 @@ args:
 retval: (mixed) - result of the callback execution.
 ```
 
-Examples:
+### Examples:
 ```lua
 --// Add a callback interceptor
 AddIntercept("my-event-name", {"game_object"})

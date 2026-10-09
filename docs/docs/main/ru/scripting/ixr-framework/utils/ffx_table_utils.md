@@ -21,7 +21,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_table_utils.script]
 --// Проверить, есть ли в массиве таблиц элемент, у которого значение по указанному ключу равно искомому.
 is_value_exists_by_key(tbl, key, value)
 args:
@@ -113,6 +114,7 @@ args:
   tbl (table)(required) - таблица для извлечения ключей.
 retval: (table) - массив ключей.
 ```
+:::
 
 ### Примеры использований:
 ```lua

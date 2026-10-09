@@ -13,7 +13,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_particles_utils.script]
 --// Создать или переиспользовать систему частиц. В текущей реализации параметр id игнорируется – новый объект создаётся с автоматическим индексом, после чего проигрывается в указанной позиции.
 play_async(id, pg_path, pos)
 args:
@@ -52,6 +53,7 @@ args:
   direction (vector)(required) - вектор направления для базиса Z.
 retval: (none)
 ```
+:::
 
 ### Примеры использований:
 ```lua

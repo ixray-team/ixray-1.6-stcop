@@ -16,7 +16,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_spawn_utils.script]
 --// Создать указанное количество объектов секции на позиции актёра на земле.
 spawn_on_ground_by_actor_pos(section, count)
 args:
@@ -76,6 +77,7 @@ args:
   npc_id (number)(required) - серверный ID NPC.
 retval: (server_object|false) - серверный объект или false при ошибке.
 ```
+:::
 
 ### Примеры использований:
 ```lua

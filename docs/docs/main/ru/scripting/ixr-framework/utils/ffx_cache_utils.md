@@ -10,7 +10,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_cache_utils.script]
 --// Получить значение из кеша. Если ключ отсутствует или записи устарела, вызывается fn_closure для получения свежего значения, которое затем сохраняется и возвращается.
 get_cached(key_name, fn_closure, time_invalidate, default_value, skip_errors)
 args:
@@ -27,8 +28,9 @@ args:
   key_name (string)(required) - ключ кеша для удаления.
 retval: (none)
 ```
+:::
 
-Примеры использований:
+### Примеры использований:
 ```lua
 --// Получаем данные, кешируем на 30 секунд (30000 мс)
 local data = ffx_cache_utils.get_cached("user_profile", function()

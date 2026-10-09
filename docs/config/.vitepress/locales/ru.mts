@@ -21,6 +21,12 @@ export const ruLocale = {
   lang: 'ru',
   dir: 'ltr',
   themeConfig: {
+    parameterDetails: {
+      defaultValue: 'По умолчанию',
+      normalMode: 'Обычно',
+      zoomMode: 'Прицеливание',
+      format: 'Формат',
+    },
     outline: { level: [2, 3], label: 'Содержание' },
     docFooter: {
       prev: 'Предыдущая страница',
@@ -33,7 +39,7 @@ export const ruLocale = {
       linkText: 'Вернуться домой',
     },
     editLink: {
-      pattern: 'https://github.com/ixray-team/ixray-1.6-stcop/edit/default/docs/:path',
+      pattern: 'https://github.com/ixray-team/ixray-1.6-stcop/edit/default/docs/docs/:path',
       text: 'Редактировать страницу',
     },
     lastUpdated: {
@@ -82,3 +88,4 @@ export const ruLocale = {
     },
   },
 }
+

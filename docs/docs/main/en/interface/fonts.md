@@ -9,7 +9,7 @@
 
 ## New Font
 * Place your font in: `$game_fonts$`. (default `gamedata/fonts/{lang}`)
-* * `{lang}` - localization folder (rus/en/chs/etc...)
+* `{lang}` - localization folder (rus/en/chs/etc...)
 * Register in `fonts.ltx` as follows:
 ```ini
 [new_font] ; Name for use in XML 

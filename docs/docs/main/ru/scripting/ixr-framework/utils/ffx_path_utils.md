@@ -9,7 +9,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_path_utils.script]
 --// Извлечь имя файла из полного пути. Опционально удалить расширение.
 get_file_name(file_path, remove_ext)
 args:
@@ -17,6 +18,7 @@ args:
   remove_ext (boolean)(optional) - если true, удаляет расширение из имени (по умолчанию false).
 retval: (string) - извлечённое имя файла (с расширением или без).
 ```
+:::
 
 ### Примеры использований:
 ```lua

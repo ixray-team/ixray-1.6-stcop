@@ -45,7 +45,7 @@ args:
 retval: (void)
 ```
 
-Examples (private storage, script namespace isolated):
+### Examples (private storage, script namespace isolated):
 ```lua
 --// Check if a variable exists in private storage
 if HasStorageVar(var_name) then
@@ -97,7 +97,7 @@ args:
 retval: (bool) - success.
 ```
 
-Examples (private chunk storage, script namespace and object ID isolated):
+### Examples (private chunk storage, script namespace and object ID isolated):
 ```lua
 --// Check if an object variable exists in chunk storage
 if HasStorageObjectVar(self.object:id(), "game_difficulty") then

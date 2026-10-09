@@ -12,7 +12,9 @@
 * `read_binary_file`
 
 #### Описание методов:
-```lua
+
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_io_utils.script]
 --// Записать текстовую строку в файл.
 write_string_file(text, file_path, mode)
 args:
@@ -42,6 +44,7 @@ args:
   def_value (any) - значение по умолчанию, возвращаемое, если файл не существует или не читается
 retval: (string|any) - бинарные данные в виде строки, либо def_value в случае ошибки
 ```
+:::
 
 ### Примеры использований:
 ```lua

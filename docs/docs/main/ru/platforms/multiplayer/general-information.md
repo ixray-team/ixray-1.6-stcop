@@ -1,28 +1,39 @@
 # Мультиплеер
-## Общее сведения
-> [!IMPORTANT]  
-> **Статус**: WIP <br>
-> **Минимальная версия**: 2.0
-## Alife
-Была добавлена опциональная поддержка alife для мультиплеерных режимов. Для её активации достаточно поместить `level.spawn` в папку с mp локацией
 
-### Dedicated Server
-**Dedicated Server** был вынесен в отдельный исполняемый файл, под названием `xrServer.exe`. 
+::: important Поддержка
+**Статус:** WIP · **Минимальная версия:** 2.0
+:::
+
+## ALife
+
+В мультиплеерных режимах доступна опциональная поддержка ALife. Для её активации поместите `level.spawn` в папку мультиплеерной локации.
+
+## Dedicated Server
+
+Выделенный сервер вынесен в отдельный исполняемый файл `xrServer.exe`.
+
+Подробнее — в разделе [Dedicated Server](./dedicated-server.md).
 
 ## FreeMP
-Новый мультиплеерный режим, представляющий свободный вариант игры, приближённый к одиночному. 
-Для регистрации данной локацией в FreeMP нужно прописать в `level.ltx` в секцию `map_usage` строку `freemp`. Пример: 
-```ini
+
+FreeMP — мультиплеерный режим свободной игры, приближённый к одиночному.
+
+Чтобы зарегистрировать локацию в FreeMP, добавьте строку `freemp` в секцию `[map_usage]` файла `level.ltx`:
+
+```ini [level.ltx]
 [map_usage]
 ver=1.0
 freemp
 ```
 
-### mp_events.script
-> **mp_events** - один из основных скриптов для работы OMP. Он реализует базовый механизм отправки и обработки сетевых пакетов между клиентом и сервером для синхронизации объектов и состояний.
+### Сетевые события
 
-```lua
-local M_SCRIPT_CUSTOM_EVENT = script_events.M_SCRIPT_EVENT --// Важный момент для совместимости с IXR. 
+`mp_events` — один из основных скриптов OMP. Он отправляет и обрабатывает сетевые пакеты между клиентом и сервером для синхронизации объектов и состояний.
+
+**Совместимость с IX-Ray:** используйте `script_events.M_SCRIPT_EVENT`. Хардкодное значение из оригинального OMP несовместимо с IX-Ray.
+
+```lua [mp_events.script]
+local M_SCRIPT_CUSTOM_EVENT = script_events.M_SCRIPT_EVENT --// Важный момент для совместимости с IXR.
                             --// Оригинальный OMP использует хардкодное значение, которое не совместимо с IX-Ray.
 
 local EVENTS =
@@ -66,7 +77,7 @@ function process_client_events()
 	while script_events.get_size_client_events() > 0 do
 		local P = script_events.get_last_client_event()
 		local type = P:r_u8()
-		
+
 		if type == EVENTS.INIT_EVENT then
 			-- init event for single actor object
 
@@ -88,7 +99,7 @@ function process_client_events()
 	end
 end
 
-function process_server_events()	
+function process_server_events()
 	while script_events.get_size_server_events() > 0 do
 		local e = script_events.get_last_server_event()
 		local P = e.Packet
@@ -104,7 +115,7 @@ function process_server_events()
 			mp_doors_sync.sv_write_all_door_sections(packet)
 			mp_trade_sync.sv_write_all_trade_configs(packet)
 			send_to_client(e.SenderID, packet)
-			
+
 		elseif type == EVENTS.DOOR_USE then
 			mp_doors_sync.sv_process_use_door_event(e.SenderID, P)
 		end
@@ -114,9 +125,11 @@ function process_server_events()
 end
 ```
 
-### mp\\fmp_respawn_items.ltx
-> Конфиг, описывающий базовые вещи при спавне игрока на локации. 
-```ini
+### Стартовый набор игрока
+
+Файл `mp\fmp_respawn_items.ltx` определяет предметы, которые игрок получает при появлении на локации.
+
+```ini [mp\fmp_respawn_items.ltx]
 [spawn]
 wpn_val = 1
 ammo_9x39_ap = 1
@@ -130,8 +143,9 @@ device_pda = 1
 mp_players_rukzak = 1
 ```
 
-### Пример
-Аддон с тестовой локацией из проекта [OMP](https://github.com/xray-omp):
-https://github.com/ixray-community/ixray-addons/blob/default/omp_level.db
+### Тестовая локация
 
-Поместить в папку `$fs_root$/ixr_addons/`
+Для проверки FreeMP доступен аддон с тестовой локацией из проекта [OMP](https://github.com/xray-omp).
+
+1. Скачайте [omp_level.db](https://github.com/ixray-community/ixray-addons/blob/default/omp_level.db).
+2. Поместите файл в папку `$fs_root$/ixr_addons/`.

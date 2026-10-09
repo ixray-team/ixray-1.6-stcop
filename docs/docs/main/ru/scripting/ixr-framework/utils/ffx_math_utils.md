@@ -12,7 +12,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_math_utils.script]
 --// Округлить число по классическому правилу: 0.5 и выше — вверх, иначе — вниз.
 classic_round(value)
 args:
@@ -42,6 +43,7 @@ args:
   second_value (number)(required) - делитель.
 retval: (number) - результат деления, или 0 при небезопасном делении.
 ```
+:::
 
 ### Примеры использований:
 ```lua

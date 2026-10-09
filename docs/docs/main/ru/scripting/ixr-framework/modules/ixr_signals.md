@@ -74,7 +74,7 @@ args:
 retval: (mixed) - результат выполнения коллбэка.
  ```
 
-Примеры:
+### Примеры:
 ```lua
  --// Добавить перехватчик коллбэка
 AddIntercept("my-event-name", {"game_object"})

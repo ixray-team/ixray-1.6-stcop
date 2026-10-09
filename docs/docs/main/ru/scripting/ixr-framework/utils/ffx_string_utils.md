@@ -23,7 +23,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_string_utils.script]
 --// Возвращает длину строки, или 0, если входные данные nil.
 get_length(str)
 args:
@@ -124,6 +125,7 @@ args:
   substring (string)(required) - подстрока для удаления.
 retval: (string) - строка без указанных вхождений.
 ```
+:::
 
 ### Примеры использований:
 ```lua

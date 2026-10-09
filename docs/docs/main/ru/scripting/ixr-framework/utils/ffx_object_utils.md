@@ -23,7 +23,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_object_utils.script]
 --// Проверить, существует ли актёр (с кешированием результата).
 has_actor()
 args:
@@ -119,6 +120,7 @@ args:
   _gobj (userdata)(optional) - объект для теста; если не указан, используется актёр.
 retval: (none)
 ```
+:::
 
 ### Примеры использований:
 ```lua

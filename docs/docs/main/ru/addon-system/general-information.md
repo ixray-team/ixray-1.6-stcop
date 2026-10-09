@@ -15,10 +15,13 @@
 #### addon.init - мета информация
 * Данный файл может быть пустым 
 * Данный файл может имеет следующую структуру:
-```yaml
+::: code-group
+```yaml [addon.init]
 name: IX-Ray Anim Items
 script: test_script.script
 ```
+:::
+
 `name:` - название вашего аддона (опционально)
 
 `script:` - точка входа скриптовых систем вашего аддона (опционально). __Подробнее ниже__!
@@ -38,6 +41,6 @@ RegisterScriptCallback("save", my_script.save)     --// вызывает код 
 ![image](https://github.com/user-attachments/assets/f0c93315-5efe-4cf1-b953-a893e0d5d45c)
 
 ## Системы для работы аддонов
-* [XMLOverride](https://github.com/ixray-team/ixray-1.6-stcop/wiki/Addons:-XMLOverride)
-* [DLTX](https://github.com/ixray-team/ixray-1.6-stcop/wiki/Addons:-DLTX)
-* [Система скриптовых коллбэков](https://github.com/ixray-team/ixray-1.6-stcop/wiki/Lua:-%D0%A1%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0-%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D0%BE%D0%B2%D1%8B%D1%85-%D0%BA%D0%BE%D0%BB%D0%BB%D0%B1%D1%8D%D0%BA%D0%BE%D0%B2)
+* [XMLOverride](../configs/xml-override.md)
+* [DLTX](../configs/dltx.md)
+* [Система скриптовых коллбэков](../scripting/script-callback-system.md)

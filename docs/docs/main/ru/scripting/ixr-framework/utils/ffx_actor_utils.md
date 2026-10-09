@@ -9,15 +9,18 @@
 * `is_in_crouch`
 
 #### Описание методов:
-```lua
+
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_actor_utils.script]
 --// Проверить, находится ли актёр в приседе.
 is_in_crouch()
 args:
   (none)
 retval: (boolean) - true, если актёр существует и находится в приседе, иначе false.
 ```
+:::
 
-#### Примеры использований:
+### Примеры использований:
 ```lua
 if ffx_actor_utils.is_in_crouch() then
   SemiLog("ГГ в присяди")

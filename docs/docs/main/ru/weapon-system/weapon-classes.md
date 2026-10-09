@@ -160,7 +160,7 @@ ammo_params_toggle_shooting = "false" ; Блокировка обновлени�
 ammo_params_use_last_cartridge_type = "false" ; Нужно ли отображать предыдущий стреляемый тип (например, используется для протекты, т.к. там вылетает первая гильза, только после второго выстрела)
 ammo_params_use_chamber = "false" ; Нужно ли использовать патрон в патроннике для счётчика (например, используется для гаусс пушки, чтоб отобразить на экране не только патроны в магазине, но и в патроннике)
 
-Содержание секции из ammo_params_section'ов:
+Содержание секции из ammo_params_section(ов):
 [ammo_toz34_red]
 all_bones = shell1_red, shell2_red, shell1_blue, shell2_blue, ammo1_red, ammo2_red, ammo1_blue, ammo2_blue ; Все кости, которые используются для показа/скрытия.
 

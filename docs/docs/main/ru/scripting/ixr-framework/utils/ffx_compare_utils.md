@@ -16,7 +16,9 @@
 * `has_pattern`
 
 #### Описание методов:
-```lua
+
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_compare_utils.script]
 --// Проверить, является ли объект таблицей.
 is_table(object)
 args:
@@ -72,7 +74,9 @@ args:
   wildcard (string, optional) - символ wildcard, по умолчанию '*'
 retval: (boolean) - true, если строка соответствует шаблону, иначе false
 ```
+:::
 
+### Примеры использований:
 ```lua
 --// Проверка типа
 if ffx_compare_utils.is_table({}) then

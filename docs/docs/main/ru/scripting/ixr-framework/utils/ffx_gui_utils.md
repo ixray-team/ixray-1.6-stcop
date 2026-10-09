@@ -12,7 +12,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_gui_utils.script]
 --// Запустить GUI-диалог с возможностью скрыть инвентарь и оружие.
 run_gui(gui, close_inv)
 args:
@@ -20,6 +21,7 @@ args:
   close_inv (boolean, optional) - если true, скрывает меню инвентаря (game_hide_menu()) и убирает отображение оружия (level.show_weapon(false))
 retval: (none)
 ```
+:::
 
 ### Примеры использований:
 ```lua

@@ -13,7 +13,8 @@
 
 #### Описание методов:
 
-```lua
+::: code-group
+```lua [gamedata\scripts\ixr_framework\utils\ffx_console_utils.script]
 --// Зарегистрировать новую команду в консоли.
 register_command(name, _callable, tips_table)
 args:
@@ -29,8 +30,9 @@ args:
   arg (string|number|boolean) - аргумент команды. Если передана строка "true", она преобразуется в число 1; строка "false" → 0. Остальные значения приводятся к строке.
 retval: (none)
 ```
+:::
 
-#### Примеры использований:
+### Примеры использований:
 ```lua
 -- Регистрация команды без подсказок
 ffx_console_utils.register_command("mycmd", function(...)

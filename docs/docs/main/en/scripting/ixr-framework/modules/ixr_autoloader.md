@@ -11,8 +11,9 @@ A system for automatic script initialization. Any script not filtered out by the
 * Synergizes with the signals system.
 * To trigger automatically, just add a function named on_game_start() to your script.
 
-Override settings file compatible with the addon system: __ixr_override_autoload_system.script
-```lua
+Override settings file compatible with the addon system:
+::: code-group
+```lua [gamedata\__ixr_override_autoload_system.script]
 function configure(_ref_ixr_autoloader)
 
   -- single ignore by file names
@@ -27,8 +28,9 @@ text*text -- text starts and ends with phrase
 *text -- text ends with phrase
 text*text*text -- complex stepwise substring matching
 ```
+:::
 
-Example:
+### Example:
 ```lua
 --// Example implementation
 function on_game_start()
