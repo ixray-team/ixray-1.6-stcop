@@ -44,9 +44,20 @@ struct AudioEditorState
 	const char* BusStatus = "";
 	float LoadHistory[120] = {};
 	u32 HistoryIdx = 0;
+	ref_sound* Preview = nullptr;
 };
 
 static AudioEditorState GAudioEditor;
+
+static void Audio_StopPreview()
+{
+	if (GAudioEditor.Preview != nullptr)
+	{
+		GAudioEditor.Preview->stop();
+		delete GAudioEditor.Preview;
+		GAudioEditor.Preview = nullptr;
+	}
+}
 
 static shared_str Audio_Normalize(const char* Name)
 {
@@ -341,6 +352,21 @@ static void Audio_RenderDetails()
 	}
 
 	ImGui::SameLine();
+	if (ImGui::Button("Play"))
+	{
+		Audio_StopPreview();
+		GAudioEditor.Preview = new ref_sound();
+		GAudioEditor.Preview->create(GAudioEditor.Selected.c_str(), st_Effect, 0);
+		GAudioEditor.Preview->play(nullptr, sm_2D);
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Stop"))
+	{
+		Audio_StopPreview();
+	}
+
+	ImGui::SameLine();
 	ImGui::TextDisabled("%s", GAudioEditor.SaveStatus);
 
 	ImGui::SeparatorText("Instances");
@@ -387,9 +413,8 @@ static void Audio_RenderInspector()
 		GAudioEditor.Frozen.clear();
 	}
 
-	ImGui::SetItemTooltip("Keep sounds in the list after they stop matching the filter");
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	if (ImGui::InputTextWithHint("##Search", "search sounds (a,b include, -c exclude)", GAudioEditor.NameFilter.InputBuf, IM_ARRAYSIZE(GAudioEditor.NameFilter.InputBuf)))
+	ImGui::SetNextItemWidth(std::max(ImGui::GetContentRegionAvail().x, 200.0f));
+	if (ImGui::InputText("##Search", GAudioEditor.NameFilter.InputBuf, IM_ARRAYSIZE(GAudioEditor.NameFilter.InputBuf)))
 	{
 		GAudioEditor.NameFilter.Build();
 	}
