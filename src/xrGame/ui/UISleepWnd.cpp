@@ -968,7 +968,7 @@ void CUISleepWnd::OnConfirmSleep()
 	AddPP(*m_params.ppEffector, m_params.ppId);
 	actor->GiveInfoPortion("actor_is_sleeping");
 
-	float* MusicVolume = XRay::Sound::Mixer::GetSubmixVolume(SoundSubmixId::Music);
+	float* MusicVolume = XRay::Sound::Mixer::GetBusVolume("music");
 	float* MasterVolume = XRay::Sound::Mixer::GetMasterVolume();
 	m_savedMusic = *MusicVolume;
 	m_savedEffects = *MasterVolume;
@@ -1012,7 +1012,7 @@ void CUISleepWnd::WakeUp()
 
 void CUISleepWnd::RestoreSleepAudio()
 {
-	if (m_params.muteMusic) *XRay::Sound::Mixer::GetSubmixVolume(SoundSubmixId::Music) = m_savedMusic;
+	if (m_params.muteMusic) *XRay::Sound::Mixer::GetBusVolume("music") = m_savedMusic;
 	if (m_params.muteEffects) *XRay::Sound::Mixer::GetMasterVolume() = m_savedEffects;
 	m_savedMusic = m_savedEffects = 0.f;
 }

@@ -29,15 +29,18 @@
  **************************************************************************************/
 #include "SoundSource.h"
 #include "ogg_utils.h"
+#include "SoundBus.h"
+#include "SoundConfig.h"
+#include "../xrCore/xrAddons.h"
 
 #define SND_CACHE_CHUNK_LINES (32)
 #define SND_CACHE_LINE_WIDTH (12)
 #define SND_CACHE_LINE_CAPACITY ((SND_BLOCKSIZE + 1) * SND_CACHE_LINE_WIDTH)
-#define SND_CACHE_LINE_MAX_TIME_NS (1000000000)
 // A decoded line is guaranteed to cover at least this many frames after the requested position
 #define SND_CACHE_LINE_MIN_AHEAD (SND_CACHE_LINE_CAPACITY / 2)
 // How far ahead of the play position the decode thread is asked to stay
 #define SND_CACHE_PREFETCH_FRAMES (SND_BLOCKSIZE * 8)
+#define SND_CACHE_LINE_MAX_TIME_NS ((u64)SND_CACHE_PREFETCH_FRAMES * 2 * 1000000000 / SND_SAMPLERATE)
 #define SND_DEFAULT_MAX_DISTANCE (300.0f)
 
 struct SoundDecodeCommand
@@ -166,13 +169,14 @@ static u32 Snd_NewCacheLine()
 			}
 		}
 
-		if (OldestIdx == 0 || (Snd_GetTimestamp() - OldestTimestamp) < SND_CACHE_LINE_MAX_TIME_NS)
-		{
-			Snd_GrowCacheLines();
-		}
-		else
+		bool IsFull = (u64)(LineCount + SND_CACHE_CHUNK_LINES) * sizeof(SoundCacheLine) > (u64)psSoundCacheSizeMB * 1024 * 1024;
+		if (OldestIdx != 0 && (IsFull || Snd_GetTimestamp() - OldestTimestamp >= SND_CACHE_LINE_MAX_TIME_NS))
 		{
 			Snd_PurgeCacheLine(OldestIdx, true);
+		}
+		else if (!IsFull)
+		{
+			Snd_GrowCacheLines();
 		}
 	}
 
@@ -301,6 +305,7 @@ static bool Snd_UpdateCache(SoundSourceState* Source, u32 Position)
 	xrCriticalSectionGuard DecodeGuard(Source->DecodeLock);
 
 	u32 NewIdx = 0;
+	SoundCacheLine* Line = nullptr;
 	{
 		xrSRWLockGuard Guard(GSourcePool.CacheLock, false);
 
@@ -321,9 +326,9 @@ static bool Snd_UpdateCache(SoundSourceState* Source, u32 Position)
 		{
 			return false;
 		}
-	}
 
-	SoundCacheLine* Line = Snd_GetCacheLine(NewIdx);
+		Line = Snd_GetCacheLine(NewIdx);
+	}
 
 	// Page seek is cheap but can land far before Position. Fall back to precise seek
 	// if the line wouldn't cover enough frames after Position.
@@ -386,10 +391,10 @@ static bool Snd_UpdateCache(SoundSourceState* Source, u32 Position)
 	return false;
 }
 
-static void Snd_ParseOggComment(SoundSourceState* Source)
+static bool Snd_ParseOggComment(OggVorbis_File* File, sound_source_desc* Desc)
 {
 	bool IsParsed = false;
-	vorbis_comment* Comment = ov_comment(&Source->File, -1);
+	vorbis_comment* Comment = File != nullptr ? ov_comment(File, -1) : nullptr;
 	for (int CommentIdx = 0; Comment != nullptr && !IsParsed && CommentIdx < Comment->comments; CommentIdx++)
 	{
 		int CommentLength = Comment->comment_lengths[CommentIdx];
@@ -408,20 +413,92 @@ static void Snd_ParseOggComment(SoundSourceState* Source)
 				continue;
 			}
 
-			Source->Desc.min_distance = Reader.r_float();
-			Source->Desc.max_distance = Reader.r_float();
-			Source->Desc.volume = Decl->HasVolume ? Reader.r_float() : 1.0f;
-			Source->Desc.game_type = Reader.r_u32();
-			Source->Desc.max_ai_distance = Decl->HasAiDistance ? Reader.r_float() : SND_DEFAULT_MAX_DISTANCE;
+			Desc->min_distance = Reader.r_float();
+			Desc->max_distance = Reader.r_float();
+			Desc->volume = Decl->HasVolume ? Reader.r_float() : 1.0f;
+			Desc->game_type = (u16)Reader.r_u32();
+			Desc->max_ai_distance = Decl->HasAiDistance ? Reader.r_float() : SND_DEFAULT_MAX_DISTANCE;
 			IsParsed = true;
 			break;
 		}
 	}
 
-	if (!IsParsed)
+	return IsParsed;
+}
+
+static void Snd_ApplySoundConfig(const SoundConfigSection* Section, sound_source_desc* Desc)
+{
+	for (const CInifile::Item& Item : Section->Items)
 	{
-		Msg("~ Missing or invalid ogg-comment, file: %s", Source->Desc.name.c_str());
+		const char* Key = Item.first.c_str();
+		const char* Value = Item.second.size() ? Item.second.c_str() : "";
+		if (xr_strcmp(Key, "volume") == 0)
+		{
+			Desc->volume = (float)atof(Value);
+		}
+		else if (xr_strcmp(Key, "min_distance") == 0)
+		{
+			Desc->min_distance = (float)atof(Value);
+		}
+		else if (xr_strcmp(Key, "max_distance") == 0)
+		{
+			Desc->max_distance = (float)atof(Value);
+		}
+		else if (xr_strcmp(Key, "ai_distance") == 0)
+		{
+			Desc->max_ai_distance = (float)atof(Value);
+		}
+		else if (xr_strcmp(Key, "ai_type") == 0)
+		{
+			Desc->game_type = (u16)strtoul(Value, nullptr, 0);
+		}
+		else if (xr_strcmp(Key, "bus") == 0)
+		{
+			Desc->bus = Snd_FindBus(Value);
+		}
 	}
+}
+
+static void Snd_ReadSoundDesc(OggVorbis_File* File, const char* Name, const SoundConfigSection* Section, sound_source_desc* Desc)
+{
+	Desc->volume = 1.0f;
+	Desc->min_distance = 1.0f;
+	Desc->max_distance = SND_DEFAULT_MAX_DISTANCE;
+	Desc->max_ai_distance = SND_DEFAULT_MAX_DISTANCE;
+	Desc->game_type = 0;
+	Desc->bus = 0;
+
+	if (Section != nullptr)
+	{
+		Snd_ApplySoundConfig(Section, Desc);
+	}
+	else if (!Snd_ParseOggComment(File, Desc))
+	{
+		Msg("~ Missing or invalid ogg-comment, file: %s", Name);
+	}
+
+	// Above 1 is headroom against distance attenuation; the final gain is clamped after it
+	Desc->volume = Desc->volume >= 0.0f ? std::min(Desc->volume, 4.0f) : 0.0f;
+	if (Desc->min_distance < EPS_S)
+	{
+		Desc->min_distance = 1.0f;
+	}
+
+	if (Desc->max_distance < Desc->min_distance)
+	{
+		Desc->max_distance = Desc->min_distance + 1.0f;
+	}
+
+	if (Desc->max_ai_distance < EPS_S)
+	{
+		Desc->max_ai_distance = Desc->max_distance;
+	}
+}
+
+static const CLocatorAPI::file* Snd_ResolveSoundPath(const char* Name, string_path& Path)
+{
+	const CLocatorAPI::file* File = FS.path_exist("$level$") ? FS.exist(Path, "$level$", Name, ".ogg") : nullptr;
+	return File != nullptr ? File : FS.exist(Path, _game_sounds_, Name, ".ogg");
 }
 
 static void Snd_LoadSourceFile(SoundSourceState* Source, const char* Name)
@@ -438,13 +515,7 @@ static void Snd_LoadSourceFile(SoundSourceState* Source, const char* Name)
 
 	Source->Desc.name = BaseName;
 
-	xr_strconcat(Path, BaseName, ".ogg");
-	if (!FS.exist("$level$", Path))
-	{
-		FS.update_path(Path, _game_sounds_, Path);
-	}
-
-	if (!FS.exist(Path))
+	if (!Snd_ResolveSoundPath(BaseName, Path))
 	{
 		FS.update_path(Path, _game_sounds_, "$no_sound.ogg");
 		Msg("! Can't find sound '%s'", Source->Desc.name.c_str());
@@ -470,28 +541,7 @@ static void Snd_LoadSourceFile(SoundSourceState* Source, const char* Name)
 
 	Source->Desc.channels_count = Info->channels;
 	Source->Desc.frames_total = (u32)ov_pcm_total(&Source->File, -1);
-	Source->Desc.volume = 1.0f;
-	Source->Desc.min_distance = 1.0f;
-	Source->Desc.max_distance = SND_DEFAULT_MAX_DISTANCE;
-	Source->Desc.max_ai_distance = SND_DEFAULT_MAX_DISTANCE;
-
-	Snd_ParseOggComment(Source);
-
-	Source->Desc.volume = std::min(Source->Desc.volume, 1.0f);
-	if (Source->Desc.min_distance < EPS_S)
-	{
-		Source->Desc.min_distance = 1.0f;
-	}
-
-	if (Source->Desc.max_distance < Source->Desc.min_distance)
-	{
-		Source->Desc.max_distance = Source->Desc.min_distance + 1.0f;
-	}
-
-	if (Source->Desc.max_ai_distance < EPS_S)
-	{
-		Source->Desc.max_ai_distance = Source->Desc.max_distance;
-	}
+	Snd_ReadSoundDesc(&Source->File, BaseName, Snd_FindConfig(BaseName), &Source->Desc);
 }
 
 static void Snd_UnloadSourceFile(SoundSourceState* Source)
@@ -809,7 +859,197 @@ const sound_source_desc* XRay::Sound::Mixer::GetSource(u32 Index)
 	return nullptr;
 }
 
-void XRay::Sound::Mixer::LoadImpulseResponse(const char* Name, xr_vector<xr_vector<float>>& ChannelAudio, u32& SampleRate, u16& NumChannels)
+static shared_str Snd_GetSoundOrigin(const char* SoundPath)
+{
+	const CLocatorAPI::file* File = FS.exist(SoundPath);
+	const CAddonManager::AddonInfo* Addon = (File != nullptr && GAddonsManager != nullptr) ? GAddonsManager->FindAddon(*File) : nullptr;
+
+	string_path Name;
+	xr_strconcat(Name, "sounds\\", Addon != nullptr ? Addon->AddonName.c_str() : "vanilla", ".ltx");
+	return Name;
+}
+
+static CInifile* Snd_GetExportIni(xr_hash_map<shared_str, CInifile*>& Inis, const char* SoundPath)
+{
+	shared_str Origin = Snd_GetSoundOrigin(SoundPath);
+	CInifile*& Ini = Inis[Origin];
+	if (Ini == nullptr)
+	{
+		string_path Path;
+		FS.update_path(Path, _game_config_, Origin.c_str());
+		Ini = new CInifile(Path, false, true, false);
+	}
+
+	return Ini;
+}
+
+static void Snd_ReadSoundFile(const char* SoundPath, const char* Name, const SoundConfigSection* Section, sound_source_desc* Desc)
+{
+	IReader* Reader = FS.r_open(SoundPath);
+	OggVorbis_File Ogg = {};
+	ov_callbacks Callbacks = {ov_read_func, ov_seek_func, ov_close_func, ov_tell_func};
+	bool IsOpened = Reader != nullptr && ov_open_callbacks(Reader, &Ogg, nullptr, 0, Callbacks) == 0;
+	Snd_ReadSoundDesc(IsOpened ? &Ogg : nullptr, Name, Section, Desc);
+	if (IsOpened)
+	{
+		ov_clear(&Ogg);
+	}
+
+	if (Reader != nullptr)
+	{
+		FS.r_close(Reader);
+	}
+}
+
+static SoundSourceState* Snd_LookupSourceByName(const char* Name)
+{
+	for (auto& [Key, Source] : GSourcePool.Sources)
+	{
+		if (Source.IsReady && xr_strcmp(Source.Desc.name.c_str(), Name) == 0)
+		{
+			return &Source;
+		}
+	}
+
+	return nullptr;
+}
+
+static void Snd_CopySoundConfig(const sound_source_desc* Desc, sound_config* Config)
+{
+	Config->volume = Desc->volume;
+	Config->min_distance = Desc->min_distance;
+	Config->max_distance = Desc->max_distance;
+	Config->max_ai_distance = Desc->max_ai_distance;
+	Config->game_type = Desc->game_type;
+	Config->bus = Desc->bus;
+}
+
+bool Snd_GetSoundConfig(const char* Name, sound_config* Config)
+{
+	const SoundConfigSection* Section = Snd_FindConfig(Name);
+	Config->file = Section != nullptr ? Section->File : shared_str();
+
+	{
+		xrSRWLockGuard Guard(g_SoundSourceLock, true);
+		if (SoundSourceState* Source = Snd_LookupSourceByName(Name))
+		{
+			Snd_CopySoundConfig(&Source->Desc, Config);
+			return true;
+		}
+	}
+
+	string_path Path;
+	if (!Snd_ResolveSoundPath(Name, Path))
+	{
+		return false;
+	}
+
+	sound_source_desc Desc = {};
+	Snd_ReadSoundFile(Path, Name, Section, &Desc);
+	Snd_CopySoundConfig(&Desc, Config);
+	return true;
+}
+
+SoundSourceState* Snd_SetSoundConfig(const char* Name, sound_config* Config)
+{
+	SoundConfigSection* Section = Snd_EditConfig(Name);
+	if (Section->File.size() == 0)
+	{
+		string_path Path;
+		Snd_ResolveSoundPath(Name, Path);
+		Section->File = Snd_GetSoundOrigin(Path);
+	}
+
+	const struct
+	{
+		const char* Key;
+		float Value;
+	} Floats[] = {{"volume", Config->volume}, {"min_distance", Config->min_distance}, {"max_distance", Config->max_distance}, {"ai_distance", Config->max_ai_distance}};
+
+	string64 Value;
+	for (const auto& Float : Floats)
+	{
+		xr_sprintf(Value, "%.3f", Float.Value);
+		Snd_SetConfigValue(Section, Float.Key, Value);
+	}
+
+	xr_sprintf(Value, "%u", Config->game_type);
+	Snd_SetConfigValue(Section, "ai_type", Value);
+
+	SoundBus* Bus = Snd_GetBus(Config->bus);
+	Snd_SetConfigValue(Section, "bus", Bus != nullptr ? Bus->Name : shared_str());
+	Config->file = Section->File;
+
+	SoundSourceState* Source = Snd_LookupSourceByName(Name);
+	if (Source != nullptr)
+	{
+		Snd_ReadSoundDesc(&Source->File, Name, Section, &Source->Desc);
+		Snd_CopySoundConfig(&Source->Desc, Config);
+	}
+
+	return Source;
+}
+
+void Snd_GetLoadedSources(xr_vector<shared_str>& Names)
+{
+	xrSRWLockGuard Guard(g_SoundSourceLock, true);
+	Names.clear();
+	for (auto& [Key, Source] : GSourcePool.Sources)
+	{
+		if (Source.IsReady)
+		{
+			Names.push_back(Source.Desc.name);
+		}
+	}
+}
+
+void Snd_ExportConfig()
+{
+	xr_hash_map<shared_str, CInifile*> Inis;
+	FS_FileSet Files;
+	FS.file_list(Files, _game_sounds_, FS_ListFiles, "*.ogg");
+
+	u32 Count = 0;
+	for (const FS_File& File : Files)
+	{
+		string_path Section;
+		xr_strcpy(Section, File.name.c_str());
+		xr_strlwr(Section);
+		if (char* Ext = strext(Section))
+		{
+			*Ext = 0;
+		}
+
+		string_path SoundPath;
+		FS.update_path(SoundPath, _game_sounds_, File.name.c_str());
+		CInifile* Ini = Snd_GetExportIni(Inis, SoundPath);
+		if (Ini->section_exist(Section))
+		{
+			continue;
+		}
+
+		sound_source_desc Desc = {};
+		Snd_ReadSoundFile(SoundPath, Section, nullptr, &Desc);
+
+		Ini->w_float(Section, "volume", Desc.volume);
+		Ini->w_float(Section, "min_distance", Desc.min_distance);
+		Ini->w_float(Section, "max_distance", Desc.max_distance);
+		Ini->w_float(Section, "ai_distance", Desc.max_ai_distance);
+		Ini->w_u32(Section, "ai_type", Desc.game_type);
+		Count++;
+	}
+
+	for (auto& [Origin, Ini] : Inis)
+	{
+		Ini->save_as();
+		Msg("* [Sound] Exported sounds to '%s'", Ini->fname());
+		xr_delete(Ini);
+	}
+
+	Msg("* [Sound] Exported %u sounds", Count);
+}
+
+void Snd_LoadImpulseResponse(const char* Name, xr_vector<xr_vector<float>>& ChannelAudio, u32& SampleRate, u16& NumChannels)
 {
 	SoundSourceState Source = {};
 	Snd_LoadSourceFile(&Source, Name);

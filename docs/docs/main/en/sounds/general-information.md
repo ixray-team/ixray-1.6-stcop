@@ -9,9 +9,6 @@ The system replaces the legacy **OpenAL / OpenAL Soft** audio stack with a moder
 
 Reverb is powered by [Resonance Audio](https://github.com/resonance-audio/resonance-audio).
 
-### Dev: SteamAudio (Phonon)
-An initial SteamAudio (Phonon) implementation is present. To try it instead of Resonance Audio, remove `#define DISABLE_STEAM_AUDIO`.
-
 ![image](https://github.com/user-attachments/assets/8350c915-e1ec-4ea8-9485-a4dfc71c0543)
 
 Implemented:
