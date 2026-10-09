@@ -17,7 +17,7 @@
 #include "../../../../xrEngine/Environment.h"
 #include "../../../../xrSound/ai_sounds.h"
 #include "../../../../xrCore/Save/SaveInterface.h"
-
+#include "../../../ai_object_location.h"
 namespace
 {
 using CrowBehaviorTiming::SCrowRange;
