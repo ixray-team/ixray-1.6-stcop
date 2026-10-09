@@ -721,6 +721,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	bool picked = false;
 	size_t bones_count = bones->size();
 	buffer_vector<Fobb> cache_obb(_alloca(bones_count * sizeof(Fobb)), bones_count);
+	cache_obb.resize(bones_count);
 	//���� �������� ���������� �������� �� xr_vector
 	IKinematics::pick_result r;r.normal = normal; r.dist = dist;
 	for (u16 k=0; k<bones_count; k++)
