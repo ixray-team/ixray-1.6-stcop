@@ -37,7 +37,7 @@ void CControlRunAttack::activate()
 		return;
 	}
 	ctrl_dir->heading.target_speed	= 3.f;
-	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(m_object->EnemyMan.get_enemy()->Position());
+	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(m_object->EnemyMan.GetTrackingPosition());
 
 	//////////////////////////////////////////////////////////////////////////
 	
@@ -61,6 +61,10 @@ void CControlRunAttack::on_release()
 
 bool CControlRunAttack::check_start_conditions()
 {
+	if (m_object->ShouldApproachHiddenEnemy() || m_object->ShouldFollowLastKnownEnemy())
+	{
+		return false;
+	}
 	if (is_active())						return false;	
 	if (m_man->is_captured_pure())			return false;
 	
@@ -115,7 +119,7 @@ void CControlRunAttack::on_event(ControlCom::EEventType type, ControlCom::IEvent
 			float					path_dist		= anim_time * velocity.velocity.linear;
 
 			Fvector					dir;
-			dir.sub					(m_object->EnemyMan.get_enemy()->Position(), m_object->Position());
+			dir.sub					(m_object->EnemyMan.GetTrackingPosition(), m_object->Position());
 			dir.normalize_safe		();
 
 			Fvector					target_position;

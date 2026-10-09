@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../../../xrCore/Kernel/EngineExternal.h"
 #include "control_jump.h"
 #include "basemonster/base_monster.h"
 #include "control_manager.h"
@@ -53,6 +54,10 @@ void CControlJump::load(const char* section)
 
 bool CControlJump::check_start_conditions()
 {
+	if (m_object->ShouldApproachHiddenEnemy() || m_object->ShouldFollowLastKnownEnemy())
+	{
+		return false;
+	}
 	if (is_active())				return false;	
 	if (m_man->is_captured_pure())	return false;
 
@@ -299,7 +304,8 @@ void CControlJump::update_frame()
 		SControlDirectionData * ctrl_data_dir = (SControlDirectionData*)m_man->data(this, ControlCom::eControlDir); 
 		VERIFY					(ctrl_data_dir);
 
-		ctrl_data_dir->heading.target_angle	= m_man->direction().angle_to_target(m_data.target_object->Position());
+		ctrl_data_dir->heading.target_angle	= m_man->direction().angle_to_target(m_data.target_object == m_object->EnemyMan.get_enemy() ?
+			m_object->EnemyMan.GetTrackingPosition() : m_data.target_object->Position());
 
 		float cur_yaw, target_yaw;
 		m_man->direction().get_heading			(cur_yaw, target_yaw);
@@ -396,6 +402,12 @@ void CControlJump::stop()
 // Get target point in world space
 Fvector CControlJump::get_target(CObject *obj)
 {
+	if (obj == m_object->EnemyMan.get_enemy() && !m_object->EnemyTrackingLive &&
+		EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] &&
+		!m_object->EnemyMan.see_enemy_now())
+	{
+		return m_object->EnemyMan.GetTrackingPosition();
+	}
 	u16 bone_id			= PKinematics(obj->Visual())->LL_GetBoneRoot			();
 	CBoneInstance &bone = PKinematics(obj->Visual())->LL_GetBoneInstance		(bone_id);
 

@@ -22,7 +22,7 @@ void CStateControlMoveOutAbstract::initialize()
 	m_current_delay					= DEFAULT_LOOK_POINT_CHANGE_DELAY;
 
 	// cheating here
-	m_enemy_vertex					= this->object->EnemyMan.get_enemy()->ai_location().level_vertex_id();
+	m_enemy_vertex					= this->object->EnemyMan.GetTrackingVertex();
 }
 
 TEMPLATE_SPECIALIZATION

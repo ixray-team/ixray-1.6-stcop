@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "../xrEngine/MonsterLogicTelemetry.h"
 #include "pch_script.h"
 #include "ai_debug.h"
 #include "Creature.h"
@@ -274,6 +275,8 @@ void CCreature::shedule_Update	( u32 DT )
 	CScriptEntity::process_sound_callbacks();
 	if (g_Alive() && OnServer())
 	{
+		CMonsterLogicTimerScope VisionTimer(EMonsterLogicTimer::Vision,
+			g_MonsterLogicTelemetry.Enabled.load(std::memory_order_relaxed) && cast_base_monster() != nullptr);
 		Exec_Visibility();
 		memory().update						(dt);
 	}

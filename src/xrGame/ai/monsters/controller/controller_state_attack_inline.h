@@ -85,14 +85,14 @@ void CStateControllerAttackAbstract::execute()
 
 		Fvector dir_xz				=	this->object->Direction();
 		dir_xz.y					=	0;
-		Fvector self_to_enemy_xz	=	enemy->Position() - this->object->Position();
+		Fvector self_to_enemy_xz	=	this->object->EnemyMan.GetTrackingPosition() - this->object->Position();
 		self_to_enemy_xz.y			=	0;
 
 		float const angle			=	angle_between_vectors(dir_xz, self_to_enemy_xz);
 		
 		if (std::abs(angle) > deg2rad(30.f) )
 		{
-			bool const rotate_right		=	this->object->control().direction().is_from_right(enemy->Position());
+			bool const rotate_right		=	this->object->control().direction().is_from_right(this->object->EnemyMan.GetTrackingPosition());
 			this->object->anim().set_override_animation	(rotate_right ? 
 													 eAnimStandTurnRight: eAnimStandTurnLeft, 0);
 			this->object->dir().face_target		(enemy);

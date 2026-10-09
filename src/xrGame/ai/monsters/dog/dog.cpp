@@ -426,7 +426,7 @@ void CAI_Dog::HitEntityInJump (const CEntity *pEntity)
 // Lain: added
 u32 CAI_Dog::get_attack_rebuild_time ()
 {
-	float dist = EnemyMan.get_enemy()->Position().distance_to(Position());
+	float dist = EnemyMan.GetTrackingPosition().distance_to(Position());
 	return 100 + u32(25*dist);
 }
 

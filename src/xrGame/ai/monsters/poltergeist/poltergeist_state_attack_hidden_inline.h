@@ -31,7 +31,7 @@ TEMPLATE_SPECIALIZATION
 void   CStatePoltergeistAttackHiddenAbstract::select_target_for_move ()
 {
 	CEntityAlive const* const	enemy		=	this->object->EnemyMan.get_enemy();
-	Fvector	const	enemy_pos				=	enemy->Position();
+	Fvector	const	enemy_pos				=	this->object->EnemyMan.GetTrackingPosition();
 	Fvector	const	self_pos				=	this->object->Position();
 	
 	Fvector	const	self2enemy				=	enemy_pos - self_pos;

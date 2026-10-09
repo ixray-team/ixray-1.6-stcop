@@ -155,6 +155,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 	xrSRWLockGuard guard(&lock_visible, false);
 	xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
 	for (; I != E; I++) {
+		I->OwnTraceVisible = false;
 		if (0 == I->O->CFORM()) { I->fuzzy = -1; continue; }
 
 		// verify relation
@@ -170,6 +171,10 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 		D.sub(OP, P);
 		if (fis_zero(D.magnitude())) {
 			I->fuzzy = 1.f;
+			I->OwnTraceVisible = true;
+			I->OwnExposureMilliseconds += std::min(std::max(dt, 0.f), .1f) * 1000.f;
+			I->OwnObservationTime = Device.dwTimeGlobal;
+			I->OwnObservationPosition = I->cp_LR_dst;
 			continue;
 		}
 
@@ -260,16 +265,73 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 			}
 			else {
 				// VISIBLE
+				I->OwnTraceVisible = true;
+				I->OwnExposureMilliseconds += std::min(std::max(dt, 0.f), .1f) * 1000.f;
+				I->OwnObservationTime = Device.dwTimeGlobal;
+				I->OwnObservationPosition = I->cp_LR_dst;
 				I->fuzzy += fuzzy_update_vis * dt;
 				clamp(I->fuzzy, -.5f, 1.f);
 			}
 		}
 		else {
-			// VISIBLE, 'cause near
+			// Keep native guaranteed-near visibility, but do not treat a wall as an own observation.
+			const float NearDistance = D.magnitude();
+			Fvector NearDirection = D;
+			NearDirection.div(NearDistance);
+			I->OwnTraceVisible = !g_pGameLevel->ObjectSpace.RayTest(P, NearDirection, NearDistance, collide::rqtStatic, nullptr, nullptr);
+			if (I->OwnTraceVisible)
+			{
+				I->OwnExposureMilliseconds += std::min(std::max(dt, 0.f), .1f) * 1000.f;
+				I->OwnObservationTime = Device.dwTimeGlobal;
+				I->OwnObservationPosition = I->cp_LR_dst;
+			}
 			I->fuzzy += fuzzy_update_vis * dt;
 			clamp(I->fuzzy, -.5f, 1.f);
 		}
 	}
+}
+
+void Vision::GetOwnVisibleObjects(xr_vector<CObject*>& Objects)
+{
+	Objects.clear();
+	xrSRWLockGuard Guard(&lock_visible, true);
+	Objects.reserve(feel_visible.size());
+	for (const feel_visible_Item& Item : feel_visible)
+	{
+		if (Item.O && !Item.O->getDestroy() && Item.OwnTraceVisible && positive(Item.fuzzy))
+		{
+			Objects.push_back(Item.O);
+		}
+	}
+}
+
+bool Vision::GetOwnVisionObservation(const CObject* Object, Fvector& Position, u32& Time)
+{
+	xrSRWLockGuard Guard(&lock_visible, true);
+	for (const feel_visible_Item& Item : feel_visible)
+	{
+		if (Item.O == Object && Item.OwnTraceVisible && positive(Item.fuzzy))
+		{
+			Position = Item.OwnObservationPosition;
+			Time = Item.OwnObservationTime;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Vision::GetOwnVisionExposure(const CObject* Object, float& Milliseconds)
+{
+	xrSRWLockGuard Guard(&lock_visible, true);
+	for (const feel_visible_Item& Item : feel_visible)
+	{
+		if (Item.O == Object)
+		{
+			Milliseconds = Item.OwnExposureMilliseconds;
+			return true;
+		}
+	}
+	return false;
 }
 
 void Vision::feel_vision_get(xr_vector<CObject*>& R)

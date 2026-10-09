@@ -5,6 +5,7 @@
 #include "Render.h"
 #include "EngineThreading.h"
 #include "FPSCounter.h"
+#include "MonsterLogicTelemetry.h"
 #include "IGame_Level.h"
 #include "Autotest.h"
 
@@ -249,6 +250,7 @@ void CRenderDevice::on_idle		()
 					seqRender.Process<&pureRender::OnRender>();
 				}
 
+				g_MonsterLogicTelemetry.CaptureFrame(Device.fTimeDeltaContinual);
 				if (IsFpsShow &&
 					g_pGameLevel &&
 					!IsMainMenuActive &&

@@ -112,7 +112,7 @@ void CStateGroupAttackAbstract::execute()
 
 	bool const enemy_is_actor = enemy != nullptr && enemy->cast_actor() != nullptr;
 
-	const Fvector3 enemy_pos = enemy->Position();
+	const Fvector3 enemy_pos = this->object->EnemyMan.GetTrackingPosition();
 
 	const bool enemy_at_max_home = this->object->Home->at_home(enemy_pos);
 	const bool enemy_at_mid_home = this->object->Home->at_mid_home(enemy_pos);
@@ -254,7 +254,7 @@ void CStateGroupAttackAbstract::execute()
 						} 
 						else 
 						{
-							if (this->object->Position().distance_to(enemy->Position()) > 17.f + m_delta_distance)
+							if (this->object->Position().distance_to(this->object->EnemyMan.GetTrackingPosition()) > 17.f + m_delta_distance)
 							{
 								this->select_state(eStateAttack_Steal);
 							}
@@ -379,7 +379,7 @@ void   CStateGroupAttackAbstract::setup_substates ()
 		SStateDataMoveToPointEx data;
 
 		data.vertex				= 0;
-		data.point				= this->object->EnemyMan.get_enemy()->Position();
+		data.point				= this->object->EnemyMan.GetTrackingPosition();
 		data.action.action		= ACT_RUN;
 		data.action.time_out	= 0;		// do not use time out
 		data.completion_dist	= 15.f + m_delta_distance;		// get exactly to the point
@@ -400,7 +400,7 @@ void   CStateGroupAttackAbstract::setup_substates ()
 		SStateDataMoveToPointEx data;
 
 		data.vertex				= 0;
-		data.point				= this->object->EnemyMan.get_enemy()->Position();
+		data.point				= this->object->EnemyMan.GetTrackingPosition();
 		data.action.action		= ACT_WALK_FWD;
 		data.action.time_out	= 0;		// do not use time out
 		data.completion_dist	= 10.f + m_delta_distance;		// get exactly to the point
@@ -421,7 +421,7 @@ void   CStateGroupAttackAbstract::setup_substates ()
 		SStateDataMoveToPointEx data;
 
 		data.vertex				= 0;
-		data.point				= this->object->EnemyMan.get_enemy()->Position();
+		data.point				= this->object->EnemyMan.GetTrackingPosition();
 		data.action.action		= ACT_HOME_WALK_GROWL;
 		data.action.time_out	= 0;		// do not use time out
 		
@@ -448,7 +448,7 @@ void   CStateGroupAttackAbstract::setup_substates ()
 	if (this->current_substate == eStateAttack_RunAway )
 	{
 		SStateHideFromPoint		data;
-		data.point				= this->object->EnemyMan.get_enemy()->Position();
+		data.point				= this->object->EnemyMan.GetTrackingPosition();
 		data.accelerated		= true;
 		data.braking			= false;
 		data.accel_type			= eAT_Aggressive;

@@ -362,6 +362,7 @@ struct CScavengerCrow::SBehavior
             phase != Phase::Ground && phase != Phase::Roof && phase != Phase::Corpse &&
             phase != Phase::Shelter && phase != Phase::NightRest && phase != Phase::NightGround)
             return false;
+        if (bird.MonsterPeaceful) return false;
         const auto* Observation = CCrowSharedMemory::Get().Observe(point, radius);
         if (Observation)
         {

@@ -7,6 +7,9 @@
 #include "xrMessages.h"
 #include "xrServer.h"
 #include "Level.h"
+#include "../xrCore/Kernel/EngineExternal.h"
+#include "../xrEngine/MonsterLogicTelemetry.h"
+#include "MonsterEnemySharingDebug.h"
 #include "ai_debug.h"
 #include "alife_simulator.h"
 #include "game_cl_base.h"
@@ -1054,6 +1057,115 @@ public:
 #endif
 
 #include "ImUtils/ImUtils.h"
+class CCC_MonsterLogic : public IConsole_Command
+{
+public:
+	CCC_MonsterLogic(const char* Name) : IConsole_Command(Name) {}
+	void Execute(const char* Args) override
+	{
+		int Value;
+		if (!xr_strcmp(Args, "on") || !xr_strcmp(Args, "1"))
+		{
+			Value = 1;
+		}
+		else if (!xr_strcmp(Args, "off") || !xr_strcmp(Args, "0"))
+		{
+			Value = 0;
+		}
+		else if (!xr_strcmp(Args, "config"))
+		{
+			Value = -1;
+		}
+		else
+		{
+			InvalidSyntax();
+			return;
+		}
+		EngineExternal().SetMonsterLogicOverride(Value);
+		u32 Count = 0;
+		if (g_pGameLevel)
+		{
+			for (u32 Index = 0; Index < Level().Objects.o_count(); ++Index)
+			{
+				CObject* Object = Level().Objects.o_get_by_iterator(Index);
+				CBaseMonster* Monster = Object ? Object->cast_base_monster() : nullptr;
+				if (Monster && !Monster->getDestroy())
+				{
+					Monster->ReloadMonsterLogicOptions();
+					++Count;
+				}
+			}
+		}
+		g_MonsterLogicTelemetry.Reset();
+		Msg("Monster logic: %s; refreshed %u monsters", EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ? "ON" : "VANILLA", Count);
+	}
+	void Status(TStatus& S) override
+	{
+		const int Value = EngineExternal().GetMonsterLogicOverride();
+		xr_strcpy(S, Value < 0 ? "config" : (Value ? "on" : "off"));
+	}
+	void Info(TInfo& I) override { xr_strcpy(I, "on/off/config"); }
+	void Save(IWriter*) override {}
+};
+
+class CCC_MonsterLogicDraw : public IConsole_Command
+{
+public:
+	CCC_MonsterLogicDraw(const char* Name) : IConsole_Command(Name) {}
+	void Execute(const char* Args) override
+	{
+		const bool On = !xr_strcmp(Args, "on") || !xr_strcmp(Args, "1");
+		if (!On && xr_strcmp(Args, "off") && xr_strcmp(Args, "0"))
+		{
+			InvalidSyntax();
+			return;
+		}
+		MonsterEnemySharingDebug().SetEnabled(On);
+		if (On)
+		{
+			Msg("* Player sharing: green=own sight, white=close detection, yellow=radio, cyan=wireless, magenta=call; transfer arrows last 5s; yellow cross/up arrow=last known point while memory is valid");
+		}
+	}
+	void Status(TStatus& S) override { xr_strcpy(S, MonsterEnemySharingDebug().IsEnabled() ? "on" : "off"); }
+	void Info(TInfo& I) override { xr_strcpy(I, "on/off: player enemy sharing spheres and arrows"); }
+	void Save(IWriter*) override {}
+};
+
+class CCC_MonsterLogicStats : public IConsole_Command
+{
+public:
+	CCC_MonsterLogicStats(const char* Name) : IConsole_Command(Name) {}
+	void Execute(const char* Args) override
+	{
+		if (!xr_strcmp(Args, "reset"))
+		{
+			g_MonsterLogicTelemetry.Reset();
+			return;
+		}
+		const bool Full = !xr_strcmp(Args, "full") || !xr_strcmp(Args, "on") || !xr_strcmp(Args, "1");
+		const bool On = Full || !xr_strcmp(Args, "brief") || !xr_strcmp(Args, "on") || !xr_strcmp(Args, "1");
+		if (!On && xr_strcmp(Args, "off") && xr_strcmp(Args, "0"))
+		{
+			InvalidSyntax();
+			return;
+		}
+		g_MonsterLogicTelemetry.Detailed.store(Full, std::memory_order_relaxed);
+		g_MonsterLogicTelemetry.Enabled.store(On, std::memory_order_relaxed);
+		g_MonsterLogicTelemetry.Reset();
+		if (On)
+		{
+			Console->Execute("rs_fps_show on");
+		}
+	}
+	void Status(TStatus& S) override
+	{
+		xr_strcpy(S, !g_MonsterLogicTelemetry.Enabled.load(std::memory_order_relaxed) ? "off" :
+			g_MonsterLogicTelemetry.Detailed.load(std::memory_order_relaxed) ? "full" : "brief");
+	}
+	void Info(TInfo& I) override { xr_strcpy(I, "on/off/brief/full/reset"); }
+	void Save(IWriter*) override {}
+};
+
 struct CCC_ReloadSystemLtx : public IConsole_Command 
 {
 	CCC_ReloadSystemLtx(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
@@ -2162,6 +2274,8 @@ public:
 	}
 };
 
+#include "MonsterLogicTestSpawn.h"
+
 #include "alife_smart_terrain_registry.h"
 class CCC_SpawnSquad : public IConsole_Command {
 public:
@@ -2474,12 +2588,12 @@ public:
 			{
 				xr_shared_ptr<CParticlesObject> pParticle = Particles::Details::Create(string, false);
 
-				// вычислить позицию и направленность партикла
+				// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 				Fmatrix pos;
 				pos.identity();
 				pos.k.set(Level().CurrentControlEntity()->XFORM().k);
 				Fvector::generate_orthonormal_basis_normalized(pos.k, pos.j, pos.i);
-				// установить позицию
+				// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ
 				pos.c.set(Fvector(Device.vCameraPosition).add(Fvector(Device.vCameraDirection).mul(l_rq.range)));
 				pParticle->UpdateParent(pos, zero_vel);
 				GamePersistent().ps_needtoplay.push_back(pParticle);
@@ -2711,6 +2825,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_DisableInfo, "d_info");
 	CMD1(CCC_GiveMoney, "g_money");
 	CMD1(CCC_GSpawn, "g_spawn");
+	CMD1(CCC_GSpawnMonsters, "g_spawn_monsters");
 	CMD1(CCC_GSpawnOnDistance, "g_spawn_on_distance");
 	CMD1(CCC_GSpawnOnDistance, "g_spawn_on_dist");
 	CMD1(CCC_GSpawnToInventory, "g_spawn_inv");
@@ -2732,6 +2847,9 @@ void CCC_RegisterCommands()
 	CMD2(CCC_Boolean, "cl_cod_pickup_mode", &g_b_COD_PickUpMode);
 	
 	CMD1(CCC_MemStats, "stat_memory");
+	CMD1(CCC_MonsterLogic, "monster_logic");
+	CMD1(CCC_MonsterLogicStats, "monster_logic_stats");
+	CMD1(CCC_MonsterLogicDraw, "monster_logic_draw");
 	// game
 	CMD3(CCC_Mask32, "g_crouch_toggle", &psActorFlags, AF_CROUCH_TOGGLE);
 	CMD1(CCC_GameDifficulty, "g_game_difficulty");

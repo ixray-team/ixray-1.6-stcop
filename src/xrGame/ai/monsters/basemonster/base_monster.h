@@ -230,6 +230,74 @@ public:
 
 	virtual void			jump							(const Fvector &position, float factor) {}
 
+	void LoadMonsterLogicOptions(const char* section);
+	void LoadMonsterEnemyCall(const char* section);
+	void ReloadMonsterLogicOptions();
+	float EnemySharingRadius = 40.f;
+	float EnemySharingCloseRatio = .3f;
+	bool EnemyTrackingLive = false;
+	float EnemyCloseDetectionRadius = 0.f;
+	bool ShouldApproachHiddenEnemy();
+	bool ShouldFollowLastKnownEnemy();
+	bool HasReachedEnemyPoint(const Fvector& Point, u32 Vertex);
+	bool HasOpenEnemyCorridor(const Fvector& Point, u32 Vertex);
+	u32 ArrivalGeometryCheckTime = 0;
+	Fvector ArrivalGeometryPoint;
+	Fvector ArrivalGeometryStart;
+	bool ArrivalGeometryClear = false;
+	bool ShouldUseCloseEnemyCombat();
+	bool HasCloseSightCombat(const CEntityAlive* Target) const;
+	float EnemyCloseAttackDistance = 5.f;
+	u32 PlayerVisualAcquireTime = 400;
+	u32 EnemyStuckTime = 3000;
+	u32 PursuitTargetID = u32(-1);
+	u32 PursuitProgressTime = 0;
+	Fvector PursuitProgressPosition;
+	Fvector UnreachableBlockedGoal;
+	Fvector UnreachableSearchAnchor;
+	Fvector UnreachableSearchPoint;
+	u32 UnreachableSearchVertex = u32(-1);
+	u32 NextUnreachableSearchPoint = 0;
+	bool PursuitSearchingAround = false;
+	void UpdateUnreachablePursuit(const CEntityAlive* Target, bool WantsMovement);
+	u32 CloseSightCombatUntil = 0;
+	u32 CloseSightCombatTargetID = u32(-1);
+	bool LastKnownPursuitWasActive = false;
+	u32 EnemyMemoryRetentionMin = 30000;
+	u32 EnemyMemoryRetentionMax = 60000;
+	u32 EnemySearchAtPointTime = 15000;
+	bool EnemySharingWireless = false;
+	bool EnemySharingEnabled = true;
+	bool EnemyCallEnabled = false;
+	bool MonsterPeaceful = false;
+	float EnemyCallCooldown = 20.f;
+	u32 EnemyCallSoundType = MonsterSound::eMonsterSoundAggressive;
+	bool AutoPanicOnInvisibleDamage = false;
+	bool AutoFocusAttacker = false;
+	float AutoFocusMaxDist = 200.f;
+	u32 DamagePanicUntil = 0;
+	bool DamagePanicWasActive = false;
+	Fvector DamagePanicThreat = {0.f, 0.f, 0.f};
+	struct SNoiseReaction
+	{
+		bool Enabled = false;
+		float Radius = 0.f;
+		float PanicChance = 0.f;
+		bool Attract = false;
+		u32 NextReactionTime = 0;
+	};
+	SNoiseReaction ShotReaction;
+	SNoiseReaction ExplosionReaction;
+	u32 NoiseReactionCooldown = 3000;
+	u32 NoisePanicDuration = 6000;
+	float NoiseMinPower = .01f;
+	Fvector NoiseInvestigationPosition = {0.f, 0.f, 0.f};
+	u32 NoiseInvestigationVertex = u32(-1);
+	u32 NoiseInvestigationUntil = 0;
+	bool ReactToLoudNoise(CObject* Source, int SoundType, const Fvector& SoundPosition, float Power);
+	bool HasDamagePanic() const;
+	void ReactToActorDamage(float Amount, CObject* Attacker);
+	bool is_relation_enemy(const CEntityAlive* Other) const override;
 	bool					m_skip_transfer_enemy;			
 	IC		void			skip_transfer_enemy				(bool value){m_skip_transfer_enemy = value;}
 	

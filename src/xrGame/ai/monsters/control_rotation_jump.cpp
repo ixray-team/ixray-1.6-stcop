@@ -30,7 +30,7 @@ void CControlRotationJump::activate()
 	m_man->path_stop	(this);
 	m_man->move_stop	(this);
 
-	float yaw			= Fvector().sub(m_object->EnemyMan.get_enemy()->Position(), m_object->Position()).getH();
+	float yaw			= Fvector().sub(m_object->EnemyMan.GetTrackingPosition(), m_object->Position()).getH();
 	m_right_side		=  m_man->direction().is_from_right(angle_normalize(-yaw));
 	
 	//////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ bool CControlRotationJump::check_start_conditions()
 	if (m_time_next_rotation_jump > Device.dwTimeGlobal)	return false;
 
 	Fvector									enemy_position;
-	enemy_position.set						(m_object->EnemyMan.get_enemy()->Position());
+	enemy_position.set						(m_object->EnemyMan.GetTrackingPosition());
 	if (m_man->direction().is_face_target(enemy_position, CHECK_YAW))	return false;
 	
 	SVelocityParam &velocity_run			= m_object->move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
@@ -97,7 +97,7 @@ void CControlRotationJump::stop_at_once()
 	if (m_data.flags.is(SControlRotationJumpData::eRotateOnce) && m_object->EnemyMan.get_enemy()) {
 		// if rotate once so rotate to enemy
 		Fvector					dir_to_enemy;
-		dir_to_enemy.sub		(m_object->EnemyMan.get_enemy()->Position(), m_object->Position());
+		dir_to_enemy.sub		(m_object->EnemyMan.GetTrackingPosition(), m_object->Position());
 		dir_to_enemy.normalize	();
 		target_yaw				= angle_normalize(-dir_to_enemy.getH());
 	} else {
@@ -206,7 +206,7 @@ void CControlRotationJump::build_line_second()
 	VERIFY									(ctrl_data_dir);	
 
 	Fvector					dir_to_enemy;
-	dir_to_enemy.sub		(m_object->EnemyMan.get_enemy()->Position(), m_object->Position());
+	dir_to_enemy.sub		(m_object->EnemyMan.GetTrackingPosition(), m_object->Position());
 	dir_to_enemy.normalize	();
 	
 	float target_yaw						= dir_to_enemy.getH();

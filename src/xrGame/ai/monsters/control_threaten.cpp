@@ -29,7 +29,7 @@ void CControlThreaten::activate()
 		return;
 	}
 	ctrl_dir->heading.target_speed	= 1.f;
-	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(m_object->EnemyMan.get_enemy()->Position());
+	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(m_object->EnemyMan.GetTrackingPosition());
 
 	//////////////////////////////////////////////////////////////////////////
 	IKinematicsAnimated	*skel	= m_object->Visual()->dcast_PKinematicsAnimated();
@@ -57,7 +57,7 @@ void CControlThreaten::update_schedule()
 		{
 			return;
 		}
-		ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(m_object->EnemyMan.get_enemy()->Position());
+		ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(m_object->EnemyMan.GetTrackingPosition());
 	}
 }
 

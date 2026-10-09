@@ -59,7 +59,7 @@ void CStateManagerDog::execute()
 	bool atack = false;
 	if ( enemy )
 	{
-		const Fvector3& enemy_pos = enemy->Position();
+		const Fvector3& enemy_pos = object->EnemyMan.GetTrackingPosition();
 
 		if ( squad )
 		{

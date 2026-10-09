@@ -86,7 +86,7 @@ bool   ATTACK_ON_RUN_STATE::check_control_start_conditions	(ControlCom::EControl
 	if ( type == ControlCom::eControlRotationJump )
 	{
 		CEntityAlive const* const enemy	=	this->object->EnemyMan.get_enemy();
-		Fvector const   enemy_pos		=	enemy->Position();
+		Fvector const   enemy_pos		=	this->object->EnemyMan.GetTrackingPosition();
 		float const		self2enemy_mag	=	enemy_pos.distance_to(this->object->Position());
 
 		return								m_phaze == go_close &&
@@ -116,7 +116,7 @@ void   ATTACK_ON_RUN_STATE::set_movement_phaze (phaze const new_phaze)
 		m_go_far_start_point			=	this->object->Position();
 		m_can_do_rotation_jump			=	!(rand() % 2);
 		CEntityAlive const* const enemy	=	this->object->EnemyMan.get_enemy();
-		Fvector const   enemy_pos		=	enemy->Position();
+		Fvector const   enemy_pos		=	this->object->EnemyMan.GetTrackingPosition();
 		Fvector const   self2enemy		=	enemy_pos - this->object->Position();
 		Fvector const   self_dir		=	this->object->Direction();
 
@@ -133,7 +133,7 @@ void   ATTACK_ON_RUN_STATE::calculate_predicted_enemy_pos ()
 
 	float const		epsilon					=	0.0001f;
 	CEntityAlive const* const enemy			=	this->object->EnemyMan.get_enemy();
-	Fvector const   enemy_pos				=	enemy->Position();
+	Fvector const   enemy_pos				=	this->object->EnemyMan.GetTrackingPosition();
 	float const		self2enemy_mag			=	magnitude(enemy_pos - this->object->Position());
 	float const		far_radius				=	this->object->get_attack_on_move_far_radius();
 
@@ -187,7 +187,7 @@ void   ATTACK_ON_RUN_STATE::update_aim_side ()
 	CEntityAlive const * const enemy		=	m_attacking ? m_enemy_to_attack : this->object->EnemyMan.get_enemy();
 	
 	Fvector const self_dir					=	this->object->Direction();
-	Fvector const self_to_enemy				=	enemy->Position() - this->object->Position();
+	Fvector const self_to_enemy				=	this->object->EnemyMan.GetTrackingPosition() - this->object->Position();
 
 	aim_side const	new_attack_side			=	(self_dir.x*self_to_enemy.z - self_dir.z*self_to_enemy.x > 0) ?
 												right : left;
@@ -251,14 +251,14 @@ void   ATTACK_ON_RUN_STATE::update_movement_target ()
 	float const	prepare_time				=	this->object->get_attack_on_move_prepare_time();
 	
 	CEntityAlive const* const enemy			=	this->object->EnemyMan.get_enemy();
-	Fvector	const		enemy_pos			=	enemy->Position();
+	Fvector	const		enemy_pos			=	this->object->EnemyMan.GetTrackingPosition();
 	Fvector const		self_pos			=	this->object->Position();
 	Fvector	const		self2enemy			=	enemy_pos - self_pos;
 	float const			self2enemy_mag		=	self2enemy.magnitude();
 	
 	if ( self2enemy_mag > far_radius*2 )
 	{
-		m_target_vertex						=	enemy->ai_location().level_vertex_id();
+		m_target_vertex						=	this->object->EnemyMan.GetTrackingVertex();
 		m_target							=	ai().level_graph().vertex_position(m_target_vertex);
 		m_predicted_enemy_pos				=	m_target;
 		return;
@@ -373,7 +373,7 @@ void   ATTACK_ON_RUN_STATE::update_movement_target ()
 
 	m_target								=	self_pos + self2target;
 
-	u32 const enemy_vertex					=	enemy->ai_location().level_vertex_id();
+	u32 const enemy_vertex					=	this->object->EnemyMan.GetTrackingVertex();
 	Fvector const enemy_vertex_pos			=	ai().level_graph().vertex_position(enemy_vertex);
 	u32 const target_vertex					=	ai().level_graph().check_position_in_direction(enemy_vertex, 
 																							   enemy_vertex_pos, 
@@ -385,7 +385,7 @@ void   ATTACK_ON_RUN_STATE::update_movement_target ()
 	{
 		if ( m_phaze == go_close )
 		{
-			m_target_vertex					=	enemy->ai_location().level_vertex_id();
+			m_target_vertex					=	this->object->EnemyMan.GetTrackingVertex();
 			m_target						=	ai().level_graph().vertex_position(m_target_vertex);
 			m_predicted_enemy_pos			=	m_target;
 
@@ -404,7 +404,7 @@ void   ATTACK_ON_RUN_STATE::select_prepare_fallback_target ()
 {
 	float const	far_radius					=	this->object->get_attack_on_move_far_radius();
 	CEntityAlive const* const	enemy		=	this->object->EnemyMan.get_enemy();
-	Fvector	const	enemy_pos				=	enemy->Position();
+	Fvector	const	enemy_pos				=	this->object->EnemyMan.GetTrackingPosition();
 
 	float	const	move_scan_points		=	8;
 	float	const	move_scan_angle			=	deg2rad(360.f) / move_scan_points;
@@ -423,7 +423,7 @@ void   ATTACK_ON_RUN_STATE::select_prepare_fallback_target ()
 		}
 	}
 
-	m_target_vertex							=	enemy->ai_location().level_vertex_id();
+	m_target_vertex							=	this->object->EnemyMan.GetTrackingVertex();
 	m_target								=	ai().level_graph().vertex_position(m_target_vertex);
 }
 
@@ -473,7 +473,7 @@ void   ATTACK_ON_RUN_STATE::update_attack ()
 		{
 			CEntityAlive const* const enemy	=	it->first;
 			Fvector const enemy_pos			=	enemy == main_enemy ? 
-												m_predicted_enemy_pos : enemy->Position();
+												m_predicted_enemy_pos : this->object->EnemyMan.GetKnownEnemyPosition(enemy);
 
 
 			float		velocity			=	this->object->movement().speed();
