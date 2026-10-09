@@ -55,7 +55,7 @@ TEMPLATE_SPECIALIZATION
 bool CStateControlFireAbstract::check_start_conditions()
 {
 	if (!this->object->EnemyMan.see_enemy_now()) return false;
-	if (this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position()) < MIN_ENEMY_DISTANCE) return false;
+	if (this->object->EnemyMan.GetTrackingPosition().distance_to(this->object->Position()) < MIN_ENEMY_DISTANCE) return false;
 	if (m_time_state_last_execute + STATE_EXECUTE_DELAY > time()) return false;
 
 	return true;
@@ -66,7 +66,7 @@ bool CStateControlFireAbstract::check_completion()
 {
 	if (!this->object->EnemyMan.see_enemy_now()) return true;
 	if (this->object->HitMemory.is_hit()) return true;
-	if (this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position()) < MIN_ENEMY_DISTANCE) return true;
+	if (this->object->EnemyMan.GetTrackingPosition().distance_to(this->object->Position()) < MIN_ENEMY_DISTANCE) return true;
 	if (this->m_time_started + STATE_MAX_TIME < time()) return true;
 
 	return false;

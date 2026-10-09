@@ -105,7 +105,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute()
 
 	this->object->dir().face_target	(this->object->EnemyMan.get_enemy());
 
-	Fvector const enemy_to_self	=	this->object->EnemyMan.get_enemy()->Position() - this->object->Position();
+	Fvector const enemy_to_self	=	this->object->EnemyMan.GetTrackingPosition() - this->object->Position();
 	float const dist_to_enemy	=	magnitude(enemy_to_self);
 	float const vampire_dist	=	this->object->get_vampire_distance();
 
@@ -116,7 +116,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute()
 		this->object->anim().accel_activate		(eAT_Aggressive);
 		this->object->anim().accel_set_braking	(false);
 
-		u32 const target_vertex		=	this->object->EnemyMan.get_enemy()->ai_location().level_vertex_id();
+		u32 const target_vertex		=	this->object->EnemyMan.GetTrackingVertex();
 		Fvector const target_pos	=	ai().level_graph().vertex_position(target_vertex);
 
 		this->object->path().set_target_point		(target_pos, target_vertex);

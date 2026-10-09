@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 enum class EEngineExternalUI
 {
 	//HQIcons,
@@ -72,6 +74,15 @@ enum class EEngineExternalGame
 	None
 };
 
+enum class EEngineExternalMonstersLogic
+{
+	EnableMonsterFactionEnemySharingIsolation,
+	EnableMonsterFriendlyEnemySharing,
+	EnableMonsterDistributedTargeting,
+	EnableMonsterEnemySharingCalls,
+	None
+};
+
 enum class EEngineExternalRender 
 {
 	DisableLoadScreenTips,
@@ -140,7 +151,17 @@ class XRCORE_API CEngineExternal final
 		return Cache[(ntype)ID];
 	}
 	
+private:
+	std::atomic<int> MonsterLogicOverride{-1};
+	float MonsterEnemySharingCloseRatio = .3f;
+	u32 MonsterEnemySharingIntervalMin = 1000;
+	u32 MonsterEnemySharingIntervalMax = 2000;
 public:
+	u32 GetMonsterEnemySharingIntervalMin() const { return MonsterEnemySharingIntervalMin; }
+	u32 GetMonsterEnemySharingIntervalMax() const { return MonsterEnemySharingIntervalMax; }
+	float GetMonsterEnemySharingCloseRatio() const { return MonsterEnemySharingCloseRatio; }
+	void SetMonsterLogicOverride(int Value) { MonsterLogicOverride.store(Value, std::memory_order_relaxed); }
+	int GetMonsterLogicOverride() const { return MonsterLogicOverride.load(std::memory_order_relaxed); }
 	CEngineExternal();
 	~CEngineExternal();
 
@@ -186,6 +207,17 @@ public:
 	{
 		static xr_stack_string16 Type = "spawn_supplies";
 		return CachedGetSettings<EEngineExternalSpawnSupplies>(pOptions, Type, ID);
+	}
+
+	ICF bool operator[](const EEngineExternalMonstersLogic& ID) const
+	{
+		const int Override = GetMonsterLogicOverride();
+		if (ID == EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation && Override >= 0)
+		{
+			return Override != 0;
+		}
+		static xr_stack_string16 Type = "monsters_logic";
+		return CachedGetSettings<EEngineExternalMonstersLogic>(pOptions, Type, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalRender& ID) const

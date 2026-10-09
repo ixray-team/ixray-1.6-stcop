@@ -5,6 +5,7 @@
 #include "../../memory_manager.h"
 
 #include "basemonster/base_monster.h"
+#include "../../../xrCore/Kernel/EngineExternal.h"
 
 CMonsterSquad::CMonsterSquad() : leader(0), m_home_danger_end_tick(0), m_home_danger_mode_time(8000)
 {
@@ -90,8 +91,16 @@ void CMonsterSquad::UpdateGoal(CEntity *pE, const SMemberGoal &goal)
 	it->second = goal;
 }
 
-void CMonsterSquad::InformSquadAboutEnemy(CEntityAlive const * const enemy)
+void CMonsterSquad::InformSquadAboutEnemy(CEntityAlive const * const enemy, CBaseMonster* Source)
 {
+	if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
+	{
+		if (Source && !Source->MonsterPeaceful)
+		{
+			Source->EnemyMan.UpdateEnemySharing(enemy);
+		}
+		return;
+	}
 	for ( MEMBER_GOAL_MAP_IT	it	=	m_goals.begin();
 								it	!=	m_goals.end();
 							  ++it )

@@ -89,6 +89,7 @@ public:	// deferred sound events
 		Feel::Sound*			dest	;
 		ref_sound_data_ptr		source	;
 		float					power	;
+		Fvector Position;
 	};
 	xr_vector<_esound_delegate>	snd_Events;
 public:
