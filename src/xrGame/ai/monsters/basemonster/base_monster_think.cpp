@@ -17,7 +17,7 @@
 #include "../../../ai_space.h"
 #include "../../../level_graph.h"
 #include "../../../ai_object_location.h"
-
+#include "../control_path_builder_base.h"
 void CBaseMonster::Think()
 {
 	if (!g_Alive() || getDestroy())
