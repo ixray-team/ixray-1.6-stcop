@@ -19,13 +19,10 @@ float	psSoundDoppler = 1.0f;
 float	psSoundCull = 0.01f;
 float	psSoundRolloff = 0.75f;
 u32		psSoundModel = 0;
-float	psSoundVEffects = 1.0f;
 float	psSoundVFactor = 1.0f;
-float	psSoundVShooting = 1.0f;
 float	psSoundShootingReverb = 0.6f;
 float	psSoundCompression = 0.5f;
 
-float	psSoundVMusic = 1.0f;
 int		psSoundCacheSizeMB = 256;
 
 // Voice Chat
@@ -55,7 +52,8 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
 
 	// Events
 	listenerPos = P;
-	XRay::Sound::Mixer::Update((void*)Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundVEffects * psSoundVShooting, psSoundCompression, P, D, N);
+	// master_volume mutes the game when the window loses focus
+	XRay::Sound::Mixer::Update((void*)Handler, psTimeFactor, master_volume, psSoundCompression, P, D, N);
 #ifdef XR_MP_BUILD
 	pSoundVoiceChat->Update(P, D, N);
 #endif
@@ -478,6 +476,16 @@ void CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
 	S._p->fn_attached[idx] = fn;
 }
 
+static SoundSubmixId Snd_GetTypeSubmix(esound_type Type)
+{
+	switch (Type)
+	{
+		case st_Music: return SoundSubmixId::Music;
+		case st_Shooting: return SoundSubmixId::Shooting;
+		default: return SoundSubmixId::Effects;
+	}
+}
+
 void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type sound_type, int	game_type)
 {
 	if (!bPresent)		return;
@@ -488,6 +496,7 @@ void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type s
 	S._p->fn_attached[1] = from._p->fn_attached[1];
 	S._p->g_type = game_type;// (game_type == sg_SourceType) ? S._p->handle->game_type() : game_type;
 	S._p->s_type = sound_type;
+	S._p->submix_id = Snd_GetTypeSubmix(sound_type);
 }
 
 u32 CSoundRender_Core::GetMixedFlags(u32 flags, ref_sound& S)
@@ -504,18 +513,8 @@ u32 CSoundRender_Core::GetMixedFlags(u32 flags, ref_sound& S)
 		MixedFlags |= (u32)Mixer::Flags::NoFeedback;
 	}
 
-	if (S._sound_type() == st_Shooting)
-	{
-		MixedFlags |= (u32)Mixer::Flags::Shooting;
-	}
-
 	if ((flags & sm_Intro))
 	{
-		if (S._sound_type() == st_Music)
-		{
-			MixedFlags |= (u32)Mixer::Flags::Music;
-		}
-
 		MixedFlags |= (u32)Mixer::Flags::Intro;
 	}
 	else if ((flags & sm_2D) == 0)
@@ -543,7 +542,7 @@ void CSoundRender_Core::play(ref_sound& S, CObject* O, u32 flags, float delay)
 		S._p->slot = Mixer::Create();
 	}
 
-	Mixer::Play(S.slot(), mixer_flags, &S, delay); 
+	Mixer::Play(S.slot(), mixer_flags, &S, delay, S._submix());
 	if (O) {
 		Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::Position, ((IRenderable*)O)->renderable.xform.c);
 	}
@@ -562,7 +561,7 @@ void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, fl
 	}
 
 	u32 mixer_flags = (u32)Mixer::Flags::NoFeedback | GetMixedFlags(flags, S);
-	Mixer::PlayNoFeedback(mixer_flags, &S, O, delay, freq, vol, range_ptr, pos);
+	Mixer::PlayNoFeedback(mixer_flags, &S, O, delay, freq, vol, range_ptr, pos, S._submix());
 }
 
 void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags, float delay)
@@ -577,7 +576,7 @@ void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
 	}
 
 	u32 mixer_flags = (u32)Mixer::Flags::NoPosUpdate | GetMixedFlags(flags, S);
-	Mixer::Play(S.slot(), mixer_flags, &S, delay);
+	Mixer::Play(S.slot(), mixer_flags, &S, delay, S._submix());
 	S._p->fTimeTotal = Mixer::GetDuration(S.slot());
 	S._p->g_type = (S._p->g_type == sg_SourceType) ? XRay::Sound::Mixer::GetGameType(S.slot()) : S._p->g_type;
 	Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::Position, pos);
@@ -600,6 +599,7 @@ void CSoundRender_Core::_create_data(ref_sound_data& S, const char* fName, esoun
 		*strext(fn) = 0;
 
 	S.s_type = sound_type;
+	S.submix_id = Snd_GetTypeSubmix(sound_type);
 	S.g_type = game_type;
 	S.slot = 0;
 	S.g_object = 0;

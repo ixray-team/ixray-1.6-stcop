@@ -365,7 +365,7 @@ void Snd_ShutdownShootingReverb()
 // the direct sound decays, so the wet/dry amplitude ratio grows as d / Dc (Dc - critical distance).
 // Dry and wet form an equal-power pair and the IRs are energy-normalized, so the total loudness
 // still follows the regular distance attenuation.
-void Snd_ShootingReverbSend(sound_slot_state& Slot, const Fvector& ListenerPos, float** Buffer, float& BeginFactor, float& EndFactor)
+void Snd_ConvolutionReverbSend(sound_slot_state& Slot, const Fvector& ListenerPos, float** Buffer, float SendGain, float& BeginFactor, float& EndFactor)
 {
 	constexpr float OutdoorCriticalDistance = 25.0f;
 	constexpr float IndoorCriticalDistance = 4.0f;
@@ -394,14 +394,14 @@ void Snd_ShootingReverbSend(sound_slot_state& Slot, const Fvector& ListenerPos, 
 
 	if (SendFar || SendIndoor)
 	{
-		const float Step = (EndFactor - BeginFactor) / (float)SND_BLOCKSIZE;
+		const float Step = (EndFactor - BeginFactor) * SendGain / (float)SND_BLOCKSIZE;
 		for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
 		{
 			float* Far = GShootingReverb.SendFar[Channel];
 			float* Near = GShootingReverb.SendIndoor[Channel];
 			const float* Src = Buffer[Channel];
 
-			float Gain = BeginFactor;
+			float Gain = BeginFactor * SendGain;
 			for (u32 Key = 0; Key < SND_BLOCKSIZE; Key++, Gain += Step)
 			{
 				const float Sample = Src[Key] * Gain;
