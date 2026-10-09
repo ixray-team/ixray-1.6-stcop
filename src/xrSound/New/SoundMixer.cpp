@@ -111,7 +111,6 @@ struct sound_mixer_state
 	Fvector P, D, N;
 	Fvector listener_velocity;
 	Fvector occ;
-	Fmatrix m_V;
 
 	xr_vector<u32> free_slots;
 	xr_vector<SoundCommand> cmd;
@@ -1131,7 +1130,7 @@ ICF void DestroyInternal(int slot)
 	GMixer.free_slots.push_back(slot);
 }
 
-void Mixer::Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, float shooting_volume, float compression, const Fmatrix& mtx, Fvector P, Fvector D, Fvector N)
+void Mixer::Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, float shooting_volume, float compression, Fvector P, Fvector D, Fvector N)
 {
 	PROF_EVENT("Sound: Update Stage");
 	sound_event* Handler = (sound_event*)event_handler;
@@ -1146,7 +1145,6 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 	GMixer.effect_volume = eff_volume;
 	GMixer.music_volume = mus_volume;
 	GMixer.shooting_volume = shooting_volume;
-	GMixer.m_V = mtx;
 
 	GMixer.listener_velocity = Snd_Velocity(GMixer.P, P);
 	GMixer.P = P;
