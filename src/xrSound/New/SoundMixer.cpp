@@ -32,19 +32,18 @@
 #include "SoundSource.h"
 #include "SoundBackend.h"
 #include "SoundDSP.h"
-#include "ReverbInterface.h"
+#include "SoundAlgoritmicReverb.h"
 
 #include "../Sound.h"
 #include "../SoundRender.h"
 #include "../ai_sounds.h"
-#include "SoundConvolution.h"
+#include "SoundConvolutionReverb.h"
 
 #include <pffft.h>
 
 #define ENGINE_API
 #include "../xrEngine/xr_object.h"
 
-#include "ReverbInterface.h"
 #include "SoundSpatializer.h"
 
 #ifndef DISABLE_STEAM_AUDIO
@@ -54,7 +53,6 @@
 #include "../Plugins/ResonanceAudio.h"
 #endif
 
-IReverInterface* GReverInterface = nullptr;
 ISoundSpatializer* GSpatializer = nullptr;
 
 #define DEFAULT_SLOT_COUNT (512)
@@ -110,30 +108,20 @@ struct sound_mixer_state
 	float compressor_envelope[SND_CHANNEL_COUNT] = {FLT_EPSILON, FLT_EPSILON};
 	Fvector P, D, N;
 	Fvector listener_velocity;
-	Fvector occ;
+	Fvector occ[3]; // occluder triangle cache for get_occlusion()
 
 	xr_vector<u32> free_slots;
 	xr_vector<SoundCommand> cmd;
 	xr_vector<sound_slot_state> slots;
 	xr_hash_set<ref_sound*> sounds;
-	xr_vector<sound_zone_params> zones;
 
 	// HRTF slot management (index pool; backend state lives in the spatializer plugin)
 	xr_vector<u32> free_hrtf_slots;
 
 	sound_bus_state buses[SND_BUS_COUNT];
 
-	CConvolutionReverb ShootingReverbFar;
-	CConvolutionReverb ShootingReverbIndoor;
-	float* ShootingSendFar[SND_CHANNEL_COUNT] = {nullptr};
-	float* ShootingSendIndoor[SND_CHANNEL_COUNT] = {nullptr};
-
-	bool IsOutdoorSend = false;
-	bool IsIndoorSend = false;
-
 	float IndoorFactor = 0.0f;
 
-	bool editor_zone = false;
 	bool hrtf_enabled;
 
 #ifdef DEBUG_DRAW
@@ -616,65 +604,6 @@ static void Snd_UpdateSlotIndoorFactor(sound_slot_state& Slot, const Fvector& Po
 	Slot.IndoorFactor += (target - Slot.IndoorFactor) * k;
 }
 
-// Direct-to-reverberant ratio model: the reverberant field is roughly distance-independent while
-// the direct sound decays, so the wet/dry amplitude ratio grows as d / Dc (Dc - critical distance).
-// Dry and wet form an equal-power pair and the IRs are energy-normalized, so the total loudness
-// still follows the regular distance attenuation.
-static void Snd_ShootingReverbSend(sound_slot_state& Slot, float** Buffer, float& BeginFactor, float& EndFactor)
-{
-	constexpr float OutdoorCriticalDistance = 25.0f;
-	constexpr float IndoorCriticalDistance = 4.0f;
-
-	// A gunshot is an impulse: its tail stays audible after the direct sound even when the
-	// steady-state direct-to-reverberant ratio says otherwise, so the ratio is never taken closer than this.
-	constexpr float MinReverbDistance = 5.0f;
-
-	// 2D (HUD) sounds carry a listener-relative position, they are always at the listener.
-	const bool IsSpatial = (Slot.flags & (u16)Mixer::Flags::Spatial) != 0;
-	const Fvector& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
-	const Fvector& Range = Slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
-	const float Distance = IsSpatial ? GMixer.P.distance_to(Pos) : 0.0f;
-	const float Attenuation = IsSpatial ? DSP_DistanceAttenuation(Distance, Range) : 1.0f;
-
-	const float Indoor = std::clamp(Slot.IndoorFactor, 0.0f, 1.0f);
-	const float CriticalDistance = OutdoorCriticalDistance + (IndoorCriticalDistance - OutdoorCriticalDistance) * Indoor;
-	const float Ratio = std::max(psSoundShootingReverb, 0.0f) * std::max(Distance, MinReverbDistance) / CriticalDistance;
-	const float Dry = 1.0f / std::sqrt(1.0f + Ratio * Ratio);
-	const float Wet = Ratio * Dry * Attenuation;
-
-	const float WetFar = Wet * std::sqrt(1.0f - Indoor);
-	const float WetIndoor = Wet * std::sqrt(Indoor);
-	const bool SendFar = WetFar > EPS_S;
-	const bool SendIndoor = WetIndoor > EPS_S;
-
-	if (SendFar || SendIndoor)
-	{
-		const float Step = (EndFactor - BeginFactor) / (float)SND_BLOCKSIZE;
-		for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-		{
-			float* Far = GMixer.ShootingSendFar[Channel];
-			float* Near = GMixer.ShootingSendIndoor[Channel];
-			const float* Src = Buffer[Channel];
-
-			float Gain = BeginFactor;
-			for (u32 Key = 0; Key < SND_BLOCKSIZE; Key++, Gain += Step)
-			{
-				const float Sample = Src[Key] * Gain;
-				Far[Key] += Sample * WetFar;
-				Near[Key] += Sample * WetIndoor;
-			}
-		}
-
-		GMixer.IsOutdoorSend |= SendFar;
-		GMixer.IsIndoorSend |= SendIndoor;
-	}
-
-	const float PrevDry = Slot.ReverbDryGain < 0.0f ? Dry : Slot.ReverbDryGain;
-	Slot.ReverbDryGain = Dry;
-	BeginFactor *= PrevDry;
-	EndFactor *= Dry;
-}
-
 ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_buffer, float dt)
 {
 	auto& Slot = GMixer.slots[SlotIdx - 1];
@@ -751,7 +680,7 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 
 	if (Slot.flags & (u16)Mixer::Flags::Shooting)
 	{
-		Snd_ShootingReverbSend(Slot, process_buffer, BeginFactor, EndFactor);
+		Snd_ShootingReverbSend(Slot, GMixer.P, process_buffer, BeginFactor, EndFactor);
 	}
 
 	// Spatial processing
@@ -784,27 +713,8 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 			}
 		}
 
-		if (GMixer.editor_zone)
-		{
-			Slot.zone_idx = 1;
-		}
-
-		u32 ZoneIdx = Slot.zone_idx;
-		if (ZoneIdx && ZoneIdx <= GMixer.zones.size())
-		{
-			sound_zone_params& zone = GMixer.zones[ZoneIdx - 1];
-			zone.use_count++;
-			zone.last_use_ms = Snd_Milliseconds();
-
-			float* reverb_buffer[SND_CHANNEL_COUNT] = {};
-			for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-			{
-				reverb_buffer[Channel] = zone.data[Channel];
-			}
-
-			float ZoneFade = std::clamp(Slot.IndoorFactor, 0.0f, 1.0f);
-			DSP_MixBufferPanning(reverb_buffer, process_buffer, BeginFactor * ZoneFade, EndFactor * ZoneFade, left_panning, right_panning, SND_BLOCKSIZE);
-		}
+		float ZoneFade = std::clamp(Slot.IndoorFactor, 0.0f, 1.0f);
+		Snd_SendToReverbZone(Slot.zone_idx, process_buffer, BeginFactor * ZoneFade, EndFactor * ZoneFade, left_panning, right_panning);
 	}
 
 	// TODO(vertver): push data to buses instead of main
@@ -848,11 +758,7 @@ void Snd_MixerRenderCallback(float* buffer)
 		}
 	}
 
-	for (auto& Zone : GMixer.zones)
-	{
-		Zone.use_count = 0;
-		memset(Zone.data, 0, sizeof(Zone.data));
-	}
+	Snd_BeginReverbBlock();
 
 	for (size_t i = 0; i < GMixer.slots.size(); i++)
 	{
@@ -878,59 +784,17 @@ void Snd_MixerRenderCallback(float* buffer)
 		process_buffer[Iter] = _process_buffer[Iter];
 	}
 
-	// Reverb mixing
-	if (psSoundFlags.is(ss_EFX))
 	{
-		for (auto& Zone : GMixer.zones)
-		{
-			if (Zone.use_count == 0 && (Zone.last_use_ms + 3000) < Snd_Milliseconds())
-			{
-				continue;
-			}
-
-			PROF_EVENT("Reverb rendering");
-			float* reverb_buffer[SND_CHANNEL_COUNT] = {};
-			float* bus_buffer[SND_CHANNEL_COUNT] = {};
-
-			for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-			{
-				reverb_buffer[Channel] = Zone.data[Channel];
-				bus_buffer[Channel] = GMixer.buses[SND_BUS_REVERB].data[Channel];
-			}
-
-			if (GReverInterface)
-			{
-				GReverInterface->ProcessReverb(Zone, reverb_buffer, process_buffer, bus_buffer);
-			}
-
-			// Algorithmic (Resonance / Steam Audio) reverb is attenuated by
-			// -6 dB (x0.5) relative to its configured level.
-			float reverb_gain = std::clamp(Zone.settings.reverb, 0.0f, 1.0f) * 0.010f * 0.5f;
-			DSP_MixBuffer(bus_buffer, process_buffer, reverb_gain, reverb_gain, SND_BLOCKSIZE);
-		}
-	}
-
-	{
-		PROF_EVENT("Shooting convolution reverb");
-
-		float* bus_buffer[SND_CHANNEL_COUNT] = {};
+		float* ReverbBus[SND_CHANNEL_COUNT] = {};
 		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
 		{
-			bus_buffer[Channel] = GMixer.buses[SND_BUS_REVERB].data[Channel];
+			ReverbBus[Channel] = GMixer.buses[SND_BUS_REVERB].data[Channel];
 		}
 
-		GMixer.ShootingReverbFar.Process(GMixer.ShootingSendFar, bus_buffer, GMixer.IsOutdoorSend);
-		GMixer.ShootingReverbIndoor.Process(GMixer.ShootingSendIndoor, bus_buffer, GMixer.IsIndoorSend);
-
-		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-		{
-			memset(GMixer.ShootingSendFar[Channel], 0, SND_BLOCKSIZE * sizeof(float));
-			memset(GMixer.ShootingSendIndoor[Channel], 0, SND_BLOCKSIZE * sizeof(float));
-		}
-
-		GMixer.IsOutdoorSend = false;
-		GMixer.IsIndoorSend = false;
+		Snd_RenderReverbZones(process_buffer, ReverbBus);
+		Snd_RenderShootingReverb(ReverbBus);
 	}
+
 
 	{
 		PROF_EVENT("Sound Mixing");
@@ -1033,14 +897,7 @@ void Mixer::Initialize()
 		GMixer.free_hrtf_slots[i] = i + 1;
 	}
 
-	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-	{
-		GMixer.ShootingSendFar[Channel] = new float[SND_BLOCKSIZE]();
-		GMixer.ShootingSendIndoor[Channel] = new float[SND_BLOCKSIZE]();
-	}
-
-	GMixer.ShootingReverbFar.Initialize("ir\\ir_default_far");
-	GMixer.ShootingReverbIndoor.InitializeIndoor();
+	Snd_InitShootingReverb();
 
 #ifdef DEBUG_DRAW
 #pragma todo(replace with aligned allocators)
@@ -1066,15 +923,7 @@ void Mixer::Shutdown()
 
 	Snd_ShutdownSources();
 
-	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-	{
-		delete[] GMixer.ShootingSendFar[Channel];
-		GMixer.ShootingSendFar[Channel] = nullptr;
-		delete[] GMixer.ShootingSendIndoor[Channel];
-		GMixer.ShootingSendIndoor[Channel] = nullptr;
-	}
-	GMixer.ShootingReverbFar.Free();
-	GMixer.ShootingReverbIndoor.Free();
+	Snd_ShutdownShootingReverb();
 
 #ifdef DEBUG_DRAW
 	if (GMixer.fft_setup)
@@ -1093,11 +942,7 @@ void Mixer::Shutdown()
 
 	GMixer.free_hrtf_slots.clear();
 
-	if (GReverInterface)
-	{
-		delete GReverInterface;
-		GReverInterface = nullptr;
-	}
+	Snd_ShutdownReverb();
 
 	GMixer.slots.clear();
 	GMixer.free_slots.clear();
@@ -1241,40 +1086,11 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 						Slot.IndoorFactorValid = true;
 					}
 
-					float OutOCC = ::Sound->get_occlusion(Pos, 0.2f, &GMixer.occ);
+					float OutOCC = ::Sound->get_occlusion(Pos, 0.2f, GMixer.occ);
 					float& OldOCC = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
 					volume_lerp(OldOCC, OutOCC, 1.0f, GMixer.dt);
 
-					CDB::MODEL* EnvModel = ::Sound->get_geometry_env();
-					CDB::COLLIDER* Collider = ::Sound->get_geometry_db();
-					if (EnvModel != nullptr)
-					{
-						Fvector Dir = {0, -1, 0};
-						Collider->ray_options(CDB::OPT_ONLYNEAREST);
-						Collider->ray_query(EnvModel, Pos, Dir, 1000.f);
-						xr_vector<Fvector>& Verts = EnvModel->get_verts();
-						xr_vector<CDB::TRI>& Tris = EnvModel->get_tris();
-						if (Collider->r_count())
-						{
-							CDB::RESULT* R = Collider->r_begin();
-							CDB::TRI& T = Tris[R->id];
-							auto& TriVerts = T.verts;
-
-							Fvector TriNorm;
-							TriNorm.mknormal(Verts[TriVerts[0]], Verts[TriVerts[1]], Verts[TriVerts[2]]);
-
-							R_ASSERT(T.dummy < GMixer.zones.size());
-							Slot.zone_idx = T.dummy + 1;
-						}
-						else
-						{
-							Slot.zone_idx = 0;
-						}
-					}
-					else
-					{
-						Slot.zone_idx = 0;
-					}
+					Slot.zone_idx = Snd_FindReverbZone(Pos);
 				}
 			}
 		}
@@ -1463,7 +1279,7 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 				if (MixerSlot.flags & (u16)Flags::Spatial && Command.param0 == (u16)ParameterId::Position)
 				{
 					auto& Pos = MixerSlot.parameters[(u32)Mixer::ParameterId::Position];
-					float OutOCC = ::Sound->get_occlusion(Pos, 0.2f, &GMixer.occ);
+					float OutOCC = ::Sound->get_occlusion(Pos, 0.2f, GMixer.occ);
 					float& OldOCC = MixerSlot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
 					volume_lerp(OldOCC, OutOCC, 1.0f, GMixer.dt);
 				}
@@ -1810,43 +1626,6 @@ Fvector* Mixer::GetParameters(u32 SlotID)
 	}
 
 	return GMixer.slots[SlotID - 1].parameters;
-}
-
-void Mixer::AddEditorZone(sound_zone_params& params)
-{
-	GMixer.editor_zone = true;
-	ResetZones();
-	AddZone(params);
-}
-
-void Mixer::AddZone(sound_zone_params& params)
-{
-	if (GReverInterface)
-	{
-		GReverInterface->InitZone(params);
-	}
-
-	GMixer.zones.emplace_back(std::move(params));
-}
-
-void Mixer::ResetZones()
-{
-	xrSRWLockGuard Guard(GMixer.render_lock);
-
-	for (auto& Zone : GMixer.zones)
-	{
-		if (GReverInterface)
-		{
-			GReverInterface->ReleaseZone(Zone);
-		}
-	}
-
-	GMixer.zones.clear();
-}
-
-const xr_vector<sound_zone_params>& Mixer::GetZones()
-{
-	return GMixer.zones;
 }
 
 ref_sound::ref_sound()
