@@ -99,7 +99,7 @@ TEMPLATE_SPECIALIZATION
 bool CStateBloodsuckerPredatorAbstract::check_completion()
 {
 	if (this->object->HitMemory.get_last_hit_time() > this->time_state_started) return true;
-	if (this->object->EnemyMan.get_enemy() && this->object->EnemyMan.see_enemy_now() && (this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position()) < 4.f)) return true;
+	if (this->object->EnemyMan.get_enemy() && this->object->EnemyMan.see_enemy_now() && (this->object->Position().distance_to(this->object->EnemyMan.GetTrackingPosition()) < 4.f)) return true;
 
 	return false;
 }

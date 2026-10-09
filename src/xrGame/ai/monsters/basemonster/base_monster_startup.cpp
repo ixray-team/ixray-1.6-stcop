@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "base_monster.h"
+#include "../../../../xrCore/Kernel/EngineExternal.h"
 #include "../../../ai_space.h"
 #include "../../../Hit.h"
 #include "../../../PHDestroyable.h"
@@ -91,6 +92,8 @@ void CBaseMonster::Load(const char* section)
 //		m_item_section					= pSettings->r_string(section,"Spawn_Inventory_Item_Section");
 //		m_spawn_probability				= pSettings->r_float(section,"Spawn_Inventory_Item_Probability");
 //	} else m_spawn_probability			= 0.f;
+
+	LoadMonsterLogicOptions(section);
 
 	m_melee_rotation_factor			= READ_IF_EXISTS(pSettings,r_float,section,"Melee_Rotation_Factor", 1.5f);
 	berserk_always					= !!READ_IF_EXISTS(pSettings,r_bool,section,"berserk_always", false);
@@ -235,6 +238,7 @@ void CBaseMonster::reload	(const char* section)
 	movement().reload	(section);
 	if (g_Alive())
 	{
+		LoadMonsterEnemyCall(section);
 		// load base sounds
 		LOAD_SOUND("sound_idle",			SOUND_TYPE_MONSTER_TALKING,		MonsterSound::eLowPriority,			MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundIdle);
 		LOAD_SOUND("sound_distant_idle",	SOUND_TYPE_MONSTER_TALKING,		MonsterSound::eLowPriority+1,		MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundIdleDistant);
@@ -280,6 +284,21 @@ void CBaseMonster::reinit()
 	EnemyMan.reinit						();
 	CorpseMan.reinit					();
 
+	DamagePanicUntil = 0;
+	DamagePanicWasActive = false;
+	DamagePanicThreat.set(0.f, 0.f, 0.f);
+	LastKnownPursuitWasActive = false;
+	CloseSightCombatUntil = 0;
+	CloseSightCombatTargetID = u32(-1);
+	PursuitTargetID = u32(-1);
+	PursuitProgressTime = 0;
+	PursuitSearchingAround = false;
+	UnreachableSearchVertex = u32(-1);
+	NextUnreachableSearchPoint = 0;
+	ArrivalGeometryCheckTime = 0;
+	ShotReaction.NextReactionTime = 0;
+	ExplosionReaction.NextReactionTime = 0;
+	NoiseInvestigationUntil = 0;
 	StateMan->reinit					();
 	
 	Morale.reinit						();
@@ -527,4 +546,173 @@ void CBaseMonster::fill_bones_body_parts	(const char* body_part, CriticalWoundTy
 				u32(wound_type)
 			)
 		);
+}
+
+void CBaseMonster::LoadMonsterLogicOptions(const char* section)
+{
+	EnemySharingRadius = 40.f;
+	EnemySharingCloseRatio = .3f;
+	EnemyTrackingLive = false;
+	EnemyCloseDetectionRadius = 0.f;
+	EnemyMemoryRetentionMin = 30000;
+	EnemyMemoryRetentionMax = 60000;
+	EnemySearchAtPointTime = 15000;
+	EnemyCloseAttackDistance = 5.f;
+	PlayerVisualAcquireTime = 400;
+	EnemyStuckTime = 3000;
+	PursuitTargetID = u32(-1);
+	PursuitProgressTime = 0;
+	ArrivalGeometryCheckTime = 0;
+	PursuitSearchingAround = false;
+	UnreachableSearchVertex = u32(-1);
+	NextUnreachableSearchPoint = 0;
+	CloseSightCombatUntil = 0;
+	CloseSightCombatTargetID = u32(-1);
+	LastKnownPursuitWasActive = false;
+	EnemySharingWireless = false;
+	EnemySharingEnabled = true;
+	EnemyCallEnabled = false;
+	MonsterPeaceful = false;
+	EnemyCallCooldown = 20.f;
+	AutoPanicOnInvisibleDamage = false;
+	AutoFocusAttacker = false;
+	AutoFocusMaxDist = 200.f;
+	ShotReaction = {};
+	ExplosionReaction = {};
+	NoiseReactionCooldown = 3000;
+	NoisePanicDuration = 6000;
+	NoiseMinPower = .01f;
+	NoiseInvestigationUntil = 0;
+	NoiseInvestigationVertex = u32(-1);
+	if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
+	{
+		CInifile* CommonOptions = EngineExternal().GetIniFile();
+		PlayerVisualAcquireTime = std::min(u32(10000), READ_IF_EXISTS(CommonOptions, r_u32, "monsters_logic", "MonsterPlayerVisualAcquireTime", 400));
+		EnemyStuckTime = std::clamp(READ_IF_EXISTS(CommonOptions, r_u32, "monsters_logic", "MonsterEnemyStuckTime", u32(3000)), u32(500), u32(30000));
+		const float CloseAttackDistance = READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyCloseAttackDistance", 5.f);
+		EnemyCloseAttackDistance = _valid(CloseAttackDistance) && CloseAttackDistance >= 0.f && CloseAttackDistance <= 100.f ? CloseAttackDistance : 5.f;
+		float MemoryMin = READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyMemoryMin", 30.f);
+		float MemoryMax = READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyMemoryMax", 60.f);
+		if (!_valid(MemoryMin) || MemoryMin < 1.f || MemoryMin > 600.f)
+		{
+			MemoryMin = 30.f;
+		}
+		if (!_valid(MemoryMax) || MemoryMax < 1.f || MemoryMax > 600.f)
+		{
+			MemoryMax = 60.f;
+		}
+		if (MemoryMax < MemoryMin)
+		{
+			std::swap(MemoryMin, MemoryMax);
+		}
+		EnemyMemoryRetentionMin = u32(MemoryMin * 1000.f);
+		EnemyMemoryRetentionMax = u32(MemoryMax * 1000.f);
+		const float SearchTime = READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemySearchAtPointTime", 15.f);
+		EnemySearchAtPointTime = u32((_valid(SearchTime) && SearchTime >= 0.f && SearchTime <= 600.f ? SearchTime : 15.f) * 1000.f);
+		EnemySharingEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_sharing_enabled", true);
+		EnemyCallEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_call_enabled", false);
+		EnemyCallCooldown = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_call_cooldown", 20.f);
+		if (!_valid(EnemyCallCooldown) || EnemyCallCooldown < .5f || EnemyCallCooldown > 3600.f)
+		{
+			EnemyCallCooldown = 20.f;
+		}
+		AutoPanicOnInvisibleDamage = READ_IF_EXISTS(pSettings, r_bool, section, "autopanic_on_invisible_damage", false);
+		AutoFocusAttacker = READ_IF_EXISTS(pSettings, r_bool, section, "autofocus_attacker", false);
+		AutoFocusMaxDist = READ_IF_EXISTS(pSettings, r_float, section, "autofocus_max_dist", 200.f);
+		if (!_valid(AutoFocusMaxDist) || AutoFocusMaxDist < 0.f)
+		{
+			AutoFocusMaxDist = 200.f;
+		}
+		auto LoadNoiseReaction = [section](SNoiseReaction& Reaction, const char* Prefix)
+		{
+			string128 Key;
+			xr_sprintf(Key, "%s_enabled", Prefix);
+			Reaction.Enabled = READ_IF_EXISTS(pSettings, r_bool, section, Key, false);
+			xr_sprintf(Key, "%s_radius", Prefix);
+			Reaction.Radius = READ_IF_EXISTS(pSettings, r_float, section, Key, 0.f);
+			if (!_valid(Reaction.Radius) || Reaction.Radius < 0.f || Reaction.Radius > 500.f)
+			{
+				Reaction.Radius = 0.f;
+			}
+			xr_sprintf(Key, "%s_panic_chance", Prefix);
+			Reaction.PanicChance = READ_IF_EXISTS(pSettings, r_float, section, Key, 0.f);
+			if (!_valid(Reaction.PanicChance) || Reaction.PanicChance < 0.f || Reaction.PanicChance > 1.f)
+			{
+				Reaction.PanicChance = 0.f;
+			}
+			xr_sprintf(Key, "%s_attract", Prefix);
+			Reaction.Attract = READ_IF_EXISTS(pSettings, r_bool, section, Key, false);
+		};
+		LoadNoiseReaction(ShotReaction, "monster_shot_reaction");
+		LoadNoiseReaction(ExplosionReaction, "monster_explosion_reaction");
+		const float Cooldown = READ_IF_EXISTS(pSettings, r_float, section, "monster_noise_reaction_cooldown", 3.f);
+		NoiseReactionCooldown = u32((_valid(Cooldown) && Cooldown >= .5f && Cooldown <= 60.f ? Cooldown : 3.f) * 1000.f);
+		const float Duration = READ_IF_EXISTS(pSettings, r_float, section, "monster_noise_panic_duration", 6.f);
+		NoisePanicDuration = u32((_valid(Duration) && Duration >= 1.f && Duration <= 60.f ? Duration : 6.f) * 1000.f);
+		NoiseMinPower = READ_IF_EXISTS(pSettings, r_float, section, "monster_noise_min_power", .01f);
+		if (!_valid(NoiseMinPower) || NoiseMinPower < 0.f || NoiseMinPower > 1.f)
+		{
+			NoiseMinPower = .01f;
+		}
+		MonsterPeaceful = READ_IF_EXISTS(pSettings, r_bool, section, "monster_peaceful", false);
+		EnemyCloseDetectionRadius = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_close_detection_radius", 0.f);
+		if (!_valid(EnemyCloseDetectionRadius) || EnemyCloseDetectionRadius < 0.f)
+		{
+			EnemyCloseDetectionRadius = 0.f;
+		}
+		EnemyTrackingLive = READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_tracking_live", false);
+		EnemySharingCloseRatio = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_sharing_close_ratio", EngineExternal().GetMonsterEnemySharingCloseRatio());
+		if (!_valid(EnemySharingCloseRatio) || EnemySharingCloseRatio < 0.f || EnemySharingCloseRatio > 1.f)
+		{
+			EnemySharingCloseRatio = EngineExternal().GetMonsterEnemySharingCloseRatio();
+		}
+		EnemySharingWireless = READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_sharing_wireless", false);
+		EnemySharingRadius = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_sharing_radius", 40.f);
+		if (!_valid(EnemySharingRadius) || EnemySharingRadius < 0.f)
+		{
+			EnemySharingRadius = 0.f;
+		}
+	}
+
+}
+
+void CBaseMonster::LoadMonsterEnemyCall(const char* section)
+{
+	EnemyCallSoundType = MonsterSound::eMonsterSoundAggressive;
+	if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] &&
+		EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterEnemySharingCalls] &&
+		READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_call_enabled", false) &&
+		READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_sharing_enabled", true) &&
+		!READ_IF_EXISTS(pSettings, r_bool, section, "monster_peaceful", false))
+	{
+		const char* CallSound = READ_IF_EXISTS(pSettings, r_string, section, "monster_enemy_call_sound", "");
+		if (CallSound && CallSound[0])
+		{
+			if (sound().objects().find(MonsterSound::eMonsterSoundEnemyCall) == sound().objects().end())
+			{
+				sound().add(CallSound, DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_TALKING,
+				MonsterSound::eNormalPriority + 2, u32(MonsterSound::eBaseChannel),
+				MonsterSound::eMonsterSoundEnemyCall, m_head_bone_name);
+			}
+			EnemyCallSoundType = MonsterSound::eMonsterSoundEnemyCall;
+		}
+	}
+
+}
+
+void CBaseMonster::ReloadMonsterLogicOptions()
+{
+	if (DamagePanicWasActive)
+	{
+		StateMan->critical_finalize();
+	}
+	DamagePanicWasActive = false;
+	DamagePanicUntil = 0;
+	LoadMonsterLogicOptions(*cNameSect());
+	EnemyMan.ResetEnemySharingState(true);
+	EnemyMemory.clear();
+	if (g_Alive())
+	{
+		LoadMonsterEnemyCall(*cNameSect());
+	}
 }

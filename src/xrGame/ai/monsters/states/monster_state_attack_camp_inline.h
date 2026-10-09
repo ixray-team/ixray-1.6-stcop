@@ -59,7 +59,7 @@ bool CStateMonsterAttackCampAbstract::check_completion()
 		if (this->object->HitMemory.get_last_hit_time() > this->get_state_current()->time_started()) return true;
 	}
 
-	if (this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position()) < 5.f) return true;
+	if (this->object->EnemyMan.GetTrackingPosition().distance_to(this->object->Position()) < 5.f) return true;
 
 	return false;
 }

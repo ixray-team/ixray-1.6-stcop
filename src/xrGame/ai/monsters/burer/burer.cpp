@@ -926,7 +926,7 @@ void CBurer::StartGraviMP()
 	Fvector target_pos;
 	from_pos = Position();
 	from_pos.y += 0.5f;
-	target_pos = EnemyMan.get_enemy()->Position();
+	target_pos = EnemyMan.GetTrackingPosition();
 	target_pos.y += 0.5f;
 	gravi_object.activate(EnemyMan.get_enemy(), from_pos, target_pos);
 
@@ -949,7 +949,7 @@ void CBurer::face_enemy()
 	{
 		return;
 	}
-	Fvector const enemy_pos = EnemyMan.get_enemy()->Position();
+	Fvector const enemy_pos = EnemyMan.GetTrackingPosition();
 	Fvector const self_pos = Position();
 	Fvector const self2enemy = enemy_pos - self_pos;
 	bool const good_aiming = angle_between_vectors(self2enemy, Direction()) < deg2rad(20.f);

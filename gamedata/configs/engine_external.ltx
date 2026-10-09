@@ -91,6 +91,21 @@ EnableBlockSprintInReload = true        ; Enable block sprint in reload
 DisableSprintWhileOverweight = false    ; Disable Sprint while overweight
 SprintFovFactor = 3.0                   ; FOV magnification power while running
 
+[monsters_logic]; New mechanics require editing of mutant configs
+EnableMonsterFactionEnemySharingIsolation = false ; Isolate monster enemy sharing (root flag for use other options)
+EnableMonsterFriendlyEnemySharing = false ; Allow mutual friends sharing
+EnableMonsterDistributedTargeting = false ; Balance nearby monster targets
+EnableMonsterEnemySharingCalls = false ; Enable monster enemy calls
+MonsterEnemySharingCloseRatio = 0.3 ; Nearby hearing radius fraction
+MonsterEnemySharingIntervalMin = 1 ; Minimum sharing interval seconds
+MonsterEnemySharingIntervalMax = 2 ; Maximum sharing interval seconds
+MonsterEnemyMemoryMin = 30 ; Minimum retention seconds
+MonsterEnemyMemoryMax = 60 ; Maximum retention seconds
+MonsterEnemySearchAtPointTime = 15 ; Search after arrival seconds
+MonsterEnemyCloseAttackDistance = 5 ; Close combat distance, capped by personal detection radius
+MonsterPlayerVisualAcquireTime = 400 ; Accumulated player visibility before acquisition, milliseconds
+MonsterEnemyStuckTime = 3000 ; No movement before local search, milliseconds
+
 [spawn_supplies]
 EnableLoadoutsSupplies 						= true; Use loadouts for npc profiles
 ;; select one option ;;

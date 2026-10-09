@@ -20,6 +20,16 @@ void CStateGroupPanicRunAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateGroupPanicRunAbstract::execute()
 {
+	if (this->object->HasDamagePanic())
+	{
+		this->object->set_action(ACT_RUN);
+		this->object->set_state_sound(MonsterSound::eMonsterSoundPanic);
+		this->object->anim().accel_activate(eAT_Aggressive);
+		this->object->anim().accel_set_braking(false);
+		this->object->path().set_retreat_from_point(this->object->DamagePanicThreat);
+		this->object->path().set_generic_parameters();
+		return;
+	}
 	this->object->set_action							(ACT_RUN);
 	this->object->set_state_sound						(MonsterSound::eMonsterSoundPanic);
 	this->object->anim().accel_activate			(eAT_Aggressive);
@@ -36,6 +46,10 @@ void CStateGroupPanicRunAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateGroupPanicRunAbstract::check_completion()
 {
+	if (this->object->HasDamagePanic())
+	{
+		return false;
+	}
 	float dist_to_enemy = this->object->Position().distance_to(this->object->EnemyMan.get_enemy_position());
 	u32 time_delta	= Device.dwTimeGlobal - this->object->EnemyMan.get_enemy_time_last_seen();
 
