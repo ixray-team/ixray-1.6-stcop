@@ -34,17 +34,19 @@
 #define SND_BLOCKSIZE (1 << 10)
 #define SND_HRTF_SLOT_COUNT (512)
 
-#define SND_BUS_MASTER 0
-#define SND_BUS_REVERB 1
-#define SND_BUS_EFFECTS 2
-#define SND_BUS_MUSIC 3
-#define SND_BUS_LAST SND_BUS_MUSIC
-#define SND_BUS_COUNT (SND_BUS_LAST+1)
 
 typedef void(*audio_render_callback)(float*);
 typedef void(*audio_precache_callback)();
 
 struct ref_sound;
+
+enum class SoundSubmixId : u8
+{
+	Effects,
+	Shooting,
+	Music,
+	Count
+};
 class CObject;
 
 namespace XRay::Sound::Mixer
@@ -57,9 +59,7 @@ namespace XRay::Sound::Mixer
 		Intro = (1 << 2),
 		NoPosUpdate = (1 << 3),
 		NoFeedback = (1 << 4),
-		NoOCC = (1 << 5),
-		Music = (1 << 6),
-		Shooting = (1 << 7)
+		NoOCC = (1 << 5)
 	};
 
 	enum class State : u8
