@@ -278,6 +278,8 @@ void CContentView::Draw()
 		CollectAllFolder();
 	}
 
+	UpdateSoundPreview();
+
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(250, 100));
 	if (ImGui::Begin(WindowName.c_str()))
@@ -1014,6 +1016,11 @@ void CContentView::RescanDirectory()
 		if (!file.is_directory() && CheckFile(file))
 		{
 			Files.push_back({ file, false });
+
+			if (CSoundPreviewCache::IsPreviewable(file))
+			{
+				SoundPreviews.Refresh(file);
+			}
 		}
 	}
 
@@ -1029,6 +1036,9 @@ void CContentView::RescanDirectory()
 
 void CContentView::Destroy()
 {
+	StopSoundPreview();
+	SoundPreviews.Clear();
+
 	MenuIcon.destroy();
 	Icons.clear();
 
@@ -1096,6 +1106,8 @@ void CContentView::Init()
 
 	LoadCustomIcons();
 	LoadExtDest();
+
+	SoundPreviews.Initialize();
 
 	xr_string Files = pSettings->r_string("dialogs", "files");
 	Files.RemoveWhitespaces();
@@ -1384,11 +1396,16 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.f, 1.f, 1.f, 0.5f));
 		}
 
+		const bool IsSoundFile = !InitFileName.IsDir && CSoundPreviewCache::IsPreviewable(FilePath);
+
 		ImGui::BeginGroup();
 		{
 			if (ViewMode == EViewMode::List)
 				ImGui::Dummy(ImVec2(0, padding / 2));
 			
+			if (IsSoundFile)
+				ImGui::SetNextItemAllowOverlap();
+
 			if (ImGui::Button(ButtonId.c_str(), ImVec2(buttonSize.x, (isRenaming && ViewMode == EViewMode::Tile) ? buttonSize.y - 20: buttonSize.y)))
 			{
 				ImGuiIO& io = ImGui::GetIO();
@@ -1409,6 +1426,7 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 			DrawItemHelper(FilePath, FileName, InitFileName, IconPtr, inSelectedList);
 
 			ImVec2 cursorPos = ImGui::GetItemRectMin();
+			ImVec2 tileMax = ImGui::GetItemRectMax();
 			ImVec2 imagePos = ImVec2(
 				cursorPos.x + (buttonSize.x - ImageSize.x) / 2,
 				cursorPos.y + (ViewMode == EViewMode::Tile ? 0 : (buttonSize.y - ImageSize.y) / 2)
@@ -1428,7 +1446,10 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 				IconColor.w = 0.3;
 			}
 
-			ImGui::Image(IconPtr->Icon->get_SRView() ? IconPtr->Icon->get_SRView()->GetRawSRV()  : nullptr, ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
+			if (!IsSoundFile || !DrawSoundPreview(FilePath, cursorPos, tileMax, ImageSize, IconColor.w))
+			{
+				ImGui::Image(IconPtr->Icon->get_SRView() ? IconPtr->Icon->get_SRView()->GetRawSRV()  : nullptr, ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
+			}
 
 			/*
 				Два варианта
@@ -1626,8 +1647,9 @@ bool CContentView::CheckFile(const xr_path& File) const
 		bool TestTHM = IsThmMode   || Ext != ".thm";
 		bool TestTemp = IsTempMode || !Ext.StartWith(".~");
 		bool TestWinTrash = File.xfilename() != "desktop.ini";
+		bool TestSoundCache = Ext != ".sch";
 
-		return TestTemp && TestTHM && TestWinTrash;
+		return TestTemp && TestTHM && TestWinTrash && TestSoundCache;
 	}
 
 	return true;
@@ -2066,6 +2088,178 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 	}
 
 	return Icons[IconPath];
+}
+
+void CContentView::UpdateSoundPreview()
+{
+	// The mixer starts the slot asynchronously, so give it a moment before treating "not playing" as finished
+	if (!PreviewSoundFile.empty() && !PreviewSound.is_playing() && PreviewSoundTimer.GetElapsed_sec() > 0.25f)
+	{
+		StopSoundPreview();
+	}
+}
+
+void CContentView::StopSoundPreview()
+{
+	if (PreviewSound._p)
+	{
+		PreviewSound.stop();
+		PreviewSound.destroy();
+	}
+
+	PreviewSoundFile.clear();
+}
+
+void CContentView::ToggleSoundPreview(const xr_path& FilePath, const xr_string& SoundName)
+{
+	const bool WasPlaying = PreviewSoundFile == FilePath;
+	StopSoundPreview();
+
+	if (WasPlaying)
+	{
+		return;
+	}
+
+	PreviewSound.create(SoundName.c_str(), st_Effect, sg_Undefined);
+	if (!PreviewSound._p)
+	{
+		return;
+	}
+
+	PreviewSound.play(nullptr, sm_2D);
+	PreviewSoundFile = FilePath;
+	PreviewSoundTimer.Start();
+}
+
+bool CContentView::DrawSoundPreview(const xr_path& FilePath, const ImVec2& TileMin, const ImVec2& TileMax, const ImVec2& ImageSize, float Alpha)
+{
+	const CSoundPreviewCache::Preview* Preview = SoundPreviews.Get(FilePath);
+	if (Preview == nullptr)
+	{
+		return false;
+	}
+
+	const ImVec2 Min = ImGui::GetCursorScreenPos();
+	const ImVec2 Max = Min + ImageSize;
+	ImGui::Dummy(ImageSize);
+
+	const bool IsPlaying = PreviewSoundFile == FilePath;
+	float Progress = -1.0f;
+	if (IsPlaying && Preview->Duration > 0.0f)
+	{
+		Progress = std::clamp(XRay::Sound::Mixer::GetPlaytime(PreviewSound.slot()) / Preview->Duration, 0.0f, 1.0f);
+	}
+
+	const u8 A = u8(std::clamp(Alpha, 0.0f, 1.0f) * 255.0f);
+	const ImU32 BackgroundColor = IM_COL32(22, 22, 26, A);
+	const ImU32 CenterColor = IM_COL32(255, 255, 255, A / 10);
+	const ImU32 WaveColor = IM_COL32(124, 112, 232, Progress < 0.0f ? A : A / 2);
+	const ImU32 PlayedColor = IM_COL32(196, 188, 255, A);
+	const ImU32 AssetColor = IM_COL32(97, 85, 212, A);
+
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+	DrawList->AddRectFilled(Min, Max, BackgroundColor, 3.0f);
+
+	const float StripHeight = ImageSize.y >= 32.0f ? 3.0f : 1.0f;
+	const float WaveTop = Min.y + 2.0f;
+	const float WaveBottom = Max.y - StripHeight - 2.0f;
+	const float LaneHeight = (WaveBottom - WaveTop) / float(Preview->Lanes);
+	const int Columns = std::max(1, int(ImageSize.x) - 4);
+	const float PlayheadX = Min.x + 2.0f + Progress * float(Columns);
+
+	for (u16 Lane = 0; Lane < Preview->Lanes; Lane++)
+	{
+		const float Center = WaveTop + LaneHeight * (float(Lane) + 0.5f);
+		const float HalfHeight = LaneHeight * 0.5f - 1.0f;
+		const CSoundPreviewCache::PeakRange* Peaks = Preview->Peaks.data() + (size_t)Lane * CSoundPreviewCache::PeakCount;
+
+		DrawList->AddLine(ImVec2(Min.x + 2.0f, Center), ImVec2(Max.x - 2.0f, Center), CenterColor);
+
+		for (int Column = 0; Column < Columns; Column++)
+		{
+			const u32 First = u32(Column * CSoundPreviewCache::PeakCount / Columns);
+			const u32 Last = std::max(First + 1, u32((Column + 1) * CSoundPreviewCache::PeakCount / Columns));
+
+			float PeakMin = 0.0f;
+			float PeakMax = 0.0f;
+			for (u32 Peak = First; Peak < Last && Peak < CSoundPreviewCache::PeakCount; Peak++)
+			{
+				PeakMin = std::min(PeakMin, Peaks[Peak].Min);
+				PeakMax = std::max(PeakMax, Peaks[Peak].Max);
+			}
+
+			const float X = Min.x + 2.0f + float(Column) + 0.5f;
+			const float Top = Center - std::max(PeakMax * HalfHeight, 0.5f);
+			const float Bottom = Center - std::min(PeakMin * HalfHeight, -0.5f);
+			DrawList->AddLine(ImVec2(X, Top), ImVec2(X, Bottom), (Progress >= 0.0f && X <= PlayheadX) ? PlayedColor : WaveColor);
+		}
+	}
+
+	DrawList->AddRectFilled(ImVec2(Min.x, Max.y - StripHeight), Max, AssetColor, 3.0f, ImDrawFlags_RoundCornersBottom);
+
+	if (Progress >= 0.0f)
+	{
+		DrawList->AddLine(ImVec2(PlayheadX, WaveTop), ImVec2(PlayheadX, WaveBottom), IM_COL32(255, 255, 255, A), 1.5f);
+	}
+
+	if (ImageSize.y >= 48.0f)
+	{
+		const float Time = Progress >= 0.0f ? Progress * Preview->Duration : Preview->Duration;
+		string32 TimeText = {};
+		xr_sprintf(TimeText, "%d:%04.1f", int(Time) / 60, fmodf(Time, 60.0f));
+
+		const ImVec2 TextSize = ImGui::CalcTextSize(TimeText);
+		const ImVec2 TextPos(Max.x - TextSize.x - 4.0f, Max.y - StripHeight - TextSize.y - 2.0f);
+		DrawList->AddRectFilled(TextPos - ImVec2(2.0f, 0.0f), TextPos + TextSize + ImVec2(2.0f, 0.0f), IM_COL32(0, 0, 0, A / 2), 2.0f);
+		DrawList->AddText(TextPos, IM_COL32(230, 230, 230, A), TimeText);
+	}
+
+	const bool TileHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) && ImGui::IsMouseHoveringRect(TileMin, TileMax);
+	if (!TileHovered && !IsPlaying)
+	{
+		return true;
+	}
+
+	xr_string SoundName;
+	if (Preview->SampleRate != SND_SAMPLERATE || !SoundPreviews.GetGameSoundName(FilePath, SoundName))
+	{
+		return true;
+	}
+
+	const float Radius = std::clamp(std::min(ImageSize.x, ImageSize.y) * 0.2f, 7.0f, 18.0f);
+	const ImVec2 ButtonCenter = Min + ImageSize * 0.5f;
+	const ImVec2 CursorBackup = ImGui::GetCursorScreenPos();
+
+	ImGui::SetCursorScreenPos(ButtonCenter - ImVec2(Radius, Radius));
+	ImGui::PushID(FilePath.xstring().c_str());
+	if (ImGui::InvisibleButton("##SoundPreviewPlay", ImVec2(Radius * 2.0f, Radius * 2.0f)))
+	{
+		ToggleSoundPreview(FilePath, SoundName);
+	}
+	const bool ButtonHovered = ImGui::IsItemHovered();
+	ImGui::PopID();
+	ImGui::SetCursorScreenPos(CursorBackup);
+
+	const ImU32 ButtonColor = ButtonHovered ? IM_COL32(97, 85, 212, 235) : IM_COL32(0, 0, 0, 170);
+	DrawList->AddCircleFilled(ButtonCenter, Radius, ButtonColor);
+	DrawList->AddCircle(ButtonCenter, Radius, IM_COL32(255, 255, 255, ButtonHovered ? 255 : 190), 0, 1.5f);
+
+	const float IconSize = Radius * 0.45f;
+	if (PreviewSoundFile == FilePath)
+	{
+		DrawList->AddRectFilled(ButtonCenter - ImVec2(IconSize, IconSize) * 0.8f, ButtonCenter + ImVec2(IconSize, IconSize) * 0.8f, IM_COL32_WHITE, 1.0f);
+	}
+	else
+	{
+		const ImVec2 Offset(IconSize * 0.2f, 0.0f);
+		DrawList->AddTriangleFilled(
+			ButtonCenter + Offset + ImVec2(-IconSize * 0.8f, -IconSize),
+			ButtonCenter + Offset + ImVec2(-IconSize * 0.8f, IconSize),
+			ButtonCenter + Offset + ImVec2(IconSize, 0.0f),
+			IM_COL32_WHITE);
+	}
+
+	return true;
 }
 
 xr_map<xr_string, CContentView::FileOptData> CContentView::ScanConfigs(const xr_string& StartPath)
