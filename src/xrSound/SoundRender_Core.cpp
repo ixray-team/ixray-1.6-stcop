@@ -46,7 +46,7 @@ void CSoundRender_Core::debug_draw()
 
 }
 
-void CSoundRender_Core::update(const Fmatrix& m_V, const Fvector& P, const Fvector& D, const Fvector& N)
+void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector& N)
 {
 	if (!bReady)
 	{
@@ -55,7 +55,7 @@ void CSoundRender_Core::update(const Fmatrix& m_V, const Fvector& P, const Fvect
 
 	// Events
 	listenerPos = P;
-	XRay::Sound::Mixer::Update((void*)Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundVEffects * psSoundVShooting, psSoundCompression, m_V, P, D, N);
+	XRay::Sound::Mixer::Update((void*)Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundVEffects * psSoundVShooting, psSoundCompression, P, D, N);
 #ifdef XR_MP_BUILD
 	pSoundVoiceChat->Update(P, D, N);
 #endif
