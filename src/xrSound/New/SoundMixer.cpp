@@ -39,8 +39,6 @@
 #include "../ai_sounds.h"
 #include "SoundConvolutionReverb.h"
 
-#include <pffft.h>
-
 #define ENGINE_API
 #include "../xrEngine/xr_object.h"
 
@@ -119,13 +117,6 @@ struct sound_mixer_state
 	float IndoorFactor = 0.0f;
 
 	bool hrtf_enabled;
-
-#ifdef DEBUG_DRAW
-	PFFFT_Setup* fft_setup;
-	float* aligned_input_fft;
-	float* aligned_output_fft;
-	float fft_window[SND_BLOCKSIZE];
-#endif
 
 	float read_buffer[SND_CHANNEL_COUNT][(SND_BLOCKSIZE + 1) * 10];
 };
@@ -835,31 +826,6 @@ void Snd_MixerRenderCallback(float* buffer)
 	}
 
 #ifdef DEBUG_DRAW
-	for (size_t Iter = 0; Iter < SND_BLOCKSIZE; Iter++)
-	{
-		float Sample = 0.0f;
-		for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
-		{
-			Sample += buffer[Iter * SND_CHANNEL_COUNT + Channel];
-		}
-
-		Sample /= float(SND_CHANNEL_COUNT);
-		GMixer.aligned_input_fft[Iter] = GMixer.fft_window[Iter] * Sample;
-	}
-
-	pffft_transform_ordered(GMixer.fft_setup, GMixer.aligned_input_fft, GMixer.aligned_output_fft, nullptr, PFFFT_FORWARD);
-	g_SoundStats.spectral_data[0] = lin2dB(fabs(GMixer.aligned_output_fft[0]) / float(SND_BLOCKSIZE));
-
-	for (size_t k = 1; k < SND_BLOCKSIZE / 2; k++)
-	{
-		float re = GMixer.aligned_output_fft[k];
-		float im = GMixer.aligned_output_fft[SND_BLOCKSIZE + k - 1];
-		float mag = sqrtf(re * re + im * im) / float(SND_BLOCKSIZE);
-		g_SoundStats.spectral_data[k] = lin2dB(mag);
-	}
-
-	g_SoundStats.spectral_data[SND_BLOCKSIZE / 2] = lin2dB(fabs(GMixer.aligned_output_fft[SND_BLOCKSIZE / 2]) / float(SND_BLOCKSIZE));
-
 	float Volumes[SND_CHANNEL_COUNT] = {};
 	for (size_t Block = 0; Block < SND_BLOCKSIZE; Block++)
 	{
@@ -904,19 +870,6 @@ void Mixer::Initialize()
 	Snd_InitSubmixes();
 	Snd_InitShootingReverb();
 
-#ifdef DEBUG_DRAW
-#pragma todo(replace with aligned allocators)
-	// Blackman-Harris window
-	for (int i = 0; i < SND_BLOCKSIZE; ++i)
-	{
-		GMixer.fft_window[i] = .5 * (1. - cosf(2. * 3.1415926535897932384 * (f64)i / (f64)(SND_BLOCKSIZE - 1)));
-	}
-
-	GMixer.aligned_input_fft = (float*)aligned_alloc(16, SND_BLOCKSIZE * sizeof(float));
-	GMixer.aligned_output_fft = (float*)aligned_alloc(16, SND_BLOCKSIZE * 2 * sizeof(float));
-	GMixer.fft_setup = pffft_new_setup(SND_BLOCKSIZE, PFFFT_REAL);
-#endif
-
 	Snd_InitSources();
 
 	Backend::Initialize(Snd_MixerRenderCallback, Snd_PrecacheRenderCallback);
@@ -929,14 +882,6 @@ void Mixer::Shutdown()
 	Snd_ShutdownSources();
 
 	Snd_ShutdownShootingReverb();
-
-#ifdef DEBUG_DRAW
-	if (GMixer.fft_setup)
-	{
-		pffft_destroy_setup(GMixer.fft_setup);
-		GMixer.fft_setup = nullptr;
-	}
-#endif
 
 	if (GSpatializer)
 	{
