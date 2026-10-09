@@ -2,6 +2,14 @@
 
 English | [Русский](./code-style-cpp.rus.md)
 
+Formatting is defined by [`.clang-format`](../.clang-format), naming by [`.clang-tidy`](../.clang-tidy). This document describes both and the rules that the tools do not check. If the document and a config disagree, the config wins. Basic patterns (RAII, namespace or class, interfaces, platform code) are described in the [Coding Guidelines](https://ixray-team.github.io/ixray-1.6-stcop/en/main/coding-guidelines.html).
+
+## Tools
+
+- Format changed code with `clang-format` before committing. Visual Studio and VS Code pick up `.clang-format` from the repository root.
+- Check names with `clang-tidy` (`readability-identifier-naming`).
+- Only reformat the code you are changing. Do not reformat whole legacy files in the same commit as a functional change.
+
 ## Files
 
 Accepted extensions:
@@ -25,7 +33,6 @@ PascalCase should be used for the names of new files, and the style that has alr
 
 - It is permissible to report incomplete functionality, for example, `// TODO: Description`
 - It is permissible to report a bug, for example, `// BUG: Description`
-- It is mandatory to respect the maximum line length
 - If a kludge or hack is added, it is mandatory to report it in a comment, for example, `// HACK: Description`
 
 ## Includes
@@ -42,53 +49,73 @@ PascalCase should be used for the names of new files, and the style that has alr
   #include "xrCore.h"
   ```
 
-- It's necessary to sort includes within categories with great care
+- `clang-format` does not sort includes (`SortIncludes: Never`). The order is set by hand: the precompiled header always comes first, and the order inside a group is kept because some headers depend on it
 
 ## Naming
 
+`.clang-tidy` requires PascalCase (`CamelCase` in clang-tidy terms) for almost every name:
+
+| Entity | Style | Example |
+|--------|-------|---------|
+| Classes, structures, enumerations | PascalCase | `class SceneLoader`, `enum class LoadMode` |
+| Namespaces | PascalCase | `namespace NameUtils` |
+| Functions and methods | PascalCase | `void GenObjectName()` |
+| Local, global and static variables | PascalCase | `u32 ObjectCount` |
+| Class and structure fields (any access) | PascalCase | `u32 RefCount` |
+| Constants, `constexpr`, enumerators, `const` parameters | PascalCase | `constexpr u32 MaxObjects`, `LoadMode::Append` |
+| Macros | UPPER_CASE | `#define IXR_WINDOWS` |
+
 - Already existing names of public and protected functions, methods, and classes should be left as is to preserve API compatibility
-- Names of parameters of functions and methods, local variables and objects must begin with a small letter, complying with camelCase
+- Prefixes allowed in front of a PascalCase name:
+  - `I` for interfaces: `IReader`
+  - `C`, `E`, `F` in legacy type names: `CRenderDevice`, `EScene`. New types do not need them
+  - `g_` for global objects: `u32 g_ObjectCount;`
+  - `xr_` for IXR aliases of standard types and functions: `xr_vector`, `xr_strcpy`
+- Interface names must begin with the prefix `I`
+- Names of the fields do not use the `_` or `m_` prefixes:
+
+  ```cpp
+  class SomeClass
+  {
+  public:
+      u32 GetValue() const
+      {
+          return Value;
+      }
+
+  private:
+      u32 Value = 0;
+      u64 TotalSize = 0;
+  };
+  ```
+
+- Names of the parameters are written in PascalCase too. `clang-tidy` only checks `const` parameters, but the same style is used for all of them
 - Names of logical variables must begin with a verb:
 
   ```cpp
-  bool hasChildren;
-  bool isEnabled;
+  bool HasChildren;
+  bool IsEnabled;
   ```
 
 - Names of lambda functor objects must end with the postfix `Lambda`
 
   ```cpp
-  auto addLambda = [](auto a, auto b)
+  auto AddLambda = [](auto A, auto B)
   {
-      return a + b;
+      return A + B;
   };
   ```
 
-- Names of global objects must begin with the prefix `g_`
-
-  ```cpp
-  u32 g_SomeGlobalValue;
-  ```
-
-- Names of the `private` fields of classes and structures should start with the `_` sign, and then there should be a name with a small letter, complying with camelCase
-
-  ```cpp
-  u32 _someValue1;
-  u64 _someValue2;
-  ```
-
-- Interface names must begin with the prefix `I`
-- Names of the new classes and structures, `public` and `protected` methods should be in PascalCase
+- One-letter names are upper case as well (`I`, `T`). Prefer a range-based `for` or a descriptive name (`Index`) over a loop counter
 - Template parameter names should have descriptive names, unless the one-letter name speaks for itself and a descriptive name adds value
 - Should consider using the name `T` as the name of the template parameter if a single parameter is used
 - Prefix `T` should be added to the names of template parameters
 
 ## Standard functionality
 
-- Standard libraries cannot be used directly
-  - Use of standard libraries is allowed inside platform-dependent conditional compilation blocks in agreement with the team or the maintainer of the project
-- X-Ray types, containers, and functions are preferable as opposed to the standard ones
-  - If this type, container, or function is missing, declare the appropriate alias:
+- X-Ray types, containers, and functions are used instead of the standard ones
+  - Code that runs before `Memory._initialize` (process start, exception paths) uses `std::` containers
+  - If there is no X-Ray analog, the standard type, container, or function may be used. For a commonly used one, declare an alias:
 
   ```cpp
   using xr_string_view = std::string_view;
@@ -111,13 +138,16 @@ The full description of the types is in [this](../src/xrCore/_types.h) file
 
 ### Containers
 
-| STL                  | X-Ray         |
-|----------------------|---------------|
-| `std::vector`        | `xr_vector`   |
-| `std::unordered_map` | `xr_hash_map` |
-| `std::map`           | `xr_map`      |
-| `std::string`        | `xr_string`   |
-| `std::set`           | `xr_set`      |
+| STL                  | X-Ray           |
+|----------------------|-----------------|
+| `std::vector`        | `xr_vector`     |
+| `std::unordered_map` | `xr_hash_map`   |
+| `std::unordered_set` | `xr_hash_set`   |
+| `std::map`           | `xr_map`        |
+| `std::string`        | `xr_string`     |
+| `std::string_view`   | `xr_string_view`|
+| `std::set`           | `xr_set`        |
+| `std::unique_ptr`    | `xr_unique_ptr` |
 
 The full description of the containers is in [this](../src/xrCore/_stl_extensions.h) file
 
@@ -133,7 +163,7 @@ The full description of the containers is in [this](../src/xrCore/_stl_extension
 | `strcat`  | `xr_strcat`  |
 | `sprintf` | `xr_sprintf` |
 
-The full description of the containers is in [этом](../src/xrCore/_std_extensions.h) file
+The full description of the functions is in [this](../src/xrCore/_std_extensions.h) file
 
 ## Type casting
 
@@ -142,7 +172,9 @@ The full description of the containers is in [этом](../src/xrCore/_std_exten
 
 ## Platform dependency
 
-Platform-dependent code has to be placed under the conditional compilation block with an indication of one of the valid macros in the condition:
+Platform-dependent code lives in the `Platform` implementations (`Windows`, `Linux`, `macOS`) behind a common interface. Game, render, and other portable modules do not include platform headers and do not use platform APIs.
+
+Conditional compilation is allowed only inside the platform code, or when the difference cannot be moved behind the interface. The condition uses one of the valid macros:
 
 - `IXR_WINDOWS`
 - `IXR_LINUX`
@@ -151,14 +183,45 @@ Platform-dependent code has to be placed under the conditional compilation block
 
 ## Formatting
 
-- Always use 4 spaces instead of tabs
-- Always use curly braces to indicate conditions and cycles
-- Curly braces should be on a new line
+The rules below are applied by `clang-format`. The examples use spaces for readability; in the code, indentation is done with tabs.
+
+### Indentation and lines
+
+- Indent with tabs, one tab is 4 columns wide (`UseTab: Always`, `IndentWidth: 4`)
+- There is no line length limit (`ColumnLimit: 0`). `clang-format` does not wrap long lines; split them by hand where it helps readability
+- No more than 2 empty lines in a row
+- A block does not start with an empty line
+- Pointers and references stick to the type: `int* Ptr`, `const xr_string& Name`
+
+### Braces
+
+- Curly braces are always on a new line (Allman style), including functions, classes, namespaces, and lambdas
+- Curly braces are mandatory for every `if`, `else`, `for`, `while`, and `do`, even for a single statement. `clang-format` inserts missing ones (`InsertBraces: true`)
+- `if`, loops, and blocks are never written on one line
+- A short function may be written on one line only when it is defined inside the class body:
+
+  ```cpp
+  class SomeClass
+  {
+  public:
+      u32 GetValue() const { return Value; }
+  };
+
+  u32 SomeClass::GetSize() const
+  {
+      return Size;
+  }
+  ```
+
 - There must be 1 space between the keyword and the condition
   - In range expressions the colon should be highlighted on both sides
 
   ```cpp
   if (...)
+  {
+      ...
+  }
+  else
   {
       ...
   }
@@ -173,55 +236,92 @@ Platform-dependent code has to be placed under the conditional compilation block
       ...
   }
 
-  for (auto value : someCollection)
+  for (auto Value : SomeCollection)
   {
       ...
   }
 
-  for (auto& [id, name] : someMap) // Instead `for (auto it : someMap)`
+  for (auto& [Id, Name] : SomeMap) // Instead `for (auto It : SomeMap)`
   {
       ...
   }
   ```
 
-- The ternary operator is allowed on one line
-  - Split by lines with a more complex condition or result
-- Branching operators must follow a pattern
-  - When using brackets for `case`, it's necessary to put brackets for all other `case` blocks
+### Classes
 
-  ```cpp
-  switch (condition)
-  {
-      case 1:
-          ...
-          // falls through
-
-      case 2:
-          ...
-          break;
-
-      case 3:
-          ...
-          return;
-
-      case 4:
-      case 5:
-          ...
-          break;
-
-      default:
-          break;
-  }
-  ```
-
-- Transfer and string splitting of inherited classes and interfaces has to be conducted
+- Access modifiers are on the same level as the `class` keyword, with an empty line before them
+- Inherited classes and interfaces are either on one line or, when split, the line breaks after the colon and each base is on its own line:
 
   ```cpp
   class SomeClass :
       public IInterface,
       public BaseClass
   {
-      ...
+  public:
+      SomeClass();
+
+  private:
+      u32 Value = 0;
+  };
+  ```
+
+- The constructor initializer list starts on a new line with a colon:
+
+  ```cpp
+  SomeClass::SomeClass(u32 Value, u32 Size)
+      : Value(Value), Size(Size)
+  {
+  }
+  ```
+
+### Function calls and declarations
+
+- Arguments and parameters are either all on one line, or each on its own line. In the second case, the line breaks after the opening parenthesis and the closing parenthesis is on its own line:
+
+  ```cpp
+  DoSomething(FirstArgument, SecondArgument, ThirdArgument);
+
+  DoSomething(
+      FirstArgument,
+      SecondArgument,
+      ThirdArgument
+  );
+  ```
+
+### Operators
+
+- The ternary operator is allowed on one line
+  - With a more complex condition or result it is split by lines, and the line breaks before `?` and `:`
+
+  ```cpp
+  auto Result = IsEnabled ? GetValue() : 0;
+
+  auto Result = HasChildren
+                    ? CalculateChildrenSize(Node, Flags)
+                    : CalculateOwnSize(Node);
+  ```
+
+- Branching operators must follow a pattern
+  - `case` labels are indented inside `switch`
+  - A `case` is written either on one line (`AllowShortCaseLabelsOnASingleLine: true`), or as a block in brackets. A `case` body on several lines without brackets is prohibited
+  - The opening bracket is on the line after the label, `break` and `return` are inside the brackets
+  - Several labels with one body go one after another, each on its own line
+
+  ```cpp
+  switch (Condition)
+  {
+      case LoadMode::Append: AppendObjects(); break;
+      case LoadMode::Replace: ReplaceObjects(); return;
+
+      case LoadMode::Merge:
+      case LoadMode::Update:
+      {
+          u32 Count = GetCount();
+          Process(Count);
+          break;
+      }
+
+      default: break;
   }
   ```
 
@@ -246,6 +346,21 @@ Platform-dependent code has to be placed under the conditional compilation block
 - `nullptr` should be used instead of `NULL` and for checks
 - The use of strongly typed enumerations (`enum class`) should be prevalent
 - The use of anonymous enumerations and structures is prohibited
+- Unnamed namespaces (`namespace { ... }`) and unnamed structures (`struct { ... } Value;`) are prohibited. Give the namespace a name, and declare internal helper functions as `static`:
+
+  ```cpp
+  // Instead of `namespace { bool ParseIndex(...); }`
+  static bool ParseIndex(const char* Str, u32& Index);
+
+  // Instead of `struct { u32 Min, Max; } Range;`
+  struct IndexRange
+  {
+      u32 Min = 0;
+      u32 Max = 0;
+  };
+
+  IndexRange Range;
+  ```
 - Large code nesting should be avoided
 - A constructor and a destructor should always be defined
 - Direct full inclusion of a namespace, like, `using namespace` is prohibited
