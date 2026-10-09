@@ -14,3 +14,7 @@ set(TRACY_CALLSTACK 1 CACHE BOOL "" FORCE)
 set(TRACY_FIBERS 1 CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(Tracy)
+
+if (MSVC AND TARGET TracyClient)
+    target_compile_options(TracyClient PRIVATE $<$<CONFIG:DEBUG>:/Zi>)
+endif()
