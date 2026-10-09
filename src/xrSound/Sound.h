@@ -289,7 +289,7 @@ public:
 	virtual CDB::MODEL*				get_geometry_occ		()																						= 0;
 
 	virtual void                    debug_draw              ()                                                                                      = 0;
-	virtual void					update					( const Fmatrix& m_V, const Fvector& P, const Fvector& D, const Fvector& N)				= 0;
+	virtual void					update					(const Fvector& P, const Fvector& D, const Fvector& N)				= 0;
 	virtual void					statistic				( CSound_stats*  s0, CSound_stats_ext* s1 )												= 0;
 	virtual void					time_factor				(float time_factor)																		= 0;
 	virtual float					get_occlusion(Fvector& P, float R, Fvector* occ)                                                                = 0;
