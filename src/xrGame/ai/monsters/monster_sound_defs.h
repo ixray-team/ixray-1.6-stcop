@@ -20,6 +20,8 @@ namespace MonsterSound {
 		eMonsterSoundPanic			= eMonsterSoundBase | 11,
 		eMonsterSoundIdleDistant	= eMonsterSoundBase | 12,
 
+		eMonsterSoundEnemyCall = eMonsterSoundBase | 13,
+
 		eMonsterSoundScript			= u32(1) << 7,
 		eMonsterSoundCustom			= eMonsterSoundScript << 7,
 		eMonsterSoundDummy			= u32(-1),

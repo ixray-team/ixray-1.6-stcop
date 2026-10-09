@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 TEMPLATE_SPECIALIZATION
-CStateMonsterAttackMoveToHomePointAbstract::CStateMonsterAttackMoveToHomePoint(_Object *obj) 
+CStateMonsterAttackMoveToHomePointAbstract::CStateMonsterAttackMoveToHomePoint(_Object *obj)
                              : inherited(obj)
 {
 }
@@ -45,7 +45,7 @@ void CStateMonsterAttackMoveToHomePointAbstract::select_target()
 		m_target_node					=	u32(-1);
 	}
 
-	if ( m_target_node == u32(-1) ) 
+	if ( m_target_node == u32(-1) )
 	{
 		for ( u32 i=0; i<5; ++i )
 		{
@@ -97,8 +97,8 @@ void CStateMonsterAttackMoveToHomePointAbstract::execute()
 	if ( m_target_node == u32(-1) )
 	{
 		this->object->set_action					(ACT_STAND_IDLE);
-		this->object->path().set_target_point		(this->object->EnemyMan.get_enemy()->Position(), 
-											 this->object->EnemyMan.get_enemy()->ai_location().level_vertex_id());
+		this->object->path().set_target_point		(this->object->EnemyMan.GetTrackingPosition(),
+											 this->object->EnemyMan.GetTrackingVertex());
 	}
 	else
 	{
@@ -115,7 +115,7 @@ void CStateMonsterAttackMoveToHomePointAbstract::execute()
 	this->object->anim().accel_activate			(eAT_Aggressive);
 	this->object->anim().accel_set_braking		(false);
 
-	this->object->set_state_sound					(MonsterSound::eMonsterSoundAggressive, 
+	this->object->set_state_sound					(MonsterSound::eMonsterSoundAggressive,
 											 this->object->db().m_dwAttackSndDelay == u32(-1));
 }
 
@@ -168,7 +168,7 @@ bool CStateMonsterAttackMoveToHomePointAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterAttackMoveToHomePointAbstract::check_completion()
 {
-	if ( !this->object->at_home() ) 
+	if ( !this->object->at_home() )
 		return									false;
 
 	if ( this->object->run_home_point_when_enemy_inaccessible() )

@@ -223,7 +223,7 @@ bool CPseudoGigant::check_start_conditions(ControlCom::EControlType type)
 			return false;
 
 		// check distance to enemy
-		float dist = EnemyMan.get_enemy()->Position().distance_to(Position());
+		float dist = EnemyMan.GetTrackingPosition().distance_to(Position());
 
 		if ((dist > m_threaten_dist_max) || (dist < m_threaten_dist_min)) 
 			return false;

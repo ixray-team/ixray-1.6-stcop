@@ -27,7 +27,7 @@ void CStateGroupSquadMoveToRadiusExAbstract::execute()
 			float m_Angle = (PI - PI_DIV_2) / (squad->squad_alife_count() - 1) * (squad->get_index(this->object) - 1);
 			float m_Delta_Angle = Random.randF(PI_DIV_3 / (squad->squad_alife_count() - 1));
 			float m_heading, m_pitch;
-			Fvector m_enemy_position = this->object->EnemyMan.get_enemy()->Position();
+			Fvector m_enemy_position = this->object->EnemyMan.GetTrackingPosition();
 
 			Fvector to_direction = this->object->Home->get_home_point();
 			to_direction.sub(m_enemy_position);
@@ -41,13 +41,13 @@ void CStateGroupSquadMoveToRadiusExAbstract::execute()
 			data.point.z = m_enemy_position.z + data.completion_dist * to_direction.z;
 			if (!ai().level_graph().valid_vertex_position(data.point))
 			{
-				data.point = this->object->EnemyMan.get_enemy()->Position();
+				data.point = this->object->EnemyMan.GetTrackingPosition();
 			}
 		} else {
-			data.point = this->object->EnemyMan.get_enemy()->Position();
+			data.point = this->object->EnemyMan.GetTrackingPosition();
 		}
 	} else {
-		data.point = this->object->EnemyMan.get_enemy()->Position();
+		data.point = this->object->EnemyMan.GetTrackingPosition();
 	}
 	this->object->set_action									(data.action.action);
 	this->object->anim().SetSpecParams						(data.action.spec_params);
@@ -74,7 +74,7 @@ bool CStateGroupSquadMoveToRadiusExAbstract::check_completion()
 	if (data.action.time_out !=0) {
 		if (this->time_state_started + data.action.time_out < Device.dwTimeGlobal) return true;
 	}
-	if (this->object->Position().distance_to_xz(this->object->EnemyMan.get_enemy()->Position()) < data.completion_dist - 2.f) return true;
+	if (this->object->Position().distance_to_xz(this->object->EnemyMan.GetTrackingPosition()) < data.completion_dist - 2.f) return true;
 	if (data.point.distance_to_xz(this->object->Position()) <= 2.f) return true;
 	return false;
 }
@@ -95,7 +95,7 @@ void CStateGroupSquadMoveToRadiusAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateGroupSquadMoveToRadiusAbstract::execute()
 {
-	Fvector m_enemy_position = this->object->EnemyMan.get_enemy()->Position();
+	Fvector m_enemy_position = this->object->EnemyMan.GetTrackingPosition();
 
 	Fvector to_direction = this->object->Position();
 	to_direction.sub(m_enemy_position);
@@ -106,7 +106,7 @@ void CStateGroupSquadMoveToRadiusAbstract::execute()
 	data.point.z = m_enemy_position.z + data.completion_dist * to_direction.z;
 	if (!ai().level_graph().valid_vertex_position(data.point))
 	{
-		data.point = this->object->EnemyMan.get_enemy()->Position();
+		data.point = this->object->EnemyMan.GetTrackingPosition();
 	}
 
 	this->object->set_action									(data.action.action);

@@ -6,6 +6,10 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "ParticlesObject.h"
 #include "Level.h"
+#include "../xrEngine/MonsterLogicTelemetry.h"
+#include "ai/monsters/basemonster/base_monster.h"
+#include "ai/crow/ai_crow.h"
+#include "ai/phantom/phantom.h"
 #include "HUDManager.h"
 #include "xrServer.h"
 #include "NET_Queue.h"
@@ -616,6 +620,60 @@ void CLevel::MakeReconnect()
 
 void CLevel::OnFrame()
 {
+	if (g_MonsterLogicTelemetry.Enabled.load(std::memory_order_relaxed))
+	{
+		const u32 Generation = g_MonsterLogicTelemetry.Generation.load(std::memory_order_relaxed);
+		if (Generation != MonsterCountGeneration || s32(Device.dwTimeGlobal - NextMonsterCountUpdate) >= 0)
+		{
+			MonsterCountGeneration = Generation;
+			NextMonsterCountUpdate = Device.dwTimeGlobal + 1000;
+			u32 Alive = 0, Combat = 0, Peaceful = 0, Crows = 0, Phantoms = 0;
+			u32 PlayerKnown = 0, PlayerFirstShared = 0, PlayerShared = 0, PlayerVisible = 0;
+			for (u32 Index = 0; Index < Objects.o_count(); ++Index)
+			{
+				CObject* Object = Objects.o_get_by_iterator(Index);
+				CEntity* Entity = Object && !Object->getDestroy() ? Object->cast_entity() : nullptr;
+				if (!Entity || !Entity->g_Alive())
+				{
+					continue;
+				}
+				if (CBaseMonster* Monster = Object->cast_base_monster())
+				{
+					++Alive;
+					if (!Monster->MonsterPeaceful && Monster->EnemyMemory.KnowsPlayer(g_actor))
+					{
+						++PlayerKnown;
+						PlayerFirstShared += Monster->EnemyMemory.PlayerWasFirstShared(g_actor) ? 1 : 0;
+						PlayerShared += Monster->EnemyMemory.PlayerWasShared(g_actor) ? 1 : 0;
+					}
+					PlayerVisible += !Monster->MonsterPeaceful && g_actor && Monster->EnemyMan.see_enemy_now(g_actor) ? 1 : 0;
+					Peaceful += Monster->MonsterPeaceful ? 1 : 0;
+					const CEntityAlive* Enemy = Monster->EnemyMan.get_enemy();
+					Combat += Enemy && Enemy->g_Alive() && !Enemy->getDestroy() ? 1 : 0;
+				}
+				else if (smart_cast<CAI_Crow*>(Object))
+				{
+					++Alive;
+					++Crows;
+				}
+				else if (smart_cast<CPhantom*>(Object))
+				{
+					++Alive;
+					++Phantoms;
+				}
+			}
+			g_MonsterLogicTelemetry.PlayerKnownMonsters.store(PlayerKnown, std::memory_order_relaxed);
+			g_MonsterLogicTelemetry.PlayerFirstSharedMonsters.store(PlayerFirstShared, std::memory_order_relaxed);
+			g_MonsterLogicTelemetry.PlayerSharedMonsters.store(PlayerShared, std::memory_order_relaxed);
+			g_MonsterLogicTelemetry.PlayerVisibleMonsters.store(PlayerVisible, std::memory_order_relaxed);
+			g_MonsterLogicTelemetry.AliveMonsters.store(Alive, std::memory_order_relaxed);
+			g_MonsterLogicTelemetry.CombatMonsters.store(Combat, std::memory_order_relaxed);
+			g_MonsterLogicTelemetry.PeacefulMonsters.store(Peaceful, std::memory_order_relaxed);
+			g_MonsterLogicTelemetry.VanillaCrows.store(Crows, std::memory_order_relaxed);
+			g_MonsterLogicTelemetry.StandalonePhantoms.store(Phantoms, std::memory_order_relaxed);
+		}
+	}
+
 #ifdef DEBUG
 	DBG_RenderUpdate();
 #endif // #ifdef DEBUG

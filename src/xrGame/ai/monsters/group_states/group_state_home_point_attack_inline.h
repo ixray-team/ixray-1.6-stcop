@@ -83,8 +83,13 @@ TEMPLATE_SPECIALIZATION
 bool CStateGroupAttackMoveToHomePointAbstract::enemy_inaccessible()
 {
 	CEntityAlive const * enemy		=	this->object->EnemyMan.get_enemy();
-	Fvector const enemy_pos			=	enemy->Position();
-	Fvector const enemy_vert_pos	=	ai().level_graph().vertex_position(enemy->ai_location().level_vertex_id());
+	Fvector const enemy_pos			=	this->object->EnemyMan.GetTrackingPosition();
+	const u32 EnemyVertex = this->object->EnemyMan.GetTrackingVertex();
+	if (!ai().level_graph().valid_vertex_id(EnemyVertex))
+	{
+		return true;
+	}
+	Fvector const enemy_vert_pos = ai().level_graph().vertex_position(EnemyVertex);
 	if ( enemy_vert_pos.distance_to(enemy_pos) > 1.f )
 	{
 		return							true;
@@ -99,7 +104,7 @@ bool CStateGroupAttackMoveToHomePointAbstract::enemy_inaccessible()
 		return							true;
 	}
 
-	if ( !ai().level_graph().valid_vertex_id(enemy->ai_location().level_vertex_id()) )
+	if ( !ai().level_graph().valid_vertex_id(this->object->EnemyMan.GetTrackingVertex()) )
 	{
 		return							true;
 	}
@@ -198,7 +203,7 @@ void CStateGroupAttackMoveToHomePointAbstract::setup_substates()
 		const CEntityAlive* enemy = this->object->EnemyMan.get_enemy();
 
 		Fvector enemy2home = this->object->Home->get_home_point();
-		enemy2home.sub(enemy->Position());
+		enemy2home.sub(this->object->EnemyMan.GetTrackingPosition());
 		enemy2home.normalize_safe();
 
 		m_target_node = this->object->Home->get_place_in_max_home_to_direction(enemy2home);

@@ -44,6 +44,10 @@ namespace Feel
 			CObject*			O;
 			float				fuzzy;		// note range: (-1[no]..1[yes])
 			float				Cache_vis;
+			bool OwnTraceVisible = false;
+			u32 OwnObservationTime = 0;
+			float OwnExposureMilliseconds = 0.f;
+			Fvector OwnObservationPosition;
 			u16					bone_id;
 		};
 		xr_vector<feel_visible_Item>	feel_visible;
@@ -53,6 +57,9 @@ namespace Feel
 		void						feel_vision_update		(Fvector& P, float dt, float vis_threshold);
 		void						feel_vision_relcase		(CObject* object);
 		void						feel_vision_get			(xr_vector<CObject*>& R);
+		void GetOwnVisibleObjects(xr_vector<CObject*>& Objects);
+		bool GetOwnVisionObservation(const CObject* Object, Fvector& Position, u32& Time);
+		bool GetOwnVisionExposure(const CObject* Object, float& Milliseconds);
 		Fvector						feel_vision_get_vispoint(CObject* _O);
 		virtual		bool			feel_vision_isRelevant	(CObject* O)					= 0;
 		virtual		float			feel_vision_mtl_transp	(CObject* O, u32 element)		= 0;	

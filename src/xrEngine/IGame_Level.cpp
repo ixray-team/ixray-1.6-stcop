@@ -403,7 +403,7 @@ void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 			VERIFY(_valid(occ));
 			Power *= occ;
 			if (Power>EPS_S)
-				snd_Events.push_back({ L, S, Power });
+				snd_Events.push_back({ L, S, Power, snd_position });
 		}
 	}
 }
@@ -421,7 +421,7 @@ void IGame_Level::SoundEvent_Dispatch()
 				D.source->g_object, 
 				D.source->g_type, 
 				D.source->g_userdata, 
-				D.source->is_2d() ? Device.vCameraPosition : D.source->get_params().position, 
+				D.Position,
 				D.power
 			);
 		}

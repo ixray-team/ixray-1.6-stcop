@@ -83,7 +83,7 @@ bool CStateBurerAttackGravi<Object>::check_start_conditions()
 	{
 		return true;
 	}
-	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
+	float dist = this->object->Position().distance_to(this->object->EnemyMan.GetTrackingPosition());
 	if (current_time() < m_next_gravi_allowed_tick)
 	{
 		return false;
@@ -143,7 +143,7 @@ void CStateBurerAttackGravi<Object>::ExecuteGraviContinue()
 	this->object->anim().set_override_animation(eAnimGraviFire, anim_idx);
 
 	// проверить на грави удар
-	const float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
+	const float dist = this->object->Position().distance_to(this->object->EnemyMan.GetTrackingPosition());
 
 	float time_to_hold = (abs(dist - this->object->gravi.min_dist) / this->object->gravi.min_dist);
 	clamp(time_to_hold, 0.f, 1.f);
@@ -174,7 +174,7 @@ void CStateBurerAttackGravi<Object>::ExecuteGraviFire()
 	Fvector from_pos = this->object->Position();
 	from_pos.y += 0.5f;
 
-	Fvector target_pos = this->object->EnemyMan.get_enemy()->Position();
+	Fvector target_pos = this->object->EnemyMan.GetTrackingPosition();
 	target_pos.y += 0.5f;
 
 	this->object->gravi_object.activate(this->object->EnemyMan.get_enemy(), from_pos, target_pos);

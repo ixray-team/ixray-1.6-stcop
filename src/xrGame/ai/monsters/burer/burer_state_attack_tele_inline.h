@@ -135,7 +135,7 @@ bool CStateBurerAttackTele<Object>::check_start_conditions()
 template <typename Object>
 bool CStateBurerAttackTele<Object>::check_completion()
 {
-	float dist = this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position());
+	float dist = this->object->EnemyMan.GetTrackingPosition().distance_to(this->object->Position());
 
 	if (dist < this->object->tele_min_distance)
 	{
@@ -217,15 +217,15 @@ void CStateBurerAttackTele<Object>::FindObjects()
 	// получить список объектов вокруг врага
 	m_nearest.clear();
 	m_nearest.reserve(res_size);
-	FindFreeObjects(m_nearest, this->object->EnemyMan.get_enemy()->Position());
+	FindFreeObjects(m_nearest, this->object->EnemyMan.GetTrackingPosition());
 
 	// получить список объектов вокруг монстра
 	FindFreeObjects(m_nearest, this->object->Position());
 
 	// получить список объектов между монстром и врагом
-	float dist = this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position());
+	float dist = this->object->EnemyMan.GetTrackingPosition().distance_to(this->object->Position());
 	Fvector dir;
-	dir.sub(this->object->EnemyMan.get_enemy()->Position(), this->object->Position());
+	dir.sub(this->object->EnemyMan.GetTrackingPosition(), this->object->Position());
 	dir.normalize();
 
 	Fvector pos;
@@ -350,7 +350,7 @@ bool CStateBurerAttackTele<Object>::CheckTeleStart()
 	}
 
 	// проверить дистанцию до врага
-	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
+	float dist = this->object->Position().distance_to(this->object->EnemyMan.GetTrackingPosition());
 	if (dist < this->object->tele_min_distance)
 	{
 		return false;
@@ -431,7 +431,7 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 	}
 
 	std::sort(
-		tele_objects.begin(), tele_objects.end(), best_object_predicate2(this->object->Position(), this->object->EnemyMan.get_enemy()->Position())
+		tele_objects.begin(), tele_objects.end(), best_object_predicate2(this->object->Position(), this->object->EnemyMan.GetTrackingPosition())
 	);
 
 	for (u32 i = 0; i < max; ++i)

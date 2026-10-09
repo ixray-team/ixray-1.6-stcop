@@ -23,13 +23,13 @@ void CStateBurerAttackRunAroundAbstract::initialize()
 
 	// select point
 	Fvector dir_to_enemy, dir_from_enemy;
-	dir_to_enemy.sub(this->object->EnemyMan.get_enemy()->Position(), this->object->Position());
+	dir_to_enemy.sub(this->object->EnemyMan.GetTrackingPosition(), this->object->Position());
 	dir_to_enemy.normalize();
 
-	dir_from_enemy.sub(this->object->Position(), this->object->EnemyMan.get_enemy()->Position());
+	dir_from_enemy.sub(this->object->Position(), this->object->EnemyMan.GetTrackingPosition());
 	dir_from_enemy.normalize();
 
-	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
+	float dist = this->object->Position().distance_to(this->object->EnemyMan.GetTrackingPosition());
 
 	if (dist > 30.f)
 	{ // бежать к врагу
@@ -38,13 +38,13 @@ void CStateBurerAttackRunAroundAbstract::initialize()
 	else if ((dist < 20.f) && (dist > 4.f))
 	{ // убегать от врага
 		selected_point.mad(this->object->Position(), dir_from_enemy, DIST_QUANT);
-		dest_direction.sub(this->object->EnemyMan.get_enemy()->Position(), selected_point);
+		dest_direction.sub(this->object->EnemyMan.GetTrackingPosition(), selected_point);
 		dest_direction.normalize();
 	}
 	else
 	{ // выбрать случайную позицию
 		selected_point = random_position(this->object->Position(), DIST_QUANT);
-		dest_direction.sub(this->object->EnemyMan.get_enemy()->Position(), selected_point);
+		dest_direction.sub(this->object->EnemyMan.GetTrackingPosition(), selected_point);
 		dest_direction.normalize();
 	}
 

@@ -148,7 +148,7 @@ template <class Object>
 bool   ChimeraAttackState<Object>::select_target_for_move ()
 {
 	CEntityAlive const* const	enemy		=	this->object->EnemyMan.get_enemy();
-	Fvector	const	enemy_pos				=	enemy->Position();
+	Fvector	const	enemy_pos				=	this->object->EnemyMan.GetTrackingPosition();
 	Fvector	const	self_pos				=	this->object->Position();
 	
 	Fvector	const	self2enemy				=	enemy_pos - self_pos;
@@ -220,7 +220,7 @@ template <class Object>
 bool   ChimeraAttackState<Object>::select_target_for_attack_jump ()
 {
 	CEntityAlive const* const	enemy		=	this->object->EnemyMan.get_enemy();
-	Fvector	const	enemy_pos				=	enemy->Position();
+	Fvector	const	enemy_pos				=	this->object->EnemyMan.GetTrackingPosition();
 
 	Fvector const &	corrected_enemy_pos		=	correct_jump_pos(enemy_pos);
 	if ( check_if_jump_possible(corrected_enemy_pos) )
@@ -244,7 +244,7 @@ template <class Object>
 bool   ChimeraAttackState<Object>::select_target_for_jump (enum_action const	action)
 {
 	CEntityAlive const* const	enemy		=	this->object->EnemyMan.get_enemy();
-	Fvector	const	enemy_pos				=	enemy->Position();
+	Fvector	const	enemy_pos				=	this->object->EnemyMan.GetTrackingPosition();
 
 	if ( action == action_attack )
 	{
@@ -316,7 +316,7 @@ void   ChimeraAttackState<Object>::execute ()
 #endif // DEBUG_STATE
 
 	CEntityAlive*		enemy				=	const_cast<CEntityAlive*>( this->object->EnemyMan.get_enemy() );
-	Fvector	const		enemy_pos			=	enemy->Position();
+	Fvector	const		enemy_pos			=	this->object->EnemyMan.GetTrackingPosition();
 	Fvector const		self_pos			=	this->object->Position();
 	Fvector	const		self2enemy			=	enemy_pos - self_pos;
 	float	const		self2enemy_mag		=	magnitude(self2enemy);
@@ -349,7 +349,7 @@ void   ChimeraAttackState<Object>::execute ()
 			m_target						=	correct_jump_pos(enemy_pos);
 			if ( !ai().level_graph().valid_vertex_position(m_target) )
 			{
-				m_target_vertex				=	enemy->ai_location().level_vertex_id();
+				m_target_vertex				=	this->object->EnemyMan.GetTrackingVertex();
 				m_target					=	ai().level_graph().vertex_position(m_target_vertex);
 			}
 			else
@@ -438,7 +438,7 @@ void   ChimeraAttackState<Object>::execute ()
 				}
 			}
 
-			m_target_vertex					=	enemy->ai_location().level_vertex_id();
+			m_target_vertex					=	this->object->EnemyMan.GetTrackingVertex();
 			m_target						=	ai().level_graph().vertex_position(m_target_vertex);
 
 			m_state							=	state_undefined;
@@ -454,7 +454,7 @@ void   ChimeraAttackState<Object>::execute ()
 	}
 	else if ( self2enemy_mag >= m_min_run_distance )
 	{
- 		m_target_vertex						= 	enemy->ai_location().level_vertex_id();
+		m_target_vertex						= 	this->object->EnemyMan.GetTrackingVertex();
 		m_target							=	ai().level_graph().vertex_position(m_target_vertex);
 	}
 	else if ( can_prepare_jump || can_attack_jump )
@@ -495,7 +495,7 @@ void   ChimeraAttackState<Object>::execute ()
 		}
 		else
 		{
-			m_target_vertex					=	enemy->ai_location().level_vertex_id();
+			m_target_vertex					=	this->object->EnemyMan.GetTrackingVertex();
 			m_target						=	ai().level_graph().vertex_position(m_target_vertex);
 		}
 	}
