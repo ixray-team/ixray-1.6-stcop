@@ -488,7 +488,12 @@ ICF void fontselectioncombo(LevelInspector& LI)
 		{
 			if (!pSettings->section_exist(pair.first.c_str()))
 				return;
-			LI.m_clone_fonts_map[pair.first] = new CGameFont(pair.first.c_str());
+			
+			auto font = new CGameFont(pair.first.c_str());
+			font->SetOutline(true);
+			font->SetOutlineOffset(1.f);
+			font->SetOutlineColor(color_rgba(0,0,0, 255 / 3));
+			LI.m_clone_fonts_map[pair.first] = font;
 			font_names.push_back(pair.first.c_str());
 		});
 	}
