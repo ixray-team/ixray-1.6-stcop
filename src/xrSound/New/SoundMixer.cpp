@@ -281,7 +281,7 @@ ICF u32 Snd_ReadSlotData(u32 SlotIdx, SoundSourceState& Source, float** Data, u3
 
 	u32 ReadPostion = Slot.position;
 	u32 Frames2Read = FramesCount;
-	u32 WaitSpins = 0;
+	u32 DecodeAttempts = 0;
 
 	while (Frames2Read && ReadPostion < Source.Desc.frames_total)
 	{
@@ -296,19 +296,17 @@ ICF u32 Snd_ReadSlotData(u32 SlotIdx, SoundSourceState& Source, float** Data, u3
 		{
 			Frames2Read -= CacheFrames;
 			ReadPostion += CacheFrames;
-			WaitSpins = 0;
+			DecodeAttempts = 0;
 			continue;
 		}
 
-		PROF_EVENT("Decode OGG Wait");
+		// Cache miss: the decode thread didn't make it in time (or never got the request).
+		// Don't wait for it, decode the line right here on the render thread.
 		SND_STAT_ADD(g_SoundStats.render_cache_miss, 1u);
-		Snd_QueueDecode(&Slot.sound_name, ReadPostion);
-		if (++WaitSpins > 4096)
+		if (++DecodeAttempts > 2 || !Snd_DecodeNow(&Source, ReadPostion))
 		{
 			break;
 		}
-
-		std::this_thread::yield();
 	}
 
 	return FramesCount - Frames2Read;
@@ -341,13 +339,17 @@ ICF void Snd_ReadSlot(u32 slot_idx, SoundSourceState& source, float** data, u32 
 
 		if (slot.position < source.Desc.frames_total)
 		{
-			if (read_frames == 0)
+			if (read_frames != 0)
+			{
+				continue;
+			}
+
+			// Nothing decodable from here on: treat it as the end of the stream (loop or stop)
+			if (slot.position == 0)
 			{
 				MixerNewState(slot_idx, Mixer::State::Stopped);
 				break;
 			}
-
-			continue;
 		}
 
 		slot.position = 0;
@@ -426,13 +428,11 @@ ICF void Snd_PrecacheRenderCallback()
 			if (source != nullptr && Snd_SlotOcclusion(i + 1, *source, dt, nullptr) != ESlotOcclusionResult::False)
 			{
 				Snd_AcquireHRTFSlot(i + 1);
-				// Hand the decode off to the decode thread; only enqueue if the cache
-				// line for the current position isn't already filled.
-				if (!Snd_HasCacheLine(source, slot.position))
-				{
-					PROF_EVENT("Sound: QueueDecode");
-					Snd_QueueDecode(&slot.sound_name, slot.position);
-				}
+
+				// Async decode of the current position and the read-ahead window.
+				// Whatever doesn't make it in time is decoded on the fly by the render thread.
+				PROF_EVENT("Sound: Prefetch");
+				Snd_PrefetchSource(source, &slot.sound_name, slot.position, (slot.flags & (u8)Mixer::Flags::Looped) != 0);
 			}
 			else
 			{
