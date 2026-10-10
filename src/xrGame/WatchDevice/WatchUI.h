@@ -50,7 +50,13 @@ public:
 	void Render(const Fmatrix& Xform);
 	void RenderGlow(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity);
 	void RenderLed(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& GlassSize, const Fvector2& CoreSize, float Intensity, float Brightness);
+	void RenderConditionIcon(EWatchCondition Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color);
+	void RenderConditionBar(EWatchCondition Id, const Fmatrix& Xform, const Fvector2& Size, float Fill, float Intensity, u32 Color);
 	u32 GetGlowColor(EWatchGlow Id) const;
+	u32 GetConditionIconColor(EWatchCondition Id) const;
+	u32 GetConditionBarColor(EWatchCondition Id) const;
+	bool HasConditionIcon(EWatchCondition Id) const;
+	bool HasConditionBar(EWatchCondition Id) const;
 
 private:
 	struct SGlow
@@ -66,14 +72,32 @@ private:
 		u32 LitAlpha = 90;
 	};
 
+	enum class EBarFill : u8
+	{
+		Left,
+		Right
+	};
+
+	struct SConditionVisual
+	{
+		SGlow Icon;
+		SGlow Bar;
+		EBarFill Fill = EBarFill::Left;
+		bool IconOk = false;
+		bool BarOk = false;
+	};
+
 	CUIWatchText* CreateText(CUIXml& Xml, const char* Path, const shared_str& FontName);
 	bool CreateGlow(CUIXml& Xml, const char* Path, SGlow& Glow);
 	bool CreateGlass(CUIXml& Xml, const char* Path, SGlass& Glass);
 	void EnsureGlow(CUIXml& Xml, const char* Path, SGlow& Glow, u32 DefaultColor);
 	void EnsureGlass(CUIXml& Xml, const char* Path, SGlass& Glass);
+	void CreateConditionVisual(CUIXml& Xml, EWatchCondition Id);
+	void RenderGlowShader(SGlow& Glow, const Fmatrix& Xform, const Fvector2& Size, float Intensity, float U0, float U1, u32 Color);
 
 	SGlow Glows[u32(EWatchGlow::Count)];
 	SGlass Glasses[u32(EWatchGlow::Count)];
+	SConditionVisual Conditions[WatchConditionCount];
 
 	CUIWatchText* Time = nullptr;
 	CUIWatchText* Date = nullptr;
