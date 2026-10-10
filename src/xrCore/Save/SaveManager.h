@@ -1,5 +1,6 @@
 #pragma once
 #include "SaveObject.h"
+#include "../Kernel/xrSyncronize.h"
 
 /*
 New save file structure:
@@ -59,7 +60,7 @@ struct XRCORE_API SSaveTask
 		void Clear();
 
 	};
-	
+
 	xr_string name;
 	SGameInfoFast GameInfo;
 	xr_unique_ptr<CSaveObjectSave> Obj;
@@ -68,14 +69,14 @@ struct XRCORE_API SSaveTask
 	xr_unique_ptr<xr_map<u32, xr_vector<shared_str>>> StringsHashesMap;
 	xr_unique_ptr<xr_queue<bool>> BoolQueue;
 	u64 BoolsNum = 0;
-	
+
 	void WriteSavedDataImpl();
-	
+
 	void CompileData(CSaveObjectSave* Data);
 	void WriteStrings();
 	void WriteBools();
 	void WriteData();
-	
+
 	void ConditionalWriteString(shared_str Value, CMemoryBuffer& buffer);
 	void ConditionalWriteBool(bool Value, CMemoryBuffer& buffer);
 };
@@ -110,7 +111,7 @@ private:
 	void ReadBools(IReader* stream);
 
 	shared_str ReadStringInternal(IReader* stream);
-	
+
 #ifdef DEBUG
 	void DumpPoolStats();
 #endif
@@ -151,6 +152,7 @@ public:
 	template<typename T>
 	T* GetSaveable(ESaveVariableType Type)
 	{
+		xrCriticalSectionGuard guard(_saveElementsMutex);
 		auto Storage = SaveElementsCache.find(Type);
 		if (!I_ASSERT_M(Storage != SaveElementsCache.end(), "Unable to access cached save element of type [%s]", magic_enum::enum_name(Type).data()))
 		{
@@ -169,8 +171,10 @@ public:
 	}
 
 	void ReleaseSaveable(ISaveable* Elem);
-	
+
 private:
+	xrCriticalSection _saveElementsMutex;
+	xrCriticalSection _saveTasksMutex;
 	xr_map<ESaveVariableType, xr_vector<ISaveable*>> SaveElementsCache;
-	
+
 };
