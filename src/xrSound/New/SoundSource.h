@@ -35,8 +35,8 @@
 
 #define SND_CACHE_ENTRY_COUNT (32)
 
-#define SND_STAT_ADD(Field, Delta) std::atomic_ref<std::remove_cvref_t<decltype(Field)>>(Field).fetch_add((Delta), std::memory_order_relaxed)
-#define SND_STAT_SET(Field, Value) std::atomic_ref<std::remove_cvref_t<decltype(Field)>>(Field).store((Value), std::memory_order_relaxed)
+#define SND_STAT_ADD(Field, Delta) xr_atomic_ref<std::remove_cvref_t<decltype(Field)>>(Field).fetch_add((Delta), std::memory_order_relaxed)
+#define SND_STAT_SET(Field, Value) xr_atomic_ref<std::remove_cvref_t<decltype(Field)>>(Field).store((Value), std::memory_order_relaxed)
 
 struct SoundSourceState
 {
