@@ -13,13 +13,158 @@
 #	include <tbb/concurrent_vector.h>
 #endif
 #include <atomic>
+#if __has_include(<version>)
+#	include <version>
+#endif
+#include <type_traits>
 
 // Atomic types
-using xr_atomic_u8  = std::atomic_uint8_t;
+using xr_atomic_u8   = std::atomic_uint8_t;
 using xr_atomic_u32  = std::atomic_uint32_t;
 using xr_atomic_s32  = std::atomic_int;
+using xr_atomic_u64  = std::atomic_uint64_t;
+using xr_atomic_s64  = std::atomic_int64_t;
 using xr_atomic_bool = std::atomic_bool;
 using xr_atomic_float = std::atomic<float>;
+
+#if defined(__cpp_lib_atomic_ref)
+template <typename T>
+using xr_atomic_ref = std::atomic_ref<T>;
+#else
+template <typename T>
+class xr_atomic_ref
+{
+public:
+	using value_type = T;
+	static constexpr size_t required_alignment = alignof(T);
+	static constexpr bool is_always_lock_free = true;
+
+	explicit xr_atomic_ref(T& obj) noexcept : ptr(&obj) {}
+	xr_atomic_ref(const xr_atomic_ref&) noexcept = default;
+	xr_atomic_ref& operator=(const xr_atomic_ref&) = delete;
+
+	void store(T desired, std::memory_order order = std::memory_order_seq_cst) const noexcept
+	{
+#if defined(__GNUC__) || defined(__clang__)
+		__atomic_store_n(ptr, desired, static_cast<int>(order));
+#else
+		*ptr = desired;
+#endif
+	}
+
+	T load(std::memory_order order = std::memory_order_seq_cst) const noexcept
+	{
+#if defined(__GNUC__) || defined(__clang__)
+		return __atomic_load_n(ptr, static_cast<int>(order));
+#else
+		return *ptr;
+#endif
+	}
+
+	operator T() const noexcept
+	{
+		return load();
+	}
+
+	T exchange(T desired, std::memory_order order = std::memory_order_seq_cst) const noexcept
+	{
+#if defined(__GNUC__) || defined(__clang__)
+		return __atomic_exchange_n(ptr, desired, static_cast<int>(order));
+#else
+		T old = *ptr;
+		*ptr = desired;
+		return old;
+#endif
+	}
+
+	bool compare_exchange_weak(T& expected, T desired,
+		std::memory_order success, std::memory_order failure) const noexcept
+	{
+#if defined(__GNUC__) || defined(__clang__)
+		return __atomic_compare_exchange_n(ptr, &expected, desired, true,
+			static_cast<int>(success), static_cast<int>(failure));
+#else
+		if (*ptr == expected)
+		{
+			*ptr = desired;
+			return true;
+		}
+		expected = *ptr;
+		return false;
+#endif
+	}
+
+	bool compare_exchange_strong(T& expected, T desired,
+		std::memory_order success, std::memory_order failure) const noexcept
+	{
+#if defined(__GNUC__) || defined(__clang__)
+		return __atomic_compare_exchange_n(ptr, &expected, desired, false,
+			static_cast<int>(success), static_cast<int>(failure));
+#else
+		if (*ptr == expected)
+		{
+			*ptr = desired;
+			return true;
+		}
+		expected = *ptr;
+		return false;
+#endif
+	}
+
+	bool compare_exchange_strong(T& expected, T desired,
+		std::memory_order order = std::memory_order_seq_cst) const noexcept
+	{
+		return compare_exchange_strong(expected, desired, order,
+			order == std::memory_order_acq_rel ? std::memory_order_acquire :
+			(order == std::memory_order_release ? std::memory_order_relaxed : order));
+	}
+
+	bool compare_exchange_weak(T& expected, T desired,
+		std::memory_order order = std::memory_order_seq_cst) const noexcept
+	{
+		return compare_exchange_weak(expected, desired, order,
+			order == std::memory_order_acq_rel ? std::memory_order_acquire :
+			(order == std::memory_order_release ? std::memory_order_relaxed : order));
+	}
+
+	T fetch_add(T arg, std::memory_order order = std::memory_order_seq_cst) const noexcept
+		requires (std::is_integral_v<T> || std::is_pointer_v<T>)
+	{
+#if defined(__GNUC__) || defined(__clang__)
+		return __atomic_fetch_add(ptr, arg, static_cast<int>(order));
+#else
+		T old = *ptr;
+		*ptr += arg;
+		return old;
+#endif
+	}
+
+	T fetch_sub(T arg, std::memory_order order = std::memory_order_seq_cst) const noexcept
+		requires (std::is_integral_v<T> || std::is_pointer_v<T>)
+	{
+#if defined(__GNUC__) || defined(__clang__)
+		return __atomic_fetch_sub(ptr, arg, static_cast<int>(order));
+#else
+		T old = *ptr;
+		*ptr -= arg;
+		return old;
+#endif
+	}
+
+	T operator++() const noexcept requires (std::is_integral_v<T> || std::is_pointer_v<T>) { return fetch_add(1) + 1; }
+	T operator++(int) const noexcept requires (std::is_integral_v<T> || std::is_pointer_v<T>) { return fetch_add(1); }
+	T operator--() const noexcept requires (std::is_integral_v<T> || std::is_pointer_v<T>) { return fetch_sub(1) - 1; }
+	T operator--(int) const noexcept requires (std::is_integral_v<T> || std::is_pointer_v<T>) { return fetch_sub(1); }
+	T operator+=(T arg) const noexcept requires (std::is_integral_v<T> || std::is_pointer_v<T>) { return fetch_add(arg) + arg; }
+	T operator-=(T arg) const noexcept requires (std::is_integral_v<T> || std::is_pointer_v<T>) { return fetch_sub(arg) - arg; }
+
+private:
+	T* ptr = nullptr;
+};
+
+template <typename T>
+xr_atomic_ref(T&) -> xr_atomic_ref<T>;
+#endif
 
 template<typename T>
 ISaveObject& operator<<(ISaveObject& obj, std::atomic<T>& Value)
