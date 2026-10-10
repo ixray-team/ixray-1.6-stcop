@@ -7,6 +7,7 @@ Texture2D s_hud_rain;
 static const float kHudRainDensity = 0.225f;
 static const float kHudRainUvScale = 1.25f;
 static const float kHudRainRefraction = 0.05f;
+static const float kHudRainMinFacing = 0.4f;
 
 struct HudRainDrops
 {
@@ -87,9 +88,23 @@ void HudRain_OffsetColorUv(inout float2 uv, HudRainDrops drops)
 #endif
 }
 
-void HudRain_Perturb(inout float3 eyeNormal, HudRainDrops drops, float scale)
+void HudRain_Perturb(inout float3 eyeNormal, HudRainDrops drops, float scale, float3 eyePosition)
 {
+    float3 view = -normalize(eyePosition);
+    float baseFacing = dot(eyeNormal, view);
+
     eyeNormal = normalize(eyeNormal + drops.tilt * scale);
+
+    // A strong tilt turns the normal edge-on to the camera. At grazing angles the
+    // ambient Fresnel replaces diffuse with the env reflection, which is black at night.
+    float minFacing = min(baseFacing, kHudRainMinFacing);
+    float facing = dot(eyeNormal, view);
+    float3 side = eyeNormal - view * facing;
+    float sideLength = length(side);
+    if (facing < minFacing && sideLength > 1e-4f)
+    {
+        eyeNormal = view * minFacing + side * (sqrt(1.0f - minFacing * minFacing) / sideLength);
+    }
 }
 
 float HudRain_NormalScale(bool surfaceHasBump)
