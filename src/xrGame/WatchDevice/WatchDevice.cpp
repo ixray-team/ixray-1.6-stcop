@@ -10,10 +10,12 @@
 #include "map_manager.h"
 #include "map_location.h"
 #include "Actor.h"
+#include "ActorCondition.h"
 #include "AnomalyZone.h"
 #include "AnomalyGravity.h"
 #include "RadioactiveZone.h"
 #include "ui/UIMotionIcon.h"
+#include "../../xrCore/EngineExternal.h"
 
 namespace
 {
@@ -357,6 +359,7 @@ void CWatchDevice::Load(const shared_str& RootSection)
 
 	Loaded = true;
 	ApplyOverrideFromDisk();
+	ApplyConditionMasters();
 	UpdateDisplayFormats();
 	UpdateLightSchedule();
 	UpdateAnomalyExclude();
@@ -377,6 +380,15 @@ void CWatchDevice::ResetRuntime()
 	for (SWatchLedRuntime& Led : Leds)
 	{
 		ResetLed(Led);
+	}
+	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	{
+		ConditionRuntime[Index] = SWatchConditionRuntime{};
+		State.Condition[Index] = 0.0f;
+		State.ConditionDisplay[Index] = 0.0f;
+		State.ConditionBadness[Index] = 0.0f;
+		State.ConditionVisible[Index] = false;
+		State.ConditionSeverity[Index] = EWatchConditionSeverity::None;
 	}
 }
 
@@ -1008,6 +1020,10 @@ void CWatchDevice::Update(float Dt)
 	{
 		UpdateChannel(EWatchLedChannel(Index), SafeDt);
 	}
+	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	{
+		UpdateCondition(EWatchCondition(Index), SafeDt);
+	}
 	UpdateDisplayLag(SafeDt);
 	UpdateDisplay(SafeDt);
 	UpdateLight(SafeDt);
@@ -1051,6 +1067,12 @@ void CWatchDevice::UpdateUILayout()
 	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
 	{
 		MakeOffsetXform(Config.Present[Index].UiPosition, Config.Present[Index].UiRotation, Leds[Index].Offset);
+	}
+	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	{
+		const SWatchConditionPresent& Present = Config.Conditions[Index];
+		MakeOffsetXform(Present.UiIconPosition, Present.UiIconRotation, ConditionRuntime[Index].IconOffset);
+		MakeOffsetXform(Present.UiBarPosition, Present.UiBarRotation, ConditionRuntime[Index].BarOffset);
 	}
 
 	if (Ui)
@@ -1518,6 +1540,117 @@ void CWatchDevice::UpdateChannel(EWatchLedChannel Channel, float Dt)
 	UpdateLedBlink(Leds[Index], Config.Blink[Index], Intensity, Dt);
 }
 
+bool CWatchDevice::IsConditionAvailable(EWatchCondition Condition) const
+{
+	switch (Condition)
+	{
+		case EWatchCondition::Thirst:
+			return EngineExternal()[EEngineExternalGame::EnableThirst];
+		case EWatchCondition::Sleepiness:
+			return EngineExternal()[EEngineExternalGame::EnableSleepiness];
+		case EWatchCondition::Intoxication:
+			return EngineExternal()[EEngineExternalGame::EnableMedIntoxication];
+		default:
+			return true;
+	}
+}
+
+bool CWatchDevice::IsConditionActive(EWatchCondition Condition) const
+{
+	const SWatchConditionPresent& Present = Config.Conditions[u32(Condition)];
+	return Present.Enabled && Present.PresentUi && IsConditionAvailable(Condition);
+}
+
+float CWatchDevice::SampleCondition(EWatchCondition Condition) const
+{
+	if (!IsConditionAvailable(Condition))
+	{
+		return 0.0f;
+	}
+
+	CActor* Player = Actor();
+	if (!Player)
+	{
+		return 0.0f;
+	}
+
+	CActorCondition& Cond = Player->conditions();
+	switch (Condition)
+	{
+		case EWatchCondition::Health:
+			return clampr(Cond.GetHealth(), 0.0f, 1.0f);
+		case EWatchCondition::Power:
+			return clampr(Cond.GetPower(), 0.0f, 1.0f);
+		case EWatchCondition::Radiation:
+			return clampr(Cond.GetRadiation(), 0.0f, 1.0f);
+		case EWatchCondition::Satiety:
+			return clampr(Cond.GetSatiety(), 0.0f, 1.0f);
+		case EWatchCondition::Thirst:
+			return clampr(Cond.GetThirst(), 0.0f, 1.0f);
+		case EWatchCondition::Sleepiness:
+			return clampr(Cond.GetSleepiness(), 0.0f, 1.0f);
+		case EWatchCondition::Intoxication:
+			return clampr(Cond.GetIntoxication(), 0.0f, 1.0f);
+		case EWatchCondition::Bleeding:
+		{
+			const float Normalize = Config.Conditions[u32(Condition)].Normalize;
+			if (Normalize <= EPS)
+			{
+				return 0.0f;
+			}
+			return clampr(Cond.BleedingSpeed() / Normalize, 0.0f, 1.0f);
+		}
+		default:
+			return 0.0f;
+	}
+}
+
+void CWatchDevice::UpdateCondition(EWatchCondition Condition, float Dt)
+{
+	const u32 Index = u32(Condition);
+	const SWatchConditionPresent& Present = Config.Conditions[Index];
+	float& Value = State.Condition[Index];
+	float& DisplayValue = State.ConditionDisplay[Index];
+	float& Badness = State.ConditionBadness[Index];
+	bool& Visible = State.ConditionVisible[Index];
+	EWatchConditionSeverity& Severity = State.ConditionSeverity[Index];
+
+	if (!IsConditionActive(Condition))
+	{
+		Value = 0.0f;
+		DisplayValue = 0.0f;
+		Badness = 0.0f;
+		Visible = false;
+		Severity = EWatchConditionSeverity::None;
+		return;
+	}
+
+	float Target = Preview.PreviewCondition[Index] ? Preview.PreviewConditionValue[Index] : SampleCondition(Condition);
+	Target = clampr(Target, 0.0f, 1.0f);
+	Value = SmoothTowards(Value, Target, Dt, WatchDetail::ConditionSmoothing);
+	DisplayValue = Present.Invert ? (1.0f - Value) : Value;
+	DisplayValue = clampr(DisplayValue, 0.0f, 1.0f);
+	Visible = DisplayValue >= Present.VisibleMin && DisplayValue <= Present.VisibleMax;
+	Badness = WatchDetail::ConditionBadness(DisplayValue, Present.SeverityHigher);
+	Severity = WatchDetail::EvaluateConditionSeverity(Badness, Present);
+}
+
+u32 CWatchDevice::ConditionDrawColor(EWatchCondition Condition, u32 Fallback) const
+{
+	return WatchDetail::ConditionSeverityColor(
+		State.ConditionSeverity[u32(Condition)],
+		Config.Conditions[u32(Condition)],
+		Fallback
+	);
+}
+
+float CWatchDevice::ConditionDrawGlow(EWatchCondition Condition) const
+{
+	const u32 Index = u32(Condition);
+	const SWatchConditionPresent& Present = Config.Conditions[Index];
+	return Present.Glow * WatchDetail::ConditionSeverityGlow(State.ConditionSeverity[Index], Present);
+}
+
 bool CWatchDevice::RenderUIQuery() const
 {
 	return Ui && Model && IsEnabled();
@@ -1534,6 +1667,17 @@ void CWatchDevice::RenderUI(const Fmatrix& WatchesXform)
 	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
 	{
 		RenderChannel(EWatchLedChannel(Index), WatchesXform);
+	}
+
+	if (BoneIds.Display != BI_NONE)
+	{
+		Fmatrix DisplayXform;
+		DisplayXform.mul(WatchesXform, Model->LL_GetTransform(BoneIds.Display));
+		DisplayXform.mulB_43(UiOffset);
+		for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+		{
+			RenderCondition(EWatchCondition(Index), DisplayXform);
+		}
 	}
 }
 
@@ -1586,6 +1730,56 @@ void CWatchDevice::RenderChannel(EWatchLedChannel Channel, const Fmatrix& Watche
 	Xform.mulB_43(UiOffset);
 	Xform.mulB_43(Led.Offset);
 	Ui->RenderGlow(Glow, Xform, Present.UiSize, Led.Value);
+}
+
+void CWatchDevice::RenderCondition(EWatchCondition Condition, const Fmatrix& DisplayXform)
+{
+	const u32 Index = u32(Condition);
+	const SWatchConditionPresent& Present = Config.Conditions[Index];
+	if (!State.ConditionVisible[Index] || !Present.PresentUi || !Ui)
+	{
+		return;
+	}
+
+	const EWatchConditionSeverity Severity = State.ConditionSeverity[Index];
+	if (Severity == EWatchConditionSeverity::None)
+	{
+		return;
+	}
+
+	const float Intensity = clampr(Display.Intensity * ConditionDrawGlow(Condition), 0.0f, 1.0f);
+	if (Intensity <= EPS)
+	{
+		return;
+	}
+
+	const SWatchConditionRuntime& Runtime = ConditionRuntime[Index];
+	if (Present.PresentIcon && Ui->HasConditionIcon(Condition))
+	{
+		Fmatrix IconXform;
+		IconXform.mul(DisplayXform, Runtime.IconOffset);
+		Ui->RenderConditionIcon(
+			Condition,
+			IconXform,
+			Present.UiIconSize,
+			Intensity,
+			ConditionDrawColor(Condition, Ui->GetConditionIconColor(Condition))
+		);
+	}
+
+	if (Present.PresentBar && Ui->HasConditionBar(Condition))
+	{
+		Fmatrix BarXform;
+		BarXform.mul(DisplayXform, Runtime.BarOffset);
+		Ui->RenderConditionBar(
+			Condition,
+			BarXform,
+			Present.UiBarSize,
+			State.ConditionBadness[Index],
+			Intensity,
+			ConditionDrawColor(Condition, Ui->GetConditionBarColor(Condition))
+		);
+	}
 }
 
 void CWatchDevice::Revert()
