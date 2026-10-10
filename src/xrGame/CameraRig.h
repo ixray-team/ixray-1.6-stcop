@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/CameraDefs.h"
 
 class CActor;
 class CWeapon;

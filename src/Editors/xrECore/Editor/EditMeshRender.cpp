@@ -420,44 +420,48 @@ void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurf
 	size_t FaceCount = face_lst.size();
 
 	_VertexStream* Stream = &RCache.Vertex;
-
-	u32 vBase = 0;
-
-	svertRender* pv = (svertRender*)Stream->Lock(FaceCount * 3, m_Parent->vs_SkeletonGeom->vb_stride, vBase);
-
-	for (auto& i_it : face_lst)
-	{
-		for (int k = 0; k < 3; k++, pv++)
-		{
-			st_SVert& SV = m_SVertices[i_it * 3 + k];
-			pv->uv = SV.uv;
-			pv->P = SV.offs;
-			pv->N = SV.norm;
-
-			u8 bone_count = (u8)SV.bones.size();
-			float total = SV.bones[0].w;
-			float max_weight = SV.bones[0].w + SV.bones[1 % bone_count].w + SV.bones[2 % bone_count].w;
-			
-			pv->weight3 = SV.bones[0].w / max_weight;
-			pv->weight2 = SV.bones[1 % bone_count].w / max_weight;
-			pv->weight1 = SV.bones[2 % bone_count].w / max_weight;
-			pv->weight0 = SV.bones[3 % bone_count].w / max_weight;
-
-			pv->ind = color_rgba(
-				SV.bones[0].id, 
-				SV.bones[1 % bone_count].id,
-				SV.bones[2 % bone_count].id,
-				SV.bones[3 % bone_count].id);
-		}
-	}
+	const u32 stride = m_Parent->vs_SkeletonGeom->vb_stride;
+	VERIFY(stride == sizeof(svertRender));
 
 	ERHI_CULLMODE OldCullMode = GRHI->StateManager->GetCullMode();
+	const u32 dwRequired = shader->E[0]->passes.size();
 
-	Stream->Unlock(FaceCount * 3, m_Parent->vs_SkeletonGeom->vb_stride);
-
-	if (FaceCount)
+	// Draw in batches: a single lock of the whole surface can exceed the dynamic VB size
+	for (size_t f_start = 0; f_start < FaceCount; f_start += F_LIM)
 	{
-		u32 dwRequired = shader->E[0]->passes.size();
+		const u32 batchFaces = (u32)std::min<size_t>(F_LIM, FaceCount - f_start);
+
+		u32 vBase = 0;
+		svertRender* pv = (svertRender*)Stream->Lock(batchFaces * 3, stride, vBase);
+
+		for (u32 f = 0; f < batchFaces; ++f)
+		{
+			const int i_it = face_lst[f_start + f];
+			for (int k = 0; k < 3; k++, pv++)
+			{
+				st_SVert& SV = m_SVertices[i_it * 3 + k];
+				pv->uv = SV.uv;
+				pv->P = SV.offs;
+				pv->N = SV.norm;
+
+				u8 bone_count = (u8)SV.bones.size();
+				float total = SV.bones[0].w;
+				float max_weight = SV.bones[0].w + SV.bones[1 % bone_count].w + SV.bones[2 % bone_count].w;
+			
+				pv->weight3 = SV.bones[0].w / max_weight;
+				pv->weight2 = SV.bones[1 % bone_count].w / max_weight;
+				pv->weight1 = SV.bones[2 % bone_count].w / max_weight;
+				pv->weight0 = SV.bones[3 % bone_count].w / max_weight;
+
+				pv->ind = color_rgba(
+					SV.bones[0].id, 
+					SV.bones[1 % bone_count].id,
+					SV.bones[2 % bone_count].id,
+					SV.bones[3 % bone_count].id);
+			}
+		}
+
+		Stream->Unlock(batchFaces * 3, stride);
 
 		for (u32 dwPass = 0; dwPass < dwRequired; dwPass++)
 		{
@@ -486,7 +490,7 @@ void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurf
 			}
 			EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 			RCache.set_Geometry(m_Parent->vs_SkeletonGeom);
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, FaceCount);
+			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, batchFaces);
 		}
 	}
 }
