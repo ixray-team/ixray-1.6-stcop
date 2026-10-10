@@ -21,6 +21,30 @@ enum class EWatchLedChannel : u8
 
 inline constexpr u32 WatchLedChannelCount = u32(EWatchLedChannel::Count);
 
+enum class EWatchCondition : u8
+{
+	Health,
+	Power,
+	Radiation,
+	Satiety,
+	Thirst,
+	Sleepiness,
+	Intoxication,
+	Bleeding,
+	Count
+};
+
+inline constexpr u32 WatchConditionCount = u32(EWatchCondition::Count);
+
+enum class EWatchConditionSeverity : u8
+{
+	None,
+	Weak,
+	Medium,
+	Critical,
+	Count
+};
+
 struct SWatchRoot
 {
 	bool Enabled = true;
@@ -247,6 +271,85 @@ struct SWatchAnomalySensor
 	}
 };
 
+struct SWatchConditionMasters
+{
+	bool Enabled[WatchConditionCount] = {};
+
+	template <class V>
+	void ForEach(V& Visitor)
+	{
+		Visitor.Field(Enabled[u32(EWatchCondition::Health)], "health_enabled");
+		Visitor.Field(Enabled[u32(EWatchCondition::Power)], "power_enabled");
+		Visitor.Field(Enabled[u32(EWatchCondition::Radiation)], "radiation_enabled");
+		Visitor.Field(Enabled[u32(EWatchCondition::Satiety)], "satiety_enabled");
+		Visitor.Field(Enabled[u32(EWatchCondition::Thirst)], "thirst_enabled");
+		Visitor.Field(Enabled[u32(EWatchCondition::Sleepiness)], "sleepiness_enabled");
+		Visitor.Field(Enabled[u32(EWatchCondition::Intoxication)], "intoxication_enabled");
+		Visitor.Field(Enabled[u32(EWatchCondition::Bleeding)], "bleeding_enabled");
+	}
+};
+
+struct SWatchConditionPresent
+{
+	bool Enabled = true;
+	bool PresentUi = true;
+	bool PresentIcon = true;
+	bool PresentBar = true;
+	Fvector UiIconPosition = {0.0f, 0.0f, 0.0f};
+	Fvector UiIconRotation = {0.0f, 0.0f, 0.0f};
+	Fvector2 UiIconSize = {0.003f, 0.003f};
+	Fvector UiBarPosition = {0.0f, 0.0f, 0.0f};
+	Fvector UiBarRotation = {0.0f, 0.0f, 0.0f};
+	Fvector2 UiBarSize = {0.012f, 0.0015f};
+	bool Invert = false;
+	bool SeverityHigher = true;
+	float VisibleMin = 0.0f;
+	float VisibleMax = 1.0f;
+	float Normalize = 1.0f;
+	float Glow = 1.0f;
+	float TierWeak = 0.2f;
+	float TierMedium = 0.5f;
+	float TierCritical = 0.8f;
+	float GlowNone = 0.0f;
+	float GlowWeak = 0.55f;
+	float GlowMedium = 0.8f;
+	float GlowCritical = 1.0f;
+	Fvector4 ColorWeak = {255.0f, 210.0f, 80.0f, 220.0f};
+	Fvector4 ColorMedium = {255.0f, 140.0f, 50.0f, 240.0f};
+	Fvector4 ColorCritical = {255.0f, 55.0f, 45.0f, 255.0f};
+
+	template <class V>
+	void ForEach(V& Visitor)
+	{
+		Visitor.Field(Enabled, "enabled");
+		Visitor.Field(PresentUi, "present_ui");
+		Visitor.Field(PresentIcon, "present_icon");
+		Visitor.Field(PresentBar, "present_bar");
+		Visitor.Field(UiIconPosition, "ui_icon_p");
+		Visitor.Field(UiIconRotation, "ui_icon_r");
+		Visitor.Field(UiIconSize, "ui_icon_size");
+		Visitor.Field(UiBarPosition, "ui_bar_p");
+		Visitor.Field(UiBarRotation, "ui_bar_r");
+		Visitor.Field(UiBarSize, "ui_bar_size");
+		Visitor.Field(Invert, "invert");
+		Visitor.Field(SeverityHigher, "severity_higher");
+		Visitor.Field(VisibleMin, "visible_min", 0.0f, 1.0f);
+		Visitor.Field(VisibleMax, "visible_max", 0.0f, 1.0f);
+		Visitor.Field(Normalize, "normalize", 0.0f);
+		Visitor.Field(Glow, "glow", 0.0f);
+		Visitor.Field(TierWeak, "tier_weak", 0.0f, 1.0f);
+		Visitor.Field(TierMedium, "tier_medium", 0.0f, 1.0f);
+		Visitor.Field(TierCritical, "tier_critical", 0.0f, 1.0f);
+		Visitor.Field(GlowNone, "glow_none", 0.0f);
+		Visitor.Field(GlowWeak, "glow_weak", 0.0f);
+		Visitor.Field(GlowMedium, "glow_medium", 0.0f);
+		Visitor.Field(GlowCritical, "glow_critical", 0.0f);
+		Visitor.Field(ColorWeak, "color_weak");
+		Visitor.Field(ColorMedium, "color_medium");
+		Visitor.Field(ColorCritical, "color_critical");
+	}
+};
+
 enum class EWatchLightLevel : u8
 {
 	Day,
@@ -291,6 +394,7 @@ struct SWatchConfig
 	SWatchRoot Root;
 	SWatchBones Bones;
 	SWatchIndicatorMasters Masters;
+	SWatchConditionMasters ConditionMasters;
 	SWatchDisplay Display;
 	SWatchFonts Fonts;
 	SWatchCompass Compass;
@@ -300,6 +404,7 @@ struct SWatchConfig
 	SWatchChannelPresent Present[WatchLedChannelCount];
 	SWatchLedBlink Blink[WatchLedChannelCount];
 	SWatchAnomalySensor Anomaly;
+	SWatchConditionPresent Conditions[WatchConditionCount];
 
 	SWatchConfig()
 	{
@@ -310,6 +415,8 @@ struct SWatchConfig
 		Noise.LightEnabled = false;
 		Noise.UiPosition = {0.0075f, 0.0f, 0.0f};
 		Noise.UiSize = {0.0025f, 0.0025f};
+
+		Conditions[u32(EWatchCondition::Bleeding)].Normalize = 0.1f;
 	}
 };
 
@@ -332,6 +439,8 @@ struct SWatchDebugPreview
 	float PreviewSurgeValue = 0.0f;
 	bool PreviewChannel[WatchLedChannelCount] = {};
 	float PreviewChannelValue[WatchLedChannelCount] = {};
+	bool PreviewCondition[WatchConditionCount] = {};
+	float PreviewConditionValue[WatchConditionCount] = {};
 	bool PreviewEmission = false;
 	float PreviewEmissionValue = 0.0f;
 };
@@ -343,6 +452,11 @@ struct SWatchState
 	float Barometer = 0.0f;
 	float SurgeFactor = 0.0f;
 	float Intensity[WatchLedChannelCount] = {};
+	float Condition[WatchConditionCount] = {};
+	float ConditionDisplay[WatchConditionCount] = {};
+	float ConditionBadness[WatchConditionCount] = {};
+	bool ConditionVisible[WatchConditionCount] = {};
+	EWatchConditionSeverity ConditionSeverity[WatchConditionCount] = {};
 	float Emission = 0.0f;
 	float DisplayQuality = 1.0f;
 	xr_string TimeText;

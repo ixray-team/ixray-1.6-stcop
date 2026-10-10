@@ -240,6 +240,15 @@ void CWatchDevice::ApplyIndicatorMasters()
 	}
 }
 
+void CWatchDevice::ApplyConditionMasters()
+{
+	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	{
+		Config.Conditions[Index].Enabled =
+			Config.ConditionMasters.Enabled[Index] && Config.Conditions[Index].Enabled;
+	}
+}
+
 bool CWatchDevice::ResolveOverridePath(string_path& Out) const
 {
 	FS.update_path(Out, "$game_config$", "debug\\watch_override.ltx");

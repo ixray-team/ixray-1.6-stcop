@@ -72,6 +72,10 @@ void CWatchDevice::DrawImGui()
 	{
 		DrawChannelImGui(EWatchLedChannel(Index));
 	}
+	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	{
+		DrawConditionImGui(EWatchCondition(Index));
+	}
 	DrawPreviewImGui();
 	DrawHotSaveImGui();
 }
@@ -330,6 +334,66 @@ void CWatchDevice::DrawChannelImGui(EWatchLedChannel Channel)
 	ImGui::PopID();
 }
 
+void CWatchDevice::DrawConditionImGui(EWatchCondition Condition)
+{
+	const u32 Index = u32(Condition);
+	const WatchDetail::SWatchConditionDesc& Desc = WatchDetail::ConditionDesc(Condition);
+	SWatchConditionPresent& Present = Config.Conditions[Index];
+
+	string64 Title = {};
+	xr_sprintf(Title, "Condition %c%s", toupper(Desc.Name[0]), Desc.Name + 1);
+
+	ImGui::PushID(Desc.Name);
+	if (ImGui::CollapsingHeader(Title))
+	{
+		ImGui::Text(
+			"Raw: %.2f | Display: %.2f | Badness: %.2f | Severity: %s | Visible: %s | Available: %s | Icon: %s | Bar: %s",
+			State.Condition[Index],
+			State.ConditionDisplay[Index],
+			State.ConditionBadness[Index],
+			WatchDetail::ConditionSeverityName(State.ConditionSeverity[Index]),
+			State.ConditionVisible[Index] ? "yes" : "no",
+			IsConditionAvailable(Condition) ? "yes" : "no",
+			Ui && Ui->HasConditionIcon(Condition) ? "yes" : "no",
+			Ui && Ui->HasConditionBar(Condition) ? "yes" : "no"
+		);
+
+		ImGui::Checkbox("Enabled", &Present.Enabled);
+		ImGui::Checkbox("Present UI", &Present.PresentUi);
+		ImGui::Checkbox("Present Icon", &Present.PresentIcon);
+		ImGui::Checkbox("Present Bar", &Present.PresentBar);
+		ImGui::Checkbox("Invert", &Present.Invert);
+		ImGui::Checkbox("Severity Higher", &Present.SeverityHigher);
+
+		bool LayoutChanged = ImGui::DragFloat3("Icon Position", &Present.UiIconPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+		LayoutChanged |= ImGui::DragFloat3("Icon Rotation", &Present.UiIconRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
+		ImGui::DragFloat2("Icon Size", &Present.UiIconSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
+		LayoutChanged |= ImGui::DragFloat3("Bar Position", &Present.UiBarPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+		LayoutChanged |= ImGui::DragFloat3("Bar Rotation", &Present.UiBarRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
+		ImGui::DragFloat2("Bar Size", &Present.UiBarSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
+		if (LayoutChanged)
+		{
+			UpdateUILayout();
+		}
+
+		ImGui::DragFloat("Visible Min", &Present.VisibleMin, 0.005f, 0.0f, 1.0f, "%.3f");
+		ImGui::DragFloat("Visible Max", &Present.VisibleMax, 0.005f, 0.0f, 1.0f, "%.3f");
+		ImGui::DragFloat("Normalize", &Present.Normalize, 0.005f, 0.0f, 10.0f, "%.3f");
+		ImGui::DragFloat("Glow", &Present.Glow, 0.05f, 0.0f, 4.0f, "%.2f");
+		ImGui::DragFloat("Tier Weak", &Present.TierWeak, 0.005f, 0.0f, 1.0f, "%.3f");
+		ImGui::DragFloat("Tier Medium", &Present.TierMedium, 0.005f, 0.0f, 1.0f, "%.3f");
+		ImGui::DragFloat("Tier Critical", &Present.TierCritical, 0.005f, 0.0f, 1.0f, "%.3f");
+		ImGui::DragFloat("Glow None", &Present.GlowNone, 0.05f, 0.0f, 4.0f, "%.2f");
+		ImGui::DragFloat("Glow Weak", &Present.GlowWeak, 0.05f, 0.0f, 4.0f, "%.2f");
+		ImGui::DragFloat("Glow Medium", &Present.GlowMedium, 0.05f, 0.0f, 4.0f, "%.2f");
+		ImGui::DragFloat("Glow Critical", &Present.GlowCritical, 0.05f, 0.0f, 4.0f, "%.2f");
+		ImGui::DragFloat4("Color Weak RGBA", &Present.ColorWeak.x, 1.0f, 0.0f, 255.0f, "%.0f");
+		ImGui::DragFloat4("Color Medium RGBA", &Present.ColorMedium.x, 1.0f, 0.0f, 255.0f, "%.0f");
+		ImGui::DragFloat4("Color Critical RGBA", &Present.ColorCritical.x, 1.0f, 0.0f, 255.0f, "%.0f");
+	}
+	ImGui::PopID();
+}
+
 void CWatchDevice::DrawPreviewImGui()
 {
 	if (!ImGui::CollapsingHeader("Preview / Force", ImGuiTreeNodeFlags_DefaultOpen))
@@ -374,6 +438,19 @@ void CWatchDevice::DrawPreviewImGui()
 		ImGui::Checkbox(Label, &Preview.PreviewChannel[Index]);
 		ImGui::BeginDisabled(!Preview.PreviewChannel[Index]);
 		ImGui::SliderFloat(SliderLabel, &Preview.PreviewChannelValue[Index], 0.0f, 1.0f, "%.2f");
+		ImGui::EndDisabled();
+	}
+
+	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	{
+		const WatchDetail::SWatchConditionDesc& Desc = WatchDetail::ConditionChannels[Index];
+		string64 Label = {};
+		string64 SliderLabel = {};
+		xr_sprintf(Label, "Preview Cond %c%s", toupper(Desc.Name[0]), Desc.Name + 1);
+		xr_sprintf(SliderLabel, "Cond %c%s##Preview", toupper(Desc.Name[0]), Desc.Name + 1);
+		ImGui::Checkbox(Label, &Preview.PreviewCondition[Index]);
+		ImGui::BeginDisabled(!Preview.PreviewCondition[Index]);
+		ImGui::SliderFloat(SliderLabel, &Preview.PreviewConditionValue[Index], 0.0f, 1.0f, "%.2f");
 		ImGui::EndDisabled();
 	}
 
