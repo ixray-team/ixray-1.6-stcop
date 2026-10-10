@@ -3136,18 +3136,18 @@ void CWeapon::InitAddons()
 		if (IsScopeAttached())
 		{
 			CScope* pScope = GetScopeAttached();
-			const char* scope_sect = pScope ? pScope->cNameSect_str() : nullptr;
+			const char* scope_sect = !m_scopes.empty() && m_cur_scope < m_scopes.size() ? *m_scopes[m_cur_scope] : *GetNameWithAttachmentScope();
 			if (IsScopePermanent())
 			{
 				scope_sect = cNameSect().c_str();
 			}
 			if (scope_sect)
 			{
-			m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_zoom_factor", m_fHudFovZoomFactor);
-			m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_gl_zoom_factor", m_fHudFovGLZoomFactor);
-			m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "alter_zoom_allowed", m_AlterZoomAllowed);
-			m_Allow3DScope = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "allow_3d_scope", m_Allow3DScope);
-		}
+				m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_zoom_factor", m_fHudFovZoomFactor);
+				m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_gl_zoom_factor", m_fHudFovGLZoomFactor);
+				m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "alter_zoom_allowed", m_AlterZoomAllowed);
+				m_Allow3DScope = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "allow_3d_scope", m_Allow3DScope);
+			}
 		}
 		else
 		{
@@ -4176,13 +4176,16 @@ float CWeapon::GetMagazineWeight(const decltype(CWeapon::m_magazine)& mag) const
 float CWeapon::Weight() const
 {
 	float res = CInventoryItemObject::Weight();
-	if(IsGrenadeLauncherAttached()&&GetGrenadeLauncherName().size()){
+	if(IsGrenadeLauncherAttached()&&GetGrenadeLauncherName().size())
+	{
 		res += pSettings->r_float(GetGrenadeLauncherName(),"inv_weight");
 	}
-	if(IsScopeAttached()&&m_scopes.size()){
+	if(IsScopeAttached())
+	{
 		res += pSettings->r_float(GetScopeName(),"inv_weight");
 	}
-	if(IsSilencerAttached()&&GetSilencerName().size()){
+	if(IsSilencerAttached()&&GetSilencerName().size())
+	{
 		res += pSettings->r_float(GetSilencerName(),"inv_weight");
 	}
 	
@@ -4475,13 +4478,16 @@ void CWeapon::ZoomDec()
 u32 CWeapon::Cost() const
 {
 	u32 res = CInventoryItem::Cost();
-	if(IsGrenadeLauncherAttached()&&GetGrenadeLauncherName().size()){
+	if(IsGrenadeLauncherAttached()&&GetGrenadeLauncherName().size())
+	{
 		res += pSettings->r_u32(GetGrenadeLauncherName(),"cost");
 	}
-	if(IsScopeAttached()&&m_scopes.size()){
+	if(IsScopeAttached())
+	{
 		res += pSettings->r_u32(GetScopeName(),"cost");
 	}
-	if(IsSilencerAttached()&&GetSilencerName().size()){
+	if(IsSilencerAttached()&&GetSilencerName().size())
+	{
 		res += pSettings->r_u32(GetSilencerName(),"cost");
 	}
 	
