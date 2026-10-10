@@ -15,7 +15,7 @@
 #include "AnomalyGravity.h"
 #include "RadioactiveZone.h"
 #include "ui/UIMotionIcon.h"
-#include "../../xrCore/EngineExternal.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
 
 namespace
 {
