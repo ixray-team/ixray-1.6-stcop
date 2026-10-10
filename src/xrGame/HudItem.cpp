@@ -397,10 +397,21 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 	const float fPitchTarget = -pActor->fFPCamPitchMagnitude * lerp(HudDesc().BaseYPRParams.m_fHudPitchInertiaK, HudDesc().ZoomYPRParams.m_fHudPitchInertiaK, GetAimFactor());
 	const float fRollTarget = -pActor->fFPCamYawMagnitude * lerp(HudDesc().BaseYPRParams.m_fHudRollInertiaK, HudDesc().ZoomYPRParams.m_fHudRollInertiaK, GetAimFactor());
 
-	const float fLerp = 1.0f - exp(-dt * lerp(HudDesc().BaseYPRParams.m_fHudInertiaSpeed, HudDesc().ZoomYPRParams.m_fHudInertiaSpeed, GetAimFactor()));
-	m_fHudYawInertia += (fYawTarget - m_fHudYawInertia) * fLerp;
-	m_fHudPitchInertia += (fPitchTarget - m_fHudPitchInertia) * fLerp;
-	m_fHudRollInertia += (fRollTarget - m_fHudRollInertia) * fLerp;
+	const float fSpeed = lerp(HudDesc().BaseYPRParams.m_fHudInertiaSpeed, HudDesc().ZoomYPRParams.m_fHudInertiaSpeed, GetAimFactor());
+	Fvector inertia = { m_fHudYawInertia, m_fHudPitchInertia, m_fHudRollInertia };
+	if (CCameraRig::SpringSway(inertia, m_vHudInertiaVelocity, Fvector{ fYawTarget, fPitchTarget, fRollTarget }, fSpeed))
+	{
+		m_fHudYawInertia = inertia.x;
+		m_fHudPitchInertia = inertia.y;
+		m_fHudRollInertia = inertia.z;
+	}
+	else
+	{
+		const float fLerp = 1.0f - exp(-dt * fSpeed);
+		m_fHudYawInertia += (fYawTarget - m_fHudYawInertia) * fLerp;
+		m_fHudPitchInertia += (fPitchTarget - m_fHudPitchInertia) * fLerp;
+		m_fHudRollInertia += (fRollTarget - m_fHudRollInertia) * fLerp;
+	}
 
 	Fmatrix hud_inertia;
 	hud_inertia.identity();
