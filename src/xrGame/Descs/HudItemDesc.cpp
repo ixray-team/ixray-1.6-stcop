@@ -47,5 +47,7 @@ void SHudItemDesc::Load(const shared_str& HudSection)
 		m_sMovementBlendParams[EMovementLayers::eIdle].Load(HudSection, "anim_blend_idle");
 		m_sMovementBlendParams[EMovementLayers::eIdleAim].Load(HudSection, "anim_blend_idle_aim");
 		m_sMovementBlendParams[EMovementLayers::eAimWalk].Load(HudSection, "anim_blend_aim_walk");
+		m_sMovementBlendParams[EMovementLayers::eStrafeLeft].Load(HudSection, "anim_blend_strafe_left");
+		m_sMovementBlendParams[EMovementLayers::eStrafeRight].Load(HudSection, "anim_blend_strafe_right");
 	}
 }

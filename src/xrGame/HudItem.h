@@ -366,6 +366,7 @@ protected:
 	float						m_fHudYawInertia = 0.0f;
 	float						m_fHudPitchInertia = 0.0f;
 	float						m_fHudRollInertia = 0.0f;
+	Fvector						m_vHudInertiaVelocity = {};
 
 	virtual void				SetModelBoneStatus(const char* bone, bool show);
 	virtual void				SetMultipleBonesStatus(const char* section, const char* line, bool show);

@@ -627,6 +627,7 @@ public:
 	}
 
 	IC float				GetZoomFactor		() const		{return m_zoom_params.m_fCurrentZoomFactor;}
+	IC float				GetRTZoomFactor		() const		{return m_fRTZoomFactor;}
 
 	IC void					SetZoomFactor		(float f) 		{m_zoom_params.m_fCurrentZoomFactor = f;}
 
