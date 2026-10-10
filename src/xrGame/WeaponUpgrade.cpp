@@ -387,14 +387,7 @@ bool CWeapon::install_upgrade_hud_sect(const char* section, bool test)
 
 	if (result && !test)
 	{
-		shared_str new_hud_sect = pSettings->r_string(section, "hud");
-		shared_str old_hud = hud_sect_cache;
-
-		if (new_hud_sect == "skip_reassign")
-			SetHudSection(old_hud);
-		else
-			SetHudSection(new_hud_sect);
-
+		SetHudSection(str);
 		hud_sect_cache = hud_sect;
 	}
 
