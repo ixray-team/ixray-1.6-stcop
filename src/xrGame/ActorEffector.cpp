@@ -437,6 +437,7 @@ bool similar_cam_info(const SCamEffectorInfo& c1, const SCamEffectorInfo& c2)
 void CActorCameraManager::UpdateCamEffectors()
 {
 	m_cam_info_hud		= m_cam_info;
+	m_rig.Apply		(m_cam_info, m_cam_info_hud);
 	inherited::UpdateCamEffectors();
 
 	m_cam_info_hud.d.normalize			();

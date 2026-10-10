@@ -379,6 +379,11 @@ void CActor::on_weapon_shot_start(CWeapon* weapon)
 	effector->SetRndSeed(GetShotRndSeed());
 	effector->SetActor(this);
 	effector->Shot(weapon); 
+
+	if (this == Level().CurrentViewEntity())
+	{
+		Cameras().Rig().OnShot(weapon);
+	}
 }
 
 void CActor::on_weapon_shot_update		()
