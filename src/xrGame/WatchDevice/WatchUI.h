@@ -49,6 +49,7 @@ public:
 	void SetIntensity(float Intensity);
 	void Render(const Fmatrix& Xform);
 	void RenderGlow(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity);
+	void RenderGlow(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color);
 	void RenderLed(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& GlassSize, const Fvector2& CoreSize, float Intensity, float Brightness);
 	void RenderConditionIcon(EWatchCondition Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color);
 	void RenderConditionBar(EWatchCondition Id, const Fmatrix& Xform, const Fvector2& Size, float Fill, float Intensity, u32 Color);

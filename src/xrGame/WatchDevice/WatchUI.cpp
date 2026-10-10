@@ -416,7 +416,12 @@ void CUIWatchWnd::RenderGlowShader(SGlow& Glow, const Fmatrix& Xform, const Fvec
 
 void CUIWatchWnd::RenderGlow(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity)
 {
-	RenderGlowShader(Glows[u32(Id)], Xform, Size, Intensity, 0.0f, 1.0f, Glows[u32(Id)].Color);
+	RenderGlow(Id, Xform, Size, Intensity, Glows[u32(Id)].Color);
+}
+
+void CUIWatchWnd::RenderGlow(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color)
+{
+	RenderGlowShader(Glows[u32(Id)], Xform, Size, Intensity, 0.0f, 1.0f, Color);
 }
 
 void CUIWatchWnd::RenderConditionIcon(EWatchCondition Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color)
