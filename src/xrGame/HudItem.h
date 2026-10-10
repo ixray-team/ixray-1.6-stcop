@@ -158,6 +158,7 @@ public:
 
 
 	virtual void				UpdateHudAdditonal	(Fmatrix&);
+	bool						GetHudLookInertia	(Fmatrix& pre, Fmatrix& xform) const;
 
 
 	virtual	void				UpdateXForm			()						= 0;
@@ -367,6 +368,9 @@ protected:
 	float						m_fHudPitchInertia = 0.0f;
 	float						m_fHudRollInertia = 0.0f;
 	Fvector						m_vHudInertiaVelocity = {};
+	Fmatrix						m_HudLookInertiaPre = Fidentity;
+	Fmatrix						m_HudLookInertia = Fidentity;
+	u32							m_HudLookInertiaFrame = u32(-1);
 
 	virtual void				SetModelBoneStatus(const char* bone, bool show);
 	virtual void				SetMultipleBonesStatus(const char* section, const char* line, bool show);

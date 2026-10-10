@@ -3463,6 +3463,11 @@ void CWeaponMagazined::PlayAnimShoot()
 
 	PlayHUDMotion(SetCurrentShootAnimation(), EHudMixType::eMixHands, GetState());
 
+	if (g_player_hud != nullptr && H_Parent() != nullptr && H_Parent() == Level().CurrentControlEntity())
+	{
+		g_player_hud->OnShotAnimation(HudItemData());
+	}
+
 	if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 	{
 		if (CCustomDevice* pDevice = pActor->GetDevice())
