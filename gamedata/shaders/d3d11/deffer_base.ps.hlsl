@@ -88,9 +88,9 @@ void main(p_bumped_new I,
 
 #ifdef USE_HUD_RAINDROPS
 #if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
-    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(true));
+    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(true), M.Point);
 #else
-    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(false));
+    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(false), M.Point);
 #endif
     HudRain_Wet(M, hudRain);
 #endif
