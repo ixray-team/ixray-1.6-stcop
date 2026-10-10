@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "WatchUI.h"
+#include "WatchInternal.h"
 #include "../../xrEngine/FontManager.h"
 #include "../../xrEngine/string_table.h"
 #include "../../xrUI/ui_base.h"
@@ -213,6 +214,10 @@ bool CUIWatchWnd::Init(const SWatchDisplay& Display, const SWatchFonts& Fonts)
 	CreateGlass(Xml, "watch:anomaly_glass", Glasses[u32(EWatchGlow::Anomaly)]);
 	CreateGlass(Xml, "watch:motion_glass", Glasses[u32(EWatchGlow::Motion)]);
 	EnsureGlass(Xml, "watch:noise_glass", Glasses[u32(EWatchGlow::Noise)]);
+	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	{
+		CreateConditionVisual(Xml, EWatchCondition(Index));
+	}
 	SetLayout(Display);
 	return Time || Date || Barometer || CompassGlow || AnomalyGlow || MotionGlow || Glows[u32(EWatchGlow::Noise)].Shader->inited();
 }
@@ -265,6 +270,28 @@ void CUIWatchWnd::EnsureGlass(CUIXml& Xml, const char* Path, SGlass& Glass)
 	Glass.LitAlpha = WatchGlassDefaultLitAlpha;
 	Glass.Shader->create(WatchGlassShader);
 	Glass.Core->create(WatchLedShader);
+}
+
+void CUIWatchWnd::CreateConditionVisual(CUIXml& Xml, EWatchCondition Id)
+{
+	const WatchDetail::SWatchConditionDesc& Desc = WatchDetail::ConditionDesc(Id);
+	SConditionVisual& Visual = Conditions[u32(Id)];
+	Visual = SConditionVisual{};
+	Visual.Icon.Color = Desc.FallbackRgba;
+	Visual.Bar.Color = Desc.FallbackRgba;
+
+	string64 IconPath = {};
+	string64 BarPath = {};
+	xr_sprintf(IconPath, "watch:%s", Desc.XmlIcon);
+	xr_sprintf(BarPath, "watch:%s", Desc.XmlBar);
+
+	Visual.IconOk = CreateGlow(Xml, IconPath, Visual.Icon);
+	Visual.BarOk = CreateGlow(Xml, BarPath, Visual.Bar);
+	if (Xml.NavigateToNode(BarPath, 0))
+	{
+		const char* FillText = Xml.ReadAttrib(BarPath, 0, "fill", "l");
+		Visual.Fill = (FillText[0] == 'r') ? EBarFill::Right : EBarFill::Left;
+	}
 }
 
 void CUIWatchWnd::SetLayout(const SWatchDisplay& Display)
@@ -361,16 +388,15 @@ u32 CUIWatchWnd::GetGlowColor(EWatchGlow Id) const
 	return Glows[u32(Id)].Color;
 }
 
-void CUIWatchWnd::RenderGlow(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity)
+void CUIWatchWnd::RenderGlowShader(SGlow& Glow, const Fmatrix& Xform, const Fvector2& Size, float Intensity, float U0, float U1, u32 Color)
 {
-	SGlow& Glow = Glows[u32(Id)];
-	const u32 Alpha = iFloor(float(color_get_A(Glow.Color)) * clampr(Intensity, 0.0f, 1.0f) + 0.5f);
-	if (!Alpha || !Glow.Shader->inited())
+	const u32 Alpha = iFloor(float(color_get_A(Color)) * clampr(Intensity, 0.0f, 1.0f) + 0.5f);
+	if (!Alpha || !Glow.Shader->inited() || Size.x <= EPS || Size.y <= EPS)
 	{
 		return;
 	}
 
-	const u32 Color = subst_alpha(Glow.Color, Alpha);
+	const u32 DrawColor = subst_alpha(Color, Alpha);
 	const float HalfWidth = Size.x * 0.5f;
 	const float HalfHeight = Size.y * 0.5f;
 
@@ -378,14 +404,73 @@ void CUIWatchWnd::RenderGlow(EWatchGlow Id, const Fmatrix& Xform, const Fvector2
 	UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
 	UIRender->SetShader(*Glow.Shader);
 	UIRender->StartPrimitive(6, IUIRender::ptTriList, IUIRender::pttLIT);
-	UIRender->PushPoint(-HalfWidth, -HalfHeight, 0.0f, Color, 0.0f, 0.0f);
-	UIRender->PushPoint(HalfWidth, -HalfHeight, 0.0f, Color, 1.0f, 0.0f);
-	UIRender->PushPoint(HalfWidth, HalfHeight, 0.0f, Color, 1.0f, 1.0f);
-	UIRender->PushPoint(-HalfWidth, -HalfHeight, 0.0f, Color, 0.0f, 0.0f);
-	UIRender->PushPoint(HalfWidth, HalfHeight, 0.0f, Color, 1.0f, 1.0f);
-	UIRender->PushPoint(-HalfWidth, HalfHeight, 0.0f, Color, 0.0f, 1.0f);
+	UIRender->PushPoint(-HalfWidth, -HalfHeight, 0.0f, DrawColor, U0, 0.0f);
+	UIRender->PushPoint(HalfWidth, -HalfHeight, 0.0f, DrawColor, U1, 0.0f);
+	UIRender->PushPoint(HalfWidth, HalfHeight, 0.0f, DrawColor, U1, 1.0f);
+	UIRender->PushPoint(-HalfWidth, -HalfHeight, 0.0f, DrawColor, U0, 0.0f);
+	UIRender->PushPoint(HalfWidth, HalfHeight, 0.0f, DrawColor, U1, 1.0f);
+	UIRender->PushPoint(-HalfWidth, HalfHeight, 0.0f, DrawColor, U0, 1.0f);
 	UIRender->FlushPrimitive();
 	UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
+}
+
+void CUIWatchWnd::RenderGlow(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity)
+{
+	RenderGlowShader(Glows[u32(Id)], Xform, Size, Intensity, 0.0f, 1.0f, Glows[u32(Id)].Color);
+}
+
+void CUIWatchWnd::RenderConditionIcon(EWatchCondition Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color)
+{
+	SConditionVisual& Visual = Conditions[u32(Id)];
+	if (!Visual.IconOk)
+	{
+		return;
+	}
+
+	RenderGlowShader(Visual.Icon, Xform, Size, Intensity, 0.0f, 1.0f, Color);
+}
+
+void CUIWatchWnd::RenderConditionBar(EWatchCondition Id, const Fmatrix& Xform, const Fvector2& Size, float Fill, float Intensity, u32 Color)
+{
+	SConditionVisual& Visual = Conditions[u32(Id)];
+	Fill = clampr(Fill, 0.0f, 1.0f);
+	if (!Visual.BarOk || Fill <= EPS)
+	{
+		return;
+	}
+
+	Fvector2 FillSize = Size;
+	FillSize.x *= Fill;
+
+	const float Shift = Size.x * 0.5f * (1.0f - Fill);
+	Fmatrix Local = Fidentity;
+	Local.translate_over(Visual.Fill == EBarFill::Right ? Shift : -Shift, 0.0f, 0.0f);
+	Fmatrix FillXform;
+	FillXform.mul(Xform, Local);
+
+	const float U0 = (Visual.Fill == EBarFill::Right) ? (1.0f - Fill) : 0.0f;
+	const float U1 = (Visual.Fill == EBarFill::Right) ? 1.0f : Fill;
+	RenderGlowShader(Visual.Bar, FillXform, FillSize, Intensity, U0, U1, Color);
+}
+
+u32 CUIWatchWnd::GetConditionIconColor(EWatchCondition Id) const
+{
+	return Conditions[u32(Id)].Icon.Color;
+}
+
+u32 CUIWatchWnd::GetConditionBarColor(EWatchCondition Id) const
+{
+	return Conditions[u32(Id)].Bar.Color;
+}
+
+bool CUIWatchWnd::HasConditionIcon(EWatchCondition Id) const
+{
+	return Conditions[u32(Id)].IconOk;
+}
+
+bool CUIWatchWnd::HasConditionBar(EWatchCondition Id) const
+{
+	return Conditions[u32(Id)].BarOk;
 }
 
 void CUIWatchWnd::RenderLed(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& GlassSize, const Fvector2& CoreSize, float Intensity, float Brightness)
