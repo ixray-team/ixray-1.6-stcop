@@ -20,7 +20,7 @@
 #include "../xrEngine/ObjectDump.h"
 #endif
 bool dbg_draw_doors = false;
-CPhysicObject::CPhysicObject(void): 
+CPhysicObject::CPhysicObject(void):
 m_anim_blend( 0 ),
 m_type( epotBox ),
 m_mass( 10.f ),
@@ -239,7 +239,7 @@ void	CPhysicObject::	run_anim_forward				()
 	m_anim_blend->playing = true;
 	m_anim_blend->stop_at_end_callback = true;
 	if(m_anim_blend->speed < 0.f)
-		m_anim_blend->speed = -m_anim_blend->speed;	
+		m_anim_blend->speed = -m_anim_blend->speed;
 
 }
 void	CPhysicObject::	run_anim_back					()
@@ -270,7 +270,7 @@ void	CPhysicObject::		anim_time_set					( float time )
 		return ;
 	if( time < 0.f || time > m_anim_blend->timeTotal )
 	{
-#ifdef	DEBUG	
+#ifdef	DEBUG
 		Msg( " ! can not set blend time %f - it must be in range 0 - %f(timeTotal) obj: %s, model: %s, anim: %s", time, m_anim_blend->timeTotal, cName().c_str(), cNameVisual().c_str(), smart_cast<IKinematicsAnimated*>( PPhysicsShell()->PKinematics() )->LL_MotionDefName_dbg( m_anim_blend->motionID ).first );
 #endif
 		return;
@@ -305,10 +305,12 @@ void CPhysicObject::CreateSkeleton(CSE_ALifeObjectPhysic* po)
 {
 	if(m_pPhysicsShell) return;
 	if(!Visual()) return;
-	const char*	fixed_bones=*po->fixed_bones;
+	const shared_str fixedBones = po->fixed_bones;
+	const char* fixed_bones = fixedBones.c_str();
+	const bool hasFixedBones = fixed_bones && fixed_bones[0] != '\0';
 	m_pPhysicsShell=P_build_Shell(this,!po->_flags.test(CSE_PHSkeleton::flActive),fixed_bones);
-	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,fixed_bones[0]!='\0');
-	ApplySpawnIniToPhysicShell(PKinematics(Visual())->LL_UserData(),m_pPhysicsShell,fixed_bones[0]!='\0');
+	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,hasFixedBones);
+	ApplySpawnIniToPhysicShell(PKinematics(Visual())->LL_UserData(),m_pPhysicsShell,hasFixedBones);
 }
 
 void CPhysicObject::Load(const char* section)
@@ -500,7 +502,7 @@ void CPhysicObject::InitServerObject(CSE_Abstract* D)
 	l_tpALifePhysicObject->type = u32(m_type);
 }
 
-ICollisionHitCallback*	CPhysicObject::	get_collision_hit_callback ()	
+ICollisionHitCallback*	CPhysicObject::	get_collision_hit_callback ()
 {
 	return m_collision_hit_callback;
 }
@@ -778,12 +780,12 @@ float CPhysicObject::interpolate_states(net_update_PItem const & first, net_upda
 {
 	float ret_val = 0.f;
 	u32 CurTime = Device.dwTimeGlobal;
-	
+
 	if (CurTime == last.dwTimeStamp)
 		return 0.f;
 
 	float factor = float(CurTime - last.dwTimeStamp) / float(last.dwTimeStamp - first.dwTimeStamp);
-	
+
 	ret_val = factor;
 	if (factor > 1.f)
 	{
@@ -792,7 +794,7 @@ float CPhysicObject::interpolate_states(net_update_PItem const & first, net_upda
 	{
 		factor = 0.f;
 	}
-	
+
 	current.position.x = first.State.position.x + (factor * (last.State.position.x - first.State.position.x));
 	current.position.y = first.State.position.y + (factor * (last.State.position.y - first.State.position.y));
 	current.position.z = first.State.position.z + (factor * (last.State.position.z - first.State.position.z));
