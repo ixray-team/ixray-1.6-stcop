@@ -84,7 +84,88 @@ ICF void QuatL(const CKeyQR32& K, Fquaternion& Q)
 	Q.w = K.w;
 }
 
-ICF void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
+namespace AnimationKeys
+{
+	ICF float CatmullRom(float P0, float P1, float P2, float P3, float T)
+	{
+		const float T2 = T * T;
+		return 0.5f * (2.f * P1 + (P2 - P0) * T + (2.f * P0 - 5.f * P1 + 4.f * P2 - P3) * T2 + (3.f * (P1 - P2) + P3 - P0) * T2 * T);
+	}
+
+	ICF void ReadRotation(const CMotion& M, u32 Index, Fquaternion& Q)
+	{
+		if (M.test_flag(flTKeyFFT_Bit))
+		{
+			QuatL(M._keysR32[Index], Q);
+		}
+		else
+		{
+			QR2Quat(M._keysR[Index], Q);
+		}
+	}
+
+	ICF void ReadTranslation(const CMotion& M, u32 Index, Fvector& T)
+	{
+		if (M.test_flag(flTKeyFFT_Bit))
+		{
+			QT_FFT_l(M._keysT32[Index], T);
+		}
+		else if (M.test_flag(flTKey16IsBit))
+		{
+			QT16_2T(M._keysT16[Index], M, T);
+		}
+		else
+		{
+			QT8_2T(M._keysT8[Index], M, T);
+		}
+	}
+
+	ICF float Dot(const Fquaternion& A, const Fquaternion& B)
+	{
+		return A.x * B.x + A.y * B.y + A.z * B.z + A.w * B.w;
+	}
+
+	ICF void CubicRotation(const CMotion& M, const u32* Keys, float T, Fquaternion& Result)
+	{
+		Fquaternion Q[4];
+		for (u32 i = 0; i < 4; i++)
+		{
+			ReadRotation(M, Keys[i], Q[i]);
+		}
+
+		for (u32 i : { 0u, 2u })
+		{
+			if (Dot(Q[i], Q[1]) < 0.f)
+			{
+				Q[i].set(-Q[i].w, -Q[i].x, -Q[i].y, -Q[i].z);
+			}
+		}
+
+		if (Dot(Q[3], Q[2]) < 0.f)
+		{
+			Q[3].set(-Q[3].w, -Q[3].x, -Q[3].y, -Q[3].z);
+		}
+
+		Result.x = CatmullRom(Q[0].x, Q[1].x, Q[2].x, Q[3].x, T);
+		Result.y = CatmullRom(Q[0].y, Q[1].y, Q[2].y, Q[3].y, T);
+		Result.z = CatmullRom(Q[0].z, Q[1].z, Q[2].z, Q[3].z, T);
+		Result.w = CatmullRom(Q[0].w, Q[1].w, Q[2].w, Q[3].w, T);
+		Result.normalize();
+	}
+
+	ICF void CubicTranslation(const CMotion& M, const u32* Keys, float T, Fvector& Result)
+	{
+		Fvector P[4];
+		for (u32 i = 0; i < 4; i++)
+		{
+			ReadTranslation(M, Keys[i], P[i]);
+		}
+
+		Result.set(CatmullRom(P[0].x, P[1].x, P[2].x, P[3].x, T), CatmullRom(P[0].y, P[1].y, P[2].y, P[3].y, T), CatmullRom(P[0].z, P[1].z, P[2].z, P[3].z, T));
+	}
+}
+
+ICF void Dequantize(CKey& K, const CBlend& BD, const CMotion& M, bool Cubic = false)
 {
 	CKey* D = &K;
 	const CBlend* B = &BD;
@@ -94,6 +175,22 @@ ICF void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 	u32 frame = iFloor(time);
 	float delta = time - float(frame);
 	u32 count = M.get_count();
+
+	const bool cubic = Cubic && count > 2;
+	u32 keys[4] = {};
+	if (cubic)
+	{
+		const int last = int(count) - 1;
+		const auto outer = [&](int index) -> u32
+		{
+			return B->stop_at_end ? u32(std::clamp(index, 0, last)) : u32((index % int(count) + int(count)) % int(count));
+		};
+
+		keys[0] = outer(int(frame) - 1);
+		keys[1] = (frame + 0) % count;
+		keys[2] = (frame + 1) % count;
+		keys[3] = outer(int(frame) + 2);
+	}
 
 	// rotation
 	if (M.test_flag(flRKeyAbsent))
@@ -108,6 +205,10 @@ ICF void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 			const CKeyQR* K = &M._keysR[0];
 			QR2Quat(*K, D->Q);
 		}
+	}
+	else if (cubic)
+	{
+		AnimationKeys::CubicRotation(M, keys, clampr(delta, 0.f, 1.f), D->Q);
 	}
 	else
 	{
@@ -134,7 +235,11 @@ ICF void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 	}
 
 	// translate
-	if (M.test_flag(flTKeyPresent))
+	if (M.test_flag(flTKeyPresent) && cubic)
+	{
+		AnimationKeys::CubicTranslation(M, keys, delta, D->T);
+	}
+	else if (M.test_flag(flTKeyPresent))
 	{
 		Fvector T1, T2;
 		if (M.test_flag(flTKeyFFT_Bit))

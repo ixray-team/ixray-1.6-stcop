@@ -343,6 +343,12 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool  bM
 //	shared_motions* s_mots	= &m_Motions[motion.slot];
 //	CMotionDef* m_def		= s_mots->motion_def(motion.idx);
     
+	if (channel == 0 && m_InertialTime > 0.f)
+	{
+		InertialMarkPart(part);
+		bMixing = false;
+	}
+
 	// Process old cycles and create _new_
 	if( channel == 0 )
 	{
@@ -938,7 +944,7 @@ const	CBlendInstance::BlendSVec	&Blend				= BLEND_INST.blend_vector();
 			//keys.blend_factors[channel][b_count]	=  B->blendAmount;
 			keys.blends[channel][b_count] = B;
 			CMotion& M = *LL_GetMotion(B->motionID, SelfID);
-			Dequantize(*D, *B, M);
+			Dequantize(*D, *B, M, g_AnimCubicInterpolation != 0);
 
 			if (M.test_flag(flTKeyFFT_Bit))
 				QuatL(M._keysR32[0], BK[channel][b_count].Q);
@@ -969,8 +975,17 @@ const	CBlendInstance::BlendSVec	&Blend				= BLEND_INST.blend_vector();
 				keys_substruct( keys.keys[j], BK[j], keys.chanel_blend_conts[j] );
 }
 
-// calculate single bone with key blending 
 void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* parent, const SKeyTable& keys)
+{
+	CKey Result;
+	LL_BlendKeys(Result, keys);
+
+	Fmatrix RES;
+	RES.mk_xform(Result.Q, Result.T);
+	bi.mTransform.mul_43(*parent, RES);
+}
+
+void CKinematicsAnimated::LL_BlendKeys(CKey& Result, const SKeyTable& keys)
 {
 	// Blend them together
 	CKey channel_keys[MAX_CHANNELS];
@@ -989,13 +1004,8 @@ void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* p
 		process_single_channel(channel_keys[ch_count], BC[ch_count], keys.keys[j], keys.blends[j], keys.chanel_blend_conts[j]);
 		++ch_count;
 	}
-	CKey Result;
 	// Mix channels
 	MixChannels(Result, channel_keys, BC, ch_count);
-
-	Fmatrix RES;
-	RES.mk_xform(Result.Q, Result.T);
-	bi.mTransform.mul_43(*parent, RES);
 }
 
 void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /*= (1<<0)*/)
@@ -1003,12 +1013,247 @@ void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi
 	SKeyTable	keys;
 	LL_BuldBoneMatrixDequatize(bd, channel_mask, keys);
 
-	LL_BoneMatrixBuild(bi, parent, keys);
+	if (m_InertialTime <= 0.f || m_InertialBones.empty())
+	{
+		LL_BoneMatrixBuild(bi, parent, keys);
+		return;
+	}
+
+	CKey Result;
+	LL_BlendKeys(Result, keys);
+
+	const u16 SelfID = bd->GetSelfID();
+	InertialApply(SelfID, Result, &bi == &bone_instances[SelfID]);
+
+	Fmatrix RES;
+	RES.mk_xform(Result.Q, Result.T);
+	bi.mTransform.mul_43(*parent, RES);
 }
 
 void CKinematicsAnimated::OnCalculateBones()
 {
+	InertialAdvance();
 	UpdateTracks();
+}
+
+namespace Inertialization
+{
+	static Fvector QuatLog(Fquaternion Q)
+	{
+		if (Q.w < 0.f)
+		{
+			Q.set(-Q.w, -Q.x, -Q.y, -Q.z);
+		}
+
+		const float Sin = _sqrt(Q.x * Q.x + Q.y * Q.y + Q.z * Q.z);
+		const float Scale = Sin < EPS_S ? 2.f : 2.f * atan2f(Sin, Q.w) / Sin;
+		return { Q.x * Scale, Q.y * Scale, Q.z * Scale };
+	}
+
+	static Fquaternion QuatExp(const Fvector& V)
+	{
+		const float Angle = V.magnitude();
+		Fquaternion Q;
+		if (Angle < EPS_S)
+		{
+			Q.set(1.f, V.x * 0.5f, V.y * 0.5f, V.z * 0.5f);
+			Q.normalize();
+			return Q;
+		}
+
+		const float Sin = sinf(Angle * 0.5f) / Angle;
+		Q.set(cosf(Angle * 0.5f), V.x * Sin, V.y * Sin, V.z * Sin);
+		return Q;
+	}
+
+	static Fquaternion QuatInverse(const Fquaternion& Q)
+	{
+		Fquaternion R;
+		R.set(Q.w, -Q.x, -Q.y, -Q.z);
+		return R;
+	}
+
+	// Critically damped spring towards 0 (exact step), from Daniel Holden's spring-it-on
+	static void Decay(Fvector& X, Fvector& V, float HalfLife, float Dt)
+	{
+		const float Y = 2.f * 0.69314718f / (HalfLife + 1e-5f);
+		const Fvector J1 = Fvector().mad(V, X, Y);
+		const float Exp = expf(-Y * Dt);
+		X.mad(J1, Dt).mul(Exp);
+		V.mad(J1, -Y * Dt).mul(Exp);
+	}
+}
+
+void CKinematicsAnimated::LL_SetInertialization(float time)
+{
+	m_InertialTime = std::max(time, 0.f);
+	if (m_InertialTime <= 0.f)
+	{
+		m_InertialBones.clear();
+		return;
+	}
+
+	if (m_InertialBones.size() != LL_BoneCount())
+	{
+		m_InertialBones.assign(LL_BoneCount(), SInertialBone());
+		for (SInertialBone& S : m_InertialBones)
+		{
+			S.LastQ.identity();
+			S.PrevQ.identity();
+		}
+
+		m_InertialStamp = -1.f;
+	}
+}
+
+bool CKinematicsAnimated::LL_GetMotionBoneTransform(MotionID motion, float time, u16 bone, Fmatrix& result)
+{
+	if (!motion.valid() || bone >= LL_BoneCount() || motion.slot >= m_Motions.size())
+	{
+		return false;
+	}
+
+	xr_vector<u16> chain;
+	for (u16 id = bone; id != BI_NONE; id = LL_GetData(id).GetParentID())
+	{
+		chain.push_back(id);
+	}
+
+	CBlend sample;
+	sample.timeCurrent = std::max(time, 0.f);
+	sample.stop_at_end = true;
+
+	result.identity();
+	for (auto it = chain.rbegin(); it != chain.rend(); ++it)
+	{
+		CBoneInstance& instance = bone_instances[*it];
+		if (instance.callback_overwrite())
+		{
+			result.set(instance.mTransform);
+			continue;
+		}
+
+		CKey key;
+		Dequantize(key, sample, *LL_GetMotion(motion, *it));
+
+		Fmatrix local;
+		local.mk_xform(key.Q, key.T);
+		result.mulB_43(local);
+	}
+
+	return true;
+}
+
+void CKinematicsAnimated::LL_SetInertializationBone(u16 bone, bool enabled)
+{
+	if (bone < m_InertialBones.size())
+	{
+		SInertialBone& S = m_InertialBones[bone];
+		S.Enabled = enabled;
+		S.OffsetR.set(0.f, 0.f, 0.f);
+		S.VelocityR.set(0.f, 0.f, 0.f);
+		S.OffsetT.set(0.f, 0.f, 0.f);
+		S.VelocityT.set(0.f, 0.f, 0.f);
+	}
+}
+
+void CKinematicsAnimated::InertialAdvance()
+{
+	if (m_InertialBones.empty())
+	{
+		return;
+	}
+
+	const float Now = RDEVICE.fTimeGlobal;
+	if (m_InertialStamp == Now)
+	{
+		return;
+	}
+
+	const float Gap = m_InertialStamp < 0.f ? 1.f : Now - m_InertialStamp;
+	const float Dt = std::min(Gap, 0.1f);
+	const float HalfLife = m_InertialTime / 3.f;
+	for (SInertialBone& S : m_InertialBones)
+	{
+		if (S.Valid && m_InertialDelta > EPS_S && Gap <= 0.1f)
+		{
+			S.SourceVelocityT.sub(S.LastT, S.PrevT).div(m_InertialDelta);
+			S.SourceVelocityR = Inertialization::QuatLog(Fquaternion().mul(S.LastQ, Inertialization::QuatInverse(S.PrevQ))).div(m_InertialDelta);
+
+			constexpr float MaxVelocityT = 3.f;
+			constexpr float MaxVelocityR = 15.f;
+			if (S.SourceVelocityT.magnitude() > MaxVelocityT)
+			{
+				S.SourceVelocityT.set_length(MaxVelocityT);
+			}
+
+			if (S.SourceVelocityR.magnitude() > MaxVelocityR)
+			{
+				S.SourceVelocityR.set_length(MaxVelocityR);
+			}
+		}
+		else
+		{
+			S.SourceVelocityT.set(0.f, 0.f, 0.f);
+			S.SourceVelocityR.set(0.f, 0.f, 0.f);
+		}
+
+		S.PrevQ = S.LastQ;
+		S.PrevT = S.LastT;
+		Inertialization::Decay(S.OffsetT, S.VelocityT, HalfLife, Dt);
+		Inertialization::Decay(S.OffsetR, S.VelocityR, HalfLife, Dt);
+	}
+
+	m_InertialStamp = Now;
+	m_InertialDelta = Dt;
+}
+
+void CKinematicsAnimated::InertialMarkPart(u16 part)
+{
+	if (m_InertialBones.empty() || part >= MAX_PARTS)
+	{
+		return;
+	}
+
+	for (u16 Bone : (*m_Partition)[part].bones)
+	{
+		if (Bone < m_InertialBones.size())
+		{
+			m_InertialBones[Bone].Pending = true;
+		}
+	}
+}
+
+void CKinematicsAnimated::InertialApply(u16 bone, CKey& key, bool update)
+{
+	if (bone >= m_InertialBones.size())
+	{
+		return;
+	}
+
+	SInertialBone& S = m_InertialBones[bone];
+	if (update && S.Pending)
+	{
+		S.Pending = false;
+		if (S.Valid && S.Enabled)
+		{
+			S.OffsetT.sub(S.LastT, key.T);
+			S.VelocityT = S.SourceVelocityT;
+			S.OffsetR = Inertialization::QuatLog(Fquaternion().mul(S.LastQ, Inertialization::QuatInverse(key.Q)));
+			S.VelocityR = S.SourceVelocityR;
+		}
+	}
+
+	key.T.add(S.OffsetT);
+	key.Q.mul(Inertialization::QuatExp(S.OffsetR), Fquaternion(key.Q));
+	key.Q.normalize();
+
+	if (update)
+	{
+		S.LastQ = key.Q;
+		S.LastT = key.T;
+		S.Valid = true;
+	}
 }
 
 IBlendDestroyCallback* CKinematicsAnimated::GetBlendDestroyCallback()

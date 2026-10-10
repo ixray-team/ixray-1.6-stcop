@@ -51,6 +51,15 @@ public:
 							~CCameraRig		();
 
 	static bool				Enabled			();
+	static float			HudIkShare		();
+	static float			TurnSwaySmooth	();
+	static float			AimReloadBlend	();
+	static float			LeftHandIkFollow();
+	static float			ShotAnimBlend	();
+	static float			MassSpeed		(float mass);
+	static float			AimReloadTail	();
+	static float			ShotAnimTail	();
+	static float			HudInertialization();
 	static bool				SpringSway		(Fvector& value, Fvector& velocity, const Fvector& target, float speed);
 	static void				TransformBone	(IKinematics* model, u16 bone, const Fmatrix& delta);
 	static void				SolveLimb		(IKinematics* model, const u16* chain, const Fmatrix& target, float weight);

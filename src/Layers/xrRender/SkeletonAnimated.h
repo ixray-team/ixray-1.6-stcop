@@ -63,7 +63,34 @@ private:
 	
 	void						LL_BuldBoneMatrixDequatize	( const CBoneData* bd, u8 channel_mask,  SKeyTable& keys );
 	void						LL_BoneMatrixBuild			( CBoneInstance &bi, const Fmatrix *parent, const SKeyTable& keys );
+	void						LL_BlendKeys				( CKey& Result, const SKeyTable& keys );
 virtual	void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0) );
+
+	struct SInertialBone
+	{
+		Fquaternion				LastQ;
+		Fquaternion				PrevQ;
+		Fvector					LastT = {};
+		Fvector					PrevT = {};
+		Fvector					SourceVelocityR = {};
+		Fvector					SourceVelocityT = {};
+		Fvector					OffsetR = {};
+		Fvector					VelocityR = {};
+		Fvector					OffsetT = {};
+		Fvector					VelocityT = {};
+		bool					Valid = false;
+		bool					Pending = false;
+		bool					Enabled = true;
+	};
+
+	xr_vector<SInertialBone>	m_InertialBones;
+	float						m_InertialTime = 0.0f;
+	float						m_InertialStamp = -1.0f;
+	float						m_InertialDelta = 0.0f;
+
+	void						InertialAdvance			();
+	void						InertialMarkPart		( u16 part );
+	void						InertialApply			( u16 bone, CKey& key, bool update );
 public:
 
 	virtual void				OnCalculateBones		();
@@ -196,6 +223,9 @@ public:
 	}
 
 	virtual float				get_animation_length (MotionID motion_ID);
+	void						LL_SetInertialization	(float time) override;
+	void						LL_SetInertializationBone(u16 bone, bool enabled) override;
+	bool						LL_GetMotionBoneTransform(MotionID motion, float time, u16 bone, Fmatrix& result) override;
 };
 //IC CKinematicsAnimated* PKinematicsAnimated(IRender_Visual* V) { return V?V->dcast_PKinematicsAnimated():0; }
 IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V?(CKinematicsAnimated*)V->dcast_PKinematicsAnimated():nullptr; }
