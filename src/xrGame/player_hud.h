@@ -47,6 +47,8 @@ enum EMovementLayers : u8
 	eIdle,
 	eIdleAim,
 	eAimWalk,
+	eStrafeLeft,
+	eStrafeRight,
 	eLayersCount
 };
 
@@ -245,6 +247,9 @@ struct attachable_hud_item final
 	IKinematics*					m_model;
 	u16								m_attach_place_idx;
 	int								m_aim_bone_id = BI_NONE;
+	u16								m_left_ik_bone = BI_NONE;
+	Fmatrix							m_left_ik_offset = Fidentity;
+	bool							m_left_ik_fixed = false;
 	hud_item_measures				m_measures;
 	shared_str						m_visual_name;
 	bool							m_model_combined = false;
@@ -454,8 +459,9 @@ struct script_layer
 		m_XFORM.getXYZ(rotation);
 		position = m_XFORM.c;
 
-		position.mul(power * blend_scale);
-		rotation.mul(power * blend_scale);
+		const float weight = power * blend_scale * blend_scale * (3.0f - 2.0f * blend_scale);
+		position.mul(weight);
+		rotation.mul(weight);
 
 		m_XFORM.setXYZ(rotation);
 		m_XFORM.translate_over(position);
@@ -559,8 +565,9 @@ struct movement_layer
 		m_XFORM.getXYZ(rotation);
 		position = m_XFORM.c;
 
-		position.mul(power * blend_scale);
-		rotation.mul(power * blend_scale);
+		const float weight = power * blend_scale * blend_scale * (3.0f - 2.0f * blend_scale);
+		position.mul(weight);
+		rotation.mul(weight);
 
 		m_XFORM.setXYZ(rotation);
 		m_XFORM.translate_over(position);
@@ -574,7 +581,13 @@ struct movement_layer
 		anim->Load(anim_name.c_str());
 	}
 
-	void Play(bool loop = true)
+	float Phase()
+	{
+		const SAnimParams& params = anim->anim_param();
+		return anim->IsPlaying() && params.max_t > params.min_t ? (params.t_current - params.min_t) / (params.max_t - params.min_t) : -1.0f;
+	}
+
+	void Play(bool loop = true, float phase = -1.0f)
 	{
 		if (!anim->Name())
 		{
@@ -590,6 +603,12 @@ struct movement_layer
 		playing = true;
 		anim->Speed() = speed;
 		anim->Play(loop);
+
+		const SAnimParams& params = anim->anim_param();
+		if (phase > 0.0f && speed > 0.0f)
+		{
+			anim->Update(phase * (params.max_t - params.min_t) / speed);
+		}
 	}
 
 	void Stop(bool bForce = false)
@@ -706,6 +725,7 @@ public:
 
 private:
 	void			update_inertion		(Fmatrix& trans);
+	void			update_hands_ik		(const Fmatrix& cam_trans, CActor* actor);
 	const Fvector&	attach_rot			() const;
 	const Fvector&	attach_pos			() const;
 
@@ -718,6 +738,10 @@ private:
 
 	IKinematicsAnimated*				m_model = nullptr;
 	xr_vector<u16>						m_ancors;
+	u16									m_left_ik_chain[3] = { BI_NONE, BI_NONE, BI_NONE };
+	u16									m_right_ik_chain[3] = { BI_NONE, BI_NONE, BI_NONE };
+	float								m_left_ik_weight = 0.f;
+	u32									m_movement_key = 0;
 	attachable_hud_item*				m_attached_items[2];
 	animator_item*						m_animator_item = nullptr;
 	xr_vector<attachable_hud_item*>		m_pool;

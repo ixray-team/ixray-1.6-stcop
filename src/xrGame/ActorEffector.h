@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CameraEffector.h"
+#include "CameraRig.h"
 
 class CObjectAnimator;
 class CEffectorController;
@@ -11,6 +12,7 @@ class CActorCameraManager	:public CCameraManager
 	typedef CCameraManager	inherited;
 
 	SCamEffectorInfo		m_cam_info_hud;
+	CCameraRig				m_rig;
 
 protected:
 	virtual void			UpdateCamEffectors		();
@@ -21,6 +23,7 @@ public:
 	virtual					~CActorCameraManager() {}
 
 	IC void					hud_camera_Matrix		(Fmatrix& M){M.set(m_cam_info_hud.r, m_cam_info_hud.n, m_cam_info_hud.d, m_cam_info_hud.p);}
+	IC CCameraRig&			Rig						(){return m_rig;}
 };
 
 using GET_KOEFF_FUNC = xr_delegate<float()>;

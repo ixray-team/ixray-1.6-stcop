@@ -1849,7 +1849,11 @@ void CWeaponMagazined::OnShot()
 	if (pActor != nullptr && m_shot_cams[0].size() > 0)
 	{
 		bool aim = IsZoomed() && m_shot_cams[1].size() > 0;
-		StartCamEffector(m_shot_cams[aim ? 1 : 0], false, 33000, 33999);
+		const RStringVec& cams = m_shot_cams[aim ? 1 : 0];
+		if (!pActor->Cameras().Rig().PlayAnim(*cams[Random.randI(cams.size())], crcShot, 1.f, false))
+		{
+			StartCamEffector(cams, false, 33000, 33999);
+		}
 	}
 
 	u32 ammo_elapsed = GetCurrentElapsed(IsGrenadeMode());
