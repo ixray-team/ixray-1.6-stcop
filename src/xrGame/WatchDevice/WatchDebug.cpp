@@ -55,11 +55,30 @@ void CWatchDevice::DrawImGui()
 		BoneIds.RadIndicator != BI_NONE ? 1 : 0,
 		BoneIds.AnomIndicator != BI_NONE ? 1 : 0
 	);
+	const char* SourceKindName = "none";
+	switch (State.CompassSourceKind)
+	{
+	case EWatchCompassSourceKind::North:
+		SourceKindName = "north";
+		break;
+	case EWatchCompassSourceKind::Story:
+		SourceKindName = "story";
+		break;
+	case EWatchCompassSourceKind::Additional:
+		SourceKindName = "additional";
+		break;
+	case EWatchCompassSourceKind::UserNav:
+		SourceKindName = "nav";
+		break;
+	default:
+		break;
+	}
 	ImGui::Text(
-		"Angle: %.1f deg | Error: %.1f deg | Target: %s",
+		"Angle: %.1f deg | Error: %.1f deg | Target: %s | Kind: %s",
 		rad2deg(State.CompassAngle),
 		rad2deg(State.CompassError),
-		State.TargetValid ? "valid" : "none"
+		State.TargetValid ? "valid" : "none",
+		SourceKindName
 	);
 
 	DrawCompassImGui();
@@ -90,13 +109,31 @@ void CWatchDevice::DrawCompassImGui()
 	SWatchCompass& CompassConfig = Config.Compass;
 	char ModeBuffer[32] = {};
 	char NoTargetBuffer[32] = {};
-	DrawWatchStringInput("Mode", CompassConfig.Mode, ModeBuffer, sizeof(ModeBuffer));
-	DrawWatchStringInput("No Target", CompassConfig.NoTarget, NoTargetBuffer, sizeof(NoTargetBuffer));
+	bool Changed = false;
+	DrawWatchStringInput("Mode (north|quest|nav)", CompassConfig.Mode, ModeBuffer, sizeof(ModeBuffer));
+	Changed |= ImGui::IsItemDeactivatedAfterEdit();
+	DrawWatchStringInput("No Target (hide|north)", CompassConfig.NoTarget, NoTargetBuffer, sizeof(NoTargetBuffer));
+	Changed |= ImGui::IsItemDeactivatedAfterEdit();
 
 	ImGui::DragFloat("Stiffness", &CompassConfig.Stiffness, 0.1f, 0.0f, 100.0f, "%.2f");
 	ImGui::DragFloat("Damping", &CompassConfig.Damping, 0.1f, 0.0f, 100.0f, "%.2f");
 	ImGui::DragFloat("Gravity Strength", &CompassConfig.GravityStrength, 1.0f, 0.0f, 360.0f, "%.1f");
 	ImGui::DragFloat("Angle Offset", &CompassConfig.AngleOffset, 1.0f, -360.0f, 360.0f, "%.1f");
+	Changed |= ImGui::IsItemEdited();
+	ImGui::DragFloat("Target Glow", &CompassConfig.TargetGlow, 0.01f, 0.0f, 2.0f, "%.2f");
+	ImGui::DragFloat4("North Color RGBA", &CompassConfig.NorthColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
+	Changed |= ImGui::IsItemEdited();
+	ImGui::DragFloat4("Story Color RGBA", &CompassConfig.StoryColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
+	Changed |= ImGui::IsItemEdited();
+	ImGui::DragFloat4("Additional Color RGBA", &CompassConfig.AdditionalColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
+	Changed |= ImGui::IsItemEdited();
+	ImGui::DragFloat4("Nav Color RGBA", &CompassConfig.NavColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
+	Changed |= ImGui::IsItemEdited();
+
+	if (Changed)
+	{
+		RefreshCompassSettings();
+	}
 }
 
 void CWatchDevice::DrawDisplayImGui()

@@ -307,28 +307,44 @@ CMapLocation* CMapManager::GetMapLocation(const shared_str& spot_type, ALife::_O
 	return nullptr;
 }
 
+SQuestCompassTarget CMapManager::GetActiveQuestCompassTarget()
+{
+	SQuestCompassTarget Result;
+	if (!Level().GameTaskManager())
+		return Result;
+
+	CGameTask* storyTask = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
+	CGameTask* additionalTask = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
+	if (storyTask && storyTask->HasActiveMapTarget())
+	{
+		const SGameTaskObjective& objective = storyTask->Objective(storyTask->ActiveObjectiveIdx());
+		if (CMapLocation* activeLoc = GetMapLocation(objective.m_map_location, objective.m_map_object_id))
+		{
+			Result.Location = activeLoc;
+			Result.Type = eTaskTypeStoryline;
+			return Result;
+		}
+	}
+	if (additionalTask && additionalTask->HasActiveMapTarget())
+	{
+		const SGameTaskObjective& objective = additionalTask->Objective(additionalTask->ActiveObjectiveIdx());
+		if (CMapLocation* activeLoc = GetMapLocation(objective.m_map_location, objective.m_map_object_id))
+		{
+			Result.Location = activeLoc;
+			Result.Type = eTaskTypeAdditional;
+			return Result;
+		}
+	}
+	return Result;
+}
+
 CMapLocation* CMapManager::GetActiveTaskCompassLocation()
 {
 	CMapLocation* userNavLocation = GetActiveUserNavigationLocation();
 	if (userNavLocation)
 		return userNavLocation;
 
-	if (!Level().GameTaskManager())
-		return nullptr;
-	CGameTask* storyTask = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
-	CGameTask* additionalTask = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
-	CMapLocation* activeLoc = nullptr;
-	if (storyTask && storyTask->HasActiveMapTarget())
-	{
-		const SGameTaskObjective& objective = storyTask->Objective(storyTask->ActiveObjectiveIdx());
-		activeLoc = GetMapLocation(objective.m_map_location, objective.m_map_object_id);
-	}
-	if (!activeLoc && additionalTask && additionalTask->HasActiveMapTarget())
-	{
-		const SGameTaskObjective& objective = additionalTask->Objective(additionalTask->ActiveObjectiveIdx());
-		activeLoc = GetMapLocation(objective.m_map_location, objective.m_map_object_id);
-	}
-	return activeLoc;
+	return GetActiveQuestCompassTarget().Location;
 }
 
 CMapLocation* CMapManager::GetActiveUserNavigationLocation()

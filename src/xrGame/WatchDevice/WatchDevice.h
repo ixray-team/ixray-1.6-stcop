@@ -106,6 +106,7 @@ public:
 
 private:
 	void LoadConfig(const CInifile& Ini, const shared_str& Root, bool PersistentOnly);
+	void RefreshCompassSettings();
 	void ApplyIndicatorMasters();
 	void ApplyConditionMasters();
 	bool ResolveOverridePath(string_path& Out) const;
@@ -159,7 +160,9 @@ private:
 	float EvaluateGravityZoneIntensity(CAnomalyZone* Zone, const Fvector& ActorPos);
 
 	void RenderBoneGlow(EWatchGlow Id, u16 Bone, const Fmatrix& Offset, const Fvector2& Size, float Intensity, const Fmatrix& WatchesXform);
-	void RenderChannel(EWatchLedChannel Channel, const Fmatrix& WatchesXform);
+	void RenderBoneGlow(EWatchGlow Id, u16 Bone, const Fmatrix& Offset, const Fvector2& Size, float Intensity, u32 Color, const Fmatrix& WatchesXform);
+	u32 CompassColorForKind(EWatchCompassSourceKind Kind) const;
+	void RenderChannel(EWatchLedChannel Channel, const Fmatrix& WatchesXform, const Fmatrix& DisplayXform);
 	void RenderCondition(EWatchCondition Condition, const Fmatrix& DisplayXform);
 
 	void ResolveBones();
@@ -172,13 +175,11 @@ private:
 
 	void ResetCompassRuntime();
 	void UpdateCompass(float Dt);
-	void UpdateCompassTarget();
-	void UpdateCompassNorth();
+	void SampleCompassTarget(SWatchCompassSample& Out) const;
+	void ApplyCompassSample(const SWatchCompassSample& Sample, bool HadTarget);
 	void ApplyCompassNoTarget();
 	void SetCompassVisible(bool Visible);
 	bool HasCompassBone() const;
-	bool WorldDirToCompassAngle(const Fvector& WorldDir, float& OutAngle) const;
-	bool ApplyCompassWorldDir(const Fvector& WorldDir);
 	void CommitCompassAngle(float Angle, bool ResetVelocity);
 	void SyncCompassState();
 	bool UpdateCompassGravityChaos(float Dt);
@@ -200,6 +201,7 @@ private:
 	SWatchDisplayRuntime Display;
 	SWatchSurgeRuntime Surge;
 	SWatchCompassRuntime Compass;
+	SWatchCompassSettings CompassSettings;
 	SWatchZoneRuntime Zones;
 	SWatchLightRuntime Light;
 	SWatchLedRuntime Leds[WatchLedChannelCount];

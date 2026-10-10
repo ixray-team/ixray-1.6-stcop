@@ -45,6 +45,51 @@ enum class EWatchConditionSeverity : u8
 	Count
 };
 
+enum class EWatchCompassSourceKind : u8
+{
+	None,
+	North,
+	Story,
+	Additional,
+	UserNav
+};
+
+// north: points to the north and goes mad near gravity anomalies
+// quest: points to the active story/additional task
+// nav:   points to the player's own map mark, falls back to the quest
+enum class EWatchCompassMode : u8
+{
+	North,
+	Quest,
+	Nav
+};
+
+enum class EWatchCompassNoTarget : u8
+{
+	Hide,
+	North
+};
+
+inline constexpr u32 WatchCompassSourceKindCount = 5;
+
+// Parsed form of SWatchCompass: the runtime never compares strings
+struct SWatchCompassSettings
+{
+	EWatchCompassMode Mode = EWatchCompassMode::Quest;
+	EWatchCompassNoTarget NoTarget = EWatchCompassNoTarget::Hide;
+	float AngleOffsetRad = 0.0f;
+	u32 Colors[WatchCompassSourceKindCount] = {};
+
+	bool IsChaosEnabled() const { return Mode == EWatchCompassMode::North; }
+};
+
+struct SWatchCompassSample
+{
+	bool Valid = false;
+	EWatchCompassSourceKind Kind = EWatchCompassSourceKind::None;
+	Fvector WorldDir = {0.0f, 0.0f, 1.0f};
+};
+
 struct SWatchRoot
 {
 	bool Enabled = true;
@@ -166,12 +211,17 @@ struct SWatchFormatToken
 
 struct SWatchCompass
 {
-	shared_str Mode = "target";
+	shared_str Mode = "quest";
 	shared_str NoTarget = "hide";
 	float Stiffness = 12.0f;
 	float Damping = 5.0f;
 	float GravityStrength = 35.0f;
 	float AngleOffset = 0.0f;
+	float TargetGlow = 1.0f;
+	Fvector4 NorthColor = {255.0f, 255.0f, 255.0f, 255.0f};
+	Fvector4 StoryColor = {255.0f, 30.0f, 20.0f, 255.0f};
+	Fvector4 AdditionalColor = {80.0f, 170.0f, 255.0f, 255.0f};
+	Fvector4 NavColor = {255.0f, 200.0f, 60.0f, 255.0f};
 
 	template <class V>
 	void ForEach(V& Visitor)
@@ -182,6 +232,11 @@ struct SWatchCompass
 		Visitor.Field(Damping, "damping", 0.0f);
 		Visitor.Field(GravityStrength, "gravity_strength", 0.0f);
 		Visitor.Field(AngleOffset, "angle_offset");
+		Visitor.Field(TargetGlow, "target_glow", 0.0f);
+		Visitor.Field(NorthColor, "north_color");
+		Visitor.Field(StoryColor, "story_color");
+		Visitor.Field(AdditionalColor, "additional_color");
+		Visitor.Field(NavColor, "nav_color");
 	}
 };
 
@@ -464,4 +519,5 @@ struct SWatchState
 	xr_string BarometerText;
 	bool DisplayGlitched = false;
 	bool TargetValid = false;
+	EWatchCompassSourceKind CompassSourceKind = EWatchCompassSourceKind::None;
 };
