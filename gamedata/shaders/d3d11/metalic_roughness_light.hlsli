@@ -86,6 +86,24 @@ float3 SimpleTranslucency(float3 Radiance, float3 Light, float3 Normal)
 	return GammaToLinear(Radiance.xyz * saturate(3.5f * SSS + 0.1f));
 }
 
+// Thick translucent surfaces (skin): view-dependent transmission and soft terminator, tinted towards red
+float3 SkinTranslucency(float3 Radiance, float3 Light, float3 Normal, float3 View)
+{
+	const float3 ScatterTint = float3(1.0f, 0.35f, 0.2f);
+	const float Distortion = 0.3f;
+	const float Power = 4.0f;
+	const float Scale = 0.25f;
+	const float Wrap = 0.5f;
+
+	// Light goes from the light source, View goes from the camera
+	float Transmission = pow(saturate(dot(-View, Light - Normal * Distortion)), Power) * Scale;
+
+	float NdotL = dot(Normal, -Light);
+	float Terminator = saturate((NdotL + Wrap) * rcp(1.0f + Wrap)) - saturate(NdotL);
+
+	return GammaToLinear(Radiance.xyz) * ScatterTint * (Transmission + Terminator);
+}
+
 float3 sample_vndf_isotropic(float3 n, float3 wi, float2 u, float alpha)
 {
 	alpha = max(1e-3, alpha);
