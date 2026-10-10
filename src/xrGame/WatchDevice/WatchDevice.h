@@ -72,6 +72,12 @@ struct SWatchLightRuntime
 	xr_vector<SWatchLightKey> Keys;
 };
 
+struct SWatchConditionRuntime
+{
+	Fmatrix IconOffset = Fidentity;
+	Fmatrix BarOffset = Fidentity;
+};
+
 class CWatchDevice
 {
 public:
@@ -101,6 +107,7 @@ public:
 private:
 	void LoadConfig(const CInifile& Ini, const shared_str& Root, bool PersistentOnly);
 	void ApplyIndicatorMasters();
+	void ApplyConditionMasters();
 	bool ResolveOverridePath(string_path& Out) const;
 	void ApplyOverrideFromDisk();
 	bool IsAnyDirty();
@@ -113,6 +120,7 @@ private:
 	void DrawLagImGui(const char* Id, const char* Title, SWatchLag& Lag, float LagValue);
 	void DrawLightImGui();
 	void DrawChannelImGui(EWatchLedChannel Channel);
+	void DrawConditionImGui(EWatchCondition Condition);
 	void DrawPreviewImGui();
 	void DrawHotSaveImGui();
 
@@ -140,12 +148,19 @@ private:
 	bool IsChannelActive(EWatchLedChannel Channel) const;
 	float SampleChannel(EWatchLedChannel Channel) const;
 	void UpdateChannel(EWatchLedChannel Channel, float Dt);
+	bool IsConditionAvailable(EWatchCondition Condition) const;
+	bool IsConditionActive(EWatchCondition Condition) const;
+	float SampleCondition(EWatchCondition Condition) const;
+	void UpdateCondition(EWatchCondition Condition, float Dt);
+	u32 ConditionDrawColor(EWatchCondition Condition, u32 Fallback) const;
+	float ConditionDrawGlow(EWatchCondition Condition) const;
 	void SampleZones(float Dt);
 	bool SectionLooksLikeGravity(const shared_str& Section);
 	float EvaluateGravityZoneIntensity(CAnomalyZone* Zone, const Fvector& ActorPos);
 
 	void RenderBoneGlow(EWatchGlow Id, u16 Bone, const Fmatrix& Offset, const Fvector2& Size, float Intensity, const Fmatrix& WatchesXform);
 	void RenderChannel(EWatchLedChannel Channel, const Fmatrix& WatchesXform);
+	void RenderCondition(EWatchCondition Condition, const Fmatrix& DisplayXform);
 
 	void ResolveBones();
 	void RestoreLedMesh(SWatchLedRuntime& Led);
@@ -188,6 +203,7 @@ private:
 	SWatchZoneRuntime Zones;
 	SWatchLightRuntime Light;
 	SWatchLedRuntime Leds[WatchLedChannelCount];
+	SWatchConditionRuntime ConditionRuntime[WatchConditionCount];
 	bool Loaded = false;
 	bool CallbacksBound = false;
 	string_path OverridePath = {};
