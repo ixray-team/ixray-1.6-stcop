@@ -827,6 +827,17 @@ void attachable_hud_item::load(const shared_str& sect_name)
 	if (pSettings->line_exist(sect_name, "aim_bone_name"))
 		m_aim_bone_id = m_model->LL_BoneID(pSettings->r_string(sect_name, "aim_bone_name"));
 
+	const char* left_ik_bone = READ_IF_EXISTS(pSettings, r_string, sect_name, "left_hand_ik_bone", READ_IF_EXISTS(pSettings, r_string, "camera_rig", "left_hand_ik_bone", nullptr));
+	if (!m_model_combined && left_ik_bone != nullptr)
+	{
+		m_left_ik_bone = m_model->LL_BoneID(left_ik_bone);
+		m_left_ik_fixed = pSettings->line_exist(sect_name, "left_hand_ik_pos") || pSettings->line_exist(sect_name, "left_hand_ik_rot");
+		Fvector ypr = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "left_hand_ik_rot", zero_vel);
+		ypr.mul(PI / 180.f);
+		m_left_ik_offset.setHPB(ypr.x, ypr.y, ypr.z);
+		m_left_ik_offset.c = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "left_hand_ik_pos", zero_vel);
+	}
+
 	m_measures.load				(sect_name, m_model, m_model_combined);
 }
 
@@ -994,7 +1005,14 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 			string_path ce_path;
 			string_path anm_name;
 			xr_strconcat(anm_name, "camera_effects\\weapon\\", M.name.c_str(), ".anm");
-			if (FS.exist(ce_path, "$game_anims$", anm_name))
+			if (CCameraRig::Enabled())
+			{
+				if (!current_actor->Cameras().Rig().PlayAnim(anm_name, crcMotion, speed, false))
+				{
+					current_actor->Cameras().Rig().StopChannel(crcMotion);
+				}
+			}
+			else if (FS.exist(ce_path, "$game_anims$", anm_name))
 			{
 				CAnimatorCamEffector* e = new CAnimatorCamEffector();
 				e->SetType(ECamEffectorType(Random.randI(29999, 31999)));
@@ -1664,6 +1682,19 @@ void player_hud::load(const shared_str& player_hud_sect)
 
 		m_ancors.clear();
 
+		const auto load_chain = [&](const char* key, const char* def, u16* chain)
+		{
+			string128 bone;
+			const char* names = READ_IF_EXISTS(pSettings, r_string, player_hud_sect, key, READ_IF_EXISTS(pSettings, r_string, "camera_rig", key, def));
+			for (int i = 0; i < 3; i++)
+			{
+				chain[i] = _GetItemCount(names) == 3 ? m_model->dcast_PKinematics()->LL_BoneID(_GetItem(names, i, bone)) : BI_NONE;
+			}
+		};
+
+		load_chain("left_hand_ik_chain", "j_shoulder_le, j_elbow_le, j_wrist_le", m_left_ik_chain);
+		load_chain("right_hand_ik_chain", "j_shoulder_ri, j_elbow_ri, j_wrist_ri", m_right_ik_chain);
+
 		for (; _b != _e; ++_b)
 		{
 			if (strstr(_b->first.c_str(), "ancor_") == _b->first.c_str())
@@ -1911,6 +1942,20 @@ void player_hud::update(const Fmatrix& cam_trans)
 	Fmatrix trans = cam_trans;
 	update_inertion(trans);
 
+	CActor* actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
+	if (actor != nullptr)
+	{
+		actor->Cameras().Rig().ApplyHud(trans);
+
+		CWeapon* weapon = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr ? m_attached_items[0]->m_parent_hud_item->cast_weapon() : nullptr;
+		const u32 key = (actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & (ACTOR_DEFS::EMoveCommand::mcAnyMove | ACTOR_DEFS::EMoveCommand::mcSprint | ACTOR_DEFS::EMoveCommand::mcAccel | ACTOR_DEFS::EMoveCommand::mcCrouch)) | (weapon != nullptr && weapon->IsZoomed() ? 0x80000000 : 0);
+		if (key != m_movement_key)
+		{
+			m_movement_key = key;
+			UpdateMovementLayers();
+		}
+	}
+
 	Fmatrix trans_2 = trans;
 
 	if (m_animator_item)
@@ -2077,6 +2122,83 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 	if (m_animator_item && m_animator_item->IsPlaying)
 		m_animator_item->update(true);
+
+	update_hands_ik(cam_trans, actor);
+}
+
+void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
+{
+	attachable_hud_item* item = m_attached_items[0];
+	IKinematics* model = m_model != nullptr ? m_model->dcast_PKinematics() : nullptr;
+	if (item == nullptr || item->m_model_combined || model == nullptr || actor == nullptr || !CCameraRig::Enabled())
+	{
+		m_left_ik_weight = 0.f;
+		return;
+	}
+
+	const float lean = actor->Cameras().Rig().LeanCounter();
+	const u16 ancor = m_ancors[item->m_attach_place_idx];
+	if (!fis_zero(lean) && m_right_ik_chain[2] != BI_NONE)
+	{
+		Fvector axis;
+		Fmatrix().invert(m_transform).transform_dir(axis, cam_trans.k);
+		axis.normalize_safe();
+
+		const Fvector pivot = model->LL_GetTransform(ancor).c;
+		Fmatrix delta;
+		delta.rotation(axis, lean);
+		Fvector rotated;
+		delta.transform_dir(rotated, pivot);
+		delta.c.sub(pivot, rotated);
+
+		const Fmatrix right_target = Fmatrix().mul_43(delta, model->LL_GetTransform(m_right_ik_chain[2]));
+		const Fmatrix left_target = Fmatrix().mul_43(delta, model->LL_GetTransform(m_left_ik_chain[2] != BI_NONE ? m_left_ik_chain[2] : ancor));
+
+		u16 bone = ancor;
+		while (bone != BI_NONE && bone != m_right_ik_chain[2])
+		{
+			bone = model->LL_GetData(bone).GetParentID();
+		}
+
+		if (bone == BI_NONE)
+		{
+			CCameraRig::TransformBone(model, ancor, delta);
+		}
+
+		CCameraRig::SolveLimb(model, m_right_ik_chain, right_target, 1.f);
+		if (m_attached_items[1] == nullptr)
+		{
+			CCameraRig::SolveLimb(model, m_left_ik_chain, left_target, 1.f);
+		}
+
+		item->update(true);
+	}
+
+	bool active = m_attached_items[1] == nullptr && item->m_left_ik_bone != BI_NONE;
+	if (active)
+	{
+		const u32 state = item->m_parent_hud_item->GetState();
+		active = state == CHUDState::eIdle || item->m_parent_hud_item->WpnCanShoot() && (state == CWeapon::eFire || state == CWeapon::eFire2);
+	}
+
+	m_left_ik_weight = std::clamp(m_left_ik_weight + (active ? Device.fTimeDelta : -Device.fTimeDelta) * 4.f, 0.f, 1.f);
+	if (item->m_left_ik_bone == BI_NONE || m_left_ik_chain[2] == BI_NONE)
+	{
+		return;
+	}
+
+	Fmatrix grip;
+	grip.mul_43(item->m_item_transform, item->m_model->LL_GetTransform(item->m_left_ik_bone));
+	if (active && m_left_ik_weight < 1.f && !item->m_left_ik_fixed)
+	{
+		item->m_left_ik_offset.invert(grip).mulB_43(Fmatrix().mul_43(m_transform, model->LL_GetTransform(m_left_ik_chain[2])));
+	}
+
+	if (m_left_ik_weight > 0.f)
+	{
+		grip.mulB_43(item->m_left_ik_offset);
+		CCameraRig::SolveLimb(model, m_left_ik_chain, Fmatrix().mul_43(Fmatrix().invert(m_transform), grip), m_left_ik_weight * m_left_ik_weight * (3.f - 2.f * m_left_ik_weight));
+	}
 }
 
 u32 player_hud::anim_play(u16 part, const MotionID& M, bool bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* model)
@@ -2398,6 +2520,18 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 		}
 	}
 
+	float phase = -1.0f;
+	float phase_weight = 0.0f;
+	for (u8 i = 0; i < EMovementLayers::eStrafeLeft; i++)
+	{
+		movement_layer* anm = m_movement_layers[i];
+		if (anm != nullptr && anm->blend_scale > phase_weight && anm->Phase() >= 0.0f)
+		{
+			phase_weight = anm->blend_scale;
+			phase = anm->Phase();
+		}
+	}
+
 	for (movement_layer* anm : m_movement_layers)
 	{
 		if (!anm)
@@ -2424,38 +2558,44 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 	{
 		if (m_movement_layers[EMovementLayers::eAimWalk] != nullptr && pWeapon != nullptr && pWeapon->IsZoomed())
 		{
-			m_movement_layers[EMovementLayers::eAimWalk]->Play();
+			m_movement_layers[EMovementLayers::eAimWalk]->Play(true, phase);
 		}
 		else if (m_movement_layers[EMovementLayers::eSprint] != nullptr && (state & ACTOR_DEFS::EMoveCommand::mcSprint) != 0)
 		{
-			m_movement_layers[EMovementLayers::eSprint]->Play();
+			m_movement_layers[EMovementLayers::eSprint]->Play(true, phase);
 		}
 		else if (m_movement_layers[EMovementLayers::eWalkSlow] != nullptr && (state & ACTOR_DEFS::EMoveCommand::mcAccel) != 0 && (state & ACTOR_DEFS::EMoveCommand::mcCrouch) == 0)
 		{
-			m_movement_layers[EMovementLayers::eWalkSlow]->Play();
+			m_movement_layers[EMovementLayers::eWalkSlow]->Play(true, phase);
 		}
 		else if (m_movement_layers[EMovementLayers::eCrouch] != nullptr && (state & ACTOR_DEFS::EMoveCommand::mcAccel) == 0 && (state & ACTOR_DEFS::EMoveCommand::mcCrouch) != 0)
 		{
-			m_movement_layers[EMovementLayers::eCrouch]->Play();
+			m_movement_layers[EMovementLayers::eCrouch]->Play(true, phase);
 		}
 		else if (m_movement_layers[EMovementLayers::eCrouchSlow] != nullptr && (state & ACTOR_DEFS::EMoveCommand::mcAccel) != 0 && (state & ACTOR_DEFS::EMoveCommand::mcCrouch) != 0)
 		{
-			m_movement_layers[EMovementLayers::eCrouchSlow]->Play();
+			m_movement_layers[EMovementLayers::eCrouchSlow]->Play(true, phase);
 		}
 		else if (m_movement_layers[EMovementLayers::eWalk] != nullptr)
 		{
-			m_movement_layers[EMovementLayers::eWalk]->Play();
+			m_movement_layers[EMovementLayers::eWalk]->Play(true, phase);
+		}
+
+		const u16 strafe = (state & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 ? u16(-1) : (state & ACTOR_DEFS::EMoveCommand::mcLStrafe) != 0 ? EMovementLayers::eStrafeLeft : (state & ACTOR_DEFS::EMoveCommand::mcRStrafe) != 0 ? EMovementLayers::eStrafeRight : u16(-1);
+		if (strafe != u16(-1) && m_movement_layers[strafe] != nullptr)
+		{
+			m_movement_layers[strafe]->Play(true, phase);
 		}
 	}
 	else
 	{
 		if (m_movement_layers[EMovementLayers::eIdleAim] != nullptr && pWeapon != nullptr && pWeapon->IsZoomed())
 		{
-			m_movement_layers[EMovementLayers::eIdleAim]->Play();
+			m_movement_layers[EMovementLayers::eIdleAim]->Play(true, phase);
 		}
 		else if (m_movement_layers[EMovementLayers::eIdle] != nullptr)
 		{
-			m_movement_layers[EMovementLayers::eIdle]->Play();
+			m_movement_layers[EMovementLayers::eIdle]->Play(true, phase);
 		}
 	}
 }

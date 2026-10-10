@@ -64,6 +64,11 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 	// закончить падение
 	if (character_physics_support()->movement()->gcontact_Was){
 		if (mstate_real&mcFall){
+			if (this == Level().CurrentViewEntity())
+			{
+				Cameras().Rig().OnLand(character_physics_support()->movement()->GetContactSpeed());
+			}
+
 			if (character_physics_support()->movement()->GetContactSpeed()>4.f){
 				if (fis_zero(character_physics_support()->movement()->gcontact_HealthLost)){	
 					m_fLandingTime	= s_fLandingTime1;
@@ -438,7 +443,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 				string_path	ce_path = {};
 				string_path	anm_name = {};
 				xr_strconcat(anm_name, "camera_effects\\actor_move\\", eff_name);
-				if (FS.exist(ce_path, "$game_anims$", anm_name))
+				if (!control_entity->Cameras().Rig().PlayAnim(anm_name, crcMove, 1.f, false) && FS.exist(ce_path, "$game_anims$", anm_name))
 				{
 					CAnimatorCamLerpEffectorConst* e = new CAnimatorCamLerpEffectorConst();
 					float factor = 70.0f;

@@ -3445,6 +3445,11 @@ void CWeapon::StartCamEffector(const RStringVec& cams, bool hud_affect, int type
 		return;
 
 	const shared_str& cam = cams[Random.randI(cams.size())];
+	if (pActor->Cameras().Rig().PlayAnim(*cam, crcAction, 1.f, hud_affect))
+	{
+		return;
+	}
+
 	CAnimatorCamEffector* e = new CAnimatorCamEffector();
 	e->SetType(ECamEffectorType(Random.randI(type_min, type_max)));
 	e->SetCyclic(false);

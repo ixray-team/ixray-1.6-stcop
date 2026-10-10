@@ -1127,6 +1127,7 @@ void CActor::HitMark	(float P,
 			g_Alive() && Local() && (Level().CurrentEntity()==this) )	
 	{
 		HUD().HitMarked				(0, P, dir);
+		Cameras().Rig().OnHit	(P);
 
 		CEffectorCam* ce			= Cameras().GetCamEffector((ECamEffectorType)effFireHit);
 		if( ce )					return;
@@ -1612,17 +1613,22 @@ float CActor::currentFOV()
 	
 	CWeapon* pWeapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
 
-	if (eacFreeLook != cam_active && pWeapon && pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
+	const bool rig = pWeapon && !pWeapon->ZoomTexture() && CCameraRig::Enabled();
+	const float aim = rig ? pWeapon->GetAimFactor() : 1.f;
+
+	if (eacFreeLook != cam_active && pWeapon && (rig ? aim > 0.f : pWeapon->IsZoomed()) && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
 	{
+		const float zoom_factor = pWeapon->IsZoomed() ? pWeapon->GetZoomFactor() : pWeapon->GetRTZoomFactor();
+		const float blend = aim * aim * (3.f - 2.f * aim);
 		static const bool isAltFovCalc = EngineExternal()[EEngineExternalGame::EnableAlternateZoomFovCalc];
 		if (isAltFovCalc)
 		{
 			float fov = (g_fov / 2.f) * PI / 180.f;
-			return (2.f * atan(tan(fov) / pWeapon->GetZoomFactor()) * 180.f / PI);
+			return lerp(g_fov, 2.f * atan(tan(fov) / zoom_factor) * 180.f / PI, blend);
 		}
 		else
 		{
-			return pWeapon->GetZoomFactor() * (0.75f) + SprintFov;
+			return lerp(g_fov, zoom_factor * (0.75f) + SprintFov, blend);
 		}
 	}
 	else
