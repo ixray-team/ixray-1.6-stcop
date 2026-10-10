@@ -122,6 +122,7 @@ extern int			psSkeletonUpdate;
 extern float		r__dtex_range;
 
 int			ps_r__LightSleepFrames		= 10	;
+int			g_AnimCubicInterpolation	= 1	;
 
 float		ps_r__Detail_l_ambient		= 0.9f	;
 float		ps_r__Detail_l_aniso		= 0.25f	;
@@ -820,6 +821,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Preset,	"_preset",				&ps_Preset,	qpreset_token	);
 
 	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
+	CMD4(CCC_Integer,	"r__anim_cubic",		&g_AnimCubicInterpolation,	0,	1	);
 	CMD4(CCC_Float,		"r__dtex_range",		&r__dtex_range,		5,		175	);
 
 // Common

@@ -13,6 +13,12 @@
 
 player_hud* g_player_hud = nullptr;
 player_hud* g_player_hud2 = nullptr;
+
+namespace HudGripMarks
+{
+	constexpr const char* Start = "mm_ik_start";
+	constexpr const char* End = "mm_ik_end";
+}
 Fvector _ancor_pos;
 Fvector _wpn_root_pos;
 extern float AnimatorHideSpeedFactor;
@@ -83,7 +89,6 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 		{
 			if (model == g_player_hud->GetModel())
 			{
-				// don't load this if using CoP system
 				continue;
 			}
 			xr_string str = res.substr(5);
@@ -134,7 +139,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 
 				if (EnableAdjust)
 				{
-					float padding = 10.0f; // Отступ между кнопками
+					float padding = 10.0f;
 					float buttonHeight = 35.0f;
 
 					float widthHudPosition = ImGui::CalcTextSize("Hud Position").x + 20.0f;
@@ -208,7 +213,6 @@ void player_hud_motion_container::load_default_motions(IKinematicsAnimated* mode
 	const shared_str& anm = data.second;
 	m_anims.resize(m_anims.size() + 1);
 	pm = &m_anims.back();
-	//base and alias name
 	pm->m_alias_name = data.first;
 
 	int items_count = _GetItemCount(anm.c_str());
@@ -241,7 +245,6 @@ void player_hud_motion_container::load_default_motions(IKinematicsAnimated* mode
 		}
 	}
 
-	//and load all motions for it
 
 	for (u32 i = 0; i <= 8; ++i)
 	{
@@ -288,7 +291,6 @@ void player_hud_motion_container::load_bonepart_motions(IKinematicsAnimated* mod
 	const shared_str& anm = data.second;
 	m_item_anims.resize(m_item_anims.size() + 1);
 	ahim = &m_item_anims.back();
-	//base and alias name
 	ahim->m_alias_name = data.first;
 
 	int items_count = _GetItemCount(anm.c_str());
@@ -480,13 +482,13 @@ void attachable_hud_item::update_hud_additional(Fmatrix& trans)
 	hud_collision.mulA_43(hud_collision_z);
 
 	hud_collision.translate_over(m_collision_inertia_pos);
+	m_collision_xform.set(hud_collision);
 	trans.mulB_43(hud_collision);
 }
 
 void attachable_hud_item::setup_firedeps(firedeps& fd)
 {
 	update							(false);
-	// fire point&direction
 	if(m_measures.m_prop_flags.test(hud_item_measures::e_fire_point))
 	{
 		R_ASSERT4(m_measures.m_fire_bone != BI_NONE, 
@@ -644,12 +646,12 @@ void attachable_hud_item::render_item_ui()
 
 void hud_item_measures::load(const shared_str& sect_name, IKinematics* K, bool combined_model)
 {
-	if (combined_model) // SoC
+	if (combined_model)
 	{
 		m_item_attach[EHudOffsetAxis::eAxisPos] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "position", zero_vel);
 		m_item_attach[EHudOffsetAxis::eAxisRot] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "orientation", zero_vel);
 	}
-	else // CS/CoP
+	else
 	{
 		m_item_attach[EHudOffsetAxis::eAxisPos] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_position", zero_vel);
 		m_item_attach[EHudOffsetAxis::eAxisRot] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_orientation", zero_vel);
@@ -818,15 +820,41 @@ void attachable_hud_item::load(const shared_str& sect_name)
 {
 	m_sect_name					= sect_name;
 
-	// Visual
 	m_model_combined			= !pSettings->line_exist(sect_name, "item_visual");
 	m_visual_name = m_model_combined ? pSettings->r_string(sect_name, "visual") : pSettings->r_string(sect_name, "item_visual");
 	m_model						 = PKinematics(::Render->model_Create(m_visual_name.c_str()));
+
+	if (IKinematicsAnimated* animated = m_model->dcast_PKinematicsAnimated())
+	{
+		animated->LL_SetInertialization(CCameraRig::HudInertialization());
+
+		const char* exclude = READ_IF_EXISTS(pSettings, r_string, sect_name, "inertialization_exclude_bones", READ_IF_EXISTS(pSettings, r_string, "camera_rig", "hud_inertialization_exclude_bones", nullptr));
+		if (exclude != nullptr)
+		{
+			string128 bone_name;
+			for (int i = 0, count = _GetItemCount(exclude); i < count; ++i)
+			{
+				const u16 bone = m_model->LL_BoneID(_GetItem(exclude, i, bone_name));
+				if (bone != BI_NONE)
+				{
+					animated->LL_SetInertializationBone(bone, false);
+				}
+			}
+		}
+	}
 
 	m_attach_place_idx = READ_IF_EXISTS(pSettings, r_u16, sect_name, "attach_place_idx", 0);
 
 	if (pSettings->line_exist(sect_name, "aim_bone_name"))
 		m_aim_bone_id = m_model->LL_BoneID(pSettings->r_string(sect_name, "aim_bone_name"));
+
+	m_aim_reload_motion = READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_reload_motion", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "aim_reload_motion", 1.f));
+	m_hud_mass = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "hud_mass", 1.f), 0.1f);
+	m_shot_variation = READ_IF_EXISTS(pSettings, r_float, sect_name, "shot_anim_variation", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "shot_anim_variation", 0.f));
+	m_shot_twist = READ_IF_EXISTS(pSettings, r_float, sect_name, "shot_anim_twist", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "shot_anim_twist", 0.f));
+	m_aim_shot_motion = READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_shot_motion", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "aim_shot_motion", 1.f));
+	m_idle_fade = READ_IF_EXISTS(pSettings, r_float, sect_name, "idle_fade", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "idle_fade", 0.f));
+	m_inertia_damping = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertia_damping", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "inertia_damping", 0.55f));
 
 	const char* left_ik_bone = READ_IF_EXISTS(pSettings, r_string, sect_name, "left_hand_ik_bone", READ_IF_EXISTS(pSettings, r_string, "camera_rig", "left_hand_ik_bone", nullptr));
 	if (!m_model_combined && left_ik_bone != nullptr)
@@ -837,9 +865,55 @@ void attachable_hud_item::load(const shared_str& sect_name)
 		ypr.mul(PI / 180.f);
 		m_left_ik_offset.setHPB(ypr.x, ypr.y, ypr.z);
 		m_left_ik_offset.c = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "left_hand_ik_pos", zero_vel);
+
+		m_left_grip_blend = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "left_hand_grip_blend", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "left_hand_grip_blend", 0.f)), 0.f);
+		m_left_grip_target = READ_IF_EXISTS(pSettings, r_string, sect_name, "left_hand_grip_target", READ_IF_EXISTS(pSettings, r_string, "camera_rig", "left_hand_grip_target", "anm_idle"));
+
+		const auto read_motions = [&](const char* key, xr_vector<shared_str>& list)
+		{
+			list.clear();
+			if (const char* motions = READ_IF_EXISTS(pSettings, r_string, sect_name, key, nullptr))
+			{
+				string128 motion;
+				for (int i = 0, count = _GetItemCount(motions); i < count; ++i)
+				{
+					list.emplace_back(_GetItem(motions, i, motion));
+				}
+			}
+		};
+
+		read_motions("left_hand_grip_motions", m_left_grip_motions);
+		read_motions("left_hand_grip_hand_motions", m_left_grip_hand_motions);
 	}
 
 	m_measures.load				(sect_name, m_model, m_model_combined);
+}
+
+static CBlend* hud_play_cycle(IKinematicsAnimated* ka, u16 part, MotionID motion, bool mix, float speed, float fade)
+{
+	CBlend* B = ka->PlayCycle(part, motion, mix || fade > 0.f);
+	if (B == nullptr)
+	{
+		return nullptr;
+	}
+
+	B->speed *= speed;
+	if (fade <= 0.f)
+	{
+		return B;
+	}
+
+	B->blendAccrue = 1.f / fade;
+	for (u32 i = 0, count = ka->LL_PartBlendsCount(part); i < count; i++)
+	{
+		CBlend* old = ka->LL_PartBlend(part, i);
+		if (old != nullptr && old != B && old->channel == B->channel)
+		{
+			old->blendFalloff = 1.f / fade;
+		}
+	}
+
+	return B;
 }
 
 void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType bMixIn, float speed, player_hud_motion* anm)
@@ -890,9 +964,8 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType
 				continue;
 			}
 
-			CBlend* B = ka->PlayCycle(pid, M2, bMixIn > EHudMixType::eMixHands);
+			CBlend* B = hud_play_cycle(ka, pid, M2, bMixIn > EHudMixType::eMixHands, speed, m_parent->m_cycle_fade);
 			R_ASSERT(B);
-			B->speed *= speed;
 		}
 
 		m_model->CalculateBones_Invalidate();
@@ -977,9 +1050,11 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 
 	bool need_mix_hands = bMixIn >= EHudMixType::eMixHands;
 
+	const bool idle = strstr(anm_name_b.c_str(), "anm_idle") == anm_name_b.c_str();
+	g_player_hud->m_cycle_fade = idle && CCameraRig::Enabled() ? m_idle_fade : 0.f;
+
 	IKinematicsAnimated* kaModel = m_model_combined ? m_model->dcast_PKinematicsAnimated() : nullptr;
-	u32 ret = g_player_hud->anim_play(m_attach_place_idx, M.mid, need_mix_hands, md, speed, kaModel);
-	
+	u32 ret = g_player_hud->anim_play(m_attach_place_idx, M.mid, need_mix_hands, md, speed, kaModel);	
 	if(m_model->dcast_PKinematicsAnimated() != nullptr)
 	{
 		shared_str item_anm_name;
@@ -991,10 +1066,10 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 		anim_play(item_anm_name, bMixIn, speed, anm);
 	}
 
+	g_player_hud->m_cycle_fade = 0.f;
+
 	R_ASSERT2		(m_parent_hud_item, "parent hud item is nullptr");
 	CPhysicItem&	parent_object = m_parent_hud_item->object();
-	//R_ASSERT2		(parent_object, "object has no parent actor");
-	//CObject*		parent_object = static_cast_checked<CObject*>(&m_parent_hud_item->object());
 
 	if (IsGameTypeSingle() && parent_object.H_Parent() == Level().CurrentControlEntity())
 	{
@@ -1408,6 +1483,23 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 
 	const SHudJitterParams& jitter = itm->GetCurJitterParams();
 
+	const bool spring = CCameraRig::Enabled() && !actor->SuicideNow && !actor->PlanningSuicide;
+	const auto spring_step = [this](Fvector& offset, Fvector& velocity, float speed)
+	{
+		constexpr float step = 0.008f;
+		const float omega = std::min(speed / step * CCameraRig::MassSpeed(m_hud_mass), 1.5f / step);
+		Fvector accel;
+		accel.mul(offset, omega * omega).mad(velocity, -2.f * m_inertia_damping * omega);
+		velocity.mad(accel, step);
+		offset.mul(velocity, step);
+	};
+
+	if (!spring)
+	{
+		m_inertia_vel_pos.set(0.f, 0.f, 0.f);
+		m_inertia_vel_rot.set(0.f, 0.f, 0.f);
+	}
+
 	while (time_accumulator > 8)
 	{
 		pos = targetpos;
@@ -1430,6 +1522,11 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 			{
 				rot.set_length(speed_rot);
 			}
+		}
+		else if (spring)
+		{
+			spring_step(pos, m_inertia_vel_pos, speed_pos);
+			spring_step(rot, m_inertia_vel_rot, speed_rot);
 		}
 		else
 		{
@@ -1509,12 +1606,10 @@ player_hud::player_hud(bool invert)
 	m_legs_model = nullptr;
 	m_watch_device = new CWatchDevice();
 
-	//Bone Callback Params
 	m_bone_callback_params.emplace(r_finger0,  new BoneCallbackParams());
 	m_bone_callback_params.emplace(r_finger01, new BoneCallbackParams());
 	m_bone_callback_params.emplace(r_finger02, new BoneCallbackParams());
 
-	//Movement Layers
 	if (!pSettings->section_exist("hud_movement_layers"))
 	{
 		return;
@@ -1620,6 +1715,11 @@ void player_hud::load(const shared_str& player_hud_sect)
 	{
 		auto CreatedModel = ::Render->model_Create(model_name.c_str());
 		m_model = dynamic_cast<IKinematicsAnimated*>(CreatedModel);
+	}
+
+	if (m_model)
+	{
+		m_model->LL_SetInertialization(CCameraRig::HudInertialization());
 	}
 
 	if (m_model)
@@ -1951,6 +2051,18 @@ void angle_inertion(Fvector& c_hpb, const Fvector& t_hpb, float speed)
 	c_hpb.x = angle_inertion(c_hpb.x, t_hpb.x, speed, PI, Device.fTimeDelta);
 }
 
+static Fmatrix scale_layer_offset(const Fmatrix& offset, float factor)
+{
+	Fvector rotation;
+	offset.getXYZ(rotation);
+	rotation.mul(factor);
+
+	Fmatrix result;
+	result.setXYZ(rotation);
+	result.translate_over(Fvector().mul(offset.c, factor));
+	return result;
+}
+
 void player_hud::update(const Fmatrix& cam_trans)
 {
 	if(!m_attached_items[0] && !m_attached_items[1] && !m_animator_item)
@@ -1962,8 +2074,19 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 	Fmatrix trans = cam_trans;
 	update_inertion(trans);
+	Fvector turn_offset = Fvector().sub(trans.c, cam_trans.c);
+
+	const float turn_smooth = CCameraRig::TurnSwaySmooth();
+	if (turn_smooth > 0.f)
+	{
+		const Fvector local = { turn_offset.dotproduct(cam_trans.i), turn_offset.dotproduct(cam_trans.j), turn_offset.dotproduct(cam_trans.k) };
+		m_turn_offset.lerp(m_turn_offset, local, 1.f - expf(-Device.fTimeDelta / turn_smooth));
+		turn_offset.set(0.f, 0.f, 0.f).mad(cam_trans.i, m_turn_offset.x).mad(cam_trans.j, m_turn_offset.y).mad(cam_trans.k, m_turn_offset.z);
+		trans.c.add(cam_trans.c, turn_offset);
+	}
 
 	CActor* actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
+	const Fmatrix trans_turn = trans;
 	if (actor != nullptr)
 	{
 		actor->Cameras().Rig().ApplyHud(trans);
@@ -1977,7 +2100,11 @@ void player_hud::update(const Fmatrix& cam_trans)
 		}
 	}
 
+	const float ik_share = CCameraRig::HudIkShare();
+	m_layers_ik = ik_share > 0.f && actor != nullptr && m_attached_items[0] != nullptr && !m_attached_items[0]->m_model_combined && m_attached_items[1] == nullptr && m_animator_item == nullptr && m_right_ik_chain[2] != BI_NONE;
+
 	Fmatrix trans_2 = trans;
+	const Fmatrix trans_rig = trans;
 
 	if (m_animator_item)
 	{
@@ -2004,7 +2131,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 	}
 
 	{
-		m_attach_offsetr.setHPB(VPUSH(Fvector(attach_rot()).mul(PI / 180.0f)));//generate and set Euler angles
+		m_attach_offsetr.setHPB(VPUSH(Fvector(attach_rot()).mul(PI / 180.0f)));
 		m_attach_offsetr.c.set(attach_pos());
 		m_transform.mul(trans, m_attach_offsetr);
 	}
@@ -2013,10 +2140,13 @@ void player_hud::update(const Fmatrix& cam_trans)
 		bool left_hand_active = m_attached_items[1];
 
 		Fmatrix attach_offset;
-		attach_offset.setHPB(VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.f)));//generate and set Euler angles
+		attach_offset.setHPB(VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.f)));
 		attach_offset.c.set(left_hand_active ? m_attached_items[1]->hands_attach_pos() : attach_pos());
 		m_transformL.mul(trans_2, m_attach_offsetl.set(attach_offset));
 	}
+
+	Fmatrix script_layers = Fidentity;
+	Fmatrix movement_layers = Fidentity;
 
 	for (script_layer* anm : m_script_layers)
 	{
@@ -2060,6 +2190,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		if (anm->part == 0 || anm->part == 2)
 		{
 			m_transform.mulB_43(anm->XFORM());
+			script_layers.mulB_43(anm->XFORM());
 		}
 		
 		if (anm->part == 1 || anm->part == 2)
@@ -2099,6 +2230,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 			anm->anim->Update(Device.fTimeDelta);
 			m_transform.mulB_43(anm->XFORM());
 			m_transformL.mulB_43(anm->XFORM());
+			movement_layers.mulB_43(anm->XFORM());
 		}
 		else
 		{
@@ -2109,12 +2241,64 @@ void player_hud::update(const Fmatrix& cam_trans)
 		}
 	}
 
-	if ((m_model && (m_attached_items[0] && !m_attached_items[0]->m_model_combined || m_attached_items[1])) || (m_animator_item && m_animator_item->IsPlaying))
+	if (m_layers_ik)
+	{
+		const hud_item_measures& measures = m_attached_items[0]->m_measures;
+		const Fvector& base_pos = measures.m_hands_positions.hands_offsets_tune[EHudOffsetAxis::eAxisPos][EHudOffsetType::eDefault];
+		const Fvector& base_rot = measures.m_hands_positions.hands_offsets_tune[EHudOffsetAxis::eAxisRot][EHudOffsetType::eDefault];
+
+		const Fvector rigid_rot = Fvector().lerp(attach_rot(), base_rot, ik_share).mul(PI / 180.f);
+		Fmatrix rigid_attach;
+		rigid_attach.setHPB(rigid_rot.x, rigid_rot.y, rigid_rot.z);
+		rigid_attach.c.lerp(attach_pos(), base_pos, ik_share);
+
+		const float rigid_share = 1.f - ik_share;
+		Fmatrix rigid = trans_turn;
+		rigid.c.mad(turn_offset, -ik_share);
+		rigid.mulB_43(scale_layer_offset(Fmatrix().mul_43(Fmatrix().invert(trans_turn), trans_rig), rigid_share));
+
+		attachable_hud_item* item = m_attached_items[0];
+		const Fmatrix collision_inv = Fmatrix().invert(item->m_collision_xform);
+		Fmatrix look_pre, look;
+		if (item->m_parent_hud_item->GetHudLookInertia(look_pre, look))
+		{
+			rigid.mulB_43(Fmatrix().mul_43(Fmatrix().invert(trans_rig), look_pre));
+			rigid.mulB_43(scale_layer_offset(look, rigid_share));
+			rigid.mulB_43(Fmatrix().mul_43(Fmatrix().invert(Fmatrix().mul_43(look_pre, look)), trans).mulB_43(collision_inv));
+		}
+		else
+		{
+			rigid.mulB_43(Fmatrix().mul_43(Fmatrix().invert(trans_rig), trans).mulB_43(collision_inv));
+		}
+
+		rigid.mulB_43(scale_layer_offset(item->m_collision_xform, rigid_share));
+		rigid.mulB_43(rigid_attach);
+		rigid.mulB_43(scale_layer_offset(script_layers, 1.f - ik_share));
+		rigid.mulB_43(scale_layer_offset(movement_layers, 1.f - ik_share));
+
+		m_layers_ik_offset.invert(rigid).mulB_43(m_transform);
+		m_transform.set(rigid);
+
+		m_transformL.set(rigid);
+	}
+
+	if ((m_model &&(m_attached_items[0] && !m_attached_items[0]->m_model_combined || m_attached_items[1])) || (m_animator_item && m_animator_item->IsPlaying))
 	{
 		m_model->UpdateTracks();
 		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 		m_model->dcast_PKinematics()->CalculateBones(true);
 	}
+
+	if(m_attached_items[0])
+		m_attached_items[0]->update(true);
+
+	if(m_attached_items[1])
+		m_attached_items[1]->update(true);
+
+	if (m_animator_item && m_animator_item->IsPlaying)
+		m_animator_item->update(true);
+
+	update_hands_ik(cam_trans, actor);
 
 	{
 		if (m_watches_bone != BI_NONE)
@@ -2152,21 +2336,162 @@ void player_hud::update(const Fmatrix& cam_trans)
 	{
 		m_watch_device->TurnOffHudLights();
 	}
+}
 
-	if(m_attached_items[0])
-		m_attached_items[0]->update(true);
+xr_vector<u16> player_hud::left_arm_blend_bones() const
+{
+	xr_vector<u16> bones;
+	if (m_model == nullptr || m_left_ik_chain[0] == BI_NONE || m_left_ik_chain[1] == BI_NONE)
+	{
+		return bones;
+	}
 
-	if(m_attached_items[1])
-		m_attached_items[1]->update(true);
+	IKinematics* kinematics = m_model->dcast_PKinematics();
+	const u16 clavicle = kinematics->LL_GetData(m_left_ik_chain[0]).GetParentID();
+	if (clavicle != BI_NONE && clavicle != kinematics->LL_GetBoneRoot())
+	{
+		bones.push_back(clavicle);
+	}
 
-	if (m_animator_item && m_animator_item->IsPlaying)
-		m_animator_item->update(true);
+	bones.push_back(m_left_ik_chain[0]);
+	bones.push_back(m_left_ik_chain[1]);
+	return bones;
+}
 
-	update_hands_ik(cam_trans, actor);
+u8 attachable_hud_item::left_grip_motion_mode(const shared_str& motion) const
+{
+	const auto matches = [&](const xr_vector<shared_str>& list)
+	{
+		for (const shared_str& name : list)
+		{
+			const size_t length = name.size();
+			if (length > 0 && name.c_str()[length - 1] == '*' ? strncmp(motion.c_str(), name.c_str(), length - 1) == 0 : motion == name)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	};
+
+	return matches(m_left_grip_hand_motions) ? 2 : matches(m_left_grip_motions) ? 1 : 0;
+}
+
+static float hud_motion_amount(IKinematicsAnimated* ka, MotionID motion)
+{
+	float amount = 0.f;
+	float total = 0.f;
+	for (u32 i = 0, count = ka->LL_PartBlendsCount(0); i < count; i++)
+	{
+		const CBlend* B = ka->LL_PartBlend(0, i);
+		if (B != nullptr && B->channel == 0)
+		{
+			total += B->blendAmount;
+			if (B->motionID == motion)
+			{
+				amount += B->blendAmount;
+			}
+		}
+	}
+
+	return total > EPS ? amount / total : 0.f;
+}
+
+static float hud_motion_time(IKinematicsAnimated* ka, MotionID motion)
+{
+	float time = -1.f;
+	float amount = -1.f;
+	for (u32 i = 0, count = ka->LL_PartBlendsCount(0); i < count; i++)
+	{
+		const CBlend* B = ka->LL_PartBlend(0, i);
+		if (B != nullptr && B->channel == 0 && B->motionID == motion && B->blendAmount > amount)
+		{
+			amount = B->blendAmount;
+			time = B->timeCurrent;
+		}
+	}
+
+	return time;
+}
+
+bool player_hud::left_grip_reference(attachable_hud_item* item)
+{
+	IKinematicsAnimated* weapon = item->m_model->dcast_PKinematicsAnimated();
+	player_hud_motion* anm = item->m_hand_motions.find_motion(item->m_left_grip_target);
+	if (m_model == nullptr || weapon == nullptr || anm == nullptr || anm->m_animations.empty() || m_left_ik_chain[2] == BI_NONE)
+	{
+		return false;
+	}
+
+	const motion_descr& M = anm->m_animations[0];
+	const shared_str& item_anim = anm->m_base_name != anm->m_additional_name ? anm->m_additional_name : M.name;
+	MotionID item_motion = weapon->ID_Cycle_Safe(item_anim);
+	if (!item_motion.valid())
+	{
+		item_motion = weapon->ID_Cycle_Safe("idle");
+	}
+
+	const float hands_time = std::max(hud_motion_time(m_model, M.mid), 0.f);
+	const float item_time = std::max(hud_motion_time(weapon, item_motion), 0.f);
+
+	Fmatrix ancor, wrist, grip_bone;
+	if (!m_model->LL_GetMotionBoneTransform(M.mid, hands_time, m_ancors[item->m_attach_place_idx], ancor)
+		|| !m_model->LL_GetMotionBoneTransform(M.mid, hands_time, m_left_ik_chain[2], wrist)
+		|| !weapon->LL_GetMotionBoneTransform(item_motion, item_time, item->m_left_ik_bone, grip_bone))
+	{
+		return false;
+	}
+
+	Fmatrix grip;
+	grip.mul_43(ancor, item->m_attach_offset).mulB_43(grip_bone);
+	item->m_left_grip_ref.mul_43(Fmatrix().invert(grip), wrist);
+	item->m_left_grip_ancor_ref.set(ancor);
+
+	item->m_left_grip_pose_ref.clear();
+	for (u16 bone : left_arm_subtree())
+	{
+		Fmatrix bone_ms, parent_ms;
+		if (!m_model->LL_GetMotionBoneTransform(M.mid, hands_time, bone, bone_ms) || !m_model->LL_GetMotionBoneTransform(M.mid, hands_time, m_model->dcast_PKinematics()->LL_GetData(bone).GetParentID(), parent_ms))
+		{
+			item->m_left_grip_pose_ref.clear();
+			break;
+		}
+
+		item->m_left_grip_pose_ref.push_back(Fquaternion().set(Fmatrix().mul_43(Fmatrix().invert(parent_ms), bone_ms)));
+	}
+
+	return true;
+}
+
+static float hud_cycle_progress(IKinematicsAnimated* ka)
+{
+	float progress = -1.f;
+	float amount = 0.f;
+	for (u32 i = 0, count = ka->LL_PartBlendsCount(0); i < count; i++)
+	{
+		const CBlend* B = ka->LL_PartBlend(0, i);
+		if (B != nullptr && B->channel == 0 && B->stop_at_end && B->blend_state() != CBlend::eFalloff && B->timeTotal > EPS && B->blendAmount >= amount)
+		{
+			amount = B->blendAmount;
+			progress = std::clamp(B->timeCurrent / B->timeTotal, 0.f, 1.f);
+		}
+	}
+
+	return progress;
 }
 
 void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 {
+	if (m_left_grip_snap_frame != u32(-1) && Device.dwFrame > m_left_grip_snap_frame && m_model != nullptr)
+	{
+		for (u16 bone : left_arm_subtree())
+		{
+			m_model->LL_SetInertializationBone(bone, true);
+		}
+
+		m_left_grip_snap_frame = u32(-1);
+	}
+
 	attachable_hud_item* item = m_attached_items[0];
 	IKinematics* model = m_model != nullptr ? m_model->dcast_PKinematics() : nullptr;
 	if (item == nullptr || item->m_model_combined || model == nullptr || actor == nullptr || !CCameraRig::Enabled())
@@ -2175,78 +2500,314 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		return;
 	}
 
-	const float lean = actor->Cameras().Rig().LeanCounter();
+	const u32 state = item->m_parent_hud_item->GetState();
+	bool active = m_attached_items[1] == nullptr && item->m_left_ik_bone != BI_NONE;
+	if (active)
+	{
+		active = state == CHUDState::eIdle || item->m_parent_hud_item->WpnCanShoot() && (state == CWeapon::eFire || state == CWeapon::eFire2);
+	}
+
+	m_left_ik_weight = std::clamp(m_left_ik_weight + (active ? Device.fTimeDelta : -Device.fTimeDelta) * 4.f, 0.f, 1.f);
+
+	const bool has_right = m_right_ik_chain[0] != BI_NONE && m_right_ik_chain[1] != BI_NONE && m_right_ik_chain[2] != BI_NONE;
+	const bool has_left = m_attached_items[1] == nullptr && m_left_ik_chain[0] != BI_NONE && m_left_ik_chain[1] != BI_NONE && m_left_ik_chain[2] != BI_NONE;
+	const bool has_grip = has_left && item->m_left_ik_bone != BI_NONE;
 	const u16 ancor = m_ancors[item->m_attach_place_idx];
-	if (!fis_zero(lean) && m_right_ik_chain[2] != BI_NONE)
+
+	CWeapon* weapon = item->m_parent_hud_item->cast_weapon();
+	const bool reload_state = weapon != nullptr && (state == CWeapon::eReload || state == CWeapon::eMisfire || state == CWeapon::eLightMis || state == CWeapon::eMagCheck
+		|| state == CWeapon::eLoadChamber || state == CWeapon::eUnloadChamber || state == CWeapon::eChamberCheck);
+	if (state == CHUDState::eIdle && m_aim_reload_weight <= 0.f && m_shot_weight <= 0.f)
+	{
+		m_aim_reload_ref.set(model->LL_GetTransform(ancor));
+	}
+
+	const bool aim_reload = reload_state && weapon->IsZoomed() && item->m_aim_reload_motion < 1.f;
+	const float aim_reload_blend = CCameraRig::AimReloadBlend();
+	m_aim_reload_weight = std::clamp(aim_reload_blend > 0.f ? m_aim_reload_weight + (aim_reload ? Device.fTimeDelta : -Device.fTimeDelta) / aim_reload_blend : (aim_reload ? 1.f : 0.f), 0.f, 1.f);
+
+	const bool firing = weapon != nullptr && (state == CWeapon::eFire || state == CWeapon::eFire2) && (item->m_shot_variation > 0.f || item->m_shot_twist > 0.f || item->m_aim_shot_motion < 1.f);
+	if (state == CHUDState::eIdle && m_shot_weight <= 0.f)
+	{
+		m_shot_ref.set(model->LL_GetTransform(ancor));
+	}
+
+	const float shot_blend = CCameraRig::ShotAnimBlend();
+	m_shot_weight = std::clamp(shot_blend > 0.f ? m_shot_weight + (firing ? Device.fTimeDelta : -Device.fTimeDelta) / shot_blend : (firing ? 1.f : 0.f), 0.f, 1.f);
+
+	const float lean = actor->Cameras().Rig().LeanCounter();
+	const bool move_weapon = has_right && (m_layers_ik || !fis_zero(lean) || m_aim_reload_weight > 0.f || m_shot_weight > 0.f);
+	if (!move_weapon && !(has_grip && (m_left_ik_weight > 0.f || item->m_left_grip_blend > 0.f)))
+	{
+		return;
+	}
+
+	Fmatrix delta = move_weapon && m_layers_ik ? m_layers_ik_offset : Fidentity;
+	if (move_weapon && m_aim_reload_weight > 0.f)
+	{
+		const Fmatrix& anim = model->LL_GetTransform(ancor);
+
+		if (reload_state)
+		{
+			const float progress = hud_cycle_progress(m_model);
+			const float tail = CCameraRig::AimReloadTail();
+			m_aim_reload_release = progress < 0.f || tail <= 0.f ? 1.f : std::clamp((1.f - progress) / tail, 0.f, 1.f);
+		}
+
+		const float release = m_aim_reload_release;
+		const float blend = m_aim_reload_weight * (release * release * (3.f - 2.f * release));
+		const float weight = blend * blend * (3.f - 2.f * blend);
+		const Fmatrix motion = Fmatrix().mul_43(Fmatrix().invert(m_aim_reload_ref), anim);
+		const Fmatrix damped = Fmatrix().mul_43(m_aim_reload_ref, scale_layer_offset(motion, lerp(1.f, item->m_aim_reload_motion, weight)));
+		delta.mulB_43(Fmatrix().mul_43(damped, Fmatrix().invert(anim)));
+	}
+
+	if (move_weapon && m_shot_weight > 0.f)
+	{
+		const Fmatrix& anim = model->LL_GetTransform(ancor);
+
+		if (firing)
+		{
+			const float progress = hud_cycle_progress(m_model);
+			const float tail = CCameraRig::ShotAnimTail();
+			m_shot_release = progress < 0.f || tail <= 0.f ? 1.f : std::clamp((1.f - progress) / tail, 0.f, 1.f);
+		}
+
+		const float blend = m_shot_weight * (m_shot_release * m_shot_release * (3.f - 2.f * m_shot_release));
+		const float weight = blend * blend * (3.f - 2.f * blend);
+		const Fmatrix motion = Fmatrix().mul_43(Fmatrix().invert(m_shot_ref), anim);
+
+		const float aim = lerp(1.f, item->m_aim_shot_motion, weapon->GetAimFactor());
+
+		Fvector rot;
+		motion.getXYZ(rot);
+		const float climb = rot.x;
+		rot.x *= lerp(1.f, m_shot_rot_scale.x * aim, weight);
+		rot.y = rot.y * lerp(1.f, m_shot_rot_scale.y * aim, weight) + climb * m_shot_twist.x * aim * weight;
+		rot.z = rot.z * lerp(1.f, m_shot_rot_scale.z * aim, weight) + climb * m_shot_twist.y * aim * weight;
+
+		Fvector pos = motion.c;
+		pos.x *= lerp(1.f, m_shot_pos_scale.x * aim, weight);
+		pos.y *= lerp(1.f, m_shot_pos_scale.y * aim, weight);
+		pos.z *= lerp(1.f, m_shot_pos_scale.z * aim, weight);
+
+		Fmatrix varied;
+		varied.setXYZ(rot);
+		varied.translate_over(pos);
+		delta.mulB_43(Fmatrix().mul_43(Fmatrix().mul_43(m_shot_ref, varied), Fmatrix().invert(anim)));
+	}
+
+	if (move_weapon && !fis_zero(lean))
 	{
 		Fvector axis;
 		Fmatrix().invert(m_transform).transform_dir(axis, cam_trans.k);
 		axis.normalize_safe();
 
 		const Fvector pivot = model->LL_GetTransform(ancor).c;
-		Fmatrix delta;
-		delta.rotation(axis, lean);
+		Fmatrix lean_delta;
+		lean_delta.rotation(axis, lean);
 		Fvector rotated;
-		delta.transform_dir(rotated, pivot);
-		delta.c.sub(pivot, rotated);
+		lean_delta.transform_dir(rotated, pivot);
+		lean_delta.c.sub(pivot, rotated);
+		delta.mulA_43(lean_delta);
+	}
 
-		const Fmatrix right_target = Fmatrix().mul_43(delta, model->LL_GetTransform(m_right_ik_chain[2]));
-		const Fmatrix left_target = Fmatrix().mul_43(delta, model->LL_GetTransform(m_left_ik_chain[2] != BI_NONE ? m_left_ik_chain[2] : ancor));
+	Fmatrix right_target = has_right ? Fmatrix().mul_43(delta, model->LL_GetTransform(m_right_ik_chain[2])) : Fidentity;
+	Fmatrix left_target = has_left ? Fmatrix().mul_43(delta, model->LL_GetTransform(m_left_ik_chain[2])) : Fidentity;
+	Fmatrix grip_target = left_target;
+	float grip_weight = m_left_ik_weight * m_left_ik_weight * (3.f - 2.f * m_left_ik_weight);
+	if (has_grip)
+	{
+		Fmatrix grip;
+		grip.mul_43(Fmatrix().invert(m_transform), Fmatrix().mul_43(item->m_item_transform, item->m_model->LL_GetTransform(item->m_left_ik_bone)));
+		grip.mulA_43(delta);
+		const Fmatrix animated = Fmatrix().mul_43(Fmatrix().invert(grip), left_target);
 
-		u16 bone = ancor;
-		while (bone != BI_NONE && bone != m_right_ik_chain[2])
+		const auto follow_grip = [&](bool snap)
 		{
-			bone = model->LL_GetData(bone).GetParentID();
+			const float follow = CCameraRig::LeftHandIkFollow();
+			if (snap || follow <= 0.f)
+			{
+				item->m_left_ik_offset.set(animated);
+				return;
+			}
+
+			const float factor = 1.f - expf(-Device.fTimeDelta / follow);
+			Fquaternion q_from, q_to, q_blend;
+			q_from.set(item->m_left_ik_offset);
+			q_to.set(animated);
+			q_blend.slerp(q_from, q_to, factor);
+
+			Fvector position;
+			position.lerp(item->m_left_ik_offset.c, animated.c, factor);
+			item->m_left_ik_offset.rotation(q_blend);
+			item->m_left_ik_offset.c = position;
+		};
+
+		if (item->m_left_grip_blend > 0.f)
+		{
+			if (!item->m_left_grip_ref_tried)
+			{
+				item->m_left_grip_ref_tried = true;
+				item->m_left_grip_ref_valid = left_grip_reference(item);
+			}
+			else if (item->m_left_grip_ref_valid && (m_left_grip_reaching || m_left_grip_weight > 0.f || m_left_grip_hold > 0.f))
+			{
+				left_grip_reference(item);
+			}
+
+			if (!item->m_left_grip_ref_valid)
+			{
+				m_left_grip_reaching = false;
+			}
+
+			const bool hold = m_left_grip_hold > 0.f && item->m_left_grip_ref_valid;
+			m_left_grip_hold = std::max(m_left_grip_hold - Device.fTimeDelta, 0.f);
+
+			const float release_time = m_left_grip_release_by_mark ? item->m_left_grip_blend : std::max(CCameraRig::HudInertialization(), 0.2f);
+			m_left_grip_weight = m_left_grip_reaching || hold
+				? std::min(m_left_grip_weight + Device.fTimeDelta / item->m_left_grip_blend, 1.f)
+				: std::max(m_left_grip_weight - Device.fTimeDelta / release_time, 0.f);
+			grip_weight = m_left_grip_weight * m_left_grip_weight * (3.f - 2.f * m_left_grip_weight);
+
+			float arm_target = 1.f;
+			if (m_left_grip_hand_only)
+			{
+				const Fmatrix& current = model->LL_GetTransform(ancor);
+				Fquaternion q_current, q_idle;
+				q_current.set(current);
+				q_idle.set(item->m_left_grip_ancor_ref);
+				const float dot = std::min(std::abs(q_current.x * q_idle.x + q_current.y * q_idle.y + q_current.z * q_idle.z + q_current.w * q_idle.w), 1.f);
+				const float deviation = std::max(current.c.distance_to(item->m_left_grip_ancor_ref.c) / 0.1f, 2.f * acosf(dot) / deg2rad(30.f));
+				arm_target = std::clamp((1.f - deviation) / 0.7f, 0.f, 1.f);
+			}
+
+			m_left_grip_arm_weight = m_left_grip_weight <= 0.f ? arm_target
+				: m_left_grip_arm_weight + std::clamp(arm_target - m_left_grip_arm_weight, -Device.fTimeDelta / item->m_left_grip_blend, Device.fTimeDelta / item->m_left_grip_blend);
+			grip_target.mul_43(grip, item->m_left_grip_ref);
+		}
+		else
+		{
+			if (active && !item->m_left_ik_fixed)
+			{
+				follow_grip(m_left_ik_weight < 1.f);
+			}
+
+			grip_target.mul_43(grip, item->m_left_ik_offset);
+		}
+	}
+
+	Fvector shift = zero_vel;
+	const auto reach = [&](const u16* chain, const Fvector& target)
+	{
+		const Fvector root = model->LL_GetTransform(chain[0]).c;
+		const float length = (root.distance_to(model->LL_GetTransform(chain[1]).c) + model->LL_GetTransform(chain[1]).c.distance_to(model->LL_GetTransform(chain[2]).c)) * 0.995f;
+		const Fvector dir = Fvector().sub(target, root).sub(shift);
+		const float distance = dir.magnitude();
+		if (distance > length)
+		{
+			shift.mad(dir, 1.f - length / distance);
+		}
+	};
+
+	const Fvector left_goal = Fvector().lerp(left_target.c, grip_target.c, has_grip ? grip_weight : 0.f);
+	for (int i = 0; i < 4; i++)
+	{
+		if (has_right)
+		{
+			reach(m_right_ik_chain, right_target.c);
 		}
 
-		if (bone == BI_NONE)
+		if (has_left)
 		{
-			CCameraRig::TransformBone(model, ancor, delta);
+			reach(m_left_ik_chain, left_goal);
 		}
+	}
 
+	if (shift.square_magnitude() > EPS_S)
+	{
+		Fvector world_shift;
+		m_transform.transform_dir(world_shift, shift);
+		m_transform.c.add(world_shift);
+		right_target.c.sub(shift);
+		left_target.c.sub(shift);
+		grip_target.c.sub(shift);
+		delta.mulA_43(Fmatrix().translate(Fvector().invert(shift)));
+	}
+
+	u16 bone = ancor;
+	while (bone != BI_NONE && bone != m_right_ik_chain[2])
+	{
+		bone = model->LL_GetData(bone).GetParentID();
+	}
+
+	if (bone == BI_NONE || !has_right)
+	{
+		CCameraRig::TransformBone(model, ancor, delta);
+	}
+
+	if (has_right)
+	{
 		CCameraRig::SolveLimb(model, m_right_ik_chain, right_target, 1.f);
-		if (m_attached_items[1] == nullptr)
+	}
+
+	if (has_left)
+	{
+		const auto blend_local = [&](u16 bone, const Fquaternion& target, float weight)
+		{
+			const Fmatrix parent = model->LL_GetTransform(model->LL_GetData(bone).GetParentID());
+			const Fmatrix bone_ms = model->LL_GetTransform(bone);
+			const Fmatrix local = Fmatrix().mul_43(Fmatrix().invert(parent), bone_ms);
+
+			Fquaternion anim, result;
+			anim.set(local);
+			result.slerp(anim, target, weight);
+
+			Fmatrix new_local;
+			new_local.rotation(result);
+			new_local.c = local.c;
+			const Fmatrix new_ms = Fmatrix().mul_43(parent, new_local);
+			CCameraRig::TransformBone(model, bone, Fmatrix().mul_43(new_ms, Fmatrix().invert(bone_ms)));
+		};
+
+		const bool grip_pose = has_grip && item->m_left_grip_blend > 0.f && item->m_left_grip_ref_valid && grip_weight > 0.f;
+
+		const xr_vector<u16> arm_bones = left_arm_subtree();
+		if (grip_pose && item->m_left_grip_pose_ref.size() == arm_bones.size())
+		{
+			const xr_vector<u16> upper_bones = left_arm_blend_bones();
+			const float arm = m_left_grip_arm_weight * m_left_grip_arm_weight * (3.f - 2.f * m_left_grip_arm_weight);
+			for (size_t i = 0; i < arm_bones.size(); ++i)
+			{
+				const bool upper = std::find(upper_bones.begin(), upper_bones.end(), arm_bones[i]) != upper_bones.end();
+				blend_local(arm_bones[i], item->m_left_grip_pose_ref[i], upper ? grip_weight * arm : grip_weight);
+			}
+
+			Fquaternion q_anim, q_grip, q_blend;
+			q_anim.set(left_target);
+			q_grip.set(grip_target);
+			q_blend.slerp(q_anim, q_grip, grip_weight);
+
+			Fmatrix target;
+			target.rotation(q_blend);
+			target.c.lerp(left_target.c, grip_target.c, grip_weight);
+			CCameraRig::SolveLimb(model, m_left_ik_chain, target, 1.f);
+		}
+		else
 		{
 			CCameraRig::SolveLimb(model, m_left_ik_chain, left_target, 1.f);
+			if (has_grip && grip_weight > 0.f)
+			{
+				CCameraRig::SolveLimb(model, m_left_ik_chain, grip_target, grip_weight);
+			}
 		}
-
-		item->update(true);
 	}
 
-	bool active = m_attached_items[1] == nullptr && item->m_left_ik_bone != BI_NONE;
-	if (active)
-	{
-		const u32 state = item->m_parent_hud_item->GetState();
-		active = state == CHUDState::eIdle || item->m_parent_hud_item->WpnCanShoot() && (state == CWeapon::eFire || state == CWeapon::eFire2);
-	}
-
-	m_left_ik_weight = std::clamp(m_left_ik_weight + (active ? Device.fTimeDelta : -Device.fTimeDelta) * 4.f, 0.f, 1.f);
-	if (item->m_left_ik_bone == BI_NONE || m_left_ik_chain[2] == BI_NONE)
-	{
-		return;
-	}
-
-	Fmatrix grip;
-	grip.mul_43(item->m_item_transform, item->m_model->LL_GetTransform(item->m_left_ik_bone));
-	if (active && m_left_ik_weight < 1.f && !item->m_left_ik_fixed)
-	{
-		item->m_left_ik_offset.invert(grip).mulB_43(Fmatrix().mul_43(m_transform, model->LL_GetTransform(m_left_ik_chain[2])));
-	}
-
-	if (m_left_ik_weight > 0.f)
-	{
-		grip.mulB_43(item->m_left_ik_offset);
-		CCameraRig::SolveLimb(model, m_left_ik_chain, Fmatrix().mul_43(Fmatrix().invert(m_transform), grip), m_left_ik_weight * m_left_ik_weight * (3.f - 2.f * m_left_ik_weight));
-	}
+	item->update(true);
 }
 
 u32 player_hud::anim_play(u16 part, const MotionID& M, bool bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* model)
 {
-	///partitions info
-	// 0==default (root_bone)
-	// 1==left_hand (left hand bone hierarchy)
-	// 2==right_hand (right hand bone hierarchy)
-	// please append new bone parts for more realistic behavior of animations
 	IKinematicsAnimated* itemModel = model;
 
 	if (!itemModel && m_model)
@@ -2257,7 +2818,7 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, bool bMixIn, const CMotio
 		u16 part_id = u16(-1);
 		if (attached_item(0) && attached_item(1))
 		{
-			disable_root_part = part == 1; // if we run the animation for the left hand, we don't include the animation for the root bone (only if attached_item 1 active).
+			disable_root_part = part == 1;
 			part_id = m_model->partitions().part_id((part == 0) ? "right_hand" : "left_hand");
 		}
 
@@ -2276,10 +2837,7 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, bool bMixIn, const CMotio
 					continue;
 				}
 
-				if (CBlend* B = m_model->PlayCycle(pid, M, part == 0 && pid == 0 && attached_item(1) ? true : bMixIn))
-				{
-					B->speed *= speed;
-				}
+				hud_play_cycle(m_model, pid, M, part == 0 && pid == 0 && attached_item(1) ? true : bMixIn, speed, m_cycle_fade);
 			}
 		}
 
@@ -2303,11 +2861,9 @@ void player_hud::update_inertion(Fmatrix& trans)
 
 		static Fvector						st_last_dir={0,0,0};
 
-		// calc difference
 		Fvector								diff_dir;
 		diff_dir.sub						(xform.k, st_last_dir);
 
-		// clamp by PI_DIV_2
 		Fvector last;						last.normalize_safe(st_last_dir);
 		float dot							= last.dotproduct(xform.k);
 		if (dot<EPS){
@@ -2317,11 +2873,9 @@ void player_hud::update_inertion(Fmatrix& trans)
 			diff_dir.sub					(xform.k, st_last_dir);
 		}
 
-		// tend to forward
 		st_last_dir.mad						(diff_dir, inertion.TendtoSpeed*Device.fTimeDelta);
 		origin.mad							(diff_dir, inertion.OriginOffset);
 
-		// pitch compensation
 		float pitch							= angle_normalize_signed(xform.k.getP());
 		origin.mad							(xform.k,	-pitch * inertion.PitchOffsetD);
 		origin.mad							(xform.i,	-pitch * inertion.PitchOffsetR);
@@ -2356,6 +2910,119 @@ void player_hud::UpdateWeaponOffset(u32 delta)
 	{
 		item->UpdateInertion(delta, actor);
 	}
+}
+
+void player_hud::OnHudMotionStarted(const shared_str& motion)
+{
+	if (m_left_grip_weight > 0.f && m_model != nullptr && strstr(motion.c_str(), "anm_idle") == motion.c_str())
+	{
+		for (u16 bone : left_arm_subtree())
+		{
+			m_model->LL_SetInertializationBone(bone, false);
+		}
+
+		m_left_grip_snap_frame = Device.dwFrame;
+
+		const attachable_hud_item* item = m_attached_items[0];
+		const float arm_return = item != nullptr ? (1.f - m_left_grip_arm_weight) * item->m_left_grip_blend : 0.f;
+		m_left_grip_hold = CCameraRig::HudInertialization() > 0.f ? 0.f : std::max(std::max(item != nullptr ? item->m_idle_fade : 0.f, 0.3f), arm_return) + 0.05f;
+	}
+	else
+	{
+		m_left_grip_hold = 0.f;
+	}
+
+	attachable_hud_item* item = m_attached_items[0];
+	const u8 mode = item != nullptr && item->m_left_grip_blend > 0.f && CCameraRig::Enabled() ? item->left_grip_motion_mode(motion) : 0;
+	m_left_grip_reaching = mode != 0;
+	m_left_grip_hand_only = mode == 2;
+	m_left_grip_release_by_mark = false;
+
+	if (item == nullptr || item->m_left_grip_blend <= 0.f || !CCameraRig::Enabled() || m_model == nullptr)
+	{
+		return;
+	}
+
+	bool shown = m_left_grip_weight >= 1.f;
+	if (!shown)
+	{
+		const player_hud_motion* anm = item->m_hand_motions.find_motion(item->m_left_grip_target);
+		shown = anm != nullptr && !anm->m_animations.empty() && hud_motion_amount(m_model, anm->m_animations[0].mid) >= 0.99f;
+	}
+
+	if (mode == 0 && shown)
+	{
+		if (const player_hud_motion* anm = item->m_hand_motions.find_motion(motion))
+		{
+			for (const motion_descr& descr : anm->m_animations)
+			{
+				const CMotionDef* def = m_model->LL_GetMotionDef(descr.mid);
+				if (def != nullptr && std::any_of(def->marks.begin(), def->marks.end(), [&](const motion_marks& mark) { return xr_strcmp(mark.name, HudGripMarks::End) == 0 && !mark.is_empty(); }))
+				{
+					m_left_grip_reaching = true;
+					m_left_grip_hold = 0.f;
+					break;
+				}
+			}
+		}
+	}
+
+	if (m_left_grip_reaching && shown)
+	{
+		m_left_grip_weight = 1.f;
+	}
+}
+
+xr_vector<u16> player_hud::left_arm_subtree() const
+{
+	xr_vector<u16> bones = left_arm_blend_bones();
+	if (bones.empty())
+	{
+		return bones;
+	}
+
+	IKinematics* kinematics = m_model->dcast_PKinematics();
+	bones.resize(1);
+	for (size_t i = 0; i < bones.size(); ++i)
+	{
+		for (CBoneData* child : kinematics->LL_GetData(bones[i]).children)
+		{
+			bones.push_back(child->GetSelfID());
+		}
+	}
+
+	return bones;
+}
+
+void player_hud::OnHudMotionMark(const attachable_hud_item* item, const shared_str& mark)
+{
+	if (item != nullptr && item == m_attached_items[0] && item->m_left_grip_blend > 0.f && CCameraRig::Enabled())
+	{
+		if (xr_strcmp(mark, HudGripMarks::Start) == 0)
+		{
+			m_left_grip_reaching = true;
+			m_left_grip_release_by_mark = false;
+		}
+		else if (xr_strcmp(mark, HudGripMarks::End) == 0)
+		{
+			m_left_grip_reaching = false;
+			m_left_grip_hold = 0.f;
+			m_left_grip_release_by_mark = true;
+		}
+	}
+}
+
+void player_hud::OnShotAnimation(const attachable_hud_item* item)
+{
+	if (item == nullptr || !CCameraRig::Enabled())
+	{
+		return;
+	}
+
+	const float variation = item->m_shot_variation;
+	m_shot_rot_scale.set(1.f + ::Random.randFs(variation), 1.f + ::Random.randFs(variation), 1.f + ::Random.randFs(variation));
+	m_shot_pos_scale.set(1.f + ::Random.randFs(variation), 1.f + ::Random.randFs(variation), 1.f + ::Random.randFs(variation));
+	m_shot_twist.set(::Random.randFs(item->m_shot_twist), ::Random.randFs(item->m_shot_twist));
 }
 
 attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
@@ -2465,7 +3132,7 @@ void player_hud::RestoreHandBlends(const char* ignored_part)
 		{
 			if(pid==part_id)
 				continue;
-			CBlend* B			= m_model->PlayCycle(pid, M, true);//this can destroy BR calling UpdateTracks !
+			CBlend* B			= m_model->PlayCycle(pid, M, true);
 			if( parallel_blend->blend_state() != CBlend::eFREE_SLOT )
 			{
 				u16 bop				= B->bone_or_part;
@@ -2838,14 +3505,14 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 	}
 
 	MotionID Motion;
-	if (place_idx < std::size(m_attached_items) && m_attached_items[place_idx]) /// ищем анимацию в библиотеке айтема на пример anm_show
+	if (place_idx < std::size(m_attached_items) && m_attached_items[place_idx])
 	{
 		if (m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name))
 		{
 			return true;
 		}
 	}
-	else // иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
+	else
 	{
 		Motion = m_model->ID_Cycle_Safe(anim_name);
 
@@ -2858,22 +3525,10 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 	return false;
 }
 
-//	HUD_HANDS_ANIMATOR
-//	anim_name название анимации
-//	place_idx индекс айтема 0 - оружие, 1 - детектор, любые другие значения заставят аниматор искать анимацию в библиотеке рук по прямым названиям
-//	part_id индекс бон парта 0 - default 1 - left_hand, 2 - right_hand, -1 - означает что будет взят бон парт назначенный в анимации, любые другие значения запустят анимацию для всех бонпартов
-//	bMixIn сглаживание с предыдущей анимацией
-//	speed множитель скорости анимации
-//	anm_idx индекс анимации из конфига худайтема
-//	impact_on_item запуск анимации на айтиме
-//	similar_check для того если нужно запретить запускать анимацию если она уже была запущена
-//	static void Callback статическая функция которая будет вызвана по завершению анимации
-//	void* CallbackParam параметр в который можно поместить что угодно
-//	UpdateCallbackType тип каллбека 0 - сработает по окончанию анимации 1 - будет срабатывать пока анимация не закончится
 bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 part_id, bool bMixIn, float speed, u8 anm_idx, bool impact_on_item, bool similar_check, PlayCallback Callback, LPVOID CallbackParam, bool UpdateCallbackType)
 {
 	MotionID motion;
-	if(place_idx < std::size(m_attached_items) && m_attached_items[place_idx])///ищем анимацию в библиотеке айтема на пример anm_show
+	if(place_idx < std::size(m_attached_items) && m_attached_items[place_idx])
 	{
 		player_hud_motion* anm = m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name);
 
@@ -2898,7 +3553,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 			Msg("! Animation [%s] not found in %s motion container!", *anim_name, m_attached_items[place_idx]->m_sect_name.c_str());
 		}
 	}
-	else//иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
+	else
 	{
 		if (m_model)
 		{
@@ -2913,7 +3568,6 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 
 	if (m_model)
 	{
-		// если играется анимация stop_at_end то не будем запускать
 		u16 pc = m_model->partitions().count();
 		for (u16 pid = 0; pid < pc; ++pid)
 		{
@@ -2937,7 +3591,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 			}
 		}
 	}
-	m_blocked_part_idx = part_id;//блокируем чтобы стандартные анимации не могли перебить запущенную
+	m_blocked_part_idx = part_id;
 
 	CBlend* B = nullptr;
 	if (m_model)
@@ -2948,7 +3602,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 			case 1:
 			case 2:
 			{
-				if (similar_check) // проверим на выбранном бон парте
+				if (similar_check)
 				{
 					u32 blends_count = m_model->LL_PartBlendsCount(part_id);
 					for (u32 blend_id = 0; blend_id < blends_count; ++blend_id)
@@ -2966,13 +3620,12 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 						}
 					}
 				}
-				// запустим на выбранном бон парте
 				B = m_model->PlayCycle(part_id, motion, bMixIn, Callback, CallbackParam);
 			}
 			break;
 			case u16(-1):
 			{
-				if (similar_check) // проверим на бон парте который указанв настройках анимации
+				if (similar_check)
 				{
 					CMotionDef* m_def = m_model->LL_GetMotionDef(motion);
 					u32 blends_count = m_model->LL_PartBlendsCount(m_def->bone_or_part);
@@ -2991,13 +3644,12 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 						}
 					}
 				}
-				// запустим для того бон парта который указан в настройках анимации
 				B = m_model->PlayCycle(motion, bMixIn, Callback, CallbackParam);
 			}
 			break;
 			default:
 			{
-				if (similar_check) // проверим на всех бон партах
+				if (similar_check)
 				{
 					u16 pc = m_model->partitions().count();
 					for (u16 pid = 0; pid < pc; ++pid)
@@ -3019,7 +3671,6 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 						}
 					}
 				}
-				// запустим на всех бон партах
 				B = m_model->PlayCycle(0, motion, bMixIn, Callback, CallbackParam);
 				B = m_model->PlayCycle(1, motion, bMixIn, Callback, CallbackParam);
 				B = m_model->PlayCycle(2, motion, bMixIn, Callback, CallbackParam);
@@ -3050,7 +3701,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u16 part_id, u8 anm_idx, float blendAccrue, float blendFalloff, float Speed, float Power)
 {
 	MotionID motion;
-	if(place_idx < std::size(m_attached_items) && m_attached_items[place_idx])///ищем анимацию относительно айтема на пример anm_show
+	if(place_idx < std::size(m_attached_items) && m_attached_items[place_idx])
 	{
 		player_hud_motion* anm = m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name);
 
@@ -3065,7 +3716,7 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 			Msg("! Animation [%s] not found in %s motion container!", *anim_name, m_attached_items[place_idx]->m_sect_name.c_str());
 		}
 	}
-	else//иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
+	else
 	{
 		motion = m_model->ID_Cycle_Safe(anim_name);
 
@@ -3081,19 +3732,19 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 		{
 			case 0:
 			case 1:
-			case 2://запустим на выбранном бонпарте
+			case 2:
 			{
 				auto bones_vec = m_model->partitions().part(part_id).bones;
 				for (u32 &it : bones_vec)
 					m_model->LL_PlayFX(it, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
 			}break;
-			case u16(-1)://запустим для того который указан в настройках анимации
+			case u16(-1):
 			{
 				auto bones_vec = m_model->partitions().part(m_def->bone_or_part).bones;
 				for (u32 &it : bones_vec)
 					m_model->LL_PlayFX(it, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
 			}break;
-			default://запустим на всех бон партах
+			default:
 			{
 				for (auto &[first,second] : *m_model->dcast_PKinematics()->LL_Bones())
 					m_model->LL_PlayFX(second, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
@@ -3313,7 +3964,6 @@ Fvector& animator_item::hands_attach_rot()
 void animator_item::setup_firedeps(firedeps& fd)
 {
 	update							(false);
-	// fire point&direction
 	if(m_has_fire_point)
 	{
 		if (m_fire_bone == BI_NONE)
@@ -3349,16 +3999,6 @@ void player_hud::FingerCallback(CBoneInstance* B)
 	Fvector& target = params->m_target;
 	Fvector& current = params->m_current;
 
-	//if (!target.similar(current))
-	//{
-	//	Fvector diff[2];
-	//	diff[0] = target;
-	//	diff[0].sub(current);
-	//	diff[0].mul(Device.fTimeDelta / .1f);
-	//	current.add(diff[0]);
-	//}
-	//else
-	//	current.set(target);
 
 	current = EulerYawPitchRollInertion(current, target, 1.0f, Device.fTimeDelta);
 

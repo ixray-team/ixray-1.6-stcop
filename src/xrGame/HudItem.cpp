@@ -399,7 +399,9 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 
 	const float fSpeed = lerp(HudDesc().BaseYPRParams.m_fHudInertiaSpeed, HudDesc().ZoomYPRParams.m_fHudInertiaSpeed, GetAimFactor());
 	Fvector inertia = { m_fHudYawInertia, m_fHudPitchInertia, m_fHudRollInertia };
-	if (CCameraRig::SpringSway(inertia, m_vHudInertiaVelocity, Fvector{ fYawTarget, fPitchTarget, fRollTarget }, fSpeed))
+	const attachable_hud_item* hi = HudItemData();
+	const float fMassSpeed = fSpeed * CCameraRig::MassSpeed(hi != nullptr ? hi->m_hud_mass : 1.f);
+	if (CCameraRig::SpringSway(inertia, m_vHudInertiaVelocity, Fvector{ fYawTarget, fPitchTarget, fRollTarget }, fMassSpeed))
 	{
 		m_fHudYawInertia = inertia.x;
 		m_fHudPitchInertia = inertia.y;
@@ -427,7 +429,22 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 	hud_inertia_r.rotateZ(m_fHudRollInertia);
 	hud_inertia.mulA_43(hud_inertia_r);
 
+	m_HudLookInertiaPre.set(trans);
+	m_HudLookInertia.set(hud_inertia);
+	m_HudLookInertiaFrame = Device.dwFrame;
 	trans.mulB_43(hud_inertia);
+}
+
+bool CHudItem::GetHudLookInertia(Fmatrix& pre, Fmatrix& xform) const
+{
+	if (m_HudLookInertiaFrame != Device.dwFrame)
+	{
+		return false;
+	}
+
+	pre.set(m_HudLookInertiaPre);
+	xform.set(m_HudLookInertia);
+	return true;
 }
 
 void CHudItem::UpdateCL()
@@ -676,6 +693,11 @@ u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, EHudMixType bMix
 
 	if (HudItemData())
 	{
+		if (g_player_hud != nullptr && HudItemData() == g_player_hud->attached_item(0))
+		{
+			g_player_hud->OnHudMotionStarted(motion_name);
+		}
+
 		return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, disableRandom);
 	}
 	else
@@ -1141,6 +1163,11 @@ void CHudItem::OnMotionMark(u8 state, const motion_marks& mark)
 	if (mark.name == "mm_unpend")
 	{
 		SetPending(false);
+	}
+
+	if (g_player_hud != nullptr)
+	{
+		g_player_hud->OnHudMotionMark(HudItemData(), mark.name);
 	}
 }
 

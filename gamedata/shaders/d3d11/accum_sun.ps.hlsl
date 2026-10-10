@@ -70,7 +70,9 @@ float4 main(PSInput I) : SV_Target
 	}
 	else
 	{
-		Light += SkinTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal, O.View) * O.SSS * O.Color;
+		const float HudSkinTranslucency = 0.35f;
+		float SkinScale = O.Depth < 0.02f ? HudSkinTranslucency : 1.0f;
+		Light += SkinTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal, O.View) * O.SSS * SkinScale * O.Color;
 	}
 
 	Light *= GammaToLinear(Shadow);

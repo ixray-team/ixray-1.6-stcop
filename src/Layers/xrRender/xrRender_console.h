@@ -25,6 +25,7 @@ extern ECORE_API	u32			ps_screenshot_format;//	=	0;
 extern ECORE_API	xr_token	screenshot_format_token[];
 
 extern ECORE_API	int			ps_r__LightSleepFrames;
+extern ECORE_API	int			g_AnimCubicInterpolation;
 extern ECORE_API float ps_r__tf_Mipbias;
 extern ECORE_API	float		ps_r__Detail_l_ambient;
 extern ECORE_API	float		ps_r__Detail_l_aniso;
