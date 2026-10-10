@@ -13,8 +13,8 @@ void _VertexStream::Create()
 {
 	DEV->Evict();
 
-	rsDVB_Size = 4096;
-
+	// rsDVB_Size is initialized in the constructor and only grows in Lock();
+	// resetting it here made the grow path recreate a 4MB buffer every time.
 	mSize = rsDVB_Size * 1024;
 
 	RHIBufferDesc bufferDesc;
@@ -42,17 +42,16 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 {
 	RHIMappedSubresource MappedSubRes;
 
-#ifdef DEBUG
-	VERIFY				(0==dbg_lock);
-	dbg_lock			++;
-#endif
-
 	// Ensure there is enough space in the VB for this data
+	R_ASSERT			(vl_Count && Stride);
 	u32	bytes_need		= vl_Count*Stride;
-	R_ASSERT2			((bytes_need<=mSize) && vl_Count, make_string<const char*>("bytes_need = %d, mSize = %d, vl_Count = %d", bytes_need, mSize, vl_Count));
-	if (bytes_need > mSize)
+	// +1 vertex: Lock() always skips one vertex slot (see vl_mPosition below)
+	if (bytes_need + Stride > mSize)
 	{
-		rsDVB_Size += rsDVB_Size;
+		while (bytes_need + Stride > rsDVB_Size * 1024)
+			rsDVB_Size += rsDVB_Size;
+
+		Msg("! DVB too small (need %u bytes), growing to %uK", bytes_need, rsDVB_Size);
 
 		reset_begin();
 		reset_end();
@@ -62,6 +61,13 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 				geom->vb = pVB;
 		}
 	}
+	R_ASSERT2			(bytes_need + Stride <= mSize, make_string<const char*>("bytes_need = %u, mSize = %u, vl_Count = %u", bytes_need, mSize, vl_Count));
+
+#ifdef DEBUG
+	VERIFY				(0==dbg_lock);
+	dbg_lock			++;
+#endif
+
 	// Vertex-local info
 	u32 vl_mSize		= mSize/Stride;
 	u32 vl_mPosition	= mPosition/Stride + 1;
@@ -120,6 +126,7 @@ void _VertexStream::reset_end()
 _VertexStream::_VertexStream()
 {
 	_clear();
+	rsDVB_Size = 4096;
 }
 
 void _VertexStream::_clear()
@@ -136,7 +143,7 @@ void _VertexStream::_clear()
 void _IndexStream::Create()
 {
 	DEV->Evict();
-	rsDIB_Size = 512u;
+	// rsDIB_Size is initialized in the constructor and only grows in Lock()
 	mSize = rsDIB_Size * 1024;
 
 	RHIBufferDesc bufferDesc;
@@ -168,10 +175,13 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
 	BYTE* pLockedData = nullptr;
 
 	// Ensure there is enough space in the VB for this data
-	R_ASSERT((2 * Count <= mSize) && Count);
+	R_ASSERT(Count);
 	if (2 * Count > mSize)
 	{
-		rsDIB_Size += rsDIB_Size;
+		while (2 * Count > rsDIB_Size * 1024)
+			rsDIB_Size += rsDIB_Size;
+
+		Msg("! DIB too small (need %u bytes), growing to %uK", 2 * Count, rsDIB_Size);
 
 		reset_begin();
 		reset_end();
@@ -181,6 +191,7 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
 				geom->ib = pIB;
 		}
 	}
+	R_ASSERT2(2 * Count <= mSize, make_string<const char*>("Count = %u, mSize = %u", Count, mSize));
 	// If either user forced us to flush,
 	// or there is not enough space for the index data,
 	// then flush the buffer contents
