@@ -2,7 +2,7 @@
 #include "SaveManager.h"
 #include "MemoryBuffer.h"
 
-CSaveManager::CSaveManager() 
+CSaveManager::CSaveManager()
 {
 	SetFlag(ESaveManagerFlagsGeneral::EUseStringOptimization, true);
 	SetFlag(ESaveManagerFlagsGeneral::EUseIntOptimization, true);
@@ -32,7 +32,7 @@ CSaveManager::CSaveManager()
 	InitFunc.operator()<5000, ESaveVariableType::t_s8, CSaveVariableS8>();
 	InitFunc.operator()<50000, ESaveVariableType::t_string, CSaveVariableString>();
 	InitFunc.operator()<10, ESaveVariableType::t_longstring, CSaveVariableStringLong>();
-	
+
 }
 
 void CSaveManager::SetFlag(ESaveManagerFlagsGeneral Flag, bool Value)
@@ -113,6 +113,7 @@ void CSaveManager::WriteSavedData(const SGameInfoFast& GameInfo, CSaveObjectSave
 		xr_delete(task);
 	} else
 	{
+		xrCriticalSectionGuard guard(_saveTasksMutex);
 		SaveTasks.push(task);
 	}
 }
@@ -127,7 +128,7 @@ void SSaveTask::WriteSavedDataImpl()
 	CompileData(Obj.get());
 	{
 		PROF_EVENT("CSaveManager::WriteHeader")
- 		Buffers.BufferHeader->Write(ESaveVariableType::t_chunk);
+		Buffers.BufferHeader->Write(ESaveVariableType::t_chunk);
 		Buffers.BufferHeader->Write(GameInfo.m_actor_health);
 		Buffers.BufferHeader->Write(GameInfo.m_game_time);
 		Buffers.BufferHeader->Write(GameInfo.m_level_id);
@@ -205,7 +206,7 @@ void SSaveTask::ConditionalWriteString(shared_str Value, CMemoryBuffer& buffer)
 
 void SSaveTask::ConditionalWriteBool(bool Value, CMemoryBuffer& buffer)
 {
-	if (CSaveManager::GetInstance().TestFlag(CSaveManager::CSaveManager::ESaveManagerFlagsGeneral::EUseBoolOptimization)) 
+	if (CSaveManager::GetInstance().TestFlag(CSaveManager::CSaveManager::ESaveManagerFlagsGeneral::EUseBoolOptimization))
 	{
 		BoolQueue->push(Value);
 		++BoolsNum;
@@ -230,6 +231,8 @@ void CSaveManager::ConditionalReadBool(IReader* stream, bool& Value)
 void CSaveManager::ReleaseSaveable(ISaveable* Elem)
 {
 	Elem->Clear();
+	// Async writers return elements while the game thread captures another save.
+	xrCriticalSectionGuard guard(_saveElementsMutex);
 	auto Storage = SaveElementsCache.find(Elem->GetVariableType());
 	if (!I_ASSERT_M(Storage != SaveElementsCache.end(), "Unable to access cached save element of type [%s]", magic_enum::enum_name(Elem->GetVariableType()).data()))
 	{
@@ -430,6 +433,7 @@ void SSaveTask::SMemoryBuffers::Clear() {
 
 SSaveTask* CSaveManager::PopSaveTask()
 {
+	xrCriticalSectionGuard guard(_saveTasksMutex);
 	if(SaveTasks.size())
 	{
 		auto task = SaveTasks.front();
