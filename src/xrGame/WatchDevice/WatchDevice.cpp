@@ -19,12 +19,6 @@
 
 namespace
 {
-const Fvector WorldNorth = {0.0f, 0.0f, 1.0f};
-
-const shared_str CompassModeNorth = "north";
-const shared_str CompassModeTarget = "target";
-const shared_str CompassNoTargetHide = "hide";
-
 bool IsAnomalyExcluded(CAnomalyZone* Zone, const SWatchAnomalySensor& Sensor, const xr_vector<xr_string>& Exclude)
 {
 	if (Sensor.ExcludeRadiation && Zone->cast_radioactive_zone())
@@ -355,10 +349,12 @@ void CWatchDevice::Load(const shared_str& RootSection)
 	}
 
 	LoadConfig(*pSettings, Section, false);
+	RefreshCompassSettings();
 	ApplyIndicatorMasters();
 
 	Loaded = true;
 	ApplyOverrideFromDisk();
+	RefreshCompassSettings();
 	ApplyConditionMasters();
 	UpdateDisplayFormats();
 	UpdateLightSchedule();
@@ -400,6 +396,7 @@ void CWatchDevice::ResetCompassRuntime()
 	State.CompassAngle = 0.0f;
 	State.CompassError = 0.0f;
 	State.TargetValid = false;
+	State.CompassSourceKind = EWatchCompassSourceKind::None;
 }
 
 void CWatchDevice::BindModel(IKinematics* NewModel)
@@ -568,30 +565,6 @@ void CWatchDevice::BoneCallbackCompass(CBoneInstance* Bone)
 	Bone->mTransform.mulB_43(Rotation);
 }
 
-bool CWatchDevice::WorldDirToCompassAngle(const Fvector& WorldDir, float& OutAngle) const
-{
-	if (!HasCompassBone())
-	{
-		return false;
-	}
-
-	Fvector Direction = WorldDir;
-	Direction.y = 0.0f;
-	if (Direction.square_magnitude() < EPS_L)
-	{
-		return false;
-	}
-
-	Direction.normalize();
-
-	const float TargetH = Direction.getH();
-	const float CameraH = Device.vCameraDirection.getH();
-	OutAngle = angle_normalize_signed(
-		-angle_difference_signed(TargetH, CameraH) + deg2rad(Config.Compass.AngleOffset)
-	);
-	return true;
-}
-
 void CWatchDevice::CommitCompassAngle(float Angle, bool ResetVelocity)
 {
 	Compass.Desired = Angle;
@@ -608,18 +581,6 @@ void CWatchDevice::SyncCompassState()
 {
 	State.CompassAngle = Compass.Angle;
 	State.CompassError = angle_difference_signed(Compass.Desired, Compass.Angle);
-}
-
-bool CWatchDevice::ApplyCompassWorldDir(const Fvector& WorldDir)
-{
-	float Angle = 0.0f;
-	if (!WorldDirToCompassAngle(WorldDir, Angle))
-	{
-		return false;
-	}
-
-	CommitCompassAngle(Angle, false);
-	return true;
 }
 
 bool CWatchDevice::SectionLooksLikeGravity(const shared_str& ZoneSection)
@@ -852,19 +813,155 @@ void CWatchDevice::SetCompassVisible(bool Visible)
 		return;
 	}
 
-	if (!!Model->LL_GetBoneVisible(BoneIds.Compass) == Visible)
+	const bool CompassVisible = !!Model->LL_GetBoneVisible(BoneIds.Compass);
+	if (CompassVisible != Visible)
+	{
+		Model->LL_SetBoneVisible(BoneIds.Compass, Visible, true);
+	}
+
+	if (BoneIds.CompassLight != BI_NONE)
+	{
+		const bool LightVisible = !!Model->LL_GetBoneVisible(BoneIds.CompassLight);
+		if (LightVisible != Visible)
+		{
+			Model->LL_SetBoneVisible(BoneIds.CompassLight, Visible, true);
+		}
+	}
+}
+
+static bool IsPointerKind(EWatchCompassSourceKind Kind)
+{
+	return Kind == EWatchCompassSourceKind::Story ||
+		Kind == EWatchCompassSourceKind::Additional ||
+		Kind == EWatchCompassSourceKind::UserNav;
+}
+
+// Angle of the pointer against the view direction. False when the direction is degenerate
+static bool WorldDirToCompassAngle(const Fvector& WorldDir, const Fmatrix& View, float OffsetRad, float& OutAngle)
+{
+	Fvector Direction = WorldDir;
+	Direction.y = 0.0f;
+	if (Direction.square_magnitude() < EPS_L)
+	{
+		return false;
+	}
+
+	Direction.normalize();
+	Fvector LocalDir;
+	View.transform_dir(LocalDir, Direction);
+	LocalDir.y = 0.0f;
+
+	// Looking straight along the axis leaves no horizontal component
+	if (LocalDir.square_magnitude() < EPS_L)
+	{
+		return false;
+	}
+
+	OutAngle = angle_normalize_signed(-LocalDir.getH() + OffsetRad);
+	return true;
+}
+
+static bool SampleMapLocation(CMapLocation* Location, EWatchCompassSourceKind Kind, SWatchCompassSample& Out)
+{
+	if (!Location || !Location->Update())
+	{
+		return false;
+	}
+
+	if (Location->GetLevelName() != Level().name())
+	{
+		return false;
+	}
+
+	CObject* Entity = Level().CurrentViewEntity();
+	if (!Entity)
+	{
+		Entity = Level().CurrentEntity();
+	}
+	if (!Entity)
+	{
+		return false;
+	}
+
+	Out.WorldDir.sub(Location->GetLastPosition(), Entity->Position());
+	Out.WorldDir.y = 0.0f;
+	Out.Kind = Kind;
+	Out.Valid = true;
+	return true;
+}
+
+void CWatchDevice::RefreshCompassSettings()
+{
+	const SWatchCompass& Source = Config.Compass;
+	SWatchCompassSettings& Settings = CompassSettings;
+	Settings = SWatchCompassSettings{};
+
+	// "target" is the old name of the quest mode
+	if (Source.Mode.equal("north"))
+	{
+		Settings.Mode = EWatchCompassMode::North;
+	}
+	else if (Source.Mode.equal("nav"))
+	{
+		Settings.Mode = EWatchCompassMode::Nav;
+	}
+
+	if (Source.NoTarget.equal("north"))
+	{
+		Settings.NoTarget = EWatchCompassNoTarget::North;
+	}
+
+	Settings.AngleOffsetRad = deg2rad(Source.AngleOffset);
+	Settings.Colors[u32(EWatchCompassSourceKind::North)] = WatchDetail::ConditionColorFromRgba(Source.NorthColor);
+	Settings.Colors[u32(EWatchCompassSourceKind::Story)] = WatchDetail::ConditionColorFromRgba(Source.StoryColor);
+	Settings.Colors[u32(EWatchCompassSourceKind::Additional)] = WatchDetail::ConditionColorFromRgba(Source.AdditionalColor);
+	Settings.Colors[u32(EWatchCompassSourceKind::UserNav)] = WatchDetail::ConditionColorFromRgba(Source.NavColor);
+}
+
+void CWatchDevice::SampleCompassTarget(SWatchCompassSample& Out) const
+{
+	if (CompassSettings.Mode == EWatchCompassMode::North)
+	{
+		Out.Valid = true;
+		Out.Kind = EWatchCompassSourceKind::North;
+		return;
+	}
+
+	if (!g_pGameLevel)
 	{
 		return;
 	}
 
-	Model->LL_SetBoneVisible(BoneIds.Compass, Visible, true);
+	CMapManager& MapManager = Level().MapManager();
+	if (CompassSettings.Mode == EWatchCompassMode::Nav && SampleMapLocation(MapManager.GetActiveUserNavigationLocation(), EWatchCompassSourceKind::UserNav, Out))
+	{
+		return;
+	}
+
+	const SQuestCompassTarget Target = MapManager.GetActiveQuestCompassTarget();
+	switch (Target.Type)
+	{
+		case eTaskTypeStoryline: SampleMapLocation(Target.Location, EWatchCompassSourceKind::Story, Out); break;
+		case eTaskTypeAdditional: SampleMapLocation(Target.Location, EWatchCompassSourceKind::Additional, Out); break;
+		default: break;
+	}
+}
+
+u32 CWatchDevice::CompassColorForKind(EWatchCompassSourceKind Kind) const
+{
+	if (Kind == EWatchCompassSourceKind::None)
+	{
+		return Ui ? Ui->GetGlowColor(EWatchGlow::Compass) : color_rgba(255, 30, 20, 255);
+	}
+	return CompassSettings.Colors[u32(Kind)];
 }
 
 void CWatchDevice::ApplyCompassNoTarget()
 {
 	State.TargetValid = false;
+	State.CompassSourceKind = EWatchCompassSourceKind::None;
 
-	if (Config.Compass.NoTarget.equal(CompassNoTargetHide))
+	if (CompassSettings.NoTarget == EWatchCompassNoTarget::Hide)
 	{
 		SetCompassVisible(false);
 		Compass.SpringActive = false;
@@ -873,67 +970,52 @@ void CWatchDevice::ApplyCompassNoTarget()
 		return;
 	}
 
+	// No target: show the north instead of hiding the pointer
 	SetCompassVisible(true);
-
-	if (Config.Compass.NoTarget.equal(CompassModeNorth))
-	{
-		ApplyCompassWorldDir(WorldNorth);
-		return;
-	}
-
-	Compass.Desired = Compass.Angle;
-	Compass.Velocity = 0.0f;
-	Compass.SpringActive = false;
-	SyncCompassState();
+	SWatchCompassSample Sample;
+	Sample.Valid = true;
+	Sample.Kind = EWatchCompassSourceKind::North;
+	ApplyCompassSample(Sample, false);
 }
 
-void CWatchDevice::UpdateCompassTarget()
+void CWatchDevice::ApplyCompassSample(const SWatchCompassSample& Sample, bool HadTarget)
 {
-	State.TargetValid = false;
-
-	if (!g_pGameLevel)
+	if (!Sample.Valid)
 	{
 		ApplyCompassNoTarget();
 		return;
 	}
 
-	CMapLocation* Location = Level().MapManager().GetActiveTaskCompassLocation();
-	if (!Location || !Location->Update())
+	const bool PointerTarget = IsPointerKind(Sample.Kind);
+
+	if (Sample.WorldDir.square_magnitude() < EPS_L)
+	{
+		// Standing on the target: keep the pointer where it is
+		if (HadTarget && PointerTarget)
+		{
+			SetCompassVisible(true);
+			State.TargetValid = true;
+			State.CompassSourceKind = Sample.Kind;
+			Compass.SpringActive = true;
+			SyncCompassState();
+			return;
+		}
+
+		ApplyCompassNoTarget();
+		return;
+	}
+
+	float Angle = 0.0f;
+	if (!WorldDirToCompassAngle(Sample.WorldDir, Device.mView, CompassSettings.AngleOffsetRad, Angle))
 	{
 		ApplyCompassNoTarget();
 		return;
 	}
 
-	if (Location->GetLevelName() != Level().name())
-	{
-		ApplyCompassNoTarget();
-		return;
-	}
-
-	CObject* Entity = Level().CurrentEntity();
-	if (!Entity)
-	{
-		ApplyCompassNoTarget();
-		return;
-	}
-
-	Fvector WorldDir;
-	WorldDir.sub(Location->GetLastPosition(), Entity->Position());
-	if (!ApplyCompassWorldDir(WorldDir))
-	{
-		ApplyCompassNoTarget();
-		return;
-	}
-
+	CommitCompassAngle(Angle, !HadTarget);
 	SetCompassVisible(true);
-	State.TargetValid = true;
-}
-
-void CWatchDevice::UpdateCompassNorth()
-{
-	State.TargetValid = false;
-	SetCompassVisible(true);
-	ApplyCompassWorldDir(WorldNorth);
+	State.TargetValid = PointerTarget;
+	State.CompassSourceKind = Sample.Kind;
 }
 
 void CWatchDevice::UpdateCompassSpring(float Dt)
@@ -974,35 +1056,35 @@ void CWatchDevice::UpdateCompass(float Dt)
 	if (!HasCompassBone())
 	{
 		State.TargetValid = false;
+		State.CompassSourceKind = EWatchCompassSourceKind::None;
 		Compass.SpringActive = false;
 		SyncCompassState();
 		return;
 	}
 
+	bool AllowChaos = false;
 	if (Preview.ForceAngle)
 	{
 		State.TargetValid = false;
+		State.CompassSourceKind = EWatchCompassSourceKind::None;
 		SetCompassVisible(true);
 		CommitCompassAngle(deg2rad(Preview.ForceAngleDeg), true);
 	}
-	else if (Config.Compass.Mode.equal(CompassModeNorth))
-	{
-		UpdateCompassNorth();
-	}
-	else if (Config.Compass.Mode.equal(CompassModeTarget))
-	{
-		UpdateCompassTarget();
-	}
 	else
 	{
-		State.TargetValid = false;
-		Compass.SpringActive = false;
+		const bool HadTarget = State.TargetValid;
+		SWatchCompassSample Sample;
+		SampleCompassTarget(Sample);
+		AllowChaos = CompassSettings.IsChaosEnabled();
+		ApplyCompassSample(Sample, HadTarget);
 	}
 
-	if (!UpdateCompassGravityChaos(Dt))
+	if (AllowChaos && UpdateCompassGravityChaos(Dt))
 	{
-		UpdateCompassSpring(Dt);
+		return;
 	}
+
+	UpdateCompassSpring(Dt);
 }
 
 void CWatchDevice::Update(float Dt)
@@ -1658,22 +1740,31 @@ bool CWatchDevice::RenderUIQuery() const
 
 void CWatchDevice::RenderUI(const Fmatrix& WatchesXform)
 {
-	Fmatrix UiXform;
-	UiXform.mul(WatchesXform, Model->LL_GetTransform(BoneIds.Display));
-	UiXform.mulB_43(UiOffset);
-	Ui->Render(UiXform);
+	Fmatrix DisplayXform;
+	DisplayXform.mul(WatchesXform, Model->LL_GetTransform(BoneIds.Display));
+	DisplayXform.mulB_43(UiOffset);
+	Ui->Render(DisplayXform);
 
-	RenderBoneGlow(EWatchGlow::Compass, BoneIds.CompassLight, Light.Offset, Config.Light.UiSize, State.Emission, WatchesXform);
+	const float CompassIntensity = State.TargetValid
+		? Config.Compass.TargetGlow * State.DisplayQuality
+		: State.Emission;
+	const u32 CompassColor = CompassColorForKind(State.CompassSourceKind);
+	RenderBoneGlow(
+		EWatchGlow::Compass,
+		BoneIds.CompassLight,
+		Light.Offset,
+		Config.Light.UiSize,
+		CompassIntensity,
+		CompassColor,
+		WatchesXform
+	);
 	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
 	{
-		RenderChannel(EWatchLedChannel(Index), WatchesXform);
+		RenderChannel(EWatchLedChannel(Index), WatchesXform, DisplayXform);
 	}
 
 	if (BoneIds.Display != BI_NONE)
 	{
-		Fmatrix DisplayXform;
-		DisplayXform.mul(WatchesXform, Model->LL_GetTransform(BoneIds.Display));
-		DisplayXform.mulB_43(UiOffset);
 		for (u32 Index = 0; Index < WatchConditionCount; ++Index)
 		{
 			RenderCondition(EWatchCondition(Index), DisplayXform);
@@ -1683,6 +1774,12 @@ void CWatchDevice::RenderUI(const Fmatrix& WatchesXform)
 
 void CWatchDevice::RenderBoneGlow(EWatchGlow Id, u16 Bone, const Fmatrix& Offset, const Fvector2& Size, float Intensity, const Fmatrix& WatchesXform)
 {
+	const u32 Color = Ui ? Ui->GetGlowColor(Id) : 0xFFFFFFFF;
+	RenderBoneGlow(Id, Bone, Offset, Size, Intensity, Color, WatchesXform);
+}
+
+void CWatchDevice::RenderBoneGlow(EWatchGlow Id, u16 Bone, const Fmatrix& Offset, const Fvector2& Size, float Intensity, u32 Color, const Fmatrix& WatchesXform)
+{
 	if (Intensity <= 0.0f || Bone == BI_NONE || !Model->LL_GetBoneVisible(Bone))
 	{
 		return;
@@ -1691,10 +1788,10 @@ void CWatchDevice::RenderBoneGlow(EWatchGlow Id, u16 Bone, const Fmatrix& Offset
 	Fmatrix GlowXform;
 	GlowXform.mul(WatchesXform, Model->LL_GetTransform(Bone));
 	GlowXform.mulB_43(Offset);
-	Ui->RenderGlow(Id, GlowXform, Size, Intensity);
+	Ui->RenderGlow(Id, GlowXform, Size, Intensity, Color);
 }
 
-void CWatchDevice::RenderChannel(EWatchLedChannel Channel, const Fmatrix& WatchesXform)
+void CWatchDevice::RenderChannel(EWatchLedChannel Channel, const Fmatrix& WatchesXform, const Fmatrix& DisplayXform)
 {
 	const SWatchChannelPresent& Present = Config.Present[u32(Channel)];
 	const SWatchLedRuntime& Led = Leds[u32(Channel)];
@@ -1725,9 +1822,7 @@ void CWatchDevice::RenderChannel(EWatchLedChannel Channel, const Fmatrix& Watche
 		return;
 	}
 
-	Fmatrix Xform;
-	Xform.mul(WatchesXform, Model->LL_GetTransform(BoneIds.Display));
-	Xform.mulB_43(UiOffset);
+	Fmatrix Xform = DisplayXform;
 	Xform.mulB_43(Led.Offset);
 	Ui->RenderGlow(Glow, Xform, Present.UiSize, Led.Value);
 }
@@ -1790,6 +1885,7 @@ void CWatchDevice::Revert()
 	}
 
 	Config = ConfigBaseline;
+	RefreshCompassSettings();
 	Preview = SWatchDebugPreview{};
 	UpdateDisplayFormats();
 	UpdateLightSchedule();

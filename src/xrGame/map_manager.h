@@ -1,10 +1,17 @@
 #pragma once
 #include "object_interfaces.h"
 #include "map_location_defs.h"
+#include "GameTaskDefs.h"
 
 class CMapLocationWrapper;
 class CInventoryOwner;
 class CMapLocation;
+
+struct SQuestCompassTarget
+{
+	CMapLocation* Location = nullptr;
+	ETaskType Type = eTaskTypeDummy;
+};
 
 class CMapManager
 {
@@ -28,6 +35,7 @@ public:
 	void					RemoveMapLocation			(CMapLocation* ml);
 	CMapLocation*			GetMapLocation				(const shared_str& spot_type, ALife::_OBJECT_ID id);
 	CMapLocation*			GetActiveTaskCompassLocation	();
+	SQuestCompassTarget		GetActiveQuestCompassTarget	();
 	CMapLocation*			GetActiveUserNavigationLocation();
 	void					SetActiveUserNavigationLocation(CMapLocation* ml);
 	void					ClearActiveUserNavigationLocation();
