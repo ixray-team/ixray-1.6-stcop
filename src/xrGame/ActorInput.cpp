@@ -122,16 +122,30 @@ void CActor::IR_OnKeyboardPress(int dik)
 	if (!g_Alive()) return;
 
 	auto bindRadial = get_binded_action(dik, agUIRadialWeapon);
+	auto bindAim = get_binded_action(dik, agAiming);
 	if(m_holder && kUSE != bind)
 	{
 		m_holder->OnKeyboardPress			(dik);
-		if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_START))		return;
+		if(m_holder->allowWeapon())
+		{
+			if (IsZoomAimingMode() && bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_START))
+				return;
+			if (inventory().Action(bindRadial == kNOTBINDED ? (u16)bind : (u16)bindRadial, CMD_START))
+				return;
+			if (bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_START))
+				return;
+		}
 		return;
 	}
 	else
 	{
+		if (IsZoomAimingMode() && bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_START))
+			return;
 
 		if (inventory().Action(bindRadial == kNOTBINDED ? (u16)bind : (u16)bindRadial, CMD_START))
+			return;
+
+		if (bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_START))
 			return;
 	}
 	if (IsWaunded)
@@ -380,16 +394,31 @@ void CActor::IR_OnKeyboardRelease(int dik)
 	if (g_Alive())	
 	{
 		auto bindRadial = get_binded_action(dik, agUIRadialWeapon);
+		auto bindAim = get_binded_action(dik, agAiming);
 		if(m_holder)
 		{
 			m_holder->OnKeyboardRelease(dik);
 			
-			if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_STOP))		return;
+			if(m_holder->allowWeapon())
+			{
+				if (IsZoomAimingMode() && bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_STOP))
+					return;
+				if (inventory().Action(bindRadial == kNOTBINDED ? (u16)bind : (u16)bindRadial, CMD_STOP))
+					return;
+				if (bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_STOP))
+					return;
+			}
 			return;
 		}
 		else
 		{
+			if (IsZoomAimingMode() && bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_STOP))
+				return;
+
 			if (inventory().Action(bindRadial == kNOTBINDED ? (u16)bind : (u16)bindRadial, CMD_STOP))
+				return;
+
+			if (bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_STOP))
 				return;
 		}
 
@@ -1179,6 +1208,8 @@ void CActor::IR_GamepadKeyPress(int id)
 			}
 			break;
 		}
+		case kBRIGHTNESS_PLUS:
+		case kBRIGHTNESS_MINUS:
 		case kWPN_ZOOM_INC:
 		case kWPN_ZOOM_DEC:
 		{
@@ -1221,14 +1252,28 @@ void CActor::IR_GamepadKeyRelease(int id)
 
 	if (g_Alive())	
 	{
+		EGameActions bindAim = get_binded_action(id, agAiming);
 		if(m_holder)
 		{
 			m_holder->OnGamepadKeyRelease(id);
 			
-			if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_STOP))		return;
+			if(m_holder->allowWeapon())
+			{
+				if (IsZoomAimingMode() && bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_STOP))
+					return;
+				if (inventory().Action((u16)bind, CMD_STOP))
+					return;
+				if (bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_STOP))
+					return;
+			}
 			return;
 		}else
+		{
+			if (IsZoomAimingMode() && bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_STOP))
+				return;
 			if(inventory().Action((u16)bind, CMD_STOP))		return;
+			if(bindAim != kNOTBINDED && inventory().Action((u16)bindAim, CMD_STOP))		return;
+		}
 
 
 
