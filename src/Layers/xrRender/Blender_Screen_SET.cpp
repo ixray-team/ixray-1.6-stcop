@@ -114,9 +114,9 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 
 		VERIFY(C.L_textures.size() > 0);
 		C.r_dx10Texture("s_base", C.L_textures[0]);
-		int iSmp = C.r_dx10Sampler("smp_base");
-		//if (oClamp.value)
-		//	C.i_Address(iSmp, D3DTADDRESS_CLAMP);
+		u32 iSmp = C.r_dx10Sampler("smp_base");
+		if (oClamp.value && (iSmp != u32(-1)))
+			C.i_Address(iSmp, D3DTADDRESS_CLAMP);
 
 	}
 	else
@@ -142,12 +142,12 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 
 		VERIFY(C.L_textures.size() > 0);
 		C.r_dx10Texture("s_base", C.L_textures[0]);
-		int iSmp = C.r_dx10Sampler("smp_base");
+		u32 iSmp = C.r_dx10Sampler("smp_base");
 #ifdef _EDITOR
 		C.r_Matrix(oT_xform);
 #endif
-		//if ((oClamp.value) && (iSmp != u32(-1)))
-		//	C.i_Address(iSmp, D3DTADDRESS_CLAMP);
+		if (oClamp.value && (iSmp != u32(-1)))
+			C.i_Address(iSmp, D3DTADDRESS_CLAMP);
 	}
 
 	C.PassSET_ZB(oZTest.value, oZWrite.value);
