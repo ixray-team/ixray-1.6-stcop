@@ -21,6 +21,7 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_image", r2_RT_generic);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
         C.r_dx10Texture("s_half_depth", r2_RT_half_depth);
+        C.r_dx10Texture("s_hiz", r2_RT_sslr_hiz);
 
         C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
         C.r_dx10Texture("s_env", r2_RT_env);
@@ -40,6 +41,8 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         break;
     case 1:
 		C.r_ComputePass("sslr_filter");
+
+        C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
 
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
@@ -100,6 +103,15 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_rtlinear");
         C.r_dx10Sampler("smp_nofilter");
 
+        C.r_End();
+        break;
+    case 4:
+        C.r_ComputePass("sslr_hiz_copy");
+        C.r_dx10Texture("s_position", r2_RT_P);
+        C.r_End();
+        break;
+    case 5:
+        C.r_ComputePass("sslr_hiz_reduce");
         C.r_End();
         break;
     }

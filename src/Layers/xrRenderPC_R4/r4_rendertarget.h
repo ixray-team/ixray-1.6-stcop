@@ -73,6 +73,7 @@ public:
 	ref_rt						rt_sslr_temp;
 	ref_rt						rt_sslr_old;
 	ref_rt						rt_sslr_data;
+	ref_rt						rt_sslr_hiz;
 
 	// MRT-path
 	ref_rt						rt_Generic;

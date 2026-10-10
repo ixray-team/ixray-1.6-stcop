@@ -30,6 +30,7 @@ public:
 	IRHIRenderTargetView* pRT;
 
 	xr_vector<IRHIRenderTargetView*> pMippedRT;
+	xr_vector<IRHIUnorderedAccessView*> pMippedUAV;
 	IRHIDepthStencilView* pZRT;
 	IRHIUnorderedAccessView* pUAView;
 
