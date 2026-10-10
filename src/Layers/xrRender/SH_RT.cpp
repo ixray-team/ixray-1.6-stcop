@@ -201,6 +201,18 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 				uavDesc.NumElements = dwWidth * dwHeight;
 
 				pUAView = GRHI->CreateUAV(pSurface, uavDesc);
+
+				if (CreationFlags & CRTCreationFlags::MIPPED_RT_FLAG)
+				{
+					pMippedUAV.resize(desc.MipLevels);
+					pMippedUAV[0] = pUAView; pUAView->AddRef();
+
+					for (u32 MipLevel = 1; MipLevel < desc.MipLevels; ++MipLevel)
+					{
+						uavDesc.MipSlice = MipLevel;
+						pMippedUAV[MipLevel] = GRHI->CreateUAV(pSurface, uavDesc);
+					}
+				}
 			}
 
 			pMippedRT.resize(0);
@@ -243,6 +255,13 @@ void CRT::destroy()
 	}
 
 	pMippedRT.clear();
+
+	for (IRHIUnorderedAccessView* MippedUAV : pMippedUAV)
+	{
+		_RELEASE(MippedUAV);
+	}
+
+	pMippedUAV.clear();
 }
 
 void CRT::reset_begin()

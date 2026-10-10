@@ -13,6 +13,56 @@ void CRenderTarget::phase_sslr()
 	const UINT tgroupsX = (RCache.get_width() + 7u) / 8u;
 	const UINT tgroupsY = (RCache.get_height() + 7u) / 8u;
 
+	// Min-Z pyramid for the hierarchical trace (Stachowiak, Stochastic SSR)
+	{
+		GPU_EVENT(sslr_hiz);
+
+		ID3D11UnorderedAccessView* uav_dummy[2] = { nullptr, nullptr };
+		UINT UAVInitialCounts[2] = { 1, 1 };
+
+		const xr_vector<IRHIUnorderedAccessView*>& MipUAVs = rt_sslr_hiz->pMippedUAV;
+
+		{
+			ShaderElement* S = &*(s_sslr->E[4]);
+			SPass& P = *(S->passes[0]);
+			RCache.set_States(P.state);
+			RCache.set_Constants(P.constants);
+			RCache.set_Textures(P.T);
+			RCache.set_CS(P.cs);
+
+			ID3D11UnorderedAccessView* MipUAV = reinterpret_cast<ID3D11UnorderedAccessView*>(MipUAVs[0]->GetRaw());
+			RContext->CSSetUnorderedAccessViews(0, 1, &MipUAV, UAVInitialCounts);
+
+			RCache.Compute(tgroupsX, tgroupsY, 1);
+
+			RContext->CSSetUnorderedAccessViews(0, 1, uav_dummy, UAVInitialCounts);
+		}
+
+		ShaderElement* S = &*(s_sslr->E[5]);
+		SPass& P = *(S->passes[0]);
+		RCache.set_States(P.state);
+		RCache.set_Constants(P.constants);
+		RCache.set_Textures(P.T);
+		RCache.set_CS(P.cs);
+
+		for (u32 MipLevel = 1; MipLevel < MipUAVs.size(); ++MipLevel)
+		{
+			const u32 MipWidth = std::max(rt_sslr_hiz->dwWidth >> MipLevel, 1u);
+			const u32 MipHeight = std::max(rt_sslr_hiz->dwHeight >> MipLevel, 1u);
+
+			ID3D11UnorderedAccessView* MipUAV[2] =
+			{
+				reinterpret_cast<ID3D11UnorderedAccessView*>(MipUAVs[MipLevel - 1]->GetRaw()),
+				reinterpret_cast<ID3D11UnorderedAccessView*>(MipUAVs[MipLevel]->GetRaw())
+			};
+
+			RContext->CSSetUnorderedAccessViews(0, 2, MipUAV, UAVInitialCounts);
+			RCache.Compute((MipWidth + 7u) / 8u, (MipHeight + 7u) / 8u, 1);
+		}
+
+		RContext->CSSetUnorderedAccessViews(0, 2, uav_dummy, UAVInitialCounts);
+	}
+
 	{
 		GPU_EVENT(sslr_render);
 

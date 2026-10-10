@@ -650,6 +650,8 @@ CRenderTarget::CRenderTarget()
 
 			rt_sslr_data.create(r2_RT_sslr_data, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 			rt_sslr_temp.create(r2_RT_sslr_temp, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+
+			rt_sslr_hiz.create(r2_RT_sslr_hiz, s_dwWidth, s_dwHeight, ERHI_FORMAT::R32_FLOAT, 1, CRT::CRTCreationFlags(CRT::USE_UAV_FLAG | CRT::MIPPED_RT_FLAG));
 		}
 
 		if(RImplementation.o.offscreen_reflecitons)
