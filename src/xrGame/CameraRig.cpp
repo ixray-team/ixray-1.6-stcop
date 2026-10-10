@@ -6,6 +6,7 @@
 #include "CharacterPhysicsSupport.h"
 #include "PHMovementControl.h"
 #include "Level.h"
+#include "player_hud.h"
 #include "../xrEngine/CameraBase.h"
 #include "../xrEngine/ObjectAnimator.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -29,6 +30,9 @@ struct SCameraRigParams
 	float	strafe_roll			= 0.4f, look_roll = 0.12f, roll_max = 3.f, aim_roll_scale = 0.3f, roll_stiffness = 90.f, roll_damping = 16.f;
 	float	sway_damping_ratio	= 0.6f;
 	float	lean_hud_counter	= 0.7f;
+	float	hud_ik_share		= 0.8f, turn_sway_smooth = 0.05f, aim_reload_blend = 0.25f, left_hand_ik_follow = 0.3f, shot_anim_blend = 0.1f;
+	float	inertia_speed		= 1.3f, mass_speed_exponent = 0.25f, aim_reload_tail = 0.2f, shot_anim_tail = 0.3f;
+	float	hud_inertialization	= 0.f;
 };
 
 static SCameraRigParams	g_rig;
@@ -70,6 +74,11 @@ bool CCameraRig::Enabled()
 		{ "strafe_roll", &p.strafe_roll, 1, true }, { "look_roll", &p.look_roll, 1, true }, { "roll_max", &p.roll_max, 1, true },
 		{ "aim_roll_scale", &p.aim_roll_scale, 1, false }, { "roll_stiffness", &p.roll_stiffness, 1, false }, { "roll_damping", &p.roll_damping, 1, false },
 		{ "sway_damping_ratio", &p.sway_damping_ratio, 1, false }, { "lean_hud_counter", &p.lean_hud_counter, 1, false },
+		{ "hud_ik_share", &p.hud_ik_share, 1, false }, { "turn_sway_smooth", &p.turn_sway_smooth, 1, false }, { "aim_reload_blend", &p.aim_reload_blend, 1, false },
+		{ "left_hand_ik_follow", &p.left_hand_ik_follow, 1, false }, { "shot_anim_blend", &p.shot_anim_blend, 1, false },
+		{ "inertia_speed", &p.inertia_speed, 1, false }, { "mass_speed_exponent", &p.mass_speed_exponent, 1, false },
+		{ "aim_reload_tail", &p.aim_reload_tail, 1, false }, { "shot_anim_tail", &p.shot_anim_tail, 1, false },
+		{ "hud_inertialization", &p.hud_inertialization, 1, false },
 	};
 
 	for (const auto& it : params)
@@ -199,7 +208,9 @@ void CCameraRig::OnShot(CWeapon* weapon)
 	}
 
 	const float aim = weapon->GetAimFactor();
-	const float kick = _sqrt(g_rig.kick_stiffness) * lerp(1.f, g_rig.aim_kick_scale, aim);
+	const attachable_hud_item* hud_item = weapon->HudItemData();
+	const float mass = hud_item != nullptr ? hud_item->m_hud_mass : 1.f;
+	const float kick = _sqrt(g_rig.kick_stiffness) * lerp(1.f, g_rig.aim_kick_scale, aim) / _sqrt(mass);
 	m_punch.velocity.mad(Fvector().set(m_weapon_punch.y * ::Random.randFs(1.f), m_weapon_punch.x, m_weapon_punch.z * ::Random.randFs(1.f)), _sqrt(g_rig.punch_stiffness) * lerp(1.f, g_rig.aim_punch_scale, aim));
 	m_kick.velocity.mad(Fvector().set(m_weapon_kick_rot.y * ::Random.randFs(1.f), m_weapon_kick_rot.x, m_weapon_kick_rot.z * ::Random.randFs(1.f)), kick);
 	m_kick_pos.velocity.mad(m_weapon_kick_pos, kick);
@@ -370,6 +381,51 @@ void CCameraRig::ApplyHud(Fmatrix& trans)
 float CCameraRig::LeanCounter() const
 {
 	return m_update_frame == Device.dwFrame ? -m_lean * g_rig.lean_hud_counter : 0.f;
+}
+
+float CCameraRig::HudIkShare()
+{
+	return Enabled() ? std::clamp(g_rig.hud_ik_share, 0.f, 1.f) : 0.f;
+}
+
+float CCameraRig::TurnSwaySmooth()
+{
+	return Enabled() ? g_rig.turn_sway_smooth : 0.f;
+}
+
+float CCameraRig::HudInertialization()
+{
+	return Enabled() ? g_rig.hud_inertialization : 0.f;
+}
+
+float CCameraRig::ShotAnimTail()
+{
+	return g_rig.shot_anim_tail;
+}
+
+float CCameraRig::AimReloadTail()
+{
+	return g_rig.aim_reload_tail;
+}
+
+float CCameraRig::MassSpeed(float mass)
+{
+	return g_rig.inertia_speed / powf(std::max(mass, 0.1f), g_rig.mass_speed_exponent);
+}
+
+float CCameraRig::ShotAnimBlend()
+{
+	return g_rig.shot_anim_blend;
+}
+
+float CCameraRig::LeftHandIkFollow()
+{
+	return g_rig.left_hand_ik_follow;
+}
+
+float CCameraRig::AimReloadBlend()
+{
+	return g_rig.aim_reload_blend;
 }
 
 bool CCameraRig::SpringSway(Fvector& value, Fvector& velocity, const Fvector& target, float speed)
