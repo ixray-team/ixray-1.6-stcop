@@ -72,7 +72,7 @@ public:
 	u16*						Lock			( u32 Count, u32& vOffset );
 	void						Unlock			(u32 RealCount);
 
-	_IndexStream()				{ _clear();		};
+	_IndexStream()				{ _clear(); rsDIB_Size = 512u; };
 	~_IndexStream()				{ Destroy();	};
 };
 #endif
