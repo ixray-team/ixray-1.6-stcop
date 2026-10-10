@@ -751,7 +751,7 @@ bool CUICompassBar::InitCardinalEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR
     float cardinalAngle = 0.0f;
     if (TryGetCardinalAngleRad(directionNode, cardinalAngle))
     {
-        entry.dirXZ.set(cosf(cardinalAngle), sinf(cardinalAngle));
+        entry.dirXZ.set(-sinf(cardinalAngle), cosf(cardinalAngle));
         entry.angleRad = cardinalAngle;
         entry.hasAngle = true;
     }
@@ -922,7 +922,7 @@ bool CUICompassBar::InitCardinalPointEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, L
     entry.baseMarkerColor = marker ? marker->GetTextureColor() : 0;
     entry.markerCfg = markerCfg;
     entry.alpha = 1.0f;
-    entry.dirXZ.set(cosf(cardinalAngle), sinf(cardinalAngle));
+    entry.dirXZ.set(-sinf(cardinalAngle), cosf(cardinalAngle));
     entry.angleRad = cardinalAngle;
     entry.hasAngle = true;
     entry.kind = ECompassLabelKind::Cardinal;
@@ -1210,7 +1210,7 @@ bool CUICompassBar::InitLabelFromDesc(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR
     entry.angleRad = desc.angleRad;
     entry.hasAngle = true;
     entry.kind = desc.kind;
-    entry.dirXZ.set(cosf(desc.angleRad), sinf(desc.angleRad));
+    entry.dirXZ.set(-sinf(desc.angleRad), cosf(desc.angleRad));
     entry.baseTextColor = text->GetTextColor();
     entry.baseMarkerColor = marker ? marker->GetTextureColor() : 0;
     entry.markerCfg = markerCfg;
@@ -1661,7 +1661,7 @@ void CUICompassBar::UpdateStrip(float heading)
     }
 
     const float uAtlas = CompassProjection::ComputeStripUAtlas(
-        heading + _stripHeadingBiasRad,
+        _stripHeadingBiasRad - heading,
         atlasCircumference,
         _stripTexWidth,
         _kDefaultStripTexWidth,

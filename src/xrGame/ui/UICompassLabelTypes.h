@@ -58,7 +58,7 @@ namespace CompassLabels
 
 	inline float NavDegToEngineRad(float navAngleDeg)
 	{
-		return deg2rad(90.0f - navAngleDeg);
+		return deg2rad(-navAngleDeg);
 	}
 
 	inline float NormalizeNavDeg(float navAngleDeg)

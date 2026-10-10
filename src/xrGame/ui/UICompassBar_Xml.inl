@@ -449,42 +449,42 @@ namespace
 
 		if (!xr_strcmp(directionNode, "n"))
 		{
-			outAngleRad = deg2rad(90.f);
+			outAngleRad = deg2rad(0.f);
 			return true;
 		}
 		if (!xr_strcmp(directionNode, "e"))
 		{
-			outAngleRad = deg2rad(0.f);
+			outAngleRad = deg2rad(-90.f);
 			return true;
 		}
 		if (!xr_strcmp(directionNode, "s"))
 		{
-			outAngleRad = deg2rad(-90.f);
+			outAngleRad = deg2rad(180.f);
 			return true;
 		}
 		if (!xr_strcmp(directionNode, "w"))
 		{
-			outAngleRad = deg2rad(180.f);
+			outAngleRad = deg2rad(90.f);
 			return true;
 		}
 		if (!xr_strcmp(directionNode, "ne"))
 		{
-			outAngleRad = deg2rad(45.f);
+			outAngleRad = deg2rad(-45.f);
 			return true;
 		}
 		if (!xr_strcmp(directionNode, "se"))
 		{
-			outAngleRad = deg2rad(-45.f);
+			outAngleRad = deg2rad(-135.f);
 			return true;
 		}
 		if (!xr_strcmp(directionNode, "sw"))
 		{
-			outAngleRad = deg2rad(-135.f);
+			outAngleRad = deg2rad(135.f);
 			return true;
 		}
 		if (!xr_strcmp(directionNode, "nw"))
 		{
-			outAngleRad = deg2rad(135.f);
+			outAngleRad = deg2rad(45.f);
 			return true;
 		}
 		return false;
