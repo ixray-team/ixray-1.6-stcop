@@ -767,7 +767,7 @@ u32 Snd_CopyCached(const SoundSourceState* Source, u32 Position, float** OutData
 	SoundCacheLine* Line = Snd_GetCacheLine(CacheIdx);
 
 	// LRU: lines in active use must not be the eviction candidates. Several readers may hold the shared lock
-	std::atomic_ref<u64>(Line->Timestamp).store(Snd_GetTimestamp(), std::memory_order_relaxed);
+	xr_atomic_ref<u64>(Line->Timestamp).store(Snd_GetTimestamp(), std::memory_order_relaxed);
 	if (Position < Line->Start || Line->End <= Line->Start || Position >= Line->End || Position - Line->Start >= SND_CACHE_LINE_CAPACITY)
 	{
 		return 0;
