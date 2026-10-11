@@ -1,8 +1,9 @@
 #ifndef r_backend_treeH
 #define r_backend_treeH
 #pragma once
+#include "RenderAPI.h"
 
-class ECORE_API	R_tree
+class RENDER_API	R_tree
 {
 public:
 	RHIShaderConstant*		c_m_xform_v;

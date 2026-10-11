@@ -81,7 +81,7 @@ void EScene::Render(const Fmatrix& camera)
 		SceneMToolsIt s_end = SceneTools.end();
 		for (; s_it != s_end; s_it++)
 		{
-			EDevice->SetShader(B ? EDevice->m_SelectionShader : EDevice->m_WireShader);
+			EDevice->SetShader(B ? GEditorDraw.SelectionShader : GEditorDraw.WireShader);
 			RCache.set_xform_world(Fidentity);
 			(*s_it)->OnRenderRoot(P, B);
 		}
@@ -137,5 +137,44 @@ void EScene::Render(const Fmatrix& camera)
 	for (; s_it != s_end; s_it++)
 	{
 		(*s_it)->AfterRender();
+	}
+}
+
+void EScene::RenderShadowCasters()
+{
+	if (!valid())
+	{
+		return;
+	}
+
+	// Classes whose objects add geometry to the scene graph; the others only draw helpers
+	static const ObjClassID CasterClasses[] = { OBJCLASS_SCENEOBJECT, OBJCLASS_SPAWNPOINT, OBJCLASS_TERRAIN };
+
+	for (ObjClassID ClassID : CasterClasses)
+	{
+		ESceneCustomOTool* SceneTool = GetOTool(ClassID);
+		if (SceneTool == nullptr || !SceneTool->IsLoaded || !SceneTool->IsVisible())
+		{
+			continue;
+		}
+
+		for (CCustomObject* Object : SceneTool->GetObjects())
+		{
+			// IsRender tests the current view, which is the light frustum here
+			if (!Object->Visible() || !Object->IsRender())
+			{
+				continue;
+			}
+
+			const u32 RenderPriorityMask = Object->RenderPriorityMask();
+			for (u32 Priority = 1; Priority <= 3; ++Priority)
+			{
+				if (RenderPriorityMask & (1u << Priority))
+				{
+					Object->Render((int)Priority, false);
+					Object->Render((int)Priority, true);
+				}
+			}
+		}
 	}
 }

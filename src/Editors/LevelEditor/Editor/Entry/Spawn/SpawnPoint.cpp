@@ -601,6 +601,32 @@ void CSpawnPoint::SSpawnData::FillProp(const char* pref, PropItemVec& items)
 	}
 }
 
+void CSpawnPoint::SSpawnData::RenderVisuals(bool bSelected, const Fmatrix& parent, int priority, bool strictB2F)
+{
+	xrCriticalSectionGuard guard(mLuaEnter);
+
+	if (m_Visual && m_Visual->visual)
+	{
+		::RImplementation.model_Render(m_Visual->visual, parent, priority, strictB2F, 1.f);
+	}
+
+	if (IdleParticle && IsIdleParticleInRange())
+	{
+		::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
+	}
+
+	if (bSelected)
+	{
+		Fmatrix M;
+		for (u32 Index = 0; Index < m_VisualHelpers.size(); ++Index)
+		{
+			visual_data* vc = m_Data->visual_collection() + Index;
+			M.mul(parent, vc->matrix);
+			::RImplementation.model_Render(m_VisualHelpers[Index]->visual, M, priority, strictB2F, 1.f);
+		}
+	}
+}
+
 void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int priority, bool strictB2F)
 {
 	xrCriticalSectionGuard guard(mLuaEnter);
@@ -612,21 +638,13 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 		m_Motion->animator->DrawPath();
 
 	RCache.set_xform_world		(Fidentity);
-	EDevice->SetShader			(EDevice->m_WireShader);
+	EDevice->SetShader			(GEditorDraw.WireShader);
 	m_Data->on_render			(&DU_impl,this,bSelected,parent,priority,strictB2F);
 
-	if (IdleParticle)
+	// Simulated in OnFrame: Render runs for every priority of every render pass
+	if (IdleParticle && IsIdleParticleInRange())
 	{
-		float Dist = EDevice->vCameraPosition.distance_to(m_owner->FPosition);
-		if (Dist < EDevice->RenderRadius * 0.25f)
-		{
-			IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
-			static Fvector v = { 0.f, 0.f, 0.f };
-			Particles->UpdateParent(parent, v, false);
-			Particles->OnFrame(1);
-
-			::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
-		}
+		::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
 	}
 
 	if(bSelected)
@@ -646,9 +664,23 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 	}
 }
 
+bool CSpawnPoint::SSpawnData::IsIdleParticleInRange() const
+{
+	return EDevice->vCameraPosition.distance_to(m_owner->FPosition) < EDevice->RenderRadius * 0.25f;
+}
+
 void CSpawnPoint::SSpawnData::OnFrame()
 {
 	xrCriticalSectionGuard guard(FrameMutex);
+
+	// Idle particles advance once per frame by the frame time, like CParticlesObject in game
+	if (IdleParticle && IsIdleParticleInRange())
+	{
+		IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
+		static Fvector Velocity = { 0.f, 0.f, 0.f };
+		Particles->UpdateParent(m_owner->FTransformRP, Velocity, false);
+		Particles->OnFrame(EDevice->dwTimeDelta);
+	}
 
 	if (m_Data->m_editor_flags.is(CSE_Abstract::flUpdateProperties))
 		ExecCommand				(COMMAND_UPDATE_PROPERTIES);
@@ -1055,6 +1087,39 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 	}
 	Fmatrix SaveTransform = FTransformRP;
 
+	// Scene collection (main and shadow passes): only visuals reach the scene graph, the
+	// helpers (icons, names, shapes, selection) are drawn in the overlay pass
+	if (GEditorDraw.IsSubmitPass())
+	{
+		if (m_physics_shell)
+		{
+			UpdateObjectXform(FTransformRP);
+		}
+
+		// Shapes skip the submit pass themselves; attached particles add their visual
+		if (m_AttachedObject)
+		{
+			m_AttachedObject->Render(priority, strictB2F);
+		}
+
+		if (m_SpawnData.Valid())
+		{
+			m_SpawnData.RenderVisuals(Selected(), FTransformRP, priority, strictB2F);
+		}
+
+		if (m_Type == ptRPoint)
+		{
+			ESceneSpawnTool* st = smart_cast<ESceneSpawnTool*>(FParentTools); VERIFY(st);
+			if (CEditableObject* v = st->get_draw_visual(m_RP_TeamID, m_RP_Type, m_GameType))
+			{
+				v->Render(this, FTransformRP, priority, strictB2F);
+			}
+		}
+
+		FTransformRP = SaveTransform;
+		return;
+	}
+
 	if (m_physics_shell)
 	{
 		UpdateObjectXform(FTransformRP);
@@ -1091,13 +1156,13 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 							Fcolor c;
 							c.set(RP_COLORS[r]);
 							c.mul_rgb(k*0.9f+0.1f);
-							DU_impl.DrawEntity(c.get(),EDevice->m_WireShader);
+							DU_impl.DrawEntity(c.get(),GEditorDraw.WireShader);
 						}
 					}break;
 					case ptEnvMod:
 					{
 						Fvector pos={0,0,0};
-						EDevice->SetShader(EDevice->m_WireShader);
+						EDevice->SetShader(GEditorDraw.WireShader);
 						AddCross(pos,0.25f,0.25f,0.25f,0.25f,0.25f,0.25f,Selected()?ENVMOD_SEL_COLOR2:ENVMOD_COLOR,true);
 						if (Selected())
 							switch(m_EM_ShapeType)
@@ -1155,7 +1220,7 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 				RCache.set_xform_world(Fidentity);
 				Fbox bb; GetBox(bb);
 				u32 clr = Locked()?0xFFFF0000:0xFFFFFFFF;
-				EDevice->SetShader(EDevice->m_WireShader);
+				EDevice->SetShader(GEditorDraw.WireShader);
 				DU_impl.DrawSelectionBoxB(bb,&clr);
 			}
 		}

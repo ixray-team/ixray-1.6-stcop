@@ -111,8 +111,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		switch (C.iElement)
 		{
 		case SE_R1_NORMAL_HQ:
-#ifndef _EDITOR
-			if (ps_r1_flags.test(R1FLAG_TERRAIN_MASK)) {
+			if (!Device.IsEditorMode() && ps_r1_flags.test(R1FLAG_TERRAIN_MASK)) {
 				string256 mask;
 				xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
 
@@ -124,7 +123,6 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 				C.r_Sampler("s_dt_a", oA_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 			} 
 			else
-#endif 
 			{
 				C.r_Pass("impl_dt", "impl_dt", true);
 			}
@@ -211,14 +209,16 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
-	// codepath is the same, only the shaders differ
-	// ***only pixel shaders differ***
+
 	string256 mask;
 	xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
 
-	if (C.bEditor) {
+	if (C.bEditor)
+	{
 		string256 mask;
 		xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
+
+		RImplementation.addShaderOption("USE_4_BUMP", "");
 
 		//	C.r_Pass("impl_dt", "impl_dt", TRUE);
 		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
@@ -235,7 +235,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_dx10Texture("s_dn_a", xr_strconcat(mask, oA_Name, "_bump"));
 		C.r_dx10Texture("s_detail", oT2_Name);
 
-		C.r_End();
+		uber_deffer_editor_end(C);
 		return;
 	}
 

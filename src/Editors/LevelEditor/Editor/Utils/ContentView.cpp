@@ -3,7 +3,6 @@
 
 #include "../../Nodes/UIDialogsView.h"
 #include "../../../../utils/xrDXT/xrDXT.h"
-#include "../../../xrECore/Editor/ParticleEffectActions.h"
 
 #include "Viewports/ViewportMesh.h"
 #include "Viewports/ViewportParticle.h"
@@ -1067,7 +1066,7 @@ void CContentView::LoadCustomIcons()
 		{
 			string_path Path = {};
 			sprintf(Path, "%s%s", "ed\\content_browser\\", el.second.c_str());
-			Icons[el.first.c_str()] = { EDevice->Resources->_CreateTexture(Path),	true };
+			Icons[el.first.c_str()] = { DEV->_CreateTexture(Path),	true };
 		}
 
 	}
@@ -1082,27 +1081,27 @@ void CContentView::RemoveCustomIcon(const xr_string& icon)
 
 void CContentView::Init()
 {
-	Icons["Folder"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\folder"),	true};
-	Icons[".."]		= {EDevice->Resources->_CreateTexture("ed\\content_browser\\folder"),	true};
-	Icons["thm"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\thm"),		true};
-	Icons["logs"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\log"),		true};
-	Icons["ogg"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\ogg"),		true};
-	Icons["level"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\level"),	true};
-	Icons["wav"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\wav"),		true};
-	Icons["object"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\object"),	true};
-	Icons["image"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\image"),	true};
-	Icons["seq"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\seq"),		true};
-	Icons["tga"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\tga"),		true};
-	Icons["file"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\file"),		true};
-	Icons["exe"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\exe"),		true};
-	Icons["cmd"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\cmd"),		true};
-	Icons["dll"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\dll"),		true};
-	Icons["backup"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\backup"),	true};
-	Icons["env_mod"]= {EDevice->Resources->_CreateTexture("ed\\content_browser\\env_mod"),	true};
-	Icons["dialogs"] = { EDevice->Resources->_CreateTexture("ed\\content_browser\\dialogs"),true};
-	Icons["multi"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\multi"),	true};
+	Icons["Folder"] = {DEV->_CreateTexture("ed\\content_browser\\folder"),	true};
+	Icons[".."]		= {DEV->_CreateTexture("ed\\content_browser\\folder"),	true};
+	Icons["thm"]	= {DEV->_CreateTexture("ed\\content_browser\\thm"),		true};
+	Icons["logs"]	= {DEV->_CreateTexture("ed\\content_browser\\log"),		true};
+	Icons["ogg"]	= {DEV->_CreateTexture("ed\\content_browser\\ogg"),		true};
+	Icons["level"]	= {DEV->_CreateTexture("ed\\content_browser\\level"),	true};
+	Icons["wav"]	= {DEV->_CreateTexture("ed\\content_browser\\wav"),		true};
+	Icons["object"] = {DEV->_CreateTexture("ed\\content_browser\\object"),	true};
+	Icons["image"]	= {DEV->_CreateTexture("ed\\content_browser\\image"),	true};
+	Icons["seq"]	= {DEV->_CreateTexture("ed\\content_browser\\seq"),		true};
+	Icons["tga"]	= {DEV->_CreateTexture("ed\\content_browser\\tga"),		true};
+	Icons["file"]	= {DEV->_CreateTexture("ed\\content_browser\\file"),		true};
+	Icons["exe"]	= {DEV->_CreateTexture("ed\\content_browser\\exe"),		true};
+	Icons["cmd"]	= {DEV->_CreateTexture("ed\\content_browser\\cmd"),		true};
+	Icons["dll"]	= {DEV->_CreateTexture("ed\\content_browser\\dll"),		true};
+	Icons["backup"] = {DEV->_CreateTexture("ed\\content_browser\\backup"),	true};
+	Icons["env_mod"]= {DEV->_CreateTexture("ed\\content_browser\\env_mod"),	true};
+	Icons["dialogs"] = { DEV->_CreateTexture("ed\\content_browser\\dialogs"),true};
+	Icons["multi"]	= {DEV->_CreateTexture("ed\\content_browser\\multi"),	true};
 
-	MenuIcon = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
+	MenuIcon = DEV->_CreateTexture("ed\\bar\\menu");
 
 	LoadCustomIcons();
 	LoadExtDest();
@@ -1975,7 +1974,7 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 
 			if (pSettings->line_exist(ValidPath.data(), "$ed_icon"))
 			{
-				Icons[IconPath] = { EDevice->Resources->_CreateTexture(pSettings->r_string_wb(ValidPath.data(), "$ed_icon").c_str()), false };
+				Icons[IconPath] = { DEV->_CreateTexture(pSettings->r_string_wb(ValidPath.data(), "$ed_icon").c_str()), false };
 				Icons[IconPath].Icon->Load();
 			}
 			else
@@ -2073,7 +2072,7 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 		{
 			xr_string NewPath = IconPath.substr(0, IconPath.length() - 4);
 
-			Icons[IconPath] = {EDevice->Resources->_CreateTexture(NewPath.c_str()), false};
+			Icons[IconPath] = {DEV->_CreateTexture(NewPath.c_str()), false};
 			Icons[IconPath].Icon->Load();
 
 			if(!Icons[IconPath].Icon->pSurface)

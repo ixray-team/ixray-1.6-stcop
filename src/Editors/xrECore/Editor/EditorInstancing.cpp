@@ -10,11 +10,20 @@ bool CEditorInstanceBatcher::IsShaderSupported(Shader* S)
 		return false;
 	}
 
-	for (ref_pass& Pass : S->E[0]->passes)
+	// Every element the scene graph picks for a surface: normal HQ / LQ and shadow generation
+	for (u32 Element = 0; Element <= SE_R2_SHADOW; ++Element)
 	{
-		if (!Pass->vs || Pass->vs->editor_instance_slot == u32(-1))
+		if (!S->E[Element])
 		{
-			return false;
+			continue;
+		}
+
+		for (ref_pass& Pass : S->E[Element]->passes)
+		{
+			if (!Pass->vs || Pass->vs->editor_instance_slot == u32(-1))
+			{
+				return false;
+			}
 		}
 	}
 
@@ -165,7 +174,7 @@ void CEditorInstanceBatcher::DrawRun(const SItem& First, u32 Offset, u32 Count)
 		RCache.set_c(ParamsName, float(Offset), 0.0f, 0.0f, 0.0f);
 
 		GRHI->ShaderResourceCache->SetVSResource(S->E[0]->passes[PassID]->vs->editor_instance_slot, SRV);
-		EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
+		EDevice->SetRS(D3DRS_FILLMODE, GEditorDraw.FillMode);
 
 		RCache.set_Geometry(First.GeomPtr);
 		RCache.RenderInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, First.VertexCount / 3, Count);

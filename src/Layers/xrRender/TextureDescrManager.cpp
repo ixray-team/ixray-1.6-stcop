@@ -113,8 +113,7 @@ void CTextureDescrMngr::LoadLTX()
 				}
 			}
 		}//"specification"
-#ifdef _EDITOR
-		if (ini.section_exist("types"))
+		if (Device.IsEditorMode() && ini.section_exist("types"))
 		{
 			CInifile::Sect& 	data = ini.r_section("types");
 			for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); I++)	
@@ -125,7 +124,6 @@ void CTextureDescrMngr::LoadLTX()
 				desc.m_type				= (STextureParams::ETType)atoi(item.second.c_str());
 			}
 		}//"types"
-#endif
 	}//file-exist
 }
 

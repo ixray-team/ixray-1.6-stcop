@@ -242,15 +242,13 @@ void FixedConstants::UpdateView()
 	cpu_view.scaled_screen_res.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 	cpu_view.pos_decompression_params2.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 
-#ifndef _EDITOR
-	for (int i = 0; i < 3 && i < (int)RImplementation.m_sun_cascades.size(); ++i)
+	for (int i = 0; i < 3 && !Device.IsEditorMode() && i < (int)RImplementation.m_sun_cascades.size(); ++i)
 	{
 		Fmatrix adj{0.5f, 0, 0, 0, 0, -0.5f, 0, 0, 0, 0, 1, 0, 0.5f, 0.5f, RImplementation.m_sun_cascades[i].bias, 1};
 		Fmatrix xf;
 		xf.mul(adj, RImplementation.m_sun_cascades[i].xform);
 		store_Float4x4(&cpu_light.m_shadow_sun[i * 4], xf);
 	}
-#endif
 
 	const R_xforms& x = RCache.xforms;
 	store_Float3x4(cpu_object.m_WV, x.m_wv);

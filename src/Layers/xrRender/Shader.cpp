@@ -65,9 +65,7 @@ bool SPass::equal(const SPass& other)
 
 	if (T != other.T)					return false;
 	if (C != other.C)					return false;
-#ifdef _EDITOR
 	if (M != other.M)					return false;
-#endif
 	return true;
 }
 

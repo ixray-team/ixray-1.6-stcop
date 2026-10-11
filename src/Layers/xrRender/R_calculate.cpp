@@ -23,6 +23,7 @@ extern float		r_ssaLOD_MU4		;
 
 void CRender::Calculate		()
 {
+
 	// Transfer to global space to avoid deep pointer access
 	IRender_Target* T				=	getTarget	();
 	float	fov_factor				=	_sqr		(90.f / Device.fFOV);
@@ -50,8 +51,9 @@ void CRender::Calculate		()
 	r_ssaHZBvsTEX					=	_sqr(ps_r__ssaHZBvsTEX/3)	/g_fSCREEN;
 	r_dtex_range					=	ps_r2_df_parallax_range * g_fSCREEN / (1024.f * 768.f);
 	
-	// Detect camera-sector
-	if (!vLastCameraPos.similar(Device.vCameraPosition,EPS_S)) 
+	// Detect camera-sector (the editors have no sectors or portals)
+	const bool HasSectors = !Device.IsEditorMode();
+	if (HasSectors && !vLastCameraPos.similar(Device.vCameraPosition,EPS_S)) 
 	{
 		CSector* pSector		= (CSector*)detectLastSector(Device.vCameraPosition);
 		if (pSector && (pSector!=pLastSector))
@@ -63,7 +65,7 @@ void CRender::Calculate		()
 	}
 
 	// Check if camera is too near to some portal - if so force DualRender
-	if (rmPortals) 
+	if (HasSectors && rmPortals) 
 	{
 		float	eps			= Device.fViewportNear+EPS_L;
 		Fvector box_radius; box_radius.set(eps,eps,eps);
@@ -75,8 +77,19 @@ void CRender::Calculate		()
 		}
 	}
 
-	//
-	Lights.Update();
+	// The unlit editor view (no weather) has no sun
+#if RENDER==R_R4
+	if (!Device.IsEditorMode() || EditorIsLit())
+#endif
+	{
+		Lights.Update();
+	}
+#if RENDER==R_R4
+	else
+	{
+		Lights.package.clear();
+	}
+#endif
 
 	lstRenderables.resize(0);
 	lstRenderables.reserve(4096);

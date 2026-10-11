@@ -181,7 +181,7 @@ void	CBlender_Tree::Compile	(CBlender_Compile& C)
 	if (C.bEditor)
 	{
 		uber_deffer(C, true, "deffer_base", "deffer_base", oBlend.value, 0, true);
-		C.r_End();
+		uber_deffer_editor_end(C);
 		return;
 	}
 

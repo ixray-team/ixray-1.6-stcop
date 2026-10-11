@@ -51,7 +51,7 @@ void CPortal::Render(int priority, bool strictB2F)
 			return;
 		}
 
-		EDevice->SetShader(EDevice->m_WireShader);
+		EDevice->SetShader(GEditorDraw.WireShader);
 		RCache.set_xform_world(Fidentity);
 
 		FvectorVec V;

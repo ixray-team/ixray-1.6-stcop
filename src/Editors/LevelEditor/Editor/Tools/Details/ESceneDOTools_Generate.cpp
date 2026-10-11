@@ -148,6 +148,26 @@ bool EDetailManager::UpdateHeader(){
 }
 
 #define EPS_L_VAR 0.0012345f
+void EDetailManager::PickSnapTriangles(const Fbox& Box, xr_vector<Fvector>& Verts)
+{
+	extern ECORE_API CDB::COLLIDER XRC;
+	XRC.box_options(CDB::OPT_FULL_TEST);
+
+	SBoxPickInfoVec PickInfo;
+	Scene->BoxPickObjects(Box, PickInfo, GetSnapList());
+
+	Fvector Face[3];
+	for (SBoxPickInfo& Info : PickInfo)
+	{
+		VERIFY(Info.s_obj);
+		for (const auto& Inf : Info.inf)
+		{
+			Info.e_obj->GetFaceWorld(Info.s_obj->_Transform(), Info.e_mesh, Inf.id, Face);
+			Verts.insert(Verts.end(), Face, Face + 3);
+		}
+	}
+}
+
 void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot)
 {
 	Fbox bbox;

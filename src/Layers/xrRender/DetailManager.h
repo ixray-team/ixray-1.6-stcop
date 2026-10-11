@@ -8,42 +8,38 @@
 #include "../../xrCore/xrPool.h"
 #include "DetailFormat.h"
 #include "DetailModel.h"
+#include "RenderAPI.h"
 
-#ifdef _EDITOR
-//.	#include	"ESceneClassList.h"
-	constexpr int	dm_max_decompress	= 14;
-	class CCustomObject;
-	typedef u32	ObjClassID;
+class CCustomObject;
+typedef u32	ObjClassID;
 
-    typedef xr_list<CCustomObject*> 		ObjectList;
-    typedef ObjectList::iterator 			ObjectIt;
-    typedef xr_map<ObjClassID,ObjectList> 	ObjectMap;
-    typedef ObjectMap::iterator 			ObjectPairIt;
-
-#else
-	constexpr int	dm_max_decompress	= 7;
-#endif
+typedef xr_list<CCustomObject*> 		ObjectList;
+typedef ObjectList::iterator 			ObjectIt;
+typedef xr_map<ObjClassID,ObjectList> 	ObjectMap;
+typedef ObjectMap::iterator 			ObjectPairIt;
 
 constexpr int		dm_obj_in_slot = 4;
 constexpr int		dm_slide_window_count = 4;
 constexpr int		dm_cache_count = 16;
 constexpr float		dm_slot_size = DETAIL_SLOT_SIZE;
 
-extern u32		dm_size;
-extern u32 		dm_slide_window_line;
-extern u32		dm_cache_line;
-extern u32		dm_cache_size;
-extern float	dm_fade;
-extern u32		dm_current_size;
-extern u32 		dm_current_slide_window_line;
-extern u32		dm_current_cache_line;
-extern u32		dm_current_cache_size;
-extern float	dm_current_fade;
-extern float	ps_current_detail_density;
+extern RENDER_API u32		dm_size;
+extern RENDER_API u32 		dm_slide_window_line;
+extern RENDER_API u32		dm_cache_line;
+extern RENDER_API u32		dm_cache_size;
+extern RENDER_API float	dm_fade;
+extern RENDER_API u32		dm_current_size;
+extern RENDER_API u32 		dm_current_slide_window_line;
+extern RENDER_API u32		dm_current_cache_line;
+extern RENDER_API u32		dm_current_cache_size;
+extern RENDER_API float	dm_current_fade;
+extern RENDER_API float	ps_current_detail_density;
+
+RENDER_API void bwdithermap(int levels, int magic[16][16]);
 
 class light;
 
-class CDetailManager
+class RENDER_API CDetailManager
 {
 public:
 	poolSS<CDetail::SlotItem, 4096> items_pool;
@@ -121,13 +117,9 @@ public:
 	u32 alt_models_count = 0;
 	u32 vanilla_grass_indices[64] = {};
 	u32 vanilla_grass_count = 0;
-#ifndef _EDITOR    
-	xr_vector<CDetail> objects;
-	CDB::COLLIDER xrc;
-#else
 	using DetailIt = xr_vector<CDetail*>::iterator;
 	xr_vector<CDetail*> objects;
-#endif
+	CDB::COLLIDER xrc;
 
     xr_vector<xr_vector<SlideSlot>> slide_window;
     xr_vector<xr_vector<Slot*>>		cache;
@@ -161,7 +153,6 @@ public:
 	void							BuildFMBField		();
 	float							SampleFMBField		(float world_x, float world_z) const;
 
-#ifndef _EDITOR
 	// Persist precomputed fields to $level$\detail_layers\ so a reload with unchanged
 	// detail settings skips the noise rebuild. All I/O is best-effort: a read-only
 	// level folder simply falls back to regenerating.
@@ -192,7 +183,6 @@ public:
 	bool							DetailLayers_EraseFMB(float world_x, float world_z, float strength);
 	bool							DetailLayers_PaintCluster(float world_x, float world_z, u8 value, float strength);
 	bool							DetailLayers_EraseCluster(float world_x, float world_z, float strength);
-#endif
 
 	// Re-unpack ONLY the visible cache slots touched by the brush circle. Called per
 	// stroke (throttled by the tool) so edits appear in real time without a full
@@ -212,14 +202,15 @@ public:
 	Fvector							m_brush_rebuild_center{ 0.f, 0.f, 0.f };
 	float							m_brush_rebuild_radius = 0.f;
 
-#ifdef _EDITOR
-	virtual ObjectList* 			GetSnapList		()=0;
-#else
+	// Editor snap geometry (Level Editor overrides these; the game has no snap objects).
+	virtual ObjectList* 			GetSnapList		() { return nullptr; }
+	// World-space triangles (three vertices each) of the snap objects intersecting Box.
+	virtual void					PickSnapTriangles	(const Fbox& Box, xr_vector<Fvector>& Verts) {}
+
 	// Deferred rebuild: console changes set a flag; cache_Update applies it once per frame
 	// so a cfg_load (series of r__detail_* commands) rebuilds all slots a single time.
 	void RequestCacheRebuild();
 	bool ConsumeCacheRebuildRequest();
-#endif
 
 	void							hw_Load			();
 	void							hw_Unload		();

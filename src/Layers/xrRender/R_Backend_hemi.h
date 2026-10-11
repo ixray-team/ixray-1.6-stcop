@@ -1,8 +1,9 @@
 #ifndef r_backend_hemiH
 #define r_backend_hemiH
 #pragma once
+#include "RenderAPI.h"
 
-class ECORE_API	R_hemi
+class RENDER_API	R_hemi
 {
 public:
 	RHIShaderConstant*		c_pos_faces;

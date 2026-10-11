@@ -33,7 +33,7 @@ light::light()
 	ignore_object	= nullptr;
 	for (int f=0; f<6; f++)decor_object[f] = nullptr;
 
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if (RENDER==R_R2 || RENDER==R_R4)
 	ZeroMemory		(omnipart,sizeof(omnipart));
 	s_spot			= nullptr;
 	s_point			= nullptr;
@@ -51,13 +51,13 @@ light::light()
 
 light::~light	()
 {
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if (RENDER==R_R2 || RENDER==R_R4)
 	for (int f=0; f<6; f++)	xr_delete(omnipart[f]);
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 	set_active		(false);
 
 	// remove from Lights_LastFrame
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if (RENDER==R_R2 || RENDER==R_R4)
 	for (u32 it=0; it<RImplementation.Lights_LastFrame.size(); it++)
 		if (this==RImplementation.Lights_LastFrame[it])	RImplementation.Lights_LastFrame[it]=0;
 	m_sectors.clear();
@@ -84,7 +84,7 @@ void light::destroy(bool deffered)
 
 void light::set_texture(const char* name)
 {
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if (RENDER==R_R2 || RENDER==R_R4)
 	if ((0 == name) || (0 == name[0]))
 	{
 		// default shaders
@@ -107,7 +107,7 @@ void light::set_texture(const char* name)
 void light::set_shadow(bool b)						
 { 
 	flags.bShadow=b;
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if (RENDER==R_R2 || RENDER==R_R4)
 	if (flags.type==IRender_Light::POINT)
 	{
 		if(flags.bShadow)
@@ -192,7 +192,7 @@ void light::set_rotation(const Fvector& D, const Fvector& R)
 	if (!fsimilar(1.f, old_D.dotproduct(D), EPS_S))	spatial_move();
 }
 
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if (RENDER==R_R2 || RENDER==R_R4)
 void light::get_sectors()
 {
 	if(RImplementation.SectorsCount()<=1 || SpatialComponent.get() == nullptr) return;
@@ -276,7 +276,7 @@ void light::spatial_move()
 	// update spatial DB
 	ISpatialOwner::spatial_move();
 
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if (RENDER==R_R2 || RENDER==R_R4)
 	svis.invalidate();
 	if((SpatialComponent->type&ESPATIAL_TYPE::LIGHTSOURCE)!=ESPATIAL_TYPE::NONE)
 		get_sectors();
@@ -303,7 +303,7 @@ Fvector	light::spatial_sector_point()
 }
 
 //////////////////////////////////////////////////////////////////////////
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if (RENDER==R_R2 || RENDER==R_R4)
 // Xforms
 void	light::xform_calc			()
 {
@@ -616,7 +616,6 @@ void light::set_attenuation_params	(float a0, float a1, float a2, float fo)
 
 float	light::get_LOD					()
 {
-#ifndef _EDITOR
 	if	(!flags.bShadow)	return 1;
 	extern float r_ssaGLOD_start, r_ssaGLOD_end;
 	extern float ps_r2_slight_fade;
@@ -624,7 +623,4 @@ float	light::get_LOD					()
 	float	ssa = ps_r2_slight_fade * SpatialComponent->sphere.R/distSQ;
 	float	lod = _sqrt(clampr((ssa - r_ssaGLOD_end)/(r_ssaGLOD_start-r_ssaGLOD_end),0.f,1.f));
 	return lod;
-#else
-	return 1.0f;
-#endif
 }

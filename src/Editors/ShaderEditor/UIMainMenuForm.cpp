@@ -141,30 +141,30 @@ void UIMainMenuForm::Draw()
 				}
 				if (ImGui::BeginMenu("Fill Mode"))
 				{
-					bool selected[3] = { false,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
+					bool selected[3] = { false,GEditorDraw.FillMode == D3DFILL_WIREFRAME,GEditorDraw.FillMode == D3DFILL_SOLID };
 					if (ImGui::MenuItem("Wireframe", "", &selected[1]))
 					{
-						EDevice->dwFillMode = D3DFILL_WIREFRAME;
+						GEditorDraw.FillMode = D3DFILL_WIREFRAME;
 						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("Solid", "", &selected[2]))
 					{
-						EDevice->dwFillMode = D3DFILL_SOLID;
+						GEditorDraw.FillMode = D3DFILL_SOLID;
 						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();
 				}
 				if (ImGui::BeginMenu("Shader Mode"))
 				{
-					bool selected[2] = { EDevice->dwShadeMode == D3DSHADE_FLAT,EDevice->dwShadeMode == D3DSHADE_GOURAUD };
+					bool selected[2] = { GEditorDraw.ShadeMode == D3DSHADE_FLAT,GEditorDraw.ShadeMode == D3DSHADE_GOURAUD };
 					if (ImGui::MenuItem("Flat", "", &selected[0]))
 					{
-						EDevice->dwShadeMode = D3DSHADE_FLAT;
+						GEditorDraw.ShadeMode = D3DSHADE_FLAT;
 						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("Gouraud", "", &selected[1]))
 					{
-						EDevice->dwShadeMode = D3DSHADE_GOURAUD;
+						GEditorDraw.ShadeMode = D3DSHADE_GOURAUD;
 						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();

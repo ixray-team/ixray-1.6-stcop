@@ -7,7 +7,7 @@ UITopBarForm::UITopBarForm()
     m_timeUndo  = 0;
     m_timeRedo  = 0;
 
-    m_tReload   = EDevice->Resources->_CreateTexture("ed\\bar\\reload_configs");
+    m_tReload   = DEV->_CreateTexture("ed\\bar\\reload_configs");
 }
 
 UITopBarForm::~UITopBarForm() {}

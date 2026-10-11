@@ -6,11 +6,7 @@
 #include "DDSTextureLoader9.h"
 using namespace DirectX;
 
-#ifndef _EDITOR
 #include "../xrRender/dxRenderDeviceRender.h"
-#else
-#include <RedImage/RedImage.hpp>
-#endif
 
 void fix_texture_name(LPSTR fn) {
 	LPSTR _ext = strext(fn);
@@ -357,20 +353,6 @@ _DDS:
 		HRESULT const result = LoadTextureDataFromMemory((uint8_t*)S->pointer(), S->length(), &header, &bitData, &bitSize);
 		bool UseRedImage = false;
 
-#ifdef _EDITOR
-		RedImageTool::RedImage Image;
-		if (result == 0x80070032)
-		{
-			UseRedImage = true;
-			if (!Image.LoadFromMemory(S->pointer(), S->length()))
-			{
-				UseRedImage = false;
-			}
-
-			const size_t ImageBufferSize = Image.GetWidth() * 4 * Image.GetHeight();
-			bitData = (uint8_t*)*Image;
-		}
-#endif
 		if (!UseRedImage)
 		{
 			D3DCAPS9 d3dCaps;
@@ -425,14 +407,6 @@ _DDS:
 		bool is_cubemap = false;
 		bool is_volumap = false;
 
-#ifdef _EDITOR
-		if (UseRedImage)
-		{
-			is_cubemap = Image.IsCubeMap();
-			is_volumap = false;
-		}
-		else
-#endif
 		{
 			is_cubemap = (header->caps2 & DDS_CUBEMAP) == DDS_CUBEMAP;
 			is_volumap = (header->flags & DDS_HEADER_FLAGS_VOLUME) == DDS_HEADER_FLAGS_VOLUME;
@@ -472,57 +446,6 @@ _DDS:
 			strlwr(fn);
 			ID3DTexture2D* T_sysmem = nullptr;
 			HRESULT TextureApplyResult = S_OK;
-#ifdef _EDITOR
-			if (UseRedImage)
-			{
-				Image.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
-
-				TextureApplyResult = RDevice->CreateTexture
-				(
-					Image.GetWidth(), Image.GetHeight(),
-					Image.GetMips(), 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr
-				);
-
-				if (SUCCEEDED(TextureApplyResult) && T_sysmem)
-				{
-					for (u32 level = 0; level < Image.GetMips(); ++level)
-					{
-						D3DLOCKED_RECT rect;
-						if (SUCCEEDED(T_sysmem->LockRect(level, &rect, nullptr, 0)))
-						{
-							const u32 w = std::max((size_t)1, Image.GetWidth() >> level);
-							const u32 h = std::max((size_t)1, Image.GetHeight() >> level);
-
-							const u8* src = (const u8*)*Image;
-
-							size_t mipOffset = 0;
-							for (u32 l = 0; l < level; ++l)
-							{
-								mipOffset += (std::max((size_t)1, Image.GetWidth() >> l)) * (std::max((size_t)1, Image.GetHeight() >> l)) * 4;
-							}
-
-							src += mipOffset;
-
-							for (u32 y = 0; y < h; ++y)
-							{
-								u8* rowDst = (u8*)rect.pBits + y * rect.Pitch;
-								const u8* rowSrc = src + y * w * 4;
-
-								for (u32 x = 0; x < w; ++x)
-								{
-									rowDst[x * 4 + 0] = rowSrc[x * 4 + 2]; // B
-									rowDst[x * 4 + 1] = rowSrc[x * 4 + 1]; // G
-									rowDst[x * 4 + 2] = rowSrc[x * 4 + 0]; // R
-									rowDst[x * 4 + 3] = rowSrc[x * 4 + 3]; // A
-								}
-							}
-							T_sysmem->UnlockRect(level);
-						}
-					}
-				}
-			}
-			else
-#endif
 			{
 				TextureApplyResult = CreateDDSTextureFromMemoryEx
 				(

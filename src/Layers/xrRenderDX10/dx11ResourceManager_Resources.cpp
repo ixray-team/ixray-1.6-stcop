@@ -2,9 +2,7 @@
 
 
 #pragma warning(disable:4995)
-#ifndef _EDITOR
 #include "../../xrEngine/Render.h"
-#endif
 #pragma warning(default:4995)
 
 #include "../xrRender/ResourceManager.h"
@@ -115,9 +113,7 @@ SPass* CResourceManager::_CreatePass(const SPass& proto)
 	P->constants = proto.constants;
 	P->iPriority = proto.iPriority;
 	P->T = proto.T;
-#ifdef _EDITOR
 	P->M = proto.M;
-#endif
 	P->C = proto.C;
 
 	v_passes.push_back(P);
@@ -208,11 +204,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);
 
-#ifdef _EDITOR
-		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
-#else
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
-#endif
 
 		// ����������� �������� � �������
 #if 0 //ndef _EDITOR
@@ -241,6 +233,13 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 	if (I!=m_vs.end())	
 	{
 		m_vs.erase(I);
+
+		// A shader that failed to compile has no input signature and no layouts
+		if (!vs->signature)
+		{
+			return;
+		}
+
 		xr_vector<SDeclaration*>::iterator iDecl;
 		for (iDecl = v_declarations.begin(); iDecl!=v_declarations.end(); ++iDecl)
 		{
@@ -327,11 +326,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps);
 
-#ifdef _EDITOR
-		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
-#else
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
-#endif
 
 		// ����������� �������� � �������
 
@@ -424,11 +419,7 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs);
 
-#ifdef _EDITOR
-		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
-#else
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
-#endif
 
 		FS.r_close				( file );
 

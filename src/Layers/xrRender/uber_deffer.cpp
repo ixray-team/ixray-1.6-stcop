@@ -12,15 +12,16 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 	fix_texture_name(fname);
 	ref_texture pTexture; pTexture.create(fname);
 
-#ifdef _EDITOR
-	ps_r__common_flags.set(R2FLAG_USE_BUMP, TRUE);
-#endif
+	const bool EditorMode = Device.IsEditorMode();
+	if (EditorMode)
+	{
+		ps_r__common_flags.set(R2FLAG_USE_BUMP, TRUE);
+	}
 
 	bool bump = ps_r__common_flags.test(R2FLAG_USE_BUMP) && pTexture.bump_exist();
 	bool lmap = false;
 
-#ifndef _EDITOR
-	if(C.L_textures.size() >= 3)
+	if(!EditorMode && C.L_textures.size() >= 3)
 	{
 		auto tex = C.L_textures[2].c_str();
 		if(tex[0] == 'l' && tex[1] == 'm' && tex[2] == 'a' && tex[3] == 'p')
@@ -28,7 +29,6 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 			lmap = true;
 		}
 	}
-#endif
 
 	string256 dt;
 	xr_strcpy(dt, sizeof(dt), detail_replace ? detail_replace : (C.detail_texture ? C.detail_texture : ""));
@@ -198,7 +198,6 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 			C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
 			C.SetPassPriority(3);
 
-#ifndef _EDITOR
 			if(RImplementation.o.dx11_allow_wboit_transparency)
 			{
 				C.PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE, false, 0);
@@ -206,7 +205,6 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 				C.PassSET_Blend(1, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, false, 0);
 			}
 			else
-#endif
 			{
 				C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, false, 0);
 			}
@@ -222,9 +220,10 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 				C.r_dx10Texture("s_hemi", C.L_textures[2]);
 			}
 
-#ifndef _EDITOR
-			C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
-#endif
+			if (!EditorMode)
+			{
+				C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
+			}
 
 			C.r_dx10Sampler("smp_smap");
 		
@@ -238,7 +237,6 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 	}
 
 #ifdef USE_DX11
-#ifndef _EDITOR
 	if (bump && hq && RImplementation.o.dx11_enable_tessellation && C.TessMethod != CBlender_Compile::NO_TESS)
 	{
 		string256 hs = "tess", ds = "tess";
@@ -285,11 +283,6 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 			C.r_Pass(vs, ps, false);
 		}
 	}
-#else
-	{
-		C.r_Pass(vs, ps, FALSE);
-	}
-#endif
 
 	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
 	{
@@ -343,9 +336,10 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		C.r_dx10Texture("s_specular", Path);
 	}
 
-#ifndef _EDITOR
-	C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
-#endif
+	if (!EditorMode)
+	{
+		C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
+	}
 	C.r_dx10Sampler("smp_smap");
 
 	C.r_dx10Sampler("smp_base");
@@ -384,13 +378,16 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 	}
 #endif
 
-#ifdef _EDITOR
-	C.r_dx10Texture("s_material", "shaders\\r2_material");
-	C.r_dx10Texture("env_s0", "$user$env_s0");
-	C.r_dx10Texture("env_s1", "$user$env_s1");
-	C.r_dx10Texture("sky_s0", "$user$sky0");
-	C.r_dx10Texture("sky_s1", "$user$sky1");
-	C.r_dx10Sampler("smp_material");
+#ifdef USE_DX11
+	if (EditorMode)
+	{
+		C.r_dx10Texture("s_material", "shaders\\r2_material");
+		C.r_dx10Texture("env_s0", "$user$env_s0");
+		C.r_dx10Texture("env_s1", "$user$env_s1");
+		C.r_dx10Texture("sky_s0", "$user$sky0");
+		C.r_dx10Texture("sky_s1", "$user$sky1");
+		C.r_dx10Sampler("smp_material");
+	}
 #endif
 
 	if (!DO_NOT_FINISH) 
@@ -401,7 +398,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, bool aref, bool blend, const char* detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {
-#if defined(USE_DX11) && !defined(_EDITOR)
+#if defined(USE_DX11)
 	bool use_wboit = blend && !C.bHudElement && RImplementation.o.dx11_allow_wboit_transparency;
 
 	if (use_wboit)
@@ -416,7 +413,7 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 	{
 		C.PassSET_ZB(TRUE, FALSE);
 
-#if defined(USE_DX11) && !defined(_EDITOR)
+#if defined(USE_DX11)
 		if(use_wboit)
 		{
 			C.PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE, false, 0);
@@ -433,7 +430,8 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 		}
 	}
 
-#ifndef _EDITOR
+	if (!Device.IsEditorMode())
+	{
 	#ifdef USE_DX11
 		C.r_dx10Texture("s_material", r2_material);
 		C.r_dx10Texture("s_position", r2_RT_P);
@@ -456,10 +454,28 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 		C.r_Sampler("sky_s0", r2_T_sky0);
 		C.r_Sampler("sky_s1", r2_T_sky1);
 	#endif
-#endif
+	}
 
 	if(!DO_NOT_FINISH)
 	{
 		C.r_End();
 	}
 }
+
+#ifdef USE_DX11
+void uber_deffer_editor_end(CBlender_Compile& C)
+{
+	if (C.iElement == SE_R2_SHADOW || C.iElement == SE_R2_REFLECTIONS)
+	{
+		// Shadow elements (SE_R2_DETAIL_SHADOW_HQ/LQ for the details)
+		C.r_ColorWriteEnable(false, false, false, false);
+	}
+	else
+	{
+		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+		C.r_StencilRef(0x01);
+	}
+
+	C.r_End();
+}
+#endif

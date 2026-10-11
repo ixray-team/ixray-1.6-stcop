@@ -5,28 +5,22 @@
 #include "dxDebugRender.h"
 
 #include "ResourceManager.h"
-#ifndef _EDITOR
 #include "imgui.h"
 #include "../../xrEngine/Autotest.h"
-#endif
 
 dxRenderDeviceRender::dxRenderDeviceRender()
-#ifndef _EDITOR
 	:	Resources(0)
 {
 }
-#else
-{}
-#endif
 
-#if defined(USE_DX11) && !defined(_EDITOR)
+#if defined(USE_DX11)
 #include "..\xrRenderPC_R4\OverlayAPI\DLSSWrapper.h"
 #include "..\xrRenderPC_R4\OverlayAPI\FSR3Wrapper.h"
 #endif
 
 void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 {
-#if defined(USE_DX11) && !defined(_EDITOR)
+#if defined(USE_DX11)
 	switch(ps_r_scale_mode)
 	{
 		case 2:
@@ -51,35 +45,26 @@ void dxRenderDeviceRender::Copy(IRenderDeviceRender &_in)
 
 void dxRenderDeviceRender::setGamma(float fGamma)
 {
-#ifndef _EDITOR
 	m_Gamma.Gamma(fGamma);
-#endif
 }
 
 void dxRenderDeviceRender::setBrightness(float fGamma)
 {
-#ifndef _EDITOR
 	m_Gamma.Brightness(fGamma);
-#endif
 }
 
 void dxRenderDeviceRender::setContrast(float fGamma)
 {
-#ifndef _EDITOR
 	m_Gamma.Contrast(fGamma);
-#endif
 }
 
 void dxRenderDeviceRender::updateGamma()
 {
-#ifndef _EDITOR
 	m_Gamma.Update();
-#endif
 }
 
 void dxRenderDeviceRender::OnDeviceDestroy( bool bKeepTextures)
 {
-#ifndef _EDITOR
 #ifdef USE_DX11
 #ifdef DEBUG_DRAW
 	DebugRenderImpl.Shutdown();
@@ -93,7 +78,6 @@ void dxRenderDeviceRender::OnDeviceDestroy( bool bKeepTextures)
 
 	Resources->OnDeviceDestroy( bKeepTextures);
 	RCache.OnDeviceDestroy();
-#endif
 }
 
 void dxRenderDeviceRender::ValidateHW()
@@ -102,17 +86,14 @@ void dxRenderDeviceRender::ValidateHW()
 
 void dxRenderDeviceRender::DestroyHW()
 {
-#ifndef _EDITOR
 	xr_delete(Resources);
 	CImGuiManager::Instance().Destroy(true);
-#endif
 }
 
 xr_task_group thm_reload_task;
 
 void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight)
 {
-#ifndef _EDITOR
 	Resources->reset_begin	();
 	Memory.mem_compact		();
 
@@ -135,14 +116,12 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	dwWidth = Device.GetSwapchainWidth();
 	dwHeight = Device.GetSwapchainHeight();
 	Resources->reset_end();
-#endif
 }
 
 void dxRenderDeviceRender::SetupStates()
 {
 	Caps.Update();
 
-#ifndef _EDITOR
 #ifdef USE_DX11
 	//	TODO: DX10: Implement Resetting of render states into default mode
 	// SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
@@ -185,12 +164,10 @@ void dxRenderDeviceRender::SetupStates()
 	}
 
 #endif
-#endif
 }
 
 void dxRenderDeviceRender::OnDeviceCreate(const char* shName)
 {
-#ifndef _EDITOR
 	// Signal everyone - device created
 	RCache.OnDeviceCreate		();
 	m_Gamma.Update				();
@@ -208,19 +185,16 @@ void dxRenderDeviceRender::OnDeviceCreate(const char* shName)
 		DebugRenderImpl.Init();
 #endif
 	}
-#endif
 }
 
 void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, bool move_window)
 {
-#ifndef _EDITOR
 	CImGuiManager::Instance().InitHardware();
 
 	dwWidth = Device.GetSwapchainWidth();
 	dwHeight = Device.GetSwapchainHeight();
 
 	Resources = new CResourceManager();
-#endif
 }
 
 void dxRenderDeviceRender::SetupGPU( bool bForceGPU_SW, bool bForceGPU_NonPure, bool bForceGPU_REF)
@@ -229,7 +203,6 @@ void dxRenderDeviceRender::SetupGPU( bool bForceGPU_SW, bool bForceGPU_NonPure, 
 
 void dxRenderDeviceRender::overdrawBegin()
 {
-#ifndef _EDITOR
 #ifdef USE_DX11
 	//	TODO: DX10: Implement overdrawBegin
 	VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
@@ -250,12 +223,10 @@ void dxRenderDeviceRender::overdrawBegin()
 	else 
 	{ CHK_DX(RDevice->SetRenderState( D3DRS_STENCILZFAIL,	D3DSTENCILOP_INCRSAT	)); }	// ZB access
 #endif
-#endif
 }
 
 void dxRenderDeviceRender::overdrawEnd()
 {
-#ifndef _EDITOR
 #ifdef USE_DX11
 	//	TODO: DX10: Implement overdrawEnd
 	VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
@@ -291,55 +262,41 @@ void dxRenderDeviceRender::overdrawEnd()
 	}
 	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILENABLE,		false ));
 #endif
-#endif
 }
 
 void dxRenderDeviceRender::DeferredLoad(bool E)
 {
-#ifndef _EDITOR
 	Resources->DeferredLoad(E);
-#endif
 }
 
 void dxRenderDeviceRender::ResourcesDeferredUpload()
 {
-#ifndef _EDITOR
 	Resources->DeferredUpload();
-#endif
 }
 
 void dxRenderDeviceRender::ResourcesDeferredUnload()
 {
-#ifndef _EDITOR
 	Resources->DeferredUnload();
-#endif
 }
 
 void dxRenderDeviceRender::ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps)
 {
-#ifndef _EDITOR
 	if (Resources)
 		Resources->_GetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
-#endif
 }
 
 void dxRenderDeviceRender::ResourcesStoreNecessaryTextures()
 {
-#ifndef _EDITOR
 	dxRenderDeviceRender::Instance().Resources->StoreNecessaryTextures();
-#endif
 }
 
 void dxRenderDeviceRender::ResourcesDumpMemoryUsage()
 {
-#ifndef _EDITOR
 	dxRenderDeviceRender::Instance().Resources->_DumpMemoryUsage();
-#endif
 }
 
 dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 {
-#ifndef _EDITOR
 #ifdef USE_DX11
 	//	TODO: DX10: Implement GetDeviceState
 	//	TODO: DX10: Implement DXGI_PRESENT_TEST testing
@@ -358,7 +315,6 @@ dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 	}
 #endif
 
-#endif
 	return dsOK;
 }
 
@@ -369,28 +325,19 @@ bool dxRenderDeviceRender::GetForceGPU_REF()
 
 u32 dxRenderDeviceRender::GetCacheStatPolys()
 {
-#ifndef _EDITOR
 	return RCache.stat.polys;
-#else
-	return 0;
-#endif
 }
 
 void dxRenderDeviceRender::GetCacheStats(u32& calls, u32& verts, u32& polys, u32& static_dips)
 {
-#ifndef _EDITOR
 	calls		= RCache.stat.calls;
 	verts		= RCache.stat.verts;
 	polys		= RCache.stat.polys;
 	static_dips	= RCache.stat.r.s_static.dips;
-#else
-	calls = verts = polys = static_dips = 0;
-#endif
 }
 
 void dxRenderDeviceRender::Begin()
 {
-#ifndef _EDITOR
 #ifndef USE_DX11
 	CHK_DX(RDevice->BeginScene());
 #else
@@ -399,7 +346,6 @@ void dxRenderDeviceRender::Begin()
 	RCache.OnFrameBegin();
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Z(true);
-#endif
 
 	if (Resources)
 	{
@@ -413,21 +359,18 @@ void dxRenderDeviceRender::Begin()
 
 void dxRenderDeviceRender::Clear()
 {
-#ifndef _EDITOR
 	GRHI->ClearDepthStencil(GRHI->GetDepthStencilView(), ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.f, 0);
 
 	if (psDeviceFlags.test(rsClearBB))
 	{
 		GRHI->ClearTarget(RCache.get_RT());
 	}
-#endif
 }
 
 void DoAsyncScreenshot();
 
 void dxRenderDeviceRender::End()
 {
-#ifndef _EDITOR
 
 #ifdef USE_DX11
 	{
@@ -475,41 +418,32 @@ void dxRenderDeviceRender::End()
 #endif
 
 	GRHI->Present();
-#endif
 }
 
 void dxRenderDeviceRender::ResourcesDestroyNecessaryTextures()
 {
-#ifndef _EDITOR
 	Resources->DestroyNecessaryTextures();
-#endif
 }
 
 void dxRenderDeviceRender::ClearTarget()
 {
-#ifndef _EDITOR
 	GRHI->ClearTarget(RCache.get_RT());
-#endif
 }
 
 void dxRenderDeviceRender::SetupDefaultTarget()
 {
-#ifndef _EDITOR
 #ifdef USE_DX11
 	RCache.set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
 #else
 	RCache.set_RT(RTarget);
 #endif
 	GRHI->SetDepthStencilView(nullptr);
-#endif
 }
 
 void dxRenderDeviceRender::SetCacheXform(Fmatrix &mView, Fmatrix &mProject)
 {
-#ifndef _EDITOR
 	RCache.set_xform_view(mView);
 	RCache.set_xform_project(mProject);
-#endif
 }
 
 void dxRenderDeviceRender::SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject)
@@ -525,10 +459,8 @@ bool dxRenderDeviceRender::HWSupportsShaderYUV2RGB()
 
 void  dxRenderDeviceRender::OnAssetsChanged()
 {
-#ifndef _EDITOR
 	Resources->m_textures_description.UnLoad();
 	Resources->m_textures_description.Load();
-#endif
 }
 
 void dxRenderDeviceRender::PostCreate()

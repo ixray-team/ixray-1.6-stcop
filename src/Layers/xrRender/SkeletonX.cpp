@@ -2,9 +2,7 @@
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 
-#ifndef _EDITOR
-#	include "../../xrEngine/Render.h"
-#endif
+#include "../../xrEngine/Render.h"
 
 #include "SkeletonX.h"
 
@@ -627,11 +625,8 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 		Debug.fatal	(DEBUG_INFO,"Invalid vertex type in skinned model '%s'",N);
 		break;
 	}
-#ifdef _EDITOR
-	if (bids.size()>0)	
-#else
-	if (bids.size()>1)	
-#endif
+	// The editor keeps the bone list even for single-bone parts.
+	if (bids.size() > (Device.IsEditorMode() ? 0u : 1u))
     {
 		crc = crc32(&*bids.begin(),bids.size()*sizeof(u16)); 
 		BonesUsed.create(crc,(u32)bids.size(),&*bids.begin());

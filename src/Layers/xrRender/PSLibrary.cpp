@@ -10,11 +10,9 @@
 #include "ParticleAnimCurve.h"
 #include "ParticleEffect.h"
 #include "ParticleGroup.h"
+#include "EditorRenderHost.h"
 
-#ifdef _EDITOR
-#	include "../xrECore/Editor/ParticleEffectActions.h"
-#   include "../xrECore/Editor/ui_main.h"
-#endif
+#include "ParticleEffectDef.h"
 
 bool ped_sort_pred(const PS::CPEDef* a, const PS::CPEDef* b){	return xr_strcmp(a->Name(),b->Name())<0;}
 bool pgd_sort_pred(const PS::CPGDef* a, const PS::CPGDef* b){	return xr_strcmp(a->m_Name,b->m_Name)<0;}
@@ -26,20 +24,21 @@ bool pacd_find_pred(const PS::CPACDef* a, const char* b){ return xr_strcmp(a->ge
 //----------------------------------------------------
 void CPSLibrary::OnCreate()
 {
-#ifdef _EDITOR
-    if(pCreateEAction)
+    // The Particle Editor edits the per-effect sources; everyone else loads the compiled library.
+    if (PS::g_ParticleEditorActions)
     {
         Load2();
-    }else
-#endif
+    }
+    else
     {
     	string_path		fn;
         FS.update_path	(fn,_game_data_,"particles.xr");
         Load			(fn);
     }
-#ifndef _EDITOR
-	Load2();
-#endif
+	if (!Device.IsEditorMode())
+	{
+		Load2();
+	}
 	PS::CPACLibraryWrapper::GetInstance().SetPACLibrary(this);
 }
  
@@ -71,15 +70,16 @@ void CPSLibrary::OnDestroy()
 PS::PEDIt CPSLibrary::FindPEDIt(const char* Name)
 {
 	if (!Name) return m_PEDs.end();
-#ifdef _EDITOR
-	for (PS::PEDIt it=m_PEDs.begin(); it!=m_PEDs.end(); it++)
-    	if (0==xr_strcmp((*it)->Name(),Name)) return it;
-	return m_PEDs.end();
-#else
+	// Editors add and rename entries without re-sorting, so they search linearly.
+	if (Device.IsEditorMode())
+	{
+		for (PS::PEDIt it=m_PEDs.begin(); it!=m_PEDs.end(); it++)
+			if (0==xr_strcmp((*it)->Name(),Name)) return it;
+		return m_PEDs.end();
+	}
 	PS::PEDIt I = std::lower_bound(m_PEDs.begin(),m_PEDs.end(),Name,ped_find_pred);
 	if (I==m_PEDs.end() || (0!=xr_strcmp((*I)->m_Name,Name)))	return m_PEDs.end();
 	else														return I;
-#endif
 }
 
 PS::CPEDef* CPSLibrary::FindPED(const char* Name)
@@ -91,15 +91,15 @@ PS::CPEDef* CPSLibrary::FindPED(const char* Name)
 PS::PGDIt CPSLibrary::FindPGDIt(const char* Name)
 {
 	if (!Name) return m_PGDs.end();
-#ifdef _EDITOR
-	for (PS::PGDIt it=m_PGDs.begin(); it!=m_PGDs.end(); it++)
-    	if (0==xr_strcmp((*it)->m_Name,Name)) return it;
-	return m_PGDs.end();
-#else
+	if (Device.IsEditorMode())
+	{
+		for (PS::PGDIt it=m_PGDs.begin(); it!=m_PGDs.end(); it++)
+			if (0==xr_strcmp((*it)->m_Name,Name)) return it;
+		return m_PGDs.end();
+	}
 	PS::PGDIt I = std::lower_bound(m_PGDs.begin(),m_PGDs.end(),Name,pgd_find_pred);
 	if (I==m_PGDs.end() || (0!=xr_strcmp((*I)->m_Name,Name)))	return m_PGDs.end();
 	else														return I;
-#endif
 }
 
 PS::CPGDef* CPSLibrary::FindPGD(const char* Name)
@@ -128,15 +128,15 @@ PS::IPAC* CPSLibrary::FindIPAC(const char* name)
 PS::PACDIt CPSLibrary::FindPACDIt(const char* Name)
 {
 	if (!Name) return m_PACDs.end();
-#ifdef _EDITOR
-	for (auto it=m_PACDs.begin(); it!=m_PACDs.end(); it++)
-		if (0==xr_strcmp((*it)->getName(),Name)) return it;
-	return m_PACDs.end();
-#else
+	if (Device.IsEditorMode())
+	{
+		for (auto it=m_PACDs.begin(); it!=m_PACDs.end(); it++)
+			if (0==xr_strcmp((*it)->getName(),Name)) return it;
+		return m_PACDs.end();
+	}
 	PS::PACDIt I = std::lower_bound(m_PACDs.begin(),m_PACDs.end(),Name,pacd_find_pred);
 	if (I==m_PACDs.end() || (0!=xr_strcmp((*I)->getName(),Name)))	return m_PACDs.end();
 	else														return I;
-#endif
 }
 
 void CPSLibrary::RenamePGD(PS::CPGDef* src, const char* new_name)
@@ -191,13 +191,11 @@ bool CPSLibrary::Load2()
 
 	FS.file_list				(files, _path, FS_ListFiles, "*.pe,*.pg,*.pac");
 
-#ifdef _EDITOR
 	SPBItem* pb = nullptr;
-	if (EContext.UI->m_bReady)
+	if (Device.IsEditorMode() && g_EditorRenderHost && g_EditorRenderHost->IsUIReady())
 	{
-		pb = EContext.UI->ProgressStart(files.size(), "Loading particles...");
+		pb = g_EditorRenderHost->ProgressStart(files.size(), "Loading particles...");
 	}
-#endif
 	FS_FileSet::iterator it		= files.begin();
 	FS_FileSet::iterator it_e	= files.end();
 
@@ -209,9 +207,7 @@ bool CPSLibrary::Load2()
         FS.update_path			(_path, "$game_particles$",f.name.c_str());
         CInifile				ini (_path,true,true,false);
 
-#ifdef _EDITOR
-        if(pb) pb->Inc					();
-#endif
+        if(pb) g_EditorRenderHost->ProgressInc(pb);
 
         xr_sprintf				(_path, sizeof(_path),"%s%s",p_path, p_name);
         if(0==_stricmp(p_ext,".pe"))
@@ -301,12 +297,10 @@ bool CPSLibrary::Load2()
 		elem->CreateShader();
 	}
 
-#ifdef _EDITOR
 	if (pb)
 	{
-		EContext.UI->ProgressEnd(pb);
+		g_EditorRenderHost->ProgressEnd(pb);
 	}
-#endif
 	Msg				("Loaded particles :%d", files.size());
 	return true;
 }

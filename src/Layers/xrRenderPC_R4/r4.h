@@ -20,11 +20,12 @@
 
 #include "../../xrEngine/IRenderable.h"
 #include "../../xrEngine/Fmesh.h"
+#include "r4_editor_hiz.h"
 
 class dxRender_Visual;
 
 // definition
-class CRender	:	public R_dsgraph_structure
+class RENDER_API CRender	:	public R_dsgraph_structure
 {
 public:
 
@@ -96,6 +97,7 @@ public:
 	CPSLibrary													PSLibrary;
 
 	CDetailManager*												Details;
+	CDetailManager*												GetDetails() const;
 	CModelPool*													Models;
 	CWallmarksEngine*											Wallmarks;
 
@@ -401,6 +403,41 @@ public:
 	virtual bool					InIndoor					() { return pLastSector!=pOutdoorSector; };
 	virtual size_t					SectorsCount				() { return Sectors.size(); }
 
+public:
+	bool							EditorInstancing			= false;
+
+	void							Initialize					();
+	void							ShutDown					();
+	void							OnDeviceCreate				();
+	void							OnDeviceDestroy				();
+
+	void							model_Render				(IRenderVisual* V, const Fmatrix& Transform, int Priority, bool StrictB2F, float LOD);
+	void							model_RenderSingle			(IRenderVisual* V, const Fmatrix& Transform, float LOD);
+
+	void							EditorBeginOverlay			();
+	void							EditorPresent				(IRHIRenderTargetView* Destination);
+	Fcolor							EditorClearColor			= { 0.f, 0.f, 0.f, 1.f };
+	bool							EditorIsLit					() const;
+
+	CEditorHiZ						EditorHiZ;
+	bool							EditorOcclusionCulling		= true;
+
+	void							EditorRenderMain			(bool Deferred);
+	void							EditorRenderSubspace		(CFrustum& Frustum);
+	void							EditorCollect				(bool Deferred, bool Shadows);
+	void							EditorSyncLights			();
+	xr_vector<light*>				EditorLights;
+
+private:
+	void							EditorCreate				();
+	void							EditorDestroy				();
+	void							EditorRenderUnlit			();
+
+	IBlender*						EditorUnlitBlender			= nullptr;
+	ref_shader						EditorUnlitShader;
+
+public:
+
 private:
 	ShaderExternalMap				m_ShaderOptions;
 
@@ -412,4 +449,4 @@ private:
 	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase = nullptr);
 };
 
-extern CRender						RImplementation;
+extern RENDER_API CRender			RImplementation;

@@ -1,5 +1,9 @@
 #include "common.hlsli"
 #include "sload.hlsli"
+
+#ifdef EDITOR_MODE
+uniform float4 editor_selection;
+#endif
 #include "shadow.hlsli"
 
 #ifndef USE_LENGTH_BUFFER
@@ -184,7 +188,12 @@ void main(p_bumped_new I, out OutStructure O)
     M.Normal = mul(float3x3(I.M1, I.M2, I.M3), M.Normal);
     M.Normal = normalize(M.Normal);
 
+#ifdef EDITOR_MODE
+    // The editors have no baked lightmaps: full sun
+    M.Sun = 1.0f;
+#else
     M.Sun = Lmap.w;
+#endif
     M.Hemi = M.Color.w;
 
 #ifdef USE_LEGACY_LIGHT
@@ -204,6 +213,11 @@ void main(p_bumped_new I, out OutStructure O)
 		O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
 	#endif
 	
+#ifdef EDITOR_MODE
+    // Selection and highlight tint of the editors
+    M.Color.xyz += editor_selection.xyz;
+#endif
+
     GbufferPack(O, M);
 #else
 	

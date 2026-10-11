@@ -1,4 +1,5 @@
 #pragma once
+#include "RenderAPI.h"
 #include "../../Include/xrRender/SVGTypes.h"
 #include "TextureAtlas.h"
 
@@ -21,7 +22,7 @@ constexpr unsigned char _kSVGStorage_MaxElementsPerAtlas = 8;
 constexpr u32 _kSVGStorage_DocumentLruCapacity = 16;
 constexpr u32 _kSVGStorage_DefaultMaxRasterPixels = 1024;
 
-class ECORE_API CSVGStorage
+class RENDER_API CSVGStorage
 {
 public:
 #ifdef DEBUG

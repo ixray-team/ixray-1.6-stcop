@@ -4,7 +4,7 @@
 #include "device.h"
 #include "Library.h"
 #include "ImageManager.h"
-#include "render.h"
+#include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
 #include "UI_ToolsCustom.h"
 #include "EditorPreferences.h"
 #include "ELog.h"

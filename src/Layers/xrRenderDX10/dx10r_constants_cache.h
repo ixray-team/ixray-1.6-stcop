@@ -1,8 +1,9 @@
 #ifndef dx10r_constants_cacheH
 #define dx10r_constants_cacheH
 #pragma once
+#include "../xrRender/RenderAPI.h"
 
-class	ECORE_API  R_constants
+class	RENDER_API  R_constants
 {
 	enum	BufferType
 	{

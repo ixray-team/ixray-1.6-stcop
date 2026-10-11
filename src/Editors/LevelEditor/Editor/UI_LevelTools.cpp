@@ -490,13 +490,6 @@ void  CLevelTool::RenderEnvironment()
 
 void CLevelTool::Render()
 {
-	// Render update
-	if(!Scene->IsPlayInEditor())
-	{
-		::Render->Calculate();
-		::Render->Render();
-	}
-
 	EEditorState est = EContext.UI->GetEState();
 	// draw scene
 	switch(est)
@@ -527,6 +520,95 @@ void CLevelTool::Render()
 	// draw cursor
 	LUI->m_Cursor->Render();
     inherited::Render();
+}
+
+CDetailManager* CLevelTool::GetSceneDetails()
+{
+	if (!Scene || !Scene->valid())
+	{
+		return nullptr;
+	}
+
+	EEditorState est = EContext.UI->GetEState();
+	if (est != esEditScene && est != esEditLightAnim)
+	{
+		return nullptr;
+	}
+
+	EDetailManager* DetailTool = smart_cast<EDetailManager*>(Scene->GetTool(OBJCLASS_DO));
+	return DetailTool && DetailTool->IsObjectsDrawn() ? DetailTool : nullptr;
+}
+
+void CLevelTool::SubmitShadowCasters()
+{
+	EEditorState est = EContext.UI->GetEState();
+	if (est == esEditScene || est == esEditLightAnim)
+	{
+		Scene->RenderShadowCasters();
+		return;
+	}
+
+	Render();
+}
+
+u32 CLevelTool::CollectEditorLights(EditorLightDescriptor* Out, u32 Capacity)
+{
+	if (!Scene)
+	{
+		return 0;
+	}
+
+	ESceneCustomOTool* LightTool = Scene->GetOTool(OBJCLASS_LIGHT);
+	if (!LightTool || !LightTool->IsLoaded || !LightTool->IsVisible())
+	{
+		return 0;
+	}
+
+	u32 Total = 0;
+	for (CCustomObject* Object : LightTool->GetObjects())
+	{
+		CLight* Light = smart_cast<CLight*>(Object);
+		if (!Light || !Light->m_UseInD3D || !Light->Visible())
+		{
+			continue;
+		}
+
+		if (Light->m_Type != ELight::ltPoint && Light->m_Type != ELight::ltSpot)
+		{
+			continue;
+		}
+
+		if (EDevice->vCameraPosition.distance_to_sqr(Light->GetPosition()) > _sqr(EPrefs->LightDistance))
+		{
+			continue;
+		}
+
+		if (Out && Total < Capacity)
+		{
+			EditorLightDescriptor& Descriptor = Out[Total];
+			Descriptor.Type = (u32)Light->m_Type;
+			Descriptor.Position = Light->GetPosition();
+			if (Light->m_Type == ELight::ltSpot)
+			{
+				Descriptor.Direction.setHP(Light->GetRotation().y, Light->GetRotation().x);
+				Descriptor.Cone = Light->m_Cone;
+			}
+			else
+			{
+				Descriptor.Direction.set(0.f, 0.f, -1.f);
+				Descriptor.Cone = 0.f;
+			}
+			Descriptor.Color.mul_rgb(Light->m_Color, Light->m_Brightness);
+			Descriptor.Range = Light->m_Range;
+			Descriptor.Attenuation0 = Light->m_Attenuation0 + EPS_S;
+			Descriptor.Attenuation1 = Light->m_Attenuation1;
+			Descriptor.Attenuation2 = Light->m_Attenuation2;
+			Descriptor.CastShadow = Light->m_Flags.is(ELight::flAffectDynamic);
+		}
+		++Total;
+	}
+
+	return Total;
 }
 
 void CLevelTool::UpdateObjectList()

@@ -518,6 +518,14 @@ CRenderTarget::CRenderTarget()
 
 	u32 s_dwWidth = (u32)RCache.get_width(), s_dwHeight = (u32)RCache.get_height();
 
+	// The editor viewport is not the window: depth has to match the viewport targets
+	if (Device.IsEditorMode())
+	{
+		rt_EditorDepth.create("$user$editor_depth", s_dwWidth, s_dwHeight, ERHI_FORMAT::D24_UNORM_S8_UINT);
+		EditorWindowDepth = GRHI->DevicePtr->RenderDSV;
+		GRHI->DevicePtr->RenderDSV = rt_EditorDepth->pZRT;
+	}
+
 	// NORMAL
 	{
 		auto HDR_Format = ERHI_FORMAT::R16G16B16A16_FLOAT;
@@ -1073,6 +1081,13 @@ void CRenderTarget::CreateFSTriangle()
 
 CRenderTarget::~CRenderTarget	()
 {
+	if (EditorWindowDepth != nullptr)
+	{
+		GRHI->SetDepthStencilView(nullptr);
+		GRHI->DevicePtr->RenderDSV = EditorWindowDepth;
+		EditorWindowDepth = nullptr;
+	}
+
 	_RELEASE					(t_ss_async);
 
 	rt_smap_depth_sun->surface_set(nullptr);

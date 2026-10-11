@@ -15,18 +15,18 @@ dx103DFluidManager	FluidManager;
 namespace
 {
 	// For render call
-	shared_str	strDrawTexture("textureNumber");
+	shared_str&	strDrawTexture() { static shared_str Name("textureNumber"); return Name; }
 	// For project, advect
-	shared_str	strModulate("modulate");
+	shared_str&	strModulate() { static shared_str Name("modulate"); return Name; }
 	// For confinement
-	shared_str	strEpsilon("epsilon");
+	shared_str&	strEpsilon() { static shared_str Name("epsilon"); return Name; }
 	// For confinement, advect
-	shared_str	strTimeStep("timestep");
+	shared_str&	strTimeStep() { static shared_str Name("timestep"); return Name; }
 	// For advect BFECC
-	shared_str	strForward("forward");
-	shared_str	strHalfVolumeDim("halfVolumeDim");
+	shared_str&	strForward() { static shared_str Name("forward"); return Name; }
+	shared_str&	strHalfVolumeDim() { static shared_str Name("halfVolumeDim"); return Name; }
 
-	shared_str	strGravityBuoyancy("GravityBuoyancy");
+	shared_str&	strGravityBuoyancy() { static shared_str Name("GravityBuoyancy"); return Name; }
 }
 
 const char* dx103DFluidManager::m_pEngineTextureNames[ NUM_RENDER_TARGETS ] = 
@@ -350,9 +350,9 @@ void dx103DFluidManager::AdvectColorBFECC(float timestep, bool bTeperature)
 		RCache.set_Element(m_SimulationTechnique[SS_Advect]);
 
 	// Advect forward to get \phi^(n+1)
-	RCache.set_c(strTimeStep, timestep);
-	RCache.set_c(strModulate, 1.0f);
-	RCache.set_c(strForward, 1.0f);
+	RCache.set_c(strTimeStep(), timestep);
+	RCache.set_c(strModulate(), 1.0f);
+	RCache.set_c(strForward(), 1.0f);
 
 	m_pGrid->DrawSlices();
 
@@ -378,9 +378,9 @@ void dx103DFluidManager::AdvectColorBFECC(float timestep, bool bTeperature)
 	pRTTextures[RENDER_TARGET_TEMPVECTOR]->bind(dwTextureStage);
 
 	//TimeStepShaderVariable->SetFloat(timestep);
-	RCache.set_c(strTimeStep, timestep);
-	RCache.set_c(strModulate, 1.0f);
-	RCache.set_c(strForward, -1.0f);
+	RCache.set_c(strTimeStep(), timestep);
+	RCache.set_c(strModulate(), 1.0f);
+	RCache.set_c(strForward(), -1.0f);
 
 	m_pGrid->DrawSlices();
 
@@ -392,9 +392,9 @@ void dx103DFluidManager::AdvectColorBFECC(float timestep, bool bTeperature)
 
 	Fvector4 halfVol;
 	halfVol.set((float)m_iTextureWidth / 2.0f, (float)m_iTextureHeight / 2.0f, (float)m_iTextureDepth / 2.0f, 0.0f);
-	RCache.set_c(strHalfVolumeDim, halfVol);
-	RCache.set_c(strModulate, m_fDecay);
-	RCache.set_c(strForward, 1.0f);
+	RCache.set_c(strHalfVolumeDim(), halfVol);
+	RCache.set_c(strModulate(), m_fDecay);
+	RCache.set_c(strForward(), 1.0f);
 	m_pGrid->DrawSlices();
 }
 
@@ -408,10 +408,10 @@ void dx103DFluidManager::AdvectColor( float timestep, bool bTeperature )
 	else
 		RCache.set_Element(m_SimulationTechnique[SS_Advect]);
 	
-	RCache.set_c(strTimeStep, timestep);
-	RCache.set_c(strModulate, 1.0f);
-	RCache.set_c(strForward, 1.0f);
-	RCache.set_c(strModulate, m_fDecay);
+	RCache.set_c(strTimeStep(), timestep);
+	RCache.set_c(strModulate(), 1.0f);
+	RCache.set_c(strForward(), 1.0f);
+	RCache.set_c(strModulate(), m_fDecay);
 
 	m_pGrid->DrawSlices();
 }
@@ -427,12 +427,12 @@ void dx103DFluidManager::AdvectVelocity( float timestep, float fGravity )
 	else
 	{
 		RCache.set_Element(m_SimulationTechnique[SS_AdvectVelGravity]);
-		RCache.set_c(strGravityBuoyancy, fGravity);
+		RCache.set_c(strGravityBuoyancy(), fGravity);
 	}
 
-	RCache.set_c(strTimeStep, timestep);
-	RCache.set_c(strModulate, 1.0f);
-	RCache.set_c(strForward, 1.0f);
+	RCache.set_c(strTimeStep(), timestep);
+	RCache.set_c(strModulate(), 1.0f);
+	RCache.set_c(strForward(), 1.0f);
 
 	m_pGrid->DrawSlices();
 }
@@ -451,8 +451,8 @@ void dx103DFluidManager::ApplyVorticityConfinement( float timestep )
 	// Compute and apply vorticity confinement force
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
 	RCache.set_Element(m_SimulationTechnique[SS_Confinement]);
-	RCache.set_c(strEpsilon, m_fConfinementScale);
-	RCache.set_c(strTimeStep, timestep);
+	RCache.set_c(strEpsilon(), m_fConfinementScale);
+	RCache.set_c(strTimeStep(), timestep);
 
 	// Add the confinement force to the rest of the forces
 	m_pGrid->DrawSlices();
@@ -514,7 +514,7 @@ void dx103DFluidManager::ProjectVelocity( float timestep )
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY0]);
 	RCache.set_Element(m_SimulationTechnique[SS_Project]);
 
-	RCache.set_c(strModulate, 1.0f);
+	RCache.set_c(strModulate(), 1.0f);
 	m_pGrid->DrawSlices();
 }
 

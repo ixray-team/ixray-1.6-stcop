@@ -1,14 +1,13 @@
 #include "stdafx.h"
 #include "ParticleEffectDef.h"
 #include "ParticleEffect.h"
+#include "EditorRenderHost.h"
+#include "../../xrEngine/IGame_Level.h"
 #include "../../xrServerEntities/object_destroyer.h"
 
-#ifdef _EDITOR
-	#include "../../Editors/xrECore/Editor/UI_ToolsCustom.h"
-	#include "../../Editors/xrECore/Editor/ParticleEffectActions.h"
-#else
 #include "particle_core/EditorLegacy/ParticleEffectActions.h"
-#endif
+
+RENDER_API PS::IParticleEditorActions* PS::g_ParticleEditorActions = nullptr;
 
 //---------------------------------------------------------------------------
 using namespace PAPI;
@@ -37,10 +36,10 @@ CPEDef::CPEDef()
 
 CPEDef::~CPEDef()
 {
-#ifdef _EDITOR
-	for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); it++) 
-		xr_delete(*it);
-#endif
+	if (g_ParticleEditorActions)
+	{
+		g_ParticleEditorActions->DestroyActions(*this);
+	}
 }
 void CPEDef::CreateShader()
 {
@@ -71,10 +70,15 @@ void CPEDef::ExecuteAnimate(Particle *particles, u32 p_cnt, float dt)
 void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb)
 {
 	Fvector pt,n;
-#ifndef _EDITOR
-	xr_vector<CDB::TRI>& tris = g_pGameLevel->ObjectSpace.GetStaticTris();
-	xr_vector<Fvector>& verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
-#endif
+	// The editor picks against its scene through the host; the game picks the level.
+	const bool EditorPick = Device.IsEditorMode();
+	xr_vector<CDB::TRI>* tris = nullptr;
+	xr_vector<Fvector>* verts = nullptr;
+	if (!EditorPick)
+	{
+		tris = &g_pGameLevel->ObjectSpace.GetStaticTris();
+		verts = &g_pGameLevel->ObjectSpace.GetStaticVerts();
+	}
 	// Must traverse list in reverse order so Remove will work
 	for(int i = p_cnt-1; i >= 0; i--){
 		Particle &m = particles[i];
@@ -88,24 +92,30 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 			float dist 	= dir.magnitude();
 			if (dist>=EPS){
 				dir.div	(dist);
-#ifdef _EDITOR                
-				if (Tools->RayPick(m.posB,dir,dist,&pt,&n))
-				//if (false)
+				bool Picked = false;
+				if (EditorPick)
 				{
-#else
-				collide::rq_result RQ;
-                collide::rq_target RT = m_Flags.is(dfCollisionDyn)?collide::rqtBoth:collide::rqtStatic;
-				if (g_pGameLevel->ObjectSpace.RayPick(m.posB,dir,dist,RT,RQ,nullptr))
-				{	
-					pt.mad(m.posB,dir,RQ.range);
-					if (RQ.O)
-						n.set(0.f,1.f,0.f);
-					else
+					Picked = g_EditorRenderHost->RayPick(m.posB,dir,dist,&pt,&n);
+				}
+				else
+				{
+					collide::rq_result RQ;
+					collide::rq_target RT = m_Flags.is(dfCollisionDyn)?collide::rqtBoth:collide::rqtStatic;
+					if (g_pGameLevel->ObjectSpace.RayPick(m.posB,dir,dist,RT,RQ,nullptr))
 					{
-						auto& Tidxs = tris[RQ.element].verts;
-						n.mknormal(verts[Tidxs[0]],verts[Tidxs[1]],verts[Tidxs[2]]);
+						pt.mad(m.posB,dir,RQ.range);
+						if (RQ.O)
+							n.set(0.f,1.f,0.f);
+						else
+						{
+							auto& Tidxs = (*tris)[RQ.element].verts;
+							n.mknormal((*verts)[Tidxs[0]],(*verts)[Tidxs[1]],(*verts)[Tidxs[2]]);
+						}
+						Picked = true;
 					}
-#endif
+				}
+				if (Picked)
+				{
 					pick_cnt++;
 					if (cb&&(pick_cnt==1)) if (!cb(owner,m,pt,n)) break;
 					if (m_Flags.is(dfCollisionDel)){ 
@@ -217,24 +227,10 @@ bool CPEDef::LoadOriginal(IReader& F)
 		}
 	}
 
-#ifdef _EDITOR
-    if (pCreateEAction &&F.find_chunk(PS::PE::Chunks::EDATA))
+	if (g_ParticleEditorActions && F.find_chunk(PS::PE::Chunks::EDATA))
 	{
-        m_EActionList.resize(F.r_u32());
-        for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); ++it)
-		{
-            PAPI::PActionEnum type		= (PAPI::PActionEnum)F.r_u32();
-    		VERIFY(PAPI::IsValidAction(type));
-            (*it)						= pCreateEAction(type);
-        	(*it)->parent = this;
-			if ((*it) != nullptr)
-			{
-				(*it)->Load(F);
-			}
-        }
-		Compile(m_EActionList);
-    } 
-#endif
+		g_ParticleEditorActions->LoadActions(*this, F);
+	}
 
 	return true;
 }
@@ -307,41 +303,28 @@ bool CPEDef::Load2Original(CInifile& ini)
 	{
 		m_APDefaultRotation			= ini.r_fvector3	("align_to_path", "default_rotation");
 	}
-#ifdef _EDITOR
-	if(pCreateEAction)
+	if (g_ParticleEditorActions)
+	{
+		g_ParticleEditorActions->LoadActions2(*this, ini);
+	}
+	else
 	{
 		u32 count		= ini.r_u32("_effect", "action_count");
-		m_EActionList.resize(count);
+		EPAVec LegacyActions;
+		LegacyActions.resize(count);
 		u32 action_id	= 0;
-		for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); ++it,++action_id)
+		for (auto it=LegacyActions.begin(); it!=LegacyActions.end(); ++it,++action_id)
 		{
 			string256					sect;
 			xr_sprintf					(sect, sizeof(sect), "action_%04d", action_id);
 			PAPI::PActionEnum type		= (PAPI::PActionEnum)(ini.r_u32(sect,"action_type"));
-    		VERIFY(PAPI::IsValidAction(type));
-			(*it)						= pCreateEAction(type);
+			(*it)						= EPALegacy::EPACreator::pCreateEActionImpl(type);
 			(*it)->parent = this;
 			(*it)->Load2				(ini, sect);
 		}
-		Compile							(m_EActionList);
+		Compile							(LegacyActions);
+		delete_data(LegacyActions);
 	}
-#else
-	u32 count		= ini.r_u32("_effect", "action_count");
-	EPAVec m_EActionList;
-	m_EActionList.resize(count);
-	u32 action_id	= 0;
-	for (auto it=m_EActionList.begin(); it!=m_EActionList.end(); ++it,++action_id)
-	{
-		string256					sect;
-		xr_sprintf					(sect, sizeof(sect), "action_%04d", action_id);
-		PAPI::PActionEnum type		= (PAPI::PActionEnum)(ini.r_u32(sect,"action_type"));
-		(*it)						= EPALegacy::EPACreator::pCreateEActionImpl(type);
-		(*it)->parent = this;
-		(*it)->Load2				(ini, sect);
-	}
-	Compile							(m_EActionList);
-	delete_data(m_EActionList);
-#endif
 	return true;
 }
 
@@ -395,18 +378,10 @@ void CPEDef::Save2(CInifile& ini)
 	{
 		ini.w_fvector3	("align_to_path", "default_rotation", m_APDefaultRotation);
 	}
-#ifdef _EDITOR
-    ini.w_u32			("_effect", "action_count", m_EActionList.size());
-    u32					action_id = 0;
-	for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); ++it,++action_id)
+	if (g_ParticleEditorActions)
 	{
-    	VERIFY(PAPI::IsValidAction((*it)->type));
-		string256		sect;
-		xr_sprintf		(sect, sizeof(sect), "action_%04d", action_id);
-		ini.w_u32		(sect, "action_type", (*it)->type);
-    	(*it)->Save2	(ini, sect);
-    }
-#endif
+		g_ParticleEditorActions->SaveActions2(*this, ini);
+	}
 }
 
 void CPEDef::Save(IWriter& F)
@@ -473,16 +448,12 @@ void CPEDef::Save(IWriter& F)
 		F.w_fvector3	(m_APDefaultRotation);
 		F.close_chunk	();
 	}
-#ifdef _EDITOR
-	F.open_chunk	(PS::PE::Chunks::EDATA);
-    F.w_u32			(m_EActionList.size());
-    for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); it++){
-    	VERIFY(PAPI::IsValidAction((*it)->type));
-        F.w_u32		((*it)->type);
-    	(*it)->Save	(F);
-    }
-	F.close_chunk	();
-#endif
+	if (g_ParticleEditorActions)
+	{
+		F.open_chunk(PS::PE::Chunks::EDATA);
+		g_ParticleEditorActions->SaveActions(*this, F);
+		F.close_chunk();
+	}
 }
 
 void PS::CPEDef::Compile(EPAVec& v)
@@ -495,11 +466,7 @@ void PS::CPEDef::Compile(EPAVec& v)
     
 	for(; it!=it_e; ++it)
 	{
-#ifdef _EDITOR
-		if ((*it) != nullptr && (*it)->flags.is(EParticleAction::flEnabled))
-#else
 		if ((*it) != nullptr && (*it)->flags.is(EPALegacy::EParticleAction::flEnabled))
-#endif
 		{
     	    (*it)->Compile(m_Actions);
             cnt++;

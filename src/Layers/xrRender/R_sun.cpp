@@ -371,9 +371,10 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 				r_dsgraph_render_graph(0);
 
-				if (Details && Details->dtFS && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
+				CDetailManager* ActiveDetails = GetDetails();
+				if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
 				{
-					Details->hw_Render();
+					ActiveDetails->hw_Render();
 				}
 
 				fuckingsun->X.D.transluent = false;

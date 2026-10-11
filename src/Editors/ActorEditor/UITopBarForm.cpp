@@ -146,13 +146,13 @@ void UITopBarForm::DrawSkeletonFlag(const char* Id, const char* Icon, const char
 
 void UITopBarForm::InitIcons()
 {
-    Icons["undo"] = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Undo");
-    Icons["redo"] = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Redo");
-    Icons["new_scene"] = EDevice->Resources->_CreateTexture("ed\\icons\\File New");
-    Icons["open_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open");
-    Icons["save_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Save");
-    Icons["open_gamedata_folder"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open Game Data Folder");
-    Icons["preferences"] = EDevice->Resources->_CreateTexture("ed\\icons\\Tab Preferences");
+    Icons["undo"] = DEV->_CreateTexture("ed\\icons\\Edit Undo");
+    Icons["redo"] = DEV->_CreateTexture("ed\\icons\\Edit Redo");
+    Icons["new_scene"] = DEV->_CreateTexture("ed\\icons\\File New");
+    Icons["open_level"] = DEV->_CreateTexture("ed\\icons\\File Open");
+    Icons["save_level"] = DEV->_CreateTexture("ed\\icons\\File Save");
+    Icons["open_gamedata_folder"] = DEV->_CreateTexture("ed\\icons\\File Open Game Data Folder");
+    Icons["preferences"] = DEV->_CreateTexture("ed\\icons\\Tab Preferences");
 }
 
 void UITopBarForm::ClickUndo()

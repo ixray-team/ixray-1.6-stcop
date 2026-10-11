@@ -96,7 +96,7 @@ void  ESceneLightTool::OnRender(int priority, bool strictB2F)
 	if (m_Flags.is(flShowSun))
 	{
 		if ((true == strictB2F) && (1 == priority)) {
-			EDevice->SetShader(EDevice->m_WireShader);
+			EDevice->SetShader(GEditorDraw.WireShader);
 			RCache.set_xform_world(Fidentity);
 			Fvector dir;
 

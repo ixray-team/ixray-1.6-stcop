@@ -9,7 +9,7 @@
 #include "../xrECore/Editor/UI_ToolsCustom.h"
 #include "../xrECore/Editor/ui_main.h"
 #include "../xrECore/Editor/EditorPreferences.h"
-#include "../xrECore/Editor/render.h"
+#include "../../Layers/xrRenderPC_R4/RenderEditorApi.h"
 #include "../xrECore/Editor/UIRenderForm.h"
 #include "../xrECore/Editor/ELog.h"
 #include "../xrECore/Editor/Library.h"

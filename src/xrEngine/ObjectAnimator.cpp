@@ -149,7 +149,7 @@ void CObjectAnimator::DrawPath()
             path_points.push_back(T);
         }
 
-        EDevice->SetShader(EDevice->m_WireShader);
+        EDevice->SetShader(GEditorDraw.WireShader);
         RCache.set_xform_world(Fidentity);
 
         if (!path_points.empty())

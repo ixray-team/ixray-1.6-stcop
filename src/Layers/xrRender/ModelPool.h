@@ -3,6 +3,7 @@
 #ifndef ModelPoolH
 #define ModelPoolH
 #pragma once
+#include "RenderAPI.h"
 
 // refs
 class  dxRender_Visual;
@@ -11,7 +12,7 @@ namespace PS	{
 };
 
 // defs
-class ECORE_API CModelPool
+class RENDER_API CModelPool
 {
 private:
 	friend class CRender;
@@ -66,7 +67,7 @@ public:
 	void					Prefetch			();
 	void					ClearPool			( bool b_complete );
 
-#ifdef _EDITOR    
+#ifdef USE_DX11
 	void					OnDeviceDestroy		();
 	void 					Render				(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);
 	void 					RenderSingle		(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, float m_fLOD);

@@ -5,10 +5,8 @@
 
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrEngine/IGame_Persistent.h"
-#ifndef _EDITOR
 #	include "FLOD.h"
 #	include "FTreeVisual.h"
-#endif
 
 #include "FVisual.h"
 #include "FProgressive.h"
@@ -51,7 +49,6 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 	case MT_PARTICLE_GROUP:
 		V	= new PS::CParticleGroup	();
 		break;
-#ifndef _EDITOR
 	case MT_LOD:
 	{
 		V	= new FLOD					();
@@ -103,7 +100,6 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 	case MT_TREE_PM:
 		V	= new FTreeVisual_PM		();
 		break;
-#endif
 	default:
 		FATAL	("Unknown visual type");
 		break;
@@ -156,11 +152,14 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* InputName, bool allow_r
 		{
 			if (!FS.exist(fn, _game_meshes_, name))
 			{
-#ifdef _EDITOR
-				Msg("! Can't find model file '%s'.",name);
-#else            
-				Debug.fatal(DEBUG_INFO,"Can't find model file '%s'.",name);
-#endif
+				if (Device.IsEditorMode())
+				{
+					Msg("! Can't find model file '%s'.",name);
+				}
+				else
+				{
+					Debug.fatal(DEBUG_INFO,"Can't find model file '%s'.",name);
+				}
 				return nullptr;
 			}
 		}
@@ -273,9 +272,7 @@ dxRender_Visual* CModelPool::Instance_Find(const char* N)
 
 dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 {
-#ifdef _EDITOR
-	if (!name||!name[0])	return nullptr;
-#endif
+	if (Device.IsEditorMode() && (!name||!name[0]))	return nullptr;
 	string_path low_name;	VERIFY	(xr_strlen(name)<sizeof(low_name));
 	xr_strcpy(low_name,name);	_strlwr	(low_name);
 	if (strext(low_name))	*strext	(low_name)=0;
@@ -300,9 +297,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 			if (data)		Base = Instance_Load(low_name,data,true);
             else			Base = Instance_Load(low_name,true);
 			bAllowChildrenDuplicate	= true;
-#ifdef _EDITOR
-			if (!Base)		return nullptr;
-#endif
+			if (Device.IsEditorMode() && !Base)		return nullptr;
 		}
         // 3. If found - return (cloned) reference
         dxRender_Visual*		Model	= Instance_Duplicate(Base);
@@ -498,7 +493,10 @@ dxRender_Visual* CModelPool::CreatePG	(PS::CPGDef* source)
 	return V;
 }
 
-#ifdef _EDITOR
+// Editor draw path (GEditorDraw) exists only in D3D11 builds.
+#ifdef USE_DX11
+#include "EditorDrawContext.h"
+
 IC bool	_IsBoxVisible(dxRender_Visual* visual, const Fmatrix& transform)
 {
     Fbox 		bb; 
@@ -523,7 +521,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
             CKinematics* pV		= smart_cast<CKinematics*>(m_pVisual); VERIFY(pV);
             if (fis_zero(m_fLOD,EPS)&&pV->m_lod){
 		        if (_IsValidShader(pV->m_lod,priority,strictB2F)){
-	                RCache.set_Shader		(pV->m_lod->shader?pV->m_lod->shader: EDevice->m_WireShader);
+	                RCache.set_Shader		(pV->m_lod->shader?pV->m_lod->shader: GEditorDraw.WireShader);
     	            RCache.set_xform_world	(mTransform);
         	        pV->m_lod->Render		(1.f);
                 }
@@ -532,7 +530,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
                 E = pV->children.end		();
                 for (; I!=E; I++){
                     if (_IsValidShader(*I,priority,strictB2F)){
-                        RCache.set_Shader		((*I)->shader?(*I)->shader: EDevice->m_WireShader);
+                        RCache.set_Shader		((*I)->shader?(*I)->shader: GEditorDraw.WireShader);
                         RCache.set_xform_world	(mTransform);
                         (*I)->Render		 	(m_fLOD);
                     }
@@ -547,7 +545,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
             E = pV->children.end		();
             for (; I!=E; I++){
 		        if (_IsValidShader(*I,priority,strictB2F)){
-	                RCache.set_Shader		((*I)->shader?(*I)->shader: EDevice->m_WireShader);
+	                RCache.set_Shader		((*I)->shader?(*I)->shader: GEditorDraw.WireShader);
     	            RCache.set_xform_world	(mTransform);
         	        (*I)->Render		 	(m_fLOD);
                 }
@@ -574,7 +572,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
 //		if (_IsBoxVisible(m_pVisual,mTransform))
         {
             if (_IsValidShader(m_pVisual,priority,strictB2F)){
-                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader: EDevice->m_WireShader);
+                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader: GEditorDraw.WireShader);
                 RCache.set_xform_world		(mTransform);
                 m_pVisual->Render		 	(m_fLOD);
             }
@@ -583,7 +581,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
     default:
         if (_IsBoxVisible(m_pVisual,mTransform)){
             if (_IsValidShader(m_pVisual,priority,strictB2F)){
-                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader: EDevice->m_WireShader);
+                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader: GEditorDraw.WireShader);
                 RCache.set_xform_world		(mTransform);
                 m_pVisual->Render		 	(m_fLOD);
             }
