@@ -90,6 +90,11 @@ public:
 	ref_rt						rt_ui_color;
 
 	ref_rt						rt_planar_depth;
+
+	// Editor mode: scene depth of the viewport size, replaces the window depth (RDepth)
+	ref_rt						rt_EditorDepth;
+	IRHIDepthStencilView*		EditorWindowDepth = nullptr;
+
 	ref_rt						rt_planar_color;
 
 	ref_rt						rt_upscaled_depth;
@@ -437,7 +442,8 @@ public:
 	void						increment_light_marker();
 
 	void						DoAsyncScreenshot		();
-	void						PhaseGammaApply			();
+	// Resolves the LDR frame into Destination (the swapchain target when null)
+	void						PhaseGammaApply			(IRHIRenderTargetView* Destination = nullptr);
 
 #ifdef DEBUG
 	IC void						dbg_addline				(Fvector& P0, Fvector& P1, u32 c)					{

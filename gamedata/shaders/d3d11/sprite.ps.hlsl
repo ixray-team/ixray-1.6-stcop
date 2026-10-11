@@ -1,0 +1,7 @@
+#include "common.hlsli"
+#include "common_iostructs.hlsli"
+
+float4 main(p_TL I) : SV_Target
+{
+    return s_base.Sample(smp_base, I.Tex0) * I.Color;
+}

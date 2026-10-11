@@ -5,7 +5,7 @@
 
 #include "../xrPlay/Splash.h"
 
-extern ECORE_API xr_token2* actions_token;
+extern xr_token2* actions_token;
 extern xr_token2 actions_token_impl[];
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)

@@ -167,7 +167,7 @@ public:
 	// only redraw scene
 	void 			RedrawScene			(bool bForced=false){   m_Flags.set(flRedraw,true); 		if (bForced) RealRedrawScene();}
 
-	void 			SetRenderQuality	(float q)      {   EDevice->m_ScreenQuality = q;}
+	void 			SetRenderQuality	(float q)      {   GEditorDraw.ScreenQuality = q;}
 // mouse action
 	void 			EnableSelectionRect	(bool flag );                                               
 	void 			UpdateSelectionRect	(const Ivector2& from, const Ivector2& to );
@@ -253,11 +253,7 @@ public:
 
 	// Render form
 	ref_rt RT;
-	ref_rt RTPostion;
-	ref_rt RTNormal;
-	ref_rt RTDiffuse;
 	ref_rt RTCopy;
-	ref_rt ZB;
 
 	struct Viewport
 	{
@@ -302,5 +298,13 @@ public:
 };
 
 void ECORE_API ResetActionToSelect();
+
+#include "EditorContext.h"
+IC float CalcSSA(Fvector& C, float R)
+{
+	float distSQ = EContext.UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(C);
+	return R * R / distSQ;
+}
+
 #define COMMAND0(cmd)		{ExecCommand(cmd);bExec=true;}
 #define COMMAND1(cmd,p0)	{ExecCommand(cmd,p0);bExec=true;}

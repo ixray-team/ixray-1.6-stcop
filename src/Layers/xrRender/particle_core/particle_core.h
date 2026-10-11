@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
 #ifndef particle_coreH
 #define particle_coreH
+#include "../RenderAPI.h"
 #define SQRT2PI 2.506628274631000502415765284811045253006f
 #define ONEOVERSQRT2PI (1.f/SQRT2PI)
 
 namespace PAPI
 {
-	struct  pDomain
+	struct RENDER_API pDomain
 	{
 		PDomainEnum type;			// PABoxDomain, PASphereDomain, PAConeDomain...
 		Fvector 	p1, p2;			// Box vertices, Sphere center, Cylinder/Cone ends

@@ -3,7 +3,13 @@
 #include "../../xrEngine/Render.h"
 #include "../../xrCore/Collision/ISpatial.h"
 #include "r__dsgraph_types.h"
+
+#ifdef RENDER_API_IMPORTS
+class CSector;
+class CPortal;
+#else
 #include "r__sector.h"
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 // feedback	for receiving visuals										//

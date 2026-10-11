@@ -303,7 +303,7 @@ void CSHSoundEnvTools::OnRender()
 {
 	if (m_PreviewSnd.is_playing()){	
 		RCache.set_xform_world	(Fidentity);
-		EDevice->SetShader	(EDevice->m_WireShader);
+		EDevice->SetShader	(GEditorDraw.WireShader);
 		u32 clr0			= SOUND_SEL0_COLOR;
 		u32 clr1			= SOUND_SEL1_COLOR;
 		DU_impl.DrawLineSphere	(Fvector().set(0,0,0), m_Params.max_distance, clr1, true);

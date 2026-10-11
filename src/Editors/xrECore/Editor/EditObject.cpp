@@ -55,7 +55,7 @@ void CSurface::Reload()
 	}
 
 	if (!Textures.empty())
-		EDevice->Resources->ED_UpdateTextures(&Textures);
+		DEV->ED_UpdateTextures(&Textures);
 
 	OnDeviceDestroy();
 	RemoveImageData();

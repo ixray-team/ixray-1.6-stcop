@@ -12,6 +12,7 @@
 #include "../../xrEngine/GameFont.h"
 #include "../../xrEngine/x_ray.h"
 #include "../xrRender/SkeletonCustom.h"
+#include "../xrRender/EditorRenderHost.h"
 #include "../../xrEngine/IGame_Actor.h"
 
 ICF	float	CalcSSADynamic				(const Fvector& C, float R)
@@ -36,6 +37,12 @@ ICF float GetDistFromCamera(const Fvector& from_position)
 void CRender::render_main	(bool deffered, bool zfill)
 {
 	GPU_EVENT(render_main);
+	if (Device.IsEditorMode())
+	{
+		EditorRenderMain(deffered);
+		return;
+	}
+
 //	Msg						("---begin");
 	marker					++;
 	bool dont_test_sectors = Sectors.size() <= 1;
@@ -432,28 +439,51 @@ void CRender::Render()
 	GPU_EVENT(CRender_Render);
 	VERIFY(0 == mapDistort.size() + mapHUDDistort.size());
 
-	bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
+	// The editors render their scene without a level, HUD or menu
+	const bool EditorMode = Device.IsEditorMode();
 
-	if (_menu_pp)
+	if (!EditorMode)
 	{
-		render_menu();
-		return;
-	};
+		bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
 
-	IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : 0;
-	bool bMenu = pMainMenu ? pMainMenu->CanSkipSceneRendering() : false;
-	bMenu |= !(g_pGameLevel && g_hud);
+		if (_menu_pp)
+		{
+			render_menu();
+			return;
+		};
 
-	if (bMenu)
-	{
-		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
-		return;
+		IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : 0;
+		bool bMenu = pMainMenu ? pMainMenu->CanSkipSceneRendering() : false;
+		bMenu |= !(g_pGameLevel && g_hud);
+
+		if (bMenu)
+		{
+			Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
+			return;
+		}
 	}
 
 	if(m_bFirstFrameAfterReset)
 	{
 		xrRender_apply_tf();
 		m_bFirstFrameAfterReset = false;
+
+		// The editors resize their targets often and redraw on demand: no skipped frame
+		if (!EditorMode)
+		{
+			return;
+		}
+	}
+
+	// Depth of a recent frame for the occlusion culling of this one
+	if (EditorMode && EditorOcclusionCulling)
+	{
+		EditorHiZ.Fetch();
+	}
+
+	if (EditorMode && !EditorIsLit())
+	{
+		EditorRenderUnlit();
 		return;
 	}
 
@@ -581,7 +611,7 @@ void CRender::Render()
 		Target->phase_scene_begin				();
 		r_dsgraph_render_graph					(0);
 		r_dsgraph_render_lods					(true,true);
-		if(Details)	Details->Render				();
+		if (CDetailManager* ActiveDetails = GetDetails())	ActiveDetails->Render();
 		DetailLayers_RenderBrush3D			();
 		Target->phase_scene_end					();
 	} 
@@ -669,12 +699,17 @@ void CRender::Render()
 		Target->phase_scene_begin				();
 		r_dsgraph_render_hud					();
 		r_dsgraph_render_lods					(true,true);
-		if(Details)	Details->Render				();
+		if (CDetailManager* ActiveDetails = GetDetails())	ActiveDetails->Render();
 		DetailLayers_RenderBrush3D			();
 		Target->phase_scene_end					();
 	}
 
 	Target->copy_position();
+
+	if (EditorMode && EditorOcclusionCulling)
+	{
+		EditorHiZ.Build();
+	}
 
 	if (!!o.dx11_disable_motion_vectors && NeedMotionVectors())
 	{
@@ -682,7 +717,7 @@ void CRender::Render()
 	}
 
 	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
-	if(UseWinterPass && g_pGameLevel->UseSnowmask)
+	if(UseWinterPass && g_pGameLevel && g_pGameLevel->UseSnowmask)
 	{
 		GPU_EVENT(PhaseWinter);
 
@@ -856,6 +891,13 @@ void CRender::render_forward()
 	}
 
 	PortalTraverser.fade_render();
+
+	// Editor helpers under the blended geometry
+	if (Device.IsEditorMode() && g_EditorRenderHost)
+	{
+		g_EditorRenderHost->DrawSceneHelpers();
+	}
+
 	r_dsgraph_render_sorted(false);
 
 	g_pGamePersistent->Environment().RenderLast();

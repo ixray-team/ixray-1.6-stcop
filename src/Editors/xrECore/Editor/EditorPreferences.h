@@ -78,6 +78,8 @@ public:
 	u32				scene_undo_level;
 	u32				scene_recent_count;
 	u32				scene_clear_color;
+	float			LightDistance = 150.f;
+	bool			OcclusionCulling = true;
 	AStringVec 		scene_recent_list;
 	// objects
 	Flags32			object_flags;

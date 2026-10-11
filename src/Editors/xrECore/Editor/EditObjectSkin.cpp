@@ -120,7 +120,7 @@ void CEditableObject::RenderBones(const Fmatrix& parent)
         // render
 		BoneVec& lst = m_Bones;
         for(BoneIt b_it=lst.begin(); b_it!=lst.end(); b_it++){
-	        EDevice->SetShader(EDevice->m_WireShader);
+	        EDevice->SetShader(GEditorDraw.WireShader);
 	        RCache.set_xform_world(parent);
             Fmatrix& M 		= (*b_it)->_LTransform();
             Fvector p1		= M.c;
@@ -147,7 +147,7 @@ void CEditableObject::RenderBones(const Fmatrix& parent)
             }
 */
 	     	if ((*b_it)->Parent()){
-		        EDevice->SetShader(EDevice->m_SelectionShader);
+		        EDevice->SetShader(GEditorDraw.SelectionShader);
 				Fvector& p2 = (*b_it)->Parent()->_LTransform().c;
         	    DU_impl.DrawLine	(p1,p2,color_bone_link_color);
 			}
@@ -171,7 +171,7 @@ void CEditableObject::RenderBones(const Fmatrix& parent)
             	DU_impl.OutText(p1,(*b_it)->Name().c_str(),c,s);
             }
 			if (EPrefs->object_flags.is(epoDrawBoneShapes)){
-		        EDevice->SetShader(EDevice->m_SelectionShader);
+		        EDevice->SetShader(GEditorDraw.SelectionShader);
                 Fmatrix mat	= M;
                 mat.mulA_43	(parent);
                 u32 c 		= (*b_it)->flags.is(CBone::flSelected)?0x80ffffff:0x300000ff;

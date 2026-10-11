@@ -2,9 +2,7 @@
 
 
 #pragma warning(disable:4995)
-#ifndef _EDITOR
 #include "../../xrEngine/Render.h"
-#endif
 #pragma warning(default:4995)
 
 #include "../xrRender/ResourceManager.h"
@@ -87,9 +85,7 @@ SPass*		CResourceManager::_CreatePass			(const SPass& proto)
 	P->vs						=	proto.vs;
 	P->constants				=	proto.constants;
 	P->T						=	proto.T;
-#ifdef _EDITOR
 	P->M						=	proto.M;
-#endif
 	P->C						=	proto.C;
 
 	v_passes.push_back			(P);

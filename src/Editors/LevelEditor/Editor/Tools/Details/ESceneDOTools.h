@@ -91,6 +91,9 @@ public:
     void				InvalidateCache			();
 // render part -----------------------------------------------------------------
 public:
+    // The renderer draws the objects in its pipeline (CRender::GetDetails)
+    bool				IsObjectsDrawn			();
+
     ColorIndexMap		m_ColorIndices;
 	U8Vec				m_Selected;
     CCustom2DProjector	m_Base;
@@ -106,6 +109,7 @@ public:
 
     // snap 
 	virtual ObjectList* GetSnapList				(){return &m_SnapObjects;}
+	virtual void		PickSnapTriangles		(const Fbox& Box, xr_vector<Fvector>& Verts);
     virtual void		UpdateSnapList			(){};
 
 	// selection manipulate

@@ -1,4 +1,5 @@
 #pragma once
+#include "RenderAPI.h"
 
 #include "R_DStreams.h"
 #include "r_constants_cache.h"
@@ -45,7 +46,7 @@ struct R_statistics
 
 #pragma warning(push)
 #pragma warning(disable:4324)
-class ECORE_API CBackend
+class RENDER_API CBackend
 {
 public:
 	enum MaxTextures
@@ -124,9 +125,10 @@ private:
 	CTexture*						textures_ds	[mtMaxDomainShaderTextures];	// 4 vs
 	CTexture*						textures_cs	[mtMaxComputeShaderTextures];	// 4 vs
 #endif //USE_DX11
-#ifdef _EDITOR
 	CMatrix*						matrices	[8	];	// matrices are supported only for FFP
-#endif
+
+	// Cached Device.IsEditorMode(); enables editor-only per-pass state (texture matrices).
+	bool							EditorMode = false;
 
 public:
 	void Invalidate();
@@ -200,10 +202,8 @@ public:
 		void						set_Textures		(STextureList* T);
 	IC	void						set_Textures		(ref_texture_list& T_)				{ set_Textures(T_ ? &*T_ : nullptr);			}
 
-#ifdef _EDITOR
 	IC	void						set_Matrices		(SMatrixList* M);
 	IC	void						set_Matrices		(ref_matrix_list& M)				{ set_Matrices(M ? &*M : nullptr);			}
-#endif
 
 	IC	void						set_Element			(ShaderElement* S, u32	pass=0);
 	IC	void						set_Element			(ref_selement& S, u32	pass=0)		{ set_Element(S ? &*S : nullptr,pass);		}
@@ -231,6 +231,10 @@ public:
 	ICF void						set_VS				(ref_vs& _vs);
 #ifdef USE_DX11
 	ICF void						set_VS				(SVS* _vs);
+	// Vertex shader of the current pass (resources a visual binds itself, e.g. instance buffers)
+	ICF SVS*						get_VS				() const								{ return CurrentVS; }
+	// A resource was bound to a vertex shader slot outside set_Textures: rebind that slot next time
+	ICF void						InvalidateVSTexture	(u32 Slot)								{ if (Slot < mtMaxVertexShaderTextures) textures_vs[Slot] = nullptr; }
 protected:	//	In DX10 we need input shader signature which is stored in ref_vs
 #endif //USE_DX11
 
@@ -381,17 +385,16 @@ private:
 
 private:
 	ID3DBlob*				m_pInputSignature;
+	SVS*					CurrentVS = nullptr;
 
 	bool					m_bChangedRTorZB;
 #endif //USE_DX11
 };
 #pragma warning(pop)
 
-extern  ECORE_API CBackend RCache;
+extern  RENDER_API CBackend RCache;
 
-#ifndef _EDITOR
-#	include "D3DUtils.h"
-#endif
+#include "D3DUtils.h"
 
 IC void	CBackend::set_Scissor(Irect* R)
 {

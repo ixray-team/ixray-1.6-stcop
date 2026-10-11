@@ -4,9 +4,7 @@
 #include	"SkeletonX.h"
 #include "../../xrEngine/Fmesh.h"
 
-#ifndef _EDITOR
-#	include "../../xrEngine/Render.h"
-#endif
+#include "../../xrEngine/Render.h"
 
 int psSkeletonUpdate = 32;
 

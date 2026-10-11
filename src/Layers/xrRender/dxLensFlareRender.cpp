@@ -29,9 +29,10 @@ void dxLensFlareRender::Copy(ILensFlareRender &_in)
 
 void dxLensFlareRender::Render(CLensFlare &owner, bool bSun, bool bFlares, bool bGradient)
 {
-#ifdef _EDITOR
-	return;
-#endif
+	if (Device.IsEditorMode())
+	{
+		return;
+	}
 	PROF_EVENT("dxLensFlareRender::Render");
 	Fcolor dwLight;
 	Fcolor color;
@@ -87,7 +88,7 @@ void dxLensFlareRender::Render(CLensFlare &owner, bool bSun, bool bFlares, bool 
 				{
 					vec.mul(owner.vecAxis, F.fPosition);
 					vec.add(owner.vecCenter);
-					vecSx.mul(F.fPosition == 1.0f ? owner.vecX : vecDx, F.fRadius*fDistance);//если блик в центре солнца то не будем его вращать
+					vecSx.mul(F.fPosition == 1.0f ? owner.vecX : vecDx, F.fRadius*fDistance);//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 					vecSy.mul(F.fPosition == 1.0f ? owner.vecY : vecDy, F.fRadius*fDistance);
 					color.set(dwLight);
 					color.mul_rgba(F.fOpacity*owner.fBlend*owner.m_StateBlend);

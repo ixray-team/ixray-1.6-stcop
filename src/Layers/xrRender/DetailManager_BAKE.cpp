@@ -15,7 +15,6 @@
 // All I/O is best-effort like the rest of the engine: a read-only $level$ folder simply
 // regenerates the fields in memory every load (CFileWriter logs and no-ops on failure).
 
-#ifndef _EDITOR
 
 // Console vars live in the render DLL (xrRender_console.cpp). Same flat-extern pattern
 // as DetailManager_Decompress.cpp. Declared at file scope (NOT inside the anonymous
@@ -445,4 +444,3 @@ void CDetailManager::DetailLayers_ApplySettingsFromBake()
 	}
 	Msg("* detail_layers: restored %u r__detail_* settings from bake", restored);
 }
-#endif // !_EDITOR

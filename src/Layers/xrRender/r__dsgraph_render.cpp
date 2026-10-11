@@ -379,6 +379,17 @@ void R_dsgraph_structure::r_dsgraph_render_distort()
 // sub-space rendering - shortcut to render with frustum extracted from matrix
 void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O)
 {
+#if RENDER==R_R4
+	// The editors have no sectors: collect their scene for the frustum
+	if (Device.IsEditorMode())
+	{
+		CFrustum	EditorFrustum;
+		EditorFrustum.CreateFromMatrix	(mCombined,	FRUSTUM_P_ALL &(~FRUSTUM_P_NEAR));
+		RImplementation.EditorRenderSubspace(EditorFrustum);
+		return;
+	}
+#endif
+
 	if(!_sector) return;
 	CFrustum	temp;
 	temp.CreateFromMatrix			(mCombined,	FRUSTUM_P_ALL &(~FRUSTUM_P_NEAR));
@@ -389,6 +400,13 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fm
 void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O)
 {
 	PROF_EVENT("r_dsgraph_render_subspace")
+#if RENDER==R_R4
+	if (Device.IsEditorMode())
+	{
+		RImplementation.EditorRenderSubspace(*_frustum);
+		return;
+	}
+#endif
 	VERIFY							(_sector);
 	RImplementation.marker			++;			// !!! critical here
 

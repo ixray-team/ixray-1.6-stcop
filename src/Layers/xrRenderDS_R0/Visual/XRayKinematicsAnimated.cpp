@@ -53,7 +53,7 @@ void	CDS0_KinematicsAnimated::Bone_Motion_Stop_IM(CBoneData* bd, CBlend* handle)
 	LL_GetBlendInstance(bd->GetSelfID()).blend_remove(handle);
 }
 
-#if (defined DEBUG || defined _EDITOR)
+#ifdef DEBUG
 
 std::pair<LPCSTR, LPCSTR> CDS0_KinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
 {
@@ -562,12 +562,7 @@ void CDS0_KinematicsAnimated::LoadOmf(const char* path, const char* name)
 	{
 		if (!FS.exist(fn, "$game_meshes$", path))
 		{
-#ifdef _EDITOR
-			Msg("!Can't find motion file '%s'.", path);
-			return;
-#else
 			Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", path);
-#endif
 		}
 	}
 
@@ -777,12 +772,7 @@ void CDS0_KinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 			{
 				if (!FS.exist(fn, "$game_meshes$", nm))
 				{
-#ifdef _EDITOR
-					Msg("!Can't find motion file '%s'.", nm);
-					return;
-#else
 					Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", nm);
-#endif
 				}
 			}
 
@@ -820,12 +810,7 @@ void CDS0_KinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 			{
 				if (!FS.exist(fn, "$game_meshes$", nm))
 				{
-#ifdef _EDITOR
-					Msg("!Can't find motion file '%s'.", nm);
-					return;
-#else
 					Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", nm);
-#endif
 				}
 			}
 			m_Motions.push_back(SMotionsSlot());
@@ -968,7 +953,6 @@ void	CDS0_KinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatri
 	RES.mk_xform(Result.Q, Result.T);
 	bi.mTransform.mul_43(*parent, RES);
 #ifdef DEBUG
-#ifndef _EDITOR
 	if (!check_scale(RES))
 	{
 		VERIFY(check_scale(bi.mTransform));
@@ -985,7 +969,6 @@ void	CDS0_KinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatri
 	//	Msg("bone %s",*bd->name)	;
 	//}
 	//BONE_INST.mPrevTransform.set(RES);
-#endif
 #endif
 }
 

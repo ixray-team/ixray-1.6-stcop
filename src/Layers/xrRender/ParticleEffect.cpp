@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ParticleEffect.h"
+#include "EditorRenderHost.h"
 #include "CHudInitializer.h"
 
 using namespace PAPI;
@@ -138,9 +139,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 				m_Def->ExecuteAnimate(particles, p_cnt, fDT_STEP);
 
 			bool EditorTest = !Device.IsEditorMode();
-#ifdef _EDITOR
-			EditorTest = EditorTest || EContext.UI->IsPlayInEditor();
-#endif
+			EditorTest = EditorTest || (g_EditorRenderHost && g_EditorRenderHost->IsPlayInEditor());
 			if (m_Def->m_Flags.is(CPEDef::dfCollision) && EditorTest)
 				m_Def->ExecuteCollision(particles, p_cnt, fDT_STEP, this, m_CollisionCallback);
 
@@ -315,7 +314,6 @@ PAPI::ParticleAction* CParticleEffect::FindPA(shared_str PEName, PAPI::PActionEn
 //------------------------------------------------------------------------------
 // Render
 //------------------------------------------------------------------------------
-#ifndef _EDITOR
 //----------------------------------------------------
 ICF void FillSprite	(PAPI::Particle& m, xrCriticalSection& cache_lock, const Fvector& pos, const Fvector& T, const Fvector& R, const Fvector4& uv, const Fvector2& vs, u32 clr)
 {
@@ -482,6 +480,12 @@ void CParticleEffect::UpdateCache()
 
 void CParticleEffect::Render(float)
 {
+	if (Device.IsEditorMode())
+	{
+		RenderEditor();
+		return;
+	}
+
 	if (!m_Def || !m_Def->m_Flags.test(CPEDef::dfSprite))
 	{
 		return;
@@ -527,8 +531,8 @@ void CParticleEffect::Render(float)
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 }
-#else
-ICF void FillSprite(PAPI::Particle::LITBUFF*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
+
+ICF void FillSpriteEditor(PAPI::Particle::LITBUFF*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
 {
 	float sa = std::sin(angle);
 	float ca = std::cos(angle);
@@ -555,7 +559,7 @@ ICF void FillSprite(PAPI::Particle::LITBUFF*& pv, const Fvector& T, const Fvecto
 	pv++;
 }
 
-ICF void FillSprite(PAPI::Particle::LITBUFF*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
+ICF void FillSpriteEditor(PAPI::Particle::LITBUFF*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
 {
 	float sa = std::sin(angle);
 	float ca = std::cos(angle);
@@ -584,7 +588,8 @@ ICF void FillSprite(PAPI::Particle::LITBUFF*& pv, const Fvector& pos, const Fvec
 	pv++;
 }
 
-void CParticleEffect::Render(float)
+// Editor path: immediate sprite fill without the per-frame cache.
+void CParticleEffect::RenderEditor()
 {
 	// PROF_EVENT(__FUNCTION__);
 	xrCriticalSectionGuard guard(&onframe_lock);
@@ -666,11 +671,11 @@ void CParticleEffect::Render(float)
                             Fvector p;
                             m_XFORM.transform_tiny(p,m.posI);
 	                        M.mulA_43(m_XFORM);
-                            FillSprite(pv,M.k,M.i,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+                            FillSpriteEditor(pv,M.k,M.i,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
                         }
 						else
 						{
-							FillSprite(pv,M.k,M.i,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+							FillSpriteEditor(pv,M.k,M.i,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
 						}
 					}
 					else if ((speed >= EPS_S) && m_Def->m_Flags.is(CPEDef::dfFaceAlign))
@@ -689,10 +694,10 @@ void CParticleEffect::Render(float)
                             Fvector p;
                             m_XFORM.transform_tiny(p,m.posI);
 	                        M.mulA_43(m_XFORM);
-                            FillSprite(pv,M.j,M.i,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+                            FillSpriteEditor(pv,M.j,M.i,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
                         }
 						else
-                            FillSprite(pv,M.j,M.i,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+                            FillSpriteEditor(pv,M.j,M.i,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
                     }
 					else
 					{
@@ -708,10 +713,10 @@ void CParticleEffect::Render(float)
                             Fvector p,d;
                             m_XFORM.transform_tiny(p,m.posI);
                             m_XFORM.transform_dir(d,dir);
-                            FillSprite(pv,p,d,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+                            FillSpriteEditor(pv,p,d,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
                         }
 						else
-                            FillSprite(pv,m.posI,dir,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+                            FillSpriteEditor(pv,m.posI,dir,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
                     }
 				}
 				else
@@ -720,11 +725,11 @@ void CParticleEffect::Render(float)
 					{
 						Fvector p;
 						m_XFORM.transform_tiny(p,m.posI);
-						FillSprite(pv,RDEVICE.vCameraTop,RDEVICE.vCameraRight,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+						FillSpriteEditor(pv,RDEVICE.vCameraTop,RDEVICE.vCameraRight,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
 					}
 					else
 					{
-						FillSprite(pv,RDEVICE.vCameraTop,RDEVICE.vCameraRight,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+						FillSpriteEditor(pv,RDEVICE.vCameraTop,RDEVICE.vCameraRight,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
 					}
 				}
 			}
@@ -759,5 +764,5 @@ void CParticleEffect::Render(float)
 		}
 	}
 }
-#endif
+
 

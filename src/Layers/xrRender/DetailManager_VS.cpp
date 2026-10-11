@@ -47,11 +47,7 @@ void CDetailManager::hw_Load()
 	u32			dwIndices	= 0;
 	for (u32 o=0; o<objects.size(); o++)
 	{
-#ifndef _EDITOR 
-		const CDetail& D	=	objects[o];
-#else
 		const CDetail& D	=	*objects[o];
-#endif
 		dwVerts		+=	D.number_vertices*hw_BatchSize;
 		dwIndices	+=	D.number_indices*hw_BatchSize;
 	}
@@ -92,11 +88,7 @@ void CDetailManager::hw_Load()
 
 		for (u32 o=0; o<objects.size(); o++)
 		{
-#ifndef _EDITOR 
-			const CDetail& D	=	objects[o];
-#else
 			const CDetail& D	=	*objects[o];
-#endif
 			for (u32 batch=0; batch<hw_BatchSize; batch++)
 			{
 				u32 mid	=	batch;
@@ -128,11 +120,7 @@ void CDetailManager::hw_Load()
 
 		for (u32 o=0; o<objects.size(); o++)
 		{
-#ifndef _EDITOR 
-			const CDetail& D	=	objects[o];
-#else
 			const CDetail& D	=	*objects[o];
-#endif
 			u16		offset	=	0;
 			for (u32 batch=0; batch<hw_BatchSize; batch++)
 			{
@@ -217,28 +205,23 @@ void CDetailManager::hw_Render_dump(ref_constant x_array, u32 var_id, u32 lod_id
 	if (phase_shmap && var_id == 0)
 		return;
 #endif
-#ifndef _EDITOR
-	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
-	if (!in_outdoor)
-		return;
-#endif 
+	if (!Device.IsEditorMode())
+	{
+		bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+		if (!in_outdoor)
+			return;
+	}
 	// Matrices and offsets
 	u32 vOffset	= 0;
 	u32 iOffset	= 0;
 
 	// Iterate
-#ifndef _EDITOR
-
 	Fvector l_spatial_pos = L ? L->SpatialComponent->sphere.P : zero_vel;
 	float l_range_sqr = L ? _sqr(L->SpatialComponent->sphere.R) : EPS;
 
-	for (CDetail& Object : objects)
-	{
-#else
 	for (CDetail* D : objects)
 	{
 		CDetail& Object = *D;
-#endif
 		// Setup matrices + colors (and flush it as nesessary)
 		RCache.set_Element(Object.shader->E[lod_id]);
 		RImplementation.apply_lmaterial();

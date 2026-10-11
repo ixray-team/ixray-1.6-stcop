@@ -5,9 +5,7 @@
 #include "stdafx.h"
 
 
-#ifndef _EDITOR
-#	include "../../xrEngine/Render.h"
-#endif // #ifndef _EDITOR
+#include "../../xrEngine/Render.h"
 
 #include "FBasicVisual.h"
 #include "../../xrEngine/Fmesh.h"
@@ -74,10 +72,8 @@ void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
 	}
 
     // desc
-#ifdef _EDITOR
-    if (data->find_chunk(OGF_S_DESC)) 
+    if (Device.IsEditorMode() && data->find_chunk(OGF_S_DESC))
 	    desc.Load		(*data);
-#endif
 }
 
 ICF int RenderMode_to_SkinningMode(u32 rm)
@@ -125,8 +121,6 @@ void	dxRender_Visual::Copy(dxRender_Visual *pFrom)
 	PCOPY(shader_name);
 	PCOPY(shader);
 	PCOPY(vis);
-#ifdef _EDITOR
 	PCOPY(desc);
-#endif
 	PCOPY(dbg_name);
 }

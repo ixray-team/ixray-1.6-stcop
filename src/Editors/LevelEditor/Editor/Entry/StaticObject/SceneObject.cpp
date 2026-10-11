@@ -136,7 +136,7 @@ void CSceneObject::Render(int priority, bool strictB2F)
 		{
 			if (false == strictB2F)
 			{
-				EDevice->SetShader(EDevice->m_WireShader);
+				EDevice->SetShader(GEditorDraw.WireShader);
 				RCache.set_xform_world(_Transform());
 
 				u32 clr = Locked() ? 0xFFFF0000 : 0xFFFFFFFF;

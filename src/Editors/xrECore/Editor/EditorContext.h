@@ -26,3 +26,6 @@ struct ECORE_API EditorContext
 
 extern ECORE_API EditorContext EContext;
 ECORE_API void BindEditorContext();
+
+void BindEditorRenderHost();
+void DestroyEditorRenderHostObjects();

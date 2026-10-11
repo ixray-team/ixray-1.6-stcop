@@ -45,7 +45,13 @@ void CDetailManager::cache_ReInitialize()
 	bwdithermap(2, dither);
 	cache_cx = 0;
 	cache_cz = 0;
-#ifndef _EDITOR
+	if (Device.IsEditorMode())
+	{
+		BuildClusterField();
+		BuildFMBField();
+	}
+	else
+	{
 	// Reuse the baked fields when the level + settings still match; otherwise regenerate
 	// and, during an actual level Load(), persist the fresh bake for the next session.
 	// Runtime-only rebuilds (console changes) stay in memory so a momentary tweak cannot
@@ -65,10 +71,7 @@ void CDetailManager::cache_ReInitialize()
 	// (user_mask_*.bin) so painted cells overwrite the generator and untouched ones keep it.
 	DetailLayers_CommitBaseFields();
 	DetailLayers_ApplyUserMasks();
-#else
-	BuildClusterField();
-	BuildFMBField();
-#endif
+	}
 
 	// Initialize cache-grid
 	for (u32 i = 0; i < dm_cache_line; i++)
@@ -221,7 +224,7 @@ void CDetailManager::cache_Update(const Fvector& view)
 		if (!ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))
 		{
 			bool bFullUnpack = false;
-			int limit = dm_max_decompress;
+			int limit = Device.IsEditorMode() ? 14 : 7;
 			if (unpacked_slots.size() == dm_cache_size)
 			{
 				limit = dm_cache_size;

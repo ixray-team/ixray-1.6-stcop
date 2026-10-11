@@ -9,11 +9,12 @@
 #include "ExportObjectOGF.h"
 #include "D3DUtils.h"
 #include "ui_main.h"
-#include "render.h"
+#include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
 #include "../Public/PropertiesListHelper.h"
 #include "../../Layers/xrRender/ResourceManager.h"
 #include "ImageManager.h"
 #include "EditorInstancing.h"
+#include "EditorSceneSubmit.h"
 
 const float tex_w	= LOD_SAMPLE_COUNT*LOD_IMAGE_SIZE;
 const float tex_h	= 1*LOD_IMAGE_SIZE;
@@ -149,9 +150,12 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 	bb.xform(m_BBox, parent);
 	bb.getsphere(v, r);
 
+	const bool SubmitPass = GEditorDraw.IsSubmitPass();
+	const bool OverlayPass = GEditorDraw.IsOverlayPass();
+
 	if (EPrefs->object_flags.is(epoDrawLOD) && (m_objectFlags.is(eoUsingLOD) && (CalcSSA(v, r) < ssaLim)))
 	{
-		if ((1 == priority) && (true == strictB2F))
+		if ((1 == priority) && (true == strictB2F) && !SubmitPass)
 		{
 			RenderLOD(parent);
 		}
@@ -189,6 +193,11 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 		 		RenderEdge(pParent);
 			}
 
+			if (OverlayPass)
+			{
+				return;
+			}
+
 			if (IsSkeleton())
 			{
 				Engine.External.SetSkinningMode(4);
@@ -214,6 +223,25 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 					// пределы. Поэтому просто регаем дефолтный материал.
 
 					CSurface* DrawSurface = (surfaces != nullptr && surfaces->size() > s_id) ? (*surfaces)[s_id] : s_it;
+
+					if (SubmitPass)
+					{
+						// Repeated placements of a surface merge into instanced draws (opaque only:
+						// strict-B2F surfaces are sorted per copy)
+						ref_shader InstancedShader;
+						if (!strictB2F && !IsSkeleton())
+						{
+							InstancedShader = DrawSurface->_ShaderInstanced();
+						}
+
+						for (auto _M : m_Meshes)
+						{
+							_M->Submit(pParent, parent, s_it, DrawSurface->_Shader(), InstancedShader, IsSkeleton());
+						}
+						s_id++;
+						continue;
+					}
+
 					EDevice->SetShader(DrawSurface->_Shader());
 
 					ref_shader InstancedShader;
@@ -391,7 +419,7 @@ void CEditableObject::RenderLOD(const Fmatrix& parent)
 	LOD[5].p.set(p[3]); LOD[5].t.set(t[3]); LOD[5].color = 0xFFFFFFFF;
 
 	RCache.set_xform_world(parent);
-	EDevice->SetShader(m_LODShader ? m_LODShader : EDevice->m_WireShader);
+	EDevice->SetShader(m_LODShader ? m_LODShader : GEditorDraw.WireShader);
 	DU_impl.DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 2, LOD, 6, true, false);
 }
 
@@ -494,7 +522,7 @@ bool CEditableObject::CheckShaderCompatible()
 	bool bRes 			= true;
 	for(SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
 	{
-		IBlender* 		B = EDevice->Resources->_FindBlender(*(*s_it)->m_ShaderName);
+		IBlender* 		B = DEV->_FindBlender(*(*s_it)->m_ShaderName);
 		Shader_xrLC* 	C = EDevice->ShaderXRLC.Get(*(*s_it)->m_ShaderXRLCName);
 		if (!B||!C){
 			ELog.Msg	(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",m_LibName.c_str(),(*s_it)->m_ShaderName.c_str(),(*s_it)->m_ShaderXRLCName.c_str());

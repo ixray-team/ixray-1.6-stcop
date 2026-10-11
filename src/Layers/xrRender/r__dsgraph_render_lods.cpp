@@ -1,13 +1,8 @@
 #include "stdafx.h"
 #include "FLOD.h"
 
-#ifdef _EDITOR
-#include "igame_persistent.h"
-#include "environment.h"
-#else
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
-#endif
 
 extern float r_ssaLOD_A;
 extern float r_ssaLOD_B;

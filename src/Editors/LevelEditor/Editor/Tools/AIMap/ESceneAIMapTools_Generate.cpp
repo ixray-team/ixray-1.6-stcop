@@ -578,10 +578,10 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 			return false;
 		}
 
-		if (!m_Flags.is(flSlowCalculate)) {
+		if (!m_Flags.is(flSlowCalculate))
+		{
 			// evict resources
 			ExecCommand(COMMAND_EVICT_OBJECTS);
-			ExecCommand(COMMAND_EVICT_TEXTURES);
 
 			// prepare collision model
 			u32 avg_face_cnt = 0;

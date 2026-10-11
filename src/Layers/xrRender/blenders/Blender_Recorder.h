@@ -1,8 +1,9 @@
 #pragma once
+#include "../RenderAPI.h"
 #include "../tss.h"
 #pragma pack(push,4)
 
-class  CBlender_Compile  
+class RENDER_API CBlender_Compile
 {
 public:
 	sh_list				L_textures;

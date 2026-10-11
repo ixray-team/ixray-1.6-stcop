@@ -247,7 +247,7 @@ void CGroupObject::Render(int priority, bool strictB2F)
             {
     	    case OBJCLASS_SCENEOBJECT: it->pObject->Render(priority,strictB2F); break;
             default:
-                EDevice->SetShader(strictB2F?EDevice->m_SelectionShader:EDevice->m_WireShader);
+                EDevice->SetShader(strictB2F?GEditorDraw.SelectionShader:GEditorDraw.WireShader);
                 RCache.set_xform_world(Fidentity);
                 it->pObject->Render(priority,strictB2F);
         	}
@@ -258,7 +258,7 @@ void CGroupObject::Render(int priority, bool strictB2F)
     	Fbox bb;
     	if (Selected()&&GetBox(bb))
         {
-            EDevice->SetShader(EDevice->m_WireShader);
+            EDevice->SetShader(GEditorDraw.WireShader);
             RCache.set_xform_world(Fidentity);
             u32 clr = Locked()?0xFFFF0000:0xFF7070FF;
             DU_impl.DrawSelectionBoxB(bb,&clr);

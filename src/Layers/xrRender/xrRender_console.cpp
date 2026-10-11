@@ -372,7 +372,6 @@ bool		ps_r2_particle_dt			= false;
 
 int			r_debug_render_depth		= 0;
 
-#ifndef _EDITOR
 #include "../../xrEngine/XR_IOConsole.h"
 #include	"../../xrEngine/xr_ioc_cmd.h"
 #include "../../xrEngine/IGame_Level.h"
@@ -918,7 +917,7 @@ public:
 extern Fvector3 ps_ssfx_volumetric;
 #endif
 //-----------------------------------------------------------------------
-void		xrRender_initconsole	()
+RENDER_API void		xrRender_initconsole	()
 {
 	CMD1(CCC_MonsterLogic, "monster_logic");
 	CMD1(CCC_MonsterLogicStats, "monster_logic_stats");
@@ -1285,5 +1284,4 @@ void xrRender_apply_tf()
 	Console->Execute("r__tf_mipbias");
 }
 
-#endif
 

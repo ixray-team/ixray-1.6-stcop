@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 
 #include <fstream>
@@ -186,6 +186,8 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateFloat	(props,"Viewport\\FOV", 							&view_fov, 				0.1f, 	170.f);
 	PHelper().CreateFloat	(props,"Viewport\\Render Radius", 					&EDevice->RenderRadius, 10.f, 	100000.f);
 	PHelper().CreateColor	(props,"Viewport\\Clear Color", 					&scene_clear_color);
+	PHelper().CreateFloat	(props,"Viewport\\Light Distance", 				&LightDistance, 		1.f, 	10000.f);
+	PHelper().CreateBool	(props,"Viewport\\Occlusion Culling", 			&OcclusionCulling);
 
 	PHelper().CreateFlag32	(props,"Objects\\Show\\Hint", 						&object_flags, 			epoShowHint);
 	PHelper().CreateFlag32	(props,"Objects\\Show\\Pivot", 						&object_flags, 			epoDrawPivot);
@@ -416,9 +418,11 @@ void CCustomPreferences::Load()
 	if (const auto* render = GetObjectSafe(JSONData, "render"))
 	{
 		GetSafe(*render, "render_radius", EDevice->RenderRadius);
+		GetSafe(*render, "light_distance", LightDistance);
+		GetSafe(*render, "occlusion_culling", OcclusionCulling);
 		GetSafe(*render, "w", start_w);
 		GetSafe(*render, "h", start_h);
-		GetSafe(*render, "quality", EDevice->m_ScreenQuality);
+		GetSafe(*render, "quality", GEditorDraw.ScreenQuality);
 
 		int x = 0, y = 0;
 		if (GetSafe(*render, "x", x) && GetSafe(*render, "y", y))
@@ -549,7 +553,7 @@ void CCustomPreferences::Save()
 
 	JSONData["render"]["w"] = EDevice->Width;
 	JSONData["render"]["h"] = EDevice->Height;
-	JSONData["render"]["quality"] = EDevice->m_ScreenQuality;
+	JSONData["render"]["quality"] = GEditorDraw.ScreenQuality;
 
 	int X, Y;
 	SDL_GetWindowPosition(g_AppInfo.Window, &X, &Y);
@@ -558,6 +562,8 @@ void CCustomPreferences::Save()
 
 	JSONData["windows"]["log"]=bAllowLogCommands;
 	JSONData["render"]["render_radius"]=EDevice->RenderRadius;
+	JSONData["render"]["light_distance"]=LightDistance;
+	JSONData["render"]["occlusion_culling"]=OcclusionCulling;
 	
 	JSONData["ContentBrowser"]["file_custom_icon"] = custom_icons;
 	// load shortcuts

@@ -2,6 +2,7 @@
 #include "dxRenderFactory.h"
 #include "dxUIRender.h"
 #include "dxDebugRender.h"
+#include "../../xrEngine/XR_IOConsole.h"
 
 static void RenderEntryLibraryPoint()
 {
@@ -14,7 +15,12 @@ static void RenderEntryLibraryPoint()
 	DRender = &DebugRenderImpl;
 #endif // DEBUG
 
-	xrRender_initconsole();
+	// The editors link this library directly, so it is loaded before the console exists;
+	// they do not use the renderer console commands.
+	if (Console != nullptr)
+	{
+		xrRender_initconsole();
+	}
 }
 
 #ifdef IXR_WINDOWS

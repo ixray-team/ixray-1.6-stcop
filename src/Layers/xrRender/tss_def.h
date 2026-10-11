@@ -2,8 +2,9 @@
 #define TSS_DEF_H
 
 #pragma once
+#include "RenderAPI.h"
 
-class	 SimulatorStates
+class RENDER_API SimulatorStates
 {
 private:
 	struct State

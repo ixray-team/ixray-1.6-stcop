@@ -5,18 +5,19 @@
 #include <sal.h>
 #include "ImageManager.h"
 #include "ui_main.h"
-#include "render.h"
+#include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
 #include "EditorInstancing.h"
+#include "EditorSceneSubmit.h"
 #include "../Engine/XrGameMaterialLibraryEditors.h"
 #include "../Layers/xrRender/ResourceManager.h"
 #include "../Layers/xrRender/dxRenderDeviceRender.h"
 #include "UI_ToolsCustom.h"
 #include "SoundProcessor.h"
 #include "device_win_custom.h"
+#include "../../../Include/xrRender/UIRender.h"
+#include "../../../Include/xrRender/RenderFactory.h"
 CEditorRenderDevice 	*	EDevice;
 bool g_bIsEditor;
-
-float r_dtex_range = 50.f;
 
 void CEditorRenderDevice::AddSeqFrame(pureFrame* f, bool mt) { seqFrame.Add(f, REG_PRIORITY_LOW); }
 void CEditorRenderDevice::RemoveSeqFrame(pureFrame* f) { seqFrame.Remove(f); }
@@ -60,15 +61,11 @@ CEditorRenderDevice::CEditorRenderDevice()
 	RenderRadius = 400;
 	psDeviceFlags.assign(rsStatistic|rsFilterLinear|rsFog|rsDrawGrid);
 // default initialization
-    m_ScreenQuality = 1.f;
-
     TargetWidth = TargetHeight 	= 256;
 	Width = Height = 256;
 	mProject.identity();
     mFullTransform.identity();
     mView.identity	();
-	m_WireShader	= nullptr;
-	m_SelectionShader = nullptr;
 
     b_is_Ready 			= false;
 	b_is_Active			= false;
@@ -79,10 +76,6 @@ CEditorRenderDevice::CEditorRenderDevice()
 	dwTimeDelta		= 0;
 	dwTimeGlobal	= 0;
 
-	dwFillMode		= D3DFILL_SOLID;
-    dwShadeMode		= D3DSHADE_GOURAUD;
-
-    m_CurrentShader	= nullptr;
     //pSystemFont		= 0;
 
 	fASPECT 		= 1.f;
@@ -95,6 +88,7 @@ CEditorRenderDevice::CEditorRenderDevice()
 	DevicePtr = this;
 	g_bIsEditor = true;
 	BindEditorContext();
+	BindEditorRenderHost();
 
 	setup_luabind_allocator();
 	STextureParams::FillPropImpl = EditorFillPropTextureParams;
@@ -108,22 +102,12 @@ CEditorRenderDevice::~CEditorRenderDevice()
 	m_MtlLib.reset();
 }
 
-#include "../../../Layers/xrRender/dxRenderFactory.h"
-#include "../../../Layers/xrRender/dxUIRender.h"
-#include "../../../Layers/xrRender/dxDebugRender.h"
 
 typedef void __cdecl ttapi_Done_func(void);
 
 void CEditorRenderDevice::Initialize()
 {
     m_DefaultMat.set(1,1,1);
-
-	RenderFactory = &RenderFactoryImpl;
-	UIRender = &UIRenderImpl;
-
-#ifdef DEBUG_DRAW
-	DRender = &DebugRenderImpl;
-#endif
 
 	// compiler shader
     string_path fn;
@@ -140,7 +124,7 @@ void CEditorRenderDevice::Initialize()
 	Create();
 
     ::RImplementation.Initialize();
-	UIRenderImpl.CreateUIGeom();
+	UIRender->CreateUIGeom();
 
 	Resize(EPrefs->start_w, EPrefs->start_h, EPrefs->start_maximized);
 
@@ -166,7 +150,7 @@ void CEditorRenderDevice::Initialize()
 
 void CEditorRenderDevice::ShutDown()
 {
-	UIRenderImpl.DestroyUIGeom();
+	UIRender->DestroyUIGeom();
 	::RImplementation.ShutDown	();
 
 	ShaderXRLC.Unload	();
@@ -256,11 +240,16 @@ bool CEditorRenderDevice::Create()
     IReader* F			= nullptr;
 	if (FS.exist(sh))
 		F				= FS.r_open(nullptr,sh);
-	Resources			= new CResourceManager	();
+
+	// The renderer resources live in its device render object (DEV)
+	if (!m_pRender)
+		m_pRender = RenderFactory->CreateRenderDeviceRender();
+
+	DEV			= new CResourceManager	();
 
     // if build options - load textures immediately
     if (strstr(Core.Params,"-build")||strstr(Core.Params,"-ebuild"))
-        EDevice->Resources->DeferredLoad(false);
+        DEV->DeferredLoad(false);
 
 	g_FontManager = new CFontManager();
 
@@ -289,7 +278,9 @@ void CEditorRenderDevice::Destroy()
 	// before destroy
 	_Destroy(false);
 
-	xr_delete(Resources);
+	xr_delete(DEV);
+	RenderFactory->DestroyRenderDeviceRender(m_pRender);
+	m_pRender = nullptr;
 
 	EContext.UI->Destroy();
 
@@ -331,12 +322,10 @@ void CEditorRenderDevice::_Create(IReader* F)
     _SetupStates		();
     
     RCache.OnDeviceCreate		();
-	Resources->OnDeviceCreate	(F);
+	DEV->OnDeviceCreate	(F);
 	::RImplementation.OnDeviceCreate	();
 
-	m_WireShader.create("editor\\wire");
-	m_SelectionShader.create("editor\\selection");
-	ShaderTL.create("editor\\default");
+	GEditorDraw.OnDeviceCreate();
 
 	texture_null.create("ed\\ed_nodata");
 	texture_null->Load();
@@ -351,24 +340,20 @@ void CEditorRenderDevice::_Create(IReader* F)
 void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 {
 	b_is_Ready 						= false;
-    m_CurrentShader				= nullptr;
 
 	RCache.Invalidate();
 
     EContext.UI->OnDeviceDestroy			();
 
-	m_WireShader.destroy		();
-	m_SelectionShader.destroy	();
-	ShaderTL.destroy	();
+	GEditorDraw.OnDeviceDestroy();
 	texture_null.destroy		();
 
-	_RELEASE(m_DetailInstanceSRV);
-	_RELEASE(m_DetailInstanceBuffer);
 	GEditorInstancing.OnDeviceDestroy();
+	GEditorSceneSubmit.Clear();
 
 	::RImplementation.Models->OnDeviceDestroy	();
 
-	Resources->OnDeviceDestroy	(bKeepTextures);
+	DEV->OnDeviceDestroy	(bKeepTextures);
 
 	RCache.OnDeviceDestroy		();
 	::RImplementation.OnDeviceDestroy	();
@@ -389,16 +374,16 @@ void CEditorRenderDevice::Reset(bool)
 	u32 tm_start = TimerAsync();
 	SearchIcon.destroy();
 
-	Resources->reset_begin();
-	Resources->DeferredUnload();
+	DEV->reset_begin();
+	DEV->DeferredUnload();
 	EContext.UI->ResetBegin();
 
 	Memory.mem_compact();
 	ResizeBuffers(Width, Height);
 	SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
 
-	Resources->reset_end();
-	Resources->DeferredUpload();
+	DEV->reset_end();
+	DEV->DeferredUpload();
 
 	EContext.UI->ResetEnd(RDevice);
 	_SetupStates();
@@ -406,7 +391,7 @@ void CEditorRenderDevice::Reset(bool)
 	R_ASSERT(texture_null->get_SRView(), "Null texture not found!");
 	UIChooseForm::SetNullTexture(texture_null->get_SRView()->GetRawSRV());
 
-	SearchIcon = EDevice->Resources->_CreateTexture("ed\\content_browser_search");
+	SearchIcon = DEV->_CreateTexture("ed\\content_browser_search");
 	if (SearchIcon)
 	{
 		SearchIcon->Load();
@@ -592,89 +577,6 @@ void CEditorRenderDevice::InitWindowStyle()
 	SDL_SetWindowResizable(g_AppInfo.Window, SDL_TRUE);
 	SDL_SetWindowHitTest(g_AppInfo.Window, HitTestCallback, 0);
 #endif
-}
-
-void CEditorRenderDevice::SetShader(ref_shader sh)
-{
-	m_CurrentShader = sh;
-	EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
-}
-
-// HACK: detail VS reads per-instance data from a StructuredBuffer (filled by CDetailManager in game/LE);
-// single objects are drawn as instance 0 with one identity instance.
-void CEditorRenderDevice::BindDetailInstance(ref_shader& S, u32 Pass)
-{
-	SPass& P = *S->E[0]->passes[Pass];
-	if (!P.vs || P.vs->instance_buffer_slot == u32(-1))
-		return;
-
-	if (!m_DetailInstanceSRV)
-	{
-		struct alignas(16) SInstance
-		{
-			Fvector quat;
-			float scale;
-			Fvector pos;
-			float hemi;
-			float trample_strength;
-			float trample_visual;
-			float trample_dir[2];
-		};
-
-		SInstance Inst{};
-		Inst.scale = 1.f;
-		Inst.hemi = 1.f;
-
-		RHIBufferDesc Desc{};
-		Desc.Usage = ERHI_USAGE::USAGE_IMMUTABLE;
-		Desc.Type = ERHI_BUFFER_TYPE::STRUCTURED;
-		Desc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_NONE;
-		Desc.StructureByteStride = sizeof(SInstance);
-		Desc.Size = sizeof(SInstance);
-
-		RHIBufferSubresource Init{};
-		Init.pSysMem = &Inst;
-		m_DetailInstanceBuffer = GRHI->CreateBuffer(Desc, &Init);
-		if (!m_DetailInstanceBuffer)
-			return;
-
-		RHIShaderResourceViewDesc SrvDesc{};
-		SrvDesc.Format = ERHI_FORMAT::UNKNOWN;
-		SrvDesc.ElementWidth = 1;
-		m_DetailInstanceSRV = GRHI->CreateShaderResourceView(m_DetailInstanceBuffer, &SrvDesc);
-	}
-
-	GRHI->ShaderResourceCache->SetVSResource(P.vs->instance_buffer_slot, m_DetailInstanceSRV);
-}
-
-void CEditorRenderDevice::DP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 vBase, u32 pc)
-{
-	ref_shader S 			= m_CurrentShader?m_CurrentShader:m_WireShader;
-    u32 dwRequired			= S->E[0]->passes.size();
-
-    for (u32 dwPass = 0; dwPass<dwRequired; dwPass++)
-	{
-    	RCache.set_Shader	(S,dwPass);
-		BindDetailInstance	(S,dwPass);
-		EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
-		RCache.set_Geometry(geom);
-		RCache.Render		(pt,vBase,pc);
-    }
-}
-
-void CEditorRenderDevice::DIP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
-{
-	ref_shader S 			= m_CurrentShader?m_CurrentShader:m_WireShader;
-    u32 dwRequired			= S->E[0]->passes.size();
-    RCache.set_Geometry		(geom);
-
-    for (u32 dwPass = 0; dwPass<dwRequired; dwPass++)
-	{
-    	RCache.set_Shader	(S,dwPass);
-		BindDetailInstance	(S,dwPass);
-		EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
-		RCache.Render		(pt,baseV,startV,countV,startI,PC);
-    }
 }
 
 void CEditorRenderDevice::ReloadTextures()

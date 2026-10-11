@@ -5,18 +5,12 @@
 #ifndef D3DUtilsH
 #define D3DUtilsH
 
+#include "RenderAPI.h"
 #include "../../Include/xrRender/DrawUtils.h"
 //----------------------------------------------------
 
-#ifdef _EDITOR
-#	define DU_DRAW_DIP	EDevice->DIP
-#	define DU_DRAW_DP	EDevice->DP
-#else
-#	define DU_DRAW_DIP	RCache.dbg_DIP
-#	define DU_DRAW_DP	RCache.DrawTriangleFan
-#endif
-
-class CEditableObject;
+#define DU_DRAW_DIP	RCache.dbg_DIP
+#define DU_DRAW_DP	RCache.DrawTriangleFan
 
 struct SPrimitiveBuffer{
     ref_geom				pGeom;
@@ -38,7 +32,7 @@ public:
 //----------------------------------------------------
 // Utilities
 //----------------------------------------------------
-class ECORE_API CDrawUtilities: 
+class RENDER_API CDrawUtilities: 
     public CDUInterface, 
     public pureRender
 {
@@ -58,7 +52,6 @@ public:
 	ref_geom 	vs_TL;
 	ref_geom 	vs_LIT;
 protected:
-    CEditableObject* m_axis_object;
     FVF::L*		m_DD_pv;
     FVF::L*		m_DD_pv_start;
     u32 		m_DD_base;
@@ -84,7 +77,6 @@ public:
     virtual void  OnDeviceDestroy();
 
 	void UpdateGrid(int number_of_cell, float square_size, int subdiv=10);
-    void DestroyObjects();
     //----------------------------------------------------
     virtual void  DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, bool bRot45=false);
     virtual void  DrawCross(const Fvector& p, float sz, u32 clr, bool bRot45=false){ DrawCross(p, sz,sz,sz, sz,sz,sz, clr, bRot45); }
@@ -146,10 +138,7 @@ public:
 	virtual void  DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd);
 
     virtual void  DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale = 1.0f)
-#ifndef _EDITOR
     {}
-#endif
-    ;
     virtual void  DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, Fvector* vertices, int vc, u32 color, bool bCull, bool bCycle);
     virtual void  DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::TL* vertices, int vc, bool bCull, bool bCycle);
     virtual void  DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::LIT* vertices, int vc, bool bCull, bool bCycle);
@@ -158,6 +147,6 @@ public:
 
 	virtual void 			OnRender		();
 };
-extern ECORE_API CDrawUtilities DUImpl;
+extern RENDER_API CDrawUtilities DUImpl;
 //----------------------------------------------------
 #endif /*_INCDEF_D3DUtils_H_*/

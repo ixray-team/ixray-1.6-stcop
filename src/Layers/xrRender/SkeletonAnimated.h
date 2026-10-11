@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef SkeletonAnimatedH
 #define SkeletonAnimatedH
+#include "RenderAPI.h"
 
 #include "SkeletonCustom.h"
 #include "Animation.h"
@@ -43,7 +44,7 @@ IC	BlendSVec			&blend_vector	()	{ return Blend;}
 //typedef void	( * MotionMarkCallback)		(CBlend*		P);
 
 //*** The visual itself ***************************************************************************
-class  ECORE_API	CKinematicsAnimated	: public CKinematics, public IKinematicsAnimated
+class  RENDER_API	CKinematicsAnimated	: public CKinematics, public IKinematicsAnimated
 {
 	typedef CKinematics							inherited;
 	friend class								CBoneData;
@@ -133,10 +134,8 @@ private:
 	virtual	void				ProcessOmfFiles(const char* omfPath, const char* nameOgf);
 //.	bool						LoadMotions				(const char* N, IReader *data);
 public:
-#if (defined DEBUG || defined _EDITOR)
 	std::pair<const char*,const char*>	LL_MotionDefName_dbg	(MotionID	ID);
 	void						LL_DumpBlends_dbg		( );
-#endif
 	u32							LL_PartBlendsCount			( u32 bone_part_id );
 	CBlend						*LL_PartBlend				( u32 bone_part_id, u32 n );
 	void						LL_IterateBlends			( IterateBlendsCallback &callback );
@@ -145,12 +144,10 @@ public:
 	IUpdateTracksCallback		*GetUpdateTracksCalback		( ){ return m_update_tracks_callback; }
 //	const char*						LL_MotionDefName_dbg	(LPVOID		ptr);
 
-#ifdef _EDITOR
     u32							LL_CycleCount	(){u32 cnt=0; for (u32 k=0; k<m_Motions.size(); k++) cnt+=m_Motions[k].motions.cycle()->size(); return cnt;}
     u32							LL_FXCount		(){u32 cnt=0; for (u32 k=0; k<m_Motions.size(); k++) cnt+=m_Motions[k].motions.fx()->size(); return cnt;}
 	accel_map*					LL_Motions		(u32 slot){return m_Motions[slot].motions.motion_map();}
 	MotionID					ID_Motion		(const char*  N, u16 slot);
-#endif
 	u16							LL_MotionsSlotCount(){return (u16)m_Motions.size();}
 	const shared_motions&		LL_MotionsSlot	(u16 idx){return m_Motions[idx].motions;}
 

@@ -99,13 +99,10 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
 
-#ifdef _EDITOR
+	const bool EditorMode = Device.IsEditorMode();
 	const u32 mode = oBlend.IDselected;
-	const bool bATest = mode == 1 || mode == 5 || mode == 7 || mode == 8 || mode == 9;
+	const bool bATest = EditorMode && (mode == 1 || mode == 5 || mode == 7 || mode == 8 || mode == 9);
 	const char* ps = bATest ? "stub_default_at" : "stub_default";
-#else
-	const char* ps = "stub_default";
-#endif
 
 	if (oBlend.IDselected == 6)
 	{
@@ -143,9 +140,10 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 		VERIFY(C.L_textures.size() > 0);
 		C.r_dx10Texture("s_base", C.L_textures[0]);
 		u32 iSmp = C.r_dx10Sampler("smp_base");
-#ifdef _EDITOR
-		C.r_Matrix(oT_xform);
-#endif
+		if (EditorMode)
+		{
+			C.r_Matrix(oT_xform);
+		}
 		if (oClamp.value && (iSmp != u32(-1)))
 			C.i_Address(iSmp, D3DTADDRESS_CLAMP);
 	}
@@ -251,15 +249,18 @@ void	CBlender_Screen_SET::Compile	(CBlender_Compile& C)
 			
 			// This code fixes the rendering of wallmarks in editors, 
 			// but breaks dynamic wallmarks in the game, so here ifdef
-		#ifdef _EDITOR
-			C.StageSET_Color(D3DTA_TEXTURE, D3DTOP_BLENDDIFFUSEALPHA, D3DTA_DIFFUSE);
-			C.StageSET_Alpha(D3DTA_TEXTURE, D3DTOP_MODULATE, D3DTA_DIFFUSE);
-			C.Stage_Texture(oT_Name);
-		#else
-			C.StageSET_Color(D3DTA_DIFFUSE, D3DTOP_BLENDDIFFUSEALPHA, D3DTA_CURRENT);
-			C.StageSET_Alpha(D3DTA_DIFFUSE, D3DTOP_MODULATE, D3DTA_CURRENT);
-			C.Stage_Texture("$null");
-		#endif
+			if (Device.IsEditorMode())
+			{
+				C.StageSET_Color(D3DTA_TEXTURE, D3DTOP_BLENDDIFFUSEALPHA, D3DTA_DIFFUSE);
+				C.StageSET_Alpha(D3DTA_TEXTURE, D3DTOP_MODULATE, D3DTA_DIFFUSE);
+				C.Stage_Texture(oT_Name);
+			}
+			else
+			{
+				C.StageSET_Color(D3DTA_DIFFUSE, D3DTOP_BLENDDIFFUSEALPHA, D3DTA_CURRENT);
+				C.StageSET_Alpha(D3DTA_DIFFUSE, D3DTOP_MODULATE, D3DTA_CURRENT);
+				C.Stage_Texture("$null");
+			}
 
 			C.Stage_Matrix		("$null",	0);
 			C.Stage_Constant	("$null");

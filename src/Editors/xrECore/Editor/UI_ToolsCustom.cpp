@@ -220,7 +220,7 @@ void CToolCustom::Clear()
 void CToolCustom::Render()
 {
 	// render errors
-	EDevice->SetShader(EDevice->m_SelectionShader);
+	EDevice->SetShader(GEditorDraw.SelectionShader);
 	RCache.set_xform_world(Fidentity);
 	EDevice->RenderNearer(0.0003f);
 	EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -243,7 +243,7 @@ void CToolCustom::Render()
 		}
 		DU_impl.dbgDrawVert(vit->p[0], vit->c, s ? s : "");
 	}
-	EDevice->SetShader(EDevice->m_SelectionShader);
+	EDevice->SetShader(GEditorDraw.SelectionShader);
 
 	temp.clear();
 	temp.resize(64);
@@ -259,14 +259,14 @@ void CToolCustom::Render()
 	cnt = 0;
 	for (SDebugDraw::FaceIt fwit = m_DebugDraw.m_WireFaces.begin(); fwit != m_DebugDraw.m_WireFaces.end(); fwit++)
 	{
-		EDevice->SetShader(EDevice->m_SelectionShader);
+		EDevice->SetShader(GEditorDraw.SelectionShader);
 		if (fwit->i)        sprintf(temp.data(), "F: %d", cnt++);
 		DU_impl.dbgDrawFace(fwit->p[0], fwit->p[1], fwit->p[2], fwit->c, fwit->i ? temp.c_str() : "");
 	}
 	
 	cnt = 0;
 	if (!m_DebugDraw.m_SolidFaces.empty()) {
-		EDevice->SetShader(EDevice->m_SelectionShader);
+		EDevice->SetShader(GEditorDraw.SelectionShader);
 		DU_impl.DD_DrawFace_begin(false);
 		for (SDebugDraw::FaceIt fsit = m_DebugDraw.m_SolidFaces.begin(); fsit != m_DebugDraw.m_SolidFaces.end(); fsit++)
 		{
@@ -280,7 +280,7 @@ void CToolCustom::Render()
 	cnt = 0;
 	for (SDebugDraw::OBBVecIt oit = m_DebugDraw.m_OBB.begin(); oit != m_DebugDraw.m_OBB.end(); oit++)
 	{
-		EDevice->SetShader(EDevice->m_SelectionShader);
+		EDevice->SetShader(GEditorDraw.SelectionShader);
 		sprintf(temp.data(), "OBB: %d", cnt++);
 		DU_impl.DrawOBB(Fidentity, *oit, 0x2F00FF00, 0xFF00FF00);
 		DU_impl.OutText(oit->m_translate, temp.c_str(), 0xffff0000, 0x0000000);

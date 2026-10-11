@@ -11,12 +11,14 @@ private:
 public:
 	ref_light				sun_original;
 	ref_light				sun_adapted;
-	light*					rain_light;
+	light*					rain_light = nullptr;
 	light_Package			package;
 public:
 	void					add_light			(light*		L	);
 
 	void					Load				(IReader*	fs	);
+	// Sun and rain lights for the editors, which have no level light chunk
+	void					LoadEditor			();
 #if RENDER != R_R1
 	void					LoadHemi			();
 #endif

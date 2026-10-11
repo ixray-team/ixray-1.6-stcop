@@ -113,6 +113,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	g_pGamePersistent = static_cast<IGame_Persistent*>(g_XrGameManager->Create(CLSID_GAME_PERSISTANT));
 	EDevice->seqAppStart.Process<&pureAppStart::OnAppStart>();
+	g_pGamePersistent->Environment().EnsureMixer();
 
 	splash::SetProgressStatus(65, "Setting Up Console");
 

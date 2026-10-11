@@ -127,7 +127,6 @@ void EDetailManager::InvalidateCache()
     cache_ReInitialize();
 }
 
-extern void bwdithermap	(int levels, int magic[16][16] );
 void EDetailManager::InitRender()
 {
 	// inavlidate cache
@@ -136,6 +135,11 @@ void EDetailManager::InitRender()
 	bwdithermap		(2,dither);
 
     //hw_Load();
+}
+
+bool EDetailManager::IsObjectsDrawn()
+{
+	return IsLoaded && dtSlots != nullptr && !objects.empty() && m_Flags.is(flObjectsDraw) && IsVisible();
 }
 
 void EDetailManager::OnRender(int priority, bool strictB2F)
@@ -154,7 +158,7 @@ void EDetailManager::OnRender(int priority, bool strictB2F)
 				if (m_Flags.is(flSlotBoxesDraw))
 				{
 					RCache.set_xform_world(Fidentity);
-					EDevice->SetShader(EDevice->m_WireShader);
+					EDevice->SetShader(GEditorDraw.WireShader);
 
 					Fvector c;
 					Fbox bbox;
@@ -194,10 +198,7 @@ void EDetailManager::OnRender(int priority, bool strictB2F)
 				{
 					m_Base.Render(m_Flags.is(flBaseTextureBlended));
 				}
-				if (m_Flags.is(flObjectsDraw))
-				{
-					CDetailManager::Render();
-				}
+				// The objects are drawn by the renderer pipeline (IsObjectsDrawn)
 			}
 		}
 	}

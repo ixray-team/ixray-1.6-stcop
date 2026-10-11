@@ -223,9 +223,9 @@ public:
 // Just two static storage
 void CRender::create()
 {
-	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
-
 	Engine.External.SetSkinningMode();
+
+	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
 
 	// hardware
 	o.smapsize			= ps_r2_smapsize;
@@ -301,8 +301,18 @@ void CRender::create()
 
 	Target = new CRenderTarget();	// Main target
 
-	Models = new CModelPool();
-	PSLibrary.OnCreate();
+	// The editor device owns the model pool and the particle library (see r4_editor.cpp);
+	// without a level the editors also need their own sun.
+	if (Device.IsEditorMode())
+	{
+		Lights.LoadEditor();
+		EditorCreate();
+	}
+	else
+	{
+		Models = new CModelPool();
+		PSLibrary.OnCreate();
+	}
 	HWOCC.occq_create(occq_size);
 
 	rmNormal();
@@ -328,9 +338,17 @@ void CRender::destroy()
 	::PortalTraverser.destroy();
 
 	HWOCC.occq_destroy();
-	xr_delete(Models);
 	xr_delete(Target);
-	PSLibrary.OnDestroy();
+	if (Device.IsEditorMode())
+	{
+		EditorDestroy();
+		Lights.Unload();
+	}
+	else
+	{
+		xr_delete(Models);
+		PSLibrary.OnDestroy();
+	}
 	Device.seqFrame.Remove(this);
 	r_dsgraph_destroy();
 	Device.ModelDefferClear = nullptr;
@@ -339,6 +357,12 @@ void CRender::destroy()
 }
 
 void CRender::reset_begin() {
+	// Its compute pass reads the scene depth target, which is recreated
+	if (Device.IsEditorMode())
+	{
+		EditorHiZ.Destroy();
+	}
+
 	// Update incremental shadowmap-visibility solver
 	// BUG-ID: 10646
 	{
@@ -405,7 +429,14 @@ void CRender::OnFrame()
 }
 
 // Implementation
+IRender_ObjectSpecific* CreateEditorObjectSpecific();
+
 IRender_ObjectSpecific* CRender::ros_create(IRenderable* parent) {
+	if (Device.IsEditorMode())
+	{
+		return CreateEditorObjectSpecific();
+	}
+
 	return new CROS_impl();
 }
 
@@ -605,10 +636,15 @@ xr_string CRender::getShaderParams()
 		xr_string params = "_";
 		params += xr_string::ToString(start_crc);
 
+		if (EditorInstancing)
+		{
+			params += "_inst";
+		}
+
 		return params;
 	}
 
-	return "";
+	return EditorInstancing ? "_inst" : "";
 }
 
 xr_string CRender::getShaderParamsDebug() 
@@ -623,10 +659,16 @@ xr_string CRender::getShaderParamsDebug()
 		}
 
 		params[params.size() - 1] = ' ';
+
+		if (EditorInstancing)
+		{
+			params += "[inst]";
+		}
+
 		return params;
 	}
 
-	return "";
+	return EditorInstancing ? "[inst]" : "";
 }
 
 bool CRender::NeedMotionVectors() const
@@ -639,6 +681,12 @@ bool CRender::NeedMotionVectors() const
 
 bool CRender::MotionVectorsDisabled() const
 {
+	// The editors draw no velocity-dependent effects
+	if (Device.IsEditorMode())
+	{
+		return true;
+	}
+
 	return !NeedMotionVectors() || EngineExternal().ShadersOptions.contains(xr_string("DISABLE_MOTION_VECTORS"));
 }
 
@@ -760,6 +808,29 @@ static HRESULT create_shader(
 
 			//	Let constant table parse it's data
 			svs_result->constants.parse(pReflection, RC_dest_vertex);
+
+			// Structured instance buffers (detail instancing and editor instancing)
+			D3D11_SHADER_INPUT_BIND_DESC BindDesc{};
+			if (SUCCEEDED(pReflection->GetResourceBindingDescByName("detail_buffer", &BindDesc)) && BindDesc.Type == D3D_SIT_STRUCTURED)
+			{
+				svs_result->instance_buffer_slot = BindDesc.BindPoint;
+			}
+
+			if (SUCCEEDED(pReflection->GetResourceBindingDescByName("editor_instances", &BindDesc)) && BindDesc.Type == D3D_SIT_STRUCTURED)
+			{
+				svs_result->editor_instance_slot = BindDesc.BindPoint;
+			}
+
+			// The Shader Editor reflects VS inputs from the full bytecode
+			if (Device.IsEditorMode())
+			{
+				ID3DBlob* pCodeBlob = nullptr;
+				if (SUCCEEDED(D3DCreateBlob(buffer_size, &pCodeBlob)))
+				{
+					CopyMemory(pCodeBlob->GetBufferPointer(), buffer, buffer_size);
+					svs_result->vs_code = pCodeBlob;
+				}
+			}
 
 			_RELEASE(pReflection);
 		}
@@ -1147,6 +1218,21 @@ HRESULT	CRender::shader_compile(
 	}
 	sh_name[len] = '0' + char(RFeatureLevel >= D3D_FEATURE_LEVEL_11_0); ++len;
 
+	// Editor-only defines are suffixed only when set, so the game shader cache names stay unchanged
+	if (Device.IsEditorMode()) {
+		defines[def_it].Name = "EDITOR_MODE";
+		defines[def_it].Definition = "1";
+		def_it++;
+		sh_name[len] = 'e'; ++len;
+	}
+
+	if (EditorInstancing) {
+		defines[def_it].Name = "USE_EDITOR_INSTANCING";
+		defines[def_it].Definition = "1";
+		def_it++;
+		sh_name[len] = '1'; ++len;
+	}
+
 	// finish
 	defines[def_it].Name = 0;
 	defines[def_it].Definition = 0;
@@ -1217,7 +1303,8 @@ HRESULT	CRender::shader_compile(
 		string_path file;
 		xr_strcpy(file, "shaders_cache\\");
 		xr_strcat(file, _VER);
-		xr_strcat(file, "\\d3d11\\");
+		xr_strcat(file, "\\");
+		xr_strcat(file, getShaderPath());
 		xr_strcat(file, name);
 		xr_strcat(file, ".");
 		xr_strcat(file, extension);

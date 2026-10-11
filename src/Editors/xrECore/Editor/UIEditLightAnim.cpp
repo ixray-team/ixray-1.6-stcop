@@ -31,7 +31,7 @@ UIEditLightAnim::UIEditLightAnim()
 	textureDesc.Height = 32;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
-	textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+	textureDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 	textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
 	textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 	textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
@@ -535,7 +535,7 @@ void UIEditLightAnim::RenderPointer()
 		textureDesc.Height = POINTER_HEIGHT;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
-		textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+		textureDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 		textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
 		textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 		textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;

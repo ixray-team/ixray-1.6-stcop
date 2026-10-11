@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef ParticleGroupH
 #define ParticleGroupH
+#include "RenderAPI.h"
 #include "../../Include/xrRender/ParticleCustom.h"
 #include "FBasicVisual.h"
 
@@ -10,13 +11,14 @@ namespace PS
 {
 	class CParticleEffect;
 
-	class ECORE_API CPGDef final
+	// Exported per member: the Particle Editor defines the editor-only members (declared under _EDITOR) in its own module.
+	class CPGDef final
 	{
 	public:
 		shared_str			m_Name;
 		Flags32				m_Flags;
 		float				m_fTimeLimit;
-		struct ECORE_API SEffect{
+		struct SEffect{
 			enum{
 				flDefferedStop		= (1<<0),
 				flOnPlayChild		= (1<<1),
@@ -33,8 +35,8 @@ namespace PS
 			float			m_Time0;
 			float			m_Time1;
 							SEffect				(){m_Flags.zero();/*set(flEnabled)*/m_Time0=0;m_Time1=0;}
-#ifdef _EDITOR
 			CPGDef* parent = nullptr;
+#ifdef _EDITOR
             bool			Equal				(const SEffect&);
 			void FillProp(const char* pref, PropItemVec& items, u32 clr);
 			void FillPropInit(PropItemVec& items, const char* pref);
@@ -61,24 +63,22 @@ namespace PS
 		int FindEffect(SEffect* effect);
 #endif
 	public:
-							CPGDef		  	();
-							~CPGDef		  	();
-		void				SetName		  	(const char* name);
+		RENDER_API			CPGDef		  	();
+		RENDER_API			~CPGDef		  	();
+		RENDER_API void		SetName		  	(const char* name);
 
-		void 				Save		  	(IWriter& F);
-		bool 				LoadOriginal	(IReader& F);
+		RENDER_API void 	Save		  	(IWriter& F);
+		RENDER_API bool 	LoadOriginal	(IReader& F);
 
-		void 				Save2		  	(CInifile& ini);
-		bool 				Load2		 	(CInifile& ini);
-		bool				Load2Original	(CInifile& ini);
-		bool 				Load2Extended	(CInifile& ini);
+		RENDER_API void 	Save2		  	(CInifile& ini);
+		RENDER_API bool 	Load2		 	(CInifile& ini);
+		RENDER_API bool		Load2Original	(CInifile& ini);
+		RENDER_API bool 	Load2Extended	(CInifile& ini);
 
-#ifdef _EDITOR
-        void				Clone			(CPGDef* source);
-#endif
+        RENDER_API void		Clone			(CPGDef* source);
 	};
 
-	class ECORE_API CParticleGroup final : public dxRender_Visual, public IParticleCustom
+	class RENDER_API CParticleGroup final : public dxRender_Visual, public IParticleCustom
 	{
 	public:
 		const CPGDef* m_Def = nullptr;
@@ -126,9 +126,7 @@ namespace PS
 		virtual ~CParticleGroup();
 		virtual void OnFrame(u32 dt);
 
-#ifndef _EDITOR
 		virtual void UpdateCache();
-#endif
 
 		virtual void Copy(dxRender_Visual* pFrom) {FATAL("Can't duplicate particle system - NOT IMPLEMENTED");}
 

@@ -88,7 +88,7 @@ void CLight::Render(int priority, bool strictB2F)
 {
 	inherited::Render(priority,strictB2F);
     if ((1==priority)&&(false==strictB2F)){
-        EDevice->SetShader		(EDevice->m_WireShader);
+        EDevice->SetShader		(GEditorDraw.WireShader);
         RCache.set_xform_world	(Fidentity);
     	u32 clr = Locked()?LOCK_COLOR:Selected()?SEL_COLOR:(m_Flags.is(ELight::flAffectDynamic)?NORM_DYN_COLOR:NORM_COLOR);
     	switch (m_Type){
@@ -129,7 +129,7 @@ void CLight::Render(int priority, bool strictB2F)
         }
     }else if ((1==priority)&&(true==strictB2F))
     {
-        EDevice->SetShader		(EDevice->m_SelectionShader);
+        EDevice->SetShader		(GEditorDraw.SelectionShader);
         RCache.set_xform_world	(Fidentity);
     	switch (m_Type)
         {

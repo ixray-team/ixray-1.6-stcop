@@ -4,10 +4,6 @@
 #include "../../xrEngine/GameMtlLib.h"
 #include "../../xrCore/Collision/cl_intersect.h"
 
-#ifdef _EDITOR
-#include "../../Editors/LevelEditor/Editor/scene/scene.h"
-#endif
-
 #include "../../xrEngine/xr_ioc_cmd.h"
 
 
@@ -371,20 +367,26 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 
 	DetailSlot& DS = *D.DS;
 
-#ifdef _EDITOR
-	extern ECORE_API CDB::COLLIDER XRC;
-	XRC.box_options(CDB::OPT_FULL_TEST);
-	// Select polygons
-	SBoxPickInfoVec pinf;
-	Scene->BoxPickObjects(D.vis.box, pinf, GetSnapList());
-	u32 triCount = pinf.size();
-#else
-	xrc.box_options(CDB::OPT_FULL_TEST);
-	xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(), D.vis.box);
-	u32 triCount = xrc.r_count();
-	xr_vector<CDB::TRI>& tris = g_pGameLevel->ObjectSpace.GetStaticTris();
-	xr_vector<CDB::RESULT>& results = xrc.r_vec();
-#endif
+	// Select polygons: the editor picks its snap objects, the game queries the level collision
+	const bool EditorMode = Device.IsEditorMode();
+	xr_vector<Fvector> pick_verts;
+	xr_vector<CDB::TRI>* tris = nullptr;
+	xr_vector<CDB::RESULT>* results = nullptr;
+	u32 triCount = 0;
+
+	if (EditorMode)
+	{
+		PickSnapTriangles(D.vis.box, pick_verts);
+		triCount = u32(pick_verts.size() / 3);
+	}
+	else
+	{
+		xrc.box_options(CDB::OPT_FULL_TEST);
+		xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(), D.vis.box);
+		triCount = xrc.r_count();
+		tris = &g_pGameLevel->ObjectSpace.GetStaticTris();
+		results = &xrc.r_vec();
+	}
 
 	if (0 == triCount)
 	{
@@ -434,13 +436,8 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 	extern float ps_r__detail_cluster_warp_min;
 	extern float ps_r__detail_cluster_warp_max;
 
-#ifndef _EDITOR
-	float rnd_scale_min = ps_r__detail_rnd_scale_min;
-	float rnd_scale_max = ps_r__detail_rnd_scale_max;
-#else
-	float rnd_scale_min = 0.5f;
-	float rnd_scale_max = 0.9f;
-#endif
+	float rnd_scale_min = EditorMode ? 0.5f : ps_r__detail_rnd_scale_min;
+	float rnd_scale_max = EditorMode ? 0.9f : ps_r__detail_rnd_scale_max;
 
 	// Prepare to selection
 	float density = ps_r__Detail_density;
@@ -531,13 +528,9 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 			bool no_push = false;
 			for (u32 tid = 0; tid < triCount; tid++)
 			{
-#ifdef _EDITOR
-				Fvector verts[3];
-				SBoxPickInfo& I = pinf[tid];
-				for (int k = 0; k < (int)I.inf.size(); k++)
+				if (EditorMode)
 				{
-					VERIFY(I.s_obj);
-					I.e_obj->GetFaceWorld(I.s_obj->_Transform(), I.e_mesh, I.inf[k].id, verts);
+					Fvector* verts = &pick_verts[tid * 3];
 					if (CDB::TestRayTri(Item_P, dir, verts, r_u, r_v, r_range, true))
 					{
 						if (r_range >= 0)
@@ -550,10 +543,11 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 						}
 						normal.mknormal(verts[0], verts[1], verts[2]);
 					}
+					continue;
 				}
-#else
-				CDB::RESULT& R = results[tid];
-				CDB::TRI& T = tris[R.id];
+
+				CDB::RESULT& R = (*results)[tid];
+				CDB::TRI& T = (*tris)[R.id];
 				SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
 
 				if (mtl->Flags.test(SGameMtl::flPassable))
@@ -584,7 +578,6 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 					normal.mknormal(R.verts[0], R.verts[1], R.verts[2]);
 					break;
 				}
-#endif
 			}
 			if (no_push)
 			{
@@ -604,12 +597,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 			{
 				continue;
 			}
-#ifndef _EDITOR
-			const CDetail& Dobj = objects[obj_id];
-#else
 			const CDetail& Dobj = *objects[obj_id];
-#endif
-			#ifndef _EDITOR
 			if (!(ps_r__detail_fmb_use_layer_1 || ps_r__detail_fmb_use_layer_2 ||  ps_r__detail_fmb_use_layer_3) && user_fmb_mask.empty())
 			{
 				scale = r_scale.randF(Dobj.m_fMinScale * rnd_scale_min, Dobj.m_fMaxScale * rnd_scale_max);
@@ -627,22 +615,6 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 					continue;
 				scale = minScale + (maxScale - minScale) * t;
 			}
-#else
-			if (!(ps_r__detail_fmb_use_layer_1 || ps_r__detail_fmb_use_layer_2 ||  ps_r__detail_fmb_use_layer_3))
-			{
-				scale = r_scale.randF(Dobj.m_fMinScale * rnd_scale_min, Dobj.m_fMaxScale * rnd_scale_max);
-			}
-			else
-			{
-				minScale = Dobj.m_fMinScale * rnd_scale_min;
-				maxScale = Dobj.m_fMaxScale * rnd_scale_max;
-
-				// FMB поле предрассчитано на cache_ReInitialize (как cluster_field):
-				// билинейная выборка вместо вызова шума на каждый инстанс.
-				float t = SampleFMBField(Item_P.x, Item_P.z);
-				scale = minScale + (maxScale - minScale) * t;
-			}
-#endif
 
 			mResult.k.x = r_yaw.randF(-0.99, 0.99);
 			mResult.k.z = r_yaw.randF(-0.99, 0.99);

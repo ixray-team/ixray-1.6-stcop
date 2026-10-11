@@ -359,9 +359,7 @@ void CBlender_Compile::r_End(bool clear)
     dest.C = nullptr;
     ref_matrix_list temp(nullptr);
 	
-#ifdef _EDITOR
     dest.M = DEV->_CreateMatrixList(passMatrices);
-#endif
 
     SH->passes.push_back(DEV->_CreatePass(dest));
 

@@ -44,16 +44,40 @@ void CRender::models_Clear(bool b_complete)
 
 bool CRender::occ_visible(vis_data& P)
 {
+#ifdef USE_DX11
+	if (Device.IsEditorMode())
+	{
+		return occ_visible(P.box);
+	}
+#endif
 	return HOM.visible(P);
 }
 
 bool CRender::occ_visible(sPoly& P)
 {
+#ifdef USE_DX11
+	if (Device.IsEditorMode())
+	{
+		return ViewBase.testPolyInside(P);
+	}
+#endif
 	return HOM.visible(P);
 }
 
 bool CRender::occ_visible(Fbox& P)
 {
+#ifdef USE_DX11
+	if (Device.IsEditorMode())
+	{
+		u32 Mask = 0xff;
+		if (!ViewBase.testAABB(P.data(), Mask))
+		{
+			return false;
+		}
+
+		return View != nullptr || !EditorOcclusionCulling || EditorHiZ.IsVisible(P);
+	}
+#endif
 	return HOM.visible(P);
 }
 
@@ -101,6 +125,12 @@ void CRender::clear_static_wallmarks()
 
 void CRender::add_Occluder(Fbox2& bb_screenspace)
 {
+#ifdef USE_DX11
+	if (Device.IsEditorMode())
+	{
+		return;
+	}
+#endif
 	HOM.occlude(bb_screenspace);
 }
 
@@ -170,21 +200,27 @@ void CRender::add_Geometry(IRenderVisual* V)
 void CRender::rmNear()
 {
 	IRender_Target* T = getTarget();
-	RHIViewport VP = { 0, 0, (float)T->get_width(), (float)T->get_height(), 0, 0.02f };
+	const float W = T ? (float)T->get_width() : (float)Device.TargetWidth;
+	const float H = T ? (float)T->get_height() : (float)Device.TargetHeight;
+	RHIViewport VP = { 0, 0, W, H, 0, 0.02f };
 	GRHI->SetViewport(VP);
 }
 
 void CRender::rmFar()
 {
 	IRender_Target* T = getTarget();
-	RHIViewport VP = { 0, 0, (float)T->get_width(),(float)T->get_height(), 0.99999f, 1.f };
+	const float W = T ? (float)T->get_width() : (float)Device.TargetWidth;
+	const float H = T ? (float)T->get_height() : (float)Device.TargetHeight;
+	RHIViewport VP = { 0, 0, W, H, 0.99999f, 1.f };
 	GRHI->SetViewport(VP);
 }
 
 void CRender::rmNormal()
 {
 	IRender_Target* T = getTarget();
-	RHIViewport VP = { 0, 0, (float)T->get_width(), (float)T->get_height(), 0, 1.f };
+	const float W = T ? (float)T->get_width() : (float)Device.TargetWidth;
+	const float H = T ? (float)T->get_height() : (float)Device.TargetHeight;
+	RHIViewport VP = { 0, 0, W, H, 0, 1.f };
 	GRHI->SetViewport(VP);
 }
 

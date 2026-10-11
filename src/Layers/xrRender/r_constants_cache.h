@@ -1,6 +1,7 @@
 #ifndef r_constants_cacheH
 #define r_constants_cacheH
 #pragma once
+#include "RenderAPI.h"
 
 #include "r_constants.h"
 
@@ -138,7 +139,7 @@ public:
 	}
 };
 
-class	ECORE_API  R_constants
+class	RENDER_API  R_constants
 {
 public:
 	ALIGN(16)	R_constant_array	a_pixel;
