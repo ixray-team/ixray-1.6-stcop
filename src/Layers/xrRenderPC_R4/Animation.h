@@ -8,7 +8,7 @@ namespace	animation
 	{
 		lerp	=0	,
 		add			,
-		add_local	,	// delta from the first frame in bone space, weighted by the blend amounts (HUD additive motions)
+		add_local	,
 	};
 
 	struct channal_rule
