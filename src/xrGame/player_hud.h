@@ -20,6 +20,23 @@ enum EHudMixType : u8
 	eMixHands,
 	eMixAll
 };
+
+enum class EHudCycleMode : u8
+{
+	Replace,	// the motion replaces the pose (crossfade)
+	KeepBase,	// a looped motion that already plays is not restarted (return to idle after an additive motion)
+	Additive	// the motion is added over the playing pose as a delta from its first frame
+};
+
+struct SHudCycleMode
+{
+	EHudCycleMode	Type = EHudCycleMode::Replace;
+	float			BlendIn = 0.f;
+	float			BlendOut = 0.f;
+	bool			Loop = false;			// additive: a looped idle (anm_idle_sprint) instead of a one shot
+	bool			FadeAdditive = false;	// fade out the playing additive motions (leaving them for a plain motion)
+	MotionID		Reference;				// additive: delta from the first frame of this hands motion (hands model only)
+};
 enum EHudOffsetAxis : u8
 {
 	eAxisPos,
@@ -265,6 +282,13 @@ struct attachable_hud_item final
 	float							m_shot_twist = 0.f;
 	float							m_aim_shot_motion = 1.f;
 	float							m_idle_fade = 0.f;
+	xr_vector<shared_str>			m_additive_motions;
+	float							m_additive_blend_in = 0.f;
+	float							m_additive_blend_out = 0.1f;
+	bool							m_additive_playing = false;
+	shared_str						m_additive_reference;		// hands motion the additive motions were authored over
+	xr_vector<shared_str>			m_left_hand_free_motions;	// the left hand IK is off during these (sprint swings away from the weapon)
+	bool							m_left_hand_free = false;
 	float							m_inertia_damping = 0.55f;
 	Fvector							m_inertia_vel_pos = zero_vel;
 	Fvector							m_inertia_vel_rot = zero_vel;
@@ -390,6 +414,9 @@ struct script_layer
 	u8 part = 0;
 	u8 item = 0;
 	u8 state = EBlendLayers::eNone;
+	bool BaseAtEnd = false;		// held on its last frame it becomes the pose the arm IK works from (sprint start)
+	bool FadeAtEnd = false;		// a one shot fades out at its end instead of holding the last frame (sprint end)
+	float RigidWeight = 0.f;	// share of the layer the arms take in full instead of reaching it by IK
 
 	script_layer()
 	{
@@ -420,6 +447,9 @@ struct script_layer
 		this->mix = mix;
 		this->state = state;
 		this->item = item;
+		BaseAtEnd = false;
+		FadeAtEnd = false;
+		RigidWeight = 0.f;
 
 		blend_scale = 0.0f;
 		active = true;
@@ -563,6 +593,11 @@ struct movement_layer
 
 	bool playing = false;
 
+	// Plays as the change from its first frame (layered over a held pose, e.g. the last frame of the sprint start)
+	bool Relative = false;
+	bool SeamNext = false;	// the loop wrapped: the next frame jumps to its start
+	Fmatrix FirstFrameInv = Fidentity;
+
 	CObjectAnimator* anim = nullptr;
 
 	movement_layer()
@@ -579,7 +614,14 @@ struct movement_layer
 
 	const Fmatrix& XFORM()
 	{
-		m_XFORM.set(anim->XFORM());
+		if (Relative)
+		{
+			m_XFORM.mul_43(FirstFrameInv, anim->XFORM());
+		}
+		else
+		{
+			m_XFORM.set(anim->XFORM());
+		}
 
 		Fvector rotation = zero_vel, position = zero_vel;
 		m_XFORM.getXYZ(rotation);
@@ -623,6 +665,10 @@ struct movement_layer
 		playing = true;
 		anim->Speed() = speed;
 		anim->Play(loop);
+
+		// Evaluates the first frame without advancing
+		anim->Update(0.f);
+		FirstFrameInv.invert(anim->XFORM());
 
 		const SAnimParams& params = anim->anim_param();
 		if (phase > 0.0f && speed > 0.0f)
@@ -731,6 +777,33 @@ public:
 	s32				m_show_legs = 1;
 	bool			m_need_reload = true;
 	float			m_cycle_fade = 0.f;
+	SHudCycleMode	m_cycle_mode;
+	bool			m_sprinting = false;
+	bool			m_sprint_start_wait = false;
+
+	void			UpdateSprintBlend	(bool sprint);
+	bool			SprintStartPlaying	();
+	void			SyncSprintBlend		();
+
+	// The loop of the sprint start / loop / end chain (anim_blend_sprint_loop), apart from the sprint movement layer
+	movement_layer*	m_sprint_loop = nullptr;
+
+	// Weight the pose layers (safemode, aim) give up to the sprint layers, and its rates (1 / s) into and out of the sprint
+	float			m_sprint_yield = 0.f;
+	float			m_sprint_yield_in = 1.f / 0.3f;
+	float			m_sprint_yield_out = 1.f / 0.3f;
+
+	// Inertial blend of the HUD layers: at a transition the output keeps its pose and speed and the gap decays
+	Fmatrix			LayersPrev = Fidentity;
+	Fvector			LayersPrevVelPos = {}, LayersPrevVelRot = {};
+	Fvector			LayersInertPos = {}, LayersInertRot = {}, LayersInertVelPos = {}, LayersInertVelRot = {};
+	float			LayersInertHalfLife = 0.f;
+	bool			LayersInertTrigger = false;
+
+	bool			LayersInertCarryVel = true;
+
+	void			TriggerLayersInertia	(bool carry_velocity = true);
+	Fmatrix			UpdateLayersInertia		(const Fmatrix& total);
 	shared_str		NextHUDSect;
 	SBlendParams m_default_movement_layers_params[EMovementLayers::eLayersCount] = {};
 	movement_layer* m_movement_layers[EMovementLayers::eLayersCount] = {};
