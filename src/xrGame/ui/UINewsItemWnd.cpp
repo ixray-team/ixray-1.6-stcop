@@ -8,6 +8,7 @@
 #include "UIInventoryUtilities.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrEngine/string_table.h"
+#include "../../xrEngine/GameFont.h"
 #include "../InventoryOwner.h"
 
 namespace
@@ -125,6 +126,11 @@ void CUINewsItemWnd::Init(CUIXml& uiXml, const char* startFrom, bool allowStackL
 	else
 	{
 		InitLegacyFromXml(uiXml);
+	}
+
+	if (_uiCaption)
+	{
+		_captionBaseWidth = _uiCaption->GetWidth();
 	}
 
 	uiXml.SetLocalRoot(storedRoot);
@@ -401,10 +407,7 @@ void CUINewsItemWnd::SetupLegacy(GAME_NEWS_DATA& newsData)
 				_uiCaption->SetText(g_pStringTable->ParseStringFromScript(newsData.news_caption).c_str());
 			}
 
-			Fvector2 pos = _uiCaption->GetWndPos();
-			pos.x = _uiDate->GetWndPos().x + _uiDate->GetWndSize().x + 5.0f;
-			_uiCaption->SetWndPos(pos);
-			_uiCaption->SetWidth(std::min(_uiText->GetWidth() - _uiDate->GetWndSize().x - 5.0f, _uiCaption->GetWidth()));
+			LayoutCaptionAfterDate();
 		}
 
 		_uiText->Show(false);
@@ -450,10 +453,7 @@ void CUINewsItemWnd::SetupLegacy(GAME_NEWS_DATA& newsData)
 		{
 			_uiCaption->SetText(g_pStringTable->ParseStringFromScript(newsData.news_caption).c_str());
 		}
-		Fvector2 pos = _uiCaption->GetWndPos();
-		pos.x = _uiDate->GetWndPos().x + _uiDate->GetWndSize().x + 5.0f;
-		_uiCaption->SetWndPos(pos);
-		_uiCaption->SetWidth(std::min(_uiText->GetWidth() - _uiDate->GetWidth() - 5.0f, _uiCaption->GetWidth()));
+		LayoutCaptionAfterDate();
 	}
 
 	xr_string outText = newsData.news_text.c_str(); 
@@ -473,6 +473,33 @@ void CUINewsItemWnd::SetupLegacy(GAME_NEWS_DATA& newsData)
 	float h3 = _uiImage->GetWndPos().y + _uiImage->GetHeight();
 	h1 = std::max(h1, h3);
 	SetHeight(h1);
+}
+
+void CUINewsItemWnd::LayoutCaptionAfterDate()
+{
+	_layoutFontScale = g_current_font_scale.x;
+
+	if (_layout != ELayout::Legacy || !_uiDate || !_uiCaption || !_uiText)
+	{
+		return;
+	}
+
+	_uiDate->AdjustWidthToText();
+
+	Fvector2 pos = _uiCaption->GetWndPos();
+	pos.x = _uiDate->GetWndPos().x + _uiDate->GetWndSize().x + 5.0f;
+	_uiCaption->SetWndPos(pos);
+	_uiCaption->SetWidth(std::min(_uiText->GetWidth() - _uiDate->GetWndSize().x - 5.0f, _captionBaseWidth));
+}
+
+void CUINewsItemWnd::Draw()
+{
+	if (!fsimilar(_layoutFontScale, g_current_font_scale.x))
+	{
+		LayoutCaptionAfterDate();
+	}
+
+	inherited::Draw();
 }
 
 void CUINewsItemWnd::SetupStacked(GAME_NEWS_DATA& newsData)

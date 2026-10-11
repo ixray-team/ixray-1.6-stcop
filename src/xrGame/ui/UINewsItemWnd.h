@@ -35,7 +35,10 @@ class CUINewsItemWnd final : public CUIWindow
 	float _textStackSpacing = 0.f;
 	bool _legacyMode = false;
 	bool _hasDialogReplicaLayout = false;
+	float _captionBaseWidth = 0.f;
+	float _layoutFontScale = 0.f;
 
+	void LayoutCaptionAfterDate();
 	void InitLegacyFromXml(CUIXml& uiXml);
 	bool InitStackedFromXml(CUIXml& uiXml);
 	void CreateNewsStatics(CUIXml& uiXml, CUIWindow* dateParent, CUIWindow* captionParent, CUIWindow* textParent, CUIWindow* imageParent);
@@ -52,5 +55,7 @@ public:
 	void Init(CUIXml& uiXml, const char* startFrom, bool allowStackLayout);
 	void Setup(GAME_NEWS_DATA& newsData);
 	void Update() override {}
+	void Draw() override;
+	using inherited::Draw;
 	CUIWindow* ui_cast_window() override { return this; }
 };

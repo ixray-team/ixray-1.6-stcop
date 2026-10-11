@@ -127,6 +127,9 @@ private:
 	const char* m_onGetPdaStatById = {};
 
 	bool m_use_3d_icon = false;
+	float m_layout_font_scale = 0.f;
+
+	void LayoutFontDependent();
 
 public:
 						CUIRankingWnd			();
@@ -134,6 +137,8 @@ public:
 
 	virtual void 		Show					(bool status);
 	virtual void		Update					();
+	virtual void		Draw					();
+	using inherited::Draw;
 	virtual void		DrawHint				();
 	virtual void		ResetAll				();
 

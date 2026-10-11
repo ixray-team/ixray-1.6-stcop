@@ -599,13 +599,14 @@ float CGameFont::WidthOf(int ch)
 	if (ch == '\t' || ch == '\n')
 		return 0.f;
 
+	const float xs = g_current_font_scale.x;
 	if (const Glyph* glyphInfo = GetGlyphInfo(ch))
 	{
-		return float(glyphInfo->Abc.abcA + (glyphInfo->Abc.abcB * GetWidthCoef()) + glyphInfo->Abc.abcC);
+		return float(glyphInfo->Abc.abcA + (glyphInfo->Abc.abcB * GetWidthCoef()) + glyphInfo->Abc.abcC) * xs;
 	}
 
 	if (OurFont && OurFont->glyph)
-		return float(OurFont->glyph->metrics.width) / 64.f;
+		return float(OurFont->glyph->metrics.width) / 64.f * xs;
 
 	return 0.f;
 }
@@ -627,45 +628,35 @@ float CGameFont::WidthOf(const char* str)
 {
 	if (!str || !str[0]) return 0;
 
+	if (!IsUTF8(str))
+	{
+		const xr_string utf8 = Platform::ANSI_TO_UTF8(str);
+		return WidthOf(utf8.c_str());
+	}
+
 	float size = 0;
-	int length = 0;
-	const float spacing = GetLetterSpacing();
+	const float spacing = GetLetterSpacing() * g_current_font_scale.x;
 
-	if (IsUTF8(str)) 
+	auto wideStr = Platform::ANSI_TO_TCHAR(str);
+	const int length = DynamicFontLen(wideStr);
+	for (int i = 0; i < length; i++)
 	{
-		auto wideStr = Platform::ANSI_TO_TCHAR(str);
-		length = DynamicFontLen(wideStr);
-		for (int i = 0; i < length; i++)
+		if (g_FontManager->GamepadButtonMappings[wideStr[i]] &&
+			wideStr[i] >= GAMEPAD_GLYPH_START && wideStr[i] <= GAMEPAD_GLYPH_END)
 		{
-			if (g_FontManager->GamepadButtonMappings[wideStr[i]] && 
-				wideStr[i] >= GAMEPAD_GLYPH_START && wideStr[i] <= GAMEPAD_GLYPH_END)
-			{
-				Frect rect;
-				shared_str fn;
-				g_pGamePersistent->GetTextureParams(g_FontManager->GamepadButtonMappings[wideStr[i]], rect, fn);
-				size += sizeOfImage(rect).x;
-			}
-			else
-			{
-				size += WidthOf(wideStr[i]);
-			}
-			size += spacing;
+			Frect rect;
+			shared_str fn;
+			g_pGamePersistent->GetTextureParams(g_FontManager->GamepadButtonMappings[wideStr[i]], rect, fn);
+			size += sizeOfImage(rect).x;
 		}
-
-		size -= spacing;
-	}
-	else
-	{
-		length = xr_strlen(str);
-		for (int i = 0; i < length; i++)
+		else
 		{
-			size += WidthOf((u8)str[i]);
-			size += spacing;
+			size += WidthOf(wideStr[i]);
 		}
-
-		size -= spacing;
+		size += spacing;
 	}
 
+	size -= spacing;
 	return size;
 }
 

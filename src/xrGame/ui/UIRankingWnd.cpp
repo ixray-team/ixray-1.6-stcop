@@ -30,6 +30,7 @@
 #include "../character_reputation.h"
 #include "../relation_registry.h"
 #include "../../xrEngine/string_table.h"
+#include "../../xrEngine/GameFont.h"
 #include "UICharacterInfo.h"
 #include "../../xrUI/ui_base.h"
 
@@ -235,6 +236,41 @@ void CUIRankingWnd::Update()
 	{
 		m_previous_time = Device.dwTimeGlobal;
 		update_ranking_heavy();
+	}
+}
+
+void CUIRankingWnd::Draw()
+{
+	if (!fsimilar(m_layout_font_scale, g_current_font_scale.x))
+	{
+		m_layout_font_scale = g_current_font_scale.x;
+		LayoutFontDependent();
+	}
+
+	inherited::Draw();
+}
+
+void CUIRankingWnd::LayoutFontDependent()
+{
+	if (m_money_caption && m_money_value)
+	{
+		m_money_caption->AdjustWidthToText();
+		Fvector2 pos = m_money_caption->GetWndPos();
+		pos.x += m_money_caption->GetWndSize().x + 10.0f;
+		m_money_value->SetWndPos(pos);
+	}
+
+	for (const StatItem& item : m_stat_items)
+	{
+		if (item.layout != StatItem::ELayout::Legacy || !item.caption || !item.value)
+		{
+			continue;
+		}
+
+		item.caption->AdjustWidthToText();
+		Fvector2 pos = item.caption->GetWndPos();
+		pos.x += item.caption->GetWndSize().x + 5.0f;
+		item.value->SetWndPos(pos);
 	}
 }
 
