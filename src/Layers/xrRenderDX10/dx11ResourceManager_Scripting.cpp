@@ -274,9 +274,7 @@ bool	CResourceManager::_lua_HasShader	(const char* s_shader)
 
 	return	Script::bfIsObjectPresent(LSVM,undercorated,"normal",LUA_TFUNCTION)		||
 			Script::bfIsObjectPresent(LSVM,undercorated,"l_special",LUA_TFUNCTION)
-#ifdef _EDITOR
-		|| Script::bfIsObjectPresent(LSVM, undercorated, "editor", LUA_TFUNCTION)
-#endif
+		|| (Device.IsEditorMode() && Script::bfIsObjectPresent(LSVM, undercorated, "editor", LUA_TFUNCTION))
 	;
 }
 

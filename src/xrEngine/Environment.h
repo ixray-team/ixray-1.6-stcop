@@ -383,6 +383,10 @@ protected:
 							void load_level_specific_ambients   ();
 
 public:
+		// Creates the environment mixer without loading weathers. The editors render without
+		// a weather (unlit view), but the renderer constants still read the mixer.
+		void EnsureMixer							() { if (!CurrentEnv) create_mixer(); }
+
 		SThunderboltDesc* thunderbolt_description		(CInifile& config, shared_str const& section);
 		SThunderboltCollection* thunderbolt_collection	(CInifile* pIni, CInifile* thunderbolts, const char* section);
 		SThunderboltCollection* thunderbolt_collection	(xr_vector<SThunderboltCollection*>& collection,  shared_str const& id);

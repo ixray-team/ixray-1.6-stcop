@@ -53,6 +53,8 @@ list(APPEND XRR2_SRC_FILES ${XRR2_SOURCE_INCL_FILES})
 
 # Remove unused files
 #list(FILTER XRR2_SRC_FILES EXCLUDE REGEX "../xrRender/r__pixel_calculator.cpp")
+# Editor draw path is D3D11 only
+list(FILTER XRR2_SRC_FILES EXCLUDE REGEX "../xrRender/EditorDraw(Context|Utilities)\\.cpp")
 
 # xrRender_R2 project
 add_library(xrRender_R2 SHARED ${XRR2_SRC_FILES})

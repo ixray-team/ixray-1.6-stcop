@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef ParticleEffectH
 #define ParticleEffectH
+#include "RenderAPI.h"
 //---------------------------------------------------------------------------
 
 #include "ParticleEffectDef.h"
@@ -10,7 +11,7 @@
 
 namespace PS
 {
-	class ECORE_API CParticleEffect final: public dxRender_Visual, public IParticleCustom
+	class RENDER_API CParticleEffect final: public dxRender_Visual, public IParticleCustom
 	{
 		friend class CPEDef;
 	public:
@@ -44,11 +45,10 @@ namespace PS
 		virtual 			~CParticleEffect	();
 
 		void	 			OnFrame				(u32 dt);
-#ifndef _EDITOR
 		virtual void	 	UpdateCache			();
-#endif
 
 		virtual void		Render				(float LOD);
+		void				RenderEditor		();
 		virtual void		Copy				(dxRender_Visual* pFrom);
 
 		virtual void 		GeomCreate();

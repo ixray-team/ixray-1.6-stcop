@@ -8,6 +8,7 @@ class EParticlesObject: public CCustomObject
 
     IParticleCustom*	m_Particles;
 	GameTypeChooser		m_GameType;
+	u32					LastFrameUpdate = 0;
 
 	void   	OnRefChange			(PropValue* V);
 	void   	OnControlClick		(ButtonValue* sender, bool& bModif, bool& bSafe);

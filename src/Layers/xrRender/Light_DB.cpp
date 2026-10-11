@@ -161,6 +161,31 @@ void	CLight_DB::LoadHemi	()
 }
 #endif
 
+void CLight_DB::LoadEditor()
+{
+	rain_light = new light;
+	rain_light->set_type(IRender_Light::DIRECT);
+
+	const Fvector Right = { 1.f, 0.f, 0.f };
+	const Fvector Down = { 0.f, -1.f, 0.f };
+
+	light* L = Create();
+	L->flags.bStatic = true;
+	L->set_type(IRender_Light::DIRECT);
+	L->set_shadow(true);
+	L->direction.set(Down);
+	L->right.set(Right);
+	sun_original = L;
+
+	L = Create();
+	L->flags.bStatic = true;
+	L->set_type(IRender_Light::DIRECT);
+	L->set_shadow(true);
+	L->direction.set(Down);
+	L->right.set(Right);
+	sun_adapted = L;
+}
+
 void			CLight_DB::Unload	()
 {
 	v_static.clear			();
@@ -168,8 +193,11 @@ void			CLight_DB::Unload	()
 	sun_original.destroy	();
 	sun_adapted.destroy		();
 
-	rain_light->destroy(false);
-	rain_light = nullptr;
+	if (rain_light)
+	{
+		rain_light->destroy(false);
+		rain_light = nullptr;
+	}
 }
 
 light*			CLight_DB::Create	()

@@ -1,6 +1,7 @@
 #ifndef sh_atomicH
 #define sh_atomicH
 #pragma once
+#include "RenderAPI.h"
 #include "../../xrCore/xr_resource.h"
 #include "tss_def.h"
 
@@ -17,7 +18,7 @@
 // Atomic resources
 //////////////////////////////////////////////////////////////////////////
 #ifdef USE_DX11
-struct ECORE_API SInputSignature : public xr_resource_flagged
+struct RENDER_API SInputSignature : public xr_resource_flagged
 {
 	ID3DBlob*							signature;
 	SInputSignature(ID3DBlob* pBlob);
@@ -26,7 +27,7 @@ struct ECORE_API SInputSignature : public xr_resource_flagged
 typedef	resptr_core<SInputSignature,resptr_base<SInputSignature> >	ref_input_sign;
 #endif //USE_DX11
 
-struct ECORE_API SVS : public xr_resource_uniq
+struct RENDER_API SVS : public xr_resource_uniq
 {
 	ID3DVertexShader*					vs;
 	R_constant_table					constants;
@@ -43,7 +44,7 @@ struct ECORE_API SVS : public xr_resource_uniq
 typedef	resptr_core<SVS,resptr_base<SVS> >	ref_vs;
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SPS : public xr_resource_uniq
+struct RENDER_API SPS : public xr_resource_uniq
 {
 	ID3DPixelShader*					ps;
 	R_constant_table					constants;
@@ -53,7 +54,7 @@ typedef	resptr_core<SPS,resptr_base<SPS> > ref_ps;
 
 #ifdef USE_DX11
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SGS : public xr_resource_uniq
+struct RENDER_API SGS : public xr_resource_uniq
 {
 	ID3DGeometryShader*					gs;
 	R_constant_table					constants;
@@ -61,7 +62,7 @@ struct ECORE_API SGS : public xr_resource_uniq
 };
 typedef	resptr_core<SGS,resptr_base<SGS> > ref_gs;
 
-struct ECORE_API SHS : public xr_resource_uniq
+struct RENDER_API SHS : public xr_resource_uniq
 {
 	ID3D11HullShader*					sh;
 	R_constant_table					constants;
@@ -69,7 +70,7 @@ struct ECORE_API SHS : public xr_resource_uniq
 };
 typedef	resptr_core< SHS, resptr_base<SHS> >	ref_hs;
 
-struct ECORE_API SDS : public xr_resource_uniq
+struct RENDER_API SDS : public xr_resource_uniq
 {
 	ID3D11DomainShader*					sh;
 	R_constant_table					constants;
@@ -77,7 +78,7 @@ struct ECORE_API SDS : public xr_resource_uniq
 };
 typedef	resptr_core< SDS, resptr_base<SDS> >	ref_ds;
 
-struct ECORE_API SCS : public xr_resource_uniq
+struct RENDER_API SCS : public xr_resource_uniq
 {
 	ID3D11ComputeShader*					sh;
 	R_constant_table					constants;
@@ -88,7 +89,7 @@ typedef	resptr_core< SCS, resptr_base<SCS> >	ref_cs;
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SState : public xr_resource_flagged
+struct RENDER_API SState : public xr_resource_flagged
 {
 	ID3DState*							state;
 	SimulatorStates						state_code;
@@ -97,7 +98,7 @@ struct ECORE_API SState : public xr_resource_flagged
 typedef	resptr_core<SState,resptr_base<SState> >	ref_state;
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SDeclaration : public xr_resource_flagged
+struct RENDER_API SDeclaration : public xr_resource_flagged
 {
 #ifdef USE_DX11
 	//	Maps input signature to input layout

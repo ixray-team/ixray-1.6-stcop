@@ -1,6 +1,7 @@
 #ifndef r_DStreamsH
 #define r_DStreamsH
 #pragma once
+#include "RenderAPI.h"
 
 enum
 {
@@ -8,7 +9,7 @@ enum
 	LOCKFLAGS_APPEND	= D3DLOCK_NOOVERWRITE
 };
 
-class  ECORE_API _VertexStream
+class  RENDER_API _VertexStream
 {
 private :
 	IRHIBuffer*		pVB;
@@ -41,7 +42,7 @@ public:
 	~_VertexStream()			{ Destroy();	};
 };
 
-class  ECORE_API _IndexStream
+class  RENDER_API _IndexStream
 {
 private :
 	IRHIBuffer*		pIB;

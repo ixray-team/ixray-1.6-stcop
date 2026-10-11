@@ -180,12 +180,10 @@ class cl_fog_plane	: public RHIShaderConstant::Setup {
 	Fvector4	result;
 	virtual void setup(RHIShaderConstant* C)
 	{
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		if (marker!=Device.dwFrame)
 		{
 			// Plane
@@ -214,12 +212,10 @@ class cl_fog_params	: public RHIShaderConstant::Setup {
 	Fvector4	result;
 	virtual void setup(RHIShaderConstant* C)
 	{
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		if (marker!=Device.dwFrame)
 		{
 			// Near/Far
@@ -237,12 +233,10 @@ class cl_fog_color	: public RHIShaderConstant::Setup {
 	u32			marker;
 	Fvector4	result;
 	virtual void setup	(RHIShaderConstant* C)	{
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		if (marker!=Device.dwFrame)	{
 			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
 #if RENDER == R_R1
@@ -324,15 +318,13 @@ class cl_sun0_color : public RHIShaderConstant::Setup {
 	u32 marker;
 	Fvector4 result;
 	virtual void setup(RHIShaderConstant* C) {
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-#if defined(_EDITOR) || RENDER != R_R1
+#if RENDER != R_R1
 			result.set(desc.sun_color.x * ps_r2_sun_lumscale, desc.sun_color.y * ps_r2_sun_lumscale, desc.sun_color.z * ps_r2_sun_lumscale, 0);
 #else
 			result.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z, 0);
@@ -346,12 +338,10 @@ class cl_sun0_dir_w : public RHIShaderConstant::Setup {
 	u32			marker;
 	Fvector4	result;
 	virtual void setup(RHIShaderConstant* C) {
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.sun_dir.x, desc.sun_dir.y, desc.sun_dir.z, 0);
@@ -364,12 +354,10 @@ class cl_sun0_dir_e : public RHIShaderConstant::Setup {
 	u32			marker;
 	Fvector4	result;
 	virtual void setup(RHIShaderConstant* C) {
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		if (marker != Device.dwFrame) {
 			Fvector D;
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
@@ -385,16 +373,14 @@ class cl_amb_color : public RHIShaderConstant::Setup {
 	u32			marker;
 	Fvector4	result;
 	virtual void setup(RHIShaderConstant* C) {
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
 
-#if defined(_EDITOR) || RENDER != R_R1
+#if RENDER != R_R1
 			result.set(desc.ambient.x * ps_r2_sun_lumscale_amb * 2.0f,
 				desc.ambient.y * ps_r2_sun_lumscale_amb * 2.0f, desc.ambient.z * ps_r2_sun_lumscale_amb * 2.0f, desc.weight);
 #else
@@ -409,16 +395,14 @@ class cl_hemi_color : public RHIShaderConstant::Setup {
 	u32			marker;
 	Fvector4	result;
 	virtual void setup(RHIShaderConstant* C) {
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		if (marker != Device.dwFrame) 
 		{
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
-#if defined(_EDITOR) || RENDER != R_R1
+#if RENDER != R_R1
 			if (desc.old_style)
 			{
 				result.set(desc.sky_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
@@ -443,15 +427,13 @@ class cl_sky_color : public RHIShaderConstant::Setup {
 	u32 marker;
 	Fvector4 result;
 	virtual void setup(RHIShaderConstant* C) {
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
-#if defined(_EDITOR) || RENDER != R_R1
+#if RENDER != R_R1
 			result.set(desc.sky_color.x * ps_r2_sun_lumscale_sky, 
 				desc.sky_color.y * ps_r2_sun_lumscale_sky, desc.sky_color.z * ps_r2_sun_lumscale_sky, desc.sky_rotation);
 #else
@@ -499,11 +481,7 @@ static class cl_def_aref : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C) override 
 	{
-#ifdef _EDITOR
-		float def_aref_cmd = 100 / 255.0f;
-#else
-		float def_aref_cmd = ps_r2_def_aref_quality / 255.0f;
-#endif
+		float def_aref_cmd = (Device.IsEditorMode() ? 100 : ps_r2_def_aref_quality) / 255.0f;
 	#ifdef USE_DX11
 		RCache.set_c(C, def_aref_cmd);
 	#else
@@ -518,12 +496,10 @@ static class cl_rain_params : public RHIShaderConstant::Setup {
 
 	virtual void setup(RHIShaderConstant* C)
 	{
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		float rainDensity = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 		float rainWetness = g_pGamePersistent->Environment().wetness_factor;
 		RCache.set_c(C, rainDensity, rainWetness, 0.0f, g_pGameLevel ? (float)g_pGameLevel->UseSnowmask : 0.f);
@@ -550,12 +526,10 @@ static class cl_env_wind : public RHIShaderConstant::Setup
 
 	virtual void setup(RHIShaderConstant* C)
 	{
-#ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
-#endif
 		const Fvector& WindDir = g_pGamePersistent->Environment().wind_blast_direction;
 		RCache.set_c(C, WindDir.x, WindDir.y, WindDir.z, g_pGamePersistent->Environment().wind_strength_factor);
 	}
@@ -712,10 +686,11 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("c_sun", &tree_binder_c_sun);
 
 	//hemi cube
-#ifdef _EDITOR
-	r_Constant("tfactor", &binder_tfactor);
-	r_Constant("editor_selection", &binder_selection);
-#endif
+	if (Device.IsEditorMode())
+	{
+		r_Constant("tfactor", &binder_tfactor);
+		r_Constant("editor_selection", &binder_selection);
+	}
 	r_Constant("L_material", &binder_material);
 
 	r_Constant("hemi_cube_pos_faces", &binder_hemi_cube_pos_faces);

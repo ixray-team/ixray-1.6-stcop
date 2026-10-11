@@ -1,6 +1,7 @@
 #ifndef r_constantsH
 #define r_constantsH
 #pragma once
+#include "RenderAPI.h"
 
 #include "../../xrCore/xr_resource.h"
 
@@ -47,7 +48,7 @@ enum	//	Constant buffer index masks
 
 typedef	resptr_core<RHIShaderConstant,resptr_base<RHIShaderConstant> > ref_constant;
 
-class	 ECORE_API			R_constant_table	: public xr_resource_flagged	{
+class	 RENDER_API			R_constant_table	: public xr_resource_flagged	{
 public:
 	typedef xr_vector<ref_constant>		c_table;
 	c_table					table;

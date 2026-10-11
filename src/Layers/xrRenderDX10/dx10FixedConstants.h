@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrRender/RenderAPI.h"
 #include "dx10ConstantBuffer.h"
 
 struct alignas(16) CBFrame
@@ -113,60 +114,60 @@ namespace FixedConstants
 	// b0..b4: cb_frame, cb_view, cb_object, cb_material, cb_light
 	constexpr u32 kSlots = 6;
 
-	ECORE_API void Create();
-	ECORE_API void Destroy();
-	ECORE_API void UpdateFrame();
-	ECORE_API void UpdateView();
-	ECORE_API void UpdateObject(const Fmatrix& mW);
-	ECORE_API void UpdateMaterial();
-	ECORE_API void BindFrame();
-	ECORE_API void BindView();
-	ECORE_API void BindObject();
-	ECORE_API void BindMaterial();
-	ECORE_API void BindLight();
-	ECORE_API void BindAll();
-	ECORE_API void InvalidateBindings();
-	ECORE_API bool IsFixedName(const char* n);
-	ECORE_API int  FixedClass(const char* n);
-	ECORE_API void Flush();
+	RENDER_API void Create();
+	RENDER_API void Destroy();
+	RENDER_API void UpdateFrame();
+	RENDER_API void UpdateView();
+	RENDER_API void UpdateObject(const Fmatrix& mW);
+	RENDER_API void UpdateMaterial();
+	RENDER_API void BindFrame();
+	RENDER_API void BindView();
+	RENDER_API void BindObject();
+	RENDER_API void BindMaterial();
+	RENDER_API void BindLight();
+	RENDER_API void BindAll();
+	RENDER_API void InvalidateBindings();
+	RENDER_API bool IsFixedName(const char* n);
+	RENDER_API int  FixedClass(const char* n);
+	RENDER_API void Flush();
 
-	ECORE_API void SetHemiMaterial(float x,float y,float z,float w);
-	ECORE_API void SetHemiPosFaces(float x,float y,float z);
-	ECORE_API void SetHemiNegFaces(float x,float y,float z);
-	ECORE_API void SetHemiTfactor(const Fvector4& v);
-	ECORE_API void SetHemiTfactor(float x,float y,float z,float w);
-	ECORE_API void SetLitColor(const Fvector& c, const Fvector& dir);
-	ECORE_API void SetDtParams(float x,float y,float z,float w);
-	ECORE_API void SetDtParamsScale(float s);
-	ECORE_API void SetParallax(float h);
-	ECORE_API void SetAlphaRef(float a);
-	ECORE_API void SetLModelLight(const Fvector& c, const Fvector& dir);
-	ECORE_API void SetTriLOD(float lod);
-	ECORE_API void SetTfactor(const Fvector4& v);
-	ECORE_API void SetTreeXform(const Fmatrix& m);
-	ECORE_API void SetTreeXformV(const Fmatrix& m);
-	ECORE_API void SetTreeConsts(float x,float y,float z,float w);
-	ECORE_API void SetTreeWave(const Fvector4& v);
-	ECORE_API void SetTreeWind(const Fvector4& v);
-	ECORE_API void SetTreeConstsOld(float x,float y,float z,float w);
-	ECORE_API void SetTreeWaveOld(const Fvector4& v);
-	ECORE_API void SetTreeWindOld(const Fvector4& v);
-	ECORE_API void SetTreeCScale(float x,float y,float z,float w);
-	ECORE_API void SetTreeCBias(float x,float y,float z,float w);
-	ECORE_API void SetTreeCSun(float x,float y,float z,float w);
-	ECORE_API void SetLMap(const Fmatrix& m);
-	ECORE_API void SetShadow(const Fmatrix& m);
-	ECORE_API void SetShadowSun(int idx, const Fmatrix& m);
-	ECORE_API void SetLdynamic(const Fvector4& c, const Fvector4& p, const Fvector4& d);
+	RENDER_API void SetHemiMaterial(float x,float y,float z,float w);
+	RENDER_API void SetHemiPosFaces(float x,float y,float z);
+	RENDER_API void SetHemiNegFaces(float x,float y,float z);
+	RENDER_API void SetHemiTfactor(const Fvector4& v);
+	RENDER_API void SetHemiTfactor(float x,float y,float z,float w);
+	RENDER_API void SetLitColor(const Fvector& c, const Fvector& dir);
+	RENDER_API void SetDtParams(float x,float y,float z,float w);
+	RENDER_API void SetDtParamsScale(float s);
+	RENDER_API void SetParallax(float h);
+	RENDER_API void SetAlphaRef(float a);
+	RENDER_API void SetLModelLight(const Fvector& c, const Fvector& dir);
+	RENDER_API void SetTriLOD(float lod);
+	RENDER_API void SetTfactor(const Fvector4& v);
+	RENDER_API void SetTreeXform(const Fmatrix& m);
+	RENDER_API void SetTreeXformV(const Fmatrix& m);
+	RENDER_API void SetTreeConsts(float x,float y,float z,float w);
+	RENDER_API void SetTreeWave(const Fvector4& v);
+	RENDER_API void SetTreeWind(const Fvector4& v);
+	RENDER_API void SetTreeConstsOld(float x,float y,float z,float w);
+	RENDER_API void SetTreeWaveOld(const Fvector4& v);
+	RENDER_API void SetTreeWindOld(const Fvector4& v);
+	RENDER_API void SetTreeCScale(float x,float y,float z,float w);
+	RENDER_API void SetTreeCBias(float x,float y,float z,float w);
+	RENDER_API void SetTreeCSun(float x,float y,float z,float w);
+	RENDER_API void SetLMap(const Fmatrix& m);
+	RENDER_API void SetShadow(const Fmatrix& m);
+	RENDER_API void SetShadowSun(int idx, const Fmatrix& m);
+	RENDER_API void SetLdynamic(const Fvector4& c, const Fvector4& p, const Fvector4& d);
 
-	ECORE_API u32 NameHash(const char* n);
+	RENDER_API u32 NameHash(const char* n);
 
-	ECORE_API bool OnSet(u32 h, const Fmatrix& A);
-	ECORE_API bool OnSet(u32 h, const Fvector4& A);
-	ECORE_API bool OnSet(u32 h, float A);
-	ECORE_API bool OnSet(u32 h, int A);
-	ECORE_API bool OnSetA(u32 h, u32 e, const Fmatrix& A);
-	ECORE_API bool OnSetA(u32 h, u32 e, const Fvector4& A);
+	RENDER_API bool OnSet(u32 h, const Fmatrix& A);
+	RENDER_API bool OnSet(u32 h, const Fvector4& A);
+	RENDER_API bool OnSet(u32 h, float A);
+	RENDER_API bool OnSet(u32 h, int A);
+	RENDER_API bool OnSetA(u32 h, u32 e, const Fmatrix& A);
+	RENDER_API bool OnSetA(u32 h, u32 e, const Fvector4& A);
 
 	// A constant's name either belongs to a fixed layout or it never will, so match it once
 	// and cache the verdict: the long tail of blender/post-process constants then costs one

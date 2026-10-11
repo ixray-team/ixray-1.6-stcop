@@ -161,7 +161,7 @@ void CSHEngineTools::OnActivate()
 
 void CSHEngineTools::OnDeactivate()
 {
-	EDevice->Resources->SetForceBlenderShader(nullptr);
+	DEV->SetForceBlenderShader(nullptr);
 	inherited::OnDeactivate		();
 }
 
@@ -890,7 +890,7 @@ void CSHEngineTools::UpdateObjectShader()
 		CSurface* surf = E->m_Surfaces.front();
 		R_ASSERT(surf);
 
-		EDevice->Resources->SetForceBlenderShader(m_CurrentBlender ? m_CurrentBlender->getName() : nullptr);
+		DEV->SetForceBlenderShader(m_CurrentBlender ? m_CurrentBlender->getName() : nullptr);
 
 		if (m_CurrentBlender)
 		{

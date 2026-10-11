@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "RenderAPI.h"
 
 #include "r_constants.h"
 #include "../../xrCore/xr_resource.h"
@@ -22,7 +23,7 @@ class					IBlender;
 #pragma pack(push,4)
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API STextureList : 
+struct RENDER_API STextureList : 
 	public xr_resource_flagged, 
 	public xr_vector<std::pair<u32,ref_texture> >	
 {
@@ -52,7 +53,7 @@ struct ECORE_API STextureList :
 };
 typedef	resptr_core<STextureList,resptr_base<STextureList> >								ref_texture_list;
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SMatrixList : public xr_resource_flagged, public FixedVector<ref_matrix, 4>
+struct RENDER_API SMatrixList : public xr_resource_flagged, public FixedVector<ref_matrix, 4>
 {
 	SMatrixList();
 	SMatrixList& operator=(const SMatrixList& Other) = delete;
@@ -63,7 +64,7 @@ struct ECORE_API SMatrixList : public xr_resource_flagged, public FixedVector<re
 
 typedef	resptr_core<SMatrixList,resptr_base<SMatrixList> >									ref_matrix_list;
 //////////////////////////////////////////////////////////////////////////
-struct  ECORE_API SConstantList : public xr_resource_flagged, public FixedVector<ref_constant_obsolette, 4>
+struct  RENDER_API SConstantList : public xr_resource_flagged, public FixedVector<ref_constant_obsolette, 4>
 {
 	~SConstantList();
 	SConstantList();
@@ -75,7 +76,7 @@ struct  ECORE_API SConstantList : public xr_resource_flagged, public FixedVector
 typedef	resptr_core<SConstantList,resptr_base<SConstantList> >								ref_constant_list;
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SGeometry
+struct RENDER_API SGeometry
 	: public xr_resource_flagged
 {
 	ref_declaration		dcl;
@@ -86,7 +87,7 @@ struct ECORE_API SGeometry
 						SGeometry& operator=(const SGeometry& Other) = delete;
 };
 
-struct ECORE_API resptrcode_geom:
+struct RENDER_API resptrcode_geom:
 	public resptr_base<SGeometry>
 {
 	void 				create			(RHIInputElementDesc* DescList, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
@@ -99,7 +100,7 @@ struct ECORE_API resptrcode_geom:
 typedef	resptr_core<SGeometry,resptrcode_geom>												ref_geom;
 
 //////////////////////////////////////////////////////////////////////////
-struct	  ECORE_API		SPass			: public xr_resource_flagged									{
+struct	  RENDER_API		SPass			: public xr_resource_flagged									{
 	ref_state							state;		// Generic state, like Z-Buffering, samplers, etc
 	ref_ps								ps;			// may be NULL = FFP, in that case "state" must contain TSS setup
 	ref_vs								vs;			// may be NULL = FFP, in that case "state" must contain RS setup, *and* FVF-compatible declaration must be used
@@ -115,9 +116,7 @@ struct	  ECORE_API		SPass			: public xr_resource_flagged									{
 	ref_constant_list					C;
 	u8 iPriority = u8(-1);
 
-#ifdef _EDITOR
 	ref_matrix_list						M;
-#endif
 
 						~SPass			();
 
@@ -126,7 +125,7 @@ struct	  ECORE_API		SPass			: public xr_resource_flagged									{
 typedef	resptr_core<SPass,resptr_base<SPass> >												ref_pass;
 
 //////////////////////////////////////////////////////////////////////////
-struct 	 ECORE_API	ShaderElement	: public xr_resource_flagged									{
+struct 	 RENDER_API	ShaderElement	: public xr_resource_flagged									{
 public:
 	struct Sflags
 	{
@@ -154,7 +153,7 @@ public:
 typedef	resptr_core<ShaderElement,resptr_base<ShaderElement> >								ref_selement;
 
 //////////////////////////////////////////////////////////////////////////
-struct 	 ECORE_API	Shader			: public xr_resource_flagged									{
+struct 	 RENDER_API	Shader			: public xr_resource_flagged									{
 public:
 	ref_selement		E		[SHADER_ELEMENTS_MAX];	// R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,	
 										// R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
@@ -171,7 +170,7 @@ public:
 
 	void _copy(Shader& Other);
 };
-struct 	 ECORE_API	resptrcode_shader	: public resptr_base<Shader>
+struct 	 RENDER_API	resptrcode_shader	: public resptr_base<Shader>
 {
 	void				create			(const char* s_shader=nullptr, const char* s_textures=nullptr, const char* s_constants=nullptr, const char* s_matrices=nullptr);
 	void				create			(IBlender*	B,	const char* s_shader=nullptr, const char* s_textures=nullptr, const char* s_constants=nullptr, const char* s_matrices=nullptr);

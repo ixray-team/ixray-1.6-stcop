@@ -21,7 +21,6 @@
 // Naming matches the bake files (precomputed_detail_fmb_noise.bin /
 // precomputed_detail_perlin_scale.bin) with the user_mask_ prefix.
 
-#ifndef _EDITOR
 
 namespace
 {
@@ -345,4 +344,3 @@ void CDetailManager::DetailLayers_ClearUserMasks()
 		cluster_field = cluster_field_base;
 }
 
-#endif // !_EDITOR

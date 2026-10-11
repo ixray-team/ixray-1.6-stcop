@@ -890,7 +890,7 @@ bool ESceneWallmarkTool::Validate(bool)
     for (WMSVecIt slot_it=marks.begin(); slot_it!=marks.end(); slot_it++){
         wm_slot* slot= *slot_it;	
         if (slot->items.size()){
-            IBlender* 	B 	= EDevice->Resources->_FindBlender(*slot->sh_name); 
+            IBlender* 	B 	= DEV->_FindBlender(*slot->sh_name); 
             if (!B||B->canBeLMAPped()){
                 ELog.Msg	(mtError,"Wallmarks: Invalid or missing shader '%s'.",*slot->sh_name);
                 bRes 		= false;

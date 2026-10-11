@@ -742,7 +742,6 @@ void UIEditLibrary::ChangeReference(const RStringVec& items)
 	}
 
 	ExecCommand(COMMAND_EVICT_OBJECTS);
-	ExecCommand(COMMAND_EVICT_TEXTURES);
 }
 
 void UIEditLibrary::OnRender()

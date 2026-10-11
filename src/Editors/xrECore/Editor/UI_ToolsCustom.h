@@ -11,6 +11,8 @@ class CEditableObject;
 class PropValue;
 class TfrmKeyBar;
 class CBlend;
+struct EditorLightDescriptor;
+class CDetailManager;
 
 enum ETAction
 {
@@ -233,6 +235,16 @@ public:
 
     virtual void		ShowProperties		(const char* focused_item)=0;
     virtual void		UpdateProperties	(bool bForced=false)=0;
+
+    // Detail objects of the scene for the renderer pipeline (IEditorRenderHost::GetSceneDetails)
+    virtual CDetailManager*	GetSceneDetails		() { return nullptr; }
+
+    // Shadow casters of the scene for the renderer shadow-map passes (submit draw pass)
+    virtual void		SubmitShadowCasters	() { Render(); }
+
+    // Placed point/spot lights for the game lighting pipeline (LevelEditor).
+    // Returns the total number of eligible lights; writes up to Capacity.
+    virtual u32			CollectEditorLights	(EditorLightDescriptor* Out, u32 Capacity) { (void)Out; (void)Capacity; return 0; }
 
     const xr_string&	GetEditFileName		()	{ return m_LastFileName; }
 

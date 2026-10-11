@@ -92,7 +92,7 @@ void CActorTools::Render()
 					u16 bcnt = K->LL_BoneCount();
 					for (u16 bidx = 0; bidx < bcnt; ++bidx)
 					{
-						EDevice->SetShader(EDevice->m_WireShader);
+						EDevice->SetShader(GEditorDraw.WireShader);
 
 						Fmatrix M = Fmatrix().mul(m_RenderObject.ObjectXFORM(), K->LL_GetTransform(bidx));
 

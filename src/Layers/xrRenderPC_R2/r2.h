@@ -95,6 +95,7 @@ public:
 	CPSLibrary													PSLibrary;
 
 	CDetailManager*												Details;
+	CDetailManager*												GetDetails() const { return Details; }
 	CModelPool*													Models;
 	CWallmarksEngine*											Wallmarks;
 

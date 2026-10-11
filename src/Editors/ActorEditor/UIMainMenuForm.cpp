@@ -246,15 +246,15 @@ void UIMainMenuForm::Draw()
 				}
 				if (ImGui::BeginMenu("Fill Mode"))
 				{
-					bool Selected[3] = { false ,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
+					bool Selected[3] = { false ,GEditorDraw.FillMode == D3DFILL_WIREFRAME,GEditorDraw.FillMode == D3DFILL_SOLID };
 					if (ImGui::MenuItem("Wireframe", "", &Selected[1]))
 					{
-						EDevice->dwFillMode = D3DFILL_WIREFRAME;
+						GEditorDraw.FillMode = D3DFILL_WIREFRAME;
 						EContext.UI->RedrawScene();
 					}
 					if (ImGui::MenuItem("Solid", "", &Selected[2]))
 					{
-						EDevice->dwFillMode = D3DFILL_SOLID;
+						GEditorDraw.FillMode = D3DFILL_SOLID;
 						EContext.UI->RedrawScene();
 					}
 					ImGui::EndMenu();

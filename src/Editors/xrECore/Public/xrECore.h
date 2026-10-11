@@ -13,5 +13,4 @@
 #include "../Editor/Library.h"
 #include "../Editor/ImageManager.h"
 #include "../Editor/ELog.h"
-#include "../Editor/ParticleEffectActions.h"
 #include "../Editor/EditorContext.h"

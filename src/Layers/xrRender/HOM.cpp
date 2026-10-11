@@ -34,7 +34,9 @@ CHOM::CHOM()
 	bEnabled		= false;
 	m_pModel		= 0;
 #ifdef DEBUG_DRAW
-	Device.seqRender.Add(this,REG_PRIORITY_LOW-1000);
+	// The editors load the renderer before their device exists; they do not draw the HOM.
+	if (DevicePtr)
+		Device.seqRender.Add(this,REG_PRIORITY_LOW-1000);
 #endif
 }
 

@@ -208,12 +208,14 @@ IC void CBackend::ApplyVertexLayout()
 
 ICF void CBackend::set_VS(ref_vs& _vs)
 {
+	CurrentVS = _vs._get();
 	m_pInputSignature = (_vs && _vs->signature) ? _vs->signature->signature : nullptr;
 	GRHI->SetShader(_vs ? _vs->vs : nullptr, ERHI_SHADER_TYPE::VS);
 }
 
 ICF void CBackend::set_VS(SVS* _vs)
 {
+	CurrentVS = _vs;
 	m_pInputSignature = (_vs && _vs->signature) ? _vs->signature->signature : nullptr;
 	GRHI->SetShader(_vs ? _vs->vs : nullptr, ERHI_SHADER_TYPE::VS);
 }

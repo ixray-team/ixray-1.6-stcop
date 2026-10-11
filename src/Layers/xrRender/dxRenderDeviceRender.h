@@ -1,10 +1,6 @@
 #pragma once
 
-#ifndef _EDITOR
 #	define DEV dxRenderDeviceRender::Instance().Resources
-#else
-#	define DEV EDevice->Resources
-#endif
 
 #include "../../Include/xrRender/RenderDeviceRender.h"
 #include "xr_effgamma.h"

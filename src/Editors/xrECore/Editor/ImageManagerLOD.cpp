@@ -89,16 +89,16 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 
     // save render params
     Flags32 old_flag			= psDeviceFlags;
-	u32 old_dwFillMode			= EDevice->dwFillMode;
-    u32 old_dwShadeMode			= EDevice->dwShadeMode;
+	u32 old_dwFillMode			= GEditorDraw.FillMode;
+    u32 old_dwShadeMode			= GEditorDraw.ShadeMode;
     // set render params
 
     u32 cc						= 	EPrefs->scene_clear_color;
     EPrefs->scene_clear_color 	= 	0x0000000;
     psDeviceFlags.zero			();
 	psDeviceFlags.set			(rsFilterLinear,true);
-	EDevice->dwFillMode			= D3DFILL_SOLID;
-    EDevice->dwShadeMode			= D3DSHADE_GOURAUD;
+	GEditorDraw.FillMode			= D3DFILL_SOLID;
+    GEditorDraw.ShadeMode			= D3DSHADE_GOURAUD;
 
 	Fvector Pos, Dir, Normals, VecR;
 	Fmatrix MatrixV, MatrixP;
@@ -214,8 +214,8 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 	}
 
     // restore render params
-	EDevice->dwFillMode			= old_dwFillMode;
-    EDevice->dwShadeMode			= old_dwShadeMode;
+	GEditorDraw.FillMode			= old_dwFillMode;
+    GEditorDraw.ShadeMode			= old_dwShadeMode;
     psDeviceFlags 				= old_flag;
     EPrefs->scene_clear_color 	= cc;
 

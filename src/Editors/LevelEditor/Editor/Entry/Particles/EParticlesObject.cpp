@@ -57,6 +57,13 @@ void EParticlesObject::OnUpdateTransform()
 
 void EParticlesObject::OnFrame()
 {
+	// Grouped objects get OnFrame from their tool and from the group
+	if (LastFrameUpdate == EDevice->dwFrame)
+	{
+		return;
+	}
+	LastFrameUpdate = EDevice->dwFrame;
+
 	inherited::OnFrame();
     Fbox bb; GetBox(bb);
     if (::Render->occ_visible(bb))
@@ -81,7 +88,7 @@ void EParticlesObject::Render(int priority, bool strictB2F)
             if (!strictB2F) 
             {
                 // draw emitter
-                EDevice->SetShader(EDevice->m_WireShader);
+                EDevice->SetShader(GEditorDraw.WireShader);
 
                 if (!Selected())
                     AddCross(GetPosition(), 0.30f, 0.1f, 0.3f, 0.3f, 0.3f, 0.3f, 0xFFFFEBAA, false);

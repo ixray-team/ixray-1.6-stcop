@@ -329,6 +329,18 @@ public:
 	bool			HasSelectionColor		(CCustomObject*) const;
 	void 			RenderSkeleton			(CCustomObject*, const Fmatrix& parent, CSurface* S);
 
+	// Geometry of a surface only, for the renderer scene graph (it sets the shader pass)
+	void			RenderGeometry			(CCustomObject*, CSurface* S);
+	// Geometry of a surface drawn InstanceCount times (instanced vertex shader of the current pass)
+	void			RenderGeometryInstanced	(CSurface* S, u32 InstanceCount);
+	void			RenderSkeletonGeometry	(CCustomObject*, CSurface* S);
+	// Adds the surface to the renderer scene graph when it is visible in the current view
+	void			Submit					(CCustomObject*, const Fmatrix& parent, CSurface* S, const ref_shader& Shader, const ref_shader& InstancedShader, bool Skeleton);
+private:
+	// Skeleton surface with bones; applies every pass of PassShader, or the current pass when null
+	void			DrawSkeleton			(CCustomObject*, CSurface* S, ref_shader* PassShader);
+public:
+
 	void 			RenderSelection			(CCustomObject* parent, u32 color);
 	void 			RenderEdge				(CCustomObject* parent, u32 color);
 

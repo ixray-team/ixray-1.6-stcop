@@ -2,9 +2,7 @@
 #include "DetailManager.h"
 #include "xrRender_console.h"
 
-#ifndef _EDITOR
 extern int ps_trample_enabled;
-#endif
 
 u32 dm_size = 24;
 u32 dm_slide_window_line = 12;
@@ -19,7 +17,6 @@ float dm_current_fade = 47.5;
 float ps_current_detail_density = 0.6;
 float ps_current_detail_scale = 1.f;
 
-#ifndef _EDITOR
 // Set by r__detail_* console changes while the level is loaded.
 // Deferred so that a whole cfg_load (many commands in one frame) triggers a
 // single cache_ReInitialize instead of one full slot rebuild per command.
@@ -39,7 +36,6 @@ bool CDetailManager::ConsumeCacheRebuildRequest()
 	g_details_need_rebuild.store(false);
 	return true;
 }
-#endif
 
 void CDetailManager::cache_Alloc()
 {
@@ -67,14 +63,9 @@ void CDetailManager::cache_Free()
 	unpacked_slots.clear();
 	unpacked_slots.shrink_to_fit();
 	items_pool.clear();
-#ifndef _EDITOR 
-	for (CDetail& Objectl : objects)
-	{
-#else
 	for (CDetail* D : objects)
 	{
 		CDetail& Objectl = *D;
-#endif
 		for (u32 i = 0; i < 2; ++i)
 		{
 			for (u32 j = 0; j < 3; ++j)
@@ -86,7 +77,6 @@ void CDetailManager::cache_Free()
 	}
 }
 
-#ifndef _EDITOR
 void CDetailManager::Load()
 {
 	// Open file stream
@@ -110,7 +100,7 @@ void CDetailManager::Load()
 	for (u32 m_id = 0; m_id < m_count; m_id++)
 	{
 		IReader* S = m_fs->open_chunk(m_id);
-		CDetail& dt	= objects.emplace_back();
+		CDetail& dt	= *objects.emplace_back(new CDetail());
 		dt.Load(S);
 		S->close();
 	}
@@ -121,7 +111,7 @@ void CDetailManager::Load()
 	{
 		if (vanilla_grass_count >= 64)
 			break;
-		if (objects[m_id].number_vertices >= 8 && !objects[m_id].m_Flags.is(DO_NO_WAVING))
+		if (objects[m_id]->number_vertices >= 8 && !objects[m_id]->m_Flags.is(DO_NO_WAVING))
 		{
 			vanilla_grass_indices[vanilla_grass_count++] = m_id;
 		}
@@ -140,10 +130,11 @@ void CDetailManager::Load()
 				break;
 			string_path full_path;
 			FS.update_path(full_path, "$level$", dmf.name.c_str());
-			CDetail& dt = objects.emplace_back();
+			CDetail& dt = *objects.emplace_back(new CDetail());
 			obj_count++;
 			if (!dt.LoadFromDM(full_path))
 			{
+				xr_delete(objects.back());
 				objects.pop_back();
 				obj_count--;
 				Msg("! CDetailManager::Load: alt model failed to load '%s'", full_path);
@@ -184,22 +175,17 @@ void CDetailManager::Load()
 	swing_desc[1].rot2	= pSettings->r_float("details","swing_fast_rot2");
 	swing_desc[1].speed	= pSettings->r_float("details","swing_fast_speed");
 }
-#endif
+
 void CDetailManager::Unload		()
 {
 	Device.DetailsTask.wait();
 	hw_Unload();
 
-#ifndef _EDITOR
-	for (CDetail& dt : objects)
-		dt.Unload();
-#else
 	for (CDetail* dt : objects)
 	{
 		dt->Unload();
 		xr_delete(dt);
 	}
-#endif
 	objects.clear();
 
 	FS.r_close(dtFS);
@@ -209,7 +195,10 @@ void CDetailManager::Unload		()
 void CDetailManager::Render()
 {
 	PROF_EVENT("Render details");
-#ifndef _EDITOR
+	const bool EditorMode = Device.IsEditorMode();
+	bool in_outdoor = true;
+	if (!EditorMode)
+	{
 	if (!dtFS) return;
 	if (!psDeviceFlags.is(rsDetails)) return;
 
@@ -223,11 +212,10 @@ void CDetailManager::Render()
 		cache_ReInitialize();
 	}
 
-	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+	in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+	}
+
 	if(in_outdoor && task_finished.load())
-#else
-	if (task_finished.load())
-#endif
 	{
 		task_finished.store(false);
 		std::swap(render_key, calc_key);
@@ -242,15 +230,18 @@ void CDetailManager::Render()
 		(
 			[=]()
 			{
-#ifndef _EDITOR
-				if (!dtFS) return;
-				if (!psDeviceFlags.is(rsDetails)) return;
-#endif
+				if (!EditorMode)
+				{
+					if (!dtFS) return;
+					if (!psDeviceFlags.is(rsDetails)) return;
+				}
 				cache_Update(cam_pos);
 
 #ifdef USE_DX11
-#ifndef _EDITOR
-				if (ps_trample_enabled)
+				if (EditorMode)
+				{
+				}
+				else if (ps_trample_enabled)
 				{
 					TrampleProcessMarks();
 					TrampleAnimateItems();
@@ -260,28 +251,20 @@ void CDetailManager::Render()
 					TrampleAnimateItems();
 				}
 #endif
-#endif
 
 				{
 					PROF_EVENT("UpdateVisible");
-#ifndef _EDITOR 
-					for (CDetail& Objectl : objects)
-					{
-#else
 					for (CDetail* D : objects)
 					{
 						CDetail& Objectl = *D;
-#endif
 						for (u32 i = 0; i < 3; ++i)
 							Objectl.m_items[calc_key][i].clear();
 					}
-#ifndef _EDITOR
 					CHOM& HOM = RImplementation.HOM;
-#endif
 					float fade_limit = dm_fade;	fade_limit = fade_limit * fade_limit;
 					float fade_start = 1.f; fade_start = fade_start * fade_start;
 					float fade_range = fade_limit - fade_start;
-					extern ECORE_API float r_ssaDISCARD;
+					extern RENDER_API float r_ssaDISCARD;
 					float ssa_D = r_ssaDISCARD;
 					float r_ssaCHEAP = 16 * ssa_D;
 
@@ -298,10 +281,8 @@ void CDetailManager::Render()
 						u32 res = View.testSAABB(MS.vis.sphere.P, MS.vis.sphere.R, MS.vis.box.data(), mask);
 						if (fcvNone == res)
 							continue;
-#ifndef _EDITOR
-						if (!HOM.visible(MS.vis))
+						if (!EditorMode && !HOM.visible(MS.vis))
 							continue;
-#endif
 						for (u32 _i = 0; _i < dm_cache_count; _i++)
 						{
 							Slot** slots = MS.slots[_i];
@@ -317,10 +298,8 @@ void CDetailManager::Render()
 								if (fcvNone == _res)
 									continue;
 							}
-#ifndef _EDITOR
-							if (!HOM.visible(S->vis))
+							if (!EditorMode && !HOM.visible(S->vis))
 								continue;
-#endif
 							float dist_sq = cam_pos.distance_to_sqr(S->vis.sphere.P);
 							float alpha = (dist_sq < fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
 							float dist_sq_rcp = 1.f / dist_sq;
@@ -343,11 +322,7 @@ void CDetailManager::Render()
 								{
 									continue;
 								}
-#ifndef _EDITOR 
-								CDetail& D = objects[sp.id];
-#else
 								CDetail& D = *objects[sp.id];
-#endif
 								auto& ditems = D.m_items[calc_key];
 								auto& items = sp.items;
 								if (ssa_vis_id == 0)
@@ -384,14 +359,9 @@ void CDetailManager::Render()
 					srvDesc.Format = ERHI_FORMAT::UNKNOWN;
 					RHIBufferSubresource vbInit{};
 
-#ifdef _EDITOR
 					for (CDetail* DPtr : objects)
 					{
 						CDetail& D = *DPtr;
-#else
-					for (CDetail& D : objects)
-					{
-#endif
 						auto& ditems = D.m_items[calc_key];
 						auto& buffers = D.DetailGPUBoundBuffers[calc_key];
 						for (u32 i = 0; i < 3; ++i)
@@ -425,16 +395,17 @@ void CDetailManager::Render()
 		);
 	}
 
-#ifndef _EDITOR
-	float _factor = g_pGamePersistent->Environment().wind_strength_factor;
-	static float factor = _factor;
-	static float lastTime = 0.0f;
-	float fTimeDelta = Device.fTimeDelta - lastTime; fTimeDelta *= 0.5f;
-	factor += clampr(_factor - factor, -fTimeDelta, fTimeDelta);
-	lastTime = Device.fTimeDelta;
-#else
 	float factor = 0.3f;
-#endif
+	if (!EditorMode)
+	{
+		float _factor = g_pGamePersistent->Environment().wind_strength_factor;
+		static float smooth_factor = _factor;
+		static float lastTime = 0.0f;
+		float fTimeDelta = Device.fTimeDelta - lastTime; fTimeDelta *= 0.5f;
+		smooth_factor += clampr(_factor - smooth_factor, -fTimeDelta, fTimeDelta);
+		lastTime = Device.fTimeDelta;
+		factor = smooth_factor;
+	}
 	swing_current.lerp(swing_desc[0], swing_desc[1], factor);
 
 	float fDelta = Device.fTimeGlobal - m_global_time_old;

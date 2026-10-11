@@ -24,7 +24,6 @@ bool SceneBuilder::EvictResource()
 	xrCriticalSectionGuard guard_lock(temp_render_lock);
 
 	ExecCommand(COMMAND_EVICT_OBJECTS);
-	ExecCommand(COMMAND_EVICT_TEXTURES);
 
 	int objcount = Scene->ObjCount(OBJCLASS_SCENEOBJECT);
 	objcount += Scene->ObjCount(OBJCLASS_TERRAIN);

@@ -1,13 +1,14 @@
 #ifndef SH_MATRIX_H
 #define SH_MATRIX_H
 #pragma once
+#include "RenderAPI.h"
 
 #include "../../xrEngine/WaveForm.h"
 
 class		IReader;
 class		IWriter;
 
-class	ECORE_API	CMatrix	: public xr_resource_named								{
+class	RENDER_API	CMatrix	: public xr_resource_named								{
 public:
 	enum { modeProgrammable=0, modeTCM, modeS_refl, modeC_refl, modeDetail	};
 	enum

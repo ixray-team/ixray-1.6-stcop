@@ -51,7 +51,7 @@ bool CEditorRenderDevice::RenderScreenshotRT(ref_rt& rtColor, ref_rt& rtDepth)
 	u32 TexHeight = rtColor->dwHeight;
 
 	// free managed resource
-	Resources->Evict();
+	DEV->Evict();
 
 	SRTState Saved;
 	Saved.Save();
@@ -171,7 +171,7 @@ bool CEditorRenderDevice::DownsampleLODAtlas(xr_vector<ref_rt>& SrcRTs, ref_rt& 
 	}
 
 	ref_cs Compute;
-	Compute = EDevice->Resources->_CreateCS("lod_downsample");
+	Compute = DEV->_CreateCS("lod_downsample");
 	if (!Compute)
 	{
 		return false;

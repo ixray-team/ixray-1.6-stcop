@@ -4,6 +4,7 @@
 class ESceneToolBase;
 class TfrmObjectList;
 class IViewport;
+struct EditorLightDescriptor;
 
 #define estDefault 0
 #define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
@@ -112,6 +113,10 @@ public:
 
 	virtual bool		Pick				(TShiftState Shift);
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
+
+	virtual u32			CollectEditorLights	(EditorLightDescriptor* Out, u32 Capacity);
+	virtual void		SubmitShadowCasters	();
+	virtual CDetailManager*	GetSceneDetails		();
 
 	virtual void		ShowProperties		(const char* focused_item);
 	virtual void		UpdateProperties	(bool bForced){m_Flags.set(flUpdateProperties|flUpdateObjectList,true); if (bForced) OnFrame();}

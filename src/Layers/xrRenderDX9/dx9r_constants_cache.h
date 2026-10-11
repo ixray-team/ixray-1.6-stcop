@@ -1,6 +1,7 @@
 #ifndef dx9r_constants_cacheH
 #define dx9r_constants_cacheH
 #pragma once
+#include "../xrRender/RenderAPI.h"
 
 template <class T, u32 limit>
 class	R_constant_cache
@@ -128,7 +129,7 @@ public:
 	}
 };
 
-class	ECORE_API  R_constants
+class	RENDER_API  R_constants
 {
 public:
 	ALIGN(16)	R_constant_array	a_pixel;

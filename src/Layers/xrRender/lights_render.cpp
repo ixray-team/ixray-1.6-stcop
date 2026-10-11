@@ -158,10 +158,10 @@ void	CRender::render_lights	(light_Package& LP)
 
 					if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) &&
 						psDeviceFlags.is(rsDetails) &&
-						Details->dtFS &&
+						GetDetails() && GetDetails()->dtSlots &&
 						L->flags.bShadow && !decorative_light && L->SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
 					{
-						Details->hw_Render(L);
+						GetDetails()->hw_Render(L);
 					}
 
 					L->X.S.transluent = false;

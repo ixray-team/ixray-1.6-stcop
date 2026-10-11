@@ -6,7 +6,7 @@ CPluginUIRun::CPluginUIRun(IPluginBase* Plug):
 	InputPlugin(Plug)
 {
 	bOpen = true;
-	OpenImage = EDevice->Resources->_CreateTexture("ed\\bar\\open_gamedata");
+	OpenImage = DEV->_CreateTexture("ed\\bar\\open_gamedata");
 }
 
 void CPluginUIRun::Draw()

@@ -1,4 +1,5 @@
 #pragma once
+#include "RenderAPI.h"
 #include <memory_resource>
 
 constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;
@@ -19,12 +20,12 @@ inline constexpr size_t calculate_reserve_count(size_t bytes, size_t amount)
 struct smol_atlas_t;
 struct smol_atlas_item_t;
 
-class ECORE_API CTextureAtlas
+class RENDER_API CTextureAtlas
 {
 public:
 	using element_lookupid_type = char;
 
-	struct ECORE_API CTextureAtlasElement
+	struct RENDER_API CTextureAtlasElement
 	{
 		smol_atlas_item_t* p_placement = nullptr;
 
@@ -41,7 +42,7 @@ public:
 	};
 
 	/// @brief CTextureAtlasElement spatial indexing feature using morton codes, contains stable lookup_id for accessing element itself 
-	struct ECORE_API CTAESpatialIndex
+	struct RENDER_API CTAESpatialIndex
 	{
 		element_lookupid_type lookup_id = element_lookupid_type(-1);
 	};

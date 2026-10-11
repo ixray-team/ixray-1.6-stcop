@@ -26,26 +26,26 @@
 #include "engine/XrGamePersistentEditors.h"
 #include "../../../xrEngine/string_table.h"
 
-
-ECommandVec 		ECommands;
-bool 				bAllowReceiveCommand	= false;
-bool 				bAllowLogCommands		= false;
-//TfrmText*			frmEditCommandList		= 0;
-xr_string			sCommandListText;
+ECommandVec ECommands;
+bool bAllowReceiveCommand = false;
+bool bAllowLogCommands = false;
+xr_string sCommandListText;
 
 bool AllowLogCommands()
 {
 	return bAllowLogCommands;
 }
 
-ECommandVec&  GetEditorCommands()
+ECommandVec& GetEditorCommands()
 {
-	return 	ECommands;
+	return ECommands;
 }
-void 	EnableReceiveCommands()
+
+void EnableReceiveCommands()
 {
 	bAllowReceiveCommand = true;
 }
+
 SESubCommand* FindCommandByShortcut(const xr_shortcut& val)
 {
 	ECommandVec& cmds		= GetEditorCommands();
@@ -256,6 +256,7 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
         bool bWeather = psDeviceFlags.is(rsEnvironment);
         psDeviceFlags.set(rsEnvironment, false);
         g_pGamePersistent = new XrGamePersistentEditors();
+        g_pGamePersistent->Environment().EnsureMixer();
         if (Tools)
         {
             if (Tools->OnCreate())
@@ -303,7 +304,7 @@ CCommandVar CommandDestroy(CCommandVar p1, CCommandVar p2)
 	Tools->OnDestroy();
 	SndLib->OnDestroy();
 	xr_delete(SndLib);
-	DU_impl.DestroyObjects();
+	DestroyEditorRenderHostObjects();
 	Lib.OnDestroy();
 	EContext.UI->OnDestroy();
 
@@ -456,12 +457,6 @@ CCommandVar CommandEvictObjects(CCommandVar p1, CCommandVar p2)
 	return true;
 }
 
-CCommandVar CommandEvictTextures(CCommandVar p1, CCommandVar p2)
-{
-	EDevice->Resources->Evict();
-	return true;
-}
-
 CCommandVar CommandCheckModified(CCommandVar p1, CCommandVar p2)
 {
 	return Tools->IsModified();
@@ -501,13 +496,13 @@ CCommandVar CommandZoomExtents(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandToggleRenderWire(CCommandVar p1, CCommandVar p2)
 {
-	if (EDevice->dwFillMode != D3DFILL_WIREFRAME)
+	if (GEditorDraw.FillMode != D3DFILL_WIREFRAME)
 	{
-		EDevice->dwFillMode = D3DFILL_WIREFRAME;
+		GEditorDraw.FillMode = D3DFILL_WIREFRAME;
 	}
 	else
 	{
-		EDevice->dwFillMode = D3DFILL_SOLID;
+		GEditorDraw.FillMode = D3DFILL_SOLID;
 	}
 	EContext.UI->RedrawScene();
 	return true;
@@ -761,7 +756,6 @@ void TUI::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_RELOAD_TEXTURES,    	CommandReloadTextures);
 	REGISTER_CMD_S	    (COMMAND_UNLOAD_TEXTURES,    	CommandUnloadTextures);
 	REGISTER_CMD_S	    (COMMAND_EVICT_OBJECTS,      	CommandEvictObjects);
-	REGISTER_CMD_S	    (COMMAND_EVICT_TEXTURES,     	CommandEvictTextures);
 	REGISTER_CMD_S	    (COMMAND_CHECK_MODIFIED,     	CommandCheckModified);
 	REGISTER_CMD_S	    (COMMAND_ICON_PICKER,   		CommandIconPicker);
 	REGISTER_CMD_SE	    (COMMAND_SHOW_PROPERTIES,    	"Show Properties",		CommandShowProperties, false);

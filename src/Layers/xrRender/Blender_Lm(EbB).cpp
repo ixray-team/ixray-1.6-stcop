@@ -188,13 +188,16 @@ void CBlender_LmEbB::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
 
-#ifdef _EDITOR
-	if (C.bEditor) 
+	if (Device.IsEditorMode())
 	{
-		uber_deffer(C, true, "deffer_base", "deffer_base", false, 0, true);
-		C.r_End();
+		if (C.bEditor)
+		{
+			uber_deffer(C, true, "deffer_base", "deffer_base", false, 0, true);
+			uber_deffer_editor_end(C);
+		}
+		return;
 	}
-#else
+
 	if (oBlend.value)
 	{
 		switch (C.iElement)
@@ -239,6 +242,5 @@ void CBlender_LmEbB::Compile(CBlender_Compile& C)
 			break;
 		}
 	}
-#endif
 }
 #endif

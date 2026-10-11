@@ -19,7 +19,6 @@ void CRenderTarget::accum_spot_geom_destroy()
 	_RELEASE	(g_accum_spot_vb);
 }
 
-#ifndef _EDITOR
 struct Slice
 {
 	Fvector	m_Vert[4];
@@ -75,4 +74,3 @@ void CRenderTarget::accum_volumetric_geom_destroy()
 	_RELEASE	(g_accum_volumetric_ib);
 	_RELEASE	(g_accum_volumetric_vb);
 }
-#endif

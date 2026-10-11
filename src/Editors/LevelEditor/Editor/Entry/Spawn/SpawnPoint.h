@@ -92,6 +92,9 @@ public:
 
 		void    		Render			(bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
 		void    		OnFrame			();
+		// Visuals only (scene collection passes)
+		void			RenderVisuals	(bool bSelected, const Fmatrix& parent, int priority, bool strictB2F);
+		bool			IsIdleParticleInRange() const;
     	void 	OnAnimControlClick		(ButtonValue* value, bool& bModif, bool& bSafe);  
 		void	OnWallmarkUpdateClick	(ButtonValue* value, bool& bModif, bool& bSafe);
 		void	OnWallmarkDetachClick	(ButtonValue* value, bool& bModif, bool& bSafe);

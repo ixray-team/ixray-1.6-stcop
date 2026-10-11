@@ -75,6 +75,7 @@ public:
 	CGlowManager*												L_Glows;
 	CWallmarksEngine*											Wallmarks;
 	CDetailManager*												Details;
+	CDetailManager*												GetDetails() const { return Details; }
 	CModelPool*													Models;
 
 	CRenderTarget*												Target;			// Render-target

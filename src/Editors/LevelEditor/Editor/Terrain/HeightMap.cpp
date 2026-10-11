@@ -338,7 +338,7 @@ void SHeightMap::Draw(float scaleY, float cellSize)
 	if (RenderData.Chunks.empty() || !RenderData.Gpu || !RenderData.Gpu->Geom)
 		return;
 
-	EDevice->SetShader(EDevice->m_WireShader);
+	EDevice->SetShader(GEditorDraw.WireShader);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
 	CFrustum& frustum = ::Render->ViewBase;

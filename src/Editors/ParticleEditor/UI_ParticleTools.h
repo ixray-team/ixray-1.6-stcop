@@ -6,7 +6,7 @@
 #include "../../Layers/xrRender/ParticleEffect.h"
 #include "../../Layers/xrRender/ParticleGroup.h"
 #include "../../xrEngine/pure.h"
-#include "../xrECore/Editor/ParticleEffectActions.h"
+#include "ParticleEffectActions.h"
 
 // refs
 class CEditableObject;

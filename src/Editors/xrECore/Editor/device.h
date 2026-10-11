@@ -10,6 +10,7 @@
 #include "../../../xrEngine/Shader_xrLC.h"
 #include "../../../Layers/xrRender/Shader.h"
 #include "../../../Layers/xrRender/R_Backend.h"
+#include "../../../Layers/xrRender/EditorDrawContext.h"
 
 #include "../Engine/XrGameMaterialLibraryEditors.h"
 
@@ -36,30 +37,17 @@ class ECORE_API CEditorRenderDevice :
 private:
 	float m_fNearer;
 
-	ref_shader m_CurrentShader;
 	ref_texture SearchIcon;
-
-	IRHIBuffer* m_DetailInstanceBuffer = nullptr;
-	IRHIShaderResourceView* m_DetailInstanceSRV = nullptr;
 
 	void _SetupStates();
 	void _Create(IReader* F);
 	void _Destroy(bool bKeepTextures);
-	void BindDetailInstance(ref_shader& S, u32 Pass);
 
 public:
-	ref_shader m_WireShader;
-	ref_shader m_SelectionShader;
-	ref_shader ShaderTL;
-
 	ref_texture texture_null;
 	Fmaterial m_DefaultMat;
 
 	float RenderRadius;
-	float m_ScreenQuality;
-
-	u32 dwFillMode;
-	u32 dwShadeMode;
 
 	RECT NormalWinSize;
 	bool NormalWinSizeSaved = false;
@@ -106,25 +94,16 @@ public:
 		return (y + 1) * TargetHeight * 0.5f;
 	}
 
-	// draw
-	void SetShader(ref_shader sh);
-	ref_shader GetShader() { return m_CurrentShader; }
-	void DP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 startV, u32 pc);
-	void DIP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
+	// draw (state lives in GEditorDraw on the render side)
+	IC void SetShader(const ref_shader& sh) { GEditorDraw.SetShader(sh); }
+	IC ref_shader GetShader() { return GEditorDraw.GetShader(); }
+	IC void DP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 startV, u32 pc) { GEditorDraw.DP(pt, geom, startV, pc); }
+	IC void DIP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC) { GEditorDraw.DIP(pt, geom, baseV, startV, countV, startI, PC); }
 
 	IC void SetRS(D3DRENDERSTATETYPE p1, u32 p2)
 	{
 		VERIFY(b_is_Ready);
-
-		switch (p1)
-		{
-			case D3DRS_TEXTUREFACTOR:
-				RCache.hemi.set_tfactor(p2);
-			break;
-			default:
-				GRHI->StateManager->SetRenderState(p1, p2);
-			break;
-		}
+		GEditorDraw.SetRS(p1, p2);
 	}
 
 	IC void SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value)
@@ -184,7 +163,6 @@ public:
 	CRegistrator<pureDrawUI> seqDrawUI;
 
 	// Dependent classes
-	CResourceManager* Resources;
 	xr_unique_ptr<XrGameMaterialLibraryEditors> m_MtlLib;
 
 private:
@@ -199,21 +177,7 @@ public:
 	virtual bool IsEditorMode() override { return true; }
 };
 
-// video
-enum
-{
-	rsFilterLinear = (1ul << 20ul),
-	rsEdgedFaces = (1ul << 21ul),
-	rsRenderTextures = (1ul << 22ul),
-	rsFog = (1ul << 24ul),
-	rsRenderRealTime = (1ul << 25ul),
-	rsDrawGrid = (1ul << 26ul),
-	rsDrawSafeRect = (1ul << 27ul),
-	rsMuteSounds = (1ul << 28ul),
-	rsEnvironment = (1ul << 29ul),
-	rsDrawAxis = (1ul << 30ul),
-	rsDisableAxisCube = (1ul << 31ul),
-};
+#include "../../../Layers/xrRender/EditorDeviceFlags.h"
 
 #define DEFAULT_CLEARCOLOR 0x00555555
 

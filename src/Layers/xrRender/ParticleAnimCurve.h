@@ -1,4 +1,5 @@
 #pragma once
+#include "RenderAPI.h"
 #include "../../xrEngine/ParticleAnimCurveInterface.h"
 
 namespace PS
@@ -9,7 +10,8 @@ namespace PS
         float time;
     };
 
-    class ECORE_API CPACDef : public IPAC
+    // Exported per member: the Particle Editor defines the editor-only members (declared under _EDITOR) in its own module.
+    class CPACDef : public IPAC
     {
         shared_str m_Name;
         xr_vector<st_PACKey*> m_Keys;
@@ -17,22 +19,22 @@ namespace PS
         float m_MinValue = 0.0f;
         float m_MaxValue = 1.0f;
 
-        Fvector4 CalculateIntermedialeValue(st_PACKey* A, st_PACKey* B, float time);
+        RENDER_API Fvector4 CalculateIntermedialeValue(st_PACKey* A, st_PACKey* B, float time);
 
     public:
-        ~CPACDef();
+        RENDER_API ~CPACDef();
 
         IC const char* getName() const {return m_Name.c_str();}
-        void setName(const char* name);
+        RENDER_API void setName(const char* name);
         
-        void Save(IWriter& F);
-        bool Load(IReader& F);
+        RENDER_API void Save(IWriter& F);
+        RENDER_API bool Load(IReader& F);
         
-        void Save2(CInifile& ini);
-        bool Load2(CInifile& ini);
+        RENDER_API void Save2(CInifile& ini);
+        RENDER_API bool Load2(CInifile& ini);
 
-        virtual Fvector4 GetValueOnIndex(int index) override ;
-        virtual Fvector4 GetValueOnTime(float time) override ;
+        RENDER_API virtual Fvector4 GetValueOnIndex(int index) override ;
+        RENDER_API virtual Fvector4 GetValueOnTime(float time) override ;
         virtual float GetMaxTime() const override { return m_MaxTime; }
         virtual float GetMinValue() const override { return m_MinValue; }
         virtual float GetMaxValue() const override { return m_MaxValue; }
@@ -41,10 +43,10 @@ namespace PS
          *  Based on current index, current time, delta time and reverse + loop flag update current index and time and return current RGBA value
          *  Faster than externally calculate current time and search for value on time
          */
-        virtual Fvector4 FastUpdateValue(size_t& CurrentIndex, float& CurrentTime, float dt, bool Loop, bool Reverse = false) override;
+        RENDER_API virtual Fvector4 FastUpdateValue(size_t& CurrentIndex, float& CurrentTime, float dt, bool Loop, bool Reverse = false) override;
         
+        RENDER_API void Clone(CPACDef* source);
 #ifdef _EDITOR
-        void Clone(CPACDef* source);
 		void FillProp(const char* pref, PropItemVec& items, void* owner);
         void OnEditClicked(ButtonValue* B, bool& bModif, bool&);
 		bool Validate(bool bMsg);

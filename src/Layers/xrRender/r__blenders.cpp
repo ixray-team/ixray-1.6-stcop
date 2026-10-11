@@ -15,7 +15,7 @@
 #include "Blender_Model_EbB.h"
 #include "Blender_Lm(EbB).h"
 
-IBlender* CRender::blender_create	(CLASS_ID cls)
+static IBlender* CreateBlender(CLASS_ID cls)
 {	
 	switch (cls)
 	{
@@ -43,4 +43,18 @@ IBlender* CRender::blender_create	(CLASS_ID cls)
 	case B_PARTICLE:		return new CBlender_Particle		();
 	}
 	return 0;
+}
+
+IBlender* CRender::blender_create	(CLASS_ID cls)
+{
+	IBlender* B = CreateBlender(cls);
+
+	// Several classes share one implementation (B_VERT is a flat deferred blender). Keep the
+	// requested class, so a library saved by the editors does not change the shader classes.
+	if (B)
+	{
+		B->getDescription().CLS = cls;
+	}
+
+	return B;
 }

@@ -5,6 +5,7 @@
 #ifndef ResourceManagerH
 #define ResourceManagerH
 #pragma once
+#include "RenderAPI.h"
 
 #include "Shader.h"
 #include	"tss_def.h"
@@ -17,7 +18,7 @@ class dx10ConstantBuffer;
 class CSVGStorage;
 
 // defs
-class ECORE_API CResourceManager
+class RENDER_API CResourceManager
 {
 private:
 	struct str_pred {
