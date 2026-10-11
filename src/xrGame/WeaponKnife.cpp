@@ -155,34 +155,34 @@ void CWeaponKnife::LoadSounds(const char* section)
 	if (SoundExist(section, "snd_kick_1") && SoundExist(section, "snd_kick_2"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_kick, true);
-		m_sounds.LoadSound(section, "snd_kick_1", "sndKick1", false, SOUND_TYPE_WEAPON_SHOOTING);
-		m_sounds.LoadSound(section, "snd_kick_2", "sndKick2", false, SOUND_TYPE_WEAPON_SHOOTING);
+		m_sounds.LoadSound(section, "snd_kick_1", "sndKick1", false, SOUND_TYPE_WEAPON_MELEE);
+		m_sounds.LoadSound(section, "snd_kick_2", "sndKick2", false, SOUND_TYPE_WEAPON_MELEE);
 	}
 	else
 	{
-		m_sounds.LoadSound(section, "snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING, st_Shooting);
+		m_sounds.LoadSound(section, "snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_MELEE, st_Shooting);
 	}
 
 	if (SoundExist(section, "snd_draw"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_draw, true);
-		m_sounds.LoadSound(section, "snd_draw", "SndShow", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
+		m_sounds.LoadSound(section, "snd_draw", "SndShow", false, ESoundTypes(SOUND_TYPE_WEAPON_MELEE));
 	}
 
 	if (SoundExist(section, "snd_holster"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_holster, true);
-		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_WEAPON_MELEE));
 	}
 
 	if (SoundExist(section, "snd_start_suicide"))
 	{
-		m_sounds.LoadSound(section, "snd_start_suicide", "sndPrepareSuicide", false, ESoundTypes(SOUND_TYPE_ITEM_USING));
+		m_sounds.LoadSound(section, "snd_start_suicide", "sndPrepareSuicide", false, ESoundTypes(SOUND_TYPE_WEAPON_MELEE));
 	}
 
 	if (SoundExist(section, "snd_selfkill"))
 	{
-		m_sounds.LoadSound(section, "snd_selfkill", "sndSelfkill", false, ESoundTypes(SOUND_TYPE_ITEM_USING));
+		m_sounds.LoadSound(section, "snd_selfkill", "sndSelfkill", false, ESoundTypes(SOUND_TYPE_WEAPON_MELEE));
 	}
 }
 

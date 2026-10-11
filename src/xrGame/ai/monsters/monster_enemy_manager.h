@@ -37,7 +37,7 @@ class CMonsterEnemyManager {
 	u32 PlayerExposureLastVisibleTime = 0;
 	u32 OwnVisionFrame = u32(-1);
 	xr_vector<CObject*> OwnVisibleObjects;
-	bool PendingActorReacquisition = false;
+	ALife::_OBJECT_ID PendingBroadcastID = ALife::INVALID_OBJECT_ID;
 	u32 NextSharingUpdate = 0;
 	u32 NextSharingReceive = 0;
 	u32 SharingPeerCursor = 0;
@@ -48,6 +48,8 @@ class CMonsterEnemyManager {
 	u32 AssignmentUntil = 0;
 	u32 NextDistributionUpdate = 0;
 	u32 NextCallSoundTime = 0;
+	u32 NavigationTargetID = u32(-1), NavigationCheckTime = 0, NavigationVertex = u32(-1);
+	Fvector NavigationPosition = {0.f, 0.f, 0.f}, NavigationObservedPosition = {0.f, 0.f, 0.f};
 	xr_vector<u16> CalledEnemyIds;
 	u32					m_time_start_see_enemy;
 
@@ -90,7 +92,7 @@ public:
 	void FocusDamageAttacker(const CEntityAlive* Attacker);
 	bool HasDamageFocus(const CEntityAlive* Target) const;
 	bool ReceiveSharedEnemy(CBaseMonster* Source, const CEntityAlive* Target, bool ValidatedSource = false, bool Immediate = false);
-	bool ReceiveKnownEnemies(CBaseMonster* Source);
+	bool ReceiveKnownEnemies(CBaseMonster* Source, bool Immediate = false);
 	void FinishEnemySharing(CBaseMonster* Source, const xr_vector<const CEntityAlive*>& Accepted);
 	const CEntityAlive* GetAssignedEnemy();
 	void DistributeEnemies(xr_vector<CBaseMonster*>& Members);
@@ -98,6 +100,8 @@ public:
 	const Fvector& GetTrackingPosition();
 	const Fvector& GetKnownEnemyPosition(const CEntityAlive* Target);
 	u32 GetTrackingVertex();
+	const Fvector& GetNavigationPosition();
+	u32 GetNavigationVertex();
 	bool CanHearEnemySharing(CBaseMonster* Source);
 	bool CanAcceptEnemySharing(bool Immediate = false) const;
 	bool CanReceiveFrom(CBaseMonster* Source) const;

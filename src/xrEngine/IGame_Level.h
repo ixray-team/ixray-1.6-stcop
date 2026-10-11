@@ -142,6 +142,10 @@ public:
 	virtual IGame_Patrol*		CreatePatrol(const char* patrol) = 0;
 	virtual void				LoadEditor(shared_str LevelName) {};
 
+	// Game-owned operations invoked by renderer console commands.
+	virtual u32 ReloadMonsterLogicOptions() { return 0; }
+	virtual void SetMonsterLogicDraw(bool Enabled) {}
+
 	ICF void dbg_text_renderer(const Fvector& pos, u32 color = color_rgba(0, 255, 100, 255), shared_str str = "+")
 	{
 		Fvector4		v_res;

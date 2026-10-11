@@ -136,7 +136,7 @@ XREUI_API void XRay::ImGui::TableNextRow(ImGuiTableRowFlags row_flags, float min
 void XRay::ImGui::TextFramed(const char* fmt, const ImVec2 size, const ImVec2 text_align, const bool draw_background, ...)
 {
     va_list args;
-    va_start(args, text_align);
+    va_start(args, draw_background);
     TextFramedV(fmt, size, draw_background, text_align, args);
     va_end(args);
 }

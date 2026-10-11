@@ -10,6 +10,8 @@
 #include "../../actor_memory.h"
 #include "../../../xrCore/Kernel/EngineExternal.h"
 #include "../../../xrCore/Collision/xr_area.h"
+#include "control_path_builder_base.h"
+#include "control_path_builder.h"
 #include "MonsterTargetAllocation.h"
 #include "MonsterEnemySharingBudget.h"
 #include "../../MonsterEnemySharingDebug.h"
@@ -85,7 +87,7 @@ void CMonsterEnemyManager::update()
 		}else{
 			enemy = monster->EnemyMemory.get_enemy();
 		}
-		
+
 		if (enemy) {
 			SMonsterEnemy enemy_info = monster->EnemyMemory.get_enemy_info();
 			if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
@@ -102,15 +104,17 @@ void CMonsterEnemyManager::update()
 			time_last_seen				= enemy_info.time;
 		}
 	}
-	
+
 	if (!enemy) {
 		return;
 	}
-	
+
+	monster->EnemyMemory.CommitInspection(enemy);
+
 	// обновить информацию о враге в соответствии со звуковой информацией
 	if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] &&
 		monster->SoundMemory.IsRememberSound()) {
-		SoundElem	sound_elem;		
+		SoundElem	sound_elem;
 		if (monster->SoundMemory.get_sound_from_object	(enemy, sound_elem)) {
 			if (sound_elem.time > time_last_seen) {
 				position		= sound_elem.position;
@@ -128,14 +132,14 @@ void CMonsterEnemyManager::update()
 
 	// проверить видимость
 	enemy_see_me = is_faced(enemy, monster);
-	
+
 	// обновить опасность врага
 	danger_type = eNone;
 
 	switch (dwfChooseAction(0, monster->panic_threshold(), 0.f, 0.f, 0.f, monster->g_Team(),monster->g_Squad(),monster->g_Group(),0,1,2,3,4, monster, 30.f)) {
-		case 4 : 	
-		case 3 : 	
-		case 2 : 	
+		case 4 :
+		case 3 :
+		case 2 :
 		case 1 :	danger_type = eStrong;		break;
 		case 0 : 	danger_type = eWeak;		break;
 	}
@@ -143,10 +147,10 @@ void CMonsterEnemyManager::update()
 	// обновить флаги
 	flags.zero();
 
-	if ((prev_enemy == enemy) && (time_last_seen != Device.dwTimeGlobal))	flags.bor(FLAG_ENEMY_LOST_SIGHT);		
+	if ((prev_enemy == enemy) && (time_last_seen != Device.dwTimeGlobal))	flags.bor(FLAG_ENEMY_LOST_SIGHT);
 	if (prev_enemy && !prev_enemy->g_Alive())									flags.bor(FLAG_ENEMY_DIE);
 	if (!enemy_see_me)															flags.bor(FLAG_ENEMY_DOESNT_SEE_ME);
-	
+
 	float dist_now, dist_prev;
 	if (prev_enemy == enemy) {
 		dist_now	= position.distance_to(monster->Position());
@@ -178,7 +182,7 @@ void CMonsterEnemyManager::update()
 
 		if (m_time_start_see_enemy == 0) m_time_start_see_enemy = time();
 	} else m_time_start_see_enemy = 0;
-	
+
 	m_time_updated			= time();
 }
 
@@ -208,7 +212,7 @@ void CMonsterEnemyManager::unforce_enemy()
 	}
 
 	forced	= false;
-	
+
 	update	();
 }
 
@@ -328,7 +332,7 @@ void CMonsterEnemyManager::ResetPlayerVisualAcquisition(const CEntityAlive* Targ
 
 bool CMonsterEnemyManager::see_enemy_recently()
 {
-	return see_enemy_recently(enemy); 
+	return see_enemy_recently(enemy);
 }
 
 bool CMonsterEnemyManager::see_enemy_recently(const CEntityAlive* enemy_)
@@ -337,27 +341,27 @@ bool CMonsterEnemyManager::see_enemy_recently(const CEntityAlive* enemy_)
 	{
 		return false;
 	}
-	return monster->memory().visual().visible_now(enemy_); 
+	return monster->memory().visual().visible_now(enemy_);
 }
 
 bool CMonsterEnemyManager::enemy_see_me_now()
 {
 	CEntityAlive* cast_enemy = const_cast<CEntityAlive*>(enemy);
 	const CActor* actor = cast_enemy != nullptr ? cast_enemy->cast_actor() : nullptr;
-	if (actor) 
+	if (actor)
 	{
 		return (Level().CurrentViewEntity());
 	}
-	else 
+	else
 	{
 		CCreature *cm = const_cast<CEntityAlive*>(enemy)->cast_creature();
-		if ( cm ) 
+		if ( cm )
 		{
 			return cm->memory().visual().visible_right_now(monster);
 		}
 	}
 
-	return false; 
+	return false;
 }
 
 bool CMonsterEnemyManager::is_faced(const CEntityAlive *object0, const CEntityAlive *object1)
@@ -388,7 +392,7 @@ bool CMonsterEnemyManager::is_faced(const CEntityAlive *object0, const CEntityAl
 	return			(false);
 }
 
-bool CMonsterEnemyManager::is_enemy(const CEntityAlive *obj) 
+bool CMonsterEnemyManager::is_enemy(const CEntityAlive *obj)
 {
 	if (monster->MonsterPeaceful)
 	{
@@ -397,7 +401,7 @@ bool CMonsterEnemyManager::is_enemy(const CEntityAlive *obj)
 	return ((monster->g_Team() != obj->g_Team()) && monster->is_relation_enemy(obj) && obj->g_Alive());
 }
 
-const Fvector&   CMonsterEnemyManager::get_enemy_position () 
+const Fvector&   CMonsterEnemyManager::get_enemy_position ()
 {
 	if (enemy && monster->EnemyTrackingLive &&
 		EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
@@ -447,6 +451,39 @@ u32 CMonsterEnemyManager::GetTrackingVertex()
 	return vertex != u32(-1) ? vertex : monster->ai_location().level_vertex_id();
 }
 
+const Fvector& CMonsterEnemyManager::GetNavigationPosition()
+{
+	const Fvector& Observed = GetTrackingPosition();
+	const u32 Vertex = GetTrackingVertex();
+	if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ||
+		(ai().level_graph().valid_vertex_id(Vertex) && ai().level_graph().inside(Vertex, Observed) &&
+		 std::abs(Observed.y - ai().level_graph().vertex_plane_y(Vertex, Observed.x, Observed.z)) <= 1.f))
+	{
+		NavigationPosition = Observed;
+		NavigationVertex = Vertex;
+		NavigationCheckTime = 0;
+		return NavigationPosition;
+	}
+	const u32 TargetID = enemy ? u32(enemy->ID()) : u32(-1);
+	if (NavigationTargetID != TargetID || !NavigationCheckTime ||
+		(Device.dwTimeGlobal - NavigationCheckTime >= 1000 && NavigationObservedPosition.distance_to_sqr(Observed) > 1.f))
+	{
+		NavigationTargetID = TargetID;
+		NavigationObservedPosition = Observed;
+		NavigationCheckTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+		NavigationVertex = CControlPathBuilder::find_nearest_vertex(ai().level_graph().valid_vertex_id(Vertex) ? Vertex :
+			monster->ai_location().level_vertex_id(), Observed, 10.f);
+		NavigationPosition = ai().level_graph().valid_vertex_id(NavigationVertex) ? ai().level_graph().vertex_position(NavigationVertex) : Observed;
+	}
+	return NavigationPosition;
+}
+
+u32 CMonsterEnemyManager::GetNavigationVertex()
+{
+	GetNavigationPosition();
+	return NavigationVertex;
+}
+
 bool CMonsterEnemyManager::CanHearEnemySharing(CBaseMonster* Source)
 {
 	if (!Source || Source->EnemySharingRadius <= 0.f)
@@ -454,7 +491,7 @@ bool CMonsterEnemyManager::CanHearEnemySharing(CBaseMonster* Source)
 		return false;
 	}
 	const float DistanceSquared = Source->Position().distance_to_sqr(monster->Position());
-	const float CloseRadius = Source->EnemySharingRadius * Source->EnemySharingCloseRatio;
+	const float CloseRadius = Source->EnemySharingRadius * (Source->EnemyCallBroadcastFrame == Device.dwFrame ? Source->EnemySharingCallRatio : Source->EnemySharingCloseRatio);
 	return DistanceSquared <= Source->EnemySharingRadius * Source->EnemySharingRadius &&
 		(Source->EnemySharingWireless || DistanceSquared <= CloseRadius * CloseRadius || see_enemy_now(Source));
 }
@@ -465,6 +502,7 @@ void CMonsterEnemyManager::FocusDamageAttacker(const CEntityAlive* Attacker)
 	{
 		return;
 	}
+	monster->EnemyMemory.ResetInspectionForDamage(Attacker);
 	DamageFocus = Attacker;
 	DamageFocusUntil = Device.dwTimeGlobal + monster->EnemyMemory.GetMemoryTime();
 	monster->EnemyMemory.add_enemy(Attacker, Attacker->Position(),
@@ -551,7 +589,10 @@ bool CMonsterEnemyManager::HasDirectEnemyEvidence(const CEntityAlive* Target)
 		return true;
 	}
 	SoundElem Sound;
-	return monster->SoundMemory.get_sound_from_object(Target, Sound) && Device.dwTimeGlobal - Sound.time < 2000;
+	if (monster->SoundMemory.get_sound_from_object(Target, Sound) && Device.dwTimeGlobal - Sound.time < 2000) return true;
+	const auto Entry = monster->EnemyMemory.get_memory().find(Target);
+	return Entry != monster->EnemyMemory.get_memory().end() && monster->EnemyMemory.IsActual(Entry->second) &&
+		Device.dwTimeGlobal - Entry->second.time < monster->EnemyMemory.GetMemoryTime();
 }
 
 bool CMonsterEnemyManager::ReceiveSharedEnemy(CBaseMonster* Source, const CEntityAlive* Target, bool ValidatedSource, bool Immediate)
@@ -581,13 +622,16 @@ bool CMonsterEnemyManager::ReceiveSharedEnemy(CBaseMonster* Source, const CEntit
 	{
 		return false;
 	}
+	const u32 OriginTime = Entry->second.OriginTime ? Entry->second.OriginTime : Entry->second.time;
+	if (Now - OriginTime >= monster->EnemyMemory.GetMemoryTime()) return false;
+	const u32 SharedTime = Source->EnemyTrackingLive ? Now : Entry->second.time;
 	const Fvector SharedPosition = Source->EnemyTrackingLive ? Target->Position() : Entry->second.position;
 	const u32 SharedVertex = Source->EnemyTrackingLive ? Target->ai_location().level_vertex_id() : Entry->second.vertex;
 	const auto& OwnMemory = monster->EnemyMemory.get_memory();
 	const auto Own = OwnMemory.find(Target);
 	const bool WasKnown = Own != OwnMemory.end() && monster->EnemyMemory.IsActual(Own->second);
-	if ((Immediate && WasKnown && s32(Entry->second.time - Own->second.time) <= 0) ||
-		(!Immediate && !CMonsterEnemySharingBudget::NeedsRefresh(Own != OwnMemory.end(), Now, Entry->second.time,
+	if ((Immediate && WasKnown && s32(SharedTime - Own->second.time) <= 0) ||
+		(!Immediate && !CMonsterEnemySharingBudget::NeedsRefresh(Own != OwnMemory.end(), Now, SharedTime,
 		Own != OwnMemory.end() ? Own->second.time : 0, monster->EnemyMemory.GetMemoryTime(),
 		Own != OwnMemory.end() ? Own->second.position.distance_to_sqr(SharedPosition) : 0.f)))
 	{
@@ -612,14 +656,16 @@ bool CMonsterEnemyManager::ReceiveSharedEnemy(CBaseMonster* Source, const CEntit
 		g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::SharingDeferred);
 		return false;
 	}
-	monster->EnemyMemory.add_enemy(Target, SharedPosition, SharedVertex, Entry->second.time);
+	monster->EnemyMemory.add_enemy(Target, SharedPosition, SharedVertex, SharedTime);
+	monster->EnemyMemory.ReceiveTrail(Target, Entry->second, Source->EnemyTrackingLive);
+	if (MonsterEnemySharingDebug().IsEnabled()) MonsterEnemySharingDebug().Record(*Source, *monster, *Target, SharedPosition, SharedTime);
 	g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::Transfers);
 	g_MonsterLogicTelemetry.Count(Source->EnemySharingWireless ? EMonsterLogicCounter::WirelessTransfers : EMonsterLogicCounter::VisibleTransfers);
 	if (smart_cast<const CActor*>(Target))
 	{
 		monster->EnemyMemory.RecordSharedPlayer(Target, WasKnown);
 		g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::ActorTransfers);
-		MonsterEnemySharingDebug().Record(*Source, *monster, *Target, SharedPosition, Entry->second.time);
+
 	}
 	if (!ValidatedSource)
 	{
@@ -634,18 +680,24 @@ bool CMonsterEnemyManager::EmitEnemyCall(const xr_vector<const CEntityAlive*>& T
 		EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation]);
 	if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ||
 		!monster->g_Alive() || monster->getDestroy() || !monster->EnemyCallEnabled || !monster->EnemySharingEnabled || monster->MonsterPeaceful || Targets.empty() ||
-		!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterEnemySharingCalls])
+		!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterEnemySharingCallSounds])
 	{
 		return false;
 	}
-	const bool NewTarget = std::any_of(Targets.begin(), Targets.end(), [&](const CEntityAlive* Target)
+	const auto& Facts = monster->EnemyMemory.get_memory();
+	const bool Confirmed = std::any_of(Targets.begin(), Targets.end(), [&](const CEntityAlive* Target)
 	{
-		return std::find(CalledEnemyIds.begin(), CalledEnemyIds.end(), Target->ID()) == CalledEnemyIds.end();
+		const auto Fact = Facts.find(Target);
+		return Fact != Facts.end() && monster->EnemyMemory.IsActual(Fact->second) &&
+			(monster->EnemyTrackingLive || see_enemy_now(Target) || Fact->second.OwnObservationTime != 0) &&
+			std::find(CalledEnemyIds.begin(), CalledEnemyIds.end(), Target->ID()) == CalledEnemyIds.end();
 	});
-	if (!NewTarget || s32(Device.dwTimeGlobal - NextCallSoundTime) < 0)
+	if (!Confirmed) return false;
+	if (s32(Device.dwTimeGlobal - NextCallSoundTime) < 0)
 	{
 		return false;
 	}
+	monster->EnemyCallBroadcastFrame = Device.dwFrame;
 	monster->set_state_sound(monster->EnemyCallSoundType, true);
 	g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::Calls);
 	if (std::any_of(Targets.begin(), Targets.end(), [](const CEntityAlive* Target)
@@ -656,21 +708,25 @@ bool CMonsterEnemyManager::EmitEnemyCall(const xr_vector<const CEntityAlive*>& T
 		MonsterEnemySharingDebug().Mark(*monster, false);
 	}
 	NextCallSoundTime = Device.dwTimeGlobal + u32(monster->EnemyCallCooldown * 1000.f);
-	CalledEnemyIds.clear();
 	for (const CEntityAlive* Target : Targets)
 	{
-		CalledEnemyIds.push_back(Target->ID());
+		if (std::find(CalledEnemyIds.begin(), CalledEnemyIds.end(), Target->ID()) == CalledEnemyIds.end())
+		{
+			if (CalledEnemyIds.size() == CMonsterTargetAllocation::MaxTargets) CalledEnemyIds.erase(CalledEnemyIds.begin());
+			CalledEnemyIds.push_back(Target->ID());
+		}
 	}
 	return true;
 }
 
-bool CMonsterEnemyManager::ReceiveKnownEnemies(CBaseMonster* Source)
+bool CMonsterEnemyManager::ReceiveKnownEnemies(CBaseMonster* Source, bool Immediate)
 {
-	if (!CanAcceptEnemySharing() || !Source || Source->EnemyMemory.get_memory().empty() ||
+	if (!CanAcceptEnemySharing(Immediate) || !Source ||
 		!CanHearEnemySharing(Source) || !CanReceiveFrom(Source))
 	{
 		return false;
 	}
+	monster->Behavior.ShareAreas(*monster, *Source);
 	CMonsterEnemySharingBudget& Budget = EnemySharingBudget();
 	const auto& Memory = Source->EnemyMemory.get_memory();
 	if (Memory.empty() || !Budget.RecordsRemaining)
@@ -694,7 +750,7 @@ bool CMonsterEnemyManager::ReceiveKnownEnemies(CBaseMonster* Source)
 		{
 			Entry = Memory.begin();
 		}
-		if (ReceiveSharedEnemy(Source, Target, true))
+		if (ReceiveSharedEnemy(Source, Target, true, Immediate))
 		{
 			Accepted.push_back(Target);
 		}
@@ -710,8 +766,9 @@ bool CMonsterEnemyManager::ReceiveKnownEnemies(CBaseMonster* Source)
 void CMonsterEnemyManager::FinishEnemySharing(CBaseMonster* Source, const xr_vector<const CEntityAlive*>& Accepted)
 {
 	NextSharingReceive = Device.dwTimeGlobal + EnemySharingDelay();
+	monster->Behavior.ShareAreas(*monster, *Source);
 	const bool Called = Source->EnemyMan.EmitEnemyCall(Accepted);
-	if (Called && !Source->EnemySharingWireless)
+	if ((Called || Source->EnemyCallBroadcastFrame == Device.dwFrame) && !Source->EnemySharingWireless)
 	{
 		for (const CEntityAlive* Target : Accepted)
 		{
@@ -824,13 +881,19 @@ void CMonsterEnemyManager::DistributeEnemies(xr_vector<CBaseMonster*>& Members)
 	g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::Members, u32(Members.size()));
 	g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::Targets, u32(Candidates.size()));
 	CMonsterTargetAllocation Plan;
+	const float CrowdDistance = monster->Behavior.CrowdDistance;
+	Plan.CrowdPenalty = _valid(CrowdDistance) ? _sqr(std::clamp(CrowdDistance, 1.f, 100.f)) : 400.f;
 	const u32 Count = u32(Members.size()), TargetCount = u32(Candidates.size());
 	u32 TransmissionChecks = 0;
 	for (u32 Index = 0; Index < Count; ++Index)
 	{
 		CBaseMonster* Receiver = Members[Index];
 		CMonsterEnemyManager& Manager = Receiver->EnemyMan;
-		Plan.Fixed[Index] = Manager.forced || Manager.m_script_enemy || Manager.HasDamageFocus(Manager.DamageFocus) ||
+		const auto AssignedMemory = Receiver->EnemyMemory.get_memory().find(Manager.AssignedEnemy);
+		Plan.Fixed[Index] = (Manager.AssignedEnemy && s32(Manager.AssignmentUntil - Now) > 0 &&
+			Manager.enemy == Manager.AssignedEnemy && AssignedMemory != Receiver->EnemyMemory.get_memory().end() &&
+			Receiver->EnemyMemory.IsActual(AssignedMemory->second) &&
+			(!AssignedMemory->second.UnreachableSearchUntil || Receiver->EnemyTrackingLive || Manager.see_enemy_now(Manager.AssignedEnemy))) || Manager.forced || Manager.m_script_enemy || Manager.HasDamageFocus(Manager.DamageFocus) ||
 			Receiver->HasDamagePanic() || Receiver->GetScriptControl() ||
 			(Receiver->m_controlled && Receiver->m_controlled->is_under_control());
 		for (u32 TargetIndex = 0; TargetIndex < TargetCount; ++TargetIndex)
@@ -874,7 +937,12 @@ void CMonsterEnemyManager::DistributeEnemies(xr_vector<CBaseMonster*>& Members)
 				continue;
 			}
 			const float Distance = Receiver->Position().distance_to_sqr(Entry->second.position);
-			Plan.Distance[Index][TargetIndex] = Manager.AssignedEnemy == Target ? Distance * .85f : Distance;
+			if (!ai().level_graph().valid_vertex_id(Entry->second.vertex) || !Receiver->control().path_builder().accessible(Entry->second.vertex) ||
+				Receiver->Behavior.Avoids(*Receiver, Entry->second.position)) continue;
+			if (Entry->second.UnreachableSearchUntil && !Manager.see_enemy_now(Target)) continue;
+			const float Threat = std::clamp(Entry->second.danger, 0.f, 10.f);
+			const float Cost = Distance / (1.f + Threat * .05f);
+			Plan.Distance[Index][TargetIndex] = Manager.AssignedEnemy == Target ? Cost * .85f : Cost;
 		}
 	}
 	Plan.Distribute(Count, TargetCount);
@@ -892,14 +960,13 @@ void CMonsterEnemyManager::DistributeEnemies(xr_vector<CBaseMonster*>& Members)
 
 void CMonsterEnemyManager::UpdateEnemySharing(const CEntityAlive* BroadcastTarget, bool Immediate)
 {
-	if (Immediate && BroadcastTarget == g_actor)
+	if (Immediate && BroadcastTarget) PendingBroadcastID = BroadcastTarget->ID();
+	if (PendingBroadcastID != ALife::INVALID_OBJECT_ID)
 	{
-		PendingActorReacquisition = true;
-	}
-	if (PendingActorReacquisition)
-	{
-		Immediate = true;
-		BroadcastTarget = g_actor;
+		CObject* Object = Level().Objects.net_Find(PendingBroadcastID);
+		BroadcastTarget = Object ? Object->cast_entity_alive() : nullptr;
+		if (BroadcastTarget && BroadcastTarget->g_Alive()) Immediate = true;
+		else PendingBroadcastID = ALife::INVALID_OBJECT_ID;
 	}
 	CMonsterLogicTimerScope TotalTimer(EMonsterLogicTimer::NewLogicTotal,
 		EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation]);
@@ -923,7 +990,7 @@ void CMonsterEnemyManager::UpdateEnemySharing(const CEntityAlive* BroadcastTarge
 	}
 	const bool BuildMembers = !Immediate && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterDistributedTargeting] &&
 		s32(Now - NextDistributionUpdate) >= 0;
-	if (!Immediate && !BuildMembers && !CanAcceptEnemySharing() && !(monster->EnemySharingEnabled && monster->EnemySharingWireless))
+	if (!Immediate && !BuildMembers && !CanAcceptEnemySharing() && !monster->EnemySharingEnabled)
 	{
 		return;
 	}
@@ -964,7 +1031,7 @@ void CMonsterEnemyManager::UpdateEnemySharing(const CEntityAlive* BroadcastTarge
 		if (Source)
 		{
 			if (!Immediate && SourceBatches < CMonsterEnemySharingBudget::MaxSourcesPerUpdate && CanAcceptEnemySharing() &&
-				Source->EnemySharingEnabled && !Source->EnemyMemory.get_memory().empty())
+				Source->EnemySharingEnabled)
 			{
 				if (ReceiveKnownEnemies(Source))
 				{
@@ -992,8 +1059,18 @@ void CMonsterEnemyManager::UpdateEnemySharing(const CEntityAlive* BroadcastTarge
 			}
 		}
 	}
+	if (DirectEvidence && monster->EnemyCallEnabled && s32(Now - NextCallSoundTime) >= 0)
+	{
+		xr_vector<const CEntityAlive*> CallTargets;
+		for (const auto& Fact : monster->EnemyMemory.get_memory())
+		{
+			if (CallTargets.size() >= CMonsterEnemySharingBudget::MaxRecordsPerSource) break;
+			if (monster->EnemyMemory.IsActual(Fact.second) && HasDirectEnemyEvidence(Fact.first)) CallTargets.push_back(Fact.first);
+		}
+		EmitEnemyCall(CallTargets);
+	}
 	if (monster->EnemySharingEnabled && monster->EnemySharingRadius > 0.f &&
-		(Immediate || monster->EnemySharingWireless || monster->EnemySharingCloseRatio > 0.f) && DirectEvidence)
+		(Immediate || monster->EnemySharingWireless || monster->EnemySharingCloseRatio > 0.f) && (DirectEvidence || monster->Behavior.HasAreas(*monster)))
 	{
 		if (!EnemySharingBudget().TakeQuery())
 		{
@@ -1002,12 +1079,12 @@ void CMonsterEnemyManager::UpdateEnemySharing(const CEntityAlive* BroadcastTarge
 		}
 		else
 		{
-			PendingActorReacquisition = false;
+			PendingBroadcastID = ALife::INVALID_OBJECT_ID;
 			xr_vector<ISpatialShared> Neighbours;
 			{
 				CMonsterLogicTimerScope QueryTimer(EMonsterLogicTimer::Wireless);
 				g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::Queries);
-				g_SpatialSpace->q_sphere(Neighbours, 0, ESPATIAL_TYPE::COLLIDEABLE, monster->Position(), (Immediate || monster->EnemySharingWireless) ? monster->EnemySharingRadius : monster->EnemySharingRadius * monster->EnemySharingCloseRatio);
+				g_SpatialSpace->q_sphere(Neighbours, 0, ESPATIAL_TYPE::COLLIDEABLE, monster->Position(), (Immediate || monster->EnemySharingWireless) ? monster->EnemySharingRadius : monster->EnemySharingRadius * (monster->EnemyCallBroadcastFrame == Device.dwFrame ? monster->EnemySharingCallRatio : monster->EnemySharingCloseRatio));
 			}
 			u32 Delivered = 0, SpatialExamined = 0;
 			for (const auto& Spatial : Neighbours)
@@ -1023,7 +1100,7 @@ void CMonsterEnemyManager::UpdateEnemySharing(const CEntityAlive* BroadcastTarge
 					bool DeliveredEnemy = false;
 					if (Immediate)
 					{
-						DeliveredEnemy = Receiver->EnemyMan.ReceiveSharedEnemy(monster, BroadcastTarget, false, true);
+						DeliveredEnemy = Receiver->EnemyMan.ReceiveKnownEnemies(monster, true);
 					}
 					else
 					{
@@ -1040,7 +1117,7 @@ void CMonsterEnemyManager::UpdateEnemySharing(const CEntityAlive* BroadcastTarge
 	}
 	if (Immediate && !DirectEvidence)
 	{
-		PendingActorReacquisition = false;
+		PendingBroadcastID = ALife::INVALID_OBJECT_ID;
 	}
 	DistributeEnemies(Members);
 }
@@ -1068,7 +1145,7 @@ void CMonsterEnemyManager::transfer_enemy(CBaseMonster *friend_monster, bool Par
 	if (!friend_monster->EnemyMan.get_enemy()) return;
 
 	monster->EnemyMemory.add_enemy(
-		friend_monster->EnemyMan.get_enemy(), 
+		friend_monster->EnemyMan.get_enemy(),
 		friend_monster->EnemyMan.get_enemy_position(),
 		friend_monster->EnemyMan.get_enemy_vertex(),
 		friend_monster->EnemyMan.get_enemy_time_last_seen()
@@ -1150,7 +1227,7 @@ void CMonsterEnemyManager::ResetEnemySharingState(bool ResetSelection)
 	CalledEnemyIds.clear();
 	SharingPeerCursor = Random.randI(0, 64);
 	SharingTargetCursor = nullptr;
-	PendingActorReacquisition = false;
+	PendingBroadcastID = ALife::INVALID_OBJECT_ID;
 	NextSharingUpdate = 0;
 	NextSharingReceive = 0;
 	if (!monster->MonsterPeaceful && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])

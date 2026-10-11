@@ -204,7 +204,7 @@ void CSoundPlayer::play				(u32 internal_type, u32 max_start_time, u32 min_start
 	sound_single.m_sound->clone	(
 		(*I).second.second->random(id),
 		st_Effect,
-		sg_SourceType
+		sound.m_type
 	);
 
 	// No sound device: the collection holds empty sounds

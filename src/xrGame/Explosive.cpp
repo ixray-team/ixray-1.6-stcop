@@ -46,7 +46,7 @@ CExplosive::CExplosive(void)
 	m_fUpThrowFactor		= 0.f;
 
 
-	m_eSoundExplode			= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
+	m_eSoundExplode			= ESoundTypes(SOUND_TYPE_WORLD_OBJECT_EXPLODING);
 
 
 	m_eHitTypeBlast			= ALife::eHitTypeExplosion;

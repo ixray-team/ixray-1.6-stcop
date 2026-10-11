@@ -148,6 +148,9 @@ protected:
 	xr_deque<NET_Packet>		script_client_events;
 
 public:
+	u32 ReloadMonsterLogicOptions() override;
+	void SetMonsterLogicDraw(bool Enabled) override;
+
 #ifdef DEBUG
 	// level debugger
 	CLevelDebug					*m_level_debug;
