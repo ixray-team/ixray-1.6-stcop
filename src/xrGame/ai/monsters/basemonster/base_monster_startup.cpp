@@ -554,7 +554,7 @@ void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 	Behavior.Load(*this, section);
 	VisionIgnoreFoliage = READ_IF_EXISTS(pSettings, r_bool, section, "monster_vision_ignore_foliage", false);
 	EnemyCallBroadcastFrame = u32(-1);
-	const float CallRatio = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_sharing_call_ratio", READ_IF_EXISTS(EngineExternal().GetIniFile(), r_float, "monsters_logic", "MonsterEnemySharingCallRatio", .6f));
+	const float CallRatio = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_sharing_call_ratio", READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_float, "monsters_logic", "MonsterEnemySharingCallRatio", .6f));
 	EnemySharingCallRatio = _valid(CallRatio) ? std::clamp(CallRatio, 0.f, 1.f) : .6f;
 	EnemySharingRadius = 40.f;
 	EnemySharingCloseRatio = .25f;
@@ -594,7 +594,7 @@ void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 	NoiseInvestigationVertex = u32(-1);
 	if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
 	{
-		CInifile* CommonOptions = EngineExternal().GetIniFile();
+		CInifile* CommonOptions = EngineExternal().GetMonsterLogicIniFile();
 		PlayerVisualAcquireTime = std::min(u32(10000), READ_IF_EXISTS(pSettings, r_u32, section, "monster_player_visual_acquire_time", READ_IF_EXISTS(CommonOptions, r_u32, "monsters_logic", "MonsterPlayerVisualAcquireTime", 400)));
 		EnemyStuckTime = std::clamp(READ_IF_EXISTS(pSettings, r_u32, section, "monster_enemy_stuck_time", READ_IF_EXISTS(CommonOptions, r_u32, "monsters_logic", "MonsterEnemyStuckTime", u32(3000))), u32(500), u32(30000));
 		const float CloseAttackDistance = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_close_attack_distance", READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyCloseAttackDistance", 5.f));
@@ -657,7 +657,7 @@ void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 			auto ReadUnit = [&](const char* Suffix, const char* GlobalSuffix, float Default, float Minimum)
 			{
 				xr_sprintf(Key, "%s%s", xr_strcmp(Prefix, "monster_shot_reaction") == 0 ? "MonsterShotReaction" : "MonsterExplosionReaction", GlobalSuffix);
-				const float Global = READ_IF_EXISTS(EngineExternal().GetIniFile(), r_float, "monsters_logic", Key, Default);
+				const float Global = READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_float, "monsters_logic", Key, Default);
 				if (_valid(Global) && Global >= Minimum && Global <= 1.f) Default = Global;
 				xr_sprintf(Key, "%s_%s", Prefix, Suffix);
 				const float Value = READ_IF_EXISTS(pSettings, r_float, section, Key, Default);
