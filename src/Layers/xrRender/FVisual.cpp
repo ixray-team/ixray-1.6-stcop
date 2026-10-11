@@ -30,7 +30,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 	if (data->find_chunk(OGF_GCONTAINER))
 	{
-#ifndef _EDITOR
 		// verts
 		u32 ID				= data->r_u32					();
 		vBase				= data->r_u32					();
@@ -59,8 +58,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 #if RENDER==R_R4
 		iBase				+= RImplementation.getIB_Base	(ID);
 #endif
-#endif
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if (RENDER==R_R2 || RENDER==R_R4)
 		// check for fast-vertices
 		if (data->find_chunk(OGF_FASTPATH))
 		{
@@ -110,7 +108,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		if (data->find_chunk(OGF_VCONTAINER)) 
 		{
 			R_ASSERT2			(0,"pls notify andy about this.");
-#ifndef _EDITOR
 			u32 ID				= data->r_u32				();
 			vBase				= data->r_u32				();
 			vCount				= data->r_u32				();
@@ -118,7 +115,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			p_rm_Vertices		= RImplementation.getVB			(ID);
 			p_rm_Vertices->AddRef();
 			vFormat				= RImplementation.getVB_Format	(ID, &FormatSize);
-#endif
 		} 
 		else
 		{
@@ -146,7 +142,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		if (data->find_chunk(OGF_ICONTAINER)) 
 		{
 			R_ASSERT2			(0,"pls notify andy about this.");
-#ifndef _EDITOR
 			u32 ID				= data->r_u32			();
 			iBase				= data->r_u32			();
 			iCount				= data->r_u32			();
@@ -154,7 +149,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			VERIFY				(nullptr==p_rm_Indices);
 			p_rm_Indices		= RImplementation.getIB	(ID);
 			p_rm_Indices->AddRef	();
-#endif
 		} 
 		else
 		{

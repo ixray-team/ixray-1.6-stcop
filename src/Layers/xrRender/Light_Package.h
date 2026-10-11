@@ -1,5 +1,7 @@
 #pragma once
 
+class light;
+
 #include "light.h"
 
 class	light_Package

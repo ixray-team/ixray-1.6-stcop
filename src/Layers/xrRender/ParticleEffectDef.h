@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef ParticleEffectDefH
 #define ParticleEffectDefH
+#include "RenderAPI.h"
 
 #include "Shader.h"
 
@@ -55,7 +56,8 @@ namespace PS
 		}
 	};
 
-	class ECORE_API CPEDef
+	// Exported per member: the Particle Editor defines the editor-only members (declared under _EDITOR) in its own module.
+	class CPEDef
 	{
 	public:
 		enum{
@@ -97,41 +99,40 @@ namespace PS
 	    float 				m_fCollideOneMinusFriction;
         float 				m_fCollideResilience;
         float 				m_fCollideSqrCutoff; 
+	// editor action list (owned by the Particle Editor through IParticleEditorActions; empty in the game)
+		using EditorActionVec = xr_vector<::EParticleAction*>;
+		using EditorActionVecIt = EditorActionVec::iterator;
+		EditorActionVec		m_EActionList;
 	public:
-		bool 				SaveActionList		(IWriter& F);
-		bool 				LoadActionList		(IReader& F);
+		RENDER_API bool 	SaveActionList		(IWriter& F);
+		RENDER_API bool 	LoadActionList		(IReader& F);
 	// execute
-		void				ExecuteAnimate		(PAPI::Particle *particles, u32 p_cnt, float dt);
-        void				ExecuteCollision	(PAPI::Particle *particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb);
+		RENDER_API void		ExecuteAnimate		(PAPI::Particle *particles, u32 p_cnt, float dt);
+        RENDER_API void		ExecuteCollision	(PAPI::Particle *particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb);
 	public:
-                            CPEDef				();
-                            ~CPEDef				();
+        RENDER_API          CPEDef				();
+        RENDER_API          ~CPEDef				();
         
-		void				SetName				(const char* name);
+		RENDER_API void		SetName				(const char* name);
         IC const char*			Name				()const{return *m_Name;}
-        void				CreateShader		();
-        void				DestroyShader		();
+        RENDER_API void		CreateShader		();
+        RENDER_API void		DestroyShader		();
 
-		void 				Save				(IWriter& F);
-		bool 				LoadOriginal		(IReader& F);
-		bool 				LoadExtended		(IReader& F);
+		RENDER_API void 	Save				(IWriter& F);
+		RENDER_API bool 	LoadOriginal		(IReader& F);
+		RENDER_API bool 	LoadExtended		(IReader& F);
 
-		void 				Save2				(CInifile& ini);
-		bool 				Load2				(CInifile& ini);
-		bool				Load2Original		(CInifile& ini);
-		bool				Load2Entended		(CInifile& ini);
+		RENDER_API void 	Save2				(CInifile& ini);
+		RENDER_API bool 	Load2				(CInifile& ini);
+		RENDER_API bool		Load2Original		(CInifile& ini);
+		RENDER_API bool		Load2Entended		(CInifile& ini);
 
-#ifndef _EDITOR
 		using EPAVec = xr_vector<EPALegacy::EParticleAction*>;
 		using EPAVecIt = EPAVec::iterator;
-#else
+#ifdef _EDITOR
 // change Copy&Equal if variables changed
 	public:
-		using EPAVec = xr_vector<EParticleAction*>;
-		using EPAVecIt = EPAVec::iterator;
-
-		EPAVec m_EActionList;
-	public:             
+		void				CompileEditorActions();
 		void   	FindActionByName	(const char* new_name, bool& res);
 		bool   	NameOnAfterEdit					(PropValue* sender, shared_str& edit_val);
 		bool   	CollisionFrictionOnAfterEdit	(PropValue* sender, float& edit_val);
@@ -172,8 +173,24 @@ namespace PS
         bool 				Validate 			(bool bMsg);
 		void				OnDrawUI			();
 #endif
-		void Compile(EPAVec& v);
+		RENDER_API void Compile(EPAVec& v);
 	};
+
+	// Editor action list I/O. The Particle Editor installs an implementation; it is null in the game
+	// and in the other editors, which use the compiled action streams only.
+	class IParticleEditorActions
+	{
+	public:
+		virtual ~IParticleEditorActions() = default;
+
+		virtual void LoadActions(CPEDef& Def, IReader& F) = 0;
+		virtual void SaveActions(CPEDef& Def, IWriter& F) = 0;
+		virtual void LoadActions2(CPEDef& Def, CInifile& Ini) = 0;
+		virtual void SaveActions2(CPEDef& Def, CInifile& Ini) = 0;
+		virtual void DestroyActions(CPEDef& Def) = 0;
+	};
+
+	extern RENDER_API IParticleEditorActions* g_ParticleEditorActions;
 
 	namespace PE
 	{

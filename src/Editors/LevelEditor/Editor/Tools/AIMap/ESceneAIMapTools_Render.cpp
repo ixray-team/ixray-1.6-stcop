@@ -59,7 +59,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
 			if (OBJCLASS_AIMAP==LTools->CurrentClassID())
             {
 	            u32 clr = 0xffffc000;
-	            EDevice->SetShader	(EDevice->m_WireShader);
+	            EDevice->SetShader	(GEditorDraw.WireShader);
     	        DU_impl.DrawSelectionBoxB	(m_AIBBox,&clr);
             }
 

@@ -23,10 +23,6 @@ file(GLOB_RECURSE ECORE_SOURCE_WM_FILES CONFIGURE_DEPENDS
 	"WildMagic/*.*"
 )
 
-file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILESEX CONFIGURE_DEPENDS
-	"Render/*.*"
-)
-
 file(GLOB_RECURSE ECORE_SOURCE_ERR_FILES CONFIGURE_DEPENDS
 	"dxerr/*.*"
 )
@@ -37,123 +33,17 @@ file(GLOB_RECURSE ECORE_SOURCE_RES_FILES
 	"*.bmp"
 )
 
-file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
-	"../../Layers/xrRenderDX10/dx10r_constants_cache.*"
-	"../../Layers/xrRenderDX10/dx10r_constants.*"
-	"../../Layers/xrRenderDX10/dx10ConstantBuffer.*"
-	"../../Layers/xrRender/Animation.*"
-	"../../Layers/xrRender/blenders/Blender.*"
-	"../../Layers/xrRender/blenders/Blender_Palette.*"
-	"../../Layers/xrRender/blenders/Blender_Recorder.*"
-	"../../Layers/xrRender/Blender_BmmD.*"
-	"../../Layers/xrRender/Blender_detail_still.*"
-	"../../Layers/xrRender/Blender_Editor_Selection.*"
-	"../../Layers/xrRender/Blender_Editor_Wire.*"
-	"../../Layers/xrRender/Blender_Lm(EbB).*"
-	"../../Layers/xrRender/Blender_Model_EbB.*"
-	"../../Layers/xrRender/Blender_Particle.*"
-	"../../Layers/xrRender/Blender_Recorder_R2.*"
-	"../../Layers/xrRender/Blender_Recorder_StandartBinding.*"
-	"../../Layers/xrRender/Blender_Screen_SET.*"
-	"../../Layers/xrRender/Blender_tree.*"
-	"../../Layers/xrRender/DetailModel.*"
-	"../../Layers/xrRender/dxApplicationRender.*"
-	"../../Layers/xrRender/dxConsoleRender.*"
-	"../../Layers/xrRender/dxDebugRender.*"
-	"../../Layers/xrRender/dxStatGraphRender.*"
-	"../../Layers/xrRender/dxEnvironmentRender.*"
-	"../../Layers/xrRender/dxFontRender.*"
-	"../../Layers/xrRender/dxLensFlareRender.*"
-	"../../Layers/xrRender/dxObjectSpaceRender.*"
-	"../../Layers/xrRender/dxRainRender.*"
-	"../../Layers/xrRender/dxRenderDeviceRender.*"
-	"../../Layers/xrRender/dxRenderFactory.*"
-	"../../Layers/xrRender/dxStatsRender.*"
-	"../../Layers/xrRender/dxThunderboltDescRender.*"
-	"../../Layers/xrRender/dxThunderboltRender.*"
-	"../../Layers/xrRender/dxUIRender.*"
-	"../../Layers/xrRender/dxUISequenceVideoItem.*"
-	"../../Layers/xrRender/dxUIShader.*"
-	"../../Layers/xrRender/TextureAtlas.*"
-	"../../Layers/xrRender/dxWallMarkArray.*"
-	"../../Layers/xrRender/ETextureParams.*"
-	"../../Layers/xrRender/FBasicVisual.*"
-	"../../Layers/xrRender/FHierrarhyVisual.*"
-	"../../Layers/xrRender/FProgressive.*"
-	"../../Layers/xrRender/FSkinned.*"
-	"../../Layers/xrRender/FVisual.*"
-	"../../Layers/xrRenderDX10/dx11HWCaps.*"
-	"../../Layers/xrRender/ModelPool.*"
-	"../../Layers/xrRender/ParticleEffect.*"
-	"../../Layers/xrRender/ParticleEffectDef.*"
-	"../../Layers/xrRender/ParticleGroup.*"
-	"../../Layers/xrRender/ParticleAnimCurve.*"
-	"../../Layers/xrRender/PSLibrary.*"
-	"../../Layers/xrRender/ResourceManager.*"
-	"../../Layers/xrRender/ResourceManager_Loader.*"
-	"../../Layers/xrRender/ResourceManager_Reset.*"
-	"../../Layers/xrRenderDX10/dx11ResourceManager_Resources.*"
-	"../../Layers/xrRenderDX10/dx11XMLBlendCompiler.*"
-	"../../Layers/xrRenderDX10/dx11ResourceManager_Scripting.*"
-	"../../Layers/xrRenderDX10/dx10StateUtils.*"
-	"../../Layers/xrRenderDX10/dx10BufferUtils.*"
-	"../../Layers/xrRenderDX10/dx10FixedConstants.*"
-	"../../Layers/xrRenderDX10/StateManager/*.*"
-	"../../Layers/xrRender/R_Backend.*"
-	"../../Layers/xrRender/Utils/*.*"
-	"../../Layers/xrRenderPC_R4/R_Backend_LOD.*"
-	"../../Layers/xrRenderPC_R4/OverlayAPI/DLSSWrapper.*"
-	"../../Layers/xrRender/R_Backend_DBG.*"
-	"../../Layers/xrRender/R_Backend_hemi.*"
-	"../../Layers/xrRender/R_Backend_Runtime.*"
-	"../../Layers/xrRender/R_Backend_tree.*"
-	"../../Layers/xrRender/R_Backend_xform.*"
-	"../../Layers/xrRender/r_constants.*"
-	"../../Layers/xrRender/R_DStreams.*"
-	"../../Layers/xrRender/Shader.*"
-	"../../Layers/xrRender/SH_Atomic.*"
-	"../../Layers/xrRender/SH_Constant.*"
-	"../../Layers/xrRender/SH_Matrix.*"
-	"../../Layers/xrRender/SH_Texture.*"
-	"../../Layers/xrRender/SH_RT.*"
-	"../../Layers/xrRender/SkeletonAnimated.*"
-	"../../Layers/xrRender/SkeletonCustom.*"
-	"../../Layers/xrRender/SkeletonRigid.*"
-	"../../Layers/xrRender/SkeletonX.*"
-	"../../Layers/xrRender/RenderPhaseAccumPointGeom.*"
-	"../../Layers/xrRender/RenderPhaseAccumSpotGeom.*"
-	"../../Layers/xrRender/stats_manager.*"
-	"../../Layers/xrRenderDX10/dx11Texture.*"
-	"../../Layers/xrRender/TextureDescrManager.*"
-	"../../Layers/xrRender/tga.*"
-	"../../Layers/xrRender/tss_def.*"
-	"../../Layers/xrRender/xrRender_console.*"
-	"../../Layers/xrRenderPC_R1/Blender_Blur.*"
-	"../../Layers/xrRenderPC_R1/BlenderDefault.*"
-	"../../Layers/xrRenderPC_R1/Blender_default_aref.*"
-	"../../Layers/xrRenderPC_R1/Blender_LaEmB.*"
-	"../../Layers/xrRenderPC_R1/Blender_Model.*"
-	"../../Layers/xrRenderPC_R1/Blender_Screen_GRAY.*"
-	"../../Layers/xrRenderPC_R1/Blender_Shadow_World.*"
-	"../../Layers/xrRenderPC_R1/Blender_Vertex_aref.*"
-	"../../Layers/xrRenderPC_R1/Blender_Vertex.*"
-	"../../Layers/xrRender/smol-atlas.*"
-	"../../Layers/xrRender/particle_core/particle_core.*"
-	"../../Layers/xrRender/particle_core/noise.*"
-	"../../Layers/xrRender/particle_core/particle_actions_collection.*"
-	"../../Layers/xrRender/particle_core/particle_actions_collection_io.cpp"
-	"../../Layers/xrRender/particle_core/particle_holder.h"
-	"../../Layers/xrRender/particle_core/psystem.h"
-)
-
 file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DEPENDS
  #   "../../xrEngine/motion.cpp"
  #  "../../xrEngine/fmesh.cpp"
 	"../../xrEngine/ObjectAnimator.cpp"
-	"../../xrEngine/ai_script_lua_debug.cpp"
-	"../../xrEngine/ai_script_lua_extension.cpp"
 	"../../xrServerEntities/LevelGameDef.cpp"
 	"../../xrPlay/Splash.*"
+	# R1 blender set of shaders.xr (see Editor/EditorBlenders.cpp)
+	"../../Layers/xrRenderPC_R1/Blender_Blur.*"
+	"../../Layers/xrRenderPC_R1/Blender_LaEmB.*"
+	"../../Layers/xrRenderPC_R1/Blender_Screen_GRAY.*"
+	"../../Layers/xrRenderPC_R1/Blender_Shadow_World.*"
 )
 
 set(ECORE_SRC_FILES)
@@ -162,15 +52,12 @@ source_group("Engine" FILES ${ECORE_SOURCE_ENGINE_FILES})
 source_group("Editor" FILES ${ECORE_SOURCE_EDITOR_FILES})
 source_group("MeshTools" FILES ${ECORE_SOURCE_EDITOR_PUBLIC_FILES})
 source_group("WildMagic" FILES ${ECORE_SOURCE_WM_FILES})
-source_group("Render" FILES ${ECORE_SOURCE_RENDER_FILES})
-source_group("RenderEx" FILES ${ECORE_SOURCE_RENDER_FILESEX})
 source_group("Other"  FILES ${ECORE_SOURCE_EXT_FILES})
 source_group("dxerr"  FILES ${ECORE_SOURCE_ERR_FILES})
 source_group("Resources"  FILES ${ECORE_SOURCE_RES_FILES})
 
 # Apply list
 list(APPEND ECORE_SRC_FILES ${ECORE_SOURCE_ALL_FILES})
-list(APPEND ECORE_SRC_FILES ${ECORE_SOURCE_RENDER_FILES})
 list(APPEND ECORE_SRC_FILES ${ECORE_SOURCE_EXT_FILES})
 list(APPEND ECORE_SRC_FILES ${ECORE_SOURCE_RES_FILES})
 list(APPEND ECORE_SRC_FILES ${ECORE_SOURCE_EDITOR_PUBLIC_FILES})
@@ -200,6 +87,8 @@ target_compile_definitions(xrECore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrECore PUBLIC xrEUI)
 target_link_libraries(xrECore PUBLIC xrEProps)
+target_link_libraries(xrECore PUBLIC xrRender_R4)
+target_link_libraries(xrECore PUBLIC NvTriStrip)
 target_link_libraries(xrECore PUBLIC luabind)
 target_link_libraries(xrECore PUBLIC xrEngineCore)
 target_link_libraries(xrECore PUBLIC xrPhysics)

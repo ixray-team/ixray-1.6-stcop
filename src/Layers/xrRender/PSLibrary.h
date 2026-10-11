@@ -3,6 +3,7 @@
 //----------------------------------------------------
 #ifndef PSLibraryH
 #define PSLibraryH
+#include "RenderAPI.h"
 
 #include "../../Include/xrRender/particles_systems_library_interface.hpp"
 #include "../../xrEngine/ParticleAnimCurveInterface.h"
@@ -24,44 +25,41 @@ namespace PS {
 	using PACDIt = PACDVec::iterator;
 } // namespace PS
 
-class ECORE_API CPSLibrary : public particles_systems::library_interface, public PS::IPACLibrary {
+// Exported per member: the Particle Editor defines the editing members (Append*, Save) in its own module.
+class CPSLibrary : public particles_systems::library_interface, public PS::IPACLibrary {
 	PS::PEDVec			m_PEDs;
     PS::PGDVec			m_PGDs;
 	PS::PACDVec			m_PACDs;
     xr_vector<shared_str> m_all_ps;
-#ifdef _EDITOR    
     xr_string			m_CurrentParticles;
-public:
-	void 	 	FindByName		(const char* new_name, bool& res);
-#endif
 
 public:
 	// stream
-    bool Load(const char* nm);
-	bool LoadOriginal(IReader& F);
-	bool LoadExtended(IReader& F);
+    RENDER_API bool Load(const char* nm);
+	RENDER_API bool LoadOriginal(IReader& F);
+	RENDER_API bool LoadExtended(IReader& F);
 	
     bool Save(const char* nm);
 
 	// individuals INI
-	bool Load2();
+	RENDER_API bool Load2();
 	bool Save2();
 	
 public:
 						CPSLibrary		(){;}
     		 			~CPSLibrary		(){;}
 
-    void				OnCreate		();
-    void				OnDestroy		();
+    RENDER_API void		OnCreate		();
+    RENDER_API void		OnDestroy		();
 
-    PS::CPEDef*			FindPED			(const char* name);
-    PS::PEDIt			FindPEDIt		(const char* name);
-    PS::CPGDef*			FindPGD			(const char* name);
-	PS::PGDIt			FindPGDIt		(const char* name);
-	PS::CPACDef*		FindPACD		(const char* name);
-	PS::PACDIt			FindPACDIt		(const char* name);
+    RENDER_API PS::CPEDef*		FindPED			(const char* name);
+    RENDER_API PS::PEDIt		FindPEDIt		(const char* name);
+    RENDER_API PS::CPGDef*		FindPGD			(const char* name);
+	RENDER_API PS::PGDIt		FindPGDIt		(const char* name);
+	RENDER_API PS::CPACDef*		FindPACD		(const char* name);
+	RENDER_API PS::PACDIt		FindPACDIt		(const char* name);
 
-	virtual PS::IPAC*	FindIPAC		(const char* name) override;
+	RENDER_API virtual PS::IPAC*	FindIPAC		(const char* name) override;
 
     // get object properties methods
 	IC const PS::PEDVec& VecPEDs		()	{ return m_PEDs; }
@@ -77,18 +75,18 @@ public:
     PS::CPEDef*			AppendPED		(PS::CPEDef* src=nullptr);
     PS::CPGDef*			AppendPGD		(PS::CPGDef* src=nullptr);
     PS::CPACDef*		AppendPACD		(PS::CPACDef* src=nullptr);
-    void				Remove			(const char* name);
-    void				RenamePED		(PS::CPEDef* src, const char* new_name);
-    void				RenamePGD		(PS::CPGDef* src, const char* new_name);
-    void				RenamePACD		(PS::CPACDef* src, const char* new_name);
+    RENDER_API void		Remove			(const char* name);
+    RENDER_API void		RenamePED		(PS::CPEDef* src, const char* new_name);
+    RENDER_API void		RenamePGD		(PS::CPGDef* src, const char* new_name);
+    RENDER_API void		RenamePACD		(PS::CPACDef* src, const char* new_name);
 
-    void				Reload			();
+    RENDER_API void		Reload			();
     bool				Save			();
 
-	virtual	PS::CPGDef const* const*	particles_group_begin	() const;
-	virtual	PS::CPGDef const* const*	particles_group_end		() const;
-	virtual	void						particles_group_next	(PS::CPGDef const* const*& iterator) const;
-	virtual	shared_str const&			particles_group_id		(PS::CPGDef const& particles_group) const;
+	RENDER_API virtual	PS::CPGDef const* const*	particles_group_begin	() const;
+	RENDER_API virtual	PS::CPGDef const* const*	particles_group_end		() const;
+	RENDER_API virtual	void						particles_group_next	(PS::CPGDef const* const*& iterator) const;
+	RENDER_API virtual	shared_str const&			particles_group_id		(PS::CPGDef const& particles_group) const;
     virtual xr_vector<shared_str> const& vec_all_particles() const {return m_all_ps;};
 };
 

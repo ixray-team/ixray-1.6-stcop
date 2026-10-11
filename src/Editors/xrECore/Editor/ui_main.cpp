@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "EditorSceneSubmit.h"
 #include "../xrEngine/xr_input.h"
 #include "../xrEngine/IGame_Actor.h"
 #include "UI_ToolsCustom.h"
@@ -83,7 +84,7 @@ TUI::~TUI()
 
 ImTextureID TUI::LoadTexture(const char* Texture) const
 {
-	if (EDevice == nullptr || EDevice->Resources == nullptr)
+	if (EDevice == nullptr || DEV == nullptr)
 	{
 		return nullptr;
 	}
@@ -91,7 +92,7 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 	ref_texture& Tex = TextureStack[Texture];
 	if (!Tex)
 	{
-		Tex = EDevice->Resources->_CreateTexture(Texture);
+		Tex = DEV->_CreateTexture(Texture);
 	}
 
 	if (Tex->pSurface == nullptr || Tex->get_SRView() == nullptr)
@@ -451,38 +452,33 @@ void TUI::Redraw()
 
 	Viewport& View = CurrentView();
 
-	if (u32(View.RTSize.x * EDevice->m_ScreenQuality) != EDevice->TargetWidth || u32(View.RTSize.y * EDevice->m_ScreenQuality) != EDevice->TargetHeight || !RT->pSurface)
+	if (u32(View.RTSize.x * GEditorDraw.ScreenQuality) != EDevice->TargetWidth || u32(View.RTSize.y * GEditorDraw.ScreenQuality) != EDevice->TargetHeight || !RT->pSurface)
 	{
 		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
-			EDevice->TargetWidth = View.RTSize.x * EDevice->m_ScreenQuality;
-			EDevice->TargetHeight = View.RTSize.y * EDevice->m_ScreenQuality;
+			EDevice->TargetWidth = View.RTSize.x * GEditorDraw.ScreenQuality;
+			EDevice->TargetHeight = View.RTSize.y * GEditorDraw.ScreenQuality;
 
 			RT.destroy();
 			RTCopy.destroy();
-			ZB.destroy();
 			View.RTFreez.destroy();
-
-			RTPostion.destroy();
-			RTNormal.destroy();
-			RTDiffuse.destroy();
-
-			RTPostion.create("$user$position", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::R16G16B16A16_FLOAT);
-			RTNormal.create("$user$normal", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::R16G16B16A16_FLOAT);
-			RTDiffuse.create("$user$diffuse", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
 
 			RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 			View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 			RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 
-			ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::R24G8_TYPELESS);
+			// The renderer targets follow the viewport size: the scene resolution (HalfTarget) is the
+			// viewport target size, no upscaling
+			HalfTarget.x = EDevice->TargetWidth;
+			HalfTarget.y = EDevice->TargetHeight;
+
+			::Render->reset_begin();
+			::Render->reset_end();
 
 			m_Flags.set(flRedraw, true);
 
 			EDevice->m_fNearer = EDevice->mProject._43;
-			HalfTarget.x = float(View.RTSize.x) * 0.5f;
-			HalfTarget.y = float(View.RTSize.y) * 0.5f;
-			EDevice->fASPECT = float(HalfTarget.y) / float(HalfTarget.x);
+			EDevice->fASPECT = float(View.RTSize.y) / float(View.RTSize.x);
 
 			EDevice->seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
 			EDevice->seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
@@ -492,9 +488,7 @@ void TUI::Redraw()
 		else
 		{
 			// Soft render update when resizing window
-			HalfTarget.x = float(View.RTSize.x) * 0.5f;
-			HalfTarget.y = float(View.RTSize.y) * 0.5f;
-			EDevice->fASPECT = float(HalfTarget.y) / float(HalfTarget.x);
+			EDevice->fASPECT = float(View.RTSize.y) / float(View.RTSize.x);
 			m_Flags.set(flRedraw, true);
 		}
 	}
@@ -523,27 +517,8 @@ void TUI::Redraw()
 			m_Flags.set(flRedraw, false);
 			++EDevice->dwRenderFrame;
 
-			float ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 1};
-			GRHI->ClearTarget(RTNormal->pRT, ColorRGBA);
-			GRHI->ClearTarget(RTDiffuse->pRT, ColorRGBA);
-			GRHI->ClearTarget(RTPostion->pRT, ColorRGBA);
-
-			GRHI->SetDepthStencilView(nullptr);
-
-			RCache.set_RT(RT->pRT);
-			GRHI->SetDepthStencilView(ZB->pZRT);
-
-			EDevice->Clear();
-
-			RCache.set_RT(RTDiffuse->pRT, 1);
-			RCache.set_RT(RTNormal->pRT, 2);
-			RCache.set_RT(RTPostion->pRT, 3);
-
-			RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			EDevice->UpdateView();
 			EDevice->ResetMaterial();
-
-			Tools->RenderEnvironment();
 
 			for (u32 k = 0; k < Caps.raster.dwStages; k++)
 			{
@@ -561,16 +536,30 @@ void TUI::Redraw()
 				}
 			}
 
-			// draw grid
+			// Lit scene through the game pipeline: the renderer collects the editor scene
+			// (IEditorRenderHost::SubmitScene runs Tools->Render in the submit pass)
+			GEditorSceneSubmit.BeginFrame();
+			if (EPrefs)
+			{
+				RImplementation.EditorClearColor.set(EPrefs->scene_clear_color);
+				RImplementation.EditorOcclusionCulling = EPrefs->OcclusionCulling;
+			}
+			::Render->Calculate();
+			::Render->Render();
+
+			// Helpers over the lit scene, with its depth
+			RImplementation.EditorBeginOverlay();
+			GEditorDraw.Pass = EEditorDrawPass::Overlay;
+
+			// The grid is drawn by the renderer under the blended geometry (DrawSceneHelpers)
 			if (psDeviceFlags.is(rsDrawGrid))
 			{
-				DU_impl.DrawGrid();
 				DU_impl.DrawPivot(m_Pivot);
 			}
 
 			Tools->Render();
 
-			GRHI->CopySurface(RTCopy->pRT, RT->pRT);
+			GEditorDraw.Pass = EEditorDrawPass::Immediate;
 
 			// draw selection rect
 			if (m_SelectionRect)
@@ -588,7 +577,7 @@ void TUI::Redraw()
 			EDevice->Statistic->RenderDUMP_RT.End();
 			EDevice->Statistic->Show();
 
-			EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
+			EDevice->SetRS(D3DRS_FILLMODE, GEditorDraw.FillMode);
 			EDevice->seqRender.Process<&pureRender::OnRender>();
 
 			if (g_pGamePersistent->OnRenderPPUI_query())
@@ -598,9 +587,9 @@ void TUI::Redraw()
 
 			g_FontManager->Render();
 
-			RCache.set_RT(0, 1);
-			RCache.set_RT(0, 2);
-			RCache.set_RT(0, 3);
+			// Resolve into the viewport target
+			RImplementation.EditorPresent(RT->pRT);
+			GRHI->CopySurface(RTCopy->pRT, RT->pRT);
 		}
 
 		g_bRendering = false;
@@ -752,15 +741,17 @@ bool TUI::OnCreate()
 	// create base class
 	EDevice->InitTimer();
 
+	// The renderer executes its console commands while the device is created
+	Console = new CConsole();
+	Console->Initialize();
+	xrRender_initconsole();
+
 	EDevice->Initialize();
 	// Creation
 	extern CDB::COLLIDER XRC;
 	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
 
 	pInput = new CInput(false, all_device_key);
-
-	Console = new CConsole();
-	Console->Initialize();
 
 	IR_Capture();
 
@@ -785,7 +776,7 @@ bool TUI::OnCreate()
 	for (auto& [ID, View] : Views)
 	{
 		View.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
-		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
+		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth() * GEditorDraw.ScreenQuality, GetRenderHeight() * GEditorDraw.ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
 	}
 
 	EDevice->fASPECT = (float)GetRenderWidth() / (float)GetRenderHeight();
@@ -796,14 +787,9 @@ bool TUI::OnCreate()
 	RCache.set_xform_project(EDevice->mProject);
 	RCache.set_xform_world(Fidentity);
 
-	RTPostion.create("$user$position", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::R16G16B16A16_FLOAT);
-	RTNormal.create("$user$normal", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::R16G16B16A16_FLOAT);
-	RTDiffuse.create("$user$diffuse", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8A8_UNORM);
 
-	RT.create("$user$rt_color", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
-	RTCopy.create("$user$rt_color_copy", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
-
-	ZB.create("$user$rt_depth", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::R24G8_TYPELESS);
+	RT.create("$user$rt_color", GetRenderWidth() * GEditorDraw.ScreenQuality, GetRenderHeight() * GEditorDraw.ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
+	RTCopy.create("$user$rt_color_copy", GetRenderWidth() * GEditorDraw.ScreenQuality, GetRenderHeight() * GEditorDraw.ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
 
 	return true;
 }
@@ -822,11 +808,6 @@ void TUI::OnDestroy()
 
 	RT.destroy();
 	RTCopy.destroy();
-	ZB.destroy();
-
-	RTPostion.destroy();
-	RTNormal.destroy();
-	RTDiffuse.destroy();
 
 	VERIFY(m_bReady);
 	m_bReady = false;
@@ -900,7 +881,7 @@ void TUI::CreateViewport(int ID, UIRenderForm* Form)
 	MainView.ViewGlobalIDX = ID;
 
 	MainView.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
-	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
+	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth() * GEditorDraw.ScreenQuality, GetRenderHeight() * GEditorDraw.ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
 }
 
 void TUI::DestroyViewport(int ID)

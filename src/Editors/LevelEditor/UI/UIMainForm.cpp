@@ -42,54 +42,54 @@ UIMainForm::UIMainForm()
 	m_Render->OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
 
 	// Action
-	m_tMenu         = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
-	m_tSelect       = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Select");
-	m_tAdd          = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Add");
-	m_tMove         = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Move");
-	m_tScale        = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Scale");
-	m_tRotate       = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Rotate");
+	m_tMenu         = DEV->_CreateTexture("ed\\bar\\menu");
+	m_tSelect       = DEV->_CreateTexture("ed\\icons\\Tool Select");
+	m_tAdd          = DEV->_CreateTexture("ed\\icons\\Tool Add");
+	m_tMove         = DEV->_CreateTexture("ed\\icons\\Tool Move");
+	m_tScale        = DEV->_CreateTexture("ed\\icons\\Tool Scale");
+	m_tRotate       = DEV->_CreateTexture("ed\\icons\\Tool Rotate");
 
 	// Snap
-	m_tGSnap        = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Align to Normal");
-	m_tOSnap        = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Grid");
-	m_tMoveToSnap   = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Object");
-	m_tNSnap        = EDevice->Resources->_CreateTexture("ed\\icons\\Snap while Moving");
-	m_tVSnap        = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Vertex");
-	m_tASnap        = EDevice->Resources->_CreateTexture("ed\\bar\\asnap"); //????
-	m_tMSnap        = EDevice->Resources->_CreateTexture("ed\\bar\\msnap"); //????
+	m_tGSnap        = DEV->_CreateTexture("ed\\icons\\Snap Align to Normal");
+	m_tOSnap        = DEV->_CreateTexture("ed\\icons\\Snap to Grid");
+	m_tMoveToSnap   = DEV->_CreateTexture("ed\\icons\\Snap to Object");
+	m_tNSnap        = DEV->_CreateTexture("ed\\icons\\Snap while Moving");
+	m_tVSnap        = DEV->_CreateTexture("ed\\icons\\Snap to Vertex");
+	m_tASnap        = DEV->_CreateTexture("ed\\bar\\asnap"); //????
+	m_tMSnap        = DEV->_CreateTexture("ed\\bar\\msnap"); //????
 
-	m_tZoom         = EDevice->Resources->_CreateTexture("ed\\icons\\Zoom Extent");
-	m_tZoomSel      = EDevice->Resources->_CreateTexture("ed\\icons\\Zoom Extents Selected");
+	m_tZoom         = DEV->_CreateTexture("ed\\icons\\Zoom Extent");
+	m_tZoomSel      = DEV->_CreateTexture("ed\\icons\\Zoom Extents Selected");
 
 	// Axis
-	m_tX            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisX");
-	m_tY            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisY");
-	m_tZ            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZ");
-	m_tZX           = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZX");
+	m_tX            = DEV->_CreateTexture("ed\\bar\\AxisX");
+	m_tY            = DEV->_CreateTexture("ed\\bar\\AxisY");
+	m_tZ            = DEV->_CreateTexture("ed\\bar\\AxisZ");
+	m_tZX           = DEV->_CreateTexture("ed\\bar\\AxisZX");
 	
-	m_tGrid         = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Moving");
-	m_tScaleGrid    = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Scale");
-	m_tAngle        = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Rotate");
+	m_tGrid         = DEV->_CreateTexture("ed\\icons\\Snap Moving");
+	m_tScaleGrid    = DEV->_CreateTexture("ed\\icons\\Snap Scale");
+	m_tAngle        = DEV->_CreateTexture("ed\\icons\\Snap Rotate");
 
-	m_tCsLocal      = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Parent CS");
-	m_tNuScale      = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Non-Uniform Scale");
+	m_tCsLocal      = DEV->_CreateTexture("ed\\icons\\Tool Parent CS");
+	m_tNuScale      = DEV->_CreateTexture("ed\\icons\\Tool Non-Uniform Scale");
 
 	// View
-	m_tVFront       = EDevice->Resources->_CreateTexture("ed\\bar\\ViewFront");
-	m_tVBack        = EDevice->Resources->_CreateTexture("ed\\bar\\ViewB");
-	m_tVLeft        = EDevice->Resources->_CreateTexture("ed\\bar\\ViewLeft");
-	m_tVRight       = EDevice->Resources->_CreateTexture("ed\\bar\\ViewRight");
-	m_tVTop         = EDevice->Resources->_CreateTexture("ed\\bar\\ViewTop");
-	m_tVBottom      = EDevice->Resources->_CreateTexture("ed\\bar\\ViewB");
-	m_tVReset       = EDevice->Resources->_CreateTexture("ed\\bar\\ViewReset");
+	m_tVFront       = DEV->_CreateTexture("ed\\bar\\ViewFront");
+	m_tVBack        = DEV->_CreateTexture("ed\\bar\\ViewB");
+	m_tVLeft        = DEV->_CreateTexture("ed\\bar\\ViewLeft");
+	m_tVRight       = DEV->_CreateTexture("ed\\bar\\ViewRight");
+	m_tVTop         = DEV->_CreateTexture("ed\\bar\\ViewTop");
+	m_tVBottom      = DEV->_CreateTexture("ed\\bar\\ViewB");
+	m_tVReset       = DEV->_CreateTexture("ed\\bar\\ViewReset");
 
 	// Camera
-	m_tPlaneMove    = EDevice->Resources->_CreateTexture("ed\\bar\\PlaneMove");
-	m_tArcBall      = EDevice->Resources->_CreateTexture("ed\\bar\\ArcBall");
-	m_tFreeFly      = EDevice->Resources->_CreateTexture("ed\\bar\\FreeFly");
+	m_tPlaneMove    = DEV->_CreateTexture("ed\\bar\\PlaneMove");
+	m_tArcBall      = DEV->_CreateTexture("ed\\bar\\ArcBall");
+	m_tFreeFly      = DEV->_CreateTexture("ed\\bar\\FreeFly");
 
-	TransformLocalOrWorld = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Local");
-	TransformLocalOrWorld2 = EDevice->Resources->_CreateTexture("ed\\icons\\Tool World");
+	TransformLocalOrWorld = DEV->_CreateTexture("ed\\icons\\Tool Local");
+	TransformLocalOrWorld2 = DEV->_CreateTexture("ed\\icons\\Tool World");
 
 	LoadWindowsStates();
 }
@@ -695,10 +695,10 @@ void UIMainForm::DrawMenuSettings()
 
 					for (int i = 0; i < 4; i++)
 					{
-						bool selected = (i == 0 && EDevice->m_ScreenQuality < 0.3f) ||
-							(i == 1 && EDevice->m_ScreenQuality >= 0.3f && EDevice->m_ScreenQuality < 0.6f) ||
-							(i == 2 && EDevice->m_ScreenQuality >= 0.6f && EDevice->m_ScreenQuality < 1.1f) ||
-							(i == 3 && EDevice->m_ScreenQuality >= 1.1f && EDevice->m_ScreenQuality < 2.1f);
+						bool selected = (i == 0 && GEditorDraw.ScreenQuality < 0.3f) ||
+							(i == 1 && GEditorDraw.ScreenQuality >= 0.3f && GEditorDraw.ScreenQuality < 0.6f) ||
+							(i == 2 && GEditorDraw.ScreenQuality >= 0.6f && GEditorDraw.ScreenQuality < 1.1f) ||
+							(i == 3 && GEditorDraw.ScreenQuality >= 1.1f && GEditorDraw.ScreenQuality < 2.1f);
 
 						if (ImGui::MenuItem(qualities[i], "", &selected))
 						{
@@ -717,10 +717,10 @@ void UIMainForm::DrawMenuSettings()
 
 					for (int i = 0; i < 3; i++)
 					{
-						bool selected = EDevice->dwFillMode == d3dModes[i];
+						bool selected = GEditorDraw.FillMode == d3dModes[i];
 						if (ImGui::MenuItem(modes[i], "", &selected))
 						{
-							EDevice->dwFillMode = d3dModes[i];
+							GEditorDraw.FillMode = d3dModes[i];
 							EContext.UI->RedrawScene();
 						}
 					}

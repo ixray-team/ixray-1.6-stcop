@@ -49,9 +49,10 @@ void CResourceManager::OnDeviceDestroy(bool )
 	m_td.clear		();
 
 	// scripting
-#ifndef _EDITOR
-	LS_Unload				();
-#endif
+	if (!Device.IsEditorMode())
+	{
+		LS_Unload			();
+	}
 }
 
 void	CResourceManager::OnDeviceCreate	(IReader* F)
@@ -125,9 +126,7 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 
 void	CResourceManager::OnDeviceCreate	(const char* shName)
 {
-#ifdef _EDITOR
-	if (!FS.exist(shName)) return;
-#endif
+	if (Device.IsEditorMode() && !FS.exist(shName)) return;
 
 	// Check if file is compressed already
 	string32	ID			= "shENGINE";

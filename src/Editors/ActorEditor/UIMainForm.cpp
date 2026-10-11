@@ -26,16 +26,16 @@ UIMainForm::UIMainForm()
 	m_Render->SetToolBarEvent(TOnRenderToolBar(this, &UIMainForm::DrawRenderToolBar));
 
     // Action
-    m_tSelect       = EDevice->Resources->_CreateTexture("ed\\bar\\select");
-	m_tMove         = EDevice->Resources->_CreateTexture("ed\\bar\\move");
-	m_tScale        = EDevice->Resources->_CreateTexture("ed\\bar\\scale");
-	m_tRotate       = EDevice->Resources->_CreateTexture("ed\\bar\\rotate");
+    m_tSelect       = DEV->_CreateTexture("ed\\bar\\select");
+	m_tMove         = DEV->_CreateTexture("ed\\bar\\move");
+	m_tScale        = DEV->_CreateTexture("ed\\bar\\scale");
+	m_tRotate       = DEV->_CreateTexture("ed\\bar\\rotate");
 
     // Axis
-    m_tX            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisX");
-	m_tY            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisY");
-	m_tZ            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZ");
-	m_tZX           = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZX");
+    m_tX            = DEV->_CreateTexture("ed\\bar\\AxisX");
+	m_tY            = DEV->_CreateTexture("ed\\bar\\AxisY");
+	m_tZ            = DEV->_CreateTexture("ed\\bar\\AxisZ");
+	m_tZX           = DEV->_CreateTexture("ed\\bar\\AxisZX");
 }
 
 UIMainForm::~UIMainForm()

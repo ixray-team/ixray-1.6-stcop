@@ -202,6 +202,8 @@ public:
 	int 			ObjCount();
 
 	void 			Render(const Fmatrix& camera);
+	// Geometry of the scene objects only (shadow-map passes of the renderer)
+	void 			RenderShadowCasters();
 	void 			OnFrame(float dT);
 
 	virtual void 	AppendObject(CCustomObject* object, bool bExecUnd = true);

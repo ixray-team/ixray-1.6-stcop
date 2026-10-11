@@ -28,9 +28,7 @@ class CTextureDescrMngr
 	struct texture_desc{
 		texture_assoc*		m_assoc;
 		texture_spec*		m_spec;
-#ifdef _EDITOR
 		STextureParams::ETType	m_type;
-#endif
         texture_desc            ():m_assoc(nullptr),m_spec(nullptr){}
 	};
 

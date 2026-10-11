@@ -4,7 +4,6 @@
 #include "../xrRender/SH_Atomic.h"
 #include "../../xrEngine/xr_ioc_cmd.h"
 
-#ifndef _EDITOR
 extern float ps_r__detail_rnd_scale_max;
 
 extern float ps_trample_bend;
@@ -18,8 +17,6 @@ extern float ps_trample_cooltime;
 extern float ps_trample_draw_radius;
 extern float ps_trample_brush_fill;
 extern float ps_trample_press_speed;
-
-#endif // !_EDITOR
 
 void CDetailManager::hw_Load()
 {
@@ -44,8 +41,6 @@ void CDetailManager::hw_Load()
 		DetailInstanceBuffers[buff_size] = std::make_pair(buffer, srv);
 	}
 }
-
-#ifndef _EDITOR
 
 void CDetailManager::TrampleMark(float x, float y, float z, float radius, float weight, bool isActor)
 {
@@ -258,8 +253,6 @@ void CDetailManager::TrampleAnimateItems()
 	TrampleActiveSlots.resize(write);
 }
 
-#endif // !_EDITOR
-
 void CDetailManager::hw_Unload()
 {
 	for (auto& [_, it] : DetailInstanceBuffers)
@@ -268,13 +261,11 @@ void CDetailManager::hw_Unload()
 		_RELEASE(it.second);
 	}
 
-#ifndef _EDITOR
 	{
 		std::lock_guard<std::mutex> lock(TramplePendingLock);
 		TramplePendingMarks.clear();
 	}
 	TrampleActiveSlots.clear();
-#endif
 }
 
 void CDetailManager::hw_Render(light* L)
@@ -318,10 +309,12 @@ void CDetailManager::hw_Render(light* L)
 template<typename T>
 void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
 {
-#ifndef _EDITOR
-	//Render state, shaders & so on [only 1st pass]
-	RCache.set_Element(objects[0].shader->E[lod_id], 0);
-#endif
+	const bool EditorMode = Device.IsEditorMode();
+	if (!EditorMode && !objects.empty())
+	{
+		//Render state, shaders & so on [only 1st pass]
+		RCache.set_Element(objects[0]->shader->E[lod_id], 0);
+	}
 
 	bool phase_shmap = RImplementation.phase == CRender::PHASE_SMAP;
 	if(!phase_shmap)
@@ -336,7 +329,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		RCache.set_c("dir2D_old", wind_old);
 	}
 
-#ifndef _EDITOR
+	if (!EditorMode)
 	{
 		CDetailWind::Constants wc;
 		CDetailWind::ComputeConstants(wc);
@@ -350,39 +343,31 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		RCache.set_c("wind_swirl", wc.swirl);
 		RCache.set_c("wind_swirl_dir", wc.swirl_dir);
 	}
-#endif
 
 	RCache.FlushConstants();
 
-#ifndef _EDITOR
-	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
-	if (!in_outdoor)
-		return;
-#endif
+	if (!EditorMode)
+	{
+		bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+		if (!in_outdoor)
+			return;
+	}
 
 	if (phase_shmap && L)
 	{
 		Fvector l_spatial_pos = L->SpatialComponent->sphere.P;
 		float l_range_sqr = _sqr(L->SpatialComponent->sphere.R);
 
-#ifdef _EDITOR
 		for (CDetail* ObjectPtr : objects)
 		{
 			CDetail& Object = *ObjectPtr;
 			RCache.set_Element(Object.shader->E[lod_id], 0);
-#else
-		for (CDetail& Object : objects)
-		{
-			RCache.set_Element(Object.shader->E[lod_id], 0);
-#endif
-#ifndef _EDITOR
-			if (ps_trample_enabled)
+			if (!EditorMode && ps_trample_enabled)
 			{
 				Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
 				RCache.set_c("trample_params", tp_val);
 				RCache.FlushConstants();
 			}
-#endif
 			auto& items = Object.m_items[render_key][var_id];
 			u32 totalInstances = items.size();
 			if (totalInstances == 0) continue;
@@ -439,24 +424,16 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 	{
 		if (ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))//experimental
 		{
-#ifdef _EDITOR
 		for (CDetail* DPtr : objects)
 		{
 			CDetail& D = *DPtr;
 			RCache.set_Element(D.shader->E[lod_id], 0);
-#else
-		for (CDetail& D : objects)
-		{
-			RCache.set_Element(D.shader->E[lod_id], 0);
-#endif
-#ifndef _EDITOR
-				if (ps_trample_enabled)
+				if (!EditorMode && ps_trample_enabled)
 				{
 					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
 					RCache.set_c("trample_params", tp_val);
 					RCache.FlushConstants();
 				}
-#endif
 				u32 buff_size = D.m_items[render_key][var_id].size();
 				if (buff_size)
 				{
@@ -468,24 +445,16 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		}
 		else
 		{
-#ifdef _EDITOR
 			for (CDetail* ObjectPtr : objects)
 			{
 				CDetail& Object = *ObjectPtr;
 				RCache.set_Element(Object.shader->E[lod_id], 0);
-#else
-			for (CDetail& Object : objects)
-			{
-				RCache.set_Element(Object.shader->E[lod_id], 0);
-#endif
-#ifndef _EDITOR
-				if (ps_trample_enabled)
+				if (!EditorMode && ps_trample_enabled)
 				{
 					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
 					RCache.set_c("trample_params", tp_val);
 					RCache.FlushConstants();
 				}
-#endif
 				auto& items = Object.m_items[render_key][var_id];
 				u32 totalInstances = items.size();
 				if (u32(0) == totalInstances) continue;

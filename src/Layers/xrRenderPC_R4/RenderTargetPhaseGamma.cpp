@@ -2,7 +2,7 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
-void CRenderTarget::PhaseGammaApply()
+void CRenderTarget::PhaseGammaApply(IRHIRenderTargetView* Destination)
 {
 	float w = float(Device.TargetWidth);
 	float h = float(Device.TargetHeight);
@@ -18,7 +18,7 @@ void CRenderTarget::PhaseGammaApply()
 	gamma = 1.0f / std::max(EPS_S, gamma);
 
 #if defined(USE_DX11)
-	u_setrt(w, h, RTarget, nullptr, nullptr, nullptr);
+	u_setrt(w, h, Destination ? Destination : RTarget, nullptr, nullptr, nullptr);
 #endif
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);

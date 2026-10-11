@@ -27,15 +27,8 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-void main(in v_vert v, out vf o)
+void water_main(float4 P, float3 N, float3x3 NormalToWorld, float4 Color, float Hemi, out vf o)
 {
-    v.N = unpack_D3DCOLOR(v.N);
-    v.T = unpack_D3DCOLOR(v.T);
-    v.B = unpack_D3DCOLOR(v.B);
-    v.color = unpack_D3DCOLOR(v.color);
-
-    // world
-    float4 P = v.P;
     P = watermove(P);
 
     o.pos = P.xyz;
@@ -49,14 +42,12 @@ void main(in v_vert v, out vf o)
     // TangentToEyeSpace = object2eye * tangent2object
     // = object2eye * transpose(object2tangent) (since the inverse of a rotation is its transpose)
 
-    float3 N = normalize(unpack_bx2(v.N.xyz));
-
     float3 T = float3(-1.0f, 0.0f, 0.0f);
     T = normalize(T - dot(T, N) * N);
 
     float3 B = cross(N, T);
 
-    float3x3 xform = mul((float3x3)m_W, float3x3(
+    float3x3 xform = mul(NormalToWorld, float3x3(
         T.x, B.x, N.x,
         T.y, B.y, N.y,
         T.z, B.z, N.z));
@@ -75,17 +66,36 @@ void main(in v_vert v, out vf o)
     o.M2 = xform[1];
     o.M3 = xform[2];
 
-    float3 L_rgb = v.color.xyz; // precalculated RGB lighting
-    float3 L_sun = v_sun(N) * v.color.w; // sun
+    float3 L_rgb = Color.xyz; // precalculated RGB lighting
+    float3 L_sun = v_sun(N) * Color.w; // sun
     float3 L_final = L_rgb + L_sun + L_ambient.xyz;
 
     // xform, input in world coords
     o.hpos = mul(m_VP, P);
 
-    o.c0 = float4(L_final, v.N.w);
+    o.c0 = float4(L_final, Hemi);
     o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 
     //	Igor: for additional depth dest
     o.tctexgen = mul(m_V, P).xyz;
 }
 
+#ifdef EDITOR_MODE
+void main(in v_model v, out vf o)
+{
+    float4 P = float4(mul(m_W, v.P), 1.0f);
+    float3 N = normalize(mul((float3x3)m_W, (float3)v.N));
+
+    float3x3 Identity = float3x3(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+    water_main(P, N, Identity, float4(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, o);
+}
+#else
+void main(in v_vert v, out vf o)
+{
+    v.N = unpack_D3DCOLOR(v.N);
+    v.color = unpack_D3DCOLOR(v.color);
+
+    // Level geometry is in world space
+    water_main(v.P, normalize(unpack_bx2(v.N.xyz)), (float3x3)m_W, v.color, v.N.w, o);
+}
+#endif

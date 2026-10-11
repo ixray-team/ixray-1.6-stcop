@@ -72,7 +72,6 @@ void	CKinematicsAnimated::Bone_Motion_Stop_IM	(CBoneData* bd, CBlend* handle)
 	LL_GetBlendInstance	(bd->GetSelfID()).blend_remove	(handle);
 }
 
-#if (defined DEBUG || defined _EDITOR)
 
 std::pair<const char*,const char*> CKinematicsAnimated::LL_MotionDefName_dbg	(MotionID ID)
 {
@@ -131,7 +130,6 @@ void	CKinematicsAnimated::LL_DumpBlends_dbg	( )
 		dump_blend( this, *I, u32(I - blend_pool.begin()) );
 }
 
-#endif
 
 u32	CKinematicsAnimated::LL_PartBlendsCount	( u32 bone_part_id )
 {
@@ -780,12 +778,12 @@ void CKinematicsAnimated::LoadOmf(const char* path, const char* name)
 	{
 		if (!FS.exist(fn, _game_meshes_, path))
 		{
-#ifdef _EDITOR
-			Msg("!Can't find motion file '%s'.", path);
-			return;
-#else
+			if (Device.IsEditorMode())
+			{
+				Msg("!Can't find motion file '%s'.", path);
+				return;
+			}
 			Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", path);
-#endif
 		}
 	}
 
@@ -1271,7 +1269,6 @@ void CKinematicsAnimated::SetBlendDestroyCallback(IBlendDestroyCallback* cb)
 	m_blend_destroy_callback = cb;
 }
 
-#ifdef _EDITOR
 MotionID CKinematicsAnimated::ID_Motion(const char*  N, u16 slot)
 {
 	MotionID 				motion_ID;
@@ -1288,7 +1285,6 @@ MotionID CKinematicsAnimated::ID_Motion(const char*  N, u16 slot)
     }
     return motion_ID;
 }
-#endif
 
 CBlend* CKinematicsAnimated::PlayFX_Safe(const char* N, float power_scale)
 {

@@ -19,11 +19,6 @@ file(GLOB_RECURSE ELE_SOURCE_SERVER_ENTITIES_WRAPPER_FILES CONFIGURE_DEPENDS
     "../../xrServerEntities/server_entity_wrapper_inline.h"
     )
 
-file(GLOB_RECURSE ELE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
-    "../../Layers/xrRenderDX10/dx10DetailManager_VS*"
-    "../../Layers/xrRender/DetailManager*"
-    "../../Layers/xrRender/stats_manager*"
-)
 set(ELE_SRC_FILES)
 
 source_group("editor/ai" FILES ${ELE_SOURCE_AI_FILES})
@@ -35,13 +30,11 @@ source_group("editor/core" FILES ${ELE_SOURCE_EDITOR_FILES})
 source_group("editor/ui/nodes" FILES ${ELE_SOURCE_NODES_FILES})
 source_group("editor/ui" FILES ${ELE_SOURCE_UI_FILES})
 source_group("engine/core" FILES ${ELE_SOURCE_ENGINE_FILES})
-source_group("engine/render" FILES ${ELE_SOURCE_RENDER_FILES})
 source_group("le/src" FILES ${ELE_SOURCE_ENTRY_CODE_FILES})
 source_group("le/res" FILES ${ELE_SOURCE_ENTRY_RES_FILES})
 
 # Apply list
 list(APPEND ELE_SRC_FILES ${ELE_SOURCE_ALL_FILES})
-list(APPEND ELE_SRC_FILES ${ELE_SOURCE_RENDER_FILES})
 list(APPEND ELE_SRC_FILES ${ELE_SOURCE_SERVER_ENTITIES_WRAPPER_FILES})
 
 # Remove unused files

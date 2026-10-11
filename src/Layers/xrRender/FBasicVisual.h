@@ -1,6 +1,7 @@
 #ifndef FBasicVisualH
 #define FBasicVisualH
 #pragma once
+#include "RenderAPI.h"
 
 #include "../../xrEngine/vis_common.h"
 #include "../../xrEngine/Fmesh.h"
@@ -37,13 +38,11 @@ private:
 };
 
 // The class itself
-class ECORE_API dxRender_Visual :
+class RENDER_API dxRender_Visual :
 	public IRenderVisual
 {
 public:
-#ifdef _EDITOR
     ogf_desc					desc		;
-#endif
 
 	shared_str					dbg_name	;
 	virtual shared_str getDebugName() { return dbg_name; }

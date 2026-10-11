@@ -35,10 +35,10 @@ void CUIToolbar::EndCheck()
 
 void CUIToolbar::OnCreate()
 {
-	Select = EDevice->Resources->_CreateTexture("ed\\bar\\select");
-	Move = EDevice->Resources->_CreateTexture("ed\\bar\\move");
-	Rotate = EDevice->Resources->_CreateTexture("ed\\bar\\rotate");
-	Scale = EDevice->Resources->_CreateTexture("ed\\bar\\scale");
+	Select = DEV->_CreateTexture("ed\\bar\\select");
+	Move = DEV->_CreateTexture("ed\\bar\\move");
+	Rotate = DEV->_CreateTexture("ed\\bar\\rotate");
+	Scale = DEV->_CreateTexture("ed\\bar\\scale");
 }
 
 void CUIToolbar::Draw()

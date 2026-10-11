@@ -18,7 +18,7 @@ UIWeatherPropForm*     UIWeatherPropForm::Form = nullptr;
 
 UIWeatherPropForm::UIWeatherPropForm()
 {
-	m_weather_properties = EDevice->Resources->_CreateTexture("ed\\bar\\WeatherProp");
+	m_weather_properties = DEV->_CreateTexture("ed\\bar\\WeatherProp");
 	m_speed_time         = EPrefs->env_speed;
 	m_snd_on_roof        = bIsSndOnRoof;
 	m_raindrop_collision = bIsRaindropCollision;

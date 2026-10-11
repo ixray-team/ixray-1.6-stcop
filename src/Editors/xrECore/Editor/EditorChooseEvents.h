@@ -252,7 +252,7 @@ namespace ChoseEvents
     //---------------------------------------------------------------------------
     void   FillEShader(ChooseItemVec& items, void* param)
     {
-        CResourceManager::map_Blender& blenders = EDevice->Resources->_GetBlenders();
+        CResourceManager::map_Blender& blenders = DEV->_GetBlenders();
         CResourceManager::map_BlenderIt _S = blenders.begin();
         CResourceManager::map_BlenderIt _E = blenders.end();
         for (; _S != _E; _S++)			items.push_back(SChooseItem(_S->first, ""));

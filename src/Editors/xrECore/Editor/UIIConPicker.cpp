@@ -6,7 +6,7 @@ UIIconPicker* UIIconPicker::Form = nullptr;
 UIIconPicker::UIIconPicker()
 {
 
-	Icons["ed_nodata"] = { EDevice->Resources->_CreateTexture("ed\\ed_nodata"),	true };
+	Icons["ed_nodata"] = { DEV->_CreateTexture("ed\\ed_nodata"),	true };
 }
 
 UIIconPicker::~UIIconPicker()
@@ -136,7 +136,7 @@ void UIIconPicker::InitPreviewTexture(const xr_string& Tag, const string_path& P
 		return;
 
 	xr_string NewPath = Path + Tag;
-	Icons[Tag] = EDevice->Resources->_CreateTexture(NewPath.c_str());
+	Icons[Tag] = DEV->_CreateTexture(NewPath.c_str());
 	Icons[Tag]->Load();
 
 	if (!Icons[Tag]->pSurface)

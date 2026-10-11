@@ -36,6 +36,7 @@ void CBackend::CreateQuadIB()
 // Device dependance
 void CBackend::OnDeviceCreate	()
 {
+	EditorMode			= Device.IsEditorMode();
 	CreateQuadIB		();
 
 	// streams

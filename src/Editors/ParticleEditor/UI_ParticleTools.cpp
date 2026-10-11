@@ -8,7 +8,7 @@
 
 #include "../../Layers/xrRender/ParticleAnimCurve.h"
 #include "../../xrEngine/ObjectAnimator.h"
-#include "../xrECore/Editor/ParticleEffectActions.h"
+#include "ParticleEffectActions.h"
 //------------------------------------------------------------------------------
 CParticleTool*	PTools=(CParticleTool*)Tools;
 //------------------------------------------------------------------------------
@@ -16,6 +16,7 @@ CParticleTool*	PTools=(CParticleTool*)Tools;
 //static Fvector zero_vec={0.f,0.f,0.f};
  
 EParticleAction* 	pCreateEActionImpl(PAPI::PActionEnum type);
+void				BindParticleEditorActions();
 
 CParticleTool::CParticleTool()
 {
@@ -31,6 +32,7 @@ CParticleTool::CParticleTool()
 	dwFogColor			= 0xffffffff;
 	m_Flags.zero		();
 	pCreateEAction		= pCreateEActionImpl;
+	BindParticleEditorActions();
 	m_LibPED = 0;
 	m_EditPG = 0;
 	m_EditPE = 0;
@@ -210,8 +212,8 @@ void CParticleTool::Render()
 		}
 	}
 	// Draw the particles.
-	((CRender*)::Render)->Models->RenderSingle(m_EditPG,Fidentity,1.f);
-	((CRender*)::Render)->Models->RenderSingle(m_EditPE,Fidentity,1.f);
+	RImplementation.model_RenderSingle(m_EditPG, Fidentity, 1.f);
+	RImplementation.model_RenderSingle(m_EditPE, Fidentity, 1.f);
 
 	if (m_Flags.is(flAnimatedPath))
 	{
@@ -256,37 +258,45 @@ void CParticleTool::OnFrame()
 	}
 
 	if (m_Flags.is(flRemoveAction))
+	{
 		RealRemoveAction();
+	}
+
 	if (m_Flags.is(flApplyParent))
+	{
 		RealApplyParent();
+	}
+
 	if (m_Flags.is(flCompileEffect))
+	{
 		RealCompileEffect();
+	}
 
 	m_EditPE->OnFrame(EDevice->dwTimeDelta);
 	m_EditPG->OnFrame(EDevice->dwTimeDelta);
 
-	if (m_Flags.is(flRefreshProps))
-		RealUpdateProperties();
+	if (m_LibPED || m_LibPGD)
+	{
+		EContext.UI->RedrawScene();
+	}
 
-	if (m_Flags.is(flSelectEffect)){
+	if (m_Flags.is(flRefreshProps))
+	{
+		RealUpdateProperties();
+	}
+
+	if (m_Flags.is(flSelectEffect))
+	{
 		auto CurrentList = GetCurrentList();
 		R_ASSERT(CurrentList);
 		CurrentList->SelectItem(sel_eff_name.c_str());
-		m_Flags.set			(flSelectEffect,false);
-		sel_eff_name		= "";
+		m_Flags.set(flSelectEffect, false);
+		sel_eff_name = "";
 	}
 
-	xr_string tmp;
-	switch(m_EditMode){
-	case emNone:
-		{
-			break;
-		}
-	case emAction:
-		{
-			break;
-		}
-	case emEffect:
+	switch (m_EditMode)
+	{
+		case emEffect:
 		{
 			if (m_EditPE->IsPlaying())
 			{
@@ -295,39 +305,31 @@ void CParticleTool::OnFrame()
 				sprintf(nn.data(), " PE Playing...[%d]", m_EditPE->SpriteCount());
 				EContext.UI->SetStatus(nn.c_str(), false);
 			}
-		
+
 			else
 			{
-				EContext.UI->SetStatus(" Stopped.",false);
+				EContext.UI->SetStatus(" Stopped.", false);
 			}
 			break;
 		}
-	case emEffectSlot:
-		{
-			break;
-		}
-	case emGroup:
+		case emGroup:
 		{
 			if (m_EditPG->IsPlaying())
 			{
 				xr_string nn;
 				nn.resize(64);
 				sprintf(nn.data(), " PE Playing...[%d]", m_EditPG->SpriteCount());
-				EContext.UI->SetStatus(nn.c_str(),false);
+				EContext.UI->SetStatus(nn.c_str(), false);
 			}
 			else
 			{
-				EContext.UI->SetStatus(" Stopped.",false);
+				EContext.UI->SetStatus(" Stopped.", false);
 			}
 			break;
 		}
-	case emAnimCurve:
+		default:
 		{
 			break;
-		}
-	default:
-		{
-			THROW;
 		}
 	}
 }
@@ -1171,7 +1173,7 @@ void CParticleTool::RealApplyParent()
 
 void CParticleTool::RealCompileEffect()
 {
-	if (m_LibPED)    m_LibPED->Compile(m_LibPED->m_EActionList);
+	if (m_LibPED)    m_LibPED->CompileEditorActions();
 	m_Flags.set		(flCompileEffect,false);
 }
 
@@ -1672,7 +1674,7 @@ bool CParticleTool::VerifyParticleCloneItem(UIItemListForm::Node* Node)
 	return type == emEffect || type == emGroup;
 }
 
-extern ECORE_API xr_string _item_to_select_after_edit;
+extern xr_string _item_to_select_after_edit;
 
 void CParticleTool::RealUpdateProperties()
 {

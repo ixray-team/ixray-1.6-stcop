@@ -68,6 +68,8 @@ list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/lights_render.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/r__blenders.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/R_calculate.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/r__types.h")
+# Editor draw path is D3D11 only
+list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/EditorDraw(Context|Utilities)\\.cpp")
 # xrRender_R1 project
 add_library(xrRender_R1 SHARED ${XRR1_SRC_FILES})
 target_precompile_headers(xrRender_R1 PRIVATE "stdafx.h")

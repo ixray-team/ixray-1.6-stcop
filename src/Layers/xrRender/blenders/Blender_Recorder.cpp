@@ -88,18 +88,16 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 	bDetail_Diffuse	= false;
 	bDetail_Bump	= false;
 
-#ifndef _EDITOR
 #if RENDER==R_R1
 	if (RImplementation.o.no_detail_textures)
 		bDetail = false;
-#endif
 #endif
 
 	if(bDetail)
 	{
 		DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
 
-#if RENDER!=R_R1 || defined(_EDITOR)
+#if RENDER!=R_R1
 		//	Detect the alowance of detail bump usage here.
 		if (!(ps_r2_ls_flags.test(R2FLAG_DETAIL_BUMP)))
 		{
@@ -132,14 +130,18 @@ void	CBlender_Compile::SetParams		(int iPriority, bool bStrictB2F)
 	SH->flags.iPriority		= iPriority;
 	SH->flags.bStrictB2F	= bStrictB2F;
 	if (bStrictB2F){			
-#ifdef _EDITOR    
-		if (1!=(SH->flags.iPriority/2)){
-        	Log("!If StrictB2F true then Priority must div 2.");
-            SH->flags.bStrictB2F	= false;
-        }
-#else
-    	VERIFY(1==(SH->flags.iPriority/2));
-#endif
+		if (Device.IsEditorMode())
+		{
+			if (1!=(SH->flags.iPriority/2))
+			{
+				Log("!If StrictB2F true then Priority must div 2.");
+				SH->flags.bStrictB2F	= false;
+			}
+		}
+		else
+		{
+			VERIFY(1==(SH->flags.iPriority/2));
+		}
     }
 	//SH->Flags.bLighting		= false;
 }
@@ -181,9 +183,7 @@ void	CBlender_Compile::PassEnd			()
 	SetMapping				();
 	proto.constants	= DEV->_CreateConstantTable(ctable);
 	proto.T 		= DEV->_CreateTextureList	(passTextures);
-#ifdef _EDITOR
 	proto.M			= DEV->_CreateMatrixList	(passMatrices);
-#endif
 	proto.C			= DEV->_CreateConstantList	(passConstants);
 
 	ref_pass	_pass_		= DEV->_CreatePass			(proto);

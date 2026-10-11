@@ -1,8 +1,9 @@
 #ifndef r_backend_xformH
 #define r_backend_xformH
 #pragma once
+#include "RenderAPI.h"
 
-class ECORE_API	R_xforms
+class RENDER_API	R_xforms
 {
 public:
 	Fmatrix			m_invw;		// derived	- world2local, cached

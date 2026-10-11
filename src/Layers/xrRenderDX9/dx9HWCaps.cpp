@@ -4,7 +4,7 @@
 #include "../xrRender/HWCaps.h"
 #include "../xrRender/HW.h"
 
-ECORE_API CHWCaps Caps;
+RENDER_API CHWCaps Caps;
 
 void CHWCaps::Update()
 {

@@ -1,13 +1,14 @@
 #ifndef SH_CONSTANT_H
 #define SH_CONSTANT_H
 #pragma once
+#include "RenderAPI.h"
 
 #include "../../xrEngine/WaveForm.h"
 
 class		IReader;
 class		IWriter;
 
-class	ECORE_API	CConstant	: public xr_resource_named									{
+class	RENDER_API	CConstant	: public xr_resource_named									{
 public:
 	enum			{ modeProgrammable=0, modeWaveForm	};
 public:

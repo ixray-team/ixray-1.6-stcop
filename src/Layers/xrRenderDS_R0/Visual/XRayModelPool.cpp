@@ -44,7 +44,6 @@ CDS0_RenderVisual* CDS0_ModelPool::Instance_Create(u32 type)
 		break;
 	case MT_PARTICLE_GROUP:
 		break;
-#ifndef _EDITOR
 	case MT_LOD:
 		//R_ASSERT(0);
 		V = new CDS0_FLOD;
@@ -55,7 +54,6 @@ CDS0_RenderVisual* CDS0_ModelPool::Instance_Create(u32 type)
 	case MT_TREE_PM:
 		V = new CDS0_TreeVisual_PM;
 		break;
-#endif
 	default:
 		FATAL("Unknown visual type");
 		break;
@@ -203,9 +201,6 @@ CDS0_RenderVisual* CDS0_ModelPool::Instance_Find(LPCSTR N)
 
 CDS0_RenderVisual* CDS0_ModelPool::Create(const char* name, IReader* data)
 {
-#ifdef _EDITOR
-	if (!name || !name[0])	return 0;
-#endif
 	string_path low_name;	VERIFY(xr_strlen(name) < sizeof(low_name));
 	xr_strcpy(low_name, name);	xr_strlwr(low_name);
 	if (strext(low_name))	*strext(low_name) = 0;
@@ -231,9 +226,6 @@ CDS0_RenderVisual* CDS0_ModelPool::Create(const char* name, IReader* data)
 			if (data)		Base = Instance_Load(low_name, data, true);
 			else			Base = Instance_Load(low_name, true);
 			bAllowChildrenDuplicate = true;
-#ifdef _EDITOR
-			if (!Base)		return 0;
-#endif
 		}
 		// 3. If found - return (cloned) reference
 		CDS0_RenderVisual* Model = Instance_Duplicate(Base);

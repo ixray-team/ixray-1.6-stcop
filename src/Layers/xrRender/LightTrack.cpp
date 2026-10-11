@@ -7,13 +7,8 @@
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../xrEngine/xr_object.h"
 
-#ifdef _EDITOR
-#	include "igame_persistent.h"
-#	include "environment.h"
-#else
-#	include "../../xrEngine/IGame_Persistent.h"
-#	include "../../xrEngine/Environment.h"
-#endif
+#include "../../xrEngine/IGame_Persistent.h"
+#include "../../xrEngine/Environment.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

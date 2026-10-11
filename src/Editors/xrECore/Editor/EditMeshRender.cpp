@@ -3,12 +3,13 @@
 //----------------------------------------------------
 
 #include "stdafx.h"
+#include "EditorSceneSubmit.h"
 
 #include "EditMesh.h"
 #include "EditObject.h"
 #include "ui_main.h"
 #include "D3DUtils.h"
-#include "render.h"
+#include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
 #include "EditorInstancing.h"
 
 #include <FlexibleVertexFormat.h>
@@ -341,6 +342,66 @@ void CEditableMesh::Render(CCustomObject* pParent, const Fmatrix& parent, CSurfa
 	}
 }
 
+void CEditableMesh::Submit(CCustomObject* pParent, const Fmatrix& parent, CSurface* S, const ref_shader& Shader, const ref_shader& InstancedShader, bool Skeleton)
+{
+	if (!Skeleton && !m_RenderBuffers)
+	{
+		GenerateRenderBuffers();
+	}
+
+	if (!m_Flags.is(flVisible))
+	{
+		return;
+	}
+
+	Fbox bb;
+	bb.set(m_Box);
+	bb.xform(parent);
+
+	if (!::Render->occ_visible(bb))
+	{
+		return;
+	}
+
+	GEditorSceneSubmit.AddSurface(pParent, this, S, Shader, InstancedShader, parent, Skeleton);
+}
+
+void CEditableMesh::RenderGeometry(CCustomObject* pParent, CSurface* S)
+{
+	SelectionColorRaii pRenderColor(pParent, m_color_map);
+
+	if (!m_RenderBuffers)
+	{
+		return;
+	}
+
+	if (auto rb_pair = m_RenderBuffers->find(S); rb_pair != m_RenderBuffers->end())
+	{
+		for (auto& rb_it : rb_pair->second)
+		{
+			RCache.set_Geometry(rb_it.pGeom);
+			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, rb_it.dwNumVertex / 3);
+		}
+	}
+}
+
+void CEditableMesh::RenderGeometryInstanced(CSurface* S, u32 InstanceCount)
+{
+	if (!m_RenderBuffers)
+	{
+		return;
+	}
+
+	if (auto rb_pair = m_RenderBuffers->find(S); rb_pair != m_RenderBuffers->end())
+	{
+		for (auto& rb_it : rb_pair->second)
+		{
+			RCache.set_Geometry(rb_it.pGeom);
+			RCache.RenderInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, rb_it.dwNumVertex / 3, InstanceCount);
+		}
+	}
+}
+
 bool CEditableMesh::HasSelectionColor(CCustomObject* Parent) const
 {
 	auto It = m_color_map.find(Parent);
@@ -398,6 +459,19 @@ bool CEditableMesh::SubmitInstance(CCustomObject* pParent, const Fmatrix& parent
 
 void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurface* S)
 {
+	// set model shader from surface (active shader in editor device)
+	ref_shader shader = EDevice->GetShader();
+	EDevice->SetShader(shader);
+	DrawSkeleton(pParent, S, &shader);
+}
+
+void CEditableMesh::RenderSkeletonGeometry(CCustomObject* pParent, CSurface* S)
+{
+	DrawSkeleton(pParent, S, nullptr);
+}
+
+void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader* PassShader)
+{
 	SelectionColorRaii pRenderColor(pParent, m_color_map);
 
 	if (!IsGeneratedSVertices(RENDER_SKELETON_LINKS))
@@ -412,10 +486,6 @@ void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurf
 		return;
 	}
 
-	// set model shader from surface (active shader in editor device)
-	ref_shader shader = EDevice->GetShader();
-	EDevice->SetShader(shader);
-
 	IntVec& face_lst = sp_it->second;
 	size_t FaceCount = face_lst.size();
 
@@ -424,7 +494,8 @@ void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurf
 	VERIFY(stride == sizeof(svertRender));
 
 	ERHI_CULLMODE OldCullMode = GRHI->StateManager->GetCullMode();
-	const u32 dwRequired = shader->E[0]->passes.size();
+	// Without a shader the caller (the scene graph) has set the pass already
+	const u32 dwRequired = PassShader ? (u32)(*PassShader)->E[0]->passes.size() : 1;
 
 	// Draw in batches: a single lock of the whole surface can exceed the dynamic VB size
 	for (size_t f_start = 0; f_start < FaceCount; f_start += F_LIM)
@@ -465,19 +536,25 @@ void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurf
 
 		for (u32 dwPass = 0; dwPass < dwRequired; dwPass++)
 		{
-			RCache.set_Shader(shader, dwPass);
+			if (PassShader)
+			{
+				RCache.set_Shader(*PassShader, dwPass);
+			}
 
 			// transfer matrices
 			ref_constant array = RCache.get_c("sbones_array");
 
-			const BoneVec& boneVec = m_Parent->m_Bones;
-			for (u16 mid = 0, count = (u16)boneVec.size(); mid < count; mid++)
+			if (array)
 			{
-				u32 id = u32(mid * 3);
-				const Fmatrix& M = boneVec[mid]->_RenderTransform();
-				RCache.set_ca(&*array, id + 0, M._11, M._21, M._31, M._41);
-				RCache.set_ca(&*array, id + 1, M._12, M._22, M._32, M._42);
-				RCache.set_ca(&*array, id + 2, M._13, M._23, M._33, M._43);
+				const BoneVec& boneVec = m_Parent->m_Bones;
+				for (u16 mid = 0, count = (u16)boneVec.size(); mid < count; mid++)
+				{
+					u32 id = u32(mid * 3);
+					const Fmatrix& M = boneVec[mid]->_RenderTransform();
+					RCache.set_ca(&*array, id + 0, M._11, M._21, M._31, M._41);
+					RCache.set_ca(&*array, id + 1, M._12, M._22, M._32, M._42);
+					RCache.set_ca(&*array, id + 2, M._13, M._23, M._33, M._43);
+				}
 			}
 
 			if (S->m_Flags.is(CSurface::sf2Sided))
@@ -488,9 +565,11 @@ void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurf
 			{
 				GRHI->StateManager->SetCullMode(OldCullMode);
 			}
-			EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
+			EDevice->SetRS(D3DRS_FILLMODE, GEditorDraw.FillMode);
 			RCache.set_Geometry(m_Parent->vs_SkeletonGeom);
 			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, batchFaces);
 		}
 	}
+
+	GRHI->StateManager->SetCullMode(OldCullMode);
 }

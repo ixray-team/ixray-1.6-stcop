@@ -5,12 +5,13 @@
 #if !defined(AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_)
 #define AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_
 #pragma once
+#include "../RenderAPI.h"
 
 #include "../../xrEngine/Properties.h"
 #include "Blender_Recorder.h"
 
 #pragma pack(push,4)
-class ECORE_API	CBlender_DESC
+class RENDER_API	CBlender_DESC
 {
 public:
 	CLASS_ID					CLS;
@@ -31,7 +32,7 @@ public:
 	void						Setup	(const char* N);
 };
 
-class ECORE_API IBlender	: public CPropertyBase
+class RENDER_API IBlender	: public CPropertyBase
 {
 	friend class				CBlender_Compile;
 protected:

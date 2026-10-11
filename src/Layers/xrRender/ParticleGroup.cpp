@@ -5,9 +5,7 @@
 
 using namespace PS;
 
-#ifdef _EDITOR
 extern bool ps_r2_particle_dt;
-#endif
 
 //------------------------------------------------------------------------------
 CPGDef::CPGDef()
@@ -28,7 +26,6 @@ void CPGDef::SetName(const char* name)
 	m_Name			= name;
 }
 
-#ifdef _EDITOR
 void CPGDef::Clone	(CPGDef* source)
 {
 	m_Name			= "<invalid_name>";
@@ -39,7 +36,6 @@ void CPGDef::Clone	(CPGDef* source)
 	for (EffectIt d_it=m_Effects.begin(),s_it=source->m_Effects.begin(); s_it!=source->m_Effects.end(); s_it++,d_it++)
 		*d_it		= new SEffect(**s_it);
 }
-#endif
 
 //------------------------------------------------------------------------------
 // I/O part
@@ -74,9 +70,7 @@ bool CPGDef::LoadOriginal(IReader& F)
 		m_Effects.resize(F.r_u32());
 		for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); it++){
 			*it				= new SEffect();
-#ifdef _EDITOR
 			(*it)->parent = this;
-#endif
 			F.r_stringZ		((*it)->m_EffectName);
 			F.r_stringZ		((*it)->m_OnPlayChildName);
 			F.r_stringZ		((*it)->m_OnBirthChildName);
@@ -124,9 +118,7 @@ bool CPGDef::Load2Original(CInifile& ini)
 	for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); ++it,++counter)
 	{
 		*it							= new SEffect();
-#ifdef _EDITOR
 		(*it)->parent = this;
-#endif
 
 		xr_sprintf					(buff, sizeof(buff), "effect_%04d", counter);
 		
@@ -282,11 +274,14 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char*
 	}
 	else
 	{
-#ifdef _EDITOR        
-		Msg			("!Can't use looped effect '%s' as 'On Birth' child for group.",nm);
-#else
-		Debug.fatal	(DEBUG_INFO,"Can't use looped effect '%s' as 'On Birth' child for group.",nm);
-#endif
+		if (Device.IsEditorMode())
+		{
+			Msg			("!Can't use looped effect '%s' as 'On Birth' child for group.",nm);
+		}
+		else
+		{
+			Debug.fatal	(DEBUG_INFO,"Can't use looped effect '%s' as 'On Birth' child for group.",nm);
+		}
 	}
 }
 void CParticleGroup::SItem::Play()
@@ -543,7 +538,6 @@ void CParticleGroup::OnFrame(u32 u_dt)
 	}
 }
 
-#ifndef _EDITOR
 void CParticleGroup::UpdateCache()
 {
 	// PROF_EVENT(__FUNCTION__);
@@ -559,7 +553,6 @@ void CParticleGroup::UpdateCache()
 			ChildPart->UpdateCache();
 	}
 }
-#endif
 
 void CParticleGroup::UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM)
 {

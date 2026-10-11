@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #pragma once
 
+#include "../RenderAPI.h"
 #include "particle_core.h"
 #include "../../xrEngine/ParticleAnimCurveInterface.h"
 #include "../../Include/xrRender/ParticleCustom.h"
@@ -55,7 +56,7 @@ namespace PAPI{
 					protected:\
 					void* GetVariableImpl(u8 VarID) override;
 
-	struct PAAvoid : public ParticleAction
+	struct RENDER_API PAAvoid : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -75,7 +76,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct PABounce : public ParticleAction
+	struct RENDER_API PABounce : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -95,7 +96,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PACopyVertexB : public ParticleAction
+	struct RENDER_API PACopyVertexB : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -106,7 +107,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PADamping : public ParticleAction
+	struct RENDER_API PADamping : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -123,7 +124,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAExplosion : public ParticleAction
+	struct RENDER_API PAExplosion : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -147,7 +148,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAFollow : public ParticleAction
+	struct RENDER_API PAFollow : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -164,7 +165,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAGravitate : public ParticleAction
+	struct RENDER_API PAGravitate : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -181,7 +182,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAGravity : public ParticleAction
+	struct RENDER_API PAGravity : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -193,7 +194,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAJet : public ParticleAction
+	struct RENDER_API PAJet : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -216,7 +217,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAKillOld : public ParticleAction
+	struct RENDER_API PAKillOld : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -229,7 +230,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAMatchVelocity : public ParticleAction
+	struct RENDER_API PAMatchVelocity : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -246,12 +247,12 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAMove : public ParticleAction
+	struct RENDER_API PAMove : public ParticleAction
 	{
         _METHODS;
 	};
 
-	struct  PAOrbitLine : public ParticleAction
+	struct RENDER_API PAOrbitLine : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -272,7 +273,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAOrbitPoint : public ParticleAction
+	struct RENDER_API PAOrbitPoint : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -292,7 +293,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PARandomAccel : public ParticleAction
+	struct RENDER_API PARandomAccel : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -306,7 +307,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PARandomDisplace : public ParticleAction
+	struct RENDER_API PARandomDisplace : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -318,7 +319,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PARandomVelocity : public ParticleAction
+	struct RENDER_API PARandomVelocity : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -332,7 +333,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PARestore : public ParticleAction
+	struct RENDER_API PARestore : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -345,7 +346,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAScatter : public ParticleAction
+	struct RENDER_API PAScatter : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -365,7 +366,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PASink : public ParticleAction
+	struct RENDER_API PASink : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -379,7 +380,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PASinkVelocity : public ParticleAction
+	struct RENDER_API PASinkVelocity : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -393,7 +394,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PASpeedLimit : public ParticleAction
+	struct RENDER_API PASpeedLimit : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -408,7 +409,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PASource : public ParticleAction
+	struct RENDER_API PASource : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -456,7 +457,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PATargetColor : public ParticleAction
+	struct RENDER_API PATargetColor : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -476,7 +477,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PATargetSize : public ParticleAction
+	struct RENDER_API PATargetSize : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -489,7 +490,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PATargetRotate : public ParticleAction
+	struct RENDER_API PATargetRotate : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -502,7 +503,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PATargetVelocity : public ParticleAction
+	struct RENDER_API PATargetVelocity : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -518,7 +519,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-	struct  PAVortex : public ParticleAction
+	struct RENDER_API PAVortex : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -539,7 +540,7 @@ namespace PAPI{
         _METHODS;
 	};
 
-    struct  PATurbulence : public ParticleAction
+    struct RENDER_API PATurbulence : public ParticleAction
     {
     	enum class EVariable : u8
     	{
@@ -562,7 +563,7 @@ namespace PAPI{
         _METHODS;
     };
 
-	struct PABindVelocityValue : public ParticleAction
+	struct RENDER_API PABindVelocityValue : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -575,7 +576,7 @@ namespace PAPI{
 		_METHODS;
 	};
 
-	struct PABindRotationValue : public ParticleAction
+	struct RENDER_API PABindRotationValue : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -586,7 +587,7 @@ namespace PAPI{
 		_METHODS;
 	};
 
-	struct PABindSizeValue : public ParticleAction
+	struct RENDER_API PABindSizeValue : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -599,7 +600,7 @@ namespace PAPI{
 		_METHODS;
 	};
 
-	struct PABindColorValue : public ParticleAction
+	struct RENDER_API PABindColorValue : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -610,7 +611,7 @@ namespace PAPI{
 		_METHODS;
 	};
 
-	struct PABindColorAlpha : public ParticleAction
+	struct RENDER_API PABindColorAlpha : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -627,7 +628,7 @@ namespace PAPI{
 		Multiply,
 	};
 
-	struct PAColorAnimator : public ParticleAction
+	struct RENDER_API PAColorAnimator : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -646,7 +647,7 @@ namespace PAPI{
 		_METHODS;
 	};
 
-	struct PASizeAnimator : public ParticleAction
+	struct RENDER_API PASizeAnimator : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -665,7 +666,7 @@ namespace PAPI{
 		_METHODS;
 	};
 
-	struct PAVelocityAnimator : public ParticleAction
+	struct RENDER_API PAVelocityAnimator : public ParticleAction
 	{
 		enum class EVariable : u8
 		{
@@ -683,7 +684,7 @@ namespace PAPI{
 		_METHODS;
 	};
 
-	struct PAVelocityRotationAnimator : public ParticleAction
+	struct RENDER_API PAVelocityRotationAnimator : public ParticleAction
 	{
 		enum class EVariable : u8
 		{

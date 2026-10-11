@@ -309,9 +309,10 @@ void CDetail::Load(IReader* S)
 	}
 #endif
 
-#ifndef _EDITOR
-	Optimize	();
-#endif
+	if (!Device.IsEditorMode())
+	{
+		Optimize	();
+	}
 
 #ifdef USE_DX11
 	LoadGeom();
@@ -345,7 +346,6 @@ bool CDetail::LoadFromDM(const char* dm_path)
 	return true;
 }
 
-#ifndef _EDITOR
 #include "xrStripify.h"
 
 void CDetail::Optimize	()
@@ -373,4 +373,3 @@ void CDetail::Optimize	()
 			vertices[i]=verts[vec_permute[i]];
 	}
 }
-#endif

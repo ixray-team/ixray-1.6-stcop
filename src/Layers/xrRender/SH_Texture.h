@@ -1,11 +1,12 @@
 #pragma once
+#include "RenderAPI.h"
 
 #include "../../xrCore/xr_resource.h"
 
 class ENGINE_API CAviPlayerCustom;
 class CTheoraSurface;
 
-class ECORE_API CTexture : public xr_resource_named
+class RENDER_API CTexture : public xr_resource_named
 {
 public:
 	//	Since DX10 allows up to 128 unique textures, 
@@ -98,7 +99,7 @@ private:
 struct resptrcode_texture :
 	public resptr_base<CTexture>
 {
-	ECORE_API void create(const char* _name);
+	RENDER_API void create(const char* _name);
 	IC void destroy() { _set(nullptr); }
 	IC bool bump_exist() { return 0 != bump_get().size(); }
 

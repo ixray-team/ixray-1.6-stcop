@@ -38,12 +38,10 @@ static xr_string MakeXMLBlendKey(const char* s_shader, const char* s_textures)
 	xr_string key = s_shader ? s_shader : "";
 	key += "|";
 	key += s_textures ? s_textures : "";
-#ifdef _EDITOR
 	if (RImplementation.EditorInstancing)
 	{
 		key += "|inst";
 	}
-#endif
 	return key;
 }
 
@@ -192,10 +190,11 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const 
 	C.bDetail			= false;
 	C.bHudElement		= false;
 
-#ifdef _EDITOR
-	if (!C.BT)			{ /*ELog.Msg(mtError, "Can't find shader '%s'", s_shader); */return nullptr; }
-	C.bEditor			= true;
-#endif
+	if (Device.IsEditorMode())
+	{
+		if (!C.BT)		{ return nullptr; }
+		C.bEditor		= true;
+	}
 
 	// Parse names
 	_ParseList			(C.L_textures,	s_textures	);
@@ -433,12 +432,10 @@ void CResourceManager::DeferredUpload()
 		return;
 	}
 
-#ifndef _EDITOR
-	if (!ps_r__common_flags.test(RFLAG_DD_TEX_LOAD))
+	if (!Device.IsEditorMode() && !ps_r__common_flags.test(RFLAG_DD_TEX_LOAD))
 	{
 		return;
 	}
-#endif
 	PROF_EVENT("CResourceManager::DeferredUpload");
 	Log("Loading textures via DeferredUpload");
 
@@ -452,22 +449,25 @@ void CResourceManager::DeferredUpload()
 			to_load.push_back(T);
 	}
 
-#if !defined(_EDITOR) && defined(IXR_WINDOWS)
-	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
+#if defined(IXR_WINDOWS)
+	if (!Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
 		// Parallel: load filtered list
 		xr_parallel_foreach(to_load.begin(), to_load.end(), [](CTexture* texPtr) { texPtr->Load(); });
 	}
 	else
-#endif // _EDITOR
+#endif // IXR_WINDOWS
 	{
 		// Single-threaded: load filtered list
 		for (CTexture* T : to_load)
 			T->Load();
 	}
 
-#if defined(USE_DX11) && !defined(_EDITOR)
-	FluidManager.Initialize(70, 70, 70);
-	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+#if defined(USE_DX11)
+	if (!Device.IsEditorMode())
+	{
+		FluidManager.Initialize(70, 70, 70);
+		FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+	}
 #endif
 }
 
@@ -476,13 +476,14 @@ void CResourceManager::DeferredUnload()
 	if (!RDEVICE.b_is_Ready)
 		return;
 
-#ifndef _EDITOR
-	if (!ps_r__common_flags.test(RFLAG_DD_TEX_LOAD))
+	if (!Device.IsEditorMode() && !ps_r__common_flags.test(RFLAG_DD_TEX_LOAD))
 		return;
-#endif
 
-#if defined(USE_DX11) && !defined(_EDITOR)
-	FluidManager.Destroy();
+#if defined(USE_DX11)
+	if (!Device.IsEditorMode())
+	{
+		FluidManager.Destroy();
+	}
 #endif
 
 	for (auto& texture : m_textures)

@@ -85,6 +85,11 @@ void line_edit_control::update_key_states()
 {
 	m_key_state.zero();
 
+	if (pInput == nullptr)
+	{
+		return;
+	}
+
 	set_key_state(ks_LShift, pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT));
 	set_key_state(ks_RShift, pInput->iGetAsyncKeyState(SDL_SCANCODE_RSHIFT));
 	set_key_state(ks_LCtrl, pInput->iGetAsyncKeyState(SDL_SCANCODE_LCTRL));

@@ -3,7 +3,7 @@
 
 #include "../../xrCore/Collision/ISpatial.h"
 //#include "../../xrEngine/xr_object.h"
-#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
+#if (RENDER==R_R2 || RENDER==R_R4)
 #	include "Light_Package.h"
 #	include "light_smapvis.h"
 #endif //(RENDER==R_R2) || (RENDER==R_R4)
@@ -42,16 +42,14 @@ public:
 	float			m_volumetric_intensity;
 	float			m_volumetric_distance;
 
-#if (RENDER==R_R2) || (RENDER==R_R4) || defined(_EDITOR)
+#if (RENDER==R_R2) || (RENDER==R_R4)
 	float			falloff;			// precalc to make light equal to zero at light range
 	float	        attenuation0;		// Constant attenuation		
 	float	        attenuation1;		// Linear attenuation		
 	float	        attenuation2;		// Quadratic attenuation	
 
-#ifndef _EDITOR
 	light*						omnipart	[6]	;
 	smapvis			svis;		// used for 6-cubemap faces
-#endif
 
 	ref_shader		s_spot;
 	ref_shader		s_point;
@@ -153,15 +151,13 @@ public:
 	virtual IRender_Light*	dcast_Light		()	{ return this; }
 
 	virtual vis_data&		get_homdata		();
-#if (RENDER==R_R2) || (RENDER==R_R4) || defined(_EDITOR)
+#if (RENDER==R_R2) || (RENDER==R_R4)
 	void			xform_calc				();
-#ifndef _EDITOR
 	void			optimize_smap_size		();
 	void			vis_prepare				();
 	void			vis_update				();
 	void			export_ 					(light_Package& dest);
 	void			set_attenuation_params	(float a0, float a1, float a2, float fo);
-#endif // _EDITOR
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 
 	float			get_LOD					();

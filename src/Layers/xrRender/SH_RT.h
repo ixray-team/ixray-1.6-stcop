@@ -1,7 +1,8 @@
 #pragma once
+#include "RenderAPI.h"
 
 //////////////////////////////////////////////////////////////////////////
-class ECORE_API CRT :
+class RENDER_API CRT :
 	public xr_resource_named
 {
 public:
@@ -44,7 +45,7 @@ public:
 	u64 _order;
 };
 
-struct resptrcode_crt :
+struct RENDER_API resptrcode_crt :
 	public resptr_base<CRT>
 {
 	void create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
@@ -81,7 +82,7 @@ public:
 	IC bool				valid			()	{ return !pTexture; }
 };
 
-struct resptrcode_crtc:
+struct RENDER_API resptrcode_crtc:
 	public resptr_base<CRTC>
 {
 	void				create(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);

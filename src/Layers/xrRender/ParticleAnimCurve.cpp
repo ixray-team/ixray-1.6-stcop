@@ -1,10 +1,6 @@
 #include "stdafx.h"
 #include "ParticleAnimCurve.h"
 
-#ifdef _EDITOR
-#include "Editor/UI_ToolsCustom.h"
-#endif
-
 PS::CPACDef::~CPACDef()
 {
     for (auto elem : m_Keys)
@@ -198,14 +194,15 @@ Fvector4 PS::CPACDef::GetValueOnTime(float time)
     {
         return CalculateIntermedialeValue(m_Keys[m_Keys.size() - 1], m_Keys[0], time);
     }
-#ifdef _EDITOR
-    for (int i = 1; i < m_Keys.size(); i++)
+    if (Device.IsEditorMode())
     {
-        auto key1 = m_Keys[i-1];
-        auto key2 = m_Keys[i];
-        I_ASSERT_M(key1->time < key2->time, "Particle Anim Curve %s contains invalid sorted by time keys!", m_Name.c_str());
+        for (int i = 1; i < m_Keys.size(); i++)
+        {
+            auto key1 = m_Keys[i-1];
+            auto key2 = m_Keys[i];
+            I_ASSERT_M(key1->time < key2->time, "Particle Anim Curve %s contains invalid sorted by time keys!", m_Name.c_str());
+        }
     }
-#endif
     // if we here, we already know this PAC has at least 2 keys, and we are somewhere between start and end
     auto FoundIt = std::ranges::lower_bound(m_Keys, time, cmp, proj);
     VERIFY(FoundIt != m_Keys.begin() || FoundIt == m_Keys.end());
@@ -306,7 +303,6 @@ void PS::CPACDef::setName(const char* name)
     m_Name = name;
 }
 
-#ifdef _EDITOR
 void PS::CPACDef::Clone(PS::CPACDef* source)
 {
     m_Name = "<invalid_name>";
@@ -319,79 +315,3 @@ void PS::CPACDef::Clone(PS::CPACDef* source)
     }
 }
 
-void PS::CPACDef::FillProp(const char* pref, PropItemVec& items, void* owner)
-{
-    PHelper().CreateName(items,PrepareKey(pref,"Name"),&m_Name,(::ListItem*)owner);
-    // TODO: Add disabled
-    PHelper().CreateFloat(items, PrepareKey(pref,"Time Max"), &m_MaxTime, 0, 1000000);
-    auto B = PHelper().CreateButton(items, PrepareKey(pref, "Edit"), "Edit",ButtonValue::flFirstOnly);
-    B->OnBtnClickEvent.bind(this, &CPACDef::OnEditClicked);
-}
-
-void PS::CPACDef::OnEditClicked(ButtonValue* B, bool& bModif, bool& bSafe)
-{
-    Tools->EditPAC(this);
-}
-
-bool PS::CPACDef::Validate(bool bMsg)
-{
-    bool failed = false;
-    if (m_Keys.size() < 2 && bMsg)
-    {
-        Msg("Validation FAILED (invalid keys num) anim curve [%s]", m_Name.c_str());
-        failed = true;
-    }
-    return !failed;
-}
-
-void PS::CPACDef::SplitKeysForPlot(
-            xr_vector<float>& R_keys_y,
-            xr_vector<float>& G_keys_y,
-            xr_vector<float>& B_keys_y,
-            xr_vector<float>& A_keys_y,
-            xr_vector<float>& keys_x
-        )
-{
-    R_keys_y.resize(m_Keys.size(), 0);
-    G_keys_y.resize(m_Keys.size(), 0);
-    B_keys_y.resize(m_Keys.size(), 0);
-    A_keys_y.resize(m_Keys.size(), 0);
-    keys_x.resize(m_Keys.size(), 0);
-
-    for (size_t i = 0; i < m_Keys.size(); i++)
-    {
-        keys_x[i] = m_Keys[i]->time;
-        R_keys_y[i] = m_Keys[i]->value.x;
-        G_keys_y[i] = m_Keys[i]->value.y;
-        B_keys_y[i] = m_Keys[i]->value.z;
-        A_keys_y[i] = m_Keys[i]->value.w;
-    }
-}
-
-void PS::CPACDef::UpdateCurveFromKeys(const xr_vector<float>& R_keys_y, const xr_vector<float>& G_keys_y,
-    const xr_vector<float>& B_keys_y, const xr_vector<float>& A_keys_y, const xr_vector<float>& keys_x)
-{
-    R_ASSERT(
-        R_keys_y.size() == keys_x.size() &&
-        G_keys_y.size() == keys_x.size() &&
-        B_keys_y.size() == keys_x.size() &&
-        A_keys_y.size() == keys_x.size()
-        );
-    for (auto elem : m_Keys)
-    {
-        xr_delete(elem);
-    }
-    auto StartTime = keys_x[0];
-    m_Keys.resize(keys_x.size(), nullptr);
-    for (size_t i = 0; i < keys_x.size(); i++)
-    {
-        m_Keys[i] = new st_PACKey;
-        m_Keys[i]->time = keys_x[i]-StartTime;
-        m_Keys[i]->value.x = R_keys_y[i];
-        m_Keys[i]->value.y = G_keys_y[i];
-        m_Keys[i]->value.z = B_keys_y[i];
-        m_Keys[i]->value.w = A_keys_y[i];
-    }
-    m_MaxTime = m_Keys.back()->time;
-}
-#endif
