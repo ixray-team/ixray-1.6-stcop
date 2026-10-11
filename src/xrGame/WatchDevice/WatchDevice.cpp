@@ -1,331 +1,13 @@
 #include "StdAfx.h"
-#include "pch_script.h"
 #include "WatchDevice.h"
 #include "WatchInternal.h"
+#include "WatchLogic.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../../xrEngine/date_time.h"
-#include "../../xrScripts/script_engine.h"
-#include "ai_space.h"
-#include "Level.h"
-#include "map_manager.h"
-#include "map_location.h"
-#include "Actor.h"
-#include "ActorCondition.h"
-#include "AnomalyZone.h"
-#include "AnomalyGravity.h"
-#include "RadioactiveZone.h"
-#include "ui/UIMotionIcon.h"
-#include "../../xrCore/Kernel/EngineExternal.h"
 
-namespace
+CWatchDevice::CWatchDevice()
 {
-bool IsAnomalyExcluded(CAnomalyZone* Zone, const SWatchAnomalySensor& Sensor, const xr_vector<xr_string>& Exclude)
-{
-	if (Sensor.ExcludeRadiation && Zone->cast_radioactive_zone())
-	{
-		return true;
-	}
-
-	const char* ZoneSection = Zone->cNameSect().c_str();
-	for (const xr_string& Prefix : Exclude)
-	{
-		if (!strncmp(ZoneSection, Prefix.c_str(), Prefix.size()))
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-float EvaluateAnomalyZoneIntensity(CAnomalyZone* Zone, const Fvector& ActorPos, const SWatchAnomalySensor& Sensor, const xr_vector<xr_string>& Exclude)
-{
-	if (!Zone || !Zone->IsEnabled() || Sensor.Radius <= EPS || IsAnomalyExcluded(Zone, Sensor, Exclude))
-	{
-		return 0.0f;
-	}
-
-	const float Distance = std::max(0.0f, Zone->XFORM().c.distance_to(ActorPos) - Zone->Radius());
-	if (Distance >= Sensor.Radius)
-	{
-		return 0.0f;
-	}
-
-	const float T = 1.0f - Distance / Sensor.Radius;
-	return T * T;
-}
-
-float SmoothTowards(float Current, float Target, float Dt, float Rate)
-{
-	return Current + (Target - Current) * (1.0f - expf(-Dt * Rate));
-}
-
-float HashUnit(u32 Value)
-{
-	Value ^= Value >> 16;
-	Value *= 0x7FEB352Du;
-	Value ^= Value >> 15;
-	Value *= 0x846CA68Bu;
-	Value ^= Value >> 16;
-	return float(Value & 0xFFFFFFu) / float(0x1000000u);
-}
-
-float EvaluateLagUpdateHz(float BaseHz, float MinHz, float Strength)
-{
-	if (MinHz <= EPS || Strength <= EPS)
-	{
-		return BaseHz;
-	}
-
-	const float From = (BaseHz > EPS) ? BaseHz : WatchDetail::DisplayMaxHz;
-	return (MinHz < From) ? From + (MinHz - From) * Strength : From;
-}
-
-float DisplayFlickerNoise(float Phase)
-{
-	const float Wave = 0.55f * sinf(Phase * 11.0f) + 0.30f * sinf(Phase * 29.0f + 1.7f) + 0.15f * sinf(Phase * 67.0f + 0.4f);
-	return clampr(0.5f + 0.5f * Wave, 0.0f, 1.0f);
-}
-
-void ResetLed(SWatchLedRuntime& Led)
-{
-	Led.BlinkPhase = 0.0f;
-	Led.Value = 0.0f;
-}
-
-void UpdateLedBlink(SWatchLedRuntime& Led, const SWatchLedBlink& Blink, float Intensity, float Dt)
-{
-	if (Intensity <= Blink.Threshold)
-	{
-		ResetLed(Led);
-		return;
-	}
-
-	if (Intensity >= Blink.SolidThreshold)
-	{
-		Led.BlinkPhase = 0.0f;
-		Led.Value = 1.0f;
-		return;
-	}
-
-	const float Span = std::max(Blink.SolidThreshold - Blink.Threshold, EPS);
-	const float T = clampr((Intensity - Blink.Threshold) / Span, 0.0f, 1.0f);
-	Led.BlinkPhase += Dt * (Blink.BlinkMinHz + (Blink.BlinkMaxHz - Blink.BlinkMinHz) * T);
-	Led.BlinkPhase -= floorf(Led.BlinkPhase);
-	Led.Value = (Led.BlinkPhase < Blink.BlinkDuty) ? 1.0f : 0.0f;
-}
-
-float CompassChaosSpin(float Time)
-{
-	return sinf(Time * 19.0f) * 1.35f +
-		   cosf(Time * 11.0f) * 0.95f +
-		   sinf(Time * 31.0f) * 0.55f +
-		   sinf(Time * 47.0f) * cosf(Time * 13.0f) * 0.35f;
-}
-
-struct SWatchGameTime
-{
-	u32 Year = 0;
-	u32 Month = 0;
-	u32 Day = 0;
-	u32 Hour = 0;
-	u32 Minute = 0;
-	u32 Second = 0;
-};
-
-void ParseWatchFormat(const char* Format, bool Date, xr_vector<SWatchFormatToken>& Out)
-{
-	Out.clear();
-
-	for (const char* Cursor = Format; Cursor && *Cursor;)
-	{
-		auto Match = [&Cursor](const char* Key, size_t Length)
-		{
-			if (strncmp(Cursor, Key, Length) != 0)
-			{
-				return false;
-			}
-			Cursor += Length;
-			return true;
-		};
-
-		if (Match("YYYY", 4))
-		{
-			Out.push_back({EWatchFormatToken::Year4});
-		}
-		else if (Match("YY", 2))
-		{
-			Out.push_back({EWatchFormatToken::Year2});
-		}
-		else if (Match("HH", 2))
-		{
-			Out.push_back({EWatchFormatToken::Hour});
-		}
-		else if (Match("MM", 2))
-		{
-			Out.push_back({Date ? EWatchFormatToken::Month : EWatchFormatToken::Minute});
-		}
-		else if (Match("SS", 2))
-		{
-			Out.push_back({EWatchFormatToken::Second});
-		}
-		else if (Match("DD", 2))
-		{
-			Out.push_back({EWatchFormatToken::Day});
-		}
-		else
-		{
-			Out.push_back({EWatchFormatToken::Literal, *Cursor++});
-		}
-	}
-}
-
-void FormatWatchText(const xr_vector<SWatchFormatToken>& Tokens, const SWatchGameTime& Time, string64& Out)
-{
-	Out[0] = 0;
-
-	string16 Part = {};
-	for (const SWatchFormatToken& Token : Tokens)
-	{
-		switch (Token.Type)
-		{
-			case EWatchFormatToken::Hour:
-				xr_sprintf(Part, "%02u", Time.Hour);
-				break;
-			case EWatchFormatToken::Minute:
-				xr_sprintf(Part, "%02u", Time.Minute);
-				break;
-			case EWatchFormatToken::Second:
-				xr_sprintf(Part, "%02u", Time.Second);
-				break;
-			case EWatchFormatToken::Day:
-				xr_sprintf(Part, "%02u", Time.Day);
-				break;
-			case EWatchFormatToken::Month:
-				xr_sprintf(Part, "%02u", Time.Month);
-				break;
-			case EWatchFormatToken::Year2:
-				xr_sprintf(Part, "%02u", Time.Year % 100);
-				break;
-			case EWatchFormatToken::Year4:
-				xr_sprintf(Part, "%04u", Time.Year);
-				break;
-			default:
-				Part[0] = Token.Literal;
-				Part[1] = 0;
-				break;
-		}
-		xr_strcat(Out, Part);
-	}
-}
-
-bool ParseLightLevel(const char* Name, EWatchLightLevel& Level)
-{
-	static const xr_pair<const char*, EWatchLightLevel> Levels[] =
-		{
-			{"day", EWatchLightLevel::Day},
-			{"dusk", EWatchLightLevel::Dusk},
-			{"night", EWatchLightLevel::Night},
-			{"dark", EWatchLightLevel::Dark}
-		};
-
-	for (const auto& [Key, Value] : Levels)
-	{
-		if (!xr_strcmp(Name, Key))
-		{
-			Level = Value;
-			return true;
-		}
-	}
-	return false;
-}
-
-bool ParseLightSchedule(const char* Text, xr_vector<SWatchLightKey>& Keys)
-{
-	Keys.clear();
-	if (!Text)
-	{
-		return false;
-	}
-
-	const int Count = _GetItemCount(Text);
-	for (int Index = 0; Index < Count; ++Index)
-	{
-		string64 Item = {};
-		string16 Name = {};
-		SWatchLightKey Key;
-		_GetItem(Text, Index, Item);
-		if (sscanf(Item, "%f:%15s", &Key.Hour, Name) != 2 || Key.Hour < 0.0f || Key.Hour >= 24.0f || !ParseLightLevel(Name, Key.Level))
-		{
-			Keys.clear();
-			return false;
-		}
-		if (!Keys.empty() && Key.Hour <= Keys.back().Hour)
-		{
-			Keys.clear();
-			return false;
-		}
-		Keys.push_back(Key);
-	}
-	return !Keys.empty();
-}
-
-float LightLevelEmission(const SWatchLight& Light, EWatchLightLevel Level)
-{
-	switch (Level)
-	{
-		case EWatchLightLevel::Dusk:
-			return Light.DuskEmission;
-		case EWatchLightLevel::Night:
-			return Light.NightEmission;
-		case EWatchLightLevel::Dark:
-			return Light.DarkEmission;
-		default:
-			return Light.DayEmission;
-	}
-}
-
-float EvaluateLightSchedule(const xr_vector<SWatchLightKey>& Keys, const SWatchLight& Light, float Hour)
-{
-	if (Keys.empty())
-	{
-		return 0.0f;
-	}
-
-	const SWatchLightKey* From = &Keys.back();
-	const SWatchLightKey* To = &Keys.front();
-	for (size_t Index = 0; Index + 1 < Keys.size(); ++Index)
-	{
-		if (Hour >= Keys[Index].Hour && Hour < Keys[Index + 1].Hour)
-		{
-			From = &Keys[Index];
-			To = &Keys[Index + 1];
-			break;
-		}
-	}
-
-	float Span = To->Hour - From->Hour;
-	float Offset = Hour - From->Hour;
-	if (Span <= 0.0f)
-	{
-		Span += 24.0f;
-	}
-	if (Offset < 0.0f)
-	{
-		Offset += 24.0f;
-	}
-
-	const float A = LightLevelEmission(Light, From->Level);
-	const float B = LightLevelEmission(Light, To->Level);
-	return A + (B - A) * clampr(Offset / Span, 0.0f, 1.0f);
-}
-
-void MakeOffsetXform(const Fvector& Position, const Fvector& RotationDeg, Fmatrix& Out)
-{
-	Fvector RotationRad = RotationDeg;
-	RotationRad.mul(PI / 180.0f);
-	Out.setHPB(RotationRad.x, RotationRad.y, RotationRad.z);
-	Out.translate_over(Position);
-}
+	Env = CreateGameWatchEnvironment();
 }
 
 CWatchDevice::~CWatchDevice()
@@ -334,13 +16,22 @@ CWatchDevice::~CWatchDevice()
 	Ui.reset();
 }
 
+void CWatchDevice::SetEnvironment(xr_unique_ptr<IWatchEnvironment> NewEnvironment)
+{
+	Env = std::move(NewEnvironment);
+}
+
 void CWatchDevice::Load(const shared_str& RootSection)
 {
 	Section = RootSection;
+	Profile = nullptr;
 	Loaded = false;
+	DestroyHudLights();
 	Config = SWatchConfig{};
 	State = SWatchState{};
 	Preview = SWatchDebugPreview{};
+	Leds.clear();
+	Gauges.clear();
 	ResetRuntime();
 
 	if (!pSettings || !pSettings->section_exist(Section.c_str()))
@@ -348,19 +39,149 @@ void CWatchDevice::Load(const shared_str& RootSection)
 		return;
 	}
 
-	LoadConfig(*pSettings, Section, false);
-	RefreshCompassSettings();
-	ApplyIndicatorMasters();
-
 	Loaded = true;
+	ApplyConfigLayers();
+}
+
+void CWatchDevice::ApplyConfigLayers()
+{
+	DestroyHudLights();
+	Config = SWatchConfig{};
+
+	LoadElementLists(*pSettings, Section);
+	if (Profile.size())
+	{
+		LoadElementLists(*pSettings, Profile);
+	}
+	BuildElements();
+
+	LoadConfig(*pSettings, Section, false);
+	if (Profile.size())
+	{
+		LoadConfig(*pSettings, Profile, false);
+	}
 	ApplyOverrideFromDisk();
-	RefreshCompassSettings();
-	ApplyConditionMasters();
-	UpdateDisplayFormats();
-	UpdateLightSchedule();
-	UpdateAnomalyExclude();
-	UpdateUILayout();
+
+	Leds.assign(Config.Leds.size(), SWatchLedRuntime{});
+	Gauges.assign(Config.Gauges.size(), SWatchGaugeRuntime{});
+	CompileConfig(true);
 	ConfigBaseline = Config;
+}
+
+void CWatchDevice::CompileConfig(bool Report)
+{
+	if (Leds.size() != Config.Leds.size())
+	{
+		DestroyHudLights();
+		Leds.assign(Config.Leds.size(), SWatchLedRuntime{});
+	}
+	if (Gauges.size() != Config.Gauges.size())
+	{
+		Gauges.assign(Config.Gauges.size(), SWatchGaugeRuntime{});
+	}
+
+	RefreshCompassSettings(Report);
+	UpdateDisplayFormats();
+	UpdateLightSchedule(Report);
+	UpdateAnomalyExclude();
+
+	for (size_t Index = 0; Index < Leds.size(); ++Index)
+	{
+		const SWatchLedElement& Element = Config.Leds[Index];
+		SWatchLedRuntime& Led = Leds[Index];
+		Led.Enabled = Element.Master && Element.Present.Enabled;
+		const shared_str& SourceName = Element.Present.Source.size() ? Element.Present.Source : Element.Name;
+		if (!Led.SourceName.equal(SourceName) && (Report || !Led.SourceName.size()))
+		{
+			Led.Source = ResolveSource(SourceName, Report);
+			Led.SourceName = SourceName;
+		}
+	}
+
+	for (size_t Index = 0; Index < Gauges.size(); ++Index)
+	{
+		const SWatchGaugeElement& Element = Config.Gauges[Index];
+		SWatchGaugeRuntime& Gauge = Gauges[Index];
+		Gauge.Enabled = Element.Master && Element.Present.Enabled;
+		const shared_str& SourceName = Element.Present.Source.size() ? Element.Present.Source : Element.Name;
+		if (!Gauge.SourceName.equal(SourceName) && (Report || !Gauge.SourceName.size()))
+		{
+			Gauge.Source = ResolveSource(SourceName, Report);
+			Gauge.SourceName = SourceName;
+		}
+		for (u32 Severity = 0; Severity < WatchSeverityCount; ++Severity)
+		{
+			const Fvector4* Rgba = WatchDetail::ConditionSeverityRgba(EWatchConditionSeverity(Severity), Element.Present);
+			Gauge.HasColor[Severity] = Rgba && Rgba->w > EPS;
+			Gauge.Colors[Severity] = Gauge.HasColor[Severity] ? WatchDetail::ConditionColorFromRgba(*Rgba) : 0;
+		}
+	}
+
+	UpdateUILayout();
+	UpdateLedMeshes();
+	Anchors.Frame = u32(-1);
+}
+
+SWatchSource CWatchDevice::ResolveSource(const shared_str& Name, bool Report)
+{
+	SWatchSource Source;
+	const char* Text = Name.size() ? Name.c_str() : "";
+	const size_t PrefixLength = xr_strlen(WatchDetail::ScriptSourcePrefix);
+
+	if (!xr_strcmp(Text, "anomaly"))
+	{
+		Source.Kind = EWatchSourceKind::Anomaly;
+	}
+	else if (!xr_strcmp(Text, "motion"))
+	{
+		Source.Kind = EWatchSourceKind::Motion;
+	}
+	else if (!xr_strcmp(Text, "noise"))
+	{
+		Source.Kind = EWatchSourceKind::Noise;
+	}
+	else if (WatchDetail::FindCondition(Text, Source.Condition))
+	{
+		Source.Kind = EWatchSourceKind::Condition;
+	}
+	else if (!strncmp(Text, WatchDetail::ScriptSourcePrefix, PrefixLength))
+	{
+		Source.Kind = EWatchSourceKind::Script;
+		Source.Script = Env->ResolveScriptSource(Text + PrefixLength);
+	}
+	else if (Report)
+	{
+		Msg("! [watch] source [%s] is unknown, expected anomaly|motion|noise|<condition>|script:<function>", Text);
+	}
+
+	return Source;
+}
+
+shared_str CWatchDevice::ResolveProfileSection(IKinematics* NewModel) const
+{
+	if (!Loaded || !NewModel || !pSettings)
+	{
+		return shared_str();
+	}
+
+	const shared_str VisualName = NewModel->getDebugName();
+	if (!VisualName.size())
+	{
+		return shared_str();
+	}
+
+	const char* Name = VisualName.c_str();
+	const char* Base = std::max(strrchr(Name, '\\'), strrchr(Name, '/'));
+	string128 Stem = {};
+	xr_strcpy(Stem, Base ? Base + 1 : Name);
+	if (char* Dot = strrchr(Stem, '.'))
+	{
+		*Dot = 0;
+	}
+
+	string256 ProfileName = {};
+	xr_sprintf(ProfileName, "%s_%s", Section.c_str(), Stem);
+	return pSettings->section_exist(ProfileName) ? shared_str(ProfileName) : shared_str();
 }
 
 void CWatchDevice::ResetRuntime()
@@ -372,25 +193,30 @@ void CWatchDevice::ResetRuntime()
 	Zones.SampleTimer = 0.0f;
 	Zones.Gravity = 0.0f;
 	Zones.AnomalyTarget = 0.0f;
-	Zones.GravitySections.clear();
+	Anchors = SWatchAnchors{};
+	Hidden = true;
+
 	for (SWatchLedRuntime& Led : Leds)
 	{
-		ResetLed(Led);
+		Led.Intensity = 0.0f;
+		Led.BlinkPhase = 0.0f;
+		Led.Value = 0.0f;
 	}
-	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+
+	for (SWatchGaugeRuntime& Gauge : Gauges)
 	{
-		ConditionRuntime[Index] = SWatchConditionRuntime{};
-		State.Condition[Index] = 0.0f;
-		State.ConditionDisplay[Index] = 0.0f;
-		State.ConditionBadness[Index] = 0.0f;
-		State.ConditionVisible[Index] = false;
-		State.ConditionSeverity[Index] = EWatchConditionSeverity::None;
+		Gauge.Value = 0.0f;
+		Gauge.DisplayValue = 0.0f;
+		Gauge.Badness = 0.0f;
+		Gauge.Visible = false;
+		Gauge.Severity = EWatchConditionSeverity::None;
 	}
 }
 
 void CWatchDevice::ResetCompassRuntime()
 {
 	Compass = SWatchCompassRuntime{};
+	Rig.SetCompassAngle(0.0f);
 	Zones.Gravity = 0.0f;
 	Zones.SampleTimer = 0.0f;
 	State.CompassAngle = 0.0f;
@@ -403,166 +229,66 @@ void CWatchDevice::BindModel(IKinematics* NewModel)
 {
 	Unbind();
 
-	Model = NewModel;
-	if (!Model)
+	if (NewModel)
 	{
-		return;
+		AttachModel(NewModel);
 	}
-
-	AttachModel();
 }
 
-void CWatchDevice::AttachModel()
+void CWatchDevice::AttachModel(IKinematics* NewModel)
 {
-	ResolveBones();
-	SetBoneCallbacks();
+	const shared_str NewProfile = ResolveProfileSection(NewModel);
+	if (!NewProfile.equal(Profile))
+	{
+		Profile = NewProfile;
+		Msg("[watch] profile [%s]", Profile.size() ? Profile.c_str() : "base");
+		ApplyConfigLayers();
+	}
+
+	xr_vector<shared_str> LedBones;
+	LedBones.reserve(Config.Leds.size());
+	for (const SWatchLedElement& Element : Config.Leds)
+	{
+		if (Element.Present.Bone.size())
+		{
+			LedBones.push_back(Element.Present.Bone);
+		}
+		else
+		{
+			LedBones.push_back(Element.Name.equal("anomaly") ? Config.Bones.AnomIndicator : Config.Bones.RadIndicator);
+		}
+	}
+
+	Rig.Bind(NewModel, Config.Bones, LedBones);
+	if (!Rig.BonesOk())
+	{
+		const SWatchBoneIds& Ids = Rig.Bones();
+		Msg("! [watch] model is missing bones: compass=%d light=%d display=%d rad=%d anom=%d",
+			Ids.Compass != BI_NONE, Ids.CompassLight != BI_NONE, Ids.Display != BI_NONE, Ids.RadIndicator != BI_NONE, Ids.AnomIndicator != BI_NONE);
+	}
+	Rig.SetCompassAngle(Compass.Angle);
 	UpdateLedMeshes();
 	CreateUI();
+	Anchors.Frame = u32(-1);
 }
 
 void CWatchDevice::Unbind()
 {
 	DestroyHudLights();
-	for (SWatchLedRuntime& Led : Leds)
-	{
-		RestoreLedMesh(Led);
-	}
 	Ui.reset();
-	ResetBoneCallbacks();
-	ClearBones();
-	Zones.Spatial.clear();
+	Rig.Unbind();
 	ResetCompassRuntime();
-	Model = nullptr;
-}
-
-u16 CWatchDevice::ResolveBoneId(const shared_str& Name) const
-{
-	if (!Model || !Name.size())
-	{
-		return BI_NONE;
-	}
-
-	return Model->LL_BoneID(Name);
-}
-
-void CWatchDevice::ResolveBones()
-{
-	BoneIds.Compass = ResolveBoneId(Config.Bones.Compass);
-	BoneIds.CompassLight = ResolveBoneId(Config.Bones.CompassLight);
-	BoneIds.Display = ResolveBoneId(Config.Bones.Display);
-	BoneIds.RadIndicator = ResolveBoneId(Config.Bones.RadIndicator);
-	BoneIds.AnomIndicator = ResolveBoneId(Config.Bones.AnomIndicator);
-
-	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
-	{
-		const shared_str& BoneName = Config.Present[Index].Bone;
-		const u16 DefaultBone = (Index == u32(EWatchLedChannel::Anomaly)) ? BoneIds.AnomIndicator : BoneIds.RadIndicator;
-		Leds[Index].Bone = BoneName.size() ? ResolveBoneId(BoneName) : DefaultBone;
-	}
-}
-
-bool CWatchDevice::BonesOk() const
-{
-	return BoneIds.Compass != BI_NONE &&
-		   BoneIds.CompassLight != BI_NONE &&
-		   BoneIds.Display != BI_NONE &&
-		   BoneIds.RadIndicator != BI_NONE &&
-		   BoneIds.AnomIndicator != BI_NONE;
-}
-
-void CWatchDevice::RestoreLedMesh(SWatchLedRuntime& Led)
-{
-	if (Model && Led.HiddenBone != BI_NONE)
-	{
-		Model->LL_SetBoneVisible(Led.HiddenBone, true, false);
-	}
-	Led.HiddenBone = BI_NONE;
+	Anchors = SWatchAnchors{};
 }
 
 void CWatchDevice::UpdateLedMeshes()
 {
-	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
+	for (size_t Index = 0; Index < Leds.size(); ++Index)
 	{
-		const SWatchChannelPresent& Present = Config.Present[Index];
-		SWatchLedRuntime& Led = Leds[Index];
-		const bool Hide = Model && Present.Enabled && Present.PresentShader && Present.HideMesh;
-		const u16 Bone = Hide ? Led.Bone : BI_NONE;
-		if (Bone == Led.HiddenBone)
-		{
-			continue;
-		}
-
-		RestoreLedMesh(Led);
-		if (Bone != BI_NONE)
-		{
-			Model->LL_SetBoneVisible(Bone, false, false);
-			Led.HiddenBone = Bone;
-		}
+		const SWatchChannelPresent& Present = Config.Leds[Index].Present;
+		const bool Hide = Rig.Kinematics() && Leds[Index].Enabled && Present.PresentShader && Present.HideMesh;
+		Rig.SetLedMeshHidden(u32(Index), Hide);
 	}
-}
-
-void CWatchDevice::ClearBones()
-{
-	BoneIds = SWatchBoneIds{};
-	for (SWatchLedRuntime& Led : Leds)
-	{
-		Led.Bone = BI_NONE;
-	}
-}
-
-bool CWatchDevice::HasCompassBone() const
-{
-	return Model && BoneIds.Compass != BI_NONE;
-}
-
-void CWatchDevice::SetBoneCallbacks()
-{
-	if (!Model || CallbacksBound)
-	{
-		return;
-	}
-
-	if (HasCompassBone())
-	{
-		CBoneInstance& Instance = Model->LL_GetBoneInstance(BoneIds.Compass);
-		Instance.set_callback(bctCustom, &CWatchDevice::BoneCallbackCompass, this);
-	}
-
-	CallbacksBound = true;
-}
-
-void CWatchDevice::ResetBoneCallbacks()
-{
-	if (!Model || !CallbacksBound)
-	{
-		CallbacksBound = false;
-		return;
-	}
-
-	if (HasCompassBone())
-	{
-		Model->LL_GetBoneInstance(BoneIds.Compass).reset_callback();
-	}
-
-	CallbacksBound = false;
-}
-
-void CWatchDevice::BoneCallbackCompass(CBoneInstance* Bone)
-{
-	if (!Bone)
-	{
-		return;
-	}
-
-	CWatchDevice* Self = static_cast<CWatchDevice*>(Bone->callback_param());
-	if (!Self)
-	{
-		return;
-	}
-
-	Fmatrix Rotation;
-	Rotation.rotateY(Self->Compass.Angle);
-	Bone->mTransform.mulB_43(Rotation);
 }
 
 void CWatchDevice::CommitCompassAngle(float Angle, bool ResetVelocity)
@@ -579,134 +305,74 @@ void CWatchDevice::CommitCompassAngle(float Angle, bool ResetVelocity)
 
 void CWatchDevice::SyncCompassState()
 {
+	Rig.SetCompassAngle(Compass.Angle);
 	State.CompassAngle = Compass.Angle;
 	State.CompassError = angle_difference_signed(Compass.Desired, Compass.Angle);
 }
 
-bool CWatchDevice::SectionLooksLikeGravity(const shared_str& ZoneSection)
+bool CWatchDevice::IsLedActive(u32 Index) const
 {
-	if (!ZoneSection.size())
+	const SWatchChannelPresent& Present = Config.Leds[Index].Present;
+	return Leds[Index].Enabled &&
+		   ((Present.PresentShader && Rig.HasLedBone(Index)) ||
+			(Present.PresentUi && Rig.HasDisplay()));
+}
+
+bool CWatchDevice::IsGaugeActive(u32 Index) const
+{
+	const SWatchGaugeRuntime& Gauge = Gauges[Index];
+	if (!Gauge.Enabled || !Config.Gauges[Index].Present.PresentUi)
 	{
 		return false;
 	}
 
-	auto Cached = Zones.GravitySections.find(ZoneSection);
-	if (Cached != Zones.GravitySections.end())
-	{
-		return Cached->second;
-	}
-
-	bool Result = false;
-	const char* Name = ZoneSection.c_str();
-	if (pSettings && pSettings->section_exist(Name))
-	{
-		if (strstr(Name, "nogravity") || strstr(Name, "no_gravity"))
-		{
-			Result = false;
-		}
-		else if (strstr(Name, "gravi") || strstr(Name, "mincer"))
-		{
-			Result = true;
-		}
-		else
-		{
-			static const char* Keys[] = {"postprocess", "idle_particles", "blowout_particles"};
-			for (const char* Key : Keys)
-			{
-				if (!pSettings->line_exist(Name, Key))
-				{
-					continue;
-				}
-
-				const char* Value = pSettings->r_string(Name, Key);
-				if (Value && strstr(Value, "gravi"))
-				{
-					Result = true;
-					break;
-				}
-			}
-		}
-	}
-
-	Zones.GravitySections.emplace(ZoneSection, Result);
-	return Result;
+	return Gauge.Source.Kind != EWatchSourceKind::Condition || Env->IsConditionAvailable(Gauge.Source.Condition);
 }
 
-float CWatchDevice::EvaluateGravityZoneIntensity(CAnomalyZone* Zone, const Fvector& ActorPos)
+bool CWatchDevice::UsesSource(EWatchSourceKind Kind) const
 {
-	if (!Zone || !Zone->IsEnabled())
+	for (u32 Index = 0; Index < Leds.size(); ++Index)
 	{
-		return 0.0f;
-	}
-
-	TAnomalyGravity* GravityComponent = Zone->GetComponent<TAnomalyGravity>();
-	const bool HasGravityComponent = GravityComponent && GravityComponent->IsEnabled();
-	if (!Zone->cast_base_gravi_zone() && !HasGravityComponent && !SectionLooksLikeGravity(Zone->cNameSect()))
-	{
-		return 0.0f;
-	}
-
-	Fvector Delta;
-	Delta.sub(Zone->XFORM().c, ActorPos);
-	const float DistSqr = Delta.square_magnitude();
-
-	float Radius = Zone->Radius();
-	if (Radius < 1.0f)
-	{
-		Radius = 1.0f;
-	}
-
-	float Sense = Radius * 10.0f;
-	if (Sense < WatchDetail::CompassGravitySenseMin)
-	{
-		Sense = WatchDetail::CompassGravitySenseMin;
-	}
-
-	if (HasGravityComponent)
-	{
-		const float ScanRadius = GravityComponent->GetScanRadius();
-		if (ScanRadius > Radius)
+		if (Leds[Index].Source.Kind == Kind && IsLedActive(Index))
 		{
-			Sense = std::max(Sense, ScanRadius * 10.0f);
+			return true;
 		}
 	}
 
-	if (DistSqr >= Sense * Sense)
+	for (u32 Index = 0; Index < Gauges.size(); ++Index)
 	{
-		return 0.0f;
+		if (Gauges[Index].Source.Kind == Kind && IsGaugeActive(Index))
+		{
+			return true;
+		}
 	}
 
-	const float Dist = std::sqrt(DistSqr);
-	const float Power = Zone->RelativePower(Dist, Radius);
-	if (Power > EPS)
-	{
-		return Power;
-	}
-
-	const float T = 1.0f - Dist / Sense;
-	return T * T;
+	return false;
 }
 
-bool CWatchDevice::IsChannelActive(EWatchLedChannel Channel) const
+float CWatchDevice::SampleSource(const SWatchSource& Source, float Normalize) const
 {
-	const SWatchChannelPresent& Present = Config.Present[u32(Channel)];
-	const SWatchLedRuntime& Led = Leds[u32(Channel)];
-	return Present.Enabled &&
-		   ((Present.PresentShader && Led.Bone != BI_NONE) ||
-			(Present.PresentUi && BoneIds.Display != BI_NONE));
+	switch (Source.Kind)
+	{
+		case EWatchSourceKind::Anomaly: return Zones.AnomalyTarget;
+		case EWatchSourceKind::Motion: return Env->SampleMotion();
+		case EWatchSourceKind::Noise: return Env->SampleNoise();
+		case EWatchSourceKind::Condition: return Env->SampleCondition(Source.Condition, Normalize);
+		case EWatchSourceKind::Script: return Env->SampleScriptSource(Source.Script);
+		default: return 0.0f;
+	}
 }
 
 void CWatchDevice::SampleZones(float Dt)
 {
-	const bool GravityActive = !Preview.PreviewGravity && Config.Compass.GravityStrength > 0.0f && HasCompassBone();
-	const bool AnomalyActive = IsChannelActive(EWatchLedChannel::Anomaly);
+	const bool GravityActive = !Preview.PreviewGravity && Config.Compass.GravityStrength > 0.0f && Rig.HasCompass();
+	const bool AnomalyActive = UsesSource(EWatchSourceKind::Anomaly);
 	if (Preview.PreviewGravity)
 	{
 		Zones.Gravity = clampr(Preview.PreviewGravityValue, 0.0f, 1.0f);
 	}
 
-	CObject* Entity = (g_pGameLevel && g_SpatialSpace) ? Level().CurrentEntity() : nullptr;
-	if (!Entity || (!GravityActive && !AnomalyActive))
+	if (!Env->CanSampleZones() || (!GravityActive && !AnomalyActive))
 	{
 		if (!Preview.PreviewGravity)
 		{
@@ -725,54 +391,9 @@ void CWatchDevice::SampleZones(float Dt)
 
 	Zones.SampleTimer = 1.0f / WatchDetail::ZoneSampleHz;
 
-	const Fvector ActorPos = Entity->Position();
-	const float Radius = std::max(GravityActive ? WatchDetail::CompassGravityQueryRadius : 0.0f, AnomalyActive ? Config.Anomaly.Radius : 0.0f);
 	float Gravity = 0.0f;
 	float Anomaly = 0.0f;
-
-	Zones.Spatial.clear();
-	g_SpatialSpace->q_sphere(
-		Zones.Spatial,
-		0,
-		ESPATIAL_TYPE::ANOMALY_ZONE,
-		ActorPos,
-		Radius
-	);
-
-	for (ISpatialShared& Spatial : Zones.Spatial)
-	{
-		ISpatial* SpatialObject = Spatial.get();
-		if (!SpatialObject)
-		{
-			continue;
-		}
-
-		CObject* Object = SpatialObject->dcast_CObject();
-		if (!Object || Object->getDestroy())
-		{
-			continue;
-		}
-
-		CGameObject* GameObject = Object->cast_game_object();
-		if (!GameObject)
-		{
-			continue;
-		}
-
-		CAnomalyZone* Zone = GameObject->cast_anomaly_zone();
-		if (GravityActive)
-		{
-			Gravity = std::max(Gravity, EvaluateGravityZoneIntensity(Zone, ActorPos));
-		}
-		if (AnomalyActive)
-		{
-			Anomaly = std::max(Anomaly, EvaluateAnomalyZoneIntensity(Zone, ActorPos, Config.Anomaly, Zones.AnomalyExclude));
-		}
-		if ((!GravityActive || Gravity >= WatchDetail::CompassGravityEarlyOut) && (!AnomalyActive || Anomaly >= 1.0f))
-		{
-			break;
-		}
-	}
+	Env->SampleZones(GravityActive, AnomalyActive, Config.Anomaly, Zones.AnomalyExclude, Gravity, Anomaly);
 
 	if (GravityActive)
 	{
@@ -796,7 +417,7 @@ bool CWatchDevice::UpdateCompassGravityChaos(float Dt)
 	SetCompassVisible(true);
 	Compass.ChaosTime += Dt;
 
-	const float Spin = CompassChaosSpin(Compass.ChaosTime);
+	const float Spin = WatchLogic::CompassChaosSpin(Compass.ChaosTime);
 	const float Speed = deg2rad(Config.Compass.GravityStrength) * (3.0f + Intensity * 14.0f);
 	CommitCompassAngle(
 		angle_normalize_signed(Compass.Angle + Spin * Speed * Intensity * Dt),
@@ -808,95 +429,24 @@ bool CWatchDevice::UpdateCompassGravityChaos(float Dt)
 
 void CWatchDevice::SetCompassVisible(bool Visible)
 {
-	if (!HasCompassBone())
-	{
-		return;
-	}
-
-	const bool CompassVisible = !!Model->LL_GetBoneVisible(BoneIds.Compass);
-	if (CompassVisible != Visible)
-	{
-		Model->LL_SetBoneVisible(BoneIds.Compass, Visible, true);
-	}
-
-	if (BoneIds.CompassLight != BI_NONE)
-	{
-		const bool LightVisible = !!Model->LL_GetBoneVisible(BoneIds.CompassLight);
-		if (LightVisible != Visible)
-		{
-			Model->LL_SetBoneVisible(BoneIds.CompassLight, Visible, true);
-		}
-	}
+	Rig.SetCompassHidden(!Visible);
 }
 
-static bool IsPointerKind(EWatchCompassSourceKind Kind)
-{
-	return Kind == EWatchCompassSourceKind::Story ||
-		Kind == EWatchCompassSourceKind::Additional ||
-		Kind == EWatchCompassSourceKind::UserNav;
-}
-
-// Angle of the pointer against the view direction. False when the direction is degenerate
-static bool WorldDirToCompassAngle(const Fvector& WorldDir, const Fmatrix& View, float OffsetRad, float& OutAngle)
-{
-	Fvector Direction = WorldDir;
-	Direction.y = 0.0f;
-	if (Direction.square_magnitude() < EPS_L)
-	{
-		return false;
-	}
-
-	Direction.normalize();
-	Fvector LocalDir;
-	View.transform_dir(LocalDir, Direction);
-	LocalDir.y = 0.0f;
-
-	// Looking straight along the axis leaves no horizontal component
-	if (LocalDir.square_magnitude() < EPS_L)
-	{
-		return false;
-	}
-
-	OutAngle = angle_normalize_signed(-LocalDir.getH() + OffsetRad);
-	return true;
-}
-
-static bool SampleMapLocation(CMapLocation* Location, EWatchCompassSourceKind Kind, SWatchCompassSample& Out)
-{
-	if (!Location || !Location->Update())
-	{
-		return false;
-	}
-
-	if (Location->GetLevelName() != Level().name())
-	{
-		return false;
-	}
-
-	CObject* Entity = Level().CurrentViewEntity();
-	if (!Entity)
-	{
-		Entity = Level().CurrentEntity();
-	}
-	if (!Entity)
-	{
-		return false;
-	}
-
-	Out.WorldDir.sub(Location->GetLastPosition(), Entity->Position());
-	Out.WorldDir.y = 0.0f;
-	Out.Kind = Kind;
-	Out.Valid = true;
-	return true;
-}
-
-void CWatchDevice::RefreshCompassSettings()
+void CWatchDevice::RefreshCompassSettings(bool Report)
 {
 	const SWatchCompass& Source = Config.Compass;
 	SWatchCompassSettings& Settings = CompassSettings;
 	Settings = SWatchCompassSettings{};
 
-	// "target" is the old name of the quest mode
+	if (Report && !Source.Mode.equal("north") && !Source.Mode.equal("quest") && !Source.Mode.equal("target") && !Source.Mode.equal("nav"))
+	{
+		Msg("! [watch] compass mode [%s] is unknown, expected north|quest|nav, using quest", Source.Mode.size() ? Source.Mode.c_str() : "");
+	}
+	if (Report && !Source.NoTarget.equal("hide") && !Source.NoTarget.equal("north"))
+	{
+		Msg("! [watch] compass no_target [%s] is unknown, expected hide|north, using hide", Source.NoTarget.size() ? Source.NoTarget.c_str() : "");
+	}
+
 	if (Source.Mode.equal("north"))
 	{
 		Settings.Mode = EWatchCompassMode::North;
@@ -918,40 +468,11 @@ void CWatchDevice::RefreshCompassSettings()
 	Settings.Colors[u32(EWatchCompassSourceKind::UserNav)] = WatchDetail::ConditionColorFromRgba(Source.NavColor);
 }
 
-void CWatchDevice::SampleCompassTarget(SWatchCompassSample& Out) const
-{
-	if (CompassSettings.Mode == EWatchCompassMode::North)
-	{
-		Out.Valid = true;
-		Out.Kind = EWatchCompassSourceKind::North;
-		return;
-	}
-
-	if (!g_pGameLevel)
-	{
-		return;
-	}
-
-	CMapManager& MapManager = Level().MapManager();
-	if (CompassSettings.Mode == EWatchCompassMode::Nav && SampleMapLocation(MapManager.GetActiveUserNavigationLocation(), EWatchCompassSourceKind::UserNav, Out))
-	{
-		return;
-	}
-
-	const SQuestCompassTarget Target = MapManager.GetActiveQuestCompassTarget();
-	switch (Target.Type)
-	{
-		case eTaskTypeStoryline: SampleMapLocation(Target.Location, EWatchCompassSourceKind::Story, Out); break;
-		case eTaskTypeAdditional: SampleMapLocation(Target.Location, EWatchCompassSourceKind::Additional, Out); break;
-		default: break;
-	}
-}
-
 u32 CWatchDevice::CompassColorForKind(EWatchCompassSourceKind Kind) const
 {
 	if (Kind == EWatchCompassSourceKind::None)
 	{
-		return Ui ? Ui->GetGlowColor(EWatchGlow::Compass) : color_rgba(255, 30, 20, 255);
+		return Ui ? Ui->GetCompassColor() : color_rgba(255, 30, 20, 255);
 	}
 	return CompassSettings.Colors[u32(Kind)];
 }
@@ -970,7 +491,6 @@ void CWatchDevice::ApplyCompassNoTarget()
 		return;
 	}
 
-	// No target: show the north instead of hiding the pointer
 	SetCompassVisible(true);
 	SWatchCompassSample Sample;
 	Sample.Valid = true;
@@ -986,11 +506,10 @@ void CWatchDevice::ApplyCompassSample(const SWatchCompassSample& Sample, bool Ha
 		return;
 	}
 
-	const bool PointerTarget = IsPointerKind(Sample.Kind);
+	const bool PointerTarget = WatchLogic::IsPointerKind(Sample.Kind);
 
 	if (Sample.WorldDir.square_magnitude() < EPS_L)
 	{
-		// Standing on the target: keep the pointer where it is
 		if (HadTarget && PointerTarget)
 		{
 			SetCompassVisible(true);
@@ -1006,7 +525,7 @@ void CWatchDevice::ApplyCompassSample(const SWatchCompassSample& Sample, bool Ha
 	}
 
 	float Angle = 0.0f;
-	if (!WorldDirToCompassAngle(Sample.WorldDir, Device.mView, CompassSettings.AngleOffsetRad, Angle))
+	if (!WatchLogic::WorldDirToCompassAngle(Sample.WorldDir, Env->ViewMatrix(), CompassSettings.AngleOffsetRad, Angle))
 	{
 		ApplyCompassNoTarget();
 		return;
@@ -1020,40 +539,19 @@ void CWatchDevice::ApplyCompassSample(const SWatchCompassSample& Sample, bool Ha
 
 void CWatchDevice::UpdateCompassSpring(float Dt)
 {
-	if (!Compass.SpringActive || !HasCompassBone() || Dt <= 0.0f)
+	if (!Compass.SpringActive || !Rig.HasCompass() || Dt <= 0.0f)
 	{
 		SyncCompassState();
 		return;
 	}
 
-	float Remaining = Dt;
-	u32 Steps = 0;
-	while (Remaining > 0.0f && Steps < WatchDetail::CompassSpringMaxSubsteps)
-	{
-		const float Step = (Remaining > WatchDetail::CompassSpringMaxStep) ? WatchDetail::CompassSpringMaxStep : Remaining;
-		Remaining -= Step;
-		++Steps;
-
-		const float Error = angle_difference_signed(Compass.Desired, Compass.Angle);
-		if (fabsf(Error) < WatchDetail::CompassSpringSettleRad)
-		{
-			Compass.Angle = Compass.Desired;
-			Compass.Velocity = 0.0f;
-			break;
-		}
-
-		const float Accel =
-			Config.Compass.Stiffness * Error - Config.Compass.Damping * Compass.Velocity;
-		Compass.Velocity += Accel * Step;
-		Compass.Angle = angle_normalize_signed(Compass.Angle + Compass.Velocity * Step);
-	}
-
+	WatchLogic::StepCompassSpring(Compass.Angle, Compass.Velocity, Compass.Desired, Config.Compass.Stiffness, Config.Compass.Damping, Dt);
 	SyncCompassState();
 }
 
 void CWatchDevice::UpdateCompass(float Dt)
 {
-	if (!HasCompassBone())
+	if (!Rig.HasCompass())
 	{
 		State.TargetValid = false;
 		State.CompassSourceKind = EWatchCompassSourceKind::None;
@@ -1074,7 +572,7 @@ void CWatchDevice::UpdateCompass(float Dt)
 	{
 		const bool HadTarget = State.TargetValid;
 		SWatchCompassSample Sample;
-		SampleCompassTarget(Sample);
+		Env->SampleCompassTarget(CompassSettings.Mode, Sample);
 		AllowChaos = CompassSettings.IsChaosEnabled();
 		ApplyCompassSample(Sample, HadTarget);
 	}
@@ -1089,23 +587,32 @@ void CWatchDevice::UpdateCompass(float Dt)
 
 void CWatchDevice::Update(float Dt)
 {
-	if (!IsEnabled() || !Model)
+	if (!IsEnabled() || !Rig.Kinematics())
 	{
 		return;
+	}
+
+	if (Env->FrameId() > LastVisibleFrame + 1)
+	{
+		Hidden = true;
+		return;
+	}
+
+	if (Hidden)
+	{
+		Hidden = false;
+		Zones.SampleTimer = 0.0f;
+		Display.Timer = 0.0f;
+		Surge.Timer = 0.0f;
+		Light.Timer = 0.0f;
 	}
 
 	const float SafeDt = (Dt > 0.0f) ? Dt : 0.0f;
 	SampleZones(SafeDt);
 	UpdateCompass(SafeDt);
 	UpdateSurge(SafeDt);
-	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
-	{
-		UpdateChannel(EWatchLedChannel(Index), SafeDt);
-	}
-	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
-	{
-		UpdateCondition(EWatchCondition(Index), SafeDt);
-	}
+	UpdateLeds(SafeDt);
+	UpdateGauges(SafeDt);
 	UpdateDisplayLag(SafeDt);
 	UpdateDisplay(SafeDt);
 	UpdateLight(SafeDt);
@@ -1120,13 +627,13 @@ void CWatchDevice::CreateUI()
 	Display.Timer = 0.0f;
 	Surge.Timer = 0.0f;
 
-	if (!Loaded || !Model || BoneIds.Display == BI_NONE)
+	if (!Loaded || !Rig.HasDisplay())
 	{
 		return;
 	}
 
 	Ui.reset(new CUIWatchWnd());
-	if (!Ui->Init(Config.Display, Config.Fonts))
+	if (!Ui->Init(Config))
 	{
 		Ui.reset();
 		return;
@@ -1145,34 +652,35 @@ void CWatchDevice::UpdateUILayout()
 	UiOffset.k.mul(DisplayConfig.UiScale);
 	UiOffset.translate_over(DisplayConfig.UiPosition);
 
-	MakeOffsetXform(Config.Light.UiPosition, Config.Light.UiRotation, Light.Offset);
-	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
+	WatchLogic::MakeOffsetXform(Config.Light.UiPosition, Config.Light.UiRotation, Light.Offset);
+	for (size_t Index = 0; Index < Leds.size(); ++Index)
 	{
-		MakeOffsetXform(Config.Present[Index].UiPosition, Config.Present[Index].UiRotation, Leds[Index].Offset);
+		const SWatchChannelPresent& Present = Config.Leds[Index].Present;
+		WatchLogic::MakeOffsetXform(Present.UiPosition, Present.UiRotation, Leds[Index].Offset);
 	}
-	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	for (size_t Index = 0; Index < Gauges.size(); ++Index)
 	{
-		const SWatchConditionPresent& Present = Config.Conditions[Index];
-		MakeOffsetXform(Present.UiIconPosition, Present.UiIconRotation, ConditionRuntime[Index].IconOffset);
-		MakeOffsetXform(Present.UiBarPosition, Present.UiBarRotation, ConditionRuntime[Index].BarOffset);
+		const SWatchConditionPresent& Present = Config.Gauges[Index].Present;
+		WatchLogic::MakeOffsetXform(Present.UiIconPosition, Present.UiIconRotation, Gauges[Index].IconOffset);
+		WatchLogic::MakeOffsetXform(Present.UiBarPosition, Present.UiBarRotation, Gauges[Index].BarOffset);
 	}
 
 	if (Ui)
 	{
 		Ui->SetLayout(DisplayConfig);
 	}
+	Anchors.Frame = u32(-1);
 }
 
 void CWatchDevice::UpdateDisplayFormats()
 {
-	ParseWatchFormat(Config.Display.TimeFormat.c_str(), false, Display.TimeTokens);
-	ParseWatchFormat(Config.Display.DateFormat.c_str(), true, Display.DateTokens);
-	Display.Timer = 0.0f;
+	WatchLogic::ParseFormat(Config.Display.TimeFormat.c_str(), false, Display.TimeTokens);
+	WatchLogic::ParseFormat(Config.Display.DateFormat.c_str(), true, Display.DateTokens);
 }
 
 void CWatchDevice::UpdateDisplay(float Dt)
 {
-	if (!Ui || !g_pGameLevel)
+	if (!Ui || !Env->HasLevel())
 	{
 		return;
 	}
@@ -1189,13 +697,13 @@ void CWatchDevice::UpdateDisplay(float Dt)
 		return;
 	}
 
-	if (Display.FreezeChance > EPS && HashUnit(++Display.Tick) < Display.FreezeChance)
+	if (Display.FreezeChance > EPS && WatchLogic::HashUnit(++Display.Tick) < Display.FreezeChance)
 	{
 		Display.Freeze = std::max(Display.Timer, WatchDetail::DisplayMinFreeze);
 		return;
 	}
 
-	const u64 GameTime = Level().GetGameTime();
+	const u64 GameTime = Env->GameTimeMs();
 	const u64 DelayMs = u64(Display.Delay * 1000.0f);
 
 	SWatchGameTime Time;
@@ -1203,14 +711,14 @@ void CWatchDevice::UpdateDisplay(float Dt)
 	split_time(GameTime > DelayMs ? GameTime - DelayMs : 0, Time.Year, Time.Month, Time.Day, Time.Hour, Time.Minute, Time.Second, Milliseconds);
 
 	string64 Text = {};
-	FormatWatchText(Display.TimeTokens, Time, Text);
+	WatchLogic::FormatText(Display.TimeTokens, Time, Text);
 	if (State.TimeText != Text)
 	{
 		State.TimeText = Text;
 		Ui->SetTime(Text);
 	}
 
-	FormatWatchText(Display.DateTokens, Time, Text);
+	WatchLogic::FormatText(Display.DateTokens, Time, Text);
 	if (State.DateText != Text)
 	{
 		State.DateText = Text;
@@ -1218,34 +726,9 @@ void CWatchDevice::UpdateDisplay(float Dt)
 	}
 }
 
-bool CWatchDevice::SampleSurge(float& SecondsToSurge, float& Progress)
-{
-	SecondsToSurge = -1.0f;
-	Progress = -1.0f;
-	if (Surge.BridgeMissing)
-	{
-		return false;
-	}
-
-	if (!Surge.BridgeResolved)
-	{
-		if (!ai().script_engine().functor(WatchDetail::SurgeSecondsFunction, Surge.SecondsFunction) || !ai().script_engine().functor(WatchDetail::SurgeProgressFunction, Surge.ProgressFunction))
-		{
-			Surge.BridgeMissing = true;
-			Msg("! [watch] surge bridge [%s] not found, barometer has no data", WatchDetail::SurgeSecondsFunction);
-			return false;
-		}
-		Surge.BridgeResolved = true;
-	}
-
-	SecondsToSurge = Surge.SecondsFunction();
-	Progress = Surge.ProgressFunction();
-	return SecondsToSurge >= 0.0f || Progress >= 0.0f;
-}
-
 void CWatchDevice::UpdateSurge(float Dt)
 {
-	if (!Ui || !g_pGameLevel)
+	if (!Ui || !Env->HasLevel())
 	{
 		return;
 	}
@@ -1257,7 +740,7 @@ void CWatchDevice::UpdateSurge(float Dt)
 	}
 
 	Surge.Timer = 1.0f / WatchDetail::SurgeSampleHz;
-	Surge.Valid = SampleSurge(Surge.Seconds, Surge.Progress);
+	Surge.Valid = Env->SampleSurge(Surge.Seconds, Surge.Progress);
 
 	if (Preview.PreviewSurge)
 	{
@@ -1279,12 +762,12 @@ void CWatchDevice::UpdateDisplayLag(float Dt)
 {
 	const SWatchLag& SurgeLag = Config.SurgeLag;
 	const SWatchLag& AnomalyLag = Config.AnomalyLag;
-	Surge.Lag = SmoothTowards(Surge.Lag, State.SurgeFactor, Dt, WatchDetail::LagSmoothing);
-	Surge.AnomalyLag = SmoothTowards(Surge.AnomalyLag, State.Intensity[u32(EWatchLedChannel::Anomaly)], Dt, WatchDetail::LagSmoothing);
+	Surge.Lag = WatchLogic::SmoothTowards(Surge.Lag, State.SurgeFactor, Dt, WatchDetail::LagSmoothing);
+	Surge.AnomalyLag = WatchLogic::SmoothTowards(Surge.AnomalyLag, State.AnomalyLevel, Dt, WatchDetail::LagSmoothing);
 
 	const float BaseHz = Config.Display.UpdateHz;
-	const float SurgeHz = EvaluateLagUpdateHz(BaseHz, SurgeLag.MinUpdateHz, Surge.Lag);
-	const float AnomalyHz = EvaluateLagUpdateHz(BaseHz, AnomalyLag.MinUpdateHz, Surge.AnomalyLag);
+	const float SurgeHz = WatchLogic::EvaluateLagUpdateHz(BaseHz, SurgeLag.MinUpdateHz, Surge.Lag);
+	const float AnomalyHz = WatchLogic::EvaluateLagUpdateHz(BaseHz, AnomalyLag.MinUpdateHz, Surge.AnomalyLag);
 	const float SurgeFreeze = clampr(SurgeLag.FreezeChance * Surge.Lag, 0.0f, 1.0f);
 	const float AnomalyFreeze = clampr(AnomalyLag.FreezeChance * Surge.AnomalyLag, 0.0f, 1.0f);
 
@@ -1307,7 +790,7 @@ void CWatchDevice::UpdateDisplayLag(float Dt)
 		{
 			Display.GlitchPhase -= WatchDetail::DisplayGlitchWrap;
 		}
-		const float Noise = DisplayFlickerNoise(Display.GlitchPhase);
+		const float Noise = WatchLogic::DisplayFlickerNoise(Display.GlitchPhase);
 		Intensity *= 1.0f - Flicker * (0.35f + 0.65f * Noise);
 		if (Noise > 0.82f && Flicker > 0.20f)
 		{
@@ -1372,7 +855,7 @@ void CWatchDevice::UpdateBarometer()
 		return;
 	}
 
-	const float DayMinutes = float(Level().GetGameTime() % 86400000ull) / 60000.0f;
+	const float DayMinutes = float(Env->GameTimeMs() % 86400000ull) / 60000.0f;
 	const float Drift = WatchDetail::BarometerDrift * (0.6f * sinf(DayMinutes * 0.21f) + 0.4f * sinf(DayMinutes * 0.047f));
 	string16 Text = {};
 	xr_sprintf(Text, "%.0f", DisplayConfig.BarometerNormal - State.Barometer * DisplayConfig.BarometerDrop + Drift);
@@ -1393,9 +876,9 @@ void CWatchDevice::SetBarometerText(const char* Text)
 	}
 }
 
-void CWatchDevice::UpdateLightSchedule()
+void CWatchDevice::UpdateLightSchedule(bool Report)
 {
-	if (!ParseLightSchedule(Config.Light.Schedule.c_str(), Light.Keys))
+	if (!WatchLogic::ParseLightSchedule(Config.Light.Schedule.c_str(), Light.Keys) && Report)
 	{
 		Msg("! [watch] light schedule [%s] is invalid, expected ascending 'hour:day|dusk|night|dark' items", Config.Light.Schedule.size() ? Config.Light.Schedule.c_str() : "");
 	}
@@ -1410,7 +893,7 @@ void CWatchDevice::UpdateLight(float Dt)
 		return;
 	}
 
-	if (!g_pGameLevel)
+	if (!Env->HasLevel())
 	{
 		return;
 	}
@@ -1422,8 +905,8 @@ void CWatchDevice::UpdateLight(float Dt)
 	}
 
 	Light.Timer = 1.0f / WatchDetail::LightSampleHz;
-	const float Hour = float(Level().GetGameTime() % 86400000ull) / 3600000.0f;
-	State.Emission = EvaluateLightSchedule(Light.Keys, Config.Light, Hour) * State.DisplayQuality;
+	const float Hour = float(Env->GameTimeMs() % 86400000ull) / 3600000.0f;
+	State.Emission = WatchLogic::EvaluateLightSchedule(Light.Keys, Config.Light, Hour) * State.DisplayQuality;
 }
 
 void CWatchDevice::CreateHudPointLight(ref_light& PointLight, float Range)
@@ -1473,46 +956,52 @@ void CWatchDevice::TurnOffHudLights()
 	}
 }
 
-bool CWatchDevice::MakeLedXform(const SWatchLedRuntime& Led, const Fmatrix& WatchesXform, Fmatrix& Out) const
+void CWatchDevice::PrepareAnchors(const Fmatrix& WatchesXform)
 {
-	if (!Model)
+	const u32 Frame = Env->FrameId();
+	if (Anchors.Frame == Frame)
 	{
-		return false;
+		return;
 	}
 
-	if (Led.HiddenBone != BI_NONE)
+	Anchors.Frame = Frame;
+	Anchors.DisplayValid = Rig.DisplayXform(WatchesXform, Anchors.Display);
+	if (Anchors.DisplayValid)
 	{
-		const IBoneData& Data = Model->LL_GetData(Led.HiddenBone);
-		const u16 Parent = Data.GetParentID();
-		Out.mul(WatchesXform, Parent != BI_NONE ? Model->LL_GetTransform(Parent) : Fidentity);
-		Out.mulB_43(Data.get_bind_transform());
-		Out.mulB_43(Led.Offset);
-		return true;
+		Anchors.Display.mulB_43(UiOffset);
 	}
 
-	if (Led.Bone == BI_NONE || !Model->LL_GetBoneVisible(Led.Bone))
+	const u16 GlowBone = Rig.HasCompassLight() ? Rig.Bones().CompassLight : Rig.Bones().Compass;
+	Anchors.CompassValid = Rig.BoneXform(GlowBone, WatchesXform, Anchors.Compass);
+	if (Anchors.CompassValid)
 	{
-		return false;
+		Anchors.Compass.mulB_43(Light.Offset);
 	}
 
-	Out.mul(WatchesXform, Model->LL_GetTransform(Led.Bone));
-	Out.mulB_43(Led.Offset);
-	return true;
+	for (u32 Index = 0; Index < Leds.size(); ++Index)
+	{
+		SWatchLedRuntime& Led = Leds[Index];
+		Led.AnchorValid = Rig.LedXform(Index, WatchesXform, Led.Anchor);
+		if (Led.AnchorValid)
+		{
+			Led.Anchor.mulB_43(Led.Offset);
+		}
+	}
 }
 
-void CWatchDevice::SyncChannelLight(EWatchLedChannel Channel, const Fmatrix& WatchesXform)
+void CWatchDevice::SyncLedLight(u32 Index)
 {
-	const SWatchChannelPresent& Present = Config.Present[u32(Channel)];
-	SWatchLedRuntime& Led = Leds[u32(Channel)];
+	const SWatchLedElement& Element = Config.Leds[Index];
+	const SWatchChannelPresent& Present = Element.Present;
+	SWatchLedRuntime& Led = Leds[Index];
 
-	if (!Present.Enabled || !Present.PresentShader || !Present.LightEnabled)
+	if (!Led.Enabled || !Present.PresentShader || !Present.LightEnabled)
 	{
 		DestroyHudPointLight(Led.Light);
 		return;
 	}
 
-	Fmatrix Xform;
-	if (Led.Value <= EPS || !MakeLedXform(Led, WatchesXform, Xform))
+	if (Led.Value <= EPS || !Led.AnchorValid)
 	{
 		TurnOffHudPointLight(Led.Light);
 		return;
@@ -1534,8 +1023,7 @@ void CWatchDevice::SyncChannelLight(EWatchLedChannel Channel, const Fmatrix& Wat
 		}
 	}
 
-	const WatchDetail::SWatchLedChannelDesc& Desc = WatchDetail::ChannelDesc(Channel);
-	const u32 Rgba = Ui ? Ui->GetGlowColor(Desc.Glow) : Desc.FallbackRgba;
+	const u32 Rgba = Ui ? Ui->GetLedColor(Index) : WatchDetail::LedFallbackColor(Element.Name);
 	Fcolor Color;
 	Color.set(
 		float(color_get_R(Rgba)) * (1.0f / 255.0f) * Strength,
@@ -1544,7 +1032,7 @@ void CWatchDevice::SyncChannelLight(EWatchLedChannel Channel, const Fmatrix& Wat
 		1.0f
 	);
 
-	Led.Light->set_position(Xform.c);
+	Led.Light->set_position(Led.Anchor.c);
 	Led.Light->set_color(Color);
 	Led.Light->set_range(std::max(0.0f, Present.LightRange));
 	if (!Led.Light->get_active())
@@ -1555,15 +1043,17 @@ void CWatchDevice::SyncChannelLight(EWatchLedChannel Channel, const Fmatrix& Wat
 
 void CWatchDevice::SyncHudLights(const Fmatrix& WatchesXform)
 {
-	if (!IsEnabled() || !Model)
+	if (!IsEnabled() || !Rig.Kinematics())
 	{
 		TurnOffHudLights();
 		return;
 	}
 
-	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
+	LastVisibleFrame = Env->FrameId();
+	PrepareAnchors(WatchesXform);
+	for (u32 Index = 0; Index < Leds.size(); ++Index)
 	{
-		SyncChannelLight(EWatchLedChannel(Index), WatchesXform);
+		SyncLedLight(Index);
 	}
 }
 
@@ -1584,296 +1074,154 @@ void CWatchDevice::UpdateAnomalyExclude()
 	Zones.SampleTimer = 0.0f;
 }
 
-float CWatchDevice::SampleChannel(EWatchLedChannel Channel) const
+void CWatchDevice::UpdateLeds(float Dt)
 {
-	switch (Channel)
+	float AnomalyLevel = 0.0f;
+	for (u32 Index = 0; Index < Leds.size(); ++Index)
 	{
-		case EWatchLedChannel::Anomaly:
-			return Zones.AnomalyTarget;
-		case EWatchLedChannel::Motion:
-			return (IsChannelActive(Channel) && g_pMotionIcon) ? g_pMotionIcon->GetThreatNormalized() : 0.0f;
-		case EWatchLedChannel::Noise:
-			if (IsChannelActive(Channel))
-			{
-				if (const CActor* Player = Actor())
-				{
-					return clampr(Player->m_snd_noise, 0.0f, 1.0f);
-				}
-			}
-			return 0.0f;
-		default:
-			return 0.0f;
-	}
-}
-
-void CWatchDevice::UpdateChannel(EWatchLedChannel Channel, float Dt)
-{
-	const u32 Index = u32(Channel);
-	float& Intensity = State.Intensity[Index];
-	if (Preview.PreviewChannel[Index])
-	{
-		Intensity = clampr(Preview.PreviewChannelValue[Index], 0.0f, 1.0f);
-	}
-	else
-	{
-		Intensity = SmoothTowards(Intensity, SampleChannel(Channel), Dt, WatchDetail::LedSmoothing);
-	}
-
-	UpdateLedBlink(Leds[Index], Config.Blink[Index], Intensity, Dt);
-}
-
-bool CWatchDevice::IsConditionAvailable(EWatchCondition Condition) const
-{
-	switch (Condition)
-	{
-		case EWatchCondition::Thirst:
-			return EngineExternal()[EEngineExternalGame::EnableThirst];
-		case EWatchCondition::Sleepiness:
-			return EngineExternal()[EEngineExternalGame::EnableSleepiness];
-		case EWatchCondition::Intoxication:
-			return EngineExternal()[EEngineExternalGame::EnableMedIntoxication];
-		default:
-			return true;
-	}
-}
-
-bool CWatchDevice::IsConditionActive(EWatchCondition Condition) const
-{
-	const SWatchConditionPresent& Present = Config.Conditions[u32(Condition)];
-	return Present.Enabled && Present.PresentUi && IsConditionAvailable(Condition);
-}
-
-float CWatchDevice::SampleCondition(EWatchCondition Condition) const
-{
-	if (!IsConditionAvailable(Condition))
-	{
-		return 0.0f;
-	}
-
-	CActor* Player = Actor();
-	if (!Player)
-	{
-		return 0.0f;
-	}
-
-	CActorCondition& Cond = Player->conditions();
-	switch (Condition)
-	{
-		case EWatchCondition::Health:
-			return clampr(Cond.GetHealth(), 0.0f, 1.0f);
-		case EWatchCondition::Power:
-			return clampr(Cond.GetPower(), 0.0f, 1.0f);
-		case EWatchCondition::Radiation:
-			return clampr(Cond.GetRadiation(), 0.0f, 1.0f);
-		case EWatchCondition::Satiety:
-			return clampr(Cond.GetSatiety(), 0.0f, 1.0f);
-		case EWatchCondition::Thirst:
-			return clampr(Cond.GetThirst(), 0.0f, 1.0f);
-		case EWatchCondition::Sleepiness:
-			return clampr(Cond.GetSleepiness(), 0.0f, 1.0f);
-		case EWatchCondition::Intoxication:
-			return clampr(Cond.GetIntoxication(), 0.0f, 1.0f);
-		case EWatchCondition::Bleeding:
+		const SWatchLedElement& Element = Config.Leds[Index];
+		SWatchLedRuntime& Led = Leds[Index];
+		if (Led.Preview)
 		{
-			const float Normalize = Config.Conditions[u32(Condition)].Normalize;
-			if (Normalize <= EPS)
-			{
-				return 0.0f;
-			}
-			return clampr(Cond.BleedingSpeed() / Normalize, 0.0f, 1.0f);
+			Led.Intensity = clampr(Led.PreviewValue, 0.0f, 1.0f);
 		}
-		default:
-			return 0.0f;
+		else
+		{
+			const float Target = IsLedActive(Index) ? SampleSource(Led.Source, 1.0f) : 0.0f;
+			Led.Intensity = WatchLogic::SmoothTowards(Led.Intensity, Target, Dt, Element.Present.Smoothing);
+		}
+
+		WatchLogic::UpdateLedBlink(Led.BlinkPhase, Led.Value, Element.Blink, Led.Intensity, Dt);
+		if (Led.Source.Kind == EWatchSourceKind::Anomaly)
+		{
+			AnomalyLevel = std::max(AnomalyLevel, Led.Intensity);
+		}
 	}
+	State.AnomalyLevel = AnomalyLevel;
 }
 
-void CWatchDevice::UpdateCondition(EWatchCondition Condition, float Dt)
+void CWatchDevice::UpdateGauges(float Dt)
 {
-	const u32 Index = u32(Condition);
-	const SWatchConditionPresent& Present = Config.Conditions[Index];
-	float& Value = State.Condition[Index];
-	float& DisplayValue = State.ConditionDisplay[Index];
-	float& Badness = State.ConditionBadness[Index];
-	bool& Visible = State.ConditionVisible[Index];
-	EWatchConditionSeverity& Severity = State.ConditionSeverity[Index];
-
-	if (!IsConditionActive(Condition))
+	for (u32 Index = 0; Index < Gauges.size(); ++Index)
 	{
-		Value = 0.0f;
-		DisplayValue = 0.0f;
-		Badness = 0.0f;
-		Visible = false;
-		Severity = EWatchConditionSeverity::None;
-		return;
+		const SWatchConditionPresent& Present = Config.Gauges[Index].Present;
+		SWatchGaugeRuntime& Gauge = Gauges[Index];
+
+		if (!IsGaugeActive(Index))
+		{
+			Gauge.Value = 0.0f;
+			Gauge.DisplayValue = 0.0f;
+			Gauge.Badness = 0.0f;
+			Gauge.Visible = false;
+			Gauge.Severity = EWatchConditionSeverity::None;
+			continue;
+		}
+
+		const float Target = clampr(Gauge.Preview ? Gauge.PreviewValue : SampleSource(Gauge.Source, Present.Normalize), 0.0f, 1.0f);
+		Gauge.Value = WatchLogic::SmoothTowards(Gauge.Value, Target, Dt, Present.Smoothing);
+		Gauge.DisplayValue = clampr(Present.Invert ? (1.0f - Gauge.Value) : Gauge.Value, 0.0f, 1.0f);
+		Gauge.Visible = Gauge.DisplayValue >= Present.VisibleMin && Gauge.DisplayValue <= Present.VisibleMax;
+		Gauge.Badness = WatchDetail::ConditionBadness(Gauge.DisplayValue, Present.SeverityHigher);
+		Gauge.Severity = WatchDetail::EvaluateConditionSeverity(Gauge.Badness, Present);
 	}
-
-	float Target = Preview.PreviewCondition[Index] ? Preview.PreviewConditionValue[Index] : SampleCondition(Condition);
-	Target = clampr(Target, 0.0f, 1.0f);
-	Value = SmoothTowards(Value, Target, Dt, WatchDetail::ConditionSmoothing);
-	DisplayValue = Present.Invert ? (1.0f - Value) : Value;
-	DisplayValue = clampr(DisplayValue, 0.0f, 1.0f);
-	Visible = DisplayValue >= Present.VisibleMin && DisplayValue <= Present.VisibleMax;
-	Badness = WatchDetail::ConditionBadness(DisplayValue, Present.SeverityHigher);
-	Severity = WatchDetail::EvaluateConditionSeverity(Badness, Present);
 }
 
-u32 CWatchDevice::ConditionDrawColor(EWatchCondition Condition, u32 Fallback) const
+u32 CWatchDevice::GaugeColor(const SWatchGaugeRuntime& Gauge, u32 Fallback) const
 {
-	return WatchDetail::ConditionSeverityColor(
-		State.ConditionSeverity[u32(Condition)],
-		Config.Conditions[u32(Condition)],
-		Fallback
-	);
-}
-
-float CWatchDevice::ConditionDrawGlow(EWatchCondition Condition) const
-{
-	const u32 Index = u32(Condition);
-	const SWatchConditionPresent& Present = Config.Conditions[Index];
-	return Present.Glow * WatchDetail::ConditionSeverityGlow(State.ConditionSeverity[Index], Present);
+	const u32 Severity = u32(Gauge.Severity);
+	return Gauge.HasColor[Severity] ? Gauge.Colors[Severity] : Fallback;
 }
 
 bool CWatchDevice::RenderUIQuery() const
 {
-	return Ui && Model && IsEnabled();
+	return Ui && Rig.Kinematics() && IsEnabled();
 }
 
 void CWatchDevice::RenderUI(const Fmatrix& WatchesXform)
 {
-	Fmatrix DisplayXform;
-	DisplayXform.mul(WatchesXform, Model->LL_GetTransform(BoneIds.Display));
-	DisplayXform.mulB_43(UiOffset);
-	Ui->Render(DisplayXform);
+	PrepareAnchors(WatchesXform);
+	if (!Anchors.DisplayValid)
+	{
+		return;
+	}
+
+	LastVisibleFrame = Env->FrameId();
+	Ui->Render(Anchors.Display);
 
 	const float CompassIntensity = State.TargetValid
 		? Config.Compass.TargetGlow * State.DisplayQuality
 		: State.Emission;
-	const u32 CompassColor = CompassColorForKind(State.CompassSourceKind);
-	RenderBoneGlow(
-		EWatchGlow::Compass,
-		BoneIds.CompassLight,
-		Light.Offset,
-		Config.Light.UiSize,
-		CompassIntensity,
-		CompassColor,
-		WatchesXform
-	);
-	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
+	if (Anchors.CompassValid && CompassIntensity > 0.0f)
 	{
-		RenderChannel(EWatchLedChannel(Index), WatchesXform, DisplayXform);
+		Ui->RenderCompassGlow(Anchors.Compass, Config.Light.UiSize, CompassIntensity, CompassColorForKind(State.CompassSourceKind));
 	}
 
-	if (BoneIds.Display != BI_NONE)
+	for (u32 Index = 0; Index < Leds.size(); ++Index)
 	{
-		for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+		const SWatchChannelPresent& Present = Config.Leds[Index].Present;
+		const SWatchLedRuntime& Led = Leds[Index];
+		if (!Led.Enabled || Led.Value <= 0.0f)
 		{
-			RenderCondition(EWatchCondition(Index), DisplayXform);
+			continue;
+		}
+
+		if (Present.PresentShader && !Rig.IsLedMeshHidden(Index) && Led.AnchorValid)
+		{
+			Ui->RenderLedGlow(Index, Led.Anchor, Present.UiSize, Led.Value);
+		}
+
+		if (Present.PresentUi && Led.Value > EPS)
+		{
+			Fmatrix Xform = Anchors.Display;
+			Xform.mulB_43(Led.Offset);
+			Ui->RenderLedGlow(Index, Xform, Present.UiSize, Led.Value);
+		}
+	}
+
+	for (u32 Index = 0; Index < Gauges.size(); ++Index)
+	{
+		RenderGauge(Index);
+	}
+
+	for (u32 Index = 0; Index < Leds.size(); ++Index)
+	{
+		const SWatchChannelPresent& Present = Config.Leds[Index].Present;
+		const SWatchLedRuntime& Led = Leds[Index];
+		if (Led.Enabled && Present.PresentShader && Rig.IsLedMeshHidden(Index) && Led.AnchorValid)
+		{
+			Ui->RenderLed(Index, Led.Anchor, Present.GlassSize, Present.UiSize, Led.Value, Present.Brightness);
 		}
 	}
 }
 
-void CWatchDevice::RenderBoneGlow(EWatchGlow Id, u16 Bone, const Fmatrix& Offset, const Fvector2& Size, float Intensity, const Fmatrix& WatchesXform)
+void CWatchDevice::RenderGauge(u32 Index)
 {
-	const u32 Color = Ui ? Ui->GetGlowColor(Id) : 0xFFFFFFFF;
-	RenderBoneGlow(Id, Bone, Offset, Size, Intensity, Color, WatchesXform);
-}
-
-void CWatchDevice::RenderBoneGlow(EWatchGlow Id, u16 Bone, const Fmatrix& Offset, const Fvector2& Size, float Intensity, u32 Color, const Fmatrix& WatchesXform)
-{
-	if (Intensity <= 0.0f || Bone == BI_NONE || !Model->LL_GetBoneVisible(Bone))
+	const SWatchConditionPresent& Present = Config.Gauges[Index].Present;
+	const SWatchGaugeRuntime& Gauge = Gauges[Index];
+	if (!Gauge.Visible || !Present.PresentUi || Gauge.Severity == EWatchConditionSeverity::None)
 	{
 		return;
 	}
 
-	Fmatrix GlowXform;
-	GlowXform.mul(WatchesXform, Model->LL_GetTransform(Bone));
-	GlowXform.mulB_43(Offset);
-	Ui->RenderGlow(Id, GlowXform, Size, Intensity, Color);
-}
-
-void CWatchDevice::RenderChannel(EWatchLedChannel Channel, const Fmatrix& WatchesXform, const Fmatrix& DisplayXform)
-{
-	const SWatchChannelPresent& Present = Config.Present[u32(Channel)];
-	const SWatchLedRuntime& Led = Leds[u32(Channel)];
-	const EWatchGlow Glow = WatchDetail::ChannelDesc(Channel).Glow;
-	if (!Present.Enabled)
-	{
-		return;
-	}
-
-	if (Present.PresentShader)
-	{
-		if (Led.HiddenBone == BI_NONE)
-		{
-			RenderBoneGlow(Glow, Led.Bone, Led.Offset, Present.UiSize, Led.Value, WatchesXform);
-		}
-		else
-		{
-			Fmatrix LedXform;
-			if (MakeLedXform(Led, WatchesXform, LedXform))
-			{
-				Ui->RenderLed(Glow, LedXform, Present.GlassSize, Present.UiSize, Led.Value, Present.Brightness);
-			}
-		}
-	}
-
-	if (!Present.PresentUi || Led.Value <= EPS || BoneIds.Display == BI_NONE)
-	{
-		return;
-	}
-
-	Fmatrix Xform = DisplayXform;
-	Xform.mulB_43(Led.Offset);
-	Ui->RenderGlow(Glow, Xform, Present.UiSize, Led.Value);
-}
-
-void CWatchDevice::RenderCondition(EWatchCondition Condition, const Fmatrix& DisplayXform)
-{
-	const u32 Index = u32(Condition);
-	const SWatchConditionPresent& Present = Config.Conditions[Index];
-	if (!State.ConditionVisible[Index] || !Present.PresentUi || !Ui)
-	{
-		return;
-	}
-
-	const EWatchConditionSeverity Severity = State.ConditionSeverity[Index];
-	if (Severity == EWatchConditionSeverity::None)
-	{
-		return;
-	}
-
-	const float Intensity = clampr(Display.Intensity * ConditionDrawGlow(Condition), 0.0f, 1.0f);
+	const float Glow = Present.Glow * WatchDetail::ConditionSeverityGlow(Gauge.Severity, Present);
+	const float Intensity = clampr(Display.Intensity * Glow, 0.0f, 1.0f);
 	if (Intensity <= EPS)
 	{
 		return;
 	}
 
-	const SWatchConditionRuntime& Runtime = ConditionRuntime[Index];
-	if (Present.PresentIcon && Ui->HasConditionIcon(Condition))
+	if (Present.PresentIcon && Ui->HasGaugeIcon(Index))
 	{
 		Fmatrix IconXform;
-		IconXform.mul(DisplayXform, Runtime.IconOffset);
-		Ui->RenderConditionIcon(
-			Condition,
-			IconXform,
-			Present.UiIconSize,
-			Intensity,
-			ConditionDrawColor(Condition, Ui->GetConditionIconColor(Condition))
-		);
+		IconXform.mul(Anchors.Display, Gauge.IconOffset);
+		Ui->RenderGaugeIcon(Index, IconXform, Present.UiIconSize, Intensity, GaugeColor(Gauge, Ui->GetGaugeIconColor(Index)));
 	}
 
-	if (Present.PresentBar && Ui->HasConditionBar(Condition))
+	if (Present.PresentBar && Ui->HasGaugeBar(Index))
 	{
 		Fmatrix BarXform;
-		BarXform.mul(DisplayXform, Runtime.BarOffset);
-		Ui->RenderConditionBar(
-			Condition,
-			BarXform,
-			Present.UiBarSize,
-			State.ConditionBadness[Index],
-			Intensity,
-			ConditionDrawColor(Condition, Ui->GetConditionBarColor(Condition))
-		);
+		BarXform.mul(Anchors.Display, Gauge.BarOffset);
+		Ui->RenderGaugeBar(Index, BarXform, Present.UiBarSize, Gauge.Badness, Intensity, GaugeColor(Gauge, Ui->GetGaugeBarColor(Index)));
 	}
 }
 
@@ -1885,15 +1233,18 @@ void CWatchDevice::Revert()
 	}
 
 	Config = ConfigBaseline;
-	RefreshCompassSettings();
+	for (SWatchLedRuntime& Led : Leds)
+	{
+		Led.Preview = false;
+	}
+	for (SWatchGaugeRuntime& Gauge : Gauges)
+	{
+		Gauge.Preview = false;
+	}
 	Preview = SWatchDebugPreview{};
-	UpdateDisplayFormats();
-	UpdateLightSchedule();
-	UpdateAnomalyExclude();
-	UpdateLedMeshes();
-	UpdateUILayout();
-	CreateUI();
 	DestroyHudLights();
+	CompileConfig(true);
+	CreateUI();
 }
 
 void CWatchDevice::Reload()
@@ -1903,19 +1254,13 @@ void CWatchDevice::Reload()
 		return;
 	}
 
-	IKinematics* BoundModel = Model;
-	if (BoundModel)
-	{
-		ResetBoneCallbacks();
-	}
-
-	DestroyHudLights();
+	IKinematics* BoundModel = Rig.Kinematics();
+	Unbind();
 	Load(Section);
 
 	if (BoundModel)
 	{
-		Model = BoundModel;
-		AttachModel();
+		AttachModel(BoundModel);
 	}
 
 	Preview = SWatchDebugPreview{};
