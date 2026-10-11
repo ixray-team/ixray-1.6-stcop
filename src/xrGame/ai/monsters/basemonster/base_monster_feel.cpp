@@ -10,11 +10,13 @@
 #include "../../../../xrEngine/MonsterLogicTelemetry.h"
 #include "pch_script.h"
 #include "base_monster.h"
+#include "../../../../xrEngine/GameMtlLib.h"
 #include "../../../../xrCore/Kernel/EngineExternal.h"
 #include "../controlled_entity.h"
 #include "../../../Actor.h"
 #include "../../../ActorEffector.h"
 #include "../ai_monster_effector.h"
+#include "../MonsterBehaviorPolicy.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../sound_player.h"
 #include "../../../Level.h"
@@ -33,6 +35,25 @@
 #include "../../../Inventory.h"
 #include "../snork/snork.h"
 #include "../pseudogigant/pseudo_gigant.h"
+#include "../../../MonsterEnemySharingDebug.h"
+
+float CBaseMonster::GetHearingRangeFactor() const
+{
+	return EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ? HearingFactor : 1.f;
+}
+
+bool CBaseMonster::HasPriorityNoise() const
+{
+	if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation]) return false;
+	if (NoiseInvestigationUntil || HasDamagePanic() ||
+		(Behavior.ActionUntil && s32(Behavior.ActionUntil - Device.dwTimeGlobal) > 0 && xr_strcmp(Behavior.ActionMode, "NOISE SEARCH") == 0)) return true;
+	if (Behavior.NoiseLookUntil && s32(Behavior.NoiseLookUntil - Device.dwTimeGlobal) > 0) return true;
+	for (const auto& Noise : Behavior.NoiseAttention)
+	{
+		if (Noise.Until && s32(Noise.Until - Device.dwTimeGlobal) > 0 && Noise.LastCheckedEvent != Noise.LastInterest) return true;
+	}
+	return false;
+}
 
 bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvector& SoundPosition, float Power)
 {
@@ -40,6 +61,7 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 	{
 		return false;
 	}
+	if (SoundType & SOUND_TYPE_MELEE) return true;
 	const bool Explosion = (SoundType & SOUND_TYPE_OBJECT_EXPLODING) != 0;
 	const bool Shot = (SoundType & SOUND_TYPE_SHOOTING) != 0;
 	if (!Explosion && !Shot)
@@ -49,18 +71,27 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 
 	CMonsterLogicTimerScope TotalTimer(EMonsterLogicTimer::NewLogicTotal);
 	SNoiseReaction& Reaction = Explosion ? ExplosionReaction : ShotReaction;
-	if (!Reaction.Enabled || Reaction.Radius <= 0.f || MonsterPeaceful || !g_Alive() ||
-		GetScriptControl() || (m_controlled && m_controlled->is_under_control()) ||
-		Power < NoiseMinPower || Position().distance_to_sqr(SoundPosition) > Reaction.Radius * Reaction.Radius ||
-		(Reaction.NextReactionTime != 0 && s32(Reaction.NextReactionTime - Device.dwTimeGlobal) > 0))
+	const float Radius = Reaction.Radius * ((SoundType & SOUND_TYPE_SUPPRESSED) ? .3f : 1.f);
+	if (!Reaction.Enabled || (!Reaction.Attract && !Reaction.FearEnabled) || Reaction.Radius <= 0.f || MonsterPeaceful || !g_Alive() ||
+		GetScriptControl() || EnemyMan.get_script_enemy() || control().is_captured_pure() || (m_controlled && m_controlled->is_under_control()) ||
+		!_valid(Power) || Power < NoiseMinPower || Position().distance_to_sqr(SoundPosition) > Radius * Radius ||
+		GetHearingRangeFactor() <= 0.f)
 	{
 		return true;
 	}
 
-	Reaction.NextReactionTime = Device.dwTimeGlobal + NoiseReactionCooldown;
+	if (HasDamagePanic()) return true;
+	CObject* Emitter = Source;
+	for (u32 Depth = 0; Emitter && Emitter->H_Parent() && Depth < 4; ++Depth) Emitter = Emitter->H_Parent();
+	const u32 Accumulated = Behavior.HearNoise(*this, Emitter, SoundPosition, Power, Explosion);
+	const bool Interested = (Accumulated & 1u) != 0;
+	const bool Cooling = Reaction.NextReactionTime && s32(Reaction.NextReactionTime - Device.dwTimeGlobal) > 0;
+	const auto Outcome = CMonsterBehaviorPolicy::AccumulatedNoiseOutcome(Interested, (Accumulated & 2u) != 0, Cooling);
 	g_MonsterLogicTelemetry.Count(Explosion ? EMonsterLogicCounter::ExplosionNoise : EMonsterLogicCounter::ShotNoise);
-	if (Reaction.PanicChance > 0.f && Random.randF() < Reaction.PanicChance)
+	if (Outcome == CMonsterBehaviorPolicy::Panic)
 	{
+		Reaction.NextReactionTime = Device.dwTimeGlobal + NoiseReactionCooldown;
+		if (MonsterEnemySharingDebug().IsEnabled()) MonsterEnemySharingDebug().RecordNoiseReaction(*this, SoundPosition, Power, true, Explosion);
 		DamagePanicThreat = SoundPosition;
 		const u32 Until = Device.dwTimeGlobal + NoisePanicDuration;
 		if (!HasDamagePanic() || s32(Until - DamagePanicUntil) > 0)
@@ -68,19 +99,39 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 			DamagePanicUntil = Until;
 		}
 		NoiseInvestigationUntil = 0;
+		Behavior.AttentionUntil = 0;
+		Behavior.NoiseLookUntil = 0;
+		if (xr_strcmp(Behavior.ActionMode, "NOISE SEARCH") == 0) Behavior.ActionUntil = 0;
+		for (auto& Noise : Behavior.NoiseAttention) Noise = {};
+		SetAttentionVisionObject(nullptr, 0);
 		g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::NoisePanic);
 		return true;
 	}
-	if (!Reaction.Attract || HasDamagePanic())
+	if (Outcome != CMonsterBehaviorPolicy::Investigate || !Interested || HasDamagePanic())
 	{
 		return true;
 	}
 
-	if (Shot && !Explosion)
+	const u32 EmitterID = Emitter ? u32(Emitter->ID()) : u32(-1);
+	if (NoiseInvestigationUntil && (EmitterID != NoiseInvestigationSource ||
+		(EmitterID == u32(-1) && NoiseInvestigationPosition.distance_to_xz(SoundPosition) > 2.f)))
 	{
-		SoundMemory.HearSound(Source, SoundType, SoundPosition, Power, Device.dwTimeGlobal);
+		// A new unrelated noise cannot silently replace an unvisited committed acoustic point.
+		return true;
 	}
+	const CEntityAlive* Current = EnemyMan.get_enemy();
+	if (Current && u32(Current->ID()) == EmitterID && EnemyMan.see_enemy_now(Current)) return true;
 
+	// Attraction uses the delivered position; native shooting panic must not override this policy.
+
+	if (!NoiseInvestigationUntil || NoiseInvestigationPosition.distance_to_xz(SoundPosition) > 2.f)
+	{
+		NoiseProgressTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+		NoiseProgressDistance = NoiseProgressDirectDistance = -1.f; NoiseProgressSampleTime = 0;
+		NoiseProgressPosition = Position();
+		NoiseInvestigationLookUntil = Device.dwTimeGlobal + 1000;
+	}
+	NoiseInvestigationSource = Emitter ? u32(Emitter->ID()) : u32(-1);
 	NoiseInvestigationPosition = SoundPosition;
 	NoiseInvestigationVertex = u32(-1);
 	if (ai().level_graph().valid_vertex_position(SoundPosition))
@@ -91,11 +142,18 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 			NoiseInvestigationVertex = Candidate;
 		}
 	}
-	NoiseInvestigationUntil = ai().level_graph().valid_vertex_id(NoiseInvestigationVertex) ? Device.dwTimeGlobal + 10000 : 0;
-	if (const CEntityAlive* Target = Source ? Source->cast_entity_alive() : nullptr)
+	if (!ai().level_graph().valid_vertex_id(NoiseInvestigationVertex) || !control().path_builder().accessible(NoiseInvestigationVertex))
 	{
-		EnemyMemory.RememberHeardEnemy(Target, SoundPosition, Device.dwTimeGlobal, Reaction.Radius);
+		NoiseInvestigationVertex = CControlPathBuilder::find_nearest_vertex(ai_location().level_vertex_id(), SoundPosition, 10.f);
 	}
+	if (ai().level_graph().valid_vertex_id(NoiseInvestigationVertex))
+	{
+		// Sound height can be off the navigation mesh (a shot from a roof or below ground).
+		NoiseInvestigationPosition = ai().level_graph().vertex_position(NoiseInvestigationVertex);
+	}
+	NoiseInvestigationUntil = ai().level_graph().valid_vertex_id(NoiseInvestigationVertex) ? Device.dwTimeGlobal + Behavior.NoiseSearchTime : 0;
+	if (MonsterEnemySharingDebug().IsEnabled()) MonsterEnemySharingDebug().RecordNoiseReaction(*this, SoundPosition, Power, false, Explosion, NoiseInvestigationUntil != 0);
+
 	if (NoiseInvestigationUntil)
 	{
 		g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::NoiseAttract);
@@ -105,15 +163,21 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 
 void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power)
 {
-	if (!g_Alive())		return;
+	if (!g_Alive() || GetHearingRangeFactor() <= 0.f) return;
 
 	// ignore my sounds
 	if (this == who)	return;
 
 	PROF_EVENT("CBaseMonster::feel_sound_new");
 
+
 	if (user_data)
 		user_data->accept	(sound_user_data_visitor());
+
+	if ((eType & SOUND_TYPE_DYING) != 0 && eType != int(0xffffffff) && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
+	{
+		Behavior.HearDeath(*this, who ? who->cast_base_monster() : nullptr, Position, power);
+	}
 
 	// ignore unknown sounds
 	if (eType == 0xffffffff) return;
@@ -346,6 +410,26 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 }
 
 
+float CBaseMonster::feel_vision_mtl_transp(CObject* Object, u32 Element)
+{
+	if (!Object && VisionIgnoreFoliage && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterVisionIgnoreFoliage])
+	{
+		const CDB::TRI& Triangle = Level().ObjectSpace.GetStaticTris()[Element];
+		const SGameMtl* Material = GMLib.GetMaterialByIdx(Triangle.material);
+		if (Material && (Material->Flags.is(SGameMtl::flPassable) || Material->Flags.is(SGameMtl::flActorObstacle)))
+		{
+			// Filter foliage explicitly: unrelated passable geometry and trunks still occlude vision.
+			const char* Name = Material->m_Name.c_str();
+			if (Name && (!xr_strcmp(Name, "materials\\bush") || !xr_strcmp(Name, "materials\\bush_sux") ||
+				!xr_strcmp(Name, "materials\\leaves") || !xr_strcmp(Name, "materials\\foliage")))
+			{
+				return 1.f;
+			}
+		}
+	}
+	return inherited::feel_vision_mtl_transp(Object, Element);
+}
+
 bool  CBaseMonster::feel_vision_isRelevant(CObject* O)
 {
 	if(!O || O->getDestroy())		return false;
@@ -410,15 +494,19 @@ void CBaseMonster::ReactToActorDamage(float Amount, CObject* Attacker)
 	CMonsterLogicTimerScope HitTimer(EMonsterLogicTimer::ActorHit);
 	g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::Hits);
 	const bool TooFar = Position().distance_to_sqr(Player->Position()) > AutoFocusMaxDist * AutoFocusMaxDist;
-	if (TooFar || (AutoPanicOnInvisibleDamage && !EnemyMan.see_enemy_now(Player)))
+	if (TooFar && AutoPanicOnInvisibleDamage)
 	{
 		g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::Panic);
 		DamagePanicThreat = Player->Position();
-		DamagePanicUntil = Device.dwTimeGlobal + 10000;
+		DamagePanicUntil = Device.dwTimeGlobal + u32(Random.randI(6000, 10001));
 	}
 	if (!TooFar && AutoFocusAttacker)
 	{
 		g_MonsterLogicTelemetry.Count(EMonsterLogicCounter::Focus);
+		DamagePanicUntil = 0;
+		NoiseInvestigationUntil = 0;
+		NoiseInvestigationLookUntil = 0;
+		Behavior.NextUpdate = 0;
 		EnemyMan.FocusDamageAttacker(Player);
 	}
 }
@@ -426,9 +514,11 @@ void CBaseMonster::ReactToActorDamage(float Amount, CObject* Attacker)
 void CBaseMonster::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 element)
 {
 	if (!g_Alive()) return;
-	ReactToActorDamage(amount, who);
 
-	feel_sound_new(who,SOUND_TYPE_WEAPON_SHOOTING,0,who->Position(),1.f);
+	if (who && !EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
+	{
+		feel_sound_new(who, SOUND_TYPE_WEAPON_SHOOTING, 0, who->Position(), 1.f);
+	}
 	if (g_Alive()) sound().play(MonsterSound::eMonsterSoundTakeDamage);
 
 	if (element < 0) return;

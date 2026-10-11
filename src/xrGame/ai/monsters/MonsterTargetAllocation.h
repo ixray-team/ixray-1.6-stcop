@@ -9,6 +9,7 @@ public:
 	u32 Load[MaxTargets] = {};
 	u32 Target[MaxMembers] = {};
 	bool Fixed[MaxMembers] = {};
+	float CrowdPenalty = 400.f;
 
 	constexpr CMonsterTargetAllocation()
 	{
@@ -44,8 +45,8 @@ public:
 					{
 						continue;
 					}
-					if (BestTarget == u32(-1) || Load[Enemy] < Load[BestTarget] ||
-						(Load[Enemy] == Load[BestTarget] && Range < Distance[BestMember][BestTarget]))
+					const float Score = Range + float(Load[Enemy]) * CrowdPenalty;
+					if (BestTarget == u32(-1) || Score < Distance[BestMember][BestTarget] + float(Load[BestTarget]) * CrowdPenalty)
 					{
 						BestMember = Member;
 						BestTarget = Enemy;

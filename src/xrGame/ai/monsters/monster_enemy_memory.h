@@ -15,6 +15,7 @@ class CMonsterEnemyMemory {
 	bool DebugSawActor = false;
 	bool DebugDetectedCloseActor = false;
 	u32 DebugVisionGeneration = 0;
+	u32 NextCloseScan = 0;
 	const CEntityAlive* SharedPlayer = nullptr;
 	bool PlayerFirstKnownThroughSharing = false;
 
@@ -24,11 +25,16 @@ public:
 
 	void				init_external			(CBaseMonster *M, TTime mem_time);
 	u32 GetMemoryTime() const;
+	void KeepApproach(const CEntityAlive* Target, u32 Until);
+	void CommitInspection(const CEntityAlive* Target);
+	void RecordOwnTrail(const CEntityAlive* Target);
+	void ReceiveTrail(const CEntityAlive* Target, const SMonsterEnemy& Source, bool SourceLive = false);
 	void UpdateReachedPoint(const CEntityAlive* Target);
 	bool IsActual(const SMonsterEnemy& Entry) const;
 	bool IsUnreachable(const CEntityAlive* Target) const;
 	void MarkUnreachable(const CEntityAlive* Target);
 	void ClearUnreachable(const CEntityAlive* Target);
+	void ResetInspectionForDamage(const CEntityAlive* Target);
 	bool CanRefreshHiddenTarget(const CEntityAlive* Target);
 	u32 GetRemainingMemoryTime(const SMonsterEnemy& Entry) const;
 	void RememberHeardEnemy(const CEntityAlive* Target, const Fvector& SoundPosition, u32 SoundTime, float HearingRadius = -1.f);
@@ -44,16 +50,17 @@ public:
 	SMonsterEnemy		get_enemy_info			();
 	u32					get_enemies_count		() {return (u32)m_objects.size();}
 
+	bool TryNavigationFallback(const CEntityAlive* Target);
 	const ENEMIES_MAP	&get_memory				() {return m_objects;}
 
-	void				clear					() {m_objects.clear(); UnreachableIgnoredTargets.clear(); OwnSawActor = false; ActorSeenBefore = false; DebugSawActor = false; DebugDetectedCloseActor = false; ClearSharedPlayer();}
+	void				clear					() {m_objects.clear(); UnreachableIgnoredTargets.clear(); NextCloseScan = 0; OwnSawActor = false; ActorSeenBefore = false; DebugSawActor = false; DebugDetectedCloseActor = false; ClearSharedPlayer();}
 	void				remove_links			(CObject *O);
 	
 	void				add_enemy				(const CEntityAlive *enemy);
 	void				add_enemy				(const CEntityAlive *enemy, const Fvector &pos, u32 vertex, u32 time);
 
 private:
-	void SetRetention(SMonsterEnemy& Entry, const SMonsterEnemy* Previous = nullptr);
+	void SetRetention(SMonsterEnemy& Entry, const SMonsterEnemy* Previous = nullptr, bool FreshVisual = false);
 
 	void				remove_non_actual		();
 

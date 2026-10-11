@@ -7,6 +7,7 @@
 #include "../../../Level.h"
 #include "../../../entity_alive.h"
 #include "../../../Actor.h"
+#include "../../../ai_debug.h"
 #include "../../../ai_space.h"
 #include "../../../alife_simulator.h"
 #include "../../../alife_object_registry.h"
@@ -20,6 +21,15 @@
 #include "../../../ai_object_location.h"
 namespace
 {
+bool IgnoreCrowActor(CObject* Object)
+{
+#ifndef MASTER_GOLD
+    return Object && Object->cast_actor() && psAI_Flags.test(aiIgnoreActor);
+#else
+    return false;
+#endif
+}
+
 using CrowBehaviorTiming::SCrowRange;
 using CrowBehaviorTiming::SCrowReaction;
 bool CrowFoodContact(CGameObject& Bird, CEntityAlive& Corpse, const Fvector& Beak, Fvector& Point)
@@ -351,7 +361,7 @@ struct CScavengerCrow::SBehavior
         // First-person actor rendering is not a reliable perception filter.
         // Detect the actual living actor directly, even when its mesh is hidden.
         auto* actor=Actor();
-        if (actor && !actor->getDestroy() && actor->g_Alive() &&
+        if (actor && !IgnoreCrowActor(actor) && !actor->getDestroy() && actor->g_Alive() &&
             point.distance_to_sqr(actor->Position())<_sqr(radius))
         { threat=actor->Position(); return true; }
         if (noise_timer > 0.f && point.distance_to_sqr(danger) < _sqr(noise_radius))
@@ -370,7 +380,7 @@ struct CScavengerCrow::SBehavior
             {
                 auto* Object = Level().Objects.net_Find(Id);
                 auto* Entity = Object ? smart_cast<CEntityAlive*>(Object) : nullptr;
-                if (Entity && !Entity->getDestroy() && Entity->g_Alive() &&
+                if (Entity && !IgnoreCrowActor(Entity) && !Entity->getDestroy() && Entity->g_Alive() &&
                     point.distance_to_sqr(Entity->Position()) < _sqr(radius))
                 {
                     threat = Entity->Position();
@@ -1997,6 +2007,7 @@ bool CScavengerCrow::peck_surface(const Fvector& beak, Fvector& point)
 void CScavengerCrow::feel_sound_new(CObject* who,int type,CSound_UserDataPtr,const Fvector& position,float power)
 {
     if (!g_Alive() || !Local() || !m_behavior->enabled || who==this || type==int(0xffffffff)) return;
+    if (IgnoreCrowActor(who)) return;
     const bool explosion=(type&SOUND_TYPE_OBJECT_EXPLODING)!=0;
     const float radius=explosion ? m_behavior->explosion_radius : m_behavior->shot_radius;
     const float DistanceSq = Position().distance_to_sqr(position);

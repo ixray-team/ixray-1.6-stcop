@@ -11,15 +11,15 @@ CEngineExternal::CEngineExternal() :
 	string_path fname;
 	FS.update_path(fname, _game_config_, "engine_external.ltx");
 	pOptions = new CInifile(fname);
-	float SharingMin = READ_IF_EXISTS(pOptions, r_float, "monsters_logic", "MonsterEnemySharingIntervalMin", 1.f);
-	float SharingMax = READ_IF_EXISTS(pOptions, r_float, "monsters_logic", "MonsterEnemySharingIntervalMax", 2.f);
+	float SharingMin = READ_IF_EXISTS(pOptions, r_float, "monsters_logic", "MonsterEnemySharingIntervalMin", 3.f);
+	float SharingMax = READ_IF_EXISTS(pOptions, r_float, "monsters_logic", "MonsterEnemySharingIntervalMax", 5.f);
 	if (!_valid(SharingMin) || SharingMin < .25f || SharingMin > 60.f)
 	{
-		SharingMin = 1.f;
+		SharingMin = 3.f;
 	}
 	if (!_valid(SharingMax) || SharingMax < .25f || SharingMax > 60.f)
 	{
-		SharingMax = 2.f;
+		SharingMax = 5.f;
 	}
 	if (SharingMax < SharingMin)
 	{
@@ -27,10 +27,10 @@ CEngineExternal::CEngineExternal() :
 	}
 	MonsterEnemySharingIntervalMin = u32(SharingMin * 1000.f);
 	MonsterEnemySharingIntervalMax = u32(SharingMax * 1000.f);
-	MonsterEnemySharingCloseRatio = READ_IF_EXISTS(pOptions, r_float, "monsters_logic", "MonsterEnemySharingCloseRatio", .3f);
+	MonsterEnemySharingCloseRatio = READ_IF_EXISTS(pOptions, r_float, "monsters_logic", "MonsterEnemySharingCloseRatio", .25f);
 	if (!_valid(MonsterEnemySharingCloseRatio) || MonsterEnemySharingCloseRatio < 0.f || MonsterEnemySharingCloseRatio > 1.f)
 	{
-		MonsterEnemySharingCloseRatio = .3f;
+		MonsterEnemySharingCloseRatio = .25f;
 	}
 
 	if (pOptions->section_exist("shaders_options"))

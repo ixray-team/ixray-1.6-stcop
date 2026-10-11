@@ -59,7 +59,8 @@ void CStateMonsterEatAbstract::finalize()
 {
 	inherited::finalize();
 
-	monster_squad().get_squad(this->object)->unlock_corpse(this->object->CorpseMan.get_corpse());
+	// The selected corpse may have changed while approaching or dragging.
+	if (corpse) monster_squad().get_squad(this->object)->unlock_corpse(corpse);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -67,7 +68,8 @@ void CStateMonsterEatAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
 
-	monster_squad().get_squad(this->object)->unlock_corpse(this->object->CorpseMan.get_corpse());
+	// The selected corpse may have changed while approaching or dragging.
+	if (corpse) monster_squad().get_squad(this->object)->unlock_corpse(corpse);
 }
 
 
@@ -232,6 +234,7 @@ void CStateMonsterEatAbstract::setup_substates()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterEatAbstract::check_completion()
 {
+	if (this->object->HasPriorityNoise()) return true;
 	if (corpse != this->object->CorpseMan.get_corpse()) return true;
 	if (!hungry()) return true;
 
@@ -241,6 +244,7 @@ bool CStateMonsterEatAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterEatAbstract::check_start_conditions()
 {
+	if (this->object->HasPriorityNoise()) return false;
 	return (
 		this->object->CorpseMan.get_corpse() && 
 		this->object->Home->at_home(this->object->CorpseMan.get_corpse()->Position()) &&

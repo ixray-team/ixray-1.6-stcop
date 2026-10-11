@@ -26,6 +26,9 @@ namespace Feel
 		xr_vector<ISpatialShared>	r_spatial;
 		CObject*					m_owner;
 		CFrustum					Frustum;
+		CObject* AttentionObject = nullptr;
+		u32 AttentionUntil = 0;
+		float AttentionAngle = 0.f, AttentionRadius = 0.f;
 		xrSRWLock					lock_query, lock_visible;
 
 		void						o_new		(CObject* E);
@@ -57,6 +60,7 @@ namespace Feel
 		void						feel_vision_update		(Fvector& P, float dt, float vis_threshold);
 		void						feel_vision_relcase		(CObject* object);
 		void						feel_vision_get			(xr_vector<CObject*>& R);
+		void SetAttentionVisionObject(CObject* Object, u32 Until, float Angle = 0.f, float Radius = 0.f);
 		void GetOwnVisibleObjects(xr_vector<CObject*>& Objects);
 		bool GetOwnVisionObservation(const CObject* Object, Fvector& Position, u32& Time);
 		bool GetOwnVisionExposure(const CObject* Object, float& Milliseconds);
