@@ -1,8 +1,6 @@
 #include "StdAfx.h"
 #include "WatchDevice.h"
 #include "WatchInternal.h"
-#include "Actor.h"
-#include "ui/UIMotionIcon.h"
 #include <imgui.h>
 
 namespace
@@ -34,6 +32,31 @@ bool DrawWatchStringInput(const char* Label, shared_str& Value, char* Buffer, si
 	}
 	return false;
 }
+
+const char* WatchSourceName(const SWatchSource& Source)
+{
+	switch (Source.Kind)
+	{
+		case EWatchSourceKind::Anomaly: return "anomaly";
+		case EWatchSourceKind::Motion: return "motion";
+		case EWatchSourceKind::Noise: return "noise";
+		case EWatchSourceKind::Condition: return WatchDetail::ConditionNames[u32(Source.Condition)];
+		case EWatchSourceKind::Script: return "script";
+		default: return "none";
+	}
+}
+
+const char* WatchCompassKindName(EWatchCompassSourceKind Kind)
+{
+	switch (Kind)
+	{
+		case EWatchCompassSourceKind::North: return "north";
+		case EWatchCompassSourceKind::Story: return "story";
+		case EWatchCompassSourceKind::Additional: return "additional";
+		case EWatchCompassSourceKind::UserNav: return "nav";
+		default: return "none";
+	}
+}
 }
 
 void CWatchDevice::DrawImGui()
@@ -44,41 +67,23 @@ void CWatchDevice::DrawImGui()
 		return;
 	}
 
-	ImGui::Text("Section: %s", Section.c_str());
+	ImGui::Text("Section: %s | Profile: %s", Section.c_str(), Profile.size() ? Profile.c_str() : "base");
 	ImGui::Checkbox("Enabled", &Config.Root.Enabled);
-	ImGui::Text("Bones OK: %s", BonesOk() ? "yes" : "no");
+	ImGui::Text("Bones OK: %s | Visible: %s", BonesOk() ? "yes" : "no", Hidden ? "no" : "yes");
 	ImGui::Text(
 		"Bones: compass=%d light=%d ui=%d rad=%d anom=%d",
-		BoneIds.Compass != BI_NONE ? 1 : 0,
-		BoneIds.CompassLight != BI_NONE ? 1 : 0,
-		BoneIds.Display != BI_NONE ? 1 : 0,
-		BoneIds.RadIndicator != BI_NONE ? 1 : 0,
-		BoneIds.AnomIndicator != BI_NONE ? 1 : 0
+		Rig.Bones().Compass != BI_NONE ? 1 : 0,
+		Rig.Bones().CompassLight != BI_NONE ? 1 : 0,
+		Rig.Bones().Display != BI_NONE ? 1 : 0,
+		Rig.Bones().RadIndicator != BI_NONE ? 1 : 0,
+		Rig.Bones().AnomIndicator != BI_NONE ? 1 : 0
 	);
-	const char* SourceKindName = "none";
-	switch (State.CompassSourceKind)
-	{
-	case EWatchCompassSourceKind::North:
-		SourceKindName = "north";
-		break;
-	case EWatchCompassSourceKind::Story:
-		SourceKindName = "story";
-		break;
-	case EWatchCompassSourceKind::Additional:
-		SourceKindName = "additional";
-		break;
-	case EWatchCompassSourceKind::UserNav:
-		SourceKindName = "nav";
-		break;
-	default:
-		break;
-	}
 	ImGui::Text(
 		"Angle: %.1f deg | Error: %.1f deg | Target: %s | Kind: %s",
 		rad2deg(State.CompassAngle),
 		rad2deg(State.CompassError),
 		State.TargetValid ? "valid" : "none",
-		SourceKindName
+		WatchCompassKindName(State.CompassSourceKind)
 	);
 
 	DrawCompassImGui();
@@ -87,16 +92,27 @@ void CWatchDevice::DrawImGui()
 	DrawLagImGui("surge_lag", "Display Lag (Surge)", Config.SurgeLag, Surge.Lag);
 	DrawLagImGui("anomaly_lag", "Display Lag (Anomaly)", Config.AnomalyLag, Surge.AnomalyLag);
 	DrawLightImGui();
-	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
+	for (u32 Index = 0; Index < Leds.size(); ++Index)
 	{
-		DrawChannelImGui(EWatchLedChannel(Index));
+		DrawLedImGui(Index);
 	}
-	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	for (u32 Index = 0; Index < Gauges.size(); ++Index)
 	{
-		DrawConditionImGui(EWatchCondition(Index));
+		DrawGaugeImGui(Index);
 	}
 	DrawPreviewImGui();
 	DrawHotSaveImGui();
+
+	const bool EditingNow = ImGui::IsAnyItemActive();
+	if (EditingNow)
+	{
+		CompileConfig(false);
+	}
+	else if (Editing)
+	{
+		CompileConfig(true);
+	}
+	Editing = EditingNow;
 }
 
 void CWatchDevice::DrawCompassImGui()
@@ -109,31 +125,17 @@ void CWatchDevice::DrawCompassImGui()
 	SWatchCompass& CompassConfig = Config.Compass;
 	char ModeBuffer[32] = {};
 	char NoTargetBuffer[32] = {};
-	bool Changed = false;
 	DrawWatchStringInput("Mode (north|quest|nav)", CompassConfig.Mode, ModeBuffer, sizeof(ModeBuffer));
-	Changed |= ImGui::IsItemDeactivatedAfterEdit();
 	DrawWatchStringInput("No Target (hide|north)", CompassConfig.NoTarget, NoTargetBuffer, sizeof(NoTargetBuffer));
-	Changed |= ImGui::IsItemDeactivatedAfterEdit();
-
 	ImGui::DragFloat("Stiffness", &CompassConfig.Stiffness, 0.1f, 0.0f, 100.0f, "%.2f");
 	ImGui::DragFloat("Damping", &CompassConfig.Damping, 0.1f, 0.0f, 100.0f, "%.2f");
 	ImGui::DragFloat("Gravity Strength", &CompassConfig.GravityStrength, 1.0f, 0.0f, 360.0f, "%.1f");
 	ImGui::DragFloat("Angle Offset", &CompassConfig.AngleOffset, 1.0f, -360.0f, 360.0f, "%.1f");
-	Changed |= ImGui::IsItemEdited();
 	ImGui::DragFloat("Target Glow", &CompassConfig.TargetGlow, 0.01f, 0.0f, 2.0f, "%.2f");
 	ImGui::DragFloat4("North Color RGBA", &CompassConfig.NorthColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
-	Changed |= ImGui::IsItemEdited();
 	ImGui::DragFloat4("Story Color RGBA", &CompassConfig.StoryColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
-	Changed |= ImGui::IsItemEdited();
 	ImGui::DragFloat4("Additional Color RGBA", &CompassConfig.AdditionalColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
-	Changed |= ImGui::IsItemEdited();
 	ImGui::DragFloat4("Nav Color RGBA", &CompassConfig.NavColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
-	Changed |= ImGui::IsItemEdited();
-
-	if (Changed)
-	{
-		RefreshCompassSettings();
-	}
 }
 
 void CWatchDevice::DrawDisplayImGui()
@@ -148,14 +150,10 @@ void CWatchDevice::DrawDisplayImGui()
 	SWatchDisplay& DisplayConfig = Config.Display;
 	string64 TimeFormat = {};
 	string64 DateFormat = {};
-	bool TextChanged = DrawWatchStringInput("Time Format", DisplayConfig.TimeFormat, TimeFormat, sizeof(TimeFormat));
-	TextChanged |= DrawWatchStringInput("Date Format", DisplayConfig.DateFormat, DateFormat, sizeof(DateFormat));
-	TextChanged |= ImGui::DragFloat("Update Hz", &DisplayConfig.UpdateHz, 0.05f, 0.0f, 60.0f, "%.2f");
+	DrawWatchStringInput("Time Format", DisplayConfig.TimeFormat, TimeFormat, sizeof(TimeFormat));
+	DrawWatchStringInput("Date Format", DisplayConfig.DateFormat, DateFormat, sizeof(DateFormat));
+	ImGui::DragFloat("Update Hz", &DisplayConfig.UpdateHz, 0.05f, 0.0f, 60.0f, "%.2f");
 	ImGui::TextDisabled("Tokens: HH MM SS DD YY YYYY, 0 Hz = every frame");
-	if (TextChanged)
-	{
-		UpdateDisplayFormats();
-	}
 
 	SWatchFonts& Fonts = Config.Fonts;
 	string64 FontTime = {};
@@ -176,18 +174,14 @@ void CWatchDevice::DrawDisplayImGui()
 		CreateUI();
 	}
 
-	bool LayoutChanged = ImGui::DragFloat3("UI Position", &DisplayConfig.UiPosition.x, 0.0001f, -1.0f, 1.0f, "%.4f");
-	LayoutChanged |= ImGui::DragFloat3("UI Rotation", &DisplayConfig.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
-	LayoutChanged |= ImGui::DragFloat("UI Scale", &DisplayConfig.UiScale, 0.005f, 0.05f, 10.0f, "%.3f");
+	ImGui::DragFloat3("UI Position", &DisplayConfig.UiPosition.x, 0.0001f, -1.0f, 1.0f, "%.4f");
+	ImGui::DragFloat3("UI Rotation", &DisplayConfig.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
+	ImGui::DragFloat("UI Scale", &DisplayConfig.UiScale, 0.005f, 0.05f, 10.0f, "%.3f");
 	ImGui::TextDisabled("Rect: x, y, width, height");
-	LayoutChanged |= ImGui::DragFloat4("Time Rect", &DisplayConfig.UiTime.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	LayoutChanged |= ImGui::DragFloat4("Date Rect", &DisplayConfig.UiDate.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	LayoutChanged |= ImGui::DragFloat4("Barometer Rect", &DisplayConfig.UiBarometer.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	LayoutChanged |= ImGui::DragFloat4("Barometer Unit Rect", &DisplayConfig.UiBarometerUnit.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	if (LayoutChanged)
-	{
-		UpdateUILayout();
-	}
+	ImGui::DragFloat4("Time Rect", &DisplayConfig.UiTime.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+	ImGui::DragFloat4("Date Rect", &DisplayConfig.UiDate.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+	ImGui::DragFloat4("Barometer Rect", &DisplayConfig.UiBarometer.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+	ImGui::DragFloat4("Barometer Unit Rect", &DisplayConfig.UiBarometerUnit.x, 0.0001f, -0.1f, 0.1f, "%.4f");
 }
 
 void CWatchDevice::DrawBarometerImGui()
@@ -197,7 +191,7 @@ void CWatchDevice::DrawBarometerImGui()
 		return;
 	}
 
-	if (Surge.BridgeMissing)
+	if (Env->IsSurgeBridgeMissing())
 	{
 		ImGui::Text("Bridge: missing | Value: %.2f", State.Barometer);
 	}
@@ -258,92 +252,61 @@ void CWatchDevice::DrawLightImGui()
 		"Emission: %.2f | Keys: %u | Bone: %s",
 		State.Emission,
 		u32(Light.Keys.size()),
-		BoneIds.CompassLight != BI_NONE ? "yes" : "no"
+		Rig.HasCompassLight() ? "yes" : "no"
 	);
 
-	bool LightChanged = ImGui::DragFloat("Day Emission", &LightConfig.DayEmission, 0.01f, 0.0f, 1.0f, "%.2f");
-	LightChanged |= ImGui::DragFloat("Dusk Emission", &LightConfig.DuskEmission, 0.01f, 0.0f, 1.0f, "%.2f");
-	LightChanged |= ImGui::DragFloat("Night Emission", &LightConfig.NightEmission, 0.01f, 0.0f, 1.0f, "%.2f");
-	LightChanged |= ImGui::DragFloat("Dark Emission", &LightConfig.DarkEmission, 0.01f, 0.0f, 1.0f, "%.2f");
-	if (LightChanged)
-	{
-		Light.Timer = 0.0f;
-	}
+	ImGui::DragFloat("Day Emission", &LightConfig.DayEmission, 0.01f, 0.0f, 1.0f, "%.2f");
+	ImGui::DragFloat("Dusk Emission", &LightConfig.DuskEmission, 0.01f, 0.0f, 1.0f, "%.2f");
+	ImGui::DragFloat("Night Emission", &LightConfig.NightEmission, 0.01f, 0.0f, 1.0f, "%.2f");
+	ImGui::DragFloat("Dark Emission", &LightConfig.DarkEmission, 0.01f, 0.0f, 1.0f, "%.2f");
 
 	string256 Schedule = {};
 	DrawWatchStringInput("Schedule", LightConfig.Schedule, Schedule, sizeof(Schedule));
 	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
-		UpdateLightSchedule();
+		UpdateLightSchedule(true);
 	}
 	ImGui::TextDisabled("hour:day|dusk|night|dark, ascending, linear blend between keys");
 
-	bool GlowLayoutChanged = ImGui::DragFloat3("Glow Position", &LightConfig.UiPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	GlowLayoutChanged |= ImGui::DragFloat3("Glow Rotation", &LightConfig.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
-	if (GlowLayoutChanged)
-	{
-		UpdateUILayout();
-	}
+	ImGui::DragFloat3("Glow Position", &LightConfig.UiPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+	ImGui::DragFloat3("Glow Rotation", &LightConfig.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
 	ImGui::DragFloat2("Glow Size", &LightConfig.UiSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
 }
 
-void CWatchDevice::DrawChannelImGui(EWatchLedChannel Channel)
+void CWatchDevice::DrawLedImGui(u32 Index)
 {
-	const u32 Index = u32(Channel);
-	const WatchDetail::SWatchLedChannelDesc& Desc = WatchDetail::ChannelDesc(Channel);
-	SWatchChannelPresent& Present = Config.Present[Index];
+	SWatchLedElement& Element = Config.Leds[Index];
+	SWatchChannelPresent& Present = Element.Present;
 	const SWatchLedRuntime& Led = Leds[Index];
 
 	string64 Title = {};
-	xr_sprintf(Title, "%c%s Indicator", toupper(Desc.Name[0]), Desc.Name + 1);
+	xr_sprintf(Title, "Indicator %s", Element.Name.c_str());
 
-	ImGui::PushID(Desc.Name);
+	ImGui::PushID(Element.PresentSection.c_str());
 	if (ImGui::CollapsingHeader(Title, ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		float Source = 0.0f;
-		switch (Channel)
-		{
-			case EWatchLedChannel::Anomaly:
-				Source = Zones.AnomalyTarget;
-				break;
-			case EWatchLedChannel::Motion:
-				Source = g_pMotionIcon ? g_pMotionIcon->GetThreatNormalized() : 0.0f;
-				break;
-			case EWatchLedChannel::Noise:
-				if (const CActor* Player = Actor())
-				{
-					Source = Player->m_snd_noise;
-				}
-				break;
-			default:
-				break;
-		}
-
 		ImGui::Text(
-			"Intensity: %.2f | Source: %.2f | LED: %s | Bone: %s | Glass: %s | Light: %s",
-			State.Intensity[Index],
-			Source,
+			"Intensity: %.2f | Source: %s | LED: %s | Bone: %s | Glass: %s | Light: %s",
+			Led.Intensity,
+			WatchSourceName(Led.Source),
 			Led.Value > 0.0f ? "on" : "off",
-			Led.Bone != BI_NONE ? "yes" : "no",
-			Led.HiddenBone != BI_NONE ? "yes" : "no",
+			Rig.HasLedBone(Index) ? "yes" : "no",
+			Rig.IsLedMeshHidden(Index) ? "yes" : "no",
 			Led.Light ? (Led.Light->get_active() ? "on" : "idle") : "none"
 		);
 
-		bool MeshChanged = ImGui::Checkbox("Enabled", &Present.Enabled);
-		MeshChanged |= ImGui::Checkbox("Present Shader", &Present.PresentShader);
+		ImGui::Checkbox("Master", &Element.Master);
+		ImGui::Checkbox("Enabled", &Present.Enabled);
+		ImGui::Checkbox("Present Shader", &Present.PresentShader);
 		ImGui::Checkbox("Present UI", &Present.PresentUi);
-		MeshChanged |= ImGui::Checkbox("Hide Mesh (glass LED)", &Present.HideMesh);
-		if (MeshChanged)
-		{
-			UpdateLedMeshes();
-		}
+		ImGui::Checkbox("Hide Mesh (glass LED)", &Present.HideMesh);
 
-		bool LayoutChanged = ImGui::DragFloat3("LED Position", &Present.UiPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-		LayoutChanged |= ImGui::DragFloat3("LED Rotation", &Present.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
-		if (LayoutChanged)
-		{
-			UpdateUILayout();
-		}
+		string128 Source = {};
+		DrawWatchStringInput("Source", Present.Source, Source, sizeof(Source));
+		ImGui::DragFloat("Smoothing", &Present.Smoothing, 0.1f, 0.0f, 60.0f, "%.2f");
+
+		ImGui::DragFloat3("LED Position", &Present.UiPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+		ImGui::DragFloat3("LED Rotation", &Present.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
 		ImGui::DragFloat2("LED Size", &Present.UiSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
 		ImGui::DragFloat2("Glass Length/Radius", &Present.GlassSize.x, 0.0001f, 0.0f, 0.05f, "%.4f");
 		ImGui::DragFloat("Brightness", &Present.Brightness, 0.05f, 0.0f, WatchLedMaxBrightness, "%.2f");
@@ -351,7 +314,7 @@ void CWatchDevice::DrawChannelImGui(EWatchLedChannel Channel)
 		ImGui::DragFloat("Light Range", &Present.LightRange, 0.005f, 0.0f, 2.0f, "%.3f");
 		ImGui::DragFloat("Light Brightness", &Present.LightBrightness, 0.05f, 0.0f, WatchDetail::HudLightMaxStrength, "%.2f");
 
-		if (Channel == EWatchLedChannel::Anomaly)
+		if (Led.Source.Kind == EWatchSourceKind::Anomaly)
 		{
 			SWatchAnomalySensor& Sensor = Config.Anomaly;
 			ImGui::Text("Exclude: %u", u32(Zones.AnomalyExclude.size()));
@@ -360,41 +323,39 @@ void CWatchDevice::DrawChannelImGui(EWatchLedChannel Channel)
 
 			string512 Exclude = {};
 			DrawWatchStringInput("Exclude (section prefixes)", Sensor.Exclude, Exclude, sizeof(Exclude));
-			if (ImGui::IsItemDeactivatedAfterEdit())
-			{
-				UpdateAnomalyExclude();
-			}
 		}
 
-		DrawWatchBlinkFields(Config.Blink[Index]);
+		DrawWatchBlinkFields(Element.Blink);
 	}
 	ImGui::PopID();
 }
 
-void CWatchDevice::DrawConditionImGui(EWatchCondition Condition)
+void CWatchDevice::DrawGaugeImGui(u32 Index)
 {
-	const u32 Index = u32(Condition);
-	const WatchDetail::SWatchConditionDesc& Desc = WatchDetail::ConditionDesc(Condition);
-	SWatchConditionPresent& Present = Config.Conditions[Index];
+	SWatchGaugeElement& Element = Config.Gauges[Index];
+	SWatchConditionPresent& Present = Element.Present;
+	const SWatchGaugeRuntime& Gauge = Gauges[Index];
 
 	string64 Title = {};
-	xr_sprintf(Title, "Condition %c%s", toupper(Desc.Name[0]), Desc.Name + 1);
+	xr_sprintf(Title, "Condition %s", Element.Name.c_str());
 
-	ImGui::PushID(Desc.Name);
+	ImGui::PushID(Element.PresentSection.c_str());
 	if (ImGui::CollapsingHeader(Title))
 	{
 		ImGui::Text(
-			"Raw: %.2f | Display: %.2f | Badness: %.2f | Severity: %s | Visible: %s | Available: %s | Icon: %s | Bar: %s",
-			State.Condition[Index],
-			State.ConditionDisplay[Index],
-			State.ConditionBadness[Index],
-			WatchDetail::ConditionSeverityName(State.ConditionSeverity[Index]),
-			State.ConditionVisible[Index] ? "yes" : "no",
-			IsConditionAvailable(Condition) ? "yes" : "no",
-			Ui && Ui->HasConditionIcon(Condition) ? "yes" : "no",
-			Ui && Ui->HasConditionBar(Condition) ? "yes" : "no"
+			"Raw: %.2f | Display: %.2f | Badness: %.2f | Severity: %s | Visible: %s | Active: %s | Source: %s | Icon: %s | Bar: %s",
+			Gauge.Value,
+			Gauge.DisplayValue,
+			Gauge.Badness,
+			WatchDetail::ConditionSeverityName(Gauge.Severity),
+			Gauge.Visible ? "yes" : "no",
+			IsGaugeActive(Index) ? "yes" : "no",
+			WatchSourceName(Gauge.Source),
+			Ui && Ui->HasGaugeIcon(Index) ? "yes" : "no",
+			Ui && Ui->HasGaugeBar(Index) ? "yes" : "no"
 		);
 
+		ImGui::Checkbox("Master", &Element.Master);
 		ImGui::Checkbox("Enabled", &Present.Enabled);
 		ImGui::Checkbox("Present UI", &Present.PresentUi);
 		ImGui::Checkbox("Present Icon", &Present.PresentIcon);
@@ -402,16 +363,16 @@ void CWatchDevice::DrawConditionImGui(EWatchCondition Condition)
 		ImGui::Checkbox("Invert", &Present.Invert);
 		ImGui::Checkbox("Severity Higher", &Present.SeverityHigher);
 
-		bool LayoutChanged = ImGui::DragFloat3("Icon Position", &Present.UiIconPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-		LayoutChanged |= ImGui::DragFloat3("Icon Rotation", &Present.UiIconRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
+		string128 Source = {};
+		DrawWatchStringInput("Source", Present.Source, Source, sizeof(Source));
+		ImGui::DragFloat("Smoothing", &Present.Smoothing, 0.1f, 0.0f, 60.0f, "%.2f");
+
+		ImGui::DragFloat3("Icon Position", &Present.UiIconPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+		ImGui::DragFloat3("Icon Rotation", &Present.UiIconRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
 		ImGui::DragFloat2("Icon Size", &Present.UiIconSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
-		LayoutChanged |= ImGui::DragFloat3("Bar Position", &Present.UiBarPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-		LayoutChanged |= ImGui::DragFloat3("Bar Rotation", &Present.UiBarRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
+		ImGui::DragFloat3("Bar Position", &Present.UiBarPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+		ImGui::DragFloat3("Bar Rotation", &Present.UiBarRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
 		ImGui::DragFloat2("Bar Size", &Present.UiBarSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
-		if (LayoutChanged)
-		{
-			UpdateUILayout();
-		}
 
 		ImGui::DragFloat("Visible Min", &Present.VisibleMin, 0.005f, 0.0f, 1.0f, "%.3f");
 		ImGui::DragFloat("Visible Max", &Present.VisibleMax, 0.005f, 0.0f, 1.0f, "%.3f");
@@ -465,29 +426,31 @@ void CWatchDevice::DrawPreviewImGui()
 	ImGui::SliderFloat("Surge##Preview", &Preview.PreviewSurgeValue, 0.0f, 1.0f, "%.2f");
 	ImGui::EndDisabled();
 
-	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
+	for (u32 Index = 0; Index < Leds.size(); ++Index)
 	{
-		const WatchDetail::SWatchLedChannelDesc& Desc = WatchDetail::LedChannels[Index];
+		SWatchLedRuntime& Led = Leds[Index];
+		const char* Name = Config.Leds[Index].Name.c_str();
 		string64 Label = {};
 		string64 SliderLabel = {};
-		xr_sprintf(Label, "Preview %c%s", toupper(Desc.Name[0]), Desc.Name + 1);
-		xr_sprintf(SliderLabel, "%c%s##Preview", toupper(Desc.Name[0]), Desc.Name + 1);
-		ImGui::Checkbox(Label, &Preview.PreviewChannel[Index]);
-		ImGui::BeginDisabled(!Preview.PreviewChannel[Index]);
-		ImGui::SliderFloat(SliderLabel, &Preview.PreviewChannelValue[Index], 0.0f, 1.0f, "%.2f");
+		xr_sprintf(Label, "Preview %s", Name);
+		xr_sprintf(SliderLabel, "%s##PreviewLed", Name);
+		ImGui::Checkbox(Label, &Led.Preview);
+		ImGui::BeginDisabled(!Led.Preview);
+		ImGui::SliderFloat(SliderLabel, &Led.PreviewValue, 0.0f, 1.0f, "%.2f");
 		ImGui::EndDisabled();
 	}
 
-	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	for (u32 Index = 0; Index < Gauges.size(); ++Index)
 	{
-		const WatchDetail::SWatchConditionDesc& Desc = WatchDetail::ConditionChannels[Index];
+		SWatchGaugeRuntime& Gauge = Gauges[Index];
+		const char* Name = Config.Gauges[Index].Name.c_str();
 		string64 Label = {};
 		string64 SliderLabel = {};
-		xr_sprintf(Label, "Preview Cond %c%s", toupper(Desc.Name[0]), Desc.Name + 1);
-		xr_sprintf(SliderLabel, "Cond %c%s##Preview", toupper(Desc.Name[0]), Desc.Name + 1);
-		ImGui::Checkbox(Label, &Preview.PreviewCondition[Index]);
-		ImGui::BeginDisabled(!Preview.PreviewCondition[Index]);
-		ImGui::SliderFloat(SliderLabel, &Preview.PreviewConditionValue[Index], 0.0f, 1.0f, "%.2f");
+		xr_sprintf(Label, "Preview Cond %s", Name);
+		xr_sprintf(SliderLabel, "Cond %s##PreviewGauge", Name);
+		ImGui::Checkbox(Label, &Gauge.Preview);
+		ImGui::BeginDisabled(!Gauge.Preview);
+		ImGui::SliderFloat(SliderLabel, &Gauge.PreviewValue, 0.0f, 1.0f, "%.2f");
 		ImGui::EndDisabled();
 	}
 

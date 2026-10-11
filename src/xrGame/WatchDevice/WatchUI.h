@@ -41,23 +41,27 @@ private:
 class CUIWatchWnd final : public CUIWindow
 {
 public:
-	bool Init(const SWatchDisplay& Display, const SWatchFonts& Fonts);
+	bool Init(const SWatchConfig& Config);
 	void SetLayout(const SWatchDisplay& Display);
 	void SetTime(const char* Text);
 	void SetDate(const char* Text);
 	void SetBarometer(const char* Text);
 	void SetIntensity(float Intensity);
 	void Render(const Fmatrix& Xform);
-	void RenderGlow(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity);
-	void RenderGlow(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color);
-	void RenderLed(EWatchGlow Id, const Fmatrix& Xform, const Fvector2& GlassSize, const Fvector2& CoreSize, float Intensity, float Brightness);
-	void RenderConditionIcon(EWatchCondition Id, const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color);
-	void RenderConditionBar(EWatchCondition Id, const Fmatrix& Xform, const Fvector2& Size, float Fill, float Intensity, u32 Color);
-	u32 GetGlowColor(EWatchGlow Id) const;
-	u32 GetConditionIconColor(EWatchCondition Id) const;
-	u32 GetConditionBarColor(EWatchCondition Id) const;
-	bool HasConditionIcon(EWatchCondition Id) const;
-	bool HasConditionBar(EWatchCondition Id) const;
+
+	void RenderCompassGlow(const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color);
+	u32 GetCompassColor() const;
+
+	void RenderLedGlow(u32 Led, const Fmatrix& Xform, const Fvector2& Size, float Intensity);
+	void RenderLed(u32 Led, const Fmatrix& Xform, const Fvector2& GlassSize, const Fvector2& CoreSize, float Intensity, float Brightness);
+	u32 GetLedColor(u32 Led) const;
+
+	void RenderGaugeIcon(u32 Gauge, const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color);
+	void RenderGaugeBar(u32 Gauge, const Fmatrix& Xform, const Fvector2& Size, float Fill, float Intensity, u32 Color);
+	u32 GetGaugeIconColor(u32 Gauge) const;
+	u32 GetGaugeBarColor(u32 Gauge) const;
+	bool HasGaugeIcon(u32 Gauge) const;
+	bool HasGaugeBar(u32 Gauge) const;
 
 private:
 	struct SGlow
@@ -66,11 +70,25 @@ private:
 		u32 Color = 0xFFFFFFFF;
 	};
 
-	struct SGlass
+	struct SLedSegment
 	{
-		ui_shader Shader;
+		Fvector P00;
+		Fvector P01;
+		Fvector P10;
+		Fvector P11;
+		Fvector SideNormal;
+		Fvector2 N0;
+		Fvector2 N1;
+	};
+
+	struct SLed
+	{
+		SGlow Glow;
+		ui_shader Glass;
 		ui_shader Core;
 		u32 LitAlpha = 90;
+		Fvector2 GeometrySize = {-1.0f, -1.0f};
+		xr_vector<SLedSegment> Segments;
 	};
 
 	enum class EBarFill : u8
@@ -79,7 +97,7 @@ private:
 		Right
 	};
 
-	struct SConditionVisual
+	struct SGauge
 	{
 		SGlow Icon;
 		SGlow Bar;
@@ -90,15 +108,14 @@ private:
 
 	CUIWatchText* CreateText(CUIXml& Xml, const char* Path, const shared_str& FontName);
 	bool CreateGlow(CUIXml& Xml, const char* Path, SGlow& Glow);
-	bool CreateGlass(CUIXml& Xml, const char* Path, SGlass& Glass);
-	void EnsureGlow(CUIXml& Xml, const char* Path, SGlow& Glow, u32 DefaultColor);
-	void EnsureGlass(CUIXml& Xml, const char* Path, SGlass& Glass);
-	void CreateConditionVisual(CUIXml& Xml, EWatchCondition Id);
+	void CreateLed(CUIXml& Xml, const shared_str& Name, SLed& Led);
+	void CreateGauge(CUIXml& Xml, const shared_str& Name, SGauge& Gauge);
+	void BuildLedGeometry(SLed& Led, const Fvector2& GlassSize);
 	void RenderGlowShader(SGlow& Glow, const Fmatrix& Xform, const Fvector2& Size, float Intensity, float U0, float U1, u32 Color);
 
-	SGlow Glows[u32(EWatchGlow::Count)];
-	SGlass Glasses[u32(EWatchGlow::Count)];
-	SConditionVisual Conditions[WatchConditionCount];
+	SGlow CompassGlow;
+	xr_vector<SLed> Leds;
+	xr_vector<SGauge> Gauges;
 
 	CUIWatchText* Time = nullptr;
 	CUIWatchText* Date = nullptr;
