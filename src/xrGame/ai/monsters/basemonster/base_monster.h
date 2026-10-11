@@ -2,6 +2,7 @@
 
 #include "../../../Creature.h"
 
+#include "../MonsterBehavior.h"
 #include "../monster_enemy_memory.h"
 #include "../monster_corpse_memory.h"
 #include "../monster_sound_memory.h"
@@ -150,7 +151,9 @@ public:
 
 	virtual void			init							() {}
 
+	float GetHearingRangeFactor() const override;
 	virtual void			feel_sound_new					(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power);
+	float feel_vision_mtl_transp(CObject* Object, u32 Element) override;
 	virtual bool			feel_vision_isRelevant			(CObject* O);
 	virtual bool			feel_touch_on_contact			(CObject* O);
 	virtual bool			feel_touch_contact				(CObject *);
@@ -233,9 +236,13 @@ public:
 	void LoadMonsterLogicOptions(const char* section);
 	void LoadMonsterEnemyCall(const char* section);
 	void ReloadMonsterLogicOptions();
+	SMonsterBehavior Behavior;
+	float EnemySharingCallRatio = .6f;
+	u32 EnemyCallBroadcastFrame = u32(-1);
 	float EnemySharingRadius = 40.f;
-	float EnemySharingCloseRatio = .3f;
+	float EnemySharingCloseRatio = .25f;
 	bool EnemyTrackingLive = false;
+	bool VisionIgnoreFoliage = false;
 	float EnemyCloseDetectionRadius = 0.f;
 	bool ShouldApproachHiddenEnemy();
 	bool ShouldFollowLastKnownEnemy();
@@ -251,8 +258,11 @@ public:
 	u32 PlayerVisualAcquireTime = 400;
 	u32 EnemyStuckTime = 3000;
 	u32 PursuitTargetID = u32(-1);
-	u32 PursuitProgressTime = 0;
-	Fvector PursuitProgressPosition;
+	u32 PursuitProgressTime = 0, PursuitProgressSampleTime = 0;
+	float PursuitProgressDistance = -1.f, PursuitProgressDirectDistance = -1.f;
+	bool PursuitProgressOnRoute = false;
+	float GetInspectionDistance(const Fvector& Point, bool& OnRoute);
+	Fvector PursuitProgressPosition, PursuitProgressGoal = {0.f, 0.f, 0.f};
 	Fvector UnreachableBlockedGoal;
 	Fvector UnreachableSearchAnchor;
 	Fvector UnreachableSearchPoint;
@@ -283,7 +293,9 @@ public:
 		bool Enabled = false;
 		float Radius = 0.f;
 		float PanicChance = 0.f;
-		bool Attract = false;
+		bool Attract = false, FearEnabled = false;
+		float InterestStep = .25f, InterestThreshold = .65f;
+		float FearStep = .25f, FearThreshold = .65f;
 		u32 NextReactionTime = 0;
 	};
 	SNoiseReaction ShotReaction;
@@ -291,9 +303,15 @@ public:
 	u32 NoiseReactionCooldown = 3000;
 	u32 NoisePanicDuration = 6000;
 	float NoiseMinPower = .01f;
+	float HearingFactor = 1.f;
 	Fvector NoiseInvestigationPosition = {0.f, 0.f, 0.f};
 	u32 NoiseInvestigationVertex = u32(-1);
-	u32 NoiseInvestigationUntil = 0;
+	u32 NoiseInvestigationSource = u32(-1), NoiseInvestigationLookUntil = 0;
+	u32 NoiseInvestigationUntil = 0, NoiseProgressTime = 0, NoiseProgressSampleTime = 0;
+	float NoiseProgressDistance = -1.f, NoiseProgressDirectDistance = -1.f;
+	Fvector NoiseProgressPosition = {0.f, 0.f, 0.f};
+	bool NoiseProgressOnRoute = false;
+	bool HasPriorityNoise() const;
 	bool ReactToLoudNoise(CObject* Source, int SoundType, const Fvector& SoundPosition, float Power);
 	bool HasDamagePanic() const;
 	void ReactToActorDamage(float Amount, CObject* Attacker);

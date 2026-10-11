@@ -18,6 +18,10 @@
 #include "../../../level_graph.h"
 #include "../../../ai_object_location.h"
 #include "../control_path_builder_base.h"
+#include "../control_path_builder.h"
+#include "../control_direction_base.h"
+#include "../../../MonsterEnemySharingDebug.h"
+#include "../../../AnomalyZone.h"
 void CBaseMonster::Think()
 {
 	if (!g_Alive() || getDestroy())
@@ -145,10 +149,36 @@ bool CBaseMonster::ShouldFollowLastKnownEnemy()
 		!HasReachedEnemyPoint(Entry->second.position, Entry->second.vertex);
 }
 
+float CBaseMonster::GetInspectionDistance(const Fvector& Point, bool& OnRoute)
+{
+	auto& Builder = control().path_builder();
+	const auto& Route = Builder.level_path().path();
+	OnRoute = path().get_target_set().distance_to_sqr(Point) < 4.f && Builder.level_path().actual() && !Route.empty();
+	if (OnRoute)
+	{
+		const auto Current = std::find(Route.begin(), Route.end(), ai_location().level_vertex_id());
+		if (Current != Route.end())
+		{
+			// Measure the remaining graph route, including detours and the current partial segment.
+			Fvector Previous = Position();
+			float Remaining = 0.f;
+			for (auto It = Current + 1; It != Route.end(); ++It)
+			{
+				const Fvector Next = ai().level_graph().vertex_position(*It);
+				Remaining += Previous.distance_to(Next);
+				Previous = Next;
+			}
+			return Remaining + Previous.distance_to(Point);
+		}
+	}
+	OnRoute = false;
+	return Position().distance_to(Point);
+}
+
 void CBaseMonster::UpdateUnreachablePursuit(const CEntityAlive* Target, bool WantsMovement)
 {
 	PursuitSearchingAround = false;
-	if (!Target || !EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ||
+	if (anim().m_tAction == ACT_ATTACK || !Target || !EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ||
 		GetScriptControl() || EnemyMan.get_script_enemy() || MonsterPeaceful || HasDamagePanic() ||
 		(m_controlled && m_controlled->is_under_control()) || control().is_captured_pure() ||
 		is_state(StateMan->get_state_type(), eStatePanic))
@@ -158,32 +188,66 @@ void CBaseMonster::UpdateUnreachablePursuit(const CEntityAlive* Target, bool Wan
 		return;
 	}
 	CMonsterLogicTimerScope TotalTimer(EMonsterLogicTimer::NewLogicTotal);
-	const Fvector Goal = EnemyMan.GetTrackingPosition();
-	const u32 GoalVertex = EnemyMan.GetTrackingVertex();
-	if (PursuitTargetID != Target->ID() || !PursuitProgressTime)
+	const Fvector Goal = EnemyMan.GetNavigationPosition();
+	const u32 GoalVertex = EnemyMan.GetNavigationVertex();
+	if (PursuitTargetID != Target->ID() || !PursuitProgressTime || PursuitProgressGoal.distance_to_sqr(Goal) > 4.f)
 	{
 		PursuitTargetID = Target->ID();
+		PursuitProgressGoal = Goal;
 		PursuitProgressPosition = Position();
 		PursuitProgressTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+		PursuitProgressDistance = PursuitProgressDirectDistance = -1.f; PursuitProgressSampleTime = 0;
 		NextUnreachableSearchPoint = 0;
 	}
 	if (!EnemyMemory.IsUnreachable(Target))
 	{
-		if (!WantsMovement || HasReachedEnemyPoint(Goal, GoalVertex))
+		const auto Entry = EnemyMemory.get_memory().find(Target);
+		const bool Committed = Entry != EnemyMemory.get_memory().end() && Entry->second.InspectionCommitted;
+		if ((!WantsMovement && !Committed) ||
+			(HasReachedEnemyPoint(Goal, GoalVertex) && Goal.distance_to_sqr(EnemyMan.GetTrackingPosition()) <= .25f))
 		{
 			PursuitProgressPosition = Position();
 			PursuitProgressTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
 			return;
 		}
-		if (Position().distance_to_xz(PursuitProgressPosition) >= .75f)
+		if (Committed && !EnemyMan.see_enemy_now(Target))
+		{
+			if (!PursuitProgressSampleTime || Device.dwTimeGlobal - PursuitProgressSampleTime >= 500)
+			{
+				PursuitProgressSampleTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+				bool OnRoute;
+				const float Remaining = GetInspectionDistance(Goal, OnRoute);
+				// Route rebuilds cannot count as movement or refresh the stuck deadline.
+				float& Best = OnRoute ? PursuitProgressDistance : PursuitProgressDirectDistance;
+				if (Best < 0.f) Best = Remaining;
+				else if (Remaining + .5f < Best && Position().distance_to_xz(PursuitProgressPosition) >= .5f)
+				{
+					Best = Remaining;
+					PursuitProgressPosition = Position();
+					PursuitProgressTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+				}
+				PursuitProgressOnRoute = OnRoute;
+			}
+		}
+		else if (Position().distance_to_xz(PursuitProgressPosition) >= .75f)
 		{
 			PursuitProgressPosition = Position();
 			PursuitProgressTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
 		}
-		const bool Failed = !ai().level_graph().valid_vertex_id(GoalVertex) ||
-			!control().path_builder().accessible(GoalVertex) || control().path_builder().level_path().failed();
+		const bool Failed = !Home->at_home(Goal) || !ai().level_graph().valid_vertex_id(GoalVertex) ||
+			!control().path_builder().accessible(GoalVertex) || !ai().level_graph().inside(GoalVertex, Goal) ||
+			(path().get_target_set().distance_to_sqr(Goal) < 4.f && control().path_builder().level_path().failed() && Device.dwTimeGlobal - PursuitProgressTime >= 1000);
 		if (!Failed && Device.dwTimeGlobal - PursuitProgressTime < EnemyStuckTime)
 		{
+			return;
+		}
+		if (Committed && EnemyMemory.TryNavigationFallback(Target))
+		{
+			// Retry the saved graph node once; it still needs a successfully built route.
+			PursuitProgressTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+			PursuitProgressDistance = PursuitProgressDirectDistance = -1.f;
+			path().prepare_builder();
+			path().set_target_point(Entry->second.position, Entry->second.vertex);
 			return;
 		}
 		EnemyMemory.MarkUnreachable(Target);
@@ -196,7 +260,7 @@ void CBaseMonster::UpdateUnreachablePursuit(const CEntityAlive* Target, bool Wan
 	{
 		return;
 	}
-	if (HasReachedEnemyPoint(Goal, GoalVertex) ||
+	if (HasOpenEnemyCorridor(EnemyMan.GetTrackingPosition(), EnemyMan.GetTrackingVertex()) ||
 		(EnemyMan.see_enemy_now(Target) && Goal.distance_to_sqr(UnreachableBlockedGoal) > 4.f &&
 			Position().distance_to_sqr(Goal) <= 400.f && HasOpenEnemyCorridor(Goal, GoalVertex)))
 	{
@@ -215,6 +279,7 @@ void CBaseMonster::UpdateUnreachablePursuit(const CEntityAlive* Target, bool Wan
 			// A bounded local AI corridor check avoids scans and global searches for orbit points.
 			for (u32 Attempt = 0; Attempt < 12; ++Attempt)
 			{
+				if (Behavior.Enabled && !SMonsterBehavior::TakeNavigationSample()) break;
 				Fvector ToGoal;
 				ToGoal.sub(Goal, Position());
 				const float Tangent = atan2f(ToGoal.z, ToGoal.x) + (ID() % 2 ? PI_DIV_2 : -PI_DIV_2);
@@ -268,12 +333,19 @@ void CBaseMonster::update_fsm()
 	const CEntityAlive* Target = EnemyMan.get_enemy();
 	const bool VisibleTarget = EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] &&
 		!MonsterPeaceful && Target && !Target->getDestroy() && Target->g_Alive() && EnemyMan.see_enemy_now(Target);
-	if (VisibleTarget && EnemyCloseDetectionRadius > 0.f &&
-		Position().distance_to_sqr(Target->Position()) <= EnemyCloseDetectionRadius * EnemyCloseDetectionRadius)
+	if (VisibleTarget && (Behavior.Enabled ? Behavior.CloseVisualRadius : EnemyCloseDetectionRadius) > 0.f &&
+		Position().distance_to_sqr(Target->Position()) <= _sqr(Behavior.Enabled ? Behavior.CloseVisualRadius : EnemyCloseDetectionRadius))
 	{
 		// Nearby visual contact grants five seconds of live pursuit; sharing alone cannot grant it.
 		CloseSightCombatTargetID = Target->ID();
-		CloseSightCombatUntil = Device.dwTimeGlobal + 5000;
+		CloseSightCombatUntil = Device.dwTimeGlobal + (Behavior.Enabled ? Behavior.CloseVisualTime : 5000);
+	}
+	if (NoiseInvestigationUntil && VisibleTarget &&
+		(u32(Target->ID()) == NoiseInvestigationSource || Target->Position().distance_to_sqr(NoiseInvestigationPosition) < 25.f))
+	{
+		// Only a confirmed visual acquisition replaces an acoustic point with a real target.
+		NoiseInvestigationUntil = 0;
+		NoiseInvestigationLookUntil = 0;
 	}
 	const bool DamagePanic = HasDamagePanic() && !GetScriptControl() &&
 		!(m_controlled && m_controlled->is_under_control());
@@ -295,7 +367,7 @@ void CBaseMonster::update_fsm()
 		}
 		StateMan->update();
 	}
-	
+
 	const bool FollowLastKnown = !DamagePanic && ShouldFollowLastKnownEnemy() && !control().is_captured_pure();
 	const bool ApproachHidden = !DamagePanic && !is_state(StateMan->get_state_type(), eStatePanic) &&
 		!EnemyMan.get_script_enemy() && ShouldApproachHiddenEnemy() && !control().is_captured_pure();
@@ -319,7 +391,7 @@ void CBaseMonster::update_fsm()
 		set_action(ShouldApproachHiddenEnemy() ? ACT_WALK_FWD : ACT_RUN);
 		anim().clear_override_animation();
 		anim().accel_deactivate();
-		path().set_target_point(EnemyMan.GetTrackingPosition(), EnemyMan.GetTrackingVertex());
+		path().set_target_point(EnemyMan.GetNavigationPosition(), EnemyMan.GetNavigationVertex());
 		path().set_rebuild_time(1000);
 		path().set_distance_to_end(1.f);
 		path().set_use_covers(false);
@@ -335,19 +407,59 @@ void CBaseMonster::update_fsm()
 	}
 	LastKnownPursuitWasActive = !PursuitSearchingAround && (FollowLastKnown || ApproachHidden || ChaseVisible);
 
-	if (NoiseInvestigationUntil && (s32(NoiseInvestigationUntil - Device.dwTimeGlobal) <= 0 ||
-		HasReachedEnemyPoint(NoiseInvestigationPosition, NoiseInvestigationVertex)))
+	if (NoiseInvestigationUntil && !EnemyMan.get_enemy() && !DamagePanic && !GetScriptControl() &&
+		!control().is_captured_pure() && !(m_controlled && m_controlled->is_under_control()) &&
+		!is_state(StateMan->get_state_type(), eStatePanic))
 	{
-		NoiseInvestigationUntil = 0;
+		if (s32(NoiseInvestigationLookUntil - Device.dwTimeGlobal) > 0) NoiseProgressTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+		if (!NoiseProgressSampleTime || Device.dwTimeGlobal - NoiseProgressSampleTime >= 500)
+		{
+			NoiseProgressSampleTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+			bool OnRoute;
+			const float Remaining = GetInspectionDistance(NoiseInvestigationPosition, OnRoute);
+			float& Best = OnRoute ? NoiseProgressDistance : NoiseProgressDirectDistance;
+			if (Best < 0.f) Best = Remaining;
+			else if (Remaining + .5f < Best && Position().distance_to_xz(NoiseProgressPosition) >= .5f)
+			{
+				Best = Remaining;
+				NoiseProgressPosition = Position();
+				NoiseProgressTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+			}
+			NoiseProgressOnRoute = OnRoute;
+		}
+		const bool Failed = !Home->at_home(NoiseInvestigationPosition) || !ai().level_graph().valid_vertex_id(NoiseInvestigationVertex) ||
+			!control().path_builder().accessible(NoiseInvestigationVertex) ||
+			(path().get_target_set().distance_to_sqr(NoiseInvestigationPosition) < 4.f && control().path_builder().level_path().failed() && Device.dwTimeGlobal - NoiseProgressTime >= 1000) ||
+			Device.dwTimeGlobal - NoiseProgressTime >= EnemyStuckTime;
+		if (HasReachedEnemyPoint(NoiseInvestigationPosition, NoiseInvestigationVertex))
+		{
+			Behavior.ActionMode = "NOISE SEARCH";
+			Behavior.Anchor = NoiseInvestigationPosition;
+			Behavior.ActionUntil = Device.dwTimeGlobal + Behavior.NoiseSearchTime;
+			Behavior.BodyID = u32(-1); Behavior.NextPoint = 0; Behavior.NextUpdate = 0;
+			NoiseInvestigationUntil = 0;
+		}
+		else if (Failed)
+		{
+			NoiseInvestigationUntil = 0;
+			Behavior.ActionMode = "LOCAL SEARCH";
+			Behavior.Anchor = Position(); Behavior.ActionUntil = Device.dwTimeGlobal + Behavior.NoiseSearchTime;
+			Behavior.BodyID = u32(-1); Behavior.NextPoint = 0; Behavior.NextUpdate = 0;
+		}
+		else NoiseInvestigationUntil = Device.dwTimeGlobal + Behavior.NoiseSearchTime;
 	}
-	if (!DamagePanic && NoiseInvestigationUntil && !EnemyMan.get_enemy() && !GetScriptControl() &&
+
+	if (!DamagePanic && !is_state(StateMan->get_state_type(), eStatePanic) && NoiseInvestigationUntil && !EnemyMan.get_enemy() && !GetScriptControl() &&
 		!(m_controlled && m_controlled->is_under_control()) && !control().is_captured_pure())
 	{
 		CMonsterLogicTimerScope TotalTimer(EMonsterLogicTimer::NewLogicTotal);
-		set_action(ACT_WALK_FWD);
+		set_action(s32(NoiseInvestigationLookUntil - Device.dwTimeGlobal) > 0 ? ACT_STAND_IDLE :
+			Position().distance_to_sqr(NoiseInvestigationPosition) > 25.f ? ACT_RUN : ACT_WALK_FWD);
 		anim().clear_override_animation();
 		anim().accel_deactivate();
+		if (path().get_target_set().distance_to_sqr(NoiseInvestigationPosition) > 4.f) path().prepare_builder();
 		path().set_target_point(NoiseInvestigationPosition, NoiseInvestigationVertex);
+		path().set_distance_to_end(1.f);
 		path().set_rebuild_time(1000);
 		path().set_use_covers(false);
 		path().set_try_min_time(false);
@@ -355,9 +467,12 @@ void CBaseMonster::update_fsm()
 		set_state_sound(MonsterSound::eMonsterSoundAggressive);
 	}
 
+	Behavior.Update(*this);
+	if (MonsterEnemySharingDebug().IsEnabled()) Behavior.RecordDebug(*this);
+
 	// завершить обработку установленных в FSM параметров
 	post_fsm_update					();
-	
+
 	TranslateActionToPathParams		();
 
 	// информировать squad о своих целях
@@ -370,17 +485,19 @@ void CBaseMonster::update_fsm()
 
 void CBaseMonster::post_fsm_update()
 {
+	// Combat turn offsets must not survive losing the enemy or switching to sound attention.
+	m_bRunTurnLeft = m_bRunTurnRight = false;
 	if (!EnemyMan.get_enemy()) return;
-	
+
 	EMonsterState state = StateMan->get_state_type();
 
 
 	// Look at enemy while running
 	m_bRunTurnLeft = m_bRunTurnRight = false;
-	
+
 
 	Fvector direction;
-	if ( is_state(state, eStateAttack) && 
+	if ( is_state(state, eStateAttack) &&
 		 control().path_builder().is_moving_on_path() &&
 		 control().path_builder().detail().try_get_direction(direction) ) {
 
@@ -408,7 +525,7 @@ void CBaseMonster::squad_notify()
 	EMonsterState state = StateMan->get_state_type();
 
 	if (is_state(state, eStateAttack)) {
-		
+
 		goal.type	= MG_AttackEnemy;
 		goal.entity	= const_cast<CEntityAlive*>(EnemyMan.get_enemy());
 
@@ -427,6 +544,9 @@ void CBaseMonster::squad_notify()
 		goal.type	= MG_Rest;
 		goal.entity	= squad->GetLeader();
 	}
-	
+
 	squad->UpdateGoal(this, goal);
 }
+
+#include "../MonsterBehaviorPolicy.h"
+#include "../MonsterBehavior.inl"

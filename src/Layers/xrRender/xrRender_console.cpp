@@ -375,6 +375,108 @@ int			r_debug_render_depth		= 0;
 #ifndef _EDITOR
 #include "../../xrEngine/XR_IOConsole.h"
 #include	"../../xrEngine/xr_ioc_cmd.h"
+#include "../../xrEngine/IGame_Level.h"
+#include "../../xrEngine/MonsterLogicTelemetry.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
+
+class CCC_MonsterLogic : public IConsole_Command
+{
+public:
+	CCC_MonsterLogic(const char* Name) : IConsole_Command(Name) {}
+	void Execute(const char* Args) override
+	{
+		int Value;
+		if (!xr_strcmp(Args, "on") || !xr_strcmp(Args, "1"))
+		{
+			Value = 1;
+		}
+		else if (!xr_strcmp(Args, "off") || !xr_strcmp(Args, "0"))
+		{
+			Value = 0;
+		}
+		else if (!xr_strcmp(Args, "config"))
+		{
+			Value = -1;
+		}
+		else
+		{
+			InvalidSyntax();
+			return;
+		}
+		EngineExternal().SetMonsterLogicOverride(Value);
+		const u32 Count = g_pGameLevel ? g_pGameLevel->ReloadMonsterLogicOptions() : 0;
+		g_MonsterLogicTelemetry.Reset();
+		Msg("Monster logic: %s; refreshed %u monsters", EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ? "ON" : "VANILLA", Count);
+	}
+	void Status(TStatus& S) override
+	{
+		const int Value = EngineExternal().GetMonsterLogicOverride();
+		xr_strcpy(S, Value < 0 ? "config" : (Value ? "on" : "off"));
+	}
+	void Info(TInfo& I) override { xr_strcpy(I, "on/off/config"); }
+	void Save(IWriter*) override {}
+};
+
+class CCC_MonsterLogicDraw : public IConsole_Command
+{
+public:
+	CCC_MonsterLogicDraw(const char* Name) : IConsole_Command(Name) {}
+	void Execute(const char* Args) override
+	{
+		const bool On = !xr_strcmp(Args, "on") || !xr_strcmp(Args, "1");
+		if (!On && xr_strcmp(Args, "off") && xr_strcmp(Args, "0"))
+		{
+			InvalidSyntax();
+			return;
+		}
+		g_MonsterLogicTelemetry.DrawEnabled.store(On, std::memory_order_relaxed);
+		if (g_pGameLevel) g_pGameLevel->SetMonsterLogicDraw(On);
+		if (On)
+		{
+			Msg("* Player sharing: green=own sight, white=close detection, yellow=radio, cyan=wireless, magenta=call; transfer arrows last 5s; yellow cross/up arrow=last known point while memory is valid");
+		}
+	}
+	void Status(TStatus& S) override { xr_strcpy(S, g_MonsterLogicTelemetry.DrawEnabled.load(std::memory_order_relaxed) ? "on" : "off"); }
+	void Info(TInfo& I) override { xr_strcpy(I, "on/off: player enemy sharing spheres and arrows"); }
+	void Save(IWriter*) override {}
+};
+
+class CCC_MonsterLogicStats : public IConsole_Command
+{
+public:
+	CCC_MonsterLogicStats(const char* Name) : IConsole_Command(Name) {}
+	void Execute(const char* Args) override
+	{
+		if (!xr_strcmp(Args, "reset"))
+		{
+			g_MonsterLogicTelemetry.Reset();
+			return;
+		}
+		const bool Full = !xr_strcmp(Args, "full") || !xr_strcmp(Args, "on") || !xr_strcmp(Args, "1");
+		const bool On = Full || !xr_strcmp(Args, "brief") || !xr_strcmp(Args, "on") || !xr_strcmp(Args, "1");
+		if (!On && xr_strcmp(Args, "off") && xr_strcmp(Args, "0"))
+		{
+			InvalidSyntax();
+			return;
+		}
+		g_MonsterLogicTelemetry.Detailed.store(Full, std::memory_order_relaxed);
+		g_MonsterLogicTelemetry.Enabled.store(On, std::memory_order_relaxed);
+		g_MonsterLogicTelemetry.Reset();
+		if (On)
+		{
+			Console->Execute("rs_fps_show on");
+		}
+	}
+	void Status(TStatus& S) override
+	{
+		xr_strcpy(S, !g_MonsterLogicTelemetry.Enabled.load(std::memory_order_relaxed) ? "off" :
+			g_MonsterLogicTelemetry.Detailed.load(std::memory_order_relaxed) ? "full" : "brief");
+	}
+	void Info(TInfo& I) override { xr_strcpy(I, "on/off/brief/full/reset"); }
+	void Save(IWriter*) override {}
+};
+
+
 
 #ifdef USE_DX11
 #	include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
@@ -818,6 +920,10 @@ extern Fvector3 ps_ssfx_volumetric;
 //-----------------------------------------------------------------------
 void		xrRender_initconsole	()
 {
+	CMD1(CCC_MonsterLogic, "monster_logic");
+	CMD1(CCC_MonsterLogicStats, "monster_logic_stats");
+	CMD1(CCC_MonsterLogicDraw, "monster_logic_draw");
+
 	CMD3(CCC_Preset,	"_preset",				&ps_Preset,	qpreset_token	);
 
 	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "FPSCounter.h"
 #include "MonsterLogicTelemetry.h"
 #include "../xrCore/Kernel/EngineExternal.h"
@@ -98,52 +98,52 @@ void XRay::Hardware::FPSCounter::OnRender()
 			Lines.emplace_back(Buffer);
 		};
 		const bool Enabled = EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation];
-		AddLine("--- MAIN: NEW MONSTER LOGIC ---");
-		AddLine("MONSTERS %s | alive %u | fighting %u", Enabled ? "ON" : "VANILLA",
+		AddLine("--- ЛОГИКА МОНСТРОВ ---");
+		AddLine("МОНСТРЫ %s | живых %u | в бою %u", Enabled ? "ВКЛ" : "ВАНИЛЬ",
 			g_MonsterLogicTelemetry.AliveMonsters.load(std::memory_order_relaxed),
 			g_MonsterLogicTelemetry.CombatMonsters.load(std::memory_order_relaxed));
-		AddLine("PLAYER KNOWN %u | first via sharing %u",
+		AddLine("Знают ГГ: %u | впервые от сарафана: %u",
 			g_MonsterLogicTelemetry.PlayerKnownMonsters.load(std::memory_order_relaxed),
 			g_MonsterLogicTelemetry.PlayerFirstSharedMonsters.load(std::memory_order_relaxed));
-		AddLine("Received player sharing %u | sees player %u",
+		AddLine("Получили сарафан о ГГ: %u | видят ГГ: %u",
 			g_MonsterLogicTelemetry.PlayerSharedMonsters.load(std::memory_order_relaxed),
 			g_MonsterLogicTelemetry.PlayerVisibleMonsters.load(std::memory_order_relaxed));
 		const float Cost = g_MonsterLogicTelemetry.Average[u32(EMonsterLogicTimer::NewLogicTotal)];
 		const float FrameTime = g_MonsterLogicTelemetry.AverageFrameMilliseconds;
-		AddLine("NEW LOGIC %.2f ms | peak %.2f ms", Cost,
+		AddLine("Новая логика %.2f мс | пик %.2f мс", Cost,
 			g_MonsterLogicTelemetry.Peak[u32(EMonsterLogicTimer::NewLogicTotal)]);
 		if (FrameTime > EPS_S && Cost < FrameTime)
 		{
 			const float CurrentFPS = 1000.f / FrameTime;
 			const float EstimatedFPS = 1000.f / (FrameTime - Cost);
-			AddLine("CPU share %.1f%% | estimated FPS loss %.2f", Cost * 100.f / FrameTime, EstimatedFPS - CurrentFPS);
+			AddLine("Доля CPU %.1f%% | оценка потери FPS %.2f", Cost * 100.f / FrameTime, EstimatedFPS - CurrentFPS);
 		}
 		else
 		{
-			AddLine("Estimated FPS loss: awaiting valid sample");
+			AddLine("Оценка потери FPS: сбор данных");
 		}
 		const auto Session = [&](EMonsterLogicCounter Counter)
 		{
 			return static_cast<unsigned long long>(g_MonsterLogicTelemetry.SessionCounters[u32(Counter)]);
 		};
-		AddLine("SINCE RESET: radio %llu | wireless %llu | calls %llu",
+		AddLine("После сброса: сарафан %llu | пси %llu | кличи %llu",
 			Session(EMonsterLogicCounter::VisibleTransfers), Session(EMonsterLogicCounter::WirelessTransfers), Session(EMonsterLogicCounter::Calls));
-		AddLine("Player info delivered %llu times", Session(EMonsterLogicCounter::ActorTransfers));
+		AddLine("Передач информации о ГГ: %llu", Session(EMonsterLogicCounter::ActorTransfers));
 		if (g_MonsterLogicTelemetry.Detailed.load(std::memory_order_relaxed))
 		{
-			AddLine("--- DETAILS: FULL MONSTER AI ---");
-			AddLine("Includes vanilla AI; nested times overlap");
-			AddLine("Settings [%s] friends:%d distribution:%d calls:%d",
-				EngineExternal().GetMonsterLogicOverride() < 0 ? "config" : "override",
+			AddLine("--- ПОДРОБНО: ВЕСЬ ИИ МОНСТРОВ ---");
+			AddLine("Включая ваниль; вложенные времена пересекаются");
+			AddLine("Настройки [%s] друзья:%d распределение:%d кличи:%d",
+				EngineExternal().GetMonsterLogicOverride() < 0 ? "конфиг" : "консоль",
 				Enabled && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFriendlyEnemySharing],
 				Enabled && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterDistributedTargeting],
-				Enabled && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterEnemySharingCalls]);
-			AddLine("Peaceful %u / native crows %u / standalone phantoms %u",
+				Enabled && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterEnemySharingCallSounds]);
+			AddLine("Мирных %u / штатных ворон %u / фантомов %u",
 				g_MonsterLogicTelemetry.PeacefulMonsters.load(std::memory_order_relaxed),
 				g_MonsterLogicTelemetry.VanillaCrows.load(std::memory_order_relaxed),
 				g_MonsterLogicTelemetry.StandalonePhantoms.load(std::memory_order_relaxed));
-			AddLine("CPU ms/frame: avg / peak / calls (%.2fs)", g_MonsterLogicTelemetry.SampleSeconds);
-			const char* Names[] = {"Think total", "Memory", "Enemy memory", "Enemy manager", "FSM + paths", "Sharing", "Distribution", "Neighbour query", "Actor hit", "Schedule total", "Client update", "Vision + senses", "New logic total"};
+			AddLine("CPU мс/кадр: среднее / пик / вызовы (%.2f с)", g_MonsterLogicTelemetry.SampleSeconds);
+			const char* Names[] = {"Мышление", "Память", "Память врагов", "Выбор врага", "Состояния + пути", "Сарафан", "Распределение", "Поиск соседей", "Урон ГГ", "Планировщик", "Обновление кадра", "Зрение + чувства", "Новая логика"};
 			static_assert(std::size(Names) == CMonsterLogicTelemetry::TimerCount);
 			for (u32 Index = 0; Index < CMonsterLogicTelemetry::TimerCount; ++Index)
 			{
@@ -151,20 +151,18 @@ void XRay::Hardware::FPSCounter::OnRender()
 				{
 					continue;
 				}
-				AddLine("%-14s %.3f / %.3f / %.1f", Names[Index], g_MonsterLogicTelemetry.Average[Index],
+				AddLine("%s: %.3f / %.3f / %.1f", Names[Index], g_MonsterLogicTelemetry.Average[Index],
 					g_MonsterLogicTelemetry.Peak[Index], g_MonsterLogicTelemetry.CallsPerFrame[Index]);
 			}
 			auto Rate = [&](EMonsterLogicCounter Counter) { return g_MonsterLogicTelemetry.PerSecond[u32(Counter)]; };
-			AddLine("Per second: combat %.0f / sharing %.0f / transfers %.0f", Rate(EMonsterLogicCounter::CombatUpdates), Rate(EMonsterLogicCounter::SharingUpdates), Rate(EMonsterLogicCounter::Transfers));
-			AddLine("Records checked %.0f / unchanged %.0f / deferred %.0f", Rate(EMonsterLogicCounter::SharingChecked), Rate(EMonsterLogicCounter::SharingUnchanged), Rate(EMonsterLogicCounter::SharingDeferred));
-			AddLine("Native transfers %.0f", Rate(EMonsterLogicCounter::NativeTransfers));
-			AddLine("Queries %.0f (peak %u/4) / deferred %.0f", Rate(EMonsterLogicCounter::Queries), g_MonsterLogicTelemetry.CounterPeak[u32(EMonsterLogicCounter::Queries)], Rate(EMonsterLogicCounter::QueryDeferred));
-			AddLine("Plans %.0f (peak %u/2) / deferred %.0f", Rate(EMonsterLogicCounter::Plans), g_MonsterLogicTelemetry.CounterPeak[u32(EMonsterLogicCounter::Plans)], Rate(EMonsterLogicCounter::PlanDeferred));
-			AddLine("Plan members %.0f / targets %.0f / calls %.0f", Rate(EMonsterLogicCounter::Members), Rate(EMonsterLogicCounter::Targets), Rate(EMonsterLogicCounter::Calls));
-			AddLine("Hits %.0f / focus %.0f / panic %.0f", Rate(EMonsterLogicCounter::Hits), Rate(EMonsterLogicCounter::Focus), Rate(EMonsterLogicCounter::Panic));
-			AddLine("NOISE SINCE RESET: shots %llu / explosions %llu", Session(EMonsterLogicCounter::ShotNoise), Session(EMonsterLogicCounter::ExplosionNoise));
-			AddLine("Noise reactions: scared %llu / attracted %llu", Session(EMonsterLogicCounter::NoisePanic), Session(EMonsterLogicCounter::NoiseAttract));
-			AddLine("Nested CPU timers: do not add rows");
+			AddLine("В секунду: бой %.0f / обмен %.0f / передачи %.0f", Rate(EMonsterLogicCounter::CombatUpdates), Rate(EMonsterLogicCounter::SharingUpdates), Rate(EMonsterLogicCounter::Transfers));
+			AddLine("Записей проверено %.0f / прежних %.0f / отложено %.0f", Rate(EMonsterLogicCounter::SharingChecked), Rate(EMonsterLogicCounter::SharingUnchanged), Rate(EMonsterLogicCounter::SharingDeferred));
+			AddLine("Штатных передач %.0f", Rate(EMonsterLogicCounter::NativeTransfers));
+			AddLine("Запросы %.0f (пик %u/4) / отложено %.0f", Rate(EMonsterLogicCounter::Queries), g_MonsterLogicTelemetry.CounterPeak[u32(EMonsterLogicCounter::Queries)], Rate(EMonsterLogicCounter::QueryDeferred));
+			AddLine("Планы %.0f (пик %u/2) / отложено %.0f", Rate(EMonsterLogicCounter::Plans), g_MonsterLogicTelemetry.CounterPeak[u32(EMonsterLogicCounter::Plans)], Rate(EMonsterLogicCounter::PlanDeferred));
+			AddLine("В плане особей %.0f / целей %.0f / кличей %.0f", Rate(EMonsterLogicCounter::Members), Rate(EMonsterLogicCounter::Targets), Rate(EMonsterLogicCounter::Calls));
+			AddLine("Урон %.0f / фокус %.0f / испуг %.0f", Rate(EMonsterLogicCounter::Hits), Rate(EMonsterLogicCounter::Focus), Rate(EMonsterLogicCounter::Panic));
+			AddLine("Вложенные таймеры CPU: строки не складывать");
 		}
 	}
 	float Width = 0.f;

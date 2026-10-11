@@ -8,6 +8,7 @@
 #include "Level.h"
 #include "../xrEngine/MonsterLogicTelemetry.h"
 #include "ai/monsters/basemonster/base_monster.h"
+#include "MonsterEnemySharingDebug.h"
 #include "ai/crow/ai_crow.h"
 #include "ai/phantom/phantom.h"
 #include "HUDManager.h"
@@ -1457,4 +1458,24 @@ CZoneList* CLevel::create_hud_zones_list()
 	hud_zones_list = new CZoneList();
 	hud_zones_list->clear();
 	return hud_zones_list;
+}
+u32 CLevel::ReloadMonsterLogicOptions()
+{
+	u32 Count = 0;
+	for (u32 Index = 0; Index < Objects.o_count(); ++Index)
+	{
+		CObject* Object = Objects.o_get_by_iterator(Index);
+		CBaseMonster* Monster = Object ? Object->cast_base_monster() : nullptr;
+		if (Monster && !Monster->getDestroy())
+		{
+			Monster->ReloadMonsterLogicOptions();
+			++Count;
+		}
+	}
+	return Count;
+}
+
+void CLevel::SetMonsterLogicDraw(bool Enabled)
+{
+	MonsterEnemySharingDebug().SetEnabled(Enabled);
 }

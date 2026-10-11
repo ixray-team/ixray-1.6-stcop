@@ -438,6 +438,7 @@ void CBaseMonster::shedule_Update(u32 dt)
 
 void CBaseMonster::Die(CObject* who)
 {
+	Behavior.OnDeath(*this);
 	SpatialComponent->type &= ~ESPATIAL_TYPE::MONSTER_ALIVE;
 	SpatialComponent->type |= ESPATIAL_TYPE::MONSTER_DEAD;
 
@@ -506,6 +507,8 @@ void CBaseMonster::Hit(SHit* pHDS)
 		}
 	}
 	inherited::Hit(pHDS);
+	// Damage reaction must also run for hits without a skeleton bone.
+	ReactToActorDamage(conditions().GetHealthLost(), pHDS->who);
 }
 
 void CBaseMonster::PHHit(SHit &H)

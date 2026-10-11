@@ -56,6 +56,8 @@ void	Vision::feel_vision_clear()
 	xrSRWLockGuard guard_query(&lock_query, false);
 	xrSRWLockGuard guard_visible(&lock_visible, false);
 	seen.clear();
+	AttentionObject = nullptr;
+	AttentionUntil = 0;
 	query.clear();
 	diff.clear();
 	feel_visible.clear();
@@ -65,6 +67,7 @@ void	Vision::feel_vision_relcase(CObject* object)
 {
 	xrSRWLockGuard guard_query(&lock_query, false);
 	xrSRWLockGuard guard_visible(&lock_visible, false);
+	if (AttentionObject == object) { AttentionObject = nullptr; AttentionUntil = 0; }
 	xr_vector<CObject*>::iterator Io;
 	Io = std::find(seen.begin(), seen.end(), object);
 	if (Io != seen.end())	seen.erase(Io);
@@ -74,6 +77,15 @@ void	Vision::feel_vision_relcase(CObject* object)
 	if (Io != diff.end())	diff.erase(Io);
 	xr_vector<feel_visible_Item>::iterator Ii = feel_visible.begin(), IiE = feel_visible.end();
 	for (; Ii != IiE; ++Ii)if (Ii->O == object) { feel_visible.erase(Ii); break; }
+}
+
+void Vision::SetAttentionVisionObject(CObject* Object, u32 Until, float Angle, float Radius)
+{
+	xrSRWLockGuard Guard(&lock_query, false);
+	AttentionObject = Object;
+	AttentionUntil = Until;
+	AttentionAngle = Angle;
+	AttentionRadius = Radius;
 }
 
 void Vision::feel_vision_query(Fmatrix& mFull)
@@ -99,6 +111,24 @@ void Vision::feel_vision_query(Fmatrix& mFull)
 		CObject* object = spatial->dcast_CObject();
 		if (object && feel_vision_isRelevant(object))
 			seen.push_back(object);
+	}
+	// A noticed candidate is traced by the normal visibility pipeline alongside the primary frustum.
+	// It cannot replace the primary candidates or directly create enemy knowledge.
+	if (AttentionObject && s32(AttentionUntil - Device.dwTimeGlobal) > 0 && !AttentionObject->getDestroy() && feel_vision_isRelevant(AttentionObject))
+	{
+		Fvector Offset;
+		Offset.sub(AttentionObject->Center(), m_owner->Center());
+		const float Distance = Offset.magnitude();
+		if (Distance <= AttentionRadius && (AttentionAngle >= 360.f || Distance <= EPS_L ||
+			Offset.dotproduct(m_owner->XFORM().k) >= Distance * cosf(deg2rad(AttentionAngle * .5f))))
+		{
+			seen.push_back(AttentionObject);
+		}
+	}
+	else
+	{
+		AttentionObject = nullptr;
+		AttentionUntil = 0;
 	}
 	if (seen.size() > 1)
 	{

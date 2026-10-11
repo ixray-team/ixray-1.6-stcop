@@ -79,7 +79,8 @@ enum class EEngineExternalMonstersLogic
 	EnableMonsterFactionEnemySharingIsolation,
 	EnableMonsterFriendlyEnemySharing,
 	EnableMonsterDistributedTargeting,
-	EnableMonsterEnemySharingCalls,
+	EnableMonsterEnemySharingCallSounds,
+	EnableMonsterVisionIgnoreFoliage,
 	None
 };
 
@@ -153,9 +154,9 @@ class XRCORE_API CEngineExternal final
 	
 private:
 	std::atomic<int> MonsterLogicOverride{-1};
-	float MonsterEnemySharingCloseRatio = .3f;
-	u32 MonsterEnemySharingIntervalMin = 1000;
-	u32 MonsterEnemySharingIntervalMax = 2000;
+	float MonsterEnemySharingCloseRatio = .25f;
+	u32 MonsterEnemySharingIntervalMin = 3000;
+	u32 MonsterEnemySharingIntervalMax = 5000;
 public:
 	u32 GetMonsterEnemySharingIntervalMin() const { return MonsterEnemySharingIntervalMin; }
 	u32 GetMonsterEnemySharingIntervalMax() const { return MonsterEnemySharingIntervalMax; }
