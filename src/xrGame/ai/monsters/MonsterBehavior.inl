@@ -294,6 +294,8 @@ void SMonsterBehavior::Load(CBaseMonster& Monster, const char* Section)
 	NextUpdate = Device.dwTimeGlobal + (u32(Monster.ID()) * 37u) % 500u;
 	NextPeripheral = NextUpdate;
 	NoiseInterestDecay = MonsterBehaviorRuntime::ReadFloat(Section, "monster_noise_interest_decay", "MonsterNoiseInterestDecay", .1f, 0.f, 1.f);
+	NoiseImmediateInterestChance = MonsterBehaviorRuntime::ReadFloat(Section, "monster_noise_immediate_interest_chance", "MonsterNoiseImmediateInterestChance", .35f, 0.f, 1.f);
+	SoundReactionRadius = MonsterBehaviorRuntime::ReadFloat(Section, "monster_sound_reaction_radius", "MonsterSoundReactionRadius", 25.f, 0.f, 500.f);
 	NoiseInterestInterval = u32(MonsterBehaviorRuntime::ReadFloat(Section, "monster_noise_interest_interval", "MonsterNoiseInterestInterval", .1f, .05f, 5.f) * 1000.f);
 	FightQuietTime = u32(MonsterBehaviorRuntime::ReadFloat(Section, "monster_death_hazard_fight_quiet_time", "MonsterDeathHazardFightQuietTime", 15.f, 1.f, 120.f) * 1000.f);
 	AnomalyAvoidance = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_anomaly_avoidance_enabled", false);
@@ -359,14 +361,14 @@ bool SMonsterBehavior::CrossesDanger(CBaseMonster& Monster, const Fvector& Point
 	return false;
 }
 
-u32 SMonsterBehavior::HearNoise(CBaseMonster& Monster, CObject* Source, const Fvector& Position, float Power, bool Explosion)
+u32 SMonsterBehavior::HearNoise(CBaseMonster& Monster, CObject* Source, const Fvector& Position, float Power, bool Explosion, bool General)
 {
-	const auto& Reaction = Explosion ? Monster.ExplosionReaction : Monster.ShotReaction;
+	const auto& Reaction = Explosion || (General && !Monster.ShotReaction.Attract) ? Monster.ExplosionReaction : Monster.ShotReaction;
 	const u32 ID = Source ? u32(Source->ID()) : u32(-1);
 	SNoiseAttention* Slot = nullptr;
 	for (auto& Entry : NoiseAttention)
 	{
-		if (!MonsterBehaviorRuntime::Expired(Entry.Until) && Entry.Source == ID && Entry.Explosion == Explosion &&
+		if (!MonsterBehaviorRuntime::Expired(Entry.Until) && Entry.Source == ID && Entry.Explosion == Explosion && Entry.General == General &&
 			(ID != u32(-1) || Entry.Position.distance_to_sqr(Position) < 25.f))
 		{
 			Slot = &Entry;
@@ -380,19 +382,20 @@ u32 SMonsterBehavior::HearNoise(CBaseMonster& Monster, CObject* Source, const Fv
 	}
 	Slot->Source = ID;
 	Slot->Position = Position;
-	Slot->Power = Power; Slot->Explosion = Explosion;
+	Slot->Power = Power; Slot->Explosion = Explosion; Slot->General = General;
 	const u32 Now = Device.dwTimeGlobal;
 	if (!Slot->LastInterest || Now - Slot->LastInterest >= NoiseInterestInterval)
 	{
 		const float Decay = Slot->LastInterest ? float(Now - Slot->LastInterest) * .001f * NoiseInterestDecay : 0.f;
 		Slot->Interest = Reaction.Attract ? std::min(1.f, std::max(0.f, Slot->Interest - Decay) + Reaction.InterestStep) : 0.f;
-		Slot->Fear = Reaction.FearEnabled ? std::min(1.f, std::max(0.f, Slot->Fear - Decay) + Reaction.FearStep) : 0.f;
+		if (Reaction.Attract && Random.randF() < NoiseImmediateInterestChance) Slot->Interest = 1.f;
+		Slot->Fear = !General && Reaction.FearEnabled ? std::min(1.f, std::max(0.f, Slot->Fear - Decay) + Reaction.FearStep) : 0.f;
 		Slot->LastInterest = Now;
 	}
 	Slot->Until = Now + 10000;
 	// Updating a burst never postpones the already scheduled visual check.
 	return (Reaction.Attract && Slot->Interest >= Reaction.InterestThreshold ? 1u : 0u) |
-		(Reaction.FearEnabled && Slot->Fear >= Reaction.FearThreshold ? 2u : 0u);
+		(!General && Reaction.FearEnabled && Slot->Fear >= Reaction.FearThreshold ? 2u : 0u);
 }
 
 void SMonsterBehavior::ShareAreas(CBaseMonster& Receiver, const CBaseMonster& Source)
@@ -628,14 +631,14 @@ void SMonsterBehavior::Update(CBaseMonster& Monster)
 		{
 			auto& Noise = NoiseAttention[NoiseCheckCursor++ % 8];
 			if (Expired(Noise.Until) || !Expired(Noise.NextCheck) || Noise.LastCheckedEvent == Noise.LastInterest) continue;
-			if (!(Noise.Explosion ? Monster.ExplosionReaction : Monster.ShotReaction).Attract) continue;
+			if (!(Noise.Explosion || (Noise.General && !Monster.ShotReaction.Attract) ? Monster.ExplosionReaction : Monster.ShotReaction).Attract) continue;
 			Noise.NextCheck = Now + PeripheralInterval;
 			Noise.LastCheckedEvent = Noise.LastInterest;
 			// Hearing can turn an idle animal toward a sound behind it; this is not visual acquisition.
 			Attention = Noise.Position; AttentionUntil = Now + std::max(1500u, PeripheralInterval + 500u);
 			Monster.dir().face_target(Attention, 0);
 			if (MonsterEnemySharingDebug().IsEnabled()) MonsterEnemySharingDebug().RecordNoiseReaction(Monster, Noise.Position, Noise.Power, false, Noise.Explosion, Monster.NoiseInvestigationUntil &&
-				(Monster.NoiseInvestigationSource != u32(-1) ? Noise.Source == Monster.NoiseInvestigationSource : Noise.Position.distance_to_xz(Monster.NoiseInvestigationPosition) < 2.f));
+				(Monster.NoiseInvestigationSource != u32(-1) ? Noise.Source == Monster.NoiseInvestigationSource : Noise.Position.distance_to_xz(Monster.NoiseInvestigationPosition) < 2.f), Noise.General);
 
 			CObject* Source = Noise.Source != u32(-1) ? Level().Objects.net_Find(ALife::_OBJECT_ID(Noise.Source)) : nullptr;
 			CEntityAlive* Candidate = Source ? Source->cast_entity_alive() : nullptr;

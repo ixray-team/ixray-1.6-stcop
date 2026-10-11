@@ -6,6 +6,7 @@
 #include "CustomHUD.h"
 #include "Feel_Sound.h"
 #include "../xrSound/ai_sounds.h"
+#include "../xrCore/Kernel/EngineExternal.h"
 #include "Render.h"
 #include "std_classes.h"
 #include "xrLevel.h"
@@ -364,7 +365,6 @@ void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 	PROF_EVENT("IGame_Level::SoundEvent_Register");
 	if (!g_bLoaded) return;
 	if (!S) return;
-	if (S->g_type != int(0xffffffff) && (S->g_type & SOUND_TYPE_MELEE)) return;
 	if (S->g_object && S->g_object->getDestroy()) {S->g_object=nullptr; return;}
 	if (0u==S->slot) return;
 
@@ -382,7 +382,9 @@ void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 	VERIFY(_valid(p.max_ai_distance));
 	VERIFY(_valid(p.volume));
 
-	g_SpatialSpace->q_box(snd_ER, 0, ESPATIAL_TYPE::REACTTOSOUND, snd_position, { range,range,range });
+	// Monster distance hearing must not be clipped by asset range or occlusion.
+	const float QueryRange = EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ? 500.f : range;
+	g_SpatialSpace->q_box(snd_ER, 0, ESPATIAL_TYPE::REACTTOSOUND, snd_position, { QueryRange,QueryRange,QueryRange });
 
 	// Iterate
 	for (auto& spatial : snd_ER)
@@ -396,6 +398,17 @@ void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 		// Energy and signal
 		VERIFY(_valid(spatial->sphere.P));
 		float dist = snd_position.distance_to(spatial->sphere.P);
+		const float DistanceRange = L->GetDistanceSoundRange(S->g_type);
+		if (DistanceRange >= 0.f)
+		{
+			const float HearingFactor = std::clamp(L->GetHearingRangeFactor(), 0.f, 1.f);
+			if (DistanceRange > 0.f && HearingFactor > 0.f && dist <= DistanceRange * HearingFactor)
+			{
+				snd_Events.push_back({ L, S, 1.f, snd_position });
+			}
+			continue;
+		}
+		if (S->g_type != int(0xffffffff) && (S->g_type & SOUND_TYPE_MELEE)) continue;
 		if (dist>p.max_ai_distance) continue;
 		const float HearingFactor = std::clamp(L->GetHearingRangeFactor(), 0.f, 1.f);
 		if (HearingFactor <= 0.f || dist > range * HearingFactor) continue;
