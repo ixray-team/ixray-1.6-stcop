@@ -57,7 +57,7 @@ SWorld& World()
 	Value.LastTime = Device.dwTimeGlobal;
 	if (!Value.Configured)
 	{
-		CInifile* Options = EngineExternal().GetIniFile();
+		CInifile* Options = EngineExternal().GetMonsterLogicIniFile();
 		Value.MaxUpdates = std::clamp(READ_IF_EXISTS(Options, r_u32, "monsters_logic", "MonsterBehaviorUpdatesPerFrame", 12u), 1u, 64u);
 		Value.MaxQueries = std::min(READ_IF_EXISTS(Options, r_u32, "monsters_logic", "MonsterBehaviorQueriesPerFrame", 2u), 8u);
 		Value.MaxRays = std::min(READ_IF_EXISTS(Options, r_u32, "monsters_logic", "MonsterBehaviorRaysPerFrame", 16u), 64u);
@@ -230,7 +230,7 @@ bool Point(CBaseMonster& Monster, Fvector& Position, u32& Vertex)
 }
 float ReadFloat(const char* Section, const char* Local, const char* Common, float Default, float Min, float Max)
 {
-	const float Value = READ_IF_EXISTS(pSettings, r_float, Section, Local, READ_IF_EXISTS(EngineExternal().GetIniFile(), r_float, "monsters_logic", Common, Default));
+	const float Value = READ_IF_EXISTS(pSettings, r_float, Section, Local, READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_float, "monsters_logic", Common, Default));
 	return _valid(Value) ? std::clamp(Value, Min, Max) : Default;
 }
 } // namespace MonsterBehaviorRuntime
@@ -239,7 +239,7 @@ void SMonsterBehavior::Load(CBaseMonster& Monster, const char* Section)
 {
 	*this = {};
 	Monster.SetAttentionVisionObject(nullptr, 0);
-	Enabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_behavior_enabled", READ_IF_EXISTS(EngineExternal().GetIniFile(), r_bool, "monsters_logic", "MonsterBehaviorEnabled", true));
+	Enabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_behavior_enabled", READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_bool, "monsters_logic", "MonsterBehaviorEnabled", true));
 	const char* List = READ_IF_EXISTS(pSettings, r_string, Section, "monster_behavior_strategies", "direct, flank, pressure");
 	Strategies = 0;
 	const char* Names[] = {"direct", "flank", "wide", "cautious", "lunge", "charge", "encircle", "pressure", "retreat"};
@@ -281,11 +281,11 @@ void SMonsterBehavior::Load(CBaseMonster& Monster, const char* Section)
 	HazardTime = u32(MonsterBehaviorRuntime::ReadFloat(Section, "monster_death_hazard_time", "MonsterDeathHazardTime", 120.f, 5.f, 600.f) * 1000.f);
 	InvestigatorLimit = u32(MonsterBehaviorRuntime::ReadFloat(Section, "monster_corpse_investigators", "MonsterCorpseInvestigators", 2.f, 1.f, 8.f));
 	Sniff = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_search_sniff", false);
-	TrailEnabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_trail_enabled", READ_IF_EXISTS(EngineExternal().GetIniFile(), r_bool, "monsters_logic", "MonsterTrailEnabled", true));
-	PeripheralEnabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_peripheral_enabled", READ_IF_EXISTS(EngineExternal().GetIniFile(), r_bool, "monsters_logic", "MonsterPeripheralEnabled", true));
-	DeathAlertEnabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_death_alert_enabled", READ_IF_EXISTS(EngineExternal().GetIniFile(), r_bool, "monsters_logic", "MonsterDeathAlertEnabled", true));
-	BodiesEnabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_corpse_investigation_enabled", READ_IF_EXISTS(EngineExternal().GetIniFile(), r_bool, "monsters_logic", "MonsterCorpseInvestigationEnabled", true));
-	HazardsEnabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_death_hazard_enabled", READ_IF_EXISTS(EngineExternal().GetIniFile(), r_bool, "monsters_logic", "MonsterDeathHazardEnabled", true));
+	TrailEnabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_trail_enabled", READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_bool, "monsters_logic", "MonsterTrailEnabled", true));
+	PeripheralEnabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_peripheral_enabled", READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_bool, "monsters_logic", "MonsterPeripheralEnabled", true));
+	DeathAlertEnabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_death_alert_enabled", READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_bool, "monsters_logic", "MonsterDeathAlertEnabled", true));
+	BodiesEnabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_corpse_investigation_enabled", READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_bool, "monsters_logic", "MonsterCorpseInvestigationEnabled", true));
+	HazardsEnabled = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_death_hazard_enabled", READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_bool, "monsters_logic", "MonsterDeathHazardEnabled", true));
 	ApproachSpeed = MonsterBehaviorRuntime::ReadFloat(Section, "monster_approach_speed_estimate", "MonsterApproachSpeedEstimate", 2.f, .1f, 20.f);
 	CloseVisualRadius = MonsterBehaviorRuntime::ReadFloat(Section, "monster_close_visual_radius", "MonsterCloseVisualRadius", 10.f, 0.f, 30.f);
 	CloseVisualTime = u32(MonsterBehaviorRuntime::ReadFloat(Section, "monster_close_visual_time", "MonsterCloseVisualTime", 5.f, 0.f, 15.f) * 1000.f);

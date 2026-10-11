@@ -212,13 +212,17 @@ public:
 
 	ICF bool operator[](const EEngineExternalMonstersLogic& ID) const
 	{
-		const int Override = GetMonsterLogicOverride();
-		if (ID == EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation && Override >= 0)
+		if (!MonsterLogicConfigAvailable)
 		{
-			return Override != 0;
+			return false;
+		}
+		const int Override = GetMonsterLogicOverride();
+		if (ID == EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation)
+		{
+			return Override >= 0 ? Override != 0 : MonsterLogicEnabled;
 		}
 		static xr_stack_string16 Type = "monsters_logic";
-		return CachedGetSettings<EEngineExternalMonstersLogic>(pOptions, Type, ID);
+		return CachedGetSettings<EEngineExternalMonstersLogic>(MonsterLogicOptions, Type, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalRender& ID) const
@@ -256,12 +260,16 @@ public:
 	Ivector2 gamesaveSize;
 
 	CInifile* GetIniFile();
+	CInifile* GetMonsterLogicIniFile() const { return MonsterLogicOptions; }
 private:
 	void InitPlatform(const char* pPlatformName);
 
 private:
 	EEngineExternalPlatform m_platform_type;
 	CInifile* pOptions;
+	CInifile* MonsterLogicOptions = nullptr;
+	bool MonsterLogicEnabled = false;
+	bool MonsterLogicConfigAvailable = false;
 };
 
 const char* Translate_EEngineExternalPlatform(EEngineExternalPlatform);
