@@ -109,6 +109,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 			float X = float(iFloor(str.x));
 			float Y = float(iFloor(str.y));
 			float Y2 = Y + str.height;
+			const float xs = g_current_font_scale.x;
 
 			if(str.align)
 			{
@@ -177,7 +178,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 
 							IconsToRender.push_back(icon);
 
-							X += icon.sz.x + owner.GetLetterSpacing();
+							X += icon.sz.x + owner.GetLetterSpacing() * xs;
 							continue;
 						}
 					}
@@ -207,7 +208,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 
 							IconsToRender.push_back(icon);
 
-							X += icon.sz.x + owner.GetLetterSpacing();
+							X += icon.sz.x + owner.GetLetterSpacing() * xs;
 							continue;
 						}
 					}
@@ -218,13 +219,13 @@ void dxFontRender::RenderBase(CGameFont& owner)
 				}
 
 				if(i != 0) {
-					X += glyphInfo->Abc.abcA;
+					X += glyphInfo->Abc.abcA * xs;
 				}
 
 				float GlyphY = Y + glyphInfo->yOffset;
 				float GlyphY2 = Y2 + glyphInfo->yOffset;
 
-				float X2 = X + (glyphInfo->Abc.abcB * owner.GetWidthCoef());
+				float X2 = X + glyphInfo->Abc.abcB * owner.GetWidthCoef() * xs;
 
 				float u1 = float(glyphInfo->TextureCoord.left) / fWidth;
 				float u2 = float(glyphInfo->TextureCoord.right) / fWidth;
@@ -273,7 +274,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 					};
 				}
 				++vertexes;
-				X = X2 + glyphInfo->Abc.abcC + owner.GetLetterSpacing();
+				X = X2 + glyphInfo->Abc.abcC * xs + owner.GetLetterSpacing() * xs;
 			}
 
 			// Unlock and draw
