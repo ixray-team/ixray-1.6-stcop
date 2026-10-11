@@ -386,6 +386,10 @@ void CWeapon::Load		(const char* section)
 			}
 		};
 
+		CamShotVariation = std::max(pSettings->read_if_exists<float>(hud_sect, "cam_shoot_variation", pSettings->read_if_exists<float>("camera_rig", "cam_shoot_variation", 0.f)), 0.f);
+		CamShotSpeedVariation = std::clamp(pSettings->read_if_exists<float>(hud_sect, "cam_shoot_speed_variation", pSettings->read_if_exists<float>("camera_rig", "cam_shoot_speed_variation", 0.f)), 0.f, 0.9f);
+		CamShotMirror = pSettings->read_if_exists<bool>(hud_sect, "cam_shoot_mirror", pSettings->read_if_exists<bool>("camera_rig", "cam_shoot_mirror", false));
+
 		LoadMoreCameras(m_shot_cams[0], "cam_shoot", "camera_effects\\weapon\\base_shoot.anm");
 		LoadMoreCameras(m_shot_cams[1], "cam_aim_shoot", "camera_effects\\weapon\\base_aim_shoot.anm");
 

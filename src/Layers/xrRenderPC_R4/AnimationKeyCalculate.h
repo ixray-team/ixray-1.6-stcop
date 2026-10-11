@@ -418,7 +418,6 @@ ICF void keys_substruct(CKey	*R, const CKey	*BR, int b_count )
 
 
 
-// Delta in bone space: base * delta == key when base == reference
 ICF void keys_substruct_local(CKey* R, const CKey* BR, int b_count)
 {
 	for (int i = 0; i < b_count; i++)
@@ -430,7 +429,6 @@ ICF void keys_substruct_local(CKey* R, const CKey* BR, int b_count)
 	}
 }
 
-// Scales a delta key towards identity
 ICF void key_weight(CKey& k, float w)
 {
 	if (k.Q.w < 0.f)
