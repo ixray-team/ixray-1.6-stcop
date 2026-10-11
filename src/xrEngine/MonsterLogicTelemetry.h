@@ -20,6 +20,7 @@ public:
 	static constexpr u32 CounterCount = u32(EMonsterLogicCounter::Count);
 	std::atomic<bool> Enabled{false};
 	std::atomic<bool> Detailed{true};
+	std::atomic<bool> DrawEnabled{false};
 	std::atomic<u32> Generation{0};
 	std::atomic<u64> Microseconds[TimerCount]{};
 	std::atomic<u32> Invocations[TimerCount]{};

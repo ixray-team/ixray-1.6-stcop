@@ -291,14 +291,14 @@ void CBaseMonster::reinit()
 	CloseSightCombatUntil = 0;
 	CloseSightCombatTargetID = u32(-1);
 	PursuitTargetID = u32(-1);
-	PursuitProgressTime = 0;
+	PursuitProgressTime = 0; PursuitProgressDistance = -1.f; PursuitProgressSampleTime = 0;
 	PursuitSearchingAround = false;
 	UnreachableSearchVertex = u32(-1);
 	NextUnreachableSearchPoint = 0;
 	ArrivalGeometryCheckTime = 0;
 	ShotReaction.NextReactionTime = 0;
 	ExplosionReaction.NextReactionTime = 0;
-	NoiseInvestigationUntil = 0;
+	NoiseInvestigationUntil = 0; NoiseProgressTime = 0; NoiseProgressDistance = -1.f; NoiseProgressSampleTime = 0;
 	StateMan->reinit					();
 	
 	Morale.reinit						();
@@ -393,6 +393,7 @@ void CBaseMonster::net_Destroy()
 	if (m_controlled) m_controlled->on_destroy	();
 	if (StateMan) StateMan->critical_finalize	();
 
+	Behavior.Remove(*this);
 	inherited::net_Destroy				();
 	CInventoryOwner::net_Destroy		();
 
@@ -550,8 +551,13 @@ void CBaseMonster::fill_bones_body_parts	(const char* body_part, CriticalWoundTy
 
 void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 {
+	Behavior.Load(*this, section);
+	VisionIgnoreFoliage = READ_IF_EXISTS(pSettings, r_bool, section, "monster_vision_ignore_foliage", false);
+	EnemyCallBroadcastFrame = u32(-1);
+	const float CallRatio = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_sharing_call_ratio", READ_IF_EXISTS(EngineExternal().GetIniFile(), r_float, "monsters_logic", "MonsterEnemySharingCallRatio", .6f));
+	EnemySharingCallRatio = _valid(CallRatio) ? std::clamp(CallRatio, 0.f, 1.f) : .6f;
 	EnemySharingRadius = 40.f;
-	EnemySharingCloseRatio = .3f;
+	EnemySharingCloseRatio = .25f;
 	EnemyTrackingLive = false;
 	EnemyCloseDetectionRadius = 0.f;
 	EnemyMemoryRetentionMin = 30000;
@@ -561,7 +567,7 @@ void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 	PlayerVisualAcquireTime = 400;
 	EnemyStuckTime = 3000;
 	PursuitTargetID = u32(-1);
-	PursuitProgressTime = 0;
+	PursuitProgressTime = 0; PursuitProgressDistance = -1.f; PursuitProgressSampleTime = 0;
 	ArrivalGeometryCheckTime = 0;
 	PursuitSearchingAround = false;
 	UnreachableSearchVertex = u32(-1);
@@ -582,17 +588,19 @@ void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 	NoiseReactionCooldown = 3000;
 	NoisePanicDuration = 6000;
 	NoiseMinPower = .01f;
+	HearingFactor = std::clamp(READ_IF_EXISTS(pSettings, r_float, section, "monster_hearing_factor", 1.f), 0.f, 1.f);
+	if (!_valid(HearingFactor)) HearingFactor = 1.f;
 	NoiseInvestigationUntil = 0;
 	NoiseInvestigationVertex = u32(-1);
 	if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
 	{
 		CInifile* CommonOptions = EngineExternal().GetIniFile();
-		PlayerVisualAcquireTime = std::min(u32(10000), READ_IF_EXISTS(CommonOptions, r_u32, "monsters_logic", "MonsterPlayerVisualAcquireTime", 400));
-		EnemyStuckTime = std::clamp(READ_IF_EXISTS(CommonOptions, r_u32, "monsters_logic", "MonsterEnemyStuckTime", u32(3000)), u32(500), u32(30000));
-		const float CloseAttackDistance = READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyCloseAttackDistance", 5.f);
+		PlayerVisualAcquireTime = std::min(u32(10000), READ_IF_EXISTS(pSettings, r_u32, section, "monster_player_visual_acquire_time", READ_IF_EXISTS(CommonOptions, r_u32, "monsters_logic", "MonsterPlayerVisualAcquireTime", 400)));
+		EnemyStuckTime = std::clamp(READ_IF_EXISTS(pSettings, r_u32, section, "monster_enemy_stuck_time", READ_IF_EXISTS(CommonOptions, r_u32, "monsters_logic", "MonsterEnemyStuckTime", u32(3000))), u32(500), u32(30000));
+		const float CloseAttackDistance = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_close_attack_distance", READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyCloseAttackDistance", 5.f));
 		EnemyCloseAttackDistance = _valid(CloseAttackDistance) && CloseAttackDistance >= 0.f && CloseAttackDistance <= 100.f ? CloseAttackDistance : 5.f;
-		float MemoryMin = READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyMemoryMin", 30.f);
-		float MemoryMax = READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyMemoryMax", 60.f);
+		float MemoryMin = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_memory_min", READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyMemoryMin", 30.f));
+		float MemoryMax = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_memory_max", READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyMemoryMax", 60.f));
 		if (!_valid(MemoryMin) || MemoryMin < 1.f || MemoryMin > 600.f)
 		{
 			MemoryMin = 30.f;
@@ -642,6 +650,24 @@ void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 			}
 			xr_sprintf(Key, "%s_attract", Prefix);
 			Reaction.Attract = READ_IF_EXISTS(pSettings, r_bool, section, Key, false);
+			xr_sprintf(Key, "%s_interest_enabled", Prefix);
+			Reaction.Attract = READ_IF_EXISTS(pSettings, r_bool, section, Key, Reaction.Attract);
+			xr_sprintf(Key, "%s_fear_enabled", Prefix);
+			Reaction.FearEnabled = READ_IF_EXISTS(pSettings, r_bool, section, Key, Reaction.PanicChance > 0.f);
+			auto ReadUnit = [&](const char* Suffix, const char* GlobalSuffix, float Default, float Minimum)
+			{
+				xr_sprintf(Key, "%s%s", xr_strcmp(Prefix, "monster_shot_reaction") == 0 ? "MonsterShotReaction" : "MonsterExplosionReaction", GlobalSuffix);
+				const float Global = READ_IF_EXISTS(EngineExternal().GetIniFile(), r_float, "monsters_logic", Key, Default);
+				if (_valid(Global) && Global >= Minimum && Global <= 1.f) Default = Global;
+				xr_sprintf(Key, "%s_%s", Prefix, Suffix);
+				const float Value = READ_IF_EXISTS(pSettings, r_float, section, Key, Default);
+				return _valid(Value) && Value >= Minimum && Value <= 1.f ? Value : Default;
+			};
+			Reaction.InterestStep = ReadUnit("interest_step", "InterestStep", .25f, 0.f);
+			Reaction.InterestThreshold = ReadUnit("interest_threshold", "InterestThreshold", .65f, .01f);
+			if (Reaction.FearEnabled) Reaction.Attract = false;
+			Reaction.FearStep = ReadUnit("fear_step", "FearStep", .25f, 0.f);
+			Reaction.FearThreshold = ReadUnit("fear_threshold", "FearThreshold", .65f, .01f);
 		};
 		LoadNoiseReaction(ShotReaction, "monster_shot_reaction");
 		LoadNoiseReaction(ExplosionReaction, "monster_explosion_reaction");
@@ -680,7 +706,7 @@ void CBaseMonster::LoadMonsterEnemyCall(const char* section)
 {
 	EnemyCallSoundType = MonsterSound::eMonsterSoundAggressive;
 	if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] &&
-		EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterEnemySharingCalls] &&
+		EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterEnemySharingCallSounds] &&
 		READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_call_enabled", false) &&
 		READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_sharing_enabled", true) &&
 		!READ_IF_EXISTS(pSettings, r_bool, section, "monster_peaceful", false))

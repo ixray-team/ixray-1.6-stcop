@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "control_animation_base.h"
+#include "../../../xrCore/Kernel/EngineExternal.h"
 #include "control_direction_base.h"
 #include "control_movement_base.h"
 #include "basemonster/base_monster.h"
@@ -66,6 +67,7 @@ void CControlAnimationBase::reinit()
 	// обновить количество анимаций
 	m_anim_motion_map.clear	();
 	UpdateAnimCount			();
+	ConfigureSearchInspection();
 
 	// инициализация информации о текущей анимации
 	m_cur_anim.set_motion			(eAnimStandIdle);
@@ -829,3 +831,59 @@ void CControlAnimationBase::free_anim_storage()
 	}
 }
 
+void CControlAnimationBase::ConfigureSearchInspection()
+{
+	SearchInspectionAvailable = false;
+	SearchInspectionAction = ACT_LOOK_AROUND;
+	SearchInspectionDuration = 1000;
+	if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ||
+		!m_object->Behavior.Enabled || !m_object->Behavior.Sniff || !m_object->Visual())
+	{
+		return;
+	}
+	IKinematicsAnimated* Skeleton = m_object->Visual()->dcast_PKinematicsAnimated();
+	if (!Skeleton)
+	{
+		return;
+	}
+	const char* Configured = READ_IF_EXISTS(pSettings, r_string, *m_object->cNameSect(), "monster_search_animation", "auto");
+	const bool Auto = !Configured[0] || xr_strcmp(Configured, "auto") == 0;
+	const auto Walking = m_tMotions.find(ACT_HOME_WALK_SMELLING);
+	if (Auto && Walking != m_tMotions.end() && u32(Walking->second.anim) < m_anim_storage.size())
+	{
+		const SAnimItem* Item = m_anim_storage[Walking->second.anim];
+		if (Item && Item->count && Item->velocity.velocity.linear > EPS_L)
+		{
+			SearchInspectionAvailable = true;
+			SearchInspectionAction = ACT_HOME_WALK_SMELLING;
+			SearchInspectionDuration = 600;
+			return;
+		}
+	}
+	const char* Choices[] = {"stand_look_around_", "stand_check_corpse_", "stand_search_", "stand_smell_"};
+	const char* Selected = nullptr;
+	for (u32 Index = 0; Index < (Auto ? 4u : 1u); ++Index)
+	{
+		const char* Name = Auto ? Choices[Index] : Configured;
+		string256 First;
+		xr_strconcat(First, Name, "0");
+		if (Skeleton->ID_Cycle_Safe(First).valid() || Skeleton->ID_Cycle_Safe(Name).valid())
+		{
+			Selected = Name;
+			break;
+		}
+	}
+	if (!Selected)
+	{
+		return;
+	}
+	// Reuse the normal interruptible look action, never a forced animation sequence.
+	xr_delete(m_anim_storage[eAnimLookAround]);
+	SVelocityParam Idle;
+	AddAnim(eAnimLookAround, Selected, -1, &Idle, PS_STAND);
+	m_tMotions.erase(ACT_LOOK_AROUND);
+	LinkAction(ACT_LOOK_AROUND, eAnimLookAround);
+	UpdateAnimCount();
+	SearchInspectionAvailable = true;
+	SearchInspectionDuration = u32(std::clamp(get_animation_length(eAnimLookAround, 0) * 1000.f, 1000.f, 5000.f));
+}
