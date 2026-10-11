@@ -418,6 +418,32 @@ ICF void keys_substruct(CKey	*R, const CKey	*BR, int b_count )
 
 
 
+// Delta in bone space: base * delta == key when base == reference
+ICF void keys_substruct_local(CKey* R, const CKey* BR, int b_count)
+{
+	for (int i = 0; i < b_count; i++)
+	{
+		Fquaternion q;
+		q.inverse(BR[i].Q);
+		R[i].Q.set(Fquaternion().mul(q, R[i].Q));
+		R[i].T.sub(R[i].T, BR[i].T);
+	}
+}
+
+// Scales a delta key towards identity
+ICF void key_weight(CKey& k, float w)
+{
+	if (k.Q.w < 0.f)
+	{
+		k.Q.set(-k.Q.w, -k.Q.x, -k.Q.y, -k.Q.z);
+	}
+
+	Fquaternion identity;
+	identity.identity();
+	k.Q.slerp(identity, Fquaternion(k.Q), w);
+	k.T.mul(w);
+}
+
 ICF void q_scalem(Fmatrix &m, float v)
 {
 	Fquaternion q;
@@ -513,6 +539,19 @@ ICF void MixChannels(CKey &Result,const CKey	*R,const animation::channel_def* BA
 		case animation::lerp:
 			lerp_factor_sum +=BA[i].factor;
 			KEY_Interp	(Result,CKey( Result ),R[i], BA[i].factor/lerp_factor_sum ); break;
+
+		case animation::add_local:
+		{
+			CKey delta = R[i];
+			if (BA[i].factor != 1.f)
+			{
+				key_weight(delta, BA[i].factor);
+			}
+
+			Result.Q.set(Fquaternion().mul(Result.Q, delta.Q));
+			Result.Q.normalize();
+			Result.T.add(delta.T);
+		} break;
 		default: NODEFAULT;
 	}
 	VERIFY( _valid( Result.T ) );

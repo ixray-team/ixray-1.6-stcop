@@ -892,6 +892,15 @@ lean_hud_counter    = 0.7                       ; share of Q/E lean removed from
 left_hand_ik_chain  = j_shoulder_le, j_elbow_le, j_wrist_le
 right_hand_ik_chain = j_shoulder_ri, j_elbow_ri, j_wrist_ri
 left_hand_ik_bone   = wpn_body                  ; grip offset is captured from the animation unless left_hand_ik_pos/rot are set
+; additive HUD motions, per hud section: additive_motions = anm_shoot*, anm_shots* ('*' = prefix)
+; such a motion is added over the playing pose (idle, walk, aim) as its change from its own first frame,
+; so it must start in the pose it was authored over; the idle after it continues instead of restarting
+additive_blend_in   = 0                         ; s (per hud section too)
+additive_blend_out  = 0.1                       ; s, fade of the previous additive motion when the next one starts
+; anm_idle* additive motions loop (anm_idle_sprint), their _start / _end play once; a plain motion fades them out
+; per hud section: additive_reference = pm_idle ; hands motion whose first frame all additive motions are a delta from
+;   (the pose they were animated over), so a start, a loop and an end chain without jumps; default: each its own first frame
+; per hud section: left_hand_free_motions = anm_idle_sprint* ; no left hand IK grip during these (the hand swings off the weapon)
 
 shape_transp_color    = 135, 245, 66, 24
 

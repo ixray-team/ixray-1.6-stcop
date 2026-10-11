@@ -299,6 +299,7 @@ void CKinematicsAnimated::IBlendSetup(CBlend& B,u16 part,u8 channel, MotionID mo
 	B.CallbackParam = CallbackParam;
 
 	B.channel		= channel;
+	B.additive_ref.invalidate();
 	B.fall_at_end	= B.stop_at_end && (channel > 1);
 }
 void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float blendAccrue, float blendFalloff,float Power ,float Speed,u16 bone)
@@ -944,33 +945,41 @@ const	CBlendInstance::BlendSVec	&Blend				= BLEND_INST.blend_vector();
 			CMotion& M = *LL_GetMotion(B->motionID, SelfID);
 			Dequantize(*D, *B, M, g_AnimCubicInterpolation != 0);
 
-			if (M.test_flag(flTKeyFFT_Bit))
-				QuatL(M._keysR32[0], BK[channel][b_count].Q);
-			else
-				QR2Quat(M._keysR[0], BK[channel][b_count].Q);
+			// Base key: the first frame of the motion, or of the reference motion of an additive blend
+			const bool has_ref = B->additive_ref.valid() && B->additive_ref.slot < m_Motions.size();
+			CMotion& R = has_ref ? *LL_GetMotion(B->additive_ref, SelfID) : M;
 
-			if (M.test_flag(flTKeyPresent))
+			if (R.test_flag(flTKeyFFT_Bit))
+				QuatL(R._keysR32[0], BK[channel][b_count].Q);
+			else
+				QR2Quat(R._keysR[0], BK[channel][b_count].Q);
+
+			if (R.test_flag(flTKeyPresent))
 			{
-				if (M.test_flag(flTKeyFFT_Bit))
+				if (R.test_flag(flTKeyFFT_Bit))
 				{
-					QT_FFT_l(M._keysT32[0], BK[channel][b_count].T);
+					QT_FFT_l(R._keysT32[0], BK[channel][b_count].T);
 				}
-				else if (M.test_flag(flTKey16IsBit))
+				else if (R.test_flag(flTKey16IsBit))
 				{
-					QT16_2T(M._keysT16[0], M, BK[channel][b_count].T);
+					QT16_2T(R._keysT16[0], R, BK[channel][b_count].T);
 				}
 				else
 				{
-					QT8_2T(M._keysT8[0], M, BK[channel][b_count].T);
+					QT8_2T(R._keysT8[0], R, BK[channel][b_count].T);
 				}
 			}
 			else
-				BK[channel][b_count].T.set(M._initT);
+				BK[channel][b_count].T.set(R._initT);
 			++b_count;
 		}
 		for(u16 j= 0;MAX_CHANNELS>j;++j)
+		{
 			if( channels.rule(j).extern_ == animation::add )
 				keys_substruct( keys.keys[j], BK[j], keys.chanel_blend_conts[j] );
+			else if (channels.rule(j).extern_ == animation::add_local)
+				keys_substruct_local(keys.keys[j], BK[j], keys.chanel_blend_conts[j]);
+		}
 }
 
 void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* parent, const SKeyTable& keys)
@@ -1000,6 +1009,19 @@ void CKinematicsAnimated::LL_BlendKeys(CKey& Result, const SKeyTable& keys)
 		// data for channel mix cycle based on ch_count
 		channels.get_def(j, BC[ch_count]);
 		process_single_channel(channel_keys[ch_count], BC[ch_count], keys.keys[j], keys.blends[j], keys.chanel_blend_conts[j]);
+
+		// The lerp inside the channel normalizes the weights; the delta fades in and out with their sum
+		if (BC[ch_count].rule.extern_ == animation::add_local)
+		{
+			float weight = 0.f;
+			for (int i = 0; i < keys.chanel_blend_conts[j]; ++i)
+			{
+				weight += keys.blends[j][i]->blendAmount;
+			}
+
+			key_weight(channel_keys[ch_count], std::clamp(weight, 0.f, 1.f));
+		}
+
 		++ch_count;
 	}
 	// Mix channels

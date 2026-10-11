@@ -192,7 +192,7 @@ public:
 	float getLookOutAmplK() const { return HudDesc().m_fLookOutAmplK; }
 	float getActorCamSpeedFactor() const { return m_fActorCamSpeedFactor; }
 
-	bool CanStartAction(CActor* pActor);
+	bool CanStartAction(CActor* pActor, u32 kfACTTYPE = 0);
 	bool SetKeyRepeatFlag(u32 kfACTTYPE);
 
 	virtual bool NeedMovementBlend() const;

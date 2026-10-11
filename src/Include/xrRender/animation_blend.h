@@ -32,6 +32,7 @@ public:
 	MotionID		motionID = {};
 	u16				bone_or_part = 0;	// startup parameters
 	u8				channel = 0;
+	MotionID		additive_ref = {};	// additive channel: delta from the first frame of this motion instead of its own
 
 	struct NotifyKeyframeData
 	{
@@ -94,6 +95,7 @@ const CBlend& operator=( const CBlend& r )
 	motionID			=	r.motionID				;
 	bone_or_part		=	r.bone_or_part			;
 	channel				=	r.channel				;
+	additive_ref		=	r.additive_ref			;
 	blend				=	r.blend					;
 	blendAccrue			=	r.blendAccrue			;
 	blendFalloff		=	r.blendFalloff			;

@@ -1500,19 +1500,19 @@ void CActor::ProcessKeys(CHudItem* itm)
 		SetActorKeyRepeatFlag(kfGLAUNCHSWITCH, false);
 	}
 
-	if ((m_iKeyFlags & kfNEXTFIREMODE) != 0 && itm->CanStartAction(this))
+	if ((m_iKeyFlags & kfNEXTFIREMODE) != 0 && itm->CanStartAction(this, kfNEXTFIREMODE))
 	{
 		wpn->Action(kWPN_FIREMODE_NEXT, CMD_START);
 		SetActorKeyRepeatFlag(kfNEXTFIREMODE, false);
 	}
 
-	if ((m_iKeyFlags & kfPREVFIREMODE) != 0 && itm->CanStartAction(this))
+	if ((m_iKeyFlags & kfPREVFIREMODE) != 0 && itm->CanStartAction(this, kfPREVFIREMODE))
 	{
 		wpn->Action(kWPN_FIREMODE_PREV, CMD_START);
 		SetActorKeyRepeatFlag(kfPREVFIREMODE, false);
 	}
 
-	if ((m_iKeyFlags & kfRELOAD) != 0 && itm->CanStartAction(this))
+	if ((m_iKeyFlags & kfRELOAD) != 0 && itm->CanStartAction(this, kfRELOAD))
 	{
 		wpn->Action(kWPN_RELOAD, CMD_START);
 		SetActorKeyRepeatFlag(kfRELOAD, false);

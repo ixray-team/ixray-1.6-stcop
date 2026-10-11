@@ -92,6 +92,7 @@ extern	bool	b_toggle_weapon_aim;
 
 extern float	g_smart_cover_factor;
 extern int		g_upgrades_log;
+extern int		g_hud_layers_debug;
 extern float	g_smart_cover_animation_speed_factor;
 
 extern	bool	g_ai_use_old_vision;
@@ -2883,6 +2884,8 @@ void CCC_RegisterCommands()
 
 	CMD1(CCC_ShowAnimationStats, "ai_show_animation_stats");
 #endif // DEBUG
+
+	CMD4(CCC_Integer, "hud_layers_debug", &g_hud_layers_debug, 0, 1);
 
 #ifndef MASTER_GOLD
 	CMD3(CCC_Mask64, "ai_ignore_actor", &psAI_Flags, aiIgnoreActor);

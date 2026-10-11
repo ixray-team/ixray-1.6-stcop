@@ -7,6 +7,7 @@ using	namespace animation;
 const channal_rule channels::rules[channels::max] = { { mix_type::lerp, mix_type::lerp},
 	{ mix_type::lerp, mix_type::lerp},
 	{ mix_type::lerp, mix_type::add},
+	{ mix_type::lerp, mix_type::add},
 	{ mix_type::lerp, mix_type::add} };
 
 channels::channels( )

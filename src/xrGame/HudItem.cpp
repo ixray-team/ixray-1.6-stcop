@@ -14,6 +14,7 @@
 #include "HUDManager.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "Weapon.h"
+#include "CameraRig.h"
 #include "../Include/xrRender/UIRender.h"
 #include "ui/UIScriptWnd.h"
 
@@ -1163,6 +1164,12 @@ void CHudItem::OnMotionMark(u8 state, const motion_marks& mark)
 	if (mark.name == "mm_unpend")
 	{
 		SetPending(false);
+
+		// The sprint layers may start now (a draw past its mark): no state change would tell them
+		if (g_player_hud != nullptr && HudItemData() != nullptr && HudItemData() == g_player_hud->attached_item(0) && CCameraRig::Enabled())
+		{
+			g_player_hud->UpdateMovementLayers();
+		}
 	}
 
 	if (g_player_hud != nullptr)
@@ -1187,7 +1194,7 @@ bool CHudItem::SoundExist(const char* section, const char* sound_name)
 	return true;
 }
 
-bool CHudItem::CanStartAction(CActor* pActor)
+bool CHudItem::CanStartAction(CActor* pActor, u32 kfACTTYPE)
 {
 	if (pActor == nullptr)
 	{
@@ -1210,7 +1217,9 @@ bool CHudItem::CanStartAction(CActor* pActor)
 		return true;
 	}
 
-	if (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || m_bSwitchSprint)
+	// With the camera rig the reload and the fire mode switch run during the sprint, the rest still waits for it to end
+	const bool sprint_action = CCameraRig::Enabled() && (kfACTTYPE & (ACTOR_DEFS::EActorKeyflags::kfRELOAD | ACTOR_DEFS::EActorKeyflags::kfNEXTFIREMODE | ACTOR_DEFS::EActorKeyflags::kfPREVFIREMODE)) != 0;
+	if (!sprint_action && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || m_bSwitchSprint))
 	{
 		return false;
 	}
@@ -1231,7 +1240,7 @@ bool CHudItem::SetKeyRepeatFlag(u32 kfACTTYPE)
 		return true;
 	}
 
-	bool result = CanStartAction(pActor);
+	bool result = CanStartAction(pActor, kfACTTYPE);
 	if (!result)
 	{
 		CCustomDevice* pDevice = pActor->GetDevice();
