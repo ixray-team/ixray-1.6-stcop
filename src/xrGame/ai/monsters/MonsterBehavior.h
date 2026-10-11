@@ -35,12 +35,13 @@ struct SMonsterBehavior
 	float AnomalyScanRadius = 60.f, AnomalyMargin = 1.f;
 	struct SAnomaly { Fvector Position{}; float Radius = 0.f; };
 	SAnomaly Anomalies[32]{};
-	struct SNoiseAttention { u32 Source = u32(-1), Until = 0, NextCheck = 0, LastInterest = 0, LastCheckedEvent = 0; Fvector Position{}; float Interest = 0.f, Fear = 0.f, Power = 0.f; bool Explosion = false; };
+	struct SNoiseAttention { u32 Source = u32(-1), Until = 0, NextCheck = 0, LastInterest = 0, LastCheckedEvent = 0; Fvector Position{}; float Interest = 0.f, Fear = 0.f, Power = 0.f; bool Explosion = false, General = false; };
 	SNoiseAttention NoiseAttention[8]{};
 	u32 NoiseCursor = 0, NoiseCheckCursor = 0;
 	float NoiseInterestDecay = .1f;
+	float NoiseImmediateInterestChance = .35f, SoundReactionRadius = 25.f;
 	u32 NoiseInterestInterval = 100;
-	u32 HearNoise(CBaseMonster& Monster, CObject* Source, const Fvector& Position, float Power, bool Explosion);
+	u32 HearNoise(CBaseMonster& Monster, CObject* Source, const Fvector& Position, float Power, bool Explosion, bool General = false);
 	bool CrossesDanger(CBaseMonster& Monster, const Fvector& Point) const;
 	float ApproachSpeed = 2.f, CloseVisualRadius = 10.f, CrowdDistance = 20.f;
 	u32 CloseVisualTime = 5000, NoiseSearchTime = 10000;

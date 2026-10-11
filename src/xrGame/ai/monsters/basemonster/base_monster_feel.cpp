@@ -42,6 +42,19 @@ float CBaseMonster::GetHearingRangeFactor() const
 	return EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ? HearingFactor : 1.f;
 }
 
+float CBaseMonster::GetDistanceSoundRange(int Type) const
+{
+	if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation]) return -1.f;
+	if (Type == int(0xffffffff) || MonsterPeaceful || !g_Alive()) return 0.f;
+	const bool Explosion = (Type & SOUND_TYPE_OBJECT_EXPLODING) != 0;
+	const bool Shot = (Type & SOUND_TYPE_SHOOTING) != 0;
+	const auto& Reaction = Explosion ? ExplosionReaction : ShotReaction;
+	float Radius = Explosion || Shot ? Reaction.Radius : Behavior.SoundReactionRadius;
+	if (Type & SOUND_TYPE_SUPPRESSED) Radius *= .3f;
+	if (Type & SOUND_TYPE_MELEE) Radius *= .05f;
+	return Radius;
+}
+
 bool CBaseMonster::HasPriorityNoise() const
 {
 	if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation]) return false;
@@ -61,20 +74,21 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 	{
 		return false;
 	}
-	if (SoundType & SOUND_TYPE_MELEE) return true;
 	const bool Explosion = (SoundType & SOUND_TYPE_OBJECT_EXPLODING) != 0;
 	const bool Shot = (SoundType & SOUND_TYPE_SHOOTING) != 0;
-	if (!Explosion && !Shot)
+	const bool General = !Explosion && !Shot && (SoundType & (SOUND_TYPE_STEP | SOUND_TYPE_ATTACKING | SOUND_TYPE_INJURING |
+		SOUND_TYPE_DYING | SOUND_TYPE_OBJECT_BREAKING | SOUND_TYPE_OBJECT_COLLIDING | SOUND_TYPE_BULLET_HIT | SOUND_TYPE_MELEE)) != 0;
+	if (!Explosion && !Shot && !General)
 	{
 		return false;
 	}
 
 	CMonsterLogicTimerScope TotalTimer(EMonsterLogicTimer::NewLogicTotal);
-	SNoiseReaction& Reaction = Explosion ? ExplosionReaction : ShotReaction;
-	const float Radius = Reaction.Radius * ((SoundType & SOUND_TYPE_SUPPRESSED) ? .3f : 1.f);
-	if (!Reaction.Enabled || (!Reaction.Attract && !Reaction.FearEnabled) || Reaction.Radius <= 0.f || MonsterPeaceful || !g_Alive() ||
+	SNoiseReaction& Reaction = Explosion || (General && !ShotReaction.Attract) ? ExplosionReaction : ShotReaction;
+	const float Radius = GetDistanceSoundRange(SoundType) * GetHearingRangeFactor();
+	if (!Reaction.Enabled || (General ? !Reaction.Attract : (!Reaction.Attract && !Reaction.FearEnabled)) || Radius <= 0.f || MonsterPeaceful || !g_Alive() ||
 		GetScriptControl() || EnemyMan.get_script_enemy() || control().is_captured_pure() || (m_controlled && m_controlled->is_under_control()) ||
-		!_valid(Power) || Power < NoiseMinPower || Position().distance_to_sqr(SoundPosition) > Radius * Radius ||
+		Position().distance_to_sqr(SoundPosition) > Radius * Radius ||
 		GetHearingRangeFactor() <= 0.f)
 	{
 		return true;
@@ -83,7 +97,7 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 	if (HasDamagePanic()) return true;
 	CObject* Emitter = Source;
 	for (u32 Depth = 0; Emitter && Emitter->H_Parent() && Depth < 4; ++Depth) Emitter = Emitter->H_Parent();
-	const u32 Accumulated = Behavior.HearNoise(*this, Emitter, SoundPosition, Power, Explosion);
+	const u32 Accumulated = Behavior.HearNoise(*this, Emitter, SoundPosition, 1.f, Explosion, General);
 	const bool Interested = (Accumulated & 1u) != 0;
 	const bool Cooling = Reaction.NextReactionTime && s32(Reaction.NextReactionTime - Device.dwTimeGlobal) > 0;
 	const auto Outcome = CMonsterBehaviorPolicy::AccumulatedNoiseOutcome(Interested, (Accumulated & 2u) != 0, Cooling);
@@ -152,7 +166,7 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 		NoiseInvestigationPosition = ai().level_graph().vertex_position(NoiseInvestigationVertex);
 	}
 	NoiseInvestigationUntil = ai().level_graph().valid_vertex_id(NoiseInvestigationVertex) ? Device.dwTimeGlobal + Behavior.NoiseSearchTime : 0;
-	if (MonsterEnemySharingDebug().IsEnabled()) MonsterEnemySharingDebug().RecordNoiseReaction(*this, SoundPosition, Power, false, Explosion, NoiseInvestigationUntil != 0);
+	if (MonsterEnemySharingDebug().IsEnabled()) MonsterEnemySharingDebug().RecordNoiseReaction(*this, SoundPosition, Power, false, Explosion, NoiseInvestigationUntil != 0, General);
 
 	if (NoiseInvestigationUntil)
 	{

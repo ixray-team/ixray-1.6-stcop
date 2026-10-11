@@ -51,7 +51,7 @@ class CMonsterEnemySharingDebug
 		u32 Until = 0;
 		Fvector Position = {0.f, 0.f, 0.f};
 		float Power = 0.f;
-		bool Panic = false, Explosion = false, Investigating = false;
+		bool Panic = false, Explosion = false, Investigating = false, General = false;
 	};
 	SNoiseReactionMarker NoiseReactions[MaxMarkers]{};
 	u32 NoiseReactionCursor = 0;
@@ -244,7 +244,7 @@ public:
 		}
 		Selected->Active = Selected->Sight || Selected->CloseDetection || Selected->Call;
 	}
-	void RecordNoiseReaction(const CBaseMonster& Monster, const Fvector& Position, float Power, bool Panic, bool Explosion, bool Investigating = false)
+	void RecordNoiseReaction(const CBaseMonster& Monster, const Fvector& Position, float Power, bool Panic, bool Explosion, bool Investigating = false, bool General = false)
 	{
 		if (!IsEnabled()) return;
 		xrCriticalSectionGuard Guard(Mutex);
@@ -256,7 +256,7 @@ public:
 			if (Marker.Monster == Monster.ID()) { Selected = &Marker; break; }
 		}
 		if (!Selected) Selected = &NoiseReactions[NoiseReactionCursor++ % MaxMarkers];
-		*Selected = {Monster.ID(), Device.dwTimeGlobal + 5000, Position, Power, Panic, Explosion, Investigating};
+		*Selected = {Monster.ID(), Device.dwTimeGlobal + 5000, Position, Power, Panic, Explosion, Investigating, General};
 	}
 	void RecordBehavior(CBaseMonster& Monster)
 	{
@@ -453,7 +453,7 @@ public:
 			if (Reaction.Monster == FocusMonster)
 			{
 				string256 Label;
-				xr_sprintf(Label, "%s: %s | сила %.3f", Reaction.Panic ? "Испуг" : Reaction.Investigating ? "Идёт проверять" : "Прислушивается", Reaction.Explosion ? "взрыв" : "выстрел", Reaction.Power);
+				xr_sprintf(Label, "%s: %s", Reaction.Panic ? "Испуг" : Reaction.Investigating ? "Идёт проверять" : "Прислушивается", Reaction.General ? "шум" : Reaction.Explosion ? "взрыв" : "выстрел");
 				Primitives.append_text3d(Reaction.Position, shared_str(Label), Color);
 			}
 		}
