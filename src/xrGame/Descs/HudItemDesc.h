@@ -36,10 +36,10 @@ struct SHudItemDesc final
 	bool m_bDisableBore = false;
 	bool m_bBlendMovement = false;
 	SBlendParams m_sMovementBlendParams[EMovementLayers::eLayersCount];
-	SBlendParams m_sSprintStartBlendParams;	// one shot into the sprint layer
-	SBlendParams m_sSprintEndBlendParams;	// one shot out of it
-	SBlendParams m_sSprintLoopBlendParams;	// loop over the held start, on top of the sprint movement layer
-	float SprintInertia = 0.12f;			// s, half-life of the inertial blend at the sprint transitions; 0 = off
+	SBlendParams m_sSprintStartBlendParams;
+	SBlendParams m_sSprintEndBlendParams;
+	SBlendParams m_sSprintLoopBlendParams;
+	float SprintInertia = 0.12f;
 
 	float ControllerTime = 0.0f;
 	bool ProhibitSuicide = true;

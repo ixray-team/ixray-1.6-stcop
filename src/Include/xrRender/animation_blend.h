@@ -32,7 +32,7 @@ public:
 	MotionID		motionID = {};
 	u16				bone_or_part = 0;	// startup parameters
 	u8				channel = 0;
-	MotionID		additive_ref = {};	// additive channel: delta from the first frame of this motion instead of its own
+	MotionID		additive_ref = {};
 
 	struct NotifyKeyframeData
 	{

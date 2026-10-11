@@ -838,7 +838,6 @@ static void hud_read_motion_list(const shared_str& sect, const char* key, xr_vec
 	}
 }
 
-// Names ending with '*' match by prefix
 static bool hud_motion_listed(const xr_vector<shared_str>& list, const shared_str& motion)
 {
 	for (const shared_str& name : list)
@@ -937,7 +936,6 @@ static CBlend* hud_play_cycle(IKinematicsAnimated* ka, u16 part, MotionID motion
 {
 	if (mode.Type == EHudCycleMode::Additive)
 	{
-		// The previous additive motion fades out under the new one, the base pose keeps playing
 		ka->LL_FadeCycle(part, 1.f / mode.BlendOut, 1 << ADDITIVE_CHANNEL);
 		CMotionDef* def = ka->LL_GetMotionDef(motion);
 		const bool blend_in = mode.BlendIn > 0.f;
@@ -950,7 +948,6 @@ static CBlend* hud_play_cycle(IKinematicsAnimated* ka, u16 part, MotionID motion
 		return B;
 	}
 
-	// A plain motion after additive ones: they fade out (a looped one would play on forever)
 	if (mode.FadeAdditive)
 	{
 		ka->LL_FadeCycle(part, 1.f / mode.BlendOut, 1 << ADDITIVE_CHANNEL);
@@ -1037,7 +1034,6 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType
 				continue;
 			}
 
-			// The reference pose belongs to the hands model
 			SHudCycleMode item_mode = m_parent->m_cycle_mode;
 			item_mode.Reference = MotionID();
 			CBlend* B = hud_play_cycle(ka, pid, M2, bMixIn > EHudMixType::eMixHands, speed, m_parent->m_cycle_fade, item_mode);
@@ -1129,15 +1125,12 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 	const bool idle = strstr(anm_name_b.c_str(), "anm_idle") == anm_name_b.c_str();
 	g_player_hud->m_cycle_fade = idle && CCameraRig::Enabled() ? m_idle_fade : 0.f;
 
-	// Additive motions play over the current pose; the idle after them continues the base instead of restarting it.
-	// All of it belongs to the camera rig: without it every motion replaces the pose as before
 	const bool rig = CCameraRig::Enabled();
 	const bool additive = rig && hud_motion_listed(m_additive_motions, anm_name_b);
 	SHudCycleMode& mode = g_player_hud->m_cycle_mode;
 	mode.Type = additive ? EHudCycleMode::Additive : m_additive_playing && idle ? EHudCycleMode::KeepBase : EHudCycleMode::Replace;
 	mode.BlendIn = m_additive_blend_in;
 	mode.BlendOut = m_additive_blend_out;
-	// Looped: the idles (anm_idle_sprint), not their start / end one shots
 	mode.Loop = additive && idle && strstr(anm_name_b.c_str(), "_start") == nullptr && strstr(anm_name_b.c_str(), "_end") == nullptr;
 	mode.FadeAdditive = !additive && m_additive_playing;
 	mode.Reference = MotionID();
@@ -2198,7 +2191,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 		}
 		else if (m_sprint_start_wait && !SprintStartPlaying())
 		{
-			// The sprint start is over: the sprint layer takes over from it
 			m_sprint_start_wait = false;
 			TriggerLayersInertia();
 			UpdateMovementLayers();
@@ -2307,12 +2299,10 @@ void player_hud::update(const Fmatrix& cam_trans)
 			anm->Stop(false);
 		}
 
-		// The held last frame of a pose layer becomes the base of the arm IK; while it plays or fades the arms reach it by IK
 		constexpr float rigid_blend = 0.25f;
 		const bool rigid = anm->BaseAtEnd && anm->active && at_end;
 		anm->RigidWeight = std::clamp(anm->RigidWeight + (rigid ? Device.fTimeDelta : -Device.fTimeDelta) / rigid_blend, 0.f, 1.f);
 
-		// Pose layers (safemode, aim...) yield to the sprint layers: the sprint goes from that pose into its own and back
 		Fmatrix layer = anm->XFORM();
 		const bool sprint_layer = anm->BaseAtEnd || anm->FadeAtEnd;
 		if (!sprint_layer && m_sprint_yield > 0.f)
@@ -2327,7 +2317,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 			if (g_hud_layers_debug != 0 && Device.dwFrame % 10 == 0)
 			{
-				// extra: share of the layer in the arm IK base
 				hud_log_layer(anm->active ? "script" : "script(fading)", anm->name.c_str(), layer, anm->blend_scale, anm->RigidWeight);
 			}
 
@@ -2357,7 +2346,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
 	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
 
-	// The movement layers and, last, the sprint chain loop over them
 	movement_layer* all_movement_layers[EMovementLayers::eLayersCount + 1];
 	std::copy(std::begin(m_movement_layers), std::end(m_movement_layers), all_movement_layers);
 	all_movement_layers[EMovementLayers::eLayersCount] = m_sprint_loop;
@@ -2382,8 +2370,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 		if (anm->blend_scale > 0.0f)
 		{
-			// A loop whose last frame differs from its first jumps back at the wrap: smooth the seam like a transition.
-			// The animator evaluates before advancing, so the jump shows the frame after the wrap
 			if (anm->SeamNext)
 			{
 				anm->SeamNext = false;
@@ -2400,7 +2386,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 			if (g_hud_layers_debug != 0 && Device.dwFrame % 10 == 0)
 			{
-				// extra: 1 = played relative to its first frame
 				hud_log_layer(anm->playing ? "move" : "move(fading)", anm->name.c_str(), anm->XFORM(), anm->blend_scale, anm->Relative ? 1.f : 0.f);
 			}
 		}
@@ -2414,7 +2399,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 	}
 
 	{
-		// Last of the layers; with the arm IK it is shared like the movement layers
 		const Fmatrix inertia = UpdateLayersInertia(layers_total);
 		m_transform.mulB_43(inertia);
 		m_transformL.mulB_43(inertia);
@@ -2453,7 +2437,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 		rigid.mulB_43(scale_layer_offset(item->m_collision_xform, rigid_share));
 		rigid.mulB_43(rigid_attach);
-		// The held sprint pose (RigidWeight share) moves the arms with the weapon: the IK works from it
 		rigid.mulB_43(script_layers_rigid);
 		rigid.mulB_43(scale_layer_offset(script_layers, 1.f - ik_share));
 		rigid.mulB_43(scale_layer_offset(movement_layers, 1.f - ik_share));
@@ -2683,7 +2666,6 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		active = state == CHUDState::eIdle || item->m_parent_hud_item->WpnCanShoot() && (state == CWeapon::eFire || state == CWeapon::eFire2);
 	}
 
-	// The animation takes the left hand away from the weapon (a pistol sprint swing): no IK grip on it
 	active = active && !item->m_left_hand_free;
 
 	m_left_ik_weight = std::clamp(m_left_ik_weight + (active ? Device.fTimeDelta : -Device.fTimeDelta) * 4.f, 0.f, 1.f);
@@ -3382,7 +3364,6 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 		return;
 	}
 
-	// Called on every movement and weapon state change: the sprint layers follow both
 	SyncSprintBlend();
 
 	bool stop_force = m_attached_items[0] == nullptr && m_attached_items[1] == nullptr && m_animator_item == nullptr;
@@ -3462,7 +3443,6 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 
 	u32 state = pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
 
-	// The weapon has the sprint start / loop / end chain (camera rig)
 	const CHudItem* sprint_item = m_attached_items[0] != nullptr ? m_attached_items[0]->m_parent_hud_item : nullptr;
 	const bool sprint_chain = sprint_item != nullptr && sprint_item->HudDesc().m_sSprintStartBlendParams.has_motion && CCameraRig::Enabled();
 
@@ -3494,8 +3474,6 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 			m_movement_layers[EMovementLayers::eWalk]->Play(true, phase);
 		}
 
-		// The chain loop: after the start, relative to its held last frame, on top of the sprint layer; not while the
-		// sprint layers are held back (a draw, a reload...)
 		if (m_sprint_loop != nullptr && sprint_chain && m_sprinting && (state & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && !SprintStartPlaying())
 		{
 			m_sprint_loop->Relative = true;
@@ -3529,7 +3507,6 @@ void player_hud::TriggerLayersInertia(bool carry_velocity)
 	LayersInertCarryVel = carry_velocity;
 }
 
-// Critically damped decay towards 0 (exact step), as the bone inertialization
 static void hud_inertia_decay(Fvector& x, Fvector& v, float half_life, float dt)
 {
 	const float y = 2.f * 0.69314718f / (half_life + 1e-5f);
@@ -3545,7 +3522,6 @@ Fmatrix player_hud::UpdateLayersInertia(const Fmatrix& total)
 
 	if (LayersInertTrigger && dt > EPS)
 	{
-		// From the previous output to the new layers: the gap starts with the previous speed and decays
 		Fmatrix gap;
 		gap.mul_43(Fmatrix().invert(total), LayersPrev);
 		gap.getXYZ(LayersInertRot);
@@ -3578,7 +3554,6 @@ Fmatrix player_hud::UpdateLayersInertia(const Fmatrix& total)
 		output.getXYZ(rot);
 		LayersPrev.getXYZ(prev_rot);
 
-		// Clamped against frame spikes and teleports
 		LayersPrevVelPos.sub(output.c, LayersPrev.c).div(dt);
 		LayersPrevVelRot.sub(rot, prev_rot).div(dt);
 		LayersPrevVelPos.clamp(Fvector().set(-2.f, -2.f, -2.f), Fvector().set(2.f, 2.f, 2.f));
@@ -3597,7 +3572,6 @@ bool player_hud::SprintStartPlaying()
 		return false;
 	}
 
-	// Held on its last frame it is over: the sprint loop plays on top of that pose
 	for (script_layer* anm : m_script_layers)
 	{
 		if (anm->name == item->HudDesc().m_sSprintStartBlendParams.camera_name && anm->active)
@@ -3615,15 +3589,12 @@ void player_hud::SyncSprintBlend()
 	CActor* actor = entity != nullptr ? entity->cast_actor() : nullptr;
 	CHudItem* item = m_attached_items[0] != nullptr ? m_attached_items[0]->m_parent_hud_item : nullptr;
 
-	// In idle, and over the actions allowed in the sprint (reload, fire mode switch): no sprint pose over a draw, a hide...
-	// It starts once the weapon is back in one of these
 	bool sprint = false;
 	if (actor != nullptr && item != nullptr && CCameraRig::Enabled())
 	{
 		const u32 state = item->GetState();
 		const bool idle = state == CHUDState::eIdle || state == CHUDState::eSprintStart || state == CHUDState::eSprintEnd;
 		const bool sprint_action = item->cast_weapon() != nullptr && (state == CWeapon::eReload || state == CWeapon::eSwitchMode);
-		// A draw past its mm_unpend mark: the rest of it plays under the sprint
 		const bool draw_unpended = state == CHUDState::eShowing && !item->IsPending();
 		sprint = (idle || sprint_action || draw_unpended) && (actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint) != 0;
 	}
@@ -3641,14 +3612,11 @@ void player_hud::UpdateSprintBlend(bool sprint)
 	m_sprinting = sprint;
 	m_sprint_start_wait = false;
 
-	// The sprint start / end layers belong to the camera rig
 	if (!CCameraRig::Enabled())
 	{
 		return;
 	}
 
-	// Only into the sprint: on the stop the inertia would carry the loop swing speed on (a bounce depending on its phase).
-	// Without the speed: the previous motion may head the other way (the end goes to idle)
 	if (sprint)
 	{
 		TriggerLayersInertia(false);
@@ -3663,8 +3631,6 @@ void player_hud::UpdateSprintBlend(bool sprint)
 	const SBlendParams& start = item->HudDesc().m_sSprintStartBlendParams;
 	const SBlendParams& end = item->HudDesc().m_sSprintEndBlendParams;
 
-	// Sprinting again while the end still plays: the pose is part way back to idle. The start then resumes from the
-	// mirrored point (end at p of its way = start at 1 - p) with the weight of the end, instead of restarting from idle
 	float end_progress = -1.f;
 	float end_blend = 0.f;
 	if (sprint && end.has_motion)
@@ -3679,7 +3645,6 @@ void player_hud::UpdateSprintBlend(bool sprint)
 			}
 			else if (start.has_motion && anm->name == start.camera_name && !anm->active)
 			{
-				// The held start still fading out right after the stop: it is the same pose, its weight carries over
 				end_blend += anm->blend_scale;
 			}
 		}
@@ -3687,7 +3652,6 @@ void player_hud::UpdateSprintBlend(bool sprint)
 		end_blend = std::min(end_blend, 1.f);
 	}
 
-	// The other one fades out under the new one
 	if (start.has_motion)
 	{
 		StopBlendAnm(start.camera_name);
@@ -3706,13 +3670,11 @@ void player_hud::UpdateSprintBlend(bool sprint)
 
 	script_layer* layer = PlayBlendAnm(params.camera_name, params.speed_power.x, params.speed_power.y, params.blend_params, false, true, true, m_attached_items[1] != nullptr ? 0 : 2, 0, script_layer::EBlendLayers::eNone);
 
-	// The start holds its last frame (the sprint pose) and the arm IK then works from it; the end fades out when done
 	if (layer != nullptr)
 	{
 		layer->BaseAtEnd = sprint;
 		layer->FadeAtEnd = !sprint;
 
-		// The pose layers give way over the start and come back over the end
 		const SAnimParams& layer_params = layer->anim->anim_param();
 		const float length = (layer_params.max_t - layer_params.min_t) / std::max(params.speed_power.x, EPS);
 		if (length > EPS)

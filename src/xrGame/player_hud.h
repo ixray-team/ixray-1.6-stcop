@@ -23,9 +23,9 @@ enum EHudMixType : u8
 
 enum class EHudCycleMode : u8
 {
-	Replace,	// the motion replaces the pose (crossfade)
-	KeepBase,	// a looped motion that already plays is not restarted (return to idle after an additive motion)
-	Additive	// the motion is added over the playing pose as a delta from its first frame
+	Replace,
+	KeepBase,
+	Additive
 };
 
 struct SHudCycleMode
@@ -33,9 +33,9 @@ struct SHudCycleMode
 	EHudCycleMode	Type = EHudCycleMode::Replace;
 	float			BlendIn = 0.f;
 	float			BlendOut = 0.f;
-	bool			Loop = false;			// additive: a looped idle (anm_idle_sprint) instead of a one shot
-	bool			FadeAdditive = false;	// fade out the playing additive motions (leaving them for a plain motion)
-	MotionID		Reference;				// additive: delta from the first frame of this hands motion (hands model only)
+	bool			Loop = false;
+	bool			FadeAdditive = false;
+	MotionID		Reference;
 };
 enum EHudOffsetAxis : u8
 {
@@ -286,8 +286,8 @@ struct attachable_hud_item final
 	float							m_additive_blend_in = 0.f;
 	float							m_additive_blend_out = 0.1f;
 	bool							m_additive_playing = false;
-	shared_str						m_additive_reference;		// hands motion the additive motions were authored over
-	xr_vector<shared_str>			m_left_hand_free_motions;	// the left hand IK is off during these (sprint swings away from the weapon)
+	shared_str						m_additive_reference;
+	xr_vector<shared_str>			m_left_hand_free_motions;
 	bool							m_left_hand_free = false;
 	float							m_inertia_damping = 0.55f;
 	Fvector							m_inertia_vel_pos = zero_vel;
@@ -414,9 +414,9 @@ struct script_layer
 	u8 part = 0;
 	u8 item = 0;
 	u8 state = EBlendLayers::eNone;
-	bool BaseAtEnd = false;		// held on its last frame it becomes the pose the arm IK works from (sprint start)
-	bool FadeAtEnd = false;		// a one shot fades out at its end instead of holding the last frame (sprint end)
-	float RigidWeight = 0.f;	// share of the layer the arms take in full instead of reaching it by IK
+	bool BaseAtEnd = false;
+	bool FadeAtEnd = false;
+	float RigidWeight = 0.f;
 
 	script_layer()
 	{
@@ -593,9 +593,8 @@ struct movement_layer
 
 	bool playing = false;
 
-	// Plays as the change from its first frame (layered over a held pose, e.g. the last frame of the sprint start)
 	bool Relative = false;
-	bool SeamNext = false;	// the loop wrapped: the next frame jumps to its start
+	bool SeamNext = false;
 	Fmatrix FirstFrameInv = Fidentity;
 
 	CObjectAnimator* anim = nullptr;
@@ -666,7 +665,6 @@ struct movement_layer
 		anim->Speed() = speed;
 		anim->Play(loop);
 
-		// Evaluates the first frame without advancing
 		anim->Update(0.f);
 		FirstFrameInv.invert(anim->XFORM());
 
@@ -785,15 +783,12 @@ public:
 	bool			SprintStartPlaying	();
 	void			SyncSprintBlend		();
 
-	// The loop of the sprint start / loop / end chain (anim_blend_sprint_loop), apart from the sprint movement layer
 	movement_layer*	m_sprint_loop = nullptr;
 
-	// Weight the pose layers (safemode, aim) give up to the sprint layers, and its rates (1 / s) into and out of the sprint
 	float			m_sprint_yield = 0.f;
 	float			m_sprint_yield_in = 1.f / 0.3f;
 	float			m_sprint_yield_out = 1.f / 0.3f;
 
-	// Inertial blend of the HUD layers: at a transition the output keeps its pose and speed and the gap decays
 	Fmatrix			LayersPrev = Fidentity;
 	Fvector			LayersPrevVelPos = {}, LayersPrevVelRot = {};
 	Fvector			LayersInertPos = {}, LayersInertRot = {}, LayersInertVelPos = {}, LayersInertVelRot = {};

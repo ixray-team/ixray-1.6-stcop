@@ -25,6 +25,8 @@ class CCameraRig
 		bool				active		= false;
 		bool				fade_out	= false;
 		bool				hud_affect	= false;
+		Fvector				scale_hpb	= { 1.f, 1.f, 1.f };
+		Fvector				scale_pos	= { 1.f, 1.f, 1.f };
 	};
 
 	struct SSpring
@@ -39,6 +41,7 @@ class CCameraRig
 	shared_str				m_weapon_sect;
 	Fvector					m_weapon_punch = {}, m_weapon_kick_pos = {}, m_weapon_kick_rot = {};
 	float					m_weapon_trauma = 0.f;
+	float					m_weapon_fov_kick = 0.f;
 	float					m_trauma = 0.f;
 	float					m_lean = 0.f;
 	u32						m_update_frame = u32(-1);
@@ -64,7 +67,7 @@ public:
 	static void				TransformBone	(IKinematics* model, u16 bone, const Fmatrix& delta);
 	static void				SolveLimb		(IKinematics* model, const u16* chain, const Fmatrix& target, float weight);
 
-	bool					PlayAnim		(const char* name, ECameraRigChannel channel, float speed, bool hud_affect);
+	bool					PlayAnim		(const char* name, ECameraRigChannel channel, float speed, bool hud_affect, const Fvector& scale_hpb = { 1.f, 1.f, 1.f }, const Fvector& scale_pos = { 1.f, 1.f, 1.f });
 	void					StopChannel		(ECameraRigChannel channel);
 	void					OnShot			(CWeapon* weapon);
 	void					OnHit			(float power);

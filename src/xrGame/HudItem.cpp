@@ -1165,7 +1165,6 @@ void CHudItem::OnMotionMark(u8 state, const motion_marks& mark)
 	{
 		SetPending(false);
 
-		// The sprint layers may start now (a draw past its mark): no state change would tell them
 		if (g_player_hud != nullptr && HudItemData() != nullptr && HudItemData() == g_player_hud->attached_item(0) && CCameraRig::Enabled())
 		{
 			g_player_hud->UpdateMovementLayers();
@@ -1217,7 +1216,6 @@ bool CHudItem::CanStartAction(CActor* pActor, u32 kfACTTYPE)
 		return true;
 	}
 
-	// With the camera rig the reload and the fire mode switch run during the sprint, the rest still waits for it to end
 	const bool sprint_action = CCameraRig::Enabled() && (kfACTTYPE & (ACTOR_DEFS::EActorKeyflags::kfRELOAD | ACTOR_DEFS::EActorKeyflags::kfNEXTFIREMODE | ACTOR_DEFS::EActorKeyflags::kfPREVFIREMODE)) != 0;
 	if (!sprint_action && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || m_bSwitchSprint))
 	{

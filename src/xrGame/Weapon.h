@@ -537,6 +537,9 @@ public:
 	RStringVec m_aim_cams[2] = {};
 
 	RStringVec m_shot_cams[2] = {};
+	float CamShotVariation = 0.f;
+	float CamShotSpeedVariation = 0.f;
+	bool CamShotMirror = false;
 
 protected:
 	bool m_bBlockUpdateAmmoBonesShooting = false;

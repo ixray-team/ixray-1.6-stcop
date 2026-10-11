@@ -945,7 +945,6 @@ const	CBlendInstance::BlendSVec	&Blend				= BLEND_INST.blend_vector();
 			CMotion& M = *LL_GetMotion(B->motionID, SelfID);
 			Dequantize(*D, *B, M, g_AnimCubicInterpolation != 0);
 
-			// Base key: the first frame of the motion, or of the reference motion of an additive blend
 			const bool has_ref = B->additive_ref.valid() && B->additive_ref.slot < m_Motions.size();
 			CMotion& R = has_ref ? *LL_GetMotion(B->additive_ref, SelfID) : M;
 
@@ -1010,7 +1009,6 @@ void CKinematicsAnimated::LL_BlendKeys(CKey& Result, const SKeyTable& keys)
 		channels.get_def(j, BC[ch_count]);
 		process_single_channel(channel_keys[ch_count], BC[ch_count], keys.keys[j], keys.blends[j], keys.chanel_blend_conts[j]);
 
-		// The lerp inside the channel normalizes the weights; the delta fades in and out with their sum
 		if (BC[ch_count].rule.extern_ == animation::add_local)
 		{
 			float weight = 0.f;

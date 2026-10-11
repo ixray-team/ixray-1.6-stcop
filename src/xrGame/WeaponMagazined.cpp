@@ -1850,7 +1850,24 @@ void CWeaponMagazined::OnShot()
 	{
 		bool aim = IsZoomed() && m_shot_cams[1].size() > 0;
 		const RStringVec& cams = m_shot_cams[aim ? 1 : 0];
-		if (!pActor->Cameras().Rig().PlayAnim(*cams[Random.randI(cams.size())], crcShot, 1.f, false))
+
+		Fvector scale_hpb = { 1.f, 1.f, 1.f };
+		Fvector scale_pos = { 1.f, 1.f, 1.f };
+		if (CamShotVariation > 0.f)
+		{
+			scale_hpb.set(1.f + Random.randFs(CamShotVariation), 1.f + Random.randFs(CamShotVariation), 1.f + Random.randFs(CamShotVariation));
+			scale_pos.set(1.f + Random.randFs(CamShotVariation), 1.f + Random.randFs(CamShotVariation), 1.f + Random.randFs(CamShotVariation));
+		}
+
+		if (CamShotMirror && Random.randI(2) != 0)
+		{
+			scale_hpb.x = -scale_hpb.x;
+			scale_hpb.z = -scale_hpb.z;
+			scale_pos.x = -scale_pos.x;
+		}
+
+		const float speed = 1.f + Random.randFs(CamShotSpeedVariation);
+		if (!pActor->Cameras().Rig().PlayAnim(*cams[Random.randI(cams.size())], crcShot, speed, false, scale_hpb, scale_pos))
 		{
 			StartCamEffector(cams, false, 33000, 33999);
 		}

@@ -16,6 +16,7 @@ struct SCameraRigParams
 	float	blend_in[crcCount]	= { 0.12f, 0.08f, 0.f, 0.15f };
 	float	blend_out[crcCount]	= { 0.25f, 0.15f, 0.08f, 0.3f };
 	float	fov_stiffness		= 500.f, fov_damping = 45.f;
+	float	shot_fov_kick		= 0.f, aim_fov_kick_scale = 0.5f;
 	Fvector	punch				= { 0.45f, 0.2f, 0.35f };
 	float	punch_stiffness		= 220.f, punch_damping = 16.f, punch_hud_scale = 1.f, aim_punch_scale = 0.5f;
 	Fvector	kick_pos			= { 0.f, 0.004f, -0.03f };
@@ -59,6 +60,7 @@ bool CCameraRig::Enabled()
 		{ "shot_blend_in", &p.blend_in[crcShot], 1, false }, { "shot_blend_out", &p.blend_out[crcShot], 1, false },
 		{ "move_blend_in", &p.blend_in[crcMove], 1, false }, { "move_blend_out", &p.blend_out[crcMove], 1, false },
 		{ "fov_stiffness", &p.fov_stiffness, 1, false }, { "fov_damping", &p.fov_damping, 1, false },
+		{ "shot_fov_kick", &p.shot_fov_kick, 1, false }, { "aim_fov_kick_scale", &p.aim_fov_kick_scale, 1, false },
 		{ "punch", &p.punch.x, 3, true }, { "punch_stiffness", &p.punch_stiffness, 1, false }, { "punch_damping", &p.punch_damping, 1, false },
 		{ "punch_hud_scale", &p.punch_hud_scale, 1, false }, { "aim_punch_scale", &p.aim_punch_scale, 1, false },
 		{ "kick_pos", &p.kick_pos.x, 3, false }, { "kick_rot", &p.kick_rot.x, 3, true },
@@ -128,7 +130,7 @@ void CCameraRig::StopChannel(ECameraRigChannel channel)
 	FadeChannel(channel);
 }
 
-bool CCameraRig::PlayAnim(const char* name, ECameraRigChannel channel, float speed, bool hud_affect)
+bool CCameraRig::PlayAnim(const char* name, ECameraRigChannel channel, float speed, bool hud_affect, const Fvector& scale_hpb, const Fvector& scale_pos)
 {
 	string_path path;
 	if (!Enabled() || name == nullptr || !FS.exist(path, "$game_anims$", name))
@@ -174,6 +176,8 @@ bool CCameraRig::PlayAnim(const char* name, ECameraRigChannel channel, float spe
 	slot->anim->Speed() = speed;
 	slot->channel = channel;
 	slot->hud_affect = hud_affect;
+	slot->scale_hpb = scale_hpb;
+	slot->scale_pos = scale_pos;
 	slot->active = true;
 	slot->fade_out = false;
 	slot->weight = g_rig.blend_in[channel] > 0.f ? 0.f : 1.f;
@@ -205,6 +209,7 @@ void CCameraRig::OnShot(CWeapon* weapon)
 		m_weapon_kick_rot = pSettings->line_exist(sect, "rig_kick_rot") ? Fvector(pSettings->r_fvector3(sect, "rig_kick_rot")).mul(PI / 180.f) : g_rig.kick_rot;
 		m_weapon_kick_pos = READ_IF_EXISTS(pSettings, r_fvector3, sect, "rig_kick_pos", g_rig.kick_pos);
 		m_weapon_trauma = READ_IF_EXISTS(pSettings, r_float, sect, "rig_shot_trauma", g_rig.shot_trauma);
+		m_weapon_fov_kick = READ_IF_EXISTS(pSettings, r_float, sect, "rig_fov_kick", g_rig.shot_fov_kick);
 	}
 
 	const float aim = weapon->GetAimFactor();
@@ -215,6 +220,12 @@ void CCameraRig::OnShot(CWeapon* weapon)
 	m_kick.velocity.mad(Fvector().set(m_weapon_kick_rot.y * ::Random.randFs(1.f), m_weapon_kick_rot.x, m_weapon_kick_rot.z * ::Random.randFs(1.f)), kick);
 	m_kick_pos.velocity.mad(m_weapon_kick_pos, kick);
 	m_trauma = std::clamp(m_trauma + m_weapon_trauma * lerp(1.f, g_rig.aim_kick_scale, aim), 0.f, 1.f);
+
+	if (m_fov_valid && !fis_zero(m_weapon_fov_kick))
+	{
+		const float zoom = std::min(m_fov.value.x / std::max(g_fov, 1.f), 1.f);
+		m_fov.velocity.x += m_weapon_fov_kick * lerp(1.f, g_rig.aim_fov_kick_scale, aim) * zoom * _sqrt(g_rig.fov_stiffness) * 2.71828f;
+	}
 }
 
 void CCameraRig::OnLand(float speed)
@@ -267,13 +278,15 @@ void CCameraRig::UpdateLayers(float dt, Fvector& pos, Fvector& hpb, Fvector& hud
 		const float weight = layer.weight * layer.weight * (3.f - 2.f * layer.weight);
 		Fvector anim_hpb;
 		layer.anim->XFORM().getHPB(anim_hpb);
+		anim_hpb.mul(layer.scale_hpb);
+		const Fvector anim_pos = Fvector().mul(layer.anim->XFORM().c, layer.scale_pos);
 		hpb.mad(anim_hpb, weight);
-		pos.mad(layer.anim->XFORM().c, weight);
+		pos.mad(anim_pos, weight);
 
 		if (layer.hud_affect)
 		{
 			hud_hpb.mad(anim_hpb, weight);
-			hud_pos.mad(layer.anim->XFORM().c, weight);
+			hud_pos.mad(anim_pos, weight);
 		}
 	}
 }
