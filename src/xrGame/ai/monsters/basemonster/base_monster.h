@@ -152,6 +152,7 @@ public:
 	virtual void			init							() {}
 
 	float GetHearingRangeFactor() const override;
+	float GetDistanceSoundRange(int Type) const override;
 	virtual void			feel_sound_new					(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power);
 	float feel_vision_mtl_transp(CObject* Object, u32 Element) override;
 	virtual bool			feel_vision_isRelevant			(CObject* O);
