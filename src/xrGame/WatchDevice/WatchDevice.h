@@ -2,20 +2,43 @@
 
 #include "WatchTypes.h"
 #include "WatchUI.h"
-#include <luabind/functor.hpp>
+#include "WatchEnvironment.h"
+#include "WatchRig.h"
 
 class IKinematics;
-class CBoneInstance;
-class CAnomalyZone;
 
 struct SWatchLedRuntime
 {
 	Fmatrix Offset = Fidentity;
+	Fmatrix Anchor = Fidentity;
+	shared_str SourceName;
+	SWatchSource Source;
+	bool Enabled = false;
+	bool AnchorValid = false;
+	bool Preview = false;
+	float PreviewValue = 0.0f;
+	float Intensity = 0.0f;
 	float BlinkPhase = 0.0f;
 	float Value = 0.0f;
-	u16 Bone = u16(-1);
-	u16 HiddenBone = u16(-1);
 	ref_light Light = nullptr;
+};
+
+struct SWatchGaugeRuntime
+{
+	Fmatrix IconOffset = Fidentity;
+	Fmatrix BarOffset = Fidentity;
+	shared_str SourceName;
+	SWatchSource Source;
+	bool Enabled = false;
+	bool Preview = false;
+	float PreviewValue = 0.0f;
+	float Value = 0.0f;
+	float DisplayValue = 0.0f;
+	float Badness = 0.0f;
+	bool Visible = false;
+	EWatchConditionSeverity Severity = EWatchConditionSeverity::None;
+	u32 Colors[WatchSeverityCount] = {};
+	bool HasColor[WatchSeverityCount] = {};
 };
 
 struct SWatchDisplayRuntime
@@ -40,10 +63,6 @@ struct SWatchSurgeRuntime
 	float Lag = 0.0f;
 	float AnomalyLag = 0.0f;
 	bool Valid = false;
-	bool BridgeMissing = false;
-	bool BridgeResolved = false;
-	luabind::functor<float> SecondsFunction;
-	luabind::functor<float> ProgressFunction;
 };
 
 struct SWatchCompassRuntime
@@ -60,9 +79,7 @@ struct SWatchZoneRuntime
 	float SampleTimer = 0.0f;
 	float Gravity = 0.0f;
 	float AnomalyTarget = 0.0f;
-	xr_vector<ISpatialShared> Spatial;
 	xr_vector<xr_string> AnomalyExclude;
-	xr_hash_map<shared_str, bool> GravitySections;
 };
 
 struct SWatchLightRuntime
@@ -72,19 +89,24 @@ struct SWatchLightRuntime
 	xr_vector<SWatchLightKey> Keys;
 };
 
-struct SWatchConditionRuntime
+struct SWatchAnchors
 {
-	Fmatrix IconOffset = Fidentity;
-	Fmatrix BarOffset = Fidentity;
+	u32 Frame = u32(-1);
+	bool DisplayValid = false;
+	bool CompassValid = false;
+	Fmatrix Display = Fidentity;
+	Fmatrix Compass = Fidentity;
 };
 
 class CWatchDevice
 {
 public:
-	CWatchDevice() = default;
+	CWatchDevice();
 	CWatchDevice(const CWatchDevice&) = delete;
 	CWatchDevice& operator=(const CWatchDevice&) = delete;
 	~CWatchDevice();
+
+	void SetEnvironment(xr_unique_ptr<IWatchEnvironment> NewEnvironment);
 
 	void Load(const shared_str& RootSection);
 	void BindModel(IKinematics* NewModel);
@@ -102,13 +124,16 @@ public:
 	void Reload();
 
 	bool IsEnabled() const { return Loaded && Config.Root.Enabled; }
-	bool BonesOk() const;
+	bool BonesOk() const { return Rig.BonesOk(); }
 
 private:
 	void LoadConfig(const CInifile& Ini, const shared_str& Root, bool PersistentOnly);
-	void RefreshCompassSettings();
-	void ApplyIndicatorMasters();
-	void ApplyConditionMasters();
+	void LoadElementLists(const CInifile& Ini, const shared_str& Root);
+	void BuildElements();
+	void ApplyConfigLayers();
+	void CompileConfig(bool Report);
+	SWatchSource ResolveSource(const shared_str& Name, bool Report);
+	shared_str ResolveProfileSection(IKinematics* NewModel) const;
 	bool ResolveOverridePath(string_path& Out) const;
 	void ApplyOverrideFromDisk();
 	bool IsAnyDirty();
@@ -120,8 +145,8 @@ private:
 	void DrawBarometerImGui();
 	void DrawLagImGui(const char* Id, const char* Title, SWatchLag& Lag, float LagValue);
 	void DrawLightImGui();
-	void DrawChannelImGui(EWatchLedChannel Channel);
-	void DrawConditionImGui(EWatchCondition Condition);
+	void DrawLedImGui(u32 Index);
+	void DrawGaugeImGui(u32 Index);
 	void DrawPreviewImGui();
 	void DrawHotSaveImGui();
 
@@ -131,71 +156,53 @@ private:
 	void UpdateDisplayFormats();
 	void UpdateDisplay(float Dt);
 	void UpdateDisplayLag(float Dt);
-	bool SampleSurge(float& SecondsToSurge, float& Progress);
 	void UpdateSurge(float Dt);
 	void UpdateBarometer();
 	void SetBarometerText(const char* Text);
-	void UpdateLightSchedule();
+	void UpdateLightSchedule(bool Report);
 	void UpdateLight(float Dt);
 
 	void DestroyHudLights();
 	void CreateHudPointLight(ref_light& Light, float Range);
 	void DestroyHudPointLight(ref_light& Light);
 	void TurnOffHudPointLight(ref_light& Light);
-	void SyncChannelLight(EWatchLedChannel Channel, const Fmatrix& WatchesXform);
-	bool MakeLedXform(const SWatchLedRuntime& Led, const Fmatrix& WatchesXform, Fmatrix& Out) const;
+	void SyncLedLight(u32 Index);
+	void PrepareAnchors(const Fmatrix& WatchesXform);
 
 	void UpdateAnomalyExclude();
-	bool IsChannelActive(EWatchLedChannel Channel) const;
-	float SampleChannel(EWatchLedChannel Channel) const;
-	void UpdateChannel(EWatchLedChannel Channel, float Dt);
-	bool IsConditionAvailable(EWatchCondition Condition) const;
-	bool IsConditionActive(EWatchCondition Condition) const;
-	float SampleCondition(EWatchCondition Condition) const;
-	void UpdateCondition(EWatchCondition Condition, float Dt);
-	u32 ConditionDrawColor(EWatchCondition Condition, u32 Fallback) const;
-	float ConditionDrawGlow(EWatchCondition Condition) const;
+	bool IsLedActive(u32 Index) const;
+	bool IsGaugeActive(u32 Index) const;
+	bool UsesSource(EWatchSourceKind Kind) const;
+	float SampleSource(const SWatchSource& Source, float Normalize) const;
 	void SampleZones(float Dt);
-	bool SectionLooksLikeGravity(const shared_str& Section);
-	float EvaluateGravityZoneIntensity(CAnomalyZone* Zone, const Fvector& ActorPos);
+	void UpdateLeds(float Dt);
+	void UpdateGauges(float Dt);
+	void RenderGauge(u32 Index);
+	u32 GaugeColor(const SWatchGaugeRuntime& Gauge, u32 Fallback) const;
 
-	void RenderBoneGlow(EWatchGlow Id, u16 Bone, const Fmatrix& Offset, const Fvector2& Size, float Intensity, const Fmatrix& WatchesXform);
-	void RenderBoneGlow(EWatchGlow Id, u16 Bone, const Fmatrix& Offset, const Fvector2& Size, float Intensity, u32 Color, const Fmatrix& WatchesXform);
-	u32 CompassColorForKind(EWatchCompassSourceKind Kind) const;
-	void RenderChannel(EWatchLedChannel Channel, const Fmatrix& WatchesXform, const Fmatrix& DisplayXform);
-	void RenderCondition(EWatchCondition Condition, const Fmatrix& DisplayXform);
-
-	void ResolveBones();
-	void RestoreLedMesh(SWatchLedRuntime& Led);
 	void UpdateLedMeshes();
-	void ClearBones();
-	void SetBoneCallbacks();
-	void ResetBoneCallbacks();
-	void AttachModel();
+	void AttachModel(IKinematics* NewModel);
 
+	void RefreshCompassSettings(bool Report);
+	u32 CompassColorForKind(EWatchCompassSourceKind Kind) const;
 	void ResetCompassRuntime();
 	void UpdateCompass(float Dt);
-	void SampleCompassTarget(SWatchCompassSample& Out) const;
 	void ApplyCompassSample(const SWatchCompassSample& Sample, bool HadTarget);
 	void ApplyCompassNoTarget();
 	void SetCompassVisible(bool Visible);
-	bool HasCompassBone() const;
 	void CommitCompassAngle(float Angle, bool ResetVelocity);
 	void SyncCompassState();
 	bool UpdateCompassGravityChaos(float Dt);
 	void UpdateCompassSpring(float Dt);
 
-	static void BoneCallbackCompass(CBoneInstance* Bone);
-
-	u16 ResolveBoneId(const shared_str& Name) const;
-
 	shared_str Section;
+	shared_str Profile;
 	SWatchConfig Config;
 	SWatchConfig ConfigBaseline;
 	SWatchState State;
 	SWatchDebugPreview Preview;
-	SWatchBoneIds BoneIds;
-	IKinematics* Model = nullptr;
+	CWatchRig Rig;
+	xr_unique_ptr<IWatchEnvironment> Env;
 	xr_unique_ptr<CUIWatchWnd> Ui;
 	Fmatrix UiOffset = Fidentity;
 	SWatchDisplayRuntime Display;
@@ -204,10 +211,13 @@ private:
 	SWatchCompassSettings CompassSettings;
 	SWatchZoneRuntime Zones;
 	SWatchLightRuntime Light;
-	SWatchLedRuntime Leds[WatchLedChannelCount];
-	SWatchConditionRuntime ConditionRuntime[WatchConditionCount];
+	SWatchAnchors Anchors;
+	xr_vector<SWatchLedRuntime> Leds;
+	xr_vector<SWatchGaugeRuntime> Gauges;
+	u32 LastVisibleFrame = 0;
+	bool Hidden = true;
 	bool Loaded = false;
-	bool CallbacksBound = false;
+	bool Editing = false;
 	string_path OverridePath = {};
 	string_path LastHotSaveStatus = {};
 };

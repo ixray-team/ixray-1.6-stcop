@@ -2,25 +2,6 @@
 
 inline constexpr float WatchLedMaxBrightness = 16.0f;
 
-enum class EWatchGlow : u8
-{
-	Compass,
-	Anomaly,
-	Motion,
-	Noise,
-	Count
-};
-
-enum class EWatchLedChannel : u8
-{
-	Anomaly,
-	Motion,
-	Noise,
-	Count
-};
-
-inline constexpr u32 WatchLedChannelCount = u32(EWatchLedChannel::Count);
-
 enum class EWatchCondition : u8
 {
 	Health,
@@ -36,6 +17,23 @@ enum class EWatchCondition : u8
 
 inline constexpr u32 WatchConditionCount = u32(EWatchCondition::Count);
 
+enum class EWatchSourceKind : u8
+{
+	None,
+	Anomaly,
+	Motion,
+	Noise,
+	Condition,
+	Script
+};
+
+struct SWatchSource
+{
+	EWatchSourceKind Kind = EWatchSourceKind::None;
+	EWatchCondition Condition = EWatchCondition::Health;
+	u32 Script = u32(-1);
+};
+
 enum class EWatchConditionSeverity : u8
 {
 	None,
@@ -44,6 +42,8 @@ enum class EWatchConditionSeverity : u8
 	Critical,
 	Count
 };
+
+inline constexpr u32 WatchSeverityCount = u32(EWatchConditionSeverity::Count);
 
 enum class EWatchCompassSourceKind : u8
 {
@@ -54,9 +54,6 @@ enum class EWatchCompassSourceKind : u8
 	UserNav
 };
 
-// north: points to the north and goes mad near gravity anomalies
-// quest: points to the active story/additional task
-// nav:   points to the player's own map mark, falls back to the quest
 enum class EWatchCompassMode : u8
 {
 	North,
@@ -72,7 +69,6 @@ enum class EWatchCompassNoTarget : u8
 
 inline constexpr u32 WatchCompassSourceKindCount = 5;
 
-// Parsed form of SWatchCompass: the runtime never compares strings
 struct SWatchCompassSettings
 {
 	EWatchCompassMode Mode = EWatchCompassMode::Quest;
@@ -93,11 +89,17 @@ struct SWatchCompassSample
 struct SWatchRoot
 {
 	bool Enabled = true;
+	bool UseOverride = true;
+	shared_str Indicators = "anomaly, motion, noise";
+	shared_str Conditions = "health, power, radiation, satiety, thirst, sleepiness, intoxication, bleeding";
 
 	template <class V>
 	void ForEach(V& Visitor)
 	{
 		Visitor.Field(Enabled, "enabled");
+		Visitor.Field(UseOverride, "use_override");
+		Visitor.Field(Indicators, "indicators");
+		Visitor.Field(Conditions, "conditions");
 	}
 };
 
@@ -117,19 +119,6 @@ struct SWatchBones
 		Visitor.Field(Display, "display");
 		Visitor.Field(RadIndicator, "rad_indicator");
 		Visitor.Field(AnomIndicator, "anom_indicator");
-	}
-};
-
-struct SWatchIndicatorMasters
-{
-	bool Enabled[WatchLedChannelCount] = {true, true, true};
-
-	template <class V>
-	void ForEach(V& Visitor)
-	{
-		Visitor.Field(Enabled[u32(EWatchLedChannel::Anomaly)], "anomaly_enabled");
-		Visitor.Field(Enabled[u32(EWatchLedChannel::Motion)], "motion_enabled");
-		Visitor.Field(Enabled[u32(EWatchLedChannel::Noise)], "noise_enabled");
 	}
 };
 
@@ -263,6 +252,8 @@ struct SWatchChannelPresent
 	bool PresentShader = true;
 	bool PresentUi = false;
 	shared_str Bone;
+	shared_str Source;
+	float Smoothing = 4.0f;
 	Fvector UiPosition = {0.0f, 0.0f, 0.0f};
 	Fvector UiRotation = {0.0f, 0.0f, 0.0f};
 	Fvector2 UiSize = {0.004f, 0.004f};
@@ -280,6 +271,8 @@ struct SWatchChannelPresent
 		Visitor.Field(PresentShader, "present_shader");
 		Visitor.Field(PresentUi, "present_ui");
 		Visitor.Field(Bone, "bone");
+		Visitor.Field(Source, "source");
+		Visitor.Field(Smoothing, "smoothing", 0.0f);
 		Visitor.Field(UiPosition, "ui_p");
 		Visitor.Field(UiRotation, "ui_r");
 		Visitor.Field(UiSize, "ui_size");
@@ -326,30 +319,14 @@ struct SWatchAnomalySensor
 	}
 };
 
-struct SWatchConditionMasters
-{
-	bool Enabled[WatchConditionCount] = {};
-
-	template <class V>
-	void ForEach(V& Visitor)
-	{
-		Visitor.Field(Enabled[u32(EWatchCondition::Health)], "health_enabled");
-		Visitor.Field(Enabled[u32(EWatchCondition::Power)], "power_enabled");
-		Visitor.Field(Enabled[u32(EWatchCondition::Radiation)], "radiation_enabled");
-		Visitor.Field(Enabled[u32(EWatchCondition::Satiety)], "satiety_enabled");
-		Visitor.Field(Enabled[u32(EWatchCondition::Thirst)], "thirst_enabled");
-		Visitor.Field(Enabled[u32(EWatchCondition::Sleepiness)], "sleepiness_enabled");
-		Visitor.Field(Enabled[u32(EWatchCondition::Intoxication)], "intoxication_enabled");
-		Visitor.Field(Enabled[u32(EWatchCondition::Bleeding)], "bleeding_enabled");
-	}
-};
-
 struct SWatchConditionPresent
 {
 	bool Enabled = true;
 	bool PresentUi = true;
 	bool PresentIcon = true;
 	bool PresentBar = true;
+	shared_str Source;
+	float Smoothing = 6.0f;
 	Fvector UiIconPosition = {0.0f, 0.0f, 0.0f};
 	Fvector UiIconRotation = {0.0f, 0.0f, 0.0f};
 	Fvector2 UiIconSize = {0.003f, 0.003f};
@@ -380,6 +357,8 @@ struct SWatchConditionPresent
 		Visitor.Field(PresentUi, "present_ui");
 		Visitor.Field(PresentIcon, "present_icon");
 		Visitor.Field(PresentBar, "present_bar");
+		Visitor.Field(Source, "source");
+		Visitor.Field(Smoothing, "smoothing", 0.0f);
 		Visitor.Field(UiIconPosition, "ui_icon_p");
 		Visitor.Field(UiIconRotation, "ui_icon_r");
 		Visitor.Field(UiIconSize, "ui_icon_size");
@@ -402,6 +381,40 @@ struct SWatchConditionPresent
 		Visitor.Field(ColorWeak, "color_weak");
 		Visitor.Field(ColorMedium, "color_medium");
 		Visitor.Field(ColorCritical, "color_critical");
+	}
+};
+
+struct SWatchLedElement
+{
+	shared_str Name;
+	shared_str PresentSection;
+	shared_str MasterKey;
+	bool Master = true;
+	SWatchChannelPresent Present;
+	SWatchLedBlink Blink;
+};
+
+struct SWatchGaugeElement
+{
+	shared_str Name;
+	shared_str PresentSection;
+	shared_str MasterKey;
+	bool Master = false;
+	SWatchConditionPresent Present;
+};
+
+template <class TElement>
+struct SWatchMasters
+{
+	xr_vector<TElement>* Elements = nullptr;
+
+	template <class V>
+	void ForEach(V& Visitor)
+	{
+		for (TElement& Element : *Elements)
+		{
+			Visitor.Field(Element.Master, Element.MasterKey.c_str());
+		}
 	}
 };
 
@@ -448,31 +461,15 @@ struct SWatchConfig
 {
 	SWatchRoot Root;
 	SWatchBones Bones;
-	SWatchIndicatorMasters Masters;
-	SWatchConditionMasters ConditionMasters;
 	SWatchDisplay Display;
 	SWatchFonts Fonts;
 	SWatchCompass Compass;
 	SWatchLag SurgeLag;
 	SWatchLag AnomalyLag;
 	SWatchLight Light;
-	SWatchChannelPresent Present[WatchLedChannelCount];
-	SWatchLedBlink Blink[WatchLedChannelCount];
 	SWatchAnomalySensor Anomaly;
-	SWatchConditionPresent Conditions[WatchConditionCount];
-
-	SWatchConfig()
-	{
-		SWatchChannelPresent& Noise = Present[u32(EWatchLedChannel::Noise)];
-		Noise.PresentShader = false;
-		Noise.PresentUi = true;
-		Noise.HideMesh = false;
-		Noise.LightEnabled = false;
-		Noise.UiPosition = {0.0075f, 0.0f, 0.0f};
-		Noise.UiSize = {0.0025f, 0.0025f};
-
-		Conditions[u32(EWatchCondition::Bleeding)].Normalize = 0.1f;
-	}
+	xr_vector<SWatchLedElement> Leds;
+	xr_vector<SWatchGaugeElement> Gauges;
 };
 
 struct SWatchBoneIds
@@ -492,10 +489,6 @@ struct SWatchDebugPreview
 	float PreviewGravityValue = 0.0f;
 	bool PreviewSurge = false;
 	float PreviewSurgeValue = 0.0f;
-	bool PreviewChannel[WatchLedChannelCount] = {};
-	float PreviewChannelValue[WatchLedChannelCount] = {};
-	bool PreviewCondition[WatchConditionCount] = {};
-	float PreviewConditionValue[WatchConditionCount] = {};
 	bool PreviewEmission = false;
 	float PreviewEmissionValue = 0.0f;
 };
@@ -506,12 +499,7 @@ struct SWatchState
 	float CompassError = 0.0f;
 	float Barometer = 0.0f;
 	float SurgeFactor = 0.0f;
-	float Intensity[WatchLedChannelCount] = {};
-	float Condition[WatchConditionCount] = {};
-	float ConditionDisplay[WatchConditionCount] = {};
-	float ConditionBadness[WatchConditionCount] = {};
-	bool ConditionVisible[WatchConditionCount] = {};
-	EWatchConditionSeverity ConditionSeverity[WatchConditionCount] = {};
+	float AnomalyLevel = 0.0f;
 	float Emission = 0.0f;
 	float DisplayQuality = 1.0f;
 	xr_string TimeText;

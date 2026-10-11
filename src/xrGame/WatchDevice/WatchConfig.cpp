@@ -232,20 +232,70 @@ void CWatchDevice::LoadConfig(const CInifile& Ini, const shared_str& Root, bool 
 		LoadBlock(Ini, WatchDetail::MakeWatchSection(Root, Suffix), Block, Scratch); });
 }
 
-void CWatchDevice::ApplyIndicatorMasters()
+void CWatchDevice::LoadElementLists(const CInifile& Ini, const shared_str& Root)
 {
-	for (u32 Index = 0; Index < WatchLedChannelCount; ++Index)
-	{
-		Config.Present[Index].Enabled = Config.Masters.Enabled[Index] && Config.Present[Index].Enabled;
-	}
+	xr_vector<SWatchFieldRef> Scratch;
+	LoadBlock(Ini, Root, Config.Root, Scratch);
 }
 
-void CWatchDevice::ApplyConditionMasters()
+void CWatchDevice::BuildElements()
 {
-	for (u32 Index = 0; Index < WatchConditionCount; ++Index)
+	Config.Leds.clear();
+	Config.Gauges.clear();
+
+	string128 Name = {};
+	string256 Buffer = {};
+
+	const char* Indicators = Config.Root.Indicators.size() ? Config.Root.Indicators.c_str() : "";
+	const int IndicatorCount = _GetItemCount(Indicators);
+	for (int Index = 0; Index < IndicatorCount; ++Index)
 	{
-		Config.Conditions[Index].Enabled =
-			Config.ConditionMasters.Enabled[Index] && Config.Conditions[Index].Enabled;
+		_GetItem(Indicators, Index, Name);
+		if (!Name[0])
+		{
+			continue;
+		}
+
+		SWatchLedElement& Element = Config.Leds.emplace_back();
+		Element.Name = Name;
+		xr_sprintf(Buffer, "indicators.%s", Name);
+		Element.PresentSection = Buffer;
+		xr_sprintf(Buffer, "%s_enabled", Name);
+		Element.MasterKey = Buffer;
+
+		if (Element.Name.equal("noise"))
+		{
+			SWatchChannelPresent& Present = Element.Present;
+			Present.PresentShader = false;
+			Present.PresentUi = true;
+			Present.HideMesh = false;
+			Present.LightEnabled = false;
+			Present.UiPosition = {0.0075f, 0.0f, 0.0f};
+			Present.UiSize = {0.0025f, 0.0025f};
+		}
+	}
+
+	const char* Conditions = Config.Root.Conditions.size() ? Config.Root.Conditions.c_str() : "";
+	const int ConditionCount = _GetItemCount(Conditions);
+	for (int Index = 0; Index < ConditionCount; ++Index)
+	{
+		_GetItem(Conditions, Index, Name);
+		if (!Name[0])
+		{
+			continue;
+		}
+
+		SWatchGaugeElement& Element = Config.Gauges.emplace_back();
+		Element.Name = Name;
+		xr_sprintf(Buffer, "conditions.%s", Name);
+		Element.PresentSection = Buffer;
+		xr_sprintf(Buffer, "%s_enabled", Name);
+		Element.MasterKey = Buffer;
+
+		if (Element.Name.equal("bleeding"))
+		{
+			Element.Present.Normalize = 0.1f;
+		}
 	}
 }
 
@@ -267,11 +317,12 @@ bool CWatchDevice::ResolveOverridePath(string_path& Out) const
 
 void CWatchDevice::ApplyOverrideFromDisk()
 {
-	if (!ResolveOverridePath(OverridePath))
+	if (!Config.Root.UseOverride || !ResolveOverridePath(OverridePath))
 	{
 		return;
 	}
 
+	Msg("[watch] override applied from [%s]", OverridePath);
 	CInifile File(OverridePath, true, true, false);
 	LoadConfig(File, Section, true);
 }
