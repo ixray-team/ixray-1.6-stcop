@@ -91,69 +91,9 @@ EnableBlockSprintInReload = false        ; Enable block sprint in reload
 DisableSprintWhileOverweight = false    ; Disable Sprint while overweight
 SprintFovFactor = 3.0                   ; FOV magnification power while running
 
-[monsters_logic]; New mechanics require editing of mutant configs
-EnableMonsterFactionEnemySharingIsolation = false ; Isolate monster enemy sharing (root flag for use other options)
-EnableMonsterFriendlyEnemySharing = false ; Allow mutual friends sharing
-EnableMonsterDistributedTargeting = false ; Balance nearby monster targets
-EnableMonsterEnemySharingCallSounds = false ; Enable audible enemy-sharing calls
-EnableMonsterVisionIgnoreFoliage = false ; Ignore passable foliage materials in mutant vision, preserving trunks and walls
-MonsterEnemySharingCloseRatio = 0.25 ; Nearby hearing radius fraction
-MonsterEnemySharingIntervalMin = 3 ; Minimum sharing interval seconds
-MonsterEnemySharingIntervalMax = 5 ; Maximum sharing interval seconds
-; Shared behavior defaults; distances in meters, times in seconds.
-MonsterEnemySharingCallRatio = 0.6
-MonsterBehaviorEnabled = true
-MonsterSearchTimeMin = 15
-MonsterSearchTimeMax = 25
-MonsterApproachTimeMax = 90
-MonsterSearchRadius = 12
-MonsterSearchAngle = 60
-MonsterTrailLength = 5
-MonsterApproachWidth = 5
-MonsterPeripheralAngle = 150
-MonsterPeripheralRadius = 25
-MonsterPeripheralInterval = 1
-MonsterDeathHearingRadius = 20
-MonsterCorpseDetectionRadius = 25
-MonsterCorpseInterestTime = 90
-MonsterCorpseInvestigators = 2
-MonsterDeathHazardThreshold = 3
-MonsterDeathHazardRadius = 12
-MonsterDeathHazardTime = 120
-MonsterDeathHazardFightQuietTime = 15 ; Time since confirmed combat before cemetery avoidance resumes
-MonsterBehaviorUpdatesPerFrame = 12
-MonsterBehaviorQueriesPerFrame = 2
-MonsterBehaviorRaysPerFrame = 16
-MonsterBehaviorNodesPerFrame = 72
-MonsterEnemyMemoryMin = 30 ; Minimum retention seconds
-MonsterEnemyMemoryMax = 60 ; Maximum retention seconds
-MonsterEnemySearchAtPointTime = 15 ; Search after arrival seconds
-MonsterEnemyCloseAttackDistance = 5 ; Close combat distance, capped by personal detection radius
-MonsterPlayerVisualAcquireTime = 400 ; Accumulated player visibility before acquisition, milliseconds
-MonsterEnemyStuckTime = 3000 ; No movement before local search, milliseconds
+; Monsters ai (required custom monsters configs and shared monsters options new_monsters_logic.ltx)
+UseDeathOrDieMonstersLogic = false ; Enable additional monster logic
 
-MonsterApproachSpeedEstimate = 2
-MonsterCloseVisualRadius = 10
-MonsterCloseVisualTime = 5
-MonsterNoiseSearchTime = 10
-MonsterShotReactionInterestStep = .25 ; Default accumulated sound reaction value
-MonsterShotReactionInterestThreshold = .65 ; Default accumulated sound reaction value
-MonsterShotReactionFearStep = .25 ; Default accumulated sound reaction value
-MonsterShotReactionFearThreshold = .65 ; Default accumulated sound reaction value
-MonsterExplosionReactionInterestStep = .25 ; Default accumulated sound reaction value
-MonsterExplosionReactionInterestThreshold = .65 ; Default accumulated sound reaction value
-MonsterExplosionReactionFearStep = .25 ; Default accumulated sound reaction value
-MonsterExplosionReactionFearThreshold = .65 ; Default accumulated sound reaction value
-MonsterNoiseInterestDecay = 0.1 ; Interest lost per second
-MonsterNoiseInterestInterval = 0.1 ; Minimum time between interest additions
-MonsterAnomalyScanRadius = 60 ; Local permanent field cache radius
-MonsterAnomalyMargin = 1 ; Extra clearance around field bounds
-MonsterTargetCrowdDistance = 20
-MonsterTrailEnabled = true
-MonsterPeripheralEnabled = true
-MonsterDeathAlertEnabled = true
-MonsterCorpseInvestigationEnabled = true
-MonsterDeathHazardEnabled = true
 [spawn_supplies]
 EnableLoadoutsSupplies 						= true; Use loadouts for npc profiles
 ;; select one option ;;
