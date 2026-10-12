@@ -943,6 +943,8 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		return;
 	}
 
+	ImGui::PushID(item);
+
 	THudLightLaser* ll = nullptr;
 	THudLightTorch* lt = nullptr;
 
@@ -1044,6 +1046,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 
 	auto drawPositions = [&](EHudOffsetType offset_type) -> void
 	{
+		ImGui::PushID(static_cast<int>(offset_type));
 		ImGui::SeparatorText("Position##HUD");
 
 		Fvector& position = offset_type ? item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][offset_type] : item->m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisPos];
@@ -1241,6 +1244,8 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 				ImGui::EndTable();
 			}
 		}
+
+		ImGui::PopID();
 	};
 
 	if (!item->m_model_combined)
