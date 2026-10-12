@@ -4088,7 +4088,7 @@ bool CWeapon::NeedBlockSprint() const
 
 	const static bool IsBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 
-	return State == eFire || State == eFire2 || State == eKick || State == eSuicide || State == eSuicideStop || IsBlockSprintInReload && State == eReload || m_bIsAimAnimationPlaying;
+	return State == eFire || State == eFire2 || IsPending() && (State == eKick || State == eSuicide || State == eSuicideStop || IsBlockSprintInReload && State == eReload) || m_bIsAimAnimationPlaying;
 }
 
 void CWeapon::render_hud_mode()

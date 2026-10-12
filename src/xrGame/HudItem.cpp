@@ -825,7 +825,9 @@ bool CHudItem::TryPlayAnimIdle()
 						{
 							if (CHudItem* pHudItem = g_player_hud->attached_item(0)->m_parent_hud_item)
 							{
-								if (!pHudItem->m_bSwitchSprint)
+								const u8 NextState = pHudItem->GetNextState();
+								bool CanSprint = NextState == eIdle || NextState == eShowing || NextState == eSprintEnd || NextState == eBore;
+								if (!pHudItem->m_bSwitchSprint && CanSprint)
 								{
 									pHudItem->m_bSwitchSprint = true;
 									pHudItem->SwitchState(eSprintStart);
@@ -983,7 +985,7 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 	}
 	else if (!IsZoomed() && GetNextState() != eHiding)
 	{
-		if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && GetNextState() != eSprintStart && GetNextState() == eSprintEnd)
+		if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && (GetNextState() == eSprintEnd || !IsPending() && GetState() == GetNextState()))
 		{
 			m_bSwitchSprint = true;
 			SwitchState(eSprintStart);
@@ -1010,7 +1012,10 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 				{
 					if (CHudItem* pHudItem = g_player_hud->attached_item(0)->m_parent_hud_item)
 					{
-						if (!pHudItem->m_bSwitchSprint)
+						const u8 NextState = pHudItem->GetNextState();
+						const u8 State = pHudItem->GetNextState();
+						bool CanSprint = NextState == eIdle || NextState == eShowing || NextState == eSprintEnd || NextState == eBore || NextState == State && !pHudItem->IsPending();
+						if (!pHudItem->m_bSwitchSprint && CanSprint)
 						{
 							pHudItem->m_bSwitchSprint = true;
 							pHudItem->SwitchState(eSprintStart);
@@ -1019,7 +1024,7 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 				}
 			}
 		}
-		else if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) == 0 && GetNextState() != eSprintEnd && GetNextState() == eSprintStart)
+		else if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) == 0 && GetNextState() == eSprintStart)
 		{
 			m_bSwitchSprint = false;
 			SwitchState(eSprintEnd);
@@ -1195,7 +1200,7 @@ bool CHudItem::CanStartAction(CActor* pActor)
 
 	if (CCustomDevice* pDevice = pActor->GetDevice())
 	{
-		u8 state = pDevice->GetState();
+		u8 state = pDevice->GetNextState();
 		if (state != CCustomDevice::eIdle && state != CCustomDevice::EDeviceStates::eHandAimStart && state != CCustomDevice::EDeviceStates::eHandAimEnd && !pDevice->IsHidden() || pDevice->NeedActivation())
 		{
 			return false;
