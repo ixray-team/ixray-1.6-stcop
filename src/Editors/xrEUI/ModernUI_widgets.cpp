@@ -264,6 +264,7 @@ XREUI_API void XRay::ImGui::Separator(float thickness)
 // - IconButton()
 // - ToggleButton()
 // - ToggleFlagButton()
+// - ToggleSwitch()
 // 
 // Toolbar Buttons:
 // - ToolbarButtonBackground()
@@ -419,6 +420,55 @@ XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const I
 		);
 	}
 	return  Changed;
+}
+
+XREUI_API bool XRay::ImGui::ToggleSwitch(const char* Id, bool* State, const char* OnText, const char* OffText)
+{
+	if (!State)
+	{
+		return false;
+	}
+
+	const ImGuiStyle& Style = ::ImGui::GetStyle();
+	const float Height = ::ImGui::GetFrameHeight();
+	const float Width = Height * 1.8f;
+	const float Radius = Height * 0.5f;
+
+	::ImGui::PushID(Id);
+	const ImVec2 Pos = ::ImGui::GetCursorScreenPos();
+	const bool Clicked = ::ImGui::InvisibleButton("##switch", { Width, Height });
+	if (Clicked)
+	{
+		*State = !*State;
+	}
+	const bool Hovered = ::ImGui::IsItemHovered();
+	if (Hovered)
+	{
+		::ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+	}
+
+	// Knob slides to the new state
+	const ImGuiID AnimId = ::ImGui::GetItemID();
+	ImGuiStorage* Storage = ::ImGui::GetStateStorage();
+	float Knob = Storage->GetFloat(AnimId, *State ? 1.f : 0.f);
+	const float Speed = ::ImGui::GetIO().DeltaTime * 8.f;
+	Knob = *State ? ImMin(Knob + Speed, 1.f) : ImMax(Knob - Speed, 0.f);
+	Storage->SetFloat(AnimId, Knob);
+
+	const ImU32 OffColor = ::ImGui::GetColorU32(Hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
+	const ImU32 OnColor = GetEditorColor(Hovered ? EEditorColors::AccentHover : EEditorColors::Accent);
+	const ImVec4 Track = ImLerp(::ImGui::ColorConvertU32ToFloat4(OffColor), ::ImGui::ColorConvertU32ToFloat4(OnColor), Knob);
+
+	ImDrawList* DrawList = ::ImGui::GetWindowDrawList();
+	DrawList->AddRectFilled(Pos, { Pos.x + Width, Pos.y + Height }, ::ImGui::ColorConvertFloat4ToU32(Track), Radius);
+	DrawList->AddCircleFilled({ Pos.x + Radius + Knob * (Width - Height), Pos.y + Radius }, Radius - 2.f, ::ImGui::GetColorU32(ImGuiCol_Text));
+
+	::ImGui::SameLine(0.f, Style.ItemInnerSpacing.x);
+	::ImGui::AlignTextToFramePadding();
+	::ImGui::TextUnformatted(*State ? OnText : OffText);
+	::ImGui::PopID();
+
+	return Clicked;
 }
 
 XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags, uint32_t Mask, const ImVec2& Size)

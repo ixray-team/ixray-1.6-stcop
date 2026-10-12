@@ -420,6 +420,12 @@ void CCustomPreferences::Load()
 		GetSafe(*render, "render_radius", EDevice->RenderRadius);
 		GetSafe(*render, "light_distance", LightDistance);
 		GetSafe(*render, "occlusion_culling", OcclusionCulling);
+		GetSafe(*render, "hemi", Hemi);
+		GetSafe(*render, "dynamic_lights", DynamicLights);
+		GetSafe(*render, "light_shadows", LightShadows);
+		GetSafe(*render, "ssao_mode", ps_r_ssao_mode);
+		Hemi = std::clamp(Hemi, 0.f, 1.f);
+		ps_r_ssao_mode = std::min(ps_r_ssao_mode, 2u);
 		GetSafe(*render, "w", start_w);
 		GetSafe(*render, "h", start_h);
 		GetSafe(*render, "quality", GEditorDraw.ScreenQuality);
@@ -564,6 +570,10 @@ void CCustomPreferences::Save()
 	JSONData["render"]["render_radius"]=EDevice->RenderRadius;
 	JSONData["render"]["light_distance"]=LightDistance;
 	JSONData["render"]["occlusion_culling"]=OcclusionCulling;
+	JSONData["render"]["hemi"]=Hemi;
+	JSONData["render"]["dynamic_lights"]=DynamicLights;
+	JSONData["render"]["light_shadows"]=LightShadows;
+	JSONData["render"]["ssao_mode"]=ps_r_ssao_mode;
 	
 	JSONData["ContentBrowser"]["file_custom_icon"] = custom_icons;
 	// load shortcuts
