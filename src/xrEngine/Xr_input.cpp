@@ -408,6 +408,9 @@ void CInput::NoInputUpdate()
 	}
 
 	offs[0] = offs[1] = offs[2] = 0;
+
+	mouseMoved = false;
+	mouseScrolled = false;
 }
 
 void CInput::MouseUpdate( )
