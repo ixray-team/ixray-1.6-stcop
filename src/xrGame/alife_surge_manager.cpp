@@ -31,7 +31,10 @@ void CALifeSurgeManager::spawn_new_spawns			()
 {
 	// FX: Dirty hack
 	for (auto Iter = m_temp_spawns.begin(); Iter < m_temp_spawns.end(); Iter++) {
-		auto& AbstarctObject = spawns().spawns().vertex(*Iter)->data()->object();
+		auto* vertex_ptr = spawns().spawns().vertex(*Iter);
+		if (!vertex_ptr)
+			continue;
+		auto& AbstarctObject = vertex_ptr->data()->object();
 		if (smart_cast<CSE_ALifeCreatureActor*>(&AbstarctObject)) {
 			u16 ID = *Iter;
 			m_temp_spawns.erase(Iter);
@@ -42,7 +45,10 @@ void CALifeSurgeManager::spawn_new_spawns			()
 
 	for (u16 ObjectID : m_temp_spawns) {
 		CSE_ALifeDynamicObject* object = nullptr;
-		auto& AbstarctObject = spawns().spawns().vertex(ObjectID)->data()->object();
+		auto* vertex_ptr = spawns().spawns().vertex(ObjectID);
+		if (!vertex_ptr)
+			continue;
+		auto& AbstarctObject = vertex_ptr->data()->object();
 		CSE_ALifeDynamicObject* spawn = AbstarctObject.cast_alife_dynamic_object();
 
 		create(object, spawn, ObjectID);
