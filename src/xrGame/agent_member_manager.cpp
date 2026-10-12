@@ -57,6 +57,7 @@ void CAgentMemberManager::add					(CEntity *member)
 	iterator					I = std::find_if(m_members.begin(),m_members.end(), CMemberPredicate(stalker));
 	VERIFY						(I == m_members.end());
 	m_members.push_back			(new CMemberOrder(stalker));
+	m_actuality = false;
 }
 
 void CAgentMemberManager::remove				(CEntity *member)
@@ -74,6 +75,9 @@ void CAgentMemberManager::remove				(CEntity *member)
 
 	iterator					I = std::find_if(m_members.begin(),m_members.end(), CMemberPredicate(stalker));
 	VERIFY						(I != m_members.end());
+	// Remove the cached order before freeing it, even if its combat bit is clear.
+	m_combat_members.erase(std::remove(m_combat_members.begin(), m_combat_members.end(), *I), m_combat_members.end());
+	m_actuality = false;
 	xr_delete					(*I);
 	m_members.erase				(I);
 }
@@ -159,22 +163,46 @@ bool CAgentMemberManager::registered_in_combat	(const CAI_Stalker *object) const
 	return						(!!(m_combat_mask & mask(object)));
 }
 
-CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::combat_members	()
+CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::combat_members()
 {
+	// Readiness can change without a membership change. Keep the combat mask and
+	// cached orders in sync before any enemy distribution stage uses them.
+	for (CMemberOrder* Order : m_combat_members)
+	{
+		if (!Order)
+		{
+			m_actuality = false;
+			continue;
+		}
+		CAI_Stalker& Member = Order->object();
+		if (Member.getDestroy() || !Member.g_Alive() || !Member.GetMemoryManager())
+		{
+			unregister_in_combat(&Member);
+			m_actuality = false;
+		}
+	}
 	if (m_actuality)
-		return							(m_combat_members);
-
-	m_actuality							= true;
-
-	m_combat_members.clear				();
-	MEMBER_STORAGE::iterator			I = members().begin();
-	MEMBER_STORAGE::iterator			E = members().end();
-	for ( ; I != E; ++I) {
-		if (registered_in_combat(&(*I)->object()))
-			m_combat_members.push_back	(*I);
+	{
+		return m_combat_members;
 	}
 
-	return								(m_combat_members);
+	m_combat_members.clear();
+	for (CMemberOrder* Order : members())
+	{
+		CAI_Stalker& Member = Order->object();
+		if (!registered_in_combat(&Member))
+		{
+			continue;
+		}
+		if (Member.getDestroy() || !Member.g_Alive() || !Member.GetMemoryManager())
+		{
+			unregister_in_combat(&Member);
+			continue;
+		}
+		m_combat_members.push_back(Order);
+	}
+	m_actuality = true;
+	return m_combat_members;
 }
 
 u64 CAgentMemberManager::non_combat_members_mask	() const

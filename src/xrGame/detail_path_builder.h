@@ -10,6 +10,8 @@
 
 #include "movement_manager.h"
 #include "detail_path_manager.h"
+#include "level_path_manager.h"
+#include "path_manager_params.h"
 
 class CDetailPathBuilder {
 private:
@@ -52,7 +54,7 @@ public:
 			return;
 		}
 
-		m_object->detail().build_path	(*m_level_path,m_path_vertex_index);
+		m_object->detail().build_path	(*m_level_path,m_path_vertex_index,m_object->level_path().IsPartialPath(),m_object->base_level_params()->UsePathLimits);
 
 		m_object->on_build_path			();
 

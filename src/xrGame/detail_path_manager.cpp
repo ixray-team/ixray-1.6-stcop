@@ -11,6 +11,7 @@
 #include "ai_space.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
+#include "restricted_object.h"
 
 #ifdef DEBUG
 #	include "Creature.h"
@@ -30,6 +31,7 @@ void CDetailPathManager::reinit			()
 {
 	m_actuality				= false;
 	m_failed				= false;
+	PartialPath = false;
 	m_start_position		= Fvector().set(0,0,0);
 	m_dest_position			= Fvector().set(0,0,0);
 	m_current_travel_point	= u32(-1);
@@ -94,8 +96,98 @@ bool CDetailPathManager::try_get_direction(Fvector& direction) const
 	return					true;
 }
 
-void CDetailPathManager::build_path(const xr_vector<u32> &level_path, u32 intermediate_index)
+bool CDetailPathManager::ValidateFourTransitionPath(u32 StartVertex) const
 {
+	if (m_path.empty())
+	{
+		return false;
+	}
+	const auto& Graph = ai().level_graph();
+	u32 Vertex = StartVertex;
+	Fvector Previous = m_start_position;
+	bool LeftStart = false;
+	const float SampleStep = std::max(Graph.header().cell_size() * .25f, .05f);
+	for (const auto& Point : m_path)
+	{
+		const Fvector SegmentStart = Previous;
+		const float Length = SegmentStart.distance_to(Point.position);
+		const u32 Samples = std::max(1u, u32(std::ceil(Length / SampleStep)));
+		for (u32 Sample = 1; Sample <= Samples; ++Sample)
+		{
+			Fvector Position;
+			Position.lerp(SegmentStart, Point.position, float(Sample) / float(Samples));
+			Vertex = Graph.check_position_in_direction(Vertex, Previous, Position);
+			if (!Graph.valid_vertex_id(Vertex))
+			{
+				return false;
+			}
+			LeftStart |= Vertex != StartVertex;
+			if ((LeftStart || Vertex != StartVertex) && !Graph.HasFourTransitions(Vertex))
+			{
+				return false;
+			}
+			Previous = Position;
+		}
+	}
+	return true;
+}
+
+bool CDetailPathManager::BuildNodeCentrePath(const xr_vector<u32>& LevelPath)
+{
+	// Retain a forward velocity selected by the smooth builder and allowed masks.
+	u32 Velocity = u32(-1);
+	for (const auto& Point : m_path)
+	{
+		const auto Parameters = m_movement_params.find(Point.velocity);
+		if (Parameters != m_movement_params.end() && Parameters->second.linear_velocity > EPS_L &&
+			check_mask(m_velocity_mask, Point.velocity))
+		{
+			Velocity = Point.velocity;
+			break;
+		}
+	}
+	if (Velocity == u32(-1))
+	{
+		return false;
+	}
+	const auto& Graph = ai().level_graph();
+	m_path.clear();
+	m_key_points.clear();
+	STravelPathPoint Point;
+	Point.position = m_start_position;
+	Point.vertex_id = LevelPath.front();
+	Point.velocity = Velocity;
+	m_path.push_back(Point);
+	for (const u32 Vertex : LevelPath)
+	{
+		Point.position = Graph.vertex_position(Vertex);
+		Point.vertex_id = Vertex;
+		if (m_path.back().position.distance_to_sqr(Point.position) > EPS_L * EPS_L)
+		{
+			m_path.push_back(Point);
+		}
+	}
+	// Keep a precise final target only within the last accepted node.
+	if (!PartialPath && Graph.inside(LevelPath.back(), m_dest_position))
+	{
+		Point.position = m_dest_position;
+		Point.vertex_id = LevelPath.back();
+		m_path.push_back(Point);
+	}
+	if (!ValidateFourTransitionPath(LevelPath.front()))
+	{
+		return false;
+	}
+	m_dest_vertex_id = LevelPath.back();
+	m_corrected_dest_position = m_path.back().position;
+	m_last_patrol_point = u32(m_path.size() - 1);
+	m_distance_to_target_actual = false;
+	return true;
+}
+
+void CDetailPathManager::build_path(const xr_vector<u32> &level_path, u32 intermediate_index, bool IsPartialPath, bool RequireFourTransitions)
+{
+	PartialPath = IsPartialPath;
 	if (valid(m_start_position) && valid(m_dest_position)) {
 		switch (m_path_type) {
 			case eDetailPathTypeSmooth : {
@@ -112,6 +204,27 @@ void CDetailPathManager::build_path(const xr_vector<u32> &level_path, u32 interm
 			}
 			default : NODEFAULT;
 		}
+		if (RequireFourTransitions && !failed() && !level_path.empty())
+		{
+			if (m_restricted_object)
+			{
+				m_restricted_object->add_border(level_path.front(), level_path.back());
+			}
+			if (!ValidateFourTransitionPath(level_path.front()))
+			{
+				m_failed = !BuildNodeCentrePath(level_path);
+				if (m_failed)
+				{
+					m_path.clear();
+					m_actuality = false;
+				}
+			}
+			if (m_restricted_object)
+			{
+				m_restricted_object->remove_border();
+			}
+		}
+
 		if (failed()) {
 #ifndef MASTER_GOLD
 			Msg						("! DetailPathManager has failed : from [%f,%f,%f] to [%f,%f,%f]", VPUSH(ai().level_graph().vertex_position(level_path.front())), VPUSH(ai().level_graph().vertex_position(level_path.back())));
