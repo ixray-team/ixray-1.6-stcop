@@ -163,7 +163,7 @@ bool CAgentMemberManager::registered_in_combat	(const CAI_Stalker *object) const
 	return						(!!(m_combat_mask & mask(object)));
 }
 
-CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::combat_members	()
+CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::combat_members()
 {
 	// Readiness can change without a membership change. Keep the combat mask and
 	// cached orders in sync before any enemy distribution stage uses them.

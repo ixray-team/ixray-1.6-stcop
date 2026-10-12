@@ -69,8 +69,12 @@ void CClientSpawnManager::add				(ALife::_OBJECT_ID requesting_id, ALife::_OBJEC
 void CClientSpawnManager::remove			(REQUESTED_REGISTRY &registry, ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, bool no_warning)
 {
 	REQUESTED_REGISTRY::iterator	I = registry.find(requested_id);
-	if (I == registry.end()) {
-		ai().script_engine().script_log	(eLuaMessageTypeError,"There is no spawn callback on object with id %d from object with id %d!",requesting_id,requested_id);
+	if (I == registry.end())
+	{
+		if (!no_warning)
+		{
+			ai().script_engine().script_log(eLuaMessageTypeError, "There is no spawn callback on object with id %d from object with id %d!", requesting_id, requested_id);
+		}
 		return;
 	}
 
@@ -90,6 +94,20 @@ void CClientSpawnManager::remove			(ALife::_OBJECT_ID requesting_id, ALife::_OBJ
 		return;
 
 	m_registry.erase				(I);
+}
+
+void CClientSpawnManager::RemoveIfExists(ALife::_OBJECT_ID TargetId, ALife::_OBJECT_ID OwnerId)
+{
+	auto Entry = m_registry.find(TargetId);
+	if (Entry == m_registry.end())
+	{
+		return;
+	}
+	remove(Entry->second, TargetId, OwnerId, true);
+	if (Entry->second.empty())
+	{
+		m_registry.erase(Entry);
+	}
 }
 
 void CClientSpawnManager::clear				(ALife::_OBJECT_ID requested_id)
@@ -143,11 +161,11 @@ void CClientSpawnManager::merge_spawn_callbacks	(CSpawnCallback &new_callback, C
 
 const CClientSpawnManager::CSpawnCallback *CClientSpawnManager::callback(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id) const
 {
-	REQUEST_REGISTRY::const_iterator	I = m_registry.find(requested_id);
+	REQUEST_REGISTRY::const_iterator	I = m_registry.find(requesting_id);
 	if (I == m_registry.end())
 		return						(0);
 
-	REQUESTED_REGISTRY::const_iterator	i = (*I).second.find(requesting_id);
+	REQUESTED_REGISTRY::const_iterator	i = (*I).second.find(requested_id);
 	if (i == (*I).second.end())
 		return						(0);
 

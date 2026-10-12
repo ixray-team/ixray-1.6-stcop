@@ -104,6 +104,8 @@ extern float g_bobbing_factor;
 
 extern ENGINE_API int m_look_cam_fp_zoom;
 
+extern int g_ALDrawPaths;
+
 int m_iQuickSave = 0;
 u32 m_iQuickSavesCount = 5;
 
@@ -2745,6 +2747,7 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer, "g_cam_fp_zoom", &m_look_cam_fp_zoom, 0, 1);
 
 	// alife
+	CMD4(CCC_Integer, "al_draw_paths", &g_ALDrawPaths, 0, 1);
 #ifdef DEBUG
 	CMD1(CCC_ALifePath, "al_path");		// build path
 
