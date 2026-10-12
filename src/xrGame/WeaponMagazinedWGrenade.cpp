@@ -921,6 +921,7 @@ bool CWeaponMagazinedWGrenade::Detach(const char* item_section_name, bool b_spaw
 		UnloadMagazine();
 		PerformSwitchGL();
 
+		InitAddons();
 		UpdateAddonsVisibility();
 		UpdateHUDAddonsVisibility();
 		ProcessScope();
