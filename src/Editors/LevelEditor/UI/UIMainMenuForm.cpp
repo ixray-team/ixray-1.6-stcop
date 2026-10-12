@@ -522,7 +522,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::BeginMenuI("Environment", ICON_FA_CLOUD_SUN))
 				{
                     {
-                        if (ImGui::Button("Weather properties"))
+                        if (ImGui::Button("Lighting"))
                         {
                             ExecCommand(COMMAND_WEATHER_PROPERTIES);
                         }

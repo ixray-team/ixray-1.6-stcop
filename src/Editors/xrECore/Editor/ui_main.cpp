@@ -15,7 +15,7 @@
 #include "UIImageEditorForm.h"
 #include "UISoundEditorForm.h"
 #include "UIMinimapEditorForm.h"
-#include "UIWeatherPropForm.h"
+#include "UILightingForm.h"
 #include "UILogForm.h"
 #include "../xrEngine/gamefont.h"
 #include "../XrEngine/XR_IOConsole.h"
@@ -543,6 +543,9 @@ void TUI::Redraw()
 			{
 				RImplementation.EditorClearColor.set(EPrefs->scene_clear_color);
 				RImplementation.EditorOcclusionCulling = EPrefs->OcclusionCulling;
+				RImplementation.EditorHemi = EPrefs->Hemi;
+				RImplementation.EditorDynamicLights = EPrefs->DynamicLights;
+				RImplementation.EditorLightShadows = EPrefs->LightShadows;
 			}
 			::Render->Calculate();
 			::Render->Render();
@@ -912,7 +915,7 @@ void TUI::OnDrawUI()
 	UIImageEditorForm::Update();
 	UISoundEditorForm::Update();
 	UIMinimapEditorForm::Update();
-	UIWeatherPropForm::Update();
+	UILightingForm::Update();
 	UIIconPicker::Update();
 	UILogForm::Update();
 	EDevice->seqDrawUI.Process<&pureDrawUI::OnDrawUI>();

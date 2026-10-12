@@ -175,6 +175,13 @@ public:
 
 	ICF void						apply_object				(IRenderable*	O)
 	{
+		// Editors do not track lighting per object (no CROS_impl): one hemi for the whole scene
+		if (Device.IsEditorMode())
+		{
+			EditorApplyHemi			();
+			return;
+		}
+
 		if (0==O)					return;
 		if (0==O->renderable_ROS())	return;
 		CROS_impl& LT				= *((CROS_impl*)O->renderable_ROS());
@@ -186,6 +193,17 @@ public:
 
 		avg_lit_color = LT.get_avg_color();
 		avg_lit_dir = LT.get_avg_dir();
+	}
+	IC void							EditorApplyHemi				()
+	{
+		o_hemi						= 0.75f*EditorHemi;
+		o_sun						= 0.75f;
+		for (float& Face : o_hemi_cube)
+		{
+			Face					= EditorHemi;
+		}
+
+		avg_lit_color = avg_lit_dir = { 0,0,0 };
 	}
 	IC void							apply_lmaterial				()
 	{
@@ -421,6 +439,11 @@ public:
 
 	CEditorHiZ						EditorHiZ;
 	bool							EditorOcclusionCulling		= true;
+
+	// Lighting window of the editors. The compilers bake hemi for the game; the editors use one value.
+	float							EditorHemi					= 0.5f;
+	bool							EditorDynamicLights			= true;
+	bool							EditorLightShadows			= true;
 
 	void							EditorRenderMain			(bool Deferred);
 	void							EditorRenderSubspace		(CFrustum& Frustum);
