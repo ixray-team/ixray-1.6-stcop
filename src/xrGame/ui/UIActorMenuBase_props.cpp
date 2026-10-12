@@ -290,9 +290,11 @@ void CUIActorMenuBase::PropertiesBoxForSlots(CUICellItem* cell_item, PIItem item
 		}
 		b_show = true;
 	}
-	if (item->Belt() && pInv->CanPutInBelt(item))
+    
+    
+    if (item->Belt() && pInv->CanPutInBelt(item))
 	{
-		m_UIPropertiesBox->AddItem("st_move_on_belt", nullptr, INVENTORY_TO_BELT_ACTION);
+		//m_UIPropertiesBox->AddItem("st_move_on_belt", nullptr, INVENTORY_TO_BELT_ACTION);
 		b_show = true;
 	}
 
@@ -370,14 +372,6 @@ void CUIActorMenuBase::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item,
 				m_UIPropertiesBox->AddItem("st_move_to", nullptr, INVENTORY_DROP_ACTION);
 				b_show = true;
 
-				if (cell_item->ChildsCount())
-				{
-					if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
-					{
-						m_UIPropertiesBox->AddItem("st_move_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
-					}
-					m_UIPropertiesBox->AddItem("st_move_all", (void*)INVENTORY_ALL_CODE, INVENTORY_DROP_ACTION);
-				}
 			}
 		}
 	}
