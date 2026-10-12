@@ -19,6 +19,56 @@ namespace HudAttachMarks
 	constexpr const char* Start = "mm_ik_start";
 	constexpr const char* End = "mm_ik_end";
 }
+
+namespace HudRotation
+{
+	Fquaternion FromEuler(const Fvector& degrees)
+	{
+		Fmatrix rotation;
+		rotation.setHPB(deg2rad(degrees.x), deg2rad(degrees.y), deg2rad(degrees.z));
+		return Fquaternion().set(rotation);
+	}
+
+	Fvector ToEuler(const Fquaternion& rotation)
+	{
+		Fvector hpb;
+		Fmatrix().rotation(rotation).getHPB(hpb);
+		return hpb.mul(180.f / PI);
+	}
+
+	Fvector Delta(const Fquaternion& from, const Fquaternion& to)
+	{
+		Fquaternion delta;
+		delta.mul(to, Fquaternion().inverse(from));
+		if (delta.w < 0.f)
+		{
+			delta.set(-delta.w, -delta.x, -delta.y, -delta.z);
+		}
+
+		Fvector axis;
+		float angle;
+		if (!delta.get_axis_angle(axis, angle))
+		{
+			return zero_vel;
+		}
+
+		return axis.mul(angle * 180.f / PI);
+	}
+
+	Fquaternion Apply(const Fvector& degrees, const Fquaternion& rotation)
+	{
+		const float angle = degrees.magnitude();
+		if (angle <= EPS_S)
+		{
+			return rotation;
+		}
+
+		Fvector axis = Fvector().div(degrees, angle);
+		Fquaternion step;
+		step.rotation(axis, deg2rad(angle));
+		return Fquaternion().mul(step, rotation);
+	}
+}
 Fvector _ancor_pos;
 Fvector _wpn_root_pos;
 extern float AnimatorHideSpeedFactor;
@@ -1629,16 +1679,17 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		m_inertia_vel_rot.set(0.f, 0.f, 0.f);
 	}
 
+	const Fquaternion target_rotation = HudRotation::FromEuler(targetrot);
+
 	while (time_accumulator > 8)
 	{
 		pos = targetpos;
-		rot = targetrot;
 
 		Fvector cur_pos = hands_attach_pos();
-		Fvector cur_rot = hands_attach_rot();
+		Fquaternion cur_rotation = HudRotation::FromEuler(hands_attach_rot());
 
 		pos.sub(cur_pos);
-		rot.sub(cur_rot);
+		rot = HudRotation::Delta(cur_rotation, target_rotation);
 
 		if (actor->SuicideNow)
 		{
@@ -1671,7 +1722,7 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		}
 
 		cur_pos.add(pos);
-		cur_rot.add(rot);
+		cur_rotation = HudRotation::Apply(rot, cur_rotation);
 
 		if (actor->IsHandJitter())
 		{
@@ -1685,13 +1736,14 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 			rot.y = ::Random.randF(0.0f, 1000.f) - 500.0f;
 			rot.z = ::Random.randF(0.0f, 1000.f) - 500.0f;
 			rot.set_length(jitter.rot_amplitude * actor->GetHandJitterScale(itm));
-			cur_rot.add(rot);
+			cur_rotation = HudRotation::Apply(rot, cur_rotation);
 		}
+
+		const Fvector cur_rot = HudRotation::ToEuler(cur_rotation);
 
 		cur_pos.sub(m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisPos]);
 		m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisPos].add(cur_pos);
-		cur_rot.sub(m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisRot]);
-		m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisRot].add(cur_rot);
+		m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisRot].set(cur_rot);
 
 		time_accumulator -= 8;
 	}
@@ -1699,10 +1751,9 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 	if (actor->SuicideNow && ActorVisForContr && !(itm->HudDesc().ProhibitSuicide || itm->cast_weapon() && itm->cast_weapon()->SuicideByAnimation))
 	{
 		pos = hands_attach_pos();
-		rot = hands_attach_rot();
-	
+		rot = HudRotation::Delta(target_rotation, HudRotation::FromEuler(hands_attach_rot()));
+
 		pos.sub(targetpos);
-		rot.sub(targetrot);
 	
 		if (pos.magnitude() < jitter.pos_amplitude * 2.0f && rot.magnitude() < jitter.rot_amplitude * 2.0f)
 		{
@@ -2450,9 +2501,10 @@ void player_hud::update(const Fmatrix& cam_trans)
 		const Fvector& base_pos = measures.m_hands_positions.hands_offsets_tune[EHudOffsetAxis::eAxisPos][EHudOffsetType::eDefault];
 		const Fvector& base_rot = measures.m_hands_positions.hands_offsets_tune[EHudOffsetAxis::eAxisRot][EHudOffsetType::eDefault];
 
-		const Fvector rigid_rot = Fvector().lerp(attach_rot(), base_rot, ik_share).mul(PI / 180.f);
+		Fquaternion rigid_rotation;
+		rigid_rotation.slerp(HudRotation::FromEuler(attach_rot()), HudRotation::FromEuler(base_rot), ik_share);
 		Fmatrix rigid_attach;
-		rigid_attach.setHPB(rigid_rot.x, rigid_rot.y, rigid_rot.z);
+		rigid_attach.rotation(rigid_rotation);
 		rigid_attach.c.lerp(attach_pos(), base_pos, ik_share);
 
 		const float rigid_share = 1.f - ik_share;
