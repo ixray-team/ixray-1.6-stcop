@@ -48,6 +48,7 @@ CDialogHolder::~CDialogHolder()
 
 void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	R_ASSERT						( !pDialog->IsShown() );
 
 	AddDialogToRender				(pDialog);
@@ -85,6 +86,7 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 
 void CDialogHolder::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	if (pDialog->IsShown())
 		StopMenu(pDialog);
 	else
@@ -100,6 +102,7 @@ void CDialogHolder::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 
 void CDialogHolder::StopMenu(CUIDialogWnd* pDialog)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	R_ASSERT( pDialog->IsShown() );
 
 	if( TopInputReceiver()==pDialog )
@@ -126,6 +129,7 @@ void CDialogHolder::StopMenu(CUIDialogWnd* pDialog)
 
 void CDialogHolder::AddDialogToRender(CUIWindow* pDialog)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	dlgItem itm		(pDialog);
 	itm.enabled		= true;
 
@@ -145,31 +149,46 @@ void CDialogHolder::AddDialogToRender(CUIWindow* pDialog)
 
 void CDialogHolder::RemoveDialogToRender(CUIWindow* pDialog)
 {
-	dlgItem itm		(pDialog);
-	itm.enabled		= true;
-	xr_vector<dlgItem>::iterator it = std::find(m_dialogsToRender.begin(),m_dialogsToRender.end(),itm);
-
-	if(it!=m_dialogsToRender.end())
+	xrCriticalSectionGuard Guard(DialogsLock);
+	bool WasRemoved = false;
+	for (auto* Dialogs : {&m_dialogsToRender, &m_dialogsToRender_new})
 	{
-		(*it).wnd->Show(false);
-		(*it).wnd->Enable(false);
-		(*it).enabled = false;
+		for (auto& Item : *Dialogs)
+		{
+			if (Item.wnd == pDialog && Item.enabled)
+			{
+				Item.enabled = false;
+				Item.wnd = nullptr;
+				WasRemoved = true;
+			}
+		}
+	}
+	if (WasRemoved)
+	{
+		pDialog->Show(false);
+		pDialog->Enable(false);
 	}
 }
 
 
-
 void CDialogHolder::DoRenderDialogs()
 {
-	xr_vector<dlgItem>::iterator it = m_dialogsToRender.begin();
-	for(; it!=m_dialogsToRender.end();++it){
-		if( (*it).enabled && (*it).wnd != nullptr && (*it).wnd->IsShown() )
-			(*it).wnd->Draw();
+	xrCriticalSectionGuard Guard(DialogsLock);
+	// Draw callbacks may add dialogs and reallocate the vector.
+	const auto DialogCount = m_dialogsToRender.size();
+	for (size_t Index = 0; Index < DialogCount && Index < m_dialogsToRender.size(); ++Index)
+	{
+		const dlgItem Item = m_dialogsToRender[Index];
+		if (Item.enabled && Item.wnd != nullptr && Item.wnd->IsShown())
+		{
+			Item.wnd->Draw();
+		}
 	}
 }
 
 void  CDialogHolder::OnExternalHideIndicators()
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	xr_vector<recvItem>::iterator it = m_input_receivers.begin();
 	xr_vector<recvItem>::iterator it_e = m_input_receivers.end();
 	for(;it!=it_e;++it)
@@ -181,6 +200,7 @@ void  CDialogHolder::OnExternalHideIndicators()
 
 CUIDialogWnd* CDialogHolder::TopInputReceiver()
 { 
+	xrCriticalSectionGuard Guard(DialogsLock);
 	if ( !m_input_receivers.empty() ) 
 		return m_input_receivers.back().m_item; 
 	return nullptr; 
@@ -188,6 +208,7 @@ CUIDialogWnd* CDialogHolder::TopInputReceiver()
 
 void CDialogHolder::SetMainInputReceiver	(CUIDialogWnd* ir, bool _find_remove)	
 { 
+	xrCriticalSectionGuard Guard(DialogsLock);
 	if( TopInputReceiver() == ir ) return;
 
 	if(!ir || _find_remove){
@@ -236,6 +257,7 @@ void CDialogHolder::StopDialog(CUIDialogWnd* pDialog)
 
 void CDialogHolder::OnFrame()
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	m_b_in_update = true;
 	CUIDialogWnd* wnd = TopInputReceiver();
 	if ( wnd && wnd->IsEnabled() )
@@ -244,10 +266,15 @@ void CDialogHolder::OnFrame()
 	}
 	//else
 	{
-		xr_vector<dlgItem>::iterator it = m_dialogsToRender.begin();
-		for(; it!=m_dialogsToRender.end();++it)
-			if((*it).enabled && (*it).wnd->IsEnabled())
-				(*it).wnd->Update();
+		const auto DialogCount = m_dialogsToRender.size();
+		for (size_t Index = 0; Index < DialogCount && Index < m_dialogsToRender.size(); ++Index)
+		{
+			const dlgItem Item = m_dialogsToRender[Index];
+			if (Item.enabled && Item.wnd != nullptr && Item.wnd->IsEnabled())
+			{
+				Item.wnd->Update();
+			}
+		}
 	}
 
 	m_b_in_update = false;
@@ -264,15 +291,18 @@ void CDialogHolder::OnFrame()
 
 void CDialogHolder::CleanInternals()
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	while( !m_input_receivers.empty() )
 		m_input_receivers.pop_back();
 
 	m_dialogsToRender.clear	();
+	m_dialogsToRender_new.clear();
 	GetUICursor().Hide		();
 }
 
 bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd*	TIR = TopInputReceiver();
 	if(!TIR)				return false;
 	if(!TIR->IR_process())	return false;
@@ -309,6 +339,7 @@ bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 
 bool CDialogHolder::IR_UIOnGamepadKeyPress(int id)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd*	TIR = TopInputReceiver();
 	if(!TIR)				
 		return false;
@@ -325,6 +356,7 @@ bool CDialogHolder::IR_UIOnGamepadKeyPress(int id)
 
 bool CDialogHolder::IR_UIOnGamepadUpdateStick(int id, Fvector2 value)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd*	TIR = TopInputReceiver();
 	if(!TIR)				
 		return false;
@@ -353,6 +385,7 @@ bool CDialogHolder::IR_UIOnGamepadUpdateStick(int id, Fvector2 value)
 
 bool CDialogHolder::IR_UIOnGamepadKeyHold(int id)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd* TIR = TopInputReceiver();
 	if (!TIR)				
 		return false;
@@ -369,6 +402,7 @@ bool CDialogHolder::IR_UIOnGamepadKeyHold(int id)
 
 bool CDialogHolder::IR_UIOnKeyboardRelease(int dik)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd* TIR		= TopInputReceiver();
 	if(!TIR)				return false;
 	if(!TIR->IR_process())	return false;
@@ -401,6 +435,7 @@ bool CDialogHolder::IR_UIOnKeyboardRelease(int dik)
 
 bool CDialogHolder::IR_UIOnKeyboardHold(int dik)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd* TIR		= TopInputReceiver();
 	if(!TIR)				return false;
 	if(!TIR->IR_process())	return false;
@@ -424,6 +459,7 @@ bool CDialogHolder::IR_UIOnKeyboardHold(int dik)
 
 bool CDialogHolder::IR_UIOnMouseWheel (int direction)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd* TIR		= TopInputReceiver();
 	if(!TIR)				return false;
 	if(!TIR->IR_process())	return false;
@@ -436,6 +472,7 @@ bool CDialogHolder::IR_UIOnMouseWheel (int direction)
 
 bool CDialogHolder::IR_UIOnMouseMove(int dx, int dy)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd* TIR		= TopInputReceiver();
 	if(!TIR)				return false;
 	if(!TIR->IR_process())	return false;
@@ -461,6 +498,7 @@ bool CDialogHolder::IR_UIOnMouseMove(int dx, int dy)
 
 bool CDialogHolder::IR_UIOnGyroscopeMove(Fvector3 value)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd* TIR = TopInputReceiver();
 	if (!TIR)
 	{
@@ -494,6 +532,7 @@ bool CDialogHolder::IR_UIOnGyroscopeMove(Fvector3 value)
 
 bool CDialogHolder::IR_UIOnTouchpadMove(Fvector2 value)
 {
+	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd* TIR = TopInputReceiver();
 	if (!TIR)
 	{
