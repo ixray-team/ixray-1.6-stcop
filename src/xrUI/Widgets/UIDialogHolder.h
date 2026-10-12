@@ -30,6 +30,7 @@ class UI_API CDialogHolder :
 	xr_vector<dlgItem>										m_dialogsToRender;
 	xr_vector<dlgItem>										m_dialogsToRender_new;
 	bool													m_b_in_update;
+	xrCriticalSection DialogsLock;
 
 	void					StartMenu						(CUIDialogWnd* pDialog, bool bDoHideIndicators);
 	void					StopMenu						(CUIDialogWnd* pDialog);
