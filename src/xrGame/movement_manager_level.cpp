@@ -44,7 +44,7 @@ void CMovementManager::process_level_path()
 
 			build_level_path();
 
-			if (!m_build_at_once)
+			if (level_path().failed() || !m_build_at_once)
 			{
 				break;
 			}
@@ -91,7 +91,11 @@ void CMovementManager::process_level_path()
 				if (detail().completed(object().Position(), !detail().state_patrol_path()))
 				{
 					m_path_state = ePathStateContinueLevelPath;
-					if (level_path().completed())
+					if (level_path().IsPartialPath())
+					{
+						m_path_state = ePathStateBuildLevelPath;
+					}
+					else if (level_path().completed())
 					{
 						m_path_state = ePathStatePathCompleted;
 					}
