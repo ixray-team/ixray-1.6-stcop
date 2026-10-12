@@ -313,6 +313,7 @@ public:
 	Fvector NoiseProgressPosition = {0.f, 0.f, 0.f};
 	bool NoiseProgressOnRoute = false;
 	bool HasPriorityNoise() const;
+	bool IsFriendlyNoiseSource(CObject* Source) const;
 	bool ReactToLoudNoise(CObject* Source, int SoundType, const Fvector& SoundPosition, float Power);
 	bool HasDamagePanic() const;
 	void ReactToActorDamage(float Amount, CObject* Attacker);

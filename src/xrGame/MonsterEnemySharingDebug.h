@@ -3,6 +3,7 @@
 #include "../xrCore/Kernel/xrSyncronize.h"
 #include "../xrCore/Kernel/EngineExternal.h"
 #include "../xrEngine/MonsterLogicTelemetry.h"
+#include "../xrSound/ai_sounds.h"
 #include "HUDManager.h"
 #include "Level.h"
 #include "Actor.h"
@@ -52,7 +53,54 @@ class CMonsterEnemySharingDebug
 		Fvector Position = {0.f, 0.f, 0.f};
 		float Power = 0.f;
 		bool Panic = false, Explosion = false, Investigating = false, General = false;
+		u32 SoundType = 0;
+		bool ActorSource = false;
+		float Interest = 0.f;
 	};
+	static const char* NoiseTypeName(u32 SoundType, bool ActorSource)
+	{
+		if (SoundType & SOUND_TYPE_OBJECT_EXPLODING)
+		{
+			return "Взрыв";
+		}
+		if (SoundType & SOUND_TYPE_MELEE)
+		{
+			return "Холодное оружие";
+		}
+		if (SoundType & SOUND_TYPE_SHOOTING)
+		{
+			return SoundType & SOUND_TYPE_SUPPRESSED ? "Выстрел с глушителем" : "Выстрел";
+		}
+		if (SoundType & SOUND_TYPE_STEP)
+		{
+			return ActorSource ? "Шаги ГГ" : SoundType & SOUND_TYPE_MONSTER ? "Шаги мутанта" : "Шаги";
+		}
+		if (SoundType & SOUND_TYPE_BULLET_HIT)
+		{
+			return "Попадание пули";
+		}
+		if (SoundType & SOUND_TYPE_ATTACKING)
+		{
+			return "Атака / бой";
+		}
+		if (SoundType & SOUND_TYPE_INJURING)
+		{
+			return "Звук ранения";
+		}
+		if (SoundType & SOUND_TYPE_DYING)
+		{
+			return "Предсмертный звук";
+		}
+		if (SoundType & SOUND_TYPE_OBJECT_BREAKING)
+		{
+			return "Разрушение предмета";
+		}
+		if (SoundType & SOUND_TYPE_OBJECT_COLLIDING)
+		{
+			return "Столкновение предметов";
+		}
+		return "Другой шум";
+	}
 	SNoiseReactionMarker NoiseReactions[MaxMarkers]{};
 	u32 NoiseReactionCursor = 0;
 	struct SBehavior
@@ -244,7 +292,7 @@ public:
 		}
 		Selected->Active = Selected->Sight || Selected->CloseDetection || Selected->Call;
 	}
-	void RecordNoiseReaction(const CBaseMonster& Monster, const Fvector& Position, float Power, bool Panic, bool Explosion, bool Investigating = false, bool General = false)
+	void RecordNoiseReaction(const CBaseMonster& Monster, const Fvector& Position, float Power, bool Panic, bool Explosion, bool Investigating, bool General, u32 SoundType, bool ActorSource, float Interest)
 	{
 		if (!IsEnabled()) return;
 		xrCriticalSectionGuard Guard(Mutex);
@@ -256,7 +304,7 @@ public:
 			if (Marker.Monster == Monster.ID()) { Selected = &Marker; break; }
 		}
 		if (!Selected) Selected = &NoiseReactions[NoiseReactionCursor++ % MaxMarkers];
-		*Selected = {Monster.ID(), Device.dwTimeGlobal + 5000, Position, Power, Panic, Explosion, Investigating, General};
+		*Selected = {Monster.ID(), Device.dwTimeGlobal + 5000, Position, Power, Panic, Explosion, Investigating, General, SoundType, ActorSource, Interest};
 	}
 	void RecordBehavior(CBaseMonster& Monster)
 	{
@@ -450,12 +498,12 @@ public:
 				Primitives.append_line(From, To, Color);
 			}
 			Primitives.append_line(Monster->Center(), Reaction.Position, Color);
-			if (Reaction.Monster == FocusMonster)
-			{
-				string256 Label;
-				xr_sprintf(Label, "%s: %s", Reaction.Panic ? "Испуг" : Reaction.Investigating ? "Идёт проверять" : "Прислушивается", Reaction.General ? "шум" : Reaction.Explosion ? "взрыв" : "выстрел");
-				Primitives.append_text3d(Reaction.Position, shared_str(Label), Color);
-			}
+			string256 Label;
+			xr_sprintf(Label, "%s | %s | интерес %.0f%% | #%u", NoiseTypeName(Reaction.SoundType, Reaction.ActorSource),
+				Reaction.Panic ? "Испуг" : Reaction.Investigating ? "Идёт проверять" : "Прислушивается", Reaction.Interest * 100.f, u32(Reaction.Monster));
+			Fvector LabelPosition = Reaction.Position;
+			LabelPosition.y += .6f;
+			Primitives.append_text3d(LabelPosition, shared_str(Label), Color);
 		}
 		ALife::_OBJECT_ID DrawnSources[MaxLinks]{};
 		u32 SourceCount = 0;
@@ -658,7 +706,8 @@ public:
 		for (const auto& Zone : ZoneSnapshot)
 		{
 			if (!Zone.Until || s32(Zone.Until - Device.dwTimeGlobal) <= 0) continue;
-			const u32 Color = !xr_strcmp(Zone.Kind, "ANOMALY") ? color_rgba(255, 50, 30, 180) :
+			const u32 Color = !xr_strcmp(Zone.Kind, "NOISE SEARCH") ? color_rgba(80, 180, 255, 180) :
+				!xr_strcmp(Zone.Kind, "ANOMALY") ? color_rgba(255, 50, 30, 180) :
 				!xr_strcmp(Zone.Kind, "DANGER") ? color_rgba(255, 140, 30, 180) :
 				!xr_strcmp(Zone.Kind, "FIGHT") ? color_rgba(255, 210, 60, 180) : color_rgba(220, 100, 255, 180);
 			Fvector Last = Zone.Position; Last.x += Zone.Radius;

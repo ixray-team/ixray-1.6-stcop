@@ -296,6 +296,17 @@ void SMonsterBehavior::Load(CBaseMonster& Monster, const char* Section)
 	NoiseInterestDecay = MonsterBehaviorRuntime::ReadFloat(Section, "monster_noise_interest_decay", "MonsterNoiseInterestDecay", .1f, 0.f, 1.f);
 	NoiseImmediateInterestChance = MonsterBehaviorRuntime::ReadFloat(Section, "monster_noise_immediate_interest_chance", "MonsterNoiseImmediateInterestChance", .35f, 0.f, 1.f);
 	SoundReactionRadius = MonsterBehaviorRuntime::ReadFloat(Section, "monster_sound_reaction_radius", "MonsterSoundReactionRadius", 25.f, 0.f, 500.f);
+	ShotHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_shot_hearing_ratio", "MonsterShotHearingRatio", 1.f, 0.f, 1.f);
+	ExplosionHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_explosion_hearing_ratio", "MonsterExplosionHearingRatio", 1.f, 0.f, 1.f);
+	StepHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_step_hearing_ratio", "MonsterStepHearingRatio", 1.f, 0.f, 1.f);
+	CombatHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_combat_hearing_ratio", "MonsterCombatHearingRatio", 1.f, 0.f, 1.f);
+	InjuryHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_injury_hearing_ratio", "MonsterInjuryHearingRatio", 1.f, 0.f, 1.f);
+	DeathHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_death_hearing_ratio", "MonsterDeathHearingRatio", 1.f, 0.f, 1.f);
+	BreakingHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_breaking_hearing_ratio", "MonsterBreakingHearingRatio", 1.f, 0.f, 1.f);
+	CollisionHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_collision_hearing_ratio", "MonsterCollisionHearingRatio", 1.f, 0.f, 1.f);
+	BulletHitHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_bullet_hit_hearing_ratio", "MonsterBulletHitHearingRatio", 1.f, 0.f, 1.f);
+	SuppressedHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_suppressed_hearing_ratio", "MonsterSuppressedHearingRatio", 0.3f, 0.f, 1.f);
+	MeleeHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_melee_hearing_ratio", "MonsterMeleeHearingRatio", 0.05f, 0.f, 1.f);
 	NoiseInterestInterval = u32(MonsterBehaviorRuntime::ReadFloat(Section, "monster_noise_interest_interval", "MonsterNoiseInterestInterval", .1f, .05f, 5.f) * 1000.f);
 	FightQuietTime = u32(MonsterBehaviorRuntime::ReadFloat(Section, "monster_death_hazard_fight_quiet_time", "MonsterDeathHazardFightQuietTime", 15.f, 1.f, 120.f) * 1000.f);
 	AnomalyAvoidance = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_anomaly_avoidance_enabled", false);
@@ -361,7 +372,7 @@ bool SMonsterBehavior::CrossesDanger(CBaseMonster& Monster, const Fvector& Point
 	return false;
 }
 
-u32 SMonsterBehavior::HearNoise(CBaseMonster& Monster, CObject* Source, const Fvector& Position, float Power, bool Explosion, bool General)
+u32 SMonsterBehavior::HearNoise(CBaseMonster& Monster, CObject* Source, const Fvector& Position, float Power, bool Explosion, bool General, u32 SoundType)
 {
 	const auto& Reaction = Explosion || (General && !Monster.ShotReaction.Attract) ? Monster.ExplosionReaction : Monster.ShotReaction;
 	const u32 ID = Source ? u32(Source->ID()) : u32(-1);
@@ -383,6 +394,7 @@ u32 SMonsterBehavior::HearNoise(CBaseMonster& Monster, CObject* Source, const Fv
 	Slot->Source = ID;
 	Slot->Position = Position;
 	Slot->Power = Power; Slot->Explosion = Explosion; Slot->General = General;
+	Slot->SoundType = SoundType; Slot->ActorSource = Source && Source->cast_actor();
 	const u32 Now = Device.dwTimeGlobal;
 	if (!Slot->LastInterest || Now - Slot->LastInterest >= NoiseInterestInterval)
 	{
@@ -392,6 +404,7 @@ u32 SMonsterBehavior::HearNoise(CBaseMonster& Monster, CObject* Source, const Fv
 		Slot->Fear = !General && Reaction.FearEnabled ? std::min(1.f, std::max(0.f, Slot->Fear - Decay) + Reaction.FearStep) : 0.f;
 		Slot->LastInterest = Now;
 	}
+	LastNoiseInterest = Slot->Interest;
 	Slot->Until = Now + 10000;
 	// Updating a burst never postpones the already scheduled visual check.
 	return (Reaction.Attract && Slot->Interest >= Reaction.InterestThreshold ? 1u : 0u) |
@@ -631,6 +644,12 @@ void SMonsterBehavior::Update(CBaseMonster& Monster)
 		{
 			auto& Noise = NoiseAttention[NoiseCheckCursor++ % 8];
 			if (Expired(Noise.Until) || !Expired(Noise.NextCheck) || Noise.LastCheckedEvent == Noise.LastInterest) continue;
+			CObject* Source = Noise.Source != u32(-1) ? Level().Objects.net_Find(ALife::_OBJECT_ID(Noise.Source)) : nullptr;
+			if (Monster.IsFriendlyNoiseSource(Source))
+			{
+				Noise = {};
+				continue;
+			}
 			if (!(Noise.Explosion || (Noise.General && !Monster.ShotReaction.Attract) ? Monster.ExplosionReaction : Monster.ShotReaction).Attract) continue;
 			Noise.NextCheck = Now + PeripheralInterval;
 			Noise.LastCheckedEvent = Noise.LastInterest;
@@ -638,9 +657,8 @@ void SMonsterBehavior::Update(CBaseMonster& Monster)
 			Attention = Noise.Position; AttentionUntil = Now + std::max(1500u, PeripheralInterval + 500u);
 			Monster.dir().face_target(Attention, 0);
 			if (MonsterEnemySharingDebug().IsEnabled()) MonsterEnemySharingDebug().RecordNoiseReaction(Monster, Noise.Position, Noise.Power, false, Noise.Explosion, Monster.NoiseInvestigationUntil &&
-				(Monster.NoiseInvestigationSource != u32(-1) ? Noise.Source == Monster.NoiseInvestigationSource : Noise.Position.distance_to_xz(Monster.NoiseInvestigationPosition) < 2.f), Noise.General);
+				(Monster.NoiseInvestigationSource != u32(-1) ? Noise.Source == Monster.NoiseInvestigationSource : Noise.Position.distance_to_xz(Monster.NoiseInvestigationPosition) < 2.f), Noise.General, Noise.SoundType, Noise.ActorSource, Noise.Interest);
 
-			CObject* Source = Noise.Source != u32(-1) ? Level().Objects.net_Find(ALife::_OBJECT_ID(Noise.Source)) : nullptr;
 			CEntityAlive* Candidate = Source ? Source->cast_entity_alive() : nullptr;
 			// Explosions and detached sound objects need a small source-centered candidate query.
 			if (PeripheralEnabled && (!Candidate || !Candidate->g_Alive()) && World().Queries)
@@ -1361,7 +1379,7 @@ void SMonsterBehavior::RecordDebug(CBaseMonster& Monster)
 	}
 	if (!MonsterBehaviorRuntime::Expired(ActionUntil))
 	{
-		Debug.RecordZone(Pack, Monster.ID(), Anchor, SearchRadius, ActionUntil, BodyID == u32(-1) ? "ALERT" : "INVESTIGATION");
+		Debug.RecordZone(Pack, Monster.ID(), Anchor, SearchRadius, ActionUntil, BodyID == u32(-1) ? ActionMode : "INVESTIGATION");
 	}
 }
 
