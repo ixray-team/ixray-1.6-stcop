@@ -11,7 +11,7 @@
 #include "UIEditLightAnim.h"
 #include "UIImageEditorForm.h"
 #include "UIMinimapEditorForm.h"
-#include "UIWeatherPropForm.h"
+#include "UILightingForm.h"
 #include "UISoundEditorForm.h"
 #include "D3DUtils.h"
 #include "UIMoveToCamera.h"
@@ -419,7 +419,7 @@ CCommandVar CommandMinimapEditor(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandWeatherProperties(CCommandVar p1, CCommandVar p2)
 {
-    UIWeatherPropForm::Show();
+    UILightingForm::Show();
     return true;
 }
 
@@ -724,7 +724,7 @@ void TUI::RegisterCommands()
 	REGISTER_CMD_S		(COMMAND_QUIT,           		CommandQuit);
 	REGISTER_CMD_SE		(COMMAND_EDITOR_PREF,    		"Editor Preferences",	CommandEditorPrefs, false);
 
-    REGISTER_CMD_SE(COMMAND_WEATHER_PROPERTIES, "Weather Properties", CommandWeatherProperties, true);
+    REGISTER_CMD_SE(COMMAND_WEATHER_PROPERTIES, "Lighting", CommandWeatherProperties, true);
 
 
 	REGISTER_CMD_SE	(COMMAND_SIMULATE,  			"Simulate",      		CommandSimulate, true);

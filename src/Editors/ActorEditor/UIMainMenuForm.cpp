@@ -186,7 +186,7 @@ void UIMainMenuForm::Draw()
 			{
 				if (ImGui::BeginMenuI("Environment", ICON_FA_CLOUD_SUN))
 				{
-					DrawMenuItem("Properties", COMMAND_WEATHER_PROPERTIES);
+					DrawMenuItem("Lighting", COMMAND_WEATHER_PROPERTIES);
 
 					bool selected = !psDeviceFlags.test(rsEnvironment);
 					if (ImGui::MenuItem("None", "", &selected))
