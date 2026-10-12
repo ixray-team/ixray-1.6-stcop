@@ -73,21 +73,22 @@ bool CCustomDevice::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate)
 		}
 	}
 
-	if (!bres && itm->GetState() != CHUDState::eShowing)
+	if (itm->GetState() != CHUDState::eShowing && itm->IsPending())
 	{
-		bres = bres && !itm->IsPending();
+		bres = false;
 	}
 
 	if (bres)
 	{
 		if (CWeapon* W = itm->cast_weapon())
 		{
-			bres = bres && (W->GetState() != CHUDState::eBore) && (W->GetState() != CWeapon::eReload) && (W->GetState() != CWeapon::eSwitch) && (W->GetState() != CWeapon::eSwitchMode) && !W->IsZoomed();
+			const u8 WState = W->GetNextState();
+			bres = WState != CHUDState::eBore && WState != CWeapon::eReload && WState != CWeapon::eSwitch && WState != CWeapon::eSwitchMode && !W->IsZoomed();
 		}
 
 		if (CMissile* M = itm->cast_missile())
 		{
-			bres = bres && M->GetState() < CMissile::EMissileStates::eThrowStart;
+			bres = M->GetNextState() < CMissile::EMissileStates::eThrowStart;
 		}
 	}
 	return bres;
@@ -692,11 +693,16 @@ void CCustomDevice::UpdateVisibility()
 		}
 		else
 		{
-			CWeapon* wpn = parent_hud_item != nullptr ? parent_hud_item->cast_weapon() : nullptr;
-			if (wpn != nullptr && (wpn->IsZoomed() && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch || wpn->GetState() == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() + wpn->GetAmmoChamberElapsed() == 0))
+			if (CWeapon* wpn = parent_hud_item != nullptr ? parent_hud_item->cast_weapon() : nullptr)
 			{
-				HideDetector(true);
-				m_bNeedActivation = true;
+				const u8 WState = wpn->GetNextState();
+				const bool WpnIsEmpty = wpn->GetAmmoElapsed() + wpn->GetAmmoChamberElapsed() == 0;
+
+				if (wpn->IsZoomed() && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || WState == CWeapon::eReload || WState == CWeapon::eSwitch || WState == CWeapon::eSwitchMode && WpnIsEmpty)
+				{
+					HideDetector(true);
+					m_bNeedActivation = true;
+				}
 			}
 		}
 	}
