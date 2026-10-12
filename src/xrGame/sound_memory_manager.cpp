@@ -563,7 +563,7 @@ void CSoundMemoryManager::clear_delayed_objects()
 	DELAYED_SOUND_OBJECTS::const_iterator	E = m_delayed_objects.end();
 	for ( ; I != E; ++I)
 		if (manager.callback(I->m_object_id,m_object->ID()))
-			manager.remove					(I->m_object_id,m_object->ID());
+			manager.RemoveIfExists(I->m_object_id, m_object->ID());
 
 	m_delayed_objects.clear					();
 }

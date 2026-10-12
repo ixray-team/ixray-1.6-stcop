@@ -202,7 +202,11 @@ void CMovementManager::process_game_path()
 						else
 							if (detail().completed(object().Position(),!detail().state_patrol_path())) {
 								m_path_state	= ePathStateContinueLevelPath;
-								if (level_path().completed()) {
+								if (level_path().IsPartialPath())
+								{
+									m_path_state = ePathStateBuildLevelPath;
+								}
+								else if (level_path().completed()) {
 									m_path_state	= ePathStateContinueGamePath;
 									if (game_path().completed())
 										m_path_state	= ePathStatePathCompleted;

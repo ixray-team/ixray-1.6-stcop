@@ -31,9 +31,8 @@
 #include "../xrEngine/EngineApp.h"
 #include "ui/UILoadingScreen.h"
 
-#ifndef MASTER_GOLD
-#	include "Creature.h"
-#endif // MASTER_GOLD
+#include "Creature.h"
+#include "movement_manager.h"
 
 #include "ai_debug.h"
 #include "../../xrUI/ui_base.h"
@@ -984,6 +983,18 @@ void CGamePersistent::OnRenderPPUI_main()
 	{
 		Level().BulletManager().Render();
 
+		if (g_ALDrawPaths && g_hud)
+		{
+			for (u32 Index = 0; Index < Level().Objects.o_count(); ++Index)
+			{
+				CObject* Object = Level().Objects.o_get_by_iterator(Index);
+				CCreature* Creature = Object && !Object->getDestroy() ? Object->cast_creature() : nullptr;
+				if (Creature && Creature->g_Alive())
+				{
+					Creature->movement().DrawPathDebug(HUD().world_prims);
+				}
+			}
+		}
 		MonsterEnemySharingDebug().Draw(HUD().world_prims);
 		HUD().draw_prims();
 	}

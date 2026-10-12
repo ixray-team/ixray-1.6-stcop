@@ -12,6 +12,7 @@
 #include "../../Actor.h"
 #include "../../actor_memory.h"
 #include "../../visual_memory_manager.h"
+#include "../../path_manager_params.h"
 
 #ifdef DEBUG
 extern bool show_restrictions(CRestrictedObject *object);
@@ -51,6 +52,9 @@ void CControlPathBuilder::reinit()
 
 	m_data.path_type				= MovementManager::ePathTypeLevelPath;
 	m_data.game_graph_target_vertex	= u32(-1);
+	YieldSampling = false;
+	YieldActive = false;
+	YieldRetryTime = 0;
 }
 
 void CControlPathBuilder::update_schedule()
@@ -67,7 +71,11 @@ void CControlPathBuilder::update_schedule()
 		}
 	}
 
-	if (m_data.reset_actuality)
+	Fvector NavigationTarget = m_data.target_position;
+	u32 NavigationVertex = m_data.target_node;
+	const bool Yielding = UpdateYieldTarget(NavigationTarget, NavigationVertex);
+
+	if (m_data.reset_actuality && !Yielding)
 		make_inactual();
 
 	// set enabled
@@ -79,7 +87,7 @@ void CControlPathBuilder::update_schedule()
 		detail().set_path_type(eDetailPathTypeSmooth);
 
 		// установить direction
-		detail().set_use_dest_orientation(m_data.use_dest_orientation);
+		detail().set_use_dest_orientation(m_data.use_dest_orientation && !Yielding);
 		if (m_data.use_dest_orientation)	detail().set_dest_direction(m_data.dest_orientation);
 
 		detail().set_try_min_time(m_data.try_min_time);
@@ -110,14 +118,159 @@ void CControlPathBuilder::update_schedule()
 			// TODO: make it VERIFY
 			if (m_data.target_node == u32(-1)) return;
 
-			detail().set_dest_position(m_data.target_position);
-			set_level_dest_vertex(m_data.target_node);
+			detail().set_dest_position(NavigationTarget);
+			set_level_dest_vertex(NavigationVertex);
 		}
 	}
 
 	update_path();
 
 	m_man->notify(ControlCom::eventPathUpdated, 0);
+}
+
+bool CControlPathBuilder::UpdateYieldTarget(Fvector& Target, u32& Vertex)
+{
+	CBaseMonster& Monster = *inherited_com::m_object;
+	const u32 Now = Device.dwTimeGlobal;
+	const Fvector Position = Monster.Position();
+	if (!base_level_params()->UsePathLimits || !m_data.enable || !Monster.g_Alive() ||
+		m_data.path_type != MovementManager::ePathTypeLevelPath || Monster.GetScriptControl() ||
+		Monster.animation_movement_controlled())
+	{
+		YieldSampling = false;
+		YieldActive = false;
+		return false;
+	}
+
+	if (YieldActive)
+	{
+		if (Now - YieldStartTime < 5000 && Position.distance_to_sqr(YieldPosition) > .25f)
+		{
+			Target = YieldPosition;
+			Vertex = YieldVertex;
+			return true;
+		}
+		YieldActive = false;
+		YieldSampling = false;
+		YieldRetryTime = Now;
+		// The control data still contains the original goal; resume it below.
+		return false;
+	}
+
+	// Do not mistake an idle animation, a path build or an arrival for a blockage.
+	if (wait_for_distributed_computation() || !is_moving_on_path() || old_desirable_speed() < .1f ||
+		Position.distance_to_sqr(Target) < 1.f)
+	{
+		YieldSampling = false;
+		return false;
+	}
+	if (!YieldSampling || Position.distance_to_sqr(YieldSamplePosition) > .16f)
+	{
+		YieldSamplePosition = Position;
+		YieldSampleTime = Now;
+		YieldSampling = true;
+		return false;
+	}
+	if (Now - YieldSampleTime < 2000 || (YieldRetryTime && Now - YieldRetryTime < 2000))
+	{
+		return false;
+	}
+	YieldRetryTime = Now;
+
+	xr_vector<ISpatialShared> Neighbours;
+	g_SpatialSpace->q_sphere(Neighbours, 0, ESPATIAL_TYPE::COLLIDEABLE, Position, 6.f);
+	CBaseMonster* Blocker = nullptr;
+	float Closest = flt_max;
+	const float OwnRadius = std::clamp(Monster.Radius(), .35f, 2.f);
+	Fvector Forward = Fvector().sub(Target, Position);
+	Forward.y = 0.f;
+	Forward.normalize_safe();
+	for (const ISpatialShared& Spatial : Neighbours)
+	{
+		CObject* Object = Spatial ? Spatial->dcast_CObject() : nullptr;
+		CBaseMonster* Other = Object && !Object->getDestroy() ? Object->cast_base_monster() : nullptr;
+		if (!Other || Other == &Monster || !Other->g_Alive() || Other == Monster.EnemyMan.get_enemy() ||
+			Other->EnemyMan.get_enemy() == &Monster)
+		{
+			continue;
+		}
+		Fvector Offset = Fvector().sub(Other->Position(), Position);
+		if (std::abs(Offset.y) > 1.5f)
+		{
+			continue;
+		}
+		Offset.y = 0.f;
+		const float Distance = Offset.magnitude();
+		const float Clearance = OwnRadius + std::clamp(Other->Radius(), .35f, 2.f) + .5f;
+		if (Distance > Clearance || Offset.dotproduct(Forward) < -.25f || Distance >= Closest)
+		{
+			continue;
+		}
+		// One member of a moving pair yields. An idle creature cannot yield for us.
+		if (Monster.ID() < Other->ID() && Other->movement().enabled() && Other->movement().old_desirable_speed() > .1f)
+		{
+			continue;
+		}
+		Blocker = Other;
+		Closest = Distance;
+	}
+	if (!Blocker)
+	{
+		return false;
+	}
+
+	Fvector Away = Fvector().sub(Position, Blocker->Position());
+	Away.y = 0.f;
+	if (Away.square_magnitude() < EPS_L)
+	{
+		Away.set(-Forward.x, 0.f, -Forward.z);
+	}
+	Away.normalize_safe();
+	const Fvector Side = Fvector().set(-Away.z, 0.f, Away.x);
+	const float Step = std::min(OwnRadius + std::clamp(Blocker->Radius(), .35f, 2.f) + 1.f,
+		base_level_params()->MaxPathLength);
+	const u32 StartVertex = Monster.ai_location().level_vertex_id();
+	for (u32 Attempt = 0; Attempt < 4; ++Attempt)
+	{
+		Fvector Direction = Fvector().mul(Side, Attempt % 2 ? -1.f : 1.f);
+		Direction.mad(Away, Attempt < 2 ? .75f : 1.5f);
+		Direction.normalize_safe();
+		Fvector Candidate = Fvector().mad(Position, Direction, Step);
+		const u32 Node = ai().level_graph().check_position_in_direction(StartVertex, Position, Candidate);
+		if (!valid_destination(Candidate, Node) || !accessible(Node) || !accessible(Candidate))
+		{
+			continue;
+		}
+		Candidate.y = ai().level_graph().vertex_plane_y(Node, Candidate.x, Candidate.z);
+		bool Occupied = false;
+		for (const ISpatialShared& Spatial : Neighbours)
+		{
+			CObject* Object = Spatial ? Spatial->dcast_CObject() : nullptr;
+			CCreature* Other = Object && !Object->getDestroy() ? Object->cast_creature() : nullptr;
+			if (!Other || Other == &Monster || !Other->g_Alive() || std::abs(Other->Position().y - Candidate.y) > 1.5f)
+			{
+				continue;
+			}
+			Fvector Offset = Fvector().sub(Candidate, Other->Position());
+			Offset.y = 0.f;
+			const float Clearance = OwnRadius + std::clamp(Other->Radius(), .35f, 2.f) + .25f;
+			if (Offset.square_magnitude() < Clearance * Clearance)
+			{
+				Occupied = true;
+				break;
+			}
+		}
+		if (Occupied)
+		{
+			continue;
+		}
+		YieldPosition = Target = Candidate;
+		YieldVertex = Vertex = Node;
+		YieldStartTime = Now;
+		YieldActive = true;
+		return true;
+	}
+	return false;
 }
 
 void CControlPathBuilder::on_travel_point_change(const u32 &previous_travel_point_index)

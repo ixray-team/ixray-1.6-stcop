@@ -79,13 +79,25 @@ public:
 	void process_impl()
 	{
 		m_object->m_wait_for_distributed_computation	= false;
+		// Limited searches may fail temporarily (for example, occupied spawn nodes).
+		// Retry after the delay rather than caching the same pair forever.
+		if (m_object->base_level_params()->UsePathLimits && m_object->level_path().failed() && m_use_delay_after_fail && Device.dwTimeGlobal - m_last_fail_time < time_to_wait_after_fail)
+		{
+			return;
+		}
 		m_object->level_path().build_path	(m_start_vertex_id,m_dest_vertex_id);
 
 		if (m_object->level_path().failed()) {
+			// Do not keep moving along a previous path after a bounded search fails.
+			if (m_object->level_path().evaluator()->UsePathLimits)
+			{
+				m_object->clear_path();
+			}
 			if ( m_use_delay_after_fail )
 				m_last_fail_time			= Device.dwTimeGlobal;
 
 			m_object->m_path_state			= CMovementManager::ePathStateBuildLevelPath;
+			m_object->UpdatePathDebug();
 			return;
 		}
 
@@ -102,6 +114,7 @@ public:
 		
 		inherited::setup					(m_object->level_path().path(),m_object->level_path().intermediate_index());
 		inherited::process_impl				(false);
+		m_object->UpdatePathDebug();
 	}
 
 	void process()

@@ -38,6 +38,18 @@ class
 private:
 	friend class CMovementManager;
 	friend class CLevelPathBuilder;
+	u32 SearchDestVertexId = u32(-1);
+	xr_vector<u32> PlannedRoute;
+	struct ExpensiveGoalAttempt
+	{
+		u32 VertexId;
+		u32 LastUsed;
+	};
+	xr_vector<ExpensiveGoalAttempt> ExpensiveGoals;
+	u32 LastCacheCleanupTime = 0;
+	bool ExpensiveRoute = false;
+	u32 LastExpensiveSearchTime = 0;
+	bool HasExpensiveAttempt = false;
 
 protected:
 	IC	virtual	void	before_search				(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id);
@@ -47,6 +59,9 @@ protected:
 public:
 	IC					CBasePathManager			(CRestrictedObject *object);
 	IC			void	reinit						(const ILevelGraph *graph = 0);
+	IC void MaintainPathCache(u32 ActiveGoal);
+	IC bool IsPartialPath() const;
+	IC bool completed() const override;
 	IC			bool	actual						() const;
 	IC			void	on_restrictions_change		();
 	IC			void	build_path					(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id);

@@ -81,6 +81,9 @@ public:
 	ILevelGraph();
 	virtual			~ILevelGraph();
 	bool			Search	(u32 start_vertex_id, u32 dest_vertex_id,xr_vector<u32>& OutPath, float MaxRange = type_max(float), u32 MaxIterationCount = 0xFFFFFFFF,u32 MaxVisitedNodeCount = 0xFFFFFFFF) const;
+	bool SearchLimited(u32 StartVertexId, u32 DestVertexId, xr_vector<u32>& OutPath, float MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount, float MaxPathLength, xr_vector<u32>* PlannedPath = nullptr) const;
+	bool HasFourTransitions(u32 VertexId) const;
+	bool SelectPathSegment(const xr_vector<u32>& PlannedPath, u32 StartVertexId, xr_vector<u32>& OutPath, float MaxPathLength) const;
 	u32				SearchNearestVertex	(u32 VertexID , const Fvector & TargetPosition, float Range) const;
 
 
