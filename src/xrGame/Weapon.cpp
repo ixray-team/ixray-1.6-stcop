@@ -649,7 +649,6 @@ void CWeapon::Load		(const char* section)
 	LoadVector(m_bDefHideBonesScopeAttached, "def_hide_bones_override_when_scope_attached");
 	LoadVector(m_bScopeShowBones, "no_scope_overriding_show_bones");
 	LoadVector(m_bScopeHideBones, "no_scope_overriding_hide_bones");
-	LoadVector(m_sCollimatorSightsBones, "collimator_sights_bones");
 
 	m_fRechargeTime = READ_IF_EXISTS(pSettings, r_float, section, "recharge_time", 0.0f);
 
