@@ -483,8 +483,10 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		return;
 	}
 
+	ImGui::PushID(item);
 	if (!ImGui::CollapsingHeader(*shared_str().printf("Item: %s", item->m_sect_name.c_str())))
 	{
+		ImGui::PopID();
 		return;
 	}
 
