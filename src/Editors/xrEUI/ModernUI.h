@@ -104,6 +104,8 @@ namespace XRay::ImGui
 	XREUI_API	bool			ToggleButton(const char* label, bool* flags, const ImVec2& size = { 0, 0 });
 	   inline	bool			ToggleButton(const char* label, bool& state, const ImVec2& size = { 0, 0 }) { return ToggleButton(label, &state, size); }
 	XREUI_API	bool			ToggleFlagButton(const char* label, uint32_t* flags, uint32_t mask, const ImVec2& size);
+	// On/off switch with a sliding knob; the text right of it follows the state
+	XREUI_API	bool			ToggleSwitch(const char* id, bool* state, const char* on_text, const char* off_text);
 	XREUI_API	void			Separator(float thickness = 2.0f);
 
 	XREUI_API	bool			ToolbarIconButton(

@@ -378,7 +378,7 @@ void CRender::EditorSyncLights()
 		light* Light = EditorLights[Index];
 		Light->set_type(Descriptor.Type == (u32)IRender_Light::SPOT ? IRender_Light::SPOT : IRender_Light::POINT);
 		// Same rule as CLight_DB::add_light: -noshadows disables every shadowed light
-		Light->set_shadow(Descriptor.CastShadow && !o.noshadows);
+		Light->set_shadow(Descriptor.CastShadow && EditorLightShadows && !o.noshadows);
 		// Hardware occlusion queries drop lights hidden behind geometry, as in the game
 		// (light::vis_prepare / vis_update). The point light faces inherit it in export_.
 		Light->set_occq_mode(true);
@@ -433,6 +433,8 @@ void CRender::EditorSyncLights()
 void CRender::EditorCollect(bool Deferred, bool Shadows)
 {
 	set_Object(nullptr);
+	// Normal (static) items and details apply the material without an object
+	EditorApplyHemi();
 
 	// The editors control visibility themselves (their device flags have no rsDraw* bits)
 	if (g_EditorRenderHost)
@@ -449,7 +451,7 @@ void CRender::EditorCollect(bool Deferred, bool Shadows)
 	}
 
 	// Placed editor lights join the game lighting pipeline with the spatial ones
-	if (Deferred && !Shadows && EditorIsLit())
+	if (Deferred && !Shadows && EditorDynamicLights && EditorIsLit())
 	{
 		EditorSyncLights();
 	}
