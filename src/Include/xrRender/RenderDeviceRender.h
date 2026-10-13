@@ -6,6 +6,14 @@
 
 struct SDL_Window;
 
+struct UIIconLighting
+{
+	Fvector Color = {1.0f, 1.0f, 1.0f};
+	float Intensity = 1.0f;
+	Fvector Direction = {0.0f, 0.0f, 1.0f};
+	float Ambient = 1.0f;
+};
+
 class IRenderDeviceRender
 {
 public:
@@ -65,6 +73,8 @@ public:
 	virtual void	End() = 0;
 	virtual void	ClearTarget() = 0;
 	virtual void	SetupDefaultTarget() = 0;
+	virtual void InvalidateRenderCache() {}
+	virtual UIIconLighting* GetUIIconLighting() { return nullptr; }
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	OnAssetsChanged() = 0;
@@ -75,4 +85,4 @@ public:
 	virtual Frect GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint = {}) = 0;
 };
 
-#endif	//	RenderDeviceRender_included
+#endif //	RenderDeviceRender_included

@@ -12,6 +12,45 @@
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/date_time.h"
 // matrices
+class UIIconLightBinding final : public RHIShaderConstant::Setup
+{
+public:
+	void setup(RHIShaderConstant* Constant) override
+	{
+		if (const auto* Settings = Device.m_pRender->GetUIIconLighting())
+		{
+			RCache.set_c(Constant, Settings->Color.x * Settings->Intensity, Settings->Color.y * Settings->Intensity, Settings->Color.z * Settings->Intensity, Settings->Ambient);
+		}
+	}
+};
+
+class UIIconDirectionBinding final : public RHIShaderConstant::Setup
+{
+public:
+	void setup(RHIShaderConstant* Constant) override
+	{
+		if (const auto* Settings = Device.m_pRender->GetUIIconLighting())
+		{
+			RCache.set_c(Constant, Settings->Direction.x, Settings->Direction.y, Settings->Direction.z, 0.0f);
+		}
+	}
+};
+
+static UIIconLightBinding g_UIIconLightBinding;
+static UIIconDirectionBinding g_UIIconDirectionBinding;
+
+class UIIconEmissiveTintBinding final : public RHIShaderConstant::Setup
+{
+public:
+	void setup(RHIShaderConstant* Constant) override
+	{
+		// World rendering stays neutral; the icon draw overrides this constant explicitly.
+		RCache.set_c(Constant, 1.0f, 1.0f, 1.0f, 1.0f);
+	}
+};
+
+static UIIconEmissiveTintBinding g_UIIconEmissiveTintBinding;
+
 #define	BIND_DECLARE(xf)	\
 class cl_xform_##xf	: public RHIShaderConstant::Setup {	virtual void setup (RHIShaderConstant* C) { RCache.xforms.set_c_##xf (C); } }; \
 	static cl_xform_##xf	binder_##xf
@@ -721,6 +760,9 @@ void	CBlender_Compile::SetMapping()
 
 	r_Constant("L_hemi_color", &binder_hemi_color);
 	r_Constant("L_ambient", &binder_amb_color);
+	r_Constant("ui_icon_light", &g_UIIconLightBinding);
+	r_Constant("ui_icon_direction", &g_UIIconDirectionBinding);
+	r_Constant("ui_emissive_tint", &g_UIIconEmissiveTintBinding);
 
 	r_Constant("screen_res", &binder_screen_res);
 	r_Constant("def_aref", &binder_def_aref);

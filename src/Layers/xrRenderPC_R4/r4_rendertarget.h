@@ -335,7 +335,7 @@ public:
 	void						phase_depth_upscale		();
 
 	void						phase_cas				();
-	void						phase_ui_postprocess	(Fcolor*);
+	void						phase_ui_postprocess	(Fcolor*, bool HasBackground);
 	void						phase_ui_postprocess_copy();
 
 	void						phase_gtao				();

@@ -322,6 +322,14 @@ Shader* CResourceManager::_lua_Create(const char* d_shader, const char* s_textur
 		}
 	}
 
+	// Compile the UI variant with the same detail lookup as the normal pass.
+	if (Script::bfIsObjectPresent(LSVM, s_shader, "normal_ui", LUA_TFUNCTION))
+	{
+		C.iElement = SE_R2_UI;
+		C.bDetail = DEV->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+		S.UIElement = C._lua_Compile(s_shader, "normal_ui");
+	}
+
 	// Compile element (HUD)
 	if (Script::bfIsObjectPresent(LSVM, s_shader, "normal_hud", LUA_TFUNCTION))
 	{
