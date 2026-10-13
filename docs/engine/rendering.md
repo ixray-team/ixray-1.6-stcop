@@ -97,6 +97,16 @@ At zero brightness, the 2D weapon postprocess stays disabled. Recreating an expi
 
 The 3D postprocess shaders convert the HDR world snapshot to display colors using the current exposure before evaluating the `.ppe` color table. They then invert tone mapping and exposure before returning the snapshot to the lens shader. This prevents the scene combine from applying exposure twice to display colors and washing out the scope. The conversion matches `combine_2` without the bloom term: exposure is divided by `bloom_amount + 1` (its square root with legacy lighting). Legacy lighting squares colors only to mix bloom and tone-maps the unsquared color, so the scope shaders must not square or take the square root around tone mapping: at high night exposure that brightens the lens to white.
 
+## Rain puddles
+
+`r4_rain_puddles` enables noise-based terrain puddles only when R4 uses `USE_LEGACY_LIGHT`. The option is off initially and requires a game restart. `CRender::o.RainPuddles` captures it at renderer creation/reset; the shader cache adds a separate `USE_RAIN_PUDDLES` permutation only for that legacy path. PBR retains its existing masked wet-surface calculation, shader permutations and SSLR/VSLR processing.
+
+The terrain shader samples three shared textures for Perlin contours, surface waves and rain-impact ripples, using terrain UVs and the upward geometric normal. Coverage follows `CEnvironment::wetness_factor`; no level-specific puddle mask is required. The enabled legacy path uses an RGBA surface buffer and stores coverage in its third channel. The legacy wet-surface compute shader preserves that channel when repacking the material; its PBR branch remains unchanged. Disabled legacy lighting retains the compact R8 surface format.
+
+`CRenderTarget::PhaseRainPuddles` blends reflections into the combined opaque scene before forward rendering. `rain_puddles.ps.hlsl` calls the water shader's existing `ScreenSpaceLocalReflections`, controlled by `r4_sslr_water`, with sky-map fallback. It does not enable the world's SSLR/VSLR passes on legacy lighting. `r4_puddles` continues to control the separate level-authored volumetric geometry.
+
+Configuration, assets, wetness timing and troubleshooting: [English guide](../docs/main/en/graphics/weather/getting-wet.md) / [Russian guide](../docs/main/ru/graphics/weather/getting-wet.md). Sources: [terrain bindings](../../src/Layers/xrRender/Blender_BmmD.cpp), [reflection pass](../../src/Layers/xrRenderPC_R4/RainPuddles.cpp), [reflection bindings](../../src/Layers/xrRenderPC_R4/BlenderRainPuddles.cpp).
+
 ## Visor glass and rain drops
 
 Full equipment configuration, condition mapping, accumulation/reset rules, wiping animation setup, assets and troubleshooting: [English guide](../docs/main/en/gameplay/equipment/visor-glass.md) / [Russian guide](../docs/main/ru/gameplay/equipment/visor-glass.md).

@@ -230,8 +230,12 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	GbufferPack(O, M);
 	
+#if defined(USE_LEGACY_LIGHT) && defined(USE_RAIN_PUDDLES)
+	// GbufferPack resets unused legacy channels; preserve the terrain puddle mask.
+	O.Material.z = u_surface[DTid].z;
+#endif
+
 	u_color[DTid] = O.Color;
 	u_normal[DTid] = O.Normal;
 	u_surface[DTid] = O.Material;
 }
-
