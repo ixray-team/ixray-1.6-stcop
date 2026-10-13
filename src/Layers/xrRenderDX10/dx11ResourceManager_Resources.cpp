@@ -15,7 +15,7 @@
 
 #include "../xrRender/ShaderResourceTraits.h"
 
-#include <FlexibleVertexFormat.h>
+#include "../../xrCore/FVFLegacy.h"
 using namespace FVF;
 
 SHS*	CResourceManager::_CreateHS			(const char* Name)

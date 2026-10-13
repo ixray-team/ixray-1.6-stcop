@@ -10,6 +10,7 @@
 #include "ActorEffector.h"
 #include "Level.h"
 #include "../xrEngine/xr_level_controller.h"
+#include "../xrEngine/EngineAPI.h"
 #include "game_cl_base.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
@@ -5156,8 +5157,7 @@ void CWeapon::LoadNightBrightnessParamsFromSection(shared_str sect)
 		process_if_exists_set(Parameters.c_str(), "scope_nightvision_min_factor", m_lens_night_brightness.min_factor, false);
 	}
 
-	bool b_r2 = !!psDeviceFlags.test(rsR2);
-	b_r2 |= !!psDeviceFlags.test(rsR4);
+	bool b_r2 = LightingModeIsDynamic();
 
 	if (!b_r2 && m_lens_night_brightness.max_value > 1.0f)
 	{

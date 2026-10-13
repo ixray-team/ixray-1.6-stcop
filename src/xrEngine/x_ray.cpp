@@ -24,6 +24,7 @@
 #include "IGame_Level.h"
 #include "FPSCounter.h"
 #include "GamepadService.h"
+#include "Autotest.h"
 
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= nullptr;
@@ -213,6 +214,8 @@ ENGINE_API void EngineLoadStage4()
 	PROF_EVENT("EngineLoadStage4");
 	InitSound1();
 	execUserScript();
+	if (Autotest::Active())
+		psDeviceFlags.set(rsFullscreen, FALSE);
 	InitSound2();
 
 	// ...command line for auto start

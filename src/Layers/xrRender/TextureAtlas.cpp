@@ -1325,9 +1325,7 @@ void CSVGStorage::init_default_atlas()
 				float fStartDim = 32.0f;
 				fStartDim *= i;
 				lunasvg::Bitmap bmp = doc->renderToBitmap(fStartDim, fStartDim);
-#ifdef USE_DX11
 				bmp.convertToRGBA();
-#endif
 
 				m_default_atlas.addRegion(_notused_lookupid, _kSVGStorage_DefaultSVGTextureSubPathName, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
 			}
@@ -1607,9 +1605,7 @@ ESVGLoadResult CSVGStorage::get_bitmap(const std::string_view& filesystemSubpath
 	DebugRecordRenderToBitmapTime(t1 - t0);
 #endif
 
-#ifdef USE_DX11
 	bmp->convertToRGBA();
-#endif
 	ApplySvgTintToNearWhitePixels(*bmp, tint);
 	return ESVGLoadResult::Success;
 }

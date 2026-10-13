@@ -4,6 +4,7 @@
 #include "../xrEngine/LightAnimLibrary.h"
 #include "../xrEngine/CameraBase.h"
 #include "../xrEngine/xr_collide_form.h"
+#include "../xrEngine/EngineAPI.h"
 #include "Inventory.h"
 
 static constexpr float TORCH_INERTION_SPEED_MAX = 7.5f;
@@ -14,8 +15,6 @@ static constexpr float OPTIMIZATION_DISTANCE = 100.0f;
 
 static bool stalker_use_dynamic_lights = false;
 
-ENGINE_API int g_current_renderer;
-
 CTorch::CTorch()
 {
 	light_render = ::Render->light_create();
@@ -23,7 +22,7 @@ CTorch::CTorch()
 	light_render->set_shadow(true);
 	light_omni = ::Render->light_create();
 	light_omni->set_type(IRender_Light::POINT);
-	light_omni->set_shadow(!!psDeviceFlags.test(rsR4));
+	light_omni->set_shadow(LightingModeIsDynamic());
 
 	glow_render = ::Render->glow_create();
 
@@ -31,7 +30,7 @@ CTorch::CTorch()
 
 	// Disabling shift by x and z axes for 1st render, 
 	// because we don't have dynamic lighting in it. 
-	if (g_current_renderer == 1)
+	if (LightingModeIsStatic())
 	{
 		TORCH_OFFSET.x = 0.0f;
 		TORCH_OFFSET.z = 0.0f;
@@ -170,8 +169,7 @@ bool CTorch::net_Spawn(CSE_Abstract* DC)
 		return false;
 	}
 
-	bool b_r2 = !!psDeviceFlags.test(rsR2);
-	b_r2 |= !!psDeviceFlags.test(rsR4);
+	bool b_r2 = LightingModeIsDynamic();
 
 	IKinematics* K = PKinematics(Visual());
 	CInifile* pUserData = K->LL_UserData();

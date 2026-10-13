@@ -55,7 +55,7 @@ T max(T a, T b) { return _MAX(a,b); }
 #include "stdmat.h"
 #include "UTILAPI.H"
 
-#include <d3d9types.h>
+#include "../../../xrCore/D3DLegacy.h"
 
 #define ENGINE_API
 #define ECORE_API

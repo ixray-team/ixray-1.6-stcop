@@ -627,46 +627,6 @@ void FlipVertical(xr_vector<u32>& pixels, int width, int height)
 
 bool GetRTDataU32(ref_rt& RT, xr_vector<u32>& outPixels, int& width, int& height)
 {
-#if 0
-	IDirect3DSurface9* pSrc = nullptr;
-	((IDirect3DTexture9*)RT->pTexture->pSurface->GetRawTexture())->GetSurfaceLevel(0, &pSrc);
-	if (!pSrc)
-	{
-		return false;
-	}
-
-	D3DSURFACE_DESC desc;
-	pSrc->GetDesc(&desc);
-	width = desc.Width;
-	height = desc.Height;
-
-	IDirect3DSurface9* pSysMem = nullptr;
-	RDevice->CreateOffscreenPlainSurface(width, height, desc.Format, D3DPOOL_SYSTEMMEM, &pSysMem, nullptr);
-
-	RDevice->GetRenderTargetData(pSrc, pSysMem);
-	pSrc->Release();
-
-	D3DLOCKED_RECT rect;
-	pSysMem->LockRect(&rect, nullptr, D3DLOCK_READONLY);
-
-	outPixels.resize(width * height);
-	for (int y = 0; y < height; ++y)
-	{
-		u32* src = (u32*)((u8*)rect.pBits + y * rect.Pitch);
-		u32* dst = &outPixels[y * width];
-		memcpy(dst, src, width * sizeof(u32));
-	}
-
-	pSysMem->UnlockRect();
-	pSysMem->Release();
-
-	for (u32& p : outPixels)
-	{
-		p |= 0xFF000000;
-	}
-
-	FlipVertical(outPixels, width, height);
-#endif
 #pragma todo("FX to Hozar: Impl")
 	return true;
 }

@@ -13,14 +13,16 @@ dxRenderDeviceRender::dxRenderDeviceRender()
 {
 }
 
-#if defined(USE_DX11)
 #include "..\xrRenderPC_R4\OverlayAPI\DLSSWrapper.h"
 #include "..\xrRenderPC_R4\OverlayAPI\FSR3Wrapper.h"
-#endif
 
 void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 {
-#if defined(USE_DX11)
+	if (LightingModeIsStaticRender())
+	{
+		RenderScale = 1.f;
+		return;
+	}
 	switch(ps_r_scale_mode)
 	{
 		case 2:
@@ -33,9 +35,6 @@ void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 		}
 		break;
 	}
-#else
-	RenderScale = 1.0f;
-#endif
 }
 
 void dxRenderDeviceRender::Copy(IRenderDeviceRender &_in)
@@ -66,11 +65,9 @@ void dxRenderDeviceRender::updateGamma()
 void dxRenderDeviceRender::OnDeviceDestroy( bool bKeepTextures)
 {
 	Resources->WaitForTextureLoading();
-#ifdef USE_DX11
 #ifdef DEBUG_DRAW
 	DebugRenderImpl.Shutdown();
 #endif // #ifdef DEBUG_DRAW
-#endif // USE_DX11
 
 	RCache.Invalidate();
 
@@ -123,48 +120,9 @@ void dxRenderDeviceRender::SetupStates()
 {
 	Caps.Update();
 
-#ifdef USE_DX11
 	//	TODO: DX10: Implement Resetting of render states into default mode
 	// SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
 	// SSManager.SetMipLodBias(ps_r__tf_Mipbias);
-#else //USE_DX11
-	for (u32 i=0; i<Caps.raster.dwStages; i++)				{
-		CHK_DX(RDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, ps_r__tf_Anisotropic));
-		CHK_DX(RDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *(LPDWORD)&ps_r__tf_Mipbias));
-		CHK_DX(RDevice->SetSamplerState	( i, D3DSAMP_MINFILTER,	D3DTEXF_LINEAR 		));
-		CHK_DX(RDevice->SetSamplerState	( i, D3DSAMP_MAGFILTER,	D3DTEXF_LINEAR 		));
-		CHK_DX(RDevice->SetSamplerState	( i, D3DSAMP_MIPFILTER,	D3DTEXF_LINEAR		));
-	}
-	CHK_DX(RDevice->SetRenderState( D3DRS_DITHERENABLE,		true				));
-	CHK_DX(RDevice->SetRenderState( D3DRS_COLORVERTEX,		true				));
-	CHK_DX(RDevice->SetRenderState( D3DRS_ZENABLE,			true				));
-	CHK_DX(RDevice->SetRenderState( D3DRS_SHADEMODE,			D3DSHADE_GOURAUD	));
-	CHK_DX(RDevice->SetRenderState( D3DRS_CULLMODE,			D3DCULL_CCW			));
-	CHK_DX(RDevice->SetRenderState( D3DRS_ALPHAFUNC,			D3DCMP_GREATER		));
-	CHK_DX(RDevice->SetRenderState( D3DRS_LOCALVIEWER,		true				));
-
-	CHK_DX(RDevice->SetRenderState( D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL	));
-	CHK_DX(RDevice->SetRenderState( D3DRS_SPECULARMATERIALSOURCE,D3DMCS_MATERIAL	));
-	CHK_DX(RDevice->SetRenderState( D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_MATERIAL	));
-	CHK_DX(RDevice->SetRenderState( D3DRS_EMISSIVEMATERIALSOURCE,D3DMCS_COLOR1	));
-	CHK_DX(RDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS,	false			));
-	CHK_DX(RDevice->SetRenderState( D3DRS_NORMALIZENORMALS,		true			));
-
-	if (psDeviceFlags.test(rsWireframe))	{ CHK_DX(RDevice->SetRenderState( D3DRS_FILLMODE,			D3DFILL_WIREFRAME	)); }
-	else									{ CHK_DX(RDevice->SetRenderState( D3DRS_FILLMODE,			D3DFILL_SOLID		)); }
-
-	// ******************** Fog parameters
-	CHK_DX(RDevice->SetRenderState( D3DRS_FOGCOLOR,			0					));
-	CHK_DX(RDevice->SetRenderState( D3DRS_RANGEFOGENABLE,	false				));
-	if (Caps.bTableFog)	{
-		CHK_DX(RDevice->SetRenderState( D3DRS_FOGTABLEMODE,	D3DFOG_LINEAR		));
-		CHK_DX(RDevice->SetRenderState( D3DRS_FOGVERTEXMODE,	D3DFOG_NONE			));
-	} else {
-		CHK_DX(RDevice->SetRenderState( D3DRS_FOGTABLEMODE,	D3DFOG_NONE			));
-		CHK_DX(RDevice->SetRenderState( D3DRS_FOGVERTEXMODE,	D3DFOG_LINEAR		));
-	}
-
-#endif
 }
 
 void dxRenderDeviceRender::OnDeviceCreate(const char* shName)
@@ -182,7 +140,7 @@ void dxRenderDeviceRender::OnDeviceCreate(const char* shName)
 		m_SelectionShader.create	("editor\\selection");
 
 		DUImpl.OnDeviceCreate			();
-#if defined(USE_DX11) && defined(DEBUG_DRAW)
+#if defined(DEBUG_DRAW)
 		DebugRenderImpl.Init();
 #endif
 	}
@@ -204,65 +162,14 @@ void dxRenderDeviceRender::SetupGPU( bool bForceGPU_SW, bool bForceGPU_NonPure, 
 
 void dxRenderDeviceRender::overdrawBegin()
 {
-#ifdef USE_DX11
 	//	TODO: DX10: Implement overdrawBegin
 	VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
-#else //USE_DX11
-	// Turn stenciling
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILENABLE,		true			));
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILFUNC,		D3DCMP_ALWAYS	));
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILREF,		0				));
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILMASK,		0x00000000		));
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILWRITEMASK,	0xffffffff		));
-
-	// Increment the stencil buffer for each pixel drawn
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILFAIL,		D3DSTENCILOP_KEEP		));
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILPASS,		D3DSTENCILOP_INCRSAT	));
-
-	if (1==Caps.SceneMode)		
-	{ CHK_DX(RDevice->SetRenderState( D3DRS_STENCILZFAIL,	D3DSTENCILOP_KEEP		)); }	// Overdraw
-	else 
-	{ CHK_DX(RDevice->SetRenderState( D3DRS_STENCILZFAIL,	D3DSTENCILOP_INCRSAT	)); }	// ZB access
-#endif
 }
 
 void dxRenderDeviceRender::overdrawEnd()
 {
-#ifdef USE_DX11
 	//	TODO: DX10: Implement overdrawEnd
 	VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
-#else //USE_DX11
-	// Set up the stencil states
-	CHK_DX	(RDevice->SetRenderState( D3DRS_STENCILZFAIL,		D3DSTENCILOP_KEEP	));
-	CHK_DX	(RDevice->SetRenderState( D3DRS_STENCILFAIL,		D3DSTENCILOP_KEEP	));
-	CHK_DX	(RDevice->SetRenderState( D3DRS_STENCILPASS,		D3DSTENCILOP_KEEP	));
-	CHK_DX	(RDevice->SetRenderState( D3DRS_STENCILFUNC,		D3DCMP_EQUAL		));
-	CHK_DX	(RDevice->SetRenderState( D3DRS_STENCILMASK,		0xff				));
-
-	// Set the background to black
-	CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_xrgb(255, 0, 0), 0, 0));
-
-	// Draw a rectangle wherever the count equal I
-	RCache.OnFrameEnd	();
-	CHK_DX	(RDevice->SetFVF( FVF::F_TL ));
-
-	// Render gradients
-	for (int I=0; I<12; I++ ) 
-	{
-		u32	_c	= I*256/13;
-		u32	c = color_xrgb(_c, _c, _c);
-
-		FVF::TL	pv[4];
-		pv[0].set(float(0),			float(RCache.get_height()),	c,0,0);			
-		pv[1].set(float(0),			float(0),			c,0,0);					
-		pv[2].set(float( RCache.get_width()),	float(RCache.get_height()),	c,0,0);	
-		pv[3].set(float( RCache.get_width()),	float(0),			c,0,0);
-
-		CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILREF,		I	));
-		CHK_DX(RDevice->DrawPrimitiveUP	( D3DPT_TRIANGLESTRIP,	2,	pv, sizeof(FVF::TL) ));
-	}
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILENABLE,		false ));
-#endif
 }
 
 void dxRenderDeviceRender::DeferredLoad(bool E)
@@ -298,23 +205,9 @@ void dxRenderDeviceRender::ResourcesDumpMemoryUsage()
 
 dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 {
-#ifdef USE_DX11
 	//	TODO: DX10: Implement GetDeviceState
 	//	TODO: DX10: Implement DXGI_PRESENT_TEST testing
 	//VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
-#else //USE_DX11
-	HRESULT	_hr		= RDevice->TestCooperativeLevel();
-	if (FAILED(_hr))
-	{
-		// If the device was lost, do not render until we get it back
-		if		(D3DERR_DEVICELOST==_hr)
-			return dsLost;
-
-		// Check if the device is ready to be reset
-		if		(D3DERR_DEVICENOTRESET==_hr)
-			return dsNeedReset;
-	}
-#endif
 
 	return dsOK;
 }
@@ -339,10 +232,6 @@ void dxRenderDeviceRender::GetCacheStats(u32& calls, u32& verts, u32& polys, u32
 
 void dxRenderDeviceRender::Begin()
 {
-#ifndef USE_DX11
-	CHK_DX(RDevice->BeginScene());
-#else
-#endif //USE_DX11
 
 	RCache.OnFrameBegin();
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
@@ -373,12 +262,10 @@ void DoAsyncScreenshot();
 void dxRenderDeviceRender::End()
 {
 
-#ifdef USE_DX11
 	{
 		GPU_EVENT(GAMMA_APPLY);
 		RImplementation.Target->PhaseGammaApply();
 	}
-#endif
 
 	RCache.OnFrameEnd();
 	{
@@ -402,10 +289,8 @@ void dxRenderDeviceRender::End()
 	}
 #else
 
-#ifdef USE_DX11
 	//GRHI->SetDepthStencilView(RDepth);
 	GRHI->SetRenderTargetView(RTarget, 0, true);
-#endif
 
 #endif
 
@@ -414,7 +299,7 @@ void dxRenderDeviceRender::End()
 
 	PROF_EVENT("Present");
 
-#if defined(IXRAY_PROFILER_TRACY) && defined(USE_DX11)
+#if defined(IXRAY_PROFILER_TRACY)
 	PROF_GPU_CTX_COLLECT();
 #endif
 
@@ -433,11 +318,7 @@ void dxRenderDeviceRender::ClearTarget()
 
 void dxRenderDeviceRender::SetupDefaultTarget()
 {
-#ifdef USE_DX11
 	RCache.set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
-#else
-	RCache.set_RT(RTarget);
-#endif
 	GRHI->SetDepthStencilView(nullptr);
 }
 
@@ -461,11 +342,7 @@ void dxRenderDeviceRender::InvalidateRenderCache()
 
 UIIconLighting* dxRenderDeviceRender::GetUIIconLighting()
 {
-#ifdef USE_DX11
 	return &IconLighting;
-#else
-	return nullptr;
-#endif
 }
 
 void dxRenderDeviceRender::SetCacheXform(Fmatrix &mView, Fmatrix &mProject)

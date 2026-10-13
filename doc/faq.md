@@ -24,11 +24,11 @@ The Windows XP operating system has not been supported by the manufacturer for a
 
 ### What renders and types of lighting are available?
 
-All original renders are available. DirectX 10 works on a backward compatibility scheme with DirectX 11. The choice of DirectX 9 render has been simplified: now instead of 3 presets, 1 is available with __full__ functionality preservation of the previous ones.
+There is a single renderer, DirectX 11, with two lighting modes: static (the original R1 look, baked lighting plus dynamic lights) and dynamic (the original R2/R3/R4 deferred look). The former `renderer_r1`, `renderer_r2` and DirectX 10 selections are kept as aliases of these two modes.
 
 ### What is the status of Direct 9 render support?
 
-At the moment, DirectX 9 is still supported by the project, but in the future, new features will not be added to the DirectX 9 render.
+DirectX 9 support has been removed. The former DirectX 9 static and dynamic renders are available as the static and dynamic lighting modes of the DirectX 11 renderer.
 
 ### Why do the FPS counter values displayed in the game not match the values from external programs?
 

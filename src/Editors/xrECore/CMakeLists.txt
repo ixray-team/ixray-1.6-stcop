@@ -40,10 +40,10 @@ file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DEPENDS
 	"../../xrServerEntities/LevelGameDef.cpp"
 	"../../xrPlay/Splash.*"
 	# R1 blender set of shaders.xr (see Editor/EditorBlenders.cpp)
-	"../../Layers/xrRenderPC_R1/Blender_Blur.*"
-	"../../Layers/xrRenderPC_R1/Blender_LaEmB.*"
-	"../../Layers/xrRenderPC_R1/Blender_Screen_GRAY.*"
-	"../../Layers/xrRenderPC_R1/Blender_Shadow_World.*"
+	"../../Layers/xrRender/Blender_Blur.*"
+	"../../Layers/xrRender/Blender_LaEmB.*"
+	"../../Layers/xrRender/Blender_Screen_GRAY.*"
+	"../../Layers/xrRender/Blender_Shadow_World.*"
 )
 
 set(ECORE_SRC_FILES)
@@ -111,13 +111,6 @@ if (WIN32)
 endif()
 
 target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
-
-## DirectX SDK
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-	target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
-else()
-	target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x64/d3dx9.lib)
-endif()
 
 ## lunaSVG
 target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)

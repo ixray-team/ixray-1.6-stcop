@@ -44,7 +44,6 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 				mapNormalVS&	vs				= mapNormalPasses[_priority][iPass];
 				for (mapNormalVS::TNode& Nvs : vs)
 				{
-	#ifdef USE_DX11
 					RCache.set_VS					(Nvs.key);
 	
 					//	GS setup
@@ -53,20 +52,12 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 					{
 						GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
 						mapNormalPS&		ps			= Ngs.val;
-	#else //USE_DX11
-						GRHI->SetShader(Nvs.key, ERHI_SHADER_TYPE::VS);
-						mapNormalPS&		ps			= Nvs.val;
-	#endif
 						for (mapNormalPS::TNode& Nps : ps)
 						{
 							GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);	
-	#ifdef USE_DX11
 							mapNormalCS&		cs			= Nps.val.mapCS;
 							GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
 							GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
-	#else //USE_DX11
-							mapNormalCS&		cs			= Nps.val;
-	#endif
 							for (mapNormalCS::TNode& Ncs : cs)
 							{
 								RCache.set_Constants			(Ncs.key);
@@ -86,9 +77,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 										for (_NormalItem& Ni : items)
 										{
 											float LOD = calcLOD(Ni.ssa, Ni.R);
-	#ifdef USE_DX11
 											RCache.LOD.set_LOD(LOD);
-	#endif
 											if (Ni.geom)
 											{
 												RCache.set_Geometry(Ni.geom);
@@ -106,9 +95,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 							}if(_clear) cs.clear();
 	
 						}if(_clear) ps.clear();
-	#ifdef USE_DX11
 					}if(_clear) gs.clear();
-	#endif //USE_DX11
 				}if(_clear) vs.clear();
 			}
 		}
@@ -126,7 +113,6 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 			mapMatrixVS&	vs				= mapMatrixPasses[_priority][iPass];
 			for (mapMatrixVS::TNode& Nvs : vs)
 			{
-	#ifdef USE_DX11
 				RCache.set_VS					(Nvs.key);	
 				mapMatrixGS&		gs			= Nvs.val;
 				for (mapMatrixGS::TNode& Ngs : gs)
@@ -134,20 +120,12 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 					GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
 	
 					mapMatrixPS&		ps			= Ngs.val;
-	#else //USE_DX11
-					GRHI->SetShader(Nvs.key, ERHI_SHADER_TYPE::VS);
-					mapMatrixPS&		ps			= Nvs.val;
-	#endif
 					for (mapMatrixPS::TNode& Nps : ps)
 					{
 						GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);
-	#ifdef USE_DX11
 						mapMatrixCS&		cs			= Nps.val.mapCS;
 						GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
 						GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
-	#else
-						mapMatrixCS&		cs			= Nps.val;
-	#endif
 						for (mapMatrixCS::TNode& Ncs : cs)
 						{
 							RCache.set_Constants			(Ncs.key);
@@ -177,9 +155,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 											RImplementation.apply_lmaterial();
 	
 											float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
-	#ifdef USE_DX11
 											RCache.LOD.set_LOD(LOD);
-	#endif
 											Ni.pVisual->Render(LOD);
 										}if (_clear)items.visuals.clear();
 										continue;
@@ -194,9 +170,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 							}if(_clear) states.clear();
 						}if(_clear) cs.clear();
 					}if(_clear) ps.clear();
-	#ifdef USE_DX11
 				}if(_clear) gs.clear();
-	#endif //USE_DX11
 			}if(_clear) vs.clear();
 		}
 	}
@@ -209,7 +183,6 @@ ICF void RenderNode(mapSorted_Node& N, bool emissive = false)
 	VERIFY(V && V->shader._get());
 	RCache.set_Element(N.val.se);
 
-#ifdef USE_DX11
 	if (auto* Constant = RCache.get_c("ui_emissive_tint")._get())
 	{
 		const auto* Settings = RImplementation.val_bUI ? Device.m_pRender->GetUIIconLighting() : nullptr;
@@ -235,7 +208,6 @@ ICF void RenderNode(mapSorted_Node& N, bool emissive = false)
 		RCache.set_ColorWriteEnable();
 		GRHI->StateManager->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	}
-#endif
 
 	if (V->dcast_ParticleCustom())
 	{
@@ -273,9 +245,7 @@ void R_dsgraph_structure::r_dsgraph_render_ui()
 
 void R_dsgraph_structure::r_dsgraph_render_sorted_ui()
 {
-#if	RENDER!=R_R1
 	RenderMap(mapUIEmissive);
-#endif
 
 	mapUISorted.traverseRL(sorted_L1);
 	mapUISorted.clear();
@@ -288,12 +258,6 @@ void R_dsgraph_structure::r_dsgraph_render_hud()
 
 	RenderMap(mapHUD);
 
-#if	RENDER==R_R1
-	if (g_hud && g_hud->RenderActiveItemUIQuery())
-	{
-		r_dsgraph_render_hud_ui();
-	}
-#endif
 }
 
 void R_dsgraph_structure::r_dsgraph_render_hud_ui()
@@ -303,9 +267,6 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 
 	CHudInitializer initalizer(true, true);
 
-#if	RENDER==R_R2
-	RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, nullptr, nullptr, RDepth);
-#endif
 
 	g_hud->RenderActiveItemUI();
 }
@@ -328,7 +289,6 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 	PROF_EVENT("r_dsgraph_render_sorted_hud");
 
 	CHudInitializer initalizer(true, true);
-#ifdef USE_DX11
 	auto velocity_target = RCache.get_RT(1);
 	RCache.set_RT(nullptr, 1);
 	RenderMap(mapHUDEmissive, true);
@@ -338,7 +298,6 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 	{
 		r_dsgraph_render_hud_ui();
 	}
-#endif
 
 	mapHUDSorted.traverseRL(sorted_L1);
 	mapHUDSorted.clear();
@@ -348,18 +307,11 @@ void R_dsgraph_structure::r_dsgraph_render_emissive()
 {
 	PROF_EVENT("r_dsgraph_render_emissive");
 
-#if	RENDER!=R_R1
 	RenderMap(mapEmissive);
-#ifndef USE_DX11
-	CHudInitializer initalizer(true, true);
-	RenderMap(mapHUDEmissive);
-#endif // !USE_DX11
-#endif
 }
 
 void R_dsgraph_structure::r_dsgraph_render_scope()
 {
-#if	RENDER==R_R4
 	GPU_EVENT(SCOPE_BUFFER_RENDER);
 	RImplementation.Target->copy_position();
 
@@ -367,16 +319,13 @@ void R_dsgraph_structure::r_dsgraph_render_scope()
 
 	CHudInitializer initalizer(true);
 	RenderMap(mapHUDScopeMask);
-#endif
 }
 
 void R_dsgraph_structure::r_dsgraph_render_wmarks()
 {
 	PROF_EVENT("r_dsgraph_render_wmarks");
 
-#if	RENDER!=R_R1
 	RenderMap(mapWmark);
-#endif
 }
 
 void R_dsgraph_structure::r_dsgraph_render_distort()
@@ -392,7 +341,6 @@ void R_dsgraph_structure::r_dsgraph_render_distort()
 // sub-space rendering - shortcut to render with frustum extracted from matrix
 void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O)
 {
-#if RENDER==R_R4
 	// The editors have no sectors: collect their scene for the frustum
 	if (Device.IsEditorMode())
 	{
@@ -401,7 +349,6 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fm
 		RImplementation.EditorRenderSubspace(EditorFrustum);
 		return;
 	}
-#endif
 
 	if(!_sector) return;
 	CFrustum	temp;
@@ -413,13 +360,11 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fm
 void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O)
 {
 	PROF_EVENT("r_dsgraph_render_subspace")
-#if RENDER==R_R4
 	if (Device.IsEditorMode())
 	{
 		RImplementation.EditorRenderSubspace(*_frustum);
 		return;
 	}
-#endif
 	VERIFY							(_sector);
 	RImplementation.marker			++;			// !!! critical here
 
@@ -490,7 +435,6 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 				// renderable
 				IRenderable* renderable = spatial->dcast_Renderable();
 				if (0 == renderable)				continue;					// unknown, but renderable object (r1_glow???)
-#if RENDER!=R_R1
 				if(Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
 				{
 					CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
@@ -509,7 +453,6 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 						}
 					}
 				}
-#endif
 				if(O && O->dcast_Renderable()==renderable) continue;
 
 				if (phase != CRender::PHASE_SMAP)

@@ -17,7 +17,9 @@ float4 main(v2p I) : SV_Target
     float4 s1 = s_clouds1.Sample(smp_base, I.tc1);
     float4 mix = I.color * (s0 + s1);
 	
-#ifdef USE_LEGACY_SKY_TONEMAP
+#ifdef USE_R1_STATIC_LIGHTING
+	return mix;
+#elif defined(USE_LEGACY_SKY_TONEMAP)
 	return float4(detonemap(mix.xyz), mix.w);
 #else
 	return float4(GammaToLinear(mix.xyz), mix.w);

@@ -3,33 +3,6 @@
 
 #include "tss_def.h"
 
-IDirect3DStateBlock9* SimulatorStates::record	()
-{
-#ifdef USE_DX11
-	return 0;
-#else //USE_DX11
-	CHK_DX(RDevice->BeginStateBlock());
-	for (u32 it=0; it<States.size(); it++)
-	{
-		State& S	= States[it];
-		switch (S.type)
-		{
-		case 0:	CHK_DX(RDevice->SetRenderState		((D3DRENDERSTATETYPE)S.v1,S.v2));				break;
-		case 1: CHK_DX(RDevice->SetTextureStageState	(S.v1,(D3DTEXTURESTAGESTATETYPE)S.v2,S.v3));	break;
-		case 2: 
-			{
-				CHK_DX(RDevice->SetSamplerState		(S.v1,
-														(D3DSAMPLERSTATETYPE)S.v2,
-														((D3DSAMPLERSTATETYPE)S.v2==D3DSAMP_MAGFILTER&&S.v3==D3DTEXF_ANISOTROPIC)?D3DTEXF_LINEAR:S.v3));
-			}break;
-		}
-	}
-	IDirect3DStateBlock9*	SB = nullptr;
-	CHK_DX	(RDevice->EndStateBlock(&SB));
-	return	SB;
-#endif
-}
-
 void	SimulatorStates::set_RS(u32 a, u32 b, u32 c)
 {
 	States.erase(std::remove_if(States.begin(), States.end(),
@@ -94,7 +67,6 @@ void	SimulatorStates::clear	()
 	States.clear();
 }
 
-#ifdef USE_DX11
 
 #include "../xrRenderDX10/dx10StateUtils.h"
 
@@ -479,4 +451,3 @@ void SimulatorStates::UpdateDesc(RHISampleDesc descArray[RHI_COMMONSHADER_SAMPLE
 	}
 }
 
-#endif //USE_DX11
