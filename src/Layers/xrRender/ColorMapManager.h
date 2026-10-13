@@ -9,7 +9,7 @@
 class ColorMapManager
 {
 public:
-	ColorMapManager();
+	ColorMapManager(const char* First = "$user$cmap0", const char* Second = "$user$cmap1");
 
 	void	SetTextures(const shared_str &tex0, const shared_str &tex1);
 
