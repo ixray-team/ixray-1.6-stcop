@@ -1,10 +1,11 @@
 #pragma once
+#include "../../Include/xrRender/VisorGlassType.h"
 
 class CBlenderGasMask :
 	public IBlender
 {
 public:
-	CBlenderGasMask();
+	CBlenderGasMask(VisorGlassType GlassType = VisorGlassType::Curved);
 	virtual ~CBlenderGasMask() = default;
 
 	virtual const char* getComment() { return "GasMask effect"; }
@@ -13,4 +14,6 @@ public:
 
 	virtual void Compile(CBlender_Compile& C);
 
+private:
+	VisorGlassType GlassType;
 };

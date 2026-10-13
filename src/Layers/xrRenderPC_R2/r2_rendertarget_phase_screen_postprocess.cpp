@@ -54,22 +54,13 @@ void CRenderTarget::PhaseSaturation() {
 
 void CRenderTarget::PhaseRaindrops()
 {
-	const bool ItemCfgHudRainDropsAvailable = g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable;
-	if (!ItemCfgHudRainDropsAvailable)
+	const auto& Params = g_pGamePersistent->ShaderParams;
+	const bool HasGlass = Params.ItemCfgHudRainDropsAvailable && Params.HelmetCondition >= 0.f;
+	g_pGamePersistent->VisorRain.Update(UseRainDrops && HasGlass);
+	if (g_pGamePersistent->VisorRain.GetAmount() < EPS_L)
 	{
 		return;
 	}
 
-	const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
-	if (condition < 0)
-	{
-		return;
-	}
-
-	if (g_pGamePersistent->Environment().wetness_factor < EPS_L)
-	{
-		return;
-	}
-
-	RenderEffect(ScreenPostProcessType::Raindrops);
+	RenderEffect(g_RainDropsMode == 1 ? ScreenPostProcessType::ProceduralRaindrops : ScreenPostProcessType::Raindrops);
 }
