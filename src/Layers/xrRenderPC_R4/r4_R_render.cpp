@@ -516,6 +516,7 @@ void CRender::Render()
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 	}
 
+	Device.ScopePostprocessActive = false;
 	// Shared item UI is rendered once before any world or HUD passes.
 	GRHI->ClearTarget(Target->rt_ui_pda->pRT, ERTColor::Transparent);
 	if (GActorInterface)
@@ -924,7 +925,22 @@ void CRender::render_forward()
 	{
 		if(bSpecial)
 		{
-			GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+			if (Device.ScopePostprocessActive)
+			{
+				Target->phase_pp(&Device.ScopePostprocess);
+				if (RImplementation.o.dx11_disable_motion_vectors)
+				{
+					Target->u_setrt(Target->rt_Generic_0, nullptr, RDepth);
+				}
+				else
+				{
+					Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, RDepth);
+				}
+			}
+			else
+			{
+				GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+			}
 		}
 
 		r_dsgraph_render_sorted_hud();

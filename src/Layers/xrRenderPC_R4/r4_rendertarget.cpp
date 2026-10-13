@@ -1051,6 +1051,7 @@ CRenderTarget::CRenderTarget()
 
 	// PP
 	s_postprocess.create("postprocess");
+	ScopePostprocessShader.create("scope_postprocess");
 	g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RCache.Vertex.Buffer(), RCache.QuadIB);
 
 	// Menu

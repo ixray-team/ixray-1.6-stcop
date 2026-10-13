@@ -222,6 +222,22 @@ void CNightVisionEffector::PlaySounds(EPlaySounds which)
 void TWeaponNightVision::Load(const shared_str& sect)
 {
 	m_section = sect;
+	ScopeAnimator.reset();
+}
+
+void TWeaponNightVision::UpdateScopePostprocess(float Factor)
+{
+	if (!pSettings->line_exist(m_section, "pp_eff_name"))
+	{
+		return;
+	}
+	if (!ScopeAnimator)
+	{
+		ScopeAnimator = xr_make_unique<CPostprocessAnimator>(effWeaponNightVision, pSettings->r_bool(m_section, "pp_eff_cyclic"));
+		ScopeAnimator->Load(pSettings->r_string(m_section, "pp_eff_name"));
+	}
+	ScopeAnimator->SetCurrentFactor(Factor);
+	Device.ScopePostprocessActive = ScopeAnimator->Valid() && ScopeAnimator->Process(Device.ScopePostprocess);
 }
 
 void TWeaponNightVision::EndComponent()
