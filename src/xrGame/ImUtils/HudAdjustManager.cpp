@@ -523,11 +523,8 @@ ICF void HudAdjustDragAngleDeg(const char* label, float* v, float v_speed = 1.0f
 	float max_limit = v_limit * 10.f;
 	ImGui::DragFloat(label, v, v_speed, -max_limit, max_limit, format);
 
-	*v -= v_limit * floorf(*v / v_limit);
-	if (*v >= v_limit)
-	{
-		*v = 0.0f; // на случай погрешности, чтобы не получить ровно 360
-	}
+	// нормализация в [-v_limit/2, +v_limit/2), иначе -1 превращается в 359 и смещения интерполируются через полный оборот
+	*v -= v_limit * floorf(*v / v_limit + 0.5f);
 }
 ICF void HudAdjustDragAngleRad(const char* label, float* v, float v_speed = 1.0f, float v_limit = PI_MUL_2, const char* format = "%.0f")
 {
