@@ -268,6 +268,8 @@ struct attachable_hud_item final
 	Fmatrix							m_left_ik_offset = Fidentity;
 	bool							m_left_ik_fixed = false;
 	float							LeftHandAttachBlend = 0.f;
+	float							LeftHandIkBlend = 0.25f;
+	float							LeftHandFingerTail = 0.f;
 	shared_str						LeftHandAttachTarget;
 	xr_vector<shared_str>			LeftHandAttachMotions;
 	xr_vector<shared_str>			LeftHandAttachAnimatedArmMotions;
@@ -814,6 +816,9 @@ public:
 	xr_vector<script_layer*> m_script_layers = {};
 
 	IKinematicsAnimated* GetModel() { return m_model; }
+	float			LeftGripWeight		() const { return m_left_ik_weight; }
+	bool			LeftGripFingersFrozen() const { return !LeftGripFingerPose.empty(); }
+	bool			PreviewGripBlocked = false;
 	animator_item* create_animator_item(CHudAnimatorBase* animator, const shared_str& section);
 	void			delete_animator_item();
 	animator_item* GetAnimator() { return m_animator_item; }
@@ -831,6 +836,7 @@ private:
 	bool			LeftHandAttachReference	(attachable_hud_item* item);
 	bool			RetargetHandTarget	(attachable_hud_item* item, u16 ancor, u16 wrist, Fmatrix& result);
 	xr_vector<u16>	left_arm_blend_bones() const;
+	xr_vector<u16>	left_hand_fingers() const;
 	float								RetargetWeight = 0.f;
 	Fmatrix								RetargetLeftTarget = Fidentity;
 	Fmatrix								RetargetRightTarget = Fidentity;
@@ -839,6 +845,9 @@ private:
 	float								LeftHandAttachWeight = 0.f;
 	bool								LeftHandAttachReaching = false;
 	u32									LeftHandAttachSnapFrame = u32(-1);
+	bool								LeftGripActive = false;
+	xr_vector<u16>						LeftGripFingerBones;
+	xr_vector<Fquaternion>				LeftGripFingerPose;
 	float								LeftHandAttachHold = 0.f;
 	float								LeftHandAttachArmWeight = 1.f;
 	bool								LeftHandAttachAnimatedArm = false;
