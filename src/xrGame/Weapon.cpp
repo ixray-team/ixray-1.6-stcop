@@ -4553,6 +4553,9 @@ void CWeapon::UpdateAltScope()
 		{
 			cNameVisual_set(vis);
 		}
+
+		// The icon must follow the same section as the world model when scopes replace it.
+		m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, sectionNeedLoad, "3d_static_visual_name", pSettings->r_string(sectionNeedLoad, "visual"));
 	}
 
 	shared_str new_hud = pSettings->r_string(sectionNeedLoad, "hud");
