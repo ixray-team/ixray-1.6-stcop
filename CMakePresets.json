@@ -18,8 +18,6 @@
                 "IXRAY_COMPRESSOR_ONLY": "OFF",
                 "IXRAY_PLUGINS": "OFF",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "ON",
-                "IXRAY_USE_R2": "ON",
                 "IXRAY_UNITYBUILD": "ON",
                 "IXRAY_PROFILER": "ON"
             }
@@ -50,8 +48,6 @@
                 "IXRAY_COMPRESSOR_ONLY": "OFF",
                 "IXRAY_PLUGINS": "OFF",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "ON",
-                "IXRAY_USE_R2": "ON",
                 "IXRAY_UNITYBUILD": "OFF",
                 "IXRAY_PROFILER": "ON"
             }
@@ -68,8 +64,6 @@
                 "IXRAY_COMPRESSOR_ONLY": "OFF",
                 "IXRAY_PLUGINS": "OFF",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "OFF",
-                "IXRAY_USE_R2": "OFF",
                 "IXRAY_USE_GL": "ON",
                 "IXRAY_UNITYBUILD": "OFF",
                 "CMAKE_C_COMPILER": "clang-14",
@@ -114,8 +108,6 @@
                 "IXRAY_COMPRESSOR_ONLY": "OFF",
                 "IXRAY_PLUGINS": "OFF",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "ON",
-                "IXRAY_USE_R2": "ON",
                 "IXRAY_UNITYBUILD": "ON",
                 "IXRAY_CROSS_COMPILATION": "ON"
             }
@@ -132,8 +124,6 @@
                 "IXRAY_COMPRESSOR_ONLY": "OFF",
                 "IXRAY_PLUGINS": "OFF",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "ON",
-                "IXRAY_USE_R2": "ON",
                 "IXRAY_UNITYBUILD": "ON",
                 "IXRAY_PROFILER": "ON"
             }
@@ -165,8 +155,6 @@
                 "IXRAY_COMPRESSOR_ONLY": "OFF",
                 "IXRAY_PLUGINS": "OFF",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "OFF",
-                "IXRAY_USE_R2": "OFF",
                 "IXRAY_UNITYBUILD": "ON",
                 "IXRAY_PROFILER": "ON"
             }
@@ -198,8 +186,6 @@
                 "IXRAY_COMPRESSOR_ONLY": "OFF",
                 "IXRAY_PLUGINS": "OFF",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "ON",
-                "IXRAY_USE_R2": "OFF",
                 "IXRAY_UNITYBUILD": "ON",
                 "IXRAY_PROFILER": "ON"
             }
@@ -231,8 +217,6 @@
                 "IXRAY_COMPRESSOR_ONLY": "OFF",
                 "IXRAY_PLUGINS": "ON",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "OFF",
-                "IXRAY_USE_R2": "OFF",
                 "IXRAY_UNITYBUILD": "ON",
                 "IXRAY_PROFILER": "OFF"
             }
@@ -264,8 +248,6 @@
                 "IXRAY_COMPRESSOR_ONLY": "ON",
                 "IXRAY_PLUGINS": "OFF",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "OFF",
-                "IXRAY_USE_R2": "OFF",
                 "IXRAY_UNITYBUILD": "ON",
                 "IXRAY_PROFILER": "OFF"
             }
@@ -297,8 +279,6 @@
                 "IXRAY_COMPRESSOR_ONLY": "ON",
                 "IXRAY_PLUGINS": "OFF",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "OFF",
-                "IXRAY_USE_R2": "OFF",
                 "IXRAY_UNITYBUILD": "ON",
                 "CMAKE_C_COMPILER": "clang-14",
                 "CMAKE_CXX_COMPILER": "clang++-14"

@@ -56,7 +56,6 @@ struct RENDER_API resptrcode_crt :
 };
 typedef	resptr_core<CRT, resptrcode_crt> ref_rt;
 
-#ifdef USE_DX11
 //////////////////////////////////////////////////////////////////////////
 class CRTC:
 	public xr_resource_named
@@ -90,4 +89,3 @@ struct RENDER_API resptrcode_crtc:
 };
 
 typedef	resptr_core<CRTC,resptrcode_crtc> ref_rtc;
-#endif

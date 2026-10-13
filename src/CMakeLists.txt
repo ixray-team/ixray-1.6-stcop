@@ -21,13 +21,6 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     if(IXRAY_MP)
         add_subdirectory("Layers/xrRenderDS_R0")
     endif()
-    if(IXRAY_USE_R1)
-        add_subdirectory("Layers/xrRenderPC_R1")
-    endif()
-
-    if(IXRAY_USE_R2)
-        add_subdirectory("Layers/xrRenderPC_R2")
-    endif()
 
     # The editors render through xrRender_R4 as well
     if(IXR_TEST_CI OR IXRAY_EDITORS)
@@ -74,13 +67,6 @@ if(IXRAY_MP AND NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)
 endif()
 
 if(WIN32)
-    if (IXRAY_USE_R1 AND NOT IXRAY_COMPRESSOR_ONLY)
-        set_target_properties(xrRender_R1 PROPERTIES ${IXRAY_FOLDER_RENDER})
-    endif()
-
-    if (IXRAY_USE_R2 AND NOT IXRAY_COMPRESSOR_ONLY)
-        set_target_properties(xrRender_R2 PROPERTIES ${IXRAY_FOLDER_RENDER})
-    endif()
 
     if (NOT IXRAY_COMPRESSOR_ONLY AND (IXR_TEST_CI OR IXRAY_EDITORS))
         set_target_properties(xrRender_R4 PROPERTIES ${IXRAY_FOLDER_RENDER})

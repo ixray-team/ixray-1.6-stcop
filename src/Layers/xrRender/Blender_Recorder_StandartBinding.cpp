@@ -11,6 +11,8 @@
 #include "dxRenderDeviceRender.h"
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/date_time.h"
+#include "../../xrEngine/EngineAPI.h"
+
 // matrices
 class UIIconLightBinding final : public RHIShaderConstant::Setup
 {
@@ -65,14 +67,12 @@ BIND_DECLARE(wv);
 BIND_DECLARE(vp);
 BIND_DECLARE(wvp);
 
-#ifdef USE_DX11
 BIND_DECLARE(w_old);
 BIND_DECLARE(v_old);
 BIND_DECLARE(p_old);
 BIND_DECLARE(wv_old);
 BIND_DECLARE(vp_old);
 BIND_DECLARE(wvp_old);
-#endif
 
 #define DECLARE_TREE_BIND(c)	\
 	class cl_tree_##c: public RHIShaderConstant::Setup	{virtual void setup(RHIShaderConstant* C) {RCache.tree.set_c_##c(C);} };	\
@@ -85,11 +85,9 @@ DECLARE_TREE_BIND(consts);
 DECLARE_TREE_BIND(wave);
 DECLARE_TREE_BIND(wind);
 
-#ifdef USE_DX11
 DECLARE_TREE_BIND(consts_old);
 DECLARE_TREE_BIND(wave_old);
 DECLARE_TREE_BIND(wind_old);
-#endif
 
 DECLARE_TREE_BIND(c_scale);
 DECLARE_TREE_BIND(c_bias);
@@ -148,7 +146,6 @@ class cl_texgen : public RHIShaderConstant::Setup
 	{
 		Fmatrix mTexgen;
 
-#ifdef USE_DX11
 		Fmatrix			mTexelAdjust		= 
 		{
 			0.5f,				0.0f,				0.0f,			0.0f,
@@ -156,19 +153,6 @@ class cl_texgen : public RHIShaderConstant::Setup
 			0.0f,				0.0f,				1.0f,			0.0f,
 			0.5f,				0.5f,				0.0f,			1.0f
 		};
-#else //USE_DX11
-		float	_w						= float(RCache.get_width());
-		float	_h						= float(RCache.get_height());
-		float	o_w						= (.5f / _w);
-		float	o_h						= (.5f / _h);
-		Fmatrix			mTexelAdjust		= 
-		{
-			0.5f,				0.0f,				0.0f,			0.0f,
-			0.0f,				-0.5f,				0.0f,			0.0f,
-			0.0f,				0.0f,				1.0f,			0.0f,
-			0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
-		};
-#endif
 
 		mTexgen.mul	(mTexelAdjust,RCache.xforms.m_wvp);
 
@@ -183,7 +167,6 @@ class cl_VPtexgen : public RHIShaderConstant::Setup
 	{
 		Fmatrix mTexgen;
 
-#ifdef USE_DX11
 		Fmatrix			mTexelAdjust		= 
 		{
 			0.5f,				0.0f,				0.0f,			0.0f,
@@ -191,19 +174,6 @@ class cl_VPtexgen : public RHIShaderConstant::Setup
 			0.0f,				0.0f,				1.0f,			0.0f,
 			0.5f,				0.5f,				0.0f,			1.0f
 		};
-#else //USE_DX11
-		float	_w						= float(RCache.get_width());
-		float	_h						= float(RCache.get_height());
-		float	o_w						= (.5f / _w);
-		float	o_h						= (.5f / _h);
-		Fmatrix			mTexelAdjust		= 
-		{
-			0.5f,				0.0f,				0.0f,			0.0f,
-			0.0f,				-0.5f,				0.0f,			0.0f,
-			0.0f,				0.0f,				1.0f,			0.0f,
-			0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
-		};
-#endif
 
 		mTexgen.mul	(mTexelAdjust,RCache.xforms.m_vp);
 
@@ -213,7 +183,6 @@ class cl_VPtexgen : public RHIShaderConstant::Setup
 static cl_VPtexgen		binder_VPtexgen;
 
 // fog
-#if 1 //ndef _EDITOR
 class cl_fog_plane	: public RHIShaderConstant::Setup {
 	u32			marker;
 	Fvector4	result;
@@ -278,16 +247,18 @@ class cl_fog_color	: public RHIShaderConstant::Setup {
 		}
 		if (marker!=Device.dwFrame)	{
 			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
-#if RENDER == R_R1
-			result.set(desc.fog_color.x * ps_r1_fog_luminance, desc.fog_color.y * ps_r1_fog_luminance, desc.fog_color.z * ps_r1_fog_luminance, 0);
-#else
-			result.set(desc.fog_color.x, desc.fog_color.y, desc.fog_color.z, 0);
-#endif // RENDER==R_R1
+			if (LightingModeIsStaticRender())
+			{
+				result.set(desc.fog_color.x * ps_r1_fog_luminance, desc.fog_color.y * ps_r1_fog_luminance, desc.fog_color.z * ps_r1_fog_luminance, 0);
+			}
+			else
+			{
+				result.set(desc.fog_color.x, desc.fog_color.y, desc.fog_color.z, 0);
+			}
 		}
 		RCache.set_c	(C,result);
 	}
 };	static cl_fog_color		binder_fog_color;
-#endif
 
 // times
 class cl_times : public RHIShaderConstant::Setup 
@@ -340,7 +311,6 @@ class cl_hud_project : public RHIShaderConstant::Setup {
 };
 static cl_hud_project binder_hud_project;
 
-#if 1 //ndef _EDITOR
 // TAA Jiter
 class cl_taa_jitter : public RHIShaderConstant::Setup {
 	virtual void setup(RHIShaderConstant* C) {
@@ -349,9 +319,7 @@ class cl_taa_jitter : public RHIShaderConstant::Setup {
 	}
 };
 static cl_taa_jitter binder_taa_jitter;
-#endif
 
-#if 1 //ndef _EDITOR
 // D-Light0
 class cl_sun0_color : public RHIShaderConstant::Setup {
 	u32 marker;
@@ -363,11 +331,14 @@ class cl_sun0_color : public RHIShaderConstant::Setup {
 		}
 		if (marker != Device.dwFrame) {
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-#if RENDER != R_R1
-			result.set(desc.sun_color.x * ps_r2_sun_lumscale, desc.sun_color.y * ps_r2_sun_lumscale, desc.sun_color.z * ps_r2_sun_lumscale, 0);
-#else
-			result.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z, 0);
-#endif
+			if (!LightingModeIsStaticRender())
+			{
+				result.set(desc.sun_color.x * ps_r2_sun_lumscale, desc.sun_color.y * ps_r2_sun_lumscale, desc.sun_color.z * ps_r2_sun_lumscale, 0);
+			}
+			else
+			{
+				result.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z, 0);
+			}
 		}
 		RCache.set_c(C, result);
 	}
@@ -419,12 +390,15 @@ class cl_amb_color : public RHIShaderConstant::Setup {
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
 
-#if RENDER != R_R1
-			result.set(desc.ambient.x * ps_r2_sun_lumscale_amb * 2.0f,
-				desc.ambient.y * ps_r2_sun_lumscale_amb * 2.0f, desc.ambient.z * ps_r2_sun_lumscale_amb * 2.0f, desc.weight);
-#else
-			result.set(desc.ambient.x, desc.ambient.y, desc.ambient.z, desc.weight);
-#endif
+			if (!LightingModeIsStaticRender())
+			{
+				result.set(desc.ambient.x * ps_r2_sun_lumscale_amb * 2.0f,
+					desc.ambient.y * ps_r2_sun_lumscale_amb * 2.0f, desc.ambient.z * ps_r2_sun_lumscale_amb * 2.0f, desc.weight);
+			}
+			else
+			{
+				result.set(desc.ambient.x, desc.ambient.y, desc.ambient.z, desc.weight);
+			}
 		}
 		RCache.set_c(C, result);
 	}
@@ -441,26 +415,28 @@ class cl_hemi_color : public RHIShaderConstant::Setup {
 		if (marker != Device.dwFrame) 
 		{
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
-#if RENDER != R_R1
-			if (desc.old_style)
+			if (!LightingModeIsStaticRender())
 			{
-				result.set(desc.sky_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
-					desc.sky_color.y * ps_r2_sun_lumscale_hemi * 4.0f, desc.sky_color.z * ps_r2_sun_lumscale_hemi * 4.0f, desc.weight);
+				if (desc.old_style)
+				{
+					result.set(desc.sky_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
+						desc.sky_color.y * ps_r2_sun_lumscale_hemi * 4.0f, desc.sky_color.z * ps_r2_sun_lumscale_hemi * 4.0f, desc.weight);
+				}
+				else
+				{
+					result.set(desc.hemi_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
+						desc.hemi_color.y * ps_r2_sun_lumscale_hemi * 4.0f, desc.hemi_color.z * ps_r2_sun_lumscale_hemi * 4.0f, desc.weight);
+				}
 			}
 			else
 			{
-				result.set(desc.hemi_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
-					desc.hemi_color.y * ps_r2_sun_lumscale_hemi * 4.0f, desc.hemi_color.z * ps_r2_sun_lumscale_hemi * 4.0f, desc.weight);
+				result.set(desc.hemi_color);
 			}
-#else
-			result.set(desc.hemi_color);
-#endif
 		}
 
 		RCache.set_c(C, result);
 	}
 }; static cl_hemi_color binder_hemi_color;
-#endif
 
 class cl_sky_color : public RHIShaderConstant::Setup {
 	u32 marker;
@@ -472,12 +448,15 @@ class cl_sky_color : public RHIShaderConstant::Setup {
 		}
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
-#if RENDER != R_R1
-			result.set(desc.sky_color.x * ps_r2_sun_lumscale_sky, 
-				desc.sky_color.y * ps_r2_sun_lumscale_sky, desc.sky_color.z * ps_r2_sun_lumscale_sky, desc.sky_rotation);
-#else
-			result.set(desc.sky_color.x, desc.sky_color.y, desc.sky_color.z, desc.sky_rotation);
-#endif
+			if (!LightingModeIsStaticRender())
+			{
+				result.set(desc.sky_color.x * ps_r2_sun_lumscale_sky, 
+					desc.sky_color.y * ps_r2_sun_lumscale_sky, desc.sky_color.z * ps_r2_sun_lumscale_sky, desc.sky_rotation);
+			}
+			else
+			{
+				result.set(desc.sky_color.x, desc.sky_color.y, desc.sky_color.z, desc.sky_rotation);
+			}
 		}
 		RCache.set_c(C, result);
 	}
@@ -521,11 +500,7 @@ static class cl_def_aref : public RHIShaderConstant::Setup
 	virtual void setup(RHIShaderConstant* C) override 
 	{
 		float def_aref_cmd = ps_r2_def_aref_quality / 255.0f;
-	#ifdef USE_DX11
 		RCache.set_c(C, def_aref_cmd);
-	#else
-		RCache.set_c(C, def_aref_cmd, 0.0f, 0.0f, 0.0f);
-	#endif
 	}
 } binder_def_aref;
 
@@ -709,14 +684,12 @@ void	CBlender_Compile::SetMapping()
 
 	r_Constant("m_P_hud", &binder_hud_project);
 
-#ifdef USE_DX11
 	r_Constant("m_W_old", &binder_w_old);
 	r_Constant("m_V_old", &binder_v_old);
 	r_Constant("m_P_old", &binder_p_old);
 	r_Constant("m_WV_old", &binder_wv_old);
 	r_Constant("m_VP_old", &binder_vp_old);
 	r_Constant("m_WVP_old", &binder_wvp_old);
-#endif
 
 	r_Constant("m_xform_v", &tree_binder_m_xform_v);
 	r_Constant("m_xform", &tree_binder_m_xform);
@@ -726,11 +699,9 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("wind", &tree_binder_wind);
 	r_Constant("env_wind", &binder_wind);
 
-#ifdef USE_DX11
 	r_Constant("consts_old", &tree_binder_consts_old);
 	r_Constant("wave_old", &tree_binder_wave_old);
 	r_Constant("wind_old", &tree_binder_wind_old);
-#endif
 
 	r_Constant("c_scale", &tree_binder_c_scale);
 	r_Constant("c_bias", &tree_binder_c_bias);

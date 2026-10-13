@@ -102,7 +102,7 @@ You can read about the differences in [FAQ](https://github.com/ixray-team/ixray-
 - Architectures support: __x64__
 - Visual Studio 2019-2026 is supported
 - __CMake__ build system
-- Supported renderers: __DirectX 9.0c__, __DirectX 11__
+- Supported renderer: __DirectX 11__ (static and dynamic lighting)
 - Improved performance and better FPS
 - Fixed original bugs
 - Increased level loading speed by 3-4 times

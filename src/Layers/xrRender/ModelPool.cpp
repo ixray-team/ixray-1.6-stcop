@@ -494,7 +494,6 @@ dxRender_Visual* CModelPool::CreatePG	(PS::CPGDef* source)
 }
 
 // Editor draw path (GEditorDraw) exists only in D3D11 builds.
-#ifdef USE_DX11
 #include "EditorDrawContext.h"
 
 IC bool	_IsBoxVisible(dxRender_Visual* visual, const Fmatrix& transform)
@@ -601,4 +600,3 @@ void CModelPool::OnDeviceDestroy()
 {
 	Destroy();
 }
-#endif

@@ -17,9 +17,7 @@ void CRenderTarget::PhaseGammaApply(IRHIRenderTargetView* Destination)
 	contrast = contrast * 0.5f + 0.5f;
 	gamma = 1.0f / std::max(EPS_S, gamma);
 
-#if defined(USE_DX11)
 	u_setrt(w, h, Destination ? Destination : RTarget, nullptr, nullptr, nullptr);
-#endif
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
  	RImplementation.rmNormal();

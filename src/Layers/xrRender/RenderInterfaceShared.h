@@ -44,29 +44,24 @@ void CRender::models_Clear(bool b_complete)
 
 bool CRender::occ_visible(vis_data& P)
 {
-#ifdef USE_DX11
 	if (Device.IsEditorMode())
 	{
 		return occ_visible(P.box);
 	}
-#endif
 	return HOM.visible(P);
 }
 
 bool CRender::occ_visible(sPoly& P)
 {
-#ifdef USE_DX11
 	if (Device.IsEditorMode())
 	{
 		return ViewBase.testPolyInside(P);
 	}
-#endif
 	return HOM.visible(P);
 }
 
 bool CRender::occ_visible(Fbox& P)
 {
-#ifdef USE_DX11
 	if (Device.IsEditorMode())
 	{
 		u32 Mask = 0xff;
@@ -77,7 +72,6 @@ bool CRender::occ_visible(Fbox& P)
 
 		return View != nullptr || !EditorOcclusionCulling || EditorHiZ.IsVisible(P);
 	}
-#endif
 	return HOM.visible(P);
 }
 
@@ -125,12 +119,10 @@ void CRender::clear_static_wallmarks()
 
 void CRender::add_Occluder(Fbox2& bb_screenspace)
 {
-#ifdef USE_DX11
 	if (Device.IsEditorMode())
 	{
 		return;
 	}
-#endif
 	HOM.occlude(bb_screenspace);
 }
 

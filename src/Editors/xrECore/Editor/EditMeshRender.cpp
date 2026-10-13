@@ -12,7 +12,7 @@
 #include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
 #include "EditorInstancing.h"
 
-#include <FlexibleVertexFormat.h>
+#include "../../../xrCore/FVFLegacy.h"
 //
 //struct VEditorVertex
 //{

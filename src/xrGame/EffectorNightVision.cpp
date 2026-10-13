@@ -2,6 +2,7 @@
 #include "EffectorNightVision.h"
 #include "../xrSound/ai_sounds.h"
 
+#include "../xrEngine/EngineAPI.h"
 #include "Level.h"
 
 #include "ActorEffector.h"
@@ -136,7 +137,7 @@ CNightVisionEffector::~CNightVisionEffector()
 void CNightVisionEffector::Start(const shared_str& sect, bool play_sound, const Fcolor& color)
 {
 	nvg_color = color;
-	static const bool used_shader_nvg = !!psDeviceFlags.test(rsR4);
+	static const bool used_shader_nvg = LightingModeIsDynamic();
 
 	if (used_shader_nvg)
 	{
@@ -156,7 +157,7 @@ void CNightVisionEffector::Start(const shared_str& sect, bool play_sound, const 
 
 void CNightVisionEffector::Stop(const float factor, bool play_sound)
 {
-	static const bool used_shader_nvg = !!psDeviceFlags.test(rsR4);
+	static const bool used_shader_nvg = LightingModeIsDynamic();
 
 	if (used_shader_nvg)
 	{

@@ -71,7 +71,7 @@ Cflags: -I\${includedir}
                 ${dxvk_SOURCE_DIR} ${DXVK_BUILD_DIR}
                 --buildtype=debug
                 --prefix=${DXVK_INSTALL_DIR}
-                -Denable_d3d9=true
+                -Denable_d3d9=false
                 -Denable_d3d11=true
                 -Dnative_sdl3=enabled   
                 -Dnative_sdl2=disabled
@@ -114,16 +114,6 @@ Cflags: -I\${includedir}
     endif()
 
     # detect actual lib dir
-    find_library(DXVK_D3D9
-        NAMES dxvk_d3d9 libdxvk_d3d9
-        PATHS
-            ${DXVK_INSTALL_DIR}/lib
-            ${DXVK_INSTALL_DIR}/lib64
-            ${DXVK_INSTALL_DIR}/lib/x86_64-linux-gnu
-        NO_DEFAULT_PATH
-        REQUIRED
-    )
-
     find_library(DXVK_D3D11
         NAMES dxvk_d3d11 libdxvk_d3d11
         PATHS
@@ -135,7 +125,6 @@ Cflags: -I\${includedir}
     )
 
     set(DXVK_LIBRARIES 
-        ${DXVK_D3D9}
         ${DXVK_D3D11}
         CACHE PATH "kal" FORCE
     )

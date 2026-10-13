@@ -1,9 +1,7 @@
 #include "stdafx.h"
 
 #include "TextureDescrManager.h"
-#ifdef USE_DX11
 #include "../xrRenderDX10/dx10FixedConstants.h"
-#endif
 // eye-params
 float					r__dtex_range	= 50;
 class cl_dt_scaler		: public RHIShaderConstant::Setup {
@@ -14,9 +12,7 @@ public:
 	virtual void setup	(RHIShaderConstant* C)
 	{
 		RCache.set_c	(C,scale,scale,scale,1/r__dtex_range);
-#ifdef USE_DX11
 		FixedConstants::SetDtParamsScale(scale);
-#endif
 	}
 };
 

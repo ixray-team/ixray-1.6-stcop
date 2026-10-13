@@ -68,14 +68,12 @@ private:
 
 	Fvector					approximate			;
 
-#if RENDER!=R_R1
 	Fvector					last_position;
 	s32						ticks_to_update;
 	s32						sky_rays_uptodate;
 
 	Fvector avg_color;
 	Fvector avg_dir;
-#endif	// RENDER!=R_R1
 
 	Fvector smooth_avg_color;
 	Fvector smooth_avg_dir;
@@ -135,10 +133,8 @@ private:
 	//prepares static or hemisphere lights for ambient occlusion calculations
 	void prepare_lights(Fvector& position, IRenderable* O);
 
-#if RENDER!=R_R1
 	//	Updates only if makes a desizion that update is necessary
 	void smart_update(IRenderable* O);
-#endif	//	RENDER!=R_R1
 };
 
 #endif // !defined(AFX_LIGHTTRACK_H__89914D61_AC0B_4C7C_BA8C_D7D810738CE7__INCLUDED_)

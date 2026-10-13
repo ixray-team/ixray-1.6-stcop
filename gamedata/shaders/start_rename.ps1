@@ -1,5 +1,5 @@
 # Define the directories
-$directories = @("r1", "r2", "r3", "editor", "shared")
+$directories = @("editor", "shared")
 
 # Define the extension mappings
 $extensionMappings = @{

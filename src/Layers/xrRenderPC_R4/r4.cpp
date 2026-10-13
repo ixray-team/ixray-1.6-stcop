@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "r4.h"
+#include "r1_GlowManager.h"
 #include "../xrRender/FBasicVisual.h"
 #include "../../xrEngine/xr_object.h"
 #include "../../xrEngine/CustomHUD.h"
@@ -17,16 +18,18 @@
 
 #include "../xrRender/RenderInterfaceShared.h"
 #include "OverlayAPI/DLSSWrapper.h"
+#include "../../xrEngine/EngineAPI.h"
+#include "r1_LightPPA.h"
 
 CRender RImplementation;
 
 //////////////////////////////////////////////////////////////////////////
-class CGlow				: public IRender_Glow
+class CDynamicGlow : public IRender_Glow
 {
 public:
 	bool				bActive;
 public:
-	CGlow() : bActive(false)		{ }
+	CDynamicGlow() : bActive(false)		{ }
 	virtual void					set_active			(bool b)					{ bActive=b;		}
 	virtual bool					get_active			()							{ return bActive;	}
 	virtual void					set_position		(const Fvector& P)			{ }
@@ -41,6 +44,14 @@ float r_dtex_range = 50.f;
 
 ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float cdist_sq, bool is_hud)
 {
+	if (LightingModeIsStaticRender())
+	{
+		if (val_bUI && pVisual->shader->E[SE_R1_UI])
+			return pVisual->shader->E[SE_R1_UI]._get();
+		if (phase == PHASE_NORMAL)
+			return pVisual->shader->E[L_Projector && L_Projector->shadowing() ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ]._get();
+		return rimp_select_sh_static(pVisual, cdist_sq);
+	}
 	if (!!RImplementation.val_bUI)
 	{
 		if (auto* Element = pVisual->shader->UIElement._get())
@@ -79,6 +90,15 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 
 ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq)
 {
+	if (LightingModeIsStaticRender())
+	{
+		int id = SE_R1_NORMAL_LQ;
+		if (phase == PHASE_POINT) id = SE_R1_LPOINT;
+		else if (phase == PHASE_SPOT) id = SE_R1_LSPOT;
+		else if (phase == PHASE_LMODELS) id = SE_R1_LMODELS;
+		else if ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) id = SE_R1_NORMAL_HQ;
+		return pVisual->shader->E[id]._get();
+	}
 	int id = SE_R2_SHADOW;
 
 	if (CRender::PHASE_NORMAL == RImplementation.phase)
@@ -248,17 +268,17 @@ void CRender::create()
 	o.nvdbt = false;
 
 	// options
-	o.sunstatic = !ps_r2_ls_flags.test(R2FLAG_SUN) ? true : false;
-	o.volumetricfog = ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
+	o.sunstatic = LightingModeIsStaticRender() || !ps_r2_ls_flags.test(R2FLAG_SUN);
+	o.volumetricfog = LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
 	o.noshadows = Core.ParamsData.test(ECoreParams::noshadows);
 	o.distortion_enabled = !Core.ParamsData.test(ECoreParams::nodistort);
 	o.distortion = o.distortion_enabled;
 	o.disasm = Core.ParamsData.test(ECoreParams::disasm);
 
-	if(!EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT")))
+	if(LightingModeIsDynamicRender() && !EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT")))
 	{
-		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
-		o.offscreen_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_OFFSCREEN_REFLECTIONS);
+		o.deffered_reflecitons = true; //!!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+		o.offscreen_reflecitons = true; //!!ps_r2_ls_flags_ext.test(R4FLAG_OFFSCREEN_REFLECTIONS);
 		o.dx11_use_legacy_light = false;
 	}
 	else
@@ -267,12 +287,14 @@ void CRender::create()
 		o.dx11_use_legacy_light = true;
 	}
 
+	if (LightingModeIsStaticRender())
+		o.deffered_reflecitons = o.offscreen_reflecitons = false;
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
 	clearAllShaderOptions();
 
-	o.dx11_allow_wboit_transparency = !!EngineExternal().ShadersOptions.contains(xr_string("ALLOW_WBOIT_TRANSPARENCY"));
+	o.dx11_allow_wboit_transparency = LightingModeIsDynamicRender() && !!EngineExternal().ShadersOptions.contains(xr_string("ALLOW_WBOIT_TRANSPARENCY"));
 
-	o.dx11_enable_tessellation = RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
+	o.dx11_enable_tessellation = LightingModeIsDynamicRender() && RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
 	// constants
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params2", &binder_pos_decompress_params2);
@@ -301,7 +323,10 @@ void CRender::create()
 
 	m_bMakeAsyncSS = false;
 
-	g_DLSSWrapper.Create();
+	if (LightingModeIsDynamicRender())
+		g_DLSSWrapper.Create();
+	else
+		L_Dynamic = new CLightR_Manager();
 
 	Target = new CRenderTarget();	// Main target
 
@@ -325,8 +350,11 @@ void CRender::create()
 	xrRender_apply_tf();
 	::PortalTraverser.initialize();
 
-	FluidManager.Initialize(70, 70, 70);
-	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+	if (LightingModeIsDynamicRender())
+	{
+		FluidManager.Initialize(70, 70, 70);
+		FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+	}
 
 	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueuedDeffer);
 }
@@ -338,7 +366,9 @@ void CRender::destroy()
 	DetailLayers_EditorDestroy();
 
 	m_bMakeAsyncSS = false;
-	FluidManager.Destroy();
+	if (LightingModeIsDynamicRender())
+		FluidManager.Destroy();
+	xr_delete(L_Dynamic);
 	::PortalTraverser.destroy();
 
 	HWOCC.occq_destroy();
@@ -357,7 +387,8 @@ void CRender::destroy()
 	r_dsgraph_destroy();
 	Device.ModelDefferClear = nullptr;
 
-	g_DLSSWrapper.Destroy();
+	if (LightingModeIsDynamicRender())
+		g_DLSSWrapper.Destroy();
 }
 
 void CRender::reset_begin() {
@@ -367,6 +398,8 @@ void CRender::reset_begin() {
 		EditorHiZ.Destroy();
 	}
 
+	xr_delete(L_Projector);
+	xr_delete(L_Shadows);
 	// Update incremental shadowmap-visibility solver
 	// BUG-ID: 10646
 	{
@@ -391,7 +424,7 @@ void CRender::reset_begin() {
 	xr_delete(Target);
 	HWOCC.occq_destroy();
 
-	if(!EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT"))) 
+	if(LightingModeIsDynamicRender() && !EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT"))) 
 	{
 		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
 		o.offscreen_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_OFFSCREEN_REFLECTIONS);
@@ -413,9 +446,18 @@ void CRender::reset_end() {
 		Details->Load();
 	}
 	Target = new CRenderTarget();
+	if (b_loaded && LightingModeIsStaticRender())
+	{
+		L_Projector = new CLightProjector();
+		L_Shadows = new CLightShadows();
+	}
+
+
+	if (L_Glows) L_Glows->reset_geometry();
 
 	xrRender_apply_tf();
-	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+	if (LightingModeIsDynamicRender())
+		FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
 
 	// Set this flag true to skip the first render frame,
 	// that some data is not ready in the first frame (for example device camera position)
@@ -553,12 +595,14 @@ IRender_Light* CRender::light_create()
 
 IRender_Glow* CRender::glow_create()
 {
-	return new CGlow();
+	return LightingModeIsStaticRender() ? static_cast<IRender_Glow*>(new CGlow()) : new CDynamicGlow();
 }
 
 void CRender::set_Object(IRenderable* O)
 {
 	val_pObject = O;
+	if (L_Projector) L_Projector->set_object(phase == PHASE_NORMAL ? O : nullptr);
+	if (L_Shadows) L_Shadows->set_object(phase == PHASE_NORMAL ? O : nullptr);
 }
 
 CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
@@ -678,10 +722,18 @@ xr_string CRender::getShaderParamsDebug()
 
 bool CRender::NeedMotionVectors() const
 {
+	if (LightingModeIsStaticRender())
+		return false;
+
 	return (ps_r_scale_mode >= 2) || 
 	       (ps_r2_aa_type == 3) || 
 	       ps_r4_mblur_quality > 0 || 
 	       o.deffered_reflecitons;
+}
+
+IRender_interface::GenerationLevel CRender::get_generation()
+{
+	return LightingModeIsStaticRender() ? IRender_interface::GENERATION_R1 : IRender_interface::GENERATION_R2;
 }
 
 bool CRender::MotionVectorsDisabled() const
@@ -709,6 +761,12 @@ void CRender::clearAllShaderOptions()
 {
 	//GPU_EVENT(__FUNCTION__)
 	m_ShaderOptions = EngineExternal().ShadersOptions;
+
+	if (LightingModeIsStaticRender())
+	{
+		addShaderOption("USE_R1_STATIC_LIGHTING", "2");
+		addShaderOption("USE_LEGACY_LIGHT", "1");
+	}
 
 	if (o.dx11_disable_motion_vectors)
 	{
@@ -1015,14 +1073,14 @@ HRESULT	CRender::shader_compile(
 		xr_strcat(sh_name, c_smapsize); len += 4;
 	}
 
-	if(ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS)) {
+	if(LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS)) {
 		defines[def_it].Name = "USE_SUNMASK";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
 	sh_name[len] = '0' + char(ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS)); ++len;
 
-	if(o.sunstatic) {
+	if(LightingModeIsDynamicRender() && o.sunstatic) {
 		defines[def_it].Name = "USE_R2_STATIC_SUN";
 		defines[def_it].Definition = "1";
 		def_it++;
@@ -1077,7 +1135,7 @@ HRESULT	CRender::shader_compile(
 	sh_name[len] = '0' + char(4 == m_skinning); ++len;
 
 	//	Igor: need restart options
-	if(ps_r2_ls_flags.test(R2FLAG_SOFT_WATER)) {
+	if(LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER)) {
 		defines[def_it].Name = "USE_SOFT_WATER";
 		defines[def_it].Definition = "1";
 
@@ -1110,7 +1168,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES)) {
+	if(LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES)) {
 		defines[def_it].Name = "USE_SOFT_PARTICLES";
 		defines[def_it].Definition = "1";
 
@@ -1121,7 +1179,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(ps_r2_ls_flags.test(R2FLAG_DOF)) {
+	if(LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_DOF)) {
 		defines[def_it].Name = "USE_DOF";
 		defines[def_it].Definition = "1";
 
@@ -1132,7 +1190,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(ps_r2_ls_flags_ext.test(R4FLAG_SCREEN_SPACE_HUD_SHADOWS)) {
+	if(LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R4FLAG_SCREEN_SPACE_HUD_SHADOWS)) {
 		defines[def_it].Name = "USE_HUD_SHADOWS";
 		defines[def_it].Definition = "1";
 
@@ -1143,7 +1201,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(ps_r2_ls_flags_ext.test(R4FLAG_HASHED_ALPHA_TEST)) {
+	if(LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R4FLAG_HASHED_ALPHA_TEST)) {
 		defines[def_it].Name = "USE_HASHED_AREF";
 		defines[def_it].Definition = "1";
 
@@ -1154,7 +1212,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER)) {
+	if(LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER)) {
 		defines[def_it].Name = "USE_SSLR_ON_WATER";
 		defines[def_it].Definition = "1";
 
@@ -1165,7 +1223,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(ps_r_sun_shafts > 0) {
+	if(LightingModeIsDynamicRender() && ps_r_sun_shafts > 0) {
 		xr_sprintf(c_sun_shafts, "%d", ps_r_sun_shafts);
 		defines[def_it].Name = "SUN_SHAFTS_QUALITY";
 		defines[def_it].Definition = c_sun_shafts;
@@ -1177,7 +1235,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(ps_r_sun_quality > 0) {
+	if(LightingModeIsDynamicRender() && ps_r_sun_quality > 0) {
 		xr_sprintf(c_sun_quality, "%d", ps_r_sun_quality);
 		defines[def_it].Name = "SUN_QUALITY";
 		defines[def_it].Definition = c_sun_quality;
@@ -1189,7 +1247,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if(ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX)) {
+	if(LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX)) {
 		defines[def_it].Name = "ALLOW_STEEPPARALLAX";
 		defines[def_it].Definition = "1";
 		def_it++;
