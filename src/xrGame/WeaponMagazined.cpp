@@ -2994,8 +2994,6 @@ void CWeaponMagazined::InitAddons()
 		ResetSilencerKoeffs();
 	}
 
-	RestoreScopeZoomUpgrades();
-
 	HudSelector();
 	inherited::InitAddons();
 }

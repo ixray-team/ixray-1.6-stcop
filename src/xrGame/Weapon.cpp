@@ -4705,14 +4705,6 @@ void CWeapon::LoadScopeEffects(const char* Section)
 	m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, Section, "scope_nightvision", WeaponNightVision.c_str());
 	m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, Section, "scope_dynamic_zoom", HasDynamicZoom);
 
-	// Installed upgrades override defaults when a scope or its HUD is reloaded.
-	for (const shared_str& Upgrade : m_upgrades)
-	{
-		const shared_str Parameters = pSettings->r_string(Upgrade, "section");
-		process_if_exists_set(Parameters.c_str(), "scope_alive_detector", m_zoom_params.m_sUseBinocularVision, false);
-		process_if_exists_set(Parameters.c_str(), "scope_nightvision", m_zoom_params.m_sUseZoomPostprocess, false);
-		process_if_exists_set(Parameters.c_str(), "scope_dynamic_zoom", m_zoom_params.m_bUseDynamicZoom, false);
-	}
 	RefreshScopeDetector();
 	RefreshScopeNightVision();
 }
@@ -4766,13 +4758,6 @@ void CWeapon::LoadCurrentScopeParams(const char* section)
 	}
 
 	m_zoom_params.m_fScopeZoomFactor = pSettings->r_float(section, "scope_zoom_factor");
-
-
-	for (const shared_str& Upgrade : m_upgrades)
-	{
-		const shared_str Parameters = pSettings->r_string(Upgrade, "section");
-		process_if_exists(Parameters.c_str(), "scope_zoom_factor", m_zoom_params.m_fScopeZoomFactor, false);
-	}
 
 	LoadScopeEffects(section);
 
@@ -5560,18 +5545,4 @@ float CWeapon::GetAddonRecoil() const
 //		silencerFactor, grenadeFactor,  adjustedScopeFactor, finalRecoil);
 
 	return finalRecoil;
-}
-
-void CWeapon::RestoreScopeZoomUpgrades()
-{
-	for (const shared_str& Upgrade : m_upgrades)
-	{
-		const shared_str Parameters = pSettings->r_string(Upgrade, "section");
-		process_if_exists(Parameters.c_str(), "ironsight_zoom_factor", m_zoom_params.m_fIronSightZoomFactor, false);
-		if (!IsScopeAttached() && IsZoomEnabled())
-		{
-			process_if_exists(Parameters.c_str(), "scope_zoom_factor", m_zoom_params.m_fIronSightZoomFactor, false);
-		}
-		install_upgrade_scope_zoom(Parameters.c_str(), false);
-	}
 }
