@@ -81,6 +81,7 @@ public:
 
 	virtual void			render_item_ui		();
 	virtual bool			render_item_ui_query();
+	bool ScopeEffectQuery();
 	bool ScopeUIQuery();
 	void RenderScopeUI();
 
@@ -303,6 +304,10 @@ public:
 	bool bLoadAltScopesParams(const char* section);
 	void LoadOriginalScopesParams(const char* section);
 	void LoadCurrentScopeParams(const char* section);
+	void LoadScopeEffects(const char* Section);
+	void RefreshScopeDetector();
+	void RefreshScopeNightVision();
+	bool InstallScopeEffectsUpgrade(const char* Section, bool IsTest);
 	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }

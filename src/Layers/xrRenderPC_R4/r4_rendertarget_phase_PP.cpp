@@ -1,25 +1,28 @@
 #include "stdafx.h"
 #include "r4_rendertarget.h"
 
-void	CRenderTarget::u_calc_tc_noise		(Fvector2& p0, Fvector2& p1)
+void	CRenderTarget::u_calc_tc_noise(Fvector2& p0, Fvector2& p1, float Scale, float FPS, bool IsScope)
 {
 	CTexture*	T					= RCache.get_ActiveTexture	(2);
 	VERIFY2		(T, "Texture #3 in noise shader should be setted up");
-	u32			tw					= iCeil(float(T->get_Width	())*param_noise_scale+EPS_S);
-	u32			th					= iCeil(float(T->get_Height ())*param_noise_scale+EPS_S);
+	u32			tw					= iCeil(float(T->get_Width	())*std::max(Scale, EPS_L)+EPS_S);
+	u32			th					= iCeil(float(T->get_Height ())*std::max(Scale, EPS_L)+EPS_S);
 	VERIFY2		(tw && th, "Noise scale can't be zero in any way");
 
+	float& NoiseTime = IsScope ? ScopeNoiseTime : im_noise_time;
+	u32& ShiftWidth = IsScope ? ScopeNoiseShiftWidth : im_noise_shift_w;
+	u32& ShiftHeight = IsScope ? ScopeNoiseShiftHeight : im_noise_shift_h;
 	// calculate shift from FPSes
-	im_noise_time					-= Device.fTimeDelta;
-	if (im_noise_time<0)			{
-		im_noise_shift_w			= ::Random.randI(tw?tw:1);
-		im_noise_shift_h			= ::Random.randI(th?th:1);
-		float	fps_time			= 1/param_noise_fps;
-		while (im_noise_time<0)		im_noise_time += fps_time;
+	NoiseTime					-= Device.fTimeDelta;
+	if (NoiseTime<0)			{
+		ShiftWidth			= ::Random.randI(tw?tw:1);
+		ShiftHeight			= ::Random.randI(th?th:1);
+		float	fps_time			= 1 / std::max(FPS, EPS_L);
+		while (NoiseTime<0)		NoiseTime += fps_time;
 	}
 
-	u32			shift_w				= im_noise_shift_w;
-	u32			shift_h				= im_noise_shift_h;
+	u32			shift_w				= ShiftWidth;
+	u32			shift_h				= ShiftHeight;
 	float		start_u				= (float(shift_w)+.5f)/(tw);
 	float		start_v				= (float(shift_h)+.5f)/(th);
 	u32			_w					= (u32)RCache.get_target_width();
@@ -103,30 +106,55 @@ struct TL_2c3uv		{
 	}
 };
 
-void CRenderTarget::phase_pp		()
+void CRenderTarget::phase_pp(const SPPInfo* ScopeInfo)
 {
 	// combination/postprocess
 	u32 _w = (u32)RCache.get_target_width();
 	u32 _h = (u32)RCache.get_target_height();
-	u_setrt(_w, _h, RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
+	u_setrt(_w, _h, ScopeInfo ? rt_Accumulator->pRT : rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
+	const float Gray = ScopeInfo ? ScopeInfo->gray : param_gray;
+	const float Noise = ScopeInfo ? ScopeInfo->noise.intensity : param_noise;
+	SPPInfo::SColor ScopeBaseColor = ScopeInfo ? ScopeInfo->color_base : pp_identity.color_base;
+	const u32 BaseColor = ScopeInfo ? u32(ScopeBaseColor) : param_color_base;
+	SPPInfo::SColor ScopeGrayColor = ScopeInfo ? ScopeInfo->color_gray : pp_identity.color_gray;
+	const u32 GrayColor = ScopeInfo ? u32(ScopeGrayColor) : param_color_gray;
+	Fvector Brightness = param_color_add;
+	if (ScopeInfo)
+	{
+		Brightness.set(ScopeInfo->color_add.r, ScopeInfo->color_add.g, ScopeInfo->color_add.b);
+	}
+	const float MapInfluence = ScopeInfo ? ScopeInfo->cm_influence : param_color_map_influence;
+	const float MapInterpolate = ScopeInfo ? ScopeInfo->cm_interpolate : param_color_map_interpolate;
+	if (ScopeInfo)
+	{
+		ScopeColorMaps.SetTextures(ScopeInfo->cm_tex1, ScopeInfo->cm_tex2.size() ? ScopeInfo->cm_tex2 : ScopeInfo->cm_tex1);
+	}
 	//	Element 0 for for normal post-process
 	//	Element 4 for color map post-process
-	bool	bCMap = u_need_CM();
+	bool bCMap = MapInfluence > 0.001f;
 
-	RCache.set_Element(s_postprocess->E[bCMap ? 4 : 0]);
+	RCache.set_Element((ScopeInfo ? ScopePostprocessShader : s_postprocess)->E[bCMap ? 4 : 0]);
 
-	int		gblend		= clampr		(iFloor((1-param_gray)*255.f),0,255);
-	int		nblend		= clampr		(iFloor((1-param_noise)*255.f),0,255);
-	u32					p_color			= subst_alpha		(param_color_base,nblend);
-	u32					p_gray			= subst_alpha		(param_color_gray,gblend);
-	Fvector				p_brightness	= param_color_add	;
+	int		gblend		= clampr		(iFloor((1-Gray)*255.f),0,255);
+	int		nblend		= clampr		(iFloor((1-Noise)*255.f),0,255);
+	u32					p_color			= subst_alpha(BaseColor,nblend);
+	u32					p_gray			= subst_alpha(GrayColor,gblend);
+	Fvector				p_brightness = Brightness	;
 
 	// Draw full-screen quad textured with our scene image
 	u32		Offset;
 	
 	Fvector2			n0,n1,r0,r1,l0,l1;
 	u_calc_tc_duality_ss	(r0,r1,l0,l1);
-	u_calc_tc_noise			(n0,n1);
+	if (ScopeInfo)
+	{
+		const float Shift = ScopeInfo->blur * 0.5f;
+		r0.set((0.5f + Shift) / _w, (0.5f + Shift) / _h);
+		r1.set(1.0f + r0.x - ScopeInfo->duality.h * 0.5f, 1.0f + r0.y - ScopeInfo->duality.v * 0.5f);
+		l0.set(r0.x + ScopeInfo->duality.h * 0.5f, r0.y + ScopeInfo->duality.v * 0.5f);
+		l1.set(1.0f + r0.x, 1.0f + r0.y);
+	}
+	u_calc_tc_noise(n0, n1, ScopeInfo ? ScopeInfo->noise.grain : param_noise_scale, ScopeInfo ? ScopeInfo->noise.fps : param_noise_fps, ScopeInfo != nullptr);
 
 	// Fill vertex buffer
 	float				du	= ps_r1_pps_u, dv = ps_r1_pps_v;
@@ -141,7 +169,7 @@ void CRenderTarget::phase_pp		()
 	static	shared_str	s_brightness	= "c_brightness";
 	static	shared_str	s_colormap		= "c_colormap";
 	RCache.set_c		( s_brightness, p_brightness.x, p_brightness.y, p_brightness.z, 0 );
-	RCache.set_c		(s_colormap, param_color_map_influence,param_color_map_interpolate,0,0);
+	RCache.set_c		(s_colormap, MapInfluence, MapInterpolate,0,0);
 	RCache.set_Geometry	(g_postprocess);
 	RCache.Render		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 }
