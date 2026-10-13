@@ -16,10 +16,11 @@ void CRenderTarget::phase_cas()
 	GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
 }
 
-void CRenderTarget::phase_ui_postprocess(Fcolor* color)
+void CRenderTarget::phase_ui_postprocess(Fcolor* color, bool HasBackground)
 {
 	RCache.set_Element(s_cas->E[3]);
 	RCache.set_Geometry(FSTriangleGeom);
+	RCache.set_c("ui_has_background", HasBackground ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
 
 	if(color)
 	{

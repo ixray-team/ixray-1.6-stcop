@@ -227,7 +227,9 @@ void	CBlender_Compile::PassSET_ablend_mode(u32 idx, bool bABlend, u32 abSRC, u32
 	RS.SetRS(idx, D3DRS_DESTBLEND, bABlend ? abDST : D3DBLEND_ZERO);
 
 #ifdef USE_DX11
-	RS.SetRS(idx, D3DRS_SRCBLENDALPHA, bABlend ? abSRC : D3DBLEND_ONE);
+	// UI targets need coverage alpha, rather than alpha multiplied by itself.
+	const bool IsUIBlend = iElement == SE_R2_UI && bABlend;
+	RS.SetRS(idx, D3DRS_SRCBLENDALPHA, IsUIBlend ? D3DBLEND_ONE : (bABlend ? abSRC : D3DBLEND_ONE));
 	RS.SetRS(idx, D3DRS_DESTBLENDALPHA, bABlend ? abDST : D3DBLEND_ZERO);
 #endif	//	USE_DX11
 }
