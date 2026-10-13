@@ -4,6 +4,7 @@
 #	ifdef IXRAY_PROFILER
 #		include <optick.h>
 #		define PROF_THREAD(Name) OPTICK_THREAD(Name);
+#		define PROF_REGISTER_THREAD(Name) ::Optick::RegisterThread(Name);
 #		define PROF_START_THREAD(Name) OPTICK_START_THREAD(Name) OPTICK_EVENT(Name);
 #		define PROF_STOP_THREAD() OPTICK_STOP_THREAD();
 #		define PROF_START_CAPTURE() OPTICK_START_CAPTURE();
@@ -18,6 +19,7 @@
 #		include <tracy/Tracy.hpp>
 #		define TRACY_CALLSTACK 8
 #   	define PROF_THREAD(Name) tracy::SetThreadName(Name);
+#   	define PROF_REGISTER_THREAD(Name) tracy::SetThreadName(Name);
 #   	define PROF_START_THREAD(Name) TracyFiberEnter(Name);
 #   	define PROF_START_THREAD_HINT(Name, Hint) TracyFiberEnterHint(Name, Hint);
 #   	define PROF_STOP_THREAD() TracyFiberLeave;
@@ -31,6 +33,7 @@
 #		define PROF_MEM_FREE_CAPTURE(Ptr) TracyFree(Ptr);
 #	else // no profiler
 #		define PROF_THREAD(Name);
+#		define PROF_REGISTER_THREAD(Name);
 #		define PROF_START_THREAD(Name);
 #		define PROF_STOP_THREAD();
 #		define PROF_START_CAPTURE();
@@ -58,6 +61,7 @@
 #	undef IXRAY_PROFILER
 #	undef IXRAY_PROFILER_TRACY
 #	define PROF_THREAD(Name);
+#	define PROF_REGISTER_THREAD(Name);
 #	define PROF_START_THREAD(Name);
 #	define PROF_STOP_THREAD();
 #	define PROF_START_CAPTURE();
