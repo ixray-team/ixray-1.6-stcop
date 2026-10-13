@@ -51,6 +51,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
         text: 'Экипировка',
         items: [
           { text: 'Общая информация', link: '/gameplay/equipment/general-information' },
+            { text: 'Стекло маски и капли дождя', link: '/gameplay/equipment/visor-glass' },
           { text: 'Апгрейды предметов', link: '/gameplay/equipment/item-upgrades' },
         ],
       },

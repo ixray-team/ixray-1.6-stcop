@@ -97,6 +97,10 @@ void IGame_Persistent::Start(const char* op)
 
 void IGame_Persistent::Disconnect()
 {
+	VisorRain.Reset();
+	ShaderParams = {};
+	ShaderParams.HelmetCondition = -1.f;
+
 	// clear "need to play" particles
 	destroy_particles(true);
 

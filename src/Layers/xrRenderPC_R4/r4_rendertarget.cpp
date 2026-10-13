@@ -606,6 +606,8 @@ CRenderTarget::CRenderTarget()
 
 		b_gasmask = new CBlenderGasMask;
 		s_gasmask.create(b_gasmask);
+		FlatGasMaskBlender = new CBlenderGasMask(VisorGlassType::Flat);
+		FlatGasMaskShader.create(FlatGasMaskBlender);
 	}
 
 	// SMAA
@@ -1159,6 +1161,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_gamma);
 	xr_delete(b_spp);
 	xr_delete(b_gasmask);
+	xr_delete(FlatGasMaskBlender);
 	xr_delete(b_accum_mask);
 	xr_delete(b_occq);
 	xr_delete(b_cas);
