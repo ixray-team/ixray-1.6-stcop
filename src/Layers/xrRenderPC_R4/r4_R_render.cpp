@@ -6,6 +6,7 @@
 #include "../../xrEngine/xr_object.h"
 
 #include "../xrRender/QueryHelper.h"
+#include "../xrRender/EditorDrawContext.h"
 
 #include "OverlayAPI/FSR3Wrapper.h"
 
@@ -572,7 +573,10 @@ void CRender::Render()
 			// flush
 			Target->phase_scene_prepare();
 			RCache.set_ColorWriteEnable(false);
-			r_dsgraph_render_graph(0);
+			{
+				CEditorFillModeScope FillModeScope(EditorMode);
+				r_dsgraph_render_graph(0);
+			}
 			RCache.set_ColorWriteEnable();
 		}
 		else
@@ -607,6 +611,7 @@ void CRender::Render()
 	if (!split_the_scene_to_minimize_wait)
 	{
 		GPU_EVENT(DEFER_PART0_NO_SPLIT);
+		CEditorFillModeScope FillModeScope(EditorMode);
 		// level, DO NOT SPLIT
 		Target->phase_scene_begin				();
 		r_dsgraph_render_hud					();
@@ -621,6 +626,7 @@ void CRender::Render()
 	else 
 	{
 		GPU_EVENT(DEFER_PART0_SPLIT);
+		CEditorFillModeScope FillModeScope(EditorMode);
 		// level, SPLIT
 		Target->phase_scene_begin				();
 		r_dsgraph_render_graph					(0);
@@ -697,6 +703,7 @@ void CRender::Render()
 	if (split_the_scene_to_minimize_wait)	
 	{
 		GPU_EVENT(DEFER_PART1_SPLIT);
+		CEditorFillModeScope FillModeScope(EditorMode);
 		
 		// level
 		Target->phase_scene_begin				();
@@ -854,7 +861,10 @@ void CRender::render_forward()
 	}
 
 	// May be WBOIT
-	r_dsgraph_render_graph(1);
+	{
+		CEditorFillModeScope FillModeScope(Device.IsEditorMode());
+		r_dsgraph_render_graph(1);
+	}
 
 	bool bDistort = RImplementation.mapDistort.size() || RImplementation.mapHUDDistort.size();
 	GRHI->ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
@@ -901,7 +911,10 @@ void CRender::render_forward()
 		g_EditorRenderHost->DrawSceneHelpers();
 	}
 
-	r_dsgraph_render_sorted(false);
+	{
+		CEditorFillModeScope FillModeScope(Device.IsEditorMode());
+		r_dsgraph_render_sorted(false);
+	}
 
 	g_pGamePersistent->Environment().RenderLast();
 	Target->phase_combine_volumetric();

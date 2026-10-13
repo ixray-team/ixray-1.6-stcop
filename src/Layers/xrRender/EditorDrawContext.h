@@ -65,3 +65,30 @@ private:
 };
 
 extern RENDER_API CEditorDrawContext GEditorDraw;
+
+class CEditorFillModeScope
+{
+public:
+	explicit CEditorFillModeScope(bool Enable) :
+		Active(Enable && GEditorDraw.FillMode != D3DFILL_SOLID)
+	{
+		if (Active)
+		{
+			GRHI->StateManager->OverrideFillMode(true, GEditorDraw.FillMode);
+		}
+	}
+
+	~CEditorFillModeScope()
+	{
+		if (Active)
+		{
+			GRHI->StateManager->OverrideFillMode(false, D3DFILL_SOLID);
+		}
+	}
+
+	CEditorFillModeScope(const CEditorFillModeScope&) = delete;
+	CEditorFillModeScope& operator=(const CEditorFillModeScope&) = delete;
+
+private:
+	bool Active;
+};

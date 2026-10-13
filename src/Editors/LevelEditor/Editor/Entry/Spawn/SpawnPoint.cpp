@@ -307,13 +307,22 @@ void CSpawnPoint::SSpawnData::get_bone_xform	(const char* name, Fmatrix& xform)
 	}
 }
 
-bool CSpawnPoint::SSpawnData::LoadLTX	(CInifile& ini, const char* sect_name)
+bool CSpawnPoint::SSpawnData::LoadLTX(CInifile& ini, const char* sect_name)
 {
-	xr_string temp 		= ini.r_string		(sect_name, "name");
-	Create				(temp.c_str());
+	const char* RealValue = ini.r_string(sect_name, "name");
+	if (RealValue == nullptr)
+	{
+		Msg("!Can't find spawn element section \"%s\" into current level!", sect_name);
+		return false;
+	}
 
-	if(ini.line_exist(sect_name,"fl"))
-		m_flags.assign		(ini.r_u8(sect_name,"fl"));
+	xr_string temp = RealValue;
+	Create(temp.c_str());
+
+	if (ini.line_exist(sect_name, "fl"))
+	{
+		m_flags.assign(ini.r_u8(sect_name, "fl"));
+	}
 		
 	NET_Packet 				Packet;
 	SIniFileStream 			ini_stream;
