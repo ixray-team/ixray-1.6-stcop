@@ -539,6 +539,15 @@ public:
 		tokens					= vid_quality_token;
 
 		inherited::Execute		(args);
+
+		// The renderer library is loaded once at startup. Later calls (user.ltx after -r2/-r4, the
+		// options menu) only change the saved choice: the flags select the device API and game
+		// systems of the running renderer, and the new renderer starts after a restart.
+		if (Device.m_pRender != nullptr)
+		{
+			return;
+		}
+
 		//	0 - r1
 		//	1..3 - r2
 		//	4 - r3
