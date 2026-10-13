@@ -1,182 +1,182 @@
 <af_params x="0" y="0" width="217" height="20">
-    <condition x="0" y="0" width="214" height="20">
-        <caption x="0" y="0" width="15" height="20" stretch="1" complex_mode="0">
+    <condition x="0" y="0" width="214" height="19">
+        <caption x="0" y="0" width="15" height="18" stretch="1" complex_mode="0">
             <texture>ui_am_condition</texture>
-            <text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+            <text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
         </caption>
-        <value x="117" y="0" width="30" height="20" magnitude="100" unit_str="st_proc">
+        <value x="117" y="0" width="30" height="18" magnitude="100" unit_str="st_proc">
             <text font="letterica16" vert_align="c"/>
         </value>
     </condition>
 
-	<health_restore_speed x="0" y="0" width="214" height="20">
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<health_restore_speed x="0" y="0" width="214" height="19">
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_health_restore_speed</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="1000">
+		<value x="117" y="0" width="30" height="18" magnitude="1000" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</health_restore_speed>
 
-	<radiation_restore_speed x="0" y="0" width="214" height="20">
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<radiation_restore_speed x="0" y="0" width="214" height="19">
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_radiation_immunity</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
 		<texture_minus>ui_inv_icon_radiation_restore_speed</texture_minus>
-		<value x="117" y="0" width="30" height="20" magnitude="1000" sign_inverse="1">
+		<value x="117" y="0" width="30" height="18" magnitude="1000" sign_inverse="1" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</radiation_restore_speed>
 
-	<satiety_restore_speed x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<satiety_restore_speed x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_satiety_restore_speed</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="1000">
+		<value x="117" y="0" width="30" height="18" magnitude="1000" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</satiety_restore_speed>
 
-	<power_restore_speed x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<power_restore_speed x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_power_restore_speed</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="1000">
+		<value x="117" y="0" width="30" height="18" magnitude="1000" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</power_restore_speed>
 
-	<bleeding_restore_speed x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<bleeding_restore_speed x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_bleeding_restore_speed</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="1000">
+		<value x="117" y="0" width="30" height="18" magnitude="1000" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</bleeding_restore_speed>
 	
-	<jump_height_modifier x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<jump_height_modifier x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_am_prop_artefact</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="100" unit_str="st_proc">
+		<value x="117" y="0" width="30" height="18" magnitude="100" unit_str="st_proc" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</jump_height_modifier>
 
-	<movement_speed_modifier x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<movement_speed_modifier x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_am_prop_artefact</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="100" unit_str="st_proc">
+		<value x="117" y="0" width="30" height="18" magnitude="100" unit_str="st_proc" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</movement_speed_modifier>
 
-	<sleepiness_restore_speed x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<sleepiness_restore_speed x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_am_prop_artefact</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="10000">
+		<value x="117" y="0" width="30" height="18" magnitude="10000" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</sleepiness_restore_speed>
 
-	<equipment_durability_modifier x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<equipment_durability_modifier x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_am_prop_artefact</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="100" unit_str="st_proc">
+		<value x="117" y="0" width="30" height="18" magnitude="100" unit_str="st_proc" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</equipment_durability_modifier>
 
-	<inventory_weight_modifier x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<inventory_weight_modifier x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_am_prop_artefact</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="100" unit_str="st_proc">
+		<value x="117" y="0" width="30" height="18" magnitude="100" unit_str="st_proc" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</inventory_weight_modifier>
 
 
-	<burn_immunity x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<burn_immunity x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_burn_immunity</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="100">
+		<value x="117" y="0" width="30" height="18" magnitude="100" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</burn_immunity>
 
-	<shock_immunity x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<shock_immunity x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_shock_immunity</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="100">
+		<value x="117" y="0" width="30" height="18" magnitude="100" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</shock_immunity>
 	
-	<radiation_immunity x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<radiation_immunity x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_radiation_immunity</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="100">
+		<value x="117" y="0" width="30" height="18" magnitude="100" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</radiation_immunity>
 	
-	<telepatic_immunity x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<telepatic_immunity x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_telepatic_immunity</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="100">
+		<value x="117" y="0" width="30" height="18" magnitude="100" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</telepatic_immunity>
 	
-	<chemical_burn_immunity x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<chemical_burn_immunity x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_chemical_burn_immunity</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="100">
+		<value x="117" y="0" width="30" height="18" magnitude="100" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</chemical_burn_immunity>
 
-	<af_slots x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<af_slots x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_am_prop_artefact</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="238" y="0" width="33" height="20" magnitude="1">
+		<value x="238" y="0" width="33" height="18" magnitude="1">
 			<text font="letterica16" color="ui_6" align="r" vert_align="c"/>
 		</value>
 	</af_slots>
 
-	<additional_weight x="0" y="0" width="214" height="20" >
-		<caption x="0" y="0" width="15" height="20" stretch="1">
+	<additional_weight x="0" y="0" width="214" height="19" >
+		<caption x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_additional_weight</texture>
-			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
+			<text font="letterica16" vert_align="c" x="18" y="0" color="ui_3"/>
 		</caption>
-		<value x="117" y="0" width="30" height="20" magnitude="1" unit_str="st_kg">
+		<value x="117" y="0" width="30" height="18" magnitude="1" unit_str="st_kg" colorize="1" text_colorize="0">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</additional_weight>

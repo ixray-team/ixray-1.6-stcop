@@ -203,8 +203,11 @@ bool CUIArtefactParams::Check(const shared_str& af_section)
 void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 {
 	DetachAll();
-	if (m_Prop_line)
-		AttachChild( m_Prop_line );
+	const bool HasSeparator = m_Prop_line && is_artefact();
+	if (HasSeparator)
+	{
+		AttachChild(m_Prop_line);
+	}
 
 	CActor* actor = Level().CurrentViewEntity()->cast_actor();
 	if (!actor)
@@ -214,8 +217,10 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 	float val = 0.0f, max_val = 1.0f, h = 0.0f;
 	Fvector2 pos {0,0};
-	if (m_Prop_line)
+	if (HasSeparator)
+	{
 		h = m_Prop_line->GetWndPos().y + m_Prop_line->GetWndSize().y;
+	}
 
 	const auto setValue = [&](UIArtefactParamItem* item, float value)
     {
@@ -344,139 +349,4 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 	}
 
 	SetHeight( h );
-}
-
-/// ----------------------------------------------------------------
-
-UIArtefactParamItem::UIArtefactParamItem()
-{
-	m_caption   = nullptr;
-	m_value     = nullptr;
-	m_magnitude = 1.0f;
-	m_sign_inverse = false;
-	m_text_legacy = nullptr;
-}
-
-UIArtefactParamItem::~UIArtefactParamItem() = default;
-
-UIArtefactParamItem::InitResult UIArtefactParamItem::Init(CUIXml& xml, const char* section)
-{
-	if(!CUIXmlInit::InitStatic(xml, section, 0, this, false))
-		return InitPlain(xml, section);
-
-	XML_NODE* base_node = xml.GetLocalRoot();
-
-	xml.SetLocalRoot( xml.NavigateToNode( section ) );
-
-	m_caption   = UIHelper::CreateStatic( xml, "caption", this );
-	m_value     = UIHelper::CreateStatic( xml, "value",   this );
-	m_magnitude = xml.ReadAttribFlt( "value", 0, "magnitude", 1.0f );
-	m_sign_inverse = (xml.ReadAttribInt( "value", 0, "sign_inverse", 0 ) == 1);
-	
-	const char* unit_str = xml.ReadAttrib( "value", 0, "unit_str", "" );
-	m_unit_str._set( g_pStringTable->translate( unit_str ) );
-	
-	const char* texture_minus = xml.Read( "texture_minus", 0, "" );
-	if ( texture_minus && xr_strlen(texture_minus) )
-	{
-		m_texture_minus._set( texture_minus );
-		
-		const char* texture_plus = xml.Read( "caption:texture", 0, "" );
-		m_texture_plus._set( texture_plus );
-		VERIFY( m_texture_plus.size() );
-	}
-	xml.SetLocalRoot(base_node);
-	return InitResult::Normal;
-}
-
-UIArtefactParamItem::InitResult UIArtefactParamItem::InitPlain(CUIXml& xml, const char* section)
-{
-    string256 buf;
-    xr_strconcat(buf, "static_", section);
-	if (!CUIXmlInit::InitStatic(xml, buf, 0, this, false))
-	{
-		return InitResult::Failed;
-	}
-    m_caption = new CUIStatic();
-    m_caption->SetAutoDelete(true);
-    AttachChild(m_caption);
-    m_caption->Show(false); // hack
-
-    m_value = new CUIStatic();
-    m_value->SetAutoDelete(true);
-    AttachChild(m_value);
-    m_value->Show(false); // hack
-
-	TextOff();
-	m_text_legacy = UIHelper::CreateStatic(xml, buf, this);
-	m_text_legacy->TextureOff();
-	m_text_legacy->SetWidth(1000.f); // St4lker0k765: hack for complex mode
-
-    return InitResult::Plain;
-}
-
-void UIArtefactParamItem::SetDefaultValuesPlain(float magnitude, bool isSignInverse, const shared_str& unit)
-{
-    m_magnitude = magnitude;
-    m_sign_inverse = isSignInverse;
-    m_unit_str = unit;
-}
-void UIArtefactParamItem::SetCaption(const char* name)
-{
-	if (!m_caption || !name)
-	{
-		return;
-	}
-
-	m_caption->TextItemControl()->SetText(name);
-}
-
-void UIArtefactParamItem::SetValue(float value)
-{
-	if (!m_value)
-	{
-		return;
-	}
-
-	value *= m_magnitude;
-	string32	buf;
-	xr_sprintf( buf, "%+.0f", value );
-	
-	string256 str;
-	if ( m_unit_str.size() )
-	{
-		xr_strconcat( str, buf, " ", m_unit_str.c_str() );
-	}
-	else
-	{
-		xr_strconcat( str, buf );
-	}
-	m_value->SetText( str );
-
-	constexpr u32 red_clr = color_argb(255, 210, 50, 50);
-	constexpr u32 green_clr = color_argb(255, 170, 170, 170);
-
-	bool positive = (value >= 0.0f);
-	positive      = (m_sign_inverse)? !positive : positive;
-	u32 color     = (positive      )? green_clr : red_clr;
-	m_value->SetTextColor( color );
-
-	if (m_caption && m_texture_minus.size())
-	{
-		if (positive)
-		{
-			m_caption->InitTexture(m_texture_plus.c_str());
-		}
-		else
-		{
-			m_caption->InitTexture(m_texture_minus.c_str());
-		}
-	}
-
-	// hack
-	if (m_caption && m_text_legacy && !m_caption->IsShown() && !m_value->IsShown())
-	{
-		xr_sprintf(buf, "%s %s %s", m_caption->GetText(), positive ? "%c[green]" : "%c[red]", m_value->GetText());
-		m_text_legacy->SetText(buf);
-	}
 }
