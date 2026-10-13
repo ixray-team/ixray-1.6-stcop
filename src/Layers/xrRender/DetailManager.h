@@ -202,6 +202,11 @@ public:
 	Fvector							m_brush_rebuild_center{ 0.f, 0.f, 0.f };
 	float							m_brush_rebuild_radius = 0.f;
 
+	// Recompute the slide window visibility on the next cache_Update even if the camera
+	// stays in the same slot (editor edits that make slots empty or non-empty).
+	std::atomic<bool>				m_slide_window_dirty{ false };
+	void							RequestSlideWindowUpdate() { m_slide_window_dirty.store(true, std::memory_order_release); }
+
 	// Editor snap geometry (Level Editor overrides these; the game has no snap objects).
 	virtual ObjectList* 			GetSnapList		() { return nullptr; }
 	// World-space triangles (three vertices each) of the snap objects intersecting Box.

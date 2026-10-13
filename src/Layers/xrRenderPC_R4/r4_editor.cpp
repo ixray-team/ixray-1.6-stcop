@@ -116,6 +116,41 @@ namespace
 			C.r_End();
 		}
 	};
+
+	// Scene depth into the viewport-sized overlay depth (no color, depth always written)
+	class CBlender_EditorDepthUpscale final : public IBlender
+	{
+	public:
+		CBlender_EditorDepthUpscale()
+		{
+			description.CLS = 0;
+		}
+
+		const char* getComment() override
+		{
+			return "INTERNAL: editor overlay depth";
+		}
+
+		bool canBeDetailed() override
+		{
+			return false;
+		}
+
+		bool canBeLMAPped() override
+		{
+			return false;
+		}
+
+		void Compile(CBlender_Compile& C) override
+		{
+			IBlender::Compile(C);
+
+			C.r_Pass("stub_fullscreen_triangle", "editor_depth_upscale", false, false, true);
+			C.r_dx10Texture("s_position", r2_RT_P);
+			C.r_dx10Sampler("smp_nofilter");
+			C.r_End();
+		}
+	};
 }
 
 namespace
@@ -144,6 +179,9 @@ void CRender::EditorCreate()
 	EditorUnlitBlender = new CBlender_EditorUnlit();
 	EditorUnlitShader.create(EditorUnlitBlender);
 
+	EditorDepthUpscaleBlender = new CBlender_EditorDepthUpscale();
+	EditorDepthUpscaleShader.create(EditorDepthUpscaleBlender);
+
 	// The game loads them with the level; the editors play levels without it (PIE)
 	Wallmarks = new CWallmarksEngine();
 }
@@ -161,6 +199,8 @@ void CRender::EditorDestroy()
 	xr_delete(Wallmarks);
 	EditorUnlitShader.destroy();
 	xr_delete(EditorUnlitBlender);
+	EditorDepthUpscaleShader.destroy();
+	xr_delete(EditorDepthUpscaleBlender);
 }
 
 bool CRender::EditorIsLit() const
@@ -176,6 +216,9 @@ bool CRender::EditorIsLit() const
 
 void CRender::EditorRenderUnlit()
 {
+	ps_r_taa_jitter.set(0.f, 0.f, -1.f);
+	ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	View = nullptr;
 
@@ -208,11 +251,11 @@ void CRender::EditorRenderUnlit()
 		EditorHiZ.Build();
 	}
 
-	// Albedo into the final target
-	const u32 Width = Target->get_target_width();
-	const u32 Height = Target->get_target_height();
+	// Albedo into a target of the scene size, upscaled to the viewport at the end
+	const u32 Width = (u32)RCache.get_width();
+	const u32 Height = (u32)RCache.get_height();
 
-	Target->u_setrt(Width, Height, Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, nullptr);
+	Target->u_setrt(Width, Height, Target->rt_Generic_0->pRT, nullptr, nullptr, nullptr, nullptr);
 	rmNormal();
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
@@ -227,7 +270,7 @@ void CRender::EditorRenderUnlit()
 	phase = PHASE_NORMAL;
 	render_main(false);
 
-	Target->u_setrt(Width, Height, Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, RDepth);
+	Target->u_setrt(Width, Height, Target->rt_Generic_0->pRT, nullptr, nullptr, nullptr, RDepth);
 	rmNormal();
 	RCache.set_xform_world(Fidentity);
 	RCache.set_xform_view(Device.mView);
@@ -244,6 +287,8 @@ void CRender::EditorRenderUnlit()
 	r_dsgraph_render_sorted(false);
 
 	r_pmask(true, false);
+
+	Target->PhaseEditorScale();
 }
 
 //---------------------------------------------------------------------------
@@ -523,9 +568,36 @@ void CRender::EditorCollect(bool Deferred, bool Shadows)
 //---------------------------------------------------------------------------
 // Output
 
+IRHIDepthStencilView* CRender::EditorOverlayDepth()
+{
+	if (!Target->rt_EditorOverlayDepth)
+	{
+		return RDepth;
+	}
+
+	Target->copy_position();
+
+	IRHIDepthStencilView* Depth = Target->rt_EditorOverlayDepth->pZRT;
+	Target->u_setrt(Target->get_target_width(), Target->get_target_height(), nullptr, nullptr, nullptr, nullptr, Depth);
+	rmNormal();
+
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_Stencil(FALSE);
+	RCache.set_Element(EditorDepthUpscaleShader->E[0]);
+	RCache.set_Geometry(Target->FSTriangleGeom);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+
+	return Depth;
+}
+
 void CRender::EditorBeginOverlay()
 {
-	Target->u_setrt(Target->get_target_width(), Target->get_target_height(), Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, RDepth);
+	IRHIDepthStencilView* Depth = EditorOverlayDepth();
+
+	ps_r_taa_jitter.set(0.f, 0.f, -1.f);
+	ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+
+	Target->u_setrt(Target->get_target_width(), Target->get_target_height(), Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, Depth);
 	rmNormal();
 
 	RCache.set_xform_world(Fidentity);

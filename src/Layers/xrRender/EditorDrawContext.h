@@ -38,6 +38,8 @@ public:
 	u32 FillMode = D3DFILL_SOLID;
 	u32 ShadeMode = D3DSHADE_GOURAUD;
 	float ScreenQuality = 1.f;
+	u32 Upscaler = 1;
+	bool UpscalerReset = false;
 
 	void OnDeviceCreate();
 	void OnDeviceDestroy();

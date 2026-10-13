@@ -524,6 +524,11 @@ CRenderTarget::CRenderTarget()
 		rt_EditorDepth.create("$user$editor_depth", s_dwWidth, s_dwHeight, ERHI_FORMAT::D24_UNORM_S8_UINT);
 		EditorWindowDepth = GRHI->DevicePtr->RenderDSV;
 		GRHI->DevicePtr->RenderDSV = rt_EditorDepth->pZRT;
+
+		if (s_dwWidth != get_target_width() || s_dwHeight != get_target_height())
+		{
+			rt_EditorOverlayDepth.create("$user$editor_overlay_depth", get_target_width(), get_target_height(), ERHI_FORMAT::D24_UNORM_S8_UINT);
+		}
 	}
 
 	// NORMAL

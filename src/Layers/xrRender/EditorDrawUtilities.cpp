@@ -38,7 +38,6 @@ static Fvector boxvert[boxvertcount];
 
 #define FILL_MODE GEditorDraw.FillMode
 #define SHADE_MODE GEditorDraw.ShadeMode
-#define SCREEN_QUALITY GEditorDraw.ScreenQuality
 
 
 // identity box
@@ -1142,13 +1141,13 @@ void CEditorDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const I
 	u32 vBase;
 	FVF::TL* pv = (FVF::TL*)Stream->Lock(6, vs_TL->vb_stride, vBase);
 
-	pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
-	pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelEnd.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
-	pv->set(m_SelEnd.x * SCREEN_QUALITY, m_SelEnd.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+	pv->set(m_SelStart.x, m_SelStart.y, m_SelectionRect, 0.f, 0.f); pv++;
+	pv->set(m_SelStart.x, m_SelEnd.y, m_SelectionRect, 0.f, 0.f); pv++;
+	pv->set(m_SelEnd.x, m_SelEnd.y, m_SelectionRect, 0.f, 0.f); pv++;
 
-	pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
-	pv->set(m_SelEnd.x * SCREEN_QUALITY, m_SelEnd.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
-	pv->set(m_SelEnd.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+	pv->set(m_SelStart.x, m_SelStart.y, m_SelectionRect, 0.f, 0.f); pv++;
+	pv->set(m_SelEnd.x, m_SelEnd.y, m_SelectionRect, 0.f, 0.f); pv++;
+	pv->set(m_SelEnd.x, m_SelStart.y, m_SelectionRect, 0.f, 0.f); pv++;
 
 	Stream->Unlock(6, vs_TL->vb_stride);
 

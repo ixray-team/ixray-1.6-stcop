@@ -155,6 +155,12 @@ void DLSSWrapper::Resize(const ContextParameters& Parameters)
 	}
 
 #ifdef IXR_X64
+	if (Handle != nullptr)
+	{
+		NVSDK_NGX_D3D11_ReleaseFeature(Handle);
+		Handle = nullptr;
+	}
+
 	// Устанавливаем пресет для выбранного режима качества
 	u32 PresetID = GetOptimalPresetForScale(ps_render_scale);
 

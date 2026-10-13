@@ -687,47 +687,7 @@ void UIMainForm::DrawMenuSettings()
 			// Render подменю
 			if (ImGui::BeginMenu("Render"))
 			{
-				// Quality подменю
-				if (ImGui::BeginMenu("Quality"))
-				{
-					const char* qualities[] = { "25%", "50%", "100%", "200%" };
-					const float values[] = { 0.25f, 0.5f, 1.0f, 2.0f };
-
-					for (int i = 0; i < 4; i++)
-					{
-						bool selected = (i == 0 && GEditorDraw.ScreenQuality < 0.3f) ||
-							(i == 1 && GEditorDraw.ScreenQuality >= 0.3f && GEditorDraw.ScreenQuality < 0.6f) ||
-							(i == 2 && GEditorDraw.ScreenQuality >= 0.6f && GEditorDraw.ScreenQuality < 1.1f) ||
-							(i == 3 && GEditorDraw.ScreenQuality >= 1.1f && GEditorDraw.ScreenQuality < 2.1f);
-
-						if (ImGui::MenuItem(qualities[i], "", &selected))
-						{
-							EContext.UI->SetRenderQuality(values[i]);
-							EContext.UI->RedrawScene();
-						}
-					}
-					ImGui::EndMenu();
-				}
-
-				// Fill Mode подменю
-				if (ImGui::BeginMenu("Fill Mode"))
-				{
-					const char* modes[] = { "Point", "Wireframe", "Solid" };
-					D3DFILLMODE d3dModes[] = { D3DFILL_POINT, D3DFILL_WIREFRAME, D3DFILL_SOLID };
-
-					for (int i = 0; i < 3; i++)
-					{
-						bool selected = GEditorDraw.FillMode == d3dModes[i];
-						if (ImGui::MenuItem(modes[i], "", &selected))
-						{
-							GEditorDraw.FillMode = d3dModes[i];
-							EContext.UI->RedrawScene();
-						}
-					}
-					ImGui::EndMenu();
-				}
-
-				DrawFlagMenuItem("Edged Faces", rsEdgedFaces);
+				EditorRenderMenu::DrawItems();
 				ImGui::EndMenu();
 			}
 

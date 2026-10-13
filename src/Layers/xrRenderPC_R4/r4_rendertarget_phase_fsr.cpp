@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "../xrRender/EditorDrawContext.h"
+
 #include "OverlayAPI/FSR3Wrapper.h"
 
 void CRenderTarget::init_fsr()
@@ -40,7 +42,7 @@ bool CRenderTarget::phase_fsr()
 	fsr3Params.displayWidth = (u32)RCache.get_target_width();
 	fsr3Params.displayHeight = (u32)RCache.get_target_height();
 
-	fsr3Params.cameraReset = false;
+	fsr3Params.cameraReset = Device.IsEditorMode() && GEditorDraw.UpscalerReset;
 
 	fsr3Params.cameraJitterX = ps_r_taa_jitter_full.x;
 	fsr3Params.cameraJitterY = ps_r_taa_jitter_full.y;
