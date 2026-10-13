@@ -34,7 +34,7 @@ void CBlender_Sharpening::Compile(CBlender_Compile& C)
 	}
 	else if (C.iElement == 3)
 	{
-		C.r_Pass("stub_fullscreen_triangle", "ui_postprocess", false, false, false, true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
+		C.r_Pass("stub_fullscreen_triangle", "ui_postprocess", false, false, false, true, D3DBLEND_ONE, D3DBLEND_INVSRCALPHA);
 		C.r_dx10Texture("s_image", r2_RT_ui_color);
 		C.r_dx10Sampler("smp_rtlinear");
 		C.r_dx10Sampler("smp_nofilter");

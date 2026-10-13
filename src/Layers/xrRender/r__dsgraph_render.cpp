@@ -210,6 +210,19 @@ ICF void RenderNode(mapSorted_Node& N, bool emissive = false)
 	RCache.set_Element(N.val.se);
 
 #ifdef USE_DX11
+	if (auto* Constant = RCache.get_c("ui_emissive_tint")._get())
+	{
+		const auto* Settings = RImplementation.val_bUI ? Device.m_pRender->GetUIIconLighting() : nullptr;
+		if (Settings)
+		{
+			RCache.set_c(Constant, Settings->Color.x * Settings->Intensity, Settings->Color.y * Settings->Intensity, Settings->Color.z * Settings->Intensity, 1.0f);
+		}
+		else
+		{
+			RCache.set_c(Constant, 1.0f, 1.0f, 1.0f, 1.0f);
+		}
+	}
+
 	if (emissive)
 	{
 		GRHI->StateManager->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);

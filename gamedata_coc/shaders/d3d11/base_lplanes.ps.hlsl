@@ -1,5 +1,7 @@
 #include "common.hlsli"
 
+uniform float4 ui_emissive_tint;
+
 struct v2p
 {
     float2 tc0 : TEXCOORD0; // base
@@ -10,6 +12,8 @@ struct v2p
 float4 main(v2p I) : SV_Target
 {
     float4 t_base = s_base.Sample(smp_base, I.tc0);
-    return GammaToLinear(float4(t_base.xyz, t_base.w * I.c0.w));
+    float4 Color = GammaToLinear(float4(t_base.xyz, t_base.w * I.c0.w));
+    Color.xyz *= ui_emissive_tint.xyz;
+    return Color;
 }
 
