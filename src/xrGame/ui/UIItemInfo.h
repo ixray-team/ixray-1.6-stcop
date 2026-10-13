@@ -32,6 +32,11 @@ private:
 	};
 	_desc_info				m_desc_info;
 	CInventoryItem* m_pInvItem;
+	float BaseTooltipWidth = 0.0f;
+	float BaseDescriptionWidth = 0.0f;
+	float BaseNameWidth = 0.0f;
+	float BaseTradeTipWidth = 0.0f;
+	float BaseCostX = 0.0f;
 public:
 						CUIItemInfo			();
 	virtual				~CUIItemInfo		();
