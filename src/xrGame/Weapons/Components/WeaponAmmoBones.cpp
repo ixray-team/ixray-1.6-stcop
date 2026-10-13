@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "WeaponAmmoBones.h"
 #include "../../Weapon.h"
+#include "../WeaponBoneVisibility.h"
 
 void TLiteAmmoBones::BeginComponent(IECSOwner* O)
 {
@@ -468,72 +469,85 @@ void TAmmoBones::Load(CWeapon* pWeapon, const shared_str& section)
 	}
 }
 
+void TAmmoBones::ApplyToModel(IKinematics* Model, xr_span<const SAmmoBonesParams> Parameters, u32 Count, u8 Type)
+{
+	if (!Model)
+	{
+		return;
+	}
+	for (const auto& Parameter : Parameters)
+	{
+		for (const auto& Bone : Parameter.AllBones)
+		{
+			WeaponBoneVisibility::SetBone(*Model, Bone, false);
+		}
+	}
+	for (const auto& Parameter : Parameters)
+	{
+		if (Parameter.AmmoType == Type || Parameter.AmmoType == CWeapon::undefined_ammo_type)
+		{
+			const auto It = Parameter.ConfigurationMap.find(Count);
+			if (It != Parameter.ConfigurationMap.end())
+			{
+				for (const auto& Bone : It->second.second)
+				{
+					WeaponBoneVisibility::SetBone(*Model, Bone, true);
+				}
+			}
+		}
+	}
+	Model->CalculateBones_Invalidate();
+	Model->CalculateBones(true);
+}
+
+void TAmmoBones::ApplyDefaultIconBones(IKinematics& Model, LPCSTR SectionName, xr_span<const shared_str> InstalledSections)
+{
+	LPCSTR HudSection = WeaponBoneVisibility::ReadString(SectionName, "hud");
+	for (const auto& Parameters : InstalledSections)
+	{
+		HudSection = READ_IF_EXISTS(pSettings, r_string, Parameters, "hud", HudSection);
+	}
+	const auto ReadParameters = [&](LPCSTR Field)
+	{
+		LPCSTR Parameters = pSettings->section_exist(HudSection) && pSettings->line_exist(HudSection, Field) ? HudSection : SectionName;
+		return WeaponBoneVisibility::ReadString(Parameters, Field);
+	};
+	xr_vector<SAmmoBonesParams> Parameters;
+	const s32 MagazineSize = READ_IF_EXISTS(pSettings, r_s32, SectionName, "ammo_mag_size", 0);
+	LPCSTR Common = ReadParameters("ammo_params_section");
+	if (*Common && pSettings->section_exist(Common))
+	{
+		Parameters.emplace_back().Load(Common, MagazineSize);
+	}
+	else
+	{
+		LPCSTR Ammo = WeaponBoneVisibility::ReadString(SectionName, "ammo_class");
+		for (int Index = 0, Count = _GetItemCount(Ammo); Index < Count; ++Index)
+		{
+			string64 Field;
+			xr_sprintf(Field, "ammo_params_section_%d", Index);
+			LPCSTR Section = ReadParameters(Field);
+			if (*Section && pSettings->section_exist(Section))
+			{
+				Parameters.emplace_back(Index).Load(Section, MagazineSize);
+			}
+		}
+	}
+	// Newly spawned server items have an empty magazine and ammo type zero.
+	ApplyToModel(&Model, Parameters, 0, 0);
+}
+
 void TAmmoBones::UpdateAmmoBones(CWeapon* pWeapon, u32 idx, u8 type)
 {
 	if (pWeapon == nullptr)
 	{
 		return;
 	}
-
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, bool status)
-	{
-		if (kin != nullptr)
-		{
-			u16 bone_id = kin->LL_BoneID(bone_name);
-			if (bone_id != BI_NONE)
-			{
-				kin->LL_SetBoneVisible(bone_id, status, false);
-			}
-		}
-	};
-
 	if (pWeapon->m_bUseChamberInUpdateBones)
 	{
 		idx += pWeapon->GetAmmoChamberElapsed();
 	}
-
-	attachable_hud_item* HID = pWeapon->HudItemData();
-	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
-	IKinematics* world_kin = pWeapon->Visual() != nullptr ? PKinematics(pWeapon->Visual()) : nullptr;
-
-	for (const auto& bone_param : m_ammo_params)
-	{
-		for (const auto& bone_name : bone_param.AllBones)
-		{
-			SetVisible(hud_kin, bone_name, false);
-			SetVisible(world_kin, bone_name, false);
-		}
-	}
-
-	for (const auto& bone_param : m_ammo_params)
-	{
-		if (bone_param.AmmoType == type || bone_param.AmmoType == CWeapon::undefined_ammo_type)
-		{
-			auto it = bone_param.ConfigurationMap.find(idx);
-			if (it == bone_param.ConfigurationMap.end())
-			{
-				continue;
-			}
-
-			const auto& node = it->second;
-
-			for (const auto& configuration_bone : node.second)
-			{
-				SetVisible(hud_kin, configuration_bone, true);
-				SetVisible(world_kin, configuration_bone, true);
-			}
-		}
-	}
-
-	if (world_kin != nullptr)
-	{
-		world_kin->CalculateBones_Invalidate();
-		world_kin->CalculateBones(true);
-	}
-
-	if (hud_kin != nullptr)
-	{
-		hud_kin->CalculateBones_Invalidate();
-		hud_kin->CalculateBones(true);
-	}
+	attachable_hud_item* HudItem = pWeapon->HudItemData();
+	ApplyToModel(HudItem ? HudItem->m_model : nullptr, m_ammo_params, idx, type);
+	ApplyToModel(pWeapon->Visual() ? PKinematics(pWeapon->Visual()) : nullptr, m_ammo_params, idx, type);
 }
