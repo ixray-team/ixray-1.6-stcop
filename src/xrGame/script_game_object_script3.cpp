@@ -441,6 +441,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 			
 		///////////////////////////////////////////////////////////////////////////////
 		// CoC
+		.def("is_weapon", &CScriptGameObject::IsWeapon)
 		.def("weapon_in_grenade_mode", &CScriptGameObject::WeaponInGrenadeMode)
 		.def("weapon_set_scope", &CScriptGameObject::Weapon_SetCurrentScope)
 		.def("weapon_get_scope", &CScriptGameObject::Weapon_GetCurrentScope)

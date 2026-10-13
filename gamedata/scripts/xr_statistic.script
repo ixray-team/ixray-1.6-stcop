@@ -7,6 +7,7 @@ actor_statistic = {
 					founded_secrets = 0,
 					artefacts_founded = 0,
 					best_monster = nil,
+					best_monster_profile = nil,
 					favorite_weapon_sect = nil,
 					best_monster_rank = 0,
 					}
@@ -27,44 +28,19 @@ monster_classes = {
 			[clsid.tushkano_s ] 	  = "tushkano",
 		}
 
-weapons_table = {
-									abakan			= 0,
-									ak74			= 0,
-									ak74u			= 0,
-									beretta			= 0,
-									bm16			= 0,
-									colt1911		= 0,
-									desert			= 0,
-									f1				= 0,
-									fn2000			= 0,
-									fort			= 0,
-									g36				= 0,
-									gauss			= 0,
-									groza			= 0,
-									hpsa			= 0,
-									knife			= 0,
-									l85				= 0,
-									lr300			= 0,
-									mp5				= 0,
-									pb				= 0,
-									pkm				= 0,
-									pm				= 0,
-									protecta		= 0,
-									rg				= 0,
-									rgd5			= 0,
-									rpg7			= 0,
-									sig220			= 0,
-									sig550			= 0,
-									spas12			= 0,
-									svd				= 0,
-									svu				= 0,
-									toz34			= 0,
-									usp45			= 0,
-									val				= 0,
-									vintorez		= 0,
-									walther			= 0,
-									wincheaster1300	= 0,
-				}
+weapons_table = {}
+
+local StatisticsIni = ini_file("misc\\pda_statistics.ltx")
+
+function GetMonsterTexture(Key)
+	local Section = actor_statistic.best_monster
+	if Section and StatisticsIni:section_exist(Section) and StatisticsIni:line_exist(Section, Key) then
+		return StatisticsIni:r_string(Section, Key) or ""
+	end
+
+	local Profile = pda.killed_monsters_tbl[actor_statistic.best_monster_profile]
+	return Profile and Profile[Key] or ""
+end
 
 artefacts_table = {
 	af_cristall = false,
@@ -125,9 +101,6 @@ function set_best_monster(obj)
 --		actor_statistic.best_monster = "stalker"
 	else
 		local community = monster_classes[get_clsid(obj)]
-		if not(community) then
-			abort("Statistic ERROR: cannot find monster class for [%s] clsid [%s]", obj:name(), tostring(get_clsid(obj)))
-		end
 		local s_obj = alife():object(obj:id())
 		if(s_obj) then
 			local rank = s_obj:rank()
@@ -164,42 +137,42 @@ function set_best_monster(obj)
 					community = community.."_weak"
 				end
 			end
-			if(rank>actor_statistic.best_monster_rank) then
+			local Section = s_obj:section_name()
+			if StatisticsIni:section_exist(Section) and StatisticsIni:line_exist(Section, "rank") then
+				rank = StatisticsIni:r_u32(Section, "rank")
+			end
+			if not actor_statistic.best_monster or rank > actor_statistic.best_monster_rank then
 				actor_statistic.best_monster_rank = rank
-				actor_statistic.best_monster = community
+				actor_statistic.best_monster = Section
+				actor_statistic.best_monster_profile = community
 			end
 		end
 	end
 end
 
 function set_best_weapon(hit_amount)
-	local active_item = db.actor:active_item()
-	if(active_item) then
-		local s_obj = alife():object(active_item:id())
-		if(s_obj) then
-			local s = s_obj:section_name()
-			for w in string.gfind(s, "%w+") do
-				if(weapons_table[w]~=nil) then
-					weapons_table[w] = weapons_table[w] + hit_amount
-				end
-			end
+	if hit_amount <= 0 then
+		return
+	end
+
+	local ActiveItem = db.actor:active_item()
+	if not ActiveItem or not ActiveItem:is_weapon() then
+		return
+	end
+
+	local Section = ActiveItem:section()
+	local Settings = system_ini()
+	if Settings:line_exist(Section, "parent_section") then
+		local ParentSection = Settings:r_string(Section, "parent_section")
+		if ParentSection and ParentSection ~= "" and Settings:section_exist(ParentSection) then
+			Section = ParentSection
 		end
-		local amount = 0
-		for k,v in pairs(weapons_table) do
-			if(v>amount) then
-				amount = v
-				if(k=="rgd5" or k=="f1") then
-					actor_statistic.favorite_weapon_sect = "grenade_"..k
-				else
-					actor_statistic.favorite_weapon_sect = "wpn_"..k
-				end
-				if(k=="desert") then
-					actor_statistic.favorite_weapon_sect = "wpn_desert_eagle"
-				elseif(k=="rg") then
-					actor_statistic.favorite_weapon_sect = "wpn_rg-6"
-				end
-			end
-		end
+	end
+
+	weapons_table[Section] = (weapons_table[Section] or 0) + hit_amount
+	local Favorite = actor_statistic.favorite_weapon_sect
+	if not Favorite or weapons_table[Section] > (weapons_table[Favorite] or 0) then
+		actor_statistic.favorite_weapon_sect = Section
 	end
 end
 
@@ -212,12 +185,13 @@ function save(package)
 	package:w_u16(actor_statistic.artefacts_founded)
 	package:w_u32(actor_statistic.best_monster_rank)
 	package:w_stringZ(tostring(actor_statistic.best_monster))
+	package:w_stringZ(tostring(actor_statistic.best_monster_profile))
 	package:w_stringZ(tostring(actor_statistic.favorite_weapon_sect))
 	local i = 0
 	for k,v in pairs(weapons_table) do
 		i = i + 1
 	end
-	package:w_u8(i)
+	package:w_u16(i)
 	for k,v in pairs(weapons_table) do
 		package:w_stringZ(tostring(k))
 		package:w_float(v)
@@ -255,11 +229,15 @@ function load(package)
 		actor_statistic.best_monster = str
 	end
 	str = package:r_stringZ()
+	if str ~= "nil" then
+		actor_statistic.best_monster_profile = str
+	end
+	str = package:r_stringZ()
 	if(str~="nil") then
 		actor_statistic.favorite_weapon_sect = str
 	end
 	weapons_table = {}
-	local n = package:r_u8()
+	local n = package:r_u16()
 	for i = 1,n do
 		local k = package:r_stringZ()
 		local v = package:r_float()
