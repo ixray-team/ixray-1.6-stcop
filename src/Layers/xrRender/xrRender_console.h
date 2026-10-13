@@ -159,6 +159,8 @@ extern ECORE_API float 		ps_r2_tonemap_vibrance;					// tonemap vibrance (option
 
 extern bool UseGasmak;
 extern bool UseRainDrops;
+extern u32 g_RainDropsMode;
+extern bool UseWeaponRainDrops;
 
 extern ECORE_API int opt_static;
 extern ECORE_API int opt_dynamic;

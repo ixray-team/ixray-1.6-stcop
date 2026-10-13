@@ -555,6 +555,18 @@ static class cl_rain_params : public RHIShaderConstant::Setup {
 	}
 } binder_rain_params;
 
+class VisorRainBinding final : public RHIShaderConstant::Setup
+{
+public:
+	void setup(RHIShaderConstant* Constant) override
+	{
+		const float Amount = g_pGamePersistent ? g_pGamePersistent->VisorRain.GetAmount() : 0.f;
+		RCache.set_c(Constant, Amount, 0.f, 0.f, 0.f);
+	}
+};
+
+static VisorRainBinding g_VisorRainBinding;
+
 static class cl_inv_v : public RHIShaderConstant::Setup
 {
 	u32	marker;
@@ -773,6 +785,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("screen_scale", &binder_screen_scale);
 
 	r_Constant("rain_params", &binder_rain_params);
+	r_Constant("visor_rain", &g_VisorRainBinding);
 
 	//LVutner: Gunslinger...
 	r_Constant("m_hud_params", &binder_m_hud_params);

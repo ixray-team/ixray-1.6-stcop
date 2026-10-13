@@ -59,4 +59,13 @@
     <string id="ui_rs_device_active">
         <text>Immer aktiv</text>
     </string>
+	<string id="ui_mm_r2_rain_drops_mode">
+		<text>Glass rain drops type</text>
+	</string>
+	<string id="texture">
+		<text>Texture</text>
+	</string>
+	<string id="procedural">
+		<text>Procedural</text>
+	</string>
 </string_table>

@@ -56,6 +56,11 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
             C.r_dx10Texture("s_droplets", "shaders\\fx_hud_droplets");
             break;
         }
+		case ScreenPostProcessType::ProceduralRaindrops:
+		{
+			C.r_Pass("stub_fullscreen_triangle", "procedural_raindrops", false, false, false);
+			break;
+		}
     }
 
     C.r_dx10Texture("s_image", r2_RT_backbuffer_final);
