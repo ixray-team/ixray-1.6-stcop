@@ -411,6 +411,11 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("aim_bone_id",					(const char* (CScriptGameObject::*) () const)&CScriptGameObject::aim_bone_id)
 
 		.def("actor_look_at_point",			&CScriptGameObject::ActorLookAtPoint)
+		.def("actor_focus_point", &CScriptGameObject::ActorFocusPoint)
+		.def("actor_focus_object", &CScriptGameObject::ActorFocusObject)
+		.def("actor_stop_focus", &CScriptGameObject::ActorStopFocus)
+		.def("actor_focus_active", &CScriptGameObject::ActorFocusActive)
+		.def("actor_focus_state", &CScriptGameObject::ActorFocusState)
 		.def("enable_level_changer",		&CScriptGameObject::enable_level_changer)
 		.def("is_level_changer_enabled",	&CScriptGameObject::is_level_changer_enabled)
 
