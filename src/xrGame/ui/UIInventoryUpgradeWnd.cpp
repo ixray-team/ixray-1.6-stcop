@@ -170,7 +170,7 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 		if (enable3DIcons)
         {
 			IRenderVisual* prevVisual = m_item->GetVisual();
-            m_item->SetVisual(icons_struct._3d_static_visual);
+			m_item->SetIconVisual(icons_struct._3d_static_visual);
 			if (m_item->GetVisual() != prevVisual)
 			{
 				m_item->SetXYZ(icons_struct._3d_static_rotate);
