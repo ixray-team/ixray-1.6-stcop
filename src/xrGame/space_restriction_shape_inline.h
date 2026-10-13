@@ -46,7 +46,11 @@ IC	CSpaceRestrictionShape::CSpaceRestrictionShape	(CSpaceRestrictor *space_restr
 
 IC	void CSpaceRestrictionShape::initialize			()
 {
-	VERIFY						(m_initialized);
+	if (!m_initialized)
+	{
+		m_initialized = true;
+		build_border();
+	}
 }
 
 IC	bool CSpaceRestrictionShape::shape				() const

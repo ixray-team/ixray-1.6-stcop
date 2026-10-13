@@ -370,7 +370,7 @@ IC	u32	ILevelGraph::value(const u32 vertex_id, const_iterator &i) const
 
 IC	bool ILevelGraph::is_accessible		(const u32 vertex_id) const
 {
-	return				(valid_vertex_id(vertex_id) && m_access_mask[vertex_id]);
+	return IsEditorNodeEnabled(vertex_id) && m_access_mask[vertex_id];
 }
 
 IC	void ILevelGraph::set_invalid_vertex(u32 &vertex_id, CVertex **vertex) const
@@ -652,6 +652,32 @@ IC	void ILevelGraph::clear_mask_no_check	(u32 vertex_id)
 template<typename P>
 IC	void ILevelGraph::iterate_vertices		(const Fvector &min_position, const Fvector &max_position, const P &predicate) const
 {
+	if (!SearchNodes.empty())
+	{
+		auto Begin = SearchNodes.begin();
+		auto End = SearchNodes.end();
+		if (valid_vertex_position(min_position))
+		{
+			Begin = std::lower_bound(Begin, End, vertex_position(min_position).xz(), &vertex::predicate2);
+		}
+		if (valid_vertex_position(max_position))
+		{
+			End = std::upper_bound(Begin, End, vertex_position(max_position).xz(), &vertex::predicate);
+			if (End != SearchNodes.end())
+			{
+				++End;
+			}
+		}
+		for (auto I = Begin; I != End; ++I)
+		{
+			const u32 ID = SearchNodeIDs[u32(I - SearchNodes.begin())];
+			if (IsEditorNodeEnabled(ID))
+			{
+				predicate(m_nodes[ID]);
+			}
+		}
+		return;
+	}
 	CVertex						*I, *E;
 
 	if (valid_vertex_position(min_position))
@@ -668,7 +694,12 @@ IC	void ILevelGraph::iterate_vertices		(const Fvector &min_position, const Fvect
 		E						= m_nodes + header().vertex_count();
 
 	for ( ; I != E; ++I)
-		predicate				(*I);
+	{
+		if (IsEditorNodeEnabled(u32(I - m_nodes)))
+		{
+			predicate(*I);
+		}
+	}
 }
 
 IC	u32	ILevelGraph::max_x					() const

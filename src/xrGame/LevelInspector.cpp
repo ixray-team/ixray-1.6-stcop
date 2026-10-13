@@ -1996,6 +1996,7 @@ void LevelInspector::DrawLevelGraph()
 	ILevelGraph& lgraph = ai().level_graph();
 	u8 curr_level_id = lgraph.level_id();
 	static u8 last_level_id = curr_level_id;
+	static u32 LastGraphRevision = lgraph.EditorRevision;
 	static const float node_D = lgraph.header().cell_size();
 	static const float node_R_F = node_D * 0.78f;
 	static const float node_R = node_D * 0.5f;
@@ -2007,6 +2008,7 @@ void LevelInspector::DrawLevelGraph()
 		Fvector v3;
 		Fvector v4;
 		Fvector2 c;
+		bool EditorEnabled = true;
 		u32 base_color = 0u;
 		u32 color = 0u;
 	};
@@ -2058,7 +2060,7 @@ void LevelInspector::DrawLevelGraph()
 	//	}
 	//}
 
-	if (last_level_id != curr_level_id)
+	if (last_level_id != curr_level_id || LastGraphRevision != lgraph.EditorRevision)
 	{
 		calc_nodes.wait();
 		vertex_buffer[0].clear();
@@ -2074,6 +2076,7 @@ void LevelInspector::DrawLevelGraph()
 		level_bbox2D.invalidate();
 		nodes_size = lgraph.header().vertex_count();
 		last_level_id = curr_level_id;
+		LastGraphRevision = lgraph.EditorRevision;
 	}
 
 	static int leafs_granularity = nodes_size / devider;
@@ -2131,6 +2134,7 @@ void LevelInspector::DrawLevelGraph()
 				}
 			}
 
+			node.EditorEnabled = lgraph.IsEditorNodeEnabled(i);
 			node.color = node.base_color;
 		}
 		const Fbox& level_bbox = Level().ObjectSpace.GetBoundingVolume();
@@ -2359,6 +2363,10 @@ void LevelInspector::DrawLevelGraph()
 				for (u32 i = node->start_index; i < node->end_index; ++i)
 				{
 					CachedNode& node = cached_nodes[node_indices[i]];
+					if (!node.EditorEnabled)
+					{
+						continue;
+					}
 					u32 color = node.color;
 					node.color = node.base_color;
 					Fvector& vert1 = node.v1;

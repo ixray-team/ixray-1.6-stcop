@@ -49,6 +49,7 @@
 #include "ui/UIPdaWnd.h"
 #include "HUDManager.h"
 #include "MonsterEnemySharingDebug.h"
+#include "ImUtils/AIGridEditor.h"
 #include "../xrUI/UICursor.h"
 
 extern int g_keypress_on_start;
@@ -123,6 +124,7 @@ CGamePersistent::CGamePersistent(void)
 
 CGamePersistent::~CGamePersistent(void)
 {	
+	ShutdownAIGridEditor();
 	FS.r_close					(pDemoFile);
 	Device.seqFrame.Remove		(this);
 	g_pEventManager->Event.Handler_Detach	(eDemoStart,this);
@@ -174,6 +176,7 @@ void CGamePersistent::OnAppStart()
 
 void CGamePersistent::OnAppEnd	()
 {
+	ShutdownAIGridEditor();
 	if(m_pMainMenu->IsActive())
 		m_pMainMenu->Activate(false);
 
@@ -997,6 +1000,9 @@ void CGamePersistent::OnRenderPPUI_main()
 		}
 		MonsterEnemySharingDebug().Draw(HUD().world_prims);
 		HUD().draw_prims();
+#ifdef DEBUG_DRAW
+		RenderAIGridEditorWorld();
+#endif
 	}
 
 	// always

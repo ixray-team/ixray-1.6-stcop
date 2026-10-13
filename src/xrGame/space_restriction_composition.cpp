@@ -69,6 +69,8 @@ bool CSpaceRestrictionComposition::inside					(const Fsphere &sphere)
 
 void CSpaceRestrictionComposition::initialize	()
 {
+	m_restrictions.clear();
+	m_border.clear();
 	u32							n = _GetItemCount(*m_space_restrictors);
 	VERIFY						(n);
 	if (n == 1) {
@@ -82,8 +84,17 @@ void CSpaceRestrictionComposition::initialize	()
 	string256					element;
 
 	for (u32 i=0; i<n ;++i)
-		if (!m_space_restriction_holder->restriction(_GetItem(*m_space_restrictors,i,element))->initialized())
+	{
+		auto Restriction = m_space_restriction_holder->restriction(_GetItem(*m_space_restrictors, i, element));
+		if (!Restriction->initialized())
+		{
+			Restriction->initialize();
+		}
+		if (!Restriction->initialized())
+		{
 			return;
+		}
+	}
 
 	Fsphere						*spheres = (Fsphere*)_alloca(n*sizeof(Fsphere));
 	for (u32 i=0; i<n ;++i) {
