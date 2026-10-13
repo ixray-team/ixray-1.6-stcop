@@ -2941,33 +2941,7 @@ void CWeaponMagazined::InitAddons()
 
 		m_scope_recoil.m_fScopeAttachedRecoilReduction = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_reduction", 1.0f);
 
-		m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, get_scope_section, "scope_alive_detector", 0);
-		m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, get_scope_section, "scope_nightvision", 0);
-
-		if (m_zoom_params.m_sUseBinocularVision.size() <= 0)
-		{
-			DestroyComponent<TBinocularsVision>();
-		}
-		else
-		{
-			if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
-			{
-				Vision->Load(m_zoom_params.m_sUseBinocularVision);
-			}
-		}
-
-		if (m_zoom_params.m_sUseZoomPostprocess.size() <= 0)
-		{
-			DestroyComponent<TWeaponNightVision>();
-		}
-		else
-		{
-			if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
-			{
-				NightVision->SwitchNightVision(false);
-				NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
-			}
-		}
+		LoadScopeEffects(get_scope_section.c_str());
 
 		m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
 		m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
@@ -3001,12 +2975,12 @@ void CWeaponMagazined::InitAddons()
 		CShootingObject::fire_mode = eSilencerFire;
 		if (pSilencer)
 		{
-			CShootingObject::Load(*pSilencer->cNameSect());
+			CShootingObject::LoadEffects(*pSilencer->cNameSect());
 			LoadSoundsSilencer(*pSilencer->cNameSect());
 		}
 		else
 		{
-			CShootingObject::Load(*cNameSect());
+			CShootingObject::LoadEffects(*cNameSect());
 			LoadSoundsSilencer(*cNameSect());
 		}
 		ApplySilencerKoeffs();
@@ -3016,7 +2990,7 @@ void CWeaponMagazined::InitAddons()
 	{
 		CShootingObject::fire_mode = eDefaultFire;
 
-		CShootingObject::Load(*cNameSect());
+		CShootingObject::LoadEffects(*cNameSect());
 		ResetSilencerKoeffs();
 	}
 
