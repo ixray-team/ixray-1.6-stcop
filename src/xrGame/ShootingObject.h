@@ -27,6 +27,7 @@ protected:
 
 	void	reload(const char* section) {};
 	void	Load(const char* section);
+	void LoadEffects(const char* Section);
 
 private:
 	float		m_air_resistance_factor;
