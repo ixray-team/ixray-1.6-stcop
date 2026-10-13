@@ -136,6 +136,7 @@ struct
 	bool spawn_on_level{};
 	bool render_as_table{ true };
 	bool Use3DIcons = false;
+	bool IconSettingsInitialized = false;
 	SpawnManagerIconViews IconCache;
 	string16 spawn_count{};
 	// weapon tab
@@ -209,6 +210,12 @@ void InitSections()
 	{
 		R_ASSERT2(false, "! clsid manager uninitialized!");
 		return;
+	}
+
+	if (!imgui_spawn_manager.IconSettingsInitialized)
+	{
+		imgui_spawn_manager.Use3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+		imgui_spawn_manager.IconSettingsInitialized = true;
 	}
 
 	CUIXml xml_test;
@@ -530,7 +537,7 @@ void RenderSpawnManagerWindow() {
 		ImGui::SetItemTooltip("If this checkbox is enabled the content in the window will be rendered as table otherwise it is a list view");
 
 		ImGui::Checkbox("3D icons", &imgui_spawn_manager.Use3DIcons);
-		ImGui::SetItemTooltip("Use inventory 3D icon settings. Unavailable models use the regular icon. Independent of Enable3DIcons.");
+		ImGui::SetItemTooltip("Use inventory 3D icon settings. Unavailable models use the regular icon. Defaults to Enable3DIcons; can be changed independently.");
 		Render3DIconLightingControls();
 
 		ImGui::InputText("count##IT_InGameSpawnManager", imgui_spawn_manager.spawn_count, sizeof(imgui_spawn_manager).spawn_count);
