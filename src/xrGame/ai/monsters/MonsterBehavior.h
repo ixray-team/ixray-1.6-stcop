@@ -52,6 +52,18 @@ struct SMonsterBehavior
 	float SuppressedHearingRatio = 0.3f;
 	float MeleeHearingRatio = 0.05f;
 	float LastNoiseInterest = 0.f;
+	float MeleeSoundRadius = 5.0f;
+	float ActorJumpSoundRadius = 20.0f;
+	float ActorSprintSoundRadius = 15.0f;
+	float ActorRunSoundRadius = 10.0f;
+	float ActorWalkSoundRadius = 7.0f;
+	float ActorHighCrouchSoundRadius = 5.0f;
+	float ActorLowCrouchSoundRadius = 2.0f;
+	float SniperShotRatio = 1.0f;
+	float ShotgunShotRatio = 0.75f;
+	float AutomaticShotRatio = 0.6f;
+	float PistolShotRatio = 0.4f;
+	float GrenadeLauncherShotRatio = 0.25f;
 	u32 NoiseInterestInterval = 100;
 	u32 HearNoise(CBaseMonster& Monster, CObject* Source, const Fvector& Position, float Power, bool Explosion, bool General, u32 SoundType);
 	bool CrossesDanger(CBaseMonster& Monster, const Fvector& Point) const;

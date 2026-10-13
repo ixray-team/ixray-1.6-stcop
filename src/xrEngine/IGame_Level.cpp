@@ -398,7 +398,7 @@ void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 		// Energy and signal
 		VERIFY(_valid(spatial->sphere.P));
 		float dist = snd_position.distance_to(spatial->sphere.P);
-		const float DistanceRange = L->GetDistanceSoundRange(S->g_type);
+		const float DistanceRange = L->GetDistanceSoundRange(S->g_type, S->g_object);
 		if (DistanceRange >= 0.f)
 		{
 			const float HearingFactor = std::clamp(L->GetHearingRangeFactor(), 0.f, 1.f);
