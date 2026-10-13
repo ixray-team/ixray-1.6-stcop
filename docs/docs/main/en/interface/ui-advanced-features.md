@@ -20,6 +20,7 @@ This page serves as an overview of new UI features. Each page below is provided 
 8. [SVG on HUD](svg-icons.md)
 9. [Weight progress bar](weight-progress-bar.md)
 10. [Sleep dialog](sleep-dialog.md)
+11. [3D inventory icons](3d-icons.md)
 
 ## Quick toggles
 
