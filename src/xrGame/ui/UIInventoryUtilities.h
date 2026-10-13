@@ -78,6 +78,7 @@ struct InventoryIconParams
 	const char* _3d_static_visual;
 	Fvector _3d_static_rotate;
 	float _3d_static_scale;
+	Fvector2 IconOffset{};
 	float scaleIcon;
 
 	const char* icons_texture;

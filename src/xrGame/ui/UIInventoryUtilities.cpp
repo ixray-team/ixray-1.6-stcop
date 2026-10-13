@@ -720,6 +720,7 @@ InventoryUtilities::InventoryIconParams InventoryUtilities::GetInventoryIconPara
 	ret_struct._3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, section, "3d_static_rotate", ret_struct._3d_static_rotate.set(0, 0, 0));
 	ret_struct._3d_static_rotate.mul(M_PI / 180.0f);
 	ret_struct._3d_static_scale = READ_IF_EXISTS(pSettings, r_float, section, "3d_static_scale", 1.f);
+	ret_struct.IconOffset = READ_IF_EXISTS(pSettings, r_fvector2, section, "3d_static_offset", Fvector2().set(0.0f, 0.0f));
 	return ret_struct;
 }
 
