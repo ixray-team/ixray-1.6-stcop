@@ -235,15 +235,18 @@ void CRender::EditorRenderUnlit()
 	r_pmask(true, false);
 
 	rmNormal();
-	Target->phase_scene_begin();
-	r_dsgraph_render_hud();
-	Target->phase_scene_begin();
-	r_dsgraph_render_graph(0);
-	if (CDetailManager* SceneDetails = GetDetails())
 	{
-		SceneDetails->Render();
+		CEditorFillModeScope FillModeScope(true);
+		Target->phase_scene_begin();
+		r_dsgraph_render_hud();
+		Target->phase_scene_begin();
+		r_dsgraph_render_graph(0);
+		if (CDetailManager* SceneDetails = GetDetails())
+		{
+			SceneDetails->Render();
+		}
+		Target->phase_scene_end();
 	}
-	Target->phase_scene_end();
 
 	if (EditorOcclusionCulling)
 	{
@@ -283,8 +286,11 @@ void CRender::EditorRenderUnlit()
 		g_EditorRenderHost->DrawSceneHelpers();
 	}
 
-	r_dsgraph_render_graph(1);
-	r_dsgraph_render_sorted(false);
+	{
+		CEditorFillModeScope FillModeScope(true);
+		r_dsgraph_render_graph(1);
+		r_dsgraph_render_sorted(false);
+	}
 
 	r_pmask(true, false);
 

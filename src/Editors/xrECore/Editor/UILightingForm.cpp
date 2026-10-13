@@ -354,6 +354,8 @@ void UILightingForm::Update()
 		return;
 	}
 
+	EPrefs->OpenLighting = !Form->IsClosed();
+
 	if (!Form->IsClosed())
 	{
 		ImGui::SetNextWindowPos(ImGui::GetWindowViewport()->GetCenter(), ImGuiCond_FirstUseEver, { 0.5f, 0.5f });

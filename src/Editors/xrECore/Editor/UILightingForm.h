@@ -1,7 +1,8 @@
 #pragma once
 
 // Viewport lighting of the editors: lit or unlit view, weather, hemi, AO, placed lights, rain.
-class UILightingForm: public IEditorWnd
+class ECORE_API UILightingForm:
+	public IEditorWnd
 {
 public:
 	UILightingForm() = default;

@@ -86,8 +86,8 @@ namespace
 			return;
 		}
 
-		const char* Names[] = { "Point", "Wireframe", "Solid" };
-		const u32 Modes[] = { D3DFILL_POINT, D3DFILL_WIREFRAME, D3DFILL_SOLID };
+		const char* Names[] = { "Wireframe", "Solid" };
+		const u32 Modes[] = { D3DFILL_WIREFRAME, D3DFILL_SOLID };
 
 		for (u32 Index = 0; Index < std::size(Modes); ++Index)
 		{
