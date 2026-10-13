@@ -79,6 +79,7 @@ void CPHObject::spatial_move()
 
 void CPHObject::Collide()
 {
+	SPHCollideContext& ctx = CPHWorld::GetCollideContext();
 	if (m_flags.test(fl_ray_motions))
 	{
 		CPHMoveStorage* tracers = MoveStorage();
@@ -93,7 +94,7 @@ void CPHObject::Collide()
 			float	magnitude = dir.magnitude();
 			if (magnitude < EPS) continue;
 			dir.mul(1.f / magnitude);
-			g_SpatialSpacePhysic->q_ray(ph_world->r_spatial, 0, ESPATIAL_TYPE::PHYSIC, *from, dir, magnitude);//|ISpatial_DB::O_ONLYFIRST
+			g_SpatialSpacePhysic->q_ray(ctx.Spatial, 0, ESPATIAL_TYPE::PHYSIC, *from, dir, magnitude);//|ISpatial_DB::O_ONLYFIRST
 #ifdef DEBUG
 			if (debug_output().ph_dbg_draw_mask().test(phDbgDrawRayMotions))
 			{
@@ -103,13 +104,14 @@ void CPHObject::Collide()
 			}
 
 #endif
-			qResultVec& result = ph_world->r_spatial;
+			qResultVec& result = ctx.Spatial;
 			qResultIt i = result.begin(), e = result.end();
 			for (; i != e; ++i)
 			{
 				CPHObject* obj2 = (*i)->dcast_CPHObject();
 				if (obj2 == this || !obj2->m_flags.test(st_dirty))		continue;
-				dGeomID	motion_ray = ph_world->GetMotionRayGeom();
+				if (ctx.Collecting && obj2->CollidePhaseIndex < CollidePhaseIndex && obj2->ClearsDirtyOnCollide())	continue;
+				dGeomID	motion_ray = ctx.Collecting ? ctx.GetMotionRay() : ph_world->GetMotionRayGeom();
 				dGeomRayMotionSetGeom(motion_ray, I.dGeom());
 				dGeomRayMotionsSet(motion_ray, (const dReal*)from, (const dReal*)&dir, magnitude);
 				NearCallback(this, obj2, motion_ray, obj2->dSpacedGeom());
@@ -120,17 +122,23 @@ void CPHObject::Collide()
 	CollideDynamics					();
 ///////////////////////////////
 	if(CPHCollideValidator::DoCollideStatic(*this) && !m_flags.test(fl_collision_disable)) CollideStatic(dSpacedGeom(),this);
-	m_flags.set(st_dirty,false);
+
+	if (ctx.Collecting)
+		ctx.DirtyObjects.push_back(this);
+	else
+		m_flags.set(st_dirty,false);
 }
 
 void CPHObject::CollideDynamics()
 {
-	g_SpatialSpacePhysic->q_box(ph_world->r_spatial, 0, ESPATIAL_TYPE::PHYSIC, SpatialComponent->sphere.P, AABB);
-	qResultVec& result = ph_world->r_spatial;
+	SPHCollideContext& ctx = CPHWorld::GetCollideContext();
+	g_SpatialSpacePhysic->q_box(ctx.Spatial, 0, ESPATIAL_TYPE::PHYSIC, SpatialComponent->sphere.P, AABB);
+	qResultVec& result = ctx.Spatial;
 	qResultIt i = result.begin(), e = result.end();
 	for (; i != e; ++i) {
 		CPHObject* obj2 = (*i)->dcast_CPHObject();
 		if (obj2 == this || !obj2->m_flags.test(st_dirty) || m_flags.test(fl_collision_disable) || m_flags.test(fl_collision_disable_dynamic) || obj2->m_flags.test(fl_collision_disable))		continue;
+		if (ctx.Collecting && obj2->CollidePhaseIndex < CollidePhaseIndex && obj2->ClearsDirtyOnCollide())		continue;
 		if (CPHCollideValidator::DoCollide(*this, *obj2)) NearCallback(this, obj2, dSpacedGeom(), obj2->dSpacedGeom());
 	}
 }
@@ -138,7 +146,7 @@ void CPHObject::CollideDynamics()
 void CPHObject::reinit_single()
 {
 	IslandReinit					();
-	qResultVec& result=ph_world->r_spatial	;
+	qResultVec& result=CPHWorld::GetCollideContext().Spatial	;
 	qResultIt i=result.begin(),e=result.end();
 	for(;i!=e;++i)	
 	{
@@ -179,7 +187,7 @@ bool	CPHObject::step_single(dReal	step)
 
 void		CPHObject::	step( float time ) //it is still not a true step for object because it collide the object only not subsequent collision is doing
 {
-	ph_world->r_spatial.resize(0);
+	CPHWorld::GetCollideContext().Spatial.resize(0);
 	reinit_single						();
 	Collide								();
 	IslandStep						( time );

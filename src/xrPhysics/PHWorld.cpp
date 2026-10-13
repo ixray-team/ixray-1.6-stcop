@@ -17,6 +17,7 @@
 #include "../xrEngine/defines.h"
 #include "../xrCore/Collision/xr_area.h"
 #include "../xrCore/FS_internal.h"
+#include <thread>
 
 #ifdef DEBUG_DRAW
 #	include "debug_output.h"
@@ -98,6 +99,8 @@ public IPHWorldUpdateCallbck
 } empty_update_callback;
 
 CPHWorld::CPHWorld() :
+	m_serial_collide_context(nullptr),
+	m_parallel_phase_active(false),
 	m_update_callback(&empty_update_callback),
 	m_default_contact_shotmark(0),
 	m_default_character_contact_shotmark(0),
@@ -119,8 +122,6 @@ CPHWorld::CPHWorld() :
 	b_processing = false;
 	m_gravity = default_world_gravity;
 	b_exist = false;
-
-	r_spatial.reserve(128);
 }
 
 void CPHWorld::SetStep(float s)
@@ -146,6 +147,9 @@ void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 	dWorldID phWorld = 0;
 	m_object_space = os;
 	m_level_objects = lo;
+
+	m_serial_collide_context = new SPHCollideContext();
+	m_parallel_phase_active = false;
 
 	Device.AddSeqFrame(this, mt);
 
@@ -174,8 +178,6 @@ void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 
 void CPHWorld::Destroy()
 {
-	r_spatial.clear();
-
 	Mesh.Destroy();
 
 #ifdef DEBUG
@@ -187,6 +189,8 @@ void CPHWorld::Destroy()
 
 	ContactFeedBacks.clear();
 	ContactEffectors.clear();
+
+	DestroyCollideContexts();
 
 	dCloseODE();
 
@@ -241,21 +245,7 @@ void CPHWorld::Step()
 	++m_steps_short_num;
 	Device.StatPhysics()->ph_collision.Begin	();
 
-
-	for(i_object=m_objects.begin();m_objects.end() != i_object;)
-	{
-		CPHObject* obj=(*i_object);
-#ifdef	DEBUG
-		debug_output().DBG_ObjBeforeCollision( obj );
-#endif
-		obj->Collide();
-#ifdef	DEBUG
-		debug_output().DBG_ObjAfterCollision( obj );
-#endif
-		++i_object;
-	}
-
-
+	ProcessCollisions();
 
 	Device.StatPhysics()->ph_collision.End	();
 
@@ -304,31 +294,7 @@ void CPHWorld::Step()
 	m_update_callback->update_step();
 
 //////////////////////////////////////////////////////////////////////
-	for(i_object=m_objects.begin();m_objects.end() != i_object;)
-	{	
-		CPHObject* obj=(*i_object);
-		++i_object;
-#ifdef DEBUG
-		if(debug_output().ph_dbg_draw_mask().test(phDbgDrawObjectStatistics))
-		{
-			if(obj->Island().IsActive())
-			{
-				debug_output().dbg_islands_num()++;
-				debug_output().dbg_joints_num()+=obj->Island().nj;
-				debug_output().dbg_bodies_num()+=obj->Island().nb;
-			}
-		}
-#endif
-
-#ifdef	DEBUG
-		debug_output().DBG_ObjBeforeStep( obj );
-#endif
-		obj->IslandStep(fixed_step);
-
-#ifdef	DEBUG
-		debug_output().DBG_ObjAfterStep( obj );
-#endif
-	}
+	StepIslands();
 
 	Device.StatPhysics()->ph_core.End		();
 
@@ -372,13 +338,7 @@ void CPHWorld::StepTouch()
 {
 	PROF_EVENT("CPHWorld::StepTouch");
 	PH_OBJECT_I i_object;
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
-	{
-		CPHObject* obj = (*i_object);
-		obj->Collide();
-
-		++i_object;
-	}
+	ProcessCollisions();
 
 	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
@@ -583,4 +543,323 @@ void CPHWorld::GetState(V_PH_WORLD_STATE& state)
 void CPHWorld::StepNumIterations(int num_it)
 {
 	dWorldSetQuickStepNumIterations(nullptr, num_it);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+SPHCollideContext::SPHCollideContext()
+{
+	Pairs.reserve(256);
+	Objects.reserve(64);
+	PairBounds.reserve(65);
+	DirtyObjects.reserve(64);
+}
+
+SPHCollideContext::~SPHCollideContext()
+{
+	if (MotionRay)
+	{
+		dGeomDestroy(MotionRay);
+		MotionRay = nullptr;
+	}
+}
+
+dGeomID SPHCollideContext::GetMotionRay()
+{
+	if (!MotionRay)
+		MotionRay = dCreateRayMotions(0);
+
+	return MotionRay;
+}
+
+void SPHCollideContext::Reset()
+{
+	Spatial.clear();
+	Pairs.clear();
+	Objects.clear();
+	PairBounds.clear();
+	DirtyObjects.clear();
+	Collecting = false;
+}
+
+static thread_local SPHCollideContext* t_current_collide_context = nullptr;
+
+void CPHWorld::SetCurrentCollideContext(SPHCollideContext* ctx)
+{
+	t_current_collide_context = ctx;
+}
+
+SPHCollideContext& CPHWorld::GetCollideContext()
+{
+	if (t_current_collide_context)
+		return *t_current_collide_context;
+
+	VERIFY(ph_world);
+	VERIFY(ph_world->m_serial_collide_context);
+	return *ph_world->m_serial_collide_context;
+}
+
+static bool UseParallelPhysics()
+{
+	if (phThreads == 1)
+		return false;
+
+	return xr_max_concurrency() > 1;
+}
+
+static u32 ParallelPhysicsThreads()
+{
+	if (phThreads > 1)
+		return (u32)phThreads;
+
+	const size_t concurrency = xr_max_concurrency();
+	return concurrency > 1 ? (u32)concurrency : 1u;
+}
+
+template <class F>
+static void RunNamedWorker(std::thread::id caller, const char* name, F&& body)
+{
+	if (std::this_thread::get_id() == caller)
+	{
+		body();
+		return;
+	}
+
+	PROF_THREAD(name);
+	body();
+}
+
+void CPHWorld::EnsureCollideContexts(u32 count)
+{
+	while (m_collide_contexts.size() < count)
+	{
+		SPHCollideContext* ctx = new SPHCollideContext();
+		ctx->GetMotionRay();
+		m_collide_contexts.push_back(ctx);
+	}
+}
+
+void CPHWorld::DestroyCollideContexts()
+{
+	for (SPHCollideContext* ctx : m_collide_contexts)
+		delete ctx;
+
+	m_collide_contexts.clear();
+
+	delete m_serial_collide_context;
+	m_serial_collide_context = nullptr;
+	t_current_collide_context = nullptr;
+}
+
+void CPHWorld::CollectPair(CPHObject* obj1, CPHObject* obj2, dGeomID o1, dGeomID o2, bool static_pair)
+{
+	SPHCollideContext& ctx = GetCollideContext();
+
+	SPHCollidePair& pair = ctx.Pairs.emplace_back();
+	pair.Obj1 = obj1;
+	pair.Obj2 = obj2;
+	pair.O1 = o1;
+	pair.O2 = o2;
+	pair.Static = static_pair;
+}
+
+void CPHWorld::ProcessCollisions()
+{
+	xr_vector<CPHObject*> snapshot;
+	snapshot.reserve(m_objects.Count());
+
+	for (CPHObject* obj : m_objects)
+		snapshot.push_back(obj);
+
+	const u32 count = (u32)snapshot.size();
+
+	for (u32 i = 0; i < count; ++i)
+		snapshot[i]->CollidePhaseIndex = i;
+
+	if (count >= 8 && !m_parallel_phase_active && UseParallelPhysics())
+	{
+		u32 chunks = ParallelPhysicsThreads() * 2;
+		if (chunks > count)
+			chunks = count;
+
+		ProcessCollisionsParallel(snapshot, chunks);
+		ApplyCollisions(chunks);
+		return;
+	}
+
+	PROF_EVENT("PH Collide Serial");
+
+	for (CPHObject* obj : snapshot)
+	{
+#ifdef	DEBUG
+		debug_output().DBG_ObjBeforeCollision(obj);
+#endif
+		obj->Collide();
+#ifdef	DEBUG
+		debug_output().DBG_ObjAfterCollision(obj);
+#endif
+	}
+}
+
+void CPHWorld::ProcessCollisionsParallel(xr_vector<CPHObject*>& objects, u32 chunks)
+{
+	EnsureCollideContexts(chunks);
+
+	m_parallel_phase_active = true;
+
+	xr_vector<SPHCollideContext*>& contexts = m_collide_contexts;
+	const u32 count = (u32)objects.size();
+
+	u32 workers = ParallelPhysicsThreads();
+	if (workers > chunks)
+		workers = chunks;
+
+	const std::thread::id caller = std::this_thread::get_id();
+	xr_atomic_u32 next_chunk(0);
+
+	for (u32 w = 0; w < workers; ++w)
+	{
+		m_physics_tasks.run([&contexts, &objects, &next_chunk, caller, count, chunks]()
+		{
+			RunNamedWorker(caller, "PH Collide Worker", [&]()
+			{
+				PROF_EVENT("PH Collide Collect");
+
+				for (;;)
+				{
+					const u32 chunk = next_chunk.fetch_add(1);
+					if (chunk >= chunks)
+						break;
+
+					SPHCollideContext& ctx = *contexts[chunk];
+					ctx.Reset();
+					ctx.Collecting = true;
+					CPHWorld::SetCurrentCollideContext(&ctx);
+
+					struct SContextReset
+					{
+						~SContextReset() { CPHWorld::SetCurrentCollideContext(nullptr); }
+					} context_reset;
+
+					const u32 begin = (u32)((u64)chunk * count / chunks);
+					const u32 end = (u32)((u64)(chunk + 1) * count / chunks);
+
+					for (u32 i = begin; i < end; ++i)
+					{
+						CPHObject* obj = objects[i];
+						ctx.Objects.push_back(obj);
+						ctx.PairBounds.push_back((u32)ctx.Pairs.size());
+						obj->Collide();
+					}
+
+					ctx.PairBounds.push_back((u32)ctx.Pairs.size());
+				}
+			});
+		});
+	}
+
+	m_physics_tasks.wait();
+}
+
+void CPHWorld::ApplyCollidePair(const SPHCollidePair& pair)
+{
+	if (pair.Static)
+	{
+		CollideStatic(pair.O2, pair.Obj2);
+		return;
+	}
+
+	NearCallback(pair.Obj1, pair.Obj2, pair.O1, pair.O2);
+}
+
+void CPHWorld::ApplyCollisions(u32 chunks)
+{
+	PROF_EVENT("PH Collide Apply");
+
+	for (u32 chunk = 0; chunk < chunks; ++chunk)
+	{
+		SPHCollideContext& ctx = *m_collide_contexts[chunk];
+
+		for (u32 k = 0; k < (u32)ctx.Objects.size(); ++k)
+		{
+			CPHObject* obj = ctx.Objects[k];
+			const u32 pairBegin = ctx.PairBounds[k];
+			const u32 pairEnd = ctx.PairBounds[k + 1];
+
+			for (u32 p = pairBegin; p < pairEnd; ++p)
+				ApplyCollidePair(ctx.Pairs[p]);
+
+			obj->CollidePostProcess();
+		}
+
+		for (CPHObject* obj : ctx.DirtyObjects)
+			obj->ClearDirty();
+	}
+
+	m_parallel_phase_active = false;
+}
+
+void CPHWorld::StepIslands()
+{
+	xr_vector<CPHIsland*> islands;
+	islands.reserve(m_objects.Count());
+
+	for (CPHObject* obj : m_objects)
+	{
+		CPHIsland* island = &obj->Island();
+		if (island->IsActive())
+			islands.push_back(island);
+	}
+
+#ifdef DEBUG
+	if (debug_output().ph_dbg_draw_mask().test(phDbgDrawObjectStatistics))
+	{
+		for (CPHIsland* island : islands)
+		{
+			debug_output().dbg_islands_num()++;
+			debug_output().dbg_joints_num() += island->nj;
+			debug_output().dbg_bodies_num() += island->nb;
+		}
+	}
+#endif
+
+	const u32 count = (u32)islands.size();
+
+	if (count >= 4 && !m_parallel_phase_active && UseParallelPhysics())
+	{
+		u32 workers = ParallelPhysicsThreads();
+		if (workers > count)
+			workers = count;
+
+		const std::thread::id caller = std::this_thread::get_id();
+		xr_atomic_u32 next_island(0);
+
+		for (u32 w = 0; w < workers; ++w)
+		{
+			m_physics_tasks.run([&islands, &next_island, caller, count]()
+			{
+				RunNamedWorker(caller, "PH Island Worker", [&]()
+				{
+					PROF_EVENT("PH Island Step");
+
+					for (;;)
+					{
+						const u32 i = next_island.fetch_add(1);
+						if (i >= count)
+							break;
+
+						islands[i]->Step(fixed_step);
+					}
+				});
+			});
+		}
+
+		m_physics_tasks.wait();
+		return;
+	}
+
+	PROF_EVENT("PH Island Step Serial");
+
+	for (CPHIsland* island : islands)
+		island->Step(fixed_step);
 }

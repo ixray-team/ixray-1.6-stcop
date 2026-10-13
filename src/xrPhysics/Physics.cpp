@@ -49,6 +49,7 @@ const float			default_world_gravity							=	2*9.81f;
 
 /////////////////////////////////////////////////////
 int			phIterations											= 18;
+int			phThreads												= 0;
 float		phTimefactor = 1.f;
 Fbox		phBoundaries = { 1000.f,1000.f,-1000.f,-1000.f,0.f,0.f };
 dWorldID	phWorld;
@@ -250,7 +251,13 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 
 void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2)
 {	
-	
+	SPHCollideContext& ctx = CPHWorld::GetCollideContext();
+	if (ctx.Collecting)
+	{
+		ph_world->CollectPair(obj1, obj2, o1, o2, false);
+		return;
+	}
+
 	CPHIsland* island1=obj1->DActiveIsland();
 	CPHIsland* island2=obj2->DActiveIsland();
 	obj2->near_callback(obj1);
@@ -265,7 +272,13 @@ void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2)
 
 void CollideStatic(dGeomID o2,CPHObject* obj2)
 {
-	
+	SPHCollideContext& ctx = CPHWorld::GetCollideContext();
+	if (ctx.Collecting)
+	{
+		ph_world->CollectPair(obj2, obj2, ph_world->GetMeshGeom(), o2, true);
+		return;
+	}
+
 	CPHIsland* island2=obj2->DActiveIsland();
 	CollideIntoGroup(ph_world->GetMeshGeom(),o2,ContactGroup,island2,island2->MaxJoints());
 }

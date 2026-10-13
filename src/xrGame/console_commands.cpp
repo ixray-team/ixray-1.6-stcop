@@ -2888,6 +2888,7 @@ void CCC_RegisterCommands()
 	// Physics
 	CMD1(CCC_PHFps, "ph_frequency");
 	CMD1(CCC_PHIterations, "ph_iterations");
+	CMD4(CCC_Integer, "ph_threads", &phThreads, 0, 64);
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_NoClip, "g_no_clip");
