@@ -44,6 +44,8 @@ public:
 	bool read_value_from_section(const char* section, const char* param, float& result);
 	bool compute_value(ItemUpgrades_type const& item_upgrades);
 	bool show_result(const char* values);
+	void FitToWidth(float Width, bool WrapText = true);
+	float GetRequiredWidth();
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
@@ -66,6 +68,10 @@ protected:
 	int	m_iNumUpgr = 0;
 	float m_fsec_col_pos = 0.0f;
 	float m_fnext_line_pos = 0.0f;
+	mutable float PendingRowHeight = 0.0f;
+	float BaseWidth = 0.0f;
+	float AvailableWidth = 0.0f;
+	bool CanExpand = false;
 
 public:
 	UIInvUpgPropertiesWnd();
@@ -74,6 +80,7 @@ public:
 
 	void set_upgrade_info(Upgrade_type& upgrade);
 	void set_item_info(CInventoryItem& item);
+	void SetAvailableWidth(float Width, bool AllowExpansion);
 	void UpdateStatsPos(float& h, Fvector2& pos, UIProperty* pWnd, int& counter) const;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
