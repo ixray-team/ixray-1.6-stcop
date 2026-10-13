@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "GamePersistent.h"
+#include "ImUtils/ImUtils.h"
 #include "../xrEngine/Fmesh.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/GameMtlLib.h"
@@ -177,6 +178,8 @@ void CGamePersistent::OnAppStart()
 void CGamePersistent::OnAppEnd	()
 {
 	ShutdownAIGridEditor();
+	DestroySpawnManagerWindow();
+
 	if(m_pMainMenu->IsActive())
 		m_pMainMenu->Activate(false);
 
