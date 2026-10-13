@@ -1445,16 +1445,6 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 							}
 
 							ReadLineLambda();
-							const auto ContentStart = RawLine.find_first_not_of(" \t");
-							if (ContentStart != xr_string::npos &&
-								(RawLine[ContentStart] == '[' || RawLine[ContentStart] == '#' ||
-								 RawLine.compare(ContentStart, 2, "![") == 0 ||
-								 RawLine.compare(ContentStart, 3, "!![") == 0 ||
-								 RawLine.find('=') != xr_string::npos))
-							{
-								FixQuoteLambda();
-								break;
-							}
 
 							value_raw += "\r\n";
 							value_raw += RawLine;
