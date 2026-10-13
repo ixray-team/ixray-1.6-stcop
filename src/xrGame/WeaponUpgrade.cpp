@@ -42,6 +42,8 @@ bool CWeapon::install_upgrade_impl(const char* section, bool test)
 	result |= process_if_exists_set(section, "use_revolver_scheme", m_bUseRevolverScheme, test);
 	result |= process_if_exists_set(section, "use_mosin_scheme", m_bUseMosinScheme, test);
 
+	result |= InstallScopeEffectsUpgrade(section, test);
+
 	return result;
 }
 
@@ -184,7 +186,7 @@ bool CWeapon::install_upgrade_disp(const char* section, bool test)
 	result |= process_if_exists(section, "misfire_start_prob", misfireStartProbability, test);
 	result |= process_if_exists(section, "misfire_end_prob", misfireEndProbability, test);
 
-	bool result2 = process_if_exists_set(section, "zoom_enabled", m_zoom_params.m_bZoomEnabled, test);
+	result |= process_if_exists_set(section, "zoom_enabled", m_zoom_params.m_bZoomEnabled, test);
 
 	return result;
 }
@@ -209,7 +211,7 @@ bool CWeapon::install_upgrade_hit(const char* section, bool test)
 	result |= result2;
 
 	shared_str	s_sHitPowerCritical;
-	result2 = process_if_exists_set(section, "hit_power_critical", s_sHitPower, test);
+	result2 = process_if_exists_set(section, "hit_power_critical", s_sHitPowerCritical, test);
 	if (result2 && !test)
 	{
 		string32 buffer;
@@ -317,26 +319,6 @@ bool CWeapon::install_upgrade_addon(const char* section, bool test)
 			}
 		}
 	}
-	result |= process_if_exists_set(section, "scope_dynamic_zoom", m_zoom_params.m_bUseDynamicZoom, test);
-	result |= process_if_exists_set(section, "scope_nightvision", m_zoom_params.m_sUseZoomPostprocess, test);
-	result |= process_if_exists_set(section, "scope_alive_detector", m_zoom_params.m_sUseBinocularVision, test);
-
-	if (m_zoom_params.m_sUseBinocularVision.size() > 0)
-	{
-		if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
-		{
-			Vision->Load(m_zoom_params.m_sUseBinocularVision);
-		}
-	}
-
-	if (m_zoom_params.m_sUseZoomPostprocess.size() > 0)
-	{
-		if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
-		{
-			NightVision->SwitchNightVision(false);
-			NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
-		}
-	}
 
 	result |= result2;
 
@@ -379,6 +361,25 @@ bool CWeapon::install_upgrade_addon(const char* section, bool test)
 	return result;
 }
 
+bool CWeapon::InstallScopeEffectsUpgrade(const char* Section, bool IsTest)
+{
+	const bool HasDetector = process_if_exists_set(Section, "scope_alive_detector", m_zoom_params.m_sUseBinocularVision, IsTest);
+	const bool HasNightVision = process_if_exists_set(Section, "scope_nightvision", m_zoom_params.m_sUseZoomPostprocess, IsTest);
+	const bool HasDynamicZoom = process_if_exists_set(Section, "scope_dynamic_zoom", m_zoom_params.m_bUseDynamicZoom, IsTest);
+	if (!IsTest)
+	{
+		if (HasDetector)
+		{
+			RefreshScopeDetector();
+		}
+		if (HasNightVision)
+		{
+			RefreshScopeNightVision();
+		}
+	}
+	return HasDetector || HasNightVision || HasDynamicZoom;
+}
+
 bool CWeapon::install_upgrade_hud_sect(const char* section, bool test)
 {
 	const char* str;
@@ -389,9 +390,8 @@ bool CWeapon::install_upgrade_hud_sect(const char* section, bool test)
 	{
 		SetHudSection(str);
 		hud_sect_cache = hud_sect;
+		InitAddons();
 	}
-
-	InitAddons();
 
 	return result;
 }
@@ -406,9 +406,8 @@ bool CWeapon::install_upgrade_hud_sect_silencer(const char* section, bool test)
 	{
 		hud_silencer = pSettings->r_string(section, "hud_silencer");
 		m_bUseSilHud = pSettings->r_bool(section, "hud_when_silencer_is_attached");
+		InitAddons();
 	}
-
-	InitAddons();
 
 	return result;
 }
@@ -423,9 +422,8 @@ bool CWeapon::install_upgrade_hud_sect_scope(const char* section, bool test)
 	{
 		hud_scope = pSettings->r_string(section, "hud_scope");
 		m_bUseScopeHud = pSettings->r_bool(section, "hud_when_scope_is_attached");
+		InitAddons();
 	}
-
-	InitAddons();
 
 	return result;
 }
@@ -440,9 +438,8 @@ bool CWeapon::install_upgrade_hud_sect_gl(const char* section, bool test)
 	{
 		hud_scope = pSettings->r_string(section, "hud_gl");
 		m_bUseGLHud = pSettings->r_bool(section, "hud_when_gl_is_attached");
+		InitAddons();
 	}
-
-	InitAddons();
 
 	return result;
 }
@@ -677,7 +674,10 @@ bool CWeapon::install_upgrade_scope_zoom(const char* section, bool test)
 
 	result |= process_if_exists_set(section, "force_zoom_sound", m_lens_zoom_params.force_zoom_sound, test);
 
-	SetLensParams(m_lens_zoom_params);
+	if (!test)
+	{
+		SetLensParams(m_lens_zoom_params);
+	}
 
 	stepped_params last = m_lens_night_brightness;
 
@@ -703,12 +703,12 @@ bool CWeapon::install_upgrade_scope_zoom(const char* section, bool test)
 	bool b_r2 = !!psDeviceFlags.test(rsR2);
 	b_r2 |= !!psDeviceFlags.test(rsR4);
 
-	if (!b_r2 && m_lens_night_brightness.max_value > 1.0f)
+	if (!test && !b_r2 && m_lens_night_brightness.max_value > 1.0f)
 	{
 		m_lens_night_brightness.max_value = 1.0f;
 	}
 
-	if (abs(m_lens_night_brightness.max_value - last.max_value) > EPS || fabs(m_lens_night_brightness.min_value - last.min_value) > EPS || m_lens_night_brightness.steps != last.steps)
+	if (!test && (abs(m_lens_night_brightness.max_value - last.max_value) > EPS || fabs(m_lens_night_brightness.min_value - last.min_value) > EPS || m_lens_night_brightness.steps != last.steps))
 	{
 		if (m_lens_night_brightness.lens_night_brightness_saved_step >= 0)
 		{

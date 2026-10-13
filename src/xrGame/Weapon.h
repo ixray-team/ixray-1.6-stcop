@@ -360,6 +360,11 @@ public:
 	bool bLoadAltScopesParams(const char* section);
 	void LoadOriginalScopesParams(const char* section);
 	void LoadCurrentScopeParams(const char* section);
+	void RestoreScopeZoomUpgrades();
+	void LoadScopeEffects(const char* Section);
+	void RefreshScopeDetector();
+	void RefreshScopeNightVision();
+	bool InstallScopeEffectsUpgrade(const char* Section, bool IsTest);
 
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
