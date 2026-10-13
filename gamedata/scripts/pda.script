@@ -270,16 +270,10 @@ killed_monsters_tbl =
 	none 				= {back = "", icon = ""}
 }
 function get_monster_back()
-	if not(xr_statistic.actor_statistic.best_monster) or not(killed_monsters_tbl[xr_statistic.actor_statistic.best_monster]) then
-		return tostring(killed_monsters_tbl.none.back)
-	end
-		return tostring(killed_monsters_tbl[xr_statistic.actor_statistic.best_monster].back)
+	return xr_statistic.GetMonsterTexture("back")
 end
 function get_monster_icon()
-	if not(xr_statistic.actor_statistic.best_monster) or not(killed_monsters_tbl[xr_statistic.actor_statistic.best_monster]) then
-		return tostring(killed_monsters_tbl.none.icon)
-	end
-		return tostring(killed_monsters_tbl[xr_statistic.actor_statistic.best_monster].icon)
+	return xr_statistic.GetMonsterTexture("icon")
 end
 function get_favorite_weapon()
 	if not(xr_statistic.actor_statistic.favorite_weapon_sect) then

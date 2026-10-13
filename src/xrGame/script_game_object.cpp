@@ -707,6 +707,11 @@ u32 CScriptGameObject::GetAmmoElapsedWithChamber()
 	return 0;
 }
 
+bool CScriptGameObject::IsWeapon() const
+{
+	return object().cast_weapon() != nullptr || object().cast_grenade() != nullptr;
+}
+
 //FFx0001++
 bool CScriptGameObject::IsWeaponUseChamber()
 {
