@@ -176,6 +176,3 @@ set(YAML_LIB_NAME yaml-cpp.dll)
 
 # MySQL Connector
 set(MYSQLCONNECTOR ${CMAKE_BINARY_DIR}/packages/IXRay.MySQLConnector.8.0.33/)
-
-# DLSS
-set(NVIDIA_DLSS ${CMAKE_BINARY_DIR}/packages/IXRay.DLSS.310.4.0/)
