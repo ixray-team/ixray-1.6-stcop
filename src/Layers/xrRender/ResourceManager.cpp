@@ -461,6 +461,17 @@ void CResourceManager::ReloadTextureDescriptions()
 	m_textures_description.Load();
 }
 
+// Direct3D 9 keeps textures in D3DPOOL_DEFAULT. IDirect3DDevice9::Reset fails while any of them
+// exists, so R1 and R2 always unload and upload textures in bulk, whatever user.ltx says.
+static bool DeferredTextureLoadEnabled()
+{
+#ifdef USE_DX11
+	return Device.IsEditorMode() || ps_r__common_flags.test(RFLAG_DD_TEX_LOAD);
+#else
+	return true;
+#endif
+}
+
 void CResourceManager::DeferredUpload()
 {
 	WaitForTextureLoading();
@@ -469,7 +480,7 @@ void CResourceManager::DeferredUpload()
 		return;
 	}
 
-	if (!Device.IsEditorMode() && !ps_r__common_flags.test(RFLAG_DD_TEX_LOAD))
+	if (!DeferredTextureLoadEnabled())
 	{
 		return;
 	}
@@ -503,7 +514,7 @@ void CResourceManager::DeferredUnload()
 	if (!RDEVICE.b_is_Ready)
 		return;
 
-	if (!Device.IsEditorMode() && !ps_r__common_flags.test(RFLAG_DD_TEX_LOAD))
+	if (!DeferredTextureLoadEnabled())
 		return;
 
 #if defined(USE_DX11)
