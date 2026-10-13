@@ -564,6 +564,8 @@ void CWeapon::Load		(const char* section)
 		}
 	}
 
+	LoadScopeEffects(section);
+
 	auto ReachInAllSections = [&](const char* param_name)
 	{
 		const char* reached_sect = section;
@@ -3659,16 +3661,29 @@ void CWeapon::render_item_ui()
 	ZoomTexture()->Draw		();
 }
 
-bool CWeapon::ScopeUIQuery()
+bool CWeapon::ScopeEffectQuery()
 {
 	return m_pInventory && m_pInventory->ActiveItem() == this && ParentIsActor() && GetHUDmode() &&
 		   Allow3DScopes() && IsScopeAttached() && IsLensedScopeInstalled() &&
 		   IsZoomed() && !IsRotatingToZoom() && !IsAltZoomed() && !IsGrenadeMode() &&
-		   m_zoom_params.m_fZoomRotationFactor2 == 0.0f && m_zoom_params.m_sUseBinocularVision.size() > 0;
+		   m_zoom_params.m_fZoomRotationFactor2 == 0.0f;
+}
+
+bool CWeapon::ScopeUIQuery()
+{
+	return ScopeEffectQuery() && m_zoom_params.m_sUseBinocularVision.size() > 0;
 }
 
 void CWeapon::RenderScopeUI()
 {
+	if (ScopeEffectQuery())
+	{
+		if (TWeaponNightVision* NightVision = GetComponent<TWeaponNightVision>())
+		{
+			NightVision->SwitchNightVision(false);
+			NightVision->UpdateScopePostprocess(GetNightPPEFactor());
+		}
+	}
 	if (ScopeUIQuery())
 	{
 		if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())
@@ -4337,6 +4352,62 @@ bool createWpnScopeXML()
 	return pWpnScopeXml->Load(CONFIG_PATH, UI_PATH, "scopes.xml");
 }
 
+void CWeapon::LoadScopeEffects(const char* Section)
+{
+	const shared_str WeaponDetector = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_alive_detector", nullptr);
+	const shared_str WeaponNightVision = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_nightvision", nullptr);
+	const bool HasDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
+	m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, Section, "scope_alive_detector", WeaponDetector.c_str());
+	m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, Section, "scope_nightvision", WeaponNightVision.c_str());
+	m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, Section, "scope_dynamic_zoom", HasDynamicZoom);
+
+	for (const shared_str& Upgrade : m_upgrades)
+	{
+		const shared_str Parameters = pSettings->r_string(Upgrade, "section");
+		process_if_exists_set(Parameters.c_str(), "scope_alive_detector", m_zoom_params.m_sUseBinocularVision, false);
+		process_if_exists_set(Parameters.c_str(), "scope_nightvision", m_zoom_params.m_sUseZoomPostprocess, false);
+		process_if_exists_set(Parameters.c_str(), "scope_dynamic_zoom", m_zoom_params.m_bUseDynamicZoom, false);
+	}
+
+	RefreshScopeDetector();
+	RefreshScopeNightVision();
+}
+
+void CWeapon::RefreshScopeDetector()
+{
+	if (m_zoom_params.m_sUseBinocularVision.size() > 0)
+	{
+		if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
+		{
+			Vision->Load(m_zoom_params.m_sUseBinocularVision);
+		}
+	}
+	else if (!cast_weapon_binoculars())
+	{
+		DestroyComponent<TBinocularsVision>();
+	}
+}
+
+void CWeapon::RefreshScopeNightVision()
+{
+	if (m_zoom_params.m_sUseZoomPostprocess.size() > 0)
+	{
+		if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
+		{
+			NightVision->SwitchNightVision(false);
+			NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
+		}
+	}
+	else
+	{
+		if (TWeaponNightVision* NightVision = GetComponent<TWeaponNightVision>())
+		{
+			NightVision->SwitchNightVision(false);
+			DestroyComponent<TWeaponNightVision>();
+		}
+	}
+}
+
 void CWeapon::LoadCurrentScopeParams(const char* section)
 {
 	shared_str scope_tex_name = "none";
@@ -4350,30 +4421,7 @@ void CWeapon::LoadCurrentScopeParams(const char* section)
 
 	m_zoom_params.m_fScopeZoomFactor = pSettings->r_float(section, "scope_zoom_factor");
 
-	if (bScopeIsHasTexture)
-	{
-		m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
-		m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", false);
-
-		m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
-
-		if (m_zoom_params.m_sUseBinocularVision.size() > 0)
-		{
-			if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
-			{
-				Vision->Load(m_zoom_params.m_sUseBinocularVision);
-			}
-		}
-
-		if (m_zoom_params.m_sUseZoomPostprocess.size() > 0)
-		{
-			if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
-			{
-				NightVision->SwitchNightVision(false);
-				NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
-			}
-		}
-	}
+	LoadScopeEffects(section);
 
 	if (m_UIScope)
 	{

@@ -5,6 +5,7 @@
 // ZFar  - always 1.0f
 
 #include "pure.h"
+#include "CameraManager.h"
 #include "../xrCore/FTimer.h"
 #include "Stats.h"
 
@@ -76,6 +77,9 @@ public:
 		float ActorWeaponCondition = -1.0f;
 		float ActorWeaponLoading = 1.0f;
 	} hudViewportData;
+
+	SPPInfo ScopePostprocess;
+	bool ScopePostprocessActive = false;
 
 	// Engine flow-control
 	u32										dwFrame;
