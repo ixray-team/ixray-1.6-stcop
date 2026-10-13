@@ -18,8 +18,6 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 
-#include "EffectorDOF.h"
-#include "ActorEffector.h"
 #include "GamePersistent.h"
 
 bool EnableTalkDof = true;
@@ -54,6 +52,7 @@ CUITalkWnd::CUITalkWnd()
 
 CUITalkWnd::~CUITalkWnd()
 {
+	RestoreTalkEffects();
 }
 
 void CUITalkWnd::InitTalkWnd()
@@ -70,8 +69,9 @@ void CUITalkWnd::InitTalkWnd()
 void CUITalkWnd::InitTalkDialog()
 {
 	m_pActor = Actor();
-	if (m_pActor != nullptr && !m_pActor->IsTalking())
+	if (m_pActor == nullptr || !m_pActor->IsTalking())
 	{
+		HideDialog();
 		return;
 	}
 
@@ -109,8 +109,16 @@ void CUITalkWnd::InitTalkDialog()
 	UITalkDialogWnd->ResetQuestionSelection();
 
 	InitOthersStartDialog();
+	if (!IsShown() || !m_pActor)
+	{
+		return;
+	}
 	NeedUpdateQuestions();
 	Update();
+	if (!IsShown() || !m_pActor)
+	{
+		return;
+	}
 
 	UITalkDialogWnd->mechanic_mode = m_pOthersInvOwner->SpecificCharacter().upgrade_mechanic();
 	UITalkDialogWnd->SetOsoznanieMode(m_pOthersInvOwner->NeedOsoznanieMode());
@@ -251,6 +259,7 @@ void CUITalkWnd::Update()
 	if (g_actor && m_pActor && !m_pActor->IsTalking())
 	{
 		StopTalk();
+		return;
 	}
 	else
 	{
@@ -260,12 +269,17 @@ void CUITalkWnd::Update()
 		if (nullptr == pOurGO || nullptr == pOtherGO)
 		{
 			HideDialog();
+			return;
 		}
 	}
 
 	if (m_bNeedToUpdateQuestions)
 	{
 		UpdateQuestions();
+		if (!IsShown() || !m_pActor)
+		{
+			return;
+		}
 
 		if (!UITalkDialogWnd->m_ClickedQuestionID.size() || !UITalkDialogWnd->HasQuestionWithID(UITalkDialogWnd->m_ClickedQuestionID))
 			UITalkDialogWnd->SetFirstQuestionSelected();
@@ -276,6 +290,7 @@ void CUITalkWnd::Update()
 
 	inherited::Update();
 	UpdateCameraDirection(m_pOthersInvOwner->cast_game_object(), m_pOthersInvOwner->GetFocusingOnNpc());
+	UpdateTalkDof();
 	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
 
 	if (playing_sound())
@@ -294,42 +309,49 @@ void CUITalkWnd::Draw()
 
 void CUITalkWnd::Show(bool status)
 {
-	inherited::Show					(status);
-	if(status)
+	if (status && m_pActor && IsShown())
+	{
+		return;
+	}
+
+	inherited::Show(status);
+	if (status)
 	{
 		ActionRepeaters()->ResetAll(nullptr);
-		InitTalkDialog				();
+		InitTalkDialog();
+		if (!IsShown() || !m_pActor)
+		{
+			return;
+		}
 		m_pActor->ResetCameraFocus();
 
 		if (m_pOthersInvOwner->GetFocusingOnNpc())
 		{
 			if (EnableTalkDof && !fsimilar(m_TalkDof.w, -1.0f))
 			{
-				m_pActor->Cameras().AddCamEffector(new CEffectorDOF(m_TalkDof, 0.0f));
+				HasTalkDof = true;
+				UpdateTalkDof();
 			}
 
-			g_fov = g_fov * m_talkFovScale;
+			SavedFov = g_fov;
+			HasTalkFov = true;
+			g_fov = SavedFov * m_talkFovScale;
 		}
 	}
 	else
 	{
-		StopSnd						();
-		UITalkDialogWnd->Hide		();
+		RestoreTalkEffects();
+		StopSnd();
+		UITalkDialogWnd->Hide();
 
-		if(m_pActor)
+		if (m_pActor)
 		{
-			if (m_pOthersInvOwner->GetFocusingOnNpc())
+			ToTopicMode();
+
+			if (m_pActor->IsTalking())
 			{
-				g_fov = g_fov / m_talkFovScale;
-
-				GamePersistent().RestoreEffectorDOF();
-				m_pActor->Cameras().RemoveCamEffector(eCEDOF);
-			}
-
-			ToTopicMode					();
-
-			if (m_pActor->IsTalking()) 
 				m_pActor->StopTalk();
+			}
 
 			m_pActor = nullptr;
 		}
@@ -344,6 +366,38 @@ bool  CUITalkWnd::TopicMode			()
 void  CUITalkWnd::ToTopicMode		() 
 {
 	m_pCurrentDialog.reset();// = DIALOG_SHARED_PTR((CPhraseDialog*)nullptr);
+}
+
+void CUITalkWnd::UpdateTalkDof()
+{
+	if (!HasTalkDof || !m_pOthersInvOwner)
+	{
+		return;
+	}
+
+	Fvector TargetPosition;
+	m_pOthersInvOwner->cast_game_object()->Center(TargetPosition);
+	Fvector TargetDirection;
+	TargetDirection.sub(TargetPosition, Device.vCameraPosition);
+	const float FocusDistance = std::max(TargetDirection.dotproduct(Device.vCameraDirection), EPS_L);
+	// Keep the configured blur distances relative to the conversation partner.
+	Fvector Dof;
+	Dof.set(FocusDistance + m_TalkDof.x - m_TalkDof.y, FocusDistance, FocusDistance + m_TalkDof.z - m_TalkDof.y);
+	GamePersistent().SetEffectorDOF(Dof);
+}
+
+void CUITalkWnd::RestoreTalkEffects()
+{
+	if (HasTalkFov)
+	{
+		g_fov = SavedFov;
+		HasTalkFov = false;
+	}
+	if (HasTalkDof)
+	{
+		GamePersistent().RestoreEffectorDOF();
+		HasTalkDof = false;
+	}
 }
 
 void CUITalkWnd::AskQuestion()
