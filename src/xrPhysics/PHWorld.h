@@ -62,8 +62,9 @@ class CPHWorld	:	public	pureFrame,
 	void						DestroyCollideContexts		()										;
 	void						ProcessCollisions			()										;
 	void						ProcessCollisionsParallel	(xr_vector<CPHObject*>& objects, u32 chunks);
+	void						NarrowphaseCollisions		(u32 chunks)							;
 	void						ApplyCollisions				(u32 chunks)							;
-	void						ApplyCollidePair			(const SPHCollidePair& pair)			;
+	void						ApplyCollidePair			(const SPHCollidePair& pair, dContact* contacts);
 	void						StepIslands					()										;
 
 public:

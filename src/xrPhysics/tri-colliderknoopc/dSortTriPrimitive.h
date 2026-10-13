@@ -70,7 +70,11 @@ int SetBackTrajectoryCnt(const dReal* p,const dReal*last_pos,Triangle &neg_tri, 
 	SURFACE(Contacts,0)->mode=neg_tri.T->material;
   
 	if(dGeomGetUserData(o1)->callback)
+	{
+		static xrCriticalSection callback_lock;
+		xrCriticalSectionGuard guard(&callback_lock);
 		dGeomGetUserData(o1)->callback(neg_tri.T,Contacts);
+	}
 	return 1;
 }
 

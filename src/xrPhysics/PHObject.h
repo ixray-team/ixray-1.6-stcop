@@ -54,6 +54,7 @@ public:
 					tpStaticShell
 			};
 			u32					CollidePhaseIndex = 0;
+			xrSRWLock			CollideGuard;
 protected:
 				Fvector		AABB;
 protected:

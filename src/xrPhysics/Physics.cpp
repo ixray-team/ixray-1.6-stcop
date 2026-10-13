@@ -73,23 +73,13 @@ IC void add_contact_body_effector(dBodyID body,const dContact& c,SGameMtl* mater
 	}
 }
 
-IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,CPHIsland* world,const int &MAX_CONTACTS)
+int ApplyContacts(dContact* contacts, int n, dGeomID o1, dGeomID o2, dJointGroupID jointGroup, CPHIsland* world, const int &MAX_CONTACTS)
 {
-	const int RS= 800+10;
-	const int N = RS;
-	
-	static dContact contacts[RS];
 	int	collided_contacts=0;
-	// get the contacts up to a maximum of N contacts
-	int n;
-	
+
 	VERIFY	(o1);
 	VERIFY	(o2); 
-	VERIFY(&contacts[0].geom);
-	n		= dCollide(o1, o2, N, &contacts[0].geom, sizeof(dContact));	
-
-	if(n>N-1)
-		n=N-1;
+	VERIFY(contacts);
 	int i;
 	
 
@@ -247,6 +237,21 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		}
 	}
 	return collided_contacts;
+}
+
+IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup, CPHIsland* world, const int &MAX_CONTACTS)
+{
+	const int RS = 800 + 10;
+	const int N = RS;
+
+	thread_local xr_vector<dContact> contacts;
+	contacts.resize(N);
+
+	int n = dCollide(o1, o2, N, &contacts[0].geom, sizeof(dContact));
+	if (n > N - 1)
+		n = N - 1;
+
+	return ApplyContacts(contacts.data(), n, o1, o2, jointGroup, world, MAX_CONTACTS);
 }
 
 void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2)

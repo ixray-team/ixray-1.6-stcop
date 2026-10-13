@@ -549,6 +549,8 @@ void CPHWorld::StepNumIterations(int num_it)
 
 SPHCollideContext::SPHCollideContext()
 {
+	Contacts.reserve(1024);
+	ContactScratch.resize(800 + 10);
 	Pairs.reserve(256);
 	Objects.reserve(64);
 	PairBounds.reserve(65);
@@ -575,6 +577,7 @@ dGeomID SPHCollideContext::GetMotionRay()
 void SPHCollideContext::Reset()
 {
 	Spatial.clear();
+	Contacts.clear();
 	Pairs.clear();
 	Objects.clear();
 	PairBounds.clear();
@@ -683,6 +686,7 @@ void CPHWorld::ProcessCollisions()
 			chunks = count;
 
 		ProcessCollisionsParallel(snapshot, chunks);
+		NarrowphaseCollisions(chunks);
 		ApplyCollisions(chunks);
 		return;
 	}
@@ -761,15 +765,105 @@ void CPHWorld::ProcessCollisionsParallel(xr_vector<CPHObject*>& objects, u32 chu
 	m_physics_tasks.wait();
 }
 
-void CPHWorld::ApplyCollidePair(const SPHCollidePair& pair)
+static void RunNarrowphase(SPHCollideContext& ctx, SPHCollidePair& pair)
 {
-	if (pair.Static)
+	const int N = 800 + 10;
+	int n = dCollide(pair.O1, pair.O2, N, &ctx.ContactScratch[0].geom, sizeof(dContact));
+	if (n > N - 1)
+		n = N - 1;
+
+	const u32 first = (u32)ctx.Contacts.size();
+
+	if (n > 0)
+		ctx.Contacts.insert(ctx.Contacts.end(), ctx.ContactScratch.begin(), ctx.ContactScratch.begin() + n);
+
+	pair.FirstContact = first;
+	pair.ContactCount = (u32)n;
+}
+
+static void NarrowphasePair(SPHCollideContext& ctx, SPHCollidePair& pair)
+{
+	CPHObject* first = pair.Obj1;
+	CPHObject* second = pair.Obj2;
+
+	if (first == second)
 	{
-		CollideStatic(pair.O2, pair.Obj2);
+		xrSRWLockGuard guard(&first->CollideGuard, false);
+		RunNarrowphase(ctx, pair);
 		return;
 	}
 
-	NearCallback(pair.Obj1, pair.Obj2, pair.O1, pair.O2);
+	if (first->CollidePhaseIndex < second->CollidePhaseIndex)
+	{
+		xrSRWLockGuard guard1(&first->CollideGuard, false);
+		xrSRWLockGuard guard2(&second->CollideGuard, false);
+		RunNarrowphase(ctx, pair);
+	}
+	else
+	{
+		xrSRWLockGuard guard2(&second->CollideGuard, false);
+		xrSRWLockGuard guard1(&first->CollideGuard, false);
+		RunNarrowphase(ctx, pair);
+	}
+}
+
+void CPHWorld::NarrowphaseCollisions(u32 chunks)
+{
+	xr_vector<SPHCollideContext*>& contexts = m_collide_contexts;
+	const std::thread::id caller = std::this_thread::get_id();
+	xr_atomic_u32 next_chunk(0);
+
+	u32 workers = ParallelPhysicsThreads();
+	if (workers > chunks)
+		workers = chunks;
+
+	for (u32 w = 0; w < workers; ++w)
+	{
+		m_physics_tasks.run([&contexts, &next_chunk, caller, chunks]()
+		{
+			RunNamedWorker(caller, "PH Narrowphase Worker", [&]()
+			{
+				PROF_EVENT("PH Collide Narrowphase");
+
+				for (;;)
+				{
+					const u32 chunk = next_chunk.fetch_add(1);
+					if (chunk >= chunks)
+						break;
+
+					SPHCollideContext& ctx = *contexts[chunk];
+					for (SPHCollidePair& pair : ctx.Pairs)
+						NarrowphasePair(ctx, pair);
+				}
+			});
+		});
+	}
+
+	m_physics_tasks.wait();
+}
+
+void CPHWorld::ApplyCollidePair(const SPHCollidePair& pair, dContact* contacts)
+{
+	if (pair.Static)
+	{
+		CPHIsland* island = pair.Obj2->DActiveIsland();
+		ApplyContacts(contacts, (int)pair.ContactCount, GetMeshGeom(), pair.O2, ContactGroup, island, island->MaxJoints());
+		return;
+	}
+
+	CPHIsland* island1 = pair.Obj1->DActiveIsland();
+	CPHIsland* island2 = pair.Obj2->DActiveIsland();
+	pair.Obj2->near_callback(pair.Obj1);
+	int MAX_CONTACTS = -1;
+	if (!island1->CanMerge(island2, MAX_CONTACTS))
+		return;
+
+	if (ApplyContacts(contacts, (int)pair.ContactCount, pair.O1, pair.O2, ContactGroup, island1, MAX_CONTACTS) != 0)
+	{
+		pair.Obj1->MergeIsland(pair.Obj2);
+		if (!pair.Obj2->is_active())
+			pair.Obj2->EnableObject(pair.Obj1);
+	}
 }
 
 void CPHWorld::ApplyCollisions(u32 chunks)
@@ -787,7 +881,10 @@ void CPHWorld::ApplyCollisions(u32 chunks)
 			const u32 pairEnd = ctx.PairBounds[k + 1];
 
 			for (u32 p = pairBegin; p < pairEnd; ++p)
-				ApplyCollidePair(ctx.Pairs[p]);
+			{
+				const SPHCollidePair& pair = ctx.Pairs[p];
+				ApplyCollidePair(pair, ctx.Contacts.data() + pair.FirstContact);
+			}
 
 			obj->CollidePostProcess();
 		}

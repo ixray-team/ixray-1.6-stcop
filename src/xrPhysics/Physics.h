@@ -29,6 +29,7 @@ extern CBlockAllocator<CPHContactBodyEffector,128> ContactEffectors;
 
 void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2);
 void CollideStatic(dGeomID o2,CPHObject* obj2);
+int  ApplyContacts(dContact* contacts, int n, dGeomID o1, dGeomID o2, dJointGroupID jointGroup, CPHIsland* world, const int &MAX_CONTACTS);
 
 class CPHElement;
 class CPHShell;

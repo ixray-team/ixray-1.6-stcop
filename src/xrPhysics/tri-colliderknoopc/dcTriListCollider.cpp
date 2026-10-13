@@ -20,6 +20,12 @@ dcTriListCollider::dcTriListCollider(dxGeom* Geometry)
 
 dcTriListCollider::~dcTriListCollider() = default;
 
+void dcTriListCollider::Rebind(dxGeom* Geometry_)
+{
+	Geometry = Geometry_;
+	GeomData = (dxTriList*)dGeomGetClassData(Geometry_);
+}
+
 int dCollideBP (const dxGeom* o1, const dxGeom* o2, int flags, dContactGeom *contact, int skip);	// ODE internal function
 
 

@@ -25,6 +25,7 @@ class dcTriListCollider
 public:
 	dcTriListCollider(dxGeom* Geometry);
 	~dcTriListCollider();
+	void Rebind(dxGeom* Geometry_);
 	int CollideBox(dxGeom* Box, int Flags, dContactGeom* Contact, int Stride);
 	int CollideSphere(dxGeom* Sphere, int Flags, dContactGeom* Contact, int Stride);
 	int CollideCylinder(dxGeom* Cylinder, int Flags, dContactGeom* Contacts, int Stride);
