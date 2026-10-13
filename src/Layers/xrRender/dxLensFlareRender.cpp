@@ -29,10 +29,6 @@ void dxLensFlareRender::Copy(ILensFlareRender &_in)
 
 void dxLensFlareRender::Render(CLensFlare &owner, bool bSun, bool bFlares, bool bGradient)
 {
-	if (Device.IsEditorMode())
-	{
-		return;
-	}
 	PROF_EVENT("dxLensFlareRender::Render");
 	Fcolor dwLight;
 	Fcolor color;

@@ -247,20 +247,9 @@ void	CBlender_Screen_SET::Compile	(CBlender_Compile& C)
 			C.StageBegin		();
 			C.StageSET_Address	(oClamp.value?D3DTADDRESS_CLAMP:D3DTADDRESS_WRAP);
 			
-			// This code fixes the rendering of wallmarks in editors, 
-			// but breaks dynamic wallmarks in the game, so here ifdef
-			if (Device.IsEditorMode())
-			{
-				C.StageSET_Color(D3DTA_TEXTURE, D3DTOP_BLENDDIFFUSEALPHA, D3DTA_DIFFUSE);
-				C.StageSET_Alpha(D3DTA_TEXTURE, D3DTOP_MODULATE, D3DTA_DIFFUSE);
-				C.Stage_Texture(oT_Name);
-			}
-			else
-			{
-				C.StageSET_Color(D3DTA_DIFFUSE, D3DTOP_BLENDDIFFUSEALPHA, D3DTA_CURRENT);
-				C.StageSET_Alpha(D3DTA_DIFFUSE, D3DTOP_MODULATE, D3DTA_CURRENT);
-				C.Stage_Texture("$null");
-			}
+			C.StageSET_Color(D3DTA_DIFFUSE, D3DTOP_BLENDDIFFUSEALPHA, D3DTA_CURRENT);
+			C.StageSET_Alpha(D3DTA_DIFFUSE, D3DTOP_MODULATE, D3DTA_CURRENT);
+			C.Stage_Texture("$null");
 
 			C.Stage_Matrix		("$null",	0);
 			C.Stage_Constant	("$null");

@@ -520,7 +520,7 @@ static class cl_def_aref : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C) override 
 	{
-		float def_aref_cmd = (Device.IsEditorMode() ? 100 : ps_r2_def_aref_quality) / 255.0f;
+		float def_aref_cmd = ps_r2_def_aref_quality / 255.0f;
 	#ifdef USE_DX11
 		RCache.set_c(C, def_aref_cmd);
 	#else
