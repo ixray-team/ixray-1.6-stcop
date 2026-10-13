@@ -117,6 +117,12 @@ void CArmorBase::Load(const char* section)
 
 	bIsHudGasMaskAvailable = !!READ_IF_EXISTS(pSettings, r_bool, section, "hud_gas_mask_avaliable", true);		// FFx0001 ++
 	bIsHudRainDropsAvailable = !!READ_IF_EXISTS(pSettings, r_bool, section, "hud_rain_drops_avaliable", true);  // FFx0001 ++
+	const char* GasMaskType = READ_IF_EXISTS(pSettings, r_string, section, "hud_gas_mask_type", "flat");
+	GlassType = xr_strcmp(GasMaskType, "curved") == 0 ? VisorGlassType::Curved : VisorGlassType::Flat;
+	if (GlassType == VisorGlassType::Flat && xr_strcmp(GasMaskType, "flat") != 0)
+	{
+		Msg("! Unknown hud_gas_mask_type '%s' in [%s], using flat", GasMaskType, section);
+	}
 
 	if (pSettings->line_exist(section, "glass_present"))
 	{

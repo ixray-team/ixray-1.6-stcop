@@ -2,6 +2,16 @@
 #include "xrRender_console.h"
 #include "dxRenderDeviceRender.h"
 
+bool UseWeaponRainDrops = true;
+
+u32 g_RainDropsMode = 0;
+static xr_token RainDropsModeTokens[] =
+	{
+		{"texture", 0},
+		{"procedural", 1},
+		{nullptr, 0}
+};
+
 u32 ps_Preset =	2;
 xr_token							qpreset_token							[ ]={
 	{ "Minimum",					0											},
@@ -834,6 +844,8 @@ void		xrRender_initconsole	()
 
 	CMD2(CCC_Boolean, "r4_use_gasmask", &UseGasmak);
 	CMD2(CCC_Boolean, "r2_use_rain_drops", &UseRainDrops);
+	CMD3(CCC_Token, "r2_rain_drops_mode", &g_RainDropsMode, RainDropsModeTokens);
+	CMD2(CCC_Boolean, "r2_use_weapon_raindrops", &UseWeaponRainDrops);
 
 	// added by Papa Doenitz 2026-03-05
 	CMD2(CCC_Boolean, "r2_new_autoexposure", &ps_r2_new_autoexposure);

@@ -51,6 +51,7 @@
 #include "InteractiveObject.h"
 #include "nvg.h"
 #include "Bolt.h"
+#include "../xrEngine/IGame_Persistent.h"
 
 extern u32 hud_adj_mode;
 
@@ -2261,7 +2262,10 @@ void CActor::ClearMask()
 
 void CActor::ClearMaskCB()
 {
-	//RAVLIK TO LVUTNER: KOGDA KAPLI NA EBAL'NIKE?
+	if (g_pGamePersistent && Level().CurrentViewEntity() == this)
+	{
+		g_pGamePersistent->VisorRain.Clear();
+	}
 }
 
 void CActor::MakeKick()

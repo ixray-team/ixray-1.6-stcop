@@ -42,6 +42,7 @@ public:
 	IBlender* b_fxaa = nullptr;
 	IBlender* b_spp = nullptr;
 	IBlender* b_gasmask = nullptr;
+	IBlender* FlatGasMaskBlender = nullptr;
 	IBlender* b_smaa = nullptr;
 	IBlender* b_scale = nullptr;
 	IBlender* b_cas = nullptr;
@@ -172,6 +173,7 @@ private:
 
 	ref_shader					s_spp;
 	ref_shader					s_gasmask;
+	ref_shader FlatGasMaskShader;
 	ref_shader					s_fxaa;
 	ref_shader					s_smaa;
 	ref_shader					s_scale;

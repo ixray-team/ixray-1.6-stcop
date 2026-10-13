@@ -2082,29 +2082,35 @@ void CActor::UpdateCL()
 		psHUD_Flags.set(HUD_CROSSHAIR_RT2, true);
 		psHUD_Flags.set(HUD_DRAW_RT, true);
 
-		g_pGamePersistent->ShaderParams.HelmetCondition = -1;
-		g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvailable = true;
-		g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable = true;
+		auto& Params = g_pGamePersistent->ShaderParams;
+		const u16 PreviousVisorItemId = Params.VisorItemId;
+		Params = {};
 
-		if (PIItem Helmet = inventory().ItemFromSlot(HELMET_SLOT))
+		if (g_Alive() && cam_active == eacFirstEye)
 		{
-			g_pGamePersistent->ShaderParams.HelmetCondition = Helmet->GetCondition();
-			CHelmet* CHM = Helmet->cast_helmet();
+			CArmorBase* GlassArmor = nullptr;
+			if (CHelmet* Helmet = GetHelmet(); Helmet && Helmet->GlassPresent)
+			{
+				GlassArmor = Helmet;
+			}
+			else if (CCustomOutfit* Outfit = GetOutfit(); Outfit && Outfit->GlassPresent)
+			{
+				GlassArmor = Outfit;
+			}
 
-			if (CHM) {
-				g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvailable = CHM->IsHudGasMaskAvailable();
-				g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable = CHM->IsHudRainDropsAvailable();
+			if (GlassArmor)
+			{
+				Params.HelmetCondition = GlassArmor->GetCondition();
+				Params.ItemCfgHudGasMaskAvailable = GlassArmor->IsHudGasMaskAvailable();
+				Params.ItemCfgHudRainDropsAvailable = GlassArmor->IsHudRainDropsAvailable();
+				Params.GlassType = GlassArmor->GetGlassType();
+				Params.VisorItemId = GlassArmor->ID();
 			}
 		}
-		else if (PIItem Outfit = inventory().ItemFromSlot(OUTFIT_SLOT))
-		{
-			CCustomOutfit* COF = Outfit->cast_outfit();
 
-			if (COF && !COF->bIsHelmetAvaliable) {
-				g_pGamePersistent->ShaderParams.HelmetCondition = Outfit->GetCondition();
-				g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvailable = COF->IsHudGasMaskAvailable();
-				g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable = COF->IsHudRainDropsAvailable();
-			}
+		if (PreviousVisorItemId != Params.VisorItemId)
+		{
+			g_pGamePersistent->VisorRain.Reset();
 		}
 	}
 

@@ -48,11 +48,13 @@ use_condition = false; Имеет ли предмет прогрессбар и�
 > [!IMPORTANT]
 > **Минимальная версия**: 1.2.2 <br>
 
-* Консольные команды r_use_gasmask и r_use_rain_drops
+Текущие консольные команды: `r4_use_gasmask`, `r2_use_rain_drops` и `r2_rain_drops_mode`. Типы стекла, состояние предмета, накопление капель и анимации протирания в текущей ветке описаны в [Стекло маски и капли дождя](visor-glass.md).
 
 ```ini
-hud_gas_mask_avaliable = true; Доступна ли отрисовка капель дождя
-hud_rain_drops_avaliable = true; Доступна ли отрисовка газ маски
+glass_present = true; The item has visor glass
+hud_gas_mask_avaliable = true; Allow glass rendering
+hud_rain_drops_avaliable = true; Allow rain drops rendering
+hud_gas_mask_type = flat; flat (default) or curved
 ```
 
 > [!IMPORTANT]
@@ -75,10 +77,12 @@ forbid_change_skin = false ; Меняет ли визуал (руки/ноги)
 
 > [!IMPORTANT]
 > **Минимальная версия**: 1.2.2 <br>
-* Консольные команды r_use_gasmask и r_use_rain_drops
+Текущие консольные команды: `r4_use_gasmask`, `r2_use_rain_drops` и `r2_rain_drops_mode`. Типы стекла, состояние предмета, накопление капель и анимации протирания в текущей ветке описаны в [Стекло маски и капли дождя](visor-glass.md).
 ```ini
-hud_gas_mask_avaliable = true; Доступна ли отрисовка капель дождя
-hud_rain_drops_avaliable = true; Доступна ли отрисовка газ маски
+glass_present = true; The item has visor glass
+hud_gas_mask_avaliable = true; Allow glass rendering
+hud_rain_drops_avaliable = true; Allow rain drops rendering
+hud_gas_mask_type = flat; flat (default) or curved
 ```
 
 > [!IMPORTANT]
