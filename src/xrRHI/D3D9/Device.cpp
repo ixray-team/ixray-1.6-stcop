@@ -203,6 +203,11 @@ void InternalDevice9::ResizeBuffers(u32 Width, u32 Height)
 				break;
 
 			Msg("! ERROR: [%dx%d]: Reset failed, hr = 0x%08X", P.BackBufferWidth, P.BackBufferHeight, u32(_hr));
+
+			// Only a lost device recovers by waiting. Any other result (D3DERR_INVALIDCALL: a
+			// D3DPOOL_DEFAULT resource is still alive) would repeat forever behind a black screen.
+			CHECK_OR_EXIT(_hr == D3DERR_DEVICELOST || _hr == D3DERR_DEVICENOTRESET,
+				make_string<const char*>("Direct3D 9 device reset failed (hr = 0x%08X).", u32(_hr)));
 			Sleep(100);
 		}
 	}
