@@ -5,6 +5,7 @@
 
 void CResourceManager::reset_begin()
 {
+	WaitForTextureLoading();
 	// destroy everything, renderer may use
 	::Render->reset_begin		();
 
@@ -104,6 +105,7 @@ template<class C>	void mdump(C c)
 
 CResourceManager::~CResourceManager		()
 {
+	WaitForTextureLoading();
 	DestroyNecessaryTextures	();
 #ifdef DEBUG
 	Dump(false);
