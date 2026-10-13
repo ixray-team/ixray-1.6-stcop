@@ -97,9 +97,8 @@ CObjectHandler(this),
 #endif // DEBUG
 	m_registered_in_combat_on_migration	= false;
 
-	savedOrientation = { 0.f, 0.f, 0.f };
-	dTimeFSeen = Device.dwTimeGlobal + 1000;
-	dTimeNfSeen = Device.dwTimeGlobal + 1000;
+	HeadLookOrientation.set(0.f, 0.f, 0.f);
+	HeadLookTime = u32(-1);
 	
 	LoadCallbackGlobals(m_isUpdateBestWeapon, m_onUpdateBestWeaponName, "OnUpdateBestWeapon");
 }
@@ -554,83 +553,80 @@ void CAI_Stalker::Load				(const char* section)
 	m_can_select_items				= !!pSettings->r_bool(section,"can_select_items");
 }
 
-void CAI_Stalker::BoneCallback(CBoneInstance* B) {
-	CAI_Stalker* this_class = static_cast<CAI_Stalker*>(B->callback_param());
-
-	this_class->LookAtActor(B);
-	R_ASSERT2(_valid(B->mTransform), "CAI_Stalker::BoneCallback");
-}
-
-void CAI_Stalker::LookAtActor(CBoneInstance* headBone)
+void CAI_Stalker::BoneCallback(CBoneInstance* HeadBone)
 {
-	if (!m_bHeadRotate || !g_Alive() || !g_actor)
-		return;
-
-	if (wounded())
-		return;
-
-	auto adjustHeadOrientation = [&](float targetPitch, float targetYaw, float targetRoll) {
-		savedOrientation.x = angle_inertion(savedOrientation.x, targetPitch, angle_difference(savedOrientation.x, targetPitch), PI_MUL_2, Device.fTimeDelta);
-		savedOrientation.y = angle_inertion(savedOrientation.y, targetYaw, angle_difference(savedOrientation.y, targetYaw), PI_MUL_2, Device.fTimeDelta);
-		savedOrientation.z = angle_inertion(savedOrientation.z, targetRoll, angle_difference(savedOrientation.z, targetRoll), PI_MUL_2, Device.fTimeDelta);
-		};
-
-	if (g_actor->Position().distance_to(Position()) > 4.f) {
-		adjustHeadOrientation(0.f, 0.f, 0.f);
-		Fmatrix M;
-		M.setHPB(VPUSH(savedOrientation));
-		headBone->mTransform.mulB_43(M);
-		return;
-	}
-
-	if (memory().visual().visible_right_now(g_actor)) {
-		Fmatrix actorHead;
-		PKinematics(g_actor->Visual())->Bone_GetAnimPos(actorHead, u16(g_actor->m_head), u8(-1), false);
-		actorHead.mulA_43(g_actor->XFORM());
-
-		Fmatrix myHead = headBone->mTransform;
-		myHead.mulA_43(XFORM());
-		myHead.c.mad(myHead.i, .15f);
-
-		Fvector dir, cam_pos = g_actor->HUDview() ? g_actor->cam_FirstEye()->Position() : actorHead.c;
-		dir.sub(cam_pos, myHead.c).normalize();
-
-		Fmatrix target_matrix;
-		target_matrix.identity();
-		target_matrix.k.set(dir);
-		Fvector::generate_orthonormal_basis_normalized(target_matrix.k, target_matrix.i, target_matrix.j);
-		target_matrix.j.invert();
-		target_matrix.mulA_43(Fmatrix(headBone->mTransform).mulA_43(XFORM()).invert());
-
-		float yaw, pitch, roll;
-		target_matrix.getHPB(pitch, yaw, roll);
-
-		clamp(pitch, -0.75f, 0.7f);
-		clamp(yaw, -1.0f, 1.0f);
-		clamp(roll, -0.4f, 0.4f);
-
-		bool inRange = (pitch > -0.7f && pitch < 0.65f) && (yaw > -0.9f && yaw < 0.9f) && (roll > -0.35f && roll < 0.35f);
-		if (inRange && dTimeNfSeen < Device.dwTimeGlobal) {
-			dTimeFSeen = Device.dwTimeGlobal + 1000;
-			adjustHeadOrientation(pitch, yaw, roll);
-		}
-
-		bool outOfRange = !(pitch > -0.75f && pitch < 0.7f) && !(yaw > -1.2f && yaw < 1.2f) && !(roll > -0.5f && roll < 0.5f);
-		if (outOfRange && dTimeFSeen < Device.dwTimeGlobal) {
-			dTimeNfSeen = Device.dwTimeGlobal + 1000;
-			adjustHeadOrientation(0.f, 0.f, 0.f);
-		}
-	}
-	else {
-		adjustHeadOrientation(0.f, 0.f, 0.f); // Reset if actor not visible
-	}
-
-	Fmatrix M;
-	M.setHPB(VPUSH(savedOrientation));
-	headBone->mTransform.mulB_43(M);
+	CAI_Stalker* Object = static_cast<CAI_Stalker*>(HeadBone->callback_param());
+	Object->LookAtActor(HeadBone);
+	R_ASSERT2(_valid(HeadBone->mTransform), "CAI_Stalker::BoneCallback");
 }
 
-bool CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
+void CAI_Stalker::LookAtActor(CBoneInstance* HeadBone, float Weight)
+{
+	if (!EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor] || !m_bHeadRotate || !g_Alive() || wounded() || !g_actor)
+	{
+		HeadLookOrientation.set(0.f, 0.f, 0.f);
+		HeadLookTime = u32(-1);
+		return;
+	}
+
+	// Bone calculations can be repeated or skip render frames.
+	if (HeadLookTime != Device.dwTimeGlobal)
+	{
+		float DeltaTime = HeadLookTime == u32(-1) ? Device.fTimeDelta : float(Device.dwTimeGlobal - HeadLookTime) / 1000.f;
+		clamp(DeltaTime, 0.f, 0.1f);
+		HeadLookTime = Device.dwTimeGlobal;
+
+		Fvector TargetOrientation = {0.f, 0.f, 0.f};
+		if (Weight > 0.f && g_actor->Position().distance_to_sqr(Position()) <= 16.f && memory().visual().visible_right_now(g_actor))
+		{
+			Fvector ActorLookPosition = g_actor->cam_FirstEye()->Position();
+			if (!g_actor->HUDview())
+			{
+				Fmatrix ActorHead;
+				PKinematics(g_actor->Visual())->Bone_GetAnimPos(ActorHead, u16(g_actor->m_head), u8(-1), false);
+				ActorHead.mulA_43(g_actor->XFORM());
+				ActorLookPosition = ActorHead.c;
+			}
+
+			Fmatrix HeadTransform = HeadBone->mTransform;
+			HeadTransform.mulA_43(XFORM());
+			Fvector HeadPosition = HeadTransform.c;
+			HeadPosition.mad(HeadTransform.i, .15f);
+			Fvector Direction;
+			Direction.sub(ActorLookPosition, HeadPosition);
+
+			// Avoid a degenerate direction and a vertical orthonormal basis.
+			if (Direction.x * Direction.x + Direction.z * Direction.z > EPS_S)
+			{
+				Direction.normalize();
+				Fmatrix TargetTransform;
+				TargetTransform.identity();
+				TargetTransform.k.set(Direction);
+				Fvector::generate_orthonormal_basis_normalized(TargetTransform.k, TargetTransform.i, TargetTransform.j);
+				TargetTransform.j.invert();
+				TargetTransform.mulA_43(HeadTransform.invert());
+
+				Fvector Angles;
+				TargetTransform.getHPB(Angles);
+				if (_valid(Angles) && Angles.x > -0.75f && Angles.x < 0.7f && Angles.y > -1.f && Angles.y < 1.f && Angles.z > -0.4f && Angles.z < 0.4f)
+				{
+					TargetOrientation = Angles;
+				}
+			}
+		}
+
+		HeadLookOrientation.x = angle_inertion(HeadLookOrientation.x, TargetOrientation.x, angle_difference(HeadLookOrientation.x, TargetOrientation.x), PI_MUL_2, DeltaTime);
+		HeadLookOrientation.y = angle_inertion(HeadLookOrientation.y, TargetOrientation.y, angle_difference(HeadLookOrientation.y, TargetOrientation.y), PI_MUL_2, DeltaTime);
+		HeadLookOrientation.z = angle_inertion(HeadLookOrientation.z, TargetOrientation.z, angle_difference(HeadLookOrientation.z, TargetOrientation.z), PI_MUL_2, DeltaTime);
+	}
+
+	clamp(Weight, 0.f, 1.f);
+	Fmatrix Correction;
+	Correction.setHPB(HeadLookOrientation.x * Weight, HeadLookOrientation.y * Weight, HeadLookOrientation.z * Weight);
+	HeadBone->mTransform.mulB_43(Correction);
+}
+
+bool CAI_Stalker::net_Spawn(CSE_Abstract* DC)
 {
 	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeHumanStalker			*tpHuman = smart_cast<CSE_ALifeHumanStalker*>(e);
@@ -650,6 +646,8 @@ bool CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	
 	set_money						(tpHuman->m_dwMoney, false);
 
+	HeadLookOrientation.set(0.f, 0.f, 0.f);
+	HeadLookTime = u32(-1);
 	animation().reload				();
 
 	movement().m_head.current.yaw	= movement().m_head.target.yaw = movement().m_body.current.yaw = movement().m_body.target.yaw	= angle_normalize_signed(-tpHuman->o_torso.yaw);
@@ -737,13 +735,6 @@ bool CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 
 	sight().update					();
 	Exec_Look						(.001f);
-
-	const static bool isNPCLookAtActor = EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor];
-	if (isNPCLookAtActor)
-	{
-		CBoneInstance* bone_head = &PKinematics(Visual())->LL_GetBoneInstance(PKinematics(Visual())->LL_BoneID("bip01_head"));
-		bone_head->set_callback(bctCustom, BoneCallback, this);
-	}
 
 	m_pPhysics_support->in_NetSpawn	(e);
 
@@ -1337,4 +1328,3 @@ void CAI_Stalker::ChangeVisual(shared_str NewVisual)
 	Visual()->dcast_PKinematics()->CalculateBones_Invalidate();
 	Visual()->dcast_PKinematics()->CalculateBones(true);
 };
-
