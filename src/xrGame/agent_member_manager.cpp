@@ -57,7 +57,6 @@ void CAgentMemberManager::add					(CEntity *member)
 	iterator					I = std::find_if(m_members.begin(),m_members.end(), CMemberPredicate(stalker));
 	VERIFY						(I == m_members.end());
 	m_members.push_back			(new CMemberOrder(stalker));
-	m_actuality = false;
 }
 
 void CAgentMemberManager::remove				(CEntity *member)
@@ -163,7 +162,7 @@ bool CAgentMemberManager::registered_in_combat	(const CAI_Stalker *object) const
 	return						(!!(m_combat_mask & mask(object)));
 }
 
-CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::combat_members()
+CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::combat_members	()
 {
 	// Readiness can change without a membership change. Keep the combat mask and
 	// cached orders in sync before any enemy distribution stage uses them.
@@ -184,9 +183,7 @@ CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::combat_members()
 	}
 
 	if (m_actuality)
-	{
-		return m_combat_members;
-	}
+		return							(m_combat_members);
 
 	m_combat_members.clear();
 	for (CMemberOrder* Order : members())

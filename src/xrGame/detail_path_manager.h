@@ -96,7 +96,6 @@ private:
 	u32 GraphRevision = 0;
 	bool										m_failed;
 	EDetailPathType								m_path_type;
-	bool PartialPath = false;
 
 private:
 	Fvector										m_start_position;
@@ -152,13 +151,10 @@ private:
 			void	build_smooth_path			(const xr_vector<u32>	&level_path,	  u32							intermediate_index);
 
 private:
-	bool ValidateFourTransitionPath(u32 StartVertex) const;
-	bool BuildNodeCentrePath(const xr_vector<u32>& LevelPath);
-
 			void	update_distance_to_target	();
 
 protected:
-			void	build_path					(const xr_vector<u32> &level_path, u32 intermediate_index, bool IsPartialPath = false, bool RequireFourTransitions = false);
+			void	build_path					(const xr_vector<u32> &level_path, u32 intermediate_index);
 
 	friend class CScriptEntity;
 	friend class CMovementManager;

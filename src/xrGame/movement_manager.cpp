@@ -26,13 +26,10 @@
 // Lain: added 
 #include "steering_behaviour.h"
 #include "Actor.h"
-#include "Level.h"
-#include "LevelInspector.h"
 
 using namespace MovementManager;
 
 const float verify_distance = 15.f;
-int g_ALDrawPaths = 0;
 
 CMovementManager::CMovementManager	(CCreature *object)
 {
@@ -111,29 +108,7 @@ void CMovementManager::reload		(const char* section)
 
 bool CMovementManager::net_Spawn	(CSE_Abstract* data)
 {
-	// Level-specific limits apply to stalkers and the shared monster path builder.
-	*base_level_params() = CBaseParameters();
-	const CInifile* Settings = Level().pLevel;
-	if (Settings && Settings->section_exist("ai_path_limits"))
-	{
-		base_level_params()->UsePathLimits = true;
-		const bool IsMonster = m_object->cast_base_monster() != nullptr;
-		const char* LengthKey = IsMonster ? "monster_max_path_length" : "npc_max_path_length";
-		const float DefaultLength = IsMonster ? 100.f : 200.f;
-		float Length = READ_IF_EXISTS(Settings, r_float, "ai_path_limits", LengthKey, DefaultLength);
-		if (!_valid(Length) || Length < 0.f)
-		{
-			Msg("! Invalid [ai_path_limits] %s; using %.1f meters", LengthKey, DefaultLength);
-			Length = DefaultLength;
-		}
-		base_level_params()->MaxPathLength = Length > 0.f ? Length : type_max(float);
-
-		const u32 Iterations = READ_IF_EXISTS(Settings, r_u32, "ai_path_limits", "max_iterations", 8192);
-		const u32 Nodes = READ_IF_EXISTS(Settings, r_u32, "ai_path_limits", "max_visited_nodes", 8192);
-		base_level_params()->max_iteration_count = Iterations ? Iterations : u32(-1);
-		base_level_params()->max_visited_node_count = Nodes ? Nodes : u32(-1);
-	}
-	return restrictions().net_Spawn(data);
+	return							(restrictions().net_Spawn(data));
 }
 
 void CMovementManager::net_Destroy	()
@@ -183,11 +158,6 @@ const xr_vector<DetailPathManager::STravelPathPoint>	&CMovementManager::path	() 
 void CMovementManager::update_path				()
 {
 	PROF_EVENT("Build Path::update")
-	if (!wait_for_distributed_computation() && base_level_params()->UsePathLimits)
-	{
-		level_path().MaintainPathCache(enabled() && !path_completed() ? level_path().dest_vertex_id() : u32(-1));
-	}
-	UpdatePathDebug();
 
 	if (!enabled() || wait_for_distributed_computation())
 		return;
@@ -284,8 +254,6 @@ void CMovementManager::update_path				()
 		}
 		default :				NODEFAULT;
 	}
-
-	UpdatePathDebug();
 
 #ifdef USE_FREE_IN_RESTRICTIONS
 	if (restrictions().accessible(object().Position()))
@@ -528,90 +496,4 @@ Fvector CMovementManager::target_position			() const
 		return				(object().Position());
 
 	return					(detail().path()[detail().last_patrol_point()].position);
-}
-
-void CMovementManager::UpdatePathDebug()
-{
-	if (!g_ALDrawPaths || wait_for_distributed_computation())
-	{
-		return;
-	}
-
-	xrCriticalSectionGuard Guard(PathDrawMutex);
-	PathDrawData.Valid = false;
-	PathDrawData.Points.clear();
-	if (!base_level_params()->UsePathLimits || !ai().get_level_graph())
-	{
-		return;
-	}
-
-	const ILevelGraph& Graph = ai().level_graph();
-	const u32 TargetId = level_path().SearchDestVertexId;
-	if (!Graph.valid_vertex_id(TargetId))
-	{
-		return;
-	}
-
-	PathDrawData.Position = object().Position();
-	PathDrawData.Target = Graph.vertex_position(TargetId);
-	PathDrawData.ObjectId = object().ID();
-	PathDrawData.Partial = level_path().IsPartialPath();
-	PathDrawData.Failed = level_path().failed();
-	PathDrawData.Expensive = level_path().ExpensiveRoute;
-	for (const u32 VertexId : level_path().path())
-	{
-		if (!Graph.valid_vertex_id(VertexId))
-		{
-			return;
-		}
-		Fvector Point = Graph.vertex_position(VertexId);
-		PathDrawData.Points.push_back(Point);
-	}
-	PathDrawData.Valid = true;
-}
-
-void CMovementManager::DrawPathDebug(LevelInspector& Prims)
-{
-	if (!g_ALDrawPaths)
-	{
-		return;
-	}
-
-	xrCriticalSectionGuard Guard(PathDrawMutex);
-	const PathDrawSnapshot& Data = PathDrawData;
-	if (!Data.Valid)
-	{
-		return;
-	}
-
-	const u32 PathColor = (Data.Failed || Data.Expensive) ? color_rgba(255, 70, 70, 255) : color_rgba(40, 220, 255, 255);
-	const u32 TargetColor = color_rgba(255, 220, 40, 255);
-	const u32 SegmentColor = color_rgba(220, 70, 255, 255);
-	for (size_t Index = 1; Index < Data.Points.size(); ++Index)
-	{
-		Prims.append_line(Fvector(Data.Points[Index - 1]).add(Fvector().set(0.f, 0.25f, 0.f)), Fvector(Data.Points[Index]).add(Fvector().set(0.f, 0.25f, 0.f)), PathColor);
-	}
-
-	Fvector Target = Data.Target;
-	Target.y += 0.4f;
-	Prims.append_sphere(Target, 0.5f, TargetColor, color_rgba(255, 220, 40, 25));
-	Prims.append_text3d(Fvector(Target).add(Fvector().set(0.f, 0.9f, 0.f)), shared_str().printf("#%u", Data.ObjectId), TargetColor);
-
-	// A short direction arrow identifies the goal without drawing kilometer-long lines.
-	Fvector Direction;
-	Direction.sub(Data.Target, Data.Position);
-	if (Direction.square_magnitude() > EPS_L)
-	{
-		Direction.normalize();
-		Prims.append_lines_arrow(Fvector(Data.Position).add(Fvector().set(0.f, 1.f, 0.f)), Direction, 3.f, TargetColor);
-	}
-	if (Data.Partial && !Data.Points.empty())
-	{
-		Fvector End = Data.Points.back();
-		End.y += 0.4f;
-		Prims.append_sphere(End, 0.35f, SegmentColor, color_rgba(220, 70, 255, 25));
-		Prims.append_text3d(Fvector(End).add(Fvector().set(0.f, 0.8f, 0.f)), shared_str().printf("#%u", Data.ObjectId), SegmentColor);
-	}
-
-	Prims.append_text3d(Fvector(Data.Position).add(Fvector().set(0.f, 2.2f, 0.f)), shared_str().printf("#%u", Data.ObjectId), PathColor);
 }

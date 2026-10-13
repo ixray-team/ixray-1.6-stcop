@@ -66,29 +66,11 @@ namespace DetailPathManager {
 
 class CLevelPathBuilder;
 class CDetailPathBuilder;
-struct LevelInspector;
-extern int g_ALDrawPaths;
 
 class CMovementManager 
 {
 	friend class CLevelPathBuilder;
 	friend class CDetailPathBuilder;
-
-private:
-	struct PathDrawSnapshot
-	{
-		xr_vector<Fvector> Points;
-		Fvector Position{};
-		Fvector Target{};
-		u32 ObjectId = 0;
-		bool Valid = false;
-		bool Partial = false;
-		bool Failed = false;
-		bool Expensive = false;
-	};
-	xrCriticalSection PathDrawMutex;
-	PathDrawSnapshot PathDrawData;
-	void UpdatePathDebug();
 
 protected:
 	typedef MonsterSpace::SBoneRotation			CBoneRotation;
@@ -236,7 +218,6 @@ public:
 	virtual	bool	can_use_distributed_computations			() const;
 			
 			void	clear_path				();
-	void DrawPathDebug(LevelInspector& Prims);
 
 public:
 	IC		SGameVertex				*base_game_params			() const;
