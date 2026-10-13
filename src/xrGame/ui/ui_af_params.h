@@ -2,9 +2,11 @@
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrEngine/AI/alife_space.h"
 #include "../../xrUI/Widgets/UIStatic.h"
+#include "UIItemParam.h"
 
 class CUIXml;
-class UIArtefactParamItem;
+
+using UIArtefactParamItem = UIItemParam;
 class CInventoryItem;
 
 class CUIArtefactParams final : public CUIWindow
@@ -52,42 +54,3 @@ protected:
 	bool is_backpack() const { return object_type == CParamType::eParamTypeBackpack; }
 
 }; // class CUIArtefactParams
-
-// -----------------------------------
-
-class UIArtefactParamItem final : public CUIStatic
-{
-public:
-				UIArtefactParamItem	();
-	virtual		~UIArtefactParamItem();
-	
-    enum class InitResult
-    {
-        Failed,
-        Normal,
-        Plain
-    };
-	
-	InitResult	Init				( CUIXml& xml, const char* section );
-	
-		void	SetDefaultValuesPlain(float magnitude, bool isSignInverse, const shared_str& unit);
-		void	SetCaption			( const char* name );
-		void	SetValue			( float value );
-	
-	virtual CUIWindow* ui_cast_window() { return this; }
-		bool	GetLegacyMode		() { return !(m_caption && m_caption->IsShown() && m_value && m_value->IsShown()); }
-
-protected:
-	InitResult	InitPlain			(CUIXml& xml, const char* section);
-
-private:
-	CUIStatic*	m_caption;
-	CUIStatic*	m_value;
-	CUIStatic*	m_text_legacy; // 100%
-	float		m_magnitude;
-	bool		m_sign_inverse;
-	shared_str	m_unit_str;
-	shared_str	m_texture_minus;
-	shared_str	m_texture_plus;
-
-}; // class UIArtefactParamItem

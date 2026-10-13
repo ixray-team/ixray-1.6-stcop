@@ -1,6 +1,7 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../EntityCondition.h"
+#include "UIItemParam.h"
 
 class CUIXml;
 class CUIStatic;
@@ -25,34 +26,25 @@ protected:
 	UIBoosterInfoItem*	m_booster_anabiotic;
 	UIBoosterInfoItem*	m_booster_time;
 
-	CUIStatic*			m_Prop_line;
+	CUIStatic*			m_Prop_line = nullptr;
 
 }; // class CUIBoosterInfo
 
 // -----------------------------------
 
-class UIBoosterInfoItem final : public CUIWindow
+class UIBoosterInfoItem final : public UIItemParam
 {
 public:
-				UIBoosterInfoItem	();
-	virtual		~UIBoosterInfoItem();
-		
-		void	Init				( CUIXml& xml, const char* section );
-		void	SetCaption			( const char* name );
-		void	SetValue			( float value );
-		void	SetValueText		( const char* text );
-		void	ShowValue			( bool show );
-	
-	virtual CUIWindow* ui_cast_window() { return this; }
+	UIBoosterInfoItem() = default;
+	~UIBoosterInfoItem() override = default;
 
-	float		m_magnitude;
-private:
-	CUIStatic*	m_caption;
-	CUIStatic*	m_value;
-	bool		m_show_sign;
-	bool		m_sign_inverse = false;
-	shared_str	m_unit_str;
-	shared_str	m_texture_minus;
-	shared_str	m_texture_plus;
+	void Init(CUIXml& Xml, const char* Section)
+	{
+		UIItemParam::Init(Xml, Section);
+	}
 
-}; // class UIBoosterInfoItem
+	void SetValue(float Value)
+	{
+		UIItemParam::SetValue(Value, false);
+	}
+};
