@@ -137,8 +137,71 @@ void CCoverManager::clear_covers			(PointVector &covers)
 	covers.clear			();
 }
 
+void CCoverManager::RefreshStaticCoverForEditor()
+{
+	// Keep smart-cover objects/storage and existing cover pointers alive: NPC
+	// evaluators can still hold them until their next scheduled update.
+	const auto& Graph = ai().level_graph();
+	PointVector Previous;
+	if (m_covers)
+	{
+		m_covers->all(Previous);
+	}
+	xr_hash_map<u32, CCoverPoint*> Existing;
+	for (CCoverPoint* Point : EditorRetiredCovers)
+	{
+		Existing[Point->level_vertex_id()] = Point;
+	}
+	EditorRetiredCovers.clear();
+	xr_delete(m_covers);
+	m_covers = new CPointQuadTree(Graph.header().box(), Graph.header().cell_size() * .5f, 8 * 65536, 4 * 65536);
+	for (CCoverPoint* Point : Previous)
+	{
+		if (Point->m_is_smart_cover)
+		{
+			m_covers->insert(Point);
+		}
+		else
+		{
+			Existing[Point->level_vertex_id()] = Point;
+		}
+	}
+	m_temp.resize(Graph.header().vertex_count());
+	for (u32 I = 0; I < Graph.header().vertex_count(); ++I)
+	{
+		const auto& Vertex = *Graph.vertex(I);
+		bool HasCover = false;
+		for (u8 D = 0; D < 4; ++D)
+		{
+			HasCover |= Vertex.high_cover(D) != 0 || (Graph.header().version() != XRAI_SOC_VERSION && Vertex.low_cover(D) != 0);
+		}
+		m_temp[I] = Graph.IsEditorNodeEnabled(I) && HasCover && edge_vertex(I);
+	}
+	for (u32 I = 0; I < Graph.header().vertex_count(); ++I)
+	{
+		if (!m_temp[I] || !critical_cover(I))
+		{
+			continue;
+		}
+		auto Found = Existing.find(I);
+		CCoverPoint* Point = Found == Existing.end() ? new CCoverPoint(Graph.vertex_position(I), I) : Found->second;
+		Point->m_position = Graph.vertex_position(I);
+		m_covers->insert(Point);
+		if (Found != Existing.end())
+		{
+			Existing.erase(Found);
+		}
+	}
+	for (const auto& Entry : Existing)
+	{
+		EditorRetiredCovers.push_back(Entry.second);
+	}
+	m_nearest.clear();
+}
+
 void CCoverManager::clear					()
 {
+	clear_covers(EditorRetiredCovers);
 	if (!get_covers())
 		return;
 

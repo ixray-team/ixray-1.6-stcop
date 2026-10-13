@@ -39,6 +39,7 @@ private:
 	friend class CMovementManager;
 	friend class CLevelPathBuilder;
 	u32 SearchDestVertexId = u32(-1);
+	u32 GraphRevision = 0;
 	xr_vector<u32> PlannedRoute;
 	struct ExpensiveGoalAttempt
 	{

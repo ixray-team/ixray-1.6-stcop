@@ -8,11 +8,6 @@
 
 #pragma once
 
-IC	bool CDetailPathManager::actual			() const
-{
-	return					(m_actuality);
-}
-
 IC	void CDetailPathManager::make_inactual	()
 {
 	m_actuality				= false;

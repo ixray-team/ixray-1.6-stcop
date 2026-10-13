@@ -20,8 +20,13 @@ private:
 	friend class CRenumbererConverter;
 
 	IReader* m_reader;
+	CVertex* OriginalNodes = nullptr;
+	CHeader EditorHeader;
+	xr_vector<CVertex> EditorNodes;
+
 public:
-					CLevelGraph					();
+	void ApplyEditorNodes(const hdrNODES& Header, const xr_vector<CVertex>& Nodes, const xr_vector<u8>& Deleted = {});
+	CLevelGraph();
 	virtual			~CLevelGraph				();
 
 #ifdef DEBUG

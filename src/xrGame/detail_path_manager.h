@@ -93,6 +93,7 @@ private:
 
 private:
 	bool										m_actuality;
+	u32 GraphRevision = 0;
 	bool										m_failed;
 	EDetailPathType								m_path_type;
 	bool PartialPath = false;
@@ -176,11 +177,11 @@ public:
 			bool	valid						() const;
 			Fvector direction					() const;
 			bool	try_get_direction			(Fvector& direction) const;
-	IC		bool	actual						() const;
-	IC		void	make_inactual				();
-	IC		bool	failed						() const;
-	IC		bool	completed					(const Fvector &position, bool bRealCompleted, const u32 &travel_point_point_index) const;
-	IC		bool	completed					(const Fvector &position, bool bRealCompleted = true) const;
+			bool actual() const;
+			IC void make_inactual();
+			IC bool failed() const;
+			IC bool completed(const Fvector& position, bool bRealCompleted, const u32& travel_point_point_index) const;
+			IC bool completed(const Fvector& position, bool bRealCompleted = true) const;
 			bool	valid						(const Fvector &position) const;
 	IC		u32		curr_travel_point_index		() const;
 
