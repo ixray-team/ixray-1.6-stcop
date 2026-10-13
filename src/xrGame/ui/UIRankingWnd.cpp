@@ -380,7 +380,7 @@ void CUIRankingWnd::Init()
 	if (xml.NavigateToNode("favorite_weapon_icon"))
 	{
 		m_favorite_weapon_icon = UIHelper::Create3dStatic(xml, "favorite_weapon_icon", this);
-		m_use_3d_icon = xml.ReadAttribBool("favorite_weapon_icon", 0, "use_3d", false);
+		m_use_3d_icon = xml.ReadAttribBool("favorite_weapon_icon", 0, "use_3d", EngineExternal()[EEngineExternalGame::Enable3DIcons]);
 	}
 	if (xml.NavigateToNode("favorite_weapon_ramka"))
 		m_favorite_weapon_ramka		= UIHelper::CreateFrameWindow(xml, "favorite_weapon_ramka", this);
@@ -973,7 +973,7 @@ void CUIRankingWnd::get_best_monster()
 {
 	const char* str = nullptr;
 
-	if (!PdaScriptBridge::TryCall(PdaScript::GetMonsterBack, str) || !str || !str[0])
+	if (!PdaScriptBridge::TryCall(PdaScript::GetMonsterBack, str) || !str)
 	{
 		return;
 	}
@@ -982,13 +982,20 @@ void CUIRankingWnd::get_best_monster()
 	{
 		if (m_monster_icon_back)
 		{
-			m_monster_icon_back->TextureOn();
-			m_monster_icon_back->InitTexture(str);
+			if (str[0])
+			{
+				m_monster_icon_back->TextureOn();
+				m_monster_icon_back->InitTexture(str);
+			}
+			else
+			{
+				m_monster_icon_back->TextureOff();
+			}
 		}
 		m_last_monster_icon_back = str;
 	}
 
-	if (!PdaScriptBridge::TryCall(PdaScript::GetMonsterIcon, str) || !str || !str[0])
+	if (!PdaScriptBridge::TryCall(PdaScript::GetMonsterIcon, str) || !str)
 	{
 		return;
 	}
@@ -997,8 +1004,15 @@ void CUIRankingWnd::get_best_monster()
 	{
 		if (m_monster_icon)
 		{
-			m_monster_icon->TextureOn();
-			m_monster_icon->InitTexture(str);
+			if (str[0])
+			{
+				m_monster_icon->TextureOn();
+				m_monster_icon->InitTexture(str);
+			}
+			else
+			{
+				m_monster_icon->TextureOff();
+			}
 		}
 		m_last_monster_icon = str;
 	}
@@ -1014,104 +1028,125 @@ void CUIRankingWnd::get_favorite_weapon()
 
 	if (m_favorite_weapon_icon && xr_strcmp(str, m_last_weapon_icon))
 	{
-		if(pSettings->section_exist(str) && pSettings->line_exist(str, "upgr_icon_x"))
+		if (!pSettings->section_exist(str))
 		{
-			if (m_use_3d_icon)
+			m_favorite_weapon_icon->SetVisual(nullptr);
+			m_favorite_weapon_icon->TextureOff();
+			return;
+		}
+
+		bool Has3dIcon = false;
+		if (m_use_3d_icon)
+		{
+			const char* VisualName = READ_IF_EXISTS(pSettings, r_string, str, "3d_static_visual_name", READ_IF_EXISTS(pSettings, r_string, str, "visual", nullptr));
+			if (VisualName && VisualName[0])
 			{
-				m_favorite_weapon_icon->SetIconVisual(READ_IF_EXISTS(pSettings, r_string, str, "3d_static_visual_name", pSettings->r_string(str, "visual")));
-				if (!m_favorite_weapon_icon->GetVisual())
+				m_favorite_weapon_icon->SetIconVisual(VisualName);
+				if (m_favorite_weapon_icon->GetVisual())
 				{
-					return;
-				}
-				Fvector rot = READ_IF_EXISTS(pSettings, r_fvector3, str, "3d_static_rotate", rot.set(0, 0, 0));
-				rot.mul(M_PI / 180.0f);
-				m_favorite_weapon_icon->SetXYZ(rot);
-				m_favorite_weapon_icon->SetScaleFactor(READ_IF_EXISTS(pSettings, r_float, str, "3d_static_scale", 1.f));
-				m_favorite_weapon_icon->SetIconOffset(READ_IF_EXISTS(pSettings, r_fvector2, str, "3d_static_offset", Fvector2().set(0.0f, 0.0f)));
+					Fvector rot = READ_IF_EXISTS(pSettings, r_fvector3, str, "3d_static_rotate", rot.set(0, 0, 0));
+					rot.mul(M_PI / 180.0f);
+					m_favorite_weapon_icon->SetXYZ(rot);
+					m_favorite_weapon_icon->SetScaleFactor(READ_IF_EXISTS(pSettings, r_float, str, "3d_static_scale", 1.f));
+					m_favorite_weapon_icon->SetIconOffset(READ_IF_EXISTS(pSettings, r_fvector2, str, "3d_static_offset", Fvector2().set(0.0f, 0.0f)));
 
-				RStringVec m_bDefHideBones{}, m_bDefShowBones{};
+					RStringVec m_bDefHideBones{}, m_bDefShowBones{};
 
-				auto LoadVector = [&](RStringVec& vec, const char* sect)
-				{
-					if (pSettings->line_exist(str, sect))
+					auto LoadVector = [&](RStringVec& vec, const char* sect)
 					{
-						const char* S = pSettings->r_string(str, sect);
-						if (S && S[0])
+						if (pSettings->line_exist(str, sect))
 						{
-							string128 Item = "";
-							int count = _GetItemCount(S);
-							for (int it = 0; it < count; ++it)
+							const char* S = pSettings->r_string(str, sect);
+							if (S && S[0])
 							{
-								_GetItem(S, it, Item);
-								vec.push_back(Item);
+								string128 Item = "";
+								int count = _GetItemCount(S);
+								for (int it = 0; it < count; ++it)
+								{
+									_GetItem(S, it, Item);
+									vec.push_back(Item);
+								}
 							}
 						}
-					}
-				};
+					};
 
-				LoadVector(m_bDefHideBones, "def_hide_bones");
-				LoadVector(m_bDefShowBones, "def_show_bones");
+					LoadVector(m_bDefHideBones, "def_hide_bones");
+					LoadVector(m_bDefShowBones, "def_show_bones");
 
-				IKinematics* K = m_favorite_weapon_icon->GetVisual()->dcast_PKinematics();
-				for (auto& bone : m_bDefHideBones)
-				{
-					u16 bone_id = K->LL_BoneID(bone);
-					if (bone_id == BI_NONE)
+					IKinematics* K = m_favorite_weapon_icon->GetVisual()->dcast_PKinematics();
+					for (auto& bone : m_bDefHideBones)
 					{
-						continue;
+						u16 bone_id = K->LL_BoneID(bone);
+						if (bone_id == BI_NONE)
+						{
+							continue;
+						}
+						bool bVisibleNow = K->LL_GetBoneVisible(bone_id);
+						if (bVisibleNow != false)
+						{
+							K->LL_SetBoneVisible(bone_id, false, false);
+						}
 					}
-					bool bVisibleNow = K->LL_GetBoneVisible(bone_id);
-					if (bVisibleNow != false)
+
+					for (auto& bone : m_bDefShowBones)
+					{
+						u16 bone_id = K->LL_BoneID(bone);
+						if (bone_id == BI_NONE)
+						{
+							continue;
+						}
+						bool bVisibleNow = K->LL_GetBoneVisible(bone_id);
+						if (bVisibleNow != true)
+						{
+							K->LL_SetBoneVisible(bone_id, true, false);
+						}
+					}
+
+					u16 bone_id = K->LL_BoneID("wpn_launcher");
+					if (bone_id != BI_NONE)
 					{
 						K->LL_SetBoneVisible(bone_id, false, false);
 					}
-				}
 
-				for (auto& bone : m_bDefShowBones)
-				{
-					u16 bone_id = K->LL_BoneID(bone);
-					if (bone_id == BI_NONE)
+					bone_id = K->LL_BoneID("wpn_silencer");
+					if (bone_id != BI_NONE)
 					{
-						continue;
+						K->LL_SetBoneVisible(bone_id, false, false);
 					}
-					bool bVisibleNow = K->LL_GetBoneVisible(bone_id);
-					if (bVisibleNow != true)
-					{
-						K->LL_SetBoneVisible(bone_id, true, false);
-					}
+					m_favorite_weapon_icon->CaptureIconBones();
+					m_favorite_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 255));
+					Has3dIcon = true;
 				}
-
-				u16 bone_id = K->LL_BoneID("wpn_launcher");
-				if (bone_id != BI_NONE)
-				{
-					K->LL_SetBoneVisible(bone_id, false, false);
-				}
-
-				bone_id = K->LL_BoneID("wpn_silencer");
-				if (bone_id != BI_NONE)
-				{
-					K->LL_SetBoneVisible(bone_id, false, false);
-				}
-				m_favorite_weapon_icon->CaptureIconBones();
 			}
-			else
+		}
+
+		if (!Has3dIcon)
+		{
+			m_favorite_weapon_icon->SetVisual(nullptr);
+			if (pSettings->line_exist(str, "upgr_icon_x") && pSettings->line_exist(str, "upgr_icon_y") && pSettings->line_exist(str, "upgr_icon_width") && pSettings->line_exist(str, "upgr_icon_height"))
 			{
 				const char* upgrIconsTexture = READ_IF_EXISTS(pSettings, r_string, str, "upgr_icons_texture", nullptr);
 				m_favorite_weapon_icon->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
-				if(!xr_strcmp(str, "wpn_rpg7"))
+				if (!xr_strcmp(str, "wpn_rpg7"))
+				{
 					m_favorite_weapon_icon->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
-	
-				Frect				tex_rect;
-				tex_rect.x1			= float(pSettings->r_u32(str, "upgr_icon_x"));
-				tex_rect.y1			= float(pSettings->r_u32(str, "upgr_icon_y"));
-				tex_rect.x2			= float(pSettings->r_u32(str, "upgr_icon_width"));
-				tex_rect.y2			= float(pSettings->r_u32(str, "upgr_icon_height"));
-				tex_rect.rb.add		(tex_rect.lt);
+				}
+
+				Frect tex_rect;
+				tex_rect.x1 = float(pSettings->r_u32(str, "upgr_icon_x"));
+				tex_rect.y1 = float(pSettings->r_u32(str, "upgr_icon_y"));
+				tex_rect.x2 = float(pSettings->r_u32(str, "upgr_icon_width"));
+				tex_rect.y2 = float(pSettings->r_u32(str, "upgr_icon_height"));
+				tex_rect.rb.add(tex_rect.lt);
 				m_favorite_weapon_icon->SetTextureRect(tex_rect);
 				m_favorite_weapon_icon->TextureOn();
-				m_favorite_weapon_icon->SetTextureColor(color_rgba(255,255,255,255));
-				m_favorite_weapon_icon->SetWndSize(Fvector2().set((tex_rect.x2-tex_rect.x1)*CHudPdaAnimator::GetPDAScreen_kx()*0.8, (tex_rect.y2-tex_rect.y1)*0.8));
+				m_favorite_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 255));
+				m_favorite_weapon_icon->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * CHudPdaAnimator::GetPDAScreen_kx() * 0.8, (tex_rect.y2 - tex_rect.y1) * 0.8));
 				m_favorite_weapon_icon->SetStretchTexture(true);
+			}
+			else
+			{
+				m_favorite_weapon_icon->TextureOff();
 			}
 		}
 		m_last_weapon_icon = str;

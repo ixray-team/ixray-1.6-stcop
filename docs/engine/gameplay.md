@@ -65,6 +65,20 @@ Export: `DECLARE_SCRIPT_REGISTER_FUNCTION` plus `*_script.cpp`. Common scripts: 
 
 Luabind allocations use `Memory` in game mode; the Lua VM is created with `luaL_newstate()`. Level GC is `lua_gc(..., LUA_GCSTEP, psLUA_GCSTEP)` in `CLevel::script_gc` on `GameThread`. `IXRAY_LDEBUG` sets `LUABIND_DEBUG_SCRIPTS`; LuaPanda is loaded in `lua_ext.cpp` when `socket.lua` loads successfully.
 
+## PDA statistics
+
+Modder reference: [PDA statistics](../docs/main/ru/gameplay/general/pda-statistics.md). This applies to the common `gamedata` scripts; the CoC, CS and SoC script sets have separate implementations.
+
+`xr_statistic.set_best_weapon` groups positive hit callback amounts by full item section, with one optional `parent_section` redirect. The guard uses the native `game_object:is_weapon()` predicate (firearms, melee weapons and hand grenades), independent of Lua class tables initialized by a startup callback. Attribution still uses the actor's active item at impact. The stock death callbacks also contribute a synthetic hit of amount `1`.
+
+`CUIRankingWnd` reads the favorite icon's `use_3d` XML attribute, defaulting to `Enable3DIcons`. The 3D model path does not require upgrade icon coordinates. Missing or unsuitable models fall back to the 2D upgrade atlas when all four coordinates are available; stale models are released before that fallback.
+
+`set_best_monster` stores the exact ALife section and stock fallback artwork profile. `misc/pda_statistics.ltx` optionally overrides the comparison rank and each UI texture independently. Missing texture keys select the stock fallback; empty keys disable that layer in `CUIRankingWnd`. Overrides do not alter the creature's ALife rank or retroactively recompute saved statistics.
+
+`CGrenade::Throw` records the thrower as the explosion initiator. `CGrenade::Destroy` preserves it; `CExplosive::Initiator` falls back to the explosive's own ID when no initiator exists. Explosion event packets and blast hits carry that initiator, allowing the death callback to credit player kills. This does not resolve the separate favorite-weapon attribution limitation.
+
+Both `save`/`load` and `Serialize` persist the section, comparison rank, fallback profile and weapon counters. The legacy weapon count uses `u16`. Earlier statistics save layouts are unsupported; start a new game.
+
 ## Files
 
 | Area | Path under `src/xrGame` |

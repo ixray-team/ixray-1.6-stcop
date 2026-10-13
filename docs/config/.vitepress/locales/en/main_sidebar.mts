@@ -38,6 +38,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
           { text: 'Mutants', link: '/en/gameplay/general/mutants' },
           { text: 'Transport', link: '/en/gameplay/general/transport' },
           { text: 'Characters', link: '/en/gameplay/general/characters' },
+          { text: 'PDA statistics', link: '/en/gameplay/general/pda-statistics' },
           { text: 'Third-person view', link: '/en/gameplay/general/3rd-person-view' },
           { text: 'First-person legs', link: '/en/gameplay/general/legs-from-the-first-person' },
           { text: 'Life simulation', link: '/en/gameplay/general/life-simulation' },

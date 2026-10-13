@@ -490,6 +490,7 @@ public:
 
 			// FFx0001 ++
 			u32					GetAmmoElapsedWithChamber(); 
+			bool IsWeapon() const;
 			bool				IsWeaponUseChamber();
 			bool				IsWorldObjectBoneVisible(const char* bone_name);
 			bool				SetWorldObjectBoneVisibility(const char* boneName, bool bVisibility);
