@@ -42,6 +42,8 @@ bool CWeapon::install_upgrade_impl(const char* section, bool test)
 	result |= process_if_exists_set(section, "use_revolver_scheme", m_bUseRevolverScheme, test);
 	result |= process_if_exists_set(section, "use_mosin_scheme", m_bUseMosinScheme, test);
 
+	result |= process_if_exists_set(section, "misfire_after_problems_level", m_fMisfireAfterProblemsLevel, test);
+
 	return result;
 }
 
