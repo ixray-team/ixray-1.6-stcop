@@ -77,7 +77,7 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
 	if (enable3DIcons)
     {
-        SetVisual(itm->m_3d_static_visual_name);
+		SetIconVisual(itm->m_3d_static_visual_name);
 		SetBonesVisible(itm->object().Visual()->dcast_PKinematics());
     }
 }

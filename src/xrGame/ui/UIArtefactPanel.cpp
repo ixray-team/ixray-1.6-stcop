@@ -40,7 +40,7 @@ void CUIArtefactPanel::InitIcons(const xr_vector<const CArtefact*>& artefacts)
 		static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
 		if (enable3DIcons)
         {
-			tmp->SetVisual(icons_struct._3d_static_visual);
+			tmp->SetIconVisual(icons_struct._3d_static_visual);
 			tmp->SetXYZ(icons_struct._3d_static_rotate);
 			tmp->SetScaleFactor(icons_struct._3d_static_scale);
         }
