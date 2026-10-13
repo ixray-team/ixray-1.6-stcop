@@ -43,11 +43,17 @@ public:
 	void EndComponent();
 
 	void Load(const shared_str& section);
-	void Update();
+	void Update(bool UpdateProjection = true);
 	void Draw();
+	void DrawScopeUI();
 	void remove_links(CObject* object);
 
 private:
+	void UpdateTargetFrames();
+
+	ui_shader ScopeShader;
+	u32 ScopeUIFrame = u32(-1);
+
 	ECS_COMPONENT(TBinocularsVision)
 		ECS_STRING(m_section.c_str(), "Vision Section");
 	ECS_END
