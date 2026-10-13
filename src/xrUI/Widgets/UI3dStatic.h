@@ -1,5 +1,6 @@
 #pragma once
 #include "UIStatic.h"
+#include "../../xrEngine/VisMask.h"
 
 class IRenderVisual;
 class IKinematics;
@@ -25,30 +26,33 @@ public:
 
 			void	SetVisual		(IRenderVisual* pVisual);
 			void	SetVisual		(const shared_str& cVisualName);
+	void SetIconVisual(const shared_str& Name);
+	void CaptureIconBones();
 
-	virtual void	Draw			();
+	void Draw() override;
 
-			void	SetScaleFactor	(float fScale) { fScaleFactor = fScale; }
-			float	GetScaleFactor	() { return fScaleFactor;  }
-			void	SetCaptMoving	(bool bMoving) { m_bCaptMoving = bMoving; }
-			bool	IsCaptMoving	() { return m_bCaptMoving; }
+	void SetScaleFactor(float fScale) { fScaleFactor = fScale; }
+	float GetScaleFactor() { return fScaleFactor; }
+	void SetCaptMoving(bool bMoving) { m_bCaptMoving = bMoving; }
+	bool IsCaptMoving() { return m_bCaptMoving; }
 
-	IRenderVisual*	GetVisual		() { return pCurrentVisual; }
-
-	void			SetBonesVisible (IKinematics* pVisual);
+	IRenderVisual* GetVisual();
+	void SetBonesVisible(IKinematics* pVisual);
 
 protected:
-
 	static void GetRealBoundBox(IKinematics* m_model, Fmatrix& xform, Fbox& bbox);
 	void FromScreenToItem(int x_screen, int y_screen, float& x_item, float& y_item);
 
-	IRenderVisual* pCurrentVisual = NULL;
+	IRenderVisual* pCurrentVisual = nullptr;
+	bool IsCachedIcon = false;
+	VisMask IconBones;
+	void ReleaseVisual();
+	void ApplyIconBones();
 
 	float fViewportNear, fViewportDist, fViewportAspect;
 	float fViewportFOV, fViewportSize;
-    bool m_bCaptMoving;
+	bool m_bCaptMoving;
 
 	Fmatrix mView, mInvView, mProject, mRotate;
-
 	float fScaleFactor;
 };
