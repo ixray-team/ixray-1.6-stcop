@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UI3dStatic.h"
+#include "../UI3dIconCache.h"
 #include "../Include/xrRender/RenderVisual.h"
 
 #include "../xrEngine/device.h"
@@ -39,13 +40,18 @@ CUI3dStatic::~CUI3dStatic()
 
 void CUI3dStatic::SetBonesVisible(IKinematics* pVisual)
 {
-	if (!pCurrentVisual)
+	if (!pCurrentVisual || !pVisual)
 	{
 		return;
 	}
 
 	if (auto pK = pCurrentVisual->dcast_PKinematics())
 	{
+		if (pK == pVisual)
+		{
+			CaptureIconBones();
+			return;
+		}
 		pK->LL_SetBonesVisibleAll();
 
 		for (auto& [bonename, bone_id] : *pVisual->LL_Bones())
@@ -58,6 +64,7 @@ void CUI3dStatic::SetBonesVisible(IKinematics* pVisual)
 
 		pK->CalculateBones_Invalidate();
 		pK->CalculateBones(true);
+		CaptureIconBones();
 	}
 }
 
@@ -143,6 +150,7 @@ void CUI3dStatic::GetRealBoundBox(IKinematics* m_model, Fmatrix& xform, Fbox& bb
 
 void CUI3dStatic::Draw()
 {
+	ApplyIconBones();
 	if (pCurrentVisual)
 	{
 		Frect rect{};
@@ -267,11 +275,7 @@ Fvector CUI3dStatic::GetHPB() const
 
 void CUI3dStatic::SetVisual(const shared_str& cVisualName)
 {
-	if (pCurrentVisual)
-	{
-		::Render->model_Delete(pCurrentVisual);
-		pCurrentVisual = nullptr;
-	}
+	ReleaseVisual();
 
 	if (!cVisualName)
 	{
@@ -282,6 +286,12 @@ void CUI3dStatic::SetVisual(const shared_str& cVisualName)
 
 	if (pCurrentVisual == nullptr)
 	{
+		return;
+	}
+	if (!pCurrentVisual->dcast_PKinematics())
+	{
+		::Render->model_Delete(pCurrentVisual);
+		pCurrentVisual = nullptr;
 		return;
 	}
 
@@ -303,11 +313,7 @@ void CUI3dStatic::SetVisual(const shared_str& cVisualName)
 
 void CUI3dStatic::SetVisual(IRenderVisual* pVisual)
 {
-	if (pCurrentVisual) 
-	{
-		::Render->model_Delete(pCurrentVisual);
-		pCurrentVisual = nullptr;
-	}
+	ReleaseVisual();
 
 	if (!pVisual) 
 	{
@@ -334,3 +340,62 @@ void CUI3dStatic::SetVisual(IRenderVisual* pVisual)
 	}
 }
 
+void CUI3dStatic::ReleaseVisual()
+{
+	if (pCurrentVisual)
+	{
+		if (IsCachedIcon)
+		{
+			UI3dIconCache::Instance().Release(pCurrentVisual);
+		}
+		else
+		{
+			::Render->model_Delete(pCurrentVisual);
+		}
+		pCurrentVisual = nullptr;
+	}
+	IsCachedIcon = false;
+}
+
+void CUI3dStatic::SetIconVisual(const shared_str& Name)
+{
+	if (IsCachedIcon && UI3dIconCache::Instance().Matches(pCurrentVisual, Name))
+	{
+		pCurrentVisual->dcast_PKinematics()->LL_SetBonesVisibleAll();
+		CaptureIconBones();
+		return;
+	}
+	auto* Visual = UI3dIconCache::Instance().Acquire(Name);
+	ReleaseVisual();
+	pCurrentVisual = Visual;
+	IsCachedIcon = pCurrentVisual != nullptr;
+	if (IsCachedIcon)
+	{
+		pCurrentVisual->dcast_PKinematics()->LL_SetBonesVisibleAll();
+		CaptureIconBones();
+	}
+}
+
+void CUI3dStatic::CaptureIconBones()
+{
+	if (IsCachedIcon)
+	{
+		IconBones = pCurrentVisual->dcast_PKinematics()->LL_GetBonesVisible();
+	}
+}
+
+void CUI3dStatic::ApplyIconBones()
+{
+	if (IsCachedIcon)
+	{
+		auto* Kinematics = pCurrentVisual->dcast_PKinematics();
+		Kinematics->LL_SetBonesVisible(IconBones);
+		Kinematics->CalculateBones_Invalidate();
+	}
+}
+
+IRenderVisual* CUI3dStatic::GetVisual()
+{
+	ApplyIconBones();
+	return pCurrentVisual;
+}

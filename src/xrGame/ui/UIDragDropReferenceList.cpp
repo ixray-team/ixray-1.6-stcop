@@ -106,7 +106,8 @@ void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 	if (enable3DIcons)
 	{
 		const PIItem iitem = static_cast<PIItem>(itm->m_pData);
-		ref->SetVisual(iitem->m_3d_static_visual_name);
+		ref->SetIconVisual(iitem->m_3d_static_visual_name);
+		ref->SetBonesVisible(iitem->object().Visual()->dcast_PKinematics());
 		ref->SetScaleFactor(iitem->m_3d_static_scale);
 		Fvector fRot = iitem->m_3d_static_rotate;
 		if (GetVerticalPlacement())
@@ -115,7 +116,8 @@ void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 			fRot.y -= deg2rad(180.f);
 		}
 		ref->SetXYZ(fRot);
-		itm->SetVisual(iitem->m_3d_static_visual_name);
+		itm->SetIconVisual(iitem->m_3d_static_visual_name);
+		itm->SetBonesVisible(iitem->object().Visual()->dcast_PKinematics());
 		itm->SetScaleFactor(iitem->m_3d_static_scale);
 		if (GetVerticalPlacement())
 		{
@@ -163,8 +165,8 @@ void CUIDragDropReferenceList::LoadItemTexture(const char* section, Ivector2 cel
 	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
 	if (enable3DIcons)
 	{
-        ref->SetVisual(icons_struct._3d_static_visual);
-        ref->SetXYZ(icons_struct._3d_static_rotate);
+		ref->SetIconVisual(icons_struct._3d_static_visual);
+		ref->SetXYZ(icons_struct._3d_static_rotate);
         ref->SetScaleFactor(icons_struct._3d_static_scale);
 	}
 	else

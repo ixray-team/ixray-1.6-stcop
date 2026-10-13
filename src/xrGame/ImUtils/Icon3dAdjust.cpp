@@ -263,7 +263,9 @@ namespace
 			{
 				if (cell && item_matches_target(static_cast<CInventoryItem*>(cell->m_pData)))
 				{
-					cell->SetVisual(m_visual_applied);
+					cell->SetIconVisual(m_visual_applied);
+					auto* Item = static_cast<CInventoryItem*>(cell->m_pData);
+					cell->SetBonesVisible(Item->object().Visual()->dcast_PKinematics());
 				}
 			}
 		}
