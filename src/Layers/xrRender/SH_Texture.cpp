@@ -44,6 +44,8 @@ CTexture::~CTexture()
 
 void CTexture::surface_set(IRHISurface* surf)
 {
+	xrCriticalSectionGuard Guard(LoadGuard);
+	FinishLoading();
 	if (surf)			surf->AddRef();
 	_RELEASE(pSurface);
 	_RELEASE(m_pSRView);
@@ -111,6 +113,7 @@ void CTexture::surface_set(IRHISurface* surf)
 
 IRHISurface* CTexture::surface_get()
 {
+	WaitForLoad();
 	if (flags.bLoadedAsStaging)
 		ProcessStaging();
 
@@ -131,8 +134,7 @@ void CTexture::PostLoad	()
 
 void CTexture::apply_load(u32 dwStage)
 {
-	if (!flags.bLoaded)		Load();
-	else					PostLoad();
+	Load();
 
 	bind(dwStage);
 }
@@ -154,6 +156,7 @@ void CTexture::ProcessStaging()
 			desc.Width = pSurface->GetWidth();
 			desc.Height = pSurface->GetHeight();
 			desc.Depth = 1;
+			desc.ArraySize = pSurface->GetArraySize();
 			desc.MipLevels = pSurface->GetMipLevels();
 			desc.Format = pSurface->GetFormat();
 			desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
@@ -320,7 +323,70 @@ void CTexture::Preload	()
 void CTexture::Load()
 {
 	PROF_EVENT("CTexture::Load");
+	xrCriticalSectionGuard Guard(LoadGuard);
+	FinishLoading();
+	if (!flags.bLoaded)
+	{
+		Preload();
+		LoadImpl();
+	}
+	PostLoad();
+}
 
+bool CTexture::StartLoading()
+{
+	xrCriticalSectionGuard Guard(LoadGuard);
+	if (LoadTask || flags.bLoaded)
+	{
+		return true;
+	}
+
+	// Video playback and texture sequences stay on the calling thread.
+	string_path FileName;
+	if (strchr(*cName, '$') || FS.exist(FileName, _game_textures_, *cName, ".ogm") ||
+		FS.exist(FileName, _game_textures_, *cName, ".avi") || FS.exist(FileName, _game_textures_, *cName, ".seq"))
+	{
+		return false;
+	}
+
+	Preload();
+	LoadTask = xr_make_unique<xr_task_group>();
+	auto LoadLambda = [this]()
+	{
+		PROF_EVENT("CTexture::LoadAsync");
+		LoadImpl();
+	};
+	LoadTask->run(LoadLambda);
+	IsLoading.store(true, std::memory_order_release);
+	return true;
+}
+
+void CTexture::FinishLoading()
+{
+	if (LoadTask)
+	{
+		LoadTask->wait();
+		LoadTask.reset();
+		if (!flags.bLoaded)
+		{
+			// A cancelled parent task may prevent the queued load from starting.
+			LoadImpl();
+		}
+		IsLoading.store(false, std::memory_order_release);
+	}
+}
+
+void CTexture::WaitForLoad()
+{
+	if (IsLoading.load(std::memory_order_acquire))
+	{
+		xrCriticalSectionGuard Guard(LoadGuard);
+		FinishLoading();
+	}
+}
+
+void CTexture::LoadImpl()
+{
 	flags.bLoaded = true;
 	if (pSurface)
 		return;
@@ -336,8 +402,6 @@ void CTexture::Load()
 		flags.bUser = true;
 		return;
 	}
-
-	Preload();
 
 	bool bCreateView = true;
 
@@ -524,12 +588,12 @@ void CTexture::Load()
 			}
 		}
 	}
-
-	PostLoad();
 }
 
 void CTexture::Unload()
 {
+	xrCriticalSectionGuard Guard(LoadGuard);
+	FinishLoading();
 	if (!can_unload) return;
 	flags.bLoaded = false;
 	flags.bLoadedAsStaging = false;
@@ -570,6 +634,11 @@ ERHI_USAGE CTexture::GetUsage()
 
 IRHIShaderResourceView* CTexture::GetView()
 {
+	WaitForLoad();
+	if (flags.bLoadedAsStaging)
+	{
+		ProcessStaging();
+	}
 	return m_pSRView;
 }
 
@@ -604,6 +673,8 @@ bool CTexture::video_IsPlaying()
 
 void CTexture::CreateEmpty(u32 w, u32 h)
 {
+	xrCriticalSectionGuard Guard(LoadGuard);
+	FinishLoading();
 	R_ASSERT(RDevice && "must be valid");
 
 	flags.bLoaded = true;

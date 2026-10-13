@@ -65,6 +65,7 @@ void dxRenderDeviceRender::updateGamma()
 
 void dxRenderDeviceRender::OnDeviceDestroy( bool bKeepTextures)
 {
+	Resources->WaitForTextureLoading();
 #ifdef USE_DX11
 #ifdef DEBUG_DRAW
 	DebugRenderImpl.Shutdown();
@@ -486,8 +487,7 @@ bool dxRenderDeviceRender::HWSupportsShaderYUV2RGB()
 
 void  dxRenderDeviceRender::OnAssetsChanged()
 {
-	Resources->m_textures_description.UnLoad();
-	Resources->m_textures_description.Load();
+	Resources->ReloadTextureDescriptions();
 }
 
 void dxRenderDeviceRender::PostCreate()

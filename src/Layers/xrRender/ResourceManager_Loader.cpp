@@ -6,6 +6,7 @@
 
 void CResourceManager::OnDeviceDestroy(bool )
 {
+	WaitForTextureLoading();
 	if (RDEVICE.b_is_Ready)				return;
 
 	if (m_pStorageSVG)
