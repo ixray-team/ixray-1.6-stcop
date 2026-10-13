@@ -62,6 +62,7 @@ enum class EditorUI : u8
 	Audio_General,
 	UI_General,
 	ECSViewer,
+	Tools_AIGridEditor,
 	Count
 };
 

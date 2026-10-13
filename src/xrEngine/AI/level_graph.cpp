@@ -13,8 +13,36 @@ ILevelGraph::~ILevelGraph()
 {
 }
 
+void ILevelGraph::RebuildSearchIndex()
+{
+	SearchNodes.clear();
+	SearchNodeIDs.clear();
+	if (std::is_sorted(m_nodes, m_nodes + header().vertex_count(), [](const CVertex& A, const CVertex& B)
+					   { return A.position().xz() < B.position().xz(); }))
+	{
+		return;
+	}
+	SearchNodeIDs.resize(header().vertex_count());
+	for (u32 I = 0; I < SearchNodeIDs.size(); ++I)
+	{
+		SearchNodeIDs[I] = I;
+	}
+	std::stable_sort(SearchNodeIDs.begin(), SearchNodeIDs.end(), [this](u32 A, u32 B)
+					 { return m_nodes[A].position().xz() < m_nodes[B].position().xz(); });
+	SearchNodes.reserve(SearchNodeIDs.size());
+	for (u32 ID : SearchNodeIDs)
+	{
+		SearchNodes.push_back(m_nodes[ID]);
+	}
+}
+
 bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>& OutPath, float MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount) const
 {
+	if (!IsEditorNodeEnabled(start_vertex_id) || !IsEditorNodeEnabled(dest_vertex_id))
+	{
+		OutPath.clear();
+		return false;
+	}
 	PROF_EVENT("AStar Search");
 
 	CTimer timer;
@@ -236,7 +264,7 @@ bool ILevelGraph::SearchLimited(u32 start_vertex_id, u32 dest_vertex_id, xr_vect
 	{
 		PlannedPath->clear();
 	}
-	if (!valid_vertex_id(start_vertex_id) || !valid_vertex_id(dest_vertex_id))
+	if (!IsEditorNodeEnabled(start_vertex_id) || !IsEditorNodeEnabled(dest_vertex_id))
 	{
 		return false;
 	}
@@ -515,6 +543,10 @@ u32	ILevelGraph::vertex(const Fvector& position) const
 	u32						selected;
 	set_invalid_vertex(selected);
 	for (u32 Iter = 0; Iter < header().vertex_count(); ++Iter) {
+		if (!IsEditorNodeEnabled(Iter))
+		{
+			continue;
+		}
 		float				dist = distance(Iter, position);
 		if (dist < min_dist) {
 			min_dist = dist;
@@ -528,6 +560,10 @@ u32	ILevelGraph::vertex(const Fvector& position) const
 
 u32 ILevelGraph::vertex(u32 current_node_id, const Fvector& position) const
 {
+	if (!IsEditorNodeEnabled(current_node_id))
+	{
+		current_node_id = u32(-1);
+	}
 #ifndef AI_COMPILER
 	if (DevicePtr)
 	{
@@ -681,26 +717,35 @@ u32	ILevelGraph::vertex_id(const Fvector& position) const
 	VERIFY2(valid_vertex_position(position),make_string<const char*>("invalid position for ILevelGraph::vertex_id specified: [%f][%f][%f]",	VPUSH(position)));
 
 	CPosition _vertex_position = vertex_position(position);
-	CVertex* B = m_nodes;
-	CVertex* E = m_nodes + header().vertex_count();
-	CVertex* I = std::lower_bound
-	(
+	const CVertex* B = SearchNodes.empty() ? m_nodes : SearchNodes.data();
+	const CVertex* E = B + header().vertex_count();
+	const CVertex* I = std::lower_bound(
 		B, E, _vertex_position.xz(), [](const CVertex& vertex, u32 xz_value)
-		{
-			return vertex.position().xz() < xz_value;
-		}
+		{ return vertex.position().xz() < xz_value; }
 	);
 
 	if ((I == E) || ((*I).position().xz() != _vertex_position.xz()))
 		return			(u32(-1));
+	while (I != E && I->position().xz() == _vertex_position.xz() && !IsEditorNodeEnabled(SearchNodeID(u32(I - B))))
+	{
+		++I;
+	}
+	if (I == E || I->position().xz() != _vertex_position.xz())
+	{
+		return u32(-1);
+	}
 
-	u32					best_vertex_id = u32(I - B);
+	u32 best_vertex_id = SearchNodeID(u32(I - B));
 	float				y = vertex_plane_y(best_vertex_id, position.x, position.z);
 	for (++I; I != E; ++I) {
 		if ((*I).position().xz() != _vertex_position.xz())
 			break;
 
-		u32				new_vertex_id = u32(I - B);
+		u32 new_vertex_id = SearchNodeID(u32(I - B));
+		if (!IsEditorNodeEnabled(new_vertex_id))
+		{
+			continue;
+		}
 		float			_y = vertex_plane_y(new_vertex_id, position.x, position.z);
 		if (y <= position.y) {
 			// so, current Node is under the specified position
@@ -753,8 +798,8 @@ u32 ILevelGraph::guess_vertex_id(u32 const& current_vertex_id, Fvector const& po
 	float					result_distance = nearest(best_point, position, vertex_contour);
 	u32						result_vertex_id = current_vertex_id;
 
-	CVertex const* B = m_nodes;
-	CVertex const* E = m_nodes + header().vertex_count();
+	CVertex const* B = SearchNodes.empty() ? m_nodes : SearchNodes.data();
+	CVertex const* E = B + header().vertex_count();
 	u32 start_x = (u32)std::max(0, int(x) - max_guess_vertex_count);
 	u32 stop_x = std::min(max_x(), x + (u32)max_guess_vertex_count);
 	u32 start_z = (u32)std::max(0, int(z) - max_guess_vertex_count);
@@ -775,15 +820,27 @@ u32 ILevelGraph::guess_vertex_id(u32 const& current_vertex_id, Fvector const& po
 
 			if ((*I).position().xz() != test_xz)
 				continue;
+			while (I != E && I->position().xz() == test_xz && !IsEditorNodeEnabled(SearchNodeID(u32(I - B))))
+			{
+				++I;
+			}
+			if (I == E || I->position().xz() != test_xz)
+			{
+				continue;
+			}
 
-			u32				best_vertex_id = u32(I - B);
+			u32 best_vertex_id = SearchNodeID(u32(I - B));
 			contour(vertex_contour, best_vertex_id);
 			float			best_distance = nearest(best_point, position, vertex_contour);
 			for (++I; I != E; ++I) {
 				if ((*I).position().xz() != test_xz)
 					break;
 
-				u32				vertex_id = u32(I - B);
+				u32 vertex_id = SearchNodeID(u32(I - B));
+				if (!IsEditorNodeEnabled(vertex_id))
+				{
+					continue;
+				}
 				Fvector			point;
 				contour(vertex_contour, vertex_id);
 				float			distance = nearest(point, position, vertex_contour);

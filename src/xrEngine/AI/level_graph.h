@@ -53,12 +53,19 @@ protected:
 	u32						m_column_length;
 	u32						m_max_x;
 	u32						m_max_z;
+	xr_vector<CVertex> SearchNodes;
+	xr_vector<u32> SearchNodeIDs;
+	xr_vector<u8> EditorDeletedNodes;
+	void RebuildSearchIndex();
+	u32 SearchNodeID(u32 Index) const { return SearchNodeIDs.empty() ? Index : SearchNodeIDs[Index]; }
 
 protected:
 			u32		vertex						(const Fvector &position) const;
 			u32		guess_vertex_id				(u32 const &current_vertex_id, Fvector const &position) const;
 
 public:
+	u32 EditorRevision = 0;
+	bool IsEditorNodeEnabled(u32 ID) const { return valid_vertex_id(ID) && (EditorDeletedNodes.empty() || !EditorDeletedNodes[ID]); }
 	typedef u32 const_iterator;
 	typedef u32 const_spawn_iterator;
 	typedef u32 const_death_iterator;

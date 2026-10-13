@@ -35,6 +35,7 @@ public:
 protected:
 	CPointQuadTree					*m_covers;
 	xr_vector<bool>					m_temp;
+	PointVector EditorRetiredCovers;
 	mutable PointVector				m_nearest;
 
 private:
@@ -61,9 +62,10 @@ public:
 									CCoverManager			();
 	virtual							~CCoverManager			();
 			void					compute_static_cover	();
-	IC		CPointQuadTree			&covers					() const;
-	IC		CPointQuadTree			*get_covers				();
-	IC		Storage					*smart_covers_storage	()	const;
+			void RefreshStaticCoverForEditor();
+			IC CPointQuadTree& covers() const;
+			IC CPointQuadTree* get_covers();
+			IC Storage* smart_covers_storage() const;
 			void					clear					();
 	template <typename _evaluator_type, typename _restrictor_type>
 	IC		const CCoverPoint		*best_cover				(const Fvector &position, float radius, _evaluator_type &evaluator, const _restrictor_type &restrictor) const;

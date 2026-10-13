@@ -20,7 +20,7 @@ IC	CSpaceRestriction::CSpaceRestriction			(CSpaceRestrictionManager *space_restr
 
 IC	bool CSpaceRestriction::initialized				() const
 {
-	return							(m_initialized);
+	return CSpaceRestrictionAbstract::initialized();
 }
 
 IC	shared_str CSpaceRestriction::out_restrictions		() const

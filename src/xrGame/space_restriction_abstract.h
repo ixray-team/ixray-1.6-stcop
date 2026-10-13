@@ -14,6 +14,7 @@ protected:
 	xr_vector<u32>					m_border;
 	xr_vector<u32>					m_accessible_neighbour_border;
 	bool							m_initialized;
+	u32 GraphRevision = 0;
 	bool							m_accessible_neighbour_border_actual;
 
 private:

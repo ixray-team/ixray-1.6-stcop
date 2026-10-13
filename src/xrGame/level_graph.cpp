@@ -200,11 +200,39 @@ CLevelGraph::CLevelGraph()
 
 CLevelGraph::~CLevelGraph()
 {
-	if (m_header->version() < XRAI_CURRENT_VERSION)
+	if (OriginalNodes)
 	{
-		xr_delete(m_nodes);
+		delete[] OriginalNodes;
+	}
+	else if (EditorNodes.empty() && m_header->version() != XRAI_LARGE_VERSION)
+	{
+		delete[] m_nodes;
 	}
 
 	VERIFY(Device.IsEditorMode() == false);
 	FS.r_close(m_reader);
+}
+
+void CLevelGraph::ApplyEditorNodes(const hdrNODES& Header, const xr_vector<CVertex>& Nodes, const xr_vector<u8>& Deleted)
+{
+	if (EditorNodes.empty() && m_header->version() != XRAI_LARGE_VERSION)
+	{
+		OriginalNodes = m_nodes;
+	}
+	static_cast<hdrNODES&>(EditorHeader) = Header;
+	EditorNodes = Nodes;
+	EditorDeletedNodes = Deleted;
+	m_header = &EditorHeader;
+	m_nodes = EditorNodes.data();
+	m_row_length = iFloor((Header.aabb.max.z - Header.aabb.min.z) / Header.size + EPS_L + 1.5f);
+	m_column_length = iFloor((Header.aabb.max.x - Header.aabb.min.x) / Header.size + EPS_L + 1.5f);
+	m_access_mask.resize(Header.count, true);
+	unpack_xz(vertex_position(Header.aabb.max), m_max_x, m_max_z);
+	RebuildSearchIndex();
+	++EditorRevision;
+#ifdef DEBUG
+#ifndef AI_COMPILER
+	m_current_actual = false;
+#endif
+#endif
 }

@@ -29,12 +29,24 @@ IC	const xr_vector<u32> &CSpaceRestrictionAbstract::border						()
 
 IC	bool CSpaceRestrictionAbstract::initialized									() const
 {
+	if (ai().get_level_graph() && GraphRevision != ai().level_graph().EditorRevision)
+	{
+		auto* Self = const_cast<CSpaceRestrictionAbstract*>(this);
+		Self->GraphRevision = ai().level_graph().EditorRevision;
+		Self->m_initialized = false;
+		Self->m_accessible_neighbour_border_actual = false;
+		Self->m_accessible_neighbour_border.clear();
+	}
 	return											(m_initialized);
 }
 
 template <typename T>
 IC	const xr_vector<u32> &CSpaceRestrictionAbstract::accessible_neighbour_border(T &restriction, bool out_restriction)
 {
+	if (!initialized())
+	{
+		initialize();
+	}
 	if (!m_accessible_neighbour_border_actual)
 		prepare_accessible_neighbour_border			(restriction,out_restriction);
 

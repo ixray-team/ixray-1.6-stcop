@@ -52,6 +52,13 @@ public:
 public:
 	CHeader					m_tCrossTableHeader;
 	CCell					*m_tpaCrossTable;
+	xr_vector<CCell> EditorCells;
+	void ApplyEditorCells(const xr_vector<CCell>& Cells)
+	{
+		EditorCells = Cells;
+		m_tpaCrossTable = EditorCells.data();
+		m_tCrossTableHeader.dwNodeCount = u32(EditorCells.size());
+	}
 
 public:
 							IGameLevelCrossTable	();

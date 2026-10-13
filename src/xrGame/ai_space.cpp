@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "game_graph.h"
 #include "level_graph.h"
+#include "ImUtils/AIGridEditor.h"
 #include "graph_engine.h"
 #include "ef_storage.h"
 #include "ai_space.h"
@@ -109,6 +110,7 @@ void CAI_Space::load				(const char* level_name)
 	m_level_graph = new CLevelGraph();
 
 	game_graph().set_current_level(current_level.id());
+	LoadAIGridEditorPatch();
 	R_ASSERT2				(cross_table().header().level_guid() == level_graph().header().guid(), "cross_table doesn't correspond to the AI-map");
 	R_ASSERT2				(cross_table().header().game_guid() == game_graph().header().guid(), "graph doesn't correspond to the cross table");
 	
