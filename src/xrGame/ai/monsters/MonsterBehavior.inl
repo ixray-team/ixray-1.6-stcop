@@ -307,6 +307,18 @@ void SMonsterBehavior::Load(CBaseMonster& Monster, const char* Section)
 	BulletHitHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_bullet_hit_hearing_ratio", "MonsterBulletHitHearingRatio", 1.f, 0.f, 1.f);
 	SuppressedHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_suppressed_hearing_ratio", "MonsterSuppressedHearingRatio", 0.3f, 0.f, 1.f);
 	MeleeHearingRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_melee_hearing_ratio", "MonsterMeleeHearingRatio", 0.05f, 0.f, 1.f);
+	MeleeSoundRadius = MonsterBehaviorRuntime::ReadFloat(Section, "monster_melee_sound_radius", "MonsterMeleeSoundRadius", 5.0f, 0.f, 500.f);
+	ActorJumpSoundRadius = MonsterBehaviorRuntime::ReadFloat(Section, "monster_actor_jump_sound_radius", "MonsterActorJumpSoundRadius", 20.0f, 0.f, 500.f);
+	ActorSprintSoundRadius = MonsterBehaviorRuntime::ReadFloat(Section, "monster_actor_sprint_sound_radius", "MonsterActorSprintSoundRadius", 15.0f, 0.f, 500.f);
+	ActorRunSoundRadius = MonsterBehaviorRuntime::ReadFloat(Section, "monster_actor_run_sound_radius", "MonsterActorRunSoundRadius", 10.0f, 0.f, 500.f);
+	ActorWalkSoundRadius = MonsterBehaviorRuntime::ReadFloat(Section, "monster_actor_walk_sound_radius", "MonsterActorWalkSoundRadius", 7.0f, 0.f, 500.f);
+	ActorHighCrouchSoundRadius = MonsterBehaviorRuntime::ReadFloat(Section, "monster_actor_high_crouch_sound_radius", "MonsterActorHighCrouchSoundRadius", 5.0f, 0.f, 500.f);
+	ActorLowCrouchSoundRadius = MonsterBehaviorRuntime::ReadFloat(Section, "monster_actor_low_crouch_sound_radius", "MonsterActorLowCrouchSoundRadius", 2.0f, 0.f, 500.f);
+	SniperShotRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_sniper_shot_ratio", "MonsterSniperShotRatio", 1.0f, 0.f, 1.f);
+	ShotgunShotRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_shotgun_shot_ratio", "MonsterShotgunShotRatio", 0.75f, 0.f, 1.f);
+	AutomaticShotRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_automatic_shot_ratio", "MonsterAutomaticShotRatio", 0.6f, 0.f, 1.f);
+	PistolShotRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_pistol_shot_ratio", "MonsterPistolShotRatio", 0.4f, 0.f, 1.f);
+	GrenadeLauncherShotRatio = MonsterBehaviorRuntime::ReadFloat(Section, "monster_grenade_launcher_shot_ratio", "MonsterGrenadeLauncherShotRatio", 0.25f, 0.f, 1.f);
 	NoiseInterestInterval = u32(MonsterBehaviorRuntime::ReadFloat(Section, "monster_noise_interest_interval", "MonsterNoiseInterestInterval", .1f, .05f, 5.f) * 1000.f);
 	FightQuietTime = u32(MonsterBehaviorRuntime::ReadFloat(Section, "monster_death_hazard_fight_quiet_time", "MonsterDeathHazardFightQuietTime", 15.f, 1.f, 120.f) * 1000.f);
 	AnomalyAvoidance = READ_IF_EXISTS(pSettings, r_bool, Section, "monster_anomaly_avoidance_enabled", false);
@@ -379,11 +391,13 @@ u32 SMonsterBehavior::HearNoise(CBaseMonster& Monster, CObject* Source, const Fv
 	SNoiseAttention* Slot = nullptr;
 	for (auto& Entry : NoiseAttention)
 	{
-		if (!MonsterBehaviorRuntime::Expired(Entry.Until) && Entry.Source == ID && Entry.Explosion == Explosion && Entry.General == General &&
-			(ID != u32(-1) || Entry.Position.distance_to_sqr(Position) < 25.f))
+		if (!MonsterBehaviorRuntime::Expired(Entry.Until) && Entry.Source == ID && Entry.SoundType == SoundType &&
+			Entry.Position.distance_to_sqr(Position) <= .01f)
 		{
-			Slot = &Entry;
-			break;
+			// Repeated mixer pulses from the same point are the same acoustic observation.
+			LastNoiseInterest = Entry.Interest;
+			Entry.Until = Device.dwTimeGlobal + 10000;
+			return 0;
 		}
 	}
 	if (!Slot)

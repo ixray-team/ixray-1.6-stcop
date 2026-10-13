@@ -33,6 +33,9 @@
 #include "../../../../xrScripts/script_callback_ex.h"
 #include "../../../ActorCondition.h"
 #include "../../../Inventory.h"
+#include "../../../Weapon.h"
+#include "../../../WeaponMagazinedWGrenade.h"
+#include "../../../InventoryOwner.h"
 #include "../snork/snork.h"
 #include "../pseudogigant/pseudo_gigant.h"
 #include "../../../MonsterEnemySharingDebug.h"
@@ -42,10 +45,37 @@ float CBaseMonster::GetHearingRangeFactor() const
 	return EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ? HearingFactor : 1.f;
 }
 
-float CBaseMonster::GetDistanceSoundRange(int Type) const
+float CBaseMonster::GetDistanceSoundRange(int Type, CObject* Source) const
 {
 	if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation]) return -1.f;
 	if (Type == int(0xffffffff) || MonsterPeaceful || !g_Alive()) return 0.f;
+	CObject* Owner = Source;
+	for (u32 Depth = 0; Owner && Owner->H_Parent() && Depth < 4; ++Depth)
+	{
+		Owner = Owner->H_Parent();
+	}
+	CActor* Player = Owner ? Owner->cast_actor() : nullptr;
+	if (Type & SOUND_TYPE_ACTOR_JUMP)
+	{
+		return Behavior.ActorJumpSoundRadius;
+	}
+	if ((Type & SOUND_TYPE_STEP) && Player)
+	{
+		const u32 State = Player->mstate_real;
+		if (State & ACTOR_DEFS::mcCrouch)
+		{
+			return State & ACTOR_DEFS::mcAccel ? Behavior.ActorLowCrouchSoundRadius : Behavior.ActorHighCrouchSoundRadius;
+		}
+		if (State & ACTOR_DEFS::mcSprint)
+		{
+			return Behavior.ActorSprintSoundRadius;
+		}
+		return isActorAccelerated(State, Player->IsZoomAimingMode()) ? Behavior.ActorRunSoundRadius : Behavior.ActorWalkSoundRadius;
+	}
+	if (Type & SOUND_TYPE_MELEE)
+	{
+		return Behavior.MeleeSoundRadius * Behavior.MeleeHearingRatio;
+	}
 	const bool Explosion = (Type & SOUND_TYPE_OBJECT_EXPLODING) != 0;
 	const bool Shot = (Type & SOUND_TYPE_SHOOTING) != 0;
 	const auto& Reaction = Explosion ? ExplosionReaction : ShotReaction;
@@ -86,6 +116,46 @@ float CBaseMonster::GetDistanceSoundRange(int Type) const
 	else if (Type & SOUND_TYPE_OBJECT_COLLIDING)
 	{
 		Ratio = Behavior.CollisionHearingRatio;
+	}
+	if (Shot && !Explosion)
+	{
+		CWeapon* Weapon = Source ? smart_cast<CWeapon*>(Source) : nullptr;
+		CInventoryOwner* InventoryOwner = Owner ? smart_cast<CInventoryOwner*>(Owner) : nullptr;
+		if (!Weapon && InventoryOwner && InventoryOwner->inventory().ActiveItem())
+		{
+			Weapon = InventoryOwner->inventory().ActiveItem()->cast_weapon();
+		}
+		if (Weapon)
+		{
+			const char* Section = Weapon->cNameSect().c_str();
+			const char* Kind = READ_IF_EXISTS(pSettings, r_string, Section, "weapon_class", "");
+			const int WeaponType = READ_IF_EXISTS(pSettings, r_s32, Section, "ef_weapon_type", 8);
+			CWeaponMagazinedWGrenade* Launcher = Weapon->cast_weapon_magazined_w_grenade();
+			if ((Launcher && Launcher->IsGrenadeMode()) || WeaponType == 12)
+			{
+				Ratio *= Behavior.GrenadeLauncherShotRatio;
+			}
+			else if (!xr_strcmp(Kind, "sniper_rifle") || WeaponType == 11)
+			{
+				Ratio *= Behavior.SniperShotRatio;
+			}
+			else if (!xr_strcmp(Kind, "shotgun") || WeaponType == 9)
+			{
+				Ratio *= Behavior.ShotgunShotRatio;
+			}
+			else if (WeaponType == 5)
+			{
+				Ratio *= Behavior.PistolShotRatio;
+			}
+			else
+			{
+				Ratio *= Behavior.AutomaticShotRatio;
+			}
+		}
+		else
+		{
+			Ratio *= Behavior.AutomaticShotRatio;
+		}
 	}
 	Radius *= Ratio;
 	if (Type & SOUND_TYPE_SUPPRESSED)
@@ -154,7 +224,7 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 
 	CMonsterLogicTimerScope TotalTimer(EMonsterLogicTimer::NewLogicTotal);
 	SNoiseReaction& Reaction = Explosion || (General && !ShotReaction.Attract) ? ExplosionReaction : ShotReaction;
-	const float Radius = GetDistanceSoundRange(SoundType) * GetHearingRangeFactor();
+	const float Radius = GetDistanceSoundRange(SoundType, Source) * GetHearingRangeFactor();
 	if (!Reaction.Enabled || (General ? !Reaction.Attract : (!Reaction.Attract && !Reaction.FearEnabled)) || Radius <= 0.f || MonsterPeaceful || !g_Alive() ||
 		GetScriptControl() || EnemyMan.get_script_enemy() || control().is_captured_pure() || (m_controlled && m_controlled->is_under_control()) ||
 		Position().distance_to_sqr(SoundPosition) > Radius * Radius ||
@@ -170,6 +240,25 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 	if (IsFriendlyNoiseSource(Emitter))
 	{
 		return true;
+	}
+	CActor* PlayerEmitter = Emitter ? Emitter->cast_actor() : nullptr;
+	if (PlayerEmitter && (SoundType & SOUND_TYPE_STEP) && !(SoundType & SOUND_TYPE_ACTOR_JUMP))
+	{
+		const u32 State = PlayerEmitter->mstate_real;
+		u32 Mode = SOUND_TYPE_ACTOR_WALK;
+		if (State & ACTOR_DEFS::mcCrouch)
+		{
+			Mode = State & ACTOR_DEFS::mcAccel ? SOUND_TYPE_ACTOR_LOW_CROUCH : SOUND_TYPE_ACTOR_HIGH_CROUCH;
+		}
+		else if (State & ACTOR_DEFS::mcSprint)
+		{
+			Mode = SOUND_TYPE_ACTOR_SPRINT;
+		}
+		else if (isActorAccelerated(State, PlayerEmitter->IsZoomAimingMode()))
+		{
+			Mode = SOUND_TYPE_ACTOR_RUN;
+		}
+		SoundType = (SoundType & ~SOUND_TYPE_ACTOR_STEP_MASK) | Mode;
 	}
 	const u32 Accumulated = Behavior.HearNoise(*this, Emitter, SoundPosition, 1.f, Explosion, General, u32(SoundType));
 	const bool Interested = (Accumulated & 1u) != 0;
