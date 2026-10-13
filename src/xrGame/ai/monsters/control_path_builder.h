@@ -63,17 +63,6 @@ public:
 			bool	is_path_built			();
 
 private:
-	// Recovery state is local to ground-monster navigation, not the shared AI graph.
-	Fvector YieldSamplePosition{};
-	Fvector YieldPosition{};
-	u32 YieldVertex = u32(-1);
-	u32 YieldSampleTime = 0;
-	u32 YieldStartTime = 0;
-	u32 YieldRetryTime = 0;
-	bool YieldSampling = false;
-	bool YieldActive = false;
-	bool UpdateYieldTarget(Fvector& Target, u32& Vertex);
-
 			bool	build_special			(const Fvector &target, u32 node, u32 vel_mask);
 			void	make_inactual			();	
 };

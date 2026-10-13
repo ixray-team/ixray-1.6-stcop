@@ -44,7 +44,6 @@ public:
 			void		add						(ALife::_OBJECT_ID	requesting_id, ALife::_OBJECT_ID requested_id, const CALLBACK_TYPE &object_callback);
 			void		add						(ALife::_OBJECT_ID	requesting_id, ALife::_OBJECT_ID requested_id, CSpawnCallback &callback);
 			void		remove					(ALife::_OBJECT_ID	requesting_id, ALife::_OBJECT_ID requested_id);
-	void RemoveIfExists(ALife::_OBJECT_ID TargetId, ALife::_OBJECT_ID OwnerId);
 			void		clear					(ALife::_OBJECT_ID	requested_id);
 			void		clear					();
 			void		callback				(CObject			*object);

@@ -19,7 +19,6 @@
 #include "doors_actor.h"
 #include "doors_manager.h"
 #include "level_path_builder.h"
-#include "path_manager_params.h"
 
 #ifndef MASTER_GOLD
 #	include "ai_debug.h"
@@ -116,22 +115,7 @@ bool stalker_movement_manager_obstacles::can_build_restricted_path	(const obstac
 	}
 
 
-	const auto* Parameters = base_level_params();
-	if (Parameters->UsePathLimits)
-	{
-		const u32 Destination = level_path().dest_vertex_id();
-		// Probe with the same topology and work budgets as the actual route.
-		// A partial result does not prove that this obstacle can be bypassed.
-		m_failed_to_build_path = !ai().level_graph().SearchLimited(
-			object().ai_location().level_vertex_id(), Destination, m_temp_path,
-			Parameters->max_range, Parameters->max_iteration_count, Parameters->max_visited_node_count,
-			type_max(float)) || m_temp_path.empty() || m_temp_path.back() != Destination;
-	}
-	else
-	{
-		m_failed_to_build_path = !ai().level_graph().Search(object().ai_location().level_vertex_id(),
-			level_path().dest_vertex_id(), m_temp_path, type_max(float), 0xFFFFFFFF, 4096);
-	}
+	m_failed_to_build_path			= !ai().level_graph().Search(object().ai_location().level_vertex_id(),level_path().dest_vertex_id(),m_temp_path,type_max(float),0xFFFFFFFF,4096);
 
 
 	remove_border					(query);
