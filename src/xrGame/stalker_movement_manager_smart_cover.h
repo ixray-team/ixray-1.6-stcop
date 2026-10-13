@@ -68,6 +68,9 @@ public:
 // forced to be public
 public:
 		transition_action const	&current_transition		();
+		// Анимация текущего перехода, выбранная один раз при построении пути.
+		// transitions::action::animation() без параметров при каждом вызове выбирает случайную анимацию.
+		animation_action const	&selected_transition_animation	();
 			bool				exit_transition			();
 			void				go_next_loophole		();
 			void	start_non_animated_loophole_change	();

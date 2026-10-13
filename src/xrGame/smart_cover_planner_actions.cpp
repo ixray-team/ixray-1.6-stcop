@@ -101,7 +101,7 @@ void change_loophole::finalize		()
 void change_loophole::select_animation	(shared_str &result)
 {
 	if (!object().movement().exit_transition()) {
-		result						= object().movement().current_transition().animation().animation_id();
+		result						= object().movement().selected_transition_animation().animation_id();
 		return;
 	}
 
@@ -199,7 +199,7 @@ void exit::initialize			()
 {
 	inherited::initialize		();
 
-	if (!object().movement().current_transition().animation().has_animation())
+	if (!object().movement().selected_transition_animation().has_animation())
 		return;
 
 	object().sight().enable		(false);
@@ -209,7 +209,7 @@ void exit::execute				()
 {
 	inherited::execute			();
 
-	if (object().movement().current_transition().animation().has_animation())
+	if (object().movement().selected_transition_animation().has_animation())
 		return;
 
 	setup_orientation										();
@@ -226,13 +226,13 @@ void exit::finalize				()
 
 bool exit::is_animated_action	()
 {
-	return						(object().movement().current_transition().animation().has_animation());
+	return						(object().movement().selected_transition_animation().has_animation());
 }
 
 void exit::select_animation		(shared_str& result)
 {
-	VERIFY						(object().movement().current_transition().animation().has_animation());
-	result						= object().movement().current_transition().animation().animation_id();
+	VERIFY						(object().movement().selected_transition_animation().has_animation());
+	result						= object().movement().selected_transition_animation().animation_id();
 }
 
 void exit::on_animation_end	()
