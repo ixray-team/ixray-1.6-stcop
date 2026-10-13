@@ -1,6 +1,0 @@
-<w>
-    <element_0 ps="simple_color_axis" vs="stub_notransform_t" fog="0" zread="0" zwrite="0">
-        <blend status="1" src="srcalpha" dest="invsrcalpha"/>
-        <cull_mode mode="none" />
-    </element_0>
-</w>
