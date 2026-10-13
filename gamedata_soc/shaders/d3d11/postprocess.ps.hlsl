@@ -15,7 +15,7 @@ float4 main(p_postpr I) : SV_Target
     float gray = dot(image, I.Gray.xyz);
     image = lerp(gray, image, I.Gray.w);
 
-    float3 t_noise = s_noise.Sample(smp_linear, I.Tex2.xy).xyz;
+    float3 t_noise = s_noise.SampleLevel(smp_linear, I.Tex2.xy, 0).xyz;
     float3 noised = image * t_noise * 2.0f;
 	
     image = lerp(noised, image, I.Color.w);
