@@ -26,9 +26,15 @@ static void	_BCL callback_rotation		(CBoneInstance* bone)
 
 	CAI_Stalker const*				object = parameter->m_object;
 	if (!object->sight().enabled())
+	{
+		if (parameter->IsHead)
+		{
+			parameter->m_object->LookAtActor(bone);
+		}
 		return;
+	}
 
-	Fvector	position				= bone->mTransform.c;
+	Fvector position = bone->mTransform.c;
 
 	if (_valid(*parameter->m_rotation))
 	{
@@ -41,8 +47,12 @@ static void	_BCL callback_rotation		(CBoneInstance* bone)
 
 	CWeaponShotEffector&			effector = object->weapon_shot_effector();
 	if (!effector.IsActive()) {
-		bone->mTransform.c			= position;
-		R_ASSERT					( _valid( bone->mTransform ) );
+		bone->mTransform.c = position;
+		if (parameter->IsHead)
+		{
+			parameter->m_object->LookAtActor(bone);
+		}
+		R_ASSERT(_valid(bone->mTransform));
 		return;
 	}
 
@@ -62,6 +72,10 @@ static void	_BCL callback_rotation		(CBoneInstance* bone)
 	R_ASSERT						( _valid( effector_transform ) );
 	bone->mTransform.mulA_43		(effector_transform);
 	bone->mTransform.c				= position;
+	if (parameter->IsHead)
+	{
+		parameter->m_object->LookAtActor(bone);
+	}
 	R_ASSERT						( _valid( bone->mTransform ) );
 }
 
@@ -110,6 +124,10 @@ static void	_BCL callback_rotation_blend	(CBoneInstance* const bone)
 	R_ASSERT						( _valid( rotation ) );
 	bone->mTransform.mulA_43		(rotation);
 	bone->mTransform.c				= position;
+	if (parameter->IsHead)
+	{
+		parameter->m_object->LookAtActor(bone, multiplier);
+	}
 	R_ASSERT						( _valid( bone->mTransform ) );
 }
 
@@ -130,6 +148,7 @@ void CStalkerAnimationManager::assign_bone_callbacks	()
 	m_head_params.m_object			= &object();
 	m_head_params.m_blend			= 0;
 	m_head_params.m_forward			= true;
+	m_head_params.IsHead = true;
 
 	int								head_bone = kinematics->LL_BoneID(pSettings->r_string(section,"bone_head"));
 	kinematics->LL_GetBoneInstance	( u16(head_bone)).set_callback( bctCustom, &callback_rotation, &m_head_params);
@@ -170,6 +189,7 @@ void CStalkerAnimationManager::assign_bone_blend_callbacks	(bool const& forward_
 	m_head_params.m_object			= &object();
 	m_head_params.m_blend			= &global().blend();
 	m_head_params.m_forward			= forward_direction;
+	m_head_params.IsHead = true;
 
 	int								head_bone = kinematics->LL_BoneID(pSettings->r_string(section,"bone_head"));
 	kinematics->LL_GetBoneInstance	( u16(head_bone)).set_callback( bctCustom, &callback_rotation_blend, &m_head_params);

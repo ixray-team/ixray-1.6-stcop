@@ -86,24 +86,26 @@ private:
 	AnimationModifier				m_global_modifier;
 
 public:
-	struct callback_params 
+	struct callback_params
 	{
-		Fmatrix const*				m_rotation;
-		CAI_Stalker const*			m_object;
-		CBlend const* const*		m_blend;
-		bool						m_forward;
+		Fmatrix const* m_rotation;
+		CAI_Stalker* m_object;
+		CBlend const* const* m_blend;
+		bool m_forward;
+		bool IsHead = false;
 
-							callback_params	()
+		callback_params()
 		{
-			invalidate				();
+			invalidate();
 		}
 
-		inline	void		invalidate		()
+		inline void invalidate()
 		{
-			m_rotation				= 0;
-			m_object				= 0;
-			m_blend					= 0;
-			m_forward				= false;
+			m_rotation = 0;
+			m_object = 0;
+			m_blend = 0;
+			m_forward = false;
+			IsHead = false;
 		}
 	}; // struct callback_params
 
