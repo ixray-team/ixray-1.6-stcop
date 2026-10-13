@@ -71,9 +71,25 @@ class CMonsterEnemySharingDebug
 		{
 			return SoundType & SOUND_TYPE_SUPPRESSED ? "Выстрел с глушителем" : "Выстрел";
 		}
+		if (SoundType & SOUND_TYPE_ACTOR_JUMP)
+		{
+			return "Прыжок ГГ";
+		}
 		if (SoundType & SOUND_TYPE_STEP)
 		{
-			return ActorSource ? "Шаги ГГ" : SoundType & SOUND_TYPE_MONSTER ? "Шаги мутанта" : "Шаги";
+			if (ActorSource)
+			{
+				switch (SoundType & SOUND_TYPE_ACTOR_STEP_MASK)
+				{
+				case SOUND_TYPE_ACTOR_SPRINT: return "Спринт ГГ";
+				case SOUND_TYPE_ACTOR_RUN: return "Бег ГГ";
+				case SOUND_TYPE_ACTOR_WALK: return "Шаг ГГ";
+				case SOUND_TYPE_ACTOR_HIGH_CROUCH: return "Высокий присед ГГ";
+				case SOUND_TYPE_ACTOR_LOW_CROUCH: return "Низкий присед ГГ";
+				default: return "Шаги ГГ";
+				}
+			}
+			return SoundType & SOUND_TYPE_MONSTER ? "Шаги мутанта" : "Шаги";
 		}
 		if (SoundType & SOUND_TYPE_BULLET_HIT)
 		{
