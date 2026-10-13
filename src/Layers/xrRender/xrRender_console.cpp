@@ -1170,6 +1170,7 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r4_cas_sharpening", &ps_r4_cas_sharpening, 0.0f, 1.0f);
 
 	CMD3(CCC_Mask32, "r4_puddles", &ps_r2_ls_flags_ext, R4FLAG_PUDDLES);
+	CMD3(CCC_Mask32, "r4_rain_puddles", &ps_r2_ls_flags_ext, R4FLAG_RAIN_PUDDLES);
 
 	CMD2(CCC_Boolean, "r4_use_gasmask", &UseGasmak);
 	CMD2(CCC_Boolean, "r2_use_rain_drops", &UseRainDrops);

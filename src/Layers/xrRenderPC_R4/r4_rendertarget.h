@@ -220,6 +220,7 @@ private:
 
 	//	DX10 Rain
 	ref_shader					s_rain;
+	ref_shader RainPuddlesShader;
 	ref_geom						g_accum_point	;
 	ref_geom						g_accum_spot	;
 	ref_geom						g_accum_omnipart;
@@ -365,6 +366,7 @@ public:
 	void						phase_nvg				();
 
 	bool						phase_puddles			();
+	void PhaseRainPuddles();
 	void						phase_planar			();
 
 	void						RenderEffect			(ScreenPostProcessType postProcessType, bool = true);

@@ -1023,4 +1023,7 @@
 	<string id="procedural">
 		<text>Процедурные</text>
 	</string>
+	<string id="ui_mm_rain_puddles">
+		<text>Дождевые лужи (легаси)</text>
+	</string>
 </string_table>

@@ -1029,4 +1029,7 @@
 	<string id="procedural">
 		<text>Procedural</text>
 	</string>
+	<string id="ui_mm_rain_puddles">
+		<text>Rain puddles (legacy)</text>
+	</string>
 </string_table>

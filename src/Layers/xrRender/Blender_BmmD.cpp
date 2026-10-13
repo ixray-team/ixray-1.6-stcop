@@ -222,6 +222,13 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 
 		C.r_dx10Texture("s_lmap", C.L_textures[1]);
 
+		if (RImplementation.o.RainPuddles)
+		{
+			C.r_dx10Texture("s_puddles_perlin", "shaders\\rain_puddles_perlin");
+			C.r_dx10Texture("s_puddles_normal", "shaders\\rain_puddles_normal");
+			C.r_dx10Texture("s_puddles_ripples", "shaders\\rain_puddles_ripples");
+		}
+
 		if(C.iElement == SE_R2_NORMAL_HQ) 
 		{
 			C.r_dx10Texture("s_mask", mask);
