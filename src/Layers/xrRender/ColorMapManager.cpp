@@ -4,10 +4,10 @@
 #include "dxRenderDeviceRender.h"
 
 
-ColorMapManager::ColorMapManager()
+ColorMapManager::ColorMapManager(const char* First, const char* Second)
 {
-	m_CMap[0]	= dxRenderDeviceRender::Instance().Resources->_CreateTexture("$user$cmap0");
-	m_CMap[1]	= dxRenderDeviceRender::Instance().Resources->_CreateTexture("$user$cmap1");
+	m_CMap[0]	= dxRenderDeviceRender::Instance().Resources->_CreateTexture(First);
+	m_CMap[1]	= dxRenderDeviceRender::Instance().Resources->_CreateTexture(Second);
 }
 
 void ColorMapManager::SetTextures(const shared_str &tex0, const shared_str &tex1)
