@@ -69,12 +69,16 @@ private:
 	typedef FHierrarhyVisual	inherited;
 	friend class				CBoneData;
 	friend class				CSkeletonX;
+	friend class				SkeletonBatch;
 
 
 	xr_vector<shared_str>		L_parents;
 	xr_vector<xr_vector<u16> > 	GroupIDs;
 
-public: 
+	void						CalculateBoneHierarchy	(const CBoneData* bd, const Fmatrix* parent);
+	void						AdvanceTracks			();
+
+public:
 #ifdef DEBUG
 	bool						dbg_single_use_marker;
 #endif
@@ -118,8 +122,10 @@ protected:
 	u32							UCalc_Time				;
 	s32							UCalc_Visibox			;
 	u32							Visibox_frame = 0;
+	u32							TracksTime = 0;			// RDEVICE.dwTimeGlobal of the last OnCalculateBones
+	u32							BatchMarker = 0;		// SkeletonBatch that already holds this skeleton
+	// Guards bone calculation and bone reads that need a whole matrix. See SkeletonRigid.cpp for the wait rules.
 	xrCriticalSection			UCalc_Mutex;
-	xrCriticalSection			UCalc_Mutex2;
 
 	VisMask						visimask;
     
@@ -203,21 +209,8 @@ public:
 	ICF Fmatrix&			_BCL	LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const	{	return LL_GetBoneInstance(bone_id).mTransform;					}
 
-	ICF void				_BCL	LL_GetBoneLocalPosition(u16 bone_id, Fvector& result)
-	{
-		{
-			xrCriticalSectionGuard g(UCalc_Mutex);
-			result = LL_GetBoneInstance(bone_id).mTransform.c;
-		}
-	}
-
-	ICF void				_BCL	LL_GetBoneLocalTransform(u16 bone_id, Fmatrix& result)
-	{
-		{
-			xrCriticalSectionGuard g(UCalc_Mutex);
-			result = LL_GetBoneInstance(bone_id).mTransform;
-		}
-	}
+	void					_BCL	LL_GetBoneLocalPosition(u16 bone_id, Fvector& result);
+	void					_BCL	LL_GetBoneLocalTransform(u16 bone_id, Fmatrix& result);
 
 	ICF void				_BCL	LL_GetBoneWorldPosition	(u16 bone_id, const Fmatrix& xform, Fvector& result)
 	{
@@ -294,6 +287,8 @@ public:
 	
 	// Main functionality
 	virtual void					CalculateBones				(bool bForceExact	=	false);		// Recalculate skeleton
+	// Advances animation tracks for this frame without bone calculation. Track callbacks run on the calling thread.
+	void							PrepareBones				();
 	void							CalculateBones_Invalidate	();
 	void							Callback					(UpdateCallback C, void* Param)		{	Update_Callback	= C; Update_Callback_Param	= Param;	}
 

@@ -30,6 +30,14 @@ With `r__mt_texture_load on`, creating a texture starts its DDS load as soon as 
 
 The R4 `render.experemental.target_res` command is registered during renderer console initialization, before any background texture load. Texture loading never registers console commands from a worker.
 
+## Skeleton updates
+
+The renderer calculates skeletons in parallel (`SkeletonBatch`, `src/Layers/xrRenderPC_R4/SkeletonBatch.cpp`). `render_main` (deferred pass) and `r_dsgraph_render_subspace` (light and sun shadows) collect visible dynamic objects before static geometry, add their `CKinematics` to `R_dsgraph_structure::SkeletonUpdates`, and launch the batch. Worker threads calculate the bones while the primary thread traverses static geometry; `Wait` lets the primary thread take the remaining skeletons. Wallmarks, lights, glows and `renderable_Render` then run on the primary thread in the original traversal order.
+
+`Launch` calls `CKinematics::PrepareBones` on the calling thread first: animation tracks and their blend callbacks (game and script code) never run on a worker. Bone hierarchies, bone callbacks and visual callbacks (IK ray picks, attachments) run on workers. `r__mt_skeletons off` keeps the same order and calculates every skeleton on the primary thread.
+
+`UCalc_Mutex` is the only skeleton lock. A thread that is calculating a skeleton never waits for another one: a nested `CalculateBones` or `Bone_Calculate` on a skeleton owned by another thread is skipped, and `LL_GetBoneLocalPosition` / `LL_GetBoneLocalTransform` read the current matrices unlocked. This avoids cycles between neighbouring NPCs whose IK rays hit each other's collision forms. For the same reason `CCF_Skeleton::BuildState` copies the bone matrices before it takes its build lock: a thread that waits for a skeleton must not hold a lock that the skeleton's own ray picks need. Physics shell activation in `CPHElement::BonesCallBack` is serialized, because it moves ODE bodies in a shared space.
+
 ## R4 dynamic frame
 
 `CRender::Render` in `src/Layers/xrRenderPC_R4/r4_R_render.cpp` is reached from `seqRender`.
