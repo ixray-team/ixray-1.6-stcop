@@ -27,6 +27,11 @@ CDetailPathManager::~CDetailPathManager	()
 {
 }
 
+bool CDetailPathManager::actual() const
+{
+	return m_actuality && ai().get_level_graph() && GraphRevision == ai().level_graph().EditorRevision;
+}
+
 void CDetailPathManager::reinit			()
 {
 	m_actuality				= false;
@@ -187,6 +192,7 @@ bool CDetailPathManager::BuildNodeCentrePath(const xr_vector<u32>& LevelPath)
 
 void CDetailPathManager::build_path(const xr_vector<u32> &level_path, u32 intermediate_index, bool IsPartialPath, bool RequireFourTransitions)
 {
+	GraphRevision = ai().level_graph().EditorRevision;
 	PartialPath = IsPartialPath;
 	if (valid(m_start_position) && valid(m_dest_position)) {
 		switch (m_path_type) {

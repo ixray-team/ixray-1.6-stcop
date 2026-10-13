@@ -738,6 +738,7 @@ void RenderCarConfigEditor();
 void RenderToolsInputManagerWindow();
 void RenderToolsRenderDebugSVGStorageViewerWindow();
 void RenderDetailLayersEditorWindow();
+void RenderAIGridEditorWindow();
 void RenderTextureEditor();
 void RenderQuestEditor();
 void RenderPPEEditor();

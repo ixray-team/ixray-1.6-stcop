@@ -37,12 +37,24 @@ IC	void CLevelManagerTemplate::reinit(const ILevelGraph *graph)
 TEMPLATE_SPECIALIZATION
 IC	bool CLevelManagerTemplate::actual() const
 {
+	if (GraphRevision != ai().level_graph().EditorRevision)
+	{
+		return false;
+	}
 	return						(inherited::actual(this->m_object->object().ai_location().level_vertex_id(), this->dest_vertex_id()));
 }
 
 TEMPLATE_SPECIALIZATION
 IC	void CLevelManagerTemplate::build_path	(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id)
 {
+	if (GraphRevision != ai().level_graph().EditorRevision)
+	{
+		GraphRevision = ai().level_graph().EditorRevision;
+		PlannedRoute.clear();
+		ExpensiveGoals.clear();
+		HasExpensiveAttempt = false;
+		ExpensiveRoute = false;
+	}
 	PROF_EVENT("Build Path/Level Path");
 	
 	THROW						(ai().level_graph().valid_vertex_id(start_vertex_id) && ai().level_graph().valid_vertex_id(dest_vertex_id));
