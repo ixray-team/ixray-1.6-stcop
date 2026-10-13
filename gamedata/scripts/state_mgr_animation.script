@@ -361,8 +361,13 @@ function animation:add_anim(anim, state)
 		return
 	end
 
+	-- Первую входную анимацию состояния с позицией всегда играем в координатах точки.
+	-- Иначе после выхода из состояния (например, NPC встал, чтобы сменить оружие) повторный вход
+	-- проигрывался относительно текущей позы: NPC разворачивался и садился "в воздух".
+	local force_position = self.mgr.animation_position ~= nil and self.states.anim_marker == MARKER_IN and self.states.seq_id == 1
+
 	-- Если позиций/направление анимации не заданы или они уже применились
-	if self.mgr.animation_position == nil or self.mgr.pos_direction_applied == true then
+	if self.mgr.animation_position == nil or (self.mgr.pos_direction_applied == true and not force_position) then
 		-- Анимация с передвижением.
 		--npc:set_sight(CSightParams.eSightTypeAnimationDirection, false,false)
 --		printf("%s no pos", npc:name())
