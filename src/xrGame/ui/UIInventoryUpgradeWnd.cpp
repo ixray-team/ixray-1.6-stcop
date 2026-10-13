@@ -176,6 +176,7 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 				m_item->SetXYZ(icons_struct._3d_static_rotate);
 			}
             m_item->SetScaleFactor(icons_struct._3d_static_scale);
+            m_item->SetIconOffset(icons_struct.IconOffset);
             m_item->SetBonesVisible(m_inv_item->object().Visual()->dcast_PKinematics());
         }
         else
