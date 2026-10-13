@@ -996,6 +996,45 @@ bool EDetailManager::PickPaintPoint(Fvector& Point)
 	return Found;
 }
 
+void EDetailManager::EnsurePaintResolution()
+{
+	// A low-resolution base (e.g. the 64x64 'ed/empty_details') spans many detail slots
+	// per texel, so a brush stroke barely touches any texel. Upscale the mask once so that
+	// every slot quadrant gets its own texel. Nearest sampling keeps the exact colors that
+	// the color indices are matched against.
+	const float TargetTexelSize = DETAIL_SLOT_SIZE_2;
+	const u32 MaxSize = 4096;
+
+	const float WorldW = m_BBox.max.x - m_BBox.min.x;
+	const float WorldH = m_BBox.max.z - m_BBox.min.z;
+	if (WorldW < EPS_L || WorldH < EPS_L)
+		return;
+
+	const u32 NewW = std::min(MaxSize, (u32)iCeil(WorldW / TargetTexelSize) + 1);
+	const u32 NewH = std::min(MaxSize, (u32)iCeil(WorldH / TargetTexelSize) + 1);
+	if (NewW <= m_Base.w && NewH <= m_Base.h)
+		return;
+
+	const u32 DstW = std::max(NewW, m_Base.w);
+	const u32 DstH = std::max(NewH, m_Base.h);
+
+	U32Vec Resized(DstW * DstH);
+	for (u32 V = 0; V < DstH; ++V)
+	{
+		const u32 SrcV = std::min(m_Base.h - 1, (u32)iFloor((float(V) / float(DstH - 1)) * float(m_Base.h - 1) + 0.5f));
+		for (u32 U = 0; U < DstW; ++U)
+		{
+			const u32 SrcU = std::min(m_Base.w - 1, (u32)iFloor((float(U) / float(DstW - 1)) * float(m_Base.w - 1) + 0.5f));
+			Resized[V * DstW + U] = m_Base.data[SrcV * m_Base.w + SrcU];
+		}
+	}
+
+	m_Base.data.swap(Resized);
+	m_Base.w = DstW;
+	m_Base.h = DstH;
+	BaseDataDirty = true;
+}
+
 void EDetailManager::RegenerateSlotsUnderBrush(const Fvector& WorldPoint)
 {
 	if (!dtSlots || objects.empty() || m_ColorIndices.empty())
@@ -1035,6 +1074,10 @@ void EDetailManager::RegenerateSlotsUnderBrush(const Fvector& WorldPoint)
 				}
 			}
 		}
+
+	// slots that switched between empty and non-empty change the slide window
+	// visibility, which cache_Update otherwise refreshes only on camera moves
+	RequestSlideWindowUpdate();
 }
 
 void EDetailManager::PaintAt(const Fvector& WorldPoint)
@@ -1047,6 +1090,8 @@ void EDetailManager::PaintAt(const Fvector& WorldPoint)
 	float WorldH = Box.max.z - Box.min.z;
 	if (WorldW < EPS_L || WorldH < EPS_L)
 		return;
+
+	EnsurePaintResolution();
 
 	float TexW = (float)m_Base.w;
 	float TexH = (float)m_Base.h;

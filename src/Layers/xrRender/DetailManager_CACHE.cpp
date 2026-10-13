@@ -154,7 +154,8 @@ void CDetailManager::cache_Update(const Fvector& view)
 	int v_x = iFloor(view.x / dm_slot_size + .5f);
 	int v_z = iFloor(view.z / dm_slot_size + .5f);
 
-	bool bUpdateSlideWindow = (cache_cx != v_x) || (cache_cz != v_z);
+	bool bUpdateSlideWindow = m_slide_window_dirty.exchange(false, std::memory_order_acquire);
+	bUpdateSlideWindow = bUpdateSlideWindow || (cache_cx != v_x) || (cache_cz != v_z);
 	// *****	Cache shift
 	{
 		PROF_EVENT("cache_Tasks");
@@ -346,6 +347,8 @@ void CDetailManager::DetailLayers_RebuildSlotsAround(const Fvector& center, floa
 			UnpackSlotItems(S);
 		}
 	}
+
+	RequestSlideWindowUpdate();
 }
 
 // Publish a per-stroke slot rebuild to the DetailsTask worker (see cache_Update).

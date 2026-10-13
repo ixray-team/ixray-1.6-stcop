@@ -215,67 +215,7 @@ void UIMainMenuForm::Draw()
 					}
 					ImGui::EndMenu();
 				}
-				if (ImGui::BeginMenu("Quality"))
-				{
-					static bool Selected[4] = { false,false,true,false };
-					if (ImGui::MenuItem("25%", "", &Selected[0]))
-					{
-						Selected[1] = Selected[2] = Selected[3] = false;
-						EContext.UI->SetRenderQuality(1 / 4.f);
-						EContext.UI->RedrawScene();
-					}
-					if (ImGui::MenuItem("50%", "", &Selected[1]))
-					{
-						Selected[0] = Selected[2] = Selected[3] = false;
-						EContext.UI->SetRenderQuality(1 / 2.f);
-						EContext.UI->RedrawScene();
-					}
-					if (ImGui::MenuItem("100%", "", &Selected[2]))
-					{
-						Selected[1] = Selected[0] = Selected[3] = false;
-						EContext.UI->SetRenderQuality(1.f);
-						EContext.UI->RedrawScene();
-					}
-					if (ImGui::MenuItem("200%", "", &Selected[3]))
-					{
-						Selected[1] = Selected[2] = Selected[0] = false;
-						EContext.UI->SetRenderQuality(2.f);
-						EContext.UI->RedrawScene();
-					}
-					ImGui::EndMenu();
-				}
-				if (ImGui::BeginMenu("Fill Mode"))
-				{
-					bool Selected[3] = { false ,GEditorDraw.FillMode == D3DFILL_WIREFRAME,GEditorDraw.FillMode == D3DFILL_SOLID };
-					if (ImGui::MenuItem("Wireframe", "", &Selected[1]))
-					{
-						GEditorDraw.FillMode = D3DFILL_WIREFRAME;
-						EContext.UI->RedrawScene();
-					}
-					if (ImGui::MenuItem("Solid", "", &Selected[2]))
-					{
-						GEditorDraw.FillMode = D3DFILL_SOLID;
-						EContext.UI->RedrawScene();
-					}
-					ImGui::EndMenu();
-				}
-				{
-					bool Selected = psDeviceFlags.test(rsEdgedFaces);
-					if (ImGui::MenuItem("Edged Faces", "", &Selected))
-					{
-						psDeviceFlags.set(rsEdgedFaces, Selected);
-						EContext.UI->RedrawScene();
-					}
-				}
-				ImGui::Separator();
-				{
-					bool selected = !Caps.bForceGPU_SW;
-					if (ImGui::MenuItem("RenderHW", "", &selected))
-					{
-						Caps.bForceGPU_SW = !selected;
-						EContext.UI->Resize();
-					}
-				}
+				EditorRenderMenu::DrawItems();
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();

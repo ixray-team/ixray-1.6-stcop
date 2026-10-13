@@ -429,6 +429,9 @@ void CCustomPreferences::Load()
 		GetSafe(*render, "w", start_w);
 		GetSafe(*render, "h", start_h);
 		GetSafe(*render, "quality", GEditorDraw.ScreenQuality);
+		GEditorDraw.ScreenQuality = std::clamp(GEditorDraw.ScreenQuality, 0.25f, 1.f);
+		GetSafe(*render, "upscaler", GEditorDraw.Upscaler);
+		GEditorDraw.Upscaler = std::clamp(GEditorDraw.Upscaler, 1u, 3u);
 
 		int x = 0, y = 0;
 		if (GetSafe(*render, "x", x) && GetSafe(*render, "y", y))
@@ -560,6 +563,7 @@ void CCustomPreferences::Save()
 	JSONData["render"]["w"] = EDevice->Width;
 	JSONData["render"]["h"] = EDevice->Height;
 	JSONData["render"]["quality"] = GEditorDraw.ScreenQuality;
+	JSONData["render"]["upscaler"] = GEditorDraw.Upscaler;
 
 	int X, Y;
 	SDL_GetWindowPosition(g_AppInfo.Window, &X, &Y);

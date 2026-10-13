@@ -195,5 +195,6 @@ public:
 	void				RenderBrush			();
 	void				ClearMask			();
 protected:
+	void				EnsurePaintResolution	();
 	void				RegenerateSlotsUnderBrush(const Fvector& WorldPoint);
 };

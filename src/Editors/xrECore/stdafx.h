@@ -86,6 +86,7 @@ struct astr_pred
 #include "../../xrEngine/Properties.h"
 #include "../../Layers/xrRenderPC_R4/RenderEditorApi.h"
 #include "Editor/ui_main.h"
+#include "Editor/UIRenderOptionsMenu.h"
 using FLvertexVec = xr_vector<FVF::L>;
 using FLvertexIt = FLvertexVec::iterator;
 
