@@ -18,6 +18,8 @@ g_camera_rig_descriptions[] =
 	{ "hud_ik_share", u8"Доля покачивания оружия (инерция поворота, смещения hud_move_* с наклонами/прыжком/приземлением, movement_layer_*), которую руки догоняют через IK; остальное двигает весь HUD. 0 = старое жёсткое поведение" },
 	{ "lean_hud_counter", u8"Доля крена от наклона Q/E, снимаемая с оружия (0 = оружие кренится вместе с камерой, меньше 0 = доп. крен); руки догоняют через IK" },
 	{ "left_hand_ik_follow", u8"с, как быстро хват левой руки догоняет свою анимированную позу после включения IK хвата; 0 = хват замирает при включении IK" },
+	{ "left_hand_ik_blend", u8"с, за сколько левая рука подлетает к хвату (после перезарядки, доставания...) и отпускает его; 0 = сразу. Для оружия: left_hand_ik_blend в hud-секции" },
+	{ "left_hand_finger_tail", u8"Доля подлёта руки к хвату в его конце, за которую пальцы из замороженной в начале подлёта позы переходят в хват (позу из анимации); 0 = пальцы всё время идут по анимации. Для оружия: left_hand_finger_tail в hud-секции" },
 	{ "left_hand_attach_blend", u8"с, плавность прикрепления левой руки к оружию и её отпускания (left_hand_attach_motions). Для оружия: left_hand_attach_blend в hud-секции" },
 
 	{ "turn_sway_smooth", u8"с, сглаживание покачивания от поворота мыши (неровные рывки мыши трясут оружие в руках); 0 = выкл." },
@@ -312,6 +314,12 @@ void RenderCameraRigEditor()
 	}
 
 	ImGui::SetItemTooltip("$app_data_root$\\camera_rig\\saved.ltx");
+
+	ImGui::SameLine();
+	if (ImGui::Button("Motion player"))
+	{
+		HudMotionPlayerOpen();
+	}
 
 	const shared_str hud_sect = CameraRigActiveHudSection();
 	ImGui::Text("Hud section: %s", hud_sect.size() ? hud_sect.c_str() : "-");

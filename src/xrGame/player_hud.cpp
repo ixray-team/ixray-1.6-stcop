@@ -978,6 +978,8 @@ void attachable_hud_item::LoadRigParams()
 	m_additive_blend_in = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "additive_blend_in", rig.additive_blend_in), 0.f);
 	m_additive_blend_out = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "additive_blend_out", rig.additive_blend_out), 0.01f);
 	LeftHandAttachBlend = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "left_hand_attach_blend", rig.left_hand_attach_blend), 0.f);
+	LeftHandIkBlend = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "left_hand_ik_blend", rig.left_hand_ik_blend), 0.f);
+	LeftHandFingerTail = std::clamp(READ_IF_EXISTS(pSettings, r_float, sect_name, "left_hand_finger_tail", rig.left_hand_finger_tail), 0.f, 1.f);
 }
 
 static CBlend* hud_playing_cycle(IKinematicsAnimated* ka, u16 part, MotionID motion)
@@ -2809,9 +2811,26 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		active = state == CHUDState::eIdle || item->m_parent_hud_item->WpnCanShoot() && (state == CWeapon::eFire || state == CWeapon::eFire2);
 	}
 
-	active = active && !item->m_left_hand_free;
+	active = active && !item->m_left_hand_free && !PreviewGripBlocked;
 
-	m_left_ik_weight = std::clamp(m_left_ik_weight + (active ? Device.fTimeDelta : -Device.fTimeDelta) * 4.f, 0.f, 1.f);
+	m_left_ik_weight = item->LeftHandIkBlend > 0.f ? std::clamp(m_left_ik_weight + (active ? Device.fTimeDelta : -Device.fTimeDelta) / item->LeftHandIkBlend, 0.f, 1.f) : (active ? 1.f : 0.f);
+
+	if (active && !LeftGripActive && m_left_ik_weight < 1.f && item->LeftHandFingerTail > 0.f)
+	{
+		LeftGripFingerBones = left_hand_fingers();
+		LeftGripFingerPose.clear();
+		for (u16 bone : LeftGripFingerBones)
+		{
+			const Fmatrix parent = model->LL_GetTransform(model->LL_GetData(bone).GetParentID());
+			LeftGripFingerPose.push_back(Fquaternion().set(Fmatrix().mul_43(Fmatrix().invert(parent), model->LL_GetTransform(bone))));
+		}
+	}
+	else if (!active)
+	{
+		LeftGripFingerPose.clear();
+	}
+
+	LeftGripActive = active;
 
 	const bool has_right = m_right_ik_chain[0] != BI_NONE && m_right_ik_chain[1] != BI_NONE && m_right_ik_chain[2] != BI_NONE;
 	const bool has_left = m_attached_items[1] == nullptr && m_left_ik_chain[0] != BI_NONE && m_left_ik_chain[1] != BI_NONE && m_left_ik_chain[2] != BI_NONE;
@@ -3144,6 +3163,25 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 				CCameraRig::SolveLimb(model, m_left_ik_chain, attach_target, attach_weight);
 			}
 		}
+
+		if (!attach_pose && !LeftGripFingerPose.empty() && LeftGripFingerPose.size() == LeftGripFingerBones.size())
+		{
+			const float tail = item->LeftHandFingerTail;
+			const float grip = m_left_ik_weight * m_left_ik_weight * (3.f - 2.f * m_left_ik_weight);
+			const float close = tail > 0.f ? std::clamp((grip - (1.f - tail)) / tail, 0.f, 1.f) : 1.f;
+			const float hold = 1.f - close * close * (3.f - 2.f * close);
+			if (hold > 0.f)
+			{
+				for (size_t i = 0; i < LeftGripFingerBones.size(); ++i)
+				{
+					blend_local(LeftGripFingerBones[i], LeftGripFingerPose[i], hold);
+				}
+			}
+			else
+			{
+				LeftGripFingerPose.clear();
+			}
+		}
 	}
 
 	item->update(true);
@@ -3314,6 +3352,28 @@ void player_hud::OnHudMotionStarted(const shared_str& motion)
 	{
 		LeftHandAttachWeight = 1.f;
 	}
+}
+
+xr_vector<u16> player_hud::left_hand_fingers() const
+{
+	xr_vector<u16> bones;
+	if (m_model == nullptr || m_left_ik_chain[2] == BI_NONE)
+	{
+		return bones;
+	}
+
+	IKinematics* kinematics = m_model->dcast_PKinematics();
+	bones.push_back(m_left_ik_chain[2]);
+	for (size_t i = 0; i < bones.size(); ++i)
+	{
+		for (CBoneData* child : kinematics->LL_GetData(bones[i]).children)
+		{
+			bones.push_back(child->GetSelfID());
+		}
+	}
+
+	bones.erase(bones.begin());
+	return bones;
 }
 
 xr_vector<u16> player_hud::left_arm_subtree() const

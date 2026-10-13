@@ -747,6 +747,8 @@ void Render3DIconAdjust();
 void RenderDemoRecordEditorWindow();
 void RenderActorAnimationManager();
 void RenderCameraRigEditor();
+void RenderHudMotionPlayer();
+void HudMotionPlayerOpen();
 
 /* MISCELLANEOUS */
 
