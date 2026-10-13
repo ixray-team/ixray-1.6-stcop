@@ -494,8 +494,8 @@ bool CDetailPathManager::init_build(
 	
 	validate_vertex_position			(start);
 	
-	dest.position						= ai().level_graph().v2d(PartialPath ? ai().level_graph().vertex_position(level_path.back()) : m_dest_position);
-	if (m_use_dest_orientation && !PartialPath)
+	dest.position						= ai().level_graph().v2d(m_dest_position);
+	if (m_use_dest_orientation)
 		dest.direction					= ai().level_graph().v2d(m_dest_direction);
 	else
 		dest.direction.set				(0.f,1.f);
@@ -870,7 +870,7 @@ void CDetailPathManager::build_smooth_path		(
 		m_restricted_object->add_border	(start.vertex_id,dest.vertex_id);
 	}
 
-	xr_vector<STravelParamsIndex>		&finish_params = (m_use_dest_orientation && !PartialPath) ? m_start_params : m_dest_params;
+	xr_vector<STravelParamsIndex>		&finish_params = m_use_dest_orientation ? m_start_params : m_dest_params;
 
 	if (!fill_key_points(level_path,intermediate_index,start,dest)) {
 		if (m_restricted_object)

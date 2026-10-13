@@ -39,11 +39,7 @@ IC	void CMemoryManager::fill_enemies	(const xr_vector<T>* objects, const _predic
 template <typename _predicate>
 IC void CMemoryManager::fill_enemies(const _predicate& predicate) const
 {
-	if (!m_visual || !m_enemy)
-	{
-		return;
-	}
-	fill_enemies(m_visual->objectsPtr(), predicate);
+	fill_enemies(visual().objectsPtr(), predicate);
 }
 
 IC	CVisualMemoryManager	&CMemoryManager::visual		() const
