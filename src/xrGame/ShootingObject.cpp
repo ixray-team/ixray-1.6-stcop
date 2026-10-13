@@ -62,30 +62,40 @@ void CShootingObject::destroy_particles()
 
 void CShootingObject::Load(const char* section)
 {
-	if(pSettings->line_exist(section,"light_disabled"))
-		m_bLightShotEnabled = !pSettings->r_bool(section,"light_disabled");
-	else
-		m_bLightShotEnabled = true;
-
-	//время затрачиваемое на выстрел
+	// время затрачиваемое на выстрел
 	fOneShotTimeSaved = READ_IF_EXISTS(pSettings, r_float, section, "rpm", fOneShotTimeSaved);
-	VERIFY2(fOneShotTimeSaved >0.f, make_string<const char*>("Section [%s], line rpm = %f", section, fOneShotTimeSaved));
+	VERIFY2(fOneShotTimeSaved > 0.f, make_string<const char*>("Section [%s], line rpm = %f", section, fOneShotTimeSaved));
 	fOneShotTime = 60.f / (fOneShotTimeSaved * READ_IF_EXISTS(pSettings, r_float, section, "rpm_mult", 1.0f));
 
 	LoadFireParams(section);
-	LoadLights(section, fire_mode == eSilencerFire ? "silencer_" : fire_mode == eGlauncherFire ? "grenade_" : "");
+	LoadEffects(section);
+}
 
-	m_sShellParticles = READ_IF_EXISTS(pSettings, r_string, section, "shell_particles", m_sShellParticles);
-	m_sSmokeParticles = READ_IF_EXISTS(pSettings, r_string, section, "smoke_particles", m_sSmokeParticles);
-	m_sFlameParticles = READ_IF_EXISTS(pSettings, r_string, section, "flame_particles", m_sFlameParticles);
-	m_sSmokeSilencerParticles = READ_IF_EXISTS(pSettings, r_string, section, "silencer_smoke_particles", m_sSmokeSilencerParticles);
-	m_sFlameSilencerParticles = READ_IF_EXISTS(pSettings, r_string, section, "silencer_flame_particles", m_sFlameSilencerParticles);
-	m_sFlameGlauncherParticles = READ_IF_EXISTS(pSettings, r_string, section, "grenade_flame_particles", m_sFlameGlauncherParticles);
-	m_sSmokeGlauncherParticles = READ_IF_EXISTS(pSettings, r_string, section, "grenade_smoke_particles", m_sSmokeGlauncherParticles);
+void CShootingObject::LoadEffects(const char* Section)
+{
+	if (pSettings->line_exist(Section, "light_disabled"))
+	{
+		m_bLightShotEnabled = !pSettings->r_bool(Section, "light_disabled");
+	}
+	else
+	{
+		m_bLightShotEnabled = true;
+	}
 
-	vLoadedShellPoint = READ_IF_EXISTS(pSettings, r_fvector3, section, "shell_point", vLoadedShellPoint);
+	LoadLights(Section, fire_mode == eSilencerFire ? "silencer_" : fire_mode == eGlauncherFire ? "grenade_"
+																							   : "");
 
-	m_air_resistance_factor = READ_IF_EXISTS(pSettings, r_float, section, "air_resistance_factor", m_air_resistance_factor);
+	m_sShellParticles = READ_IF_EXISTS(pSettings, r_string, Section, "shell_particles", m_sShellParticles);
+	m_sSmokeParticles = READ_IF_EXISTS(pSettings, r_string, Section, "smoke_particles", m_sSmokeParticles);
+	m_sFlameParticles = READ_IF_EXISTS(pSettings, r_string, Section, "flame_particles", m_sFlameParticles);
+	m_sSmokeSilencerParticles = READ_IF_EXISTS(pSettings, r_string, Section, "silencer_smoke_particles", m_sSmokeSilencerParticles);
+	m_sFlameSilencerParticles = READ_IF_EXISTS(pSettings, r_string, Section, "silencer_flame_particles", m_sFlameSilencerParticles);
+	m_sFlameGlauncherParticles = READ_IF_EXISTS(pSettings, r_string, Section, "grenade_flame_particles", m_sFlameGlauncherParticles);
+	m_sSmokeGlauncherParticles = READ_IF_EXISTS(pSettings, r_string, Section, "grenade_smoke_particles", m_sSmokeGlauncherParticles);
+
+	vLoadedShellPoint = READ_IF_EXISTS(pSettings, r_fvector3, Section, "shell_point", vLoadedShellPoint);
+
+	m_air_resistance_factor = READ_IF_EXISTS(pSettings, r_float, Section, "air_resistance_factor", m_air_resistance_factor);
 
 	light_render = ::Render->light_create();
 	if (::Render->get_generation() == IRender_interface::GENERATION_R2)

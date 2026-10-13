@@ -401,25 +401,7 @@ void CWeapon::Load		(const char* section)
 		LoadMoreCameras(m_aim_cams[1], "cam_aim_out", "camera_effects\\actor_move\\aim_out.anm");
 	}
 
-	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",false);
-	m_zoom_params.m_sUseZoomPostprocess	= READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
-	m_zoom_params.m_sUseBinocularVision	= READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
-
-	if (m_zoom_params.m_sUseBinocularVision.size() > 0)
-	{
-		if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
-		{
-			Vision->Load(m_zoom_params.m_sUseBinocularVision);
-		}
-	}
-
-	if (m_zoom_params.m_sUseZoomPostprocess.size() > 0)
-	{
-		if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
-		{
-			NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
-		}
-	}
+	LoadScopeEffects(section);
 
 	auto ReachInAllSections = [&](const char* param_name)
 	{
@@ -4119,7 +4101,7 @@ void CWeapon::render_item_ui()
 	ZoomTexture()->Draw		();
 }
 
-bool CWeapon::unlimited_ammo() 
+bool CWeapon::unlimited_ammo()
 { 
 	if (IsGameTypeSingle())
 	{
@@ -4857,6 +4839,62 @@ bool createWpnScopeXML()
 	return pWpnScopeXml->Load(CONFIG_PATH, UI_PATH, "scopes.xml");
 }
 
+void CWeapon::LoadScopeEffects(const char* Section)
+{
+	const shared_str WeaponDetector = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_alive_detector", nullptr);
+	const shared_str WeaponNightVision = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_nightvision", nullptr);
+	const bool HasDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
+	m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, Section, "scope_alive_detector", WeaponDetector.c_str());
+	m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, Section, "scope_nightvision", WeaponNightVision.c_str());
+	m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, Section, "scope_dynamic_zoom", HasDynamicZoom);
+
+	// Installed upgrades override defaults when a scope or its HUD is reloaded.
+	for (const shared_str& Upgrade : m_upgrades)
+	{
+		const shared_str Parameters = pSettings->r_string(Upgrade, "section");
+		process_if_exists_set(Parameters.c_str(), "scope_alive_detector", m_zoom_params.m_sUseBinocularVision, false);
+		process_if_exists_set(Parameters.c_str(), "scope_nightvision", m_zoom_params.m_sUseZoomPostprocess, false);
+		process_if_exists_set(Parameters.c_str(), "scope_dynamic_zoom", m_zoom_params.m_bUseDynamicZoom, false);
+	}
+	RefreshScopeDetector();
+	RefreshScopeNightVision();
+}
+
+void CWeapon::RefreshScopeDetector()
+{
+	if (m_zoom_params.m_sUseBinocularVision.size() > 0)
+	{
+		if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
+		{
+			Vision->Load(m_zoom_params.m_sUseBinocularVision);
+		}
+	}
+	else if (!cast_weapon_binoculars())
+	{
+		DestroyComponent<TBinocularsVision>();
+	}
+}
+
+void CWeapon::RefreshScopeNightVision()
+{
+	if (m_zoom_params.m_sUseZoomPostprocess.size() > 0)
+	{
+		if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
+		{
+			NightVision->SwitchNightVision(false);
+			NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
+		}
+	}
+	else
+	{
+		if (TWeaponNightVision* NightVision = GetComponent<TWeaponNightVision>())
+		{
+			NightVision->SwitchNightVision(false);
+			DestroyComponent<TWeaponNightVision>();
+		}
+	}
+}
+
 void CWeapon::LoadCurrentScopeParams(const char* section)
 {
 	shared_str scope_tex_name = "none";
@@ -4865,35 +4903,21 @@ void CWeapon::LoadCurrentScopeParams(const char* section)
 	{
 		scope_tex_name = pSettings->r_string(section, "scope_texture");
 		if (xr_strcmp(scope_tex_name, "none") != 0)
+		{
 			bScopeIsHasTexture = true;
+		}
 	}
 
 	m_zoom_params.m_fScopeZoomFactor = pSettings->r_float(section, "scope_zoom_factor");
 
-	if (bScopeIsHasTexture)
+
+	for (const shared_str& Upgrade : m_upgrades)
 	{
-		m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
-		m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", false);
-
-		m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
-
-		if (m_zoom_params.m_sUseBinocularVision.size() > 0)
-		{
-			if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
-			{
-				Vision->Load(m_zoom_params.m_sUseBinocularVision);
-			}
-		}
-
-		if (m_zoom_params.m_sUseZoomPostprocess.size() > 0)
-		{
-			if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
-			{
-				NightVision->SwitchNightVision(false);
-				NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
-			}
-		}
+		const shared_str Parameters = pSettings->r_string(Upgrade, "section");
+		process_if_exists(Parameters.c_str(), "scope_zoom_factor", m_zoom_params.m_fScopeZoomFactor, false);
 	}
+
+	LoadScopeEffects(section);
 
 	if (m_UIScope)
 	{
@@ -5679,4 +5703,18 @@ float CWeapon::GetAddonRecoil() const
 //		silencerFactor, grenadeFactor,  adjustedScopeFactor, finalRecoil);
 
 	return finalRecoil;
+}
+
+void CWeapon::RestoreScopeZoomUpgrades()
+{
+	for (const shared_str& Upgrade : m_upgrades)
+	{
+		const shared_str Parameters = pSettings->r_string(Upgrade, "section");
+		process_if_exists(Parameters.c_str(), "ironsight_zoom_factor", m_zoom_params.m_fIronSightZoomFactor, false);
+		if (!IsScopeAttached() && IsZoomEnabled())
+		{
+			process_if_exists(Parameters.c_str(), "scope_zoom_factor", m_zoom_params.m_fIronSightZoomFactor, false);
+		}
+		install_upgrade_scope_zoom(Parameters.c_str(), false);
+	}
 }
