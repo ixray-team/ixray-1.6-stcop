@@ -46,7 +46,7 @@ protected:
 	Root			DATA;
 	
 	void Load(IReader* F, const char* path, allow_include_func_t	allow_include_func = nullptr);
-	void LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Sect>& OutputData, xr_string_map<xr_string, xr_vector<xr_string>>& ParentDataMap, bool bOverridesOnly, bool bIsRootFile);
+	void LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Sect>& OutputData, xr_string_map<xr_string, xr_vector<xr_string>>& ParentDataMap, bool bOverridesOnly, bool bIsRootFile, const char* SourceFileName);
 
 protected:
 	// FX: DLTX trash
