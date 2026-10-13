@@ -456,7 +456,7 @@ CTexture* CResourceManager::_CreateTexture	(const char* _Name)
 		T->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 		m_textures.insert	(std::make_pair(T->set_name(Name),T));
 		T->Preload			();
-		if (RDEVICE.b_is_Ready && !bDeferredLoad) T->Load();
+		LoadTexture(T);
 		return		T;
 	}
 }

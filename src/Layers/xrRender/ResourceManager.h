@@ -114,6 +114,8 @@ private:
 
 	// misc
 	xrCriticalSection creationGuard;
+	void LoadTexture(CTexture* Texture);
+
 public:
 	CTextureDescrMngr									m_textures_description;
 	xr_vector<std::pair<shared_str,RHIShaderConstant::Setup*> >	v_constant_setup;
@@ -247,6 +249,8 @@ private:
 	shared_str		m_ForceBlenderShader;
 public:
 	void			DeferredUpload			();
+	void WaitForTextureLoading();
+	void ReloadTextureDescriptions();
 	void			DeferredUnload			();
 	void			Evict					();
 	void			StoreNecessaryTextures	();
