@@ -118,6 +118,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
       { text: 'Exported enums', link: '/en/scripting/exported-enums' },
       { text: 'Lua: Callbacks', link: '/en/scripting/lua-callbacks' },
       { text: 'New functions', link: '/en/scripting/new-functions' },
+      { text: 'Camera focus', link: '/en/scripting/camera-focus' },
       { text: 'Script callback system', link: '/en/scripting/script-callback-system' },
       { text: 'Saving script data (luamarshal)', link: '/en/scripting/luamarshal' },
       { text: 'Weather manager', link: '/en/scripting/weather-manager' },

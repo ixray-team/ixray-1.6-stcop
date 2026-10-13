@@ -476,6 +476,7 @@ void	CActor::net_Import_Physic_proceed	( )
 
 bool CActor::net_Spawn(CSE_Abstract* DC)
 {
+	ResetCameraFocus();
 	m_holder_id				= ALife::INVALID_OBJECT_ID;
 	m_snd_noise			= 0.0f;
 
@@ -735,6 +736,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 
 void CActor::net_Destroy	()
 {
+	ResetCameraFocus();
 	CActorAuraPostEffectsBalancer::clear_all	();
 
 	if (g_pGameLevel)
@@ -809,6 +811,7 @@ void CActor::net_Destroy	()
 
 void CActor::net_Relcase(CObject* O)
 {
+	ReleaseCameraFocusTarget(O);
 	VERIFY(O);
 	CGameObject* GO = O->cast_game_object();
 	if(GO&&m_pObjectWeLookingAt==GO){
@@ -1493,6 +1496,7 @@ void CActor::save(NET_Packet &output_packet)
 
 void CActor::load(IReader &input_packet)
 {
+	ResetCameraFocus();
 	inherited::load(input_packet);
 	CInventoryOwner::load(input_packet);
 	m_bOutBorder=!!(input_packet.r_u8());
@@ -1549,6 +1553,10 @@ void CActor::load(IReader &input_packet)
 
 void CActor::Serialize(ISaveObject& Object)
 {
+	if (!Object.IsSave())
+	{
+		ResetCameraFocus();
+	}
 	BEGIN_CHUNK(Object,"CActor")
 	{
 		inherited::Serialize(Object);

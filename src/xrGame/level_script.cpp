@@ -755,6 +755,7 @@ float add_cam_effector(const char* fn, int id, bool cyclic, const char* cb_func)
 
 float add_cam_effector_without_fov(const char* fn, int id, bool cyclic, const char* cb_func)
 {
+	Actor()->ResetCameraFocus();
 	CAnimatorCamEffectorScriptCB* e = new CAnimatorCamEffectorScriptCB(cb_func);
 	e->m_bAbsolutePositioning = true;
 	e->SetType((ECamEffectorType)id);
@@ -766,6 +767,7 @@ float add_cam_effector_without_fov(const char* fn, int id, bool cyclic, const ch
 
 float add_cam_effector2(const char* fn, int id, bool cyclic, const char* cb_func, float cam_fov)
 {
+	Actor()->ResetCameraFocus();
 	CAnimatorCamEffectorScriptCB* e		= new CAnimatorCamEffectorScriptCB(cb_func);
 	e->m_bAbsolutePositioning	= true;
 	e->m_fov					= cam_fov;

@@ -36,6 +36,8 @@ args: value (boolean)
 
 ## CActor
 
+Scripted look-at, zoom and tracking: [Camera focus](camera-focus.md).
+
 ### New
 
 * Actor Status

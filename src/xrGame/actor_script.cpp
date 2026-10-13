@@ -27,6 +27,16 @@ void CActor::script_register(lua_State* L)
 {
 	module(L)
 		[
+			class_<CameraFocusParams>("camera_focus_params")
+				.def(constructor<>())
+				.def_readwrite("fov", &CameraFocusParams::Fov)
+				.def_readwrite("blend_in", &CameraFocusParams::BlendIn)
+				.def_readwrite("hold_time", &CameraFocusParams::HoldTime)
+				.def_readwrite("blend_out", &CameraFocusParams::BlendOut)
+				.def_readwrite("tracking_speed", &CameraFocusParams::TrackingSpeed)
+				.def_readwrite("lock_input", &CameraFocusParams::LockInput)
+				.def_readwrite("track", &CameraFocusParams::Track)
+				.def_readwrite("restore_direction", &CameraFocusParams::RestoreDirection),
 			class_<CActor, CGameObject>("CActor")
 				.def(constructor<>())
 			 .def("conditions", &CActor::conditions)

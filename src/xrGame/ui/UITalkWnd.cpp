@@ -299,6 +299,7 @@ void CUITalkWnd::Show(bool status)
 	{
 		ActionRepeaters()->ResetAll(nullptr);
 		InitTalkDialog				();
+		m_pActor->ResetCameraFocus();
 
 		if (m_pOthersInvOwner->GetFocusingOnNpc())
 		{
