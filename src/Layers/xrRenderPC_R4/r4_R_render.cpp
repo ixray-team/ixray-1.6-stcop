@@ -485,6 +485,8 @@ void CRender::Render()
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 	}
 
+	// Shared item UI is rendered once before any world or HUD passes.
+	GRHI->ClearTarget(Target->rt_ui_pda->pRT, ERTColor::Transparent);
 	if (GActorInterface)
 	{
 		Target->u_setrt(Target->rt_ui_pda, 0, 0);

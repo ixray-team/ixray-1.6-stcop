@@ -2897,6 +2897,21 @@ void CActor::RenderItemUI()
 			GetUICursor().OnRender();
 		}
 	}
+	else
+	{
+		RenderScopeUI();
+	}
+}
+
+void CActor::RenderScopeUI()
+{
+	if (CInventoryItem* Item = inventory().ActiveItem())
+	{
+		if (CWeapon* Weapon = Item->cast_weapon())
+		{
+			Weapon->RenderScopeUI();
+		}
+	}
 }
 
 bool CActor::renderable_ShadowGenerate	() 

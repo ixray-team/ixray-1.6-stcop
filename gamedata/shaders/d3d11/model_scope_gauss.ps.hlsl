@@ -1,4 +1,5 @@
 #include "common.hlsli"
+#include "scope_ui.hlsli"
 
 uniform float4 m_hud_params;
 uniform float4 m_affects;
@@ -25,6 +26,8 @@ float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
 	t_base.xyz = detonemap(t_base.xyz);
 	
 	
+	t_vp2.xyz = ApplyScopeUI(t_vp2.xyz, pos2d.xy);
+
 	float alpha = m_hud_params.y * m_hud_params.a;
 	t_vp2 *= saturate(alpha * 2.0f - 1.0f);
 
