@@ -24,6 +24,11 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
 			C.r_Pass("null", "raindrops", false, false, false);
 			C.r_Sampler("s_droplets", "shaders\\fx_hud_droplets");
 			break;
+		case ScreenPostProcessType::ProceduralRaindrops:
+		{
+			C.r_Pass("null", "procedural_raindrops", false, false, false);
+			break;
+		}
 	}
 
 	C.r_Sampler_clf("s_image", r2_RT_albedo);

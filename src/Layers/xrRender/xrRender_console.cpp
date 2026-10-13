@@ -4,6 +4,14 @@
 
 bool UseWeaponRainDrops = true;
 
+u32 g_RainDropsMode = 0;
+static xr_token RainDropsModeTokens[] =
+	{
+		{"texture", 0},
+		{"procedural", 1},
+		{nullptr, 0}
+};
+
 int g_TextureTargetResolution = 8192;
 
 bool ps_r__detail_use_alternative_tree_assets = false;
@@ -1200,6 +1208,7 @@ RENDER_API void		xrRender_initconsole	()
 
 	CMD2(CCC_Boolean, "r4_use_gasmask", &UseGasmak);
 	CMD2(CCC_Boolean, "r2_use_rain_drops", &UseRainDrops);
+	CMD3(CCC_Token, "r2_rain_drops_mode", &g_RainDropsMode, RainDropsModeTokens);
 	CMD2(CCC_Boolean, "r2_use_weapon_raindrops", &UseWeaponRainDrops);
 
 	// added by Papa Doenitz 2026-03-05

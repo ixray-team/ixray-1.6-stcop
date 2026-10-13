@@ -194,6 +194,7 @@ extern RENDER_API float 		ps_r2_tonemap_vibrance;					// tonemap vibrance (optio
 
 extern bool UseGasmak;
 extern bool UseRainDrops;
+extern u32 g_RainDropsMode;
 extern bool UseWeaponRainDrops;
 
 extern RENDER_API int opt_static;

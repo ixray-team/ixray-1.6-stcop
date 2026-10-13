@@ -3,6 +3,7 @@
 #include "inventory_item_object.h"
 #include "antigas.h"
 #include "IRestoresOwner.h"
+#include "../Include/xrRender/VisorGlassType.h"
 
 struct SBoneProtections;
 
@@ -39,6 +40,7 @@ public:
 	virtual Fcolor			GetNV_Color				() const { return m_NightVisionColor; }
 	virtual bool			IsHudGasMaskAvailable	() { return bIsHudGasMaskAvailable; }
 	virtual bool			IsHudRainDropsAvailable	() { return bIsHudRainDropsAvailable; }
+	VisorGlassType GetGlassType() const { return GlassType; }
 	void OverrideHitTypeProtection(ALife::EHitType hit_type, float value);
 	bool InstallAntigasFilter(CInventoryItem* inventory_item);
 	bool UnInstallAntigasFilter();
@@ -51,6 +53,7 @@ public:
 
 protected:
 	HitImmunity::HitTypeSVec m_HitTypeProtection;
+	VisorGlassType GlassType = VisorGlassType::Flat;
 
 	bool					bIsHudGasMaskAvailable = false;		// FFx0001 ++
 	bool					bIsHudRainDropsAvailable = false;	// FFx0001 ++

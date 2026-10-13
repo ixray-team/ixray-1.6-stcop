@@ -4,6 +4,8 @@
 #include "Environment.h"
 #include "IGame_ObjectPool.h"
 #include "Render.h"
+#include "VisorRainDrops.h"
+#include "../Include/xrRender/VisorGlassType.h"
 #include <luabind/class_info.hpp>
 
 class IRenderVisual;
@@ -53,13 +55,16 @@ public:
 
 	struct ShaderParamsData
 	{
-		float HelmetCondition = 0;
-		bool ItemCfgHudGasMaskAvailable = true;
-		bool ItemCfgHudRainDropsAvailable = true;
+		float HelmetCondition = -1.f;
+		bool ItemCfgHudGasMaskAvailable = false;
+		bool ItemCfgHudRainDropsAvailable = false;
+		VisorGlassType GlassType = VisorGlassType::Flat;
+		u16 VisorItemId = u16(-1);
 	};
 
 	params m_game_params;
 	ShaderParamsData ShaderParams;
+	VisorRainDrops VisorRain;
 	luabind::functor<void> ixr_framework_onframe;
 public:
 	virtual void					PreStart			(const char* op);

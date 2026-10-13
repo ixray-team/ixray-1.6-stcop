@@ -39,24 +39,21 @@ void CRenderTarget::PhaseAberration()
 
 void CRenderTarget::PhaseRaindrops()
 {
-	const bool ItemCfgHudRainDropsAvailable = g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable;
-	if (!ItemCfgHudRainDropsAvailable)
+	const auto& Params = g_pGamePersistent->ShaderParams;
+	const bool HasGlass = Params.ItemCfgHudRainDropsAvailable && Params.HelmetCondition >= 0.f;
+	g_pGamePersistent->VisorRain.Update(UseRainDrops && HasGlass);
+	if (g_pGamePersistent->VisorRain.GetAmount() < EPS_L)
 	{
 		return;
 	}
 
-	const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
-	if (condition < 0)
+	if (UseGasmak && Params.ItemCfgHudGasMaskAvailable && Params.GlassType == VisorGlassType::Flat)
 	{
+		// The flat glass pass already includes the selected rain effect.
 		return;
 	}
 
-	if (g_pGamePersistent->Environment().wetness_factor < EPS_L)
-	{
-		return;
-	}
-
-	RenderEffect(ScreenPostProcessType::Raindrops);
+	RenderEffect(g_RainDropsMode == 1 ? ScreenPostProcessType::ProceduralRaindrops : ScreenPostProcessType::Raindrops);
 }
 
 void CRenderTarget::PhaseGasmask()
@@ -84,7 +81,20 @@ void CRenderTarget::PhaseGasmask()
 	RCache.set_Stencil(false);
 
 	// Set shader and geometry
-	RCache.set_Element(s_gasmask->E[currentState]);
+	const auto& Params = g_pGamePersistent->ShaderParams;
+	if (Params.GlassType == VisorGlassType::Flat)
+	{
+		g_pGamePersistent->VisorRain.Update(UseRainDrops && Params.ItemCfgHudRainDropsAvailable);
+		const float Condition = clampr(condition, 0.f, 1.f);
+		const u32 DamagePhase = std::min(u32((1.f - Condition) * 10.f) + 1, 10u);
+		const float RainMode = UseRainDrops && Params.ItemCfgHudRainDropsAvailable ? float(g_RainDropsMode + 1) : 0.f;
+		RCache.set_Element(FlatGasMaskShader->E[0]);
+		RCache.set_c("mask_control", float(DamagePhase), RainMode, 1.f, 0.f);
+	}
+	else
+	{
+		RCache.set_Element(s_gasmask->E[currentState]);
+	}
 	RCache.set_Geometry(FSTriangleGeom);
 
 	// Render

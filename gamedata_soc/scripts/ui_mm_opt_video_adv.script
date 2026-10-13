@@ -208,6 +208,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	handler:addCheck(self, mode_2, "ui_mm_saturation", "r2_saturation", system_depends.sdNothing)
 	handler:addCheck(self, mode_4, "ui_mm_r4_use_gasmask", "r4_use_gasmask", system_depends.sdNothing)
 	handler:addCheck(self, mode_2, "ui_mm_r2_use_rain_drops", "r2_use_rain_drops", system_depends.sdNothing)
+	handler:addComboBox(self, mode_2, "ui_mm_r2_rain_drops_mode", "r2_rain_drops_mode", 2, false, system_depends.sdNothing)
 
 	handler.enableDof = handler:addCheck(self, mode_2, "ui_mm_dof", "r2_dof_enable", system_depends.sdVidRestart, "enableDof")
     handler:AddCallback("enableDof", ui_events.BUTTON_CLICKED, reloadControls, nil)

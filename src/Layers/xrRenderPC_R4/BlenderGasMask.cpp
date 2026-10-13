@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "BlenderGasMask.h"
 
-CBlenderGasMask::CBlenderGasMask()
+CBlenderGasMask::CBlenderGasMask(VisorGlassType GlassType)
+	: GlassType(GlassType)
 {
 	description.CLS = 0;
 }
@@ -9,6 +10,30 @@ CBlenderGasMask::CBlenderGasMask()
 void CBlenderGasMask::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
+
+	if (GlassType == VisorGlassType::Flat)
+	{
+		if (C.iElement != 0)
+		{
+			return;
+		}
+
+		C.r_Pass("stub_fullscreen_triangle", "flat_gasmask", false, false, false);
+		C.r_dx10Texture("s_image", r2_RT_backbuffer_final);
+		C.r_dx10Texture("s_droplets", "shaders\\fx_hud_droplets");
+		for (u32 Index = 1; Index <= 10; ++Index)
+		{
+			string64 SamplerName;
+			string128 TextureName;
+			xr_sprintf(SamplerName, "s_mask_nm_%u", Index);
+			xr_sprintf(TextureName, "shaders\\gasmasks\\mask_nm_%u", Index);
+			C.r_dx10Texture(SamplerName, TextureName);
+		}
+		C.r_dx10Sampler("smp_nofilter");
+		C.r_dx10Sampler("smp_rtlinear");
+		C.r_End();
+		return;
+	}
 
 	if (C.iElement < 0 || C.iElement > 3)
 	{

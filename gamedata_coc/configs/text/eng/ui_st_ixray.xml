@@ -1014,4 +1014,13 @@
 	<string id="ui_rmw_wpn_laser">
 		<text>$$ACTION_WPN_LASER$$ Laser sight</text>
 	</string>
+	<string id="ui_mm_r2_rain_drops_mode">
+		<text>Glass rain drops type</text>
+	</string>
+	<string id="texture">
+		<text>Texture</text>
+	</string>
+	<string id="procedural">
+		<text>Procedural</text>
+	</string>
 </string_table>
