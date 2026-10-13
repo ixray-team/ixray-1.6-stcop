@@ -94,6 +94,7 @@ public:
 	// Editor mode: scene depth of the viewport size, replaces the window depth (RDepth)
 	ref_rt						rt_EditorDepth;
 	IRHIDepthStencilView*		EditorWindowDepth = nullptr;
+	ref_rt						rt_EditorOverlayDepth;
 
 	ref_rt						rt_planar_color;
 
@@ -335,6 +336,7 @@ public:
 	void						init_dlss();
 	bool						phase_dlss();
 	void						phase_scale				();
+	void						PhaseEditorScale		();
 
 	void						copy_position			();
 

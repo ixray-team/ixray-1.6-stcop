@@ -167,7 +167,7 @@ public:
 	// only redraw scene
 	void 			RedrawScene			(bool bForced=false){   m_Flags.set(flRedraw,true); 		if (bForced) RealRedrawScene();}
 
-	void 			SetRenderQuality	(float q)      {   GEditorDraw.ScreenQuality = q;}
+	void 			SetRenderQuality	(float q)      {   GEditorDraw.ScreenQuality = std::clamp(q, 0.25f, 1.f);}
 // mouse action
 	void 			EnableSelectionRect	(bool flag );                                               
 	void 			UpdateSelectionRect	(const Ivector2& from, const Ivector2& to );
@@ -261,6 +261,10 @@ public:
 		CUI_Camera m_Camera;
 		ref_rt RTFreez;
 		Ivector2 RTSize;
+
+		Fmatrix PrevView;
+		Fmatrix PrevProject;
+		bool HasPrevTransform = false;
 
 		SDL_Window* WndHandle = nullptr;
 		int ViewGlobalIDX = -1;

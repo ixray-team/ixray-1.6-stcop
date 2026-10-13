@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "../xrRender/EditorDrawContext.h"
+
 #include "OverlayAPI/DLSSWrapper.h"
 
 void CRenderTarget::init_dlss()
@@ -40,7 +42,7 @@ bool CRenderTarget::phase_dlss()
 	dlssParams.renderWidth = (int)RCache.get_width();
 	dlssParams.renderHeight = (int)RCache.get_height();
 
-	dlssParams.cameraReset = false;
+	dlssParams.cameraReset = Device.IsEditorMode() && GEditorDraw.UpscalerReset;
 
 	dlssParams.cameraJitterX = ps_r_taa_jitter_full.x;
 	dlssParams.cameraJitterY = ps_r_taa_jitter_full.y;

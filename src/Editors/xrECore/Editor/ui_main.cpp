@@ -27,6 +27,74 @@
 	x->pSurface->Release()
 
 ECORE_API extern bool bIsLevelEditor;
+extern ENGINE_API u32 ps_r_scale_mode;
+extern ENGINE_API u32 ps_proxy_r_scale_mode;
+extern ENGINE_API u32 ps_render_scale_preset;
+extern ENGINE_API float ps_render_scale;
+
+namespace
+{
+	bool IsTemporalUpscaler()
+	{
+		return GEditorDraw.Upscaler >= 2;
+	}
+
+	// Scene scale for the current render quality. The temporal upscalers (DLSS, FSR) run their
+	// quality presets: the quality picks the preset the way vid_scale_preset 5 picks it from vid_scale.
+	float GetSceneScale()
+	{
+		const float Quality = std::clamp(GEditorDraw.ScreenQuality, 0.25f, 1.f);
+		if (!IsTemporalUpscaler())
+		{
+			return Quality;
+		}
+
+		// Native, quality, balanced, performance, ultra performance (CRenderDevice::Reset)
+		static constexpr float ScalePresets[] = { 1.0f, 1.5f, 1.724f, 2.0f, 3.0f };
+
+		u32 Preset = 4;
+		if (Quality >= 0.9f)
+		{
+			Preset = 0;
+		}
+		else if (Quality >= 0.7f)
+		{
+			Preset = 1;
+		}
+		else if (Quality >= 0.6f)
+		{
+			Preset = 2;
+		}
+		else if (Quality >= 0.5f)
+		{
+			Preset = 3;
+		}
+
+		// The DLSS / FSR contexts read the preset when the render targets are created
+		ps_render_scale_preset = Preset;
+		ps_render_scale = Quality;
+
+		return 1.f / ScalePresets[Preset];
+	}
+
+	// Scene resolution of a viewport (even, as the game does)
+	Ivector2 GetSceneSize(const Ivector2& ViewportSize)
+	{
+		const float Scale = GetSceneScale();
+		if (Scale >= 1.f)
+		{
+			return ViewportSize;
+		}
+
+		Ivector2 Size;
+		Size.x = std::max(2, iFloor(float(ViewportSize.x) * Scale));
+		Size.y = std::max(2, iFloor(float(ViewportSize.y) * Scale));
+		Size.x += Size.x % 2;
+		Size.y += Size.y % 2;
+		return Size;
+	}
+}
+
 namespace ImGui
 {
 XREUI_API ImFont* LightFont;
@@ -452,12 +520,27 @@ void TUI::Redraw()
 
 	Viewport& View = CurrentView();
 
-	if (u32(View.RTSize.x * GEditorDraw.ScreenQuality) != EDevice->TargetWidth || u32(View.RTSize.y * GEditorDraw.ScreenQuality) != EDevice->TargetHeight || !RT->pSurface)
+	// Render quality scales the scene resolution only; the renderer upscales it to the viewport
+	// with the selected upscaler
+	ps_r_scale_mode = ps_proxy_r_scale_mode = GEditorDraw.Upscaler;
+
+	const Ivector2 SceneSize = GetSceneSize(View.RTSize);
+
+	// The temporal upscalers keep one history: start it over on another viewport, size or mode
+	static int UpscaledViewID = -1;
+	static u32 UpscaledMode = 0;
+	bool UpscalerReset = UpscaledViewID != View.ViewGlobalIDX;
+
+	if (u32(View.RTSize.x) != EDevice->TargetWidth || u32(View.RTSize.y) != EDevice->TargetHeight || SceneSize.x != HalfTarget.x || SceneSize.y != HalfTarget.y || UpscaledMode != GEditorDraw.Upscaler || !RT->pSurface)
 	{
 		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
-			EDevice->TargetWidth = View.RTSize.x * GEditorDraw.ScreenQuality;
-			EDevice->TargetHeight = View.RTSize.y * GEditorDraw.ScreenQuality;
+			// The DLSS / FSR contexts are created with the render targets
+			UpscaledMode = GEditorDraw.Upscaler;
+			UpscalerReset = true;
+
+			EDevice->TargetWidth = View.RTSize.x;
+			EDevice->TargetHeight = View.RTSize.y;
 
 			RT.destroy();
 			RTCopy.destroy();
@@ -467,10 +550,9 @@ void TUI::Redraw()
 			View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 			RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 
-			// The renderer targets follow the viewport size: the scene resolution (HalfTarget) is the
-			// viewport target size, no upscaling
-			HalfTarget.x = EDevice->TargetWidth;
-			HalfTarget.y = EDevice->TargetHeight;
+			// The renderer targets follow the viewport size, the scene resolution (HalfTarget)
+			// follows the render quality
+			HalfTarget = SceneSize;
 
 			::Render->reset_begin();
 			::Render->reset_end();
@@ -509,7 +591,8 @@ void TUI::Redraw()
 
 		if (m_Flags.is(flRedraw))
 		{
-			redraw_frame = EDevice->dwRenderFrame + 3;
+			// The temporal upscalers converge over the jittered frames
+			redraw_frame = EDevice->dwRenderFrame + (IsTemporalUpscaler() ? 32 : 3);
 		}
 
 		if (redraw_frame > EDevice->dwRenderFrame || IsPlayInEditor())
@@ -519,6 +602,26 @@ void TUI::Redraw()
 
 			EDevice->UpdateView();
 			EDevice->ResetMaterial();
+
+			// Camera of the previous frame of this viewport: the velocity pass reprojects the depth with it
+			if (!View.HasPrevTransform || UpscalerReset)
+			{
+				View.PrevView = EDevice->mView;
+				View.PrevProject = EDevice->mProject;
+				View.HasPrevTransform = true;
+			}
+
+			EDevice->mView_old = View.PrevView;
+			EDevice->mProject_old = View.PrevProject;
+			EDevice->mFullTransform_old.mul(View.PrevProject, View.PrevView);
+			RCache.set_xform_view_old(View.PrevView);
+			RCache.set_xform_project_old(View.PrevProject);
+
+			View.PrevView = EDevice->mView;
+			View.PrevProject = EDevice->mProject;
+
+			GEditorDraw.UpscalerReset = UpscalerReset;
+			UpscaledViewID = View.ViewGlobalIDX;
 
 			for (u32 k = 0; k < Caps.raster.dwStages; k++)
 			{
@@ -549,6 +652,14 @@ void TUI::Redraw()
 			}
 			::Render->Calculate();
 			::Render->Render();
+
+			GEditorDraw.UpscalerReset = false;
+
+			// An unavailable DLSS falls back to FSR, FSR to the linear filter (phase_combine)
+			if (ps_proxy_r_scale_mode != GEditorDraw.Upscaler)
+			{
+				GEditorDraw.Upscaler = ps_proxy_r_scale_mode;
+			}
 
 			// Helpers over the lit scene, with its depth
 			RImplementation.EditorBeginOverlay();
@@ -779,7 +890,7 @@ bool TUI::OnCreate()
 	for (auto& [ID, View] : Views)
 	{
 		View.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
-		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth() * GEditorDraw.ScreenQuality, GetRenderHeight() * GEditorDraw.ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
+		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 	}
 
 	EDevice->fASPECT = (float)GetRenderWidth() / (float)GetRenderHeight();
@@ -791,8 +902,8 @@ bool TUI::OnCreate()
 	RCache.set_xform_world(Fidentity);
 
 
-	RT.create("$user$rt_color", GetRenderWidth() * GEditorDraw.ScreenQuality, GetRenderHeight() * GEditorDraw.ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
-	RTCopy.create("$user$rt_color_copy", GetRenderWidth() * GEditorDraw.ScreenQuality, GetRenderHeight() * GEditorDraw.ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
+	RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
+	RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 
 	return true;
 }
@@ -884,7 +995,7 @@ void TUI::CreateViewport(int ID, UIRenderForm* Form)
 	MainView.ViewGlobalIDX = ID;
 
 	MainView.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
-	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth() * GEditorDraw.ScreenQuality, GetRenderHeight() * GEditorDraw.ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
+	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 }
 
 void TUI::DestroyViewport(int ID)

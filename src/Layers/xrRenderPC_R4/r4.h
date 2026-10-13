@@ -455,9 +455,13 @@ private:
 	void							EditorCreate				();
 	void							EditorDestroy				();
 	void							EditorRenderUnlit			();
+	// Depth for the helpers drawn at the viewport size over the (possibly upscaled) scene
+	IRHIDepthStencilView*			EditorOverlayDepth			();
 
 	IBlender*						EditorUnlitBlender			= nullptr;
 	ref_shader						EditorUnlitShader;
+	IBlender*						EditorDepthUpscaleBlender	= nullptr;
+	ref_shader						EditorDepthUpscaleShader;
 
 public:
 
