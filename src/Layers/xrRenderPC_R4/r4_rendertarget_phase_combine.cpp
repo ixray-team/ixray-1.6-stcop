@@ -148,6 +148,11 @@ void CRenderTarget::phase_combine()
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 	}
 
+	if (!_menu_pp && RImplementation.o.RainPuddles)
+	{
+		PhaseRainPuddles();
+	}
+
 	if (RImplementation.o.dx11_allow_wboit_transparency)
 	{
 		GRHI->ClearTarget(rt_Forward->pRT);

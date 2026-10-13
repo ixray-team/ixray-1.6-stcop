@@ -1,5 +1,10 @@
 #include "common.hlsli"
 #include "sload.hlsli"
+
+#if defined(USE_LEGACY_LIGHT) && defined(USE_RAIN_PUDDLES)
+#include "shared\RainPuddles.hlsli"
+#define USE_TERRAIN_RAIN_PUDDLES
+#endif
 #include "shadow.hlsli"
 
 #ifndef USE_LENGTH_BUFFER
@@ -56,15 +61,26 @@ void main(p_bumped_new I, out OutStructure O)
 	#endif
 #endif
 
+#ifdef USE_TERRAIN_RAIN_PUDDLES
+	float3 PuddleNormal;
+	float2 PuddleRefraction;
+	float3 FlatNormal = mul(float3x3(I.M1, I.M2, I.M3), float3(0.0f, 0.0f, 1.0f));
+	float PuddleAmount = GetRainPuddle(I.tcdh.xy, FlatNormal, M.Point.z, PuddleNormal, PuddleRefraction);
+	float2 PuddleDetailTexCoord = tcdbump + PuddleRefraction;
+#define RAIN_PUDDLE_DETAIL_TC PuddleDetailTexCoord
+#else
+#define RAIN_PUDDLE_DETAIL_TC tcdbump
+#endif
+
     M.Color = s_base.Sample(smp_base, I.tcdh.xy);
     float4 Lmap = s_lmap.Sample(smp_base, I.tcdh.xy);
 
 #ifdef USE_PBR
 	#ifdef USE_4_BUMP
-		float3 r_base = s_dt_r.Sample(smp_base, tcdbump).xyz * Mask.x;
-		float3 g_base = s_dt_g.Sample(smp_base, tcdbump).xyz * Mask.y;
-		float3 b_base = s_dt_b.Sample(smp_base, tcdbump).xyz * Mask.z;
-		float3 a_base = s_dt_a.Sample(smp_base, tcdbump).xyz * Mask.w;
+		float3 r_base = s_dt_r.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC).xyz * Mask.x;
+		float3 g_base = s_dt_g.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC).xyz * Mask.y;
+		float3 b_base = s_dt_b.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC).xyz * Mask.z;
+		float3 a_base = s_dt_a.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC).xyz * Mask.w;
 
 		float4 r_bump = s_dn_r.Sample(smp_base, tcdbump) * Mask.x;
 		float4 g_bump = s_dn_g.Sample(smp_base, tcdbump) * Mask.y;
@@ -119,7 +135,7 @@ void main(p_bumped_new I, out OutStructure O)
 			M.AO = r_bumpX.w + g_bumpX.w + b_bumpX.w + a_bumpX.w;
 		#endif
 	#else
-		float4 Detail = s_detail.Sample(smp_base, tcdbump);
+		float4 Detail = s_detail.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC);
 		float4 DetailBump = s_detailBump.Sample(smp_base, tcdbump);
 		float4 DetailBumpX = s_detailBumpX.Sample(smp_base, tcdbump);
 
@@ -144,10 +160,10 @@ void main(p_bumped_new I, out OutStructure O)
 	#endif
 #else
 	#ifdef USE_4_BUMP
-		float3 Detail_R = s_dt_r.Sample(smp_base, tcdbump).xyz * Mask.x;
-		float3 Detail_G = s_dt_g.Sample(smp_base, tcdbump).xyz * Mask.y;
-		float3 Detail_B = s_dt_b.Sample(smp_base, tcdbump).xyz * Mask.z;
-		float3 Detail_A = s_dt_a.Sample(smp_base, tcdbump).xyz * Mask.w;
+		float3 Detail_R = s_dt_r.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC).xyz * Mask.x;
+		float3 Detail_G = s_dt_g.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC).xyz * Mask.y;
+		float3 Detail_B = s_dt_b.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC).xyz * Mask.z;
+		float3 Detail_A = s_dt_a.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC).xyz * Mask.w;
 		
 		float3 Detail = Detail_R + Detail_G + Detail_B + Detail_A;
 
@@ -164,7 +180,7 @@ void main(p_bumped_new I, out OutStructure O)
 			M.Gloss = min(1.0f, Normal_R.x + Normal_G.x + Normal_B.x + Normal_A.x);
 		#endif
 	#else
-		float4 Detail = s_detail.Sample(smp_base, tcdbump);
+		float4 Detail = s_detail.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC);
 		float4 DetailBump = s_detailBump.Sample(smp_base, tcdbump);
 		float4 DetailBumpX = s_detailBumpX.Sample(smp_base, tcdbump);
 		
@@ -183,6 +199,12 @@ void main(p_bumped_new I, out OutStructure O)
 
     M.Normal = mul(float3x3(I.M1, I.M2, I.M3), M.Normal);
     M.Normal = normalize(M.Normal);
+
+#ifdef USE_TERRAIN_RAIN_PUDDLES
+	M.Normal = normalize(lerp(M.Normal, PuddleNormal, PuddleAmount));
+	M.Color.xyz *= lerp(1.0f.xxx, float3(0.66f, 0.63f, 0.6f), PuddleAmount);
+	M.Gloss = max(M.Gloss, min(PuddleAmount, 0.4f) + saturate(rain_params.y * 2.0f) * 0.15f);
+#endif
 
     M.Sun = Lmap.w;
     M.Hemi = M.Color.w;
@@ -205,6 +227,10 @@ void main(p_bumped_new I, out OutStructure O)
 	#endif
 	
     GbufferPack(O, M);
+#ifdef USE_TERRAIN_RAIN_PUDDLES
+	// The legacy surface buffer's third channel carries coverage to water SSR.
+	O.Material.z = PuddleAmount;
+#endif
 #else
 	
 	float4 LightColor = float4(L_sun_color.xyz, 0.5f);
@@ -270,4 +296,3 @@ void main(p_bumped_new I, out OutStructure O)
 	O.Length = ViewLength;
 #endif
 }
-

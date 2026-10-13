@@ -289,6 +289,9 @@ void CRender::create()
 
 	if (LightingModeIsStaticRender())
 		o.deffered_reflecitons = o.offscreen_reflecitons = false;
+
+	o.RainPuddles = LightingModeIsDynamicRender() && o.dx11_use_legacy_light && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
+
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
 	clearAllShaderOptions();
 
@@ -433,6 +436,7 @@ void CRender::reset_begin() {
 	{
 		o.deffered_reflecitons = o.offscreen_reflecitons = false;
 	}
+	o.RainPuddles = LightingModeIsDynamicRender() && o.dx11_use_legacy_light && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
 }
 
 void CRender::reset_end() {
@@ -1166,6 +1170,14 @@ HRESULT	CRender::shader_compile(
 	}
 	else {
 		sh_name[len] = '0';	++len;
+	}
+
+	if (o.RainPuddles)
+	{
+		defines[def_it].Name = "USE_RAIN_PUDDLES";
+		defines[def_it].Definition = "1";
+		++def_it;
+		sh_name[len++] = 'P';
 	}
 
 	if(LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES)) {

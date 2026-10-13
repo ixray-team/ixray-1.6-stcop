@@ -15,6 +15,7 @@
 #include "blender_gtao.h"
 #include "blender_taa.h"
 #include "BlenderGasMask.h"
+#include "BlenderRainPuddles.h"
 #include "blender_nvg.h"
 #include "blender_sslr.h"
 
@@ -571,7 +572,7 @@ CRenderTarget::CRenderTarget()
 
 		auto NormalFormat = ERHI_FORMAT::R10G10B10A2_UNORM;
 
-		if (RImplementation.o.dx11_use_legacy_light)
+		if (RImplementation.o.dx11_use_legacy_light && !RImplementation.o.RainPuddles)
 		{
 			SurfaceFormat = ERHI_FORMAT::R8_UNORM;
 		}
@@ -790,6 +791,12 @@ CRenderTarget::CRenderTarget()
 		b_rain_mask_texture = b_rain_mask_texture || FS.exist(temp, "$level$", "rain_mask", ".dds");
 
 		s_rain.create(&TempBlender, "null", b_rain_mask_texture ? "rain_mask" : nullptr);
+	}
+
+	if (RImplementation.o.RainPuddles)
+	{
+		BlenderRainPuddles Blender;
+		RainPuddlesShader.create(&Blender, "null");
 	}
 
 	// POINT
