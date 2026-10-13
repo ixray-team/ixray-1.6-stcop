@@ -387,7 +387,7 @@ bool CWeapon::install_upgrade_hud_sect(const char* section, bool test)
 
 	if (result && !test)
 	{
-		SetHudSection(str);
+		hud_sect = str;
 		hud_sect_cache = hud_sect;
 	}
 
