@@ -170,6 +170,11 @@ void CRenderTarget::phase_pp(const SPPInfo* ScopeInfo)
 	static	shared_str	s_colormap		= "c_colormap";
 	RCache.set_c		( s_brightness, p_brightness.x, p_brightness.y, p_brightness.z, 0 );
 	RCache.set_c		(s_colormap, MapInfluence, MapInterpolate,0,0);
+	if (ScopeInfo)
+	{
+		// The scope shader converts HDR to display colors the same way as combine_2
+		RCache.set_c("bloom_params", ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.0f);
+	}
 	RCache.set_Geometry	(g_postprocess);
 	RCache.Render		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 }
