@@ -29,6 +29,7 @@
 #include "../eatable_item.h"
 #include "UICellItem.h"
 #include "UIGrenadeParams.h"
+#include "../ImUtils/ImUtils.h"
 
 extern const char* g_inventory_upgrade_xml;
 
@@ -529,6 +530,10 @@ void CUIItemInfo::TryAddBoosterInfo(CInventoryItem& pInvItem)
 
 void CUIItemInfo::Draw()
 {
+	if (ShouldHide3DIconItemDescriptions())
+	{
+		return;
+	}
 	if(m_pInvItem)
 		inherited::Draw();
 }
