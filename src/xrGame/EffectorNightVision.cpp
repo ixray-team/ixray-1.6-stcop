@@ -237,6 +237,8 @@ void TWeaponNightVision::UpdateScopePostprocess(float Factor)
 		ScopeAnimator->Load(pSettings->r_string(m_section, "pp_eff_name"));
 	}
 	ScopeAnimator->SetCurrentFactor(Factor);
+	// SPPInfo::lerp accumulates several fields, so start from zero like CCameraManager::UpdatePPEffectors
+	Device.ScopePostprocess = pp_zero;
 	Device.ScopePostprocessActive = ScopeAnimator->Valid() && ScopeAnimator->Process(Device.ScopePostprocess);
 }
 
