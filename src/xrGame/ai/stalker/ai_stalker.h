@@ -138,9 +138,8 @@ private:
 private:
 	float							m_power_fx_factor;
 
-	Fvector savedOrientation;
-	u32 dTimeFSeen;
-	u32 dTimeNfSeen;
+	Fvector HeadLookOrientation;
+	u32 HeadLookTime;
 private:
 	float							m_fRankDisperison;
 	float							m_fRankVisibility;
@@ -223,8 +222,8 @@ public:
 	virtual void						reload								(const char*	section );				
 	virtual void						LoadSounds							(const char* section );
 	
-	static void BoneCallback(CBoneInstance* B);
-	void LookAtActor(CBoneInstance* headBone);
+	static void BoneCallback(CBoneInstance* HeadBone);
+	void LookAtActor(CBoneInstance* HeadBone, float Weight = 1.f);
 
 	virtual bool						net_Spawn							(CSE_Abstract* DC);
 
