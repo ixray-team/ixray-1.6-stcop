@@ -329,6 +329,7 @@ struct attachable_hud_item final
 		: m_parent(pparent), m_upd_firedeps_frame(u32(-1)), m_parent_hud_item(NULL) {}
 			~attachable_hud_item	();
 	void load						(const shared_str& sect_name);
+	void LoadRigParams				();
 	void update						(bool bForce);
 	void update_hud_additional		(Fmatrix& trans);
 	void setup_firedeps				(firedeps& fd);
@@ -734,6 +735,7 @@ public:
 					~player_hud			();
 	void			load				(const shared_str& model_name);
 	void			load_default		();
+	void			ReloadRigParams		();
 	void			update				(const Fmatrix& trans);
 	void			render_hud			();	
 	void			render_item_ui		();

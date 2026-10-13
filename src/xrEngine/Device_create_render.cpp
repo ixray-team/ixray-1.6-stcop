@@ -149,6 +149,10 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("Actor Animations", nullptr, &States[static_cast<u8>(EditorUI::Game_ActorAnimations)]);
 				ImGui::MenuItem("Level Inspector", nullptr, &States[static_cast<u8>(EditorUI::LevelInspector)]);
 				ImGui::MenuItem("Demo record", nullptr, &States[static_cast<u8>(EditorUI::Game_DemoRecord)]);
+				if (pSettings->section_exist("camera_rig") && READ_IF_EXISTS(pSettings, r_bool, "camera_rig", "enabled", false))
+				{
+					ImGui::MenuItem("Camera Rig", nullptr, &States[static_cast<u8>(EditorUI::Game_CameraRig)]);
+				}
 				if (ImGui::BeginMenu("Editors##InGame"))
 				{
 					ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);

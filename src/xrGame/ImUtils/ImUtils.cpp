@@ -98,6 +98,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("3D Icons Adjust", CImGuiManager::ERenderPriority::eMedium, Render3DIconAdjust);
 		CImGuiManager::Instance().Subscribe("Actor Animations", CImGuiManager::ERenderPriority::eMedium, RenderActorAnimationManager);
 		CImGuiManager::Instance().Subscribe("Demo Record", CImGuiManager::ERenderPriority::eMedium, RenderDemoRecordEditorWindow);
+		CImGuiManager::Instance().Subscribe("Camera Rig", CImGuiManager::ERenderPriority::eMedium, RenderCameraRigEditor);
 
 		InitImGuiCLSIDInGame();
 		InitImGuiSearchInGame();

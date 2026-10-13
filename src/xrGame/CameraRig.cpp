@@ -11,99 +11,181 @@
 #include "../xrEngine/ObjectAnimator.h"
 #include "../Include/xrRender/Kinematics.h"
 
-struct SCameraRigParams
-{
-	float	blend_in[crcCount]	= { 0.12f, 0.08f, 0.f, 0.15f };
-	float	blend_out[crcCount]	= { 0.25f, 0.15f, 0.08f, 0.3f };
-	float	fov_stiffness		= 500.f, fov_damping = 45.f;
-	float	shot_fov_kick		= 0.f, aim_fov_kick_scale = 0.5f;
-	Fvector	punch				= { 0.45f, 0.2f, 0.35f };
-	float	punch_stiffness		= 220.f, punch_damping = 16.f, punch_hud_scale = 1.f, aim_punch_scale = 0.5f;
-	Fvector	kick_pos			= { 0.f, 0.004f, -0.03f };
-	Fvector	kick_rot			= { 1.6f, 0.4f, 0.8f };
-	float	kick_stiffness		= 320.f, kick_damping = 22.f, aim_kick_scale = 0.3f;
-	float	shot_trauma			= 0.04f, hit_trauma = 0.6f, explosion_trauma = 0.9f, trauma_decay = 1.4f;
-	float	shake_frequency		= 17.f, shake_hud_scale = 0.35f;
-	Fvector	shake_rot			= { 2.f, 2.f, 3.f };
-	Fvector	shake_pos			= { 0.008f, 0.008f, 0.004f };
-	float	land_min_speed		= 4.f, land_max_speed = 14.f, land_pitch = 2.5f, land_roll = 0.8f, land_height = 0.07f;
-	float	land_trauma			= 0.3f, land_hud_scale = 1.6f, land_stiffness = 160.f, land_damping = 12.f;
-	float	strafe_roll			= 0.4f, look_roll = 0.12f, roll_max = 3.f, aim_roll_scale = 0.3f, roll_stiffness = 90.f, roll_damping = 16.f;
-	float	sway_damping_ratio	= 0.6f;
-	float	lean_hud_counter	= 0.7f;
-	float	hud_ik_share		= 0.8f, turn_sway_smooth = 0.05f, aim_reload_blend = 0.25f, left_hand_ik_follow = 0.3f, shot_anim_blend = 0.1f;
-	float	inertia_speed		= 1.3f, mass_speed_exponent = 0.25f, aim_reload_tail = 0.2f, shot_anim_tail = 0.3f;
-	float	hud_inertialization	= 0.f;
-};
-
 static SCameraRigParams	g_rig;
 static int				g_rig_enabled = -1;
 
+static const SCameraRigParam g_rig_params[] =
+{
+	{ "Arms and IK", "hud_ik_share", nullptr, &g_rig.hud_ik_share, nullptr, 1, false, 0.01f },
+	{ "Arms and IK", "lean_hud_counter", nullptr, &g_rig.lean_hud_counter, nullptr, 1, false, 0.01f },
+	{ "Arms and IK", "left_hand_ik_follow", nullptr, &g_rig.left_hand_ik_follow, nullptr, 1, false, 0.005f },
+	{ "Arms and IK", "left_hand_attach_blend", "left_hand_attach_blend", &g_rig.left_hand_attach_blend, nullptr, 1, false, 0.005f },
+
+	{ "Inertia and sway", "turn_sway_smooth", nullptr, &g_rig.turn_sway_smooth, nullptr, 1, false, 0.002f },
+	{ "Inertia and sway", "inertia_speed", nullptr, &g_rig.inertia_speed, nullptr, 1, false, 0.01f },
+	{ "Inertia and sway", "inertia_damping", "inertia_damping", &g_rig.inertia_damping, nullptr, 1, false, 0.01f },
+	{ "Inertia and sway", "mass_speed_exponent", nullptr, &g_rig.mass_speed_exponent, nullptr, 1, false, 0.01f },
+	{ "Inertia and sway", "sway_damping_ratio", nullptr, &g_rig.sway_damping_ratio, nullptr, 1, false, 0.01f },
+
+	{ "Animation transitions", "hud_inertialization", nullptr, &g_rig.hud_inertialization, nullptr, 1, false, 0.005f },
+	{ "Animation transitions", "idle_fade", "idle_fade", &g_rig.idle_fade, nullptr, 1, false, 0.005f },
+	{ "Animation transitions", "additive_blend_in", "additive_blend_in", &g_rig.additive_blend_in, nullptr, 1, false, 0.005f },
+	{ "Animation transitions", "additive_blend_out", "additive_blend_out", &g_rig.additive_blend_out, nullptr, 1, false, 0.005f },
+
+	{ "Aim reload", "aim_reload_motion", "aim_reload_motion", &g_rig.aim_reload_motion, nullptr, 1, false, 0.01f },
+	{ "Aim reload", "aim_reload_blend", nullptr, &g_rig.aim_reload_blend, nullptr, 1, false, 0.005f },
+	{ "Aim reload", "aim_reload_tail", nullptr, &g_rig.aim_reload_tail, nullptr, 1, false, 0.005f },
+
+	{ "Shot animation", "shot_anim_variation", "shot_anim_variation", &g_rig.shot_anim_variation, nullptr, 1, false, 0.01f },
+	{ "Shot animation", "shot_anim_twist", "shot_anim_twist", &g_rig.shot_anim_twist, nullptr, 1, false, 0.01f },
+	{ "Shot animation", "shot_anim_blend", nullptr, &g_rig.shot_anim_blend, nullptr, 1, false, 0.005f },
+	{ "Shot animation", "shot_anim_tail", nullptr, &g_rig.shot_anim_tail, nullptr, 1, false, 0.005f },
+	{ "Shot animation", "aim_shot_motion", "aim_shot_motion", &g_rig.aim_shot_motion, nullptr, 1, false, 0.01f },
+
+	{ "Shot camera", "cam_shoot_variation", "cam_shoot_variation", &g_rig.cam_shoot_variation, nullptr, 1, false, 0.01f },
+	{ "Shot camera", "cam_shoot_mirror", "cam_shoot_mirror", nullptr, &g_rig.cam_shoot_mirror, 0, false, 0.f },
+	{ "Shot camera", "cam_shoot_speed_variation", "cam_shoot_speed_variation", &g_rig.cam_shoot_speed_variation, nullptr, 1, false, 0.005f },
+	{ "Shot camera", "shot_fov_kick", "rig_fov_kick", &g_rig.shot_fov_kick, nullptr, 1, false, 0.05f },
+	{ "Shot camera", "aim_fov_kick_scale", nullptr, &g_rig.aim_fov_kick_scale, nullptr, 1, false, 0.01f },
+	{ "Shot camera", "fov_stiffness", nullptr, &g_rig.fov_stiffness, nullptr, 1, false, 1.f },
+	{ "Shot camera", "fov_damping", nullptr, &g_rig.fov_damping, nullptr, 1, false, 0.1f },
+
+	{ "Camera layers", "motion_blend_in", nullptr, &g_rig.blend_in[crcMotion], nullptr, 1, false, 0.005f },
+	{ "Camera layers", "motion_blend_out", nullptr, &g_rig.blend_out[crcMotion], nullptr, 1, false, 0.005f },
+	{ "Camera layers", "action_blend_in", nullptr, &g_rig.blend_in[crcAction], nullptr, 1, false, 0.005f },
+	{ "Camera layers", "action_blend_out", nullptr, &g_rig.blend_out[crcAction], nullptr, 1, false, 0.005f },
+	{ "Camera layers", "shot_blend_in", nullptr, &g_rig.blend_in[crcShot], nullptr, 1, false, 0.005f },
+	{ "Camera layers", "shot_blend_out", nullptr, &g_rig.blend_out[crcShot], nullptr, 1, false, 0.005f },
+	{ "Camera layers", "move_blend_in", nullptr, &g_rig.blend_in[crcMove], nullptr, 1, false, 0.005f },
+	{ "Camera layers", "move_blend_out", nullptr, &g_rig.blend_out[crcMove], nullptr, 1, false, 0.005f },
+
+	{ "Punch", "punch", "rig_punch", &g_rig.punch.x, nullptr, 3, true, 0.01f },
+	{ "Punch", "punch_stiffness", nullptr, &g_rig.punch_stiffness, nullptr, 1, false, 1.f },
+	{ "Punch", "punch_damping", nullptr, &g_rig.punch_damping, nullptr, 1, false, 0.1f },
+	{ "Punch", "punch_hud_scale", nullptr, &g_rig.punch_hud_scale, nullptr, 1, false, 0.01f },
+	{ "Punch", "aim_punch_scale", nullptr, &g_rig.aim_punch_scale, nullptr, 1, false, 0.01f },
+
+	{ "Kick", "kick_pos", "rig_kick_pos", &g_rig.kick_pos.x, nullptr, 3, false, 0.0005f },
+	{ "Kick", "kick_rot", "rig_kick_rot", &g_rig.kick_rot.x, nullptr, 3, true, 0.01f },
+	{ "Kick", "kick_stiffness", nullptr, &g_rig.kick_stiffness, nullptr, 1, false, 1.f },
+	{ "Kick", "kick_damping", nullptr, &g_rig.kick_damping, nullptr, 1, false, 0.1f },
+	{ "Kick", "aim_kick_scale", nullptr, &g_rig.aim_kick_scale, nullptr, 1, false, 0.01f },
+
+	{ "Shake", "shot_trauma", "rig_shot_trauma", &g_rig.shot_trauma, nullptr, 1, false, 0.005f },
+	{ "Shake", "hit_trauma", nullptr, &g_rig.hit_trauma, nullptr, 1, false, 0.01f },
+	{ "Shake", "explosion_trauma", nullptr, &g_rig.explosion_trauma, nullptr, 1, false, 0.01f },
+	{ "Shake", "trauma_decay", nullptr, &g_rig.trauma_decay, nullptr, 1, false, 0.01f },
+	{ "Shake", "shake_frequency", nullptr, &g_rig.shake_frequency, nullptr, 1, false, 0.1f },
+	{ "Shake", "shake_hud_scale", nullptr, &g_rig.shake_hud_scale, nullptr, 1, false, 0.01f },
+	{ "Shake", "shake_rot", nullptr, &g_rig.shake_rot.x, nullptr, 3, true, 0.01f },
+	{ "Shake", "shake_pos", nullptr, &g_rig.shake_pos.x, nullptr, 3, false, 0.0005f },
+
+	{ "Landing", "land_min_speed", nullptr, &g_rig.land_min_speed, nullptr, 1, false, 0.05f },
+	{ "Landing", "land_max_speed", nullptr, &g_rig.land_max_speed, nullptr, 1, false, 0.05f },
+	{ "Landing", "land_pitch", nullptr, &g_rig.land_pitch, nullptr, 1, true, 0.01f },
+	{ "Landing", "land_roll", nullptr, &g_rig.land_roll, nullptr, 1, true, 0.01f },
+	{ "Landing", "land_height", nullptr, &g_rig.land_height, nullptr, 1, false, 0.001f },
+	{ "Landing", "land_trauma", nullptr, &g_rig.land_trauma, nullptr, 1, false, 0.01f },
+	{ "Landing", "land_hud_scale", nullptr, &g_rig.land_hud_scale, nullptr, 1, false, 0.01f },
+	{ "Landing", "land_stiffness", nullptr, &g_rig.land_stiffness, nullptr, 1, false, 1.f },
+	{ "Landing", "land_damping", nullptr, &g_rig.land_damping, nullptr, 1, false, 0.1f },
+
+	{ "Roll", "strafe_roll", nullptr, &g_rig.strafe_roll, nullptr, 1, true, 0.005f },
+	{ "Roll", "look_roll", nullptr, &g_rig.look_roll, nullptr, 1, true, 0.005f },
+	{ "Roll", "roll_max", nullptr, &g_rig.roll_max, nullptr, 1, true, 0.01f },
+	{ "Roll", "aim_roll_scale", nullptr, &g_rig.aim_roll_scale, nullptr, 1, false, 0.01f },
+	{ "Roll", "roll_stiffness", nullptr, &g_rig.roll_stiffness, nullptr, 1, false, 1.f },
+	{ "Roll", "roll_damping", nullptr, &g_rig.roll_damping, nullptr, 1, false, 0.1f },
+};
+
+static void rig_load_param(const SCameraRigParam& it)
+{
+	static const SCameraRigParams defaults;
+	const char* field = it.Flag != nullptr ? (const char*)it.Flag : (const char*)it.Value;
+	const ptrdiff_t offset = field - (const char*)&g_rig;
+	std::memcpy((char*)&g_rig + offset, (const char*)&defaults + offset, it.Flag != nullptr ? sizeof(bool) : sizeof(float) * it.Count);
+
+	if (pSettings->line_exist("camera_rig", it.Key))
+	{
+		if (it.Flag != nullptr)
+		{
+			*it.Flag = pSettings->r_bool("camera_rig", it.Key);
+		}
+		else if (it.Count == 3)
+		{
+			*(Fvector*)it.Value = pSettings->r_fvector3("camera_rig", it.Key);
+		}
+		else
+		{
+			*it.Value = pSettings->r_float("camera_rig", it.Key);
+		}
+	}
+
+	for (u32 i = 0; it.Degrees && i < it.Count; i++)
+	{
+		it.Value[i] = deg2rad(it.Value[i]);
+	}
+}
+
+void CCameraRig::Reload()
+{
+	g_rig = {};
+	g_rig_enabled = 0;
+
+	if (!pSettings->section_exist("camera_rig"))
+	{
+		return;
+	}
+
+	for (const SCameraRigParam& it : g_rig_params)
+	{
+		rig_load_param(it);
+	}
+
+	g_rig_enabled = READ_IF_EXISTS(pSettings, r_bool, "camera_rig", "enabled", true);
+}
+
+void CCameraRig::ReloadGroup(const char* group)
+{
+	if (!pSettings->section_exist("camera_rig"))
+	{
+		return;
+	}
+
+	for (const SCameraRigParam& it : g_rig_params)
+	{
+		if (xr_strcmp(it.Group, group) == 0)
+		{
+			rig_load_param(it);
+		}
+	}
+}
+
 bool CCameraRig::Enabled()
 {
-	if (g_rig_enabled >= 0)
+	if (g_rig_enabled < 0)
 	{
-		return !!g_rig_enabled;
+		Reload();
 	}
 
-	g_rig_enabled = pSettings->section_exist("camera_rig") && READ_IF_EXISTS(pSettings, r_bool, "camera_rig", "enabled", true);
-	if (!g_rig_enabled)
-	{
-		return false;
-	}
+	return !!g_rig_enabled;
+}
 
-	SCameraRigParams& p = g_rig;
-	const struct { const char* key; float* value; u32 count; bool deg; } params[] =
-	{
-		{ "motion_blend_in", &p.blend_in[crcMotion], 1, false }, { "motion_blend_out", &p.blend_out[crcMotion], 1, false },
-		{ "action_blend_in", &p.blend_in[crcAction], 1, false }, { "action_blend_out", &p.blend_out[crcAction], 1, false },
-		{ "shot_blend_in", &p.blend_in[crcShot], 1, false }, { "shot_blend_out", &p.blend_out[crcShot], 1, false },
-		{ "move_blend_in", &p.blend_in[crcMove], 1, false }, { "move_blend_out", &p.blend_out[crcMove], 1, false },
-		{ "fov_stiffness", &p.fov_stiffness, 1, false }, { "fov_damping", &p.fov_damping, 1, false },
-		{ "shot_fov_kick", &p.shot_fov_kick, 1, false }, { "aim_fov_kick_scale", &p.aim_fov_kick_scale, 1, false },
-		{ "punch", &p.punch.x, 3, true }, { "punch_stiffness", &p.punch_stiffness, 1, false }, { "punch_damping", &p.punch_damping, 1, false },
-		{ "punch_hud_scale", &p.punch_hud_scale, 1, false }, { "aim_punch_scale", &p.aim_punch_scale, 1, false },
-		{ "kick_pos", &p.kick_pos.x, 3, false }, { "kick_rot", &p.kick_rot.x, 3, true },
-		{ "kick_stiffness", &p.kick_stiffness, 1, false }, { "kick_damping", &p.kick_damping, 1, false }, { "aim_kick_scale", &p.aim_kick_scale, 1, false },
-		{ "shot_trauma", &p.shot_trauma, 1, false }, { "hit_trauma", &p.hit_trauma, 1, false },
-		{ "explosion_trauma", &p.explosion_trauma, 1, false }, { "trauma_decay", &p.trauma_decay, 1, false },
-		{ "shake_frequency", &p.shake_frequency, 1, false }, { "shake_hud_scale", &p.shake_hud_scale, 1, false },
-		{ "shake_rot", &p.shake_rot.x, 3, true }, { "shake_pos", &p.shake_pos.x, 3, false },
-		{ "land_min_speed", &p.land_min_speed, 1, false }, { "land_max_speed", &p.land_max_speed, 1, false },
-		{ "land_pitch", &p.land_pitch, 1, true }, { "land_roll", &p.land_roll, 1, true }, { "land_height", &p.land_height, 1, false },
-		{ "land_trauma", &p.land_trauma, 1, false }, { "land_hud_scale", &p.land_hud_scale, 1, false },
-		{ "land_stiffness", &p.land_stiffness, 1, false }, { "land_damping", &p.land_damping, 1, false },
-		{ "strafe_roll", &p.strafe_roll, 1, true }, { "look_roll", &p.look_roll, 1, true }, { "roll_max", &p.roll_max, 1, true },
-		{ "aim_roll_scale", &p.aim_roll_scale, 1, false }, { "roll_stiffness", &p.roll_stiffness, 1, false }, { "roll_damping", &p.roll_damping, 1, false },
-		{ "sway_damping_ratio", &p.sway_damping_ratio, 1, false }, { "lean_hud_counter", &p.lean_hud_counter, 1, false },
-		{ "hud_ik_share", &p.hud_ik_share, 1, false }, { "turn_sway_smooth", &p.turn_sway_smooth, 1, false }, { "aim_reload_blend", &p.aim_reload_blend, 1, false },
-		{ "left_hand_ik_follow", &p.left_hand_ik_follow, 1, false }, { "shot_anim_blend", &p.shot_anim_blend, 1, false },
-		{ "inertia_speed", &p.inertia_speed, 1, false }, { "mass_speed_exponent", &p.mass_speed_exponent, 1, false },
-		{ "aim_reload_tail", &p.aim_reload_tail, 1, false }, { "shot_anim_tail", &p.shot_anim_tail, 1, false },
-		{ "hud_inertialization", &p.hud_inertialization, 1, false },
-	};
+const SCameraRigParams& CCameraRig::Params()
+{
+	Enabled();
+	return g_rig;
+}
 
-	for (const auto& it : params)
-	{
-		if (pSettings->line_exist("camera_rig", it.key))
-		{
-			if (it.count == 3)
-			{
-				*(Fvector*)it.value = pSettings->r_fvector3("camera_rig", it.key);
-			}
-			else
-			{
-				*it.value = pSettings->r_float("camera_rig", it.key);
-			}
-		}
+const SCameraRigParam* CCameraRig::ParamList(u32& count)
+{
+	count = u32(std::size(g_rig_params));
+	return g_rig_params;
+}
 
-		for (u32 i = 0; it.deg && i < it.count; i++)
-		{
-			it.value[i] = deg2rad(it.value[i]);
-		}
-	}
-
-	return true;
+void CCameraRig::ResetWeaponCache()
+{
+	m_weapon_sect = nullptr;
 }
 
 CCameraRig::~CCameraRig()

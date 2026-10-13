@@ -541,6 +541,8 @@ public:
 	float CamShotSpeedVariation = 0.f;
 	bool CamShotMirror = false;
 
+	void LoadCamShotParams();
+
 protected:
 	bool m_bBlockUpdateAmmoBonesShooting = false;
 	bool m_bUseLastAmmoType = false;

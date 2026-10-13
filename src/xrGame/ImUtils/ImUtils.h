@@ -746,6 +746,7 @@ void Render3rdAdjust();
 void Render3DIconAdjust();
 void RenderDemoRecordEditorWindow();
 void RenderActorAnimationManager();
+void RenderCameraRigEditor();
 
 /* MISCELLANEOUS */
 

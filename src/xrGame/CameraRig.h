@@ -15,6 +15,47 @@ enum ECameraRigChannel
 	crcCount
 };
 
+struct SCameraRigParams
+{
+	float	blend_in[crcCount]	= { 0.12f, 0.08f, 0.f, 0.15f };
+	float	blend_out[crcCount]	= { 0.25f, 0.15f, 0.08f, 0.3f };
+	float	fov_stiffness		= 500.f, fov_damping = 45.f;
+	float	shot_fov_kick		= 0.f, aim_fov_kick_scale = 0.5f;
+	Fvector	punch				= { 0.45f, 0.2f, 0.35f };
+	float	punch_stiffness		= 220.f, punch_damping = 16.f, punch_hud_scale = 1.f, aim_punch_scale = 0.5f;
+	Fvector	kick_pos			= { 0.f, 0.004f, -0.03f };
+	Fvector	kick_rot			= { 1.6f, 0.4f, 0.8f };
+	float	kick_stiffness		= 320.f, kick_damping = 22.f, aim_kick_scale = 0.3f;
+	float	shot_trauma			= 0.04f, hit_trauma = 0.6f, explosion_trauma = 0.9f, trauma_decay = 1.4f;
+	float	shake_frequency		= 17.f, shake_hud_scale = 0.35f;
+	Fvector	shake_rot			= { 2.f, 2.f, 3.f };
+	Fvector	shake_pos			= { 0.008f, 0.008f, 0.004f };
+	float	land_min_speed		= 4.f, land_max_speed = 14.f, land_pitch = 2.5f, land_roll = 0.8f, land_height = 0.07f;
+	float	land_trauma			= 0.3f, land_hud_scale = 1.6f, land_stiffness = 160.f, land_damping = 12.f;
+	float	strafe_roll			= 0.4f, look_roll = 0.12f, roll_max = 3.f, aim_roll_scale = 0.3f, roll_stiffness = 90.f, roll_damping = 16.f;
+	float	sway_damping_ratio	= 0.6f;
+	float	lean_hud_counter	= 0.7f;
+	float	hud_ik_share		= 0.8f, turn_sway_smooth = 0.05f, aim_reload_blend = 0.25f, left_hand_ik_follow = 0.3f, shot_anim_blend = 0.1f;
+	float	inertia_speed		= 1.3f, mass_speed_exponent = 0.25f, aim_reload_tail = 0.2f, shot_anim_tail = 0.3f;
+	float	hud_inertialization	= 0.f;
+	float	aim_reload_motion	= 1.f, shot_anim_variation = 0.f, shot_anim_twist = 0.f, aim_shot_motion = 1.f, idle_fade = 0.f, inertia_damping = 0.55f;
+	float	additive_blend_in	= 0.f, additive_blend_out = 0.1f, left_hand_attach_blend = 0.f;
+	float	cam_shoot_variation	= 0.f, cam_shoot_speed_variation = 0.f;
+	bool	cam_shoot_mirror	= false;
+};
+
+struct SCameraRigParam
+{
+	const char*	Group;
+	const char*	Key;
+	const char*	HudKey;
+	float*		Value;
+	bool*		Flag;
+	u32			Count;
+	bool		Degrees;
+	float		Speed;
+};
+
 class CCameraRig
 {
 	struct SLayer
@@ -54,6 +95,10 @@ public:
 							~CCameraRig		();
 
 	static bool				Enabled			();
+	static void				Reload			();
+	static void				ReloadGroup		(const char* group);
+	static const SCameraRigParams& Params	();
+	static const SCameraRigParam* ParamList	(u32& count);
 	static float			HudIkShare		();
 	static float			TurnSwaySmooth	();
 	static float			AimReloadBlend	();
@@ -69,6 +114,7 @@ public:
 
 	bool					PlayAnim		(const char* name, ECameraRigChannel channel, float speed, bool hud_affect, const Fvector& scale_hpb = { 1.f, 1.f, 1.f }, const Fvector& scale_pos = { 1.f, 1.f, 1.f });
 	void					StopChannel		(ECameraRigChannel channel);
+	void					ResetWeaponCache();
 	void					OnShot			(CWeapon* weapon);
 	void					OnHit			(float power);
 	void					OnExplosion		(float power);
