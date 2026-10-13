@@ -1746,7 +1746,7 @@ void CWeapon::UpdateCL()
 	{
 		if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())
 		{
-			Vision->Update();
+			Vision->Update(!ScopeUIQuery());
 		}
 	}
 
@@ -3933,6 +3933,25 @@ void CWeapon::render_item_ui()
 
 	ZoomTexture()->Update	();
 	ZoomTexture()->Draw		();
+}
+
+bool CWeapon::ScopeUIQuery()
+{
+	return m_pInventory && m_pInventory->ActiveItem() == this && ParentIsActor() && GetHUDmode() &&
+		   Allow3DScopes() && IsScopeAttached() && IsLensedScopeInstalled() &&
+		   IsZoomed() && !IsRotatingToZoom() && !IsAltZoomed() && !IsGrenadeMode() &&
+		   m_zoom_params.m_fZoomRotationFactor2 == 0.0f && m_zoom_params.m_sUseBinocularVision.size() > 0;
+}
+
+void CWeapon::RenderScopeUI()
+{
+	if (ScopeUIQuery())
+	{
+		if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())
+		{
+			Vision->DrawScopeUI();
+		}
+	}
 }
 
 bool CWeapon::unlimited_ammo()
