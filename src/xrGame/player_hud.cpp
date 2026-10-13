@@ -989,6 +989,7 @@ void attachable_hud_item::load(const shared_str& sect_name)
 		m_aim_bone_id = m_model->LL_BoneID(pSettings->r_string(sect_name, "aim_bone_name"));
 
 	m_hud_mass = std::max(pSettings->read_if_exists<float>(sect_name, "hud_mass", 1.f), 0.1f);
+	IkEnabled = pSettings->read_if_exists<bool>(sect_name, "hud_ik", true);
 
 	hud_read_motion_list(sect_name, "additive_motions", m_additive_motions);
 	m_additive_reference = pSettings->read_if_exists<str_c>(sect_name, "additive_reference", nullptr);
@@ -2581,11 +2582,12 @@ void player_hud::update(const Fmatrix& cam_trans)
 		const Fvector& base_pos = measures.m_hands_positions.hands_offsets_tune[EHudOffsetAxis::eAxisPos][EHudOffsetType::eDefault];
 		const Fvector& base_rot = measures.m_hands_positions.hands_offsets_tune[EHudOffsetAxis::eAxisRot][EHudOffsetType::eDefault];
 
+		const float offset_share = m_attached_items[0]->IkEnabled ? ik_share : 0.f;
 		Fquaternion rigid_rotation;
-		rigid_rotation.slerp(HudRotation::FromEuler(attach_rot()), HudRotation::FromEuler(base_rot), ik_share);
+		rigid_rotation.slerp(HudRotation::FromEuler(attach_rot()), HudRotation::FromEuler(base_rot), offset_share);
 		Fmatrix rigid_attach;
 		rigid_attach.rotation(rigid_rotation);
-		rigid_attach.c.lerp(attach_pos(), base_pos, ik_share);
+		rigid_attach.c.lerp(attach_pos(), base_pos, offset_share);
 
 		const float rigid_share = 1.f - ik_share;
 		Fmatrix rigid = trans_turn;
