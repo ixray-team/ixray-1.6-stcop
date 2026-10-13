@@ -1027,6 +1027,7 @@ void CUIRankingWnd::get_favorite_weapon()
 				rot.mul(M_PI / 180.0f);
 				m_favorite_weapon_icon->SetXYZ(rot);
 				m_favorite_weapon_icon->SetScaleFactor(READ_IF_EXISTS(pSettings, r_float, str, "3d_static_scale", 1.f));
+				m_favorite_weapon_icon->SetIconOffset(READ_IF_EXISTS(pSettings, r_fvector2, str, "3d_static_offset", Fvector2().set(0.0f, 0.0f)));
 
 				RStringVec m_bDefHideBones{}, m_bDefShowBones{};
 

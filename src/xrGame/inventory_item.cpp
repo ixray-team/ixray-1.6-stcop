@@ -326,6 +326,7 @@ void CInventoryItem::Read3dStaticsData(const char* section)
 	m_3d_static_rotate.mul(M_PI / 180.0f);
 
 	m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, section, "3d_static_scale", 1.f);
+	IconOffset = READ_IF_EXISTS(pSettings, r_fvector2, section, "3d_static_offset", Fvector2().set(0.0f, 0.0f));
 }
 
 void CInventoryItem::RefreshTranslations()
