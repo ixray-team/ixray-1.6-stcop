@@ -329,6 +329,7 @@ struct attachable_hud_item final
 		: m_parent(pparent), m_upd_firedeps_frame(u32(-1)), m_parent_hud_item(NULL) {}
 			~attachable_hud_item	();
 	void load						(const shared_str& sect_name);
+	void LoadRigParams				();
 	void update						(bool bForce);
 	void update_hud_additional		(Fmatrix& trans);
 	void setup_firedeps				(firedeps& fd);
@@ -738,6 +739,7 @@ public:
 	static void		RequestAllHands		();
 	void			FinishDefaultLoad	(bool IsEarly = false);
 	void			EnsureDefaultLoaded	() { if (PendingDefaultSect.size()) FinishDefaultLoad(true); }
+	void			ReloadRigParams		();
 	void			update				(const Fmatrix& world_cam_trans);
 	void			render_hud			();	
 	void			render_item_ui		();

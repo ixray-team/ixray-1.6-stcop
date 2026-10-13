@@ -751,6 +751,7 @@ void RenderActorAnimationManager();
 void RenderCinemaFilmMakerEditor();
 void CinemaFilmMaker_Render();
 void CinemaFilmMaker_Shutdown();
+void RenderCameraRigEditor();
 
 /* MISCELLANEOUS */
 
