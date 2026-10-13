@@ -749,6 +749,7 @@ void RenderActorAnimationManager();
 void Icon3dAdjust_NotifyHoveredCell(CUICellItem* cell);
 void Icon3dAdjust_RegisterCell(CUICellItem* cell);
 void Icon3dAdjust_UnregisterCell(CUICellItem* cell);
+bool ShouldHide3DIconItemDescriptions();
 
 void DestroySpawnManagerWindow();
 void Render3DIconLightingControls();
