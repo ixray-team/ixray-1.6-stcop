@@ -171,6 +171,7 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 		return;
 	}
 	CUIXmlInit::InitWindow( xml_doc, outfit_info, 0, this );
+	const float RowSpacing = xml_doc.ReadAttribFlt(outfit_info, 0, "row_spacing", 0.0f);
 	xml_doc.SetLocalRoot(base_node);
 	
 	string256 buf;
@@ -194,7 +195,7 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 		{
 			AttachChild(m_items[id]);
 			m_items[id]->SetWndPos(pos);
-			pos.y += m_items[id]->GetWndSize().y;
+			pos.y += m_items[id]->GetWndSize().y + RowSpacing;
 		}
 	}
 	pos.x = GetWndSize().x;

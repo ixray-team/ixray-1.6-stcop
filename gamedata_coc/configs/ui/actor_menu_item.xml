@@ -271,13 +271,13 @@
 			<text font="letterica16" align="l" vert_align="t" r="170" g="170" b="170"/>
 		</info_prerequisites>
 
-		<properties x="20" y="20" width="320" height="20" sec_col_pos="185" next_line_pos="20">
+		<properties x="20" y="20" width="320" height="19" sec_col_pos="185" next_line_pos="19">
 	        <upgr_line x="0" y="0" width="370" height="9" stretch="1">
 	            <texture>ui_inGame2_hint_wnd_upgrades</texture>
 	        </upgr_line>
-			<icon x="0"  y="0" width="20"  height="20" />
-			<text x="25" y="3" width="235" height="18" >
-				<text font="letterica16" r="170" g="170" b="170"/>
+			<icon x="0"  y="0" width="18"  height="18" stretch="1"/>
+			<text x="22" y="0" width="235" height="18" >
+				<text font="letterica16" r="170" g="170" b="170" vert_align="c"/>
 			</text>
 		</properties>
 	</upgrade_info>
@@ -316,7 +316,7 @@
     </condition_progess_bar>
 	<!-- ============================ outfit_info ====================================   -->
 
-	<outfit_info x="0" y="0" width="350" height="180">
+	<outfit_info x="0" y="0" width="350" height="180" row_spacing="1">
 		<prop_line x="0" y="0" width="370" height="9" stretch="1">
 			<texture>ui_inGame2_hint_wnd_Properties</texture>
 		</prop_line>

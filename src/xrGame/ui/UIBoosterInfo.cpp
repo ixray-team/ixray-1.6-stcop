@@ -168,8 +168,10 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 		if(pSettings->line_exist(section.c_str(), ef_boosters_section_names[i]) && ef_boosters_section_names[i] && m_booster_items[i])
 		{
 			val = pSettings->r_float(section, ef_boosters_section_names[i]) * m_booster_items[i]->m_magnitude;
-			if(val < 1.f)
+			if (std::abs(val) < 1.f)
+			{
 				continue;
+			}
 
 			EBoostParams type = (EBoostParams)i;
 			switch(type)
@@ -217,7 +219,7 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 	if(pSettings->line_exist(section.c_str(), "eat_satiety"))
 	{
 		val = pSettings->r_float(section, "eat_satiety") * m_booster_satiety->m_magnitude;
-		if(val >= 1.f)
+		if (std::abs(val) >= 1.f)
 		{
 			m_booster_satiety->SetValue(val);
 			pos.set(m_booster_satiety->GetWndPos());
@@ -231,7 +233,7 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 	if (pSettings->line_exist(section.c_str(), "eat_thirst") && m_booster_thirst)
 	{
 		val = pSettings->r_float(section, "eat_thirst") * m_booster_thirst->m_magnitude;
-		if (val >= 1.f)
+		if (std::abs(val) >= 1.f)
 		{
 			m_booster_thirst->SetValue(val);
 			pos.set(m_booster_thirst->GetWndPos());
@@ -247,7 +249,7 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 	if(pSettings->line_exist(section.c_str(), "eat_sleepiness") && m_booster_sleepiness)
 	{
 		val = pSettings->r_float(section, "eat_sleepiness") * m_booster_sleepiness->m_magnitude;
-		if (val >= 1.f)
+		if (std::abs(val) >= 1.f)
 		{
 			m_booster_sleepiness->SetValue(val);
 			pos.set(m_booster_sleepiness->GetWndPos());
@@ -322,99 +324,4 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 		}
 	}
 	SetHeight(h);
-}
-
-/// ----------------------------------------------------------------
-
-UIBoosterInfoItem::UIBoosterInfoItem()
-{
-	m_caption				= nullptr;
-	m_value					= nullptr;
-	m_magnitude				= 1.0f;
-	m_show_sign				= false;
-	
-	m_unit_str._set			("");
-	m_texture_minus._set	("");
-	m_texture_plus._set		("");
-}
-
-UIBoosterInfoItem::~UIBoosterInfoItem()
-{
-}
-
-void UIBoosterInfoItem::Init(CUIXml& xml, const char* section)
-{
-	CUIXmlInit::InitWindow(xml, section, 0, this);
-	xml.SetLocalRoot(xml.NavigateToNode(section));
-
-	m_caption   = UIHelper::CreateStatic(xml, "caption", this);
-	m_value     = UIHelper::CreateStatic(xml, "value",   this);
-	m_magnitude = xml.ReadAttribFlt("value", 0, "magnitude", 1.0f);
-	m_sign_inverse = (xml.ReadAttribInt( "value", 0, "sign_inverse", 0 ) == 1);
-	m_show_sign = (xml.ReadAttribInt("value", 0, "show_sign", 1) == 1);
-	
-	const char* unit_str = xml.ReadAttrib("value", 0, "unit_str", "");
-	m_unit_str._set(g_pStringTable->translate(unit_str));
-	
-	const char* texture_minus = xml.Read("texture_minus", 0, "");
-	if(texture_minus && xr_strlen(texture_minus))
-	{
-		m_texture_minus._set(texture_minus);
-		
-		const char* texture_plus = xml.Read("caption:texture", 0, "");
-		m_texture_plus._set(texture_plus);
-		VERIFY(m_texture_plus.size());
-	}
-}
-
-void UIBoosterInfoItem::SetCaption(const char* name)
-{
-	m_caption->TextItemControl()->SetText(name);
-}
-
-void UIBoosterInfoItem::SetValue(float value)
-{
-	string32 buf;
-	if(m_show_sign)
-		xr_sprintf(buf, "%+.0f", value);
-	else
-		xr_sprintf(buf, "%.0f", value);
-	
-	string256 str;
-	if(m_unit_str.size())
-		xr_strconcat(str, buf, " ", m_unit_str.c_str());
-	else
-		xr_strconcat(str, buf);
-
-	m_value->SetText(str);
-
-	bool positive = (value >= 0.0f);
-	positive = (m_sign_inverse) ? !positive : positive;
-	m_value->SetTextColor(color_rgba(170, 170, 170, 255));
-
-	if(m_texture_minus.size())
-	{
-		if(positive)
-			m_caption->InitTexture(m_texture_plus.c_str());
-		else
-			m_caption->InitTexture(m_texture_minus.c_str());
-	}
-}
-
-void UIBoosterInfoItem::SetValueText(const char* text)
-{
-	m_value->SetText(text ? text : "");
-	m_value->SetTextColor(color_rgba(170, 170, 170, 255));
-}
-
-void UIBoosterInfoItem::ShowValue(bool show)
-{
-	if (m_value)
-	{
-		m_value->Show(show);
-		if (!show)
-		{
-			m_value->SetText("");
-		}
-	}
 }

@@ -222,6 +222,11 @@ bool CUIItemInfo::InitItemInfo(const char* xml_name)
 	}
 
 	xml_init.InitAutoStaticGroup	(uiXml, "auto", 0, this);
+	BaseTooltipWidth = GetWidth();
+	BaseDescriptionWidth = UIDesc ? UIDesc->GetWidth() : 0.0f;
+	BaseNameWidth = UIName ? UIName->GetWidth() : 0.0f;
+	BaseTradeTipWidth = UITradeTip ? UITradeTip->GetWidth() : 0.0f;
+	BaseCostX = UICost ? UICost->GetWndPos().x : 0.0f;
 	return true;
 }
 
@@ -247,6 +252,35 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	m_pInvItem				= pInvItem;
 	Enable					(nullptr != m_pInvItem);
 	if(!m_pInvItem)			return;
+
+	if (UIDesc && m_b_FitToHeight)
+	{
+		UIDesc->SetWidth(BaseDescriptionWidth);
+		float ExtraWidth = 0.0f;
+		if (UIProperties && pInvItem->upgardes().size())
+		{
+			const float ContentWidth = UIDesc->GetDesiredChildWidth();
+			UIProperties->SetAvailableWidth(ContentWidth, true);
+			UIProperties->set_item_info(*pInvItem);
+			ExtraWidth = std::max(0.0f, UIProperties->GetWidth() - ContentWidth);
+		}
+		SetWidth(BaseTooltipWidth + ExtraWidth);
+		UIDesc->SetWidth(BaseDescriptionWidth + ExtraWidth);
+		if (UIName)
+		{
+			UIName->SetWidth(BaseNameWidth + ExtraWidth);
+		}
+		if (UITradeTip)
+		{
+			UITradeTip->SetWidth(BaseTradeTipWidth + ExtraWidth);
+		}
+		if (UICost)
+		{
+			Fvector2 CostPosition = UICost->GetWndPos();
+			CostPosition.x = BaseCostX + ExtraWidth;
+			UICost->SetWndPos(CostPosition);
+		}
+	}
 
 	Fvector2				pos;	pos.set( 0.0f, 0.0f );
 	string256				str;
@@ -513,7 +547,11 @@ void CUIItemInfo::TryAddUpgradeInfo(CInventoryItem& pInvItem)
 {
 	if (pInvItem.upgardes().size() && UIProperties)
 	{
-		UIProperties->set_item_info(pInvItem);
+		if (!m_b_FitToHeight)
+		{
+			UIProperties->SetAvailableWidth(UIDesc->GetDesiredChildWidth(), false);
+			UIProperties->set_item_info(pInvItem);
+		}
 		UIDesc->AddWindow(UIProperties, false);
 	}
 }

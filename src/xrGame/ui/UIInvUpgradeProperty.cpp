@@ -127,6 +127,28 @@ bool UIProperty::show_result(const char* values)
 	}
 }
 
+float UIProperty::GetRequiredWidth()
+{
+	m_ui_text->TextItemControl()->SetTextComplexMode(false);
+	m_ui_text->AdjustWidthToText();
+	return m_ui_text->GetWndPos().x + m_ui_text->GetWidth() + 1.0f;
+}
+
+void UIProperty::FitToWidth(float Width, bool WrapText)
+{
+	SetWidth(Width);
+	m_ui_text->SetWidth(std::max(1.0f, Width - m_ui_text->GetWndPos().x - 1.0f));
+	m_ui_text->TextItemControl()->SetTextComplexMode(WrapText);
+	m_ui_text->SetHeight(m_ui_icon->GetHeight());
+	if (WrapText)
+	{
+		m_ui_text->TextItemControl()->ParseText(true);
+		m_ui_text->AdjustHeightToText();
+		m_ui_text->SetHeight(std::max(m_ui_text->GetHeight(), m_ui_icon->GetHeight()));
+	}
+	SetHeight(std::max(m_ui_icon->GetWndPos().y + m_ui_icon->GetHeight(), m_ui_text->GetWndPos().y + m_ui_text->GetHeight()) + 1.0f);
+}
+
 // =================== UIPropertiesWnd =====================================================
 
 UIInvUpgPropertiesWnd::UIInvUpgPropertiesWnd()
@@ -147,6 +169,7 @@ void UIInvUpgPropertiesWnd::UpdateStatsPos(float& h, Fvector2& pos, UIProperty* 
 		pos.x = m_fsec_col_pos; // Правый столбец
 	}
 	// Увеличиваем счетчик
+	PendingRowHeight = std::max(PendingRowHeight, pWnd->GetHeight());
 	counter += 1;
 
 	// Устанавливаем вертикальное положение
@@ -155,7 +178,8 @@ void UIInvUpgPropertiesWnd::UpdateStatsPos(float& h, Fvector2& pos, UIProperty* 
 	// Если оба столбца заполнены (четное количество элементов), переходим на следующую строку
 	if (counter % 2 == 0)
 	{
-		h += m_fnext_line_pos;
+		h += std::max(m_fnext_line_pos, PendingRowHeight);
+		PendingRowHeight = 0.0f;
 	}
 
 	// Устанавливаем позицию элемента
@@ -183,6 +207,9 @@ void UIInvUpgPropertiesWnd::init_from_xml(const char* xml_name)
 	{
 		m_Upgr_line = UIHelper::CreateStatic(ui_xml, "properties:upgr_line", this);
 	}
+
+	BaseWidth = GetWidth();
+	AvailableWidth = BaseWidth;
 
 	m_fsec_col_pos = ui_xml.ReadAttribFlt("properties", 0, "sec_col_pos", UI().is_widescreen() ? 105.f : 130.f);
 	m_fnext_line_pos = ui_xml.ReadAttribFlt("properties", 0, "next_line_pos", 20.f);
@@ -215,60 +242,52 @@ void UIInvUpgPropertiesWnd::init_from_xml(const char* xml_name)
 	ui_xml.SetLocalRoot(stored_root);
 }
 
+void UIInvUpgPropertiesWnd::SetAvailableWidth(float Width, bool AllowExpansion)
+{
+	AvailableWidth = std::max(1.0f, Width);
+	CanExpand = AllowExpansion;
+}
+
 void UIInvUpgPropertiesWnd::set_info(ItemUpgrades_type const& item_upgrades)
 {
-	Fvector2 new_size;
-	new_size.set(GetWndPos());
-	float height = 0.f;
-	float visiblePropertiesHeight = 0.0f;
-	m_iNumUpgr = 0;
-	new_size.x = GetWndSize().x;
-
-	if (m_Upgr_line)
+	xr_vector<UIProperty*> VisibleProperties;
+	float RequiredColumnWidth = 0.0f;
+	for (auto* Property : m_properties_ui)
 	{
-		height += m_Upgr_line->GetWndSize().y + 3.0f;
-	}
-
-	for (auto& ui_property : m_properties_ui)
-	{
-		ui_property->Show(false);
-
-		if (ui_property->compute_value(item_upgrades))
+		Property->Show(false);
+		if (Property->compute_value(item_upgrades))
 		{
-			new_size.set(ui_property->GetWndPos());
-			new_size.x = 0.f;
-			UpdateStatsPos(height, new_size, ui_property, m_iNumUpgr);
-
-			visiblePropertiesHeight += ui_property->GetWndSize().y;
-			ui_property->Show(true);
+			VisibleProperties.push_back(Property);
+			RequiredColumnWidth = std::max(RequiredColumnWidth, Property->GetRequiredWidth());
 		}
 	}
+	m_iNumUpgr = (int)VisibleProperties.size();
+	PendingRowHeight = 0.0f;
+	float Height = m_Upgr_line ? m_Upgr_line->GetWndSize().y + 1.0f : 0.0f;
+	const float MinWidth = std::max(BaseWidth, AvailableWidth);
+	const float ColumnWidth = CanExpand ? std::max(MinWidth * 0.5f, RequiredColumnWidth + 1.0f) : MinWidth * 0.5f;
+	SetWidth(ColumnWidth * 2.0f);
+	m_fsec_col_pos = ColumnWidth;
 
-	// Для финальной высоты нужно добавить высоту последнего элемента, если количество нечетное
-	if (m_iNumUpgr > 0)
+	for (u32 Index = 0; Index < VisibleProperties.size(); Index += 2)
 	{
-		UIProperty* last_property = nullptr;
-		for (auto& ui_property : m_properties_ui)
+		UIProperty* Left = VisibleProperties[Index];
+		Left->FitToWidth(ColumnWidth, !CanExpand);
+		Left->SetWndPos(Fvector2().set(0.0f, Height));
+		Left->Show(true);
+		float RowHeight = Left->GetHeight();
+
+		if (Index + 1 < VisibleProperties.size())
 		{
-			if (ui_property->IsShown())
-			{
-				last_property = ui_property;
-			}
+			UIProperty* Right = VisibleProperties[Index + 1];
+			Right->FitToWidth(ColumnWidth, !CanExpand);
+			Right->SetWndPos(Fvector2().set(ColumnWidth, Height));
+			Right->Show(true);
+			RowHeight = std::max(RowHeight, Right->GetHeight());
 		}
-		
-		if (last_property)
-		{
-			if (m_iNumUpgr % 2 != 0)
-			{
-				height += last_property->GetWndSize().y;
-			}
-			else
-			{
-				height += last_property->GetWndSize().y;
-			}
-		}
+		Height += std::max(m_fnext_line_pos, RowHeight);
 	}
-	SetHeight(height);
+	SetHeight(Height);
 }
 
 void UIInvUpgPropertiesWnd::set_upgrade_info(Upgrade_type& upgrade)
