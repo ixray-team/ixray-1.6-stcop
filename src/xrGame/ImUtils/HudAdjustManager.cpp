@@ -11,6 +11,7 @@
 #include "../game_news.h"
 #include "../HudTorchLight.h"
 #include "../Weapon.h"
+#include "../CameraRig.h"
 
 extern bool hud_adj_crosshair;
 extern bool forceFPDraw;
@@ -67,6 +68,11 @@ static void HudAdjustDrawSaveButton()
 
 			file.w_fvector3(sect, "item_position", p_item->m_measures.m_item_attach[EHudOffsetAxis::eAxisPos]);
 			file.w_fvector3(sect, "item_orientation", p_item->m_measures.m_item_attach[EHudOffsetAxis::eAxisRot]);
+
+			if (!p_item->IkEnabled || pSettings->line_exist(p_item->m_sect_name, "hud_ik"))
+			{
+				file.w_bool(sect, "hud_ik", p_item->IkEnabled);
+			}
 		}
 		else
 		{
@@ -956,6 +962,12 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		{
 			ll = wpn->GetLightLaser();
 		}
+	}
+
+	if (!item->m_model_combined && CCameraRig::Enabled())
+	{
+		ImGui::Checkbox("Hand IK", &item->IkEnabled);
+		ImGui::SetItemTooltip("hud_ik: off = hud offsets (aim, safemode, collision...) move the whole HUD instead of the weapon through arm IK; sway, grip, draw and holster keep IK");
 	}
 
 	firedeps fd = {};
