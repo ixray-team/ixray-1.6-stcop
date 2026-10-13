@@ -129,6 +129,12 @@ void stalker_movement_manager_smart_cover::enter_smart_cover			()
 		}
 	}
 
+	// m_enter_* нужны только сразу после входа с анимацией (если цель сменилась во время неё).
+	// Раньше они не сбрасывались, и при следующем входе без анимации NPC "попадал" в старый лупхол:
+	// играл его анимации относительно точки входа нового лупхола (разворот и посадка в воздух).
+	m_enter_cover_id					= "";
+	m_enter_loophole_id					= "";
+
 	m_animation_selector->initialize	();
 }
 
@@ -138,7 +144,7 @@ MotionID stalker_movement_manager_smart_cover::select_animation			(bool& animati
 		return							(MotionID());
 
 	animation_movement_controller		= true;
-	VERIFY								(m_entering_smart_cover_with_animation || current_transition().animation().has_animation());
+	VERIFY								(m_entering_smart_cover_with_animation || selected_transition_animation().has_animation());
 	return								(m_enter_animation);
 }
 
@@ -152,6 +158,8 @@ void stalker_movement_manager_smart_cover::on_animation_end				()
 		if (!m_current.cover())
 			unbind_global_selector		();
 
+		m_enter_cover_id				= "";
+		m_enter_loophole_id				= "";
 		return;
 	}
 
@@ -203,7 +211,7 @@ void stalker_movement_manager_smart_cover::reach_enter_location			(u32 const& ti
 	}
 
 	Fvector								position;
-	m_target.cover()->object().XFORM().transform_tiny(position, m_current_transition->animation().position());
+	m_target.cover()->object().XFORM().transform_tiny(position, current_transition_animation().position());
 
 	u32									level_vertex_id	= ai().level_graph().vertex( u32(-1), position);
 	if (!accessible(level_vertex_id) || !accessible(position)) {
@@ -273,7 +281,7 @@ void stalker_movement_manager_smart_cover::reach_enter_location			(u32 const& ti
 
 	object().animation().global().target_matrix	(position, direction);
 
-	if (!current_transition().animation().has_animation()) {
+	if (!selected_transition_animation().has_animation()) {
 		enter_smart_cover				();
 		return;
 	}
@@ -289,7 +297,7 @@ void stalker_movement_manager_smart_cover::reach_enter_location			(u32 const& ti
 	VERIFY								(m_enter_cover_id != "");
 	VERIFY								(m_enter_loophole_id != "");
 
-	m_enter_animation					= smart_cast<IKinematicsAnimated*>(object().Visual())->ID_Cycle(current_transition().animation().animation_id());
+	m_enter_animation					= smart_cast<IKinematicsAnimated*>(object().Visual())->ID_Cycle(selected_transition_animation().animation_id());
 
 	CStalkerAnimationManager			&animation = object().animation();
 
@@ -445,6 +453,12 @@ stalker_movement_manager_smart_cover::transition_action const &stalker_movement_
 	return					(*m_current_transition);
 }
 
+
+stalker_movement_manager_smart_cover::animation_action const &stalker_movement_manager_smart_cover::selected_transition_animation	()
+{
+	current_transition		();
+	return					(current_transition_animation());
+}
 
 void stalker_movement_manager_smart_cover::cleanup_after_animation_selector	()
 {
