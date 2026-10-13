@@ -183,6 +183,7 @@ void	CUIRadialMenuWeapon::Draw()
 						itm.icon->SetIconVisual(icons_struct._3d_static_visual);
 						itm.icon->SetXYZ(icons_struct._3d_static_rotate);
 						itm.icon->SetScaleFactor(icons_struct._3d_static_scale);
+						itm.icon->SetIconOffset(icons_struct.IconOffset);
 						itm.icon->SetBonesVisible(item->object().Visual()->dcast_PKinematics());
 					}
 					else

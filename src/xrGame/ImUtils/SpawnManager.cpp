@@ -71,6 +71,7 @@ public:
 			Rotation.mul(M_PI / 180.0f);
 			Entry.Icon->SetXYZ(Rotation);
 			Entry.Icon->SetScaleFactor(READ_IF_EXISTS(pSettings, r_float, SectionName, "3d_static_scale", 1.0f));
+			Entry.Icon->SetIconOffset(READ_IF_EXISTS(pSettings, r_fvector2, SectionName, "3d_static_offset", Fvector2().set(0.0f, 0.0f)));
 		}
 		return Entry.Icon.get();
 	}

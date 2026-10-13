@@ -78,6 +78,7 @@ public:
 				bool		HasChild				(CUICellItem* item);
 	virtual		bool		EqualTo					(CUICellItem* itm);
 	IC const	Ivector2&	GetGridSize				()						{return m_grid_size;}; //size in grid
+	void SetGridSize(const Ivector2& Size);
 	IC			void		SetAccelerator			(int dik)				{m_accelerator=dik;};
 	IC			int			GetAccelerator			()		const			{return m_accelerator;};
 

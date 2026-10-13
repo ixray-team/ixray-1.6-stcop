@@ -679,6 +679,23 @@ bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	return inherited::OnKeyboardAction(dik, keyboard_action);
 }
 
+void CUICellItem::SetGridSize(const Ivector2& Size)
+{
+	if (Size.x < 1 || Size.y < 1)
+	{
+		return;
+	}
+	Frect TextureRect = GetUIStaticItem().GetTextureRect();
+	TextureRect.x2 = TextureRect.x1 + TextureRect.width() * Size.x / m_grid_size.x;
+	TextureRect.y2 = TextureRect.y1 + TextureRect.height() * Size.y / m_grid_size.y;
+	SetTextureRect(TextureRect);
+	m_grid_size = Size;
+	for (CUICellItem* Child : m_childs)
+	{
+		Child->SetGridSize(Size);
+	}
+}
+
 CUIDragItem* CUICellItem::CreateDragItem()
 {
 	CUIDragItem* tmp;
@@ -711,6 +728,7 @@ CUIDragItem* CUICellItem::CreateDragItem()
 		}
 		tmp->wnd()->SetXYZ(xyz);
 		tmp->wnd()->SetScaleFactor(GetScaleFactor());
+		tmp->wnd()->SetIconOffset(GetIconOffset());
 		tmp->wnd()->SetBonesVisible(GetVisual()->dcast_PKinematics());
 	}
 	else

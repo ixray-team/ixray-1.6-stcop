@@ -267,6 +267,7 @@ public:
 
 	Fvector m_3d_static_rotate{};
 	float m_3d_static_scale = 1.f;
+	Fvector2 IconOffset{};
 	const char* m_3d_static_visual_name = "";
 
 	SInvItemPlace m_ItemCurrPlace = {};

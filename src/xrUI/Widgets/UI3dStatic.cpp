@@ -203,7 +203,7 @@ void CUI3dStatic::Draw()
 
 		float right_item_offset, up_item_offset;
 
-		FromScreenToItem(rect.left + GetWidth() * 0.5f, rect.top + GetHeight() * 0.5f, right_item_offset, up_item_offset);
+		FromScreenToItem(rect.left + GetWidth() * (0.5f + IconOffset.x), rect.top + GetHeight() * (0.5f + IconOffset.y), right_item_offset, up_item_offset);
 
 		translate_matrix.identity();
 		translate_matrix.translate(right_item_offset, up_item_offset, fViewportDist);

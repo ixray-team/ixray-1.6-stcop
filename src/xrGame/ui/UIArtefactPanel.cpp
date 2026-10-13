@@ -43,6 +43,7 @@ void CUIArtefactPanel::InitIcons(const xr_vector<const CArtefact*>& artefacts)
 			tmp->SetIconVisual(icons_struct._3d_static_visual);
 			tmp->SetXYZ(icons_struct._3d_static_rotate);
 			tmp->SetScaleFactor(icons_struct._3d_static_scale);
+			tmp->SetIconOffset(icons_struct.IconOffset);
         }
         else
 			tmp->SetVisual(nullptr);

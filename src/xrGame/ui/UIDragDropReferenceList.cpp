@@ -109,6 +109,7 @@ void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 		ref->SetIconVisual(iitem->m_3d_static_visual_name);
 		ref->SetBonesVisible(iitem->object().Visual()->dcast_PKinematics());
 		ref->SetScaleFactor(iitem->m_3d_static_scale);
+		ref->SetIconOffset(iitem->IconOffset);
 		Fvector fRot = iitem->m_3d_static_rotate;
 		if (GetVerticalPlacement())
 		{
@@ -119,6 +120,7 @@ void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 		itm->SetIconVisual(iitem->m_3d_static_visual_name);
 		itm->SetBonesVisible(iitem->object().Visual()->dcast_PKinematics());
 		itm->SetScaleFactor(iitem->m_3d_static_scale);
+		itm->SetIconOffset(iitem->IconOffset);
 		if (GetVerticalPlacement())
 		{
 			fRot.x += deg2rad(90.f);
@@ -168,6 +170,7 @@ void CUIDragDropReferenceList::LoadItemTexture(const char* section, Ivector2 cel
 		ref->SetIconVisual(icons_struct._3d_static_visual);
 		ref->SetXYZ(icons_struct._3d_static_rotate);
         ref->SetScaleFactor(icons_struct._3d_static_scale);
+        ref->SetIconOffset(icons_struct.IconOffset);
 	}
 	else
 		ref->SetVisual(nullptr);
