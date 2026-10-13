@@ -118,38 +118,68 @@ void CCF_Skeleton::BuildState()
 	IKinematics* K		= PKinematics(pVisual);
 
 	const Fmatrix& L2W	= owner->XFORM();
-	xrSRWLockGuard guard(&build_lock, false);
-	if (vis_mask != K->LL_GetBonesVisible())
+
+	// Bone matrices are read without the build lock: the skeleton can be calculated on another
+	// thread right now, and a thread that calculates a skeleton takes this lock in its ray picks
+	static thread_local xr_vector<u16> BoneIds;
+	static thread_local xr_vector<Fmatrix> BoneTransforms;
 	{
-		vis_mask = K->LL_GetBonesVisible();
-		elements.resize(0);
-		bv_box.set(pVisual->getVisData().box);
-		bv_box.getsphere(bv_sphere.P, bv_sphere.R);
-		for (u16 i = 0; i < K->LL_BoneCount(); i++)
+		xrSRWLockGuard guard(&build_lock, false);
+		if (vis_mask != K->LL_GetBonesVisible())
 		{
-			if (!K->LL_GetBoneVisible(i))
+			vis_mask = K->LL_GetBonesVisible();
+			elements.resize(0);
+			bv_box.set(pVisual->getVisData().box);
+			bv_box.getsphere(bv_sphere.P, bv_sphere.R);
+			for (u16 i = 0; i < K->LL_BoneCount(); i++)
 			{
-				continue;
+				if (!K->LL_GetBoneVisible(i))
+				{
+					continue;
+				}
+				SBoneShape& shape = K->LL_GetData(i).shape;
+				if (SBoneShape::stNone == shape.type)
+				{
+					continue;
+				}
+				if (shape.flags.is(SBoneShape::sfNoPickable))
+				{
+					continue;
+				}
+				elements.emplace_back(i, shape.type);
 			}
-			SBoneShape& shape = K->LL_GetData(i).shape;
-			if (SBoneShape::stNone == shape.type)
-			{
-				continue;
-			}
-			if (shape.flags.is(SBoneShape::sfNoPickable))
-			{
-				continue;
-			}
-			elements.emplace_back(i, shape.type);
+		}
+
+		BoneIds.resize(0);
+		for (const SElement& E : elements)
+		{
+			BoneIds.push_back(E.elem_id);
 		}
 	}
 
-	for (ElementVecIt I=elements.begin(); I!=elements.end(); I++){
-		if (!I->valid())		continue;
+	BoneTransforms.resize(BoneIds.size());
+	for (size_t i = 0; i < BoneIds.size(); ++i)
+	{
+		if (BoneIds[i] != u16(-1))
+		{
+			K->LL_GetBoneLocalTransform(BoneIds[i], BoneTransforms[i]);
+		}
+	}
+
+	xrSRWLockGuard guard(&build_lock, false);
+	// Another thread has rebuilt the elements in the meantime
+	if (elements.size() != BoneIds.size())
+	{
+		return;
+	}
+
+	for (size_t i = 0; i < elements.size(); ++i)
+	{
+		ElementVecIt I = elements.begin() + i;
+		if (!I->valid() || I->elem_id != BoneIds[i])	continue;
 		SBoneShape&	shape		= K->LL_GetData(I->elem_id).shape;
 		Fmatrix					ME,T,TW;
-		Fmatrix Mbone;
-		K->LL_GetBoneLocalTransform(I->elem_id, Mbone);
+		Fmatrix Mbone = BoneTransforms[i];
 		VERIFY2( DET(Mbone)>EPS, (make_string<const char*>("0 scale bone matrix, %d \n", I->elem_id ) + dbg_object_full_dump_string( owner ) ).c_str()  );
 		if (CCF_bone_callback && owner == g_pGameLevel->CurrentViewEntity())
 			CCF_bone_callback(Mbone, CCF_bone_callback_param);

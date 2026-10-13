@@ -890,6 +890,10 @@ void CPHElement::BonesCallBack(CBoneInstance* B)
 
 	if (m_flags.test(flActivating))
 	{
+		// Skeletons are calculated on several threads. Activation moves bodies and geoms that
+		// share an ODE space with other shells.
+		static xrCriticalSection ActivationLock;
+		xrCriticalSectionGuard Guard(ActivationLock);
 		ActivatingPos(B->mTransform);
 		B->set_callback_overwrite(true);
 	}

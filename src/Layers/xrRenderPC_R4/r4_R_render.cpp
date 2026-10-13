@@ -121,6 +121,12 @@ void CRender::render_main	(bool deffered, bool zfill)
 				//. disabled scissoring (HW.Caps.bScissor?CPortalTraverser::VQ_SCISSOR:0)	// generate scissoring info
 				);
 		}
+
+		// Dynamic objects are collected before static geometry: worker threads calculate their
+		// skeletons while the static hierarchy is traversed
+		CollectMainDynamic(deffered, dont_test_sectors);
+		SkeletonUpdates.Launch();
+
 		// Determine visibility for static geometry hierrarhy
 		if(psDeviceFlags.test(rsDrawStatic))
 		{
@@ -159,174 +165,10 @@ void CRender::render_main	(bool deffered, bool zfill)
 			}
 		}
 		PROF_EVENT("add_dynamic")
-		const bool use_full_detail_distance = ps_r1_full_detail_distance_scale < 1.f;
-		const float full_detail_distance = use_full_detail_distance ?
-			std::max(100.f, g_pGamePersistent->Environment().CurrentEnv->far_plane * ps_r1_full_detail_distance_scale) : 0.f;
-		// Traverse frustums
-		for (u32 o_it=0; o_it<lstRenderablesMain.size(); o_it++)
-		{
-			ISpatial*	spatial	= lstRenderablesMain[o_it].get();
-			if	(0==spatial) continue;
+		SkeletonUpdates.Wait();
+		RenderMainDynamic();
 
-			if (use_full_detail_distance &&
-				Device.vCameraPosition.distance_to_sqr(spatial->sphere.P) > _sqr(full_detail_distance + spatial->sphere.R))
-			{
-				light* L = (spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE ?
-					(light*)spatial->dcast_Light() : nullptr;
-				if (!L || !L->flags.bHudMode)
-					continue;
-			}
-
-			spatial->spatial_updatesector();
-			CSector* sector = (CSector*)spatial->sector;
-			if	(0==sector) continue;
-
-			if ((spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
-			{
-				// hud lightsource
-				if(light* L = (light*)(spatial->dcast_Light()))
-				{
-					if(L->flags.bHudMode)
-					{
-						Lights.add_light(L);
-						continue;
-					}
-				}
-			}
-
-			if(!HOM.visible(spatial->sphere)) continue;
-			if (L_Glows && phase == PHASE_NORMAL)
-			{
-				if (CGlow* glow = spatial->dcast_CGlow())
-				{
-					L_Glows->add(glow);
-					continue;
-				}
-			}
-
-
-			if ((spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
-			{
-				// lightsource
-				if(light* L = (light*)(spatial->dcast_Light()))
-				{
-					if (L->get_LOD()>EPS_L&&!L->flags.bHudMode)
-						Lights.add_light(L);
-				}
-				continue;
-			}
-			if (dont_test_sectors)
-			{
-				if ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
-				{
-					// renderable
-					if (IRenderable* renderable = spatial->dcast_Renderable())
-					{
-						if (Device.vCameraPosition.distance_to_sqr(spatial->sphere.P) < _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
-						{
-							if (CalcSSADynamic(spatial->sphere.P, spatial->sphere.R) > spatial->ssa_dyn_factor && GetDistFromCamera(spatial->sphere.P) < spatial->ssa_d_cam)
-							{
-								if (deffered)
-								{
-									CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
-									if (pKin)
-									{
-										pKin->CalculateBones(true);
-										pKin->CalculateWallmarks();
-										//dbg_text_renderer(spatial->sphere.P);
-									}
-								}
-								if (spatial->sphere.R > 1.f)
-								{
-									// Rendering
-									set_Object(renderable);
-									renderable->renderable_Render();
-									set_Object(0);
-								}
-							}
-							if (spatial->sphere.R <= 1.f)
-							{
-								// Rendering
-								set_Object(renderable);
-								renderable->renderable_Render();
-								set_Object(0);
-							}
-						}
-					}
-				}
-				
-				if ((spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && (!deffered || LightingModeIsStaticRender()))
-				{
-					// renderable
-					if	(IRenderable* renderable = spatial->dcast_Renderable())
-					{
-						// Rendering
-						set_Object						(renderable);
-						renderable->renderable_Render();
-						set_Object						(0);
-					}
-				}
-			}
-			else
-			{
-				if	(PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector
-				for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
-				{
-					CFrustum&	view	= sector->r_frustums[v_it];
-					if (!view.testSphere_dirty(spatial->sphere.P,spatial->sphere.R))	continue;
-
-					if ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
-					{
-						// renderable
-						if	(IRenderable* renderable = spatial->dcast_Renderable())
-						{
-							if(Device.vCameraPosition.distance_to_sqr(spatial->sphere.P)<_sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
-							{
-								if(CalcSSADynamic(spatial->sphere.P,spatial->sphere.R)>spatial->ssa_dyn_factor&&GetDistFromCamera(spatial->sphere.P)<spatial->ssa_d_cam)
-								{
-									if(deffered)
-									{
-										CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
-										if(pKin)
-										{
-											pKin->CalculateBones(true);
-											pKin->CalculateWallmarks();
-										}
-									}
-									if(spatial->sphere.R>1.f)
-									{
-										// Rendering
-										set_Object						(renderable);
-										renderable->renderable_Render();
-										set_Object						(0);
-									}
-								}
-								if(spatial->sphere.R<=1.f)
-								{
-									// Rendering
-									set_Object						(renderable);
-									renderable->renderable_Render();
-									set_Object						(0);
-								}
-							}
-						}
-					}
-
-					if ((spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && (!deffered || LightingModeIsStaticRender()))
-					{
-						// renderable
-						if	(IRenderable* renderable = spatial->dcast_Renderable())
-						{
-							// Rendering
-							set_Object						(renderable);
-							renderable->renderable_Render();
-							set_Object						(0);
-						}
-					}
-				}
-			}
-		}
-		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))	
+		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))
 		{
 			PROF_EVENT("Render HUD");
 			g_hud->Render_Last();		// HUD
@@ -340,6 +182,148 @@ void CRender::render_main	(bool deffered, bool zfill)
 			PROF_EVENT("Render HUD");
 			g_hud->Render_Last();		// HUD
 		}
+	}
+}
+
+void CRender::CollectMainDynamic(bool deffered, bool dont_test_sectors)
+{
+	PROF_EVENT("collect_dynamic")
+	MainDynamic.clear();
+
+	const bool use_full_detail_distance = ps_r1_full_detail_distance_scale < 1.f;
+	const float full_detail_distance = use_full_detail_distance ?
+		std::max(100.f, g_pGamePersistent->Environment().CurrentEnv->far_plane * ps_r1_full_detail_distance_scale) : 0.f;
+	// Traverse frustums
+	for (u32 o_it=0; o_it<lstRenderablesMain.size(); o_it++)
+	{
+		ISpatial*	spatial	= lstRenderablesMain[o_it].get();
+		if	(0==spatial) continue;
+
+		if (use_full_detail_distance &&
+			Device.vCameraPosition.distance_to_sqr(spatial->sphere.P) > _sqr(full_detail_distance + spatial->sphere.R))
+		{
+			light* L = (spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE ?
+				(light*)spatial->dcast_Light() : nullptr;
+			if (!L || !L->flags.bHudMode)
+				continue;
+		}
+
+		spatial->spatial_updatesector();
+		CSector* sector = (CSector*)spatial->sector;
+		if	(0==sector) continue;
+
+		if ((spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
+		{
+			// hud lightsource
+			if(light* L = (light*)(spatial->dcast_Light()))
+			{
+				if(L->flags.bHudMode)
+				{
+					MainDynamic.push_back({ nullptr, L, nullptr });
+					continue;
+				}
+			}
+		}
+
+		if(!HOM.visible(spatial->sphere)) continue;
+		if (L_Glows && phase == PHASE_NORMAL)
+		{
+			if (CGlow* glow = spatial->dcast_CGlow())
+			{
+				L_Glows->add(glow);
+				continue;
+			}
+		}
+
+		if ((spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
+		{
+			// lightsource
+			if(light* L = (light*)(spatial->dcast_Light()))
+			{
+				if (L->get_LOD()>EPS_L&&!L->flags.bHudMode)
+					MainDynamic.push_back({ nullptr, L, nullptr });
+			}
+			continue;
+		}
+		if (dont_test_sectors)
+		{
+			CollectMainRenderable(spatial, deffered);
+		}
+		else
+		{
+			if	(PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector
+			for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
+			{
+				CFrustum&	view	= sector->r_frustums[v_it];
+				if (!view.testSphere_dirty(spatial->sphere.P,spatial->sphere.R))	continue;
+
+				CollectMainRenderable(spatial, deffered);
+			}
+		}
+	}
+}
+
+void CRender::CollectMainRenderable(ISpatial* spatial, bool deffered)
+{
+	if ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
+	{
+		// renderable
+		if (IRenderable* renderable = spatial->dcast_Renderable())
+		{
+			if (Device.vCameraPosition.distance_to_sqr(spatial->sphere.P) < _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
+			{
+				CKinematics* pKin = nullptr;
+				bool Render = spatial->sphere.R <= 1.f;
+				if (CalcSSADynamic(spatial->sphere.P, spatial->sphere.R) > spatial->ssa_dyn_factor && GetDistFromCamera(spatial->sphere.P) < spatial->ssa_d_cam)
+				{
+					if (deffered)
+					{
+						pKin = PCKinematics((dxRender_Visual*)renderable->renderable.visual);
+						if (pKin)
+						{
+							SkeletonUpdates.Add(pKin);
+						}
+					}
+					Render = true;
+				}
+
+				if (Render)
+				{
+					MainDynamic.push_back({ renderable, nullptr, pKin });
+				}
+			}
+		}
+	}
+
+	if ((spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && (!deffered || LightingModeIsStaticRender()))
+	{
+		// renderable
+		if	(IRenderable* renderable = spatial->dcast_Renderable())
+		{
+			MainDynamic.push_back({ renderable, nullptr, nullptr });
+		}
+	}
+}
+
+void CRender::RenderMainDynamic()
+{
+	for (const MainDynamicItem& Item : MainDynamic)
+	{
+		if (Item.Light)
+		{
+			Lights.add_light(Item.Light);
+			continue;
+		}
+
+		if (Item.Skeleton)
+		{
+			Item.Skeleton->CalculateWallmarks();
+		}
+
+		// Rendering
+		set_Object(Item.Renderable);
+		Item.Renderable->renderable_Render();
+		set_Object(0);
 	}
 }
 

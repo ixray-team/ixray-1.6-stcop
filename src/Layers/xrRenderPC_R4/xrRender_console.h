@@ -265,6 +265,7 @@ enum
 	RFLAG_DD_TEX_LOAD = (1<<19),
 	R4FLAG_TSHDOWS = (1 << 20),
 	R4FLAG_RAIN_PUDDLES = (1 << 21),
+	RFLAG_MT_SKELETONS = (1 << 22),
 };
 
 // Registers the renderer console commands. The game calls it when the renderer is loaded;
