@@ -1314,6 +1314,7 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		UIPickUpItemIcon->SetIconVisual(icons_struct._3d_static_visual);
 		UIPickUpItemIcon->SetXYZ(icons_struct._3d_static_rotate);
 		UIPickUpItemIcon->SetScaleFactor(icons_struct._3d_static_scale);
+		UIPickUpItemIcon->SetIconOffset(icons_struct.IconOffset);
 		UIPickUpItemIcon->SetBonesVisible(m_pPickUpItem->object().Visual()->dcast_PKinematics());
 	}
 	else
@@ -1837,6 +1838,7 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 					slot->SetIconVisual(icons_struct._3d_static_visual);
 					slot->SetXYZ(icons_struct._3d_static_rotate);
 					slot->SetScaleFactor(icons_struct._3d_static_scale);
+					slot->SetIconOffset(icons_struct.IconOffset);
 				}
 				else
 				{

@@ -160,6 +160,7 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 					m_stAmmoType1->SetVisual(icons_struct._3d_static_visual);
 					m_stAmmoType1->SetXYZ(icons_struct._3d_static_rotate);
 					m_stAmmoType1->SetScaleFactor(icons_struct._3d_static_scale);
+					m_stAmmoType1->SetIconOffset(icons_struct.IconOffset);
 				}
 				else
 				{
@@ -195,6 +196,7 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 					m_stAmmoType2->SetVisual(icons_struct._3d_static_visual);
 					m_stAmmoType2->SetXYZ(icons_struct._3d_static_rotate);
 					m_stAmmoType2->SetScaleFactor(icons_struct._3d_static_scale);
+					m_stAmmoType2->SetIconOffset(icons_struct.IconOffset);
 				}
 				else
 				{
@@ -230,6 +232,7 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 					m_stAmmoType3->SetVisual(icons_struct._3d_static_visual);
 					m_stAmmoType3->SetXYZ(icons_struct._3d_static_rotate);
 					m_stAmmoType3->SetScaleFactor(icons_struct._3d_static_scale);
+					m_stAmmoType3->SetIconOffset(icons_struct.IconOffset);
 				}
 				else
 				{

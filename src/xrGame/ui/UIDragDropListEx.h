@@ -92,6 +92,7 @@ public:
 	u32						back_color;
 
 			bool			HasCells			() const;
+	bool TryResizeItem(CUICellItem* Item, const Ivector2& Size);
 	const	Ivector2&		CellsCapacity		();
 			void			SetCellsCapacity	(const Ivector2 c);
 			void			SetStartCellsCapacity(const Ivector2 c){m_orig_cell_capacity=c;SetCellsCapacity(c);};
@@ -200,6 +201,7 @@ protected:
 
 	void						GetTexUVLT			(Fvector2& uv, u32 col, u32 row, u8 select_mode);
 	void						ReinitSize			();
+	void UpdateItemBounds(CUICellItem* Item, const Ivector2& Position);
 	u32							GetCellsInRange		(const Irect& rect, UI_CELLS_VEC& res);
 
 public:							

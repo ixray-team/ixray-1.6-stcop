@@ -495,6 +495,64 @@ void CUIDragDropListEx::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 	}
 }
 
+bool CUIDragDropListEx::TryResizeItem(CUICellItem* Item, const Ivector2& Size)
+{
+	if (!Item || Size.x < 1 || Size.y < 1 || m_drag_item)
+	{
+		return false;
+	}
+	xrCriticalSectionGuard Guard(m_container->csUi);
+	if (!IsOwner(Item) || Item->OwnerList() != this || !Item->IsOwnerListValid())
+	{
+		return false;
+	}
+	Ivector2 Position = m_container->GetItemPos(Item);
+	Ivector2 OldSize = Item->GetGridSize();
+	Ivector2 NewSize = Size;
+	if (GetVerticalPlacement())
+	{
+		std::swap(OldSize.x, OldSize.y);
+		std::swap(NewSize.x, NewSize.y);
+	}
+	for (int X = 0; X < NewSize.x; ++X)
+	{
+		for (int Y = 0; Y < NewSize.y; ++Y)
+		{
+			const Ivector2 CellPosition = Ivector2().set(Position.x + X, Position.y + Y);
+			if (!m_container->ValidCell(CellPosition))
+			{
+				return false;
+			}
+			const auto& Cell = m_container->GetCellAt(CellPosition);
+			if (Cell.m_item && Cell.m_item != Item)
+			{
+				return false;
+			}
+		}
+	}
+	for (int X = 0; X < OldSize.x; ++X)
+	{
+		for (int Y = 0; Y < OldSize.y; ++Y)
+		{
+			// Resizing keeps the item attached; Clear() would invalidate its owner.
+			auto& Cell = m_container->GetCellAt(Ivector2().set(Position.x + X, Position.y + Y));
+			Cell.m_item = nullptr;
+			Cell.m_bMainItem = false;
+		}
+	}
+	Item->SetGridSize(Size);
+	for (int X = 0; X < NewSize.x; ++X)
+	{
+		for (int Y = 0; Y < NewSize.y; ++Y)
+		{
+			m_container->GetCellAt(Ivector2().set(Position.x + X, Position.y + Y)).SetItem(Item, X == 0 && Y == 0);
+		}
+	}
+	m_container->UpdateItemBounds(Item, Position);
+	m_container->ValidateSelector();
+	return true;
+}
+
 void CUIDragDropListEx::Compact()
 {
 	xrCriticalSectionGuard guard(m_container->csUi);
@@ -671,6 +729,7 @@ void CUIDragDropListEx::SetItem(CUICellItem* itm, Ivector2 cell_pos) // start at
 
     const PIItem iitem = static_cast<PIItem>(itm->m_pData);
     itm->SetScaleFactor(iitem->m_3d_static_scale);
+    itm->SetIconOffset(iitem->IconOffset);
     Fvector fRot = iitem->m_3d_static_rotate;
     if (GetVerticalPlacement())
         fRot.x += deg2rad(90.f);
@@ -928,36 +987,35 @@ void CUICellContainer::PlaceItemAtPos(CUICellItem* itm, Ivector2& cell_pos)
 			C.SetItem		(itm,(x==0&&y==0));
 		}
 	}
-	// without this will be double compression on wide screens
-	// solution works only for "quads" cells
+	UpdateItemBounds(itm, cell_pos);
+	AttachChild(itm);
+	itm->OnAfterChild(m_pParentDragDropList);
+}
+
+void CUICellContainer::UpdateItemBounds(CUICellItem* Item, const Ivector2& Position)
+{
+	Ivector2 Size = Item->GetGridSize();
 	if (m_pParentDragDropList->GetVerticalPlacement())
 	{
-		itm->SetWndSize            ( Fvector2().set( (m_cellSize.y*cs.x),        (m_cellSize.y*cs.y)         )    );
+		std::swap(Size.x, Size.y);
+		Item->SetWndSize(Fvector2().set(m_cellSize.y * Size.x, m_cellSize.y * Size.y));
 	}
 	else
 	{
-		itm->SetWndSize            ( Fvector2().set( (m_cellSize.x*cs.x),        (m_cellSize.y*cs.y)         )    );    
+		Item->SetWndSize(Fvector2().set(m_cellSize.x * Size.x, m_cellSize.y * Size.y));
 	}
-
-	if (!m_pParentDragDropList->GetVirtualCells()) {
-		// FX: (Отступ + размер) * позиция грида... Логично
-		Fvector2 ValidItemPos = { float((m_cellSpacing.x + m_cellSize.x) * cell_pos.x), float(((m_cellSpacing.y + m_cellSize.y) * cell_pos.y)) };
-		itm->SetWndPos(ValidItemPos);
+	if (m_pParentDragDropList->GetVirtualCells())
+	{
+		Fvector2 AlignedPosition = m_pParentDragDropList->GetWndSize();
+		AlignedPosition.sub(Fvector2().set(m_cellSize.x * Size.x, m_cellSize.y * Size.y));
+		AlignedPosition.div(2.0f);
+		Item->SetWndPos(AlignedPosition);
 	}
 	else
 	{
-		Fvector2 AlignPos = m_pParentDragDropList->GetWndSize();;
-
-		// FX: We get the coordinates from the center of the window, taking into account the size of the item
-		AlignPos.sub(Fvector2().set(m_cellSize.x * cs.x,m_cellSize.y * cs.y));
-		AlignPos.div(2);
-
-		itm->SetWndPos(AlignPos);
+		Item->SetWndPos(Fvector2().set((m_cellSpacing.x + m_cellSize.x) * Position.x,
+			(m_cellSpacing.y + m_cellSize.y) * Position.y));
 	}
-
-
-	AttachChild				(itm);
-	itm->OnAfterChild		(m_pParentDragDropList);
 }
 
 CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)

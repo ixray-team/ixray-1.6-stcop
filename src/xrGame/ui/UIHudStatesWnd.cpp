@@ -1527,6 +1527,7 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
         m_ui_weapon_icon->SetVisual(icons_struct._3d_static_visual);
         m_ui_weapon_icon->SetXYZ(icons_struct._3d_static_rotate);
         m_ui_weapon_icon->SetScaleFactor(icons_struct._3d_static_scale);
+        m_ui_weapon_icon->SetIconOffset(icons_struct.IconOffset);
     }
     else
     {
@@ -1548,6 +1549,7 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
         m_ui_weapon_icon->SetVisual(icons_struct._3d_static_visual);
 
         m_ui_weapon_icon->SetScaleFactor(icons_struct._3d_static_scale);
+        m_ui_weapon_icon->SetIconOffset(icons_struct.IconOffset);
         Fvector fRot = icons_struct._3d_static_rotate;
         m_ui_weapon_icon->SetXYZ(fRot);
     }
