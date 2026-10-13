@@ -373,6 +373,8 @@ bool	R_constant_table::parse	(void* _desc, u32 destination)
 			{
 				D3D_SHADER_BUFFER_DESC TableDesc;
 				pTable->GetDesc(&TableDesc);
+				if (TableDesc.Type == D3D_CT_RESOURCE_BIND_INFO)
+					continue;
 
 				D3D_SHADER_INPUT_BIND_DESC ResDesc{};
 				HRESULT hr = pReflection->GetResourceBindingDescByName(TableDesc.Name, &ResDesc);

@@ -546,22 +546,31 @@ public:
 	virtual void	Execute	(const char* args)
 	{
 		tokens					= vid_quality_token;
-
-		inherited::Execute		(args);
-
-		// The renderer library is loaded once at startup. Later calls (user.ltx after -r2/-r4, the
-		// options menu) only change the saved choice: the flags select the device API and game
-		// systems of the running renderer, and the new renderer starts after a restart.
-		if (Device.m_pRender != nullptr)
+		if (g_dedicated_server)
 		{
+			inherited::Execute	(args);
 			return;
 		}
 
-		//	0 - r1
-		//	1..3 - r2
-		//	4 - r3
-		psDeviceFlags.set(rsR2, std::string("renderer_r2") == tokens[renderer_value].name);
-		psDeviceFlags.set(rsR4, std::string("renderer_r4") == tokens[renderer_value].name);
+		ELightingMode mode;
+		if (!LightingModeParseToken(args, mode))
+		{
+			InvalidSyntax();
+			return;
+		}
+
+		inherited::Execute		(LightingModeCanonicalToken(mode));
+		LightingModeApply		(mode, !g_lighting_mode_locked);
+	}
+
+	virtual void	Status	(TStatus& S)
+	{
+		if (g_dedicated_server)
+		{
+			inherited::Status(S);
+			return;
+		}
+		xr_strcpy(S, LightingModeCanonicalToken(g_lighting_mode_cfg));
 	}
 
 	virtual void	Save	(IWriter *F)	

@@ -208,9 +208,7 @@ ICF void xrSkin4W(vertRender* D,vertBoned4W* S, u32 vCount, CBoneInstance* BI)
 
 shared_str s_bones_array_const;
 
-#ifdef USE_DX11
 shared_str s_bones_array_const_old;
-#endif // USE_DX11
 
 void CSkeletonX::Copy(dxRender_Visual* V)
 {
@@ -271,7 +269,6 @@ void CSkeletonX::Render(float LOD)
 
 ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 {
-#ifdef USE_DX11
 	struct arraybuff{Fvector4 buff[3];};
 
 	arraybuff* array = 0;
@@ -320,18 +317,6 @@ ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 			};
 		}
 	}
-#else
-	ref_constant array = RCache.get_c(s_bones_array_const);
-	for (u16 bid = 0; bid < bonecount; bid++)
-	{
-		Fmatrix& M = BI[bid].mRenderTransform;
-		u32 id = u32(bid * 3);
-
-		RCache.set_ca(&*array, id, M.i.x, M.j.x, M.k.x, M.c.x);
-		RCache.set_ca(&*array, id + 1, M.i.y, M.j.y, M.k.y, M.c.y);
-		RCache.set_ca(&*array, id + 2, M.i.z, M.j.z, M.k.z, M.c.z);
-	}
-#endif // USE_DX11
 }
 
 void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
@@ -339,7 +324,6 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 	//PROF_EVENT("CSkeletonX::_Render");
 	bool phase_normal = RImplementation.phase == RImplementation.PHASE_NORMAL;
 
-#ifdef USE_DX11
 	if(phase_normal)
 	{
 		Parent->StoreVisualMatrix(RCache.xforms.m_w);
@@ -347,7 +331,6 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 		if(RenderMode != RM_SINGLE)
 			RCache.set_xform_world_old(Parent->mOldWorldMartrix);
 	}
-#endif
 
 	//RCache.stat.r.s_dynamic.add		(vCount);
 	switch (RenderMode)
@@ -360,22 +343,16 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 		{
 			//PROF_EVENT("RM_SINGLE")
 			CBoneInstance& B = Parent->bone_instances[u16(RMS_boneid)];
-#ifdef USE_DX11
 			const Fmatrix& R = phase_normal ? B.mRenderTransform_tmp : B.mRenderTransform;
-#else
-			const Fmatrix& R = B.mRenderTransform;
-#endif
 			Fmatrix	W;	W.mul_43(RCache.xforms.m_w, R);
 
 			RCache.set_xform_world	(W);
 
-#ifdef USE_DX11
 			if(phase_normal)
 			{
 				Fmatrix	O; O.mul_43(Parent->mOldWorldMartrix, B.mRenderTransform_old);
 				RCache.set_xform_world_old(O);
 			}
-#endif
 
 			RCache.set_Geometry(hGeom);
 			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, vCount, iOffset, pCount);
@@ -457,9 +434,7 @@ void CSkeletonX::Load(const char* N, IReader* data, u32 dwFlags)
 void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount) 
 {	
 	s_bones_array_const = "sbones_array";
-#ifdef USE_DX11
 	s_bones_array_const_old = "sbones_array_old";
-#endif // USE_DX11
 
 	// Load vertices
 	bool FoundedChunk = !!data->find_chunk(OGF_VERTICES);
@@ -470,9 +445,7 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 	u16 hw_bones_cnt = 65; // 75 // u16((256 - 22 - 3) / 3);
 	u16 sw_bones_cnt = 0;
 
-#ifdef USE_DX11
 	hw_bones_cnt = 254;
-#endif
 
 	buffer_vector<u16> bids(_alloca(hw_bones_cnt * sizeof(u16)), hw_bones_cnt);
 	//если поймаете исключение замените на xr_vector
@@ -810,11 +783,7 @@ struct vertHW_4W
 template<typename VertSrc, typename VertHW, typename DeclT, size_t Size, typename VerticesContainer>
 ICF void _Load_hw_generic(CSkeletonX& V, void* _verts_, DeclT(&decl)[Size], VerticesContainer& container)
 {
-#ifdef USE_DX11
 	u16 Multiplier = 1;
-#else
-	u16 Multiplier = 3;
-#endif
 	// Back up vertex data
 	u32 size = V.vCount * sizeof(VertSrc);
 	u32 crc = crc32(_verts_, size);

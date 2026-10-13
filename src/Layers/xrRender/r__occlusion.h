@@ -27,11 +27,7 @@ private:
 	xr_vector<_Q>			used;		// id's are generated from this and it is cleared from back only
 	xr_vector<u32>			fids;		// free id's
 public:
-#ifdef USE_DX11
 	typedef	u64		occq_result;
-#else //USE_DX11
-	typedef	u32		occq_result;
-#endif
 public:
 	R_occlusion		();
 	~R_occlusion	();

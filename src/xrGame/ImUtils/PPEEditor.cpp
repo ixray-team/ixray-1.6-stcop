@@ -1741,19 +1741,9 @@ void RenderPPEEditorUI_TexturePreview(IRHISurface* pTexture, IRHIShaderResourceV
 
 	ImVec2 preview_size(width * scale, height * scale);
 
-	if (GRHI->APILevel == D3D9)
+	if (pView && pView->GetRawSRV())
 	{
-		if (pTexture->GetRawTexture())
-		{
-			ImGui::Image(pTexture->GetRawTexture(), preview_size);
-		}
-	}
-	else
-	{
-		if (pView && pView->GetRawSRV())
-		{
-			ImGui::Image(pView->GetRawSRV(), preview_size);
-		}
+		ImGui::Image(pView->GetRawSRV(), preview_size);
 	}
 }
 
@@ -2378,7 +2368,7 @@ void RequestHandler_PPEEditor(const SRequestData& req)
 				{
 					g_ppe_tex_browser.p_preview = pSurface;
 
-					if (GRHI->APILevel != D3D9)
+					if (GRHI->APILevel == D3D11)
 					{
 						RHIShaderResourceViewDesc desc_srv;
 						desc_srv.MipLevels = 1;

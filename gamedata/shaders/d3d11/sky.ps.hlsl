@@ -46,6 +46,7 @@ void main(in v2p I, out sky O)
     sky *= L_sky_color.xyz;
 #endif
 
+#ifndef USE_R1_STATIC_LIGHTING
 	float diff_green_red = L_sun_color.g - L_sun_color.r;
 	float diff_green_blue = L_sun_color.g - L_sun_color.b;
 	float amount = (diff_green_red + 0.05f) + (diff_green_blue - 0.05f);
@@ -56,7 +57,11 @@ void main(in v2p I, out sky O)
 		sky += rb.rgb * amount * 8.f;
 	}
 
-#ifdef USE_LEGACY_SKY_TONEMAP
+#endif
+
+#ifdef USE_R1_STATIC_LIGHTING
+	O.Color = float4(sky, 0.0f);
+#elif defined(USE_LEGACY_SKY_TONEMAP)
 	O.Color = float4(detonemap(sky * 0.66f), 0.0f);
 #else
 	O.Color = float4(GammaToLinear(sky), 0.0f);

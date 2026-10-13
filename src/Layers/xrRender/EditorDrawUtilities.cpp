@@ -3,7 +3,7 @@
 #include "stdafx.h"
 
 
-#include <FlexibleVertexFormat.h>
+#include "../../xrCore/FVFLegacy.h"
 
 #include "../../xrEngine/GameFont.h"
 #include "EditorDrawUtilities.h"

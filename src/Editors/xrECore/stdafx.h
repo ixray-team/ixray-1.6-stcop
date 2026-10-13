@@ -4,9 +4,8 @@
 #pragma once
 // DirectX headers
 
-#define USE_DX11 1
-#include <d3d9.h>
 #include <d3d11.h>
+#include "../../xrCore/D3DLegacy.h"
 #include <d3d11shader.h>
 
 #include "../xrEUI/stdafx.h"
@@ -34,11 +33,6 @@
 #define smart_cast fast_dynamic_cast
 
 //#define MU_LODS_TRUE
-#define R_R1    1
-#define R_R2    2
-#define R_R4    4
-#define RENDER  R_R4
-
 #define PropertyGP(a,b)	__declspec( property( get=a, put=b ) )
 #define THROW			FATAL("THROW");
 #define THROW2(a)		R_ASSERT(a);

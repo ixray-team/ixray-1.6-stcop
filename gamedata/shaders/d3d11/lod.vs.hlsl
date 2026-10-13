@@ -1,3 +1,6 @@
+#ifdef USE_R1_STATIC_LIGHTING
+#include "r1_lod.vs.hlsl"
+#else
 #include "common.hlsli"
 #define L_SCALE 3.1f
 
@@ -42,3 +45,5 @@ void main(in v_bolbord I, out p_bilbord O)
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 }
 
+
+#endif

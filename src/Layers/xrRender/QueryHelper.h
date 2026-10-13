@@ -2,7 +2,6 @@
 #define	QueryHelper_included
 #pragma once
 
-#ifdef USE_DX11
 
 IC HRESULT CreateQuery ( ID3DQuery **ppQuery, D3DQUERYTYPE Type)
 {
@@ -39,28 +38,5 @@ IC HRESULT EndQuery( ID3DQuery *pQuery)
 	return S_OK;
 }
 
-#else //USE_DX11
-
-IC HRESULT CreateQuery ( ID3DQuery **ppQuery, D3DQUERYTYPE Type)
-{
-	return RDevice->CreateQuery(Type, ppQuery);
-}
-
-IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize, u32 Flags = 0)
-{
-	return pQuery->GetData( pData, DataSize, D3DGETDATA_FLUSH);
-}
-
-IC HRESULT BeginQuery( ID3DQuery *pQuery)
-{
-	return pQuery->Issue( D3DISSUE_BEGIN);
-}
-
-IC HRESULT EndQuery( ID3DQuery *pQuery)
-{
-	return pQuery->Issue( D3DISSUE_END);
-}
-
-#endif
 
 #endif	//	QueryHelper_included

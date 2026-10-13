@@ -79,3 +79,13 @@ function l_special_impl(shader, vs, t_base)
     shader:dx10sampler("smp_base")
     shader:dx10sampler("smp_nofilter")
 end
+
+if GetShaderOption("USE_R1_STATIC_LIGHTING") then
+    r1_static = true
+
+    l_special = nil
+
+    function normal(shader, t_base, t_second, t_detail)
+        r1.water(shader, tex_base, false, false)
+    end
+end

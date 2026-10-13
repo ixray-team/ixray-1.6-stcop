@@ -40,7 +40,6 @@ namespace RHIUtils
 		return true;
 	}
 
-	// Will return nullptr on DX9
 	inline bool CreateConstantBuffer(IRHIBuffer** ppBuffer, u32 DataSize)
 	{
 		RHIBufferDesc desc = {};

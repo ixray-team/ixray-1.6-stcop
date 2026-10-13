@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "r1_GlowManager.h"
 
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../xrRender/FBasicVisual.h"
@@ -15,6 +16,7 @@
 #include "../xrRender/SkeletonCustom.h"
 #include "../xrRender/EditorRenderHost.h"
 #include "../../xrEngine/IGame_Actor.h"
+#include "r1_LightPPA.h"
 
 ICF	float	CalcSSADynamic				(const Fvector& C, float R)
 {
@@ -192,6 +194,15 @@ void CRender::render_main	(bool deffered, bool zfill)
 			}
 
 			if(!HOM.visible(spatial->sphere)) continue;
+			if (L_Glows && phase == PHASE_NORMAL)
+			{
+				if (CGlow* glow = spatial->dcast_CGlow())
+				{
+					L_Glows->add(glow);
+					continue;
+				}
+			}
+
 
 			if ((spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
 			{
@@ -243,7 +254,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 					}
 				}
 				
-				if ((spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && !deffered)
+				if ((spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && (!deffered || LightingModeIsStaticRender()))
 				{
 					// renderable
 					if	(IRenderable* renderable = spatial->dcast_Renderable())
@@ -300,7 +311,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 						}
 					}
 
-					if ((spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && !deffered)
+					if ((spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && (!deffered || LightingModeIsStaticRender()))
 					{
 						// renderable
 						if	(IRenderable* renderable = spatial->dcast_Renderable())
@@ -486,6 +497,12 @@ void CRender::Render()
 	if (EditorMode && !EditorIsLit())
 	{
 		EditorRenderUnlit();
+		return;
+	}
+
+	if (!EditorMode && LightingModeIsStaticRender())
+	{
+		render_static();
 		return;
 	}
 

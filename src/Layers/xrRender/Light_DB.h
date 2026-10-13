@@ -19,9 +19,7 @@ public:
 	void					Load				(IReader*	fs	);
 	// Sun and rain lights for the editors, which have no level light chunk
 	void					LoadEditor			();
-#if RENDER != R_R1
 	void					LoadHemi			();
-#endif
 	void					Unload				();
 
 	light*					Create				();

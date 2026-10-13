@@ -68,10 +68,8 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		Fvector& f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
 		float factor_visual = factor / 2.f + .5f;
 		u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
-#if RENDER != R_R1
 		f_rain_color.mul(0.9f);
 		factor_visual *= 0.8f;
-#endif // RENDER != R_R1
 		_IndexStream& _IS = RCache.Index;
 		RCache.set_Shader(DM_Drop->shader);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);

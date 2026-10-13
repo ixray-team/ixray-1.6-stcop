@@ -305,7 +305,6 @@ public:
 			Fvector3		t1,t2;
 			t1.sub					(points[P.points[0]], points[P.points[1]]);
 			t2.sub					(points[P.points[0]], points[P.points[2]]);
-		#ifdef USE_DX11
 			float			len;
 
 			P.planeN.crossproduct	(t1,t2);
@@ -349,26 +348,6 @@ public:
 				Fplane	p301;	p301.build(p3,p0,p1);
 				VERIFY	(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
 			}
-		#else
-			//	HACK: Igor: just make sure we calculated the plane
-
-			P.planeN.crossproduct	(t1,t2).normalize();
-			P.planeD			= -	P.planeN.dotproduct(points[P.points[0]]);
-
-			// verify
-			if (_debug)
-			{
-				Fvector&		p0	= points[P.points[0]];
-				Fvector&		p1	= points[P.points[1]];
-				Fvector&		p2	= points[P.points[2]];
-				Fvector&		p3	= points[P.points[3]];
-				Fplane	p012;	p012.build(p0,p1,p2);
-				Fplane	p123;	p123.build(p1,p2,p3);
-				Fplane	p230;	p230.build(p2,p3,p0);
-				Fplane	p301;	p301.build(p3,p0,p1);
-				VERIFY	(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
-			}
-		#endif
 		}
 	}
 

@@ -6,6 +6,7 @@
 #include "Actor.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "../xrEngine/LightAnimLibrary.h"
+#include "../xrEngine/EngineAPI.h"
 #include "Level.h"
 #include "game_cl_base.h"
 #include "../xrEngine/IGame_Persistent.h"
@@ -408,7 +409,7 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 	m_zone_flags.set			(eUseOnOffTime,	(m_TimeToDisable!=0)&&(m_TimeToEnable!=0) );
 
 	//добавить источники света
-	bool br1 = (0==psDeviceFlags.test(rsR2|rsR4));
+	bool br1 = LightingModeIsStatic();
 	
 	
 	bool render_ver_allowed = !br1 || (br1&&m_zone_flags.test(eIdleLightR1)) ;

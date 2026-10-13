@@ -1,10 +1,5 @@
 #include "RHI.h"
 
-#include "D3D9/Device.h"
-#include "D3D9/DX9ShaderDeclaration.h"
-#include "D3D9/DX9ShaderResourceStateCache.h"
-#include "D3D9/RHIStateManagerDX9.h"
-
 #include "D3D11/Device.h"
 #include "D3D11/DX11GPUEvents.h"
 #include "D3D11/DX11ShaderDeclaration.h"
@@ -78,13 +73,6 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 
 	switch (NewAPILevel)
 	{
-		case ERHI_API_LAYER::D3D9:  
-		{
-			DevicePtr = new InternalDevice9;  
-			ShaderResourceCache = new DX9ShaderResourceStateCache;
-			StateManager = new RHIStateManagerDX9();
-			break;
-		}
 		case ERHI_API_LAYER::D3D11:
 		{
 			DevicePtr = new InternalDevice11;
@@ -167,10 +155,6 @@ IRHIStateManager* CRHI::CreateStateManager(void* context)
 			: static_cast<ID3D11DeviceContext*>(GetContext());
 
 		return new RHIStateManagerDX11(dxContext);
-	}
-	else if (APILevel == ERHI_API_LAYER::D3D9)
-	{
-		return new RHIStateManagerDX9();
 	}
 
 	VERIFY(!"Unsupported");
@@ -431,10 +415,6 @@ IRHIShaderDeclaration* CRHI::CreateDecl(const RHIInputElementDesc* Desc, size_t 
 	{
 		Decl = new DX11ShaderDeclaration(Desc, DeclSize);
 	}
-	else
-	{
-		Decl = new DX9ShaderDeclaration(Desc, DeclSize);
-	}
 	
 	return Decl;
 }
@@ -519,11 +499,6 @@ void CRHI::ClearVertexBuffer(u32 vb_stride)
 		u32	iOffset = 0;
 		Context->IASetVertexBuffers(0, 1, nullptr, &vb_stride, &iOffset);
 	}
-	else
-	{
-		IDirect3DDevice9* DxDevice = (IDirect3DDevice9*)DevicePtr->RawDevice;
-		CHK_DX(DxDevice->SetStreamSource(0, nullptr, 0, vb_stride));
-	}
 }
 
 void CRHI::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
@@ -558,20 +533,10 @@ void CRHI::ClearIndexBuffer()
 		ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
 		Context->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
 	}
-	else
-	{
-		IDirect3DDevice9* DxDevice = (IDirect3DDevice9*)DevicePtr->RawDevice;
-		CHK_DX(DxDevice->SetIndices(nullptr));
-	}
 }
 
 bool CRHI::IsTessPass() const
 {
-	if (APILevel == ERHI_API_LAYER::D3D9)
-	{
-		return false;
-	}
-
 	return Shaders[(size_t)ERHI_SHADER_TYPE::HS] || Shaders[(size_t)ERHI_SHADER_TYPE::DS];
 }
 
@@ -629,17 +594,6 @@ void CRHI::SetShader(void* NativeShader, ERHI_SHADER_TYPE Type)
 			case ERHI_SHADER_TYPE::DS: Context->DSSetShader((ID3D11DomainShader*)NativeShader, nullptr, 0); break;
 			case ERHI_SHADER_TYPE::CS: Context->CSSetShader((ID3D11ComputeShader*)NativeShader, nullptr, 0); break;
 			default: break;
-		}
-	}
-	else if (APILevel == ERHI_API_LAYER::D3D9)
-	{
-		IDirect3DDevice9* DxDevice = (IDirect3DDevice9*)DevicePtr->RawDevice;
-
-		switch (Type)
-		{
-			case ERHI_SHADER_TYPE::PS: CHK_DX(DxDevice->SetPixelShader((IDirect3DPixelShader9*)NativeShader)); break;
-			case ERHI_SHADER_TYPE::VS: CHK_DX(DxDevice->SetVertexShader((IDirect3DVertexShader9*)NativeShader)); break;
-			default: break; // DX9 supports only VS and PS in this context
 		}
 	}
 

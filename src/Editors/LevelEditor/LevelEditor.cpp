@@ -130,6 +130,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	Console->ExecuteScript(Console->ConfigFile);
 
 	Console->Hide();
+	g_lighting_mode = ELightingMode::Dynamic;
 
 	splash::SetProgressStatus(75, "Performing Final UI Setup");
 

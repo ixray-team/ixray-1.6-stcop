@@ -135,7 +135,7 @@ jobs:
         run: |
           cmake \
             --build build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} \
-            --target xrEngine xrRender_R1 xrRender_R2 xrGame \
+            --target xrEngine xrGame \
             --config ${{ matrix.config }} \
             -j$(nproc)
 

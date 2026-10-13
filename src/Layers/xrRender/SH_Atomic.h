@@ -5,11 +5,7 @@
 #include "../../xrCore/xr_resource.h"
 #include "tss_def.h"
 
-#ifdef USE_DX11
 #	include "../xrRenderDX10/StateManager/dx10State.h"
-#else
-#	include "../xrRenderDX9/xrD3DDefs.h"
-#endif
 
 #pragma pack(push,4)
 
@@ -17,7 +13,6 @@
 //////////////////////////////////////////////////////////////////////////
 // Atomic resources
 //////////////////////////////////////////////////////////////////////////
-#ifdef USE_DX11
 struct RENDER_API SInputSignature : public xr_resource_flagged
 {
 	ID3DBlob*							signature;
@@ -25,19 +20,16 @@ struct RENDER_API SInputSignature : public xr_resource_flagged
 	~SInputSignature();
 };
 typedef	resptr_core<SInputSignature,resptr_base<SInputSignature> >	ref_input_sign;
-#endif //USE_DX11
 
 struct RENDER_API SVS : public xr_resource_uniq
 {
 	ID3DVertexShader*					vs;
 	R_constant_table					constants;
-#ifdef USE_DX11
 	ref_input_sign						signature;
 	// full compiled VS bytecode (kept so editors/tools can reflect inputs)
 	ID3DBlob*							vs_code;
 	u32									instance_buffer_slot = u32(-1);
 	u32									editor_instance_slot = u32(-1);
-#endif //USE_DX11
 	SVS				();
 	~SVS			();
 };
@@ -52,7 +44,6 @@ struct RENDER_API SPS : public xr_resource_uniq
 };
 typedef	resptr_core<SPS,resptr_base<SPS> > ref_ps;
 
-#ifdef USE_DX11
 //////////////////////////////////////////////////////////////////////////
 struct RENDER_API SGS : public xr_resource_uniq
 {
@@ -86,7 +77,6 @@ struct RENDER_API SCS : public xr_resource_uniq
 };
 typedef	resptr_core< SCS, resptr_base<SCS> >	ref_cs;
 
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 struct RENDER_API SState : public xr_resource_flagged
@@ -100,7 +90,6 @@ typedef	resptr_core<SState,resptr_base<SState> >	ref_state;
 //////////////////////////////////////////////////////////////////////////
 struct RENDER_API SDeclaration : public xr_resource_flagged
 {
-#ifdef USE_DX11
 	//	Maps input signature to input layout
 	xr_map<ID3DBlob*, ID3DInputLayout*> vs_to_layout;
 	xr_vector<RHIInputElementDesc> dx10_dcl_code;
@@ -108,10 +97,6 @@ struct RENDER_API SDeclaration : public xr_resource_flagged
 	//	Used as the source for VS-input mapping so repeated patches to
 	//	dx10_dcl_code don't degrade the channel set.
 	xr_vector<RHIInputElementDesc> dx10_dcl_code_pristine;
-#else //USE_DX11	//	Don't need it: use ID3DInputLayout instead
-					//	which is per ( declaration, VS input layout) pair
-	IDirect3DVertexDeclaration9*		dcl;
-#endif
 
 	//	Use this for DirectX10 to cache DX9 declaration for comparison purpose only
 	xr_vector<D3DVERTEXELEMENT9>		dcl_code;

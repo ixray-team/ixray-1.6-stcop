@@ -16,6 +16,9 @@
 #include "SMAP_Allocator.h"
 #include "../xrRender/Light_DB.h"
 #include "../xrRender/LightTrack.h"
+#include "r1_LightProjector.h"
+#include "r1_LightShadows.h"
+class CGlowManager;
 #include "../xrRender/r_sun_cascades.h"
 
 #include "../../xrEngine/IRenderable.h"
@@ -23,11 +26,18 @@
 #include "r4_editor_hiz.h"
 
 class dxRender_Visual;
+class CLightR_Manager;
 
 // definition
 class RENDER_API CRender	:	public R_dsgraph_structure
 {
 public:
+	enum { PHASE_POINT = 3, PHASE_SPOT = 4, PHASE_LMODELS = 5 };
+	bool vis_intersect = false;
+	CLightR_Manager* L_Dynamic = nullptr;
+	CLightProjector* L_Projector = nullptr;
+	CLightShadows* L_Shadows = nullptr;
+	CGlowManager* L_Glows = nullptr;
 
 	enum
 	{
@@ -136,6 +146,7 @@ private:
 
 public:
 	void							render_main					(bool deffered, bool zfill = false);
+	void render_static();
 	void							render_forward				();
 	void							render_lights				(light_Package& LP	);
 	void							render_menu					();
@@ -182,6 +193,20 @@ public:
 			return;
 		}
 
+		if (LightingModeIsStaticRender())
+		{
+			RCache.set_c("L_dynamic_props", 0, 0, 0, 0);
+			RCache.set_ca("m_plmap_clamp", 0, 0, 0, 0, 1);
+			if (!O || !O->renderable_ROS())
+				return;
+			CROS_impl& light_state = *static_cast<CROS_impl*>(O->renderable_ROS());
+			light_state.update_smooth(O);
+			const float sun = 0.5f * light_state.get_sun();
+			RCache.set_c("L_dynamic_props", sun, sun, sun, 0.5f * light_state.get_hemi());
+			if (L_Projector && light_state.shadow_recv_frame == Device.dwFrame && O->renderable_ShadowReceive())
+				L_Projector->setup(light_state.shadow_recv_slot);
+			return;
+		}
 		if (0==O)					return;
 		if (0==O->renderable_ROS())	return;
 		CROS_impl& LT				= *((CROS_impl*)O->renderable_ROS());
@@ -252,7 +277,7 @@ public:
 
 public:
 	// feature level
-	virtual	GenerationLevel			get_generation			()	{ return IRender_interface::GENERATION_R2; }
+	virtual	GenerationLevel			get_generation			();
 
 	virtual bool					is_sun_static			()	{ return o.sunstatic;}
 	virtual DWORD					get_dx_level			()	{ return 0x000A0001; }

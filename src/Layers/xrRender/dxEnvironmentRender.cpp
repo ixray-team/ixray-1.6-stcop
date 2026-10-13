@@ -188,21 +188,7 @@ void dxEnvironmentRender::OnFrame(CEnvironment& env) {
 		_RELEASE(E1);
 	}
 	// ******************** Environment params (setting)
-#ifdef USE_DX11
 	//	TODO: DX10: Implement environment parameters setting for DX10 (if necessary)
-#else //USE_DX11
-
-#if		RENDER==R_R1
-	Fvector3	fog_color = env.CurrentEnv->fog_color;
-	fog_color.mul(ps_r1_fog_luminance);
-#else	//	RENDER==R_R1
-	Fvector3& fog_color = env.CurrentEnv->fog_color;
-#endif	//	RENDER==R_R1
-
-	CHK_DX(RDevice->SetRenderState(D3DRS_FOGCOLOR, color_rgba_f(fog_color.x, fog_color.y, fog_color.z, 0)));
-	CHK_DX(RDevice->SetRenderState(D3DRS_FOGSTART, *(u32*)(&env.CurrentEnv->fog_near)));
-	CHK_DX(RDevice->SetRenderState(D3DRS_FOGEND, *(u32*)(&env.CurrentEnv->fog_far)));
-#endif
 }
 
 void dxEnvironmentRender::OnLoad()
@@ -259,9 +245,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 	// Render
 	RCache.set_xform_world(mSky);
 
-#ifdef USE_DX11
 	RCache.set_xform_world_old(mSkyOld);
-#endif
 
 	RCache.set_Geometry(sh_2geom);
 	RCache.set_Shader(sh_2sky);

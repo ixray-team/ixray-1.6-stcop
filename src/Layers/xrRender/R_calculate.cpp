@@ -78,18 +78,14 @@ void CRender::Calculate		()
 	}
 
 	// The unlit editor view (no weather) has no sun
-#if RENDER==R_R4
 	if (!Device.IsEditorMode() || EditorIsLit())
-#endif
 	{
 		Lights.Update();
 	}
-#if RENDER==R_R4
 	else
 	{
 		Lights.package.clear();
 	}
-#endif
 
 	lstRenderables.resize(0);
 	lstRenderables.reserve(4096);

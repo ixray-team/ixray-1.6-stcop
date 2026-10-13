@@ -55,7 +55,7 @@
 #	define render_alloc				doug_lea_alloc
 	using render_allocator = doug_lea_allocator_wrapper;
 
-#else // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
+#else
 #	define render_alloc				xalloc
 	using render_allocator = xr_allocator;
 #endif // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
@@ -95,14 +95,10 @@ namespace R_dsgraph
 		dxRender_Visual* pVisual;
 	};
 
-#ifdef USE_DX11	//	DX10 needs shader signature to propperly bind deometry to shader
 	using vs_type = SVS*;
 	using gs_type = ID3DGeometryShader*;
 	using hs_type = ID3D11HullShader*;
 	using ds_type = ID3D11DomainShader*;
-#else //USE_DX11
-	using vs_type = ID3DVertexShader*;
-#endif
 	using ps_type = ID3DPixelShader*;
 
 	// NORMAL
@@ -111,7 +107,6 @@ namespace R_dsgraph
 	using mapNormalTextures = FixedMAP<STextureList*,mapNormalItems,render_allocator>;
 	using mapNormalStates = FixedMAP<ID3DState*,mapNormalTextures,render_allocator>;
 	using mapNormalCS = FixedMAP<R_constant_table*,mapNormalStates,render_allocator>;
-#ifdef USE_DX11
 	struct	mapNormalAdvStages
 	{
 		hs_type		hs;
@@ -119,15 +114,8 @@ namespace R_dsgraph
 		mapNormalCS	mapCS;
 	};
 	using mapNormalPS = FixedMAP<ps_type, mapNormalAdvStages,render_allocator>;
-#else
-	using mapNormalPS = FixedMAP<ps_type, mapNormalCS,render_allocator>;
-#endif
-#ifdef USE_DX11
 	using mapNormalGS = FixedMAP<gs_type, mapNormalPS,render_allocator>;
 	using mapNormalVS = FixedMAP<vs_type, mapNormalGS,render_allocator>;
-#else //USE_DX11
-	using mapNormalVS = FixedMAP<vs_type, mapNormalPS,render_allocator>;
-#endif
 	using mapNormal_T = mapNormalVS;
 	using mapNormalPasses_T = mapNormal_T[SHADER_PASSES_MAX];
 
@@ -143,7 +131,6 @@ namespace R_dsgraph
 	using mapMatrixTextures = FixedMAP<STextureList*,mapMatrixItems,render_allocator>;
 	using mapMatrixStates = FixedMAP<ID3DState*,mapMatrixTextures,render_allocator>;
 	using mapMatrixCS = FixedMAP<R_constant_table*,mapMatrixStates,render_allocator>;
-#ifdef USE_DX11
 	struct	mapMatrixAdvStages
 	{
 		hs_type		hs;
@@ -151,15 +138,8 @@ namespace R_dsgraph
 		mapMatrixCS	mapCS;
 	};
 	using mapMatrixPS = FixedMAP<ps_type, mapMatrixAdvStages,render_allocator>;
-#else
-	using mapMatrixPS = FixedMAP<ps_type, mapMatrixCS,render_allocator>;
-#endif
-#ifdef USE_DX11
 	using mapMatrixGS = FixedMAP<gs_type, mapMatrixPS,render_allocator>;
 	using mapMatrixVS = FixedMAP<vs_type, mapMatrixGS,render_allocator>;
-#else //USE_DX11
-	using mapMatrixVS = FixedMAP<vs_type, mapMatrixPS,render_allocator>;
-#endif
 	using mapMatrix_T = mapMatrixVS;
 	using mapMatrixPasses_T = mapMatrix_T[SHADER_PASSES_MAX];
 
