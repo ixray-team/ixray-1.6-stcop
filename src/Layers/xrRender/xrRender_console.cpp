@@ -196,7 +196,7 @@ Flags32 ps_r2_ls_flags_ext =
 
 Flags32 ps_r__common_flags = 
 { 
-	R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD
+	R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD | RFLAG_MT_SKELETONS
 #ifndef USE_DX11
 	// FX: Для ебучего dx9 надо ВСЕГДА ОСВОБОЖДАТЬ РЕСУРСЫ
 	| RFLAG_DD_TEX_LOAD
@@ -1164,6 +1164,7 @@ RENDER_API void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask32, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
 	CMD3(CCC_Mask32, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
+	CMD3(CCC_Mask32, "r__mt_skeletons", &ps_r__common_flags, RFLAG_MT_SKELETONS);
 #ifdef USE_DX11
 	CMD4(CCC_Integer, "render.experemental.target_res", &g_TextureTargetResolution, 256, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION);
 #endif

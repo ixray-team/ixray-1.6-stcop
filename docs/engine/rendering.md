@@ -10,7 +10,7 @@ This branch uses separate client renderer DLLs. Dedicated servers load `xrRender
 | `renderer_r2` | `xrRender_R2` | D3D9 | dynamic, deferred | `src/Layers/xrRenderPC_R2/r2_R_render.cpp` |
 | `renderer_r4` | `xrRender_R4` | D3D11 | dynamic, deferred | `src/Layers/xrRenderPC_R4/r4_R_render.cpp` |
 
-`CApplication::ConfigureRenderer` applies `-r4`, `-r2`, or the config renderer before DLL loading. The console command in `src/xrEngine/xr_ioc_cmd.cpp` sets `rsR2` / `rsR4`. `CEngineAPI::InitializeNotDedicated` tries R4 when `rsR4` is set, then R2 if R4 loading fails or `rsR2` is set. `Initialize` falls back to R1 when no renderer loaded. Changing the renderer requires a restart.
+`CApplication::ConfigureRenderer` applies `-r4`, `-r2`, or the config renderer before DLL loading. The console command in `src/xrEngine/xr_ioc_cmd.cpp` sets `rsR2` / `rsR4` only until the renderer library is loaded (`Device.m_pRender`); later calls from `user.ltx` or the options menu only change the saved token, so `-r2` / `-r4` survive the config and the running renderer keeps its device API. `CEngineAPI::InitializeNotDedicated` tries R4 when `rsR4` is set, then R2 if R4 loading fails or `rsR2` is set. `Initialize` falls back to R1 when no renderer loaded. Changing the renderer requires a restart.
 
 `CreateRendererList` checks each renderer library beside the executable and emits its token independently (`.dll` on Windows, `lib*.so` elsewhere). `-perfhud_hack` bypasses the presence checks. Dedicated list is a dummy `renderer_r1` token.
 
@@ -29,6 +29,14 @@ With `r__mt_texture_load on`, creating a texture starts its DDS load as soon as 
 `CResourceManager::DeferredUpload` uses the same tasks and waits for completion before returning. It also drains pending loads when deferred upload is disabled. Device reset/destruction and texture-description reload wait before changing the resources used by the loader. Turning multithreaded loading off retains synchronous or lazy loading according to `bDeferredLoad`; `r__deferred_texture_load` controls bulk upload/unload.
 
 The R4 `render.experemental.target_res` command is registered during renderer console initialization, before any background texture load. Texture loading never registers console commands from a worker.
+
+## Skeleton updates
+
+R2 and R4 calculate skeletons in parallel (`SkeletonBatch`, `src/Layers/xrRender/SkeletonBatch.cpp`). `render_main` (deferred pass) and `r_dsgraph_render_subspace` (light and sun shadows) collect visible dynamic objects before static geometry, add their `CKinematics` to `R_dsgraph_structure::SkeletonUpdates`, and launch the batch. Worker threads calculate the bones while the primary thread traverses static geometry; `Wait` lets the primary thread take the remaining skeletons. Wallmarks, lights and `renderable_Render` then run on the primary thread in the original traversal order. R1 still calculates bones inside `add_leafs_Dynamic`.
+
+`Launch` calls `CKinematics::PrepareBones` on the calling thread first: animation tracks and their blend callbacks (game and script code) never run on a worker. Bone hierarchies, bone callbacks and visual callbacks (IK ray picks, attachments) run on workers. `r__mt_skeletons off` keeps the same order and calculates every skeleton on the primary thread.
+
+`UCalc_Mutex` is the only skeleton lock. A thread that is calculating a skeleton never waits for another one: a nested `CalculateBones` or `Bone_Calculate` on a skeleton owned by another thread is skipped, and `LL_GetBoneLocalPosition` / `LL_GetBoneLocalTransform` read the current matrices unlocked. This avoids cycles between neighbouring NPCs whose IK rays hit each other's collision forms. For the same reason `CCF_Skeleton::BuildState` copies the bone matrices before it takes its build lock: a thread that waits for a skeleton must not hold a lock that the skeleton's own ray picks need. Physics shell activation in `CPHElement::BonesCallBack` is serialized, because it moves ODE bodies in a shared space.
 
 ## R4 dynamic frame
 

@@ -134,6 +134,19 @@ private:
 	void							LoadSWIs					(IReaderBase& fs);
 	void							Load3DFluid					();
 
+	// Dynamic part of render_main, in traversal order: a light to add, or a renderable to submit
+	struct MainDynamicItem
+	{
+		IRenderable*	Renderable;
+		light*			Light;
+		CKinematics*	Skeleton;		// wallmarks are updated before submission
+	};
+	xr_vector<MainDynamicItem>		MainDynamic;
+
+	void							CollectMainDynamic			(bool deffered, bool dont_test_sectors);
+	void							CollectMainRenderable		(ISpatial* spatial, bool deffered);
+	void							RenderMainDynamic			();
+
 public:
 	void							render_main					(bool deffered, bool zfill = false);
 	void							render_forward				();

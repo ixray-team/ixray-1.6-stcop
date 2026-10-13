@@ -3,6 +3,7 @@
 #include "../../xrEngine/Render.h"
 #include "../../xrCore/Collision/ISpatial.h"
 #include "r__dsgraph_types.h"
+#include "SkeletonBatch.h"
 
 #ifdef RENDER_API_IMPORTS
 class CSector;
@@ -71,6 +72,17 @@ public:
 	xr_vector<dxRender_Visual*,render_alloc<dxRender_Visual*> >			lstVisuals	;
 
 	xr_vector<dxRender_Visual*,render_alloc<dxRender_Visual*> >			lstRecorded	;
+
+	// Dynamic objects of a sub-space pass, in traversal order
+	struct SubspaceItem
+	{
+		IRenderable*	Renderable;
+		CFrustum*		Frustum;
+	};
+	xr_vector<SubspaceItem>										SubspaceDynamic;
+
+	// Skeletons of the current pass, calculated while static geometry is traversed
+	SkeletonBatch												SkeletonUpdates;
 
 	u32															counter_S	;
 	u32															counter_D	;
@@ -169,6 +181,9 @@ public:
 
 	void detectSectors_sphere(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, const Fsphere& sphere);
 	void detectSectors_frustum(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, CFrustum* _frustum);
+
+private:
+	void		CollectSubspaceDynamic							(const CFrustum& MainView);
 
 public:
 	virtual		u32						memory_usage			()

@@ -443,6 +443,16 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 
 	// Traverse sector/portal structure
 	PortalTraverser.traverse		( _sector, ViewBase, _cop, mCombined, 0 );
+
+	// Dynamic objects are collected before static geometry: worker threads calculate their skeletons
+	// while the static hierarchy is traversed
+	const bool DrawDynamic = _dynamic && psDeviceFlags.test(rsDrawDynamic);
+	if (DrawDynamic)
+	{
+		CollectSubspaceDynamic(ViewSave);
+		SkeletonUpdates.Launch();
+	}
+
 	{
 		PROF_EVENT("add_static");
 	// Determine visibility for static geometry hierrarhy
@@ -461,64 +471,23 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 		}
 	}
 
-	if (_dynamic && psDeviceFlags.test(rsDrawDynamic))
+	if (DrawDynamic)
 	{
 		PROF_EVENT("add_dynamic")
 		set_Object(0);
+		SkeletonUpdates.Wait();
 
-		// Traverse object database
-		g_SpatialSpace->q_frustum
-		(
-			lstRenderables,
-			ISpatial_DB::O_ORDERED,
-			ESPATIAL_TYPE::RENDERABLE | ESPATIAL_TYPE::RENDERABLESHADOW,
-			ViewBase
-		);
-
-		// Determine visibility for dynamic part of scene
-		for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
+		for (const SubspaceItem& Item : SubspaceDynamic)
 		{
-			ISpatial*	spatial		= lstRenderables[o_it].get();
-			CSector*	sector		= (CSector*)spatial->sector;
-			if	(0==sector)										continue;	// disassociated from S/P structure
-			if	(PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector
-			for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
+			set_Frustum(Item.Frustum);
+			if(O && O->dcast_Renderable()==Item.Renderable) continue;
+
+			if (phase != CRender::PHASE_SMAP)
 			{
-				set_Frustum			(&(sector->r_frustums[v_it]));
-				if (!View->testSphere_dirty(spatial->sphere.P,spatial->sphere.R))	continue;
-
-				// renderable
-				IRenderable* renderable = spatial->dcast_Renderable();
-				if (0 == renderable)				continue;					// unknown, but renderable object (r1_glow???)
-#if RENDER!=R_R1
-				if(Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
-				{
-					CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
-					if(pKin)
-					{
-						if ((spatial->type & ESPATIAL_TYPE::RENDERABLESHADOW) != ESPATIAL_TYPE::NONE)
-						{
-							pKin->CalculateBones(true);
-						}
-						if ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE)
-						{
-							if(0==ViewSave.testSphere_dirty(spatial->sphere.P, spatial->sphere.R))
-							{
-								pKin->CalculateBones(true);
-							}
-						}
-					}
-				}
-#endif
-				if(O && O->dcast_Renderable()==renderable) continue;
-
-				if (phase != CRender::PHASE_SMAP)
-				{
-					set_Object(renderable);
-				}
-
-				renderable->renderable_Render();
+				set_Object(Item.Renderable);
 			}
+
+			Item.Renderable->renderable_Render();
 		}
 
 		set_Object(0);
@@ -527,6 +496,55 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 	// Restore
 	ViewBase = ViewSave;
 	View = 0;
+}
+
+void R_dsgraph_structure::CollectSubspaceDynamic(const CFrustum& MainView)
+{
+	PROF_EVENT("collect_dynamic");
+	SubspaceDynamic.clear();
+
+	// Traverse object database
+	g_SpatialSpace->q_frustum
+	(
+		lstRenderables,
+		ISpatial_DB::O_ORDERED,
+		ESPATIAL_TYPE::RENDERABLE | ESPATIAL_TYPE::RENDERABLESHADOW,
+		ViewBase
+	);
+
+	// Determine visibility for dynamic part of scene
+	for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
+	{
+		ISpatial*	spatial		= lstRenderables[o_it].get();
+		CSector*	sector		= (CSector*)spatial->sector;
+		if	(0==sector)										continue;	// disassociated from S/P structure
+		if	(PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector
+		for (CFrustum& view : sector->r_frustums)
+		{
+			if (!view.testSphere_dirty(spatial->sphere.P,spatial->sphere.R))	continue;
+
+			// renderable
+			IRenderable* renderable = spatial->dcast_Renderable();
+			if (0 == renderable)				continue;					// unknown, but renderable object (r1_glow???)
+#if RENDER!=R_R1
+			if(Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
+			{
+				// Shadow casters, and objects the main view did not calculate
+				const bool ShadowCaster = (spatial->type & ESPATIAL_TYPE::RENDERABLESHADOW) != ESPATIAL_TYPE::NONE;
+				const bool OutsideMainView = (spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE &&
+					!MainView.testSphere_dirty(spatial->sphere.P, spatial->sphere.R);
+				if (ShadowCaster || OutsideMainView)
+				{
+					if (CKinematics* pKin = PCKinematics((dxRender_Visual*)renderable->renderable.visual))
+					{
+						SkeletonUpdates.Add(pKin);
+					}
+				}
+			}
+#endif
+			SubspaceDynamic.push_back({ renderable, &view });
+		}
+	}
 }
 
 #include "FHierrarhyVisual.h"
