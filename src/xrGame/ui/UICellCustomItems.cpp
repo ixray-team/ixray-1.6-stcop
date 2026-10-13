@@ -431,6 +431,10 @@ void CUIWeaponCellItem::Update()
 				pWeapon->ProcessScope();
 			}
 
+			if (enable3DIcons)
+			{
+				SetIconVisual(pItem->m_3d_static_visual_name);
+			}
 			SetBonesVisible(pItem->object().Visual()->dcast_PKinematics());
 		}
 	}
@@ -479,6 +483,10 @@ void CUIWeaponCellItem::OnAfterChild(CUIDragDropListEx* parent_list)
 			pWeapon->ProcessScope();
 		}
 
+		if (EngineExternal()[EEngineExternalGame::Enable3DIcons])
+		{
+			SetIconVisual(pItem->m_3d_static_visual_name);
+		}
 		SetBonesVisible(pItem->object().Visual()->dcast_PKinematics());
 	}
 }
