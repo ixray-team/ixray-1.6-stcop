@@ -13,6 +13,100 @@
 #include "game_news.h"
 #include "script_sound.h"
 #include "../../xrCore/xr_ini.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
+#include "../Weapons/WeaponBoneVisibility.h"
+
+class SpawnManagerIconViews final
+{
+public:
+	SpawnManagerIconViews() = default;
+	~SpawnManagerIconViews() = default;
+
+	void Clear()
+	{
+		Icons.clear();
+	}
+
+	void BeginFrame(bool IsEnabled)
+	{
+		for (auto It = Icons.begin(); It != Icons.end();)
+		{
+			if (!IsEnabled || It->second.LastFrame + 1 < Device.dwFrame)
+			{
+				It = Icons.erase(It);
+			}
+			else
+			{
+				++It;
+			}
+		}
+	}
+
+	CUI3dStatic* Get(LPCSTR SectionName)
+	{
+		auto [It, IsNew] = Icons.try_emplace(SectionName);
+		auto& Entry = It->second;
+		Entry.LastFrame = Device.dwFrame;
+		if (IsNew)
+		{
+			LPCSTR Visual = READ_IF_EXISTS(pSettings, r_string, SectionName, "3d_static_visual_name", READ_IF_EXISTS(pSettings, r_string, SectionName, "visual", nullptr));
+			Entry.Icon = xr_make_unique<CUI3dStatic>();
+			Entry.Icon->SetIconVisual(Visual);
+			if (Entry.Icon->GetVisual())
+			{
+				if (pSettings->line_exist(SectionName, "class") && g_pClsidManager->is_weapon(pSettings->r_clsid(SectionName, "class")))
+				{
+					WeaponBoneVisibility::ConfigureDefault(*Entry.Icon->GetVisual()->dcast_PKinematics(), SectionName);
+					Entry.Icon->CaptureIconBones();
+				}
+			}
+			else
+			{
+				Entry.Icon.reset();
+			}
+		}
+		if (Entry.Icon)
+		{
+			Fvector Rotation = READ_IF_EXISTS(pSettings, r_fvector3, SectionName, "3d_static_rotate", Fvector().set(0.0f, 0.0f, 0.0f));
+			Rotation.mul(M_PI / 180.0f);
+			Entry.Icon->SetXYZ(Rotation);
+			Entry.Icon->SetScaleFactor(READ_IF_EXISTS(pSettings, r_float, SectionName, "3d_static_scale", 1.0f));
+		}
+		return Entry.Icon.get();
+	}
+
+private:
+	struct IconEntry
+	{
+		xr_unique_ptr<CUI3dStatic> Icon;
+		u32 LastFrame = 0;
+	};
+
+	xr_map<xr_string, IconEntry> Icons;
+};
+
+struct SpawnManagerIconDrawData
+{
+	CUI3dStatic* Icon;
+	ImVec2 Position;
+	ImVec2 Size;
+};
+
+static void SpawnManagerDrawIcon(const ImDrawList*, const ImDrawCmd* Command)
+{
+	const auto& Data = *static_cast<const SpawnManagerIconDrawData*>(Command->UserCallbackData);
+	const ImVec2 Origin = ImGui::GetMainViewport()->Pos;
+	const float ScaleX = UI().ClientToScreenScaledX(1.0f);
+	const float ScaleY = UI().ClientToScreenScaledY(1.0f);
+	Data.Icon->SetWndPos(Fvector2().set((Data.Position.x - Origin.x) / ScaleX, (Data.Position.y - Origin.y) / ScaleY));
+	Data.Icon->SetWndSize(Fvector2().set(Data.Size.x / ScaleX, Data.Size.y / ScaleY));
+	Frect Clip;
+	Clip.set((Command->ClipRect.x - Origin.x) / ScaleX, (Command->ClipRect.y - Origin.y) / ScaleY, (Command->ClipRect.z - Origin.x) / ScaleX, (Command->ClipRect.w - Origin.y) / ScaleY);
+	Device.m_pRender->InvalidateRenderCache();
+	UI().PushScissor(Clip);
+	Data.Icon->Draw();
+	UI().PopScissor();
+}
 
 using Section = xr_vector<xr_pair<xr_string_view, CInifile::Sect*>>;
 struct SectionData
@@ -41,6 +135,8 @@ struct
 	bool weapon_sort_by_min_fire_distance{};
 	bool spawn_on_level{};
 	bool render_as_table{ true };
+	bool Use3DIcons = false;
+	SpawnManagerIconViews IconCache;
 	string16 spawn_count{};
 	// weapon tab
 
@@ -86,6 +182,7 @@ Section FilterSectionsWithSearch(const Section& sections, const char* searchBuff
 
 void DestroySpawnManagerWindow()
 {
+	imgui_spawn_manager.IconCache.Clear();
 	imgui_spawn_manager.WeaponsSections.clear();
 	imgui_spawn_manager.ItemsSections.clear();
 	imgui_spawn_manager.ItemsUsedSections.clear();
@@ -342,6 +439,7 @@ void InitSections()
 }
 
 void RenderSpawnManagerWindow() {
+	imgui_spawn_manager.IconCache.BeginFrame(imgui_spawn_manager.Use3DIcons && g_pGameLevel && Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SpawnManager)]);
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SpawnManager)])
 		return;
 
@@ -430,6 +528,10 @@ void RenderSpawnManagerWindow() {
 		{
 		}
 		ImGui::SetItemTooltip("If this checkbox is enabled the content in the window will be rendered as table otherwise it is a list view");
+
+		ImGui::Checkbox("3D icons", &imgui_spawn_manager.Use3DIcons);
+		ImGui::SetItemTooltip("Use inventory 3D icon settings. Unavailable models use the regular icon. Independent of Enable3DIcons.");
+		Render3DIconLightingControls();
 
 		ImGui::InputText("count##IT_InGameSpawnManager", imgui_spawn_manager.spawn_count, sizeof(imgui_spawn_manager).spawn_count);
 		ImGui::SetItemTooltip("How many items to spawn by one click, from 1 to specified number by user input");
@@ -1187,13 +1289,45 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imname)
 {
 	auto name = section->Name.c_str();
-	const auto surface = READ_IF_EXISTS(pSettings, r_string, name, "icons_texture", "ui\\ui_icon_equipment");
-	const auto surfaceParams = ::Render->getSurface(surface);
 
 	bool isIcon = section->line_exist("inv_grid_x")
 		&& section->line_exist("inv_grid_y")
 		&& section->line_exist("inv_grid_width")
 		&& section->line_exist("inv_grid_height");
+
+	bool HasLabel = false;
+	if (imgui_spawn_manager.Use3DIcons && isIcon)
+	{
+		const float Scale = READ_IF_EXISTS(pSettings, r_float, name, "inv_scale", 1.0f);
+		const float Divisor = Scale > 1.0f ? 2.0f : 1.0f;
+		const ImVec2 Size(pSettings->r_float(name, "inv_grid_width") * INV_GRID_WIDTH(Scale) / Divisor, pSettings->r_float(name, "inv_grid_height") * INV_GRID_HEIGHT(Scale) / Divisor);
+		if (Size.x > 0.0f && Size.y > 0.0f)
+		{
+			ImGui::SeparatorText(name);
+			HasLabel = true;
+			const ImVec2 Padding = ImGui::GetStyle().FramePadding;
+			const ImVec2 ButtonSize(Size.x + Padding.x * 2.0f, Size.y + Padding.y * 2.0f);
+			const bool IsVisible = ImGui::IsRectVisible(ButtonSize);
+			auto* Icon = IsVisible ? imgui_spawn_manager.IconCache.Get(name) : nullptr;
+			if (Icon || !IsVisible)
+			{
+				ImGui::PushID(imname);
+				const bool IsPressed = ImGui::Button("##3d_icon", ButtonSize);
+				ImGui::PopID();
+				if (Icon && ImGui::IsItemVisible())
+				{
+					const ImVec2 Min = ImGui::GetItemRectMin();
+					SpawnManagerIconDrawData Data{Icon, ImVec2(Min.x + Padding.x, Min.y + Padding.y), Size};
+					auto* DrawList = ImGui::GetWindowDrawList();
+					DrawList->AddCallback(SpawnManagerDrawIcon, &Data, sizeof(Data));
+					DrawList->AddCallback(ImDrawCallback_ResetRenderState, nullptr);
+				}
+				return IsPressed;
+			}
+		}
+	}
+	const auto surface = READ_IF_EXISTS(pSettings, r_string, name, "icons_texture", "ui\\ui_icon_equipment");
+	const auto surfaceParams = ::Render->getSurface(surface);
 
 	if (surfaceParams.Surface == nullptr || !isIcon)
 		return ImGui::Button(imname);
@@ -1204,7 +1338,10 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 	float w = pSettings->r_float(name, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
 	float h = pSettings->r_float(name, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
 
-	ImGui::SeparatorText(name);
+	if (!HasLabel)
+	{
+		ImGui::SeparatorText(name);
+	}
 	bool isScaleIcon = scaleIcon > 1.0f;
 
 	return ImGui::ImageButton(imname, surfaceParams.Surface, { w / (1 + isScaleIcon), h / (1 + isScaleIcon)},
