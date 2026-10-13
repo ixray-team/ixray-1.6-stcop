@@ -47,6 +47,8 @@ void RHIStateManagerDX11::Reset()
 
 	bOverrideScissoring = false;
 	bOverrideScissoringValue = false;
+	bOverrideFillMode = false;
+	OverrideFillModeValue = D3D11_FILL_SOLID;
 	SampleMask = 0xffffffff;
 }
 
@@ -173,6 +175,11 @@ void RHIStateManagerDX11::SetRasterizerState(void* NewState)
 	{
 		EnableScissoring(bOverrideScissoringValue);
 	}
+
+	if (bOverrideFillMode)
+	{
+		SetFillMode(OverrideFillModeValue);
+	}
 }
 
 void RHIStateManagerDX11::SetDepthStencilState(void* NewState)
@@ -238,6 +245,43 @@ void RHIStateManagerDX11::OverrideScissoring(bool Override, bool Value)
 			bRSChanged = true;
 		}
 	}
+}
+
+IC D3D11_FILL_MODE ToFillMode(u32 Mode)
+{
+	return Mode == D3D11_FILL_SOLID ? D3D11_FILL_SOLID : D3D11_FILL_WIREFRAME;
+}
+
+void RHIStateManagerDX11::SetFillMode(D3D11_FILL_MODE Mode)
+{
+	ValidateRDesc();
+
+	if (RDesc.FillMode != Mode)
+	{
+		bRSChanged = true;
+		RDesc.FillMode = Mode;
+	}
+}
+
+void RHIStateManagerDX11::OverrideFillMode(bool Override, u32 Mode)
+{
+	bOverrideFillMode = Override;
+	OverrideFillModeValue = ToFillMode(Mode);
+
+	if (bOverrideFillMode)
+	{
+		SetFillMode(OverrideFillModeValue);
+		return;
+	}
+
+	D3D11_RASTERIZER_DESC StateDesc = {};
+	StateDesc.FillMode = D3D11_FILL_SOLID;
+	if (RasterizerState)
+	{
+		RasterizerState->GetDesc(&StateDesc);
+	}
+
+	SetFillMode(StateDesc.FillMode);
 }
 
 void RHIStateManagerDX11::SetStencilRef(u32 NewStencilRef)
@@ -400,9 +444,7 @@ void RHIStateManagerDX11::SetRenderState(u32 p1, u32 p2)
 			break;
 
 		case D3DRS_FILLMODE:
-			ValidateRDesc();
-			bRSChanged = bRSChanged || RDesc.FillMode != (D3D11_FILL_MODE)p2;
-			RDesc.FillMode = (D3D11_FILL_MODE)p2;
+			SetFillMode(ToFillMode(p2));
 			break;
 
 		case D3DRS_ZWRITEENABLE:

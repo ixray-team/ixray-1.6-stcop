@@ -36,12 +36,14 @@ public:
 	void SetSampleMask(u32 Mask);
 
 	virtual void OverrideScissoring(bool Override = true, bool Value = true) override;
+	virtual void OverrideFillMode(bool Override, u32 Mode) override;
 
 	// Bind to a specific D3D11 device context (immediate or deferred)
 	void SetContext(ID3D11DeviceContext* InContext);
 
 private:
 	void ValidateRDesc();
+	void SetFillMode(D3D11_FILL_MODE Mode);
 	void ValidateDSDesc();
 	void ValidateBDesc();
 
@@ -66,6 +68,9 @@ private:
 
 	bool bOverrideScissoring;
 	bool bOverrideScissoringValue;
+
+	bool bOverrideFillMode;
+	D3D11_FILL_MODE OverrideFillModeValue;
 
 	bool bRSForced;
 	bool bDSSForced;

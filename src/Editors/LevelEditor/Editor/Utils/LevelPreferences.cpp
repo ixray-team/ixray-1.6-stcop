@@ -75,6 +75,7 @@ void CLevelPreferences::Load()
 	{
 		GetSafe(*windows, "object_list", OpenObjectList);
 		GetSafe(*windows, "properties", OpenProperties);
+		GetSafe(*windows, "OpenLighting", OpenLighting);
 		GetSafe(*windows, "world_properties", OpenWorldProperties);
 		GetSafe(*windows, "snap_list", OpenSnapList);
 		GetSafe(*windows, "light_anim", OpenLightAnim);
@@ -164,6 +165,7 @@ void CLevelPreferences::Save()
 	JSONData["windows"]["object_list"] = OpenObjectList;
 	JSONData["windows"]["properties"] = OpenProperties;
 	JSONData["windows"]["world_properties"] = OpenWorldProperties;
+	JSONData["windows"]["OpenLighting"] = OpenLighting;
 	JSONData["windows"]["snap_list"] = OpenSnapList;
 	JSONData["windows"]["log_clear_in_pie"] = UILogForm::bClearInPIE;
 	JSONData["windows"]["light_anim"] = OpenLightAnim;

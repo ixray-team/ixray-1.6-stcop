@@ -33,6 +33,8 @@ public:
 	virtual void SetAlphaRef(u32 NewAlphaRef) = 0;
 	virtual void* GetCache(ERHI_STATE_CACHE_TYPE Type, void* Desc) { return nullptr; };
 	virtual void OverrideScissoring(bool Override = true, bool Value = true) {};
+	// Fill mode kept over the rasterizer states of the shaders (D3DFILLMODE values)
+	virtual void OverrideFillMode(bool Override, u32 Mode) {};
 
 	virtual void SetRenderState(u32, u32){};
 

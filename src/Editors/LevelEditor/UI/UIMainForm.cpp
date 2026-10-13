@@ -11,6 +11,7 @@
 #include "Editor/Terrain/HeightmapUtils.h"
 
 #include "IconsFontAwesome6.h"
+#include "../xrECore/Editor/UILightingForm.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
 
 UIMainForm* MainForm = nullptr;
@@ -129,10 +130,10 @@ void UIMainForm::LoadWindowsStates()
 		m_WorldProperties->Close();
 	}
 
-	//if (LPrefs->OpenLightAnim)
-	//{
-	//	UIEditLightAnim::Show();
-	//}
+	if (LPrefs->OpenLighting)
+	{
+		UILightingForm::Show();
+	}
 }
 
 UIMainForm::~UIMainForm()

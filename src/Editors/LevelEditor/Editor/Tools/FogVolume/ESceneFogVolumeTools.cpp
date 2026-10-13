@@ -260,18 +260,19 @@ void EFogVolume::OnChangeEnvs	(PropValue* prop)
     LTools->UpdateProperties(false);
 }
 
-void EFogVolume::FillPropObjects(const char* pref, PropItemVec& values)
+void EFogVolume::FillProp(const char* pref, PropItemVec& values)
 {
-	inherited::FillProp			(pref, values);
+	inherited::FillProp(pref, values);
 
 	PropValue* P;
-    P=PHelper().CreateToken8	(values, PrepareKey(pref,"VolumeType"),	&m_volumeType, fog_vol_type);
-    P->OnChangeEvent.bind		(this,&EFogVolume::OnChangeEnvs);
+	P = PHelper().CreateToken8(values, PrepareKey(pref, "VolumeType"), &m_volumeType, fog_vol_type);
+	P->OnChangeEvent.bind(this, &EFogVolume::OnChangeEnvs);
 
-    if(m_volumeType==fvEmitter)
-    	P=PHelper().CreateRText	(values, PrepareKey(pref,"profile (ltx)"),	&m_volume_profile);
+	if (m_volumeType == fvEmitter)
+	{
+		P = PHelper().CreateRText(values, PrepareKey(pref, "profile (ltx)"), &m_volume_profile);
+	}
 }
-
 
 bool EFogVolume::GetSummaryInfo(SSceneSummary* inf)
 {
