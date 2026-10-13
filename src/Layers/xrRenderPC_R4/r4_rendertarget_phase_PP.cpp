@@ -24,10 +24,10 @@ void	CRenderTarget::u_calc_tc_noise		(Fvector2& p0, Fvector2& p1)
 	float		start_v				= (float(shift_h)+.5f)/(th);
 	u32			_w					= (u32)RCache.get_target_width();
 	u32			_h					= (u32)RCache.get_target_height();
-	u32			cnt_w				= _w / tw;
-	u32			cnt_h				= _h / th;
-	float		end_u				= start_u + float(cnt_w) + 1;
-	float		end_v				= start_v + float(cnt_h) + 1;
+	float CountWidth = float(_w) / float(tw);
+	float CountHeight = float(_h) / float(th);
+	float		end_u				= start_u + CountWidth;
+	float		end_v				= start_v + CountHeight;
  
 	p0.set		(start_u,	start_v	);
 	p1.set		(end_u,		end_v	);

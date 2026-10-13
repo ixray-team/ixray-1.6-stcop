@@ -17,8 +17,8 @@ float4 main(p_postpr I) : SV_Target
 
     float grad_i = dot(image_o, 0.3333f);
 
-    float3 image0 = s_grad0.Sample(smp_rtlinear, float2(grad_i, 0.5f)).xyz;
-    float3 image1 = s_grad1.Sample(smp_rtlinear, float2(grad_i, 0.5f)).xyz;
+    float3 image0 = s_grad0.SampleLevel(smp_rtlinear, float2(grad_i, 0.5f), 0).xyz;
+    float3 image1 = s_grad1.SampleLevel(smp_rtlinear, float2(grad_i, 0.5f), 0).xyz;
 	
     float3 image = lerp(image0, image1, c_colormap.y);
     image = lerp(image_o, image, c_colormap.x);
@@ -26,7 +26,7 @@ float4 main(p_postpr I) : SV_Target
     float gray = dot(image, I.Gray.xyz);
     image = lerp(gray, image, I.Gray.w);
 
-    float3 t_noise = s_noise.Sample(smp_linear, I.Tex2.xy).xyz;
+    float3 t_noise = s_noise.SampleLevel(smp_linear, I.Tex2.xy, 0).xyz;
     float3 noised = image * t_noise * 2.0f;
 	
     image = lerp(noised, image, I.Color.w);
