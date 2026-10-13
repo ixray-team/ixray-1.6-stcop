@@ -122,6 +122,7 @@ namespace
 	{
 	public:
 		void notify_hovered(CUICellItem* cell) { m_hovered_cell = cell; }
+		bool ShouldHideItemDescriptions() const { return HideItemDescriptions; }
 
 		void register_cell(CUICellItem* cell)
 		{
@@ -514,6 +515,7 @@ namespace
 		shared_str m_target_section;
 		xr_vector<CInventoryItem*> m_target_items;
 		bool m_follow_cursor = true;
+		bool HideItemDescriptions = false;
 
 		Fvector m_rotate_deg{};
 		float m_scale = 1.0f;
@@ -793,6 +795,8 @@ namespace
 		}
 
 		ImGui::SeparatorText("Target");
+		ImGui::Checkbox("Hide item description", &HideItemDescriptions);
+		ImGui::SetItemTooltip("Hide item description windows while this editor is open. Closing the editor restores descriptions.");
 
 		ImGui::Checkbox("Follow cursor", &m_follow_cursor);
 		ImGui::SetItemTooltip("Select the item under the cursor automatically");
@@ -992,6 +996,12 @@ void Render3DIconAdjust()
 void Icon3dAdjust_NotifyHoveredCell(CUICellItem* cell)
 {
 	g_icon3d_adjust.notify_hovered(cell);
+}
+
+bool ShouldHide3DIconItemDescriptions()
+{
+	return Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_3DIconAdjust)]
+		&& g_icon3d_adjust.ShouldHideItemDescriptions();
 }
 
 void Icon3dAdjust_RegisterCell(CUICellItem* cell)
