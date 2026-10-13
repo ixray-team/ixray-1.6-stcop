@@ -154,10 +154,12 @@ void FixedConstants::UpdateFrame()
 	float decr = RDEVICE.hudViewportData.IsElectronicsProblemsDecreasing ? 1.0f : 0.0f;
 	cpu_frame.m_affects.set(RDEVICE.hudViewportData.CurrentElectronicsProblemsCnt / 10.0f, ::Random.randF(0, 1), RDEVICE.hudViewportData.TargetElectronicsProblemsCnt / 10.0f, decr);
 	cpu_frame.m_actor_params.set(RDEVICE.hudViewportData.ActorHealth, RDEVICE.hudViewportData.ActorOutfitCondition, RDEVICE.hudViewportData.ActorWeaponCondition, RDEVICE.hudViewportData.ActorWeaponLoading);
+	cpu_frame.Digiclock.set(0.f, 0.f, 0.f, 0.f);
 	if (g_pGameLevel && g_pGameLevel->bReady && 0 == Device.dwPrecacheFrame)
 	{
 		u32 y, mn, d, h, mi, s, ms;
 		split_time(g_pGameLevel->GetGameTime(), y, mn, d, h, mi, s, ms);
+		cpu_frame.Digiclock.set((h / 10) / 10.f, (h % 10) / 10.f, (mi / 10) / 10.f, (mi % 10) / 10.f);
 		float sf = s / 60.f, mf = (sf + mi) / 60.f, hf = (mf + h) / 12.f;
 		cpu_frame.m_timearrow.set(std::sin(PI_MUL_2 * hf), std::cos(PI_MUL_2 * hf), std::sin(PI_MUL_2 * mf), std::cos(PI_MUL_2 * mf));
 		float sa = PI_MUL_2 * sf, hp;

@@ -32,6 +32,7 @@ struct alignas(16) CBFrame
 	Fvector4 c_brightness;
 	Fvector4 c_colormap;
 	Fvector4 hud_rain;
+	Fvector4 Digiclock;
 };
 
 struct alignas(16) CBView
