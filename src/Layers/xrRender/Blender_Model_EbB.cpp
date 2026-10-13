@@ -197,6 +197,10 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 	if (C.iElement == SE_R2_UI)
 	{
 		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
+		if (oBlend.value)
+		{
+			RImplementation.addShaderOption("UI_ALPHA_BLEND", "1");
+		}
 		uber_deffer(C, false, "deffer_model", "ui_base", false, 0, true);
 		
 		if (oBlend.value)

@@ -8,6 +8,32 @@
 
 #include "../../xrCore/FS.h"
 #include "../../xrCore/EngineExternal.h"
+#include "../../xrUI/UI3dIconCache.h"
+
+void Render3DIconLightingControls()
+{
+	if (!ImGui::CollapsingHeader("DX11 icon lighting"))
+	{
+		return;
+	}
+	ImGui::Text("Shared icon models: %zu", UI3dIconCache::Instance().GetModelCount());
+	auto* Settings = Device.m_pRender->GetUIIconLighting();
+	if (!Settings)
+	{
+		ImGui::TextDisabled("Lighting controls require renderer_r4.");
+		return;
+	}
+	ImGui::ColorEdit3("Light color", &Settings->Color.x);
+	ImGui::DragFloat("Intensity", &Settings->Intensity, 0.02f, 0.0f, 16.0f);
+	ImGui::DragFloat("Ambient", &Settings->Ambient, 0.02f, 0.0f, 8.0f);
+	ImGui::DragFloat3("Direction", &Settings->Direction.x, 0.01f, -1.0f, 1.0f);
+	ImGui::SetItemTooltip("View-space direction. A zero vector uses the default (0, 0, 1).");
+	if (ImGui::Button("Reset icon lighting"))
+	{
+		*Settings = UIIconLighting{};
+	}
+	ImGui::TextDisabled("Applies to all 3D icons immediately. Settings last until restart.");
+}
 
 extern bool g_Adjust3dIcon;
 extern float g_Adjust3dIconValue;
@@ -656,6 +682,7 @@ namespace
 	void CImGui3dIconAdjust::draw()
 	{
 		validate_target();
+		Render3DIconLightingControls();
 
 		if (!EngineExternal()[EEngineExternalGame::Enable3DIcons])
 		{

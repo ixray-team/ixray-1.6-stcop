@@ -502,6 +502,33 @@ void dxRenderDeviceRender::SetupDefaultTarget()
 #endif
 }
 
+void dxRenderDeviceRender::InvalidateRenderCache()
+{
+	// ImGui binds hardware state directly, bypassing the engine caches.
+	IRHIRenderTargetView* Targets[RHI_MAX_RENDER_TARGETS]{};
+	for (u32 Index = 0; Index < RHI_MAX_RENDER_TARGETS; ++Index)
+	{
+		Targets[Index] = GRHI->GetRenderTargetView(Index);
+	}
+	auto* Depth = GRHI->GetDepthStencilView();
+	RCache.Invalidate();
+	for (u32 Index = 0; Index < RHI_MAX_RENDER_TARGETS; ++Index)
+	{
+		GRHI->SetRenderTargetView(Targets[Index], Index);
+	}
+	GRHI->SetDepthStencilView(Depth);
+	GRHI->ApplyRenderTargetChange();
+}
+
+UIIconLighting* dxRenderDeviceRender::GetUIIconLighting()
+{
+#ifdef USE_DX11
+	return &IconLighting;
+#else
+	return nullptr;
+#endif
+}
+
 void dxRenderDeviceRender::SetCacheXform(Fmatrix &mView, Fmatrix &mProject)
 {
 #ifndef _EDITOR
