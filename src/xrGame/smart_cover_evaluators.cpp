@@ -215,7 +215,7 @@ bool can_exit_loophole_with_animation::evaluate			()
 			target_cover ? target_cover->id().c_str() : "<world>"
 		);
 #endif // #ifdef DEBUG
-		return					(movement.current_transition().animation().has_animation());
+		return					(movement.selected_transition_animation().has_animation());
 	}
 
 	smart_cover::loophole const*current_loophole = current.cover_loophole();
@@ -228,7 +228,7 @@ bool can_exit_loophole_with_animation::evaluate			()
 			target_loophole ? target_loophole->id().c_str() : "<world>"
 		);
 #endif // #ifdef DEBUG
-		return					(movement.current_transition().animation().has_animation());
+		return					(movement.selected_transition_animation().has_animation());
 	}
 
 	return						(false);

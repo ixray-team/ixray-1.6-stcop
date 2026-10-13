@@ -386,7 +386,7 @@ void stalker_movement_manager_smart_cover::build_exit_path_to_cover					()
 			);
 
 		buffer_vector<shared_str>	temp(
-			_alloca(sizeof(u32)*m_temp_loophole_path.size()),
+			_alloca(sizeof(shared_str)*m_temp_loophole_path.size()),
 			m_temp_loophole_path.size(),
 			m_temp_loophole_path.begin(),
 			m_temp_loophole_path.end()
