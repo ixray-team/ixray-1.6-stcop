@@ -182,7 +182,7 @@ void TBinocularsVision::EndComponent()
 	delete_data(m_active_objects);
 }
 
-void TBinocularsVision::Update()
+void TBinocularsVision::Update(bool UpdateProjection)
 {
 	if (g_dedicated_server)
 		return;
@@ -248,19 +248,23 @@ void TBinocularsVision::Update()
 		m_active_objects.pop_back			();
 	}
 
-	it = m_active_objects.begin();
-	for(;it!=m_active_objects.end();++it)
+	if (UpdateProjection)
 	{
-		SBinocVisibleObj* visObj			= (*it);
-		
-		bool bLocked = visObj->m_flags.test(flTargetLocked);
-		
-		(*it)->Update						();
-		
-		if(bLocked != visObj->m_flags.test(flTargetLocked))
-			m_sounds.PlaySound	("catch_snd", Fvector().set(0,0,0), nullptr, true);
+		UpdateTargetFrames();
 	}
+}
 
+void TBinocularsVision::UpdateTargetFrames()
+{
+	for (SBinocVisibleObj* Object : m_active_objects)
+	{
+		const bool IsLocked = Object->m_flags.test(flTargetLocked);
+		Object->Update();
+		if (IsLocked != Object->m_flags.test(flTargetLocked))
+		{
+			m_sounds.PlaySound("catch_snd", Fvector().set(0, 0, 0), nullptr, true);
+		}
+	}
 }
 
 void TBinocularsVision::Draw()
@@ -268,6 +272,44 @@ void TBinocularsVision::Draw()
 	VIS_OBJECTS_IT	it = m_active_objects.begin();
 	for(;it!=m_active_objects.end();++it)
 		(*it)->Draw							();
+}
+
+void TBinocularsVision::DrawScopeUI()
+{
+	if (ScopeUIFrame == Device.dwFrame)
+	{
+		return;
+	}
+	ScopeUIFrame = Device.dwFrame;
+
+	// Project the markers with the camera that renders the scope world this frame.
+	UpdateTargetFrames();
+	if (m_active_objects.empty())
+	{
+		return;
+	}
+
+	if (!ScopeShader->inited())
+	{
+		CUIStatic Marker;
+		Marker.InitTextureEx("ui\\ui_enemy_frame", "hud\\scope_detector");
+		ScopeShader = Marker.GetShader();
+	}
+
+	for (SBinocVisibleObj* Object : m_active_objects)
+	{
+		CUIStatic* Corners[] = {&Object->m_lt, &Object->m_lb, &Object->m_rt, &Object->m_rb};
+		const ui_shader SavedShader = Object->m_lt.GetShader();
+		for (CUIStatic* Corner : Corners)
+		{
+			Corner->SetShader(ScopeShader);
+		}
+		Object->Draw();
+		for (CUIStatic* Corner : Corners)
+		{
+			Corner->SetShader(SavedShader);
+		}
+	}
 }
 
 void TBinocularsVision::Load(const shared_str& section)
