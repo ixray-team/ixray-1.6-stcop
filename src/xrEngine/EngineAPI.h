@@ -87,6 +87,7 @@ enum class EditorUI : u8
 	UI_General,
 	ECSViewer,
 	Tools_AIGridEditor,
+	Game_CameraRig,
 	Count
 };
 

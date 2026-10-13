@@ -981,6 +981,45 @@ void attachable_hud_item::load(const shared_str& sect_name)
 	m_visual_name = m_model_combined ? pSettings->r_string(sect_name, "visual") : pSettings->r_string(sect_name, "item_visual");
 	m_model						 = PKinematics(::Render->model_Create(m_visual_name.c_str()));
 
+	LoadRigParams();
+
+	m_attach_place_idx = pSettings->read_if_exists<u16>(sect_name, "attach_place_idx", 0);
+
+	if (pSettings->line_exist(sect_name, "aim_bone_name"))
+		m_aim_bone_id = m_model->LL_BoneID(pSettings->r_string(sect_name, "aim_bone_name"));
+
+	m_hud_mass = std::max(pSettings->read_if_exists<float>(sect_name, "hud_mass", 1.f), 0.1f);
+
+	hud_read_motion_list(sect_name, "additive_motions", m_additive_motions);
+	m_additive_reference = pSettings->read_if_exists<str_c>(sect_name, "additive_reference", nullptr);
+	hud_read_motion_list(sect_name, "additive_retarget_motions", AdditiveRetargetMotions);
+	AdditiveRetargetReference = pSettings->read_if_exists<str_c>(sect_name, "additive_retarget_reference", nullptr);
+	hud_read_motion_list(sect_name, "left_hand_free_motions", m_left_hand_free_motions);
+
+	const char* left_ik_bone = pSettings->read_if_exists<str_c>(sect_name, "left_hand_ik_bone", pSettings->read_if_exists<str_c>("camera_rig", "left_hand_ik_bone", nullptr));
+	if (!m_model_combined && left_ik_bone != nullptr)
+	{
+		m_left_ik_bone = m_model->LL_BoneID(left_ik_bone);
+		m_left_ik_fixed = pSettings->line_exist(sect_name, "left_hand_ik_pos") || pSettings->line_exist(sect_name, "left_hand_ik_rot");
+		Fvector ypr = pSettings->read_if_exists<Fvector3>(sect_name, "left_hand_ik_rot", zero_vel);
+		ypr.mul(PI / 180.f);
+		m_left_ik_offset.setHPB(ypr.x, ypr.y, ypr.z);
+		m_left_ik_offset.c = pSettings->read_if_exists<Fvector3>(sect_name, "left_hand_ik_pos", zero_vel);
+
+		LeftHandAttachTarget = pSettings->read_if_exists<str_c>(sect_name, "left_hand_attach_target", pSettings->read_if_exists<str_c>("camera_rig", "left_hand_attach_target", "anm_idle"));
+
+		hud_read_motion_list(sect_name, "left_hand_attach_motions", LeftHandAttachMotions);
+		hud_read_motion_list(sect_name, "left_hand_attach_animated_arm_motions", LeftHandAttachAnimatedArmMotions);
+	}
+
+	m_measures.load				(sect_name, m_model, m_model_combined);
+}
+
+void attachable_hud_item::LoadRigParams()
+{
+	const SCameraRigParams& rig = CCameraRig::Params();
+	const shared_str& sect_name = m_sect_name;
+
 	if (IKinematicsAnimated* animated = m_model->dcast_PKinematicsAnimated())
 	{
 		animated->LL_SetInertialization(CCameraRig::HudInertialization());
@@ -1000,45 +1039,15 @@ void attachable_hud_item::load(const shared_str& sect_name)
 		}
 	}
 
-	m_attach_place_idx = pSettings->read_if_exists<u16>(sect_name, "attach_place_idx", 0);
-
-	if (pSettings->line_exist(sect_name, "aim_bone_name"))
-		m_aim_bone_id = m_model->LL_BoneID(pSettings->r_string(sect_name, "aim_bone_name"));
-
-	m_aim_reload_motion = pSettings->read_if_exists<float>(sect_name, "aim_reload_motion", pSettings->read_if_exists<float>("camera_rig", "aim_reload_motion", 1.f));
-	m_hud_mass = std::max(pSettings->read_if_exists<float>(sect_name, "hud_mass", 1.f), 0.1f);
-	m_shot_variation = pSettings->read_if_exists<float>(sect_name, "shot_anim_variation", pSettings->read_if_exists<float>("camera_rig", "shot_anim_variation", 0.f));
-	m_shot_twist = pSettings->read_if_exists<float>(sect_name, "shot_anim_twist", pSettings->read_if_exists<float>("camera_rig", "shot_anim_twist", 0.f));
-	m_aim_shot_motion = pSettings->read_if_exists<float>(sect_name, "aim_shot_motion", pSettings->read_if_exists<float>("camera_rig", "aim_shot_motion", 1.f));
-	m_idle_fade = pSettings->read_if_exists<float>(sect_name, "idle_fade", pSettings->read_if_exists<float>("camera_rig", "idle_fade", 0.f));
-	m_inertia_damping = pSettings->read_if_exists<float>(sect_name, "inertia_damping", pSettings->read_if_exists<float>("camera_rig", "inertia_damping", 0.55f));
-
-	hud_read_motion_list(sect_name, "additive_motions", m_additive_motions);
-	m_additive_blend_in = std::max(pSettings->read_if_exists<float>(sect_name, "additive_blend_in", pSettings->read_if_exists<float>("camera_rig", "additive_blend_in", 0.f)), 0.f);
-	m_additive_blend_out = std::max(pSettings->read_if_exists<float>(sect_name, "additive_blend_out", pSettings->read_if_exists<float>("camera_rig", "additive_blend_out", 0.1f)), 0.01f);
-	m_additive_reference = pSettings->read_if_exists<str_c>(sect_name, "additive_reference", nullptr);
-	hud_read_motion_list(sect_name, "additive_retarget_motions", AdditiveRetargetMotions);
-	AdditiveRetargetReference = pSettings->read_if_exists<str_c>(sect_name, "additive_retarget_reference", nullptr);
-	hud_read_motion_list(sect_name, "left_hand_free_motions", m_left_hand_free_motions);
-
-	const char* left_ik_bone = pSettings->read_if_exists<str_c>(sect_name, "left_hand_ik_bone", pSettings->read_if_exists<str_c>("camera_rig", "left_hand_ik_bone", nullptr));
-	if (!m_model_combined && left_ik_bone != nullptr)
-	{
-		m_left_ik_bone = m_model->LL_BoneID(left_ik_bone);
-		m_left_ik_fixed = pSettings->line_exist(sect_name, "left_hand_ik_pos") || pSettings->line_exist(sect_name, "left_hand_ik_rot");
-		Fvector ypr = pSettings->read_if_exists<Fvector3>(sect_name, "left_hand_ik_rot", zero_vel);
-		ypr.mul(PI / 180.f);
-		m_left_ik_offset.setHPB(ypr.x, ypr.y, ypr.z);
-		m_left_ik_offset.c = pSettings->read_if_exists<Fvector3>(sect_name, "left_hand_ik_pos", zero_vel);
-
-		LeftHandAttachBlend = std::max(pSettings->read_if_exists<float>(sect_name, "left_hand_attach_blend", pSettings->read_if_exists<float>("camera_rig", "left_hand_attach_blend", 0.f)), 0.f);
-		LeftHandAttachTarget = pSettings->read_if_exists<str_c>(sect_name, "left_hand_attach_target", pSettings->read_if_exists<str_c>("camera_rig", "left_hand_attach_target", "anm_idle"));
-
-		hud_read_motion_list(sect_name, "left_hand_attach_motions", LeftHandAttachMotions);
-		hud_read_motion_list(sect_name, "left_hand_attach_animated_arm_motions", LeftHandAttachAnimatedArmMotions);
-	}
-
-	m_measures.load				(sect_name, m_model, m_model_combined);
+	m_aim_reload_motion = pSettings->read_if_exists<float>(sect_name, "aim_reload_motion", rig.aim_reload_motion);
+	m_shot_variation = pSettings->read_if_exists<float>(sect_name, "shot_anim_variation", rig.shot_anim_variation);
+	m_shot_twist = pSettings->read_if_exists<float>(sect_name, "shot_anim_twist", rig.shot_anim_twist);
+	m_aim_shot_motion = pSettings->read_if_exists<float>(sect_name, "aim_shot_motion", rig.aim_shot_motion);
+	m_idle_fade = pSettings->read_if_exists<float>(sect_name, "idle_fade", rig.idle_fade);
+	m_inertia_damping = pSettings->read_if_exists<float>(sect_name, "inertia_damping", rig.inertia_damping);
+	m_additive_blend_in = std::max(pSettings->read_if_exists<float>(sect_name, "additive_blend_in", rig.additive_blend_in), 0.f);
+	m_additive_blend_out = std::max(pSettings->read_if_exists<float>(sect_name, "additive_blend_out", rig.additive_blend_out), 0.01f);
+	LeftHandAttachBlend = std::max(pSettings->read_if_exists<float>(sect_name, "left_hand_attach_blend", rig.left_hand_attach_blend), 0.f);
 }
 
 static CBlend* hud_playing_cycle(IKinematicsAnimated* ka, u16 part, MotionID motion)
@@ -4394,6 +4403,19 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 					m_model->LL_PlayFX(second, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
 			}break;
 		}
+	}
+}
+
+void player_hud::ReloadRigParams()
+{
+	if (m_model != nullptr)
+	{
+		m_model->LL_SetInertialization(CCameraRig::HudInertialization());
+	}
+
+	for (attachable_hud_item* item : m_pool)
+	{
+		item->LoadRigParams();
 	}
 }
 
