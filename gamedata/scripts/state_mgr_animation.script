@@ -132,6 +132,13 @@ function animation:set_control()
 		self:update_anim()
 	end
 end
+-- NPC left the body state (stood up): the next positioned INTO animation must be placed at the point again.
+-- Otherwise re-entering (e.g. after weapon change) plays relative to the current pose and the NPC sits in the air.
+function animation:reset_position_applied()
+	if self.name == "state_mgr_animstate_list" then
+		self.mgr.pos_direction_applied = false
+	end
+end
 -- Инициализируем выбор анимации
 function animation:update_anim()
 	local anim, state = self:select_anim()
@@ -181,6 +188,10 @@ function animation:set_state(new_state, fast_set)
 		-- перевести current_state в nil
 		--printf("NULIFY ANIM MARKER %s", tostring(self.states.anim_marker))
 		self.states.anim_marker = nil
+
+		if new_state == nil then
+			self:reset_position_applied()
+		end
 
 		self.states.current_state 	= new_state
 		self.states.target_state	= new_state
@@ -361,13 +372,8 @@ function animation:add_anim(anim, state)
 		return
 	end
 
-	-- Первую входную анимацию состояния с позицией всегда играем в координатах точки.
-	-- Иначе после выхода из состояния (например, NPC встал, чтобы сменить оружие) повторный вход
-	-- проигрывался относительно текущей позы: NPC разворачивался и садился "в воздух".
-	local force_position = self.mgr.animation_position ~= nil and self.states.anim_marker == MARKER_IN and self.states.seq_id == 1
-
 	-- Если позиций/направление анимации не заданы или они уже применились
-	if self.mgr.animation_position == nil or (self.mgr.pos_direction_applied == true and not force_position) then
+	if self.mgr.animation_position == nil or self.mgr.pos_direction_applied == true then
 		-- Анимация с передвижением.
 		--npc:set_sight(CSightParams.eSightTypeAnimationDirection, false,false)
 --		printf("%s no pos", npc:name())
@@ -387,6 +393,7 @@ function animation:add_anim(anim, state)
 		npc:add_animation			(anim, true, self.mgr.animation_position, vector():set(0, rot_y, 0), false)
 
 		self.mgr.pos_direction_applied = true
+		self.mgr.body_placed_position = vector():set(self.mgr.animation_position)
 	end
 end
 
@@ -458,6 +465,7 @@ function animation:animation_callback(skip_multianim_check)
 
 		states.seq_id = 1
 		states.current_state = nil
+		self:reset_position_applied()
 
 		-- Передать управление анимстейту.
 		if self.name == "state_mgr_animation_list" then
