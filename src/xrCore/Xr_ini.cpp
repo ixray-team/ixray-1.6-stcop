@@ -1018,10 +1018,10 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 	OverrideParentDataMap.reserve(16);
 	OverrideToFilename.reserve(16);
 	// Read contents of root file
-	LTXLoad(F, path, OverrideData, OverrideParentDataMap, true, true);
+	LTXLoad(F, path, OverrideData, OverrideParentDataMap, true, true, m_file_name[0] ? m_file_name : "<memory>");
 
 	F->seek(0);
-	LTXLoad(F, path, BaseData, BaseParentDataMap, false, true);
+	LTXLoad(F, path, BaseData, BaseParentDataMap, false, true, m_file_name[0] ? m_file_name : "<memory>");
 
 	// Merge base and override data together
 	thread_local xr_vector<xr_string> PreviousEvaluations;
@@ -1067,7 +1067,7 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 	OverrideModifyListData = {};
 }
 
-void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Sect>& OutputData, xr_string_map<xr_string, xr_vector<xr_string>>& ParentDataMap, bool bOverridesOnly, bool bIsRootFile)
+void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Sect>& OutputData, xr_string_map<xr_string, xr_vector<xr_string>>& ParentDataMap, bool bOverridesOnly, bool bIsRootFile, const char* SourceFileName)
 {
 	string4096 LTXHelpStr1;
 	string4096 LTXHelpStr2;
@@ -1099,7 +1099,7 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			R_ASSERT3(I, "Can't find include file:", name);
 
 			strcpy(DLTXCurrentFileName, name);
-			LTXLoad(I, inc_path, OutputData, ParentDataMap, bOverridesOnly, false);
+			LTXLoad(I, inc_path, OutputData, ParentDataMap, bOverridesOnly, false, _fn);
 
 			FS.r_close(I);
 		}
@@ -1202,12 +1202,35 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 		}
 	};
 
+	u32 LineNumber = 1;
+	xr_string RawLine;
+	auto ReadLineLambda = [&]()
+	{
+		const char* Begin = static_cast<const char*>(F->pointer());
+		F->r_string(RawLine);
+		const char* End = static_cast<const char*>(F->pointer());
+		for (const char* Cursor = Begin; Cursor < End; ++Cursor)
+		{
+			if (*Cursor == '\n' || (*Cursor == '\r' && (Cursor + 1 == End || Cursor[1] != '\n')))
+			{
+				++LineNumber;
+			}
+		}
+	};
+
 	bool bHasLoadedModFiles = false;
 	while (!F->eof() || (bIsRootFile && !bHasLoadedModFiles))
 	{
+		const u32 ValueLineNumber = LineNumber;
 		if (!F->eof())
 		{
-			F->r_string(LTXHelpStr1, sizeof(LTXHelpStr1));
+			ReadLineLambda();
+			if (RawLine.size() >= sizeof(LTXHelpStr1) - 1)
+			{
+				Debug.fatal(DEBUG_INFO, "! LTX line too long: %s:%u", SourceFileName, ValueLineNumber);
+				return;
+			}
+			xr_strcpy(LTXHelpStr1, sizeof(LTXHelpStr1), RawLine.c_str());
 			_Trim(LTXHelpStr1);
 		}
 		else if (!bHasLoadedModFiles && bIsRootFile)
@@ -1394,22 +1417,57 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 					xr_string value_raw = t;
 					bool bInsideSTR = _parse(LTXHelpStr2, value_raw.data());
 
-					// multiline str value
 					if (bInsideSTR)
 					{
+						const auto ValueEnd = F->tell();
+						const u32 NextLineNumber = LineNumber;
+						const auto InitialValueSize = value_raw.size();
+						auto FixQuoteLambda = [&]()
+						{
+							string1024 QuoteError;
+							xr_sprintf(QuoteError, sizeof(QuoteError), "Unclosed LTX quote: %s:%u", SourceFileName, ValueLineNumber);
+							R_ASSERT2(!bInsideSTR, QuoteError);
+
+							F->seek(ValueEnd);
+							LineNumber = NextLineNumber;
+							value_raw.resize(InitialValueSize);
+							value_raw += '"';
+							_parse(LTXHelpStr2, value_raw.c_str());
+							Msg("! LTX quote fixed: %s:%u", SourceFileName, ValueLineNumber);
+						};
+
 						while (bInsideSTR)
 						{
+							if (F->eof())
+							{
+								FixQuoteLambda();
+								break;
+							}
+
+							ReadLineLambda();
+							const auto ContentStart = RawLine.find_first_not_of(" \t");
+							if (ContentStart != xr_string::npos &&
+								(RawLine[ContentStart] == '[' || RawLine[ContentStart] == '#' ||
+								 RawLine.compare(ContentStart, 2, "![") == 0 ||
+								 RawLine.compare(ContentStart, 3, "!![") == 0 ||
+								 RawLine.find('=') != xr_string::npos))
+							{
+								FixQuoteLambda();
+								break;
+							}
+
 							value_raw += "\r\n";
-							string4096 str_add_raw;
-							F->r_string(str_add_raw, 4096);
-							value_raw += str_add_raw;
+							value_raw += RawLine;
+							if (value_raw.size() >= sizeof(LTXHelpStr2))
+							{
+								FixQuoteLambda();
+								break;
+							}
 
 							bInsideSTR = _parse(LTXHelpStr2, value_raw.data());
-
-							if (bInsideSTR)
+							if (bInsideSTR && F->tell() >= 4 && is_empty_line_now(F))
 							{
-								if (is_empty_line_now(F))
-									value_raw += "\r\n";
+								value_raw += "\r\n";
 							}
 						}
 					}
