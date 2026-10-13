@@ -57,6 +57,11 @@ extern u32 hud_adj_mode;
 
 void CActor::IR_OnKeyboardPress(int dik)
 {
+	if (IsCameraFocusInputLocked())
+	{
+		return;
+	}
+
 	auto bind = get_binded_action(dik);
 	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 	{
@@ -334,6 +339,11 @@ void CActor::IR_OnKeyboardPress(int dik)
 
 void CActor::IR_OnMouseWheel(int direction)
 {
+	if (IsCameraFocusInputLocked())
+	{
+		return;
+	}
+
 	if (hud_adj_mode)
 	{
 		g_player_hud->tune({ 0.f,0.f,float(direction) });
@@ -475,6 +485,11 @@ void CActor::IR_OnKeyboardRelease(int dik)
 
 void CActor::IR_OnKeyboardHold(int dik)
 {
+	if (IsCameraFocusInputLocked())
+	{
+		return;
+	}
+
 	auto bind = get_binded_action(dik);
 	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 	{
@@ -701,6 +716,11 @@ void CActor::IR_OnMouseMoveCorrectMouseSense(int& p_dx, int& p_dy, float& sense)
 
 void CActor::IR_OnMouseMove(int dx, int dy)
 {
+	if (IsCameraFocusInputLocked())
+	{
+		return;
+	}
+
 	if (hud_adj_mode)
 	{
 		float LookFactor = GetLookFactor();
@@ -767,6 +787,11 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 
 void CActor::IR_OnGyroscopeMove(Fvector3 value)
 {
+	if (IsCameraFocusInputLocked())
+	{
+		return;
+	}
+
 	PIItem iitem = inventory().ActiveItem();
 	if (iitem != nullptr && iitem->cast_hud_item())
 	{
@@ -818,6 +843,11 @@ void CActor::IR_OnGyroscopeMove(Fvector3 value)
 
 void CActor::IR_OnTouchpadMove(Fvector2 value)
 {
+	if (IsCameraFocusInputLocked())
+	{
+		return;
+	}
+
 	PIItem iitem = inventory().ActiveItem();
 	if (iitem != nullptr && iitem->cast_hud_item())
 	{
@@ -869,6 +899,11 @@ void CActor::IR_OnTouchpadMove(Fvector2 value)
 
 void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 {
+	if (IsCameraFocusInputLocked())
+	{
+		return;
+	}
+
 	if (Remote())
 	{
 		return;
@@ -999,6 +1034,11 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 u32 gamepad_crouch_time_global = 0;
 void CActor::IR_GamepadKeyPress(int id)
 {
+	if (IsCameraFocusInputLocked())
+	{
+		return;
+	}
+
 	auto bind = get_binded_action(id);
 	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 	{
@@ -1297,6 +1337,11 @@ void CActor::IR_GamepadKeyRelease(int id)
 
 void CActor::IR_GamepadKeyHold(int id)
 {
+	if (IsCameraFocusInputLocked())
+	{
+		return;
+	}
+
 	auto bind = get_binded_action(id);
 	
 	if (Remote())	
@@ -1404,7 +1449,7 @@ static bool IsActionKeyPressed(const EGameActions& EGameAction)
 
 bool CActor::IsActionKeyPressedInGame(const EGameActions& EGameAction) const
 {
-	return IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() != nullptr && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr && !load_screen_renderer.IsActive() && !CImGuiManager::Instance().IsCapturingInputs();
+	return !IsCameraFocusInputLocked() && IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() != nullptr && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr && !load_screen_renderer.IsActive() && !CImGuiManager::Instance().IsCapturingInputs();
 }
 
 void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide)
