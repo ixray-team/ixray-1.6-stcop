@@ -343,6 +343,11 @@ public:
 
 
 			void				ActorLookAtPoint	(Fvector point);
+			bool ActorFocusPoint(const Fvector& Point, const CameraFocusParams& Params);
+			bool ActorFocusObject(CScriptGameObject* Target, const Fvector& Offset, const CameraFocusParams& Params);
+			void ActorStopFocus(float Duration);
+			bool ActorFocusActive() const;
+			u32 ActorFocusState() const;
 			void				IterateInventory	(luabind::functor<bool> functor, luabind::object object);
 			void				IterateInventoryBox	(luabind::functor<bool> functor, luabind::object object);
 			void				MarkItemDropped		(CScriptGameObject *item);

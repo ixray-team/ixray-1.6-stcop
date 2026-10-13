@@ -29,6 +29,10 @@ ENGINE_API extern float psHUD_FOV_def;
 
 void CActor::cam_Set	(EActorCameras style)
 {
+	if (style != eacFirstEye)
+	{
+		ResetCameraFocus();
+	}
 	CCameraBase* old_cam = cam_Active();
 	cam_active = style;
 	old_cam->OnDeactivate();
@@ -383,6 +387,7 @@ void CActor::cam_Update(float dt, float fFOV)
 {
 	if(m_holder)
 	{
+		ResetCameraFocus();
 		return;
 	}
 
@@ -519,6 +524,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	}
 
 	xform.transform_tiny(CamPivot);
+	fFOV = UpdateCameraFocus(CamPivot, fFOV, dt);
 
 	if (Level().CurrentEntity() == this)
 	{

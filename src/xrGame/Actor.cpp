@@ -1371,6 +1371,7 @@ void CActor::TryRegisterHelpWounded(CAI_Stalker* targetStalker, const CInventory
 
 void CActor::Die	(CObject* who)
 {
+	ResetCameraFocus();
 	SpatialComponent->type &= ~ESPATIAL_TYPE::ACTOR_ALIVE;
 	SpatialComponent->type |= ESPATIAL_TYPE::ACTOR_DEAD;
 
