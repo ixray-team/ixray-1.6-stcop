@@ -89,10 +89,10 @@ float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 #ifndef IBL_MAX_LOD
 	float4 MipLevels = 0.0f;
 	sky_s0.GetDimensions(MipLevels.x, MipLevels.y, MipLevels.z, MipLevels.w);
-	float2 Lod = MipLevels.w * Roughness;
+	float2 Lod = max(0.0f, MipLevels.w - 1.0f) * Roughness;
 	#ifdef USE_HQ_SKY2_LOD
 		sky_s1.GetDimensions(MipLevels.x, MipLevels.y, MipLevels.z, MipLevels.w);
-		Lod.y = MipLevels.w * Roughness;
+		Lod.y = max(0.0f, MipLevels.w - 1.0f) * Roughness;
 	#endif
 #else
 	float2 Lod = IBL_MAX_LOD * Roughness;
