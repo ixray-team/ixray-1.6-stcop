@@ -202,7 +202,7 @@ void InternalDevice9::ResizeBuffers(u32 Width, u32 Height)
 			if (SUCCEEDED(_hr))
 				break;
 
-			Msg("! ERROR: [%dx%d]: %s", P.BackBufferWidth, P.BackBufferHeight, Debug.dxerror2string(_hr));
+			Msg("! ERROR: [%dx%d]: Reset failed, hr = 0x%08X", P.BackBufferWidth, P.BackBufferHeight, u32(_hr));
 			Sleep(100);
 		}
 	}
