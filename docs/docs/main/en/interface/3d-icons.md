@@ -13,7 +13,7 @@ Set `Enable3DIcons = true` in `engine_external.ltx`.
 
 ## Spawn Manager
 
-Open `Game` в†’ `Spawn Manager` in the ImGui menu (`Alt`) and enable `3D icons`. This checkbox is off by default and works independently of `Enable3DIcons`, in both table and list views.
+Open `Game` → `Spawn Manager` in the ImGui menu (`Alt`). The `3D icons` checkbox initially follows `Enable3DIcons` in `engine_external.ltx` and can then be changed independently, in both table and list views.
 
 Icons use the section's model, rotation and scale settings. Missing or unsupported models fall back to the regular atlas icon. Clicking an icon spawns the item with the current Spawn Manager settings.
 
@@ -25,11 +25,13 @@ Weapon previews use the same addon, upgrade and scope bone rules as `CWeapon`, i
 3d_static_visual_name = dynamics\devices\dev_binoculars\dev_binoculars.ogf
 3d_static_rotate = 0.0, 90.0, 0.0
 3d_static_scale = 1.0
+3d_static_offset = 0.0, 0.0
 ```
 
 - `3d_static_visual_name`: icon model, relative to the meshes folder. When omitted, the item's world model (`visual`) is used.
 - `3d_static_rotate`: rotation around X, Y and Z, in degrees.
 - `3d_static_scale`: multiplier for the fitted icon size.
+- `3d_static_offset`: X/Y displacement relative to the icon's width/height. The default is `(0, 0)`; `(0.1, 0.1)` moves the model right/down by 10% of its bounds. The model remains clipped to the icon bounds.
 
 ## Adjusting icons in game
 
@@ -47,6 +49,10 @@ The console command `3d_icons_adjust 1` enables adjustment. `3d_icons_adjust_val
 Alternatively, open `Game` в†’ `3D Icons Adjust` in the ImGui menu.
 
 The editor provides an inventory list with section/name filtering, item count and location; modified items are highlighted. Select an item in the list or enable `Follow cursor`. Edit the model, rotation and scale with immediate feedback, or use `Reset to config` to restore the section's values.
+
+Enable `Hide item description` to hide item description windows while the editor is open. Descriptions return when the checkbox is cleared or the editor is closed.
+
+`Position inside icon` edits `3d_static_offset` on both axes. `Inventory cells` edits `inv_grid_width` and `inv_grid_height` for all actor inventory items in the selected section. Resizing updates the occupied cells immediately; increasing the size requires free neighbouring cells and sufficient space before the grid edge. Stop dragging before resizing. `inv_grid_x` and `inv_grid_y` remain coordinates in the 2D icon atlas and do not move the 3D model. Offset and grid size are included in logging, clipboard export, saved LTX sections and config reset.
 
 `Log values` writes settings to the log. `Copy config` copies an LTX block to the clipboard. `Save to file` writes modified sections to `$app_data_root$\3d_icons\adjusted.ltx`. The adjustment hotkeys also work while the editor is focused and adjustment mode is enabled.
 
