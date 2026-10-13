@@ -2806,11 +2806,6 @@ bool CWeapon::CanAimNow()
 
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
-	if (!isDelayedWeaponActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
-	{
-		return !IsZoomed();
-	}
-
 	bool result = true;
 
 	CCustomDevice* pDevice = pActor->GetDevice(true);
@@ -2819,6 +2814,11 @@ bool CWeapon::CanAimNow()
 	{
 		u8 state = pDevice->GetNextState();
 		result = pDevice->IsHidden() && !pDevice->NeedActivation() || !!(state == CCustomDevice::eIdle || state == CCustomDevice::EDeviceStates::eHandAimStart || state == CCustomDevice::EDeviceStates::eHandAimEnd);
+	}
+
+	if (!isDelayedWeaponActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
+	{
+		return !IsZoomed() && result;
 	}
 
 	//if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || GetNextState() == eSprintStart || GetNextState() == eSprintEnd || m_bSwitchSprint))
