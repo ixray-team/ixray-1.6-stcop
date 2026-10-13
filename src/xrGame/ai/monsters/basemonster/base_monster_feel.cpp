@@ -298,7 +298,8 @@ bool  CBaseMonster::feel_vision_isRelevant(CObject* O)
 void CBaseMonster::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 element)
 {
 	if (!g_Alive()) return;
-	
+	if (!who) return;
+
 	feel_sound_new(who,SOUND_TYPE_WEAPON_SHOOTING,0,who->Position(),1.f);
 	if (g_Alive()) sound().play(MonsterSound::eMonsterSoundTakeDamage);
 

@@ -70,6 +70,8 @@ void CAI_Rat::Exec_Action(float /**dt/**/)
 
 void CAI_Rat::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 /**element/**/)
 {
+	if (!who) return;
+
 	// Save event
 	Fvector D;
 	XFORM().transform_dir(D,vLocalDir);
