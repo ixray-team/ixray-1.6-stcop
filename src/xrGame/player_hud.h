@@ -278,6 +278,7 @@ struct attachable_hud_item final
 	xr_vector<Fquaternion>			LeftHandAttachPoseRef;
 	float							m_aim_reload_motion = 1.f;
 	float							m_hud_mass = 1.f;
+	bool							IkEnabled = true;
 	float							m_shot_variation = 0.f;
 	float							m_shot_twist = 0.f;
 	float							m_aim_shot_motion = 1.f;
