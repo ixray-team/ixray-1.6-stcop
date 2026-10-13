@@ -48,6 +48,8 @@ public:
 	void End() override;
 	void ClearTarget() override;
 	void SetupDefaultTarget() override;
+	void InvalidateRenderCache() override;
+	UIIconLighting* GetUIIconLighting() override;
 	void SetCacheXform(Fmatrix &mView, Fmatrix &mProject) override;
 	virtual void SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject);
 	void OnAssetsChanged() override;
@@ -66,4 +68,5 @@ public:
 	ref_shader			m_SelectionShader;
 	FactoryPtr<IUIShader> m_empty_default_shader;
 	CGammaControl		m_Gamma;
+	UIIconLighting IconLighting;
 };

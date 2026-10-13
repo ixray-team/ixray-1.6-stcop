@@ -338,19 +338,20 @@ void CRender::render_menu	()
 
 void CRender::RenderUI(Fcolor* color)
 {
-	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), Target->rt_Position->pRT, Target->rt_Normal->pRT, RTarget, RDepth);
+	auto* UITarget = RCache.get_RT();
+	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), Target->rt_Position->pRT, Target->rt_Normal->pRT, UITarget, RDepth);
 	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
 	rmNormal();
 
 	r_dsgraph_render_ui();
 
-	Target->u_setrt(RCache.get_width(), RCache.get_height(), RTarget, nullptr, nullptr, RDepth);
+	Target->u_setrt(RCache.get_width(), RCache.get_height(), UITarget, nullptr, nullptr, RDepth);
 	rmNormal();
 
 	r_dsgraph_render_sorted_ui();
 
 	marker++;
-	Target->u_setrt(RCache.get_width(), RCache.get_height(), RTarget, nullptr, nullptr, nullptr);
+	Target->u_setrt(RCache.get_width(), RCache.get_height(), UITarget, nullptr, nullptr, nullptr);
 }
 
 void CRender::Render()

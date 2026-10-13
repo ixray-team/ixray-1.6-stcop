@@ -755,6 +755,7 @@ void Icon3dAdjust_RegisterCell(CUICellItem* cell);
 void Icon3dAdjust_UnregisterCell(CUICellItem* cell);
 
 void DestroySpawnManagerWindow();
+void Render3DIconLightingControls();
 
 /* WORKER THREAD of Tools */
 

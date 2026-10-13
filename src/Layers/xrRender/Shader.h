@@ -159,6 +159,7 @@ public:
 										// R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
 
 	shared_str			src_shader, src_textures, src_constants, src_matrices;
+	ref_selement UIElement;
 	int					src_skinning = -1;
 
 	Shader();

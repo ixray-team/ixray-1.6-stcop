@@ -524,7 +524,8 @@ void CRender::Calculate				()
 
 void CRender::RenderUI(Fcolor* color)
 {
-	Target->u_setrt(RCache.get_width(), RCache.get_height(), RTarget, nullptr, nullptr, RDepth);
+	auto* UITarget = RCache.get_RT();
+	Target->u_setrt(RCache.get_width(), RCache.get_height(), UITarget, nullptr, nullptr, RDepth);
 	rmNormal();
 
 	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
@@ -533,7 +534,7 @@ void CRender::RenderUI(Fcolor* color)
 	r_dsgraph_render_sorted_ui();
 
 	marker++;
-	Target->u_setrt(RCache.get_width(), RCache.get_height(), RTarget, nullptr, nullptr, nullptr);
+	Target->u_setrt(RCache.get_width(), RCache.get_height(), UITarget, nullptr, nullptr, nullptr);
 
 	rmNormal();
 

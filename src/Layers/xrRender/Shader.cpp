@@ -106,6 +106,10 @@ bool ShaderElement::equal	(ShaderElement* S)
 //
 bool Shader::equal	(Shader& S)
 {
+	if (UIElement != S.UIElement)
+	{
+		return false;
+	}
 	return
 		E[0] && E[0]->equal(&*S.E[0]) &&
 		E[1] && E[1]->equal(&*S.E[1]) &&
@@ -173,6 +177,7 @@ Shader::Shader()
 
 void Shader::_copy(Shader& Other)
 {
+	UIElement = Other.UIElement;
 	for (u32 i = 0; i < SHADER_ELEMENTS_MAX; i++)
 	{
 		E[i] = Other.E[i];

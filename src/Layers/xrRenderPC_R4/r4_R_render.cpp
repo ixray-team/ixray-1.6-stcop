@@ -408,7 +408,8 @@ void CRender::RenderUI(Fcolor* color)
 	UIRender->SetScissor(&Scissor);
 	rmNormal();
 
-	if(Target->rt_BackbufferLUT->pRT == pRT_0)
+	const bool HasBackground = Target->rt_BackbufferLUT->pRT == pRT_0;
+	if (HasBackground)
 	{
 		Target->phase_ui_postprocess_copy();
 	}
@@ -430,7 +431,7 @@ void CRender::RenderUI(Fcolor* color)
 	UIRender->SetScissor(&Scissor);
 	RImplementation.rmNormal();
 
-	Target->phase_ui_postprocess(color);
+	Target->phase_ui_postprocess(color, HasBackground);
 	++marker;
 }
 

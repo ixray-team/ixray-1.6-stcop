@@ -5,6 +5,9 @@
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 
+uniform float4 ui_icon_light;
+uniform float4 ui_icon_direction;
+
 float3 AmbientLightingUI(float3 View, float3 Normal, float3 Diffuse, float3 Specular, float Roughness)
 {
 	float3 Reflect = reflect(View, Normal);
@@ -59,10 +62,10 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
 	M.Specular = M.Specular * M.Specular * 0.16f;
 #endif
 
-	float4 LightColor = float2(1.0f, 0.0f).xxxy;
+	float4 LightColor = float4(ui_icon_light.xyz, 0.0f);
 	float3 View = float2(1.0f, 0.0f).yyx;
 	
-	float3 LightDirection = float2(1.0f, 0.0f).yyx;
+	float3 LightDirection = dot(ui_icon_direction.xyz, ui_icon_direction.xyz) > EPS_L ? ui_icon_direction.xyz : float3(0.0f, 0.0f, 1.0f);
 	LightDirection = normalize(LightDirection);
 	
 	#ifndef USE_LEGACY_LIGHT
@@ -76,7 +79,11 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
 		float3 Ambient = AmbientLightingUI(View, M.Normal, M.Color.xyz, M.Gloss.xxx, M.Material);
 	#endif
 	
-    Color.xyz = Ambient + Light.xyz;
-    Color.w = saturate(M.Color.w + EPS_L);
+    Color.xyz = Ambient * ui_icon_light.w + Light.xyz;
+#ifdef UI_ALPHA_BLEND
+    Color.w = saturate(M.Color.w);
+#else
+    // Opaque and alpha-tested fragments fully cover the UI target.
+    Color.w = 1.0f;
+#endif
 }
-

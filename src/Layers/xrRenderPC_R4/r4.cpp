@@ -43,6 +43,10 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 {
 	if (!!RImplementation.val_bUI)
 	{
+		if (auto* Element = pVisual->shader->UIElement._get())
+		{
+			return Element;
+		}
 		if (auto pSh = pVisual->shader->E[SE_R2_UI]._get())
 		{
 			return pSh;
