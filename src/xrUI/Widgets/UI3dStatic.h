@@ -32,6 +32,8 @@ public:
 	void Draw() override;
 
 	void SetScaleFactor(float fScale) { fScaleFactor = fScale; }
+	void SetIconOffset(const Fvector2& Offset) { IconOffset = Offset; }
+	const Fvector2& GetIconOffset() const { return IconOffset; }
 	float GetScaleFactor() { return fScaleFactor; }
 	void SetCaptMoving(bool bMoving) { m_bCaptMoving = bMoving; }
 	bool IsCaptMoving() { return m_bCaptMoving; }
@@ -55,4 +57,5 @@ protected:
 
 	Fmatrix mView, mInvView, mProject, mRotate;
 	float fScaleFactor;
+	Fvector2 IconOffset{};
 };
