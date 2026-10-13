@@ -22,6 +22,7 @@
 #include "EffectorNightVision.h"
 #include "HudAnimatorManager.h"
 #include "nvg.h"
+#include "CameraFocus.h"
 
 using namespace ACTOR_DEFS;
 
@@ -89,6 +90,16 @@ class CActor:
 	friend class CActorCondition;
 private:
 	typedef CEntityAlive	inherited;
+	CameraFocus Focus;
+	CGameObject* FocusTarget = nullptr;
+	Fvector FocusPoint = {};
+	Fvector FocusOffset = {};
+	bool FocusRestoreDirection = false;
+
+	bool CanFocusCamera() const;
+	float UpdateCameraFocus(const Fvector& Position, float NaturalFov, float Delta);
+	void ReleaseCameraFocusTarget(CObject* Object);
+
 	CPickUpManager* pPickup = nullptr;
 	CAutoAim* pAutoaim = nullptr;
 
@@ -490,6 +501,14 @@ public:
 	IC CCameraBase*			cam_FirstEye		()	{return cameras[eacFirstEye];}
 	IC EActorCameras active_cam() { return cam_active; }
 	virtual void cam_Set(EActorCameras style);
+
+	bool FocusCameraPoint(const Fvector& Point, const CameraFocusParams& Params);
+	bool FocusCameraObject(CGameObject* Target, const Fvector& Offset, const CameraFocusParams& Params);
+	void StopCameraFocus(float Duration = -1.f);
+	void ResetCameraFocus();
+	bool IsCameraFocusActive() const { return Focus.IsActive(); }
+	bool IsCameraFocusInputLocked() const { return Focus.IsInputLocked(); }
+	u32 GetCameraFocusState() const { return (u32)Focus.GetPhase(); }
 
 	float					currentFOV();
 protected:
