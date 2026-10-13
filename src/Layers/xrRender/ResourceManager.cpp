@@ -499,11 +499,8 @@ void CResourceManager::DeferredUpload()
 	WaitForTextureLoading();
 
 #if defined(USE_DX11)
-	if (!Device.IsEditorMode())
-	{
-		FluidManager.Initialize(70, 70, 70);
-		FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
-	}
+	FluidManager.Initialize(70, 70, 70);
+	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
 #endif
 }
 
@@ -518,10 +515,7 @@ void CResourceManager::DeferredUnload()
 		return;
 
 #if defined(USE_DX11)
-	if (!Device.IsEditorMode())
-	{
-		FluidManager.Destroy();
-	}
+	FluidManager.Destroy();
 #endif
 
 	for (auto& texture : m_textures)
