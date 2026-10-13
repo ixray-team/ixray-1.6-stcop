@@ -221,6 +221,7 @@ FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(SWIs.size()));
 CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
 {
 	auto texture = DEV->_CreateTexture(nameTexture);
+	texture->Load();
 	SurfaceParams surface = {};
 	surface.Surface = texture->pSurface->GetRawTexture();
 	surface.w = texture->get_Width();

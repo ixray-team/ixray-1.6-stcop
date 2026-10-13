@@ -22,6 +22,14 @@ This branch uses separate client renderer DLLs. Dedicated servers load `xrRender
 
 Shared code is in `src/Layers/xrRender`, `xrRenderDX9`, and `xrRenderDX10`; renderer CMake files select the sources compiled into each DLL. Resources use `CResourceManager`; materials use `IBlender` and shader permutations. R4 compute shaders use `CSCompiler`. Game code requests visuals through `Render` (`ModelPool`, `SkeletonAnimated`, `WallmarksEngine`, `PSLibrary`).
 
+## Texture loading
+
+With `r__mt_texture_load on`, creating a texture starts its DDS load as soon as the render device is ready, including during deferred resource creation. Each `CTexture` owns a task group allocated only while a load is pending. Repeated requests reuse that task. `Load`, surface/view access, unloading, and destruction wait for it; worker tasks do not change the texture's bind delegate. D3D11 staging uploads and binding remain on the rendering thread. Video textures, sequences, user surfaces, and editor loads use the synchronous path.
+
+`CResourceManager::DeferredUpload` uses the same tasks and waits for completion before returning. It also drains pending loads when deferred upload is disabled. Device reset/destruction and texture-description reload wait before changing the resources used by the loader. Turning multithreaded loading off retains synchronous or lazy loading according to `bDeferredLoad`; `r__deferred_texture_load` controls bulk upload/unload.
+
+The R4 `render.experemental.target_res` command is registered during renderer console initialization, before any background texture load. Texture loading never registers console commands from a worker.
+
 ## R4 dynamic frame
 
 `CRender::Render` in `src/Layers/xrRenderPC_R4/r4_R_render.cpp` is reached from `seqRender`.

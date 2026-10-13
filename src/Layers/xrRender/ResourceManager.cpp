@@ -7,7 +7,6 @@
 #include "tss.h"
 #include "blenders/Blender.h"
 #include "blenders/Blender_Recorder.h"
-#include <execution>
 
 #ifdef USE_DX11
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
@@ -425,8 +424,46 @@ void CResourceManager::Delete(const Shader* S)
 	Msg("! ERROR: Failed to find complete shader");
 }
 
+void CResourceManager::LoadTexture(CTexture* Texture)
+{
+	if (!RDEVICE.b_is_Ready)
+	{
+		return;
+	}
+
+	if (!Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD) && Texture->StartLoading())
+	{
+		return;
+	}
+
+	if (!bDeferredLoad)
+	{
+		Texture->Load();
+	}
+}
+
+void CResourceManager::WaitForTextureLoading()
+{
+	PROF_EVENT("CResourceManager::WaitForTextureLoading");
+	// LoadImpl does not acquire creationGuard or access texture descriptions.
+	xrCriticalSectionGuard Guard(creationGuard);
+	for (auto& [Name, Texture] : m_textures)
+	{
+		Texture->WaitForLoad();
+	}
+}
+
+void CResourceManager::ReloadTextureDescriptions()
+{
+	xrCriticalSectionGuard Guard(creationGuard);
+	WaitForTextureLoading();
+	m_textures_description.UnLoad();
+	m_textures_description.Load();
+}
+
 void CResourceManager::DeferredUpload()
 {
+	WaitForTextureLoading();
 	if (!RDEVICE.b_is_Ready)
 	{
 		return;
@@ -439,28 +476,16 @@ void CResourceManager::DeferredUpload()
 	PROF_EVENT("CResourceManager::DeferredUpload");
 	Log("Loading textures via DeferredUpload");
 
-	// Build list of textures that actually need loading to avoid extra work
-	xr_vector<CTexture*> to_load;
-	to_load.reserve(m_textures.size());
-	for (auto& pair : m_textures) {
-		CTexture* T = pair.second;
-		// Only enqueue textures that are not already marked as loaded
-		if (T && !T->flags.bLoaded)
-			to_load.push_back(T);
-	}
-
-#if defined(IXR_WINDOWS)
-	if (!Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
-		// Parallel: load filtered list
-		xr_parallel_foreach(to_load.begin(), to_load.end(), [](CTexture* texPtr) { texPtr->Load(); });
-	}
-	else
-#endif // IXR_WINDOWS
+	xrCriticalSectionGuard Guard(creationGuard);
+	const bool IsParallel = !Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD);
+	for (auto& [Name, Texture] : m_textures)
 	{
-		// Single-threaded: load filtered list
-		for (CTexture* T : to_load)
-			T->Load();
+		if (!IsParallel || !Texture->StartLoading())
+		{
+			Texture->Load();
+		}
 	}
+	WaitForTextureLoading();
 
 #if defined(USE_DX11)
 	if (!Device.IsEditorMode())
@@ -473,6 +498,8 @@ void CResourceManager::DeferredUpload()
 
 void CResourceManager::DeferredUnload() 
 {
+	xrCriticalSectionGuard Guard(creationGuard);
+	WaitForTextureLoading();
 	if (!RDEVICE.b_is_Ready)
 		return;
 
@@ -492,6 +519,8 @@ void CResourceManager::DeferredUnload()
 
 void CResourceManager::ED_UpdateTextures(xr_vector<xr_string>* names)
 {
+	xrCriticalSectionGuard Guard(creationGuard);
+	WaitForTextureLoading();
 	// 1. Unload
 	if (names){
 		for (u32 nid=0; nid<names->size(); nid++)
@@ -530,6 +559,8 @@ Shader* CResourceManager::_CreateShader(Shader* InShader)
 
 void	CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps)
 {
+	xrCriticalSectionGuard Guard(creationGuard);
+	WaitForTextureLoading();
 	m_base=c_base=m_lmaps=c_lmaps=0;
 
 	map_Texture::iterator I = m_textures.begin	();
@@ -550,6 +581,8 @@ void	CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u
 
 void CResourceManager::_DumpMemoryUsage		()
 {
+	xrCriticalSectionGuard Guard(creationGuard);
+	WaitForTextureLoading();
 	xr_multimap<u32,std::pair<u32,shared_str> >		mtex	;
 
 	// sort
