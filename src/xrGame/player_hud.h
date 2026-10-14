@@ -286,6 +286,7 @@ struct attachable_hud_item final
 	xr_vector<Fquaternion>			FingerGripPose;
 	shared_str						FingerGripPoseMotion;
 	Fmatrix							LeftHandAttachAncorRef = Fidentity;
+	Fmatrix							LeftHandAttachArmRootRef = Fidentity;
 	xr_vector<Fquaternion>			LeftHandAttachPoseRef;
 	float							m_aim_reload_motion = 1.f;
 	float							m_hud_mass = 1.f;
@@ -844,6 +845,7 @@ private:
 	xr_vector<u16>	left_arm_blend_bones() const;
 	xr_vector<u16>	left_hand_fingers() const;
 	bool			FingerGripReference	(attachable_hud_item* item);
+	bool			ArmRetargetReference(attachable_hud_item* item, const xr_vector<u16>& bones);
 	float								RetargetWeight = 0.f;
 	Fmatrix								RetargetLeftTarget = Fidentity;
 	Fmatrix								RetargetRightTarget = Fidentity;
@@ -859,6 +861,9 @@ private:
 	xr_vector<Fquaternion>				FingerRefPose;
 	MotionID							FingerRefMotion;
 	int									FingerRefSegment = -1;
+	MotionID							ArmRetargetMotion;
+	xr_vector<Fquaternion>				ArmRetargetPose;
+	Fmatrix								ArmRetargetRootRef = Fidentity;
 	MotionID							AttachOffsetMotion;
 	Fmatrix								AttachOffsetRef = Fidentity;
 	float								LeftHandAttachHold = 0.f;
