@@ -1175,6 +1175,19 @@ void CKinematicsAnimated::LL_SetInertializationBone(u16 bone, bool enabled)
 	}
 }
 
+bool CKinematicsAnimated::LL_GetBoneTransformMasked(u16 bone, u8 channel_mask, Fmatrix& result)
+{
+	if (bone >= LL_BoneCount())
+	{
+		return false;
+	}
+
+	CBoneInstance instance = bone_instances[bone];
+	BoneChain_Calculate(&LL_GetData(bone), instance, channel_mask, true);
+	result.set(instance.mTransform);
+	return true;
+}
+
 void CKinematicsAnimated::LL_ResetInertialization()
 {
 	for (SInertialBone& S : m_InertialBones)

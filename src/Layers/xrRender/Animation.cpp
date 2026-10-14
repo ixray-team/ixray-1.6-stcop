@@ -4,7 +4,7 @@
 
 using	namespace animation;
 
-const channal_rule channels::rules[channels::max] = { { lerp, lerp }, { lerp, lerp }, { lerp, add }, {lerp, add }, { lerp, add_local } };
+const channal_rule channels::rules[channels::max] = { { lerp, lerp }, { lerp, lerp }, { lerp, add }, {lerp, add }, { lerp, add_local }, { lerp, add_local } };
 
 channels::channels( )
 {
