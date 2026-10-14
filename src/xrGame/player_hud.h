@@ -361,6 +361,11 @@ struct attachable_hud_item final
 	bool need_renderable			();
 	u8 LeftHandAttachMotionMode		(const shared_str& motion) const;
 	bool RetargetMode				(const shared_str& motion, shared_str& reference) const;
+	const player_hud_motion* OwnIdle	() const;
+	MotionID AliasMotion				(const char* alias) const;
+	bool SprintLayered				() const;
+	shared_str SprintLayerReference	() const;
+	float SprintLayerBlend			() const { return std::max(m_idle_fade, 0.1f); }
 	void set_bone_visible			(const shared_str& bone_name, bool bVisibility, bool bSilent=false);
 	void debug_draw_firedeps		();
 	void UpdateInertion				(u32 delta, CActor* actor);
@@ -445,9 +450,6 @@ struct script_layer
 	u8 part = 0;
 	u8 item = 0;
 	u8 state = EBlendLayers::eNone;
-	bool BaseAtEnd = false;
-	bool FadeAtEnd = false;
-	float RigidWeight = 0.f;
 
 	script_layer()
 	{
@@ -478,9 +480,6 @@ struct script_layer
 		this->mix = mix;
 		this->state = state;
 		this->item = item;
-		BaseAtEnd = false;
-		FadeAtEnd = false;
-		RigidWeight = 0.f;
 
 		blend_scale = 0.0f;
 		active = true;
@@ -624,9 +623,6 @@ struct movement_layer
 
 	bool playing = false;
 
-	bool Relative = false;
-	bool SeamNext = false;
-	Fmatrix FirstFrameInv = Fidentity;
 
 	CObjectAnimator* anim = nullptr;
 
@@ -644,14 +640,7 @@ struct movement_layer
 
 	const Fmatrix& XFORM()
 	{
-		if (Relative)
-		{
-			m_XFORM.mul_43(FirstFrameInv, anim->XFORM());
-		}
-		else
-		{
-			m_XFORM.set(anim->XFORM());
-		}
+		m_XFORM.set(anim->XFORM());
 
 		Fvector rotation = zero_vel, position = zero_vel;
 		m_XFORM.getXYZ(rotation);
@@ -695,9 +684,6 @@ struct movement_layer
 		playing = true;
 		anim->Speed() = speed;
 		anim->Play(loop);
-
-		anim->Update(0.f);
-		FirstFrameInv.invert(anim->XFORM());
 
 		const SAnimParams& params = anim->anim_param();
 		if (phase > 0.0f && speed > 0.0f)
@@ -808,28 +794,36 @@ public:
 	float			m_cycle_fade = 0.f;
 	SHudCycleMode	m_cycle_mode;
 	bool			m_sprinting = false;
-	bool			m_sprint_start_wait = false;
 
-	void			UpdateSprintBlend	(bool sprint);
-	bool			SprintStartPlaying	();
 	void			SyncSprintBlend		();
 
-	movement_layer*	m_sprint_loop = nullptr;
+	enum class ESprintAdditiveStage : u8
+	{
+		None,
+		Start,
+		Loop,
+		End
+	};
+
+	ESprintAdditiveStage	SprintAdditiveStage = ESprintAdditiveStage::None;
+	attachable_hud_item*	SprintAdditiveItem = nullptr;
+	MotionID				SprintStartMotion;
+	MotionID				SprintLoopMotion;
+	MotionID				SprintEndMotion;
+	MotionID				SprintReferenceMotion;
+	float					SprintEndPower = 1.f;
+
+	bool			SprintAdditiveEnabled	() const;
+	bool			SprintPoseActive		() const { return m_sprinting && SprintAdditiveEnabled(); }
+	void			ResolveSprintAdditive	(attachable_hud_item* item);
+	bool			PlaySprintAdditive		(attachable_hud_item* item, MotionID motion, bool loop, float progress, float power = 1.f);
+	void			StopSprintAdditive		(float blend);
+	float			SprintAdditiveProgress	(MotionID motion) const;
+	void			UpdateSprintAdditive	(bool sprint);
+	void			UpdateSprintAdditiveChain();
 
 	float			m_sprint_yield = 0.f;
-	float			m_sprint_yield_in = 1.f / 0.3f;
-	float			m_sprint_yield_out = 1.f / 0.3f;
 
-	Fmatrix			LayersPrev = Fidentity;
-	Fvector			LayersPrevVelPos = {}, LayersPrevVelRot = {};
-	Fvector			LayersInertPos = {}, LayersInertRot = {}, LayersInertVelPos = {}, LayersInertVelRot = {};
-	float			LayersInertHalfLife = 0.f;
-	bool			LayersInertTrigger = false;
-
-	bool			LayersInertCarryVel = true;
-
-	void			TriggerLayersInertia	(bool carry_velocity = true);
-	Fmatrix			UpdateLayersInertia		(const Fmatrix& total);
 	shared_str		NextHUDSect;
 	SBlendParams m_default_movement_layers_params[EMovementLayers::eLayersCount] = {};
 	movement_layer* m_movement_layers[EMovementLayers::eLayersCount] = {};
@@ -853,7 +847,7 @@ private:
 	void			update_hands_ik		(const Fmatrix& cam_trans, CActor* actor);
 	bool			LeftHandAttachReference	(attachable_hud_item* item);
 	bool			HandAttachRelative	(attachable_hud_item* item, MotionID hands_motion, float hands_time, MotionID item_motion, float item_time, Fmatrix& relative, Fmatrix* ancor_ms = nullptr);
-	bool			RetargetHandTarget	(attachable_hud_item* item, u16 ancor, u16 wrist, Fmatrix& result);
+	bool			RetargetHandTarget	(attachable_hud_item* item, u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result);
 	xr_vector<u16>	left_arm_blend_bones() const;
 	xr_vector<u16>	left_hand_fingers() const;
 	bool			FingerGripReference	(attachable_hud_item* item);
@@ -863,6 +857,9 @@ private:
 	Fmatrix								RetargetRightTarget = Fidentity;
 	bool								RetargetLeftValid = false;
 	bool								RetargetRightValid = false;
+	float								SprintHandWeight = 0.f;
+	bool			SprintBaseTransform	(u16 bone, Fmatrix& result) const;
+	bool			SprintBoneDelta		(u16 bone, Fmatrix& result) const;
 	float								LeftHandAttachWeight = 0.f;
 	bool								LeftHandAttachReaching = false;
 	u32									LeftHandAttachSnapFrame = u32(-1);

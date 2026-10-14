@@ -50,10 +50,6 @@ struct SHudItemDesc final
 	XPROPERTY(IniReadExist, Name="use_blending_movement")
 	bool m_bBlendMovement = false;
 	SBlendParams m_sMovementBlendParams[EMovementLayers::eLayersCount];
-	SBlendParams m_sSprintStartBlendParams;
-	SBlendParams m_sSprintEndBlendParams;
-	SBlendParams m_sSprintLoopBlendParams;
-	float SprintInertia = 0.12f;
 
 	XPROPERTY(IniReadExist, Name="controller_time")
 	float ControllerTime = 0.0f;

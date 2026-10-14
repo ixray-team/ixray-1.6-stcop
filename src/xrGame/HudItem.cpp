@@ -597,6 +597,12 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_sprint, HudAnimationExist("anm_idle_sprint"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_moving, HudAnimationExist("anm_idle_moving"));
 
+	if (SprintLayered())
+	{
+		m_eAnimationsFlags.set(EAnimationsFlags::af_sprint_in_out, false);
+		m_eAnimationsFlags.set(EAnimationsFlags::af_sprint, false);
+	}
+
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_dry, HudAnimationExist("anm_hand_dry"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_shoot, HudAnimationExist("anm_hand_shoot"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_jammed, HudAnimationExist("anm_hand_jammed"));
@@ -844,7 +850,7 @@ bool CHudItem::TryPlayAnimIdle()
 							{
 								const u8 NextState = pHudItem->GetNextState();
 								bool CanSprint = NextState == eIdle || NextState == eShowing || NextState == eSprintEnd || NextState == eBore;
-								if (!pHudItem->m_bSwitchSprint && CanSprint)
+								if (!pHudItem->m_bSwitchSprint && CanSprint && !pHudItem->SprintLayered())
 								{
 									pHudItem->m_bSwitchSprint = true;
 									pHudItem->SwitchState(eSprintStart);
@@ -1002,7 +1008,7 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 	}
 	else if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && !IsZoomed() && GetNextState() != eHiding)
 	{
-		if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && (GetNextState() == eSprintEnd || !IsPending() && GetState() == GetNextState()))
+		if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && (GetNextState() == eSprintEnd || !IsPending() && GetState() == GetNextState()) && !SprintLayered())
 		{
 			m_bSwitchSprint = true;
 			SwitchState(eSprintStart);
@@ -1032,7 +1038,7 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 						const u8 NextState = pHudItem->GetNextState();
 						const u8 State = pHudItem->GetNextState();
 						bool CanSprint = NextState == eIdle || NextState == eShowing || NextState == eSprintEnd || NextState == eBore || NextState == State && !pHudItem->IsPending();
-						if (!pHudItem->m_bSwitchSprint && CanSprint)
+						if (!pHudItem->m_bSwitchSprint && CanSprint && !pHudItem->SprintLayered())
 						{
 							pHudItem->m_bSwitchSprint = true;
 							pHudItem->SwitchState(eSprintStart);
@@ -1064,6 +1070,12 @@ attachable_hud_item* CHudItem::HudItemData()
 		return hi;
 
 	return nullptr;
+}
+
+bool CHudItem::SprintLayered()
+{
+	attachable_hud_item* hi = HudItemData();
+	return hi != nullptr && hi->SprintLayered();
 }
 
 float CHudItem::GetHudFov()
