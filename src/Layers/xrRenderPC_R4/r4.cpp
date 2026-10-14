@@ -150,6 +150,22 @@ static class cl_water_intensity : public RHIShaderConstant::Setup
 	}
 }	binder_water_intensity;
 
+static class RainPuddleWaterBoundsSetup : public RHIShaderConstant::Setup
+{
+	void setup(RHIShaderConstant* Constant) override
+	{
+		RCache.set_c(Constant, RImplementation.RainPuddleWater.GetBounds());
+	}
+} g_RainPuddleWaterBoundsBinder;
+
+static class RainPuddleWaterHeightRangeSetup : public RHIShaderConstant::Setup
+{
+	void setup(RHIShaderConstant* Constant) override
+	{
+		RCache.set_c(Constant, RImplementation.RainPuddleWater.GetHeightRange());
+	}
+} g_RainPuddleWaterHeightRangeBinder;
+
 static class cl_invP : public RHIShaderConstant::Setup
 {
 	u32 marker = 0;
@@ -303,6 +319,8 @@ void CRender::create()
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params2", &binder_pos_decompress_params2);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("sun_shafts_intensity", &binder_sun_shafts_intensity);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("water_intensity", &binder_water_intensity);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("RainPuddleWaterBounds", &g_RainPuddleWaterBoundsBinder);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("RainPuddleWaterHeightRange", &g_RainPuddleWaterHeightRangeBinder);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_shadow_sun", &binder_m_shadow_sun);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_AlphaRef", &binder_alpha_ref);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("parallax", &binder_parallax);
@@ -331,6 +349,10 @@ void CRender::create()
 	else
 		L_Dynamic = new CLightR_Manager();
 
+	if (o.RainPuddles)
+	{
+		RainPuddleWater.Build();
+	}
 	Target = new CRenderTarget();	// Main target
 
 	// The editor device owns the model pool and the particle library (see r4_editor.cpp);
@@ -367,6 +389,7 @@ void CRender::destroy()
 	// Release the editor's lazily created brush resources while the device is still
 	// alive - their destructors dereference DEV, which is null by DLL detach time.
 	DetailLayers_EditorDestroy();
+	RainPuddleWater.Destroy();
 
 	m_bMakeAsyncSS = false;
 	if (LightingModeIsDynamicRender())
@@ -441,6 +464,10 @@ void CRender::reset_begin() {
 
 void CRender::reset_end() {
 	//	Prevent error on first get data
+	if (o.RainPuddles)
+	{
+		RainPuddleWater.Build(b_loaded && g_pGameLevel ? &g_pGameLevel->ObjectSpace : nullptr);
+	}
 
 	HWOCC.occq_create(occq_size);
 

@@ -9,6 +9,9 @@
 Texture2D s_puddles_perlin;
 Texture2D s_puddles_normal;
 Texture2D s_puddles_ripples;
+Texture2D<float2> s_puddles_water_height;
+float4 RainPuddleWaterBounds;
+float4 RainPuddleWaterHeightRange;
 
 float2 ProcessPuddleRipple(float4 Ripple, float Speed)
 {
@@ -38,13 +41,44 @@ float2 RainPuddleRipples(float2 TexCoord, float Depth)
 	return clamp(Ripples * DistanceFade, -1.0f, 1.0f) * rain_params.x;
 }
 
-float GetRainPuddle(float2 TexCoord, float3 FlatNormal, float Depth, out float3 WaterNormal, out float2 Refraction)
+float GetRainPuddleWaterVisibility(float3 ViewPoint)
+{
+	// Fade both the liquid footprint and the vertical approach to the water surface.
+	[branch]
+	if (RainPuddleWaterBounds.z > 0.0f && RainPuddleWaterBounds.w > 0.0f)
+	{
+		float3 WorldPoint = mul(m_invV, float4(ViewPoint, 1.0f)).xyz;
+		float2 WaterTexCoord = (WorldPoint.xz - RainPuddleWaterBounds.xy) * RainPuddleWaterBounds.zw;
+		[branch]
+		if (all(WaterTexCoord >= 0.0f) && all(WaterTexCoord < 1.0f))
+		{
+			float2 Water = s_puddles_water_height.SampleLevel(smp_linear, WaterTexCoord, 0.0f);
+			[branch]
+			if (Water.y > EPS)
+			{
+				// Empty cells have zero height and coverage; divide out filtered coverage.
+				float WaterHeight = RainPuddleWaterHeightRange.x + Water.x / Water.y * RainPuddleWaterHeightRange.y;
+				float HeightFade = smoothstep(0.02f, 0.25f, WorldPoint.y - WaterHeight);
+				return lerp(1.0f, HeightFade, Water.y);
+			}
+		}
+	}
+	return 1.0f;
+}
+
+float GetRainPuddle(float2 TexCoord, float3 FlatNormal, float3 ViewPoint, out float3 WaterNormal, out float2 Refraction)
 {
 	WaterNormal = mul((float3x3)m_V, float3(0.0f, 1.0f, 0.0f));
 	Refraction = 0.0f;
 	float Wetness = saturate(rain_params.y);
 	[branch]
 	if (Wetness <= 0.0f)
+	{
+		return 0.0f;
+	}
+
+	float WaterVisibility = GetRainPuddleWaterVisibility(ViewPoint);
+	if (WaterVisibility <= 0.0f)
 	{
 		return 0.0f;
 	}
@@ -56,6 +90,7 @@ float GetRainPuddle(float2 TexCoord, float3 FlatNormal, float Depth, out float3 
 	float Amount = saturate((Noise - 0.12f) * Wetness) * Slope;
 	// Keep the original soft edge transition (border hardness 0.15).
 	Amount = smoothstep(0.0f, 0.255f, Amount);
+	Amount *= WaterVisibility;
 	[branch]
 	if (Amount <= 0.0f)
 	{
@@ -69,7 +104,7 @@ float GetRainPuddle(float2 TexCoord, float3 FlatNormal, float Depth, out float3 
 	float3 Normal1 = s_puddles_normal.Sample(smp_base, RippleTexCoord - float2(0.33f, Animation)).xyz;
 	float3 Ripples = normalize(float3(Normal0.xy + Normal1.xy, Normal0.z * Normal1.z)) * 2.0f - 1.0f;
 	Ripples *= saturate(0.05f + RainIntensity * 0.1f);
-	Ripples = Ripples * 0.666f + float3(RainPuddleRipples(RippleTexCoord * 1.3f, Depth) * 0.333f, 0.0f);
+	Ripples = Ripples * 0.666f + float3(RainPuddleRipples(RippleTexCoord * 1.3f, ViewPoint.z) * 0.333f, 0.0f);
 
 	WaterNormal = mul((float3x3)m_V, float3(Ripples.x, 1.0f, Ripples.y));
 	Refraction = Ripples.xy * 0.15f * smoothstep(0.6f, 0.8f, Amount);

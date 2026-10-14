@@ -39,6 +39,10 @@ void CRender::level_Load(IReader* fs)
 
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
 	clearAllShaderOptions();
+	if (o.RainPuddles)
+	{
+		RainPuddleWater.Build(&g_pGameLevel->ObjectSpace);
+	}
 
 	// Shaders
 	g_pGamePersistent->SetLoadStageTitle("st_loading_shaders");
@@ -297,6 +301,10 @@ void CRender::level_Unload()
 {
 	if (0==g_pGameLevel)		return;
 	if (!b_loaded)				return;
+	if (o.RainPuddles)
+	{
+		RainPuddleWater.Build();
+	}
 
 	u32 I;
 

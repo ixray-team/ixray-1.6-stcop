@@ -49,6 +49,8 @@ These three textures are shared by all levels. **No separate puddle mask for eac
 
 Puddles use the terrain's texture coordinates and geometric normal. The slope factor is `saturate((0.1 - max(abs(WorldNormal.x), abs(WorldNormal.z))) * 13)` on upward-facing surfaces, so they appear on nearly horizontal, upward-facing terrain. They also work in the terrain's lower-detail pass. They do not project onto ordinary building roofs, walls, actors or weapons. The material-based PBR implementation remains responsible for its own supported surfaces and mask projection.
 
+Terrain below water is excluded automatically. On level load, R4 builds a water-height map from static collision triangles whose game material has both `flLiquid` and `flPassable`. The map stores normalized height and coverage in two 16-bit channels, retaining 16 MiB of GPU memory and one filtered texture sample. Puddle visibility fades smoothly with water coverage and from 2 to 25 cm above the water surface before applying puddle color, normals, gloss or refraction. This supports separate water bodies at different heights and does not depend on whether the camera sees the water surface. Custom water geometry must include correctly tagged liquid collision surfaces for this exclusion to work.
+
 ### Reflections
 
 The puddle reflection pass calls the existing water shader's `ScreenSpaceLocalReflections` function. It uses scene depth, the puddle normal and reprojection into the previous frame's scene image. The world SSLR/VSLR passes are not enabled for legacy lighting by this feature.
