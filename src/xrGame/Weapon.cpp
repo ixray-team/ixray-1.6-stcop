@@ -4227,7 +4227,7 @@ bool CWeapon::NeedBlockSprint() const
 	const static bool IsDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
 	const bool layered_action = State == eReload || State == eSwitchMode || State == eSafemodeSwitch || !IsPending() && State != eFire && State != eFire2 && State != eHiding && State != eHidden;
-	if (layered_action && const_cast<CWeapon*>(this)->SprintLayered())
+	if (layered_action && SprintLayered())
 	{
 		return m_bIsAimAnimationPlaying;
 	}

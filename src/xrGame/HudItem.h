@@ -172,7 +172,7 @@ public:
 	virtual shared_str			SetCurrentStateAnimation(const shared_str& first_name) { return first_name; }
 
 	attachable_hud_item*		HudItemData				();
-	bool						SprintLayered			();
+	bool						SprintLayered			() const { return m_bSprintLayered; }
 	virtual void				on_a_hud_attach			();
 	virtual bool				HudAnimationExist		(const shared_str& anim_name, bool only_for_actor = true);
 	virtual void				on_b_hud_detach			();
@@ -345,6 +345,7 @@ public:
 	CUIWindow* ScriptWindow = nullptr;
 
 	bool m_bSwitchSprint = false;
+	bool m_bSprintLayered = false;
 
 protected:
 

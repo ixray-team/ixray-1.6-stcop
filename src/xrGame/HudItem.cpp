@@ -540,10 +540,14 @@ void CHudItem::OnH_A_Independent()
 void CHudItem::on_b_hud_detach()
 {
 	m_sounds.StopAllSounds	();
+	m_bSprintLayered = false;
 }
 
 void CHudItem::on_a_hud_attach()
 {
+	attachable_hud_item* hud_data = HudItemData();
+	m_bSprintLayered = hud_data != nullptr && hud_data->SprintLayered();
+
 	if (m_current_motion_def)
 	{
 		PlayHUDMotion_noCB(m_current_motion, EHudMixType::eNoMix, false);
@@ -1045,12 +1049,6 @@ attachable_hud_item* CHudItem::HudItemData()
 		return hi;
 
 	return nullptr;
-}
-
-bool CHudItem::SprintLayered()
-{
-	attachable_hud_item* hi = HudItemData();
-	return hi != nullptr && hi->SprintLayered();
 }
 
 float CHudItem::GetHudFov()
