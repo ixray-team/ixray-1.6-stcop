@@ -3,7 +3,7 @@
 #include <imgui_internal.h>
 #include "implot.h"
 
-#include "../../Layers/xrRender/ParticleAnimCurve.h"
+#include "../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
 
 UIPACEditorForm* UIPACEditorForm::Form = nullptr;
 

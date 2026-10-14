@@ -2,7 +2,7 @@
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
 
-#include "../xrRender/dxEnvironmentRender.h"
+#include "dxEnvironmentRender.h"
 
 ENGINE_API extern bool turn_nvg; //Переместить в более подходящее место
 

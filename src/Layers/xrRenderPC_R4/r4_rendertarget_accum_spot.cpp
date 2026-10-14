@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "../xrRender/du_cone.h"
-#include "../xrRender/CHudInitializer.h"
+#include "du_cone.h"
+#include "CHudInitializer.h"
 
 Fvector3 ps_ssfx_volumetric = { .0f, 1.0f, 3.0f }; // Force Volumetric, Vol Intensity, Vol Quality
 

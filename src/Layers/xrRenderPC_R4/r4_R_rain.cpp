@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/IRenderable.h"
-#include "../xrRender/FBasicVisual.h"
+#include "FBasicVisual.h"
 
-#include "../xrRender/R_sun_support.h"
+#include "R_sun_support.h"
 
 const	float	tweak_rain_COP_initial_offs = 1200.f;
 const	float	tweak_rain_ortho_xform_initial_offs = 1000.f;	//. ?

@@ -12,8 +12,8 @@
 #include "../xrEngine/bone.h"
 #include "EditMesh.h"
 
-#include "../Layers/xrRender/SkeletonAnimated.h"
-#include "../Layers/xrRender/AnimationKeyCalculate.h"
+#include "../Layers/xrRenderPC_R4/SkeletonAnimated.h"
+#include "../Layers/xrRenderPC_R4/AnimationKeyCalculate.h"
 
 //----------------------------------------------------
 class fBoneNameEQ {

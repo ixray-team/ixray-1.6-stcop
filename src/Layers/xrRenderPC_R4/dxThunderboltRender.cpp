@@ -1,0 +1,114 @@
+#include "stdafx.h"
+#include "dxThunderboltRender.h"
+
+#include "../../xrEngine/thunderbolt.h"
+#include "dxThunderboltDescRender.h"
+#include "dxLensFlareRender.h"
+
+dxThunderboltRender::dxThunderboltRender()
+{
+	// geom
+	hGeom_model.create	(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
+	hGeom_gradient.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
+}
+
+dxThunderboltRender::~dxThunderboltRender()
+{
+	hGeom_model.destroy();
+	hGeom_gradient.destroy();
+}
+
+void dxThunderboltRender::Copy(IThunderboltRender &_in)
+{
+	*this = *(dxThunderboltRender*)&_in;
+}
+
+void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
+{
+	VERIFY(owner.current);
+
+	// lightning model
+	float dv = owner.lightning_phase*0.5f;
+	dv = (owner.lightning_phase>0.5f)?Random.randI(2)*0.5f:dv;
+
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	u32 v_offset,i_offset;
+	
+	dxThunderboltDescRender *pThRen = (dxThunderboltDescRender*)&*owner.current->m_pRender;
+
+	u32 vCount_Lock = pThRen->l_model->number_vertices;
+	u32 iCount_Lock = pThRen->l_model->number_indices;
+	IRender_DetailModel::fvfVertexOut* v_ptr = (IRender_DetailModel::fvfVertexOut*)RCache.Vertex.Lock(vCount_Lock, hGeom_model->vb_stride, v_offset);
+	u16* i_ptr = RCache.Index.Lock(iCount_Lock, i_offset);
+	// XForm verts
+	pThRen->l_model->transfer(owner.current_xform,v_ptr,0xffffffff,i_ptr,0,0.f,dv);
+	// Flush if needed
+	RCache.Vertex.Unlock(vCount_Lock,hGeom_model->vb_stride);
+	RCache.Index.Unlock(iCount_Lock);
+	RCache.set_xform_world(Fidentity);
+	RCache.set_Shader(pThRen->l_model->shader);
+	RCache.set_Geometry(hGeom_model);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,v_offset,0,vCount_Lock,i_offset,iCount_Lock/3);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+
+	// gradient
+	Fvector vecSx, vecSy;
+	u32 VS_Offset;
+	struct LITF
+	{
+		struct
+		{
+			Fvector p; u32 color; Fvector2 t;
+		} buff[4];
+	};
+	LITF* pv = (LITF*)RCache.Vertex.Lock(8,hGeom_gradient.stride(),VS_Offset);
+	// top
+	{
+		u32 c_val = iFloor(owner.current->m_GradientTop->fOpacity*owner.lightning_phase*255.f);
+		u32 c = color_rgba(c_val,c_val,c_val,c_val);
+		vecSx.mul(Device.vCameraRight, owner.current->m_GradientTop->fRadius.x*owner.lightning_size);
+		vecSy.mul(Device.vCameraTop, -owner.current->m_GradientTop->fRadius.y*owner.lightning_size);
+		Fvector& curr_center = owner.current_xform.c;
+		*pv =
+		{
+			curr_center + vecSx - vecSy, c, {0.f, 0.f},
+			curr_center + vecSx + vecSy, c, {0.f, 1.f},
+			curr_center - vecSx - vecSy, c, {1.f, 0.f},
+			curr_center - vecSx + vecSy, c, {1.f, 1.f}
+		};
+		pv++;
+	}
+	// center
+	{
+		u32 c_val = iFloor(owner.current->m_GradientTop->fOpacity*owner.lightning_phase*255.f);
+		u32 c = color_rgba(c_val,c_val,c_val,c_val);
+		vecSx.mul(Device.vCameraRight, owner.current->m_GradientCenter->fRadius.x*owner.lightning_size);
+		vecSy.mul(Device.vCameraTop, -owner.current->m_GradientCenter->fRadius.y*owner.lightning_size);
+		Fvector& curr_center = owner.lightning_center;
+		*pv =
+		{
+			curr_center + vecSx - vecSy, c, {0.f, 0.f},
+			curr_center + vecSx + vecSy, c, {0.f, 1.f},
+			curr_center - vecSx - vecSy, c, {1.f, 0.f},
+			curr_center - vecSx + vecSy, c, {1.f, 1.f}
+		};
+		pv++;
+	}
+	RCache.Vertex.Unlock(8,hGeom_gradient.stride());
+	RCache.set_xform_world(Fidentity);
+	RCache.set_Geometry(hGeom_gradient);
+	RCache.set_Shader(((dxFlareRender*)&*owner.current->m_GradientTop->m_pFlare)->hShader);
+
+	//	Hack. Since lightning gradient uses sun shader override z write settings manually
+	RCache.set_Z(true);
+	RCache.set_ZFunc(D3DCMP_LESSEQUAL);
+
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,VS_Offset, 0,4,0,2);
+	RCache.set_Shader(((dxFlareRender*)&*owner.current->m_GradientCenter->m_pFlare)->hShader);
+
+	//	Hack. Since lightning gradient uses sun shader override z write settings manually
+	RCache.set_Z(true);
+	RCache.set_ZFunc(D3DCMP_LESSEQUAL);
+
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,VS_Offset+4, 0,4,0,2);
+}

@@ -2,19 +2,19 @@
 #include "r1_GlowManager.h"
 
 #include "../../xrEngine/IGame_Persistent.h"
-#include "../xrRender/FBasicVisual.h"
+#include "FBasicVisual.h"
 #include "../../xrEngine/CustomHUD.h"
 #include "../../xrEngine/xr_object.h"
 
-#include "../xrRender/QueryHelper.h"
-#include "../xrRender/EditorDrawContext.h"
+#include "QueryHelper.h"
+#include "EditorDrawContext.h"
 
 #include "OverlayAPI/FSR3Wrapper.h"
 
 #include "../../xrEngine/GameFont.h"
 #include "../../xrEngine/x_ray.h"
-#include "../xrRender/SkeletonCustom.h"
-#include "../xrRender/EditorRenderHost.h"
+#include "SkeletonCustom.h"
+#include "EditorRenderHost.h"
 #include "../../xrEngine/IGame_Actor.h"
 #include "r1_LightPPA.h"
 

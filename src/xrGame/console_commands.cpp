@@ -2450,7 +2450,7 @@ public:
 };
 
 #include "../Include/xrRender/particles_systems_library_interface.hpp"
-#include "../Layers/xrRender/PSLibrary.h"
+#include "../Layers/xrRenderPC_R4/PSLibrary.h"
 #include "GamePersistent.h"
 class CCC_Particle_TEST : public IConsole_Command
 {
@@ -2477,12 +2477,11 @@ public:
 			{
 				xr_shared_ptr<CParticlesObject> pParticle = Particles::Details::Create(string, false);
 
-				// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 				Fmatrix pos;
 				pos.identity();
 				pos.k.set(Level().CurrentControlEntity()->XFORM().k);
 				Fvector::generate_orthonormal_basis_normalized(pos.k, pos.j, pos.i);
-				// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ
+
 				pos.c.set(Fvector(Device.vCameraPosition).add(Fvector(Device.vCameraDirection).mul(l_rq.range)));
 				pParticle->UpdateParent(pos, zero_vel);
 				GamePersistent().ps_needtoplay.push_back(pParticle);

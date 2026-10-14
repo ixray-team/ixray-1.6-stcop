@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "../xrRender/EditorDrawContext.h"
+#include "EditorDrawContext.h"
 
 #include "OverlayAPI/DLSSWrapper.h"
 
