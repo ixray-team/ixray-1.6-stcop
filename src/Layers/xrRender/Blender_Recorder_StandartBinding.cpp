@@ -12,6 +12,17 @@
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/date_time.h"
 // matrices
+class ScopePostprocessBinding final : public RHIShaderConstant::Setup
+{
+public:
+	void setup(RHIShaderConstant* Constant) override
+	{
+		RCache.set_c(Constant, Device.ScopePostprocessActive ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
+	}
+};
+
+static ScopePostprocessBinding g_ScopePostprocessBinding;
+
 class UIIconLightBinding final : public RHIShaderConstant::Setup
 {
 public:
@@ -789,6 +800,7 @@ void	CBlender_Compile::SetMapping()
 
 	//LVutner: Gunslinger...
 	r_Constant("m_hud_params", &binder_m_hud_params);
+	r_Constant("ScopePostprocessActive", &g_ScopePostprocessBinding);
 	r_Constant("m_zoom_deviation", &binder_m_zoom_deviation);
 	r_Constant("m_affects", &binder_affects);
 	r_Constant("m_actor_params", &binder_actor_states);
