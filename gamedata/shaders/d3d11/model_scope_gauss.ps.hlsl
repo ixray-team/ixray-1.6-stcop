@@ -24,7 +24,7 @@ float4 main(v2p I) : SV_Target
 	t_base.xyz = detonemap(t_base.xyz);
 	
 	
-	t_vp2.xyz = ApplyScopeUI(t_vp2.xyz, pos2d.xy);
+	t_vp2.xyz = ApplyScopeUI(t_vp2.xyz, I.hpos.xy);
 
 	float alpha = m_hud_params.y * m_hud_params.a;
 	t_vp2 *= saturate(alpha * 2.0f - 1.0f);

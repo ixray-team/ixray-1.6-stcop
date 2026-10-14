@@ -27,7 +27,7 @@ float4 main(v2p I) : SV_Target
 	t_vp2.xyz = calc_night_vision_effect(I.tc0, t_vp2, float3(1.0, 2.0, 1.0)).xyz;
 	t_vp2.xyz = GammaToLinear(t_vp2.xyz);
 	
-	t_vp2.xyz = ApplyScopeUI(t_vp2.xyz, pos2d.xy);
+	t_vp2.xyz = ApplyScopeUI(t_vp2.xyz, I.hpos.xy);
 
 	float alpha = m_hud_params.y * m_hud_params.a;
 	t_vp2 *= saturate(alpha * 2.0f - 1.0f);
