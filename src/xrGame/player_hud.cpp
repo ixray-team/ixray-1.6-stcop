@@ -3391,7 +3391,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 
 	finger_hold = finger_hold && FingerRefMotion == finger.Motion && FingerRefPose.size() == FingerGripBones.size();
 	float finger_settle = 0.f;
-	if (has_left && !FingerGripBones.empty() && !item->m_left_hand_free && (item->AttachPose.size() != 0 || item->LeftHandAttachBlend > 0.f))
+	if (has_attach && weapon != nullptr && !FingerGripBones.empty() && !item->m_left_hand_free && (item->AttachPose.size() != 0 || item->LeftHandAttachBlend > 0.f))
 	{
 		const float settle_time = item->LeftHandAttachBlend > 0.f ? item->LeftHandAttachBlend : std::max(item->m_idle_fade, 0.1f);
 		finger_settle = hud_motion_settle(m_model, item->m_hand_motions, settle_time, !finger_mark && LeftHandAttachWeight <= 0.f);
