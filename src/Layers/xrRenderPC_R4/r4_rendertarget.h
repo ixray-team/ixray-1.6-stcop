@@ -19,6 +19,8 @@ private:
 	u32							dwWidth;
 	u32							dwHeight;
 	u32							dwAccumulatorClearMark;
+	float NightVisionInterference = 0.0f;
+	bool NightVisionInterferenceInitialized = false;
 public:
 	enum	eStencilOptimizeMode
 	{

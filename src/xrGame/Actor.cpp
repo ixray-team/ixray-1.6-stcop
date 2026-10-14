@@ -2095,7 +2095,12 @@ void CActor::UpdateCL()
 
 		auto& Params = g_pGamePersistent->ShaderParams;
 		const u16 PreviousVisorItemId = Params.VisorItemId;
-		Params = {};
+		// Refresh only visor data; night vision parameters persist until the next activation.
+		Params.HelmetCondition = -1.f;
+		Params.ItemCfgHudGasMaskAvailable = false;
+		Params.ItemCfgHudRainDropsAvailable = false;
+		Params.GlassType = VisorGlassType::Flat;
+		Params.VisorItemId = u16(-1);
 
 		if (g_Alive() && cam_active == eacFirstEye)
 		{

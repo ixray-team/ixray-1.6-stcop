@@ -324,6 +324,10 @@ void CRenderTarget::phase_combine()
 		GPU_EVENT(phase_nvg);
 		PhaseEffectSQ(EffectSQ::NVG);
 	}
+	else
+	{
+		NightVisionInterferenceInitialized = false;
+	}
 	
 	{
 		GPU_EVENT(phase_pp);
