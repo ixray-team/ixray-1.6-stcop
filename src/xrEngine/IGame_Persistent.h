@@ -60,6 +60,7 @@ public:
 		bool ItemCfgHudRainDropsAvailable = false;
 		VisorGlassType GlassType = VisorGlassType::Flat;
 		u16 VisorItemId = u16(-1);
+		Fvector4 NightVisionPostprocess{};
 	};
 
 	params m_game_params;

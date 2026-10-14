@@ -40,7 +40,26 @@ void CRenderTarget::PhaseEffectSQ(EffectSQ Effect)
 	}
 	case EffectSQ::NVG:
 	{
-		DrawBackBuffer(*this, s_nvg, 0);
+		const float TargetInterference = clampr(Device.hudViewportData.CurrentElectronicsProblemsCnt / 10.0f, 0.0f, 1.0f);
+		if (!NightVisionInterferenceInitialized)
+		{
+			// Turning on a device during an emission must not briefly restore its image.
+			NightVisionInterference = TargetInterference;
+			NightVisionInterferenceInitialized = true;
+		}
+		else
+		{
+			// Scripts can apply electronics problems immediately when restoring a saved emission.
+			const float MaxDelta = 0.2f * clampr(Device.fTimeDelta, 0.0f, 0.1f);
+			NightVisionInterference += clampr(TargetInterference - NightVisionInterference, -MaxDelta, MaxDelta);
+		}
+		DrawSQ(s_nvg, rt_Back_Buffer_AA, 0, [this]
+		{
+			BindScreenPass();
+			RCache.set_c("NightVisionPostprocess", g_pGamePersistent->ShaderParams.NightVisionPostprocess);
+			RCache.set_c("NightVisionInterference", NightVisionInterference);
+		});
+		ResolveSurface(rt_Back_Buffer, rt_Back_Buffer_AA);
 		break;
 	}
 	case EffectSQ::Aberration:

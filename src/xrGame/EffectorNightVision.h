@@ -4,12 +4,15 @@
 #include "Actor.h"
 #include "PostprocessAnimator.h"
 
+class CUIGameCustom;
+
 class CNightVisionEffector
 {
 	CActor*					m_pActor = nullptr;
 	HUD_SOUND_COLLECTION	m_sounds;
 	RStringVec				m_disabled_maps = {};
 	bool					m_bNightVisionOn = false;
+	bool ShaderNightVision = false;
 public:
 
 	enum EPlaySounds
@@ -29,6 +32,7 @@ public:
 	void	SwitchNightVision();
 	void	SwitchNightVision(bool vision_on, bool use_sounds = true);
 	bool	GetStatus() const { return m_bNightVisionOn; }
+	void UpdateMask(CUIGameCustom& GameUI);
 };
 
 struct TWeaponNightVision
