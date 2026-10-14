@@ -20,6 +20,7 @@ g_camera_rig_descriptions[] =
 	{ "left_hand_ik_follow", u8"с, как быстро хват левой руки догоняет свою анимированную позу после включения IK хвата; 0 = хват замирает при включении IK" },
 	{ "left_hand_ik_blend", u8"с, за сколько левая рука подлетает к хвату (после перезарядки, доставания...) и отпускает его; 0 = сразу. Для оружия: left_hand_ik_blend в hud-секции" },
 	{ "left_hand_finger_tail", u8"Доля подлёта руки к хвату в его конце, за которую пальцы из замороженной в начале подлёта позы переходят в хват (позу из анимации); 0 = пальцы всё время идут по анимации. Для оружия: left_hand_finger_tail в hud-секции" },
+	{ "left_hand_finger_grip", u8"Сила сдвига пальцев левой руки к хвату рукоятки по метке mm_ik_fingers: пальцы двигаются как в анимации, но вокруг позы хвата (1 = база точно в хвате, 0.5 = посередине, 0 = выкл.). Для оружия: left_hand_finger_grip в hud-секции" },
 	{ "left_hand_attach_blend", u8"с, плавность прикрепления левой руки к оружию и её отпускания (left_hand_attach_motions). Для оружия: left_hand_attach_blend в hud-секции" },
 
 	{ "turn_sway_smooth", u8"с, сглаживание покачивания от поворота мыши (неровные рывки мыши трясут оружие в руках); 0 = выкл." },
@@ -139,6 +140,7 @@ static float* CameraRigHudField(attachable_hud_item* item, const char* key)
 		{ "left_hand_attach_blend", &attachable_hud_item::LeftHandAttachBlend },
 		{ "left_hand_ik_blend", &attachable_hud_item::LeftHandIkBlend },
 		{ "left_hand_finger_tail", &attachable_hud_item::LeftHandFingerTail },
+		{ "left_hand_finger_grip", &attachable_hud_item::LeftHandFingerGrip },
 	};
 
 	for (const auto& it : fields)
