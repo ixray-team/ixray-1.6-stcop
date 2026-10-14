@@ -1,9 +1,7 @@
-﻿#include "stdafx.h"
+﻿#include "StdAfx.h"
 #include "CutsceneItem.h"
 
 #include "ai_space.h"
-//#include "Kinematics.h"
-//#include "KinematicsAnimated.h"
 #include "script_game_object.h"
 
 SCutsceneObjectElement::SCutsceneObjectElement(LPCSTR ObjectName)
