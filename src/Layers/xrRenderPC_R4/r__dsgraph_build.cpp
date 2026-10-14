@@ -197,7 +197,7 @@ ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 	return	R / distSQ;
 }
 
-void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center)
+void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center, bool Force)
 {
 	CRender& RI = RImplementation;
 
@@ -216,7 +216,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 
 	float distSQ;
 	float SSA = CalcSSA(distSQ, Center, pVisual);
-	if (SSA <= r_ssaDISCARD) return;
+	if (SSA <= r_ssaDISCARD && !Force) return;
 
 	// Distortive geometry should be marked and R2 special-cases it
 	// a) Allow to optimize RT order
@@ -474,7 +474,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool IgnoreObject)
+void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool IgnoreObject, bool Force)
 {
 	if (0 == pVisual) return;
 
@@ -542,7 +542,7 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 			// Calculate distance to it's center
 			Fvector Tpos;
 			val_pTransform->transform_tiny(Tpos, pVisual->vis.sphere.P);
-			r_dsgraph_insert_dynamic(pVisual,Tpos);
+			r_dsgraph_insert_dynamic(pVisual,Tpos, Force);
 		}
 		return;
 	}
