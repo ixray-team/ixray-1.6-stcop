@@ -288,10 +288,12 @@ struct attachable_hud_item final
 	bool							LeftHandAttachRefValid = false;
 	bool							LeftHandAttachRefTried = false;
 	xr_vector<Fquaternion>			FingerGripPose;
+	xr_vector<Fvector>				FingerGripPos;
 	shared_str						FingerGripPoseMotion;
 	Fmatrix							LeftHandAttachAncorRef = Fidentity;
 	Fmatrix							LeftHandAttachArmRootRef = Fidentity;
 	xr_vector<Fquaternion>			LeftHandAttachPoseRef;
+	xr_vector<Fvector>				LeftHandAttachPosRef;
 	float							m_aim_reload_motion = 1.f;
 	float							m_hud_mass = 1.f;
 	bool							IkEnabled = true;
@@ -849,6 +851,7 @@ private:
 	void			update_inertion		(Fmatrix& trans);
 	void			update_hands_ik		(const Fmatrix& cam_trans, CActor* actor);
 	bool			LeftHandAttachReference	(attachable_hud_item* item);
+	bool			HandAttachRelative	(attachable_hud_item* item, MotionID hands_motion, float hands_time, MotionID item_motion, float item_time, Fmatrix& relative, Fmatrix* ancor_ms = nullptr);
 	bool			RetargetHandTarget	(attachable_hud_item* item, u16 ancor, u16 wrist, Fmatrix& result);
 	xr_vector<u16>	left_arm_blend_bones() const;
 	xr_vector<u16>	left_hand_fingers() const;
@@ -873,6 +876,7 @@ private:
 	xr_vector<Fquaternion>				ArmRetargetPose;
 	Fmatrix								ArmRetargetRootRef = Fidentity;
 	MotionID							AttachOffsetMotion;
+	bool								AttachOffsetSampled = false;
 	Fmatrix								AttachOffsetRef = Fidentity;
 	float								LeftHandAttachHold = 0.f;
 	float								LeftHandAttachArmWeight = 1.f;
