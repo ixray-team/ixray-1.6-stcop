@@ -12,7 +12,9 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 
 	RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
 
-	if (!C.L_textures.empty())
+	// _ParseList substitutes $null for a missing texture list; it is not a level mask.
+	const bool UseRainMask = !RImplementation.o.dx11_use_legacy_light && RImplementation.o.HasRainPuddleMask && !C.L_textures.empty() && xr_strcmp(C.L_textures[0].c_str(), "$null") != 0;
+	if (UseRainMask)
 	{
 		RImplementation.addShaderOption("USE_RAIN_MASK", "1");
 	}
@@ -31,8 +33,16 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 
 	C.r_dx10Texture("s_waterFall", "water\\water_flowing_nmap");
 	C.r_dx10Texture("s_water", "water\\water_SBumpVolume");
+	if (!RImplementation.o.dx11_use_legacy_light && RImplementation.o.ProceduralRainPuddles)
+	{
+		C.r_dx10Texture("s_puddles_perlin", "shaders\\rain_puddles_perlin");
+		C.r_dx10Texture("s_puddles_normal", "shaders\\rain_puddles_normal");
+		C.r_dx10Texture("s_puddles_ripples", "shaders\\rain_puddles_ripples");
+		C.r_dx10Texture("s_puddles_water_height", "$user$rain_puddles_water_height");
+		C.r_dx10Sampler("smp_base");
+	}
 
-	if(!C.L_textures.empty())
+	if (UseRainMask)
 	{
 		C.r_dx10Texture("s_mask", C.L_textures[0]);
 	}

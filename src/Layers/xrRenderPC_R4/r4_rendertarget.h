@@ -352,6 +352,7 @@ public:
 
 	bool						phase_puddles			();
 	void PhaseRainPuddles();
+	void CreateRainShaders();
 	void						phase_planar			();
 
 	void						PhaseEffectSQ			(EffectSQ Effect);
