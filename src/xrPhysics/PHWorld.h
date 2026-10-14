@@ -49,28 +49,22 @@ class CPHWorld	:	public	pureFrame,
 	PH_UPDATE_OBJECT_STORAGE	m_freezed_update_objects;
 	dGeomID						m_motion_ray;
 
-	xr_vector<SPHCollideContext*>	m_collide_contexts;
-	SPHCollideContext*			m_serial_collide_context;
-	xr_task_group				m_physics_tasks;
-	bool						m_parallel_phase_active;
+	xr_vector<SPHCollisionQuery> CollisionQueries;
+	SPHCollideContext SerialCollideContext;
+	xr_task_group PhysicsTasks;
+	bool IsPhysicsPhaseActive = false;
+	bool IsStepping = false;
 
 	IPHWorldUpdateCallbck*	m_update_callback;
 	CObjectSpace*			m_object_space;
 	CObjectList*			m_level_objects;
 
-	void						EnsureCollideContexts		(u32 count)								;
-	void						DestroyCollideContexts		()										;
-	void						ProcessCollisions			()										;
-	void						ProcessCollisionsParallel	(xr_vector<CPHObject*>& objects, u32 chunks);
-	void						NarrowphaseCollisions		(u32 chunks)							;
-	void						ApplyCollisions				(u32 chunks)							;
-	void						ApplyCollidePair			(const SPHCollidePair& pair, dContact* contacts);
-	void						StepIslands					()										;
+	void ProcessCollisions();
+	void CollectCollisionQueries(u32 Workers);
+	void StepIslands();
 
 public:
-	static SPHCollideContext&	GetCollideContext			()										;
-	static void					SetCurrentCollideContext	(SPHCollideContext* ctx)				;
-	void						CollectPair					(CPHObject* obj1, CPHObject* obj2, dGeomID o1, dGeomID o2, bool static_pair);
+	static SPHCollideContext& GetCollideContext();
 	u64							m_steps_num;
 
 private:

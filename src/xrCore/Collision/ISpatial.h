@@ -12,7 +12,7 @@ Requirements:
 		- radius completely determines	"level"
 		- position completely detemines "node"
 	* O(1) removal
-	* 
+	*
 1. Rendering
 	* Should live inside spatial DB
 	* Should have at least "bounding-sphere" or "bounding-box"
@@ -99,7 +99,7 @@ enum class ESPATIAL_TYPE : u64
 };
 ENUM_CLASS_FLAGS(ESPATIAL_TYPE);
 //////////////////////////////////////////////////////////////////////////
-// Comment: 
+// Comment:
 //		ordinal objects			- renderable?, collideable?, visibleforAI?
 //		physical-decorations	- renderable, collideable
 //		lights					- lightsource
@@ -149,10 +149,10 @@ public:
 	// Cached node bounds for TBV optimization
 	float node_radius = 0.f;
 	float ssa_dyn_factor = 0.002f;
-	float ssa_d_cam = 220.f;	
+	float ssa_d_cam = 220.f;
 
 	// Cached parent node for "empty-members" optimization
-	ISpatial_NODE* node_ptr = nullptr;		
+	ISpatial_NODE* node_ptr = nullptr;
 	IRender_Sector* sector = nullptr;
 
 	// allow different spaces
@@ -199,7 +199,7 @@ public:
 	Fvector OwnerSectorPoint();
 	void OwnerReset(ISpatialOwner* ptr);
 
-	ICF void spatial_updatesector()	
+	ICF void spatial_updatesector()
 	{
 		if (ESPATIAL_TYPE::NONE == (type& ESPATIAL_TYPE::INVALIDSECTOR))
 			return;
@@ -214,7 +214,7 @@ public:
 	CPHObject*		dcast_CPHObject		();
 	CGlow*			dcast_CGlow			();
 
-	constexpr ISpatial(ISpatial_DB* NewSpace, ISpatialOwner* Owner) : 
+	constexpr ISpatial(ISpatial_DB* NewSpace, ISpatialOwner* Owner) :
 		RawOwner(Owner)
 	{
 		space = NewSpace;
@@ -236,7 +236,7 @@ public:
 	virtual void	spatial_move() { SpatialComponent->Move(); };
 	virtual Fvector	spatial_sector_point() { return SpatialComponent->sphere.P; }
 
-	
+
 	virtual CObject*		dcast_CObject		() { return nullptr; };
 	virtual Feel::Sound*	dcast_FeelSound		() { return nullptr; };
 	virtual IRenderable*	dcast_Renderable	() { return nullptr; };
@@ -318,6 +318,7 @@ struct ISpatial_NODE
 class XRCORE_API ISpatial_DB
 {
 private:
+	xr_atomic_u32 QueryGeneration{0};
 	xr_vector<ISpatial_NODE*>		nodes;
 public:
 	xrSRWLock						db_lock;
@@ -382,6 +383,13 @@ public:
 		O_ORDERED		= (1<<2),
 		O_force_u32		= u32(-1)
 	};
+
+	// Invalidate cached query results even when a move stays inside its node.
+	void InvalidateQueries() { QueryGeneration.fetch_add(1); }
+	u64 QueryRevision() const { return QueryGeneration.load(); }
+
+	// A full result is returned only when it fits the supplied limit.
+	bool QueryBoxLimited(xr_vector<ISpatialShared>& Result, ESPATIAL_TYPE Mask, const Fbox& Box, u32 Limit, u64& Revision);
 
 	// query
 	void q_ray(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_and, const Fvector& _start, const Fvector& _dir, float _range);

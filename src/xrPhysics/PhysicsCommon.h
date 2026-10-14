@@ -26,6 +26,9 @@ extern	XRPHYSICS_API	float		phTimefactor						;
 extern	XRPHYSICS_API	int			phIterations						;
 extern	XRPHYSICS_API	int			phThreads							;
 
+extern XRPHYSICS_API bool g_PhysicsParallelBroadphase;
+extern XRPHYSICS_API bool g_PhysicsParallelIslands;
+
 struct SGameMtl;
 
 IC float Erp(float k_p,float k_d,float s=fixed_step)		{return ((s*(k_p)) / (((s)*(k_p)) + (k_d)));}

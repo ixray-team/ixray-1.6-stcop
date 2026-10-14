@@ -113,17 +113,25 @@ void CStats::Show()
 			fRFPS= fInv*fRFPS+ fOne*1000.f/RenderTOTAL.result;
 		}
 	}
-	
+
 	{
-		float mem_count		= float	(Memory.stat_calls);
-		if (mem_count>fMem_calls)	fMem_calls	=	mem_count;
-		else						fMem_calls	=	.9f*fMem_calls + .1f*mem_count;
-		Memory.stat_calls	= 0		;
+		const u32 MemoryCalls = xr_atomic_ref<u32>(Memory.stat_calls).exchange(0, std::memory_order_relaxed);
+		float mem_count = float(MemoryCalls);
+		if (mem_count > fMem_calls)
+		{
+			fMem_calls = mem_count;
+		}
+		else
+		{
+			fMem_calls = .9f * fMem_calls + .1f * mem_count;
+		}
 	}
-	
+
 	if (g_dedicated_server)
+	{
 		return;
-	
+	}
+
 	int frm = 2000;
 	div_t ddd = div(Device.dwFrame,frm);
 	

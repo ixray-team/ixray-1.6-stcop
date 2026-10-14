@@ -49,6 +49,8 @@ const float			default_world_gravity							=	2*9.81f;
 
 /////////////////////////////////////////////////////
 int			phIterations											= 18;
+bool g_PhysicsParallelBroadphase = true;
+bool g_PhysicsParallelIslands = true;
 int			phThreads												= 0;
 float		phTimefactor = 1.f;
 Fbox		phBoundaries = { 1000.f,1000.f,-1000.f,-1000.f,0.f,0.f };
@@ -244,25 +246,17 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 	const int RS = 800 + 10;
 	const int N = RS;
 
-	thread_local xr_vector<dContact> contacts;
-	contacts.resize(N);
+	dContact contacts[RS];
 
 	int n = dCollide(o1, o2, N, &contacts[0].geom, sizeof(dContact));
 	if (n > N - 1)
 		n = N - 1;
 
-	return ApplyContacts(contacts.data(), n, o1, o2, jointGroup, world, MAX_CONTACTS);
+	return ApplyContacts(contacts, n, o1, o2, jointGroup, world, MAX_CONTACTS);
 }
 
 void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2)
 {	
-	SPHCollideContext& ctx = CPHWorld::GetCollideContext();
-	if (ctx.Collecting)
-	{
-		ph_world->CollectPair(obj1, obj2, o1, o2, false);
-		return;
-	}
-
 	CPHIsland* island1=obj1->DActiveIsland();
 	CPHIsland* island2=obj2->DActiveIsland();
 	obj2->near_callback(obj1);
@@ -277,13 +271,6 @@ void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2)
 
 void CollideStatic(dGeomID o2,CPHObject* obj2)
 {
-	SPHCollideContext& ctx = CPHWorld::GetCollideContext();
-	if (ctx.Collecting)
-	{
-		ph_world->CollectPair(obj2, obj2, ph_world->GetMeshGeom(), o2, true);
-		return;
-	}
-
 	CPHIsland* island2=obj2->DActiveIsland();
 	CollideIntoGroup(ph_world->GetMeshGeom(),o2,ContactGroup,island2,island2->MaxJoints());
 }

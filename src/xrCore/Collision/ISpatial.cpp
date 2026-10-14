@@ -39,7 +39,7 @@ Feel::Sound* ISpatial::dcast_FeelSound()
 	return RawOwner ? RawOwner->dcast_FeelSound() : nullptr;
 }
 
-IRenderable* ISpatial::dcast_Renderable() 
+IRenderable* ISpatial::dcast_Renderable()
 {
 	return RawOwner ? RawOwner->dcast_Renderable() : nullptr;
 }
@@ -62,7 +62,7 @@ void ISpatial::Register()
 	{
 		// already registered - nothing to do
 	}
-	else 
+	else
 	{
 		// register
 		R_ASSERT(space);
@@ -91,6 +91,7 @@ void ISpatial::Move()
 {
 	if (node_ptr)
 	{
+		space->InvalidateQueries();
 		//*** somehow it was determined that object has been moved
 		type |= ESPATIAL_TYPE::INVALIDSECTOR;
 
@@ -113,6 +114,10 @@ void ISpatial::Move()
 
 void ISpatial::OwnerReset(ISpatialOwner* ptr)
 {
+	if (node_ptr)
+	{
+		space->InvalidateQueries();
+	}
 	RawOwner = ptr;
 }
 
@@ -142,6 +147,7 @@ void ISpatial::spatial_updatesector_internal()
 ///////////////////////////////////ISpatial_DB///////////////////////////////////////
 void ISpatial_DB::initialize(Fbox& BB)
 {
+	InvalidateQueries();
 	Fvector bbc, bbd;
 	BB.get_CD(bbc, bbd);
 
@@ -207,13 +213,14 @@ void ISpatial_DB::db_insert(ISpatialShared S, ISpatial_NODE* N, Fvector& n_C, fl
 
 void ISpatial_DB::insert(ISpatialShared S)
 {
+	InvalidateQueries();
 	if (m_root != nullptr && S->verify_sp(m_center, m_bounds))
 	{
 		// Object inside our DB
 		db_insert(S, m_root, m_center, m_bounds);
 		VERIFY(S->spatial_inside());
 	}
-	else 
+	else
 	{
 		// Object outside our DB, put it into root node and hack bounds
 		// Object will reinsert itself until fits into "real", "controlled" space
@@ -243,6 +250,7 @@ void ISpatial_DB::db_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
 
 void ISpatial_DB::remove(ISpatialShared S)
 {
+	InvalidateQueries();
 	ISpatial_NODE* N = S->node_ptr;
 	VERIFY(N);
 	N->_remove(S);

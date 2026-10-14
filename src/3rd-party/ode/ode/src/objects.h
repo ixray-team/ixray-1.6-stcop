@@ -110,16 +110,17 @@ struct dxBody : public dObject {
 
 
 struct dxWorld : public dBase {
-  dxBody *firstbody;		// body linked list
-  dxJoint *firstjoint;		// joint linked list
-  int nb,nj;				// number of bodies and joints in lists
-  static dVector3 gravity;	// gravity vector (m/s/s)
-  static dReal global_erp;	// global error reduction parameter
-  static dReal global_cfm;	// global costraint force mixing parameter
-  static dxAutoDisable adis;// auto-disable parameters
-  static int adis_flag;			// auto-disable flag for new bodies
-  static dxQuickStepParameters qs;
-  static dxContactParameters contactp;
+	unsigned int QuickStepSeed = 0;
+	dxBody* firstbody;		   // body linked list
+	dxJoint* firstjoint;	   // joint linked list
+	int nb, nj;				   // number of bodies and joints in lists
+	static dVector3 gravity;   // gravity vector (m/s/s)
+	static dReal global_erp;   // global error reduction parameter
+	static dReal global_cfm;   // global costraint force mixing parameter
+	static dxAutoDisable adis; // auto-disable parameters
+	static int adis_flag;	   // auto-disable flag for new bodies
+	static dxQuickStepParameters qs;
+	static dxContactParameters contactp;
 };
 
 

@@ -37,7 +37,7 @@
 
 
 #include <random>
-static thread_local auto rng = std::mt19937(std::random_device()());
+
 
 #define ALLOCA dALLOCA16
 
@@ -60,7 +60,7 @@ typedef dReal *dRealMutablePtr;
 // for the SOR method:
 // uncomment the following line to determine a new constraint-solving
 // order for each iteration. however, the qsort per iteration is expensive,
-// and the optimal order is somewhat problem dependent. 
+// and the optimal order is somewhat problem dependent.
 // @@@ try the leaf->root ordering.
 
 //#define REORDER_CONSTRAINTS 1
@@ -94,7 +94,7 @@ static void compute_invM_JT (int m, dRealMutablePtr J, dRealMutablePtr iMJ, int 
 	dRealMutablePtr iMJ_ptr = iMJ;
 	dRealMutablePtr J_ptr = J;
 	for (i=0; i<m; i++) {
-		int b1 = jb[i*2];	
+		int b1 = jb[i*2];
 		int b2 = jb[i*2+1];
 		dReal k = body[b1]->invMass;
 		for (j=0; j<3; j++) iMJ_ptr[j] = k*J_ptr[j];
@@ -119,7 +119,7 @@ static void multiply_invM_JT (int m, int nb, dRealMutablePtr iMJ, int *jb,
 	dSetZero (out,6*nb);
 	dRealPtr iMJ_ptr = iMJ;
 	for (i=0; i<m; i++) {
-		int b1 = jb[i*2];	
+		int b1 = jb[i*2];
 		int b2 = jb[i*2+1];
 		dRealMutablePtr out_ptr = out + b1*6;
 		for (j=0; j<6; j++) out_ptr[j] += iMJ_ptr[j] * in[i];
@@ -141,15 +141,15 @@ static void multiply_J (int m, dRealMutablePtr J, int *jb,
 	int i,j;
 	dRealPtr J_ptr = J;
 	for (i=0; i<m; i++) {
-		int b1 = jb[i*2];	
+		int b1 = jb[i*2];
 		int b2 = jb[i*2+1];
 		dReal sum = 0;
 		dRealMutablePtr in_ptr = in + b1*6;
-		for (j=0; j<6; j++) sum += J_ptr[j] * in_ptr[j];				
+		for (j=0; j<6; j++) sum += J_ptr[j] * in_ptr[j];
 		J_ptr += 6;
 		if (b2 >= 0) {
 			in_ptr = in + b2*6;
-			for (j=0; j<6; j++) sum += J_ptr[j] * in_ptr[j];				
+			for (j=0; j<6; j++) sum += J_ptr[j] * in_ptr[j];
 		}
 		J_ptr += 6;
 		out[i] = sum;
@@ -236,11 +236,11 @@ static void CG_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *b
 	dSetZero (lambda,m);
 	memcpy (r,b,m*sizeof(dReal));		// residual r = b - A*lambda
 #endif
-	
+
 	for (int iteration=0; iteration < num_iterations; iteration++) {
 		for (i=0; i<m; i++) z[i] = r[i]*Ad[i];	// z = inv(M)*r
 		dReal rho = dot (m,r,z);		// rho = r'*z
-		
+
 		// @@@
 		// we must check for convergence, otherwise rho will go to 0 if
 		// we get an exact solution, which will introduce NaNs into the equations.
@@ -248,17 +248,17 @@ static void CG_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *b
 			printf ("CG returned at iteration %d\n",iteration);
 			break;
 		}
-		
+
 		if (iteration==0) {
 			memcpy (p,z,m*sizeof(dReal));	// p = z
 		}
 		else {
 			add (m,p,z,p,rho/last_rho);	// p = z + (rho/last_rho)*p
 		}
-		
+
 		// compute q = (J*inv(M)*J')*p
 		multiply_J_invM_JT (m,nb,J,iMJ,jb,cfm,fc,p,q);
-	
+
 		dReal alpha = rho/dot (m,p,q);		// alpha = rho/(p'*q)
 		add (m,lambda,lambda,p,alpha);		// lambda = lambda + alpha*p
 		add (m,r,r,q,-alpha);			// r = r - alpha*q
@@ -315,10 +315,7 @@ static  __cdecl  int compare_index_error (const void *a, const void *b)
 
 #endif
 
-static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *body,
-					 dRealPtr invI, dRealMutablePtr lambda, dRealMutablePtr fc, dRealMutablePtr b,
-					 dRealMutablePtr lo, dRealMutablePtr hi, dRealPtr cfm, int *findex,
-					 dxQuickStepParameters *qs)
+static void SOR_LCP(int m, int nb, dRealMutablePtr J, int* jb, dxBody* const* body, dRealPtr invI, dRealMutablePtr lambda, dRealMutablePtr fc, dRealMutablePtr b, dRealMutablePtr lo, dRealMutablePtr hi, dRealPtr cfm, int* findex, dxQuickStepParameters* qs, std::mt19937& Rng)
 {
 	const int num_iterations = qs->num_iterations;
 	const dReal sor_w = qs->w;		// SOR over-relaxation parameter
@@ -427,7 +424,7 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 #endif
 #ifdef RANDOMLY_REORDER_CONSTRAINTS
 		if ((iteration & 3) == 0) {
-			std::shuffle(order, order + m, rng);
+			std::shuffle(order, order + m, Rng);
 			/*
 			for (i=1; i<m; ++i) {
 				IndexError tmp = order[i];
@@ -535,7 +532,7 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 {
 	const int num_iterations = qs->num_iterations;
 	const dReal sor_w = qs->w;		// SOR over-relaxation parameter
-	
+
 	int i,j;
 
 #ifdef WARM_STARTING
@@ -660,11 +657,11 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 			//     linearizing access to those arrays. hmmm, this does not seem
 			//     like a win, but we should think carefully about our memory
 			//     access pattern.
-		
+
 			int index = order[i].index;
 			J_ptr = J + index*12;
 			iMJ_ptr = iMJ + index*12;
-		
+
 			// set the limits for this constraint. note that 'hicopy' is used.
 			// this is the place where the QuickStep method differs from the
 			// direct LCP solving method, since that method only performs this
@@ -678,7 +675,7 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 			int b2 = jb[index*2+1];
 			dReal delta = b[index] - lambda[index]*Ad[index];
 			dRealMutablePtr fc_ptr = fc + 6*b1;
-			
+
 			// @@@ potential optimization: SIMD-ize this and the b2 >= 0 case
 			delta -=fc_ptr[0] * J_ptr[0] + fc_ptr[1] * J_ptr[1] +
 				fc_ptr[2] * J_ptr[2] + fc_ptr[3] * J_ptr[3] +
@@ -700,7 +697,7 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 			//@@@ a trick that may or may not help
 			//dReal ramp = (1-((dReal)(iteration+1)/(dReal)num_iterations));
 			//delta *= ramp;
-		
+
 			// update fc.
 			// @@@ potential optimization: SIMD for this and the b2 >= 0 case
 
@@ -729,7 +726,7 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 				lambda[index] = new_lambda;
 			}
 
-	
+
 			int b1 = jb[index*2];
 			int b2 = jb[index*2+1];
 			iMJ_ptr = iMJ + index*12;
@@ -759,7 +756,11 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 void dxQuickStepper (dxWorld *world, dxBody * const *body, int nb,
 		     dxJoint **joint, int nj, dReal stepsize)
 {
-	
+	// The sequence belongs to the world, independent of worker assignment.
+	std::mt19937 Rng(world->QuickStepSeed);
+	world->QuickStepSeed = world->QuickStepSeed * 1664525u + 1013904223u;
+
+
 	int i,j;
 	IFTIMING(dTimerStart("preprocessing");)
 
@@ -767,14 +768,14 @@ void dxQuickStepper (dxWorld *world, dxBody * const *body, int nb,
 
 	// number all bodies in the body list - set their tag values
 	for (i=0; i<nb; i++) body[i]->tag = i;
-	
+
 	// make a local copy of the joint array, because we might want to modify it.
 	// (the "dxJoint *const*" declaration says we're allowed to modify the joints
 	// but not the joint array, because the caller might need it unchanged).
 	//@@@ do we really need to do this? we'll be sorting constraint rows individually, not joints
 	//dxJoint **joint = (dxJoint**) alloca (nj * sizeof(dxJoint*));//slipch@ - no need  to copy with sipmle island processing
 	//memcpy (joint,_joint,nj * sizeof(dxJoint*));
-	
+
 	// for all bodies, compute the inertia tensor and its inverse in the global
 	// frame, and compute the rotational force and add it to the torque
 	// accumulator. I and invI are a vertical stack of 3x4 matrices, one per body.
@@ -859,7 +860,7 @@ void dxQuickStepper (dxWorld *world, dxBody * const *body, int nb,
 		dSetValue (lo,m,-dInfinity);
 		dSetValue (hi,m, dInfinity);
 		for (i=0; i<m; i++) findex[i] = -1;
-		
+
 		// get jacobian data from constraints. an m*12 matrix will be created
 		// to store the two jacobian blocks from each constraint. it has this
 		// format:
@@ -942,7 +943,7 @@ void dxQuickStepper (dxWorld *world, dxBody * const *body, int nb,
 		// solve the LCP problem and get lambda and invM*constraint_force
 		IFTIMING (dTimerNow ("solving LCP problem");)
 		dRealAllocaArray (cforce,nb*6);
-		SOR_LCP (m,nb,J,jb,body,invI,lambda,cforce,rhs,lo,hi,cfm,findex,&world->qs);
+		SOR_LCP(m, nb, J, jb, body, invI, lambda, cforce, rhs, lo, hi, cfm, findex, &world->qs, Rng);
 
 #ifdef WARM_STARTING
 		// save lambda for the next iteration
@@ -955,10 +956,10 @@ void dxQuickStepper (dxWorld *world, dxBody * const *body, int nb,
 
 		// note that the SOR method overwrites rhs and J at this point, so
 		// they should not be used again.
-		
+
 		// add stepsize * cforce to the body velocity
 		bool bvalid=true;
-		for (i=0; i<nb; i++) 
+		for (i=0; i<nb; i++)
 			for (j=0; j<3; j++)
 			{
 
@@ -1027,15 +1028,15 @@ void dxQuickStepper (dxWorld *world, dxBody * const *body, int nb,
 	for (i=0; i<nb; i++) {
 		dxBody	*b=body[i];
 		dReal body_invMass = b->invMass;
-		for (j=0; j<3; j++) 
+		for (j=0; j<3; j++)
 		{
 			//if (_valid(body[i]->facc[j]))
 				b->lvel[j] += stepsize * body_invMass *b->facc[j];
 		}
 		for (j=0; j<3; j++)
-		{	
+		{
 		//	if(!_valid(b->tacc[j]))b->tacc[j]=0.f;
-			b->tacc[j] *= stepsize;	
+			b->tacc[j] *= stepsize;
 		}
 #ifdef DEBUG_VALID
 		dIASSERT(dValid(b->avel[0])&&dValid(b->avel[1])&&dValid(b->avel[2]));

@@ -3,12 +3,12 @@
 
 void* xrMemory::mem_alloc(size_t size)
 {
-	stat_calls++;
+	xr_atomic_ref<u32>(stat_calls).fetch_add(1, std::memory_order_relaxed);
 	if (pAlloc == nullptr)
 	{
 		auto ptr = malloc(size);
 		PROF_MEM_ALLOC_CAPTURE(ptr, size);
-    	return ptr;
+		return ptr;
 	}
 	auto ptr = pAlloc->alloc(size);
 	PROF_MEM_ALLOC_CAPTURE(ptr, size);
@@ -17,7 +17,7 @@ void* xrMemory::mem_alloc(size_t size)
 
 void xrMemory::mem_free(void* P)
 {
-	stat_calls++;
+	xr_atomic_ref<u32>(stat_calls).fetch_add(1, std::memory_order_relaxed);
 	PROF_MEM_FREE_CAPTURE(P);
 	if (pAlloc == nullptr)
 	{
@@ -29,7 +29,7 @@ void xrMemory::mem_free(void* P)
 
 void* xrMemory::mem_realloc(void* P, size_t size)
 {
-	stat_calls++;
+	xr_atomic_ref<u32>(stat_calls).fetch_add(1, std::memory_order_relaxed);
 	PROF_MEM_FREE_CAPTURE(P);
 	if (pAlloc == nullptr)
 	{

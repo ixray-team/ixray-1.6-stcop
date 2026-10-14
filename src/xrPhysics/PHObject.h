@@ -53,8 +53,6 @@ public:
 					tpCharacter,
 					tpStaticShell
 			};
-			u32					CollidePhaseIndex = 0;
-			xrSRWLock			CollideGuard;
 protected:
 				Fvector		AABB;
 protected:
@@ -118,9 +116,7 @@ public:
 			void			collision_dynamic_disable();
 virtual		void			ClearRecentlyDeactivated		()										{;}		
 virtual		void			Collide							()										;
-virtual		void			CollidePostProcess				()										{}
-virtual		bool			ClearsDirtyOnCollide			()								const	{return true;}
-		IC	void			ClearDirty						()										{m_flags.set(st_dirty,false);}
+			void PrepareCollisionQuery(SPHCollisionQuery& Query) const;
 virtual		void			near_callback					(CPHObject* obj)						{;}
 virtual		void			RMotionsQuery					(qResultVec	&res)						{;}
 virtual		CPHMoveStorage*	MoveStorage						()										{return NULL;}

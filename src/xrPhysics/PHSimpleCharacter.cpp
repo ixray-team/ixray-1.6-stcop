@@ -1888,20 +1888,9 @@ void CPHSimpleCharacter::Collide()
 	OnStartCollidePhase();
 
 	inherited::Collide();
-
-	if (!CPHWorld::GetCollideContext().Collecting)
-		CheckInjuriousMaterial();
-}
-
-void CPHSimpleCharacter::CollidePostProcess()
-{
-	CheckInjuriousMaterial();
-}
-
-void CPHSimpleCharacter::CheckInjuriousMaterial()
-{
 	if (injuriousMaterialIDX == GAMEMTL_NONE_IDX && (*p_lastMaterialIDX) != GAMEMTL_NONE_IDX && GMLibrary().GetMaterialByIdx(*p_lastMaterialIDX)->Flags.test(SGameMtl::flInjurious))
 		injuriousMaterialIDX = *p_lastMaterialIDX;
+
 }
 
 void CPHSimpleCharacter::OnStartCollidePhase()

@@ -19,18 +19,6 @@ dcTriListCollider* GetData(dxGeom* TriList){
 
 }
 
-static dcTriListCollider& GetThreadCollider(dxGeom* TriList)
-{
-	thread_local xr_unique_ptr<dcTriListCollider> collider;
-
-	if (!collider)
-		collider.reset(new dcTriListCollider(TriList));
-	else
-		collider->Rebind(TriList);
-
-	return *collider;
-}
-
 
 
 inline bool ValidateCollision(dxGeom* o1, dxGeom* o2){
@@ -74,7 +62,7 @@ int dCollideSTL(dxGeom* TriList, dxGeom* Sphere, int Flags, dContactGeom* Contac
 
 	if (ValidateCollision(Sphere, TriList)){
 
-		return GetThreadCollider(TriList).CollideSphere(Sphere, Flags, Contact, Stride);
+		return GetData(TriList)->CollideSphere(Sphere, Flags, Contact, Stride);
 
 	}
 
@@ -89,7 +77,7 @@ int dCollideBTL(dxGeom* TriList, dxGeom* Box, int Flags, dContactGeom* Contact, 
 
 	if (ValidateCollision(Box, TriList)){
 
-		return GetThreadCollider(TriList).CollideBox(Box, Flags, Contact, Stride);
+		return GetData(TriList)->CollideBox(Box, Flags, Contact, Stride);
 
 	}
 
@@ -102,7 +90,7 @@ int dCollideCTL(dxGeom* TriList, dxGeom* Cyl, int Flags, dContactGeom* Contact, 
 
 	if (ValidateCollision(Cyl, TriList)){
 
-		return GetThreadCollider(TriList).CollideCylinder(Cyl, Flags, Contact, Stride);
+		return GetData(TriList)->CollideCylinder(Cyl, Flags, Contact, Stride);
 
 	}
 
@@ -228,6 +216,3 @@ dxGeom* dCreateTriList(dSpaceID space, dTriCallback* Callback, dTriArrayCallback
 	return g;
 
 }
-
-
-

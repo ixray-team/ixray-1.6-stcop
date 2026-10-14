@@ -164,6 +164,7 @@ IC	void		Unmerge()
 }
 IC	void			Init()
 {
+	QuickStepSeed = 0;
 	//b_active=true;
 	m_flags.init();
 	m_nj=nj=0;

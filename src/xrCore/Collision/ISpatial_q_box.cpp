@@ -9,6 +9,8 @@ struct spatial_box_walker final
 	ISpatial_DB*	space;
 	xr_vector<ISpatialShared>& R;
 	bool bFirst = false;
+	u32 MaxResults = 0;
+	bool IsTruncated = false;
 
 	void walk(ISpatial_NODE* N, const Fvector& n_C, float n_R)
 	{
@@ -21,13 +23,18 @@ struct spatial_box_walker final
 		for (ISpatialShared& S : N->items)
 		{
 			if (!S.get()) continue;
-			if (ESPATIAL_TYPE::NONE == (S->type & mask))	
+			if (ESPATIAL_TYPE::NONE == (S->type & mask))
 				continue;
 
 			Fvector& sC = S->sphere.P;
 			float sR = S->sphere.R;
 			if (!box.intersect(Fbox{sC-sR,sC+sR})) continue;
 
+			if (MaxResults && R.size() >= MaxResults)
+			{
+				IsTruncated = true;
+				return;
+			}
 			R.push_back(S);
 			if (bFirst) return;
 		}
@@ -41,8 +48,10 @@ struct spatial_box_walker final
 
 			walk(N->children[octant], Fvector().mad(n_C, c_spatial_offset[octant], c_R), c_R);
 
-			if (bFirst && !R.empty())
+			if (IsTruncated || (bFirst && !R.empty()))
+			{
 				return;
+			}
 		}
 	}
 };
@@ -51,10 +60,9 @@ void ISpatial_DB::q_box(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mas
 {
 	PROF_EVENT("ISpatial_DB::q_box");
 	xrSRWLockGuard guard(&db_lock, true);
+	R.clear();
 	if (!m_root)
 		return;
-
-	R.clear();
 	R.reserve(16);
 
 	spatial_box_walker W
@@ -66,6 +74,31 @@ void ISpatial_DB::q_box(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mas
 		!!(_o & O_ONLYFIRST),
 	};
 	W.walk(m_root, m_center, m_bounds);
+}
+
+bool ISpatial_DB::QueryBoxLimited(xr_vector<ISpatialShared>& Result, ESPATIAL_TYPE Mask, const Fbox& Box, u32 Limit, u64& Revision)
+{
+	PROF_EVENT("ISpatial_DB::QueryBoxLimited");
+	xrSRWLockGuard Guard(&db_lock, true);
+	Revision = QueryRevision();
+	Result.clear();
+	if (!Limit)
+	{
+		return false;
+	}
+	if (!m_root)
+	{
+		return true;
+	}
+	Result.reserve(Limit);
+	spatial_box_walker Walker{Box, Mask, this, Result, false, Limit};
+	Walker.walk(m_root, m_center, m_bounds);
+	if (Walker.IsTruncated)
+	{
+		Result.clear();
+		return false;
+	}
+	return true;
 }
 
 struct spatial_obb_walker final
@@ -136,7 +169,7 @@ void ISpatial_DB::q_obb(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mas
 
 struct spatial_sphere_walker final
 {
-	Fsphere sphere;        // сфера запроса
+	Fsphere sphere; // Query sphere
 	ESPATIAL_TYPE mask;
 	ISpatial_DB* space;
 	xr_vector<ISpatialShared>& R;

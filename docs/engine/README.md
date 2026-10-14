@@ -8,6 +8,7 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | --- | --- |
 | [architecture.md](architecture.md) | DLL load, globals, registrators, factory |
 | [lifecycle.md](lifecycle.md) | Load stages, `on_idle`, threads |
+| [physics-threading.md](physics-threading.md) | Physics phases, bounded query cache, solver scheduling and runtime verification |
 | [core.md](core.md) | Memory, `FS`, ltx, console, input, sound |
 | [rendering.md](rendering.md) | R1/R2/R4 selection, APIs, dynamic and static frames |
 | [gameplay.md](gameplay.md) | Level, ALife, Lua, class files |
