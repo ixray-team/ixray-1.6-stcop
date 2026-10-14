@@ -467,10 +467,11 @@ public:
 	float m_fSafeModeRotateTime = 0.25f;
 	Fvector SafemodeVelocityPos = {};
 	Fvector SafemodeVelocityRot = {};
-	float SafemodeDamping = 0.6f;
+	float SafemodeDamping = -1.f;
 	bool SafemodeFeedbackPending = false;
 	bool SafemodeFeedbackFrom = false;
 	bool SafemodeTogglePending = false;
+	float AimReloadFovOut = 0.f;
 
 	Fmatrix m_hud_trans_last = Fidentity;
 	Fquaternion m_hud_aim_align;

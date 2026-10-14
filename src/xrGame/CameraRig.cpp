@@ -35,9 +35,21 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Animation transitions", "additive_blend_in", "additive_blend_in", &g_rig.additive_blend_in, nullptr, 1, false, 0.005f },
 	{ "Animation transitions", "additive_blend_out", "additive_blend_out", &g_rig.additive_blend_out, nullptr, 1, false, 0.005f },
 
+	{ "Sprint and safemode", "sprint_pose_inertia", "sprint_pose_inertia", &g_rig.sprint_pose_inertia, nullptr, 1, false, 0.005f },
+	{ "Sprint and safemode", "sprint_pose_damping", "sprint_pose_damping", &g_rig.sprint_pose_damping, nullptr, 1, false, 0.01f },
+	{ "Sprint and safemode", "safemode_damping", "safemode_damping", &g_rig.safemode_damping, nullptr, 1, false, 0.01f },
+
 	{ "Aim reload", "aim_reload_motion", "aim_reload_motion", &g_rig.aim_reload_motion, nullptr, 1, false, 0.01f },
 	{ "Aim reload", "aim_reload_blend", nullptr, &g_rig.aim_reload_blend, nullptr, 1, false, 0.005f },
 	{ "Aim reload", "aim_reload_tail", nullptr, &g_rig.aim_reload_tail, nullptr, 1, false, 0.005f },
+	{ "Aim reload", "aim_reload_hud_offset_pos", "aim_reload_hud_offset_pos", &g_rig.aim_reload_hud_offset_pos.x, nullptr, 3, false, 0.0005f },
+	{ "Aim reload", "aim_reload_hud_offset_rot", "aim_reload_hud_offset_rot", &g_rig.aim_reload_hud_offset_rot.x, nullptr, 3, false, 0.05f },
+	{ "Aim reload", "aim_reload_zoom_out", "aim_reload_zoom_out", &g_rig.aim_reload_zoom_out, nullptr, 1, false, 0.01f },
+	{ "Aim reload", "aim_reload_pose_inertia", "aim_reload_pose_inertia", &g_rig.aim_reload_pose_inertia, nullptr, 1, false, 0.005f },
+	{ "Aim reload", "aim_reload_pose_inertia_out", "aim_reload_pose_inertia_out", &g_rig.aim_reload_pose_inertia_out, nullptr, 1, false, 0.005f },
+	{ "Aim reload", "aim_reload_hud_push_pos", "aim_reload_hud_push_pos", &g_rig.aim_reload_hud_push_pos.x, nullptr, 3, false, 0.0005f },
+	{ "Aim reload", "aim_reload_push_inertia", "aim_reload_push_inertia", &g_rig.aim_reload_push_inertia, nullptr, 1, false, 0.005f },
+	{ "Aim reload", "aim_reload_drop_inertia_out", "aim_reload_drop_inertia_out", &g_rig.aim_reload_drop_inertia_out, nullptr, 1, false, 0.005f },
 
 	{ "Shot animation", "shot_anim_variation", "shot_anim_variation", &g_rig.shot_anim_variation, nullptr, 1, false, 0.01f },
 	{ "Shot animation", "shot_anim_twist", "shot_anim_twist", &g_rig.shot_anim_twist, nullptr, 1, false, 0.01f },

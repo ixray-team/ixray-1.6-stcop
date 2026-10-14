@@ -34,9 +34,21 @@ g_camera_rig_descriptions[] =
 	{ "additive_blend_in", u8"с, плавность включения аддитивных анимаций (additive_motions). Для оружия: additive_blend_in в hud-секции" },
 	{ "additive_blend_out", u8"с, плавность выключения аддитивных анимаций (additive_motions). Для оружия: additive_blend_out в hud-секции" },
 
+	{ "sprint_pose_inertia", u8"с, мягкость перехода между позой спринта и сейфмодом (уход сейфмода при входе в спринт, возврат при выходе); 0 = без инерции. Для оружия: sprint_pose_inertia в hud-секции" },
+	{ "sprint_pose_damping", u8"Затухание этого перехода: меньше 1 = небольшой перелёт и доводка (живее), 1 = без перелёта. Для оружия: sprint_pose_damping в hud-секции" },
+	{ "safemode_damping", u8"Затухание пружины смещения сейфмода (вход и выход, длительность = safemode_rotate_time): меньше 1 = перелёт и доводка, 1 = без перелёта. Для оружия: safemode_damping в hud-секции или секции оружия" },
+
 	{ "aim_reload_motion", u8"Доля движения оружия из анимации перезарядки в прицеле (1 = как нарисовано); руки догоняют через IK. Для оружия: aim_reload_motion в hud-секции" },
 	{ "aim_reload_blend", u8"с, плавность включения и выключения aim_reload_motion" },
 	{ "aim_reload_tail", u8"Доля анимации перезарядки в её конце, за которую гашение снимается, чтобы она пришла в свою последнюю (idle) позу" },
+	{ "aim_reload_hud_offset_pos", u8"м, смещение худа при перезарядке в прицеле (x вправо, y вверх, z от камеры); 0, 0, 0 = выкл. Для оружия: aim_reload_hud_offset_pos в hud-секции" },
+	{ "aim_reload_hud_offset_rot", u8"Градусы, наклон худа при перезарядке в прицеле (x, y, z); 0, 0, 0 = выкл. Для оружия: aim_reload_hud_offset_rot в hud-секции" },
+	{ "aim_reload_zoom_out", u8"Доля приближения прицела, которая снимается при перезарядке в прицеле (FOV отдаляется); 0 = выкл., 1 = FOV как без прицела. Для оружия: aim_reload_zoom_out в hud-секции" },
+	{ "aim_reload_pose_inertia", u8"с, мягкость, с которой худ смещается и FOV отдаляется при перезарядке в прицеле; 0 = без сглаживания. Для оружия: aim_reload_pose_inertia в hud-секции" },
+	{ "aim_reload_pose_inertia_out", u8"с, то же, но для возврата в конце перезарядки (меньше = резче); 0 = без сглаживания. Для оружия: aim_reload_pose_inertia_out в hud-секции" },
+	{ "aim_reload_hud_push_pos", u8"м, резкий толчок оружия при перезарядке в прицеле (z = вперёд), отдельно от плавного смещения; 0, 0, 0 = выкл. Для оружия: aim_reload_hud_push_pos в hud-секции" },
+	{ "aim_reload_push_inertia", u8"с, резкость толчка и его возврата, когда перезарядка начинает отпускать (меньше = резче). Для оружия: aim_reload_push_inertia в hud-секции" },
+	{ "aim_reload_drop_inertia_out", u8"с, как быстро смещение худа по y возвращается, когда перезарядка начинает отпускать (меньше = резче). Для оружия: aim_reload_drop_inertia_out в hud-секции" },
 
 	{ "shot_anim_variation", u8"Каждый выстрел масштабирует движение оружия из анимации выстрела по каждой оси на 1 ± это значение. Для оружия: shot_anim_variation в hud-секции" },
 	{ "shot_anim_twist", u8"Каждый выстрел переводит до этой доли подброса ствола в рыскание и крен, в случайную сторону. Для оружия: shot_anim_twist в hud-секции" },
@@ -141,6 +153,13 @@ static float* CameraRigHudField(attachable_hud_item* item, const char* key)
 		{ "left_hand_ik_blend", &attachable_hud_item::LeftHandIkBlend },
 		{ "left_hand_finger_tail", &attachable_hud_item::LeftHandFingerTail },
 		{ "left_hand_finger_grip", &attachable_hud_item::LeftHandFingerGrip },
+		{ "sprint_pose_inertia", &attachable_hud_item::SprintPoseInertia },
+		{ "sprint_pose_damping", &attachable_hud_item::SprintPoseDamping },
+		{ "aim_reload_zoom_out", &attachable_hud_item::AimReloadZoomOut },
+		{ "aim_reload_pose_inertia", &attachable_hud_item::AimReloadPoseInertia },
+		{ "aim_reload_pose_inertia_out", &attachable_hud_item::AimReloadPoseInertiaOut },
+		{ "aim_reload_push_inertia", &attachable_hud_item::AimReloadPushInertia },
+		{ "aim_reload_drop_inertia_out", &attachable_hud_item::AimReloadDropInertiaOut },
 	};
 
 	for (const auto& it : fields)

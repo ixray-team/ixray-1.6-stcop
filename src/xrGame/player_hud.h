@@ -323,6 +323,14 @@ struct attachable_hud_item final
 	xr_vector<Fquaternion>			LeftHandAttachPoseRef;
 	xr_vector<Fvector>				LeftHandAttachPosRef;
 	float							m_aim_reload_motion = 1.f;
+	Fvector							AimReloadOffsetPos = {};
+	Fvector							AimReloadOffsetRot = {};
+	float							AimReloadZoomOut = 0.f;
+	float							AimReloadPoseInertia = 0.15f;
+	float							AimReloadPoseInertiaOut = 0.05f;
+	Fvector							AimReloadPushPos = {};
+	float							AimReloadPushInertia = 0.04f;
+	float							AimReloadDropInertiaOut = 0.04f;
 	float							m_hud_mass = 1.f;
 	bool							IkEnabled = true;
 	float							m_shot_variation = 0.f;
@@ -851,6 +859,9 @@ public:
 
 	bool			SprintAdditiveEnabled	() const;
 	float			SprintPoseWeight		() const { return SprintPose; }
+	float			AimReloadPose			() const;
+	float			AimReloadPush			() const;
+	float			AimReloadDrop			() const;
 	void			UpdateSprintPose		();
 	float			SprintPoseTarget		();
 	float			SprintLayerDeviation	() const;
@@ -940,6 +951,12 @@ private:
 	Fmatrix								m_aim_reload_ref = Fidentity;
 	float								m_aim_reload_weight = 0.f;
 	float								m_aim_reload_release = 1.f;
+	float								AimReloadPoseValue = 0.f;
+	float								AimReloadPoseVelocity = 0.f;
+	float								AimReloadPushValue = 0.f;
+	float								AimReloadPushVelocity = 0.f;
+	float								AimReloadDropValue = 0.f;
+	float								AimReloadDropVelocity = 0.f;
 	Fmatrix								m_shot_ref = Fidentity;
 	float								m_shot_weight = 0.f;
 	float								m_shot_release = 1.f;

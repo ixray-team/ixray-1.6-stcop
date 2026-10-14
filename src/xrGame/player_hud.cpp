@@ -1007,8 +1007,6 @@ void attachable_hud_item::load(const shared_str& sect_name)
 
 	hud_read_motion_list(sect_name, "additive_motions", m_additive_motions);
 	m_additive_reference = READ_IF_EXISTS(pSettings, r_string, sect_name, "additive_reference", nullptr);
-	SprintPoseInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "sprint_pose_inertia", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "sprint_pose_inertia", 0.08f)), 0.f);
-	SprintPoseDamping = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "sprint_pose_damping", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "sprint_pose_damping", 0.6f)), 0.f);
 	hud_read_motion_list(sect_name, "additive_retarget_motions", AdditiveRetargetMotions);
 	hud_read_motion_list(sect_name, "retarget_motions", RetargetMotions);
 	hud_read_motion_list(sect_name, "anim_pose_retarget_motions", AttachPoseRetargetMotions);
@@ -1059,6 +1057,16 @@ void attachable_hud_item::LoadRigParams()
 	}
 
 	m_aim_reload_motion = READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_reload_motion", rig.aim_reload_motion);
+	AimReloadOffsetPos = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "aim_reload_hud_offset_pos", rig.aim_reload_hud_offset_pos);
+	AimReloadOffsetRot = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "aim_reload_hud_offset_rot", rig.aim_reload_hud_offset_rot);
+	AimReloadZoomOut = std::clamp(READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_reload_zoom_out", rig.aim_reload_zoom_out), 0.f, 1.f);
+	AimReloadPoseInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_reload_pose_inertia", rig.aim_reload_pose_inertia), 0.f);
+	AimReloadPoseInertiaOut = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_reload_pose_inertia_out", rig.aim_reload_pose_inertia_out), 0.f);
+	AimReloadPushPos = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "aim_reload_hud_push_pos", rig.aim_reload_hud_push_pos);
+	AimReloadPushInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_reload_push_inertia", rig.aim_reload_push_inertia), 0.f);
+	AimReloadDropInertiaOut = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_reload_drop_inertia_out", rig.aim_reload_drop_inertia_out), 0.f);
+	SprintPoseInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "sprint_pose_inertia", rig.sprint_pose_inertia), 0.f);
+	SprintPoseDamping = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "sprint_pose_damping", rig.sprint_pose_damping), 0.f);
 	m_shot_variation = READ_IF_EXISTS(pSettings, r_float, sect_name, "shot_anim_variation", rig.shot_anim_variation);
 	m_shot_twist = READ_IF_EXISTS(pSettings, r_float, sect_name, "shot_anim_twist", rig.shot_anim_twist);
 	m_aim_shot_motion = READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_shot_motion", rig.aim_shot_motion);
@@ -3361,6 +3369,12 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	{
 		m_left_ik_weight = 0.f;
 		RetargetWeight = 0.f;
+		AimReloadPoseValue = 0.f;
+		AimReloadPoseVelocity = 0.f;
+		AimReloadPushValue = 0.f;
+		AimReloadPushVelocity = 0.f;
+		AimReloadDropValue = 0.f;
+		AimReloadDropVelocity = 0.f;
 		return;
 	}
 
@@ -3440,9 +3454,21 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		m_aim_reload_ref.set(model->LL_GetTransform(ancor));
 	}
 
-	const bool aim_reload = reload_state && weapon->IsZoomed() && item->m_aim_reload_motion < 1.f;
+	const bool aim_reload = reload_state && weapon->IsZoomed() && (item->m_aim_reload_motion < 1.f || item->AimReloadZoomOut > 0.f || !fis_zero(item->AimReloadOffsetPos.square_magnitude()) || !fis_zero(item->AimReloadOffsetRot.square_magnitude()) || !fis_zero(item->AimReloadPushPos.square_magnitude()));
+	if (aim_reload && m_aim_reload_weight <= 0.f)
+	{
+		m_aim_reload_release = 1.f;
+	}
+
 	const float aim_reload_blend = CCameraRig::AimReloadBlend();
 	m_aim_reload_weight = std::clamp(aim_reload_blend > 0.f ? m_aim_reload_weight + (aim_reload ? Device.fTimeDelta : -Device.fTimeDelta) / aim_reload_blend : (aim_reload ? 1.f : 0.f), 0.f, 1.f);
+	const float aim_reload_target = m_aim_reload_weight * hud_smooth(m_aim_reload_release);
+	const float aim_reload_half_life = aim_reload_target < AimReloadPoseValue ? item->AimReloadPoseInertiaOut : item->AimReloadPoseInertia;
+	HudSpring::Step(AimReloadPoseValue, AimReloadPoseVelocity, aim_reload_target, aim_reload_half_life, 1.f, Device.fTimeDelta);
+	const float aim_reload_push = aim_reload && m_aim_reload_release >= 1.f ? 1.f : 0.f;
+	HudSpring::Step(AimReloadPushValue, AimReloadPushVelocity, aim_reload_push, item->AimReloadPushInertia, 1.f, Device.fTimeDelta);
+	const float aim_reload_drop = aim_reload && m_aim_reload_release >= 1.f ? m_aim_reload_weight : 0.f;
+	HudSpring::Step(AimReloadDropValue, AimReloadDropVelocity, aim_reload_drop, aim_reload_drop < AimReloadDropValue ? item->AimReloadDropInertiaOut : item->AimReloadPoseInertia, 1.f, Device.fTimeDelta);
 
 	Fmatrix sprint_layer_ancor = Fidentity;
 	if (sprint_layer > 0.f)
@@ -3509,7 +3535,14 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		{
 			const float progress = hud_cycle_progress(m_model);
 			const float tail = CCameraRig::AimReloadTail();
-			m_aim_reload_release = progress < 0.f || tail <= 0.f ? 1.f : std::clamp((1.f - progress) / tail, 0.f, 1.f);
+			if (tail <= 0.f)
+			{
+				m_aim_reload_release = 1.f;
+			}
+			else if (progress >= 0.f)
+			{
+				m_aim_reload_release = std::clamp((1.f - progress) / tail, 0.f, 1.f);
+			}
 		}
 
 		const float release = m_aim_reload_release;
@@ -4878,6 +4911,21 @@ float player_hud::SprintPoseTarget()
 	}
 
 	return weight * SprintPoseShape;
+}
+
+float player_hud::AimReloadPose() const
+{
+	return std::clamp(AimReloadPoseValue, 0.f, 1.f);
+}
+
+float player_hud::AimReloadPush() const
+{
+	return std::clamp(AimReloadPushValue, 0.f, 1.f);
+}
+
+float player_hud::AimReloadDrop() const
+{
+	return std::clamp(AimReloadDropValue, 0.f, 1.f);
 }
 
 void player_hud::UpdateSprintPose()
