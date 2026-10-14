@@ -1175,6 +1175,21 @@ void CKinematicsAnimated::LL_SetInertializationBone(u16 bone, bool enabled)
 	}
 }
 
+void CKinematicsAnimated::LL_ResetInertialization()
+{
+	for (SInertialBone& S : m_InertialBones)
+	{
+		S.Valid = false;
+		S.Pending = false;
+		S.OffsetR.set(0.f, 0.f, 0.f);
+		S.VelocityR.set(0.f, 0.f, 0.f);
+		S.OffsetT.set(0.f, 0.f, 0.f);
+		S.VelocityT.set(0.f, 0.f, 0.f);
+		S.SourceVelocityR.set(0.f, 0.f, 0.f);
+		S.SourceVelocityT.set(0.f, 0.f, 0.f);
+	}
+}
+
 void CKinematicsAnimated::InertialAdvance()
 {
 	if (m_InertialBones.empty())
@@ -1189,6 +1204,11 @@ void CKinematicsAnimated::InertialAdvance()
 	}
 
 	const float Gap = m_InertialStamp < 0.f ? 1.f : Now - m_InertialStamp;
+	if (Gap > 0.25f)
+	{
+		LL_ResetInertialization();
+	}
+
 	const float Dt = std::min(Gap, 0.1f);
 	const float HalfLife = m_InertialTime / 3.f;
 	for (SInertialBone& S : m_InertialBones)

@@ -222,6 +222,7 @@ public:
 	virtual float				get_animation_length (MotionID motion_ID);
 	void						LL_SetInertialization	(float time) override;
 	void						LL_SetInertializationBone(u16 bone, bool enabled) override;
+	void						LL_ResetInertialization	() override;
 	bool						LL_GetMotionBoneTransform(MotionID motion, float time, u16 bone, Fmatrix& result) override;
 };
 //IC CKinematicsAnimated* PKinematicsAnimated(IRender_Visual* V) { return V?V->dcast_PKinematicsAnimated():0; }

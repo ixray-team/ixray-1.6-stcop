@@ -109,6 +109,7 @@ public:
 
 	virtual void						LL_SetInertialization(float time) = 0;
 	virtual void						LL_SetInertializationBone(u16 bone, bool enabled) = 0;
+	virtual void						LL_ResetInertialization() = 0;
 	virtual bool						LL_GetMotionBoneTransform(MotionID motion, float time, u16 bone, Fmatrix& result) = 0;
 //#ifdef DEBUG
 //	virtual	const BlendSVec			&blend_cycle	(const u32 &bone_part_id) const = 0;

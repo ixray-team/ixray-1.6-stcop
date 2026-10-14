@@ -152,6 +152,7 @@ public:
 	CBlend* PlayFX_Safe(LPCSTR N, float power_scale) override;
 	void LL_SetInertialization(float) override {}
 	void LL_SetInertializationBone(u16, bool) override {}
+	void LL_ResetInertialization() override {}
 	bool LL_GetMotionBoneTransform(MotionID, float, u16, Fmatrix&) override { return false; }
 	const CPartition& partitions() const { return *m_Partition; };
 

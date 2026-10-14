@@ -4247,6 +4247,12 @@ void player_hud::attach_item(CHudItem* item)
 			RetargetLeftValid = false;
 			RetargetRightValid = false;
 			ArmRetargetMotion = MotionID();
+			m_model->LL_ResetInertialization();
+		}
+
+		if (IKinematicsAnimated* animated = pi->m_model->dcast_PKinematicsAnimated())
+		{
+			animated->LL_ResetInertialization();
 		}
 
 		pi->m_additive_playing = false;
