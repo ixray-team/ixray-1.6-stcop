@@ -308,6 +308,7 @@ struct attachable_hud_item final
 	shared_str						m_additive_reference;
 	xr_vector<shared_str>			AdditiveRetargetMotions;
 	shared_str						AdditiveRetargetReference;
+	xr_vector<shared_str>			RetargetMotions;
 	xr_vector<shared_str>			AttachPoseRetargetMotions;
 	shared_str						AttachPoseReference;
 	bool							RetargetPlaying = false;
@@ -359,7 +360,7 @@ struct attachable_hud_item final
 	bool render_item_ui_query		();
 	bool need_renderable			();
 	u8 LeftHandAttachMotionMode		(const shared_str& motion) const;
-	bool AttachPoseRetarget			(const shared_str& motion) const;
+	bool RetargetMode				(const shared_str& motion, shared_str& reference) const;
 	void set_bone_visible			(const shared_str& bone_name, bool bVisibility, bool bSilent=false);
 	void debug_draw_firedeps		();
 	void UpdateInertion				(u32 delta, CActor* actor);

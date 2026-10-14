@@ -904,6 +904,89 @@ static bool hud_motion_listed(const xr_vector<shared_str>& list, const shared_st
 	return false;
 }
 
+static const shared_str& hud_retarget_source_idle(const shared_str& motion)
+{
+	static xr_hash_map<shared_str, shared_str> sources;
+	static xr_hash_set<shared_str> idles;
+	static bool built = false;
+	if (!built)
+	{
+		built = true;
+		string128 name;
+		const auto read_list = [&name](CInifile::Sect& sect, const char* key, xr_vector<shared_str>& list)
+		{
+			const char* value = nullptr;
+			if (sect.line_exist(key, &value) && value != nullptr)
+			{
+				for (int i = 0, count = _GetItemCount(value); i < count; ++i)
+				{
+					list.emplace_back(_GetItem(value, i, name));
+				}
+			}
+		};
+
+		for (int pass = 0; pass < 2; ++pass)
+		{
+			for (CInifile::Sect& sect : pSettings->sections())
+			{
+				const char* idle = nullptr;
+				if (!sect.line_exist("anm_idle", &idle) || idle == nullptr || _GetItemCount(idle) == 0)
+				{
+					continue;
+				}
+
+				const shared_str idle_motion = _GetItem(idle, 0, name);
+				idles.insert(idle_motion);
+				xr_vector<shared_str> additive;
+				xr_vector<shared_str> retarget;
+				read_list(sect, "additive_retarget_motions", additive);
+				read_list(sect, "retarget_motions", retarget);
+
+				for (const CInifile::Item& line : sect.Data)
+				{
+					const char* alias = line.first.c_str();
+					if (alias == nullptr || strstr(alias, "anm_") != alias || strstr(alias, "anm_bp_") == alias || strstr(alias, "anm_idle") == alias
+						|| line.second.size() == 0 || hud_motion_listed(additive, line.first) || hud_motion_listed(retarget, line.first) != (pass == 1))
+					{
+						continue;
+					}
+
+					sources.try_emplace(shared_str(_GetItem(line.second.c_str(), 0, name)), idle_motion);
+				}
+			}
+		}
+	}
+
+	static xr_hash_map<shared_str, shared_str> by_name;
+	if (const auto named = by_name.find(motion); named != by_name.end())
+	{
+		return named->second;
+	}
+
+	shared_str found;
+	xr_string prefix = motion.c_str() != nullptr ? motion.c_str() : "";
+	for (size_t split = prefix.rfind('_'); split != xr_string::npos && split > 0; split = prefix.rfind('_'))
+	{
+		prefix.resize(split);
+		const shared_str candidate = (prefix + "_idle").c_str();
+		if (idles.contains(candidate))
+		{
+			found = candidate;
+			break;
+		}
+	}
+
+	if (found.size() == 0)
+	{
+		if (const auto it = sources.find(motion); it != sources.end())
+		{
+			found = it->second;
+		}
+	}
+
+	return by_name.try_emplace(motion, found).first->second;
+}
+
 void attachable_hud_item::load(const shared_str& sect_name)
 {
 	m_sect_name					= sect_name;
@@ -925,6 +1008,7 @@ void attachable_hud_item::load(const shared_str& sect_name)
 	hud_read_motion_list(sect_name, "additive_motions", m_additive_motions);
 	m_additive_reference = READ_IF_EXISTS(pSettings, r_string, sect_name, "additive_reference", nullptr);
 	hud_read_motion_list(sect_name, "additive_retarget_motions", AdditiveRetargetMotions);
+	hud_read_motion_list(sect_name, "retarget_motions", RetargetMotions);
 	hud_read_motion_list(sect_name, "anim_pose_retarget_motions", AttachPoseRetargetMotions);
 	AdditiveRetargetReference = READ_IF_EXISTS(pSettings, r_string, sect_name, "additive_retarget_reference", nullptr);
 	hud_read_motion_list(sect_name, "left_hand_free_motions", m_left_hand_free_motions);
@@ -1266,8 +1350,8 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 
 	const bool idle = strstr(anm_name_b.c_str(), "anm_idle") == anm_name_b.c_str();
 	const bool rig = CCameraRig::Enabled();
-	const bool pose_retarget = rig && !m_model_combined && AttachPoseRetarget(anm_name_b);
-	const bool retarget = pose_retarget || (rig && !m_model_combined && hud_motion_listed(AdditiveRetargetMotions, anm_name_b));
+	shared_str retarget_reference;
+	const bool retarget = RetargetMode(anm_name_b, retarget_reference);
 	if (retarget)
 	{
 		PlayRetargetBase();
@@ -1283,7 +1367,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 	mode.Loop = additive && idle && strstr(anm_name_b.c_str(), "_start") == nullptr && strstr(anm_name_b.c_str(), "_end") == nullptr;
 	mode.FadeAdditive = !additive && m_additive_playing;
 	mode.Reference = MotionID();
-	const shared_str& reference = pose_retarget ? AttachPoseReference : retarget ? AdditiveRetargetReference : m_additive_reference;
+	const shared_str& reference = retarget ? retarget_reference : m_additive_reference;
 	if (additive && reference.size() != 0 && !m_model_combined && g_player_hud->GetModel() != nullptr)
 	{
 		mode.Reference = g_player_hud->GetModel()->ID_Cycle_Safe(reference);
@@ -2700,19 +2784,71 @@ xr_vector<u16> player_hud::left_arm_blend_bones() const
 	return bones;
 }
 
-bool attachable_hud_item::AttachPoseRetarget(const shared_str& motion) const
+bool attachable_hud_item::RetargetMode(const shared_str& motion, shared_str& reference) const
 {
-	return AttachPoseReference.size() != 0 && hud_motion_listed(AttachPoseRetargetMotions, motion);
+	reference = nullptr;
+	if (m_model_combined || !CCameraRig::Enabled())
+	{
+		return false;
+	}
+
+	const auto base_name = [this](const char* alias)
+	{
+		for (const player_hud_motion& it : m_hand_motions.m_anims)
+		{
+			if (it.m_alias_name == alias)
+			{
+				return it.m_base_name;
+			}
+		}
+
+		return shared_str();
+	};
+
+	const shared_str& source = hud_retarget_source_idle(base_name(motion.c_str()));
+	const bool grip = AttachPoseReference.size() != 0;
+	if (hud_motion_listed(AdditiveRetargetMotions, motion))
+	{
+		reference = source.size() != 0 ? source : AdditiveRetargetReference;
+		return true;
+	}
+
+	if (hud_motion_listed(RetargetMotions, motion))
+	{
+		const shared_str own = base_name("anm_idle");
+		if (source.size() != 0 ? source != own : AdditiveRetargetReference.size() != 0)
+		{
+			reference = source.size() != 0 ? source : AdditiveRetargetReference;
+			return true;
+		}
+
+		reference = own;
+		return grip;
+	}
+
+	if (grip && hud_motion_listed(AttachPoseRetargetMotions, motion))
+	{
+		reference = source.size() != 0 ? source : AttachPoseReference;
+		return true;
+	}
+
+	return false;
 }
 
 u8 attachable_hud_item::LeftHandAttachMotionMode(const shared_str& motion) const
 {
-	if (AttachPoseRetarget(motion))
+	shared_str reference;
+	if (RetargetMode(motion, reference))
 	{
 		return 0;
 	}
 
-	return hud_motion_listed(LeftHandAttachAnimatedArmMotions, motion) ? 2 : hud_motion_listed(LeftHandAttachMotions, motion) ? 1 : 0;
+	if (hud_motion_listed(LeftHandAttachAnimatedArmMotions, motion) || hud_motion_listed(RetargetMotions, motion))
+	{
+		return 2;
+	}
+
+	return hud_motion_listed(LeftHandAttachMotions, motion) ? 1 : 0;
 }
 
 static float hud_motion_amount(IKinematicsAnimated* ka, MotionID motion)
