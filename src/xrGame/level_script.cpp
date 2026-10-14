@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+
 #include "pch_script.h"
 #include "Level.h"
 #include "Actor.h"
@@ -62,6 +63,8 @@
 
 #include "ElectronicsProblemsManager.h"
 #include "SaveObjectHelpers.h"
+#include "Cutscenes/CutsceneManager.h"
+#include "Cutscenes/CutsceneItem.h"
 
 using namespace luabind;
 
@@ -2133,6 +2136,27 @@ void CLevel::script_register(lua_State *L)
 		def("size",						&level_nearest::Size),
 		def("get",						&level_nearest::Get)
 	];
+
+	module(L, "animslot")
+	[
+		def("play_cutscene", &CCutsceneManager::PlayCutscene),
+		def("stop_current_cutscene", &CCutsceneManager::FinishCurrentCutscene)
+	];
+
+	module(L)
+		[
+			class_<SCutsceneObjectElement>("SCutsceneObjectElement")
+				.def("set_all_bones_visibility", &SCutsceneObjectElement::SetAllBonesVisibility)
+				.def("set_bone_visibility", &SCutsceneObjectElement::SetBoneVisibility)
+				.def("set_parent", &SCutsceneObjectElement::SetParent)
+				.def("set_anim_to_play", &SCutsceneObjectElement::SetAnimToPlay)
+				.def("set_on_finish_func", &SCutsceneObjectElement::SetOnFinishFunc)
+				.def("get_bone_id", &SCutsceneObjectElement::GetBoneID)
+				.def("set_bones_weapon", &SCutsceneObjectElement::SetBonesWeapon),
+			class_<CCutsceneItem>("CCutsceneItem")
+				.def("create_object_element", &CCutsceneItem::CreateObjectElement)
+				.def("set_pivot_object", &CCutsceneItem::SetPivotObject)
+		];
 
 	module(L, "player_hud")
 	[
