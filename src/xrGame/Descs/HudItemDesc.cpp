@@ -28,10 +28,6 @@ void SHudItemDesc::Load(const shared_str& HudSection)
 		m_sMovementBlendParams[EMovementLayers::eCrouch].Load(HudSection, "anim_blend_crouch");
 		m_sMovementBlendParams[EMovementLayers::eCrouchSlow].Load(HudSection, "anim_blend_crouch_slow");
 		m_sMovementBlendParams[EMovementLayers::eSprint].Load(HudSection, "anim_blend_sprint");
-		m_sSprintStartBlendParams.Load(HudSection, "anim_blend_sprint_start");
-		m_sSprintEndBlendParams.Load(HudSection, "anim_blend_sprint_end");
-		m_sSprintLoopBlendParams.Load(HudSection, "anim_blend_sprint_loop");
-		SprintInertia = std::max(pSettings->read_if_exists<float>(HudSection, "anim_blend_sprint_inertia", SprintInertia), 0.f);
 		m_sMovementBlendParams[EMovementLayers::eIdle].Load(HudSection, "anim_blend_idle");
 		m_sMovementBlendParams[EMovementLayers::eIdleAim].Load(HudSection, "anim_blend_idle_aim");
 		m_sMovementBlendParams[EMovementLayers::eAimWalk].Load(HudSection, "anim_blend_aim_walk");
