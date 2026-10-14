@@ -128,6 +128,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 
 			if (dont_test_sectors)
 			{
+				PROF_EVENT("add_static: non sector")
 				CSector* sector = (CSector*)Sectors[0];
 				set_Frustum(&ViewBase);
 				add_Geometry(sector->root());
