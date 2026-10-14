@@ -122,6 +122,14 @@ void CUIGameCustom::OnFrame()
 void CUIGameCustom::Render()
 {
 	PROF_EVENT("CUIGameCustom::Render");
+	if (CActor* Player = Actor(); Player && Player->GetNightVisionEffector())
+	{
+		Player->GetNightVisionEffector()->UpdateMask(*this);
+	}
+	else
+	{
+		RemoveCustomStatic("nv_tunnel");
+	}
 	GameCaptions()->Draw();
 	
 	{

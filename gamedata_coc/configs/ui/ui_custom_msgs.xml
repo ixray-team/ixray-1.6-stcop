@@ -654,4 +654,9 @@
 	<hud_glass12 x="0" y="0" width="1024" height="768" stretch="1">
 		<texture>ui\hud_glass12</texture>
 	</hud_glass12>
+	<!-- The powered night vision device keeps this mask during electronics interference. -->
+	<nv_tunnel x="0" y="0" width="1024" height="768" stretch="1">
+		<texture>hud\nvg_vignette</texture>
+	</nv_tunnel>
+
 </header>

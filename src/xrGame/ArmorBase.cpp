@@ -60,6 +60,16 @@ void CArmorBase::OnH_A_Chield()
 	}
 }
 
+Fcolor CArmorBase::GetNV_Color() const
+{
+	// Resolve the current profile when enabling NVG, including a profile changed by upgrades.
+	if (!NightVisionColorFromItem && m_NightVisionSect.size() && pSettings->section_exist(m_NightVisionSect) && pSettings->line_exist(m_NightVisionSect, "shader_nvg_color"))
+	{
+		return pSettings->r_fcolor(m_NightVisionSect, "shader_nvg_color");
+	}
+	return m_NightVisionColor;
+}
+
 void CArmorBase::Load(const char* section)
 {
 	inherited::Load(section);
@@ -94,16 +104,14 @@ void CArmorBase::Load(const char* section)
 		m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
 	}
 
-	if (pSettings->line_exist(section, "nightvision_color"))
+	NightVisionColorFromItem = pSettings->line_exist(section, "nightvision_color");
+	if (NightVisionColorFromItem)
 	{
 		m_NightVisionColor = pSettings->r_fcolor(section, "nightvision_color");
 	}
 	else
 	{
-		m_NightVisionColor.r = 0.3f;
-		m_NightVisionColor.g = 1.0f;
-		m_NightVisionColor.b = 0.2f;
-		m_NightVisionColor.a = 0.0f;
+		m_NightVisionColor.set(0.3f, 1.0f, 0.2f, 0.0f);
 	}
 
 	pSettings->read_if_exists(m_bTorchAvailable, section, "torch_available");

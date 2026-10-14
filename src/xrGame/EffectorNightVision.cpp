@@ -10,6 +10,8 @@
 #include "Actor.h"
 #include "Inventory.h"
 #include "nvg.h"
+#include "ui/UIGameCustom.h"
+#include "../xrEngine/IGame_Persistent.h"
 
 ENGINE_API extern bool turn_nvg;
 ENGINE_API extern Fcolor nvg_color;
@@ -130,16 +132,44 @@ CNightVisionEffector::~CNightVisionEffector()
 	m_pActor = nullptr;
 	m_disabled_maps = {};
 	m_bNightVisionOn = false;
-	turn_nvg = false;
+	if (ShaderNightVision)
+	{
+		turn_nvg = false;
+	}
 }
 
 void CNightVisionEffector::Start(const shared_str& sect, bool play_sound, const Fcolor& color)
 {
 	nvg_color = color;
-	static const bool used_shader_nvg = !!psDeviceFlags.test(rsR4);
+	const u32 Generation = std::min(READ_IF_EXISTS(pSettings, r_u32, sect, "shader_effect_range", 1u), 3u);
+	ShaderNightVision = psDeviceFlags.test(rsR4) && Generation != 0;
+	m_bNightVisionOn = true;
 
-	if (used_shader_nvg)
+	if (ShaderNightVision)
 	{
+		Fvector4 Postprocess;
+		switch (Generation)
+		{
+			case 2:
+				Postprocess.set(0.125f, 0.005f, 0.0125f, 0.9f);
+				break;
+			case 3:
+				Postprocess.set(0.075f, 0.0025f, 0.005f, 1.0f);
+				break;
+			default:
+				Postprocess.set(0.175f, 0.009f, 0.025f, 0.8f);
+				break;
+		}
+		if (pSettings->line_exist(sect, "shader_nvg_postprocessing"))
+		{
+			Postprocess = pSettings->r_fvector4(sect, "shader_nvg_postprocessing");
+		}
+		g_pGamePersistent->ShaderParams.NightVisionPostprocess = Postprocess;
+		if (nvg_color.a <= 1.0f)
+		{
+			nvg_color.a = Generation == 3 ? 15.0f : Generation == 2 ? 10.0f
+																	: 8.0f;
+		}
 		turn_nvg = true;
 	}
 	else
@@ -156,9 +186,9 @@ void CNightVisionEffector::Start(const shared_str& sect, bool play_sound, const 
 
 void CNightVisionEffector::Stop(const float factor, bool play_sound)
 {
-	static const bool used_shader_nvg = !!psDeviceFlags.test(rsR4);
+	m_bNightVisionOn = false;
 
-	if (used_shader_nvg)
+	if (ShaderNightVision)
 	{
 		if (turn_nvg)
 		{
@@ -170,6 +200,7 @@ void CNightVisionEffector::Stop(const float factor, bool play_sound)
 
 			m_sounds.StopSound("NightVisionIdleSnd");
 		}
+		ShaderNightVision = false;
 	}
 	else
 	{
@@ -191,7 +222,20 @@ void CNightVisionEffector::Stop(const float factor, bool play_sound)
 bool CNightVisionEffector::IsActive()
 {
 	CEffectorPP* pp = m_pActor->Cameras().GetPPEffector((EEffectorPPType)effNightvision);
-	return pp != nullptr || turn_nvg;
+	return pp != nullptr || (ShaderNightVision && turn_nvg);
+}
+
+void CNightVisionEffector::UpdateMask(CUIGameCustom& GameUI)
+{
+	// Interference suppresses the shader, while the powered device keeps its UI mask.
+	if (m_bNightVisionOn && IsActive() && m_pActor->g_Alive() && m_pActor->HUDview())
+	{
+		GameUI.AddCustomStatic("nv_tunnel", true);
+	}
+	else
+	{
+		GameUI.RemoveCustomStatic("nv_tunnel");
+	}
 }
 
 void CNightVisionEffector::PlaySounds(EPlaySounds which)
