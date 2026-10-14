@@ -1,28 +1,29 @@
 #include "stdafx.h"
-
 #include "r4_rendertarget.h"
+#include "../../xrEngine/IGame_Persistent.h"
 
 void CRenderTarget::phase_nvg()
 {
-	u32 Offset = 0;
-    constexpr u32 vertex_color = color_rgba(0, 0, 0, 255);
+	const float TargetInterference = clampr(Device.hudViewportData.CurrentElectronicsProblemsCnt / 10.0f, 0.0f, 1.0f);
+	if (!NightVisionInterferenceInitialized)
+	{
+		// A device enabled during an emission must start with its current interference.
+		NightVisionInterference = TargetInterference;
+		NightVisionInterferenceInitialized = true;
+	}
+	else
+	{
+		const float MaxDelta = 0.2f * clampr(Device.fTimeDelta, 0.0f, 0.1f);
+		NightVisionInterference += clampr(TargetInterference - NightVisionInterference, -MaxDelta, MaxDelta);
+	}
 
-    u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
+	u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(false);
-
-	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(3, g_combine->vb_stride, Offset);
-	pv->set(-1.0, 1.0, 1.0, 1.0, vertex_color, 0.0, 0.0);
-	pv++;
-	pv->set(3.0, 1.0, 1.0, 1.0, vertex_color, 2.0, 0.0);
-	pv++;
-	pv->set(-1.0, -3.0, 1.0, 1.0, vertex_color, 0.0, 2.0);
-	pv++;
-	RCache.Vertex.Unlock(3, g_combine->vb_stride);
-
-    RCache.set_Element(s_nvg->E[0]);
-	RCache.set_Geometry(g_combine);
-
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
+	RCache.set_Stencil(false);
+	RCache.set_Element(s_nvg->E[0]);
+	RCache.set_c("NightVisionPostprocess", g_pGamePersistent->ShaderParams.NightVisionPostprocess);
+	RCache.set_c("NightVisionInterference", NightVisionInterference, 0.0f, 0.0f, 0.0f);
+	RCache.set_Geometry(FSTriangleGeom);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 	GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
 }
