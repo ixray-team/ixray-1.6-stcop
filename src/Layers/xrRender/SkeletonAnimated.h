@@ -91,6 +91,7 @@ virtual	void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, co
 
 	void						InertialAdvance			();
 	void						InertialMarkPart		( u16 part );
+	void						InertialAddSeam			( u16 part, const CBlend& blend );
 	void						InertialApply			( u16 bone, CKey& key, bool update );
 public:
 

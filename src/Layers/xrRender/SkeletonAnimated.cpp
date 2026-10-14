@@ -542,7 +542,15 @@ void CKinematicsAnimated::LL_UpdateTracks( float dt, bool b_force, bool leave_bl
 			if ( !b_force && B.dwFrame == RDEVICE.dwFrame )
 					continue;
 			B.dwFrame =	RDEVICE.dwFrame;
-			if( B.update( dt, B.Callback ) && !leave_blends )
+			const float TimeBefore = B.timeCurrent;
+			const bool Finished = B.update( dt, B.Callback );
+			const bool Wrapped = !B.stop_at_end && B.blendAmount > EPS_L && (B.speed >= 0.f ? B.timeCurrent < TimeBefore : B.timeCurrent > TimeBefore);
+			if (Wrapped && m_InertialTime > 0.f)
+			{
+				InertialAddSeam(part, B);
+			}
+
+			if( Finished && !leave_blends )
 			{
 				DestroyCycle( B );
 				blend_cycles[part].erase( I );
@@ -1278,6 +1286,44 @@ void CKinematicsAnimated::InertialMarkPart(u16 part)
 		{
 			m_InertialBones[Bone].Pending = true;
 		}
+	}
+}
+
+void CKinematicsAnimated::InertialAddSeam(u16 part, const CBlend& blend)
+{
+	if (m_InertialBones.empty() || part >= MAX_PARTS || blend.timeTotal <= END_EPS)
+	{
+		return;
+	}
+
+	CBlend End;
+	End.timeCurrent = blend.timeTotal - END_EPS;
+	End.stop_at_end = true;
+
+	CBlend Start;
+	Start.timeCurrent = 0.f;
+	Start.stop_at_end = true;
+
+	const float Weight = std::clamp(blend.blendAmount, 0.f, 1.f);
+	const bool Forward = blend.speed >= 0.f;
+	for (u16 Bone : (*m_Partition)[part].bones)
+	{
+		if (Bone >= m_InertialBones.size() || !m_InertialBones[Bone].Enabled)
+		{
+			continue;
+		}
+
+		const CMotion& Motion = *LL_GetMotion(blend.motionID, Bone);
+		CKey KeyEnd, KeyStart;
+		Dequantize(KeyEnd, End, Motion);
+		Dequantize(KeyStart, Start, Motion);
+
+		const CKey& From = Forward ? KeyEnd : KeyStart;
+		const CKey& To = Forward ? KeyStart : KeyEnd;
+
+		SInertialBone& S = m_InertialBones[Bone];
+		S.OffsetT.mad(Fvector().sub(From.T, To.T), Weight);
+		S.OffsetR.mad(Inertialization::QuatLog(Fquaternion().mul(From.Q, Inertialization::QuatInverse(To.Q))), Weight);
 	}
 }
 
