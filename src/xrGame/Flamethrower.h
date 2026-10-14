@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "../xrSound/ai_sounds.h"
-#include "weapon.h"
+#include "Weapon.h"
 #include "FlameCanister.h"
 #include "FlamethrowerTraceCollision.h"
 

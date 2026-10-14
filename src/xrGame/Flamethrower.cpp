@@ -1,10 +1,10 @@
 ﻿#include "StdAfx.h"
 
 #include "Flamethrower.h"
-#include "actor.h"
-#include "inventory.h"
+#include "Actor.h"
+#include "Inventory.h"
 #include "InventoryOwner.h"
-#include "xrserver_objects_alife_items.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "EffectorZoomInertion.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "UIGameCustom.h"
