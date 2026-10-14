@@ -152,6 +152,7 @@ public:
 	virtual void LL_SetInertialization(float) override {}
 	virtual void LL_SetInertializationBone(u16, bool) override {}
 	virtual void LL_ResetInertialization() override {}
+	virtual bool LL_GetBoneTransformMasked(u16, u8, Fmatrix&) override { return false; }
 	virtual bool LL_GetMotionBoneTransform(MotionID, float, u16, Fmatrix&) override { return false; }
 	virtual const CPartition& partitions() const override { return *m_Partition; };
 

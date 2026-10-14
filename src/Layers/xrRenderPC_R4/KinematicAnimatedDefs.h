@@ -6,8 +6,9 @@
 #include	"../../xrEngine/SkeletonMotionDefs.h"
 // consts
 const	u32		MAX_BLENDED			=	16;
-const	u32		MAX_CHANNELS		=	5;
+const	u32		MAX_CHANNELS		=	6;
 const	u8		ADDITIVE_CHANNEL	=	4;
+const	u8		LAYER_ADDITIVE_CHANNEL	=	5;
 
 const	u32		MAX_BLENDED_POOL	=	(MAX_BLENDED*MAX_PARTS*MAX_CHANNELS);
 const	u32		MAX_ANIM_SLOT		=	48;
