@@ -3718,9 +3718,12 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 			{
 				// Rarely even after timeout client object still exists, so we cannot free ID yet
 				if (auto ExistingEntity = Level().Objects.net_Find(elem.second); 
-					IVERIFY_M(!ExistingEntity, "Object with ID [%u] still exists despite free timeout [%u] is over!", elem.second, ID_delete_delay))
+					!IVERIFY_M(!ExistingEntity, "Object with ID [%u] still exists despite free timeout [%u] is over!", elem.second, ID_delete_delay))
 				{
-					break;
+					auto PostponedID = elem.second;
+					m_pending_delete_id_queue.pop();
+					m_pending_delete_id_queue.emplace(CurTime, PostponedID);
+					continue;
 				}
 				FreeIDImpl(elem.second);
 				m_pending_delete_id_set.erase(elem.second);
@@ -3853,16 +3856,16 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 		{
 			Pack.set |= 1 << Mod;
 			Result = ID;
-		}
-		if (Pack.set == 255)
-		{
-			IVERIFY(LLChunk.empty);
-			--LLChunk.empty;
-		}
-		if (!LLChunk.empty)
-		{
-			IVERIFY(Chunk.empty);
-			--Chunk.empty;
+			if (Pack.set == 255)
+			{
+				IVERIFY(LLChunk.empty);
+				--LLChunk.empty;
+				if (!LLChunk.empty)
+				{
+					IVERIFY(Chunk.empty);
+					--Chunk.empty;
+				}
+			}
 		}
 	}
 #ifdef DEBUG
