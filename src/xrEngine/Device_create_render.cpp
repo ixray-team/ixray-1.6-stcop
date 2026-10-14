@@ -134,25 +134,48 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 
 			if (ImGui::BeginMenu("Game"))
 			{
-				ImGui::MenuItem("Spawn Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SpawnManager)]);
-				ImGui::MenuItem("Weapon Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_WeaponManager)]);
-				ImGui::MenuItem("Search Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SearchManager)]);
-				ImGui::MenuItem("Graph Editor", nullptr, &States[static_cast<u8>(EditorUI::Game_GraphEditor)]);
-
-
-				//ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);
-				ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_HudAdjustManager)]);
-				ImGui::MenuItem("Watch Debug", nullptr, &States[static_cast<u8>(EditorUI::Game_WatchDebug)]);
-				ImGui::MenuItem("Hud Adjust (Legacy)", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
-				ImGui::MenuItem("3rd Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_3rdAdjust)]);
-				ImGui::MenuItem("3D Icons Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_3DIconAdjust)]);
-				ImGui::MenuItem("Actor Animations", nullptr, &States[static_cast<u8>(EditorUI::Game_ActorAnimations)]);
 				ImGui::MenuItem("Level Inspector", nullptr, &States[static_cast<u8>(EditorUI::LevelInspector)]);
-				ImGui::MenuItem("Demo record", nullptr, &States[static_cast<u8>(EditorUI::Game_DemoRecord)]);
-				if (pSettings->section_exist("camera_rig") && READ_IF_EXISTS(pSettings, r_bool, "camera_rig", "enabled", false))
+				ImGui::MenuItem("Spawn Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SpawnManager)]);
+
+				if (ImGui::BeginMenu("World##InGame"))
 				{
-					ImGui::MenuItem("Camera Rig", nullptr, &States[static_cast<u8>(EditorUI::Game_CameraRig)]);
+					ImGui::MenuItem("Search Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SearchManager)]);
+					ImGui::MenuItem("Graph Editor", nullptr, &States[static_cast<u8>(EditorUI::Game_GraphEditor)]);
+
+					ImGui::EndMenu();
 				}
+
+				if (ImGui::BeginMenu("Weapon & HUD##InGame"))
+				{
+					ImGui::MenuItem("Weapon Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_WeaponManager)]);
+					ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_HudAdjustManager)]);
+					ImGui::MenuItem("Hud Adjust (Legacy)", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
+					if (pSettings->section_exist("camera_rig") && READ_IF_EXISTS(pSettings, r_bool, "camera_rig", "enabled", false))
+					{
+						ImGui::MenuItem("Camera Rig", nullptr, &States[static_cast<u8>(EditorUI::Game_CameraRig)]);
+					}
+					ImGui::MenuItem("OMF", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
+					ImGui::MenuItem("Watch Debug", nullptr, &States[static_cast<u8>(EditorUI::Game_WatchDebug)]);
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::BeginMenu("Actor##InGame"))
+				{
+					ImGui::MenuItem("Actor Animations", nullptr, &States[static_cast<u8>(EditorUI::Game_ActorAnimations)]);
+					ImGui::MenuItem("3rd Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_3rdAdjust)]);
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::BeginMenu("UI##InGame"))
+				{
+					ImGui::MenuItem("3D Icons Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_3DIconAdjust)]);
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::MenuItem("Demo record", nullptr, &States[static_cast<u8>(EditorUI::Game_DemoRecord)]);
 				if (ImGui::BeginMenu("Editors##InGame"))
 				{
 					ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
@@ -164,7 +187,6 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 
 					ImGui::MenuItem("Texture Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_TextureEditor)]);
 					ImGui::MenuItem("Quest Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_QuestEditor)]);
-					ImGui::MenuItem("OMF", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
 					ImGui::MenuItem("Input", nullptr, &States[static_cast<u8>(EditorUI::Tools_InputManager)]);
 
 					ImGui::EndMenu();
