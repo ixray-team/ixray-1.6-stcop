@@ -39,7 +39,7 @@ struct SCameraRigParams
 	float	inertia_speed		= 1.3f, mass_speed_exponent = 0.25f, aim_reload_tail = 0.2f, shot_anim_tail = 0.3f;
 	float	hud_inertialization	= 0.f;
 	float	aim_reload_motion	= 1.f, shot_anim_variation = 0.f, shot_anim_twist = 0.f, aim_shot_motion = 1.f, idle_fade = 0.f, inertia_damping = 0.55f;
-	float	additive_blend_in	= 0.f, additive_blend_out = 0.1f, left_hand_attach_blend = 0.f, left_hand_ik_blend = 0.25f, left_hand_finger_tail = 0.f;
+	float	additive_blend_in	= 0.f, additive_blend_out = 0.1f, left_hand_attach_blend = 0.f, left_hand_ik_blend = 0.25f, left_hand_finger_tail = 0.f, left_hand_finger_grip = 1.f;
 	float	cam_shoot_variation	= 0.f, cam_shoot_speed_variation = 0.f;
 	bool	cam_shoot_mirror	= false;
 };

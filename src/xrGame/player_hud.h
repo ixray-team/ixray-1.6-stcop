@@ -276,12 +276,15 @@ struct attachable_hud_item final
 	float							LeftHandAttachBlend = 0.f;
 	float							LeftHandIkBlend = 0.25f;
 	float							LeftHandFingerTail = 0.f;
+	float							LeftHandFingerGrip = 1.f;
 	shared_str						LeftHandAttachTarget;
 	xr_vector<shared_str>			LeftHandAttachMotions;
 	xr_vector<shared_str>			LeftHandAttachAnimatedArmMotions;
 	Fmatrix							LeftHandAttachRef = Fidentity;
 	bool							LeftHandAttachRefValid = false;
 	bool							LeftHandAttachRefTried = false;
+	xr_vector<Fquaternion>			FingerGripPose;
+	shared_str						FingerGripPoseMotion;
 	Fmatrix							LeftHandAttachAncorRef = Fidentity;
 	xr_vector<Fquaternion>			LeftHandAttachPoseRef;
 	float							m_aim_reload_motion = 1.f;
@@ -785,7 +788,6 @@ public:
 
 	void			UpdateWeaponOffset(u32 delta);
 	void			OnShotAnimation		(const attachable_hud_item* item);
-	void			OnHudMotionMark		(const attachable_hud_item* item, const shared_str& mark);
 	void			OnHudMotionStarted	(const shared_str& motion);
 
 	IKinematics*	m_legs_model;
@@ -841,6 +843,7 @@ private:
 	bool			RetargetHandTarget	(attachable_hud_item* item, u16 ancor, u16 wrist, Fmatrix& result);
 	xr_vector<u16>	left_arm_blend_bones() const;
 	xr_vector<u16>	left_hand_fingers() const;
+	bool			FingerGripReference	(attachable_hud_item* item);
 	float								RetargetWeight = 0.f;
 	Fmatrix								RetargetLeftTarget = Fidentity;
 	Fmatrix								RetargetRightTarget = Fidentity;
@@ -852,10 +855,15 @@ private:
 	bool								LeftGripActive = false;
 	xr_vector<u16>						LeftGripFingerBones;
 	xr_vector<Fquaternion>				LeftGripFingerPose;
+	xr_vector<u16>						FingerGripBones;
+	xr_vector<Fquaternion>				FingerRefPose;
+	MotionID							FingerRefMotion;
+	int									FingerRefSegment = -1;
+	MotionID							AttachOffsetMotion;
+	Fmatrix								AttachOffsetRef = Fidentity;
 	float								LeftHandAttachHold = 0.f;
 	float								LeftHandAttachArmWeight = 1.f;
 	bool								LeftHandAttachAnimatedArm = false;
-	bool								LeftHandAttachReleaseByMark = false;
 	xr_vector<u16>	left_arm_subtree	() const;
 	const Fvector&	attach_rot			() const;
 	const Fvector&	attach_pos			() const;

@@ -1170,11 +1170,6 @@ void CHudItem::OnMotionMark(u8 state, const motion_marks& mark)
 			g_player_hud->UpdateMovementLayers();
 		}
 	}
-
-	if (g_player_hud != nullptr)
-	{
-		g_player_hud->OnHudMotionMark(HudItemData(), mark.name);
-	}
 }
 
 bool CHudItem::SoundExist(const char* section, const char* sound_name)
