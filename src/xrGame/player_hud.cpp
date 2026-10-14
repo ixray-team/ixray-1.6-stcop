@@ -1007,6 +1007,8 @@ void attachable_hud_item::load(const shared_str& sect_name)
 
 	hud_read_motion_list(sect_name, "additive_motions", m_additive_motions);
 	m_additive_reference = READ_IF_EXISTS(pSettings, r_string, sect_name, "additive_reference", nullptr);
+	SprintPoseInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "sprint_pose_inertia", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "sprint_pose_inertia", 0.08f)), 0.f);
+	SprintPoseDamping = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "sprint_pose_damping", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "sprint_pose_damping", 0.6f)), 0.f);
 	hud_read_motion_list(sect_name, "additive_retarget_motions", AdditiveRetargetMotions);
 	hud_read_motion_list(sect_name, "retarget_motions", RetargetMotions);
 	hud_read_motion_list(sect_name, "anim_pose_retarget_motions", AttachPoseRetargetMotions);
@@ -2491,11 +2493,8 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 	Fmatrix script_layers = Fidentity;
 
-	{
-		const bool yield = m_sprinting && SprintAdditiveEnabled();
-		const float rate = m_attached_items[0] != nullptr ? 1.f / m_attached_items[0]->SprintLayerBlend() : 1.f / 0.3f;
-		m_sprint_yield = std::clamp(m_sprint_yield + Device.fTimeDelta * (yield ? rate : -rate), 0.f, 1.f);
-	}
+	UpdateSprintPose();
+	m_sprint_yield = SprintPose;
 	Fmatrix movement_layers = Fidentity;
 
 	for (script_layer* anm : m_script_layers)
@@ -2540,7 +2539,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		Fmatrix layer = anm->XFORM();
 		if (m_sprint_yield > 0.f)
 		{
-			layer = scale_layer_offset(layer, 1.f - hud_smooth(m_sprint_yield));
+			layer = scale_layer_offset(layer, 1.f - m_sprint_yield);
 		}
 
 		if (anm->part == 0 || anm->part == 2)
@@ -4790,13 +4789,119 @@ void player_hud::UpdateSprintAdditive(bool sprint)
 		SprintEndPower = start >= 0.f ? start : 1.f;
 	}
 
-	if (!leaving && PlaySprintAdditive(item, SprintEndMotion, false, 0.f, SprintEndPower))
+	CWeapon* end_weapon = item->m_parent_hud_item != nullptr ? item->m_parent_hud_item->cast_weapon() : nullptr;
+	const bool to_safemode = end_weapon != nullptr && end_weapon->SprintEndsInSafemode();
+	if (!leaving && to_safemode)
+	{
+		end_weapon->OnSprintToSafemode();
+	}
+
+	if (!leaving && !to_safemode && PlaySprintAdditive(item, SprintEndMotion, false, 0.f, SprintEndPower))
 	{
 		SprintAdditiveStage = ESprintAdditiveStage::End;
 	}
 	else
 	{
 		StopSprintAdditive(item->SprintLayerBlend());
+	}
+}
+
+float player_hud::SprintLayerDeviation() const
+{
+	const attachable_hud_item* item = m_attached_items[0];
+	if (m_model == nullptr || item == nullptr || item->m_attach_place_idx >= m_ancors.size())
+	{
+		return 0.f;
+	}
+
+	const u16 ancor = m_ancors[item->m_attach_place_idx];
+	Fmatrix full, base;
+	if (ancor == BI_NONE || !m_model->LL_GetBoneTransformMasked(ancor, u8(-1), full) || !m_model->LL_GetBoneTransformMasked(ancor, u8(~(1 << LAYER_ADDITIVE_CHANNEL)), base))
+	{
+		return 0.f;
+	}
+
+	const Fmatrix delta = Fmatrix().mul_43(full, Fmatrix().invert(base));
+	Fquaternion rotation;
+	rotation.set(delta);
+	const float angle = 2.f * acosf(std::min(std::abs(rotation.w), 1.f)) / deg2rad(30.f);
+	const float distance = delta.c.magnitude() / 0.1f;
+	return _sqrt(angle * angle + distance * distance);
+}
+
+float player_hud::SprintPoseTarget()
+{
+	if (m_model == nullptr)
+	{
+		return 0.f;
+	}
+
+	const float weight = hud_smooth(hud_channel_weight(m_model, LAYER_ADDITIVE_CHANNEL));
+	if (SprintAdditiveStage == ESprintAdditiveStage::Start || SprintAdditiveStage == ESprintAdditiveStage::Loop)
+	{
+		if (SprintAdditiveStage == ESprintAdditiveStage::Start)
+		{
+			const float progress = SprintAdditiveProgress(SprintStartMotion);
+			SprintPoseShape = progress >= 0.f ? hud_smooth(progress) : SprintPoseShape;
+		}
+		else
+		{
+			SprintPoseShape = 1.f;
+		}
+
+		SprintExitDeviation = -1.f;
+		return weight * SprintPoseShape;
+	}
+
+	if (weight <= 0.f)
+	{
+		SprintExitDeviation = -1.f;
+		return 0.f;
+	}
+
+	const float deviation = SprintLayerDeviation();
+	if (SprintExitDeviation < 0.f)
+	{
+		SprintExitDeviation = deviation;
+		SprintExitPose = SprintTarget;
+	}
+
+	if (SprintExitDeviation > 1e-3f)
+	{
+		return SprintExitPose * std::clamp(deviation / SprintExitDeviation, 0.f, 1.f);
+	}
+
+	if (SprintAdditiveStage == ESprintAdditiveStage::End)
+	{
+		const float progress = SprintAdditiveProgress(SprintEndMotion);
+		SprintPoseShape = progress >= 0.f ? 1.f - hud_smooth(progress) : SprintPoseShape;
+	}
+
+	return weight * SprintPoseShape;
+}
+
+void player_hud::UpdateSprintPose()
+{
+	SprintTarget = SprintPoseTarget();
+
+	const attachable_hud_item* item = m_attached_items[0];
+	const float half_life = item != nullptr ? item->SprintPoseInertia : 0.f;
+	const float damping = item != nullptr ? item->SprintPoseDamping : 1.f;
+	HudSpring::Step(SprintPose, SprintPoseVelocity, SprintTarget, half_life, damping, Device.fTimeDelta);
+	SprintPose = std::clamp(SprintPose, -0.25f, 1.25f);
+
+	if (SprintTarget <= 0.f && std::abs(SprintPose) < 1e-3f && std::abs(SprintPoseVelocity) < 1e-2f)
+	{
+		SprintPose = 0.f;
+		SprintPoseVelocity = 0.f;
+	}
+}
+
+void player_hud::CutSprintEnd()
+{
+	if (SprintAdditiveStage == ESprintAdditiveStage::End && SprintAdditiveItem != nullptr)
+	{
+		StopSprintAdditive(SprintAdditiveItem->SprintLayerBlend());
 	}
 }
 

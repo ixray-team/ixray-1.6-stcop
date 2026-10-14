@@ -20,6 +20,34 @@ namespace HudAttachMarks
 	constexpr const char* Fingers = "mm_ik_fingers";
 }
 
+namespace HudSpring
+{
+	inline void Step(float& value, float& velocity, float goal, float half_life, float damping, float dt)
+	{
+		if (half_life <= 0.f)
+		{
+			value = goal;
+			velocity = 0.f;
+			return;
+		}
+
+		if (dt <= 0.f)
+		{
+			return;
+		}
+
+		const float omega = 2.f * 0.69314718f / half_life;
+		const int steps = std::clamp(static_cast<int>(std::ceil(dt * 240.f)), 1, 64);
+		const float step = dt / static_cast<float>(steps);
+		for (int i = 0; i < steps; ++i)
+		{
+			const float accel = -omega * omega * (value - goal) - 2.f * damping * omega * velocity;
+			velocity += accel * step;
+			value += velocity * step;
+		}
+	}
+}
+
 enum EHudMixType : u8
 {
 	eNoMix = 0,
@@ -306,6 +334,8 @@ struct attachable_hud_item final
 	float							m_additive_blend_out = 0.1f;
 	bool							m_additive_playing = false;
 	shared_str						m_additive_reference;
+	float							SprintPoseInertia = 0.08f;
+	float							SprintPoseDamping = 0.6f;
 	xr_vector<shared_str>			AdditiveRetargetMotions;
 	shared_str						AdditiveRetargetReference;
 	xr_vector<shared_str>			RetargetMotions;
@@ -812,15 +842,25 @@ public:
 	MotionID				SprintEndMotion;
 	MotionID				SprintReferenceMotion;
 	float					SprintEndPower = 1.f;
+	float					SprintPose = 0.f;
+	float					SprintPoseShape = 0.f;
+	float					SprintExitDeviation = -1.f;
+	float					SprintExitPose = 0.f;
+	float					SprintTarget = 0.f;
+	float					SprintPoseVelocity = 0.f;
 
 	bool			SprintAdditiveEnabled	() const;
-	bool			SprintPoseActive		() const { return m_sprinting && SprintAdditiveEnabled(); }
+	float			SprintPoseWeight		() const { return SprintPose; }
+	void			UpdateSprintPose		();
+	float			SprintPoseTarget		();
+	float			SprintLayerDeviation	() const;
 	void			ResolveSprintAdditive	(attachable_hud_item* item);
 	bool			PlaySprintAdditive		(attachable_hud_item* item, MotionID motion, bool loop, float progress, float power = 1.f);
 	void			StopSprintAdditive		(float blend);
 	float			SprintAdditiveProgress	(MotionID motion) const;
 	void			UpdateSprintAdditive	(bool sprint);
 	void			UpdateSprintAdditiveChain();
+	void			CutSprintEnd			();
 
 	float			m_sprint_yield = 0.f;
 

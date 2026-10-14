@@ -1017,7 +1017,13 @@ void CKinematicsAnimated::LL_BlendKeys(CKey& Result, const SKeyTable& keys)
 				weight += keys.blends[j][i]->blendAmount;
 			}
 
-			key_weight(channel_keys[ch_count], std::clamp(weight, 0.f, 1.f));
+			weight = std::clamp(weight, 0.f, 1.f);
+			if (j == LAYER_ADDITIVE_CHANNEL)
+			{
+				weight = weight * weight * (3.f - 2.f * weight);
+			}
+
+			key_weight(channel_keys[ch_count], weight);
 		}
 
 		++ch_count;

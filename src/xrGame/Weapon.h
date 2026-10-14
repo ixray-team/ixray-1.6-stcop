@@ -465,6 +465,12 @@ public:
 	float m_fLastRechargeTime = 0.0f;
 	float m_fSafeModeRotationFactor = 0.0f;
 	float m_fSafeModeRotateTime = 0.25f;
+	Fvector SafemodeVelocityPos = {};
+	Fvector SafemodeVelocityRot = {};
+	float SafemodeDamping = 0.6f;
+	bool SafemodeFeedbackPending = false;
+	bool SafemodeFeedbackFrom = false;
+	bool SafemodeTogglePending = false;
 
 	Fmatrix m_hud_trans_last = Fidentity;
 	Fquaternion m_hud_aim_align;
@@ -625,6 +631,12 @@ public:
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
 	void					OnSafemodeOut		();
+	void					ToggleSafemode		(CActor* pActor);
+	bool					SafemodeFeedbackDeferred();
+	bool					SprintEndsInSafemode() const;
+	void					OnSprintToSafemode	();
+	void					PlaySafemodeFeedback(bool entering);
+	void					UpdateSafemodeFeedback(CActor* pActor);
 	void					StartCamEffector	(const RStringVec& cams, bool hud_affect = true, int type_min = 32000, int type_max = 32999);
 	IC virtual bool IsZoomed() const final override { return m_zoom_params.m_bIsZoomModeNow; }
 	IC		bool			IsAltZoomed			()	const		{return m_zoom_params.m_bIsAltZoomModeNow;}
