@@ -2,6 +2,8 @@
 #include "scope_ui.hlsli"
 #include "pnv.hlsli"
 
+float ScopePostprocessActive;
+
 
 struct v2p
 {
@@ -22,9 +24,15 @@ float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
 	
     float4 t_vp2 = s_image[pos2d.xy];
 	
-	t_vp2.xyz = LinearToGamma(t_vp2.xyz) * 3.5f; t_vp2.xyz /= t_vp2.xyz + 1.0f;
-	t_vp2.xyz = calc_night_vision_effect(I.tc0, t_vp2, float3(1.0, 2.0, 1.0)).xyz;
-	t_vp2.xyz = GammaToLinear(t_vp2.xyz);
+	// A configured PPE profile has already processed the snapshot, as in a 2D scope.
+	// Apply the material NVG only for scopes without an active PPE effect.
+	[branch]
+	if (ScopePostprocessActive < 0.5f && m_zoom_deviation.z > 0.0f)
+	{
+		t_vp2.xyz = LinearToGamma(t_vp2.xyz) * 3.5f; t_vp2.xyz /= t_vp2.xyz + 1.0f;
+		t_vp2.xyz = calc_night_vision_effect(I.tc0, t_vp2, float3(1.0, 2.0, 1.0)).xyz;
+		t_vp2.xyz = GammaToLinear(t_vp2.xyz);
+	}
 	
 	t_vp2.xyz = ApplyScopeUI(t_vp2.xyz, pos2d.xy);
 
