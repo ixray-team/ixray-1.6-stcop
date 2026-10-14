@@ -858,6 +858,14 @@ void CRender::render_forward()
 	{
 		if(bSpecial)
 		{
+			for (const auto& Node : mapHUDSorted)
+			{
+				if (!Node.val.se->flags.ScopePostprocess)
+				{
+					Device.ScopePostprocessActive = false;
+					break;
+				}
+			}
 			if (Device.ScopePostprocessActive)
 			{
 				Target->phase_pp(&Device.ScopePostprocess);
