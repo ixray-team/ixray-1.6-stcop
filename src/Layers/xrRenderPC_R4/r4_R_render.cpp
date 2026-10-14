@@ -796,7 +796,8 @@ void CRender::Render()
 	}
 
 	//	TODO: DX10: Implement DX10 rain.
-	if (ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF))
+	const bool PbrRainPuddles = !o.dx11_use_legacy_light && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES) && (o.HasRainPuddleMask || o.ProceduralRainPuddles);
+	if (ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF) || PbrRainPuddles)
 	{
 		GPU_EVENT(DEFER_RAIN);
 		render_rain();
