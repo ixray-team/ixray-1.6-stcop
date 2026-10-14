@@ -69,6 +69,11 @@ extern float AnimatorHideSpeedFactor;
 
 int g_hud_layers_debug = 0;
 
+static float hud_smooth(float t)
+{
+	return t * t * (3.f - 2.f * t);
+}
+
 static void hud_log_layer(const char* kind, const char* name, const Fmatrix& xform, float blend, float extra)
 {
 	Fvector rot;
@@ -2469,7 +2474,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		const bool sprint_layer = anm->BaseAtEnd || anm->FadeAtEnd;
 		if (!sprint_layer && m_sprint_yield > 0.f)
 		{
-			layer = scale_layer_offset(layer, 1.f - m_sprint_yield * m_sprint_yield * (3.f - 2.f * m_sprint_yield));
+			layer = scale_layer_offset(layer, 1.f - hud_smooth(m_sprint_yield));
 		}
 
 		if (anm->part == 0 || anm->part == 2)
@@ -2794,9 +2799,14 @@ static SHudMarkSpan hud_mark_span(const CMotionDef* def, const char* name, float
 	return span;
 }
 
-static bool hud_motion_local_pose(IKinematicsAnimated* ka, MotionID motion, float time, const xr_vector<u16>& bones, xr_vector<Fquaternion>& pose)
+static bool hud_motion_local_pose(IKinematicsAnimated* ka, MotionID motion, float time, const xr_vector<u16>& bones, xr_vector<Fquaternion>& pose, xr_vector<Fvector>* positions = nullptr)
 {
 	pose.clear();
+	if (positions != nullptr)
+	{
+		positions->clear();
+	}
+
 	IKinematics* kinematics = ka->dcast_PKinematics();
 	for (u16 bone : bones)
 	{
@@ -2804,10 +2814,20 @@ static bool hud_motion_local_pose(IKinematicsAnimated* ka, MotionID motion, floa
 		if (!ka->LL_GetMotionBoneTransform(motion, time, bone, bone_ms) || !ka->LL_GetMotionBoneTransform(motion, time, kinematics->LL_GetData(bone).GetParentID(), parent_ms))
 		{
 			pose.clear();
+			if (positions != nullptr)
+			{
+				positions->clear();
+			}
+
 			return false;
 		}
 
-		pose.push_back(Fquaternion().set(Fmatrix().mul_43(Fmatrix().invert(parent_ms), bone_ms)));
+		const Fmatrix local = Fmatrix().mul_43(Fmatrix().invert(parent_ms), bone_ms);
+		pose.push_back(Fquaternion().set(local));
+		if (positions != nullptr)
+		{
+			positions->push_back(local.c);
+		}
 	}
 
 	return !pose.empty();
@@ -2837,6 +2857,46 @@ static MotionID hud_dominant_motion(IKinematicsAnimated* ka)
 	}
 
 	return motion;
+}
+
+static float hud_motion_settle(IKinematicsAnimated* ka, const player_hud_motion_container& motions, float settle_time, bool ahead)
+{
+	xr_vector<MotionID> idles;
+	for (const player_hud_motion& motion : motions.m_anims)
+	{
+		if (strstr(motion.m_alias_name.c_str(), "anm_idle") == motion.m_alias_name.c_str())
+		{
+			for (const motion_descr& descr : motion.m_animations)
+			{
+				idles.push_back(descr.mid);
+			}
+		}
+	}
+
+	float settled = 0.f;
+	float total = 0.f;
+	for (u32 i = 0, count = ka->LL_PartBlendsCount(0); i < count; i++)
+	{
+		const CBlend* B = ka->LL_PartBlend(0, i);
+		if (B == nullptr || B->channel != 0 || B->blend_state() == CBlend::eFREE_SLOT || B->blendAmount <= 0.f || B->timeTotal <= EPS || std::find(idles.begin(), idles.end(), B->motionID) != idles.end())
+		{
+			continue;
+		}
+
+		if (B->blend_state() == CBlend::eFalloff)
+		{
+			settled += B->blendAmount;
+		}
+		else if (ahead)
+		{
+			const float speed = std::abs(B->speed) > EPS ? std::abs(B->speed) : 1.f;
+			settled += B->blendAmount * (1.f - hud_mark_ramp(std::max(B->timeTotal - B->timeCurrent, 0.f) / speed, settle_time));
+		}
+
+		total += B->blendAmount;
+	}
+
+	return total > 0.f ? std::clamp(settled / total, 0.f, 1.f) : 0.f;
 }
 
 struct SHudFingerHold
@@ -2961,6 +3021,33 @@ static bool hud_attach_mark(IKinematicsAnimated* ka, const shared_str& mark, flo
 	return true;
 }
 
+bool player_hud::HandAttachRelative(attachable_hud_item* item, MotionID hands_motion, float hands_time, MotionID item_motion, float item_time, Fmatrix& relative, Fmatrix* ancor_ms)
+{
+	IKinematicsAnimated* weapon = item->m_model->dcast_PKinematicsAnimated();
+	if (m_model == nullptr || weapon == nullptr || m_left_ik_chain[2] == BI_NONE || item->m_left_ik_bone == BI_NONE)
+	{
+		return false;
+	}
+
+	Fmatrix ancor, wrist, attach_bone;
+	if (!m_model->LL_GetMotionBoneTransform(hands_motion, hands_time, m_ancors[item->m_attach_place_idx], ancor)
+		|| !m_model->LL_GetMotionBoneTransform(hands_motion, hands_time, m_left_ik_chain[2], wrist)
+		|| !weapon->LL_GetMotionBoneTransform(item_motion, item_time, item->m_left_ik_bone, attach_bone))
+	{
+		return false;
+	}
+
+	Fmatrix attach;
+	attach.mul_43(ancor, item->m_attach_offset).mulB_43(attach_bone);
+	relative.mul_43(Fmatrix().invert(attach), wrist);
+	if (ancor_ms != nullptr)
+	{
+		ancor_ms->set(ancor);
+	}
+
+	return true;
+}
+
 bool player_hud::LeftHandAttachReference(attachable_hud_item* item)
 {
 	IKinematicsAnimated* weapon = item->m_model->dcast_PKinematicsAnimated();
@@ -2980,28 +3067,14 @@ bool player_hud::LeftHandAttachReference(attachable_hud_item* item)
 
 	const float hands_time = std::max(hud_motion_time(m_model, M.mid), 0.f);
 	const float item_time = std::max(hud_motion_time(weapon, item_motion), 0.f);
-
-	Fmatrix ancor, wrist, attach_bone;
-	if (!m_model->LL_GetMotionBoneTransform(M.mid, hands_time, m_ancors[item->m_attach_place_idx], ancor)
-		|| !m_model->LL_GetMotionBoneTransform(M.mid, hands_time, m_left_ik_chain[2], wrist)
-		|| !weapon->LL_GetMotionBoneTransform(item_motion, item_time, item->m_left_ik_bone, attach_bone))
+	if (!HandAttachRelative(item, M.mid, hands_time, item_motion, item_time, item->LeftHandAttachRef, &item->LeftHandAttachAncorRef))
 	{
 		return false;
 	}
 
-	Fmatrix attach;
-	attach.mul_43(ancor, item->m_attach_offset).mulB_43(attach_bone);
-	item->LeftHandAttachRef.mul_43(Fmatrix().invert(attach), wrist);
-	item->LeftHandAttachAncorRef.set(ancor);
-
 	const xr_vector<u16> arm_bones = left_arm_subtree();
-	hud_motion_local_pose(m_model, M.mid, hands_time, arm_bones, item->LeftHandAttachPoseRef);
-	if (arm_bones.empty() || !m_model->LL_GetMotionBoneTransform(M.mid, hands_time, arm_bones[0], item->LeftHandAttachArmRootRef))
-	{
-		item->LeftHandAttachArmRootRef.identity();
-	}
-
-	return true;
+	hud_motion_local_pose(m_model, M.mid, hands_time, arm_bones, item->LeftHandAttachPoseRef, &item->LeftHandAttachPosRef);
+	return !arm_bones.empty() && m_model->LL_GetMotionBoneTransform(M.mid, hands_time, arm_bones[0], item->LeftHandAttachArmRootRef);
 }
 
 bool player_hud::RetargetHandTarget(attachable_hud_item* item, u16 ancor, u16 wrist, Fmatrix& result)
@@ -3180,7 +3253,14 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	}
 
 	finger_hold = finger_hold && FingerRefMotion == finger.Motion && FingerRefPose.size() == FingerGripBones.size();
-	if (!move_weapon && !retarget_right && !retarget_left && !(has_attach && (m_left_ik_weight > 0.f || item->LeftHandAttachBlend > 0.f)) && !finger_hold)
+	float finger_settle = 0.f;
+	if (has_left && !FingerGripBones.empty() && !item->m_left_hand_free && (item->AttachPose.size() != 0 || item->LeftHandAttachBlend > 0.f))
+	{
+		const float settle_time = item->LeftHandAttachBlend > 0.f ? item->LeftHandAttachBlend : std::max(item->m_idle_fade, 0.1f);
+		finger_settle = hud_motion_settle(m_model, item->m_hand_motions, settle_time, !finger_mark && LeftHandAttachWeight <= 0.f);
+	}
+
+	if (!move_weapon && !retarget_right && !retarget_left && !(has_attach && (m_left_ik_weight > 0.f || item->LeftHandAttachBlend > 0.f)) && !finger_hold && finger_settle <= 0.f)
 	{
 		return;
 	}
@@ -3198,8 +3278,8 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		}
 
 		const float release = m_aim_reload_release;
-		const float blend = m_aim_reload_weight * (release * release * (3.f - 2.f * release));
-		const float weight = blend * blend * (3.f - 2.f * blend);
+		const float blend = m_aim_reload_weight * hud_smooth(release);
+		const float weight = hud_smooth(blend);
 		const Fmatrix motion = Fmatrix().mul_43(Fmatrix().invert(m_aim_reload_ref), anim);
 		const Fmatrix damped = Fmatrix().mul_43(m_aim_reload_ref, scale_layer_offset(motion, lerp(1.f, item->m_aim_reload_motion, weight)));
 		delta.mulB_43(Fmatrix().mul_43(damped, Fmatrix().invert(anim)));
@@ -3216,8 +3296,8 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 			m_shot_release = progress < 0.f || tail <= 0.f ? 1.f : std::clamp((1.f - progress) / tail, 0.f, 1.f);
 		}
 
-		const float blend = m_shot_weight * (m_shot_release * m_shot_release * (3.f - 2.f * m_shot_release));
-		const float weight = blend * blend * (3.f - 2.f * blend);
+		const float blend = m_shot_weight * hud_smooth(m_shot_release);
+		const float weight = hud_smooth(blend);
 		const Fmatrix motion = Fmatrix().mul_43(Fmatrix().invert(m_shot_ref), anim);
 
 		const float aim = lerp(1.f, item->m_aim_shot_motion, weapon->GetAimFactor());
@@ -3255,7 +3335,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		delta.mulA_43(lean_delta);
 	}
 
-	const float retarget_weight = RetargetWeight * RetargetWeight * (3.f - 2.f * RetargetWeight);
+	const float retarget_weight = hud_smooth(RetargetWeight);
 	const auto retarget_blend = [&](Fmatrix& target, const Fmatrix& local)
 	{
 		const Fmatrix held = Fmatrix().mul_43(delta, Fmatrix().mul_43(model->LL_GetTransform(ancor), local));
@@ -3284,7 +3364,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	}
 
 	Fmatrix attach_target = left_target;
-	float attach_weight = m_left_ik_weight * m_left_ik_weight * (3.f - 2.f * m_left_ik_weight);
+	float attach_weight = hud_smooth(m_left_ik_weight);
 	float attach_target_weight = -1.f;
 	if (has_attach)
 	{
@@ -3349,7 +3429,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 				LeftHandAttachWeight = mark_weight;
 			}
 
-			attach_weight = LeftHandAttachWeight * LeftHandAttachWeight * (3.f - 2.f * LeftHandAttachWeight);
+			attach_weight = hud_smooth(LeftHandAttachWeight);
 
 			float arm_target = 1.f;
 			if (LeftHandAttachAnimatedArm)
@@ -3368,24 +3448,41 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 			}
 			else if (mark_weight > 0.f)
 			{
+				IKinematicsAnimated* weapon_model = item->m_model->dcast_PKinematicsAnimated();
+				const MotionID weapon_motion = weapon_model != nullptr ? hud_dominant_motion(weapon_model) : MotionID();
 				if (AttachOffsetMotion != mark_motion)
 				{
 					AttachOffsetMotion = mark_motion;
-					AttachOffsetRef.set(animated);
+					AttachOffsetSampled = weapon_motion.valid() && HandAttachRelative(item, mark_motion, 0.f, weapon_motion, 0.f, AttachOffsetRef);
+					if (!AttachOffsetSampled)
+					{
+						AttachOffsetRef.set(animated);
+					}
 				}
 
-				const float offset = mark_weight * mark_weight * (3.f - 2.f * mark_weight);
-				Fmatrix grip_rotation, ref_rotation, animated_rotation;
+				Fmatrix source = animated;
+				if (AttachOffsetSampled)
+				{
+					const float hands_time = std::max(hud_motion_time(m_model, mark_motion), 0.f);
+					const float weapon_time = std::max(hud_motion_time(weapon_model, weapon_motion), 0.f);
+					if (!HandAttachRelative(item, mark_motion, hands_time, weapon_motion, weapon_time, source))
+					{
+						source = animated;
+					}
+				}
+
+				const float offset = hud_smooth(mark_weight);
+				Fmatrix grip_rotation, ref_rotation, source_rotation;
 				grip_rotation.rotation(Fquaternion().set(item->LeftHandAttachRef));
 				ref_rotation.rotation(Fquaternion().set(AttachOffsetRef));
-				animated_rotation.rotation(Fquaternion().set(animated));
+				source_rotation.rotation(Fquaternion().set(source));
 
 				Fquaternion q_offset;
 				q_offset.slerp(Fquaternion().identity(), Fquaternion().set(Fmatrix().mul_43(grip_rotation, Fmatrix().invert(ref_rotation))), offset);
 
 				Fmatrix shifted;
-				shifted.mul_43(Fmatrix().rotation(q_offset), animated_rotation);
-				shifted.c.mad(animated.c, Fvector().sub(item->LeftHandAttachRef.c, AttachOffsetRef.c), offset);
+				shifted.mul_43(Fmatrix().rotation(q_offset), source_rotation);
+				shifted.c.mad(source.c, Fvector().sub(item->LeftHandAttachRef.c, AttachOffsetRef.c), offset);
 				attach_target.mul_43(attach, shifted);
 				attach_target_weight = 1.f;
 			}
@@ -3452,7 +3549,12 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 
 	if (has_left)
 	{
-		const auto blend_local = [&](u16 bone, const Fquaternion& target, float weight)
+		const auto local_transform = [&](u16 bone)
+		{
+			return Fmatrix().mul_43(Fmatrix().invert(model->LL_GetTransform(model->LL_GetData(bone).GetParentID())), model->LL_GetTransform(bone));
+		};
+
+		const auto blend_local = [&](u16 bone, const Fquaternion& target, float weight, const Fvector* position = nullptr)
 		{
 			const Fmatrix parent = model->LL_GetTransform(model->LL_GetData(bone).GetParentID());
 			const Fmatrix bone_ms = model->LL_GetTransform(bone);
@@ -3464,7 +3566,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 
 			Fmatrix new_local;
 			new_local.rotation(result);
-			new_local.c = local.c;
+			new_local.c = position != nullptr ? Fvector().lerp(local.c, *position, weight) : local.c;
 			const Fmatrix new_ms = Fmatrix().mul_43(parent, new_local);
 			CCameraRig::TransformBone(model, bone, Fmatrix().mul_43(new_ms, Fmatrix().invert(bone_ms)));
 		};
@@ -3472,39 +3574,44 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		const bool attach_pose = has_attach && item->LeftHandAttachBlend > 0.f && item->LeftHandAttachRefValid && attach_weight > 0.f;
 
 		const xr_vector<u16> arm_bones = left_arm_subtree();
-		if (attach_pose && item->LeftHandAttachPoseRef.size() == arm_bones.size())
+		if (attach_pose && !arm_bones.empty() && item->LeftHandAttachPoseRef.size() == arm_bones.size())
 		{
 			const xr_vector<u16> upper_bones = left_arm_blend_bones();
-			const float arm = LeftHandAttachArmWeight * LeftHandAttachArmWeight * (3.f - 2.f * LeftHandAttachArmWeight);
+			const float arm = hud_smooth(LeftHandAttachArmWeight);
 			const bool retarget_arm = LeftHandAttachAnimatedArm && ArmRetargetReference(item, arm_bones);
-			if (retarget_arm)
 			{
 				const Fmatrix current = model->LL_GetTransform(arm_bones[0]);
 				const Fmatrix& attach_root = item->LeftHandAttachArmRootRef;
 
-				Fquaternion q_current, q_retarget, q_attach, q_arm, q_result;
+				Fquaternion q_current, q_attach, q_arm, q_result;
 				q_current.set(current);
 				q_attach.set(attach_root);
-				q_retarget.set(Fmatrix().mul_43(Fmatrix().mul_43(Fmatrix().rotation(q_current), Fmatrix().invert(Fmatrix().rotation(Fquaternion().set(ArmRetargetRootRef)))), Fmatrix().rotation(q_attach)));
-				q_arm.slerp(q_retarget, q_attach, arm);
-				q_result.slerp(q_current, q_arm, attach_weight);
+				Fvector arm_pos = attach_root.c;
+				float root_weight = attach_weight * arm;
+				if (retarget_arm)
+				{
+					Fquaternion q_retarget;
+					q_retarget.set(Fmatrix().mul_43(Fmatrix().mul_43(Fmatrix().rotation(q_current), Fmatrix().invert(Fmatrix().rotation(Fquaternion().set(ArmRetargetRootRef)))), Fmatrix().rotation(q_attach)));
+					q_arm.slerp(q_retarget, q_attach, arm);
+					arm_pos.lerp(Fvector().add(attach_root.c, Fvector().sub(current.c, ArmRetargetRootRef.c)), attach_root.c, arm);
+					root_weight = attach_weight;
+				}
+				else
+				{
+					q_arm = q_attach;
+				}
 
-				const Fvector retarget_pos = Fvector().add(attach_root.c, Fvector().sub(current.c, ArmRetargetRootRef.c));
-				const Fvector arm_pos = Fvector().lerp(retarget_pos, attach_root.c, arm);
+				q_result.slerp(q_current, q_arm, root_weight);
 
 				Fmatrix result;
 				result.rotation(q_result);
-				result.c.lerp(current.c, arm_pos, attach_weight);
+				result.c.lerp(current.c, arm_pos, root_weight);
 				CCameraRig::TransformBone(model, arm_bones[0], Fmatrix().mul_43(result, Fmatrix().invert(current)));
 			}
 
-			for (size_t i = 0; i < arm_bones.size(); ++i)
+			for (size_t i = 1; i < arm_bones.size(); ++i)
 			{
 				const u16 bone = arm_bones[i];
-				if (retarget_arm && i == 0)
-				{
-					continue;
-				}
 
 				if (finger_mark && std::find(FingerGripBones.begin(), FingerGripBones.end(), bone) != FingerGripBones.end())
 				{
@@ -3514,7 +3621,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 				const Fquaternion& target_pose = item->LeftHandAttachPoseRef[i];
 				if (std::find(upper_bones.begin(), upper_bones.end(), bone) == upper_bones.end())
 				{
-					blend_local(bone, target_pose, attach_weight);
+					blend_local(bone, target_pose, attach_weight, item->LeftHandAttachPosRef.size() == arm_bones.size() ? &item->LeftHandAttachPosRef[i] : nullptr);
 				}
 				else if (!retarget_arm)
 				{
@@ -3522,7 +3629,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 				}
 				else
 				{
-					const Fmatrix local = Fmatrix().mul_43(Fmatrix().invert(model->LL_GetTransform(model->LL_GetData(bone).GetParentID())), model->LL_GetTransform(bone));
+					const Fmatrix local = local_transform(bone);
 					const Fmatrix offset = Fmatrix().mul_43(Fmatrix().rotation(target_pose), Fmatrix().invert(Fmatrix().rotation(ArmRetargetPose[i])));
 					Fquaternion animated;
 					animated.slerp(Fquaternion().set(Fmatrix().mul_43(offset, local)), target_pose, arm);
@@ -3552,9 +3659,9 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		if (!attach_pose && !LeftGripFingerPose.empty() && LeftGripFingerPose.size() == LeftGripFingerBones.size())
 		{
 			const float tail = item->LeftHandFingerTail;
-			const float grip = m_left_ik_weight * m_left_ik_weight * (3.f - 2.f * m_left_ik_weight);
+			const float grip = hud_smooth(m_left_ik_weight);
 			const float close = tail > 0.f ? std::clamp((grip - (1.f - tail)) / tail, 0.f, 1.f) : 1.f;
-			const float hold = 1.f - close * close * (3.f - 2.f * close);
+			const float hold = 1.f - hud_smooth(close);
 			if (hold > 0.f)
 			{
 				for (size_t i = 0; i < LeftGripFingerBones.size(); ++i)
@@ -3568,38 +3675,65 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 			}
 		}
 
+		const bool attach_ref = item->LeftHandAttachRefValid && item->LeftHandAttachPoseRef.size() == arm_bones.size();
+		const bool idle_ref = (finger_hold || finger_settle > 0.f) && !attach_ref && FingerGripReference(item);
+		const auto finger_target = [&](size_t i, Fquaternion& target, const Fvector*& position)
+		{
+			position = nullptr;
+			if (attach_ref)
+			{
+				const auto it = std::find(arm_bones.begin(), arm_bones.end(), FingerGripBones[i]);
+				if (it == arm_bones.end())
+				{
+					return false;
+				}
+
+				const size_t index = it - arm_bones.begin();
+				target = item->LeftHandAttachPoseRef[index];
+				position = item->LeftHandAttachPosRef.size() == arm_bones.size() ? &item->LeftHandAttachPosRef[index] : nullptr;
+				return true;
+			}
+
+			if (idle_ref)
+			{
+				target = item->FingerGripPose[i];
+				position = item->FingerGripPos.size() == FingerGripBones.size() ? &item->FingerGripPos[i] : nullptr;
+				return true;
+			}
+
+			return false;
+		};
+
 		if (finger_hold)
 		{
-			const bool attach_ref = item->LeftHandAttachRefValid && item->LeftHandAttachPoseRef.size() == arm_bones.size();
-			const bool idle = !attach_ref && FingerGripReference(item);
-			const float weight = finger.Weight * finger.Weight * (3.f - 2.f * finger.Weight) * finger.Hold * item->LeftHandFingerGrip;
+			const float weight = hud_smooth(finger.Weight) * finger.Hold * item->LeftHandFingerGrip;
 			for (size_t i = 0; i < FingerGripBones.size() && weight > 0.f; ++i)
 			{
-				const u16 bone = FingerGripBones[i];
 				Fquaternion grip;
-				if (attach_ref)
-				{
-					const auto it = std::find(arm_bones.begin(), arm_bones.end(), bone);
-					if (it == arm_bones.end())
-					{
-						continue;
-					}
-
-					grip = item->LeftHandAttachPoseRef[it - arm_bones.begin()];
-				}
-				else if (idle)
-				{
-					grip = item->FingerGripPose[i];
-				}
-				else
+				const Fvector* grip_position = nullptr;
+				if (!finger_target(i, grip, grip_position))
 				{
 					continue;
 				}
 
-				const Fmatrix& parent_ms = model->LL_GetTransform(model->LL_GetData(bone).GetParentID());
-				const Fmatrix local = Fmatrix().mul_43(Fmatrix().invert(parent_ms), model->LL_GetTransform(bone));
+				const u16 bone = FingerGripBones[i];
+				const Fmatrix local = local_transform(bone);
 				const Fmatrix delta = Fmatrix().mul_43(Fmatrix().rotation(grip), Fmatrix().invert(Fmatrix().rotation(FingerRefPose[i])));
-				blend_local(bone, Fquaternion().set(Fmatrix().mul_43(delta, local)), weight);
+				blend_local(bone, Fquaternion().set(Fmatrix().mul_43(delta, local)), weight, grip_position);
+			}
+		}
+
+		if (finger_settle > 0.f)
+		{
+			const float weight = hud_smooth(finger_settle);
+			for (size_t i = 0; i < FingerGripBones.size(); ++i)
+			{
+				Fquaternion target;
+				const Fvector* position = nullptr;
+				if (finger_target(i, target, position))
+				{
+					blend_local(FingerGripBones[i], target, weight, position);
+				}
 			}
 		}
 	}
@@ -3775,7 +3909,7 @@ bool player_hud::FingerGripReference(attachable_hud_item* item)
 		const player_hud_motion* anm = item->m_hand_motions.find_motion(idle);
 		if (m_model != nullptr && anm != nullptr && !anm->m_animations.empty())
 		{
-			hud_motion_local_pose(m_model, anm->m_animations[0].mid, 0.f, FingerGripBones, item->FingerGripPose);
+			hud_motion_local_pose(m_model, anm->m_animations[0].mid, 0.f, FingerGripBones, item->FingerGripPose, &item->FingerGripPos);
 		}
 	}
 
