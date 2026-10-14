@@ -65,7 +65,7 @@ void main(p_bumped_new I, out OutStructure O)
 	float3 PuddleNormal;
 	float2 PuddleRefraction;
 	float3 FlatNormal = mul(float3x3(I.M1, I.M2, I.M3), float3(0.0f, 0.0f, 1.0f));
-	float PuddleAmount = GetRainPuddle(I.tcdh.xy, FlatNormal, M.Point.z, PuddleNormal, PuddleRefraction);
+	float PuddleAmount = GetRainPuddle(I.tcdh.xy, FlatNormal, M.Point, PuddleNormal, PuddleRefraction);
 	float2 PuddleDetailTexCoord = tcdbump + PuddleRefraction;
 #define RAIN_PUDDLE_DETAIL_TC PuddleDetailTexCoord
 #else
