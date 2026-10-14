@@ -35,7 +35,7 @@ float2 RainPuddleRipples(float2 TexCoord, float Depth)
 	float2 Ripples = ProcessPuddleRipple(Layer0, 1.05f * 0.85f);
 	Ripples += ProcessPuddleRipple(Layer1, 1.31f * 0.85f);
 	Ripples += ProcessPuddleRipple(Layer2, 1.58f * 0.85f);
-	return clamp(Ripples * DistanceFade, -1.0f, 1.0f) * rain_params.x * 3.0f;
+	return clamp(Ripples * DistanceFade, -1.0f, 1.0f) * rain_params.x;
 }
 
 float GetRainPuddle(float2 TexCoord, float3 FlatNormal, float Depth, out float3 WaterNormal, out float2 Refraction)
@@ -50,9 +50,11 @@ float GetRainPuddle(float2 TexCoord, float3 FlatNormal, float Depth, out float3 
 	}
 
 	float3 WorldNormal = mul((float3x3)m_invV, normalize(FlatNormal));
-	float Slope = saturate((WorldNormal.y - 0.997f) * 102.997f);
+	// Terrain Upgrade's slope test, restricted to upward-facing surfaces.
+	float Slope = saturate((0.1f - max(abs(WorldNormal.x), abs(WorldNormal.z))) * 13.0f) * step(0.0f, WorldNormal.y);
 	float Noise = s_puddles_perlin.Sample(smp_base, TexCoord * 15.0f).r;
 	float Amount = saturate((Noise - 0.12f) * Wetness) * Slope;
+	// Keep the original soft edge transition (border hardness 0.15).
 	Amount = smoothstep(0.0f, 0.255f, Amount);
 	[branch]
 	if (Amount <= 0.0f)
@@ -65,12 +67,12 @@ float GetRainPuddle(float2 TexCoord, float3 FlatNormal, float Depth, out float3 
 	float2 RippleTexCoord = TexCoord * 140.0f;
 	float3 Normal0 = s_puddles_normal.Sample(smp_base, RippleTexCoord + float2(0.0f, Animation)).xyz;
 	float3 Normal1 = s_puddles_normal.Sample(smp_base, RippleTexCoord - float2(0.33f, Animation)).xyz;
-	float3 Ripples = Normal0 + Normal1 - 1.0f;
+	float3 Ripples = normalize(float3(Normal0.xy + Normal1.xy, Normal0.z * Normal1.z)) * 2.0f - 1.0f;
 	Ripples *= saturate(0.05f + RainIntensity * 0.1f);
 	Ripples = Ripples * 0.666f + float3(RainPuddleRipples(RippleTexCoord * 1.3f, Depth) * 0.333f, 0.0f);
 
 	WaterNormal = mul((float3x3)m_V, float3(Ripples.x, 1.0f, Ripples.y));
-	Refraction = Ripples.xy * 0.15f * smoothstep(0.6f, 0.8f, Wetness * Amount);
+	Refraction = Ripples.xy * 0.15f * smoothstep(0.6f, 0.8f, Amount);
 	return Amount;
 }
 

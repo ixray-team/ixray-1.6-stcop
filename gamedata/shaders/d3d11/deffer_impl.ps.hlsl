@@ -205,9 +205,9 @@ void main(p_bumped_new I, out OutStructure O)
     M.Normal = normalize(M.Normal);
 
 #ifdef USE_TERRAIN_RAIN_PUDDLES
-	M.Normal = normalize(lerp(M.Normal, PuddleNormal, PuddleAmount));
+	M.Normal = normalize(lerp(M.Normal, PuddleNormal, saturate(PuddleAmount * PuddleAmount * 2.0f)));
 	M.Color.xyz *= lerp(1.0f.xxx, float3(0.66f, 0.63f, 0.6f), PuddleAmount);
-	M.Gloss = max(M.Gloss, min(PuddleAmount, 0.4f) + saturate(rain_params.y * 2.0f) * 0.15f);
+	M.Gloss = max(M.Gloss, PuddleAmount * 0.4f + saturate(rain_params.y * 2.0f) * 0.15f);
 #endif
 
 #ifdef EDITOR_MODE
