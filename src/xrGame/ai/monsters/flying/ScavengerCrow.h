@@ -16,7 +16,7 @@ public:
         const Fvector& position, float power) override;
     bool net_Spawn(CSE_Abstract* data) override;
     void net_Destroy() override;
-	void renderable_Render() override;
+	void renderable_Render(void* graph = nullptr) override;
     void net_Relcase(CObject* Object) override;
     void Die(CObject* who) override;
     char* get_monster_class_name() override { return (char*)"scavenger_crow"; }
