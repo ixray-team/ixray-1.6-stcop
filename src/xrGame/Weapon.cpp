@@ -3935,15 +3935,16 @@ void CWeapon::render_item_ui()
 
 bool CWeapon::ScopeEffectQuery()
 {
+	// Keep the same postprocess while the lens fades in or out during zoom animations.
 	return m_pInventory && m_pInventory->ActiveItem() == this && ParentIsActor() && GetHUDmode() &&
 		   Allow3DScopes() && IsScopeAttached() && IsLensedScopeInstalled() &&
-		   IsZoomed() && !IsRotatingToZoom() && !IsAltZoomed() && !IsGrenadeMode() &&
+		   (IsZoomed() || m_zoom_params.m_fZoomRotationFactor > 0.0f) && !IsAltZoomed() && !IsGrenadeMode() &&
 		   m_zoom_params.m_fZoomRotationFactor2 == 0.0f;
 }
 
 bool CWeapon::ScopeUIQuery()
 {
-	return ScopeEffectQuery() && m_zoom_params.m_sUseBinocularVision.size() > 0;
+	return ScopeEffectQuery() && IsZoomed() && !IsRotatingToZoom() && m_zoom_params.m_sUseBinocularVision.size() > 0;
 }
 
 void CWeapon::RenderScopeUI()
