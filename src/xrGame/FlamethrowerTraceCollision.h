@@ -3,7 +3,7 @@
 #include "StdAfx.h"
 
 #include "xrCore/Containers/_stl_extensions.h"
-#include "../xrEngine/feel_touch.h"
+#include "../xrEngine/Feel_Touch.h"
 #include "xrCore/Save/SaveObject.h"
 
 class CBulletManager;
