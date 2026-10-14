@@ -1,4 +1,7 @@
 # Gameplay: Inventory Items
+
+See [Night vision](night-vision.md) for shader generations, equipment profiles, the UI edge mask and electronics interference.
+
 ## Any Inventory Item (CInventoryItem)
 > [!IMPORTANT]
 > **Status**: Supported <br>

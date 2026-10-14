@@ -239,17 +239,26 @@ cam_eff_name	= camera_effects\hit_back_right.anm
 ; Nightvision postprocess
 ;-------------------------------------------------------------------------------
 [effector_nightvision_1]
+shader_effect_range = 1
+shader_nvg_color = 0.4, 0.9, 0.3, 8.0
+shader_nvg_postprocessing = 0.175, 0.009, 0.025, 0.8
 pp_eff_name		= nightvision_1.ppe
 pp_eff_overlap = false
 pp_eff_cyclic	= 1
 
 
 [effector_nightvision_2]
+shader_effect_range = 2
+shader_nvg_color = 0.4, 0.99, 0.83, 10.0
+shader_nvg_postprocessing = 0.125, 0.005, 0.0125, 0.9
 pp_eff_name 	= nightvision_2.ppe
 pp_eff_cyclic 	= 1
 pp_eff_overlap = false
 
 [effector_nightvision_3]
+shader_effect_range = 3
+shader_nvg_color = 0.8, 0.8, 0.8, 15.0
+shader_nvg_postprocessing = 0.075, 0.0025, 0.005, 1.0
 pp_eff_name 	= nightvision_3.ppe
 pp_eff_cyclic 	= 1
 pp_eff_overlap = false

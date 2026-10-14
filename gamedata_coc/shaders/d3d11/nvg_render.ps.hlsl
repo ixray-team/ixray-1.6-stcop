@@ -1,13 +1,9 @@
-/*
-		Simple nightvision. Test
-
-		Author:
-		- LVutner
-
-		---IX-Ray Engine---
-*/
-
+// Night vision profiles adapted from the source calc_pnv shader.
+// UI lens masking is maintained independently by the night vision effector.
 #include "common.hlsli"
+
+float4 NightVisionPostprocess;
+float NightVisionInterference;
 
 struct PSInput
 {
@@ -15,33 +11,35 @@ struct PSInput
 	float2 texcoord : TEXCOORD0;
 };
 
+float GetNightVisionVisibility()
+{
+	// Derived from m_affects.x with a local slew limit for immediate script updates.
+	float Problems = saturate(NightVisionInterference);
+	float Progress = smoothstep(0.02f, 0.4f, Problems);
+	float SlowPulse = 0.65f * (0.5f + 0.5f * sin(timers.x * 5.654867f));
+	SlowPulse += 0.35f * (0.5f + 0.5f * sin(timers.x * 10.681415f + 1.7f));
+	// Only dim the effect: no white flashes or random full-frame on/off transitions.
+	float Flicker = 0.18f * (4.0f * Progress * (1.0f - Progress)) * SlowPulse;
+	return (1.0f - Progress) * (1.0f - Flicker);
+}
 
 float4 main(PSInput I) : SV_Target
 {
-	//consts
-	const float neg_sqr_rad = -1.0 / (65. * 65.);
-	const float2 min_max_bright = float2(4, 8);
+	float4 Scene = s_image.SampleLevel(smp_rtlinear, I.texcoord, 0.0f);
+	float Visibility = GetNightVisionVisibility();
+	[branch]
+	if (Visibility <= 0.0f)
+	{
+		return Scene;
+	}
 
-	//Sample blue noise texture
-	//You can replace 0 with m_taa_jitter.w % 32 to animate it (texture contains 32 frames)
-	float3 jitter_tex = s_blue_noise[uint3(uint2(I.hpos.xy * 0.5) % 128, uint(20*timers.x) % 32)].xyz;
+	float Noise = frac(sin(dot(I.texcoord, float2(12.0f, 78.0f) + timers.x * 3.17f)) * 43758.0f);
+	float Luminance = dot(Scene.rgb, LUMINANCE_VECTOR);
+	float3 Image = Luminance * saturate(nvg_color.rgb) * max(nvg_color.a, 1.0f);
+	Image += NightVisionPostprocess.z * sin(I.texcoord.y * timers.x);
+	Image += NightVisionPostprocess.y * sin(timers.x * 50.0f);
+	Image += Noise * NightVisionPostprocess.x;
+	Image *= saturate(NightVisionPostprocess.w - distance(I.texcoord, float2(0.5f, 0.5f)) * 1.5f);
 
-	//Unpack G-Buffer data...
-	float3 Point =  GbufferGetPointRealUnjitter(I.texcoord.xy, 1.0f - s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x);
-
-	//Fetch fulres scene
-	float3 image = s_image[I.hpos.xy].xyz;
-	float falloff = saturate(dot(Point, Point) * neg_sqr_rad + 1.0);
-    image = nvg_color.xyz * dot(image, (0.33));
-	float bmod = lerp(min_max_bright.x, min_max_bright.y, falloff);
-	
-    image *= bmod;
-    image = image * jitter_tex.x + image;
-    image += step(jitter_tex.y, 0.1) * 0.1;
-	image *= bmod;
-	image /= 1.0 + image;
-	image.rgb = ((image.rgb - 0.5) * 1.4) + 0.5;
-    image *= 1.0-smoothstep(0.2, 1.0, length(I.texcoord-0.5));	
-
-	return float4(image, 1.0);
+	return float4(lerp(Scene.rgb, saturate(Image), Visibility), Scene.a);
 }
