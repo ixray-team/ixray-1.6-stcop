@@ -114,6 +114,7 @@ public:
 
 	bool					PlayAnim		(const char* name, ECameraRigChannel channel, float speed, bool hud_affect, const Fvector& scale_hpb = { 1.f, 1.f, 1.f }, const Fvector& scale_pos = { 1.f, 1.f, 1.f });
 	void					StopChannel		(ECameraRigChannel channel);
+	void					PreviewAnim		(const char* name, ECameraRigChannel channel, float time, float speed);
 	void					ResetWeaponCache();
 	void					OnShot			(CWeapon* weapon);
 	void					OnHit			(float power);

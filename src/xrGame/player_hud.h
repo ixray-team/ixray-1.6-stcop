@@ -14,6 +14,12 @@ class CMotionDef;
 class CHudAnimatorBase;
 class CObjectAnimator;
 
+namespace HudAttachMarks
+{
+	constexpr const char* Ik = "mm_ik";
+	constexpr const char* Fingers = "mm_ik_fingers";
+}
+
 enum EHudMixType : u8
 {
 	eNoMix = 0,
@@ -816,8 +822,6 @@ public:
 	xr_vector<script_layer*> m_script_layers = {};
 
 	IKinematicsAnimated* GetModel() { return m_model; }
-	float			LeftGripWeight		() const { return m_left_ik_weight; }
-	bool			LeftGripFingersFrozen() const { return !LeftGripFingerPose.empty(); }
 	bool			PreviewGripBlocked = false;
 	animator_item* create_animator_item(CHudAnimatorBase* animator, const shared_str& section);
 	void			delete_animator_item();

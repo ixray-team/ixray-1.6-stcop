@@ -10,6 +10,8 @@
 
 struct STextureParams;
 class CUICellItem;
+struct attachable_hud_item;
+struct player_hud_motion;
 
 constexpr ImVec4 kAuthorTextColor = ImVec4(0.063f, 0.788f, 0.196f, 1.0f);
 constexpr ImVec4 kContributorsTextColor = ImVec4(0.306f, 0.745f, 0.878f, 1.0f);
@@ -672,16 +674,6 @@ struct CImGuiRequestManager
 #define IXRAY_MAX_IMGUI_REQUESTS_COUNT 8
 
 
-// todo: implement viewer
-/// @brief \~english if enabled then you will have in-game viewer but right now it is not implemented feature
-#define IXRAY_OMF_EDITOR_ENABLE_VIEWER 0
-#define IXRAY_OMF_EDITOR_TAB_GAME 1
-#define IXRAY_OMF_EDITOR_TAB_EDITOR 1
-
-/// @brief \~english if enabled 'bone renaming' section won't exist and you can directly rename from bone list  otherwise you have to rename only through 'bone renaming' section
-#define IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING 1
-#define IXRAY_OMF_EDITOR_TAB_HELP 1
-
 #define IXRAY_PPE_EDITOR_TAB_GAME 1
 #define IXRAY_PPE_EDITOR_TAB_EDITOR 1
 #define IXRAY_PPE_EDITOR_TAB_HELP 1
@@ -748,7 +740,12 @@ void RenderDemoRecordEditorWindow();
 void RenderActorAnimationManager();
 void RenderCameraRigEditor();
 void RenderHudMotionPlayer();
-void HudMotionPlayerOpen();
+void HudMotionPlayerClose();
+void HudMotionPlayerRefresh();
+const player_hud_motion* HudMotionPlayerSelectedAnim(attachable_hud_item* item);
+bool HudMotionPlayerCurrentMarkTime(attachable_hud_item* item, IKinematicsAnimated* model, MotionID motion, float& time);
+void RenderHudMotionPlayerSpeed(attachable_hud_item* item);
+bool& HudMotionPlayerKeys();
 
 /* MISCELLANEOUS */
 

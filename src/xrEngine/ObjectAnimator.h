@@ -41,6 +41,7 @@ public:
 
     IC const Fmatrix&	XFORM			(){return m_XFORM;}
 	const SAnimParams& anim_param() { return m_MParam; }
+	void				SetTime			(float time) { m_MParam.t_current = time; m_MParam.tmp = time; }
 	bool				IsLooped() const { return bLoop; }
 	float				GetLength		();
 	// Update
