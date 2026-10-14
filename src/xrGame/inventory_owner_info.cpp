@@ -3,8 +3,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <discord_gamesdk/cpp/types.h>
-
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "InventoryOwner.h"
