@@ -214,6 +214,67 @@ void CCameraRig::StopChannel(ECameraRigChannel channel)
 	FadeChannel(channel);
 }
 
+void CCameraRig::PreviewAnim(const char* name, ECameraRigChannel channel, float time, float speed)
+{
+	const auto find = [&]() -> SLayer*
+	{
+		SLayer* found = nullptr;
+		for (SLayer& it : m_layers)
+		{
+			if (it.anim == nullptr || it.channel != channel || xr_strcmp(it.anim->Name(), name) != 0)
+			{
+				continue;
+			}
+
+			if (found == nullptr || it.active && (!found->active || found->fade_out))
+			{
+				found = &it;
+			}
+		}
+
+		return found;
+	};
+
+	SLayer* layer = find();
+	if (layer == nullptr)
+	{
+		if (!PlayAnim(name, channel, speed, false))
+		{
+			return;
+		}
+
+		layer = find();
+		if (layer == nullptr)
+		{
+			return;
+		}
+	}
+
+	const SAnimParams& params = layer->anim->anim_param();
+	if (time >= params.max_t - EPS_L)
+	{
+		if (layer->active)
+		{
+			layer->fade_out = true;
+		}
+
+		return;
+	}
+
+	if (!layer->active)
+	{
+		layer->active = true;
+		layer->hud_affect = false;
+		layer->scale_hpb.set(1.f, 1.f, 1.f);
+		layer->scale_pos.set(1.f, 1.f, 1.f);
+		layer->weight = g_rig.blend_in[channel] > 0.f ? 0.f : 1.f;
+	}
+
+	layer->anim->Speed() = speed;
+	layer->anim->SetTime(std::max(time, params.min_t));
+	layer->fade_out = false;
+}
+
 bool CCameraRig::PlayAnim(const char* name, ECameraRigChannel channel, float speed, bool hud_affect, const Fvector& scale_hpb, const Fvector& scale_pos)
 {
 	string_path path;
