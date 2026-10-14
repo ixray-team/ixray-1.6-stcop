@@ -43,9 +43,11 @@ The puddles are **texture-driven**, rather than entirely generated from mathemat
 | `textures/shaders/rain_puddles_normal.dds` | Two animated layers of surface waves. |
 | `textures/shaders/rain_puddles_ripples.dds` | Three animated layers of rain-impact ripples. |
 
+The implementation retains the original soft edges (border hardness `0.15`, coverage transition `smoothstep(0, 0.255, Amount)`) and uses the Terrain Upgrade's wave-normal blending, rain-ripple intensity, gradual normal transition and proportional gloss from Screen Space Shaders Update 23.5. It retains Perlin contours; the separate height-based terrain rewrite and its additional height/mask assets are not required.
+
 These three textures are shared by all levels. **No separate puddle mask for each level or terrain texture is required.** They are supplied in all four game packages and must be installed together with the shaders.
 
-Puddles use the terrain's texture coordinates and geometric normal. The slope factor is `saturate((WorldNormal.y - 0.997) * 102.997)`, so they appear on nearly horizontal, upward-facing terrain. They also work in the terrain's lower-detail pass. They do not project onto ordinary building roofs, walls, actors or weapons. The material-based PBR implementation remains responsible for its own supported surfaces and mask projection.
+Puddles use the terrain's texture coordinates and geometric normal. The slope factor is `saturate((0.1 - max(abs(WorldNormal.x), abs(WorldNormal.z))) * 13)` on upward-facing surfaces, so they appear on nearly horizontal, upward-facing terrain. They also work in the terrain's lower-detail pass. They do not project onto ordinary building roofs, walls, actors or weapons. The material-based PBR implementation remains responsible for its own supported surfaces and mask projection.
 
 ### Reflections
 
@@ -66,6 +68,7 @@ With `USE_LEGACY_LIGHT = 0`, the existing PBR wet-surface shader continues to us
 | Symptom | Check |
 | --- | --- |
 | No new puddles | R4, legacy lighting, `r4_rain_puddles on` before restarting; accumulated wetness and nearly flat terrain in view. |
+| Option is on, but legacy puddles are missing with addons | Check DLTX `mod_engine_external_*.ltx` files: an addon can override `USE_LEGACY_LIGHT` with `0`. A local override must be applied after those files; restart the game. |
 | Only sky reflections | Enable `r4_sslr_water` and restart. SSR also needs a visible scene hit and previous-frame image data. |
 | No puddles on a roof | Expected for the terrain implementation. PBR mask projection is a separate implementation. |
 | Puddles remain after rain stops | Expected: environmental wetness dries gradually. |
