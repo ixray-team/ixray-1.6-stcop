@@ -33,6 +33,8 @@ namespace
 		int						SelectedInterval = -1;
 		string512				SaveStatus = {};
 		bool					Weapon = false;
+		int						EditField = 0;
+		bool					EditFocus = false;
 	};
 
 	struct SOMFMotionSnapshot
@@ -380,6 +382,8 @@ static void OMFEditorMarks(SOMFMotion& motion, float length)
 	const float scale = keys ? SAMPLE_FPS : 1.f;
 	float frame = 0.f;
 	const bool has_frame = state.Item != nullptr && HudMotionPlayerCurrentMarkTime(state.Item, motion.Model, motion.Motion, frame);
+	const float mark_speed = def->Speed();
+	const float mark_length = mark_speed <= EPS || fsimilar(mark_speed, 1.f) ? length : length / mark_speed;
 
 	if (state.MarksMotion != motion.Motion)
 	{
@@ -413,12 +417,14 @@ static void OMFEditorMarks(SOMFMotion& motion, float length)
 		for (int i = 0; i < int(def->marks.size()); ++i)
 		{
 			ImGui::PushID(i);
+			ImGui::PushStyleColor(ImGuiCol_Text, HudMotionPlayerMarkColor(def->marks[i].name));
 			if (ImGui::Selectable(def->marks[i].name.c_str(), i == state.SelectedMark))
 			{
 				state.SelectedMark = i;
 				state.SelectedInterval = -1;
 			}
 
+			ImGui::PopStyleColor();
 			ImGui::PopID();
 		}
 
@@ -451,11 +457,13 @@ static void OMFEditorMarks(SOMFMotion& motion, float length)
 		{
 			const motion_marks::interval& interval = mark->intervals[i];
 			ImGui::PushID(i);
+			ImGui::PushStyleColor(ImGuiCol_Text, HudMotionPlayerMarkColor(mark->name));
 			if (ImGui::Selectable(shared_str().printf("%.2f - %.2f", interval.first * scale, interval.second * scale).c_str(), i == state.SelectedInterval))
 			{
 				state.SelectedInterval = i;
 			}
 
+			ImGui::PopStyleColor();
 			ImGui::PopID();
 		}
 
@@ -488,16 +496,64 @@ static void OMFEditorMarks(SOMFMotion& motion, float length)
 	const float label = ImGui::CalcTextSize("Start:").x + style.ItemSpacing.x;
 	const auto value_field = [&](const char* name, const char* id, bool start)
 	{
+		const int field = start ? 1 : 2;
+		if (interval == nullptr && state.EditField == field)
+		{
+			state.EditField = 0;
+		}
+
 		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted(name);
+		if (mark != nullptr)
+		{
+			ImGui::TextColored(ImGui::ColorConvertU32ToFloat4(HudMotionPlayerMarkColor(mark->name)), "%s", name);
+		}
+		else
+		{
+			ImGui::TextUnformatted(name);
+		}
+
 		ImGui::SameLine(label);
 		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 6.f);
 
 		float value = interval != nullptr ? (start ? interval->first : interval->second) * scale : 0.f;
 		ImGui::BeginDisabled(interval == nullptr);
-		if (ImGui::DragFloat(id, &value, keys ? 0.1f : 0.005f, 0.f, 0.f, "%.2f"))
+		if (state.EditField == field)
 		{
-			(start ? interval->first : interval->second) = value / scale;
+			if (state.EditFocus)
+			{
+				ImGui::SetKeyboardFocusHere();
+				state.EditFocus = false;
+			}
+
+			if (ImGui::InputFloat(id, &value, 0.f, 0.f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+			{
+				(start ? interval->first : interval->second) = std::clamp(value / scale, 0.f, mark_length);
+				state.EditField = 0;
+			}
+			else if (ImGui::IsItemDeactivated())
+			{
+				state.EditField = 0;
+			}
+		}
+		else
+		{
+			if (ImGui::DragFloat(id, &value, keys ? 0.1f : 0.005f, 0.f, 0.f, "%.2f", ImGuiSliderFlags_NoInput))
+			{
+				(start ? interval->first : interval->second) = std::clamp(value / scale, 0.f, mark_length);
+			}
+
+			if (interval != nullptr && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && state.Item != nullptr)
+			{
+				HudMotionPlayerSeekMark(state.Item, motion.Model, motion.Motion, start ? interval->first : interval->second);
+			}
+
+			if (interval != nullptr && ImGui::IsItemClicked(ImGuiMouseButton_Right))
+			{
+				state.EditField = field;
+				state.EditFocus = true;
+			}
+
+			ImGui::SetItemTooltip("Drag to change, double click to move the player here, right click to type the value");
 		}
 
 		ImGui::SameLine();
@@ -693,7 +749,7 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 	switch (static_cast<eRequestType_OMFEditor>(req.request_type))
 	{
 	case eRequestType_OMFEditor::kDeselectCurrentSelectedOrHideWindow:
-		if (!ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId))
+		if (!ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId) && !ImGui::GetIO().WantTextInput)
 		{
 			Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)] = false;
 		}

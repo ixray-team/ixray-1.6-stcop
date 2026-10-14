@@ -746,6 +746,8 @@ const player_hud_motion* HudMotionPlayerSelectedAnim(attachable_hud_item* item);
 bool HudMotionPlayerCurrentMarkTime(attachable_hud_item* item, IKinematicsAnimated* model, MotionID motion, float& time);
 void RenderHudMotionPlayerSpeed(attachable_hud_item* item);
 bool& HudMotionPlayerKeys();
+ImU32 HudMotionPlayerMarkColor(const shared_str& name);
+bool HudMotionPlayerSeekMark(attachable_hud_item* item, IKinematicsAnimated* model, MotionID motion, float mark_time);
 
 /* MISCELLANEOUS */
 
