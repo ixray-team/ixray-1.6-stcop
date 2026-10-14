@@ -412,7 +412,7 @@ void CWeapon::Load		(const char* section)
 
 	pSettings->r_bool_nullable(section, "allow_safemode", m_bAllowSafemode);
 	pSettings->r_float_nullable(section, "safemode_rotate_time", m_fSafeModeRotateTime);
-	SafemodeDamping = pSettings->read_if_exists<float>(ReachInAllSections("safemode_damping"), "safemode_damping", pSettings->read_if_exists<float>("camera_rig", "safemode_damping", SafemodeDamping));
+	SafemodeDamping = pSettings->read_if_exists<float>(ReachInAllSections("safemode_damping"), "safemode_damping", -1.f);
 
 	m_AlterZoomAllowed = pSettings->read_if_exists<bool>(ReachInAllSections("alter_zoom_allowed"), "alter_zoom_allowed", false);
 
@@ -3714,8 +3714,14 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	attachable_hud_item* hi = HudItemData();
 	if (hi == nullptr)
 	{
+		AimReloadFovOut = 0.f;
 		return;
 	}
+
+	const float aim_reload_pose = g_player_hud != nullptr && g_player_hud->attached_item(0) == hi ? g_player_hud->AimReloadPose() : 0.f;
+	const float aim_reload_push = g_player_hud != nullptr && g_player_hud->attached_item(0) == hi ? g_player_hud->AimReloadPush() : 0.f;
+	const float aim_reload_drop = g_player_hud != nullptr && g_player_hud->attached_item(0) == hi ? g_player_hud->AimReloadDrop() : 0.f;
+	AimReloadFovOut = hi->AimReloadZoomOut * aim_reload_pose;
 
 	const EHudOffsetType idx = GetCurrentHudOffsetIdx();
 
@@ -3745,9 +3751,10 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	if (safemode_spring)
 	{
 		const float half_life = std::max(m_fSafeModeRotateTime * 0.35f, 0.01f);
+		const float damping = SafemodeDamping >= 0.f ? SafemodeDamping : CCameraRig::Params().safemode_damping;
 		const auto spring = [&](float error, float& velocity)
 		{
-			HudSpring::Step(error, velocity, 0.f, half_life, SafemodeDamping, Device.fTimeDelta);
+			HudSpring::Step(error, velocity, 0.f, half_life, damping, Device.fTimeDelta);
 			return error;
 		};
 
@@ -3811,6 +3818,16 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	trans.mulB_43(hud_rotation);
 
 	m_hud_trans_last = trans;
+
+	if (aim_reload_pose > 0.f || aim_reload_push > 0.f || aim_reload_drop > 0.f)
+	{
+		const Fvector reload_rot = Fvector(hi->AimReloadOffsetRot).mul(PI / 180.f * aim_reload_pose);
+		Fmatrix reload_offset;
+		reload_offset.setXYZ(reload_rot);
+		const Fvector& reload_pos = hi->AimReloadOffsetPos;
+		reload_offset.translate_over(Fvector().set(reload_pos.x * aim_reload_pose, reload_pos.y * aim_reload_drop, reload_pos.z * aim_reload_pose).mad(hi->AimReloadPushPos, aim_reload_push));
+		trans.mulB_43(reload_offset);
+	}
 
 	if (IsZoomed())
 	{
