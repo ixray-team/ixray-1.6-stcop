@@ -54,17 +54,6 @@ function smart_terrain_binder:net_destroy()
 	end)
 end
 
-function smart_terrain_binder:net_Relcase( obj )
-    return PROF_EVENT_CLOSURE("net_Relcase", function()
-    --	printf( "smart_terrain_binder.net_Relcase: self.object=%s obj=%s", self.object:name(), obj:name() )
-    
-        if self.se_smart_terrain.npc_info[obj:id()] then
-            --self.se_smart_terrain.gulag:object_setup_offline( obj:id(), true )
-            -- TODO: Заменить на аналог
-        end
-	end)
-end
-
 function smart_terrain_binder:update( delta )
     return PROF_EVENT_CLOSURE("update", function()
         SendScriptCallback("binder_smart_terrain_on_update", self, self.object, delta)
