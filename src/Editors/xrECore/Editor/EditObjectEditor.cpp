@@ -11,7 +11,7 @@
 #include "ui_main.h"
 #include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
 #include "../Public/PropertiesListHelper.h"
-#include "../../Layers/xrRender/ResourceManager.h"
+#include "../../Layers/xrRenderPC_R4/ResourceManager.h"
 #include "ImageManager.h"
 #include "EditorInstancing.h"
 #include "EditorSceneSubmit.h"

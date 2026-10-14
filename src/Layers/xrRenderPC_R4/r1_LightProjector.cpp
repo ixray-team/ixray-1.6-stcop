@@ -2,7 +2,7 @@
 #include "r1_LightProjector.h"
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../xrEngine/xr_object.h"
-#include "../xrRender/LightTrack.h"
+#include "LightTrack.h"
 
 const	float		P_distance		= 50;					
 const	float		P_cam_dist		= 200;
@@ -114,7 +114,7 @@ void CLightProjector::OnAppActivate()
 	invalidate					();
 }
 
-#include "../xrRender/SkeletonCustom.h"
+#include "SkeletonCustom.h"
 void CLightProjector::calculate	()
 {
 	if (receivers.empty())		return;

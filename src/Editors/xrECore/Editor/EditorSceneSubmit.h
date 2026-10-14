@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../Layers/xrRender/FBasicVisual.h"
+#include "../../../Layers/xrRenderPC_R4/FBasicVisual.h"
 
 class CCustomObject;
 class CEditableMesh;

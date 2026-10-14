@@ -8,7 +8,7 @@
 #include "../xrECore/Editor/EditObject.h"
 #include "../../xrEngine/motion.h"
 #include "../../xrEngine/bone.h"
-#include "../../Layers/xrRender/SkeletonAnimated.h"
+#include "../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
 #include "../../xrEngine/Fmesh.h"
 #include "../xrEProps/FolderLib.h"
 #include "../../xrPhysics/PhysicsShell.h"
