@@ -88,6 +88,12 @@ public:
 	adopt_compiler&			_dx10texture	(const char* _resname, const char* _texname)		{	C->r_dx10Texture(_resname, _texname);		return	*this;		}
 	adopt_dx10sampler		_dx10sampler	(const char* _name)							{	u32 s = C->r_dx10Sampler(_name);			return	adopt_dx10sampler(C,s);	}
 
+	adopt_compiler& ScopePostprocess(bool Enabled)
+	{
+		C->SH->flags.ScopePostprocess = Enabled;
+		return *this;
+	}
+
 	//	DX10 specific
 	adopt_compiler&			_dx10color_write_enable (bool cR, bool cG, bool cB, bool cA)		{	C->r_ColorWriteEnable(cR, cG, cB, cA);		return	*this;		}
 	adopt_compiler&			_dx10Stencil	(bool Enable, u32 Func, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail) {C->r_Stencil(Enable, Func, Mask, WriteMask, Fail, Pass, ZFail);		return	*this;		}
@@ -178,6 +184,7 @@ void	CResourceManager::LS_Load			()
 			.def("sorting",						&adopt_compiler::_options		,return_reference_to<1>())
 			.def("emissive",					&adopt_compiler::_o_emissive	,return_reference_to<1>())
 			.def("scope",						&adopt_compiler::_o_scope		,return_reference_to<1>())
+			.def("scope_postprocess", &adopt_compiler::ScopePostprocess, return_reference_to<1>())
 			.def("distort",						&adopt_compiler::_o_distort		,return_reference_to<1>())
 			.def("wmark",						&adopt_compiler::_o_wmark		,return_reference_to<1>())
 			.def("fog",							&adopt_compiler::_fog			,return_reference_to<1>())
