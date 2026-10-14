@@ -539,6 +539,20 @@ static void OMFEditorMarks(SOMFMotion& motion, float length)
 		};
 
 		xr_vector<shared_str> names = { HudAttachMarks::Ik, HudAttachMarks::Fingers, "mm_unpend", "Left" };
+		if (state.Item != nullptr)
+		{
+			state.Item->UpdateAttachPose();
+			size_t front = 0;
+			for (const shared_str& mark : { state.Item->IkMark, state.Item->FingersMark })
+			{
+				if (std::find(names.begin(), names.end(), mark) == names.end())
+				{
+					names.insert(names.begin() + front++, mark);
+				}
+			}
+		}
+
+		const size_t fixed = names.size();
 		for (const SOMFMotion& it : state.Motions)
 		{
 			for (const motion_marks& marks : it.Def->marks)
@@ -550,7 +564,7 @@ static void OMFEditorMarks(SOMFMotion& motion, float length)
 			}
 		}
 
-		std::sort(names.begin() + 4, names.end(), [](const shared_str& a, const shared_str& b) { return xr_strcmp(a, b) < 0; });
+		std::sort(names.begin() + fixed, names.end(), [](const shared_str& a, const shared_str& b) { return xr_strcmp(a, b) < 0; });
 
 		for (const shared_str& name : names)
 		{
