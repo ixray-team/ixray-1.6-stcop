@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../xrRender/ColorMapManager.h"
-#include "../xrRender/ScreenPostProcessTypes.h"
+#include "ColorMapManager.h"
+#include "ScreenPostProcessTypes.h"
 
 class light;
 struct SPPInfo;

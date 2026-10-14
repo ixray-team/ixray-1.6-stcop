@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Layers/xrRender/DetailModel.h"
+#include "../Layers/xrRenderPC_R4/DetailModel.h"
 
 // refs
 class CEditableObject;

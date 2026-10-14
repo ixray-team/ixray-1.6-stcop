@@ -5,7 +5,7 @@
 #include "EditObject.h"
 #include "EditMesh.h"
 #include "ui_main.h"
-#include "../Layers/xrRender/SH_RT.h"
+#include "../Layers/xrRenderPC_R4/SH_RT.h"
 #include "../xrEngine/xrHemisphere.h"
 
 using Fvector4Vec = xr_vector<Fvector4>;

@@ -1,0 +1,679 @@
+#include "stdafx.h"
+
+#include "../../xrRHI/RHITextureInterfaces.h"
+#include "ResourceManager.h"
+
+#include "../../xrEngine/Render.h"
+
+#include "../../xrEngine/tntQAVI.h"
+#include "../../xrEngine/xrTheora_Surface.h"
+
+#include "dxRenderDeviceRender.h"
+
+void resptrcode_texture::create(const char* _name)
+{
+	PROF_EVENT("resptrcode_texture::create");
+	_set(DEV->_CreateTexture(_name));
+}
+
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
+CTexture::CTexture		()
+{
+	pSurface			= nullptr;
+	m_pSRView			= nullptr;
+	pAVI				= nullptr;
+	pTheora				= nullptr;
+	seqMSPF				= 0;
+	flags.MemoryUsage	= 0;
+	flags.bLoaded		= false;
+	flags.bUser			= false;
+	flags.seqCycles		= false;
+	flags.bLoadedAsStaging = false;
+	m_material			= 1.0f;
+	can_unload = true;
+	bind				= xr_make_delegate(this,&CTexture::apply_load);
+}
+
+CTexture::~CTexture()
+{
+	Unload();
+	DEV->_DeleteTexture(this);
+}
+
+void CTexture::surface_set(IRHISurface* surf)
+{
+	xrCriticalSectionGuard Guard(LoadGuard);
+	FinishLoading();
+	if (surf)			surf->AddRef();
+	_RELEASE(pSurface);
+	_RELEASE(m_pSRView);
+
+	pSurface = surf;
+	m_pSRView = nullptr;
+
+	if (pSurface)
+	{
+		RHIShaderResourceViewDesc ViewDesc = {};
+		ViewDesc.MostDetailedMip = 0;
+
+		ERHI_RESOURCE_DIMENSION type = pSurface->GetTextureType();
+		if (ERHI_RESOURCE_DIMENSION::TEXTURE2D == type)
+		{
+			if (((ERHI_RESOURCE_MISC_FLAG)pSurface->GetMiscFlags() & ERHI_RESOURCE_MISC_FLAG::TEXTURECUBE) != ERHI_RESOURCE_MISC_FLAG(0))
+			{
+				ViewDesc.ViewDimension = ERHI_SRV_DIMENSION::TEXTURECUBE;
+				ViewDesc.MipLevels = pSurface->GetMipLevels();
+			}
+			else
+			{
+				if (pSurface->GetSampleDescCount() <= 1)
+				{
+					ViewDesc.ViewDimension = (pSurface->GetArraySize() > 1) ? ERHI_SRV_DIMENSION::TEXTURE2DARRAY : ERHI_SRV_DIMENSION::TEXTURE2D;
+					ViewDesc.MipLevels = pSurface->GetMipLevels();
+				}
+				else
+				{
+					VERIFY(pSurface->GetArraySize() == 1);
+					ViewDesc.ViewDimension = ERHI_SRV_DIMENSION::TEXTURE2DMS;
+					ViewDesc.MipLevels = pSurface->GetMipLevels();
+				}
+			}
+
+			ViewDesc.Format = ERHI_FORMAT::UNKNOWN;
+
+			switch (pSurface->GetFormat())
+			{
+			case ERHI_FORMAT::R24G8_TYPELESS:
+				ViewDesc.Format = ERHI_FORMAT::R24_UNORM_X8_TYPELESS;
+				break;
+			case ERHI_FORMAT::R32_TYPELESS:
+				ViewDesc.Format = ERHI_FORMAT::R32_FLOAT;
+				break;
+			case ERHI_FORMAT::R16_TYPELESS:
+				ViewDesc.Format = ERHI_FORMAT::R16_UNORM;
+				break;
+			}
+
+			ViewDesc.ArraySize = pSurface->GetArraySize();
+
+			if ((pSurface->GetSampleDescCount() <= 1) || (ViewDesc.Format != ERHI_FORMAT::R24_UNORM_X8_TYPELESS))
+			{
+				ViewDesc.FirstArraySlice = 0;
+				m_pSRView = GRHI->CreateShaderResourceView(pSurface, &ViewDesc);
+			}
+		}
+		else
+		{
+			m_pSRView = GRHI->CreateShaderResourceView(pSurface, nullptr);
+		}
+	}
+}
+
+IRHISurface* CTexture::surface_get()
+{
+	WaitForLoad();
+	if (flags.bLoadedAsStaging)
+		ProcessStaging();
+
+	if (pSurface)
+	{
+		pSurface->AddRef();
+	}
+	return pSurface;
+}
+
+void CTexture::PostLoad	()
+{
+	if (pTheora)				bind = xr_make_delegate(this,&CTexture::apply_theora);
+	else if (pAVI)				bind = xr_make_delegate(this,&CTexture::apply_avi);
+	else if (!seqDATA.empty())	bind = xr_make_delegate(this,&CTexture::apply_seq);
+	else						bind = xr_make_delegate(this,&CTexture::apply_normal);
+}
+
+void CTexture::apply_load(u32 dwStage)
+{
+	Load();
+
+	bind(dwStage);
+}
+
+void CTexture::ProcessStaging()
+{
+	VERIFY(pSurface);
+	VERIFY(flags.bLoadedAsStaging);
+
+	IRHISurface* pTargetSurface = nullptr;
+
+	ERHI_RESOURCE_DIMENSION type = pSurface->GetTextureType();
+
+	switch (type)
+	{
+		case ERHI_RESOURCE_DIMENSION::TEXTURE2D:
+		{
+			RHITextureDesc desc;
+			desc.Width = pSurface->GetWidth();
+			desc.Height = pSurface->GetHeight();
+			desc.Depth = 1;
+			desc.ArraySize = pSurface->GetArraySize();
+			desc.MipLevels = pSurface->GetMipLevels();
+			desc.Format = pSurface->GetFormat();
+			desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+			desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+			desc.CPUAccessFlags = 0;
+			desc.MiscFlags = pSurface->GetMiscFlags();
+			
+			pTargetSurface = GRHI->CreateTextureFromMemory(nullptr, 0, desc);
+		}
+		break;
+		case ERHI_RESOURCE_DIMENSION::TEXTURE3D:
+		{
+			RHITextureDesc desc;
+			desc.Width = pSurface->GetWidth();
+			desc.Height = pSurface->GetHeight();
+			desc.Depth = pSurface->GetDepth();
+			desc.MipLevels = pSurface->GetMipLevels();
+			desc.Format = pSurface->GetFormat();
+			desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+			desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+			desc.CPUAccessFlags = 0;
+			desc.MiscFlags = pSurface->GetMiscFlags();
+			
+			pTargetSurface = GRHI->CreateTextureFromMemory(nullptr, 0, desc);
+		}
+		break;
+	default:
+		VERIFY(!"CTexture::ProcessStaging unsupported dimensions.");
+	}
+
+	GRHI->CopySurface(pTargetSurface, pSurface);
+
+	flags.bLoadedAsStaging = false;
+
+	//	Check if texture was not copied _before_ it was converted.
+	pSurface->Release();
+	pSurface = nullptr;
+
+	surface_set(pTargetSurface);
+
+	_RELEASE(pTargetSurface);
+}
+
+void CTexture::Apply(u32 dwStage)
+{
+	if (flags.bLoadedAsStaging)
+		ProcessStaging();
+
+	if (dwStage < rstVertex)
+	{
+		//	Pixel shader stage resources
+		GRHI->ShaderResourceCache->SetPSResource(dwStage, m_pSRView);
+	}
+	else if (dwStage < rstGeometry)
+	{
+		//	Vertex shader stage resources
+		GRHI->ShaderResourceCache->SetVSResource(dwStage - rstVertex, m_pSRView);
+	}
+	else if (dwStage < rstHull)
+	{
+		//	Geometry shader stage resources
+		GRHI->ShaderResourceCache->SetGSResource(dwStage - rstGeometry, m_pSRView);
+	}
+	else if (dwStage < rstDomain)
+	{
+		//	Geometry shader stage resources
+		GRHI->ShaderResourceCache->SetHSResource(dwStage - rstHull, m_pSRView);
+	}
+	else if (dwStage < rstCompute)
+	{
+		//	Geometry shader stage resources
+		GRHI->ShaderResourceCache->SetDSResource(dwStage - rstDomain, m_pSRView);
+	}
+	else if (dwStage < rstInvalid)
+	{
+		//	Geometry shader stage resources
+		GRHI->ShaderResourceCache->SetCSResource(dwStage - rstCompute, m_pSRView);
+	}
+	else VERIFY("Invalid stage");
+}
+
+void CTexture::apply_theora(u32 dwStage)
+{
+	if (!pTheora || !pSurface)
+		return;
+
+	if (pTheora->Update(m_play_time != 0xFFFFFFFF ? m_play_time : Device.dwTimeContinual))
+	{
+		ERHI_RESOURCE_DIMENSION type = pSurface->GetTextureType();
+		R_ASSERT(ERHI_RESOURCE_DIMENSION::TEXTURE2D == type);
+
+		u32 RowPitch = 0;
+		void* InputBuffer = pSurface->Lock(0, &RowPitch);
+
+
+		u32 Right = pTheora->Width(true);
+		u32 _w = pTheora->Width(false);
+
+		u32 DeltaOffset = RowPitch / u32(pTheora->Width(false) * 4);
+		_w *= DeltaOffset;
+
+		int _pos = 0;
+		pTheora->DecompressFrame((u32*)InputBuffer, _w - Right, _pos);
+
+		pSurface->Unlock();
+	}
+	Apply(dwStage);
+}
+
+void CTexture::apply_avi(u32 dwStage)
+{
+	if (pAVI->NeedUpdate())
+	{
+		ERHI_RESOURCE_DIMENSION type = pSurface->GetTextureType();
+		R_ASSERT(ERHI_RESOURCE_DIMENSION::TEXTURE2D == type);
+
+		u32 RowPitch = 0;
+		void* InputBuffer = pSurface->Lock(0, &RowPitch);
+
+		// AVI
+		R_ASSERT(RowPitch == int(pAVI->m_dwWidth * 4));
+		BYTE* ptr; pAVI->GetFrame(&ptr);
+		CopyMemory(InputBuffer, ptr, pAVI->m_dwWidth * pAVI->m_dwHeight * 4);
+		pSurface->Unlock();
+	}
+
+	Apply(dwStage);
+}
+
+void CTexture::apply_seq(u32 dwStage)
+{
+	// SEQ
+	u32	frame = Device.dwTimeContinual / seqMSPF;
+	u32	frame_data = (u32)seqDATA.size();
+
+	if (flags.seqCycles)
+	{
+		u32	frame_id = frame % (frame_data * 2);
+		if (frame_id >= frame_data)	frame_id = (frame_data - 1) - (frame_id % frame_data);
+		pSurface = seqDATA[frame_id];
+		m_pSRView = m_seqSRView[frame_id];
+	}
+	else
+	{
+		u32	frame_id = frame % frame_data;
+		pSurface = seqDATA[frame_id];
+		m_pSRView = m_seqSRView[frame_id];
+	}
+
+	Apply(dwStage);
+}
+
+void CTexture::apply_normal	(u32 dwStage)
+{
+	Apply(dwStage);
+}
+
+void CTexture::Preload	()
+{
+	m_bumpmap = DEV->m_textures_description.GetBumpName(cName);
+	m_material = DEV->m_textures_description.GetMaterial(cName);
+}
+
+void CTexture::Load()
+{
+	PROF_EVENT("CTexture::Load");
+	xrCriticalSectionGuard Guard(LoadGuard);
+	FinishLoading();
+	if (!flags.bLoaded)
+	{
+		Preload();
+		LoadImpl();
+	}
+	PostLoad();
+}
+
+bool CTexture::StartLoading()
+{
+	xrCriticalSectionGuard Guard(LoadGuard);
+	if (LoadTask || flags.bLoaded)
+	{
+		return true;
+	}
+
+	// Video playback and texture sequences stay on the calling thread.
+	string_path FileName;
+	if (strchr(*cName, '$') || FS.exist(FileName, _game_textures_, *cName, ".ogm") ||
+		FS.exist(FileName, _game_textures_, *cName, ".avi") || FS.exist(FileName, _game_textures_, *cName, ".seq"))
+	{
+		return false;
+	}
+
+	Preload();
+	LoadTask = xr_make_unique<xr_task_group>();
+	auto LoadLambda = [this]()
+	{
+		PROF_EVENT("CTexture::LoadAsync");
+		LoadImpl();
+	};
+	LoadTask->run(LoadLambda);
+	IsLoading.store(true, std::memory_order_release);
+	return true;
+}
+
+void CTexture::FinishLoading()
+{
+	if (LoadTask)
+	{
+		LoadTask->wait();
+		LoadTask.reset();
+		if (!flags.bLoaded)
+		{
+			// A cancelled parent task may prevent the queued load from starting.
+			LoadImpl();
+		}
+		IsLoading.store(false, std::memory_order_release);
+	}
+}
+
+void CTexture::WaitForLoad()
+{
+	if (IsLoading.load(std::memory_order_acquire))
+	{
+		xrCriticalSectionGuard Guard(LoadGuard);
+		FinishLoading();
+	}
+}
+
+void CTexture::LoadImpl()
+{
+	flags.bLoaded = true;
+	if (pSurface)
+		return;
+
+	flags.bUser = false;
+	flags.MemoryUsage = 0;
+
+	if (0 == _stricmp(*cName, "$null"))
+		return;
+
+	if (nullptr != strstr(*cName, "$user$"))
+	{
+		flags.bUser = true;
+		return;
+	}
+
+	bool bCreateView = true;
+
+	// Check for OGM
+	string_path fn;
+	if (FS.exist(fn, _game_textures_, *cName, ".ogm"))
+	{
+		// AVI
+		pTheora = new CTheoraSurface();
+		m_play_time = 0xFFFFFFFF;
+
+		if (!pTheora->Load(fn))
+		{
+			xr_delete(pTheora);
+			FATAL("Can't open video stream");
+		}
+		else
+		{
+			flags.MemoryUsage = pTheora->Width(true) * pTheora->Height(true) * 4;
+			pTheora->Play(true, Device.dwTimeContinual);
+
+			u32 _w = pTheora->Width(false);
+			u32 _h = pTheora->Height(false);
+
+			// Create RHITextureDesc for the texture
+			RHITextureDesc rhiDesc;
+			rhiDesc.Width = _w;
+			rhiDesc.Height = _h;
+			rhiDesc.MipLevels = 1;
+			rhiDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+			rhiDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+			rhiDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+			rhiDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
+			rhiDesc.MiscFlags = 0;
+
+			pSurface = GRHI->CreateTextureFromMemory(nullptr, 0, rhiDesc);
+			if (pSurface == nullptr)
+			{
+				FATAL("Invalid video stream");
+				xr_delete(pTheora);
+				pSurface = nullptr;
+				m_pSRView = nullptr;
+			}
+			else
+			{
+				m_pSRView = GRHI->CreateShaderResourceView(pSurface, nullptr);
+			}
+
+		}
+	}
+	else if (FS.exist(fn, _game_textures_, *cName, ".avi"))
+	{
+		// AVI
+		pAVI = new CAviPlayerCustom();
+
+		if (!pAVI->Load(fn))
+		{
+			xr_delete(pAVI);
+			FATAL("Can't open video stream");
+		}
+		else
+		{
+			flags.MemoryUsage = pAVI->m_dwWidth * pAVI->m_dwHeight * 4;
+
+			RHITextureDesc rhiDesc;
+			rhiDesc.Width = pAVI->m_dwWidth;
+			rhiDesc.Height = pAVI->m_dwHeight;
+			rhiDesc.MipLevels = 1;
+			rhiDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+			rhiDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+			rhiDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+			rhiDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
+			rhiDesc.MiscFlags = 0;
+
+			// Use GRHI to create the surface
+			pSurface = GRHI->CreateTextureFromMemory(nullptr, 0, rhiDesc);
+			if (pSurface == nullptr)
+			{
+				FATAL("Invalid video stream");
+				xr_delete(pAVI);
+				pSurface = nullptr;
+				m_pSRView = nullptr;
+			}
+			else
+			{
+				m_pSRView = GRHI->CreateShaderResourceView(pSurface, nullptr);
+			}
+
+		}
+	}
+	else if (FS.exist(fn, _game_textures_, *cName, ".seq"))
+	{
+		// Sequence
+		string256 buffer;
+		IReader* _fs = FS.r_open(fn);
+
+		flags.seqCycles = false;
+		_fs->r_string(buffer, sizeof(buffer));
+		if (0 == _stricmp(buffer, "cycled"))
+		{
+			flags.seqCycles = true;
+			_fs->r_string(buffer, sizeof(buffer));
+		}
+		u32 fps = atoi(buffer);
+		seqMSPF = 1000 / fps;
+
+		while (!_fs->eof())
+		{
+			_fs->r_string(buffer, sizeof(buffer));
+			_Trim(buffer);
+			if (buffer[0])
+			{
+				// Load another texture
+				u32	mem = 0;
+				pSurface = ::RImplementation.texture_load(buffer, mem);
+				if (pSurface)
+				{
+					seqDATA.push_back(pSurface);
+					m_seqSRView.push_back(nullptr);
+					m_seqSRView.back() = GRHI->CreateShaderResourceView(seqDATA.back(), nullptr);
+					flags.MemoryUsage += mem;
+				}
+			}
+		}
+		pSurface = nullptr;
+		FS.r_close(_fs);
+	}
+	else
+	{
+		// Normal texture
+		u32	mem = 0;
+		pSurface = ::RImplementation.texture_load(*cName, mem, true);
+
+		if (GetUsage() == ERHI_USAGE::USAGE_STAGING)
+		{
+			flags.bLoadedAsStaging = true;
+			bCreateView = false;
+		}
+
+		// Calc memory usage and preload into vid-mem
+		if (pSurface)
+		{
+			flags.MemoryUsage = mem;
+
+			if (bCreateView)
+			{
+				m_pSRView = GRHI->CreateShaderResourceView(pSurface, nullptr);
+			}
+		}
+	}
+}
+
+void CTexture::Unload()
+{
+	xrCriticalSectionGuard Guard(LoadGuard);
+	FinishLoading();
+	if (!can_unload) return;
+	flags.bLoaded = false;
+	flags.bLoadedAsStaging = false;
+
+	if (!seqDATA.empty())
+	{
+		for (u32 I = 0; I < seqDATA.size(); I++)
+		{
+			_RELEASE(seqDATA[I]);
+			_RELEASE(m_seqSRView[I]);
+		}
+		seqDATA.clear();
+		m_seqSRView.clear();
+		pSurface = nullptr;
+		m_pSRView = nullptr;
+	}
+
+	_RELEASE(pSurface);
+	_RELEASE(m_pSRView);
+
+	xr_delete(pAVI);
+	xr_delete(pTheora);
+
+	bind = xr_make_delegate(this, &CTexture::apply_load);
+}
+
+ERHI_USAGE CTexture::GetUsage()
+{
+	ERHI_USAGE res = ERHI_USAGE::USAGE_DEFAULT;
+
+	if (pSurface)
+	{
+		res = pSurface->GetUsage();
+	}
+
+	return res;
+}
+
+IRHIShaderResourceView* CTexture::GetView()
+{
+	WaitForLoad();
+	if (flags.bLoadedAsStaging)
+	{
+		ProcessStaging();
+	}
+	return m_pSRView;
+}
+
+void CTexture::video_Play(bool looped, u32 _time)
+{
+	if (pTheora)
+	{
+		pTheora->Play(looped, (_time != 0xFFFFFFFF) ? (m_play_time = _time) : Device.dwTimeContinual);
+	}
+}
+
+void CTexture::video_Pause(bool state)
+{
+	if (pTheora)
+	{
+		pTheora->Pause(state);
+	}
+}
+
+void CTexture::video_Stop()
+{
+	if (pTheora)
+	{
+		pTheora->Stop();
+	}
+}
+
+bool CTexture::video_IsPlaying()
+{
+	return (pTheora) ? pTheora->IsPlaying() : false;
+}
+
+void CTexture::CreateEmpty(u32 w, u32 h)
+{
+	xrCriticalSectionGuard Guard(LoadGuard);
+	FinishLoading();
+	R_ASSERT(RDevice && "must be valid");
+
+	flags.bLoaded = true;
+	if (pSurface)
+		return;
+
+	flags.bUser = false;
+	flags.MemoryUsage = 0;
+	if (0 == _stricmp(*cName, "$null"))	return;
+	if (nullptr != strstr(*cName, "$user$")) {
+		flags.bUser = true;
+		return;
+	}
+
+	Preload();
+
+	RHITextureDesc desc = {};
+	desc.Width = w;
+	desc.Height = h;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+	desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+	desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+
+	RHISubResource Subres = {};
+	pSurface = GRHI->CreateTexture2D(desc, Subres);
+
+	if (pSurface)
+	{
+		flags.MemoryUsage = w * h * 4;
+		m_pSRView = GRHI->CreateShaderResourceView(pSurface, nullptr);
+	}
+
+	PostLoad();
+
+	can_unload = false;
+}

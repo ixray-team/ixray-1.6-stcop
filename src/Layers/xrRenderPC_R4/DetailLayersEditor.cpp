@@ -2,9 +2,9 @@
 
 #include "r4.h"
 
-#include "../xrRender/DetailManager.h"
-#include "../xrRender/DetailsWind.h"
-#include "../xrRender/dxRenderDeviceRender.h"
+#include "DetailManager.h"
+#include "DetailsWind.h"
+#include "dxRenderDeviceRender.h"
 #include "../../xrRHI/RHIUtils.h"
 #include "../../xrCore/Collision/xrCDB.h"
 

@@ -4,7 +4,7 @@
 #include "CubeMapHelper.h"
 #include "ui_main.h"
 #include "EditObject.h"
-#include "../Layers/xrRender/ResourceManager.h"
+#include "../Layers/xrRenderPC_R4/ResourceManager.h"
 
 CImageManager ImageLib;
 

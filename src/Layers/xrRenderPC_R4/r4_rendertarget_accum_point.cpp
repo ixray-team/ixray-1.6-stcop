@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../xrRender/CHudInitializer.h"
+#include "CHudInitializer.h"
 
 void CRenderTarget::accum_point		(light* L)
 {

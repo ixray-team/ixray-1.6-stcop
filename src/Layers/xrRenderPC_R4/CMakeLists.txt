@@ -7,18 +7,18 @@ file(GLOB_RECURSE XRR4_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 	"*.h"
 )
 file(GLOB_RECURSE XRR4_SOURCE_COMP_FILES CONFIGURE_DEPENDS
-	"../xrRender/*.cpp"
-	"../xrRender/*.h"
+	"*.cpp"
+	"*.h"
 )
 file(GLOB XRR4_SOURCE_BLEND_FILES
-	"../xrRender/Blender_*.cpp"
-	"../xrRender/Blender_*.h"
+	"Blender_*.cpp"
+	"Blender_*.h"
 	"Blender_*.cpp"
 	"Blender_*.h"
 )
 file(GLOB_RECURSE XRR4_SOURCE_DX11_FILES CONFIGURE_DEPENDS
-	"../xrRenderDX10/*.cpp"
-	"../xrRenderDX10/*.h"
+	"*.cpp"
+	"*.h"
 )
 file(GLOB XRR4_SOURCE_LUA_FILES CONFIGURE_DEPENDS
 	"../../xrEngine/ai_script_lua*.cpp"
@@ -28,8 +28,8 @@ file(GLOB XRR4_SOURCE_OVERLAY_FILES "OverlayAPI/*.*")
 file(GLOB_RECURSE XRR4_SOURCE_INCL_FILES CONFIGURE_DEPENDS "../../Include/*.h")
 
 file(GLOB_RECURSE XRR4_SOURCE_PARTICLE_CORE CONFIGURE_DEPENDS
-	"../xrRender/particle_core/*.cpp"
-	"../xrRender/particle_core/*.h"
+	"particle_core/*.cpp"
+	"particle_core/*.h"
 )
 
 # Source groups

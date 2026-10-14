@@ -6,7 +6,6 @@
 #include "../../xrUI/UICursor.h"
 #include "../../xrEngine/string_table.h"
 #include "../../xrEngine/xr_input.h"
-#include "../../Layers/xrRender/xrRender_console.h"
 
 CUIEncyclopediaArticleWnd::CUIEncyclopediaArticleWnd()
 {

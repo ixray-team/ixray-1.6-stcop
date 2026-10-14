@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "R_Backend_LOD.h"
-#include "../xrRenderDX10/dx10FixedConstants.h"
+#include "dx10FixedConstants.h"
 
 R_LOD::R_LOD()
 {

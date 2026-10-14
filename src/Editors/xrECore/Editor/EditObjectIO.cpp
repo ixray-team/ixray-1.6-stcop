@@ -14,7 +14,7 @@
 #include "ExportObjectOGF.h"
 
 #if 1
- #include "../Layers/xrRender/Shader.h"
+ #include "../Layers/xrRenderPC_R4/Shader.h"
 
 bool CEditableObject::Load(const char* fname)
 {

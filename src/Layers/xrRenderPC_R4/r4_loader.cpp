@@ -1,20 +1,20 @@
 #include "stdafx.h"
 #include "r4.h"
 #include "r1_GlowManager.h"
-#include "../xrRender/ResourceManager.h"
-#include "../xrRender/FBasicVisual.h"
+#include "ResourceManager.h"
+#include "FBasicVisual.h"
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrEngine/xrLevel.h"
 #include "../../xrEngine/x_ray.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrCore/stream_reader.h"
 
-#include "../xrRender/dxRenderDeviceRender.h"
+#include "dxRenderDeviceRender.h"
 
-#include "../xrRenderDX10/dx10BufferUtils.h"
-#include "../xrRenderDX10/3DFluid/dx103DFluidVolume.h"
+#include "dx10BufferUtils.h"
+#include "3DFluid/dx103DFluidVolume.h"
 
-#include "../xrRender/FHierrarhyVisual.h"
+#include "FHierrarhyVisual.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
