@@ -20,7 +20,7 @@
 #include "ai_object_location.h"
 #include "BurningComponent.h"
 
-ENGINE_API bool	g_dedicated_server;
+ENGINE_API extern bool	g_dedicated_server;
 ENGINE_API  extern float psHUD_FOV;
 ENGINE_API  extern float psHUD_FOV_def;
 
