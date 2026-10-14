@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "StdAfx.h"
 #include "FlamethrowerTraceCollision.h"
 #include "Creature.h"
 #include "Flamethrower.h"
