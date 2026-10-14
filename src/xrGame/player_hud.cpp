@@ -2130,18 +2130,19 @@ void player_hud::load(const shared_str& player_hud_sect)
 
 		m_ancors.clear();
 
-		const auto load_chain = [&](const char* key, const char* def, u16* chain)
+		const auto load_chain = [&](const char* key, u16* chain)
 		{
 			string128 bone;
-			const char* names = READ_IF_EXISTS(pSettings, r_string, player_hud_sect, key, READ_IF_EXISTS(pSettings, r_string, "camera_rig", key, def));
+			const char* names = READ_IF_EXISTS(pSettings, r_string, player_hud_sect, key, READ_IF_EXISTS(pSettings, r_string, "camera_rig", key, nullptr));
+			const bool valid = names != nullptr && _GetItemCount(names) == 3;
 			for (int i = 0; i < 3; i++)
 			{
-				chain[i] = _GetItemCount(names) == 3 ? m_model->dcast_PKinematics()->LL_BoneID(_GetItem(names, i, bone)) : BI_NONE;
+				chain[i] = valid ? m_model->dcast_PKinematics()->LL_BoneID(_GetItem(names, i, bone)) : BI_NONE;
 			}
 		};
 
-		load_chain("left_hand_ik_chain", "j_shoulder_le, j_elbow_le, j_wrist_le", m_left_ik_chain);
-		load_chain("right_hand_ik_chain", "j_shoulder_ri, j_elbow_ri, j_wrist_ri", m_right_ik_chain);
+		load_chain("left_hand_ik_chain", m_left_ik_chain);
+		load_chain("right_hand_ik_chain", m_right_ik_chain);
 
 		for (; _b != _e; ++_b)
 		{
