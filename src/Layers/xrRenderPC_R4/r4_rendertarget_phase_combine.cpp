@@ -330,6 +330,10 @@ void CRenderTarget::phase_combine()
 		GPU_EVENT(phase_nvg);
 		phase_nvg();
 	}
+	else
+	{
+		NightVisionInterferenceInitialized = false;
+	}
 	
 	{
 		GPU_EVENT(phase_pp);

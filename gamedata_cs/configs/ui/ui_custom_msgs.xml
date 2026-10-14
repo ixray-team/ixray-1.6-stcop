@@ -218,4 +218,9 @@
   <can_use_weapon_now x="200" y="70" width="600" height="50" ttl="3">
           <text font="graffiti32"  r="240" g="217" b="182" a="255" align="c">can_use_weapon_now</text>
   </can_use_weapon_now>
+	<!-- The powered night vision device keeps this mask during electronics interference. -->
+	<nv_tunnel x="0" y="0" width="1024" height="768" stretch="1">
+		<texture>hud\nvg_vignette</texture>
+	</nv_tunnel>
+
 </header>
