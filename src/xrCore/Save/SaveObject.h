@@ -801,13 +801,6 @@ ISaveObject& operator<<(ISaveObject& Object, FixedVector<T, Size>& Value) {
 }
 #endif
 
-#ifndef IXR_WINDOWS
-template<IsSaveObjectSerializable T, int Size>
-ISaveObject& operator<<(ISaveObject& Object, FixedVector<T, Size>& Value) {
-	return ((CSaveObject*)&Object)->Serialize(Value);
-}
-#endif
-
 template<IsSaveObjectSerializable T, typename H, typename Eq>
 ISaveObject& operator<<(ISaveObject& Object, xr_hash_set<T, H, Eq>& Value) {
 	return ((CSaveObject*)&Object)->Serialize(Value);
