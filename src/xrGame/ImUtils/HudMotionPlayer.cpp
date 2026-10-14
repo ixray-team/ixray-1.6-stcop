@@ -295,6 +295,60 @@ void HudMotionPlayerClose()
 	}
 }
 
+ImU32 HudMotionPlayerMarkColor(const shared_str& name)
+{
+	static constexpr ImU32 colors[] =
+	{
+		IM_COL32(235, 70, 70, 255),
+		IM_COL32(80, 170, 255, 255),
+		IM_COL32(110, 215, 90, 255),
+		IM_COL32(245, 185, 50, 255),
+		IM_COL32(195, 115, 245, 255),
+		IM_COL32(60, 215, 205, 255),
+		IM_COL32(245, 125, 195, 255),
+		IM_COL32(240, 140, 60, 255),
+		IM_COL32(170, 200, 90, 255),
+		IM_COL32(150, 150, 255, 255),
+	};
+
+	static xr_hash_map<shared_str, u32> indices;
+	const u32 index = indices.try_emplace(name, u32(indices.size())).first->second;
+	return colors[index % std::size(colors)];
+}
+
+bool HudMotionPlayerSeekMark(attachable_hud_item* item, IKinematicsAnimated* model, MotionID motion, float mark_time)
+{
+	auto& state = imgui_hud_motion_player;
+	const xr_vector<player_hud_motion>& motions = item->m_hand_motions.m_anims;
+	if (state.Item != item->m_parent_hud_item || state.Selected < 0 || state.Selected >= int(motions.size()))
+	{
+		return false;
+	}
+
+	if (!state.Playing)
+	{
+		HudMotionPlayerPlay(item->m_parent_hud_item, item, motions[state.Selected].m_alias_name, true);
+	}
+
+	const CBlend* blend = HudMotionPlayerBlend(model, motion);
+	CMotionDef* def = blend != nullptr ? model->LL_GetMotionDef(motion) : nullptr;
+	if (def == nullptr || blend->timeTotal <= EPS)
+	{
+		return false;
+	}
+
+	if (!state.Paused)
+	{
+		state.Paused = true;
+		HudMotionPlayerApplyPlayback(item);
+	}
+
+	const float speed = def->Speed();
+	const float time = speed <= EPS || fsimilar(speed, 1.f) ? mark_time : mark_time * speed;
+	HudMotionPlayerSetTime(item, std::clamp(time / blend->timeTotal, 0.f, 1.f));
+	return true;
+}
+
 static void HudMotionPlayerDrawMarks(attachable_hud_item* item, const ImVec2& pos, float width, float total_seconds)
 {
 	const CMotionDef* def = HudMotionPlayerArmsModel(item)->LL_GetMotionDef(imgui_hud_motion_player.ArmsMotion);
@@ -314,21 +368,34 @@ static void HudMotionPlayerDrawMarks(attachable_hud_item* item, const ImVec2& po
 	ImDrawList* draw = ImGui::GetWindowDrawList();
 
 	xr_string hovered;
+	const auto hover = [&](float x, const motion_marks& marks, const char* edge)
+	{
+		if (std::abs(mouse.x - x) <= radius * 2.f && mouse.y >= pos.y && mouse.y <= pos.y + height)
+		{
+			if (!hovered.empty())
+			{
+				hovered += "\n";
+			}
+
+			hovered += marks.name.c_str();
+			hovered += edge;
+		}
+	};
+
 	for (const motion_marks& marks : def->marks)
 	{
+		const ImU32 color = HudMotionPlayerMarkColor(marks.name);
 		for (const motion_marks::interval& interval : marks.intervals)
 		{
 			const float x = start + usable * std::clamp(interval.first / total_seconds, 0.f, 1.f);
-			draw->AddCircleFilled(ImVec2(x, y), radius, IM_COL32(230, 40, 40, 255));
+			draw->AddCircleFilled(ImVec2(x, y), radius, color);
+			hover(x, marks, " (start)");
 
-			if (std::abs(mouse.x - x) <= radius * 2.f && mouse.y >= pos.y && mouse.y <= pos.y + height)
+			if (interval.second > interval.first + EPS_L && interval.second < total_seconds - EPS_L)
 			{
-				if (!hovered.empty())
-				{
-					hovered += "\n";
-				}
-
-				hovered += marks.name.c_str();
+				const float end = start + usable * std::clamp(interval.second / total_seconds, 0.f, 1.f);
+				draw->AddCircle(ImVec2(end, y), radius, color, 0, 1.5f);
+				hover(end, marks, " (end)");
 			}
 		}
 	}
