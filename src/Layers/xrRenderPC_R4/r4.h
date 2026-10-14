@@ -36,6 +36,7 @@ public:
 	enum { PHASE_POINT = 3, PHASE_SPOT = 4, PHASE_LMODELS = 5 };
 	bool vis_intersect = false;
 	RainPuddleWaterMap RainPuddleWater;
+	void UpdateRainPuddleMode();
 	CLightR_Manager* L_Dynamic = nullptr;
 	CLightProjector* L_Projector = nullptr;
 	CLightShadows* L_Shadows = nullptr;
@@ -72,6 +73,8 @@ public:
 
 		u32 dx11_use_legacy_light : 1;
 		u32 RainPuddles : 1;
+		u32 ProceduralRainPuddles : 1;
+		u32 HasRainPuddleMask : 1;
 		u32 dx11_enable_tessellation : 1;
 		u32 dx11_disable_motion_vectors : 1;
 		u32 dx11_allow_wboit_transparency : 1;

@@ -141,7 +141,7 @@ void CRenderTarget::phase_combine()
 		});
 	}
 
-	if (!_menu_pp && RImplementation.o.RainPuddles)
+	if (!_menu_pp && RImplementation.o.dx11_use_legacy_light && RImplementation.o.ProceduralRainPuddles)
 	{
 		PhaseRainPuddles();
 	}

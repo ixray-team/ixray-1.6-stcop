@@ -166,6 +166,15 @@ static class RainPuddleWaterHeightRangeSetup : public RHIShaderConstant::Setup
 	}
 } g_RainPuddleWaterHeightRangeBinder;
 
+static class RainPuddleControlSetup : public RHIShaderConstant::Setup
+{
+	void setup(RHIShaderConstant* Constant) override
+	{
+		const bool Enabled = RImplementation.o.RainPuddles && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
+		RCache.set_c(Constant, Enabled ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
+	}
+} g_RainPuddleControlBinder;
+
 static class cl_invP : public RHIShaderConstant::Setup
 {
 	u32 marker = 0;
@@ -306,7 +315,8 @@ void CRender::create()
 	if (LightingModeIsStaticRender())
 		o.deffered_reflecitons = o.offscreen_reflecitons = false;
 
-	o.RainPuddles = LightingModeIsDynamicRender() && o.dx11_use_legacy_light && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
+	o.RainPuddles = LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
+	UpdateRainPuddleMode();
 
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
 	clearAllShaderOptions();
@@ -321,6 +331,7 @@ void CRender::create()
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("water_intensity", &binder_water_intensity);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("RainPuddleWaterBounds", &g_RainPuddleWaterBoundsBinder);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("RainPuddleWaterHeightRange", &g_RainPuddleWaterHeightRangeBinder);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("RainPuddleControl", &g_RainPuddleControlBinder);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_shadow_sun", &binder_m_shadow_sun);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_AlphaRef", &binder_alpha_ref);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("parallax", &binder_parallax);
@@ -349,7 +360,7 @@ void CRender::create()
 	else
 		L_Dynamic = new CLightR_Manager();
 
-	if (o.RainPuddles)
+	if (o.ProceduralRainPuddles)
 	{
 		RainPuddleWater.Build();
 	}
@@ -459,14 +470,19 @@ void CRender::reset_begin() {
 	{
 		o.deffered_reflecitons = o.offscreen_reflecitons = false;
 	}
-	o.RainPuddles = LightingModeIsDynamicRender() && o.dx11_use_legacy_light && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
+	o.RainPuddles = LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
+	UpdateRainPuddleMode();
 }
 
 void CRender::reset_end() {
 	//	Prevent error on first get data
-	if (o.RainPuddles)
+	if (o.ProceduralRainPuddles)
 	{
 		RainPuddleWater.Build(b_loaded && g_pGameLevel ? &g_pGameLevel->ObjectSpace : nullptr);
+	}
+	else
+	{
+		RainPuddleWater.Destroy();
 	}
 
 	HWOCC.occq_create(occq_size);
@@ -716,12 +732,23 @@ xr_string CRender::getShaderParams()
 		xr_string params = "_";
 		params += xr_string::ToString(start_crc);
 
+		// Match the procedural permutation in the in-memory shader resource cache.
+		if (o.ProceduralRainPuddles)
+		{
+			params += "_puddles";
+		}
+
 		if (EditorInstancing)
 		{
 			params += "_inst";
 		}
 
 		return params;
+	}
+
+	if (o.ProceduralRainPuddles)
+	{
+		return EditorInstancing ? "_puddles_inst" : "_puddles";
 	}
 
 	return EditorInstancing ? "_inst" : "";
@@ -1199,7 +1226,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '0';	++len;
 	}
 
-	if (o.RainPuddles)
+	if (o.ProceduralRainPuddles)
 	{
 		defines[def_it].Name = "USE_RAIN_PUDDLES";
 		defines[def_it].Definition = "1";

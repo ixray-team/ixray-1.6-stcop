@@ -98,6 +98,7 @@ void CRenderTarget::draw_rain(light& RainSetup)
 		AngleFactor = AngleFactor - std::floor(AngleFactor);
 
 		RCache.set_c("RainDensity", fRainFactor, AngleFactor, fWetnessFactor, 0);
+		RCache.set_c("RainFeatures", ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF) ? 1.0f : 0.0f, ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES) ? 1.0f : 0.0f, 0.0f, 0.0f);
 		RCache.set_c("RainFallof", ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0);
 
 		RCache.set_c

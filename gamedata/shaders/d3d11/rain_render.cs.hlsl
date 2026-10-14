@@ -1,10 +1,16 @@
 #include "common.hlsli"
 #include "shadow.hlsli"
 
+#if defined(USE_RAIN_PUDDLES) && !defined(USE_LEGACY_LIGHT)
+#define RAIN_PUDDLE_COMPUTE
+#include "shared\RainPuddles.hlsli"
+#endif
+
 Texture3D s_water;
 Texture2D s_waterFall;
 
 float4 RainDensity;
+float4 RainFeatures; // General wet surfaces, rain puddles.
 float4 RainFallof;
 float4 WorldX;
 float4 WorldZ;
@@ -44,15 +50,15 @@ float3 GbufferGetPointReal(float2 TexCoord)
 	return GbufferGetPointRealJitter(TexCoord, Depth);
 }
 
-float3 GetFlatNormal(float2 tc) 
+float3 GetFlatNormal(float2 tc, float2 SampleOffset)
 {
 	float3 center_point = GbufferGetPointReal(tc);
 	
-	float3 crosspoint0 = GbufferGetPointReal(tc + float2(pos_decompression_params2.z, 0.0f));
-	float3 crosspoint1 = GbufferGetPointReal(tc + float2(0.0f, pos_decompression_params2.w));
+	float3 crosspoint0 = GbufferGetPointReal(tc + float2(SampleOffset.x, 0.0f));
+	float3 crosspoint1 = GbufferGetPointReal(tc + float2(0.0f, SampleOffset.y));
 	
-	float3 crosspoint2 = GbufferGetPointReal(tc - float2(pos_decompression_params2.z, 0.0f));
-	float3 crosspoint3 = GbufferGetPointReal(tc - float2(0.0f, pos_decompression_params2.w));
+	float3 crosspoint2 = GbufferGetPointReal(tc - float2(SampleOffset.x, 0.0f));
+	float3 crosspoint3 = GbufferGetPointReal(tc - float2(0.0f, SampleOffset.y));
 	
 	float3 ddx_1 = crosspoint0 - center_point;
 	float3 ddy_1 = crosspoint1 - center_point;
@@ -62,10 +68,10 @@ float3 GetFlatNormal(float2 tc)
 	
 	if
 	(
-		tc.x <= pos_decompression_params2.z ||
-		tc.x >= (1.0 - pos_decompression_params2.z) ||
-		tc.y <= pos_decompression_params2.w ||
-		tc.y >= (1.0 - pos_decompression_params2.w)
+		tc.x <= SampleOffset.x ||
+		tc.x >= (1.0 - SampleOffset.x) ||
+		tc.y <= SampleOffset.y ||
+		tc.y >= (1.0 - SampleOffset.y)
 	) 
 	{
 		ddx_2 = ddx_1 = tc.x > 0.5 ? ddx_2 : ddx_1;
@@ -79,6 +85,21 @@ float3 GetFlatNormal(float2 tc)
 	
 	return normalize(cross(ddx_1, ddy_1));
 }
+
+float3 GetFlatNormal(float2 TexCoord)
+{
+	return GetFlatNormal(TexCoord, pos_decompression_params2.zw);
+}
+
+#if defined(USE_RAIN_PUDDLES) && !defined(USE_LEGACY_LIGHT)
+float3 GetRainPuddleFlatNormal(float2 TexCoord, float ViewDepth)
+{
+	// Average nearby terrain faces over a 25 cm footprint, using the same four depth taps.
+	float2 SampleOffset = 0.25f * float2(m_P._11, m_P._22) / (2.0f * max(ViewDepth, 0.1f));
+	SampleOffset = max(pos_decompression_params2.zw, min(SampleOffset, 0.02f));
+	return GetFlatNormal(TexCoord, SampleOffset);
+}
+#endif
 
 // float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR, float4 pos2d : SV_POSITION) : SV_Target
 [numthreads(8, 8, 1)]
@@ -156,24 +177,29 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
     float fIsX = WorldN.x;
     float fIsZ = WorldN.z;
 
-    float3 waterSplash = GetNVNMap(s_water, WorldP.xz, timers.x * 3.0);
-    float3 tc1 = WorldP * 0.5f;
+	[branch]
+	if (RainFeatures.x > 0.0f)
+	{
+		float3 waterSplash = GetNVNMap(s_water, WorldP.xz, timers.x * 3.0);
+		float3 tc1 = WorldP * 0.5f;
 
-    float3 waterFallX = GetWaterNMap(s_waterFall, float2(tc1.z, tc1.y + RainDensity.y));
-    float3 waterFallZ = GetWaterNMap(s_waterFall, float2(tc1.x, tc1.y + RainDensity.y));
+		float3 waterFallX = GetWaterNMap(s_waterFall, float2(tc1.z, tc1.y + RainDensity.y));
+		float3 waterFallZ = GetWaterNMap(s_waterFall, float2(tc1.x, tc1.y + RainDensity.y));
 
-    float2 IsDir = normalize(float2(fIsZ, fIsX));
+		float2 IsDir = normalize(float2(fIsZ, fIsX));
 
-    float WeaponAttenuation = M.Depth > 0.02f ? 1.0f : 0.0f;
-    float ApplyNormalCoeff = s * WeaponAttenuation;
+		float WeaponAttenuation = M.Depth > 0.02f ? 1.0f : 0.0f;
+		float ApplyNormalCoeff = s * WeaponAttenuation * RainFeatures.x;
 
-    float3 water = waterSplash * fIsUp;
-    water += waterFallX.yxz * abs(fIsX);
-    water += waterFallZ.zxy * abs(fIsZ);
+		float3 water = waterSplash * fIsUp;
+		water += waterFallX.yxz * abs(fIsX);
+		water += waterFallZ.zxy * abs(fIsZ);
 
-    water.xyz = mul((float3x3)m_V, water.xyz);
-    N += water.xyz * ApplyNormalCoeff;
-	
+		water.xyz = mul((float3x3)m_V, water.xyz);
+		N += water.xyz * ApplyNormalCoeff;
+
+	}
+
 #ifdef USE_LEGACY_LIGHT
     s *= dot(M.Color.xyz, float3(0.33, 0.33, 0.33));
 	
@@ -192,35 +218,53 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	Jitter = Jitter - 0.5f;
 	Jitter *= rcp(1024.0f);
 	
-#ifdef USE_RAIN_MASK
+#if defined(USE_RAIN_MASK) || defined(USE_RAIN_PUDDLES)
 	[branch]
-	if(!object_mask)
+	if (RainFeatures.y > 0.0f)
 	{
-		WorldP = mul(m_invV, P).xyz;
-		float2 tc = WorldP.xz * m_level_scale.zw - m_level_scale.xy;
-	
-		float mask = s_mask.SampleLevel(smp_linear, tc + Jitter.xy * 0.01f, 0).x;
-		mask = lerp(0.0f, smoothstep(RainDensity.z, max(RainDensity.z - 0.1f, 0.0f), mask), saturate(RainDensity.z * 10.0f));
-		
-		float3 RainNormal = GetFlatNormal(TexCoord);
-		fIsUp = -dot(Ldynamic_dir.xyz, RainNormal.xyz);
-		mask *= smoothstep(0.6f, 0.8f, fIsUp) * Shadow;
-		
+		float mask = 0.0f;
+#ifdef USE_RAIN_PUDDLES
+		float3 PuddleNormal = N;
+#endif
+#ifdef USE_RAIN_MASK
+		if (!object_mask)
+		{
+			WorldP = mul(m_invV, P).xyz;
+			float2 tc = WorldP.xz * m_level_scale.zw - m_level_scale.xy;
+			mask = s_mask.SampleLevel(smp_linear, tc + Jitter.xy * 0.01f, 0).x;
+			mask = lerp(0.0f, smoothstep(RainDensity.z, max(RainDensity.z - 0.1f, 0.0f), mask), saturate(RainDensity.z * 10.0f));
+			float3 RainNormal = GetFlatNormal(TexCoord);
+			fIsUp = -dot(Ldynamic_dir.xyz, RainNormal.xyz);
+			mask *= smoothstep(0.6f, 0.8f, fIsUp) * Shadow;
+		}
+#elif defined(USE_RAIN_PUDDLES)
+		// Procedural PBR puddles are restricted to terrain materials.
+		if (M.MaterialID == TERRAIN_ID && M.Depth > 0.02f)
+		{
+			WorldP = mul(m_invV, P).xyz;
+			float2 tc = WorldP.xz * m_level_scale.zw - m_level_scale.xy;
+			float2 Refraction;
+			mask = GetRainPuddle(tc, GetRainPuddleFlatNormal(TexCoord, M.Point.z), M.Point, PuddleNormal, Refraction) * Shadow;
+		}
+#endif
 		M.Roughness = lerp(M.Roughness, 0.03f, mask);
 		M.Specular = lerp(M.Specular, 0.5f, mask);
-		
 		M.Color.xyz *= lerp(1.0f, 0.3f * M.AO, mask);
-		
 		M.AO = lerp(M.AO, 1.0f, mask);
-		
+#if defined(USE_RAIN_PUDDLES) && !defined(USE_RAIN_MASK)
+		N = lerp(N, PuddleNormal, mask);
+#else
 		N -= Ldynamic_dir.xyz * mask * 60.0f;
-		
+#endif
 		s *= 1.0f - mask;
 	}
 #endif
 
+	// Puddles and general wet-surface shading have independent console switches.
+	s *= RainFeatures.x;
+
 	M.Color *= lerp(1.0f, lerp(0.66f, 1.0f, M.Metalness), s);
-	M.Color.xyz += Jitter * 4.0f;
+	M.Color.xyz += Jitter * 4.0f * RainFeatures.x;
 	
 	M.Roughness = lerp(M.Roughness, min(0.2f, M.Roughness), s); 
 	M.Specular = lerp(M.Specular, 0.5f * max(0.5f * F90, M.Specular), s);
