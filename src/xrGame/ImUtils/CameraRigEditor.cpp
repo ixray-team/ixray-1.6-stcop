@@ -315,12 +315,6 @@ void RenderCameraRigEditor()
 
 	ImGui::SetItemTooltip("$app_data_root$\\camera_rig\\saved.ltx");
 
-	ImGui::SameLine();
-	if (ImGui::Button("Motion player"))
-	{
-		HudMotionPlayerOpen();
-	}
-
 	const shared_str hud_sect = CameraRigActiveHudSection();
 	ImGui::Text("Hud section: %s", hud_sect.size() ? hud_sect.c_str() : "-");
 
@@ -359,9 +353,17 @@ void RenderCameraRigEditor()
 		}
 	}
 
+	static bool refresh_preview = false;
 	if (changed)
 	{
 		CameraRigApply();
+		refresh_preview = true;
+	}
+
+	if (refresh_preview && !ImGui::IsAnyItemActive())
+	{
+		refresh_preview = false;
+		HudMotionPlayerRefresh();
 	}
 
 	ImGui::End();
