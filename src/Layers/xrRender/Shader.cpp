@@ -78,6 +78,7 @@ ShaderElement::ShaderElement()
 	flags.bStrictB2F	= false;
 	flags.bEmissive		= false;
 	flags.bScopeMask	= false;
+	flags.ScopePostprocess = true;
 	flags.bDistort		= false;
 	flags.bWmark		= false;
 	flags.bLandscape	= false;
@@ -89,6 +90,10 @@ bool ShaderElement::equal	(ShaderElement& S)
 	if (flags.bStrictB2F	!= S.flags.bStrictB2F)	return false;
 	if (flags.bEmissive		!= S.flags.bEmissive)	return false;
 	if (flags.bScopeMask	!= S.flags.bScopeMask)	return false;
+	if (flags.ScopePostprocess != S.flags.ScopePostprocess)
+	{
+		return false;
+	}
 	if (flags.bWmark		!= S.flags.bWmark)		return false;
 	if (flags.bLandscape	!= S.flags.bLandscape)	return false;
 	if (flags.bDistort		!= S.flags.bDistort)	return false;
