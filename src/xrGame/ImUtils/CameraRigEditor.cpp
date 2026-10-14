@@ -112,11 +112,75 @@ static const char* CameraRigDescription(const char* key)
 	return nullptr;
 }
 
+static xr_map<shared_str, xr_map<shared_str, float>> g_camera_rig_hud_values;
+
+static float* CameraRigHudField(attachable_hud_item* item, const char* key)
+{
+	if (item == nullptr)
+	{
+		return nullptr;
+	}
+
+	static const struct
+	{
+		const char*						Key;
+		float attachable_hud_item::*	Field;
+	}
+	fields[] =
+	{
+		{ "aim_reload_motion", &attachable_hud_item::m_aim_reload_motion },
+		{ "shot_anim_variation", &attachable_hud_item::m_shot_variation },
+		{ "shot_anim_twist", &attachable_hud_item::m_shot_twist },
+		{ "aim_shot_motion", &attachable_hud_item::m_aim_shot_motion },
+		{ "idle_fade", &attachable_hud_item::m_idle_fade },
+		{ "inertia_damping", &attachable_hud_item::m_inertia_damping },
+		{ "additive_blend_in", &attachable_hud_item::m_additive_blend_in },
+		{ "additive_blend_out", &attachable_hud_item::m_additive_blend_out },
+		{ "left_hand_attach_blend", &attachable_hud_item::LeftHandAttachBlend },
+		{ "left_hand_ik_blend", &attachable_hud_item::LeftHandIkBlend },
+		{ "left_hand_finger_tail", &attachable_hud_item::LeftHandFingerTail },
+	};
+
+	for (const auto& it : fields)
+	{
+		if (xr_strcmp(it.Key, key) == 0)
+		{
+			return &(item->*it.Field);
+		}
+	}
+
+	return nullptr;
+}
+
+static attachable_hud_item* CameraRigActiveHudItem(const shared_str& hud_sect)
+{
+	attachable_hud_item* item = g_player_hud != nullptr ? g_player_hud->attached_item(0) : nullptr;
+	return item != nullptr && hud_sect.size() && item->m_sect_name == hud_sect ? item : nullptr;
+}
+
+static void CameraRigApplyHudValues(attachable_hud_item* item)
+{
+	const auto values = item != nullptr ? g_camera_rig_hud_values.find(item->m_sect_name) : g_camera_rig_hud_values.end();
+	if (values == g_camera_rig_hud_values.end())
+	{
+		return;
+	}
+
+	for (const auto& [key, value] : values->second)
+	{
+		if (float* field = CameraRigHudField(item, key.c_str()))
+		{
+			*field = value;
+		}
+	}
+}
+
 static void CameraRigApply()
 {
 	if (g_player_hud != nullptr)
 	{
 		g_player_hud->ReloadRigParams();
+		CameraRigApplyHudValues(g_player_hud->attached_item(0));
 	}
 
 	CActor* actor = Actor();
@@ -212,6 +276,14 @@ static void CameraRigSave()
 		file.w_string("camera_rig", params[i].Key, value);
 	}
 
+	for (const auto& [sect, values] : g_camera_rig_hud_values)
+	{
+		for (const auto& [key, value] : values)
+		{
+			file.w_float(sect.c_str(), key.c_str(), value);
+		}
+	}
+
 	if (file.save_as(path))
 	{
 		Msg("Camera rig saved to [%s]", path);
@@ -266,8 +338,24 @@ static bool CameraRigDrawParam(const SCameraRigParam& param, const shared_str& h
 	if (param.HudKey != nullptr && hud_sect.size() && pSettings->line_exist(hud_sect, param.HudKey))
 	{
 		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(1.f, 0.8f, 0.2f, 1.f), "[%s = %s]", param.HudKey, pSettings->r_string(hud_sect, param.HudKey));
-		ImGui::SetItemTooltip("Overridden in hud section [%s]", hud_sect.c_str());
+		if (float* field = CameraRigHudField(CameraRigActiveHudItem(hud_sect), param.HudKey))
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 0.8f, 0.2f, 1.f));
+			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.f);
+			if (ImGui::DragFloat("##hud", field, param.Speed, 0.f, 0.f, "%.4f"))
+			{
+				g_camera_rig_hud_values[hud_sect][param.HudKey] = *field;
+				changed = true;
+			}
+
+			ImGui::PopStyleColor();
+			ImGui::SetItemTooltip("[%s] %s: this weapon uses this value, the global one is ignored", hud_sect.c_str(), param.HudKey);
+		}
+		else
+		{
+			ImGui::TextColored(ImVec4(1.f, 0.8f, 0.2f, 1.f), "[%s = %s]", param.HudKey, pSettings->r_string(hud_sect, param.HudKey));
+			ImGui::SetItemTooltip("Overridden in hud section [%s]", hud_sect.c_str());
+		}
 	}
 
 	ImGui::PopID();
@@ -316,6 +404,7 @@ void RenderCameraRigEditor()
 	ImGui::SetItemTooltip("$app_data_root$\\camera_rig\\saved.ltx");
 
 	const shared_str hud_sect = CameraRigActiveHudSection();
+	CameraRigApplyHudValues(CameraRigActiveHudItem(hud_sect));
 	ImGui::Text("Hud section: %s", hud_sect.size() ? hud_sect.c_str() : "-");
 
 	ImGui::Separator();
