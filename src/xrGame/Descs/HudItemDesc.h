@@ -36,10 +36,6 @@ struct SHudItemDesc final
 	bool m_bDisableBore = false;
 	bool m_bBlendMovement = false;
 	SBlendParams m_sMovementBlendParams[EMovementLayers::eLayersCount];
-	SBlendParams m_sSprintStartBlendParams;
-	SBlendParams m_sSprintEndBlendParams;
-	SBlendParams m_sSprintLoopBlendParams;
-	float SprintInertia = 0.12f;
 
 	float ControllerTime = 0.0f;
 	bool ProhibitSuicide = true;

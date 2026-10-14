@@ -3630,7 +3630,8 @@ EHudOffsetType CWeapon::GetCurrentHudOffsetIdx() const
 
 	if (!IsZoomed())
 	{
-		return pActor->IsSafemode() ? EHudOffsetType::eSafemode : EHudOffsetType::eDefault;
+		const bool sprint_pose = g_player_hud != nullptr && g_player_hud->attached_item(0) != nullptr && g_player_hud->attached_item(0)->m_parent_hud_item == this && g_player_hud->SprintPoseActive();
+		return pActor->IsSafemode() && !sprint_pose ? EHudOffsetType::eSafemode : EHudOffsetType::eDefault;
 	}
 	else if (IsGrenadeMode())
 	{
@@ -4224,6 +4225,12 @@ bool CWeapon::NeedBlockSprint() const
 {
 	const u8 State = GetState();
 	const static bool IsDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
+
+	const bool layered_action = State == eReload || State == eSwitchMode || State == eSafemodeSwitch || !IsPending() && State != eFire && State != eFire2 && State != eHiding && State != eHidden;
+	if (layered_action && const_cast<CWeapon*>(this)->SprintLayered())
+	{
+		return m_bIsAimAnimationPlaying;
+	}
 
 	if (IsDelayedWeaponActions)
 	{

@@ -2006,7 +2006,6 @@ player_hud::~player_hud()
 	xr_delete(m_animator_item);
 
 	delete_data(m_movement_layers);
-	xr_delete(m_sprint_loop);
 	delete_data(m_script_layers);
 	delete_data(m_bone_callback_params);
 }
@@ -2441,12 +2440,8 @@ void player_hud::update(const Fmatrix& cam_trans)
 			m_movement_key = key;
 			UpdateMovementLayers();
 		}
-		else if (m_sprint_start_wait && !SprintStartPlaying())
-		{
-			m_sprint_start_wait = false;
-			TriggerLayersInertia();
-			UpdateMovementLayers();
-		}
+
+		UpdateSprintAdditiveChain();
 	}
 
 	const float ik_share = CCameraRig::HudIkShare();
@@ -2495,13 +2490,11 @@ void player_hud::update(const Fmatrix& cam_trans)
 	}
 
 	Fmatrix script_layers = Fidentity;
-	Fmatrix script_layers_rigid = Fidentity;
-	Fmatrix layers_total = Fidentity;
 
 	{
-		const CHudItem* item = m_attached_items[0] != nullptr ? m_attached_items[0]->m_parent_hud_item : nullptr;
-		const bool yield = m_sprinting && item != nullptr && (item->HudDesc().m_sSprintStartBlendParams.has_motion || item->HudDesc().m_sSprintEndBlendParams.has_motion);
-		m_sprint_yield = std::clamp(m_sprint_yield + Device.fTimeDelta * (yield ? m_sprint_yield_in : -m_sprint_yield_out), 0.f, 1.f);
+		const bool yield = m_sprinting && SprintAdditiveEnabled();
+		const float rate = m_attached_items[0] != nullptr ? 1.f / m_attached_items[0]->SprintLayerBlend() : 1.f / 0.3f;
+		m_sprint_yield = std::clamp(m_sprint_yield + Device.fTimeDelta * (yield ? rate : -rate), 0.f, 1.f);
 	}
 	Fmatrix movement_layers = Fidentity;
 
@@ -2544,20 +2537,8 @@ void player_hud::update(const Fmatrix& cam_trans)
 			continue;
 		}
 
-		const SAnimParams& anm_params = anm->anim->anim_param();
-		const bool at_end = !anm->anim->IsLooped() && anm_params.t_current >= anm_params.max_t;
-		if (anm->FadeAtEnd && at_end && anm->active)
-		{
-			anm->Stop(false);
-		}
-
-		constexpr float rigid_blend = 0.25f;
-		const bool rigid = anm->BaseAtEnd && anm->active && at_end;
-		anm->RigidWeight = std::clamp(anm->RigidWeight + (rigid ? Device.fTimeDelta : -Device.fTimeDelta) / rigid_blend, 0.f, 1.f);
-
 		Fmatrix layer = anm->XFORM();
-		const bool sprint_layer = anm->BaseAtEnd || anm->FadeAtEnd;
-		if (!sprint_layer && m_sprint_yield > 0.f)
+		if (m_sprint_yield > 0.f)
 		{
 			layer = scale_layer_offset(layer, 1.f - hud_smooth(m_sprint_yield));
 		}
@@ -2565,23 +2546,13 @@ void player_hud::update(const Fmatrix& cam_trans)
 		if (anm->part == 0 || anm->part == 2)
 		{
 			m_transform.mulB_43(layer);
-			layers_total.mulB_43(layer);
 
 			if (g_hud_layers_debug != 0 && Device.dwFrame % 10 == 0)
 			{
-				hud_log_layer(anm->active ? "script" : "script(fading)", anm->name.c_str(), layer, anm->blend_scale, anm->RigidWeight);
+				hud_log_layer(anm->active ? "script" : "script(fading)", anm->name.c_str(), layer, anm->blend_scale, 0.f);
 			}
 
-			if (anm->RigidWeight > 0.f)
-			{
-				const float weight = anm->RigidWeight * anm->RigidWeight * (3.f - 2.f * anm->RigidWeight);
-				script_layers_rigid.mulB_43(scale_layer_offset(layer, weight));
-				script_layers.mulB_43(scale_layer_offset(layer, 1.f - weight));
-			}
-			else
-			{
-				script_layers.mulB_43(layer);
-			}
+			script_layers.mulB_43(layer);
 		}
 		
 		if (anm->part == 1 || anm->part == 2)
@@ -2598,11 +2569,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
 	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
 
-	movement_layer* all_movement_layers[EMovementLayers::eLayersCount + 1];
-	std::copy(std::begin(m_movement_layers), std::end(m_movement_layers), all_movement_layers);
-	all_movement_layers[EMovementLayers::eLayersCount] = m_sprint_loop;
-
-	for (movement_layer* anm : all_movement_layers)
+	for (movement_layer* anm : m_movement_layers)
 	{
 		if (anm == nullptr || anm->anim == nullptr || !anm->playing && anm->blend_scale <= 0.0f)
 		{
@@ -2622,23 +2589,15 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 		if (anm->blend_scale > 0.0f)
 		{
-			if (anm->SeamNext)
-			{
-				anm->SeamNext = false;
-				TriggerLayersInertia();
-			}
-
 			anm->anim->Update(Device.fTimeDelta);
-			anm->SeamNext = anm->Relative && anm->playing && anm->anim->anim_param().bWrapped;
 
 			m_transform.mulB_43(anm->XFORM());
 			m_transformL.mulB_43(anm->XFORM());
 			movement_layers.mulB_43(anm->XFORM());
-			layers_total.mulB_43(anm->XFORM());
 
 			if (g_hud_layers_debug != 0 && Device.dwFrame % 10 == 0)
 			{
-				hud_log_layer(anm->playing ? "move" : "move(fading)", anm->name.c_str(), anm->XFORM(), anm->blend_scale, anm->Relative ? 1.f : 0.f);
+				hud_log_layer(anm->playing ? "move" : "move(fading)", anm->name.c_str(), anm->XFORM(), anm->blend_scale, 0.f);
 			}
 		}
 		else
@@ -2648,13 +2607,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 				anm->Stop(true);
 			}
 		}
-	}
-
-	{
-		const Fmatrix inertia = UpdateLayersInertia(layers_total);
-		m_transform.mulB_43(inertia);
-		m_transformL.mulB_43(inertia);
-		movement_layers.mulB_43(inertia);
 	}
 
 	if (m_layers_ik)
@@ -2691,7 +2643,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 		rigid.mulB_43(scale_layer_offset(item->m_collision_xform, rigid_share));
 		rigid.mulB_43(rigid_attach);
-		rigid.mulB_43(script_layers_rigid);
 		rigid.mulB_43(scale_layer_offset(script_layers, 1.f - ik_share));
 		rigid.mulB_43(scale_layer_offset(movement_layers, 1.f - ik_share));
 
@@ -2700,7 +2651,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 		if (g_hud_layers_debug != 0 && Device.dwFrame % 10 == 0)
 		{
 			hud_log_layer("total", "script", script_layers, 0.f, 0.f);
-			hud_log_layer("total", "script_rigid", script_layers_rigid, 0.f, 0.f);
 			hud_log_layer("total", "movement", movement_layers, 0.f, 0.f);
 			hud_log_layer("total", "ik_offset", m_layers_ik_offset, 0.f, ik_share);
 		}
@@ -2816,7 +2766,8 @@ bool attachable_hud_item::RetargetMode(const shared_str& motion, shared_str& ref
 
 	if (hud_motion_listed(RetargetMotions, motion))
 	{
-		const shared_str own = base_name("anm_idle");
+		const player_hud_motion* own_idle = OwnIdle();
+		const shared_str own = own_idle != nullptr ? own_idle->m_base_name : shared_str();
 		if (source.size() != 0 ? source != own : AdditiveRetargetReference.size() != 0)
 		{
 			reference = source.size() != 0 ? source : AdditiveRetargetReference;
@@ -2834,6 +2785,77 @@ bool attachable_hud_item::RetargetMode(const shared_str& motion, shared_str& ref
 	}
 
 	return false;
+}
+
+const player_hud_motion* attachable_hud_item::OwnIdle() const
+{
+	const player_hud_motion* numbered = nullptr;
+	for (const player_hud_motion& it : m_hand_motions.m_anims)
+	{
+		if (it.m_animations.empty())
+		{
+			continue;
+		}
+
+		if (it.m_alias_name == "anm_idle")
+		{
+			return &it;
+		}
+
+		const char* name = it.m_alias_name.c_str();
+		if (numbered == nullptr && strstr(name, "anm_idle_") == name && isdigit(static_cast<unsigned char>(name[9])))
+		{
+			numbered = &it;
+		}
+	}
+
+	return numbered;
+}
+
+MotionID attachable_hud_item::AliasMotion(const char* alias) const
+{
+	for (const player_hud_motion& it : m_hand_motions.m_anims)
+	{
+		if (it.m_alias_name == alias && !it.m_animations.empty())
+		{
+			return it.m_animations[0].mid;
+		}
+	}
+
+	return MotionID();
+}
+
+bool attachable_hud_item::SprintLayered() const
+{
+	if (m_model_combined || !CCameraRig::Enabled() || !AliasMotion("anm_idle_sprint").valid())
+	{
+		return false;
+	}
+
+	const shared_str alias = "anm_idle_sprint";
+	return hud_motion_listed(RetargetMotions, alias) || hud_motion_listed(AdditiveRetargetMotions, alias) || hud_motion_listed(m_additive_motions, alias);
+}
+
+shared_str attachable_hud_item::SprintLayerReference() const
+{
+	shared_str reference;
+	RetargetMode("anm_idle_sprint", reference);
+	if (reference.size() != 0)
+	{
+		return reference;
+	}
+
+	if (m_additive_reference.size() != 0)
+	{
+		return m_additive_reference;
+	}
+
+	if (const player_hud_motion* idle = OwnIdle())
+	{
+		return idle->m_base_name;
+	}
+
+	return reference;
 }
 
 u8 attachable_hud_item::LeftHandAttachMotionMode(const shared_str& motion) const
@@ -2979,14 +3001,14 @@ static float hud_ancor_deviation(const Fmatrix& current, const Fmatrix& referenc
 	return std::max(current.c.distance_to(reference.c) / 0.1f, 2.f * acosf(dot) / deg2rad(30.f));
 }
 
-static MotionID hud_dominant_motion(IKinematicsAnimated* ka)
+static MotionID hud_dominant_motion(IKinematicsAnimated* ka, u8 channel = 0)
 {
 	MotionID motion;
 	float amount = 0.f;
 	for (u32 i = 0, count = ka->LL_PartBlendsCount(0); i < count; i++)
 	{
 		const CBlend* B = ka->LL_PartBlend(0, i);
-		if (B != nullptr && B->channel == 0 && B->blend_state() != CBlend::eFREE_SLOT && B->blendAmount > amount)
+		if (B != nullptr && B->channel == channel && B->blend_state() != CBlend::eFREE_SLOT && B->blendAmount > amount)
 		{
 			amount = B->blendAmount;
 			motion = B->motionID;
@@ -3214,15 +3236,33 @@ bool player_hud::LeftHandAttachReference(attachable_hud_item* item)
 	return !arm_bones.empty() && m_model->LL_GetMotionBoneTransform(M.mid, hands_time, arm_bones[0], item->LeftHandAttachArmRootRef);
 }
 
-bool player_hud::RetargetHandTarget(attachable_hud_item* item, u16 ancor, u16 wrist, Fmatrix& result)
+static const player_hud_motion* hud_current_idle(attachable_hud_item* item)
 {
-	const player_hud_motion* idle = item->m_hand_motions.find_motion("anm_idle");
-	if (m_model == nullptr || idle == nullptr || idle->m_animations.empty() || wrist == BI_NONE || !item->RetargetMotion.valid() || !item->RetargetReferenceMotion.valid())
+	if (CHudItem* hud_item = item->m_parent_hud_item)
+	{
+		if (const player_hud_motion* current = item->m_hand_motions.find_motion(hud_item->SetCurrentStateAnimation(hud_item->SetCurrentIdleAnimation())))
+		{
+			return current;
+		}
+	}
+
+	if (const player_hud_motion* idle = item->m_hand_motions.find_motion("anm_idle"))
+	{
+		return idle;
+	}
+
+	return item->OwnIdle();
+}
+
+bool player_hud::RetargetHandTarget(attachable_hud_item* item, u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result)
+{
+	const player_hud_motion* idle = hud_current_idle(item);
+	if (m_model == nullptr || idle == nullptr || idle->m_animations.empty() || wrist == BI_NONE || !motion.valid() || !reference.valid())
 	{
 		return false;
 	}
 
-	const float time = hud_motion_time(m_model, item->RetargetMotion, ADDITIVE_CHANNEL);
+	const float time = hud_motion_time(m_model, motion, channel);
 	if (time < 0.f)
 	{
 		return false;
@@ -3231,10 +3271,10 @@ bool player_hud::RetargetHandTarget(attachable_hud_item* item, u16 ancor, u16 wr
 	const MotionID idle_motion = idle->m_animations[0].mid;
 	const float idle_time = std::max(hud_motion_time(m_model, idle_motion), 0.f);
 
-	const auto relative = [&](MotionID motion, float at, Fmatrix& out)
+	const auto relative = [&](MotionID sample, float at, Fmatrix& out)
 	{
 		Fmatrix ancor_ms, wrist_ms;
-		if (!m_model->LL_GetMotionBoneTransform(motion, at, ancor, ancor_ms) || !m_model->LL_GetMotionBoneTransform(motion, at, wrist, wrist_ms))
+		if (!m_model->LL_GetMotionBoneTransform(sample, at, ancor, ancor_ms) || !m_model->LL_GetMotionBoneTransform(sample, at, wrist, wrist_ms))
 		{
 			return false;
 		}
@@ -3243,14 +3283,47 @@ bool player_hud::RetargetHandTarget(attachable_hud_item* item, u16 ancor, u16 wr
 		return true;
 	};
 
-	Fmatrix source, reference, target;
-	if (!relative(item->RetargetMotion, time, source) || !relative(item->RetargetReferenceMotion, 0.f, reference) || !relative(idle_motion, idle_time, target))
+	Fmatrix source, reference_relative, target;
+	if (!relative(motion, time, source) || !relative(reference, 0.f, reference_relative) || !relative(idle_motion, idle_time, target))
 	{
 		return false;
 	}
 
-	result.mul_43(source, Fmatrix().mul_43(Fmatrix().invert(reference), target));
-	result.c.add(source.c, Fvector().sub(target.c, reference.c));
+	result.mul_43(source, Fmatrix().mul_43(Fmatrix().invert(reference_relative), target));
+	result.c.add(source.c, Fvector().sub(target.c, reference_relative.c));
+	return true;
+}
+
+static float hud_channel_weight(IKinematicsAnimated* ka, u8 channel)
+{
+	float weight = 0.f;
+	for (u32 i = 0, count = ka->LL_PartBlendsCount(0); i < count; i++)
+	{
+		const CBlend* B = ka->LL_PartBlend(0, i);
+		if (B != nullptr && B->channel == channel && B->blend_state() != CBlend::eFREE_SLOT)
+		{
+			weight += B->blendAmount;
+		}
+	}
+
+	return std::clamp(weight, 0.f, 1.f);
+}
+
+bool player_hud::SprintBaseTransform(u16 bone, Fmatrix& result) const
+{
+	const MotionID motion = hud_dominant_motion(m_model);
+	return motion.valid() && m_model->LL_GetMotionBoneTransform(motion, std::max(hud_motion_time(m_model, motion), 0.f), bone, result);
+}
+
+bool player_hud::SprintBoneDelta(u16 bone, Fmatrix& result) const
+{
+	Fmatrix base;
+	if (bone == BI_NONE || !SprintBaseTransform(bone, base))
+	{
+		return false;
+	}
+
+	result.mul_43(m_model->dcast_PKinematics()->LL_GetTransform(bone), Fmatrix().invert(base));
 	return true;
 }
 
@@ -3337,12 +3410,28 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	const bool retarget = RetargetWeight > 0.f && !ancor_in_right_hand;
 	if (retarget && item->RetargetPlaying)
 	{
-		RetargetRightValid = has_right && RetargetHandTarget(item, ancor, m_right_ik_chain[2], RetargetRightTarget);
-		RetargetLeftValid = has_left && RetargetHandTarget(item, ancor, m_left_ik_chain[2], RetargetLeftTarget);
+		RetargetRightValid = has_right && RetargetHandTarget(item, ancor, m_right_ik_chain[2], item->RetargetMotion, ADDITIVE_CHANNEL, item->RetargetReferenceMotion, RetargetRightTarget);
+		RetargetLeftValid = has_left && RetargetHandTarget(item, ancor, m_left_ik_chain[2], item->RetargetMotion, ADDITIVE_CHANNEL, item->RetargetReferenceMotion, RetargetLeftTarget);
 	}
 
 	const bool retarget_right = retarget && has_right && RetargetRightValid;
 	const bool retarget_left = retarget && has_left && RetargetLeftValid;
+
+	const float sprint_layer = hud_channel_weight(m_model, LAYER_ADDITIVE_CHANNEL);
+	const bool sprint_action = sprint_layer > 0.f && state != CHUDState::eIdle && !item->RetargetPlaying && !item->m_additive_playing;
+	SprintHandWeight = std::clamp(SprintHandWeight + (sprint_action ? Device.fTimeDelta : -Device.fTimeDelta) / item->SprintLayerBlend(), 0.f, 1.f);
+
+	Fmatrix sprint_ancor_delta, sprint_right_base, sprint_left_base;
+	const bool sprint_hands = SprintHandWeight > 0.f && sprint_layer > 0.f && SprintBoneDelta(ancor, sprint_ancor_delta);
+	const bool sprint_right = sprint_hands && has_right && !ancor_in_right_hand && SprintBaseTransform(m_right_ik_chain[2], sprint_right_base);
+	const bool sprint_left = sprint_hands && has_left && SprintBaseTransform(m_left_ik_chain[2], sprint_left_base);
+
+	const player_hud_motion* sprint_idle = SprintAdditiveEnabled() ? hud_current_idle(item) : nullptr;
+	const bool sprint_foreign = SprintAdditiveEnabled() && (sprint_idle == nullptr || sprint_idle->m_animations.empty() || SprintReferenceMotion != sprint_idle->m_animations[0].mid);
+	const MotionID sprint_motion = sprint_layer > 0.f && sprint_foreign ? hud_dominant_motion(m_model, LAYER_ADDITIVE_CHANNEL) : MotionID();
+	Fmatrix sprint_right_layer, sprint_left_layer;
+	const bool sprint_layer_right = sprint_motion.valid() && has_right && !ancor_in_right_hand && RetargetHandTarget(item, ancor, m_right_ik_chain[2], sprint_motion, LAYER_ADDITIVE_CHANNEL, SprintReferenceMotion, sprint_right_layer);
+	const bool sprint_layer_left = sprint_motion.valid() && has_left && RetargetHandTarget(item, ancor, m_left_ik_chain[2], sprint_motion, LAYER_ADDITIVE_CHANNEL, SprintReferenceMotion, sprint_left_layer);
 
 	CWeapon* weapon = item->m_parent_hud_item->cast_weapon();
 	const bool reload_state = weapon != nullptr && (state == CWeapon::eReload || state == CWeapon::eMisfire || state == CWeapon::eLightMis || state == CWeapon::eMagCheck
@@ -3356,10 +3445,20 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	const float aim_reload_blend = CCameraRig::AimReloadBlend();
 	m_aim_reload_weight = std::clamp(aim_reload_blend > 0.f ? m_aim_reload_weight + (aim_reload ? Device.fTimeDelta : -Device.fTimeDelta) / aim_reload_blend : (aim_reload ? 1.f : 0.f), 0.f, 1.f);
 
+	Fmatrix sprint_layer_ancor = Fidentity;
+	if (sprint_layer > 0.f)
+	{
+		Fmatrix full, base;
+		if (m_model->LL_GetBoneTransformMasked(ancor, u8(-1), full) && m_model->LL_GetBoneTransformMasked(ancor, u8(~(1 << LAYER_ADDITIVE_CHANNEL)), base))
+		{
+			sprint_layer_ancor.mul_43(full, Fmatrix().invert(base));
+		}
+	}
+
 	const bool firing = weapon != nullptr && (state == CWeapon::eFire || state == CWeapon::eFire2) && (item->m_shot_variation > 0.f || item->m_shot_twist > 0.f || item->m_aim_shot_motion < 1.f);
 	if (state == CHUDState::eIdle && m_shot_weight <= 0.f)
 	{
-		m_shot_ref.set(model->LL_GetTransform(ancor));
+		m_shot_ref.mul_43(Fmatrix().invert(sprint_layer_ancor), model->LL_GetTransform(ancor));
 	}
 
 	const float shot_blend = CCameraRig::ShotAnimBlend();
@@ -3397,7 +3496,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		finger_settle = hud_motion_settle(m_model, item->m_hand_motions, settle_time, !finger_mark && LeftHandAttachWeight <= 0.f);
 	}
 
-	if (!move_weapon && !retarget_right && !retarget_left && !(has_attach && (m_left_ik_weight > 0.f || item->LeftHandAttachBlend > 0.f)) && !finger_hold && finger_settle <= 0.f)
+	if (!move_weapon && !retarget_right && !retarget_left && !sprint_right && !sprint_left && !sprint_layer_right && !sprint_layer_left && !(has_attach && (m_left_ik_weight > 0.f || item->LeftHandAttachBlend > 0.f)) && !finger_hold && finger_settle <= 0.f)
 	{
 		return;
 	}
@@ -3424,7 +3523,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 
 	if (move_weapon && m_shot_weight > 0.f)
 	{
-		const Fmatrix& anim = model->LL_GetTransform(ancor);
+		const Fmatrix anim = Fmatrix().mul_43(Fmatrix().invert(sprint_layer_ancor), model->LL_GetTransform(ancor));
 
 		if (firing)
 		{
@@ -3454,7 +3553,8 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		Fmatrix varied;
 		varied.setXYZ(rot);
 		varied.translate_over(pos);
-		delta.mulB_43(Fmatrix().mul_43(Fmatrix().mul_43(m_shot_ref, varied), Fmatrix().invert(anim)));
+		const Fmatrix correction = Fmatrix().mul_43(Fmatrix().mul_43(m_shot_ref, varied), Fmatrix().invert(anim));
+		delta.mulB_43(Fmatrix().mul_43(Fmatrix().mul_43(sprint_layer_ancor, correction), Fmatrix().invert(sprint_layer_ancor)));
 	}
 
 	if (move_weapon && !fis_zero(lean))
@@ -3472,20 +3572,35 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 		delta.mulA_43(lean_delta);
 	}
 
-	const float retarget_weight = hud_smooth(RetargetWeight);
-	const auto retarget_blend = [&](Fmatrix& target, const Fmatrix& local)
+	const auto blend_target = [](Fmatrix& target, const Fmatrix& held, float weight)
 	{
-		const Fmatrix held = Fmatrix().mul_43(delta, Fmatrix().mul_43(model->LL_GetTransform(ancor), local));
-
 		Fquaternion q_anim, q_held, q_blend;
 		q_anim.set(target);
 		q_held.set(held);
-		q_blend.slerp(q_anim, q_held, retarget_weight);
+		q_blend.slerp(q_anim, q_held, weight);
 
 		Fvector position;
-		position.lerp(target.c, held.c, retarget_weight);
+		position.lerp(target.c, held.c, weight);
 		target.rotation(q_blend);
 		target.c = position;
+	};
+
+	const float retarget_weight = hud_smooth(RetargetWeight);
+	const auto retarget_blend = [&](Fmatrix& target, const Fmatrix& local)
+	{
+		blend_target(target, Fmatrix().mul_43(delta, Fmatrix().mul_43(model->LL_GetTransform(ancor), local)), retarget_weight);
+	};
+
+	const float sprint_hand_weight = hud_smooth(SprintHandWeight);
+	const auto sprint_blend = [&](Fmatrix& target, const Fmatrix& base)
+	{
+		blend_target(target, Fmatrix().mul_43(delta, Fmatrix().mul_43(sprint_ancor_delta, base)), sprint_hand_weight);
+	};
+
+	const float sprint_layer_weight = hud_smooth(sprint_layer);
+	const auto sprint_layer_blend = [&](Fmatrix& target, const Fmatrix& local)
+	{
+		blend_target(target, Fmatrix().mul_43(delta, Fmatrix().mul_43(model->LL_GetTransform(ancor), local)), sprint_layer_weight);
 	};
 
 	Fmatrix right_target = has_right ? Fmatrix().mul_43(delta, model->LL_GetTransform(m_right_ik_chain[2])) : Fidentity;
@@ -3493,11 +3608,35 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	{
 		retarget_blend(right_target, RetargetRightTarget);
 	}
+	else
+	{
+		if (sprint_layer_right)
+		{
+			sprint_layer_blend(right_target, sprint_right_layer);
+		}
+
+		if (sprint_right)
+		{
+			sprint_blend(right_target, sprint_right_base);
+		}
+	}
 
 	Fmatrix left_target = has_left ? Fmatrix().mul_43(delta, model->LL_GetTransform(m_left_ik_chain[2])) : Fidentity;
 	if (retarget_left)
 	{
 		retarget_blend(left_target, RetargetLeftTarget);
+	}
+	else
+	{
+		if (sprint_layer_left)
+		{
+			sprint_layer_blend(left_target, sprint_left_layer);
+		}
+
+		if (sprint_left)
+		{
+			sprint_blend(left_target, sprint_left_base);
+		}
 	}
 
 	Fmatrix attach_target = left_target;
@@ -3718,7 +3857,12 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 			const bool retarget_arm = LeftHandAttachAnimatedArm && ArmRetargetReference(item, arm_bones);
 			{
 				const Fmatrix current = model->LL_GetTransform(arm_bones[0]);
-				const Fmatrix& attach_root = item->LeftHandAttachArmRootRef;
+				Fmatrix attach_root = item->LeftHandAttachArmRootRef;
+				Fmatrix sprint_root_delta;
+				if (sprint_layer > 0.f && SprintBoneDelta(model->LL_GetData(arm_bones[0]).GetParentID(), sprint_root_delta))
+				{
+					attach_root.mulA_43(sprint_root_delta);
+				}
 
 				Fquaternion q_current, q_attach, q_arm, q_result;
 				q_current.set(current);
@@ -4243,6 +4387,10 @@ void player_hud::attach_item(CHudItem* item)
 				m_model->LL_FadeCycle(pid, 1.f / pi->m_additive_blend_out, 1 << ADDITIVE_CHANNEL);
 			}
 
+			StopSprintAdditive(pi->SprintLayerBlend());
+			SprintAdditiveItem = pi;
+			ResolveSprintAdditive(pi);
+
 			RetargetWeight = 0.f;
 			RetargetLeftValid = false;
 			RetargetRightValid = false;
@@ -4382,21 +4530,6 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 				m_movement_layers[i]->Reload(m_default_movement_layers_params[i].camera_name, m_default_movement_layers_params[i].speed_power, m_default_movement_layers_params[i].blend_params);
 			}
 		}
-
-		const SBlendParams& loop_params = m_attached_items[0]->m_parent_hud_item->HudDesc().m_sSprintLoopBlendParams;
-		if (loop_params.has_motion)
-		{
-			if (m_sprint_loop == nullptr)
-			{
-				m_sprint_loop = new movement_layer();
-			}
-
-			m_sprint_loop->Reload(loop_params.camera_name, loop_params.speed_power, loop_params.blend_params);
-		}
-		else if (m_sprint_loop != nullptr)
-		{
-			m_sprint_loop->Stop(true);
-		}
 	}
 
 	float phase = -1.0f;
@@ -4421,11 +4554,6 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 		anm->Stop(stop_force);
 	}
 
-	if (m_sprint_loop != nullptr)
-	{
-		m_sprint_loop->Stop(stop_force);
-	}
-
 	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
 	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
 
@@ -4438,9 +4566,6 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 
 	u32 state = pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
 
-	const CHudItem* sprint_item = m_attached_items[0] != nullptr ? m_attached_items[0]->m_parent_hud_item : nullptr;
-	const bool sprint_chain = sprint_item != nullptr && sprint_item->HudDesc().m_sSprintStartBlendParams.has_motion && CCameraRig::Enabled();
-
 	if (pActor->AnyMove())
 	{
 		if (m_movement_layers[EMovementLayers::eAimWalk] != nullptr && pWeapon != nullptr && pWeapon->IsZoomed())
@@ -4449,7 +4574,6 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 		}
 		else if (m_movement_layers[EMovementLayers::eSprint] != nullptr && (state & ACTOR_DEFS::EMoveCommand::mcSprint) != 0)
 		{
-			m_movement_layers[EMovementLayers::eSprint]->Relative = false;
 			m_movement_layers[EMovementLayers::eSprint]->Play(true, phase);
 		}
 		else if (m_movement_layers[EMovementLayers::eWalkSlow] != nullptr && (state & ACTOR_DEFS::EMoveCommand::mcAccel) != 0 && (state & ACTOR_DEFS::EMoveCommand::mcCrouch) == 0)
@@ -4467,12 +4591,6 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 		else if (m_movement_layers[EMovementLayers::eWalk] != nullptr)
 		{
 			m_movement_layers[EMovementLayers::eWalk]->Play(true, phase);
-		}
-
-		if (m_sprint_loop != nullptr && sprint_chain && m_sprinting && (state & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && !SprintStartPlaying())
-		{
-			m_sprint_loop->Relative = true;
-			m_sprint_loop->Play(true, -1.f);
 		}
 
 		const u16 strafe = (state & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 ? u16(-1) : (state & ACTOR_DEFS::EMoveCommand::mcLStrafe) != 0 ? EMovementLayers::eStrafeLeft : (state & ACTOR_DEFS::EMoveCommand::mcRStrafe) != 0 ? EMovementLayers::eStrafeRight : u16(-1);
@@ -4494,90 +4612,6 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 	}
 }
 
-void player_hud::TriggerLayersInertia(bool carry_velocity)
-{
-	const CHudItem* item = m_attached_items[0] != nullptr ? m_attached_items[0]->m_parent_hud_item : nullptr;
-	LayersInertHalfLife = item != nullptr && CCameraRig::Enabled() ? item->HudDesc().SprintInertia : 0.f;
-	LayersInertTrigger = LayersInertHalfLife > 0.f;
-	LayersInertCarryVel = carry_velocity;
-}
-
-static void hud_inertia_decay(Fvector& x, Fvector& v, float half_life, float dt)
-{
-	const float y = 2.f * 0.69314718f / (half_life + 1e-5f);
-	const Fvector j = Fvector().mad(v, x, y);
-	const float e = expf(-y * dt);
-	x.mad(j, dt).mul(e);
-	v.mad(j, -y * dt).mul(e);
-}
-
-Fmatrix player_hud::UpdateLayersInertia(const Fmatrix& total)
-{
-	const float dt = Device.fTimeDelta;
-
-	if (LayersInertTrigger && dt > EPS)
-	{
-		Fmatrix gap;
-		gap.mul_43(Fmatrix().invert(total), LayersPrev);
-		gap.getXYZ(LayersInertRot);
-		LayersInertPos = gap.c;
-		LayersInertVelPos = LayersInertCarryVel ? LayersPrevVelPos : Fvector().set(0.f, 0.f, 0.f);
-		LayersInertVelRot = LayersInertCarryVel ? LayersPrevVelRot : Fvector().set(0.f, 0.f, 0.f);
-	}
-
-	LayersInertTrigger = false;
-
-	if (LayersInertHalfLife > 0.f)
-	{
-		hud_inertia_decay(LayersInertPos, LayersInertVelPos, LayersInertHalfLife, dt);
-		hud_inertia_decay(LayersInertRot, LayersInertVelRot, LayersInertHalfLife, dt);
-	}
-	else
-	{
-		LayersInertPos.set(0.f, 0.f, 0.f);
-		LayersInertRot.set(0.f, 0.f, 0.f);
-	}
-
-	Fmatrix correction;
-	correction.setXYZ(LayersInertRot);
-	correction.translate_over(LayersInertPos);
-
-	const Fmatrix output = Fmatrix().mul_43(total, correction);
-	if (dt > EPS)
-	{
-		Fvector rot, prev_rot;
-		output.getXYZ(rot);
-		LayersPrev.getXYZ(prev_rot);
-
-		LayersPrevVelPos.sub(output.c, LayersPrev.c).div(dt);
-		LayersPrevVelRot.sub(rot, prev_rot).div(dt);
-		LayersPrevVelPos.clamp(Fvector().set(-2.f, -2.f, -2.f), Fvector().set(2.f, 2.f, 2.f));
-		LayersPrevVelRot.clamp(Fvector().set(-10.f, -10.f, -10.f), Fvector().set(10.f, 10.f, 10.f));
-	}
-
-	LayersPrev = output;
-	return correction;
-}
-
-bool player_hud::SprintStartPlaying()
-{
-	const CHudItem* item = m_attached_items[0] != nullptr ? m_attached_items[0]->m_parent_hud_item : nullptr;
-	if (item == nullptr || !item->HudDesc().m_sSprintStartBlendParams.has_motion || !CCameraRig::Enabled())
-	{
-		return false;
-	}
-
-	for (script_layer* anm : m_script_layers)
-	{
-		if (anm->name == item->HudDesc().m_sSprintStartBlendParams.camera_name && anm->active)
-		{
-			return anm->anim->anim_param().t_current < anm->anim->anim_param().max_t;
-		}
-	}
-
-	return false;
-}
-
 void player_hud::SyncSprintBlend()
 {
 	CObject* entity = Level().CurrentEntity();
@@ -4589,103 +4623,216 @@ void player_hud::SyncSprintBlend()
 	{
 		const u32 state = item->GetState();
 		const bool idle = state == CHUDState::eIdle || state == CHUDState::eSprintStart || state == CHUDState::eSprintEnd;
-		const bool sprint_action = item->cast_weapon() != nullptr && (state == CWeapon::eReload || state == CWeapon::eSwitchMode);
-		const bool draw_unpended = state == CHUDState::eShowing && !item->IsPending();
-		sprint = (idle || sprint_action || draw_unpended) && (actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint) != 0;
+		const bool sprint_action = item->cast_weapon() != nullptr && (state == CWeapon::eReload || state == CWeapon::eSwitchMode || state == CWeapon::eSafemodeSwitch);
+		const bool unpended = !item->IsPending() && state != CHUDState::eHiding && state != CHUDState::eHidden;
+		sprint = (idle || sprint_action || unpended) && (actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint) != 0;
 	}
 
-	UpdateSprintBlend(sprint);
+	UpdateSprintAdditive(sprint);
+	m_sprinting = sprint;
 }
 
-void player_hud::UpdateSprintBlend(bool sprint)
+bool player_hud::SprintAdditiveEnabled() const
 {
-	if (sprint == m_sprinting)
+	return m_model != nullptr && m_attached_items[0] != nullptr && m_attached_items[0] == SprintAdditiveItem && SprintLoopMotion.valid();
+}
+
+void player_hud::ResolveSprintAdditive(attachable_hud_item* item)
+{
+	SprintStartMotion = MotionID();
+	SprintLoopMotion = MotionID();
+	SprintEndMotion = MotionID();
+	SprintReferenceMotion = MotionID();
+	if (m_model == nullptr || item == nullptr || !item->SprintLayered())
 	{
 		return;
 	}
 
-	m_sprinting = sprint;
-	m_sprint_start_wait = false;
+	SprintStartMotion = item->AliasMotion("anm_idle_sprint_start");
+	SprintLoopMotion = item->AliasMotion("anm_idle_sprint");
+	SprintEndMotion = item->AliasMotion("anm_idle_sprint_end");
 
-	if (!CCameraRig::Enabled())
+	const shared_str reference = item->SprintLayerReference();
+	if (reference.size() != 0)
 	{
+		SprintReferenceMotion = m_model->ID_Cycle_Safe(reference);
+	}
+}
+
+bool player_hud::PlaySprintAdditive(attachable_hud_item* item, MotionID motion, bool loop, float progress, float power)
+{
+	if (m_model == nullptr || !motion.valid())
+	{
+		return false;
+	}
+
+	CMotionDef* def = m_model->LL_GetMotionDef(motion);
+	const float rate = 1.f / item->SprintLayerBlend();
+	for (u16 part = 0, count = m_model->partitions().count(); part < count; ++part)
+	{
+		m_model->LL_FadeCycle(part, rate, 1 << LAYER_ADDITIVE_CHANNEL);
+		CBlend* B = m_model->LL_PlayCycle(part, motion, true, rate, rate, def != nullptr ? def->Speed() : 1.f, !loop, nullptr, nullptr, LAYER_ADDITIVE_CHANNEL);
+		if (B != nullptr)
+		{
+			B->additive_ref = SprintReferenceMotion;
+			B->fall_at_end = false;
+			B->blendPower = std::clamp(power, 0.05f, 1.f);
+			B->timeCurrent = std::clamp(progress, 0.f, 1.f) * std::max(B->timeTotal - END_EPS, 0.f);
+		}
+	}
+
+	return true;
+}
+
+void player_hud::StopSprintAdditive(float blend)
+{
+	SprintAdditiveStage = ESprintAdditiveStage::None;
+	if (m_model == nullptr)
+	{
+		return;
+	}
+
+	for (u16 part = 0, count = m_model->partitions().count(); part < count; ++part)
+	{
+		m_model->LL_FadeCycle(part, 1.f / std::max(blend, 0.01f), 1 << LAYER_ADDITIVE_CHANNEL);
+	}
+}
+
+float player_hud::SprintAdditiveProgress(MotionID motion) const
+{
+	if (m_model == nullptr || !motion.valid())
+	{
+		return -1.f;
+	}
+
+	for (u16 part = 0, count = m_model->partitions().count(); part < count; ++part)
+	{
+		for (u32 i = 0, blends = m_model->LL_PartBlendsCount(part); i < blends; i++)
+		{
+			const CBlend* B = m_model->LL_PartBlend(part, i);
+			if (B != nullptr && B->channel == LAYER_ADDITIVE_CHANNEL && B->motionID == motion && B->blend_state() != CBlend::eFREE_SLOT && B->blend_state() != CBlend::eFalloff)
+			{
+				const float length = B->timeTotal - END_EPS;
+				return length > EPS ? std::clamp(B->timeCurrent / length, 0.f, 1.f) : 1.f;
+			}
+		}
+	}
+
+	return -1.f;
+}
+
+void player_hud::UpdateSprintAdditive(bool sprint)
+{
+	attachable_hud_item* item = m_attached_items[0];
+	if (item != SprintAdditiveItem)
+	{
+		if (SprintAdditiveStage != ESprintAdditiveStage::None)
+		{
+			StopSprintAdditive(SprintAdditiveItem != nullptr ? SprintAdditiveItem->SprintLayerBlend() : 0.2f);
+		}
+
+		SprintAdditiveItem = item;
+	}
+
+	ResolveSprintAdditive(item);
+	if (!SprintAdditiveEnabled())
+	{
+		if (SprintAdditiveStage != ESprintAdditiveStage::None)
+		{
+			StopSprintAdditive(item != nullptr ? item->SprintLayerBlend() : 0.2f);
+		}
+
 		return;
 	}
 
 	if (sprint)
 	{
-		TriggerLayersInertia(false);
+		if (SprintAdditiveStage == ESprintAdditiveStage::Start || SprintAdditiveStage == ESprintAdditiveStage::Loop)
+		{
+			return;
+		}
+
+		float progress = 0.f;
+		if (SprintAdditiveStage == ESprintAdditiveStage::End)
+		{
+			const float end = SprintAdditiveProgress(SprintEndMotion);
+			progress = end >= 0.f ? (1.f - end) * SprintEndPower : 0.f;
+		}
+
+		if (PlaySprintAdditive(item, SprintStartMotion, false, progress))
+		{
+			SprintAdditiveStage = ESprintAdditiveStage::Start;
+		}
+		else if (PlaySprintAdditive(item, SprintLoopMotion, true, 0.f))
+		{
+			SprintAdditiveStage = ESprintAdditiveStage::Loop;
+		}
+		else
+		{
+			StopSprintAdditive(item->SprintLayerBlend());
+		}
+
+		return;
 	}
 
-	CHudItem* item = m_attached_items[0] != nullptr ? m_attached_items[0]->m_parent_hud_item : nullptr;
-	if (item == nullptr)
+	if (SprintAdditiveStage == ESprintAdditiveStage::None || SprintAdditiveStage == ESprintAdditiveStage::End)
 	{
 		return;
 	}
 
-	const SBlendParams& start = item->HudDesc().m_sSprintStartBlendParams;
-	const SBlendParams& end = item->HudDesc().m_sSprintEndBlendParams;
+	const u32 state = item->m_parent_hud_item != nullptr ? item->m_parent_hud_item->GetState() : CHUDState::eHidden;
+	const bool leaving = state == CHUDState::eHiding || state == CHUDState::eHidden;
 
-	float end_progress = -1.f;
-	float end_blend = 0.f;
-	if (sprint && end.has_motion)
+	SprintEndPower = 1.f;
+	if (SprintAdditiveStage == ESprintAdditiveStage::Start)
 	{
-		for (script_layer* anm : m_script_layers)
-		{
-			const SAnimParams& anm_params = anm->anim->anim_param();
-			if (anm->name == end.camera_name && anm->active && anm->blend_scale > 0.f && anm_params.max_t > anm_params.min_t)
-			{
-				end_progress = std::clamp((anm_params.t_current - anm_params.min_t) / (anm_params.max_t - anm_params.min_t), 0.f, 1.f);
-				end_blend += anm->blend_scale;
-			}
-			else if (start.has_motion && anm->name == start.camera_name && !anm->active)
-			{
-				end_blend += anm->blend_scale;
-			}
-		}
-
-		end_blend = std::min(end_blend, 1.f);
+		const float start = SprintAdditiveProgress(SprintStartMotion);
+		SprintEndPower = start >= 0.f ? start : 1.f;
 	}
 
-	if (start.has_motion)
+	if (!leaving && PlaySprintAdditive(item, SprintEndMotion, false, 0.f, SprintEndPower))
 	{
-		StopBlendAnm(start.camera_name);
+		SprintAdditiveStage = ESprintAdditiveStage::End;
 	}
-
-	if (end.has_motion)
+	else
 	{
-		StopBlendAnm(end.camera_name, end_progress >= 0.f && start.has_motion);
+		StopSprintAdditive(item->SprintLayerBlend());
 	}
+}
 
-	const SBlendParams& params = sprint ? start : end;
-	if (!params.has_motion || !item->NeedMovementBlend())
+void player_hud::UpdateSprintAdditiveChain()
+{
+	if (SprintAdditiveStage == ESprintAdditiveStage::None)
 	{
 		return;
 	}
 
-	script_layer* layer = PlayBlendAnm(params.camera_name, params.speed_power.x, params.speed_power.y, params.blend_params, false, true, true, m_attached_items[1] != nullptr ? 0 : 2, 0, script_layer::EBlendLayers::eNone);
-
-	if (layer != nullptr)
+	attachable_hud_item* item = SprintAdditiveItem;
+	if (item == nullptr || !SprintAdditiveEnabled())
 	{
-		layer->BaseAtEnd = sprint;
-		layer->FadeAtEnd = !sprint;
-
-		const SAnimParams& layer_params = layer->anim->anim_param();
-		const float length = (layer_params.max_t - layer_params.min_t) / std::max(params.speed_power.x, EPS);
-		if (length > EPS)
-		{
-			(sprint ? m_sprint_yield_in : m_sprint_yield_out) = 1.f / length;
-		}
-
-		if (sprint && end_progress >= 0.f)
-		{
-			const SAnimParams& start_params = layer->anim->anim_param();
-			layer->anim->Update((1.f - end_progress) * (start_params.max_t - start_params.min_t) / std::max(params.speed_power.x, EPS));
-			layer->blend_scale = end_blend;
-		}
+		StopSprintAdditive(item != nullptr ? item->SprintLayerBlend() : 0.2f);
+		return;
 	}
 
-	m_sprint_start_wait = sprint;
+	if (SprintAdditiveStage == ESprintAdditiveStage::Loop)
+	{
+		return;
+	}
+
+	const bool start = SprintAdditiveStage == ESprintAdditiveStage::Start;
+	const float progress = SprintAdditiveProgress(start ? SprintStartMotion : SprintEndMotion);
+	if (progress >= 0.f && progress < 1.f)
+	{
+		return;
+	}
+
+	if (start && PlaySprintAdditive(item, SprintLoopMotion, true, 0.f))
+	{
+		SprintAdditiveStage = ESprintAdditiveStage::Loop;
+		return;
+	}
+
+	StopSprintAdditive(item->SprintLayerBlend());
 }
 
 void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
