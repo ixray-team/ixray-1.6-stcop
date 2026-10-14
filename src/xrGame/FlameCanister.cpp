@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "StdAfx.h"
 #include "FlameCanister.h"
 #include "Flamethrower.h"
 #include "Inventory.h"
