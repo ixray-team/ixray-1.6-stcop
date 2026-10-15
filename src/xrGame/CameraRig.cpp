@@ -219,6 +219,19 @@ const SCameraRigParam* CCameraRig::ParamList(u32& count)
 	return g_rig_params;
 }
 
+const SCameraRigParam* CCameraRig::FindHudParam(const char* hud_key)
+{
+	for (const SCameraRigParam& it : g_rig_params)
+	{
+		if (it.HudKey != nullptr && xr_strcmp(it.HudKey, hud_key) == 0)
+		{
+			return &it;
+		}
+	}
+
+	return nullptr;
+}
+
 void CCameraRig::ResetWeaponCache()
 {
 	m_weapon_sect = nullptr;
