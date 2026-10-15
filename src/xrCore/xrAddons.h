@@ -23,6 +23,7 @@ public:
 
 	void Initialize();
 	bool CanApply(xr_string& TempPath, CLocatorAPI::file& Desc);
+	bool CanApplyFile(xr_string& TempPath, CLocatorAPI::file& Desc);
 
 	void MountAddons();
 	XRCORE_API const AddonInfo* FindAddon(const CLocatorAPI::file& Desc) const;

@@ -142,7 +142,7 @@ CLocatorAPI::~CLocatorAPI()
 	VERIFY				(0==m_iLockRescan);
 }
 
-void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif)
+void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif, bool isKnownFile)
 {	
 	xr_string TempPath = name;
 	xr_strlwr(TempPath);
@@ -151,7 +151,9 @@ void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size
 
 	if (IsAddonPhase && !IsArchivePhase)
 	{
-		if (!GAddonsManager->CanApply(TempPath, desc))
+		const bool canApply = isKnownFile ? GAddonsManager->CanApplyFile(TempPath, desc) :
+			GAddonsManager->CanApply(TempPath, desc);
+		if (!canApply)
 		{
 			return;
 		}
@@ -189,7 +191,14 @@ void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size
 	{
 		_splitpath		(temp, path, folder, nullptr, nullptr );
 		xr_strcat			(path,folder);
-		if (!exist(path))	
+		if (exist(path))
+		{
+			if (!m_Flags.test(flReady) && xr_strcmp(path, TempPath.c_str()) != 0)
+			{
+				break;
+			}
+		}
+		else
 		{
 			desc.name			= xr_strdup(path);
 			desc.vfs			= 0xffffffff;
@@ -627,6 +636,7 @@ bool CLocatorAPI::Recurse(const char* path)
 		return false;
 	}
 
+	{
 	for (xr_dir_entry elem : xr_dir_iter(path))
 	{
 		xr_path elem_path = elem;
@@ -643,6 +653,7 @@ bool CLocatorAPI::Recurse(const char* path)
 		chache.ftime = xr_chrono_to_time_t(elem.last_write_time());
 		chache.fsize = (chache.dir ? 0 : elem.file_size());
 		chache.fileName = elem_path.xfilename();
+	}
 	}
 
 	size_t newSize = GetScanCacheBuffer()->size();
@@ -692,7 +703,7 @@ bool CLocatorAPI::Recurse(const char* path)
 				else
 				{
 					u32 fsize = chache.fsize;
-					Register(N, 0xffffffff, 0, 0, fsize, fsize, chache.ftime);
+					Register(N, 0xffffffff, 0, 0, fsize, fsize, chache.ftime, true);
 					//Register(N, 0xffffffff, 0, 0, fsize, fsize, u32(chache.ftime / 10000000 - 11644473600LL));
 				}
 			}
@@ -1191,11 +1202,42 @@ int CLocatorAPI::file_list(FS_FileSet& dest, const char* path, u32 flags, const 
 	_SequenceToList(masks, mask);
 	bool b_mask = !masks.empty();
 
-	size_t base_len = xr_strlen(N);
-	for (++I; I != m_files.end(); ++I)
+	const size_t base_len = xr_strlen(N);
+	const char* scanBase = N;
+	size_t scanLength = base_len;
+	xr_string scanPrefix;
+	++I;
+	if (b_mask && (flags & FS_ListFiles) && !(flags & FS_ListFolders))
+	{
+		xr_string_view prefix(masks.front().data(), masks.front().size());
+		prefix = prefix.substr(0, prefix.find_first_of("*?"));
+		for (const auto& pattern : masks)
+		{
+			size_t length = 0;
+			while (length < prefix.size() && length < pattern.size() && prefix[length] == pattern[length])
+			{
+				++length;
+			}
+			prefix = prefix.substr(0, length);
+		}
+		if (!prefix.empty())
+		{
+			scanPrefix.reserve(base_len + prefix.size());
+			scanPrefix.assign(N, base_len);
+			scanPrefix.append(prefix.data(), prefix.size());
+			desc.name = scanPrefix.c_str();
+			I = m_files.lower_bound(desc);
+			scanBase = scanPrefix.c_str();
+			scanLength = scanPrefix.size();
+		}
+	}
+	for (; I != m_files.end(); ++I)
 	{
 		const file& entry = *I;
-		if (0 != strncmp(entry.name, N, base_len))	break;	// end of list
+		if (strncmp(entry.name, scanBase, scanLength) != 0)
+		{
+			break;
+		}
 		const char* end_symbol = entry.name + xr_strlen(entry.name) - 1;
 		if ((*end_symbol) != Platform::kPreferredSeparator[0])
 		{

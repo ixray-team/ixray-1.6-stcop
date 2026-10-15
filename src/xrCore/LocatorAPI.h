@@ -84,7 +84,7 @@ private:
 
 	bool IsArchivePhase = false;
 
-	void						Register		(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif);
+	void						Register		(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif, bool isKnownFile = false);
 	void						ProcessArchive	(const char* path, const char* base_path = nullptr);
 	void						ProcessOne		(const char* path, system_file* F);
 	bool						Recurse			(const char* path);	
