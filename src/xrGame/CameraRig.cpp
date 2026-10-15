@@ -234,12 +234,12 @@ const SCameraRigParam* CCameraRig::FindHudParam(const char* hud_key)
 
 void CCameraRig::ResetWeaponCache()
 {
-	m_weapon_sect = nullptr;
+	WeaponSect = nullptr;
 }
 
 CCameraRig::~CCameraRig()
 {
-	for (SLayer& layer : m_layers)
+	for (SLayer& layer : Layers)
 	{
 		xr_delete(layer.anim);
 	}
@@ -247,7 +247,7 @@ CCameraRig::~CCameraRig()
 
 void CCameraRig::FadeChannel(ECameraRigChannel channel)
 {
-	for (SLayer& layer : m_layers)
+	for (SLayer& layer : Layers)
 	{
 		if (layer.active && layer.channel == channel)
 		{
@@ -266,7 +266,7 @@ void CCameraRig::PreviewAnim(const char* name, ECameraRigChannel channel, float 
 	const auto find = [&]() -> SLayer*
 	{
 		SLayer* found = nullptr;
-		for (SLayer& it : m_layers)
+		for (SLayer& it : Layers)
 		{
 			if (it.anim == nullptr || it.channel != channel || xr_strcmp(it.anim->Name(), name) != 0)
 			{
@@ -330,7 +330,7 @@ bool CCameraRig::PlayAnim(const char* name, ECameraRigChannel channel, float spe
 		return false;
 	}
 
-	for (const SLayer& layer : m_layers)
+	for (const SLayer& layer : Layers)
 	{
 		if (channel == crcMove && layer.active && !layer.fade_out && layer.channel == channel && xr_strcmp(layer.anim->Name(), name) == 0)
 		{
@@ -343,8 +343,8 @@ bool CCameraRig::PlayAnim(const char* name, ECameraRigChannel channel, float spe
 		FadeChannel(channel);
 	}
 
-	SLayer* slot = &m_layers[0];
-	for (SLayer& layer : m_layers)
+	SLayer* slot = &Layers[0];
+	for (SLayer& layer : Layers)
 	{
 		if (!layer.active)
 		{
@@ -378,12 +378,12 @@ bool CCameraRig::PlayAnim(const char* name, ECameraRigChannel channel, float spe
 
 void CCameraRig::OnHit(float power)
 {
-	m_trauma = std::clamp(m_trauma + power * g_rig.hit_trauma, 0.f, 1.f);
+	Trauma = std::clamp(Trauma + power * g_rig.hit_trauma, 0.f, 1.f);
 }
 
 void CCameraRig::OnExplosion(float power)
 {
-	m_trauma = std::clamp(m_trauma + power * g_rig.explosion_trauma, 0.f, 1.f);
+	Trauma = std::clamp(Trauma + power * g_rig.explosion_trauma, 0.f, 1.f);
 }
 
 void CCameraRig::OnShot(CWeapon* weapon)
@@ -394,29 +394,29 @@ void CCameraRig::OnShot(CWeapon* weapon)
 	}
 
 	const shared_str& sect = weapon->HudSection();
-	if (m_weapon_sect != sect)
+	if (WeaponSect != sect)
 	{
-		m_weapon_sect = sect;
-		m_weapon_punch = pSettings->line_exist(sect, "rig_punch") ? Fvector(pSettings->r_fvector3(sect, "rig_punch")).mul(PI / 180.f) : g_rig.punch;
-		m_weapon_kick_rot = pSettings->line_exist(sect, "rig_kick_rot") ? Fvector(pSettings->r_fvector3(sect, "rig_kick_rot")).mul(PI / 180.f) : g_rig.kick_rot;
-		m_weapon_kick_pos = READ_IF_EXISTS(pSettings, r_fvector3, sect, "rig_kick_pos", g_rig.kick_pos);
-		m_weapon_trauma = READ_IF_EXISTS(pSettings, r_float, sect, "rig_shot_trauma", g_rig.shot_trauma);
-		m_weapon_fov_kick = READ_IF_EXISTS(pSettings, r_float, sect, "rig_fov_kick", g_rig.shot_fov_kick);
+		WeaponSect = sect;
+		WeaponPunch = pSettings->line_exist(sect, "rig_punch") ? Fvector(pSettings->r_fvector3(sect, "rig_punch")).mul(PI / 180.f) : g_rig.punch;
+		WeaponKickRot = pSettings->line_exist(sect, "rig_kick_rot") ? Fvector(pSettings->r_fvector3(sect, "rig_kick_rot")).mul(PI / 180.f) : g_rig.kick_rot;
+		WeaponKickPos = READ_IF_EXISTS(pSettings, r_fvector3, sect, "rig_kick_pos", g_rig.kick_pos);
+		WeaponTrauma = READ_IF_EXISTS(pSettings, r_float, sect, "rig_shot_trauma", g_rig.shot_trauma);
+		WeaponFovKick = READ_IF_EXISTS(pSettings, r_float, sect, "rig_fov_kick", g_rig.shot_fov_kick);
 	}
 
 	const float aim = weapon->GetAimFactor();
 	const attachable_hud_item* hud_item = weapon->HudItemData();
-	const float mass = hud_item != nullptr ? hud_item->m_hud_mass : 1.f;
+	const float mass = hud_item != nullptr ? hud_item->HudMass : 1.f;
 	const float kick = _sqrt(g_rig.kick_stiffness) * lerp(1.f, g_rig.aim_kick_scale, aim) / _sqrt(mass);
-	m_punch.velocity.mad(Fvector().set(m_weapon_punch.y * ::Random.randFs(1.f), m_weapon_punch.x, m_weapon_punch.z * ::Random.randFs(1.f)), _sqrt(g_rig.punch_stiffness) * lerp(1.f, g_rig.aim_punch_scale, aim));
-	m_kick.velocity.mad(Fvector().set(m_weapon_kick_rot.y * ::Random.randFs(1.f), m_weapon_kick_rot.x, m_weapon_kick_rot.z * ::Random.randFs(1.f)), kick);
-	m_kick_pos.velocity.mad(m_weapon_kick_pos, kick);
-	m_trauma = std::clamp(m_trauma + m_weapon_trauma * lerp(1.f, g_rig.aim_kick_scale, aim), 0.f, 1.f);
+	Punch.velocity.mad(Fvector().set(WeaponPunch.y * ::Random.randFs(1.f), WeaponPunch.x, WeaponPunch.z * ::Random.randFs(1.f)), _sqrt(g_rig.punch_stiffness) * lerp(1.f, g_rig.aim_punch_scale, aim));
+	Kick.velocity.mad(Fvector().set(WeaponKickRot.y * ::Random.randFs(1.f), WeaponKickRot.x, WeaponKickRot.z * ::Random.randFs(1.f)), kick);
+	KickPos.velocity.mad(WeaponKickPos, kick);
+	Trauma = std::clamp(Trauma + WeaponTrauma * lerp(1.f, g_rig.aim_kick_scale, aim), 0.f, 1.f);
 
-	if (m_fov_valid && !fis_zero(m_weapon_fov_kick))
+	if (FovValid && !fis_zero(WeaponFovKick))
 	{
-		const float zoom = std::min(m_fov.value.x / std::max(g_fov, 1.f), 1.f);
-		m_fov.velocity.x += m_weapon_fov_kick * lerp(1.f, g_rig.aim_fov_kick_scale, aim) * zoom * _sqrt(g_rig.fov_stiffness) * 2.71828f;
+		const float zoom = std::min(Fov.value.x / std::max(g_fov, 1.f), 1.f);
+		Fov.velocity.x += WeaponFovKick * lerp(1.f, g_rig.aim_fov_kick_scale, aim) * zoom * _sqrt(g_rig.fov_stiffness) * 2.71828f;
 	}
 }
 
@@ -428,8 +428,8 @@ void CCameraRig::OnLand(float speed)
 	}
 
 	const float power = std::clamp((speed - g_rig.land_min_speed) / std::max(g_rig.land_max_speed - g_rig.land_min_speed, EPS_L), 0.f, 1.f);
-	m_land.velocity.mad(Fvector().set(-g_rig.land_pitch, -g_rig.land_height, g_rig.land_roll * ::Random.randFs(1.f)), _sqrt(g_rig.land_stiffness) * power);
-	m_trauma = std::clamp(m_trauma + g_rig.land_trauma * power, 0.f, 1.f);
+	Land.velocity.mad(Fvector().set(-g_rig.land_pitch, -g_rig.land_height, g_rig.land_roll * ::Random.randFs(1.f)), _sqrt(g_rig.land_stiffness) * power);
+	Trauma = std::clamp(Trauma + g_rig.land_trauma * power, 0.f, 1.f);
 }
 
 static float rig_noise(float time, float seed)
@@ -447,7 +447,7 @@ static float rig_noise(float time, float seed)
 
 void CCameraRig::UpdateLayers(float dt, Fvector& pos, Fvector& hpb, Fvector& hud_pos, Fvector& hud_hpb)
 {
-	for (SLayer& layer : m_layers)
+	for (SLayer& layer : Layers)
 	{
 		if (!layer.active)
 		{
@@ -491,10 +491,10 @@ void CCameraRig::Update(CActor* actor, float fov, float lean)
 	}
 
 	const float dt = Device.fTimeDelta;
-	if (!m_fov_valid)
+	if (!FovValid)
 	{
-		m_fov.value.set(fov, 0.f, 0.f);
-		m_fov_valid = true;
+		Fov.value.set(fov, 0.f, 0.f);
+		FovValid = true;
 	}
 
 	PIItem active_item = actor->inventory().ActiveItem();
@@ -505,35 +505,35 @@ void CCameraRig::Update(CActor* actor, float fov, float lean)
 	UpdateLayers(dt, pos, hpb, hud_pos, hud_hpb);
 
 	const Fvector zero = {};
-	m_fov.value.spring_inertion(Fvector().set(fov, 0.f, 0.f), m_fov.velocity, dt, g_rig.fov_stiffness, g_rig.fov_damping);
-	m_punch.value.spring_inertion(zero, m_punch.velocity, dt, g_rig.punch_stiffness, g_rig.punch_damping);
-	m_kick.value.spring_inertion(zero, m_kick.velocity, dt, g_rig.kick_stiffness, g_rig.kick_damping);
-	m_kick_pos.value.spring_inertion(zero, m_kick_pos.velocity, dt, g_rig.kick_stiffness, g_rig.kick_damping);
-	m_land.value.spring_inertion(zero, m_land.velocity, dt, g_rig.land_stiffness, g_rig.land_damping);
+	Fov.value.spring_inertion(Fvector().set(fov, 0.f, 0.f), Fov.velocity, dt, g_rig.fov_stiffness, g_rig.fov_damping);
+	Punch.value.spring_inertion(zero, Punch.velocity, dt, g_rig.punch_stiffness, g_rig.punch_damping);
+	Kick.value.spring_inertion(zero, Kick.velocity, dt, g_rig.kick_stiffness, g_rig.kick_damping);
+	KickPos.value.spring_inertion(zero, KickPos.velocity, dt, g_rig.kick_stiffness, g_rig.kick_damping);
+	Land.value.spring_inertion(zero, Land.velocity, dt, g_rig.land_stiffness, g_rig.land_damping);
 
 	CCameraBase* cam = actor->cam_FirstEye();
 	Fvector right;
 	right.crossproduct(cam->vNormal, cam->vDirection);
 	const float lateral = actor->character_physics_support()->movement()->GetVelocity().dotproduct(right);
 	const float roll = std::clamp(lateral * g_rig.strafe_roll - actor->fFPCamYawMagnitude * g_rig.look_roll, -g_rig.roll_max, g_rig.roll_max) * lerp(1.f, g_rig.aim_roll_scale, aim);
-	m_roll.value.spring_inertion(Fvector().set(0.f, 0.f, roll), m_roll.velocity, dt, g_rig.roll_stiffness, g_rig.roll_damping);
+	Roll.value.spring_inertion(Fvector().set(0.f, 0.f, roll), Roll.velocity, dt, g_rig.roll_stiffness, g_rig.roll_damping);
 
-	m_trauma = std::max(m_trauma - g_rig.trauma_decay * dt, 0.f);
-	const float shake = m_trauma * m_trauma * std::min(m_fov.value.x / std::max(g_fov, 1.f), 1.f);
+	Trauma = std::max(Trauma - g_rig.trauma_decay * dt, 0.f);
+	const float shake = Trauma * Trauma * std::min(Fov.value.x / std::max(g_fov, 1.f), 1.f);
 	const float time = Device.fTimeGlobal * g_rig.shake_frequency;
 	const Fvector shake_hpb = { rig_noise(time, 1.f) * g_rig.shake_rot.y * shake, rig_noise(time, 2.f) * g_rig.shake_rot.x * shake, rig_noise(time, 3.f) * g_rig.shake_rot.z * shake };
 	const Fvector shake_pos = { rig_noise(time, 4.f) * g_rig.shake_pos.x * shake, rig_noise(time, 5.f) * g_rig.shake_pos.y * shake, rig_noise(time, 6.f) * g_rig.shake_pos.z * shake };
-	const Fvector land_hpb = { 0.f, m_land.value.x, m_land.value.z };
-	const Fvector land_pos = { 0.f, m_land.value.y, 0.f };
+	const Fvector land_hpb = { 0.f, Land.value.x, Land.value.z };
+	const Fvector land_pos = { 0.f, Land.value.y, 0.f };
 
-	m_world_hpb.add(hpb, m_punch.value).add(m_roll.value).add(shake_hpb).add(land_hpb);
-	m_world_pos.add(pos, shake_pos).add(land_pos);
-	m_hud_cam_hpb.mad(hud_hpb, m_punch.value, g_rig.punch_hud_scale).add(m_roll.value).mad(shake_hpb, g_rig.shake_hud_scale).add(land_hpb);
-	m_hud_cam_pos.mad(hud_pos, shake_pos, g_rig.shake_hud_scale).add(land_pos);
-	m_hud_hpb.mad(m_kick.value, land_hpb, g_rig.land_hud_scale - 1.f);
-	m_hud_pos.mad(m_kick_pos.value, land_pos, g_rig.land_hud_scale - 1.f);
-	m_lean = lean;
-	m_update_frame = Device.dwFrame;
+	WorldHpb.add(hpb, Punch.value).add(Roll.value).add(shake_hpb).add(land_hpb);
+	WorldPos.add(pos, shake_pos).add(land_pos);
+	HudCamHpb.mad(hud_hpb, Punch.value, g_rig.punch_hud_scale).add(Roll.value).mad(shake_hpb, g_rig.shake_hud_scale).add(land_hpb);
+	HudCamPos.mad(hud_pos, shake_pos, g_rig.shake_hud_scale).add(land_pos);
+	HudHpb.mad(Kick.value, land_hpb, g_rig.land_hud_scale - 1.f);
+	HudPos.mad(KickPos.value, land_pos, g_rig.land_hud_scale - 1.f);
+	Lean = lean;
+	UpdateFrame = Device.dwFrame;
 }
 
 static void rig_offset(SCamEffectorInfo& info, const Fvector& pos, const Fvector& hpb)
@@ -559,33 +559,33 @@ static void rig_offset(SCamEffectorInfo& info, const Fvector& pos, const Fvector
 
 void CCameraRig::Apply(SCamEffectorInfo& world, SCamEffectorInfo& hud)
 {
-	if (m_update_frame != Device.dwFrame)
+	if (UpdateFrame != Device.dwFrame)
 	{
 		return;
 	}
 
-	rig_offset(world, m_world_pos, m_world_hpb);
-	rig_offset(hud, m_hud_cam_pos, m_hud_cam_hpb);
-	world.fFov = m_fov.value.x;
-	hud.fFov = m_fov.value.x;
+	rig_offset(world, WorldPos, WorldHpb);
+	rig_offset(hud, HudCamPos, HudCamHpb);
+	world.fFov = Fov.value.x;
+	hud.fFov = Fov.value.x;
 }
 
 void CCameraRig::ApplyHud(Fmatrix& trans)
 {
-	if (m_update_frame != Device.dwFrame)
+	if (UpdateFrame != Device.dwFrame)
 	{
 		return;
 	}
 
 	Fmatrix offset;
-	offset.setHPB(m_hud_hpb.x, m_hud_hpb.y, m_hud_hpb.z);
-	offset.c = m_hud_pos;
+	offset.setHPB(HudHpb.x, HudHpb.y, HudHpb.z);
+	offset.c = HudPos;
 	trans.mulB_43(offset);
 }
 
 float CCameraRig::LeanCounter() const
 {
-	return m_update_frame == Device.dwFrame ? -m_lean * g_rig.lean_hud_counter : 0.f;
+	return UpdateFrame == Device.dwFrame ? -Lean * g_rig.lean_hud_counter : 0.f;
 }
 
 float CCameraRig::HudIkShare()

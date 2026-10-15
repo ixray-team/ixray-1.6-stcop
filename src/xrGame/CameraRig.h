@@ -88,17 +88,17 @@ class CCameraRig
 		Fvector				velocity	= {};
 	};
 
-	SLayer					m_layers[12];
-	SSpring					m_punch, m_kick, m_kick_pos, m_land, m_roll, m_fov;
-	Fvector					m_world_pos = {}, m_world_hpb = {}, m_hud_cam_pos = {}, m_hud_cam_hpb = {}, m_hud_pos = {}, m_hud_hpb = {};
-	shared_str				m_weapon_sect;
-	Fvector					m_weapon_punch = {}, m_weapon_kick_pos = {}, m_weapon_kick_rot = {};
-	float					m_weapon_trauma = 0.f;
-	float					m_weapon_fov_kick = 0.f;
-	float					m_trauma = 0.f;
-	float					m_lean = 0.f;
-	u32						m_update_frame = u32(-1);
-	bool					m_fov_valid = false;
+	SLayer					Layers[12];
+	SSpring					Punch, Kick, KickPos, Land, Roll, Fov;
+	Fvector					WorldPos = {}, WorldHpb = {}, HudCamPos = {}, HudCamHpb = {}, HudPos = {}, HudHpb = {};
+	shared_str				WeaponSect;
+	Fvector					WeaponPunch = {}, WeaponKickPos = {}, WeaponKickRot = {};
+	float					WeaponTrauma = 0.f;
+	float					WeaponFovKick = 0.f;
+	float					Trauma = 0.f;
+	float					Lean = 0.f;
+	u32						UpdateFrame = u32(-1);
+	bool					FovValid = false;
 
 	void					FadeChannel		(ECameraRigChannel channel);
 	void					UpdateLayers	(float dt, Fvector& pos, Fvector& hpb, Fvector& hud_pos, Fvector& hud_hpb);

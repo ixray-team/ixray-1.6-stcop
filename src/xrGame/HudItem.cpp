@@ -401,8 +401,8 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 	const float fSpeed = lerp(HudDesc().BaseYPRParams.m_fHudInertiaSpeed, HudDesc().ZoomYPRParams.m_fHudInertiaSpeed, GetAimFactor());
 	Fvector inertia = { m_fHudYawInertia, m_fHudPitchInertia, m_fHudRollInertia };
 	const attachable_hud_item* hi = HudItemData();
-	const float fMassSpeed = fSpeed * CCameraRig::MassSpeed(hi != nullptr ? hi->m_hud_mass : 1.f);
-	if (CCameraRig::SpringSway(inertia, m_vHudInertiaVelocity, Fvector{ fYawTarget, fPitchTarget, fRollTarget }, fMassSpeed))
+	const float fMassSpeed = fSpeed * CCameraRig::MassSpeed(hi != nullptr ? hi->HudMass : 1.f);
+	if (CCameraRig::SpringSway(inertia, HudInertiaVelocity, Fvector{ fYawTarget, fPitchTarget, fRollTarget }, fMassSpeed))
 	{
 		m_fHudYawInertia = inertia.x;
 		m_fHudPitchInertia = inertia.y;
@@ -430,21 +430,21 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 	hud_inertia_r.rotateZ(m_fHudRollInertia);
 	hud_inertia.mulA_43(hud_inertia_r);
 
-	m_HudLookInertiaPre.set(trans);
-	m_HudLookInertia.set(hud_inertia);
-	m_HudLookInertiaFrame = Device.dwFrame;
+	HudLookInertiaPre.set(trans);
+	HudLookInertia.set(hud_inertia);
+	HudLookInertiaFrame = Device.dwFrame;
 	trans.mulB_43(hud_inertia);
 }
 
 bool CHudItem::GetHudLookInertia(Fmatrix& pre, Fmatrix& xform) const
 {
-	if (m_HudLookInertiaFrame != Device.dwFrame)
+	if (HudLookInertiaFrame != Device.dwFrame)
 	{
 		return false;
 	}
 
-	pre.set(m_HudLookInertiaPre);
-	xform.set(m_HudLookInertia);
+	pre.set(HudLookInertiaPre);
+	xform.set(HudLookInertia);
 	return true;
 }
 
@@ -540,13 +540,13 @@ void CHudItem::OnH_A_Independent()
 void CHudItem::on_b_hud_detach()
 {
 	m_sounds.StopAllSounds	();
-	m_bSprintLayered = false;
+	CachedSprintLayered = false;
 }
 
 void CHudItem::on_a_hud_attach()
 {
 	attachable_hud_item* hud_data = HudItemData();
-	m_bSprintLayered = hud_data != nullptr && hud_data->SprintLayered();
+	CachedSprintLayered = hud_data != nullptr && hud_data->SprintLayered();
 
 	if (m_current_motion_def)
 	{

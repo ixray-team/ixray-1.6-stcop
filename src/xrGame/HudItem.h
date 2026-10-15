@@ -172,7 +172,7 @@ public:
 	virtual shared_str			SetCurrentStateAnimation(const shared_str& first_name) { return first_name; }
 
 	attachable_hud_item*		HudItemData				();
-	bool						SprintLayered			() const { return m_bSprintLayered; }
+	bool						SprintLayered			() const { return CachedSprintLayered; }
 	virtual void				on_a_hud_attach			();
 	virtual bool				HudAnimationExist		(const shared_str& anim_name, bool only_for_actor = true);
 	virtual void				on_b_hud_detach			();
@@ -345,7 +345,7 @@ public:
 	CUIWindow* ScriptWindow = nullptr;
 
 	bool m_bSwitchSprint = false;
-	bool m_bSprintLayered = false;
+	bool CachedSprintLayered = false;
 
 protected:
 
@@ -369,10 +369,10 @@ protected:
 	float						m_fHudYawInertia = 0.0f;
 	float						m_fHudPitchInertia = 0.0f;
 	float						m_fHudRollInertia = 0.0f;
-	Fvector						m_vHudInertiaVelocity = {};
-	Fmatrix						m_HudLookInertiaPre = Fidentity;
-	Fmatrix						m_HudLookInertia = Fidentity;
-	u32							m_HudLookInertiaFrame = u32(-1);
+	Fvector						HudInertiaVelocity = {};
+	Fmatrix						HudLookInertiaPre = Fidentity;
+	Fmatrix						HudLookInertia = Fidentity;
+	u32							HudLookInertiaFrame = u32(-1);
 
 	virtual void				SetModelBoneStatus(const char* bone, bool show);
 	virtual void				SetMultipleBonesStatus(const char* section, const char* line, bool show);
